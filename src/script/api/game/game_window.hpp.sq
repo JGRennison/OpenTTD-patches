@@ -466,6 +466,7 @@ void SQGSWindow_Register(Squirrel *engine)
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_FRW_TIMES_NAMES,                       "WID_FRW_TIMES_NAMES");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_FRW_TIMES_CURRENT,                     "WID_FRW_TIMES_CURRENT");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_FRW_TIMES_AVERAGE,                     "WID_FRW_TIMES_AVERAGE");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_FRW_SCROLLBAR,                         "WID_FRW_SCROLLBAR");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_FGW_CAPTION,                           "WID_FGW_CAPTION");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_FGW_GRAPH,                             "WID_FGW_GRAPH");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GL_TEMPERATE,                          "WID_GL_TEMPERATE");
@@ -546,7 +547,8 @@ void SQGSWindow_Register(Squirrel *engine)
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_CPR_FOOTER,                            "WID_CPR_FOOTER");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_CPR_ENABLE_CARGOES,                    "WID_CPR_ENABLE_CARGOES");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_CPR_DISABLE_CARGOES,                   "WID_CPR_DISABLE_CARGOES");
-	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_CPR_CARGO_FIRST,                       "WID_CPR_CARGO_FIRST");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_CPR_MATRIX,                            "WID_CPR_MATRIX");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_CPR_MATRIX_SCROLLBAR,                  "WID_CPR_MATRIX_SCROLLBAR");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_CL_BACKGROUND,                         "WID_CL_BACKGROUND");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_PRD_SCORE_FIRST,                       "WID_PRD_SCORE_FIRST");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_PRD_SCORE_LAST,                        "WID_PRD_SCORE_LAST");
@@ -1040,6 +1042,7 @@ void SQGSWindow_Register(Squirrel *engine)
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GO_BASE_MUSIC_STATUS,                  "WID_GO_BASE_MUSIC_STATUS");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GO_BASE_MUSIC_TEXTFILE,                "WID_GO_BASE_MUSIC_TEXTFILE");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GO_BASE_MUSIC_DESCRIPTION,             "WID_GO_BASE_MUSIC_DESCRIPTION");
+	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GO_FONT_ZOOM_DROPDOWN,                 "WID_GO_FONT_ZOOM_DROPDOWN");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GS_FILTER,                             "WID_GS_FILTER");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GS_OPTIONSPANEL,                       "WID_GS_OPTIONSPANEL");
 	SQGSWindow.DefSQConst(engine, ScriptWindow::WID_GS_SCROLLBAR,                          "WID_GS_SCROLLBAR");

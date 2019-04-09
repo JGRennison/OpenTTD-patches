@@ -41,7 +41,7 @@
 #include "safeguards.h"
 
 /** Helper type for lists/vectors of trains */
-typedef SmallVector<Train *, 16> TrainList;
+typedef std::vector<Train *> TrainList;
 
 RailtypeInfo _railtypes[RAILTYPE_END];
 RailType _sorted_railtypes[RAILTYPE_END];
@@ -167,7 +167,7 @@ RailType AllocateRailType(RailTypeLabel label)
 			/* Set up new rail type */
 			*rti = _original_railtypes[RAILTYPE_RAIL];
 			rti->label = label;
-			rti->alternate_labels.Clear();
+			rti->alternate_labels.clear();
 
 			/* Make us compatible with ourself. */
 			rti->powered_railtypes    = (RailTypes)(1LL << rt);
@@ -1534,7 +1534,7 @@ static Vehicle *UpdateTrainPowerProc(Vehicle *v, void *data)
 	if (v->type != VEH_TRAIN) return NULL;
 
 	TrainList *affected_trains = static_cast<TrainList*>(data);
-	affected_trains->Include(Train::From(v)->First());
+	include(*affected_trains, Train::From(v)->First());
 
 	return NULL;
 }
@@ -1603,7 +1603,7 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			continue;
 		}
 
-		SmallVector<Train *, 2> vehicles_affected;
+		std::vector<Train *> vehicles_affected;
 
 		/* Vehicle on the tile when not converting Rail <-> ElRail
 		 * Tunnels and bridges have special check later */
@@ -1623,7 +1623,7 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 					if (v != NULL && !HasPowerOnRail(v->railtype, totype)) {
 						/* No power on new rail type, reroute. */
 						FreeTrainTrackReservation(v);
-						*vehicles_affected.Append() = v;
+						vehicles_affected.push_back(v);
 					}
 				}
 
@@ -1705,7 +1705,7 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 						if (v != NULL && !HasPowerOnRail(v->railtype, totype)) {
 							/* No power on new rail type, reroute. */
 							FreeTrainTrackReservation(v);
-							*vehicles_affected.Append() = v;
+							vehicles_affected.push_back(v);
 						}
 					}
 
@@ -1747,15 +1747,15 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				break;
 		}
 
-		for (uint i = 0; i < vehicles_affected.Length(); ++i) {
+		for (uint i = 0; i < vehicles_affected.size(); ++i) {
 			TryPathReserve(vehicles_affected[i], true);
 		}
 	}
 
 	if (flags & DC_EXEC) {
 		/* Railtype changed, update trains as when entering different track */
-		for (Train **v = affected_trains.Begin(); v != affected_trains.End(); v++) {
-			(*v)->ConsistChanged(CCF_TRACK);
+		for (Train *v : affected_trains) {
+			v->ConsistChanged(CCF_TRACK);
 		}
 	}
 
@@ -2107,12 +2107,25 @@ static void DrawTrackBitsOverlay(TileInfo *ti, TrackBits track, const RailtypeIn
 		DrawGroundSprite(image, PAL_NONE);
 	}
 
+	bool no_combine = ti->tileh == SLOPE_FLAT && HasBit(rti->flags, RTF_NO_SPRITE_COMBINE);
 	SpriteID overlay = GetCustomRailSprite(rti, ti->tile, RTSG_OVERLAY);
-	SpriteID ground = GetCustomRailSprite(rti, ti->tile, RTSG_GROUND);
+	SpriteID ground = GetCustomRailSprite(rti, ti->tile, no_combine ? RTSG_GROUND_COMPLETE : RTSG_GROUND);
 	TrackBits pbs = _settings_client.gui.show_track_reservation ? GetRailReservationTrackBits(ti->tile) : TRACK_BIT_NONE;
 
 	if (track == TRACK_BIT_NONE) {
 		/* Half-tile foundation, no track here? */
+	} else if (no_combine) {
+		/* Use trackbits as direct index from ground sprite, subtract 1
+		 * because there is no sprite for no bits. */
+		DrawGroundSprite(ground + track - 1, PAL_NONE);
+
+		/* Draw reserved track bits */
+		if (pbs & TRACK_BIT_X)     DrawGroundSprite(overlay + RTO_X, PALETTE_CRASH);
+		if (pbs & TRACK_BIT_Y)     DrawGroundSprite(overlay + RTO_Y, PALETTE_CRASH);
+		if (pbs & TRACK_BIT_UPPER) DrawTrackSprite(overlay + RTO_N, PALETTE_CRASH, ti, SLOPE_N);
+		if (pbs & TRACK_BIT_LOWER) DrawTrackSprite(overlay + RTO_S, PALETTE_CRASH, ti, SLOPE_S);
+		if (pbs & TRACK_BIT_RIGHT) DrawTrackSprite(overlay + RTO_E, PALETTE_CRASH, ti, SLOPE_E);
+		if (pbs & TRACK_BIT_LEFT)  DrawTrackSprite(overlay + RTO_W, PALETTE_CRASH, ti, SLOPE_W);
 	} else if (ti->tileh == SLOPE_NW && track == TRACK_BIT_Y) {
 		DrawGroundSprite(ground + RTO_SLOPE_NW, PAL_NONE);
 		if (pbs != TRACK_BIT_NONE) DrawGroundSprite(overlay + RTO_SLOPE_NW, PALETTE_CRASH);
@@ -2272,23 +2285,30 @@ static void DrawTrackBits(TileInfo *ti, TrackBits track)
 			image = _track_sloped_sprites[ti->tileh - 1] + rti->base_sprites.track_y;
 		} else {
 			/* track on flat ground */
-			(image = rti->base_sprites.track_y, track == TRACK_BIT_Y) ||
-			(image++,                           track == TRACK_BIT_X) ||
-			(image++,                           track == TRACK_BIT_UPPER) ||
-			(image++,                           track == TRACK_BIT_LOWER) ||
-			(image++,                           track == TRACK_BIT_RIGHT) ||
-			(image++,                           track == TRACK_BIT_LEFT) ||
-			(image++,                           track == TRACK_BIT_CROSS) ||
+			switch (track) {
+				/* single track, select combined track + ground sprite*/
+				case TRACK_BIT_Y:     image = rti->base_sprites.track_y;     break;
+				case TRACK_BIT_X:     image = rti->base_sprites.track_y + 1; break;
+				case TRACK_BIT_UPPER: image = rti->base_sprites.track_y + 2; break;
+				case TRACK_BIT_LOWER: image = rti->base_sprites.track_y + 3; break;
+				case TRACK_BIT_RIGHT: image = rti->base_sprites.track_y + 4; break;
+				case TRACK_BIT_LEFT:  image = rti->base_sprites.track_y + 5; break;
+				case TRACK_BIT_CROSS: image = rti->base_sprites.track_y + 6; break;
 
-			(image = rti->base_sprites.track_ns, track == TRACK_BIT_HORZ) ||
-			(image++,                            track == TRACK_BIT_VERT) ||
+				/* double diagonal track, select combined track + ground sprite*/
+				case TRACK_BIT_HORZ:  image = rti->base_sprites.track_ns;     break;
+				case TRACK_BIT_VERT:  image = rti->base_sprites.track_ns + 1; break;
 
-			(junction = true, false) ||
-			(image = rti->base_sprites.ground, (track & TRACK_BIT_3WAY_NE) == 0) ||
-			(image++,                          (track & TRACK_BIT_3WAY_SW) == 0) ||
-			(image++,                          (track & TRACK_BIT_3WAY_NW) == 0) ||
-			(image++,                          (track & TRACK_BIT_3WAY_SE) == 0) ||
-			(image++, true);
+				/* junction, select only ground sprite, handle track sprite later */
+				default:
+					junction = true;
+					if ((track & TRACK_BIT_3WAY_NE) == 0) { image = rti->base_sprites.ground;     break; }
+					if ((track & TRACK_BIT_3WAY_SW) == 0) { image = rti->base_sprites.ground + 1; break; }
+					if ((track & TRACK_BIT_3WAY_NW) == 0) { image = rti->base_sprites.ground + 2; break; }
+					if ((track & TRACK_BIT_3WAY_SE) == 0) { image = rti->base_sprites.ground + 3; break; }
+					image = rti->base_sprites.ground + 4;
+					break;
+			}
 		}
 
 		switch (rgt) {
@@ -2912,48 +2932,48 @@ int TicksToLeaveDepot(const Train *v)
  */
 static VehicleEnterTileStatus VehicleEnter_Track(Vehicle *u, TileIndex tile, int x, int y)
 {
-	/* this routine applies only to trains in depot tiles */
+	/* This routine applies only to trains in depot tiles. */
 	if (u->type != VEH_TRAIN || !IsRailDepotTile(tile)) return VETSB_CONTINUE;
 
-	Train *v = Train::From(u);
-
-	/* depot direction */
+	/* Depot direction. */
 	DiagDirection dir = GetRailDepotDirection(tile);
-
-	/* Calculate the point where the following wagon should be activated. */
-	int length = v->CalcNextVehicleOffset();
-
-	byte fract_coord_leave =
-		((_fractcoords_enter[dir] & 0x0F) + // x
-			(length + 1) * _deltacoord_leaveoffset[dir]) +
-		(((_fractcoords_enter[dir] >> 4) +  // y
-			((length + 1) * _deltacoord_leaveoffset[dir + 4])) << 4);
 
 	byte fract_coord = (x & 0xF) + ((y & 0xF) << 4);
 
-	if (_fractcoords_behind[dir] == fract_coord) {
-		/* make sure a train is not entering the tile from behind */
-		return VETSB_CANNOT_ENTER;
-	} else if (_fractcoords_enter[dir] == fract_coord) {
-		if (DiagDirToDir(ReverseDiagDir(dir)) == v->direction) {
-			/* enter the depot */
-			v->track = TRACK_BIT_DEPOT,
-			v->vehstatus |= VS_HIDDEN; // hide it
-			v->direction = ReverseDir(v->direction);
-			if (v->Next() == NULL) VehicleEnterDepot(v->First());
-			v->tile = tile;
+	/* Make sure a train is not entering the tile from behind. */
+	if (_fractcoords_behind[dir] == fract_coord) return VETSB_CANNOT_ENTER;
 
-			InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
-			return VETSB_ENTERED_WORMHOLE;
-		}
-	} else if (fract_coord_leave == fract_coord) {
-		if (DiagDirToDir(dir) == v->direction) {
-			/* leave the depot? */
+	Train *v = Train::From(u);
+
+	/* Leaving depot? */
+	if (v->direction == DiagDirToDir(dir)) {
+		/* Calculate the point where the following wagon should be activated. */
+		int length = v->CalcNextVehicleOffset();
+
+		byte fract_coord_leave =
+			((_fractcoords_enter[dir] & 0x0F) + // x
+				(length + 1) * _deltacoord_leaveoffset[dir]) +
+			(((_fractcoords_enter[dir] >> 4) +  // y
+				((length + 1) * _deltacoord_leaveoffset[dir + 4])) << 4);
+
+		if (fract_coord_leave == fract_coord) {
+			/* Leave the depot. */
 			if ((v = v->Next()) != NULL) {
 				v->vehstatus &= ~VS_HIDDEN;
 				v->track = (DiagDirToAxis(dir) == AXIS_X ? TRACK_BIT_X : TRACK_BIT_Y);
 			}
 		}
+	} else if (_fractcoords_enter[dir] == fract_coord) {
+		/* Entering depot. */
+		assert(DiagDirToDir(ReverseDiagDir(dir)) == v->direction);
+		v->track = TRACK_BIT_DEPOT,
+		v->vehstatus |= VS_HIDDEN;
+		v->direction = ReverseDir(v->direction);
+		if (v->Next() == NULL) VehicleEnterDepot(v->First());
+		v->tile = tile;
+
+		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
+		return VETSB_ENTERED_WORMHOLE;
 	}
 
 	return VETSB_CONTINUE;

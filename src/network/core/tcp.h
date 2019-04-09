@@ -17,8 +17,6 @@
 #include "address.h"
 #include "packet.h"
 
-#ifdef ENABLE_NETWORK
-
 /** The states of sending the packets. */
 enum SendPacketsState {
 	SPS_CLOSED,      ///< The connection got closed.
@@ -42,7 +40,7 @@ public:
 	 */
 	bool IsConnected() const { return this->sock != INVALID_SOCKET; }
 
-	virtual NetworkRecvStatus CloseConnection(bool error = true);
+	NetworkRecvStatus CloseConnection(bool error = true) override;
 	virtual void SendPacket(Packet *packet);
 	SendPacketsState SendPackets(bool closing_down = false);
 
@@ -65,7 +63,6 @@ public:
  */
 class TCPConnecter {
 private:
-	class ThreadObject *thread; ///< Thread used to create the TCP connection
 	bool connected;             ///< Whether we succeeded in making the connection
 	bool aborted;               ///< Whether we bailed out (i.e. connection making failed)
 	bool killed;                ///< Whether we got killed
@@ -73,7 +70,7 @@ private:
 
 	void Connect();
 
-	static void ThreadEntry(void *param);
+	static void ThreadEntry(TCPConnecter *param);
 
 protected:
 	/** Address we're connecting to */
@@ -98,7 +95,5 @@ public:
 	static void CheckCallbacks();
 	static void KillAll();
 };
-
-#endif /* ENABLE_NETWORK */
 
 #endif /* NETWORK_CORE_TCP_H */

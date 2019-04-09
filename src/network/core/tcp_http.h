@@ -16,8 +16,6 @@
 
 #include "tcp.h"
 
-#ifdef ENABLE_NETWORK
-
 /** Callback for when the HTTP handler has something to tell us. */
 struct HTTPCallback {
 	/**
@@ -62,7 +60,7 @@ public:
 		return this->sock != INVALID_SOCKET;
 	}
 
-	virtual NetworkRecvStatus CloseConnection(bool error = true);
+	NetworkRecvStatus CloseConnection(bool error = true) override;
 
 	NetworkHTTPSocketHandler(SOCKET sock, HTTPCallback *callback,
 			const char *host, const char *url, const char *data, int depth);
@@ -108,20 +106,18 @@ public:
 		free(this->url);
 	}
 
-	virtual void OnFailure()
+	void OnFailure() override
 	{
 		this->callback->OnFailure();
 		free(this->data);
 	}
 
-	virtual void OnConnect(SOCKET s)
+	void OnConnect(SOCKET s) override
 	{
 		new NetworkHTTPSocketHandler(s, this->callback, this->address.GetHostname(), this->url, this->data, this->depth);
 		/* We've relinquished control of data now. */
 		this->data = NULL;
 	}
 };
-
-#endif /* ENABLE_NETWORK */
 
 #endif /* NETWORK_CORE_TCP_HTTP_H */

@@ -29,7 +29,6 @@
 #include "sound_func.h"
 #include "ai/ai.hpp"
 #include "game/game.hpp"
-#include "pathfinder/opf/opf_ship.h"
 #include "engine_base.h"
 #include "company_base.h"
 #include "tunnelbridge_map.h"
@@ -178,7 +177,6 @@ static void CheckIfShipNeedsService(Vehicle *v)
 
 	uint max_distance;
 	switch (_settings_game.pf.pathfinder_for_ships) {
-		case VPF_OPF:  max_distance = 12; break;
 		case VPF_NPF:  max_distance = _settings_game.pf.npf.maximum_go_to_depot_penalty  / NPF_TILE_LENGTH;  break;
 		case VPF_YAPF: max_distance = _settings_game.pf.yapf.maximum_go_to_depot_penalty / YAPF_TILE_LENGTH; break;
 		default: NOT_REACHED();
@@ -369,9 +367,7 @@ static bool CheckShipLeaveDepot(Ship *v)
 	if (north_tracks && south_tracks) {
 		/* Ask pathfinder for best direction */
 		bool reverse = false;
-		bool path_found;
 		switch (_settings_game.pf.pathfinder_for_ships) {
-			case VPF_OPF: reverse = OPFShipChooseTrack(v, north_neighbour, north_dir, north_tracks, path_found) == INVALID_TRACK; break; // OPF always allows reversing
 			case VPF_NPF: reverse = NPFShipCheckReverse(v); break;
 			case VPF_YAPF: reverse = YapfShipCheckReverse(v); break;
 			default: NOT_REACHED();
@@ -470,18 +466,11 @@ static Track ChooseShipTrack(Ship *v, TileIndex tile, DiagDirection enterdir, Tr
 	bool path_found = true;
 	Track track;
 
-	if (v->dest_tile == 0 || DistanceManhattan(tile, v->dest_tile) > SHIP_MAX_ORDER_DISTANCE + 5) {
-		/* No destination or destination too far, don't invoke pathfinder. */
+	if (v->dest_tile == 0) {
+		/* No destination, don't invoke pathfinder. */
 		track = TrackBitsToTrack(v->state);
 		if (!IsDiagonalTrack(track)) track = TrackToOppositeTrack(track);
-		if (!HasBit(tracks, track)) {
-			/* Can't continue in same direction so pick first available track. */
-			if (_settings_game.pf.forbid_90_deg) {
-				tracks &= ~TrackCrossesTracks(TrackdirToTrack(v->GetVehicleTrackdir()));
-				if (tracks == TRACK_BIT_NONE) return INVALID_TRACK;
-			}
-			track = FindFirstTrack(tracks);
-		}
+		if (!HasBit(tracks, track)) track = FindFirstTrack(tracks);
 		path_found = false;
 	} else {
 		/* Attempt to follow cached path. */
@@ -499,7 +488,6 @@ static Track ChooseShipTrack(Ship *v, TileIndex tile, DiagDirection enterdir, Tr
 		}
 
 		switch (_settings_game.pf.pathfinder_for_ships) {
-			case VPF_OPF: track = OPFShipChooseTrack(v, tile, enterdir, tracks, path_found); break;
 			case VPF_NPF: track = NPFShipChooseTrack(v, path_found); break;
 			case VPF_YAPF: track = YapfShipChooseTrack(v, tile, enterdir, tracks, path_found, v->path); break;
 			default: NOT_REACHED();
@@ -510,9 +498,18 @@ static Track ChooseShipTrack(Ship *v, TileIndex tile, DiagDirection enterdir, Tr
 	return track;
 }
 
-static inline TrackBits GetAvailShipTracks(TileIndex tile, DiagDirection dir)
+/**
+ * Get the available water tracks on a tile for a ship entering a tile.
+ * @param tile The tile about to enter.
+ * @param dir The entry direction.
+ * @param trackdir The trackdir the ship has on the old tile.
+ * @return The available trackbits on the next tile.
+ */
+static inline TrackBits GetAvailShipTracks(TileIndex tile, DiagDirection dir, Trackdir trackdir)
 {
-	return GetTileShipTrackStatus(tile) & DiagdirReachesTracks(dir);
+	TrackBits tracks = GetTileShipTrackStatus(tile) & DiagdirReachesTracks(dir);
+
+	return tracks;
 }
 
 static const byte _ship_subcoord[4][6][3] = {
@@ -699,7 +696,7 @@ static void ShipController(Ship *v)
 
 			DiagDirection diagdir = DiagdirBetweenTiles(gp.old_tile, gp.new_tile);
 			assert(diagdir != INVALID_DIAGDIR);
-			tracks = GetAvailShipTracks(gp.new_tile, diagdir);
+			tracks = GetAvailShipTracks(gp.new_tile, diagdir, v->GetVehicleTrackdir());
 			if (tracks == TRACK_BIT_NONE) goto reverse_direction;
 
 			/* Choose a direction, and continue if we find one */
@@ -754,6 +751,10 @@ static void ShipController(Ship *v)
 			if ((v->vehstatus & VS_HIDDEN) == 0) v->Vehicle::UpdateViewport(true);
 			return;
 		}
+
+		/* Ship is back on the bridge head, we need to comsume its path
+		 * cache entry here as we didn't have to choose a ship track. */
+		if (!v->path.empty()) v->path.pop_front();
 	}
 
 	/* update image of ship, as well as delta XY */

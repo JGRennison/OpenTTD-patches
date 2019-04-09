@@ -77,7 +77,7 @@ static inline int32 BigMulS(const int32 a, const int32 b, const uint8 shift)
 	return (int32)((int64)a * (int64)b >> shift);
 }
 
-typedef SmallVector<Industry *, 16> SmallIndustryList;
+typedef std::vector<Industry *> SmallIndustryList;
 
 /**
  * Score info, values used for computing the detailed performance rating.
@@ -260,7 +260,7 @@ int UpdateCompanyRatingAndValue(Company *c, bool update)
 			/* Skip the total */
 			if (i == SCORE_TOTAL) continue;
 			/*  Check the score */
-			s = Clamp(_score_part[owner][i], 0, _score_info[i].needed) * _score_info[i].score / _score_info[i].needed;
+			s = Clamp<int64>(_score_part[owner][i], 0, _score_info[i].needed) * _score_info[i].score / _score_info[i].needed;
 			score += s;
 			total_score += _score_info[i].score;
 		}
@@ -292,10 +292,8 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 	 * the client. This is needed as it needs to know whether "you" really
 	 * are the current local company. */
 	Backup<CompanyByte> cur_company(_current_company, old_owner, FILE_LINE);
-#ifdef ENABLE_NETWORK
 	/* In all cases, make spectators of clients connected to that company */
 	if (_networking) NetworkClientsToSpectators(old_owner);
-#endif /* ENABLE_NETWORK */
 	if (old_owner == _local_company) {
 		/* Single player cheated to AI company.
 		 * There are no spectators in single player, so we must pick some other company. */
@@ -642,7 +640,7 @@ static void CompanyCheckBankrupt(Company *c)
 			 * that changing the current company is okay. In case of single
 			 * player we are sure (the above check) that we are not the local
 			 * company and thus we won't be moved. */
-			if (!_networking || _network_server) DoCommandP(0, CCA_DELETE | (c->index << 16), CRR_BANKRUPT, CMD_COMPANY_CTRL);
+			if (!_networking || _network_server) DoCommandP(0, CCA_DELETE | (c->index << 16) | (CRR_BANKRUPT << 24), 0, CMD_COMPANY_CTRL);
 			break;
 		}
 	}
@@ -1030,9 +1028,10 @@ static SmallIndustryList _cargo_delivery_destinations;
  * @param cargo_type Type of cargo delivered
  * @param num_pieces Amount of cargo delivered
  * @param source The source of the cargo
+ * @param company The company delivering the cargo
  * @return actually accepted pieces of cargo
  */
-static uint DeliverGoodsToIndustry(const Station *st, CargoID cargo_type, uint num_pieces, IndustryID source)
+static uint DeliverGoodsToIndustry(const Station *st, CargoID cargo_type, uint num_pieces, IndustryID source, CompanyID company)
 {
 	/* Find the nearest industrytile to the station sign inside the catchment area, whose industry accepts the cargo.
 	 * This fails in three cases:
@@ -1043,8 +1042,9 @@ static uint DeliverGoodsToIndustry(const Station *st, CargoID cargo_type, uint n
 
 	uint accepted = 0;
 
-	for (uint i = 0; i < st->industries_near.Length() && num_pieces != 0; i++) {
-		Industry *ind = st->industries_near[i];
+	for (Industry *ind : st->industries_near) {
+		if (num_pieces == 0) break;
+
 		if (ind->index == source) continue;
 
 		uint cargo_index;
@@ -1058,13 +1058,16 @@ static uint DeliverGoodsToIndustry(const Station *st, CargoID cargo_type, uint n
 		if (IndustryTemporarilyRefusesCargo(ind, cargo_type)) continue;
 
 		/* Insert the industry into _cargo_delivery_destinations, if not yet contained */
-		_cargo_delivery_destinations.Include(ind);
+		include(_cargo_delivery_destinations, ind);
 
 		uint amount = min(num_pieces, 0xFFFFU - ind->incoming_cargo_waiting[cargo_index]);
 		ind->incoming_cargo_waiting[cargo_index] += amount;
 		ind->last_cargo_accepted_at[cargo_index] = _date;
 		num_pieces -= amount;
 		accepted += amount;
+
+		/* Update the cargo monitor. */
+		AddCargoDelivery(cargo_type, company, amount, ST_INDUSTRY, source, st, ind->index);
 	}
 
 	return accepted;
@@ -1090,30 +1093,30 @@ static Money DeliverGoods(int num_pieces, CargoID cargo_type, StationID dest, Ti
 	Station *st = Station::Get(dest);
 
 	/* Give the goods to the industry. */
-	uint accepted = DeliverGoodsToIndustry(st, cargo_type, num_pieces, src_type == ST_INDUSTRY ? src : INVALID_INDUSTRY);
+	uint accepted_ind = DeliverGoodsToIndustry(st, cargo_type, num_pieces, src_type == ST_INDUSTRY ? src : INVALID_INDUSTRY, company->index);
 
 	/* If this cargo type is always accepted, accept all */
-	if (HasBit(st->always_accepted, cargo_type)) accepted = num_pieces;
+	uint accepted_total = HasBit(st->always_accepted, cargo_type) ? num_pieces : accepted_ind;
 
 	/* Update station statistics */
-	if (accepted > 0) {
+	if (accepted_total > 0) {
 		SetBit(st->goods[cargo_type].status, GoodsEntry::GES_EVER_ACCEPTED);
 		SetBit(st->goods[cargo_type].status, GoodsEntry::GES_CURRENT_MONTH);
 		SetBit(st->goods[cargo_type].status, GoodsEntry::GES_ACCEPTED_BIGTICK);
 	}
 
 	/* Update company statistics */
-	company->cur_economy.delivered_cargo[cargo_type] += accepted;
+	company->cur_economy.delivered_cargo[cargo_type] += accepted_total;
 
 	/* Increase town's counter for town effects */
 	const CargoSpec *cs = CargoSpec::Get(cargo_type);
-	st->town->received[cs->town_effect].new_act += accepted;
+	st->town->received[cs->town_effect].new_act += accepted_total;
 
 	/* Determine profit */
-	Money profit = GetTransportedGoodsIncome(accepted, DistanceManhattan(source_tile, st->xy), days_in_transit, cargo_type);
+	Money profit = GetTransportedGoodsIncome(accepted_total, DistanceManhattan(source_tile, st->xy), days_in_transit, cargo_type);
 
 	/* Update the cargo monitor. */
-	AddCargoDelivery(cargo_type, company->index, accepted, src_type, src, st);
+	AddCargoDelivery(cargo_type, company->index, accepted_total - accepted_ind, src_type, src, st);
 
 	/* Modify profit if a subsidy is in effect */
 	if (CheckSubsidised(cargo_type, company->index, src_type, src, st))  {
@@ -1518,6 +1521,17 @@ static void HandleStationRefit(Vehicle *v, CargoArray &consist_capleft, Station 
 	cur_company.Restore();
 }
 
+/**
+ * Test whether a vehicle can load cargo at a station even if exclusive transport rights are present.
+ * @param st Station with cargo waiting to be loaded.
+ * @param v Vehicle loading the cargo.
+ * @return true when a vehicle can load the cargo.
+ */
+static bool MayLoadUnderExclusiveRights(const Station *st, const Vehicle *v)
+{
+	return st->owner != OWNER_NONE || st->town->exclusive_counter == 0 || st->town->exclusivity == v->owner;
+}
+
 struct ReserveCargoAction {
 	Station *st;
 	StationIDStack *next_station;
@@ -1527,7 +1541,7 @@ struct ReserveCargoAction {
 
 	bool operator()(Vehicle *v)
 	{
-		if (v->cargo_cap > v->cargo.RemainingCount()) {
+		if (v->cargo_cap > v->cargo.RemainingCount() && MayLoadUnderExclusiveRights(st, v)) {
 			st->goods[v->cargo_type].cargo.Reserve(v->cargo_cap - v->cargo.RemainingCount(),
 					&v->cargo, st->xy, *next_station);
 		}
@@ -1751,7 +1765,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 		/* If there's goods waiting at the station, and the vehicle
 		 * has capacity for it, load it on the vehicle. */
 		uint cap_left = v->cargo_cap - v->cargo.StoredCount();
-		if (cap_left > 0 && (v->cargo.ActionCount(VehicleCargoList::MTA_LOAD) > 0 || ge->cargo.AvailableCount() > 0)) {
+		if (cap_left > 0 && (v->cargo.ActionCount(VehicleCargoList::MTA_LOAD) > 0 || ge->cargo.AvailableCount() > 0) && MayLoadUnderExclusiveRights(st, v)) {
 			if (v->cargo.StoredCount() == 0) TriggerVehicle(v, VEHICLE_TRIGGER_NEW_CARGO);
 			if (_settings_game.order.gradual_loading) cap_left = min(cap_left, GetLoadAmount(v));
 
@@ -1931,11 +1945,10 @@ void LoadUnloadStation(Station *st)
 	}
 
 	/* Call the production machinery of industries */
-	const Industry * const *isend = _cargo_delivery_destinations.End();
-	for (Industry **iid = _cargo_delivery_destinations.Begin(); iid != isend; iid++) {
-		TriggerIndustryProduction(*iid);
+	for (Industry *iid : _cargo_delivery_destinations) {
+		TriggerIndustryProduction(iid);
 	}
-	_cargo_delivery_destinations.Clear();
+	_cargo_delivery_destinations.clear();
 }
 
 /**

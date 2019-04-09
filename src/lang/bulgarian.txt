@@ -976,6 +976,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Нормалн�
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Двукратно
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Четирикратно
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Базов графичен набор
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Изберете базов графичен набор
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} липсващи/повредени файлове
@@ -1632,7 +1634,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Инд�
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Съперници
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Компютърни играчи
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Оригинален
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(препоръчва се)
 
@@ -1714,13 +1715,9 @@ STR_QUIT_NO                                                     :{BLACK}Не
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :ДОС
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -2009,9 +2006,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Сърв
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Компанията е защитена. Въведете парола
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Списък с играчите
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Наблюдавай
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Нова фирма
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Списък с играчите
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Наблюдавай
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Нова фирма
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Изгони
@@ -2026,7 +2023,6 @@ STR_NETWORK_CLIENT                                              :Клиент
 STR_NETWORK_SPECTATORS                                          :Наблюдатели
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Въведете количеството пари, което искате да дадете
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Зрител
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Незапазвай паролата
@@ -3265,6 +3261,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Безгруп�
 STR_GROUP_DEFAULT_SHIPS                                         :Безгрупни кораби
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Безгрупни самолети
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Групи - Щракни на група за да видиш списък на всички превозни средства от тази група
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Щракни да създадеш група
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Изтрий избраната група
@@ -3324,10 +3321,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Купи
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Купи Кораб
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Купи самолет
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Купи маркираният влак. Shift строеж/цена за построяване
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Купи посоченото МПС. Shift строеж/цена за построяване
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Купи посоченият кораб. Shift строеж/цена за построяване
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Купи посоченият самолет. Shift строеж/цена за построяване
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Преименувай
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Преименувай

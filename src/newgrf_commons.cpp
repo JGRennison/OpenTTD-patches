@@ -579,7 +579,7 @@ bool Convert8bitBooleanCallback(const GRFFile *grffile, uint16 cbid, uint16 cb_r
 }
 
 
-/* static */ SmallVector<DrawTileSeqStruct, 8> NewGRFSpriteLayout::result_seq;
+/* static */ std::vector<DrawTileSeqStruct> NewGRFSpriteLayout::result_seq;
 
 /**
  * Clone the building sprites of a spritelayout.
@@ -661,12 +661,13 @@ void NewGRFSpriteLayout::AllocateRegisters()
  */
 uint32 NewGRFSpriteLayout::PrepareLayout(uint32 orig_offset, uint32 newgrf_ground_offset, uint32 newgrf_offset, uint constr_stage, bool separate_ground) const
 {
-	result_seq.Clear();
+	result_seq.clear();
 	uint32 var10_values = 0;
 
 	/* Create a copy of the spritelayout, so we can modify some values.
 	 * Also include the groundsprite into the sequence for easier processing. */
-	DrawTileSeqStruct *result = result_seq.Append();
+	/*C++17: DrawTileSeqStruct *result = &*/ result_seq.emplace_back();
+	DrawTileSeqStruct *result = &result_seq.back();
 	result->image = ground;
 	result->delta_x = 0;
 	result->delta_y = 0;
@@ -674,15 +675,15 @@ uint32 NewGRFSpriteLayout::PrepareLayout(uint32 orig_offset, uint32 newgrf_groun
 
 	const DrawTileSeqStruct *dtss;
 	foreach_draw_tile_seq(dtss, this->seq) {
-		*result_seq.Append() = *dtss;
+		result_seq.push_back(*dtss);
 	}
-	result_seq.Append()->MakeTerminator();
-
+	result_seq.emplace_back() /*C++17: .MakeTerminator()*/;
+	result_seq.back().MakeTerminator();
 	/* Determine the var10 values the action-1-2-3 chains needs to be resolved for,
 	 * and apply the default sprite offsets (unless disabled). */
 	const TileLayoutRegisters *regs = this->registers;
 	bool ground = true;
-	foreach_draw_tile_seq(result, result_seq.Begin()) {
+	foreach_draw_tile_seq(result, result_seq.data()) {
 		TileLayoutFlags flags = TLF_NOTHING;
 		if (regs != NULL) flags = regs->flags;
 
@@ -736,7 +737,7 @@ void NewGRFSpriteLayout::ProcessRegisters(uint8 resolved_var10, uint32 resolved_
 	DrawTileSeqStruct *result;
 	const TileLayoutRegisters *regs = this->registers;
 	bool ground = true;
-	foreach_draw_tile_seq(result, result_seq.Begin()) {
+	foreach_draw_tile_seq(result, result_seq.data()) {
 		TileLayoutFlags flags = TLF_NOTHING;
 		if (regs != NULL) flags = regs->flags;
 

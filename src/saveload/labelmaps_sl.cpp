@@ -17,7 +17,7 @@
 
 #include "../safeguards.h"
 
-static SmallVector<RailTypeLabel, RAILTYPE_END> _railtype_list;
+static std::vector<RailTypeLabel> _railtype_list;
 
 /**
  * Test if any saved rail type labels are different to the currently loaded
@@ -26,7 +26,7 @@ static SmallVector<RailTypeLabel, RAILTYPE_END> _railtype_list;
  */
 static bool NeedRailTypeConversion()
 {
-	for (uint i = 0; i < _railtype_list.Length(); i++) {
+	for (uint i = 0; i < _railtype_list.size(); i++) {
 		if ((RailType)i < RAILTYPE_END) {
 			const RailtypeInfo *rti = GetRailTypeInfo((RailType)i);
 			if (rti->label != _railtype_list[i]) return true;
@@ -42,13 +42,13 @@ static bool NeedRailTypeConversion()
 void AfterLoadLabelMaps()
 {
 	if (NeedRailTypeConversion()) {
-		SmallVector<RailType, RAILTYPE_END> railtype_conversion_map;
+		std::vector<RailType> railtype_conversion_map;
 
-		for (uint i = 0; i < _railtype_list.Length(); i++) {
+		for (uint i = 0; i < _railtype_list.size(); i++) {
 			RailType r = GetRailTypeByLabel(_railtype_list[i]);
 			if (r == INVALID_RAILTYPE) r = RAILTYPE_BEGIN;
 
-			*railtype_conversion_map.Append() = r;
+			railtype_conversion_map.push_back(r);
 		}
 
 		for (TileIndex t = 0; t < MapSize(); t++) {
@@ -81,7 +81,7 @@ void AfterLoadLabelMaps()
 		}
 	}
 
-	_railtype_list.Clear();
+	_railtype_list.clear();
 }
 
 /** Container for a label for SaveLoad system */
@@ -108,13 +108,13 @@ static void Save_RAIL()
 
 static void Load_RAIL()
 {
-	_railtype_list.Clear();
+	_railtype_list.clear();
 
 	LabelObject lo;
 
 	while (SlIterateArray() != -1) {
 		SlObject(&lo, _label_object_desc);
-		*_railtype_list.Append() = (RailTypeLabel)lo.label;
+		_railtype_list.push_back((RailTypeLabel)lo.label);
 	}
 }
 

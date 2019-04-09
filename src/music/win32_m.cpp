@@ -42,7 +42,7 @@ static struct {
 
 	MidiFile current_file;           ///< file currently being played from
 	PlaybackSegment current_segment; ///< segment info for current playback
-	DWORD playback_start_time;       ///< timestamp current file began playback
+	size_t playback_start_time;      ///< timestamp current file began playback
 	size_t current_block;            ///< next block index to send
 	MidiFile next_file;              ///< upcoming file to play
 	PlaybackSegment next_segment;    ///< segment info for upcoming file
@@ -184,10 +184,10 @@ void CALLBACK TimerCallback(UINT uTimerID, UINT, DWORD_PTR dwUser, DWORD_PTR, DW
 		/* find first block after start time and pretend playback started earlier
 		* this is to allow all blocks prior to the actual start to still affect playback,
 		* as they may contain important controller and program changes */
-		uint preload_bytes = 0;
+		size_t preload_bytes = 0;
 		for (size_t bl = 0; bl < _midi.current_file.blocks.size(); bl++) {
 			MidiFile::DataBlock &block = _midi.current_file.blocks[bl];
-			preload_bytes += block.data.Length();
+			preload_bytes += block.data.size();
 			if (block.ticktime >= _midi.current_segment.start) {
 				if (_midi.current_segment.loop) {
 					DEBUG(driver, 2, "Win32-MIDI: timer: loop from block %d (ticktime %d, realtime %.3f, bytes %d)", (int)bl, (int)block.ticktime, ((int)block.realtime)/1000.0, (int)preload_bytes);
@@ -210,7 +210,7 @@ void CALLBACK TimerCallback(UINT uTimerID, UINT, DWORD_PTR dwUser, DWORD_PTR, DW
 
 	/* play pending blocks */
 	DWORD current_time = timeGetTime();
-	DWORD playback_time = current_time - _midi.playback_start_time;
+	size_t playback_time = current_time - _midi.playback_start_time;
 	while (_midi.current_block < _midi.current_file.blocks.size()) {
 		MidiFile::DataBlock &block = _midi.current_file.blocks[_midi.current_block];
 
@@ -229,8 +229,8 @@ void CALLBACK TimerCallback(UINT uTimerID, UINT, DWORD_PTR dwUser, DWORD_PTR, DW
 			break;
 		}
 
-		byte *data = block.data.Begin();
-		size_t remaining = block.data.Length();
+		byte *data = block.data.data();
+		size_t remaining = block.data.size();
 		byte last_status = 0;
 		while (remaining > 0) {
 			/* MidiFile ought to have converted everything out of running status,

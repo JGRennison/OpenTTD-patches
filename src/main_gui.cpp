@@ -53,7 +53,6 @@ static int _rename_what = -1;
 
 void CcGiveMoney(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2)
 {
-#ifdef ENABLE_NETWORK
 	if (result.Failed() || !_settings_game.economy.give_money) return;
 
 	/* Inform the company of the action of one of its clients (controllers). */
@@ -66,25 +65,22 @@ void CcGiveMoney(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2
 	} else {
 		NetworkServerSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_TEAM, p2, msg, CLIENT_ID_SERVER, p1);
 	}
-#endif /* ENABLE_NETWORK */
 }
 
 void HandleOnEditText(const char *str)
 {
 	switch (_rename_what) {
-#ifdef ENABLE_NETWORK
-	case 3: { // Give money, you can only give money in excess of loan
-		const Company *c = Company::GetIfValid(_local_company);
-		if (c == NULL) break;
-		Money money = min(c->money - c->current_loan, (Money)(atoi(str) / _currency->rate));
+		case 3: { // Give money, you can only give money in excess of loan
+			const Company *c = Company::GetIfValid(_local_company);
+			if (c == NULL) break;
+			Money money = min(c->money - c->current_loan, (Money)(atoi(str) / _currency->rate));
 
-		uint32 money_c = Clamp(ClampToI32(money), 0, 20000000); // Clamp between 20 million and 0
+			uint32 money_c = Clamp(ClampToI32(money), 0, 20000000); // Clamp between 20 million and 0
 
-		/* Give 'id' the money, and subtract it from ourself */
-		DoCommandP(0, money_c, _rename_id, CMD_GIVE_MONEY | CMD_MSG(STR_ERROR_INSUFFICIENT_FUNDS), CcGiveMoney, str);
-		break;
-	}
-#endif /* ENABLE_NETWORK */
+			/* Give 'id' the money, and subtract it from ourself */
+			DoCommandP(0, money_c, _rename_id, CMD_GIVE_MONEY | CMD_MSG(STR_ERROR_INSUFFICIENT_FUNDS), CcGiveMoney, str);
+			break;
+		}
 		default: NOT_REACHED();
 	}
 
@@ -124,14 +120,12 @@ void CcPlaySound_EXPLOSION(const CommandCost &result, TileIndex tile, uint32 p1,
 	if (result.Succeeded() && _settings_client.sound.confirm) SndPlayTileFx(SND_12_EXPLOSION, tile);
 }
 
-#ifdef ENABLE_NETWORK
 void ShowNetworkGiveMoneyWindow(CompanyID company)
 {
 	_rename_id = company;
 	_rename_what = 3;
 	ShowQueryString(STR_EMPTY, STR_NETWORK_GIVE_MONEY_CAPTION, 30, NULL, CS_NUMERAL, QSF_NONE);
 }
-#endif /* ENABLE_NETWORK */
 
 
 /**
@@ -220,6 +214,7 @@ enum {
 	GHK_RESET_OBJECT_TO_PLACE,
 	GHK_DELETE_WINDOWS,
 	GHK_DELETE_NONVITAL_WINDOWS,
+	GHK_DELETE_ALL_MESSAGES,
 	GHK_REFRESH_SCREEN,
 	GHK_CRASH,
 	GHK_MONEY,
@@ -255,7 +250,7 @@ struct MainWindow : Window
 		this->refresh.SetInterval(LINKGRAPH_DELAY);
 	}
 
-	virtual void OnRealtimeTick(uint delta_ms)
+	void OnRealtimeTick(uint delta_ms) override
 	{
 		if (!this->refresh.Elapsed(delta_ms)) return;
 
@@ -266,11 +261,11 @@ struct MainWindow : Window
 			return;
 		}
 
-		this->viewport->overlay->RebuildCache();
+		this->viewport->overlay->SetDirty();
 		this->GetWidget<NWidgetBase>(WID_M_VIEWPORT)->SetDirty(this);
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		this->DrawWidgets();
 		if (_game_mode == GM_MENU) {
@@ -290,7 +285,7 @@ struct MainWindow : Window
 		}
 	}
 
-	virtual EventState OnHotkey(int hotkey)
+	EventState OnHotkey(int hotkey) override
 	{
 		if (hotkey == GHK_QUIT) {
 			HandleExitGameRequest();
@@ -345,6 +340,7 @@ struct MainWindow : Window
 			case GHK_RESET_OBJECT_TO_PLACE: ResetObjectToPlace(); break;
 			case GHK_DELETE_WINDOWS: DeleteNonVitalWindows(); break;
 			case GHK_DELETE_NONVITAL_WINDOWS: DeleteAllNonVitalWindows(); break;
+			case GHK_DELETE_ALL_MESSAGES: DeleteAllMessages(); break;
 			case GHK_REFRESH_SCREEN: MarkWholeScreenDirty(); break;
 
 			case GHK_CRASH: // Crash the game
@@ -395,7 +391,6 @@ struct MainWindow : Window
 				ResetRestoreAllTransparency();
 				break;
 
-#ifdef ENABLE_NETWORK
 			case GHK_CHAT: // smart chat; send to team if any, otherwise to all
 				if (_networking) {
 					const NetworkClientInfo *cio = NetworkClientInfo::GetByClientID(_network_own_client_id);
@@ -423,14 +418,13 @@ struct MainWindow : Window
 					ShowNetworkChatQueryWindow(DESTTYPE_CLIENT, CLIENT_ID_SERVER);
 				}
 				break;
-#endif
 
 			default: return ES_NOT_HANDLED;
 		}
 		return ES_HANDLED;
 	}
 
-	virtual void OnScroll(Point delta)
+	void OnScroll(Point delta) override
 	{
 		this->viewport->scrollpos_x += ScaleByZoom(delta.x, this->viewport->zoom);
 		this->viewport->scrollpos_y += ScaleByZoom(delta.y, this->viewport->zoom);
@@ -439,14 +433,14 @@ struct MainWindow : Window
 		this->refresh.SetInterval(LINKGRAPH_DELAY);
 	}
 
-	virtual void OnMouseWheel(int wheel)
+	void OnMouseWheel(int wheel) override
 	{
 		if (_settings_client.gui.scrollwheel_scrolling != 2) {
 			ZoomInOrOutToCursorWindow(wheel < 0, this);
 		}
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		if (this->viewport != NULL) {
 			NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_M_VIEWPORT);
@@ -460,7 +454,7 @@ struct MainWindow : Window
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		/* Forward the message to the appropriate toolbar (ingame or scenario editor) */
@@ -488,6 +482,7 @@ static Hotkey global_hotkeys[] = {
 	Hotkey(WKC_ESC, "reset_object_to_place", GHK_RESET_OBJECT_TO_PLACE),
 	Hotkey(WKC_DELETE, "delete_windows", GHK_DELETE_WINDOWS),
 	Hotkey(WKC_DELETE | WKC_SHIFT, "delete_all_windows", GHK_DELETE_NONVITAL_WINDOWS),
+	Hotkey(WKC_DELETE | WKC_CTRL, "delete_all_messages", GHK_DELETE_ALL_MESSAGES),
 	Hotkey('R' | WKC_CTRL, "refresh_screen", GHK_REFRESH_SCREEN),
 #if defined(_DEBUG)
 	Hotkey('0' | WKC_ALT, "crash_game", GHK_CRASH),
@@ -513,12 +508,10 @@ static Hotkey global_hotkeys[] = {
 	Hotkey('8' | WKC_CTRL | WKC_SHIFT, "invisibility_catenary", GHK_TOGGLE_INVISIBILITY + 7),
 	Hotkey('X' | WKC_CTRL, "transparency_toolbar", GHK_TRANSPARENCY_TOOLBAR),
 	Hotkey('X', "toggle_transparency", GHK_TRANSPARANCY),
-#ifdef ENABLE_NETWORK
 	Hotkey(_ghk_chat_keys, "chat", GHK_CHAT),
 	Hotkey(_ghk_chat_all_keys, "chat_all", GHK_CHAT_ALL),
 	Hotkey(_ghk_chat_company_keys, "chat_company", GHK_CHAT_COMPANY),
 	Hotkey(_ghk_chat_server_keys, "chat_server", GHK_CHAT_SERVER),
-#endif
 	HOTKEY_LIST_END
 };
 HotkeyList MainWindow::hotkeys("global", global_hotkeys);

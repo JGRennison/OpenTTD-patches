@@ -68,6 +68,7 @@
 #include "linkgraph/linkgraphschedule.h"
 
 #include <stdarg.h>
+#include <system_error>
 
 #include "safeguards.h"
 
@@ -183,16 +184,14 @@ static void ShowHelp()
 		"  -e                  = Start Editor\n"
 		"  -g [savegame]       = Start new/save game immediately\n"
 		"  -G seed             = Set random seed\n"
-#if defined(ENABLE_NETWORK)
 		"  -n [ip:port#company]= Join network game\n"
 		"  -p password         = Password to join server\n"
 		"  -P password         = Password to join company\n"
 		"  -D [ip][:port]      = Start dedicated server\n"
 		"  -l ip[:port]        = Redirect DEBUG()\n"
-#if !defined(__MORPHOS__) && !defined(__AMIGA__) && !defined(_WIN32)
+#if !defined(_WIN32)
 		"  -f                  = Fork into the background (dedicated only)\n"
 #endif
-#endif /* ENABLE_NETWORK */
 		"  -I graphics_set     = Force the graphics set (see below)\n"
 		"  -S sounds_set       = Force the sounds set (see below)\n"
 		"  -M music_set        = Force the music set (see below)\n"
@@ -332,9 +331,7 @@ static void ShutdownGame()
 	/* Uninitialize variables that are allocated dynamically */
 	GamelogReset();
 
-#ifdef ENABLE_NETWORK
 	free(_config_file);
-#endif
 
 	LinkGraphSchedule::Clear();
 	PoolBase::Clean(PT_ALL);
@@ -466,7 +463,6 @@ struct AfterNewGRFScan : NewGRFScanCallback {
 
 		Game::Uninitialize(true);
 		AI::Uninitialize(true);
-		CheckConfig();
 		LoadFromHighScore();
 		LoadHotkeysFromConfig();
 		WindowDesc::LoadFromConfig();
@@ -480,13 +476,11 @@ struct AfterNewGRFScan : NewGRFScanCallback {
 		if (startyear != INVALID_YEAR) _settings_newgame.game_creation.starting_year = startyear;
 		if (generation_seed != GENERATE_NEW_SEED) _settings_newgame.game_creation.generation_seed = generation_seed;
 
-#if defined(ENABLE_NETWORK)
 		if (dedicated_host != NULL) {
 			_network_bind_list.Clear();
-			*_network_bind_list.Append() = stredup(dedicated_host);
+			_network_bind_list.push_back(stredup(dedicated_host));
 		}
 		if (dedicated_port != 0) _settings_client.network.server_port = dedicated_port;
-#endif /* ENABLE_NETWORK */
 
 		/* initialize the ingame console */
 		IConsoleInit();
@@ -496,7 +490,6 @@ struct AfterNewGRFScan : NewGRFScanCallback {
 		/* Make sure _settings is filled with _settings_newgame if we switch to a game directly */
 		if (_switch_mode != SM_NONE) MakeNewgameSettingsLive();
 
-#ifdef ENABLE_NETWORK
 		if (_network_available && network_conn != NULL) {
 			const char *port = NULL;
 			const char *company = NULL;
@@ -522,14 +515,13 @@ struct AfterNewGRFScan : NewGRFScanCallback {
 			_switch_mode = SM_NONE;
 			NetworkClientConnectGame(NetworkAddress(network_conn, rport), join_as, join_server_password, join_company_password);
 		}
-#endif /* ENABLE_NETWORK */
 
 		/* After the scan we're not used anymore. */
 		delete this;
 	}
 };
 
-#if defined(UNIX) && !defined(__MORPHOS__)
+#if defined(UNIX)
 extern void DedicatedFork();
 #endif
 
@@ -542,16 +534,14 @@ static const OptionData _options[] = {
 	 GETOPT_SHORT_VALUE('s'),
 	 GETOPT_SHORT_VALUE('v'),
 	 GETOPT_SHORT_VALUE('b'),
-#if defined(ENABLE_NETWORK)
 	GETOPT_SHORT_OPTVAL('D'),
 	GETOPT_SHORT_OPTVAL('n'),
 	 GETOPT_SHORT_VALUE('l'),
 	 GETOPT_SHORT_VALUE('p'),
 	 GETOPT_SHORT_VALUE('P'),
-#if !defined(__MORPHOS__) && !defined(__AMIGA__) && !defined(_WIN32)
+#if !defined(_WIN32)
 	 GETOPT_SHORT_NOVAL('f'),
 #endif
-#endif /* ENABLE_NETWORK */
 	 GETOPT_SHORT_VALUE('r'),
 	 GETOPT_SHORT_VALUE('t'),
 	GETOPT_SHORT_OPTVAL('d'),
@@ -584,13 +574,14 @@ int openttd_main(int argc, char *argv[])
 	/* AfterNewGRFScan sets save_config to true after scanning completed. */
 	bool save_config = false;
 	AfterNewGRFScan *scanner = new AfterNewGRFScan(&save_config);
-#if defined(ENABLE_NETWORK)
 	bool dedicated = false;
 	char *debuglog_conn = NULL;
 
 	extern bool _dedicated_forks;
 	_dedicated_forks = false;
-#endif /* ENABLE_NETWORK */
+
+	std::unique_lock<std::mutex> modal_work_lock(_modal_progress_work_mutex, std::defer_lock);
+	std::unique_lock<std::mutex> modal_paint_lock(_modal_progress_paint_mutex, std::defer_lock);
 
 	_game_mode = GM_MENU;
 	_switch_mode = SM_MENU;
@@ -609,7 +600,6 @@ int openttd_main(int argc, char *argv[])
 		case 's': free(sounddriver); sounddriver = stredup(mgo.opt); break;
 		case 'v': free(videodriver); videodriver = stredup(mgo.opt); break;
 		case 'b': free(blitter); blitter = stredup(mgo.opt); break;
-#if defined(ENABLE_NETWORK)
 		case 'D':
 			free(musicdriver);
 			free(sounddriver);
@@ -644,7 +634,6 @@ int openttd_main(int argc, char *argv[])
 		case 'P':
 			scanner->join_company_password = mgo.opt;
 			break;
-#endif /* ENABLE_NETWORK */
 		case 'r': ParseResolution(&resolution, mgo.opt); break;
 		case 't': scanner->startyear = atoi(mgo.opt); break;
 		case 'd': {
@@ -735,14 +724,12 @@ int openttd_main(int argc, char *argv[])
 	DeterminePaths(argv[0]);
 	TarScanner::DoScan(TarScanner::BASESET);
 
-#if defined(ENABLE_NETWORK)
 	if (dedicated) DEBUG(net, 0, "Starting dedicated version %s", _openttd_revision);
 	if (_dedicated_forks && !dedicated) _dedicated_forks = false;
 
-#if defined(UNIX) && !defined(__MORPHOS__)
+#if defined(UNIX)
 	/* We must fork here, or we'll end up without some resources we need (like sockets) */
 	if (_dedicated_forks) DedicatedFork();
-#endif
 #endif
 
 	LoadFromConfig(true);
@@ -820,7 +807,6 @@ int openttd_main(int argc, char *argv[])
 
 	NetworkStartUp(); // initialize network-core
 
-#if defined(ENABLE_NETWORK)
 	if (debuglog_conn != NULL && _network_available) {
 		const char *not_used = NULL;
 		const char *port = NULL;
@@ -833,7 +819,6 @@ int openttd_main(int argc, char *argv[])
 
 		NetworkStartDebugLog(NetworkAddress(debuglog_conn, rport));
 	}
-#endif /* ENABLE_NETWORK */
 
 	if (!HandleBootstrap()) {
 		ShutdownGame();
@@ -881,8 +866,14 @@ int openttd_main(int argc, char *argv[])
 	free(musicdriver);
 
 	/* Take our initial lock on whatever we might want to do! */
-	_modal_progress_paint_mutex->BeginCritical();
-	_modal_progress_work_mutex->BeginCritical();
+	try {
+		modal_work_lock.lock();
+		modal_paint_lock.lock();
+	} catch (const std::system_error&) {
+		/* If there is some error we assume that threads aren't usable on the system we run. */
+		extern bool _use_threaded_modal_progress; // From progress.cpp
+		_use_threaded_modal_progress = false;
+	}
 
 	GenerateWorld(GWM_EMPTY, 64, 64); // Make the viewport initialization happy
 	WaitTillGeneratedWorld();
@@ -898,6 +889,7 @@ int openttd_main(int argc, char *argv[])
 	VideoDriver::GetInstance()->MainLoop();
 
 	WaitTillSaved();
+	WaitTillGeneratedWorld(); // Make sure any generate world threads have been joined.
 
 	/* only save config if we have to */
 	if (save_config) {
@@ -936,12 +928,10 @@ exit_normal:
 
 	delete scanner;
 
-#ifdef ENABLE_NETWORK
 	extern FILE *_log_fd;
 	if (_log_fd != NULL) {
 		fclose(_log_fd);
 	}
-#endif /* ENABLE_NETWORK */
 
 	return ret;
 }
@@ -990,13 +980,11 @@ static void MakeNewGameDone()
 
 	InitializeRailGUI();
 
-#ifdef ENABLE_NETWORK
 	/* We are the server, we start a new company (not dedicated),
 	 * so set the default password *if* needed. */
 	if (_network_server && !StrEmpty(_settings_client.network.default_company_pass)) {
 		NetworkChangeCompanyPassword(_local_company, _settings_client.network.default_company_pass);
 	}
-#endif /* ENABLE_NETWORK */
 
 	if (_settings_client.gui.pause_on_newgame) DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
 
@@ -1052,7 +1040,6 @@ bool SafeLoad(const char *filename, SaveLoadOperation fop, DetailedFileType dft,
 		case SL_OK: return true;
 
 		case SL_REINIT:
-#ifdef ENABLE_NETWORK
 			if (_network_dedicated) {
 				/*
 				 * We need to reinit a network map...
@@ -1068,7 +1055,6 @@ bool SafeLoad(const char *filename, SaveLoadOperation fop, DetailedFileType dft,
 				/* We can't load the intro game as server, so disconnect first. */
 				NetworkDisconnect();
 			}
-#endif /* ENABLE_NETWORK */
 
 			switch (ogm) {
 				default:
@@ -1085,7 +1071,6 @@ bool SafeLoad(const char *filename, SaveLoadOperation fop, DetailedFileType dft,
 
 void SwitchToMode(SwitchMode new_mode)
 {
-#ifdef ENABLE_NETWORK
 	/* If we are saving something, the network stays in his current state */
 	if (new_mode != SM_SAVE_GAME) {
 		/* If the network is active, make it not-active */
@@ -1114,7 +1099,7 @@ void SwitchToMode(SwitchMode new_mode)
 			}
 		}
 	}
-#endif /* ENABLE_NETWORK */
+
 	/* Make sure all AI controllers are gone at quitting game */
 	if (new_mode != SM_SAVE_GAME) AI::KillAll();
 
@@ -1125,11 +1110,9 @@ void SwitchToMode(SwitchMode new_mode)
 
 		case SM_RESTARTGAME: // Restart --> 'Random game' with current settings
 		case SM_NEWGAME: // New Game --> 'Random game'
-#ifdef ENABLE_NETWORK
 			if (_network_server) {
 				seprintf(_network_game_info.map_name, lastof(_network_game_info.map_name), "Random Map");
 			}
-#endif /* ENABLE_NETWORK */
 			MakeNewGame(false, new_mode == SM_NEWGAME);
 			break;
 
@@ -1152,21 +1135,17 @@ void SwitchToMode(SwitchMode new_mode)
 				IConsoleCmdExec("exec scripts/game_start.scr 0");
 				/* Decrease pause counter (was increased from opening load dialog) */
 				DoCommandP(0, PM_PAUSED_SAVELOAD, 0, CMD_PAUSE);
-#ifdef ENABLE_NETWORK
 				if (_network_server) {
 					seprintf(_network_game_info.map_name, lastof(_network_game_info.map_name), "%s (Loaded game)", _file_to_saveload.title);
 				}
-#endif /* ENABLE_NETWORK */
 			}
 			break;
 		}
 
 		case SM_START_HEIGHTMAP: // Load a heightmap and start a new game from it
-#ifdef ENABLE_NETWORK
 			if (_network_server) {
 				seprintf(_network_game_info.map_name, lastof(_network_game_info.map_name), "%s (Heightmap)", _file_to_saveload.title);
 			}
-#endif /* ENABLE_NETWORK */
 			MakeNewGame(true, true);
 			break;
 
@@ -1238,10 +1217,10 @@ static void CheckCaches()
 	if (_debug_desync_level <= 1) return;
 
 	/* Check the town caches. */
-	SmallVector<TownCache, 4> old_town_caches;
+	std::vector<TownCache> old_town_caches;
 	Town *t;
 	FOR_ALL_TOWNS(t) {
-		MemCpyT(old_town_caches.Append(), &t->cache);
+		old_town_caches.push_back(t->cache);
 	}
 
 	extern void RebuildTownCaches();
@@ -1250,23 +1229,23 @@ static void CheckCaches()
 
 	uint i = 0;
 	FOR_ALL_TOWNS(t) {
-		if (MemCmpT(old_town_caches.Get(i), &t->cache) != 0) {
+		if (MemCmpT(old_town_caches.data() + i, &t->cache) != 0) {
 			DEBUG(desync, 2, "town cache mismatch: town %i", (int)t->index);
 		}
 		i++;
 	}
 
 	/* Check company infrastructure cache. */
-	SmallVector<CompanyInfrastructure, 4> old_infrastructure;
+	std::vector<CompanyInfrastructure> old_infrastructure;
 	Company *c;
-	FOR_ALL_COMPANIES(c) MemCpyT(old_infrastructure.Append(), &c->infrastructure);
+	FOR_ALL_COMPANIES(c) old_infrastructure.push_back(c->infrastructure);
 
 	extern void AfterLoadCompanyStats();
 	AfterLoadCompanyStats();
 
 	i = 0;
 	FOR_ALL_COMPANIES(c) {
-		if (MemCmpT(old_infrastructure.Get(i), &c->infrastructure) != 0) {
+		if (MemCmpT(old_infrastructure.data() + i, &c->infrastructure) != 0) {
 			DEBUG(desync, 2, "infrastructure cache mismatch: company %i", (int)c->index);
 		}
 		i++;
@@ -1439,8 +1418,11 @@ void StateGameLoop()
 		BasePersistentStorageArray::SwitchMode(PSM_LEAVE_GAMELOOP);
 
 #ifndef DEBUG_DUMP_COMMANDS
-		AI::GameLoop();
-		Game::GameLoop();
+		{
+			PerformanceMeasurer framerate(PFE_ALLSCRIPTS);
+			AI::GameLoop();
+			Game::GameLoop();
+		}
 #endif
 		UpdateLandscapingLimits();
 
@@ -1481,10 +1463,8 @@ static void DoAutosave()
 void GameLoop()
 {
 	if (_game_mode == GM_BOOTSTRAP) {
-#ifdef ENABLE_NETWORK
 		/* Check for UDP stuff */
 		if (_network_available) NetworkBackgroundLoop();
-#endif
 		InputLoop();
 		return;
 	}
@@ -1507,7 +1487,6 @@ void GameLoop()
 	IncreaseSpriteLRU();
 	InteractiveRandom();
 
-#ifdef ENABLE_NETWORK
 	/* Check for UDP stuff */
 	if (_network_available) NetworkBackgroundLoop();
 
@@ -1523,9 +1502,6 @@ void GameLoop()
 		/* Singleplayer */
 		StateGameLoop();
 	}
-#else
-	StateGameLoop();
-#endif /* ENABLE_NETWORK */
 
 	if (!_pause_mode && HasBit(_display_opt, DO_FULL_ANIMATION)) DoPaletteAnimations();
 

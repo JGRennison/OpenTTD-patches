@@ -468,6 +468,7 @@ STR_TOOLBAR_SOUND_MUSIC                                         :Lyd/musikk
 ############ range for message menu starts
 STR_NEWS_MENU_LAST_MESSAGE_NEWS_REPORT                          :Siste melding/nyhet
 STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Tidligere meldinger
+STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Slett alle meldinger
 ############ range ends here
 
 ############ range for about menu starts
@@ -996,6 +997,13 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :2 ganger størrelse
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :4 ganger størrelse
 
+STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Skriftstørrelse
+STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Velg skriftstørrelse for grensesnitt
+
+STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normal
+STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Dobbel størrelse
+STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Firedobbel størrelse
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Grafikksett
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Velg grafikksett som skal brukes
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} manglende/ødelagt{P "" e} fil{P "" er}
@@ -1178,6 +1186,8 @@ STR_CONFIG_SETTING_AUTOSLOPE                                    :Tillat endring 
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Tillat endring av landskapet under bygninger og spor uten å fjerne dem
 STR_CONFIG_SETTING_CATCHMENT                                    :Mer realistisk størrelse på oppfangingsområder: {STRING}
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Ha oppsamlingsområder i forskjellige størrelser for forskjellige typer stasjoner og lufthavner
+STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Firmaets stasjoner kan betjene industrier med tilknyttede nøytrale stasjoner: {STRING}
+STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Hvis aktivert, vil industrier med egne stasjoner (slik som oljerigger) også kunne betjenes av firma-stasjoner bygget i nærheten. Hvis deaktivert, vil disse industriene bare kunne betjenes av sine egne stasjoner. Nærliggende firma-stasjoner vil ikke kunne betjene dem, heller ikke vil den egne stasjonen betjene noe annet enn den tilhørende industrien.
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Tillat fjerning av flere veier, broer osv. eid av byene: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Gjør det enklere å fjerne infrastruktur og bygninger som tilhører byer
 STR_CONFIG_SETTING_TRAIN_LENGTH                                 :Maksimal toglengde: {STRING}
@@ -1194,8 +1204,8 @@ STR_CONFIG_SETTING_TRAIN_SLOPE_STEEPNESS_HELPTEXT               :Brattheten av e
 STR_CONFIG_SETTING_PERCENTAGE                                   :{COMMA} %
 STR_CONFIG_SETTING_ROAD_VEHICLE_SLOPE_STEEPNESS                 :Skråningens bratthet for veikjøretøy: {STRING}
 STR_CONFIG_SETTING_ROAD_VEHICLE_SLOPE_STEEPNESS_HELPTEXT        :Brattheten av et skrått kartelement for et veikjøretøy. Høyere verdier gjør det vanskeligere å kjøre opp bakken
-STR_CONFIG_SETTING_FORBID_90_DEG                                :Forby tog og skip å gjøre 90° svinger: {STRING}
-STR_CONFIG_SETTING_FORBID_90_DEG_HELPTEXT                       :90-graders svinger oppstår når et horisontalt spor etterfølges av et vertikalt spor på tilstøtende kartelement, som dermed fører til at toget må snu 90 grader når det krysser kartelementet, istedenfor de vanlige 45 grader for andre spor-kombinasjoner. Dette gjelder også for båters svingradius
+STR_CONFIG_SETTING_FORBID_90_DEG                                :Forby tog å gjøre 90° svinger: {STRING}
+STR_CONFIG_SETTING_FORBID_90_DEG_HELPTEXT                       :90-graders svinger oppstår når et horisontalt spor etterfølges av et vertikalt spor på tilstøtende kartelement, som medfører at toget må svinge 90 grader når det krysser kartelementet, i stedet for de vanlige 45 grader for andre spor-kombinasjoner.
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS                        :Tillat sammenslåing av stasjoner som ikke ligger inntil hverandre: {STRING}
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS_HELPTEXT               :Gjør det mulig å legge til deler til en stasjon uten at de er direkte ved siden av hverandre. Bruk Ctrl+klikk for å bygge slike stasjoner.
 STR_CONFIG_SETTING_INFLATION                                    :Inflasjon: {STRING}
@@ -1252,8 +1262,8 @@ STR_CONFIG_SETTING_PLANE_SPEED                                  :Flyfart faktor:
 STR_CONFIG_SETTING_PLANE_SPEED_HELPTEXT                         :Still den relative hastigheten til fly sammenlignet med andre kjøretøy, for å redusere inntekter ved luftfrakt
 STR_CONFIG_SETTING_PLANE_SPEED_VALUE                            :1 / {COMMA}
 STR_CONFIG_SETTING_PLANE_CRASHES                                :Antall flystyrter: {STRING}
-STR_CONFIG_SETTING_PLANE_CRASHES_HELPTEXT                       :Bestem sjansen for en flykatastrofe
-STR_CONFIG_SETTING_PLANE_CRASHES_NONE                           :Ingen
+STR_CONFIG_SETTING_PLANE_CRASHES_HELPTEXT                       :Bestem sannsynligheten for flykrasj.{}* Store fly vil alltid kunne krasje når de lander på små flyplasser.
+STR_CONFIG_SETTING_PLANE_CRASHES_NONE                           :Ingen*
 STR_CONFIG_SETTING_PLANE_CRASHES_REDUCED                        :Redusert
 STR_CONFIG_SETTING_PLANE_CRASHES_NORMAL                         :Normalt
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :Tillat stoppesteder med gjennomkjøring på by-eide veier: {STRING}
@@ -1578,6 +1588,10 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_HELPTEXT                       :Ved å aktivere
 STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Forbudt
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Tillatt
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Tillatt, egendefinert oppsett av by
+STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :varegenerering byer: {STRING}
+STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Hvor mye varer som genereres av hus i byer, i forhold til byens folketall.{}Kvadratisk vekst: En by av dobbel størrelse genererer fire ganger så mange passasjerer.{}Lineær vekst: En by av dobbel størrelse genererer dobbelt så mange passasjerer.
+STR_CONFIG_SETTING_TOWN_CARGOGENMODE_ORIGINAL                   :Kvadratisk (original)
+STR_CONFIG_SETTING_TOWN_CARGOGENMODE_BITCOUNT                   :Lineær
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Plassering av trær i spillet: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :Kontroll tilfeldige utseender til tre under spillet. Dette kan påvirke industrier som avhenger av trevekst, for eksempel trelast
@@ -1705,7 +1719,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Gods-di
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Motstandere
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Datamaskinstyrte spillere
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Original
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Anbefalt)
 
@@ -1789,13 +1802,9 @@ STR_QUIT_NO                                                     :{BLACK}Nei
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -2085,11 +2094,12 @@ STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Koble fr
 
 STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Tjeneren er beskyttet. Skriv inn passord
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Firmaet er beskyttet. Skriv inn passord
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST_CAPTION                    :{WHITE}Klientliste
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Liste over klienter
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Vær tilskuer
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nytt firma
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Liste over klienter
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Vær tilskuer
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Nytt firma
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Kast ut
@@ -2104,7 +2114,6 @@ STR_NETWORK_CLIENT                                              :Klient
 STR_NETWORK_SPECTATORS                                          :Tilskuere
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Skriv inn hvor mye penger du ønsker å gi
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Tilskuer
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Ikke lagre passordet
@@ -2134,7 +2143,7 @@ STR_NETWORK_CHAT_ALL                                            :[Alle] {STRING}
 STR_NETWORK_CHAT_OSKTITLE                                       :{BLACK}Skriv inn tekst for nettverkssamtale
 
 # Network messages
-STR_NETWORK_ERROR_NOTAVAILABLE                                  :{WHITE}Ingen nettverksadaptere funnet eller kompilert uten ENABLE_NETWORK
+STR_NETWORK_ERROR_NOTAVAILABLE                                  :{WHITE}Ingen nettverksadapter funnet
 STR_NETWORK_ERROR_NOSERVER                                      :{WHITE}Kunne ikke finne noen nettverksspill
 STR_NETWORK_ERROR_NOCONNECTION                                  :{WHITE}Tjeneren svarte ikke på forespørselen
 STR_NETWORK_ERROR_NEWGRF_MISMATCH                               :{WHITE}Kunne ikke koble til pga. ulike versjoner av NewGRF
@@ -2743,6 +2752,9 @@ STR_FRAMERATE_DRAWING                                           :{BLACK}Grafikkt
 STR_FRAMERATE_DRAWING_VIEWPORTS                                 :{BLACK}  Synsfelt for spillverden:
 STR_FRAMERATE_VIDEO                                             :{BLACK}Video output:
 STR_FRAMERATE_SOUND                                             :{BLACK}Lydmiksing:
+STR_FRAMERATE_ALLSCRIPTS                                        :{BLACK}  GS/AI total:
+STR_FRAMERATE_GAMESCRIPT                                        :{BLACK}   Game script:
+STR_FRAMERATE_AI                                                :{BLACK}   AI {NUM} {STRING}
 ############ End of leave-in-this-order
 ############ Leave those lines in this order!!
 STR_FRAMETIME_CAPTION_GAMELOOP                                  :Spill-løkke
@@ -2757,6 +2769,9 @@ STR_FRAMETIME_CAPTION_DRAWING                                   :Grafikktegning
 STR_FRAMETIME_CAPTION_DRAWING_VIEWPORTS                         :Tegning av synsfelt for spillverden
 STR_FRAMETIME_CAPTION_VIDEO                                     :Video output
 STR_FRAMETIME_CAPTION_SOUND                                     :Lydmiksing
+STR_FRAMETIME_CAPTION_ALLSCRIPTS                                :GS/AI scripts total
+STR_FRAMETIME_CAPTION_GAMESCRIPT                                :Game script
+STR_FRAMETIME_CAPTION_AI                                        :AI {NUM} {STRING}
 ############ End of leave-in-this-order
 
 
@@ -2989,7 +3004,7 @@ STR_NEWGRF_ERROR_GRM_FAILED                                     :Etterspurte GRF
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} ble deaktivert av {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Ugyldig/ukjent sprite layout-format (figur {3:NUM})
 STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG                         :For mange elementer i fortegnelse over eiendomsverdier (sprite {3:NUM}, property {4:HEX})
-STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :Ugyldig industriprodukjson callback (sprite {3:NUM}, "{1:STRING}")
+STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :Ugyldig industriprodukjson callback (sprite {3:NUM}, "{2:STRING}")
 
 # NewGRF related 'general' warnings
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}Advarsel!
@@ -3021,6 +3036,7 @@ STR_NEWGRF_BUGGY                                                :{WHITE}NewGRF '
 STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{WHITE}Vare-/ombyggingsinformasjon for '{1:ENGINE}' er forskjellig fra kjøpelisten etter konstruksjonen. Dette kan resultere i at autofornying ikke fungerer på riktig måte.
 STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :{WHITE}'{1:STRING}' forårsaket en uendelig løkke i produksjonstilbakekallet.
 STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT                        :{WHITE}Tilbakekall {1:HEX} rapporterte ukjent/ugyldig resultat {2:HEX}
+STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK              :{WHITE}'{1:STRING}' ugyldig varetype i produksjonscallback at {2:HEX}
 
 # 'User removed essential NewGRFs'-placeholders for stuff without specs
 STR_NEWGRF_INVALID_CARGO                                        :<invalid cargo>
@@ -3115,6 +3131,7 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Du kan 
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} Målsetninger
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Globale mål
+STR_GOALS_SPECTATOR                                             :Globale mål
 STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Globale mål:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Ingen -
@@ -3163,6 +3180,7 @@ STR_SUBSIDIES_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                :{BLACK}Klikk fo
 # Story book window
 STR_STORY_BOOK_CAPTION                                          :{WHITE}{COMPANY} Historiebok
 STR_STORY_BOOK_SPECTATOR_CAPTION                                :{WHITE}Global historiebok
+STR_STORY_BOOK_SPECTATOR                                        :Global historiebok
 STR_STORY_BOOK_TITLE                                            :{YELLOW}{STRING}
 STR_STORY_BOOK_GENERIC_PAGE_ITEM                                :Side {NUM}
 STR_STORY_BOOK_SEL_PAGE_TOOLTIP                                 :{BLACK}Gå til en bestemt side ved å velge den i denne nedtrekkslisten.
@@ -3423,6 +3441,8 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Ugrupperte kjø
 STR_GROUP_DEFAULT_SHIPS                                         :Ugrupperte skip
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Ugrupperte luftfartøy
 
+STR_GROUP_COUNT_WITH_SUBGROUP                                   :{TINY_FONT}{COMMA} (+{COMMA})
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Grupper - Klikk på en gruppe for å se alle kjøretøy i gruppen. Dra og slipp grupper for å arrangere dem hierarkisk
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Klikk for å opprette en gruppe
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Fjern den valgte gruppen
@@ -3455,6 +3475,7 @@ STR_BUY_VEHICLE_SHIP_CAPTION                                    :Nye skip
 STR_BUY_VEHICLE_AIRCRAFT_CAPTION                                :Nye luftfartøy
 
 STR_PURCHASE_INFO_COST_WEIGHT                                   :{BLACK}Kostnad: {GOLD}{CURRENCY_LONG}{BLACK} Vekt: {GOLD}{WEIGHT_SHORT}
+STR_PURCHASE_INFO_COST_REFIT_WEIGHT                             :{BLACK}Kostnad: {GOLD}{CURRENCY_LONG}{BLACK} (Ombyggingskostnad: {GOLD}{CURRENCY_LONG}{BLACK}) Vekt: {GOLD}{WEIGHT_SHORT}
 STR_PURCHASE_INFO_SPEED_POWER                                   :{BLACK}Hastighet: {GOLD}{VELOCITY}{BLACK} Kraft: {GOLD}{POWER}
 STR_PURCHASE_INFO_SPEED                                         :{BLACK}Hastighet: {GOLD}{VELOCITY}
 STR_PURCHASE_INFO_SPEED_OCEAN                                   :{BLACK}Hastighet på havet: {GOLD}{VELOCITY}
@@ -3465,8 +3486,10 @@ STR_PURCHASE_INFO_REFITTABLE                                    :(ombyggbart)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Designet: {GOLD}{NUM}{BLACK} Levetid: {GOLD}{COMMA} år
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Maks pålitelighet: {GOLD}{COMMA}{NBSP}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Kostnad: {GOLD}{CURRENCY_LONG}
+STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Kostnad: {GOLD}{CURRENCY_LONG}{BLACK} (Ombyggingskostnad: {GOLD}{CURRENCY_LONG}{BLACK})
 STR_PURCHASE_INFO_WEIGHT_CWEIGHT                                :{BLACK}Vekt: {GOLD}{WEIGHT_SHORT} ({WEIGHT_SHORT})
 STR_PURCHASE_INFO_COST_SPEED                                    :{BLACK}Kostnad: {GOLD}{CURRENCY_LONG}{BLACK} Hastighet: {GOLD}{VELOCITY}
+STR_PURCHASE_INFO_COST_REFIT_SPEED                              :{BLACK}Kostnad: {GOLD}{CURRENCY_LONG}{BLACK} (Ombyggingskostnad: {GOLD}{CURRENCY_LONG}{BLACK}) Hastighet: {GOLD}{VELOCITY}
 STR_PURCHASE_INFO_AIRCRAFT_CAPACITY                             :{BLACK}Kapasitet: {GOLD}{CARGO_LONG}, {CARGO_LONG}
 STR_PURCHASE_INFO_PWAGPOWER_PWAGWEIGHT                          :{BLACK}Lokomotivvogner: {GOLD}+{POWER}{BLACK} Vekt: {GOLD}+{WEIGHT_SHORT}
 STR_PURCHASE_INFO_REFITTABLE_TO                                 :{BLACK}Kan bygges om til: {GOLD}{STRING}
@@ -3487,10 +3510,20 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Kjøp kj
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Kjøp skip
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Kjøp luftfartøy
 
+STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_BUTTON                  :{BLACK}Kjøp og bygg om kjøretøy
+STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_REFIT_VEHICLE_BUTTON           :{BLACK}Kjøp og bygg om kjøretøy
+STR_BUY_VEHICLE_SHIP_BUY_REFIT_VEHICLE_BUTTON                   :{BLACK}Kjøp og bygg om skip
+STR_BUY_VEHICLE_AIRCRAFT_BUY_REFIT_VEHICLE_BUTTON               :{BLACK}Kjøp og bygg om luftfartøy
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Kjøp det merkede tog/vogn. Shift+klikk viser estimert kostnad
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Kjøp det merkede kjøretøy. Shift+klikk viser estimert kostnad
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Kjøp det merkede skip. Shift+klikk viser estimert kostnad
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Kjøp det merkede luftfartøy. Shift+klikk viser estimert kostnad
+
+STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_TOOLTIP                 :{BLACK}Kjøp og bygg om merket tog/vogn. Shift+klikk viser anslått kostnad uten å kjøpe.
+STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_REFIT_VEHICLE_TOOLTIP          :{BLACK}Kjøp og bygg om det merkede kjøretøyet. Shift+klikk viser anslått kostnad uten å kjøpe.
+STR_BUY_VEHICLE_SHIP_BUY_REFIT_VEHICLE_TOOLTIP                  :{BLACK}Kjøp og bygg om det merkede skipet. Shift+klikk viser anslått kostnad uten å kjøpe.
+STR_BUY_VEHICLE_AIRCRAFT_BUY_REFIT_VEHICLE_TOOLTIP              :{BLACK}Kjøp og bygg om det merkede luftfartøyet. Shift+klikk viser anslått kostnad uten å kjøpe.
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Endre navn
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Endre navn
@@ -4447,6 +4480,7 @@ STR_ERROR_GROUP_CAN_T_CREATE                                    :{WHITE}Kan ikke
 STR_ERROR_GROUP_CAN_T_DELETE                                    :{WHITE}Kan ikke slette denne gruppen...
 STR_ERROR_GROUP_CAN_T_RENAME                                    :{WHITE}Kan ikke gi nytt navn på denne gruppen...
 STR_ERROR_GROUP_CAN_T_SET_PARENT                                :{WHITE}Kan ikke sette foreldregruppe...
+STR_ERROR_GROUP_CAN_T_SET_PARENT_RECURSION                      :{WHITE}... løkker i gruppehierarkiet er ikke tillatt
 STR_ERROR_GROUP_CAN_T_REMOVE_ALL_VEHICLES                       :{WHITE}Kan ikke fjerne alle kjøretøy fra denne gruppen...
 STR_ERROR_GROUP_CAN_T_ADD_VEHICLE                               :{WHITE}Kan ikke legge til kjøretøyet i denne gruppen...
 STR_ERROR_GROUP_CAN_T_ADD_SHARED_VEHICLE                        :{WHITE}Kan ikke legge til delte kjøretøyer i gruppen...

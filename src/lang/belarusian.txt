@@ -1301,6 +1301,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Звычайн�
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Падвоены
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Пачацвяроны
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Набор базавай ґрафікі
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Выбар базавага набору ґрафічных аб'ектаў
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} адсутнічаюч{P ы ых ых}/пашкоджан{P ы ых ых} файл{P "" ы аў}
@@ -2007,7 +2009,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Раз�
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Канкурэнты
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Кампутарныя гульцы
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :арыґінальны
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(рэкамэндуецца)
 
@@ -2091,13 +2092,9 @@ STR_QUIT_NO                                                     :{BLACK}Не
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -2387,9 +2384,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Сэрв
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Кампанія абароненая. Увядзіце пароль
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Сьпіс кліентаў
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Назіраць
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Новая кампанія
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Сьпіс кліентаў
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Назіраць
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Новая кампанія
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Выкінуць гульца
@@ -2404,7 +2401,6 @@ STR_NETWORK_CLIENT                                              :Кліент
 STR_NETWORK_SPECTATORS                                          :Назіральнікі
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Увядзіце суму грошай, якую вы хочаце перадаць
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Назіральнік
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Не захоўваць уведзены пароль
@@ -3687,6 +3683,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Бяз груп
 STR_GROUP_DEFAULT_SHIPS                                         :Бяз групы
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Бяз групы
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Ґрупы — клікніце па назьве ґрупы, каб убачыць сьпіс транспарту ў гэтай ґрупе. Націсьніце ды перацягвайце ґрупы, каб упарадкаваць гіерархію.
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Стварыць групу
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Выдаліць выбраную групу
@@ -3749,10 +3746,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Купі
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Купіць
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Купіць
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Набыць абраны лякаматыў/ваґон. Shift+пстрычка — ацэнка кошту набыцьця.
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Набыць абраны аўтамабіль. Shift+пстрычка — ацэнка кошту набыцьця.
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Набыць абраны карабель. Shift+пстрычка — ацэнка кошту набыцьця.
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Набыць абраны авіятранспарт. Shift+пстрычка — ацэнка кошту набыцьця.
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Перайменаваць
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Перайменаваць

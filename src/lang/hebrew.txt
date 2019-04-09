@@ -1003,6 +1003,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :רגיל
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :גודל כפול
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :גודל מרובע
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}ערכת גרפיקה בסיסית
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}בחר בערכת גרפיקה בסיסית לשימוש
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{P 0 "קובץ " ""}{NUM}{P "" " קבצים"} חסר{P 0 "" ים}/הושחט{P 0 "" ו}
@@ -1707,7 +1709,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}התפ�
 STR_CONFIG_SETTING_AI                                           :{ORANGE}מתחרים
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}שחקני מחשב
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :מקורי
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(מומלץ)
 
@@ -1791,13 +1792,9 @@ STR_QUIT_NO                                                     :{BLACK}לא
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :חלונות
-STR_OSNAME_DOS                                                  :דוס
 STR_OSNAME_UNIX                                                 :יוניקס
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :מערכת הפעלה בי
 STR_OSNAME_HAIKU                                                :הייקו
-STR_OSNAME_MORPHOS                                              :מערכת הפעלה מורפ
-STR_OSNAME_AMIGAOS                                              :מערכת הפעלה אניגמה
 STR_OSNAME_OS2                                                  :מערכת הפעלה או.אס שתיים
 STR_OSNAME_SUNOS                                                :סולריס
 
@@ -2087,9 +2084,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}שרת �
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}חברה מוגנת. הזן סיסמה
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}רשימת משתתפים
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}צפה
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}חברה חדשה
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :רשימת משתתפים
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :צפה
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :חברה חדשה
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :בעט
@@ -2104,7 +2101,6 @@ STR_NETWORK_CLIENT                                              :לקוח
 STR_NETWORK_SPECTATORS                                          :צופים
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}הכנס סכום כסף שברצונך לתת
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}צופה
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}בטל שמירת הסיסמה החדשה
@@ -3395,6 +3391,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :רכבים לא
 STR_GROUP_DEFAULT_SHIPS                                         :כלי שייט לא משוייכים
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :כלי טייס לא משוייכים
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}קבוצות – לחץ על קבוצה לצפייה בכל הכלים השייכים אליה. גרור כדי לסדר הירארכיה.
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}לחץ ליצירת קבוצה חדשה
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}מחק את הקבוצה שנבחרה
@@ -3457,10 +3454,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}רכוש
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}רכוש כלי שייט
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}רכוש כלי טייס
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}רכוש את קרון הרכבת שמודגש. Shift+לחיצה מציג הערכת עלות ללא רכישה
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}רכוש את כלי הרכב שמודגש. Shift+לחיצה מציג הערכת עלות ללא רכישה
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}רכוש את כלי השייט שמודגש. Shift+לחיצה מציג הערכת עלות ללא רכישה
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}רכוש את כלי הטייס שמודגש. Shift+לחיצה מציג הערכת עלות ללא רכישה
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}שנה שם
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}שנה שם

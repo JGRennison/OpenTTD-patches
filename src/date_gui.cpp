@@ -55,7 +55,7 @@ struct SetDateWindow : Window {
 		this->date.year = Clamp(this->date.year, min_year, max_year);
 	}
 
-	virtual Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number)
+	Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number) override
 	{
 		Point pt = { this->parent->left + this->parent->width / 2 - sm_width / 2, this->parent->top + this->parent->height / 2 - sm_height / 2 };
 		return pt;
@@ -75,14 +75,14 @@ struct SetDateWindow : Window {
 
 			case WID_SD_DAY:
 				for (uint i = 0; i < 31; i++) {
-					*list->Append() = new DropDownListStringItem(STR_DAY_NUMBER_1ST + i, i + 1, false);
+					list->push_back(new DropDownListStringItem(STR_DAY_NUMBER_1ST + i, i + 1, false));
 				}
 				selected = this->date.day;
 				break;
 
 			case WID_SD_MONTH:
 				for (uint i = 0; i < 12; i++) {
-					*list->Append() = new DropDownListStringItem(STR_MONTH_JAN + i, i, false);
+					list->push_back(new DropDownListStringItem(STR_MONTH_JAN + i, i, false));
 				}
 				selected = this->date.month;
 				break;
@@ -91,7 +91,7 @@ struct SetDateWindow : Window {
 				for (Year i = this->min_year; i <= this->max_year; i++) {
 					DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_JUST_INT, i, false);
 					item->SetParam(0, i);
-					*list->Append() = item;
+					list->push_back(item);
 				}
 				selected = this->date.year;
 				break;
@@ -100,7 +100,7 @@ struct SetDateWindow : Window {
 		ShowDropDownList(this, list, selected, widget);
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		Dimension d = {0, 0};
 		switch (widget) {
@@ -129,7 +129,7 @@ struct SetDateWindow : Window {
 		*size = d;
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_SD_DAY:   SetDParam(0, this->date.day - 1 + STR_DAY_NUMBER_1ST); break;
@@ -138,7 +138,7 @@ struct SetDateWindow : Window {
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_SD_DAY:
@@ -154,7 +154,7 @@ struct SetDateWindow : Window {
 		}
 	}
 
-	virtual void OnDropdownSelect(int widget, int index)
+	void OnDropdownSelect(int widget, int index) override
 	{
 		switch (widget) {
 			case WID_SD_DAY:

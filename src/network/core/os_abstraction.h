@@ -18,8 +18,6 @@
 
 /* Include standard stuff per OS */
 
-#ifdef ENABLE_NETWORK
-
 /* Windows stuff */
 #if defined(_WIN32)
 #include <errno.h>
@@ -48,50 +46,34 @@ typedef unsigned long in_addr_t;
 #	endif
 #	define SOCKET int
 #	define INVALID_SOCKET -1
-#	if !defined(__MORPHOS__) && !defined(__AMIGA__)
-#		define ioctlsocket ioctl
-#	if !defined(BEOS_NET_SERVER)
-#		define closesocket close
-#	endif
-#		define GET_LAST_ERROR() (errno)
-#	endif
+#	define ioctlsocket ioctl
+#	define closesocket close
+#	define GET_LAST_ERROR() (errno)
 /* Need this for FIONREAD on solaris */
 #	define BSD_COMP
 
 /* Includes needed for UNIX-like systems */
 #	include <unistd.h>
 #	include <sys/ioctl.h>
-#	if defined(__BEOS__) && defined(BEOS_NET_SERVER)
-#		include <be/net/socket.h>
-#		include <be/kernel/OS.h> /* snooze() */
-#		include <be/net/netdb.h>
-		typedef unsigned long in_addr_t;
-#		define INADDR_NONE INADDR_BROADCAST
-#	else
-#		include <sys/socket.h>
-#		include <netinet/in.h>
-#		include <netinet/tcp.h>
-#		include <arpa/inet.h>
-#		include <net/if.h>
+#	include <sys/socket.h>
+#	include <netinet/in.h>
+#	include <netinet/tcp.h>
+#	include <arpa/inet.h>
+#	include <net/if.h>
 /* According to glibc/NEWS, <ifaddrs.h> appeared in glibc-2.3. */
-#		if !defined(__sgi__) && !defined(SUNOS) && !defined(__MORPHOS__) && !defined(__BEOS__) && !defined(__HAIKU__) && !defined(__INNOTEK_LIBC__) \
-		   && !(defined(__GLIBC__) && (__GLIBC__ <= 2) && (__GLIBC_MINOR__ <= 2)) && !defined(__dietlibc__) && !defined(HPUX)
+#	if !defined(__sgi__) && !defined(SUNOS) && !defined(__INNOTEK_LIBC__) \
+	   && !(defined(__GLIBC__) && (__GLIBC__ <= 2) && (__GLIBC_MINOR__ <= 2)) && !defined(__dietlibc__) && !defined(HPUX)
 /* If for any reason ifaddrs.h does not exist on your system, comment out
  *   the following two lines and an alternative way will be used to fetch
  *   the list of IPs from the system. */
-#			include <ifaddrs.h>
-#			define HAVE_GETIFADDRS
-#		endif
-#		if !defined(INADDR_NONE)
-#			define INADDR_NONE 0xffffffff
-#		endif
-#		if defined(__BEOS__) && !defined(BEOS_NET_SERVER)
-			/* needed on Zeta */
-#			include <sys/sockio.h>
-#		endif
-#	endif /* BEOS_NET_SERVER */
+#		include <ifaddrs.h>
+#		define HAVE_GETIFADDRS
+#	endif
+#	if !defined(INADDR_NONE)
+#		define INADDR_NONE 0xffffffff
+#	endif
 
-#	if !defined(__BEOS__) && defined(__GLIBC__) && (__GLIBC__ <= 2) && (__GLIBC_MINOR__ <= 1)
+#	if defined(__GLIBC__) && (__GLIBC__ <= 2) && (__GLIBC_MINOR__ <= 1)
 		typedef uint32_t in_addr_t;
 #	endif
 
@@ -99,14 +81,6 @@ typedef unsigned long in_addr_t;
 #	include <sys/time.h>
 #	include <netdb.h>
 #endif /* UNIX */
-
-#ifdef __BEOS__
-	typedef int socklen_t;
-#endif
-
-#ifdef __HAIKU__
-	#define IPV6_V6ONLY 27
-#endif
 
 /* OS/2 stuff */
 #if defined(__OS2__)
@@ -164,39 +138,6 @@ typedef unsigned long in_addr_t;
 
 #endif /* OS/2 */
 
-/* MorphOS and Amiga stuff */
-#if defined(__MORPHOS__) || defined(__AMIGA__)
-#	include <exec/types.h>
-#	include <proto/exec.h>   /* required for Open/CloseLibrary() */
-	/* MorphOS defines his network functions with UBYTE arrays while we
-	 *  use char arrays. This gives tons of unneeded warnings */
-#	define UBYTE char
-#	if defined(__MORPHOS__)
-#		include <sys/filio.h>  /* FIO* defines */
-#		include <sys/sockio.h> /* SIO* defines */
-#		include <netinet/in.h>
-#	else /* __AMIGA__ */
-#		include	<proto/socket.h>
-#	endif
-
-/* Make the names compatible */
-#	define closesocket(s) CloseSocket(s)
-#	define GET_LAST_ERROR() Errno()
-#	define ioctlsocket(s, request, status) IoctlSocket((LONG)s, (ULONG)request, (char*)status)
-#	define ioctl ioctlsocket
-
-	typedef unsigned int in_addr_t;
-	typedef long         socklen_t;
-	extern struct Library *SocketBase;
-
-#	ifdef __AMIGA__
-	/* for usleep() implementation */
-	extern struct Device      *TimerBase;
-	extern struct MsgPort     *TimerPort;
-	extern struct timerequest *TimerRequest;
-#	endif
-#endif /* __MORPHOS__ || __AMIGA__ */
-
 /**
  * Try to set the socket into non-blocking mode.
  * @param d The socket to set the non-blocking more for.
@@ -209,11 +150,7 @@ static inline bool SetNonBlocking(SOCKET d)
 #else
 	int nonblocking = 1;
 #endif
-#if (defined(__BEOS__) && defined(BEOS_NET_SERVER))
-	return setsockopt(d, SOL_SOCKET, SO_NONBLOCK, &nonblocking, sizeof(nonblocking)) == 0;
-#else
 	return ioctlsocket(d, FIONBIO, &nonblocking) == 0;
-#endif
 }
 
 /**
@@ -224,19 +161,13 @@ static inline bool SetNonBlocking(SOCKET d)
 static inline bool SetNoDelay(SOCKET d)
 {
 	/* XXX should this be done at all? */
-#if !defined(BEOS_NET_SERVER) /* not implemented on BeOS net_server */
 	int b = 1;
 	/* The (const char*) cast is needed for windows */
 	return setsockopt(d, IPPROTO_TCP, TCP_NODELAY, (const char*)&b, sizeof(b)) == 0;
-#else
-	return true;
-#endif
 }
 
 /* Make sure these structures have the size we expect them to be */
 assert_compile(sizeof(in_addr)  ==  4); ///< IPv4 addresses should be 4 bytes.
 assert_compile(sizeof(in6_addr) == 16); ///< IPv6 addresses should be 16 bytes.
-
-#endif /* ENABLE_NETWORK */
 
 #endif /* NETWORK_CORE_OS_ABSTRACTION_H */

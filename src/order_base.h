@@ -21,7 +21,7 @@
 #include "vehicle_type.h"
 #include "date_type.h"
 
-typedef Pool<Order, OrderID, 256, 64000> OrderPool;
+typedef Pool<Order, OrderID, 256, 0xFF0000> OrderPool;
 typedef Pool<OrderList, OrderListID, 128, 64000> OrderListPool;
 extern OrderPool _order_pool;
 extern OrderListPool _orderlist_pool;
@@ -50,7 +50,7 @@ private:
 public:
 	Order *next;          ///< Pointer to next order. If NULL, end of list
 
-	Order() : refit_cargo(CT_NO_REFIT), max_speed(UINT16_MAX) {}
+	Order() : flags(0), refit_cargo(CT_NO_REFIT), max_speed(UINT16_MAX) {}
 	~Order();
 
 	Order(uint32 packed);

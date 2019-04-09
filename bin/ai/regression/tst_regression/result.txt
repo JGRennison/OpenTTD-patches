@@ -8536,7 +8536,6 @@ ERROR: IsEnd() is invalid as Begin() is never called
 --TileList_IndustryProducing--
   Count():             92
   Location ListDump:
-    46920 => 1
     46919 => 1
     46918 => 1
     46917 => 1
@@ -8545,7 +8544,6 @@ ERROR: IsEnd() is invalid as Begin() is never called
     46914 => 1
     46913 => 1
     46912 => 1
-    46911 => 1
     46664 => 1
     46663 => 1
     46662 => 1
@@ -8628,6 +8626,8 @@ ERROR: IsEnd() is invalid as Begin() is never called
     44353 => 1
     44352 => 1
     44351 => 1
+    46920 => 0
+    46911 => 0
 
 --TileList_StationType--
   Count():             4
@@ -9128,6 +9128,18 @@ ERROR: IsEnd() is invalid as Begin() is never called
   GetWagonAge():        0
   GetWagonEngineType(): 65535
   GetWagonAge():        -1
+  --Refit--
+    GetBuildWithRefitCapacity(): -1
+    GetBuildWithRefitCapacity(): 0
+    GetBuildWithRefitCapacity(): 160
+    BuildVehicleWithRefit():     20
+    GetCapacity():               160
+    GetCapacity():               0
+    GetRefitCapacity():          160
+    RefitVehicle():              true
+    GetCapacity():               0
+    GetCapacity():               160
+    SellVehicle():               true
   --Errors--
     RefitVehicle():        false
     GetLastErrorString():  ERR_VEHICLE_NOT_IN_DEPOT
@@ -9175,7 +9187,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     13 => 5489
     12 => 5489
   CurrentSpeed ListDump:
-    12 => 21
+    12 => 27
     17 => 0
     16 => 0
     14 => 0

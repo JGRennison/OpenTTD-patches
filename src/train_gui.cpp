@@ -174,13 +174,19 @@ struct CargoSummaryItem {
 	{
 		return this->cargo != other.cargo || this->subtype != other.subtype;
 	}
+
+	/** Used by std::find() and similar functions */
+	inline bool operator == (const CargoSummaryItem &other) const
+	{
+		return !(this->cargo != other.cargo);
+	}
 };
 
 static const uint TRAIN_DETAILS_MIN_INDENT = 32; ///< Minimum indent level in the train details window
 static const uint TRAIN_DETAILS_MAX_INDENT = 72; ///< Maximum indent level in the train details window; wider than this and we start on a new line
 
 /** Container for the cargo summary information. */
-typedef SmallVector<CargoSummaryItem, 2> CargoSummary;
+typedef std::vector<CargoSummaryItem> CargoSummary;
 /** Reused container of cargo details */
 static CargoSummary _cargo_summary;
 
@@ -263,7 +269,7 @@ static void TrainDetailsCapacityTab(const CargoSummaryItem *item, int left, int 
  */
 static void GetCargoSummaryOfArticulatedVehicle(const Train *v, CargoSummary *summary)
 {
-	summary->Clear();
+	summary->clear();
 	do {
 		if (!v->GetEngine()->CanCarryCargo()) continue;
 
@@ -272,9 +278,10 @@ static void GetCargoSummaryOfArticulatedVehicle(const Train *v, CargoSummary *su
 		new_item.subtype = GetCargoSubtypeText(v);
 		if (new_item.cargo == INVALID_CARGO && new_item.subtype == STR_EMPTY) continue;
 
-		CargoSummaryItem *item = summary->Find(new_item);
-		if (item == summary->End()) {
-			item = summary->Append();
+		auto item = std::find(summary->begin(), summary->end(), new_item);
+		if (item == summary->end()) {
+			summary->emplace_back();
+			item = summary->end() - 1;
 			item->cargo = new_item.cargo;
 			item->subtype = new_item.subtype;
 			item->capacity = 0;
@@ -332,7 +339,7 @@ int GetTrainDetailsWndVScroll(VehicleID veh_id, TrainDetailsWindowTabs det_tab)
 	} else {
 		for (const Train *v = Train::Get(veh_id); v != NULL; v = v->GetNextVehicle()) {
 			GetCargoSummaryOfArticulatedVehicle(v, &_cargo_summary);
-			num += max(1u, _cargo_summary.Length());
+			num += max(1u, (unsigned)_cargo_summary.size());
 
 			uint length = GetLengthOfArticulatedVehicle(v);
 			if (length > TRAIN_DETAILS_MAX_INDENT) num++;
@@ -400,7 +407,7 @@ void DrawTrainDetails(const Train *v, int left, int right, int y, int vscroll_po
 				dx = 0;
 			}
 
-			uint num_lines = max(1u, _cargo_summary.Length());
+			uint num_lines = max(1u, (unsigned)_cargo_summary.size());
 			for (uint i = 0; i < num_lines; i++) {
 				int sprite_width = max<int>(dx, ScaleGUITrad(TRAIN_DETAILS_MIN_INDENT)) + 3;
 				int data_left  = left + (rtl ? 0 : sprite_width);
@@ -412,7 +419,7 @@ void DrawTrainDetails(const Train *v, int left, int right, int y, int vscroll_po
 					}
 					switch (det_tab) {
 						case TDW_TAB_CARGO:
-							if (i < _cargo_summary.Length()) {
+							if (i < _cargo_summary.size()) {
 								TrainDetailsCargoTab(&_cargo_summary[i], data_left, data_right, py);
 							} else {
 								DrawString(data_left, data_right, py, STR_QUANTITY_N_A, TC_LIGHT_BLUE);
@@ -424,7 +431,7 @@ void DrawTrainDetails(const Train *v, int left, int right, int y, int vscroll_po
 							break;
 
 						case TDW_TAB_CAPACITY:
-							if (i < _cargo_summary.Length()) {
+							if (i < _cargo_summary.size()) {
 								TrainDetailsCapacityTab(&_cargo_summary[i], data_left, data_right, py);
 							} else {
 								SetDParam(0, STR_EMPTY);

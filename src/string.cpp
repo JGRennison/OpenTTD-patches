@@ -37,12 +37,12 @@
 #include "os/macosx/string_osx.h"
 #endif
 
-#ifdef WITH_ICU_SORT
+#ifdef WITH_ICU_I18N
 /* Required by strnatcmp. */
 #include <unicode/ustring.h>
 #include "language.h"
 #include "gfx_func.h"
-#endif /* WITH_ICU_SORT */
+#endif /* WITH_ICU_I18N */
 
 /* The function vsnprintf is used internally to perform the required formatting
  * tasks. As such this one must be allowed, and makes sure it's terminated. */
@@ -583,13 +583,13 @@ int strnatcmp(const char *s1, const char *s2, bool ignore_garbage_at_front)
 		s2 = SkipGarbage(s2);
 	}
 
-#ifdef WITH_ICU_SORT
+#ifdef WITH_ICU_I18N
 	if (_current_collator != NULL) {
 		UErrorCode status = U_ZERO_ERROR;
 		int result = _current_collator->compareUTF8(s1, s2, status);
 		if (U_SUCCESS(status)) return result;
 	}
-#endif /* WITH_ICU_SORT */
+#endif /* WITH_ICU_I18N */
 
 #if defined(_WIN32) && !defined(STRGEN) && !defined(SETTINGSGEN)
 	int res = OTTDStringCompare(s1, s2);
@@ -612,7 +612,7 @@ int strnatcmp(const char *s1, const char *s2, bool ignore_garbage_at_front)
 	return new UniscribeStringIterator();
 }
 
-#elif defined(WITH_ICU_SORT)
+#elif defined(WITH_ICU_I18N)
 
 #include <unicode/utext.h>
 #include <unicode/brkiter.h>
@@ -623,8 +623,8 @@ class IcuStringIterator : public StringIterator
 	icu::BreakIterator *char_itr; ///< ICU iterator for characters.
 	icu::BreakIterator *word_itr; ///< ICU iterator for words.
 
-	SmallVector<UChar, 32> utf16_str;      ///< UTF-16 copy of the string.
-	SmallVector<size_t, 32> utf16_to_utf8; ///< Mapping from UTF-16 code point position to index in the UTF-8 source string.
+	std::vector<UChar> utf16_str;      ///< UTF-16 copy of the string.
+	std::vector<size_t> utf16_to_utf8; ///< Mapping from UTF-16 code point position to index in the UTF-8 source string.
 
 public:
 	IcuStringIterator() : char_itr(NULL), word_itr(NULL)
@@ -633,8 +633,8 @@ public:
 		this->char_itr = icu::BreakIterator::createCharacterInstance(icu::Locale(_current_language != NULL ? _current_language->isocode : "en"), status);
 		this->word_itr = icu::BreakIterator::createWordInstance(icu::Locale(_current_language != NULL ? _current_language->isocode : "en"), status);
 
-		*this->utf16_str.Append() = '\0';
-		*this->utf16_to_utf8.Append() = 0;
+		this->utf16_str.push_back('\0');
+		this->utf16_to_utf8.push_back(0);
 	}
 
 	virtual ~IcuStringIterator()
@@ -651,29 +651,29 @@ public:
 		 * for word break iterators (especially for CJK languages) in combination
 		 * with UTF-8 input. As a work around we have to convert the input to
 		 * UTF-16 and create a mapping back to UTF-8 character indices. */
-		this->utf16_str.Clear();
-		this->utf16_to_utf8.Clear();
+		this->utf16_str.clear();
+		this->utf16_to_utf8.clear();
 
 		while (*s != '\0') {
 			size_t idx = s - string_base;
 
 			WChar c = Utf8Consume(&s);
 			if (c < 0x10000) {
-				*this->utf16_str.Append() = (UChar)c;
+				this->utf16_str.push_back((UChar)c);
 			} else {
 				/* Make a surrogate pair. */
-				*this->utf16_str.Append() = (UChar)(0xD800 + ((c - 0x10000) >> 10));
-				*this->utf16_str.Append() = (UChar)(0xDC00 + ((c - 0x10000) & 0x3FF));
-				*this->utf16_to_utf8.Append() = idx;
+				this->utf16_str.push_back((UChar)(0xD800 + ((c - 0x10000) >> 10)));
+				this->utf16_str.push_back((UChar)(0xDC00 + ((c - 0x10000) & 0x3FF)));
+				this->utf16_to_utf8.push_back(idx);
 			}
-			*this->utf16_to_utf8.Append() = idx;
+			this->utf16_to_utf8.push_back(idx);
 		}
-		*this->utf16_str.Append() = '\0';
-		*this->utf16_to_utf8.Append() = s - string_base;
+		this->utf16_str.push_back('\0');
+		this->utf16_to_utf8.push_back(s - string_base);
 
 		UText text = UTEXT_INITIALIZER;
 		UErrorCode status = U_ZERO_ERROR;
-		utext_openUChars(&text, this->utf16_str.Begin(), this->utf16_str.Length() - 1, &status);
+		utext_openUChars(&text, this->utf16_str.data(), this->utf16_str.size() - 1, &status);
 		this->char_itr->setText(&text, status);
 		this->word_itr->setText(&text, status);
 		this->char_itr->first();
@@ -684,7 +684,7 @@ public:
 	{
 		/* Convert incoming position to an UTF-16 string index. */
 		uint utf16_pos = 0;
-		for (uint i = 0; i < this->utf16_to_utf8.Length(); i++) {
+		for (uint i = 0; i < this->utf16_to_utf8.size(); i++) {
 			if (this->utf16_to_utf8[i] == pos) {
 				utf16_pos = i;
 				break;

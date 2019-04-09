@@ -11,8 +11,6 @@
 
 #include "../stdafx.h"
 
-#ifdef ENABLE_NETWORK
-
 #include "../gfx_func.h"
 #include "../network/network.h"
 #include "../network/network_internal.h"
@@ -24,11 +22,8 @@
 #include "../company_func.h"
 #include "../core/random_func.hpp"
 #include "../saveload/saveload.h"
+#include "../thread.h"
 #include "dedicated_v.h"
-
-#ifdef BEOS_NET_SERVER
-#include <net/socket.h>
-#endif
 
 #ifdef __OS2__
 #	include <sys/time.h> /* gettimeofday */
@@ -79,6 +74,7 @@ static void DedicatedSignalHandler(int sig)
 # include <time.h>
 # include <tchar.h>
 # include "../os/windows/win32.h"
+# include "../thread.h"
 static HANDLE _hInputReady, _hWaitForInputHandling;
 static HANDLE _hThread; // Thread to close
 static char _win_console_thread_buffer[200];
@@ -86,7 +82,7 @@ static char _win_console_thread_buffer[200];
 /* Windows Console thread. Just loop and signal when input has been received */
 static void WINAPI CheckForConsoleInput()
 {
-	SetWin32ThreadName(-1, "ottd:win-console");
+	SetCurrentThreadName("ottd:win-console");
 
 	DWORD nb;
 	HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
@@ -320,5 +316,3 @@ void VideoDriver_Dedicated::MainLoop()
 		}
 	}
 }
-
-#endif /* ENABLE_NETWORK */

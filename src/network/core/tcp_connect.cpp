@@ -11,17 +11,15 @@
  * @file tcp_connect.cpp Basic functions to create connections without blocking.
  */
 
-#ifdef ENABLE_NETWORK
-
 #include "../../stdafx.h"
-#include "../../thread/thread.h"
+#include "../../thread.h"
 
 #include "tcp.h"
 
 #include "../../safeguards.h"
 
 /** List of connections that are currently being created */
-static SmallVector<TCPConnecter *,  1> _tcp_connecters;
+static std::vector<TCPConnecter *> _tcp_connecters;
 
 /**
  * Create a new connecter for the given address
@@ -34,8 +32,8 @@ TCPConnecter::TCPConnecter(const NetworkAddress &address) :
 	sock(INVALID_SOCKET),
 	address(address)
 {
-	*_tcp_connecters.Append() = this;
-	if (!ThreadObject::New(TCPConnecter::ThreadEntry, this, &this->thread, "ottd:tcp")) {
+	_tcp_connecters.push_back(this);
+	if (!StartNewThread(NULL, "ottd:tcp", &TCPConnecter::ThreadEntry, this)) {
 		this->Connect();
 	}
 }
@@ -55,9 +53,9 @@ void TCPConnecter::Connect()
  * Entry point for the new threads.
  * @param param the TCPConnecter instance to call Connect on.
  */
-/* static */ void TCPConnecter::ThreadEntry(void *param)
+/* static */ void TCPConnecter::ThreadEntry(TCPConnecter *param)
 {
-	static_cast<TCPConnecter*>(param)->Connect();
+	param->Connect();
 }
 
 /**
@@ -68,22 +66,22 @@ void TCPConnecter::Connect()
  */
 /* static */ void TCPConnecter::CheckCallbacks()
 {
-	for (TCPConnecter **iter = _tcp_connecters.Begin(); iter < _tcp_connecters.End(); /* nothing */) {
+	for (auto iter = _tcp_connecters.begin(); iter < _tcp_connecters.end(); /* nothing */) {
 		TCPConnecter *cur = *iter;
 		if ((cur->connected || cur->aborted) && cur->killed) {
-			_tcp_connecters.Erase(iter);
+			iter = _tcp_connecters.erase(iter);
 			if (cur->sock != INVALID_SOCKET) closesocket(cur->sock);
 			delete cur;
 			continue;
 		}
 		if (cur->connected) {
-			_tcp_connecters.Erase(iter);
+			iter = _tcp_connecters.erase(iter);
 			cur->OnConnect(cur->sock);
 			delete cur;
 			continue;
 		}
 		if (cur->aborted) {
-			_tcp_connecters.Erase(iter);
+			iter = _tcp_connecters.erase(iter);
 			cur->OnFailure();
 			delete cur;
 			continue;
@@ -95,7 +93,5 @@ void TCPConnecter::Connect()
 /** Kill all connection attempts. */
 /* static */ void TCPConnecter::KillAll()
 {
-	for (TCPConnecter **iter = _tcp_connecters.Begin(); iter != _tcp_connecters.End(); iter++) (*iter)->killed = true;
+	for (TCPConnecter *conn : _tcp_connecters) conn->killed = true;
 }
-
-#endif /* ENABLE_NETWORK */

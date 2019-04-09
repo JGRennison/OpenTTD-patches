@@ -75,7 +75,7 @@ save_params
 make_cflags_and_ldflags
 
 EXE=""
-if [ "$os" = "MINGW" ] || [ "$os" = "CYGWIN" ] || [ "$os" = "OS2" ] || [ "$os" = "DOS" ]; then
+if [ "$os" = "MINGW" ] || [ "$os" = "CYGWIN" ] || [ "$os" = "OS2" ]; then
 	EXE=".exe"
 fi
 
@@ -116,18 +116,15 @@ AWKCOMMAND='
 		if ($0 == "DEDICATED"   && "'$enable_dedicated'" != "1")   { next; }
 		if ($0 == "AI"          && "'$enable_ai'" == "0")          { next; }
 		if ($0 == "COCOA"       && "'$with_cocoa'" == "0")         { next; }
-		if ($0 == "DOS"         && "'$os'" != "DOS")               { next; }
-		if ($0 == "BEOS"        && "'$os'" != "BEOS" &&
-		                                       "'$os'" != "HAIKU") { next; }
+		if ($0 == "HAIKU"       && "'$os'" != "HAIKU")             { next; }
 		if ($0 == "WIN32"       && "'$os'" != "MINGW" &&
 		                 "'$os'" != "CYGWIN" && "'$os'" != "MSVC") { next; }
-		if ($0 == "MORPHOS"     && "'$os'" != "MORPHOS")           { next; }
 		if ($0 == "MSVC"        && "'$os'" != "MSVC")              { next; }
 		if ($0 == "DIRECTMUSIC" && "'$with_direct_music'" == "0")  { next; }
-		if ($0 == "LIBTIMIDITY" && "'$libtimidity'" == "" )        { next; }
 		if ($0 == "FLUIDSYNTH"  && "'$fluidsynth'" == "" )         { next; }
-		if ($0 == "HAVE_THREAD" && "'$with_threads'" == "0")       { next; }
-		if ($0 == "SSE"         && "'$with_sse'" != "1")           { next; }
+		if ($0 == "USE_XAUDIO2" && "'$with_xaudio2'" == "0")       { next; }
+		if ($0 == "USE_THREADS" && "'$with_threads'" == "0")       { next; }
+		if ($0 == "USE_SSE"     && "'$with_sse'" != "1")           { next; }
 
 		skip += 1;
 

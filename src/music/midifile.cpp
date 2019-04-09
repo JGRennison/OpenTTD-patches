@@ -21,7 +21,6 @@
 #include "../console_func.h"
 #include "../console_internal.h"
 
-
 /* SMF reader based on description at: http://www.somascape.org/midi/tech/mfile.html */
 
 
@@ -217,7 +216,7 @@ static bool ReadTrackChunk(FILE *file, MidiFile &target)
 				case MIDIST_CONTROLLER:
 				case MIDIST_PITCHBEND:
 					/* 3 byte messages */
-					data = block->data.Append(3);
+					data = grow(block->data, 3);
 					data[0] = status;
 					if (!chunk.ReadBuffer(&data[1], 2)) {
 						return false;
@@ -226,7 +225,7 @@ static bool ReadTrackChunk(FILE *file, MidiFile &target)
 				case MIDIST_PROGCHG:
 				case MIDIST_CHANPRESS:
 					/* 2 byte messages */
-					data = block->data.Append(2);
+					data = grow(block->data, 2);
 					data[0] = status;
 					if (!chunk.ReadByte(data[1])) {
 						return false;
@@ -267,7 +266,7 @@ static bool ReadTrackChunk(FILE *file, MidiFile &target)
 			if (!chunk.ReadVariableLength(length)) {
 				return false;
 			}
-			byte *data = block->data.Append(length + 1);
+			byte *data = grow(block->data, length + 1);
 			data[0] = 0xF0;
 			if (!chunk.ReadBuffer(data + 1, length)) {
 				return false;
@@ -275,7 +274,7 @@ static bool ReadTrackChunk(FILE *file, MidiFile &target)
 			if (data[length] != 0xF7) {
 				/* Engage Casio weirdo mode - convert to normal sysex */
 				running_sysex = true;
-				*block->data.Append() = 0xF7;
+				block->data.push_back(0xF7);
 			} else {
 				running_sysex = false;
 			}
@@ -285,7 +284,7 @@ static bool ReadTrackChunk(FILE *file, MidiFile &target)
 			if (!chunk.ReadVariableLength(length)) {
 				return false;
 			}
-			byte *data = block->data.Append(length);
+			byte *data = grow(block->data, length);
 			if (!chunk.ReadBuffer(data, length)) {
 				return false;
 			}
@@ -330,14 +329,14 @@ static bool FixupMidiData(MidiFile &target)
 	uint32 last_ticktime = 0;
 	for (size_t i = 0; i < target.blocks.size(); i++) {
 		MidiFile::DataBlock &block = target.blocks[i];
-		if (block.data.Length() == 0) {
+		if (block.data.size() == 0) {
 			continue;
 		} else if (block.ticktime > last_ticktime || merged_blocks.size() == 0) {
 			merged_blocks.push_back(block);
 			last_ticktime = block.ticktime;
 		} else {
-			byte *datadest = merged_blocks.back().data.Append(block.data.Length());
-			memcpy(datadest, block.data.Begin(), block.data.Length());
+			byte *datadest = grow(merged_blocks.back().data, block.data.size());
+			memcpy(datadest, block.data.data(), block.data.size());
 		}
 	}
 	std::swap(merged_blocks, target.blocks);
@@ -508,14 +507,14 @@ struct MpsMachine {
 
 	static void AddMidiData(MidiFile::DataBlock &block, byte b1, byte b2)
 	{
-		*block.data.Append() = b1;
-		*block.data.Append() = b2;
+		block.data.push_back(b1);
+		block.data.push_back(b2);
 	}
 	static void AddMidiData(MidiFile::DataBlock &block, byte b1, byte b2, byte b3)
 	{
-		*block.data.Append() = b1;
-		*block.data.Append() = b2;
-		*block.data.Append() = b3;
+		block.data.push_back(b1);
+		block.data.push_back(b2);
+		block.data.push_back(b3);
 	}
 
 	/**
@@ -941,8 +940,8 @@ bool MidiFile::WriteSMF(const char *filename)
 		}
 
 		/* Write each block data command */
-		byte *dp = block.data.Begin();
-		while (dp < block.data.End()) {
+		byte *dp = block.data.data();
+		while (dp < block.data.data() + block.data.size()) {
 			/* Always zero delta time inside blocks */
 			if (needtime) {
 				fputc(0, f);

@@ -17,9 +17,9 @@
 
 #include "table/control_codes.h"
 
-#ifdef WITH_ICU_LAYOUT
+#ifdef WITH_ICU_LX
 #include <unicode/ustring.h>
-#endif /* WITH_ICU_LAYOUT */
+#endif /* WITH_ICU_LX */
 
 #ifdef WITH_UNISCRIBE
 #include "os/windows/string_uniscribe.h"
@@ -50,7 +50,7 @@ Font::Font(FontSize size, TextColour colour) :
 	assert(size < FS_END);
 }
 
-#ifdef WITH_ICU_LAYOUT
+#ifdef WITH_ICU_LX
 /* Implementation details of LEFontInstance */
 
 le_int32 Font::getUnitsPerEM() const
@@ -124,7 +124,7 @@ le_bool Font::getGlyphPoint(LEGlyphID glyph, le_int32 pointNumber, LEPoint &poin
 /**
  * Wrapper for doing layouts with ICU.
  */
-class ICUParagraphLayout : public AutoDeleteSmallVector<ParagraphLayouter::Line *, 4>, public ParagraphLayouter {
+class ICUParagraphLayout : public AutoDeleteSmallVector<ParagraphLayouter::Line *>, public ParagraphLayouter {
 	icu::ParagraphLayout *p; ///< The actual ICU paragraph layout.
 public:
 	/** Visual run contains data about the bit of text with the same font. */
@@ -143,14 +143,14 @@ public:
 	};
 
 	/** A single line worth of VisualRuns. */
-	class ICULine : public AutoDeleteSmallVector<ICUVisualRun *, 4>, public ParagraphLayouter::Line {
+	class ICULine : public AutoDeleteSmallVector<ICUVisualRun *>, public ParagraphLayouter::Line {
 		icu::ParagraphLayout::Line *l; ///< The actual ICU line.
 
 	public:
 		ICULine(icu::ParagraphLayout::Line *l) : l(l)
 		{
 			for (int i = 0; i < l->countRuns(); i++) {
-				*this->Append() = new ICUVisualRun(l->getVisualRun(i));
+				this->push_back(new ICUVisualRun(l->getVisualRun(i)));
 			}
 		}
 		~ICULine() { delete l; }
@@ -158,7 +158,7 @@ public:
 		int GetLeading() const { return l->getLeading(); }
 		int GetWidth() const   { return l->getWidth(); }
 		int CountRuns() const  { return l->countRuns(); }
-		const ParagraphLayouter::VisualRun *GetVisualRun(int run) const { return *this->Get(run); }
+		const ParagraphLayouter::VisualRun *GetVisualRun(int run) const { return this->at(run); }
 
 		int GetInternalCharLength(WChar c) const
 		{
@@ -196,13 +196,13 @@ public:
 			/* ICU's ParagraphLayout cannot handle empty strings, so fake one. */
 			buff[0] = ' ';
 			length = 1;
-			fontMapping.End()[-1].first++;
+			fontMapping.back().first++;
 		}
 
 		/* Fill ICU's FontRuns with the right data. */
-		icu::FontRuns runs(fontMapping.Length());
-		for (FontMap::iterator iter = fontMapping.Begin(); iter != fontMapping.End(); iter++) {
-			runs.add(iter->second, iter->first);
+		icu::FontRuns runs(fontMapping.size());
+		for (auto &pair : fontMapping) {
+			runs.add(pair.second, pair.first);
 		}
 
 		LEErrorCode status = LE_NO_ERROR;
@@ -226,7 +226,7 @@ public:
 		return length;
 	}
 };
-#endif /* WITH_ICU_LAYOUT */
+#endif /* WITH_ICU_LX */
 
 /*** Paragraph layout ***/
 /**
@@ -269,7 +269,7 @@ public:
 	};
 
 	/** A single line worth of VisualRuns. */
-	class FallbackLine : public AutoDeleteSmallVector<FallbackVisualRun *, 4>, public ParagraphLayouter::Line {
+	class FallbackLine : public AutoDeleteSmallVector<FallbackVisualRun *>, public ParagraphLayouter::Line {
 	public:
 		int GetLeading() const;
 		int GetWidth() const;
@@ -419,8 +419,8 @@ int FallbackParagraphLayout::FallbackVisualRun::GetLeading() const
 int FallbackParagraphLayout::FallbackLine::GetLeading() const
 {
 	int leading = 0;
-	for (const FallbackVisualRun * const *run = this->Begin(); run != this->End(); run++) {
-		leading = max(leading, (*run)->GetLeading());
+	for (const FallbackVisualRun * const &run : *this) {
+		leading = max(leading, run->GetLeading());
 	}
 
 	return leading;
@@ -432,7 +432,7 @@ int FallbackParagraphLayout::FallbackLine::GetLeading() const
  */
 int FallbackParagraphLayout::FallbackLine::GetWidth() const
 {
-	if (this->Length() == 0) return 0;
+	if (this->size() == 0) return 0;
 
 	/*
 	 * The last X position of a run contains is the end of that run.
@@ -449,7 +449,7 @@ int FallbackParagraphLayout::FallbackLine::GetWidth() const
  */
 int FallbackParagraphLayout::FallbackLine::CountRuns() const
 {
-	return this->Length();
+	return (uint)this->size();
 }
 
 /**
@@ -458,7 +458,7 @@ int FallbackParagraphLayout::FallbackLine::CountRuns() const
  */
 const ParagraphLayouter::VisualRun *FallbackParagraphLayout::FallbackLine::GetVisualRun(int run) const
 {
-	return *this->Get(run);
+	return this->at(run);
 }
 
 /**
@@ -498,12 +498,12 @@ const ParagraphLayouter::Line *FallbackParagraphLayout::NextLine(int max_width)
 	if (*this->buffer == '\0') {
 		/* Only a newline. */
 		this->buffer = NULL;
-		*l->Append() = new FallbackVisualRun(this->runs.Begin()->second, this->buffer, 0, 0);
+		l->push_back(new FallbackVisualRun(this->runs.front().second, this->buffer, 0, 0));
 		return l;
 	}
 
 	int offset = this->buffer - this->buffer_begin;
-	FontMap::iterator iter = this->runs.Begin();
+	FontMap::iterator iter = this->runs.data();
 	while (iter->first <= offset) {
 		iter++;
 		assert(iter != this->runs.End());
@@ -527,7 +527,7 @@ const ParagraphLayouter::Line *FallbackParagraphLayout::NextLine(int max_width)
 
 		if (this->buffer == next_run) {
 			int w = l->GetWidth();
-			*l->Append() = new FallbackVisualRun(iter->second, begin, this->buffer - begin, w);
+			l->push_back(new FallbackVisualRun(iter->second, begin, this->buffer - begin, w));
 			iter++;
 			assert(iter != this->runs.End());
 
@@ -572,9 +572,9 @@ const ParagraphLayouter::Line *FallbackParagraphLayout::NextLine(int max_width)
 		this->buffer++;
 	}
 
-	if (l->Length() == 0 || last_char - begin != 0) {
+	if (l->size() == 0 || last_char - begin != 0) {
 		int w = l->GetWidth();
-		*l->Append() = new FallbackVisualRun(iter->second, begin, last_char - begin, w);
+		l->push_back(new FallbackVisualRun(iter->second, begin, last_char - begin, w));
 	}
 	return l;
 }
@@ -600,7 +600,7 @@ static inline void GetLayouter(Layouter::LineCacheItem &line, const char *&str, 
 	Font *f = Layouter::GetFont(state.fontsize, state.cur_colour);
 
 	line.buffer = buff_begin;
-	fontMapping.Clear();
+	fontMapping.clear();
 
 	/*
 	 * Go through the whole string while adding Font instances to the font map
@@ -674,11 +674,11 @@ Layouter::Layouter(const char *str, int maxw, TextColour colour, FontSize fontsi
 		} else {
 			/* Line is new, layout it */
 			FontState old_state = state;
-#if defined(WITH_ICU_LAYOUT) || defined(WITH_UNISCRIBE) || defined(WITH_COCOA)
+#if defined(WITH_ICU_LX) || defined(WITH_UNISCRIBE) || defined(WITH_COCOA)
 			const char *old_str = str;
 #endif
 
-#ifdef WITH_ICU_LAYOUT
+#ifdef WITH_ICU_LX
 			GetLayouter<ICUParagraphLayoutFactory>(line, str, state);
 			if (line.layout == NULL) {
 				static bool warned = false;
@@ -720,7 +720,7 @@ Layouter::Layouter(const char *str, int maxw, TextColour colour, FontSize fontsi
 		/* Copy all lines into a local cache so we can reuse them later on more easily. */
 		const ParagraphLayouter::Line *l;
 		while ((l = line.layout->NextLine(maxw)) != NULL) {
-			*this->Append() = l;
+			this->push_back(l);
 		}
 
 	} while (c != '\0');
@@ -733,9 +733,9 @@ Layouter::Layouter(const char *str, int maxw, TextColour colour, FontSize fontsi
 Dimension Layouter::GetBounds()
 {
 	Dimension d = { 0, 0 };
-	for (const ParagraphLayouter::Line **l = this->Begin(); l != this->End(); l++) {
-		d.width = max<uint>(d.width, (*l)->GetWidth());
-		d.height += (*l)->GetLeading();
+	for (const ParagraphLayouter::Line *l : *this) {
+		d.width = max<uint>(d.width, l->GetWidth());
+		d.height += l->GetLeading();
 	}
 	return d;
 }
@@ -757,12 +757,12 @@ Point Layouter::GetCharPosition(const char *ch) const
 		size_t len = Utf8Decode(&c, str);
 		if (c == '\0' || c == '\n') break;
 		str += len;
-		index += (*this->Begin())->GetInternalCharLength(c);
+		index += this->front()->GetInternalCharLength(c);
 	}
 
 	if (str == ch) {
 		/* Valid character. */
-		const ParagraphLayouter::Line *line = *this->Begin();
+		const ParagraphLayouter::Line *line = this->front();
 
 		/* Pointer to the end-of-string/line marker? Return total line width. */
 		if (*ch == '\0' || *ch == '\n') {
@@ -795,7 +795,7 @@ Point Layouter::GetCharPosition(const char *ch) const
  */
 const char *Layouter::GetCharAtPosition(int x) const
 {
-	const ParagraphLayouter::Line *line = *this->Begin();
+	const ParagraphLayouter::Line *line = this->front();
 
 	for (int run_index = 0; run_index < line->CountRuns(); run_index++) {
 		const ParagraphLayouter::VisualRun *run = line->GetVisualRun(run_index);
@@ -834,7 +834,7 @@ Font *Layouter::GetFont(FontSize size, TextColour colour)
 	if (it != fonts[size].End()) return it->second;
 
 	Font *f = new Font(size, colour);
-	*fonts[size].Append() = FontColourMap::Pair(colour, f);
+	fonts[size].emplace_back(colour, f);
 	return f;
 }
 
@@ -844,10 +844,10 @@ Font *Layouter::GetFont(FontSize size, TextColour colour)
  */
 void Layouter::ResetFontCache(FontSize size)
 {
-	for (FontColourMap::iterator it = fonts[size].Begin(); it != fonts[size].End(); ++it) {
-		delete it->second;
+	for (auto &pair : fonts[size]) {
+		delete pair.second;
 	}
-	fonts[size].Clear();
+	fonts[size].clear();
 
 	/* We must reset the linecache since it references the just freed fonts */
 	ResetLineCache();

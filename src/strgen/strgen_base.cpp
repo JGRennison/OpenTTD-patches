@@ -235,14 +235,14 @@ static ParsedCommandStruct _cur_pcs;
 static int _cur_argidx;
 
 /** The buffer for writing a single string. */
-struct Buffer : SmallVector<byte, 256> {
+struct Buffer : std::vector<byte> {
 	/**
 	 * Convenience method for adding a byte.
 	 * @param value The value to add.
 	 */
 	void AppendByte(byte value)
 	{
-		*this->Append() = value;
+		this->push_back(value);
 	}
 
 	/**
@@ -252,19 +252,19 @@ struct Buffer : SmallVector<byte, 256> {
 	void AppendUtf8(uint32 value)
 	{
 		if (value < 0x80) {
-			*this->Append() = value;
+			this->push_back(value);
 		} else if (value < 0x800) {
-			*this->Append() = 0xC0 + GB(value,  6, 5);
-			*this->Append() = 0x80 + GB(value,  0, 6);
+			this->push_back(0xC0 + GB(value,  6, 5));
+			this->push_back(0x80 + GB(value,  0, 6));
 		} else if (value < 0x10000) {
-			*this->Append() = 0xE0 + GB(value, 12, 4);
-			*this->Append() = 0x80 + GB(value,  6, 6);
-			*this->Append() = 0x80 + GB(value,  0, 6);
+			this->push_back(0xE0 + GB(value, 12, 4));
+			this->push_back(0x80 + GB(value,  6, 6));
+			this->push_back(0x80 + GB(value,  0, 6));
 		} else if (value < 0x110000) {
-			*this->Append() = 0xF0 + GB(value, 18, 3);
-			*this->Append() = 0x80 + GB(value, 12, 6);
-			*this->Append() = 0x80 + GB(value,  6, 6);
-			*this->Append() = 0x80 + GB(value,  0, 6);
+			this->push_back(0xF0 + GB(value, 18, 3));
+			this->push_back(0x80 + GB(value, 12, 6));
+			this->push_back(0x80 + GB(value,  6, 6));
+			this->push_back(0x80 + GB(value,  0, 6));
 		} else {
 			strgen_warning("Invalid unicode value U+0x%X", value);
 		}
@@ -1029,14 +1029,14 @@ void LanguageWriter::WriteLang(const StringData &data)
 				for (c = casep; c != NULL; c = c->next) {
 					buffer.AppendByte(c->caseidx);
 					/* Make some space for the 16-bit length */
-					uint pos = buffer.Length();
+					uint pos = (uint)buffer.size();
 					buffer.AppendByte(0);
 					buffer.AppendByte(0);
 					/* Write string */
 					PutCommandString(&buffer, c->string);
 					buffer.AppendByte(0); // terminate with a zero
 					/* Fill in the length */
-					uint size = buffer.Length() - (pos + 2);
+					uint size = (uint)buffer.size() - (pos + 2);
 					buffer[pos + 0] = GB(size, 8, 8);
 					buffer[pos + 1] = GB(size, 0, 8);
 				}
@@ -1044,9 +1044,9 @@ void LanguageWriter::WriteLang(const StringData &data)
 
 			if (cmdp != NULL) PutCommandString(&buffer, cmdp);
 
-			this->WriteLength(buffer.Length());
-			this->Write(buffer.Begin(), buffer.Length());
-			buffer.Clear();
+			this->WriteLength((uint)buffer.size());
+			this->Write(buffer.data(), buffer.size());
+			buffer.clear();
 		}
 	}
 }

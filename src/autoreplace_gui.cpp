@@ -123,7 +123,7 @@ class ReplaceVehicleWindow : public Window {
 		byte side = draw_left ? 0 : 1;
 
 		GUIEngineList *list = &this->engines[side];
-		list->Clear();
+		list->clear();
 
 		const Engine *e;
 		FOR_ALL_ENGINES_OF_TYPE(e, type) {
@@ -140,7 +140,7 @@ class ReplaceVehicleWindow : public Window {
 				if (!CheckAutoreplaceValidity(this->sel_engine[0], eid, _local_company)) continue;
 			}
 
-			*list->Append() = eid;
+			list->push_back(eid);
 			if (eid == this->sel_engine[side]) selected_engine = eid; // The selected engine is still in the list
 		}
 		this->sel_engine[side] = selected_engine; // update which engine we selected (the same or none, if it's not in the list anymore)
@@ -160,8 +160,8 @@ class ReplaceVehicleWindow : public Window {
 		if (this->engines[0].NeedRebuild()) {
 			/* We need to rebuild the left engines list */
 			this->GenerateReplaceVehList(true);
-			this->vscroll[0]->SetCount(this->engines[0].Length());
-			if (this->reset_sel_engine && this->sel_engine[0] == INVALID_ENGINE && this->engines[0].Length() != 0) {
+			this->vscroll[0]->SetCount((uint)this->engines[0].size());
+			if (this->reset_sel_engine && this->sel_engine[0] == INVALID_ENGINE && this->engines[0].size() != 0) {
 				this->sel_engine[0] = this->engines[0][0];
 			}
 		}
@@ -170,7 +170,7 @@ class ReplaceVehicleWindow : public Window {
 			/* Either we got a request to rebuild the right engines list, or the left engines list selected a different engine */
 			if (this->sel_engine[0] == INVALID_ENGINE) {
 				/* Always empty the right engines list when nothing is selected in the left engines list */
-				this->engines[1].Clear();
+				this->engines[1].clear();
 				this->sel_engine[1] = INVALID_ENGINE;
 			} else {
 				if (this->reset_sel_engine && this->sel_engine[0] != INVALID_ENGINE) {
@@ -180,11 +180,11 @@ class ReplaceVehicleWindow : public Window {
 				}
 				/* Regenerate the list on the right. Note: This resets sel_engine[1] to INVALID_ENGINE, if it is no longer available. */
 				this->GenerateReplaceVehList(false);
-				this->vscroll[1]->SetCount(this->engines[1].Length());
+				this->vscroll[1]->SetCount((uint)this->engines[1].size());
 				if (this->reset_sel_engine && this->sel_engine[1] != INVALID_ENGINE) {
 					int position = 0;
-					for (EngineID *it = this->engines[1].Begin(); it != this->engines[1].End(); ++it) {
-						if (*it == this->sel_engine[1]) break;
+					for (EngineID &eid : this->engines[1]) {
+						if (eid == this->sel_engine[1]) break;
 						++position;
 					}
 					this->vscroll[1]->ScrollTowards(position);
@@ -237,7 +237,7 @@ public:
 		this->sel_group = id_g;
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_RV_SORT_ASCENDING_DESCENDING: {
@@ -316,7 +316,7 @@ public:
 		}
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_RV_CAPTION:
@@ -353,7 +353,7 @@ public:
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_RV_SORT_ASCENDING_DESCENDING:
@@ -384,7 +384,7 @@ public:
 			case WID_RV_RIGHT_MATRIX: {
 				int side = (widget == WID_RV_LEFT_MATRIX) ? 0 : 1;
 				EngineID start  = this->vscroll[side]->GetPosition(); // what is the offset for the start (scrolling)
-				EngineID end    = min(this->vscroll[side]->GetCapacity() + start, this->engines[side].Length());
+				EngineID end    = min(this->vscroll[side]->GetCapacity() + start, (uint)this->engines[side].size());
 
 				/* Do the actual drawing */
 				DrawEngineList((VehicleType)this->window_number, r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, r.top + WD_FRAMERECT_TOP,
@@ -394,7 +394,7 @@ public:
 		}
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		if (this->engines[0].NeedRebuild() || this->engines[1].NeedRebuild()) this->GenerateLists();
 
@@ -423,9 +423,16 @@ public:
 			/* Draw details panels. */
 			for (int side = 0; side < 2; side++) {
 				if (this->sel_engine[side] != INVALID_ENGINE) {
+					/* Use default engine details without refitting */
+					const Engine *e = Engine::Get(this->sel_engine[side]);
+					TestedEngineDetails ted;
+					ted.cost = 0;
+					ted.cargo = e->GetDefaultCargoType();
+					ted.capacity = e->GetDisplayDefaultCapacity(&ted.mail_capacity);
+
 					NWidgetBase *nwi = this->GetWidget<NWidgetBase>(side == 0 ? WID_RV_LEFT_DETAILS : WID_RV_RIGHT_DETAILS);
 					int text_end = DrawVehiclePurchaseInfo(nwi->pos_x + WD_FRAMETEXT_LEFT, nwi->pos_x + nwi->current_x - WD_FRAMETEXT_RIGHT,
-							nwi->pos_y + WD_FRAMERECT_TOP, this->sel_engine[side]);
+							nwi->pos_y + WD_FRAMERECT_TOP, this->sel_engine[side], ted);
 					needed_height = max(needed_height, text_end - (int)nwi->pos_y + WD_FRAMERECT_BOTTOM);
 				}
 			}
@@ -437,7 +444,7 @@ public:
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_RV_SORT_ASCENDING_DESCENDING:
@@ -461,8 +468,8 @@ public:
 
 			case WID_RV_TRAIN_ENGINEWAGON_DROPDOWN: {
 				DropDownList *list = new DropDownList();
-				*list->Append() = new DropDownListStringItem(STR_REPLACE_ENGINES, 1, false);
-				*list->Append() = new DropDownListStringItem(STR_REPLACE_WAGONS, 0, false);
+				list->push_back(new DropDownListStringItem(STR_REPLACE_ENGINES, 1, false));
+				list->push_back(new DropDownListStringItem(STR_REPLACE_WAGONS, 0, false));
 				ShowDropDownList(this, list, this->replace_engines ? 1 : 0, WID_RV_TRAIN_ENGINEWAGON_DROPDOWN);
 				break;
 			}
@@ -501,7 +508,7 @@ public:
 					click_side = 1;
 				}
 				uint i = this->vscroll[click_side]->GetScrolledRowFromWidget(pt.y, this, widget);
-				size_t engine_count = this->engines[click_side].Length();
+				size_t engine_count = this->engines[click_side].size();
 
 				EngineID e = engine_count > i ? this->engines[click_side][i] : INVALID_ENGINE;
 				if (e == this->sel_engine[click_side]) break; // we clicked the one we already selected
@@ -516,7 +523,7 @@ public:
 		}
 	}
 
-	virtual void OnDropdownSelect(int widget, int index)
+	void OnDropdownSelect(int widget, int index) override
 	{
 		switch (widget) {
 			case WID_RV_SORT_DROPDOWN:
@@ -557,7 +564,7 @@ public:
 		}
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		this->vscroll[0]->SetCapacityFromWidget(this, WID_RV_LEFT_MATRIX);
 		this->vscroll[1]->SetCapacityFromWidget(this, WID_RV_RIGHT_MATRIX);
@@ -568,7 +575,7 @@ public:
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (data != 0) {
 			/* This needs to be done in command-scope to enforce rebuilding before resorting invalid data */

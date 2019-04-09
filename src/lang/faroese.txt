@@ -951,6 +951,8 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :annað
 
 
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Base grafikk sett
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Vel ta base grafikk setti tú vil brúka
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} vantandi/oyðiløgd fíl{P a ir}
@@ -1521,7 +1523,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Ídnað
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Kappingarneytar
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Teldu spælarir
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Upprunaligur
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Viðmældur)
 
@@ -1589,13 +1590,9 @@ STR_QUIT_NO                                                     :{BLACK}Nei
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -1881,9 +1878,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Servarin
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Fyritøka er vard. Skriva loyniorð
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Listi yvir klientar
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Eygleið
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nýggja fyritøku
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Listi yvir klientar
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Eygleið
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Nýggja fyritøku
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Sparka
@@ -2966,6 +2963,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Óbólkaði akf
 STR_GROUP_DEFAULT_SHIPS                                         :Óbólkaði skip
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Óbólkaði flogfør
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Bólkar - trýst á ein bólk fyri at síggja øll flutningstól í hesum bólki
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Trýst fyri at gera ein bólk
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Strika valda bólkin
@@ -3021,10 +3019,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Keyp akf
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Keyp skip
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Keyp flogfar
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Keyp undirstrikaða tok flutningstóli. Shift+trýst vísur kostnaðar meting uttan at keypa
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Keyp undirstrikaða akfari. Shift+trýst vísur kostnaðar meting uttan at keypa
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Keyp undirstrikaða skipi. Shift+trýst vísur kostnaðar meting uttan at keypa
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Keyp undirstrikaða flogfari. Shift+trýst vísur kostnaðar meting uttan at keypa
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Navngev
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Navngev

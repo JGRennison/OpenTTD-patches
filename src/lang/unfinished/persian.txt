@@ -969,6 +969,8 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :دیگر
 
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :دو برابر
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}بسته گرافیک پایه
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}بسته گرافیک پایه را انتخاب کنید
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} فایل وجود ندارد یا خراب است
@@ -1412,7 +1414,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}توز�
 STR_CONFIG_SETTING_AI                                           :{ORANGE}رقیبان
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}بازیگران رایانه
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :اصلی
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(توصیه می گردد)
 
@@ -1482,13 +1483,9 @@ STR_QUIT_NO                                                     :{BLACK}خیر
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :هایکو
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -1791,7 +1788,6 @@ STR_NETWORK_CLIENT                                              :سرویس گی
 STR_NETWORK_SPECTATORS                                          :تماشاگران
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}مقدار پولی که می خواهید دریافت نمایید را وارد کنید
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}تماشگر
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}رمز وارد شده را به خاطر نسپار
@@ -2942,6 +2938,7 @@ STR_VEHICLE_LIST_SEND_AIRCRAFT_TO_HANGAR                        :فرستادن 
 
 
 
+
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :قطار جدید
 STR_BUY_VEHICLE_TRAIN_MONORAIL_CAPTION                          :قطار جدید مونوریل
@@ -2964,9 +2961,11 @@ STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON                        :{BLACK}ساخت
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}خرید وسیله نقلیه
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}خرید هواپیما
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}خرید قطار مشخص شده. Shift+Click کنید تا قبل از خرید، مبلغ تقریبی آنرا نمایش دهد
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}خرید کشتی مشخص شده . Shift+Click کنید تا هزینه تقریبی نمایش داده شود
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}خرید هواپیمای مشخص شده. برای مشاهده هزینه تقریبی Shift+Click کنید
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}تغییر نام
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}تغییر نام

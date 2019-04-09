@@ -25,7 +25,7 @@
 #include "../stdafx.h"
 #include "../debug.h"
 #include "../station_base.h"
-#include "../thread/thread.h"
+#include "../thread.h"
 #include "../town.h"
 #include "../network/network.h"
 #include "../window_func.h"
@@ -45,6 +45,7 @@
 #include "../string_func_extra.h"
 #include "../fios.h"
 #include "../error.h"
+#include <atomic>
 
 #include "table/strings.h"
 
@@ -410,9 +411,9 @@ void NORETURN CDECL SlErrorCorruptFmt(const char *format, ...)
 	SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME, str, true);
 }
 
-typedef void (*AsyncSaveFinishProc)();                ///< Callback for when the savegame loading is finished.
-static AsyncSaveFinishProc _async_save_finish = NULL; ///< Callback to call when the savegame loading is finished.
-static ThreadObject *_save_thread;                    ///< The thread we're using to compress and write a savegame
+typedef void (*AsyncSaveFinishProc)();                      ///< Callback for when the savegame loading is finished.
+static std::atomic<AsyncSaveFinishProc> _async_save_finish; ///< Callback to call when the savegame loading is finished.
+static std::thread _save_thread;                            ///< The thread we're using to compress and write a savegame
 
 /**
  * Called by save thread to tell we finished saving.
@@ -421,9 +422,9 @@ static ThreadObject *_save_thread;                    ///< The thread we're usin
 static void SetAsyncSaveFinish(AsyncSaveFinishProc proc)
 {
 	if (_exit_game) return;
-	while (_async_save_finish != NULL) CSleep(10);
+	while (_async_save_finish.load(std::memory_order_acquire) != NULL) CSleep(10);
 
-	_async_save_finish = proc;
+	_async_save_finish.store(proc, std::memory_order_release);
 }
 
 /**
@@ -431,16 +432,13 @@ static void SetAsyncSaveFinish(AsyncSaveFinishProc proc)
  */
 void ProcessAsyncSaveFinish()
 {
-	if (_async_save_finish == NULL) return;
+	AsyncSaveFinishProc proc = _async_save_finish.exchange(NULL, std::memory_order_acq_rel);
+	if (proc == NULL) return;
 
-	_async_save_finish();
+	proc();
 
-	_async_save_finish = NULL;
-
-	if (_save_thread != NULL) {
-		_save_thread->Join();
-		delete _save_thread;
-		_save_thread = NULL;
+	if (_save_thread.joinable()) {
+		_save_thread.join();
 	}
 }
 
@@ -2077,7 +2075,7 @@ struct FileReader : LoadFilter {
 		_sl.sf = NULL;
 	}
 
-	/* virtual */ size_t Read(byte *buf, size_t size)
+	size_t Read(byte *buf, size_t size) override
 	{
 		/* We're in the process of shutting down, i.e. in "failure" mode. */
 		if (this->file == NULL) return 0;
@@ -2085,7 +2083,7 @@ struct FileReader : LoadFilter {
 		return fread(buf, 1, size, this->file);
 	}
 
-	/* virtual */ void Reset()
+	void Reset() override
 	{
 		clearerr(this->file);
 		if (fseek(this->file, this->begin, SEEK_SET)) {
@@ -2115,7 +2113,7 @@ struct FileWriter : SaveFilter {
 		_sl.sf = NULL;
 	}
 
-	/* virtual */ void Write(byte *buf, size_t size)
+	void Write(byte *buf, size_t size) override
 	{
 		/* We're in the process of shutting down, i.e. in "failure" mode. */
 		if (this->file == NULL) return;
@@ -2123,7 +2121,7 @@ struct FileWriter : SaveFilter {
 		if (fwrite(buf, 1, size, this->file) != size) SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE);
 	}
 
-	/* virtual */ void Finish()
+	void Finish() override
 	{
 		if (this->file != NULL) fclose(this->file);
 		this->file = NULL;
@@ -2151,7 +2149,7 @@ struct LZOLoadFilter : LoadFilter {
 		if (lzo_init() != LZO_E_OK) SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, "cannot initialize decompressor");
 	}
 
-	/* virtual */ size_t Read(byte *buf, size_t ssize)
+	size_t Read(byte *buf, size_t ssize) override
 	{
 		assert(ssize >= LZO_BUFFER_SIZE);
 
@@ -2199,7 +2197,7 @@ struct LZOSaveFilter : SaveFilter {
 		if (lzo_init() != LZO_E_OK) SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, "cannot initialize compressor");
 	}
 
-	/* virtual */ void Write(byte *buf, size_t size)
+	void Write(byte *buf, size_t size) override
 	{
 		const lzo_bytep in = buf;
 		/* Buffer size is from the LZO docs plus the chunk header size. */
@@ -2238,7 +2236,7 @@ struct NoCompLoadFilter : LoadFilter {
 	{
 	}
 
-	/* virtual */ size_t Read(byte *buf, size_t size)
+	size_t Read(byte *buf, size_t size) override
 	{
 		return this->chain->Read(buf, size);
 	}
@@ -2255,7 +2253,7 @@ struct NoCompSaveFilter : SaveFilter {
 	{
 	}
 
-	/* virtual */ void Write(byte *buf, size_t size)
+	void Write(byte *buf, size_t size) override
 	{
 		this->chain->Write(buf, size);
 	}
@@ -2289,7 +2287,7 @@ struct ZlibLoadFilter : LoadFilter {
 		inflateEnd(&this->z);
 	}
 
-	/* virtual */ size_t Read(byte *buf, size_t size)
+	size_t Read(byte *buf, size_t size) override
 	{
 		this->z.next_out  = buf;
 		this->z.avail_out = (uint)size;
@@ -2368,12 +2366,12 @@ struct ZlibSaveFilter : SaveFilter {
 		} while (this->z.avail_in || !this->z.avail_out);
 	}
 
-	/* virtual */ void Write(byte *buf, size_t size)
+	void Write(byte *buf, size_t size) override
 	{
 		this->WriteLoop(buf, size, 0);
 	}
 
-	/* virtual */ void Finish()
+	void Finish() override
 	{
 		this->WriteLoop(NULL, 0, Z_FINISH);
 		this->chain->Finish();
@@ -2386,7 +2384,7 @@ struct ZlibSaveFilter : SaveFilter {
  ********** START OF LZMA CODE **************
  ********************************************/
 
-#if defined(WITH_LZMA)
+#if defined(WITH_LIBLZMA)
 #include <lzma.h>
 
 /**
@@ -2418,7 +2416,7 @@ struct LZMALoadFilter : LoadFilter {
 		lzma_end(&this->lzma);
 	}
 
-	/* virtual */ size_t Read(byte *buf, size_t size)
+	size_t Read(byte *buf, size_t size) override
 	{
 		this->lzma.next_out  = buf;
 		this->lzma.avail_out = size;
@@ -2487,19 +2485,19 @@ struct LZMASaveFilter : SaveFilter {
 		} while (this->lzma.avail_in || !this->lzma.avail_out);
 	}
 
-	/* virtual */ void Write(byte *buf, size_t size)
+	void Write(byte *buf, size_t size) override
 	{
 		this->WriteLoop(buf, size, LZMA_RUN);
 	}
 
-	/* virtual */ void Finish()
+	void Finish() override
 	{
 		this->WriteLoop(NULL, 0, LZMA_FINISH);
 		this->chain->Finish();
 	}
 };
 
-#endif /* WITH_LZMA */
+#endif /* WITH_LIBLZMA */
 
 /*******************************************
  ************* END OF CODE *****************
@@ -2536,7 +2534,7 @@ static const SaveLoadFormat _saveload_formats[] = {
 #else
 	{"zlib",   TO_BE32X('OTTZ'), NULL,                               NULL,                               0, 0, 0},
 #endif
-#if defined(WITH_LZMA)
+#if defined(WITH_LIBLZMA)
 	/* Level 2 compression is speed wise as fast as zlib level 6 compression (old default), but results in ~10% smaller saves.
 	 * Higher compression levels are possible, and might improve savegame size by up to 25%, but are also up to 10 times slower.
 	 * The next significant reduction in file size is at level 4, but that is already 4 times slower. Level 3 is primarily 50%
@@ -2719,19 +2717,11 @@ static SaveOrLoadResult SaveFileToDisk(bool threaded)
 	}
 }
 
-/** Thread run function for saving the file to disk. */
-static void SaveFileToDiskThread(void *arg)
-{
-	SaveFileToDisk(true);
-}
-
 void WaitTillSaved()
 {
-	if (_save_thread == NULL) return;
+	if (!_save_thread.joinable()) return;
 
-	_save_thread->Join();
-	delete _save_thread;
-	_save_thread = NULL;
+	_save_thread.join();
 
 	/* Make sure every other state is handled properly as well. */
 	ProcessAsyncSaveFinish();
@@ -2759,7 +2749,8 @@ static SaveOrLoadResult DoSave(SaveFilter *writer, bool threaded)
 	SlSaveChunks();
 
 	SaveFileStart();
-	if (!threaded || !ThreadObject::New(&SaveFileToDiskThread, NULL, &_save_thread, "ottd:savegame")) {
+
+	if (!threaded || !StartNewThread(&_save_thread, "ottd:savegame", &SaveFileToDisk, true)) {
 		if (threaded) DEBUG(sl, 1, "Cannot create savegame thread, reverting to single-threaded mode...");
 
 		SaveOrLoadResult result = SaveFileToDisk(false);

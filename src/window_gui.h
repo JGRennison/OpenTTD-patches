@@ -265,6 +265,13 @@ struct ViewportData : ViewPort {
 
 struct QueryString;
 
+/* misc_gui.cpp */
+enum TooltipCloseCondition {
+	TCC_RIGHT_CLICK,
+	TCC_HOVER,
+	TCC_NONE,
+};
+
 /**
  * Data structure for an opened window
  */
@@ -274,7 +281,7 @@ protected:
 	void InitializePositionSize(int x, int y, int min_width, int min_height);
 	virtual void FindWindowPlacementAndResize(int def_width, int def_height);
 
-	SmallVector<int, 4> scheduled_invalidation_data;  ///< Data of scheduled OnInvalidateData() calls.
+	std::vector<int> scheduled_invalidation_data;  ///< Data of scheduled OnInvalidateData() calls.
 
 public:
 	Window(WindowDesc *desc);
@@ -327,7 +334,7 @@ public:
 	NWidgetStacked *shade_select;    ///< Selection widget (#NWID_SELECTION) to use for shading the window. If \c NULL, window cannot shade.
 	Dimension unshaded_size;         ///< Last known unshaded size (only valid while shaded).
 
-	int scrolling_scrollbar;         ///< Widgetindex of just being dragged scrollbar. -1 if none is active.
+	int mouse_capture_widget;        ///< Widgetindex of current mouse capture widget (e.g. dragged scrollbar). -1 if no widget has mouse capture.
 
 	Window *parent;                  ///< Parent window.
 	Window *z_front;                 ///< The window in front of us in z-order.
@@ -629,11 +636,19 @@ public:
 	virtual bool OnRightClick(Point pt, int widget) { return false; }
 
 	/**
-	 * The mouse is hovering over a widget in the window, perform an action for it, like opening a custom tooltip.
+	 * The mouse is hovering over a widget in the window, perform an action for it.
 	 * @param pt     The point where the mouse is hovering.
 	 * @param widget The widget where the mouse is hovering.
 	 */
 	virtual void OnHover(Point pt, int widget) {}
+
+	/**
+	 * Event to display a custom tooltip.
+	 * @param pt     The point where the mouse is located.
+	 * @param widget The widget where the mouse is located.
+	 * @return True if the event is handled, false if it is ignored.
+	 */
+	virtual bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) { return false; }
 
 	/**
 	 * An 'object' is being dragged at the provided position, highlight the target if possible.
@@ -869,13 +884,6 @@ Wcls *AllocateWindowDescFront(WindowDesc *desc, int window_number, bool return_e
 }
 
 void RelocateAllWindows(int neww, int newh);
-
-/* misc_gui.cpp */
-enum TooltipCloseCondition {
-	TCC_RIGHT_CLICK,
-	TCC_LEFT_CLICK,
-	TCC_HOVER,
-};
 
 void GuiShowTooltips(Window *parent, StringID str, uint paramcount = 0, const uint64 params[] = NULL, TooltipCloseCondition close_tooltip = TCC_HOVER);
 

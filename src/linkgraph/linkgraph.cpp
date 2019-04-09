@@ -139,7 +139,10 @@ void LinkGraph::RemoveNode(NodeID id)
 		node_edges[id] = node_edges[last_node];
 	}
 	Station::Get(this->nodes[last_node].station)->goods[this->cargo].node = id;
-	this->nodes.Erase(this->nodes.Get(id));
+	/* Erase node by swapping with the last element. Node index is referenced
+	 * directly from station goods entries so the order and position must remain. */
+	this->nodes[id] = this->nodes.back();
+	this->nodes.pop_back();
 	this->edges.EraseColumn(id);
 	/* Not doing EraseRow here, as having the extra invalid row doesn't hurt
 	 * and removing it would trigger a lot of memmove. The data has already
@@ -159,7 +162,7 @@ NodeID LinkGraph::AddNode(const Station *st)
 	const GoodsEntry &good = st->goods[this->cargo];
 
 	NodeID new_node = this->Size();
-	this->nodes.Append();
+	this->nodes.emplace_back();
 	/* Avoid reducing the height of the matrix as that is expensive and we
 	 * most likely will increase it again later which is again expensive. */
 	this->edges.Resize(new_node + 1U,
@@ -281,7 +284,7 @@ void LinkGraph::Init(uint size)
 {
 	assert(this->Size() == 0);
 	this->edges.Resize(size, size);
-	this->nodes.Resize(size);
+	this->nodes.resize(size);
 
 	for (uint i = 0; i < size; ++i) {
 		this->nodes[i].Init();
