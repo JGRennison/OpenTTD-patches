@@ -1493,9 +1493,9 @@ struct StationViewWindow : public Window {
 	 * @param count Size of the batch of cargo.
 	 * @param dest CargoDataEntry to save the results in.
 	 */
-	void EstimateDestinations(CargoID cargo, StationID source, StationID next, uint count, CargoDataEntry *dest)
+	void EstimateDestinations(CargoID cargo, StationID source, StationID next, uint count, CargoDataEntry *dest, uint depth = 0)
 	{
-		if (Station::IsValidID(next) && Station::IsValidID(source)) {
+		if (depth <= 128 && Station::IsValidID(next) && Station::IsValidID(source)) {
 			CargoDataEntry tmp;
 			const FlowStatMap &flowmap = Station::Get(next)->goods[cargo].flows;
 			FlowStatMap::const_iterator map_it = flowmap.find(source);
@@ -1528,7 +1528,7 @@ struct StationViewWindow : public Window {
 							if (child->GetStation() == next) {
 								dest->InsertOrRetrieve(next)->Update(estimate);
 							} else {
-								EstimateDestinations(cargo, source, child->GetStation(), estimate, dest);
+								EstimateDestinations(cargo, source, child->GetStation(), estimate, dest, depth + 1);
 							}
 						}
 					}
