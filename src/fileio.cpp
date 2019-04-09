@@ -15,7 +15,7 @@
 #include "fios.h"
 #include "string_func.h"
 #include "tar_type.h"
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 # define access _taccess
 #elif defined(__HAIKU__)
@@ -29,7 +29,7 @@
 #include <algorithm>
 
 #ifdef WITH_XDG_BASEDIR
-#include "basedir.h"
+#include <basedir.h>
 #endif
 
 #include "safeguards.h"
@@ -347,7 +347,7 @@ char *FioGetFullPath(char *buf, const char *last, Searchpath sp, Subdirectory su
 
 /**
  * Find a path to the filename in one of the search directories.
- * @param buf [out] Destination buffer for the path.
+ * @param[out] buf Destination buffer for the path.
  * @param last End of the destination buffer.
  * @param subdir Subdirectory to try.
  * @param filename Filename to look for.
@@ -361,7 +361,7 @@ char *FioFindFullPath(char *buf, const char *last, Subdirectory subdir, const ch
 	FOR_ALL_SEARCHPATHS(sp) {
 		FioGetFullPath(buf, last, sp, subdir, filename);
 		if (FileExists(buf)) return buf;
-#if !defined(WIN32)
+#if !defined(_WIN32)
 		/* Be, as opening files, aware that sometimes the filename
 		 * might be in uppercase when it is in lowercase on the
 		 * disk. Of course Windows doesn't care about casing. */
@@ -399,7 +399,7 @@ char *FioGetDirectory(char *buf, const char *last, Subdirectory subdir)
 
 static FILE *FioFOpenFileSp(const char *filename, const char *mode, Searchpath sp, Subdirectory subdir, size_t *filesize)
 {
-#if defined(WIN32) && defined(UNICODE)
+#if defined(_WIN32) && defined(UNICODE)
 	/* fopen is implemented as a define with ellipses for
 	 * Unicode support (prepend an L). As we are not sending
 	 * a string, but a variable, it 'renames' the variable,
@@ -416,12 +416,12 @@ static FILE *FioFOpenFileSp(const char *filename, const char *mode, Searchpath s
 		seprintf(buf, lastof(buf), "%s%s%s", _searchpaths[sp], _subdirs[subdir], filename);
 	}
 
-#if defined(WIN32)
+#if defined(_WIN32)
 	if (mode[0] == 'r' && GetFileAttributes(OTTD2FS(buf)) == INVALID_FILE_ATTRIBUTES) return NULL;
 #endif
 
 	f = fopen(buf, mode);
-#if !defined(WIN32)
+#if !defined(_WIN32)
 	if (f == NULL && strtolower(buf + ((subdir == NO_DIRECTORY) ? 0 : strlen(_searchpaths[sp]) - 1))) {
 		f = fopen(buf, mode);
 	}
@@ -438,7 +438,7 @@ static FILE *FioFOpenFileSp(const char *filename, const char *mode, Searchpath s
 /**
  * Opens a file from inside a tar archive.
  * @param entry The entry to open.
- * @param filesize [out] If not \c NULL, size of the opened file.
+ * @param[out] filesize If not \c NULL, size of the opened file.
  * @return File handle of the opened file, or \c NULL if the file is not available.
  * @note The file is read from within the tar file, and may not return \c EOF after reading the whole file.
  */
@@ -460,7 +460,6 @@ FILE *FioFOpenFileTar(TarFileListEntry *entry, size_t *filesize)
  * Opens a OpenTTD file somewhere in a personal or global directory.
  * @param filename Name of the file to open.
  * @param subdir Subdirectory to open.
- * @param filename Name of the file to open.
  * @return File handle of the opened file, or \c NULL if the file is not available.
  */
 FILE *FioFOpenFile(const char *filename, const char *mode, Subdirectory subdir, size_t *filesize)
@@ -536,20 +535,10 @@ void FioCreateDirectory(const char *name)
 {
 	/* Ignore directory creation errors; they'll surface later on, and most
 	 * of the time they are 'directory already exists' errors anyhow. */
-#if defined(WIN32)
+#if defined(_WIN32)
 	CreateDirectory(OTTD2FS(name), NULL);
 #elif defined(OS2) && !defined(__INNOTEK_LIBC__)
 	mkdir(OTTD2FS(name));
-#elif defined(__MORPHOS__) || defined(__AMIGAOS__)
-	char buf[MAX_PATH];
-	strecpy(buf, name, lastof(buf));
-
-	size_t len = strlen(name) - 1;
-	if (buf[len] == '/') {
-		buf[len] = '\0'; // Kill pathsep, so mkdir() will not fail
-	}
-
-	mkdir(OTTD2FS(buf), 0755);
 #else
 	mkdir(OTTD2FS(name), 0755);
 #endif
@@ -632,7 +621,7 @@ static void SimplifyFileName(char *name)
 
 /**
  * Perform the scanning of a particular subdirectory.
- * @param subdir The subdirectory to scan.
+ * @param sd The subdirectory to scan.
  * @return The number of found tar files.
  */
 uint TarScanner::DoScan(Subdirectory sd)
@@ -980,14 +969,14 @@ bool ExtractTar(const char *tar_filename, Subdirectory subdir)
 	return true;
 }
 
-#if defined(WIN32)
+#if defined(_WIN32)
 /**
  * Determine the base (personal dir and game data dir) paths
  * @param exe the path from the current path to the executable
  * @note defined in the OS related files (os2.cpp, win32.cpp, unix.cpp etc)
  */
 extern void DetermineBasePaths(const char *exe);
-#else /* defined(WIN32) */
+#else /* defined(_WIN32) */
 
 /**
  * Changes the working directory to the path of the give executable.
@@ -1011,10 +1000,6 @@ static bool ChangeWorkingDirectoryToExecutable(const char *exe)
 	char *s = strrchr(tmp, PATHSEPCHAR);
 	if (s != NULL) {
 		*s = '\0';
-#if defined(__DJGPP__)
-		/* If we want to go to the root, we can't use cd C:, but we must use '/' */
-		if (s > tmp && *(s - 1) == ':') chdir("/");
-#endif
 		if (chdir(tmp) != 0) {
 			DEBUG(misc, 0, "Directory with the binary does not exist?");
 		} else {
@@ -1067,7 +1052,7 @@ void DetermineBasePaths(const char *exe)
 	AppendPathSeparator(tmp, lastof(tmp));
 	_searchpaths[SP_PERSONAL_DIR_XDG] = stredup(tmp);
 #endif
-#if defined(__MORPHOS__) || defined(__AMIGA__) || defined(DOS) || defined(OS2) || !defined(WITH_PERSONAL_DIR)
+#if defined(OS2) || !defined(WITH_PERSONAL_DIR)
 	_searchpaths[SP_PERSONAL_DIR] = NULL;
 #else
 #ifdef __HAIKU__
@@ -1110,13 +1095,9 @@ void DetermineBasePaths(const char *exe)
 	_searchpaths[SP_SHARED_DIR] = NULL;
 #endif
 
-#if defined(__MORPHOS__) || defined(__AMIGA__)
-	_searchpaths[SP_WORKING_DIR] = NULL;
-#else
 	if (getcwd(tmp, MAX_PATH) == NULL) *tmp = '\0';
 	AppendPathSeparator(tmp, lastof(tmp));
 	_searchpaths[SP_WORKING_DIR] = stredup(tmp);
-#endif
 
 	_do_scan_working_directory = DoScanWorkingDirectory();
 
@@ -1136,7 +1117,7 @@ void DetermineBasePaths(const char *exe)
 		}
 	}
 
-#if defined(__MORPHOS__) || defined(__AMIGA__) || defined(DOS) || defined(OS2)
+#if !defined(GLOBAL_DATA_DIR)
 	_searchpaths[SP_INSTALLATION_DIR] = NULL;
 #else
 	seprintf(tmp, lastof(tmp), "%s", GLOBAL_DATA_DIR);
@@ -1150,7 +1131,7 @@ extern void cocoaSetApplicationBundleDir();
 	_searchpaths[SP_APPLICATION_BUNDLE_DIR] = NULL;
 #endif
 }
-#endif /* defined(WIN32) */
+#endif /* defined(_WIN32) */
 
 const char *_personal_dir;
 
@@ -1240,7 +1221,7 @@ void DeterminePaths(const char *exe)
 	}
 
 	/* Make the necessary folders */
-#if !defined(__MORPHOS__) && !defined(__AMIGA__) && defined(WITH_PERSONAL_DIR)
+#if defined(WITH_PERSONAL_DIR)
 	FioCreateDirectory(config_dir);
 	if (config_dir != _personal_dir) FioCreateDirectory(_personal_dir);
 #endif
@@ -1259,7 +1240,6 @@ void DeterminePaths(const char *exe)
 
 	/* If we have network we make a directory for the autodownloading of content */
 	_searchpaths[SP_AUTODOWNLOAD_DIR] = str_fmt("%s%s", _personal_dir, "content_download" PATHSEP);
-#ifdef ENABLE_NETWORK
 	FioCreateDirectory(_searchpaths[SP_AUTODOWNLOAD_DIR]);
 
 	/* Create the directory for each of the types of content */
@@ -1272,14 +1252,6 @@ void DeterminePaths(const char *exe)
 
 	extern char *_log_file;
 	_log_file = str_fmt("%sopenttd.log",  _personal_dir);
-#else /* ENABLE_NETWORK */
-	/* If we don't have networking, we don't need to make the directory. But
-	 * if it exists we keep it, otherwise remove it from the search paths. */
-	if (!FileExists(_searchpaths[SP_AUTODOWNLOAD_DIR]))  {
-		free(_searchpaths[SP_AUTODOWNLOAD_DIR]);
-		_searchpaths[SP_AUTODOWNLOAD_DIR] = NULL;
-	}
-#endif /* ENABLE_NETWORK */
 }
 
 /**
@@ -1303,7 +1275,7 @@ void SanitizeFilename(char *filename)
 /**
  * Load a file into memory.
  * @param filename Name of the file to load.
- * @param lenp [out] Length of loaded data.
+ * @param[out] lenp Length of loaded data.
  * @param maxsize Maximum size to load.
  * @return Pointer to new memory containing the loaded data, or \c NULL if loading failed.
  * @note If \a maxsize less than the length of the file, loading fails.

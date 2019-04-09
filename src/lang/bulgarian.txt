@@ -976,6 +976,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Нормалн�
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Двукратно
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Четирикратно
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Базов графичен набор
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Изберете базов графичен набор
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} липсващи/повредени файлове
@@ -1245,6 +1247,7 @@ STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD_HELPTEXT             :Позволя�
 STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}Промяната не е възможна, когато има превозни средства.
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :Поддръжка на инфраструктурата: {STRING}
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :Когато е разрешено, съществуват разходи за поддръжка на инфраструктурата. Разходите се увеличават пропорционално на размера на пътната мрежа, влияейки повече на големите компании отколкото на по-малките
+
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Летишата не губят валидност: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Разрешавайки тази настройка, всеки вид летище остава завинаги достъпно след неговото представяне
@@ -1631,7 +1634,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Инд�
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Съперници
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Компютърни играчи
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Оригинален
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(препоръчва се)
 
@@ -1713,13 +1715,9 @@ STR_QUIT_NO                                                     :{BLACK}Не
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :ДОС
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -1748,7 +1746,6 @@ STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Пром
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Промяна на производствените стойности: {ORANGE}{STRING}
 
 # Livery window
-STR_LIVERY_CAPTION                                              :{WHITE}Нова цветове
 
 STR_LIVERY_GENERAL_TOOLTIP                                      :{BLACK}Показване на общи цветови схеми
 STR_LIVERY_TRAIN_TOOLTIP                                        :{BLACK}Показване цветовите схеми на влаковете
@@ -2009,9 +2006,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Сърв
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Компанията е защитена. Въведете парола
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Списък с играчите
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Наблюдавай
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Нова фирма
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Списък с играчите
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Наблюдавай
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Нова фирма
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Изгони
@@ -2026,7 +2023,6 @@ STR_NETWORK_CLIENT                                              :Клиент
 STR_NETWORK_SPECTATORS                                          :Наблюдатели
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Въведете количеството пари, което искате да дадете
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Зрител
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Незапазвай паролата
@@ -2626,7 +2622,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Земя, пр�
 STR_ABOUT_OPENTTD                                               :{WHITE}Относно OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Авторски права {COPYRIGHT} 1995 Крис Сойер (Chris Sawyer), Всички права са запазени
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD версия {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2018 The OpenTTD team
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2019 The OpenTTD team
 
 # Framerate display window
 ############ Leave those lines in this order!!
@@ -3214,18 +3210,8 @@ STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Фоку
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Ниво на производство: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Индустрията обяви незабавна ликвидация!
 
-############ range for requires starts
-STR_INDUSTRY_VIEW_REQUIRES_CARGO                                :{BLACK}Нуждае се от: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Нуждае се от: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
-STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Нуждае се от: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
-############ range for requires ends
 
 STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING}{BLACK}: {CARGO_SHORT} чакащ{STRING}
-
-############ range for produces starts
-STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Произвежда: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Произвежда: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
-############ range for produces ends
 
 STR_CONFIG_GAME_PRODUCTION                                      :{WHITE}Промени производството
 STR_CONFIG_GAME_PRODUCTION_LEVEL                                :{WHITE}Промени нивото на производство(процент, до 800%)
@@ -3274,6 +3260,7 @@ STR_GROUP_DEFAULT_TRAINS                                        :Безгруп�
 STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Безгрупни пътни превозни средства
 STR_GROUP_DEFAULT_SHIPS                                         :Безгрупни кораби
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Безгрупни самолети
+
 
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Групи - Щракни на група за да видиш списък на всички превозни средства от тази група
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Щракни да създадеш група
@@ -3334,10 +3321,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Купи
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Купи Кораб
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Купи самолет
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Купи маркираният влак. Shift строеж/цена за построяване
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Купи посоченото МПС. Shift строеж/цена за построяване
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Купи посоченият кораб. Shift строеж/цена за построяване
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Купи посоченият самолет. Shift строеж/цена за построяване
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Преименувай
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Преименувай
@@ -4133,7 +4122,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Твър
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Твърде много части на гара
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Твърде много автобусни спирки
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Твърде много гари за камиони
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Твърде близо до друга гара/товарна платформа
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Прекалено близо до друг док
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Прекалено близо до друго летище
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Станцията не може да бъде преименувана...

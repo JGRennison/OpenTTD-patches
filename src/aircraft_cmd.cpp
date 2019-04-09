@@ -37,6 +37,7 @@
 #include "core/backup_type.hpp"
 #include "zoom_func.h"
 #include "disaster_vehicle.h"
+#include "newgrf_airporttiles.h"
 #include "framerate_type.h"
 
 #include "table/strings.h"
@@ -127,16 +128,15 @@ static StationID FindNearestHangar(const Aircraft *v)
 	const AircraftVehicleInfo *avi = AircraftVehInfo(v->engine_type);
 
 	FOR_ALL_STATIONS(st) {
-		if (st->owner != v->owner || !(st->facilities & FACIL_AIRPORT)) continue;
+		if (st->owner != v->owner || !(st->facilities & FACIL_AIRPORT) || !st->airport.HasHangar()) continue;
 
 		const AirportFTAClass *afc = st->airport.GetFTA();
-		if (!st->airport.HasHangar() || (
-					/* don't crash the plane if we know it can't land at the airport */
-					(afc->flags & AirportFTAClass::SHORT_STRIP) &&
-					(avi->subtype & AIR_FAST) &&
-					!_cheats.no_jetcrash.value)) {
-			continue;
-		}
+
+		/* don't crash the plane if we know it can't land at the airport */
+		if ((afc->flags & AirportFTAClass::SHORT_STRIP) && (avi->subtype & AIR_FAST) && !_cheats.no_jetcrash.value) continue;
+
+		/* the plane won't land at any helicopter station */
+		if (!(afc->flags & AirportFTAClass::AIRPLANES) && (avi->subtype & AIR_CTOL)) continue;
 
 		/* v->tile can't be used here, when aircraft is flying v->tile is set to 0 */
 		uint distance = DistanceSquare(vtile, st->airport.tile);
@@ -248,7 +248,7 @@ void GetAircraftSpriteSize(EngineID engine, uint &width, uint &height, int &xoff
  * @param flags    type of operation.
  * @param e        the engine to build.
  * @param data     unused.
- * @param ret[out] the vehicle that has been built.
+ * @param[out] ret the vehicle that has been built.
  * @return the cost of this operation or an error.
  */
 CommandCost CmdBuildAircraft(TileIndex tile, DoCommandFlag flags, const Engine *e, uint16 data, Vehicle **ret)
@@ -379,7 +379,7 @@ bool Aircraft::FindClosestDepot(TileIndex *location, DestinationID *destination,
 {
 	const Station *st = GetTargetAirportIfValid(this);
 	/* If the station is not a valid airport or if it has no hangars */
-	if (st == NULL || !st->airport.HasHangar()) {
+	if (st == NULL || !CanVehicleUseStation(this, st) || !st->airport.HasHangar()) {
 		/* the aircraft has to search for a hangar on its own */
 		StationID station = FindNearestHangar(this);
 
@@ -635,6 +635,12 @@ static int UpdateAircraftSpeed(Aircraft *v, uint speed_limit = SPEED_LIMIT_NONE,
 	 * and take-off speeds being too low. */
 	speed_limit *= _settings_game.vehicle.plane_speed;
 
+	/* adjust speed for broken vehicles */
+	if (v->vehstatus & VS_AIRCRAFT_BROKEN) {
+		if (SPEED_LIMIT_BROKEN < speed_limit) hard_limit = false;
+		speed_limit = min(speed_limit, SPEED_LIMIT_BROKEN);
+	}
+
 	if (v->vcache.cached_max_speed < speed_limit) {
 		if (v->cur_speed < speed_limit) hard_limit = false;
 		speed_limit = v->vcache.cached_max_speed;
@@ -653,9 +659,6 @@ static int UpdateAircraftSpeed(Aircraft *v, uint speed_limit = SPEED_LIMIT_NONE,
 	}
 
 	spd = min(v->cur_speed + (spd >> 8) + (v->subspeed < t), speed_limit);
-
-	/* adjust speed for broken vehicles */
-	if (v->vehstatus & VS_AIRCRAFT_BROKEN) spd = min(spd, SPEED_LIMIT_BROKEN);
 
 	/* updates statusbar only if speed have changed to save CPU time */
 	if (spd != v->cur_speed) {
@@ -694,9 +697,9 @@ int GetTileHeightBelowAircraft(const Vehicle *v)
  * When the maximum is reached the vehicle should consider descending.
  * When the minimum is reached the vehicle should consider ascending.
  *
- * @param v               The vehicle to get the flight levels for.
- * @param [out] min_level The minimum bounds for flight level.
- * @param [out] max_level The maximum bounds for flight level.
+ * @param v              The vehicle to get the flight levels for.
+ * @param[out] min_level The minimum bounds for flight level.
+ * @param[out] max_level The maximum bounds for flight level.
  */
 void GetAircraftFlightLevelBounds(const Vehicle *v, int *min_level, int *max_level)
 {
@@ -728,7 +731,7 @@ void GetAircraftFlightLevelBounds(const Vehicle *v, int *min_level, int *max_lev
 
 /**
  * Gets the maximum 'flight level' for the holding pattern of the aircraft,
- * in pixels 'z_pos' 0, depending on terrain below..
+ * in pixels 'z_pos' 0, depending on terrain below.
  *
  * @param v The aircraft that may or may not need to decrease its altitude.
  * @return Maximal aircraft holding altitude, while in normal flight, in pixels.
@@ -780,6 +783,7 @@ int GetAircraftFlightLevel(T *v, bool takeoff)
 }
 
 template int GetAircraftFlightLevel(DisasterVehicle *v, bool takeoff);
+template int GetAircraftFlightLevel(Aircraft *v, bool takeoff);
 
 /**
  * Find the entry point to an airport depending on direction which
@@ -915,6 +919,8 @@ static bool AircraftController(Aircraft *v)
 
 	/* Helicopter landing. */
 	if (amd.flag & AMED_HELI_LOWER) {
+		SetBit(v->flags, VAF_HELI_DIRECT_DESCENT);
+
 		if (st == NULL) {
 			/* FIXME - AircraftController -> if station no longer exists, do not land
 			 * helicopter will circle until sign disappears, then go to next order
@@ -935,7 +941,10 @@ static bool AircraftController(Aircraft *v)
 			Vehicle *u = v->Next()->Next();
 
 			/*  Increase speed of rotors. When speed is 80, we've landed. */
-			if (u->cur_speed >= 80) return true;
+			if (u->cur_speed >= 80) {
+				ClrBit(v->flags, VAF_HELI_DIRECT_DESCENT);
+				return true;
+			}
 			u->cur_speed += 4;
 		} else {
 			count = UpdateAircraftSpeed(v);
@@ -1301,18 +1310,17 @@ static void CrashAirplane(Aircraft *v)
  */
 static void MaybeCrashAirplane(Aircraft *v)
 {
-	if (_settings_game.vehicle.plane_crashes == 0) return;
 
 	Station *st = Station::Get(v->targetairport);
 
-	/* FIXME -- MaybeCrashAirplane -> increase crashing chances of very modern airplanes on smaller than AT_METROPOLITAN airports */
-	uint32 prob = (0x4000 << _settings_game.vehicle.plane_crashes);
+	uint32 prob;
 	if ((st->airport.GetFTA()->flags & AirportFTAClass::SHORT_STRIP) &&
 			(AircraftVehInfo(v->engine_type)->subtype & AIR_FAST) &&
 			!_cheats.no_jetcrash.value) {
-		prob /= 20;
+		prob = 3276;
 	} else {
-		prob /= 1500;
+		if (_settings_game.vehicle.plane_crashes == 0) return;
+		prob = (0x4000 << _settings_game.vehicle.plane_crashes) / 1500;
 	}
 
 	if (GB(Random(), 0, 22) > prob) return;
@@ -1362,7 +1370,13 @@ static void AircraftEntersTerminal(Aircraft *v)
  */
 static void AircraftLandAirplane(Aircraft *v)
 {
+	Station *st = Station::Get(v->targetairport);
+
+	TileIndex vt = TileVirtXY(v->x_pos, v->y_pos);
+
 	v->UpdateDeltaXY();
+
+	AirportTileAnimationTrigger(st, vt, AAT_STATION_AIRPLANE_LAND);
 
 	if (!PlayVehicleSound(v, VSE_TOUCHDOWN)) {
 		SndPlayVehicleFx(SND_17_SKID_PLANE, v);
@@ -1531,7 +1545,7 @@ static void AircraftEventHandler_AtTerminal(Aircraft *v, const AirportFTAClass *
 			go_to_hangar = Station::Get(v->targetairport)->airport.HasHangar();
 	}
 
-	if (go_to_hangar) {
+	if (go_to_hangar && Station::Get(v->targetairport)->airport.HasHangar()) {
 		v->state = HANGAR;
 	} else {
 		/* airplane goto state takeoff, helicopter to helitakeoff */
@@ -1600,6 +1614,7 @@ static void AircraftEventHandler_Flying(Aircraft *v, const AirportFTAClass *apc)
 				uint16 tsubspeed = v->subspeed;
 				if (!AirportHasBlock(v, current, apc)) {
 					v->state = landingtype; // LANDING / HELILANDING
+					if (v->state == HELILANDING) SetBit(v->flags, VAF_HELI_DIRECT_DESCENT);
 					/* it's a bit dirty, but I need to set position to next position, otherwise
 					 * if there are multiple runways, plane won't know which one it took (because
 					 * they all have heading LANDING). And also occupy that block! */
@@ -1889,7 +1904,7 @@ static bool FreeTerminal(Aircraft *v, byte i, byte last_terminal)
 
 /**
  * Get the number of terminals at the airport.
- * @param afc Airport description.
+ * @param apc Airport description.
  * @return Number of terminals.
  */
 static uint GetNumTerminals(const AirportFTAClass *apc)
@@ -2088,7 +2103,19 @@ void UpdateAirplanesOnNewStation(const Station *st)
 	FOR_ALL_AIRCRAFT(v) {
 		if (!v->IsNormalAircraft() || v->targetairport != st->index) continue;
 		assert(v->state == FLYING);
+
+		Order *o = &v->current_order;
+		/* The aircraft is heading to a hangar, but the new station doesn't have one,
+		 * or the aircraft can't land on the new station. Cancel current order. */
+		if (o->IsType(OT_GOTO_DEPOT) && !(o->GetDepotOrderType() & ODTFB_PART_OF_ORDERS) && o->GetDestination() == st->index &&
+				(!st->airport.HasHangar() || !CanVehicleUseStation(v, st))) {
+			o->MakeDummy();
+			SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
+		}
 		v->pos = v->previous_pos = AircraftGetEntryPoint(v, ap, rotation);
 		UpdateAircraftCache(v);
 	}
+
+	/* Heliports don't have a hangar. Invalidate all go to hangar orders from all aircraft. */
+	if (!st->airport.HasHangar()) RemoveOrderFromAllVehicles(OT_GOTO_DEPOT, st->index, true);
 }

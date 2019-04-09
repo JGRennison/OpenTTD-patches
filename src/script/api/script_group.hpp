@@ -42,11 +42,12 @@ public:
 	/**
 	 * Create a new group.
 	 * @param vehicle_type The type of vehicle to create a group for.
+	 * @param parent_group_id The parent group id to create this group under, INVALID_GROUP for top-level.
 	 * @return The GroupID of the new group, or an invalid GroupID when
 	 *  it failed. Check the return value using IsValidGroup(). In test-mode
 	 *  0 is returned if it was successful; any other value indicates failure.
 	 */
-	static GroupID CreateGroup(ScriptVehicle::VehicleType vehicle_type);
+	static GroupID CreateGroup(ScriptVehicle::VehicleType vehicle_type, GroupID parent_group_id);
 
 	/**
 	 * Delete the given group. When the deletion succeeds all vehicles in the
@@ -83,6 +84,24 @@ public:
 	 * @return The name the group has.
 	 */
 	static char *GetName(GroupID group_id);
+
+	/**
+	 * Set parent group of a group.
+	 * @param group_id The group to set the parent for.
+	 * @param parent_group_id The parent group to set.
+	 * @pre IsValidGroup(group_id).
+	 * @pre IsValidGroup(parent_group_id).
+	 * @return True if and only if the parent group was changed.
+	 */
+	static bool SetParent(GroupID group_id, GroupID parent_group_id);
+
+	/**
+	 * Get parent group of a group.
+	 * @param group_id The group to get the parent of.
+	 * @pre IsValidGroup(group_id).
+	 * @return The group id of the parent group.
+	 */
+	static GroupID GetParent(GroupID group_id);
 
 	/**
 	 * Enable or disable autoreplace protected. If the protection is
@@ -171,6 +190,60 @@ public:
 	 * @return True if and if the replacing was successfully stopped.
 	 */
 	static bool StopAutoReplace(GroupID group_id, EngineID engine_id);
+
+	/**
+	 * Get the current profit of a group.
+	 * @param group_id The group to get the profit of.
+	 * @pre IsValidGroup(group_id).
+	 * @return The current profit the group has.
+	 */
+	static Money GetProfitThisYear(GroupID group_id);
+
+	/**
+	 * Get the profit of last year of a group.
+	 * @param group_id The group to get the profit of.
+	 * @pre IsValidGroup(group_id).
+	 * @return The current profit the group had last year.
+	 */
+	static Money GetProfitLastYear(GroupID group_id);
+
+	/**
+	 * Get the current vehicle usage of a group.
+	 * @param group_id The group to get the current usage of.
+	 * @pre IsValidGroup(group_id).
+	 * @return The current usage of the group.
+	 */
+	static uint32 GetCurrentUsage(GroupID group_id);
+
+	/**
+	 * Set primary colour for a group.
+	 * @param group_id The group id to set the colour of.
+	 * @param colour Colour to set.
+	 * @pre IsValidGroup(group_id).
+	 */
+	static bool SetPrimaryColour(GroupID group_id, ScriptCompany::Colours colour);
+
+	/**
+	 * Set secondary colour for a group.
+	 * @param group_id The group id to set the colour of.
+	 * @param colour Colour to set.
+	 * @pre IsValidGroup(group_id).
+	 */
+	static bool SetSecondaryColour(GroupID group_id, ScriptCompany::Colours colour);
+
+	/**
+	 * Get primary colour of a group.
+	 * @param group_id The group id to get the colour of.
+	 * @pre IsValidGroup(group_id).
+	 */
+	static ScriptCompany::Colours GetPrimaryColour(GroupID group_id);
+
+	/**
+	 * Get secondary colour for a group.
+	 * @param group_id The group id to get the colour of.
+	 * @pre IsValidGroup(group_id).
+	 */
+	static ScriptCompany::Colours GetSecondaryColour(GroupID group_id);
 };
 
 #endif /* SCRIPT_GROUP_HPP */

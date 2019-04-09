@@ -414,6 +414,8 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :oħrajn
 
 
 
+
+
 # Custom currency window
 
 
@@ -457,6 +459,7 @@ STR_CONFIG_SETTING_DISASTERS                                    :Diżastri: {STR
 STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Ixgħel jew itfi diżastri li xi drabi jistgħu jaffetwaw jew ikissru vetturi jew infrastrutturi
 STR_CONFIG_SETTING_CITY_APPROVAL                                :L-attitudni tal-kunsill lokali lejn bidliet fil-viċinanzi: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Iddeċiedi kemm l-ammont ta storbju u danni lill-ambjent ta' kumpanija jaffetwaw il-klassifikazzjoni tagħhom mar-raħal u proġetti oħra tal-futur
+
 
 
 
@@ -821,12 +824,7 @@ STR_FINANCES_POSITIVE_INCOME                                    :{BLACK}+{CURREN
 
 # Industry view
 
-############ range for requires starts
-############ range for requires ends
 
-
-############ range for produces starts
-############ range for produces ends
 
 
 # Vehicle lists
@@ -846,7 +844,10 @@ STR_FINANCES_POSITIVE_INCOME                                    :{BLACK}+{CURREN
 
 
 
+
 # Build vehicle window
+
+
 
 
 

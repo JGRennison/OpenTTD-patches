@@ -115,7 +115,7 @@ LanguageStrings *ReadRawLanguageStrings(const char *file)
 			while (i > 0 && (buffer[i - 1] == '\r' || buffer[i - 1] == '\n' || buffer[i - 1] == ' ')) i--;
 			buffer[i] = '\0';
 
-			*ret->lines.Append() = stredup(buffer, buffer + to_read - 1);
+			ret->lines.push_back(stredup(buffer, buffer + to_read - 1));
 
 			if (len > to_read) {
 				to_read = 0;
@@ -142,16 +142,16 @@ struct StringListReader : StringReader {
 	/**
 	 * Create the reader.
 	 * @param data        The data to fill during reading.
-	 * @param file        The file we are reading.
+	 * @param strings     The language strings we are reading.
 	 * @param master      Are we reading the master file?
 	 * @param translation Are we reading a translation?
 	 */
 	StringListReader(StringData &data, const LanguageStrings *strings, bool master, bool translation) :
-			StringReader(data, strings->language, master, translation), p(strings->lines.Begin()), end(strings->lines.End())
+			StringReader(data, strings->language, master, translation), p(strings->lines.data()), end(p + strings->lines.size())
 	{
 	}
 
-	/* virtual */ char *ReadLine(char *buffer, const char *last)
+	char *ReadLine(char *buffer, const char *last) override
 	{
 		if (this->p == this->end) return NULL;
 
@@ -194,7 +194,7 @@ struct TranslationWriter : LanguageWriter {
 		char *dest = MallocT<char>(length + 1);
 		memcpy(dest, buffer, length);
 		dest[length] = '\0';
-		*this->strings->Append() = dest;
+		this->strings->push_back(dest);
 	}
 };
 
@@ -212,7 +212,7 @@ struct StringNameWriter : HeaderWriter {
 
 	void WriteStringID(const char *name, int stringid)
 	{
-		if (stringid == (int)this->strings->Length()) *this->strings->Append() = stredup(name);
+		if (stringid == (int)this->strings->size()) this->strings->push_back(stredup(name));
 	}
 
 	void Finalise(const StringData &data)
@@ -242,11 +242,11 @@ public:
 		this->FileScanner::Scan(".txt", directory, false);
 	}
 
-	/* virtual */ bool AddFile(const char *filename, size_t basepath_length, const char *tar_filename)
+	bool AddFile(const char *filename, size_t basepath_length, const char *tar_filename) override
 	{
 		if (strcmp(filename, exclude) == 0) return true;
 
-		*gs->raw_strings.Append() = ReadRawLanguageStrings(filename);
+		gs->raw_strings.push_back(ReadRawLanguageStrings(filename));
 		return true;
 	}
 };
@@ -269,7 +269,7 @@ GameStrings *LoadTranslations()
 
 	GameStrings *gs = new GameStrings();
 	try {
-		*gs->raw_strings.Append() = ReadRawLanguageStrings(filename);
+		gs->raw_strings.push_back(ReadRawLanguageStrings(filename));
 
 		/* Scan for other language files */
 		LanguageScanner scanner(gs, filename);
@@ -318,14 +318,14 @@ void GameStrings::Compile()
 	StringNameWriter id_writer(&this->string_names);
 	id_writer.WriteHeader(data);
 
-	for (LanguageStrings **p = this->raw_strings.Begin(); p != this->raw_strings.End(); p++) {
+	for (LanguageStrings *p : this->raw_strings) {
 		data.FreeTranslation();
-		StringListReader translation_reader(data, *p, false, strcmp((*p)->language, "english") != 0);
+		StringListReader translation_reader(data, p, false, strcmp(p->language, "english") != 0);
 		translation_reader.ParseFile();
 		if (_errors != 0) throw std::exception();
 
-		LanguageStrings *compiled = *this->compiled_strings.Append() = new LanguageStrings((*p)->language);
-		TranslationWriter writer(&compiled->lines);
+		this->compiled_strings.push_back(new LanguageStrings(p->language));
+		TranslationWriter writer(&this->compiled_strings.back()->lines);
 		writer.WriteLang(data);
 	}
 }
@@ -340,7 +340,7 @@ GameStrings *_current_data = NULL;
  */
 const char *GetGameStringPtr(uint id)
 {
-	if (id >= _current_data->cur_language->lines.Length()) return GetStringPtr(STR_UNDEFINED);
+	if (id >= _current_data->cur_language->lines.size()) return GetStringPtr(STR_UNDEFINED);
 	return _current_data->cur_language->lines[id];
 }
 
@@ -360,10 +360,11 @@ void RegisterGameTranslation(Squirrel *engine)
 	if (SQ_FAILED(sq_get(vm, -2))) return;
 
 	int idx = 0;
-	for (const char * const *p = _current_data->string_names.Begin(); p != _current_data->string_names.End(); p++, idx++) {
-		sq_pushstring(vm, *p, -1);
+	for (const char * const p : _current_data->string_names) {
+		sq_pushstring(vm, p, -1);
 		sq_pushinteger(vm, idx);
 		sq_rawset(vm, -3);
+		idx++;
 	}
 
 	sq_pop(vm, 2);
@@ -391,9 +392,9 @@ void ReconsiderGameScriptLanguage()
 	assert(language != NULL);
 	language++;
 
-	for (LanguageStrings **p = _current_data->compiled_strings.Begin(); p != _current_data->compiled_strings.End(); p++) {
-		if (strcmp((*p)->language, language) == 0) {
-			_current_data->cur_language = *p;
+	for (LanguageStrings *p : _current_data->compiled_strings) {
+		if (strcmp(p->language, language) == 0) {
+			_current_data->cur_language = p;
 			return;
 		}
 	}

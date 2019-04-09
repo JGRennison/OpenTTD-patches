@@ -18,10 +18,10 @@
 #include "../safeguards.h"
 
 static const SaveLoad _engine_desc[] = {
-	 SLE_CONDVAR(Engine, intro_date,          SLE_FILE_U16 | SLE_VAR_I32,  0,  30),
-	 SLE_CONDVAR(Engine, intro_date,          SLE_INT32,                  31, SL_MAX_VERSION),
-	 SLE_CONDVAR(Engine, age,                 SLE_FILE_U16 | SLE_VAR_I32,  0,  30),
-	 SLE_CONDVAR(Engine, age,                 SLE_INT32,                  31, SL_MAX_VERSION),
+	 SLE_CONDVAR(Engine, intro_date,          SLE_FILE_U16 | SLE_VAR_I32,  SL_MIN_VERSION,  SLV_31),
+	 SLE_CONDVAR(Engine, intro_date,          SLE_INT32,                  SLV_31, SL_MAX_VERSION),
+	 SLE_CONDVAR(Engine, age,                 SLE_FILE_U16 | SLE_VAR_I32,  SL_MIN_VERSION,  SLV_31),
+	 SLE_CONDVAR(Engine, age,                 SLE_INT32,                  SLV_31, SL_MAX_VERSION),
 	     SLE_VAR(Engine, reliability,         SLE_UINT16),
 	     SLE_VAR(Engine, reliability_spd_dec, SLE_UINT16),
 	     SLE_VAR(Engine, reliability_start,   SLE_UINT16),
@@ -31,19 +31,19 @@ static const SaveLoad _engine_desc[] = {
 	     SLE_VAR(Engine, duration_phase_2,    SLE_UINT16),
 	     SLE_VAR(Engine, duration_phase_3,    SLE_UINT16),
 
-	SLE_CONDNULL(1,                                                        0, 120),
+	SLE_CONDNULL(1,                                                        SL_MIN_VERSION, SLV_121),
 	     SLE_VAR(Engine, flags,               SLE_UINT8),
-	SLE_CONDNULL(1,                                                        0, 178), // old preview_company_rank
-	 SLE_CONDVAR(Engine, preview_asked,       SLE_UINT16,                179, SL_MAX_VERSION),
-	 SLE_CONDVAR(Engine, preview_company,     SLE_UINT8,                 179, SL_MAX_VERSION),
+	SLE_CONDNULL(1,                                                        SL_MIN_VERSION, SLV_179), // old preview_company_rank
+	 SLE_CONDVAR(Engine, preview_asked,       SLE_UINT16,                SLV_179, SL_MAX_VERSION),
+	 SLE_CONDVAR(Engine, preview_company,     SLE_UINT8,                 SLV_179, SL_MAX_VERSION),
 	     SLE_VAR(Engine, preview_wait,        SLE_UINT8),
-	SLE_CONDNULL(1,                                                        0,  44),
-	 SLE_CONDVAR(Engine, company_avail,       SLE_FILE_U8  | SLE_VAR_U16,  0, 103),
-	 SLE_CONDVAR(Engine, company_avail,       SLE_UINT16,                104, SL_MAX_VERSION),
-	 SLE_CONDVAR(Engine, company_hidden,      SLE_UINT16,                193, SL_MAX_VERSION),
-	 SLE_CONDSTR(Engine, name,                SLE_STR, 0,                 84, SL_MAX_VERSION),
+	SLE_CONDNULL(1,                                                        SL_MIN_VERSION,  SLV_45),
+	 SLE_CONDVAR(Engine, company_avail,       SLE_FILE_U8  | SLE_VAR_U16,  SL_MIN_VERSION, SLV_104),
+	 SLE_CONDVAR(Engine, company_avail,       SLE_UINT16,                SLV_104, SL_MAX_VERSION),
+	 SLE_CONDVAR(Engine, company_hidden,      SLE_UINT16,                SLV_193, SL_MAX_VERSION),
+	 SLE_CONDSTR(Engine, name,                SLE_STR, 0,                 SLV_84, SL_MAX_VERSION),
 
-	SLE_CONDNULL(16,                                                       2, 143), // old reserved space
+	SLE_CONDNULL(16,                                                       SLV_2, SLV_144), // old reserved space
 
 	SLE_END()
 };
@@ -105,7 +105,7 @@ static void Load_ENGN()
 		Engine *e = GetTempDataEngine(index);
 		SlObject(e, _engine_desc);
 
-		if (IsSavegameVersionBefore(179)) {
+		if (IsSavegameVersionBefore(SLV_179)) {
 			/* preview_company_rank was replaced with preview_company and preview_asked.
 			 * Just cancel any previews. */
 			e->flags &= ~4; // ENGINE_OFFER_WINDOW_OPEN
@@ -177,20 +177,21 @@ static const SaveLoad _engine_id_mapping_desc[] = {
 
 static void Save_EIDS()
 {
-	const EngineIDMapping *end = _engine_mngr.End();
 	uint index = 0;
-	for (EngineIDMapping *eid = _engine_mngr.Begin(); eid != end; eid++, index++) {
+	for (EngineIDMapping &eid : _engine_mngr) {
 		SlSetArrayIndex(index);
-		SlObject(eid, _engine_id_mapping_desc);
+		SlObject(&eid, _engine_id_mapping_desc);
+		index++;
 	}
 }
 
 static void Load_EIDS()
 {
-	_engine_mngr.Clear();
+	_engine_mngr.clear();
 
 	while (SlIterateArray() != -1) {
-		EngineIDMapping *eid = _engine_mngr.Append();
+		/*C++17: EngineIDMapping *eid = &*/ _engine_mngr.emplace_back();
+		EngineIDMapping *eid = &_engine_mngr.back();
 		SlObject(eid, _engine_id_mapping_desc);
 	}
 }

@@ -805,6 +805,8 @@ STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :Секој ме
 
 
 
+
+
 # Custom currency window
 
 
@@ -841,6 +843,7 @@ STR_CONFIG_SETTING_REALISTIC                                    :Реален
 
 STR_CONFIG_SETTING_SMOKE_AMOUNT                                 :Износ на локомотива чад / искри: {STRING}
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :Инфраструктура за одржување: {STRING}
+
 
 
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :Дебелина на линии во графици: {STRING}
@@ -949,9 +952,6 @@ STR_QUIT_NO                                                     :{BLACK}Не
 STR_OSNAME_WINDOWS                                              :Windows
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -1199,7 +1199,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Компани�
 STR_ABOUT_OPENTTD                                               :{WHITE}За OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Оригинален copyright {COPYRIGHT} 1995 Chris Sawyer, Сите права се задржани
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD верзија {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2018 OpenTTD тимот
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2019 OpenTTD тимот
 
 # Framerate display window
 ############ Leave those lines in this order!!
@@ -1413,12 +1413,7 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL                           :{WHITE}{CURRENC
 # Industry view
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Производство ниво: {YELLOW}{COMMA}%
 
-############ range for requires starts
-############ range for requires ends
 
-
-############ range for produces starts
-############ range for produces ends
 
 STR_CONFIG_GAME_PRODUCTION_LEVEL                                :{WHITE}Промена на производство на ниво (процент, до 800%)
 
@@ -1453,6 +1448,7 @@ STR_VEHICLE_LIST_SEND_SHIP_TO_DEPOT                             :Испрати 
 
 
 
+
 # Build vehicle window
 
 STR_BUY_VEHICLE_TRAIN_ALL_CAPTION                               :Шински возила
@@ -1464,7 +1460,9 @@ STR_BUY_VEHICLE_AIRCRAFT_LIST_TOOLTIP                           :{BLACK}Лист
 
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Направи авион
 
+
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Направи авион од селектираниот тип
+
 
 STR_BUY_VEHICLE_AIRCRAFT_RENAME_BUTTON                          :{BLACK}Преименувај
 

@@ -119,3 +119,17 @@ AIOrder.AIOF_UNLOAD_FLAGS <- AIOrder.OF_UNLOAD_FLAGS
 AIOrder.AIOF_LOAD_FLAGS <- AIOrder.OF_LOAD_FLAGS
 AIOrder.AIOF_DEPOT_FLAGS <- AIOrder.OF_DEPOT_FLAGS
 AIOrder.AIOF_INVALID <- AIOrder.OF_INVALID
+
+/* 1.9 adds a vehicle type parameter. */
+AIBridge._GetName <- AIBridge.GetName;
+AIBridge.GetName <- function(bridge_id)
+{
+	return AIBridge._GetName(bridge_id, AIVehicle.VT_RAIL);
+}
+
+/* 1.9 adds parent_group_id to CreateGroup function */
+AIGroup._CreateGroup <- AIGroup.CreateGroup;
+AIGroup.CreateGroup <- function(vehicle_type)
+{
+	return AIGroup._CreateGroup(vehicle_type, AIGroup.GROUP_INVALID);
+}

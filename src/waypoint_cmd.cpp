@@ -20,6 +20,7 @@
 #include "pathfinder/yapf/yapf_cache.h"
 #include "strings_func.h"
 #include "viewport_func.h"
+#include "viewport_kdtree.h"
 #include "window_func.h"
 #include "date_func.h"
 #include "vehicle_func.h"
@@ -148,7 +149,8 @@ extern CommandCost CanExpandRailStation(const BaseStation *st, TileArea &new_ta,
  * @param start_tile northern most tile where waypoint will be built
  * @param flags type of operation
  * @param p1 various bitstuffed elements
- * - p1 = (bit  4)    - orientation (Axis)
+ * - p1 = (bit  0- 5) - railtype (not used)
+ * - p1 = (bit  6)    - orientation (Axis)
  * - p1 = (bit  8-15) - width of waypoint
  * - p1 = (bit 16-23) - height of waypoint
  * - p1 = (bit 24)    - allow waypoints directly adjacent to other waypoints.
@@ -161,7 +163,7 @@ extern CommandCost CanExpandRailStation(const BaseStation *st, TileArea &new_ta,
 CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	/* Unpack parameters */
-	Axis axis      = Extract<Axis, 4, 1>(p1);
+	Axis axis      = Extract<Axis, 6, 1>(p1);
 	byte width     = GB(p1,  8, 8);
 	byte height    = GB(p1, 16, 8);
 	bool adjacent  = HasBit(p1, 24);
@@ -224,11 +226,15 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 	}
 
 	if (flags & DC_EXEC) {
+		bool need_sign_update = false;
 		if (wp == NULL) {
 			wp = new Waypoint(start_tile);
+			need_sign_update = true;
 		} else if (!wp->IsInUse()) {
 			/* Move existing (recently deleted) waypoint to the new location */
+			_viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeWaypoint(wp->index));
 			wp->xy = start_tile;
+			need_sign_update = true;
 		}
 		wp->owner = GetTileOwner(start_tile);
 
@@ -243,6 +249,7 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 		if (wp->town == NULL) MakeDefaultName(wp);
 
 		wp->UpdateVirtCoord();
+		if (need_sign_update) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeWaypoint(wp->index));
 
 		const StationSpec *spec = StationClass::Get(spec_class)->GetSpec(spec_index);
 		byte *layout_ptr = AllocaM(byte, count);
@@ -309,6 +316,7 @@ CommandCost CmdBuildBuoy(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 			wp = new Waypoint(tile);
 		} else {
 			/* Move existing (recently deleted) buoy to the new location */
+			_viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeWaypoint(wp->index));
 			wp->xy = tile;
 			InvalidateWindowData(WC_WAYPOINT_VIEW, wp->index);
 		}
@@ -327,6 +335,7 @@ CommandCost CmdBuildBuoy(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 		MarkTileDirtyByTile(tile);
 
 		wp->UpdateVirtCoord();
+		_viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeWaypoint(wp->index));
 		InvalidateWindowData(WC_WAYPOINT_VIEW, wp->index);
 	}
 

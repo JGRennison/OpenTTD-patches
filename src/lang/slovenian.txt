@@ -1137,6 +1137,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normalno
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dvojna velikost
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Velikost kvadrata
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Osnovni komplet grafik
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Izberi osnovni komplet grafik za uporabo
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} manjkajoč{P a i e ih}/okvarjen{P a i e ih} datotek{P a i e ""}
@@ -1403,6 +1405,7 @@ STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD_HELPTEXT             :Dovoli gradnjo 
 STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}Sprememba teh nastavitev ni mogoča, ko so tam vozila
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :Vzdrževanje infrastrukture: {STRING}
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :Če je omogočeno, infrastruktura upošteva vzdrževalne stroške, ki rastejo skozi čas proporcionalno z velikostjo omrežja.
+
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Letališča nikoli ne potečejo: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Če je omogočeno, bo vsak tip letališča ostal omogočen vedno po uvedbi.
@@ -1835,7 +1838,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Razpore
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Tekmeci
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Računalniški igralci
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Original
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Priporočeno)
 
@@ -1918,13 +1920,9 @@ STR_QUIT_NO                                                     :{BLACK}Ne
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -1953,7 +1951,6 @@ STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Spremeni
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Omogoči spreminjanje proizvodnih vrednosti: {ORANGE}{STRING}
 
 # Livery window
-STR_LIVERY_CAPTION                                              :{WHITE}Nova barvna shema
 
 STR_LIVERY_GENERAL_TOOLTIP                                      :{BLACK}Prikaz glavnih barvnih shem
 STR_LIVERY_TRAIN_TOOLTIP                                        :{BLACK}Prikaz barvnih shem vlakov
@@ -2215,9 +2212,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Strežni
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Podjetje je zaščiteno. Vnesi geslo
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Seznam gostov
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Opazuj
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Novo podjetje
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Seznam gostov
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Opazuj
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Novo podjetje
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Brcni
@@ -2232,7 +2229,6 @@ STR_NETWORK_CLIENT                                              :Gost
 STR_NETWORK_SPECTATORS                                          :Gledalci
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Vpiši znesek denarja za darovanje
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Gledalec
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Ne shrani vnešenega gesla
@@ -2834,7 +2830,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Ozemlje v lasti
 STR_ABOUT_OPENTTD                                               :{WHITE}O OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Prvotne avtorske pravice {COPYRIGHT} 1995 Chris Sawyer, vse pravice pridržane
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD različica {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2018 ekipa OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2019 ekipa OpenTTD
 
 # Framerate display window
 ############ Leave those lines in this order!!
@@ -3438,17 +3434,7 @@ STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Osredoto
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Nivo proizvodnje: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Industrija je napovedala zaprtje!
 
-############ range for requires starts
-STR_INDUSTRY_VIEW_REQUIRES_CARGO                                :{BLACK}Potrebuje: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Potrebuje: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
-STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Potrebuje: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
-############ range for requires ends
 
-
-############ range for produces starts
-STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Proizvaja: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Proizvaja: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
-############ range for produces ends
 
 STR_CONFIG_GAME_PRODUCTION                                      :{WHITE}Spremeni proizvodnjo (večkratnik 8, do 2040)
 STR_CONFIG_GAME_PRODUCTION_LEVEL                                :{WHITE}Spremeni nivo proizvodnje (odstotki, do 800%)
@@ -3497,6 +3483,7 @@ STR_GROUP_DEFAULT_TRAINS                                        :Vlaki brez skup
 STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Cestna vozila brez skupine
 STR_GROUP_DEFAULT_SHIPS                                         :Ladje brez skupine
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Letala brez skupine
+
 
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Skupine - Klikni na skupino za seznam vseh vozil v skupini
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Klikni za ustvarit skupino
@@ -3555,10 +3542,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Kupi voz
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Kupi ladjo
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Kupi letalo
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Kupi izbrano železniško vozilo. Shift+Klik prikaže predviden strošek brez nakupa
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Kupi izbrano cestno vozilo. Shift+Klik prikaže predviden strošek brez nakupa
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Kupi izbrano ladjo. Shift+Klik prikaže predviden strošek brez nakupa
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Kupi izbrano letalo. Shift+Klik prikaže predviden strošek brez nakupa
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Preimenuj
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Preimenuj
@@ -4358,7 +4347,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Preveč 
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Preveč delov železniške postaje
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Preveč avtobusnih postaj
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Preveč tovornih postaj
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Preblizu druge postaje
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Preblizu drugemu pristanišču
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Preblizu sosednjemu letališču
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Ni mogoče preimenovati postaje

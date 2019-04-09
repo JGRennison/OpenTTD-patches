@@ -24,14 +24,13 @@ void IConsoleListSettings(const char *prefilter);
 
 void LoadFromConfig(bool minimal = false);
 void SaveToConfig();
-void CheckConfig();
 
 void IniLoadWindowSettings(IniFile *ini, const char *grpname, void *desc);
 void IniSaveWindowSettings(IniFile *ini, const char *grpname, void *desc);
 
 /* Functions to load and save NewGRF settings to a separate
  * configuration file, used for presets. */
-typedef AutoFreeSmallVector<char *, 4> GRFPresetList;
+typedef AutoFreeSmallVector<char *> GRFPresetList;
 
 void GetGRFPresetList(GRFPresetList *list);
 struct GRFConfig *LoadGRFPresetFromConfig(const char *config_name);
@@ -41,10 +40,6 @@ void DeleteGRFPresetFromConfig(const char *config_name);
 uint GetCompanySettingIndex(const char *name);
 void SetDefaultCompanySettings(CompanyID cid);
 
-#if defined(ENABLE_NETWORK)
 void SyncCompanySettings();
-#else /* ENABLE_NETWORK */
-static inline void SyncCompanySettings() {}
-#endif /* ENABLE_NETWORK */
 
 #endif /* SETTINGS_FUNC_H */

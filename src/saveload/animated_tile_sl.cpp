@@ -18,15 +18,15 @@
 
 #include "../safeguards.h"
 
-extern SmallVector<TileIndex, 256> _animated_tiles;
+extern std::vector<TileIndex> _animated_tiles;
 
 /**
  * Save the ANIT chunk.
  */
 static void Save_ANIT()
 {
-	SlSetLength(_animated_tiles.Length() * sizeof(*_animated_tiles.Begin()));
-	SlArray(_animated_tiles.Begin(), _animated_tiles.Length(), SLE_UINT32);
+	SlSetLength(_animated_tiles.size() * sizeof(_animated_tiles.front()));
+	SlArray(_animated_tiles.data(), _animated_tiles.size(), SLE_UINT32);
 }
 
 /**
@@ -35,22 +35,22 @@ static void Save_ANIT()
 static void Load_ANIT()
 {
 	/* Before version 80 we did NOT have a variable length animated tile table */
-	if (IsSavegameVersionBefore(80)) {
+	if (IsSavegameVersionBefore(SLV_80)) {
 		/* In pre version 6, we has 16bit per tile, now we have 32bit per tile, convert it ;) */
 		TileIndex anim_list[256];
-		SlArray(anim_list, 256, IsSavegameVersionBefore(6) ? (SLE_FILE_U16 | SLE_VAR_U32) : SLE_UINT32);
+		SlArray(anim_list, 256, IsSavegameVersionBefore(SLV_6) ? (SLE_FILE_U16 | SLE_VAR_U32) : SLE_UINT32);
 
 		for (int i = 0; i < 256; i++) {
 			if (anim_list[i] == 0) break;
-			*_animated_tiles.Append() = anim_list[i];
+			_animated_tiles.push_back(anim_list[i]);
 		}
 		return;
 	}
 
-	uint count = (uint)SlGetFieldLength() / sizeof(*_animated_tiles.Begin());
-	_animated_tiles.Clear();
-	_animated_tiles.Append(count);
-	SlArray(_animated_tiles.Begin(), count, SLE_UINT32);
+	uint count = (uint)SlGetFieldLength() / sizeof(_animated_tiles.front());
+	_animated_tiles.clear();
+	_animated_tiles.resize(_animated_tiles.size() + count);
+	SlArray(_animated_tiles.data(), count, SLE_UINT32);
 }
 
 /**

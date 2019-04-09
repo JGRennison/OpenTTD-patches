@@ -26,11 +26,13 @@ void SQAIGroup_Register(Squirrel *engine)
 	SQAIGroup.DefSQConst(engine, ScriptGroup::GROUP_INVALID, "GROUP_INVALID");
 
 	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::IsValidGroup,                "IsValidGroup",                2, ".i");
-	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::CreateGroup,                 "CreateGroup",                 2, ".i");
+	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::CreateGroup,                 "CreateGroup",                 3, ".ii");
 	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::DeleteGroup,                 "DeleteGroup",                 2, ".i");
 	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::GetVehicleType,              "GetVehicleType",              2, ".i");
 	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::SetName,                     "SetName",                     3, ".i.");
 	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::GetName,                     "GetName",                     2, ".i");
+	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::SetParent,                   "SetParent",                   3, ".ii");
+	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::GetParent,                   "GetParent",                   2, ".i");
 	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::EnableAutoReplaceProtection, "EnableAutoReplaceProtection", 3, ".ib");
 	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::GetAutoReplaceProtection,    "GetAutoReplaceProtection",    2, ".i");
 	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::GetNumEngines,               "GetNumEngines",               3, ".ii");
@@ -40,6 +42,13 @@ void SQAIGroup_Register(Squirrel *engine)
 	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::SetAutoReplace,              "SetAutoReplace",              4, ".iii");
 	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::GetEngineReplacement,        "GetEngineReplacement",        3, ".ii");
 	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::StopAutoReplace,             "StopAutoReplace",             3, ".ii");
+	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::GetProfitThisYear,           "GetProfitThisYear",           2, ".i");
+	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::GetProfitLastYear,           "GetProfitLastYear",           2, ".i");
+	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::GetCurrentUsage,             "GetCurrentUsage",             2, ".i");
+	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::SetPrimaryColour,            "SetPrimaryColour",            3, ".ii");
+	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::SetSecondaryColour,          "SetSecondaryColour",          3, ".ii");
+	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::GetPrimaryColour,            "GetPrimaryColour",            2, ".i");
+	SQAIGroup.DefSQStaticMethod(engine, &ScriptGroup::GetSecondaryColour,          "GetSecondaryColour",          2, ".i");
 
 	SQAIGroup.PostRegister(engine);
 }

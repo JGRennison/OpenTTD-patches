@@ -23,13 +23,13 @@
 
 #include "safeguards.h"
 
-extern const uint16 SAVEGAME_VERSION;  ///< current savegame version
+extern const SaveLoadVersion SAVEGAME_VERSION;  ///< current savegame version
 
 extern SavegameType _savegame_type; ///< type of savegame we are loading
 
-extern uint32 _ttdp_version;     ///< version of TTDP savegame (if applicable)
-extern uint16 _sl_version;       ///< the major savegame version identifier
-extern byte   _sl_minor_version; ///< the minor savegame version, DO NOT USE!
+extern uint32 _ttdp_version;        ///< version of TTDP savegame (if applicable)
+extern SaveLoadVersion _sl_version; ///< the major savegame version identifier
+extern byte   _sl_minor_version;    ///< the minor savegame version, DO NOT USE!
 
 
 static GamelogActionType _gamelog_action_type = GLAT_NONE; ///< action to record if anything changes
@@ -38,6 +38,30 @@ LoggedAction *_gamelog_action = NULL;        ///< first logged action
 uint _gamelog_actions         = 0;           ///< number of actions
 static LoggedAction *_current_action = NULL; ///< current action we are logging, NULL when there is no action active
 
+
+/**
+ * Return the revision string for the current client version, for use in gamelog.
+ * The string returned is at most GAMELOG_REVISION_LENGTH bytes long.
+ */
+static const char * GetGamelogRevisionString()
+{
+	/* Allocate a buffer larger than necessary (git revision hash is 40 bytes) to avoid truncation later */
+	static char gamelog_revision[48] = { 0 };
+	assert_compile(lengthof(gamelog_revision) > GAMELOG_REVISION_LENGTH);
+
+	if (IsReleasedVersion()) {
+		return _openttd_revision;
+	} else if (gamelog_revision[0] == 0) {
+		/* Prefix character indication revision status */
+		assert(_openttd_revision_modified < 3);
+		gamelog_revision[0] = "gum"[_openttd_revision_modified]; // g = "git", u = "unknown", m = "modified"
+		/* Append the revision hash */
+		strecat(gamelog_revision, _openttd_revision_hash, lastof(gamelog_revision));
+		/* Truncate string to GAMELOG_REVISION_LENGTH bytes */
+		gamelog_revision[GAMELOG_REVISION_LENGTH - 1] = '\0';
+	}
+	return gamelog_revision;
+}
 
 /**
  * Stores information about new action, but doesn't allocate it
@@ -154,6 +178,7 @@ struct GRFPresence{
 	bool was_missing;     ///< Grf was missing during some gameload in the past
 
 	GRFPresence(const GRFConfig *gc) : gc(gc), was_missing(false) {}
+	GRFPresence() = default;
 };
 typedef SmallMap<uint32, GRFPresence> GrfIDMapping;
 
@@ -415,7 +440,7 @@ void GamelogRevision()
 	if (lc == NULL) return;
 
 	memset(lc->revision.text, 0, sizeof(lc->revision.text));
-	strecpy(lc->revision.text, _openttd_revision, lastof(lc->revision.text));
+	strecpy(lc->revision.text, GetGamelogRevisionString(), lastof(lc->revision.text));
 	lc->revision.slver = SAVEGAME_VERSION;
 	lc->revision.modified = _openttd_revision_modified;
 	lc->revision.newgrf = _openttd_newgrf_version;
@@ -484,7 +509,7 @@ void GamelogTestRevision()
 		}
 	}
 
-	if (rev == NULL || strcmp(rev->revision.text, _openttd_revision) != 0 ||
+	if (rev == NULL || strcmp(rev->revision.text, GetGamelogRevisionString()) != 0 ||
 			rev->revision.modified != _openttd_revision_modified ||
 			rev->revision.newgrf != _openttd_newgrf_version) {
 		GamelogRevision();
@@ -771,9 +796,9 @@ void GamelogGRFUpdate(const GRFConfig *oldc, const GRFConfig *newc)
  * Get some basic information from the given gamelog.
  * @param gamelog_action Pointer to the gamelog to extract information from.
  * @param gamelog_actions Number of actions in the given gamelog.
- * @param [out] last_ottd_rev OpenTTD NewGRF version from the binary that saved the savegame last.
- * @param [out] ever_modified Max value of 'modified' from all binaries that ever saved this savegame.
- * @param [out] removed_newgrfs Set to true if any NewGRFs have been removed.
+ * @param[out] last_ottd_rev OpenTTD NewGRF version from the binary that saved the savegame last.
+ * @param[out] ever_modified Max value of 'modified' from all binaries that ever saved this savegame.
+ * @param[out] removed_newgrfs Set to true if any NewGRFs have been removed.
  */
 void GamelogInfo(LoggedAction *gamelog_action, uint gamelog_actions, uint32 *last_ottd_rev, byte *ever_modified, bool *removed_newgrfs)
 {

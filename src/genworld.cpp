@@ -34,6 +34,7 @@
 #include "game/game.hpp"
 #include "game/game_instance.hpp"
 #include "string_func.h"
+#include "thread.h"
 
 #include "safeguards.h"
 
@@ -93,14 +94,15 @@ static void CleanupGeneration()
 /**
  * The internal, real, generate function.
  */
-static void _GenerateWorld(void *)
+static void _GenerateWorld()
 {
 	/* Make sure everything is done via OWNER_NONE. */
 	Backup<CompanyByte> _cur_company(_current_company, OWNER_NONE, FILE_LINE);
 
+	std::unique_lock<std::mutex> lock(_modal_progress_work_mutex, std::defer_lock);
 	try {
 		_generating_world = true;
-		_modal_progress_work_mutex->BeginCritical();
+		lock.lock();
 		if (_network_dedicated) DEBUG(net, 1, "Generating map, please wait...");
 		/* Set the Random() seed to generation_seed so we produce the same map with the same seed */
 		if (_settings_game.game_creation.generation_seed == GENERATE_NEW_SEED) _settings_game.game_creation.generation_seed = _settings_newgame.game_creation.generation_seed = InteractiveRandom();
@@ -120,8 +122,8 @@ static void _GenerateWorld(void *)
 
 			/* Make sure the tiles at the north border are void tiles if needed. */
 			if (_settings_game.construction.freeform_edges) {
-				for (uint row = 0; row < MapSizeY(); row++) MakeVoid(TileXY(0, row));
-				for (uint col = 0; col < MapSizeX(); col++) MakeVoid(TileXY(col, 0));
+				for (uint x = 0; x < MapSizeX(); x++) MakeVoid(TileXY(x, 0));
+				for (uint y = 0; y < MapSizeY(); y++) MakeVoid(TileXY(0, y));
 			}
 
 			/* Make the map the height of the setting */
@@ -194,7 +196,7 @@ static void _GenerateWorld(void *)
 		IncreaseGeneratingWorldProgress(GWP_GAME_START);
 
 		CleanupGeneration();
-		_modal_progress_work_mutex->EndCritical();
+		lock.unlock();
 
 		ShowNewGRFError();
 
@@ -210,7 +212,6 @@ static void _GenerateWorld(void *)
 		BasePersistentStorageArray::SwitchMode(PSM_LEAVE_GAMELOOP, true);
 		if (_cur_company.IsValid()) _cur_company.Restore();
 		_generating_world = false;
-		_modal_progress_work_mutex->EndCritical();
 		throw;
 	}
 }
@@ -241,17 +242,15 @@ void GenerateWorldSetAbortCallback(GWAbortProc *proc)
  */
 void WaitTillGeneratedWorld()
 {
-	if (_gw.thread == NULL) return;
+	if (!_gw.thread.joinable()) return;
 
-	_modal_progress_work_mutex->EndCritical();
-	_modal_progress_paint_mutex->EndCritical();
+	_modal_progress_work_mutex.unlock();
+	_modal_progress_paint_mutex.unlock();
 	_gw.quit_thread = true;
-	_gw.thread->Join();
-	delete _gw.thread;
-	_gw.thread   = NULL;
+	_gw.thread.join();
 	_gw.threaded = false;
-	_modal_progress_work_mutex->BeginCritical();
-	_modal_progress_paint_mutex->BeginCritical();
+	_modal_progress_work_mutex.lock();
+	_modal_progress_paint_mutex.lock();
 }
 
 /**
@@ -283,7 +282,7 @@ void HandleGeneratingWorldAbortion()
 
 	CleanupGeneration();
 
-	if (_gw.thread != NULL) _gw.thread->Exit();
+	if (_gw.thread.joinable() && _gw.thread.get_id() == std::this_thread::get_id()) throw OTTDThreadExitSignal();
 
 	SwitchToMode(_switch_mode);
 }
@@ -325,18 +324,14 @@ void GenerateWorld(GenWorldMode mode, uint size_x, uint size_y, bool reset_setti
 	SetupColoursAndInitialWindow();
 	SetObjectToPlace(SPR_CURSOR_ZZZ, PAL_NONE, HT_NONE, WC_MAIN_WINDOW, 0);
 
-	if (_gw.thread != NULL) {
-		_gw.thread->Join();
-		delete _gw.thread;
-		_gw.thread = NULL;
-	}
+	if (_gw.thread.joinable()) _gw.thread.join();
 
-	if (!VideoDriver::GetInstance()->HasGUI() || !ThreadObject::New(&_GenerateWorld, NULL, &_gw.thread, "ottd:genworld")) {
+	if (!UseThreadedModelProgress() || !VideoDriver::GetInstance()->HasGUI() || !StartNewThread(&_gw.thread, "ottd:genworld", &_GenerateWorld)) {
 		DEBUG(misc, 1, "Cannot create genworld thread, reverting to single-threaded mode");
 		_gw.threaded = false;
-		_modal_progress_work_mutex->EndCritical();
-		_GenerateWorld(NULL);
-		_modal_progress_work_mutex->BeginCritical();
+		_modal_progress_work_mutex.unlock();
+		_GenerateWorld();
+		_modal_progress_work_mutex.lock();
 		return;
 	}
 

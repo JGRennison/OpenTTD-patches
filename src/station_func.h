@@ -19,10 +19,11 @@
 #include "economy_func.h"
 #include "rail.h"
 #include "linkgraph/linkgraph_type.h"
+#include "industry_type.h"
 
 void ModifyStationRatingAround(TileIndex tile, Owner owner, int amount, uint radius);
 
-void FindStationsAroundTiles(const TileArea &location, StationList *stations);
+void FindStationsAroundTiles(const TileArea &location, StationList *stations, bool use_nearby = true);
 
 void ShowStationViewWindow(StationID station);
 void UpdateAllStationVirtCoords();

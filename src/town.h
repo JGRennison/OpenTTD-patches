@@ -31,7 +31,7 @@ typedef TileMatrix<CargoTypes, 4> AcceptanceMatrix;
 static const uint CUSTOM_TOWN_NUMBER_DIFFICULTY  = 4; ///< value for custom town number in difficulty settings
 static const uint CUSTOM_TOWN_MAX_NUMBER = 5000;  ///< this is the maximum number of towns a user can specify in customisation
 
-static const uint INVALID_TOWN = 0xFFFF;
+static const TownID INVALID_TOWN = 0xFFFF;
 
 static const uint TOWN_GROWTH_WINTER = 0xFFFFFFFE; ///< The town only needs this cargo in the winter (any amount)
 static const uint TOWN_GROWTH_DESERT = 0xFFFFFFFF; ///< The town needs the cargo for growth when on desert (any amount)
@@ -88,6 +88,7 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	CargoTypes cargo_produced;       ///< Bitmap of all cargoes produced by houses in this town.
 	AcceptanceMatrix cargo_accepted; ///< Bitmap of cargoes accepted by houses for each 4*4 map square of the town.
 	CargoTypes cargo_accepted_total; ///< NOSAVE: Bitmap of all cargoes accepted by houses in this town.
+	StationList stations_near;       ///< NOSAVE: List of nearby stations.
 
 	uint16 time_until_rebuild;     ///< time until we rebuild a house
 
@@ -143,6 +144,9 @@ uint32 GetWorldPopulation();
 void UpdateAllTownVirtCoords();
 void ShowTownViewWindow(TownID town);
 void ExpandTown(Town *t);
+
+void RebuildTownKdtree();
+
 
 /**
  * Action types that a company must ask permission for to a town authority.

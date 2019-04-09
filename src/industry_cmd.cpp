@@ -182,6 +182,10 @@ Industry::~Industry()
 
 	DeleteSubsidyWith(ST_INDUSTRY, this->index);
 	CargoPacket::InvalidateAllFrom(ST_INDUSTRY, this->index);
+
+	for (Station *st : this->stations_near) {
+		st->industries_near.erase(this);
+	}
 }
 
 /**
@@ -191,7 +195,6 @@ Industry::~Industry()
 void Industry::PostDestructor(size_t index)
 {
 	InvalidateWindowData(WC_INDUSTRY_DIRECTORY, 0, 0);
-	Station::RecomputeIndustriesNearForAll();
 }
 
 
@@ -394,35 +397,49 @@ static void AddAcceptedCargo_Industry(TileIndex tile, CargoArray &acceptance, Ca
 {
 	IndustryGfx gfx = GetIndustryGfx(tile);
 	const IndustryTileSpec *itspec = GetIndustryTileSpec(gfx);
+	const Industry *ind = Industry::GetByTile(tile);
 
-	/* When we have to use a callback, we put our data in the next two variables */
-	CargoID raw_accepts_cargo[lengthof(itspec->accepts_cargo)];
-	uint8 raw_cargo_acceptance[lengthof(itspec->acceptance)];
+	/* Starting point for acceptance */
+	CargoID accepts_cargo[lengthof(itspec->accepts_cargo)];
+	int8 cargo_acceptance[lengthof(itspec->acceptance)];
+	MemCpyT(accepts_cargo, itspec->accepts_cargo, lengthof(accepts_cargo));
+	MemCpyT(cargo_acceptance, itspec->acceptance, lengthof(cargo_acceptance));
 
-	/* And then these will always point to a same sized array with the required data */
-	const CargoID *accepts_cargo = itspec->accepts_cargo;
-	const uint8 *cargo_acceptance = itspec->acceptance;
+	if (itspec->special_flags & INDTILE_SPECIAL_ACCEPTS_ALL_CARGO) {
+		/* Copy all accepted cargoes from industry itself */
+		for (uint i = 0; i < lengthof(ind->accepts_cargo); i++) {
+			CargoID *pos = std::find(accepts_cargo, endof(accepts_cargo), ind->accepts_cargo[i]);
+			if (pos == endof(accepts_cargo)) {
+				/* Not found, insert */
+				pos = std::find(accepts_cargo, endof(accepts_cargo), CT_INVALID);
+				if (pos == endof(accepts_cargo)) continue; // nowhere to place, give up on this one
+				*pos = ind->accepts_cargo[i];
+			}
+			cargo_acceptance[pos - accepts_cargo] += 8;
+		}
+	}
 
 	if (HasBit(itspec->callback_mask, CBM_INDT_ACCEPT_CARGO)) {
+		/* Try callback for accepts list, if success override all existing accepts */
 		uint16 res = GetIndustryTileCallback(CBID_INDTILE_ACCEPT_CARGO, 0, 0, gfx, Industry::GetByTile(tile), tile);
 		if (res != CALLBACK_FAILED) {
-			accepts_cargo = raw_accepts_cargo;
-			for (uint i = 0; i < lengthof(itspec->accepts_cargo); i++) raw_accepts_cargo[i] = GetCargoTranslation(GB(res, i * 5, 5), itspec->grf_prop.grffile);
+			MemSetT(accepts_cargo, CT_INVALID, lengthof(accepts_cargo));
+			for (uint i = 0; i < 3; i++) accepts_cargo[i] = GetCargoTranslation(GB(res, i * 5, 5), itspec->grf_prop.grffile);
 		}
 	}
 
 	if (HasBit(itspec->callback_mask, CBM_INDT_CARGO_ACCEPTANCE)) {
+		/* Try callback for acceptance list, if success override all existing acceptance */
 		uint16 res = GetIndustryTileCallback(CBID_INDTILE_CARGO_ACCEPTANCE, 0, 0, gfx, Industry::GetByTile(tile), tile);
 		if (res != CALLBACK_FAILED) {
-			cargo_acceptance = raw_cargo_acceptance;
-			for (uint i = 0; i < lengthof(itspec->accepts_cargo); i++) raw_cargo_acceptance[i] = GB(res, i * 4, 4);
+			MemSetT(cargo_acceptance, 0, lengthof(cargo_acceptance));
+			for (uint i = 0; i < 3; i++) cargo_acceptance[i] = GB(res, i * 4, 4);
 		}
 	}
 
-	const Industry *ind = Industry::GetByTile(tile);
 	for (byte i = 0; i < lengthof(itspec->accepts_cargo); i++) {
 		CargoID a = accepts_cargo[i];
-		if (a == CT_INVALID || cargo_acceptance[i] == 0) continue; // work only with valid cargoes
+		if (a == CT_INVALID || cargo_acceptance[i] <= 0) continue; // work only with valid cargoes
 
 		/* Add accepted cargo */
 		acceptance[a] += cargo_acceptance[i];
@@ -502,8 +519,6 @@ static bool TransportIndustryGoods(TileIndex tile)
 	const IndustrySpec *indspec = GetIndustrySpec(i->type);
 	bool moved_cargo = false;
 
-	StationFinder stations(i->location);
-
 	for (uint j = 0; j < lengthof(i->produced_cargo_waiting); j++) {
 		uint cw = min(i->produced_cargo_waiting[j], 255);
 		if (cw > indspec->minimal_cargo && i->produced_cargo[j] != CT_INVALID) {
@@ -514,7 +529,7 @@ static bool TransportIndustryGoods(TileIndex tile)
 
 			i->this_month_production[j] += cw;
 
-			uint am = MoveGoodsToStation(i->produced_cargo[j], cw, ST_INDUSTRY, i->index, stations.GetStations());
+			uint am = MoveGoodsToStation(i->produced_cargo[j], cw, ST_INDUSTRY, i->index, &i->stations_near);
 			i->this_month_transported[j] += am;
 
 			moved_cargo |= (am != 0);
@@ -1118,8 +1133,9 @@ static void ProduceIndustryGoods(Industry *i)
 		if (HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS)) IndustryProductionCallback(i, 1);
 
 		IndustryBehaviour indbehav = indsp->behaviour;
-		i->produced_cargo_waiting[0] = min(0xffff, i->produced_cargo_waiting[0] + i->production_rate[0]);
-		i->produced_cargo_waiting[1] = min(0xffff, i->produced_cargo_waiting[1] + i->production_rate[1]);
+		for (size_t j = 0; j < lengthof(i->produced_cargo_waiting); j++) {
+			i->produced_cargo_waiting[j] = min(0xffff, i->produced_cargo_waiting[j] + i->production_rate[j]);
+		}
 
 		if ((indbehav & INDUSTRYBEH_PLANT_FIELDS) != 0) {
 			uint16 cb_res = CALLBACK_FAILED;
@@ -1323,7 +1339,7 @@ static CheckNewIndustryProc * const _check_new_industry_procs[CHECK_END] = {
  * Find a town for the industry, while checking for multiple industries in the same town.
  * @param tile Position of the industry to build.
  * @param type Industry type.
- * @param [out] town Pointer to return town for the new industry, \c NULL is written if no good town can be found.
+ * @param[out] t Pointer to return town for the new industry, \c NULL is written if no good town can be found.
  * @return Succeeded or failed command.
  *
  * @pre \c *t != NULL
@@ -1365,14 +1381,14 @@ bool IsSlopeRefused(Slope current, Slope refused)
 
 /**
  * Are the tiles of the industry free?
- * @param tile                     Position to check.
- * @param it                       Industry tiles table.
- * @param itspec_index             The index of the itsepc to build/fund
- * @param type                     Type of the industry.
- * @param initial_random_bits      The random bits the industry is going to have after construction.
- * @param founder                  Industry founder
- * @param creation_type            The circumstances the industry is created under.
- * @param [out] custom_shape_check Perform custom check for the site.
+ * @param tile                    Position to check.
+ * @param it                      Industry tiles table.
+ * @param itspec_index            The index of the itsepc to build/fund
+ * @param type                    Type of the industry.
+ * @param initial_random_bits     The random bits the industry is going to have after construction.
+ * @param founder                 Industry founder
+ * @param creation_type           The circumstances the industry is created under.
+ * @param[out] custom_shape_check Perform custom check for the site.
  * @return Failed or succeeded command.
  */
 static CommandCost CheckIfIndustryTilesAreFree(TileIndex tile, const IndustryTileTable *it, uint itspec_index, int type, uint16 initial_random_bits, Owner founder, IndustryAvailabilityCallType creation_type, bool *custom_shape_check = NULL)
@@ -1630,6 +1646,37 @@ static void AdvertiseIndustryOpening(const Industry *ind)
 }
 
 /**
+ * Populate an industry's list of nearby stations, and if it accepts any cargo, also
+ * add the industry to each station's nearby industry list.
+ * @param ind Industry
+ */
+static void PopulateStationsNearby(Industry *ind)
+{
+	if (ind->neutral_station != NULL && !_settings_game.station.serve_neutral_industries) {
+		/* Industry has a neutral station. Use it and ignore any other nearby stations. */
+		ind->stations_near.insert(ind->neutral_station);
+		ind->neutral_station->industries_near.clear();
+		ind->neutral_station->industries_near.insert(ind);
+		return;
+	}
+
+	/* Get our list of nearby stations. */
+	FindStationsAroundTiles(ind->location, &ind->stations_near, false);
+
+	/* Test if industry can accept cargo */
+	uint cargo_index;
+	for (cargo_index = 0; cargo_index < lengthof(ind->accepts_cargo); cargo_index++) {
+		if (ind->accepts_cargo[cargo_index] != CT_INVALID) break;
+	}
+	if (cargo_index >= lengthof(ind->accepts_cargo)) return;
+
+	/* Cargo is accepted, add industry to nearby stations nearby industry list. */
+	for (Station *st : ind->stations_near) {
+		st->industries_near.insert(ind);
+	}
+}
+
+/**
  * Put an industry on the map.
  * @param i       Just allocated poolitem, mostly empty.
  * @param tile    North tile of the industry.
@@ -1648,18 +1695,23 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 	i->type = type;
 	Industry::IncIndustryTypeCount(type);
 
-	i->produced_cargo[0] = indspec->produced_cargo[0];
-	i->produced_cargo[1] = indspec->produced_cargo[1];
-	i->accepts_cargo[0] = indspec->accepts_cargo[0];
-	i->accepts_cargo[1] = indspec->accepts_cargo[1];
-	i->accepts_cargo[2] = indspec->accepts_cargo[2];
-	i->production_rate[0] = indspec->production_rate[0];
-	i->production_rate[1] = indspec->production_rate[1];
+	MemCpyT(i->produced_cargo,  indspec->produced_cargo,  lengthof(i->produced_cargo));
+	MemCpyT(i->production_rate, indspec->production_rate, lengthof(i->production_rate));
+	MemCpyT(i->accepts_cargo,   indspec->accepts_cargo,   lengthof(i->accepts_cargo));
+
+	MemSetT(i->produced_cargo_waiting,     0, lengthof(i->produced_cargo_waiting));
+	MemSetT(i->this_month_production,      0, lengthof(i->this_month_production));
+	MemSetT(i->this_month_transported,     0, lengthof(i->this_month_transported));
+	MemSetT(i->last_month_pct_transported, 0, lengthof(i->last_month_pct_transported));
+	MemSetT(i->last_month_transported,     0, lengthof(i->last_month_transported));
+	MemSetT(i->incoming_cargo_waiting,     0, lengthof(i->incoming_cargo_waiting));
+	MemSetT(i->last_cargo_accepted_at,     0, lengthof(i->last_cargo_accepted_at));
 
 	/* don't use smooth economy for industries using production related callbacks */
 	if (indspec->UsesSmoothEconomy()) {
-		i->production_rate[0] = min((RandomRange(256) + 128) * i->production_rate[0] >> 8, 255);
-		i->production_rate[1] = min((RandomRange(256) + 128) * i->production_rate[1] >> 8, 255);
+		for (size_t ci = 0; ci < lengthof(i->production_rate); ci++) {
+			i->production_rate[ci] = min((RandomRange(256) + 128) * i->production_rate[ci] >> 8, 255);
+		}
 	}
 
 	i->town = t;
@@ -1669,19 +1721,6 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 	i->random_colour = GB(r, 0, 4);
 	i->counter = GB(r, 4, 12);
 	i->random = initial_random_bits;
-	i->produced_cargo_waiting[0] = 0;
-	i->produced_cargo_waiting[1] = 0;
-	i->incoming_cargo_waiting[0] = 0;
-	i->incoming_cargo_waiting[1] = 0;
-	i->incoming_cargo_waiting[2] = 0;
-	i->this_month_production[0] = 0;
-	i->this_month_production[1] = 0;
-	i->this_month_transported[0] = 0;
-	i->this_month_transported[1] = 0;
-	i->last_month_pct_transported[0] = 0;
-	i->last_month_pct_transported[1] = 0;
-	i->last_month_transported[0] = 0;
-	i->last_month_transported[1] = 0;
 	i->was_cargo_delivered = false;
 	i->last_prod_year = _cur_year;
 	i->founder = founder;
@@ -1712,10 +1751,17 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 	}
 
 	if (_generating_world) {
-		i->last_month_production[0] = i->production_rate[0] * 8;
-		i->last_month_production[1] = i->production_rate[1] * 8;
-	} else {
-		i->last_month_production[0] = i->last_month_production[1] = 0;
+		if (HasBit(indspec->callback_mask, CBM_IND_PRODUCTION_256_TICKS)) {
+			IndustryProductionCallback(i, 1);
+			for (size_t ci = 0; ci < lengthof(i->last_month_production); ci++) {
+				i->last_month_production[ci] = i->produced_cargo_waiting[ci] * 8;
+				i->produced_cargo_waiting[ci] = 0;
+			}
+		}
+
+		for (size_t ci = 0; ci < lengthof(i->last_month_production); ci++) {
+			i->last_month_production[ci] += i->production_rate[ci] * 8;
+		}
 	}
 
 	if (HasBit(indspec->callback_mask, CBM_IND_DECIDE_COLOUR)) {
@@ -1727,28 +1773,56 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 	}
 
 	if (HasBit(indspec->callback_mask, CBM_IND_INPUT_CARGO_TYPES)) {
+		/* Clear all input cargo types */
 		for (uint j = 0; j < lengthof(i->accepts_cargo); j++) i->accepts_cargo[j] = CT_INVALID;
-		for (uint j = 0; j < lengthof(i->accepts_cargo); j++) {
+		/* Query actual types */
+		uint maxcargoes = (indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED) ? lengthof(i->accepts_cargo) : 3;
+		for (uint j = 0; j < maxcargoes; j++) {
 			uint16 res = GetIndustryCallback(CBID_INDUSTRY_INPUT_CARGO_TYPES, j, 0, i, type, INVALID_TILE);
 			if (res == CALLBACK_FAILED || GB(res, 0, 8) == CT_INVALID) break;
 			if (indspec->grf_prop.grffile->grf_version >= 8 && res >= 0x100) {
 				ErrorUnknownCallbackResult(indspec->grf_prop.grffile->grfid, CBID_INDUSTRY_INPUT_CARGO_TYPES, res);
 				break;
 			}
-			i->accepts_cargo[j] = GetCargoTranslation(GB(res, 0, 8), indspec->grf_prop.grffile);
+			CargoID cargo = GetCargoTranslation(GB(res, 0, 8), indspec->grf_prop.grffile);
+			if (std::find(indspec->accepts_cargo, endof(indspec->accepts_cargo), cargo) == endof(indspec->accepts_cargo)) {
+				/* Cargo not in spec, error in NewGRF */
+				ErrorUnknownCallbackResult(indspec->grf_prop.grffile->grfid, CBID_INDUSTRY_INPUT_CARGO_TYPES, res);
+				break;
+			}
+			if (std::find(i->accepts_cargo, i->accepts_cargo + j, cargo) != i->accepts_cargo + j) {
+				/* Duplicate cargo */
+				ErrorUnknownCallbackResult(indspec->grf_prop.grffile->grfid, CBID_INDUSTRY_INPUT_CARGO_TYPES, res);
+				break;
+			}
+			i->accepts_cargo[j] = cargo;
 		}
 	}
 
 	if (HasBit(indspec->callback_mask, CBM_IND_OUTPUT_CARGO_TYPES)) {
+		/* Clear all output cargo types */
 		for (uint j = 0; j < lengthof(i->produced_cargo); j++) i->produced_cargo[j] = CT_INVALID;
-		for (uint j = 0; j < lengthof(i->produced_cargo); j++) {
+		/* Query actual types */
+		uint maxcargoes = (indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED) ? lengthof(i->produced_cargo) : 2;
+		for (uint j = 0; j < maxcargoes; j++) {
 			uint16 res = GetIndustryCallback(CBID_INDUSTRY_OUTPUT_CARGO_TYPES, j, 0, i, type, INVALID_TILE);
 			if (res == CALLBACK_FAILED || GB(res, 0, 8) == CT_INVALID) break;
 			if (indspec->grf_prop.grffile->grf_version >= 8 && res >= 0x100) {
 				ErrorUnknownCallbackResult(indspec->grf_prop.grffile->grfid, CBID_INDUSTRY_OUTPUT_CARGO_TYPES, res);
 				break;
 			}
-			i->produced_cargo[j] = GetCargoTranslation(GB(res, 0, 8), indspec->grf_prop.grffile);
+			CargoID cargo = GetCargoTranslation(GB(res, 0, 8), indspec->grf_prop.grffile);
+			if (std::find(indspec->produced_cargo, endof(indspec->produced_cargo), cargo) == endof(indspec->produced_cargo)) {
+				/* Cargo not in spec, error in NewGRF */
+				ErrorUnknownCallbackResult(indspec->grf_prop.grffile->grfid, CBID_INDUSTRY_OUTPUT_CARGO_TYPES, res);
+				break;
+			}
+			if (std::find(i->produced_cargo, i->produced_cargo + j, cargo) != i->produced_cargo + j) {
+				/* Duplicate cargo */
+				ErrorUnknownCallbackResult(indspec->grf_prop.grffile->grfid, CBID_INDUSTRY_OUTPUT_CARGO_TYPES, res);
+				break;
+			}
+			i->produced_cargo[j] = cargo;
 		}
 	}
 
@@ -1783,7 +1857,7 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 	}
 	InvalidateWindowData(WC_INDUSTRY_DIRECTORY, 0, 0);
 
-	Station::RecomputeIndustriesNearForAll();
+	if (!_generating_world) PopulateStationsNearby(i);
 }
 
 /**
@@ -1793,11 +1867,11 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
  * @param flags of operations to conduct
  * @param indspec pointer to industry specifications
  * @param itspec_index the index of the itsepc to build/fund
- * @param seed random seed (possibly) used by industries
- * @param initial_random_bits The random bits the industry is going to have after construction.
+ * @param random_var8f random seed (possibly) used by industries
+ * @param random_initial_bits The random bits the industry is going to have after construction.
  * @param founder Founder of the industry
  * @param creation_type The circumstances the industry is created under.
- * @param [out] ip Pointer to store newly created industry.
+ * @param[out] ip Pointer to store newly created industry.
  * @return Succeeded or failed command.
  *
  * @post \c *ip contains the newly created industry if all checks are successful and the \a flags request actual creation, else it contains \c NULL afterwards.
@@ -1810,7 +1884,7 @@ static CommandCost CreateNewIndustryHelper(TileIndex tile, IndustryType type, Do
 
 	*ip = NULL;
 
-	SmallVector<ClearedObjectArea, 1> object_areas(_cleared_object_areas);
+	std::vector<ClearedObjectArea> object_areas(_cleared_object_areas);
 	CommandCost ret = CheckIfIndustryTilesAreFree(tile, it, itspec_index, type, random_initial_bits, founder, creation_type, &custom_shape_check);
 	_cleared_object_areas = object_areas;
 	if (ret.Failed()) return ret;
@@ -1961,7 +2035,7 @@ static Industry *CreateNewIndustry(TileIndex tile, IndustryType type, IndustryAv
 /**
  * Compute the appearance probability for an industry during map creation.
  * @param it Industry type to compute.
- * @param [out] force_at_least_one Returns whether at least one instance should be forced on map creation.
+ * @param[out] force_at_least_one Returns whether at least one instance should be forced on map creation.
  * @return Relative probability for the industry to appear.
  */
 static uint32 GetScaledIndustryGenerationProbability(IndustryType it, bool *force_at_least_one)
@@ -1986,7 +2060,7 @@ static uint32 GetScaledIndustryGenerationProbability(IndustryType it, bool *forc
 /**
  * Compute the probability for constructing a new industry during game play.
  * @param it Industry type to compute.
- * @param [out] min_number Minimal number of industries that should exist at the map.
+ * @param[out] min_number Minimal number of industries that should exist at the map.
  * @return Relative probability for the industry to appear.
  */
 static uint16 GetIndustryGamePlayProbability(IndustryType it, byte *min_number)
@@ -2194,8 +2268,9 @@ void Industry::RecomputeProductionMultipliers()
 	assert(!indspec->UsesSmoothEconomy());
 
 	/* Rates are rounded up, so e.g. oilrig always produces some passengers */
-	this->production_rate[0] = min(CeilDiv(indspec->production_rate[0] * this->prod_level, PRODLEVEL_DEFAULT), 0xFF);
-	this->production_rate[1] = min(CeilDiv(indspec->production_rate[1] * this->prod_level, PRODLEVEL_DEFAULT), 0xFF);
+	for (size_t i = 0; i < lengthof(this->production_rate); i++) {
+		this->production_rate[i] = min(CeilDiv(indspec->production_rate[i] * this->prod_level, PRODLEVEL_DEFAULT), 0xFF);
+	}
 }
 
 
@@ -2387,11 +2462,7 @@ static void CanCargoServiceIndustry(CargoID cargo, Industry *ind, bool *c_accept
  */
 static int WhoCanServiceIndustry(Industry *ind)
 {
-	/* Find all stations within reach of the industry */
-	StationList stations;
-	FindStationsAroundTiles(ind->location, &stations);
-
-	if (stations.Length() == 0) return 0; // No stations found at all => nobody services
+	if (ind->stations_near.size() == 0) return 0; // No stations found at all => nobody services
 
 	const Vehicle *v;
 	int result = 0;
@@ -2427,7 +2498,7 @@ static int WhoCanServiceIndustry(Industry *ind)
 				/* Same cargo produced by industry is dropped here => not serviced by vehicle v */
 				if ((o->GetUnloadType() & OUFB_UNLOAD) && !c_accepts) break;
 
-				if (stations.Contains(st)) {
+				if (ind->stations_near.find(st) != ind->stations_near.end()) {
 					if (v->owner == _local_company) return 2; // Company services industry
 					result = 1; // Competitor services industry
 				}
@@ -2866,3 +2937,8 @@ extern const TileTypeProcs _tile_type_industry_procs = {
 	GetFoundation_Industry,      // get_foundation_proc
 	TerraformTile_Industry,      // terraform_tile_proc
 };
+
+bool IndustryCompare::operator() (const Industry *lhs, const Industry *rhs) const
+{
+	return lhs->index < rhs->index;
+}

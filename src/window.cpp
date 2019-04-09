@@ -37,6 +37,9 @@
 #include "game/game.hpp"
 #include "video/video_driver.hpp"
 #include "framerate_type.h"
+#include "network/network_func.h"
+#include "guitimer_func.h"
+#include "news_func.h"
 
 #include "safeguards.h"
 
@@ -49,7 +52,7 @@ enum ViewportAutoscrolling {
 };
 
 static Point _drag_delta; ///< delta between mouse cursor and upper left corner of dragged window
-static Window *_mouseover_last_w = NULL; ///< Window of the last #MOUSEOVER event.
+static Window *_mouseover_last_w = NULL; ///< Window of the last OnMouseOver event.
 static Window *_last_scroll_window = NULL; ///< Window of the last scroll event.
 
 /** List of windows opened at the screen sorted from the front. */
@@ -82,7 +85,7 @@ SpecialMouseMode _special_mouse_mode; ///< Mode of the mouse.
  * List of all WindowDescs.
  * This is a pointer to ensure initialisation order with the various static WindowDesc instances.
  */
-static SmallVector<WindowDesc*, 16> *_window_descs = NULL;
+static std::vector<WindowDesc*> *_window_descs = NULL;
 
 /** Config file to store WindowDesc */
 char *_windows_file;
@@ -105,13 +108,13 @@ WindowDesc::WindowDesc(WindowPosition def_pos, const char *ini_key, int16 def_wi
 	default_width_trad(def_width_trad),
 	default_height_trad(def_height_trad)
 {
-	if (_window_descs == NULL) _window_descs = new SmallVector<WindowDesc*, 16>();
-	*_window_descs->Append() = this;
+	if (_window_descs == NULL) _window_descs = new std::vector<WindowDesc*>();
+	_window_descs->push_back(this);
 }
 
 WindowDesc::~WindowDesc()
 {
-	_window_descs->Erase(_window_descs->Find(this));
+	_window_descs->erase(std::find(_window_descs->begin(), _window_descs->end(), this));
 }
 
 /**
@@ -141,9 +144,9 @@ void WindowDesc::LoadFromConfig()
 {
 	IniFile *ini = new IniFile();
 	ini->LoadFromDisk(_windows_file, NO_DIRECTORY);
-	for (WindowDesc **it = _window_descs->Begin(); it != _window_descs->End(); ++it) {
-		if ((*it)->ini_key == NULL) continue;
-		IniLoadWindowSettings(ini, (*it)->ini_key, *it);
+	for (WindowDesc *wd : *_window_descs) {
+		if (wd->ini_key == NULL) continue;
+		IniLoadWindowSettings(ini, wd->ini_key, wd);
 	}
 	delete ini;
 }
@@ -163,13 +166,13 @@ static int CDECL DescSorter(WindowDesc * const *a, WindowDesc * const *b)
 void WindowDesc::SaveToConfig()
 {
 	/* Sort the stuff to get a nice ini file on first write */
-	QSortT(_window_descs->Begin(), _window_descs->Length(), DescSorter);
+	QSortT(_window_descs->data(), _window_descs->size(), DescSorter);
 
 	IniFile *ini = new IniFile();
 	ini->LoadFromDisk(_windows_file, NO_DIRECTORY);
-	for (WindowDesc **it = _window_descs->Begin(); it != _window_descs->End(); ++it) {
-		if ((*it)->ini_key == NULL) continue;
-		IniSaveWindowSettings(ini, (*it)->ini_key, *it);
+	for (WindowDesc *wd : *_window_descs) {
+		if (wd->ini_key == NULL) continue;
+		IniSaveWindowSettings(ini, wd->ini_key, wd);
 	}
 	ini->SaveToDisk(_windows_file);
 	delete ini;
@@ -327,8 +330,8 @@ Scrollbar *Window::GetScrollbar(uint widnum)
  */
 const QueryString *Window::GetQueryString(uint widnum) const
 {
-	const SmallMap<int, QueryString*>::Pair *query = this->querystrings.Find(widnum);
-	return query != this->querystrings.End() ? query->second : NULL;
+	auto query = this->querystrings.Find(widnum);
+	return query != this->querystrings.end() ? query->second : NULL;
 }
 
 /**
@@ -653,7 +656,7 @@ static void DispatchLeftClickEvent(Window *w, int x, int y, int click_count)
 
 	/* Clicked on a widget that is not disabled.
 	 * So unless the clicked widget is the caption bar, change focus to this widget.
-	 * Exception: In the OSK we always want the editbox to stay focussed. */
+	 * Exception: In the OSK we always want the editbox to stay focused. */
 	if (widget_type != WWT_CAPTION && w->window_class != WC_OSK) {
 		/* focused_widget_changed is 'now' only true if the window this widget
 		 * is in gained focus. In that case it must remain true, also if the
@@ -767,16 +770,17 @@ static void DispatchRightClickEvent(Window *w, int x, int y)
 	NWidgetCore *wid = w->nested_root->GetWidgetFromPos(x, y);
 	if (wid == NULL) return;
 
+	Point pt = { x, y };
+
 	/* No widget to handle, or the window is not interested in it. */
 	if (wid->index >= 0) {
-		Point pt = { x, y };
 		if (w->OnRightClick(pt, wid->index)) return;
 	}
 
 	/* Right-click close is enabled and there is a closebox */
 	if (_settings_client.gui.right_mouse_wnd_close && w->nested_root->GetWidgetOfType(WWT_CLOSEBOX)) {
 		delete w;
-	} else if (_settings_client.gui.hover_delay_ms == 0 && wid->tool_tip != 0) {
+	} else if (_settings_client.gui.hover_delay_ms == 0 && !w->OnTooltip(pt, wid->index, TCC_RIGHT_CLICK) && wid->tool_tip != 0) {
 		GuiShowTooltips(w, wid->tool_tip, 0, NULL, TCC_RIGHT_CLICK);
 	}
 }
@@ -794,8 +798,10 @@ static void DispatchHoverEvent(Window *w, int x, int y)
 	/* No widget to handle */
 	if (wid == NULL) return;
 
+	Point pt = { x, y };
+
 	/* Show the tooltip if there is any */
-	if (wid->tool_tip != 0) {
+	if (!w->OnTooltip(pt, wid->index, TCC_HOVER) && wid->tool_tip != 0) {
 		GuiShowTooltips(w, wid->tool_tip);
 		return;
 	}
@@ -803,7 +809,6 @@ static void DispatchHoverEvent(Window *w, int x, int y)
 	/* Widget has no index, so the window is not interested in it. */
 	if (wid->index < 0) return;
 
-	Point pt = { x, y };
 	w->OnHover(pt, wid->index);
 }
 
@@ -938,6 +943,8 @@ static void DrawOverlappedWindow(Window *w, int left, int top, int right, int bo
 void DrawOverlappedWindowForAll(int left, int top, int right, int bottom)
 {
 	Window *w;
+
+	DrawPixelInfo *old_dpi = _cur_dpi;
 	DrawPixelInfo bk;
 	_cur_dpi = &bk;
 
@@ -951,6 +958,7 @@ void DrawOverlappedWindowForAll(int left, int top, int right, int bottom)
 			DrawOverlappedWindow(w, max(left, w->left), max(top, w->top), min(right, w->left + w->width), min(bottom, w->top + w->height));
 		}
 	}
+	_cur_dpi = old_dpi;
 }
 
 /**
@@ -1115,7 +1123,7 @@ Window *FindWindowById(WindowClass cls, WindowNumber number)
 
 /**
  * Find any window by its class. Useful when searching for a window that uses
- * the window number as a #WindowType, like #WC_SEND_NETWORK_MSG.
+ * the window number as a #WindowClass, like #WC_SEND_NETWORK_MSG.
  * @param cls Window class
  * @return Pointer to the found window, or \c NULL if not available
  */
@@ -1430,7 +1438,6 @@ static void BringWindowToFront(Window *w)
 
 /**
  * Initializes the data (except the position and initial size) of a new Window.
- * @param desc          Window description.
  * @param window_number Number being assigned to the new window
  * @return Window pointer of the newly created window
  * @pre If nested widgets are used (\a widget is \c NULL), #nested_root and #nested_array_size must be initialized.
@@ -1739,7 +1746,7 @@ static Point LocalGetWindowPlacement(const WindowDesc *desc, int16 sm_width, int
 	int16 default_width  = max(desc->GetDefaultWidth(),  sm_width);
 	int16 default_height = max(desc->GetDefaultHeight(), sm_height);
 
-	if (desc->parent_cls != 0 /* WC_MAIN_WINDOW */ && (w = FindWindowById(desc->parent_cls, window_number)) != NULL) {
+	if (desc->parent_cls != WC_NONE && (w = FindWindowById(desc->parent_cls, window_number)) != NULL) {
 		bool rtl = _current_text_dir == TD_RTL;
 		if (desc->parent_cls == WC_BUILD_TOOLBAR || desc->parent_cls == WC_SCEN_LAND_GEN) {
 			pt.x = w->left + (rtl ? w->width - default_width : 0);
@@ -1841,7 +1848,7 @@ void Window::InitNested(WindowNumber window_number)
  * Empty constructor, initialization has been moved to #InitNested() called from the constructor of the derived class.
  * @param desc The description of the window.
  */
-Window::Window(WindowDesc *desc) : window_desc(desc), scrolling_scrollbar(-1)
+Window::Window(WindowDesc *desc) : window_desc(desc), mouse_capture_widget(-1)
 {
 }
 
@@ -1917,6 +1924,8 @@ void ResetWindowSystem()
 
 static void DecreaseWindowCounters()
 {
+	if (_scroller_click_timeout != 0) _scroller_click_timeout--;
+
 	Window *w;
 	FOR_ALL_WINDOWS_FROM_FRONT(w) {
 		if (_scroller_click_timeout == 0) {
@@ -1927,7 +1936,7 @@ static void DecreaseWindowCounters()
 					NWidgetScrollbar *sb = static_cast<NWidgetScrollbar*>(nwid);
 					if (sb->disp_flags & (ND_SCROLLBAR_UP | ND_SCROLLBAR_DOWN)) {
 						sb->disp_flags &= ~(ND_SCROLLBAR_UP | ND_SCROLLBAR_DOWN);
-						w->scrolling_scrollbar = -1;
+						w->mouse_capture_widget = -1;
 						sb->SetDirty(w);
 					}
 				}
@@ -1935,8 +1944,8 @@ static void DecreaseWindowCounters()
 		}
 
 		/* Handle editboxes */
-		for (SmallMap<int, QueryString*>::Pair *it = w->querystrings.Begin(); it != w->querystrings.End(); ++it) {
-			it->second->HandleEditBox(w, it->first);
+		for (SmallMap<int, QueryString*>::Pair &pair : w->querystrings) {
+			pair.second->HandleEditBox(w, pair.first);
 		}
 
 		w->OnMouseLoop();
@@ -2000,7 +2009,7 @@ static void HandleMouseOver()
 {
 	Window *w = FindWindowFromPt(_cursor.pos.x, _cursor.pos.y);
 
-	/* We changed window, put a MOUSEOVER event to the last window */
+	/* We changed window, put an OnMouseOver event to the last window */
 	if (_mouseover_last_w != NULL && _mouseover_last_w != w) {
 		/* Reset mouse-over coordinates of previous window */
 		Point pt = { -1, -1 };
@@ -2379,47 +2388,66 @@ static void StartWindowSizing(Window *w, bool to_left)
 }
 
 /**
- * handle scrollbar scrolling with the mouse.
+ * Handle scrollbar scrolling with the mouse.
+ * @param w window with active scrollbar.
+ */
+static void HandleScrollbarScrolling(Window *w)
+{
+	int i;
+	NWidgetScrollbar *sb = w->GetWidget<NWidgetScrollbar>(w->mouse_capture_widget);
+	bool rtl = false;
+
+	if (sb->type == NWID_HSCROLLBAR) {
+		i = _cursor.pos.x - _cursorpos_drag_start.x;
+		rtl = _current_text_dir == TD_RTL;
+	} else {
+		i = _cursor.pos.y - _cursorpos_drag_start.y;
+	}
+
+	if (sb->disp_flags & ND_SCROLLBAR_BTN) {
+		if (_scroller_click_timeout == 1) {
+			_scroller_click_timeout = 3;
+			sb->UpdatePosition(rtl == HasBit(sb->disp_flags, NDB_SCROLLBAR_UP) ? 1 : -1);
+			w->SetDirty();
+		}
+		return;
+	}
+
+	/* Find the item we want to move to and make sure it's inside bounds. */
+	int pos = min(max(0, i + _scrollbar_start_pos) * sb->GetCount() / _scrollbar_size, max(0, sb->GetCount() - sb->GetCapacity()));
+	if (rtl) pos = max(0, sb->GetCount() - sb->GetCapacity() - pos);
+	if (pos != sb->GetPosition()) {
+		sb->SetPosition(pos);
+		w->SetDirty();
+	}
+}
+
+/**
+ * Handle active widget (mouse draggin on widget) with the mouse.
  * @return State of handling the event.
  */
-static EventState HandleScrollbarScrolling()
+static EventState HandleActiveWidget()
 {
 	Window *w;
 	FOR_ALL_WINDOWS_FROM_BACK(w) {
-		if (w->scrolling_scrollbar >= 0) {
+		if (w->mouse_capture_widget >= 0) {
 			/* Abort if no button is clicked any more. */
 			if (!_left_button_down) {
-				w->scrolling_scrollbar = -1;
+				w->mouse_capture_widget = -1;
 				w->SetDirty();
 				return ES_HANDLED;
 			}
 
-			int i;
-			NWidgetScrollbar *sb = w->GetWidget<NWidgetScrollbar>(w->scrolling_scrollbar);
-			bool rtl = false;
-
-			if (sb->type == NWID_HSCROLLBAR) {
-				i = _cursor.pos.x - _cursorpos_drag_start.x;
-				rtl = _current_text_dir == TD_RTL;
+			/* Handle scrollbar internally, or dispatch click event */
+			WidgetType type = w->GetWidget<NWidgetBase>(w->mouse_capture_widget)->type;
+			if (type == NWID_VSCROLLBAR || type == NWID_HSCROLLBAR) {
+				HandleScrollbarScrolling(w);
 			} else {
-				i = _cursor.pos.y - _cursorpos_drag_start.y;
-			}
+				/* If cursor hasn't moved, there is nothing to do. */
+				if (_cursor.delta.x == 0 && _cursor.delta.y == 0) return ES_HANDLED;
 
-			if (sb->disp_flags & ND_SCROLLBAR_BTN) {
-				if (_scroller_click_timeout == 1) {
-					_scroller_click_timeout = 3;
-					sb->UpdatePosition(rtl == HasBit(sb->disp_flags, NDB_SCROLLBAR_UP) ? 1 : -1);
-					w->SetDirty();
-				}
-				return ES_HANDLED;
-			}
-
-			/* Find the item we want to move to and make sure it's inside bounds. */
-			int pos = min(max(0, i + _scrollbar_start_pos) * sb->GetCount() / _scrollbar_size, max(0, sb->GetCount() - sb->GetCapacity()));
-			if (rtl) pos = max(0, sb->GetCount() - sb->GetCapacity() - pos);
-			if (pos != sb->GetPosition()) {
-				sb->SetPosition(pos);
-				w->SetDirty();
+				Point pt = { _cursor.pos.x - w->left, _cursor.pos.y - w->top };
+				w->OnClick(pt, w->mouse_capture_widget, 0);
 			}
 			return ES_HANDLED;
 		}
@@ -2751,18 +2779,17 @@ static void HandleAutoscroll()
 	y -= vp->top;
 
 	/* here allows scrolling in both x and y axis */
-#define scrollspeed 3
+	static const int SCROLLSPEED = 3;
 	if (x - 15 < 0) {
-		w->viewport->dest_scrollpos_x += ScaleByZoom((x - 15) * scrollspeed, vp->zoom);
+		w->viewport->dest_scrollpos_x += ScaleByZoom((x - 15) * SCROLLSPEED, vp->zoom);
 	} else if (15 - (vp->width - x) > 0) {
-		w->viewport->dest_scrollpos_x += ScaleByZoom((15 - (vp->width - x)) * scrollspeed, vp->zoom);
+		w->viewport->dest_scrollpos_x += ScaleByZoom((15 - (vp->width - x)) * SCROLLSPEED, vp->zoom);
 	}
 	if (y - 15 < 0) {
-		w->viewport->dest_scrollpos_y += ScaleByZoom((y - 15) * scrollspeed, vp->zoom);
+		w->viewport->dest_scrollpos_y += ScaleByZoom((y - 15) * SCROLLSPEED, vp->zoom);
 	} else if (15 - (vp->height - y) > 0) {
-		w->viewport->dest_scrollpos_y += ScaleByZoom((15 - (vp->height - y)) * scrollspeed, vp->zoom);
+		w->viewport->dest_scrollpos_y += ScaleByZoom((15 - (vp->height - y)) * SCROLLSPEED, vp->zoom);
 	}
-#undef scrollspeed
 }
 
 enum MouseClick {
@@ -2843,7 +2870,7 @@ static void MouseLoop(MouseClick click, int mousewheel)
 	if (VpHandlePlaceSizingDrag()  == ES_HANDLED) return;
 	if (HandleMouseDragDrop()      == ES_HANDLED) return;
 	if (HandleWindowDragging()     == ES_HANDLED) return;
-	if (HandleScrollbarScrolling() == ES_HANDLED) return;
+	if (HandleActiveWidget()       == ES_HANDLED) return;
 	if (HandleViewportScroll()     == ES_HANDLED) return;
 
 	HandleMouseOver();
@@ -3003,7 +3030,7 @@ void HandleMouseEvents()
 		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 		_newgrf_debug_sprite_picker.clicked_pixel = blitter->MoveTo(_screen.dst_ptr, _cursor.pos.x, _cursor.pos.y);
 		_newgrf_debug_sprite_picker.click_time = _realtime_tick;
-		_newgrf_debug_sprite_picker.sprites.Clear();
+		_newgrf_debug_sprite_picker.sprites.clear();
 		_newgrf_debug_sprite_picker.mode = SPM_REDRAW;
 		MarkWholeScreenDirty();
 	} else {
@@ -3053,7 +3080,6 @@ void InputLoop()
 	assert(HasModalProgress() || IsLocalCompany());
 
 	CheckSoftLimit();
-	HandleKeyScrolling();
 
 	/* Do the actual free of the deleted windows. */
 	for (Window *v = _z_front_window; v != NULL; /* nothing */) {
@@ -3066,9 +3092,6 @@ void InputLoop()
 		free(w);
 	}
 
-	if (_scroller_click_timeout != 0) _scroller_click_timeout--;
-	DecreaseWindowCounters();
-
 	if (_input_events_this_tick != 0) {
 		/* The input loop is called only once per GameLoop() - so we can clear the counter here */
 		_input_events_this_tick = 0;
@@ -3078,7 +3101,17 @@ void InputLoop()
 
 	/* HandleMouseEvents was already called for this tick */
 	HandleMouseEvents();
-	HandleAutoscroll();
+}
+
+/**
+ * Dispatch OnRealtimeTick event over all windows
+ */
+void CallWindowRealtimeTickEvent(uint delta_ms)
+{
+	Window *w;
+	FOR_ALL_WINDOWS_FROM_FRONT(w) {
+		w->OnRealtimeTick(delta_ms);
+	}
 }
 
 /**
@@ -3086,16 +3119,45 @@ void InputLoop()
  */
 void UpdateWindows()
 {
+	static uint32 last_realtime_tick = _realtime_tick;
+	uint delta_ms = _realtime_tick - last_realtime_tick;
+	last_realtime_tick = _realtime_tick;
+
+	if (delta_ms == 0) return;
+
 	PerformanceMeasurer framerate(PFE_DRAWING);
 	PerformanceAccumulator::Reset(PFE_DRAWWORLD);
 
+	CallWindowRealtimeTickEvent(delta_ms);
+
+	static GUITimer network_message_timer = GUITimer(1);
+	if (network_message_timer.Elapsed(delta_ms)) {
+		network_message_timer.SetInterval(1000);
+		NetworkChatMessageLoop();
+	}
+
 	Window *w;
 
-	static int highlight_timer = 1;
-	if (--highlight_timer == 0) {
-		highlight_timer = 15;
+	static GUITimer window_timer = GUITimer(1);
+	if (window_timer.Elapsed(delta_ms)) {
+		if (_network_dedicated) window_timer.SetInterval(MILLISECONDS_PER_TICK);
+
+		extern int _caret_timer;
+		_caret_timer += 3;
+		CursorTick();
+
+		HandleKeyScrolling();
+		HandleAutoscroll();
+		DecreaseWindowCounters();
+	}
+
+	static GUITimer highlight_timer = GUITimer(1);
+	if (highlight_timer.Elapsed(delta_ms)) {
+		highlight_timer.SetInterval(450);
 		_window_highlight_colour = !_window_highlight_colour;
 	}
+
+	if (!_pause_mode || _game_mode == GM_EDITOR || _settings_game.construction.command_pause_level > CMDPL_NO_CONSTRUCTION) MoveAllTextEffects(delta_ms);
 
 	FOR_ALL_WINDOWS_FROM_FRONT(w) {
 		w->ProcessScheduledInvalidations();
@@ -3106,21 +3168,23 @@ void UpdateWindows()
 	 * But still empty the invalidation queues above. */
 	if (_network_dedicated) return;
 
-	static int we4_timer = 0;
-	int t = we4_timer + 1;
+	static GUITimer hundredth_timer = GUITimer(1);
+	if (hundredth_timer.Elapsed(delta_ms)) {
+		hundredth_timer.SetInterval(3000); // Historical reason: 100 * MILLISECONDS_PER_TICK
 
-	if (t >= 100) {
 		FOR_ALL_WINDOWS_FROM_FRONT(w) {
 			w->OnHundredthTick();
 		}
-		t = 0;
 	}
-	we4_timer = t;
 
-	FOR_ALL_WINDOWS_FROM_FRONT(w) {
-		if ((w->flags & WF_WHITE_BORDER) && --w->white_border_timer == 0) {
-			CLRBITS(w->flags, WF_WHITE_BORDER);
-			w->SetDirty();
+	if (window_timer.HasElapsed()) {
+		window_timer.SetInterval(MILLISECONDS_PER_TICK);
+
+		FOR_ALL_WINDOWS_FROM_FRONT(w) {
+			if ((w->flags & WF_WHITE_BORDER) && --w->white_border_timer == 0) {
+				CLRBITS(w->flags, WF_WHITE_BORDER);
+				w->SetDirty();
+			}
 		}
 	}
 
@@ -3186,7 +3250,7 @@ void Window::InvalidateData(int data, bool gui_scope)
 	this->SetDirty();
 	if (!gui_scope) {
 		/* Schedule GUI-scope invalidation for next redraw. */
-		*this->scheduled_invalidation_data.Append() = data;
+		this->scheduled_invalidation_data.push_back(data);
 	}
 	this->OnInvalidateData(data, gui_scope);
 }
@@ -3196,10 +3260,11 @@ void Window::InvalidateData(int data, bool gui_scope)
  */
 void Window::ProcessScheduledInvalidations()
 {
-	for (int *data = this->scheduled_invalidation_data.Begin(); this->window_class != WC_INVALID && data != this->scheduled_invalidation_data.End(); data++) {
-		this->OnInvalidateData(*data, true);
+	for (int data : this->scheduled_invalidation_data) {
+		if (this->window_class == WC_INVALID) break;
+		this->OnInvalidateData(data, true);
 	}
-	this->scheduled_invalidation_data.Clear();
+	this->scheduled_invalidation_data.clear();
 }
 
 /**
@@ -3270,13 +3335,13 @@ void InvalidateWindowClassesData(WindowClass cls, int data, bool gui_scope)
 }
 
 /**
- * Dispatch WE_TICK event over all windows
+ * Dispatch OnGameTick event over all windows
  */
-void CallWindowTickEvent()
+void CallWindowGameTickEvent()
 {
 	Window *w;
 	FOR_ALL_WINDOWS_FROM_FRONT(w) {
-		w->OnTick();
+		w->OnGameTick();
 	}
 }
 
@@ -3335,6 +3400,17 @@ restart_search:
 }
 
 /**
+ * Delete all messages and their corresponding window (if any).
+ */
+void DeleteAllMessages()
+{
+	InitNewsItemStructs();
+	InvalidateWindowData(WC_STATUS_BAR, 0, SBI_NEWS_DELETED); // invalidate the statusbar
+	InvalidateWindowData(WC_MESSAGE_HISTORY, 0); // invalidate the message history
+	DeleteWindowById(WC_NEWS_WINDOW, 0); // close newspaper or general message window if shown
+}
+
+/**
  * Delete all windows that are used for construction of vehicle etc.
  * Once done with that invalidate the others to ensure they get refreshed too.
  */
@@ -3376,10 +3452,9 @@ void ReInitAllWindows()
 	FOR_ALL_WINDOWS_FROM_BACK(w) {
 		w->ReInit();
 	}
-#ifdef ENABLE_NETWORK
+
 	void NetworkReInitChatBoxSize();
 	NetworkReInitChatBoxSize();
-#endif
 
 	/* Make sure essential parts of all windows are visible */
 	RelocateAllWindows(_cur_resolution.width, _cur_resolution.height);
@@ -3480,8 +3555,9 @@ void ChangeVehicleViewports(VehicleID from_index, VehicleID to_index)
  */
 void RelocateAllWindows(int neww, int newh)
 {
-	Window *w;
+	DeleteWindowById(WC_DROPDOWN_MENU, 0);
 
+	Window *w;
 	FOR_ALL_WINDOWS_FROM_BACK(w) {
 		int left, top;
 		/* XXX - this probably needs something more sane. For example specifying

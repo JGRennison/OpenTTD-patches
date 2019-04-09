@@ -58,7 +58,7 @@
  *
  *
  * Rows are horizontal sections of the viewport, also half a tile wide.
- * This time the nothern most tile on the map defines 0 and
+ * This time the northern most tile on the map defines 0 and
  * everything south of that has a positive number.
  */
 
@@ -82,6 +82,7 @@
 #include "tilehighlight_func.h"
 #include "window_gui.h"
 #include "linkgraph/linkgraph_gui.h"
+#include "viewport_kdtree.h"
 #include "viewport_sprite_sorter.h"
 #include "bridge_map.h"
 #include "company_base.h"
@@ -97,6 +98,10 @@
 #include "safeguards.h"
 
 Point _tile_fract_coords;
+
+
+ViewportSignKdtree _viewport_sign_kdtree(&Kdtree_ViewportSignXYFunc);
+static int _viewport_sign_maxwidth = 0;
 
 
 static const int MAX_TILE_EXTENT_LEFT   = ZOOM_LVL_BASE * TILE_PIXELS;                     ///< Maximum left   extent of tile relative to north corner.
@@ -148,10 +153,10 @@ enum SpriteCombineMode {
 	SPRITE_COMBINE_ACTIVE,   ///< %Sprite combining is active. #AddSortableSpriteToDraw outputs child sprites.
 };
 
-typedef SmallVector<TileSpriteToDraw, 64> TileSpriteToDrawVector;
-typedef SmallVector<StringSpriteToDraw, 4> StringSpriteToDrawVector;
-typedef SmallVector<ParentSpriteToDraw, 64> ParentSpriteToDrawVector;
-typedef SmallVector<ChildScreenSpriteToDraw, 16> ChildScreenSpriteToDrawVector;
+typedef std::vector<TileSpriteToDraw> TileSpriteToDrawVector;
+typedef std::vector<StringSpriteToDraw> StringSpriteToDrawVector;
+typedef std::vector<ParentSpriteToDraw> ParentSpriteToDrawVector;
+typedef std::vector<ChildScreenSpriteToDraw> ChildScreenSpriteToDrawVector;
 
 /** Data structure storing rendering information */
 struct ViewportDrawer {
@@ -399,65 +404,27 @@ ViewPort *IsPtInWindowViewport(const Window *w, int x, int y)
 }
 
 /**
- * Translate screen coordinate in a viewport to a tile coordinate
+ * Translate screen coordinate in a viewport to underlying tile coordinate.
+ *
+ * Returns exact point of the map that is visible in the given place
+ * of the viewport (3D perspective), height of tiles and foundations matter.
+ *
  * @param vp  Viewport that contains the (\a x, \a y) screen coordinate
- * @param x   Screen x coordinate
- * @param y   Screen y coordinate
- * @param clamp_to_map Clamp the coordinate outside of the map to the closest tile within the map.
- * @return Tile coordinate
+ * @param x   Screen x coordinate, distance in pixels from the left edge of viewport frame
+ * @param y   Screen y coordinate, distance in pixels from the top edge of viewport frame
+ * @param clamp_to_map Clamp the coordinate outside of the map to the closest, non-void tile within the map
+ * @return Tile coordinate or (-1, -1) if given x or y is not within viewport frame
  */
 Point TranslateXYToTileCoord(const ViewPort *vp, int x, int y, bool clamp_to_map)
 {
-	Point pt;
-	int a, b;
-	int z;
-
-	if ( (uint)(x -= vp->left) >= (uint)vp->width ||
-				(uint)(y -= vp->top) >= (uint)vp->height) {
-				Point pt = {-1, -1};
-				return pt;
+	if (!IsInsideBS(x, vp->left, vp->width) || !IsInsideBS(y, vp->top, vp->height)) {
+		Point pt = { -1, -1 };
+		return pt;
 	}
 
-	x = (ScaleByZoom(x, vp->zoom) + vp->virtual_left) >> (2 + ZOOM_LVL_SHIFT);
-	y = (ScaleByZoom(y, vp->zoom) + vp->virtual_top) >> (1 + ZOOM_LVL_SHIFT);
-
-	a = y - x;
-	b = y + x;
-
-	if (clamp_to_map) {
-		/* Bring the coordinates near to a valid range. This is mostly due to the
-		 * tiles on the north side of the map possibly being drawn too high due to
-		 * the extra height levels. So at the top we allow a number of extra tiles.
-		 * This number is based on the tile height and pixels. */
-		int extra_tiles = CeilDiv(_settings_game.construction.max_heightlevel * TILE_HEIGHT, TILE_PIXELS);
-		a = Clamp(a, -extra_tiles * TILE_SIZE, MapMaxX() * TILE_SIZE - 1);
-		b = Clamp(b, -extra_tiles * TILE_SIZE, MapMaxY() * TILE_SIZE - 1);
-	}
-
-	/* (a, b) is the X/Y-world coordinate that belongs to (x,y) if the landscape would be completely flat on height 0.
-	 * Now find the Z-world coordinate by fix point iteration.
-	 * This is a bit tricky because the tile height is non-continuous at foundations.
-	 * The clicked point should be approached from the back, otherwise there are regions that are not clickable.
-	 * (FOUNDATION_HALFTILE_LOWER on SLOPE_STEEP_S hides north halftile completely)
-	 * So give it a z-malus of 4 in the first iterations.
-	 */
-	z = 0;
-
-	int min_coord = _settings_game.construction.freeform_edges ? TILE_SIZE : 0;
-
-	for (int i = 0; i < 5; i++) z = GetSlopePixelZ(Clamp(a + max(z, 4) - 4, min_coord, MapMaxX() * TILE_SIZE - 1), Clamp(b + max(z, 4) - 4, min_coord, MapMaxY() * TILE_SIZE - 1)) / 2;
-	for (int malus = 3; malus > 0; malus--) z = GetSlopePixelZ(Clamp(a + max(z, malus) - malus, min_coord, MapMaxX() * TILE_SIZE - 1), Clamp(b + max(z, malus) - malus, min_coord, MapMaxY() * TILE_SIZE - 1)) / 2;
-	for (int i = 0; i < 5; i++) z = GetSlopePixelZ(Clamp(a + z, min_coord, MapMaxX() * TILE_SIZE - 1), Clamp(b + z, min_coord, MapMaxY() * TILE_SIZE - 1)) / 2;
-
-	if (clamp_to_map) {
-		pt.x = Clamp(a + z, min_coord, MapMaxX() * TILE_SIZE - 1);
-		pt.y = Clamp(b + z, min_coord, MapMaxY() * TILE_SIZE - 1);
-	} else {
-		pt.x = a + z;
-		pt.y = b + z;
-	}
-
-	return pt;
+	return InverseRemapCoords2(
+			ScaleByZoom(x - vp->left, vp->zoom) + vp->virtual_left,
+			ScaleByZoom(y - vp->top, vp->zoom) + vp->virtual_top, clamp_to_map);
 }
 
 /* When used for zooming, check area below current coordinates (x,y)
@@ -532,13 +499,14 @@ static void AddTileSpriteToDraw(SpriteID image, PaletteID pal, int32 x, int32 y,
 {
 	assert((image & SPRITE_MASK) < MAX_SPRITES);
 
-	TileSpriteToDraw *ts = _vd.tile_sprites_to_draw.Append();
-	ts->image = image;
-	ts->pal = pal;
-	ts->sub = sub;
+	/*C++17: TileSpriteToDraw &ts = */ _vd.tile_sprites_to_draw.emplace_back();
+	TileSpriteToDraw &ts = _vd.tile_sprites_to_draw.back();
+	ts.image = image;
+	ts.pal = pal;
+	ts.sub = sub;
 	Point pt = RemapCoords(x, y, z);
-	ts->x = pt.x + extra_offs_x;
-	ts->y = pt.y + extra_offs_y;
+	ts.x = pt.x + extra_offs_x;
+	ts.y = pt.y + extra_offs_y;
 }
 
 /**
@@ -631,7 +599,7 @@ void OffsetGroundSprite(int x, int y)
 	}
 
 	/* _vd.last_child == NULL if foundation sprite was clipped by the viewport bounds */
-	if (_vd.last_child != NULL) _vd.foundation[_vd.foundation_part] = _vd.parent_sprites_to_draw.Length() - 1;
+	if (_vd.last_child != NULL) _vd.foundation[_vd.foundation_part] = (uint)_vd.parent_sprites_to_draw.size() - 1;
 
 	_vd.foundation_offset[_vd.foundation_part].x = x * ZOOM_LVL_BASE;
 	_vd.foundation_offset[_vd.foundation_part].y = y * ZOOM_LVL_BASE;
@@ -660,8 +628,8 @@ static void AddCombinedSprite(SpriteID image, PaletteID pal, int x, int y, int z
 			pt.y + spr->y_offs + spr->height <= _vd.dpi.top)
 		return;
 
-	const ParentSpriteToDraw *pstd = _vd.parent_sprites_to_draw.End() - 1;
-	AddChildSpriteScreen(image, pal, pt.x - pstd->left, pt.y - pstd->top, false, sub, false);
+	const ParentSpriteToDraw &pstd = _vd.parent_sprites_to_draw.back();
+	AddChildSpriteScreen(image, pal, pt.x - pstd.left, pt.y - pstd.top, false, sub, false);
 }
 
 /**
@@ -741,29 +709,30 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 		return;
 	}
 
-	ParentSpriteToDraw *ps = _vd.parent_sprites_to_draw.Append();
-	ps->x = tmp_x;
-	ps->y = tmp_y;
+	/*C++17: ParentSpriteToDraw &ps = */ _vd.parent_sprites_to_draw.emplace_back();
+	ParentSpriteToDraw &ps = _vd.parent_sprites_to_draw.back();
+	ps.x = tmp_x;
+	ps.y = tmp_y;
 
-	ps->left = tmp_left;
-	ps->top  = tmp_top;
+	ps.left = tmp_left;
+	ps.top  = tmp_top;
 
-	ps->image = image;
-	ps->pal = pal;
-	ps->sub = sub;
-	ps->xmin = x + bb_offset_x;
-	ps->xmax = x + max(bb_offset_x, w) - 1;
+	ps.image = image;
+	ps.pal = pal;
+	ps.sub = sub;
+	ps.xmin = x + bb_offset_x;
+	ps.xmax = x + max(bb_offset_x, w) - 1;
 
-	ps->ymin = y + bb_offset_y;
-	ps->ymax = y + max(bb_offset_y, h) - 1;
+	ps.ymin = y + bb_offset_y;
+	ps.ymax = y + max(bb_offset_y, h) - 1;
 
-	ps->zmin = z + bb_offset_z;
-	ps->zmax = z + max(bb_offset_z, dz) - 1;
+	ps.zmin = z + bb_offset_z;
+	ps.zmax = z + max(bb_offset_z, dz) - 1;
 
-	ps->comparison_done = false;
-	ps->first_child = -1;
+	ps.comparison_done = false;
+	ps.first_child = -1;
 
-	_vd.last_child = &ps->first_child;
+	_vd.last_child = &ps.first_child;
 
 	if (_vd.combine_sprites == SPRITE_COMBINE_PENDING) _vd.combine_sprites = SPRITE_COMBINE_ACTIVE;
 }
@@ -857,35 +826,37 @@ void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool tran
 		pal = PALETTE_TO_TRANSPARENT;
 	}
 
-	*_vd.last_child = _vd.child_screen_sprites_to_draw.Length();
+	*_vd.last_child = (uint)_vd.child_screen_sprites_to_draw.size();
 
-	ChildScreenSpriteToDraw *cs = _vd.child_screen_sprites_to_draw.Append();
-	cs->image = image;
-	cs->pal = pal;
-	cs->sub = sub;
-	cs->x = scale ? x * ZOOM_LVL_BASE : x;
-	cs->y = scale ? y * ZOOM_LVL_BASE : y;
-	cs->next = -1;
+	/*C++17: ChildScreenSpriteToDraw &cs = */ _vd.child_screen_sprites_to_draw.emplace_back();
+	ChildScreenSpriteToDraw &cs = _vd.child_screen_sprites_to_draw.back();
+	cs.image = image;
+	cs.pal = pal;
+	cs.sub = sub;
+	cs.x = scale ? x * ZOOM_LVL_BASE : x;
+	cs.y = scale ? y * ZOOM_LVL_BASE : y;
+	cs.next = -1;
 
 	/* Append the sprite to the active ChildSprite list.
 	 * If the active ParentSprite is a foundation, update last_foundation_child as well.
 	 * Note: ChildSprites of foundations are NOT sequential in the vector, as selection sprites are added at last. */
-	if (_vd.last_foundation_child[0] == _vd.last_child) _vd.last_foundation_child[0] = &cs->next;
-	if (_vd.last_foundation_child[1] == _vd.last_child) _vd.last_foundation_child[1] = &cs->next;
-	_vd.last_child = &cs->next;
+	if (_vd.last_foundation_child[0] == _vd.last_child) _vd.last_foundation_child[0] = &cs.next;
+	if (_vd.last_foundation_child[1] == _vd.last_child) _vd.last_foundation_child[1] = &cs.next;
+	_vd.last_child = &cs.next;
 }
 
 static void AddStringToDraw(int x, int y, StringID string, uint64 params_1, uint64 params_2, Colours colour, uint16 width)
 {
 	assert(width != 0);
-	StringSpriteToDraw *ss = _vd.string_sprites_to_draw.Append();
-	ss->string = string;
-	ss->x = x;
-	ss->y = y;
-	ss->params[0] = params_1;
-	ss->params[1] = params_2;
-	ss->width = width;
-	ss->colour = colour;
+	/*C++17: StringSpriteToDraw &ss = */ _vd.string_sprites_to_draw.emplace_back();
+	StringSpriteToDraw &ss = _vd.string_sprites_to_draw.back();
+	ss.string = string;
+	ss.x = x;
+	ss.y = y;
+	ss.params[0] = params_1;
+	ss.params[1] = params_2;
+	ss.width = width;
+	ss.colour = colour;
 }
 
 
@@ -1252,61 +1223,116 @@ void ViewportAddString(const DrawPixelInfo *dpi, ZoomLevel small_from, const Vie
 	}
 }
 
-static void ViewportAddTownNames(DrawPixelInfo *dpi)
+static Rect ExpandRectWithViewportSignMargins(Rect r, ZoomLevel zoom)
 {
-	if (!HasBit(_display_opt, DO_SHOW_TOWN_NAMES) || _game_mode == GM_MENU) return;
+	/* Pessimistically always use normal font, but also assume small font is never larger in either dimension */
+	const int fh = FONT_HEIGHT_NORMAL;
+	const int max_tw = _viewport_sign_maxwidth / 2 + 1;
+	const int expand_y = ScaleByZoom(VPSM_TOP + fh + VPSM_BOTTOM, zoom);
+	const int expand_x = ScaleByZoom(VPSM_LEFT + max_tw + VPSM_RIGHT, zoom);
 
-	const Town *t;
-	FOR_ALL_TOWNS(t) {
-		ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &t->cache.sign,
-				_settings_client.gui.population_in_label ? STR_VIEWPORT_TOWN_POP : STR_VIEWPORT_TOWN,
-				STR_VIEWPORT_TOWN_TINY_WHITE, STR_VIEWPORT_TOWN_TINY_BLACK,
-				t->index, t->cache.population);
-	}
+	r.left -= expand_x;
+	r.right += expand_x;
+	r.top -= expand_y;
+	r.bottom += expand_y;
+
+	return r;
 }
 
-
-static void ViewportAddStationNames(DrawPixelInfo *dpi)
+static void ViewportAddKdtreeSigns(DrawPixelInfo *dpi)
 {
-	if (!(HasBit(_display_opt, DO_SHOW_STATION_NAMES) || HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES)) || _game_mode == GM_MENU) return;
+	Rect search_rect{ dpi->left, dpi->top, dpi->left + dpi->width, dpi->top + dpi->height };
+	search_rect = ExpandRectWithViewportSignMargins(search_rect, dpi->zoom);
+
+	bool show_stations = HasBit(_display_opt, DO_SHOW_STATION_NAMES) && _game_mode != GM_MENU;
+	bool show_waypoints = HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES) && _game_mode != GM_MENU;
+	bool show_towns = HasBit(_display_opt, DO_SHOW_TOWN_NAMES) && _game_mode != GM_MENU;
+	bool show_signs = HasBit(_display_opt, DO_SHOW_SIGNS) && !IsInvisibilitySet(TO_SIGNS);
+	bool show_competitors = HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS);
 
 	const BaseStation *st;
-	FOR_ALL_BASE_STATIONS(st) {
-		/* Check whether the base station is a station or a waypoint */
-		bool is_station = Station::IsExpected(st);
-
-		/* Don't draw if the display options are disabled */
-		if (!HasBit(_display_opt, is_station ? DO_SHOW_STATION_NAMES : DO_SHOW_WAYPOINT_NAMES)) continue;
-
-		/* Don't draw if station is owned by another company and competitor station names are hidden. Stations owned by none are never ignored. */
-		if (!HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS) && _local_company != st->owner && st->owner != OWNER_NONE) continue;
-
-		ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &st->sign,
-				is_station ? STR_VIEWPORT_STATION : STR_VIEWPORT_WAYPOINT,
-				(is_station ? STR_VIEWPORT_STATION : STR_VIEWPORT_WAYPOINT) + 1, STR_NULL,
-				st->index, st->facilities, (st->owner == OWNER_NONE || !st->IsInUse()) ? COLOUR_GREY : _company_colours[st->owner]);
-	}
-}
-
-
-static void ViewportAddSigns(DrawPixelInfo *dpi)
-{
-	/* Signs are turned off or are invisible */
-	if (!HasBit(_display_opt, DO_SHOW_SIGNS) || IsInvisibilitySet(TO_SIGNS)) return;
-
 	const Sign *si;
-	FOR_ALL_SIGNS(si) {
-		/* Don't draw if sign is owned by another company and competitor signs should be hidden.
-		 * Note: It is intentional that also signs owned by OWNER_NONE are hidden. Bankrupt
-		 * companies can leave OWNER_NONE signs after them. */
-		if (!HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS) && _local_company != si->owner && si->owner != OWNER_DEITY) continue;
 
+	/* Collect all the items first and draw afterwards, to ensure layering */
+	std::vector<const BaseStation *> stations;
+	std::vector<const Town *> towns;
+	std::vector<const Sign *> signs;
+
+	_viewport_sign_kdtree.FindContained(search_rect.left, search_rect.top, search_rect.right, search_rect.bottom, [&](const ViewportSignKdtreeItem & item) {
+		switch (item.type) {
+			case ViewportSignKdtreeItem::VKI_STATION:
+				if (!show_stations) break;
+				st = BaseStation::Get(item.id.station);
+
+				/* Don't draw if station is owned by another company and competitor station names are hidden. Stations owned by none are never ignored. */
+				if (!show_competitors && _local_company != st->owner && st->owner != OWNER_NONE) break;
+
+				stations.push_back(st);
+				break;
+
+			case ViewportSignKdtreeItem::VKI_WAYPOINT:
+				if (!show_waypoints) break;
+				st = BaseStation::Get(item.id.station);
+
+				/* Don't draw if station is owned by another company and competitor station names are hidden. Stations owned by none are never ignored. */
+				if (!show_competitors && _local_company != st->owner && st->owner != OWNER_NONE) break;
+
+				stations.push_back(st);
+				break;
+
+			case ViewportSignKdtreeItem::VKI_TOWN:
+				if (!show_towns) break;
+				towns.push_back(Town::Get(item.id.town));
+				break;
+
+			case ViewportSignKdtreeItem::VKI_SIGN:
+				if (!show_signs) break;
+				si = Sign::Get(item.id.sign);
+
+				/* Don't draw if sign is owned by another company and competitor signs should be hidden.
+				* Note: It is intentional that also signs owned by OWNER_NONE are hidden. Bankrupt
+				* companies can leave OWNER_NONE signs after them. */
+				if (!show_competitors && _local_company != si->owner && si->owner != OWNER_DEITY) break;
+
+				signs.push_back(si);
+				break;
+
+			default:
+				NOT_REACHED();
+		}
+	});
+
+	/* Layering order (bottom to top): Town names, signs, stations */
+
+	for (const auto *t : towns) {
+		ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &t->cache.sign,
+			_settings_client.gui.population_in_label ? STR_VIEWPORT_TOWN_POP : STR_VIEWPORT_TOWN,
+			STR_VIEWPORT_TOWN_TINY_WHITE, STR_VIEWPORT_TOWN_TINY_BLACK,
+			t->index, t->cache.population);
+	}
+
+	for (const auto *si : signs) {
 		ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &si->sign,
-				STR_WHITE_SIGN,
-				(IsTransparencySet(TO_SIGNS) || si->owner == OWNER_DEITY) ? STR_VIEWPORT_SIGN_SMALL_WHITE : STR_VIEWPORT_SIGN_SMALL_BLACK, STR_NULL,
-				si->index, 0, (si->owner == OWNER_NONE) ? COLOUR_GREY : (si->owner == OWNER_DEITY ? INVALID_COLOUR : _company_colours[si->owner]));
+			STR_WHITE_SIGN,
+			(IsTransparencySet(TO_SIGNS) || si->owner == OWNER_DEITY) ? STR_VIEWPORT_SIGN_SMALL_WHITE : STR_VIEWPORT_SIGN_SMALL_BLACK, STR_NULL,
+			si->index, 0, (si->owner == OWNER_NONE) ? COLOUR_GREY : (si->owner == OWNER_DEITY ? INVALID_COLOUR : _company_colours[si->owner]));
+	}
+
+	for (const auto *st : stations) {
+		if (Station::IsExpected(st)) {
+			/* Station */
+			ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &st->sign,
+				STR_VIEWPORT_STATION, STR_VIEWPORT_STATION + 1, STR_NULL,
+				st->index, st->facilities, (st->owner == OWNER_NONE || !st->IsInUse()) ? COLOUR_GREY : _company_colours[st->owner]);
+		} else {
+			/* Waypoint */
+			ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &st->sign,
+				STR_VIEWPORT_WAYPOINT, STR_VIEWPORT_WAYPOINT + 1, STR_NULL,
+				st->index, st->facilities, (st->owner == OWNER_NONE || !st->IsInUse()) ? COLOUR_GREY : _company_colours[st->owner]);
+		}
 	}
 }
+
 
 /**
  * Update the position of the viewport sign.
@@ -1367,9 +1393,8 @@ void ViewportSign::MarkDirty(ZoomLevel maxzoom) const
 
 static void ViewportDrawTileSprites(const TileSpriteToDrawVector *tstdv)
 {
-	const TileSpriteToDraw *tsend = tstdv->End();
-	for (const TileSpriteToDraw *ts = tstdv->Begin(); ts != tsend; ++ts) {
-		DrawSpriteViewport(ts->image, ts->pal, ts->x, ts->y, ts->sub);
+	for (const TileSpriteToDraw &ts : *tstdv) {
+		DrawSpriteViewport(ts.image, ts.pal, ts.x, ts.y, ts.sub);
 	}
 }
 
@@ -1382,8 +1407,8 @@ static bool ViewportSortParentSpritesChecker()
 /** Sort parent sprites pointer array */
 static void ViewportSortParentSprites(ParentSpriteToSortVector *psdv)
 {
-	ParentSpriteToDraw **psdvend = psdv->End();
-	ParentSpriteToDraw **psd = psdv->Begin();
+	auto psdvend = psdv->end();
+	auto psd = psdv->begin();
 	while (psd != psdvend) {
 		ParentSpriteToDraw *ps = *psd;
 
@@ -1394,7 +1419,7 @@ static void ViewportSortParentSprites(ParentSpriteToSortVector *psdv)
 
 		ps->comparison_done = true;
 
-		for (ParentSpriteToDraw **psd2 = psd + 1; psd2 != psdvend; psd2++) {
+		for (auto psd2 = psd + 1; psd2 != psdvend; psd2++) {
 			ParentSpriteToDraw *ps2 = *psd2;
 
 			if (ps2->comparison_done) continue;
@@ -1429,7 +1454,7 @@ static void ViewportSortParentSprites(ParentSpriteToSortVector *psdv)
 
 			/* Move ps2 in front of ps */
 			ParentSpriteToDraw *temp = ps2;
-			for (ParentSpriteToDraw **psd3 = psd2; psd3 > psd; psd3--) {
+			for (auto psd3 = psd2; psd3 > psd; psd3--) {
 				*psd3 = *(psd3 - 1);
 			}
 			*psd = temp;
@@ -1439,14 +1464,12 @@ static void ViewportSortParentSprites(ParentSpriteToSortVector *psdv)
 
 static void ViewportDrawParentSprites(const ParentSpriteToSortVector *psd, const ChildScreenSpriteToDrawVector *csstdv)
 {
-	const ParentSpriteToDraw * const *psd_end = psd->End();
-	for (const ParentSpriteToDraw * const *it = psd->Begin(); it != psd_end; it++) {
-		const ParentSpriteToDraw *ps = *it;
+	for (const ParentSpriteToDraw *ps : *psd) {
 		if (ps->image != SPR_EMPTY_BOUNDING_BOX) DrawSpriteViewport(ps->image, ps->pal, ps->x, ps->y, ps->sub);
 
 		int child_idx = ps->first_child;
 		while (child_idx >= 0) {
-			const ChildScreenSpriteToDraw *cs = csstdv->Get(child_idx);
+			const ChildScreenSpriteToDraw *cs = csstdv->data() + child_idx;
 			child_idx = cs->next;
 			DrawSpriteViewport(cs->image, cs->pal, ps->left + cs->x, ps->top + cs->y, cs->sub);
 		}
@@ -1459,9 +1482,7 @@ static void ViewportDrawParentSprites(const ParentSpriteToSortVector *psd, const
  */
 static void ViewportDrawBoundingBoxes(const ParentSpriteToSortVector *psd)
 {
-	const ParentSpriteToDraw * const *psd_end = psd->End();
-	for (const ParentSpriteToDraw * const *it = psd->Begin(); it != psd_end; it++) {
-		const ParentSpriteToDraw *ps = *it;
+	for (const ParentSpriteToDraw *ps : *psd) {
 		Point pt1 = RemapCoords(ps->xmax + 1, ps->ymax + 1, ps->zmax + 1); // top front corner
 		Point pt2 = RemapCoords(ps->xmin    , ps->ymax + 1, ps->zmax + 1); // top left corner
 		Point pt3 = RemapCoords(ps->xmax + 1, ps->ymin    , ps->zmax + 1); // top right corner
@@ -1498,38 +1519,37 @@ static void ViewportDrawDirtyBlocks()
 
 static void ViewportDrawStrings(ZoomLevel zoom, const StringSpriteToDrawVector *sstdv)
 {
-	const StringSpriteToDraw *ssend = sstdv->End();
-	for (const StringSpriteToDraw *ss = sstdv->Begin(); ss != ssend; ++ss) {
+	for (const StringSpriteToDraw &ss : *sstdv) {
 		TextColour colour = TC_BLACK;
-		bool small = HasBit(ss->width, 15);
-		int w = GB(ss->width, 0, 15);
-		int x = UnScaleByZoom(ss->x, zoom);
-		int y = UnScaleByZoom(ss->y, zoom);
+		bool small = HasBit(ss.width, 15);
+		int w = GB(ss.width, 0, 15);
+		int x = UnScaleByZoom(ss.x, zoom);
+		int y = UnScaleByZoom(ss.y, zoom);
 		int h = VPSM_TOP + (small ? FONT_HEIGHT_SMALL : FONT_HEIGHT_NORMAL) + VPSM_BOTTOM;
 
-		SetDParam(0, ss->params[0]);
-		SetDParam(1, ss->params[1]);
+		SetDParam(0, ss.params[0]);
+		SetDParam(1, ss.params[1]);
 
-		if (ss->colour != INVALID_COLOUR) {
+		if (ss.colour != INVALID_COLOUR) {
 			/* Do not draw signs nor station names if they are set invisible */
-			if (IsInvisibilitySet(TO_SIGNS) && ss->string != STR_WHITE_SIGN) continue;
+			if (IsInvisibilitySet(TO_SIGNS) && ss.string != STR_WHITE_SIGN) continue;
 
-			if (IsTransparencySet(TO_SIGNS) && ss->string != STR_WHITE_SIGN) {
+			if (IsTransparencySet(TO_SIGNS) && ss.string != STR_WHITE_SIGN) {
 				/* Don't draw the rectangle.
 				 * Real colours need the TC_IS_PALETTE_COLOUR flag.
 				 * Otherwise colours from _string_colourmap are assumed. */
-				colour = (TextColour)_colour_gradient[ss->colour][6] | TC_IS_PALETTE_COLOUR;
+				colour = (TextColour)_colour_gradient[ss.colour][6] | TC_IS_PALETTE_COLOUR;
 			} else {
 				/* Draw the rectangle if 'transparent station signs' is off,
 				 * or if we are drawing a general text sign (STR_WHITE_SIGN). */
 				DrawFrameRect(
-					x, y, x + w, y + h, ss->colour,
+					x, y, x + w, y + h, ss.colour,
 					IsTransparencySet(TO_SIGNS) ? FR_TRANSPARENT : FR_NONE
 				);
 			}
 		}
 
-		DrawString(x + VPSM_LEFT, x + w - 1 - VPSM_RIGHT, y + VPSM_TOP, ss->string, colour, SA_HOR_CENTER);
+		DrawString(x + VPSM_LEFT, x + w - 1 - VPSM_RIGHT, y + VPSM_TOP, ss.string, colour, SA_HOR_CENTER);
 	}
 }
 
@@ -1558,17 +1578,14 @@ void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom
 	ViewportAddLandscape();
 	ViewportAddVehicles(&_vd.dpi);
 
-	ViewportAddTownNames(&_vd.dpi);
-	ViewportAddStationNames(&_vd.dpi);
-	ViewportAddSigns(&_vd.dpi);
+	ViewportAddKdtreeSigns(&_vd.dpi);
 
 	DrawTextEffects(&_vd.dpi);
 
-	if (_vd.tile_sprites_to_draw.Length() != 0) ViewportDrawTileSprites(&_vd.tile_sprites_to_draw);
+	if (_vd.tile_sprites_to_draw.size() != 0) ViewportDrawTileSprites(&_vd.tile_sprites_to_draw);
 
-	ParentSpriteToDraw *psd_end = _vd.parent_sprites_to_draw.End();
-	for (ParentSpriteToDraw *it = _vd.parent_sprites_to_draw.Begin(); it != psd_end; it++) {
-		*_vd.parent_sprites_to_sort.Append() = it;
+	for (auto &psd : _vd.parent_sprites_to_draw) {
+		_vd.parent_sprites_to_sort.push_back(&psd);
 	}
 
 	_vp_sprite_sorter(&_vd.parent_sprites_to_sort);
@@ -1591,7 +1608,7 @@ void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom
 		vp->overlay->Draw(&dp);
 	}
 
-	if (_vd.string_sprites_to_draw.Length() != 0) {
+	if (_vd.string_sprites_to_draw.size() != 0) {
 		/* translate to world coordinates */
 		dp.left = UnScaleByZoom(_vd.dpi.left, zoom);
 		dp.top = UnScaleByZoom(_vd.dpi.top, zoom);
@@ -1600,11 +1617,11 @@ void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom
 
 	_cur_dpi = old_dpi;
 
-	_vd.string_sprites_to_draw.Clear();
-	_vd.tile_sprites_to_draw.Clear();
-	_vd.parent_sprites_to_draw.Clear();
-	_vd.parent_sprites_to_sort.Clear();
-	_vd.child_screen_sprites_to_draw.Clear();
+	_vd.string_sprites_to_draw.clear();
+	_vd.tile_sprites_to_draw.clear();
+	_vd.parent_sprites_to_draw.clear();
+	_vd.parent_sprites_to_sort.clear();
+	_vd.child_screen_sprites_to_draw.clear();
 }
 
 /**
@@ -1669,121 +1686,33 @@ void Window::DrawViewport() const
 }
 
 /**
- * Continue criteria for the SearchMapEdge function.
- * @param iter       Value to check.
- * @param iter_limit Maximum value for the iter
- * @param sy         Screen y coordinate calculated for the tile at hand
- * @param sy_limit   Limit to the screen y coordinate
- * @return True when we should continue searching.
+ * Ensure that a given viewport has a valid scroll position.
+ *
+ * There must be a visible piece of the map in the center of the viewport.
+ * If there isn't, the viewport will be scrolled to nearest such location.
+ *
+ * @param vp The viewport.
+ * @param[in,out] scroll_x Viewport X scroll.
+ * @param[in,out] scroll_y Viewport Y scroll.
  */
-typedef bool ContinueMapEdgeSearch(int iter, int iter_limit, int sy, int sy_limit);
-
-/** Continue criteria for searching a no-longer-visible tile in negative direction, starting at some tile. */
-static inline bool ContinueLowerMapEdgeSearch(int iter, int iter_limit, int sy, int sy_limit) { return iter > 0          && sy > sy_limit; }
-/** Continue criteria for searching a no-longer-visible tile in positive direction, starting at some tile. */
-static inline bool ContinueUpperMapEdgeSearch(int iter, int iter_limit, int sy, int sy_limit) { return iter < iter_limit && sy < sy_limit; }
-
-/**
- * Searches, starting at the given tile, by applying the given offset to iter, for a no longer visible tile.
- * The whole sense of this function is keeping the to-be-written code small, thus it is a little bit abstracted
- * so the same function can be used for both the X and Y locations. As such a reference to one of the elements
- * in curr_tile was needed.
- * @param curr_tile  A tile
- * @param iter       Reference to either the X or Y of curr_tile.
- * @param iter_limit Upper search limit for the iter value.
- * @param offset     Search in steps of this size
- * @param sy_limit   Search limit to be passed to the criteria
- * @param continue_criteria Search as long as this criteria is true
- * @return The final value of iter.
- */
-static int SearchMapEdge(Point &curr_tile, int &iter, int iter_limit, int offset, int sy_limit, ContinueMapEdgeSearch continue_criteria)
+static inline void ClampViewportToMap(const ViewPort *vp, int *scroll_x, int *scroll_y)
 {
-	int sy;
-	do {
-		iter = Clamp(iter + offset, 0, iter_limit);
-		sy = GetViewportY(curr_tile);
-	} while (continue_criteria(iter, iter_limit, sy, sy_limit));
+	/* Centre of the viewport is hot spot. */
+	Point pt = {
+		*scroll_x + vp->virtual_width / 2,
+		*scroll_y + vp->virtual_height / 2
+	};
 
-	return iter;
-}
+	/* Find nearest tile that is within borders of the map. */
+	bool clamped;
+	pt = InverseRemapCoords2(pt.x, pt.y, true, &clamped);
 
-/**
- * Determine the clamping of either the X or Y coordinate to the map.
- * @param curr_tile   A tile
- * @param iter        Reference to either the X or Y of curr_tile.
- * @param iter_limit  Upper search limit for the iter value.
- * @param start       Start value for the iteration.
- * @param other_ref   Reference to the opposite axis in curr_tile than of iter.
- * @param other_value Start value for of the opposite axis
- * @param vp_value    Value of the viewport location in the opposite axis as for iter.
- * @param other_limit Limit for the other value, so if iter is X, then other_limit is for Y.
- * @param vp_top      Top of the viewport.
- * @param vp_bottom   Bottom of the viewport.
- * @return Clamped version of vp_value.
- */
-static inline int ClampXYToMap(Point &curr_tile, int &iter, int iter_limit, int start, int &other_ref, int other_value, int vp_value, int other_limit, int vp_top, int vp_bottom)
-{
-	bool upper_edge = other_value < _settings_game.construction.max_heightlevel / 4;
-
-	/*
-	 * First get an estimate of the tiles relevant for us at that edge.  Relevant in the sense
-	 * "at least close to the visible area". Thus, we don't look at exactly each tile, inspecting
-	 * e.g. every tenth should be enough. After all, the desired screen limit is set such that
-	 * the bordermost tiles are painted in the middle of the screen when one hits the limit,
-	 * i.e. it is no harm if there is some small error in that calculation
-	 */
-
-	other_ref = upper_edge ? 0 : other_limit;
-	iter = start;
-	int min_iter = SearchMapEdge(curr_tile, iter, iter_limit, upper_edge ? -10 : +10, vp_top,    upper_edge ? ContinueLowerMapEdgeSearch : ContinueUpperMapEdgeSearch);
-	iter = start;
-	int max_iter = SearchMapEdge(curr_tile, iter, iter_limit, upper_edge ? +10 : -10, vp_bottom, upper_edge ? ContinueUpperMapEdgeSearch : ContinueLowerMapEdgeSearch);
-
-	max_iter = min(max_iter + _settings_game.construction.max_heightlevel / 4, iter_limit);
-	min_iter = min(min_iter, max_iter);
-
-	/* Now, calculate the highest heightlevel of these tiles. Again just as an estimate. */
-	int max_heightlevel_at_edge = 0;
-	for (iter = min_iter; iter <= max_iter; iter += 10) {
-		max_heightlevel_at_edge = max(max_heightlevel_at_edge, (int)TileHeight(TileXY(curr_tile.x, curr_tile.y)));
+	if (clamped) {
+		/* Convert back to viewport coordinates and remove centering. */
+		pt = RemapCoords2(pt.x, pt.y);
+		*scroll_x = pt.x - vp->virtual_width / 2;
+		*scroll_y = pt.y - vp->virtual_height / 2;
 	}
-
-	/* Based on that heightlevel, calculate the limit. For the upper edge a tile with height zero would
-	 * get a limit of zero, on the other side it depends on the number of tiles along the axis. */
-	return upper_edge ?
-			max(vp_value, -max_heightlevel_at_edge * (int)(TILE_HEIGHT * 2 * ZOOM_LVL_BASE)) :
-			min(vp_value, (other_limit * TILE_SIZE * 4 - max_heightlevel_at_edge * TILE_HEIGHT * 2) * ZOOM_LVL_BASE);
-}
-
-static inline void ClampViewportToMap(const ViewPort *vp, int &x, int &y)
-{
-	int original_y = y;
-
-	/* Centre of the viewport is hot spot */
-	x += vp->virtual_width / 2;
-	y += vp->virtual_height / 2;
-
-	/* Convert viewport coordinates to map coordinates
-	 * Calculation is scaled by 4 to avoid rounding errors */
-	int vx = -x + y * 2;
-	int vy =  x + y * 2;
-
-	/* Find out which tile corresponds to (vx,vy) if one assumes height zero.  The cast is necessary to prevent C++ from
-	 * converting the result to an uint, which gives an overflow instead of a negative result... */
-	int tx = vx / (int)(TILE_SIZE * 4 * ZOOM_LVL_BASE);
-	int ty = vy / (int)(TILE_SIZE * 4 * ZOOM_LVL_BASE);
-
-	Point curr_tile;
-	vx = ClampXYToMap(curr_tile, curr_tile.y, MapMaxY(), ty, curr_tile.x, tx, vx, MapMaxX(), original_y, original_y + vp->virtual_height);
-	vy = ClampXYToMap(curr_tile, curr_tile.x, MapMaxX(), tx, curr_tile.y, ty, vy, MapMaxY(), original_y, original_y + vp->virtual_height);
-
-	/* Convert map coordinates to viewport coordinates */
-	x = (-vx + vy) / 2;
-	y = ( vx + vy) / 4;
-
-	/* Remove centering */
-	x -= vp->virtual_width / 2;
-	y -= vp->virtual_height / 2;
 }
 
 /**
@@ -1803,7 +1732,7 @@ void UpdateViewportPosition(Window *w)
 		SetViewportPosition(w, pt.x, pt.y);
 	} else {
 		/* Ensure the destination location is within the map */
-		ClampViewportToMap(vp, w->viewport->dest_scrollpos_x, w->viewport->dest_scrollpos_y);
+		ClampViewportToMap(vp, &w->viewport->dest_scrollpos_x, &w->viewport->dest_scrollpos_y);
 
 		int delta_x = w->viewport->dest_scrollpos_x - w->viewport->scrollpos_x;
 		int delta_y = w->viewport->dest_scrollpos_y - w->viewport->scrollpos_y;
@@ -1813,8 +1742,8 @@ void UpdateViewportPosition(Window *w)
 			if (_settings_client.gui.smooth_scroll) {
 				int max_scroll = ScaleByMapSize1D(512 * ZOOM_LVL_BASE);
 				/* Not at our desired position yet... */
-				w->viewport->scrollpos_x += Clamp(delta_x / 4, -max_scroll, max_scroll);
-				w->viewport->scrollpos_y += Clamp(delta_y / 4, -max_scroll, max_scroll);
+				w->viewport->scrollpos_x += Clamp(DivAwayFromZero(delta_x, 4), -max_scroll, max_scroll);
+				w->viewport->scrollpos_y += Clamp(DivAwayFromZero(delta_y, 4), -max_scroll, max_scroll);
 			} else {
 				w->viewport->scrollpos_x = w->viewport->dest_scrollpos_x;
 				w->viewport->scrollpos_y = w->viewport->dest_scrollpos_y;
@@ -1823,7 +1752,7 @@ void UpdateViewportPosition(Window *w)
 								w->viewport->scrollpos_y == w->viewport->dest_scrollpos_y);
 		}
 
-		ClampViewportToMap(vp, w->viewport->scrollpos_x, w->viewport->scrollpos_y);
+		ClampViewportToMap(vp, &w->viewport->scrollpos_x, &w->viewport->scrollpos_y);
 
 		SetViewportPosition(w, w->viewport->scrollpos_x, w->viewport->scrollpos_y);
 		if (update_overlay) RebuildViewportOverlay(w);
@@ -1905,30 +1834,15 @@ void ConstrainAllViewportsZoom()
  * Mark a tile given by its index dirty for repaint.
  * @param tile The tile to mark dirty.
  * @param bridge_level_offset Height of bridge on tile to also mark dirty. (Height level relative to north corner.)
+ * @param tile_height_override Height of the tile (#TileHeight).
  * @ingroup dirty
  */
-void MarkTileDirtyByTile(TileIndex tile, int bridge_level_offset)
+void MarkTileDirtyByTile(TileIndex tile, int bridge_level_offset, int tile_height_override)
 {
-	Point pt = RemapCoords(TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE, TilePixelHeight(tile));
+	Point pt = RemapCoords(TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE, tile_height_override * TILE_HEIGHT);
 	MarkAllViewportsDirty(
 			pt.x - MAX_TILE_EXTENT_LEFT,
 			pt.y - MAX_TILE_EXTENT_TOP - ZOOM_LVL_BASE * TILE_HEIGHT * bridge_level_offset,
-			pt.x + MAX_TILE_EXTENT_RIGHT,
-			pt.y + MAX_TILE_EXTENT_BOTTOM);
-}
-
-/**
- * Mark a (virtual) tile outside the map dirty for repaint.
- * @param x Tile X position.
- * @param y Tile Y position.
- * @ingroup dirty
- */
-void MarkTileDirtyByTileOutsideMap(int x, int y)
-{
-	Point pt = RemapCoords(x * TILE_SIZE, y * TILE_SIZE, TilePixelHeightOutsideMap(x, y));
-	MarkAllViewportsDirty(
-			pt.x - MAX_TILE_EXTENT_LEFT,
-			pt.y, // no buildings outside of map
 			pt.x + MAX_TILE_EXTENT_RIGHT,
 			pt.y + MAX_TILE_EXTENT_BOTTOM);
 }
@@ -2071,75 +1985,202 @@ static bool CheckClickOnViewportSign(const ViewPort *vp, int x, int y, const Vie
 	int sign_half_width = ScaleByZoom((small ? sign->width_small : sign->width_normal) / 2, vp->zoom);
 	int sign_height = ScaleByZoom(VPSM_TOP + (small ? FONT_HEIGHT_SMALL : FONT_HEIGHT_NORMAL) + VPSM_BOTTOM, vp->zoom);
 
-	x = ScaleByZoom(x - vp->left, vp->zoom) + vp->virtual_left;
-	y = ScaleByZoom(y - vp->top, vp->zoom) + vp->virtual_top;
-
 	return y >= sign->top && y < sign->top + sign_height &&
 			x >= sign->center - sign_half_width && x < sign->center + sign_half_width;
 }
 
-static bool CheckClickOnTown(const ViewPort *vp, int x, int y)
+
+/**
+ * Check whether any viewport sign was clicked, and dispatch the click.
+ * @param vp the clicked viewport
+ * @param x X position of click
+ * @param y Y position of click
+ * @return true if the sign was hit
+ */
+static bool CheckClickOnViewportSign(const ViewPort *vp, int x, int y)
 {
-	if (!HasBit(_display_opt, DO_SHOW_TOWN_NAMES)) return false;
+	x = ScaleByZoom(x - vp->left, vp->zoom) + vp->virtual_left;
+	y = ScaleByZoom(y - vp->top, vp->zoom) + vp->virtual_top;
 
-	const Town *t;
-	FOR_ALL_TOWNS(t) {
-		if (CheckClickOnViewportSign(vp, x, y, &t->cache.sign)) {
-			ShowTownViewWindow(t->index);
-			return true;
+	Rect search_rect{ x - 1, y - 1, x + 1, y + 1 };
+	search_rect = ExpandRectWithViewportSignMargins(search_rect, vp->zoom);
+
+	bool show_stations = HasBit(_display_opt, DO_SHOW_STATION_NAMES) && _game_mode != GM_MENU;
+	bool show_waypoints = HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES) && _game_mode != GM_MENU;
+	bool show_towns = HasBit(_display_opt, DO_SHOW_TOWN_NAMES) && _game_mode != GM_MENU;
+	bool show_signs = HasBit(_display_opt, DO_SHOW_SIGNS) && !IsInvisibilitySet(TO_SIGNS);
+	bool show_competitors = HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS);
+
+	/* Topmost of each type that was hit */
+	BaseStation *st = NULL, *last_st = NULL;
+	Town *t = NULL, *last_t = NULL;
+	Sign *si = NULL, *last_si = NULL;
+
+	/* See ViewportAddKdtreeSigns() for details on the search logic */
+	_viewport_sign_kdtree.FindContained(search_rect.left, search_rect.top, search_rect.right, search_rect.bottom, [&](const ViewportSignKdtreeItem & item) {
+		switch (item.type) {
+			case ViewportSignKdtreeItem::VKI_STATION:
+				if (!show_stations) break;
+				st = BaseStation::Get(item.id.station);
+				if (!show_competitors && _local_company != st->owner && st->owner != OWNER_NONE) break;
+				if (CheckClickOnViewportSign(vp, x, y, &st->sign)) last_st = st;
+				break;
+
+			case ViewportSignKdtreeItem::VKI_WAYPOINT:
+				if (!show_waypoints) break;
+				st = BaseStation::Get(item.id.station);
+				if (!show_competitors && _local_company != st->owner && st->owner != OWNER_NONE) break;
+				if (CheckClickOnViewportSign(vp, x, y, &st->sign)) last_st = st;
+				break;
+
+			case ViewportSignKdtreeItem::VKI_TOWN:
+				if (!show_towns) break;
+				t = Town::Get(item.id.town);
+				if (CheckClickOnViewportSign(vp, x, y, &t->cache.sign)) last_t = t;
+				break;
+
+			case ViewportSignKdtreeItem::VKI_SIGN:
+				if (!show_signs) break;
+				si = Sign::Get(item.id.sign);
+				if (!show_competitors && _local_company != si->owner && si->owner != OWNER_DEITY) break;
+				if (CheckClickOnViewportSign(vp, x, y, &si->sign)) last_si = si;
+				break;
+
+			default:
+				NOT_REACHED();
 		}
-	}
+	});
 
-	return false;
+	/* Select which hit to handle based on priority */
+	if (last_st != NULL) {
+		if (Station::IsExpected(last_st)) {
+			ShowStationViewWindow(last_st->index);
+		} else {
+			ShowWaypointWindow(Waypoint::From(last_st));
+		}
+		return true;
+	} else if (last_t != NULL) {
+		ShowTownViewWindow(last_t->index);
+		return true;
+	} else if (last_si != NULL) {
+		HandleClickOnSign(last_si);
+		return true;
+	} else {
+		return false;
+	}
 }
 
-static bool CheckClickOnStation(const ViewPort *vp, int x, int y)
+
+ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeStation(StationID id)
 {
-	if (!(HasBit(_display_opt, DO_SHOW_STATION_NAMES) || HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES)) || IsInvisibilitySet(TO_SIGNS)) return false;
+	ViewportSignKdtreeItem item;
+	item.type = VKI_STATION;
+	item.id.station = id;
 
-	const BaseStation *st;
-	FOR_ALL_BASE_STATIONS(st) {
-		/* Check whether the base station is a station or a waypoint */
-		bool is_station = Station::IsExpected(st);
+	const Station *st = Station::Get(id);
+	Point pt = RemapCoords2(TileX(st->xy) * TILE_SIZE, TileY(st->xy) * TILE_SIZE);
 
-		/* Don't check if the display options are disabled */
-		if (!HasBit(_display_opt, is_station ? DO_SHOW_STATION_NAMES : DO_SHOW_WAYPOINT_NAMES)) continue;
+	pt.y -= 32 * ZOOM_LVL_BASE;
+	if ((st->facilities & FACIL_AIRPORT) && st->airport.type == AT_OILRIG) pt.y -= 16 * ZOOM_LVL_BASE;
 
-		/* Don't check if competitor signs are not shown and the sign isn't owned by the local company */
-		if (!HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS) && _local_company != st->owner && st->owner != OWNER_NONE) continue;
+	item.center = pt.x;
+	item.top = pt.y;
 
-		if (CheckClickOnViewportSign(vp, x, y, &st->sign)) {
-			if (is_station) {
-				ShowStationViewWindow(st->index);
-			} else {
-				ShowWaypointWindow(Waypoint::From(st));
-			}
-			return true;
-		}
-	}
+	/* Assume the sign can be a candidate for drawing, so measure its width */
+	_viewport_sign_maxwidth = max<int>(_viewport_sign_maxwidth, st->sign.width_normal);
 
-	return false;
+	return item;
 }
 
-
-static bool CheckClickOnSign(const ViewPort *vp, int x, int y)
+ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeWaypoint(StationID id)
 {
-	/* Signs are turned off, or they are transparent and invisibility is ON, or company is a spectator */
-	if (!HasBit(_display_opt, DO_SHOW_SIGNS) || IsInvisibilitySet(TO_SIGNS) || _local_company == COMPANY_SPECTATOR) return false;
+	ViewportSignKdtreeItem item;
+	item.type = VKI_WAYPOINT;
+	item.id.station = id;
 
-	const Sign *si;
-	FOR_ALL_SIGNS(si) {
-		/* If competitor signs are hidden, don't check signs that aren't owned by local company */
-		if (!HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS) && _local_company != si->owner && si->owner != OWNER_DEITY) continue;
-		if (si->owner == OWNER_DEITY && _game_mode != GM_EDITOR) continue;
+	const Waypoint *st = Waypoint::Get(id);
+	Point pt = RemapCoords2(TileX(st->xy) * TILE_SIZE, TileY(st->xy) * TILE_SIZE);
 
-		if (CheckClickOnViewportSign(vp, x, y, &si->sign)) {
-			HandleClickOnSign(si);
-			return true;
-		}
+	pt.y -= 32 * ZOOM_LVL_BASE;
+
+	item.center = pt.x;
+	item.top = pt.y;
+
+	/* Assume the sign can be a candidate for drawing, so measure its width */
+	_viewport_sign_maxwidth = max<int>(_viewport_sign_maxwidth, st->sign.width_normal);
+
+	return item;
+}
+
+ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeTown(TownID id)
+{
+	ViewportSignKdtreeItem item;
+	item.type = VKI_TOWN;
+	item.id.town = id;
+
+	const Town *town = Town::Get(id);
+	Point pt = RemapCoords2(TileX(town->xy) * TILE_SIZE, TileY(town->xy) * TILE_SIZE);
+
+	pt.y -= 24 * ZOOM_LVL_BASE;
+
+	item.center = pt.x;
+	item.top = pt.y;
+
+	/* Assume the sign can be a candidate for drawing, so measure its width */
+	_viewport_sign_maxwidth = max<int>(_viewport_sign_maxwidth, town->cache.sign.width_normal);
+
+	return item;
+}
+
+ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeSign(SignID id)
+{
+	ViewportSignKdtreeItem item;
+	item.type = VKI_SIGN;
+	item.id.sign = id;
+
+	const Sign *sign = Sign::Get(id);
+	Point pt = RemapCoords(sign->x, sign->y, sign->z);
+
+	pt.y -= 6 * ZOOM_LVL_BASE;
+
+	item.center = pt.x;
+	item.top = pt.y;
+
+	/* Assume the sign can be a candidate for drawing, so measure its width */
+	_viewport_sign_maxwidth = max<int>(_viewport_sign_maxwidth, sign->sign.width_normal);
+
+	return item;
+}
+
+void RebuildViewportKdtree()
+{
+	/* Reset biggest size sign seen */
+	_viewport_sign_maxwidth = 0;
+
+	std::vector<ViewportSignKdtreeItem> items;
+	items.reserve(BaseStation::GetNumItems() + Town::GetNumItems() + Sign::GetNumItems());
+
+	const Station *st;
+	FOR_ALL_STATIONS(st) {
+		items.push_back(ViewportSignKdtreeItem::MakeStation(st->index));
 	}
 
-	return false;
+	const Waypoint *wp;
+	FOR_ALL_WAYPOINTS(wp) {
+		items.push_back(ViewportSignKdtreeItem::MakeWaypoint(wp->index));
+	}
+
+	const Town *town;
+	FOR_ALL_TOWNS(town) {
+		items.push_back(ViewportSignKdtreeItem::MakeTown(town->index));
+	}
+
+	const Sign *sign;
+	FOR_ALL_SIGNS(sign) {
+		items.push_back(ViewportSignKdtreeItem::MakeSign(sign->index));
+	}
+
+	_viewport_sign_kdtree.Build(items.begin(), items.end());
 }
 
 
@@ -2186,9 +2227,7 @@ bool HandleViewportClicked(const ViewPort *vp, int x, int y)
 		return true;
 	}
 
-	if (CheckClickOnTown(vp, x, y)) return true;
-	if (CheckClickOnStation(vp, x, y)) return true;
-	if (CheckClickOnSign(vp, x, y)) return true;
+	if (CheckClickOnViewportSign(vp, x, y)) return true;
 	bool result = CheckClickOnLandscape(vp, x, y);
 
 	if (v != NULL) {
@@ -2211,7 +2250,7 @@ void RebuildViewportOverlay(Window *w)
 	if (w->viewport->overlay != NULL &&
 			w->viewport->overlay->GetCompanyMask() != 0 &&
 			w->viewport->overlay->GetCargoMask() != 0) {
-		w->viewport->overlay->RebuildCache();
+		w->viewport->overlay->SetDirty();
 		w->SetDirty();
 	}
 }
@@ -2431,7 +2470,6 @@ void UpdateTileSelection()
 					break;
 				default:
 					NOT_REACHED();
-					break;
 			}
 			_thd.new_pos.x = x1 & ~TILE_UNIT_MASK;
 			_thd.new_pos.y = y1 & ~TILE_UNIT_MASK;
@@ -2467,10 +2505,15 @@ void UpdateTileSelection()
  * @param params (optional) up to 5 pieces of additional information that may be added to a tooltip
  * @param close_cond Condition for closing this tooltip.
  */
-static inline void ShowMeasurementTooltips(StringID str, uint paramcount, const uint64 params[], TooltipCloseCondition close_cond = TCC_LEFT_CLICK)
+static inline void ShowMeasurementTooltips(StringID str, uint paramcount, const uint64 params[], TooltipCloseCondition close_cond = TCC_NONE)
 {
 	if (!_settings_client.gui.measure_tooltip) return;
 	GuiShowTooltips(_thd.GetCallbackWnd(), str, paramcount, params, close_cond);
+}
+
+static void HideMeasurementTooltips()
+{
+	DeleteWindowById(WC_TOOLTIPS, 0);
 }
 
 /** highlighting tiles while only going over them with the mouse */
@@ -2528,7 +2571,11 @@ void VpSetPresizeRange(TileIndex from, TileIndex to)
 	_thd.next_drawstyle = HT_RECT;
 
 	/* show measurement only if there is any length to speak of */
-	if (distance > 1) ShowMeasurementTooltips(STR_MEASURE_LENGTH, 1, &distance, TCC_HOVER);
+	if (distance > 1) {
+		ShowMeasurementTooltips(STR_MEASURE_LENGTH, 1, &distance);
+	} else {
+		HideMeasurementTooltips();
+	}
 }
 
 static void VpStartPreSizing()
@@ -3142,6 +3189,7 @@ EventState VpHandlePlaceSizingDrag()
 	}
 	SetTileSelectSize(1, 1);
 
+	HideMeasurementTooltips();
 	w->OnPlaceMouseUp(_thd.select_method, _thd.select_proc, _thd.selend, TileVirtXY(_thd.selstart.x, _thd.selstart.y), TileVirtXY(_thd.selend.x, _thd.selend.y));
 
 	return ES_HANDLED;
@@ -3180,7 +3228,10 @@ void SetObjectToPlace(CursorID icon, PaletteID pal, HighLightStyle mode, WindowC
 		 * this function might in some cases reset the newly set object to
 		 * place or not properly reset the original selection. */
 		_thd.window_class = WC_INVALID;
-		if (w != NULL) w->OnPlaceObjectAbort();
+		if (w != NULL) {
+			w->OnPlaceObjectAbort();
+			HideMeasurementTooltips();
+		}
 	}
 
 	/* Mark the old selection dirty, in case the selection shape or colour changes */
@@ -3277,12 +3328,8 @@ CommandCost CmdScrollViewport(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 			if (_local_company != (CompanyID)p2) return CommandCost();
 			break;
 		case VST_CLIENT:
-#ifdef ENABLE_NETWORK
 			if (_network_own_client_id != (ClientID)p2) return CommandCost();
 			break;
-#else
-			return CommandCost();
-#endif
 		default:
 			return CMD_ERROR;
 	}

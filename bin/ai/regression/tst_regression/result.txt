@@ -867,105 +867,165 @@ ERROR: IsEnd() is invalid as Begin() is never called
 --Bridge--
   Bridge -1
     IsValidBridge():    false
-    GetName():          (null : 0x00000000)
+    GetName():
+     VT_RAIL:           (null : 0x00000000)
+     VT_ROAD:           (null : 0x00000000)
+     VT_WATER:          (null : 0x00000000)
+     VT_AIR:            (null : 0x00000000)
     GetMaxSpeed():      -1
     GetPrice():         -1
     GetMaxLength():     -1
     GetMinLength():     -1
   Bridge 0
     IsValidBridge():    true
-    GetName():          Wooden rail bridge
+    GetName():
+     VT_RAIL:           Wooden rail bridge
+     VT_ROAD:           Wooden road bridge
+     VT_WATER:          Aqueduct
+     VT_AIR:            (null : 0x00000000)
     GetMaxSpeed():      32
     GetPrice():         450
     GetMaxLength():     66
     GetMinLength():     2
   Bridge 1
     IsValidBridge():    true
-    GetName():          Concrete rail bridge
+    GetName():
+     VT_RAIL:           Concrete rail bridge
+     VT_ROAD:           Concrete road bridge
+     VT_WATER:          Aqueduct
+     VT_AIR:            (null : 0x00000000)
     GetMaxSpeed():      48
     GetPrice():         630
     GetMaxLength():     4
     GetMinLength():     2
   Bridge 2
     IsValidBridge():    true
-    GetName():          Steel girder rail bridge
+    GetName():
+     VT_RAIL:           Steel girder rail bridge
+     VT_ROAD:           Steel girder road bridge
+     VT_WATER:          Aqueduct
+     VT_AIR:            (null : 0x00000000)
     GetMaxSpeed():      64
     GetPrice():         811
     GetMaxLength():     7
     GetMinLength():     2
   Bridge 3
     IsValidBridge():    true
-    GetName():          Reinforced concrete suspension rail bridge
+    GetName():
+     VT_RAIL:           Reinforced concrete suspension rail bridge
+     VT_ROAD:           Reinforced concrete suspension road bridge
+     VT_WATER:          Aqueduct
+     VT_AIR:            (null : 0x00000000)
     GetMaxSpeed():      80
     GetPrice():         946
     GetMaxLength():     12
     GetMinLength():     4
   Bridge 4
     IsValidBridge():    true
-    GetName():          Steel suspension rail bridge
+    GetName():
+     VT_RAIL:           Steel suspension rail bridge
+     VT_ROAD:           Steel suspension road bridge
+     VT_WATER:          Aqueduct
+     VT_AIR:            (null : 0x00000000)
     GetMaxSpeed():      96
     GetPrice():         1042
     GetMaxLength():     66
     GetMinLength():     5
   Bridge 5
     IsValidBridge():    true
-    GetName():          Steel suspension rail bridge
+    GetName():
+     VT_RAIL:           Steel suspension rail bridge
+     VT_ROAD:           Steel suspension road bridge
+     VT_WATER:          Aqueduct
+     VT_AIR:            (null : 0x00000000)
     GetMaxSpeed():      112
     GetPrice():         1081
     GetMaxLength():     66
     GetMinLength():     5
   Bridge 6
     IsValidBridge():    true
-    GetName():          Steel cantilever rail bridge
+    GetName():
+     VT_RAIL:           Steel cantilever rail bridge
+     VT_ROAD:           Steel cantilever road bridge
+     VT_WATER:          Aqueduct
+     VT_AIR:            (null : 0x00000000)
     GetMaxSpeed():      160
     GetPrice():         1261
     GetMaxLength():     9
     GetMinLength():     5
   Bridge 7
     IsValidBridge():    true
-    GetName():          Steel cantilever rail bridge
+    GetName():
+     VT_RAIL:           Steel cantilever rail bridge
+     VT_ROAD:           Steel cantilever road bridge
+     VT_WATER:          Aqueduct
+     VT_AIR:            (null : 0x00000000)
     GetMaxSpeed():      208
     GetPrice():         1306
     GetMaxLength():     10
     GetMinLength():     5
   Bridge 8
     IsValidBridge():    true
-    GetName():          Steel cantilever rail bridge
+    GetName():
+     VT_RAIL:           Steel cantilever rail bridge
+     VT_ROAD:           Steel cantilever road bridge
+     VT_WATER:          Aqueduct
+     VT_AIR:            (null : 0x00000000)
     GetMaxSpeed():      240
     GetPrice():         1396
     GetMaxLength():     11
     GetMinLength():     5
   Bridge 9
     IsValidBridge():    true
-    GetName():          Steel girder rail bridge
+    GetName():
+     VT_RAIL:           Steel girder rail bridge
+     VT_ROAD:           Steel girder road bridge
+     VT_WATER:          Aqueduct
+     VT_AIR:            (null : 0x00000000)
     GetMaxSpeed():      256
     GetPrice():         1351
     GetMaxLength():     4
     GetMinLength():     2
   Bridge 10
     IsValidBridge():    false
-    GetName():          (null : 0x00000000)
+    GetName():
+     VT_RAIL:           (null : 0x00000000)
+     VT_ROAD:           (null : 0x00000000)
+     VT_WATER:          (null : 0x00000000)
+     VT_AIR:            (null : 0x00000000)
     GetMaxSpeed():      -1
     GetPrice():         -1
     GetMaxLength():     -1
     GetMinLength():     -1
   Bridge 11
     IsValidBridge():    false
-    GetName():          (null : 0x00000000)
+    GetName():
+     VT_RAIL:           (null : 0x00000000)
+     VT_ROAD:           (null : 0x00000000)
+     VT_WATER:          (null : 0x00000000)
+     VT_AIR:            (null : 0x00000000)
     GetMaxSpeed():      -1
     GetPrice():         -1
     GetMaxLength():     -1
     GetMinLength():     -1
   Bridge 12
     IsValidBridge():    false
-    GetName():          (null : 0x00000000)
+    GetName():
+     VT_RAIL:           (null : 0x00000000)
+     VT_ROAD:           (null : 0x00000000)
+     VT_WATER:          (null : 0x00000000)
+     VT_AIR:            (null : 0x00000000)
     GetMaxSpeed():      -1
     GetPrice():         -1
     GetMaxLength():     -1
     GetMinLength():     -1
   Bridge 13
     IsValidBridge():    false
-    GetName():          (null : 0x00000000)
+    GetName():
+     VT_RAIL:           (null : 0x00000000)
+     VT_ROAD:           (null : 0x00000000)
+     VT_WATER:          (null : 0x00000000)
+     VT_AIR:            (null : 0x00000000)
     GetMaxSpeed():      -1
     GetPrice():         -1
     GetMaxLength():     -1
@@ -1292,7 +1352,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     GetRunningCost():   820
     GetPower():         300
     GetWeight():        47
-    GetMaxTractiveEffort(): 139
+    GetMaxTractiveEffort(): 136
     GetVehicleType():   0
     GetRailType():      0
     GetRoadType():      -1
@@ -1436,7 +1496,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     GetRunningCost():   1968
     GetPower():         1000
     GetWeight():        131
-    GetMaxTractiveEffort(): 388
+    GetMaxTractiveEffort(): 381
     GetVehicleType():   0
     GetRailType():      0
     GetRoadType():      -1
@@ -1454,7 +1514,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     GetRunningCost():   2296
     GetPower():         1200
     GetWeight():        162
-    GetMaxTractiveEffort(): 480
+    GetMaxTractiveEffort(): 471
     GetVehicleType():   0
     GetRailType():      0
     GetRoadType():      -1
@@ -7253,7 +7313,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
   IsBuoyTile():         false
   IsLockTile():         false
   IsCanalTile():        false
-  GetBankBalance():     479851
+  GetBankBalance():     479664
   BuildWaterDepot():    true
   BuildDock():          true
   BuildBuoy():          true
@@ -7266,7 +7326,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
   IsBuoyTile():         true
   IsLockTile():         true
   IsCanalTile():        true
-  GetBankBalance():     465257
+  GetBankBalance():     465070
 
 --AIWaypointList(BUOY)--
   Count():             1
@@ -7285,7 +7345,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
   IsBuoyTile():         false
   IsLockTile():         false
   IsCanalTile():        false
-  GetBankBalance():     459862
+  GetBankBalance():     459675
   BuildWaterDepot():    true
   BuildDock():          true
 
@@ -7334,6 +7394,35 @@ ERROR: IsEnd() is invalid as Begin() is never called
     HasTransportType():            true
     HasTransportType():            false
     RemoveRail():                  true
+    HasTransportType():            false
+    HasTransportType():            false
+    BuildRailTrack():              true
+    RemoveRailTrack():             false
+    RemoveRailTrack():             true
+    BuildRail():                   true
+    HasTransportType():            true
+    HasTransportType():            false
+    RemoveRail():                  true
+    HasTransportType():            true
+    HasTransportType():            false
+    BuildRailTrack():              true
+    HasTransportType():            true
+    HasTransportType():            true
+    RemoveRail():                  true
+    HasTransportType():            false
+    HasTransportType():            false
+    BuildRailTrack():              false
+    BuildRailTrack():              false
+    BuildRailTrack():              true
+    BuildRailTrack():              true
+    BuildRailTrack():              false
+    DemolishTile():                true
+    BuildRailTrack():              true
+    BuildRailTrack():              false
+    BuildRailTrack():              false
+    BuildRailTrack():              false
+    DemolishTile():                true
+    BuildRailTrack():              true
   Depot
     IsRailTile():                  false
     BuildRailDepot():              false
@@ -7362,6 +7451,30 @@ ERROR: IsEnd() is invalid as Begin() is never called
     IsRailStationTile():           false
     IsRailStationTile():           false
     IsRailStationTile():           false
+  Waypoint
+    BuildRailTrack():              true
+    BuildRailTrack():              true
+    BuildRailTrack():              true
+    BuildRailWaypoint():           false
+    BuildRailWaypoint():           true
+    BuildRailWaypoint():           true
+    BuildRailWaypoint():           false
+    IsRailWaypointTile():          false
+    IsRailWaypointTile():          true
+    IsRailWaypointTile():          true
+    IsRailWaypointTile():          false
+    RemoveRailWaypointTileRectangle():true
+    RemoveRailWaypointTileRectangle():true
+    IsRailWaypointTile():          false
+    IsRailWaypointTile():          false
+    IsRailWaypointTile():          false
+    IsRailWaypointTile():          false
+    HasTransportType():            false
+    HasTransportType():            false
+    HasTransportType():            true
+    HasTransportType():            true
+    DemolishTile():                true
+    DemolishTile():                true
 
 --RailTypeList--
   Count():             1
@@ -7485,9 +7598,9 @@ ERROR: IsEnd() is invalid as Begin() is never called
   GetName(0):               Look, a station
   GetLocation(1):           29253
   GetLocation(1000):        -1
-  GetStationID(33411):      4
+  GetStationID(33411):      6
   GetStationID(34411):      65535
-  GetStationID(33411):      4
+  GetStationID(33411):      6
   HasRoadType(3, TRAM):     false
   HasRoadType(3, ROAD):     false
   HasRoadType(33411, TRAM): false
@@ -8423,7 +8536,6 @@ ERROR: IsEnd() is invalid as Begin() is never called
 --TileList_IndustryProducing--
   Count():             92
   Location ListDump:
-    46920 => 1
     46919 => 1
     46918 => 1
     46917 => 1
@@ -8432,7 +8544,6 @@ ERROR: IsEnd() is invalid as Begin() is never called
     46914 => 1
     46913 => 1
     46912 => 1
-    46911 => 1
     46664 => 1
     46663 => 1
     46662 => 1
@@ -8515,6 +8626,8 @@ ERROR: IsEnd() is invalid as Begin() is never called
     44353 => 1
     44352 => 1
     44351 => 1
+    46920 => 0
+    46911 => 0
 
 --TileList_StationType--
   Count():             4
@@ -9015,6 +9128,18 @@ ERROR: IsEnd() is invalid as Begin() is never called
   GetWagonAge():        0
   GetWagonEngineType(): 65535
   GetWagonAge():        -1
+  --Refit--
+    GetBuildWithRefitCapacity(): -1
+    GetBuildWithRefitCapacity(): 0
+    GetBuildWithRefitCapacity(): 160
+    BuildVehicleWithRefit():     20
+    GetCapacity():               160
+    GetCapacity():               0
+    GetRefitCapacity():          160
+    RefitVehicle():              true
+    GetCapacity():               0
+    GetCapacity():               160
+    SellVehicle():               true
   --Errors--
     RefitVehicle():        false
     GetLastErrorString():  ERR_VEHICLE_NOT_IN_DEPOT
@@ -9062,7 +9187,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     13 => 5489
     12 => 5489
   CurrentSpeed ListDump:
-    12 => 21
+    12 => 27
     17 => 0
     16 => 0
     14 => 0

@@ -19,6 +19,7 @@
 #include "autoreplace_gui.h"
 #include "articulated_vehicles.h"
 #include "core/random_func.hpp"
+#include "vehiclelist.h"
 
 #include "table/strings.h"
 
@@ -32,7 +33,6 @@ extern void ChangeVehicleViewWindow(VehicleID from_index, VehicleID to_index);
  * Figure out if two engines got at least one type of cargo in common (refitting if needed)
  * @param engine_a one of the EngineIDs
  * @param engine_b the other EngineID
- * @param type the type of the engines
  * @return true if they can both carry the same type of cargo (or at least one of them got no capacity at all)
  */
 static bool EnginesHaveCargoInCommon(EngineID engine_a, EngineID engine_b)
@@ -237,7 +237,7 @@ static CargoID GetNewCargoTypeForReplace(Vehicle *v, EngineID engine_type, bool 
  * @param v The vehicle to find a replacement for
  * @param c The vehicle's owner (it's faster to forward the pointer than refinding it)
  * @param always_replace Always replace, even if not old.
- * @param [out] e the EngineID of the replacement. INVALID_ENGINE if no replacement is found
+ * @param[out] e the EngineID of the replacement. INVALID_ENGINE if no replacement is found
  * @return Error if the engine to build is not available
  */
 static CommandCost GetNewEngineType(const Vehicle *v, const Company *c, bool always_replace, EngineID &e)
@@ -294,7 +294,7 @@ static CommandCost BuildReplacementVehicle(Vehicle *old_veh, Vehicle **new_vehic
 	if (refit_cargo == CT_INVALID) return CommandCost(); // incompatible cargoes
 
 	/* Build the new vehicle */
-	cost = DoCommand(old_veh->tile, e, 0, DC_EXEC | DC_AUTOREPLACE, GetCmdBuildVeh(old_veh));
+	cost = DoCommand(old_veh->tile, e | (CT_INVALID << 24), 0, DC_EXEC | DC_AUTOREPLACE, GetCmdBuildVeh(old_veh));
 	if (cost.Failed()) return cost;
 
 	Vehicle *new_veh = Vehicle::Get(_new_vehicle_id);
@@ -778,6 +778,9 @@ CommandCost CmdSetAutoReplace(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 	if (flags & DC_EXEC) {
 		GroupStatistics::UpdateAutoreplace(_current_company);
 		if (IsLocalCompany()) SetWindowDirty(WC_REPLACE_VEHICLE, Engine::Get(old_engine_type)->type);
+
+		const VehicleType vt = Engine::Get(old_engine_type)->type;
+		SetWindowDirty(GetWindowClassForVehicleType(vt), VehicleListIdentifier(VL_GROUP_LIST, vt, _current_company).Pack());
 	}
 	if ((flags & DC_EXEC) && IsLocalCompany()) InvalidateAutoreplaceWindow(old_engine_type, id_g);
 

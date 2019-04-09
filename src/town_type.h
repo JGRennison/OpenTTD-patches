@@ -54,7 +54,7 @@ enum Ratings {
 	RATING_GROWTH_UP_STEP    =   5, ///< when a town grows, all companies have rating increased a bit ...
 	RATING_GROWTH_MAXIMUM    = RATING_MEDIOCRE, ///< ... up to RATING_MEDIOCRE
 	RATING_STATION_UP_STEP   =  12, ///< when a town grows, company gains reputation for all well serviced stations ...
-	RATING_STATION_DOWN_STEP = -15, ///< ... but loses for bad serviced stations
+	RATING_STATION_DOWN_STEP = -15, ///< ... but loses for badly serviced stations
 
 	RATING_TUNNEL_BRIDGE_DOWN_STEP = -250, ///< penalty for removing town owned tunnel or bridge
 	RATING_TUNNEL_BRIDGE_MINIMUM   =    0, ///< minimum rating after removing tunnel or bridge
@@ -104,6 +104,14 @@ enum TownFounding {
 };
 /** It needs to be 8bits, because we save and load it as such */
 typedef SimpleTinyEnumT<TownFounding, byte> TownFoundingByte;
+
+/** Town cargo generation modes */
+enum TownCargoGenMode : byte {
+	TCGM_BEGIN = 0,
+	TCGM_ORIGINAL = 0,  ///< Original algorithm (quadratic cargo by population)
+	TCGM_BITCOUNT,      ///< Bit-counted algorithm (normal distribution from individual house population)
+	TCGM_END,
+};
 
 static const uint MAX_LENGTH_TOWN_NAME_CHARS = 32; ///< The maximum length of a town name in characters including '\0'
 

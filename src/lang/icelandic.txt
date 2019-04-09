@@ -950,6 +950,8 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :annað
 
 
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Grunngrafík
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Nota grunngrafíkina
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} týnd{P "" ar} eða ónýt{P "" ar} skrá{P "" r}
@@ -1202,6 +1204,7 @@ STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD_HELPTEXT             :Leyfa byggingu 
 STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}Ekki er hægt að breyta þessari stillingu þegar til eru farartæki
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :Viðhald á innviðum: {STRING}
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :Ef þessi stilling er virk kostar að reka innviði fyrirtækisins. Kostnaður eykst í auknu hlutfalli við stærð fyrirtækisins, því eru áhrifin meiri á stór fyrirtæki en lítil
+
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Alltaf hægt að byggja allar gerðir flugvalla: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Ef þessi stilling er virk þá er hver tegund flugvallar alltaf aðgengileg eftir að hann verður fyrst aðgengilegur
@@ -1548,7 +1551,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Iðnað
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Mótherji
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Gervigreind
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Upprunalegt
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Ráðlegt)
 
@@ -1629,13 +1631,9 @@ STR_QUIT_NO                                                     :{BLACK}Nei
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -1662,7 +1660,6 @@ STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Breyta u
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Leyfa breytingar á verðmæti framleiðslu: {ORANGE}{STRING}
 
 # Livery window
-STR_LIVERY_CAPTION                                              :{WHITE}Nýtt Litaskema
 
 STR_LIVERY_GENERAL_TOOLTIP                                      :{BLACK}Grunnlitur fyrirtækis
 STR_LIVERY_TRAIN_TOOLTIP                                        :{BLACK}Litaskema lesta
@@ -1918,9 +1915,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Þjónn 
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Fyrirtæki er varið. Sláðu inn lykilorð
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Listi yfir leikmenn
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Fylgjast með
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nýtt fyrirtæki
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Listi yfir leikmenn
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Fylgjast með
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Nýtt fyrirtæki
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Sparka
@@ -1935,7 +1932,6 @@ STR_NETWORK_CLIENT                                              :Notandi
 STR_NETWORK_SPECTATORS                                          :Áhorfendur
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Sláðu inn peningaupphæð sem þú vilt láta af hendi rakna
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Áhorfandi
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Ekki vista innslegið lykilorð
@@ -2529,7 +2525,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Land í eigu fy
 STR_ABOUT_OPENTTD                                               :{WHITE}Um OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Upphaflegur höfundarréttur {COPYRIGHT} 1995 Chris Sawyer, Öll réttindi áskilin
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD útgáfa {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2018 OpenTTD hópurinn
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT}2002-2019 OpenTTD hópurinn
 
 # Framerate display window
 ############ Leave those lines in this order!!
@@ -3075,17 +3071,7 @@ STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Miðja a
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Framleiðsla: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Iðnaðurinn hefur tilkynnt yfirvofandi lokun.
 
-############ range for requires starts
-STR_INDUSTRY_VIEW_REQUIRES_CARGO                                :{BLACK}Þarf: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Þarf: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
-STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Þarf: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
-############ range for requires ends
 
-
-############ range for produces starts
-STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Framleiðir: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Framleiðir: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
-############ range for produces ends
 
 STR_CONFIG_GAME_PRODUCTION                                      :{WHITE}Breyta framleiðslu (margfeldi af 8, allt að 2040)
 STR_CONFIG_GAME_PRODUCTION_LEVEL                                :{WHITE}Breyta framleiðslumagni (prósentu hámark er 800%)
@@ -3134,6 +3120,7 @@ STR_GROUP_DEFAULT_TRAINS                                        :Hóplausar lest
 STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Hóplausar bifreiðir
 STR_GROUP_DEFAULT_SHIPS                                         :Hóplaus skip
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Hóplausar flugvélar
+
 
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Hópar - Smelltu á hóp til að skrifa öll farartæki í þessum hóp
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Smelltu til að búa til hóp
@@ -3190,10 +3177,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Kaupa bi
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Kaupa skip
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Kaupa flugvél
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Kaupa valinn lestarvagn. Shift+smella sýnir áætlaðan kostnað án þess að kaupa
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Kaupa valda bifreið. Shift+smella sýnir áætlaðan kostnað án þess að kaupa
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Kaupa valið skip. Shift+smella sýnir áætlaðan kostnað án þess að kaupa
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Kaupa valda flugvél. Shift+smella sýnir áætlaðan kostnað án þess að kaupa
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Endurnefna
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Endurnefna
@@ -3966,7 +3955,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Of marga
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Of margir hlutar af lestarstöðvum
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Of margar strætisvagnastöðvar
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Of margar vörubílastöðvar
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Of nálægt annarri stöð/lestunarsvæði
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Of nálægt annarri bryggju
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Of nálægt öðrum flugvelli
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Get ekki endurnefnt stöð...

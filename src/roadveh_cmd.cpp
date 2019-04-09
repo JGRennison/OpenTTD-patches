@@ -255,7 +255,7 @@ void RoadVehUpdateCache(RoadVehicle *v, bool same_length)
  * @param flags    type of operation.
  * @param e        the engine to build.
  * @param data     unused.
- * @param ret[out] the vehicle that has been built.
+ * @param[out] ret the vehicle that has been built.
  * @return the cost of this operation or an error.
  */
 CommandCost CmdBuildRoadVehicle(TileIndex tile, DoCommandFlag flags, const Engine *e, uint16 data, Vehicle **ret)
@@ -924,6 +924,8 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 	/* Remove tracks unreachable from the enter dir */
 	trackdirs &= DiagdirReachesTrackdirs(enterdir);
 	if (trackdirs == TRACKDIR_BIT_NONE) {
+		/* If vehicle expected a path, it no longer exists, so invalidate it. */
+		if (!v->path.empty()) v->path.clear();
 		/* No reachable tracks, so we'll reverse */
 		return_track(_road_reverse_table[enterdir]);
 	}
@@ -954,12 +956,35 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 
 	/* Only one track to choose between? */
 	if (KillFirstBit(trackdirs) == TRACKDIR_BIT_NONE) {
+		if (!v->path.empty() && v->path.tile.front() == tile) {
+			/* Vehicle expected a choice here, invalidate its path. */
+			v->path.clear();
+		}
 		return_track(FindFirstBit2x64(trackdirs));
 	}
 
+	/* Attempt to follow cached path. */
+	if (!v->path.empty()) {
+		if (v->path.tile.front() != tile) {
+			/* Vehicle didn't expect a choice here, invalidate its path. */
+			v->path.clear();
+		} else {
+			Trackdir trackdir = v->path.td.front();
+
+			if (HasBit(trackdirs, trackdir)) {
+				v->path.td.pop_front();
+				v->path.tile.pop_front();
+				return_track(trackdir);
+			}
+
+			/* Vehicle expected a choice which is no longer available. */
+			v->path.clear();
+		}
+	}
+
 	switch (_settings_game.pf.pathfinder_for_roadvehs) {
-		case VPF_NPF:  best_track = NPFRoadVehicleChooseTrack(v, tile, enterdir, trackdirs, path_found); break;
-		case VPF_YAPF: best_track = YapfRoadVehicleChooseTrack(v, tile, enterdir, trackdirs, path_found); break;
+		case VPF_NPF:  best_track = NPFRoadVehicleChooseTrack(v, tile, enterdir, path_found); break;
+		case VPF_YAPF: best_track = YapfRoadVehicleChooseTrack(v, tile, enterdir, trackdirs, path_found, v->path); break;
 
 		default: NOT_REACHED();
 	}
@@ -1600,6 +1625,13 @@ bool RoadVehicle::Tick()
 	return true;
 }
 
+void RoadVehicle::SetDestTile(TileIndex tile)
+{
+	if (tile == this->dest_tile) return;
+	this->path.clear();
+	this->dest_tile = tile;
+}
+
 static void CheckIfRoadVehNeedsService(RoadVehicle *v)
 {
 	/* If we already got a slot at a stop, use that FIRST, and go to a depot later */
@@ -1639,7 +1671,7 @@ static void CheckIfRoadVehNeedsService(RoadVehicle *v)
 
 	SetBit(v->gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS);
 	v->current_order.MakeGoToDepot(depot, ODTFB_SERVICE);
-	v->dest_tile = rfdd.tile;
+	v->SetDestTile(rfdd.tile);
 	SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
 }
 

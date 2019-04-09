@@ -9,8 +9,6 @@
 
 /** @file network_client.cpp Client part of the network protocol. */
 
-#ifdef ENABLE_NETWORK
-
 #include "../stdafx.h"
 #include "network_gui.h"
 #include "../saveload/saveload.h"
@@ -31,6 +29,7 @@
 #include "network_base.h"
 #include "network_client.h"
 #include "../core/backup_type.hpp"
+#include "../thread.h"
 
 #include "table/strings.h"
 
@@ -43,7 +42,7 @@
 struct PacketReader : LoadFilter {
 	static const size_t CHUNK = 32 * 1024;  ///< 32 KiB chunks of memory.
 
-	AutoFreeSmallVector<byte *, 16> blocks; ///< Buffer with blocks of allocated memory.
+	AutoFreeSmallVector<byte *> blocks;     ///< Buffer with blocks of allocated memory.
 	byte *buf;                              ///< Buffer we're going to write to/read from.
 	byte *bufe;                             ///< End of the buffer we write to/read from.
 	byte **block;                           ///< The block we're reading from/writing to.
@@ -79,14 +78,14 @@ struct PacketReader : LoadFilter {
 		/* Allocate a new chunk and add the remaining data. */
 		pbuf += to_write;
 		to_write   = in_packet - to_write;
-		this->buf  = *this->blocks.Append() = CallocT<byte>(CHUNK);
+		this->blocks.push_back(this->buf = CallocT<byte>(CHUNK));
 		this->bufe = this->buf + CHUNK;
 
 		memcpy(this->buf, pbuf, to_write);
 		this->buf += to_write;
 	}
 
-	/* virtual */ size_t Read(byte *rbuf, size_t size)
+	size_t Read(byte *rbuf, size_t size) override
 	{
 		/* Limit the amount to read to whatever we still have. */
 		size_t ret_size = size = min(this->written_bytes - this->read_bytes, size);
@@ -108,11 +107,11 @@ struct PacketReader : LoadFilter {
 		return ret_size;
 	}
 
-	/* virtual */ void Reset()
+	void Reset() override
 	{
 		this->read_bytes = 0;
 
-		this->block = this->blocks.Begin();
+		this->block = this->blocks.data();
 		this->buf   = *this->block++;
 		this->bufe  = this->buf + CHUNK;
 	}
@@ -125,6 +124,7 @@ struct PacketReader : LoadFilter {
 void ClientNetworkEmergencySave()
 {
 	if (!_settings_client.gui.autosave_on_network_disconnect) return;
+	if (!_networking) return;
 
 	const char *filename = "netsave.sav";
 	DEBUG(net, 0, "Client: Performing emergency save (%s)", filename);
@@ -211,6 +211,8 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 			res != NETWORK_RECV_STATUS_SERVER_BANNED) {
 		SendError(errorno);
 	}
+
+	ClientNetworkEmergencySave();
 
 	_switch_mode = SM_MENU;
 	this->CloseConnection(res);
@@ -343,7 +345,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendJoin()
 	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 
 	Packet *p = new Packet(PACKET_CLIENT_JOIN);
-	p->Send_string(_openttd_revision);
+	p->Send_string(GetNetworkRevisionString());
 	p->Send_uint32(_openttd_newgrf_version);
 	p->Send_string(_settings_client.network.client_name); // Client name
 	p->Send_uint8 (_network_join_as);     // PlayAs
@@ -878,7 +880,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MAP_DONE(Packet
 			 * the server will give us a client-id and let us in */
 			_network_join_status = NETWORK_JOIN_STATUS_REGISTERING;
 			ShowJoinStatusWindow();
-			NetworkSendCommand(0, 0, 0, CMD_COMPANY_CTRL, NULL, NULL, _local_company);
+			NetworkSendCommand(0, CCA_NEW, 0, CMD_COMPANY_CTRL, NULL, NULL, _local_company);
 		}
 	} else {
 		/* take control over an existing company */
@@ -1172,8 +1174,6 @@ void ClientNetworkGameSocketHandler::CheckConnection()
 	 * the server will forcefully disconnect you. */
 	if (lag > 20) {
 		this->NetworkGameSocketHandler::CloseConnection();
-		ShowErrorMessage(STR_NETWORK_ERROR_LOSTCONNECTION, INVALID_STRING_ID, WL_CRITICAL);
-		ClientNetworkEmergencySave();
 		return;
 	}
 
@@ -1319,5 +1319,3 @@ bool NetworkMaxSpectatorsReached()
 {
 	return NetworkSpectatorCount() >= (_network_server ? _settings_client.network.max_spectators : _network_server_max_spectators);
 }
-
-#endif /* ENABLE_NETWORK */

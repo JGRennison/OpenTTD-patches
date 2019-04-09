@@ -304,6 +304,39 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout
 			return GetCountAndDistanceOfClosestInstance(parameter, layout_filter, town_filter, this->industry);
 		}
 
+		case 0x69:
+		case 0x6A:
+		case 0x6B:
+		case 0x6C:
+		case 0x6D:
+		case 0x70:
+		case 0x71: {
+			CargoID cargo = GetCargoTranslation(parameter, this->ro.grffile);
+			int index = this->industry->GetCargoProducedIndex(cargo);
+			if (index < 0) return 0; // invalid cargo
+			switch (variable) {
+				case 0x69: return this->industry->produced_cargo_waiting[index];
+				case 0x6A: return this->industry->this_month_production[index];
+				case 0x6B: return this->industry->this_month_transported[index];
+				case 0x6C: return this->industry->last_month_production[index];
+				case 0x6D: return this->industry->last_month_transported[index];
+				case 0x70: return this->industry->production_rate[index];
+				case 0x71: return this->industry->last_month_pct_transported[index];
+				default: NOT_REACHED();
+			}
+		}
+
+
+		case 0x6E:
+		case 0x6F: {
+			CargoID cargo = GetCargoTranslation(parameter, this->ro.grffile);
+			int index = this->industry->GetCargoAcceptedIndex(cargo);
+			if (index < 0) return 0; // invalid cargo
+			if (variable == 0x6E) return this->industry->last_cargo_accepted_at[index];
+			if (variable == 0x6F) return this->industry->incoming_cargo_waiting[index];
+			NOT_REACHED();
+		}
+
 		/* Get a variable from the persistent storage */
 		case 0x7C: return (this->industry->psa != NULL) ? this->industry->psa->GetValue(parameter) : 0;
 
@@ -364,7 +397,10 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout
 
 		case 0xB0: return Clamp(this->industry->construction_date - DAYS_TILL_ORIGINAL_BASE_YEAR, 0, 65535); // Date when built since 1920 (in days)
 		case 0xB3: return this->industry->construction_type; // Construction type
-		case 0xB4: return Clamp(this->industry->last_cargo_accepted_at - DAYS_TILL_ORIGINAL_BASE_YEAR, 0, 65535); // Date last cargo accepted since 1920 (in days)
+		case 0xB4: {
+			Date *latest = std::max_element(this->industry->last_cargo_accepted_at, endof(this->industry->last_cargo_accepted_at));
+			return Clamp((*latest) - DAYS_TILL_ORIGINAL_BASE_YEAR, 0, 65535); // Date last cargo accepted since 1920 (in days)
+		}
 	}
 
 	DEBUG(grf, 1, "Unhandled industry variable 0x%X", variable);
@@ -415,7 +451,7 @@ static const GRFFile *GetGrffile(IndustryType type)
 /**
  * Constructor of the industries resolver.
  * @param tile %Tile owned by the industry.
- * @param industry %Industry being resolved.
+ * @param indus %Industry being resolved.
  * @param type Type of the industry.
  * @param random_bits Random bits of the new industry.
  * @param callback Callback ID.
@@ -575,13 +611,39 @@ void IndustryProductionCallback(Industry *ind, int reason)
 		if (tgroup == NULL || tgroup->type != SGT_INDUSTRY_PRODUCTION) break;
 		const IndustryProductionSpriteGroup *group = (const IndustryProductionSpriteGroup *)tgroup;
 
-		bool deref = (group->version == 1);
+		if (group->version == 0xFF) {
+			/* Result was marked invalid on load, display error message */
+			SetDParamStr(0, spec->grf_prop.grffile->filename);
+			SetDParam(1, spec->name);
+			SetDParam(2, ind->location.tile);
+			ShowErrorMessage(STR_NEWGRF_BUGGY, STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK, WL_WARNING);
 
-		for (uint i = 0; i < 3; i++) {
-			ind->incoming_cargo_waiting[i] = Clamp(ind->incoming_cargo_waiting[i] - DerefIndProd(group->subtract_input[i], deref) * multiplier, 0, 0xFFFF);
+			/* abort the function early, this error isn't critical and will allow the game to continue to run */
+			break;
 		}
-		for (uint i = 0; i < 2; i++) {
-			ind->produced_cargo_waiting[i] = Clamp(ind->produced_cargo_waiting[i] + max(DerefIndProd(group->add_output[i], deref), 0) * multiplier, 0, 0xFFFF);
+
+		bool deref = (group->version >= 1);
+
+		if (group->version < 2) {
+			/* Callback parameters map directly to industry cargo slot indices */
+			for (uint i = 0; i < group->num_input; i++) {
+				ind->incoming_cargo_waiting[i] = Clamp(ind->incoming_cargo_waiting[i] - DerefIndProd(group->subtract_input[i], deref) * multiplier, 0, 0xFFFF);
+			}
+			for (uint i = 0; i < group->num_output; i++) {
+				ind->produced_cargo_waiting[i] = Clamp(ind->produced_cargo_waiting[i] + max(DerefIndProd(group->add_output[i], deref), 0) * multiplier, 0, 0xFFFF);
+			}
+		} else {
+			/* Callback receives list of cargos to apply for, which need to have their cargo slots in industry looked up */
+			for (uint i = 0; i < group->num_input; i++) {
+				int cargo_index = ind->GetCargoAcceptedIndex(group->cargo_input[i]);
+				if (cargo_index < 0) continue;
+				ind->incoming_cargo_waiting[cargo_index] = Clamp(ind->incoming_cargo_waiting[cargo_index] - DerefIndProd(group->subtract_input[i], deref) * multiplier, 0, 0xFFFF);
+			}
+			for (uint i = 0; i < group->num_output; i++) {
+				int cargo_index = ind->GetCargoProducedIndex(group->cargo_output[i]);
+				if (cargo_index < 0) continue;
+				ind->produced_cargo_waiting[cargo_index] = Clamp(ind->produced_cargo_waiting[cargo_index] + max(DerefIndProd(group->add_output[i], deref), 0) * multiplier, 0, 0xFFFF);
+			}
 		}
 
 		int32 again = DerefIndProd(group->again, deref);
@@ -602,7 +664,7 @@ void IndustryProductionCallback(Industry *ind, int reason)
  */
 bool IndustryTemporarilyRefusesCargo(Industry *ind, CargoID cargo_type)
 {
-	assert(cargo_type == ind->accepts_cargo[0] || cargo_type == ind->accepts_cargo[1] || cargo_type == ind->accepts_cargo[2]);
+	assert(std::find(ind->accepts_cargo, endof(ind->accepts_cargo), cargo_type) != endof(ind->accepts_cargo));
 
 	const IndustrySpec *indspec = GetIndustrySpec(ind->type);
 	if (HasBit(indspec->callback_mask, CBM_IND_REFUSE_CARGO)) {

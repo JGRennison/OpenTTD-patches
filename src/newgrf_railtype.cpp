@@ -87,8 +87,8 @@ RailTypeResolverObject::RailTypeResolverObject(const RailtypeInfo *rti, TileInde
  * @param rti The rail type data (spec).
  * @param tile The tile to get the sprite for.
  * @param rtsg The type of sprite to draw.
- * @param content Where are we drawing the tile?
- * @param [out] num_results If not NULL, return the number of sprites in the spriteset.
+ * @param context Where are we drawing the tile?
+ * @param[out] num_results If not NULL, return the number of sprites in the spriteset.
  * @return The sprite to draw.
  */
 SpriteID GetCustomRailSprite(const RailtypeInfo *rti, TileIndex tile, RailTypeSpriteGroup rtsg, TileContext context, uint *num_results)
@@ -139,12 +139,13 @@ SpriteID GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalTy
 uint8 GetReverseRailTypeTranslation(RailType railtype, const GRFFile *grffile)
 {
 	/* No rail type table present, return rail type as-is */
-	if (grffile == NULL || grffile->railtype_list.Length() == 0) return railtype;
+	if (grffile == NULL || grffile->railtype_list.size() == 0) return railtype;
 
 	/* Look for a matching rail type label in the table */
 	RailTypeLabel label = GetRailTypeInfo(railtype)->label;
-	int index = grffile->railtype_list.FindIndex(label);
-	if (index >= 0) return index;
+
+	int idx = find_index(grffile->railtype_list, label);
+	if (idx >= 0) return idx;
 
 	/* If not found, return as invalid */
 	return 0xFF;

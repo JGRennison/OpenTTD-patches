@@ -39,9 +39,9 @@ struct AirportScopeResolver : public ScopeResolver {
 	{
 	}
 
-	/* virtual */ uint32 GetRandomBits() const;
-	/* virtual */ uint32 GetVariable(byte variable, uint32 parameter, bool *available) const;
-	/* virtual */ void StorePSA(uint pos, int32 value);
+	uint32 GetRandomBits() const override;
+	uint32 GetVariable(byte variable, uint32 parameter, bool *available) const override;
+	void StorePSA(uint pos, int32 value) override;
 };
 
 /** Resolver object for airports. */
@@ -51,7 +51,7 @@ struct AirportResolverObject : public ResolverObject {
 	AirportResolverObject(TileIndex tile, Station *st, byte airport_id, byte layout,
 			CallbackID callback = CBID_NO_CALLBACK, uint32 callback_param1 = 0, uint32 callback_param2 = 0);
 
-	/* virtual */ ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0)
+	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0) override
 	{
 		switch (scope) {
 			case VSG_SCOPE_SELF: return &this->airport_scope;
@@ -59,7 +59,7 @@ struct AirportResolverObject : public ResolverObject {
 		}
 	}
 
-	/* virtual */ const SpriteGroup *ResolveReal(const RealSpriteGroup *group) const;
+	const SpriteGroup *ResolveReal(const RealSpriteGroup *group) const override;
 };
 
 /**
@@ -100,6 +100,7 @@ AirportSpec AirportSpec::specs[NUM_AIRPORTS]; ///< Airport specifications.
 	assert(type < lengthof(AirportSpec::specs));
 	const AirportSpec *as = &AirportSpec::specs[type];
 	if (type >= NEW_AIRPORT_OFFSET && !as->enabled) {
+		if (_airport_mngr.GetGRFID(type) == 0) return as;
 		byte subst_id = _airport_mngr.GetSubstituteID(type);
 		if (subst_id == AT_INVALID) return as;
 		as = &AirportSpec::specs[subst_id];
@@ -127,6 +128,24 @@ bool AirportSpec::IsAvailable() const
 	if (_cur_year < this->min_year) return false;
 	if (_settings_game.station.never_expire_airports) return true;
 	return _cur_year <= this->max_year;
+}
+
+/**
+ * Check if the airport would be within the map bounds at the given tile.
+ * @param table Selected layout table. This affects airport rotation, and therefore dimenions.
+ * @param tile Top corner of the airport.
+ * @return true iff the airport would be within the map bounds at the given tile.
+ */
+bool AirportSpec::IsWithinMapBounds(byte table, TileIndex tile) const
+{
+	if (table >= this->num_table) return false;
+
+	byte w = this->size_x;
+	byte h = this->size_y;
+	if (this->rotation[table] == DIR_E || this->rotation[table] == DIR_W) Swap(w, h);
+
+	return TileX(tile) + w < MapSizeX() &&
+		TileY(tile) + h < MapSizeY();
 }
 
 /**
@@ -216,7 +235,6 @@ void AirportOverrideManager::SetEntitySpec(AirportSpec *as)
 
 /**
  * Store a value into the object's persistent storage.
- * @param object Object that we want to query.
  * @param pos Position in the persistent storage to use.
  * @param value Value to store.
  */

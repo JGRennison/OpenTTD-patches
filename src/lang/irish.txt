@@ -984,6 +984,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Gnáth
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Méid dúbailte
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Méid cheathrúil
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Sraith graifice bunaidh
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Roghnaigh an sraith grafaice bunaidh le húsáid
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} {P ch ch ch gc c}omhad ar iarraidh/truaillithe
@@ -1250,6 +1252,7 @@ STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD_HELPTEXT             :Tabhair cead st
 STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}Ní féidir an socrú seo a athrú nuair atá feithiclí ann
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :Cothabháil bonneagair: {STRING}
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :Má tá sé cumasaithe, bíonn costais chothabhála ar bhonneagar. Méadaíonn an costas níos tapúla ná méid an líonra, rad a fhágann go mbíonn tionchar níos mó aige ar chuideachtaí móra ná ar chuideachtaí beaga
+
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Ní imíonn aerfoirt as dáta riamh: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Má dhéantar an socrú seo a chumasú beidh gach cineál aerfoirt ar fáil go deo tar éis é a thabhairt isteach
@@ -1681,7 +1684,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Dáilea
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Iomaitheoirí
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Ríomh-imreoirí
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Bunaidh
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Molta)
 
@@ -1764,13 +1766,9 @@ STR_QUIT_NO                                                     :{BLACK}Níl
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -1799,7 +1797,6 @@ STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Athraigh
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Cumasaigh luachanna táirgeachta a athrú: {ORANGE}{STRING}
 
 # Livery window
-STR_LIVERY_CAPTION                                              :{WHITE}Scéim Dathanna Nua
 
 STR_LIVERY_GENERAL_TOOLTIP                                      :{BLACK}Taispeáin scéimeanna dathanna ginearálta
 STR_LIVERY_TRAIN_TOOLTIP                                        :{BLACK}Taispeáin scéimeanna dathanna na dtraenacha
@@ -2061,9 +2058,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Tá an f
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Tá an chuideachta faoi chosaint. Iontráil pasfhocal
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Liosta na gcliant
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Féach air
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Cuideachta nua
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Liosta na gcliant
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Féach air
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Cuideachta nua
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Ciceáil
@@ -2078,7 +2075,6 @@ STR_NETWORK_CLIENT                                              :Cliant
 STR_NETWORK_SPECTATORS                                          :Féachadóirí
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Iontráil an méid airgid is mian leat a thabhairt
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Féachadóir
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Ná sábháil an pasfhocal a iontráladh
@@ -2680,7 +2676,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Talamh faoi úi
 STR_ABOUT_OPENTTD                                               :{WHITE}Maidir le OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Cóipcheart bunaidh {COPYRIGHT} 1995 Chris Sawyer, Gach ceart ar cosaint
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD leagan {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 An fhoireann OpenTTD
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2019 An fhoireann OpenTTD
 
 # Framerate display window
 ############ Leave those lines in this order!!
@@ -3284,17 +3280,7 @@ STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Láraigh
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Leibhéal táirgeachta: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}D'fhógair an tionscal go ndúnfaidh sé gan mhoill!
 
-############ range for requires starts
-STR_INDUSTRY_VIEW_REQUIRES_CARGO                                :{BLACK}Teastaíonn: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Teastaíonn: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
-STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Teastaíonn: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
-############ range for requires ends
 
-
-############ range for produces starts
-STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Táirgtear: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Táirgtear: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
-############ range for produces ends
 
 STR_CONFIG_GAME_PRODUCTION                                      :{WHITE}Athraigh táirgeacht (iolra de 8, suas go 2040)
 STR_CONFIG_GAME_PRODUCTION_LEVEL                                :{WHITE}Athraigh an ráta táirgeachta (céatadán, suas go 800%)
@@ -3343,6 +3329,7 @@ STR_GROUP_DEFAULT_TRAINS                                        :Traenacha nach 
 STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Feithiclí bóthair nach bhfuil i ngrúpa
 STR_GROUP_DEFAULT_SHIPS                                         :Longa nach bhfuil i ngrúpa
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Aerárthaigh nach bhfuil i ngrúpa
+
 
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Grúpaí - cliceáil ar ghrúpa le gach feithicil sa ghrúpa seo a liostú
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Cliceáil le grúpa a chruthú
@@ -3401,10 +3388,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Ceannaig
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Ceannaigh Long
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Ceannaigh Aerárthach
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Ceannaigh an fheithicil traenach aibhsithe
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Ceannaigh an fheithicil bóthair aibhsithe
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Ceannaigh an long aibhsithe
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Ceannaigh an t-aerárthach aibhsithe
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Athainmnigh
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Athainmnigh
@@ -4203,7 +4192,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}An iomar
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}An iomarca codanna stáisiún iarnróid
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}An iomarca stadanna bus
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}An iomarca stáisiúin leoraithe
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Roghearr do stáisiún/limistéar lódála eile
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Roghearr do dug eile
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Roghearr d'aerfort eile
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Ní féidir an stáisiún a athainmniú...

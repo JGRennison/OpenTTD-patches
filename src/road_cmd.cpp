@@ -333,7 +333,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 						if (rt == ROADTYPE_ROAD && IsRoadOwner(tile, ROADTYPE_ROAD, OWNER_TOWN)) {
 							/* Update nearest-town index */
 							const Town *town = CalcClosestTownFromTile(tile);
-							SetTownIndex(tile, town == NULL ? (TownID)INVALID_TOWN : town->index);
+							SetTownIndex(tile, town == NULL ? INVALID_TOWN : town->index);
 						}
 						SetRoadBits(tile, ROAD_NONE, rt);
 						SetRoadTypes(tile, rts);
@@ -494,7 +494,7 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 	if ((Company::IsValidID(company) && p2 != 0) || (company == OWNER_TOWN && !Town::IsValidID(p2)) || (company == OWNER_DEITY && p2 != 0)) return CMD_ERROR;
 	if (company != OWNER_TOWN) {
 		const Town *town = CalcClosestTownFromTile(tile);
-		p2 = (town != NULL) ? town->index : (TownID)INVALID_TOWN;
+		p2 = (town != NULL) ? town->index : INVALID_TOWN;
 
 		if (company == OWNER_DEITY) {
 			company = OWNER_TOWN;
@@ -809,7 +809,9 @@ do_clear:;
  */
 static bool CanConnectToRoad(TileIndex tile, RoadType rt, DiagDirection dir)
 {
-	RoadBits bits = GetAnyRoadBits(tile + TileOffsByDiagDir(dir), rt, false);
+	tile += TileOffsByDiagDir(dir);
+	if (!IsValidTile(tile)) return false;
+	RoadBits bits = GetAnyRoadBits(tile, rt, false);
 	return (bits & DiagDirToRoadBits(ReverseDiagDir(dir))) != 0;
 }
 
@@ -1017,15 +1019,17 @@ CommandCost CmdBuildRoadDepot(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 
 	if (!IsValidRoadType(rt) || !ValParamRoadType(rt)) return CMD_ERROR;
 
+	CommandCost cost(EXPENSES_CONSTRUCTION);
+
 	Slope tileh = GetTileSlope(tile);
-	if (tileh != SLOPE_FLAT && (
-				!_settings_game.construction.build_on_slopes ||
-				!CanBuildDepotByTileh(dir, tileh)
-			)) {
-		return_cmd_error(STR_ERROR_FLAT_LAND_REQUIRED);
+	if (tileh != SLOPE_FLAT) {
+		if (!_settings_game.construction.build_on_slopes || !CanBuildDepotByTileh(dir, tileh)) {
+			return_cmd_error(STR_ERROR_FLAT_LAND_REQUIRED);
+		}
+		cost.AddCost(_price[PR_BUILD_FOUNDATION]);
 	}
 
-	CommandCost cost = DoCommand(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+	cost.AddCost(DoCommand(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR));
 	if (cost.Failed()) return cost;
 
 	if (IsBridgeAbove(tile)) return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
@@ -1442,7 +1446,7 @@ void UpdateNearestTownForRoadTiles(bool invalidate)
 
 	for (TileIndex t = 0; t < MapSize(); t++) {
 		if (IsTileType(t, MP_ROAD) && !IsRoadDepot(t) && !HasTownOwnedRoad(t)) {
-			TownID tid = (TownID)INVALID_TOWN;
+			TownID tid = INVALID_TOWN;
 			if (!invalidate) {
 				const Town *town = CalcClosestTownFromTile(t);
 				if (town != NULL) tid = town->index;

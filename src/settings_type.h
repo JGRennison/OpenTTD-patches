@@ -99,7 +99,7 @@ struct GUISettings {
 	bool   smooth_scroll;                    ///< smooth scroll viewports
 	bool   measure_tooltip;                  ///< show a permanent tooltip when dragging tools
 	byte   liveries;                         ///< options for displaying company liveries, 0=none, 1=self, 2=all
-	bool   prefer_teamchat;                  ///< choose the chat message target with <ENTER>, true=all clients, false=your team
+	bool   prefer_teamchat;                  ///< choose the chat message target with \<ENTER\>, true=all clients, false=your team
 	uint8  advanced_vehicle_list;            ///< use the "advanced" vehicle list
 	uint8  loading_indicators;               ///< show loading indicators
 	uint8  default_rail_type;                ///< the default rail type for the rail GUI
@@ -146,6 +146,7 @@ struct GUISettings {
 	byte   missing_strings_threshold;        ///< the number of missing strings before showing the warning
 	uint8  graph_line_thickness;             ///< the thickness of the lines in the various graph guis
 	uint8  osk_activation;                   ///< Mouse gesture to trigger the OSK.
+	byte   starting_colour;                  ///< default color scheme for the company to start a new game with
 
 	uint16 console_backlog_timeout;          ///< the minimum amount of time items should be in the console backlog before they will be removed in ~3 seconds granularity.
 	uint16 console_backlog_length;           ///< the minimum amount of items in the console backlog before items will be removed.
@@ -153,11 +154,9 @@ struct GUISettings {
 	uint8  station_gui_group_order;          ///< the order of grouping cargo entries in the station gui
 	uint8  station_gui_sort_by;              ///< sort cargo entries in the station gui by station name or amount
 	uint8  station_gui_sort_order;           ///< the sort order of entries in the station gui - ascending or descending
-#ifdef ENABLE_NETWORK
 	uint16 network_chat_box_width_pct;       ///< width of the chat box in percent
 	uint8  network_chat_box_height;          ///< height of the chat box in lines
 	uint16 network_chat_timeout;             ///< timeout of chat messages in seconds
-#endif
 
 	uint8  developer;                        ///< print non-fatal warnings in console (>= 1), copy debug output to console (== 2)
 	bool   show_date_in_logs;                ///< whether to show dates in console logs
@@ -236,7 +235,6 @@ struct NewsSettings {
 
 /** All settings related to the network. */
 struct NetworkSettings {
-#ifdef ENABLE_NETWORK
 	uint16 sync_freq;                                     ///< how often do we check whether we are still in-sync
 	uint8  frame_freq;                                    ///< how often do we send commands to the clients
 	uint16 commands_per_frame;                            ///< how many commands may be sent each frame_freq frames?
@@ -276,8 +274,6 @@ struct NetworkSettings {
 	char   last_host[NETWORK_HOSTNAME_LENGTH];            ///< IP address of the last joined server
 	uint16 last_port;                                     ///< port of the last joined server
 	bool   no_http_content_downloads;                     ///< do not do content downloads over HTTP
-#else /* ENABLE_NETWORK */
-#endif
 };
 
 /** Settings related to the creation of games. */
@@ -343,12 +339,6 @@ struct AISettings {
 struct ScriptSettings {
 	uint8  settings_profile;                 ///< difficulty profile to set initial settings of scripts, esp. random AIs
 	uint32 script_max_opcode_till_suspend;   ///< max opcode calls till scripts will suspend
-};
-
-/** Settings related to the old pathfinder. */
-struct OPFSettings {
-	uint16 pf_maxlength;                     ///< maximum length when searching for a train route for new pathfinder
-	byte   pf_maxdepth;                      ///< maximum recursion depth when searching for a train route for new pathfinder
 };
 
 /** Settings related to the new pathfinder. */
@@ -417,6 +407,8 @@ struct YAPFSettings {
 	uint32 rail_longer_platform_per_tile_penalty;  ///< penalty for longer  station platform than train (per tile)
 	uint32 rail_shorter_platform_penalty;          ///< penalty for shorter station platform than train
 	uint32 rail_shorter_platform_per_tile_penalty; ///< penalty for shorter station platform than train (per tile)
+	uint32 ship_curve45_penalty;                   ///< penalty for 45-deg curve for ships
+	uint32 ship_curve90_penalty;                   ///< penalty for 90-deg curve for ships
 };
 
 /** Settings related to all pathfinders. */
@@ -437,7 +429,6 @@ struct PathfinderSettings {
 	byte   wait_for_pbs_path;                ///< how long to wait for a path reservation.
 	byte   path_backoff_interval;            ///< ticks between checks for a free path.
 
-	OPFSettings  opf;                        ///< pathfinder settings for the old pathfinder
 	NPFSettings  npf;                        ///< pathfinder settings for the new pathfinder
 	YAPFSettings yapf;                       ///< pathfinder settings for the yet another pathfinder
 };
@@ -492,6 +483,7 @@ struct EconomySettings {
 	uint8  larger_towns;                     ///< the number of cities to build. These start off larger and grow twice as fast
 	uint8  initial_city_size;                ///< multiplier for the initial size of the cities compared to towns
 	TownLayoutByte town_layout;              ///< select town layout, @see TownLayout
+	TownCargoGenMode town_cargogen_mode;     ///< algorithm for generating cargo from houses, @see TownCargoGenMode
 	bool   allow_town_roads;                 ///< towns are allowed to build roads (always allowed when generating world / in SE)
 	TownFoundingByte found_town;             ///< town founding, @see TownFounding
 	bool   station_noise_level;              ///< build new airports when the town noise level is still within accepted limits
@@ -523,6 +515,7 @@ struct LinkGraphSettings {
 /** Settings related to stations. */
 struct StationSettings {
 	bool   modified_catchment;               ///< different-size catchment areas
+	bool   serve_neutral_industries;         ///< company stations can serve industries with attached neutral stations
 	bool   adjacent_stations;                ///< allow stations to be built directly adjacent to other stations
 	bool   distant_join_stations;            ///< allow to join non-adjacent stations
 	bool   never_expire_airports;            ///< never expire airports

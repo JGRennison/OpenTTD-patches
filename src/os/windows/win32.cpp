@@ -17,6 +17,7 @@
 #include <windows.h>
 #include <fcntl.h>
 #include <regstr.h>
+#define NO_SHOBJIDL_SORTDIRECTION // Avoid multiple definition of SORT_ASCENDING
 #include <shlobj.h> /* SHGetFolderPath */
 #include <shellapi.h>
 #include "win32.h"
@@ -29,11 +30,9 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include "../../language.h"
+#include "../../thread.h"
 
-/* Due to TCHAR, strncat and strncpy have to remain (for a while). */
 #include "../../safeguards.h"
-#undef strncat
-#undef strncpy
 
 bool _in_event_loop_post_crash;
 
@@ -83,7 +82,7 @@ void ShowOSErrorBox(const char *buf, bool system)
 {
 	_in_event_loop_post_crash = true;
 	MyShowCursor(true);
-	MessageBox(GetActiveWindow(), OTTD2FS(buf), _T("Error!"), MB_ICONSTOP);
+	MessageBox(GetActiveWindow(), OTTD2FS(buf), _T("Error!"), MB_ICONSTOP | MB_TASKMODAL);
 }
 
 void OSOpenBrowser(const char *url)
@@ -303,7 +302,7 @@ void CreateConsole()
 	if (_has_console) return;
 	_has_console = true;
 
-	AllocConsole();
+	if (!AllocConsole()) return;
 
 	hand = GetStdHandle(STD_OUTPUT_HANDLE);
 	GetConsoleScreenBufferInfo(hand, &coninfo);
@@ -548,12 +547,6 @@ bool GetClipboardContents(char *buffer, const char *last)
 }
 
 
-void CSleep(int milliseconds)
-{
-	Sleep(milliseconds);
-}
-
-
 /**
  * Convert to OpenTTD's encoding from that of the local environment.
  * When the project is built in UNICODE, the system codepage is irrelevant and
@@ -628,11 +621,11 @@ char *convert_from_fs(const TCHAR *name, char *utf8_buf, size_t buflen)
  * Convert from OpenTTD's encoding to that of the environment in
  * UNICODE. OpenTTD encoding is UTF8, local is wide
  * @param name pointer to a valid string that will be converted
- * @param utf16_buf pointer to a valid wide-char buffer that will receive the
+ * @param system_buf pointer to a valid wide-char buffer that will receive the
  * converted string
  * @param buflen length in wide characters of the receiving buffer
  * @param console_cp convert to the console encoding instead of the normal system encoding.
- * @return pointer to utf16_buf. If conversion fails the string is of zero-length
+ * @return pointer to system_buf. If conversion fails the string is of zero-length
  */
 TCHAR *convert_to_fs(const char *name, TCHAR *system_buf, size_t buflen, bool console_cp)
 {
@@ -735,14 +728,6 @@ const char *GetCurrentLocale(const char *)
 	return retbuf;
 }
 
-uint GetCPUCoreCount()
-{
-	SYSTEM_INFO info;
-
-	GetSystemInfo(&info);
-	return info.dwNumberOfProcessors;
-}
-
 
 static WCHAR _cur_iso_locale[16] = L"";
 
@@ -807,6 +792,42 @@ int OTTDStringCompare(const char *s1, const char *s2)
 	return CompareString(MAKELCID(_current_language->winlangid, SORT_DEFAULT), NORM_IGNORECASE, s1_buf, -1, s2_buf, -1);
 }
 
+static DWORD main_thread_id;
+
+void SetSelfAsMainThread()
+{
+	main_thread_id = GetCurrentThreadId();
+}
+
+bool IsMainThread()
+{
+	return main_thread_id == GetCurrentThreadId();
+}
+
+bool IsNonMainThread()
+{
+	return main_thread_id != GetCurrentThreadId();
+}
+
+static std::map<DWORD, std::string> _thread_name_map;
+static std::mutex _thread_name_map_mutex;
+
+static void Win32SetThreadName(uint id, const char *name)
+{
+	std::lock_guard<std::mutex> lock(_thread_name_map_mutex);
+	_thread_name_map[id] = name;
+}
+
+int GetCurrentThreadName(char *str, const char *last)
+{
+	std::lock_guard<std::mutex> lock(_thread_name_map_mutex);
+	auto iter = _thread_name_map.find(GetCurrentThreadId());
+	if (iter != _thread_name_map.end()) {
+		return seprintf(str, last, "%s", iter->second.c_str());
+	}
+	return 0;
+}
+
 #ifdef _MSC_VER
 /* Based on code from MSDN: https://msdn.microsoft.com/en-us/library/xcb2z8hs.aspx */
 const DWORD MS_VC_EXCEPTION = 0x406D1388;
@@ -821,12 +842,14 @@ PACK_N(struct THREADNAME_INFO {
 /**
  * Signal thread name to any attached debuggers.
  */
-void SetWin32ThreadName(DWORD dwThreadID, const char* threadName)
+void SetCurrentThreadName(const char *threadName)
 {
+	Win32SetThreadName(GetCurrentThreadId(), threadName);
+
 	THREADNAME_INFO info;
 	info.dwType = 0x1000;
 	info.szName = threadName;
-	info.dwThreadID = dwThreadID;
+	info.dwThreadID = -1;
 	info.dwFlags = 0;
 
 #pragma warning(push)
@@ -836,5 +859,10 @@ void SetWin32ThreadName(DWORD dwThreadID, const char* threadName)
 	} __except (EXCEPTION_EXECUTE_HANDLER) {
 	}
 #pragma warning(pop)
+}
+#else
+void SetCurrentThreadName(const char *)
+{
+	Win32SetThreadName(GetCurrentThreadId(), threadName);
 }
 #endif

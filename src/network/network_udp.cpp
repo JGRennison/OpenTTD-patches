@@ -14,8 +14,6 @@
  * communication before the game is being joined.
  */
 
-#ifdef ENABLE_NETWORK
-
 #include "../stdafx.h"
 #include "../date_func.h"
 #include "../map_func.h"
@@ -26,18 +24,19 @@
 #include "network.h"
 #include "../core/endian_func.hpp"
 #include "../company_base.h"
-#include "../thread/thread.h"
+#include "../thread.h"
 #include "../rev.h"
 #include "../newgrf_text.h"
 #include "../strings_func.h"
 #include "table/strings.h"
+#include <mutex>
 
 #include "core/udp.h"
 
 #include "../safeguards.h"
 
 /** Mutex for all out threaded udp resolution and such. */
-static ThreadMutex *_network_udp_mutex = ThreadMutex::New();
+static std::mutex _network_udp_mutex;
 
 /** Session key to register ourselves to the master server */
 static uint64 _session_key = 0;
@@ -50,55 +49,27 @@ NetworkUDPSocketHandler *_udp_client_socket = NULL; ///< udp client socket
 NetworkUDPSocketHandler *_udp_server_socket = NULL; ///< udp server socket
 NetworkUDPSocketHandler *_udp_master_socket = NULL; ///< udp master socket
 
-/** Simpler wrapper struct for NetworkUDPQueryServerThread */
-struct NetworkUDPQueryServerInfo : NetworkAddress {
-	bool manually; ///< Did we connect manually or not?
-
-	/**
-	 * Create the structure.
-	 * @param address The address of the server to query.
-	 * @param manually Whether the address was entered manually.
-	 */
-	NetworkUDPQueryServerInfo(const NetworkAddress &address, bool manually) :
-		NetworkAddress(address),
-		manually(manually)
-	{
-	}
-};
-
 /**
  * Helper function doing the actual work for querying the server.
  * @param address The address of the server.
  * @param needs_mutex Whether we need to acquire locks when sending the packet or not.
  * @param manually Whether the address was entered manually.
  */
-static void NetworkUDPQueryServer(NetworkAddress *address, bool needs_mutex, bool manually)
+static void DoNetworkUDPQueryServer(NetworkAddress &address, bool needs_mutex, bool manually)
 {
 	/* Clear item in gamelist */
 	NetworkGameList *item = CallocT<NetworkGameList>(1);
-	address->GetAddressAsString(item->info.server_name, lastof(item->info.server_name));
-	strecpy(item->info.hostname, address->GetHostname(), lastof(item->info.hostname));
-	item->address = *address;
+	address.GetAddressAsString(item->info.server_name, lastof(item->info.server_name));
+	strecpy(item->info.hostname, address.GetHostname(), lastof(item->info.hostname));
+	item->address = address;
 	item->manually = manually;
 	NetworkGameListAddItemDelayed(item);
 
-	if (needs_mutex) _network_udp_mutex->BeginCritical();
+	std::unique_lock<std::mutex> lock(_network_udp_mutex, std::defer_lock);
+	if (needs_mutex) lock.lock();
 	/* Init the packet */
 	Packet p(PACKET_UDP_CLIENT_FIND_SERVER);
-	if (_udp_client_socket != NULL) _udp_client_socket->SendPacket(&p, address);
-	if (needs_mutex) _network_udp_mutex->EndCritical();
-}
-
-/**
- * Threaded part for resolving the IP of a server and querying it.
- * @param pntr the NetworkUDPQueryServerInfo.
- */
-static void NetworkUDPQueryServerThread(void *pntr)
-{
-	NetworkUDPQueryServerInfo *info = (NetworkUDPQueryServerInfo*)pntr;
-	NetworkUDPQueryServer(info, true, info->manually);
-
-	delete info;
+	if (_udp_client_socket != NULL) _udp_client_socket->SendPacket(&p, &address);
 }
 
 /**
@@ -108,9 +79,8 @@ static void NetworkUDPQueryServerThread(void *pntr)
  */
 void NetworkUDPQueryServer(NetworkAddress address, bool manually)
 {
-	NetworkUDPQueryServerInfo *info = new NetworkUDPQueryServerInfo(address, manually);
-	if (address.IsResolved() || !ThreadObject::New(NetworkUDPQueryServerThread, info, NULL, "ottd:udp-query")) {
-		NetworkUDPQueryServerThread(info);
+	if (address.IsResolved() || !StartNewThread(NULL, "ottd:udp-query", &DoNetworkUDPQueryServer, std::move(address), true, std::move(manually))) {
+		DoNetworkUDPQueryServer(address, true, manually);
 	}
 }
 
@@ -119,8 +89,8 @@ void NetworkUDPQueryServer(NetworkAddress address, bool manually)
 /** Helper class for connecting to the master server. */
 class MasterNetworkUDPSocketHandler : public NetworkUDPSocketHandler {
 protected:
-	virtual void Receive_MASTER_ACK_REGISTER(Packet *p, NetworkAddress *client_addr);
-	virtual void Receive_MASTER_SESSION_KEY(Packet *p, NetworkAddress *client_addr);
+	void Receive_MASTER_ACK_REGISTER(Packet *p, NetworkAddress *client_addr) override;
+	void Receive_MASTER_SESSION_KEY(Packet *p, NetworkAddress *client_addr) override;
 public:
 	/**
 	 * Create the socket.
@@ -150,9 +120,9 @@ void MasterNetworkUDPSocketHandler::Receive_MASTER_SESSION_KEY(Packet *p, Networ
 /** Helper class for handling all server side communication. */
 class ServerNetworkUDPSocketHandler : public NetworkUDPSocketHandler {
 protected:
-	virtual void Receive_CLIENT_FIND_SERVER(Packet *p, NetworkAddress *client_addr);
-	virtual void Receive_CLIENT_DETAIL_INFO(Packet *p, NetworkAddress *client_addr);
-	virtual void Receive_CLIENT_GET_NEWGRFS(Packet *p, NetworkAddress *client_addr);
+	void Receive_CLIENT_FIND_SERVER(Packet *p, NetworkAddress *client_addr) override;
+	void Receive_CLIENT_DETAIL_INFO(Packet *p, NetworkAddress *client_addr) override;
+	void Receive_CLIENT_GET_NEWGRFS(Packet *p, NetworkAddress *client_addr) override;
 public:
 	/**
 	 * Create the socket.
@@ -191,7 +161,7 @@ void ServerNetworkUDPSocketHandler::Receive_CLIENT_FIND_SERVER(Packet *p, Networ
 
 	strecpy(ngi.map_name, _network_game_info.map_name, lastof(ngi.map_name));
 	strecpy(ngi.server_name, _settings_client.network.server_name, lastof(ngi.server_name));
-	strecpy(ngi.server_revision, _openttd_revision, lastof(ngi.server_revision));
+	strecpy(ngi.server_revision, GetNetworkRevisionString(), lastof(ngi.server_revision));
 
 	Packet packet(PACKET_UDP_SERVER_RESPONSE);
 	this->SendNetworkGameInfo(&packet, &ngi);
@@ -326,10 +296,10 @@ void ServerNetworkUDPSocketHandler::Receive_CLIENT_GET_NEWGRFS(Packet *p, Networ
 /** Helper class for handling all client side communication. */
 class ClientNetworkUDPSocketHandler : public NetworkUDPSocketHandler {
 protected:
-	virtual void Receive_SERVER_RESPONSE(Packet *p, NetworkAddress *client_addr);
-	virtual void Receive_MASTER_RESPONSE_LIST(Packet *p, NetworkAddress *client_addr);
-	virtual void Receive_SERVER_NEWGRFS(Packet *p, NetworkAddress *client_addr);
-	virtual void HandleIncomingNetworkGameInfoGRFConfig(GRFConfig *config);
+	void Receive_SERVER_RESPONSE(Packet *p, NetworkAddress *client_addr) override;
+	void Receive_MASTER_RESPONSE_LIST(Packet *p, NetworkAddress *client_addr) override;
+	void Receive_SERVER_NEWGRFS(Packet *p, NetworkAddress *client_addr) override;
+	void HandleIncomingNetworkGameInfoGRFConfig(GRFConfig *config) override;
 public:
 	virtual ~ClientNetworkUDPSocketHandler() {}
 };
@@ -430,7 +400,7 @@ void ClientNetworkUDPSocketHandler::Receive_MASTER_RESPONSE_LIST(Packet *p, Netw
 			/* Somehow we reached the end of the packet */
 			if (this->HasClientQuit()) return;
 
-			NetworkUDPQueryServer(&addr, false, false);
+			DoNetworkUDPQueryServer(addr, false, false);
 		}
 	}
 }
@@ -497,12 +467,12 @@ void ClientNetworkUDPSocketHandler::HandleIncomingNetworkGameInfoGRFConfig(GRFCo
 /** Broadcast to all ips */
 static void NetworkUDPBroadCast(NetworkUDPSocketHandler *socket)
 {
-	for (NetworkAddress *addr = _broadcast_list.Begin(); addr != _broadcast_list.End(); addr++) {
+	for (NetworkAddress &addr : _broadcast_list) {
 		Packet p(PACKET_UDP_CLIENT_FIND_SERVER);
 
-		DEBUG(net, 4, "[udp] broadcasting to %s", addr->GetHostname());
+		DEBUG(net, 4, "[udp] broadcasting to %s", addr.GetHostname());
 
-		socket->SendPacket(&p, addr, true, true);
+		socket->SendPacket(&p, &addr, true, true);
 	}
 }
 
@@ -536,9 +506,8 @@ void NetworkUDPSearchGame()
 
 /**
  * Thread entry point for de-advertising.
- * @param pntr unused.
  */
-static void NetworkUDPRemoveAdvertiseThread(void *pntr)
+static void NetworkUDPRemoveAdvertiseThread()
 {
 	DEBUG(net, 1, "[udp] removing advertise from master server");
 
@@ -551,9 +520,8 @@ static void NetworkUDPRemoveAdvertiseThread(void *pntr)
 	p.Send_uint8 (NETWORK_MASTER_SERVER_VERSION);
 	p.Send_uint16(_settings_client.network.server_port);
 
-	_network_udp_mutex->BeginCritical();
+	std::lock_guard<std::mutex> lock(_network_udp_mutex);
 	if (_udp_master_socket != NULL) _udp_master_socket->SendPacket(&p, &out_addr, true);
-	_network_udp_mutex->EndCritical();
 }
 
 /**
@@ -565,16 +533,15 @@ void NetworkUDPRemoveAdvertise(bool blocking)
 	/* Check if we are advertising */
 	if (!_networking || !_network_server || !_network_udp_server) return;
 
-	if (blocking || !ThreadObject::New(NetworkUDPRemoveAdvertiseThread, NULL, NULL, "ottd:udp-advert")) {
-		NetworkUDPRemoveAdvertiseThread(NULL);
+	if (blocking || !StartNewThread(NULL, "ottd:udp-advert", &NetworkUDPRemoveAdvertiseThread)) {
+		NetworkUDPRemoveAdvertiseThread();
 	}
 }
 
 /**
  * Thread entry point for advertising.
- * @param pntr unused.
  */
-static void NetworkUDPAdvertiseThread(void *pntr)
+static void NetworkUDPAdvertiseThread()
 {
 	/* Find somewhere to send */
 	NetworkAddress out_addr(NETWORK_MASTER_SERVER_HOST, NETWORK_MASTER_SERVER_PORT);
@@ -605,9 +572,8 @@ static void NetworkUDPAdvertiseThread(void *pntr)
 	p.Send_uint16(_settings_client.network.server_port);
 	p.Send_uint64(_session_key);
 
-	_network_udp_mutex->BeginCritical();
+	std::lock_guard<std::mutex> lock(_network_udp_mutex);
 	if (_udp_master_socket != NULL) _udp_master_socket->SendPacket(&p, &out_addr, true);
-	_network_udp_mutex->EndCritical();
 }
 
 /**
@@ -648,8 +614,8 @@ void NetworkUDPAdvertise()
 	if (_next_advertisement < _last_advertisement) _next_advertisement = UINT32_MAX;
 	if (_next_retry         < _last_advertisement) _next_retry         = UINT32_MAX;
 
-	if (!ThreadObject::New(NetworkUDPAdvertiseThread, NULL, NULL, "ottd:udp-advert")) {
-		NetworkUDPAdvertiseThread(NULL);
+	if (!StartNewThread(NULL, "ottd:udp-advert", &NetworkUDPAdvertiseThread)) {
+		NetworkUDPAdvertiseThread();
 	}
 }
 
@@ -662,7 +628,7 @@ void NetworkUDPInitialize()
 	DEBUG(net, 1, "[udp] initializing listeners");
 	assert(_udp_client_socket == NULL && _udp_server_socket == NULL && _udp_master_socket == NULL);
 
-	_network_udp_mutex->BeginCritical();
+	std::lock_guard<std::mutex> lock(_network_udp_mutex);
 
 	_udp_client_socket = new ClientNetworkUDPSocketHandler();
 
@@ -670,19 +636,18 @@ void NetworkUDPInitialize()
 	GetBindAddresses(&server, _settings_client.network.server_port);
 	_udp_server_socket = new ServerNetworkUDPSocketHandler(&server);
 
-	server.Clear();
+	server.clear();
 	GetBindAddresses(&server, 0);
 	_udp_master_socket = new MasterNetworkUDPSocketHandler(&server);
 
 	_network_udp_server = false;
 	_network_udp_broadcast = 0;
-	_network_udp_mutex->EndCritical();
 }
 
 /** Close all UDP related stuff. */
 void NetworkUDPClose()
 {
-	_network_udp_mutex->BeginCritical();
+	std::lock_guard<std::mutex> lock(_network_udp_mutex);
 	_udp_server_socket->Close();
 	_udp_master_socket->Close();
 	_udp_client_socket->Close();
@@ -692,7 +657,6 @@ void NetworkUDPClose()
 	_udp_client_socket = NULL;
 	_udp_server_socket = NULL;
 	_udp_master_socket = NULL;
-	_network_udp_mutex->EndCritical();
 
 	_network_udp_server = false;
 	_network_udp_broadcast = 0;
@@ -702,7 +666,7 @@ void NetworkUDPClose()
 /** Receive the UDP packets. */
 void NetworkBackgroundUDPLoop()
 {
-	_network_udp_mutex->BeginCritical();
+	std::lock_guard<std::mutex> lock(_network_udp_mutex);
 
 	if (_network_udp_server) {
 		_udp_server_socket->ReceivePackets();
@@ -711,8 +675,4 @@ void NetworkBackgroundUDPLoop()
 		_udp_client_socket->ReceivePackets();
 		if (_network_udp_broadcast > 0) _network_udp_broadcast--;
 	}
-
-	_network_udp_mutex->EndCritical();
 }
-
-#endif /* ENABLE_NETWORK */

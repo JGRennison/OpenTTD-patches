@@ -173,6 +173,9 @@ void MusicSystem::ChangeMusicSet(const char *set_name)
 {
 	BaseMusic::SetSet(set_name);
 
+	free(BaseMusic::ini_set);
+	BaseMusic::ini_set = stredup(set_name);
+
 	this->BuildPlaylists();
 	this->ChangePlaylist(this->selected_playlist);
 
@@ -456,7 +459,7 @@ struct MusicTrackSelectionWindow : public Window {
 		this->LowerWidget(WID_MTS_ALL + _settings_client.music.playlist);
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_MTS_PLAYLIST:
@@ -473,7 +476,7 @@ struct MusicTrackSelectionWindow : public Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		for (int i = 0; i < 6; i++) {
@@ -483,7 +486,7 @@ struct MusicTrackSelectionWindow : public Window {
 		this->SetDirty();
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_MTS_PLAYLIST: {
@@ -518,7 +521,7 @@ struct MusicTrackSelectionWindow : public Window {
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_MTS_LIST_LEFT: {
@@ -551,7 +554,7 @@ struct MusicTrackSelectionWindow : public Window {
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_MTS_LIST_LEFT: { // add to playlist
@@ -584,7 +587,7 @@ struct MusicTrackSelectionWindow : public Window {
 		}
 	}
 
-	virtual void OnDropdownSelect(int widget, int index)
+	void OnDropdownSelect(int widget, int index) override
 	{
 		switch (widget) {
 			case WID_MTS_MUSICSET:
@@ -592,7 +595,6 @@ struct MusicTrackSelectionWindow : public Window {
 				break;
 			default:
 				NOT_REACHED();
-				break;
 		}
 	}
 };
@@ -670,7 +672,7 @@ struct MusicWindow : public Window {
 			);
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			/* Make sure that WID_M_SHUFFLE and WID_M_PROGRAMME have the same size.
@@ -712,7 +714,7 @@ struct MusicWindow : public Window {
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_M_TRACK_NR: {
@@ -761,7 +763,7 @@ struct MusicWindow : public Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		for (int i = 0; i < 6; i++) {
@@ -773,7 +775,7 @@ struct MusicWindow : public Window {
 		this->SetDirty();
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_M_PREV: // skip to prev
@@ -797,7 +799,7 @@ struct MusicWindow : public Window {
 
 				byte *vol = (widget == WID_M_MUSIC_VOL) ? &_settings_client.music.music_vol : &_settings_client.music.effect_vol;
 
-				byte new_vol = x * 127 / this->GetWidget<NWidgetBase>(widget)->current_x;
+				byte new_vol = Clamp(x * 127 / (int)this->GetWidget<NWidgetBase>(widget)->current_x, 0, 127);
 				if (_current_text_dir == TD_RTL) new_vol = 127 - new_vol;
 				/* Clamp to make sure min and max are properly settable */
 				if (new_vol > 124) new_vol = 127;
@@ -808,7 +810,7 @@ struct MusicWindow : public Window {
 					this->SetDirty();
 				}
 
-				_left_button_clicked = false;
+				if (click_count > 0) this->mouse_capture_widget = widget;
 				break;
 			}
 

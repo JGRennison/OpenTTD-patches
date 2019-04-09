@@ -76,9 +76,9 @@ struct BaseSet {
 	{
 		free(this->name);
 
-		for (TranslatedStrings::iterator iter = this->description.Begin(); iter != this->description.End(); iter++) {
-			free(iter->first);
-			free(iter->second);
+		for (auto &pair : this->description) {
+			free(pair.first);
+			free(pair.second);
 		}
 
 		for (uint i = 0; i < NUM_FILES; i++) {
@@ -122,16 +122,16 @@ struct BaseSet {
 	{
 		if (isocode != NULL) {
 			/* First the full ISO code */
-			for (TranslatedStrings::const_iterator iter = this->description.Begin(); iter != this->description.End(); iter++) {
-				if (strcmp(iter->first, isocode) == 0) return iter->second;
+			for (const auto &pair : this->description) {
+				if (strcmp(pair.first, isocode) == 0) return pair.second;
 			}
 			/* Then the first two characters */
-			for (TranslatedStrings::const_iterator iter = this->description.Begin(); iter != this->description.End(); iter++) {
-				if (strncmp(iter->first, isocode, 2) == 0) return iter->second;
+			for (const auto &pair : this->description) {
+				if (strncmp(pair.first, isocode, 2) == 0) return pair.second;
 			}
 		}
 		/* Then fall back */
-		return this->description.Begin()->second;
+		return this->description.front().second;
 	}
 
 	/**
@@ -176,7 +176,7 @@ protected:
 	static Tbase_set *duplicate_sets; ///< All sets that aren't available, but needed for not downloading base sets when a newer version than the one on BaNaNaS is loaded.
 	static const Tbase_set *used_set; ///< The currently used set
 
-	/* virtual */ bool AddFile(const char *filename, size_t basepath_length, const char *tar_filename);
+	bool AddFile(const char *filename, size_t basepath_length, const char *tar_filename) override;
 
 	/**
 	 * Get the extension that is used to identify this set.

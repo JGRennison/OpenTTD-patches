@@ -431,9 +431,9 @@ uint Engine::GetDisplayMaxTractiveEffort() const
 	/* Only trains and road vehicles have 'tractive effort'. */
 	switch (this->type) {
 		case VEH_TRAIN:
-			return (10 * this->GetDisplayWeight() * GetEngineProperty(this->index, PROP_TRAIN_TRACTIVE_EFFORT, this->u.rail.tractive_effort)) / 256;
+			return (GROUND_ACCELERATION * this->GetDisplayWeight() * GetEngineProperty(this->index, PROP_TRAIN_TRACTIVE_EFFORT, this->u.rail.tractive_effort)) / 256 / 1000;
 		case VEH_ROAD:
-			return (10 * this->GetDisplayWeight() * GetEngineProperty(this->index, PROP_ROADVEH_TRACTIVE_EFFORT, this->u.road.tractive_effort)) / 256;
+			return (GROUND_ACCELERATION * this->GetDisplayWeight() * GetEngineProperty(this->index, PROP_ROADVEH_TRACTIVE_EFFORT, this->u.road.tractive_effort)) / 256 / 1000;
 
 		default: NOT_REACHED();
 	}
@@ -487,14 +487,15 @@ StringID Engine::GetAircraftTypeText() const
  */
 void EngineOverrideManager::ResetToDefaultMapping()
 {
-	this->Clear();
+	this->clear();
 	for (VehicleType type = VEH_TRAIN; type <= VEH_AIRCRAFT; type++) {
 		for (uint internal_id = 0; internal_id < _engine_counts[type]; internal_id++) {
-			EngineIDMapping *eid = this->Append();
-			eid->type            = type;
-			eid->grfid           = INVALID_GRFID;
-			eid->internal_id     = internal_id;
-			eid->substitute_id   = internal_id;
+			/*C++17: EngineIDMapping &eid = */ this->emplace_back();
+			EngineIDMapping &eid = this->back();
+			eid.type            = type;
+			eid.grfid           = INVALID_GRFID;
+			eid.internal_id     = internal_id;
+			eid.substitute_id   = internal_id;
 		}
 	}
 }
@@ -510,12 +511,12 @@ void EngineOverrideManager::ResetToDefaultMapping()
  */
 EngineID EngineOverrideManager::GetID(VehicleType type, uint16 grf_local_id, uint32 grfid)
 {
-	const EngineIDMapping *end = this->End();
 	EngineID index = 0;
-	for (const EngineIDMapping *eid = this->Begin(); eid != end; eid++, index++) {
-		if (eid->type == type && eid->grfid == grfid && eid->internal_id == grf_local_id) {
+	for (const EngineIDMapping &eid : *this) {
+		if (eid.type == type && eid.grfid == grfid && eid.internal_id == grf_local_id) {
 			return index;
 		}
+		index++;
 	}
 	return INVALID_ENGINE;
 }
@@ -547,15 +548,15 @@ void SetupEngines()
 	DeleteWindowByClass(WC_ENGINE_PREVIEW);
 	_engine_pool.CleanPool();
 
-	assert(_engine_mngr.Length() >= _engine_mngr.NUM_DEFAULT_ENGINES);
-	const EngineIDMapping *end = _engine_mngr.End();
+	assert(_engine_mngr.size() >= _engine_mngr.NUM_DEFAULT_ENGINES);
 	uint index = 0;
-	for (const EngineIDMapping *eid = _engine_mngr.Begin(); eid != end; eid++, index++) {
+	for (const EngineIDMapping &eid : _engine_mngr) {
 		/* Assert is safe; there won't be more than 256 original vehicles
 		 * in any case, and we just cleaned the pool. */
 		assert(Engine::CanAllocateItem());
-		const Engine *e = new Engine(eid->type, eid->internal_id);
+		const Engine *e = new Engine(eid.type, eid.internal_id);
 		assert(e->index == index);
+		index++;
 	}
 }
 
@@ -573,7 +574,7 @@ static bool IsWagon(EngineID index)
 }
 
 /**
- * Update #reliability of engine \a e, (if needed) update the engine GUIs.
+ * Update #Engine::reliability and (if needed) update the engine GUIs.
  * @param e %Engine to update.
  */
 static void CalcEngineReliability(Engine *e)
@@ -652,7 +653,14 @@ void StartupOneEngine(Engine *e, Date aging_date)
 	/* Don't randomise the start-date in the first two years after gamestart to ensure availability
 	 * of engines in early starting games.
 	 * Note: TTDP uses fixed 1922 */
+	SavedRandomSeeds saved_seeds;
+	SaveRandomSeeds(&saved_seeds);
+	SetRandomSeed(_settings_game.game_creation.generation_seed ^
+	              ei->base_intro ^
+	              e->type ^
+	              e->GetGRFID());
 	uint32 r = Random();
+
 	e->intro_date = ei->base_intro <= ConvertYMDToDate(_settings_game.game_creation.starting_year + 2, 0, 1) ? ei->base_intro : (Date)GB(r, 0, 9) + ei->base_intro;
 	if (e->intro_date <= _date) {
 		e->age = (aging_date - e->intro_date) >> 5;
@@ -672,6 +680,7 @@ void StartupOneEngine(Engine *e, Date aging_date)
 
 	e->reliability_spd_dec = ei->decay_speed << 2;
 
+	RestoreRandomSeeds(saved_seeds);
 	CalcEngineReliability(e);
 
 	/* prevent certain engines from ever appearing. */

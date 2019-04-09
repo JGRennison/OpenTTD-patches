@@ -18,11 +18,9 @@
 #include "script_scanner.hpp"
 #include "script_info.hpp"
 
-#if defined(ENABLE_NETWORK)
 #include "../network/network_content.h"
 #include "../3rdparty/md5/md5.h"
 #include "../tar_type.h"
-#endif /* ENABLE_NETWORK */
 
 #include "../safeguards.h"
 
@@ -134,7 +132,7 @@ void ScriptScanner::RegisterScript(ScriptInfo *info)
 
 	if (this->info_list.find(script_name) != this->info_list.end()) {
 		/* This script was already registered */
-#ifdef WIN32
+#ifdef _WIN32
 		/* Windows doesn't care about the case */
 		if (strcasecmp(this->info_list[script_name]->GetMainScript(), info->GetMainScript()) == 0) {
 #else
@@ -179,8 +177,6 @@ char *ScriptScanner::GetConsoleList(char *p, const char *last, bool newest_only)
 
 	return p;
 }
-
-#if defined(ENABLE_NETWORK)
 
 /** Helper for creating a MD5sum of all files within of a script. */
 struct ScriptFileChecksumCreator : FileScanner {
@@ -287,5 +283,3 @@ const char *ScriptScanner::FindMainScript(const ContentInfo *ci, bool md5sum)
 	}
 	return NULL;
 }
-
-#endif /* ENABLE_NETWORK */

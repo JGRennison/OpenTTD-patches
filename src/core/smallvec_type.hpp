@@ -14,375 +14,60 @@
 
 #include "alloc_func.hpp"
 #include "mem_func.hpp"
+#include <vector>
+#include <algorithm>
 
 /**
- * Simple vector template class.
+ * Helper function to append an item to a vector if it is not already contained
+ * Consider using std::set, std::unordered_set or std::flat_set in new code
  *
- * @note There are no asserts in the class so you have
- *       to care about that you grab an item which is
- *       inside the list.
+ * @param vec A reference to the vector to be extended
+ * @param item Reference to the item to be copy-constructed if not found
  *
- * @tparam T The type of the items stored
- * @tparam S The steps of allocation
+ * @return Whether the item was already present
  */
-template <typename T, uint S>
-class SmallVector {
-protected:
-	T *data;       ///< The pointer to the first item
-	uint items;    ///< The number of items stored
-	uint capacity; ///< The available space for storing items
+template <typename T>
+inline bool include(std::vector<T>& vec, const T &item)
+{
+	const bool is_member = std::find(vec.begin(), vec.end(), item) != vec.end();
+	if (!is_member) vec.emplace_back(item);
+	return is_member;
+}
 
-public:
-	SmallVector() : data(NULL), items(0), capacity(0) { }
+/**
+ * Helper function to get the index of an item
+ * Consider using std::set, std::unordered_set or std::flat_set in new code
+ *
+ * @param vec A reference to the vector to be extended
+ * @param item Reference to the item to be search for
+ *
+ * @return Index of element if found, otherwise -1
+ */
+template <typename T>
+int find_index(std::vector<T> const& vec, T const& item)
+{
+	auto const it = std::find(vec.begin(), vec.end(), item);
+	if (it != vec.end()) return it - vec.begin();
 
-	/**
-	 * Copy constructor.
-	 * @param other The other vector to copy.
-	 */
-	SmallVector(const SmallVector &other) : data(NULL), items(0), capacity(0)
-	{
-		this->Assign(other);
-	}
+	return -1;
+}
 
-	/**
-	 * Generic copy constructor.
-	 * @param other The other vector to copy.
-	 */
-	template <uint X>
-	SmallVector(const SmallVector<T, X> &other) : data(NULL), items(0), capacity(0)
-	{
-		this->Assign(other);
-	}
-
-	/**
-	 * Assignment.
-	 * @param other The other vector to assign.
-	 */
-	SmallVector &operator=(const SmallVector &other)
-	{
-		this->Assign(other);
-		return *this;
-	}
-
-	/**
-	 * Generic assignment.
-	 * @param other The other vector to assign.
-	 */
-	template <uint X>
-	SmallVector &operator=(const SmallVector<T, X> &other)
-	{
-		this->Assign(other);
-		return *this;
-	}
-
-	~SmallVector()
-	{
-		free(this->data);
-	}
-
-	/**
-	 * Assign items from other vector.
-	 */
-	template <uint X>
-	inline void Assign(const SmallVector<T, X> &other)
-	{
-		if ((const void *)&other == (void *)this) return;
-
-		this->Clear();
-		if (other.Length() > 0) MemCpyT<T>(this->Append(other.Length()), other.Begin(), other.Length());
-	}
-
-	/**
-	 * Remove all items from the list.
-	 */
-	inline void Clear()
-	{
-		/* In fact we just reset the item counter avoiding the need to
-		 * probably reallocate the same amount of memory the list was
-		 * previously using. */
-		this->items = 0;
-	}
-
-	/**
-	 * Remove all items from the list and free allocated memory.
-	 */
-	inline void Reset()
-	{
-		this->items = 0;
-		this->capacity = 0;
-		free(data);
-		data = NULL;
-	}
-
-	/**
-	 * Compact the list down to the smallest block size boundary.
-	 */
-	inline void Compact()
-	{
-		uint capacity = Align(this->items, S);
-		if (capacity >= this->capacity) return;
-
-		this->capacity = capacity;
-		this->data = ReallocT(this->data, this->capacity);
-	}
-
-	/**
-	 * Append an item and return it.
-	 * @param to_add the number of items to append
-	 * @return pointer to newly allocated item
-	 */
-	inline T *Append(uint to_add = 1)
-	{
-		uint begin = this->items;
-		this->items += to_add;
-
-		if (this->items > this->capacity) {
-			this->capacity = Align(this->items, S);
-			this->data = ReallocT(this->data, this->capacity);
-		}
-
-		return &this->data[begin];
-	}
-
-	/**
-	 * Set the size of the vector, effectively truncating items from the end or appending uninitialised ones.
-	 * @param num_items Target size.
-	 */
-	inline void Resize(uint num_items)
-	{
-		this->items = num_items;
-
-		if (this->items > this->capacity) {
-			this->capacity = Align(this->items, S);
-			this->data = ReallocT(this->data, this->capacity);
-		}
-	}
-
-	/**
-	 * Insert a new item at a specific position into the vector, moving all following items.
-	 * @param item Position at which the new item should be inserted
-	 * @return pointer to the new item
-	 */
-	inline T *Insert(T *item)
-	{
-		assert(item >= this->Begin() && item <= this->End());
-
-		size_t to_move = this->End() - item;
-		size_t start = item - this->Begin();
-
-		this->Append();
-		if (to_move > 0) MemMoveT(this->Begin() + start + 1, this->Begin() + start, to_move);
-		return this->Begin() + start;
-	}
-
-	/**
-	 * Search for the first occurrence of an item.
-	 * The '!=' operator of T is used for comparison.
-	 * @param item Item to search for
-	 * @return The position of the item, or End() when not present
-	 */
-	inline const T *Find(const T &item) const
-	{
-		const T *pos = this->Begin();
-		const T *end = this->End();
-		while (pos != end && *pos != item) pos++;
-		return pos;
-	}
-
-	/**
-	 * Search for the first occurrence of an item.
-	 * The '!=' operator of T is used for comparison.
-	 * @param item Item to search for
-	 * @return The position of the item, or End() when not present
-	 */
-	inline T *Find(const T &item)
-	{
-		T *pos = this->Begin();
-		const T *end = this->End();
-		while (pos != end && *pos != item) pos++;
-		return pos;
-	}
-
-	/**
-	 * Search for the first occurrence of an item.
-	 * The '!=' operator of T is used for comparison.
-	 * @param item Item to search for
-	 * @return The position of the item, or -1 when not present
-	 */
-	inline int FindIndex(const T &item) const
-	{
-		int index = 0;
-		const T *pos = this->Begin();
-		const T *end = this->End();
-		while (pos != end && *pos != item) {
-			pos++;
-			index++;
-		}
-		return pos == end ? -1 : index;
-	}
-
-	/**
-	 * Tests whether a item is present in the vector.
-	 * The '!=' operator of T is used for comparison.
-	 * @param item Item to test for
-	 * @return true iff the item is present
-	 */
-	inline bool Contains(const T &item) const
-	{
-		return this->Find(item) != this->End();
-	}
-
-	/**
-	 * Removes given item from this vector
-	 * @param item item to remove
-	 * @note it has to be pointer to item in this map. It is overwritten by the last item.
-	 */
-	inline void Erase(T *item)
-	{
-		assert(item >= this->Begin() && item < this->End());
-		*item = this->data[--this->items];
-	}
-
-	/**
-	 * Remove items from the vector while preserving the order of other items.
-	 * @param pos First item to remove.
-	 * @param count Number of consecutive items to remove.
-	 */
-	void ErasePreservingOrder(uint pos, uint count = 1)
-	{
-		ErasePreservingOrder(this->data + pos, count);
-	}
-
-	/**
-	 * Remove items from the vector while preserving the order of other items.
-	 * @param item First item to remove.
-	 * @param count Number of consecutive items to remove.
-	 */
-	inline void ErasePreservingOrder(T *item, uint count = 1)
-	{
-		if (count == 0) return;
-		assert(item >= this->Begin());
-		assert(item + count <= this->End());
-
-		this->items -= count;
-		ptrdiff_t to_move = this->End() - item;
-		if (to_move > 0) MemMoveT(item, item + count, to_move);
-	}
-
-	/**
-	 * Tests whether a item is present in the vector, and appends it to the end if not.
-	 * The '!=' operator of T is used for comparison.
-	 * @param item Item to test for
-	 * @return true iff the item is was already present
-	 */
-	inline bool Include(const T &item)
-	{
-		bool is_member = this->Contains(item);
-		if (!is_member) *this->Append() = item;
-		return is_member;
-	}
-
-	/**
-	 * Get the number of items in the list.
-	 *
-	 * @return The number of items in the list.
-	 */
-	inline uint Length() const
-	{
-		return this->items;
-	}
-
-	/**
-	 * Get the pointer to the first item (const)
-	 *
-	 * @return the pointer to the first item
-	 */
-	inline const T *Begin() const
-	{
-		return this->data;
-	}
-
-	/**
-	 * Get the pointer to the first item
-	 *
-	 * @return the pointer to the first item
-	 */
-	inline T *Begin()
-	{
-		return this->data;
-	}
-
-	/**
-	 * Get the pointer behind the last valid item (const)
-	 *
-	 * @return the pointer behind the last valid item
-	 */
-	inline const T *End() const
-	{
-		return &this->data[this->items];
-	}
-
-	/**
-	 * Get the pointer behind the last valid item
-	 *
-	 * @return the pointer behind the last valid item
-	 */
-	inline T *End()
-	{
-		return &this->data[this->items];
-	}
-
-	/**
-	 * Get the pointer to item "number" (const)
-	 *
-	 * @param index the position of the item
-	 * @return the pointer to the item
-	 */
-	inline const T *Get(uint index) const
-	{
-		/* Allow access to the 'first invalid' item */
-		assert(index <= this->items);
-		return &this->data[index];
-	}
-
-	/**
-	 * Get the pointer to item "number"
-	 *
-	 * @param index the position of the item
-	 * @return the pointer to the item
-	 */
-	inline T *Get(uint index)
-	{
-		/* Allow access to the 'first invalid' item */
-		assert(index <= this->items);
-		return &this->data[index];
-	}
-
-	/**
-	 * Get item "number" (const)
-	 *
-	 * @param index the position of the item
-	 * @return the item
-	 */
-	inline const T &operator[](uint index) const
-	{
-		assert(index < this->items);
-		return this->data[index];
-	}
-
-	/**
-	 * Get item "number"
-	 *
-	 * @param index the position of the item
-	 * @return the item
-	 */
-	inline T &operator[](uint index)
-	{
-		assert(index < this->items);
-		return this->data[index];
-	}
-};
-
+/**
+ * Helper function to append N default-constructed elements and get a pointer to the first new element
+ * Consider using std::back_inserter in new code
+ *
+ * @param vec A reference to the vector to be extended
+ * @param num Number of elements to be default-constructed
+ *
+ * @return Pointer to the first new element
+ */
+template <typename T>
+T* grow(std::vector<T>& vec, std::size_t num)
+{
+	std::size_t const pos = vec.size();
+	vec.resize(pos + num);
+	return vec.data() + pos;
+}
 
 /**
  * Simple vector template class, with automatic free.
@@ -392,10 +77,9 @@ public:
  *       inside the list.
  *
  * @param T The type of the items stored, must be a pointer
- * @param S The steps of allocation
  */
-template <typename T, uint S>
-class AutoFreeSmallVector : public SmallVector<T, S> {
+template <typename T>
+class AutoFreeSmallVector : public std::vector<T> {
 public:
 	~AutoFreeSmallVector()
 	{
@@ -407,11 +91,11 @@ public:
 	 */
 	inline void Clear()
 	{
-		for (uint i = 0; i < this->items; i++) {
-			free(this->data[i]);
+		for (T p : *this) {
+			free(p);
 		}
 
-		this->items = 0;
+		std::vector<T>::clear();
 	}
 };
 
@@ -423,10 +107,9 @@ public:
  *       inside the list.
  *
  * @param T The type of the items stored, must be a pointer
- * @param S The steps of allocation
  */
-template <typename T, uint S>
-class AutoDeleteSmallVector : public SmallVector<T, S> {
+template <typename T>
+class AutoDeleteSmallVector : public std::vector<T> {
 public:
 	~AutoDeleteSmallVector()
 	{
@@ -438,14 +121,14 @@ public:
 	 */
 	inline void Clear()
 	{
-		for (uint i = 0; i < this->items; i++) {
-			delete this->data[i];
+		for (T p : *this) {
+			delete p;
 		}
 
-		this->items = 0;
+		std::vector<T>::clear();
 	}
 };
 
-typedef AutoFreeSmallVector<char*, 4> StringList; ///< Type for a list of strings.
+typedef AutoFreeSmallVector<char*> StringList; ///< Type for a list of strings.
 
 #endif /* SMALLVEC_TYPE_HPP */

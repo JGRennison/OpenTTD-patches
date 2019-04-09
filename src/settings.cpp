@@ -448,13 +448,30 @@ static void Write_ValidateSetting(void *ptr, const SettingDesc *sd, int32 val)
 			case SLE_VAR_U16:
 			case SLE_VAR_I32: {
 				/* Override the minimum value. No value below sdb->min, except special value 0 */
-				if (!(sdb->flags & SGF_0ISDISABLED) || val != 0) val = Clamp(val, sdb->min, sdb->max);
+				if (!(sdb->flags & SGF_0ISDISABLED) || val != 0) {
+					if (!(sdb->flags & SGF_MULTISTRING)) {
+						/* Clamp value-type setting to its valid range */
+						val = Clamp(val, sdb->min, sdb->max);
+					} else if (val < sdb->min || val > (int32)sdb->max) {
+						/* Reset invalid discrete setting (where different values change gameplay) to its default value */
+						val = (int32)(size_t)sdb->def;
+					}
+				}
 				break;
 			}
 			case SLE_VAR_U32: {
 				/* Override the minimum value. No value below sdb->min, except special value 0 */
-				uint min = ((sdb->flags & SGF_0ISDISABLED) && (uint)val <= (uint)sdb->min) ? 0 : sdb->min;
-				WriteValue(ptr, SLE_VAR_U32, (int64)ClampU(val, min, sdb->max));
+				uint32 uval = (uint32)val;
+				if (!(sdb->flags & SGF_0ISDISABLED) || uval != 0) {
+					if (!(sdb->flags & SGF_MULTISTRING)) {
+						/* Clamp value-type setting to its valid range */
+						uval = ClampU(uval, sdb->min, sdb->max);
+					} else if (uval < (uint)sdb->min || uval > sdb->max) {
+						/* Reset invalid discrete setting to its default value */
+						uval = (uint32)(size_t)sdb->def;
+					}
+				}
+				WriteValue(ptr, SLE_VAR_U32, (int64)uval);
 				return;
 			}
 			case SLE_VAR_I64:
@@ -710,7 +727,7 @@ static void IniLoadSettingList(IniFile *ini, const char *grpname, StringList *li
 	list->Clear();
 
 	for (const IniItem *item = group->item; item != NULL; item = item->next) {
-		if (item->name != NULL) *list->Append() = stredup(item->name);
+		if (item->name != NULL) list->push_back(stredup(item->name));
 	}
 }
 
@@ -730,8 +747,8 @@ static void IniSaveSettingList(IniFile *ini, const char *grpname, StringList *li
 	if (group == NULL || list == NULL) return;
 	group->Clear();
 
-	for (char **iter = list->Begin(); iter != list->End(); iter++) {
-		group->GetItem(*iter, true)->SetValue("");
+	for (char *iter : *list) {
+		group->GetItem(iter, true)->SetValue("");
 	}
 }
 
@@ -1095,7 +1112,7 @@ static bool InvalidateNewGRFChangeWindows(int32 p1)
 
 static bool InvalidateCompanyLiveryWindow(int32 p1)
 {
-	InvalidateWindowClassesData(WC_COMPANY_COLOUR);
+	InvalidateWindowClassesData(WC_COMPANY_COLOUR, -1);
 	return RedrawScreen(p1);
 }
 
@@ -1174,6 +1191,7 @@ static bool MaxNoAIsChange(int32 i)
 		ShowErrorMessage(STR_WARNING_NO_SUITABLE_AI, INVALID_STRING_ID, WL_CRITICAL);
 	}
 
+	InvalidateWindowClassesData(WC_GAME_OPTIONS, 0);
 	return true;
 }
 
@@ -1221,8 +1239,8 @@ static bool CheckFreeformEdges(int32 p1)
 				return false;
 			}
 		}
-		for (uint i = 0; i < MapSizeX(); i++) MakeVoid(TileXY(i, 0));
-		for (uint i = 0; i < MapSizeY(); i++) MakeVoid(TileXY(0, i));
+		for (uint x = 0; x < MapSizeX(); x++) MakeVoid(TileXY(x, 0));
+		for (uint y = 0; y < MapSizeY(); y++) MakeVoid(TileXY(0, y));
 	} else {
 		for (uint i = 0; i < MapMaxX(); i++) {
 			if (TileHeight(TileXY(i, 1)) != 0) {
@@ -1301,7 +1319,7 @@ static bool ChangeMaxHeightLevel(int32 p1)
 
 static bool StationCatchmentChanged(int32 p1)
 {
-	Station::RecomputeIndustriesNearForAll();
+	Station::RecomputeCatchmentForAll();
 	return true;
 }
 
@@ -1312,8 +1330,14 @@ static bool MaxVehiclesChanged(int32 p1)
 	return true;
 }
 
-
-#ifdef ENABLE_NETWORK
+static bool InvalidateShipPathCache(int32 p1)
+{
+	Ship *s;
+	FOR_ALL_SHIPS(s) {
+		s->path.clear();
+	}
+	return true;
+}
 
 static bool UpdateClientName(int32 p1)
 {
@@ -1346,9 +1370,6 @@ static bool UpdateClientConfigValues(int32 p1)
 	return true;
 }
 
-#endif /* ENABLE_NETWORK */
-
-
 /* End - Callback Functions */
 
 /**
@@ -1367,7 +1388,7 @@ static void PrepareOldDiffCustom()
  */
 static void HandleOldDiffCustom(bool savegame)
 {
-	uint options_to_load = GAME_DIFFICULTY_NUM - ((savegame && IsSavegameVersionBefore(4)) ? 1 : 0);
+	uint options_to_load = GAME_DIFFICULTY_NUM - ((savegame && IsSavegameVersionBefore(SLV_4)) ? 1 : 0);
 
 	if (!savegame) {
 		/* If we did read to old_diff_custom, then at least one value must be non 0. */
@@ -1459,7 +1480,7 @@ static int DecodeHexNibble(char c)
  * Parse a sequence of characters (supposedly hex digits) into a sequence of bytes.
  * After the hex number should be a \c '|' character.
  * @param pos First character to convert.
- * @param dest [out] Output byte array to write the bytes.
+ * @param[out] dest Output byte array to write the bytes.
  * @param dest_size Number of bytes in \a dest.
  * @return Whether reading was successful.
  */
@@ -1668,9 +1689,9 @@ static void HandleSettingDescs(IniFile *ini, SettingDescProc *proc, SettingDescP
 {
 	if (basic_settings) {
 		proc(ini, (const SettingDesc*)_misc_settings,    "misc",  NULL);
-#if defined(WIN32) && !defined(DEDICATED)
+#if defined(_WIN32) && !defined(DEDICATED)
 		proc(ini, (const SettingDesc*)_win32_settings,   "win32", NULL);
-#endif /* WIN32 */
+#endif /* _WIN32 */
 	}
 
 	if (other_settings) {
@@ -1678,11 +1699,9 @@ static void HandleSettingDescs(IniFile *ini, SettingDescProc *proc, SettingDescP
 		proc(ini, _currency_settings,"currency", &_custom_currency);
 		proc(ini, _company_settings, "company",  &_settings_client.company);
 
-#ifdef ENABLE_NETWORK
 		proc_list(ini, "server_bind_addresses", &_network_bind_list);
 		proc_list(ini, "servers", &_network_host_list);
 		proc_list(ini, "bans",    &_network_ban_list);
-#endif /* ENABLE_NETWORK */
 	}
 }
 
@@ -1748,7 +1767,7 @@ void SaveToConfig()
 
 /**
  * Get the list of known NewGrf presets.
- * @param list[inout] Pointer to list for storing the preset names.
+ * @param[in,out] list Pointer to list for storing the preset names.
  */
 void GetGRFPresetList(GRFPresetList *list)
 {
@@ -1758,7 +1777,7 @@ void GetGRFPresetList(GRFPresetList *list)
 	IniGroup *group;
 	for (group = ini->group; group != NULL; group = group->next) {
 		if (strncmp(group->name, "preset-", 7) == 0) {
-			*list->Append() = stredup(group->name + 7);
+			list->push_back(stredup(group->name + 7));
 		}
 	}
 
@@ -1982,7 +2001,6 @@ void SetDefaultCompanySettings(CompanyID cid)
 	}
 }
 
-#if defined(ENABLE_NETWORK)
 /**
  * Sync all company settings in a multiplayer game.
  */
@@ -1998,7 +2016,6 @@ void SyncCompanySettings()
 		if (old_value != new_value) NetworkSendCommand(0, i, new_value, CMD_CHANGE_COMPANY_SETTING, NULL, NULL, _local_company);
 	}
 }
-#endif /* ENABLE_NETWORK */
 
 /**
  * Get the index in the _company_settings array of a setting
@@ -2246,18 +2263,6 @@ static void Check_PATS()
 static void Save_PATS()
 {
 	SaveSettings(_settings, &_settings_game);
-}
-
-void CheckConfig()
-{
-	/*
-	 * Increase old default values for pf_maxdepth and pf_maxlength
-	 * to support big networks.
-	 */
-	if (_settings_newgame.pf.opf.pf_maxdepth == 16 && _settings_newgame.pf.opf.pf_maxlength == 512) {
-		_settings_newgame.pf.opf.pf_maxdepth = 48;
-		_settings_newgame.pf.opf.pf_maxlength = 4096;
-	}
 }
 
 extern const ChunkHandler _setting_chunk_handlers[] = {

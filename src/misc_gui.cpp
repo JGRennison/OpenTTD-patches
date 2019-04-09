@@ -26,6 +26,7 @@
 #include "core/geometry_func.hpp"
 #include "newgrf_debug.h"
 #include "zoom_func.h"
+#include "guitimer_func.h"
 
 #include "widgets/misc_widget.h"
 
@@ -71,7 +72,7 @@ public:
 	char landinfo_data[LAND_INFO_LINE_END][LAND_INFO_LINE_BUFF_SIZE];
 	TileIndex tile;
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget != WID_LI_BACKGROUND) return;
 
@@ -90,7 +91,7 @@ public:
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		if (widget != WID_LI_BACKGROUND) return;
 
@@ -132,10 +133,11 @@ public:
 		DEBUG(misc, LANDINFOD_LEVEL, "m5     = %#x", _m[tile].m5);
 		DEBUG(misc, LANDINFOD_LEVEL, "m6     = %#x", _me[tile].m6);
 		DEBUG(misc, LANDINFOD_LEVEL, "m7     = %#x", _me[tile].m7);
+		DEBUG(misc, LANDINFOD_LEVEL, "m8     = %#x", _me[tile].m8);
 #undef LANDINFOD_LEVEL
 	}
 
-	virtual void OnInit()
+	void OnInit() override
 	{
 		Town *t = ClosestTownFromTile(tile, _settings_game.economy.dist_local_authority);
 
@@ -193,11 +195,8 @@ public:
 		StringID str = STR_LAND_AREA_INFORMATION_COST_TO_CLEAR_N_A;
 		Company *c = Company::GetIfValid(_local_company);
 		if (c != NULL) {
-			Money old_money = c->money;
-			c->money = INT64_MAX;
 			assert(_current_company == _local_company);
-			CommandCost costclear = DoCommand(tile, 0, 0, DC_NONE, CMD_LANDSCAPE_CLEAR);
-			c->money = old_money;
+			CommandCost costclear = DoCommand(tile, 0, 0, DC_QUERY_COST, CMD_LANDSCAPE_CLEAR);
 			if (costclear.Succeeded()) {
 				Money cost = costclear.GetCost();
 				if (cost < 0) {
@@ -329,12 +328,12 @@ public:
 		if (!found) this->landinfo_data[LAND_INFO_MULTICENTER_LINE][0] = '\0';
 	}
 
-	virtual bool IsNewGRFInspectable() const
+	bool IsNewGRFInspectable() const override
 	{
 		return ::IsNewGRFInspectable(GetGrfSpecFeature(this->tile), this->tile);
 	}
 
-	virtual void ShowNewGRFInspectWindow() const
+	void ShowNewGRFInspectWindow() const override
 	{
 		::ShowNewGRFInspectWindow(GetGrfSpecFeature(this->tile), this->tile);
 	}
@@ -344,7 +343,7 @@ public:
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		switch (data) {
@@ -401,6 +400,7 @@ static const char * const _credits[] = {
 	"  Christoph Elsenhans (frosch) - General coding (since 0.6)",
 	"  Lo\xC3\xAF""c Guilloux (glx) - General / Windows Expert (since 0.4.5)",
 	"  Michael Lutz (michi_cc) - Path based signals (since 0.7)",
+	"  Niels Martin Hansen (nielsm) - Music system, general coding (since 1.9)",
 	"  Owen Rudge (orudge) - Forum host, OS/2 port (since 0.1)",
 	"  Peter Nelson (peter1138) - Spiritual descendant from NewGRF gods (since 0.4.5)",
 	"  Ingo von Borstel (planetmaker) - General, Support (since 1.1)",
@@ -455,24 +455,26 @@ static const char * const _credits[] = {
 
 struct AboutWindow : public Window {
 	int text_position;                       ///< The top of the scrolling text
-	byte counter;                            ///< Used to scroll the text every 5 ticks
 	int line_height;                         ///< The height of a single line
 	static const int num_visible_lines = 19; ///< The number of lines visible simultaneously
+
+	static const uint TIMER_INTERVAL = 150;  ///< Scrolling interval in ms
+	GUITimer timer;
 
 	AboutWindow() : Window(&_about_desc)
 	{
 		this->InitNested(WN_GAME_OPTIONS_ABOUT);
 
-		this->counter = 5;
 		this->text_position = this->GetWidget<NWidgetBase>(WID_A_SCROLLING_TEXT)->pos_y + this->GetWidget<NWidgetBase>(WID_A_SCROLLING_TEXT)->current_y;
+		this->timer.SetInterval(TIMER_INTERVAL);
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		if (widget == WID_A_WEBSITE) SetDParamStr(0, "Website: http://www.openttd.org");
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		if (widget != WID_A_SCROLLING_TEXT) return;
 
@@ -488,7 +490,7 @@ struct AboutWindow : public Window {
 		*size = maxdim(*size, d);
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget != WID_A_SCROLLING_TEXT) return;
 
@@ -503,11 +505,11 @@ struct AboutWindow : public Window {
 		}
 	}
 
-	virtual void OnTick()
+	void OnRealtimeTick(uint delta_ms) override
 	{
-		if (--this->counter == 0) {
-			this->counter = 5;
-			this->text_position--;
+		uint count = this->timer.CountElapsed(delta_ms);
+		if (count > 0) {
+			this->text_position -= count;
 			/* If the last text has scrolled start a new from the start */
 			if (this->text_position < (int)(this->GetWidget<NWidgetBase>(WID_A_SCROLLING_TEXT)->pos_y - lengthof(_credits) * this->line_height)) {
 				this->text_position = this->GetWidget<NWidgetBase>(WID_A_SCROLLING_TEXT)->pos_y + this->GetWidget<NWidgetBase>(WID_A_SCROLLING_TEXT)->current_y;
@@ -665,7 +667,7 @@ struct TooltipsWindow : public Window
 		CLRBITS(this->flags, WF_WHITE_BORDER);
 	}
 
-	virtual Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number)
+	Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number) override
 	{
 		/* Find the free screen space between the main toolbar at the top, and the statusbar at the bottom.
 		 * Add a fixed distance 2 so the tooltip floats free from both bars.
@@ -685,7 +687,7 @@ struct TooltipsWindow : public Window
 		return pt;
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		/* There is only one widget. */
 		for (uint i = 0; i != this->paramcount; i++) SetDParam(i, this->params[i]);
@@ -698,7 +700,7 @@ struct TooltipsWindow : public Window
 		size->height += 2 + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		/* There is only one widget. */
 		GfxFillRect(r.left, r.top, r.right, r.bottom, PC_BLACK);
@@ -710,7 +712,7 @@ struct TooltipsWindow : public Window
 		DrawStringMultiLine(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, r.top + WD_FRAMERECT_TOP, r.bottom - WD_FRAMERECT_BOTTOM, this->string_id, TC_FROMSTRING, SA_CENTER);
 	}
 
-	virtual void OnMouseLoop()
+	void OnMouseLoop() override
 	{
 		/* Always close tooltips when the cursor is not in our window. */
 		if (!_cursor.in_window) {
@@ -722,8 +724,8 @@ struct TooltipsWindow : public Window
 		 * we are dragging the tool. Normal tooltips work with hover or rmb. */
 		switch (this->close_cond) {
 			case TCC_RIGHT_CLICK: if (!_right_button_down) delete this; break;
-			case TCC_LEFT_CLICK: if (!_left_button_down) delete this; break;
 			case TCC_HOVER: if (!_mouse_hovering) delete this; break;
+			case TCC_NONE: break;
 		}
 	}
 };
@@ -734,7 +736,7 @@ struct TooltipsWindow : public Window
  * @param str String to be displayed
  * @param paramcount number of params to deal with
  * @param params (optional) up to 5 pieces of additional information that may be added to a tooltip
- * @param use_left_mouse_button close the tooltip when the left (true) or right (false) mouse button is released
+ * @param close_tooltip when the left (true) or right (false) mouse button is released
  */
 void GuiShowTooltips(Window *parent, StringID str, uint paramcount, const uint64 params[], TooltipCloseCondition close_tooltip)
 {
@@ -971,7 +973,7 @@ struct QueryStringWindow : public Window
 		this->SetFocusedWidget(WID_QS_TEXT);
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		if (widget == WID_QS_DEFAULT && (this->flags & QSF_ENABLE_DEFAULT) == 0) {
 			/* We don't want this widget to show! */
@@ -981,7 +983,7 @@ struct QueryStringWindow : public Window
 		}
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		if (widget == WID_QS_CAPTION) SetDParam(0, this->editbox.caption);
 	}
@@ -1000,7 +1002,7 @@ struct QueryStringWindow : public Window
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_QS_DEFAULT:
@@ -1070,7 +1072,7 @@ void ShowQueryString(StringID str, StringID caption, uint maxsize, Window *paren
  */
 struct QueryWindow : public Window {
 	QueryCallbackProc *proc; ///< callback function executed on closing of popup. Window* points to parent, bool is true if 'yes' clicked, false otherwise
-	uint64 params[10];       ///< local copy of _decode_parameters
+	uint64 params[10];       ///< local copy of #_global_string_params
 	StringID message;        ///< message shown for query window
 	StringID caption;        ///< title of window
 
@@ -1095,7 +1097,7 @@ struct QueryWindow : public Window {
 		if (this->proc != NULL) this->proc(this->parent, false);
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_Q_CAPTION:
@@ -1109,7 +1111,7 @@ struct QueryWindow : public Window {
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		if (widget != WID_Q_TEXT) return;
 
@@ -1119,7 +1121,7 @@ struct QueryWindow : public Window {
 		*size = d;
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget != WID_Q_TEXT) return;
 
@@ -1127,7 +1129,7 @@ struct QueryWindow : public Window {
 				this->message, TC_FROMSTRING, SA_CENTER);
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_Q_YES: {
@@ -1150,7 +1152,7 @@ struct QueryWindow : public Window {
 		}
 	}
 
-	virtual EventState OnKeyPress(WChar key, uint16 keycode)
+	EventState OnKeyPress(WChar key, uint16 keycode) override
 	{
 		/* ESC closes the window, Enter confirms the action */
 		switch (keycode) {

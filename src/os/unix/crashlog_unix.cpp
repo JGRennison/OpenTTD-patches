@@ -140,7 +140,7 @@ class CrashLogUnix : public CrashLog {
 	void *signal_instruction_ptr;
 #endif
 
-	/* virtual */ char *LogOSVersion(char *buffer, const char *last) const
+	char *LogOSVersion(char *buffer, const char *last) const override
 	{
 		struct utsname name;
 		if (uname(&name) < 0) {
@@ -160,7 +160,7 @@ class CrashLogUnix : public CrashLog {
 		);
 	}
 
-	/* virtual */ char *LogOSVersionDetail(char *buffer, const char *last) const
+	char *LogOSVersionDetail(char *buffer, const char *last) const override
 	{
 		struct utsname name;
 		if (uname(&name) < 0) return buffer;
@@ -177,7 +177,7 @@ class CrashLogUnix : public CrashLog {
 		return buffer;
 	}
 
-	/* virtual */ char *LogError(char *buffer, const char *last, const char *message) const
+	char *LogError(char *buffer, const char *last, const char *message) const override
 	{
 		buffer += seprintf(buffer, last,
 				"Crash reason:\n"
@@ -247,7 +247,7 @@ class CrashLogUnix : public CrashLog {
 	 *
 	 * Also log GDB information if available
 	 */
-	/* virtual */ char *LogRegisters(char *buffer, const char *last) const
+	char *LogRegisters(char *buffer, const char *last) const
 	{
 		buffer = LogGdbInfo(buffer, last);
 
@@ -387,7 +387,7 @@ class CrashLogUnix : public CrashLog {
 	 * Note that GCC complains about 'buffer' being clobbered by the longjmp.
 	 * This is not an issue as we save/restore it explicitly, so silence the warning.
 	 */
-	/* virtual */ char *LogStacktrace(char *buffer, const char *last) const
+	char *LogStacktrace(char *buffer, const char *last) const override
 	{
 		buffer += seprintf(buffer, last, "Stacktrace:\n");
 

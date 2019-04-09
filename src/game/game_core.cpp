@@ -15,6 +15,7 @@
 #include "../company_func.h"
 #include "../network/network.h"
 #include "../window_func.h"
+#include "../framerate_type.h"
 #include "game.hpp"
 #include "game_scanner.hpp"
 #include "game_config.hpp"
@@ -31,8 +32,16 @@
 
 /* static */ void Game::GameLoop()
 {
-	if (_networking && !_network_server) return;
-	if (Game::instance == NULL) return;
+	if (_networking && !_network_server) {
+		PerformanceMeasurer::SetInactive(PFE_GAMESCRIPT);
+		return;
+	}
+	if (Game::instance == NULL) {
+		PerformanceMeasurer::SetInactive(PFE_GAMESCRIPT);
+		return;
+	}
+
+	PerformanceMeasurer framerate(PFE_GAMESCRIPT);
 
 	Game::frame_counter++;
 
@@ -248,8 +257,6 @@
 	return Game::scanner_library->FindLibrary(library, version);
 }
 
-#if defined(ENABLE_NETWORK)
-
 /**
  * Check whether we have an Game (library) with the exact characteristics as ci.
  * @param ci the characteristics to search on (shortname and md5sum)
@@ -265,8 +272,6 @@
 {
 	return Game::scanner_library->HasScript(ci, md5sum);
 }
-
-#endif /* defined(ENABLE_NETWORK) */
 
 /* static */ GameScannerInfo *Game::GetScannerInfo()
 {

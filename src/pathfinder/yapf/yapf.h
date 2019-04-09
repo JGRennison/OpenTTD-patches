@@ -15,6 +15,8 @@
 #include "../../direction_type.h"
 #include "../../track_type.h"
 #include "../../vehicle_type.h"
+#include "../../ship.h"
+#include "../../roadveh.h"
 #include "../pathfinder_type.h"
 
 /**
@@ -26,7 +28,7 @@
  * @param path_found [out] Whether a path has been found (true) or has been guessed (false)
  * @return         the best trackdir for next turn or INVALID_TRACK if the path could not be found
  */
-Track YapfShipChooseTrack(const Ship *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks, bool &path_found);
+Track YapfShipChooseTrack(const Ship *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks, bool &path_found, ShipPathCache &path_cache);
 
 /**
  * Returns true if it is better to reverse the ship before leaving depot using YAPF.
@@ -44,7 +46,7 @@ bool YapfShipCheckReverse(const Ship *v);
  * @param path_found [out] Whether a path has been found (true) or has been guessed (false)
  * @return          the best trackdir for next turn or INVALID_TRACKDIR if the path could not be found
  */
-Trackdir YapfRoadVehicleChooseTrack(const RoadVehicle *v, TileIndex tile, DiagDirection enterdir, TrackdirBits trackdirs, bool &path_found);
+Trackdir YapfRoadVehicleChooseTrack(const RoadVehicle *v, TileIndex tile, DiagDirection enterdir, TrackdirBits trackdirs, bool &path_found, RoadVehPathCache &path_cache);
 
 /**
  * Finds the best path for given train using YAPF.

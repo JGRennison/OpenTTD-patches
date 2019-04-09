@@ -19,7 +19,7 @@
 #include "safeguards.h"
 
 /** The table/list with animated tiles. */
-SmallVector<TileIndex, 256> _animated_tiles;
+std::vector<TileIndex> _animated_tiles;
 
 /**
  * Removes the given tile from the animated tile table.
@@ -27,10 +27,10 @@ SmallVector<TileIndex, 256> _animated_tiles;
  */
 void DeleteAnimatedTile(TileIndex tile)
 {
-	TileIndex *to_remove = _animated_tiles.Find(tile);
-	if (to_remove != _animated_tiles.End()) {
+	auto to_remove = std::find(_animated_tiles.begin(), _animated_tiles.end(), tile);
+	if (to_remove != _animated_tiles.end()) {
 		/* The order of the remaining elements must stay the same, otherwise the animation loop may miss a tile. */
-		_animated_tiles.ErasePreservingOrder(to_remove);
+		_animated_tiles.erase(to_remove);
 		MarkTileDirtyByTile(tile);
 	}
 }
@@ -43,7 +43,7 @@ void DeleteAnimatedTile(TileIndex tile)
 void AddAnimatedTile(TileIndex tile)
 {
 	MarkTileDirtyByTile(tile);
-	_animated_tiles.Include(tile);
+	include(_animated_tiles, tile);
 }
 
 /**
@@ -53,8 +53,8 @@ void AnimateAnimatedTiles()
 {
 	PerformanceAccumulator framerate(PFE_GL_LANDSCAPE);
 
-	const TileIndex *ti = _animated_tiles.Begin();
-	while (ti < _animated_tiles.End()) {
+	const TileIndex *ti = _animated_tiles.data();
+	while (ti < _animated_tiles.data() + _animated_tiles.size()) {
 		const TileIndex curr = *ti;
 		AnimateTile(curr);
 		/* During the AnimateTile call, DeleteAnimatedTile could have been called,
@@ -75,5 +75,5 @@ void AnimateAnimatedTiles()
  */
 void InitializeAnimatedTiles()
 {
-	_animated_tiles.Clear();
+	_animated_tiles.clear();
 }

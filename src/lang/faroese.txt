@@ -453,6 +453,7 @@ STR_ABOUT_MENU_SCREENSHOT                                       :Skermmynd
 STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Suma in skermmynd
 STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Vanliga suma skermmynd
 STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Skermmynd av øllum kortinum
+STR_ABOUT_MENU_SHOW_FRAMERATE                                   :Vís mynda títtleika
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :Um 'OpenTTD'
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Sprite aligner
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Skift millum bindingar kassar
@@ -950,6 +951,8 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :annað
 
 
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Base grafikk sett
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Vel ta base grafikk setti tú vil brúka
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} vantandi/oyðiløgd fíl{P a ir}
@@ -1202,6 +1205,7 @@ STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD_HELPTEXT             :Loyv bygging av
 STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}Ikki møguligt at broyta hesa áseting tá ta eru flutningstól
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :Innakervis viðlílkahald: {STRING}
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :Um gilda, innankervi elvir til viðlíkahalds kostnað. Kostnaðurin vaksur yvir-lutfalsliga við støddina á kervinum, og ávirkar harvið størri fyritøkur meira enn smærri fyritøkur
+
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Floghavnir ganga ongantíð út: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Gildan av hesi áseting ger at hvørt floghavna slag altíð er tøkt eftir tað er komi í nýtslu
@@ -1519,7 +1523,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Ídnað
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Kappingarneytar
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Teldu spælarir
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Upprunaligur
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Viðmældur)
 
@@ -1587,13 +1590,9 @@ STR_QUIT_NO                                                     :{BLACK}Nei
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -1620,7 +1619,6 @@ STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Broyt n�
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Gilda broytingar av framleiðslu virðum: {ORANGE}{STRING}
 
 # Livery window
-STR_LIVERY_CAPTION                                              :{WHITE}Nýggja lit samanseting
 
 STR_LIVERY_GENERAL_TOOLTIP                                      :{BLACK}Vís vanligu lit samansetingarnar
 STR_LIVERY_TRAIN_TOOLTIP                                        :{BLACK}Vís tok lit samansetingarnar
@@ -1880,9 +1878,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Servarin
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Fyritøka er vard. Skriva loyniorð
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Listi yvir klientar
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Eygleið
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nýggja fyritøku
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Listi yvir klientar
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Eygleið
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Nýggja fyritøku
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Sparka
@@ -2420,7 +2418,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Ogn hjá fyrit�
 STR_ABOUT_OPENTTD                                               :{WHITE}Um OpenTTD
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Upprunalig upphavsrættindi {COPYRIGHT} 1995 Chris Sawyer, Øll rættindi umbiðin
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD útgáva {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2018 OpenTTD toymi
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2019 OpenTTD toymi
 
 # Framerate display window
 ############ Leave those lines in this order!!
@@ -2915,17 +2913,7 @@ STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_
 STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Savna høvuðs sýni á ídnaðin. Ctrl+trýst letur nýggjan sýnisglugga upp við sýni á ídnaðin
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Framleiðslu støði: {YELLOW}{COMMA}%
 
-############ range for requires starts
-STR_INDUSTRY_VIEW_REQUIRES_CARGO                                :{BLACK}Tørvar: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO                          :{BLACK}Tørvar: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
-STR_INDUSTRY_VIEW_REQUIRES_CARGO_CARGO_CARGO                    :{BLACK}Tørvar: {YELLOW}{STRING}{STRING}, {STRING}{STRING}, {STRING}{STRING}
-############ range for requires ends
 
-
-############ range for produces starts
-STR_INDUSTRY_VIEW_PRODUCES_CARGO                                :{BLACK}Framleiður: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_PRODUCES_CARGO_CARGO                          :{BLACK}Framleiður: {YELLOW}{STRING}{STRING}, {STRING}{STRING}
-############ range for produces ends
 
 STR_CONFIG_GAME_PRODUCTION                                      :{WHITE}Broyt framleiðslu (fald av 8, upp til 2040)
 STR_CONFIG_GAME_PRODUCTION_LEVEL                                :{WHITE}Broyt framleiðslu støði (prosent, upp til 800%)
@@ -2974,6 +2962,7 @@ STR_GROUP_DEFAULT_TRAINS                                        :Óbólkaði tok
 STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Óbólkaði akfør
 STR_GROUP_DEFAULT_SHIPS                                         :Óbólkaði skip
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Óbólkaði flogfør
+
 
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Bólkar - trýst á ein bólk fyri at síggja øll flutningstól í hesum bólki
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Trýst fyri at gera ein bólk
@@ -3030,10 +3019,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Keyp akf
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Keyp skip
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Keyp flogfar
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Keyp undirstrikaða tok flutningstóli. Shift+trýst vísur kostnaðar meting uttan at keypa
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Keyp undirstrikaða akfari. Shift+trýst vísur kostnaðar meting uttan at keypa
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Keyp undirstrikaða skipi. Shift+trýst vísur kostnaðar meting uttan at keypa
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Keyp undirstrikaða flogfari. Shift+trýst vísur kostnaðar meting uttan at keypa
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Navngev
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Navngev
@@ -3723,7 +3714,6 @@ STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Ov nógv
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Ov nógvir tok støð deilir
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Ov nógvir buss steðgir
 STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Ov nógvar lastbila støðir
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_STATION                          :{WHITE}Ov tætt við eina aðra støð/lessi øki
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Ov tætt við eina aðra havn
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Ov tætt við eina aðra floghavn
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Kann ikki navngeva støð...

@@ -1001,7 +1001,7 @@ public:
 	};
 
 	/* automatically generated from ../../widgets/cheat_widget.h */
-	/** Widgets of the #CheatWindow class.. */
+	/** Widgets of the #CheatWindow class. */
 	enum CheatWidgets {
 		WID_C_PANEL                                  = ::WID_C_PANEL,                                  ///< Panel where all cheats are shown in.
 	};
@@ -1080,10 +1080,15 @@ public:
 		WID_SCL_CLASS_ROAD                           = ::WID_SCL_CLASS_ROAD,                           ///< Class road.
 		WID_SCL_CLASS_SHIP                           = ::WID_SCL_CLASS_SHIP,                           ///< Class ship.
 		WID_SCL_CLASS_AIRCRAFT                       = ::WID_SCL_CLASS_AIRCRAFT,                       ///< Class aircraft.
+		WID_SCL_GROUPS_RAIL                          = ::WID_SCL_GROUPS_RAIL,                          ///< Rail groups.
+		WID_SCL_GROUPS_ROAD                          = ::WID_SCL_GROUPS_ROAD,                          ///< Road groups.
+		WID_SCL_GROUPS_SHIP                          = ::WID_SCL_GROUPS_SHIP,                          ///< Ship groups.
+		WID_SCL_GROUPS_AIRCRAFT                      = ::WID_SCL_GROUPS_AIRCRAFT,                      ///< Aircraft groups.
 		WID_SCL_SPACER_DROPDOWN                      = ::WID_SCL_SPACER_DROPDOWN,                      ///< Spacer for dropdown.
 		WID_SCL_PRI_COL_DROPDOWN                     = ::WID_SCL_PRI_COL_DROPDOWN,                     ///< Dropdown for primary colour.
 		WID_SCL_SEC_COL_DROPDOWN                     = ::WID_SCL_SEC_COL_DROPDOWN,                     ///< Dropdown for secondary colour.
 		WID_SCL_MATRIX                               = ::WID_SCL_MATRIX,                               ///< Matrix.
+		WID_SCL_MATRIX_SCROLLBAR                     = ::WID_SCL_MATRIX_SCROLLBAR,                     ///< Matrix scrollbar.
 	};
 
 	/**
@@ -1272,6 +1277,7 @@ public:
 		WID_SL_CAPTION                               = ::WID_SL_CAPTION,                               ///< Caption of the window.
 		WID_SL_SORT_BYNAME                           = ::WID_SL_SORT_BYNAME,                           ///< Sort by name button.
 		WID_SL_SORT_BYDATE                           = ::WID_SL_SORT_BYDATE,                           ///< Sort by date button.
+		WID_SL_FILTER                                = ::WID_SL_FILTER,                                ///< Filter list of files
 		WID_SL_BACKGROUND                            = ::WID_SL_BACKGROUND,                            ///< Background of window.
 		WID_SL_FILE_BACKGROUND                       = ::WID_SL_FILE_BACKGROUND,                       ///< Background of file selection.
 		WID_SL_HOME_BUTTON                           = ::WID_SL_HOME_BUTTON,                           ///< Home button.
@@ -1299,6 +1305,7 @@ public:
 		WID_FRW_TIMES_NAMES                          = ::WID_FRW_TIMES_NAMES,
 		WID_FRW_TIMES_CURRENT                        = ::WID_FRW_TIMES_CURRENT,
 		WID_FRW_TIMES_AVERAGE                        = ::WID_FRW_TIMES_AVERAGE,
+		WID_FRW_SCROLLBAR                            = ::WID_FRW_SCROLLBAR,
 	};
 
 	/** Widgets of the #FrametimeGraphWindow class. */
@@ -1433,7 +1440,8 @@ public:
 		WID_CPR_FOOTER                               = ::WID_CPR_FOOTER,                               ///< Footer.
 		WID_CPR_ENABLE_CARGOES                       = ::WID_CPR_ENABLE_CARGOES,                       ///< Enable cargoes button.
 		WID_CPR_DISABLE_CARGOES                      = ::WID_CPR_DISABLE_CARGOES,                      ///< Disable cargoes button.
-		WID_CPR_CARGO_FIRST                          = ::WID_CPR_CARGO_FIRST,                          ///< First cargo in the list.
+		WID_CPR_MATRIX                               = ::WID_CPR_MATRIX,                               ///< Cargo list.
+		WID_CPR_MATRIX_SCROLLBAR                     = ::WID_CPR_MATRIX_SCROLLBAR,                     ///< Cargo list scrollbar.
 	};
 
 	/** Widget of the #CompanyLeagueWindow class. */
@@ -1470,6 +1478,7 @@ public:
 		WID_GL_CREATE_GROUP                          = ::WID_GL_CREATE_GROUP,                          ///< Create group button.
 		WID_GL_DELETE_GROUP                          = ::WID_GL_DELETE_GROUP,                          ///< Delete group button.
 		WID_GL_RENAME_GROUP                          = ::WID_GL_RENAME_GROUP,                          ///< Rename group button.
+		WID_GL_LIVERY_GROUP                          = ::WID_GL_LIVERY_GROUP,                          ///< Group livery button.
 		WID_GL_REPLACE_PROTECTION                    = ::WID_GL_REPLACE_PROTECTION,                    ///< Replace protection button.
 		WID_GL_INFO                                  = ::WID_GL_INFO,                                  ///< Group info.
 	};
@@ -2177,6 +2186,7 @@ public:
 		WID_GO_BASE_MUSIC_STATUS                     = ::WID_GO_BASE_MUSIC_STATUS,                     ///< Info about corrupted files etc.
 		WID_GO_BASE_MUSIC_TEXTFILE                   = ::WID_GO_BASE_MUSIC_TEXTFILE,                   ///< Open base music readme, changelog (+1) or license (+2).
 		WID_GO_BASE_MUSIC_DESCRIPTION                = ::WID_GO_BASE_MUSIC_DESCRIPTION,                ///< Description of selected base music set.
+		WID_GO_FONT_ZOOM_DROPDOWN                    = ::WID_GO_FONT_ZOOM_DROPDOWN,                    ///< Dropdown for the font zoom level.
 	};
 
 	/** Widgets of the #GameSettingsWindow class. */

@@ -23,6 +23,7 @@
 #include "sound_func.h"
 #include "window_func.h"
 #include "company_base.h"
+#include "guitimer_func.h"
 
 #include "smallmap_gui.h"
 
@@ -46,7 +47,7 @@ static const uint8 PC_GRASS_LAND      = 0x54; ///< Dark green palette colour for
 static const uint8 PC_BARE_LAND       = 0x37; ///< Brown palette colour for bare land.
 static const uint8 PC_FIELDS          = 0x25; ///< Light brown palette colour for fields.
 static const uint8 PC_TREES           = 0x57; ///< Green palette colour for trees.
-static const uint8 PC_WATER           = 0xCA; ///< Dark blue palette colour for water.
+static const uint8 PC_WATER           = 0xC9; ///< Dark blue palette colour for water.
 
 /** Macro for ordinary entry of LegendAndColour */
 #define MK(a, b) {a, b, INVALID_INDUSTRYTYPE, 0, INVALID_COMPANY, true, false, false}
@@ -273,7 +274,7 @@ struct SmallMapColourScheme {
 static SmallMapColourScheme _heightmap_schemes[] = {
 	{NULL, _green_map_heights,      lengthof(_green_map_heights),      MKCOLOUR_XXXX(0x54)}, ///< Green colour scheme.
 	{NULL, _dark_green_map_heights, lengthof(_dark_green_map_heights), MKCOLOUR_XXXX(0x62)}, ///< Dark green colour scheme.
-	{NULL, _violet_map_heights,     lengthof(_violet_map_heights),     MKCOLOUR_XXXX(0x82)}, ///< Violet colour scheme.
+	{NULL, _violet_map_heights,     lengthof(_violet_map_heights),     MKCOLOUR_XXXX(0x81)}, ///< Violet colour scheme.
 };
 
 /**
@@ -416,7 +417,7 @@ static const byte _tiletype_importance[] = {
 /**
  * Return the colour a tile would be displayed with in the small map in mode "Contour".
  * @param tile The tile of which we would like to get the colour.
- * @param t    Effective tile type of the tile (see #GetTileColours).
+ * @param t    Effective tile type of the tile (see #SmallMapWindow::GetTileColours).
  * @return The colour of tile in the small map in mode "Contour"
  */
 static inline uint32 GetSmallMapContoursPixels(TileIndex tile, TileType t)
@@ -429,7 +430,7 @@ static inline uint32 GetSmallMapContoursPixels(TileIndex tile, TileType t)
  * Return the colour a tile would be displayed with in the small map in mode "Vehicles".
  *
  * @param tile The tile of which we would like to get the colour.
- * @param t    Effective tile type of the tile (see #GetTileColours).
+ * @param t    Effective tile type of the tile (see #SmallMapWindow::GetTileColours).
  * @return The colour of tile in the small map in mode "Vehicles"
  */
 static inline uint32 GetSmallMapVehiclesPixels(TileIndex tile, TileType t)
@@ -442,7 +443,7 @@ static inline uint32 GetSmallMapVehiclesPixels(TileIndex tile, TileType t)
  * Return the colour a tile would be displayed with in the small map in mode "Industries".
  *
  * @param tile The tile of which we would like to get the colour.
- * @param t    Effective tile type of the tile (see #GetTileColours).
+ * @param t    Effective tile type of the tile (see #SmallMapWindow::GetTileColours).
  * @return The colour of tile in the small map in mode "Industries"
  */
 static inline uint32 GetSmallMapIndustriesPixels(TileIndex tile, TileType t)
@@ -455,7 +456,7 @@ static inline uint32 GetSmallMapIndustriesPixels(TileIndex tile, TileType t)
  * Return the colour a tile would be displayed with in the small map in mode "Routes".
  *
  * @param tile The tile of which we would like to get the colour.
- * @param t    Effective tile type of the tile (see #GetTileColours).
+ * @param t    Effective tile type of the tile (see #SmallMapWindow::GetTileColours).
  * @return The colour of tile  in the small map in mode "Routes"
  */
 static inline uint32 GetSmallMapRoutesPixels(TileIndex tile, TileType t)
@@ -488,7 +489,7 @@ static inline uint32 GetSmallMapRoutesPixels(TileIndex tile, TileType t)
  * Return the colour a tile would be displayed with in the small map in mode "link stats".
  *
  * @param tile The tile of which we would like to get the colour.
- * @param t    Effective tile type of the tile (see #GetTileColours).
+ * @param t    Effective tile type of the tile (see #SmallMapWindow::GetTileColours).
  * @return The colour of tile in the small map in mode "link stats"
  */
 static inline uint32 GetSmallMapLinkStatsPixels(TileIndex tile, TileType t)
@@ -511,7 +512,7 @@ static const uint32 _vegetation_clear_bits[] = {
  * Return the colour a tile would be displayed with in the smallmap in mode "Vegetation".
  *
  * @param tile The tile of which we would like to get the colour.
- * @param t    Effective tile type of the tile (see #GetTileColours).
+ * @param t    Effective tile type of the tile (see #SmallMapWindow::GetTileColours).
  * @return The colour of tile  in the smallmap in mode "Vegetation"
  */
 static inline uint32 GetSmallMapVegetationPixels(TileIndex tile, TileType t)
@@ -538,7 +539,7 @@ static inline uint32 GetSmallMapVegetationPixels(TileIndex tile, TileType t)
  * Return the colour a tile would be displayed with in the small map in mode "Owner".
  *
  * @param tile The tile of which we would like to get the colour.
- * @param t    Effective tile type of the tile (see #GetTileColours).
+ * @param t    Effective tile type of the tile (see #SmallMapWindow::GetTileColours).
  * @return The colour of tile in the small map in mode "Owner"
  */
 static inline uint32 GetSmallMapOwnerPixels(TileIndex tile, TileType t)
@@ -611,7 +612,7 @@ inline Point SmallMapWindow::RemapTile(int tile_x, int tile_y) const
  * that tile for a point in the smallmap.
  * @param px       Horizontal coordinate of the pixel.
  * @param py       Vertical coordinate of the pixel.
- * @param sub[out] Pixel position at the tile (0..3).
+ * @param[out] sub Pixel position at the tile (0..3).
  * @param add_sub  Add current #subscroll to the position.
  * @return Tile being displayed at the given position relative to #scroll_x and #scroll_y.
  * @note The #subscroll offset is already accounted for.
@@ -641,11 +642,11 @@ inline Point SmallMapWindow::PixelToTile(int px, int py, int *sub, bool add_sub)
 
 /**
  * Compute base parameters of the smallmap such that tile (\a tx, \a ty) starts at pixel (\a x, \a y).
- * @param tx        Tile x coordinate.
- * @param ty        Tile y coordinate.
- * @param x         Non-negative horizontal position in the display where the tile starts.
- * @param y         Non-negative vertical position in the display where the tile starts.
- * @param sub [out] Value of #subscroll needed.
+ * @param tx       Tile x coordinate.
+ * @param ty       Tile y coordinate.
+ * @param x        Non-negative horizontal position in the display where the tile starts.
+ * @param y        Non-negative vertical position in the display where the tile starts.
+ * @param[out] sub Value of #subscroll needed.
  * @return #scroll_x, #scroll_y values.
  */
 Point SmallMapWindow::ComputeScroll(int tx, int ty, int x, int y, int *sub)
@@ -712,7 +713,7 @@ void SmallMapWindow::SetZoomLevel(ZoomLevelChange change, const Point *zoom_pt)
 			this->SetNewScroll(this->scroll_x + (tile.x - new_tile.x) * TILE_SIZE,
 					this->scroll_y + (tile.y - new_tile.y) * TILE_SIZE, sub);
 		} else if (this->map_type == SMT_LINKSTATS) {
-			this->overlay->RebuildCache();
+			this->overlay->SetDirty();
 		}
 		this->SetWidgetDisabledState(WID_SM_ZOOM_IN,  this->zoom == zoomlevels[MIN_ZOOM_INDEX]);
 		this->SetWidgetDisabledState(WID_SM_ZOOM_OUT, this->zoom == zoomlevels[MAX_ZOOM_INDEX]);
@@ -922,8 +923,8 @@ void SmallMapWindow::DrawMapIndicators() const
 	/* Find main viewport. */
 	const ViewPort *vp = FindWindowById(WC_MAIN_WINDOW, 0)->viewport;
 
-	Point upper_left_smallmap_coord  = TranslateXYToTileCoord(vp, vp->left, vp->top, false);
-	Point lower_right_smallmap_coord = TranslateXYToTileCoord(vp, vp->left + vp->width - 1, vp->top + vp->height - 1, false);
+	Point upper_left_smallmap_coord  = InverseRemapCoords2(vp->virtual_left, vp->virtual_top);
+	Point lower_right_smallmap_coord = InverseRemapCoords2(vp->virtual_left + vp->virtual_width - 1, vp->virtual_top + vp->virtual_height - 1);
 
 	Point upper_left = this->RemapTile(upper_left_smallmap_coord.x / (int)TILE_SIZE, upper_left_smallmap_coord.y / (int)TILE_SIZE);
 	upper_left.x -= this->subscroll;
@@ -1055,7 +1056,7 @@ void SmallMapWindow::SetupWidgetData()
 	this->GetWidget<NWidgetStacked>(WID_SM_SELECT_BUTTONS)->SetDisplayedPlane(plane);
 }
 
-SmallMapWindow::SmallMapWindow(WindowDesc *desc, int window_number) : Window(desc), refresh(FORCE_REFRESH_PERIOD)
+SmallMapWindow::SmallMapWindow(WindowDesc *desc, int window_number) : Window(desc), refresh(GUITimer(FORCE_REFRESH_PERIOD))
 {
 	_smallmap_industry_highlight = INVALID_INDUSTRYTYPE;
 	this->overlay = new LinkGraphOverlay(this, WID_SM_MAP, 0, this->GetOverlayCompanyMask(), 1);
@@ -1289,7 +1290,7 @@ void SmallMapWindow::SwitchMapType(SmallMapType map_type)
 
 	this->SetupWidgetData();
 
-	if (map_type == SMT_LINKSTATS) this->overlay->RebuildCache();
+	if (map_type == SMT_LINKSTATS) this->overlay->SetDirty();
 	if (map_type != SMT_INDUSTRY) this->BreakIndustryChainLink();
 	this->SetDirty();
 }
@@ -1390,7 +1391,7 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 	}
 	if (new_highlight != _smallmap_industry_highlight) {
 		_smallmap_industry_highlight = new_highlight;
-		this->refresh = _smallmap_industry_highlight != INVALID_INDUSTRYTYPE ? BLINK_PERIOD : FORCE_REFRESH_PERIOD;
+		this->refresh.SetInterval(_smallmap_industry_highlight != INVALID_INDUSTRYTYPE ? BLINK_PERIOD : FORCE_REFRESH_PERIOD);
 		_smallmap_industry_highlight_state = true;
 		this->SetDirty();
 	}
@@ -1400,15 +1401,7 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 {
 	switch (widget) {
 		case WID_SM_MAP: { // Map window
-			/*
-			 * XXX: scrolling with the left mouse button is done by subsequently
-			 * clicking with the left mouse button; clicking once centers the
-			 * large map at the selected point. So by unclicking the left mouse
-			 * button here, it gets reclicked during the next inputloop, which
-			 * would make it look like the mouse is being dragged, while it is
-			 * actually being (virtually) clicked every inputloop.
-			 */
-			_left_button_clicked = false;
+			if (click_count > 0) this->mouse_capture_widget = widget;
 
 			const NWidgetBase *wid = this->GetWidget<NWidgetBase>(WID_SM_MAP);
 			Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
@@ -1570,22 +1563,22 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 	}
 }
 
-/* virtual */ void SmallMapWindow::OnTick()
+/* virtual */ void SmallMapWindow::OnRealtimeTick(uint delta_ms)
 {
 	/* Update the window every now and then */
-	if (--this->refresh != 0) return;
+	if (!this->refresh.Elapsed(delta_ms)) return;
 
 	if (this->map_type == SMT_LINKSTATS) {
 		uint32 company_mask = this->GetOverlayCompanyMask();
 		if (this->overlay->GetCompanyMask() != company_mask) {
 			this->overlay->SetCompanyMask(company_mask);
 		} else {
-			this->overlay->RebuildCache();
+			this->overlay->SetDirty();
 		}
 	}
 	_smallmap_industry_highlight_state = !_smallmap_industry_highlight_state;
 
-	this->refresh = _smallmap_industry_highlight != INVALID_INDUSTRYTYPE ? BLINK_PERIOD : FORCE_REFRESH_PERIOD;
+	this->refresh.SetInterval(_smallmap_industry_highlight != INVALID_INDUSTRYTYPE ? BLINK_PERIOD : FORCE_REFRESH_PERIOD);
 	this->SetDirty();
 }
 
@@ -1623,7 +1616,7 @@ void SmallMapWindow::SetNewScroll(int sx, int sy, int sub)
 	this->scroll_x = sx;
 	this->scroll_y = sy;
 	this->subscroll = sub;
-	if (this->map_type == SMT_LINKSTATS) this->overlay->RebuildCache();
+	if (this->map_type == SMT_LINKSTATS) this->overlay->SetDirty();
 }
 
 /* virtual */ void SmallMapWindow::OnScroll(Point delta)
@@ -1644,7 +1637,7 @@ void SmallMapWindow::SetNewScroll(int sx, int sy, int sub)
 void SmallMapWindow::SmallMapCenterOnCurrentPos()
 {
 	const ViewPort *vp = FindWindowById(WC_MAIN_WINDOW, 0)->viewport;
-	Point viewport_center = TranslateXYToTileCoord(vp, vp->left + vp->width / 2, vp->top + vp->height / 2);
+	Point viewport_center = InverseRemapCoords2(vp->virtual_left + vp->virtual_width / 2, vp->virtual_top + vp->virtual_height / 2);
 
 	int sub;
 	const NWidgetBase *wid = this->GetWidget<NWidgetBase>(WID_SM_MAP);
@@ -1692,7 +1685,7 @@ public:
 		this->smallmap_window = NULL;
 	}
 
-	virtual void SetupSmallestSize(Window *w, bool init_array)
+	void SetupSmallestSize(Window *w, bool init_array) override
 	{
 		NWidgetBase *display = this->head;
 		NWidgetBase *bar = display->next;
@@ -1710,7 +1703,7 @@ public:
 		this->resize_y = min(display->resize_y, bar->resize_y);
 	}
 
-	virtual void AssignSizePosition(SizingType sizing, uint x, uint y, uint given_width, uint given_height, bool rtl)
+	void AssignSizePosition(SizingType sizing, uint x, uint y, uint given_width, uint given_height, bool rtl) override
 	{
 		this->pos_x = x;
 		this->pos_y = y;
@@ -1734,7 +1727,7 @@ public:
 		bar->AssignSizePosition(ST_RESIZE, x, y + display_height, given_width, bar_height, rtl);
 	}
 
-	virtual NWidgetCore *GetWidgetFromPos(int x, int y)
+	NWidgetCore *GetWidgetFromPos(int x, int y) override
 	{
 		if (!IsInsideBS(x, this->pos_x, this->current_x) || !IsInsideBS(y, this->pos_y, this->current_y)) return NULL;
 		for (NWidgetBase *child_wid = this->head; child_wid != NULL; child_wid = child_wid->next) {
@@ -1744,7 +1737,7 @@ public:
 		return NULL;
 	}
 
-	virtual void Draw(const Window *w)
+	void Draw(const Window *w) override
 	{
 		for (NWidgetBase *child_wid = this->head; child_wid != NULL; child_wid = child_wid->next) child_wid->Draw(w);
 	}

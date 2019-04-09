@@ -21,15 +21,24 @@
 #include "strings_type.h"
 #include "date_type.h"
 #include "signal_type.h"
+#include "settings_type.h"
 
 /** Railtype flags. */
 enum RailTypeFlags {
 	RTF_CATENARY          = 0,                           ///< Bit number for drawing a catenary.
 	RTF_NO_LEVEL_CROSSING = 1,                           ///< Bit number for disallowing level crossings.
+	RTF_HIDDEN            = 2,                           ///< Bit number for hiding from selection.
+	RTF_NO_SPRITE_COMBINE = 3,                           ///< Bit number for using non-combined junctions.
+	RTF_ALLOW_90DEG       = 4,                           ///< Bit number for always allowed 90 degree turns, regardless of setting.
+	RTF_DISALLOW_90DEG    = 5,                           ///< Bit number for never allowed 90 degree turns, regardless of setting.
 
 	RTFB_NONE              = 0,                          ///< All flags cleared.
 	RTFB_CATENARY          = 1 << RTF_CATENARY,          ///< Value for drawing a catenary.
 	RTFB_NO_LEVEL_CROSSING = 1 << RTF_NO_LEVEL_CROSSING, ///< Value for disallowing level crossings.
+	RTFB_HIDDEN            = 1 << RTF_HIDDEN,            ///< Value for hiding from selection.
+	RTFB_NO_SPRITE_COMBINE = 1 << RTF_NO_SPRITE_COMBINE, ///< Value for using non-combined junctions.
+	RTFB_ALLOW_90DEG       = 1 << RTF_ALLOW_90DEG,       ///< Value for always allowed 90 degree turns, regardless of setting.
+	RTFB_DISALLOW_90DEG    = 1 << RTF_DISALLOW_90DEG,    ///< Value for never allowed 90 degree turns, regardless of setting.
 };
 DECLARE_ENUM_AS_BIT_SET(RailTypeFlags)
 
@@ -49,6 +58,7 @@ enum RailTypeSpriteGroup {
 	RTSG_FENCES,      ///< Fence images
 	RTSG_TUNNEL_PORTAL, ///< Tunnel portal overlay
 	RTSG_SIGNALS,     ///< Signal images
+	RTSG_GROUND_COMPLETE, ///< Complete ground images
 	RTSG_END,
 };
 
@@ -108,7 +118,7 @@ enum RailFenceOffset {
 };
 
 /** List of rail type labels. */
-typedef SmallVector<RailTypeLabel, 4> RailTypeLabelList;
+typedef std::vector<RailTypeLabel> RailTypeLabelList;
 
 /**
  * This struct contains all the info that is needed to draw and construct tracks.
@@ -239,7 +249,7 @@ public:
 	 * When #INVALID_DATE or a vehicle using this railtype gets introduced earlier,
 	 * the vehicle's introduction date will be used instead for this railtype.
 	 * The introduction at this date is furthermore limited by the
-	 * #introduction_required_types.
+	 * #introduction_required_railtypes.
 	 */
 	Date introduction_date;
 
@@ -337,6 +347,26 @@ static inline bool RailNoLevelCrossings(RailType rt)
 }
 
 /**
+ * Test if 90 degree turns are disallowed between two railtypes.
+ * @param rt1 First railtype to test for.
+ * @param rt2 Second railtype to test for.
+ * @param def Default value to use if the rail type doesn't specify anything.
+ * @return True if 90 degree turns are disallowed between the two rail types.
+ */
+static inline bool Rail90DegTurnDisallowed(RailType rt1, RailType rt2, bool def = _settings_game.pf.forbid_90_deg)
+{
+	if (rt1 == INVALID_RAILTYPE || rt2 == INVALID_RAILTYPE) return def;
+
+	const RailtypeInfo *rti1 = GetRailTypeInfo(rt1);
+	const RailtypeInfo *rti2 = GetRailTypeInfo(rt2);
+
+	bool rt1_90deg = HasBit(rti1->flags, RTF_DISALLOW_90DEG) || (!HasBit(rti1->flags, RTF_ALLOW_90DEG) && def);
+	bool rt2_90deg = HasBit(rti2->flags, RTF_DISALLOW_90DEG) || (!HasBit(rti2->flags, RTF_ALLOW_90DEG) && def);
+
+	return rt1_90deg || rt2_90deg;
+}
+
+/**
  * Returns the cost of building the specified railtype.
  * @param railtype The railtype being built.
  * @return The cost multiplier.
@@ -419,12 +449,14 @@ Foundation GetRailFoundation(Slope tileh, TrackBits bits);
 
 
 bool HasRailtypeAvail(const CompanyID company, const RailType railtype);
+bool HasAnyRailtypesAvail(const CompanyID company);
 bool ValParamRailtype(const RailType rail);
 
 RailTypes AddDateIntroducedRailTypes(RailTypes current, Date date);
 
 RailType GetBestRailtype(const CompanyID company);
-RailTypes GetCompanyRailtypes(const CompanyID c);
+RailTypes GetCompanyRailtypes(CompanyID company, bool introduces = true);
+RailTypes GetRailTypes(bool introduces);
 
 RailType GetRailTypeByLabel(RailTypeLabel label, bool allow_alternate_labels = true);
 
@@ -434,6 +466,7 @@ RailType AllocateRailType(RailTypeLabel label);
 
 extern RailType _sorted_railtypes[RAILTYPE_END];
 extern uint8 _sorted_railtypes_size;
+extern RailTypes _railtypes_hidden_mask;
 
 /**
  * Loop header for iterating over railtypes, sorted by sortorder.

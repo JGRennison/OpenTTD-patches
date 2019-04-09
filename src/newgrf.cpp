@@ -65,7 +65,7 @@
  * served as subject to the initial testing of this codec. */
 
 /** List of all loaded GRF files */
-static SmallVector<GRFFile *, 16> _grf_files;
+static std::vector<GRFFile *> _grf_files;
 
 /** Miscellaneous GRF features, set by Action 0x0D, parameter 0x9E */
 byte _misc_grf_features = 0;
@@ -194,7 +194,7 @@ static GrfProcessingState _cur;
 
 /**
  * Helper to check whether an image index is valid for a particular NewGRF vehicle.
- * @param <T> The type of vehicle.
+ * @tparam T The type of vehicle.
  * @param image_index The image index to check.
  * @return True iff the image index is valid, or 0xFD (use new graphics).
  */
@@ -391,9 +391,8 @@ void CDECL grfmsg(int severity, const char *str, ...)
  */
 static GRFFile *GetFileByGRFID(uint32 grfid)
 {
-	const GRFFile * const *end = _grf_files.End();
-	for (GRFFile * const *file = _grf_files.Begin(); file != end; file++) {
-		if ((*file)->grfid == grfid) return *file;
+	for (GRFFile * const file : _grf_files) {
+		if (file->grfid == grfid) return file;
 	}
 	return NULL;
 }
@@ -405,9 +404,8 @@ static GRFFile *GetFileByGRFID(uint32 grfid)
  */
 static GRFFile *GetFileByFilename(const char *filename)
 {
-	const GRFFile * const *end = _grf_files.End();
-	for (GRFFile * const *file = _grf_files.Begin(); file != end; file++) {
-		if (strcmp((*file)->filename, filename) == 0) return *file;
+	for (GRFFile * const file : _grf_files) {
+		if (strcmp(file->filename, filename) == 0) return file;
 	}
 	return NULL;
 }
@@ -461,7 +459,7 @@ struct StringIDMapping {
 	StringID source;  ///< Source StringID (GRF local).
 	StringID *target; ///< Destination for mapping result.
 };
-typedef SmallVector<StringIDMapping, 16> StringIDMappingVector;
+typedef std::vector<StringIDMapping> StringIDMappingVector;
 static StringIDMappingVector _string_to_grf_mapping;
 
 /**
@@ -472,10 +470,7 @@ static StringIDMappingVector _string_to_grf_mapping;
 static void AddStringForMapping(StringID source, StringID *target)
 {
 	*target = STR_UNDEFINED;
-	StringIDMapping *item = _string_to_grf_mapping.Append();
-	item->grfid = _cur.grffile->grfid;
-	item->source = source;
-	item->target = target;
+	_string_to_grf_mapping.push_back({_cur.grffile->grfid, source, target});
 }
 
 /**
@@ -637,7 +632,7 @@ static Engine *GetNewEngine(const GRFFile *file, VehicleType type, uint16 intern
 
 		/* Reserve the engine slot */
 		if (!static_access) {
-			EngineIDMapping *eid = _engine_mngr.Get(engine);
+			EngineIDMapping *eid = _engine_mngr.data() + engine;
 			eid->grfid           = scope_grfid; // Note: this is INVALID_GRFID if dynamic_engines is disabled, so no reservation
 		}
 
@@ -658,12 +653,13 @@ static Engine *GetNewEngine(const GRFFile *file, VehicleType type, uint16 intern
 	e->grf_prop.grffile = file;
 
 	/* Reserve the engine slot */
-	assert(_engine_mngr.Length() == e->index);
-	EngineIDMapping *eid = _engine_mngr.Append();
-	eid->type            = type;
-	eid->grfid           = scope_grfid; // Note: this is INVALID_GRFID if dynamic_engines is disabled, so no reservation
-	eid->internal_id     = internal_id;
-	eid->substitute_id   = min(internal_id, _engine_counts[type]); // substitute_id == _engine_counts[subtype] means "no substitute"
+	assert(_engine_mngr.size() == e->index);
+	_engine_mngr.push_back({
+			scope_grfid, // Note: this is INVALID_GRFID if dynamic_engines is disabled, so no reservation
+			internal_id,
+			{static_cast<byte>(type)},
+			static_cast<uint8>(min(internal_id, _engine_counts[type])) // substitute_id == _engine_counts[subtype] means "no substitute"
+	});
 
 	if (engine_pool_size != Engine::GetPoolSize()) {
 		/* Resize temporary engine data ... */
@@ -734,9 +730,9 @@ static void MapSpriteMappingRecolour(PalSpriteID *grf_sprite)
  * @param invert_action1_flag Set to true, if palette bit 15 means 'not from action 1'.
  * @param use_cur_spritesets  Whether to use currently referenceable action 1 sets.
  * @param feature             GrfSpecFeature to use spritesets from.
- * @param [out] grf_sprite    Read sprite and palette.
- * @param [out] max_sprite_offset  Optionally returns the number of sprites in the spriteset of the sprite. (0 if no spritset)
- * @param [out] max_palette_offset Optionally returns the number of sprites in the spriteset of the palette. (0 if no spritset)
+ * @param[out] grf_sprite     Read sprite and palette.
+ * @param[out] max_sprite_offset  Optionally returns the number of sprites in the spriteset of the sprite. (0 if no spritset)
+ * @param[out] max_palette_offset Optionally returns the number of sprites in the spriteset of the palette. (0 if no spritset)
  * @return Read TileLayoutFlags.
  */
 static TileLayoutFlags ReadSpriteLayoutSprite(ByteReader *buf, bool read_flags, bool invert_action1_flag, bool use_cur_spritesets, int feature, PalSpriteID *grf_sprite, uint16 *max_sprite_offset = NULL, uint16 *max_palette_offset = NULL)
@@ -1058,7 +1054,7 @@ static ChangeInfoResult RailVehicleChangeInfo(uint engine, int numinfo, int prop
 			case 0x05: { // Track type
 				uint8 tracktype = buf->ReadByte();
 
-				if (tracktype < _cur.grffile->railtype_list.Length()) {
+				if (tracktype < _cur.grffile->railtype_list.size()) {
 					_gted[e->index].railtypelabel = _cur.grffile->railtype_list[tracktype];
 					break;
 				}
@@ -1200,7 +1196,7 @@ static ChangeInfoResult RailVehicleChangeInfo(uint engine, int numinfo, int prop
 					break;
 				}
 
-				if (_cur.grffile->railtype_list.Length() == 0) {
+				if (_cur.grffile->railtype_list.size() == 0) {
 					/* Use traction type to select between normal and electrified
 					 * rail only when no translation list is in place. */
 					if (_gted[e->index].railtypelabel == RAILTYPE_RAIL_LABEL     && engclass >= EC_ELECTRIC) _gted[e->index].railtypelabel = RAILTYPE_ELECTRIC_LABEL;
@@ -1845,7 +1841,7 @@ static ChangeInfoResult AircraftVehicleChangeInfo(uint engine, int numinfo, int 
 
 /**
  * Define properties for stations
- * @param stdid StationID of the first station tile.
+ * @param stid StationID of the first station tile.
  * @param numinfo Number of subsequent station tiles to change the property for.
  * @param prop The property to change.
  * @param buf The property value.
@@ -1905,26 +1901,27 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, Byte
 					/* On error, bail out immediately. Temporary GRF data was already freed */
 					if (_cur.skip_sprites < 0) return CIR_DISABLED;
 
-					static SmallVector<DrawTileSeqStruct, 8> tmp_layout;
-					tmp_layout.Clear();
+					static std::vector<DrawTileSeqStruct> tmp_layout;
+					tmp_layout.clear();
 					for (;;) {
 						/* no relative bounding box support */
-						DrawTileSeqStruct *dtss = tmp_layout.Append();
-						MemSetT(dtss, 0);
+						/*C++17: DrawTileSeqStruct &dtss = */ tmp_layout.emplace_back();
+						DrawTileSeqStruct &dtss = tmp_layout.back();
+						MemSetT(&dtss, 0);
 
-						dtss->delta_x = buf->ReadByte();
-						if (dtss->IsTerminator()) break;
-						dtss->delta_y = buf->ReadByte();
-						dtss->delta_z = buf->ReadByte();
-						dtss->size_x = buf->ReadByte();
-						dtss->size_y = buf->ReadByte();
-						dtss->size_z = buf->ReadByte();
+						dtss.delta_x = buf->ReadByte();
+						if (dtss.IsTerminator()) break;
+						dtss.delta_y = buf->ReadByte();
+						dtss.delta_z = buf->ReadByte();
+						dtss.size_x = buf->ReadByte();
+						dtss.size_y = buf->ReadByte();
+						dtss.size_z = buf->ReadByte();
 
-						ReadSpriteLayoutSprite(buf, false, true, false, GSF_STATIONS, &dtss->image);
+						ReadSpriteLayoutSprite(buf, false, true, false, GSF_STATIONS, &dtss.image);
 						/* On error, bail out immediately. Temporary GRF data was already freed */
 						if (_cur.skip_sprites < 0) return CIR_DISABLED;
 					}
-					dts->Clone(tmp_layout.Begin());
+					dts->Clone(tmp_layout.data());
 				}
 				break;
 
@@ -2103,7 +2100,7 @@ static ChangeInfoResult CanalChangeInfo(uint id, int numinfo, int prop, ByteRead
 	ChangeInfoResult ret = CIR_SUCCESS;
 
 	if (id + numinfo > CF_END) {
-		grfmsg(1, "CanalChangeInfo: Canal feature %u is invalid, max %u, ignoring", id + numinfo, CF_END);
+		grfmsg(1, "CanalChangeInfo: Canal feature 0x%02X is invalid, max %u, ignoring", id + numinfo, CF_END);
 		return CIR_INVALID_ID;
 	}
 
@@ -2293,6 +2290,10 @@ static ChangeInfoResult IgnoreTownHouseProperty(int prop, ByteReader *buf)
 			for (byte j = 0; j < count; j++) buf->ReadByte();
 			break;
 		}
+
+		case 0x23:
+			buf->Skip(buf->ReadByte() * 2);
+			break;
 
 		default:
 			ret = CIR_UNKNOWN;
@@ -2526,6 +2527,28 @@ static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, Byt
 				housespec->max_year = buf->ReadWord();
 				break;
 
+			case 0x23: { // variable length cargo types accepted
+				uint count = buf->ReadByte();
+				if (count > lengthof(housespec->accepts_cargo)) {
+					GRFError *error = DisableGrf(STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG);
+					error->param_value[1] = prop;
+					return CIR_DISABLED;
+				}
+				/* Always write the full accepts_cargo array, and check each index for being inside the
+				 * provided data. This ensures all values are properly initialized, and also avoids
+				 * any risks of array overrun. */
+				for (uint i = 0; i < lengthof(housespec->accepts_cargo); i++) {
+					if (i < count) {
+						housespec->accepts_cargo[i] = GetCargoTranslation(buf->ReadByte(), _cur.grffile);
+						housespec->cargo_acceptance[i] = buf->ReadByte();
+					} else {
+						housespec->accepts_cargo[i] = CT_INVALID;
+						housespec->cargo_acceptance[i] = 0;
+					}
+				}
+				break;
+			}
+
 			default:
 				ret = CIR_UNKNOWN;
 				break;
@@ -2553,7 +2576,7 @@ static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, Byt
  * @param gvid ID of the global variable. This is basically only checked for zerones.
  * @param numinfo Number of subsequent IDs to change the property for.
  * @param buf The property value.
- * @param [in,out] translation_table Storage location for the translation table.
+ * @param[in,out] translation_table Storage location for the translation table.
  * @param name Name of the table for debug output.
  * @return ChangeInfoResult.
  */
@@ -2565,10 +2588,10 @@ static ChangeInfoResult LoadTranslationTable(uint gvid, int numinfo, ByteReader 
 		return CIR_INVALID_ID;
 	}
 
-	translation_table.Clear();
+	translation_table.clear();
 	for (int i = 0; i < numinfo; i++) {
 		uint32 item = buf->ReadDWord();
-		*translation_table.Append() = BSWAP32(item);
+		translation_table.push_back(BSWAP32(item));
 	}
 
 	return CIR_SUCCESS;
@@ -2773,14 +2796,14 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, By
 						if (map.openttd_id >= MAX_NUM_GENDERS) {
 							grfmsg(1, "GlobalVarChangeInfo: Gender name %s is not known, ignoring", name);
 						} else {
-							*_cur.grffile->language_map[curidx].gender_map.Append() = map;
+							_cur.grffile->language_map[curidx].gender_map.push_back(map);
 						}
 					} else {
 						map.openttd_id = lang->GetCaseIndex(name);
 						if (map.openttd_id >= MAX_NUM_CASES) {
 							grfmsg(1, "GlobalVarChangeInfo: Case name %s is not known, ignoring", name);
 						} else {
-							*_cur.grffile->language_map[curidx].case_map.Append() = map;
+							_cur.grffile->language_map[curidx].case_map.push_back(map);
 						}
 					}
 					newgrf_id = buf->ReadByte();
@@ -3083,6 +3106,10 @@ static ChangeInfoResult IgnoreIndustryTileProperty(int prop, ByteReader *buf)
 			buf->ReadWord();
 			break;
 
+		case 0x13:
+			buf->Skip(buf->ReadByte() * 2);
+			break;
+
 		default:
 			ret = CIR_UNKNOWN;
 			break;
@@ -3172,7 +3199,7 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint indtid, int numinfo, int pr
 			case 0x0C: {
 				uint16 acctp = buf->ReadWord();
 				tsp->accepts_cargo[prop - 0x0A] = GetCargoTranslation(GB(acctp, 0, 8), _cur.grffile);
-				tsp->acceptance[prop - 0x0A] = GB(acctp, 8, 8);
+				tsp->acceptance[prop - 0x0A] = Clamp(GB(acctp, 8, 8), 0, 16);
 				break;
 			}
 
@@ -3200,6 +3227,26 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint indtid, int numinfo, int pr
 			case 0x12: // Special flags
 				tsp->special_flags = (IndustryTileSpecialFlags)buf->ReadByte();
 				break;
+
+			case 0x13: { // variable length cargo acceptance
+				byte num_cargoes = buf->ReadByte();
+				if (num_cargoes > lengthof(tsp->acceptance)) {
+					GRFError *error = DisableGrf(STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG);
+					error->param_value[1] = prop;
+					return CIR_DISABLED;
+				}
+				for (uint i = 0; i < lengthof(tsp->acceptance); i++) {
+					if (i < num_cargoes) {
+						tsp->accepts_cargo[i] = GetCargoTranslation(buf->ReadByte(), _cur.grffile);
+						/* Tile acceptance can be negative to counteract the INDTILE_SPECIAL_ACCEPTS_ALL_CARGO flag */
+						tsp->acceptance[i] = (int8)buf->ReadByte();
+					} else {
+						tsp->accepts_cargo[i] = CT_INVALID;
+						tsp->acceptance[i] = 0;
+					}
+				}
+				break;
+			}
 
 			default:
 				ret = CIR_UNKNOWN;
@@ -3280,11 +3327,17 @@ static ChangeInfoResult IgnoreIndustryProperty(int prop, ByteReader *buf)
 			for (byte j = 0; j < 3; j++) buf->ReadByte();
 			break;
 
-		case 0x15: {
-			byte number_of_sounds = buf->ReadByte();
-			for (uint8 j = 0; j < number_of_sounds; j++) {
-				buf->ReadByte();
-			}
+		case 0x15:
+		case 0x25:
+		case 0x26:
+		case 0x27:
+			buf->Skip(buf->ReadByte());
+			break;
+
+		case 0x28: {
+			int num_inputs = buf->ReadByte();
+			int num_outputs = buf->ReadByte();
+			buf->Skip(num_inputs * num_outputs * 2);
 			break;
 		}
 
@@ -3472,8 +3525,6 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 								} else {
 									/* Declared as been valid, can be used */
 									itt[k].gfx = tempid;
-									size = k + 1;
-									copy_from = itt;
 								}
 							} else if (itt[k].gfx == 0xFF) {
 								itt[k].ti.x = (int8)GB(itt[k].ti.x, 0, 8);
@@ -3644,6 +3695,77 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 				break;
 			}
 
+			case 0x25: { // variable length produced cargoes
+				byte num_cargoes = buf->ReadByte();
+				if (num_cargoes > lengthof(indsp->produced_cargo)) {
+					GRFError *error = DisableGrf(STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG);
+					error->param_value[1] = prop;
+					return CIR_DISABLED;
+				}
+				for (uint i = 0; i < lengthof(indsp->produced_cargo); i++) {
+					if (i < num_cargoes) {
+						CargoID cargo = GetCargoTranslation(buf->ReadByte(), _cur.grffile);
+						indsp->produced_cargo[i] = cargo;
+					} else {
+						indsp->produced_cargo[i] = CT_INVALID;
+					}
+				}
+				break;
+			}
+
+			case 0x26: { // variable length accepted cargoes
+				byte num_cargoes = buf->ReadByte();
+				if (num_cargoes > lengthof(indsp->accepts_cargo)) {
+					GRFError *error = DisableGrf(STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG);
+					error->param_value[1] = prop;
+					return CIR_DISABLED;
+				}
+				for (uint i = 0; i < lengthof(indsp->accepts_cargo); i++) {
+					if (i < num_cargoes) {
+						CargoID cargo = GetCargoTranslation(buf->ReadByte(), _cur.grffile);
+						indsp->accepts_cargo[i] = cargo;
+					} else {
+						indsp->accepts_cargo[i] = CT_INVALID;
+					}
+				}
+				break;
+			}
+
+			case 0x27: { // variable length production rates
+				byte num_cargoes = buf->ReadByte();
+				if (num_cargoes > lengthof(indsp->production_rate)) {
+					GRFError *error = DisableGrf(STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG);
+					error->param_value[1] = prop;
+					return CIR_DISABLED;
+				}
+				for (uint i = 0; i < lengthof(indsp->production_rate); i++) {
+					if (i < num_cargoes) {
+						indsp->production_rate[i] = buf->ReadByte();
+					} else {
+						indsp->production_rate[i] = 0;
+					}
+				}
+				break;
+			}
+
+			case 0x28: { // variable size input/output production multiplier table
+				byte num_inputs = buf->ReadByte();
+				byte num_outputs = buf->ReadByte();
+				if (num_inputs > lengthof(indsp->accepts_cargo) || num_outputs > lengthof(indsp->produced_cargo)) {
+					GRFError *error = DisableGrf(STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG);
+					error->param_value[1] = prop;
+					return CIR_DISABLED;
+				}
+				for (uint i = 0; i < lengthof(indsp->accepts_cargo); i++) {
+					for (uint j = 0; j < lengthof(indsp->produced_cargo); j++) {
+						uint16 mult = 0;
+						if (i < num_inputs && j < num_outputs) mult = buf->ReadWord();
+						indsp->input_cargo_multiplier[i][j] = mult;
+					}
+				}
+				break;
+			}
+
 			default:
 				ret = CIR_UNKNOWN;
 				break;
@@ -3787,8 +3909,6 @@ static ChangeInfoResult AirportChangeInfo(uint airport, int numinfo, int prop, B
 								} else {
 									/* Declared as been valid, can be used */
 									att[k].gfx = tempid;
-									size = k + 1;
-									copy_from = att;
 								}
 							} else if (att[k].gfx == 0xFF) {
 								att[k].ti.x = (int8)GB(att[k].ti.x, 0, 8);
@@ -4212,7 +4332,7 @@ static ChangeInfoResult RailTypeReserveInfo(uint id, int numinfo, int prop, Byte
 				if (_cur.grffile->railtype_map[id + i] != INVALID_RAILTYPE) {
 					int n = buf->ReadByte();
 					for (int j = 0; j != n; j++) {
-						*_railtypes[_cur.grffile->railtype_map[id + i]].alternate_labels.Append() = BSWAP32(buf->ReadDWord());
+						_railtypes[_cur.grffile->railtype_map[id + i]].alternate_labels.push_back(BSWAP32(buf->ReadDWord()));
 					}
 					break;
 				}
@@ -4407,11 +4527,16 @@ static void FeatureChangeInfo(ByteReader *buf)
 	uint numinfo  = buf->ReadByte();
 	uint engine   = buf->ReadExtendedByte();
 
-	grfmsg(6, "FeatureChangeInfo: feature %d, %d properties, to apply to %d+%d",
+	if (feature >= GSF_END) {
+		grfmsg(1, "FeatureChangeInfo: Unsupported feature 0x%02X, skipping", feature);
+		return;
+	}
+
+	grfmsg(6, "FeatureChangeInfo: Feature 0x%02X, %d properties, to apply to %d+%d",
 	               feature, numprops, engine, numinfo);
 
 	if (feature >= lengthof(handler) || handler[feature] == NULL) {
-		if (feature != GSF_CARGOES) grfmsg(1, "FeatureChangeInfo: Unsupported feature %d, skipping", feature);
+		if (feature != GSF_CARGOES) grfmsg(1, "FeatureChangeInfo: Unsupported feature 0x%02X, skipping", feature);
 		return;
 	}
 
@@ -4526,9 +4651,15 @@ static void NewSpriteSet(ByteReader *buf)
 	}
 	uint16 num_ents = buf->ReadExtendedByte();
 
+	if (feature >= GSF_END) {
+		_cur.skip_sprites = num_sets * num_ents;
+		grfmsg(1, "NewSpriteSet: Unsupported feature 0x%02X, skipping %d sprites", feature, _cur.skip_sprites);
+		return;
+	}
+
 	_cur.AddSpriteSets(feature, _cur.spriteid, first_set, num_sets, num_ents);
 
-	grfmsg(7, "New sprite set at %d of type %d, consisting of %d sets with %d views each (total %d)",
+	grfmsg(7, "New sprite set at %d of feature 0x%02X, consisting of %d sets with %d views each (total %d)",
 		_cur.spriteid, feature, num_sets, num_ents, num_sets * num_ents
 	);
 
@@ -4620,6 +4751,11 @@ static void NewSpriteGroup(ByteReader *buf)
 	SpriteGroup *act_group = NULL;
 
 	uint8 feature = buf->ReadByte();
+	if (feature >= GSF_END) {
+		grfmsg(1, "NewSpriteGroup: Unsupported feature 0x%02X, skipping", feature);
+		return;
+	}
+
 	uint8 setid   = buf->ReadByte();
 	uint8 type    = buf->ReadByte();
 
@@ -4651,43 +4787,44 @@ static void NewSpriteGroup(ByteReader *buf)
 				case 2: group->size = DSG_SIZE_DWORD; varsize = 4; break;
 			}
 
-			static SmallVector<DeterministicSpriteGroupAdjust, 16> adjusts;
-			adjusts.Clear();
+			static std::vector<DeterministicSpriteGroupAdjust> adjusts;
+			adjusts.clear();
 
 			/* Loop through the var adjusts. Unfortunately we don't know how many we have
 			 * from the outset, so we shall have to keep reallocing. */
 			do {
-				DeterministicSpriteGroupAdjust *adjust = adjusts.Append();
+				/*C++17: DeterministicSpriteGroupAdjust &adjust = */ adjusts.emplace_back();
+				DeterministicSpriteGroupAdjust &adjust = adjusts.back();
 
 				/* The first var adjust doesn't have an operation specified, so we set it to add. */
-				adjust->operation = adjusts.Length() == 1 ? DSGA_OP_ADD : (DeterministicSpriteGroupAdjustOperation)buf->ReadByte();
-				adjust->variable  = buf->ReadByte();
-				if (adjust->variable == 0x7E) {
+				adjust.operation = adjusts.size() == 1 ? DSGA_OP_ADD : (DeterministicSpriteGroupAdjustOperation)buf->ReadByte();
+				adjust.variable  = buf->ReadByte();
+				if (adjust.variable == 0x7E) {
 					/* Link subroutine group */
-					adjust->subroutine = GetGroupFromGroupID(setid, type, buf->ReadByte());
+					adjust.subroutine = GetGroupFromGroupID(setid, type, buf->ReadByte());
 				} else {
-					adjust->parameter = IsInsideMM(adjust->variable, 0x60, 0x80) ? buf->ReadByte() : 0;
+					adjust.parameter = IsInsideMM(adjust.variable, 0x60, 0x80) ? buf->ReadByte() : 0;
 				}
 
 				varadjust = buf->ReadByte();
-				adjust->shift_num = GB(varadjust, 0, 5);
-				adjust->type      = (DeterministicSpriteGroupAdjustType)GB(varadjust, 6, 2);
-				adjust->and_mask  = buf->ReadVarSize(varsize);
+				adjust.shift_num = GB(varadjust, 0, 5);
+				adjust.type      = (DeterministicSpriteGroupAdjustType)GB(varadjust, 6, 2);
+				adjust.and_mask  = buf->ReadVarSize(varsize);
 
-				if (adjust->type != DSGA_TYPE_NONE) {
-					adjust->add_val    = buf->ReadVarSize(varsize);
-					adjust->divmod_val = buf->ReadVarSize(varsize);
+				if (adjust.type != DSGA_TYPE_NONE) {
+					adjust.add_val    = buf->ReadVarSize(varsize);
+					adjust.divmod_val = buf->ReadVarSize(varsize);
 				} else {
-					adjust->add_val    = 0;
-					adjust->divmod_val = 0;
+					adjust.add_val    = 0;
+					adjust.divmod_val = 0;
 				}
 
 				/* Continue reading var adjusts while bit 5 is set. */
 			} while (HasBit(varadjust, 5));
 
-			group->num_adjusts = adjusts.Length();
+			group->num_adjusts = (uint)adjusts.size();
 			group->adjusts = MallocT<DeterministicSpriteGroupAdjust>(group->num_adjusts);
-			MemCpyT(group->adjusts, adjusts.Begin(), group->num_adjusts);
+			MemCpyT(group->adjusts, adjusts.data(), group->num_adjusts);
 
 			std::vector<DeterministicSpriteGroupRange> ranges;
 			ranges.resize(buf->ReadByte());
@@ -4843,7 +4980,7 @@ static void NewSpriteGroup(ByteReader *buf)
 				}
 
 				case GSF_INDUSTRIES: {
-					if (type > 1) {
+					if (type > 2) {
 						grfmsg(1, "NewSpriteGroup: Unsupported industry production version %d, skipping", type);
 						break;
 					}
@@ -4853,27 +4990,77 @@ static void NewSpriteGroup(ByteReader *buf)
 					act_group = group;
 					group->version = type;
 					if (type == 0) {
+						group->num_input = 3;
 						for (uint i = 0; i < 3; i++) {
 							group->subtract_input[i] = (int16)buf->ReadWord(); // signed
 						}
+						group->num_output = 2;
 						for (uint i = 0; i < 2; i++) {
 							group->add_output[i] = buf->ReadWord(); // unsigned
 						}
 						group->again = buf->ReadByte();
-					} else {
+					} else if (type == 1) {
+						group->num_input = 3;
 						for (uint i = 0; i < 3; i++) {
 							group->subtract_input[i] = buf->ReadByte();
 						}
+						group->num_output = 2;
 						for (uint i = 0; i < 2; i++) {
 							group->add_output[i] = buf->ReadByte();
 						}
 						group->again = buf->ReadByte();
+					} else if (type == 2) {
+						group->num_input = buf->ReadByte();
+						if (group->num_input > lengthof(group->subtract_input)) {
+							GRFError *error = DisableGrf(STR_NEWGRF_ERROR_INDPROD_CALLBACK);
+							error->data = stredup("too many inputs (max 16)");
+							return;
+						}
+						for (uint i = 0; i < group->num_input; i++) {
+							byte rawcargo = buf->ReadByte();
+							CargoID cargo = GetCargoTranslation(rawcargo, _cur.grffile);
+							if (cargo == CT_INVALID) {
+								/* The mapped cargo is invalid. This is permitted at this point,
+								 * as long as the result is not used. Mark it invalid so this
+								 * can be tested later. */
+								group->version = 0xFF;
+							} else if (std::find(group->cargo_input, group->cargo_input + i, cargo) != group->cargo_input + i) {
+								GRFError *error = DisableGrf(STR_NEWGRF_ERROR_INDPROD_CALLBACK);
+								error->data = stredup("duplicate input cargo");
+								return;
+							}
+							group->cargo_input[i] = cargo;
+							group->subtract_input[i] = buf->ReadByte();
+						}
+						group->num_output = buf->ReadByte();
+						if (group->num_output > lengthof(group->add_output)) {
+							GRFError *error = DisableGrf(STR_NEWGRF_ERROR_INDPROD_CALLBACK);
+							error->data = stredup("too many outputs (max 16)");
+							return;
+						}
+						for (uint i = 0; i < group->num_output; i++) {
+							byte rawcargo = buf->ReadByte();
+							CargoID cargo = GetCargoTranslation(rawcargo, _cur.grffile);
+							if (cargo == CT_INVALID) {
+								/* Mark this result as invalid to use */
+								group->version = 0xFF;
+							} else if (std::find(group->cargo_output, group->cargo_output + i, cargo) != group->cargo_output + i) {
+								GRFError *error = DisableGrf(STR_NEWGRF_ERROR_INDPROD_CALLBACK);
+								error->data = stredup("duplicate output cargo");
+								return;
+							}
+							group->cargo_output[i] = cargo;
+							group->add_output[i] = buf->ReadByte();
+						}
+						group->again = buf->ReadByte();
+					} else {
+						NOT_REACHED();
 					}
 					break;
 				}
 
 				/* Loading of Tile Layout and Production Callback groups would happen here */
-				default: grfmsg(1, "NewSpriteGroup: Unsupported feature %d, skipping", feature);
+				default: grfmsg(1, "NewSpriteGroup: Unsupported feature 0x%02X, skipping", feature);
 			}
 		}
 	}
@@ -4896,7 +5083,7 @@ static CargoID TranslateCargo(uint8 feature, uint8 ctype)
 	if (feature == GSF_STATIONS && ctype == 0xFE) return CT_DEFAULT_NA;
 	if (ctype == 0xFF) return CT_PURCHASE;
 
-	if (_cur.grffile->cargo_list.Length() == 0) {
+	if (_cur.grffile->cargo_list.size() == 0) {
 		/* No cargo table, so use bitnum values */
 		if (ctype >= 32) {
 			grfmsg(1, "TranslateCargo: Cargo bitnum %d out of range (max 31), skipping.", ctype);
@@ -4916,8 +5103,8 @@ static CargoID TranslateCargo(uint8 feature, uint8 ctype)
 	}
 
 	/* Check if the cargo type is out of bounds of the cargo translation table */
-	if (ctype >= _cur.grffile->cargo_list.Length()) {
-		grfmsg(1, "TranslateCargo: Cargo type %d out of range (max %d), skipping.", ctype, _cur.grffile->cargo_list.Length() - 1);
+	if (ctype >= _cur.grffile->cargo_list.size()) {
+		grfmsg(1, "TranslateCargo: Cargo type %d out of range (max %d), skipping.", ctype, (unsigned int)_cur.grffile->cargo_list.size() - 1);
 		return CT_INVALID;
 	}
 
@@ -5400,6 +5587,11 @@ static void FeatureMapSpriteGroup(ByteReader *buf)
 	uint8 feature = buf->ReadByte();
 	uint8 idcount = buf->ReadByte();
 
+	if (feature >= GSF_END) {
+		grfmsg(1, "FeatureMapSpriteGroup: Unsupported feature 0x%02X, skipping", feature);
+		return;
+	}
+
 	/* If idcount is zero, this is a feature callback */
 	if (idcount == 0) {
 		/* Skip number of cargo ids? */
@@ -5407,7 +5599,7 @@ static void FeatureMapSpriteGroup(ByteReader *buf)
 		uint16 groupid = buf->ReadWord();
 		if (!IsValidGroupID(groupid, "FeatureMapSpriteGroup")) return;
 
-		grfmsg(6, "FeatureMapSpriteGroup: Adding generic feature callback for feature %d", feature);
+		grfmsg(6, "FeatureMapSpriteGroup: Adding generic feature callback for feature 0x%02X", feature);
 
 		AddGenericCallback(feature, _cur.grffile, _cur.spritegroups[groupid]);
 		return;
@@ -5416,7 +5608,7 @@ static void FeatureMapSpriteGroup(ByteReader *buf)
 	/* Mark the feature as used by the grf (generic callbacks do not count) */
 	SetBit(_cur.grffile->grf_features, feature);
 
-	grfmsg(6, "FeatureMapSpriteGroup: Feature %d, %d ids", feature, idcount);
+	grfmsg(6, "FeatureMapSpriteGroup: Feature 0x%02X, %d ids", feature, idcount);
 
 	switch (feature) {
 		case GSF_TRAINS:
@@ -5467,7 +5659,7 @@ static void FeatureMapSpriteGroup(ByteReader *buf)
 			return;
 
 		default:
-			grfmsg(1, "FeatureMapSpriteGroup: Unsupported feature %d, skipping", feature);
+			grfmsg(1, "FeatureMapSpriteGroup: Unsupported feature 0x%02X, skipping", feature);
 			return;
 	}
 }
@@ -5494,6 +5686,11 @@ static void FeatureNewName(ByteReader *buf)
 	bool new_scheme = _cur.grffile->grf_version >= 7;
 
 	uint8 feature  = buf->ReadByte();
+	if (feature >= GSF_END && feature != 0x48) {
+		grfmsg(1, "FeatureNewName: Unsupported feature 0x%02X, skipping", feature);
+		return;
+	}
+
 	uint8 lang     = buf->ReadByte();
 	uint8 num      = buf->ReadByte();
 	bool generic   = HasBit(lang, 7);
@@ -5510,7 +5707,7 @@ static void FeatureNewName(ByteReader *buf)
 
 	uint16 endid = id + num;
 
-	grfmsg(6, "FeatureNewName: About to rename engines %d..%d (feature %d) in language 0x%02X",
+	grfmsg(6, "FeatureNewName: About to rename engines %d..%d (feature 0x%02X) in language 0x%02X",
 	               id, endid, feature, lang);
 
 	for (; id < endid && buf->HasData(); id++) {
@@ -5663,7 +5860,6 @@ static void GraphicsNew(ByteReader *buf)
 	 * B graphics-type What set of graphics the sprites define.
 	 * E num-sprites   How many sprites are in this set?
 	 * V other data    Graphics type specific data.  Currently unused. */
-	/* TODO */
 
 	uint8 type = buf->ReadByte();
 	uint16 num = buf->ReadExtendedByte();
@@ -5907,7 +6103,8 @@ static uint32 GetParamVal(byte param, uint32 *cond_val)
 				/* Supported in Action 0x07 and 0x09, not 0x0D */
 				return 0;
 			} else {
-				uint32 param_val = _ttdpatch_flags[*cond_val / 0x20];
+				uint32 index = *cond_val / 0x20;
+				uint32 param_val = index < lengthof(_ttdpatch_flags) ? _ttdpatch_flags[index] : 0;
 				*cond_val %= 0x20;
 				return param_val;
 			}
@@ -6050,7 +6247,6 @@ static void SkipIf(ByteReader *buf)
 	 * B condition-type
 	 * V value
 	 * B num-sprites */
-	/* TODO: More params. More condition types. */
 	uint32 cond_val = 0;
 	uint32 mask = 0;
 	bool result;
@@ -6736,12 +6932,6 @@ static void ParamSet(ByteReader *buf)
 		src2 = (src2 == 0xFF) ? data : GetParamVal(src2, NULL);
 	}
 
-	/* TODO: You can access the parameters of another GRF file by using
-	 * source2=FE, source1=the other GRF's parameter number and data=GRF
-	 * ID.  This is only valid with operation 00 (set).  If the GRF ID
-	 * cannot be found, a value of 0 is used for the parameter value
-	 * instead. */
-
 	uint32 res;
 	switch (oper) {
 		case 0x00:
@@ -6842,13 +7032,13 @@ static void ParamSet(ByteReader *buf)
 			break;
 		}
 
-		/* @todo implement */
-		case 0x93: // Tile refresh offset to left
+		/* not implemented */
+		case 0x93: // Tile refresh offset to left -- Intended to allow support for larger sprites, not necessary for OTTD
 		case 0x94: // Tile refresh offset to right
 		case 0x95: // Tile refresh offset upwards
 		case 0x96: // Tile refresh offset downwards
-		case 0x97: // Snow line height
-		case 0x99: // Global ID offset
+		case 0x97: // Snow line height -- Better supported by feature 8 property 10h (snow line table) TODO: implement by filling the entire snow line table with the given value
+		case 0x99: // Global ID offset -- Not necessary since IDs are remapped automatically
 			grfmsg(7, "ParamSet: Skipping unimplemented target 0x%02X", target);
 			break;
 
@@ -7658,10 +7848,8 @@ static bool HandleParameterInfo(ByteReader *buf)
 			continue;
 		}
 
-		if (id >= _cur.grfconfig->param_info.Length()) {
-			uint num_to_add = id - _cur.grfconfig->param_info.Length() + 1;
-			GRFParameterInfo **newdata = _cur.grfconfig->param_info.Append(num_to_add);
-			MemSetT<GRFParameterInfo *>(newdata, 0, num_to_add);
+		if (id >= _cur.grfconfig->param_info.size()) {
+			_cur.grfconfig->param_info.resize(id + 1);
 		}
 		if (_cur.grfconfig->param_info[id] == NULL) {
 			_cur.grfconfig->param_info[id] = new GRFParameterInfo(id);
@@ -7897,14 +8085,15 @@ static void InitializeGRFSpecial()
 	                   |       ((_settings_game.vehicle.dynamic_engines ? 1 : 0) << 0x18)  // dynamic engines
 	                   |                                                      (1 << 0x1E)  // variablerunningcosts
 	                   |                                                      (1 << 0x1F); // any switch is on
+
+	_ttdpatch_flags[4] =                                                      (1 << 0x00); // larger persistent storage
 }
 
 /** Reset and clear all NewGRF stations */
 static void ResetCustomStations()
 {
-	const GRFFile * const *end = _grf_files.End();
-	for (GRFFile **file = _grf_files.Begin(); file != end; file++) {
-		StationSpec **&stations = (*file)->stations;
+	for (GRFFile * const file : _grf_files) {
+		StationSpec **&stations = file->stations;
 		if (stations == NULL) continue;
 		for (uint i = 0; i < NUM_STATIONS_PER_GRF; i++) {
 			if (stations[i] == NULL) continue;
@@ -7937,9 +8126,8 @@ static void ResetCustomStations()
 /** Reset and clear all NewGRF houses */
 static void ResetCustomHouses()
 {
-	const GRFFile * const *end = _grf_files.End();
-	for (GRFFile **file = _grf_files.Begin(); file != end; file++) {
-		HouseSpec **&housespec = (*file)->housespec;
+	for (GRFFile * const file : _grf_files) {
+		HouseSpec **&housespec = file->housespec;
 		if (housespec == NULL) continue;
 		for (uint i = 0; i < NUM_HOUSES_PER_GRF; i++) {
 			free(housespec[i]);
@@ -7953,9 +8141,8 @@ static void ResetCustomHouses()
 /** Reset and clear all NewGRF airports */
 static void ResetCustomAirports()
 {
-	const GRFFile * const *end = _grf_files.End();
-	for (GRFFile **file = _grf_files.Begin(); file != end; file++) {
-		AirportSpec **aslist = (*file)->airportspec;
+	for (GRFFile * const file : _grf_files) {
+		AirportSpec **aslist = file->airportspec;
 		if (aslist != NULL) {
 			for (uint i = 0; i < NUM_AIRPORTS_PER_GRF; i++) {
 				AirportSpec *as = aslist[i];
@@ -7974,10 +8161,10 @@ static void ResetCustomAirports()
 				}
 			}
 			free(aslist);
-			(*file)->airportspec = NULL;
+			file->airportspec = NULL;
 		}
 
-		AirportTileSpec **&airporttilespec = (*file)->airtspec;
+		AirportTileSpec **&airporttilespec = file->airtspec;
 		if (airporttilespec != NULL) {
 			for (uint i = 0; i < NUM_AIRPORTTILES_PER_GRF; i++) {
 				free(airporttilespec[i]);
@@ -7991,10 +8178,9 @@ static void ResetCustomAirports()
 /** Reset and clear all NewGRF industries */
 static void ResetCustomIndustries()
 {
-	const GRFFile * const *end = _grf_files.End();
-	for (GRFFile **file = _grf_files.Begin(); file != end; file++) {
-		IndustrySpec **&industryspec = (*file)->industryspec;
-		IndustryTileSpec **&indtspec = (*file)->indtspec;
+	for (GRFFile * const file : _grf_files) {
+		IndustrySpec **&industryspec = file->industryspec;
+		IndustryTileSpec **&indtspec = file->indtspec;
 
 		/* We are verifiying both tiles and industries specs loaded from the grf file
 		 * First, let's deal with industryspec */
@@ -8031,9 +8217,8 @@ static void ResetCustomIndustries()
 /** Reset and clear all NewObjects */
 static void ResetCustomObjects()
 {
-	const GRFFile * const *end = _grf_files.End();
-	for (GRFFile **file = _grf_files.Begin(); file != end; file++) {
-		ObjectSpec **&objectspec = (*file)->objectspec;
+	for (GRFFile * const file : _grf_files) {
+		ObjectSpec **&objectspec = file->objectspec;
 		if (objectspec == NULL) continue;
 		for (uint i = 0; i < NUM_OBJECTS_PER_GRF; i++) {
 			free(objectspec[i]);
@@ -8047,12 +8232,11 @@ static void ResetCustomObjects()
 /** Reset and clear all NewGRFs */
 static void ResetNewGRF()
 {
-	const GRFFile * const *end = _grf_files.End();
-	for (GRFFile **file = _grf_files.Begin(); file != end; file++) {
-		delete *file;
+	for (GRFFile * const file : _grf_files) {
+		delete file;
 	}
 
-	_grf_files.Clear();
+	_grf_files.clear();
 	_cur.grffile   = NULL;
 }
 
@@ -8069,7 +8253,6 @@ static void ResetNewGRFErrors()
 
 /**
  * Reset all NewGRF loaded data
- * TODO
  */
 void ResetNewGRFData()
 {
@@ -8187,13 +8370,13 @@ static void BuildCargoTranslationMap()
 		const CargoSpec *cs = CargoSpec::Get(c);
 		if (!cs->IsValid()) continue;
 
-		if (_cur.grffile->cargo_list.Length() == 0) {
+		if (_cur.grffile->cargo_list.size() == 0) {
 			/* Default translation table, so just a straight mapping to bitnum */
 			_cur.grffile->cargo_map[c] = cs->bitnum;
 		} else {
 			/* Check the translation table for this cargo's label */
-			int index = _cur.grffile->cargo_list.FindIndex(cs->label);
-			if (index >= 0) _cur.grffile->cargo_map[c] = index;
+			int idx = find_index(_cur.grffile->cargo_list, {cs->label});
+			if (idx >= 0) _cur.grffile->cargo_map[c] = idx;
 		}
 	}
 }
@@ -8212,7 +8395,7 @@ static void InitNewGRFFile(const GRFConfig *config)
 	}
 
 	newfile = new GRFFile(config);
-	*_grf_files.Append() = _cur.grffile = newfile;
+	_grf_files.push_back(_cur.grffile = newfile);
 }
 
 /**
@@ -8367,7 +8550,7 @@ static void CalculateRefitMasks()
 			{
 				const GRFFile *file = _gted[engine].defaultcargo_grf;
 				if (file == NULL) file = e->GetGRF();
-				if (file != NULL && file->grf_version >= 8 && file->cargo_list.Length() != 0) {
+				if (file != NULL && file->grf_version >= 8 && file->cargo_list.size() != 0) {
 					cargo_map_for_first_refittable = file->cargo_map;
 				}
 			}
@@ -8422,6 +8605,8 @@ static void FinaliseEngineArray()
 				e->info.string_id = STR_NEWGRF_INVALID_ENGINE;
 			}
 		}
+
+		if (!HasBit(e->info.climates, _settings_game.game_creation.landscape)) continue;
 
 		/* When the train does not set property 27 (misc flags), but it
 		 * is overridden by a NewGRF graphically we want to disable the
@@ -8567,9 +8752,8 @@ static void FinaliseHouseArray()
 	 * On the other hand, why 1930? Just 'fix' the houses with the lowest
 	 * minimum introduction date to 0.
 	 */
-	const GRFFile * const *end = _grf_files.End();
-	for (GRFFile **file = _grf_files.Begin(); file != end; file++) {
-		HouseSpec **&housespec = (*file)->housespec;
+	for (GRFFile * const file : _grf_files) {
+		HouseSpec **&housespec = file->housespec;
 		if (housespec == NULL) continue;
 
 		for (int i = 0; i < NUM_HOUSES_PER_GRF; i++) {
@@ -8581,7 +8765,7 @@ static void FinaliseHouseArray()
 			const HouseSpec *next2 = (i + 2 < NUM_HOUSES_PER_GRF ? housespec[i + 2] : NULL);
 			const HouseSpec *next3 = (i + 3 < NUM_HOUSES_PER_GRF ? housespec[i + 3] : NULL);
 
-			if (!IsHouseSpecValid(hs, next1, next2, next3, (*file)->filename)) continue;
+			if (!IsHouseSpecValid(hs, next1, next2, next3, file->filename)) continue;
 
 			_house_mngr.SetEntitySpec(hs);
 		}
@@ -8630,10 +8814,9 @@ static void FinaliseHouseArray()
  */
 static void FinaliseIndustriesArray()
 {
-	const GRFFile * const *end = _grf_files.End();
-	for (GRFFile **file = _grf_files.Begin(); file != end; file++) {
-		IndustrySpec **&industryspec = (*file)->industryspec;
-		IndustryTileSpec **&indtspec = (*file)->indtspec;
+	for (GRFFile * const file : _grf_files) {
+		IndustrySpec **&industryspec = file->industryspec;
+		IndustryTileSpec **&indtspec = file->indtspec;
 		if (industryspec != NULL) {
 			for (int i = 0; i < NUM_INDUSTRYTYPES_PER_GRF; i++) {
 				IndustrySpec *indsp = industryspec[i];
@@ -8701,9 +8884,8 @@ static void FinaliseIndustriesArray()
  */
 static void FinaliseObjectsArray()
 {
-	const GRFFile * const *end = _grf_files.End();
-	for (GRFFile **file = _grf_files.Begin(); file != end; file++) {
-		ObjectSpec **&objectspec = (*file)->objectspec;
+	for (GRFFile * const file : _grf_files) {
+		ObjectSpec **&objectspec = file->objectspec;
 		if (objectspec != NULL) {
 			for (int i = 0; i < NUM_OBJECTS_PER_GRF; i++) {
 				if (objectspec[i] != NULL && objectspec[i]->grf_prop.grffile != NULL && objectspec[i]->enabled) {
@@ -8721,9 +8903,8 @@ static void FinaliseObjectsArray()
  */
 static void FinaliseAirportsArray()
 {
-	const GRFFile * const *end = _grf_files.End();
-	for (GRFFile **file = _grf_files.Begin(); file != end; file++) {
-		AirportSpec **&airportspec = (*file)->airportspec;
+	for (GRFFile * const file : _grf_files) {
+		AirportSpec **&airportspec = file->airportspec;
 		if (airportspec != NULL) {
 			for (int i = 0; i < NUM_AIRPORTS_PER_GRF; i++) {
 				if (airportspec[i] != NULL && airportspec[i]->enabled) {
@@ -8732,7 +8913,7 @@ static void FinaliseAirportsArray()
 			}
 		}
 
-		AirportTileSpec **&airporttilespec = (*file)->airtspec;
+		AirportTileSpec **&airporttilespec = file->airtspec;
 		if (airporttilespec != NULL) {
 			for (uint i = 0; i < NUM_AIRPORTTILES_PER_GRF; i++) {
 				if (airporttilespec[i] != NULL && airporttilespec[i]->enabled) {
@@ -9021,7 +9202,7 @@ static void FinalisePriceBaseMultipliers()
 	static const uint32 override_features = (1 << GSF_TRAINS) | (1 << GSF_ROADVEHICLES) | (1 << GSF_SHIPS) | (1 << GSF_AIRCRAFT);
 
 	/* Evaluate grf overrides */
-	int num_grfs = _grf_files.Length();
+	int num_grfs = (uint)_grf_files.size();
 	int *grf_overrides = AllocaM(int, num_grfs);
 	for (int i = 0; i < num_grfs; i++) {
 		grf_overrides[i] = -1;
@@ -9033,7 +9214,7 @@ static void FinalisePriceBaseMultipliers()
 		GRFFile *dest = GetFileByGRFID(override);
 		if (dest == NULL) continue;
 
-		grf_overrides[i] = _grf_files.FindIndex(dest);
+		grf_overrides[i] = find_index(_grf_files, dest);
 		assert(grf_overrides[i] >= 0);
 	}
 
@@ -9093,10 +9274,9 @@ static void FinalisePriceBaseMultipliers()
 	}
 
 	/* Apply fallback prices for grf version < 8 */
-	const GRFFile * const *end = _grf_files.End();
-	for (GRFFile **file = _grf_files.Begin(); file != end; file++) {
-		if ((*file)->grf_version >= 8) continue;
-		PriceMultipliers &price_base_multipliers = (*file)->price_base_multipliers;
+	for (GRFFile * const file : _grf_files) {
+		if (file->grf_version >= 8) continue;
+		PriceMultipliers &price_base_multipliers = file->price_base_multipliers;
 		for (Price p = PR_BEGIN; p < PR_END; p++) {
 			Price fallback_price = _price_base_specs[p].fallback_price;
 			if (fallback_price != INVALID_PRICE && price_base_multipliers[p] == INVALID_PRICE_MODIFIER) {
@@ -9108,21 +9288,21 @@ static void FinalisePriceBaseMultipliers()
 	}
 
 	/* Decide local/global scope of price base multipliers */
-	for (GRFFile **file = _grf_files.Begin(); file != end; file++) {
-		PriceMultipliers &price_base_multipliers = (*file)->price_base_multipliers;
+	for (GRFFile * const file : _grf_files) {
+		PriceMultipliers &price_base_multipliers = file->price_base_multipliers;
 		for (Price p = PR_BEGIN; p < PR_END; p++) {
 			if (price_base_multipliers[p] == INVALID_PRICE_MODIFIER) {
 				/* No multiplier was set; set it to a neutral value */
 				price_base_multipliers[p] = 0;
 			} else {
-				if (!HasBit((*file)->grf_features, _price_base_specs[p].grf_feature)) {
+				if (!HasBit(file->grf_features, _price_base_specs[p].grf_feature)) {
 					/* The grf does not define any objects of the feature,
 					 * so it must be a difficulty setting. Apply it globally */
-					DEBUG(grf, 3, "'%s' sets global price base multiplier %d", (*file)->filename, p);
+					DEBUG(grf, 3, "'%s' sets global price base multiplier %d", file->filename, p);
 					SetPriceBaseMultiplier(p, price_base_multipliers[p]);
 					price_base_multipliers[p] = 0;
 				} else {
-					DEBUG(grf, 3, "'%s' sets local price base multiplier %d", (*file)->filename, p);
+					DEBUG(grf, 3, "'%s' sets local price base multiplier %d", file->filename, p);
 				}
 			}
 		}
@@ -9134,10 +9314,10 @@ extern void InitGRFTownGeneratorNames();
 /** Finish loading NewGRFs and execute needed post-processing */
 static void AfterLoadGRFs()
 {
-	for (StringIDMapping *it = _string_to_grf_mapping.Begin(); it != _string_to_grf_mapping.End(); it++) {
-		*it->target = MapGRFStringID(it->grfid, it->source);
+	for (StringIDMapping &it : _string_to_grf_mapping) {
+		*it.target = MapGRFStringID(it.grfid, it.source);
 	}
-	_string_to_grf_mapping.Clear();
+	_string_to_grf_mapping.clear();
 
 	/* Free the action 6 override sprites. */
 	for (GRFLineToSpriteOverride::iterator it = _grf_line_to_action6_sprite_override.begin(); it != _grf_line_to_action6_sprite_override.end(); it++) {

@@ -29,6 +29,7 @@
 #include "../widgets/dropdown_func.h"
 #include "../hotkeys.h"
 #include "../core/geometry_func.hpp"
+#include "../guitimer_func.h"
 
 #include "ai.hpp"
 #include "ai_gui.hpp"
@@ -97,7 +98,7 @@ struct AIListWindow : public Window {
 		}
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_AIL_CAPTION:
@@ -106,7 +107,7 @@ struct AIListWindow : public Window {
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		if (widget == WID_AIL_LIST) {
 			this->line_height = FONT_HEIGHT_NORMAL + WD_MATRIX_TOP + WD_MATRIX_BOTTOM;
@@ -117,7 +118,7 @@ struct AIListWindow : public Window {
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_AIL_LIST: {
@@ -182,7 +183,7 @@ struct AIListWindow : public Window {
 		DeleteWindowByClass(WC_QUERY_STRING);
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_AIL_LIST: { // Select one of the AIs
@@ -210,7 +211,7 @@ struct AIListWindow : public Window {
 		}
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_AIL_LIST);
 	}
@@ -220,7 +221,7 @@ struct AIListWindow : public Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (_game_mode == GM_NORMAL && Company::IsValidID(this->slot)) {
 			delete this;
@@ -286,7 +287,7 @@ struct AISettingsWindow : public Window {
 	bool clicked_increase;                ///< Whether we clicked the increase or decrease button.
 	bool clicked_dropdown;                ///< Whether the dropdown is open.
 	bool closing_dropdown;                ///< True, if the dropdown list is currently closing.
-	int timeout;                          ///< Timeout for unclicking the button.
+	GUITimer timeout;                     ///< Timeout for unclicking the button.
 	int clicked_row;                      ///< The clicked row of settings.
 	int line_height;                      ///< Height of a row in the matrix widget.
 	Scrollbar *vscroll;                   ///< Cache of the vertical scrollbar.
@@ -316,7 +317,7 @@ struct AISettingsWindow : public Window {
 		this->RebuildVisibleSettings();
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_AIS_CAPTION:
@@ -345,7 +346,7 @@ struct AISettingsWindow : public Window {
 		this->vscroll->SetCount((int)this->visible_settings.size());
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		if (widget == WID_AIS_BACKGROUND) {
 			this->line_height = max(SETTING_BUTTON_HEIGHT, FONT_HEIGHT_NORMAL) + WD_MATRIX_TOP + WD_MATRIX_BOTTOM;
@@ -356,7 +357,7 @@ struct AISettingsWindow : public Window {
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget != WID_AIS_BACKGROUND) return;
 
@@ -377,7 +378,7 @@ struct AISettingsWindow : public Window {
 		for (; this->vscroll->IsVisible(i) && it != visible_settings.end(); i++, it++) {
 			const ScriptConfigItem &config_item = **it;
 			int current_value = config->GetSetting((config_item).name);
-			bool editable = _game_mode == GM_MENU || ((this->slot != OWNER_DEITY) && !Company::IsValidID(this->slot)) || (config_item.flags & SCRIPTCONFIG_INGAME) != 0;
+			bool editable = this->IsEditableItem(config_item);
 
 			StringID str;
 			TextColour colour;
@@ -420,7 +421,7 @@ struct AISettingsWindow : public Window {
 		}
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		if (this->closing_dropdown) {
 			this->closing_dropdown = false;
@@ -429,7 +430,7 @@ struct AISettingsWindow : public Window {
 		this->DrawWidgets();
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_AIS_BACKGROUND: {
@@ -440,7 +441,7 @@ struct AISettingsWindow : public Window {
 				VisibleSettingsList::const_iterator it = this->visible_settings.begin();
 				for (int i = 0; i < num; i++) it++;
 				const ScriptConfigItem config_item = **it;
-				if (_game_mode == GM_NORMAL && ((this->slot == OWNER_DEITY) || Company::IsValidID(this->slot)) && (config_item.flags & SCRIPTCONFIG_INGAME) == 0) return;
+				if (!this->IsEditableItem(config_item)) return;
 
 				if (this->clicked_row != num) {
 					DeleteChildWindows(WC_QUERY_STRING);
@@ -480,7 +481,7 @@ struct AISettingsWindow : public Window {
 
 							DropDownList *list = new DropDownList();
 							for (int i = config_item.min_value; i <= config_item.max_value; i++) {
-								*list->Append() = new DropDownListCharStringItem(config_item.labels->Find(i)->second, i, false);
+								list->push_back(new DropDownListCharStringItem(config_item.labels->Find(i)->second, i, false));
 							}
 
 							ShowDropDownListAt(this, list, old_val, -1, wi_rect, COLOUR_ORANGE, true);
@@ -505,7 +506,7 @@ struct AISettingsWindow : public Window {
 					if (new_val != old_val) {
 						this->ai_config->SetSetting(config_item.name, new_val);
 						this->clicked_button = num;
-						this->timeout = 5;
+						this->timeout.SetInterval(150);
 					}
 				} else if (!bool_item && !config_item.complete_labels) {
 					/* Display a query box so users can enter a custom value. */
@@ -529,7 +530,7 @@ struct AISettingsWindow : public Window {
 		}
 	}
 
-	virtual void OnQueryTextFinished(char *str)
+	void OnQueryTextFinished(char *str) override
 	{
 		if (StrEmpty(str)) return;
 		VisibleSettingsList::const_iterator it = this->visible_settings.begin();
@@ -541,7 +542,7 @@ struct AISettingsWindow : public Window {
 		this->SetDirty();
 	}
 
-	virtual void OnDropdownSelect(int widget, int index)
+	void OnDropdownSelect(int widget, int index) override
 	{
 		assert(this->clicked_dropdown);
 		VisibleSettingsList::const_iterator it = this->visible_settings.begin();
@@ -552,7 +553,7 @@ struct AISettingsWindow : public Window {
 		this->SetDirty();
 	}
 
-	virtual void OnDropdownClose(Point pt, int widget, int index, bool instant_close)
+	void OnDropdownClose(Point pt, int widget, int index, bool instant_close) override
 	{
 		/* We cannot raise the dropdown button just yet. OnClick needs some hint, whether
 		 * the same dropdown button was clicked again, and then not open the dropdown again.
@@ -563,14 +564,14 @@ struct AISettingsWindow : public Window {
 		this->SetDirty();
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_AIS_BACKGROUND);
 	}
 
-	virtual void OnTick()
+	void OnRealtimeTick(uint delta_ms) override
 	{
-		if (--this->timeout == 0) {
+		if (this->timeout.Elapsed(delta_ms)) {
 			this->clicked_button = -1;
 			this->SetDirty();
 		}
@@ -581,9 +582,17 @@ struct AISettingsWindow : public Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		this->RebuildVisibleSettings();
+		HideDropDownMenu(this);
+		DeleteChildWindows(WC_QUERY_STRING);
+	}
+
+private:
+	bool IsEditableItem(const ScriptConfigItem config_item) const
+	{
+		return _game_mode == GM_MENU || ((this->slot != OWNER_DEITY) && !Company::IsValidID(this->slot)) || (config_item.flags & SCRIPTCONFIG_INGAME) != 0;
 	}
 };
 
@@ -637,7 +646,7 @@ struct ScriptTextfileWindow : public TextfileWindow {
 		this->LoadTextfile(textfile, (slot == OWNER_DEITY) ? GAME_DIR : AI_DIR);
 	}
 
-	/* virtual */ void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		if (widget == WID_TF_CAPTION) {
 			SetDParam(0, (slot == OWNER_DEITY) ? STR_CONTENT_TYPE_GAME_SCRIPT : STR_CONTENT_TYPE_AI);
@@ -653,7 +662,7 @@ struct ScriptTextfileWindow : public TextfileWindow {
  */
 void ShowScriptTextfileWindow(TextfileType file_type, CompanyID slot)
 {
-	DeleteWindowByClass(WC_TEXTFILE);
+	DeleteWindowById(WC_TEXTFILE, file_type);
 	new ScriptTextfileWindow(file_type, slot);
 }
 
@@ -734,7 +743,7 @@ struct AIConfigWindow : public Window {
 		DeleteWindowByClass(WC_AI_SETTINGS);
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_AIC_NUMBER:
@@ -758,7 +767,7 @@ struct AIConfigWindow : public Window {
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_AIC_GAMELIST:
@@ -810,7 +819,7 @@ struct AIConfigWindow : public Window {
 		return slot < max_slot;
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_AIC_GAMELIST: {
@@ -849,7 +858,7 @@ struct AIConfigWindow : public Window {
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		if (widget >= WID_AIC_TEXTFILE && widget < WID_AIC_TEXTFILE + TFT_END) {
 			if (this->selected_slot == INVALID_COMPANY || GetConfig(this->selected_slot) == NULL) return;
@@ -868,7 +877,6 @@ struct AIConfigWindow : public Window {
 					new_value = min(MAX_COMPANIES - 1, GetGameSettings().difficulty.max_no_competitors + 1);
 				}
 				IConsoleSetSetting("difficulty.max_no_competitors", new_value);
-				this->InvalidateData();
 				break;
 			}
 
@@ -920,9 +928,7 @@ struct AIConfigWindow : public Window {
 				if (!_network_available) {
 					ShowErrorMessage(STR_NETWORK_ERROR_NOTAVAILABLE, INVALID_STRING_ID, WL_ERROR);
 				} else {
-#if defined(ENABLE_NETWORK)
 					ShowNetworkContentListWindow(NULL, CONTENT_TYPE_AI, CONTENT_TYPE_GAME);
-#endif
 				}
 				break;
 		}
@@ -933,7 +939,7 @@ struct AIConfigWindow : public Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!IsEditable(this->selected_slot)) {
 			this->selected_slot = INVALID_COMPANY;
@@ -1090,7 +1096,7 @@ struct AIDebugWindow : public Window {
 		this->InvalidateData(-1);
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		if (widget == WID_AID_LOG_PANEL) {
 			resize->height = FONT_HEIGHT_NORMAL + WD_PAR_VSEP_NORMAL;
@@ -1098,7 +1104,7 @@ struct AIDebugWindow : public Window {
 		}
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		this->SelectValidDebugCompany();
 
@@ -1176,7 +1182,7 @@ struct AIDebugWindow : public Window {
 		this->last_vscroll_pos = this->vscroll->GetPosition();
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_AID_NAME_TEXT:
@@ -1199,7 +1205,7 @@ struct AIDebugWindow : public Window {
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (ai_debug_company == INVALID_COMPANY) return;
 
@@ -1258,7 +1264,7 @@ struct AIDebugWindow : public Window {
 		this->last_vscroll_pos = this->vscroll->GetPosition();
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		/* Also called for hotkeys, so check for disabledness */
 		if (this->IsWidgetDisabled(widget)) return;
@@ -1276,8 +1282,8 @@ struct AIDebugWindow : public Window {
 			case WID_AID_RELOAD_TOGGLE:
 				if (ai_debug_company == OWNER_DEITY) break;
 				/* First kill the company of the AI, then start a new one. This should start the current AI again */
-				DoCommandP(0, 2 | ai_debug_company << 16, CRR_MANUAL, CMD_COMPANY_CTRL);
-				DoCommandP(0, 1 | ai_debug_company << 16, 0, CMD_COMPANY_CTRL);
+				DoCommandP(0, CCA_DELETE | ai_debug_company << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
+				DoCommandP(0, CCA_NEW_AI | ai_debug_company << 16, 0, CMD_COMPANY_CTRL);
 				break;
 
 			case WID_AID_SETTINGS:
@@ -1328,7 +1334,7 @@ struct AIDebugWindow : public Window {
 		}
 	}
 
-	virtual void OnEditboxChanged(int wid)
+	void OnEditboxChanged(int wid) override
 	{
 		if (wid == WID_AID_BREAK_STR_EDIT_BOX) {
 			/* Save the current string to static member so it can be restored next time the window is opened. */
@@ -1343,7 +1349,7 @@ struct AIDebugWindow : public Window {
 	 *             This is the company ID of the AI/GS which wrote a new log message, or -1 in other cases.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		/* If the log message is related to the active company tab, check the break string.
 		 * This needs to be done in gameloop-scope, so the AI is suspended immediately. */
@@ -1400,7 +1406,7 @@ struct AIDebugWindow : public Window {
 				(ai_debug_company == OWNER_DEITY ? !Game::IsPaused() : !AI::IsPaused(ai_debug_company)));
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_AID_LOG_PANEL);
 	}

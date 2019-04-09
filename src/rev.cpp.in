@@ -54,6 +54,11 @@ const char _openttd_build_date[] = __DATE__ " " __TIME__;
 const char _openttd_build_configure[] = "!!CONFIGURE_INVOCATION!!";
 
 /**
+ * The git revision hash of this version.
+ */
+const char _openttd_revision_hash[] = "!!GITHASH!!";
+
+/**
  * Let us know if current build was modified. This detection
  * works even in the case when revision string is overridden by
  * --revision argument.
@@ -62,6 +67,13 @@ const char _openttd_build_configure[] = "!!CONFIGURE_INVOCATION!!";
  * and 2 is for modified revision.
  */
 const byte _openttd_revision_modified = !!MODIFIED!!;
+
+/**
+ * Indicate whether this is a tagged version.
+ * If this is non-0, then _openttd_revision is the name of the tag,
+ * and the version is likely a beta, release candidate, or real release.
+ */
+const byte _openttd_revision_tagged = !!ISTAG!!;
 
 /**
  * The NewGRF revision of OTTD:
@@ -76,11 +88,4 @@ const byte _openttd_revision_modified = !!MODIFIED!!;
  * final release will always have a lower version number than the released
  * version, thus making comparisons on specific revisions easy.
  */
-const uint32 _openttd_newgrf_version = 1 << 28 | 9 << 24 | 0 << 20 | 0 << 19 | 28004;
-
-#ifdef __MORPHOS__
-/**
- * Variable used by MorphOS to show the version.
- */
-extern const char morphos_versions_tag[] = "$VER: OpenTTD !!VERSION!! (!!DATE!!) OpenTTD Team [MorphOS, PowerPC]";
-#endif
+const uint32 _openttd_newgrf_version = 1 << 28 | 10 << 24 | 0 << 20 | !!ISSTABLETAG!! << 19 | 28004;

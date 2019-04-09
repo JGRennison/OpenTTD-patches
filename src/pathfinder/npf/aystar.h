@@ -30,7 +30,7 @@ enum AystarStatus {
 	AYSTAR_EMPTY_OPENLIST, ///< All items are tested, and no path has been found.
 	AYSTAR_STILL_BUSY,     ///< Some checking was done, but no path found yet, and there are still items left to try.
 	AYSTAR_NO_PATH,        ///< No path to the goal was found.
-	AYSTAR_LIMIT_REACHED,  ///< The #max_nodes limit has been reached, aborting search.
+	AYSTAR_LIMIT_REACHED,  ///< The #AyStar::max_search_nodes limit has been reached, aborting search.
 	AYSTAR_DONE,           ///< Not an end-tile, or wrong direction.
 };
 
@@ -59,6 +59,8 @@ struct OpenListNode {
 	PathNode path;
 };
 
+bool CheckIgnoreFirstTile(const PathNode *node);
+
 struct AyStar;
 
 /**
@@ -75,7 +77,7 @@ struct AyStar;
  *  - #AYSTAR_FOUND_END_NODE : indicates this is the end tile
  *  - #AYSTAR_DONE : indicates this is not the end tile (or direction was wrong)
  */
-typedef int32 AyStar_EndNodeCheck(AyStar *aystar, OpenListNode *current);
+typedef int32 AyStar_EndNodeCheck(const AyStar *aystar, const OpenListNode *current);
 
 /**
  * Calculate the G-value for the %AyStar algorithm.
@@ -93,9 +95,9 @@ typedef int32 AyStar_CalculateG(AyStar *aystar, AyStarNode *current, OpenListNod
 typedef int32 AyStar_CalculateH(AyStar *aystar, AyStarNode *current, OpenListNode *parent);
 
 /**
- * This function requests the tiles around the current tile and put them in #tiles_around.
- * #tiles_around is never reset, so if you are not using directions, just leave it alone.
- * \warning Never add more tiles_around than memory allocated for it.
+ * This function requests the tiles around the current tile and put them in #neighbours.
+ * #neighbours is never reset, so if you are not using directions, just leave it alone.
+ * @warning Never add more #neighbours than memory allocated for it.
  */
 typedef void AyStar_GetNeighbours(AyStar *aystar, OpenListNode *current);
 

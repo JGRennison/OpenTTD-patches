@@ -33,6 +33,7 @@
 #include "command_func.h"
 #include "company_base.h"
 #include "settings_internal.h"
+#include "guitimer_func.h"
 
 #include "widgets/news_widget.h"
 
@@ -260,16 +261,20 @@ struct NewsWindow : Window {
 	uint16 chat_height;   ///< Height of the chat window.
 	uint16 status_height; ///< Height of the status bar window
 	const NewsItem *ni;   ///< News item to display.
-	static uint duration; ///< Remaining time for showing current news message (may only be accessed while a news item is displayed).
+	static int duration;  ///< Remaining time for showing the current news message (may only be access while a news item is displayed).
+
+	GUITimer timer;
 
 	NewsWindow(WindowDesc *desc, const NewsItem *ni) : Window(desc), ni(ni)
 	{
-		NewsWindow::duration = 555;
+		NewsWindow::duration = 16650;
 		const Window *w = FindWindowByClass(WC_SEND_NETWORK_MSG);
 		this->chat_height = (w != NULL) ? w->height : 0;
 		this->status_height = FindWindowById(WC_STATUS_BAR, 0)->height;
 
 		this->flags |= WF_DISABLE_VP_SCROLL;
+
+		this->timer.SetInterval(15);
 
 		this->CreateNestedTree();
 
@@ -303,13 +308,13 @@ struct NewsWindow : Window {
 		GfxFillRect(r.left,  r.bottom, r.right, r.bottom, PC_BLACK);
 	}
 
-	virtual Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number)
+	Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number) override
 	{
 		Point pt = { 0, _screen.height };
 		return pt;
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		StringID str = STR_NULL;
 		switch (widget) {
@@ -360,12 +365,12 @@ struct NewsWindow : Window {
 		*size = maxdim(*size, d);
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		if (widget == WID_N_DATE) SetDParam(0, this->ni->date);
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_N_CAPTION:
@@ -422,7 +427,7 @@ struct NewsWindow : Window {
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_N_CLOSEBOX:
@@ -461,7 +466,7 @@ struct NewsWindow : Window {
 		}
 	}
 
-	virtual EventState OnKeyPress(WChar key, uint16 keycode)
+	EventState OnKeyPress(WChar key, uint16 keycode) override
 	{
 		if (keycode == WKC_SPACE) {
 			/* Don't continue. */
@@ -476,7 +481,7 @@ struct NewsWindow : Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		/* The chatbar has notified us that is was either created or closed */
@@ -485,16 +490,23 @@ struct NewsWindow : Window {
 		this->SetWindowTop(newtop);
 	}
 
-	virtual void OnTick()
+	void OnRealtimeTick(uint delta_ms) override
 	{
-		/* Scroll up newsmessages from the bottom in steps of 4 pixels */
-		int newtop = max(this->top - 4, _screen.height - this->height - this->status_height - this->chat_height);
-		this->SetWindowTop(newtop);
+		int count = this->timer.CountElapsed(delta_ms);
+		if (count > 0) {
+			/* Scroll up newsmessages from the bottom */
+			int newtop = max(this->top - 2 * count, _screen.height - this->height - this->status_height - this->chat_height);
+			this->SetWindowTop(newtop);
+		}
+
+		/* Decrement the news timer. We don't need to action an elapsed event here,
+		 * so no need to use TimerElapsed(). */
+		if (NewsWindow::duration > 0) NewsWindow::duration -= delta_ms;
 	}
 
 private:
 	/**
-	 * Moves the window so #newtop is new 'top' coordinate. Makes screen dirty where needed.
+	 * Moves the window to a new #top coordinate. Makes screen dirty where needed.
 	 * @param newtop new top coordinate
 	 */
 	void SetWindowTop(int newtop)
@@ -536,7 +548,7 @@ private:
 	}
 };
 
-/* static */ uint NewsWindow::duration = 0; // Instance creation.
+/* static */ int NewsWindow::duration = 0; // Instance creation.
 
 
 /** Open up an own newspaper window for the news item */
@@ -588,11 +600,8 @@ static bool ReadyForNextItem()
 	 * Check if the status bar message is still being displayed? */
 	if (IsNewsTickerShown()) return false;
 
-	/* Newspaper message, decrement duration counter */
-	if (NewsWindow::duration != 0) NewsWindow::duration--;
-
 	/* neither newsticker nor newspaper are running */
-	return (NewsWindow::duration == 0 || FindWindowById(WC_NEWS_WINDOW, 0) == NULL);
+	return (NewsWindow::duration <= 0 || FindWindowById(WC_NEWS_WINDOW, 0) == NULL);
 }
 
 /** Move to the next news item */
@@ -962,7 +971,6 @@ void ShowLastNewsMessage()
  * @param y position of the string
  * @param colour the colour the string will be shown in
  * @param *ni NewsItem being printed
- * @param maxw maximum width of string in pixels
  */
 static void DrawNewsString(uint left, uint right, int y, TextColour colour, const NewsItem *ni)
 {
@@ -1016,7 +1024,7 @@ struct MessageHistoryWindow : Window {
 		this->OnInvalidateData(0);
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		if (widget == WID_MH_BACKGROUND) {
 			this->line_height = FONT_HEIGHT_NORMAL + 2;
@@ -1032,13 +1040,13 @@ struct MessageHistoryWindow : Window {
 		}
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		this->OnInvalidateData(0);
 		this->DrawWidgets();
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget != WID_MH_BACKGROUND || _total_news == 0) return;
 
@@ -1073,13 +1081,13 @@ struct MessageHistoryWindow : Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		this->vscroll->SetCount(_total_news);
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		if (widget == WID_MH_BACKGROUND) {
 			NewsItem *ni = _latest_news;
@@ -1094,7 +1102,7 @@ struct MessageHistoryWindow : Window {
 		}
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_MH_BACKGROUND);
 	}

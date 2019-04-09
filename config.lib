@@ -52,7 +52,6 @@ set_default() {
 	enable_profiling="0"
 	enable_lto="0"
 	enable_dedicated="0"
-	enable_network="1"
 	enable_static="1"
 	enable_translator="0"
 	enable_unicode="1"
@@ -82,7 +81,7 @@ set_default() {
 	with_iconv="1"
 	with_midi=""
 	with_midi_arg=""
-	with_libtimidity="1"
+	with_fluidsynth="1"
 	with_freetype="1"
 	with_fontconfig="1"
 	with_icu_layout="1"
@@ -133,7 +132,6 @@ set_default() {
 		enable_profiling
 		enable_lto
 		enable_dedicated
-		enable_network
 		enable_static
 		enable_translator
 		enable_unicode
@@ -162,7 +160,7 @@ set_default() {
 		with_iconv
 		with_midi
 		with_midi_arg
-		with_libtimidity
+		with_fluidsynth
 		with_freetype
 		with_fontconfig
 		with_icu_layout
@@ -295,9 +293,6 @@ detect_params() {
 			--enable-ipo=*)               enable_lto="$optarg";;
 			--enable-dedicated)           enable_dedicated="1";;
 			--enable-dedicated=*)         enable_dedicated="$optarg";;
-			--enable-network)             enable_network="2";;
-			--enable-network=*)           enable_network="$optarg";;
-			--disable-network)            enable_network="0";;
 			--disable-static)             enable_static="0";;
 			--enable-static)              enable_static="2";;
 			--enable-static=*)            enable_static="$optarg";;
@@ -374,9 +369,9 @@ detect_params() {
 			--without-libpng)             with_png="0";;
 			--with-libpng=*)              with_png="$optarg";;
 
-			--with-libtimidity)           with_libtimidity="2";;
-			--without-libtimidity)        with_libtimidity="0";;
-			--with-libtimidity=*)         with_libtimidity="$optarg";;
+			--with-fluidsynth)            with_fluidsynth="2";;
+			--without-fluidsynth)         with_fluidsynth="0";;
+			--with-fluidsynth=*)          with_fluidsynth="$optarg";;
 
 			--with-freetype)              with_freetype="2";;
 			--without-freetype)           with_freetype="0";;
@@ -577,10 +572,10 @@ check_params() {
 
 	# Check if all params have valid values
 
-	# OS only allows DETECT, UNIX, OSX, FREEBSD, DRAGONFLY, OPENBSD, NETBSD, MORPHOS, BEOS, HAIKU, SUNOS, CYGWIN, MINGW, OS2, and DOS
-	if [ -z "`echo $os | egrep '^(DETECT|UNIX|OSX|FREEBSD|DRAGONFLY|OPENBSD|NETBSD|HPUX|MORPHOS|BEOS|HAIKU|SUNOS|CYGWIN|MINGW|OS2|DOS)$'`" ]; then
+	# OS only allows DETECT, UNIX, OSX, FREEBSD, DRAGONFLY, OPENBSD, NETBSD, HAIKU, SUNOS, CYGWIN, MINGW, and OS2
+	if [ -z "`echo $os | egrep '^(DETECT|UNIX|OSX|FREEBSD|DRAGONFLY|OPENBSD|NETBSD|HPUX|HAIKU|SUNOS|CYGWIN|MINGW|OS2)$'`" ]; then
 		log 1 "configure: error: invalid option --os=$os"
-		log 1 " Available options are: --os=[DETECT|UNIX|OSX|FREEBSD|DRAGONFLY|OPENBSD|NETBSD|HPUX|MORPHOS|BEOS|HAIKU|SUNOS|CYGWIN|MINGW|OS2|DOS]"
+		log 1 " Available options are: --os=[DETECT|UNIX|OSX|FREEBSD|DRAGONFLY|OPENBSD|NETBSD|HPUX|HAIKU|SUNOS|CYGWIN|MINGW|OS2]"
 		exit 1
 	fi
 	# cpu_type can be either 32 or 64
@@ -647,7 +642,7 @@ check_params() {
 	detect_sse_capable_architecture
 
 	if [ "$enable_static" = "1" ]; then
-		if [ "$os" = "MINGW" ] || [ "$os" = "CYGWIN" ] || [ "$os" = "MORPHOS" ] || [ "$os" = "DOS" ]; then
+		if [ "$os" = "MINGW" ] || [ "$os" = "CYGWIN" ]; then
 			enable_static="2"
 		else
 			enable_static="0"
@@ -657,8 +652,8 @@ check_params() {
 	if [ "$enable_static" != "0" ]; then
 		log 1 "checking static... yes"
 
-		if [ "$os" != "MINGW" ] && [ "$os" != "CYGWIN" ] && [ "$os" != "OSX" ] && [ "$os" != "MORPHOS" ] && [ "$os" != "DOS" ]; then
-			log 1 "WARNING: static is only known to work on Windows, DOS, MacOSX and MorphOS"
+		if [ "$os" != "MINGW" ] && [ "$os" != "CYGWIN" ] && [ "$os" != "OSX" ]; then
+			log 1 "WARNING: static is only known to work on Windows, and MacOSX"
 			log 1 "WARNING: use static at your own risk on this platform"
 
 			sleep 5
@@ -668,7 +663,7 @@ check_params() {
 	fi
 
 	if [ "$enable_unicode" = "1" ]; then
-		if [ "$os" = "MINGW" ] || [ "$os" = "CYGWIN" ] || [ "$os" = "DOS" ]; then
+		if [ "$os" = "MINGW" ] || [ "$os" = "CYGWIN" ]; then
 			enable_unicode="2"
 		else
 			enable_unicode="0"
@@ -773,11 +768,6 @@ check_params() {
 	if [ "$enable_dedicated" != "0" ]; then
 		log 1 "checking GDI video driver... dedicated server, skipping"
 		log 1 "checking dedicated... found"
-
-		if [ "$enable_network" = "0" ]; then
-			log 1 "configure: error: building a dedicated server without network support is pointless"
-			exit 1
-		fi
 	else
 		if [ "$os" = "MINGW" ] || [ "$os" = "CYGWIN" ]; then
 			log 1 "checking GDI video driver... found"
@@ -808,15 +798,6 @@ check_params() {
 		log 1 "checking console application... enabled"
 	fi
 
-	if [ "$enable_network" = "1" ] && [ "$os" = "DOS" ]; then
-		log 1 "checking network... DOS, skipping"
-		enable_network=0
-	elif [ "$enable_network" != "0" ]; then
-		log 1 "checking network... found"
-	else
-		log 1 "checking network... disabled"
-	fi
-
 	log 1 "checking squirrel... found"
 	SCRIPT_SRC_DIR="$ROOT_DIR/src/3rdparty/squirrel/include"
 
@@ -838,7 +819,7 @@ check_params() {
 	pre_detect_with_zlib=$with_zlib
 	detect_zlib
 
-	if [ "$with_zlib" = "0" ] || [ -z "$zlib-config" ]; then
+	if [ "$with_zlib" = "0" ] || [ -z "$zlib_config" ]; then
 		log 1 "WARNING: zlib was not detected or disabled"
 		log 1 "WARNING: OpenTTD doesn't require zlib, but it does mean that many features"
 		log 1 "WARNING: (like loading most old savegames/scenarios, loading heightmaps,"
@@ -913,7 +894,7 @@ check_params() {
 	detect_fontconfig
 	detect_icu_layout
 	detect_icu_sort
-	detect_libtimidity
+	detect_fluidsynth
 
 	if [ "$with_direct_music" != "0" ]; then
 		if [ "$os" != "MINGW" ] && [ "$os" != "CYGWIN" ]; then
@@ -956,9 +937,7 @@ check_params() {
 	fi
 
 	if [ "$enable_debug" = "0" ] && [ "$enable_profiling" = "0" ] && [ "$enable_strip" != "0" ]; then
-		if [ "$os" = "MORPHOS" ]; then
-			strip_arg="--strip-all --strip-unneeded --remove-section .comment"
-		elif [ "$os" = "OSX" ]; then
+		if [ "$os" = "OSX" ]; then
 			strip_arg=""
 		elif [ "$os" = "OS2" ]; then
 			strip_arg=""
@@ -1047,10 +1026,6 @@ check_params() {
 	if [ -z "$nforenum" ] && [ -n "$grfcodec" ]; then
 		log 1 "checking nforenum/grfcodec... grfcodec needs nforenum enabled, disabling grfcodec"
 		grfcodec=""
-	fi
-
-	if [ "$os" = "DOS" ]; then
-		with_threads="0"
 	fi
 
 	if [ "$os" != "OSX" ] && [ "$with_application_bundle" != "0" ]; then
@@ -1155,7 +1130,7 @@ check_params() {
 	fi
 
 	if [ "$personal_dir" = "1" ]; then
-		if [ "$os" = "MINGW" ] || [ "$os" = "CYGWIN" ] || [ "$os" = "DOS" ] || [ "$os" = "HAIKU" ]; then
+		if [ "$os" = "MINGW" ] || [ "$os" = "CYGWIN" ] || [ "$os" = "HAIKU" ]; then
 			personal_dir="OpenTTD"
 		elif [ "$os" = "OSX" ]; then
 			personal_dir="Documents/OpenTTD"
@@ -1260,6 +1235,8 @@ make_compiler_cflags() {
 	eval eval "ldflags=\\\$$4"
 	eval eval "features=\\\$$5"
 
+	cppstd="-std=c++11"
+
 	if [ `echo "$version_line" | cut -d' ' -f1` = "icc" ]; then
 		# Enable some things only for certain ICC versions
 		cc_version=`$1 -dumpversion | cut -c 1-4 | sed s@\\\.@@g`
@@ -1335,8 +1312,6 @@ make_compiler_cflags() {
 		if [ $cc_version -ge 110 ]; then
 			# remark #2259: non-pointer conversion from ... to ... may lose significant bits
 			flags="$flags -wd2259"
-			# Use c++0x mode so static_assert() is available
-			cxxflags="$cxxflags -std=c++11"
 		fi
 
 		if [ $cc_version -lt 140 ]; then
@@ -1354,7 +1329,8 @@ make_compiler_cflags() {
 		fi
 	elif echo "$version_line" | grep -q "clang"; then
 		# Enable some things only for certain clang versions
-		cc_version="`$1 -v 2>&1 | head -n 1 | sed s@[^0-9]@@g | cut -c 1-2`"
+		# Need to try really hard to get the version line, because OSX clang likes to hide its true version
+		cc_version="`$1 -v 2>&1 | grep -i version | head -n 1 | sed s@[^0-9.]@@g | $awk -F . '{printf "%d%02d\n", $1, $2}'`"
 
 		# aliasing rules are not held in openttd code
 		flags="$flags -fno-strict-aliasing"
@@ -1376,14 +1352,17 @@ make_compiler_cflags() {
 		# it happens when using the FOR_ALL_WINDOWS_FROM_BACK_FROM macro
 		flags="$flags -Wno-self-assign"
 
-		if [ "$cc_version" -lt "30" ]; then
+		# warning: <something> is a C++11 extension
+		flags="$flags -Wno-c++11-extensions"
+
+		if [ "$cc_version" -lt "300" ]; then
 			# warning: equality comparison with extraneous parentheses
 			flags="$flags -Wno-parentheses"
 			# warning: operands of ? are integers of different signs: 'unsigned int' and 'int'
 			flags="$flags -Wno-sign-compare"
 		fi
 
-		if [ "$cc_version" -ge "30" ]; then
+		if [ "$cc_version" -ge "300" ]; then
 			# warning: equality comparison with extraneous parentheses
 			# this warning could be useful, but it warns about code in squirrel
 			flags="$flags -Wno-parentheses-equality"
@@ -1402,11 +1381,8 @@ make_compiler_cflags() {
 			flags="$flags -Wno-unused-variable"
 		fi
 
-		if [ "$cc_version" -ge "33" ]; then
-			# clang completed C++11 support in version 3.3
-			flags="$flags -std=c++11"
-		else
-			log 1 "configure: error: clang version is too old: `$1 -v 2>&1 | head -n 1`, minumum: 3.3"
+		if [ "$cc_version" -lt "303" ]; then
+			log 1 "configure: error: clang version is too old: `$1 -v 2>&1 | grep -i version | head -n 1`, minumum: 3.3"
 			exit 1
 		fi
 
@@ -1429,6 +1405,7 @@ make_compiler_cflags() {
 		flags="$flags -Wwrite-strings -Wpointer-arith"
 		flags="$flags -W -Wno-unused-parameter -Wredundant-decls"
 		flags="$flags -Wformat=2 -Wformat-security"
+		cppstd="-std=gnu++11"
 
 		if [ $enable_assert -eq 0 ]; then
 			# Do not warn about unused variables when building without asserts
@@ -1468,12 +1445,6 @@ make_compiler_cflags() {
 			flags="$flags -Wnon-virtual-dtor"
 		fi
 
-		if [ $cc_version -ge 403 ] && [ $cc_version -lt 600 ]; then
-			# Use gnu++0x mode so static_assert() is available.
-			# Don't use c++0x, it breaks mingw (with gcc 4.4.0).
-			cxxflags="$cxxflags -std=gnu++11"
-		fi
-
 		if [ $cc_version -eq 405 ]; then
 			# Prevent optimisation supposing enums are in a range specified by the standard
 			# For details, see http://gcc.gnu.org/PR43680
@@ -1498,7 +1469,7 @@ make_compiler_cflags() {
 		if [ $cc_version -ge 600 ]; then
 			# -flifetime-dse=2 (default since GCC 6) doesn't play
 			# well with our custom pool item allocator
-			cxxflags="$cxxflags -flifetime-dse=1 -std=gnu++14"
+			cxxflags="$cxxflags -flifetime-dse=1"
 		fi
 
 		if [ "$enable_lto" != "0" ]; then
@@ -1525,7 +1496,7 @@ make_compiler_cflags() {
 	fi
 
 	eval "$2=\"$flags\""
-	eval "$3=\"$cxxflags\""
+	eval "$3=\"$cxxflags $cppstd\""
 	eval "$4=\"$ldflags\""
 	eval "$5=\"$features\""
 }
@@ -1577,7 +1548,7 @@ make_cflags_and_ldflags() {
 	CXXFLAGS_ENV="$CXXFLAGS"
 	CXXFLAGS=""
 	# Libs to compile. In fact this is just LDFLAGS
-	LIBS="-lstdc++"
+	LIBS=""
 	# LDFLAGS used for HOST
 	LDFLAGS_ENV="$LDFLAGS"
 	LDFLAGS=""
@@ -1593,10 +1564,6 @@ make_cflags_and_ldflags() {
 	if [ "$enable_debug" = "0" ]; then
 		# No debug, add default stuff
 		OBJS_SUBDIR="release"
-		if [ "$os" = "MORPHOS" ]; then
-			CFLAGS="-I/gg/os-include -noixemul -fstrict-aliasing -fexpensive-optimizations -mcpu=604 -fno-inline -mstring -mmultiple $CFLAGS"
-			LDFLAGS="$LDFLAGS -noixemul"
-		fi
 
 		if [ "$enable_profiling" = "0" ]; then
 			# -fomit-frame-pointer and -pg do not go well together (gcc errors they are incompatible)
@@ -1685,7 +1652,7 @@ make_cflags_and_ldflags() {
 		fi
 	fi
 
-	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "OPENBSD" ] && [ "$os" != "MINGW" ] && [ "$os" != "MORPHOS" ] && [ "$os" != "OSX" ] && [ "$os" != "DOS" ] && [ "$os" != "OS2" ]; then
+	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "OPENBSD" ] && [ "$os" != "MINGW" ] && [ "$os" != "OSX" ] && [ "$os" != "OS2" ]; then
 		LIBS="$LIBS -lpthread"
 	fi
 	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "MINGW" ] && [ "$os" != "MORPHOS" ] && [ "$os" != "OSX" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ] && [ "$os" != "PSP" ] && [ "$os" != "OS2" ]; then
@@ -1896,13 +1863,8 @@ EOL
 		fi
 	fi
 
-	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "MINGW" ] && [ "$os" != "DOS" ]; then
+	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "MINGW" ]; then
 		LIBS="$LIBS -lc"
-	fi
-
-	if [ "$os" = "MORPHOS" ]; then
-		# -Wstrict-prototypes generates much noise because of system headers
-		CFLAGS="$CFLAGS -Wno-strict-prototypes"
 	fi
 
 	if [ "$os" = "OPENBSD" ]; then
@@ -1928,12 +1890,12 @@ EOL
 		fi
 	fi
 
-	if [ "$os" = "BEOS" ] || [ "$os" = "HAIKU" ]; then
+	if [ "$os" = "HAIKU" ]; then
 		LIBS="$LIBS -lmidi -lbe"
 	fi
 
 	# Most targets act like UNIX, just with some additions
-	if [ "$os" = "BEOS" ] || [ "$os" = "HAIKU" ] || [ "$os" = "OSX" ] || [ "$os" = "MORPHOS" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "DRAGONFLY" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ] || [ "$os" = "OS2" ]; then
+	if [ "$os" = "HAIKU" ] || [ "$os" = "OSX" ] || [ "$os" = "FREEBSD" ] || [ "$os" = "DRAGONFLY" ] || [ "$os" = "OPENBSD" ] || [ "$os" = "NETBSD" ] || [ "$os" = "HPUX" ] || [ "$os" = "SUNOS" ] || [ "$os" = "OS2" ]; then
 		CFLAGS="$CFLAGS -DUNIX"
 	fi
 	# And others like Windows
@@ -1957,12 +1919,10 @@ EOL
 		CFLAGS="$CFLAGS -DWITH_SDL"
 		# SDL must not add _GNU_SOURCE as it breaks many platforms
 		CFLAGS="$CFLAGS `$sdl_config --cflags | sed 's@-D_GNU_SOURCE[^ ]*@@'`"
-		if [ "$os" != "MINGW" ] && [ "$os" != "CYGWIN" ]; then
-			if [ "$enable_static" != "0" ]; then
-				LIBS="$LIBS `$sdl_config --static-libs`"
-			else
-				LIBS="$LIBS `$sdl_config --libs`"
-			fi
+		if [ "$enable_static" != "0" ]; then
+			LIBS="$LIBS `$sdl_config --static --libs`"
+		else
+			LIBS="$LIBS `$sdl_config --libs`"
 		fi
 	fi
 
@@ -1990,7 +1950,7 @@ EOL
 	fi
 
 	if [ -n "$lzma_config" ]; then
-		CFLAGS="$CFLAGS -DWITH_LZMA"
+		CFLAGS="$CFLAGS -DWITH_LIBLZMA"
 		CFLAGS="$CFLAGS `$lzma_config --cflags | tr '\n\r' '  '`"
 
 		if [ "$enable_static" != "0" ]; then
@@ -2061,7 +2021,7 @@ EOL
 	fi
 
 	if [ -n "$icu_layout_config" ]; then
-		CFLAGS="$CFLAGS -DWITH_ICU_LAYOUT"
+		CFLAGS="$CFLAGS -DWITH_ICU_LX"
 		CFLAGS="$CFLAGS `$icu_layout_config --cflags | tr '\n\r' '  '`"
 
 		if [ "$static_icu" != "0" ]; then
@@ -2072,7 +2032,7 @@ EOL
 	fi
 
 	if [ -n "$icu_sort_config" ]; then
-		CFLAGS="$CFLAGS -DWITH_ICU_SORT"
+		CFLAGS="$CFLAGS -DWITH_ICU_I18N"
 		CFLAGS="$CFLAGS `$icu_sort_config --cflags | tr '\n\r' '  '`"
 
 		if [ "$static_icu" != "0" ]; then
@@ -2101,15 +2061,9 @@ EOL
 		CFLAGS="$CFLAGS -DWITH_XAUDIO2"
 	fi
 
-	if [ -n "$libtimidity_config" ]; then
-		CFLAGS="$CFLAGS -DLIBTIMIDITY"
-		CFLAGS="$CFLAGS `$libtimidity_config --cflags | tr '\n\r' '  '`"
-
-		if [ "$enable_static" != "0" ]; then
-			LIBS="$LIBS `$libtimidity_config --libs --static | tr '\n\r' '  '`"
-		else
-			LIBS="$LIBS `$libtimidity_config --libs | tr '\n\r' '  '`"
-		fi
+	if [ -n "$fluidsynth" ]; then
+		LIBS="$LIBS -lfluidsynth"
+		CFLAGS="$CFLAGS -DFLUIDSYNTH"
 	fi
 
 	if [ "$with_iconv" != "0" ]; then
@@ -2142,20 +2096,12 @@ EOL
 		CFLAGS="$CFLAGS -DUNICODE -D_UNICODE"
 	fi
 
-	if [ "$enable_network" != "0" ]; then
-		CFLAGS="$CFLAGS -DENABLE_NETWORK"
+	if [ "$os" = "HAIKU" ]; then
+		LDFLAGS="$LDFLAGS -lnetwork"
+	fi
 
-		if [ "$os" = "BEOS" ]; then
-			LDFLAGS="$LDFLAGS -lbind -lsocket"
-		fi
-
-		if [ "$os" = "HAIKU" ]; then
-			LDFLAGS="$LDFLAGS -lnetwork"
-		fi
-
-		if [ "$os" = "SUNOS" ]; then
-			LDFLAGS="$LDFLAGS -lnsl -lsocket"
-		fi
+	if [ "$os" = "SUNOS" ]; then
+		LDFLAGS="$LDFLAGS -lnsl -lsocket"
 	fi
 
 	if [ "$enable_static" != "0" ]; then
@@ -2230,7 +2176,7 @@ EOL
 		cflags_makedep="`echo | $cxx_host $CXXFLAGS -E -x c++ -dM - | sed 's@.define @-D@g;s@ .*@ @g;s@(.*)@@g' | tr -d '\r\n'`"
 
 		# Please escape ALL " within ` because e.g. "" terminates the string in some sh implementations
-		cflags_makedep="$cflags_makedep `echo \"$CFLAGS\" \"$CXXFLAGS\" | sed 's@ /@ -@g;s@-I[ ]*[^ ]*@@g'`"
+		cflags_makedep="$cflags_makedep `echo \"$CFLAGS\" \"$CXXFLAGS\" | sed 's@ /@ -@g;s@-I[ ]*[^ ]*@@g;s@[ ]*-[^D][^ ]*@@g'`"
 	else
 		makedepend=""
 	fi
@@ -2634,7 +2580,7 @@ detect_awk() {
 
 detect_os() {
 	if [ "$os" = "DETECT" ]; then
-		# Detect UNIX, OSX, FREEBSD, DRAGONFLY, OPENBSD, NETBSD, HPUX, MORPHOS, BEOS, SUNOS, CYGWIN, MINGW, OS2, and DOS
+		# Detect UNIX, OSX, FREEBSD, DRAGONFLY, OPENBSD, NETBSD, HPUX, SUNOS, CYGWIN, MINGW, and OS2
 
 		# Try first via dumpmachine, then via uname
 		os=`echo "$host" | tr '[A-Z]' '[a-z]' | $awk '
@@ -2645,15 +2591,12 @@ detect_os() {
 					/openbsd/      { print "OPENBSD";   exit}
 					/netbsd/       { print "NETBSD";    exit}
 					/hp-ux/        { print "HPUX";      exit}
-					/morphos/      { print "MORPHOS";   exit}
-					/beos/         { print "BEOS";      exit}
 					/haiku/        { print "HAIKU";     exit}
 					/sunos/        { print "SUNOS";     exit}
 					/solaris/      { print "SUNOS";     exit}
 					/cygwin/       { print "CYGWIN";    exit}
 					/mingw/        { print "MINGW";     exit}
 					/os2/          { print "OS2";       exit}
-					/dos/          { print "DOS";       exit}
 		'`
 
 		if [ -z "$os" ]; then
@@ -2665,8 +2608,6 @@ detect_os() {
 					/openbsd/      { print "OPENBSD";   exit}
 					/netbsd/       { print "NETBSD";    exit}
 					/hp-ux/        { print "HPUX";      exit}
-					/morphos/      { print "MORPHOS";   exit}
-					/beos/         { print "BEOS";      exit}
 					/haiku/        { print "HAIKU";     exit}
 					/sunos/        { print "SUNOS";     exit}
 					/cygwin/       { print "CYGWIN";    exit}
@@ -2679,7 +2620,7 @@ detect_os() {
 		if [ -z "$os" ]; then
 			log 1 "detecting OS... none detected"
 			log 1 "I couldn't detect your OS. Please use --os=OS to force one"
-			log 1 "Allowed values are: UNIX, OSX, FREEBSD, DRAGONFLY, OPENBSD, NETBSD, MORPHOS, HPUX, BEOS, HAIKU, SUNOS, CYGWIN, MINGW, OS2, and DOS"
+			log 1 "Allowed values are: UNIX, OSX, FREEBSD, DRAGONFLY, OPENBSD, NETBSD, HPUX, HAIKU, SUNOS, CYGWIN, MINGW, and OS2"
 			exit 1
 		fi
 
@@ -3044,8 +2985,8 @@ detect_lzo2() {
 	detect_library "$with_lzo2" "lzo2" "liblzo2.a" "lzo/" "lzo1x.h"
 }
 
-detect_libtimidity() {
-	detect_pkg_config "$with_libtimidity" "libtimidity" "libtimidity_config" "0.1" "1"
+detect_fluidsynth() {
+	detect_library "$with_fluidsynth" "fluidsynth" "" "" "fluidsynth.h"
 }
 
 detect_pkg_config() {
@@ -3148,10 +3089,22 @@ detect_fontconfig() {
 }
 
 detect_icu_layout() {
+	if [ "$with_cocoa" != "0" ] && [ "$with_icu_layout" = "1" ]; then
+		log 1 "checking icu-lx... OSX, skipping"
+		icu_layout_config=""
+		return 0
+	fi
+
 	detect_pkg_config "$with_icu_layout" "icu-lx" "icu_layout_config" "4.8" "1"
 }
 
 detect_icu_sort() {
+	if [ "$with_cocoa" != "0" ] && [ "$with_icu_sort" = "1" ]; then
+		log 1 "checking icu-i18n... OSX, skipping"
+		icu_sort_config=""
+		return 0
+	fi
+
 	detect_pkg_config "$with_icu_sort" "icu-i18n" "icu_sort_config" "4.8" "1"
 }
 
@@ -3173,10 +3126,16 @@ detect_iconv() {
 	# Try to find iconv.h, seems to only thing to detect iconv with
 
 	if [ "$with_iconv" = "1" ] || [ "$with_iconv" = "" ] || [ "$with_iconv" = "2" ]; then
-		iconv=`ls -1 /usr/include 2>/dev/null | grep "iconv.h"`
-		if [ -z "$iconv" ]; then
-			iconv=`ls -1 /usr/local/include 2>/dev/null | grep "iconv.h"`
-		fi
+		# Iterate over search paths
+		iconv=""
+		search_paths=`LC_ALL=C $cxx_host $OSX_SYSROOT $CFLAGS -E - -v </dev/null 2>&1 | \
+		              $awk '/#include <...> search starts here:/{flag=1;next}/End of search list./{flag=0}flag'`
+		for path in $search_paths; do
+			iconv=`ls -1 $path 2>/dev/null | grep "iconv.h"`
+			if [ -n "$iconv" ]; then
+				break
+			fi
+		done
 	else
 		# Make sure it exists
 		iconv=`ls $with_iconv/include/iconv.h 2>/dev/null`
@@ -3762,8 +3721,8 @@ showhelp() {
 	echo "  --lipo=LIPO                    the lipo to use (OSX ONLY) [HOST-lipo]"
 	echo "  --os=OS                        the OS we are compiling for [DETECT]"
 	echo "                                 DETECT/UNIX/OSX/FREEBSD/DRAGONFLY/OPENBSD/"
-	echo "                                 NETBSD/MORPHOS/HPUX/BEOS/SUNOS/CYGWIN/"
-	echo "                                 MINGW/OS2/DOS/HAIKU"
+	echo "                                 NETBSD/HPUX/SUNOS/CYGWIN/"
+	echo "                                 MINGW/OS2/HAIKU"
 	echo ""
 	echo "Paths:"
 	echo "  --prefix-dir=dir               specifies the prefix for all installed"
@@ -3817,7 +3776,6 @@ showhelp() {
 	echo "  --enable-console               compile as a console application instead of as a GUI application."
 	echo "                                 If this setting is active, debug output will appear in the same"
 	echo "                                 console instead of opening a new window. (Win32 ONLY)"
-	echo "  --disable-network              disable network support"
 	echo "  --disable-assert               disable asserts (continue on errors)"
 	echo "  --enable-strip                 enable any possible stripping"
 	echo "  --without-osx-sysroot          disable the automatic adding of sysroot "
@@ -3832,8 +3790,7 @@ showhelp() {
 	echo "  --with-midi=midi               define which midi-player to use"
 	echo "  --with-midi-arg=arg            define which args to use for the"
 	echo "                                 midi-player"
-	echo "  --with-libtimidity[=\"pkg-config libtimidity\"]"
-	echo "                                 enables libtimidity support"
+	echo "  --with-fluidsynth              enables fluidsynth support"
 	echo "  --with-allegro[=\"pkg-config allegro\"]"
 	echo "                                 enables Allegro video driver support"
 	echo "  --with-cocoa                   enables COCOA video driver (OSX ONLY)"

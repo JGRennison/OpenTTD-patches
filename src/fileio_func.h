@@ -107,7 +107,7 @@ public:
 		ALL      = BASESET | NEWGRF | AI | SCENARIO | GAME, ///< Scan for everything.
 	};
 
-	/* virtual */ bool AddFile(const char *filename, size_t basepath_length, const char *tar_filename = NULL);
+	bool AddFile(const char *filename, size_t basepath_length, const char *tar_filename = NULL) override;
 
 	bool AddFile(Subdirectory sd, const char *filename);
 
@@ -118,7 +118,7 @@ public:
 DECLARE_ENUM_AS_BIT_SET(TarScanner::Mode)
 
 /* Implementation of opendir/readdir/closedir for Windows */
-#if defined(WIN32)
+#if defined(_WIN32)
 struct DIR;
 
 struct dirent { // XXX - only d_name implemented
@@ -136,7 +136,7 @@ int closedir(DIR *d);
 /* Use system-supplied opendir/readdir/closedir functions */
 # include <sys/types.h>
 # include <dirent.h>
-#endif /* defined(WIN32) */
+#endif /* defined(_WIN32) */
 
 /**
  * A wrapper around opendir() which will convert the string from

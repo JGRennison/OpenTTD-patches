@@ -50,7 +50,7 @@ struct GoalListWindow : public Window {
 		this->OnInvalidateData(0);
 	}
 
-	/* virtual */ void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		if (widget != WID_GOAL_CAPTION) return;
 
@@ -62,7 +62,7 @@ struct GoalListWindow : public Window {
 		}
 	}
 
-	/* virtual */ void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		if (widget != WID_GOAL_LIST) return;
 
@@ -101,7 +101,7 @@ struct GoalListWindow : public Window {
 
 	/**
 	 * Handle clicking at a goal.
-	 * @param s @Goal clicked at.
+	 * @param s #Goal clicked at.
 	 */
 	void HandleClick(const Goal *s)
 	{
@@ -177,7 +177,7 @@ struct GoalListWindow : public Window {
 		return 3 + num_global + num_company;
 	}
 
-	/* virtual */ void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		if (widget != WID_GOAL_LIST) return;
 		Dimension d = maxdim(GetStringBoundingBox(STR_GOALS_GLOBAL_TITLE), GetStringBoundingBox(STR_GOALS_COMPANY_TITLE));
@@ -193,7 +193,7 @@ struct GoalListWindow : public Window {
 	/**
 	 * Draws either the global goals or the company goal section.
 	 * This is a helper method for #DrawWidget.
-	 * @param pos [inout] Vertical line number to draw.
+	 * @param[in,out] pos Vertical line number to draw.
 	 * @param cap Number of lines to draw in the window.
 	 * @param x Left edge of the text line to draw.
 	 * @param y Vertical position of the top edge of the window.
@@ -250,8 +250,8 @@ struct GoalListWindow : public Window {
 	/**
 	 * Draws a given column of the goal list.
 	 * @param column Which column to draw.
-	 * @wid Pointer to the goal list widget.
-	 * @progress_col_width Width of the progress column.
+	 * @param wid Pointer to the goal list widget.
+	 * @param progress_col_width Width of the progress column.
 	 * @return max width of drawn text
 	 */
 	void DrawListColumn(GoalColumn column, NWidgetBase *wid, uint progress_col_width) const
@@ -272,7 +272,7 @@ struct GoalListWindow : public Window {
 		DrawPartialGoalList(pos, cap, x, y, right, progress_col_width, false, column);
 	}
 
-	/* virtual */ void OnPaint()
+	void OnPaint() override
 	{
 		this->DrawWidgets();
 
@@ -299,7 +299,7 @@ struct GoalListWindow : public Window {
 
 	}
 
-	/* virtual */ void OnResize()
+	void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_GOAL_LIST);
 	}
@@ -309,7 +309,7 @@ struct GoalListWindow : public Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	/* virtual */ void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		this->vscroll->SetCount(this->CountLines());
@@ -388,7 +388,7 @@ struct GoalQuestionWindow : public Window {
 		free(this->question);
 	}
 
-	/* virtual */ void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_GQ_CAPTION:
@@ -409,7 +409,7 @@ struct GoalQuestionWindow : public Window {
 		}
 	}
 
-	/* virtual */ void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_GQ_BUTTON_1:
@@ -429,7 +429,7 @@ struct GoalQuestionWindow : public Window {
 		}
 	}
 
-	/* virtual */ void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		if (widget != WID_GQ_QUESTION) return;
 
@@ -437,7 +437,7 @@ struct GoalQuestionWindow : public Window {
 		size->height = GetStringHeight(STR_JUST_RAW_STRING, size->width) + WD_PAR_VSEP_WIDE;
 	}
 
-	/* virtual */ void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget != WID_GQ_QUESTION) return;
 

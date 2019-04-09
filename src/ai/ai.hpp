@@ -32,7 +32,7 @@ public:
 		START_NEXT_EASY   = DAYS_IN_YEAR * 2,
 		START_NEXT_MEDIUM = DAYS_IN_YEAR,
 		START_NEXT_HARD   = DAYS_IN_YEAR / 2,
-		START_NEXT_MIN    = 1,
+		START_NEXT_MIN    = 0,
 		START_NEXT_MAX    = 3600,
 		START_NEXT_DEVIATION = 60,
 	};
@@ -164,11 +164,9 @@ public:
 	/** Gets the ScriptScanner instance that is used to find AI Libraries */
 	static AIScannerLibrary *GetScannerLibrary();
 
-#if defined(ENABLE_NETWORK)
 	/** Wrapper function for AIScanner::HasAI */
 	static bool HasAI(const struct ContentInfo *ci, bool md5sum);
 	static bool HasAILibrary(const ContentInfo *ci, bool md5sum);
-#endif
 private:
 	static uint frame_counter;                      ///< Tick counter for the AI code
 	static class AIScannerInfo *scanner_info;       ///< ScriptScanner instance that is used to find AIs

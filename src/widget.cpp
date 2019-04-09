@@ -99,7 +99,7 @@ static void ScrollbarClickPositioning(Window *w, NWidgetScrollbar *sb, int x, in
 			_scroller_click_timeout = 3;
 			sb->UpdatePosition(rtl ? 1 : -1);
 		}
-		w->scrolling_scrollbar = sb->index;
+		w->mouse_capture_widget = sb->index;
 	} else if (pos >= ma - button_size) {
 		/* Pressing the lower button? */
 		SetBit(sb->disp_flags, NDB_SCROLLBAR_DOWN);
@@ -108,7 +108,7 @@ static void ScrollbarClickPositioning(Window *w, NWidgetScrollbar *sb, int x, in
 			_scroller_click_timeout = 3;
 			sb->UpdatePosition(rtl ? -1 : 1);
 		}
-		w->scrolling_scrollbar = sb->index;
+		w->mouse_capture_widget = sb->index;
 	} else {
 		Point pt = HandleScrollbarHittest(sb, mi, ma, sb->type == NWID_HSCROLLBAR);
 
@@ -119,7 +119,7 @@ static void ScrollbarClickPositioning(Window *w, NWidgetScrollbar *sb, int x, in
 		} else {
 			_scrollbar_start_pos = pt.x - mi - button_size;
 			_scrollbar_size = ma - mi - button_size * 2;
-			w->scrolling_scrollbar = sb->index;
+			w->mouse_capture_widget = sb->index;
 			_cursorpos_drag_start = _cursor.pos;
 		}
 	}
@@ -755,7 +755,7 @@ NWidgetBase::NWidgetBase(WidgetType tp) : ZeroedMemoryAllocator()
  */
 
 /**
- * @fn void FillNestedArray(NWidgetBase **array, uint length)
+ * @fn void NWidgetBase::FillNestedArray(NWidgetBase **array, uint length)
  * Fill the Window::nested_array array with pointers to nested widgets in the tree.
  * @param array Base pointer of the array.
  * @param length Length of the array.
@@ -1673,10 +1673,10 @@ NWidgetCore *NWidgetMatrix::GetWidgetFromPos(int x, int y)
 
 /**
  * Get the different offsets that are influenced by scrolling.
- * @param [out] start_x     The start position in columns (index of the left-most column, swapped in RTL).
- * @param [out] start_y     The start position in rows.
- * @param [out] base_offs_x The base horizontal offset in pixels (X position of the column \a start_x).
- * @param [out] base_offs_y The base vertical offset in pixels (Y position of the column \a start_y).
+ * @param[out] start_x     The start position in columns (index of the left-most column, swapped in RTL).
+ * @param[out] start_y     The start position in rows.
+ * @param[out] base_offs_x The base horizontal offset in pixels (X position of the column \a start_x).
+ * @param[out] base_offs_y The base vertical offset in pixels (Y position of the column \a start_y).
  */
 void NWidgetMatrix::GetScrollOffsets(int &start_x, int &start_y, int &base_offs_x, int &base_offs_y)
 {
@@ -2038,7 +2038,7 @@ void NWidgetScrollbar::Draw(const Window *w)
 
 	bool up_lowered = HasBit(this->disp_flags, NDB_SCROLLBAR_UP);
 	bool down_lowered = HasBit(this->disp_flags, NDB_SCROLLBAR_DOWN);
-	bool middle_lowered = !(this->disp_flags & ND_SCROLLBAR_BTN) && w->scrolling_scrollbar == this->index;
+	bool middle_lowered = !(this->disp_flags & ND_SCROLLBAR_BTN) && w->mouse_capture_widget == this->index;
 
 	if (this->type == NWID_HSCROLLBAR) {
 		DrawHorizontalScrollbar(r, this->colour, up_lowered, middle_lowered, down_lowered, this);
@@ -2805,7 +2805,7 @@ NWidgetContainer *MakeNWidgets(const NWidgetPart *parts, int count, int *biggest
  * @param parts Array with parts of the widgets.
  * @param count Length of the \a parts array.
  * @param biggest_index Pointer to biggest nested widget index collected in the tree.
- * @param [out] shade_select Pointer to the inserted shade selection widget (\c NULL if not unserted).
+ * @param[out] shade_select Pointer to the inserted shade selection widget (\c NULL if not unserted).
  * @return Root of the nested widget tree, a vertical container containing the entire GUI.
  * @ingroup NestedWidgetParts
  * @pre \c biggest_index != NULL

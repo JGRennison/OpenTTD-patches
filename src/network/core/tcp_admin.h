@@ -19,8 +19,6 @@
 #include "../network_type.h"
 #include "../../core/pool_type.hpp"
 
-#ifdef ENABLE_NETWORK
-
 /**
  * Enum with types of TCP packets specific to the admin network.
  * This protocol may only be extended to ensure stability.
@@ -363,7 +361,7 @@ protected:
 	 * uint8   ID of the company.
 	 * uint64  Money.
 	 * uint64  Loan.
-	 * uint64  Income.
+	 * int64   Income.
 	 * uint16  Delivered cargo (this quarter).
 	 * uint64  Company value (last quarter).
 	 * uint16  Performance (last quarter).
@@ -483,7 +481,7 @@ protected:
 
 	NetworkRecvStatus HandlePacket(Packet *p);
 public:
-	NetworkRecvStatus CloseConnection(bool error = true);
+	NetworkRecvStatus CloseConnection(bool error = true) override;
 
 	NetworkAdminSocketHandler(SOCKET s);
 	~NetworkAdminSocketHandler();
@@ -499,7 +497,5 @@ public:
 		return this->status;
 	}
 };
-
-#endif /* ENABLE_NETWORK */
 
 #endif /* NETWORK_CORE_TCP_ADMIN_H */

@@ -1,6 +1,6 @@
 # Version numbers to update
 !define APPV_MAJOR 1
-!define APPV_MINOR 9
+!define APPV_MINOR 10
 !define APPV_MAINT 0
 !define APPV_BUILD 0
 !define APPV_EXTRA "-beta1"
@@ -24,6 +24,7 @@
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "top.bmp"
 
+ManifestDPIAware true
 BrandingText "OpenTTD Installer"
 SetCompressor LZMA
 

@@ -383,15 +383,21 @@ bool FindSubsidyIndustryCargoRoute()
 	CargoID cid;
 
 	/* Randomize cargo type */
-	if (src_ind->produced_cargo[1] != CT_INVALID && HasBit(Random(), 0)) {
-		cid = src_ind->produced_cargo[1];
-		trans = src_ind->last_month_pct_transported[1];
-		total = src_ind->last_month_production[1];
-	} else {
-		cid = src_ind->produced_cargo[0];
-		trans = src_ind->last_month_pct_transported[0];
-		total = src_ind->last_month_production[0];
+	int num_cargos = 0;
+	uint cargo_index;
+	for (cargo_index = 0; cargo_index < lengthof(src_ind->produced_cargo); cargo_index++) {
+		if (src_ind->produced_cargo[cargo_index] != CT_INVALID) num_cargos++;
 	}
+	if (num_cargos == 0) return false; // industry produces nothing
+	int cargo_num = RandomRange(num_cargos) + 1;
+	for (cargo_index = 0; cargo_index < lengthof(src_ind->produced_cargo); cargo_index++) {
+		if (src_ind->produced_cargo[cargo_index] != CT_INVALID) cargo_num--;
+		if (cargo_num == 0) break;
+	}
+	assert(cargo_num == 0); // indicates loop didn't break as intended
+	cid = src_ind->produced_cargo[cargo_index];
+	trans = src_ind->last_month_pct_transported[cargo_index];
+	total = src_ind->last_month_production[cargo_index];
 
 	/* Quit if no production in this industry
 	 * or if the pct transported is already large enough
@@ -435,14 +441,11 @@ bool FindSubsidyCargoDestination(CargoID cid, SourceType src_type, SourceID src)
 		case ST_INDUSTRY: {
 			/* Select a random industry. */
 			const Industry *dst_ind = Industry::GetRandom();
+			if (dst_ind == NULL) return false;
 
 			/* The industry must accept the cargo */
-			if (dst_ind == NULL ||
-					(cid != dst_ind->accepts_cargo[0] &&
-					 cid != dst_ind->accepts_cargo[1] &&
-					 cid != dst_ind->accepts_cargo[2])) {
-				return false;
-			}
+			bool valid = std::find(dst_ind->accepts_cargo, endof(dst_ind->accepts_cargo), cid) != endof(dst_ind->accepts_cargo);
+			if (!valid) return false;
 
 			dst = dst_ind->index;
 			break;
@@ -561,7 +564,7 @@ bool CheckSubsidised(CargoID cargo_type, CompanyID company, SourceType src_type,
 
 	/* Remember all towns near this station (at least one house in its catchment radius)
 	 * which are destination of subsidised path. Do that only if needed */
-	SmallVector<const Town *, 2> towns_near;
+	std::vector<const Town *> towns_near;
 	if (!st->rect.IsEmpty()) {
 		Subsidy *s;
 		FOR_ALL_SUBSIDIES(s) {
@@ -570,15 +573,11 @@ bool CheckSubsidised(CargoID cargo_type, CompanyID company, SourceType src_type,
 			if (s->cargo_type != cargo_type || s->src_type != src_type || s->src != src) continue;
 			if (s->IsAwarded() && s->awarded != company) continue;
 
-			Rect rect = st->GetCatchmentRect();
-
-			for (int y = rect.top; y <= rect.bottom; y++) {
-				for (int x = rect.left; x <= rect.right; x++) {
-					TileIndex tile = TileXY(x, y);
-					if (!IsTileType(tile, MP_HOUSE)) continue;
-					const Town *t = Town::GetByTile(tile);
-					if (t->cache.part_of_subsidy & POS_DST) towns_near.Include(t);
-				}
+			BitmapTileIterator it(st->catchment_tiles);
+			for (TileIndex tile = it; tile != INVALID_TILE; tile = ++it) {
+				if (!IsTileType(tile, MP_HOUSE)) continue;
+				const Town *t = Town::GetByTile(tile);
+				if (t->cache.part_of_subsidy & POS_DST) include(towns_near, t);
 			}
 			break;
 		}
@@ -593,18 +592,18 @@ bool CheckSubsidised(CargoID cargo_type, CompanyID company, SourceType src_type,
 		if (s->cargo_type == cargo_type && s->src_type == src_type && s->src == src && (!s->IsAwarded() || s->awarded == company)) {
 			switch (s->dst_type) {
 				case ST_INDUSTRY:
-					for (const Industry * const *ip = st->industries_near.Begin(); ip != st->industries_near.End(); ip++) {
-						if (s->dst == (*ip)->index) {
-							assert((*ip)->part_of_subsidy & POS_DST);
+					for (Industry *ind : st->industries_near) {
+						if (s->dst == ind->index) {
+							assert(ind->part_of_subsidy & POS_DST);
 							subsidised = true;
 							if (!s->IsAwarded()) s->AwardTo(company);
 						}
 					}
 					break;
 				case ST_TOWN:
-					for (const Town * const *tp = towns_near.Begin(); tp != towns_near.End(); tp++) {
-						if (s->dst == (*tp)->index) {
-							assert((*tp)->cache.part_of_subsidy & POS_DST);
+					for (const Town *tp : towns_near) {
+						if (s->dst == tp->index) {
+							assert(tp->cache.part_of_subsidy & POS_DST);
 							subsidised = true;
 							if (!s->IsAwarded()) s->AwardTo(company);
 						}

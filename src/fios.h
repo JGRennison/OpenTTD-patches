@@ -18,6 +18,13 @@
 #include "network/core/tcp_content.h"
 
 
+/** Special values for save-load window for the data parameter of #InvalidateWindowData. */
+enum SaveLoadInvalidateWindowData {
+	SLIWD_RESCAN_FILES,          ///< Rescan all files (when changed directory, ...)
+	SLIWD_SELECTION_CHANGES,     ///< File selection has changed (user click, ...)
+	SLIWD_FILTER_CHANGES,        ///< The filename filter has changed (via the editbox)
+};
+
 typedef SmallMap<uint, CompanyProperties *> CompanyPropertiesMap;
 
 /**
@@ -113,16 +120,17 @@ public:
 	 */
 	inline FiosItem *Append()
 	{
-		return this->files.Append();
+		/*C++17: return &*/ this->files.emplace_back();
+		return &this->files.back();
 	}
 
 	/**
 	 * Get the number of files in the list.
 	 * @return The number of files stored in the list.
 	 */
-	inline uint Length() const
+	inline size_t Length() const
 	{
-		return this->files.Length();
+		return this->files.size();
 	}
 
 	/**
@@ -131,7 +139,7 @@ public:
 	 */
 	inline const FiosItem *Begin() const
 	{
-		return this->files.Begin();
+		return this->files.data();
 	}
 
 	/**
@@ -140,28 +148,28 @@ public:
 	 */
 	inline const FiosItem *End() const
 	{
-		return this->files.End();
+		return this->Begin() + this->Length();
 	}
 
 	/**
 	 * Get a pointer to the indicated file information. File information must exist.
 	 * @return Address of the indicated existing file information.
 	 */
-	inline const FiosItem *Get(uint index) const
+	inline const FiosItem *Get(size_t index) const
 	{
-		return this->files.Get(index);
+		return this->files.data() + index;
 	}
 
 	/**
 	 * Get a pointer to the indicated file information. File information must exist.
 	 * @return Address of the indicated existing file information.
 	 */
-	inline FiosItem *Get(uint index)
+	inline FiosItem *Get(size_t index)
 	{
-		return this->files.Get(index);
+		return this->files.data() + index;
 	}
 
-	inline const FiosItem &operator[](uint index) const
+	inline const FiosItem &operator[](size_t index) const
 	{
 		return this->files[index];
 	}
@@ -170,7 +178,7 @@ public:
 	 * Get a reference to the indicated file information. File information must exist.
 	 * @return The requested file information.
 	 */
-	inline FiosItem &operator[](uint index)
+	inline FiosItem &operator[](size_t index)
 	{
 		return this->files[index];
 	}
@@ -178,19 +186,19 @@ public:
 	/** Remove all items from the list. */
 	inline void Clear()
 	{
-		this->files.Clear();
+		this->files.clear();
 	}
 
 	/** Compact the list down to the smallest block size boundary. */
 	inline void Compact()
 	{
-		this->files.Compact();
+		this->files.shrink_to_fit();
 	}
 
 	void BuildFileList(AbstractFileType abstract_filetype, SaveLoadOperation fop);
 	const FiosItem *FindItem(const char *file);
 
-	SmallVector<FiosItem, 32> files; ///< The list of files.
+	std::vector<FiosItem> files; ///< The list of files.
 };
 
 enum SortingBits {

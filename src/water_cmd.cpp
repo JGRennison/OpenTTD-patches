@@ -428,7 +428,7 @@ CommandCost CmdBuildCanal(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 					MakeRiver(tile, Random());
 					if (_game_mode == GM_EDITOR) {
 						TileIndex tile2 = tile;
-						CircularTileSearch(&tile2, 5, RiverModifyDesertZone, NULL);
+						CircularTileSearch(&tile2, RIVER_OFFSET_DESERT_DISTANCE, RiverModifyDesertZone, NULL);
 					}
 					break;
 
@@ -895,7 +895,7 @@ static void GetTileDesc_Water(TileIndex tile, TileDesc *td)
 				case WATER_CLASS_SEA:   td->str = STR_LAI_WATER_DESCRIPTION_WATER; break;
 				case WATER_CLASS_CANAL: td->str = STR_LAI_WATER_DESCRIPTION_CANAL; break;
 				case WATER_CLASS_RIVER: td->str = STR_LAI_WATER_DESCRIPTION_RIVER; break;
-				default: NOT_REACHED(); break;
+				default: NOT_REACHED();
 			}
 			break;
 		case WATER_TILE_COAST: td->str = STR_LAI_WATER_DESCRIPTION_COAST_OR_RIVERBANK; break;
@@ -904,7 +904,7 @@ static void GetTileDesc_Water(TileIndex tile, TileDesc *td)
 			td->str = STR_LAI_WATER_DESCRIPTION_SHIP_DEPOT;
 			td->build_date = Depot::GetByTile(tile)->build_date;
 			break;
-		default: NOT_REACHED(); break;
+		default: NOT_REACHED();
 	}
 
 	td->owner[0] = GetTileOwner(tile);

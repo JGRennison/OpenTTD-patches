@@ -184,12 +184,12 @@ uint SpriteFontCache::GetGlyphWidth(GlyphID key)
 {
 	SpriteID sprite = this->GetUnicodeGlyph(key);
 	if (sprite == 0) sprite = this->GetUnicodeGlyph('?');
-	return SpriteExists(sprite) ? GetSprite(sprite, ST_FONT)->width + ScaleGUITrad(this->fs != FS_NORMAL ? 1 : 0) : 0;
+	return SpriteExists(sprite) ? GetSprite(sprite, ST_FONT)->width + ScaleFontTrad(this->fs != FS_NORMAL ? 1 : 0) : 0;
 }
 
 int SpriteFontCache::GetHeight() const
 {
-	return ScaleGUITrad(this->height);
+	return ScaleFontTrad(this->height);
 }
 
 bool SpriteFontCache::GetDrawGlyphShadow()
@@ -210,6 +210,7 @@ class FreeTypeFontCache : public FontCache {
 private:
 	FT_Face face;  ///< The font face associated with this font.
 	int req_size;  ///< Requested font size.
+	int used_size; ///< Used font size.
 
 	typedef SmallMap<uint32, SmallPair<size_t, const void*> > FontTable; ///< Table with font table cache
 	FontTable font_tables; ///< Cached font tables.
@@ -243,6 +244,7 @@ private:
 public:
 	FreeTypeFontCache(FontSize fs, FT_Face face, int pixels);
 	~FreeTypeFontCache();
+	virtual int GetFontSize() const { return this->used_size; }
 	virtual SpriteID GetUnicodeGlyph(WChar key) { return this->parent->GetUnicodeGlyph(key); }
 	virtual void SetUnicodeGlyph(WChar key, SpriteID sprite) { this->parent->SetUnicodeGlyph(key, sprite); }
 	virtual void InitializeUnicodeGlyphMap() { this->parent->InitializeUnicodeGlyphMap(); }
@@ -280,17 +282,20 @@ void FreeTypeFontCache::SetFontSize(FontSize fs, FT_Face face, int pixels)
 {
 	if (pixels == 0) {
 		/* Try to determine a good height based on the minimal height recommended by the font. */
-		int scaled_height = ScaleGUITrad(_default_font_height[this->fs]);
+		int scaled_height = ScaleFontTrad(_default_font_height[this->fs]);
 		pixels = scaled_height;
 
 		TT_Header *head = (TT_Header *)FT_Get_Sfnt_Table(this->face, ft_sfnt_head);
 		if (head != NULL) {
 			/* Font height is minimum height plus the difference between the default
 			 * height for this font size and the small size. */
-			int diff = scaled_height - ScaleGUITrad(_default_font_height[FS_SMALL]);
+			int diff = scaled_height - ScaleFontTrad(_default_font_height[FS_SMALL]);
 			pixels = Clamp(min(head->Lowest_Rec_PPEM, 20) + diff, scaled_height, MAX_FONT_SIZE);
 		}
+	} else {
+		pixels = ScaleFontTrad(pixels);
 	}
+	this->used_size = pixels;
 
 	FT_Error err = FT_Set_Pixel_Sizes(this->face, 0, pixels);
 	if (err != FT_Err_Ok) {
@@ -406,8 +411,8 @@ FreeTypeFontCache::~FreeTypeFontCache()
 	this->face = NULL;
 	this->ClearFontCache();
 
-	for (FontTable::iterator iter = this->font_tables.Begin(); iter != this->font_tables.End(); iter++) {
-		free(iter->second.second);
+	for (auto &iter : this->font_tables) {
+		free(iter.second.second);
 	}
 }
 
@@ -416,6 +421,9 @@ FreeTypeFontCache::~FreeTypeFontCache()
  */
 void FreeTypeFontCache::ClearFontCache()
 {
+	/* Font scaling might have changed, determine font size anew if it was automatically selected. */
+	if (this->face != NULL) this->SetFontSize(this->fs, this->face, this->req_size);
+
 	if (this->glyph_to_sprite == NULL) return;
 
 	for (int i = 0; i < 256; i++) {
@@ -433,9 +441,6 @@ void FreeTypeFontCache::ClearFontCache()
 	this->glyph_to_sprite = NULL;
 
 	Layouter::ResetFontCache(this->fs);
-
-	/* GUI scaling might have changed, determine font size anew if it was automatically selected. */
-	if (this->face != NULL && this->req_size == 0) this->SetFontSize(this->fs, this->face, this->req_size);
 }
 
 FreeTypeFontCache::GlyphEntry *FreeTypeFontCache::GetGlyphPtr(GlyphID key)
@@ -543,7 +548,7 @@ const Sprite *FreeTypeFontCache::GetGlyph(GlyphID key)
 			return glyph->sprite;
 		}
 	}
-	FT_Load_Glyph(this->face, key, FT_LOAD_DEFAULT);
+	FT_Load_Glyph(this->face, key, aa ? FT_LOAD_TARGET_NORMAL : FT_LOAD_TARGET_MONO);
 	FT_Render_Glyph(this->face->glyph, aa ? FT_RENDER_MODE_NORMAL : FT_RENDER_MODE_MONO);
 
 	/* Despite requesting a normal glyph, FreeType may have returned a bitmap */
@@ -628,7 +633,7 @@ GlyphID FreeTypeFontCache::MapCharToGlyph(WChar key)
 const void *FreeTypeFontCache::GetFontTable(uint32 tag, size_t &length)
 {
 	const FontTable::iterator iter = this->font_tables.Find(tag);
-	if (iter != this->font_tables.End()) {
+	if (iter != this->font_tables.data() + this->font_tables.size()) {
 		length = iter->second.first;
 		return iter->second.second;
 	}

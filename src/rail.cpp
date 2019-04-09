@@ -180,14 +180,24 @@ RailType GetTileRailType(TileIndex tile)
 }
 
 /**
- * Finds out if a company has a certain railtype available
+ * Finds out if a company has a certain buildable railtype available.
  * @param company the company in question
  * @param railtype requested RailType
  * @return true if company has requested RailType available
  */
 bool HasRailtypeAvail(const CompanyID company, const RailType railtype)
 {
-	return HasBit(Company::Get(company)->avail_railtypes, railtype);
+	return !HasBit(_railtypes_hidden_mask, railtype) && HasBit(Company::Get(company)->avail_railtypes, railtype);
+}
+
+/**
+ * Test if any buildable railtype is available for a company.
+ * @param company the company in question
+ * @return true if company has any RailTypes available
+ */
+bool HasAnyRailtypesAvail(const CompanyID company)
+{
+	return (Company::Get(company)->avail_railtypes & ~_railtypes_hidden_mask) != 0;
 }
 
 /**
@@ -251,14 +261,15 @@ RailTypes AddDateIntroducedRailTypes(RailTypes current, Date date)
 
 /**
  * Get the rail types the given company can build.
- * @param c the company to get the rail types for.
+ * @param company the company to get the rail types for.
+ * @param introduces If true, include rail types introduced by other rail types
  * @return the rail types.
  */
-RailTypes GetCompanyRailtypes(CompanyID company)
+RailTypes GetCompanyRailtypes(CompanyID company, bool introduces)
 {
 	RailTypes rts = RAILTYPES_NONE;
 
-	Engine *e;
+	const Engine *e;
 	FOR_ALL_ENGINES_OF_TYPE(e, VEH_TRAIN) {
 		const EngineInfo *ei = &e->info;
 
@@ -268,12 +279,46 @@ RailTypes GetCompanyRailtypes(CompanyID company)
 
 			if (rvi->railveh_type != RAILVEH_WAGON) {
 				assert(rvi->railtype < RAILTYPE_END);
-				rts |= GetRailTypeInfo(rvi->railtype)->introduces_railtypes;
+				if (introduces) {
+					rts |= GetRailTypeInfo(rvi->railtype)->introduces_railtypes;
+				} else {
+					SetBit(rts, rvi->railtype);
+				}
 			}
 		}
 	}
 
-	return AddDateIntroducedRailTypes(rts, _date);
+	if (introduces) return AddDateIntroducedRailTypes(rts, _date);
+	return rts;
+}
+
+/**
+ * Get list of rail types, regardless of company availability.
+ * @param introduces If true, include rail types introduced by other rail types
+ * @return the rail types.
+ */
+RailTypes GetRailTypes(bool introduces)
+{
+	RailTypes rts = RAILTYPES_NONE;
+
+	const Engine *e;
+	FOR_ALL_ENGINES_OF_TYPE(e, VEH_TRAIN) {
+		const EngineInfo *ei = &e->info;
+		if (!HasBit(ei->climates, _settings_game.game_creation.landscape)) continue;
+
+		const RailVehicleInfo *rvi = &e->u.rail;
+		if (rvi->railveh_type != RAILVEH_WAGON) {
+			assert(rvi->railtype < RAILTYPE_END);
+			if (introduces) {
+				rts |= GetRailTypeInfo(rvi->railtype)->introduces_railtypes;
+			} else {
+				SetBit(rts, rvi->railtype);
+			}
+		}
+	}
+
+	if (introduces) return AddDateIntroducedRailTypes(rts, MAX_DAY);
+	return rts;
 }
 
 /**
@@ -294,7 +339,7 @@ RailType GetRailTypeByLabel(RailTypeLabel label, bool allow_alternate_labels)
 		/* Test if any rail type defines the label as an alternate. */
 		for (RailType r = RAILTYPE_BEGIN; r != RAILTYPE_END; r++) {
 			const RailtypeInfo *rti = GetRailTypeInfo(r);
-			if (rti->alternate_labels.Contains(label)) return r;
+			if (std::find(rti->alternate_labels.begin(), rti->alternate_labels.end(), label) != rti->alternate_labels.end()) return r;
 		}
 	}
 

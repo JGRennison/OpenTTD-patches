@@ -21,21 +21,14 @@
 #include <stdarg.h>
 #include <exception>
 
-#if (!defined(WIN32) && !defined(WIN64)) || defined(__CYGWIN__)
+#if !defined(_WIN32) || defined(__CYGWIN__)
 #include <unistd.h>
 #include <sys/stat.h>
 #endif
 
-#if defined WIN32 || defined __WATCOMC__
+#if defined(_WIN32) || defined(__WATCOMC__)
 #include <direct.h>
-#endif /* WIN32 || __WATCOMC__ */
-
-#ifdef __MORPHOS__
-#ifdef stderr
-#undef stderr
-#endif
-#define stderr stdout
-#endif /* __MORPHOS__ */
+#endif /* _WIN32 || __WATCOMC__ */
 
 #include "../table/strgen_tables.h"
 
@@ -122,14 +115,14 @@ struct FileStringReader : StringReader {
 		fclose(this->fh);
 	}
 
-	/* virtual */ char *ReadLine(char *buffer, const char *last)
+	char *ReadLine(char *buffer, const char *last) override
 	{
 		return fgets(buffer, ClampToU16(last - buffer + 1), this->fh);
 	}
 
-	/* virtual */ void HandlePragma(char *str);
+	void HandlePragma(char *str) override;
 
-	/* virtual */ void ParseFile()
+	void ParseFile() override
 	{
 		this->StringReader::ParseFile();
 
@@ -215,7 +208,10 @@ bool CompareFiles(const char *n1, const char *n2)
 	if (f2 == NULL) return false;
 
 	FILE *f1 = fopen(n1, "rb");
-	if (f1 == NULL) error("can't open %s", n1);
+	if (f1 == NULL) {
+		fclose(f2);
+		error("can't open %s", n1);
+	}
 
 	size_t l1, l2;
 	do {
@@ -330,9 +326,9 @@ struct HeaderFileWriter : HeaderWriter, FileWriter {
 			unlink(this->filename);
 		} else {
 			/* else rename tmp.xxx into filename */
-	#if defined(WIN32) || defined(WIN64)
+#	if defined(_WIN32)
 			unlink(this->real_filename);
-	#endif
+#	endif
 			if (rename(this->filename, this->real_filename) == -1) error("rename() failed");
 		}
 	}
@@ -374,7 +370,7 @@ static inline void ottd_mkdir(const char *directory)
 {
 	/* Ignore directory creation errors; they'll surface later on, and most
 	 * of the time they are 'directory already exists' errors anyhow. */
-#if defined(WIN32) || defined(__WATCOMC__)
+#if defined(_WIN32) || defined(__WATCOMC__)
 	mkdir(directory);
 #else
 	mkdir(directory, 0755);
@@ -396,11 +392,13 @@ static inline char *mkpath(char *buf, const char *last, const char *path, const 
 	return buf;
 }
 
-#if defined(__MINGW32__)
+#if defined(_WIN32)
 /**
  * On MingW, it is common that both / as \ are accepted in the
  * params. To go with those flow, we rewrite all incoming /
- * simply to \, so internally we can safely assume \.
+ * simply to \, so internally we can safely assume \, and do
+ * this for all Windows machines to keep identical behaviour,
+ * no matter what your compiler was.
  */
 static inline char *replace_pathsep(char *s)
 {
@@ -537,6 +535,7 @@ int CDECL main(int argc, char *argv[])
 			HeaderFileWriter writer(pathbuf);
 			writer.WriteHeader(data);
 			writer.Finalise(data);
+			if (_errors != 0) return 1;
 		} else if (mgo.numleft >= 1) {
 			char *r;
 
