@@ -334,9 +334,19 @@ char *CrashLog::LogGamelog(char *buffer, const char *last) const
  */
 char *CrashLog::LogRecentNews(char *buffer, const char *last) const
 {
-	buffer += seprintf(buffer, last, "Recent news messages:\n");
-
+	uint total = 0;
 	for (NewsItem *news = _oldest_news; news != NULL; news = news->next) {
+		total++;
+	}
+	uint show = min<uint>(total, 32);
+	buffer += seprintf(buffer, last, "Recent news messages (%u of %u):\n", show, total);
+
+	uint skip = total - show;
+	for (NewsItem *news = _oldest_news; news != NULL; news = news->next) {
+		if (skip) {
+			skip--;
+			continue;
+		}
 		YearMonthDay ymd;
 		ConvertDateToYMD(news->date, &ymd);
 		buffer += seprintf(buffer, last, "(%i-%02i-%02i) StringID: %u, Type: %u, Ref1: %u, %u, Ref2: %u, %u\n",
