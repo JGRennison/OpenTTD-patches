@@ -31,7 +31,7 @@
 #include "news_gui.h"
 #include "scope_info.h"
 #include "command_func.h"
-#include "thread/thread.h"
+#include "thread.h"
 
 #include "ai/ai_info.hpp"
 #include "game/game.hpp"
@@ -394,7 +394,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 
 	if (IsNonMainThread()) {
 		buffer += seprintf(buffer, last, "Non-main thread (");
-		buffer += GetThreadName(buffer, last);
+		buffer += GetCurrentThreadName(buffer, last);
 		buffer += seprintf(buffer, last, ")\n\n");
 	}
 

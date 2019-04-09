@@ -12,7 +12,7 @@
 #ifndef LINKGRAPHJOB_H
 #define LINKGRAPHJOB_H
 
-#include "../thread/thread.h"
+#include "../thread.h"
 #include "../core/dyn_arena_alloc.hpp"
 #include "linkgraph.h"
 #include <vector>

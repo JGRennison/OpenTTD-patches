@@ -21,6 +21,7 @@
 #include "network/network_func.h"
 #include "window_func.h"
 #include "newgrf_debug.h"
+#include "thread.h"
 
 #include "table/palettes.h"
 #include "table/string_colours.h"
@@ -1311,8 +1312,8 @@ void DrawDirtyBlocks()
 	if (HasModalProgress()) {
 		/* We are generating the world, so release our rights to the map and
 		 * painting while we are waiting a bit. */
-		_modal_progress_paint_mutex->EndCritical();
-		_modal_progress_work_mutex->EndCritical();
+		_modal_progress_paint_mutex.unlock();
+		_modal_progress_work_mutex.unlock();
 
 		/* Wait a while and update _realtime_tick so we are given the rights */
 		if (!IsFirstModalProgressLoop()) CSleep(MODAL_PROGRESS_REDRAW_TIMEOUT);
@@ -1320,9 +1321,9 @@ void DrawDirtyBlocks()
 
 		/* Modal progress thread may need blitter access while we are waiting for it. */
 		VideoDriver::GetInstance()->ReleaseBlitterLock();
-		_modal_progress_paint_mutex->BeginCritical();
+		_modal_progress_paint_mutex.lock();
 		VideoDriver::GetInstance()->AcquireBlitterLock();
-		_modal_progress_work_mutex->BeginCritical();
+		_modal_progress_work_mutex.lock();
 
 		/* When we ended with the modal progress, do not draw the blocks.
 		 * Simply let the next run do so, otherwise we would be loading

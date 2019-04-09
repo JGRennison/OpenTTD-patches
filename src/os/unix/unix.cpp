@@ -17,6 +17,7 @@
 #include "../../debug.h"
 #include "../../string_func.h"
 #include "../../fios.h"
+#include "../../thread.h"
 
 
 #include <dirent.h>
@@ -43,11 +44,17 @@
 #include <sys/sysctl.h>
 #endif
 
+#ifndef NO_THREADS
+#include <pthread.h>
+#endif
+
 #if defined(__APPLE__)
-	#if defined(WITH_SDL)
+#	if defined(WITH_SDL)
 		/* the mac implementation needs this file included in the same file as main() */
-		#include <SDL.h>
-	#endif
+#		include <SDL.h>
+#	endif
+
+#	include "../macosx/macos.h"
 #endif
 
 #include "../../safeguards.h"
@@ -266,44 +273,7 @@ bool GetClipboardContents(char *buffer, const char *last)
 #endif
 
 
-/* multi os compatible sleep function */
-
-void CSleep(int milliseconds)
-{
-	usleep(milliseconds * 1000);
-}
-
-
 #ifndef __APPLE__
-uint GetCPUCoreCount()
-{
-	uint count = 1;
-#ifdef HAS_SYSCTL
-	int ncpu = 0;
-	size_t len = sizeof(ncpu);
-
-#ifdef OPENBSD
-	int name[2];
-	name[0] = CTL_HW;
-	name[1] = HW_NCPU;
-	if (sysctl(name, 2, &ncpu, &len, NULL, 0) < 0) {
-	        ncpu = 0;
-	}
-#else
-	if (sysctlbyname("hw.availcpu", &ncpu, &len, NULL, 0) < 0) {
-		sysctlbyname("hw.ncpu", &ncpu, &len, NULL, 0);
-	}
-#endif /* #ifdef OPENBSD */
-
-	if (ncpu > 0) count = ncpu;
-#elif defined(_SC_NPROCESSORS_ONLN)
-	long res = sysconf(_SC_NPROCESSORS_ONLN);
-	if (res > 0) count = res;
-#endif
-
-	return count;
-}
-
 void OSOpenBrowser(const char *url)
 {
 	pid_t child_pid = fork();
@@ -317,4 +287,56 @@ void OSOpenBrowser(const char *url)
 	DEBUG(misc, 0, "Failed to open url: %s", url);
 	exit(0);
 }
+#endif /* __APPLE__ */
+
+void SetCurrentThreadName(const char *threadName) {
+#if !defined(NO_THREADS) && defined(__GLIBC__)
+#if __GLIBC_PREREQ(2, 12)
+	if (threadName) pthread_setname_np(pthread_self(), threadName);
+#endif /* __GLIBC_PREREQ(2, 12) */
+#endif /* !defined(NO_THREADS) && defined(__GLIBC__) */
+#if defined(__APPLE__)
+	MacOSSetThreadName(threadName);
+#endif /* defined(__APPLE__) */
+}
+
+int GetCurrentThreadName(char *str, const char *last)
+{
+#if !defined(NO_THREADS) && defined(__GLIBC__)
+#if __GLIBC_PREREQ(2, 12)
+	char buffer[16];
+	int result = pthread_getname_np(pthread_self(), buffer, sizeof(buffer));
+	if (result == 0) {
+		return seprintf(str, last, "%s", buffer);
+	}
 #endif
+#endif
+	return 0;
+}
+
+static pthread_t main_thread;
+
+void SetSelfAsMainThread()
+{
+#if !defined(NO_THREADS)
+	main_thread = pthread_self();
+#endif
+}
+
+bool IsMainThread()
+{
+#if !defined(NO_THREADS)
+	return main_thread == pthread_self();
+#else
+	return true;
+#endif
+}
+
+bool IsNonMainThread()
+{
+#if !defined(NO_THREADS)
+	return main_thread != pthread_self();
+#else
+	return false;
+#endif
+}

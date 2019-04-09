@@ -142,13 +142,11 @@ void LinkGraphSchedule::JoinNext()
 }
 
 /**
- * Run all handlers for the given Job. This method is tailored to
- * ThreadObject::New.
- * @param j Pointer to a link graph job.
+ * Run all handlers for the given Job.
+ * @param job Pointer to a link graph job.
  */
-/* static */ void LinkGraphSchedule::Run(void *j)
+/* static */ void LinkGraphSchedule::Run(LinkGraphJob *job)
 {
-	LinkGraphJob *job = (LinkGraphJob *)j;
 	for (uint i = 0; i < lengthof(instance.handlers); ++i) {
 		if (job->IsJobAborted()) return;
 		instance.handlers[i]->Run(*job);
@@ -232,20 +230,17 @@ LinkGraphSchedule::~LinkGraphSchedule()
 LinkGraphJobGroup::LinkGraphJobGroup(constructor_token token, std::vector<LinkGraphJob *> jobs) :
 	jobs(std::move(jobs)) { }
 
-void LinkGraphJobGroup::SpawnThread() {
-	ThreadObject *t = nullptr;
-
+void LinkGraphJobGroup::SpawnThread()
+{
 	/**
 	 * Spawn a thread if possible and run the link graph job in the thread. If
 	 * that's not possible run the job right now in the current thread.
 	 */
-	if (ThreadObject::New(&(LinkGraphJobGroup::Run), this, &t, "ottd:linkgraph")) {
-		this->thread.reset(t);
+	if (StartNewThread(&this->thread, "ottd:linkgraph", &(LinkGraphJobGroup::Run), this)) {
 		for (auto &it : this->jobs) {
 			it->SetJobGroup(this->shared_from_this());
 		}
 	} else {
-		this->thread.reset();
 		/* Of course this will hang a bit.
 		 * On the other hand, if you want to play games which make this hang noticably
 		 * on a platform without threads then you'll probably get other problems first.
@@ -257,10 +252,11 @@ void LinkGraphJobGroup::SpawnThread() {
 	}
 }
 
-void LinkGraphJobGroup::JoinThread() {
-	if (!this->thread || this->joined_thread) return;
-	this->thread->Join();
-	this->joined_thread = true;
+void LinkGraphJobGroup::JoinThread()
+{
+	if (this->thread.joinable()) {
+		this->thread.join();
+	}
 }
 
 /**

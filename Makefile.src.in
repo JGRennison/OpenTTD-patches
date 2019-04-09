@@ -143,7 +143,7 @@ $(OBJS_CPP:%.o=%.d): %.d: $(SRC_DIR)/%.cpp $(FILE_DEP)
 
 $(OBJS_MM:%.o=%.d): %.d: $(SRC_DIR)/%.mm $(FILE_DEP)
 	$(E) '$(STAGE) DEP $(<:$(SRC_DIR)/%.mm=%.mm)'
-	$(Q)$(CC_HOST) $(CFLAGS) -MM $< | sed 's@^$(@F:%.d=%.o):@$@ $(@:%.d=%.o):@' > $@
+	$(Q)$(CXX_HOST) $(CFLAGS) $(CXXFLAGS) -MM $< | sed 's@^$(@F:%.d=%.o):@$@ $(@:%.d=%.o):@' > $@
 
 $(OBJS_RC:%.o=%.d): %.d: $(SRC_DIR)/%.rc $(FILE_DEP)
 	$(E) '$(STAGE) DEP $(<:$(SRC_DIR)/%.rc=%.rc)'
@@ -253,7 +253,7 @@ $(filter %sse4.o, $(OBJS_CPP)): %.o: $(SRC_DIR)/%.cpp $(DEP_MASK) $(FILE_DEP)
 
 $(OBJS_MM): %.o: $(SRC_DIR)/%.mm $(DEP_MASK) $(FILE_DEP)
 	$(E) '$(STAGE) Compiling $(<:$(SRC_DIR)/%.mm=%.mm)'
-	$(Q)$(CC_HOST) $(CFLAGS) -c -o $@ $<
+	$(Q)$(CXX_HOST) $(CFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 $(OBJS_RC): %.o: $(SRC_DIR)/%.rc $(FILE_DEP)
 	$(E) '$(STAGE) Compiling resource $(<:$(SRC_DIR)/%.rc=%.rc)'
@@ -277,7 +277,7 @@ endif
 
 # Revision files
 
-$(SRC_DIR)/rev.cpp: $(CONFIG_CACHE_VERSION) $(SRC_DIR)/rev.cpp.in
+$(SRC_DIR)/rev.cpp: $(CONFIG_CACHE_VERSION) $(CONFIG_CACHE_INVOCATION) $(SRC_DIR)/rev.cpp.in
 	$(Q)cat $(SRC_DIR)/rev.cpp.in      | sed "s@\!\!ISODATE\!\!@$(ISODATE)@g;s@!!VERSION!!@$(VERSION)@g;s@!!MODIFIED!!@$(MODIFIED)@g;s@!!DATE!!@`date +%d.%m.%y`@g;s@!!GITHASH!!@$(GITHASH)@g;s@!!ISTAG!!@$(ISTAG)@g;s@!!ISSTABLETAG!!@$(ISSTABLETAG)@g;s@\!\!CONFIGURE_INVOCATION\!\!@$(CONFIGURE_INVOCATION)@g;" > $(SRC_DIR)/rev.cpp
 
 $(SRC_DIR)/os/windows/ottdres.rc: $(CONFIG_CACHE_VERSION) $(SRC_DIR)/os/windows/ottdres.rc.in

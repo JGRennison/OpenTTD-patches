@@ -15,19 +15,17 @@
 #include "../stdafx.h"
 #include "../debug.h"
 #include "../window_func.h"
-#include "../thread/thread.h"
 #include "network_internal.h"
 #include "network_udp.h"
 #include "network_gamelist.h"
+#include <atomic>
 
 #include "../safeguards.h"
 
 NetworkGameList *_network_game_list = NULL;
 
-/** Mutex for handling delayed insertion/querying of servers. */
-static ThreadMutex *_network_game_list_mutex = ThreadMutex::New();
 /** The games to insert when the GUI thread has time for us. */
-static NetworkGameList *_network_game_delayed_insertion_list = NULL;
+static std::atomic<NetworkGameList *> _network_game_delayed_insertion_list(NULL);
 
 /**
  * Add a new item to the linked gamelist, but do it delayed in the next tick
@@ -36,19 +34,17 @@ static NetworkGameList *_network_game_delayed_insertion_list = NULL;
  */
 void NetworkGameListAddItemDelayed(NetworkGameList *item)
 {
-	_network_game_list_mutex->BeginCritical();
-	item->next = _network_game_delayed_insertion_list;
-	_network_game_delayed_insertion_list = item;
-	_network_game_list_mutex->EndCritical();
+	item->next = _network_game_delayed_insertion_list.load(std::memory_order_relaxed);
+	while (!_network_game_delayed_insertion_list.compare_exchange_weak(item->next, item, std::memory_order_acq_rel)) {}
 }
 
 /** Perform the delayed (thread safe) insertion into the game list */
 static void NetworkGameListHandleDelayedInsert()
 {
-	_network_game_list_mutex->BeginCritical();
-	while (_network_game_delayed_insertion_list != NULL) {
-		NetworkGameList *ins_item = _network_game_delayed_insertion_list;
-		_network_game_delayed_insertion_list = ins_item->next;
+	while (true) {
+		NetworkGameList *ins_item = _network_game_delayed_insertion_list.load(std::memory_order_relaxed);
+		while (ins_item != NULL && !_network_game_delayed_insertion_list.compare_exchange_weak(ins_item, ins_item->next, std::memory_order_acq_rel)) {}
+		if (ins_item == NULL) break; // No item left.
 
 		NetworkGameList *item = NetworkGameListAddItem(ins_item->address);
 
@@ -66,7 +62,6 @@ static void NetworkGameListHandleDelayedInsert()
 		}
 		free(ins_item);
 	}
-	_network_game_list_mutex->EndCritical();
 }
 
 /**

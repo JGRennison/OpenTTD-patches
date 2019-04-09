@@ -12,7 +12,7 @@
 #ifndef LINKGRAPHSCHEDULE_H
 #define LINKGRAPHSCHEDULE_H
 
-#include "../thread/thread.h"
+#include "../thread.h"
 #include "linkgraph.h"
 #include <memory>
 
@@ -55,7 +55,7 @@ public:
 	static const uint SPAWN_JOIN_TICK = 21; ///< Tick when jobs are spawned or joined every day.
 	static LinkGraphSchedule instance;
 
-	static void Run(void *j);
+	static void Run(LinkGraphJob *job);
 	static void Clear();
 
 	void SpawnNext();
@@ -85,8 +85,7 @@ class LinkGraphJobGroup : public std::enable_shared_from_this<LinkGraphJobGroup>
 	friend LinkGraphJob;
 
 private:
-	bool joined_thread = false;              ///< True if thread has already been joined
-	std::unique_ptr<ThreadObject> thread;    ///< Thread the job group is running in or NULL if it's running in the main thread.
+	std::thread thread;                      ///< Thread the job group is running in or NULL if it's running in the main thread.
 	const std::vector<LinkGraphJob *> jobs;  ///< The set of jobs in this job set
 
 private:

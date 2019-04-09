@@ -1389,8 +1389,7 @@
     <ResourceCompile Include="..\src\os\windows\ottdres.rc" />
     <ClCompile Include="..\src\os\windows\string_uniscribe.cpp" />
     <ClCompile Include="..\src\os\windows\win32.cpp" />
-    <ClInclude Include="..\src\thread\thread.h" />
-    <ClCompile Include="..\src\thread\thread_win32.cpp" />
+    <ClInclude Include="..\src\thread.h" />
     <ClInclude Include="..\src\tracerestrict.h" />
     <ClCompile Include="..\src\tracerestrict.cpp" />
     <ClCompile Include="..\src\tracerestrict_gui.cpp" />

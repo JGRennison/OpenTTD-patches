@@ -26,7 +26,7 @@
 #include "../debug.h"
 #include "../station_base.h"
 #include "../dock_base.h"
-#include "../thread/thread.h"
+#include "../thread.h"
 #include "../town.h"
 #include "../network/network.h"
 #include "../window_func.h"
@@ -46,6 +46,7 @@
 #include "../string_func_extra.h"
 #include "../fios.h"
 #include "../error.h"
+#include <atomic>
 
 #include "../tbtr_template_vehicle.h"
 
@@ -427,9 +428,9 @@ void NORETURN CDECL SlErrorCorruptFmt(const char *format, ...)
 	SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME, str, true);
 }
 
-typedef void (*AsyncSaveFinishProc)();                ///< Callback for when the savegame loading is finished.
-static AsyncSaveFinishProc _async_save_finish = NULL; ///< Callback to call when the savegame loading is finished.
-static ThreadObject *_save_thread;                    ///< The thread we're using to compress and write a savegame
+typedef void (*AsyncSaveFinishProc)();                      ///< Callback for when the savegame loading is finished.
+static std::atomic<AsyncSaveFinishProc> _async_save_finish; ///< Callback to call when the savegame loading is finished.
+static std::thread _save_thread;                            ///< The thread we're using to compress and write a savegame
 
 /**
  * Called by save thread to tell we finished saving.
@@ -438,9 +439,9 @@ static ThreadObject *_save_thread;                    ///< The thread we're usin
 static void SetAsyncSaveFinish(AsyncSaveFinishProc proc)
 {
 	if (_exit_game) return;
-	while (_async_save_finish != NULL) CSleep(10);
+	while (_async_save_finish.load(std::memory_order_acquire) != NULL) CSleep(10);
 
-	_async_save_finish = proc;
+	_async_save_finish.store(proc, std::memory_order_release);
 }
 
 /**
@@ -448,16 +449,13 @@ static void SetAsyncSaveFinish(AsyncSaveFinishProc proc)
  */
 void ProcessAsyncSaveFinish()
 {
-	if (_async_save_finish == NULL) return;
+	AsyncSaveFinishProc proc = _async_save_finish.exchange(NULL, std::memory_order_acq_rel);
+	if (proc == NULL) return;
 
-	_async_save_finish();
+	proc();
 
-	_async_save_finish = NULL;
-
-	if (_save_thread != NULL) {
-		_save_thread->Join();
-		delete _save_thread;
-		_save_thread = NULL;
+	if (_save_thread.joinable()) {
+		_save_thread.join();
 	}
 }
 
@@ -2759,19 +2757,11 @@ static SaveOrLoadResult SaveFileToDisk(bool threaded)
 	}
 }
 
-/** Thread run function for saving the file to disk. */
-static void SaveFileToDiskThread(void *arg)
-{
-	SaveFileToDisk(true);
-}
-
 void WaitTillSaved()
 {
-	if (_save_thread == NULL) return;
+	if (!_save_thread.joinable()) return;
 
-	_save_thread->Join();
-	delete _save_thread;
-	_save_thread = NULL;
+	_save_thread.join();
 
 	/* Make sure every other state is handled properly as well. */
 	ProcessAsyncSaveFinish();
@@ -2799,7 +2789,8 @@ static SaveOrLoadResult DoSave(SaveFilter *writer, bool threaded)
 	SlSaveChunks();
 
 	SaveFileStart();
-	if (!threaded || !ThreadObject::New(&SaveFileToDiskThread, NULL, &_save_thread, "ottd:savegame")) {
+
+	if (!threaded || !StartNewThread(&_save_thread, "ottd:savegame", &SaveFileToDisk, true)) {
 		if (threaded) DEBUG(sl, 1, "Cannot create savegame thread, reverting to single-threaded mode...");
 
 		SaveOrLoadResult result = SaveFileToDisk(false);

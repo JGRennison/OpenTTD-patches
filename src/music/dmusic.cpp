@@ -19,7 +19,7 @@
 #include "../debug.h"
 #include "../os/windows/win32.h"
 #include "../core/mem_func.hpp"
-#include "../thread/thread.h"
+#include "../thread.h"
 #include "../fileio_func.h"
 #include "../base_media_base.h"
 #include "dmusic.h"
@@ -30,6 +30,7 @@
 #include <dmksctrl.h>
 #include <dmusicc.h>
 #include <algorithm>
+#include <mutex>
 
 #include "../safeguards.h"
 
@@ -138,11 +139,11 @@ static struct {
 } _playback;
 
 /** Handle to our worker thread. */
-static ThreadObject *_dmusic_thread = NULL;
+static std::thread _dmusic_thread;
 /** Event to signal the thread that it should look at a state change. */
 static HANDLE _thread_event = NULL;
 /** Lock access to playback data that is not thread-safe. */
-static ThreadMutex *_thread_mutex = NULL;
+static std::mutex _thread_mutex;
 
 /** The direct music object manages buffers and ports. */
 static IDirectMusic *_music = NULL;
@@ -596,7 +597,7 @@ static void TransmitNotesOff(IDirectMusicBuffer *buffer, REFERENCE_TIME block_ti
 	Sleep(Clamp((block_time - cur_time) / MS_TO_REFTIME, 5, 1000));
 }
 
-static void MidiThreadProc(void *)
+static void MidiThreadProc()
 {
 	DEBUG(driver, 2, "DMusic: Entering playback thread");
 
@@ -655,7 +656,7 @@ static void MidiThreadProc(void *)
 				DEBUG(driver, 2, "DMusic thread: Starting playback");
 				{
 					/* New scope to limit the time the mutex is locked. */
-					ThreadMutexLocker lock(_thread_mutex);
+					std::lock_guard<std::mutex> lock(_thread_mutex);
 
 					current_file.MoveFrom(_playback.next_file);
 					std::swap(_playback.next_segment, current_segment);
@@ -1167,10 +1168,8 @@ const char *MusicDriver_DMusic::Start(const char * const *parm)
 	/* Create playback thread and synchronization primitives. */
 	_thread_event = CreateEvent(NULL, FALSE, FALSE, NULL);
 	if (_thread_event == NULL) return "Can't create thread shutdown event";
-	_thread_mutex = ThreadMutex::New();
-	if (_thread_mutex == NULL) return "Can't create thread mutex";
 
-	if (!ThreadObject::New(&MidiThreadProc, this, &_dmusic_thread, "ottd:dmusic")) return "Can't create MIDI output thread";
+	if (!StartNewThread(&_dmusic_thread, "ottd:dmusic", &MidiThreadProc)) return "Can't create MIDI output thread";
 
 	return NULL;
 }
@@ -1184,10 +1183,10 @@ MusicDriver_DMusic::~MusicDriver_DMusic()
 
 void MusicDriver_DMusic::Stop()
 {
-	if (_dmusic_thread != NULL) {
+	if (_dmusic_thread.joinable()) {
 		_playback.shutdown = true;
 		SetEvent(_thread_event);
-		_dmusic_thread->Join();
+		_dmusic_thread.join();
 	}
 
 	/* Unloaded any instruments we loaded. */
@@ -1223,7 +1222,6 @@ void MusicDriver_DMusic::Stop()
 	}
 
 	CloseHandle(_thread_event);
-	delete _thread_mutex;
 
 	CoUninitialize();
 }
@@ -1231,7 +1229,7 @@ void MusicDriver_DMusic::Stop()
 
 void MusicDriver_DMusic::PlaySong(const MusicSongInfo &song)
 {
-	ThreadMutexLocker lock(_thread_mutex);
+	std::lock_guard<std::mutex> lock(_thread_mutex);
 
 	if (!_playback.next_file.LoadSong(song)) return;
 
