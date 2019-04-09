@@ -168,7 +168,7 @@ Station::~Station()
 	CargoPacket::InvalidateAllFrom(this->index);
 
 	_station_kdtree.Remove(this->index);
-	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeStation(this->index));
+	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeStation(this->index, this->viewport_sign_kdtree_pt));
 }
 
 

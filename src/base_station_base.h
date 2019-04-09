@@ -16,6 +16,7 @@
 #include "command_type.h"
 #include "viewport_type.h"
 #include "station_map.h"
+#include "core/geometry_type.hpp"
 
 typedef Pool<BaseStation, StationID, 32, 64000> StationPool;
 extern StationPool _station_pool;
@@ -75,6 +76,8 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 
 	TileArea train_station;         ///< Tile area the train 'station' part covers
 	StationRect rect;               ///< NOSAVE: Station spread out rectangle maintained by StationRect::xxx() functions
+
+	Point viewport_sign_kdtree_pt;  ///< NOSAVE: Viewport sign kd tree: saved point (for tree removals)
 
 	/**
 	 * Initialize the base station.

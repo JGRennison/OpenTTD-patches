@@ -56,6 +56,6 @@ Waypoint::~Waypoint()
 	if (CleaningPool()) return;
 	DeleteWindowById(WC_WAYPOINT_VIEW, this->index);
 	RemoveOrderFromAllVehicles(OT_GOTO_WAYPOINT, this->index);
-	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeWaypoint(this->index));
+	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeWaypoint(this->index, this->viewport_sign_kdtree_pt));
 	TraceRestrictRemoveDestinationID(TROCAF_WAYPOINT, this->index);
 }

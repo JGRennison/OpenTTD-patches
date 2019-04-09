@@ -65,7 +65,9 @@ struct ViewportSignKdtreeItem {
 	}
 
 	static ViewportSignKdtreeItem MakeStation(StationID id);
+	static ViewportSignKdtreeItem MakeStation(StationID id, Point pt);
 	static ViewportSignKdtreeItem MakeWaypoint(StationID id);
+	static ViewportSignKdtreeItem MakeWaypoint(StationID id, Point pt);
 	static ViewportSignKdtreeItem MakeTown(TownID id);
 	static ViewportSignKdtreeItem MakeSign(SignID id);
 };

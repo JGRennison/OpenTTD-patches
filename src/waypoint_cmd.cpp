@@ -245,7 +245,7 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 			need_sign_update = true;
 		} else if (!wp->IsInUse()) {
 			/* Move existing (recently deleted) waypoint to the new location */
-			if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeWaypoint(wp->index));
+			if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeWaypoint(wp->index, wp->viewport_sign_kdtree_pt));
 			wp->xy = start_tile;
 			need_sign_update = true;
 		}
@@ -320,7 +320,7 @@ CommandCost CmdBuildBuoy(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 			wp = new Waypoint(tile);
 		} else {
 			/* Move existing (recently deleted) buoy to the new location */
-			if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeWaypoint(wp->index));
+			if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeWaypoint(wp->index, wp->viewport_sign_kdtree_pt));
 			wp->xy = tile;
 			InvalidateWindowData(WC_WAYPOINT_VIEW, wp->index);
 		}

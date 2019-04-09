@@ -3266,11 +3266,13 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeStation(StationID id)
 	item.type = VKI_STATION;
 	item.id.station = id;
 
-	const Station *st = Station::Get(id);
+	Station *st = Station::Get(id);
 	Point pt = RemapCoords2(TileX(st->xy) * TILE_SIZE, TileY(st->xy) * TILE_SIZE);
 
 	pt.y -= 32 * ZOOM_LVL_BASE;
 	if ((st->facilities & FACIL_AIRPORT) && st->airport.type == AT_OILRIG) pt.y -= 16 * ZOOM_LVL_BASE;
+
+	st->viewport_sign_kdtree_pt = pt;
 
 	item.center = pt.x;
 	item.top = pt.y;
@@ -3281,16 +3283,28 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeStation(StationID id)
 	return item;
 }
 
+ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeStation(StationID id, Point pt)
+{
+	ViewportSignKdtreeItem item;
+	item.type = VKI_STATION;
+	item.id.station = id;
+	item.center = pt.x;
+	item.top = pt.y;
+	return item;
+}
+
 ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeWaypoint(StationID id)
 {
 	ViewportSignKdtreeItem item;
 	item.type = VKI_WAYPOINT;
 	item.id.station = id;
 
-	const Waypoint *st = Waypoint::Get(id);
+	Waypoint *st = Waypoint::Get(id);
 	Point pt = RemapCoords2(TileX(st->xy) * TILE_SIZE, TileY(st->xy) * TILE_SIZE);
 
 	pt.y -= 32 * ZOOM_LVL_BASE;
+
+	st->viewport_sign_kdtree_pt = pt;
 
 	item.center = pt.x;
 	item.top = pt.y;
@@ -3298,6 +3312,16 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeWaypoint(StationID id)
 	/* Assume the sign can be a candidate for drawing, so measure its width */
 	_viewport_sign_maxwidth = max<int>(_viewport_sign_maxwidth, st->sign.width_normal);
 
+	return item;
+}
+
+ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeWaypoint(StationID id, Point pt)
+{
+	ViewportSignKdtreeItem item;
+	item.type = VKI_WAYPOINT;
+	item.id.station = id;
+	item.center = pt.x;
+	item.top = pt.y;
 	return item;
 }
 
