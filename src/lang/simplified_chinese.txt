@@ -989,6 +989,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :正常大小
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :两倍大小
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :四倍大小
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}基础图形组
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}选择要使用的基础图形组
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} 文件{}未找到或不正确
@@ -1692,7 +1694,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}货物�
 STR_CONFIG_SETTING_AI                                           :{ORANGE}竞争
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}电脑玩家
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :原始的
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(推荐)
 
@@ -1775,13 +1776,9 @@ STR_QUIT_NO                                                     :{BLACK}否
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -2071,9 +2068,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}服务�
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}公司需要密码：
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}客户端列表
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}旁观
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}新公司
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :客户端列表
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :旁观
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :新公司
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :踢出
@@ -2088,7 +2085,6 @@ STR_NETWORK_CLIENT                                              :客户端
 STR_NETWORK_SPECTATORS                                          :旁观者
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}请输入您想赠与的资金数
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}旁观者
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}不保存所输入的密码
@@ -3361,6 +3357,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :未分组汽车
 STR_GROUP_DEFAULT_SHIPS                                         :未分组船只
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :未分组飞机
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}组 - 点击一个组别以显示所有隶属此组的车辆。拖曳组别标签以重新排列组别的次序和层级。
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}创建分组
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}删除分组
@@ -3423,10 +3420,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}购买�
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}购买船只
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}购买飞机
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}购买选定的列车，按住 Shift 键单击可以显示所需资金
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}购买选定的汽车，按住 Shift 键单击可以显示所需资金
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}购买选定的船只，按住 Shift 键单击可以显示所需资金
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}购买选定的飞机，按住 Shift 键单击可以显示所需资金
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}重命名
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}重命名

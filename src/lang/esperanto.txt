@@ -967,6 +967,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normala
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Duobla grandeco
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Kvaroble grandeco
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Baza grafikaro
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Selektu la uzendan bazgrafikaron
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} mankanta{P "" j}/koruptita{P "" j} dosiero{P "" j}
@@ -1366,7 +1368,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Industr
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Konkurantoj
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Komputil-ludantoj
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Originale
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Rekomendite)
 
@@ -1425,13 +1426,9 @@ STR_QUIT_NO                                                     :{BLACK}Ne
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Vindozo
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unikso
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -1713,9 +1710,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Servilo 
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Kompanio estas protektata. Enigu pasvorton
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Klientlisto
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Spekti
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nova kompanio
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Klientlisto
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Spekti
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Nova kompanio
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Forbatu
@@ -2775,6 +2772,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Sengrupaj strat
 STR_GROUP_DEFAULT_SHIPS                                         :Sengrupaj ŝipoj
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Sengrupaj aviadiloj
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Grupoj - klaku grupon por listigi ĉiujn veturilojn de tiu ĉi grupo. Trenu/faligu grupojn por ordigi ĝin
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Klaku por krei grupon
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Viŝu la selektitan grupon
@@ -2828,10 +2826,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Aĉeti V
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Aĉeti Ŝipon
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Aĉeti Aviadilon
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Aĉeti la emfazitan trajnveturilon. Montri taksitaj kostoj sen aĉeti per maljuskliga klavo + Klaki
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Aĉeti la emfazitan stratveturilon. Montri taksitaj kostoj sen aĉeti per maljuskliga klavo + Klaki
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Aĉeti la emfazitan ŝipon. Montri taksitaj kostoj sen aĉeti per maljuskliga klavo + Klaki
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Aĉeti la emfazitan aviadilon. Montri taksitaj kostoj sen aĉeti per maljuskliga klavo + Klaki
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Alinomi
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Alinomi

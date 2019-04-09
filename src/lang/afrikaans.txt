@@ -985,6 +985,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normaal
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dubbel groote
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Quad grootte
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Basis-grafikastel
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Kies die basis-grafikastel stel om te gebruik
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} verlore / korrupte ler{P "" s}
@@ -1683,7 +1685,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Vragver
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Mededingers
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Rekenaar spelers
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Oorspronklik
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Aanbevole)
 
@@ -1766,13 +1767,9 @@ STR_QUIT_NO                                                     :{BLACK}Nee
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -2062,9 +2059,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Verskaff
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Maatskappy is beskerm. Voer wagwoord in
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Klient Lys
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Toeskou
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nuwe maatskapy
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Klient Lys
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Toeskou
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Nuwe maatskapy
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Skop
@@ -2079,7 +2076,6 @@ STR_NETWORK_CLIENT                                              :Klient
 STR_NETWORK_SPECTATORS                                          :Aanskouers
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Sleutel die bedrag geld in wat u wil gee
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Toeskouer
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Moenie die ingesleutelde wagwoord bewaar nie
@@ -3335,6 +3331,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Ongegroepeerde 
 STR_GROUP_DEFAULT_SHIPS                                         :Ongegroepeerde skepe
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Ongegroepeerde vliegtuig
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Groepe - klik op 'n groep om alle voertuie in hierdie groep te lys. Sleep en los om te rangskik volgens hiërargie.
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Klik om groep te skep
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Vee uit die gekose groep
@@ -3392,10 +3389,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Koop Voe
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Bou skip
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Koop vliegtuig
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Koop die gekose lokomotief/wa. Shift+klik vir kwotasie
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Koop die gekose voertuig. Shift+klik vir kwotasie
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Koop die gekose skip. Shift+klik vir kwotasie
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Koop die gekose vliegtuig. Shift+klik vir kwotasie
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Hernoem
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Hernoem

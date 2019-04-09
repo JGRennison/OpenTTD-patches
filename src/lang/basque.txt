@@ -972,6 +972,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normala
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Tamaina doblea
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Tamaina laukoitza
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Grafiko basea markatu
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Aukeratu erabili beharreko grafiko paketea
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} galdutako/hautsitako artxiboa{P "" k}
@@ -1596,7 +1598,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Zama ba
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Lehiakideak
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Ordenagailu jokalariak
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Jatorrizkoa
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Gomendatua)
 
@@ -1678,13 +1679,9 @@ STR_QUIT_NO                                                     :{BLACK}Ez
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -1970,9 +1967,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Zerbitza
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Konpainia babestua dago. Pasahitza sartu
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Bezero zerrenda
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Ikusle
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Konpainia berria
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Bezero zerrenda
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Ikusle
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Konpainia berria
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Kanporatu
@@ -1987,7 +1984,6 @@ STR_NETWORK_CLIENT                                              :Bezeroa
 STR_NETWORK_SPECTATORS                                          :Ikusleak
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Eman nahi duzun diru kantitatea ezarri
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Ikusle
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Ez gorde sartutako pasahitza
@@ -3223,6 +3219,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Taldeetan ez da
 STR_GROUP_DEFAULT_SHIPS                                         :Taldeetan ez dauden itsasontziak
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Taldeetan ez dauden hegazkinak
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Taldeak - Taldean klikatu taldearen ibilgailuak zerrendatzeko
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Klikatu taldea sortzeko
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Aukeratutako taldea ezabatu
@@ -3279,10 +3276,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Ibilgail
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Itsasontia erosi
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Hegazkina erosi
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Aukeratuta dagoen ibilgailua erosi. Shift+Klik gutxi gora beherako kostea erakutsi
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Aukeratuta dagoen ibilgailua erosi. Shift+Klik gutxi gora beherako kostea erakutsi
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Aukeratuta dagoen itsasontzia erosi. Shift+Klik gutxi gora beherako kostea erakutsi
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Aukeratuta dagoen hegazkina erosi. Shift+Klik gutxi gora beherako kostea erakutsi
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Berrizendatu
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Berrizendatu

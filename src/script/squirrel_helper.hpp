@@ -29,10 +29,10 @@ namespace SQConvert {
 	 *  comes out of scope. Useful to make sure you can use stredup(),
 	 *  without leaking memory.
 	 */
-	struct SQAutoFreePointers : SmallVector<void *, 1> {
+	struct SQAutoFreePointers : std::vector<void *> {
 		~SQAutoFreePointers()
 		{
-			for (uint i = 0; i < this->items; i++) free(this->data[i]);
+			for (void * p : *this) free(p);
 		}
 	};
 
@@ -117,7 +117,7 @@ namespace SQConvert {
 		sq_getstring(vm, -1, &tmp);
 		char *tmp_str = stredup(tmp);
 		sq_poptop(vm);
-		*ptr->Append() = (void *)tmp_str;
+		ptr->push_back((void *)tmp_str);
 		str_validate(tmp_str, tmp_str + strlen(tmp_str));
 		return tmp_str;
 	}
@@ -132,12 +132,12 @@ namespace SQConvert {
 		sq_pushobject(vm, obj);
 		sq_pushnull(vm);
 
-		SmallVector<int32, 2> data;
+		std::vector<int32> data;
 
 		while (SQ_SUCCEEDED(sq_next(vm, -2))) {
 			SQInteger tmp;
 			if (SQ_SUCCEEDED(sq_getinteger(vm, -1, &tmp))) {
-				*data.Append() = (int32)tmp;
+				data.push_back((int32)tmp);
 			} else {
 				sq_pop(vm, 4);
 				throw sq_throwerror(vm, "a member of an array used as parameter to a function is not numeric");
@@ -147,11 +147,11 @@ namespace SQConvert {
 		}
 		sq_pop(vm, 2);
 
-		Array *arr = (Array*)MallocT<byte>(sizeof(Array) + sizeof(int32) * data.Length());
-		arr->size = data.Length();
-		memcpy(arr->array, data.Begin(), sizeof(int32) * data.Length());
+		Array *arr = (Array*)MallocT<byte>(sizeof(Array) + sizeof(int32) * data.size());
+		arr->size = data.size();
+		memcpy(arr->array, data.data(), sizeof(int32) * data.size());
 
-		*ptr->Append() = arr;
+		ptr->push_back(arr);
 		return arr;
 	}
 

@@ -992,6 +992,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dobro
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Quádruplo
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Conjunto de gráficos base
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Selecionar o conjunto de gráficos base para usar
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} arquivo{P "" s} faltando/corrompido{P "" s}
@@ -1698,7 +1700,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Distrib
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Oponentes
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Computadores
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Original
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Recomendado)
 
@@ -1782,13 +1783,9 @@ STR_QUIT_NO                                                     :{BLACK}Não
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -2078,9 +2075,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Servidor
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Empresa está protegida. Digite a senha
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Lista de clientes
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Assistir
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nova Companhia
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Lista de clientes
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Assistir
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Nova Companhia
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Banir
@@ -2095,7 +2092,6 @@ STR_NETWORK_CLIENT                                              :Cliente
 STR_NETWORK_SPECTATORS                                          :Espectadores
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Entre a quantia a ser dada
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Espectador
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Não salvar a senha digitada
@@ -3397,6 +3393,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Automóveis sem
 STR_GROUP_DEFAULT_SHIPS                                         :Embarcações sem grupo
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Aeronaves sem grupo
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Grupos - Clique em um grupo para listar seus veículos. Clique e arraste para organizar a hierarquia.
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Clique para criar um grupo
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Remove o grupo selecionado
@@ -3459,10 +3456,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Comprar 
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Comprar Embarcação
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Comprar Aeronave
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Compra o veículo ferroviário selecionado. Shift+Clique mostra preço estimado sem a compra
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Compra o veículo selecionado. Shift+Clique mostra preço estimado sem a compra
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Compra a embarcação selecionada. Shift+Clique mostra preço estimado sem a compra
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Compra a aeronave selecionada. Shift+Clique mostra o preço estimado sem a compra
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Renomear
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Renomear

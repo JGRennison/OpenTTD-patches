@@ -29,7 +29,7 @@
 #include <algorithm>
 
 #ifdef WITH_XDG_BASEDIR
-#include "basedir.h"
+#include <basedir.h>
 #endif
 
 #include "safeguards.h"
@@ -539,16 +539,6 @@ void FioCreateDirectory(const char *name)
 	CreateDirectory(OTTD2FS(name), NULL);
 #elif defined(OS2) && !defined(__INNOTEK_LIBC__)
 	mkdir(OTTD2FS(name));
-#elif defined(__MORPHOS__) || defined(__AMIGAOS__)
-	char buf[MAX_PATH];
-	strecpy(buf, name, lastof(buf));
-
-	size_t len = strlen(name) - 1;
-	if (buf[len] == '/') {
-		buf[len] = '\0'; // Kill pathsep, so mkdir() will not fail
-	}
-
-	mkdir(OTTD2FS(buf), 0755);
 #else
 	mkdir(OTTD2FS(name), 0755);
 #endif
@@ -1010,10 +1000,6 @@ static bool ChangeWorkingDirectoryToExecutable(const char *exe)
 	char *s = strrchr(tmp, PATHSEPCHAR);
 	if (s != NULL) {
 		*s = '\0';
-#if defined(__DJGPP__)
-		/* If we want to go to the root, we can't use cd C:, but we must use '/' */
-		if (s > tmp && *(s - 1) == ':') chdir("/");
-#endif
 		if (chdir(tmp) != 0) {
 			DEBUG(misc, 0, "Directory with the binary does not exist?");
 		} else {
@@ -1066,7 +1052,7 @@ void DetermineBasePaths(const char *exe)
 	AppendPathSeparator(tmp, lastof(tmp));
 	_searchpaths[SP_PERSONAL_DIR_XDG] = stredup(tmp);
 #endif
-#if defined(__MORPHOS__) || defined(__AMIGA__) || defined(DOS) || defined(OS2) || !defined(WITH_PERSONAL_DIR)
+#if defined(OS2) || !defined(WITH_PERSONAL_DIR)
 	_searchpaths[SP_PERSONAL_DIR] = NULL;
 #else
 #ifdef __HAIKU__
@@ -1109,13 +1095,9 @@ void DetermineBasePaths(const char *exe)
 	_searchpaths[SP_SHARED_DIR] = NULL;
 #endif
 
-#if defined(__MORPHOS__) || defined(__AMIGA__)
-	_searchpaths[SP_WORKING_DIR] = NULL;
-#else
 	if (getcwd(tmp, MAX_PATH) == NULL) *tmp = '\0';
 	AppendPathSeparator(tmp, lastof(tmp));
 	_searchpaths[SP_WORKING_DIR] = stredup(tmp);
-#endif
 
 	_do_scan_working_directory = DoScanWorkingDirectory();
 
@@ -1135,7 +1117,7 @@ void DetermineBasePaths(const char *exe)
 		}
 	}
 
-#if defined(__MORPHOS__) || defined(__AMIGA__) || defined(DOS) || defined(OS2)
+#if !defined(GLOBAL_DATA_DIR)
 	_searchpaths[SP_INSTALLATION_DIR] = NULL;
 #else
 	seprintf(tmp, lastof(tmp), "%s", GLOBAL_DATA_DIR);
@@ -1239,7 +1221,7 @@ void DeterminePaths(const char *exe)
 	}
 
 	/* Make the necessary folders */
-#if !defined(__MORPHOS__) && !defined(__AMIGA__) && defined(WITH_PERSONAL_DIR)
+#if defined(WITH_PERSONAL_DIR)
 	FioCreateDirectory(config_dir);
 	if (config_dir != _personal_dir) FioCreateDirectory(_personal_dir);
 #endif
@@ -1258,7 +1240,6 @@ void DeterminePaths(const char *exe)
 
 	/* If we have network we make a directory for the autodownloading of content */
 	_searchpaths[SP_AUTODOWNLOAD_DIR] = str_fmt("%s%s", _personal_dir, "content_download" PATHSEP);
-#ifdef ENABLE_NETWORK
 	FioCreateDirectory(_searchpaths[SP_AUTODOWNLOAD_DIR]);
 
 	/* Create the directory for each of the types of content */
@@ -1271,14 +1252,6 @@ void DeterminePaths(const char *exe)
 
 	extern char *_log_file;
 	_log_file = str_fmt("%sopenttd.log",  _personal_dir);
-#else /* ENABLE_NETWORK */
-	/* If we don't have networking, we don't need to make the directory. But
-	 * if it exists we keep it, otherwise remove it from the search paths. */
-	if (!FileExists(_searchpaths[SP_AUTODOWNLOAD_DIR]))  {
-		free(_searchpaths[SP_AUTODOWNLOAD_DIR]);
-		_searchpaths[SP_AUTODOWNLOAD_DIR] = NULL;
-	}
-#endif /* ENABLE_NETWORK */
 }
 
 /**

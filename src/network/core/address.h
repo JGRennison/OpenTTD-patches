@@ -17,11 +17,9 @@
 #include "../../string_func.h"
 #include "../../core/smallmap_type.hpp"
 
-#ifdef ENABLE_NETWORK
-
 class NetworkAddress;
-typedef SmallVector<NetworkAddress, 4> NetworkAddressList; ///< Type for a list of addresses.
-typedef SmallMap<NetworkAddress, SOCKET, 4> SocketList;    ///< Type for a mapping between address and socket.
+typedef std::vector<NetworkAddress> NetworkAddressList; ///< Type for a list of addresses.
+typedef SmallMap<NetworkAddress, SOCKET> SocketList;    ///< Type for a mapping between address and socket.
 
 /**
  * Wrapper for (un)resolved network addresses; there's no reason to transform
@@ -192,5 +190,4 @@ public:
 	static const char *AddressFamilyAsString(int family);
 };
 
-#endif /* ENABLE_NETWORK */
 #endif /* NETWORK_CORE_ADDRESS_H */

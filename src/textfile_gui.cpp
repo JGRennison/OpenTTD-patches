@@ -25,7 +25,7 @@
 #include <zlib.h>
 #endif
 
-#if defined(WITH_LZMA)
+#if defined(WITH_LIBLZMA)
 #include <lzma.h>
 #endif
 
@@ -86,7 +86,7 @@ uint TextfileWindow::GetContentHeight()
 	int max_width = this->GetWidget<NWidgetCore>(WID_TF_BACKGROUND)->current_x - WD_FRAMETEXT_LEFT - WD_FRAMERECT_RIGHT;
 
 	uint height = 0;
-	for (uint i = 0; i < this->lines.Length(); i++) {
+	for (uint i = 0; i < this->lines.size(); i++) {
 		height += GetStringHeight(this->lines[i], max_width, FS_MONO);
 	}
 
@@ -113,10 +113,10 @@ void TextfileWindow::SetupScrollbars()
 		this->hscroll->SetCount(0);
 	} else {
 		uint max_length = 0;
-		for (uint i = 0; i < this->lines.Length(); i++) {
+		for (uint i = 0; i < this->lines.size(); i++) {
 			max_length = max(max_length, GetStringBoundingBox(this->lines[i], FS_MONO).width);
 		}
-		this->vscroll->SetCount(this->lines.Length() * FONT_HEIGHT_MONO);
+		this->vscroll->SetCount((uint)this->lines.size() * FONT_HEIGHT_MONO);
 		this->hscroll->SetCount(max_length + WD_FRAMETEXT_LEFT + WD_FRAMETEXT_RIGHT);
 	}
 
@@ -152,7 +152,7 @@ void TextfileWindow::SetupScrollbars()
 	int line_height = FONT_HEIGHT_MONO;
 	int y_offset = -this->vscroll->GetPosition();
 
-	for (uint i = 0; i < this->lines.Length(); i++) {
+	for (uint i = 0; i < this->lines.size(); i++) {
 		if (IsWidgetLowered(WID_TF_WRAPTEXT)) {
 			y_offset = DrawStringMultiLine(0, right - x, y_offset, bottom - y, this->lines[i], TC_WHITE, SA_TOP | SA_LEFT, false, FS_MONO);
 		} else {
@@ -184,7 +184,7 @@ void TextfileWindow::SetupScrollbars()
 
 /* virtual */ const char *TextfileWindow::NextString()
 {
-	if (this->search_iterator >= this->lines.Length()) return NULL;
+	if (this->search_iterator >= this->lines.size()) return NULL;
 
 	return this->lines[this->search_iterator++];
 }
@@ -257,7 +257,7 @@ static void Gunzip(byte **bufp, size_t *sizep)
 }
 #endif
 
-#if defined(WITH_LZMA)
+#if defined(WITH_LIBLZMA)
 
 /**
  * Do an in-memory xunzip operation. This works on a .xz or (legacy)
@@ -319,7 +319,7 @@ static void Xunzip(byte **bufp, size_t *sizep)
 {
 	if (textfile == NULL) return;
 
-	this->lines.Clear();
+	this->lines.clear();
 
 	/* Get text from file */
 	size_t filesize;
@@ -332,7 +332,7 @@ static void Xunzip(byte **bufp, size_t *sizep)
 
 	if (read != filesize) return;
 
-#if defined(WITH_ZLIB) || defined(WITH_LZMA)
+#if defined(WITH_ZLIB) || defined(WITH_LIBLZMA)
 	const char *suffix = strrchr(textfile, '.');
 	if (suffix == NULL) return;
 #endif
@@ -342,7 +342,7 @@ static void Xunzip(byte **bufp, size_t *sizep)
 	if (strcmp(suffix, ".gz") == 0) Gunzip((byte**)&this->text, &filesize);
 #endif
 
-#if defined(WITH_LZMA)
+#if defined(WITH_LIBLZMA)
 	/* In-place xunzip */
 	if (strcmp(suffix, ".xz") == 0) Xunzip((byte**)&this->text, &filesize);
 #endif
@@ -365,11 +365,11 @@ static void Xunzip(byte **bufp, size_t *sizep)
 	str_validate(p, this->text + filesize, SVS_REPLACE_WITH_QUESTION_MARK | SVS_ALLOW_NEWLINE);
 
 	/* Split the string on newlines. */
-	*this->lines.Append() = p;
+	this->lines.push_back(p);
 	for (; *p != '\0'; p++) {
 		if (*p == '\n') {
 			*p = '\0';
-			*this->lines.Append() = p + 1;
+			this->lines.push_back(p + 1);
 		}
 	}
 
@@ -407,7 +407,7 @@ const char *GetTextfile(TextfileType type, Subdirectory dir, const char *filenam
 #if defined(WITH_ZLIB)
 		"txt.gz",
 #endif
-#if defined(WITH_LZMA)
+#if defined(WITH_LIBLZMA)
 		"txt.xz",
 #endif
 	};

@@ -991,6 +991,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Bình thường
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Gấp 2 lần
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Gấp 4 lần
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Gói đồ họa
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Chọn gói đồ họa để sử dụng
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} thiếu/hỏng file
@@ -1697,7 +1699,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Phân b
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Đối Thủ
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Nhân vật máy
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Nguyên bản
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Nên dùng)
 
@@ -1781,13 +1782,9 @@ STR_QUIT_NO                                                     :{BLACK}Không �
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -2077,9 +2074,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Server y
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Công ty yêu cầu xác thực. Nhập mật khẩu
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Danh sách máy trạm
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Xem
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Công ty mới
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Danh sách máy trạm
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Xem
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Công ty mới
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Đá
@@ -2094,7 +2091,6 @@ STR_NETWORK_CLIENT                                              :Máy trạm
 STR_NETWORK_SPECTATORS                                          :Người xem
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Nhập số tiền muốn cho đi
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Người xem
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Không được ghi mật khẩu đã nhập
@@ -3400,6 +3396,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Xe ôtô chưa 
 STR_GROUP_DEFAULT_SHIPS                                         :Tày thuỷ chưa lập nhóm
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Máy bay chưa lập nhóm
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Nhóm - chọn nhóm để hiển thị các phương tiện thuộc nhóm. Kéo thả nhóm để sắp xếp lại danh sách.
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Ấn vào để tạo nhóm
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Xoá nhóm đã chọn
@@ -3462,10 +3459,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Mua P.Ti
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Mua tàu
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Mua Máy Bay
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Mua tàu hỏa đã ấn định. Shift+Click để xem giá mua dự tính
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Mua xe đã ấn định. Shift+Click để xem giá mua dự tính
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Mua tàu đã ấn định. Shift+Click để xem giá mua dự tính
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Mua máy bay đã ấn định. Shift+Click để xem giá mua dự tính
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Thay tên
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Thay tên

@@ -30,6 +30,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include "../../language.h"
+#include "../../thread.h"
 
 #include "../../safeguards.h"
 
@@ -78,7 +79,7 @@ bool LoadLibraryList(Function proc[], const char *dll)
 void ShowOSErrorBox(const char *buf, bool system)
 {
 	MyShowCursor(true);
-	MessageBox(GetActiveWindow(), OTTD2FS(buf), _T("Error!"), MB_ICONSTOP);
+	MessageBox(GetActiveWindow(), OTTD2FS(buf), _T("Error!"), MB_ICONSTOP | MB_TASKMODAL);
 }
 
 void OSOpenBrowser(const char *url)
@@ -543,12 +544,6 @@ bool GetClipboardContents(char *buffer, const char *last)
 }
 
 
-void CSleep(int milliseconds)
-{
-	Sleep(milliseconds);
-}
-
-
 /**
  * Convert to OpenTTD's encoding from that of the local environment.
  * When the project is built in UNICODE, the system codepage is irrelevant and
@@ -730,14 +725,6 @@ const char *GetCurrentLocale(const char *)
 	return retbuf;
 }
 
-uint GetCPUCoreCount()
-{
-	SYSTEM_INFO info;
-
-	GetSystemInfo(&info);
-	return info.dwNumberOfProcessors;
-}
-
 
 static WCHAR _cur_iso_locale[16] = L"";
 
@@ -816,12 +803,12 @@ PACK_N(struct THREADNAME_INFO {
 /**
  * Signal thread name to any attached debuggers.
  */
-void SetWin32ThreadName(DWORD dwThreadID, const char* threadName)
+void SetCurrentThreadName(const char *threadName)
 {
 	THREADNAME_INFO info;
 	info.dwType = 0x1000;
 	info.szName = threadName;
-	info.dwThreadID = dwThreadID;
+	info.dwThreadID = -1;
 	info.dwFlags = 0;
 
 #pragma warning(push)
@@ -832,4 +819,6 @@ void SetWin32ThreadName(DWORD dwThreadID, const char* threadName)
 	}
 #pragma warning(pop)
 }
+#else
+void SetCurrentThreadName(const char *) {}
 #endif

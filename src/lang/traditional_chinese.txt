@@ -984,6 +984,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :正常大小
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :兩倍大小
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :四倍大小
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}基本圖形集
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}選擇要使用的基本圖形集
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} 檔案遺失／損毀
@@ -1682,7 +1684,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}貨物�
 STR_CONFIG_SETTING_AI                                           :{ORANGE}競爭對手
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}電腦玩家
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :預設
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(建議)
 
@@ -1765,13 +1766,9 @@ STR_QUIT_NO                                                     :{BLACK}否
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -2061,9 +2058,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}伺服�
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}公司受保護，輸入密碼
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}用戶端清單
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}旁觀者
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}新公司
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :用戶端清單
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :旁觀者
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :新公司
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :踢除
@@ -2078,7 +2075,6 @@ STR_NETWORK_CLIENT                                              :用戶端
 STR_NETWORK_SPECTATORS                                          :旁觀者
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}請輸入你要付出多少資金
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}旁觀者
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}不要儲存所輸入的密碼
@@ -3334,6 +3330,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :未分組的車
 STR_GROUP_DEFAULT_SHIPS                                         :未分組的船舶
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :未分組的飛機
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}群組 - 點選群組以顯示其中的運輸工具清單。拖曳群組標籤以排列群組的次序和層級。
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}點選可建立群組
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}移除所選群組
@@ -3391,10 +3388,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}購買�
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}購買船舶
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}購買飛機
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}購買選定的列車。按住 Shift 點選則只會顯示預估的購買費用
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}購買選定的車輛。按住 Shift 點選則只會顯示預估的購買費用
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}購買選定的船舶。按住 Shift 點選則只會顯示預估的購買費用
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}購買選定的飛機。按住 Shift 點選則只會顯示預估的購買費用
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}重新命名
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}重新命名

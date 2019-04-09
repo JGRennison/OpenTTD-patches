@@ -467,6 +467,7 @@ STR_TOOLBAR_SOUND_MUSIC                                         :Sonido y músic
 ############ range for message menu starts
 STR_NEWS_MENU_LAST_MESSAGE_NEWS_REPORT                          :Último mensaje o noticia
 STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Historial de mensajes
+STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Eliminar todos los mensajes
 ############ range ends here
 
 ############ range for about menu starts
@@ -995,6 +996,13 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Doble
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Cuádruple
 
+STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Tamaño de letra
+STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Elegir qué tamaño de letra usar en la interfaz
+
+STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normal
+STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Doble
+STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Cuádruple
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Gráficos base
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Elegir los gráficos base
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} archivo{P "" s} perdido{P "" s} o con errores
@@ -1193,8 +1201,8 @@ STR_CONFIG_SETTING_TRAIN_SLOPE_STEEPNESS_HELPTEXT               :Grado de inclin
 STR_CONFIG_SETTING_PERCENTAGE                                   :{COMMA}%
 STR_CONFIG_SETTING_ROAD_VEHICLE_SLOPE_STEEPNESS                 :Inclinación de pendientes para vehículos de carretera: {STRING}
 STR_CONFIG_SETTING_ROAD_VEHICLE_SLOPE_STEEPNESS_HELPTEXT        :Grado de inclinación de una casilla con pendiente para un vehículo de carretera. Los valores altos hacen que sea más difícil subir las colinas
-STR_CONFIG_SETTING_FORBID_90_DEG                                :Prohibir a trenes y barcos realizar giros de 90°: {STRING}
-STR_CONFIG_SETTING_FORBID_90_DEG_HELPTEXT                       :Los giros de 90° ocurren en vías férreas perpendiculares donde el tren gira 90° al pasar de una casilla a otra, en lugar de los 45° habituales en otras combinaciones de vías. Esto también se aplica al radio de giro de los barcos
+STR_CONFIG_SETTING_FORBID_90_DEG                                :Prohibir a trenes realizar giros de 90°: {STRING}
+STR_CONFIG_SETTING_FORBID_90_DEG_HELPTEXT                       :Los giros de 90° ocurren en vías férreas perpendiculares donde el tren gira 90° al pasar de una casilla a otra, en lugar de los 45° habituales en otras combinaciones de vías.
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS                        :Permitir la ampliación de estaciones no adyacentes: {STRING}
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS_HELPTEXT               :Permitir añadir de partes a una estación sin tener que estar en contacto directo con las partes existentes. Se debe pulsar Ctrl+Clic para añadir las nuevas partes
 STR_CONFIG_SETTING_INFLATION                                    :Inflación: {STRING}
@@ -1250,8 +1258,8 @@ STR_CONFIG_SETTING_PLANE_SPEED                                  :Factor de veloc
 STR_CONFIG_SETTING_PLANE_SPEED_HELPTEXT                         :Establece la velocidad relativa de las aeronaves comparada con la de otros vehículos para reducir las utilidades de transportación aérea
 STR_CONFIG_SETTING_PLANE_SPEED_VALUE                            :1/{COMMA}
 STR_CONFIG_SETTING_PLANE_CRASHES                                :Cantidad de accidentes aéreos: {STRING}
-STR_CONFIG_SETTING_PLANE_CRASHES_HELPTEXT                       :Probabilidad de que ocurran accidentes aéreos
-STR_CONFIG_SETTING_PLANE_CRASHES_NONE                           :Ninguno
+STR_CONFIG_SETTING_PLANE_CRASHES_HELPTEXT                       :Probabilidad de que ocurran accidentes aéreos.{}* Las aeronaves grandes son más propensas a accidentes en areopuertos pequeños
+STR_CONFIG_SETTING_PLANE_CRASHES_NONE                           :Ninguno*
 STR_CONFIG_SETTING_PLANE_CRASHES_REDUCED                        :Reducida
 STR_CONFIG_SETTING_PLANE_CRASHES_NORMAL                         :Normal
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :Permitir la construcción de paradas intermedias sobre carreteras en pueblos: {STRING}
@@ -1576,6 +1584,10 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_HELPTEXT                       :Los jugadores p
 STR_CONFIG_SETTING_TOWN_FOUNDING_FORBIDDEN                      :Prohibido
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Permitido
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Permitido, diseño urbano personalizado
+STR_CONFIG_SETTING_TOWN_CARGOGENMODE                            :Generación de cargamento en pueblios: {STRING}
+STR_CONFIG_SETTING_TOWN_CARGOGENMODE_HELPTEXT                   :Cantidad de cargamento producido por las casas con relación a la población.{}Crecimiento cuadrado: un pueblo de doble tamaño genera el cuádruple de pasajeros.{}Crecimiento lineal: un pueblo de doble tamaño genera el doble de pasajeros.
+STR_CONFIG_SETTING_TOWN_CARGOGENMODE_ORIGINAL                   :Cuadrado
+STR_CONFIG_SETTING_TOWN_CARGOGENMODE_BITCOUNT                   :Lineal
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Crecimiento de árboles durante la partida: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :Controlar la aparición aleatoria de árboles durante la partida. Esto puede afectar industrias que dependen del crecimiento de árboles, como los aserraderos
@@ -1703,7 +1715,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Distrib
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Competidores
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Jugadores no humanos
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Original
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(recomendado)
 
@@ -1787,13 +1798,9 @@ STR_QUIT_NO                                                     :{BLACK}No
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -2082,11 +2089,12 @@ STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Desconec
 
 STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Servidor protegido. Introducir contraseña
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Empresa protegida. Introducir contraseña
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST_CAPTION                    :{WHITE}Lista de clientes
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Lista de clientes
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Observar
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nueva empresa
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Lista de clientes
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Observar
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Nueva empresa
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Expulsar
@@ -2101,7 +2109,6 @@ STR_NETWORK_CLIENT                                              :Cliente
 STR_NETWORK_SPECTATORS                                          :Espectadores
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Introducir la cantidad de dinero a dar
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Espectador
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}No guardar la contraseña introducida
@@ -2131,7 +2138,7 @@ STR_NETWORK_CHAT_ALL                                            :[Todos] {STRING
 STR_NETWORK_CHAT_OSKTITLE                                       :{BLACK}Introducir mensaje para el chat en red
 
 # Network messages
-STR_NETWORK_ERROR_NOTAVAILABLE                                  :{WHITE}No se encontraron ni compilaron dispositivos sin soporte de red
+STR_NETWORK_ERROR_NOTAVAILABLE                                  :{WHITE}No se encontraron dispositivos de red
 STR_NETWORK_ERROR_NOSERVER                                      :{WHITE}No se pudo encontrar ninguna partida en red
 STR_NETWORK_ERROR_NOCONNECTION                                  :{WHITE}El servidor no responde a la petición
 STR_NETWORK_ERROR_NEWGRF_MISMATCH                               :{WHITE}No se pudo conectar debido a incompatibilidad de NewGRF
@@ -2740,6 +2747,9 @@ STR_FRAMERATE_DRAWING                                           :{BLACK}Presenta
 STR_FRAMERATE_DRAWING_VIEWPORTS                                 :{BLACK} Ventanas de vista generales:
 STR_FRAMERATE_VIDEO                                             :{BLACK}Salida de video:
 STR_FRAMERATE_SOUND                                             :{BLACK}Mezcla de sonido:
+STR_FRAMERATE_ALLSCRIPTS                                        :{BLACK}  Scripts en total:
+STR_FRAMERATE_GAMESCRIPT                                        :{BLACK} Script de juego:
+STR_FRAMERATE_AI                                                :{BLACK} IA {NUM} {STRING}
 ############ End of leave-in-this-order
 ############ Leave those lines in this order!!
 STR_FRAMETIME_CAPTION_GAMELOOP                                  :Bucle de juego
@@ -2754,6 +2764,9 @@ STR_FRAMETIME_CAPTION_DRAWING                                   :Presentación d
 STR_FRAMETIME_CAPTION_DRAWING_VIEWPORTS                         :Presentación de ventanas de vista generales
 STR_FRAMETIME_CAPTION_VIDEO                                     :Salida de video
 STR_FRAMETIME_CAPTION_SOUND                                     :Mezcla de sonido
+STR_FRAMETIME_CAPTION_ALLSCRIPTS                                :Scripts de juego e IA en total
+STR_FRAMETIME_CAPTION_GAMESCRIPT                                :Script de juego
+STR_FRAMETIME_CAPTION_AI                                        :IA {NUM} {STRING}
 ############ End of leave-in-this-order
 
 
@@ -2986,7 +2999,7 @@ STR_NEWGRF_ERROR_GRM_FAILED                                     :Recursos GRF so
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} fue desactivado por {STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Formato de colocación de sprites no válido o desconocido (sprite {3:NUM})
 STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG                         :Demasiados elementos en la lista de valores de propiedad (sprite {3:NUM}, property {4:HEX})
-STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :Llamada de producción de industria no válida (sprite {3:NUM}, "{1:STRING}")
+STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :Llamada de producción de industria no válida (sprite {3:NUM}, "{2:STRING}")
 
 # NewGRF related 'general' warnings
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}¡Precaución!
@@ -3018,6 +3031,7 @@ STR_NEWGRF_BUGGY                                                :{WHITE}El NewGR
 STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{WHITE}La información de cargamento o reequipamiento para '{1:ENGINE}' difiere de la lista de compra después de la construcción. Esto puede causar que la renovación y el reemplazo automático no haga el reequipamiento correcta
 STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :{WHITE}'{1:STRING}' ha causado un bucle sin fin en la llamada de producción
 STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT                        :{WHITE}La llamada {1:HEX} devolvió un resultado desconocido o no válido {2:HEX}
+STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK              :{WHITE}'{1:STRING}' retornó un tipo inválido de cargamento en la llamada de producción en {2:HEX}
 
 # 'User removed essential NewGRFs'-placeholders for stuff without specs
 STR_NEWGRF_INVALID_CARGO                                        :<cargamento no válido>
@@ -3112,6 +3126,7 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Soborna
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}Metas de {COMPANY}
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Metas globales
+STR_GOALS_SPECTATOR                                             :Metas globales
 STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Metas globales:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Ninguna -
@@ -3160,6 +3175,7 @@ STR_SUBSIDIES_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                :{BLACK}Clic en 
 # Story book window
 STR_STORY_BOOK_CAPTION                                          :{WHITE}Historial de {COMPANY}
 STR_STORY_BOOK_SPECTATOR_CAPTION                                :{WHITE}Historial global
+STR_STORY_BOOK_SPECTATOR                                        :Historial global
 STR_STORY_BOOK_TITLE                                            :{YELLOW}{STRING}
 STR_STORY_BOOK_GENERIC_PAGE_ITEM                                :Página {NUM}
 STR_STORY_BOOK_SEL_PAGE_TOOLTIP                                 :{BLACK}Permitir ir a una página específica al elegirla en esta lista desplegable
@@ -3420,6 +3436,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Vehículos de c
 STR_GROUP_DEFAULT_SHIPS                                         :Barcos sin agrupar
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Aeronaves sin agrupar
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Grupos: Clic en un grupo para ver los vehículos incluidos. Arrastrar y soltar para reorganizar los grupos.
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Clic para crear un grupo
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Eliminar el grupo seleccionado
@@ -3452,6 +3469,7 @@ STR_BUY_VEHICLE_SHIP_CAPTION                                    :Nuevos barcos
 STR_BUY_VEHICLE_AIRCRAFT_CAPTION                                :Nuevas aeronaves
 
 STR_PURCHASE_INFO_COST_WEIGHT                                   :{BLACK}Costo: {GOLD}{CURRENCY_LONG}{BLACK} Peso: {GOLD}{WEIGHT_SHORT}
+STR_PURCHASE_INFO_COST_REFIT_WEIGHT                             :{BLACK}Costo: {GOLD}{CURRENCY_LONG}{BLACK} (Costo de reformación: {GOLD}{CURRENCY_LONG}{BLACK}) Peso: {GOLD}{WEIGHT_SHORT}
 STR_PURCHASE_INFO_SPEED_POWER                                   :{BLACK}Velocidad: {GOLD}{VELOCITY}{BLACK} Potencia: {GOLD}{POWER}
 STR_PURCHASE_INFO_SPEED                                         :{BLACK}Velocidad: {GOLD}{VELOCITY}
 STR_PURCHASE_INFO_SPEED_OCEAN                                   :{BLACK}Velocidad en océano: {GOLD}{VELOCITY}
@@ -3462,8 +3480,10 @@ STR_PURCHASE_INFO_REFITTABLE                                    :(reequipable)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Diseñado: {GOLD}{NUM}{BLACK} Duración: {GOLD}{COMMA} año{P "" s}
 STR_PURCHASE_INFO_RELIABILITY                                   :{BLACK}Máx. fiabilidad: {GOLD}{COMMA}%
 STR_PURCHASE_INFO_COST                                          :{BLACK}Costo: {GOLD}{CURRENCY_LONG}
+STR_PURCHASE_INFO_COST_REFIT                                    :{BLACK}Costo: {GOLD}{CURRENCY_LONG}{BLACK} (Costo de reformación: {GOLD}{CURRENCY_LONG}{BLACK})
 STR_PURCHASE_INFO_WEIGHT_CWEIGHT                                :{BLACK}Peso: {GOLD}{WEIGHT_SHORT} ({WEIGHT_SHORT})
 STR_PURCHASE_INFO_COST_SPEED                                    :{BLACK}Costo: {GOLD}{CURRENCY_LONG}{BLACK} Velocidad: {GOLD}{VELOCITY}
+STR_PURCHASE_INFO_COST_REFIT_SPEED                              :{BLACK}Costo: {GOLD}{CURRENCY_LONG}{BLACK} (Costo de reformación: {GOLD}{CURRENCY_LONG}{BLACK}) Velocidad: {GOLD}{VELOCITY}
 STR_PURCHASE_INFO_AIRCRAFT_CAPACITY                             :{BLACK}Capacidad: {GOLD}{CARGO_LONG}, {CARGO_LONG}
 STR_PURCHASE_INFO_PWAGPOWER_PWAGWEIGHT                          :{BLACK}Vagones con motor: {GOLD}+{POWER}{BLACK} Peso: {GOLD}+{WEIGHT_SHORT}
 STR_PURCHASE_INFO_REFITTABLE_TO                                 :{BLACK}Reforma: {GOLD}{STRING}
@@ -3484,10 +3504,20 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Comprar
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Comprar
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Comprar
 
+STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_BUTTON                  :{BLACK}Comprar y reformar tren
+STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_REFIT_VEHICLE_BUTTON           :{BLACK}Comprar y reformar vehículo
+STR_BUY_VEHICLE_SHIP_BUY_REFIT_VEHICLE_BUTTON                   :{BLACK}Comprar y reformar barco
+STR_BUY_VEHICLE_AIRCRAFT_BUY_REFIT_VEHICLE_BUTTON               :{BLACK}Comprar y reformar aeronave
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Comprar el tren elegido. Mayús+Clic muestra una estimación del precio sin realizar la compra
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Comprar el vehículo de carretera elegido. Mayús+Clic muestra una estimación del precio sin realizar la compra
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Comprar el barco elegido. Mayús+Clic muestra una estimación del precio sin realizar la compra
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Comprar la aeronave elegida. Mayús+Clic muestra una estimación del precio sin realizar la compra
+
+STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_TOOLTIP                 :{BLACK}Comprar y reformar tren seleccionado. Mayús+Clic muestra una estimación del precio sin realizar la compra
+STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_REFIT_VEHICLE_TOOLTIP          :{BLACK}Comprar y reformar vehículo seleccionado. Mayús+Clic muestra una estimación del precio sin realizar la compra
+STR_BUY_VEHICLE_SHIP_BUY_REFIT_VEHICLE_TOOLTIP                  :{BLACK}Comprar y reformar barco seleccionado. Mayús+Clic muestra una estimación del precio sin realizar la compra
+STR_BUY_VEHICLE_AIRCRAFT_BUY_REFIT_VEHICLE_TOOLTIP              :{BLACK}Comprar y reformar areonave seleccionada. Mayús+Clic muestra una estimación del precio sin realizar la compra
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Cambiar nombre
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Cambiar nombre

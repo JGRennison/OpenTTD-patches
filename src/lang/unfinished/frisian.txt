@@ -983,6 +983,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normaal
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dûbele grutte
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Fjouwerdûbele grutte
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Basisset for ôfbyldings
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Selektearje de basis ôfbyldingsset om te brûken
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} ûntbrekke{P "" nde}/korrupt{P "" e} bestân
@@ -1633,7 +1635,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Frachtd
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Tsjinstânners
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Computer spilers
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Orizjiniel
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Recommended)
 
@@ -1699,13 +1700,9 @@ STR_QUIT_NO                                                     :{BLACK}Nee
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -1976,7 +1973,6 @@ STR_NETWORK_SERVER                                              :Tsjinner
 STR_NETWORK_CLIENT                                              :Kliïnt
 STR_NETWORK_SPECTATORS                                          :Taskôgers
 
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Taskôger
 
 # Network set password
 STR_COMPANY_PASSWORD_OK                                         :{BLACK}Jou it bedriuw it nije wachtwurd
@@ -3076,6 +3072,7 @@ STR_GROUP_ALL_AIRCRAFTS                                         :Alle fleantugen
 
 STR_GROUP_DEFAULT_SHIPS                                         :Net groepearre skepen
 
+
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Klik om in groep oan te meitsje
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Smit de selektearre groep fuort
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}Feroarje de namme fan de selektearre groep
@@ -3119,10 +3116,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Keapje a
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Keapje boat
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Keapje fleantúg
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Keapje ferljochte trein
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Keapje ferljochte auto
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Keapje ferljochte boat
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Keapje ferljochte fleantúg
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Jow in nije namme
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Jow in nije namme

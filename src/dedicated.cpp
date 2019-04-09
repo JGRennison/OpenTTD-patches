@@ -11,21 +11,18 @@
 
 #include "stdafx.h"
 
-#ifdef ENABLE_NETWORK
-
 char *_log_file = NULL; ///< File to reroute output of a forked OpenTTD to
 FILE *_log_fd   = NULL; ///< File to reroute output of a forked OpenTTD to
 
-#if defined(UNIX) && !defined(__MORPHOS__)
+#if defined(UNIX)
 
 #include <unistd.h>
 
 #include "safeguards.h"
 
-#if (defined(SUNOS) && !defined(_LP64) && !defined(_I32LPx)) || defined(__HAIKU__)
+#if defined(SUNOS) && !defined(_LP64) && !defined(_I32LPx)
 /* Solaris has, in certain situation, pid_t defined as long, while in other
  *  cases it has it defined as int... this handles all cases nicely.
- * Haiku has also defined pid_t as a long.
  */
 # define PRINTF_PID_T "%ld"
 #else
@@ -68,10 +65,3 @@ void DedicatedFork()
 	}
 }
 #endif
-
-#else
-
-/** Empty helper function call for NOT(UNIX and not MORPHOS) systems */
-void DedicatedFork() {}
-
-#endif /* ENABLE_NETWORK */

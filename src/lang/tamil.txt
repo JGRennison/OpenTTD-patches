@@ -946,6 +946,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :சராசர
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :இரண்டு மடங்கு
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :நான்கு மடங்கு
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}அடிப்படை அசைவூட்டம்
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}பயன்படுத்தப்போகும் அடிப்படை அசைவூட்டத்தினை தேர்ந்தெடுக்கவும்
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} இல்லாத/பிழையான கோப்பு{P "" கள்}
@@ -1466,7 +1468,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}சர�
 STR_CONFIG_SETTING_AI                                           :{ORANGE}போட்டியாளர்கள்
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}கணினி வீரர்கள்
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :அசல்
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(பரிந்துரைக்கப்பட்டது)
 
@@ -1535,13 +1536,9 @@ STR_QUIT_NO                                                     :{BLACK}இல�
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -1811,9 +1808,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}சர�
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}நிற்வனம் காக்கப்பட்டுள்ளது. கடவுச்சொல்லினை இடவும்
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}விளையாடுவோர் பட்டியல்
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}கவனி
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}புதிய நிறுவனம்
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :விளையாடுவோர் பட்டியல்
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :கவனி
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :புதிய நிறுவனம்
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :உதை
@@ -1828,7 +1825,6 @@ STR_NETWORK_CLIENT                                              :Client
 STR_NETWORK_SPECTATORS                                          :கவனிப்பவர்கள்
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}கொடுக்கப்படும் பணத்தின் அளவினை இடவும்
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}பார்வையாளர்
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}கடவுச்சொல்லினை நினைவில் வைத்திருக்காதே
@@ -2956,6 +2952,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :குழுவ
 STR_GROUP_DEFAULT_SHIPS                                         :குழுவில் இல்லாத கப்பல்கள்
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :குழுவில் இல்லாத விமானம்
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}குழுக்கள் - குழுவில் உள்ள அனைத்து வாகனங்களினை பார்க்க அக்குழுவினை சொடுக்கவும்
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}ஓர் குழுவினை உருவாக்க சொடுக்கவும்
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}தேர்ந்தெடுக்கப்பட்ட குழுவின் பெயரினை நீக்கவும்
@@ -3010,10 +3007,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}வா�
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}கப்பலை வாங்கு
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}விமானத்தை வாங்கு
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}காட்டப்படும் இரயில் வாகனத்தை வாங்கவும். Shift+Click செய்தால் வாங்கும்போது ஆகும் மதிப்பிடப்பட்டச் செலவுகளைக் காட்டு
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}காட்டப்படும் சாலை வாகனத்தை வாங்கவும். Shift+Click செய்தால் வாங்கும்போது ஆகும் மதிப்பிடப்பட்டச் செலவுகளைக் காட்டும்
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}காட்டப்படும் கப்பலை வாங்கவும். Shift+Click செய்தால் வாங்கும்போது ஆகும் மதிப்பிடப்பட்டச் செலவுகளைக் காட்டும்
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}காட்டப்படும் விமானத்தை வாங்கவும். Shift+Click செய்தால் வாங்கும்போது ஆகும் மதிப்பிடப்பட்டச் செலவுகளைக் காட்டும்
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}பெயரிடு
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}பெயரிடு

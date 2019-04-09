@@ -364,7 +364,7 @@ struct DepotWindow : Window {
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget != WID_D_MATRIX) return;
 
@@ -398,7 +398,7 @@ struct DepotWindow : Window {
 		uint16 rows_in_display = wid->current_y / wid->resize_y;
 
 		uint16 num = this->vscroll->GetPosition() * this->num_columns;
-		int maxval = min(this->vehicle_list.Length(), num + (rows_in_display * this->num_columns));
+		int maxval = min((uint)this->vehicle_list.size(), num + (rows_in_display * this->num_columns));
 		int y;
 		for (y = r.top + 1; num < maxval; y += this->resize.step_height) { // Draw the rows
 			for (byte i = 0; i < this->num_columns && num < maxval; i++, num++) {
@@ -413,16 +413,16 @@ struct DepotWindow : Window {
 			}
 		}
 
-		maxval = min(this->vehicle_list.Length() + this->wagon_list.Length(), (this->vscroll->GetPosition() * this->num_columns) + (rows_in_display * this->num_columns));
+		maxval = min((uint)this->vehicle_list.size() + (uint)this->wagon_list.size(), (this->vscroll->GetPosition() * this->num_columns) + (rows_in_display * this->num_columns));
 
 		/* Draw the train wagons without an engine in front. */
 		for (; num < maxval; num++, y += this->resize.step_height) {
-			const Vehicle *v = this->wagon_list[num - this->vehicle_list.Length()];
+			const Vehicle *v = this->wagon_list[num - this->vehicle_list.size()];
 			this->DrawVehicleInDepot(v, r.left, r.right, y);
 		}
 	}
 
-	void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		if (widget != WID_D_CAPTION) return;
 
@@ -465,7 +465,7 @@ struct DepotWindow : Window {
 
 		uint pos = ((row + this->vscroll->GetPosition()) * this->num_columns) + xt;
 
-		if (this->vehicle_list.Length() + this->wagon_list.Length() <= pos) {
+		if (this->vehicle_list.size() + this->wagon_list.size() <= pos) {
 			/* Clicking on 'line' / 'block' without a vehicle */
 			if (this->type == VEH_TRAIN) {
 				/* End the dragging */
@@ -478,12 +478,12 @@ struct DepotWindow : Window {
 		}
 
 		bool wagon = false;
-		if (this->vehicle_list.Length() > pos) {
+		if (this->vehicle_list.size() > pos) {
 			*veh = this->vehicle_list[pos];
 			/* Skip vehicles that are scrolled off the list */
 			if (this->type == VEH_TRAIN) x += this->hscroll->GetPosition();
 		} else {
-			pos -= this->vehicle_list.Length();
+			pos -= (uint)this->vehicle_list.size();
 			*veh = this->wagon_list[pos];
 			/* free wagons don't have an initial loco. */
 			x -= ScaleGUITrad(VEHICLEINFO_FULL_VEHICLE_WIDTH);
@@ -650,7 +650,7 @@ struct DepotWindow : Window {
 	uint flag_width;
 	uint flag_height;
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_D_MATRIX: {
@@ -701,12 +701,12 @@ struct DepotWindow : Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		this->generate_list = true;
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		if (this->generate_list) {
 			/* Generate the vehicle list
@@ -726,7 +726,7 @@ struct DepotWindow : Window {
 		/* determine amount of items for scroller */
 		if (this->type == VEH_TRAIN) {
 			uint max_width = ScaleGUITrad(VEHICLEINFO_FULL_VEHICLE_WIDTH);
-			for (uint num = 0; num < this->vehicle_list.Length(); num++) {
+			for (uint num = 0; num < this->vehicle_list.size(); num++) {
 				uint width = 0;
 				for (const Train *v = Train::From(this->vehicle_list[num]); v != NULL; v = v->Next()) {
 					width += v->GetDisplayImageWidth();
@@ -734,11 +734,11 @@ struct DepotWindow : Window {
 				max_width = max(max_width, width);
 			}
 			/* Always have 1 empty row, so people can change the setting of the train */
-			this->vscroll->SetCount(this->vehicle_list.Length() + this->wagon_list.Length() + 1);
+			this->vscroll->SetCount((uint)this->vehicle_list.size() + (uint)this->wagon_list.size() + 1);
 			/* Always make it longer than the longest train, so you can attach vehicles at the end, and also see the next vertical tile separator line */
 			this->hscroll->SetCount(max_width + ScaleGUITrad(2 * VEHICLEINFO_FULL_VEHICLE_WIDTH + 1));
 		} else {
-			this->vscroll->SetCount(CeilDiv(this->vehicle_list.Length(), this->num_columns));
+			this->vscroll->SetCount(CeilDiv((uint)this->vehicle_list.size(), this->num_columns));
 		}
 
 		/* Setup disabled buttons. */
@@ -758,7 +758,7 @@ struct DepotWindow : Window {
 		this->DrawWidgets();
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_D_MATRIX: { // List
@@ -811,7 +811,7 @@ struct DepotWindow : Window {
 
 			case WID_D_SELL_ALL:
 				/* Only open the confirmation window if there are anything to sell */
-				if (this->vehicle_list.Length() != 0 || this->wagon_list.Length() != 0) {
+				if (this->vehicle_list.size() != 0 || this->wagon_list.size() != 0) {
 					TileIndex tile = this->window_number;
 					byte vehtype = this->type;
 
@@ -837,7 +837,7 @@ struct DepotWindow : Window {
 		}
 	}
 
-	virtual void OnQueryTextFinished(char *str)
+	void OnQueryTextFinished(char *str) override
 	{
 		if (str == NULL) return;
 
@@ -845,7 +845,7 @@ struct DepotWindow : Window {
 		DoCommandP(0, GetDepotIndex(this->window_number), 0, CMD_RENAME_DEPOT | CMD_MSG(STR_ERROR_CAN_T_RENAME_DEPOT), NULL, str);
 	}
 
-	virtual bool OnRightClick(Point pt, int widget)
+	bool OnRightClick(Point pt, int widget) override
 	{
 		if (widget != WID_D_MATRIX) return false;
 
@@ -906,7 +906,7 @@ struct DepotWindow : Window {
 	 * @param v the original vehicle to clone
 	 * @return Always true.
 	 */
-	virtual bool OnVehicleSelect(const Vehicle *v)
+	bool OnVehicleSelect(const Vehicle *v) override
 	{
 		if (_ctrl_pressed) {
 			/* Share-clone, do not open new viewport, and keep tool active */
@@ -921,7 +921,7 @@ struct DepotWindow : Window {
 		return true;
 	}
 
-	virtual void OnPlaceObjectAbort()
+	void OnPlaceObjectAbort() override
 	{
 		/* abort clone */
 		this->RaiseWidget(WID_D_CLONE);
@@ -939,7 +939,7 @@ struct DepotWindow : Window {
 		}
 	}
 
-	virtual void OnMouseDrag(Point pt, int widget)
+	void OnMouseDrag(Point pt, int widget) override
 	{
 		if (this->sel == INVALID_VEHICLE) return;
 		if (widget != this->hovered_widget) {
@@ -991,7 +991,7 @@ struct DepotWindow : Window {
 		this->SetWidgetDirty(widget);
 	}
 
-	virtual void OnDragDrop(Point pt, int widget)
+	void OnDragDrop(Point pt, int widget) override
 	{
 		switch (widget) {
 			case WID_D_MATRIX: {
@@ -1046,7 +1046,7 @@ struct DepotWindow : Window {
 		_cursor.vehchain = false;
 	}
 
-	virtual void OnTimeout()
+	void OnTimeout() override
 	{
 		if (!this->IsWidgetDisabled(WID_D_SELL)) {
 			this->RaiseWidget(WID_D_SELL);
@@ -1058,7 +1058,7 @@ struct DepotWindow : Window {
 		}
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_D_MATRIX);
 		NWidgetCore *nwi = this->GetWidget<NWidgetCore>(WID_D_MATRIX);
@@ -1069,7 +1069,7 @@ struct DepotWindow : Window {
 		}
 	}
 
-	virtual EventState OnCTRLStateChange()
+	EventState OnCTRLStateChange() override
 	{
 		if (this->sel != INVALID_VEHICLE) {
 			_cursor.vehchain = _ctrl_pressed;

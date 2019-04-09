@@ -946,6 +946,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :تقريب عا
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :تقريب ×2
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :تقريب ×4
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK} الواجهة الرسومية الاساسية
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK} اختر مجموعة الواجهة الرسومية
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} ملف مفقود او غير صالح
@@ -1367,7 +1369,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :توزيع ال
 STR_CONFIG_SETTING_AI                                           :{ORANGE}المتنافسين
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE} لاعبين الحاسوب
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :اصلي
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(مفضل)
 
@@ -1438,13 +1439,9 @@ STR_QUIT_NO                                                     :{BLACK}لا
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :ويندوز
-STR_OSNAME_DOS                                                  :دوس
 STR_OSNAME_UNIX                                                 :يونكس
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :بي او اس
 STR_OSNAME_HAIKU                                                :هايكو
-STR_OSNAME_MORPHOS                                              :مورف او اس
-STR_OSNAME_AMIGAOS                                              :اميقا
 STR_OSNAME_OS2                                                  :او اس/2
 STR_OSNAME_SUNOS                                                :صن
 
@@ -1726,9 +1723,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}الخا
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}الشركه محميه. من فضلك ادخل كلمه المرور
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}قائمة العملاء
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}شاهد
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}شركة جديدة
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :قائمة العملاء
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :شاهد
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :شركة جديدة
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :اطرد
@@ -2862,6 +2859,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :لاتنتمي 
 STR_GROUP_DEFAULT_SHIPS                                         :مركبة لاتنتمي لأي مجموعة
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :طائرة لاتنتمي لأي مجموعة
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}المجموعات: اضغط على اي مجموعة لعرض مركباتها . اسحب للترتيب .
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}أضغط لإنشاء مجموعة
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}أحذف المجموعة المختارة
@@ -2918,10 +2916,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}شراء
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}شراء سفينة
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}شراء طائرة
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}شراء العربة الموضحة
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}شراء العربة
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}شراء السفينة المختارة
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}اشتر الطائرة المختارة
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}اعادة تسمية
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}أعد التسمية

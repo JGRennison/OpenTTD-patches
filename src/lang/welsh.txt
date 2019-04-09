@@ -984,6 +984,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Arferol
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dyblyg
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Pedwarplyg
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Set raffeg sylfaenol
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Dewiswch y set raffeg sylfaenol i'w defnyddio
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} ffeil ar goll/llygredig
@@ -1684,7 +1686,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Dosrani
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Cystadleuwyr
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Chwaraewyr Cyfrifiadurol
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Gwreiddiol
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Argymellir)
 
@@ -1768,13 +1769,9 @@ STR_QUIT_NO                                                     :{BLACK}Na
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -2064,9 +2061,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Mae'r gw
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Mae'r cwmni wedi'i ddiogelu. rhowch y cyfrinair.
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Rhestr Cleientiaid
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Gwylio
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Cwmni newydd
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Rhestr Cleientiaid
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Gwylio
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Cwmni newydd
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Cicio
@@ -2081,7 +2078,6 @@ STR_NETWORK_CLIENT                                              :Gwestai
 STR_NETWORK_SPECTATORS                                          :Gwylwyr
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Nodwch faint o arian yr hoffech chi ei roi
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Gwyliwr
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Peidio cadw'r cyfrinair a roddwyd
@@ -3341,6 +3337,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Cerbydau ffordd
 STR_GROUP_DEFAULT_SHIPS                                         :Llongau heb eu grwpio
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Awyrenau heb eu grwpio
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Grŵp - cliciwch ar grŵp i restru pob cerbyd yn y grŵp hwn. Gallwch glico a llusgo grwpiau i drefnu'r hierarchaeth.
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Cliciwch i greu grŵp
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Dileu'r grŵp a ddewiswyd
@@ -3403,10 +3400,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Prynu Ce
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Prynu Llong
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Prynu Awyren
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Adeiladu'r cerbyd trên sydd wedi'i amlygu. Mae Shift+Clic yn dangos amcangyfrif o'r gost
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Adeiladu'r cerbyd ffordd sydd wedi'i amlygu. Mae Shift+Clic yn dangos amcangyfrif o'r gost
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Adeiladu'r llong sydd wedi'i hamlygu. Mae Shift+Clic yn dfangos amcangyfrif o'r gost
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Adeiladu'r awyren sydd wedi'i hamlygu. Mae Shift+Clic yn dangos amcangyfrif o'r gost
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Ailenwi
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Ailenwi

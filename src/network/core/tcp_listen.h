@@ -20,8 +20,6 @@
 #include "../../debug.h"
 #include "table/strings.h"
 
-#ifdef ENABLE_NETWORK
-
 /**
  * Template for TCP listeners.
  * @param Tsocket      The class we create sockets for.
@@ -56,13 +54,13 @@ public:
 
 			/* Check if the client is banned */
 			bool banned = false;
-			for (char **iter = _network_ban_list.Begin(); iter != _network_ban_list.End(); iter++) {
-				banned = address.IsInNetmask(*iter);
+			for (char *entry : _network_ban_list) {
+				banned = address.IsInNetmask(entry);
 				if (banned) {
 					Packet p(Tban_packet);
 					p.PrepareToSend();
 
-					DEBUG(net, 1, "[%s] Banned ip tried to join (%s), refused", Tsocket::GetName(), *iter);
+					DEBUG(net, 1, "[%s] Banned ip tried to join (%s), refused", Tsocket::GetName(), entry);
 
 					if (send(s, (const char*)p.buffer, p.size, 0) < 0) {
 						DEBUG(net, 0, "send failed with error %d", GET_LAST_ERROR());
@@ -113,20 +111,16 @@ public:
 		}
 
 		/* take care of listener port */
-		for (SocketList::iterator s = sockets.Begin(); s != sockets.End(); s++) {
-			FD_SET(s->second, &read_fd);
+		for (auto &s : sockets) {
+			FD_SET(s.second, &read_fd);
 		}
 
 		tv.tv_sec = tv.tv_usec = 0; // don't block at all.
-#if !defined(__MORPHOS__) && !defined(__AMIGA__)
 		if (select(FD_SETSIZE, &read_fd, &write_fd, NULL, &tv) < 0) return false;
-#else
-		if (WaitSelect(FD_SETSIZE, &read_fd, &write_fd, NULL, &tv, NULL) < 0) return false;
-#endif
 
 		/* accept clients.. */
-		for (SocketList::iterator s = sockets.Begin(); s != sockets.End(); s++) {
-			if (FD_ISSET(s->second, &read_fd)) AcceptClient(s->second);
+		for (auto &s : sockets) {
+			if (FD_ISSET(s.second, &read_fd)) AcceptClient(s.second);
 		}
 
 		/* read stuff from clients */
@@ -146,16 +140,16 @@ public:
 	 */
 	static bool Listen(uint16 port)
 	{
-		assert(sockets.Length() == 0);
+		assert(sockets.size() == 0);
 
 		NetworkAddressList addresses;
 		GetBindAddresses(&addresses, port);
 
-		for (NetworkAddress *address = addresses.Begin(); address != addresses.End(); address++) {
-			address->Listen(SOCK_STREAM, &sockets);
+		for (NetworkAddress &address : addresses) {
+			address.Listen(SOCK_STREAM, &sockets);
 		}
 
-		if (sockets.Length() == 0) {
+		if (sockets.size() == 0) {
 			DEBUG(net, 0, "[server] could not start network: could not create listening socket");
 			NetworkError(STR_NETWORK_ERROR_SERVER_START);
 			return false;
@@ -167,16 +161,14 @@ public:
 	/** Close the sockets we're listening on. */
 	static void CloseListeners()
 	{
-		for (SocketList::iterator s = sockets.Begin(); s != sockets.End(); s++) {
-			closesocket(s->second);
+		for (auto &s : sockets) {
+			closesocket(s.second);
 		}
-		sockets.Clear();
+		sockets.clear();
 		DEBUG(net, 1, "[%s] closed listeners", Tsocket::GetName());
 	}
 };
 
 template <class Tsocket, PacketType Tfull_packet, PacketType Tban_packet> SocketList TCPListenHandler<Tsocket, Tfull_packet, Tban_packet>::sockets;
-
-#endif /* ENABLE_NETWORK */
 
 #endif /* NETWORK_CORE_TCP_LISTEN_H */

@@ -26,9 +26,6 @@
 
 #include "../../safeguards.h"
 
-static const uint MAX_SYMBOL_LEN = 512;
-static const uint MAX_FRAMES     = 64;
-
 /* printf format specification for 32/64-bit addresses. */
 #ifdef _M_AMD64
 #define PRINTF_PTR "0x%016IX"
@@ -43,14 +40,14 @@ class CrashLogWindows : public CrashLog {
 	/** Information about the encountered exception */
 	EXCEPTION_POINTERS *ep;
 
-	/* virtual */ char *LogOSVersion(char *buffer, const char *last) const;
-	/* virtual */ char *LogError(char *buffer, const char *last, const char *message) const;
-	/* virtual */ char *LogStacktrace(char *buffer, const char *last) const;
-	/* virtual */ char *LogRegisters(char *buffer, const char *last) const;
-	/* virtual */ char *LogModules(char *buffer, const char *last) const;
+	char *LogOSVersion(char *buffer, const char *last) const override;
+	char *LogError(char *buffer, const char *last, const char *message) const override;
+	char *LogStacktrace(char *buffer, const char *last) const override;
+	char *LogRegisters(char *buffer, const char *last) const override;
+	char *LogModules(char *buffer, const char *last) const override;
 public:
 #if defined(_MSC_VER)
-	/* virtual */ int WriteCrashDump(char *filename, const char *filename_last) const;
+	int WriteCrashDump(char *filename, const char *filename_last) const override;
 	char *AppendDecodedStacktrace(char *buffer, const char *last) const;
 #else
 	char *AppendDecodedStacktrace(char *buffer, const char *last) const { return buffer; }
@@ -322,6 +319,9 @@ static char *PrintModuleInfo(char *output, const char *last, HMODULE mod)
 }
 
 #if defined(_MSC_VER)
+static const uint MAX_SYMBOL_LEN = 512;
+static const uint MAX_FRAMES     = 64;
+
 #pragma warning(disable:4091)
 #include <dbghelp.h>
 #pragma warning(default:4091)

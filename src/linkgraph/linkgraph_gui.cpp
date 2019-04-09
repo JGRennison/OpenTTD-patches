@@ -239,8 +239,12 @@ void LinkGraphOverlay::AddLinks(const Station *from, const Station *to)
  * Draw the linkgraph overlay or some part of it, in the area given.
  * @param dpi Area to be drawn to.
  */
-void LinkGraphOverlay::Draw(const DrawPixelInfo *dpi) const
+void LinkGraphOverlay::Draw(const DrawPixelInfo *dpi)
 {
+	if (this->dirty) {
+		this->RebuildCache();
+		this->dirty = false;
+	}
 	this->DrawLinks(dpi);
 	this->DrawStationDots(dpi);
 }
@@ -555,7 +559,7 @@ void LinkGraphLegendWindow::DrawWidget(const Rect &r, int widget) const
 	}
 }
 
-bool LinkGraphLegendWindow::OnHoverCommon(Point pt, int widget, TooltipCloseCondition close_cond)
+bool LinkGraphLegendWindow::OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond)
 {
 	if (IsInsideMM(widget, WID_LGL_COMPANY_FIRST, WID_LGL_COMPANY_LAST + 1)) {
 		if (this->IsWidgetDisabled(widget)) {
@@ -576,19 +580,6 @@ bool LinkGraphLegendWindow::OnHoverCommon(Point pt, int widget, TooltipCloseCond
 		params[0] = cargo->name;
 		GuiShowTooltips(this, STR_BLACK_STRING, 1, params, close_cond);
 		return true;
-	}
-	return false;
-}
-
-void LinkGraphLegendWindow::OnHover(Point pt, int widget)
-{
-	this->OnHoverCommon(pt, widget, TCC_HOVER);
-}
-
-bool LinkGraphLegendWindow::OnRightClick(Point pt, int widget)
-{
-	if (_settings_client.gui.hover_delay_ms == 0) {
-		return this->OnHoverCommon(pt, widget, TCC_RIGHT_CLICK);
 	}
 	return false;
 }

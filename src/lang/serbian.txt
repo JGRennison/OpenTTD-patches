@@ -1183,6 +1183,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normalna velič
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Uvećavajte veličinu dva puta
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Uvećavajte veličinu četiri puta
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Osnovni skup grafika
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Odaberite željeni skup osnovnih grafika
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} datotek{P a e a} nedostaj{P e u e}/neispravn{P a o o}
@@ -1889,7 +1891,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Distrib
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Suparnici
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Računar
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Originalno
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Preporučuje se)
 
@@ -1972,13 +1973,9 @@ STR_QUIT_NO                                                     :{BLACK}Ne
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -2268,9 +2265,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Server j
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Preduzeće je zaštićeno. Unesite lozinku
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Spisak klijenata
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Praćenje
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Novo preduzeće
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Spisak klijenata
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Praćenje
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Novo preduzeće
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Izbaci
@@ -2285,7 +2282,6 @@ STR_NETWORK_CLIENT                                              :Igrač
 STR_NETWORK_SPECTATORS                                          :Posmatrači
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Unesite svotu novca koju želite dati
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Posmatrač
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Otkaži unetu lozinku
@@ -3548,6 +3544,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Negrupisana dru
 STR_GROUP_DEFAULT_SHIPS                                         :Negrupisani brodovi
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Negrupisane letilice
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Grupe - klikom na grupu se prikazuje spisak vozila u grupi. Hijerarhija grupa se uređuje metodom "prevuci i pusti"
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Klikom se pravi nova grupa
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Briše se označena grupa
@@ -3610,10 +3607,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Kupi Voz
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Kupi Brod
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Kupi Letelicu
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Kupuje označeno šinsko vozilo. Shift+Klik prikazuje procenu troškova bez kupovine
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Kupuje označeno drumsko vozilo. Shift+Klik prikazuje procenu troškova bez kupovine
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Kupuje označeni brod. Shift+Klik prikazuje procenu troškova bez kupovine
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Kupuje označenu letilicu. Shift+Klik prikazuje procenu troškova bez kupovine
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Preimenuj
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Promena naziva

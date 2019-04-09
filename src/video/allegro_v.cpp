@@ -25,6 +25,7 @@
 #include "../core/random_func.hpp"
 #include "../core/math_func.hpp"
 #include "../framerate_type.h"
+#include "../thread.h"
 #include "allegro_v.h"
 #include <allegro.h>
 
@@ -440,12 +441,6 @@ const char *VideoDriver_Allegro::Start(const char * const *parm)
 	signal(SIGSEGV, NULL);
 #endif
 
-#if defined(DOS)
-	/* Force DOS builds to ALWAYS use full screen as
-	 * it can't do windowed. */
-	_fullscreen = true;
-#endif
-
 	GetVideoModes();
 	if (!CreateMainSurface(_cur_resolution.width, _cur_resolution.height)) {
 		return "Failed to set up Allegro video";
@@ -461,7 +456,7 @@ void VideoDriver_Allegro::Stop()
 	if (--_allegro_instance_count == 0) allegro_exit();
 }
 
-#if defined(UNIX) || defined(__OS2__) || defined(DOS)
+#if defined(UNIX) || defined(__OS2__)
 # include <sys/time.h> /* gettimeofday */
 
 static uint32 GetTime()
@@ -548,9 +543,6 @@ bool VideoDriver_Allegro::ChangeResolution(int w, int h)
 
 bool VideoDriver_Allegro::ToggleFullscreen(bool fullscreen)
 {
-#ifdef DOS
-	return false;
-#else
 	_fullscreen = fullscreen;
 	GetVideoModes(); // get the list of available video modes
 	if (_num_resolutions == 0 || !this->ChangeResolution(_cur_resolution.width, _cur_resolution.height)) {
@@ -559,7 +551,6 @@ bool VideoDriver_Allegro::ToggleFullscreen(bool fullscreen)
 		return false;
 	}
 	return true;
-#endif
 }
 
 bool VideoDriver_Allegro::AfterBlitterChange()

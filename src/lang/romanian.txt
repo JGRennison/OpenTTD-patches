@@ -475,6 +475,7 @@ STR_ABOUT_MENU_SCREENSHOT                                       :Capturează ecr
 STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Captură mărită
 STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Mărimea implicită a capturii
 STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Capturează toată harta
+STR_ABOUT_MENU_SHOW_FRAMERATE                                   :Arată FPS
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :Despre 'OpenTTD'
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Aliniere imagini
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Afişează/ascunde casetele de încadrare
@@ -923,6 +924,7 @@ STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Rand sud-africa
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Personalizată...
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :Lari Georgian (GEL)
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Rial Iranian (IRR)
+STR_GAME_OPTIONS_CURRENCY_RUB                                   :Ruble rusești (RUB)
 ############ end of currency region
 
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Autovehiculele circulă...
@@ -984,6 +986,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Alege m�
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normală
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Mărime dublă
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Mărime împătrită
+
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Set grafic de bază
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Selectează setul grafic de bază utilizat în joc
@@ -1101,6 +1105,7 @@ STR_CONFIG_SETTING_TYPE_COMPANY_MENU                            :Setări compani
 STR_CONFIG_SETTING_TYPE_COMPANY_INGAME                          :Setări companie (stocate în fişierul de salvare; afectează doar compania curentă)
 
 STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :{BLACK}Categorie:
+STR_CONFIG_SETTING_RESTRICT_TYPE                                :{BLACK}Tip:
 STR_CONFIG_SETTING_RESTRICT_DROPDOWN_HELPTEXT                   :{BLACK}Arată în lista de mai jos doar setările modificate
 STR_CONFIG_SETTING_RESTRICT_BASIC                               :Setări de bază (afişează numai setări importante)
 STR_CONFIG_SETTING_RESTRICT_ADVANCED                            :Setări avansate (afişează majoritatea setărilor)
@@ -1116,6 +1121,7 @@ STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_INGAME                    :Setări joc (st
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_MENU                   :Setări companie (stocate în salvări; afectează doar jocurile noi)
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_INGAME                 :Setări compenia (stocate în salvări; afectează doar compania curentă)
 STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK}Arată toate rezultatele de căutare setând{}{SILVER}Categoria {BLACK}în {WHITE}{STRING}
+STR_CONFIG_SETTING_TYPE_HIDES                                   :{BLACK}Arată toate rezultatele de căutare setând{}{SILVER}Tipul {BLACK}în {WHITE}Toate tipurile de setări
 STR_CONFIG_SETTINGS_NONE                                        :{WHITE}- Nespecificat -
 
 STR_CONFIG_SETTING_OFF                                          :Inactiv
@@ -1307,6 +1313,7 @@ STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT                         :Alegeți distri
 STR_CONFIG_SETTING_TREE_PLACER_NONE                             :Niciunul
 STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :Original
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Îmbunătăţit
+STR_CONFIG_SETTING_ROAD_SIDE                                    :Autovehicule: {STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Alege banda pentru condus
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Rotaţie hartă înălţimi: {STRING}
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_COUNTER_CLOCKWISE         :Spre stânga
@@ -1326,6 +1333,7 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_HELPTEXT                :Culoarea terenu
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Verde
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_DARK_GREEN              :Verde închis
 STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Mov
+STR_CONFIG_SETTING_SCROLLMODE_RMB_LOCKED                        :Mută harta ținând apăsat click dreapta, poziția cursorului rămânând fixă
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Derulare uşoară ecran: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Controlează modul de deplasare a imaginii din ecranul principal când se face click pe harta mică sau când se execută o comandă de deplasare către un obiect anume de pe hartă. Dacă este activată, imaginea se deplasează în mod fluid, altfel imaginea sare direct la zona dorită
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Arată o indicaţie de distanţă la folosirea uneltelor de construcţie: {STRING}
@@ -1358,6 +1366,7 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Control+Click
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Oprit
 
 
+STR_CONFIG_SETTING_AUTOSAVE                                     :Autosalvare: {STRING}
 
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Foloseşte formatul datei {STRING} pentru numele salvărilor
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Formatul datei in numele salvărilor
@@ -1596,6 +1605,7 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED                        :Modalitatea de 
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Modalitatea de distribuire pentru alte clase de cargo: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Acurateţea distribuţiei: {STRING}
 STR_CONFIG_SETTING_DEMAND_DISTANCE                              :Efectul distanţei asupra cererii: {STRING}
+STR_CONFIG_SETTING_DEMAND_DISTANCE_HELPTEXT                     :Dacă setezi această valoare peste 0, distanța dintre stația origine A al mărfii și o posibilă stație B va afecta cantitatea de marfă trimisă din punctul A în B. Cu cât e mai departe B de A cu atât va fi mai mică cantitatea de marfă transportată. Cu cât mărești această valoare, cu atât mai puțină marfă se livrează spre destinațiile îndepărtate si cu atât mai multă la cele mai apropiate.
 STR_CONFIG_SETTING_DEMAND_SIZE                                  :Cantitatea de cargo la întoarcere pentru modul simetric: {STRING}
 STR_CONFIG_SETTING_SHORT_PATH_SATURATION                        :Saturaţia căilor de capacitate mică înainte de a utiliza căi de capacitate mare: {STRING}
 
@@ -1636,6 +1646,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metric (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}Localizare
+STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}Grafică
 STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Efecte sonore
 STR_CONFIG_SETTING_INTERFACE                                    :{ORANGE}Interfaţă
 STR_CONFIG_SETTING_INTERFACE_GENERAL                            :{ORANGE}General
@@ -1654,7 +1665,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Distrib
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Concurenţi
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Jucători virtuali
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Original
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Recomandat)
 
@@ -1737,13 +1747,9 @@ STR_QUIT_NO                                                     :{BLACK}Nu
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -2034,9 +2040,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Server p
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Companie protejată. Introdu parola
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Lista de clienţi
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Observă
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Companie nouă
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Lista de clienţi
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Observă
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Companie nouă
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Dă afară
@@ -2051,7 +2057,6 @@ STR_NETWORK_CLIENT                                              :Client
 STR_NETWORK_SPECTATORS                                          :Spectatori
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Introduceţi suma pe care o oferiţi
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Spectator
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Parola introdusă nu se va salva
@@ -2659,6 +2664,7 @@ STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD 
 STR_FRAMERATE_RATE_GAMELOOP_TOOLTIP                             :{BLACK}Număr de evenimente de joc simulate per secundă.
 STR_FRAMERATE_AVERAGE                                           :{WHITE}Medie
 STR_FRAMERATE_DATA_POINTS                                       :{BLACK}Date bazate pe măsurători {COMMA}
+STR_FRAMERATE_MS_GOOD                                           :{LTBLUE}{DECIMAL} ms
 STR_FRAMERATE_GRAPH_MILLISECONDS                                :{TINY_FONT}{COMMA} ms
 ############ Leave those lines in this order!!
 STR_FRAMERATE_VIDEO                                             :{BLACK}Ieșire video:
@@ -2689,6 +2695,7 @@ STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}Detalii 
 STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}Nicio informaţie disponibilă
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
 STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF: {WHITE}{STRING}
+STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Filtrare după:
 
 STR_SAVELOAD_OSKTITLE                                           :{BLACK}Introduceţi un nume pentru salvare
 
@@ -2814,6 +2821,7 @@ STR_NEWGRF_SETTINGS_DISABLED                                    :{RED}Dezactivat
 STR_NEWGRF_SETTINGS_INCOMPATIBLE                                :{RED}Incompatibil cu această versiune de OpenTTD
 
 # NewGRF save preset window
+STR_SAVE_PRESET_TITLE                                           :{BLACK}Adaugă denumire presetare
 STR_SAVE_PRESET_CANCEL                                          :{BLACK}Anulează
 STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Nu schimba setarea implicită
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Salvează setarea pe numele selectat
@@ -3306,6 +3314,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Vehicule rutier
 STR_GROUP_DEFAULT_SHIPS                                         :Nave negrupate
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Aeronave negrupate
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Grupuri - click pe un grup pentru lista completă a vehiculelor acestuia
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Click pentru a creea un grup
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Şterge grupul selectat
@@ -3322,6 +3331,7 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :Elimină toate 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Redenumeşte un grup
 
 STR_GROUP_OCCUPANCY                                             :Utilizare curentă:
+STR_GROUP_OCCUPANCY_VALUE                                       :{NUM}%
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Noi vehicule feroviare
@@ -3365,10 +3375,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Cumpăr�
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Cumpără navă
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Cumpără aeronavă
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Cumpără vehiculul feroviar selectat. Shift+Click arată costul estimat fără să cumpere vehiculul
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Cumpără autovehiculul selectat. Shift+Click arată costul estimat fără să cumpere autovehiculul
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Cumpără nava selectată. Shift+Click arată costul estimativ fără a efectua achiziţia
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Cumpără aeronava selectată. Shift+Click arată costul estimativ fără a efectua achiziţia
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Nume nou
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Nume nou
@@ -3488,6 +3500,7 @@ STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :locomotivă per
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Cost: {CURRENCY_LONG} Greutate: {WEIGHT_SHORT}{}Vitezã: {VELOCITY}  Putere: {POWER}{}Cost de rulare: {CURRENCY_LONG}/an{}Capacitate: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Cost: {CURRENCY_LONG} Greutate: {WEIGHT_SHORT}{}Viteză: {VELOCITY}  Putere: {POWER}  Ef. T. Max.: {6:FORCE}{}Cost rulaj: {4:CURRENCY_LONG}/an{}Capacitate: {5:CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Cost: {CURRENCY_LONG} Viteză max.: {VELOCITY}{}Capacitate: {CARGO_LONG}{}Mentenanţă: {CURRENCY_LONG}/an
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_CAP_RUNCOST    :{BLACK}Cost: {CURRENCY_LONG} Viteza maximă: {VELOCITY}{}Tip avion: {STRING} Rază: {COMMA} pătrățele{}Capacitate: {CARGO_LONG}, {CARGO_LONG}{}Cost întreținere: {CURRENCY_LONG}/an
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Înlocuieşte {STRING} - {STRING}
@@ -4422,6 +4435,7 @@ STR_BASESOUNDS_DOS_DESCRIPTION                                  :Setul de sunete
 STR_BASESOUNDS_WIN_DESCRIPTION                                  :Setul de sunete original al Transport Tycoon Deluxe pentru Windows.
 STR_BASESOUNDS_NONE_DESCRIPTION                                 :Un set de sunete fără nici un sunet inclus.
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :Setul de muzică original al Transport Tycoon Deluxe pentru Windows.
+STR_BASEMUSIC_DOS_DESCRIPTION                                   :Setul de muzică original al Transport Tycoon Deluxe pentru DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Un set de muzică fără muzică inclusă.
 
 ##id 0x2000

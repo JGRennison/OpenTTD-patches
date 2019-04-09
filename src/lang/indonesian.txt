@@ -989,6 +989,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Kali dua
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Kali empat
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Set Grafik Dasar
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Pilih grafik dasar yang digunakan
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} berkas hilang atau rusak
@@ -1692,7 +1694,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Distrib
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Pesaing
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Pemain Komputer
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Asli
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Recommended)
 
@@ -1775,13 +1776,9 @@ STR_QUIT_NO                                                     :{BLACK}Tidak
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -2071,9 +2068,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Server t
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Perusahaan terkunci, masukkan kata kunci
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Daftar klien
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Menonton
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Buat Perusahaan
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Daftar klien
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Menonton
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Buat Perusahaan
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Usir
@@ -2088,7 +2085,6 @@ STR_NETWORK_CLIENT                                              :Klien
 STR_NETWORK_SPECTATORS                                          :Penonton
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Masukkan jumlah uang yang akan diberikan
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Pengamat
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Jangan simpan kata sandi yang telah dimasukkan
@@ -3370,6 +3366,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Kendaraan tanpa
 STR_GROUP_DEFAULT_SHIPS                                         :Kapal tanpa kelompok
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Pesawat tanpa kelompok
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Kelompok - Klik salah satu untuk melihat daftar kendaraan pada kelompok tersebut
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Klik untuk membuat kelompok
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Hapus kelompok terpilih
@@ -3432,10 +3429,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Beli Ken
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Beli Kapal
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Beli Pesawat
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Beli kereta yang dipilih. Shift untuk menampilkan perkiraan biaya
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Beli kendaraan yang dipilih. Shift untuk menampilkan perkiraan biaya
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Beli kapal yang dipilih. Shift untuk menampilkan perkiraan biaya
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Beli pesawat yang dipilih. Shift untuk menampilkan perkiraan biaya
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Ubah Nama
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Ganti Nama

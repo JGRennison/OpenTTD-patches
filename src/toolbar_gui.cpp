@@ -97,14 +97,12 @@ public:
 		this->checkmark_width = GetStringBoundingBox(STR_JUST_CHECKMARK).width + 3;
 	}
 
-	virtual ~DropDownListCheckedItem() {}
-
 	uint Width() const
 	{
 		return DropDownListStringItem::Width() + this->checkmark_width;
 	}
 
-	void Draw(int left, int right, int top, int bottom, bool sel, int bg_colour) const
+	void Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const
 	{
 		bool rtl = _current_text_dir == TD_RTL;
 		if (this->checked) {
@@ -129,14 +127,12 @@ public:
 		this->lock_size = GetSpriteSize(SPR_LOCK);
 	}
 
-	virtual ~DropDownListCompanyItem() {}
-
-	bool Selectable() const
+	bool Selectable() const override
 	{
 		return true;
 	}
 
-	uint Width() const
+	uint Width() const override
 	{
 		CompanyID company = (CompanyID)this->result;
 		SetDParam(0, company);
@@ -144,12 +140,12 @@ public:
 		return GetStringBoundingBox(STR_COMPANY_NAME_COMPANY_NUM).width + this->icon_size.width + this->lock_size.width + 6;
 	}
 
-	uint Height(uint width) const
+	uint Height(uint width) const override
 	{
 		return max(max(this->icon_size.height, this->lock_size.height) + 2U, (uint)FONT_HEIGHT_NORMAL);
 	}
 
-	void Draw(int left, int right, int top, int bottom, bool sel, int bg_colour) const
+	void Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const override
 	{
 		CompanyID company = (CompanyID)this->result;
 		bool rtl = _current_text_dir == TD_RTL;
@@ -202,7 +198,7 @@ static void PopupMainToolbMenu(Window *w, int widget, StringID string, int count
 {
 	DropDownList *list = new DropDownList();
 	for (int i = 0; i < count; i++) {
-		*list->Append() = new DropDownListStringItem(string + i, i, false);
+		list->push_back(new DropDownListStringItem(string + i, i, false));
 	}
 	PopupMainToolbMenu(w, widget, list, 0);
 }
@@ -218,39 +214,40 @@ static const int CTMN_SPECTATOR   = -4; ///< Show a company window as spectator
  * @param w The toolbar window.
  * @param widget The button widget id.
  * @param grey A bitbask of which items to mark as disabled.
- * @param include_spectator If true, a spectator option is included in the list.
  */
-static void PopupMainCompanyToolbMenu(Window *w, int widget, int grey = 0, bool include_spectator = false)
+static void PopupMainCompanyToolbMenu(Window *w, int widget, int grey = 0)
 {
 	DropDownList *list = new DropDownList();
 
-#ifdef ENABLE_NETWORK
-	if (_networking) {
-		if (widget == WID_TN_COMPANIES) {
-			/* Add the client list button for the companies menu */
-			*list->Append() = new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_CLIENT_LIST, CTMN_CLIENT_LIST, false);
-		}
+	switch (widget) {
+		case WID_TN_COMPANIES:
+			if (!_networking) break;
 
-		if (include_spectator) {
-			if (widget == WID_TN_COMPANIES) {
-				if (_local_company == COMPANY_SPECTATOR) {
-					*list->Append() = new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_NEW_COMPANY, CTMN_NEW_COMPANY, NetworkMaxCompaniesReached());
-				} else {
-					*list->Append() = new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_SPECTATE, CTMN_SPECTATE, NetworkMaxSpectatorsReached());
-				}
+			/* Add the client list button for the companies menu */
+			list->push_back(new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_CLIENT_LIST, CTMN_CLIENT_LIST, false));
+
+			if (_local_company == COMPANY_SPECTATOR) {
+				list->push_back(new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_NEW_COMPANY, CTMN_NEW_COMPANY, NetworkMaxCompaniesReached()));
 			} else {
-				*list->Append() = new DropDownListStringItem(STR_NETWORK_TOOLBAR_LIST_SPECTATOR, CTMN_SPECTATOR, false);
+				list->push_back(new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_SPECTATE, CTMN_SPECTATE, NetworkMaxSpectatorsReached()));
 			}
-		}
+			break;
+
+		case WID_TN_STORY:
+			list->push_back(new DropDownListStringItem(STR_STORY_BOOK_SPECTATOR, CTMN_SPECTATOR, false));
+			break;
+
+		case WID_TN_GOAL:
+			list->push_back(new DropDownListStringItem(STR_GOALS_SPECTATOR, CTMN_SPECTATOR, false));
+			break;
 	}
-#endif /* ENABLE_NETWORK */
 
 	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
 		if (!Company::IsValidID(c)) continue;
-		*list->Append() = new DropDownListCompanyItem(c, false, HasBit(grey, c));
+		list->push_back(new DropDownListCompanyItem(c, false, HasBit(grey, c)));
 	}
 
-	PopupMainToolbMenu(w, widget, list, _local_company == COMPANY_SPECTATOR ? CTMN_CLIENT_LIST : (int)_local_company);
+	PopupMainToolbMenu(w, widget, list, _local_company == COMPANY_SPECTATOR ? (widget == WID_TN_COMPANIES ? CTMN_CLIENT_LIST : CTMN_SPECTATOR) : (int)_local_company);
 }
 
 
@@ -321,24 +318,24 @@ enum OptionMenuEntries {
 static CallBackFunction ToolbarOptionsClick(Window *w)
 {
 	DropDownList *list = new DropDownList();
-	*list->Append() = new DropDownListStringItem(STR_SETTINGS_MENU_GAME_OPTIONS,             OME_GAMEOPTIONS, false);
-	*list->Append() = new DropDownListStringItem(STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE,     OME_SETTINGS, false);
+	list->push_back(new DropDownListStringItem(STR_SETTINGS_MENU_GAME_OPTIONS,             OME_GAMEOPTIONS, false));
+	list->push_back(new DropDownListStringItem(STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE,     OME_SETTINGS, false));
 	/* Changes to the per-AI settings don't get send from the server to the clients. Clients get
 	 * the settings once they join but never update it. As such don't show the window at all
 	 * to network clients. */
-	if (!_networking || _network_server) *list->Append() = new DropDownListStringItem(STR_SETTINGS_MENU_SCRIPT_SETTINGS, OME_SCRIPT_SETTINGS, false);
-	*list->Append() = new DropDownListStringItem(STR_SETTINGS_MENU_NEWGRF_SETTINGS,          OME_NEWGRFSETTINGS, false);
-	*list->Append() = new DropDownListStringItem(STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS,     OME_TRANSPARENCIES, false);
-	*list->Append() = new DropDownListItem(-1, false);
-	*list->Append() = new DropDownListCheckedItem(STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED,    OME_SHOW_TOWNNAMES, false, HasBit(_display_opt, DO_SHOW_TOWN_NAMES));
-	*list->Append() = new DropDownListCheckedItem(STR_SETTINGS_MENU_STATION_NAMES_DISPLAYED, OME_SHOW_STATIONNAMES, false, HasBit(_display_opt, DO_SHOW_STATION_NAMES));
-	*list->Append() = new DropDownListCheckedItem(STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED,     OME_SHOW_WAYPOINTNAMES, false, HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES));
-	*list->Append() = new DropDownListCheckedItem(STR_SETTINGS_MENU_SIGNS_DISPLAYED,         OME_SHOW_SIGNS, false, HasBit(_display_opt, DO_SHOW_SIGNS));
-	*list->Append() = new DropDownListCheckedItem(STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS,   OME_SHOW_COMPETITOR_SIGNS, false, HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS));
-	*list->Append() = new DropDownListCheckedItem(STR_SETTINGS_MENU_FULL_ANIMATION,          OME_FULL_ANIMATION, false, HasBit(_display_opt, DO_FULL_ANIMATION));
-	*list->Append() = new DropDownListCheckedItem(STR_SETTINGS_MENU_FULL_DETAIL,             OME_FULL_DETAILS, false, HasBit(_display_opt, DO_FULL_DETAIL));
-	*list->Append() = new DropDownListCheckedItem(STR_SETTINGS_MENU_TRANSPARENT_BUILDINGS,   OME_TRANSPARENTBUILDINGS, false, IsTransparencySet(TO_HOUSES));
-	*list->Append() = new DropDownListCheckedItem(STR_SETTINGS_MENU_TRANSPARENT_SIGNS,       OME_SHOW_STATIONSIGNS, false, IsTransparencySet(TO_SIGNS));
+	if (!_networking || _network_server) list->push_back(new DropDownListStringItem(STR_SETTINGS_MENU_SCRIPT_SETTINGS, OME_SCRIPT_SETTINGS, false));
+	list->push_back(new DropDownListStringItem(STR_SETTINGS_MENU_NEWGRF_SETTINGS,          OME_NEWGRFSETTINGS, false));
+	list->push_back(new DropDownListStringItem(STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS,     OME_TRANSPARENCIES, false));
+	list->push_back(new DropDownListItem(-1, false));
+	list->push_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED,    OME_SHOW_TOWNNAMES, false, HasBit(_display_opt, DO_SHOW_TOWN_NAMES)));
+	list->push_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_STATION_NAMES_DISPLAYED, OME_SHOW_STATIONNAMES, false, HasBit(_display_opt, DO_SHOW_STATION_NAMES)));
+	list->push_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED,     OME_SHOW_WAYPOINTNAMES, false, HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES)));
+	list->push_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_SIGNS_DISPLAYED,         OME_SHOW_SIGNS, false, HasBit(_display_opt, DO_SHOW_SIGNS)));
+	list->push_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS,   OME_SHOW_COMPETITOR_SIGNS, false, HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS)));
+	list->push_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_FULL_ANIMATION,          OME_FULL_ANIMATION, false, HasBit(_display_opt, DO_FULL_ANIMATION)));
+	list->push_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_FULL_DETAIL,             OME_FULL_DETAILS, false, HasBit(_display_opt, DO_FULL_DETAIL)));
+	list->push_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_TRANSPARENT_BUILDINGS,   OME_TRANSPARENTBUILDINGS, false, IsTransparencySet(TO_HOUSES)));
+	list->push_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_TRANSPARENT_SIGNS,       OME_SHOW_STATIONSIGNS, false, IsTransparencySet(TO_SIGNS)));
 
 	ShowDropDownList(w, list, 0, WID_TN_SETTINGS, 140, true, true);
 	if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
@@ -467,10 +464,10 @@ enum MapMenuEntries {
 static CallBackFunction ToolbarMapClick(Window *w)
 {
 	DropDownList *list = new DropDownList();
-	*list->Append() = new DropDownListStringItem(STR_MAP_MENU_MAP_OF_WORLD,            MME_SHOW_SMALLMAP,          false);
-	*list->Append() = new DropDownListStringItem(STR_MAP_MENU_EXTRA_VIEW_PORT,         MME_SHOW_EXTRAVIEWPORTS,    false);
-	*list->Append() = new DropDownListStringItem(STR_MAP_MENU_LINGRAPH_LEGEND,         MME_SHOW_LINKGRAPH,         false);
-	*list->Append() = new DropDownListStringItem(STR_MAP_MENU_SIGN_LIST,               MME_SHOW_SIGNLISTS,         false);
+	list->push_back(new DropDownListStringItem(STR_MAP_MENU_MAP_OF_WORLD,            MME_SHOW_SMALLMAP,          false));
+	list->push_back(new DropDownListStringItem(STR_MAP_MENU_EXTRA_VIEW_PORT,         MME_SHOW_EXTRAVIEWPORTS,    false));
+	list->push_back(new DropDownListStringItem(STR_MAP_MENU_LINGRAPH_LEGEND,         MME_SHOW_LINKGRAPH,         false));
+	list->push_back(new DropDownListStringItem(STR_MAP_MENU_SIGN_LIST,               MME_SHOW_SIGNLISTS,         false));
 	PopupMainToolbMenu(w, WID_TN_SMALL_MAP, list, 0);
 	return CBF_NONE;
 }
@@ -478,11 +475,11 @@ static CallBackFunction ToolbarMapClick(Window *w)
 static CallBackFunction ToolbarScenMapTownDir(Window *w)
 {
 	DropDownList *list = new DropDownList();
-	*list->Append() = new DropDownListStringItem(STR_MAP_MENU_MAP_OF_WORLD,            MME_SHOW_SMALLMAP,          false);
-	*list->Append() = new DropDownListStringItem(STR_MAP_MENU_EXTRA_VIEW_PORT,         MME_SHOW_EXTRAVIEWPORTS,    false);
-	*list->Append() = new DropDownListStringItem(STR_MAP_MENU_SIGN_LIST,               MME_SHOW_SIGNLISTS,         false);
-	*list->Append() = new DropDownListStringItem(STR_TOWN_MENU_TOWN_DIRECTORY,         MME_SHOW_TOWNDIRECTORY,     false);
-	*list->Append() = new DropDownListStringItem(STR_INDUSTRY_MENU_INDUSTRY_DIRECTORY, MME_SHOW_INDUSTRYDIRECTORY, false);
+	list->push_back(new DropDownListStringItem(STR_MAP_MENU_MAP_OF_WORLD,            MME_SHOW_SMALLMAP,          false));
+	list->push_back(new DropDownListStringItem(STR_MAP_MENU_EXTRA_VIEW_PORT,         MME_SHOW_EXTRAVIEWPORTS,    false));
+	list->push_back(new DropDownListStringItem(STR_MAP_MENU_SIGN_LIST,               MME_SHOW_SIGNLISTS,         false));
+	list->push_back(new DropDownListStringItem(STR_TOWN_MENU_TOWN_DIRECTORY,         MME_SHOW_TOWNDIRECTORY,     false));
+	list->push_back(new DropDownListStringItem(STR_INDUSTRY_MENU_INDUSTRY_DIRECTORY, MME_SHOW_INDUSTRYDIRECTORY, false));
 	PopupMainToolbMenu(w, WID_TE_SMALL_MAP, list, 0);
 	return CBF_NONE;
 }
@@ -597,7 +594,7 @@ static CallBackFunction MenuClickFinances(int index)
 
 static CallBackFunction ToolbarCompaniesClick(Window *w)
 {
-	PopupMainCompanyToolbMenu(w, WID_TN_COMPANIES, 0, true);
+	PopupMainCompanyToolbMenu(w, WID_TN_COMPANIES, 0);
 	return CBF_NONE;
 }
 
@@ -609,7 +606,6 @@ static CallBackFunction ToolbarCompaniesClick(Window *w)
  */
 static CallBackFunction MenuClickCompany(int index)
 {
-#ifdef ENABLE_NETWORK
 	if (_networking) {
 		switch (index) {
 			case CTMN_CLIENT_LIST:
@@ -634,7 +630,6 @@ static CallBackFunction MenuClickCompany(int index)
 				return CBF_NONE;
 		}
 	}
-#endif /* ENABLE_NETWORK */
 	ShowCompany((CompanyID)index);
 	return CBF_NONE;
 }
@@ -643,7 +638,7 @@ static CallBackFunction MenuClickCompany(int index)
 
 static CallBackFunction ToolbarStoryClick(Window *w)
 {
-	PopupMainCompanyToolbMenu(w, WID_TN_STORY, 0, true);
+	PopupMainCompanyToolbMenu(w, WID_TN_STORY, 0);
 	return CBF_NONE;
 }
 
@@ -663,7 +658,7 @@ static CallBackFunction MenuClickStory(int index)
 
 static CallBackFunction ToolbarGoalClick(Window *w)
 {
-	PopupMainCompanyToolbMenu(w, WID_TN_GOAL, 0, true);
+	PopupMainCompanyToolbMenu(w, WID_TN_GOAL, 0);
 	return CBF_NONE;
 }
 
@@ -902,7 +897,7 @@ static CallBackFunction ToolbarBuildRoadClick(Window *w)
 	DropDownList *list = new DropDownList();
 
 	/* Road is always visible and available. */
-	*list->Append() = new DropDownListStringItem(STR_ROAD_MENU_ROAD_CONSTRUCTION, ROADTYPE_ROAD, false);
+	list->push_back(new DropDownListIconItem(SPR_IMG_ROAD_X_DIR, PAL_NONE, STR_ROAD_MENU_ROAD_CONSTRUCTION, ROADTYPE_ROAD, false));
 
 	/* Tram is only visible when there will be a tram, and available when that has been introduced. */
 	Engine *e;
@@ -910,7 +905,7 @@ static CallBackFunction ToolbarBuildRoadClick(Window *w)
 		if (!HasBit(e->info.climates, _settings_game.game_creation.landscape)) continue;
 		if (!HasBit(e->info.misc_flags, EF_ROAD_TRAM)) continue;
 
-		*list->Append() = new DropDownListStringItem(STR_ROAD_MENU_TRAM_CONSTRUCTION, ROADTYPE_TRAM, !HasBit(c->avail_roadtypes, ROADTYPE_TRAM));
+		list->push_back(new DropDownListIconItem(SPR_IMG_TRAMWAY_X_DIR, PAL_NONE, STR_ROAD_MENU_TRAM_CONSTRUCTION, ROADTYPE_TRAM, !HasBit(c->avail_roadtypes, ROADTYPE_TRAM)));
 		break;
 	}
 	ShowDropDownList(w, list, _last_built_roadtype, WID_TN_ROADS, 140, true, true);
@@ -1019,7 +1014,7 @@ static CallBackFunction MenuClickMusicWindow(int index)
 
 static CallBackFunction ToolbarNewspaperClick(Window *w)
 {
-	PopupMainToolbMenu(w, WID_TN_MESSAGES, STR_NEWS_MENU_LAST_MESSAGE_NEWS_REPORT, 2);
+	PopupMainToolbMenu(w, WID_TN_MESSAGES, STR_NEWS_MENU_LAST_MESSAGE_NEWS_REPORT, 3);
 	return CBF_NONE;
 }
 
@@ -1034,6 +1029,7 @@ static CallBackFunction MenuClickNewspaper(int index)
 	switch (index) {
 		case 0: ShowLastNewsMessage(); break;
 		case 1: ShowMessageHistory();  break;
+		case 2: DeleteAllMessages();   break;
 	}
 	return CBF_NONE;
 }
@@ -1336,7 +1332,7 @@ public:
 		return type == WWT_IMGBTN || type == WWT_IMGBTN_2 || type == WWT_PUSHIMGBTN;
 	}
 
-	void SetupSmallestSize(Window *w, bool init_array)
+	void SetupSmallestSize(Window *w, bool init_array) override
 	{
 		this->smallest_x = 0; // Biggest child
 		this->smallest_y = 0; // Biggest child
@@ -1369,7 +1365,7 @@ public:
 		_toolbar_width = nbuttons * this->smallest_x;
 	}
 
-	void AssignSizePosition(SizingType sizing, uint x, uint y, uint given_width, uint given_height, bool rtl)
+	void AssignSizePosition(SizingType sizing, uint x, uint y, uint given_width, uint given_height, bool rtl) override
 	{
 		assert(given_width >= this->smallest_x && given_height >= this->smallest_y);
 
@@ -1432,7 +1428,7 @@ public:
 		}
 	}
 
-	/* virtual */ void Draw(const Window *w)
+	void Draw(const Window *w) override
 	{
 		/* Draw brown-red toolbar bg. */
 		GfxFillRect(this->pos_x, this->pos_y, this->pos_x + this->current_x - 1, this->pos_y + this->current_y - 1, PC_VERY_DARK_RED);
@@ -1447,7 +1443,7 @@ public:
 		}
 	}
 
-	/* virtual */ NWidgetCore *GetWidgetFromPos(int x, int y)
+	NWidgetCore *GetWidgetFromPos(int x, int y) override
 	{
 		if (!IsInsideBS(x, this->pos_x, this->current_x) || !IsInsideBS(y, this->pos_y, this->current_y)) return NULL;
 
@@ -1474,7 +1470,7 @@ public:
 
 /** Container for the 'normal' main toolbar */
 class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
-	/* virtual */ const byte *GetButtonArrangement(uint &width, uint &arrangable_count, uint &button_count, uint &spacer_count) const
+	const byte *GetButtonArrangement(uint &width, uint &arrangable_count, uint &button_count, uint &spacer_count) const override
 	{
 		static const uint SMALLEST_ARRANGEMENT = 14;
 		static const uint BIGGEST_ARRANGEMENT  = 20;
@@ -1797,7 +1793,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 class NWidgetScenarioToolbarContainer : public NWidgetToolbarContainer {
 	uint panel_widths[2]; ///< The width of the two panels (the text panel and date panel)
 
-	void SetupSmallestSize(Window *w, bool init_array)
+	void SetupSmallestSize(Window *w, bool init_array) override
 	{
 		this->NWidgetToolbarContainer::SetupSmallestSize(w, init_array);
 
@@ -1812,7 +1808,7 @@ class NWidgetScenarioToolbarContainer : public NWidgetToolbarContainer {
 		}
 	}
 
-	/* virtual */ const byte *GetButtonArrangement(uint &width, uint &arrangable_count, uint &button_count, uint &spacer_count) const
+	const byte *GetButtonArrangement(uint &width, uint &arrangable_count, uint &button_count, uint &spacer_count) const override
 	{
 		static const byte arrange_all[] = {
 			WID_TE_PAUSE,
@@ -2001,12 +1997,12 @@ struct MainToolbarWindow : Window {
 		this->timer.SetInterval(MILLISECONDS_PER_TICK);
 	}
 
-	virtual void FindWindowPlacementAndResize(int def_width, int def_height)
+	void FindWindowPlacementAndResize(int def_width, int def_height) override
 	{
 		Window::FindWindowPlacementAndResize(_toolbar_width, def_height);
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		/* If spectator, disable all construction buttons
 		 * ie : Build road, rail, ships, airports and landscaping
@@ -2024,18 +2020,18 @@ struct MainToolbarWindow : Window {
 		this->DrawWidgets();
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		if (_game_mode != GM_MENU && !this->IsWidgetDisabled(widget)) _toolbar_button_procs[widget](this);
 	}
 
-	virtual void OnDropdownSelect(int widget, int index)
+	void OnDropdownSelect(int widget, int index) override
 	{
 		CallBackFunction cbf = _menu_clicked_procs[widget](index);
 		if (cbf != CBF_NONE) _last_started_action = cbf;
 	}
 
-	virtual EventState OnHotkey(int hotkey)
+	EventState OnHotkey(int hotkey) override
 	{
 		switch (hotkey) {
 			case MTHK_PAUSE: ToolbarPauseClick(this); break;
@@ -2074,16 +2070,14 @@ struct MainToolbarWindow : Window {
 			case MTHK_CHEATS: if (!_networking) ShowCheatWindow(); break;
 			case MTHK_TERRAFORM: ShowTerraformToolbar(); break;
 			case MTHK_EXTRA_VIEWPORT: ShowExtraViewPortWindowForTileUnderCursor(); break;
-#ifdef ENABLE_NETWORK
 			case MTHK_CLIENT_LIST: if (_networking) ShowClientList(); break;
-#endif
 			case MTHK_SIGN_LIST: ShowSignList(); break;
 			default: return ES_NOT_HANDLED;
 		}
 		return ES_HANDLED;
 	}
 
-	virtual void OnPlaceObject(Point pt, TileIndex tile)
+	void OnPlaceObject(Point pt, TileIndex tile) override
 	{
 		switch (_last_started_action) {
 			case CBF_PLACE_SIGN:
@@ -2098,12 +2092,12 @@ struct MainToolbarWindow : Window {
 		}
 	}
 
-	virtual void OnPlaceObjectAbort()
+	void OnPlaceObjectAbort() override
 	{
 		_last_started_action = CBF_NONE;
 	}
 
-	virtual void OnRealtimeTick(uint delta_ms)
+	void OnRealtimeTick(uint delta_ms) override
 	{
 		if (!this->timer.Elapsed(delta_ms)) return;
 		this->timer.SetInterval(MILLISECONDS_PER_TICK);
@@ -2119,7 +2113,7 @@ struct MainToolbarWindow : Window {
 		}
 	}
 
-	virtual void OnTimeout()
+	void OnTimeout() override
 	{
 		/* We do not want to automatically raise the pause, fast forward and
 		 * switchbar buttons; they have to stay down when pressed etc. */
@@ -2136,7 +2130,7 @@ struct MainToolbarWindow : Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		if (FindWindowById(WC_MAIN_WINDOW, 0) != NULL) HandleZoomMessage(this, FindWindowById(WC_MAIN_WINDOW, 0)->viewport, WID_TN_ZOOM_IN, WID_TN_ZOOM_OUT);
@@ -2187,9 +2181,7 @@ static Hotkey maintoolbar_hotkeys[] = {
 	Hotkey(WKC_CTRL | WKC_ALT | 'C', "cheats", MTHK_CHEATS),
 	Hotkey('L', "terraform", MTHK_TERRAFORM),
 	Hotkey('V', "extra_viewport", MTHK_EXTRA_VIEWPORT),
-#ifdef ENABLE_NETWORK
 	Hotkey((uint16)0, "client_list", MTHK_CLIENT_LIST),
-#endif
 	Hotkey((uint16)0, "sign_list", MTHK_SIGN_LIST),
 	HOTKEY_LIST_END
 };
@@ -2338,12 +2330,12 @@ struct ScenarioEditorToolbarWindow : Window {
 		this->timer.SetInterval(MILLISECONDS_PER_TICK);
 	}
 
-	virtual void FindWindowPlacementAndResize(int def_width, int def_height)
+	void FindWindowPlacementAndResize(int def_width, int def_height) override
 	{
 		Window::FindWindowPlacementAndResize(_toolbar_width, def_height);
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		this->SetWidgetDisabledState(WID_TE_DATE_BACKWARD, _settings_game.game_creation.starting_year <= MIN_YEAR);
 		this->SetWidgetDisabledState(WID_TE_DATE_FORWARD, _settings_game.game_creation.starting_year >= MAX_YEAR);
@@ -2351,7 +2343,7 @@ struct ScenarioEditorToolbarWindow : Window {
 		this->DrawWidgets();
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_TE_DATE:
@@ -2372,7 +2364,7 @@ struct ScenarioEditorToolbarWindow : Window {
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_TE_SPACER:
@@ -2387,14 +2379,14 @@ struct ScenarioEditorToolbarWindow : Window {
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		if (_game_mode == GM_MENU) return;
 		CallBackFunction cbf = _scen_toolbar_button_procs[widget](this);
 		if (cbf != CBF_NONE) _last_started_action = cbf;
 	}
 
-	virtual void OnDropdownSelect(int widget, int index)
+	void OnDropdownSelect(int widget, int index) override
 	{
 		/* The map button is in a different location on the scenario
 		 * editor toolbar, so we need to adjust for it. */
@@ -2404,7 +2396,7 @@ struct ScenarioEditorToolbarWindow : Window {
 		if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 	}
 
-	virtual EventState OnHotkey(int hotkey)
+	EventState OnHotkey(int hotkey) override
 	{
 		CallBackFunction cbf = CBF_NONE;
 		switch (hotkey) {
@@ -2436,7 +2428,7 @@ struct ScenarioEditorToolbarWindow : Window {
 		return ES_HANDLED;
 	}
 
-	virtual void OnPlaceObject(Point pt, TileIndex tile)
+	void OnPlaceObject(Point pt, TileIndex tile) override
 	{
 		switch (_last_started_action) {
 			case CBF_PLACE_SIGN:
@@ -2451,19 +2443,19 @@ struct ScenarioEditorToolbarWindow : Window {
 		}
 	}
 
-	virtual void OnPlaceObjectAbort()
+	void OnPlaceObjectAbort() override
 	{
 		_last_started_action = CBF_NONE;
 	}
 
-	virtual void OnTimeout()
+	void OnTimeout() override
 	{
 		this->SetWidgetsLoweredState(false, WID_TE_DATE_BACKWARD, WID_TE_DATE_FORWARD, WIDGET_LIST_END);
 		this->SetWidgetDirty(WID_TE_DATE_BACKWARD);
 		this->SetWidgetDirty(WID_TE_DATE_FORWARD);
 	}
 
-	virtual void OnRealtimeTick(uint delta_ms)
+	void OnRealtimeTick(uint delta_ms) override
 	{
 		if (!this->timer.Elapsed(delta_ms)) return;
 		this->timer.SetInterval(MILLISECONDS_PER_TICK);
@@ -2484,13 +2476,13 @@ struct ScenarioEditorToolbarWindow : Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 		if (FindWindowById(WC_MAIN_WINDOW, 0) != NULL) HandleZoomMessage(this, FindWindowById(WC_MAIN_WINDOW, 0)->viewport, WID_TE_ZOOM_IN, WID_TE_ZOOM_OUT);
 	}
 
-	virtual void OnQueryTextFinished(char *str)
+	void OnQueryTextFinished(char *str) override
 	{
 		/* Was 'cancel' pressed? */
 		if (str == NULL) return;

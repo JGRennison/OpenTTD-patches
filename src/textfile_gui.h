@@ -21,28 +21,32 @@ const char *GetTextfile(TextfileType type, Subdirectory dir, const char *filenam
 
 /** Window for displaying a textfile */
 struct TextfileWindow : public Window, MissingGlyphSearcher {
-	TextfileType file_type;              ///< Type of textfile to view.
-	Scrollbar *vscroll;                  ///< Vertical scrollbar.
-	Scrollbar *hscroll;                  ///< Horizontal scrollbar.
-	char *text;                          ///< Lines of text from the NewGRF's textfile.
-	SmallVector<const char *, 64> lines; ///< #text, split into lines in a table with lines.
-	uint search_iterator;                ///< Iterator for the font check search.
+	TextfileType file_type;          ///< Type of textfile to view.
+	Scrollbar *vscroll;              ///< Vertical scrollbar.
+	Scrollbar *hscroll;              ///< Horizontal scrollbar.
+	char *text;                      ///< Lines of text from the NewGRF's textfile.
+	std::vector<const char *> lines; ///< #text, split into lines in a table with lines.
+	uint search_iterator;            ///< Iterator for the font check search.
 
 	static const int TOP_SPACING    = WD_FRAMETEXT_TOP;    ///< Additional spacing at the top of the #WID_TF_BACKGROUND widget.
 	static const int BOTTOM_SPACING = WD_FRAMETEXT_BOTTOM; ///< Additional spacing at the bottom of the #WID_TF_BACKGROUND widget.
 
 	TextfileWindow(TextfileType file_type);
-	virtual ~TextfileWindow();
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize);
-	virtual void OnClick(Point pt, int widget, int click_count);
-	virtual void DrawWidget(const Rect &r, int widget) const;
-	virtual void OnResize();
-	virtual void Reset();
-	virtual FontSize DefaultSize();
-	virtual const char *NextString();
-	virtual bool Monospace();
-	virtual void SetFontNames(FreeTypeSettings *settings, const char *font_name);
+	~TextfileWindow();
+
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override;
+	void OnClick(Point pt, int widget, int click_count) override;
+	void DrawWidget(const Rect &r, int widget) const override;
+	void OnResize() override;
+
+	void Reset() override;
+	FontSize DefaultSize() override;
+	const char *NextString() override;
+	bool Monospace() override;
+	void SetFontNames(FreeTypeSettings *settings, const char *font_name) override;
+
 	virtual void LoadTextfile(const char *textfile, Subdirectory dir);
+
 private:
 	uint GetContentHeight();
 	void SetupScrollbars();

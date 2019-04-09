@@ -994,6 +994,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dubbel storlek
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Fyrdubbel storlek
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Grafikpaket som standard
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Välj vilket grafikpaket som ska användas som standard
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} saknad{P "" e}/trasig{P "" a} fil{P "" er}
@@ -1702,7 +1704,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Godsdis
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Motståndare
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Datorspelare
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Standard
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Rekommenderad)
 
@@ -1786,13 +1787,9 @@ STR_QUIT_NO                                                     :{BLACK}Nej
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -2083,9 +2080,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Servern 
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Företaget är skyddat. Ange lösenord
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Klientlista
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Åskåda
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Nytt företag
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Klientlista
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Åskåda
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Nytt företag
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Kasta ut
@@ -2100,7 +2097,6 @@ STR_NETWORK_CLIENT                                              :Klient
 STR_NETWORK_SPECTATORS                                          :Åskådare
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Skriv in mängd pengar som du vill ge
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Åskådare
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Spara inte det inmatade lösenordet
@@ -2985,7 +2981,7 @@ STR_NEWGRF_ERROR_GRM_FAILED                                     :Efterfrågade G
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} har inaktiverats av {2:STRING}
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Felaktigt/okänt layout-format av spriteobjekt (spriteobjekt {3:NUM})
 STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG                         :För många poster i listan med egenskapsvärden (spriteobjekt {3:NUM}, egenskap {4:HEX})
-STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :Ogiltig industriproduktions-callback (spriteobjekt {3:NUM}, "{1:STRING}")
+STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :Ogiltig industriproduktions-callback (spriteobjekt {3:NUM}, "{2:STRING}")
 
 # NewGRF related 'general' warnings
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}Varning!
@@ -3419,6 +3415,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Ogrupperade vä
 STR_GROUP_DEFAULT_SHIPS                                         :Ogrupperade skepp
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Ogrupperade flygmaskiner
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Grupper - klicka på en grupp för att lista alla fordon i gruppen. Dra och släpp grupper för att ordna hierarkin.
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Klicka för att skapa en grupp
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Ta bort vald grupp
@@ -3483,10 +3480,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Köp for
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Köp skepp
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Köp flygplan
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Köp markerad tågvagn. Shift+klick visar kostnad utan att köpa
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Köp markerat vägfordon. Shift+klick visar kostnad utan att köpa
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Köp markerat skepp. Shift+klick visar kostnad utan att köpa
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Köp markerat flygplan. Shift+klick visar kostnad utan att köpa
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Byt namn på
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Byt namn på

@@ -15,14 +15,32 @@
  * functions may still be available if you return an older API version
  * in GetAPIVersion() in info.nut.
  *
+ * \b 1.10.0
+ *
+ * This version is not yet released. The following changes are not set in stone yet.
+ *
+ * API additions:
+ * \li AIGroup::SetPrimaryColour
+ * \li AIGroup::SetSecondaryColour
+ * \li AIGroup::GetPrimaryColour
+ * \li AIGroup::GetSecondaryColour
+ * \li AIVehicle::BuildVehicleWithRefit
+ * \li AIVehicle::GetBuildWithRefitCapacity
+ *
  * \b 1.9.0
  *
- * 1.9.0 is not yet released. The following changes are not set in stone yet.
  * API additions:
  * \li AIAirport::GetMonthlyMaintenanceCost
+ * \li AIGroup::SetParent
+ * \li AIGroup::GetParent
+ * \li AICompany::SetPrimaryLiveryColour
+ * \li AICompany::SetSecondaryLiveryColour
+ * \li AICompany::GetPrimaryLiveryColour
+ * \li AICompany::GetSecondaryLiveryColour
  *
  * Other changes:
  * \li AIBridge::GetName takes one extra parameter to refer the vehicle type
+ * \li AIGroup::CreateGroup gains parent_group_id parameter
  *
  * \b 1.8.0
  *

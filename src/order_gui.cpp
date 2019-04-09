@@ -395,11 +395,13 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 
 		if (st->owner == _local_company || st->owner == OWNER_NONE) {
 			byte facil;
-			(facil = FACIL_DOCK, v->type == VEH_SHIP) ||
-			(facil = FACIL_TRAIN, v->type == VEH_TRAIN) ||
-			(facil = FACIL_AIRPORT, v->type == VEH_AIRCRAFT) ||
-			(facil = FACIL_BUS_STOP, v->type == VEH_ROAD && RoadVehicle::From(v)->IsBus()) ||
-			(facil = FACIL_TRUCK_STOP, 1);
+			switch (v->type) {
+				case VEH_SHIP:     facil = FACIL_DOCK;    break;
+				case VEH_TRAIN:    facil = FACIL_TRAIN;   break;
+				case VEH_AIRCRAFT: facil = FACIL_AIRPORT; break;
+				case VEH_ROAD:     facil = RoadVehicle::From(v)->IsBus() ? FACIL_BUS_STOP : FACIL_TRUCK_STOP; break;
+				default: NOT_REACHED();
+			}
 			if (st->facilities & facil) {
 				order.MakeGoToStation(st_index);
 				if (_ctrl_pressed) order.SetLoadType(OLF_FULL_LOAD_ANY);
@@ -796,7 +798,7 @@ public:
 		this->OnInvalidateData(VIWD_MODIFY_ORDERS);
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_O_ORDER_LIST:
@@ -833,7 +835,7 @@ public:
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		VehicleOrderID from = INVALID_VEH_ORDER_ID;
 		VehicleOrderID to   = INVALID_VEH_ORDER_ID;
@@ -1068,7 +1070,7 @@ public:
 		this->SetDirty();
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		if (this->vehicle->owner != _local_company) {
 			this->selected_order = -1; // Disable selection any selected row at a competitor order window.
@@ -1078,7 +1080,7 @@ public:
 		this->DrawWidgets();
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget != WID_O_ORDER_LIST) return;
 
@@ -1136,7 +1138,7 @@ public:
 		}
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_O_COND_VALUE: {
@@ -1157,7 +1159,7 @@ public:
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_O_ORDER_LIST: {
@@ -1295,7 +1297,7 @@ public:
 			case WID_O_COND_VARIABLE: {
 				DropDownList *list = new DropDownList();
 				for (uint i = 0; i < lengthof(_order_conditional_variable); i++) {
-					*list->Append() = new DropDownListStringItem(STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE + _order_conditional_variable[i], _order_conditional_variable[i], false);
+					list->push_back(new DropDownListStringItem(STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE + _order_conditional_variable[i], _order_conditional_variable[i], false));
 				}
 				ShowDropDownList(this, list, this->vehicle->GetOrder(this->OrderGetSel())->GetConditionVariable(), WID_O_COND_VARIABLE);
 				break;
@@ -1322,7 +1324,7 @@ public:
 		}
 	}
 
-	virtual void OnQueryTextFinished(char *str)
+	void OnQueryTextFinished(char *str) override
 	{
 		if (!StrEmpty(str)) {
 			VehicleOrderID sel = this->OrderGetSel();
@@ -1345,7 +1347,7 @@ public:
 		}
 	}
 
-	virtual void OnDropdownSelect(int widget, int index)
+	void OnDropdownSelect(int widget, int index) override
 	{
 		switch (widget) {
 			case WID_O_NON_STOP:
@@ -1388,7 +1390,7 @@ public:
 		}
 	}
 
-	virtual void OnDragDrop(Point pt, int widget)
+	void OnDragDrop(Point pt, int widget) override
 	{
 		switch (widget) {
 			case WID_O_ORDER_LIST: {
@@ -1421,7 +1423,7 @@ public:
 		}
 	}
 
-	virtual EventState OnHotkey(int hotkey)
+	EventState OnHotkey(int hotkey) override
 	{
 		if (this->vehicle->owner != _local_company) return ES_NOT_HANDLED;
 
@@ -1442,7 +1444,7 @@ public:
 		return ES_HANDLED;
 	}
 
-	virtual void OnPlaceObject(Point pt, TileIndex tile)
+	void OnPlaceObject(Point pt, TileIndex tile) override
 	{
 		if (this->goto_type == OPOS_GOTO) {
 			const Order cmd = GetOrderCmdFromTile(this->vehicle, tile);
@@ -1455,7 +1457,7 @@ public:
 		}
 	}
 
-	virtual bool OnVehicleSelect(const Vehicle *v)
+	bool OnVehicleSelect(const Vehicle *v) override
 	{
 		/* v is vehicle getting orders. Only copy/clone orders if vehicle doesn't have any orders yet.
 		 * We disallow copying orders of other vehicles if we already have at least one order entry
@@ -1473,7 +1475,7 @@ public:
 		return true;
 	}
 
-	virtual void OnPlaceObjectAbort()
+	void OnPlaceObjectAbort() override
 	{
 		this->goto_type = OPOS_NONE;
 		this->SetWidgetDirty(WID_O_GOTO);
@@ -1485,7 +1487,7 @@ public:
 		}
 	}
 
-	virtual void OnMouseDrag(Point pt, int widget)
+	void OnMouseDrag(Point pt, int widget) override
 	{
 		if (this->selected_order != -1 && widget == WID_O_ORDER_LIST) {
 			/* An order is dragged.. */
@@ -1505,7 +1507,7 @@ public:
 		}
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		/* Update the scroll bar */
 		this->vscroll->SetCapacityFromWidget(this, WID_O_ORDER_LIST);

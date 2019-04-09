@@ -73,6 +73,8 @@ struct Group : GroupPool::PoolItem<&_group_pool> {
 	Livery livery;                          ///< Custom colour scheme for vehicles in this group
 	GroupStatistics statistics;             ///< NOSAVE: Statistics and caches on the vehicles in the group.
 
+	bool folded;                            ///< NOSAVE: Is this group folded in the group view?
+
 	GroupID parent;                         ///< Parent group
 
 	Group(CompanyID owner = INVALID_COMPANY);
@@ -100,6 +102,9 @@ static inline bool IsAllGroupID(GroupID id_g)
 
 
 uint GetGroupNumEngines(CompanyID company, GroupID id_g, EngineID id_e);
+uint GetGroupNumVehicle(CompanyID company, GroupID id_g, VehicleType type);
+uint GetGroupNumProfitVehicle(CompanyID company, GroupID id_g, VehicleType type);
+Money GetGroupProfitLastYear(CompanyID company, GroupID id_g, VehicleType type);
 
 void SetTrainGroupID(Train *v, GroupID grp);
 void UpdateTrainGroupID(Train *v);

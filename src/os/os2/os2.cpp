@@ -18,6 +18,7 @@
 #include "../../core/random_func.hpp"
 #include "../../string_func.h"
 #include "../../textbuf_gui.h"
+#include "../../thread.h"
 
 #include "table/strings.h"
 
@@ -204,25 +205,15 @@ bool GetClipboardContents(char *buffer, const char *last)
 }
 
 
-void CSleep(int milliseconds)
-{
-#ifndef __INNOTEK_LIBC__
-	delay(milliseconds);
-#else
-	usleep(milliseconds * 1000);
-#endif
-}
-
 const char *FS2OTTD(const char *name) {return name;}
 const char *OTTD2FS(const char *name) {return name;}
-
-uint GetCPUCoreCount()
-{
-	return 1;
-}
 
 void OSOpenBrowser(const char *url)
 {
 	// stub only
 	DEBUG(misc, 0, "Failed to open url: %s", url);
+}
+
+void SetCurrentThreadName(const char *)
+{
 }

@@ -152,12 +152,10 @@ OpenTTD has been ported to several platforms and operating systems. It should
 not be very difficult to port it to a new platform. The currently working
 platforms are:
 
-- BeOS (SDL or Allegro)
-- DOS (Allegro)
 - FreeBSD (SDL)
+- Haiku (SDL)
 - Linux (SDL or Allegro)
 - macOS (universal) (Cocoa video and sound drivers)
-- MorphOS (SDL)
 - OpenBSD (SDL)
 - OS/2 (SDL)
 - Windows (Win32 GDI (faster) or SDL or Allegro)
@@ -310,22 +308,22 @@ your operating system:
 Different types of data or extensions go into different subdirectories of the
 chosen main OpenTTD directory:
 
-| data type | directory | additional info |
-| --- | --- | --- |
-| Config File | (no subdirectory) | |
-| Screenshots | screenshot | |
-| Base Graphics | baseset | (or a subdirectory thereof) |
-| Sound Sets | baseset | (or a subdirectory thereof) |
-| NewGRFs | newgrf | (or a subdirectory thereof) |
-| 32bpp Sets | newgrf | (or a subdirectory thereof) |
-| Music Sets | baseset | (or a subdirectory thereof) |
-| AIs | ai | (or a subdirectory thereof) |
-| AI Libraries | ai/library | (or a subdirectory thereof) |
-| Game Scripts (GS) | game | (or a subdirectory thereof) |
-| GS Libraries | game/library | (or a subdirectory thereof) |
-| Savegames | save | |
-| Automatic Savegames | save/autosave | |
-| Scenarios | scenario | |
+| data type           | directory         | additional info             |
+| ------------------- | ----------------- | --------------------------- |
+| Config File         | (no subdirectory) |                             |
+| Screenshots         | screenshot        |                             |
+| Base Graphics       | baseset           | (or a subdirectory thereof) |
+| Sound Sets          | baseset           | (or a subdirectory thereof) |
+| NewGRFs             | newgrf            | (or a subdirectory thereof) |
+| 32bpp Sets          | newgrf            | (or a subdirectory thereof) |
+| Music Sets          | baseset           | (or a subdirectory thereof) |
+| AIs                 | ai                | (or a subdirectory thereof) |
+| AI Libraries        | ai/library        | (or a subdirectory thereof) |
+| Game Scripts (GS)   | game              | (or a subdirectory thereof) |
+| GS Libraries        | game/library      | (or a subdirectory thereof) |
+| Savegames           | save              |                             |
+| Automatic Savegames | save/autosave     |                             |
+| Scenarios           | scenario          |                             |
 
 The (automatically created) directory content_download is for OpenTTD's internal
 use and no files should be added to it or its subdirectories manually.
@@ -476,6 +474,12 @@ The following is an explanation of the different statistics:
 - *World ticks* - Time spent on other world/landscape processing. This
   includes towns growing, building animations, updates of farmland and trees,
   and station rating updates.
+- *GS/AI total*, *Game script*, and *AI players* - Time spent running logic
+  for game scripts and AI players. The total may show as less than the current
+  sum of the individual scripts, this is because AI players at lower
+  difficulty settings do not run every game tick, and hence contribute less
+  to the average across all ticks. Keep in mind that the "Current" figure is
+  also an average, just only over short term.
 - *Link graph delay* - Time overruns of the cargo distribution link graph
   update thread. Usually the link graph is updated in a background thread,
   but these updates need to synchronise with the main game loop occasionally,
@@ -516,7 +520,7 @@ and it should build automatically. In case you want to build with SDL support
 you need to add WITH_SDL to the project settings.
 
 PNG (WITH_PNG), ZLIB (WITH_ZLIB), LZO (WITH_LZO), Freetype (WITH_FREETYPE) and
-LZMA (WITH_LZMA) support is enabled by default. For these to work you need their
+libLZMA (WITH_LIBLZMA) support is enabled by default. For these to work you need their
 development files. To get them just use vcpkg from https://github.com/Microsoft/vcpkg
 using x86-windows-static and x64-windows-static triplets.
 For more help with VS see docs/Readme_Windows_MSVC.md.
@@ -541,32 +545,14 @@ However, for the first build one has to do a '`./configure`' first.
 To make a universal binary type '`./configure --enabled-universal`'
 instead of '`./configure`'.
 
-### BeOS:
+### Haiku:
 
 Use '`make`', but do a '`./configure`' before the first build.
-
-### MorphOS:
-
-Use '`make`'. However, for the first build one has to do a '`./configure`'
-first. Note that you need the MorphOS SDK, latest libnix updates (else C++
-parts of OpenTTD will not build) and the powersdl.library SDK. Optionally libz,
-libpng and freetype2 developer files.
 
 ### OS/2:
 
 A comprehensive GNU build environment is required to build the OS/2 version.
 See the docs/Readme_OS2.txt file for more information.
-
-### DOS:
-
-A build environment with DJGPP is needed as well as libraries such as
-Allegro, zlib and libpng, which all can be downloaded from the DJGPP
-website. Compilation is straight forward: use '`make`', but do a '`./configure`'
-before the first build. The build binary will need cwsdpmi.exe to be in
-the same directory as the openttd executable. cwsdpmi.exe can be found in
-the os/dos/cwsdpmi subdirectory. If you compile with stripping turned on a
-binary will be generated that does not need cwsdpmi.exe by adding the
-cswdstub.exe to the created OpenTTD binary.
 
 ### 7.1) Required/optional libraries
 
@@ -753,16 +739,6 @@ src/3rdparty/os2 are distributed partly under the GNU Lesser General Public
 License 2.1, and partly under the (3-clause) BSD license. The exact licensing
 terms can be found in src/3rdparty/os2/getaddrinfo.c resp.
 src/3rdparty/os2/getnameinfo.c.
-
-The exe2coff implementation in os/dos/exe2coff is available under the
-GPL, with a number of additional terms. See os/dos/exe2coff/copying and
-os/dos/exe2coff/copying.dj for the exact licensing terms.
-
-The CWSDPMI implementation in os/dos/cwsdpmi is distributed under a
-custom binary-only license that prohibits modification. The exact
-licensing terms can be found in os/dos/cwsdpmi/cwsdpmi.txt. The sources
-for these files can be downloaded at its author site, at
-http://homer.rice.edu/~sandmann/cwsdpmi/csdpmi5s.zip.
 
 CONTRIBUTING.md is adapted from
 [Bootstrap](https://github.com/twbs/bootstrap/blob/master/CONTRIBUTING.md)

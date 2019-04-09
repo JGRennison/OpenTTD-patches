@@ -688,12 +688,13 @@ void ResetVehicleColourMap()
  * List of vehicles that should check for autoreplace this tick.
  * Mapping of vehicle -> leave depot immediately after autoreplace.
  */
-typedef SmallMap<Vehicle *, bool, 4> AutoreplaceMap;
+typedef SmallMap<Vehicle *, bool> AutoreplaceMap;
 static AutoreplaceMap _vehicles_to_autoreplace;
 
 void InitializeVehicles()
 {
-	_vehicles_to_autoreplace.Reset();
+	_vehicles_to_autoreplace.clear();
+	_vehicles_to_autoreplace.shrink_to_fit();
 	ResetVehicleHash();
 }
 
@@ -942,7 +943,7 @@ static void RunVehicleDayProc()
 
 void CallVehicleTicks()
 {
-	_vehicles_to_autoreplace.Clear();
+	_vehicles_to_autoreplace.clear();
 
 	RunVehicleDayProc();
 
@@ -1027,15 +1028,15 @@ void CallVehicleTicks()
 	}
 
 	Backup<CompanyByte> cur_company(_current_company, FILE_LINE);
-	for (AutoreplaceMap::iterator it = _vehicles_to_autoreplace.Begin(); it != _vehicles_to_autoreplace.End(); it++) {
-		v = it->first;
+	for (auto &it : _vehicles_to_autoreplace) {
+		v = it.first;
 		/* Autoreplace needs the current company set as the vehicle owner */
 		cur_company.Change(v->owner);
 
 		/* Start vehicle if we stopped them in VehicleEnteredDepotThisTick()
 		 * We need to stop them between VehicleEnteredDepotThisTick() and here or we risk that
 		 * they are already leaving the depot again before being replaced. */
-		if (it->second) v->vehstatus &= ~VS_STOPPED;
+		if (it.second) v->vehstatus &= ~VS_STOPPED;
 
 		/* Store the position of the effect as the vehicle pointer will become invalid later */
 		int x = v->x_pos;
@@ -1348,8 +1349,11 @@ void AgeVehicle(Vehicle *v)
 	/* Don't warn about non-primary or not ours vehicles or vehicles that are crashed */
 	if (v->Previous() != NULL || v->owner != _local_company || (v->vehstatus & VS_CRASHED) != 0) return;
 
+	const Company *c = Company::Get(v->owner);
 	/* Don't warn if a renew is active */
-	if (Company::Get(v->owner)->settings.engine_renew && v->GetEngine()->company_avail != 0) return;
+	if (c->settings.engine_renew && v->GetEngine()->company_avail != 0) return;
+	/* Don't warn if a replacement is active */
+	if (EngineHasReplacementForCompany(c, v->engine_type, v->group_id)) return;
 
 	StringID str;
 	if (age == -DAYS_IN_LEAP_YEAR) {
@@ -2279,9 +2283,7 @@ void Vehicle::GetConsistFreeCapacities(SmallMap<CargoID, uint> &capacities) cons
 		if (v->cargo_cap == 0) continue;
 		SmallPair<CargoID, uint> *pair = capacities.Find(v->cargo_type);
 		if (pair == capacities.End()) {
-			pair = capacities.Append();
-			pair->first = v->cargo_type;
-			pair->second = v->cargo_cap - v->cargo.StoredCount();
+			capacities.push_back({v->cargo_type, v->cargo_cap - v->cargo.StoredCount()});
 		} else {
 			pair->second += v->cargo_cap - v->cargo.StoredCount();
 		}
@@ -2897,10 +2899,10 @@ void GetVehicleSet(VehicleSet &set, Vehicle *v, uint8 num_vehicles)
 		for (; u != NULL && num_vehicles > 0; num_vehicles--) {
 			do {
 				/* Include current vehicle in the selection. */
-				set.Include(u->index);
+				include(set, u->index);
 
 				/* If the vehicle is multiheaded, add the other part too. */
-				if (u->IsMultiheaded()) set.Include(u->other_multiheaded_part->index);
+				if (u->IsMultiheaded()) include(set, u->other_multiheaded_part->index);
 
 				u = u->Next();
 			} while (u != NULL && u->IsArticulatedPart());

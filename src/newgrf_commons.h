@@ -164,13 +164,13 @@ struct NewGRFSpriteLayout : ZeroedMemoryAllocator, DrawTileSprites {
 	 */
 	const DrawTileSeqStruct *GetLayout(PalSpriteID *ground) const
 	{
-		DrawTileSeqStruct *front = result_seq.Begin();
+		DrawTileSeqStruct *front = result_seq.data();
 		*ground = front->image;
 		return front + 1;
 	}
 
 private:
-	static SmallVector<DrawTileSeqStruct, 8> result_seq; ///< Temporary storage when preprocessing spritelayouts.
+	static std::vector<DrawTileSeqStruct> result_seq; ///< Temporary storage when preprocessing spritelayouts.
 };
 
 /**
@@ -228,6 +228,7 @@ class HouseOverrideManager : public OverrideManagerBase {
 public:
 	HouseOverrideManager(uint16 offset, uint16 maximum, uint16 invalid) :
 			OverrideManagerBase(offset, maximum, invalid) {}
+
 	void SetEntitySpec(const HouseSpec *hs);
 };
 
@@ -238,8 +239,9 @@ public:
 	IndustryOverrideManager(uint16 offset, uint16 maximum, uint16 invalid) :
 			OverrideManagerBase(offset, maximum, invalid) {}
 
-	virtual uint16 AddEntityID(byte grf_local_id, uint32 grfid, byte substitute_id);
-	virtual uint16 GetID(uint8 grf_local_id, uint32 grfid) const;
+	uint16 AddEntityID(byte grf_local_id, uint32 grfid, byte substitute_id) override;
+	uint16 GetID(uint8 grf_local_id, uint32 grfid) const override;
+
 	void SetEntitySpec(IndustrySpec *inds);
 };
 

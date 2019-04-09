@@ -814,7 +814,7 @@ static Train *FindGoodVehiclePos(const Train *src)
 }
 
 /** Helper type for lists/vectors of trains */
-typedef SmallVector<Train *, 16> TrainList;
+typedef std::vector<Train *> TrainList;
 
 /**
  * Make a backup of a train into a train list.
@@ -823,7 +823,7 @@ typedef SmallVector<Train *, 16> TrainList;
  */
 static void MakeTrainBackup(TrainList &list, Train *t)
 {
-	for (; t != NULL; t = t->Next()) *list.Append() = t;
+	for (; t != NULL; t = t->Next()) list.push_back(t);
 }
 
 /**
@@ -833,12 +833,11 @@ static void MakeTrainBackup(TrainList &list, Train *t)
 static void RestoreTrainBackup(TrainList &list)
 {
 	/* No train, nothing to do. */
-	if (list.Length() == 0) return;
+	if (list.size() == 0) return;
 
 	Train *prev = NULL;
 	/* Iterate over the list and rebuild it. */
-	for (Train **iter = list.Begin(); iter != list.End(); iter++) {
-		Train *t = *iter;
+	for (Train *t : list) {
 		if (prev != NULL) {
 			prev->SetNext(t);
 		} else if (t->Previous() != NULL) {
@@ -2100,7 +2099,7 @@ static void CheckNextTrainTile(Train *v)
 			if (HasPbsSignalOnTrackdir(ft.m_new_tile, FindFirstTrackdir(ft.m_new_td_bits))) {
 				/* If the next tile is a PBS signal, try to make a reservation. */
 				TrackBits tracks = TrackdirBitsToTrackBits(ft.m_new_td_bits);
-				if (_settings_game.pf.forbid_90_deg) {
+				if (Rail90DegTurnDisallowed(GetTileRailType(ft.m_old_tile), GetTileRailType(ft.m_new_tile))) {
 					tracks &= ~TrackCrossesTracks(TrackdirToTrack(ft.m_old_td));
 				}
 				ChooseTrainTrack(v, ft.m_new_tile, ft.m_exitdir, tracks, false, NULL, false);
@@ -2339,7 +2338,7 @@ static PBSTileInfo ExtendTrainReservation(const Train *v, TrackBits *new_tracks,
 			if (HasOnewaySignalBlockingTrackdir(ft.m_new_tile, FindFirstTrackdir(ft.m_new_td_bits))) break;
 		}
 
-		if (_settings_game.pf.forbid_90_deg) {
+		if (Rail90DegTurnDisallowed(GetTileRailType(ft.m_old_tile), GetTileRailType(ft.m_new_tile))) {
 			ft.m_new_td_bits &= ~TrackdirCrossesTrackdirs(ft.m_old_td);
 			if (ft.m_new_td_bits == TRACKDIR_BIT_NONE) break;
 		}
@@ -2391,7 +2390,7 @@ static PBSTileInfo ExtendTrainReservation(const Train *v, TrackBits *new_tracks,
 	while (tile != stopped || cur_td != stopped_td) {
 		if (!ft.Follow(tile, cur_td)) break;
 
-		if (_settings_game.pf.forbid_90_deg) {
+		if (Rail90DegTurnDisallowed(GetTileRailType(ft.m_old_tile), GetTileRailType(ft.m_new_tile))) {
 			ft.m_new_td_bits &= ~TrackdirCrossesTrackdirs(ft.m_old_td);
 			assert(ft.m_new_td_bits != TRACKDIR_BIT_NONE);
 		}
@@ -2626,7 +2625,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 		DiagDirection exitdir = TrackdirToExitdir(res_dest.trackdir);
 		TileIndex     next_tile = TileAddByDiagDir(res_dest.tile, exitdir);
 		TrackBits     reachable = TrackdirBitsToTrackBits((TrackdirBits)(GetTileTrackStatus(next_tile, TRANSPORT_RAIL, 0))) & DiagdirReachesTracks(exitdir);
-		if (_settings_game.pf.forbid_90_deg) {
+		if (Rail90DegTurnDisallowed(GetTileRailType(res_dest.tile), GetTileRailType(next_tile))) {
 			reachable &= ~TrackCrossesTracks(TrackdirToTrack(res_dest.trackdir));
 		}
 
@@ -2718,7 +2717,7 @@ bool TryPathReserve(Train *v, bool mark_as_stuck, bool first_tile_okay)
 	TileIndex     new_tile = TileAddByDiagDir(origin.tile, exitdir);
 	TrackBits     reachable = TrackdirBitsToTrackBits(TrackStatusToTrackdirBits(GetTileTrackStatus(new_tile, TRANSPORT_RAIL, 0)) & DiagdirReachesTrackdirs(exitdir));
 
-	if (_settings_game.pf.forbid_90_deg) reachable &= ~TrackCrossesTracks(TrackdirToTrack(origin.trackdir));
+	if (Rail90DegTurnDisallowed(GetTileRailType(origin.tile), GetTileRailType(new_tile))) reachable &= ~TrackCrossesTracks(TrackdirToTrack(origin.trackdir));
 
 	bool res_made = false;
 	ChooseTrainTrack(v, new_tile, exitdir, reachable, true, &res_made, mark_as_stuck);
@@ -3139,7 +3138,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 				TrackBits red_signals = TrackdirBitsToTrackBits(TrackStatusToRedSignals(ts) & reachable_trackdirs);
 
 				TrackBits bits = TrackdirBitsToTrackBits(trackdirbits);
-				if (_settings_game.pf.forbid_90_deg && prev == NULL) {
+				if (Rail90DegTurnDisallowed(GetTileRailType(gp.old_tile), GetTileRailType(gp.new_tile)) && prev == NULL) {
 					/* We allow wagons to make 90 deg turns, because forbid_90_deg
 					 * can be switched on halfway a turn */
 					bits &= ~TrackCrossesTracks(FindFirstTrack(v->track));
@@ -3186,12 +3185,12 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 							v->cur_speed = 0;
 							v->subspeed = 0;
 							v->progress = 255; // make sure that every bit of acceleration will hit the signal again, so speed stays 0.
-							if (!_settings_game.pf.reverse_at_signals || ++v->wait_counter < _settings_game.pf.wait_oneway_signal * 20) return false;
+							if (!_settings_game.pf.reverse_at_signals || ++v->wait_counter < _settings_game.pf.wait_oneway_signal * DAY_TICKS * 2) return false;
 						} else if (HasSignalOnTrackdir(gp.new_tile, i)) {
 							v->cur_speed = 0;
 							v->subspeed = 0;
 							v->progress = 255; // make sure that every bit of acceleration will hit the signal again, so speed stays 0.
-							if (!_settings_game.pf.reverse_at_signals || ++v->wait_counter < _settings_game.pf.wait_twoway_signal * 73) {
+							if (!_settings_game.pf.reverse_at_signals || ++v->wait_counter < _settings_game.pf.wait_twoway_signal * DAY_TICKS * 2) {
 								DiagDirection exitdir = TrackdirToExitdir(i);
 								TileIndex o_tile = TileAddByDiagDir(gp.new_tile, exitdir);
 
@@ -3711,7 +3710,7 @@ static bool TrainCheckIfLineEnds(Train *v, bool reverse)
 
 	/* mask unreachable track bits if we are forbidden to do 90deg turns */
 	TrackBits bits = TrackdirBitsToTrackBits(trackdirbits);
-	if (_settings_game.pf.forbid_90_deg) {
+	if (Rail90DegTurnDisallowed(GetTileRailType(v->tile), GetTileRailType(tile))) {
 		bits &= ~TrackCrossesTracks(FindFirstTrack(v->track));
 	}
 

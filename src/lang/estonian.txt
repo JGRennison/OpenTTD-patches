@@ -1043,6 +1043,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Tavaline
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Topeltsuurus
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Ruudu suurus
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Alusgraafika kogu
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Valib kasutatava alusgraafika kogu
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} puuduv{P "" ad}/viga{P ne sed} fail{P "" id}
@@ -1743,7 +1745,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Kaubaja
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Konkurendid
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Arvuti
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Algne
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(soovitatud)
 
@@ -1826,13 +1827,9 @@ STR_QUIT_NO                                                     :{BLACK}Ei
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -2124,9 +2121,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Server o
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Ettevõte on kaitstud. Sisesta salasõna
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Klientide nimekiri
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Jälgi
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Uus ettevõte
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Klientide nimekiri
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Jälgi
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Uus ettevõte
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Viska välja
@@ -2141,7 +2138,6 @@ STR_NETWORK_CLIENT                                              :Klient
 STR_NETWORK_SPECTATORS                                          :Vaatlejad
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Sisesta summa mida anda
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Vaatleja
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Sisestatud salasõna ei salvestata
@@ -3412,6 +3408,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Rühmitamata s�
 STR_GROUP_DEFAULT_SHIPS                                         :Rühmitamata laevad
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Rühmitamata õhusõidukid
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Rühm - Klõpsa rühmal, et kõiki seal olevaid sõidukeid järjestada
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Klõpsa rühma loomiseks
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Eemalda valitud rühm
@@ -3470,10 +3467,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Ehita ve
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Ehita laev
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Ehita lennuk
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Osta valitud raudteesõiduk. Shift+klõpsuga kuvatakse eeldatav ostuhind
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Osta valitud mootorsõiduk. Shift+klõpsuga kuvatakse eeldatav ostuhind
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Osta valitud laev. Shift+klõpsuga kuvatakse eeldatav ostuhind
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Osta valitud õhusõiduk. Shift+klõpsuga kuvatakse eeldatav ostuhind
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Nimevahetus
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Nimevahetus

@@ -1,7 +1,9 @@
 trigger:
 - master
+- release/*
 pr:
 - master
+- release/*
 
 jobs:
 - job: windows
@@ -54,6 +56,9 @@ jobs:
   displayName: 'MacOS'
   pool:
     vmImage: 'macOS-10.13'
+
+  variables:
+    MACOSX_DEPLOYMENT_TARGET: 10.9
 
   steps:
   - template: azure-pipelines/templates/ci-git-rebase.yml

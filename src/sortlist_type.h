@@ -47,7 +47,7 @@ struct Filtering {
  * @tparam F Type of data fed as additional value to the filter function. @see FilterFunction
  */
 template <typename T, typename F = const char*>
-class GUIList : public SmallVector<T, 32> {
+class GUIList : public std::vector<T> {
 public:
 	typedef int CDECL SortFunction(const T*, const T*); ///< Signature of sort function.
 	typedef bool CDECL FilterFunction(const T*, F);     ///< Signature of filter function.
@@ -67,7 +67,7 @@ protected:
 	 */
 	bool IsSortable() const
 	{
-		return (this->data != NULL && this->items >= 2);
+		return std::vector<T>::size() >= 2;
 	}
 
 	/**
@@ -240,7 +240,7 @@ public:
 	{
 		this->flags ^= VL_DESC;
 
-		if (this->IsSortable()) MemReverseT(this->data, this->items);
+		if (this->IsSortable()) MemReverseT(std::vector<T>::data(), std::vector<T>::size());
 	}
 
 	/**
@@ -270,11 +270,11 @@ public:
 		if (this->flags & VL_FIRST_SORT) {
 			CLRBITS(this->flags, VL_FIRST_SORT);
 
-			QSortT(this->data, this->items, compare, desc);
+			QSortT(std::vector<T>::data(), std::vector<T>::size(), compare, desc);
 			return true;
 		}
 
-		GSortT(this->data, this->items, compare, desc);
+		GSortT(std::vector<T>::data(), std::vector<T>::size(), compare, desc);
 		return true;
 	}
 
@@ -337,13 +337,12 @@ public:
 		if (!(this->flags & VL_FILTER)) return false;
 
 		bool changed = false;
-		for (uint iter = 0; iter < this->items;) {
-			T *item = &this->data[iter];
-			if (!decide(item, filter_data)) {
-				this->Erase(item);
+		for (auto it = std::vector<T>::begin(); it != std::vector<T>::end(); /* Nothing */) {
+			if (!decide(&*it, filter_data)) {
+				it = std::vector<T>::erase(it);
 				changed = true;
 			} else {
-				iter++;
+				it++;
 			}
 		}
 

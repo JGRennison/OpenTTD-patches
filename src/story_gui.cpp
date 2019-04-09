@@ -52,16 +52,16 @@ protected:
 	void BuildStoryPageList()
 	{
 		if (this->story_pages.NeedRebuild()) {
-			this->story_pages.Clear();
+			this->story_pages.clear();
 
 			const StoryPage *p;
 			FOR_ALL_STORY_PAGES(p) {
 				if (this->IsPageAvailable(p)) {
-					*this->story_pages.Append() = p;
+					this->story_pages.push_back(p);
 				}
 			}
 
-			this->story_pages.Compact();
+			this->story_pages.shrink_to_fit();
 			this->story_pages.RebuildDone();
 		}
 
@@ -78,19 +78,19 @@ protected:
 	void BuildStoryPageElementList()
 	{
 		if (this->story_page_elements.NeedRebuild()) {
-			this->story_page_elements.Clear();
+			this->story_page_elements.clear();
 
 			const StoryPage *p = GetSelPage();
 			if (p != NULL) {
 				const StoryPageElement *pe;
 				FOR_ALL_STORY_PAGE_ELEMENTS(pe) {
 					if (pe->page == p->index) {
-						*this->story_page_elements.Append() = pe;
+						this->story_page_elements.push_back(pe);
 					}
 				}
 			}
 
-			this->story_page_elements.Compact();
+			this->story_page_elements.shrink_to_fit();
 			this->story_page_elements.RebuildDone();
 		}
 
@@ -130,8 +130,7 @@ protected:
 	int GetSelPageNum() const
 	{
 		int page_number = 0;
-		for (const StoryPage *const*iter = this->story_pages.Begin(); iter != this->story_pages.End(); iter++) {
-			const StoryPage *p = *iter;
+		for (const StoryPage *p : this->story_pages) {
 			if (p->index == this->selected_page_id) {
 				return page_number;
 			}
@@ -148,7 +147,7 @@ protected:
 		/* Verify that the selected page exist. */
 		if (!_story_page_pool.IsValidID(this->selected_page_id)) return false;
 
-		return (*this->story_pages.Begin())->index == this->selected_page_id;
+		return this->story_pages.front()->index == this->selected_page_id;
 	}
 
 	/**
@@ -159,8 +158,8 @@ protected:
 		/* Verify that the selected page exist. */
 		if (!_story_page_pool.IsValidID(this->selected_page_id)) return false;
 
-		if (this->story_pages.Length() <= 1) return true;
-		const StoryPage *last = *(this->story_pages.End() - 1);
+		if (this->story_pages.size() <= 1) return true;
+		const StoryPage *last = this->story_pages.back();
 		return last->index == this->selected_page_id;
 	}
 
@@ -195,8 +194,7 @@ protected:
 		/* Find the last available page which is previous to the current selected page. */
 		const StoryPage *last_available;
 		last_available = NULL;
-		for (const StoryPage *const*iter = this->story_pages.Begin(); iter != this->story_pages.End(); iter++) {
-			const StoryPage *p = *iter;
+		for (const StoryPage *p : this->story_pages) {
 			if (p->index == this->selected_page_id) {
 				if (last_available == NULL) return; // No previous page available.
 				this->SetSelectedPage(last_available->index);
@@ -214,12 +212,12 @@ protected:
 		if (!_story_page_pool.IsValidID(this->selected_page_id)) return;
 
 		/* Find selected page. */
-		for (const StoryPage *const*iter = this->story_pages.Begin(); iter != this->story_pages.End(); iter++) {
+		for (auto iter = this->story_pages.begin(); iter != this->story_pages.end(); iter++) {
 			const StoryPage *p = *iter;
 			if (p->index == this->selected_page_id) {
 				/* Select the page after selected page. */
 				iter++;
-				if (iter != this->story_pages.End()) {
+				if (iter != this->story_pages.end()) {
 					this->SetSelectedPage((*iter)->index);
 				}
 				return;
@@ -234,8 +232,7 @@ protected:
 	{
 		DropDownList *list = new DropDownList();
 		uint16 page_num = 1;
-		for (const StoryPage *const*iter = this->story_pages.Begin(); iter != this->story_pages.End(); iter++) {
-			const StoryPage *p = *iter;
+		for (const StoryPage *p : this->story_pages) {
 			bool current_page = p->index == this->selected_page_id;
 			DropDownListStringItem *item = NULL;
 			if (p->title != NULL) {
@@ -248,12 +245,12 @@ protected:
 				item = str_item;
 			}
 
-			*list->Append() = item;
+			list->push_back(item);
 			page_num++;
 		}
 
 		/* Check if list is empty. */
-		if (list->Length() == 0) {
+		if (list->size() == 0) {
 			delete list;
 			list = NULL;
 		}
@@ -353,8 +350,7 @@ protected:
 		uint height = GetHeadHeight(max_width);
 
 		/* Body */
-		for (const StoryPageElement **iter = this->story_page_elements.Begin(); iter != this->story_page_elements.End(); iter++) {
-			const StoryPageElement *pe = *iter;
+		for (const StoryPageElement *pe : this->story_page_elements) {
 			height += element_vertical_dist;
 			height += GetPageElementHeight(*pe, max_width);
 		}
@@ -444,8 +440,8 @@ public:
 	 */
 	void UpdatePrevNextDisabledState()
 	{
-		this->SetWidgetDisabledState(WID_SB_PREV_PAGE, story_pages.Length() == 0 || this->IsFirstPageSelected());
-		this->SetWidgetDisabledState(WID_SB_NEXT_PAGE, story_pages.Length() == 0 || this->IsLastPageSelected());
+		this->SetWidgetDisabledState(WID_SB_PREV_PAGE, story_pages.size() == 0 || this->IsFirstPageSelected());
+		this->SetWidgetDisabledState(WID_SB_NEXT_PAGE, story_pages.size() == 0 || this->IsLastPageSelected());
 		this->SetWidgetDirty(WID_SB_PREV_PAGE);
 		this->SetWidgetDirty(WID_SB_NEXT_PAGE);
 	}
@@ -463,7 +459,7 @@ public:
 		}
 	}
 
-	virtual void SetStringParameters(int widget) const
+	void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_SB_SEL_PAGE: {
@@ -482,7 +478,7 @@ public:
 		}
 	}
 
-	virtual void OnPaint()
+	void OnPaint() override
 	{
 		/* Detect if content has changed height. This can happen if a
 		 * multi-line text contains eg. {COMPANY} and that company is
@@ -497,7 +493,7 @@ public:
 		this->DrawWidgets();
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget != WID_SB_PAGE_PANEL) return;
 
@@ -532,8 +528,7 @@ public:
 		y_offset = DrawStringMultiLine(0, right - x, y_offset, bottom - y, STR_STORY_BOOK_TITLE, TC_BLACK, SA_TOP | SA_HOR_CENTER);
 
 		/* Page elements */
-		for (const StoryPageElement *const*iter = this->story_page_elements.Begin(); iter != this->story_page_elements.End(); iter++) {
-			const StoryPageElement *const pe = *iter;
+		for (const StoryPageElement *const pe : this->story_page_elements) {
 			y_offset += line_height; // margin to previous element
 
 			switch (pe->type) {
@@ -563,7 +558,7 @@ public:
 		_cur_dpi = old_dpi;
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		if (widget != WID_SB_SEL_PAGE && widget != WID_SB_PAGE_PANEL) return;
 
@@ -575,7 +570,7 @@ public:
 			case WID_SB_SEL_PAGE: {
 
 				/* Get max title width. */
-				for (uint16 i = 0; i < this->story_pages.Length(); i++) {
+				for (uint16 i = 0; i < this->story_pages.size(); i++) {
 					const StoryPage *s = this->story_pages[i];
 
 					if (s->title != NULL) {
@@ -606,13 +601,13 @@ public:
 
 	}
 
-	virtual void OnResize()
+	void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_SB_PAGE_PANEL, WD_FRAMETEXT_TOP + WD_FRAMETEXT_BOTTOM);
 		this->vscroll->SetCount(this->GetContentHeight());
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_SB_SEL_PAGE: {
@@ -620,7 +615,7 @@ public:
 				if (list != NULL) {
 					/* Get the index of selected page. */
 					int selected = 0;
-					for (uint16 i = 0; i < this->story_pages.Length(); i++) {
+					for (uint16 i = 0; i < this->story_pages.size(); i++) {
 						const StoryPage *p = this->story_pages[i];
 						if (p->index == this->selected_page_id) break;
 						selected++;
@@ -650,8 +645,7 @@ public:
 				/* Detect if a page element was clicked. */
 				uint y = head_height;
 				uint element_vertical_dist = FONT_HEIGHT_NORMAL;
-				for (const StoryPageElement *const*iter = this->story_page_elements.Begin(); iter != this->story_page_elements.End(); iter++) {
-					const StoryPageElement *const pe = *iter;
+				for (const StoryPageElement *const pe : this->story_page_elements) {
 
 					y += element_vertical_dist; // margin row
 
@@ -667,7 +661,7 @@ public:
 		}
 	}
 
-	virtual void OnDropdownSelect(int widget, int index)
+	void OnDropdownSelect(int widget, int index) override
 	{
 		if (widget != WID_SB_SEL_PAGE) return;
 
@@ -682,7 +676,7 @@ public:
 	 *   >= 0   Id of the page that needs to be refreshed. If it is not the current page, nothing happens.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
 
@@ -694,7 +688,7 @@ public:
 			this->BuildStoryPageList();
 
 			/* Was the last page removed? */
-			if (this->story_pages.Length() == 0) {
+			if (this->story_pages.size() == 0) {
 				this->selected_generic_title[0] = '\0';
 			}
 
@@ -702,14 +696,14 @@ public:
 			if (!_story_page_pool.IsValidID(this->selected_page_id)) {
 				this->selected_page_id = INVALID_STORY_PAGE;
 			}
-			if (this->selected_page_id == INVALID_STORY_PAGE && this->story_pages.Length() > 0) {
+			if (this->selected_page_id == INVALID_STORY_PAGE && this->story_pages.size() > 0) {
 				/* No page is selected, but there exist at least one available.
 				 * => Select first page.
 				 */
 				this->SetSelectedPage(this->story_pages[0]->index);
 			}
 
-			this->SetWidgetDisabledState(WID_SB_SEL_PAGE, this->story_pages.Length() == 0);
+			this->SetWidgetDisabledState(WID_SB_SEL_PAGE, this->story_pages.size() == 0);
 			this->SetWidgetDirty(WID_SB_SEL_PAGE);
 			this->UpdatePrevNextDisabledState();
 		} else if (data >= 0 && this->selected_page_id == data) {

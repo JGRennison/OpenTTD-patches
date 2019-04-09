@@ -995,6 +995,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normal
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Doppelt
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Vierfach
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Basisgrafiken
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Zu benutzendes Set an Basisgrafiken auswählen
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} fehlende/fehlerhafte Datei{P "" en}
@@ -1703,7 +1705,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}Warenve
 STR_CONFIG_SETTING_AI                                           :{ORANGE}Mitbewerber
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Computerspieler
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :Original
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(empfohlen)
 
@@ -1787,13 +1788,9 @@ STR_QUIT_NO                                                     :{BLACK}Nein
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -2084,9 +2081,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Server i
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Firma ist geschützt. Passwort eingeben:
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Teilnehmerliste
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Zuschauen
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}Neue Firma
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Teilnehmerliste
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Zuschauen
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :Neue Firma
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :Hinauswerfen
@@ -2101,7 +2098,6 @@ STR_NETWORK_CLIENT                                              :Teilnehmer
 STR_NETWORK_SPECTATORS                                          :Zuschauer
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}Wieviel Geld soll übergeben werden?
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}Zuschauer
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Eingegebenes Passwort nicht speichern
@@ -2986,7 +2982,7 @@ STR_NEWGRF_ERROR_GRM_FAILED                                     :Die angefordert
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} wurde von {STRING} deaktiviert
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Ungültiges oder unbekanntes Format für Spritelayout (Sprite {3:NUM})
 STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG                         :Zu viele Elemente in Eigenschaftswert-Liste (Sprite {3:NUM}, Eigenschaft {4:HEX})
-STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :Ungültige Produktions-Rückruffunktion (Sprite {3:NUM}, "{1:STRING}")
+STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :Ungültige Produktions-Rückruffunktion (Sprite {3:NUM}, "{2:STRING}")
 
 # NewGRF related 'general' warnings
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}Achtung!
@@ -3420,6 +3416,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :Ungruppierte St
 STR_GROUP_DEFAULT_SHIPS                                         :Ungruppierte Schiffe
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :Ungruppierte Flugzeuge
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}Gruppen - Klick auf eine Gruppe zeigt Liste aller Fahrzeuge der Gruppe an
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Neue Gruppe erstellen
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Ausgewählte Gruppe löschen
@@ -3484,10 +3481,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Fahrzeug
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Schiff kaufen
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Flugzeug kaufen
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Angewähltes Fahrzeug kaufen. Shift+Klick zeigt einen Kostenvoranschlag
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Ausgewähltes Fahrzeug kaufen. Shift+Klick zeigt einen Kostenvoranschlag
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Ausgewähltes Schiff kaufen. Shift+Klick zeigt einen Kostenvoranschlag
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Augewähltes Flugzeug kaufen. Shift schaltet zwischen Bauen und Kostenvoranschlag um
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Umbenennen
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}Umbenennen

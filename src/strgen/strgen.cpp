@@ -30,13 +30,6 @@
 #include <direct.h>
 #endif /* _WIN32 || __WATCOMC__ */
 
-#ifdef __MORPHOS__
-#ifdef stderr
-#undef stderr
-#endif
-#define stderr stdout
-#endif /* __MORPHOS__ */
-
 #include "../table/strgen_tables.h"
 
 #include "../safeguards.h"
@@ -122,14 +115,14 @@ struct FileStringReader : StringReader {
 		fclose(this->fh);
 	}
 
-	/* virtual */ char *ReadLine(char *buffer, const char *last)
+	char *ReadLine(char *buffer, const char *last) override
 	{
 		return fgets(buffer, ClampToU16(last - buffer + 1), this->fh);
 	}
 
-	/* virtual */ void HandlePragma(char *str);
+	void HandlePragma(char *str) override;
 
-	/* virtual */ void ParseFile()
+	void ParseFile() override
 	{
 		this->StringReader::ParseFile();
 
@@ -399,11 +392,13 @@ static inline char *mkpath(char *buf, const char *last, const char *path, const 
 	return buf;
 }
 
-#if defined(__MINGW32__)
+#if defined(_WIN32)
 /**
  * On MingW, it is common that both / as \ are accepted in the
  * params. To go with those flow, we rewrite all incoming /
- * simply to \, so internally we can safely assume \.
+ * simply to \, so internally we can safely assume \, and do
+ * this for all Windows machines to keep identical behaviour,
+ * no matter what your compiler was.
  */
 static inline char *replace_pathsep(char *s)
 {

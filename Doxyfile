@@ -289,16 +289,15 @@ EXPAND_ONLY_PREDEF     = YES
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           =
 INCLUDE_FILE_PATTERNS  =
-PREDEFINED             = ENABLE_NETWORK \
-                         WITH_ZLIB \
+PREDEFINED             = WITH_ZLIB \
                          WITH_LZO \
-                         WITH_LZMA \
+                         WITH_LIBLZMA \
                          WITH_SDL \
                          WITH_PNG \
                          WITH_FONTCONFIG \
                          WITH_FREETYPE \
-                         WITH_ICU_SORT \
-                         WITH_ICU_LAYOUT \
+                         WITH_ICU_I18N \
+                         WITH_ICU_LX \
                          UNICODE \
                          _UNICODE \
                          _GNU_SOURCE \

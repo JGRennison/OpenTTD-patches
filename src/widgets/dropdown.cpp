@@ -22,7 +22,7 @@
 #include "../safeguards.h"
 
 
-void DropDownListItem::Draw(int left, int right, int top, int bottom, bool sel, int bg_colour) const
+void DropDownListItem::Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const
 {
 	int c1 = _colour_gradient[bg_colour][3];
 	int c2 = _colour_gradient[bg_colour][7];
@@ -39,7 +39,7 @@ uint DropDownListStringItem::Width() const
 	return GetStringBoundingBox(buffer).width;
 }
 
-void DropDownListStringItem::Draw(int left, int right, int top, int bottom, bool sel, int bg_colour) const
+void DropDownListStringItem::Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const
 {
 	DrawString(left + WD_FRAMERECT_LEFT, right - WD_FRAMERECT_RIGHT, top, this->String(), sel ? TC_WHITE : TC_BLACK);
 }
@@ -69,6 +69,40 @@ StringID DropDownListCharStringItem::String() const
 {
 	SetDParamStr(0, this->raw_string);
 	return this->string;
+}
+
+DropDownListIconItem::DropDownListIconItem(SpriteID sprite, PaletteID pal, StringID string, int result, bool masked) : DropDownListParamStringItem(string, result, masked), sprite(sprite), pal(pal)
+{
+	this->dim = GetSpriteSize(sprite);
+	if (this->dim.height < (uint)FONT_HEIGHT_NORMAL) {
+		this->sprite_y = (FONT_HEIGHT_NORMAL - dim.height) / 2;
+		this->text_y = 0;
+	} else {
+		this->sprite_y = 0;
+		this->text_y = (dim.height - FONT_HEIGHT_NORMAL) / 2;
+	}
+}
+
+uint DropDownListIconItem::Height(uint width) const
+{
+	return max(this->dim.height, (uint)FONT_HEIGHT_NORMAL);
+}
+
+uint DropDownListIconItem::Width() const
+{
+	return DropDownListStringItem::Width() + this->dim.width + WD_FRAMERECT_LEFT;
+}
+
+void DropDownListIconItem::Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const
+{
+	bool rtl = _current_text_dir == TD_RTL;
+	DrawSprite(this->sprite, this->pal, rtl ? right - this->dim.width - WD_FRAMERECT_RIGHT : left + WD_FRAMERECT_LEFT, top + this->sprite_y);
+	DrawString(left + WD_FRAMERECT_LEFT + (rtl ? 0 : (this->dim.width + WD_FRAMERECT_LEFT)), right - WD_FRAMERECT_RIGHT - (rtl ? (this->dim.width + WD_FRAMERECT_RIGHT) : 0), top + this->text_y, this->String(), sel ? TC_WHITE : TC_BLACK);
+}
+
+void DropDownListIconItem::SetDimension(Dimension d)
+{
+	this->dim = d;
 }
 
 static const NWidgetPart _nested_dropdown_menu_widgets[] = {
@@ -117,7 +151,7 @@ struct DropdownWindow : Window {
 	DropdownWindow(Window *parent, const DropDownList *list, int selected, int button, bool instant_close, const Point &position, const Dimension &size, Colours wi_colour, bool scroll)
 			: Window(&_dropdown_desc)
 	{
-		assert(list->Length() > 0);
+		assert(list->size() > 0);
 
 		this->position = position;
 
@@ -140,14 +174,13 @@ struct DropdownWindow : Window {
 
 		/* Total length of list */
 		int list_height = 0;
-		for (const DropDownListItem * const *it = list->Begin(); it != list->End(); ++it) {
-			const DropDownListItem *item = *it;
+		for (const DropDownListItem *item : *list) {
 			list_height += item->Height(items_width);
 		}
 
 		/* Capacity is the average number of items visible */
-		this->vscroll->SetCapacity(size.height * (uint16)list->Length() / list_height);
-		this->vscroll->SetCount((uint16)list->Length());
+		this->vscroll->SetCapacity(size.height * (uint16)list->size() / list_height);
+		this->vscroll->SetCount((uint16)list->size());
 
 		this->parent_wnd_class = parent->window_class;
 		this->parent_wnd_num   = parent->window_number;
@@ -196,13 +229,10 @@ struct DropdownWindow : Window {
 		int width = nwi->current_x - 4;
 		int pos   = this->vscroll->GetPosition();
 
-		const DropDownList *list = this->list;
-
-		for (const DropDownListItem * const *it = list->Begin(); it != list->End(); ++it) {
+		for (const DropDownListItem *item : *this->list) {
 			/* Skip items that are scrolled up */
 			if (--pos >= 0) continue;
 
-			const DropDownListItem *item = *it;
 			int item_height = item->Height(width);
 
 			if (y < item_height) {
@@ -225,8 +255,7 @@ struct DropdownWindow : Window {
 
 		int y = r.top + 2;
 		int pos = this->vscroll->GetPosition();
-		for (const DropDownListItem * const *it = this->list->Begin(); it != this->list->End(); ++it) {
-			const DropDownListItem *item = *it;
+		for (const DropDownListItem *item : *this->list) {
 			int item_height = item->Height(r.right - r.left + 1);
 
 			/* Skip items that are scrolled up */
@@ -355,8 +384,7 @@ void ShowDropDownListAt(Window *w, const DropDownList *list, int selected, int b
 	/* Total height of list */
 	uint height = 0;
 
-	for (const DropDownListItem * const *it = list->Begin(); it != list->End(); ++it) {
-		const DropDownListItem *item = *it;
+	for (const DropDownListItem *item : *list) {
 		height += item->Height(width);
 		if (auto_width) max_item_width = max(max_item_width, item->Width() + 5);
 	}
@@ -384,7 +412,7 @@ void ShowDropDownListAt(Window *w, const DropDownList *list, int selected, int b
 		/* If the dropdown doesn't fully fit, we need a dropdown. */
 		if (height > available_height) {
 			scroll = true;
-			uint avg_height = height / list->Length();
+			uint avg_height = height / (uint)list->size();
 
 			/* Check at least there is space for one item. */
 			assert(available_height >= avg_height);
@@ -475,12 +503,12 @@ void ShowDropDownMenu(Window *w, const StringID *strings, int selected, int butt
 
 	for (uint i = 0; strings[i] != INVALID_STRING_ID; i++) {
 		if (!HasBit(hidden_mask, i)) {
-			*list->Append() = new DropDownListStringItem(strings[i], i, HasBit(disabled_mask, i));
+			list->push_back(new DropDownListStringItem(strings[i], i, HasBit(disabled_mask, i)));
 		}
 	}
 
 	/* No entries in the list? */
-	if (list->Length() == 0) {
+	if (list->size() == 0) {
 		delete list;
 		return;
 	}

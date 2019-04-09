@@ -984,6 +984,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :通常
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :2倍
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :4倍
 
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}基本グラフィックセット
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}使用するグラフィックセットを選択します
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}見つからないか破損しているファイルが{NUM}個あります
@@ -1682,7 +1684,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}貨物�
 STR_CONFIG_SETTING_AI                                           :{ORANGE}競争会社
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}コンピュータプレイヤー
 
-STR_CONFIG_SETTING_PATHFINDER_OPF                               :オリジナル
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF{BLUE}(おすすめ)
 
@@ -1765,13 +1766,9 @@ STR_QUIT_NO                                                     :{BLACK}いい�
 
 # Supported OSes
 STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_DOS                                                  :DOS
 STR_OSNAME_UNIX                                                 :Unix
 STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_BEOS                                                 :BeOS
 STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_MORPHOS                                              :MorphOS
-STR_OSNAME_AMIGAOS                                              :AmigaOS
 STR_OSNAME_OS2                                                  :OS/2
 STR_OSNAME_SUNOS                                                :SunOS
 
@@ -2061,9 +2058,9 @@ STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}この�
 STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}この会社は保護されています。経営に参画するにはパスワードを入力してください
 
 # Network company list added strings
-STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}クライアントリスト
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}観覧モード
-STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :{WHITE}新会社
+STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :クライアントリスト
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :観覧モード
+STR_NETWORK_COMPANY_LIST_NEW_COMPANY                            :新会社
 
 # Network client list
 STR_NETWORK_CLIENTLIST_KICK                                     :追放
@@ -2078,7 +2075,6 @@ STR_NETWORK_CLIENT                                              :クライアン
 STR_NETWORK_SPECTATORS                                          :観覧者
 
 STR_NETWORK_GIVE_MONEY_CAPTION                                  :{WHITE}送りたい金額を入力
-STR_NETWORK_TOOLBAR_LIST_SPECTATOR                              :{BLACK}観覧者
 
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}入力したパスワードを保存しない
@@ -3336,6 +3332,7 @@ STR_GROUP_DEFAULT_ROAD_VEHICLES                                 :グループ化
 STR_GROUP_DEFAULT_SHIPS                                         :グループ化されていない船舶
 STR_GROUP_DEFAULT_AIRCRAFTS                                     :グループ化されていない航空機
 
+
 STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}グループ - クリックするとこのグループに所属する全車両一覧を表示します。ドラック&ドロップで順序を並べ替えられます
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}新規のグループを作成します
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}選択したグループを削除します
@@ -3393,10 +3390,12 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}車両�
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}船舶を購入
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}航空機を購入
 
+
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}選択した列車を購入します。Shift+クリックで購入費を見積もります
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}選択した車両を購入します。Shift+クリックで購入費を見積もります
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}選択した船舶を購入します。Shift+クリックで購入費を見積もります
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}選択した航空機を購入します。Shift+クリックで購入費を見積もります
+
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}名称を変更
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}名称を変更
