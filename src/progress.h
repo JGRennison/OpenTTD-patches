@@ -13,6 +13,9 @@
 #define PROGRESS_H
 
 #include <mutex>
+#if defined(__MINGW32__)
+#include "3rdparty/mingw-std-threads/mingw.mutex.h"
+#endif
 
 static const uint MODAL_PROGRESS_REDRAW_TIMEOUT = 200; ///< Timeout between redraws
 

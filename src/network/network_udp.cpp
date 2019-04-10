@@ -30,6 +30,9 @@
 #include "../strings_func.h"
 #include "table/strings.h"
 #include <mutex>
+#if defined(__MINGW32__)
+#include "../3rdparty/mingw-std-threads/mingw.mutex.h"
+#endif
 
 #include "core/udp.h"
 

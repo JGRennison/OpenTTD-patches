@@ -31,6 +31,12 @@
 #include <sys/stat.h>
 #include "../../language.h"
 #include "../../thread.h"
+#include <map>
+#include <mutex>
+#if defined(__MINGW32__)
+#include "../../3rdparty/mingw-std-threads/mingw.mutex.h"
+#endif
+
 
 #include "../../safeguards.h"
 
@@ -861,7 +867,7 @@ void SetCurrentThreadName(const char *threadName)
 #pragma warning(pop)
 }
 #else
-void SetCurrentThreadName(const char *)
+void SetCurrentThreadName(const char *threadName)
 {
 	Win32SetThreadName(GetCurrentThreadId(), threadName);
 }

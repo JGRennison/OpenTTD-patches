@@ -1247,3 +1247,9 @@ scope_info.h
 3rdparty/cpp-btree/safe_btree.h
 3rdparty/cpp-btree/safe_btree_map.h
 3rdparty/cpp-btree/safe_btree_set.h
+
+# MinGW threading
+3rdparty/mingw-std-threads/mingw.condition_variable.h
+3rdparty/mingw-std-threads/mingw.mutex.h
+3rdparty/mingw-std-threads/mingw.shared_mutex.h
+3rdparty/mingw-std-threads/mingw.thread.h

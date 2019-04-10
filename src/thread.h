@@ -15,6 +15,9 @@
 #include "debug.h"
 #include <system_error>
 #include <thread>
+#if defined(__MINGW32__)
+#include "3rdparty/mingw-std-threads/mingw.thread.h"
+#endif
 
 /** Signal used for signalling we knowingly want to end the thread. */
 class OTTDThreadExitSignal { };
