@@ -103,6 +103,9 @@
     <Filter Include="Btree containers">
       <UniqueIdentifier>{c76ff9f1-1e62-46d8-8d55-000000000033}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MinGW threading">
+      <UniqueIdentifier>{c76ff9f1-1e62-46d8-8d55-000000000034}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\tbtr_template_gui_main.cpp">
@@ -3299,6 +3302,18 @@
     </ClInclude>
     <ClInclude Include="..\src\3rdparty\cpp-btree\safe_btree_set.h">
       <Filter>Btree containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\3rdparty\mingw-std-threads\mingw.condition_variable.h">
+      <Filter>MinGW threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\3rdparty\mingw-std-threads\mingw.mutex.h">
+      <Filter>MinGW threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\3rdparty\mingw-std-threads\mingw.shared_mutex.h">
+      <Filter>MinGW threading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\3rdparty\mingw-std-threads\mingw.thread.h">
+      <Filter>MinGW threading</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
