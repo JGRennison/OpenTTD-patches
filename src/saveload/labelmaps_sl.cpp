@@ -42,36 +42,45 @@ static bool NeedRailTypeConversion()
 void AfterLoadLabelMaps()
 {
 	if (NeedRailTypeConversion()) {
-		std::vector<RailType> railtype_conversion_map;
+		RailType railtype_conversion_map[RAILTYPE_END];
 
 		for (uint i = 0; i < _railtype_list.size(); i++) {
 			RailType r = GetRailTypeByLabel(_railtype_list[i]);
 			if (r == INVALID_RAILTYPE) r = RAILTYPE_BEGIN;
 
-			railtype_conversion_map.push_back(r);
+			railtype_conversion_map[i] = r;
 		}
+		for (uint i = _railtype_list.size(); i < RAILTYPE_END; i++) {
+			railtype_conversion_map[i] = RAILTYPE_RAIL;
+		}
+
+		auto convert = [&](TileIndex t) {
+			SetRailType(t, railtype_conversion_map[GetRailType(t)]);
+			RailType secondary = GetTileSecondaryRailTypeIfValid(t);
+			if (secondary != INVALID_RAILTYPE) SetSecondaryRailType(t, railtype_conversion_map[secondary]);
+		};
 
 		for (TileIndex t = 0; t < MapSize(); t++) {
 			switch (GetTileType(t)) {
 				case MP_RAILWAY:
-					SetRailType(t, railtype_conversion_map[GetRailType(t)]);
+					convert(t);
 					break;
 
 				case MP_ROAD:
 					if (IsLevelCrossing(t)) {
-						SetRailType(t, railtype_conversion_map[GetRailType(t)]);
+						convert(t);
 					}
 					break;
 
 				case MP_STATION:
 					if (HasStationRail(t)) {
-						SetRailType(t, railtype_conversion_map[GetRailType(t)]);
+						convert(t);
 					}
 					break;
 
 				case MP_TUNNELBRIDGE:
 					if (GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL) {
-						SetRailType(t, railtype_conversion_map[GetRailType(t)]);
+						convert(t);
 					}
 					break;
 
