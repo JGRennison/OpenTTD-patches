@@ -64,7 +64,7 @@ static const StringID _cargo_type_unload_order_drowdown[] = {
 };
 static const uint32 _cargo_type_unload_order_drowdown_hidden_mask = 0x8; // 01000
 
-DropDownList* GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected);
+DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected);
 
 struct CargoTypeOrdersWindow : public Window {
 private:
@@ -2064,8 +2064,8 @@ public:
 			case WID_O_COND_SLOT: {
 				int selected;
 				TraceRestrictSlotID value = this->vehicle->GetOrder(this->OrderGetSel())->GetXData();
-				DropDownList *list = GetSlotDropDownList(this->vehicle->owner, value, selected);
-				if (list != nullptr) ShowDropDownList(this, list, selected, WID_O_COND_SLOT, 0, true);
+				DropDownList list = GetSlotDropDownList(this->vehicle->owner, value, selected);
+				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_COND_SLOT, 0, true);
 				break;
 			}
 
@@ -2082,16 +2082,12 @@ public:
 
 			case WID_O_COND_CARGO: {
 				uint value = this->vehicle->GetOrder(this->OrderGetSel())->GetConditionValue();
-				DropDownList *list = new DropDownList();
+				DropDownList list;
 				for (size_t i = 0; i < _sorted_standard_cargo_specs_size; ++i) {
 					const CargoSpec *cs = _sorted_cargo_specs[i];
-					list->push_back(new DropDownListStringItem(cs->name, cs->Index(), false));
+					list.emplace_back(new DropDownListStringItem(cs->name, cs->Index(), false));
 				}
-				if (list->size() == 0) {
-					delete list;
-					return;
-				}
-				ShowDropDownList(this, list, value, WID_O_COND_CARGO, 0);
+				if (!list.empty()) ShowDropDownList(this, std::move(list), value, WID_O_COND_CARGO, 0);
 				break;
 			}
 
@@ -2100,11 +2096,11 @@ public:
 				break;
 
 			case WID_O_COND_VARIABLE: {
-				DropDownList *list = new DropDownList();
+				DropDownList list;
 				for (uint i = 0; i < lengthof(_order_conditional_variable); i++) {
-					list->push_back(new DropDownListStringItem(STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE + _order_conditional_variable[i], _order_conditional_variable[i], false));
+					list.emplace_back(new DropDownListStringItem(STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE + _order_conditional_variable[i], _order_conditional_variable[i], false));
 				}
-				ShowDropDownList(this, list, this->vehicle->GetOrder(this->OrderGetSel())->GetConditionVariable(), WID_O_COND_VARIABLE);
+				ShowDropDownList(this, std::move(list), this->vehicle->GetOrder(this->OrderGetSel())->GetConditionVariable(), WID_O_COND_VARIABLE);
 				break;
 			}
 

@@ -90,30 +90,31 @@ public:
 
 	public:
 		UniscribeVisualRun(const UniscribeRun &range, int x);
-		virtual ~UniscribeVisualRun()
+		UniscribeVisualRun(UniscribeVisualRun &&other) noexcept;
+		~UniscribeVisualRun() override
 		{
 			free(this->glyph_to_char);
 		}
 
-		virtual const GlyphID *GetGlyphs() const { return &this->glyphs[0]; }
-		virtual const float *GetPositions() const { return &this->positions[0]; }
-		virtual const int *GetGlyphToCharMap() const;
+		const GlyphID *GetGlyphs() const override { return &this->glyphs[0]; }
+		const float *GetPositions() const override { return &this->positions[0]; }
+		const int *GetGlyphToCharMap() const override;
 
-		virtual const Font *GetFont() const { return this->font;  }
-		virtual int GetLeading() const { return this->font->fc->GetHeight(); }
-		virtual int GetGlyphCount() const { return this->num_glyphs; }
+		const Font *GetFont() const override { return this->font;  }
+		int GetLeading() const override { return this->font->fc->GetHeight(); }
+		int GetGlyphCount() const override { return this->num_glyphs; }
 		int GetAdvance() const { return this->total_advance; }
 	};
 
 	/** A single line worth of VisualRuns. */
-	class UniscribeLine : public AutoDeleteSmallVector<UniscribeVisualRun *>, public ParagraphLayouter::Line {
+	class UniscribeLine : public std::vector<UniscribeVisualRun>, public ParagraphLayouter::Line {
 	public:
-		virtual int GetLeading() const;
-		virtual int GetWidth() const;
-		virtual int CountRuns() const { return (uint)this->size();  }
-		virtual const VisualRun *GetVisualRun(int run) const { return this->at(run);  }
+		int GetLeading() const override;
+		int GetWidth() const override;
+		int CountRuns() const override { return (uint)this->size();  }
+		const VisualRun &GetVisualRun(int run) const override { return this->at(run);  }
 
-		int GetInternalCharLength(WChar c) const
+		int GetInternalCharLength(WChar c) const override
 		{
 			/* Uniscribe uses UTF-16 internally which means we need to account for surrogate pairs. */
 			return c >= 0x010000U ? 2 : 1;
@@ -125,15 +126,15 @@ public:
 		this->Reflow();
 	}
 
-	virtual ~UniscribeParagraphLayout() {}
+	~UniscribeParagraphLayout() override {}
 
-	virtual void Reflow()
+	void Reflow() override
 	{
 		this->cur_range = this->ranges.begin();
 		this->cur_range_offset = 0;
 	}
 
-	virtual const Line *NextLine(int max_width);
+	std::unique_ptr<const Line> NextLine(int max_width) override;
 };
 
 void UniscribeResetScriptCache(FontSize size)
@@ -317,7 +318,7 @@ static std::vector<SCRIPT_ITEM> UniscribeItemizeString(UniscribeParagraphLayoutF
 	return new UniscribeParagraphLayout(ranges, buff);
 }
 
-/* virtual */ const ParagraphLayouter::Line *UniscribeParagraphLayout::NextLine(int max_width)
+/* virtual */ std::unique_ptr<const ParagraphLayouter::Line> UniscribeParagraphLayout::NextLine(int max_width)
 {
 	std::vector<UniscribeRun>::iterator start_run = this->cur_range;
 	std::vector<UniscribeRun>::iterator last_run = this->cur_range;
@@ -403,7 +404,7 @@ static std::vector<SCRIPT_ITEM> UniscribeItemizeString(UniscribeParagraphLayoutF
 	if (FAILED(ScriptLayout((int)bidi_level.size(), &bidi_level[0], &vis_to_log[0], NULL))) return NULL;
 
 	/* Create line. */
-	UniscribeLine *line = new UniscribeLine();
+	std::unique_ptr<UniscribeLine> line(new UniscribeLine());
 
 	int cur_pos = 0;
 	for (std::vector<INT>::iterator l = vis_to_log.begin(); l != vis_to_log.end(); l++) {
@@ -424,7 +425,7 @@ static std::vector<SCRIPT_ITEM> UniscribeItemizeString(UniscribeParagraphLayoutF
 			if (!UniscribeShapeRun(this->text_buffer, run)) return NULL;
 		}
 
-		line->push_back(new UniscribeVisualRun(run, cur_pos));
+		line->emplace_back(run, cur_pos);
 		cur_pos += run.total_advance;
 	}
 
@@ -448,8 +449,8 @@ static std::vector<SCRIPT_ITEM> UniscribeItemizeString(UniscribeParagraphLayoutF
 int UniscribeParagraphLayout::UniscribeLine::GetLeading() const
 {
 	int leading = 0;
-	for (const UniscribeVisualRun *run : *this) {
-		leading = max(leading, run->GetLeading());
+	for (const auto &run : *this) {
+		leading = max(leading, run.GetLeading());
 	}
 
 	return leading;
@@ -462,8 +463,8 @@ int UniscribeParagraphLayout::UniscribeLine::GetLeading() const
 int UniscribeParagraphLayout::UniscribeLine::GetWidth() const
 {
 	int length = 0;
-	for (const UniscribeVisualRun *run : *this) {
-		length += run->GetAdvance();
+	for (const auto &run : *this) {
+		length += run.GetAdvance();
 	}
 
 	return length;
@@ -482,6 +483,14 @@ UniscribeParagraphLayout::UniscribeVisualRun::UniscribeVisualRun(const Uniscribe
 		advance += range.advances[i];
 	}
 	this->positions[this->num_glyphs * 2] = advance + x;
+}
+
+UniscribeParagraphLayout::UniscribeVisualRun::UniscribeVisualRun(UniscribeVisualRun&& other) noexcept
+								: glyphs(std::move(other.glyphs)), positions(std::move(other.positions)), char_to_glyph(std::move(other.char_to_glyph)),
+								  start_pos(other.start_pos), total_advance(other.total_advance), num_glyphs(other.num_glyphs), font(other.font)
+{
+	this->glyph_to_char = other.glyph_to_char;
+	other.glyph_to_char = NULL;
 }
 
 const int *UniscribeParagraphLayout::UniscribeVisualRun::GetGlyphToCharMap() const

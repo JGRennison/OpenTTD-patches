@@ -471,7 +471,7 @@ static const TraceRestrictDropDownListSet *GetSortedCargoTypeDropDownListSet()
 /**
  * Get a DropDownList of the group list
  */
-static DropDownList *GetGroupDropDownList(Owner owner, GroupID group_id, int &selected)
+static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &selected)
 {
 	typedef GUIList<const Group*> GUIGroupList;
 	extern int CDECL GroupNameSorter(const Group * const *a, const Group * const *b);
@@ -488,18 +488,18 @@ static DropDownList *GetGroupDropDownList(Owner owner, GroupID group_id, int &se
 	list.ForceResort();
 	list.Sort(&GroupNameSorter);
 
-	DropDownList *dlist = new DropDownList();
+	DropDownList dlist;
 	selected = -1;
 
 	if (group_id == DEFAULT_GROUP) selected = DEFAULT_GROUP;
-	dlist->push_back(new DropDownListStringItem(STR_GROUP_DEFAULT_TRAINS, DEFAULT_GROUP, false));
+	dlist.emplace_back(new DropDownListStringItem(STR_GROUP_DEFAULT_TRAINS, DEFAULT_GROUP, false));
 
 	for (size_t i = 0; i < list.size(); ++i) {
 		const Group *g = list[i];
 		if (group_id == g->index) selected = group_id;
 		DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_GROUP_NAME, g->index, false);
 		item->SetParam(0, g->index);
-		dlist->push_back(item);
+		dlist.emplace_back(item);
 	}
 
 	return dlist;
@@ -516,9 +516,10 @@ static int CDECL SlotNameSorter(const TraceRestrictSlot * const *a, const TraceR
 /**
  * Get a DropDownList of the group list
  */
-DropDownList *GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected)
+DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected)
 {
 	GUIList<const TraceRestrictSlot*> list;
+	DropDownList dlist;
 
 	const TraceRestrictSlot *slot;
 	FOR_ALL_TRACE_RESTRICT_SLOTS(slot) {
@@ -527,12 +528,11 @@ DropDownList *GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int 
 		}
 	}
 
-	if (list.size() == 0) return NULL;
+	if (list.size() == 0) return dlist;
 
 	list.ForceResort();
 	list.Sort(&SlotNameSorter);
 
-	DropDownList *dlist = new DropDownList();
 	selected = -1;
 
 	for (size_t i = 0; i < list.size(); ++i) {
@@ -540,7 +540,7 @@ DropDownList *GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int 
 		if (slot_id == s->index) selected = slot_id;
 		DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_TRACE_RESTRICT_SLOT_NAME, s->index, false);
 		item->SetParam(0, s->index);
-		dlist->push_back(item);
+		dlist.emplace_back(item);
 	}
 
 	return dlist;
@@ -1498,8 +1498,8 @@ public:
 
 					case TRVT_GROUP_INDEX: {
 						int selected;
-						DropDownList *dlist = GetGroupDropDownList(this->GetOwner(), GetTraceRestrictValue(item), selected);
-						ShowDropDownList(this, dlist, selected, TR_WIDGET_VALUE_DROPDOWN);
+						DropDownList dlist = GetGroupDropDownList(this->GetOwner(), GetTraceRestrictValue(item), selected);
+						ShowDropDownList(this, std::move(dlist), selected, TR_WIDGET_VALUE_DROPDOWN);
 						break;
 					}
 
@@ -1509,8 +1509,8 @@ public:
 
 					case TRVT_SLOT_INDEX: {
 						int selected;
-						DropDownList *dlist = GetSlotDropDownList(this->GetOwner(), GetTraceRestrictValue(item), selected);
-						if (dlist != NULL) ShowDropDownList(this, dlist, selected, TR_WIDGET_VALUE_DROPDOWN);
+						DropDownList dlist = GetSlotDropDownList(this->GetOwner(), GetTraceRestrictValue(item), selected);
+						if (!dlist.empty()) ShowDropDownList(this, std::move(dlist), selected, TR_WIDGET_VALUE_DROPDOWN);
 						break;
 					}
 
@@ -1533,8 +1533,8 @@ public:
 				switch (GetTraceRestrictTypeProperties(item).value_type) {
 					case TRVT_SLOT_INDEX_INT: {
 						int selected;
-						DropDownList *dlist = GetSlotDropDownList(this->GetOwner(), GetTraceRestrictValue(item), selected);
-						if (dlist != NULL) ShowDropDownList(this, dlist, selected, TR_WIDGET_LEFT_AUX_DROPDOWN);
+						DropDownList dlist = GetSlotDropDownList(this->GetOwner(), GetTraceRestrictValue(item), selected);
+						if (!dlist.empty()) ShowDropDownList(this, std::move(dlist), selected, TR_WIDGET_LEFT_AUX_DROPDOWN);
 						break;
 					}
 
@@ -2546,21 +2546,21 @@ private:
 	 */
 	void ShowCompanyDropDownListWithValue(CompanyID value, bool missing_ok, int button)
 	{
-		DropDownList *list = new DropDownList();
+		DropDownList list;
 
 		Company *c;
 		FOR_ALL_COMPANIES(c) {
-			list->push_back(MakeCompanyDropDownListItem(c->index));
+			list.emplace_back(MakeCompanyDropDownListItem(c->index));
 			if (c->index == value) missing_ok = true;
 		}
-		list->push_back(new DropDownListStringItem(STR_TRACE_RESTRICT_UNDEFINED_COMPANY, INVALID_COMPANY, false));
+		list.emplace_back(new DropDownListStringItem(STR_TRACE_RESTRICT_UNDEFINED_COMPANY, INVALID_COMPANY, false));
 		if (INVALID_COMPANY == value) missing_ok = true;
 
 		assert(missing_ok == true);
 		assert(button == TR_WIDGET_VALUE_DROPDOWN);
 		this->value_drop_down_is_company = true;
 
-		ShowDropDownList(this, list, value, button, 0, true, false);
+		ShowDropDownList(this, std::move(list), value, button, 0, true, false);
 	}
 
 	/**

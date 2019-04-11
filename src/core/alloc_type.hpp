@@ -167,7 +167,7 @@ public:
 template <typename T>
 class AutoFreePtr
 {
-	T *ptr; ///< Stored pointer.
+	T *ptr = nullptr; ///< Stored pointer.
 
 public:
 	AutoFreePtr(T *ptr) : ptr(ptr) {}
@@ -192,6 +192,18 @@ public:
 	inline operator T *() { return this->ptr; }
 	/** Cast to underlaying regular pointer. */
 	inline operator const T *() const { return this->ptr; }
+
+	AutoFreePtr(AutoFreePtr<T> &&other) noexcept
+	{
+		*this = std::move(other);
+	}
+
+	AutoFreePtr& operator=(AutoFreePtr<T> &&other) noexcept
+	{
+		this->Assign(other.ptr);
+		other.ptr = nullptr;
+		return *this;
+	}
 };
 
 #endif /* ALLOC_TYPE_HPP */

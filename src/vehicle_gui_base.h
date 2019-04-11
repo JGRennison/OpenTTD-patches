@@ -74,7 +74,7 @@ struct BaseVehicleListWindow : public Window {
 	void OnInit() override;
 	void CheckCargoFilterEnableState(int plane_widget, bool re_init, bool possible = true);
 	Dimension GetActionDropdownSize(bool show_autoreplace, bool show_group, bool show_template_replace, StringID change_order_str = 0);
-	DropDownList *BuildActionDropdownList(bool show_autoreplace, bool show_group, bool show_template_replace,
+	DropDownList BuildActionDropdownList(bool show_autoreplace, bool show_group, bool show_template_replace,
 			StringID change_order_str = 0, bool show_create_group = false, bool consider_top_level = false);
 	bool ShouldShowActionDropdownList() const;
 };

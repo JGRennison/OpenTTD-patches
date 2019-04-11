@@ -129,14 +129,14 @@ static const SaveLoad _game_language_string[] = {
 	 SLE_END()
 };
 
-static void SaveReal_GSTR(LanguageStrings *ls)
+static void SaveReal_GSTR(const LanguageStrings *ls)
 {
 	_game_saveload_string  = ls->language;
 	_game_saveload_strings = (uint)ls->lines.size();
 
 	SlObject(NULL, _game_language_header);
-	for (uint i = 0; i < _game_saveload_strings; i++) {
-		_game_saveload_string = ls->lines[i];
+	for (const auto &i : ls->lines) {
+		_game_saveload_string = i.c_str();
 		SlObject(NULL, _game_language_string);
 	}
 }
@@ -150,13 +150,13 @@ static void Load_GSTR()
 		_game_saveload_string = NULL;
 		SlObject(NULL, _game_language_header);
 
-		LanguageStrings *ls = new LanguageStrings(_game_saveload_string != NULL ? _game_saveload_string : "");
+		std::unique_ptr<LanguageStrings> ls(new LanguageStrings(_game_saveload_string != NULL ? _game_saveload_string : ""));
 		for (uint i = 0; i < _game_saveload_strings; i++) {
 			SlObject(NULL, _game_language_string);
-			ls->lines.push_back(stredup(_game_saveload_string != NULL ? _game_saveload_string : ""));
+			ls->lines.emplace_back(_game_saveload_string != NULL ? _game_saveload_string : "");
 		}
 
-		_current_data->raw_strings.push_back(ls);
+		_current_data->raw_strings.push_back(std::move(ls));
 	}
 
 	/* If there were no strings in the savegame, set GameStrings to NULL */
@@ -176,7 +176,7 @@ static void Save_GSTR()
 
 	for (uint i = 0; i < _current_data->raw_strings.size(); i++) {
 		SlSetArrayIndex(i);
-		SlAutolength((AutolengthProc *)SaveReal_GSTR, _current_data->raw_strings[i]);
+		SlAutolength((AutolengthProc *)SaveReal_GSTR, _current_data->raw_strings[i].get());
 	}
 }
 

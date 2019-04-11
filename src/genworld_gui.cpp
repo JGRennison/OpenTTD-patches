@@ -308,14 +308,14 @@ static bool CheckMapSize(bool print_warning = true)
  * Dimension selected in the other dropdown is used to suggest which choices are 'valid'
  * @param other_dimension Dimension specified by the second dropdown.
  */
-static DropDownList *BuildMapsizeDropDown(int other_dimension)
+static DropDownList BuildMapsizeDropDown(int other_dimension)
 {
-	DropDownList *list = new DropDownList();
+	DropDownList list;
 
 	for (uint i = MIN_MAP_SIZE_BITS; i <= MAX_MAP_SIZE_BITS; i++) {
 		DropDownListParamStringItem *item = new DropDownListParamStringItem((i + other_dimension > MAX_MAP_TILES_BITS) ? STR_RED_INT : STR_JUST_INT, i, false);
 		item->SetParam(0, 1LL << i);
-		list->push_back(item);
+		list.emplace_back(item);
 	}
 
 	return list;

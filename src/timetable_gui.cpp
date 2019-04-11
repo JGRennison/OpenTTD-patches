@@ -876,10 +876,10 @@ struct TimetableWindow : Window {
 				bool leave_type_disabled = (order == NULL) ||
 							((!(order->IsType(OT_GOTO_STATION) || (order->IsType(OT_GOTO_DEPOT) && !(order->GetDepotActionType() & ODATFB_HALT))) ||
 								(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) && !order->IsType(OT_CONDITIONAL));
-				DropDownList *list = new DropDownList();
-				list->push_back(new DropDownListStringItem(STR_TIMETABLE_LEAVE_NORMAL, OLT_NORMAL, leave_type_disabled));
-				list->push_back(new DropDownListStringItem(STR_TIMETABLE_LEAVE_EARLY, OLT_LEAVE_EARLY, leave_type_disabled));
-				ShowDropDownList(this, list, order != NULL ? order->GetLeaveType() : -1, WID_VT_EXTRA);
+				DropDownList list;
+				list.emplace_back(new DropDownListStringItem(STR_TIMETABLE_LEAVE_NORMAL, OLT_NORMAL, leave_type_disabled));
+				list.emplace_back(new DropDownListStringItem(STR_TIMETABLE_LEAVE_EARLY, OLT_LEAVE_EARLY, leave_type_disabled));
+				ShowDropDownList(this, std::move(list), order != NULL ? order->GetLeaveType() : -1, WID_VT_EXTRA);
 				break;
 			}
 		}

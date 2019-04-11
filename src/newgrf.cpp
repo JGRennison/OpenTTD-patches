@@ -8229,7 +8229,7 @@ struct GRFPropertyMapAction {
 				const char *str_store = stredup(str);
 				grfmsg(2, "Unimplemented mapped %s: %s, feature: %X, mapped to: %X, %s on use",
 						this->descriptor, str, this->feature, this->prop_id, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
-				_cur.grffile->remap_unknown_property_names.push_back(str_store);
+				_cur.grffile->remap_unknown_property_names.emplace_back(str_store);
 				GRFFilePropertyRemapEntry &entry = _cur.grffile->action0_property_remaps[this->feature].Entry(this->prop_id);
 				entry.name = str_store;
 				entry.id = (this->fallback_mode == GPMFM_IGNORE) ? A0RPI_UNKNOWN_IGNORE : A0RPI_UNKNOWN_ERROR;
@@ -8274,7 +8274,7 @@ struct GRFPropertyMapAction {
 				const char *str_store = stredup(str);
 				grfmsg(2, "Unimplemented mapped %s: %s, mapped to: %X, %s on use",
 						this->descriptor, str, this->prop_id, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
-				_cur.grffile->remap_unknown_property_names.push_back(str_store);
+				_cur.grffile->remap_unknown_property_names.emplace_back(str_store);
 				Action5TypeRemapEntry &entry = _cur.grffile->action5_type_remaps.Entry(this->prop_id);
 				entry.name = str_store;
 				entry.info = nullptr;

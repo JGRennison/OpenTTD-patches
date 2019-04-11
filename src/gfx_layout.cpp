@@ -124,7 +124,7 @@ le_bool Font::getGlyphPoint(LEGlyphID glyph, le_int32 pointNumber, LEPoint &poin
 /**
  * Wrapper for doing layouts with ICU.
  */
-class ICUParagraphLayout : public AutoDeleteSmallVector<ParagraphLayouter::Line *>, public ParagraphLayouter {
+class ICUParagraphLayout : public ParagraphLayouter {
 	icu::ParagraphLayout *p; ///< The actual ICU paragraph layout.
 public:
 	/** Visual run contains data about the bit of text with the same font. */
@@ -134,33 +134,33 @@ public:
 	public:
 		ICUVisualRun(const icu::ParagraphLayout::VisualRun *vr) : vr(vr) { }
 
-		const Font *GetFont() const          { return (const Font*)vr->getFont(); }
-		int GetGlyphCount() const            { return vr->getGlyphCount(); }
-		const GlyphID *GetGlyphs() const     { return vr->getGlyphs(); }
-		const float *GetPositions() const    { return vr->getPositions(); }
-		int GetLeading() const               { return vr->getLeading(); }
-		const int *GetGlyphToCharMap() const { return vr->getGlyphToCharMap(); }
+		const Font *GetFont() const override          { return (const Font*)vr->getFont(); }
+		int GetGlyphCount() const override            { return vr->getGlyphCount(); }
+		const GlyphID *GetGlyphs() const override     { return vr->getGlyphs(); }
+		const float *GetPositions() const override    { return vr->getPositions(); }
+		int GetLeading() const override               { return vr->getLeading(); }
+		const int *GetGlyphToCharMap() const override { return vr->getGlyphToCharMap(); }
 	};
 
 	/** A single line worth of VisualRuns. */
-	class ICULine : public AutoDeleteSmallVector<ICUVisualRun *>, public ParagraphLayouter::Line {
+	class ICULine : public std::vector<ICUVisualRun>, public ParagraphLayouter::Line {
 		icu::ParagraphLayout::Line *l; ///< The actual ICU line.
 
 	public:
 		ICULine(icu::ParagraphLayout::Line *l) : l(l)
 		{
 			for (int i = 0; i < l->countRuns(); i++) {
-				this->push_back(new ICUVisualRun(l->getVisualRun(i)));
+				this->emplace_back(l->getVisualRun(i));
 			}
 		}
-		~ICULine() { delete l; }
+		~ICULine() override { delete l; }
 
-		int GetLeading() const { return l->getLeading(); }
-		int GetWidth() const   { return l->getWidth(); }
-		int CountRuns() const  { return l->countRuns(); }
-		const ParagraphLayouter::VisualRun *GetVisualRun(int run) const { return this->at(run); }
+		int GetLeading() const override { return l->getLeading(); }
+		int GetWidth() const override   { return l->getWidth(); }
+		int CountRuns() const override  { return l->countRuns(); }
+		const ParagraphLayouter::VisualRun &GetVisualRun(int run) const override { return this->at(run); }
 
-		int GetInternalCharLength(WChar c) const
+		int GetInternalCharLength(WChar c) const override
 		{
 			/* ICU uses UTF-16 internally which means we need to account for surrogate pairs. */
 			return Utf8CharLen(c) < 4 ? 1 : 2;
@@ -168,13 +168,13 @@ public:
 	};
 
 	ICUParagraphLayout(icu::ParagraphLayout *p) : p(p) { }
-	~ICUParagraphLayout() { delete p; }
-	void Reflow() { p->reflow(); }
+	~ICUParagraphLayout() override { delete p; }
+	void Reflow() override  { p->reflow(); }
 
-	ParagraphLayouter::Line *NextLine(int max_width)
+	std::unique_ptr<const Line> NextLine(int max_width) override
 	{
 		icu::ParagraphLayout::Line *l = p->nextLine(max_width);
-		return l == NULL ? NULL : new ICULine(l);
+		return std::unique_ptr<const Line>(l == NULL ? NULL : new ICULine(l));
 	}
 };
 
@@ -259,24 +259,25 @@ public:
 
 	public:
 		FallbackVisualRun(Font *font, const WChar *chars, int glyph_count, int x);
-		~FallbackVisualRun();
-		const Font *GetFont() const;
-		int GetGlyphCount() const;
-		const GlyphID *GetGlyphs() const;
-		const float *GetPositions() const;
-		int GetLeading() const;
-		const int *GetGlyphToCharMap() const;
+		FallbackVisualRun(FallbackVisualRun &&other) noexcept;
+		~FallbackVisualRun() override;
+		const Font *GetFont() const override;
+		int GetGlyphCount() const override;
+		const GlyphID *GetGlyphs() const override;
+		const float *GetPositions() const override;
+		int GetLeading() const override;
+		const int *GetGlyphToCharMap() const override;
 	};
 
 	/** A single line worth of VisualRuns. */
-	class FallbackLine : public AutoDeleteSmallVector<FallbackVisualRun *>, public ParagraphLayouter::Line {
+	class FallbackLine : public std::vector<FallbackVisualRun>, public ParagraphLayouter::Line {
 	public:
-		int GetLeading() const;
-		int GetWidth() const;
-		int CountRuns() const;
-		const ParagraphLayouter::VisualRun *GetVisualRun(int run) const;
+		int GetLeading() const override;
+		int GetWidth() const override;
+		int CountRuns() const override;
+		const ParagraphLayouter::VisualRun &GetVisualRun(int run) const override;
 
-		int GetInternalCharLength(WChar c) const { return 1; }
+		int GetInternalCharLength(WChar c) const override { return 1; }
 	};
 
 	const WChar *buffer_begin; ///< Begin of the buffer.
@@ -284,8 +285,8 @@ public:
 	FontMap &runs;             ///< The fonts we have to use for this paragraph.
 
 	FallbackParagraphLayout(WChar *buffer, int length, FontMap &runs);
-	void Reflow();
-	const ParagraphLayouter::Line *NextLine(int max_width);
+	void Reflow() override;
+	std::unique_ptr<const Line> NextLine(int max_width) override;
 };
 
 /**
@@ -348,6 +349,18 @@ FallbackParagraphLayout::FallbackVisualRun::FallbackVisualRun(Font *font, const 
 		this->positions[2 * i + 3] = 0;
 		this->glyph_to_char[i] = i;
 	}
+}
+
+/** Move constructor for visual runs.*/
+FallbackParagraphLayout::FallbackVisualRun::FallbackVisualRun(FallbackVisualRun &&other) noexcept : font(other.font), glyph_count(other.glyph_count)
+{
+	this->positions = other.positions;
+	this->glyph_to_char = other.glyph_to_char;
+	this->glyphs = other.glyphs;
+
+	other.positions = NULL;
+	other.glyph_to_char = NULL;
+	other.glyphs = NULL;
 }
 
 /** Free all data. */
@@ -419,8 +432,8 @@ int FallbackParagraphLayout::FallbackVisualRun::GetLeading() const
 int FallbackParagraphLayout::FallbackLine::GetLeading() const
 {
 	int leading = 0;
-	for (const FallbackVisualRun * const &run : *this) {
-		leading = max(leading, run->GetLeading());
+	for (const auto &run : *this) {
+		leading = max(leading, run.GetLeading());
 	}
 
 	return leading;
@@ -439,8 +452,8 @@ int FallbackParagraphLayout::FallbackLine::GetWidth() const
 	 * Since there is no left-to-right support, taking this value of
 	 * the last run gives us the end of the line and thus the width.
 	 */
-	const ParagraphLayouter::VisualRun *run = this->GetVisualRun(this->CountRuns() - 1);
-	return (int)run->GetPositions()[run->GetGlyphCount() * 2];
+	const auto &run = this->GetVisualRun(this->CountRuns() - 1);
+	return (int)run.GetPositions()[run.GetGlyphCount() * 2];
 }
 
 /**
@@ -456,7 +469,7 @@ int FallbackParagraphLayout::FallbackLine::CountRuns() const
  * Get a specific visual run.
  * @return The visual run.
  */
-const ParagraphLayouter::VisualRun *FallbackParagraphLayout::FallbackLine::GetVisualRun(int run) const
+const ParagraphLayouter::VisualRun &FallbackParagraphLayout::FallbackLine::GetVisualRun(int run) const
 {
 	return this->at(run);
 }
@@ -485,7 +498,7 @@ void FallbackParagraphLayout::Reflow()
  * @param max_width The maximum width of the string.
  * @return A Line, or NULL when at the end of the paragraph.
  */
-const ParagraphLayouter::Line *FallbackParagraphLayout::NextLine(int max_width)
+std::unique_ptr<const ParagraphLayouter::Line> FallbackParagraphLayout::NextLine(int max_width)
 {
 	/* Simple idea:
 	 *  - split a line at a newline character, or at a space where we can break a line.
@@ -493,13 +506,13 @@ const ParagraphLayouter::Line *FallbackParagraphLayout::NextLine(int max_width)
 	 */
 	if (this->buffer == NULL) return NULL;
 
-	FallbackLine *l = new FallbackLine();
+	std::unique_ptr<FallbackLine> l(new FallbackLine());
 
 	if (*this->buffer == '\0') {
 		/* Only a newline. */
 		this->buffer = NULL;
-		l->push_back(new FallbackVisualRun(this->runs.front().second, this->buffer, 0, 0));
-		return l;
+		l->emplace_back(this->runs.front().second, this->buffer, 0, 0);
+		return std::move(l); // Not supposed to be needed, but clang-3.8 barfs otherwise.
 	}
 
 	int offset = this->buffer - this->buffer_begin;
@@ -527,7 +540,7 @@ const ParagraphLayouter::Line *FallbackParagraphLayout::NextLine(int max_width)
 
 		if (this->buffer == next_run) {
 			int w = l->GetWidth();
-			l->push_back(new FallbackVisualRun(iter->second, begin, this->buffer - begin, w));
+			l->emplace_back(iter->second, begin, this->buffer - begin, w);
 			iter++;
 			assert(iter != this->runs.End());
 
@@ -549,7 +562,7 @@ const ParagraphLayouter::Line *FallbackParagraphLayout::NextLine(int max_width)
 					/* The character is wider than allowed width; don't know
 					 * what to do with this case... bail out! */
 					this->buffer = NULL;
-					return l;
+					return std::move(l); // Not supposed to be needed, but clang-3.8 barfs otherwise.
 				}
 
 				if (last_space == NULL) {
@@ -574,9 +587,9 @@ const ParagraphLayouter::Line *FallbackParagraphLayout::NextLine(int max_width)
 
 	if (l->size() == 0 || last_char - begin != 0) {
 		int w = l->GetWidth();
-		l->push_back(new FallbackVisualRun(iter->second, begin, last_char - begin, w));
+		l->emplace_back(iter->second, begin, last_char - begin, w);
 	}
-	return l;
+	return std::move(l); // Not supposed to be needed, but clang-3.8 barfs otherwise.
 }
 
 /**
@@ -717,12 +730,12 @@ Layouter::Layouter(const char *str, int maxw, TextColour colour, FontSize fontsi
 			}
 		}
 
-		/* Copy all lines into a local cache so we can reuse them later on more easily. */
-		const ParagraphLayouter::Line *l;
-		while ((l = line.layout->NextLine(maxw)) != NULL) {
-			this->push_back(l);
+		/* Move all lines into a local cache so we can reuse them later on more easily. */
+		for (;;) {
+			auto l = line.layout->NextLine(maxw);
+			if (l == NULL) break;
+			this->push_back(std::move(l));
 		}
-
 	} while (c != '\0');
 }
 
@@ -733,7 +746,7 @@ Layouter::Layouter(const char *str, int maxw, TextColour colour, FontSize fontsi
 Dimension Layouter::GetBounds()
 {
 	Dimension d = { 0, 0 };
-	for (const ParagraphLayouter::Line *l : *this) {
+	for (const auto &l : *this) {
 		d.width = max<uint>(d.width, l->GetWidth());
 		d.height += l->GetLeading();
 	}
@@ -762,7 +775,7 @@ Point Layouter::GetCharPosition(const char *ch) const
 
 	if (str == ch) {
 		/* Valid character. */
-		const ParagraphLayouter::Line *line = this->front();
+		const auto &line = this->front();
 
 		/* Pointer to the end-of-string/line marker? Return total line width. */
 		if (*ch == '\0' || *ch == '\n') {
@@ -772,12 +785,12 @@ Point Layouter::GetCharPosition(const char *ch) const
 
 		/* Scan all runs until we've found our code point index. */
 		for (int run_index = 0; run_index < line->CountRuns(); run_index++) {
-			const ParagraphLayouter::VisualRun *run = line->GetVisualRun(run_index);
+			const ParagraphLayouter::VisualRun &run = line->GetVisualRun(run_index);
 
-			for (int i = 0; i < run->GetGlyphCount(); i++) {
+			for (int i = 0; i < run.GetGlyphCount(); i++) {
 				/* Matching glyph? Return position. */
-				if ((size_t)run->GetGlyphToCharMap()[i] == index) {
-					Point p = { (int)run->GetPositions()[i * 2], (int)run->GetPositions()[i * 2 + 1] };
+				if ((size_t)run.GetGlyphToCharMap()[i] == index) {
+					Point p = { (int)run.GetPositions()[i * 2], (int)run.GetPositions()[i * 2 + 1] };
 					return p;
 				}
 			}
@@ -795,21 +808,21 @@ Point Layouter::GetCharPosition(const char *ch) const
  */
 const char *Layouter::GetCharAtPosition(int x) const
 {
-	const ParagraphLayouter::Line *line = this->front();
+	const auto &line = this->front();
 
 	for (int run_index = 0; run_index < line->CountRuns(); run_index++) {
-		const ParagraphLayouter::VisualRun *run = line->GetVisualRun(run_index);
+		const ParagraphLayouter::VisualRun &run = line->GetVisualRun(run_index);
 
-		for (int i = 0; i < run->GetGlyphCount(); i++) {
+		for (int i = 0; i < run.GetGlyphCount(); i++) {
 			/* Not a valid glyph (empty). */
-			if (run->GetGlyphs()[i] == 0xFFFF) continue;
+			if (run.GetGlyphs()[i] == 0xFFFF) continue;
 
-			int begin_x = (int)run->GetPositions()[i * 2];
-			int end_x   = (int)run->GetPositions()[i * 2 + 2];
+			int begin_x = (int)run.GetPositions()[i * 2];
+			int end_x   = (int)run.GetPositions()[i * 2 + 2];
 
 			if (IsInsideMM(x, begin_x, end_x)) {
 				/* Found our glyph, now convert to UTF-8 string index. */
-				size_t index = run->GetGlyphToCharMap()[i];
+				size_t index = run.GetGlyphToCharMap()[i];
 
 				size_t cur_idx = 0;
 				for (const char *str = this->string; *str != '\0'; ) {

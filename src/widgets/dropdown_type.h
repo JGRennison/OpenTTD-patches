@@ -56,7 +56,7 @@ public:
 	void Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const override;
 	virtual StringID String() const { return this->string; }
 
-	static int CDECL NatSortFunc(const DropDownListItem * const *first, const DropDownListItem * const *second);
+	static bool NatSortFunc(std::unique_ptr<const DropDownListItem> const &first, std::unique_ptr<const DropDownListItem> const &second);
 };
 
 /**
@@ -96,19 +96,19 @@ class DropDownListIconItem : public DropDownListParamStringItem {
 public:
 	DropDownListIconItem(SpriteID sprite, PaletteID pal, StringID string, int result, bool masked);
 
-	/* virtual */ uint Height(uint width) const;
-	/* virtual */ uint Width() const;
-	/* virtual */ void Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const;
+	uint Height(uint width) const override;
+	uint Width() const override;
+	void Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const override;
 	void SetDimension(Dimension d);
 };
 
 /**
  * A drop down list is a collection of drop down list items.
  */
-typedef AutoDeleteSmallVector<const DropDownListItem *> DropDownList;
+typedef std::vector<std::unique_ptr<const DropDownListItem>> DropDownList;
 
-void ShowDropDownListAt(Window *w, const DropDownList *list, int selected, int button, Rect wi_rect, Colours wi_colour, bool auto_width = false, bool instant_close = false, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
+void ShowDropDownListAt(Window *w, DropDownList &&list, int selected, int button, Rect wi_rect, Colours wi_colour, bool auto_width = false, bool instant_close = false, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
 
-void ShowDropDownList(Window *w, const DropDownList *list, int selected, int button, uint width = 0, bool auto_width = false, bool instant_close = false, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
+void ShowDropDownList(Window *w, DropDownList &&list, int selected, int button, uint width = 0, bool auto_width = false, bool instant_close = false, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
 
 #endif /* WIDGETS_DROPDOWN_TYPE_H */
