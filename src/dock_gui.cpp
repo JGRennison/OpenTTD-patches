@@ -162,7 +162,7 @@ struct BuildDocksToolbarWindow : Window {
 
 			case WID_DT_RIVER: // Build river button (in scenario editor)
 				if (_game_mode != GM_EDITOR && !_settings_game.construction.enable_build_river) return;
-				HandlePlacePushButton(this, WID_DT_RIVER, SPR_CURSOR_RIVER, HT_RECT);
+				HandlePlacePushButton(this, WID_DT_RIVER, SPR_CURSOR_RIVER, _game_mode == GM_EDITOR ? HT_RECT | HT_DIAGONAL : HT_RECT);
 				break;
 
 			case WID_DT_BUILD_AQUEDUCT: // Build aqueduct button
@@ -212,7 +212,7 @@ struct BuildDocksToolbarWindow : Window {
 				break;
 
 			case WID_DT_RIVER: // Build river button (in scenario editor)
-				VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_CREATE_RIVER);
+				VpStartPlaceSizing(tile, (_game_mode == GM_EDITOR) ? VPM_X_AND_Y : VPM_X_OR_Y, DDSP_CREATE_RIVER);
 				break;
 
 			case WID_DT_BUILD_AQUEDUCT: // Build aqueduct button
@@ -239,7 +239,7 @@ struct BuildDocksToolbarWindow : Window {
 					DoCommandP(end_tile, start_tile, (_game_mode == GM_EDITOR && _ctrl_pressed) ? WATER_CLASS_SEA : WATER_CLASS_CANAL, CMD_BUILD_CANAL | CMD_MSG(STR_ERROR_CAN_T_BUILD_CANALS), CcPlaySound_SPLAT_WATER);
 					break;
 				case DDSP_CREATE_RIVER:
-					DoCommandP(end_tile, start_tile, WATER_CLASS_RIVER, CMD_BUILD_CANAL | CMD_MSG(STR_ERROR_CAN_T_PLACE_RIVERS), CcPlaySound_SPLAT_WATER);
+					DoCommandP(end_tile, start_tile, WATER_CLASS_RIVER | (_ctrl_pressed ? 1 << 2 : 0), CMD_BUILD_CANAL | CMD_MSG(STR_ERROR_CAN_T_PLACE_RIVERS), CcPlaySound_SPLAT_WATER);
 					break;
 
 				default: break;
