@@ -3303,18 +3303,6 @@
     <ClInclude Include="..\src\3rdparty\cpp-btree\safe_btree_set.h">
       <Filter>Btree containers</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\3rdparty\mingw-std-threads\mingw.condition_variable.h">
-      <Filter>MinGW threading</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\3rdparty\mingw-std-threads\mingw.mutex.h">
-      <Filter>MinGW threading</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\3rdparty\mingw-std-threads\mingw.shared_mutex.h">
-      <Filter>MinGW threading</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\3rdparty\mingw-std-threads\mingw.thread.h">
-      <Filter>MinGW threading</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\media\openttd.ico" />

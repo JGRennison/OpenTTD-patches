@@ -136,6 +136,7 @@ load_main_data() {
 			if ($0 == "WIN32"       && "'$os'" != "MINGW" &&
 											"'$os'" != "CYGWIN" && "'$os'" != "MSVC" ) { next; }
 			if ($0 == "MSVC"        && "'$os'" != "MSVC")              { next; }
+			if ($0 == "MINGW"       && "'$os'" != "MINGW")             { next; }
 			if ($0 == "DIRECTMUSIC" && "'$enable_directmusic'" != "1") { next; }
 			if ($0 == "FLUIDSYNTH"  && "'$enable_fluidsynth'" != "1")  { next; }
 			if ($0 == "USE_XAUDIO2" && "'$with_xaudio2'" == "0")       { next; }
