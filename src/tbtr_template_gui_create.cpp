@@ -112,16 +112,16 @@ static void TrainDepotMoveVehicle(const Vehicle *wagon, VehicleID sel, const Veh
 
 	if (v == wagon) return;
 
-	if (wagon == NULL) {
-		if (head != NULL) wagon = head->Last();
+	if (wagon == nullptr) {
+		if (head != nullptr) wagon = head->Last();
 	} else {
 		wagon = wagon->Previous();
-		if (wagon == NULL) return;
+		if (wagon == nullptr) return;
 	}
 
 	if (wagon == v) return;
 
-	DoCommandP(v->tile, v->index | ((_ctrl_pressed ? 1 : 0) << 20) | (1 << 21) , wagon == NULL ? INVALID_VEHICLE : wagon->index,
+	DoCommandP(v->tile, v->index | ((_ctrl_pressed ? 1 : 0) << 20) | (1 << 21) , wagon == nullptr ? INVALID_VEHICLE : wagon->index,
 			CMD_MOVE_RAIL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_MOVE_VEHICLE), CcVirtualTrainWagonsMoved);
 }
 
@@ -139,7 +139,7 @@ private:
 public:
 	TemplateCreateWindow(WindowDesc* _wdesc, TemplateVehicle *to_edit, bool *window_open) : Window(_wdesc)
 	{
-		this->CreateNestedTree(_wdesc != NULL);
+		this->CreateNestedTree(_wdesc != nullptr);
 		this->hscroll = this->GetScrollbar(TCW_SCROLLBAR_H_NEW_TMPL);
 		this->vscroll = this->GetScrollbar(TCW_SCROLLBAR_V_NEW_TMPL);
 		this->FinishInitNested(VEH_TRAIN);
@@ -149,13 +149,13 @@ public:
 		this->owner = _local_company;
 
 		this->create_window_open = window_open;
-		this->template_index = (to_edit != NULL) ? to_edit->index : INVALID_VEHICLE;
+		this->template_index = (to_edit != nullptr) ? to_edit->index : INVALID_VEHICLE;
 
 		this->sel = INVALID_VEHICLE;
 		this->vehicle_over = INVALID_VEHICLE;
 		this->sell_hovered = false;
 
-		if (to_edit != NULL) {
+		if (to_edit != nullptr) {
 			DoCommandP(0, to_edit->index, 0, CMD_VIRTUAL_TRAIN_FROM_TEMPLATE_VEHICLE | CMD_MSG(STR_TMPL_CANT_CREATE), CcSetVirtualTrain);
 		}
 
@@ -166,9 +166,9 @@ public:
 
 	~TemplateCreateWindow()
 	{
-		if (virtual_train != NULL) {
+		if (virtual_train != nullptr) {
 			DoCommandP(0, virtual_train->index, 0, CMD_DELETE_VIRTUAL_TRAIN);
-			virtual_train = NULL;
+			virtual_train = nullptr;
 		}
 
 		SetWindowClassesDirty(WC_TRAINS_LIST);
@@ -181,12 +181,12 @@ public:
 
 	void SetVirtualTrain(Train* const train)
 	{
-		if (virtual_train != NULL) {
+		if (virtual_train != nullptr) {
 			DoCommandP(0, virtual_train->index, 0, CMD_DELETE_VIRTUAL_TRAIN);
 		}
 
 		virtual_train = train;
-		if (virtual_train != NULL) {
+		if (virtual_train != nullptr) {
 			assert(HasBit(virtual_train->subtype, GVSF_VIRTUAL));
 		}
 		UpdateButtonState();
@@ -207,7 +207,7 @@ public:
 		if(!gui_scope) return;
 
 		if (this->template_index != INVALID_VEHICLE) {
-			if (TemplateVehicle::GetIfValid(this->template_index) == NULL) {
+			if (TemplateVehicle::GetIfValid(this->template_index) == nullptr) {
 				delete this;
 				return;
 			}
@@ -239,9 +239,9 @@ public:
 				break;
 			}
 			case TCW_OK: {
-				if (virtual_train != NULL) {
+				if (virtual_train != nullptr) {
 					DoCommandP(0, this->template_index, virtual_train->index, CMD_REPLACE_TEMPLATE_VEHICLE);
-					virtual_train = NULL;
+					virtual_train = nullptr;
 				} else if (this->template_index != INVALID_VEHICLE) {
 					DoCommandP(0, this->template_index, 0, CMD_DELETE_TEMPLATE_VEHICLE);
 				}
@@ -253,7 +253,7 @@ public:
 				break;
 			}
 			case TCW_REFIT: {
-				if (virtual_train != NULL) {
+				if (virtual_train != nullptr) {
 					ShowVehicleRefitWindow(virtual_train, INVALID_VEH_ORDER_ID, this, false, true);
 				}
 				break;
@@ -264,9 +264,9 @@ public:
 	virtual bool OnVehicleSelect(const Vehicle *v)
 	{
 		// throw away the current virtual train
-		if (virtual_train != NULL) {
+		if (virtual_train != nullptr) {
 			DoCommandP(0, virtual_train->index, 0, CMD_DELETE_VIRTUAL_TRAIN);
-			virtual_train = NULL;
+			virtual_train = nullptr;
 		}
 
 		// create a new one
@@ -316,7 +316,7 @@ public:
 					DrawString(8, r.right, 4 - this->vscroll->GetPosition(), STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE);
 					/* Draw cargo summary */
 					CargoArray cargo_caps;
-					for (const Train *tmp = this->virtual_train; tmp != NULL; tmp = tmp->Next()) {
+					for (const Train *tmp = this->virtual_train; tmp != nullptr; tmp = tmp->Next()) {
 						cargo_caps[tmp->cargo_type] += tmp->cargo_cap;
 					}
 					int y = 30 - this->vscroll->GetPosition();
@@ -342,17 +342,17 @@ public:
 	{
 		switch (widget) {
 			case TCW_NEW_TMPL_PANEL: {
-				const Vehicle *v = NULL;
+				const Vehicle *v = nullptr;
 				VehicleID sel = this->sel;
 
 				this->sel = INVALID_VEHICLE;
 				this->SetDirty();
 
 				NWidgetBase *nwi = this->GetWidget<NWidgetBase>(TCW_NEW_TMPL_PANEL);
-				GetDepotVehiclePtData gdvp = { NULL, NULL };
+				GetDepotVehiclePtData gdvp = { nullptr, nullptr };
 
 				if (this->GetVehicleFromDepotWndPt(pt.x - nwi->pos_x, pt.y - nwi->pos_y, &v, &gdvp) == MODE_DRAG_VEHICLE && sel != INVALID_VEHICLE) {
-					if (gdvp.wagon == NULL || gdvp.wagon->index != sel) {
+					if (gdvp.wagon == nullptr || gdvp.wagon->index != sel) {
 						this->vehicle_over = INVALID_VEHICLE;
 						TrainDepotMoveVehicle(gdvp.wagon, sel, gdvp.head);
 					}
@@ -368,7 +368,7 @@ public:
 				Train* train_to_delete = Train::Get(this->sel);
 
 				if (virtual_train == train_to_delete) {
-					virtual_train = (_ctrl_pressed) ? NULL : virtual_train->GetNextUnit();
+					virtual_train = (_ctrl_pressed) ? nullptr : virtual_train->GetNextUnit();
 				}
 
 				DoCommandP(0, this->sel | (sell_cmd << 20) | (1 << 21), 0, GetCmdSellVeh(VEH_TRAIN), CcDeleteVirtualTrain);
@@ -411,19 +411,19 @@ public:
 		}
 
 		NWidgetBase *matrix = this->GetWidget<NWidgetBase>(widget);
-		const Vehicle *v = NULL;
-		GetDepotVehiclePtData gdvp = {NULL, NULL};
+		const Vehicle *v = nullptr;
+		GetDepotVehiclePtData gdvp = {nullptr, nullptr};
 
 		if (this->GetVehicleFromDepotWndPt(pt.x - matrix->pos_x, pt.y - matrix->pos_y, &v, &gdvp) != MODE_DRAG_VEHICLE) return;
 		VehicleID new_vehicle_over = INVALID_VEHICLE;
-		if (gdvp.head != NULL) {
-			if (gdvp.wagon == NULL && gdvp.head->Last()->index != this->sel) { // ..at the end of the train.
+		if (gdvp.head != nullptr) {
+			if (gdvp.wagon == nullptr && gdvp.head->Last()->index != this->sel) { // ..at the end of the train.
 				/* NOTE: As a wagon can't be moved at the begin of a train, head index isn't used to mark a drag-and-drop
 				 * destination inside a train. This head index is then used to indicate that a wagon is inserted at
 				 * the end of the train.
 				 */
 				new_vehicle_over = gdvp.head->index;
-			} else if (gdvp.wagon != NULL && gdvp.head != gdvp.wagon &&
+			} else if (gdvp.wagon != nullptr && gdvp.head != gdvp.wagon &&
 					gdvp.wagon->index != this->sel &&
 					gdvp.wagon->Previous()->index != this->sel) { // ..over an existing wagon.
 				new_vehicle_over = gdvp.wagon->index;
@@ -443,8 +443,8 @@ public:
 		uint height = 30;
 		CargoArray cargo_caps;
 
-		if (virtual_train != NULL) {
-			for (Train *train = virtual_train; train != NULL; train = train->Next()) {
+		if (virtual_train != nullptr) {
+			for (Train *train = virtual_train; train != nullptr; train = train->Next()) {
 				width += train->GetDisplayImageWidth();
 				cargo_caps[train->cargo_type] += train->cargo_cap;
 			}
@@ -506,31 +506,31 @@ public:
 		x -= this->header_width;
 
 		/* find the vehicle in this row that was clicked */
-		for (; v != NULL; v = v->Next()) {
+		for (; v != nullptr; v = v->Next()) {
 			x -= v->GetDisplayImageWidth();
 			if (x < 0) break;
 		}
 
-		d->wagon = (v != NULL ? v->GetFirstEnginePart() : NULL);
+		d->wagon = (v != nullptr ? v->GetFirstEnginePart() : nullptr);
 
 		return MODE_DRAG_VEHICLE;
 	}
 
 	void ClickedOnVehiclePanel(int x, int y)
 	{
-		GetDepotVehiclePtData gdvp = { NULL, NULL };
-		const Vehicle *v = NULL;
+		GetDepotVehiclePtData gdvp = { nullptr, nullptr };
+		const Vehicle *v = nullptr;
 		this->GetVehicleFromDepotWndPt(x, y, &v, &gdvp);
 
 		v = gdvp.wagon;
 
-		if (v != NULL && VehicleClicked(v)) return;
+		if (v != nullptr && VehicleClicked(v)) return;
 		VehicleID sel = this->sel;
 
 		if (sel != INVALID_VEHICLE) {
 			this->sel = INVALID_VEHICLE;
 			TrainDepotMoveVehicle(v, sel, gdvp.head);
-		} else if (v != NULL) {
+		} else if (v != nullptr) {
 			SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
 			SetMouseCursorVehicle(v, EIT_PURCHASE);
 			_cursor.vehchain = _ctrl_pressed;
@@ -549,13 +549,13 @@ public:
 
 	void UpdateButtonState()
 	{
-		this->SetWidgetDisabledState(TCW_REFIT, virtual_train == NULL);
+		this->SetWidgetDisabledState(TCW_REFIT, virtual_train == nullptr);
 	}
 };
 
 void ShowTemplateCreateWindow(TemplateVehicle *to_edit, bool *create_window_open)
 {
-	if (BringWindowToFrontById(WC_CREATE_TEMPLATE, VEH_TRAIN) != NULL) return;
+	if (BringWindowToFrontById(WC_CREATE_TEMPLATE, VEH_TRAIN) != nullptr) return;
 	new TemplateCreateWindow(&_template_create_window_desc, to_edit, create_window_open);
 }
 

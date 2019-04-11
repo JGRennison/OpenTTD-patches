@@ -83,7 +83,7 @@ struct CYapfRailSegment
 		, m_last_signal_tile(INVALID_TILE)
 		, m_last_signal_td(INVALID_TRACKDIR)
 		, m_end_segment_reason(ESRB_NONE)
-		, m_hash_next(NULL)
+		, m_hash_next(nullptr)
 	{}
 
 	inline const Key& GetKey() const
@@ -147,8 +147,8 @@ struct CYapfRailNodeT
 	inline void Set(CYapfRailNodeT *parent, TileIndex tile, Trackdir td, bool is_choice)
 	{
 		base::Set(parent, tile, td, is_choice);
-		m_segment = NULL;
-		if (parent == NULL) {
+		m_segment = nullptr;
+		if (parent == nullptr) {
 			m_num_signals_passed      = 0;
 			m_num_signals_res_through_passed = 0;
 			m_last_non_reserve_through_signal_tile = INVALID_TILE;
@@ -181,19 +181,19 @@ struct CYapfRailNodeT
 
 	inline TileIndex GetLastTile() const
 	{
-		assert(m_segment != NULL);
+		assert(m_segment != nullptr);
 		return m_segment->m_last_tile;
 	}
 
 	inline Trackdir GetLastTrackdir() const
 	{
-		assert(m_segment != NULL);
+		assert(m_segment != nullptr);
 		return m_segment->m_last_td;
 	}
 
 	inline void SetLastTileTrackdir(TileIndex tile, Trackdir td)
 	{
-		assert(m_segment != NULL);
+		assert(m_segment != nullptr);
 		m_segment->m_last_tile = tile;
 		m_segment->m_last_td = td;
 	}

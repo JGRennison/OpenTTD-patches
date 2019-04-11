@@ -352,7 +352,7 @@ DEF_CONSOLE_CMD(ConLoad)
 	const char *file = argv[1];
 	_console_file_list.ValidateFileList();
 	const FiosItem *item = _console_file_list.FindItem(file);
-	if (item != NULL) {
+	if (item != nullptr) {
 		if (GetAbstractFileType(item->type) == FT_SAVEGAME) {
 			_switch_mode = SM_LOAD_GAME;
 			_file_to_saveload.SetMode(item->type);
@@ -381,7 +381,7 @@ DEF_CONSOLE_CMD(ConRemove)
 	const char *file = argv[1];
 	_console_file_list.ValidateFileList();
 	const FiosItem *item = _console_file_list.FindItem(file);
-	if (item != NULL) {
+	if (item != nullptr) {
 		if (!FiosDelete(item->name)) {
 			IConsolePrintF(CC_ERROR, "%s: Failed to delete file", file);
 		}
@@ -423,7 +423,7 @@ DEF_CONSOLE_CMD(ConChangeDirectory)
 	const char *file = argv[1];
 	_console_file_list.ValidateFileList(true);
 	const FiosItem *item = _console_file_list.FindItem(file);
-	if (item != NULL) {
+	if (item != nullptr) {
 		switch (item->type) {
 			case FIOS_TYPE_DIR: case FIOS_TYPE_DRIVE: case FIOS_TYPE_PARENT:
 				FiosBrowseTo(item);
@@ -451,7 +451,7 @@ DEF_CONSOLE_CMD(ConPrintWorkingDirectory)
 	_console_file_list.ValidateFileList(true);
 	_console_file_list.InvalidateFileList();
 
-	FiosGetDescText(&path, NULL);
+	FiosGetDescText(&path, nullptr);
 	IConsolePrint(CC_DEFAULT, path);
 	return true;
 }
@@ -477,7 +477,7 @@ static bool ConKickOrBan(const char *argv, bool ban)
 {
 	uint n;
 
-	if (strchr(argv, '.') == NULL && strchr(argv, ':') == NULL) { // banning with ID
+	if (strchr(argv, '.') == nullptr && strchr(argv, ':') == nullptr) { // banning with ID
 		ClientID client_id = (ClientID)atoi(argv);
 
 		/* Don't kill the server, or the client doing the rcon. The latter can't be kicked because
@@ -490,7 +490,7 @@ static bool ConKickOrBan(const char *argv, bool ban)
 		}
 
 		NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(client_id);
-		if (ci == NULL) {
+		if (ci == nullptr) {
 			IConsoleError("Invalid client");
 			return true;
 		}
@@ -691,7 +691,7 @@ DEF_CONSOLE_CMD(ConClientNickChange)
 		return true;
 	}
 
-	if (NetworkClientInfo::GetByClientID(client_id) == NULL) {
+	if (NetworkClientInfo::GetByClientID(client_id) == nullptr) {
 		IConsoleError("Invalid client");
 		return true;
 	}
@@ -762,7 +762,7 @@ DEF_CONSOLE_CMD(ConMoveClient)
 	CompanyID company_id = (CompanyID)(atoi(argv[2]) <= MAX_COMPANIES ? atoi(argv[2]) - 1 : atoi(argv[2]));
 
 	/* check the client exists */
-	if (ci == NULL) {
+	if (ci == nullptr) {
 		IConsoleError("Invalid client-id, check the command 'clients' for valid client-id's.");
 		return true;
 	}
@@ -890,8 +890,8 @@ DEF_CONSOLE_CMD(ConNetworkConnect)
 	if (argc < 2) return false;
 	if (_networking) NetworkDisconnect(); // we are in network-mode, first close it!
 
-	const char *port = NULL;
-	const char *company = NULL;
+	const char *port = nullptr;
+	const char *company = nullptr;
 	char *ip = argv[1];
 	/* Default settings: default port and new company */
 	uint16 rport = NETWORK_DEFAULT_PORT;
@@ -900,7 +900,7 @@ DEF_CONSOLE_CMD(ConNetworkConnect)
 	ParseConnectionString(&company, &port, ip);
 
 	IConsolePrintF(CC_DEFAULT, "Connecting to %s...", ip);
-	if (company != NULL) {
+	if (company != nullptr) {
 		join_as = (CompanyID)atoi(company);
 		IConsolePrintF(CC_DEFAULT, "    company-no: %d", join_as);
 
@@ -911,7 +911,7 @@ DEF_CONSOLE_CMD(ConNetworkConnect)
 			join_as--;
 		}
 	}
-	if (port != NULL) {
+	if (port != nullptr) {
 		rport = atoi(port);
 		IConsolePrintF(CC_DEFAULT, "    port: %s", port);
 	}
@@ -936,7 +936,7 @@ DEF_CONSOLE_CMD(ConExec)
 
 	FILE *script_file = FioFOpenFile(argv[1], "r", BASE_DIR);
 
-	if (script_file == NULL) {
+	if (script_file == nullptr) {
 		if (argc == 2 || atoi(argv[2]) != 0) IConsoleError("script file not found");
 		return true;
 	}
@@ -944,7 +944,7 @@ DEF_CONSOLE_CMD(ConExec)
 	_script_running = true;
 
 	char cmdline[ICON_CMDLN_SIZE];
-	while (_script_running && fgets(cmdline, sizeof(cmdline), script_file) != NULL) {
+	while (_script_running && fgets(cmdline, sizeof(cmdline), script_file) != nullptr) {
 		/* Remove newline characters from the executing script */
 		for (char *cmdptr = cmdline; *cmdptr != '\0'; cmdptr++) {
 			if (*cmdptr == '\n' || *cmdptr == '\r') {
@@ -995,7 +995,7 @@ DEF_CONSOLE_CMD(ConScript)
 
 		IConsolePrintF(CC_DEFAULT, "file output started to: %s", argv[1]);
 		_iconsole_output_file = fopen(argv[1], "ab");
-		if (_iconsole_output_file == NULL) IConsoleError("could not open file");
+		if (_iconsole_output_file == nullptr) IConsoleError("could not open file");
 	}
 
 	return true;
@@ -1034,7 +1034,7 @@ DEF_CONSOLE_CMD(ConNewGame)
 		return true;
 	}
 
-	StartNewGameWithoutGUI((argc == 2) ? strtoul(argv[1], NULL, 10) : GENERATE_NEW_SEED);
+	StartNewGameWithoutGUI((argc == 2) ? strtoul(argv[1], nullptr, 10) : GENERATE_NEW_SEED);
 	return true;
 }
 
@@ -1286,7 +1286,7 @@ DEF_CONSOLE_CMD(ConRescanNewGRF)
 		return true;
 	}
 
-	ScanNewGRFFiles(NULL);
+	ScanNewGRFFiles(nullptr);
 
 	return true;
 }
@@ -1327,7 +1327,7 @@ DEF_CONSOLE_CMD(ConAlias)
 	if (argc < 3) return false;
 
 	alias = IConsoleAliasGet(argv[1]);
-	if (alias == NULL) {
+	if (alias == nullptr) {
 		IConsoleAliasRegister(argv[1], argv[2]);
 	} else {
 		free(alias->cmdline);
@@ -1349,7 +1349,7 @@ DEF_CONSOLE_CMD(ConScreenShot)
 	if (argc > 3) return false;
 
 	ScreenshotType type = SC_VIEWPORT;
-	const char *name = NULL;
+	const char *name = nullptr;
 
 	if (argc > 1) {
 		if (strcmp(argv[1], "big") == 0) {
@@ -1385,7 +1385,7 @@ DEF_CONSOLE_CMD(ConMinimap)
 		return true;
 	}
 
-	const char *name = NULL;
+	const char *name = nullptr;
 	if (argc > 1) {
 		if (strcmp(argv[1], "owner") != 0) {
 			/* invalid mode */
@@ -1410,7 +1410,7 @@ DEF_CONSOLE_CMD(ConInfoCmd)
 	if (argc < 2) return false;
 
 	const IConsoleCmd *cmd = IConsoleCmdGet(argv[1]);
-	if (cmd == NULL) {
+	if (cmd == nullptr) {
 		IConsoleError("the given command was not found");
 		return true;
 	}
@@ -1418,7 +1418,7 @@ DEF_CONSOLE_CMD(ConInfoCmd)
 	IConsolePrintF(CC_DEFAULT, "command name: %s", cmd->name);
 	IConsolePrintF(CC_DEFAULT, "command proc: %p", cmd->proc);
 
-	if (cmd->hook != NULL) IConsoleWarning("command is hooked");
+	if (cmd->hook != nullptr) IConsoleWarning("command is hooked");
 
 	return true;
 }
@@ -1476,16 +1476,16 @@ DEF_CONSOLE_CMD(ConHelp)
 
 		RemoveUnderscores(argv[1]);
 		cmd = IConsoleCmdGet(argv[1]);
-		if (cmd != NULL) {
-			cmd->proc(0, NULL);
+		if (cmd != nullptr) {
+			cmd->proc(0, nullptr);
 			return true;
 		}
 
 		alias = IConsoleAliasGet(argv[1]);
-		if (alias != NULL) {
+		if (alias != nullptr) {
 			cmd = IConsoleCmdGet(alias->cmdline);
-			if (cmd != NULL) {
-				cmd->proc(0, NULL);
+			if (cmd != nullptr) {
+				cmd->proc(0, nullptr);
 				return true;
 			}
 			IConsolePrintF(CC_ERROR, "ERROR: alias is of special type, please see its execution-line: '%s'", alias->cmdline);
@@ -1515,9 +1515,9 @@ DEF_CONSOLE_CMD(ConListCommands)
 		return true;
 	}
 
-	for (const IConsoleCmd *cmd = _iconsole_cmds; cmd != NULL; cmd = cmd->next) {
-		if (argv[1] == NULL || strstr(cmd->name, argv[1]) != NULL) {
-			if (cmd->unlisted == false && (cmd->hook == NULL || cmd->hook(false) != CHR_HIDE)) IConsolePrintF(CC_DEFAULT, "%s", cmd->name);
+	for (const IConsoleCmd *cmd = _iconsole_cmds; cmd != nullptr; cmd = cmd->next) {
+		if (argv[1] == nullptr || strstr(cmd->name, argv[1]) != nullptr) {
+			if (cmd->unlisted == false && (cmd->hook == nullptr || cmd->hook(false) != CHR_HIDE)) IConsolePrintF(CC_DEFAULT, "%s", cmd->name);
 		}
 	}
 
@@ -1531,8 +1531,8 @@ DEF_CONSOLE_CMD(ConListAliases)
 		return true;
 	}
 
-	for (const IConsoleAlias *alias = _iconsole_aliases; alias != NULL; alias = alias->next) {
-		if (argv[1] == NULL || strstr(alias->name, argv[1]) != NULL) {
+	for (const IConsoleAlias *alias = _iconsole_aliases; alias != nullptr; alias = alias->next) {
+		if (argv[1] == nullptr || strstr(alias->name, argv[1]) != nullptr) {
 			IConsolePrintF(CC_DEFAULT, "%s => %s", alias->name, alias->cmdline);
 		}
 	}
@@ -1741,8 +1741,8 @@ static void OutputContentState(const ContentInfo *const ci)
 
 DEF_CONSOLE_CMD(ConContent)
 {
-	static ContentCallback *cb = NULL;
-	if (cb == NULL) {
+	static ContentCallback *cb = nullptr;
+	if (cb == nullptr) {
 		cb = new ConsoleContentCallback();
 		_network_content_client.AddCallback(cb);
 	}
@@ -1800,7 +1800,7 @@ DEF_CONSOLE_CMD(ConContent)
 	if (strcasecmp(argv[1], "state") == 0) {
 		IConsolePrintF(CC_WHITE, "id, type, state, name");
 		for (ConstContentIterator iter = _network_content_client.Begin(); iter != _network_content_client.End(); iter++) {
-			if (argc > 2 && strcasestr((*iter)->name, argv[2]) == NULL) continue;
+			if (argc > 2 && strcasestr((*iter)->name, argv[2]) == nullptr) continue;
 			OutputContentState(*iter);
 		}
 		return true;
@@ -1865,7 +1865,7 @@ DEF_CONSOLE_CMD(ConListSettings)
 
 	if (argc > 2) return false;
 
-	IConsoleListSettings((argc == 2) ? argv[1] : NULL);
+	IConsoleListSettings((argc == 2) ? argv[1] : nullptr);
 	return true;
 }
 

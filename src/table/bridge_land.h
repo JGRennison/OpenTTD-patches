@@ -744,7 +744,7 @@ static const PalSpriteID * const * const _bridge_sprite_table[MAX_BRIDGES] = {
  * @param nrd description of the road bridge in query tool
  */
 #define MBR(y, mnl, mxl, p, mxs, spr, plt, dsc, nrl, nrd, pillars) \
-	{y, mnl, mxl, p, mxs, spr, plt, dsc, { nrl, nrd }, NULL, 0, 0, pillars}
+	{y, mnl, mxl, p, mxs, spr, plt, dsc, { nrl, nrd }, nullptr, 0, 0, pillars}
 
 #define ALL_PILLARS  { 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F }
 #define SUSP_PILLARS { 0x03, 0x06, 0x0C, 0x09, 0x0C, 0x09, 0x03, 0x06, 0x0F, 0x0F, 0x00, 0x00 }

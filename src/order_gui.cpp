@@ -146,7 +146,7 @@ public:
 	 * @param v The vehicle the order belongs to.
 	 * @param order_id Which order to display/edit.
 	 * @param variant Which aspect of the order to display/edit: load or unload.
-	 * @pre \c v != NULL
+	 * @pre \c v != nullptr
 	 */
 	CargoTypeOrdersWindow(WindowDesc *desc, const Vehicle *v, VehicleOrderID order_id, CargoTypeOrdersWindowVariant variant) : Window(desc)
 	{
@@ -388,7 +388,7 @@ static WindowDesc _cargo_type_unload_orders_widgets (
  * @param parent The parent window.
  * @param order_id Which order to display/edit.
  * @param variant Which aspect of the order to display/edit: load or unload.
- * @pre \c v != NULL
+ * @pre \c v != nullptr
  */
 void ShowCargoTypeOrdersWindow(const Vehicle *v, Window *parent, VehicleOrderID order_id, CargoTypeOrdersWindowVariant variant)
 {
@@ -742,7 +742,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 
 	/* Check range for aircraft. */
 	if (v->type == VEH_AIRCRAFT && Aircraft::From(v)->GetRange() > 0 && order->IsGotoOrder()) {
-		const Order *next = order->next != NULL ? order->next : v->GetFirstOrder();
+		const Order *next = order->next != nullptr ? order->next : v->GetFirstOrder();
 		if (GetOrderDistance(order, next, v) > Aircraft::From(v)->acache.cached_max_range_sqr) SetDParam(10, STR_ORDER_OUT_OF_RANGE);
 	}
 
@@ -1164,7 +1164,7 @@ private:
 	 */
 	static const StringID *GetComparatorStrings(const Order *order)
 	{
-		if (order == NULL) return _order_conditional_condition;
+		if (order == nullptr) return _order_conditional_condition;
 		switch (order->GetConditionVariable()) {
 			case OCV_FREE_PLATFORMS:
 			case OCV_CARGO_WAITING:
@@ -1210,7 +1210,7 @@ private:
 		VehicleOrderID sel_ord = this->OrderGetSel();
 		const Order *order = this->vehicle->GetOrder(sel_ord);
 
-		if (order == NULL || (order->GetLoadType() == load_type && load_type != OLFB_CARGO_TYPE_LOAD)) return;
+		if (order == nullptr || (order->GetLoadType() == load_type && load_type != OLFB_CARGO_TYPE_LOAD)) return;
 
 		if (load_type < 0) {
 			load_type = order->GetLoadType() == OLF_LOAD_IF_POSSIBLE ? OLF_FULL_LOAD_ANY : OLF_LOAD_IF_POSSIBLE;
@@ -1239,7 +1239,7 @@ private:
 
 		if (i < 0) {
 			const Order *order = this->vehicle->GetOrder(sel_ord);
-			if (order == NULL) return;
+			if (order == nullptr) return;
 			i = (order->GetDepotOrderType() & ODTFB_SERVICE) ? DA_ALWAYS_GO : DA_SERVICE;
 		}
 		DoCommandP(this->vehicle->tile, this->vehicle->index + (sel_ord << 20), MOF_DEPOT_ACTION | (i << 4), CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
@@ -1251,7 +1251,7 @@ private:
 	void OrderClick_NearestDepot()
 	{
 		Order order;
-		order.next = NULL;
+		order.next = nullptr;
 		order.index = 0;
 		order.MakeGoToDepot(0, ODTFB_PART_OF_ORDERS,
 				(_settings_client.gui.new_nonstop || _settings_game.order.nonstop_only) && this->vehicle->IsGroundVehicle() ? ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS : ONSF_STOP_EVERYWHERE);
@@ -1268,7 +1268,7 @@ private:
 		VehicleOrderID sel_ord = this->OrderGetSel();
 		const Order *order = this->vehicle->GetOrder(sel_ord);
 
-		if (order == NULL || (order->GetUnloadType() == unload_type && unload_type != OUFB_CARGO_TYPE_UNLOAD)) return;
+		if (order == nullptr || (order->GetUnloadType() == unload_type && unload_type != OUFB_CARGO_TYPE_UNLOAD)) return;
 
 		if (unload_type < 0) {
 			unload_type = order->GetUnloadType() == OUF_UNLOAD_IF_POSSIBLE ? OUFB_UNLOAD : OUF_UNLOAD_IF_POSSIBLE;
@@ -1314,7 +1314,7 @@ private:
 		VehicleOrderID sel_ord = this->OrderGetSel();
 		const Order *order = this->vehicle->GetOrder(sel_ord);
 
-		if (order == NULL || order->GetNonStopType() == non_stop) return;
+		if (order == nullptr || order->GetNonStopType() == non_stop) return;
 
 		/* Keypress if negative, so 'toggle' to the next */
 		if (non_stop < 0) {
@@ -1402,7 +1402,7 @@ private:
 	{
 		this->can_do_refit = false;
 		this->can_do_autorefit = false;
-		for (const Vehicle *w = this->vehicle; w != NULL; w = w->IsGroundVehicle() ? w->Next() : NULL) {
+		for (const Vehicle *w = this->vehicle; w != nullptr; w = w->IsGroundVehicle() ? w->Next() : nullptr) {
 			if (IsEngineRefittable(w->engine_type)) this->can_do_refit = true;
 			if (HasBit(Engine::Get(w->engine_type)->info.misc_flags, EF_AUTO_REFIT)) this->can_do_autorefit = true;
 		}
@@ -1628,11 +1628,11 @@ public:
 		NWidgetStacked *right_sel     = this->GetWidget<NWidgetStacked>(WID_O_SEL_TOP_RIGHT);
 		/* Ship or airplane. */
 		NWidgetStacked *row_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_TOP_ROW);
-		assert(row_sel != NULL || (train_row_sel != NULL && left_sel != NULL && middle_sel != NULL && right_sel != NULL));
+		assert(row_sel != nullptr || (train_row_sel != nullptr && left_sel != nullptr && middle_sel != nullptr && right_sel != nullptr));
 
 
-		if (order == NULL) {
-			if (row_sel != NULL) {
+		if (order == nullptr) {
+			if (row_sel != nullptr) {
 				row_sel->SetDisplayedPlane(DP_ROW_LOAD);
 			} else {
 				train_row_sel->SetDisplayedPlane(DP_GROUNDVEHICLE_ROW_NORMAL);
@@ -1651,7 +1651,7 @@ public:
 
 			switch (order->GetType()) {
 				case OT_GOTO_STATION:
-					if (row_sel != NULL) {
+					if (row_sel != nullptr) {
 						row_sel->SetDisplayedPlane(DP_ROW_LOAD);
 					} else {
 						train_row_sel->SetDisplayedPlane(DP_GROUNDVEHICLE_ROW_NORMAL);
@@ -1673,7 +1673,7 @@ public:
 					break;
 
 				case OT_GOTO_WAYPOINT:
-					if (row_sel != NULL) {
+					if (row_sel != nullptr) {
 						row_sel->SetDisplayedPlane(DP_ROW_LOAD);
 					} else {
 						train_row_sel->SetDisplayedPlane(DP_GROUNDVEHICLE_ROW_NORMAL);
@@ -1690,7 +1690,7 @@ public:
 					break;
 
 				case OT_GOTO_DEPOT:
-					if (row_sel != NULL) {
+					if (row_sel != nullptr) {
 						row_sel->SetDisplayedPlane(DP_ROW_DEPOT);
 					} else {
 						train_row_sel->SetDisplayedPlane(DP_GROUNDVEHICLE_ROW_NORMAL);
@@ -1709,7 +1709,7 @@ public:
 					break;
 
 				case OT_CONDITIONAL: {
-					if (row_sel != NULL) {
+					if (row_sel != nullptr) {
 						row_sel->SetDisplayedPlane(DP_ROW_CONDITIONAL);
 					} else {
 						train_row_sel->SetDisplayedPlane(DP_GROUNDVEHICLE_ROW_CONDITIONAL);
@@ -1720,7 +1720,7 @@ public:
 					bool is_slot_occupancy = (ocv == OCV_SLOT_OCCUPANCY || ocv == OCV_TRAIN_IN_SLOT);
 
 					if (is_cargo) {
-						if (order == NULL || !CargoSpec::Get(order->GetConditionValue())->IsValid()) {
+						if (order == nullptr || !CargoSpec::Get(order->GetConditionValue())->IsValid()) {
 							this->GetWidget<NWidgetCore>(WID_O_COND_CARGO)->widget_data = STR_NEWGRF_INVALID_CARGO;
 						} else {
 							this->GetWidget<NWidgetCore>(WID_O_COND_CARGO)->widget_data = CargoSpec::Get(order->GetConditionValue())->name;
@@ -1744,7 +1744,7 @@ public:
 				}
 
 				default: // every other order
-					if (row_sel != NULL) {
+					if (row_sel != nullptr) {
 						row_sel->SetDisplayedPlane(DP_ROW_LOAD);
 					} else {
 						train_row_sel->SetDisplayedPlane(DP_GROUNDVEHICLE_ROW_NORMAL);
@@ -1807,7 +1807,7 @@ public:
 		const Order *order = this->vehicle->GetOrder(i);
 		/* First draw the highlighting underground if it exists. */
 		if (this->order_over != INVALID_VEH_ORDER_ID) {
-			while (order != NULL) {
+			while (order != nullptr) {
 				/* Don't draw anything if it extends past the end of the window. */
 				if (!this->vscroll->IsVisible(i)) break;
 
@@ -1832,7 +1832,7 @@ public:
 		}
 
 		/* Draw the orders. */
-		while (order != NULL) {
+		while (order != nullptr) {
 			/* Don't draw anything if it extends past the end of the window. */
 			if (!this->vscroll->IsVisible(i)) break;
 
@@ -1857,7 +1857,7 @@ public:
 		int i = this->vscroll->GetPosition();
 		const Order *order = this->vehicle->GetOrder(i);
 		/* Draw the orders. */
-		while (order != NULL) {
+		while (order != nullptr) {
 			/* Don't draw anything if it extends past the end of the window. */
 			if (!this->vscroll->IsVisible(i)) break;
 
@@ -1880,7 +1880,7 @@ public:
 				VehicleOrderID sel = this->OrderGetSel();
 				const Order *order = this->vehicle->GetOrder(sel);
 
-				if (order != NULL && order->IsType(OT_CONDITIONAL)) {
+				if (order != nullptr && order->IsType(OT_CONDITIONAL)) {
 					uint value = order->GetConditionValue();
 					if (order->GetConditionVariable() == OCV_MAX_SPEED) value = ConvertSpeedToDisplaySpeed(value);
 					SetDParam(0, value);
@@ -1924,7 +1924,7 @@ public:
 					VehicleOrderID order_id = this->GetOrderFromPt(_cursor.pos.y - this->top);
 					if (order_id != INVALID_VEH_ORDER_ID) {
 						Order order;
-						order.next = NULL;
+						order.next = nullptr;
 						order.index = 0;
 						order.MakeConditional(order_id);
 
@@ -1956,7 +1956,7 @@ public:
 							osl = OSL_PLATFORM_NEAR_END;
 						}
 						if (osl == OSL_PLATFORM_THROUGH) {
-							for (const Vehicle *u = this->vehicle; u != NULL; u = u->Next()) {
+							for (const Vehicle *u = this->vehicle; u != nullptr; u = u->Next()) {
 								/* Passengers may not be through-loaded */
 								if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CC_PASSENGERS)) {
 									osl = OSL_PLATFORM_NEAR_END;
@@ -2073,7 +2073,7 @@ public:
 				VehicleOrderID sel_ord = this->OrderGetSel();
 				const Order *order = this->vehicle->GetOrder(sel_ord);
 
-				if (order == NULL) break;
+				if (order == nullptr) break;
 
 				DoCommandP(this->vehicle->tile, this->vehicle->index + (sel_ord << 20), MOF_WAYPOINT_FLAGS | (order->GetWaypointFlags() ^ OWF_REVERSE) << 4,
 						CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
@@ -2168,7 +2168,7 @@ public:
 		}
 
 		if (this->query_text_widget == WID_O_ADD_VEH_GROUP) {
-			DoCommandP(0, VehicleListIdentifier(VL_SINGLE_VEH, this->vehicle->type, this->vehicle->owner, this->vehicle->index).Pack(), 0, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), NULL, str);
+			DoCommandP(0, VehicleListIdentifier(VL_SINGLE_VEH, this->vehicle->type, this->vehicle->owner, this->vehicle->index).Pack(), 0, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, str);
 		}
 	}
 
@@ -2598,7 +2598,7 @@ void ShowOrdersWindow(const Vehicle *v)
 {
 	DeleteWindowById(WC_VEHICLE_DETAILS, v->index, false);
 	DeleteWindowById(WC_VEHICLE_TIMETABLE, v->index, false);
-	if (BringWindowToFrontById(WC_VEHICLE_ORDERS, v->index) != NULL) return;
+	if (BringWindowToFrontById(WC_VEHICLE_ORDERS, v->index) != nullptr) return;
 
 	/* Using a different WindowDescs for _local_company causes problems.
 	 * Due to this we have to close order windows in ChangeWindowOwner/DeleteCompanyWindows,

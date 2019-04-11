@@ -109,7 +109,7 @@ assert_compile(lengthof(_glog_desc) == GLCT_END);
 
 static void Load_GLOG_common(LoggedAction *&gamelog_action, uint &gamelog_actions)
 {
-	assert(gamelog_action == NULL);
+	assert(gamelog_action == nullptr);
 	assert(gamelog_actions == 0);
 
 	GamelogActionType at;
@@ -120,7 +120,7 @@ static void Load_GLOG_common(LoggedAction *&gamelog_action, uint &gamelog_action
 		la->at = at;
 
 		SlObject(la, _glog_action_desc); // has to be saved after 'DATE'!
-		la->change = NULL;
+		la->change = nullptr;
 		la->changes = 0;
 
 		GamelogChangeType ct;
@@ -128,7 +128,7 @@ static void Load_GLOG_common(LoggedAction *&gamelog_action, uint &gamelog_action
 			la->change = ReallocT(la->change, la->changes + 1);
 
 			LoggedChange *lc = &la->change[la->changes++];
-			/* for SLE_STR, pointer has to be valid! so make it NULL */
+			/* for SLE_STR, pointer has to be valid! so make it nullptr */
 			memset(lc, 0, sizeof(*lc));
 			lc->ct = ct;
 
@@ -185,5 +185,5 @@ static void Check_GLOG()
 }
 
 extern const ChunkHandler _gamelog_chunk_handlers[] = {
-	{ 'GLOG', Save_GLOG, Load_GLOG, NULL, Check_GLOG, CH_RIFF | CH_LAST }
+	{ 'GLOG', Save_GLOG, Load_GLOG, nullptr, Check_GLOG, CH_RIFF | CH_LAST }
 };

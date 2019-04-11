@@ -207,7 +207,7 @@ static uint _num_signals_evaluated; ///< Number of programmable signals evaluate
 /** Check whether there is a train on rail, not in a depot */
 static Vehicle *TrainOnTileEnum(Vehicle *v, void *)
 {
-	if (v->type != VEH_TRAIN || Train::From(v)->track == TRACK_BIT_DEPOT) return NULL;
+	if (v->type != VEH_TRAIN || Train::From(v)->track == TRACK_BIT_DEPOT) return nullptr;
 
 	return v;
 }
@@ -216,10 +216,10 @@ static Vehicle *TrainOnTileEnum(Vehicle *v, void *)
 static Vehicle *TrainInWormholeTileEnum(Vehicle *v, void *data)
 {
 	/* Only look for front engine or last wagon. */
-	if (v->type != VEH_TRAIN || (v->Previous() != NULL && v->Next() != NULL)) return NULL;
+	if (v->type != VEH_TRAIN || (v->Previous() != nullptr && v->Next() != nullptr)) return nullptr;
 	TileIndex tile = *(TileIndex *)data;
-	if (tile != TileVirtXY(v->x_pos, v->y_pos)) return NULL;
-	if (!(Train::From(v)->track & TRACK_BIT_WORMHOLE) && !(Train::From(v)->track & GetAcrossTunnelBridgeTrackBits(tile))) return NULL;
+	if (tile != TileVirtXY(v->x_pos, v->y_pos)) return nullptr;
+	if (!(Train::From(v)->track & TRACK_BIT_WORMHOLE) && !(Train::From(v)->track & GetAcrossTunnelBridgeTrackBits(tile))) return nullptr;
 	return v;
 }
 
@@ -315,13 +315,13 @@ static SigInfo ExploreSegment(Owner owner)
 
 				if (IsRailDepot(tile)) {
 					if (enterdir == INVALID_DIAGDIR) { // from 'inside' - train just entered or left the depot
-						if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
+						if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, nullptr, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
 						exitdir = GetRailDepotDirection(tile);
 						tile += TileOffsByDiagDir(exitdir);
 						enterdir = ReverseDiagDir(exitdir);
 						break;
 					} else if (enterdir == GetRailDepotDirection(tile)) { // entered a depot
-						if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
+						if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, nullptr, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
 						continue;
 					} else {
 						continue;
@@ -338,7 +338,7 @@ static SigInfo ExploreSegment(Owner owner)
 					if (!(info.flags & SF_TRAIN) && EnsureNoTrainOnTrackBits(tile, tracks).Failed()) info.flags |= SF_TRAIN;
 				} else {
 					if (tracks_masked == TRACK_BIT_NONE) continue; // no incidating track
-					if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
+					if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, nullptr, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
 				}
 
 				if (HasSignals(tile)) { // there is exactly one track - not zero, because there is exit from this tile
@@ -392,7 +392,7 @@ static SigInfo ExploreSegment(Owner owner)
 				if (DiagDirToAxis(enterdir) != GetRailStationAxis(tile)) continue; // different axis
 				if (IsStationTileBlocked(tile)) continue; // 'eye-candy' station tile
 
-				if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
+				if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, nullptr, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
 				tile += TileOffsByDiagDir(exitdir);
 				break;
 
@@ -401,7 +401,7 @@ static SigInfo ExploreSegment(Owner owner)
 				if (!IsOneSignalBlock(owner, GetTileOwner(tile))) continue;
 				if (DiagDirToAxis(enterdir) == GetCrossingRoadAxis(tile)) continue; // different axis
 
-				if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, NULL, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
+				if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, nullptr, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
 				if (_settings_game.vehicle.safer_crossings) info.flags |= SF_PBS;
 				tile += TileOffsByDiagDir(exitdir);
 				break;
@@ -424,7 +424,7 @@ static SigInfo ExploreSegment(Owner owner)
 							return EnsureNoTrainOnTrackBits(tile, tracks & (~across_tracks)).Failed();
 						}
 					} else {
-						return HasVehicleOnPos(tile, NULL, &TrainOnTileEnum);
+						return HasVehicleOnPos(tile, nullptr, &TrainOnTileEnum);
 					}
 				};
 

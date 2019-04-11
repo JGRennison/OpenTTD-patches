@@ -231,14 +231,14 @@ static void Load_SPRG()
 			switch(op) {
 				case PSO_FIRST: {
 					sp->first_instruction = new SignalSpecial(sp, PSO_FIRST);
-					sp->first_instruction->GetPrevHandle() = NULL;
+					sp->first_instruction->GetPrevHandle() = nullptr;
 					MakeFixup(l, sp->first_instruction->next, ReadVLI());
 					break;
 				}
 
 				case PSO_LAST: {
 					sp->last_instruction = new SignalSpecial(sp, PSO_LAST);
-					sp->last_instruction->next = NULL;
+					sp->last_instruction->next = nullptr;
 					MakeFixup(l, sp->last_instruction->GetPrevHandle(), ReadVLI());
 					break;
 				}
@@ -280,5 +280,5 @@ static void Load_SPRG()
 }
 
 extern const ChunkHandler _signal_chunk_handlers[] = {
-	{ 'SPRG', Save_SPRG, Load_SPRG, NULL, NULL, CH_RIFF | CH_LAST},
+	{ 'SPRG', Save_SPRG, Load_SPRG, nullptr, nullptr, CH_RIFF | CH_LAST},
 };

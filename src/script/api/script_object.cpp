@@ -38,7 +38,7 @@ static ScriptStorage *GetStorage()
 }
 
 
-/* static */ ScriptInstance *ScriptObject::ActiveInstance::active = NULL;
+/* static */ ScriptInstance *ScriptObject::ActiveInstance::active = nullptr;
 
 ScriptObject::ActiveInstance::ActiveInstance(ScriptInstance *instance)
 {
@@ -53,7 +53,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 
 /* static */ ScriptInstance *ScriptObject::GetActiveInstance()
 {
-	assert(ScriptObject::ActiveInstance::active != NULL);
+	assert(ScriptObject::ActiveInstance::active != nullptr);
 	return ScriptObject::ActiveInstance::active;
 }
 
@@ -298,10 +298,10 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	}
 
 	/* Set the default callback to return a true/false result of the DoCommand */
-	if (callback == NULL) callback = &ScriptInstance::DoCommandReturn;
+	if (callback == nullptr) callback = &ScriptInstance::DoCommandReturn;
 
 	/* Are we only interested in the estimate costs? */
-	bool estimate_only = GetDoCommandMode() != NULL && !GetDoCommandMode()();
+	bool estimate_only = GetDoCommandMode() != nullptr && !GetDoCommandMode()();
 
 	/* Only set p2 when the command does not come from the network. */
 	if (GetCommandFlags(cmd) & CMD_CLIENT_ID && p2 == 0) p2 = UINT32_MAX;
@@ -310,7 +310,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 			tile, TileX(tile), TileY(tile), p1, p2, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd), estimate_only);
 
 	/* Try to perform the command. */
-	CommandCost res = ::DoCommandPScript(tile, p1, p2, cmd, (_networking && !_generating_world) ? ScriptObject::GetActiveInstance()->GetDoCommandCallback() : NULL, text, false, estimate_only, 0);
+	CommandCost res = ::DoCommandPScript(tile, p1, p2, cmd, (_networking && !_generating_world) ? ScriptObject::GetActiveInstance()->GetDoCommandCallback() : nullptr, text, false, estimate_only, 0);
 
 	/* We failed; set the error and bail out */
 	if (res.Failed()) {
@@ -333,7 +333,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 
 	if (_generating_world) {
 		IncreaseDoCommandCosts(res.GetCost());
-		if (callback != NULL) {
+		if (callback != nullptr) {
 			/* Insert return value into to stack and throw a control code that
 			 * the return value in the stack should be used. */
 			callback(GetActiveInstance());

@@ -35,15 +35,15 @@ template <typename Tpf> void DumpState(Tpf &pf1, Tpf &pf2)
 #if defined(UNIX) && defined(__GLIBC__)
 	static unsigned int num = 0;
 	int pid = getpid();
-	const char *fn1 = NULL;
-	const char *fn2 = NULL;
-	FILE *f1 = NULL;
-	FILE *f2 = NULL;
+	const char *fn1 = nullptr;
+	const char *fn2 = nullptr;
+	FILE *f1 = nullptr;
+	FILE *f2 = nullptr;
 	for(;;) {
 		free(fn1);
 		fn1 = str_fmt("yapf-%d-%u-1.txt", pid, num);
 		f1 = fopen(fn1, "wx");
-		if (f1 == NULL && errno == EEXIST) {
+		if (f1 == nullptr && errno == EEXIST) {
 			num++;
 			continue;
 		}
@@ -59,8 +59,8 @@ template <typename Tpf> void DumpState(Tpf &pf1, Tpf &pf2)
 	FILE *f1 = fopen("yapf1.txt", "wt");
 	FILE *f2 = fopen("yapf2.txt", "wt");
 #endif
-	assert(f1 != NULL);
-	assert(f2 != NULL);
+	assert(f1 != nullptr);
+	assert(f2 != nullptr);
 	fwrite(dmp1.m_out.Data(), 1, dmp1.m_out.Size(), f1);
 	fwrite(dmp2.m_out.Data(), 1, dmp2.m_out.Size(), f2);
 	fclose(f1);
@@ -115,7 +115,7 @@ private:
 			tile = TILE_ADD(tile, diff);
 		} while (IsCompatibleTrainStationTile(tile, start) && tile != m_origin_tile);
 
-		TriggerStationRandomisation(NULL, start, SRT_PATH_RESERVATION);
+		TriggerStationRandomisation(nullptr, start, SRT_PATH_RESERVATION);
 
 		return true;
 	}
@@ -169,7 +169,7 @@ public:
 	/** Check the node for a possible reservation target. */
 	inline void FindSafePositionOnNode(Node *node)
 	{
-		assert(node->m_parent != NULL);
+		assert(node->m_parent != nullptr);
 
 		/* We will never pass more than two non-reserve-through signals, no need to check for a safe tile. */
 		if (node->m_parent->m_num_signals_passed - node->m_parent->m_num_signals_res_through_passed >= 2) return;
@@ -185,7 +185,7 @@ public:
 		m_res_fail_tile = INVALID_TILE;
 		m_origin_tile = origin;
 
-		if (target != NULL) {
+		if (target != nullptr) {
 			target->tile = m_res_dest;
 			target->trackdir = m_res_dest_td;
 			target->okay = false;
@@ -195,7 +195,7 @@ public:
 		PBSWaitingPositionRestrictedSignalInfo restricted_signal_info;
 		if (!IsWaitingPositionFree(Yapf().GetVehicle(), m_res_dest, m_res_dest_td, false, &restricted_signal_info)) return false;
 
-		for (Node *node = m_res_node; node->m_parent != NULL; node = node->m_parent) {
+		for (Node *node = m_res_node; node->m_parent != nullptr; node = node->m_parent) {
 			node->IterateTiles(Yapf().GetVehicle(), Yapf(), *this, &CYapfReserveTrack<Types>::ReserveSingleTrack);
 			if (m_res_fail_tile != INVALID_TILE) {
 				/* Reservation failed, undo. */
@@ -205,7 +205,7 @@ public:
 					/* If this is the node that failed, stop at the failed tile. */
 					m_res_fail_tile = fail_node == node ? stop_tile : INVALID_TILE;
 					fail_node->IterateTiles(Yapf().GetVehicle(), Yapf(), *this, &CYapfReserveTrack<Types>::UnreserveSingleTrack);
-				} while (fail_node != node && (fail_node = fail_node->m_parent) != NULL);
+				} while (fail_node != node && (fail_node = fail_node->m_parent) != nullptr);
 
 				return false;
 			}
@@ -217,13 +217,13 @@ public:
 				extern TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const void *);
 
 				TraceRestrictProgramResult out;
-				TraceRestrictProgramInput input(restricted_signal_info.tile, restricted_signal_info.trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, NULL);
+				TraceRestrictProgramInput input(restricted_signal_info.tile, restricted_signal_info.trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr);
 				input.permitted_slot_operations = TRPISP_PBS_RES_END_ACQUIRE | TRPISP_PBS_RES_END_RELEASE;
 				prog->Execute(Yapf().GetVehicle(), input, out);
 			}
 		}
 
-		if (target != NULL) target->okay = true;
+		if (target != nullptr) target->okay = true;
 
 		if (Yapf().CanUseGlobalCache(*m_res_node)) {
 			YapfNotifyTrackLayoutChange(INVALID_TILE, INVALID_TRACK);
@@ -238,12 +238,12 @@ public:
 		Node *n2 = pf2.GetBestNode();
 		uint depth = 0;
 		for (;;) {
-			if ((n1 != NULL) != (n2 != NULL)) {
-				DEBUG(desync, 0, "%s: node nonnull state at %u = [%d, %d]", name, depth, (n1 != NULL), (n2 != NULL));
+			if ((n1 != nullptr) != (n2 != nullptr)) {
+				DEBUG(desync, 0, "%s: node nonnull state at %u = [%d, %d]", name, depth, (n1 != nullptr), (n2 != nullptr));
 				DumpState(pf1, pf2);
 				return;
 			}
-			if (n1 == NULL) break;
+			if (n1 == nullptr) break;
 
 			if (n1->GetTile() != n2->GetTile()) {
 				DEBUG(desync, 0, "%s tile mismatch at %u = [0x%X, 0x%X]", name, depth, n1->GetTile(), n2->GetTile());
@@ -364,7 +364,7 @@ public:
 
 		/* walk through the path back to the origin */
 		Node *pNode = n;
-		while (pNode->m_parent != NULL) {
+		while (pNode->m_parent != nullptr) {
 			pNode = pNode->m_parent;
 		}
 
@@ -434,7 +434,7 @@ public:
 		return result1;
 	}
 
-	bool FindNearestSafeTile(const Train *v, TileIndex t1, Trackdir td, bool override_railtype, bool dont_reserve, bool *found_path = NULL)
+	bool FindNearestSafeTile(const Train *v, TileIndex t1, Trackdir td, bool override_railtype, bool dont_reserve, bool *found_path = nullptr)
 	{
 		/* Set origin and destination. */
 		Yapf().SetOrigin(t1, td);
@@ -449,15 +449,15 @@ public:
 		this->SetReservationTarget(pNode, pNode->GetLastTile(), pNode->GetLastTrackdir());
 
 		/* Walk through the path back to the origin. */
-		Node *pPrev = NULL;
-		while (pNode->m_parent != NULL) {
+		Node *pPrev = nullptr;
+		while (pNode->m_parent != nullptr) {
 			pPrev = pNode;
 			pNode = pNode->m_parent;
 
 			this->FindSafePositionOnNode(pPrev);
 		}
 
-		return dont_reserve || this->TryReservePath(NULL, pNode->GetLastTile());
+		return dont_reserve || this->TryReservePath(nullptr, pNode->GetLastTile());
 	}
 };
 
@@ -521,7 +521,7 @@ public:
 		if (_debug_yapfdesync_level < 1 && _debug_desync_level < 2) {
 			result1 = pf1.ChooseRailTrack(v, tile, enterdir, tracks, path_found, reserve_track, target);
 		} else {
-			result1 = pf1.ChooseRailTrack(v, tile, enterdir, tracks, path_found, false, NULL);
+			result1 = pf1.ChooseRailTrack(v, tile, enterdir, tracks, path_found, false, nullptr);
 			Tpf pf2;
 			pf2.DisableCache(true);
 			Trackdir result2 = pf2.ChooseRailTrack(v, tile, enterdir, tracks, path_found, reserve_track, target);
@@ -538,7 +538,7 @@ public:
 
 	inline Trackdir ChooseRailTrack(const Train *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks, bool &path_found, bool reserve_track, PBSTileInfo *target)
 	{
-		if (target != NULL) target->tile = INVALID_TILE;
+		if (target != nullptr) target->tile = INVALID_TILE;
 
 		/* set origin and destination nodes */
 		PBSTileInfo origin = FollowTrainReservation(v);
@@ -551,14 +551,14 @@ public:
 		/* if path not found - return INVALID_TRACKDIR */
 		Trackdir next_trackdir = INVALID_TRACKDIR;
 		Node *pNode = Yapf().GetBestNode();
-		if (pNode != NULL) {
+		if (pNode != nullptr) {
 			/* reserve till end of path */
 			this->SetReservationTarget(pNode, pNode->GetLastTile(), pNode->GetLastTrackdir());
 
 			/* path was found or at least suggested
 			 * walk through the path back to the origin */
-			Node *pPrev = NULL;
-			while (pNode->m_parent != NULL) {
+			Node *pPrev = nullptr;
+			while (pNode->m_parent != nullptr) {
 				pPrev = pNode;
 				pNode = pNode->m_parent;
 
@@ -611,7 +611,7 @@ public:
 		/* path was found
 		 * walk through the path back to the origin */
 		Node *pNode = Yapf().GetBestNode();
-		while (pNode->m_parent != NULL) {
+		while (pNode->m_parent != nullptr) {
 			pNode = pNode->m_parent;
 		}
 

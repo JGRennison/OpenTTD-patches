@@ -239,9 +239,9 @@ static const LegendAndColour * const _legend_table[] = {
 
 /** Available colour schemes for height maps. */
 SmallMapColourScheme _heightmap_schemes[] = {
-	{NULL, _green_map_heights,      lengthof(_green_map_heights),      MKCOLOUR_XXXX(0x5B)}, ///< Green colour scheme.
-	{NULL, _dark_green_map_heights, lengthof(_dark_green_map_heights), MKCOLOUR_XXXX(0x62)}, ///< Dark green colour scheme.
-	{NULL, _violet_map_heights,     lengthof(_violet_map_heights),     MKCOLOUR_XXXX(0x81)}, ///< Violet colour scheme.
+	{nullptr, _green_map_heights,      lengthof(_green_map_heights),      MKCOLOUR_XXXX(0x5B)}, ///< Green colour scheme.
+	{nullptr, _dark_green_map_heights, lengthof(_dark_green_map_heights), MKCOLOUR_XXXX(0x62)}, ///< Dark green colour scheme.
+	{nullptr, _violet_map_heights,     lengthof(_violet_map_heights),     MKCOLOUR_XXXX(0x81)}, ///< Violet colour scheme.
 };
 
 /**
@@ -250,7 +250,7 @@ SmallMapColourScheme _heightmap_schemes[] = {
 void BuildLandLegend()
 {
 	/* The smallmap window has never been initialized, so no need to change the legend. */
-	if (_heightmap_schemes[0].height_colours == NULL) return;
+	if (_heightmap_schemes[0].height_colours == nullptr) return;
 
 	/*
 	 * The general idea of this function is to fill the legend with an appropriate evenly spaced
@@ -467,7 +467,7 @@ static void NotifyAllViewports(ViewportMapType map_type)
 {
 	Window *w;
 	FOR_ALL_WINDOWS_FROM_BACK(w) {
-		if (w->viewport != NULL)
+		if (w->viewport != nullptr)
 			if (w->viewport->zoom >= ZOOM_LVL_DRAW_MAP && w->viewport->map_type == map_type)
 				w->InvalidateData();
 	}
@@ -975,7 +975,7 @@ SmallMapWindow::SmallMapWindow(WindowDesc *desc, int window_number) : Window(des
 
 	this->SetupWidgetData();
 
-	this->SetZoomLevel(ZLC_INITIALIZE, NULL);
+	this->SetZoomLevel(ZLC_INITIALIZE, nullptr);
 	this->SmallMapCenterOnCurrentPos();
 	this->SetOverlayCargoMask();
 }
@@ -1380,7 +1380,7 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 
 		case WID_SM_ENABLE_ALL:
 		case WID_SM_DISABLE_ALL: {
-			LegendAndColour *tbl = NULL;
+			LegendAndColour *tbl = nullptr;
 			switch (this->map_type) {
 				case SMT_INDUSTRY:
 					tbl = _legend_from_industries;
@@ -1659,7 +1659,7 @@ class NWidgetSmallmapDisplay : public NWidgetContainer {
 public:
 	NWidgetSmallmapDisplay() : NWidgetContainer(NWID_VERTICAL)
 	{
-		this->smallmap_window = NULL;
+		this->smallmap_window = nullptr;
 	}
 
 	void SetupSmallestSize(Window *w, bool init_array) override
@@ -1671,7 +1671,7 @@ public:
 		bar->SetupSmallestSize(w, init_array);
 
 		this->smallmap_window = dynamic_cast<SmallMapWindow *>(w);
-		assert(this->smallmap_window != NULL);
+		assert(this->smallmap_window != nullptr);
 		this->smallest_x = max(display->smallest_x, bar->smallest_x + smallmap_window->GetMinLegendWidth());
 		this->smallest_y = display->smallest_y + max(bar->smallest_y, smallmap_window->GetLegendHeight(smallmap_window->min_number_of_columns));
 		this->fill_x = max(display->fill_x, bar->fill_x);
@@ -1706,17 +1706,17 @@ public:
 
 	NWidgetCore *GetWidgetFromPos(int x, int y) override
 	{
-		if (!IsInsideBS(x, this->pos_x, this->current_x) || !IsInsideBS(y, this->pos_y, this->current_y)) return NULL;
-		for (NWidgetBase *child_wid = this->head; child_wid != NULL; child_wid = child_wid->next) {
+		if (!IsInsideBS(x, this->pos_x, this->current_x) || !IsInsideBS(y, this->pos_y, this->current_y)) return nullptr;
+		for (NWidgetBase *child_wid = this->head; child_wid != nullptr; child_wid = child_wid->next) {
 			NWidgetCore *widget = child_wid->GetWidgetFromPos(x, y);
-			if (widget != NULL) return widget;
+			if (widget != nullptr) return widget;
 		}
-		return NULL;
+		return nullptr;
 	}
 
 	void Draw(const Window *w) override
 	{
-		for (NWidgetBase *child_wid = this->head; child_wid != NULL; child_wid = child_wid->next) child_wid->Draw(w);
+		for (NWidgetBase *child_wid = this->head; child_wid != nullptr; child_wid = child_wid->next) child_wid->Draw(w);
 	}
 };
 
@@ -1840,7 +1840,7 @@ bool ScrollMainWindowTo(int x, int y, int z, bool instant)
 	if (res) return res;
 
 	SmallMapWindow *w = dynamic_cast<SmallMapWindow*>(FindWindowById(WC_SMALLMAP, 0));
-	if (w != NULL) w->SmallMapCenterOnCurrentPos();
+	if (w != nullptr) w->SmallMapCenterOnCurrentPos();
 
 	return res;
 }

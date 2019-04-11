@@ -87,7 +87,7 @@ struct DualTrackBits {
 /**
  * Finds which Electrified Rail Bits are present on a given tile.
  * @param t tile to check
- * @param override pointer to PCP override, can be NULL
+ * @param override pointer to PCP override, can be nullptr
  * @return trackbits of tile if it is electrified
  */
 static DualTrackBits GetRailTrackBitsUniversal(TileIndex t, byte *override)
@@ -128,7 +128,7 @@ static DualTrackBits GetRailTrackBitsUniversal(TileIndex t, byte *override)
 			if (secondary_bits && HasRailCatenary(GetSecondaryRailType(t))) {
 				out.secondary = secondary_bits;
 			}
-			if ((out.primary | out.secondary) && override != NULL && (IsTunnel(t) || GetTunnelBridgeLength(t, GetOtherBridgeEnd(t)) > 0)) {
+			if ((out.primary | out.secondary) && override != nullptr && (IsTunnel(t) || GetTunnelBridgeLength(t, GetOtherBridgeEnd(t)) > 0)) {
 				*override = 1 << GetTunnelBridgeDirection(t);
 			}
 			break;
@@ -396,7 +396,7 @@ static void DrawRailCatenaryRailway(const TileInfo *ti)
 		/* Here's one of the main headaches. GetTileSlope does not correct for possibly
 		 * existing foundataions, so we do have to do that manually later on.*/
 		tileh[TS_NEIGHBOUR] = GetTileSlope(neighbour);
-		DualTrackBits neighbour_track_config = GetRailTrackBitsUniversal(neighbour, NULL);
+		DualTrackBits neighbour_track_config = GetRailTrackBitsUniversal(neighbour, nullptr);
 		trackconfig[TS_NEIGHBOUR] = neighbour_track_config.primary | neighbour_track_config.secondary;
 		wireconfig[TS_NEIGHBOUR] = MaskWireBits(neighbour, trackconfig[TS_NEIGHBOUR]);
 		if (IsTunnelTile(neighbour) && i != GetTunnelBridgeDirection(neighbour)) wireconfig[TS_NEIGHBOUR] = trackconfig[TS_NEIGHBOUR] = TRACK_BIT_NONE;

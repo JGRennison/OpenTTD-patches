@@ -58,7 +58,7 @@ void TemplateVehicleImageDimensions::SetFromTrain(const Train *t)
 	this->cached_veh_length = t->gcache.cached_veh_length;
 
 	const Engine *e = t->GetEngine();
-	if (e->GetGRF() != NULL && is_custom_sprite(e->u.rail.image_index)) {
+	if (e->GetGRF() != nullptr && is_custom_sprite(e->u.rail.image_index)) {
 		this->reference_width = e->GetGRF()->traininfo_vehicle_width;
 		this->vehicle_pitch = e->GetGRF()->traininfo_vehicle_pitch;
 	}
@@ -85,7 +85,7 @@ TemplateVehicle::TemplateVehicle(VehicleType ty, EngineID eid, byte subtypeflag,
 
 TemplateVehicle::~TemplateVehicle() {
 	TemplateVehicle *v = this->Next();
-	this->SetNext(NULL);
+	this->SetNext(nullptr);
 
 	delete v;
 }
@@ -137,7 +137,7 @@ TemplateReplacement* GetTemplateReplacementByGroupID(GroupID gid)
 			return tr;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 bool IssueTemplateReplacement(GroupID gid, TemplateID tid)

@@ -183,7 +183,7 @@ static void Load_ORDR()
 			/* The orders were built like this:
 			 * While the order is valid, set the previous will get its next pointer set */
 			Order *prev = Order::GetIfValid(order_index - 1);
-			if (prev != NULL) prev->next = o;
+			if (prev != nullptr) prev->next = o;
 		}
 	} else {
 		int index;
@@ -231,7 +231,7 @@ void Load_ORDX()
 	int index;
 	while ((index = SlIterateArray()) != -1) {
 		Order *order = Order::GetIfValid(index);
-		assert(order != NULL);
+		assert(order != nullptr);
 		order->AllocExtraInfo();
 		SlObject(order->extra.get(), GetOrderExtraInfoDescription());
 	}
@@ -358,8 +358,8 @@ static void Ptrs_BKOR()
 }
 
 extern const ChunkHandler _order_chunk_handlers[] = {
-	{ 'BKOR', Save_BKOR, Load_BKOR, Ptrs_BKOR, NULL, CH_ARRAY},
-	{ 'ORDR', Save_ORDR, Load_ORDR, Ptrs_ORDR, NULL, CH_ARRAY},
-	{ 'ORDL', Save_ORDL, Load_ORDL, Ptrs_ORDL, NULL, CH_ARRAY},
-	{ 'ORDX', Save_ORDX, Load_ORDX, NULL,      NULL, CH_SPARSE_ARRAY | CH_LAST},
+	{ 'BKOR', Save_BKOR, Load_BKOR, Ptrs_BKOR, nullptr, CH_ARRAY},
+	{ 'ORDR', Save_ORDR, Load_ORDR, Ptrs_ORDR, nullptr, CH_ARRAY},
+	{ 'ORDL', Save_ORDL, Load_ORDL, Ptrs_ORDL, nullptr, CH_ARRAY},
+	{ 'ORDX', Save_ORDX, Load_ORDX, nullptr,      nullptr, CH_SPARSE_ARRAY | CH_LAST},
 };

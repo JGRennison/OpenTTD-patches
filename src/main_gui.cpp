@@ -114,7 +114,7 @@ bool DoZoomInOutWindow(ZoomStateChange how, Window *w)
 {
 	ViewPort *vp;
 
-	assert(w != NULL);
+	assert(w != nullptr);
 	vp = w->viewport;
 
 	switch (how) {
@@ -148,7 +148,7 @@ bool DoZoomInOutWindow(ZoomStateChange how, Window *w)
 			w->viewport->follow_vehicle = INVALID_VEHICLE;
 			break;
 	}
-	if (vp != NULL) { // the vp can be null when how == ZOOM_NONE
+	if (vp != nullptr) { // the vp can be null when how == ZOOM_NONE
 		vp->virtual_left = w->viewport->scrollpos_x;
 		vp->virtual_top = w->viewport->scrollpos_y;
 	}
@@ -162,7 +162,7 @@ bool DoZoomInOutWindow(ZoomStateChange how, Window *w)
 
 void ZoomInOrOutToCursorWindow(bool in, Window *w)
 {
-	assert(w != NULL);
+	assert(w != nullptr);
 
 	if (_game_mode != GM_MENU) {
 		ViewPort *vp = w->viewport;
@@ -375,7 +375,7 @@ struct MainWindow : Window
 			case GHK_CHAT: // smart chat; send to team if any, otherwise to all
 				if (_networking) {
 					const NetworkClientInfo *cio = NetworkClientInfo::GetByClientID(_network_own_client_id);
-					if (cio == NULL) break;
+					if (cio == nullptr) break;
 
 					ShowNetworkChatQueryWindow(NetworkClientPreferTeamChat(cio) ? DESTTYPE_TEAM : DESTTYPE_BROADCAST, cio->client_playas);
 				}
@@ -388,7 +388,7 @@ struct MainWindow : Window
 			case GHK_CHAT_COMPANY: // send text to all team mates
 				if (_networking) {
 					const NetworkClientInfo *cio = NetworkClientInfo::GetByClientID(_network_own_client_id);
-					if (cio == NULL) break;
+					if (cio == nullptr) break;
 
 					ShowNetworkChatQueryWindow(DESTTYPE_TEAM, cio->client_playas);
 				}
@@ -446,7 +446,7 @@ struct MainWindow : Window
 
 	void OnResize() override
 	{
-		if (this->viewport != NULL) {
+		if (this->viewport != nullptr) {
 			NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_M_VIEWPORT);
 			nvp->UpdateViewportCoordinates(this);
 			this->refresh.SetInterval(LINKGRAPH_DELAY);
@@ -533,7 +533,7 @@ static Hotkey global_hotkeys[] = {
 HotkeyList MainWindow::hotkeys("global", global_hotkeys);
 
 static WindowDesc _main_window_desc(
-	WDP_MANUAL, NULL, 0, 0,
+	WDP_MANUAL, nullptr, 0, 0,
 	WC_MAIN_WINDOW, WC_NONE,
 	0,
 	_nested_main_window_widgets, lengthof(_nested_main_window_widgets),

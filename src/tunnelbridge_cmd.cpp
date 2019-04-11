@@ -141,7 +141,7 @@ void ResetBridges()
 {
 	/* First, free sprite table data */
 	for (BridgeType i = 0; i < MAX_BRIDGES; i++) {
-		if (_bridge[i].sprite_table != NULL) {
+		if (_bridge[i].sprite_table != nullptr) {
 			for (BridgePieces j = BRIDGE_PIECE_NORTH; j < BRIDGE_PIECE_INVALID; j++) free(_bridge[i].sprite_table[j]);
 			free(_bridge[i].sprite_table);
 		}
@@ -207,7 +207,7 @@ static inline const PalSpriteID *GetBridgeSpriteTable(int index, BridgePieces ta
 {
 	const BridgeSpec *bridge = GetBridgeSpec(index);
 	assert(table < BRIDGE_PIECE_INVALID);
-	if (bridge->sprite_table == NULL || bridge->sprite_table[table] == NULL) {
+	if (bridge->sprite_table == nullptr || bridge->sprite_table[table] == nullptr) {
 		return _bridge_sprite_table[index][table];
 	} else {
 		return bridge->sprite_table[table];
@@ -325,7 +325,7 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 		company = OWNER_TOWN;
 
 		/* If we are not within a town, we are not owned by the town */
-		if (town == NULL || DistanceSquare(tile_start, town->xy) > town->cache.squared_town_zone_radius[HZB_TOWN_EDGE]) {
+		if (town == nullptr || DistanceSquare(tile_start, town->xy) > town->cache.squared_town_zone_radius[HZB_TOWN_EDGE]) {
 			company = OWNER_NONE;
 		}
 	}
@@ -386,7 +386,7 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 				_game_mode != GM_EDITOR) {
 			Town *t = ClosestTownFromTile(tile_start, UINT_MAX);
 
-			if (t == NULL) {
+			if (t == nullptr) {
 				return CMD_ERROR;
 			} else {
 				SetDParam(0, t->index);
@@ -604,7 +604,7 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 			}
 
 			case TRANSPORT_WATER:
-				if (is_new_owner && c != NULL) c->infrastructure.water += (bridge_len + 2) * TUNNELBRIDGE_TRACKBIT_FACTOR;
+				if (is_new_owner && c != nullptr) c->infrastructure.water += (bridge_len + 2) * TUNNELBRIDGE_TRACKBIT_FACTOR;
 				MakeAqueductBridgeRamp(tile_start, owner, dir);
 				MakeAqueductBridgeRamp(tile_end,   owner, ReverseDiagDir(dir));
 				break;
@@ -629,7 +629,7 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 	 * and cost is computed in "bridge_gui.c". For AI, Towns this has to be of course calculated
 	 */
 	Company *c = Company::GetIfValid(company);
-	if (!(flags & DC_QUERY_COST) || (c != NULL && c->is_ai)) {
+	if (!(flags & DC_QUERY_COST) || (c != nullptr && c->is_ai)) {
 		bridge_len += 2; // begin and end tiles/ramps
 
 		switch (transport_type) {
@@ -638,7 +638,7 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 			default: break;
 		}
 
-		if (c != NULL) bridge_len = CalcBridgeLenCostFactor(bridge_len);
+		if (c != nullptr) bridge_len = CalcBridgeLenCostFactor(bridge_len);
 
 		if (transport_type != TRANSPORT_WATER) {
 			cost.AddCost((int64)bridge_len * _price[PR_BUILD_BRIDGE] * GetBridgeSpec(bridge_type)->price >> 8);
@@ -792,7 +792,7 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 		company = OWNER_TOWN;
 
 		/* If we are not within a town, we are not owned by the town */
-		if (town == NULL || DistanceSquare(start_tile, town->xy) > town->cache.squared_town_zone_radius[HZB_TOWN_EDGE]) {
+		if (town == nullptr || DistanceSquare(start_tile, town->xy) > town->cache.squared_town_zone_radius[HZB_TOWN_EDGE]) {
 			company = OWNER_NONE;
 		}
 	}
@@ -888,7 +888,7 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 		/* Mark the tile as already cleared for the terraform command.
 		 * Do this for all tiles (like trees), not only objects. */
 		ClearedObjectArea *coa = FindClearedObject(end_tile);
-		if (coa == NULL) {
+		if (coa == nullptr) {
 			/*C++17: coa = &*/ _cleared_object_areas.push_back({end_tile, TileArea(end_tile, 1, 1)});
 			coa = &_cleared_object_areas.back();
 		}
@@ -910,7 +910,7 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 		assert(coa >= begin && coa < begin + _cleared_object_areas.size());
 		size_t coa_index = coa - begin;
 		assert(coa_index < UINT_MAX); // more than 2**32 cleared areas would be a bug in itself
-		coa = NULL;
+		coa = nullptr;
 
 		ret = DoCommand(end_tile, end_tileh & start_tileh, 0, flags, CMD_TERRAFORM_LAND);
 		_cleared_object_areas[(uint)coa_index].first_tile = old_first_tile;
@@ -941,13 +941,13 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 		const Tunnel *t = new Tunnel(tn, ts, TileHeight(tn), is_chunnel);
 
 		if (transport_type == TRANSPORT_RAIL) {
-			if (!IsTunnelTile(start_tile) && c != NULL) c->infrastructure.rail[railtype] += num_pieces;
+			if (!IsTunnelTile(start_tile) && c != nullptr) c->infrastructure.rail[railtype] += num_pieces;
 			MakeRailTunnel(start_tile, company, t->index, direction,                 railtype);
 			MakeRailTunnel(end_tile,   company, t->index, ReverseDiagDir(direction), railtype);
 			AddSideToSignalBuffer(start_tile, INVALID_DIAGDIR, company);
 			YapfNotifyTrackLayoutChange(start_tile, DiagDirToDiagTrack(direction));
 		} else {
-			if (c != NULL) {
+			if (c != nullptr) {
 				RoadType rt;
 				FOR_EACH_SET_ROADTYPE(rt, rts ^ (IsTunnelTile(start_tile) ? GetRoadTypes(start_tile) : ROADTYPES_NONE)) {
 					c->infrastructure.road[rt] += num_pieces * 2; // A full diagonal road has two road bits.
@@ -1027,7 +1027,7 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 
 	_build_tunnel_endtile = endtile;
 
-	Town *t = NULL;
+	Town *t = nullptr;
 	if (IsTileOwner(tile, OWNER_TOWN) && _game_mode != GM_EDITOR) {
 		t = ClosestTownFromTile(tile, UINT_MAX); // town penalty rating
 
@@ -1054,10 +1054,10 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 			Track track = DiagDirToDiagTrack(dir);
 			Owner owner = GetTileOwner(tile);
 
-			Train *v = NULL;
+			Train *v = nullptr;
 			if (HasTunnelReservation(tile)) {
 				v = GetTrainForReservation(tile, track);
-				if (v != NULL) FreeTrainTrackReservation(v);
+				if (v != nullptr) FreeTrainTrackReservation(v);
 			}
 
 			if (Company::IsValidID(owner)) {
@@ -1080,13 +1080,13 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 			YapfNotifyTrackLayoutChange(tile,    track);
 			YapfNotifyTrackLayoutChange(endtile, track);
 
-			if (v != NULL) TryPathReserve(v);
+			if (v != nullptr) TryPathReserve(v);
 		} else {
 			RoadType rt;
 			FOR_EACH_SET_ROADTYPE(rt, GetRoadTypes(tile)) {
 				/* A full diagonal road tile has two road bits. */
 				Company *c = Company::GetIfValid(GetRoadOwner(tile, rt));
-				if (c != NULL) {
+				if (c != nullptr) {
 					c->infrastructure.road[rt] -= len * 2 * TUNNELBRIDGE_TRACKBIT_FACTOR;
 					DirtyCompanyInfrastructureWindows(c->index);
 				}
@@ -1123,7 +1123,7 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 	DiagDirection direction = GetTunnelBridgeDirection(tile);
 	TileIndexDiff delta = TileOffsByDiagDir(direction);
 
-	Town *t = NULL;
+	Town *t = nullptr;
 	if (IsTileOwner(tile, OWNER_TOWN) && _game_mode != GM_EDITOR) {
 		t = ClosestTownFromTile(tile, UINT_MAX); // town penalty rating
 
@@ -1170,7 +1170,7 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 				Track track;
 				while ((track = RemoveFirstTrack(&reserved)) != INVALID_TRACK) {
 					Train *v = GetTrainForReservation(tile, track);
-					if (v != NULL) {
+					if (v != nullptr) {
 						FreeTrainTrackReservation(v);
 						vehicles_affected.push_back(v);
 					}
@@ -1279,7 +1279,7 @@ static int DrawPillarColumn(int z_bottom, int z_top, const PalSpriteID *psid, in
 {
 	int cur_z;
 	for (cur_z = z_top; cur_z >= z_bottom; cur_z -= TILE_HEIGHT) {
-		DrawPillar(psid, x, y, cur_z, w, h, NULL);
+		DrawPillar(psid, x, y, cur_z, w, h, nullptr);
 	}
 	return cur_z;
 }
@@ -2201,7 +2201,7 @@ static void UpdateRoadTunnelBridgeInfrastructure(TileIndex begin, TileIndex end,
 	RoadType rt;
 	FOR_EACH_SET_ROADTYPE(rt, GetRoadTypes(begin)) {
 		Company * const c = Company::GetIfValid(GetRoadOwner(begin, rt));
-		if (c != NULL) {
+		if (c != nullptr) {
 			uint infra = 0;
 			if (IsBridge(begin)) {
 				const RoadBits bits = GetCustomBridgeHeadRoadBits(begin, rt);
@@ -2221,7 +2221,7 @@ static void UpdateRoadTunnelBridgeInfrastructure(TileIndex begin, TileIndex end,
 	}
 	FOR_EACH_SET_ROADTYPE(rt, GetRoadTypes(end)) {
 		Company * const c = Company::GetIfValid(GetRoadOwner(end, rt));
-		if (c != NULL) {
+		if (c != nullptr) {
 			uint infra = 0;
 			if (IsBridge(end)) {
 				const RoadBits bits = GetCustomBridgeHeadRoadBits(end, rt);
@@ -2247,7 +2247,7 @@ void SubtractRoadTunnelBridgeInfrastructure(TileIndex begin, TileIndex end) {
 static void UpdateRailTunnelBridgeInfrastructure(Company *c, TileIndex begin, TileIndex end, bool add) {
 	const uint middle_len = GetTunnelBridgeLength(begin, end) * TUNNELBRIDGE_TRACKBIT_FACTOR;
 
-	if (c != NULL) {
+	if (c != nullptr) {
 		uint primary_count = middle_len + GetTunnelBridgeHeadOnlyPrimaryRailInfrastructureCount(begin) + GetTunnelBridgeHeadOnlyPrimaryRailInfrastructureCount(end);
 		if (add) {
 			c->infrastructure.rail[GetRailType(begin)] += primary_count;
@@ -2623,14 +2623,14 @@ extern const TileTypeProcs _tile_type_tunnelbridge_procs = {
 	DrawTile_TunnelBridge,           // draw_tile_proc
 	GetSlopePixelZ_TunnelBridge,     // get_slope_z_proc
 	ClearTile_TunnelBridge,          // clear_tile_proc
-	NULL,                            // add_accepted_cargo_proc
+	nullptr,                            // add_accepted_cargo_proc
 	GetTileDesc_TunnelBridge,        // get_tile_desc_proc
 	GetTileTrackStatus_TunnelBridge, // get_tile_track_status_proc
 	ClickTile_TunnelBridge,          // click_tile_proc
-	NULL,                            // animate_tile_proc
+	nullptr,                            // animate_tile_proc
 	TileLoop_TunnelBridge,           // tile_loop_proc
 	ChangeTileOwner_TunnelBridge,    // change_tile_owner_proc
-	NULL,                            // add_produced_cargo_proc
+	nullptr,                            // add_produced_cargo_proc
 	VehicleEnter_TunnelBridge,       // vehicle_enter_tile_proc
 	GetFoundation_TunnelBridge,      // get_foundation_proc
 	TerraformTile_TunnelBridge,      // terraform_tile_proc

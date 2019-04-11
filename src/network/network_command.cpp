@@ -21,7 +21,7 @@
 
 /** Table with all the callbacks we'll use for conversion*/
 static CommandCallback * const _callback_table[] = {
-	/* 0x00 */ NULL,
+	/* 0x00 */ nullptr,
 	/* 0x01 */ CcBuildPrimaryVehicle,
 	/* 0x02 */ CcBuildAirport,
 	/* 0x03 */ CcBuildBridge,
@@ -69,8 +69,8 @@ void CommandQueue::Append(CommandPacket *p, bool move)
 	} else {
 		*add = *p;
 	}
-	add->next = NULL;
-	if (this->first == NULL) {
+	add->next = nullptr;
+	if (this->first == nullptr) {
 		this->first = add;
 	} else {
 		this->last->next = add;
@@ -89,15 +89,15 @@ std::unique_ptr<CommandPacket> CommandQueue::Pop(bool ignore_paused)
 
 	CommandPacket **prev = &this->first;
 	CommandPacket *ret = this->first;
-	CommandPacket *prev_item = NULL;
+	CommandPacket *prev_item = nullptr;
 	if (ignore_paused && _pause_mode != PM_UNPAUSED) {
-		while (ret != NULL && !IsCommandAllowedWhilePaused(ret->cmd)) {
+		while (ret != nullptr && !IsCommandAllowedWhilePaused(ret->cmd)) {
 			prev_item = ret;
 			prev = &ret->next;
 			ret = ret->next;
 		}
 	}
-	if (ret != NULL) {
+	if (ret != nullptr) {
 		if (ret == this->last) this->last = prev_item;
 		*prev = ret->next;
 		this->count--;
@@ -114,17 +114,17 @@ CommandPacket *CommandQueue::Peek(bool ignore_paused)
 {
 	if (!ignore_paused || _pause_mode == PM_UNPAUSED) return this->first;
 
-	for (CommandPacket *p = this->first; p != NULL; p = p->next) {
+	for (CommandPacket *p = this->first; p != nullptr; p = p->next) {
 		if (IsCommandAllowedWhilePaused(p->cmd)) return p;
 	}
-	return NULL;
+	return nullptr;
 }
 
 /** Free everything that is in the queue. */
 void CommandQueue::Free()
 {
 	std::unique_ptr<CommandPacket> cp;
-	while ((cp = this->Pop()) != NULL) {}
+	while ((cp = this->Pop()) != nullptr) {}
 	assert(this->count == 0);
 }
 
@@ -158,7 +158,7 @@ void NetworkSendCommand(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, Comman
 
 	c.binary_length = binary_length;
 	if (binary_length == 0) {
-		if (text != NULL) {
+		if (text != nullptr) {
 			c.text.assign(text);
 		} else {
 			c.text.clear();
@@ -198,7 +198,7 @@ void NetworkSendCommand(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, Comman
  */
 void NetworkSyncCommandQueue(NetworkClientSocket *cs)
 {
-	for (CommandPacket *p = _local_execution_queue.Peek(); p != NULL; p = p->next) {
+	for (CommandPacket *p = _local_execution_queue.Peek(); p != nullptr; p = p->next) {
 		CommandPacket c = *p;
 		c.callback = 0;
 		cs->outgoing_queue.Append(std::move(c));
@@ -215,7 +215,7 @@ void NetworkExecuteLocalCommandQueue()
 	CommandQueue &queue = (_network_server ? _local_execution_queue : ClientNetworkGameSocketHandler::my_client->incoming_queue);
 
 	CommandPacket *cp;
-	while ((cp = queue.Peek()) != NULL) {
+	while ((cp = queue.Peek()) != nullptr) {
 		/* The queue is always in order, which means
 		 * that the first element will be executed first. */
 		if (_frame_counter < cp->frame) break;
@@ -262,13 +262,13 @@ static void DistributeCommandPacket(CommandPacket &cp, const NetworkClientSocket
 		if (cs->status >= NetworkClientSocket::STATUS_MAP) {
 			/* Callbacks are only send back to the client who sent them in the
 			 *  first place. This filters that out. */
-			cp.callback = (cs != owner) ? NULL : callback;
+			cp.callback = (cs != owner) ? nullptr : callback;
 			cp.my_cmd = (cs == owner);
 			cs->outgoing_queue.Append(cp);
 		}
 	}
 
-	cp.callback = (cs != owner) ? NULL : callback;
+	cp.callback = (cs != owner) ? nullptr : callback;
 	cp.my_cmd = (cs == owner);
 	_local_execution_queue.Append(cp);
 }
@@ -288,7 +288,7 @@ static void DistributeQueue(CommandQueue *queue, const NetworkClientSocket *owne
 #endif
 
 	std::unique_ptr<CommandPacket> cp;
-	while (--to_go >= 0 && (cp = queue->Pop(true)) != NULL) {
+	while (--to_go >= 0 && (cp = queue->Pop(true)) != nullptr) {
 		DistributeCommandPacket(*cp, owner);
 		NetworkAdminCmdLogging(owner, cp.get());
 	}
@@ -298,7 +298,7 @@ static void DistributeQueue(CommandQueue *queue, const NetworkClientSocket *owne
 void NetworkDistributeCommands()
 {
 	/* First send the server's commands. */
-	DistributeQueue(&_local_wait_queue, NULL);
+	DistributeQueue(&_local_wait_queue, nullptr);
 
 	/* Then send the queues of the others. */
 	NetworkClientSocket *cs;
@@ -311,7 +311,7 @@ void NetworkDistributeCommands()
  * Receives a command from the network.
  * @param p the packet to read from.
  * @param cp the struct to write the data to.
- * @return an error message. When NULL there has been no error.
+ * @return an error message. When nullptr there has been no error.
  */
 const char *NetworkGameSocketHandler::ReceiveCommand(Packet *p, CommandPacket *cp)
 {
@@ -337,7 +337,7 @@ const char *NetworkGameSocketHandler::ReceiveCommand(Packet *p, CommandPacket *c
 	if (callback >= lengthof(_callback_table))  return "invalid callback";
 
 	cp->callback = _callback_table[callback];
-	return NULL;
+	return nullptr;
 }
 
 /**
@@ -367,7 +367,7 @@ void NetworkGameSocketHandler::SendCommand(Packet *p, const CommandPacket *cp)
 
 	if (callback == lengthof(_callback_table)) {
 		DEBUG(net, 0, "Unknown callback. (Pointer: %p) No callback sent", cp->callback);
-		callback = 0; // _callback_table[0] == NULL
+		callback = 0; // _callback_table[0] == nullptr
 	}
 	p->Send_uint8 (callback);
 }

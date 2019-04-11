@@ -31,5 +31,5 @@ static void Load_TMPL_RPLS()
 }
 
 extern const ChunkHandler _template_replacement_chunk_handlers[] = {
-	{'TRPL', Save_TMPL_RPLS, Load_TMPL_RPLS, NULL, NULL, CH_ARRAY | CH_LAST},
+	{'TRPL', Save_TMPL_RPLS, Load_TMPL_RPLS, nullptr, nullptr, CH_ARRAY | CH_LAST},
 };

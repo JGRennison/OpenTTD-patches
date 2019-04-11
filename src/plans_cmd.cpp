@@ -58,7 +58,7 @@ CommandCost CmdAddPlan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2
 CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text, uint32 binary_length)
 {
 	Plan *p = Plan::GetIfValid(p1);
-	if (p == NULL) return CMD_ERROR;
+	if (p == nullptr) return CMD_ERROR;
 	CommandCost ret = CheckOwnership(p->owner);
 	if (ret.Failed()) return ret;
 	if (p2 > (MAX_CMD_TEXT_LENGTH / sizeof(TileIndex))) return_cmd_error(STR_ERROR_TOO_MANY_NODES);
@@ -93,7 +93,7 @@ CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 CommandCost CmdChangePlanVisibility(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	Plan *p = Plan::GetIfValid(p1);
-	if (p == NULL) return CMD_ERROR;
+	if (p == nullptr) return CMD_ERROR;
 	CommandCost ret = CheckOwnership(p->owner);
 	if (ret.Failed()) return ret;
 	if (flags & DC_EXEC) {
@@ -116,7 +116,7 @@ CommandCost CmdChangePlanVisibility(TileIndex tile, DoCommandFlag flags, uint32 
 CommandCost CmdRemovePlan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	Plan *p = Plan::GetIfValid(p1);
-	if (p == NULL) return CMD_ERROR;
+	if (p == nullptr) return CMD_ERROR;
 	CommandCost ret = CheckOwnership(p->owner);
 	if (ret.Failed()) return ret;
 	if (flags & DC_EXEC) {
@@ -125,7 +125,7 @@ CommandCost CmdRemovePlan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 			Window *w = FindWindowById(WC_PLANS, 0);
 			if (w) w->InvalidateData(p->index, false);
 		}
-		if (p == _current_plan) _current_plan = NULL;
+		if (p == _current_plan) _current_plan = nullptr;
 		delete p;
 	}
 	return CommandCost();
@@ -143,7 +143,7 @@ CommandCost CmdRemovePlan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 CommandCost CmdRemovePlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	Plan *p = Plan::GetIfValid(p1);
-	if (p == NULL) return CMD_ERROR;
+	if (p == nullptr) return CMD_ERROR;
 	CommandCost ret = CheckOwnership(p->owner);
 	if (ret.Failed()) return ret;
 	if (p2 >= p->lines.size()) return CMD_ERROR;
@@ -172,10 +172,10 @@ CommandCost CmdRemovePlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 */
 CommandCost CmdRenamePlan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
-	if (text == NULL) return CMD_ERROR;
+	if (text == nullptr) return CMD_ERROR;
 
 	Plan *p = Plan::GetIfValid(p1);
-	if (p == NULL) return CMD_ERROR;
+	if (p == nullptr) return CMD_ERROR;
 	CommandCost ret = CheckOwnership(p->owner);
 	if (ret.Failed()) return ret;
 

@@ -44,7 +44,7 @@ protected:
 public:
 	ErrorMessageData(const ErrorMessageData &data);
 	~ErrorMessageData();
-	ErrorMessageData(StringID summary_msg, StringID detailed_msg, uint duration = 0, int x = 0, int y = 0, const GRFFile *textref_stack_grffile = NULL, uint textref_stack_size = 0, const uint32 *textref_stack = NULL, StringID extra_msg = INVALID_STRING_ID);
+	ErrorMessageData(StringID summary_msg, StringID detailed_msg, uint duration = 0, int x = 0, int y = 0, const GRFFile *textref_stack_grffile = nullptr, uint textref_stack_size = 0, const uint32 *textref_stack = nullptr, StringID extra_msg = INVALID_STRING_ID);
 
 	/** Check whether error window shall display a company manager face */
 	bool HasFace() const { return face != INVALID_COMPANY; }
@@ -57,7 +57,7 @@ public:
 
 void ScheduleErrorMessage(const ErrorMessageData &data);
 
-void ShowErrorMessage(StringID summary_msg, StringID detailed_msg, WarningLevel wl, int x = 0, int y = 0, const GRFFile *textref_stack_grffile = NULL, uint textref_stack_size = 0, const uint32 *textref_stack = NULL, StringID extra_msg = INVALID_STRING_ID);
+void ShowErrorMessage(StringID summary_msg, StringID detailed_msg, WarningLevel wl, int x = 0, int y = 0, const GRFFile *textref_stack_grffile = nullptr, uint textref_stack_size = 0, const uint32 *textref_stack = nullptr, StringID extra_msg = INVALID_STRING_ID);
 void ClearErrorMessages();
 void ShowFirstError();
 void UnshowCriticalError();

@@ -169,7 +169,7 @@ class CrashLogUnix : public CrashLog {
 			char *buffer_orig = buffer;
 			buffer += seprintf(buffer, last, "Distro version:\n");
 
-			const char *args[] = { "/bin/sh", "-c", "lsb_release -a || find /etc -maxdepth 1 -type f -a \\( -name '*release' -o -name '*version' \\) -exec head -v {} \\+", NULL };
+			const char *args[] = { "/bin/sh", "-c", "lsb_release -a || find /etc -maxdepth 1 -type f -a \\( -name '*release' -o -name '*version' \\) -exec head -v {} \\+", nullptr };
 			if (!ExecReadStdout("/bin/sh", const_cast<char* const*>(args), buffer, last)) {
 				buffer = buffer_orig;
 			}
@@ -203,7 +203,7 @@ class CrashLogUnix : public CrashLog {
 #endif
 		buffer += seprintf(buffer, last,
 				" Message: %s\n\n",
-				message == NULL ? "<none>" : message
+				message == nullptr ? "<none>" : message
 		);
 
 		return buffer;
@@ -344,7 +344,7 @@ class CrashLogUnix : public CrashLog {
 		args.push_back("bt full");
 
 #ifdef WITH_SIGACTION
-		if (this->GetMessage() == NULL && this->signal_instruction_ptr_valid) {
+		if (this->GetMessage() == nullptr && this->signal_instruction_ptr_valid) {
 			seprintf(disasm_buffer, lastof(disasm_buffer), "x/1i %p", this->signal_instruction_ptr);
 			args.push_back("-ex");
 			args.push_back("set disassembly-flavor intel");
@@ -355,7 +355,7 @@ class CrashLogUnix : public CrashLog {
 		}
 #endif
 
-		args.push_back(NULL);
+		args.push_back(nullptr);
 		if (!ExecReadStdout("gdb", const_cast<char* const*>(&(args[0])), buffer, last)) {
 			buffer = buffer_orig;
 		}
@@ -424,15 +424,15 @@ class CrashLogUnix : public CrashLog {
 			int dladdr_result = dladdr(trace[i], &info);
 			const char *func_name = info.dli_sname;
 			void *func_addr = info.dli_saddr;
-			const char *file_name = NULL;
+			const char *file_name = nullptr;
 			unsigned int line_num = 0;
 #if defined(WITH_BFD)
 			/* subtract one to get the line before the return address, i.e. the function call line */
 			sym_info_bfd bfd_info(reinterpret_cast<bfd_vma>(trace[i]) - 1);
 			if (dladdr_result && info.dli_fname) {
 				lookup_addr_bfd(info.dli_fname, bfd_info);
-				if (bfd_info.file_name != NULL) file_name = bfd_info.file_name;
-				if (bfd_info.function_name != NULL) func_name = bfd_info.function_name;
+				if (bfd_info.file_name != nullptr) file_name = bfd_info.file_name;
+				if (bfd_info.function_name != nullptr) func_name = bfd_info.function_name;
 				if (bfd_info.function_addr != 0) func_addr = reinterpret_cast<void *>(bfd_info.function_addr);
 				line_num = bfd_info.line;
 			}
@@ -441,11 +441,11 @@ class CrashLogUnix : public CrashLog {
 			const int ptr_str_size = (2 + sizeof(void*) * 2);
 			if (dladdr_result && func_name) {
 				int status = -1;
-				char *demangled = NULL;
+				char *demangled = nullptr;
 #if defined(WITH_DEMANGLE)
-				demangled = abi::__cxa_demangle(func_name, NULL, 0, &status);
+				demangled = abi::__cxa_demangle(func_name, nullptr, 0, &status);
 #endif /* WITH_DEMANGLE */
-				const char *name = (demangled != NULL && status == 0) ? demangled : func_name;
+				const char *name = (demangled != nullptr && status == 0) ? demangled : func_name;
 				buffer += seprintf(buffer, last, " [%02i] %*p %-40s %s + 0x%zx\n", i, ptr_str_size,
 						trace[i], info.dli_fname, name, (char *)trace[i] - (char *)func_addr);
 				free(demangled);
@@ -455,7 +455,7 @@ class CrashLogUnix : public CrashLog {
 			} else {
 				ok = false;
 			}
-			if (file_name != NULL) {
+			if (file_name != nullptr) {
 				buffer += seprintf(buffer, last, "%*s%s:%u\n", 7 + ptr_str_size, "", file_name, line_num);
 			}
 			if (ok) continue;
@@ -465,7 +465,7 @@ class CrashLogUnix : public CrashLog {
 		free(messages);
 
 		signal(SIGSEGV, SIG_DFL);
-		sigprocmask(SIG_SETMASK, &oldsigs, NULL);
+		sigprocmask(SIG_SETMASK, &oldsigs, nullptr);
 
 /* end of __GLIBC__ */
 #elif defined(SUNOS)
@@ -511,7 +511,7 @@ class CrashLogUnix : public CrashLog {
 		buffer = this->CrashLog::LogScopeInfo(buffer, last);
 
 		signal(SIGSEGV, SIG_DFL);
-		sigprocmask(SIG_SETMASK, &oldsigs, NULL);
+		sigprocmask(SIG_SETMASK, &oldsigs, nullptr);
 		return buffer;
 	}
 #endif
@@ -566,7 +566,7 @@ static void CDECL HandleCrash(int signum)
 	}
 
 	const char *abort_reason = CrashLog::GetAbortCrashlogReason();
-	if (abort_reason != NULL) {
+	if (abort_reason != nullptr) {
 		printf("A serious fault condition occurred in the game. The game will shut down.\n%s", abort_reason);
 		abort();
 	}
@@ -591,7 +591,7 @@ static void CDECL HandleCrash(int signum)
 		sa.sa_flags = SA_SIGINFO | SA_RESTART;
 		sigemptyset(&sa.sa_mask);
 		sa.sa_sigaction = HandleCrash;
-		sigaction(*i, &sa, NULL);
+		sigaction(*i, &sa, nullptr);
 #else
 		signal(*i, HandleCrash);
 #endif

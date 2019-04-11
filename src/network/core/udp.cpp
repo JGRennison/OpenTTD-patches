@@ -28,12 +28,12 @@ extern const uint8 _out_of_band_grf_md5[16];
  */
 NetworkUDPSocketHandler::NetworkUDPSocketHandler(NetworkAddressList *bind)
 {
-	if (bind != NULL) {
+	if (bind != nullptr) {
 		for (NetworkAddress &addr : *bind) {
 			this->bind.push_back(addr);
 		}
 	} else {
-		/* As hostname NULL and port 0/NULL don't go well when
+		/* As hostname nullptr and port 0/nullptr don't go well when
 		 * resolving it we need to add an address for each of
 		 * the address families we support. */
 		this->bind.emplace_back(nullptr, 0, AF_INET);
@@ -209,14 +209,14 @@ void NetworkUDPSocketHandler::SendNetworkGameInfo(Packet *p, const NetworkGameIn
 		uint count = 0;
 
 		/* Count number of GRFs to send information about */
-		for (c = info->grfconfig; c != NULL; c = c->next) {
+		for (c = info->grfconfig; c != nullptr; c = c->next) {
 			if (!HasBit(c->flags, GCF_STATIC)) count++;
 		}
 		p->Send_uint8(min<uint>(count, NETWORK_MAX_GRF_COUNT)); // Send number of GRFs
 
 		/* Send actual GRF Identifications */
 		uint index = 0;
-		for (c = info->grfconfig; c != NULL; c = c->next) {
+		for (c = info->grfconfig; c != nullptr; c = c->next) {
 			if (!HasBit(c->flags, GCF_STATIC)) {
 				if (index == NETWORK_MAX_GRF_COUNT - 1 && count > NETWORK_MAX_GRF_COUNT) {
 					/* Send fake GRF ID */
@@ -293,13 +293,13 @@ void NetworkUDPSocketHandler::SendNetworkGameInfoExtended(Packet *p, const Netwo
 		uint count = 0;
 
 		/* Count number of GRFs to send information about */
-		for (c = info->grfconfig; c != NULL; c = c->next) {
+		for (c = info->grfconfig; c != nullptr; c = c->next) {
 			if (!HasBit(c->flags, GCF_STATIC)) count++;
 		}
 		p->Send_uint32(count); // Send number of GRFs
 
 		/* Send actual GRF Identifications */
-		for (c = info->grfconfig; c != NULL; c = c->next) {
+		for (c = info->grfconfig; c != nullptr; c = c->next) {
 			if (!HasBit(c->flags, GCF_STATIC)) {
 				this->SendGRFIdentifier(p, &c->ident);
 			}
@@ -489,7 +489,7 @@ void NetworkUDPSocketHandler::Receive_EX_MULTI(Packet *p, NetworkAddress *client
 	if (total == 0 || index >= total) return;
 	if (!p->CanReadFromPacket(payload_size)) return;
 
-	time_t cur_time = time(NULL);
+	time_t cur_time = time(nullptr);
 
 	auto add_to_fragment = [&](FragmentSet &fs) {
 		fs.fragments[index].assign((const char *) p->buffer + p->pos, payload_size);

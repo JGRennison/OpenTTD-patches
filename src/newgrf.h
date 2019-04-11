@@ -122,13 +122,13 @@ enum GRFPropertyMapFallbackMode {
 };
 
 struct GRFPropertyMapDefinition {
-	const char *name; // NULL indicates the end of the list
+	const char *name; // nullptr indicates the end of the list
 	int id;
 	uint8 feature;
 
 	/** Create empty object used to identify the end of a list. */
 	GRFPropertyMapDefinition() :
-		name(NULL),
+		name(nullptr),
 		id(0),
 		feature(0)
 	{}
@@ -174,13 +174,13 @@ struct Action5Type {
 };
 
 struct Action5TypeRemapDefinition {
-	const char *name; // NULL indicates the end of the list
+	const char *name; // nullptr indicates the end of the list
 	const Action5Type info;
 
 	/** Create empty object used to identify the end of a list. */
 	Action5TypeRemapDefinition() :
-		name(NULL),
-		info({ A5BLOCK_INVALID, 0, 0, 0, NULL })
+		name(nullptr),
+		info({ A5BLOCK_INVALID, 0, 0, 0, nullptr })
 	{}
 
 	Action5TypeRemapDefinition(const char *type_name, Action5BlockType block_type, SpriteID sprite_base, uint16 min_sprites, uint16 max_sprites, const char *info_name) :

@@ -91,6 +91,6 @@ static void Load_PLANLINE()
 
 /** Chunk handlers related to plans. */
 extern const ChunkHandler _plan_chunk_handlers[] = {
-	{ 'PLAN', Save_PLAN, Load_PLAN, NULL, NULL, CH_ARRAY},
-	{ 'PLLN', NULL, Load_PLANLINE, NULL, NULL, CH_ARRAY | CH_LAST},
+	{ 'PLAN', Save_PLAN, Load_PLAN, nullptr, nullptr, CH_ARRAY},
+	{ 'PLLN', nullptr, Load_PLANLINE, nullptr, nullptr, CH_ARRAY | CH_LAST},
 };

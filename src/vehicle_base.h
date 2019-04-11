@@ -485,7 +485,7 @@ public:
 	 */
 	inline void InvalidateNewGRFCacheOfChain()
 	{
-		for (Vehicle *u = this; u != NULL; u = u->Next()) {
+		for (Vehicle *u = this; u != nullptr; u = u->Next()) {
 			u->InvalidateNewGRFCache();
 		}
 	}
@@ -609,14 +609,14 @@ public:
 	/**
 	 * Get the next vehicle of this vehicle.
 	 * @note articulated parts are also counted as vehicles.
-	 * @return the next vehicle or NULL when there isn't a next vehicle.
+	 * @return the next vehicle or nullptr when there isn't a next vehicle.
 	 */
 	inline Vehicle *Next() const { return this->next; }
 
 	/**
 	 * Get the previous vehicle of this vehicle.
 	 * @note articulated parts are also counted as vehicles.
-	 * @return the previous vehicle or NULL when there isn't a previous vehicle.
+	 * @return the previous vehicle or nullptr when there isn't a previous vehicle.
 	 */
 	inline Vehicle *Previous() const { return this->previous; }
 
@@ -633,7 +633,7 @@ public:
 	inline Vehicle *Last()
 	{
 		Vehicle *v = this;
-		while (v->Next() != NULL) v = v->Next();
+		while (v->Next() != nullptr) v = v->Next();
 		return v;
 	}
 
@@ -644,22 +644,22 @@ public:
 	inline const Vehicle *Last() const
 	{
 		const Vehicle *v = this;
-		while (v->Next() != NULL) v = v->Next();
+		while (v->Next() != nullptr) v = v->Next();
 		return v;
 	}
 
 	/**
 	 * Get the vehicle at offset \a n of this vehicle chain.
 	 * @param n Offset from the current vehicle.
-	 * @return The new vehicle or NULL if the offset is out-of-bounds.
+	 * @return The new vehicle or nullptr if the offset is out-of-bounds.
 	 */
 	inline Vehicle *Move(int n)
 	{
 		Vehicle *v = this;
 		if (n < 0) {
-			for (int i = 0; i != n && v != NULL; i--) v = v->Previous();
+			for (int i = 0; i != n && v != nullptr; i--) v = v->Previous();
 		} else {
-			for (int i = 0; i != n && v != NULL; i++) v = v->Next();
+			for (int i = 0; i != n && v != nullptr; i++) v = v->Next();
 		}
 		return v;
 	}
@@ -667,15 +667,15 @@ public:
 	/**
 	 * Get the vehicle at offset \a n of this vehicle chain.
 	 * @param n Offset from the current vehicle.
-	 * @return The new vehicle or NULL if the offset is out-of-bounds.
+	 * @return The new vehicle or nullptr if the offset is out-of-bounds.
 	 */
 	inline const Vehicle *Move(int n) const
 	{
 		const Vehicle *v = this;
 		if (n < 0) {
-			for (int i = 0; i != n && v != NULL; i--) v = v->Previous();
+			for (int i = 0; i != n && v != nullptr; i--) v = v->Previous();
 		} else {
-			for (int i = 0; i != n && v != NULL; i++) v = v->Next();
+			for (int i = 0; i != n && v != nullptr; i++) v = v->Next();
 		}
 		return v;
 	}
@@ -684,17 +684,17 @@ public:
 	 * Get the first order of the vehicles order list.
 	 * @return first order of order list.
 	 */
-	inline Order *GetFirstOrder() const { return (this->orders.list == NULL) ? NULL : this->orders.list->GetFirstOrder(); }
+	inline Order *GetFirstOrder() const { return (this->orders.list == nullptr) ? nullptr : this->orders.list->GetFirstOrder(); }
 
 	/**
 	 * Get the vehicle ahead on track.
-	 * @return the vehicle ahead on track or NULL when there isn't one.
+	 * @return the vehicle ahead on track or nullptr when there isn't one.
 	 */
 	inline Vehicle *AheadSeparation() const { return this->ahead_separation; }
 
 	/**
 	 * Get the vehicle behind on track.
-	 * @return the vehicle behind on track or NULL when there isn't one.
+	 * @return the vehicle behind on track or nullptr when there isn't one.
 	 */
 	inline Vehicle *BehindSeparation() const { return this->behind_separation; }
 
@@ -722,13 +722,13 @@ public:
 
 	/**
 	 * Get the next vehicle of the shared vehicle chain.
-	 * @return the next shared vehicle or NULL when there isn't a next vehicle.
+	 * @return the next shared vehicle or nullptr when there isn't a next vehicle.
 	 */
 	inline Vehicle *NextShared() const { return this->next_shared; }
 
 	/**
 	 * Get the previous vehicle of the shared vehicle chain
-	 * @return the previous shared vehicle or NULL when there isn't a previous vehicle.
+	 * @return the previous shared vehicle or nullptr when there isn't a previous vehicle.
 	 */
 	inline Vehicle *PreviousShared() const { return this->previous_shared; }
 
@@ -736,25 +736,25 @@ public:
 	 * Get the first vehicle of this vehicle chain.
 	 * @return the first vehicle of the chain.
 	 */
-	inline Vehicle *FirstShared() const { return (this->orders.list == NULL) ? this->First() : this->orders.list->GetFirstSharedVehicle(); }
+	inline Vehicle *FirstShared() const { return (this->orders.list == nullptr) ? this->First() : this->orders.list->GetFirstSharedVehicle(); }
 
 	/**
 	 * Check if we share our orders with another vehicle.
 	 * @return true if there are other vehicles sharing the same order
 	 */
-	inline bool IsOrderListShared() const { return this->orders.list != NULL && this->orders.list->IsShared(); }
+	inline bool IsOrderListShared() const { return this->orders.list != nullptr && this->orders.list->IsShared(); }
 
 	/**
 	 * Get the number of orders this vehicle has.
 	 * @return the number of orders this vehicle has.
 	 */
-	inline VehicleOrderID GetNumOrders() const { return (this->orders.list == NULL) ? 0 : this->orders.list->GetNumOrders(); }
+	inline VehicleOrderID GetNumOrders() const { return (this->orders.list == nullptr) ? 0 : this->orders.list->GetNumOrders(); }
 
 	/**
 	 * Get the number of manually added orders this vehicle has.
 	 * @return the number of manually added orders this vehicle has.
 	 */
-	inline VehicleOrderID GetNumManualOrders() const { return (this->orders.list == NULL) ? 0 : this->orders.list->GetNumManualOrders(); }
+	inline VehicleOrderID GetNumManualOrders() const { return (this->orders.list == nullptr) ? 0 : this->orders.list->GetNumManualOrders(); }
 
 	/**
 	 * Get the next station the vehicle will stop at.
@@ -763,7 +763,7 @@ public:
 	inline CargoStationIDStackSet GetNextStoppingStation() const
 	{
 		CargoStationIDStackSet set;
-		if (this->orders.list != NULL) set.FillNextStoppingStation(this, this->orders.list);
+		if (this->orders.list != nullptr) set.FillNextStoppingStation(this, this->orders.list);
 		return set;
 	}
 
@@ -938,13 +938,13 @@ public:
 	}
 
 	/**
-	 * Returns order 'index' of a vehicle or NULL when it doesn't exists
+	 * Returns order 'index' of a vehicle or nullptr when it doesn't exists
 	 * @param index the order to fetch
 	 * @return the found (or not) order
 	 */
 	inline Order *GetOrder(int index) const
 	{
-		return (this->orders.list == NULL) ? NULL : this->orders.list->GetOrderAt(index);
+		return (this->orders.list == nullptr) ? nullptr : this->orders.list->GetOrderAt(index);
 	}
 
 	/**
@@ -954,16 +954,16 @@ public:
 	 */
 	inline VehicleOrderID GetIndexOfOrder(const Order *order) const
 	{
-		return (this->orders.list == NULL) ? INVALID_VEH_ORDER_ID : this->orders.list->GetIndexOfOrder(order);
+		return (this->orders.list == nullptr) ? INVALID_VEH_ORDER_ID : this->orders.list->GetIndexOfOrder(order);
 	}
 
 	/**
-	 * Returns the last order of a vehicle, or NULL if it doesn't exists
+	 * Returns the last order of a vehicle, or nullptr if it doesn't exists
 	 * @return last order of a vehicle, if available
 	 */
 	inline Order *GetLastOrder() const
 	{
-		return (this->orders.list == NULL) ? NULL : this->orders.list->GetLastOrder();
+		return (this->orders.list == nullptr) ? nullptr : this->orders.list->GetLastOrder();
 	}
 
 	bool IsEngineCountable() const;
@@ -995,7 +995,7 @@ public:
 	 */
 	inline bool HasArticulatedPart() const
 	{
-		return this->Next() != NULL && this->Next()->IsArticulatedPart();
+		return this->Next() != nullptr && this->Next()->IsArticulatedPart();
 	}
 
 	/**
@@ -1062,7 +1062,7 @@ public:
 	inline Vehicle *GetPrevVehicle() const
 	{
 		Vehicle *v = this->Previous();
-		while (v != NULL && v->IsArticulatedPart()) v = v->Previous();
+		while (v != nullptr && v->IsArticulatedPart()) v = v->Previous();
 
 		return v;
 	}
@@ -1207,7 +1207,7 @@ struct SpecializedVehicle : public Vehicle {
 	 */
 	static inline T *GetIfValid(size_t index)
 	{
-		return IsValidID(index) ? Get(index) : NULL;
+		return IsValidID(index) ? Get(index) : nullptr;
 	}
 
 	/**
@@ -1273,8 +1273,8 @@ struct SpecializedVehicle : public Vehicle {
  * @param var  The variable used to iterate over.
  */
 #define FOR_ALL_VEHICLES_OF_TYPE(name, var) \
-	for (size_t vehicle_index = 0; var = NULL, vehicle_index < name::GetPoolSize(); vehicle_index++) \
-		if ((var = name::GetIfValid(vehicle_index)) != NULL)
+	for (size_t vehicle_index = 0; var = nullptr, vehicle_index < name::GetPoolSize(); vehicle_index++) \
+		if ((var = name::GetIfValid(vehicle_index)) != nullptr)
 
 /** Generates sequence of free UnitID numbers */
 struct FreeUnitIDGenerator {

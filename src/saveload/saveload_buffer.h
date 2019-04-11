@@ -38,7 +38,7 @@ struct ReadBuffer {
 	 * Initialise our variables.
 	 * @param reader The filter to actually read data.
 	 */
-	ReadBuffer(LoadFilter *reader) : bufp(NULL), bufe(NULL), reader(reader), read(0)
+	ReadBuffer(LoadFilter *reader) : bufp(nullptr), bufe(nullptr), reader(reader), read(0)
 	{
 	}
 

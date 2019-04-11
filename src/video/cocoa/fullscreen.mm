@@ -159,7 +159,7 @@ class FullscreenSubdriver : public CocoaSubdriver {
 		/* The VBL delay is based on Ian Ollmann's RezLib <iano@cco.caltech.edu> */
 
 		CFNumberRef refreshRateCFNumber = (const __CFNumber*)CFDictionaryGetValue(this->cur_mode, kCGDisplayRefreshRate);
-		if (refreshRateCFNumber == NULL) return;
+		if (refreshRateCFNumber == nullptr) return;
 
 		double refreshRate;
 		if (CFNumberGetValue(refreshRateCFNumber, kCFNumberDoubleType, &refreshRate) == 0) return;
@@ -188,9 +188,9 @@ class FullscreenSubdriver : public CocoaSubdriver {
 		NSPoint mouseLocation;
 
 		/* Destroy any previous mode */
-		if (this->pixel_buffer != NULL) {
+		if (this->pixel_buffer != nullptr) {
 			free(this->pixel_buffer);
-			this->pixel_buffer = NULL;
+			this->pixel_buffer = nullptr;
 		}
 
 		/* See if requested mode exists */
@@ -241,7 +241,7 @@ class FullscreenSubdriver : public CocoaSubdriver {
 		/* Since CGDisplayBaseAddress and CGDisplayBytesPerRow are no longer available on 10.7,
 		 * disable until a replacement can be found. */
 		if (MacOSVersionIsAtLeast(10, 7, 0)) {
-			this->window_buffer = NULL;
+			this->window_buffer = nullptr;
 			this->window_pitch  = 0;
 		} else {
 #if (MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_7)
@@ -256,7 +256,7 @@ class FullscreenSubdriver : public CocoaSubdriver {
 
 		/* Setup double-buffer emulation */
 		this->pixel_buffer = malloc(this->device_width * this->device_height * this->device_depth / 8);
-		if (this->pixel_buffer == NULL) {
+		if (this->pixel_buffer == nullptr) {
 			DEBUG(driver, 0, "Failed to allocate memory for double buffering");
 			goto ERR_DOUBLEBUF;
 		}
@@ -300,7 +300,7 @@ class FullscreenSubdriver : public CocoaSubdriver {
 		/* Since the blanking window covers *all* windows (even force quit) correct recovery is crucial */
 ERR_NOT_INDEXED:
 		free(this->pixel_buffer);
-		this->pixel_buffer = NULL;
+		this->pixel_buffer = nullptr;
 ERR_DOUBLEBUF:
 		CGDisplaySwitchToMode(this->display_id, this->save_mode);
 ERR_NO_SWITCH:
@@ -336,9 +336,9 @@ ERR_NO_MATCH:
 		[ [ NSScreen mainScreen ] setFrame:screen_rect ];
 
 		/* Destroy the pixel buffer */
-		if (this->pixel_buffer != NULL) {
+		if (this->pixel_buffer != nullptr) {
 			free(this->pixel_buffer);
-			this->pixel_buffer = NULL;
+			this->pixel_buffer = nullptr;
 		}
 
 		if (!gamma_error) this->FadeGammaIn(&gamma_table);
@@ -359,7 +359,7 @@ public:
 		this->device_width  = CGDisplayPixelsWide(this->display_id);
 		this->device_height = CGDisplayPixelsHigh(this->display_id);
 		this->device_depth  = 0;
-		this->pixel_buffer  = NULL;
+		this->pixel_buffer  = nullptr;
 
 		this->num_dirty_rects = MAX_DIRTY_RECTS;
 	}
@@ -508,14 +508,14 @@ CocoaSubdriver *QZ_CreateFullscreenSubdriver(int width, int height, int bpp)
 	 * been removed from the API.
 	 */
 	if (MacOSVersionIsAtLeast(10, 7, 0)) {
-		return NULL;
+		return nullptr;
 	}
 
 	FullscreenSubdriver *ret = new FullscreenSubdriver();
 
 	if (!ret->ChangeResolution(width, height, bpp)) {
 		delete ret;
-		return NULL;
+		return nullptr;
 	}
 
 	return ret;

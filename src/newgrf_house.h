@@ -75,7 +75,7 @@ struct HouseResolverObject : public ResolverObject {
 	ScopeResolver *house_scope;
 	ScopeResolver *town_scope;
 
-	HouseResolverObject(HouseID house_id, TileIndex tile = INVALID_TILE, Town *town = NULL,
+	HouseResolverObject(HouseID house_id, TileIndex tile = INVALID_TILE, Town *town = nullptr,
 			CallbackID callback = CBID_NO_CALLBACK, uint32 param1 = 0, uint32 param2 = 0,
 			bool not_yet_constructed = false, uint8 initial_random_bits = 0, CargoTypes watched_cargo_triggers = 0);
 
@@ -120,7 +120,7 @@ void DrawNewHouseTileInGUI(int x, int y, HouseID house_id, bool ground);
 void AnimateNewHouseTile(TileIndex tile);
 void AnimateNewHouseConstruction(TileIndex tile);
 
-uint16 GetHouseCallback(CallbackID callback, uint32 param1, uint32 param2, HouseID house_id, Town *town = NULL, TileIndex tile = INVALID_TILE,
+uint16 GetHouseCallback(CallbackID callback, uint32 param1, uint32 param2, HouseID house_id, Town *town = nullptr, TileIndex tile = INVALID_TILE,
 		bool not_yet_constructed = false, uint8 initial_random_bits = 0, CargoTypes watched_cargo_triggers = 0);
 void WatchedCargoCallback(TileIndex tile, CargoTypes trigger_cargoes);
 

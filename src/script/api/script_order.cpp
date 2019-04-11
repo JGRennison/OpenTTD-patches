@@ -67,7 +67,7 @@ static const Order *ResolveOrder(VehicleID vehicle_id, ScriptOrder::OrderPositio
 		const Order *order = &v->current_order;
 		if (order->GetType() == OT_GOTO_DEPOT && !(order->GetDepotOrderType() & ODTFB_PART_OF_ORDERS)) return order;
 		order_position = ScriptOrder::ResolveOrderPosition(vehicle_id, order_position);
-		if (order_position == ScriptOrder::ORDER_INVALID) return NULL;
+		if (order_position == ScriptOrder::ORDER_INVALID) return nullptr;
 	}
 	const Order *order = v->GetFirstOrder();
 	while (order->GetType() == OT_IMPLICIT) order = order->next;
@@ -109,7 +109,7 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 	if (!IsValidVehicleOrder(vehicle_id, order_position)) return false;
 
 	const Order *order = ::ResolveOrder(vehicle_id, order_position);
-	return order != NULL && order->GetType() == OT_GOTO_STATION;
+	return order != nullptr && order->GetType() == OT_GOTO_STATION;
 }
 
 /* static */ bool ScriptOrder::IsGotoDepotOrder(VehicleID vehicle_id, OrderPosition order_position)
@@ -117,7 +117,7 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 	if (!IsValidVehicleOrder(vehicle_id, order_position)) return false;
 
 	const Order *order = ::ResolveOrder(vehicle_id, order_position);
-	return order != NULL && order->GetType() == OT_GOTO_DEPOT;
+	return order != nullptr && order->GetType() == OT_GOTO_DEPOT;
 }
 
 /* static */ bool ScriptOrder::IsGotoWaypointOrder(VehicleID vehicle_id, OrderPosition order_position)
@@ -125,7 +125,7 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 	if (!IsValidVehicleOrder(vehicle_id, order_position)) return false;
 
 	const Order *order = ::ResolveOrder(vehicle_id, order_position);
-	return order != NULL && order->GetType() == OT_GOTO_WAYPOINT;
+	return order != nullptr && order->GetType() == OT_GOTO_WAYPOINT;
 }
 
 /* static */ bool ScriptOrder::IsConditionalOrder(VehicleID vehicle_id, OrderPosition order_position)
@@ -151,7 +151,7 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 	if (!IsValidVehicleOrder(vehicle_id, order_position)) return false;
 
 	const Order *order = ::ResolveOrder(vehicle_id, order_position);
-	return order != NULL && order->IsRefit();
+	return order != nullptr && order->IsRefit();
 }
 
 /* static */ bool ScriptOrder::IsCurrentOrderPartOfOrderList(VehicleID vehicle_id)
@@ -241,7 +241,7 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 	if (!IsValidVehicleOrder(vehicle_id, order_position)) return INVALID_TILE;
 
 	const Order *order = ::ResolveOrder(vehicle_id, order_position);
-	if (order == NULL || order->GetType() == OT_CONDITIONAL) return INVALID_TILE;
+	if (order == nullptr || order->GetType() == OT_CONDITIONAL) return INVALID_TILE;
 	const Vehicle *v = ::Vehicle::Get(vehicle_id);
 
 	switch (order->GetType()) {
@@ -262,11 +262,11 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 				TILE_AREA_LOOP(t, st->train_station) {
 					if (st->TileBelongsToRailStation(t)) return t;
 				}
-			} else if (st->docks != NULL) {
+			} else if (st->docks != nullptr) {
 				return st->docks->flat;
-			} else if (st->bus_stops != NULL) {
+			} else if (st->bus_stops != nullptr) {
 				return st->bus_stops->xy;
-			} else if (st->truck_stops != NULL) {
+			} else if (st->truck_stops != nullptr) {
 				return st->truck_stops->xy;
 			} else if (st->airport.tile != INVALID_TILE) {
 				TILE_AREA_LOOP(tile, st->airport) {
@@ -295,7 +295,7 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 	if (!IsValidVehicleOrder(vehicle_id, order_position)) return OF_INVALID;
 
 	const Order *order = ::ResolveOrder(vehicle_id, order_position);
-	if (order == NULL || order->GetType() == OT_CONDITIONAL || order->GetType() == OT_DUMMY) return OF_INVALID;
+	if (order == nullptr || order->GetType() == OT_CONDITIONAL || order->GetType() == OT_DUMMY) return OF_INVALID;
 
 	ScriptOrderFlags order_flags = OF_NONE;
 	order_flags |= (ScriptOrderFlags)order->GetNonStopType();
@@ -588,7 +588,7 @@ static void _DoCommandReturnSetOrderFlags(class ScriptInstance *instance)
 	EnforcePrecondition(false, (order_flags & OF_GOTO_NEAREST_DEPOT) == (current & OF_GOTO_NEAREST_DEPOT));
 
 	if ((current & OF_NON_STOP_FLAGS) != (order_flags & OF_NON_STOP_FLAGS)) {
-		return ScriptObject::DoCommand(0, vehicle_id | (order_pos << 20), (order_flags & OF_NON_STOP_FLAGS) << 4 | MOF_NON_STOP, CMD_MODIFY_ORDER, NULL, &::_DoCommandReturnSetOrderFlags);
+		return ScriptObject::DoCommand(0, vehicle_id | (order_pos << 20), (order_flags & OF_NON_STOP_FLAGS) << 4 | MOF_NON_STOP, CMD_MODIFY_ORDER, nullptr, &::_DoCommandReturnSetOrderFlags);
 	}
 
 	switch (order->GetType()) {
@@ -597,16 +597,16 @@ static void _DoCommandReturnSetOrderFlags(class ScriptInstance *instance)
 				uint data = DA_ALWAYS_GO;
 				if (order_flags & OF_SERVICE_IF_NEEDED) data = DA_SERVICE;
 				if (order_flags & OF_STOP_IN_DEPOT) data = DA_STOP;
-				return ScriptObject::DoCommand(0, vehicle_id | (order_pos << 20), (data << 4) | MOF_DEPOT_ACTION, CMD_MODIFY_ORDER, NULL, &::_DoCommandReturnSetOrderFlags);
+				return ScriptObject::DoCommand(0, vehicle_id | (order_pos << 20), (data << 4) | MOF_DEPOT_ACTION, CMD_MODIFY_ORDER, nullptr, &::_DoCommandReturnSetOrderFlags);
 			}
 			break;
 
 		case OT_GOTO_STATION:
 			if ((current & OF_UNLOAD_FLAGS) != (order_flags & OF_UNLOAD_FLAGS)) {
-				return ScriptObject::DoCommand(0, vehicle_id | (order_pos << 20), (order_flags & OF_UNLOAD_FLAGS) << 2 | MOF_UNLOAD, CMD_MODIFY_ORDER, NULL, &::_DoCommandReturnSetOrderFlags);
+				return ScriptObject::DoCommand(0, vehicle_id | (order_pos << 20), (order_flags & OF_UNLOAD_FLAGS) << 2 | MOF_UNLOAD, CMD_MODIFY_ORDER, nullptr, &::_DoCommandReturnSetOrderFlags);
 			}
 			if ((current & OF_LOAD_FLAGS) != (order_flags & OF_LOAD_FLAGS)) {
-				return ScriptObject::DoCommand(0, vehicle_id | (order_pos << 20), (order_flags & OF_LOAD_FLAGS) >> 1 | MOF_LOAD, CMD_MODIFY_ORDER, NULL, &::_DoCommandReturnSetOrderFlags);
+				return ScriptObject::DoCommand(0, vehicle_id | (order_pos << 20), (order_flags & OF_LOAD_FLAGS) >> 1 | MOF_LOAD, CMD_MODIFY_ORDER, nullptr, &::_DoCommandReturnSetOrderFlags);
 			}
 			break;
 

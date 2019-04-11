@@ -103,12 +103,12 @@ static bool VehiclePositionIsAllowed(const Vehicle *v, Owner owner = INVALID_OWN
 	switch (v->type) {
 		case VEH_TRAIN:
 			if (HasBit(Train::From(v)->subtype, GVSF_VIRTUAL)) return true;
-			for (const Vehicle *u = v; u != NULL; u = u->Next()) {
+			for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
 				if (!IsInfraTileUsageAllowed(VEH_TRAIN, v->owner, u->tile) || GetTileOwner(u->tile) == owner) return false;
 			}
 			return true;
 		case VEH_ROAD:
-			for (const Vehicle *u = v; u != NULL; u = u->Next()) {
+			for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
 				if (IsRoadDepotTile(u->tile) || IsStandardRoadStopTile(u->tile)) {
 					if (!IsInfraTileUsageAllowed(VEH_ROAD, v->owner, u->tile) || GetTileOwner(u->tile) == owner) return false;
 				}
@@ -161,12 +161,12 @@ static bool OrderDestinationIsAllowed(const Order *order, const Vehicle *v, Owne
  */
 static void RemoveAndSellVehicle(Vehicle *v, bool give_money)
 {
-	assert(v->Previous() == NULL);
+	assert(v->Previous() == nullptr);
 
 	if (give_money) {
 		/* compute total value and give that to the owner */
 		Money value = 0;
-		for (Vehicle *u = v->First(); u != NULL; u = u->Next()) {
+		for (Vehicle *u = v->First(); u != nullptr; u = u->Next()) {
 			value += u->value;
 		}
 		CompanyID old = _current_company;
@@ -236,7 +236,7 @@ bool CheckSharingChangePossible(VehicleType type)
 	Vehicle *v;
 	FOR_ALL_VEHICLES(v) {
 		if (type != v->type) continue;
-		if (v->Previous() != NULL) continue;
+		if (v->Previous() != nullptr) continue;
 
 		/* Check vehicle positiion */
 		if (!VehiclePositionIsAllowed(v)) {
@@ -280,10 +280,10 @@ void HandleSharingCompanyDeletion(Owner owner)
 {
 	YapfNotifyTrackLayoutChange(INVALID_TILE, INVALID_TRACK);
 
-	Vehicle *v = NULL;
+	Vehicle *v = nullptr;
 	SCOPE_INFO_FMT([&v], "HandleSharingCompanyDeletion: veh: %s", scope_dumper().VehicleInfo(v));
 	FOR_ALL_VEHICLES(v) {
-		if (!IsCompanyBuildableVehicleType(v) || v->Previous() != NULL) continue;
+		if (!IsCompanyBuildableVehicleType(v) || v->Previous() != nullptr) continue;
 		/* vehicle position */
 		if (v->owner == owner || !VehiclePositionIsAllowed(v, owner)) {
 			RemoveAndSellVehicle(v, v->owner != owner);

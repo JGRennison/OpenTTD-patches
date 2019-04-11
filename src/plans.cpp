@@ -17,5 +17,5 @@
 PlanPool _plan_pool("Plan");
 INSTANTIATE_POOL_METHODS(Plan)
 
-Plan *_current_plan = NULL;
-Plan *_new_plan = NULL;
+Plan *_current_plan = nullptr;
+Plan *_new_plan = nullptr;

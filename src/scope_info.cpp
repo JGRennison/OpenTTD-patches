@@ -98,7 +98,7 @@ const char *scope_dumper::VehicleInfo(const Vehicle *v)
 		}
 		b += seprintf(b, last, ")");
 	} else {
-		b += seprintf(b, last, "veh: NULL");
+		b += seprintf(b, last, "veh: nullptr");
 	}
 	return this->buffer;
 }
@@ -125,7 +125,7 @@ const char *scope_dumper::StationInfo(const BaseStation *st)
 		dump_facil('W', FACIL_WAYPOINT);
 		b += seprintf(b, last, ")");
 	} else {
-		b += seprintf(b, last, "station/waypoint: NULL");
+		b += seprintf(b, last, "station/waypoint: nullptr");
 	}
 	return this->buffer;
 }

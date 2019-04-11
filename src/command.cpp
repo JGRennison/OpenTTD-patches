@@ -560,7 +560,7 @@ char *DumpCommandLog(char *buffer, const char *last)
 }
 
 /*!
- * This function range-checks a cmd, and checks if the cmd is not NULL
+ * This function range-checks a cmd, and checks if the cmd is not nullptr
  *
  * @param cmd The integer value of a command
  * @return true if the command is valid (and got a CommandProc function)
@@ -569,7 +569,7 @@ bool IsValidCommand(uint32 cmd)
 {
 	cmd &= CMD_ID_MASK;
 
-	return cmd < lengthof(_command_proc_table) && _command_proc_table[cmd].proc != NULL;
+	return cmd < lengthof(_command_proc_table) && _command_proc_table[cmd].proc != nullptr;
 }
 
 /*!
@@ -833,7 +833,7 @@ bool DoCommandP(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallbac
 		ShowCostOrIncomeAnimation(x, y, GetSlopePixelZ(x, y), res.GetCost());
 	}
 
-	if (!estimate_only && !only_sending && callback != NULL) {
+	if (!estimate_only && !only_sending && callback != nullptr) {
 		callback(res, tile, p1, p2);
 	}
 
@@ -893,7 +893,7 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd,
 	const Command &command = _command_proc_table[cmd_id];
 	/* Shouldn't happen, but you never know when someone adds
 	 * NULLs to the _command_proc_table. */
-	assert(command.proc != NULL);
+	assert(command.proc != nullptr);
 
 	/* Command flags are used internally */
 	CommandFlags cmd_flags = GetCommandFlags(cmd);
@@ -1008,7 +1008,7 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd,
 	/* update last build coordinate of company. */
 	if (tile != 0) {
 		Company *c = Company::GetIfValid(_current_company);
-		if (c != NULL) c->last_build_coordinate = tile;
+		if (c != nullptr) c->last_build_coordinate = tile;
 	}
 
 	SubtractMoneyFromCompany(res2);

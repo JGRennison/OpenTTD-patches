@@ -130,7 +130,7 @@ static void debug_print(const char *dbg, const char *buf)
 	}
 	if (strcmp(dbg, "desync") == 0) {
 		static FILE *f = FioFOpenFile("commands-out.log", "wb", AUTOSAVE_DIR);
-		if (f != NULL) {
+		if (f != nullptr) {
 			fprintf(f, "%s%s\n", GetLogPrefix(), buf);
 			fflush(f);
 		}
@@ -138,18 +138,18 @@ static void debug_print(const char *dbg, const char *buf)
 	} else if (strcmp(dbg, "random") == 0) {
 #if defined(UNIX) && defined(__GLIBC__)
 		static bool have_inited = false;
-		static FILE *f = NULL;
+		static FILE *f = nullptr;
 
 		if (!have_inited) {
 			have_inited = true;
 			unsigned int num = 0;
 			int pid = getpid();
-			const char *fn = NULL;
+			const char *fn = nullptr;
 			for(;;) {
 				free(fn);
 				fn = str_fmt("random-out-%d-%u.log", pid, num);
 				f = FioFOpenFile(fn, "wx", AUTOSAVE_DIR);
-				if (f == NULL && errno == EEXIST) {
+				if (f == nullptr && errno == EEXIST) {
 					num++;
 					continue;
 				}
@@ -160,7 +160,7 @@ static void debug_print(const char *dbg, const char *buf)
 #else
 		static FILE *f = FioFOpenFile("random-out.log", "wb", AUTOSAVE_DIR);
 #endif
-		if (f != NULL) {
+		if (f != nullptr) {
 			fprintf(f, "%s\n", buf);
 			return;
 		}
@@ -242,7 +242,7 @@ void SetDebugString(const char *s)
 		while (*s >= 'a' && *s <= 'z') s++;
 
 		/* check debugging levels */
-		p = NULL;
+		p = nullptr;
 		for (i = debug_level; i != endof(debug_level); ++i) {
 			if (s == t + strlen(i->name) && strncmp(t, i->name, s - t) == 0) {
 				p = i->level;
@@ -253,7 +253,7 @@ void SetDebugString(const char *s)
 		if (*s == '=') s++;
 		v = strtoul(s, &end, 0);
 		s = end;
-		if (p != NULL) {
+		if (p != nullptr) {
 			*p = v;
 		} else {
 			ShowInfoF("Unknown debug level '%.*s'", (int)(s - t), t);
@@ -288,13 +288,13 @@ const char *GetDebugString()
 /**
  * Get the prefix for logs; if show_date_in_logs is enabled it returns
  * the date, otherwise it returns nothing.
- * @return the prefix for logs (do not free), never NULL
+ * @return the prefix for logs (do not free), never nullptr
  */
 const char *GetLogPrefix()
 {
 	static char _log_prefix[24];
 	if (_settings_client.gui.show_date_in_logs) {
-		time_t cur_time = time(NULL);
+		time_t cur_time = time(nullptr);
 		strftime(_log_prefix, sizeof(_log_prefix), "[%Y-%m-%d %H:%M:%S] ", localtime(&cur_time));
 	} else {
 		*_log_prefix = '\0';

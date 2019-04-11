@@ -176,7 +176,7 @@ void SignalStateCondition::SetSignal(TileIndex tile, Trackdir track)
 
 // -- Instructions
 SignalInstruction::SignalInstruction(SignalProgram *prog, SignalOpcode op)
-	: opcode(op), previous(NULL), program(prog)
+	: opcode(op), previous(nullptr), program(prog)
 {
 	program->instructions.push_back(this);
 }
@@ -200,7 +200,7 @@ SignalSpecial::SignalSpecial(SignalProgram *prog, SignalOpcode op)
 	: SignalInstruction(prog, op)
 {
 	assert(op == PSO_FIRST || op == PSO_LAST);
-	this->next = NULL;
+	this->next = nullptr;
 }
 
 /*virtual*/ void SignalSpecial::Remove()
@@ -225,7 +225,7 @@ void SignalSpecial::Evaluate(SignalVM &vm)
 		vm.instruction = this->next;
 	} else {
 		DEBUG(misc, 7, "  Executing Last");
-		vm.instruction = NULL;
+		vm.instruction = nullptr;
 	}
 }
 /*virtual*/ void SignalSpecial::SetNext(SignalInstruction *next_insn)
@@ -251,10 +251,10 @@ SignalIf::PseudoInstruction::PseudoInstruction(SignalProgram *prog, SignalIf *bl
 /*virtual*/ void SignalIf::PseudoInstruction::Remove()
 {
 	if (opcode == PSO_IF_ELSE) {
-		this->block->if_true = NULL;
+		this->block->if_true = nullptr;
 		while(this->block->if_false) this->block->if_false->Remove();
 	} else if (opcode == PSO_IF_ENDIF) {
-		this->block->if_false = NULL;
+		this->block->if_false = nullptr;
 	} else NOT_REACHED();
 	delete this;
 }
@@ -281,7 +281,7 @@ SignalIf::SignalIf(SignalProgram *prog, bool raw)
 		this->condition = new SignalSimpleCondition(PSC_ALWAYS);
 		this->if_true   = new PseudoInstruction(prog, this, PSO_IF_ELSE);
 		this->if_false  = new PseudoInstruction(prog, this, PSO_IF_ENDIF);
-		this->after     = NULL;
+		this->after     = nullptr;
 	}
 }
 
@@ -345,7 +345,7 @@ SignalSet::SignalSet(SignalProgram *prog, SignalState state)
 {
 	DEBUG(misc, 7, "  Executing SetSignal, making %s", this->to_state? "green" : "red");
 	vm.state       = this->to_state;
-	vm.instruction = NULL;
+	vm.instruction = nullptr;
 }
 
 
@@ -361,7 +361,7 @@ SignalProgram *GetExistingSignalProgram(SignalReference ref)
 		assert(i->first == ref);
 		return i->second;
 	} else {
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -699,7 +699,7 @@ CommandCost CmdRemoveSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 static void CloneInstructions(SignalProgram *prog, SignalInstruction *insert_before, SignalInstruction *si)
 {
 	while(true) {
-		if(si == NULL) break;
+		if(si == nullptr) break;
 		switch(si->Opcode()) {
 			case PSO_SET_SIGNAL: {
 				SignalSet *set = new SignalSet(prog, ((SignalSet*)si)->to_state);

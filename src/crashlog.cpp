@@ -74,10 +74,10 @@
 
 #include "safeguards.h"
 
-/* static */ const char *CrashLog::message = NULL;
-/* static */ char *CrashLog::gamelog_buffer = NULL;
-/* static */ const char *CrashLog::gamelog_last = NULL;
-/* static */ const CrashLog *CrashLog::main_thread_pending_crashlog = NULL;
+/* static */ const char *CrashLog::message = nullptr;
+/* static */ char *CrashLog::gamelog_buffer = nullptr;
+/* static */ const char *CrashLog::gamelog_last = nullptr;
+/* static */ const CrashLog *CrashLog::main_thread_pending_crashlog = nullptr;
 
 char *CrashLog::LogCompiler(char *buffer, const char *last) const
 {
@@ -190,18 +190,18 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 			" Sound driver: %s\n"
 			" Sound set:    %s (%u)\n"
 			" Video driver: %s\n\n",
-			BlitterFactory::GetCurrentBlitter() == NULL ? "none" : BlitterFactory::GetCurrentBlitter()->GetName(),
-			BaseGraphics::GetUsedSet() == NULL ? "none" : BaseGraphics::GetUsedSet()->name,
-			BaseGraphics::GetUsedSet() == NULL ? UINT32_MAX : BaseGraphics::GetUsedSet()->version,
-			_current_language == NULL ? "none" : _current_language->file,
-			MusicDriver::GetInstance() == NULL ? "none" : MusicDriver::GetInstance()->GetName(),
-			BaseMusic::GetUsedSet() == NULL ? "none" : BaseMusic::GetUsedSet()->name,
-			BaseMusic::GetUsedSet() == NULL ? UINT32_MAX : BaseMusic::GetUsedSet()->version,
+			BlitterFactory::GetCurrentBlitter() == nullptr ? "none" : BlitterFactory::GetCurrentBlitter()->GetName(),
+			BaseGraphics::GetUsedSet() == nullptr ? "none" : BaseGraphics::GetUsedSet()->name,
+			BaseGraphics::GetUsedSet() == nullptr ? UINT32_MAX : BaseGraphics::GetUsedSet()->version,
+			_current_language == nullptr ? "none" : _current_language->file,
+			MusicDriver::GetInstance() == nullptr ? "none" : MusicDriver::GetInstance()->GetName(),
+			BaseMusic::GetUsedSet() == nullptr ? "none" : BaseMusic::GetUsedSet()->name,
+			BaseMusic::GetUsedSet() == nullptr ? UINT32_MAX : BaseMusic::GetUsedSet()->version,
 			_networking ? (_network_server ? "server" : "client") : "no",
-			SoundDriver::GetInstance() == NULL ? "none" : SoundDriver::GetInstance()->GetName(),
-			BaseSounds::GetUsedSet() == NULL ? "none" : BaseSounds::GetUsedSet()->name,
-			BaseSounds::GetUsedSet() == NULL ? UINT32_MAX : BaseSounds::GetUsedSet()->version,
-			VideoDriver::GetInstance() == NULL ? "none" : VideoDriver::GetInstance()->GetName()
+			SoundDriver::GetInstance() == nullptr ? "none" : SoundDriver::GetInstance()->GetName(),
+			BaseSounds::GetUsedSet() == nullptr ? "none" : BaseSounds::GetUsedSet()->name,
+			BaseSounds::GetUsedSet() == nullptr ? UINT32_MAX : BaseSounds::GetUsedSet()->version,
+			VideoDriver::GetInstance() == nullptr ? "none" : VideoDriver::GetInstance()->GetName()
 	);
 
 	buffer += seprintf(buffer, last,
@@ -221,14 +221,14 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 	buffer += seprintf(buffer, last, "AI Configuration (local: %i) (current: %i):\n", (int)_local_company, (int)_current_company);
 	const Company *c;
 	FOR_ALL_COMPANIES(c) {
-		if (c->ai_info == NULL) {
+		if (c->ai_info == nullptr) {
 			buffer += seprintf(buffer, last, " %2i: Human\n", (int)c->index);
 		} else {
 			buffer += seprintf(buffer, last, " %2i: %s (v%d)\n", (int)c->index, c->ai_info->GetName(), c->ai_info->GetVersion());
 		}
 	}
 
-	if (Game::GetInfo() != NULL) {
+	if (Game::GetInfo() != nullptr) {
 		buffer += seprintf(buffer, last, " GS: %s (v%d)\n", Game::GetInfo()->GetName(), Game::GetInfo()->GetVersion());
 	}
 	buffer += seprintf(buffer, last, "\n");
@@ -287,7 +287,7 @@ char *CrashLog::LogLibraries(char *buffer, const char *last) const
 #endif
 
 #ifdef WITH_PNG
-	buffer += seprintf(buffer, last, " PNG:        %s\n", png_get_libpng_ver(NULL));
+	buffer += seprintf(buffer, last, " PNG:        %s\n", png_get_libpng_ver(nullptr));
 #endif /* WITH_PNG */
 
 #ifdef WITH_SDL
@@ -335,14 +335,14 @@ char *CrashLog::LogGamelog(char *buffer, const char *last) const
 char *CrashLog::LogRecentNews(char *buffer, const char *last) const
 {
 	uint total = 0;
-	for (NewsItem *news = _oldest_news; news != NULL; news = news->next) {
+	for (NewsItem *news = _oldest_news; news != nullptr; news = news->next) {
 		total++;
 	}
 	uint show = min<uint>(total, 32);
 	buffer += seprintf(buffer, last, "Recent news messages (%u of %u):\n", show, total);
 
 	uint skip = total - show;
-	for (NewsItem *news = _oldest_news; news != NULL; news = news->next) {
+	for (NewsItem *news = _oldest_news; news != nullptr; news = news->next) {
 		if (skip) {
 			skip--;
 			continue;
@@ -378,7 +378,7 @@ char *CrashLog::LogCommandLog(char *buffer, const char *last) const
  */
 char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 {
-	time_t cur_time = time(NULL);
+	time_t cur_time = time(nullptr);
 	buffer += seprintf(buffer, last, "*** OpenTTD Crash Report ***\n\n");
 
 	if (GamelogTestEmergency()) {
@@ -439,7 +439,7 @@ bool CrashLog::WriteCrashLog(const char *buffer, char *filename, const char *fil
 	seprintf(filename, filename_last, "%scrash.log", _personal_dir);
 
 	FILE *file = FioFOpenFile(filename, "w", NO_DIRECTORY);
-	if (file == NULL) return false;
+	if (file == nullptr) return false;
 
 	size_t len = strlen(buffer);
 	size_t written = fwrite(buffer, 1, len, file);
@@ -466,7 +466,7 @@ bool CrashLog::WriteSavegame(char *filename, const char *filename_last) const
 {
 	/* If the map array doesn't exist, saving will fail too. If the map got
 	 * initialised, there is a big chance the rest is initialised too. */
-	if (_m == NULL) return false;
+	if (_m == nullptr) return false;
 
 	try {
 		GamelogEmergency();
@@ -491,7 +491,7 @@ bool CrashLog::WriteSavegame(char *filename, const char *filename_last) const
 bool CrashLog::WriteScreenshot(char *filename, const char *filename_last) const
 {
 	/* Don't draw when we have invalid screen size */
-	if (_screen.width < 1 || _screen.height < 1 || _screen.dst_ptr == NULL) return false;
+	if (_screen.width < 1 || _screen.height < 1 || _screen.dst_ptr == nullptr) return false;
 
 	bool res = MakeScreenshot(SC_CRASHLOG, "crash");
 	if (res) strecpy(filename, _full_screenshot_name, filename_last);
@@ -611,14 +611,14 @@ bool CrashLog::MakeCrashSavegameAndScreenshot() const
  */
 /* static */ void CrashLog::AfterCrashLogCleanup()
 {
-	if (MusicDriver::GetInstance() != NULL) MusicDriver::GetInstance()->Stop();
-	if (SoundDriver::GetInstance() != NULL) SoundDriver::GetInstance()->Stop();
-	if (VideoDriver::GetInstance() != NULL) VideoDriver::GetInstance()->Stop();
+	if (MusicDriver::GetInstance() != nullptr) MusicDriver::GetInstance()->Stop();
+	if (SoundDriver::GetInstance() != nullptr) SoundDriver::GetInstance()->Stop();
+	if (VideoDriver::GetInstance() != nullptr) VideoDriver::GetInstance()->Stop();
 }
 
 /* static */ const char *CrashLog::GetAbortCrashlogReason()
 {
-	if (_settings_client.gui.developer > 0) return NULL;
+	if (_settings_client.gui.developer > 0) return nullptr;
 
 	if (GamelogTestEmergency()) {
 		return "As you loaded an emergency savegame no crash information will be generated.\n";
@@ -629,17 +629,17 @@ bool CrashLog::MakeCrashSavegameAndScreenshot() const
 				"no crash information will be generated.\n";
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 #if defined(WITH_BFD)
-sym_info_bfd::sym_info_bfd(bfd_vma addr_) : addr(addr_), abfd(NULL), syms(NULL), sym_count(0),
-		file_name(NULL), function_name(NULL), function_addr(0), line(0), found(false) {}
+sym_info_bfd::sym_info_bfd(bfd_vma addr_) : addr(addr_), abfd(nullptr), syms(nullptr), sym_count(0),
+		file_name(nullptr), function_name(nullptr), function_addr(0), line(0), found(false) {}
 
 sym_info_bfd::~sym_info_bfd()
 {
 	free(syms);
-	if (abfd != NULL) bfd_close(abfd);
+	if (abfd != nullptr) bfd_close(abfd);
 }
 
 static void find_address_in_section(bfd *abfd, asection *section, void *data)
@@ -684,9 +684,9 @@ static void find_address_in_section(bfd *abfd, asection *section, void *data)
 
 void lookup_addr_bfd(const char *obj_file_name, sym_info_bfd &info)
 {
-	info.abfd = bfd_openr(obj_file_name, NULL);
+	info.abfd = bfd_openr(obj_file_name, nullptr);
 
-	if (info.abfd == NULL) return;
+	if (info.abfd == nullptr) return;
 
 	if (!bfd_check_format(info.abfd, bfd_object) || (bfd_get_file_flags(info.abfd) & HAS_SYMS) == 0) return;
 

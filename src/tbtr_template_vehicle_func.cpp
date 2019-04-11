@@ -172,17 +172,17 @@ void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev
 // create a full TemplateVehicle based train according to a virtual train
 TemplateVehicle* TemplateVehicleFromVirtualTrain(Train *virt)
 {
-	if (!virt) return NULL;
+	if (!virt) return nullptr;
 
 	Train *init_virt = virt;
 
 	int len = CountVehiclesInChain(virt);
 	if (!TemplateVehicle::CanAllocateItem(len)) {
-		return NULL;
+		return nullptr;
 	}
 
 	TemplateVehicle *tmp;
-	TemplateVehicle *prev = NULL;
+	TemplateVehicle *prev = nullptr;
 	for (; virt; virt = virt->Next()) {
 		tmp = new TemplateVehicle(virt->engine_type);
 		SetupTemplateVehicleFromVirtual(tmp, prev, virt);
@@ -210,14 +210,14 @@ Train* DeleteVirtualTrain(Train *chain, Train *to_del) {
 
 // retrieve template vehicle from template replacement that belongs to the given group
 TemplateVehicle* GetTemplateVehicleByGroupID(GroupID gid) {
-	if (gid >= NEW_GROUP) return NULL;
+	if (gid >= NEW_GROUP) return nullptr;
 	TemplateReplacement *tr;
 	FOR_ALL_TEMPLATE_REPLACEMENTS(tr) {
 		if (tr->Group() == gid) {
 			return TemplateVehicle::GetIfValid(tr->Template()); // there can be only one
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 /**
@@ -263,26 +263,26 @@ Train* ChainContainsEngine(EngineID eid, Train *chain) {
 	for (; chain; chain=chain->GetNextUnit())
 		if (chain->engine_type == eid)
 			return chain;
-	return NULL;
+	return nullptr;
 }
 
 // has O(n^2)
-Train* DepotContainsEngine(TileIndex tile, EngineID eid, Train *not_in = NULL)
+Train* DepotContainsEngine(TileIndex tile, EngineID eid, Train *not_in = nullptr)
 {
 	Train *t;
 	FOR_ALL_TRAINS(t) {
 		// conditions: v is stopped in the given depot, has the right engine and if 'not_in' is given v must not be contained within 'not_in'
-		// if 'not_in' is NULL, no check is needed
+		// if 'not_in' is nullptr, no check is needed
 		if (t->tile == tile
 				// If the veh belongs to a chain, wagons will not return true on IsStoppedInDepot(), only primary vehicles will
 				// in case of t not a primary veh, we demand it to be a free wagon to consider it for replacement
 				&& ((t->IsPrimaryVehicle() && t->IsStoppedInDepot()) || t->IsFreeWagon())
 				&& t->engine_type == eid
-				&& (not_in == NULL || ChainContainsVehicle(not_in, t) == false)) {
+				&& (not_in == nullptr || ChainContainsVehicle(not_in, t) == false)) {
 			return t;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 void NeutralizeStatus(Train *t)
@@ -290,7 +290,7 @@ void NeutralizeStatus(Train *t)
 	DoCommand(t->tile, DEFAULT_GROUP, t->index, DC_EXEC, CMD_ADD_VEHICLE_GROUP);
 	DoCommand(0, t->index | CO_UNSHARE << 30, 0, DC_EXEC, CMD_CLONE_ORDER);
 	DoCommand(0, t->index, FreeUnitIDGenerator(VEH_TRAIN, t->owner).NextID(), DC_EXEC, CMD_SET_VEHICLE_UNIT_NUMBER);
-	DoCommand(0, t->index, 0, DC_EXEC, CMD_RENAME_VEHICLE, NULL);
+	DoCommand(0, t->index, 0, DC_EXEC, CMD_RENAME_VEHICLE, nullptr);
 }
 
 bool TrainMatchesTemplate(const Train *t, const TemplateVehicle *tv) {
@@ -407,7 +407,7 @@ void TransferCargoForTrain(Train *old_veh, Train *new_head)
 	// how much cargo has to be moved (if possible)
 	uint remainingAmount = old_veh->cargo.TotalCount();
 	// each vehicle in the new chain shall be given as much of the old cargo as possible, until none is left
-	for (Train *tmp = new_head; tmp != NULL && remainingAmount > 0; tmp = tmp->GetNextUnit()) {
+	for (Train *tmp = new_head; tmp != nullptr && remainingAmount > 0; tmp = tmp->GetNextUnit()) {
 		if (tmp->cargo_type == _cargo_type && tmp->cargo_subtype == _cargo_subtype) {
 			// calculate the free space for new cargo on the current vehicle
 			uint curCap = tmp->cargo_cap - tmp->cargo.TotalCount();

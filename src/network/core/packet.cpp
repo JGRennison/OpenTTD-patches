@@ -25,10 +25,10 @@
  */
 Packet::Packet(NetworkSocketHandler *cs)
 {
-	assert(cs != NULL);
+	assert(cs != nullptr);
 
 	this->cs     = cs;
-	this->next   = NULL;
+	this->next   = nullptr;
 	this->pos    = 0; // We start reading from here
 	this->size   = 0;
 	this->buffer = MallocT<byte>(SHRT_MAX);
@@ -54,8 +54,8 @@ Packet::~Packet()
 
 void Packet::ResetState(PacketType type)
 {
-	this->cs                   = NULL;
-	this->next                 = NULL;
+	this->cs                   = nullptr;
+	this->next                 = nullptr;
 
 	/* Skip the size so we can write that in before sending the packet */
 	this->pos                  = 0;
@@ -68,7 +68,7 @@ void Packet::ResetState(PacketType type)
  */
 void Packet::PrepareToSend()
 {
-	assert(this->cs == NULL && this->next == NULL);
+	assert(this->cs == nullptr && this->next == nullptr);
 
 	this->buffer[0] = GB(this->size, 0, 8);
 	this->buffer[1] = GB(this->size, 8, 8);
@@ -155,7 +155,7 @@ void Packet::Send_uint64(uint64 data)
  */
 void Packet::Send_string(const char *data)
 {
-	assert(data != NULL);
+	assert(data != nullptr);
 	/* The <= *is* valid due to the fact that we are comparing sizes and not the index. */
 	assert(this->size + strlen(data) + 1 <= SHRT_MAX);
 	while ((this->buffer[this->size++] = *data++) != '\0') {}
@@ -167,7 +167,7 @@ void Packet::Send_string(const char *data)
  */
 void Packet::Send_binary(const char *data, const size_t size)
 {
-	assert(data != NULL);
+	assert(data != nullptr);
 	assert(size < MAX_CMD_TEXT_LENGTH);
 	memcpy(&this->buffer[this->size], data, size);
 	this->size += (PacketSize) size;
@@ -206,7 +206,7 @@ bool Packet::CanReadFromPacket(uint bytes_to_read, bool non_fatal)
  */
 void Packet::ReadRawPacketSize()
 {
-	assert(this->cs != NULL && this->next == NULL);
+	assert(this->cs != nullptr && this->next == nullptr);
 	this->size  = (PacketSize)this->buffer[0];
 	this->size += (PacketSize)this->buffer[1] << 8;
 }

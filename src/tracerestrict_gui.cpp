@@ -660,7 +660,7 @@ static const TraceRestrictDropDownListSet *GetCondOpDropDownListSet(TraceRestric
 
 	switch (properties.cond_type) {
 		case TRCOT_NONE:
-			return NULL;
+			return nullptr;
 
 		case TRCOT_BINARY:
 			return &set_short;
@@ -669,7 +669,7 @@ static const TraceRestrictDropDownListSet *GetCondOpDropDownListSet(TraceRestric
 			return &set_long;
 	}
 	NOT_REACHED();
-	return NULL;
+	return nullptr;
 }
 
 /**
@@ -879,7 +879,7 @@ static void DrawInstructionStringConditionalInvalidValue(TraceRestrictItem item,
 
 /**
  * Draws an instruction in the programming GUI
- * @param prog The program (may be NULL)
+ * @param prog The program (may be nullptr)
  * @param item The instruction to draw
  * @param index The instruction index
  * @param y Y position for drawing
@@ -968,7 +968,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					break;
 
 				case TRVT_TILE_INDEX: {
-					assert(prog != NULL);
+					assert(prog != nullptr);
 					assert(GetTraceRestrictType(item) == TRIT_COND_PBS_ENTRY_SIGNAL);
 					TileIndex tile = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
 					if (tile == INVALID_TILE) {
@@ -1058,7 +1058,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					break;
 
 				case TRVT_SLOT_INDEX_INT: {
-					assert(prog != NULL);
+					assert(prog != nullptr);
 					assert(GetTraceRestrictType(item) == TRIT_COND_SLOT_OCCUPANCY);
 					uint32 value = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
 					SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
@@ -1920,7 +1920,7 @@ public:
 		int line_height = this->GetWidget<NWidgetBase>(TR_WIDGET_INSTRUCTION_LIST)->resize_y;
 		int scroll_position = this->vscroll->GetPosition();
 
-		// prog may be NULL
+		// prog may be nullptr
 		const TraceRestrictProgram *prog = this->GetProgram();
 
 		int count = this->GetItemCount(prog);
@@ -2049,7 +2049,7 @@ private:
 
 	/**
 	 * Get current program
-	 * This may return NULL if no program currently exists
+	 * This may return nullptr if no program currently exists
 	 */
 	const TraceRestrictProgram *GetProgram() const
 	{
@@ -2060,7 +2060,7 @@ private:
 	 * Get instruction at @p index in program @p prog
 	 * This correctly handles start/end markers, offsets, etc.
 	 * This returns a 0 instruction if out of bounds
-	 * @p prog may be NULL
+	 * @p prog may be nullptr
 	 */
 	TraceRestrictItem GetItem(const TraceRestrictProgram *prog, int index) const
 	{
@@ -2736,7 +2736,7 @@ static WindowDesc _program_desc(
  */
 void ShowTraceRestrictProgramWindow(TileIndex tile, Track track)
 {
-	if (BringWindowToFrontById(WC_TRACE_RESTRICT, MakeTraceRestrictRefId(tile, track)) != NULL) {
+	if (BringWindowToFrontById(WC_TRACE_RESTRICT, MakeTraceRestrictRefId(tile, track)) != nullptr) {
 		return;
 	}
 
@@ -3267,13 +3267,13 @@ public:
 
 	virtual void OnQueryTextFinished(char *str)
 	{
-		if (str != NULL) {
+		if (str != nullptr) {
 			if (this->slot_set_max_occupancy) {
 				if (!StrEmpty(str)) DoCommandP(0, this->slot_rename | (1 << 16), atoi(str), CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY));
 			} else if (this->slot_rename == NEW_TRACE_RESTRICT_SLOT_ID) {
-				DoCommandP(0, 0, 0, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), NULL, str);
+				DoCommandP(0, 0, 0, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), nullptr, str);
 			} else {
-				DoCommandP(0, this->slot_rename, 0, CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME), NULL, str);
+				DoCommandP(0, this->slot_rename, 0, CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME), nullptr, str);
 			}
 		}
 		this->slot_rename = INVALID_TRACE_RESTRICT_SLOT_ID;
@@ -3405,7 +3405,7 @@ void ShowTraceRestrictSlotWindow(CompanyID company)
  * Finds a group list window determined by vehicle type and owner
  * @param vt vehicle type
  * @param owner owner of groups
- * @return pointer to VehicleGroupWindow, NULL if not found
+ * @return pointer to VehicleGroupWindow, nullptr if not found
  */
 static inline TraceRestrictSlotWindow *FindTraceRestrictSlotWindow(Owner owner)
 {
@@ -3424,5 +3424,5 @@ void DeleteTraceRestrictSlotHighlightOfVehicle(const Vehicle *v)
 	if (_special_mouse_mode != WSM_DRAGDROP) return;
 
 	TraceRestrictSlotWindow *w = FindTraceRestrictSlotWindow(v->owner);
-	if (w != NULL) w->UnselectVehicle(v->index);
+	if (w != nullptr) w->UnselectVehicle(v->index);
 }

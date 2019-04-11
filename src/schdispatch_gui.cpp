@@ -90,7 +90,7 @@ static void ScheduleAddIntl(uint32 p1, DateTicksScaled date)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	Vehicle *v = Vehicle::GetIfValid(veh);
-	if (v == NULL || !v->IsPrimaryVehicle()) return;
+	if (v == nullptr || !v->IsPrimaryVehicle()) return;
 
 	/* Make sure the time is the closest future to the timetable start */
 	DateTicksScaled start_tick = v->orders.list->GetScheduledDispatchStartTick();
@@ -213,7 +213,7 @@ struct SchdispatchWindow : Window {
 	void CountItem()
 	{
 		this->item_count = 0;
-		if (this->vehicle->orders.list != NULL) {
+		if (this->vehicle->orders.list != nullptr) {
 			this->item_count = this->vehicle->orders.list->GetScheduledDispatch().size();
 		}
 	}
@@ -240,9 +240,9 @@ struct SchdispatchWindow : Window {
 
 		if (v->owner == _local_company) {
 			this->SetWidgetDisabledState(WID_SCHDISPATCH_ENABLED, HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION));
-			this->SetWidgetDisabledState(WID_SCHDISPATCH_ADD, !HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && v->orders.list != NULL);
-			this->SetWidgetDisabledState(WID_SCHDISPATCH_SET_DURATION, !HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && v->orders.list != NULL);
-			this->SetWidgetDisabledState(WID_SCHDISPATCH_SET_START_DATE, !HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && v->orders.list != NULL);
+			this->SetWidgetDisabledState(WID_SCHDISPATCH_ADD, !HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && v->orders.list != nullptr);
+			this->SetWidgetDisabledState(WID_SCHDISPATCH_SET_DURATION, !HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && v->orders.list != nullptr);
+			this->SetWidgetDisabledState(WID_SCHDISPATCH_SET_START_DATE, !HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && v->orders.list != nullptr);
 		} else {
 			this->DisableWidget(WID_SCHDISPATCH_ENABLED);
 			this->DisableWidget(WID_SCHDISPATCH_ADD);
@@ -289,7 +289,7 @@ struct SchdispatchWindow : Window {
 	virtual void OnGameTick() override
 	{
 		const Vehicle *v = this->vehicle;
-		if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && v->orders.list != NULL) {
+		if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && v->orders.list != nullptr) {
 			if (((v->orders.list->GetScheduledDispatchStartTick() + v->orders.list->GetScheduledDispatchLastDispatch()) > _scaled_date_ticks) != this->last_departure_future) {
 				SetWidgetDirty(WID_SCHDISPATCH_SUMMARY_PANEL);
 			}
@@ -303,7 +303,7 @@ struct SchdispatchWindow : Window {
 		switch (widget) {
 			case WID_SCHDISPATCH_MATRIX: {
 				/* If order is not initialized, don't draw */
-				if (v->orders.list == NULL) break;
+				if (v->orders.list == nullptr) break;
 
 				bool rtl = _current_text_dir == TD_RTL;
 
@@ -339,7 +339,7 @@ struct SchdispatchWindow : Window {
 
 				int y = r.top + WD_FRAMERECT_TOP;
 
-				if (!HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) || v->orders.list == NULL) {
+				if (!HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) || v->orders.list == nullptr) {
 					y += FONT_HEIGHT_NORMAL;
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_SUMMARY_NOT_ENABLED);
 				} else {
@@ -470,7 +470,7 @@ struct SchdispatchWindow : Window {
 
 	virtual void OnQueryTextFinished(char *str)
 	{
-		if (str == NULL) return;
+		if (str == nullptr) return;
 		const Vehicle *v = this->vehicle;
 
 		switch (this->clicked_widget) {
@@ -507,7 +507,7 @@ struct SchdispatchWindow : Window {
 			}
 
 			case WID_SCHDISPATCH_SET_DURATION: {
-				int32 val = StrEmpty(str) ? 0 : strtoul(str, NULL, 10);
+				int32 val = StrEmpty(str) ? 0 : strtoul(str, nullptr, 10);
 
 				if (val > 0) {
 					if (_settings_client.gui.time_in_minutes) {

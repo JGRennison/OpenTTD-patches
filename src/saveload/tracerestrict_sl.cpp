@@ -179,7 +179,7 @@ void AfterLoadTraceRestrict()
 }
 
 extern const ChunkHandler _trace_restrict_chunk_handlers[] = {
-	{ 'TRRM', Save_TRRM, Load_TRRM, NULL, NULL, CH_SPARSE_ARRAY},    // Trace Restrict Mapping chunk
-	{ 'TRRP', Save_TRRP, Load_TRRP, NULL, NULL, CH_ARRAY},           // Trace Restrict Mapping Program Pool chunk
-	{ 'TRRS', Save_TRRS, Load_TRRS, NULL, NULL, CH_ARRAY | CH_LAST}, // Trace Restrict Slot Pool chunk
+	{ 'TRRM', Save_TRRM, Load_TRRM, nullptr, nullptr, CH_SPARSE_ARRAY},    // Trace Restrict Mapping chunk
+	{ 'TRRP', Save_TRRP, Load_TRRP, nullptr, nullptr, CH_ARRAY},           // Trace Restrict Mapping Program Pool chunk
+	{ 'TRRS', Save_TRRS, Load_TRRS, nullptr, nullptr, CH_ARRAY | CH_LAST}, // Trace Restrict Slot Pool chunk
 };

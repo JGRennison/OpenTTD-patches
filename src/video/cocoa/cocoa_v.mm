@@ -59,7 +59,7 @@ static OTTDMain *_ottd_main;
 static bool _cocoa_video_started = false;
 static bool _cocoa_video_dialog = false;
 
-CocoaSubdriver *_cocoa_subdriver = NULL;
+CocoaSubdriver *_cocoa_subdriver = nullptr;
 
 static NSString *OTTDMainLaunchGameEngine = @"ottdmain_launch_game_engine";
 
@@ -290,9 +290,9 @@ static void QZ_GetDisplayModeInfo(CFArrayRef modes, CFIndex i, int &bpp, uint16 
 uint QZ_ListModes(OTTD_Point *modes, uint max_modes, CGDirectDisplayID display_id, int device_depth)
 {
 #if (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6) && (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_6)
-	CFArrayRef mode_list = MacOSVersionIsAtLeast(10, 6, 0) ? CGDisplayCopyAllDisplayModes(display_id, NULL) : CGDisplayAvailableModes(display_id);
+	CFArrayRef mode_list = MacOSVersionIsAtLeast(10, 6, 0) ? CGDisplayCopyAllDisplayModes(display_id, nullptr) : CGDisplayAvailableModes(display_id);
 #elif (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6)
-	CFArrayRef mode_list = CGDisplayCopyAllDisplayModes(display_id, NULL);
+	CFArrayRef mode_list = CGDisplayCopyAllDisplayModes(display_id, nullptr);
 #else
 	CFArrayRef mode_list = CGDisplayAvailableModes(display_id);
 #endif
@@ -354,11 +354,11 @@ bool QZ_CanDisplay8bpp()
 /**
  * Update the video modus.
  *
- * @pre _cocoa_subdriver != NULL
+ * @pre _cocoa_subdriver != nullptr
  */
 static void QZ_UpdateVideoModes()
 {
-	assert(_cocoa_subdriver != NULL);
+	assert(_cocoa_subdriver != nullptr);
 
 	OTTD_Point modes[32];
 	uint count = _cocoa_subdriver->ListModes(modes, lengthof(modes));
@@ -376,7 +376,7 @@ static void QZ_UpdateVideoModes()
  */
 void QZ_GameSizeChanged()
 {
-	if (_cocoa_subdriver == NULL) return;
+	if (_cocoa_subdriver == nullptr) return;
 
 	/* Tell the game that the resolution has changed */
 	_screen.width = _cocoa_subdriver->GetWidth();
@@ -408,13 +408,13 @@ static CocoaSubdriver *QZ_CreateWindowSubdriver(int width, int height, int bpp)
 	/* The reason for the version mismatch is due to the fact that the 10.4 binary needs to work on 10.5 as well. */
 	if (MacOSVersionIsAtLeast(10, 5, 0)) {
 		ret = QZ_CreateWindowQuartzSubdriver(width, height, bpp);
-		if (ret != NULL) return ret;
+		if (ret != nullptr) return ret;
 	}
 #endif
 
 #ifdef ENABLE_COCOA_QUICKDRAW
 	ret = QZ_CreateWindowQuickdrawSubdriver(width, height, bpp);
-	if (ret != NULL) return ret;
+	if (ret != nullptr) return ret;
 #endif
 
 #if defined(ENABLE_COCOA_QUARTZ) && (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4)
@@ -424,11 +424,11 @@ static CocoaSubdriver *QZ_CreateWindowSubdriver(int width, int height, int bpp)
 	 */
 	if (MacOSVersionIsAtLeast(10, 4, 0)) {
 		ret = QZ_CreateWindowQuartzSubdriver(width, height, bpp);
-		if (ret != NULL) return ret;
+		if (ret != nullptr) return ret;
 	}
 #endif
 
-	return NULL;
+	return nullptr;
 }
 
 /**
@@ -443,11 +443,11 @@ static CocoaSubdriver *QZ_CreateWindowSubdriver(int width, int height, int bpp)
  */
 static CocoaSubdriver *QZ_CreateSubdriver(int width, int height, int bpp, bool fullscreen, bool fallback)
 {
-	CocoaSubdriver *ret = NULL;
+	CocoaSubdriver *ret = nullptr;
 	/* OSX 10.7 allows to toggle fullscreen mode differently */
 	if (MacOSVersionIsAtLeast(10, 7, 0)) {
 		ret = QZ_CreateWindowSubdriver(width, height, bpp);
-		if (ret != NULL && fullscreen) ret->ToggleFullscreen();
+		if (ret != nullptr && fullscreen) ret->ToggleFullscreen();
 	}
 #if (MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_9)
 	else {
@@ -455,13 +455,13 @@ static CocoaSubdriver *QZ_CreateSubdriver(int width, int height, int bpp, bool f
 	}
 #endif /* (MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_9) */
 
-	if (ret != NULL) return ret;
-	if (!fallback) return NULL;
+	if (ret != nullptr) return ret;
+	if (!fallback) return nullptr;
 
 	/* Try again in 640x480 windowed */
 	DEBUG(driver, 0, "Setting video mode failed, falling back to 640x480 windowed mode.");
 	ret = QZ_CreateWindowSubdriver(640, 480, bpp);
-	if (ret != NULL) return ret;
+	if (ret != nullptr) return ret;
 
 #if defined(_DEBUG) && (MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_9)
 	/* This Fullscreen mode crashes on OSX 10.7 */
@@ -469,11 +469,11 @@ static CocoaSubdriver *QZ_CreateSubdriver(int width, int height, int bpp, bool f
 		/* Try fullscreen too when in debug mode */
 		DEBUG(driver, 0, "Setting video mode failed, falling back to 640x480 fullscreen mode.");
 		ret = QZ_CreateFullscreenSubdriver(640, 480, bpp);
-		if (ret != NULL) return ret;
+		if (ret != nullptr) return ret;
 	}
 #endif /* defined(_DEBUG) && (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9) */
 
-	return NULL;
+	return nullptr;
 }
 
 
@@ -489,7 +489,7 @@ void VideoDriver_Cocoa::Stop()
 	[ _ottd_main unregisterObserver ];
 
 	delete _cocoa_subdriver;
-	_cocoa_subdriver = NULL;
+	_cocoa_subdriver = nullptr;
 
 	[ _ottd_main release ];
 
@@ -509,14 +509,14 @@ const char *VideoDriver_Cocoa::Start(const char * const *parm)
 	setupApplication();
 
 	/* Don't create a window or enter fullscreen if we're just going to show a dialog. */
-	if (_cocoa_video_dialog) return NULL;
+	if (_cocoa_video_dialog) return nullptr;
 
 	int width  = _cur_resolution.width;
 	int height = _cur_resolution.height;
 	int bpp = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 
 	_cocoa_subdriver = QZ_CreateSubdriver(width, height, bpp, _fullscreen, true);
-	if (_cocoa_subdriver == NULL) {
+	if (_cocoa_subdriver == nullptr) {
 		Stop();
 		return "Could not create subdriver";
 	}
@@ -524,7 +524,7 @@ const char *VideoDriver_Cocoa::Start(const char * const *parm)
 	QZ_GameSizeChanged();
 	QZ_UpdateVideoModes();
 
-	return NULL;
+	return nullptr;
 }
 
 /**
@@ -537,7 +537,7 @@ const char *VideoDriver_Cocoa::Start(const char * const *parm)
  */
 void VideoDriver_Cocoa::MakeDirty(int left, int top, int width, int height)
 {
-	assert(_cocoa_subdriver != NULL);
+	assert(_cocoa_subdriver != nullptr);
 
 	_cocoa_subdriver->MakeDirty(left, top, width, height);
 }
@@ -564,7 +564,7 @@ void VideoDriver_Cocoa::MainLoop()
  */
 bool VideoDriver_Cocoa::ChangeResolution(int w, int h)
 {
-	assert(_cocoa_subdriver != NULL);
+	assert(_cocoa_subdriver != nullptr);
 
 	bool ret = _cocoa_subdriver->ChangeResolution(w, h, BlitterFactory::GetCurrentBlitter()->GetScreenDepth());
 
@@ -582,7 +582,7 @@ bool VideoDriver_Cocoa::ChangeResolution(int w, int h)
  */
 bool VideoDriver_Cocoa::ToggleFullscreen(bool full_screen)
 {
-	assert(_cocoa_subdriver != NULL);
+	assert(_cocoa_subdriver != nullptr);
 
 	/* For 10.7 and later, we try to toggle using the quartz subdriver. */
 	if (_cocoa_subdriver->ToggleFullscreen()) return true;
@@ -594,12 +594,12 @@ bool VideoDriver_Cocoa::ToggleFullscreen(bool full_screen)
 		int bpp    = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 
 		delete _cocoa_subdriver;
-		_cocoa_subdriver = NULL;
+		_cocoa_subdriver = nullptr;
 
 		_cocoa_subdriver = QZ_CreateSubdriver(width, height, bpp, full_screen, false);
-		if (_cocoa_subdriver == NULL) {
+		if (_cocoa_subdriver == nullptr) {
 			_cocoa_subdriver = QZ_CreateSubdriver(width, height, bpp, oldfs, true);
-			if (_cocoa_subdriver == NULL) error("Cocoa: Failed to create subdriver");
+			if (_cocoa_subdriver == nullptr) error("Cocoa: Failed to create subdriver");
 		}
 	}
 
@@ -624,7 +624,7 @@ bool VideoDriver_Cocoa::AfterBlitterChange()
  */
 void VideoDriver_Cocoa::EditBoxLostFocus()
 {
-	if (_cocoa_subdriver != NULL) {
+	if (_cocoa_subdriver != nullptr) {
 		if ([ _cocoa_subdriver->cocoaview respondsToSelector:@selector(inputContext) ] && [ [ _cocoa_subdriver->cocoaview performSelector:@selector(inputContext) ] respondsToSelector:@selector(discardMarkedText) ]) {
 			[ [ _cocoa_subdriver->cocoaview performSelector:@selector(inputContext) ] performSelector:@selector(discardMarkedText) ];
 		}
@@ -635,7 +635,7 @@ void VideoDriver_Cocoa::EditBoxLostFocus()
 #endif
 	}
 	/* Clear any marked string from the current edit box. */
-	HandleTextInput(NULL, true);
+	HandleTextInput(nullptr, true);
 }
 
 /**
@@ -652,9 +652,9 @@ void CocoaDialog(const char *title, const char *message, const char *buttonLabel
 	_cocoa_video_dialog = true;
 
 	bool wasstarted = _cocoa_video_started;
-	if (VideoDriver::GetInstance() == NULL) {
+	if (VideoDriver::GetInstance() == nullptr) {
 		setupApplication(); // Setup application before showing dialog
-	} else if (!_cocoa_video_started && VideoDriver::GetInstance()->Start(NULL) != NULL) {
+	} else if (!_cocoa_video_started && VideoDriver::GetInstance()->Start(nullptr) != nullptr) {
 		fprintf(stderr, "%s: %s\n", title, message);
 		return;
 	}
@@ -676,7 +676,7 @@ void CocoaDialog(const char *title, const char *message, const char *buttonLabel
 #endif
 	}
 
-	if (!wasstarted && VideoDriver::GetInstance() != NULL) VideoDriver::GetInstance()->Stop();
+	if (!wasstarted && VideoDriver::GetInstance() != nullptr) VideoDriver::GetInstance()->Stop();
 
 	_cocoa_video_dialog = false;
 }
@@ -694,7 +694,7 @@ void cocoaSetApplicationBundleDir()
 		AppendPathSeparator(tmp, lastof(tmp));
 		_searchpaths[SP_APPLICATION_BUNDLE_DIR] = stredup(tmp);
 	} else {
-		_searchpaths[SP_APPLICATION_BUNDLE_DIR] = NULL;
+		_searchpaths[SP_APPLICATION_BUNDLE_DIR] = nullptr;
 	}
 
 	CFRelease(url);
@@ -967,7 +967,7 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
  */
 - (void)mouseExited:(NSEvent *)theEvent
 {
-	if (_cocoa_subdriver != NULL) UndrawMouseCursor();
+	if (_cocoa_subdriver != nullptr) UndrawMouseCursor();
 	_cursor.in_window = false;
 }
 
@@ -979,16 +979,16 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 
 	NSString *s = [ aString isKindOfClass:[ NSAttributedString class ] ] ? [ aString string ] : (NSString *)aString;
 
-	const char *insert_point = NULL;
-	const char *replace_range = NULL;
+	const char *insert_point = nullptr;
+	const char *replace_range = nullptr;
 	if (replacementRange.location != NSNotFound) {
 		/* Calculate the part to be replaced. */
 		insert_point = Utf8AdvanceByUtf16Units(_focused_window->GetFocusedText(), replacementRange.location);
 		replace_range = Utf8AdvanceByUtf16Units(insert_point, replacementRange.length);
 	}
 
-	HandleTextInput(NULL, true);
-	HandleTextInput([ s UTF8String ], false, NULL, insert_point, replace_range);
+	HandleTextInput(nullptr, true);
+	HandleTextInput([ s UTF8String ], false, nullptr, insert_point, replace_range);
 }
 
 /** Insert the given text at the caret. */
@@ -1005,9 +1005,9 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 	NSString *s = [ aString isKindOfClass:[ NSAttributedString class ] ] ? [ aString string ] : (NSString *)aString;
 
 	const char *utf8 = [ s UTF8String ];
-	if (utf8 != NULL) {
-		const char *insert_point = NULL;
-		const char *replace_range = NULL;
+	if (utf8 != nullptr) {
+		const char *insert_point = nullptr;
+		const char *replace_range = nullptr;
 		if (replacementRange.location != NSNotFound) {
 			/* Calculate the part to be replaced. */
 			NSRange marked = [ self markedRange ];
@@ -1031,7 +1031,7 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 /** Unmark the current marked text. */
 - (void)unmarkText
 {
-	HandleTextInput(NULL, true);
+	HandleTextInput(nullptr, true);
 }
 
 /** Get the caret position. */
@@ -1050,7 +1050,7 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 
 	size_t mark_len;
 	const char *mark = _focused_window->GetMarkedText(&mark_len);
-	if (mark != NULL) {
+	if (mark != nullptr) {
 		NSUInteger start = CountUtf16Units(_focused_window->GetFocusedText(), mark);
 		NSUInteger len = CountUtf16Units(mark, mark + mark_len);
 
@@ -1066,7 +1066,7 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 	if (!EditBoxInGlobalFocus()) return NO;
 
 	size_t len;
-	return _focused_window->GetMarkedText(&len) != NULL;
+	return _focused_window->GetMarkedText(&len) != nullptr;
 }
 
 /** Get a string corresponding to the given range. */
@@ -1077,7 +1077,7 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 	NSString *s = [ NSString stringWithUTF8String:_focused_window->GetFocusedText() ];
 	NSRange valid_range = NSIntersectionRange(NSMakeRange(0, [ s length ]), theRange);
 
-	if (actualRange != NULL) *actualRange = valid_range;
+	if (actualRange != nullptr) *actualRange = valid_range;
 	if (valid_range.length == 0) return nil;
 
 	return [ [ [ NSAttributedString alloc ] initWithString:[ s substringWithRange:valid_range ] ] autorelease ];
@@ -1086,7 +1086,7 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 /** Get a string corresponding to the given range. */
 - (NSAttributedString *)attributedSubstringFromRange:(NSRange)theRange
 {
-	return [ self attributedSubstringForProposedRange:theRange actualRange:NULL ];
+	return [ self attributedSubstringForProposedRange:theRange actualRange:nullptr ];
 }
 
 /** Get the current edit box string. */
@@ -1117,7 +1117,7 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 	Point pt = { (int)view_pt.x, (int)[ self frame ].size.height - (int)view_pt.y };
 
 	const char *ch = _focused_window->GetTextCharacterAtPosition(pt);
-	if (ch == NULL) return NSNotFound;
+	if (ch == nullptr) return NSNotFound;
 
 	return CountUtf16Units(_focused_window->GetFocusedText(), ch);
 }

@@ -30,7 +30,7 @@ INSTANTIATE_POOL_METHODS(Dock)
 
 	for (Dock *d = st->GetPrimaryDock();; d = d->next) {
 		if (d->sloped == tile || d->flat == tile) return d;
-		assert(d->next != NULL);
+		assert(d->next != nullptr);
 	}
 
 	NOT_REACHED();

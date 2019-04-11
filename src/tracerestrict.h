@@ -348,7 +348,7 @@ struct TraceRestrictProgramInput {
 
 	TileIndex tile;                               ///< Tile of restrict signal, for direction testing
 	Trackdir trackdir;                            ///< Track direction on tile of restrict signal, for direction testing
-	PreviousSignalProc *previous_signal_callback; ///< Callback to retrieve tile and direction of previous signal, may be NULL
+	PreviousSignalProc *previous_signal_callback; ///< Callback to retrieve tile and direction of previous signal, may be nullptr
 	const void *previous_signal_ptr;              ///< Opaque pointer suitable to be passed to previous_signal_callback
 	TraceRestrictProgramInputSlotPermissions permitted_slot_operations; ///< Permitted slot operations
 
@@ -746,14 +746,14 @@ TraceRestrictProgram *GetTraceRestrictProgram(TraceRestrictRefId ref, bool creat
 void TraceRestrictNotifySignalRemoval(TileIndex tile, Track track);
 
 /**
- * Gets the existing signal program for the tile identified by @p t and @p track, or NULL
+ * Gets the existing signal program for the tile identified by @p t and @p track, or nullptr
  */
 static inline const TraceRestrictProgram *GetExistingTraceRestrictProgram(TileIndex t, Track track)
 {
 	if (IsRestrictedSignal(t)) {
 		return GetTraceRestrictProgram(MakeTraceRestrictRefId(t, track), false);
 	} else {
-		return NULL;
+		return nullptr;
 	}
 }
 

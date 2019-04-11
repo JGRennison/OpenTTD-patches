@@ -176,6 +176,6 @@ void Load_CPDP()
 
 /** Chunk handlers related to cargo packets. */
 extern const ChunkHandler _cargopacket_chunk_handlers[] = {
-	{ 'CAPA', Save_CAPA, Load_CAPA, NULL, NULL, CH_ARRAY },
-	{ 'CPDP', Save_CPDP, Load_CPDP, NULL, NULL, CH_RIFF | CH_LAST },
+	{ 'CAPA', Save_CAPA, Load_CAPA, nullptr, nullptr, CH_ARRAY },
+	{ 'CPDP', Save_CPDP, Load_CPDP, nullptr, nullptr, CH_RIFF | CH_LAST },
 };

@@ -99,7 +99,7 @@ struct PlansWindow : Window {
 	~PlansWindow()
 	{
 		this->list.clear();
-		_current_plan = NULL;
+		_current_plan = nullptr;
 	}
 
 	virtual void OnClick(Point pt, int widget, int click_count)
@@ -188,7 +188,7 @@ struct PlansWindow : Window {
 				} else {
 					if (_current_plan) {
 						_current_plan->SetFocus(false);
-						_current_plan = NULL;
+						_current_plan = nullptr;
 					}
 				}
 				this->selected = new_selected;
@@ -203,7 +203,7 @@ struct PlansWindow : Window {
 	{
 		if (_current_plan == nullptr || str == nullptr) return;
 
-		DoCommandP(0, _current_plan->index, 0, CMD_RENAME_PLAN | CMD_MSG(STR_ERROR_CAN_T_RENAME_PLAN), NULL, str);
+		DoCommandP(0, _current_plan->index, 0, CMD_RENAME_PLAN | CMD_MSG(STR_ERROR_CAN_T_RENAME_PLAN), nullptr, str);
 	}
 
 	bool AllPlansHidden() const
@@ -401,7 +401,7 @@ struct PlansWindow : Window {
 /** Show the window to manage plans. */
 void ShowPlansWindow()
 {
-	if (BringWindowToFrontById(WC_PLANS, 0) != NULL) return;
+	if (BringWindowToFrontById(WC_PLANS, 0) != nullptr) return;
 	new PlansWindow(&_plans_desc);
 }
 

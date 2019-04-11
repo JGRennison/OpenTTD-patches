@@ -87,13 +87,13 @@ static uint32 GetTick()
 {
 	struct timeval tim;
 
-	gettimeofday(&tim, NULL);
+	gettimeofday(&tim, nullptr);
 	return tim.tv_usec / 1000 + tim.tv_sec * 1000;
 }
 
 static void QZ_WarpCursor(int x, int y)
 {
-	assert(_cocoa_subdriver != NULL);
+	assert(_cocoa_subdriver != nullptr);
 
 	/* Only allow warping when in foreground */
 	if (![ NSApp isActive ]) return;
@@ -400,7 +400,7 @@ static void QZ_MouseButtonEvent(int button, BOOL down)
 
 static bool QZ_PollEvent()
 {
-	assert(_cocoa_subdriver != NULL);
+	assert(_cocoa_subdriver != nullptr);
 
 #ifdef _DEBUG
 	uint32 et0 = GetTick();

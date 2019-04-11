@@ -72,7 +72,7 @@ public:
 	/// Get the instruction's opcode
 	inline SignalOpcode Opcode() const { return this->opcode; }
 
-	/// Get the previous instruction. If this is NULL, then this is the first
+	/// Get the previous instruction. If this is nullptr, then this is the first
 	/// instruction.
 	inline SignalInstruction *Previous() const { return this->previous; }
 
@@ -264,7 +264,7 @@ public:
 	virtual void Remove();
 
 	/** The next instruction after this one. On the End instruction, this should
-	* be NULL.
+	* be nullptr.
 	*/
 	SignalInstruction *next;
 

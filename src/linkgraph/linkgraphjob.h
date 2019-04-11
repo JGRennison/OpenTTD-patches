@@ -63,7 +63,7 @@ private:
 
 protected:
 	const LinkGraph link_graph;       ///< Link graph to by analyzed. Is copied when job is started and mustn't be modified later.
-	std::shared_ptr<LinkGraphJobGroup> group; ///< JOb group thread the job is running in or NULL if it's running in the main thread.
+	std::shared_ptr<LinkGraphJobGroup> group; ///< JOb group thread the job is running in or nullptr if it's running in the main thread.
 	const LinkGraphSettings settings; ///< Copy of _settings_game.linkgraph at spawn time.
 	DateTicks join_date_ticks;        ///< Date when the job is to be joined.
 	DateTicks start_date_ticks;       ///< Date when the job was started.
@@ -426,9 +426,9 @@ public:
 	 */
 	inline void Detach()
 	{
-		if (this->parent != NULL) {
+		if (this->parent != nullptr) {
 			this->parent->num_children--;
-			this->parent = NULL;
+			this->parent = nullptr;
 		}
 	}
 

@@ -405,7 +405,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 		FOR_ALL_VEHICLES(v) {
 			if (v->owner == old_owner && IsCompanyBuildableVehicleType(v->type)) {
 				if (new_owner == INVALID_OWNER) {
-					if (v->Previous() == NULL) {
+					if (v->Previous() == nullptr) {
 						if (_settings_game.economy.infrastructure_sharing[VEH_TRAIN] && v->type == VEH_TRAIN && Train::From(v)->IsFrontEngine() && !Train::From(v)->IsVirtual()) {
 							DeleteVisibleTrain(Train::From(v));
 						} else {
@@ -487,7 +487,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 				}
 
 				/* Invalidate the vehicle's cargo payment "owner cache". */
-				if (v->cargo_payment != NULL) v->cargo_payment->owner = NULL;
+				if (v->cargo_payment != nullptr) v->cargo_payment->owner = nullptr;
 			}
 		}
 
@@ -991,7 +991,7 @@ Money GetPrice(Price index, uint cost_factor, const GRFFile *grf_file, int shift
 	if (index >= PR_END) return 0;
 
 	Money cost = _price[index] * cost_factor;
-	if (grf_file != NULL) shift += grf_file->price_base_multipliers[index];
+	if (grf_file != nullptr) shift += grf_file->price_base_multipliers[index];
 
 	if (shift >= 0) {
 		cost <<= shift;
@@ -1212,7 +1212,7 @@ CargoPayment::~CargoPayment()
 {
 	if (this->CleaningPool()) return;
 
-	this->front->cargo_payment = NULL;
+	this->front->cargo_payment = nullptr;
 
 	if (this->visual_profit == 0 && this->visual_transfer == 0) return;
 
@@ -1243,7 +1243,7 @@ CargoPayment::~CargoPayment()
  */
 void CargoPayment::PayFinalDelivery(CargoPacket *cp, uint count)
 {
-	if (this->owner == NULL) {
+	if (this->owner == nullptr) {
 		this->owner = Company::Get(this->front->owner);
 	}
 
@@ -1289,7 +1289,7 @@ Money CargoPayment::PayTransfer(CargoPacket *cp, uint count)
 /**
  * Returns the load type of a vehicle.
  * In case of cargo type order, the load type returned depends on the cargo carriable by the vehicle.
- * @pre v != NULL
+ * @pre v != nullptr
  * @param v A pointer to a vehicle.
  * @return the load type of this vehicle.
  */
@@ -1301,7 +1301,7 @@ static OrderLoadFlags GetLoadType(const Vehicle *v)
 /**
  * Returns the unload type of a vehicle.
  * In case of cargo type order, the unload type returned depends on the cargo carriable by the vehicle.
- * @pre v != NULL
+ * @pre v != nullptr
  * @param v A pointer to a vehicle.
  * @return The unload type of this vehicle.
  */
@@ -1325,7 +1325,7 @@ void PrepareUnload(Vehicle *front_v)
 	/* Start unloading at the first possible moment */
 	front_v->load_unload_ticks = 1;
 
-	assert(front_v->cargo_payment == NULL);
+	assert(front_v->cargo_payment == nullptr);
 	/* One CargoPayment per vehicle and the vehicle limit equals the
 	 * limit in number of CargoPayments. Can't go wrong. */
 	assert_compile(CargoPaymentPool::MAX_SIZE == VehiclePool::MAX_SIZE);
@@ -1333,9 +1333,9 @@ void PrepareUnload(Vehicle *front_v)
 	front_v->cargo_payment = new CargoPayment(front_v);
 
 	CargoStationIDStackSet next_station = front_v->GetNextStoppingStation();
-	if (front_v->orders.list == NULL || (front_v->current_order.GetUnloadType() & OUFB_NO_UNLOAD) == 0) {
+	if (front_v->orders.list == nullptr || (front_v->current_order.GetUnloadType() & OUFB_NO_UNLOAD) == 0) {
 		Station *st = Station::Get(front_v->last_station_visited);
-		for (Vehicle *v = front_v; v != NULL; v = v->Next()) {
+		for (Vehicle *v = front_v; v != nullptr; v = v->Next()) {
 			if (GetUnloadType(v) & OUFB_NO_UNLOAD) continue;
 			const GoodsEntry *ge = &st->goods[v->cargo_type];
 			if (v->cargo_cap > 0 && v->cargo.TotalCount() > 0) {
@@ -1367,7 +1367,7 @@ static uint GetLoadAmount(Vehicle *v)
 
 	if (_settings_game.order.gradual_loading) {
 		uint16 cb_load_amount = CALLBACK_FAILED;
-		if (e->GetGRF() != NULL && e->GetGRF()->grf_version >= 8) {
+		if (e->GetGRF() != nullptr && e->GetGRF()->grf_version >= 8) {
 			/* Use callback 36 */
 			cb_load_amount = GetVehicleProperty(v, PROP_VEHICLE_LOAD_AMOUNT, CALLBACK_FAILED);
 		} else if (HasBit(e->info.callback_mask, CBM_VEHICLE_LOAD_AMOUNT)) {
@@ -1404,8 +1404,8 @@ static uint GetLoadAmount(Vehicle *v)
 template<class Taction>
 bool IterateVehicleParts(Vehicle *v, Taction action, bool ignore_multihead_rear = false)
 {
-	for (Vehicle *w = v; w != NULL;
-			w = w->HasArticulatedPart() ? w->GetNextArticulatedPart() : NULL) {
+	for (Vehicle *w = v; w != nullptr;
+			w = w->HasArticulatedPart() ? w->GetNextArticulatedPart() : nullptr) {
 		if (!action(w)) return false;
 		if (!ignore_multihead_rear && w->type == VEH_TRAIN) {
 			Train *train = Train::From(w);
@@ -1536,7 +1536,7 @@ struct FinalizeRefitAction
 	 */
 	bool operator()(Vehicle *v)
 	{
-		if (this->do_reserve || (cargo_type_loading == NULL || (cargo_type_loading->current_order.GetCargoLoadTypeRaw(v->cargo_type) & OLFB_FULL_LOAD))) {
+		if (this->do_reserve || (cargo_type_loading == nullptr || (cargo_type_loading->current_order.GetCargoLoadTypeRaw(v->cargo_type) & OLFB_FULL_LOAD))) {
 			this->st->goods[v->cargo_type].cargo.Reserve(v->cargo_cap - v->cargo.RemainingCount(),
 					&v->cargo, st->xy, this->next_station.Get(v->cargo_type));
 		}
@@ -1607,7 +1607,7 @@ static void HandleStationRefit(Vehicle *v, CargoArray &consist_capleft, Station 
 	/* Add new capacity to consist capacity and reserve cargo */
 	IterateVehicleParts(v_start, FinalizeRefitAction(consist_capleft, st, next_station,
 			is_auto_refit || (v->First()->current_order.GetLoadType() & OLFB_FULL_LOAD) != 0,
-			(v->First()->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD) ? v->First() : NULL));
+			(v->First()->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD) ? v->First() : nullptr));
 
 	cur_company.Restore();
 }
@@ -1637,7 +1637,7 @@ struct ReserveCargoAction {
 		/* Don't try to reserve cargo if the vehicle has already advanced beyond the station platform */
 		if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_BEYOND_PLATFORM_END)) return true;
 
-		if (cargo_type_loading != NULL) {
+		if (cargo_type_loading != nullptr) {
 			OrderLoadFlags flags = cargo_type_loading->current_order.GetCargoLoadTypeRaw(v->cargo_type);
 			if (flags & OLFB_NO_LOAD) return true;
 			if (!(flags & OLFB_FULL_LOAD) && !through_load) return true;
@@ -1668,8 +1668,8 @@ static void ReserveConsist(Station *st, Vehicle *u, CargoArray *consist_capleft,
 	/* If there is a cargo payment not all vehicles of the consist have tried to do the refit.
 	 * In that case, only reserve if it's a fixed refit and the equivalent of "articulated chain"
 	 * a vehicle belongs to already has the right cargo. */
-	bool must_reserve = !u->current_order.IsRefit() || u->cargo_payment == NULL;
-	for (Vehicle *v = u; v != NULL; v = v->Next()) {
+	bool must_reserve = !u->current_order.IsRefit() || u->cargo_payment == nullptr;
+	for (Vehicle *v = u; v != nullptr; v = v->Next()) {
 		assert(v->cargo_cap >= v->cargo.RemainingCount());
 
 		/* Exclude various ways in which the vehicle might not be the head of an equivalent of
@@ -1679,11 +1679,11 @@ static void ReserveConsist(Station *st, Vehicle *u, CargoArray *consist_capleft,
 				(v->type != VEH_TRAIN || !Train::From(v)->IsRearDualheaded()) &&
 				(v->type != VEH_AIRCRAFT || Aircraft::From(v)->IsNormalAircraft()) &&
 				(must_reserve || u->current_order.GetRefitCargo() == v->cargo_type)) {
-			IterateVehicleParts(v, ReserveCargoAction(st, next_station, cargo_type_loading ? u : NULL, through_load), through_load);
+			IterateVehicleParts(v, ReserveCargoAction(st, next_station, cargo_type_loading ? u : nullptr, through_load), through_load);
 		} else if (through_load && v->type == VEH_TRAIN && Train::From(v)->IsRearDualheaded()) {
-			ReserveCargoAction(st, next_station, cargo_type_loading ? u : NULL, through_load)(v);
+			ReserveCargoAction(st, next_station, cargo_type_loading ? u : nullptr, through_load)(v);
 		}
-		if (consist_capleft == NULL || v->cargo_cap == 0) continue;
+		if (consist_capleft == nullptr || v->cargo_cap == 0) continue;
 		if (cargo_type_loading) {
 			OrderLoadFlags flags = u->current_order.GetCargoLoadTypeRaw(v->cargo_type);
 			if (flags & OLFB_NO_LOAD) continue;
@@ -1740,7 +1740,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 		if (order->IsType(OT_GOTO_STATION) && order->GetDestination() == last_visited &&
 				order->GetStopLocation() == OSL_PLATFORM_THROUGH) {
 			pull_through_mode = true;
-			for (Vehicle *v = front; v != NULL; v = v->Next()) {
+			for (Vehicle *v = front; v != nullptr; v = v->Next()) {
 				/* Passengers may not be through-loaded */
 				if (v->cargo_cap > 0 && IsCargoInClass(v->cargo_type, CC_PASSENGERS)) {
 					pull_through_mode = false;
@@ -1768,7 +1768,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 	bool should_reserve_consist = false;
 	bool reserve_consist_cargo_type_loading = false;
 	if (_settings_game.order.improved_load && use_autorefit) {
-		if (front->cargo_payment == NULL) should_reserve_consist = true;
+		if (front->cargo_payment == nullptr) should_reserve_consist = true;
 	} else {
 		if ((front->current_order.GetLoadType() & OLFB_FULL_LOAD) || (front->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD) || pull_through_mode) {
 			should_reserve_consist = true;
@@ -1777,7 +1777,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 	}
 	if (should_reserve_consist) {
 		ReserveConsist(st, front,
-				(use_autorefit && front->load_unload_ticks != 0) ? &consist_capleft : NULL,
+				(use_autorefit && front->load_unload_ticks != 0) ? &consist_capleft : nullptr,
 				next_station,
 				reserve_consist_cargo_type_loading,
 				pull_through_mode);
@@ -1813,7 +1813,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 	CargoPayment *payment = front->cargo_payment;
 
 	uint artic_part = 0; // Articulated part we are currently trying to load. (not counting parts without capacity)
-	for (Vehicle *v = front; v != NULL; v = v->Next()) {
+	for (Vehicle *v = front; v != nullptr; v = v->Next()) {
 		if (pull_through_mode && HasBit(Train::From(v)->flags, VRF_BEYOND_PLATFORM_END)) continue;
 		if (pull_through_mode && !v->IsArticulatedPart()) {
 			int length = Train::From(v)->gcache.cached_veh_length;
@@ -1823,7 +1823,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 				length += Train::From(u)->gcache.cached_veh_length;
 			}
 			if (v != station_vehicle && !HasBit(Train::From(v->Previous())->flags, VRF_BEYOND_PLATFORM_END) && length > platform_length_left) {
-				for (Vehicle *skip = v; skip != NULL; skip = skip->Next()) {
+				for (Vehicle *skip = v; skip != nullptr; skip = skip->Next()) {
 					SetBit(Train::From(skip)->flags, VRF_NOT_YET_IN_PLATFORM);
 					if (HasBit(skip->vehicle_flags, VF_CARGO_UNLOADING)) {
 						unload_payment_not_yet_in_station = true;
@@ -1854,7 +1854,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 			uint amount_unloaded = _settings_game.order.gradual_loading ? min(cargo_count, GetLoadAmount(v)) : cargo_count;
 			bool remaining = false; // Are there cargo entities in this vehicle that can still be unloaded here?
 
-			assert(payment != NULL);
+			assert(payment != nullptr);
 			payment->SetCargo(v->cargo_type);
 
 			if (!HasBit(ge->status, GoodsEntry::GES_ACCEPTANCE) && v->cargo.ActionCount(VehicleCargoList::MTA_DELIVER) > 0) {
@@ -2025,7 +2025,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 
 	bool has_full_load_order = front->current_order.GetLoadType() & OLFB_FULL_LOAD;
 	if (front->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
-		for (Vehicle *v = front; v != NULL; v = v->Next()) {
+		for (Vehicle *v = front; v != nullptr; v = v->Next()) {
 			if (front->current_order.GetCargoLoadTypeRaw(v->cargo_type) & OLFB_FULL_LOAD) {
 				has_full_load_order = true;
 				break;
@@ -2139,7 +2139,7 @@ void LoadUnloadStation(Station *st)
 	/* No vehicle is here... */
 	if (st->loading_vehicles.empty()) return;
 
-	Vehicle *last_loading = NULL;
+	Vehicle *last_loading = nullptr;
 
 	/* Check if anything will be loaded at all. Otherwise we don't need to reserve either. */
 	for (Vehicle *v : st->loading_vehicles) {
@@ -2156,7 +2156,7 @@ void LoadUnloadStation(Station *st)
 	 * consist in a station which is not allowed to load yet because its
 	 * load_unload_ticks is still not 0.
 	 */
-	if (last_loading == NULL) return;
+	if (last_loading == nullptr) return;
 
 	for (Vehicle *v : st->loading_vehicles) {
 		if (!(v->vehstatus & (VS_STOPPED | VS_CRASHED)) && !v->current_order.IsType(OT_LOADING_ADVANCE)) LoadUnloadVehicle(v);
@@ -2238,7 +2238,7 @@ CommandCost CmdBuyShareInCompany(TileIndex tile, DoCommandFlag flags, uint32 p1,
 
 	/* Check if buying shares is allowed (protection against modified clients)
 	 * Cannot buy own shares */
-	if (c == NULL || !_settings_game.economy.allow_shares || _current_company == target_company) return CMD_ERROR;
+	if (c == nullptr || !_settings_game.economy.allow_shares || _current_company == target_company) return CMD_ERROR;
 
 	/* Protect new companies from hostile takeovers */
 	if (_cur_year - c->inaugurated_year < 6) return_cmd_error(STR_ERROR_PROTECTED);
@@ -2288,7 +2288,7 @@ CommandCost CmdSellShareInCompany(TileIndex tile, DoCommandFlag flags, uint32 p1
 	Company *c = Company::GetIfValid(target_company);
 
 	/* Cannot sell own shares */
-	if (c == NULL || _current_company == target_company) return CMD_ERROR;
+	if (c == nullptr || _current_company == target_company) return CMD_ERROR;
 
 	/* Check if selling shares is allowed (protection against modified clients).
 	 * However, we must sell shares of companies being closed down. */
@@ -2327,7 +2327,7 @@ CommandCost CmdBuyCompany(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 {
 	CompanyID target_company = (CompanyID)p1;
 	Company *c = Company::GetIfValid(target_company);
-	if (c == NULL) return CMD_ERROR;
+	if (c == nullptr) return CMD_ERROR;
 
 	/* Disable takeovers when not asked */
 	if (!HasBit(c->bankrupt_asked, _current_company)) return CMD_ERROR;

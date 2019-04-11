@@ -50,13 +50,13 @@ CommandCost CmdScheduledDispatch(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	VehicleID veh = GB(p1, 0, 20);
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
-	if (v == NULL || !v->IsPrimaryVehicle()) return CMD_ERROR;
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
 	if (flags & DC_EXEC) {
-		for (Vehicle *v2 = v->FirstShared(); v2 != NULL; v2 = v2->NextShared()) {
+		for (Vehicle *v2 = v->FirstShared(); v2 != nullptr; v2 = v2->NextShared()) {
 			if (HasBit(p2, 0)) {
 				SetBit(v2->vehicle_flags, VF_SCHEDULED_DISPATCH);
 			} else {
@@ -84,12 +84,12 @@ CommandCost CmdScheduledDispatchAdd(TileIndex tile, DoCommandFlag flags, uint32 
 	VehicleID veh = GB(p1, 0, 20);
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
-	if (v == NULL || !v->IsPrimaryVehicle()) return CMD_ERROR;
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (v->orders.list == NULL) return CMD_ERROR;
+	if (v->orders.list == nullptr) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
 		v->orders.list->AddScheduledDispatch(p2);
@@ -113,12 +113,12 @@ CommandCost CmdScheduledDispatchRemove(TileIndex tile, DoCommandFlag flags, uint
 	VehicleID veh = GB(p1, 0, 20);
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
-	if (v == NULL || !v->IsPrimaryVehicle()) return CMD_ERROR;
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (v->orders.list == NULL) return CMD_ERROR;
+	if (v->orders.list == nullptr) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
 		v->orders.list->RemoveScheduledDispatch(p2);
@@ -143,12 +143,12 @@ CommandCost CmdScheduledDispatchSetDuration(TileIndex tile, DoCommandFlag flags,
 	VehicleID veh = GB(p1, 0, 20);
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
-	if (v == NULL || !v->IsPrimaryVehicle()) return CMD_ERROR;
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (v->orders.list == NULL) return CMD_ERROR;
+	if (v->orders.list == nullptr) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
 		v->orders.list->SetScheduledDispatchDuration(p2);
@@ -183,12 +183,12 @@ CommandCost CmdScheduledDispatchSetStartDate(TileIndex tile, DoCommandFlag flags
 	VehicleID veh = GB(p1, 0, 20);
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
-	if (v == NULL || !v->IsPrimaryVehicle()) return CMD_ERROR;
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (v->orders.list == NULL) return CMD_ERROR;
+	if (v->orders.list == nullptr) return CMD_ERROR;
 
 	int32 date = (int32) GB(p2, 0, 30);
 	uint16 full_date_fract = (GB(p1, 20, 12) << 2) + GB(p2, 30, 2);
@@ -217,12 +217,12 @@ CommandCost CmdScheduledDispatchSetDelay(TileIndex tile, DoCommandFlag flags, ui
 	VehicleID veh = GB(p1, 0, 20);
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
-	if (v == NULL || !v->IsPrimaryVehicle()) return CMD_ERROR;
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (v->orders.list == NULL) return CMD_ERROR;
+	if (v->orders.list == nullptr) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
 		v->orders.list->SetScheduledDispatchDelay(p2);
@@ -252,12 +252,12 @@ CommandCost CmdScheduledDispatchResetLastDispatch(TileIndex tile, DoCommandFlag 
 	VehicleID veh = GB(p1, 0, 20);
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
-	if (v == NULL || !v->IsPrimaryVehicle()) return CMD_ERROR;
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (v->orders.list == NULL) return CMD_ERROR;
+	if (v->orders.list == nullptr) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
 		v->orders.list->SetScheduledDispatchLastDispatch(0);

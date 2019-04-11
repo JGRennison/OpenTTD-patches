@@ -128,7 +128,7 @@ public:
 
 	void OnResize() override
 	{
-		if (this->viewport != NULL) {
+		if (this->viewport != nullptr) {
 			NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_EV_VIEWPORT);
 			nvp->UpdateViewportCoordinates(this);
 		}
@@ -192,7 +192,7 @@ void ShowExtraViewPortWindow(TileIndex tile)
 	int i = 0;
 
 	/* find next free window number for extra viewport */
-	while (FindWindowById(WC_EXTRA_VIEW_PORT, i) != NULL) i++;
+	while (FindWindowById(WC_EXTRA_VIEW_PORT, i) != nullptr) i++;
 
 	new ExtraViewportWindow(&_extra_view_port_desc, i, tile);
 }
@@ -225,7 +225,7 @@ void ShowTooltipForTile(Window *w, const TileIndex tile)
 		case MP_HOUSE: {
 			if (HasBit(_display_opt, DO_SHOW_TOWN_NAMES)) return; // No need for a town name tooltip when it is already displayed
 			SetDParam(0, GetTownIndex(tile));
-			GuiShowTooltips(w, STR_TOWN_NAME_TOOLTIP, 0, NULL, TCC_HOVER_VIEWPORT);
+			GuiShowTooltips(w, STR_TOWN_NAME_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
 			break;
 		}
 		case MP_INDUSTRY: {
@@ -246,7 +246,7 @@ void ShowTooltipForTile(Window *w, const TileIndex tile)
 			}
 			SetDParam(0, indsp->name);
 			SetDParamStr(1, buffer);
-			GuiShowTooltips(w, STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP, 0, NULL, TCC_HOVER_VIEWPORT);
+			GuiShowTooltips(w, STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP, 0, nullptr, TCC_HOVER_VIEWPORT);
 			break;
 		}
 		default:

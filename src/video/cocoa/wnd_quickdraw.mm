@@ -342,7 +342,7 @@ WindowQuickdrawSubdriver::WindowQuickdrawSubdriver()
 	this->window_width  = 0;
 	this->window_height = 0;
 	this->buffer_depth  = 0;
-	this->pixel_buffer  = NULL;
+	this->pixel_buffer  = nullptr;
 	this->active        = false;
 	this->setup         = false;
 
@@ -522,7 +522,7 @@ bool WindowQuickdrawSubdriver::WindowResized()
 
 	free(this->pixel_buffer);
 	this->pixel_buffer = malloc(this->window_width * this->window_height * this->buffer_depth / 8);
-	if (this->pixel_buffer == NULL) {
+	if (this->pixel_buffer == nullptr) {
 		DEBUG(driver, 0, "Failed to allocate pixel buffer");
 		return false;
 	}
@@ -546,14 +546,14 @@ CocoaSubdriver *QZ_CreateWindowQuickdrawSubdriver(int width, int height, int bpp
 
 	if (bpp != 8 && bpp != 32) {
 		DEBUG(driver, 0, "The cocoa quickdraw subdriver only supports 8 and 32 bpp.");
-		return NULL;
+		return nullptr;
 	}
 
 	ret = new WindowQuickdrawSubdriver();
 
 	if (!ret->ChangeResolution(width, height, bpp)) {
 		delete ret;
-		return NULL;
+		return nullptr;
 	}
 
 	return ret;

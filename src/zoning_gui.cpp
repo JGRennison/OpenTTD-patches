@@ -132,14 +132,14 @@ struct ZoningWindow : public Window {
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
 	{
-		const StringID *strs = NULL;
+		const StringID *strs = nullptr;
 		switch (widget) {
 			case ZTW_OUTER_DROPDOWN:
 			case ZTW_INNER_DROPDOWN:
 				strs = _zone_type_strings;
 				break;
 		}
-		if (strs != NULL) {
+		if (strs != nullptr) {
 			while (*strs != INVALID_STRING_ID) {
 				*size = maxdim(*size, GetStringBoundingBox(*strs++));
 			}

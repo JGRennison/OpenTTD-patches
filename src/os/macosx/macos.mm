@@ -215,7 +215,7 @@ bool IsMonospaceFont(CFStringRef name)
 {
 	NSFont *font = [ NSFont fontWithName:(__bridge NSString *)name size:0.0f ];
 
-	return font != NULL ? [ font isFixedPitch ] : false;
+	return font != nullptr ? [ font isFixedPitch ] : false;
 }
 
 /**
@@ -231,7 +231,7 @@ void MacOSSetThreadName(const char *name)
 #endif
 
 	NSThread *cur = [ NSThread currentThread ];
-	if (cur != NULL && [ cur respondsToSelector:@selector(setName:) ]) {
+	if (cur != nullptr && [ cur respondsToSelector:@selector(setName:) ]) {
 		[ cur performSelector:@selector(setName:) withObject:[ NSString stringWithUTF8String:name ] ];
 	}
 }

@@ -148,7 +148,7 @@ struct SetDateWindow : Window {
 				ShowDateDropDown(widget);
 				break;
 			case WID_SD_SET_DATE:
-				if (this->callback != NULL) {
+				if (this->callback != nullptr) {
 					this->callback(this, ConvertYMDToDate(this->date.year, this->date.month, this->date.day)
 							* DAY_TICKS * _settings_game.economy.day_length_factor);
 				}
@@ -266,7 +266,7 @@ struct SetMinutesWindow : SetDateWindow
 				break;
 
 			case WID_SD_SET_DATE:
-				if (this->callback != NULL) {
+				if (this->callback != nullptr) {
 					this->callback(this, ((DateTicks)minutes - _settings_client.gui.clock_offset) * _settings_client.gui.ticks_per_minute);
 				}
 				delete this;
@@ -338,14 +338,14 @@ static const NWidgetPart _nested_set_minutes_widgets[] = {
 
 /** Description of the date setting window. */
 static WindowDesc _set_date_desc(
-	WDP_CENTER, NULL, 0, 0,
+	WDP_CENTER, nullptr, 0, 0,
 	WC_SET_DATE, WC_NONE,
 	0,
 	_nested_set_date_widgets, lengthof(_nested_set_date_widgets)
 );
 
 static WindowDesc _set_minutes_desc(
-	WDP_CENTER, NULL, 0, 0,
+	WDP_CENTER, nullptr, 0, 0,
 	WC_SET_DATE, WC_NONE,
 	0,
 	_nested_set_minutes_widgets, lengthof(_nested_set_minutes_widgets)

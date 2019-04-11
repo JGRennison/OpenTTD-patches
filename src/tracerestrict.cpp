@@ -188,7 +188,7 @@ static bool TestBinaryConditionCommon(TraceRestrictItem item, bool input)
 
 /**
  * Test order condition
- * @p order may be NULL
+ * @p order may be nullptr
  */
 static bool TestOrderCondition(const Order *order, TraceRestrictItem item)
 {
@@ -229,7 +229,7 @@ static bool TestStationCondition(StationID station, TraceRestrictItem item)
 
 /**
  * Execute program on train and store results in out
- * @p v may not be NULL
+ * @p v may not be nullptr
  * @p out should be zero-initialised
  */
 void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInput &input, TraceRestrictProgramResult& out) const
@@ -282,7 +282,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 
 					case TRIT_COND_NEXT_ORDER: {
-						if (v->orders.list == NULL) break;
+						if (v->orders.list == nullptr) break;
 						if (v->orders.list->GetNumOrders() == 0) break;
 
 						const Order *current_order = v->GetOrder(v->cur_real_order_index);
@@ -301,7 +301,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 
 					case TRIT_COND_CARGO: {
 						bool have_cargo = false;
-						for (const Vehicle *v_iter = v; v_iter != NULL; v_iter = v_iter->Next()) {
+						for (const Vehicle *v_iter = v; v_iter != nullptr; v_iter = v_iter->Next()) {
 							if (v_iter->cargo_type == GetTraceRestrictValue(item) && v_iter->cargo_cap > 0) {
 								have_cargo = true;
 								break;
@@ -360,7 +360,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 
 					case TRIT_COND_TRAIN_IN_SLOT: {
 						const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GetTraceRestrictValue(item));
-						result = TestBinaryConditionCommon(item, slot != NULL && slot->IsOccupant(v->index));
+						result = TestBinaryConditionCommon(item, slot != nullptr && slot->IsOccupant(v->index));
 						break;
 					}
 
@@ -371,11 +371,11 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GetTraceRestrictValue(item));
 						switch (static_cast<TraceRestrictSlotOccupancyCondAuxField>(GetTraceRestrictAuxField(item))) {
 							case TRSOCAF_OCCUPANTS:
-								result = TestCondition(slot != NULL ? slot->occupants.size() : 0, condop, value);
+								result = TestCondition(slot != nullptr ? slot->occupants.size() : 0, condop, value);
 								break;
 
 							case TRSOCAF_REMAINING:
-								result = TestCondition(slot != NULL ? slot->max_occupancy - slot->occupants.size() : 0, condop, value);
+								result = TestCondition(slot != nullptr ? slot->max_occupancy - slot->occupants.size() : 0, condop, value);
 								break;
 
 							default:
@@ -434,7 +434,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						switch (static_cast<TraceRestrictTrainStatusValueField>(GetTraceRestrictValue(item))) {
 							case TRTSVF_EMPTY:
 								has_status = true;
-								for (const Vehicle *v_iter = v; v_iter != NULL; v_iter = v_iter->Next()) {
+								for (const Vehicle *v_iter = v; v_iter != nullptr; v_iter = v_iter->Next()) {
 									if (v_iter->cargo.StoredCount() > 0) {
 										has_status = false;
 										break;
@@ -444,7 +444,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 
 							case TRTSVF_FULL:
 								has_status = true;
-								for (const Vehicle *v_iter = v; v_iter != NULL; v_iter = v_iter->Next()) {
+								for (const Vehicle *v_iter = v; v_iter != nullptr; v_iter = v_iter->Next()) {
 									if (v_iter->cargo.StoredCount() < v_iter->cargo_cap) {
 										has_status = false;
 										break;
@@ -569,7 +569,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 					case TRIT_SLOT: {
 						if (!input.permitted_slot_operations) break;
 						TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GetTraceRestrictValue(item));
-						if (slot == NULL) break;
+						if (slot == nullptr) break;
 						switch (static_cast<TraceRestrictSlotCondOpField>(GetTraceRestrictCondOp(item))) {
 							case TRSCOF_ACQUIRE_WAIT:
 								if (input.permitted_slot_operations & TRPISP_ACQUIRE) {
@@ -1037,7 +1037,7 @@ TraceRestrictProgram *GetTraceRestrictProgram(TraceRestrictRefId ref, bool creat
 
 		// Create new pool item
 		if (!TraceRestrictProgram::CanAllocateItem()) {
-			return NULL;
+			return nullptr;
 		}
 		TraceRestrictProgram *prog = new TraceRestrictProgram();
 
@@ -1045,7 +1045,7 @@ TraceRestrictProgram *GetTraceRestrictProgram(TraceRestrictRefId ref, bool creat
 		TraceRestrictCreateProgramMapping(ref, prog);
 		return prog;
 	} else {
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -1827,7 +1827,7 @@ CommandCost CmdCreateTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint
 CommandCost CmdDeleteTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(p1);
-	if (slot == NULL || slot->owner != _current_company) return CMD_ERROR;
+	if (slot == nullptr || slot->owner != _current_company) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
 		/* notify tracerestrict that group is about to be deleted */
@@ -1858,7 +1858,7 @@ CommandCost CmdDeleteTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint
 CommandCost CmdAlterTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GB(p1, 0, 16));
-	if (slot == NULL || slot->owner != _current_company) return CMD_ERROR;
+	if (slot == nullptr || slot->owner != _current_company) return CMD_ERROR;
 
 	if (!HasBit(p1, 16)) {
 		/* Rename slot */
@@ -1905,8 +1905,8 @@ CommandCost CmdAddVehicleTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, 
 {
 	TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(p1);
 	Vehicle *v = Vehicle::GetIfValid(p2);
-	if (slot == NULL || slot->owner != _current_company) return CMD_ERROR;
-	if (v == NULL || v->owner != _current_company) return CMD_ERROR;
+	if (slot == nullptr || slot->owner != _current_company) return CMD_ERROR;
+	if (v == nullptr || v->owner != _current_company) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
 		slot->Occupy(v->index, true);
@@ -1930,8 +1930,8 @@ CommandCost CmdRemoveVehicleTraceRestrictSlot(TileIndex tile, DoCommandFlag flag
 {
 	TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(p1);
 	Vehicle *v = Vehicle::GetIfValid(p2);
-	if (slot == NULL || slot->owner != _current_company) return CMD_ERROR;
-	if (v == NULL) return CMD_ERROR; // permit removing vehicles of other owners from your own slot
+	if (slot == nullptr || slot->owner != _current_company) return CMD_ERROR;
+	if (v == nullptr) return CMD_ERROR; // permit removing vehicles of other owners from your own slot
 
 	if (flags & DC_EXEC) {
 		slot->Vacate(v->index);

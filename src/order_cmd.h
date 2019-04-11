@@ -37,7 +37,7 @@ restart:
 			if (order->IsType(OT_IMPLICIT)) {
 				order = order->next; // DeleteOrder() invalidates current order
 				DeleteOrder(v, id);
-				if (order != NULL) goto restart;
+				if (order != nullptr) goto restart;
 				break;
 			}
 
@@ -54,7 +54,7 @@ restart:
 			order->MakeDummy();
 			order->SetTravelTimetabled(travel_timetabled);
 
-			for (const Vehicle *w = v->FirstShared(); w != NULL; w = w->NextShared()) {
+			for (const Vehicle *w = v->FirstShared(); w != nullptr; w = w->NextShared()) {
 				/* In GUI, simulate by removing the order and adding it back */
 				InvalidateVehicleOrder(w, id | (INVALID_VEH_ORDER_ID << 8));
 				InvalidateVehicleOrder(w, (INVALID_VEH_ORDER_ID << 8) | id);

@@ -51,7 +51,7 @@ struct PBSWaitingPositionRestrictedSignalInfo {
 	Trackdir  trackdir = INVALID_TRACKDIR;
 };
 
-PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res = NULL);
+PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res = nullptr);
 bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bool include_line_end, bool forbid_90deg = false);
 bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bool forbid_90deg = false, PBSWaitingPositionRestrictedSignalInfo *restricted_signal_info = nullptr);
 

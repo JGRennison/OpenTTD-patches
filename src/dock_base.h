@@ -26,7 +26,7 @@ struct Dock : DockPool::PoolItem<&_dock_pool> {
 	TileIndex flat;   ///< Position on the map of the flat tile.
 	Dock *next;       ///< Next dock of the given type at this station.
 
-	Dock(TileIndex s = INVALID_TILE, TileIndex f = INVALID_TILE) : sloped(s), flat(f), next(NULL) { }
+	Dock(TileIndex s = INVALID_TILE, TileIndex f = INVALID_TILE) : sloped(s), flat(f), next(nullptr) { }
 
 	~Dock() {}
 

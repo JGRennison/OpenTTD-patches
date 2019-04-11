@@ -75,7 +75,7 @@ struct Departure {
 	const Vehicle *vehicle;                ///< The vehicle performing this departure
 	const Order *order;                    ///< The order corresponding to this departure
 	uint scheduled_waiting_time;           ///< Scheduled waiting time if scheduled dispatch is used
-	Departure() : terminus(INVALID_STATION), via(INVALID_STATION), vehicle(NULL), order(NULL) { }
+	Departure() : terminus(INVALID_STATION), via(INVALID_STATION), vehicle(nullptr), order(nullptr) { }
 
 	inline bool operator==(const Departure& d) const {
 		if (this->calling_at.size() != d.calling_at.size()) return false;

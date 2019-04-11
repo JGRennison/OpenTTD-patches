@@ -122,8 +122,8 @@ public:
 
 	TemplateVehicle(EngineID eid)
 	{
-		next = NULL;
-		previous = NULL;
+		next = nullptr;
+		previous = nullptr;
 		first = this;
 		engine_type = eid;
 		this->reuse_depot_vehicles = true;
@@ -157,7 +157,7 @@ public:
 
 	bool IsPrimaryVehicle() const { return this->IsFrontEngine(); }
 	inline bool IsFrontEngine() const { return HasBit(this->subtype, GVSF_FRONT); }
-	inline bool HasArticulatedPart() const { return this->Next() != NULL && this->Next()->IsArticulatedPart(); }
+	inline bool HasArticulatedPart() const { return this->Next() != nullptr && this->Next()->IsArticulatedPart(); }
 
 	inline bool IsArticulatedPart() const { return HasBit(this->subtype, GVSF_ARTICULATED_PART); }
 	inline bool IsMultiheaded() const { return HasBit(this->subtype, GVSF_MULTIHEADED); }
@@ -214,7 +214,7 @@ struct TemplateReplacement : TemplateReplacementPool::PoolItem<&_template_replac
 				return tv;
 			}
 		}
-		return NULL;
+		return nullptr;
 	}
 };
 

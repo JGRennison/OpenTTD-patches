@@ -256,7 +256,7 @@ public:
 
 			case PROGRAM_WIDGET_REMOVE: {
 				SignalInstruction *ins = GetSelected();
-				if (ins == NULL) return;
+				if (ins == nullptr) return;
 
 				uint32 p1 = 0;
 				SB(p1, 0, 3, this->track);
@@ -592,7 +592,7 @@ private:
 	{
 		if (this->selected_instruction == -1
 				|| this->selected_instruction >= int(this->instructions.size()))
-			return NULL;
+			return nullptr;
 
 		return this->instructions[this->selected_instruction].insn;
 	}
@@ -850,7 +850,7 @@ static WindowDesc _program_desc(
 void ShowSignalProgramWindow(SignalReference ref)
 {
 	uint32 window_id = (ref.tile << 3) | ref.track;
-	if (BringWindowToFrontById(WC_SIGNAL_PROGRAM, window_id) != NULL) return;
+	if (BringWindowToFrontById(WC_SIGNAL_PROGRAM, window_id) != nullptr) return;
 
 	new ProgramWindow(&_program_desc, ref);
 }

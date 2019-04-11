@@ -233,7 +233,7 @@ struct SpecializedStation : public BaseStation {
 	 */
 	static inline T *GetIfValid(size_t index)
 	{
-		return IsValidID(index) ? Get(index) : NULL;
+		return IsValidID(index) ? Get(index) : nullptr;
 	}
 
 	/**
@@ -270,7 +270,7 @@ struct SpecializedStation : public BaseStation {
 };
 
 #define FOR_ALL_BASE_STATIONS_OF_TYPE(name, var) \
-	for (size_t station_index = 0; var = NULL, station_index < name::GetPoolSize(); station_index++) \
-		if ((var = name::GetIfValid(station_index)) != NULL)
+	for (size_t station_index = 0; var = nullptr, station_index < name::GetPoolSize(); station_index++) \
+		if ((var = name::GetIfValid(station_index)) != nullptr)
 
 #endif /* BASE_STATION_BASE_H */

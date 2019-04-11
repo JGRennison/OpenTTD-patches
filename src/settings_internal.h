@@ -113,8 +113,8 @@ struct SettingDescBase {
 struct SettingDesc {
 	SettingDescBase desc;   ///< Settings structure (going to configuration file)
 	SaveLoad save;          ///< Internal structure (going to savegame, parts to config)
-	const char *patx_name;  ///< Name to save/load setting from in PATX chunk, if NULL save/load from PATS chunk as normal
-	const char *xref;       ///< Name of SettingDesc to use instead of the contents of this one, useful for loading legacy savegames, if NULL save/load as normal
+	const char *patx_name;  ///< Name to save/load setting from in PATX chunk, if nullptr save/load from PATS chunk as normal
+	const char *xref;       ///< Name of SettingDesc to use instead of the contents of this one, useful for loading legacy savegames, if nullptr save/load as normal
 	OnGuiOrder *orderproc;  ///< Callback procedure for GUI re-ordering
 
 	bool IsEditable(bool do_command = false) const;

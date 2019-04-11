@@ -224,7 +224,7 @@ public:
 
 		this->details_height = 10 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
 
-		this->CreateNestedTree(wdesc != NULL);
+		this->CreateNestedTree(wdesc != nullptr);
 		this->vscroll[0] = this->GetScrollbar(TRW_WIDGET_TOP_SCROLLBAR);
 		this->vscroll[1] = this->GetScrollbar(TRW_WIDGET_MIDDLE_SCROLLBAR);
 		this->vscroll[2] = this->GetScrollbar(TRW_WIDGET_BOTTOM_SCROLLBAR);
@@ -333,7 +333,7 @@ public:
 			short count_columns = 0;
 			short max_columns = 2;
 
-			for (; tmp != NULL; tmp = tmp->Next()) {
+			for (; tmp != nullptr; tmp = tmp->Next()) {
 				cargo_caps[tmp->cargo_type] += tmp->cargo_cap;
 			}
 
@@ -363,7 +363,7 @@ public:
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size())) {
 					uint32 template_index = ((this->templates)[selected_template_index])->index;
 
-					DoCommandP(0, template_index, 0, CMD_TOGGLE_REUSE_DEPOT_VEHICLES, NULL);
+					DoCommandP(0, template_index, 0, CMD_TOGGLE_REUSE_DEPOT_VEHICLES, nullptr);
 				}
 				break;
 			}
@@ -371,7 +371,7 @@ public:
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size())) {
 					uint32 template_index = ((this->templates)[selected_template_index])->index;
 
-					DoCommandP(0, template_index, 0, CMD_TOGGLE_KEEP_REMAINING_VEHICLES, NULL);
+					DoCommandP(0, template_index, 0, CMD_TOGGLE_KEEP_REMAINING_VEHICLES, nullptr);
 				}
 				break;
 			}
@@ -379,7 +379,7 @@ public:
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size())) {
 					uint32 template_index = ((this->templates)[selected_template_index])->index;
 
-					DoCommandP(0, template_index, 0, CMD_TOGGLE_REFIT_AS_TEMPLATE, NULL);
+					DoCommandP(0, template_index, 0, CMD_TOGGLE_REFIT_AS_TEMPLATE, nullptr);
 				}
 				break;
 			}
@@ -387,7 +387,7 @@ public:
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size())) {
 					uint32 template_index = ((this->templates)[selected_template_index])->index;
 
-					DoCommandP(0, template_index, 0, CMD_TOGGLE_TMPL_REPLACE_OLD_ONLY, NULL);
+					DoCommandP(0, template_index, 0, CMD_TOGGLE_TMPL_REPLACE_OLD_ONLY, nullptr);
 				}
 				break;
 			}
@@ -423,7 +423,7 @@ public:
 
 					uint32 template_index = ((this->templates)[selected_template_index])->index;
 
-					bool succeeded = DoCommandP(0, template_index, 0, CMD_DELETE_TEMPLATE_VEHICLE, NULL);
+					bool succeeded = DoCommandP(0, template_index, 0, CMD_DELETE_TEMPLATE_VEHICLE, nullptr);
 
 					if (succeeded) {
 						BuildTemplateGuiList(&this->templates, this->vscroll[1], this->owner, this->sel_railtype);
@@ -460,7 +460,7 @@ public:
 					uint32 tv_index = ((this->templates)[selected_template_index])->index;
 					int current_group_index = (this->groups)[this->selected_group_index]->index;
 
-					DoCommandP(0, current_group_index, tv_index, CMD_ISSUE_TEMPLATE_REPLACEMENT, NULL);
+					DoCommandP(0, current_group_index, tv_index, CMD_ISSUE_TEMPLATE_REPLACEMENT, nullptr);
 					this->UpdateButtonState();
 				}
 				break;
@@ -472,7 +472,7 @@ public:
 
 				int current_group_index = (this->groups)[this->selected_group_index]->index;
 
-				DoCommandP(0, current_group_index, 0, CMD_DELETE_TEMPLATE_REPLACEMENT, NULL);
+				DoCommandP(0, current_group_index, 0, CMD_DELETE_TEMPLATE_REPLACEMENT, nullptr);
 				this->UpdateButtonState();
 				break;
 		}
@@ -481,7 +481,7 @@ public:
 
 	virtual bool OnVehicleSelect(const Vehicle *v)
 	{
-		bool succeeded = DoCommandP(0, v->index, 0, CMD_CLONE_TEMPLATE_VEHICLE_FROM_TRAIN | CMD_MSG(STR_TMPL_CANT_CREATE), NULL);
+		bool succeeded = DoCommandP(0, v->index, 0, CMD_CLONE_TEMPLATE_VEHICLE_FROM_TRAIN | CMD_MSG(STR_TMPL_CANT_CREATE), nullptr);
 
 		if (!succeeded)	return false;
 
@@ -562,7 +562,7 @@ public:
 		/** Sort the groups by their name */
 	static int CDECL GroupNameSorter(const Group * const *a, const Group * const *b)
 	{
-		static const Group *last_group[2] = { NULL, NULL };
+		static const Group *last_group[2] = { nullptr, nullptr };
 		static char         last_name[2][64] = { "", "" };
 
 		if (*a != last_group[0]) {
@@ -753,7 +753,7 @@ public:
 		short max_columns = 2;
 
 		CargoArray cargo_caps;
-		for (; tmp != NULL; tmp = tmp->Next()) {
+		for (; tmp != nullptr; tmp = tmp->Next()) {
 			cargo_caps[tmp->cargo_type] += tmp->cargo_cap;
 		}
 		int x = left;
@@ -794,7 +794,7 @@ public:
 		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_OLD_ONLY, this->editInProgress ||!selected_ok);
 
 		this->SetWidgetDisabledState(TRW_WIDGET_START, this->editInProgress || !(selected_ok && group_ok && FindTemplateIndexForGroup(g_id) != this->selected_template_index));
-		this->SetWidgetDisabledState(TRW_WIDGET_STOP, this->editInProgress || !(group_ok && GetTemplateReplacementByGroupID(g_id) != NULL));
+		this->SetWidgetDisabledState(TRW_WIDGET_STOP, this->editInProgress || !(group_ok && GetTemplateReplacementByGroupID(g_id) != nullptr));
 
 		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_DEFINE, this->editInProgress);
 		this->SetWidgetDisabledState(TRW_WIDGET_TMPL_BUTTONS_CLONE, this->editInProgress);

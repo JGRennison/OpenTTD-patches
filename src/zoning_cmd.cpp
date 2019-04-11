@@ -133,7 +133,7 @@ SpriteID TileZoneCheckOpinionEvaluation(TileIndex tile, Owner owner)
 	int opinion = 0; // 0: no town, 1: no opinion, 2: bad, 3: good
 	Town *town = ClosestTownFromTile(tile, _settings_game.economy.dist_local_authority);
 
-	if (town != NULL) {
+	if (town != nullptr) {
 		if (HasBit(town->have_ratings, owner)) {
 			opinion = (town->ratings[owner] > 0) ? 3 : 2;
 		} else {
@@ -170,7 +170,7 @@ SpriteID TileZoneCheckStationCatchmentEvaluation(TileIndex tile, Owner owner, bo
 
 	for (const Station *st : *stations.GetStations()) {
 		if (st->owner == owner) {
-			if (!open_window_only || FindWindowById(WC_STATION_VIEW, st->index) != NULL) {
+			if (!open_window_only || FindWindowById(WC_STATION_VIEW, st->index) != nullptr) {
 				return SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE;
 			}
 		}
@@ -196,7 +196,7 @@ SpriteID TileZoneCheckUnservedBuildingsEvaluation(TileIndex tile, Owner owner)
 	CargoArray dat;
 
 	memset(&dat, 0, sizeof(dat));
-	AddAcceptedCargo(tile, dat, NULL);
+	AddAcceptedCargo(tile, dat, nullptr);
 	if (dat[CT_MAIL] + dat[CT_PASSENGERS] == 0) {
 		// nothing is accepted, so now test if cargo is produced
 		AddProducedCargo(tile, dat);

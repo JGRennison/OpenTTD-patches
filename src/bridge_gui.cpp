@@ -398,7 +398,7 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 
 	const bool query_per_bridge_type = ret.Failed() && (ret.GetErrorMessage() == STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION || ret.GetErrorMessage() == STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION);
 
-	GUIBridgeList *bl = NULL;
+	GUIBridgeList *bl = nullptr;
 	if (ret.Failed()) {
 		errmsg = ret.GetErrorMessage();
 	}
@@ -436,7 +436,7 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 		}
 	}
 
-	if (bl != NULL && bl->size() != 0) {
+	if (bl != nullptr && bl->size() != 0) {
 		new BuildBridgeWindow(&_build_bridge_desc, start, end, type, bl);
 	} else {
 		delete bl;

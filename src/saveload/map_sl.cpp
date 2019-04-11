@@ -267,16 +267,16 @@ static void Save_WMAP()
 }
 
 extern const ChunkHandler _map_chunk_handlers[] = {
-	{ 'MAPS', Save_MAPS, Load_MAPS, NULL, Check_MAPS, CH_RIFF },
-	{ 'MAPT', NULL,      Load_MAPT, NULL, NULL,       CH_RIFF },
-	{ 'MAPH', NULL,      Load_MAPH, NULL, NULL,       CH_RIFF },
-	{ 'MAPO', NULL,      Load_MAP1, NULL, NULL,       CH_RIFF },
-	{ 'MAP2', NULL,      Load_MAP2, NULL, NULL,       CH_RIFF },
-	{ 'M3LO', NULL,      Load_MAP3, NULL, NULL,       CH_RIFF },
-	{ 'M3HI', NULL,      Load_MAP4, NULL, NULL,       CH_RIFF },
-	{ 'MAP5', NULL,      Load_MAP5, NULL, NULL,       CH_RIFF },
-	{ 'MAPE', NULL,      Load_MAP6, NULL, NULL,       CH_RIFF },
-	{ 'MAP7', NULL,      Load_MAP7, NULL, NULL,       CH_RIFF },
-	{ 'MAP8', NULL,      Load_MAP8, NULL, NULL,       CH_RIFF },
-	{ 'WMAP', Save_WMAP, Load_WMAP, NULL, NULL,       CH_RIFF | CH_LAST },
+	{ 'MAPS', Save_MAPS, Load_MAPS, nullptr, Check_MAPS, CH_RIFF },
+	{ 'MAPT', nullptr,      Load_MAPT, nullptr, nullptr,       CH_RIFF },
+	{ 'MAPH', nullptr,      Load_MAPH, nullptr, nullptr,       CH_RIFF },
+	{ 'MAPO', nullptr,      Load_MAP1, nullptr, nullptr,       CH_RIFF },
+	{ 'MAP2', nullptr,      Load_MAP2, nullptr, nullptr,       CH_RIFF },
+	{ 'M3LO', nullptr,      Load_MAP3, nullptr, nullptr,       CH_RIFF },
+	{ 'M3HI', nullptr,      Load_MAP4, nullptr, nullptr,       CH_RIFF },
+	{ 'MAP5', nullptr,      Load_MAP5, nullptr, nullptr,       CH_RIFF },
+	{ 'MAPE', nullptr,      Load_MAP6, nullptr, nullptr,       CH_RIFF },
+	{ 'MAP7', nullptr,      Load_MAP7, nullptr, nullptr,       CH_RIFF },
+	{ 'MAP8', nullptr,      Load_MAP8, nullptr, nullptr,       CH_RIFF },
+	{ 'WMAP', Save_WMAP, Load_WMAP, nullptr, nullptr,       CH_RIFF | CH_LAST },
 };

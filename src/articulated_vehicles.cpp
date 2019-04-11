@@ -32,9 +32,9 @@ static const uint MAX_ARTICULATED_PARTS = 100; ///< Maximum of articulated parts
  * @param mirrored Returns whether the part shall be flipped.
  * @return engine to add or INVALID_ENGINE
  */
-static EngineID GetNextArticulatedPart(uint index, EngineID front_type, Vehicle *front = NULL, bool *mirrored = NULL)
+static EngineID GetNextArticulatedPart(uint index, EngineID front_type, Vehicle *front = nullptr, bool *mirrored = nullptr)
 {
-	assert(front == NULL || front->engine_type == front_type);
+	assert(front == nullptr || front->engine_type == front_type);
 
 	const Engine *front_engine = Engine::Get(front_type);
 
@@ -45,12 +45,12 @@ static EngineID GetNextArticulatedPart(uint index, EngineID front_type, Vehicle 
 		/* 8 bits, bit 7 for mirroring */
 		callback = GB(callback, 0, 8);
 		if (callback == 0xFF) return INVALID_ENGINE;
-		if (mirrored != NULL) *mirrored = HasBit(callback, 7);
+		if (mirrored != nullptr) *mirrored = HasBit(callback, 7);
 		callback = GB(callback, 0, 7);
 	} else {
 		/* 15 bits, bit 14 for mirroring */
 		if (callback == 0x7FFF) return INVALID_ENGINE;
-		if (mirrored != NULL) *mirrored = HasBit(callback, 14);
+		if (mirrored != nullptr) *mirrored = HasBit(callback, 14);
 		callback = GB(callback, 0, 14);
 	}
 
@@ -81,7 +81,7 @@ uint CountArticulatedParts(EngineID engine_type, bool purchase_window)
 	 * either, so it doesn't matter how many articulated parts there are. */
 	if (!Vehicle::CanAllocateItem()) return 0;
 
-	Vehicle *v = NULL;
+	Vehicle *v = nullptr;
 	if (!purchase_window) {
 		v = new Vehicle();
 		v->engine_type = engine_type;
@@ -113,7 +113,7 @@ void GetArticulatedPartsEngineIDs(EngineID engine_type, bool purchase_window, st
 	 * either, so it doesn't matter how many articulated parts there are. */
 	if (!Vehicle::CanAllocateItem()) return;
 
-	Vehicle *v = NULL;
+	Vehicle *v = nullptr;
 	if (!purchase_window) {
 		v = new Vehicle();
 		v->engine_type = engine_type;
@@ -141,7 +141,7 @@ static inline uint16 GetVehicleDefaultCapacity(EngineID engine, CargoID *cargo_t
 {
 	const Engine *e = Engine::Get(engine);
 	CargoID cargo = (e->CanCarryCargo() ? e->GetDefaultCargoType() : (CargoID)CT_INVALID);
-	if (cargo_type != NULL) *cargo_type = cargo;
+	if (cargo_type != nullptr) *cargo_type = cargo;
 	if (cargo == CT_INVALID) return 0;
 	return e->GetDisplayDefaultCapacity();
 }
@@ -323,15 +323,15 @@ bool IsArticulatedVehicleCarryingDifferentCargoes(const Vehicle *v, CargoID *car
 		if (v->cargo_type != CT_INVALID && v->GetEngine()->CanCarryCargo()) {
 			if (first_cargo == CT_INVALID) first_cargo = v->cargo_type;
 			if (first_cargo != v->cargo_type) {
-				if (cargo_type != NULL) *cargo_type = CT_INVALID;
+				if (cargo_type != nullptr) *cargo_type = CT_INVALID;
 				return true;
 			}
 		}
 
-		v = v->HasArticulatedPart() ? v->GetNextArticulatedPart() : NULL;
-	} while (v != NULL);
+		v = v->HasArticulatedPart() ? v->GetNextArticulatedPart() : nullptr;
+	} while (v != nullptr);
 
-	if (cargo_type != NULL) *cargo_type = first_cargo;
+	if (cargo_type != nullptr) *cargo_type = first_cargo;
 	return false;
 }
 
@@ -363,8 +363,8 @@ void CheckConsistencyOfArticulatedVehicle(const Vehicle *v)
 		assert(v->cargo_type < NUM_CARGO);
 		real_default_capacity[v->cargo_type] += v->cargo_cap;
 
-		v = v->HasArticulatedPart() ? v->GetNextArticulatedPart() : NULL;
-	} while (v != NULL);
+		v = v->HasArticulatedPart() ? v->GetNextArticulatedPart() : nullptr;
+	} while (v != nullptr);
 
 	/* Check whether the vehicle carries more cargoes than expected */
 	bool carries_more = false;

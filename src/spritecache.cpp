@@ -476,7 +476,7 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 	}
 
 	if (sprite_avail == 0) {
-		if (sprite_type == ST_MAPGEN) return NULL;
+		if (sprite_type == ST_MAPGEN) return nullptr;
 		if (id == SPR_IMG_QUERY) usererror("Okay... something went horribly wrong. I couldn't load the fallback sprite. What should I do?");
 		return (void*)GetRawSprite(SPR_IMG_QUERY, ST_NORMAL, allocator);
 	}
@@ -590,7 +590,7 @@ bool LoadNextSprite(int load_index, uint file_slot, uint file_sprite_id, byte co
 	byte grf_type = FioReadByte();
 
 	SpriteType type;
-	void *data = NULL;
+	void *data = nullptr;
 	if (grf_type == 0xFF) {
 		/* Some NewGRF files have "empty" pseudo-sprites which are 1
 		 * byte long. Catch these so the sprites won't be displayed. */
@@ -705,14 +705,14 @@ static void DeleteEntriesFromSpriteCache(size_t target)
 	SpriteID i = 0;
 	for (; i != _spritecache.size() && candidate_bytes < target; i++) {
 		SpriteCache *sc = GetSpriteCache(i);
-		if (sc->GetType() != ST_RECOLOUR && sc->GetPtr() != NULL) {
+		if (sc->GetType() != ST_RECOLOUR && sc->GetPtr() != nullptr) {
 			push({ sc->lru, i, sc->buffer.GetSize() });
 			if (candidate_bytes >= target) break;
 		}
 	}
 	for (; i != _spritecache.size(); i++) {
 		SpriteCache *sc = GetSpriteCache(i);
-		if (sc->GetType() != ST_RECOLOUR && sc->GetPtr() != NULL && sc->lru <= candidates.front().lru) {
+		if (sc->GetType() != ST_RECOLOUR && sc->GetPtr() != nullptr && sc->lru <= candidates.front().lru) {
 			push({ sc->lru, i, sc->buffer.GetSize() });
 			while (!candidates.empty() && candidate_bytes - candidates.front().size >= target) {
 				pop();
@@ -744,7 +744,7 @@ void IncreaseSpriteLRU()
 
 		for (i = 0; i != _spritecache.size(); i++) {
 			SpriteCache *sc = GetSpriteCache(i);
-			if (sc->GetPtr() != NULL) {
+			if (sc->GetPtr() != nullptr) {
 				if (sc->lru > 0x80000000) {
 					sc->lru -= 0x80000000;
 				} else {
@@ -783,7 +783,7 @@ static void *HandleInvalidSpriteRequest(SpriteID sprite, SpriteType requested, S
 
 	SpriteType available = sc->GetType();
 	if (requested == ST_FONT && available == ST_NORMAL) {
-		if (sc->GetPtr() == NULL) sc->SetType(ST_FONT);
+		if (sc->GetPtr() == nullptr) sc->SetType(ST_FONT);
 		return GetRawSprite(sprite, sc->GetType(), allocator);
 	}
 
@@ -813,7 +813,7 @@ static void *HandleInvalidSpriteRequest(SpriteID sprite, SpriteType requested, S
  * If the sprite is not available or of wrong type, a fallback sprite is returned.
  * @param sprite Sprite to read.
  * @param type Expected sprite type.
- * @param allocator Allocator function to use. Set to NULL to use the usual sprite cache.
+ * @param allocator Allocator function to use. Set to nullptr to use the usual sprite cache.
  * @return Sprite raw data
  */
 void *GetRawSprite(SpriteID sprite, SpriteType type, AllocatorProc *allocator)
@@ -832,14 +832,14 @@ void *GetRawSprite(SpriteID sprite, SpriteType type, AllocatorProc *allocator)
 
 	if (sc->GetType() != type) return HandleInvalidSpriteRequest(sprite, type, sc, allocator);
 
-	if (allocator == NULL) {
+	if (allocator == nullptr) {
 		/* Load sprite into/from spritecache */
 
 		/* Update LRU */
 		sc->lru = ++_sprite_lru_counter;
 
 		/* Load the sprite, if it is not loaded, yet */
-		if (sc->GetPtr() == NULL) {
+		if (sc->GetPtr() == nullptr) {
 			void *ptr = ReadSprite(sc, sprite, type, AllocSprite);
 			assert(ptr == _last_sprite_allocation.GetPtr());
 			sc->buffer = std::move(_last_sprite_allocation);
@@ -865,7 +865,7 @@ uint32 GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 	SpriteCache *sc = GetSpriteCache(sprite_id);
 	if (sc->GetType() != ST_NORMAL) return 0;
 
-	const byte * const remap = (palette_id == PAL_NONE ? NULL : GetNonSprite(GB(palette_id, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1);
+	const byte * const remap = (palette_id == PAL_NONE ? nullptr : GetNonSprite(GB(palette_id, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1);
 
 	uint file_slot = sc->file_slot;
 	size_t file_pos = sc->file_pos;
@@ -965,7 +965,7 @@ void GfxClearSpriteCache()
 	/* Clear sprite ptr for all cached items */
 	for (uint i = 0; i != _spritecache.size(); i++) {
 		SpriteCache *sc = GetSpriteCache(i);
-		if (sc->GetType() != ST_RECOLOUR && sc->GetPtr() != NULL) DeleteEntryFromSpriteCache(i);
+		if (sc->GetType() != ST_RECOLOUR && sc->GetPtr() != nullptr) DeleteEntryFromSpriteCache(i);
 	}
 }
 

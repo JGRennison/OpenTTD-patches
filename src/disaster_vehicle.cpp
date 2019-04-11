@@ -138,11 +138,11 @@ DisasterVehicle::DisasterVehicle(int x, int y, Direction direction, DisasterSubT
 		case ST_HELICOPTER:
 		case ST_BIG_UFO:
 		case ST_BIG_UFO_DESTROYER:
-			GetAircraftFlightLevelBounds(this, &this->z_pos, NULL);
+			GetAircraftFlightLevelBounds(this, &this->z_pos, nullptr);
 			break;
 
 		case ST_HELICOPTER_ROTORS:
-			GetAircraftFlightLevelBounds(this, &this->z_pos, NULL);
+			GetAircraftFlightLevelBounds(this, &this->z_pos, nullptr);
 			this->z_pos += ROTOR_Z_OFFSET;
 			break;
 
@@ -192,7 +192,7 @@ void DisasterVehicle::UpdatePosition(int x, int y, int z)
 	this->UpdatePositionAndViewport();
 
 	DisasterVehicle *u = this->Next();
-	if (u != NULL) {
+	if (u != nullptr) {
 		int safe_x = Clamp(x, 0, MapMaxX() * TILE_SIZE);
 		int safe_y = Clamp(y - 1, 0, MapMaxY() * TILE_SIZE);
 
@@ -206,7 +206,7 @@ void DisasterVehicle::UpdatePosition(int x, int y, int z)
 		u->UpdateImage();
 		u->UpdatePositionAndViewport();
 
-		if ((u = u->Next()) != NULL) {
+		if ((u = u->Next()) != nullptr) {
 			u->x_pos = x;
 			u->y_pos = y;
 			u->z_pos = z + ROTOR_Z_OFFSET;
@@ -360,7 +360,7 @@ static bool DisasterTick_Ufo(DisasterVehicle *v)
 	} else {
 		/* Target a vehicle */
 		RoadVehicle *u = RoadVehicle::Get(v->dest_tile);
-		assert(u != NULL && u->type == VEH_ROAD && u->IsFrontEngine());
+		assert(u != nullptr && u->type == VEH_ROAD && u->IsFrontEngine());
 
 		uint dist = Delta(v->x_pos, u->x_pos) + Delta(v->y_pos, u->y_pos);
 
@@ -758,16 +758,16 @@ static void Disaster_Airplane_Init()
 {
 	if (!Vehicle::CanAllocateItem(2)) return;
 
-	Industry *i, *found = NULL;
+	Industry *i, *found = nullptr;
 
 	FOR_ALL_INDUSTRIES(i) {
 		if ((GetIndustrySpec(i->type)->behaviour & INDUSTRYBEH_AIRPLANE_ATTACKS) &&
-				(found == NULL || Chance16(1, 2))) {
+				(found == nullptr || Chance16(1, 2))) {
 			found = i;
 		}
 	}
 
-	if (found == NULL) return;
+	if (found == nullptr) return;
 
 	/* Start from the bottom (south side) of the map */
 	int x = (MapSizeX() + 9) * TILE_SIZE - 1;
@@ -786,16 +786,16 @@ static void Disaster_Helicopter_Init()
 {
 	if (!Vehicle::CanAllocateItem(3)) return;
 
-	Industry *i, *found = NULL;
+	Industry *i, *found = nullptr;
 
 	FOR_ALL_INDUSTRIES(i) {
 		if ((GetIndustrySpec(i->type)->behaviour & INDUSTRYBEH_CHOPPER_ATTACKS) &&
-				(found == NULL || Chance16(1, 2))) {
+				(found == nullptr || Chance16(1, 2))) {
 			found = i;
 		}
 	}
 
-	if (found == NULL) return;
+	if (found == nullptr) return;
 
 	int x = -16 * (int)TILE_SIZE;
 	int y = TileY(found->location.tile) * TILE_SIZE + 37;
@@ -984,7 +984,7 @@ void ReleaseDisastersTargetingVehicle(VehicleID vehicle)
 				/* Revert to target-searching */
 				v->current_order.SetDestination(0);
 				v->dest_tile = RandomTile();
-				GetAircraftFlightLevelBounds(v, &v->z_pos, NULL);
+				GetAircraftFlightLevelBounds(v, &v->z_pos, nullptr);
 				v->age = 0;
 			}
 		}
