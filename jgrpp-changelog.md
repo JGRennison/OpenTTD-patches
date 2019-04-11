@@ -2,6 +2,16 @@
 
 * * *
 
+### v0.30.2 (2019-04-11)
+* Fix crash and/or non-functionality which could occur when using the bootstrap UI to download the base graphics, or when using the content download window.
+* Fix crash which could occur when displaying the origin station of cargo in the station window.
+* Fix crashes related to caching of viewport station sign positions.
+* Fix create group from vehicle list command.
+* Fix rail type conversion of dual track tiles when rail type labels differ at load.
+* Allow diagonal construction of rivers in the scenario editor.
+* Persist the zoning overlay modes in UI setting.
+* Bump trunk base from commit 66c60e52bac69b752f1dd7b7c599577fcbfa17a1 to commit c0836bccefb7fbc6ebc8c5fa28886602067070f8.
+
 ### v0.30.1 (2019-04-05)
 * Fix multiplayer desync when using build and refit (regression in v0.30.0).
 * Bump trunk base from commit 24fc25164a7c4efbf78d28ce9a3dbc22d1f45f5f to commit 66c60e52bac69b752f1dd7b7c599577fcbfa17a1.
