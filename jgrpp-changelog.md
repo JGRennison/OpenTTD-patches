@@ -2,6 +2,9 @@
 
 * * *
 
+### v0.30.3 (2019-04-12)
+* Fix crashes on Windows/MinGW caused by race condition at thread initialisation due to incorrect template argument deduction.
+
 ### v0.30.2 (2019-04-11)
 * Fix crash and/or non-functionality which could occur when using the bootstrap UI to download the base graphics, or when using the content download window.
 * Fix crash which could occur when displaying the origin station of cargo in the station window.
