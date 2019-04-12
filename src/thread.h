@@ -86,7 +86,7 @@ inline bool StartNewThread(std::thread *thr, const char *name, TFn&& _Fx, TArgs&
 				} catch (...) {
 					NOT_REACHED();
 				}
-			}, name, std::forward<TFn>(_Fx), std::forward<TArgs>(_Ax)...);
+			}, std::forward<const char *>(name), std::forward<TFn>(_Fx), std::forward<TArgs>(_Ax)...);
 
 		if (thr != nullptr) {
 			*thr = std::move(t);
