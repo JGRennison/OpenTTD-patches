@@ -898,8 +898,8 @@ static EventState RailToolbarGlobalHotkeys(int hotkey)
 }
 
 const uint16 _railtoolbar_autorail_keys[] = {'5', 'A' | WKC_GLOBAL_HOTKEY, 0};
-const uint16 _railtoolbar_polyrail_keys[] = {'5' | WKC_CTRL, 'A' | WKC_CTRL | WKC_GLOBAL_HOTKEY, 0};
-const uint16 _railtoolbar_new_poly_keys[] = {'5' | WKC_CTRL | WKC_SHIFT, 'A' | WKC_CTRL | WKC_SHIFT | WKC_GLOBAL_HOTKEY, 0};
+const uint16 _railtoolbar_polyrail_keys[] = {'Y', 'A' | WKC_CTRL | WKC_GLOBAL_HOTKEY, 0};
+const uint16 _railtoolbar_new_poly_keys[] = {'Y' | WKC_CTRL, 'A' | WKC_CTRL | WKC_SHIFT | WKC_GLOBAL_HOTKEY, 0};
 
 static Hotkey railtoolbar_hotkeys[] = {
 	Hotkey('1', "build_ns", WID_RAT_BUILD_NS),
