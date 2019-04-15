@@ -2369,6 +2369,7 @@ struct VehicleDetailsWindow : Window {
 
 		this->owner = v->owner;
 		this->tab = TDW_TAB_CARGO;
+		if (v->type == VEH_TRAIN && _ctrl_pressed) this->tab = TDW_TAB_TOTALS;
 	}
 
 	~VehicleDetailsWindow()
