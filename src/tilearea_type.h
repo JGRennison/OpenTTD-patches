@@ -50,6 +50,8 @@ struct OrthogonalTileArea {
 
 	bool Contains(TileIndex tile) const;
 
+	OrthogonalTileArea &Expand(int rad);
+
 	void ClampToMap();
 
 	/**

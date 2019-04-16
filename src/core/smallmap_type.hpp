@@ -164,16 +164,6 @@ struct SmallMap : std::vector<SmallPair<T, U> > {
 		n.first = key;
 		return n.second;
 	}
-
-	inline void SortByKey()
-	{
-		QSortT(std::vector<Pair>::data(), std::vector<Pair>::size(), KeySorter);
-	}
-
-	static int CDECL KeySorter(const Pair *a, const Pair *b)
-	{
-		return a->first - b->first;
-	}
 };
 
 #endif /* SMALLMAP_TYPE_HPP */

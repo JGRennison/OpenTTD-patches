@@ -15,6 +15,7 @@
 #include "../core/endian_func.hpp"
 #include "../core/endian_type.hpp"
 #include "../fios.h"
+#include <array>
 
 #include "saveload.h"
 #include "saveload_buffer.h"
@@ -57,44 +58,44 @@ static const uint MAP_SL_BUF_SIZE = 4096;
 
 static void Load_MAPT()
 {
-	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
+	std::array<byte, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
 	for (TileIndex i = 0; i != size;) {
-		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
+		SlArray(buf.data(), MAP_SL_BUF_SIZE, SLE_UINT8);
 		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].type = buf[j];
 	}
 }
 
 static void Load_MAPH()
 {
-	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
+	std::array<byte, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
 	for (TileIndex i = 0; i != size;) {
-		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
+		SlArray(buf.data(), MAP_SL_BUF_SIZE, SLE_UINT8);
 		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].height = buf[j];
 	}
 }
 
 static void Load_MAP1()
 {
-	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
+	std::array<byte, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
 	for (TileIndex i = 0; i != size;) {
-		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
+		SlArray(buf.data(), MAP_SL_BUF_SIZE, SLE_UINT8);
 		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].m1 = buf[j];
 	}
 }
 
 static void Load_MAP2()
 {
-	SmallStackSafeStackAlloc<uint16, MAP_SL_BUF_SIZE> buf;
+	std::array<uint16, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
 	for (TileIndex i = 0; i != size;) {
-		SlArray(buf, MAP_SL_BUF_SIZE,
+		SlArray(buf.data(), MAP_SL_BUF_SIZE,
 			/* In those versions the m2 was 8 bits */
 			IsSavegameVersionBefore(SLV_5) ? SLE_FILE_U8 | SLE_VAR_U16 : SLE_UINT16
 		);
@@ -104,46 +105,46 @@ static void Load_MAP2()
 
 static void Load_MAP3()
 {
-	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
+	std::array<byte, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
 	for (TileIndex i = 0; i != size;) {
-		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
+		SlArray(buf.data(), MAP_SL_BUF_SIZE, SLE_UINT8);
 		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].m3 = buf[j];
 	}
 }
 
 static void Load_MAP4()
 {
-	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
+	std::array<byte, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
 	for (TileIndex i = 0; i != size;) {
-		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
+		SlArray(buf.data(), MAP_SL_BUF_SIZE, SLE_UINT8);
 		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].m4 = buf[j];
 	}
 }
 
 static void Load_MAP5()
 {
-	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
+	std::array<byte, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
 	for (TileIndex i = 0; i != size;) {
-		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
+		SlArray(buf.data(), MAP_SL_BUF_SIZE, SLE_UINT8);
 		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].m5 = buf[j];
 	}
 }
 
 static void Load_MAP6()
 {
-	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
+	std::array<byte, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
 	if (IsSavegameVersionBefore(SLV_42)) {
 		for (TileIndex i = 0; i != size;) {
 			/* 1024, otherwise we overflow on 64x64 maps! */
-			SlArray(buf, 1024, SLE_UINT8);
+			SlArray(buf.data(), 1024, SLE_UINT8);
 			for (uint j = 0; j != 1024; j++) {
 				_me[i++].m6 = GB(buf[j], 0, 2);
 				_me[i++].m6 = GB(buf[j], 2, 2);
@@ -153,7 +154,7 @@ static void Load_MAP6()
 		}
 	} else {
 		for (TileIndex i = 0; i != size;) {
-			SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
+			SlArray(buf.data(), MAP_SL_BUF_SIZE, SLE_UINT8);
 			for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _me[i++].m6 = buf[j];
 		}
 	}
@@ -161,22 +162,22 @@ static void Load_MAP6()
 
 static void Load_MAP7()
 {
-	SmallStackSafeStackAlloc<byte, MAP_SL_BUF_SIZE> buf;
+	std::array<byte, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
 	for (TileIndex i = 0; i != size;) {
-		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT8);
+		SlArray(buf.data(), MAP_SL_BUF_SIZE, SLE_UINT8);
 		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _me[i++].m7 = buf[j];
 	}
 }
 
 static void Load_MAP8()
 {
-	SmallStackSafeStackAlloc<uint16, MAP_SL_BUF_SIZE> buf;
+	std::array<uint16, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
 	for (TileIndex i = 0; i != size;) {
-		SlArray(buf, MAP_SL_BUF_SIZE, SLE_UINT16);
+		SlArray(buf.data(), MAP_SL_BUF_SIZE, SLE_UINT16);
 		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _me[i++].m8 = buf[j];
 	}
 }
@@ -278,5 +279,5 @@ extern const ChunkHandler _map_chunk_handlers[] = {
 	{ 'MAPE', nullptr,      Load_MAP6, nullptr, nullptr,       CH_RIFF },
 	{ 'MAP7', nullptr,      Load_MAP7, nullptr, nullptr,       CH_RIFF },
 	{ 'MAP8', nullptr,      Load_MAP8, nullptr, nullptr,       CH_RIFF },
-	{ 'WMAP', Save_WMAP, Load_WMAP, nullptr, nullptr,       CH_RIFF | CH_LAST },
+	{ 'WMAP', Save_WMAP,    Load_WMAP, nullptr, nullptr,       CH_RIFF | CH_LAST },
 };

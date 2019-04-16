@@ -226,7 +226,7 @@ struct GRFFile : ZeroedMemoryAllocator {
 
 	GRFFilePropertyRemapSet action0_property_remaps[GSF_END];
 	Action5TypeRemapSet action5_type_remaps;
-	std::vector<AutoFreePtr<const char>> remap_unknown_property_names;
+	std::vector<std::unique_ptr<const char, FreeDeleter>> remap_unknown_property_names;
 
 	uint32 param[0x80];
 	uint param_end;  ///< one more than the highest set parameter
@@ -277,7 +277,7 @@ struct GRFLoadedFeatures {
 	uint64 used_liveries;     ///< Bitmask of #LiveryScheme used by the defined engines.
 	bool has_newhouses;       ///< Set if there are any newhouses loaded.
 	bool has_newindustries;   ///< Set if there are any newindustries loaded.
-	ShoreReplacement shore;   ///< It which way shore sprites were replaced.
+	ShoreReplacement shore;   ///< In which way shore sprites were replaced.
 };
 
 /**

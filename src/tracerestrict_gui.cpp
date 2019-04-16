@@ -474,7 +474,7 @@ static const TraceRestrictDropDownListSet *GetSortedCargoTypeDropDownListSet()
 static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &selected)
 {
 	typedef GUIList<const Group*> GUIGroupList;
-	extern int CDECL GroupNameSorter(const Group * const *a, const Group * const *b);
+	extern bool GroupNameSorter(const Group * const &a, const Group * const &b);
 
 	GUIGroupList list;
 
@@ -506,11 +506,11 @@ static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &sel
 }
 
 /** Sort slots by their name */
-static int CDECL SlotNameSorter(const TraceRestrictSlot * const *a, const TraceRestrictSlot * const *b)
+static bool CDECL SlotNameSorter(const TraceRestrictSlot * const &a, const TraceRestrictSlot * const &b)
 {
-	int r = strnatcmp((*a)->name.c_str(), (*b)->name.c_str()); // Sort by name (natural sorting).
-	if (r == 0) return (*a)->index - (*b)->index;
-	return r;
+	int r = strnatcmp(a->name.c_str(), b->name.c_str()); // Sort by name (natural sorting).
+	if (r == 0) return a->index < b->index;
+	return r < 0;
 }
 
 /**

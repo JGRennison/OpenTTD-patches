@@ -15,49 +15,6 @@
 #include "alloc_func.hpp"
 
 /**
- * A small 'wrapper' for allocations that can be done on most OSes on the
- * stack, but are just too large to fit in the stack on devices with a small
- * stack such as the NDS.
- * So when it is possible a stack allocation is made, otherwise a heap
- * allocation is made and this is freed once the struct goes out of scope.
- * @param T      the type to make the allocation for
- * @param length the amount of items to allocate
- */
-template <typename T, size_t length>
-struct SmallStackSafeStackAlloc {
-	/** Storing the data on the stack */
-	T data[length];
-
-	/**
-	 * Gets a pointer to the data stored in this wrapper.
-	 * @return the pointer.
-	 */
-	inline operator T *()
-	{
-		return data;
-	}
-
-	/**
-	 * Gets a pointer to the data stored in this wrapper.
-	 * @return the pointer.
-	 */
-	inline T *operator -> ()
-	{
-		return data;
-	}
-
-	/**
-	 * Gets a pointer to the last data element stored in this wrapper.
-	 * @note needed because endof does not work properly for pointers.
-	 * @return the 'endof' pointer.
-	 */
-	inline T *EndOf()
-	{
-		return endof(data);
-	}
-};
-
-/**
  * A reusable buffer that can be used for places that temporary allocate
  * a bit of memory and do that very often, or for places where static
  * memory is allocated that might need to be reallocated sometimes.
@@ -160,50 +117,9 @@ public:
 	inline void operator delete[](void *ptr) { free(ptr); }
 };
 
-/**
- * A smart pointer class that free()'s the pointer on destruction.
- * @tparam T Storage type.
- */
-template <typename T>
-class AutoFreePtr
+struct FreeDeleter
 {
-	T *ptr = nullptr; ///< Stored pointer.
-
-public:
-	AutoFreePtr(T *ptr) : ptr(ptr) {}
-	~AutoFreePtr() { free(this->ptr); }
-
-	/**
-	 * Take ownership of a new pointer and free the old one if needed.
-	 * @param ptr NEw pointer.
-	 */
-	inline void Assign(T *ptr)
-	{
-		free(this->ptr);
-		this->ptr = ptr;
-	}
-
-	/** Dereference pointer. */
-	inline T *operator ->() { return this->ptr; }
-	/** Dereference pointer. */
-	inline const T *operator ->() const { return this->ptr; }
-
-	/** Cast to underlaying regular pointer. */
-	inline operator T *() { return this->ptr; }
-	/** Cast to underlaying regular pointer. */
-	inline operator const T *() const { return this->ptr; }
-
-	AutoFreePtr(AutoFreePtr<T> &&other) noexcept
-	{
-		*this = std::move(other);
-	}
-
-	AutoFreePtr& operator=(AutoFreePtr<T> &&other) noexcept
-	{
-		this->Assign(other.ptr);
-		other.ptr = nullptr;
-		return *this;
-	}
+	void operator()(const void* ptr) { free(ptr); }
 };
 
 #endif /* ALLOC_TYPE_HPP */
