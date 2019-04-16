@@ -1578,8 +1578,6 @@ void ViewportMapDrawVehicles(DrawPixelInfo *dpi)
 	/* The hash area to scan */
 	const ViewportHashBound vhb = GetViewportHashBound(l, r, t, b);
 
-	const int w = UnScaleByZoom(dpi->width, dpi->zoom);
-	const int h = UnScaleByZoom(dpi->height, dpi->zoom);
 	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 	for (int y = vhb.yl;; y = (y + (1 << 6)) & (0x3F << 6)) {
 		for (int x = vhb.xl;; x = (x + 1) & 0x3F) {
@@ -1588,11 +1586,10 @@ void ViewportMapDrawVehicles(DrawPixelInfo *dpi)
 			while (v != nullptr) {
 				if (!(v->vehstatus & (VS_HIDDEN | VS_UNCLICKABLE)) && (v->type != VEH_EFFECT)) {
 					Point pt = RemapCoords(v->x_pos, v->y_pos, v->z_pos);
-					const int pixel_x = UnScaleByZoomLower(pt.x - dpi->left, dpi->zoom);
-					if (IsInsideMM(pixel_x, 0, w)) {
+					if (pt.x >= l && pt.x < r && pt.y >= t && pt.y < b) {
+						const int pixel_x = UnScaleByZoomLower(pt.x - dpi->left, dpi->zoom);
 						const int pixel_y = UnScaleByZoomLower(pt.y - dpi->top, dpi->zoom);
-						if (IsInsideMM(pixel_y, 0, h))
-							blitter->SetPixel(dpi->dst_ptr, pixel_x, pixel_y, PC_WHITE);
+						blitter->SetPixel(dpi->dst_ptr, pixel_x, pixel_y, PC_WHITE);
 					}
 				}
 				v = v->hash_viewport_next;
