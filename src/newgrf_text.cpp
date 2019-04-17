@@ -740,6 +740,9 @@ const char *GetGRFStringFromGRFText(const GRFText *text)
 	return default_text;
 }
 
+static std::array<std::pair<uint16, const char *>, 16> _grf_string_ptr_log;
+static unsigned int _grf_string_ptr_log_next = 0;
+
 /**
  * Get a C-string from a stringid set by a newgrf.
  */
@@ -748,10 +751,15 @@ const char *GetGRFStringPtr(uint16 stringid)
 	assert(_grf_text[stringid].grfid != 0);
 
 	const char *str = GetGRFStringFromGRFText(_grf_text[stringid].textholder);
-	if (str != nullptr) return str;
+	if (str == nullptr) {
+		/* Use the default string ID if the fallback string isn't available */
+		str = GetStringPtr(_grf_text[stringid].def_string);
+	}
 
-	/* Use the default string ID if the fallback string isn't available */
-	return GetStringPtr(_grf_text[stringid].def_string);
+	_grf_string_ptr_log[_grf_string_ptr_log_next] = std::pair<uint16, const char *>(stringid, str);
+	_grf_string_ptr_log_next = (_grf_string_ptr_log_next + 1) % _grf_string_ptr_log.size();
+
+	return str;
 }
 
 /**
@@ -807,6 +815,10 @@ void CleanUpStrings()
 		_grf_text[id].grfid      = 0;
 		_grf_text[id].stringid   = 0;
 		_grf_text[id].textholder = nullptr;
+	}
+
+	for (id = 0; id < _grf_string_ptr_log.size(); id++) {
+		_grf_string_ptr_log[id] = std::pair<uint16, const char *>(0, nullptr);
 	}
 
 	_num_grf_texts = 0;
@@ -973,6 +985,29 @@ void RewindTextRefStack()
  */
 uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const char **str, int64 *argv, uint argv_size, bool modify_argv)
 {
+	auto too_many_newgrf_params = [&]() {
+		const char *buffer = *str;
+		uint32 grfid = 0;
+		for (uint entry = 0; entry < _grf_string_ptr_log.size(); entry++) {
+			const char *txt = _grf_string_ptr_log[entry].second;
+			uint16 stringid = _grf_string_ptr_log[entry].first;
+			if (txt != nullptr &&
+					buffer >= txt && buffer < txt + 8192 &&
+					buffer < txt + strlen(txt) &&
+					_grf_text[stringid].grfid != 0) {
+				grfid = _grf_text[stringid].grfid;
+				break;
+			}
+		}
+		if (grfid) {
+			extern GRFFile *GetFileByGRFID(uint32 grfid);
+			const GRFFile *grffile = GetFileByGRFID(grfid);
+			DEBUG(misc, 0, "Too many NewGRF string parameters (in %X, %s).", BSWAP32(grfid), grffile ? grffile->filename : "????");
+		} else {
+			DEBUG(misc, 0, "Too many NewGRF string parameters.");
+		}
+	};
+
 	switch (scc) {
 		default: break;
 
@@ -1000,7 +1035,7 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 		case SCC_NEWGRF_PRINT_WORD_STATION_NAME:
 		case SCC_NEWGRF_PRINT_WORD_CARGO_NAME:
 			if (argv_size < 1) {
-				DEBUG(misc, 0, "Too many NewGRF string parameters.");
+				too_many_newgrf_params();
 				return 0;
 			}
 			break;
@@ -1009,7 +1044,7 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 		case SCC_NEWGRF_PRINT_WORD_CARGO_SHORT:
 		case SCC_NEWGRF_PRINT_WORD_CARGO_TINY:
 			if (argv_size < 2) {
-				DEBUG(misc, 0, "Too many NewGRF string parameters.");
+				too_many_newgrf_params();
 				return 0;
 			}
 			break;
