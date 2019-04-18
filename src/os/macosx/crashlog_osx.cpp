@@ -14,6 +14,7 @@
 #include "../../string_func.h"
 #include "../../gamelog.h"
 #include "../../saveload/saveload.h"
+#include "../../thread.h"
 #include "macos.h"
 
 #include <errno.h>
@@ -40,6 +41,62 @@
 #endif
 
 #define MAX_STACK_FRAMES 64
+
+#if !defined(WITHOUT_DBG_LLDB)
+static bool ExecReadStdout(const char *file, char *const *args, char *&buffer, const char *last)
+{
+	int pipefd[2];
+	if (pipe(pipefd) == -1) return false;
+
+	int pid = fork();
+	if (pid < 0) return false;
+
+	if (pid == 0) {
+		/* child */
+
+		close(pipefd[0]); /* Close unused read end */
+		dup2(pipefd[1], STDOUT_FILENO);
+		close(pipefd[1]);
+		int null_fd = open("/dev/null", O_RDWR);
+		if (null_fd != -1) {
+			dup2(null_fd, STDERR_FILENO);
+			dup2(null_fd, STDIN_FILENO);
+		}
+
+		execvp(file, args);
+		exit(42);
+	}
+
+	/* parent */
+
+	close(pipefd[1]); /* Close unused write end */
+
+	while (buffer < last) {
+		ssize_t res = read(pipefd[0], buffer, last - buffer);
+		if (res < 0) {
+			if (errno == EINTR) continue;
+			break;
+		} else if (res == 0) {
+			break;
+		} else {
+			buffer += res;
+		}
+	}
+	buffer += seprintf(buffer, last, "\n");
+
+	close(pipefd[0]); /* close read end */
+
+	int status;
+	int wait_ret = waitpid(pid, &status, 0);
+	if (wait_ret == -1 || !WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+		/* command did not appear to run successfully */
+		return false;
+	} else {
+		/* command executed successfully */
+		return true;
+	}
+}
+#endif /* !WITHOUT_DBG_LLDB */
 
 /**
  * OSX implementation for the crash logger.
@@ -148,6 +205,57 @@ class CrashLogOSX : public CrashLog {
 		}
 
 		return buffer + seprintf(buffer, last, "\n");
+	}
+
+	/**
+	 * Get a stack backtrace of the current thread's stack and other info using the gdb debugger, if available.
+	 *
+	 * Using LLDB is useful as it knows about inlined functions and locals, and generally can
+	 * do a more thorough job than in LogStacktrace.
+	 * This is done in addition to LogStacktrace as lldb cannot be assumed to be present
+	 * and there is some potentially useful information in the output from LogStacktrace
+	 * which is not in lldb's output.
+	 */
+	char *LogLldbInfo(char *buffer, const char *last) const
+	{
+
+#if !defined(WITHOUT_DBG_LLDB)
+		pid_t pid = getpid();
+
+		char *buffer_orig = buffer;
+		buffer += seprintf(buffer, last, "LLDB info:\n");
+
+		char pid_buffer[16];
+
+		seprintf(pid_buffer, lastof(pid_buffer), "%d", pid);
+
+		std::vector<const char *> args;
+		args.push_back("lldb");
+		args.push_back("-x");
+		args.push_back("-p");
+		args.push_back(pid_buffer);
+		args.push_back("--batch");
+
+		args.push_back("-o");
+		args.push_back(IsNonMainThread() ? "bt all" : "bt");
+
+		args.push_back(nullptr);
+		if (!ExecReadStdout("lldb", const_cast<char* const*>(&(args[0])), buffer, last)) {
+			buffer = buffer_orig;
+		}
+#endif /* !WITHOUT_DBG_LLDB */
+
+		return buffer;
+	}
+
+	/**
+	 * Log LLDB information if available
+	 */
+	char *LogRegisters(char *buffer, const char *last) const override
+	{
+		buffer = LogLldbInfo(buffer, last);
+
+		return buffer;
 	}
 
 public:

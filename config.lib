@@ -97,6 +97,7 @@ set_default() {
 	with_libbfd="1"
 	with_bfd_extra_debug="1"
 	with_self_gdb_debug="1"
+	with_self_lldb_debug="1"
 
 	save_params_array="
 		build
@@ -176,6 +177,7 @@ set_default() {
 		with_libbfd
 		with_bfd_extra_debug
 		with_self_gdb_debug
+		with_self_lldb_debug
 	CC CXX CFLAGS CXXFLAGS LDFLAGS CFLAGS_BUILD CXXFLAGS_BUILD LDFLAGS_BUILD PKG_CONFIG_PATH PKG_CONFIG_LIBDIR"
 }
 
@@ -478,6 +480,10 @@ detect_params() {
 			--without-self-gdb-debug)     with_self_gdb_debug="0";;
 			--with-self-gdb-debug)        with_self_gdb_debug="1";;
 			--with-self-gdb-debug=*)      with_self_gdb_debug="$optarg";;
+
+			--without-self-lldb-debug)     with_self_lldb_debug="0";;
+			--with-self-lldb-debug)        with_self_lldb_debug="1";;
+			--with-self-lldb-debug=*)      with_self_lldb_debug="$optarg";;
 
 			CC=* | --CC=*)                CC="$optarg";;
 			CXX=* | --CXX=*)              CXX="$optarg";;
@@ -1919,6 +1925,20 @@ EOL
 			# Universal builds set this elsewhere
 			CFLAGS="$OSX_SYSROOT $CFLAGS"
 			LDFLAGS="$OSX_LD_SYSROOT $LDFLAGS"
+		fi
+
+		if [ "$with_self_lldb_debug" = "0" ]; then
+			log 1 "using dbg lldb... no"
+			CFLAGS="$CFLAGS -DWITHOUT_DBG_LLDB"
+		else
+			log 1 "using dbg lldb... yes"
+			if [ $enable_debug -lt 1 ]; then
+				if [ -n "`"$cc_host" --version | head -n1 | grep "clang" 2>/dev/null`" ]; then
+					CFLAGS="$CFLAGS -gline-tables-only"
+				else
+					CFLAGS="$CFLAGS -g1"
+				fi
+			fi
 		fi
 	fi
 
@@ -3877,6 +3897,7 @@ showhelp() {
 	echo "  --without-libbfd               disable libbfd support, used for improved crash logs (MinGW and Unix/glibc only)"
 	echo "  --without-bfd-extra-debug      disable extra debugging information when using libbfd (MinGW and Unix/glibc only)"
 	echo "  --without-self-gdb-debug       disable improved crash logs using gdb (Linux only)"
+	echo "  --without-self-lldb-debug      disable improved crash logs using lldb (OSX only)"
 	echo ""
 	echo "Some influential environment variables:"
 	echo "  CC                             C compiler command"
