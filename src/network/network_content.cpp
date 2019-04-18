@@ -255,7 +255,8 @@ void ClientNetworkContentSocketHandler::RequestContentList(ContentVector *cv, bo
 		const uint to_send = min<uint>(cv->size() - offset, max_per_packet);
 		p->Send_uint8(to_send);
 
-		for (const ContentInfo *ci : *cv) {
+		for (uint i = 0; i < to_send; i++) {
+			const ContentInfo *ci = (*cv)[offset + i];
 			p->Send_uint8((byte)ci->type);
 			p->Send_uint32(ci->unique_id);
 			if (!send_md5sum) continue;
