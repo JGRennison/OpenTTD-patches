@@ -34,6 +34,9 @@
 #include "table/strings.h"
 #include "table/control_codes.h"
 
+#include <array>
+#include <utility>
+
 #include "safeguards.h"
 
 /**
