@@ -15,6 +15,7 @@
 #include "../../strings_func.h"
 #include "../../table/control_codes.h"
 #include "../../fontcache.h"
+#include "../../scope.h"
 #include "macos.h"
 
 #include <CoreFoundation/CoreFoundation.h>
@@ -301,15 +302,22 @@ int MacOSStringCompare(const char *s1, const char *s2)
 	static bool supported = MacOSVersionIsAtLeast(10, 5, 0);
 	if (!supported) return 0;
 
+	if (_osx_locale == nullptr) return 0;
+
 	CFStringCompareFlags flags = kCFCompareCaseInsensitive | kCFCompareNumerically | kCFCompareLocalized | kCFCompareWidthInsensitive | kCFCompareForcedOrdering;
 
 	CFStringRef cf1 = CFStringCreateWithCString(kCFAllocatorDefault, s1, kCFStringEncodingUTF8);
+	if (cf1 == nullptr) return 0;
+	auto guard1 = scope_guard([&]() {
+		CFRelease(cf1);
+	});
 	CFStringRef cf2 = CFStringCreateWithCString(kCFAllocatorDefault, s2, kCFStringEncodingUTF8);
+	if (cf2 == nullptr) return 0;
+	auto guard2 = scope_guard([&]() {
+		CFRelease(cf2);
+	});
 
 	CFComparisonResult res = CFStringCompareWithOptionsAndLocale(cf1, cf2, CFRangeMake(0, CFStringGetLength(cf1)), flags, _osx_locale);
-
-	CFRelease(cf1);
-	CFRelease(cf2);
 
 	return (int)res + 2;
 }
