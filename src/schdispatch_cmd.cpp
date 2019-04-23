@@ -19,7 +19,6 @@
 #include "settings_type.h"
 #include "cmd_helper.h"
 #include "company_base.h"
-#include "core/sort_func.hpp"
 #include "settings_type.h"
 #include "schdispatch.h"
 #include "vehicle_gui.h"

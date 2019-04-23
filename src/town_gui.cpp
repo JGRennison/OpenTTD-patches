@@ -36,10 +36,9 @@
 #include "newgrf_house.h"
 #include "date_func.h"
 #include "core/random_func.hpp"
-
 #include "widgets/town_widget.h"
-
 #include "table/strings.h"
+#include <algorithm>
 
 #include "safeguards.h"
 
@@ -1221,11 +1220,11 @@ class GUIHouseList : public std::vector<HouseID> {
 protected:
 	std::vector<uint16> house_sets; ///< list of house sets, each item points the first house of the set in the houses array
 
-	static int CDECL HouseSorter(const HouseID *a, const HouseID *b)
+	static bool HouseSorter(const HouseID &a, const HouseID &b)
 	{
-		const HouseSpec *a_hs = HouseSpec::Get(*a);
+		const HouseSpec *a_hs = HouseSpec::Get(a);
 		const GRFFile *a_set = a_hs->grf_prop.grffile;
-		const HouseSpec *b_hs = HouseSpec::Get(*b);
+		const HouseSpec *b_hs = HouseSpec::Get(b);
 		const GRFFile *b_set = b_hs->grf_prop.grffile;
 
 		int ret = (a_set != nullptr) - (b_set != nullptr);
@@ -1235,10 +1234,10 @@ protected:
 				ret = a_set->grfid - b_set->grfid;
 				if (ret == 0) ret = a_hs->grf_prop.local_id - b_hs->grf_prop.local_id;
 			} else {
-				ret = *a - *b;
+				ret = a - b;
 			}
 		}
-		return ret;
+		return ret < 0;
 	}
 
 public:
@@ -1325,7 +1324,7 @@ public:
 		}
 
 		/* arrange items */
-		QSortT(this->data(), this->size(), HouseSorter);
+		std::sort(this->begin(), this->end(), HouseSorter);
 
 		/* list house sets */
 		this->house_sets.clear();

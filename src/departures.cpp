@@ -30,7 +30,6 @@
 #include "order_base.h"
 #include "settings_type.h"
 #include "core/smallvec_type.hpp"
-#include "core/sort_func.hpp"
 #include "date_type.h"
 #include "company_type.h"
 #include "cargo_type.h"
@@ -190,8 +189,8 @@ static void ScheduledDispatchDepartureLocalFix(DepartureList *departure_list)
 	}
 
 	/* Re-sort the departure list */
-	QSortT<Departure*>(departure_list->data(), departure_list->size(), [](Departure * const *a, Departure * const *b) -> int {
-		return (*a)->scheduled_date - (*b)->scheduled_date;
+	std::sort(departure_list->begin(), departure_list->end(), [](Departure * const &a, Departure * const &b) -> bool {
+		return a->scheduled_date < b->scheduled_date;
 	});
 }
 

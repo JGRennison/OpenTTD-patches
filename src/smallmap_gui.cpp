@@ -171,8 +171,7 @@ void BuildIndustriesLegend()
 	uint j = 0;
 
 	/* Add each name */
-	for (uint i = 0; i < NUM_INDUSTRYTYPES; i++) {
-		IndustryType ind = _sorted_industry_types[i];
+	for (IndustryType ind : _sorted_industry_types) {
 		const IndustrySpec *indsp = GetIndustrySpec(ind);
 		if (indsp->enabled) {
 			_legend_from_industries[j].legend = indsp->name;
@@ -203,7 +202,7 @@ void BuildLinkStatsLegend()
 	memset(_legend_linkstats, 0, sizeof(_legend_linkstats));
 
 	uint i = 0;
-	for (; i < _sorted_cargo_specs_size; ++i) {
+	for (; i < _sorted_cargo_specs.size(); ++i) {
 		const CargoSpec *cs = _sorted_cargo_specs[i];
 
 		_legend_linkstats[i].legend = cs->name;
