@@ -341,7 +341,7 @@ class CrashLogUnix : public CrashLog {
 		args.push_back("-ex");
 		args.push_back("echo \\nBacktrace:\\n");
 		args.push_back("-ex");
-		args.push_back("bt full");
+		args.push_back("bt full 100");
 
 #ifdef WITH_SIGACTION
 		if (this->GetMessage() == NULL && this->signal_instruction_ptr_valid) {
@@ -584,11 +584,22 @@ static void CDECL HandleCrash(int signum)
 
 /* static */ void CrashLog::InitialiseCrashLog()
 {
+#ifdef WITH_SIGALTSTACK
+	const size_t stack_size = max<size_t>(SIGSTKSZ, 512*1024);
+	stack_t ss;
+	ss.ss_sp = CallocT<byte>(stack_size);
+	ss.ss_size = stack_size;
+	ss.ss_flags = 0;
+	sigaltstack(&ss, nullptr);
+#endif
 	for (const int *i = _signals_to_handle; i != endof(_signals_to_handle); i++) {
 #ifdef WITH_SIGACTION
 		struct sigaction sa;
 		memset(&sa, 0, sizeof(sa));
 		sa.sa_flags = SA_SIGINFO | SA_RESTART;
+#ifdef WITH_SIGALTSTACK
+		sa.sa_flags |= SA_ONSTACK;
+#endif
 		sigemptyset(&sa.sa_mask);
 		sa.sa_sigaction = HandleCrash;
 		sigaction(*i, &sa, NULL);

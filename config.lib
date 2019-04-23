@@ -1807,6 +1807,29 @@ EOL
 			log 1 "checking ucontext... found"
 			CFLAGS="$CFLAGS -DWITH_UCONTEXT"
 		fi
+
+		log 2 "executing $cc_host $CFLAGS $CFLAGS_ENV $LDFLAGS $LDFLAGS_ENV $STATIC_FLAGS -o tmp.config.sigaltstack -x c++ - -ldl"
+		"$cc_host" $CFLAGS $CFLAGS_ENV $LDFLAGS $LDFLAGS_ENV $STATIC_FLAGS -o tmp.config.sigaltstack -x c++ - -ldl 2> /dev/null << EOL
+			#include <signal.h>
+			#include <stdlib.h>
+			int main() {
+				stack_t ss;
+				ss.ss_sp = calloc(SIGSTKSZ, 1);
+				ss.ss_size = SIGSTKSZ;
+				ss.ss_flags = 0;
+				sigaltstack(&ss, nullptr);
+				return 0;
+			}
+EOL
+		ret=$?
+		rm -f tmp.config.sigaltstack
+		log 2 "  exit code $ret"
+		if [ $ret -ne 0 ]; then
+			log 1 "checking sigaltstack... no"
+		else
+			log 1 "checking sigaltstack... found"
+			CFLAGS="$CFLAGS -DWITH_SIGALTSTACK"
+		fi
 	fi
 
 	if [ "$os" = "MINGW" ]; then
