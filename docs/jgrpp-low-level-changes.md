@@ -5,11 +5,12 @@ This document does not describe the player-visible changes/additions described i
 
 ### Crash logger and diagnostics
 
-* Additional logged items: current company ID, map size, configure invocation, detailed OS version (Unix), thread name (Unix, Win32), recently executed commands.
+* Additional logged items: current company ID, map size, configure invocation, detailed OS version (Unix), thread name, signal details (Unix, Mac), recently executed commands.
 * Better handling of crashes which occur in a non-main thread (ask the main thread to do the crash screenshot and savegame).
-* Support logging register values on Unix.
+* Support logging register values on Unix and Mac.
 * Support using libbfd for symbol lookup and line numbers (gcc/clang).
-* Support using gdb if available to add further detail to the crashlog (Unix).
+* Support using gdb/lldb if available to add further detail to the crashlog (Unix, Mac).
+* Support using sigaction and sigaltstack for more information and correct handling of stack overflow crashes (Unix, Mac).
 * Demangle C++ symbols (Unix).
 * Attempt to handle segfaults which occur within the crashlog handler (Unix).
 
