@@ -28,7 +28,9 @@ protected:
 	/** to access inherited path finder */
 	inline Tpf& Yapf()
 	{
-		return *static_cast<Tpf *>(this);
+		/* use two lines to avoid false-positive Undefined Behavior Sanitizer warnings when alignof(Tpf) > alignof(*this) and *this does not meet alignof(Tpf) */
+		Tpf *p = static_cast<Tpf *>(this);
+		return *p;
 	}
 
 public:
@@ -72,7 +74,9 @@ protected:
 	/** to access inherited path finder */
 	inline Tpf& Yapf()
 	{
-		return *static_cast<Tpf *>(this);
+		/* use two lines to avoid false-positive Undefined Behavior Sanitizer warnings when alignof(Tpf) > alignof(*this) and *this does not meet alignof(Tpf) */
+		Tpf *p = static_cast<Tpf *>(this);
+		return *p;
 	}
 
 public:
