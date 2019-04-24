@@ -1879,8 +1879,6 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 		if (!HasSignalOnTrack(tile, track)) {
 			return_cmd_error(STR_ERROR_THERE_ARE_NO_SIGNALS);
 		}
-		CommandCost ret = EnsureNoTrainOnTrack(tile, track);
-		if (ret.Failed()) return ret;
 	}
 
 	/* Only water can remove signals from anyone */
