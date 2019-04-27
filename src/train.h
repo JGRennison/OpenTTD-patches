@@ -405,7 +405,7 @@ CommandCost CmdMoveRailVehicle(TileIndex, DoCommandFlag , uint32, uint32, const 
 CommandCost CmdMoveVirtualRailVehicle(TileIndex, DoCommandFlag, uint32, uint32, const char*);
 
 Train* CmdBuildVirtualRailWagon(const Engine*);
-Train* CmdBuildVirtualRailVehicle(EngineID, bool lax_engine_check, StringID &error);
+Train* CmdBuildVirtualRailVehicle(EngineID, StringID &error);
 
 int GetTileMarginInFrontOfTrain(const Train *v, int x_pos, int y_pos);
 

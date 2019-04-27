@@ -1003,13 +1003,13 @@ Train* VirtualTrainFromTemplateVehicle(TemplateVehicle* tv, StringID &err)
 
 	assert(tv->owner == _current_company);
 
-	head = CmdBuildVirtualRailVehicle(tv->engine_type, true, err);
+	head = CmdBuildVirtualRailVehicle(tv->engine_type, err);
 	if (!head) return nullptr;
 
 	tail = head;
 	tv = tv->GetNextUnit();
 	while (tv) {
-		tmp = CmdBuildVirtualRailVehicle(tv->engine_type, true, err);
+		tmp = CmdBuildVirtualRailVehicle(tv->engine_type, err);
 		if (!tmp) {
 			CmdDeleteVirtualTrain(INVALID_TILE, DC_EXEC, head->index, 0, nullptr);
 			return nullptr;
@@ -1055,13 +1055,13 @@ CommandCost CmdVirtualTrainFromTrain(TileIndex tile, DoCommandFlag flags, uint32
 		Train *tmp, *head, *tail;
 		StringID err = INVALID_STRING_ID;
 
-		head = CmdBuildVirtualRailVehicle(train->engine_type, false, err);
+		head = CmdBuildVirtualRailVehicle(train->engine_type, err);
 		if (!head) return_cmd_error(err);
 
 		tail = head;
 		train = train->GetNextUnit();
 		while (train) {
-			tmp = CmdBuildVirtualRailVehicle(train->engine_type, false, err);
+			tmp = CmdBuildVirtualRailVehicle(train->engine_type, err);
 			if (!tmp) {
 				CmdDeleteVirtualTrain(tile, flags, head->index, 0, nullptr);
 				return_cmd_error(err);
@@ -1194,7 +1194,8 @@ CommandCost CmdTemplateVehicleFromTrain(TileIndex tile, DoCommandFlag flags, uin
 	}
 
 	for (Train *v = clicked; v != nullptr; v = v->GetNextUnit()) {
-		if (!IsEngineBuildable(v->engine_type, VEH_TRAIN, _current_company)) {
+		const Engine *e = Engine::GetIfValid(v->engine_type);
+		if (e == nullptr || e->type != VEH_TRAIN) {
 			return_cmd_error(STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + VEH_TRAIN);
 		}
 	}
