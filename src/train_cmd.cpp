@@ -4149,22 +4149,14 @@ Train* CmdBuildVirtualRailWagon(const Engine *e)
 	return v;
 }
 
-Train* CmdBuildVirtualRailVehicle(EngineID eid, bool lax_engine_check, StringID &error)
+Train* CmdBuildVirtualRailVehicle(EngineID eid, StringID &error)
 {
-	if (lax_engine_check) {
-		const Engine *e = Engine::GetIfValid(eid);
-		if (e == NULL || e->type != VEH_TRAIN) {
-			error = STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + VEH_TRAIN;
-			return NULL;
-		}
-	} else {
-		if (!IsEngineBuildable(eid, VEH_TRAIN, _current_company)) {
-			error = STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + VEH_TRAIN;
-			return NULL;
-		}
+	const Engine *e = Engine::GetIfValid(eid);
+	if (e == nullptr || e->type != VEH_TRAIN) {
+		error = STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + VEH_TRAIN;
+		return nullptr;
 	}
 
-	const Engine* e = Engine::Get(eid);
 	const RailVehicleInfo *rvi = &e->u.rail;
 
 	int num_vehicles = (e->u.rail.railveh_type == RAILVEH_MULTIHEAD ? 2 : 1) + CountArticulatedParts(eid, false);
@@ -4250,7 +4242,7 @@ CommandCost CmdBuildVirtualRailVehicle(TileIndex tile, DoCommandFlag flags, uint
 
 	if (should_execute) {
 		StringID err = INVALID_STRING_ID;
-		Train* train = CmdBuildVirtualRailVehicle(eid, false, err);
+		Train* train = CmdBuildVirtualRailVehicle(eid, err);
 
 		if (train == NULL) {
 			return_cmd_error(err);

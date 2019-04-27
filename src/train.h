@@ -353,7 +353,7 @@ CommandCost CmdMoveRailVehicle(TileIndex, DoCommandFlag , uint32, uint32, const 
 CommandCost CmdMoveVirtualRailVehicle(TileIndex, DoCommandFlag, uint32, uint32, const char*);
 
 Train* CmdBuildVirtualRailWagon(const Engine*);
-Train* CmdBuildVirtualRailVehicle(EngineID, bool lax_engine_check, StringID &error);
+Train* CmdBuildVirtualRailVehicle(EngineID, StringID &error);
 
 #define FOR_ALL_TRAINS(var) FOR_ALL_VEHICLES_OF_TYPE(Train, var)
 
