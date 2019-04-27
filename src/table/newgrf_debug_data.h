@@ -95,6 +95,18 @@ class NIHVehicle : public NIHelper {
 		b += seprintf(b, lastof(buffer), "  Flags: ");
 		b = v->DumpVehicleFlags(b, lastof(buffer));
 		print(buffer);
+		if (v->IsGroundVehicle()) {
+			const GroundVehicleCache &gvc = *(v->GetGroundVehicleCache());
+			seprintf(buffer, lastof(buffer), "  GV Cache: weight: %u, slope res: %u, max TE: %u, axle res: %u",
+					gvc.cached_weight, gvc.cached_slope_resistance, gvc.cached_max_te, gvc.cached_axle_resistance);
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  GV Cache: max track speed: %u, power: %u, air drag: %u",
+					gvc.cached_max_track_speed, gvc.cached_power, gvc.cached_air_drag);
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  GV Cache: total length: %u, veh length: %u",
+					gvc.cached_total_length, gvc.cached_veh_length);
+			print(buffer);
+		}
 	}
 };
 
