@@ -660,6 +660,18 @@ public:
 				DrawString(left, right - ScaleGUITrad(24), y + ScaleGUITrad(2), STR_TMPL_WARNING_FREE_WAGON, TC_RED, SA_RIGHT);
 			}
 
+			bool buildable = true;
+			for (const TemplateVehicle *u = v; u != nullptr; u = u->Next()) {
+				if (!IsEngineBuildable(u->engine_type, VEH_TRAIN, u->owner)) {
+					buildable = false;
+					break;
+				}
+			}
+			/* Draw a notification string for chains that are not buildable */
+			if (!buildable) {
+				DrawString(left, right - ScaleGUITrad(24), y + ScaleGUITrad(2), STR_TMPL_WARNING_VEH_UNAVAILABLE, TC_RED, SA_CENTER);
+			}
+
 			/* Draw the template's length in tile-units */
 			SetDParam(0, v->GetRealLength());
 			SetDParam(1, 1);

@@ -5848,7 +5848,6 @@ STR_TMPL_TEMPLATE_OVR_VALUE_nogoldandcurrency                   :{TINY_FONT}{BLA
 STR_TMPL_TEMPLATE_OVR_VALUE_notinyfont                          :{BLACK}Anschaffungskosten: {GOLD}{CURRENCY_LONG}
 STR_TMPL_TEMPLATE_OVR_VALUE_notinyfontandblack                  :Anschaffungskosten: {GOLD}{CURRENCY_LONG}
 STR_TMPL_WARNING_FREE_WAGON                                     :{RED}Unvollständiger Antriebsstrang: Zug kann nicht bewegt werden!
-STR_TMPL_TEST                                                   :{ORANGE}Test String: {STRING} {STRING}
 STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}Vorlage in Benutzung: {NUM}
 STR_TMP_TEMPLATE_IN_USE                                         :Vorlage ist in Benutzung
 STR_TMPL_GROUP_NUM_TRAINS                                       :{BLACK}{NUM}
