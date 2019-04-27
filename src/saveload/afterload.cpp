@@ -1296,6 +1296,44 @@ bool AfterLoadGame()
 		}
 	}
 
+	/* Railtype moved from m3 to m8 in version SLV_EXTEND_RAILTYPES. */
+	if (IsSavegameVersionBefore(SLV_EXTEND_RAILTYPES)) {
+		const bool has_extra_bit = SlXvIsFeaturePresent(XSLFI_MORE_RAIL_TYPES, 1, 1);
+		auto update_railtype = [&](TileIndex t) {
+			uint rt = GB(_m[t].m3, 0, 4);
+			if (has_extra_bit) rt |= (GB(_m[t].m1, 7, 1) << 4);
+			SetRailType(t, (RailType)rt);
+		};
+		for (TileIndex t = 0; t < map_size; t++) {
+			switch (GetTileType(t)) {
+				case MP_RAILWAY:
+					update_railtype(t);
+					break;
+
+				case MP_ROAD:
+					if (IsLevelCrossing(t)) {
+						update_railtype(t);
+					}
+					break;
+
+				case MP_STATION:
+					if (HasStationRail(t)) {
+						update_railtype(t);
+					}
+					break;
+
+				case MP_TUNNELBRIDGE:
+					if (GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL) {
+						update_railtype(t);
+					}
+					break;
+
+				default:
+					break;
+			}
+		}
+	}
+
 	if (IsSavegameVersionBefore(SLV_42)) {
 		Vehicle *v;
 
@@ -1373,44 +1411,6 @@ bool AfterLoadGame()
 				Train::From(v)->track = TRACK_BIT_WORMHOLE;
 			} else {
 				RoadVehicle::From(v)->state = RVSB_WORMHOLE;
-			}
-		}
-	}
-
-	/* Railtype moved from m3 to m8 in version SLV_EXTEND_RAILTYPES. */
-	if (IsSavegameVersionBefore(SLV_EXTEND_RAILTYPES)) {
-		const bool has_extra_bit = SlXvIsFeaturePresent(XSLFI_MORE_RAIL_TYPES, 1, 1);
-		auto update_railtype = [&](TileIndex t) {
-			uint rt = GB(_m[t].m3, 0, 4);
-			if (has_extra_bit) rt |= (GB(_m[t].m1, 7, 1) << 4);
-			SetRailType(t, (RailType)rt);
-		};
-		for (TileIndex t = 0; t < map_size; t++) {
-			switch (GetTileType(t)) {
-				case MP_RAILWAY:
-					update_railtype(t);
-					break;
-
-				case MP_ROAD:
-					if (IsLevelCrossing(t)) {
-						update_railtype(t);
-					}
-					break;
-
-				case MP_STATION:
-					if (HasStationRail(t)) {
-						update_railtype(t);
-					}
-					break;
-
-				case MP_TUNNELBRIDGE:
-					if (GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL) {
-						update_railtype(t);
-					}
-					break;
-
-				default:
-					break;
 			}
 		}
 	}
