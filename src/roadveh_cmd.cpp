@@ -852,10 +852,10 @@ static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 	if (v->roadtype == ROADTYPE_TRAM) return;
 
 	/* Don't overtake in stations */
-	if (IsTileType(v->tile, MP_STATION) || IsTileType(u->tile, MP_STATION)) return;
+	if (IsTileType(u->tile, MP_STATION)) return;
 
-	/* For now, articulated road vehicles can't overtake anything. */
-	if (v->HasArticulatedPart()) return;
+	/* If not permitted, articulated road vehicles can't overtake anything. */
+	if (!_settings_game.vehicle.roadveh_articulated_overtaking && v->HasArticulatedPart()) return;
 
 	/* Don't overtake if the vehicle is broken or about to break down */
 	if (v->breakdown_ctr != 0) return;
@@ -863,8 +863,19 @@ static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 	/* Vehicles are not driving in same direction || direction is not a diagonal direction */
 	if (v->direction != u->direction || !(v->direction & 1)) return;
 
-	/* Check if vehicle is in a road stop, depot, tunnel or bridge or not on a straight road */
-	if (v->state >= RVSB_IN_ROAD_STOP || !IsStraightRoadTrackdir((Trackdir)(v->state & RVSB_TRACKDIR_MASK))) return;
+	/* Vehicles chain is too long to overtake */
+	if (v->GetOvertakingCounterThreshold() > 255) return;
+
+	for (RoadVehicle *w = v; w != nullptr; w = w->Next()) {
+		/* Don't overtake in stations */
+		if (IsTileType(w->tile, MP_STATION)) return;
+
+		/* Don't overtake if vehicle parts not all in same direction */
+		if (w->direction != v->direction) return;
+
+		/* Check if vehicle is in a road stop, depot, tunnel or bridge or not on a straight road */
+		if (w->state >= RVSB_IN_ROAD_STOP || !IsStraightRoadTrackdir((Trackdir)(w->state & RVSB_TRACKDIR_MASK))) return;
+	}
 
 	/* Can't overtake a vehicle that is moving faster than us. If the vehicle in front is
 	 * accelerating, take the maximum speed for the comparison, else the current speed.
@@ -884,16 +895,24 @@ static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 	 *  - No barred levelcrossing
 	 *  - No other vehicles in the way
 	 */
-	od.tile = v->tile;
-	if (CheckRoadBlockedForOvertaking(&od)) return;
-
-	od.tile = v->tile + TileOffsByDiagDir(DirToDiagDir(v->direction));
-	if (CheckRoadBlockedForOvertaking(&od)) return;
+	uint tile_count = 1 + CeilDiv(v->gcache.cached_total_length, TILE_SIZE);
+	TileIndex check_tile = v->tile;
+	TileIndexDiff check_tile_diff = TileOffsByDiagDir(DirToDiagDir(v->direction));
+	for (; tile_count != 0; tile_count--, check_tile += check_tile_diff) {
+		od.tile = check_tile;
+		if (CheckRoadBlockedForOvertaking(&od)) return;
+	}
+	tile_count = v->gcache.cached_total_length / TILE_SIZE;
+	check_tile = v->tile - check_tile_diff;
+	for (; tile_count != 0; tile_count--, check_tile -= check_tile_diff) {
+		od.tile = check_tile;
+		if (CheckRoadBlockedForOvertaking(&od)) return;
+	}
 
 	/* When the vehicle in front of us is stopped we may only take
 	 * half the time to pass it than when the vehicle is moving. */
 	v->overtaking_ctr = (od.u->cur_speed == 0 || od.u->IsRoadVehicleStopped()) ? RV_OVERTAKE_TIMEOUT / 2 : 0;
-	v->overtaking = RVSB_DRIVE_SIDE;
+	v->SetRoadVehicleOvertaking(RVSB_DRIVE_SIDE);
 }
 
 static void RoadZPosAffectSpeed(RoadVehicle *v, int old_z)
@@ -1187,16 +1206,19 @@ static bool CanBuildTramTrackOnTile(CompanyID c, TileIndex t, RoadBits r)
 bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 {
 	SCOPE_INFO_FMT([&], "IndividualRoadVehicleController: %s, %s", scope_dumper().VehicleInfo(v), scope_dumper().VehicleInfo(prev));
-	if (v->overtaking != 0)  {
+	if (v->overtaking != 0 && v->IsFrontEngine())  {
 		if (IsTileType(v->tile, MP_STATION)) {
 			/* Force us to be not overtaking! */
-			v->overtaking = 0;
+			v->SetRoadVehicleOvertaking(0);
+		} else if (v->HasArticulatedPart() && !IsStraightRoadTrackdir((Trackdir)v->state)) {
+			/* Articulated RVs may not overtake on corners */
+			v->SetRoadVehicleOvertaking(0);
 		} else if (++v->overtaking_ctr >= RV_OVERTAKE_TIMEOUT) {
 			/* If overtaking just aborts at a random moment, we can have a out-of-bound problem,
 			 *  if the vehicle started a corner. To protect that, only allow an abort of
 			 *  overtake if we are on straight roads */
-			if (v->state < RVSB_IN_ROAD_STOP && IsStraightRoadTrackdir((Trackdir)v->state)) {
-				v->overtaking = 0;
+			if (v->overtaking_ctr >= v->GetOvertakingCounterThreshold() && v->state < RVSB_IN_ROAD_STOP && IsStraightRoadTrackdir((Trackdir)v->state)) {
+				v->SetRoadVehicleOvertaking(0);
 			}
 		}
 	}
@@ -1274,7 +1296,7 @@ again:
 		uint start_frame = RVC_DEFAULT_START_FRAME;
 		if (IsReversingRoadTrackdir(dir)) {
 			/* When turning around we can't be overtaking. */
-			v->overtaking = 0;
+			v->SetRoadVehicleOvertaking(0);
 
 			if (no_advance_tile) {
 				DEBUG(misc, 0, "Road vehicle attempted to turn around on a single road piece bridge head");

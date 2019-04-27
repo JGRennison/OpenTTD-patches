@@ -166,6 +166,18 @@ struct RoadVehicle FINAL : public GroundVehicle<RoadVehicle, VEH_ROAD> {
 		return !this->IsRoadVehicleOnLevelCrossing();
 	}
 
+	inline uint GetOvertakingCounterThreshold() const
+	{
+		return RV_OVERTAKE_TIMEOUT + (this->gcache.cached_total_length / 2) - (VEHICLE_LENGTH / 2);
+	}
+
+	inline void SetRoadVehicleOvertaking(byte overtaking)
+	{
+		for (RoadVehicle *u = this; u != nullptr; u = u->Next()) {
+			u->overtaking = overtaking;
+		}
+	}
+
 protected: // These functions should not be called outside acceleration code.
 
 	/**
