@@ -307,19 +307,28 @@ public:
 					old_dpi = _cur_dpi;
 					_cur_dpi = &tmp_dpi;
 
+					int y = 4 - this->vscroll->GetPosition();
+					bool buildable = true;
+					for (Train *train = this->virtual_train; train != nullptr; train = train->Next()) {
+						if (!IsEngineBuildable(train->engine_type, VEH_TRAIN, train->owner)) buildable = false;
+					}
+					if (!buildable) {
+						DrawString(8, r.right, y, STR_TMPL_WARNING_VEH_UNAVAILABLE);
+						y += FONT_HEIGHT_NORMAL;
+					}
 					/* Draw vehicle performance info */
 					const GroundVehicleCache *gcache = this->virtual_train->GetGroundVehicleCache();
 					SetDParam(2, this->virtual_train->GetDisplayMaxSpeed());
 					SetDParam(1, gcache->cached_power);
 					SetDParam(0, gcache->cached_weight);
 					SetDParam(3, gcache->cached_max_te / 1000);
-					DrawString(8, r.right, 4 - this->vscroll->GetPosition(), STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE);
+					DrawString(8, r.right, y, STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE);
 					/* Draw cargo summary */
 					CargoArray cargo_caps;
 					for (const Train *tmp = this->virtual_train; tmp != NULL; tmp = tmp->Next()) {
 						cargo_caps[tmp->cargo_type] += tmp->cargo_cap;
 					}
-					int y = 30 - this->vscroll->GetPosition();
+					y += 26;
 					for (CargoID i = 0; i < NUM_CARGO; ++i) {
 						if (cargo_caps[i] > 0) {
 							SetDParam(0, i);
@@ -443,11 +452,14 @@ public:
 		uint height = 30;
 		CargoArray cargo_caps;
 
-		if (virtual_train != NULL) {
-			for (Train *train = virtual_train; train != NULL; train = train->Next()) {
+		if (virtual_train != nullptr) {
+			bool buildable = true;
+			for (Train *train = virtual_train; train != nullptr; train = train->Next()) {
 				width += train->GetDisplayImageWidth();
 				cargo_caps[train->cargo_type] += train->cargo_cap;
+				if (!IsEngineBuildable(train->engine_type, VEH_TRAIN, train->owner)) buildable = false;
 			}
+			if (!buildable) height += FONT_HEIGHT_NORMAL;
 
 			for (CargoID i = 0; i < NUM_CARGO; ++i) {
 				if (cargo_caps[i] > 0) {
