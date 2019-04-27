@@ -1210,7 +1210,7 @@ bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 		if (IsTileType(v->tile, MP_STATION)) {
 			/* Force us to be not overtaking! */
 			v->SetRoadVehicleOvertaking(0);
-		} else if (v->HasArticulatedPart() && !IsStraightRoadTrackdir((Trackdir)v->state)) {
+		} else if (v->HasArticulatedPart() && (v->state >= RVSB_IN_ROAD_STOP || !IsStraightRoadTrackdir((Trackdir)v->state))) {
 			/* Articulated RVs may not overtake on corners */
 			v->SetRoadVehicleOvertaking(0);
 		} else if (++v->overtaking_ctr >= RV_OVERTAKE_TIMEOUT) {
