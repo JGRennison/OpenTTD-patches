@@ -205,7 +205,7 @@ static bool TestOrderCondition(const Order *order, TraceRestrictItem item)
 				result = order->IsType(OT_GOTO_WAYPOINT) && order->GetDestination() == condvalue;
 				break;
 
-			case OT_GOTO_DEPOT:
+			case TROCAF_DEPOT:
 				result = order->IsType(OT_GOTO_DEPOT) && order->GetDestination() == condvalue;
 				break;
 
