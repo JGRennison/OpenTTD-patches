@@ -303,6 +303,18 @@ enum SaveLoadVersion : uint16 {
 	SLV_TREES_WATER_CLASS,                  ///< 213  PR#7405 WaterClass update for tree tiles.
 
 	SL_MAX_VERSION,                         ///< Highest possible saveload version
+
+	SL_SPRING_2013_v2_0_102 = 220,
+	SL_SPRING_2013_v2_1_108 = 221,
+	SL_SPRING_2013_v2_1_147 = 222,
+	SL_SPRING_2013_v2_3_XXX = 223,
+	SL_SPRING_2013_v2_3_b3 = 224,
+	SL_SPRING_2013_v2_3_b4 = 225,
+	SL_SPRING_2013_v2_3_b5 = 226,
+	SL_SPRING_2013_v2_4 = 227,
+	SL_TRACE_RESTRICT_2000 = 2000,
+	SL_TRACE_RESTRICT_2001 = 2001,
+	SL_TRACE_RESTRICT_2002 = 2002,
 };
 
 /** Save or load result codes. */
