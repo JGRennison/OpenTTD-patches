@@ -2113,7 +2113,7 @@ public:
 		DoCommandP(0, this->window_number, 0, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, str);
 	}
 
-	virtual void OnPlaceObject(Point pt, TileIndex tile)
+	virtual void OnPlaceObject(Point pt, TileIndex tile) override
 	{
 		/* check depot first */
 		if (IsDepotTile(tile) && GetDepotVehicleType(tile) == this->vli.vtype) {
@@ -2861,7 +2861,7 @@ struct VehicleDetailsWindow : Window {
 		}
 	}
 
-	virtual void OnFocus(Window *previously_focused_window)
+	virtual void OnFocus(Window *previously_focused_window) override
 	{
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
 			if (this->window_number != INVALID_VEHICLE) {
@@ -2872,7 +2872,7 @@ struct VehicleDetailsWindow : Window {
 		}
 	}
 
-	virtual void OnFocusLost(Window *newly_focused_window)
+	virtual void OnFocusLost(Window *newly_focused_window) override
 	{
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
 			if (this->window_number != INVALID_VEHICLE) {
@@ -3177,7 +3177,7 @@ public:
 		DeleteWindowById(WC_VEHICLE_TIMETABLE, this->window_number, false);
 	}
 
-	virtual void OnFocus(Window *previously_focused_window)
+	virtual void OnFocus(Window *previously_focused_window) override
 	{
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
 			if (this->window_number != INVALID_VEHICLE) {
@@ -3188,7 +3188,7 @@ public:
 		}
 	}
 
-	virtual void OnFocusLost(Window *newly_focused_window)
+	virtual void OnFocusLost(Window *newly_focused_window) override
 	{
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
 			if (this->window_number != INVALID_VEHICLE) {
@@ -3496,7 +3496,7 @@ public:
 		}
 	}
 
-	virtual void OnTimeout()
+	virtual void OnTimeout() override
 	{
 		if (!this->depot_select_active) {
 			this->RaiseWidget(WID_VV_GOTO_DEPOT);
@@ -3504,7 +3504,7 @@ public:
 		}
 	}
 
-	virtual void OnPlaceObject(Point pt, TileIndex tile)
+	virtual void OnPlaceObject(Point pt, TileIndex tile) override
 	{
 		const Vehicle *v = Vehicle::Get(this->window_number);
 		if (IsDepotTile(tile) && GetDepotVehicleType(tile) == v->type && IsInfraTileUsageAllowed(v->type, v->owner, tile)) {
@@ -3515,14 +3515,14 @@ public:
 		}
 	}
 
-	virtual void OnPlaceObjectAbort()
+	virtual void OnPlaceObjectAbort() override
 	{
 		this->depot_select_active = false;
 		this->RaiseWidget(WID_VV_GOTO_DEPOT);
 		this->SetWidgetDirty(WID_VV_GOTO_DEPOT);
 	}
 
-	virtual bool OnRightClick(Point pt, int widget)
+	virtual bool OnRightClick(Point pt, int widget) override
 	{
 		if (widget == WID_VV_GOTO_DEPOT && _settings_client.gui.hover_delay_ms == 0) {
 			const Vehicle *v = Vehicle::Get(this->window_number);
@@ -3536,7 +3536,7 @@ public:
 		return false;
 	}
 
-	virtual void OnHover(Point pt, int widget)
+	virtual void OnHover(Point pt, int widget) override
 	{
 		if (widget == WID_VV_GOTO_DEPOT) {
 			const Vehicle *v = Vehicle::Get(this->window_number);
@@ -3582,7 +3582,7 @@ public:
 		}
 	}
 
-	virtual void OnRealtimeTick(uint delta_ms)
+	virtual void OnRealtimeTick(uint delta_ms) override
 	{
 		if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
 	}

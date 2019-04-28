@@ -970,7 +970,7 @@ struct TimetableWindow : Window {
 		this->GetWidget<NWidgetStacked>(WID_VT_SEL_SHARED)->SetDisplayedPlane(this->vehicle->owner == _local_company && _ctrl_pressed ? 1 : 0);
 	}
 
-	virtual void OnFocus(Window *previously_focused_window)
+	virtual void OnFocus(Window *previously_focused_window) override
 	{
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
 			MarkAllRoutePathsDirty(this->vehicle);
@@ -978,7 +978,7 @@ struct TimetableWindow : Window {
 		}
 	}
 
-	virtual void OnFocusLost(Window *newly_focused_window)
+	virtual void OnFocusLost(Window *newly_focused_window) override
 	{
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
 			MarkAllRoutePathsDirty(this->vehicle);

@@ -247,7 +247,7 @@ class CrashLogUnix : public CrashLog {
 	 *
 	 * Also log GDB information if available
 	 */
-	char *LogRegisters(char *buffer, const char *last) const
+	char *LogRegisters(char *buffer, const char *last) const override
 	{
 		buffer = LogGdbInfo(buffer, last);
 
@@ -490,7 +490,7 @@ class CrashLogUnix : public CrashLog {
 	 * This is a wrapper around the generic LogScopeInfo function which sets
 	 * up a signal handler to catch any SIGSEGVs which may occur due to invalid data
 	 */
-	/* virtual */ char *LogScopeInfo(char *buffer, const char *last) const
+	/* virtual */ char *LogScopeInfo(char *buffer, const char *last) const override
 	{
 		logStacktraceSavedBuffer = buffer;
 

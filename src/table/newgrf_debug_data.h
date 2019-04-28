@@ -84,7 +84,7 @@ class NIHVehicle : public NIHelper {
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, avail);
 	}
 
-	/* virtual */ void ExtraInfo(uint index, std::function<void(const char *)> print) const
+	/* virtual */ void ExtraInfo(uint index, std::function<void(const char *)> print) const override
 	{
 		char buffer[1024];
 		Vehicle *v = Vehicle::Get(index);

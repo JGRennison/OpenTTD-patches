@@ -2974,7 +2974,7 @@ public:
 		*this->sorting = this->vehicles.GetListing();
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_TRSL_LIST_SLOTS: {
@@ -3021,7 +3021,7 @@ public:
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	virtual void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (data == 0) {
 			/* This needs to be done in command-scope to enforce rebuilding before resorting invalid data */
@@ -3048,7 +3048,7 @@ public:
 		this->SetDirty();
 	}
 
-	virtual void SetStringParameters(int widget) const
+	virtual void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_TRSL_FILTER_BY_CARGO:
@@ -3057,7 +3057,7 @@ public:
 		}
 	}
 
-	virtual void OnPaint()
+	virtual void OnPaint() override
 	{
 		/* If we select the all vehicles, this->list will contain all vehicles of the owner
 		 * else this->list will contain all vehicles which belong to the selected group */
@@ -3094,7 +3094,7 @@ public:
 		this->DrawWidgets();
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	virtual void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_TRSL_ALL_VEHICLES:
@@ -3135,7 +3135,7 @@ public:
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	virtual void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_TRSL_SORT_BY_ORDER: // Flip sorting method ascending/descending
@@ -3258,14 +3258,14 @@ public:
 		}
 	}
 
-	virtual void OnDragDrop(Point pt, int widget)
+	virtual void OnDragDrop(Point pt, int widget) override
 	{
 		if (this->vehicle_sel != INVALID_VEHICLE) OnDragDrop_Vehicle(pt, widget);
 
 		_cursor.vehchain = false;
 	}
 
-	virtual void OnQueryTextFinished(char *str)
+	virtual void OnQueryTextFinished(char *str) override
 	{
 		if (str != nullptr) {
 			if (this->slot_set_max_occupancy) {
@@ -3279,13 +3279,13 @@ public:
 		this->slot_rename = INVALID_TRACE_RESTRICT_SLOT_ID;
 	}
 
-	virtual void OnResize()
+	virtual void OnResize() override
 	{
 		this->slot_sb->SetCapacityFromWidget(this, WID_TRSL_LIST_SLOTS);
 		this->vscroll->SetCapacityFromWidget(this, WID_TRSL_LIST_VEHICLE);
 	}
 
-	virtual void OnDropdownSelect(int widget, int index)
+	virtual void OnDropdownSelect(int widget, int index) override
 	{
 		switch (widget) {
 			case WID_TRSL_SORT_BY_DROPDOWN:
@@ -3309,7 +3309,7 @@ public:
 		}
 	}
 
-	virtual void OnPlaceObjectAbort()
+	virtual void OnPlaceObjectAbort() override
 	{
 		/* abort drag & drop */
 		this->vehicle_sel = INVALID_VEHICLE;
@@ -3318,7 +3318,7 @@ public:
 		this->SetWidgetDirty(WID_TRSL_LIST_VEHICLE);
 	}
 
-	virtual void OnMouseDrag(Point pt, int widget)
+	virtual void OnMouseDrag(Point pt, int widget) override
 	{
 		if (this->vehicle_sel == INVALID_VEHICLE) return;
 

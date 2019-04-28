@@ -1463,7 +1463,7 @@ public:
 		}
 	}
 
-	virtual void SetStringParameters(int widget) const
+	virtual void SetStringParameters(int widget) const override
 	{
 		if (widget == WID_HP_CAPTION) {
 			if (this->house_list.NumHouseSets() == 1) SetDParamStr(0, this->house_list.GetNameOfHouseSet(0));
@@ -1576,7 +1576,7 @@ public:
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_HP_HOUSE_SETS: {
@@ -1652,7 +1652,7 @@ public:
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	virtual void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (GB(widget, 0, 16)) {
 			case WID_HP_HOUSE_SETS: {
@@ -1687,7 +1687,7 @@ public:
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	virtual void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (GB(widget, 0, 16)) {
 			case WID_HP_HOUSE_SETS: {

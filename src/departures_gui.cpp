@@ -182,7 +182,7 @@ public:
 		this->DeleteDeparturesList(this->arrivals);
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_DB_LIST:
@@ -192,7 +192,7 @@ public:
 		}
 	}
 
-	virtual void SetStringParameters(int widget) const
+	virtual void SetStringParameters(int widget) const override
 	{
 		if (widget == WID_DB_CAPTION) {
 			const Station *st = Station::Get(this->station);
@@ -200,7 +200,7 @@ public:
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	virtual void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_DB_SHOW_TRAINS:   // Show trains to this station
@@ -374,7 +374,7 @@ public:
 		}
 	}
 
-	virtual void OnPaint()
+	virtual void OnPaint() override
 	{
 		if (Twaypoint || _settings_client.gui.departure_show_both) {
 			this->DisableWidget(WID_DB_SHOW_ARRS);
@@ -388,7 +388,7 @@ public:
 		this->DrawWidgets();
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	virtual void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_DB_LIST:
@@ -397,7 +397,7 @@ public:
 		}
 	}
 
-	virtual void OnResize()
+	virtual void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_DB_LIST);
 		this->GetWidget<NWidgetCore>(WID_DB_LIST)->widget_data = (this->vscroll->GetCapacity() << MAT_ROW_START) + (1 << MAT_COL_START);

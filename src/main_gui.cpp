@@ -465,7 +465,7 @@ struct MainWindow : Window
 		InvalidateWindowData(WC_MAIN_TOOLBAR, 0, data, true);
 	}
 
-	virtual void OnMouseOver(Point pt, int widget)
+	virtual void OnMouseOver(Point pt, int widget) override
 	{
 		if (pt.x != -1 && _game_mode != GM_MENU && (_mouse_hovering || _settings_client.gui.hover_delay_ms == 0)) {
 			/* Show tooltip with last month production or town name */

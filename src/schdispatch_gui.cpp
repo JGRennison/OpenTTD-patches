@@ -175,7 +175,7 @@ struct SchdispatchWindow : Window {
 	uint flag_width;
 	uint flag_height;
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_SCHDISPATCH_MATRIX: {
@@ -223,7 +223,7 @@ struct SchdispatchWindow : Window {
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	virtual void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		switch (data) {
 			case VIWD_MODIFY_ORDERS:
@@ -233,7 +233,7 @@ struct SchdispatchWindow : Window {
 		}
 	}
 
-	virtual void OnPaint()
+	virtual void OnPaint() override
 	{
 		const Vehicle *v = this->vehicle;
 		CountItem();
@@ -256,7 +256,7 @@ struct SchdispatchWindow : Window {
 		this->DrawWidgets();
 	}
 
-	virtual void SetStringParameters(int widget) const
+	virtual void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case WID_SCHDISPATCH_CAPTION: SetDParam(0, this->vehicle->index); break;
@@ -296,7 +296,7 @@ struct SchdispatchWindow : Window {
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	virtual void DrawWidget(const Rect &r, int widget) const override
 	{
 		const Vehicle *v = this->vehicle;
 
@@ -400,7 +400,7 @@ struct SchdispatchWindow : Window {
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	virtual void OnClick(Point pt, int widget, int click_count) override
 	{
 		const Vehicle *v = this->vehicle;
 
@@ -468,7 +468,7 @@ struct SchdispatchWindow : Window {
 		this->SetDirty();
 	}
 
-	virtual void OnQueryTextFinished(char *str)
+	virtual void OnQueryTextFinished(char *str) override
 	{
 		if (str == nullptr) return;
 		const Vehicle *v = this->vehicle;
@@ -541,14 +541,14 @@ struct SchdispatchWindow : Window {
 		this->SetDirty();
 	}
 
-	virtual void OnResize()
+	virtual void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_SCHDISPATCH_MATRIX);
 		NWidgetCore *nwi = this->GetWidget<NWidgetCore>(WID_SCHDISPATCH_MATRIX);
 		this->num_columns = nwi->current_x / nwi->resize_x;
 	}
 
-	virtual void OnFocus(Window *previously_focused_window)
+	virtual void OnFocus(Window *previously_focused_window) override
 	{
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
 			MarkAllRoutePathsDirty(this->vehicle);

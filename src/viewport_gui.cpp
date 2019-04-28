@@ -153,7 +153,7 @@ public:
 		}
 	}
 
-	virtual void OnMouseOver(Point pt, int widget)
+	virtual void OnMouseOver(Point pt, int widget) override
 	{
 		if (pt.x != -1 && (_mouse_hovering || _settings_client.gui.hover_delay_ms == 0)) {
 			/* Show tooltip with last month production or town name */
