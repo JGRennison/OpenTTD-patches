@@ -1273,7 +1273,6 @@ void SwitchToMode(SwitchMode new_mode)
 	SmallMapWindow::RebuildColourIndexIfNecessary();
 }
 
-
 /**
  * Check the validity of some of the caches.
  * Especially in the sense of desyncs between
@@ -1365,21 +1364,21 @@ void CheckCaches(bool force_check)
 					gro_cache[length] = Train::From(u)->gcache;
 					tra_cache[length] = Train::From(u)->tcache;
 					veh_old[length] = CallocT<Train>(1);
-					MemCpyT((Train *) veh_old[length], Train::From(u));
+					memcpy((void *) veh_old[length], (const void *) Train::From(u), sizeof(Train));
 					break;
 				case VEH_ROAD:
 					gro_cache[length] = RoadVehicle::From(u)->gcache;
 					veh_old[length] = CallocT<RoadVehicle>(1);
-					MemCpyT((RoadVehicle *) veh_old[length], RoadVehicle::From(u));
+					memcpy((void *) veh_old[length], (const void *) RoadVehicle::From(u), sizeof(RoadVehicle));
 					break;
 				case VEH_AIRCRAFT:
 					air_cache[length] = Aircraft::From(u)->acache;
 					veh_old[length] = CallocT<Aircraft>(1);
-					MemCpyT((Aircraft *) veh_old[length], Aircraft::From(u));
+					memcpy((void *) veh_old[length], (const void *) Aircraft::From(u), sizeof(Aircraft));
 					break;
 				default:
 					veh_old[length] = CallocT<Vehicle>(1);
-					MemCpyT(veh_old[length], u);
+					memcpy((void *) veh_old[length], (const void *) u, sizeof(Vehicle));
 					break;
 			}
 			length++;
