@@ -609,7 +609,9 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 						} else if (f == SCF_VALUE) {
 							if (!exec) return CommandCost();
 							vc->value = val;
-						} else CommandCost(STR_ERR_PROGSIG_INVALID_CONDITION_FIELD);
+						} else {
+							return_cmd_error(STR_ERR_PROGSIG_INVALID_CONDITION_FIELD);
+						}
 					} break;
 
 					case PSC_SIGNAL_STATE: {
