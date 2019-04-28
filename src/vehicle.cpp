@@ -81,16 +81,16 @@ static const uint GEN_HASHY_BUCKET_BITS = 6;
 #define GEN_HASH(x, y) (GEN_HASHY(y) + GEN_HASHX(x))
 
 /* Maximum size until hash repeats */
-static const int GEN_HASHX_SIZE = 1 << (GEN_HASHX_BUCKET_BITS + GEN_HASHX_BITS + ZOOM_LVL_SHIFT);
-static const int GEN_HASHY_SIZE = 1 << (GEN_HASHY_BUCKET_BITS + GEN_HASHY_BITS + ZOOM_LVL_SHIFT);
+//static const int GEN_HASHX_SIZE = 1 << (GEN_HASHX_BUCKET_BITS + GEN_HASHX_BITS + ZOOM_LVL_SHIFT);
+//static const int GEN_HASHY_SIZE = 1 << (GEN_HASHY_BUCKET_BITS + GEN_HASHY_BITS + ZOOM_LVL_SHIFT);
 
 /* Increments to reach next bucket in hash table */
-static const int GEN_HASHX_INC = 1;
-static const int GEN_HASHY_INC = 1 << GEN_HASHX_BITS;
+//static const int GEN_HASHX_INC = 1;
+//static const int GEN_HASHY_INC = 1 << GEN_HASHX_BITS;
 
 /* Mask to wrap-around buckets */
-static const uint GEN_HASHX_MASK =  (1 << GEN_HASHX_BITS) - 1;
-static const uint GEN_HASHY_MASK = ((1 << GEN_HASHY_BITS) - 1) << GEN_HASHX_BITS;
+//static const uint GEN_HASHX_MASK =  (1 << GEN_HASHX_BITS) - 1;
+//static const uint GEN_HASHY_MASK = ((1 << GEN_HASHY_BITS) - 1) << GEN_HASHX_BITS;
 
 VehicleID _new_vehicle_id;
 uint16 _returned_refit_capacity;      ///< Stores the capacity after a refit operation.

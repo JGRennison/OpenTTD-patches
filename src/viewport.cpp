@@ -126,8 +126,8 @@ bool _viewport_sign_kdtree_valid = false;
 static int _viewport_sign_maxwidth = 0;
 
 
-static const int MAX_TILE_EXTENT_LEFT   = ZOOM_LVL_BASE * TILE_PIXELS;                     ///< Maximum left   extent of tile relative to north corner.
-static const int MAX_TILE_EXTENT_RIGHT  = ZOOM_LVL_BASE * TILE_PIXELS;                     ///< Maximum right  extent of tile relative to north corner.
+//static const int MAX_TILE_EXTENT_LEFT   = ZOOM_LVL_BASE * TILE_PIXELS;                     ///< Maximum left   extent of tile relative to north corner.
+//static const int MAX_TILE_EXTENT_RIGHT  = ZOOM_LVL_BASE * TILE_PIXELS;                     ///< Maximum right  extent of tile relative to north corner.
 static const int MAX_TILE_EXTENT_TOP    = ZOOM_LVL_BASE * MAX_BUILDING_PIXELS;             ///< Maximum top    extent of tile relative to north corner (not considering bridges).
 static const int MAX_TILE_EXTENT_BOTTOM = ZOOM_LVL_BASE * (TILE_PIXELS + 2 * TILE_HEIGHT); ///< Maximum bottom extent of tile relative to north corner (worst case: #SLOPE_STEEP_N).
 
@@ -4140,7 +4140,7 @@ static void CheckOverflow(int &test, int &other, int max, int mult)
 static const uint X_DIRS = (1 << DIR_NE) | (1 << DIR_SW);
 static const uint Y_DIRS = (1 << DIR_SE) | (1 << DIR_NW);
 static const uint HORZ_DIRS = (1 << DIR_W) | (1 << DIR_E);
-static const uint VERT_DIRS = (1 << DIR_N) | (1 << DIR_S);
+//static const uint VERT_DIRS = (1 << DIR_N) | (1 << DIR_S);
 
 Trackdir PointDirToTrackdir(const Point &pt, Direction dir)
 {
