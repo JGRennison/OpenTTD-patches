@@ -21,23 +21,14 @@ static const LinkGraphID INVALID_LINK_GRAPH_JOB = UINT16_MAX;
 typedef uint16 NodeID;
 static const NodeID INVALID_NODE = UINT16_MAX;
 
-enum DistributionType {
-	DT_BEGIN = 0,
-	DT_MIN = 0,
+enum DistributionType : byte {
 	DT_MANUAL = 0,           ///< Manual distribution. No link graph calculations are run.
 	DT_ASYMMETRIC = 1,       ///< Asymmetric distribution. Usually cargo will only travel in one direction.
-	DT_MAX_NONSYMMETRIC = 1, ///< Maximum non-symmetric distribution.
 	DT_SYMMETRIC = 2,        ///< Symmetric distribution. The same amount of cargo travels in each direction between each pair of nodes.
-	DT_MAX = 2,
-	DT_NUM = 3,
-	DT_END = 3
-};
 
-/* It needs to be 8bits, because we save and load it as such
- * Define basic enum properties
- */
-template <> struct EnumPropsT<DistributionType> : MakeEnumPropsT<DistributionType, byte, DT_BEGIN, DT_END, DT_NUM> {};
-typedef TinyEnumT<DistributionType> DistributionTypeByte; // typedefing-enumification of DistributionType
+	DT_ASYMMETRIC_EQ = 20,   ///< Asymmetric distribution (equal). Usually cargo will only travel in one direction. Attempt to distribute the same amount of cargo to each sink.
+	DT_ASYMMETRIC_NEAR = 21, ///< Asymmetric distribution (nearest). Usually cargo will only travel in one direction. Attempt to distribute cargo to the nearest sink.
+};
 
 /**
  * Special modes for updating links. 'Restricted' means that vehicles with

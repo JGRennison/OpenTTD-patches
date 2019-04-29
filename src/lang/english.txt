@@ -1816,6 +1816,8 @@ STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED               :Do not scale th
 STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED_HELPTEXT      :When enabled, the linkgraph recalculation interval and time are in units of unscaled, original days, instead of day-length scaled calendar days.
 STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manual
 STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asymmetric
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC_EQ                   :asymmetric (equal distribution)
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC_NEAREST              :asymmetric (nearest)
 STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :symmetric
 STR_CONFIG_SETTING_DISTRIBUTION_PAX                             :Distribution mode for passengers: {STRING2}
 STR_CONFIG_SETTING_DISTRIBUTION_PAX_HELPTEXT                    :"symmetric" means that roughly the same number of passengers will go from a station A to a station B as from B to A. "asymmetric" means that arbitrary numbers of passengers can go in either direction. "manual" means that no automatic distribution will take place for passengers.

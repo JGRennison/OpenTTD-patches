@@ -3,6 +3,8 @@
 #include "../stdafx.h"
 #include "demands.h"
 #include <queue>
+#include <algorithm>
+#include <tuple>
 
 #include "../safeguards.h"
 
@@ -120,6 +122,58 @@ public:
 };
 
 /**
+ * A scaler for asymmetric distribution (equal supply).
+ */
+class AsymmetricScalerEq : public Scaler {
+public:
+	/**
+	 * Count a node's supply into the sum of supplies.
+	 * @param node Node.
+	 */
+	inline void AddNode(const Node &node)
+	{
+		this->supply_sum += node.Supply();
+	}
+
+	/**
+	 * Calculate the mean demand per node using the sum of supplies.
+	 * @param num_demands Number of accepting nodes.
+	 */
+	inline void SetDemandPerNode(uint num_demands)
+	{
+		this->demand_per_node = CeilDiv(this->supply_sum, num_demands);
+	}
+
+	/**
+	 * Get the effective supply of one node towards another one. In symmetric
+	 * distribution the supply of the other node is weighed in.
+	 * @param from The supplying node.
+	 * @param to The receiving node.
+	 * @return Effective supply.
+	 */
+	inline uint EffectiveSupply(const Node &from, const Node &to)
+	{
+		return max<int>(min<int>(from.Supply(), ((int) this->demand_per_node) - ((int) to.ReceivedDemand())), 1);
+	}
+
+	/**
+	 * Check if there is any acceptance left for this node. In asymmetric (equal) distribution
+	 * nodes accept as long as their demand > 0 and received_demand < demand_per_node.
+	 * @param to The node to be checked.
+	 */
+	inline bool HasDemandLeft(const Node &to)
+	{
+		return to.Demand() > 0 && to.ReceivedDemand() < this->demand_per_node;
+	}
+
+	void SetDemands(LinkGraphJob &job, NodeID from, NodeID to, uint demand_forw);
+
+private:
+	uint supply_sum;      ///< Sum of all supplies in the component.
+	uint demand_per_node; ///< Mean demand associated with each node.
+};
+
+/**
  * Set the demands between two nodes using the given base demand. In symmetric mode
  * this sets demands in both directions.
  * @param job The link graph job.
@@ -140,6 +194,19 @@ void SymmetricScaler::SetDemands(LinkGraphJob &job, NodeID from_id, NodeID to_id
 	}
 
 	this->Scaler::SetDemands(job, from_id, to_id, demand_forw);
+}
+
+/**
+ * Set the demands between two nodes using the given base demand.
+ * @param job The link graph job.
+ * @param from_id The supplying node.
+ * @param to_id The receiving node.
+ * @param demand_forw Demand calculated for the "forward" direction.
+ */
+void AsymmetricScalerEq::SetDemands(LinkGraphJob &job, NodeID from_id, NodeID to_id, uint demand_forw)
+{
+	this->Scaler::SetDemands(job, from_id, to_id, demand_forw);
+	job[to_id].ReceiveDemand(demand_forw);
 }
 
 /**
@@ -186,6 +253,7 @@ void DemandCalculator::CalcDemand(LinkGraphJob &job, Tscaler scaler)
 	 * symmetric this is relative to remote supply, otherwise it is
 	 * relative to remote demand. */
 	scaler.SetDemandPerNode(num_demands);
+
 	uint chance = 0;
 
 	while (!supplies.empty() && !demands.empty()) {
@@ -252,6 +320,56 @@ void DemandCalculator::CalcDemand(LinkGraphJob &job, Tscaler scaler)
 }
 
 /**
+ * Do the actual demand calculation, called from constructor.
+ * @param job Job to calculate the demands for.
+ * @tparam Tscaler Scaler to be used for scaling demands.
+ */
+template<class Tscaler>
+void DemandCalculator::CalcMinimisedDistanceDemand(LinkGraphJob &job, Tscaler scaler)
+{
+	std::vector<NodeID> supplies;
+	std::vector<NodeID> demands;
+
+	for (NodeID node = 0; node < job.Size(); node++) {
+		scaler.AddNode(job[node]);
+		if (job[node].Supply() > 0) {
+			supplies.push_back(node);
+		}
+		if (job[node].Demand() > 0) {
+			demands.push_back(node);
+		}
+	}
+
+	if (supplies.empty() || demands.empty()) return;
+
+	scaler.SetDemandPerNode(demands.size());
+
+	struct EdgeCandidate {
+		NodeID from_id;
+		NodeID to_id;
+		uint distance;
+	};
+	std::vector<EdgeCandidate> candidates;
+	candidates.reserve(supplies.size() * demands.size() - min(supplies.size(), demands.size()));
+	for (NodeID from_id : supplies) {
+		for (NodeID to_id : demands) {
+			if (from_id != to_id) {
+				candidates.push_back({ from_id, to_id, DistanceMaxPlusManhattan(job[from_id].XY(), job[to_id].XY()) });
+			}
+		}
+	}
+	std::sort(candidates.begin(), candidates.end(), [](const EdgeCandidate &a, const EdgeCandidate &b) {
+		return std::tie(a.distance, a.from_id, a.to_id) < std::tie(b.distance, b.from_id, b.to_id);
+	});
+	for (const EdgeCandidate &candidate : candidates) {
+		if (job[candidate.from_id].UndeliveredSupply() == 0) continue;
+		if (!scaler.HasDemandLeft(job[candidate.to_id])) continue;
+
+		scaler.SetDemands(job, candidate.from_id, candidate.to_id, min(job[candidate.from_id].UndeliveredSupply(), scaler.EffectiveSupply(job[candidate.from_id], job[candidate.to_id])));
+	}
+}
+
+/**
  * Create the DemandCalculator and immediately do the calculation.
  * @param job Job to calculate the demands for.
  */
@@ -275,6 +393,12 @@ DemandCalculator::DemandCalculator(LinkGraphJob &job) :
 			break;
 		case DT_ASYMMETRIC:
 			this->CalcDemand<AsymmetricScaler>(job, AsymmetricScaler());
+			break;
+		case DT_ASYMMETRIC_EQ:
+			this->CalcMinimisedDistanceDemand<AsymmetricScalerEq>(job, AsymmetricScalerEq());
+			break;
+		case DT_ASYMMETRIC_NEAR:
+			this->CalcMinimisedDistanceDemand<AsymmetricScaler>(job, AsymmetricScaler());
 			break;
 		default:
 			/* Nothing to do. */

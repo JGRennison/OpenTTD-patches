@@ -257,6 +257,7 @@ void LinkGraphJob::EdgeAnnotation::Init()
 void LinkGraphJob::NodeAnnotation::Init(uint supply)
 {
 	this->undelivered_supply = supply;
+	this->received_demand = 0;
 }
 
 /**

@@ -20,6 +20,9 @@ private:
 
 	template<class Tscaler>
 	void CalcDemand(LinkGraphJob &job, Tscaler scaler);
+
+	template<class Tscaler>
+	void CalcMinimisedDistanceDemand(LinkGraphJob &job, Tscaler scaler);
 };
 
 /**

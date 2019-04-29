@@ -48,6 +48,7 @@ private:
 	 */
 	struct NodeAnnotation {
 		uint undelivered_supply; ///< Amount of supply that hasn't been distributed yet.
+		uint received_demand;    ///< Received demand towards this node.
 		PathList paths;          ///< Paths through this node, sorted so that those with flow == 0 are in the back.
 		FlowStatMap flows;       ///< Planned flows to other nodes.
 		void Init(uint supply);
@@ -238,6 +239,12 @@ public:
 		uint UndeliveredSupply() const { return this->node_anno.undelivered_supply; }
 
 		/**
+		 * Get amount of supply that hasn't been delivered, yet.
+		 * @return Undelivered supply.
+		 */
+		uint ReceivedDemand() const { return this->node_anno.received_demand; }
+
+		/**
 		 * Get the flows running through this node.
 		 * @return Flows.
 		 */
@@ -271,6 +278,15 @@ public:
 		{
 			this->node_anno.undelivered_supply -= amount;
 			(*this)[to].AddDemand(amount);
+		}
+
+		/**
+		 * Receive some demand, adding demand to the respective edge.
+		 * @param amount Amount of demand to be received.
+		 */
+		void ReceiveDemand(uint amount)
+		{
+			this->node_anno.received_demand += amount;
 		}
 	};
 
