@@ -1053,6 +1053,10 @@ bool SettingEntry::IsVisibleByRestrictionMode(RestrictionMode mode) const
  */
 bool SettingEntry::UpdateFilterState(SettingFilter &filter, bool force_visible)
 {
+	if (this->setting->desc.flags & SGF_NO_NEWGAME && _game_mode == GM_MENU) {
+		SETBITS(this->flags, SEF_FILTERED);
+		return false;
+	}
 	CLRBITS(this->flags, SEF_FILTERED);
 
 	bool visible = true;

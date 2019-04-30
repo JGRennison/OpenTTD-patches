@@ -526,28 +526,31 @@ static void IniLoadSettings(IniFile *ini, const SettingDesc *sd, const char *grp
 		const SaveLoad        *sld = &sd->save;
 
 		if (!SlIsObjectCurrentlyValid(sld->version_from, sld->version_to, sld->ext_feature_test)) continue;
-
-		/* For settings.xx.yy load the settings from [xx] yy = ? */
-		s = strchr(sdb->name, '.');
-		if (s != nullptr) {
-			group = ini->GetGroup(sdb->name, s - sdb->name);
-			s++;
+		if (sdb->flags & SGF_NO_NEWGAME) {
+			item = nullptr;
 		} else {
-			s = sdb->name;
-			group = group_def;
-		}
+			/* For settings.xx.yy load the settings from [xx] yy = ? */
+			s = strchr(sdb->name, '.');
+			if (s != nullptr) {
+				group = ini->GetGroup(sdb->name, s - sdb->name);
+				s++;
+			} else {
+				s = sdb->name;
+				group = group_def;
+			}
 
-		item = group->GetItem(s, false);
-		if (item == nullptr && group != group_def) {
-			/* For settings.xx.yy load the settings from [settingss] yy = ? in case the previous
-			 * did not exist (e.g. loading old config files with a [settings] section */
-			item = group_def->GetItem(s, false);
-		}
-		if (item == nullptr) {
-			/* For settings.xx.zz.yy load the settings from [zz] yy = ? in case the previous
-			 * did not exist (e.g. loading old config files with a [yapf] section */
-			const char *sc = strchr(s, '.');
-			if (sc != nullptr) item = ini->GetGroup(s, sc - s)->GetItem(sc + 1, false);
+			item = group->GetItem(s, false);
+			if (item == nullptr && group != group_def) {
+				/* For settings.xx.yy load the settings from [settingss] yy = ? in case the previous
+				 * did not exist (e.g. loading old config files with a [settings] section */
+				item = group_def->GetItem(s, false);
+			}
+			if (item == nullptr) {
+				/* For settings.xx.zz.yy load the settings from [zz] yy = ? in case the previous
+				 * did not exist (e.g. loading old config files with a [yapf] section */
+				const char *sc = strchr(s, '.');
+				if (sc != nullptr) item = ini->GetGroup(s, sc - s)->GetItem(sc + 1, false);
+			}
 		}
 
 		p = (item == nullptr) ? sdb->def : StringToVal(sdb, item->value);
@@ -626,6 +629,7 @@ static void IniSaveSettings(IniFile *ini, const SettingDesc *sd, const char *grp
 		 * file, just continue with the next setting */
 		if (!SlIsObjectCurrentlyValid(sld->version_from, sld->version_to, sld->ext_feature_test)) continue;
 		if (sld->conv & SLF_NOT_IN_CONFIG) continue;
+		if (sdb->flags & SGF_NO_NEWGAME) continue;
 
 		/* XXX - wtf is this?? (group override?) */
 		s = strchr(sdb->name, '.');
@@ -2084,11 +2088,13 @@ bool SetSettingValue(uint index, int32 value, bool force_newgame)
 	 * (if any) to change. Also *hack*hack* we update the _newgame version
 	 * of settings because changing a company-based setting in a game also
 	 * changes its defaults. At least that is the convention we have chosen */
+	bool no_newgame = sd->desc.flags & SGF_NO_NEWGAME;
+	if (no_newgame && _game_mode == GM_MENU) return false;
 	if (sd->save.conv & SLF_NO_NETWORK_SYNC) {
 		void *var = GetVariableAddress(&GetGameSettings(), &sd->save);
 		Write_ValidateSetting(var, sd, value);
 
-		if (_game_mode != GM_MENU) {
+		if (_game_mode != GM_MENU && !no_newgame) {
 			void *var2 = GetVariableAddress(&_settings_newgame, &sd->save);
 			Write_ValidateSetting(var2, sd, value);
 		}
@@ -2099,7 +2105,7 @@ bool SetSettingValue(uint index, int32 value, bool force_newgame)
 		return true;
 	}
 
-	if (force_newgame) {
+	if (force_newgame && !no_newgame) {
 		void *var2 = GetVariableAddress(&_settings_newgame, &sd->save);
 		Write_ValidateSetting(var2, sd, value);
 		return true;
@@ -2123,7 +2129,7 @@ void SetCompanySetting(uint index, int32 value)
 	const SettingDesc *sd = &_company_settings[index];
 	if (Company::IsValidID(_local_company) && _game_mode != GM_MENU) {
 		DoCommandP(0, index, value, CMD_CHANGE_COMPANY_SETTING);
-	} else {
+	} else if (!(sd->desc.flags & SGF_NO_NEWGAME)) {
 		void *var = GetVariableAddress(&_settings_client.company, &sd->save);
 		Write_ValidateSetting(var, sd, value);
 		if (sd->desc.proc != nullptr) sd->desc.proc((int32)ReadValue(var, sd->save.conv));
@@ -2245,7 +2251,7 @@ void IConsoleSetSetting(const char *name, const char *value, bool force_newgame)
 	uint index;
 	const SettingDesc *sd = GetSettingFromName(name, &index);
 
-	if (sd == nullptr) {
+	if (sd == nullptr || ((sd->desc.flags & SGF_NO_NEWGAME) && (_game_mode == GM_MENU || force_newgame))) {
 		IConsolePrintF(CC_WARNING, "'%s' is an unknown setting.", name);
 		return;
 	}
@@ -2294,7 +2300,7 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 	const SettingDesc *sd = GetSettingFromName(name, &index);
 	const void *ptr;
 
-	if (sd == nullptr) {
+	if (sd == nullptr || ((sd->desc.flags & SGF_NO_NEWGAME) && (_game_mode == GM_MENU || force_newgame))) {
 		IConsolePrintF(CC_WARNING, "'%s' is an unknown setting.", name);
 		return;
 	}
@@ -2327,6 +2333,7 @@ void IConsoleListSettings(const char *prefilter)
 	for (const SettingDesc *sd = _settings; sd->save.cmd != SL_END; sd++) {
 		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		if (prefilter != nullptr && strstr(sd->desc.name, prefilter) == nullptr) continue;
+		if ((sd->desc.flags & SGF_NO_NEWGAME) && _game_mode == GM_MENU) continue;
 		char value[80];
 		const void *ptr = GetVariableAddress(&GetGameSettings(), &sd->save);
 

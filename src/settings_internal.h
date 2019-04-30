@@ -50,6 +50,7 @@ enum SettingGuiFlagLong {
 	SGF_PER_COMPANY  = 1 << 8, ///< this setting can be different for each company (saved in company struct)
 	SGF_DECIMAL1     = 1 << 9, ///< display a decimal representation of the setting value divided by 10
 	SGF_ENUM         = 1 << 10,///< the setting can take one of the values given by an array of struct SettingDescEnumEntry
+	SGF_NO_NEWGAME   = 1 << 11,///< the setting does not apply and is not shown in a new game context
 };
 DECLARE_ENUM_AS_BIT_SET(SettingGuiFlagLong)
 typedef SimpleTinyEnumT<SettingGuiFlagLong, uint16> SettingGuiFlag;
