@@ -49,6 +49,7 @@ enum SettingGuiFlagLong {
 	SGF_SCENEDIT_TOO = 1 << 7, ///< this setting can be changed in the scenario editor (only makes sense when SGF_NEWGAME_ONLY is set)
 	SGF_PER_COMPANY  = 1 << 8, ///< this setting can be different for each company (saved in company struct)
 	SGF_DECIMAL1     = 1 << 9, ///< display a decimal representation of the setting value divided by 10
+	SGF_ENUM         = 1 << 10,///< the setting can take one of the values given by an array of struct SettingDescEnumEntry
 };
 DECLARE_ENUM_AS_BIT_SET(SettingGuiFlagLong)
 typedef SimpleTinyEnumT<SettingGuiFlagLong, uint16> SettingGuiFlag;
@@ -92,6 +93,12 @@ typedef bool OnChange(int32 var);           ///< callback prototype on data modi
 typedef size_t OnConvert(const char *value); ///< callback prototype for conversion error
 typedef int OnGuiOrder(uint nth);            ///< callback prototype for GUI ordering
 
+/** The last entry in an array of struct SettingDescEnumEntry must use STR_NULL. */
+struct SettingDescEnumEntry {
+	int32 val;
+	StringID str;
+};
+
 /** Properties of config file settings. */
 struct SettingDescBase {
 	const char *name;       ///< name of the setting. Used in configuration file and for console
@@ -108,6 +115,7 @@ struct SettingDescBase {
 	OnChange *proc;         ///< callback procedure for when the value is changed
 	OnConvert *proc_cnvt;   ///< callback procedure when loading value mechanism fails
 	SettingCategory cat;    ///< assigned categories of the setting
+	const SettingDescEnumEntry *enumlist; ///< For SGF_ENUM. The last entry must use STR_NULL
 };
 
 struct SettingDesc {

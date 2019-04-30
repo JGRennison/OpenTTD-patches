@@ -56,19 +56,22 @@ static size_t ConvertLandscape(const char *value);
  * on the appropriate macro.
  */
 
-#define NSD_GENERAL(name, def, cmd, guiflags, min, max, interval, many, str, strhelp, strval, proc, load, cat)\
-	{name, (const void*)(size_t)(def), {(byte)cmd}, {(uint16)guiflags}, min, max, interval, many, str, strhelp, strval, proc, load, cat}
+#define NSD_GENERAL(name, def, cmd, guiflags, min, max, interval, many, str, strhelp, strval, proc, load, cat, enumlist)\
+	{name, (const void*)(size_t)(def), {(byte)cmd}, {(uint16)guiflags}, min, max, interval, many, str, strhelp, strval, proc, load, cat, enumlist}
 
 /* Macros for various objects to go in the configuration file.
  * This section is for global variables */
-#define SDTG_GENERAL2(name, sdt_cmd, sle_cmd, type, flags, guiflags, var, length, def, min, max, interval, full, str, strhelp, strval, proc, from, to, cat, extver, patxname, orderproc)\
-	{NSD_GENERAL(name, def, sdt_cmd, guiflags, min, max, interval, full, str, strhelp, strval, proc, nullptr, cat), SLEG_GENERAL_X(sle_cmd, var, type | flags, length, from, to, extver), patxname, nullptr, orderproc}
+#define SDTG_GENERAL2(name, sdt_cmd, sle_cmd, type, flags, guiflags, var, length, def, min, max, interval, full, str, strhelp, strval, proc, from, to, cat, extver, patxname, orderproc, enumlist)\
+	{NSD_GENERAL(name, def, sdt_cmd, guiflags, min, max, interval, full, str, strhelp, strval, proc, nullptr, cat, enumlist), SLEG_GENERAL_X(sle_cmd, var, type | flags, length, from, to, extver), patxname, nullptr, orderproc}
 
 #define SDTG_GENERAL(name, sdt_cmd, sle_cmd, type, flags, guiflags, var, length, def, min, max, interval, full, str, strhelp, strval, proc, from, to, cat, extver, patxname)\
-	SDTG_GENERAL2(name, sdt_cmd, sle_cmd, type, flags, guiflags, var, length, def, min, max, interval, full, str, strhelp, strval, proc, from, to, cat, extver, patxname, nullptr)
+	SDTG_GENERAL2(name, sdt_cmd, sle_cmd, type, flags, guiflags, var, length, def, min, max, interval, full, str, strhelp, strval, proc, from, to, cat, extver, patxname, nullptr, nullptr)
 
 #define SDTG_VAR(name, type, flags, guiflags, var, def, min, max, interval, str, strhelp, strval, proc, from, to, cat, extver, patxname, orderproc)\
-	SDTG_GENERAL2(name, SDT_NUMX, SL_VAR, type, flags, guiflags, var, 0, def, min, max, interval, nullptr, str, strhelp, strval, proc, from, to, cat, extver, patxname, orderproc)
+	SDTG_GENERAL2(name, SDT_NUMX, SL_VAR, type, flags, guiflags, var, 0, def, min, max, interval, nullptr, str, strhelp, strval, proc, from, to, cat, extver, patxname, orderproc, nullptr)
+
+#define SDTG_ENUM(name, type, flags, guiflags, var, def, str, strhelp, proc, from, to, cat, extver, patxname, enumlist)\
+	SDTG_GENERAL2(name, SDT_NUMX, SL_VAR, type, flags, guiflags | SGF_ENUM, var, 0, def, 0, 0, 0, nullptr, str, strhelp, STR_NULL, proc, nullptr, from, to, cat, extver, patxname, nullptr, enumlist)
 
 #define SDTG_BOOL(name, flags, guiflags, var, def, str, strhelp, strval, proc, from, to, cat, extver, patxname)\
 	SDTG_GENERAL(name, SDT_BOOLX, SL_VAR, SLE_BOOL, flags, guiflags, var, 0, def, 0, 1, 0, nullptr, str, strhelp, strval, proc, from, to, cat, extver, patxname)
@@ -86,20 +89,23 @@ static size_t ConvertLandscape(const char *value);
 	SDTG_GENERAL(name, SDT_MANYOFMANY, SL_VAR, type, flags, guiflags, var, 0, def, 0, 0, 0, full, str, strhelp, strval, proc, from, to, cat, extver, patxname)
 
 #define SDTG_NULL(length, from, to, extver)\
-	{{"", nullptr, {0}, {0}, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, SC_NONE}, SLEG_NULL_X(length, from, to, extver), nullptr, nullptr, nullptr}
+	{{"", nullptr, {0}, {0}, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, SC_NONE, nullptr}, SLEG_NULL_X(length, from, to, extver), nullptr, nullptr, nullptr}
 
-#define SDTG_END() {{nullptr, nullptr, {0}, {0}, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, SC_NONE}, SLEG_END(), nullptr, nullptr, nullptr}
+#define SDTG_END() {{nullptr, nullptr, {0}, {0}, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, SC_NONE, nullptr}, SLEG_END(), nullptr, nullptr, nullptr}
 
 /* Macros for various objects to go in the configuration file.
  * This section is for structures where their various members are saved */
-#define SDT_GENERAL2(name, sdt_cmd, sle_cmd, type, flags, guiflags, base, var, length, def, min, max, interval, full, str, strhelp, strval, proc, load, from, to, cat, extver, patxname, orderproc)\
-	{NSD_GENERAL(name, def, sdt_cmd, guiflags, min, max, interval, full, str, strhelp, strval, proc, load, cat), SLE_GENERAL_X(sle_cmd, base, var, type | flags, length, from, to, extver), patxname, nullptr, orderproc}
+#define SDT_GENERAL2(name, sdt_cmd, sle_cmd, type, flags, guiflags, base, var, length, def, min, max, interval, full, str, strhelp, strval, proc, load, from, to, cat, extver, patxname, orderproc, enumlist)\
+	{NSD_GENERAL(name, def, sdt_cmd, guiflags, min, max, interval, full, str, strhelp, strval, proc, load, cat, enumlist), SLE_GENERAL_X(sle_cmd, base, var, type | flags, length, from, to, extver), patxname, nullptr, orderproc}
 
 #define SDT_GENERAL(name, sdt_cmd, sle_cmd, type, flags, guiflags, base, var, length, def, min, max, interval, full, str, strhelp, strval, proc, load, from, to, cat, extver, patxname)\
-	SDT_GENERAL2(name, sdt_cmd, sle_cmd, type, flags, guiflags, base, var, length, def, min, max, interval, full, str, strhelp, strval, proc, load, from, to, cat, extver, patxname, nullptr)
+	SDT_GENERAL2(name, sdt_cmd, sle_cmd, type, flags, guiflags, base, var, length, def, min, max, interval, full, str, strhelp, strval, proc, load, from, to, cat, extver, patxname, nullptr, nullptr)
 
 #define SDT_VAR(base, var, type, flags, guiflags, def, min, max, interval, str, strhelp, strval, proc, from, to, cat, extver, patxname, orderproc)\
-	SDT_GENERAL2(#var, SDT_NUMX, SL_VAR, type, flags, guiflags, base, var, 1, def, min, max, interval, nullptr, str, strhelp, strval, proc, nullptr, from, to, cat, extver, patxname, orderproc)
+	SDT_GENERAL2(#var, SDT_NUMX, SL_VAR, type, flags, guiflags, base, var, 1, def, min, max, interval, nullptr, str, strhelp, strval, proc, nullptr, from, to, cat, extver, patxname, orderproc, nullptr)
+
+#define SDT_ENUM(base, var, type, flags, guiflags, def, str, strhelp, proc, from, to, cat, extver, patxname, enumlist)\
+	SDT_GENERAL2(#var, SDT_NUMX, SL_VAR, type, flags, guiflags | SGF_ENUM, base, var, 1, def, 0, 0, 0, nullptr, str, strhelp, STR_NULL, proc, nullptr, from, to, cat, extver, patxname, nullptr, enumlist)
 
 #define SDT_BOOL(base, var, flags, guiflags, def, str, strhelp, strval, proc, from, to, cat, extver, patxname)\
 	SDT_GENERAL(#var, SDT_BOOLX, SL_VAR, SLE_BOOL, flags, guiflags, base, var, 1, def, 0, 1, 0, nullptr, str, strhelp, strval, proc, nullptr, from, to, cat, extver, patxname)
@@ -120,11 +126,14 @@ static size_t ConvertLandscape(const char *value);
 	SDT_GENERAL(#var, SDT_MANYOFMANY, SL_VAR, type, flags, guiflags, base, var, 1, def, 0, 0, 0, full, str, strhelp, strval, proc, nullptr, from, to, cat, extver, patxname)
 
 #define SDT_NULL(length, from, to, extver)\
-	{{"", nullptr, {0}, {0}, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, SC_NONE}, SLE_CONDNULL_X(length, from, to, extver), nullptr, nullptr, nullptr}
+	{{"", nullptr, {0}, {0}, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, SC_NONE, nullptr}, SLE_CONDNULL_X(length, from, to, extver), nullptr, nullptr, nullptr}
 
 
 #define SDTC_VAR(var, type, flags, guiflags, def, min, max, interval, str, strhelp, strval, proc, from, to, cat, extver, patxname, orderproc)\
-	SDTG_GENERAL2(#var, SDT_NUMX, SL_VAR, type, flags, guiflags, _settings_client.var, 1, def, min, max, interval, nullptr, str, strhelp, strval, proc, from, to, cat, extver, patxname, orderproc)
+	SDTG_GENERAL2(#var, SDT_NUMX, SL_VAR, type, flags, guiflags, _settings_client.var, 1, def, min, max, interval, nullptr, str, strhelp, strval, proc, from, to, cat, extver, patxname, orderproc, nullptr)
+
+#define SDTC_ENUM(var, type, flags, guiflags, def, str, strhelp, proc, from, to, cat, extver, patxname, enumlist)\
+	SDTG_GENERAL2(#var, SDT_NUMX, SL_VAR, type, flags, guiflags | SGF_ENUM, _settings_client.var, 1, def, 0, 0, 0, nullptr, str, strhelp, STR_NULL, proc, nullptr, from, to, cat, extver, patxname, nullptr, enumlist)
 
 #define SDTC_BOOL(var, flags, guiflags, def, str, strhelp, strval, proc, from, to, cat, extver, patxname)\
 	SDTG_GENERAL(#var, SDT_BOOLX, SL_VAR, SLE_BOOL, flags, guiflags, _settings_client.var, 1, def, 0, 1, 0, nullptr, str, strhelp, strval, proc, from, to, cat, extver, patxname)
@@ -139,7 +148,7 @@ static size_t ConvertLandscape(const char *value);
 	SDTG_GENERAL(#var, SDT_ONEOFMANY, SL_VAR, type, flags, guiflags, _settings_client.var, 1, def, 0, max, 0, full, str, strhelp, strval, proc, from, to, cat, extver, patxname)
 
 #define SDT_XREF(from, to, extver, xref)\
-	{{"", nullptr, {0}, {0}, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, SC_NONE}, SLE_CONDNULL_X(0, from, to, extver), nullptr, xref, nullptr}
+	{{"", nullptr, {0}, {0}, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, SC_NONE, nullptr}, SLE_CONDNULL_X(0, from, to, extver), nullptr, xref, nullptr}
 
-#define SDT_END() {{nullptr, nullptr, {0}, {0}, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, SC_NONE}, SLE_END(), nullptr, nullptr, nullptr}
+#define SDT_END() {{nullptr, nullptr, {0}, {0}, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, SC_NONE, nullptr}, SLE_END(), nullptr, nullptr, nullptr}
 

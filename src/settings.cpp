@@ -419,6 +419,16 @@ static const void *StringToVal(const SettingDescBase *desc, const char *orig_str
 	return nullptr;
 }
 
+static bool ValidateEnumSetting(const SettingDescBase *sdb, int32 val)
+{
+	for (const SettingDescEnumEntry *enumlist = sdb->enumlist; enumlist != nullptr && enumlist->str != STR_NULL; enumlist++) {
+		if (enumlist->val == val) {
+			return true;
+		}
+	}
+	return false;
+}
+
 /**
  * Set the value of a setting and if needed clamp the value to
  * the preset minimum and maximum.
@@ -456,7 +466,9 @@ static void Write_ValidateSetting(void *ptr, const SettingDesc *sd, int32 val)
 			case SLE_VAR_I32: {
 				/* Override the minimum value. No value below sdb->min, except special value 0 */
 				if (!(sdb->flags & SGF_0ISDISABLED) || val != 0) {
-					if (!(sdb->flags & SGF_MULTISTRING)) {
+					if (sdb->flags & SGF_ENUM) {
+						if (!ValidateEnumSetting(sdb, val)) val = (int32)(size_t)sdb->def;
+					} else if (!(sdb->flags & SGF_MULTISTRING)) {
 						/* Clamp value-type setting to its valid range */
 						val = Clamp(val, sdb->min, sdb->max);
 					} else if (val < sdb->min || val > (int32)sdb->max) {
@@ -470,7 +482,9 @@ static void Write_ValidateSetting(void *ptr, const SettingDesc *sd, int32 val)
 				/* Override the minimum value. No value below sdb->min, except special value 0 */
 				uint32 uval = (uint32)val;
 				if (!(sdb->flags & SGF_0ISDISABLED) || uval != 0) {
-					if (!(sdb->flags & SGF_MULTISTRING)) {
+					if (sdb->flags & SGF_ENUM) {
+						if (!ValidateEnumSetting(sdb, val)) uval = (uint32)(size_t)sdb->def;
+					} else if (!(sdb->flags & SGF_MULTISTRING)) {
 						/* Clamp value-type setting to its valid range */
 						uval = ClampU(uval, sdb->min, sdb->max);
 					} else if (uval < (uint)sdb->min || uval > sdb->max) {

@@ -1111,7 +1111,16 @@ void SettingEntry::SetValueDParams(uint first_param, int32 value) const
 	if (sdb->cmd == SDT_BOOLX) {
 		SetDParam(first_param++, value != 0 ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
 	} else {
-		if ((sdb->flags & SGF_MULTISTRING) != 0) {
+		if ((sdb->flags & SGF_ENUM) != 0) {
+			StringID str = STR_UNDEFINED;
+			for (const SettingDescEnumEntry *enumlist = sdb->enumlist; enumlist != nullptr && enumlist->str != STR_NULL; enumlist++) {
+				if (enumlist->val == value) {
+					str = enumlist->str;
+					break;
+				}
+			}
+			SetDParam(first_param++, str);
+		} else if ((sdb->flags & SGF_MULTISTRING) != 0) {
 			SetDParam(first_param++, sdb->str_val - sdb->min + value);
 		} else if ((sdb->flags & SGF_DISPLAY_ABS) != 0) {
 			SetDParam(first_param++, sdb->str_val + ((value >= 0) ? 1 : 0));
@@ -1152,7 +1161,7 @@ void SettingEntry::DrawSetting(GameSettings *settings_ptr, int left, int right, 
 	if (sdb->cmd == SDT_BOOLX) {
 		/* Draw checkbox for boolean-value either on/off */
 		DrawBoolButton(buttons_left, button_y, value != 0, editable);
-	} else if ((sdb->flags & SGF_MULTISTRING) != 0) {
+	} else if ((sdb->flags & (SGF_MULTISTRING | SGF_ENUM)) != 0) {
 		/* Draw [v] button for settings of an enum-type */
 		DrawDropDownButton(buttons_left, button_y, COLOUR_YELLOW, state != 0, editable);
 	} else {
@@ -2209,7 +2218,7 @@ struct GameSettingsWindow : Window {
 		int32 value = (int32)ReadValue(var, sd->save.conv);
 
 		/* clicked on the icon on the left side. Either scroller, bool on/off or dropdown */
-		if (x < SETTING_BUTTON_WIDTH && (sd->desc.flags & SGF_MULTISTRING)) {
+		if (x < SETTING_BUTTON_WIDTH && (sd->desc.flags & (SGF_MULTISTRING | SGF_ENUM))) {
 			const SettingDescBase *sdb = &sd->desc;
 			this->SetDisplayedHelpText(pe);
 
@@ -2238,10 +2247,16 @@ struct GameSettingsWindow : Window {
 					this->valuedropdown_entry->SetButtons(SEF_LEFT_DEPRESSED);
 
 					DropDownList list;
-					for (int i = sdb->min; i <= (int)sdb->max; i++) {
-						int val = sd->orderproc ? sd->orderproc(i - sdb->min) : i;
-						assert_msg(val >= sdb->min && val <= (int)sdb->max, "min: %d, max: %d, val: %d", sdb->min, sdb->max, val);
-						list.emplace_back(new DropDownListStringItem(sdb->str_val + val - sdb->min, val, false));
+					if (sd->desc.flags & SGF_MULTISTRING) {
+						for (int i = sdb->min; i <= (int)sdb->max; i++) {
+							int val = sd->orderproc ? sd->orderproc(i - sdb->min) : i;
+							assert_msg(val >= sdb->min && val <= (int)sdb->max, "min: %d, max: %d, val: %d", sdb->min, sdb->max, val);
+							list.emplace_back(new DropDownListStringItem(sdb->str_val + val - sdb->min, val, false));
+						}
+					} else if ((sd->desc.flags & SGF_ENUM)) {
+						for (const SettingDescEnumEntry *enumlist = sd->desc.enumlist; enumlist != nullptr && enumlist->str != STR_NULL; enumlist++) {
+							list.emplace_back(new DropDownListStringItem(enumlist->str, enumlist->val, false));
+						}
 					}
 
 					ShowDropDownListAt(this, std::move(list), value, -1, wi_rect, COLOUR_ORANGE, true);
@@ -2311,7 +2326,7 @@ struct GameSettingsWindow : Window {
 			}
 		} else {
 			/* Only open editbox if clicked for the second time, and only for types where it is sensible for. */
-			if (this->last_clicked == pe && sd->desc.cmd != SDT_BOOLX && !(sd->desc.flags & SGF_MULTISTRING)) {
+			if (this->last_clicked == pe && sd->desc.cmd != SDT_BOOLX && !(sd->desc.flags & (SGF_MULTISTRING | SGF_ENUM))) {
 				/* Show the correct currency-translated value */
 				if (sd->desc.flags & SGF_CURRENCY) value *= _currency->rate;
 
@@ -2397,7 +2412,7 @@ struct GameSettingsWindow : Window {
 					/* Deal with drop down boxes on the panel. */
 					assert(this->valuedropdown_entry != nullptr);
 					const SettingDesc *sd = this->valuedropdown_entry->setting;
-					assert(sd->desc.flags & SGF_MULTISTRING);
+					assert(sd->desc.flags & (SGF_MULTISTRING | SGF_ENUM));
 
 					if ((sd->desc.flags & SGF_PER_COMPANY) != 0) {
 						SetCompanySetting(this->valuedropdown_entry->index, index);
