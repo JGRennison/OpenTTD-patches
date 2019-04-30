@@ -588,12 +588,14 @@ struct LinkGraphSettings {
 	DistributionType distribution_mail;         ///< distribution type for mail
 	DistributionType distribution_armoured;     ///< distribution type for armoured cargo class
 	DistributionType distribution_default;      ///< distribution type for all other goods
+	DistributionType distribution_per_cargo[NUM_CARGO]; ///< per cargo distribution types
 	uint8 accuracy;                             ///< accuracy when calculating things on the link graph. low accuracy => low running time
 	uint8 demand_size;                          ///< influence of supply ("station size") on the demand function
 	uint8 demand_distance;                      ///< influence of distance between stations on the demand function
 	uint8 short_path_saturation;                ///< percentage up to which short paths are saturated before saturating most capacious paths
 
 	inline DistributionType GetDistributionType(CargoID cargo) const {
+		if (this->distribution_per_cargo[cargo] != DT_PER_CARGO_DEFAULT) return this->distribution_per_cargo[cargo];
 		if (IsCargoInClass(cargo, CC_PASSENGERS)) return this->distribution_pax;
 		if (IsCargoInClass(cargo, CC_MAIL)) return this->distribution_mail;
 		if (IsCargoInClass(cargo, CC_ARMOURED)) return this->distribution_armoured;

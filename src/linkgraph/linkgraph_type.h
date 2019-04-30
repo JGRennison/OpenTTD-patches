@@ -28,6 +28,8 @@ enum DistributionType : byte {
 
 	DT_ASYMMETRIC_EQ = 20,   ///< Asymmetric distribution (equal). Usually cargo will only travel in one direction. Attempt to distribute the same amount of cargo to each sink.
 	DT_ASYMMETRIC_NEAR = 21, ///< Asymmetric distribution (nearest). Usually cargo will only travel in one direction. Attempt to distribute cargo to the nearest sink.
+
+	DT_PER_CARGO_DEFAULT = 128, ///< Per cargo: Use default value
 };
 
 /**

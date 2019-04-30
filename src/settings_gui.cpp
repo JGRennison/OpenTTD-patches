@@ -792,10 +792,24 @@ struct SettingEntry : BaseSettingEntry {
 	void SetValueDParams(uint first_param, int32 value) const;
 
 protected:
+	SettingEntry(const SettingDesc *setting, uint index);
 	virtual void DrawSetting(GameSettings *settings_ptr, int left, int right, int y, bool highlight) const;
+	virtual void DrawSettingString(uint left, uint right, int y, bool highlight, int32 value) const;
 
 private:
 	bool IsVisibleByRestrictionMode(RestrictionMode mode) const;
+};
+
+/** Standard setting */
+struct CargoDestPerCargoSettingEntry : SettingEntry {
+	CargoID cargo;
+
+	CargoDestPerCargoSettingEntry(CargoID cargo, const SettingDesc *setting, uint index);
+	virtual void Init(byte level = 0);
+	virtual bool UpdateFilterState(SettingFilter &filter, bool force_visible);
+
+protected:
+	virtual void DrawSettingString(uint left, uint right, int y, bool highlight, int32 value) const;
 };
 
 /** Containers for BaseSettingEntry */
@@ -962,6 +976,13 @@ SettingEntry::SettingEntry(const char *name)
 	this->name = name;
 	this->setting = nullptr;
 	this->index = 0;
+}
+
+SettingEntry::SettingEntry(const SettingDesc *setting, uint index)
+{
+	this->name = nullptr;
+	this->setting = setting;
+	this->index = index;
 }
 
 /**
@@ -1173,8 +1194,46 @@ void SettingEntry::DrawSetting(GameSettings *settings_ptr, int left, int right, 
 		DrawArrowButtons(buttons_left, button_y, COLOUR_YELLOW, state,
 				editable && value != (sdb->flags & SGF_0ISDISABLED ? 0 : sdb->min), editable && (uint32)value != sdb->max);
 	}
+	this->DrawSettingString(text_left, text_right, y + (SETTING_HEIGHT - FONT_HEIGHT_NORMAL) / 2, highlight, value);
+}
+
+void SettingEntry::DrawSettingString(uint left, uint right, int y, bool highlight, int32 value) const
+{
+	const SettingDesc *sd = this->setting;
+	const SettingDescBase *sdb = &sd->desc;
 	this->SetValueDParams(1, value);
-	DrawString(text_left, text_right, y + (SETTING_HEIGHT - FONT_HEIGHT_NORMAL) / 2, sdb->str, highlight ? TC_WHITE : TC_LIGHT_BLUE);
+	DrawString(left, right, y, sdb->str, highlight ? TC_WHITE : TC_LIGHT_BLUE);
+}
+
+/* == CargoDestPerCargoSettingEntry methods == */
+
+CargoDestPerCargoSettingEntry::CargoDestPerCargoSettingEntry(CargoID cargo, const SettingDesc *setting, uint index)
+	: SettingEntry(setting, index), cargo(cargo) {}
+
+void CargoDestPerCargoSettingEntry::Init(byte level)
+{
+	BaseSettingEntry::Init(level);
+}
+
+void CargoDestPerCargoSettingEntry::DrawSettingString(uint left, uint right, int y, bool highlight, int32 value) const
+{
+	const SettingDesc *sd = this->setting;
+	const SettingDescBase *sdb = &sd->desc;
+	assert(sdb->str == STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO);
+	SetDParam(0, CargoSpec::Get(this->cargo)->name);
+	SetDParam(1, highlight ? STR_ORANGE_STRING1_WHITE : STR_ORANGE_STRING1_LTBLUE);
+	this->SetValueDParams(2, value);
+	DrawString(left, right, y, STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM, highlight ? TC_WHITE : TC_LIGHT_BLUE);
+}
+
+bool CargoDestPerCargoSettingEntry::UpdateFilterState(SettingFilter &filter, bool force_visible)
+{
+	if (!HasBit(_cargo_mask, this->cargo)) {
+		SETBITS(this->flags, SEF_FILTERED);
+		return false;
+	} else {
+		return SettingEntry::UpdateFilterState(filter, force_visible);
+	}
 }
 
 /* == SettingsContainer methods == */
@@ -1857,6 +1916,14 @@ static SettingsContainer &GetSettingsTree()
 				cdist->Add(new SettingEntry("linkgraph.distribution_mail"));
 				cdist->Add(new SettingEntry("linkgraph.distribution_armoured"));
 				cdist->Add(new SettingEntry("linkgraph.distribution_default"));
+				SettingsPage *cdist_override = cdist->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST_PER_CARGO_OVERRIDE));
+				{
+					uint index = 0;
+					const SettingDesc *setting = GetSettingFromName("linkgraph.distribution_per_cargo[0]", &index);
+					for (CargoID c = 0; c < NUM_CARGO; c++) {
+						cdist_override->Add(new CargoDestPerCargoSettingEntry(c, setting + c, index + c));
+					}
+				}
 				cdist->Add(new SettingEntry("linkgraph.accuracy"));
 				cdist->Add(new SettingEntry("linkgraph.demand_distance"));
 				cdist->Add(new SettingEntry("linkgraph.demand_size"));

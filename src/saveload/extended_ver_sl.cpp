@@ -104,6 +104,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_CONSIST_SPEED_RD_FLAG,  XSCF_NULL,                1,   1, "consist_speed_rd_flag",     nullptr, nullptr, nullptr        },
 	{ XSLFI_SAVEGAME_UNIQUE_ID,     XSCF_IGNORABLE_ALL,       1,   1, "savegame_unique_id",        nullptr, nullptr, nullptr        },
 	{ XSLFI_RV_OVERTAKING,          XSCF_NULL,                1,   1, "roadveh_overtaking",        nullptr, nullptr, nullptr        },
+	{ XSLFI_LINKGRAPH_MODES,        XSCF_NULL,                1,   1, "linkgraph_modes",           nullptr, nullptr, nullptr        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr },// This is the end marker
 };
 
