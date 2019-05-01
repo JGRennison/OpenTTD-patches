@@ -123,6 +123,7 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 		if (likely(HasBit(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST))) return 0;
 
 		int64 incl = 0;
+		bool zero_slope_resist = true;
 
 		for (const T *u = T::From(this); u != nullptr; u = u->Next()) {
 			if (HasBit(u->gv_flags, GVF_GOINGUP_BIT)) {
@@ -130,8 +131,9 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 			} else if (HasBit(u->gv_flags, GVF_GOINGDOWN_BIT)) {
 				incl -= u->gcache.cached_slope_resistance;
 			}
+			if (incl != 0) zero_slope_resist = false;
 		}
-		if (incl == 0) SetBit(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST);
+		SB(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST, 1, zero_slope_resist ? 1 : 0);
 
 		return incl;
 	}
