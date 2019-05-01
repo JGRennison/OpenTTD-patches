@@ -41,6 +41,8 @@
 #include "newgrf_industries.h"
 #include "newgrf_industrytiles.h"
 
+#include "newgrf_config.h"
+
 #include "widgets/newgrf_debug_widget.h"
 
 #include "table/strings.h"
@@ -475,6 +477,17 @@ struct NewGRFInspectWindow : Window {
 		});
 
 		if (nih->ShowExtraInfoOnly(index)) return;
+
+		uint32 grfid = nih->GetGRFID(index);
+		if (grfid) {
+			this->DrawString(r, i++, "GRF:");
+			this->DrawString(r, i++, "  ID: %08X", BSWAP32(grfid));
+			GRFConfig *grfconfig = GetGRFConfig(grfid);
+			if (grfconfig) {
+				this->DrawString(r, i++, "  Name: %s", grfconfig->GetName());
+				this->DrawString(r, i++, "  File: %s", grfconfig->filename);
+			}
+		}
 
 		const_cast<NewGRFInspectWindow*>(this)->first_variable_line_index = i;
 
