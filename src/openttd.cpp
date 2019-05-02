@@ -1489,6 +1489,11 @@ void CheckCaches(bool force_check)
 			assert(memcmp(&st->goods[c].cargo, buff, sizeof(StationCargoList)) == 0);
 		}
 	}
+
+	OrderList *order_list;
+	FOR_ALL_ORDER_LISTS(order_list) {
+		order_list->DebugCheckSanity();
+	}
 }
 
 /**

@@ -371,6 +371,16 @@ void OrderList::ReindexOrderList()
 	}
 }
 
+bool OrderList::CheckOrderListIndexing() const
+{
+	uint idx = 0;
+	for (Order *o = this->first; o != nullptr; o = o->next, idx++) {
+		if (idx >= this->order_index.size()) return false;
+		if (this->order_index[idx] != o) return false;
+	}
+	return idx == this->order_index.size();
+}
+
 /**
  * Recomputes everything.
  * @param chain first order in the chain
@@ -778,6 +788,7 @@ void OrderList::DebugCheckSanity() const
 	DEBUG(misc, 6, "... detected %u orders (%u manual), %u vehicles, %i timetabled, %i total",
 			(uint)this->GetNumOrders(), (uint)this->num_manual_orders,
 			this->num_vehicles, this->timetable_duration, this->total_duration);
+	assert(this->CheckOrderListIndexing());
 }
 
 /**

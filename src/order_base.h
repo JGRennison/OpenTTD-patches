@@ -701,6 +701,7 @@ public:
 	void FreeChain(bool keep_orderlist = false);
 
 	void DebugCheckSanity() const;
+	bool CheckOrderListIndexing() const;
 
 	/**
 	 * Get the vector of all scheduled dispatch slot
