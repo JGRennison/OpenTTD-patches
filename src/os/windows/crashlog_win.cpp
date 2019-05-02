@@ -427,7 +427,7 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 			}
 
 			/* Print module and instruction pointer. */
-			buffer += seprintf(buffer, last, "[%02d] %-20s " PRINTF_PTR, num, mod_name, frame.AddrPC.Offset);
+			buffer += seprintf(buffer, last, "[%02d] %-20s " PRINTF_PTR, num, mod_name, (uintptr_t) frame.AddrPC.Offset);
 
 			/* Get symbol name and line info if possible. */
 			DWORD64 offset;
@@ -438,7 +438,7 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 				IMAGEHLP_LINE64 line;
 				line.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
 				if (proc.pSymGetLineFromAddr64(hCur, frame.AddrPC.Offset, &line_offs, &line)) {
-					buffer += seprintf(buffer, last, " (%s:%d)", line.FileName, line.LineNumber);
+					buffer += seprintf(buffer, last, " (%s:%u)", line.FileName, (uint) line.LineNumber);
 				}
 			} else if (image_name != nullptr) {
 #if defined (WITH_BFD)
@@ -500,7 +500,7 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 			MINIDUMP_USER_STREAM_INFORMATION musi;
 
 			userstream.Type        = LastReservedStream + 1;
-			userstream.Buffer      = (void*)this->crashlog;
+			userstream.Buffer      = const_cast<void *>(static_cast<const void*>(this->crashlog));
 			userstream.BufferSize  = (ULONG)strlen(this->crashlog) + 1;
 
 			musi.UserStreamCount   = 1;
