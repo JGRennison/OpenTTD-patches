@@ -1193,6 +1193,35 @@ void RebuildVehicleTickCaches()
 	_tick_caches_valid = true;
 }
 
+void ValidateVehicleTickCaches()
+{
+	if (!_tick_caches_valid) return;
+
+	std::vector<Train *> saved_tick_train_too_heavy_cache = std::move(_tick_train_too_heavy_cache);
+	std::sort(saved_tick_train_too_heavy_cache.begin(), saved_tick_train_too_heavy_cache.end(), [&](const Vehicle *a, const Vehicle *b) {
+		return a->index < b->index;
+	});
+    saved_tick_train_too_heavy_cache.erase(std::unique(saved_tick_train_too_heavy_cache.begin(), saved_tick_train_too_heavy_cache.end()), saved_tick_train_too_heavy_cache.end());
+	std::vector<Train *> saved_tick_train_front_cache = std::move(_tick_train_front_cache);
+	std::vector<RoadVehicle *> saved_tick_road_veh_front_cache = std::move(_tick_road_veh_front_cache);
+	std::vector<Aircraft *> saved_tick_aircraft_front_cache = std::move(_tick_aircraft_front_cache);
+	std::vector<Ship *> saved_tick_ship_cache = std::move(_tick_ship_cache);
+	std::vector<EffectVehicle *> saved_tick_effect_veh_cache = std::move(_tick_effect_veh_cache);
+	std::vector<Vehicle *> saved_tick_other_veh_cache = std::move(_tick_other_veh_cache);
+	saved_tick_effect_veh_cache.erase(std::remove(saved_tick_effect_veh_cache.begin(), saved_tick_effect_veh_cache.end(), nullptr), saved_tick_effect_veh_cache.end());
+	saved_tick_other_veh_cache.erase(std::remove(saved_tick_other_veh_cache.begin(), saved_tick_other_veh_cache.end(), nullptr), saved_tick_other_veh_cache.end());
+
+	RebuildVehicleTickCaches();
+
+	assert(saved_tick_train_too_heavy_cache == _tick_train_too_heavy_cache);
+	assert(saved_tick_train_front_cache == saved_tick_train_front_cache);
+	assert(saved_tick_road_veh_front_cache == _tick_road_veh_front_cache);
+	assert(saved_tick_aircraft_front_cache == _tick_aircraft_front_cache);
+	assert(saved_tick_ship_cache == _tick_ship_cache);
+	assert(saved_tick_effect_veh_cache == _tick_effect_veh_cache);
+	assert(saved_tick_other_veh_cache == _tick_other_veh_cache);
+}
+
 void VehicleTickCargoAging(Vehicle *v)
 {
 	if (v->vcache.cached_cargo_age_period != 0) {

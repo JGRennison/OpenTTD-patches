@@ -1494,6 +1494,9 @@ void CheckCaches(bool force_check)
 	FOR_ALL_ORDER_LISTS(order_list) {
 		order_list->DebugCheckSanity();
 	}
+
+	extern void ValidateVehicleTickCaches();
+	ValidateVehicleTickCaches();
 }
 
 /**
