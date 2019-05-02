@@ -543,7 +543,7 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 	if (abort_reason != nullptr) {
 		TCHAR _emergency_crash[512];
 		_sntprintf(_emergency_crash, lengthof(_emergency_crash),
-				_T("A serious fault condition occurred in the game. The game will shut down.\n"), OTTD2FS(abort_reason));
+				_T("A serious fault condition occurred in the game. The game will shut down. (%s)\n"), OTTD2FS(abort_reason));
 		MessageBox(nullptr, _emergency_crash, _T("Fatal Application Failure"), MB_ICONERROR);
 		ExitProcess(3);
 	}
