@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.30.3
+## JGR's Patchpack version 0.31.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -241,6 +241,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add UI setting for whether to open the new vehicle GUI when share-cloning. (added in v0.30.0).  
   * Add company setting for whether to advance order when cloning/copying/sharing (if current depot is in order list). (added in v0.30.0).  
   * Allow diagonal construction of rivers in the scenario editor. (added in v0.30.2).  
+  * Add setting to allow articulated road vehicles to overtake other vehicles. (added in v0.31.0).  
+  * Add new link graph distribution modes: asymmetric (equal) and asymmetric (nearest). (added in v0.31.0).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
   * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).

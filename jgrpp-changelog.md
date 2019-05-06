@@ -2,6 +2,25 @@
 
 * * *
 
+### v0.31.0 (2019-05-06)
+* Fix online content requests which included a large numbers of missing items.
+* Fix crash which could be triggered by an AI.
+* Add setting to allow articulated road vehicles to overtake other vehicles (default on).
+* Allow removing signals from plain rail track when a train is present.
+* Open train vehicle details window on total cargo tab if ctrl presed.
+* Link graph:
+  * Allow overriding distribution mode on a per-cargo basis, in game.
+  * Add new distribution modes: asymmetric (equal) and asymmetric (nearest).
+* Template-based train replacement:
+  * Allow cloning template trains with unavailable vehicles.
+  * Show warning on templates which include unavailable vehicles.
+* Change default non-global polyrail hotkeys to Y, CTRL-Y.
+* Improvements to crash logging (on Unix and Mac).
+* Fix potential multiplayer desync.
+* Fix false positive warnings in desync debug logging.
+* Add further checks to desync debug logging.
+* Bump trunk base from commit c0836bccefb7fbc6ebc8c5fa28886602067070f8 to commit 66cd32a252ee0edab11448b560371878b2189223.
+
 ### v0.30.3 (2019-04-12)
 * Fix crashes on Windows/MinGW caused by race condition at thread initialisation due to incorrect template argument deduction.
 
