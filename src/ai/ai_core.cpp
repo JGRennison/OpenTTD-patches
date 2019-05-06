@@ -17,6 +17,8 @@
 #include "../network/network.h"
 #include "../window_func.h"
 #include "../framerate_type.h"
+#include "../scope_info.h"
+#include "../string_func.h"
 #include "ai_scanner.hpp"
 #include "ai_instance.hpp"
 #include "ai_config.hpp"
@@ -80,6 +82,7 @@
 	const Company *c;
 	FOR_ALL_COMPANIES(c) {
 		if (c->is_ai) {
+			SCOPE_INFO_FMT([&], "AI::GameLoop: %i: %s (v%d)\n", (int)c->index, c->ai_info->GetName(), c->ai_info->GetVersion());
 			PerformanceMeasurer framerate((PerformanceElement)(PFE_AI0 + c->index));
 			cur_company.Change(c->index);
 			c->ai_instance->GameLoop();
