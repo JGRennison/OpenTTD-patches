@@ -1213,6 +1213,9 @@ bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 		} else if (v->HasArticulatedPart() && (v->state >= RVSB_IN_ROAD_STOP || !IsStraightRoadTrackdir((Trackdir)v->state))) {
 			/* Articulated RVs may not overtake on corners */
 			v->SetRoadVehicleOvertaking(0);
+		} else if (v->HasArticulatedPart() && IsBridgeTile(v->tile) && (IsRoadCustomBridgeHeadTile(v->tile) || IsRoadCustomBridgeHeadTile(GetOtherBridgeEnd(v->tile)))) {
+			/* Articulated RVs may not overtake on custom bridge heads */
+			v->SetRoadVehicleOvertaking(0);
 		} else if (++v->overtaking_ctr >= RV_OVERTAKE_TIMEOUT) {
 			/* If overtaking just aborts at a random moment, we can have a out-of-bound problem,
 			 *  if the vehicle started a corner. To protect that, only allow an abort of
