@@ -6066,7 +6066,7 @@ STR_TMPL_TEMPLATE_OVR_VALUE_nogoldandcurrency                   :{TINY_FONT}{BLA
 STR_TMPL_TEMPLATE_OVR_VALUE_notinyfont                          :{BLACK}구입 가격: {GOLD}{CURRENCY_LONG}
 STR_TMPL_TEMPLATE_OVR_VALUE_notinyfontandblack                  :구입 가격: {GOLD}{CURRENCY_LONG}
 STR_TMPL_WARNING_FREE_WAGON                                     :{RED}객차/화차만 있음: 운행할 수 없습니다!
-STR_TMPL_WARNING_VEH_UNAVAILABLE                                :{RED}열차 구성 불가: 차량을 사용할 수 없습니다!vehicle unavailable!
+STR_TMPL_WARNING_VEH_UNAVAILABLE                                :{RED}열차 구성 불가: 차량을 사용할 수 없습니다!
 STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}사용 중인 템플릿: {NUM}
 STR_TMP_TEMPLATE_IN_USE                                         :템플릿이 사용 중입니다.
 STR_TMPL_GROUP_NUM_TRAINS                                       :{BLACK}{NUM}
