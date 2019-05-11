@@ -827,6 +827,7 @@ static void DeleteOrderWarnings(const Vehicle *v)
 	DeleteVehicleNews(v->index, STR_NEWS_VEHICLE_HAS_VOID_ORDER);
 	DeleteVehicleNews(v->index, STR_NEWS_VEHICLE_HAS_DUPLICATE_ENTRY);
 	DeleteVehicleNews(v->index, STR_NEWS_VEHICLE_HAS_INVALID_ENTRY);
+	DeleteVehicleNews(v->index, STR_NEWS_VEHICLE_NO_DEPOT_ORDER);
 	DeleteVehicleNews(v->index, STR_NEWS_PLANE_USES_TOO_SHORT_RUNWAY);
 }
 
@@ -2205,6 +2206,7 @@ void CheckOrders(const Vehicle *v)
 
 		/* Check the order list */
 		int n_st = 0;
+		bool has_depot_order = false;
 
 		FOR_VEHICLE_ORDERS(v, order) {
 			/* Dummy order? */
@@ -2227,6 +2229,9 @@ void CheckOrders(const Vehicle *v)
 					message = STR_NEWS_PLANE_USES_TOO_SHORT_RUNWAY;
 				}
 			}
+			if (order->IsType(OT_GOTO_DEPOT)) {
+				has_depot_order = true;
+			}
 		}
 
 		/* Check if the last and the first order are the same */
@@ -2244,6 +2249,8 @@ void CheckOrders(const Vehicle *v)
 #ifndef NDEBUG
 		if (v->orders.list != nullptr) v->orders.list->DebugCheckSanity();
 #endif
+
+		if (message == INVALID_STRING_ID && !has_depot_order && v->type != VEH_AIRCRAFT && _settings_client.gui.no_depot_order_warn) message = STR_NEWS_VEHICLE_NO_DEPOT_ORDER;
 
 		/* We don't have a problem */
 		if (message == INVALID_STRING_ID) return;
