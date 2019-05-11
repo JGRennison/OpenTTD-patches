@@ -2001,6 +2001,63 @@ DEF_CONSOLE_CMD(ConDoDisaster)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConBankruptCompany)
+{
+	if (argc != 2) {
+		IConsoleHelp("Debug: Mark company as bankrupt.  Usage: 'bankrupt_company <company-id>'");
+		return true;
+	}
+
+	if (_game_mode != GM_NORMAL) {
+		IConsoleWarning("Companies can only be managed in a game.");
+		return true;
+	}
+
+	CompanyID company_id = (CompanyID)(atoi(argv[1]) - 1);
+	if (!Company::IsValidID(company_id)) {
+		IConsolePrintF(CC_DEFAULT, "Unknown company. Company range is between 1 and %d.", MAX_COMPANIES);
+		return true;
+	}
+
+	Company *c = Company::Get(company_id);
+	c->bankrupt_value = 42;
+	c->bankrupt_asked = 1 << c->index; // Don't ask the owner
+	c->bankrupt_timeout = 0;
+	c->money = -(UINT64_MAX >> 2);
+	IConsolePrint(CC_DEFAULT, "Company marked as bankrupt.");
+
+	return true;
+}
+
+DEF_CONSOLE_CMD(ConDeleteCompany)
+{
+	if (argc != 2) {
+		IConsoleHelp("Debug: Delete company.  Usage: 'delete_company <company-id>'");
+		return true;
+	}
+
+	if (_game_mode != GM_NORMAL) {
+		IConsoleWarning("Companies can only be managed in a game.");
+		return true;
+	}
+
+	CompanyID company_id = (CompanyID)(atoi(argv[1]) - 1);
+	if (!Company::IsValidID(company_id)) {
+		IConsolePrintF(CC_DEFAULT, "Unknown company. Company range is between 1 and %d.", MAX_COMPANIES);
+		return true;
+	}
+
+	if (company_id == _local_company) {
+		IConsoleWarning("Cannot delete current company.");
+		return true;
+	}
+
+	DoCommandP(0, CCA_DELETE | company_id << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
+	IConsolePrint(CC_DEFAULT, "Company deleted.");
+
+	return true;
+}
+
 #ifdef _DEBUG
 /******************
  *  debug commands
@@ -2186,6 +2243,8 @@ void IConsoleStdLibRegister()
 	/* NewGRF development stuff */
 	IConsoleCmdRegister("reload_newgrfs",  ConNewGRFReload, ConHookNewGRFDeveloperTool);
 	IConsoleCmdRegister("do_disaster", ConDoDisaster, ConHookNewGRFDeveloperTool, true);
+	IConsoleCmdRegister("bankrupt_company", ConBankruptCompany, ConHookNewGRFDeveloperTool, true);
+	IConsoleCmdRegister("delete_company", ConDeleteCompany, ConHookNewGRFDeveloperTool, true);
 
 	/* Bug workarounds */
 	IConsoleCmdRegister("jgrpp_bug_workaround_unblock_heliports", ConResetBlockedHeliports, ConHookNoNetwork, true);
