@@ -2638,18 +2638,17 @@ CommandCost CmdOpenCloseAirport(TileIndex tile, DoCommandFlag flags, uint32 p1, 
  */
 bool HasStationInUse(StationID station, bool include_company, CompanyID company)
 {
-	const Vehicle *v;
-	FOR_ALL_VEHICLES(v) {
-		if ((v->owner == company) == include_company) {
-			const Order *order;
-			FOR_VEHICLE_ORDERS(v, order) {
-				if ((order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT)) && order->GetDestination() == station) {
-					return true;
-				}
+	bool found = false;
+	IterateOrderRefcountMapForDestinationID(station, [&](CompanyID cid, OrderType order_type, VehicleType veh_type, uint32 refcount) {
+		if ((cid == company) == include_company) {
+			if (order_type == OT_GOTO_STATION || order_type == OT_GOTO_WAYPOINT) {
+				found = true;
+				return false;
 			}
 		}
-	}
-	return false;
+		return true;
+	});
+	return found;
 }
 
 static const TileIndexDiffC _dock_tileoffs_chkaround[] = {
