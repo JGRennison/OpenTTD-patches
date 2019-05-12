@@ -21,7 +21,9 @@
 #include "openttd.h"
 #include "table/strings.h"
 #include "company_func.h"
+#include "core/alloc_type.hpp"
 #include <list>
+#include <memory>
 
 template <typename T>
 struct BuildingCounts {
@@ -65,6 +67,7 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	uint16 townnametype;
 	uint32 townnameparts;
 	char *name;                    ///< Custom town name. If nullptr, the town was not renamed and uses the generated name.
+	std::unique_ptr<const char, FreeDeleter> cached_name; ///< NOSAVE: Cache of the resolved name of the town, if not using a custom town name
 
 	byte flags;                    ///< See #TownFlags.
 
@@ -158,6 +161,13 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 
 	void UpdateVirtCoord();
 
+	inline const char *GetCachedName() const
+	{
+		if (this->name != nullptr) return this->name;
+		if (!this->cached_name) const_cast<Town *>(this)->FillCachedName();
+		return this->cached_name.get();
+	}
+
 	static inline Town *GetByTile(TileIndex tile)
 	{
 		return Town::Get(GetTownIndex(tile));
@@ -165,11 +175,15 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 
 	static Town *GetRandom();
 	static void PostDestructor(size_t index);
+
+	private:
+	void FillCachedName();
 };
 
 uint32 GetWorldPopulation();
 
 void UpdateAllTownVirtCoords();
+void ClearAllTownCachedNames();
 void ShowTownViewWindow(TownID town);
 void ExpandTown(Town *t);
 

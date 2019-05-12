@@ -675,22 +675,7 @@ private:
 	/** Sort by town name */
 	static bool TownNameSorter(const Town * const &a, const Town * const &b)
 	{
-		static char buf_cache[64];
-		char buf[64];
-
-		SetDParam(0, a->index);
-		GetString(buf, STR_TOWN_NAME, lastof(buf));
-
-		/* If 'b' is the same town as in the last round, use the cached value
-		 * We do this to speed stuff up ('b' is called with the same value a lot of
-		 * times after each other) */
-		if (b != last_town) {
-			last_town = b;
-			SetDParam(0, b->index);
-			GetString(buf_cache, STR_TOWN_NAME, lastof(buf_cache));
-		}
-
-		return strnatcmp(buf, buf_cache) < 0; // Sort by name (natural sorting).
+		return strnatcmp(a->GetCachedName(), b->GetCachedName()) < 0; // Sort by name (natural sorting).
 	}
 
 	/** Sort by population (default descending, as big towns are of the most interest). */

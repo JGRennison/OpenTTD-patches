@@ -213,19 +213,7 @@ protected:
 	/** Sort stations by their name */
 	static bool StationNameSorter(const Station * const &a, const Station * const &b)
 	{
-		static char buf_cache[64];
-		char buf[64];
-
-		SetDParam(0, a->index);
-		GetString(buf, STR_STATION_NAME, lastof(buf));
-
-		if (b != last_station) {
-			last_station = b;
-			SetDParam(0, b->index);
-			GetString(buf_cache, STR_STATION_NAME, lastof(buf_cache));
-		}
-
-		int r = strnatcmp(buf, buf_cache); // Sort by name (natural sorting).
+		int r = strnatcmp(a->GetCachedName(), b->GetCachedName()); // Sort by name (natural sorting).
 		if (r == 0) return a->index < b->index;
 		return r < 0;
 	}
@@ -1177,21 +1165,13 @@ bool CargoSorter::SortCount(const CargoDataEntry *cd1, const CargoDataEntry *cd2
 
 bool CargoSorter::SortStation(StationID st1, StationID st2) const
 {
-	static char buf1[MAX_LENGTH_STATION_NAME_CHARS];
-	static char buf2[MAX_LENGTH_STATION_NAME_CHARS];
-
 	if (!Station::IsValidID(st1)) {
 		return Station::IsValidID(st2) ? this->order == SO_ASCENDING : this->SortId(st1, st2);
 	} else if (!Station::IsValidID(st2)) {
 		return order == SO_DESCENDING;
 	}
 
-	SetDParam(0, st1);
-	GetString(buf1, STR_STATION_NAME, lastof(buf1));
-	SetDParam(0, st2);
-	GetString(buf2, STR_STATION_NAME, lastof(buf2));
-
-	int res = strnatcmp(buf1, buf2); // Sort by name (natural sorting).
+	int res = strnatcmp(Station::Get(st1)->GetCachedName(), Station::Get(st2)->GetCachedName()); // Sort by name (natural sorting).
 	if (res == 0) {
 		return this->SortId(st1, st2);
 	} else {

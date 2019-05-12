@@ -229,6 +229,15 @@ void Town::UpdateLabel()
 	}
 }
 
+void Town::FillCachedName()
+{
+	char buf[256];
+	char *end = GetTownName(buf, this, lastof(buf));
+	char *alloced = MallocT<char>(end - buf + 1);
+	memcpy(alloced, buf, end - buf + 1);
+	this->cached_name.reset(alloced);
+}
+
 /**
  * Get the cost for removing this house
  * @return the cost (inflation corrected etc)
@@ -519,6 +528,15 @@ void UpdateAllTownVirtCoords()
 
 	FOR_ALL_TOWNS(t) {
 		t->UpdateVirtCoord();
+	}
+}
+
+void ClearAllTownCachedNames()
+{
+	Town *t;
+
+	FOR_ALL_TOWNS(t) {
+		t->cached_name.reset();
 	}
 }
 
@@ -2863,11 +2881,13 @@ CommandCost CmdRenameTown(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 	}
 
 	if (flags & DC_EXEC) {
+		t->cached_name.reset();
 		free(t->name);
 		t->name = reset ? nullptr : stredup(text);
 
 		t->UpdateVirtCoord();
 		InvalidateWindowData(WC_TOWN_DIRECTORY, 0, 1);
+		ClearAllStationCachedNames();
 		UpdateAllStationVirtCoords();
 	}
 	return CommandCost();
