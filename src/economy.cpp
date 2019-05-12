@@ -314,6 +314,8 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 		assert(old_owner != _local_company);
 	}
 
+	ClearOrderDestinationRefcountMap();
+
 	Town *t;
 
 	assert(old_owner != new_owner);
@@ -588,6 +590,8 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 
 	/* Change owner of deferred cargo payments */
 	ChangeOwnershipOfCargoPacketDeferredPayments(old_owner, new_owner);
+
+	IntialiseOrderDestinationRefcountMap();
 
 	cur_company.Restore();
 

@@ -24,11 +24,32 @@
 
 #include <memory>
 #include <vector>
+#include "3rdparty/cpp-btree/btree_map.h"
 
 typedef Pool<Order, OrderID, 256, 0xFF0000> OrderPool;
 typedef Pool<OrderList, OrderListID, 128, 64000> OrderListPool;
 extern OrderPool _order_pool;
 extern OrderListPool _orderlist_pool;
+extern btree::btree_map<uint32, uint32> _order_destination_refcount_map;
+extern bool _order_destination_refcount_map_valid;
+
+inline uint32 OrderDestinationRefcountMapKey(DestinationID dest, CompanyID cid, OrderType order_type, VehicleType veh_type)
+{
+	static_assert(sizeof(dest) == 2);
+	static_assert(OT_END <= 16);
+	return (((uint32) dest) << 16) | (((uint32) cid) << 8) | (((uint32) order_type) << 4) | ((uint32) veh_type);
+}
+
+template <typename F> void IterateOrderRefcountMapForDestinationID(DestinationID dest, F handler)
+{
+	for (auto lb = _order_destination_refcount_map.lower_bound(OrderDestinationRefcountMapKey(dest, (CompanyID) 0, (OrderType) 0, (VehicleType) 0)); lb != _order_destination_refcount_map.end(); ++lb) {
+		if (GB(lb->first, 16, 16) != dest) return;
+		if (lb->second && !handler((CompanyID) GB(lb->first, 8, 8), (OrderType) GB(lb->first, 4, 4), (VehicleType) GB(lb->first, 0, 4), lb->second)) return;
+	}
+}
+
+void IntialiseOrderDestinationRefcountMap();
+void ClearOrderDestinationRefcountMap();
 
 struct OrderExtraInfo {
 	uint8 cargo_type_flags[NUM_CARGO] = {}; ///< Load/unload types for each cargo type.

@@ -362,6 +362,7 @@ static void ShutdownGame()
 	FreeSignalDependencies();
 
 	ClearZoningCaches();
+	ClearOrderDestinationRefcountMap();
 
 	/* No NewGRFs were loaded when it was still bootstrapping. */
 	if (_game_mode != GM_BOOTSTRAP) ResetNewGRFData();

@@ -55,6 +55,47 @@ INSTANTIATE_POOL_METHODS(Order)
 OrderListPool _orderlist_pool("OrderList");
 INSTANTIATE_POOL_METHODS(OrderList)
 
+btree::btree_map<uint32, uint32> _order_destination_refcount_map;
+bool _order_destination_refcount_map_valid = false;
+
+void IntialiseOrderDestinationRefcountMap()
+{
+	ClearOrderDestinationRefcountMap();
+	const Vehicle *v;
+	FOR_ALL_VEHICLES(v) {
+		const Order *order;
+		FOR_VEHICLE_ORDERS(v, order) {
+			if (order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT) || order->IsType(OT_IMPLICIT)) {
+				_order_destination_refcount_map[OrderDestinationRefcountMapKey(order->GetDestination(), v->owner, order->GetType(), v->type)]++;
+			}
+		}
+	}
+	_order_destination_refcount_map_valid = true;
+}
+
+void ClearOrderDestinationRefcountMap()
+{
+	_order_destination_refcount_map.clear();
+	_order_destination_refcount_map_valid = false;
+}
+
+static void UpdateOrderDestinationRefcount(const Order *order, VehicleType type, Owner owner, int delta)
+{
+	if (order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT) || order->IsType(OT_IMPLICIT)) {
+		_order_destination_refcount_map[OrderDestinationRefcountMapKey(order->GetDestination(), owner, order->GetType(), type)] += delta;
+	}
+}
+
+inline void RegisterOrderDestination(const Order *order, VehicleType type, Owner owner)
+{
+	if (_order_destination_refcount_map_valid) UpdateOrderDestinationRefcount(order, type, owner, 1);
+}
+
+inline void UnregisterOrderDestination(const Order *order, VehicleType type, Owner owner)
+{
+	if (_order_destination_refcount_map_valid) UpdateOrderDestinationRefcount(order, type, owner, -1);
+}
+
 /** Clean everything up. */
 Order::~Order()
 {
@@ -397,6 +438,9 @@ void OrderList::Initialize(Order *chain, Vehicle *v)
 	this->total_duration = 0;
 	this->order_index.clear();
 
+	VehicleType type = v->type;
+	Owner owner = v->owner;
+
 	for (Order *o = this->first; o != nullptr; o = o->next) {
 		if (!o->IsType(OT_IMPLICIT)) ++this->num_manual_orders;
 		if (!o->IsType(OT_CONDITIONAL)) {
@@ -404,6 +448,7 @@ void OrderList::Initialize(Order *chain, Vehicle *v)
 			this->total_duration += o->GetWaitTime() + o->GetTravelTime();
 		}
 		this->order_index.push_back(o);
+		RegisterOrderDestination(o, type, owner);
 	}
 
 	for (Vehicle *u = this->first_shared->PreviousShared(); u != nullptr; u = u->PreviousShared()) {
@@ -422,7 +467,10 @@ void OrderList::Initialize(Order *chain, Vehicle *v)
 void OrderList::FreeChain(bool keep_orderlist)
 {
 	Order *next;
+	VehicleType type = this->GetFirstSharedVehicle()->type;
+	Owner owner = this->GetFirstSharedVehicle()->owner;
 	for (Order *o = this->first; o != nullptr; o = next) {
+		UnregisterOrderDestination(o, type, owner);
 		next = o->next;
 		delete o;
 	}
@@ -629,6 +677,7 @@ void OrderList::InsertOrderAt(Order *new_order, int index)
 		this->timetable_duration += new_order->GetTimetabledWait() + new_order->GetTimetabledTravel();
 		this->total_duration += new_order->GetWaitTime() + new_order->GetTravelTime();
 	}
+	RegisterOrderDestination(new_order, this->GetFirstSharedVehicle()->type, this->GetFirstSharedVehicle()->owner);
 	this->ReindexOrderList();
 
 	/* We can visit oil rigs and buoys that are not our own. They will be shown in
@@ -664,6 +713,7 @@ void OrderList::DeleteOrderAt(int index)
 		this->timetable_duration -= (to_remove->GetTimetabledWait() + to_remove->GetTimetabledTravel());
 		this->total_duration -= (to_remove->GetWaitTime() + to_remove->GetTravelTime());
 	}
+	UnregisterOrderDestination(to_remove, this->GetFirstSharedVehicle()->type, this->GetFirstSharedVehicle()->owner);
 	delete to_remove;
 	this->ReindexOrderList();
 }
