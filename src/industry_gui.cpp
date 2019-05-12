@@ -1253,19 +1253,7 @@ protected:
 	/** Sort industries by name */
 	static bool IndustryNameSorter(const Industry * const &a, const Industry * const &b)
 	{
-		static char buf_cache[96];
-		static char buf[96];
-
-		SetDParam(0, a->index);
-		GetString(buf, STR_INDUSTRY_NAME, lastof(buf));
-
-		if (b != last_industry) {
-			last_industry = b;
-			SetDParam(0, b->index);
-			GetString(buf_cache, STR_INDUSTRY_NAME, lastof(buf_cache));
-		}
-
-		return strnatcmp(buf, buf_cache) < 0; // Sort by name (natural sorting).
+		return strnatcmp(a->GetCachedName(), b->GetCachedName()) < 0; // Sort by name (natural sorting).
 	}
 
 	/** Sort industries by type and name */

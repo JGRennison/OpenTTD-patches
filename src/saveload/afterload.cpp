@@ -236,6 +236,7 @@ void ClearAllCachedNames()
 {
 	ClearAllStationCachedNames();
 	ClearAllTownCachedNames();
+	ClearAllIndustryCachedNames();
 }
 
 /**
