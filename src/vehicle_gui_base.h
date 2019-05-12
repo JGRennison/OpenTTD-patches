@@ -22,6 +22,8 @@ typedef GUIList<const Vehicle*, CargoID> GUIVehicleList;
 
 struct BaseVehicleListWindow : public Window {
 	GUIVehicleList vehicles;  ///< The list of vehicles
+	uint own_vehicles = 0;    ///< Count of vehicles of the local company
+	CompanyID own_company;    ///< Company ID used for own_vehicles
 	Listing *sorting;         ///< Pointer to the vehicle type related sorting.
 	byte unitnumber_digits;   ///< The number of digits of the highest unit number
 	Scrollbar *vscroll;
@@ -67,6 +69,7 @@ struct BaseVehicleListWindow : public Window {
 
 	void DrawVehicleListItems(VehicleID selected_vehicle, int line_height, const Rect &r) const;
 	void SortVehicleList();
+	void CountOwnVehicles();
 	void BuildVehicleList();
 	void SetCargoFilterIndex(int index);
 	void SetCargoFilterArray();

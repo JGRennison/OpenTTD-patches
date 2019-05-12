@@ -161,6 +161,15 @@ uint GetUnitNumberDigits(VehicleList &vehicles)
 	return 2;
 }
 
+void BaseVehicleListWindow::CountOwnVehicles()
+{
+	this->own_vehicles = 0;
+	for (const Vehicle *v : vehicles) {
+		if (v->owner == _local_company) this->own_vehicles++;
+	}
+	this->own_company = _local_company;
+}
+
 void BaseVehicleListWindow::BuildVehicleList()
 {
 	if (!this->vehicles.NeedRebuild()) return;
@@ -172,6 +181,7 @@ void BaseVehicleListWindow::BuildVehicleList()
 	this->FilterVehicleList();
 
 	this->unitnumber_digits = GetUnitNumberDigits(this->vehicles);
+	this->CountOwnVehicles();
 
 	this->vehicles.RebuildDone();
 	this->vscroll->SetCount((uint)this->vehicles.size());
@@ -328,7 +338,7 @@ Dimension BaseVehicleListWindow::GetActionDropdownSize(bool show_autoreplace, bo
  */
 bool BaseVehicleListWindow::ShouldShowActionDropdownList() const
 {
-	return this->vehicles.size() != 0 || (this->vli.vtype == VEH_TRAIN && _settings_client.gui.show_adv_tracerestrict_features);
+	return this->own_vehicles != 0 || (this->vli.vtype == VEH_TRAIN && _settings_client.gui.show_adv_tracerestrict_features);
 }
 
 /**
@@ -341,7 +351,7 @@ DropDownList BaseVehicleListWindow::BuildActionDropdownList(bool show_autoreplac
 		StringID change_order_str, bool show_create_group, bool consider_top_level)
 {
 	DropDownList list;
-	bool disable = this->vehicles.size() == 0;
+	bool disable = this->own_vehicles == 0;
 	bool mass_action_disable = disable || (_settings_client.gui.disable_top_veh_list_mass_actions && consider_top_level);
 
 	if (show_autoreplace) list.emplace_back(new DropDownListStringItem(STR_VEHICLE_LIST_REPLACE_VEHICLES, ADI_REPLACE, disable));
@@ -361,10 +371,10 @@ DropDownList BaseVehicleListWindow::BuildActionDropdownList(bool show_autoreplac
 		list.emplace_back(new DropDownListStringItem(STR_TRACE_RESTRICT_SLOT_MANAGE, ADI_TRACERESTRICT_SLOT_MGMT, false));
 	}
 	if (change_order_str != 0) {
-		list.emplace_back(new DropDownListStringItem(change_order_str, ADI_CHANGE_ORDER, false));
+		list.emplace_back(new DropDownListStringItem(change_order_str, ADI_CHANGE_ORDER, disable));
 	}
 	if (show_create_group) {
-		list.emplace_back(new DropDownListStringItem(STR_VEHICLE_LIST_CREATE_GROUP, ADI_CREATE_GROUP, false));
+		list.emplace_back(new DropDownListStringItem(STR_VEHICLE_LIST_CREATE_GROUP, ADI_CREATE_GROUP, disable));
 	}
 
 	return list;
@@ -1979,22 +1989,25 @@ public:
 		this->BuildVehicleList();
 		this->SortVehicleList();
 
+		if (_local_company != this->own_company) this->CountOwnVehicles();
+
 		if (!this->ShouldShowActionDropdownList() && this->IsWidgetLowered(WID_VL_MANAGE_VEHICLES_DROPDOWN)) {
 			HideDropDownMenu(this);
 		}
 
 		/* Hide the widgets that we will not use in this window
 		 * Some windows contains actions only fit for the owner */
-		int plane_to_show = (this->owner == _local_company) ? BP_SHOW_BUTTONS : BP_HIDE_BUTTONS;
+		bool show_buttons = this->owner == _local_company || (_local_company != INVALID_COMPANY && _settings_game.economy.infrastructure_sharing[this->vli.vtype]);
+		int plane_to_show = show_buttons ? BP_SHOW_BUTTONS : BP_HIDE_BUTTONS;
 		NWidgetStacked *nwi = this->GetWidget<NWidgetStacked>(WID_VL_HIDE_BUTTONS);
 		if (plane_to_show != nwi->shown_plane) {
 			nwi->SetDisplayedPlane(plane_to_show);
 			nwi->SetDirty(this);
 		}
-		if (this->owner == _local_company) {
-			this->SetWidgetDisabledState(WID_VL_AVAILABLE_VEHICLES, this->vli.type != VL_STANDARD);
+		if (show_buttons) {
+			this->SetWidgetDisabledState(WID_VL_AVAILABLE_VEHICLES, this->owner != _local_company || this->vli.type != VL_STANDARD);
 			this->SetWidgetDisabledState(WID_VL_MANAGE_VEHICLES_DROPDOWN, !this->ShouldShowActionDropdownList());
-			this->SetWidgetsDisabledState(this->vehicles.size() == 0 || (this->vli.type == VL_STANDARD && _settings_client.gui.disable_top_veh_list_mass_actions),
+			this->SetWidgetsDisabledState(this->owner != _local_company || this->vehicles.size() == 0 || (this->vli.type == VL_STANDARD && _settings_client.gui.disable_top_veh_list_mass_actions),
 				WID_VL_STOP_ALL,
 				WID_VL_START_ALL,
 				WIDGET_LIST_END);
@@ -2063,8 +2076,6 @@ public:
 				this->SetCargoFilterIndex(index);
 				break;
 			case WID_VL_MANAGE_VEHICLES_DROPDOWN:
-				assert(this->ShouldShowActionDropdownList());
-
 				switch (index) {
 					case ADI_REPLACE: // Replace window
 						ShowReplaceGroupVehicleWindow(ALL_GROUP, this->vli.vtype);
