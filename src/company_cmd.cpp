@@ -901,6 +901,9 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			CompanyAdminRemove(c_index, (CompanyRemoveReason)reason);
 
 			if (StoryPage::GetNumItems() == 0 || Goal::GetNumItems() == 0) InvalidateWindowData(WC_MAIN_TOOLBAR, 0);
+
+			extern void CheckCaches(bool force_check);
+			CheckCaches(true);
 			break;
 		}
 
