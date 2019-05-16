@@ -150,7 +150,6 @@ void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev
 	}
 	tmp->railtype = virt->railtype;
 	tmp->owner = virt->owner;
-	tmp->value = virt->value;
 
 	// set the subtype but also clear the virtual flag while doing it
 	tmp->subtype = virt->subtype & ~(1 << GVSF_VIRTUAL);

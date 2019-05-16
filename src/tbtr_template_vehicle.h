@@ -93,8 +93,6 @@ public:
 	bool replace_old_only;
 
 	// Things derived from a virtual train
-	TemplateVehicle *other_multiheaded_part; ///< Multiheaded Engine support
-	Money value;                        ///< Value of the vehicle
 	OwnerByte owner;
 
 	EngineID engine_type;               ///< The type of engine used for this vehicle.
