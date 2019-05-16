@@ -320,6 +320,14 @@ char *CrashLog::LogLibraries(char *buffer, const char *last) const
  */
 char *CrashLog::LogGamelog(char *buffer, const char *last) const
 {
+	if (_game_events_since_load || _game_events_overall) {
+		buffer += seprintf(buffer, last, "Events: ");
+		buffer = DumpGameEventFlags(_game_events_since_load, buffer, last);
+		buffer += seprintf(buffer, last, ", ");
+		buffer = DumpGameEventFlags(_game_events_overall, buffer, last);
+		buffer += seprintf(buffer, last, "\n\n");
+	}
+
 	CrashLog::gamelog_buffer = buffer;
 	CrashLog::gamelog_last = last;
 	GamelogPrint(&CrashLog::GamelogFillCrashLog);

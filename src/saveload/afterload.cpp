@@ -3746,6 +3746,8 @@ bool AfterLoadGame()
  */
 void ReloadNewGRFData()
 {
+	RegisterGameEvents(GEF_RELOAD_NEWGRF);
+
 	RailTypeLabel rail_type_label_map[RAILTYPE_END];
 	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
 		rail_type_label_map[rt] = GetRailTypeInfo(rt)->label;

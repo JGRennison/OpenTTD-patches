@@ -1982,6 +1982,21 @@ DEF_CONSOLE_CMD(ConVehicleStats)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConDumpGameEvents)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump game events.");
+		return true;
+	}
+
+	char buffer[256];
+	DumpGameEventFlags(_game_events_since_load, buffer, lastof(buffer));
+	IConsolePrintF(CC_DEFAULT, "Since load: %s", buffer);
+	DumpGameEventFlags(_game_events_overall, buffer, lastof(buffer));
+	IConsolePrintF(CC_DEFAULT, "Overall: %s", buffer);
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConCheckCaches)
 {
 	if (argc == 0) {
@@ -2253,6 +2268,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("dump_inflation", ConDumpInflation, nullptr, true);
 	IConsoleCmdRegister("dump_cpdp_stats", ConDumpCpdpStats, nullptr, true);
 	IConsoleCmdRegister("dump_veh_stats", ConVehicleStats, nullptr, true);
+	IConsoleCmdRegister("dump_game_events", ConDumpGameEvents, nullptr, true);
 	IConsoleCmdRegister("check_caches", ConCheckCaches, nullptr, true);
 
 	/* NewGRF development stuff */

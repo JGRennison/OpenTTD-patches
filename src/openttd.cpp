@@ -94,6 +94,9 @@ extern Company *DoStartupNewCompany(bool is_ai, CompanyID company = INVALID_COMP
 extern void ShowOSErrorBox(const char *buf, bool system);
 extern char *_config_file;
 
+GameEventFlags _game_events_since_load;
+GameEventFlags _game_events_overall;
+
 /**
  * Error handling for fatal user errors.
  * @param s the string to print.
@@ -377,6 +380,9 @@ static void ShutdownGame()
 	InvalidateVehicleTickCaches();
 	ClearVehicleTickCaches();
 	ClearCommandLog();
+
+	_game_events_since_load = (GameEventFlags) 0;
+	_game_events_overall = (GameEventFlags) 0;
 }
 
 /**
@@ -1697,4 +1703,16 @@ void GameLoop()
 
 	SoundDriver::GetInstance()->MainLoop();
 	MusicLoop();
+}
+
+char *DumpGameEventFlags(GameEventFlags events, char *b, const char *last)
+{
+	if (b <= last) *b = 0;
+	auto dump = [&](char c, GameEventFlags ev) {
+		if (events & ev) b += seprintf(b, last, "%c", c);
+	};
+	dump('d', GEF_COMPANY_DELETE);
+	dump('m', GEF_COMPANY_MERGE);
+	dump('n', GEF_RELOAD_NEWGRF);
+	return b;
 }

@@ -87,6 +87,24 @@ typedef SimpleTinyEnumT<PauseMode, byte> PauseModeByte;
 /** The current pause mode */
 extern PauseModeByte _pause_mode;
 
+enum GameEventFlags : uint32 {
+	GEF_COMPANY_DELETE       = 1 << 0, ///< (d) A company has been deleted
+	GEF_COMPANY_MERGE        = 1 << 1, ///< (m) A company has been bought by another
+	GEF_RELOAD_NEWGRF        = 1 << 2, ///< (n) ReloadNewGRFData() has been called
+};
+DECLARE_ENUM_AS_BIT_SET(GameEventFlags)
+
+extern GameEventFlags _game_events_since_load;
+extern GameEventFlags _game_events_overall;
+
+inline void RegisterGameEvents(GameEventFlags events)
+{
+	_game_events_since_load |= events;
+	_game_events_overall |= events;
+}
+
+char *DumpGameEventFlags(GameEventFlags events, char *b, const char *last);
+
 void AskExitGame();
 void AskExitToGameMenu();
 

@@ -79,6 +79,8 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	_tick_skip_counter = 0;
 	_cur_tileloop_tile = 1;
 	_thd.redsq = INVALID_TILE;
+	_game_events_since_load = (GameEventFlags) 0;
+	_game_events_overall = (GameEventFlags) 0;
 	if (reset_settings) MakeNewgameSettingsLive();
 
 	if (reset_date) {

@@ -92,6 +92,7 @@ static const SaveLoadGlobVarList _date_desc[] = {
 	SLEG_CONDVAR(_next_competitor_start,  SLE_UINT32,                SLV_109, SL_MAX_VERSION),
 	    SLEG_VAR(_trees_tick_ctr,         SLE_UINT8),
 	SLEG_CONDVAR(_pause_mode,             SLE_UINT8,                   SLV_4, SL_MAX_VERSION),
+	SLEG_CONDVAR_X(_game_events_overall,  SLE_UINT32,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_GAME_EVENTS)),
 	SLE_CONDNULL(4, SLV_11, SLV_120),
 	    SLEG_END()
 };
@@ -118,6 +119,7 @@ static const SaveLoadGlobVarList _date_check_desc[] = {
 	SLE_CONDNULL(4, SLV_109, SL_MAX_VERSION),  // _next_competitor_start
 	    SLE_NULL(1),                       // _trees_tick_ctr
 	SLE_CONDNULL(1, SLV_4, SL_MAX_VERSION),    // _pause_mode
+	SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_GAME_EVENTS)), // _game_events_overall
 	SLE_CONDNULL(4, SLV_11, SLV_120),
 	    SLEG_END()
 };
