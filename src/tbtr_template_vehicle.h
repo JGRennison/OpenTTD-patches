@@ -205,17 +205,6 @@ struct TemplateReplacement : TemplateReplacementPool::PoolItem<&_template_replac
 	inline void SetTemplate(TemplateID tid) { this->sel_template = tid; }
 
 	inline TemplateID GetTemplateVehicleID() { return sel_template; }
-
-	inline const TemplateVehicle* GetTemplateVehicle()
-	{
-		const TemplateVehicle *tv;
-		FOR_ALL_TEMPLATES(tv) {
-			if (tv->index == this->sel_template) {
-				return tv;
-			}
-		}
-		return NULL;
-	}
 };
 
 TemplateReplacement* GetTemplateReplacementByGroupID(GroupID);
