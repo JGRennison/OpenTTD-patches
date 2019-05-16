@@ -1574,6 +1574,7 @@ void TraceRestrictRemoveGroupID(GroupID index)
 /**
  * This is called when a company is about to be deleted or taken over
  * Scan program pool and change any references to it to the new company ID, to avoid dangling references
+ * Change owner and/or delete slots
  */
 void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company)
 {
@@ -1591,8 +1592,20 @@ void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company)
 		}
 	}
 
+	TraceRestrictSlot *slot;
+	FOR_ALL_TRACE_RESTRICT_SLOTS(slot) {
+		if (slot->owner != old_company) continue;
+		if (new_company == INVALID_OWNER) {
+			TraceRestrictRemoveSlotID(slot->index);
+			delete slot;
+		} else {
+			slot->owner = new_company;
+		}
+	}
+
 	// update windows
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
 }
 
 static std::unordered_multimap<VehicleID, TraceRestrictSlotID> slot_vehicle_index;
