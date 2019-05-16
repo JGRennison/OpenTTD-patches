@@ -490,7 +490,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 	if (new_owner == INVALID_OWNER) {
 		TemplateVehicle *tv;
 		FOR_ALL_TEMPLATES(tv) {
-			if (tv->owner == old_owner) {
+			if (tv->owner == old_owner && tv->Prev() == nullptr) {
 				TemplateReplacement *tr;
 				FOR_ALL_TEMPLATE_REPLACEMENTS(tr) {
 					if (tr->Template() == tv->index) {
