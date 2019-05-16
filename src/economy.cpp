@@ -2229,6 +2229,9 @@ static void DoAcquireCompany(Company *c)
 	InvalidateWindowClassesData(WC_AIRCRAFT_LIST, 0);
 
 	delete c;
+
+	extern void CheckCaches(bool force_check);
+	CheckCaches(true);
 }
 
 extern int GetAmountOwnedBy(const Company *c, Owner owner);
