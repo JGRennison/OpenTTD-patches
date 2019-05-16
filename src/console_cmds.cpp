@@ -1968,6 +1968,20 @@ DEF_CONSOLE_CMD(ConDumpCpdpStats)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConVehicleStats)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump vehicle stats.");
+		return true;
+	}
+
+	extern void DumpVehicleStats(char *buffer, const char *last);
+	char buffer[32768];
+	DumpVehicleStats(buffer, lastof(buffer));
+	PrintLineByLine(buffer);
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConCheckCaches)
 {
 	if (argc == 0) {
@@ -2238,6 +2252,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("dump_command_log", ConDumpCommandLog, nullptr, true);
 	IConsoleCmdRegister("dump_inflation", ConDumpInflation, nullptr, true);
 	IConsoleCmdRegister("dump_cpdp_stats", ConDumpCpdpStats, nullptr, true);
+	IConsoleCmdRegister("dump_veh_stats", ConVehicleStats, nullptr, true);
 	IConsoleCmdRegister("check_caches", ConCheckCaches, nullptr, true);
 
 	/* NewGRF development stuff */

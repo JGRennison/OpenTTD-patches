@@ -3969,3 +3969,52 @@ void GetVehicleSet(VehicleSet &set, Vehicle *v, uint8 num_vehicles)
 		}
 	}
 }
+
+void DumpVehicleStats(char *buffer, const char *last)
+{
+	struct vtypestats {
+		uint count[2] = { 0, 0 };
+
+		bool IsEmpty() const { return (count[0] | count[1]) == 0; }
+	};
+	struct cstats {
+		vtypestats vstats[VEH_END];
+		vtypestats virt_train;
+		vtypestats template_train;
+	};
+	std::map<OwnerByte, cstats> cstatmap;
+
+	Vehicle *v;
+	FOR_ALL_VEHICLES(v) {
+		cstats &cs = cstatmap[v->owner];
+		vtypestats &vs = ((v->type == VEH_TRAIN) && Train::From(v)->IsVirtual()) ? cs.virt_train : cs.vstats[v->type];
+		vs.count[v->Previous() != nullptr ? 1 : 0]++;
+	}
+
+	const TemplateVehicle *tv;
+	FOR_ALL_TEMPLATES(tv) {
+		cstats &cs = cstatmap[tv->owner];
+		cs.template_train.count[tv->Prev() != nullptr ? 1 : 0]++;
+	}
+	for (auto &it : cstatmap) {
+		buffer += seprintf(buffer, last, "%u: ", (uint) it.first);
+		SetDParam(0, it.first);
+		buffer = GetString(buffer, STR_COMPANY_NAME, last);
+		buffer += seprintf(buffer, last, "\n");
+
+		auto line = [&](vtypestats &vs, const char *type) {
+			if (vs.count[0] || vs.count[1]) {
+				buffer += seprintf(buffer, last, "  %10s: primary: %5u, secondary: %5u\n", type, vs.count[0], vs.count[1]);
+			}
+		};
+		line(it.second.vstats[VEH_TRAIN], "train");
+		line(it.second.vstats[VEH_ROAD], "road");
+		line(it.second.vstats[VEH_SHIP], "ship");
+		line(it.second.vstats[VEH_AIRCRAFT], "aircraft");
+		line(it.second.vstats[VEH_EFFECT], "effect");
+		line(it.second.vstats[VEH_DISASTER], "disaster");
+		line(it.second.virt_train, "virt train");
+		line(it.second.template_train, "tmpl train");
+		buffer += seprintf(buffer, last, "\n");
+	}
+}
