@@ -54,6 +54,7 @@
 #include "tracerestrict.h"
 #include "tbtr_template_vehicle.h"
 #include "scope_info.h"
+#include "pathfinder/yapf/yapf_cache.h"
 
 #include "table/strings.h"
 #include "table/pricebase.h"
@@ -593,6 +594,8 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 	ChangeOwnershipOfCargoPacketDeferredPayments(old_owner, new_owner);
 
 	IntialiseOrderDestinationRefcountMap();
+
+	YapfNotifyTrackLayoutChange(INVALID_TILE, INVALID_TRACK);
 
 	cur_company.Restore();
 
