@@ -130,6 +130,7 @@ Money CalculateCompanyValue(const Company *c, bool including_loan)
 	Vehicle *v;
 	FOR_ALL_VEHICLES(v) {
 		if (v->owner != owner) continue;
+		if (HasBit(v->subtype, GVSF_VIRTUAL)) continue;
 
 		if (v->type == VEH_TRAIN ||
 				v->type == VEH_ROAD ||
@@ -170,7 +171,7 @@ int UpdateCompanyRatingAndValue(Company *c, bool update)
 
 		FOR_ALL_VEHICLES(v) {
 			if (v->owner != owner) continue;
-			if (IsCompanyBuildableVehicleType(v->type) && v->IsPrimaryVehicle()) {
+			if (IsCompanyBuildableVehicleType(v->type) && v->IsPrimaryVehicle() && !HasBit(v->subtype, GVSF_VIRTUAL)) {
 				if (v->profit_last_year > 0) num++; // For the vehicle score only count profitable vehicles
 				if (v->age > 730) {
 					/* Find the vehicle with the lowest amount of profit */
@@ -483,7 +484,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 				if (v->IsEngineCountable()) {
 					GroupStatistics::CountEngine(v, 1);
 				}
-				if (v->IsPrimaryVehicle()) {
+				if (v->IsPrimaryVehicle() && !HasBit(v->subtype, GVSF_VIRTUAL)) {
 					GroupStatistics::CountVehicle(v, 1);
 					v->unitnumber = unitidgen[v->type].NextID();
 				}
