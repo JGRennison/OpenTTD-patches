@@ -72,6 +72,7 @@
 #include "bridge_signal_map.h"
 #include "zoning.h"
 #include "cargopacket.h"
+#include "tbtr_template_vehicle.h"
 
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
@@ -1498,6 +1499,16 @@ void CheckCaches(bool force_check)
 
 	extern void ValidateVehicleTickCaches();
 	ValidateVehicleTickCaches();
+
+	FOR_ALL_VEHICLES(v) {
+		if (v->Previous()) assert_msg(v->Previous()->Next() == v, "%u", v->index);
+		if (v->Next()) assert_msg(v->Next()->Previous() == v, "%u", v->index);
+	}
+	const TemplateVehicle *tv;
+	FOR_ALL_TEMPLATES(tv) {
+		if (tv->Prev()) assert_msg(tv->Prev()->Next() == tv, "%u", tv->index);
+		if (tv->Next()) assert_msg(tv->Next()->Prev() == tv, "%u", tv->index);
+	}
 }
 
 /**
