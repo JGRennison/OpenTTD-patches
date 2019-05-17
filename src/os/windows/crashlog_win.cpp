@@ -609,6 +609,12 @@ static void CDECL CustomAbort(int signal)
 	SetUnhandledExceptionFilter(ExceptionHandler);
 }
 
+/* static */ void CrashLog::DesyncCrashLog()
+{
+	CrashLogWindows log(nullptr);
+	log.MakeDesyncCrashLog();
+}
+
 /* The crash log GUI */
 
 static bool _expanded;

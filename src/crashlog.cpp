@@ -434,6 +434,37 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 }
 
 /**
+ * Fill the crash log buffer with all data of a desync event.
+ * @param buffer The begin where to write at.
+ * @param last   The last position in the buffer to write to.
+ * @return the position of the \c '\0' character after the buffer.
+ */
+char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last) const
+{
+	time_t cur_time = time(nullptr);
+	buffer += seprintf(buffer, last, "*** OpenTTD Multiplayer %s Desync Report ***\n\n", _network_server ? "Server" : "Client");
+
+	buffer += seprintf(buffer, last, "Desync at: %s", asctime(gmtime(&cur_time)));
+
+	YearMonthDay ymd;
+	ConvertDateToYMD(_date, &ymd);
+	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i)\n\n", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter);
+
+	buffer = this->LogOpenTTDVersion(buffer, last);
+	buffer = this->LogOSVersion(buffer, last);
+	buffer = this->LogCompiler(buffer, last);
+	buffer = this->LogOSVersionDetail(buffer, last);
+	buffer = this->LogConfiguration(buffer, last);
+	buffer = this->LogLibraries(buffer, last);
+	buffer = this->LogGamelog(buffer, last);
+	buffer = this->LogRecentNews(buffer, last);
+	buffer = this->LogCommandLog(buffer, last);
+
+	buffer += seprintf(buffer, last, "*** End of OpenTTD Multiplayer %s Desync Report ***\n", _network_server ? "Server" : "Client");
+	return buffer;
+}
+
+/**
  * Write the crash log to a file.
  * @note On success the filename will be filled with the full path of the
  *       crash log file. Make sure filename is at least \c MAX_PATH big.
@@ -442,9 +473,9 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
  * @param filename_last The last position in the filename buffer.
  * @return true when the crash log was successfully written.
  */
-bool CrashLog::WriteCrashLog(const char *buffer, char *filename, const char *filename_last) const
+bool CrashLog::WriteCrashLog(const char *buffer, char *filename, const char *filename_last, const char *name) const
 {
-	seprintf(filename, filename_last, "%scrash.log", _personal_dir);
+	seprintf(filename, filename_last, "%s%s.log", _personal_dir, name);
 
 	FILE *file = FioFOpenFile(filename, "w", NO_DIRECTORY);
 	if (file == nullptr) return false;
@@ -470,7 +501,7 @@ bool CrashLog::WriteCrashLog(const char *buffer, char *filename, const char *fil
  * @param filename_last The last position in the filename buffer.
  * @return true when the crash save was successfully made.
  */
-bool CrashLog::WriteSavegame(char *filename, const char *filename_last) const
+bool CrashLog::WriteSavegame(char *filename, const char *filename_last, const char *name) const
 {
 	/* If the map array doesn't exist, saving will fail too. If the map got
 	 * initialised, there is a big chance the rest is initialised too. */
@@ -479,7 +510,7 @@ bool CrashLog::WriteSavegame(char *filename, const char *filename_last) const
 	try {
 		GamelogEmergency();
 
-		seprintf(filename, filename_last, "%scrash.sav", _personal_dir);
+		seprintf(filename, filename_last, "%s%s.sav", _personal_dir, name);
 
 		/* Don't do a threaded saveload. */
 		return SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, NO_DIRECTORY, false) == SL_OK;
@@ -496,12 +527,12 @@ bool CrashLog::WriteSavegame(char *filename, const char *filename_last) const
  * @param filename_last The last position in the filename buffer.
  * @return true when the crash screenshot was successfully made.
  */
-bool CrashLog::WriteScreenshot(char *filename, const char *filename_last) const
+bool CrashLog::WriteScreenshot(char *filename, const char *filename_last, const char *name) const
 {
 	/* Don't draw when we have invalid screen size */
 	if (_screen.width < 1 || _screen.height < 1 || _screen.dst_ptr == nullptr) return false;
 
-	bool res = MakeScreenshot(SC_CRASHLOG, "crash");
+	bool res = MakeScreenshot(SC_CRASHLOG, name);
 	if (res) strecpy(filename, _full_screenshot_name, filename_last);
 	return res;
 }
@@ -557,6 +588,57 @@ bool CrashLog::MakeCrashLog() const
 	CrashLog::main_thread_pending_crashlog = nullptr;
 	bret = CrashLog::MakeCrashSavegameAndScreenshot();
 	if (!bret) ret = false;
+
+	return ret;
+}
+
+/**
+ * Makes a desync crash log, writes it to a file and then subsequently tries
+ * to make a crash savegame. It uses DEBUG to write
+ * information like paths to the console.
+ * @return true when everything is made successfully.
+ */
+bool CrashLog::MakeDesyncCrashLog() const
+{
+	char filename[MAX_PATH];
+	char buffer[65536 * 2];
+	bool ret = true;
+
+	const char *mode = _network_server ? "server" : "client";
+
+	char name_buffer[64];
+	char *name_buffer_date = name_buffer + seprintf(name_buffer, lastof(name_buffer), "desync-%s-", mode);
+	time_t cur_time = time(nullptr);
+	strftime(name_buffer_date, lastof(name_buffer) - name_buffer_date, "%Y%m%dT%H%M%SZ", gmtime(&cur_time));
+
+	printf("Desync encountered (%s), generating desync log...\n", mode);
+	this->FillDesyncCrashLog(buffer, lastof(buffer));
+
+	bool bret = this->WriteCrashLog(buffer, filename, lastof(filename), name_buffer);
+	if (bret) {
+		printf("Desync log written to %s. Please add this file to any bug reports.\n\n", filename);
+	} else {
+		printf("Writing desync log failed.\n\n");
+		ret = false;
+	}
+
+	bret = this->WriteSavegame(filename, lastof(filename), name_buffer);
+	if (bret) {
+		printf("Desync savegame written to %s. Please add this file and the last (auto)save to any bug reports.\n\n", filename);
+	} else {
+		ret = false;
+		printf("Writing desync savegame failed. Please attach the last (auto)save to any bug reports.\n\n");
+	}
+
+	if (!(_screen.width < 1 || _screen.height < 1 || _screen.dst_ptr == nullptr)) {
+		bret = this->WriteScreenshot(filename, lastof(filename), name_buffer);
+		if (bret) {
+			printf("Desync screenshot written to %s. Please add this file to any bug reports.\n\n", filename);
+		} else {
+			ret = false;
+			printf("Writing desync screenshot failed.\n\n");
+		}
+	}
 
 	return ret;
 }
