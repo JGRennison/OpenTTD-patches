@@ -28,6 +28,7 @@
 #include "../core/pool_func.hpp"
 #include "../core/random_func.hpp"
 #include "../rev.h"
+#include "../crashlog.h"
 #include <mutex>
 #include <condition_variable>
 
@@ -1159,6 +1160,8 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet *p
 	NetworkAdminClientError(this->client_id, errorno);
 
 	if (errorno == NETWORK_ERROR_DESYNC) {
+		CrashLog::DesyncCrashLog();
+
 		// have the server and all clients run some sanity checks
 		NetworkSendCommand(0, 0, 0, CMD_DESYNC_CHECK, NULL, NULL, _local_company);
 	}

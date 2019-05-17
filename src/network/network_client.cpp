@@ -28,6 +28,7 @@
 #include "network_client.h"
 #include "../core/backup_type.hpp"
 #include "../thread.h"
+#include "../crashlog.h"
 
 #include "table/strings.h"
 
@@ -276,6 +277,8 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 				DEBUG(desync, 1, "sync_err: %08x; %02x", _date, _date_fract);
 				DEBUG(net, 0, "Sync error detected!");
 				my_client->ClientError(NETWORK_RECV_STATUS_DESYNC);
+
+				CrashLog::DesyncCrashLog();
 
 				extern void CheckCaches(bool force_check);
 				CheckCaches(true);

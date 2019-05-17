@@ -91,7 +91,8 @@ public:
 	virtual ~CrashLog() {}
 
 	char *FillCrashLog(char *buffer, const char *last) const;
-	bool WriteCrashLog(const char *buffer, char *filename, const char *filename_last) const;
+	char *FillDesyncCrashLog(char *buffer, const char *last) const;
+	bool WriteCrashLog(const char *buffer, char *filename, const char *filename_last, const char *name = "crash") const;
 
 	/**
 	 * Write the (crash) dump to a file.
@@ -103,10 +104,11 @@ public:
 	 *         was successful (not all OSes support dumping files).
 	 */
 	virtual int WriteCrashDump(char *filename, const char *filename_last) const;
-	bool WriteSavegame(char *filename, const char *filename_last) const;
-	bool WriteScreenshot(char *filename, const char *filename_last) const;
+	bool WriteSavegame(char *filename, const char *filename_last, const char *name = "crash") const;
+	bool WriteScreenshot(char *filename, const char *filename_last, const char *name = "crash") const;
 
 	bool MakeCrashLog() const;
+	bool MakeDesyncCrashLog() const;
 
 	/**
 	 * Initialiser for crash logs; do the appropriate things so crashes are
@@ -114,6 +116,8 @@ public:
 	 * @note must be implemented by all implementers of CrashLog.
 	 */
 	static void InitialiseCrashLog();
+
+	static void DesyncCrashLog();
 
 	static void SetErrorMessage(const char *message);
 	static void AfterCrashLogCleanup();

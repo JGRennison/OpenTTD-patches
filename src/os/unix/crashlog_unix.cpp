@@ -181,3 +181,9 @@ static void CDECL HandleCrash(int signum)
 		signal(*i, HandleCrash);
 	}
 }
+
+/* static */ void CrashLog::DesyncCrashLog()
+{
+	CrashLogUnix log(0);
+	log.MakeDesyncCrashLog();
+}
