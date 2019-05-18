@@ -95,10 +95,10 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 
 	VehicleType type = GetDepotVehicleType(tile);
 	if (!IsTileOwner(tile, _current_company)) {
-		if (!_settings_game.economy.infrastructure_sharing[type]) return CMD_ERROR;
+		if (!_settings_game.economy.infrastructure_sharing[type]) return_cmd_error(STR_ERROR_CANT_PURCHASE_OTHER_COMPANY_DEPOT);
 
 		const Company *c = Company::GetIfValid(GetTileOwner(tile));
-		if (c == nullptr || !c->settings.infra_others_buy_in_depot[type]) return CMD_ERROR;
+		if (c == nullptr || !c->settings.infra_others_buy_in_depot[type]) return_cmd_error(STR_ERROR_CANT_PURCHASE_OTHER_COMPANY_DEPOT);
 	}
 
 	/* Validate the engine type. */
