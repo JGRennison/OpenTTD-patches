@@ -446,6 +446,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendCommand(const CommandPacke
 /** Send a chat-packet over the network */
 NetworkRecvStatus ClientNetworkGameSocketHandler::SendChat(NetworkAction action, DestType type, int dest, const char *msg, NetworkTextMessageData data)
 {
+	if (!my_client) return NETWORK_RECV_STATUS_CONN_LOST;
 	Packet *p = new Packet(PACKET_CLIENT_CHAT);
 
 	p->Send_uint8 (action);
