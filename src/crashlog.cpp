@@ -34,6 +34,7 @@
 #include "company_base.h"
 #include "company_func.h"
 
+#include <functional>
 #include <time.h>
 
 #ifdef WITH_ALLEGRO
@@ -397,6 +398,15 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last) const
 	buffer = this->LogGamelog(buffer, last);
 	buffer = this->LogRecentNews(buffer, last);
 	buffer = this->LogRecentCommands(buffer, last);
+
+	bool have_cache_log = false;
+	extern void CheckCaches(bool force_check, std::function<void(const char *)> log);
+	CheckCaches(true, [&](const char *str) {
+		if (!have_cache_log) buffer += seprintf(buffer, last, "CheckCaches:\n");
+		buffer += seprintf(buffer, last, "  %s\n", str);
+		have_cache_log = true;
+	});
+	if (have_cache_log) buffer += seprintf(buffer, last, "\n");
 
 	buffer += seprintf(buffer, last, "*** End of OpenTTD Multiplayer %s Desync Report ***\n", _network_server ? "Server" : "Client");
 	return buffer;

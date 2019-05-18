@@ -41,6 +41,8 @@
 #include <time.h>
 #include "string_func.h"
 
+#include <functional>
+
 #include "safeguards.h"
 
 /* scriptfile handling */
@@ -2049,8 +2051,8 @@ DEF_CONSOLE_CMD(ConCheckCaches)
 	if (broadcast) {
 		DoCommandP(0, 0, 0, CMD_DESYNC_CHECK);
 	} else {
-		extern void CheckCaches(bool force_check);
-		CheckCaches(true);
+		extern void CheckCaches(bool force_check, std::function<void(const char *)> log);
+		CheckCaches(true, nullptr);
 	}
 
 	return true;

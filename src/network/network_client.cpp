@@ -279,9 +279,6 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 				my_client->ClientError(NETWORK_RECV_STATUS_DESYNC);
 
 				CrashLog::DesyncCrashLog();
-
-				extern void CheckCaches(bool force_check);
-				CheckCaches(true);
 				return false;
 			}
 
