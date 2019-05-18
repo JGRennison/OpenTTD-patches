@@ -1173,6 +1173,7 @@ static void NormaliseTrainHead(Train *head)
  * - p1 (bit  0 - 19) source vehicle index
  * - p1 (bit      20) move all vehicles following the source vehicle
  * - p1 (bit      21) this is a virtual vehicle (for creating TemplateVehicles)
+ * - p1 (bit      22) when moving a head vehicle, always reset the head state
  * @param p2 what wagon to put the source wagon AFTER, XXX - INVALID_VEHICLE to make a new line
  * @param text unused
  * @return the cost of this operation or an error
@@ -1182,6 +1183,7 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	VehicleID s = GB(p1, 0, 20);
 	VehicleID d = GB(p2, 0, 20);
 	bool move_chain = HasBit(p1, 20);
+	bool new_head = HasBit(p1, 22);
 
 	Train *src = Train::GetIfValid(s);
 	if (src == NULL) return CMD_ERROR;
@@ -1317,7 +1319,7 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 		 *  6) non front engine gets moved within a train / to another train, nothing hapens
 		 *  7) wagon gets moved, nothing happens
 		 */
-		if (src == original_src_head && src->IsEngine() && !src->IsFrontEngine()) {
+		if (src == original_src_head && src->IsEngine() && (!src->IsFrontEngine() || new_head)) {
 			/* Cases #2 and #3: the front engine gets trashed. */
 			DeleteWindowById(WC_VEHICLE_VIEW, src->index);
 			DeleteWindowById(WC_VEHICLE_ORDERS, src->index);
@@ -1336,7 +1338,7 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 
 		/* We weren't a front engine but are becoming one. So
 		 * we should be put in the default group. */
-		if (original_src_head != src && dst_head == src) {
+		if ((original_src_head != src || new_head) && dst_head == src) {
 			SetTrainGroupID(src, DEFAULT_GROUP);
 			SetWindowDirty(WC_COMPANY, _current_company);
 		}

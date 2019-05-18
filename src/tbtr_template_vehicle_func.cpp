@@ -331,7 +331,7 @@ void BreakUpRemainders(Train *t)
 		if (HasBit(t->subtype, GVSF_ENGINE)) {
 			move = t;
 			t = t->Next();
-			DoCommand(move->tile, move->index, INVALID_VEHICLE, DC_EXEC, CMD_MOVE_RAIL_VEHICLE);
+			DoCommand(move->tile, move->index | (1 << 22), INVALID_VEHICLE, DC_EXEC, CMD_MOVE_RAIL_VEHICLE);
 			NeutralizeStatus(move);
 		} else {
 			t = t->Next();
