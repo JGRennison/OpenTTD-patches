@@ -73,6 +73,7 @@
 #include "zoning.h"
 #include "cargopacket.h"
 #include "tbtr_template_vehicle.h"
+#include "string_func_extra.h"
 
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
@@ -1287,7 +1288,7 @@ void SwitchToMode(SwitchMode new_mode)
  * the cached value and what the value would
  * be when calculated from the 'base' data.
  */
-void CheckCaches(bool force_check)
+void CheckCaches(bool force_check, std::function<void(const char *)> log)
 {
 	if (!force_check) {
 		/* Return here so it is easy to add checks that are run
@@ -1296,6 +1297,13 @@ void CheckCaches(bool force_check)
 
 		if (_debug_desync_level == 1 && _scaled_date_ticks % 500 != 0) return;
 	}
+
+	char cclog_buffer[1024];
+#define CCLOG(...) { \
+	seprintf(cclog_buffer, lastof(cclog_buffer), __VA_ARGS__); \
+	DEBUG(desync, 0, "%s", cclog_buffer); \
+	if (log) log(cclog_buffer); \
+}
 
 	/* Check the town caches. */
 	std::vector<TownCache> old_town_caches;
@@ -1311,7 +1319,7 @@ void CheckCaches(bool force_check)
 	uint i = 0;
 	FOR_ALL_TOWNS(t) {
 		if (MemCmpT(old_town_caches.data() + i, &t->cache) != 0) {
-			DEBUG(desync, 0, "town cache mismatch: town %i", (int)t->index);
+			CCLOG("town cache mismatch: town %i", (int)t->index);
 		}
 		i++;
 	}
@@ -1327,12 +1335,18 @@ void CheckCaches(bool force_check)
 	i = 0;
 	FOR_ALL_COMPANIES(c) {
 		if (MemCmpT(old_infrastructure.data() + i, &c->infrastructure) != 0) {
-			DEBUG(desync, 0, "infrastructure cache mismatch: company %i", (int)c->index);
+			CCLOG("infrastructure cache mismatch: company %i", (int)c->index);
 			char buffer[4096];
 			old_infrastructure[i].Dump(buffer, lastof(buffer));
-			DEBUG(desync, 0, "Previous:\n%s", buffer);
+			CCLOG("Previous:");
+			ProcessLineByLine(buffer, [&](const char *line) {
+				CCLOG("  %s", line);
+			});
 			c->infrastructure.Dump(buffer, lastof(buffer));
-			DEBUG(desync, 0, "Recalculated:\n%s", buffer);
+			CCLOG("Recalculated:");
+			ProcessLineByLine(buffer, [&](const char *line) {
+				CCLOG("  %s", line);
+			});
 		}
 		i++;
 	}
@@ -1404,65 +1418,65 @@ void CheckCaches(bool force_check)
 		for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
 			FillNewGRFVehicleCache(u);
 			if (memcmp(&grf_cache[length], &u->grf_cache, sizeof(NewGRFCache)) != 0) {
-				DEBUG(desync, 0, "newgrf cache mismatch: type %i, vehicle %i, company %i, unit number %i, wagon %i", (int)v->type, v->index, (int)v->owner, v->unitnumber, length);
+				CCLOG("newgrf cache mismatch: type %i, vehicle %i, company %i, unit number %i, wagon %i", (int)v->type, v->index, (int)v->owner, v->unitnumber, length);
 			}
 			if (veh_cache[length].cached_max_speed != u->vcache.cached_max_speed || veh_cache[length].cached_cargo_age_period != u->vcache.cached_cargo_age_period ||
 					veh_cache[length].cached_vis_effect != u->vcache.cached_vis_effect || HasBit(veh_cache[length].cached_veh_flags ^ u->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT)) {
-				DEBUG(desync, 0, "vehicle cache mismatch: type %i, vehicle %i, company %i, unit number %i, wagon %i", (int)v->type, v->index, (int)v->owner, v->unitnumber, length);
+				CCLOG("vehicle cache mismatch: type %i, vehicle %i, company %i, unit number %i, wagon %i", (int)v->type, v->index, (int)v->owner, v->unitnumber, length);
 			}
 			if (u->IsGroundVehicle() && (HasBit(u->GetGroundVehicleFlags(), GVF_GOINGUP_BIT) || HasBit(u->GetGroundVehicleFlags(), GVF_GOINGDOWN_BIT)) && u->GetGroundVehicleCache()->cached_slope_resistance && HasBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST)) {
-				DEBUG(desync, 0, "VCF_GV_ZERO_SLOPE_RESIST set incorrectly: type %i, vehicle %i, company %i, unit number %i, wagon %i", (int)v->type, v->index, (int)v->owner, v->unitnumber, length);
+				CCLOG("VCF_GV_ZERO_SLOPE_RESIST set incorrectly: type %i, vehicle %i, company %i, unit number %i, wagon %i", (int)v->type, v->index, (int)v->owner, v->unitnumber, length);
 			}
 			if (veh_old[length]->acceleration != u->acceleration) {
-				DEBUG(desync, 0, "acceleration mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+				CCLOG("acceleration mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
 			}
 			if (veh_old[length]->breakdown_chance != u->breakdown_chance) {
-				DEBUG(desync, 0, "breakdown_chance mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+				CCLOG("breakdown_chance mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
 			}
 			if (veh_old[length]->breakdown_ctr != u->breakdown_ctr) {
-				DEBUG(desync, 0, "breakdown_ctr mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+				CCLOG("breakdown_ctr mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
 			}
 			if (veh_old[length]->breakdown_delay != u->breakdown_delay) {
-				DEBUG(desync, 0, "breakdown_delay mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+				CCLOG("breakdown_delay mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
 			}
 			if (veh_old[length]->breakdowns_since_last_service != u->breakdowns_since_last_service) {
-				DEBUG(desync, 0, "breakdowns_since_last_service mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+				CCLOG("breakdowns_since_last_service mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
 			}
 			if (veh_old[length]->breakdown_severity != u->breakdown_severity) {
-				DEBUG(desync, 0, "breakdown_severity mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+				CCLOG("breakdown_severity mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
 			}
 			if (veh_old[length]->breakdown_type != u->breakdown_type) {
-				DEBUG(desync, 0, "breakdown_type mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+				CCLOG("breakdown_type mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
 			}
 			if (veh_old[length]->vehicle_flags != u->vehicle_flags) {
-				DEBUG(desync, 0, "vehicle_flags mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+				CCLOG("vehicle_flags mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
 			}
 			switch (u->type) {
 				case VEH_TRAIN:
 					if (memcmp(&gro_cache[length], &Train::From(u)->gcache, sizeof(GroundVehicleCache)) != 0) {
-						DEBUG(desync, 0, "train ground vehicle cache mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+						CCLOG("train ground vehicle cache mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
 					}
 					if (memcmp(&tra_cache[length], &Train::From(u)->tcache, sizeof(TrainCache)) != 0) {
-						DEBUG(desync, 0, "train cache mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+						CCLOG("train cache mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
 					}
 					if (Train::From(veh_old[length])->railtype != Train::From(u)->railtype) {
-						DEBUG(desync, 0, "railtype mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+						CCLOG("railtype mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
 					}
 					if (Train::From(veh_old[length])->compatible_railtypes != Train::From(u)->compatible_railtypes) {
-						DEBUG(desync, 0, "compatible_railtypes mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+						CCLOG("compatible_railtypes mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
 					}
 					if (Train::From(veh_old[length])->flags != Train::From(u)->flags) {
-						DEBUG(desync, 0, "flags mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+						CCLOG("flags mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
 					}
 					break;
 				case VEH_ROAD:
 					if (memcmp(&gro_cache[length], &RoadVehicle::From(u)->gcache, sizeof(GroundVehicleCache)) != 0) {
-						DEBUG(desync, 0, "road vehicle ground vehicle cache mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+						CCLOG("road vehicle ground vehicle cache mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
 					}
 					break;
 				case VEH_AIRCRAFT:
 					if (memcmp(&air_cache[length], &Aircraft::From(u)->acache, sizeof(AircraftCache)) != 0) {
-						DEBUG(desync, 0, "Aircraft vehicle cache mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+						CCLOG("Aircraft vehicle cache mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
 					}
 					break;
 				default:
@@ -1515,6 +1529,8 @@ void CheckCaches(bool force_check)
 		if (tv->Prev()) assert_msg(tv->Prev()->Next() == tv, "%u", tv->index);
 		if (tv->Next()) assert_msg(tv->Next()->Prev() == tv, "%u", tv->index);
 	}
+
+#undef CCLOG
 }
 
 /**
@@ -1529,7 +1545,7 @@ void CheckCaches(bool force_check)
 CommandCost CmdDesyncCheck(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	if (flags & DC_EXEC) {
-		CheckCaches(true);
+		CheckCaches(true, nullptr);
 	}
 
 	return CommandCost();
@@ -1588,7 +1604,7 @@ void StateGameLoop()
 			SaveOrLoad(name, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, false);
 		}
 
-		CheckCaches(false);
+		CheckCaches(false, nullptr);
 
 		/* All these actions has to be done from OWNER_NONE
 		 *  for multiplayer compatibility */

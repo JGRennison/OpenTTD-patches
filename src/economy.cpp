@@ -2235,8 +2235,8 @@ static void DoAcquireCompany(Company *c)
 
 	delete c;
 
-	extern void CheckCaches(bool force_check);
-	CheckCaches(true);
+	extern void CheckCaches(bool force_check, std::function<void(const char *)> log);
+	CheckCaches(true, nullptr);
 }
 
 extern int GetAmountOwnedBy(const Company *c, Owner owner);
