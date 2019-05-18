@@ -43,6 +43,7 @@
 #include "airport.h"
 #include "station_base.h"
 #include "economy_func.h"
+#include "string_func_extra.h"
 
 #include "safeguards.h"
 
@@ -1063,15 +1064,9 @@ DEF_CONSOLE_CMD(ConRestart)
  */
 static void PrintLineByLine(char *buf)
 {
-	char *p = buf;
-	/* Print output line by line */
-	for (char *p2 = buf; *p2 != '\0'; p2++) {
-		if (*p2 == '\n') {
-			*p2 = '\0';
-			IConsolePrintF(CC_DEFAULT, "%s", p);
-			p = p2 + 1;
-		}
-	}
+	ProcessLineByLine(buf, [&](const char *line) {
+		IConsolePrintF(CC_DEFAULT, "%s", line);
+	});
 }
 
 DEF_CONSOLE_CMD(ConListAILibs)
