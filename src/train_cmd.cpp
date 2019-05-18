@@ -5346,7 +5346,7 @@ CommandCost CmdBuildVirtualRailVehicle(TileIndex tile, DoCommandFlag flags, uint
 * @param tile unused
 * @param flags type of operation
 * @param p1 the ID of the vehicle to replace.
-* @param p2 whether the vehicle should stay in the depot.
+* @param p2 whether the vehicle should leave (1) or stay (0) in the depot.
 * @param text unused
 * @return the cost of this operation or an error
 */
@@ -5367,13 +5367,14 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	}
 
 	Train* incoming = Train::From(vehicle);
-	bool stayInDepot = p2 != 0;
+	bool leaveDepot = (p2 != 0);
 
 	Train *new_chain = nullptr;
 	Train *remainder_chain = nullptr;
 	Train *tmp_chain = nullptr;
 	TemplateVehicle *tv = GetTemplateVehicleByGroupID(incoming->group_id);
 	if (tv == nullptr) {
+		if (leaveDepot) incoming->vehstatus &= ~VS_STOPPED;
 		return CMD_ERROR;
 	}
 	EngineID eid = tv->engine_type;
@@ -5388,7 +5389,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	/* first some tests on necessity and sanity */
 	if (tv == nullptr) return buy;
 	if (tv->IsReplaceOldOnly() && !vehicle->NeedsAutorenewing(Company::Get(vehicle->owner), false)) {
-		if (!stayInDepot) incoming->vehstatus &= ~VS_STOPPED;
+		if (leaveDepot) incoming->vehstatus &= ~VS_STOPPED;
 		return buy;
 	}
 	bool need_replacement = !TrainMatchesTemplate(incoming, tv);
@@ -5410,13 +5411,13 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	if (!need_replacement) {
 		if (!need_refit || !use_refit) {
 			/* before returning, release incoming train first if 2nd param says so */
-			if (!stayInDepot) incoming->vehstatus &= ~VS_STOPPED;
+			if (leaveDepot) incoming->vehstatus &= ~VS_STOPPED;
 			return buy;
 		}
 	} else {
 		CommandCost buyCost = TestBuyAllTemplateVehiclesInChain(tv, tile);
 		if (!buyCost.Succeeded() || !CheckCompanyHasMoney(buyCost)) {
-			if (!stayInDepot) incoming->vehstatus &= ~VS_STOPPED;
+			if (leaveDepot) incoming->vehstatus &= ~VS_STOPPED;
 
 			if (!buyCost.Succeeded() && buyCost.GetErrorMessage() != INVALID_STRING_ID) {
 				return buyCost;
@@ -5545,7 +5546,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 
 	// point incoming to the newly created train so that starting/stopping from the calling function can be done
 	incoming = new_chain;
-	if (!stayInDepot && flags == DC_EXEC) {
+	if (leaveDepot && flags == DC_EXEC) {
 		new_chain->vehstatus &= ~VS_STOPPED;
 	}
 

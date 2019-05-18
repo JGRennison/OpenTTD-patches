@@ -101,8 +101,8 @@ uint16 _returned_mail_refit_capacity; ///< Stores the mail capacity after a refi
 VehiclePool _vehicle_pool("Vehicle");
 INSTANTIATE_POOL_METHODS(Vehicle)
 
-static btree::btree_set<Vehicle *> _vehicles_to_pay_repair;
-static btree::btree_set<Vehicle *> _vehicles_to_sell;
+static btree::btree_set<VehicleID> _vehicles_to_pay_repair;
+static btree::btree_set<VehicleID> _vehicles_to_sell;
 
 /**
  * Determine shared bounds of all sprites.
@@ -200,7 +200,7 @@ void VehicleServiceInDepot(Vehicle *v)
 	do {
 		v->date_of_last_service = _date;
 		if (_settings_game.vehicle.pay_for_repair && v->breakdowns_since_last_service) {
-			_vehicles_to_pay_repair.insert(v);
+			_vehicles_to_pay_repair.insert(v->index);
 		} else {
 			v->breakdowns_since_last_service = 0;
 		}
@@ -808,20 +808,16 @@ void ResetVehicleColourMap()
  * List of vehicles that should check for autoreplace this tick.
  * Mapping of vehicle -> leave depot immediately after autoreplace.
  */
-typedef SmallMap<Vehicle *, bool> AutoreplaceMap;
-static AutoreplaceMap _vehicles_to_autoreplace;
+static btree::btree_map<VehicleID, bool> _vehicles_to_autoreplace;
 
 /**
  * List of vehicles that are issued for template replacement this tick.
- * Mapping is {vehicle : leave depot after replacement}
  */
-typedef SmallMap<Train *, bool> TemplateReplacementMap;
-static TemplateReplacementMap _vehicles_to_templatereplace;
+static btree::btree_set<VehicleID> _vehicles_to_templatereplace;
 
 void InitializeVehicles()
 {
 	_vehicles_to_autoreplace.clear();
-	_vehicles_to_autoreplace.shrink_to_fit();
 	ResetVehicleHash();
 }
 
@@ -1025,7 +1021,7 @@ Vehicle::~Vehicle()
 
 	if (this->type == VEH_DISASTER) RemoveFromOtherVehicleTickCache(this);
 
-	if (this->breakdowns_since_last_service) _vehicles_to_pay_repair.erase(this);
+	if (this->breakdowns_since_last_service) _vehicles_to_pay_repair.erase(this->index);
 
 	if (this->type < VEH_BEGIN || this->type >= VEH_COMPANY_END) {
 		/* sometimes, eg. for disaster vehicles, when company bankrupts, when removing crashed/flooded vehicles,
@@ -1052,17 +1048,14 @@ Vehicle::~Vehicle()
 void VehicleEnteredDepotThisTick(Vehicle *v)
 {
 	/* Template Replacement Setup stuff */
-	bool stayInDepot = v->current_order.GetDepotActionType();
 	TemplateReplacement *tr = GetTemplateReplacementByGroupID(v->group_id);
 	if (tr != nullptr) {
-		_vehicles_to_templatereplace[(Train*) v] = stayInDepot;
-	} else {
-		/* Moved the assignment for auto replacement here to prevent auto replacement
-		 * from happening if template replacement is also scheduled */
-
 		/* Vehicle should stop in the depot if it was in 'stopping' state */
-		_vehicles_to_autoreplace[v] = !(v->vehstatus & VS_STOPPED);
+		_vehicles_to_templatereplace.insert(v->index);
 	}
+
+	/* Vehicle should stop in the depot if it was in 'stopping' state */
+	_vehicles_to_autoreplace[v->index] = !(v->vehstatus & VS_STOPPED);
 
 	/* We ALWAYS set the stopped state. Even when the vehicle does not plan on
 	 * stopping in the depot, so we stop it to ensure that it will not reserve
@@ -1348,9 +1341,10 @@ void CallVehicleTicks()
 
 	/* do Template Replacement */
 	Backup<CompanyByte> sell_cur_company(_current_company, FILE_LINE);
-	for (Vehicle *v : _vehicles_to_sell) {
+	for (VehicleID index : _vehicles_to_sell) {
+		Vehicle *v = Vehicle::Get(index);
 		SCOPE_INFO_FMT([v], "CallVehicleTicks: sell: %s", scope_dumper().VehicleInfo(v));
-		Train *t = (v->type == VEH_TRAIN) ? Train::From(v) : nullptr;
+		const bool is_train = (v->type == VEH_TRAIN);
 
 		sell_cur_company.Change(v->owner);
 
@@ -1359,7 +1353,7 @@ void CallVehicleTicks()
 		int z = v->z_pos;
 
 		CommandCost cost = DoCommand(v->tile, v->index | (1 << 20), 0, DC_EXEC, GetCmdSellVeh(v));
-
+		v = nullptr;
 		if (!cost.Succeeded()) continue;
 
 		if (IsLocalCompany() && cost.Succeeded()) {
@@ -1368,20 +1362,22 @@ void CallVehicleTicks()
 			}
 		}
 
-		_vehicles_to_pay_repair.erase(v);
-		if (t) _vehicles_to_templatereplace.Erase(t);
-		_vehicles_to_autoreplace.Erase(v);
+		if (is_train) _vehicles_to_templatereplace.erase(index);
+		_vehicles_to_autoreplace.erase(index);
 	}
 	sell_cur_company.Restore();
 
 	/* do Template Replacement */
 	Backup<CompanyByte> tmpl_cur_company(_current_company, FILE_LINE);
-	for (auto &it : _vehicles_to_templatereplace) {
-		Train *t = it.first;
+	for (VehicleID index : _vehicles_to_templatereplace) {
+		Train *t = Train::Get(index);
 
 		SCOPE_INFO_FMT([t], "CallVehicleTicks: template replace: %s", scope_dumper().VehicleInfo(t));
 
-		_vehicles_to_autoreplace.Erase(t);
+		auto it = _vehicles_to_autoreplace.find(index);
+		assert(it != _vehicles_to_autoreplace.end());
+		bool leaveDepot = it->second;
+		_vehicles_to_autoreplace.erase(it);
 
 		/* Store the position of the effect as the vehicle pointer will become invalid later */
 		int x = t->x_pos;
@@ -1390,10 +1386,8 @@ void CallVehicleTicks()
 
 		tmpl_cur_company.Change(t->owner);
 
-		bool stayInDepot = it.second;
-
 		t->vehstatus |= VS_STOPPED;
-		CommandCost res = DoCommand(t->tile, t->index, stayInDepot ? 1 : 0, DC_EXEC, CMD_TEMPLATE_REPLACE_VEHICLE);
+		CommandCost res = DoCommand(t->tile, t->index, leaveDepot ? 1 : 0, DC_EXEC, CMD_TEMPLATE_REPLACE_VEHICLE);
 
 		if (res.Succeeded()) {
 			VehicleID t_new = _new_vehicle_id;
@@ -1421,12 +1415,12 @@ void CallVehicleTicks()
 	/* do Auto Replacement */
 	Backup<CompanyByte> cur_company(_current_company, FILE_LINE);
 	for (auto &it : _vehicles_to_autoreplace) {
-		v = it.first;
+		v = Vehicle::Get(it.first);
 		/* Autoreplace needs the current company set as the vehicle owner */
 		cur_company.Change(v->owner);
 
 		if (v->type == VEH_TRAIN) {
-			assert(!_vehicles_to_templatereplace.Contains(Train::From(v)));
+			assert(!_vehicles_to_templatereplace.count(v->index));
 		}
 
 		/* Start vehicle if we stopped them in VehicleEnteredDepotThisTick()
@@ -1456,7 +1450,8 @@ void CallVehicleTicks()
 	cur_company.Restore();
 
 	Backup<CompanyByte> repair_cur_company(_current_company, FILE_LINE);
-	for (Vehicle *v : _vehicles_to_pay_repair) {
+	for (VehicleID index : _vehicles_to_pay_repair) {
+		Vehicle *v = Vehicle::Get(index);
 		SCOPE_INFO_FMT([v], "CallVehicleTicks: repair: %s", scope_dumper().VehicleInfo(v));
 
 		ExpensesType type = INVALID_EXPENSES;
@@ -2189,7 +2184,7 @@ void VehicleEnterDepot(Vehicle *v)
 		}
 
 		if (v->current_order.GetDepotActionType() & ODATFB_SELL) {
-			_vehicles_to_sell.insert(v);
+			_vehicles_to_sell.insert(v->index);
 			return;
 		}
 
@@ -2199,7 +2194,7 @@ void VehicleEnterDepot(Vehicle *v)
 			cur_company.Restore();
 
 			if (cost.Failed()) {
-				_vehicles_to_autoreplace[v] = false;
+				_vehicles_to_autoreplace[v->index] = false;
 				if (v->owner == _local_company) {
 					/* Notify the user that we stopped the vehicle */
 					SetDParam(0, v->index);
@@ -2230,7 +2225,7 @@ void VehicleEnterDepot(Vehicle *v)
 
 		if (v->current_order.GetDepotActionType() & ODATFB_HALT) {
 			/* Vehicles are always stopped on entering depots. Do not restart this one. */
-			_vehicles_to_autoreplace[v] = false;
+			_vehicles_to_autoreplace[v->index] = false;
 			/* Invalidate last_loading_station. As the link from the station
 			 * before the stop to the station after the stop can't be predicted
 			 * we shouldn't construct it when the vehicle visits the next stop. */
