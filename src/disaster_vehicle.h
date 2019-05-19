@@ -42,7 +42,7 @@ struct DisasterVehicle FINAL : public SpecializedVehicle<DisasterVehicle, VEH_DI
 	byte flags;                         ///< Flags about the state of the vehicle, @see AirVehicleFlags
 
 	/** For use by saveload. */
-	DisasterVehicle() : SpecializedVehicleBase() {}
+	DisasterVehicle();
 	DisasterVehicle(int x, int y, Direction direction, DisasterSubType subtype, VehicleID big_ufo_destroyer_target = VEH_INVALID);
 	/** We want to 'destruct' the right class. */
 	virtual ~DisasterVehicle() {}

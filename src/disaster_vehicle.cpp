@@ -116,6 +116,12 @@ void DisasterVehicle::UpdateImage()
 	this->UpdateSpriteSeqBound();
 }
 
+DisasterVehicle::DisasterVehicle() :
+		SpecializedVehicleBase()
+{
+	RegisterGameEvents(GEF_DISASTER_VEH);
+}
+
 /**
  * Construct the disaster vehicle.
  * @param x         The X coordinate.
@@ -127,6 +133,8 @@ void DisasterVehicle::UpdateImage()
 DisasterVehicle::DisasterVehicle(int x, int y, Direction direction, DisasterSubType subtype, VehicleID big_ufo_destroyer_target) :
 		SpecializedVehicleBase(), big_ufo_destroyer_target(big_ufo_destroyer_target)
 {
+	RegisterGameEvents(GEF_DISASTER_VEH);
+
 	this->vehstatus = VS_UNCLICKABLE;
 
 	this->x_pos = x;
