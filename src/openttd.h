@@ -91,6 +91,7 @@ enum GameEventFlags : uint32 {
 	GEF_COMPANY_DELETE       = 1 << 0, ///< (d) A company has been deleted
 	GEF_COMPANY_MERGE        = 1 << 1, ///< (m) A company has been bought by another
 	GEF_RELOAD_NEWGRF        = 1 << 2, ///< (n) ReloadNewGRFData() has been called
+	GEF_TBTR_REPLACEMENT     = 1 << 3, ///< (t) CMD_TEMPLATE_REPLACE_VEHICLE has been called
 };
 DECLARE_ENUM_AS_BIT_SET(GameEventFlags)
 

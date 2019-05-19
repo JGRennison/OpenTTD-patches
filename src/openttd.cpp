@@ -1730,5 +1730,6 @@ char *DumpGameEventFlags(GameEventFlags events, char *b, const char *last)
 	dump('d', GEF_COMPANY_DELETE);
 	dump('m', GEF_COMPANY_MERGE);
 	dump('n', GEF_RELOAD_NEWGRF);
+	dump('t', GEF_TBTR_REPLACEMENT);
 	return b;
 }
