@@ -21,6 +21,7 @@
 #include "group.h"
 #include "string_func.h"
 #include "pathfinder/yapf/yapf_cache.h"
+#include "scope_info.h"
 
 #include <vector>
 #include <algorithm>
@@ -1690,6 +1691,39 @@ void TraceRestrictSlot::RebuildVehicleIndex()
 			slot_vehicle_index.emplace(id, slot->index);
 		}
 	}
+}
+
+bool TraceRestrictSlot::ValidateVehicleIndex()
+{
+	std::unordered_multimap<VehicleID, TraceRestrictSlotID> saved_slot_vehicle_index = std::move(slot_vehicle_index);
+	RebuildVehicleIndex();
+	const bool ok = slot_vehicle_index == saved_slot_vehicle_index;
+	slot_vehicle_index = std::move(saved_slot_vehicle_index);
+	return ok;
+}
+
+void TraceRestrictSlot::ValidateSlotOccupants(std::function<void(const char *)> log)
+{
+	char cclog_buffer[1024];
+#define CCLOG(...) { \
+	seprintf(cclog_buffer, lastof(cclog_buffer), __VA_ARGS__); \
+	DEBUG(desync, 0, "%s", cclog_buffer); \
+	if (log) log(cclog_buffer); \
+}
+
+	const TraceRestrictSlot *slot;
+	FOR_ALL_TRACE_RESTRICT_SLOTS(slot) {
+		for (VehicleID id : slot->occupants) {
+			const Train  *t = Train::GetIfValid(id);
+			if (t) {
+				if (!t->IsFrontEngine()) CCLOG("Slot %u (%s) has non-front engine train: %s", slot->index, slot->name.c_str(), scope_dumper().VehicleInfo(t));
+				if (!HasBit(t->flags, VRF_HAVE_SLOT)) CCLOG("Slot %u (%s) has train without VRF_HAVE_SLOT: %s", slot->index, slot->name.c_str(), scope_dumper().VehicleInfo(t));
+			} else {
+				CCLOG("Slot %u (%s) has non-existent vehicle ID: %u", slot->index, slot->name.c_str(), id);
+			}
+		}
+	}
+#undef CCLOG
 }
 
 /** Slot pool is about to be cleared */

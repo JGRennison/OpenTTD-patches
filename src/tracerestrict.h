@@ -817,6 +817,8 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 	OwnerByte owner;
 
 	static void RebuildVehicleIndex();
+	static bool ValidateVehicleIndex();
+	static void ValidateSlotOccupants(std::function<void(const char *)> log);
 	static void PreCleanPool();
 
 	TraceRestrictSlot(CompanyID owner = INVALID_COMPANY)

@@ -1530,6 +1530,9 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		if (tv->Next()) assert_msg(tv->Next()->Prev() == tv, "%u", tv->index);
 	}
 
+	if (!TraceRestrictSlot::ValidateVehicleIndex()) CCLOG("Trace restrict slot vehicle index validation failed");
+	TraceRestrictSlot::ValidateSlotOccupants(log);
+
 #undef CCLOG
 }
 
