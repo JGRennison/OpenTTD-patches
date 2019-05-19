@@ -380,6 +380,15 @@ CommandCost CopyHeadSpecificThings(Vehicle *old_head, Vehicle *new_head, DoComma
 		ChangeVehicleViewports(old_head->index, new_head->index);
 		ChangeVehicleViewWindow(old_head->index, new_head->index);
 		ChangeVehicleNews(old_head->index, new_head->index);
+
+		if (old_head->type == VEH_TRAIN) {
+			/* Transfer any acquired trace restrict slots to the new vehicle */
+			if (HasBit(Train::From(old_head)->flags, VRF_HAVE_SLOT)) {
+				TraceRestrictTransferVehicleOccupantInAllSlots(old_head->index, new_head->index);
+				ClrBit(Train::From(old_head)->flags, VRF_HAVE_SLOT);
+				SetBit(Train::From(new_head)->flags, VRF_HAVE_SLOT);
+			}
+		}
 	}
 
 	return cost;
@@ -573,11 +582,6 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlag flags, bool wagon
 				/* Success ! */
 				if ((flags & DC_EXEC) != 0 && new_head != old_head) {
 					*chain = new_head;
-					if (HasBit(Train::From(old_head)->flags, VRF_HAVE_SLOT)) {
-						TraceRestrictTransferVehicleOccupantInAllSlots(old_head->index, new_head->index);
-						ClrBit(Train::From(old_head)->flags, VRF_HAVE_SLOT);
-						SetBit(Train::From(new_head)->flags, VRF_HAVE_SLOT);
-					}
 				}
 
 				/* Transfer cargo of old vehicles and sell them */
