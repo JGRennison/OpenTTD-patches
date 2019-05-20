@@ -297,6 +297,54 @@ DEF_CONSOLE_CMD(ConScrollToTile)
 }
 
 /**
+ * Highlight a tile on the map.
+ * param x tile number or tile x coordinate.
+ * param y optional y coordinate.
+ * @note When only one argument is given it is intepreted as the tile number.
+ *       When two arguments are given, they are interpreted as the tile's x
+ *       and y coordinates.
+ * @return True when either console help was shown or a proper amount of parameters given.
+ */
+DEF_CONSOLE_CMD(ConHighlightTile)
+{
+	switch (argc) {
+		case 0:
+			IConsoleHelp("Highlight a given tile.");
+			IConsoleHelp("Usage: 'highlight_tile <tile>' or 'highlight_tile <x> <y>'");
+			IConsoleHelp("Numbers can be either decimal (34161) or hexadecimal (0x4a5B).");
+			return true;
+
+		case 2: {
+			uint32 result;
+			if (GetArgumentInteger(&result, argv[1])) {
+				if (result >= MapSize()) {
+					IConsolePrint(CC_ERROR, "Tile does not exist");
+					return true;
+				}
+				SetRedErrorSquare((TileIndex)result);
+				return true;
+			}
+			break;
+		}
+
+		case 3: {
+			uint32 x, y;
+			if (GetArgumentInteger(&x, argv[1]) && GetArgumentInteger(&y, argv[2])) {
+				if (x >= MapSizeX() || y >= MapSizeY()) {
+					IConsolePrint(CC_ERROR, "Tile does not exist");
+					return true;
+				}
+				SetRedErrorSquare(TileXY(x, y));
+				return true;
+			}
+			break;
+		}
+	}
+
+	return false;
+}
+
+/**
  * Save the map to a file.
  * param filename the filename to save the map to.
  * @return True when help was displayed or the file attempted to be saved.
@@ -2154,6 +2202,8 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("minimap",      ConMinimap);
 	IConsoleCmdRegister("script",       ConScript);
 	IConsoleCmdRegister("scrollto",     ConScrollToTile);
+	IConsoleCmdRegister("highlight_tile", ConHighlightTile);
+	IConsoleAliasRegister("scrollto_highlight", "scrollto %+; highlight_tile %+");
 	IConsoleCmdRegister("alias",        ConAlias);
 	IConsoleCmdRegister("load",         ConLoad);
 	IConsoleCmdRegister("rm",           ConRemove);
