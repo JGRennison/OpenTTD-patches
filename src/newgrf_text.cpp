@@ -754,7 +754,7 @@ static unsigned int _grf_string_ptr_log_next = 0;
  */
 const char *GetGRFStringPtr(uint16 stringid)
 {
-	assert(_grf_text[stringid].grfid != 0);
+	assert_msg(_grf_text[stringid].grfid != 0, "stringid: %u", stringid);
 
 	const char *str = GetGRFStringFromGRFText(_grf_text[stringid].textholder);
 	if (str == nullptr) {
