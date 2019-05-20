@@ -944,7 +944,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_JOIN(Packet *p)
 	strecpy(ci->client_name, name, lastof(ci->client_name));
 	ci->client_playas = playas;
 	ci->client_lang = client_lang;
-	DEBUG(desync, 1, "client: date{%08x; %02x; %02x}; %02x; %02x", _date, _date_fract, _tick_skip_counter, (int)ci->client_playas, (int)ci->index);
+	DEBUG(desync, 1, "client: date{%08x; %02x; %02x}; client: %02x; company: %02x", _date, _date_fract, _tick_skip_counter, (int)ci->index, (int)ci->client_playas);
 
 	/* Make sure companies to which people try to join are not autocleaned */
 	if (Company::IsValidID(playas)) _network_company_states[playas].months_empty = 0;
@@ -1608,7 +1608,7 @@ void NetworkUpdateClientInfo(ClientID client_id)
 
 	if (ci == nullptr) return;
 
-	DEBUG(desync, 1, "client: date{%08x; %02x; %02x}; %02x; %04x", _date, _date_fract, _tick_skip_counter, (int)ci->client_playas, client_id);
+	DEBUG(desync, 1, "client: date{%08x; %02x; %02x}; client: %02x; company: %02x", _date, _date_fract, _tick_skip_counter, client_id, (int)ci->client_playas);
 
 	FOR_ALL_CLIENT_SOCKETS(cs) {
 		cs->SendClientInfo(ci);

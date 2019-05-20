@@ -2205,6 +2205,8 @@ static void DoAcquireCompany(Company *c)
 {
 	CompanyID ci = c->index;
 
+	DEBUG(desync, 1, "buy_company: date{%08x; %02x; %02x}, buyer: %u, bought: %u", _date, _date_fract, _tick_skip_counter, (uint) _current_company, (uint) ci);
+
 	CompanyNewsInformation *cni = MallocT<CompanyNewsInformation>(1);
 	cni->FillData(c, Company::Get(_current_company));
 

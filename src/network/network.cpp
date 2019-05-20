@@ -954,7 +954,7 @@ void NetworkGameLoop()
 				cp.reset(new CommandPacket());
 				int company;
 				cp->text.resize(MAX_CMD_TEXT_LENGTH);
-				int ret = sscanf(p, "date{%x; %x; %x}; %x; %x; %x; %x; %x; \"%[^\"]\"", &next_date, &next_date_fract, &next_tick_skip_counter, &company, &cp->tile, &cp->p1, &cp->p2, &cp->cmd, const_cast<char *>(cp->text.c_str()));
+				int ret = sscanf(p, "date{%x; %x; %x}; company: %x; tile: %x (%*u x %*u); p1: %x; p2: %x; cmd: %x; \"%[^\"]\"", &next_date, &next_date_fract, &next_tick_skip_counter, &company, &cp->tile, &cp->p1, &cp->p2, &cp->cmd, const_cast<char *>(cp->text.c_str()));
 				/* There are 9 pieces of data to read, however the last is a
 				 * string that might or might not exist. Ignore it if that
 				 * string misses because in 99% of the time it's not used. */
@@ -980,7 +980,9 @@ void NetworkGameLoop()
 				assert(ret == 5);
 				check_sync_state = true;
 			} else if (strncmp(p, "msg: ", 5) == 0 || strncmp(p, "client: ", 8) == 0 ||
-						strncmp(p, "load: ", 6) == 0 || strncmp(p, "save: ", 6) == 0) {
+						strncmp(p, "load: ", 6) == 0 || strncmp(p, "save: ", 6) == 0 ||
+						strncmp(p, "new_company: ", 13) == 0 || strncmp(p, "new_company_ai: ", 16) == 0 ||
+						strncmp(p, "buy_company: ", 13) == 0 || strncmp(p, "delete_company: ", 16) == 0) {
 				/* A message that is not very important to the log playback, but part of the log. */
 #ifndef DEBUG_FAILED_DUMP_COMMANDS
 			} else if (strncmp(p, "cmdf: ", 6) == 0) {
