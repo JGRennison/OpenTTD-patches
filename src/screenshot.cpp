@@ -40,6 +40,15 @@ uint _cur_screenshot_format;          ///< Index of the currently selected scree
 static char _screenshot_name[128];    ///< Filename of the screenshot file.
 char _full_screenshot_name[MAX_PATH]; ///< Pathname of the screenshot file.
 
+static const char *_screenshot_aux_text_key = nullptr;
+static const char *_screenshot_aux_text_value = nullptr;
+
+void SetScreenshotAuxiliaryText(const char *key, const char *value)
+{
+	_screenshot_aux_text_key = key;
+	_screenshot_aux_text_value = value;
+}
+
 /**
  * Callback function signature for generating lines of pixel data to be written to the screenshot file.
  * @param userdata Pointer to user data.
@@ -303,7 +312,7 @@ static bool MakePNGImage(const char *name, ScreenshotCallback *callb, void *user
 #ifdef PNG_TEXT_SUPPORTED
 	/* Try to add some game metadata to the PNG screenshot so
 	 * it's more useful for debugging and archival purposes. */
-	png_text_struct text[2];
+	png_text_struct text[3];
 	memset(text, 0, sizeof(text));
 	text[0].key = const_cast<char *>("Software");
 	text[0].text = const_cast<char *>(_openttd_revision);
@@ -332,7 +341,13 @@ static bool MakePNGImage(const char *name, ScreenshotCallback *callb, void *user
 	text[1].text = buf;
 	text[1].text_length = p - buf;
 	text[1].compression = PNG_TEXT_COMPRESSION_zTXt;
-	png_set_text(png_ptr, info_ptr, text, 2);
+	if (_screenshot_aux_text_key && _screenshot_aux_text_value) {
+		text[2].key = const_cast<char *>(_screenshot_aux_text_key);
+		text[2].text = const_cast<char *>(_screenshot_aux_text_value);
+		text[2].text_length = strlen(_screenshot_aux_text_value);
+		text[2].compression = PNG_TEXT_COMPRESSION_zTXt;
+	}
+	png_set_text(png_ptr, info_ptr, text, _screenshot_aux_text_key && _screenshot_aux_text_value ? 3 : 2);
 #endif /* PNG_TEXT_SUPPORTED */
 
 	if (pixelformat == 8) {

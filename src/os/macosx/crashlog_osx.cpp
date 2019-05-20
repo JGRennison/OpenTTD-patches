@@ -15,6 +15,7 @@
 #include "../../gamelog.h"
 #include "../../saveload/saveload.h"
 #include "../../thread.h"
+#include "../../screenshot.h"
 #include "macos.h"
 
 #include <errno.h>
@@ -431,7 +432,8 @@ public:
 			ret = false;
 		}
 
-		printf("Writing crash savegame...\n");
+		printf("Writing crash screenshot...\n");
+		SetScreenshotAuxiliaryText("Crash Log", buffer);
 		if (!this->WriteScreenshot(filename_screenshot, lastof(filename_screenshot))) {
 			filename_screenshot[0] = '\0';
 			ret = false;

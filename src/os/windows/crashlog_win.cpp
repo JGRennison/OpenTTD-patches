@@ -22,6 +22,7 @@
 #include "../../saveload/saveload.h"
 #include "../../video/video_driver.hpp"
 #include "../../openttd.h"
+#include "../../screenshot.h"
 #if defined(WITH_DEMANGLE)
 #include <cxxabi.h>
 #endif
@@ -554,6 +555,7 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 	log->WriteCrashDump(log->crashdump_filename, lastof(log->crashdump_filename));
 	log->AppendDecodedStacktrace(buf, lastof(log->crashlog));
 	log->WriteCrashLog(log->crashlog, log->crashlog_filename, lastof(log->crashlog_filename));
+	SetScreenshotAuxiliaryText("Crash Log", log->crashlog);
 	log->WriteScreenshot(log->screenshot_filename, lastof(log->screenshot_filename));
 
 	/* Close any possible log files */
