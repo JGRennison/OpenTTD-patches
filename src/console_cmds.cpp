@@ -2025,6 +2025,20 @@ DEF_CONSOLE_CMD(ConVehicleStats)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConMapStats)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump map stats.");
+		return true;
+	}
+
+	extern void DumpMapStats(char *b, const char *last);
+	char buffer[32768];
+	DumpMapStats(buffer, lastof(buffer));
+	PrintLineByLine(buffer);
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConDumpGameEvents)
 {
 	if (argc == 0) {
@@ -2313,6 +2327,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("dump_inflation", ConDumpInflation, nullptr, true);
 	IConsoleCmdRegister("dump_cpdp_stats", ConDumpCpdpStats, nullptr, true);
 	IConsoleCmdRegister("dump_veh_stats", ConVehicleStats, nullptr, true);
+	IConsoleCmdRegister("dump_map_stats", ConMapStats, nullptr, true);
 	IConsoleCmdRegister("dump_game_events", ConDumpGameEvents, nullptr, true);
 	IConsoleCmdRegister("check_caches", ConCheckCaches, nullptr, true);
 

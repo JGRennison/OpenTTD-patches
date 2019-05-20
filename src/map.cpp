@@ -14,6 +14,10 @@
 #include "core/alloc_func.hpp"
 #include "water_map.h"
 #include "string_func.h"
+#include "rail_map.h"
+#include "tunnelbridge_map.h"
+#include "3rdparty/cpp-btree/btree_map.h"
+#include <array>
 
 #include "safeguards.h"
 
@@ -403,27 +407,27 @@ uint GetClosestWaterDistance(TileIndex tile, bool water)
 	return max_dist;
 }
 
+static const char *tile_type_names[16] = {
+	"MP_CLEAR",
+	"MP_RAILWAY",
+	"MP_ROAD",
+	"MP_HOUSE",
+	"MP_TREES",
+	"MP_STATION",
+	"MP_WATER",
+	"MP_VOID",
+	"MP_INDUSTRY",
+	"MP_TUNNELBRIDGE",
+	"MP_OBJECT",
+	"INVALID_B",
+	"INVALID_C",
+	"INVALID_D",
+	"INVALID_E",
+	"INVALID_F",
+};
+
 char *DumpTileInfo(char *b, const char *last, TileIndex tile)
 {
-	static const char *tile_type_names[16] = {
-		"MP_CLEAR",
-		"MP_RAILWAY",
-		"MP_ROAD",
-		"MP_HOUSE",
-		"MP_TREES",
-		"MP_STATION",
-		"MP_WATER",
-		"MP_VOID",
-		"MP_INDUSTRY",
-		"MP_TUNNELBRIDGE",
-		"MP_OBJECT",
-		"INVALID_B",
-		"INVALID_C",
-		"INVALID_D",
-		"INVALID_E",
-		"INVALID_F",
-	};
-
 	if (tile == INVALID_TILE) {
 		b += seprintf(b, last, "tile: %X (INVALID_TILE)", tile);
 	} else {
@@ -441,4 +445,92 @@ char *DumpTileInfo(char *b, const char *last, TileIndex tile)
 		}
 	}
 	return b;
+}
+
+void DumpMapStats(char *b, const char *last)
+{
+	std::array<uint, 16> tile_types;
+	uint restricted_signals = 0;
+	uint prog_signals = 0;
+	uint dual_rail_type = 0;
+	uint road_works = 0;
+
+	enum TunnelBridgeBits {
+		TBB_BRIDGE            = 1 << 0,
+		TBB_ROAD              = 1 << 1,
+		TBB_TRAM              = 1 << 2,
+		TBB_RAIL              = 1 << 3,
+		TBB_WATER             = 1 << 4,
+		TBB_CUSTOM_HEAD       = 1 << 5,
+		TBB_DUAL_RT           = 1 << 6,
+		TBB_SIGNALLED         = 1 << 7,
+		TBB_SIGNALLED_BIDI    = 1 << 8,
+	};
+	btree::btree_map<uint, uint> tunnel_bridge_stats;
+
+	for (TileIndex t = 0; t < MapSize(); t++) {
+		tile_types[GetTileType(t)]++;
+
+		if (IsTileType(t, MP_RAILWAY)) {
+			if (GetRailTileType(t) == RAIL_TILE_SIGNALS) {
+				if (IsRestrictedSignal(t)) restricted_signals++;
+				if (HasSignalOnTrack(t, TRACK_LOWER) && GetSignalType(t, TRACK_LOWER) == SIGTYPE_PROG) prog_signals++;
+				if (HasSignalOnTrack(t, TRACK_UPPER) && GetSignalType(t, TRACK_UPPER) == SIGTYPE_PROG) prog_signals++;
+			}
+		}
+
+		bool dual_rt = false;
+		RailType rt1 = GetTileRailType(t);
+		if (rt1 != INVALID_RAILTYPE) {
+			RailType rt2 = GetTileSecondaryRailTypeIfValid(t);
+			if (rt2 != INVALID_RAILTYPE && rt1 != rt2) {
+				dual_rail_type++;
+				dual_rt = true;
+			}
+		}
+
+		if (IsNormalRoadTile(t) && HasRoadWorks(t)) road_works++;
+
+		if (IsTileType(t, MP_TUNNELBRIDGE)) {
+			uint bucket = 0;
+			if (IsBridge(t)) bucket |= TBB_BRIDGE;
+			if (IsTunnelBridgeWithSignalSimulation(t)) {
+				bucket |= TBB_SIGNALLED;
+				if (IsTunnelBridgeSignalSimulationBidirectional(t)) bucket |= TBB_SIGNALLED_BIDI;
+			}
+			if (GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD) {
+				if (HasTileRoadType(t, ROADTYPE_ROAD)) bucket |= TBB_ROAD;
+				if (HasTileRoadType(t, ROADTYPE_TRAM)) bucket |= TBB_TRAM;
+			}
+			if (GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL) bucket |= TBB_RAIL;
+			if (GetTunnelBridgeTransportType(t) == TRANSPORT_WATER) bucket |= TBB_WATER;
+			if (IsCustomBridgeHeadTile(t)) bucket |= TBB_CUSTOM_HEAD;
+			if (dual_rt) bucket |= TBB_DUAL_RT;
+			tunnel_bridge_stats[bucket]++;
+		}
+	}
+
+	for (uint type = 0; type < 16; type++) {
+		if (tile_types[type]) b += seprintf(b, last, "%-20s %20u\n", tile_type_names[type], tile_types[type]);
+	}
+
+	b += seprintf(b, last, "\n");
+
+	if (restricted_signals) b += seprintf(b, last, "restricted signals   %20u\n", restricted_signals);
+	if (prog_signals)       b += seprintf(b, last, "prog signals         %20u\n", prog_signals);
+	if (dual_rail_type)     b += seprintf(b, last, "dual rail type       %20u\n", dual_rail_type);
+	if (road_works)         b += seprintf(b, last, "road works           %20u\n", road_works);
+
+	for (auto it : tunnel_bridge_stats) {
+		b = strecpy(b, it.first & TBB_BRIDGE ? "bridge" : "tunnel", last, true);
+		if (it.first & TBB_ROAD) b = strecpy(b, ", road", last, true);
+		if (it.first & TBB_TRAM) b = strecpy(b, ", tram", last, true);
+		if (it.first & TBB_RAIL) b = strecpy(b, ", rail", last, true);
+		if (it.first & TBB_WATER) b = strecpy(b, ", water", last, true);
+		if (it.first & TBB_CUSTOM_HEAD) b = strecpy(b, ", custom head", last, true);
+		if (it.first & TBB_DUAL_RT) b = strecpy(b, ", dual rail type", last, true);
+		if (it.first & TBB_SIGNALLED) b = strecpy(b, ", signalled", last, true);
+		if (it.first & TBB_SIGNALLED_BIDI) b = strecpy(b, ", bidi", last, true);
+		b += seprintf(b, last, ": %u\n", it.second);
+	}
 }
