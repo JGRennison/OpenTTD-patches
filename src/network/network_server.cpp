@@ -171,12 +171,12 @@ struct PacketWriter : SaveFilter {
 
 		byte *bufe = buf + size;
 		while (buf != bufe) {
-			size_t to_write = min(SEND_MTU - this->current->size, bufe - buf);
+			size_t to_write = min(SHRT_MAX - this->current->size, bufe - buf);
 			memcpy(this->current->buffer + this->current->size, buf, to_write);
 			this->current->size += (PacketSize)to_write;
 			buf += to_write;
 
-			if (this->current->size == SEND_MTU) {
+			if (this->current->size == SHRT_MAX) {
 				this->AppendQueue();
 				if (buf != bufe) this->current = new Packet(PACKET_SERVER_MAP_DATA);
 			}
