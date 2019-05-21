@@ -168,7 +168,7 @@ void Packet::Send_string(const char *data)
 void Packet::Send_binary(const char *data, const size_t size)
 {
 	assert(data != nullptr);
-	assert(size < MAX_CMD_TEXT_LENGTH);
+	assert(this->size + size <= SHRT_MAX);
 	memcpy(&this->buffer[this->size], data, size);
 	this->size += (PacketSize) size;
 }
@@ -351,8 +351,7 @@ void Packet::Recv_string(std::string &buffer, StringValidationSettings settings)
  */
 void Packet::Recv_binary(char *buffer, size_t size)
 {
-	/* Don't allow reading from a closed socket */
-	if (cs->HasClientQuit()) return;
+	if (!this->CanReadFromPacket(size)) return;
 
 	memcpy(buffer, &this->buffer[this->pos], size);
 	this->pos += (PacketSize) size;
@@ -365,8 +364,7 @@ void Packet::Recv_binary(char *buffer, size_t size)
  */
 void Packet::Recv_binary(std::string &buffer, size_t size)
 {
-	/* Don't allow reading from a closed socket */
-	if (cs->HasClientQuit()) return;
+	if (!this->CanReadFromPacket(size)) return;
 
 	buffer.assign((const char *) &this->buffer[this->pos], size);
 	this->pos += (PacketSize) size;
