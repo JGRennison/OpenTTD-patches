@@ -25,6 +25,7 @@
 #include "core/backup_type.hpp"
 #include "object_base.h"
 #include "string_func.h"
+#include "core/random_func.hpp"
 #include <array>
 
 #include "table/strings.h"
@@ -751,6 +752,8 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd,
 
 	bool test_and_exec_can_differ = (cmd_flags & CMD_NO_TEST) != 0;
 
+	GameRandomSeedChecker random_state;
+
 	/* Test the command. */
 	_cleared_object_areas.clear();
 	SetTownRatingTestMode(true);
@@ -758,6 +761,11 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd,
 	CommandCost res = proc(tile, flags, p1, p2, text);
 	BasePersistentStorageArray::SwitchMode(PSM_LEAVE_TESTMODE);
 	SetTownRatingTestMode(false);
+
+	if (!random_state.Check()) {
+		DEBUG(desync, 0, "Random seed changed in test command: date{%08x; %02x}; company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; cmd: %08x; \"%s\" (%s)",
+				_date, _date_fract, (int)_current_company, tile, TileX(tile), TileY(tile), p1, p2, cmd & ~CMD_NETWORK_COMMAND, text, GetCommandName(cmd));
+	}
 
 	CommandLogEntryFlag log_flags;
 	log_flags = CLEF_NONE;
