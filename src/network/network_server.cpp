@@ -1160,13 +1160,23 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet *p
 	NetworkAdminClientError(this->client_id, errorno);
 
 	if (errorno == NETWORK_ERROR_DESYNC) {
-		CrashLog::DesyncCrashLog();
+		CrashLog::DesyncCrashLog(&(this->desync_log), nullptr);
 
 		// have the server and all clients run some sanity checks
 		NetworkSendCommand(0, 0, 0, CMD_DESYNC_CHECK, NULL, NULL, _local_company);
 	}
 
 	return this->CloseConnection(NETWORK_RECV_STATUS_CONN_LOST);
+}
+
+NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_LOG(Packet *p)
+{
+	uint size = p->Recv_uint16();
+	this->desync_log.resize(this->desync_log.size() + size);
+	p->Recv_binary(const_cast<char *>(this->desync_log.data() + this->desync_log.size() - size), size);
+	DEBUG(net, 2, "Received %u bytes of client desync log", size);
+	this->receive_limit += p->size;
+	return NETWORK_RECV_STATUS_OKAY;
 }
 
 NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_QUIT(Packet *p)

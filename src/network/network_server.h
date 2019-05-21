@@ -36,6 +36,7 @@ protected:
 	NetworkRecvStatus Receive_CLIENT_SET_NAME(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_QUIT(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_ERROR(Packet *p) override;
+	NetworkRecvStatus Receive_CLIENT_DESYNC_LOG(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_RCON(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_NEWGRFS_CHECKED(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_MOVE(Packet *p) override;
@@ -72,6 +73,8 @@ public:
 
 	struct PacketWriter *savegame; ///< Writer used to write the savegame.
 	NetworkAddress client_address; ///< IP-address of the client (so he can be banned)
+
+	std::string desync_log;
 
 	ServerNetworkGameSocketHandler(SOCKET s);
 	~ServerNetworkGameSocketHandler();

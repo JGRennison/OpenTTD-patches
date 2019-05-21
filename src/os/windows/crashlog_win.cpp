@@ -633,10 +633,10 @@ static void CDECL CustomAbort(int signal)
 	SetUnhandledExceptionFilter(ExceptionHandler);
 }
 
-/* static */ void CrashLog::DesyncCrashLog()
+/* static */ void CrashLog::DesyncCrashLog(const std::string *log_in, std::string *log_out)
 {
 	CrashLogWindows log(nullptr);
-	log.MakeDesyncCrashLog();
+	log.MakeDesyncCrashLog(log_in, log_out);
 }
 
 /* The crash log GUI */

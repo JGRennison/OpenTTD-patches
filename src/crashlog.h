@@ -108,7 +108,7 @@ public:
 	bool WriteScreenshot(char *filename, const char *filename_last, const char *name = "crash") const;
 
 	bool MakeCrashLog() const;
-	bool MakeDesyncCrashLog() const;
+	bool MakeDesyncCrashLog(const std::string *log_in, std::string *log_out) const;
 
 	/**
 	 * Initialiser for crash logs; do the appropriate things so crashes are
@@ -117,7 +117,7 @@ public:
 	 */
 	static void InitialiseCrashLog();
 
-	static void DesyncCrashLog();
+	static void DesyncCrashLog(const std::string *log_in, std::string *log_out);
 
 	static void SetErrorMessage(const char *message);
 	static void AfterCrashLogCleanup();

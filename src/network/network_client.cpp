@@ -169,15 +169,21 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::CloseConnection(NetworkRecvSta
 	 */
 	if (this->sock == INVALID_SOCKET) return status;
 
-	DEBUG(net, 1, "Closed client connection %d", this->client_id);
+	DEBUG(net, 1, "Shutting down client connection %d", this->client_id);
+
+	SetBlocking(this->sock);
 
 	this->SendPackets(true);
+
+	ShutdownSocket(this->sock, false, true, 2);
 
 	/* Wait a number of ticks so our leave message can reach the server.
 	 * This is especially needed for Windows servers as they seem to get
 	 * the "socket is closed" message before receiving our leave message,
 	 * which would trigger the server to close the connection as well. */
 	CSleep(3 * MILLISECONDS_PER_TICK);
+
+	DEBUG(net, 1, "Shutdown client connection %d", this->client_id);
 
 	delete this->GetInfo();
 	delete this;
@@ -217,6 +223,8 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 			res != NETWORK_RECV_STATUS_SERVER_BANNED) {
 		SendError(errorno);
 	}
+
+	this->SendPackets();
 
 	ClientNetworkEmergencySave();
 
@@ -276,9 +284,11 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 				NetworkError(STR_NETWORK_ERROR_DESYNC);
 				DEBUG(desync, 1, "sync_err: %08x; %02x", _date, _date_fract);
 				DEBUG(net, 0, "Sync error detected!");
-				my_client->ClientError(NETWORK_RECV_STATUS_DESYNC);
 
-				CrashLog::DesyncCrashLog();
+				std::string desync_log;
+				CrashLog::DesyncCrashLog(nullptr, &desync_log);
+				my_client->SendDesyncLog(desync_log);
+				my_client->ClientError(NETWORK_RECV_STATUS_DESYNC);
 				return false;
 			}
 
@@ -460,6 +470,21 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendError(NetworkErrorCode err
 
 	p->Send_uint8(errorno);
 	my_client->SendPacket(p);
+	return NETWORK_RECV_STATUS_OKAY;
+}
+
+/** Send an error-packet over the network */
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncLog(const std::string &log)
+{
+	for (size_t offset = 0; offset < log.size();) {
+		Packet *p = new Packet(PACKET_CLIENT_DESYNC_LOG);
+		size_t size = min<size_t>(log.size() - offset, SEND_MTU - 2 - p->size);
+		p->Send_uint16(size);
+		p->Send_binary(log.data() + offset, size);
+		my_client->SendPacket(p);
+
+		offset += size;
+	}
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
