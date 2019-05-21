@@ -384,6 +384,7 @@ static void ShutdownGame()
 
 	_game_events_since_load = (GameEventFlags) 0;
 	_game_events_overall = (GameEventFlags) 0;
+	_loadgame_DBGL_data.clear();
 }
 
 /**

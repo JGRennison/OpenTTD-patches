@@ -16,6 +16,7 @@
 #include "../../saveload/saveload.h"
 #include "../../thread.h"
 #include "../../screenshot.h"
+#include "../../debug.h"
 #include "macos.h"
 
 #include <errno.h>
@@ -427,6 +428,7 @@ public:
 		}
 
 		printf("Writing crash savegame...\n");
+		_savegame_DBGL_data = buffer;
 		if (!this->WriteSavegame(filename_save, lastof(filename_save))) {
 			filename_save[0] = '\0';
 			ret = false;

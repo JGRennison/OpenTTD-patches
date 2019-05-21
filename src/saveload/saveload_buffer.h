@@ -197,7 +197,7 @@ struct MemoryDumper {
 		*this->buf++ = b;
 	}
 
-	inline void CopyBytes(byte *ptr, size_t length)
+	inline void CopyBytes(const byte *ptr, size_t length)
 	{
 		while (length) {
 			if (unlikely(this->buf == this->bufe)) {

@@ -23,6 +23,7 @@
 #include "../../video/video_driver.hpp"
 #include "../../openttd.h"
 #include "../../screenshot.h"
+#include "../../debug.h"
 #if defined(WITH_DEMANGLE)
 #include <cxxabi.h>
 #endif
@@ -708,6 +709,7 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 					CrashLog::AfterCrashLogCleanup();
 					ExitProcess(2);
 				case 13: // Emergency save
+					_savegame_DBGL_data = CrashLogWindows::current->crashlog;
 					char filename[MAX_PATH];
 					if (CrashLogWindows::current->WriteSavegame(filename, lastof(filename))) {
 						size_t len = _tcslen(_save_succeeded) + _tcslen(OTTD2FS(filename)) + 1;
@@ -717,6 +719,7 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 					} else {
 						MessageBox(wnd, _T("Save failed"), _T("Save failed"), MB_ICONINFORMATION);
 					}
+					_savegame_DBGL_data = nullptr;
 					break;
 				case 15: // Expand window to show crash-message
 					_expanded ^= 1;

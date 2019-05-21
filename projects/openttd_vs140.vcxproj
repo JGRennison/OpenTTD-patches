@@ -938,6 +938,7 @@
     <ClCompile Include="..\src\saveload\cargopacket_sl.cpp" />
     <ClCompile Include="..\src\saveload\cheat_sl.cpp" />
     <ClCompile Include="..\src\saveload\company_sl.cpp" />
+    <ClCompile Include="..\src\saveload\debug_sl.cpp" />
     <ClCompile Include="..\src\saveload\depot_sl.cpp" />
     <ClCompile Include="..\src\saveload\economy_sl.cpp" />
     <ClCompile Include="..\src\saveload\engine_sl.cpp" />

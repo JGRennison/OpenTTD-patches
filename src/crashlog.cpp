@@ -587,6 +587,7 @@ bool CrashLog::MakeCrashLog() const
 	}
 
 	SetScreenshotAuxiliaryText("Crash Log", buffer);
+	_savegame_DBGL_data = buffer;
 
 	if (IsNonMainThread()) {
 		printf("Asking main thread to write crash savegame and screenshot...\n\n");
@@ -633,6 +634,7 @@ bool CrashLog::MakeDesyncCrashLog() const
 		ret = false;
 	}
 
+	_savegame_DBGL_data = buffer;
 	bret = this->WriteSavegame(filename, lastof(filename), name_buffer);
 	if (bret) {
 		printf("Desync savegame written to %s. Please add this file and the last (auto)save to any bug reports.\n\n", filename);
@@ -640,6 +642,7 @@ bool CrashLog::MakeDesyncCrashLog() const
 		ret = false;
 		printf("Writing desync savegame failed. Please attach the last (auto)save to any bug reports.\n\n");
 	}
+	_savegame_DBGL_data = nullptr;
 
 	if (!(_screen.width < 1 || _screen.height < 1 || _screen.dst_ptr == nullptr)) {
 		SetScreenshotAuxiliaryText("Desync Log", buffer);

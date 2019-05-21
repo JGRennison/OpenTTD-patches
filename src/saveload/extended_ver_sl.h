@@ -73,6 +73,7 @@ enum SlXvFeatureIndex {
 	XSLFI_RV_OVERTAKING,                          ///< Roadvehicle overtaking
 	XSLFI_LINKGRAPH_MODES,                        ///< Linkgraph additional distribution modes
 	XSLFI_GAME_EVENTS,                            ///< Game event flags
+	XSLFI_DEBUG,                                  ///< Debugging info
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk

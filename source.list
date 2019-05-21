@@ -652,6 +652,7 @@ saveload/cargomonitor_sl.cpp
 saveload/cargopacket_sl.cpp
 saveload/cheat_sl.cpp
 saveload/company_sl.cpp
+saveload/debug_sl.cpp
 saveload/depot_sl.cpp
 saveload/economy_sl.cpp
 saveload/engine_sl.cpp

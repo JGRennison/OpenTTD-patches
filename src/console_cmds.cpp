@@ -2054,6 +2054,18 @@ DEF_CONSOLE_CMD(ConDumpGameEvents)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConDumpLoadDebugLog)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump load debug log.");
+		return true;
+	}
+
+	std::string dbgl = _loadgame_DBGL_data;
+	PrintLineByLine(const_cast<char *>(_loadgame_DBGL_data.c_str()));
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConCheckCaches)
 {
 	if (argc == 0) {
@@ -2329,6 +2341,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("dump_veh_stats", ConVehicleStats, nullptr, true);
 	IConsoleCmdRegister("dump_map_stats", ConMapStats, nullptr, true);
 	IConsoleCmdRegister("dump_game_events", ConDumpGameEvents, nullptr, true);
+	IConsoleCmdRegister("dump_load_debug_log", ConDumpLoadDebugLog, nullptr, true);
 	IConsoleCmdRegister("check_caches", ConCheckCaches, nullptr, true);
 
 	/* NewGRF development stuff */

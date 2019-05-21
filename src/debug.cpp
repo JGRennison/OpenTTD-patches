@@ -54,6 +54,9 @@ int _debug_sound_level;
 int _debug_random_level;
 #endif
 
+const char *_savegame_DBGL_data = nullptr;
+std::string _loadgame_DBGL_data;
+
 uint32 _realtime_tick = 0;
 
 struct DebugLevel {

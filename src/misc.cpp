@@ -81,6 +81,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	_thd.redsq = INVALID_TILE;
 	_game_events_since_load = (GameEventFlags) 0;
 	_game_events_overall = (GameEventFlags) 0;
+	_loadgame_DBGL_data.clear();
 	if (reset_settings) MakeNewgameSettingsLive();
 
 	if (reset_date) {

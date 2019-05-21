@@ -14,6 +14,7 @@
 
 #include "cpu.h"
 #include <chrono>
+#include <string>
 
 /* Debugging messages policy:
  * These should be the severities used for direct DEBUG() calls
@@ -57,6 +58,9 @@ extern int _debug_sound_level;
 #ifdef RANDOM_DEBUG
 extern int _debug_random_level;
 #endif
+
+extern const char *_savegame_DBGL_data;
+extern std::string _loadgame_DBGL_data;
 
 void CDECL debug(const char *dbg, const char *format, ...) WARN_FORMAT(2, 3);
 
