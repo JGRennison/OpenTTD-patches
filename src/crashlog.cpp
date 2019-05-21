@@ -610,7 +610,7 @@ bool CrashLog::MakeCrashLog() const
  * information like paths to the console.
  * @return true when everything is made successfully.
  */
-bool CrashLog::MakeDesyncCrashLog() const
+bool CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_out) const
 {
 	char filename[MAX_PATH];
 	char buffer[65536 * 2];
@@ -624,7 +624,14 @@ bool CrashLog::MakeDesyncCrashLog() const
 	strftime(name_buffer_date, lastof(name_buffer) - name_buffer_date, "%Y%m%dT%H%M%SZ", gmtime(&cur_time));
 
 	printf("Desync encountered (%s), generating desync log...\n", mode);
-	this->FillDesyncCrashLog(buffer, lastof(buffer));
+	char *b = this->FillDesyncCrashLog(buffer, lastof(buffer));
+
+	if (log_in && !log_in->empty()) {
+		b = strecpy(b, "\n", lastof(buffer), true);
+		b = strecpy(b, log_in->c_str(), lastof(buffer), true);
+	}
+
+	if (log_out) log_out->assign(buffer);
 
 	bool bret = this->WriteCrashLog(buffer, filename, lastof(filename), name_buffer);
 	if (bret) {

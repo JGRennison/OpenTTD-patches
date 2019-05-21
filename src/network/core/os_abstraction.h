@@ -62,6 +62,9 @@ typedef unsigned long in_addr_t;
 #	define ioctlsocket ioctl
 #	define closesocket close
 #	define GET_LAST_ERROR() (errno)
+#	define SD_RECEIVE SHUT_RD
+#	define SD_SEND SHUT_WR
+#	define SD_BOTH SHUT_RDWR
 /* Need this for FIONREAD on solaris */
 #	define BSD_COMP
 
@@ -102,6 +105,9 @@ typedef unsigned long in_addr_t;
 #	define ioctlsocket ioctl
 #	define closesocket close
 #	define GET_LAST_ERROR() (sock_errno())
+#	define SD_RECEIVE SHUT_RD
+#	define SD_SEND SHUT_WR
+#	define SD_BOTH SHUT_RDWR
 
 /* Includes needed for OS/2 systems */
 #	include <types.h>
@@ -167,6 +173,21 @@ static inline bool SetNonBlocking(SOCKET d)
 }
 
 /**
+ * Try to set the socket into blocking mode.
+ * @param d The socket to set the blocking more for.
+ * @return True if setting the blocking mode succeeded, otherwise false.
+ */
+static inline bool SetBlocking(SOCKET d)
+{
+#ifdef _WIN32
+	u_long nonblocking = 0;
+#else
+	int nonblocking = 0;
+#endif
+	return ioctlsocket(d, FIONBIO, &nonblocking) == 0;
+}
+
+/**
  * Try to set the socket to not delay sending.
  * @param d The socket to disable the delaying for.
  * @return True if disabling the delaying succeeded, otherwise false.
@@ -177,6 +198,32 @@ static inline bool SetNoDelay(SOCKET d)
 	int b = 1;
 	/* The (const char*) cast is needed for windows */
 	return setsockopt(d, IPPROTO_TCP, TCP_NODELAY, (const char*)&b, sizeof(b)) == 0;
+}
+
+
+/**
+ * Try to shutdown the socket in one or both directions.
+ * @param d The socket to disable the delaying for.
+ * @param read Whether to shutdown the read direction.
+ * @param write Whether to shutdown the write direction.
+ * @param linger_timeout The socket linger timeout.
+ * @return True if successful
+ */
+static inline bool ShutdownSocket(SOCKET d, bool read, bool write, uint linger_timeout)
+{
+	if (!read && !write) return true;
+#ifdef _WIN32
+	LINGER ln = { 1U, (uint16) linger_timeout };
+#else
+	struct linger ln = { 1, (int) linger_timeout };
+#endif
+
+	setsockopt(d, SOL_SOCKET, SO_LINGER, (const char*)&ln, sizeof(ln));
+
+	int how = SD_BOTH;
+	if (!read) how = SD_SEND;
+	if (!write) how = SD_RECEIVE;
+	return shutdown(d, how) == 0;
 }
 
 /* Make sure these structures have the size we expect them to be */

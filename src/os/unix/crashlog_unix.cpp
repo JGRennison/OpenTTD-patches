@@ -620,8 +620,8 @@ static void CDECL HandleCrash(int signum)
 	}
 }
 
-/* static */ void CrashLog::DesyncCrashLog()
+/* static */ void CrashLog::DesyncCrashLog(const std::string *log_in, std::string *log_out)
 {
 	CrashLogUnix log(CrashLogUnix::DesyncTag{});
-	log.MakeDesyncCrashLog();
+	log.MakeDesyncCrashLog(log_in, log_out);
 }
