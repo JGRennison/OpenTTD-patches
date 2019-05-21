@@ -29,6 +29,7 @@
 #include "newgrf_text.h"
 #include "string_func.h"
 #include "scope_info.h"
+#include "core/random_func.hpp"
 #include <array>
 
 #include "table/strings.h"
@@ -921,6 +922,8 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd,
 
 	bool test_and_exec_can_differ = (cmd_flags & CMD_NO_TEST) != 0;
 
+	GameRandomSeedChecker random_state;
+
 	/* Test the command. */
 	_cleared_object_areas.clear();
 	SetTownRatingTestMode(true);
@@ -928,6 +931,11 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd,
 	CommandCost res = command.Execute(tile, flags, p1, p2, text, binary_length);
 	BasePersistentStorageArray::SwitchMode(PSM_LEAVE_TESTMODE);
 	SetTownRatingTestMode(false);
+
+	if (!random_state.Check()) {
+		DEBUG(desync, 0, "Random seed changed in test command: date{%08x; %02x; %02x}; company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; cmd: %08x; \"%s\" %X (%s)",
+				_date, _date_fract, _tick_skip_counter, (int)_current_company, tile, TileX(tile), TileY(tile), p1, p2, cmd & ~CMD_NETWORK_COMMAND, text, binary_length, GetCommandName(cmd));
+	}
 
 	/* Make sure we're not messing things up here. */
 	assert(exec_as_spectator ? _current_company == COMPANY_SPECTATOR : cur_company.Verify());
