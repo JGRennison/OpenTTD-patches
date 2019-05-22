@@ -74,6 +74,7 @@
 #include "cargopacket.h"
 #include "tbtr_template_vehicle.h"
 #include "string_func_extra.h"
+#include "industry.h"
 
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
@@ -1308,19 +1309,62 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 
 	/* Check the town caches. */
 	std::vector<TownCache> old_town_caches;
+	std::vector<CargoTypes> old_town_cargo_accepted_totals;
+	std::vector<StationList> old_town_stations_nears;
 	Town *t;
 	FOR_ALL_TOWNS(t) {
 		old_town_caches.push_back(t->cache);
+		old_town_cargo_accepted_totals.push_back(t->cargo_accepted_total);
+		old_town_stations_nears.push_back(t->stations_near);
+	}
+
+	std::vector<IndustryList> old_station_industries_nears;
+	std::vector<BitmapTileArea> old_station_catchment_tiles;
+	Station *st;
+	FOR_ALL_STATIONS(st) {
+		old_station_industries_nears.push_back(st->industries_near);
+		old_station_catchment_tiles.push_back(st->catchment_tiles);
+	}
+
+	std::vector<StationList> old_industry_stations_nears;
+	Industry *ind;
+	FOR_ALL_INDUSTRIES(ind) {
+		old_industry_stations_nears.push_back(ind->stations_near);
 	}
 
 	extern void RebuildTownCaches();
 	RebuildTownCaches();
 	RebuildSubsidisedSourceAndDestinationCache();
 
+	Station::RecomputeCatchmentForAll();
+
 	uint i = 0;
 	FOR_ALL_TOWNS(t) {
 		if (MemCmpT(old_town_caches.data() + i, &t->cache) != 0) {
 			CCLOG("town cache mismatch: town %i", (int)t->index);
+		}
+		if (old_town_cargo_accepted_totals[i] != t->cargo_accepted_total) {
+			CCLOG("town cargo_accepted_total mismatch: town %i", (int)t->index);
+		}
+		if (old_town_stations_nears[i] != t->stations_near) {
+			CCLOG("town stations_near mismatch: town %i", (int)t->index);
+		}
+		i++;
+	}
+	i = 0;
+	FOR_ALL_STATIONS(st) {
+		if (old_station_industries_nears[i] != st->industries_near) {
+			CCLOG("station industries_near mismatch: st %i", (int)st->index);
+		}
+		if (!(old_station_catchment_tiles[i] == st->catchment_tiles)) {
+			CCLOG("station stations_near mismatch: st %i", (int)st->index);
+		}
+		i++;
+	}
+	i = 0;
+	FOR_ALL_INDUSTRIES(ind) {
+		if (old_industry_stations_nears[i] != ind->stations_near) {
+			CCLOG("indsutry stations_near mismatch: ind %i", (int)ind->index);
 		}
 		i++;
 	}
@@ -1503,7 +1547,6 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		assert(memcmp(&v->cargo, buff, sizeof(VehicleCargoList)) == 0);
 	}
 
-	Station *st;
 	FOR_ALL_STATIONS(st) {
 		for (CargoID c = 0; c < NUM_CARGO; c++) {
 			byte buff[sizeof(StationCargoList)];

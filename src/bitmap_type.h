@@ -103,6 +103,11 @@ public:
 	{
 		return this->Contains(tile) && this->data[Index(tile)];
 	}
+
+	inline bool operator==(const BitmapTileArea &other) const
+	{
+		return TileArea::operator==(other) && this->data == other.data;
+	}
 };
 
 /** Iterator to iterate over all tiles belonging to a bitmaptilearea. */
