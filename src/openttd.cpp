@@ -1163,10 +1163,12 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 	/* Check the town caches. */
 	std::vector<TownCache> old_town_caches;
 	std::vector<CargoTypes> old_town_cargo_accepted_totals;
+	std::vector<CargoTypes> old_town_cargo_produced;
 	std::vector<StationList> old_town_stations_near;
 	for (const Town *t : Town::Iterate()) {
 		old_town_caches.push_back(t->cache);
 		old_town_cargo_accepted_totals.push_back(t->cargo_accepted_total);
+		old_town_cargo_produced.push_back(t->cargo_produced);
 		old_town_stations_near.push_back(t->stations_near);
 	}
 
@@ -1181,6 +1183,8 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 	for (const Industry *ind : Industry::Iterate()) {
 		old_industry_stations_near.push_back(ind->stations_near);
 	}
+
+	const CargoTypes old_town_cargoes_accepted = _town_cargoes_accepted;
 
 	extern void RebuildTownCaches();
 	RebuildTownCaches();
@@ -1392,7 +1396,10 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 			CCLOG("town stations near mismatch: town %i", t->index);
 		}
 		if (old_town_cargo_accepted_totals[i] != t->cargo_accepted_total) {
-			CCLOG("town cargo_accepted_total mismatch: town %i", (int)t->index);
+			CCLOG("town cargo_accepted_total mismatch: town %i, old: " OTTD_PRINTFHEX64 ". new: " OTTD_PRINTFHEX64, (int)t->index, old_town_cargo_accepted_totals[i], t->cargo_accepted_total);
+		}
+		if (old_town_cargo_produced[i] != t->cargo_produced) {
+			CCLOG("town cargo_produced mismatch: town %i, old: " OTTD_PRINTFHEX64 ". new: " OTTD_PRINTFHEX64, (int)t->index, old_town_cargo_produced[i], t->cargo_produced);
 		}
 		if (old_town_stations_near[i] != t->stations_near) {
 			CCLOG("town stations_near mismatch: town %i", (int)t->index);
@@ -1405,6 +1412,10 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 			CCLOG("industry stations near mismatch: industry %i", ind->index);
 		}
 		i++;
+	}
+
+	if (old_town_cargoes_accepted != _town_cargoes_accepted) {
+		CCLOG("_town_cargoes_accepted mismatch: old: " OTTD_PRINTFHEX64 ". new: " OTTD_PRINTFHEX64, old_town_cargoes_accepted, _town_cargoes_accepted);
 	}
 
 #undef CCLOG
