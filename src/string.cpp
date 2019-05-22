@@ -161,6 +161,28 @@ char *CDECL str_fmt(const char *str, ...)
 	return p;
 }
 
+std::string stdstr_vfmt(const char *str, va_list va)
+{
+	char buf[4096];
+
+	int len = vseprintf(buf, lastof(buf), str, va);
+	return std::string(buf, len);
+}
+
+/**
+ * Format, "printf", into a std::string.
+ * @param str The formatting string.
+ * @return The formatted string.
+ */
+std::string CDECL stdstr_fmt(const char *str, ...)
+{
+	va_list va;
+	va_start(va, str);
+	std::string output = stdstr_vfmt(str, va);
+	va_end(va);
+	return output;
+}
+
 /**
  * Scan the string for old values of SCC_ENCODED and fix it to
  * it's new, static value.
