@@ -58,6 +58,11 @@ struct OrthogonalTileArea {
 	{
 		return TILE_ADDXY(this->tile, this->w / 2, this->h / 2);
 	}
+
+	inline bool operator==(const OrthogonalTileArea &other) const
+	{
+		return std::tie(tile, w, h) == std::tie(other.tile, other.w, other.h);
+	}
 };
 
 /** Represents a diagonal tile area. */

@@ -1157,21 +1157,29 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 
 	/* Check the town caches. */
 	std::vector<TownCache> old_town_caches;
+	std::vector<CargoTypes> old_town_cargo_accepted_totals;
+	std::vector<StationList> old_town_stations_near;
 	for (const Town *t : Town::Iterate()) {
 		old_town_caches.push_back(t->cache);
+		old_town_cargo_accepted_totals.push_back(t->cargo_accepted_total);
+		old_town_stations_near.push_back(t->stations_near);
+	}
+
+	std::vector<IndustryList> old_station_industries_near;
+	std::vector<BitmapTileArea> old_station_catchment_tiles;
+	for (const Station *st : Station::Iterate()) {
+		old_station_industries_near.push_back(st->industries_near);
+		old_station_catchment_tiles.push_back(st->catchment_tiles);
+	}
+
+	std::vector<StationList> old_industry_stations_near;
+	for (const Industry *ind : Industry::Iterate()) {
+		old_industry_stations_near.push_back(ind->stations_near);
 	}
 
 	extern void RebuildTownCaches();
 	RebuildTownCaches();
 	RebuildSubsidisedSourceAndDestinationCache();
-
-	uint i = 0;
-	for (Town *t : Town::Iterate()) {
-		if (MemCmpT(old_town_caches.data() + i, &t->cache) != 0) {
-			CCLOG("town cache mismatch: town %i", (int)t->index);
-		}
-		i++;
-	}
 
 	/* Check company infrastructure cache. */
 	std::vector<CompanyInfrastructure> old_infrastructure;
@@ -1180,7 +1188,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 	extern void AfterLoadCompanyStats();
 	AfterLoadCompanyStats();
 
-	i = 0;
+	uint i = 0;
 	for (const Company *c : Company::Iterate()) {
 		if (MemCmpT(old_infrastructure.data() + i, &c->infrastructure) != 0) {
 			CCLOG("infrastructure cache mismatch: company %i", (int)c->index);
@@ -1332,13 +1340,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		assert(memcmp(&v->cargo, buff, sizeof(VehicleCargoList)) == 0);
 	}
 
-	/* Backup stations_near */
-	std::vector<StationList> old_town_stations_near;
-	for (Town *t : Town::Iterate()) old_town_stations_near.push_back(t->stations_near);
-
-	std::vector<StationList> old_industry_stations_near;
-	for (Industry *ind : Industry::Iterate())  old_industry_stations_near.push_back(ind->stations_near);
-
+	i = 0;
 	for (Station *st : Station::Iterate()) {
 		for (CargoID c = 0; c < NUM_CARGO; c++) {
 			byte buff[sizeof(StationCargoList)];
@@ -1356,34 +1358,46 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		}
 		UpdateStationDockingTiles(st);
 		if (ta.tile != st->docking_station.tile || ta.w != st->docking_station.w || ta.h != st->docking_station.h) {
-			DEBUG(desync, 2, "station docking mismatch: station %i, company %i", st->index, (int)st->owner);
+			CCLOG("station docking mismatch: station %i, company %i", st->index, (int)st->owner);
 		}
 		TILE_AREA_LOOP(tile, ta) {
 			if (docking_tiles[tile] != IsDockingTile(tile)) {
-				DEBUG(desync, 2, "docking tile mismatch: tile %i", (int)tile);
+				CCLOG("docking tile mismatch: tile %i", (int)tile);
 			}
 		}
 
-		/* Check industries_near */
-		IndustryList industries_near = st->industries_near;
 		st->RecomputeCatchment();
-		if (st->industries_near != industries_near) {
-			DEBUG(desync, 2, "station industries near mismatch: station %i", st->index);
+
+		if (old_station_industries_near[i] != st->industries_near) {
+			CCLOG("station industries_near mismatch: station %i", (int)st->index);
 		}
+		if (!(old_station_catchment_tiles[i] == st->catchment_tiles)) {
+			CCLOG("station stations_near mismatch: station %i", (int)st->index);
+		}
+		i++;
 	}
 
 	/* Check stations_near */
 	i = 0;
 	for (Town *t : Town::Iterate()) {
+		if (MemCmpT(old_town_caches.data() + i, &t->cache) != 0) {
+			CCLOG("town cache mismatch: town %i", (int)t->index);
+		}
 		if (t->stations_near != old_town_stations_near[i]) {
-			DEBUG(desync, 2, "town stations near mismatch: town %i", t->index);
+			CCLOG("town stations near mismatch: town %i", t->index);
+		}
+		if (old_town_cargo_accepted_totals[i] != t->cargo_accepted_total) {
+			CCLOG("town cargo_accepted_total mismatch: town %i", (int)t->index);
+		}
+		if (old_town_stations_near[i] != t->stations_near) {
+			CCLOG("town stations_near mismatch: town %i", (int)t->index);
 		}
 		i++;
 	}
 	i = 0;
 	for (Industry *ind : Industry::Iterate()) {
 		if (ind->stations_near != old_industry_stations_near[i]) {
-			DEBUG(desync, 2, "industry stations near mismatch: industry %i", ind->index);
+			CCLOG("industry stations near mismatch: industry %i", ind->index);
 		}
 		i++;
 	}
