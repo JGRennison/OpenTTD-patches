@@ -21,6 +21,7 @@
 #include "strings_type.h"
 #include "date_type.h"
 #include "signal_type.h"
+#include "rail_map.h"
 #include "settings_type.h"
 
 /** Railtype flags. */
@@ -364,6 +365,21 @@ static inline bool Rail90DegTurnDisallowed(RailType rt1, RailType rt2, bool def 
 	bool rt2_90deg = HasBit(rti2->flags, RTF_DISALLOW_90DEG) || (!HasBit(rti2->flags, RTF_ALLOW_90DEG) && def);
 
 	return rt1_90deg || rt2_90deg;
+}
+
+static inline bool Rail90DegTurnDisallowedTilesFromDiagDir(TileIndex t1, TileIndex t2, DiagDirection t1_towards_t2, bool def = _settings_game.pf.forbid_90_deg)
+{
+	return Rail90DegTurnDisallowed(GetTileRailTypeByEntryDir(t1, ReverseDiagDir(t1_towards_t2)), GetTileRailTypeByEntryDir(t2, t1_towards_t2), def);
+}
+
+static inline bool Rail90DegTurnDisallowedAdjacentTiles(TileIndex t1, TileIndex t2, bool def = _settings_game.pf.forbid_90_deg)
+{
+	return Rail90DegTurnDisallowedTilesFromDiagDir(t1, t2, DiagdirBetweenTiles(t1, t2));
+}
+
+static inline bool Rail90DegTurnDisallowedTilesFromTrackdir(TileIndex t1, TileIndex t2, Trackdir t1_td, bool def = _settings_game.pf.forbid_90_deg)
+{
+	return Rail90DegTurnDisallowedTilesFromDiagDir(t1, t2, TrackdirToExitdir(t1_td));
 }
 
 /**

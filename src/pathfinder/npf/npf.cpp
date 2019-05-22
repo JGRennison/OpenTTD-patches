@@ -844,7 +844,7 @@ static TrackdirBits GetDriveableTrackdirBits(TileIndex dst_tile, TileIndex src_t
 	trackdirbits &= TrackdirReachesTrackdirs(src_trackdir);
 
 	/* Filter out trackdirs that would make 90 deg turns for trains */
-	if (type == TRANSPORT_RAIL && Rail90DegTurnDisallowed(GetTileRailType(src_tile), GetTileRailType(dst_tile))) {
+	if (type == TRANSPORT_RAIL && Rail90DegTurnDisallowedTilesFromTrackdir(src_tile, dst_tile, src_trackdir)) {
 		trackdirbits &= ~TrackdirCrossesTrackdirs(src_trackdir);
 	}
 
