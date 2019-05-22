@@ -1315,11 +1315,13 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 	/* Check the town caches. */
 	std::vector<TownCache> old_town_caches;
 	std::vector<CargoTypes> old_town_cargo_accepted_totals;
+	std::vector<CargoTypes> old_town_cargo_produced;
 	std::vector<StationList> old_town_stations_nears;
 	Town *t;
 	FOR_ALL_TOWNS(t) {
 		old_town_caches.push_back(t->cache);
 		old_town_cargo_accepted_totals.push_back(t->cargo_accepted_total);
+		old_town_cargo_produced.push_back(t->cargo_produced);
 		old_town_stations_nears.push_back(t->stations_near);
 	}
 
@@ -1337,6 +1339,8 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		old_industry_stations_nears.push_back(ind->stations_near);
 	}
 
+	const CargoTypes old_town_cargoes_accepted = _town_cargoes_accepted;
+
 	extern void RebuildTownCaches();
 	RebuildTownCaches();
 	RebuildSubsidisedSourceAndDestinationCache();
@@ -1349,12 +1353,18 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 			CCLOG("town cache mismatch: town %i", (int)t->index);
 		}
 		if (old_town_cargo_accepted_totals[i] != t->cargo_accepted_total) {
-			CCLOG("town cargo_accepted_total mismatch: town %i", (int)t->index);
+			CCLOG("town cargo_accepted_total mismatch: town %i, old: " OTTD_PRINTFHEX64 ". new: " OTTD_PRINTFHEX64, (int)t->index, old_town_cargo_accepted_totals[i], t->cargo_accepted_total);
+		}
+		if (old_town_cargo_produced[i] != t->cargo_produced) {
+			CCLOG("town cargo_produced mismatch: town %i, old: " OTTD_PRINTFHEX64 ". new: " OTTD_PRINTFHEX64, (int)t->index, old_town_cargo_produced[i], t->cargo_produced);
 		}
 		if (old_town_stations_nears[i] != t->stations_near) {
 			CCLOG("town stations_near mismatch: town %i", (int)t->index);
 		}
 		i++;
+	}
+	if (old_town_cargoes_accepted != _town_cargoes_accepted) {
+		CCLOG("_town_cargoes_accepted mismatch: old: " OTTD_PRINTFHEX64 ". new: " OTTD_PRINTFHEX64, old_town_cargoes_accepted, _town_cargoes_accepted);
 	}
 	i = 0;
 	FOR_ALL_STATIONS(st) {
