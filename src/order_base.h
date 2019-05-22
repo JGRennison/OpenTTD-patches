@@ -35,8 +35,8 @@ extern bool _order_destination_refcount_map_valid;
 
 inline uint32 OrderDestinationRefcountMapKey(DestinationID dest, CompanyID cid, OrderType order_type, VehicleType veh_type)
 {
-	static_assert(sizeof(dest) == 2);
-	static_assert(OT_END <= 16);
+	assert_compile(sizeof(dest) == 2);
+	assert_compile(OT_END <= 16);
 	return (((uint32) dest) << 16) | (((uint32) cid) << 8) | (((uint32) order_type) << 4) | ((uint32) veh_type);
 }
 
