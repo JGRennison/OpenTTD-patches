@@ -933,8 +933,10 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd,
 	SetTownRatingTestMode(false);
 
 	if (!random_state.Check()) {
-		DEBUG(desync, 0, "Random seed changed in test command: date{%08x; %02x; %02x}; company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; cmd: %08x; \"%s\" %X (%s)",
-				_date, _date_fract, _tick_skip_counter, (int)_current_company, tile, TileX(tile), TileY(tile), p1, p2, cmd & ~CMD_NETWORK_COMMAND, text, binary_length, GetCommandName(cmd));
+		std::string msg = stdstr_fmt("Random seed changed in test command: company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; cmd: %08x; \"%s\" %X (%s)",
+				(int)_current_company, tile, TileX(tile), TileY(tile), p1, p2, cmd & ~CMD_NETWORK_COMMAND, text, binary_length, GetCommandName(cmd));
+		DEBUG(desync, 0, "msg: date{%08x; %02x; %02x}; %s", _date, _date_fract, _tick_skip_counter, msg.c_str());
+		LogDesyncMsg(std::move(msg));
 	}
 
 	/* Make sure we're not messing things up here. */

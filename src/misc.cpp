@@ -72,6 +72,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 
 	ViewportMapClearTunnelCache();
 	ClearCommandLog();
+	ClearDesyncMsgLog();
 
 	_pause_mode = PM_UNPAUSED;
 	_fast_forward = 0;
