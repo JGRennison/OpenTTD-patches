@@ -40,6 +40,8 @@ int CDECL vseprintf(char *str, const char *last, const char *format, va_list ap)
 
 char *CDECL str_fmt(const char *str, ...) WARN_FORMAT(1, 2);
 char *str_vfmt(const char *str, va_list ap);
+std::string CDECL stdstr_fmt(const char *str, ...) WARN_FORMAT(1, 2);
+std::string stdstr_vfmt(const char *str, va_list va);
 
 char *str_validate_intl(char *str, const char *last, StringValidationSettings settings);
 
