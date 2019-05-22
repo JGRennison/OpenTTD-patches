@@ -31,6 +31,7 @@
 #include "viewport_kdtree.h"
 #include "newgrf_profiling.h"
 #include "command_func.h"
+#include "debug.h"
 
 #include "safeguards.h"
 
@@ -65,6 +66,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	AllocateMap(size_x, size_y);
 
 	ClearRecentCommandLog();
+	ClearDesyncMsgLog();
 
 	_pause_mode = PM_UNPAUSED;
 	_fast_forward = 0;

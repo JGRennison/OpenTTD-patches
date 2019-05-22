@@ -14,6 +14,8 @@
 #include "string_func.h"
 #include "fileio_func.h"
 #include "settings_type.h"
+#include "date_func.h"
+#include <array>
 
 #if defined(_WIN32)
 #include "os/windows/win32.h"
@@ -266,3 +268,55 @@ const char *GetLogPrefix()
 	return _log_prefix;
 }
 
+struct DesyncMsgLogEntry {
+	Date date;
+	DateFract date_fract;
+	std::string msg;
+
+	DesyncMsgLogEntry() { }
+
+	DesyncMsgLogEntry(std::string msg)
+			: date(_date), date_fract(_date_fract), msg(msg) { }
+};
+
+static std::array<DesyncMsgLogEntry, 32> desync_msg_log;
+static unsigned int desync_msg_log_count = 0;
+static unsigned int desync_msg_log_next = 0;
+
+void ClearDesyncMsgLog()
+{
+	desync_msg_log_count = 0;
+	desync_msg_log_next = 0;
+}
+
+char *DumpDesyncMsgLog(char *buffer, const char *last)
+{
+	if (!desync_msg_log_count) return buffer;
+
+	const unsigned int count = min<unsigned int>(desync_msg_log_count, desync_msg_log.size());
+	unsigned int log_index = desync_msg_log_next;
+
+	buffer += seprintf(buffer, last, "Desync Msg Log:\n Showing most recent %u of %u messages\n", count, desync_msg_log_count);
+
+	for (unsigned int i = 0 ; i < count; i++) {
+		if (log_index > 0) {
+			log_index--;
+		} else {
+			log_index = desync_msg_log.size() - 1;
+		}
+		const DesyncMsgLogEntry &entry = desync_msg_log[log_index];
+
+		YearMonthDay ymd;
+		ConvertDateToYMD(entry.date, &ymd);
+		buffer += seprintf(buffer, last, " %2u | %4i-%02i-%02i, %2i | %s\n", i, ymd.year, ymd.month + 1, ymd.day, entry.date_fract, entry.msg.c_str());
+	}
+	buffer += seprintf(buffer, last, "\n");
+	return buffer;
+}
+
+void LogDesyncMsg(std::string msg)
+{
+	desync_msg_log[desync_msg_log_next] = DesyncMsgLogEntry(std::move(msg));
+	desync_msg_log_next = (desync_msg_log_next + 1) % desync_msg_log.size();
+	desync_msg_log_count++;
+}

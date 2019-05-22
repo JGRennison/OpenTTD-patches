@@ -125,4 +125,8 @@ const char *GetLogPrefix();
 /** The real time in the game. */
 extern uint32 _realtime_tick;
 
+void ClearDesyncMsgLog();
+void LogDesyncMsg(std::string msg);
+char *DumpDesyncMsgLog(char *buffer, const char *last);
+
 #endif /* DEBUG_H */

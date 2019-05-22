@@ -316,6 +316,7 @@ static void ShutdownGame()
 	UninitFreeType();
 
 	ClearRecentCommandLog();
+	ClearDesyncMsgLog();
 }
 
 /**
@@ -1152,7 +1153,11 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 #define CCLOG(...) { \
 	seprintf(cclog_buffer, lastof(cclog_buffer), __VA_ARGS__); \
 	DEBUG(desync, 0, "%s", cclog_buffer); \
-	if (log) log(cclog_buffer); \
+	if (log) { \
+		log(cclog_buffer); \
+	} else { \
+		LogDesyncMsg(cclog_buffer); \
+	} \
 }
 
 	/* Check the town caches. */

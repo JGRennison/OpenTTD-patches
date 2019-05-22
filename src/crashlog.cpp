@@ -398,6 +398,7 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last) const
 	buffer = this->LogGamelog(buffer, last);
 	buffer = this->LogRecentNews(buffer, last);
 	buffer = this->LogRecentCommands(buffer, last);
+	buffer = DumpDesyncMsgLog(buffer, last);
 
 	bool have_cache_log = false;
 	extern void CheckCaches(bool force_check, std::function<void(const char *)> log);
