@@ -47,7 +47,7 @@ RoadBits CleanUpRoadBits(const TileIndex tile, RoadBits org_rb)
 {
 	if (!IsValidTile(tile)) return ROAD_NONE;
 	for (DiagDirection dir = DIAGDIR_BEGIN; dir < DIAGDIR_END; dir++) {
-		const TileIndex neighbor_tile = TileAddByDiagDir(tile, dir);
+		TileIndex neighbor_tile = TileAddByDiagDir(tile, dir);
 
 		/* Get the Roadbit pointing to the neighbor_tile */
 		const RoadBits target_rb = DiagDirToRoadBits(dir);
@@ -57,6 +57,7 @@ RoadBits CleanUpRoadBits(const TileIndex tile, RoadBits org_rb)
 			bool connective = false;
 			const RoadBits mirrored_rb = MirrorRoadBits(target_rb);
 
+			test_tile:
 			if (IsValidTile(neighbor_tile)) {
 				switch (GetTileType(neighbor_tile)) {
 					/* Always connective ones */
@@ -79,9 +80,14 @@ RoadBits CleanUpRoadBits(const TileIndex tile, RoadBits org_rb)
 						}
 						break;
 
-					case MP_RAILWAY:
-						connective = IsPossibleCrossing(neighbor_tile, DiagDirToAxis(dir));
+					case MP_RAILWAY: {
+						if (IsPossibleCrossing(neighbor_tile, DiagDirToAxis(dir))) {
+							/* Check far side of crossing */
+							neighbor_tile = TileAddByDiagDir(neighbor_tile, dir);
+							goto test_tile;
+						}
 						break;
+					}
 
 					case MP_WATER:
 						/* Check for real water tile */
