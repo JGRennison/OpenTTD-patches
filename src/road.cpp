@@ -22,6 +22,8 @@
 
 #include "safeguards.h"
 
+uint32 _road_layout_change_counter = 0;
+
 /**
  * Return if the tile is a valid tile for a crossing.
  *

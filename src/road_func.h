@@ -182,4 +182,12 @@ RoadTypes GetCompanyRoadtypes(const CompanyID company);
 void UpdateLevelCrossing(TileIndex tile, bool sound = true, bool force_close = false);
 bool IsCrossingOccupiedByRoadVehicle(TileIndex t);
 
+inline void NotifyRoadLayoutChanged()
+{
+	_road_layout_change_counter++;
+}
+
+void NotifyRoadLayoutChangedIfTileNonLeaf(TileIndex tile, RoadType rt, RoadBits present_bits);
+void NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(TileIndex start, TileIndex end, DiagDirection start_dir, RoadType rt);
+
 #endif /* ROAD_FUNC_H */

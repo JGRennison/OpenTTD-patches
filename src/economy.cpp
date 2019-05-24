@@ -597,6 +597,8 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 
 	YapfNotifyTrackLayoutChange(INVALID_TILE, INVALID_TRACK);
 
+	NotifyRoadLayoutChanged();
+
 	cur_company.Restore();
 
 	RegisterGameEvents(new_owner != INVALID_OWNER ? GEF_COMPANY_MERGE : GEF_COMPANY_DELETE);

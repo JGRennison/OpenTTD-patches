@@ -1031,6 +1031,11 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 		return_track(FindFirstBit2x64(trackdirs));
 	}
 
+	/* Path cache is out of date, clear it */
+	if (!v->path.empty() && v->path.layout_ctr != _road_layout_change_counter) {
+		v->path.clear();
+	}
+
 	/* Attempt to follow cached path. */
 	if (!v->path.empty()) {
 		if (v->path.tile.front() != tile) {

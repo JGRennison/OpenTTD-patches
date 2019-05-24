@@ -600,6 +600,12 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 				make_bridge_ramp(tile_start, dir);
 				make_bridge_ramp(tile_end, ReverseDiagDir(dir));
 				AddRoadTunnelBridgeInfrastructure(tile_start, tile_end);
+				if (IsRoadCustomBridgeHead(tile_start) || IsRoadCustomBridgeHead(tile_end)) {
+					NotifyRoadLayoutChanged();
+				} else {
+					if (HasBit(roadtypes, ROADTYPE_ROAD)) NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile_start, tile_end, dir, ROADTYPE_ROAD);
+					if (HasBit(roadtypes, ROADTYPE_TRAM)) NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile_start, tile_end, dir, ROADTYPE_TRAM);
+				}
 				break;
 			}
 
@@ -951,6 +957,7 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 				RoadType rt;
 				FOR_EACH_SET_ROADTYPE(rt, rts ^ (IsTunnelTile(start_tile) ? GetRoadTypes(start_tile) : ROADTYPES_NONE)) {
 					c->infrastructure.road[rt] += num_pieces * 2; // A full diagonal road has two road bits.
+					NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(start_tile, end_tile, direction, rt);
 				}
 			}
 			MakeRoadTunnel(start_tile, company, t->index, direction,                 rts);
@@ -1090,6 +1097,7 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 					c->infrastructure.road[rt] -= len * 2 * TUNNELBRIDGE_TRACKBIT_FACTOR;
 					DirtyCompanyInfrastructureWindows(c->index);
 				}
+				NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile, endtile, GetTunnelBridgeDirection(tile), rt);
 			}
 
 			delete Tunnel::GetByTile(tile);
@@ -1185,6 +1193,13 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 			SubtractRailTunnelBridgeInfrastructure(tile, endtile);
 		} else if (GetTunnelBridgeTransportType(tile) == TRANSPORT_ROAD) {
 			SubtractRoadTunnelBridgeInfrastructure(tile, endtile);
+			if (IsRoadCustomBridgeHead(tile) || IsRoadCustomBridgeHead(endtile)) {
+				NotifyRoadLayoutChanged();
+			} else {
+				RoadTypes roadtypes = GetRoadTypes(tile);
+				if (HasBit(roadtypes, ROADTYPE_ROAD)) NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile, endtile, direction, ROADTYPE_ROAD);
+				if (HasBit(roadtypes, ROADTYPE_TRAM)) NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile, endtile, direction, ROADTYPE_TRAM);
+			}
 		} else { // Aqueduct
 			if (Company::IsValidID(owner)) Company::Get(owner)->infrastructure.water -= len * TUNNELBRIDGE_TRACKBIT_FACTOR;
 		}

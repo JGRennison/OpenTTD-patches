@@ -420,6 +420,7 @@ public:
 				path_cache.td.pop_back();
 				path_cache.tile.pop_back();
 			}
+			path_cache.layout_ctr = _road_layout_change_counter;
 		}
 		return next_trackdir;
 	}

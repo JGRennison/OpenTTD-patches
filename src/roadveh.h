@@ -86,6 +86,7 @@ void GetRoadVehSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs
 struct RoadVehPathCache {
 	std::deque<TrackdirByte> td;
 	std::deque<TileIndex> tile;
+	uint32 layout_ctr;
 
 	inline bool empty() const { return this->td.empty(); }
 

@@ -14,6 +14,8 @@
 
 #include "core/enum_type.hpp"
 
+extern uint32 _road_layout_change_counter;
+
 /**
  * The different roadtypes we support
  *
