@@ -76,6 +76,13 @@ public:
 		free(this->data);
 	}
 
+	void Clear()
+	{
+		this->area = TileArea(INVALID_TILE, 0, 0);
+		free(this->data);
+		this->data = nullptr;
+	}
+
 	/**
 	 * Get the total covered area.
 	 * @return The area covered by the matrix.

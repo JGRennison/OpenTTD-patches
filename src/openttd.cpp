@@ -1341,8 +1341,8 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 
 	const CargoTypes old_town_cargoes_accepted = _town_cargoes_accepted;
 
-	extern void RebuildTownCaches();
-	RebuildTownCaches();
+	extern void RebuildTownCaches(bool cargo_update_required);
+	RebuildTownCaches(false);
 	RebuildSubsidisedSourceAndDestinationCache();
 
 	Station::RecomputeCatchmentForAll();

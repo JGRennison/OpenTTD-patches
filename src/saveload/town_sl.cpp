@@ -24,7 +24,7 @@
 /**
  * Rebuild all the cached variables of towns.
  */
-void RebuildTownCaches()
+void RebuildTownCaches(bool cargo_update_required)
 {
 	Town *town;
 	InitializeBuildingCounts();
@@ -51,7 +51,11 @@ void RebuildTownCaches()
 	/* Update the population and num_house dependent values */
 	FOR_ALL_TOWNS(town) {
 		UpdateTownRadius(town);
-		UpdateTownCargoes(town);
+		if (cargo_update_required) {
+			UpdateTownCargoes(town);
+		} else {
+			UpdateTownCargoTotal(town);
+		}
 	}
 	UpdateTownCargoBitmap();
 }
@@ -66,6 +70,8 @@ void RebuildTownCaches()
  */
 void UpdateHousesAndTowns()
 {
+	bool cargo_update_required = false;
+
 	for (TileIndex t = 0; t < MapSize(); t++) {
 		if (!IsTileType(t, MP_HOUSE)) continue;
 
@@ -75,6 +81,7 @@ void UpdateHousesAndTowns()
 			 * replace it with the substitute original house type. */
 			house_id = _house_mngr.GetSubstituteID(house_id);
 			SetHouseType(t, house_id);
+			cargo_update_required = true;
 		}
 	}
 
@@ -104,15 +111,19 @@ void UpdateHousesAndTowns()
 			/* If not all tiles of this house are present remove the house.
 			 * The other tiles will get removed later in this loop because
 			 * their north tile is not the correct type anymore. */
-			if (!valid_house) DoClearSquare(t);
+			if (!valid_house) {
+				DoClearSquare(t);
+				cargo_update_required = true;
+			}
 		} else if (!IsTileType(north_tile, MP_HOUSE) || GetCleanHouseType(north_tile) != house_type) {
 			/* This tile should be part of a multi-tile building but the
 			 * north tile of this house isn't on the map. */
 			DoClearSquare(t);
+			cargo_update_required = true;
 		}
 	}
 
-	RebuildTownCaches();
+	RebuildTownCaches(cargo_update_required);
 }
 
 /** Save and load of towns. */
@@ -273,7 +284,7 @@ static void RealSave_Town(Town *t)
 	SlObject(&t->cargo_accepted, GetTileMatrixDesc());
 	if (t->cargo_accepted.area.w != 0) {
 		uint arr_len = t->cargo_accepted.area.w / AcceptanceMatrix::GRID * t->cargo_accepted.area.h / AcceptanceMatrix::GRID;
-		SlArray(t->cargo_accepted.data, arr_len, SLE_UINT32);
+		SlArray(t->cargo_accepted.data, arr_len, SLE_UINT64);
 	}
 }
 
@@ -313,16 +324,24 @@ static void Load_TOWN()
 			SlErrorCorrupt("Invalid town name generator");
 		}
 
-		if (IsSavegameVersionBefore(SLV_166)) continue;
+		if (!IsSavegameVersionBefore(SLV_166) && SlXvIsFeatureMissing(XSLFI_TOWN_CARGO_MATRIX)) {
+			SlSkipBytes(4); // tile
+			uint16 w = SlReadUint16();
+			uint16 h = SlReadUint16();
+			if (w != 0) {
+				SlSkipBytes(4 * (w / 4 * h / 4));
+			}
+		}
+		if (SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_MATRIX)) {
+			SlObject(&t->cargo_accepted, GetTileMatrixDesc());
+			if (t->cargo_accepted.area.w != 0) {
+				uint arr_len = t->cargo_accepted.area.w / AcceptanceMatrix::GRID * t->cargo_accepted.area.h / AcceptanceMatrix::GRID;
+				t->cargo_accepted.data = MallocT<CargoTypes>(arr_len);
+				SlArray(t->cargo_accepted.data, arr_len, SLE_UINT64);
 
-		SlObject(&t->cargo_accepted, GetTileMatrixDesc());
-		if (t->cargo_accepted.area.w != 0) {
-			uint arr_len = t->cargo_accepted.area.w / AcceptanceMatrix::GRID * t->cargo_accepted.area.h / AcceptanceMatrix::GRID;
-			t->cargo_accepted.data = MallocT<CargoTypes>(arr_len);
-			SlArray(t->cargo_accepted.data, arr_len, SLE_UINT32);
-
-			/* Rebuild total cargo acceptance. */
-			UpdateTownCargoTotal(t);
+				/* Rebuild total cargo acceptance. */
+				UpdateTownCargoTotal(t);
+			}
 		}
 	}
 }

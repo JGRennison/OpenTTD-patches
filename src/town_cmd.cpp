@@ -964,14 +964,12 @@ void UpdateTownCargoTotal(Town *t)
  * @param start Update the values around this tile.
  * @param update_total Set to true if the total cargo acceptance should be updated.
  */
-static void UpdateTownCargoes(Town *t, TileIndex start, bool update_total = true)
+static void UpdateTownCargoesSingleGridArea(Town *t, TileIndex start, bool update_total = true)
 {
 	CargoArray accepted, produced;
 	CargoTypes dummy = 0;
 
-	/* Gather acceptance for all houses in an area around the start tile.
-	 * The area is composed of the square the tile is in, extended one square in all
-	 * directions as the coverage area of a single station is bigger than just one square. */
+	/* Gather acceptance for all houses in an area around the start tile. */
 	TileArea area = AcceptanceMatrix::GetAreaForTile(start, 1);
 	TILE_AREA_LOOP(tile, area) {
 		if (!IsTileType(tile, MP_HOUSE) || GetTownIndex(tile) != t->index) continue;
@@ -991,6 +989,18 @@ static void UpdateTownCargoes(Town *t, TileIndex start, bool update_total = true
 	if (update_total) UpdateTownCargoTotal(t);
 }
 
+static void UpdateTownCargoesHouse(Town *t, TileIndex start, bool x_two_tiles, bool y_two_tiles, bool update_total = true)
+{
+	TileIndex lower = TileAddWrap(start, -1, -1);
+	TileIndex upper = TileAddWrap(start, x_two_tiles ? 2 : 1, y_two_tiles ? 2 : 1);
+	for (uint x = TileX(lower) & ~(AcceptanceMatrix::GRID - 1); x <= TileX(upper); x += AcceptanceMatrix::GRID) {
+		for (uint y = TileY(lower) & ~(AcceptanceMatrix::GRID - 1); y <= TileY(upper); y += AcceptanceMatrix::GRID) {
+			UpdateTownCargoesSingleGridArea(t, TileXY(x, y), false);
+		}
+	}
+	if (update_total) UpdateTownCargoTotal(t);
+}
+
 /** Update cargo acceptance for the complete town.
  * @param t The town to update.
  */
@@ -1003,7 +1013,7 @@ void UpdateTownCargoes(Town *t)
 
 	/* Update acceptance for each grid square. */
 	TILE_AREA_LOOP_STEP(tile, area, AcceptanceMatrix::GRID) {
-		UpdateTownCargoes(t, tile, false);
+		UpdateTownCargoesSingleGridArea(t, tile, false);
 	}
 
 	/* Update the total acceptance. */
@@ -2643,7 +2653,7 @@ static void DoBuildHouse(Town *t, TileIndex tile, HouseID house, byte random_bit
 	MakeTownHouse(tile, t, construction_counter, construction_stage, house, random_bits);
 	UpdateTownRadius(t);
 	UpdateTownGrowthRate(t);
-	UpdateTownCargoes(t, tile);
+	UpdateTownCargoesHouse(t, tile, hs->building_flags & BUILDING_2_TILES_X, hs->building_flags & BUILDING_2_TILES_Y);
 }
 
 /**
@@ -2852,7 +2862,7 @@ void ClearTownHouse(Town *t, TileIndex tile)
 	UpdateTownRadius(t);
 
 	/* Update cargo acceptance. */
-	UpdateTownCargoes(t, tile);
+	UpdateTownCargoesHouse(t, tile, eflags & BUILDING_2_TILES_X, eflags & BUILDING_2_TILES_Y);
 }
 
 /**

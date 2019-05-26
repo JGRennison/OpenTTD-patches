@@ -74,6 +74,7 @@ enum SlXvFeatureIndex {
 	XSLFI_LINKGRAPH_MODES,                        ///< Linkgraph additional distribution modes
 	XSLFI_GAME_EVENTS,                            ///< Game event flags
 	XSLFI_ROAD_LAYOUT_CHANGE_CTR,                 ///< Road layout change counter
+	XSLFI_TOWN_CARGO_MATRIX,                      ///< Town cargo matrix savegame format changes
 	XSLFI_DEBUG,                                  ///< Debugging info
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit

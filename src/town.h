@@ -93,7 +93,7 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 
 	/* Cargo production and acceptance stats. */
 	CargoTypes cargo_produced;       ///< Bitmap of all cargoes produced by houses in this town.
-	AcceptanceMatrix cargo_accepted; ///< Bitmap of cargoes accepted by houses for each 4*4 map square of the town.
+	AcceptanceMatrix cargo_accepted; ///< Bitmap of cargoes accepted by houses for each 4*4 (really 6*6) map square of the town.
 	CargoTypes cargo_accepted_total; ///< NOSAVE: Bitmap of all cargoes accepted by houses in this town.
 	StationList stations_near;       ///< NOSAVE: List of nearby stations.
 
