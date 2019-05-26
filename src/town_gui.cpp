@@ -38,6 +38,7 @@
 #include "core/random_func.hpp"
 #include "widgets/town_widget.h"
 #include "table/strings.h"
+#include "newgrf_debug.h"
 #include <algorithm>
 
 #include "safeguards.h"
@@ -535,12 +536,23 @@ public:
 
 		DoCommandP(0, this->window_number, 0, CMD_RENAME_TOWN | CMD_MSG(STR_ERROR_CAN_T_RENAME_TOWN), nullptr, str);
 	}
+
+	bool IsNewGRFInspectable() const override
+	{
+		return ::IsNewGRFInspectable(GSF_FAKE_TOWNS, this->window_number);
+	}
+
+	void ShowNewGRFInspectWindow() const override
+	{
+		::ShowNewGRFInspectWindow(GSF_FAKE_TOWNS, this->window_number);
+	}
 };
 
 static const NWidgetPart _nested_town_game_view_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
 		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_TV_CAPTION), SetDataTip(STR_TOWN_VIEW_TOWN_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_DEBUGBOX, COLOUR_BROWN),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
 		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
