@@ -36,7 +36,7 @@ void AfterLoadStoryBook();
 void AfterLoadLinkGraphs();
 void AfterLoadCompanyStats();
 void AfterLoadTraceRestrict();
-void UpdateHousesAndTowns();
+void UpdateHousesAndTowns(bool cargo_update_required);
 
 void UpdateOldAircraft();
 

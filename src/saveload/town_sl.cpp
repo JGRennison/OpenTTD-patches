@@ -68,10 +68,8 @@ void RebuildTownCaches(bool cargo_update_required)
  * town, the town radius and the max passengers
  * of the town.
  */
-void UpdateHousesAndTowns()
+void UpdateHousesAndTowns(bool cargo_update_required)
 {
-	bool cargo_update_required = false;
-
 	for (TileIndex t = 0; t < MapSize(); t++) {
 		if (!IsTileType(t, MP_HOUSE)) continue;
 
