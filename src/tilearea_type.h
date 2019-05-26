@@ -144,7 +144,8 @@ public:
 };
 
 /** Iterator to iterate over a tile area (rectangle) of the map. */
-class OrthogonalTileIterator : public TileIterator {
+template<uint N>
+class OrthogonalTileIteratorStep : public TileIterator {
 private:
 	int w;          ///< The width of the iterated area.
 	int x;          ///< The current 'x' position in the rectangle.
@@ -155,7 +156,7 @@ public:
 	 * Construct the iterator.
 	 * @param ta Area, i.e. begin point and width/height of to-be-iterated area.
 	 */
-	OrthogonalTileIterator(const OrthogonalTileArea &ta) : TileIterator(ta.w == 0 || ta.h == 0 ? INVALID_TILE : ta.tile), w(ta.w), x(ta.w), y(ta.h)
+	OrthogonalTileIteratorStep(const OrthogonalTileArea &ta) : TileIterator(ta.w == 0 || ta.h == 0 ? INVALID_TILE : ta.tile), w(ta.w / N), x(ta.w / N), y(ta.h / N)
 	{
 	}
 
@@ -164,9 +165,9 @@ public:
 	 * @param corner1 Tile from where to begin iterating.
 	 * @param corner2 Tile where to end the iterating.
 	 */
-	OrthogonalTileIterator(TileIndex corner1, TileIndex corner2)
+	OrthogonalTileIteratorStep(TileIndex corner1, TileIndex corner2)
 	{
-		*this = OrthogonalTileIterator(OrthogonalTileArea(corner1, corner2));
+		*this = OrthogonalTileIteratorStep(OrthogonalTileArea(corner1, corner2));
 	}
 
 	/**
@@ -177,10 +178,10 @@ public:
 		assert(this->tile != INVALID_TILE);
 
 		if (--this->x > 0) {
-			this->tile++;
+			this->tile += N;
 		} else if (--this->y > 0) {
 			this->x = this->w;
-			this->tile += TileDiffXY(1, 1) - this->w;
+			this->tile += TileDiffXY(N, N) - (N * this->w);
 		} else {
 			this->tile = INVALID_TILE;
 		}
@@ -189,9 +190,11 @@ public:
 
 	virtual TileIterator *Clone() const
 	{
-		return new OrthogonalTileIterator(*this);
+		return new OrthogonalTileIteratorStep(*this);
 	}
 };
+
+using OrthogonalTileIterator = OrthogonalTileIteratorStep<1>;
 
 /** Iterator to iterate over a tile area (rectangle) of the map.
  * It prefetches tiles once per row.
@@ -298,6 +301,7 @@ public:
  * @param ta  The tile area to search over.
  */
 #define TILE_AREA_LOOP(var, ta) for (OrthogonalTileIterator var(ta); var != INVALID_TILE; ++var)
+#define TILE_AREA_LOOP_STEP(var, ta, N) for (OrthogonalTileIteratorStep<N> var(ta); var != INVALID_TILE; ++var)
 #define TILE_AREA_LOOP_WITH_PREFETCH(var, ta) for (OrthogonalPrefetchTileIterator var(ta); var != INVALID_TILE; ++var)
 
 #endif /* TILEAREA_TYPE_H */

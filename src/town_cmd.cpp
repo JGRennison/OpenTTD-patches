@@ -953,10 +953,8 @@ void UpdateTownCargoTotal(Town *t)
 	t->cargo_accepted_total = 0;
 
 	const TileArea &area = t->cargo_accepted.GetArea();
-	TILE_AREA_LOOP(tile, area) {
-		if (TileX(tile) % AcceptanceMatrix::GRID == 0 && TileY(tile) % AcceptanceMatrix::GRID == 0) {
-			t->cargo_accepted_total |= t->cargo_accepted[tile];
-		}
+	TILE_AREA_LOOP_STEP(tile, area, AcceptanceMatrix::GRID) {
+		t->cargo_accepted_total |= t->cargo_accepted[tile];
 	}
 }
 
@@ -1004,10 +1002,8 @@ void UpdateTownCargoes(Town *t)
 	if (area.tile == INVALID_TILE) return;
 
 	/* Update acceptance for each grid square. */
-	TILE_AREA_LOOP(tile, area) {
-		if (TileX(tile) % AcceptanceMatrix::GRID == 0 && TileY(tile) % AcceptanceMatrix::GRID == 0) {
-			UpdateTownCargoes(t, tile, false);
-		}
+	TILE_AREA_LOOP_STEP(tile, area, AcceptanceMatrix::GRID) {
+		UpdateTownCargoes(t, tile, false);
 	}
 
 	/* Update the total acceptance. */
