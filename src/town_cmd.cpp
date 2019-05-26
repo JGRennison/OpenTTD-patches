@@ -991,8 +991,8 @@ static void UpdateTownCargoesSingleGridArea(Town *t, TileIndex start, bool updat
 
 static void UpdateTownCargoesHouse(Town *t, TileIndex start, bool x_two_tiles, bool y_two_tiles, bool update_total = true)
 {
-	TileIndex lower = TileAddWrap(start, -1, -1);
-	TileIndex upper = TileAddWrap(start, x_two_tiles ? 2 : 1, y_two_tiles ? 2 : 1);
+	TileIndex lower = TileAddSaturating(start, -AcceptanceMatrix::GRID, -AcceptanceMatrix::GRID);
+	TileIndex upper = TileAddSaturating(start, AcceptanceMatrix::GRID + (x_two_tiles ? 1 : 0), AcceptanceMatrix::GRID + (y_two_tiles ? 1 : 0));
 	for (uint x = TileX(lower) & ~(AcceptanceMatrix::GRID - 1); x <= TileX(upper); x += AcceptanceMatrix::GRID) {
 		for (uint y = TileY(lower) & ~(AcceptanceMatrix::GRID - 1); y <= TileY(upper); y += AcceptanceMatrix::GRID) {
 			UpdateTownCargoesSingleGridArea(t, TileXY(x, y), false);
