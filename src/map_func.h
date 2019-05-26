@@ -261,6 +261,7 @@ static inline TileIndexDiff ToTileIndexDiff(TileIndexDiffC tidc)
 #define TILE_ADDXY(tile, x, y) TILE_ADD(tile, TileDiffXY(x, y))
 
 TileIndex TileAddWrap(TileIndex tile, int addx, int addy);
+TileIndex TileAddSaturating(TileIndex tile, int addx, int addy);
 
 /**
  * Returns the TileIndexDiffC offset from a DiagDirection.

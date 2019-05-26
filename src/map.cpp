@@ -146,6 +146,26 @@ TileIndex TileAddWrap(TileIndex tile, int addx, int addy)
 	return TileXY(x, y);
 }
 
+/**
+ * This function checks if we add addx/addy to tile, if we
+ * do wrap around the edges. Instead of wrapping, saturate at the map edge.
+ *
+ * @param tile the 'starting' point of the adding
+ * @param addx the amount of tiles in the X direction to add
+ * @param addy the amount of tiles in the Y direction to add
+ * @return translated tile
+ */
+TileIndex TileAddSaturating(TileIndex tile, int addx, int addy)
+{
+	int x = TileX(tile) + addx;
+	int y = TileY(tile) + addy;
+
+	auto clamp = [&](int coord, int map_max) -> uint {
+		return Clamp<int>(coord, _settings_game.construction.freeform_edges ? 1 : 0, map_max - 1);
+	};
+	return TileXY(clamp(x,  MapMaxX()), clamp(y,  MapMaxY()));
+}
+
 /** 'Lookup table' for tile offsets given a DiagDirection */
 extern const TileIndexDiffC _tileoffs_by_diagdir[] = {
 	{-1,  0}, ///< DIAGDIR_NE
