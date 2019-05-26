@@ -571,6 +571,28 @@ class NIHTown : public NIHelper {
 
 		return nullptr;
 	}
+
+	void ExtraInfo(uint index, std::function<void(const char *)> print) const override
+	{
+		const Town *t = Town::Get(index);
+		char buffer[1024];
+
+		print("Debug Info:");
+		seprintf(buffer, lastof(buffer), "  Index: %u", index);
+		print(buffer);
+
+		char *b = buffer;
+		b += seprintf(b, lastof(buffer), "  cargo_produced: ");
+		SetDParam(0, t->cargo_produced);
+		b = GetString(b, STR_JUST_CARGO_LIST, lastof(buffer));
+		print(buffer);
+
+		b = buffer;
+		b += seprintf(b, lastof(buffer), "  cargo_accepted_total: ");
+		SetDParam(0, t->cargo_accepted_total);
+		b = GetString(b, STR_JUST_CARGO_LIST, lastof(buffer));
+		print(buffer);
+	}
 };
 
 static const NIFeature _nif_town = {
