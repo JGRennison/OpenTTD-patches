@@ -734,7 +734,7 @@ static void UpdateVehicleTileHash(Vehicle *v, bool remove)
 	Vehicle **old_hash = v->hash_tile_current;
 	Vehicle **new_hash;
 
-	if (remove) {
+	if (remove || HasBit(v->subtype, GVSF_VIRTUAL)) {
 		new_hash = nullptr;
 	} else {
 		int x = GB(TileX(v->tile), HASH_RES, HASH_BITS);
