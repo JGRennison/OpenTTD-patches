@@ -1423,6 +1423,11 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 
 	Vehicle *v;
 	FOR_ALL_VEHICLES(v) {
+		extern bool ValidateVehicleTileHash(const Vehicle *v);
+		if (!ValidateVehicleTileHash(v)) {
+			CCLOG("vehicle tile hash mismatch: type %i, vehicle %i, company %i, unit number %i", (int)v->type, v->index, (int)v->owner, v->unitnumber);
+		}
+
 		extern void FillNewGRFVehicleCache(const Vehicle *v);
 		if (v != v->First() || v->vehstatus & VS_CRASHED || !v->IsPrimaryVehicle()) continue;
 

@@ -762,6 +762,15 @@ static void UpdateVehicleTileHash(Vehicle *v, bool remove)
 	v->hash_tile_current = new_hash;
 }
 
+bool ValidateVehicleTileHash(const Vehicle *v)
+{
+	if (v->type == VEH_TRAIN && Train::From(v)->IsVirtual()) return v->hash_tile_current == nullptr;
+
+	int x = GB(TileX(v->tile), HASH_RES, HASH_BITS);
+	int y = GB(TileY(v->tile), HASH_RES, HASH_BITS) << HASH_BITS;
+	return v->hash_tile_current == &_vehicle_tile_hash[(x + y) & TOTAL_HASH_MASK];
+}
+
 static Vehicle *_vehicle_viewport_hash[1 << (GEN_HASHX_BITS + GEN_HASHY_BITS)];
 
 static void UpdateVehicleViewportHash(Vehicle *v, int x, int y)
