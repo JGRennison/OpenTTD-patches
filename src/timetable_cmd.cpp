@@ -372,7 +372,10 @@ static bool VehicleTimetableSorter(Vehicle * const &a, Vehicle * const &b)
 	if (i != 0) return i < 0;
 
 	/* If all else is equal, use some unique index to sort it the same way. */
-	return b->unitnumber < a->unitnumber;
+	int k = b->unitnumber - a->unitnumber;
+	if (k != 0) return k < 0;
+
+	return b->index < a->index;
 }
 
 /**
