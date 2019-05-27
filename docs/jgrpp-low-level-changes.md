@@ -13,6 +13,9 @@ This document does not describe the player-visible changes/additions described i
 * Support using sigaction and sigaltstack for more information and correct handling of stack overflow crashes (Unix, Mac).
 * Demangle C++ symbols (Unix).
 * Attempt to handle segfaults which occur within the crashlog handler (Unix).
+* Emit a "crash" log, savegame and screenshot on multiplayer desync.
+* Add crash/desync information to output screenshot and savegame files.
+* Send a copy of the desync crash log to the multiplayer server.
 
 #### Assertions
 
@@ -63,6 +66,7 @@ Index the vehicle list in per type arrays for use by CallVehicleTicks.
 
 Add supplementary information to find server UDP packets and reply in an extended format with more info/wider fields if detected.
 Paginate UDP packets longer than the MTU across multiple packets.
+Use larger "packets" where useful in TCP connections.
 
 ### Sprites/blitter
 
@@ -100,5 +104,6 @@ Use of __builtin_expect, byte-swap builtins, and various bitmath builtins.
 Add various debug console commands.
 Increase the number of file slots.
 Cache font heights.
+Cache resolved names for stations, towns and industries.
 Change inheritance model of class Window to keep UndefinedBehaviorSanitizer happy.
 Various other misc changes to reduce UndefinedBehaviorSanitizer spam.
