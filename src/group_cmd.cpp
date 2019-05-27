@@ -209,7 +209,7 @@ void GroupStatistics::Clear()
 
 	const Vehicle *v;
 	FOR_ALL_VEHICLES(v) {
-		if (v->IsPrimaryVehicle() && v->age > VEHICLE_PROFIT_MIN_AGE) GroupStatistics::VehicleReachedProfitAge(v);
+		if (v->IsPrimaryVehicle() && v->age > VEHICLE_PROFIT_MIN_AGE && !HasBit(v->subtype, GVSF_VIRTUAL)) GroupStatistics::VehicleReachedProfitAge(v);
 	}
 }
 

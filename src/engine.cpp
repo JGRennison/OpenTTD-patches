@@ -782,7 +782,7 @@ static CompanyID GetPreviewCompany(Engine *e)
 			/* Check whether the company uses similar vehicles */
 			Vehicle *v;
 			FOR_ALL_VEHICLES(v) {
-				if (v->owner != c->index || v->type != e->type) continue;
+				if (v->owner != c->index || v->type != e->type || HasBit(v->subtype, GVSF_VIRTUAL)) continue;
 				if (!v->GetEngine()->CanCarryCargo() || !HasBit(cargomask, v->cargo_type)) continue;
 
 				best_hist = c->old_economy[0].performance_history;
@@ -933,7 +933,7 @@ static void NewVehicleAvailable(Engine *e)
 			c->block_preview = 20;
 
 			FOR_ALL_VEHICLES(v) {
-				if (v->type == VEH_TRAIN || v->type == VEH_ROAD || v->type == VEH_SHIP ||
+				if ((v->type == VEH_TRAIN && !HasBit(v->subtype, GVSF_VIRTUAL)) || v->type == VEH_ROAD || v->type == VEH_SHIP ||
 						(v->type == VEH_AIRCRAFT && Aircraft::From(v)->IsNormalAircraft())) {
 					if (v->owner == c->index && v->engine_type == index) {
 						/* The user did prove me wrong, so restore old value */

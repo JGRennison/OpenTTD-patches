@@ -79,6 +79,7 @@ void BuildDepotVehicleList(VehicleType type, TileIndex tile, VehicleList *engine
 		/* General tests for all vehicle types */
 		if (v->type != type) continue;
 		if (v->tile != tile) continue;
+		if (HasBit(v->subtype, GVSF_VIRTUAL)) continue;
 
 		switch (type) {
 			case VEH_TRAIN: {

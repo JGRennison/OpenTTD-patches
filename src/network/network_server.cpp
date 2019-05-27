@@ -1581,7 +1581,7 @@ void NetworkPopulateCompanyStats(NetworkCompanyStats *stats)
 
 	/* Go through all vehicles and count the type of vehicles */
 	FOR_ALL_VEHICLES(v) {
-		if (!Company::IsValidID(v->owner) || !v->IsPrimaryVehicle()) continue;
+		if (!Company::IsValidID(v->owner) || !v->IsPrimaryVehicle() || HasBit(v->subtype, GVSF_VIRTUAL)) continue;
 		byte type = 0;
 		switch (v->type) {
 			case VEH_TRAIN: type = NETWORK_VEH_TRAIN; break;
@@ -1669,7 +1669,7 @@ static void NetworkAutoCleanCompanies()
 
 		const Vehicle *v;
 		FOR_ALL_VEHICLES(v) {
-			if (!Company::IsValidID(v->owner) || !v->IsPrimaryVehicle()) continue;
+			if (!Company::IsValidID(v->owner) || !v->IsPrimaryVehicle() || HasBit(v->subtype, GVSF_VIRTUAL)) continue;
 			vehicles_in_company[v->owner]++;
 		}
 	}

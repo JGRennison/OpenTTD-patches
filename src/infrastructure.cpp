@@ -194,7 +194,7 @@ static void FixAllReservations()
 	assert(!_settings_game.economy.infrastructure_sharing[VEH_TRAIN]);
 	Train *v;
 	FOR_ALL_TRAINS(v) {
-		if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0) continue;
+		if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL)) continue;
 		/* It might happen that the train reserved additional tracks,
 		 * but FollowTrainReservation can't detect those because they are no longer reachable.
 		 * detect this by first finding the end of the reservation,
@@ -237,7 +237,7 @@ bool CheckSharingChangePossible(VehicleType type)
 	StringID error_message = STR_NULL;
 	Vehicle *v;
 	FOR_ALL_VEHICLES(v) {
-		if (type != v->type) continue;
+		if (type != v->type || HasBit(v->subtype, GVSF_VIRTUAL)) continue;
 		if (v->Previous() != nullptr) continue;
 
 		/* Check vehicle positiion */
