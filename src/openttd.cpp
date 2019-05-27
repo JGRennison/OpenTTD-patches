@@ -1432,7 +1432,18 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		if (v != v->First() || v->vehstatus & VS_CRASHED || !v->IsPrimaryVehicle()) continue;
 
 		uint length = 0;
-		for (const Vehicle *u = v; u != nullptr; u = u->Next()) length++;
+		for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
+			if (u->IsGroundVehicle() && (HasBit(u->GetGroundVehicleFlags(), GVF_GOINGUP_BIT) || HasBit(u->GetGroundVehicleFlags(), GVF_GOINGDOWN_BIT)) && u->GetGroundVehicleCache()->cached_slope_resistance && HasBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST)) {
+				CCLOG("VCF_GV_ZERO_SLOPE_RESIST set incorrectly (1): type %i, vehicle %i, company %i, unit number %i, wagon %i", (int)v->type, v->index, (int)v->owner, v->unitnumber, length);
+			}
+			if (u->type == VEH_TRAIN && u->breakdown_ctr != 0 && !HasBit(Train::From(v)->flags, VRF_CONSIST_BREAKDOWN)) {
+				CCLOG("VRF_CONSIST_BREAKDOWN incorrectly not set: type %i, vehicle %i, company %i, unit number %i, wagon %i", (int)v->type, v->index, (int)v->owner, v->unitnumber, length);
+			}
+			if (u->type == VEH_TRAIN && ((Train::From(u)->track & TRACK_BIT_WORMHOLE && !(Train::From(u)->vehstatus & VS_HIDDEN)) || Train::From(u)->track == TRACK_BIT_DEPOT) && !HasBit(Train::From(v)->flags, VRF_CONSIST_SPEED_REDUCTION)) {
+				CCLOG("VRF_CONSIST_SPEED_REDUCTION incorrectly not set: type %i, vehicle %i, company %i, unit number %i, wagon %i", (int)v->type, v->index, (int)v->owner, v->unitnumber, length);
+			}
+			length++;
+		}
 
 		NewGRFCache        *grf_cache = CallocT<NewGRFCache>(length);
 		VehicleCache       *veh_cache = CallocT<VehicleCache>(length);
@@ -1490,7 +1501,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 				CCLOG("vehicle cache mismatch: type %i, vehicle %i, company %i, unit number %i, wagon %i", (int)v->type, v->index, (int)v->owner, v->unitnumber, length);
 			}
 			if (u->IsGroundVehicle() && (HasBit(u->GetGroundVehicleFlags(), GVF_GOINGUP_BIT) || HasBit(u->GetGroundVehicleFlags(), GVF_GOINGDOWN_BIT)) && u->GetGroundVehicleCache()->cached_slope_resistance && HasBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST)) {
-				CCLOG("VCF_GV_ZERO_SLOPE_RESIST set incorrectly: type %i, vehicle %i, company %i, unit number %i, wagon %i", (int)v->type, v->index, (int)v->owner, v->unitnumber, length);
+				CCLOG("VCF_GV_ZERO_SLOPE_RESIST set incorrectly (2): type %i, vehicle %i, company %i, unit number %i, wagon %i", (int)v->type, v->index, (int)v->owner, v->unitnumber, length);
 			}
 			if (veh_old[length]->acceleration != u->acceleration) {
 				CCLOG("acceleration mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
