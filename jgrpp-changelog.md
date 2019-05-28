@@ -2,6 +2,23 @@
 
 * * *
 
+### v0.31.1 (2019-05-28)
+* Fix crash when articulated road vehicles overtook other road vehicles on custom bridge heads.
+* Fix airports not being deleted on bankruptcy/company deletion when an aircraft from another company was taking off/landing.
+* Fix max speed in road vehicle purchase window when using original acceleration model.
+* Fix various issues in the company bankruptcy/take-over process.
+* Template-based train replacement:
+  * Fix state of front engine not being cleared when being replaced and kept in the depot.
+  * Fix trace restrict slot ownership not being transfered when replacing the front engine.
+  * Add error messages for replacement failure due to wrong depot railtype or owner.
+* Add news/advice setting to warn if no depot order in vehicle schedule.
+* Enable vehicle list buttons in station window when the list would be non-empty.
+* Enable vehicle group management actions on other companies' stations.
+* Improve performance of name sorting in town, industry and station list windows.
+* Improve performance of server to client map transfer on multiplayer join.
+* Fix various possible sources of non-determinism which could potentially cause multiplayer desyncs.
+* Emit "crash" log, savegame and screenshot on multiplayer desync.
+
 ### v0.31.0 (2019-05-06)
 * Fix online content requests which included a large numbers of missing items.
 * Fix crash which could be triggered by an AI.

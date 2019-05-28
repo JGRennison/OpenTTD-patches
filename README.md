@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.31.0
+## JGR's Patchpack version 0.31.1
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -243,6 +243,9 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Allow diagonal construction of rivers in the scenario editor. (added in v0.30.2).  
   * Add setting to allow articulated road vehicles to overtake other vehicles. (added in v0.31.0).  
   * Add new link graph distribution modes: asymmetric (equal) and asymmetric (nearest). (added in v0.31.0).  
+  * Add news/advice setting to warn if no depot order in vehicle schedule. (added in v0.31.1).  
+  * Enable vehicle list buttons in station window when the list would be non-empty. (added in v0.31.1).  
+  * Enable vehicle group management actions on other companies' stations. (added in v0.31.1).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
   * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).
