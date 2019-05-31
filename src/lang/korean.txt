@@ -848,24 +848,25 @@ STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_GENERAL                   :{BIG_FONT}{BLAC
 STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_FARM                      :{BIG_FONT}{BLACK}{INDUSTRY}{G 0 "이" "가"} 곤충떼의 습격으로 황폐화되었습니다!{}생산량이 50%로 떨어졌습니다.
 STR_NEWS_INDUSTRY_PRODUCTION_DECREASE_SMOOTH                    :{BIG_FONT}{BLACK}{1:INDUSTRY}의 {0:STRING} 생산량이 {2:COMMA}% 감소하였습니다!
 
-STR_NEWS_TRAIN_IS_WAITING                                       :{WHITE}{VEHICLE} : 차량기지 안에서 대기 중입니다.
-STR_NEWS_ROAD_VEHICLE_IS_WAITING                                :{WHITE}{VEHICLE} : 차고지에서 대기 중입니다.
-STR_NEWS_SHIP_IS_WAITING                                        :{WHITE}{VEHICLE} : 정박소 안에서 대기 중입니다.
-STR_NEWS_AIRCRAFT_IS_WAITING                                    :{WHITE}{VEHICLE} : 격납고 안에서 대기 중입니다.
+STR_NEWS_TRAIN_IS_WAITING                                       :{WHITE}{VEHICLE} : 차량기지 안에서 대기 중입니다
+STR_NEWS_ROAD_VEHICLE_IS_WAITING                                :{WHITE}{VEHICLE} : 차고지에서 대기 중입니다
+STR_NEWS_SHIP_IS_WAITING                                        :{WHITE}{VEHICLE} : 정박소 안에서 대기 중입니다
+STR_NEWS_AIRCRAFT_IS_WAITING                                    :{WHITE}{VEHICLE} : 격납고 안에서 대기 중입니다
 
 # Order review system / warnings
 STR_NEWS_VEHICLE_HAS_TOO_FEW_ORDERS                             :{WHITE}{VEHICLE}에 경로를 하나 이상 지정해주십시오
 STR_NEWS_VEHICLE_HAS_VOID_ORDER                                 :{WHITE}{VEHICLE}에 빈 경로가 지정되어 있습니다
 STR_NEWS_VEHICLE_HAS_DUPLICATE_ENTRY                            :{WHITE}{VEHICLE}에 중복된 경로가 지정되어 있습니다
 STR_NEWS_VEHICLE_HAS_INVALID_ENTRY                              :{WHITE}{VEHICLE}에 잘못된 경로가 지정되어 있습니다
-STR_NEWS_PLANE_USES_TOO_SHORT_RUNWAY                            :{WHITE}{VEHICLE}의 경로 중에 활주로가 너무 짧은 공항이 있습니다.
+STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE}의 경로에는 기지가 존재하지 않습니다
+STR_NEWS_PLANE_USES_TOO_SHORT_RUNWAY                            :{WHITE}{VEHICLE}의 경로 중에 활주로가 너무 짧은 공항이 있습니다
 
-STR_NEWS_VEHICLE_IS_GETTING_OLD                                 :{WHITE}{VEHICLE} : 차량이 낡았습니다.
-STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD                            :{WHITE}{VEHICLE} : 차량이 매우 낡았습니다.
+STR_NEWS_VEHICLE_IS_GETTING_OLD                                 :{WHITE}{VEHICLE} : 차량이 낡았습니다
+STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD                            :{WHITE}{VEHICLE} : 차량이 매우 낡았습니다
 STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD_AND                        :{WHITE}{VEHICLE} : 차량이 매우 낡아 교체가 시급합니다
-STR_NEWS_TRAIN_IS_STUCK                                         :{WHITE}{VEHICLE} : 다음 목적지로 가는 경로를 찾을 수 없습니다.
-STR_NEWS_VEHICLE_IS_LOST                                        :{WHITE}{VEHICLE} : 아직 다음 목적지에 도착하지 못했습니다.
-STR_NEWS_VEHICLE_IS_UNPROFITABLE                                :{WHITE}{VEHICLE}의 작년 수익이 {CURRENCY_LONG} 입니다.
+STR_NEWS_TRAIN_IS_STUCK                                         :{WHITE}{VEHICLE} : 다음 목적지로 가는 경로를 찾을 수 없습니다
+STR_NEWS_VEHICLE_IS_LOST                                        :{WHITE}{VEHICLE} : 아직 다음 목적지에 도착하지 못했습니다
+STR_NEWS_VEHICLE_IS_UNPROFITABLE                                :{WHITE}{VEHICLE}의 작년 수익이 {CURRENCY_LONG} 입니다
 STR_NEWS_AIRCRAFT_DEST_TOO_FAR                                  :{WHITE}거리가 너무 멀어서 {VEHICLE}이 다음 목적지에 도착할 수 없습니다
 
 STR_NEWS_ORDER_REFIT_FAILED                                     :{WHITE}경로 상에 있던 개조에 실패하여 {VEHICLE}의 운행을 멈췄습니다.
@@ -1311,6 +1312,8 @@ STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :이 설정을 �
 STR_CONFIG_SETTING_ORDER_REVIEW_OFF                             :검사하지 않음
 STR_CONFIG_SETTING_ORDER_REVIEW_EXDEPOT                         :정지한 차량을 제외하고 검사
 STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :모든 차량을 검사
+STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER                          :경로에 기지가 없는 경우 경고: {STRING2}
+STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_HELPTEXT                 :이 설정을 켜고 차량의 경로 검사 설정을 켜면, 기차나 차량, 선박의 경로에 기지가 없는 경우 뉴스 메시지로 알려줍니다.
 STR_CONFIG_SETTING_WARN_INCOME_LESS                             :차량의 수입이 적자일 때 경고하기: {STRING}
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :이 설정을 켜면, 지난 해에 수익이 없는 차량이 있으면 뉴스 메시지로 알려줍니다.
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :옛날 차량을 사라지지 않고 계속 만들 수 있게 함: {STRING}
@@ -5411,20 +5414,23 @@ STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}차량�
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}선박을 팔 수 없습니다...
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}항공기를 팔 수 없습니다...
 
-STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE                            :{WHITE}이 열차는 사용할 수 없는 상태입니다.
-STR_ERROR_ROAD_VEHICLE_NOT_AVAILABLE                            :{WHITE}이 차량은 사용할 수 없는 상태입니다.
-STR_ERROR_SHIP_NOT_AVAILABLE                                    :{WHITE}이 선박은 사용할 수 없는 상태입니다.
-STR_ERROR_AIRCRAFT_NOT_AVAILABLE                                :{WHITE}이 항공기는 사용할 수 없는 상태입니다.
+STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE                            :{WHITE}이 열차는 사용할 수 없는 상태입니다
+STR_ERROR_ROAD_VEHICLE_NOT_AVAILABLE                            :{WHITE}이 차량은 사용할 수 없는 상태입니다
+STR_ERROR_SHIP_NOT_AVAILABLE                                    :{WHITE}이 선박은 사용할 수 없는 상태입니다
+STR_ERROR_AIRCRAFT_NOT_AVAILABLE                                :{WHITE}이 항공기는 사용할 수 없는 상태입니다
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}게임에 차량이 너무 많습니다!
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}정비 간격 설정을 바꿀 수 없습니다...
 
-STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... 차량이 파괴되었습니다.
+STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... 차량이 파괴되었습니다
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}사용할 수 있는 차량이 모두 없어질 것입니다
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}NewGRF 설정을 변경하십시오
 STR_ERROR_NO_VEHICLES_AVAILABLE_YET                             :{WHITE}사용할 수 있는 차량이 하나도 없습니다
-STR_ERROR_NO_VEHICLES_AVAILABLE_YET_EXPLANATION                 :{WHITE}{DATE_SHORT}년 이후에 새로운 게임을 시작하거나 차량이 더 빨리 개발되는 NewGRF을 사용하십시오.
+STR_ERROR_NO_VEHICLES_AVAILABLE_YET_EXPLANATION                 :{WHITE}{DATE_SHORT}년 이후에 새로운 게임을 시작하거나 차량이 더 빨리 개발되는 NewGRF을 사용하십시오
+
+STR_ERROR_CANT_PURCHASE_OTHER_COMPANY_DEPOT                     :{WHITE}기지가 다른 회사 소유이므로 그곳에서 차량을 만들 수 없습니다
+STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE                             :{WHITE}이 선로 종류에 맞는 차량을 건설할 수 없는 차량기지입니다
 
 # Specific vehicle errors
 STR_ERROR_CAN_T_MAKE_TRAIN_PASS_SIGNAL                          :{WHITE}너무 위험해서 신호를 무시할 수 없습니다...
@@ -6088,7 +6094,7 @@ STR_TMPL_CONFIG_KEEPREMAINDERS                                  :놔두기
 STR_TMPL_CONFIG_REFIT                                           :개조
 STR_TMPL_CONFIG_OLD_ONLY                                        :낡은 차량만
 
-STR_TMPL_NUM_TRAINS_NEED_RPL                                    :# 개의 교체할 열차:
+STR_TMPL_NUM_TRAINS_NEED_RPL                                    :교체할 열차 수:
 
 STR_TMPL_CARGO_SUMMARY                                          :{CARGO_LONG}
 STR_TMPL_CARGO_SUMMARY_MULTI                                    :{CARGO_LONG} (x{NUM})
