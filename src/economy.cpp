@@ -1826,6 +1826,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 	CargoTypes reservation_left = 0;
 	CargoTypes not_yet_in_station_cargo_not_full   = 0;
 	CargoTypes not_yet_in_station_cargo_full       = 0;
+	CargoTypes beyond_platform_end_cargo_full      = 0;
 
 	front->cur_speed = 0;
 
@@ -1833,7 +1834,14 @@ static void LoadUnloadVehicle(Vehicle *front)
 
 	uint artic_part = 0; // Articulated part we are currently trying to load. (not counting parts without capacity)
 	for (Vehicle *v = front; v != nullptr; v = v->Next()) {
-		if (pull_through_mode && HasBit(Train::From(v)->flags, VRF_BEYOND_PLATFORM_END)) continue;
+		if (pull_through_mode && HasBit(Train::From(v)->flags, VRF_BEYOND_PLATFORM_END)) {
+			if (v->cargo_cap != 0) {
+				if (v->cargo.StoredCount() >= v->cargo_cap) {
+					SetBit(beyond_platform_end_cargo_full, v->cargo_type);
+				}
+			}
+			continue;
+		}
 		if (pull_through_mode && !v->IsArticulatedPart()) {
 			int length = Train::From(v)->gcache.cached_veh_length;
 			Vehicle *u = v;
@@ -2077,7 +2085,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 				/* if the aircraft carries passengers and is NOT full, then
 				 * continue loading, no matter how much mail is in */
 				if ((front->type == VEH_AIRCRAFT && IsCargoInClass(front->cargo_type, CC_PASSENGERS) && front->cargo_cap > front->cargo.StoredCount()) ||
-						(cargo_not_full != 0 && (cargo_full & ~cargo_not_full) == 0)) { // There are still non-full cargoes
+						(cargo_not_full != 0 && ((cargo_full | beyond_platform_end_cargo_full) & ~cargo_not_full) == 0)) { // There are still non-full cargoes
 					finished_loading = false;
 				}
 			} else if (cargo_not_full != 0) {
