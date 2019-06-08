@@ -3540,6 +3540,8 @@ uint Train::Crash(bool flooded)
 		HideFillingPercent(&this->fill_percent_te_id);
 	}
 
+	RegisterGameEvents(GEF_TRAIN_CRASH);
+
 	pass += this->GroundVehicleBase::Crash(flooded);
 
 	this->crash_anim_pos = flooded ? 4000 : 1; // max 4440, disappear pretty fast when flooded

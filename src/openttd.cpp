@@ -1813,5 +1813,6 @@ char *DumpGameEventFlags(GameEventFlags events, char *b, const char *last)
 	dump('n', GEF_RELOAD_NEWGRF);
 	dump('t', GEF_TBTR_REPLACEMENT);
 	dump('D', GEF_DISASTER_VEH);
+	dump('c', GEF_TRAIN_CRASH);
 	return b;
 }

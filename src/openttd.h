@@ -93,6 +93,7 @@ enum GameEventFlags : uint32 {
 	GEF_RELOAD_NEWGRF        = 1 << 2, ///< (n) ReloadNewGRFData() has been called
 	GEF_TBTR_REPLACEMENT     = 1 << 3, ///< (t) CMD_TEMPLATE_REPLACE_VEHICLE has been called
 	GEF_DISASTER_VEH         = 1 << 4, ///< (D) A disaster vehicle exists or has been created
+	GEF_TRAIN_CRASH          = 1 << 5, ///< (c) A train crash has occurred
 };
 DECLARE_ENUM_AS_BIT_SET(GameEventFlags)
 
