@@ -1252,6 +1252,15 @@ static void SetupBridgeTunnelSignalSimulation(TileIndex entrance, TileIndex exit
 	SetTunnelBridgeSignalSimulationExit(exit);
 }
 
+static void ReReserveTrainPath(Train *v)
+{
+	/* Extend the train's path if it's not stopped or loading, or not at a safe position. */
+	if (!(((v->vehstatus & VS_STOPPED) && v->cur_speed == 0) || v->current_order.IsType(OT_LOADING)) ||
+			!IsSafeWaitingPosition(v, v->tile, v->GetVehicleTrackdir(), true, _settings_game.pf.forbid_90_deg)) {
+		TryPathReserve(v, true);
+	}
+}
+
 /**
  * Build signals, alternate between double/single, signal/semaphore,
  * pre/exit/combo-signals, and what-else not. If the rail piece does not
@@ -1354,7 +1363,15 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 		};
 		if (flags & DC_EXEC) {
 			Company * const c = Company::Get(GetTileOwner(tile));
-			if (IsTunnelBridgeWithSignalSimulation(tile)) c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, tile_exit);
+			Train *re_reserve_train = nullptr;
+			if (IsTunnelBridgeWithSignalSimulation(tile)) {
+				c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, tile_exit);
+			} else {
+				if (HasAcrossTunnelBridgeReservation(tile)) {
+					re_reserve_train = GetTrainForReservation(tile, FindFirstTrack(GetAcrossTunnelBridgeReservationTrackBits(tile)));
+					if (re_reserve_train != nullptr) FreeTrainTrackReservation(re_reserve_train);
+				}
+			}
 			if (!p2_active && IsTunnelBridgeWithSignalSimulation(tile)) { // Toggle signal if already signals present.
 				if (convert_signal) {
 					if (flip_variant) {
@@ -1420,6 +1437,9 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			YapfNotifyTrackLayoutChange(tile_exit, track);
 			if (IsTunnelBridgeWithSignalSimulation(tile)) c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(tile, tile_exit);
 			DirtyCompanyInfrastructureWindows(GetTileOwner(tile));
+			if (re_reserve_train != nullptr) {
+				ReReserveTrainPath(re_reserve_train);
+			}
 		}
 		return cost;
 	}
@@ -1549,11 +1569,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 		AddTrackToSignalBuffer(tile, track, _current_company);
 		YapfNotifyTrackLayoutChange(tile, track);
 		if (v != nullptr) {
-			/* Extend the train's path if it's not stopped or loading, or not at a safe position. */
-			if (!(((v->vehstatus & VS_STOPPED) && v->cur_speed == 0) || v->current_order.IsType(OT_LOADING)) ||
-					!IsSafeWaitingPosition(v, v->tile, v->GetVehicleTrackdir(), true, _settings_game.pf.forbid_90_deg)) {
-				TryPathReserve(v, true);
-			}
+			ReReserveTrainPath(v);
 		}
 	}
 
@@ -1892,6 +1908,16 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 
 		if (IsTunnelBridgeWithSignalSimulation(tile)) { // handle tunnel/bridge signals.
 			TileIndex end = GetOtherTunnelBridgeEnd(tile);
+			std::vector<Train *> re_reserve_trains;
+			auto check_reservation = [&](TileIndex t) {
+				if (HasAcrossTunnelBridgeReservation(t)) {
+					Train *v = GetTrainForReservation(t, FindFirstTrack(GetAcrossTunnelBridgeReservationTrackBits(t)));
+					if (v != nullptr) FreeTrainTrackReservation(v);
+					re_reserve_trains.push_back(v);
+				}
+			};
+			check_reservation(tile);
+			check_reservation(end);
 			Company::Get(GetTileOwner(tile))->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, end);
 			ClearBridgeTunnelSignalSimulation(end, tile);
 			ClearBridgeTunnelSignalSimulation(tile, end);
@@ -1901,6 +1927,9 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 			YapfNotifyTrackLayoutChange(tile, track);
 			YapfNotifyTrackLayoutChange(end, track);
 			DirtyCompanyInfrastructureWindows(GetTileOwner(tile));
+			for (Train *v : re_reserve_trains) {
+				ReReserveTrainPath(v);
+			}
 			return CommandCost(EXPENSES_CONSTRUCTION, cost);
 		}
 
