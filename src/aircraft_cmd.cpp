@@ -955,6 +955,7 @@ static bool AircraftController(Aircraft *v)
 			/*  Increase speed of rotors. When speed is 80, we've landed. */
 			if (u->cur_speed >= 80) {
 				ClrBit(v->flags, VAF_HELI_DIRECT_DESCENT);
+				v->UpdatePosition();
 				return true;
 			}
 			u->cur_speed += 4;
@@ -966,6 +967,8 @@ static bool AircraftController(Aircraft *v)
 				} else {
 					SetAircraftPosition(v, v->x_pos, v->y_pos, min(v->z_pos + count, z));
 				}
+			} else {
+				v->UpdatePosition();
 			}
 		}
 		return false;
