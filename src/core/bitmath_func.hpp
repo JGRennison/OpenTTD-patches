@@ -416,7 +416,7 @@ static inline T ROR(const T x, const uint8 n)
 		return (uint64)__builtin_bswap64((uint64)x);
 #else
 		return ((x >> 56) & 0xFFULL) | ((x >> 40) & 0xFF00ULL) | ((x >> 24) & 0xFF0000ULL) | ((x >> 8) & 0xFF000000ULL) |
-				((x << 8) & 0xFF00000000ULL) | ((x << 24) & 0xFF0000000000ULL) | ((x << 40) & 0xFF000000000000ULL) | ((x << 56) & 0xFF000000000000ULL);
+				((x << 8) & 0xFF00000000ULL) | ((x << 24) & 0xFF0000000000ULL) | ((x << 40) & 0xFF000000000000ULL) | ((x << 56) & 0xFF00000000000000ULL);
 				;
 #endif /* __GNUC__ || __clang__ */
 	}
