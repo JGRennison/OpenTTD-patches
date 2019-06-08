@@ -75,6 +75,7 @@
 #include "tbtr_template_vehicle.h"
 #include "string_func_extra.h"
 #include "industry.h"
+#include "cargopacket.h"
 
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
@@ -1607,6 +1608,8 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 
 	if (!TraceRestrictSlot::ValidateVehicleIndex()) CCLOG("Trace restrict slot vehicle index validation failed");
 	TraceRestrictSlot::ValidateSlotOccupants(log);
+
+	if (!CargoPacket::ValidateDeferredCargoPayments()) CCLOG("Cargo packets deferred payments validation failed");
 
 #undef CCLOG
 }

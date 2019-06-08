@@ -292,6 +292,17 @@ void CargoPacket::PayDeferredPayments()
 	}
 }
 
+/* static */ bool CargoPacket::ValidateDeferredCargoPayments()
+{
+	for (auto &it : _cargo_packet_deferred_payments) {
+		uint id = it.first >> 32;
+		const CargoPacket *cp = CargoPacket::GetIfValid(id);
+		if (!cp) return false;
+		if (!(cp->flags & CPF_HAS_DEFERRED_PAYMENT)) return false;
+	}
+	return true;
+}
+
 /*
  *
  * Cargo list implementation

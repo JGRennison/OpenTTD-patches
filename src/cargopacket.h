@@ -204,6 +204,7 @@ public:
 	static void InvalidateAllFrom(SourceType src_type, SourceID src);
 	static void InvalidateAllFrom(StationID sid);
 	static void AfterLoad();
+	static bool ValidateDeferredCargoPayments();
 };
 
 /**
