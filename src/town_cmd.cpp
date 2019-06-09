@@ -788,9 +788,9 @@ static void TileLoop_Town(TileIndex tile)
 		ClearTownHouse(t, tile);
 
 		/* Rebuild with another house? */
-		if (GB(r, 24, 8) < 12 || !BuildTownHouse(t, tile))
-		{
-			/* House wasn't replaced, so remove it */
+		bool built = (GB(r, 24, 8) >= 12 && BuildTownHouse(t, tile));
+		if (!built || ((hs->building_flags & BUILDING_HAS_1_TILE & ~HouseSpec::Get(GetHouseType(tile))->building_flags) != 0)) {
+			/* House wasn't replaced, or replacement was smaller/different shape, so remove it */
 			if (!_generating_world) RemoveNearbyStations(t);
 		}
 	}
