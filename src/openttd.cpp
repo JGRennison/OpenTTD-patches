@@ -1360,7 +1360,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 			CCLOG("town cargo_produced mismatch: town %i, old: " OTTD_PRINTFHEX64 ". new: " OTTD_PRINTFHEX64, (int)t->index, old_town_cargo_produced[i], t->cargo_produced);
 		}
 		if (old_town_stations_nears[i] != t->stations_near) {
-			CCLOG("town stations_near mismatch: town %i", (int)t->index);
+			CCLOG("town stations_near mismatch: town %i, (old size: %u, new size: %u)", (int)t->index, (uint)old_town_stations_nears[i].size(), (uint)t->stations_near.size());
 		}
 		i++;
 	}
@@ -1370,17 +1370,17 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 	i = 0;
 	FOR_ALL_STATIONS(st) {
 		if (old_station_industries_nears[i] != st->industries_near) {
-			CCLOG("station industries_near mismatch: st %i", (int)st->index);
+			CCLOG("station industries_near mismatch: st %i, (old size: %u, new size: %u)", (int)st->index, (uint)old_station_industries_nears[i].size(), (uint)st->industries_near.size());
 		}
 		if (!(old_station_catchment_tiles[i] == st->catchment_tiles)) {
-			CCLOG("station stations_near mismatch: st %i", (int)st->index);
+			CCLOG("station catchment_tiles mismatch: st %i", (int)st->index);
 		}
 		i++;
 	}
 	i = 0;
 	FOR_ALL_INDUSTRIES(ind) {
 		if (old_industry_stations_nears[i] != ind->stations_near) {
-			CCLOG("indsutry stations_near mismatch: ind %i", (int)ind->index);
+			CCLOG("industry stations_near mismatch: ind %i, (old size: %u, new size: %u)", (int)ind->index, (uint)old_industry_stations_nears[i].size(), (uint)ind->stations_near.size());
 		}
 		i++;
 	}
