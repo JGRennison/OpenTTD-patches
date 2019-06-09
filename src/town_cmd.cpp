@@ -2074,6 +2074,8 @@ CommandCost CmdFoundTown(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 			/* 't' can't be nullptr since 'random' is false outside scenedit */
 			assert(!random);
 
+			UpdateTownCargoBitmap();
+
 			if (_current_company == OWNER_DEITY) {
 				SetDParam(0, t->index);
 				AddTileNewsItem(STR_NEWS_NEW_TOWN_UNSPONSORED, NT_INDUSTRY_OPEN, tile);
