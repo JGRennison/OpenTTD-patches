@@ -1378,10 +1378,10 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		st->RecomputeCatchment();
 
 		if (old_station_industries_near[i] != st->industries_near) {
-			CCLOG("station industries_near mismatch: station %i", (int)st->index);
+			CCLOG("station industries_near mismatch: st %i, (old size: %u, new size: %u)", (int)st->index, (uint)old_station_industries_near[i].size(), (uint)st->industries_near.size());
 		}
 		if (!(old_station_catchment_tiles[i] == st->catchment_tiles)) {
-			CCLOG("station stations_near mismatch: station %i", (int)st->index);
+			CCLOG("station catchment_tiles mismatch: st %i", (int)st->index);
 		}
 		i++;
 	}
@@ -1393,7 +1393,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 			CCLOG("town cache mismatch: town %i", (int)t->index);
 		}
 		if (t->stations_near != old_town_stations_near[i]) {
-			CCLOG("town stations near mismatch: town %i", t->index);
+			CCLOG("town stations_near mismatch: town %i, (old size: %u, new size: %u)", (int)t->index, (uint)old_town_stations_near[i].size(), (uint)t->stations_near.size());
 		}
 		if (old_town_cargo_accepted_totals[i] != t->cargo_accepted_total) {
 			CCLOG("town cargo_accepted_total mismatch: town %i, old: " OTTD_PRINTFHEX64 ". new: " OTTD_PRINTFHEX64, (int)t->index, old_town_cargo_accepted_totals[i], t->cargo_accepted_total);
