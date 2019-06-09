@@ -43,6 +43,7 @@
 #include "airport.h"
 #include "station_base.h"
 #include "economy_func.h"
+#include "town.h"
 #include "string_func_extra.h"
 
 #include "safeguards.h"
@@ -2086,6 +2087,27 @@ DEF_CONSOLE_CMD(ConCheckCaches)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConShowTownWindow)
+{
+	if (argc != 2) {
+		IConsoleHelp("Debug: Show town window.  Usage: 'show_town_window <town-id>'");
+		return true;
+	}
+
+	if (_game_mode != GM_NORMAL && _game_mode != GM_EDITOR) {
+		return true;
+	}
+
+	TownID town_id = (TownID)(atoi(argv[1]));
+	if (!Town::IsValidID(town_id)) {
+		return true;
+	}
+
+	ShowTownViewWindow(town_id);
+
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConDoDisaster)
 {
 	if (argc == 0) {
@@ -2343,6 +2365,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("dump_game_events", ConDumpGameEvents, nullptr, true);
 	IConsoleCmdRegister("dump_load_debug_log", ConDumpLoadDebugLog, nullptr, true);
 	IConsoleCmdRegister("check_caches", ConCheckCaches, nullptr, true);
+	IConsoleCmdRegister("show_town_window", ConShowTownWindow, nullptr, true);
 
 	/* NewGRF development stuff */
 	IConsoleCmdRegister("reload_newgrfs",  ConNewGRFReload, ConHookNewGRFDeveloperTool);
