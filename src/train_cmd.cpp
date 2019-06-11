@@ -1175,6 +1175,7 @@ static void NormaliseTrainHead(Train *head)
  * - p1 (bit      20) move all vehicles following the source vehicle
  * - p1 (bit      21) this is a virtual vehicle (for creating TemplateVehicles)
  * - p1 (bit      22) when moving a head vehicle, always reset the head state
+ * - p1 (bit      23) if move fails, and source vehicle is virtual, delete it
  * @param p2 what wagon to put the source wagon AFTER, XXX - INVALID_VEHICLE to make a new line
  * @param text unused
  * @return the cost of this operation or an error
@@ -1185,12 +1186,21 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	VehicleID d = GB(p2, 0, 20);
 	bool move_chain = HasBit(p1, 20);
 	bool new_head = HasBit(p1, 22);
+	bool delete_failed_virtual = HasBit(p1, 23);
 
 	Train *src = Train::GetIfValid(s);
 	if (src == NULL) return CMD_ERROR;
 
+	auto check_on_failure = [&](CommandCost cost) -> CommandCost {
+		if (delete_failed_virtual && src->IsVirtual()) {
+			return DoCommand(src->tile, src->index | (1 << 21), 0, flags, CMD_SELL_VEHICLE);
+		} else {
+			return cost;
+		}
+	};
+
 	CommandCost ret = CheckOwnership(src->owner);
-	if (ret.Failed()) return ret;
+	if (ret.Failed()) return check_on_failure(ret);
 
 	/* Do not allow moving crashed vehicles inside the depot, it is likely to cause asserts later */
 	if (src->vehstatus & VS_CRASHED) return CMD_ERROR;
@@ -1201,10 +1211,10 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 		dst = src->IsEngine() ? NULL : FindGoodVehiclePos(src);
 	} else {
 		dst = Train::GetIfValid(d);
-		if (dst == NULL) return CMD_ERROR;
+		if (dst == nullptr) return check_on_failure(CMD_ERROR);
 
 		CommandCost ret = CheckOwnership(dst->owner);
-		if (ret.Failed()) return ret;
+		if (ret.Failed()) return check_on_failure(ret);
 
 		/* Do not allow appending to crashed vehicles, too */
 		if (dst->vehstatus & VS_CRASHED) return CMD_ERROR;
@@ -1286,7 +1296,7 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 			/* Restore the train we had. */
 			RestoreTrainBackup(original_src);
 			RestoreTrainBackup(original_dst);
-			return ret;
+			return check_on_failure(ret);
 		}
 	}
 
