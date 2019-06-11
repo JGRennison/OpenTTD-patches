@@ -1630,7 +1630,7 @@ struct BuildVehicleWindow : Window {
 		} else {
 			VehicleID target = (*(this->virtual_train_out))->GetLastUnit()->index;
 
-			DoCommandP(0, (1 << 21) | toadd->index, target, CMD_MOVE_RAIL_VEHICLE);
+			DoCommandP(0, (1 << 23) | (1 << 21) | toadd->index, target, CMD_MOVE_RAIL_VEHICLE);
 		}
 		InvalidateWindowClassesData(WC_CREATE_TEMPLATE);
 		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
