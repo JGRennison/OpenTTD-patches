@@ -917,6 +917,7 @@ static void AddRearEngineToMultiheadedTrain(Train *v)
 	u->random_bits = VehicleRandomBits();
 	v->SetMultiheaded();
 	u->SetMultiheaded();
+	if (v->IsVirtual()) u->SetVirtual();
 	v->SetNext(u);
 	u->UpdatePosition();
 
@@ -5195,6 +5196,7 @@ Train* CmdBuildVirtualRailWagon(const Engine *e)
 
 	v->SetWagon();
 	v->SetFreeWagon();
+	v->SetVirtual();
 
 	v->cargo_type = e->GetDefaultCargoType();
 	v->cargo_cap = rvi->capacity;
@@ -5281,6 +5283,7 @@ Train* CmdBuildVirtualRailVehicle(EngineID eid, StringID &error)
 
 	v->SetFrontEngine();
 	v->SetEngine();
+	v->SetVirtual();
 
 	if (rvi->railveh_type == RAILVEH_MULTIHEAD) {
 		AddRearEngineToMultiheadedTrain(v);

@@ -427,6 +427,8 @@ void AddArticulatedParts(Vehicle *first)
 				}
 				t->refit_cap = 0;
 
+				if (front->IsVirtual()) t->SetVirtual();
+
 				t->SetArticulatedPart();
 				break;
 			}
