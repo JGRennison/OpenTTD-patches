@@ -416,6 +416,7 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last) const
 		if (!have_cache_log) buffer += seprintf(buffer, last, "CheckCaches:\n");
 		buffer += seprintf(buffer, last, "  %s\n", str);
 		have_cache_log = true;
+		LogDesyncMsg(stdstr_fmt("[prev desync]: %s", str));
 	});
 	if (have_cache_log) buffer += seprintf(buffer, last, "\n");
 
