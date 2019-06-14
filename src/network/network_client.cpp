@@ -483,9 +483,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendError(NetworkErrorCode err
 NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncLog(const std::string &log)
 {
 	for (size_t offset = 0; offset < log.size();) {
-		size_t size = min<size_t>(log.size() - offset, SHRT_MAX - 2);
-
 		Packet *p = new Packet(PACKET_CLIENT_DESYNC_LOG);
+		size_t size = min<size_t>(log.size() - offset, SHRT_MAX - 2 - p->size);
 		p->Send_uint16(size);
 		p->Send_binary(log.data() + offset, size);
 		my_client->SendPacket(p);

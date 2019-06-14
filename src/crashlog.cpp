@@ -455,8 +455,8 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last) const
 	ConvertDateToYMD(_date, &ymd);
 	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i)\n", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter);
 	if (_game_load_time != 0) {
-		buffer += seprintf(buffer, last, "Game loaded at: %s, %i-%02i-%02i (%i, %i)\n",
-				asctime(gmtime(&_game_load_time)), _game_load_cur_date_ymd.year, _game_load_cur_date_ymd.month + 1, _game_load_cur_date_ymd.day, _game_load_date_fract, _game_load_tick_skip_counter);
+		buffer += seprintf(buffer, last, "Game loaded at: %i-%02i-%02i (%i, %i), %s",
+				_game_load_cur_date_ymd.year, _game_load_cur_date_ymd.month + 1, _game_load_cur_date_ymd.day, _game_load_date_fract, _game_load_tick_skip_counter, asctime(gmtime(&_game_load_time)));
 	}
 	buffer += seprintf(buffer, last, "\n");
 
