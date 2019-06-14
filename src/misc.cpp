@@ -83,6 +83,10 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	_road_layout_change_counter = 0;
 	_game_events_since_load = (GameEventFlags) 0;
 	_game_events_overall = (GameEventFlags) 0;
+	_game_load_cur_date_ymd = { 0, 0, 0 };
+	_game_load_date_fract = 0;
+	_game_load_tick_skip_counter = 0;
+	_game_load_time = 0;
 	_loadgame_DBGL_data.clear();
 	if (reset_settings) MakeNewgameSettingsLive();
 

@@ -108,6 +108,8 @@ inline void RegisterGameEvents(GameEventFlags events)
 
 char *DumpGameEventFlags(GameEventFlags events, char *b, const char *last);
 
+extern time_t _game_load_time;
+
 void AskExitGame();
 void AskExitToGameMenu();
 

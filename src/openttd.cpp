@@ -100,6 +100,8 @@ extern char *_config_file;
 GameEventFlags _game_events_since_load;
 GameEventFlags _game_events_overall;
 
+time_t _game_load_time;
+
 /**
  * Error handling for fatal user errors.
  * @param s the string to print.
@@ -387,6 +389,10 @@ static void ShutdownGame()
 
 	_game_events_since_load = (GameEventFlags) 0;
 	_game_events_overall = (GameEventFlags) 0;
+	_game_load_cur_date_ymd = { 0, 0, 0 };
+	_game_load_date_fract = 0;
+	_game_load_tick_skip_counter = 0;
+	_game_load_time = 0;
 	_loadgame_DBGL_data.clear();
 }
 

@@ -25,6 +25,10 @@ extern uint32    _scaled_tick_counter;
 extern DateTicksScaled _scaled_date_ticks;
 extern uint32    _quit_after_days;
 
+extern YearMonthDay _game_load_cur_date_ymd;
+extern DateFract _game_load_date_fract;
+extern uint8 _game_load_tick_skip_counter;
+
 void SetDate(Date date, DateFract fract);
 void ConvertDateToYMD(Date date, YearMonthDay *ymd);
 Date ConvertYMDToDate(Year year, Month month, Day day);

@@ -36,6 +36,10 @@ uint32 _scaled_tick_counter; ///< Tick counter in daylength-scaled ticks
 DateTicksScaled _scaled_date_ticks; ///< Date as ticks in daylength-scaled ticks
 uint32    _quit_after_days;  ///< Quit after this many days of run time
 
+YearMonthDay _game_load_cur_date_ymd;
+DateFract _game_load_date_fract;
+uint8 _game_load_tick_skip_counter;
+
 /**
  * Set the date.
  * @param date  New date
