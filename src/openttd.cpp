@@ -87,6 +87,8 @@ extern Company *DoStartupNewCompany(bool is_ai, CompanyID company = INVALID_COMP
 extern void ShowOSErrorBox(const char *buf, bool system);
 extern char *_config_file;
 
+time_t _game_load_time;
+
 /**
  * Error handling for fatal user errors.
  * @param s the string to print.
@@ -317,6 +319,10 @@ static void ShutdownGame()
 
 	ClearRecentCommandLog();
 	ClearDesyncMsgLog();
+
+	_game_load_cur_date_ymd = { 0, 0, 0 };
+	_game_load_date_fract = 0;
+	_game_load_time = 0;
 }
 
 /**

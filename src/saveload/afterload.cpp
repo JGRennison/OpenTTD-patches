@@ -3159,6 +3159,11 @@ bool AfterLoadGame()
 	ResetSignalHandlers();
 
 	AfterLoadLinkGraphs();
+
+	ConvertDateToYMD(_date, &_game_load_cur_date_ymd);
+	_game_load_date_fract = _date_fract;
+	_game_load_time = time(nullptr);
+
 	return true;
 }
 

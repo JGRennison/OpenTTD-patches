@@ -69,6 +69,8 @@ DECLARE_ENUM_AS_BIT_SET(PauseMode)
 /** The current pause mode */
 extern PauseMode _pause_mode;
 
+extern time_t _game_load_time;
+
 void AskExitGame();
 void AskExitToGameMenu();
 

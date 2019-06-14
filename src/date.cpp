@@ -30,6 +30,10 @@ uint16 _tick_counter;  ///< Ever incrementing (and sometimes wrapping) tick coun
 
 int32 _old_ending_year_slv_105; ///< Old ending year for savegames before SLV_105
 
+YearMonthDay _game_load_cur_date_ymd;
+DateFract _game_load_date_fract;
+uint8 _game_load_tick_skip_counter;
+
 /**
  * Set the date.
  * @param date  New date

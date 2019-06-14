@@ -18,6 +18,10 @@ extern Date      _date;
 extern DateFract _date_fract;
 extern uint16 _tick_counter;
 
+extern YearMonthDay _game_load_cur_date_ymd;
+extern DateFract _game_load_date_fract;
+extern uint8 _game_load_tick_skip_counter;
+
 void SetDate(Date date, DateFract fract);
 void ConvertDateToYMD(Date date, YearMonthDay *ymd);
 Date ConvertYMDToDate(Year year, Month month, Day day);

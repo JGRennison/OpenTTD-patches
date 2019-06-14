@@ -73,6 +73,9 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	_tick_counter = 0;
 	_cur_tileloop_tile = 1;
 	_thd.redsq = INVALID_TILE;
+	_game_load_cur_date_ymd = { 0, 0, 0 };
+	_game_load_date_fract = 0;
+	_game_load_time = 0;
 	if (reset_settings) MakeNewgameSettingsLive();
 
 	_newgrf_profilers.clear();
