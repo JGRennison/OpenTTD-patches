@@ -42,8 +42,11 @@
 #include "aircraft.h"
 #include "airport.h"
 #include "station_base.h"
+#include "waypoint_base.h"
+#include "waypoint_func.h"
 #include "economy_func.h"
 #include "town.h"
+#include "industry.h"
 #include "string_func_extra.h"
 
 #include "safeguards.h"
@@ -2108,6 +2111,50 @@ DEF_CONSOLE_CMD(ConShowTownWindow)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConShowStationWindow)
+{
+	if (argc != 2) {
+		IConsoleHelp("Debug: Show station window.  Usage: 'show_station_window <town-id>'");
+		return true;
+	}
+
+	if (_game_mode != GM_NORMAL && _game_mode != GM_EDITOR) {
+		return true;
+	}
+
+	const BaseStation *bst = BaseStation::GetIfValid(atoi(argv[1]));
+	if (bst == nullptr) return true;
+	if (bst->facilities & FACIL_WAYPOINT) {
+		ShowWaypointWindow(Waypoint::From(bst));
+	} else {
+		ShowStationViewWindow(bst->index);
+	}
+
+	return true;
+}
+
+DEF_CONSOLE_CMD(ConShowIndustryWindow)
+{
+	if (argc != 2) {
+		IConsoleHelp("Debug: Show industry window.  Usage: 'show_industry_window <town-id>'");
+		return true;
+	}
+
+	if (_game_mode != GM_NORMAL && _game_mode != GM_EDITOR) {
+		return true;
+	}
+
+	IndustryID ind_id = (IndustryID)(atoi(argv[1]));
+	if (!Industry::IsValidID(ind_id)) {
+		return true;
+	}
+
+	extern void ShowIndustryViewWindow(int industry);
+	ShowIndustryViewWindow(ind_id);
+
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConDoDisaster)
 {
 	if (argc == 0) {
@@ -2366,6 +2413,8 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("dump_load_debug_log", ConDumpLoadDebugLog, nullptr, true);
 	IConsoleCmdRegister("check_caches", ConCheckCaches, nullptr, true);
 	IConsoleCmdRegister("show_town_window", ConShowTownWindow, nullptr, true);
+	IConsoleCmdRegister("show_station_window", ConShowStationWindow, nullptr, true);
+	IConsoleCmdRegister("show_industry_window", ConShowIndustryWindow, nullptr, true);
 
 	/* NewGRF development stuff */
 	IConsoleCmdRegister("reload_newgrfs",  ConNewGRFReload, ConHookNewGRFDeveloperTool);
