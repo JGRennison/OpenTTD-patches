@@ -35,6 +35,7 @@
 #include "zoom_func.h"
 #include "departures_gui.h"
 #include "zoning.h"
+#include "newgrf_debug.h"
 
 #include "widgets/station_widget.h"
 
@@ -747,6 +748,7 @@ static const NWidgetPart _nested_station_view_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_SV_CAPTION), SetDataTip(STR_STATION_VIEW_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_DEBUGBOX, COLOUR_GREY),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -2069,6 +2071,16 @@ struct StationViewWindow : public Window {
 				this->ReInit();
 			}
 		}
+	}
+
+	bool IsNewGRFInspectable() const override
+	{
+		return ::IsNewGRFInspectable(GSF_FAKE_STATION_STRUCT, this->window_number);
+	}
+
+	void ShowNewGRFInspectWindow() const override
+	{
+		::ShowNewGRFInspectWindow(GSF_FAKE_STATION_STRUCT, this->window_number);
 	}
 };
 

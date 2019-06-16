@@ -31,6 +31,7 @@
 #include "linkgraph/linkgraph.h"
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
+#include "newgrf_debug.h"
 
 #include "table/strings.h"
 
@@ -152,6 +153,7 @@ Station::~Station()
 	}
 
 	DeleteWindowById(WC_STATION_VIEW, index);
+	DeleteNewGRFInspectWindow(GSF_FAKE_STATION_STRUCT, this->index);
 
 	/* Now delete all orders that go to the station */
 	RemoveOrderFromAllVehicles(OT_GOTO_STATION, this->index);

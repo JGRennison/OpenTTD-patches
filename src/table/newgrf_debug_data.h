@@ -394,6 +394,27 @@ class NIHIndustry : public NIHelper {
 		if (i->psa == nullptr) return nullptr;
 		return (int32 *)(&i->psa->storage);
 	}
+
+	void ExtraInfo(uint index, std::function<void(const char *)> print) const override
+	{
+		char buffer[1024];
+		print("Debug Info:");
+		seprintf(buffer, lastof(buffer), "  Index: %u", index);
+		print(buffer);
+		const Industry *ind = Industry::GetIfValid(index);
+		if (ind) {
+			if (ind->neutral_station) {
+				seprintf(buffer, lastof(buffer), "  Neutral station: %u: %s", ind->neutral_station->index, ind->neutral_station->GetCachedName());
+				print(buffer);
+			}
+			seprintf(buffer, lastof(buffer), "  Nearby stations: %u", (uint) ind->stations_near.size());
+			print(buffer);
+			for (const Station *st : ind->stations_near) {
+				seprintf(buffer, lastof(buffer), "    %u: %s", st->index, st->GetCachedName());
+				print(buffer);
+			}
+		}
+	}
 };
 
 static const NIFeature _nif_industry = {
@@ -602,6 +623,49 @@ static const NIFeature _nif_town = {
 	new NIHTown(),
 };
 
+class NIHStationStruct : public NIHelper {
+	bool IsInspectable(uint index) const override        { return BaseStation::IsValidID(index); }
+	bool ShowExtraInfoOnly(uint index) const override    { return true; }
+	uint GetParent(uint index) const override            { return UINT32_MAX; }
+	const void *GetInstance(uint index)const override    { return nullptr; }
+	const void *GetSpec(uint index) const override       { return nullptr; }
+	void SetStringParameters(uint index) const override  { this->SetSimpleStringParameters(STR_STATION_NAME, index); }
+	uint32 GetGRFID(uint index) const override           { return 0; }
+
+	uint Resolve(uint index, uint var, uint param, bool *avail) const override
+	{
+		return 0;
+	}
+
+	void ExtraInfo(uint index, std::function<void(const char *)> print) const override
+	{
+		char buffer[1024];
+		print("Debug Info:");
+		seprintf(buffer, lastof(buffer), "  Index: %u", index);
+		print(buffer);
+		const Station *st = Station::GetIfValid(index);
+		if (st) {
+			if (st->industry) {
+				seprintf(buffer, lastof(buffer), "  Neutral industry: %u: %s", st->industry->index, st->industry->GetCachedName());
+				print(buffer);
+			}
+			seprintf(buffer, lastof(buffer), "  Nearby industries: %u", (uint) st->industries_near.size());
+			print(buffer);
+			for (const Industry *ind : st->industries_near) {
+				seprintf(buffer, lastof(buffer), "    %u: %s", ind->index, ind->GetCachedName());
+				print(buffer);
+			}
+		}
+	}
+};
+
+static const NIFeature _nif_station_struct = {
+	nullptr,
+	nullptr,
+	nullptr,
+	new NIHStationStruct(),
+};
+
 /** Table with all NIFeatures. */
 static const NIFeature * const _nifeatures[] = {
 	&_nif_vehicle,      // GSF_TRAINS
@@ -623,5 +687,6 @@ static const NIFeature * const _nifeatures[] = {
 	&_nif_railtype,     // GSF_RAILTYPES
 	&_nif_airporttile,  // GSF_AIRPORTTILES
 	&_nif_town,         // GSF_FAKE_TOWNS
+	&_nif_station_struct,  // GSF_FAKE_STATION_STRUCT
 };
 assert_compile(lengthof(_nifeatures) == GSF_FAKE_END);
