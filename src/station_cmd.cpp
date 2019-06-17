@@ -4054,7 +4054,7 @@ static void AddNearbyStationsByCatchment(TileIndex tile, StationList *stations, 
  * @param[out] stations The list to store the stations in
  * @param use_nearby Use nearby station list of industry/town associated with location.tile
  */
-void FindStationsAroundTiles(const TileArea &location, StationList * const stations, bool use_nearby)
+void FindStationsAroundTiles(const TileArea &location, StationList * const stations, bool use_nearby, const IndustryID industry_filter)
 {
 	if (use_nearby) {
 		/* Industries and towns maintain a list of nearby stations */
@@ -4092,6 +4092,7 @@ void FindStationsAroundTiles(const TileArea &location, StationList * const stati
 
 		/* Test if the tile is within the station's catchment */
 		TILE_AREA_LOOP(tile, location) {
+			if (industry_filter != INVALID_INDUSTRY && (!IsTileType(tile, MP_INDUSTRY) || GetIndustryIndex(tile) != industry_filter)) continue;
 			if (st->TileIsInCatchment(tile)) {
 				stations->insert(st);
 				break;

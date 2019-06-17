@@ -1389,7 +1389,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 			CCLOG("industry stations_near mismatch: ind %i, (old size: %u, new size: %u)", (int)ind->index, (uint)old_industry_stations_nears[i].size(), (uint)ind->stations_near.size());
 		}
 		StationList stlist;
-		FindStationsAroundTiles(ind->location, &stlist, false);
+		FindStationsAroundTiles(ind->location, &stlist, false, ind->index);
 		if (ind->stations_near != stlist) {
 			CCLOG("industry FindStationsAroundTiles mismatch: ind %i, (recalc size: %u, find size: %u)", (int)ind->index, (uint)ind->stations_near.size(), (uint)stlist.size());
 		}

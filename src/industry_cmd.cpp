@@ -1668,7 +1668,7 @@ static void PopulateStationsNearby(Industry *ind)
 	}
 
 	/* Get our list of nearby stations. */
-	FindStationsAroundTiles(ind->location, &ind->stations_near, false);
+	FindStationsAroundTiles(ind->location, &ind->stations_near, false, ind->index);
 
 	/* Test if industry can accept cargo */
 	uint cargo_index;
