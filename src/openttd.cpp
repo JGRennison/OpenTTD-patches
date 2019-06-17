@@ -1417,6 +1417,22 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		if (ind->stations_near != old_industry_stations_near[i]) {
 			CCLOG("industry stations near mismatch: industry %i", ind->index);
 		}
+		StationList stlist;
+		if (ind->neutral_station != nullptr && !_settings_game.station.serve_neutral_industries) {
+			stlist.insert(ind->neutral_station);
+			if (ind->stations_near != stlist) {
+				CCLOG("industry neutral station stations_near mismatch: ind %i, (recalc size: %u, neutral size: %u)", (int)ind->index, (uint)ind->stations_near.size(), (uint)stlist.size());
+			}
+		} else {
+			ForAllStationsAroundTiles(ind->location, [ind, &stlist](Station *st, TileIndex tile) {
+				if (!IsTileType(tile, MP_INDUSTRY) || GetIndustryIndex(tile) != ind->index) return false;
+				stlist.insert(st);
+				return true;
+			});
+			if (ind->stations_near != stlist) {
+				CCLOG("industry FindStationsAroundTiles mismatch: ind %i, (recalc size: %u, find size: %u)", (int)ind->index, (uint)ind->stations_near.size(), (uint)stlist.size());
+			}
+		}
 		i++;
 	}
 
