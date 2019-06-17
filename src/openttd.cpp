@@ -1389,9 +1389,16 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 			CCLOG("industry stations_near mismatch: ind %i, (old size: %u, new size: %u)", (int)ind->index, (uint)old_industry_stations_nears[i].size(), (uint)ind->stations_near.size());
 		}
 		StationList stlist;
-		FindStationsAroundTiles(ind->location, &stlist, false, ind->index);
-		if (ind->stations_near != stlist) {
-			CCLOG("industry FindStationsAroundTiles mismatch: ind %i, (recalc size: %u, find size: %u)", (int)ind->index, (uint)ind->stations_near.size(), (uint)stlist.size());
+		if (ind->neutral_station != nullptr && !_settings_game.station.serve_neutral_industries) {
+			stlist.insert(ind->neutral_station);
+			if (ind->stations_near != stlist) {
+				CCLOG("industry neutral station stations_near mismatch: ind %i, (recalc size: %u, neutral size: %u)", (int)ind->index, (uint)ind->stations_near.size(), (uint)stlist.size());
+			}
+		} else {
+			FindStationsAroundTiles(ind->location, &stlist, false, ind->index);
+			if (ind->stations_near != stlist) {
+				CCLOG("industry FindStationsAroundTiles mismatch: ind %i, (recalc size: %u, find size: %u)", (int)ind->index, (uint)ind->stations_near.size(), (uint)stlist.size());
+			}
 		}
 		i++;
 	}
