@@ -2114,7 +2114,7 @@ DEF_CONSOLE_CMD(ConShowTownWindow)
 DEF_CONSOLE_CMD(ConShowStationWindow)
 {
 	if (argc != 2) {
-		IConsoleHelp("Debug: Show station window.  Usage: 'show_station_window <town-id>'");
+		IConsoleHelp("Debug: Show station window.  Usage: 'show_station_window <station-id>'");
 		return true;
 	}
 
@@ -2136,7 +2136,7 @@ DEF_CONSOLE_CMD(ConShowStationWindow)
 DEF_CONSOLE_CMD(ConShowIndustryWindow)
 {
 	if (argc != 2) {
-		IConsoleHelp("Debug: Show industry window.  Usage: 'show_industry_window <town-id>'");
+		IConsoleHelp("Debug: Show industry window.  Usage: 'show_industry_window <industry-id>'");
 		return true;
 	}
 
