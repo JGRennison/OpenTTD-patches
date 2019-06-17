@@ -403,6 +403,8 @@ class NIHIndustry : public NIHelper {
 		print(buffer);
 		const Industry *ind = Industry::GetIfValid(index);
 		if (ind) {
+			seprintf(buffer, lastof(buffer), "  Location: %ux%u (%X), w: %u, h: %u", TileX(ind->location.tile), TileY(ind->location.tile), ind->location.tile, ind->location.w, ind->location.h);
+			print(buffer);
 			if (ind->neutral_station) {
 				seprintf(buffer, lastof(buffer), "  Neutral station: %u: %s", ind->neutral_station->index, ind->neutral_station->GetCachedName());
 				print(buffer);
@@ -643,6 +645,14 @@ class NIHStationStruct : public NIHelper {
 		print("Debug Info:");
 		seprintf(buffer, lastof(buffer), "  Index: %u", index);
 		print(buffer);
+		const BaseStation *bst = BaseStation::GetIfValid(index);
+		if (!bst) return;
+		if (bst->rect.IsEmpty()) {
+			print("  rect: empty");
+		} else {
+			seprintf(buffer, lastof(buffer), "  rect: left: %u, right: %u, top: %u, bottom: %u", bst->rect.left, bst->rect.right, bst->rect.top, bst->rect.bottom);
+			print(buffer);
+		}
 		const Station *st = Station::GetIfValid(index);
 		if (st) {
 			if (st->industry) {
