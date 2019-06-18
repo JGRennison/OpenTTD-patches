@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.31.2 (2019-06-18)
+* Fix through load orders which use full load any cargo, with multi-cargo trains.
+* Fix PBS reservations not being shortened or extended when adding or removing signals to bridges/tunnels.
+* Fix various issues which could cause multiplayer desyncs.
+* Fix incorrect save/load when using compilers other than GCC/clang (e.g. MSVC).
+
 ### v0.31.1 (2019-05-28)
 * Fix crash when articulated road vehicles overtook other road vehicles on custom bridge heads.
 * Fix airports not being deleted on bankruptcy/company deletion when an aircraft from another company was taking off/landing.
