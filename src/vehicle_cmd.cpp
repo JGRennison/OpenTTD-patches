@@ -182,7 +182,6 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 
 			if (v->IsPrimaryVehicle()) {
 				GroupStatistics::CountVehicle(v, 1);
-				OrderBackup::Restore(v, p2);
 			}
 		}
 
@@ -190,6 +189,8 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 		/* If we are not in DC_EXEC undo everything */
 		if (refitting && (flags & DC_EXEC) == 0) {
 			DoCommand(0, v->index, 0, DC_EXEC, GetCmdSellVeh(v));
+		} else if ((flags & DC_EXEC) && v->IsPrimaryVehicle()) {
+			OrderBackup::Restore(v, p2);
 		}
 	}
 
