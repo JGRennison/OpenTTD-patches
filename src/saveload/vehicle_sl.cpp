@@ -368,6 +368,15 @@ void AfterLoadVehicles(bool part_of_load)
 				v->SetServiceIntervalIsPercent(c->settings.vehicle.servint_ispercent);
 			}
 		}
+
+		if (SlXvIsFeaturePresent(XSLFI_TEMPLATE_REPLACEMENT) && (_network_server || !_networking)) {
+			Train *t;
+			FOR_ALL_TRAINS(t) {
+				if (t->IsVirtual() && t->First() == t) {
+					delete t;
+				}
+			}
+		}
 	}
 
 	CheckValidVehicles();
