@@ -1161,7 +1161,7 @@ static void NormaliseTrainHead(Train *head)
 	SetWindowWidgetDirty(WC_VEHICLE_VIEW, head->index, WID_VV_REFIT);
 
 	/* If we don't have a unit number yet, set one. */
-	if (head->unitnumber != 0) return;
+	if (head->unitnumber != 0 || HasBit(head->subtype, GVSF_VIRTUAL)) return;
 	head->unitnumber = GetFreeUnitNumber(VEH_TRAIN);
 }
 
