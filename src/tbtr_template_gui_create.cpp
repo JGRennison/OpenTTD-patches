@@ -241,7 +241,6 @@ public:
 			case TCW_OK: {
 				if (virtual_train != nullptr) {
 					DoCommandP(0, this->template_index, virtual_train->index, CMD_REPLACE_TEMPLATE_VEHICLE);
-					virtual_train = nullptr;
 				} else if (this->template_index != INVALID_VEHICLE) {
 					DoCommandP(0, this->template_index, 0, CMD_DELETE_TEMPLATE_VEHICLE);
 				}
@@ -554,6 +553,7 @@ public:
 
 	void RearrangeVirtualTrain()
 	{
+		if (!virtual_train) return;
 		virtual_train = virtual_train->First();
 		assert(HasBit(virtual_train->subtype, GVSF_VIRTUAL));
 	}
@@ -600,6 +600,7 @@ void CcDeleteVirtualTrain(const CommandCost &result, TileIndex tile, uint32 p1, 
 
 	Window* window = FindWindowById(WC_CREATE_TEMPLATE, 0);
 	if (window) {
+		((TemplateCreateWindow*)window)->RearrangeVirtualTrain();
 		window->InvalidateData();
 	}
 }
