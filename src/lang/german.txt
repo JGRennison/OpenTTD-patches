@@ -3986,6 +3986,8 @@ STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}Neue Gru
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}Ausgewählte Gruppe löschen
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}Ausgewählte Gruppe umbenennen
 STR_GROUP_LIVERY_TOOLTIP                                        :{BLACK}Farbschema der ausgewählten Gruppe ändern
+STR_GROUP_EXPAND_ALL                                            :{BLACK}Alles ausklappen
+STR_GROUP_COLLAPSE_ALL                                          :{BLACK}Alles einklappen
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Diese Gruppe von der automatischen Fahrzeugersetzung ausschließen
 
 STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}Gruppe löschen

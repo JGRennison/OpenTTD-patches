@@ -68,6 +68,10 @@ static const NWidgetPart _nested_group_widgets[] = {
 						SetDataTip(SPR_GROUP_RENAME_TRAIN, STR_GROUP_RENAME_TOOLTIP),
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_LIVERY_GROUP), SetFill(0, 1),
 						SetDataTip(SPR_GROUP_LIVERY_TRAIN, STR_GROUP_LIVERY_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_GL_COLLAPSE_ALL_GROUPS), SetFill(0, 1),
+						SetDataTip(STR_GROUP_COLLAPSE_ALL, STR_GROUP_COLLAPSE_ALL),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_GL_EXPAND_ALL_GROUPS), SetFill(0, 1),
+						SetDataTip(STR_GROUP_EXPAND_ALL, STR_GROUP_EXPAND_ALL),
 				NWidget(WWT_PANEL, COLOUR_GREY), SetFill(1, 1), EndContainer(),
 				NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_GL_REPLACE_PROTECTION), SetFill(0, 1),
 						SetDataTip(SPR_GROUP_REPLACE_OFF_TRAIN, STR_GROUP_REPLACE_PROTECTION_TOOLTIP),
@@ -185,12 +189,25 @@ private:
 
 		GUIGroupList list;
 
+		bool enable_expand_all = false;
+		bool enable_collapse_all = false;
+
 		const Group *g;
 		FOR_ALL_GROUPS(g) {
 			if (g->owner == owner && g->vehicle_type == this->vli.vtype) {
 				list.push_back(g);
+				if (g->parent != INVALID_GROUP) {
+					if (Group::Get(g->parent)->folded) {
+						enable_expand_all = true;
+					} else {
+						enable_collapse_all = true;
+					}
+				}
 			}
 		}
+
+		this->SetWidgetDisabledState(WID_GL_EXPAND_ALL_GROUPS, !enable_expand_all);
+		this->SetWidgetDisabledState(WID_GL_COLLAPSE_ALL_GROUPS, !enable_collapse_all);
 
 		list.ForceResort();
 		list.Sort(&GroupNameSorter);
@@ -342,6 +359,20 @@ private:
 		} else {
 			this->SetWidgetDirty(WID_GL_LIST_GROUP);
 		}
+	}
+
+	void SetAllGroupsFoldState(bool folded)
+	{
+		const Group *g;
+		FOR_ALL_GROUPS(g) {
+			if (g->owner == this->owner && g->vehicle_type == this->vli.vtype) {
+				if (g->parent != INVALID_GROUP) {
+					Group::Get(g->parent)->folded = folded;
+				}
+			}
+		}
+		this->groups.ForceRebuild();
+		this->SetDirty();
 	}
 
 public:
@@ -779,6 +810,17 @@ public:
 			case WID_GL_RENAME_GROUP: // Rename the selected roup
 				this->ShowRenameGroupWindow(this->vli.index, false);
 				break;
+
+			case WID_GL_COLLAPSE_ALL_GROUPS: {
+				this->SetAllGroupsFoldState(true);
+				break;
+			}
+
+			case WID_GL_EXPAND_ALL_GROUPS: {
+				this->SetAllGroupsFoldState(false);
+				break;
+			}
+
 
 			case WID_GL_LIVERY_GROUP: // Set group livery
 				ShowCompanyLiveryWindow(this->owner, this->vli.index);
