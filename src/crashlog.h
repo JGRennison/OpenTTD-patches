@@ -12,6 +12,8 @@
 #ifndef CRASHLOG_H
 #define CRASHLOG_H
 
+#include <string>
+
 /**
  * Helper class for creating crash logs.
  */
