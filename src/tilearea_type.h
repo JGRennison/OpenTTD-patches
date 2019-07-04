@@ -15,6 +15,7 @@
 #include "stdafx.h"
 #include INCLUDE_FOR_PREFETCH_NTA
 #include "map_func.h"
+#include <tuple>
 
 /** Represents the covered area of e.g. a rail station */
 struct OrthogonalTileArea {
