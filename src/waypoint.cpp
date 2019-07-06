@@ -51,6 +51,21 @@ void Waypoint::GetTileArea(TileArea *ta, StationType type) const
 	}
 }
 
+/**
+ * Move the waypoint main coordinate somewhere else.
+ * @param new_xy new tile location of the sign
+ */
+void Waypoint::MoveSign(TileIndex new_xy)
+{
+	if (this->xy == new_xy) return;
+
+	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeWaypoint(this->index, this->viewport_sign_kdtree_pt));
+
+	this->BaseStation::MoveSign(new_xy);
+
+	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeWaypoint(this->index));
+}
+
 Waypoint::~Waypoint()
 {
 	if (CleaningPool()) return;
