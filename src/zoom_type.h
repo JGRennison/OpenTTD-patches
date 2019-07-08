@@ -14,11 +14,11 @@
 
 #include "core/enum_type.hpp"
 
-static int const ZOOM_LVL_SHIFT = 2;
-static int const ZOOM_LVL_BASE  = 1 << ZOOM_LVL_SHIFT;
+static uint const ZOOM_LVL_SHIFT = 2;
+static uint const ZOOM_LVL_BASE  = 1 << ZOOM_LVL_SHIFT;
 
 /** All zoom levels we know. */
-enum ZoomLevel {
+enum ZoomLevel : byte {
 	/* Our possible zoom-levels */
 	ZOOM_LVL_BEGIN  = 0, ///< Begin for iteration.
 	ZOOM_LVL_NORMAL = 0, ///< The normal zoom level.
@@ -55,11 +55,8 @@ enum ZoomLevel {
 };
 DECLARE_POSTFIX_INCREMENT(ZoomLevel)
 
-/** Type for storing the zoom level in a byte. */
-typedef SimpleTinyEnumT<ZoomLevel, byte> ZoomLevelByte;
-
-extern ZoomLevelByte _gui_zoom;
-extern ZoomLevelByte _font_zoom;
+extern ZoomLevel _gui_zoom;
+extern ZoomLevel _font_zoom;
 #define ZOOM_LVL_GUI (_gui_zoom)
 #define ZOOM_LVL_FONT (_font_zoom)
 

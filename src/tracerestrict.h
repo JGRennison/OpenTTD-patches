@@ -814,7 +814,7 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 	std::vector<VehicleID> occupants;
 	uint32 max_occupancy = 1;
 	std::string name;
-	OwnerByte owner;
+	Owner owner;
 
 	static void RebuildVehicleIndex();
 	static bool ValidateVehicleIndex();

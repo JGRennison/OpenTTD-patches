@@ -108,8 +108,8 @@ struct GUISettings {
 	uint8  statusbar_pos;                    ///< position of statusbar, 0=left, 1=center, 2=right
 	uint8  window_snap_radius;               ///< windows snap at each other if closer than this
 	uint8  window_soft_limit;                ///< soft limit of maximum number of non-stickied non-vital windows (0 = no limit)
-	ZoomLevelByte zoom_min;                  ///< minimum zoom out level
-	ZoomLevelByte zoom_max;                  ///< maximum zoom out level
+	ZoomLevel zoom_min;                      ///< minimum zoom out level
+	ZoomLevel zoom_max;                      ///< maximum zoom out level
 	bool   disable_unsuitable_building;      ///< disable infrastructure building when no suitable vehicles are available
 	byte   autosave;                         ///< how often should we do autosaves?
 	bool   threaded_saves;                   ///< should we do threaded saves?
@@ -563,11 +563,11 @@ struct EconomySettings {
 	uint8  town_growth_cargo_transported;    ///< percentage of town growth rate which depends on proportion of transported cargo in the last month
 	uint8  larger_towns;                     ///< the number of cities to build. These start off larger and grow twice as fast
 	uint8  initial_city_size;                ///< multiplier for the initial size of the cities compared to towns
-	TownLayoutByte town_layout;              ///< select town layout, @see TownLayout
+	TownLayout town_layout;                  ///< select town layout, @see TownLayout
 	TownCargoGenMode town_cargogen_mode;     ///< algorithm for generating cargo from houses, @see TownCargoGenMode
 	bool   allow_town_roads;                 ///< towns are allowed to build roads (always allowed when generating world / in SE)
 	uint16  town_min_distance;               ///< minimum distance between towns
-	TownFoundingByte found_town;             ///< town founding, @see TownFounding
+	TownFounding found_town;                 ///< town founding.
 	bool   station_noise_level;              ///< build new airports when the town noise level is still within accepted limits
 	uint16 town_noise_population[3];         ///< population to base decision on noise evaluation (@see town_council_tolerance)
 	bool   infrastructure_sharing[4];        ///< enable infrastructure sharing for rail/road/water/air

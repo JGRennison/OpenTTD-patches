@@ -55,6 +55,8 @@ struct TileHighlightData {
 	Point outersize;     ///< Size, in tile "units", of the blue coverage area excluding the side of the selected area.
 	bool diagonal;       ///< Whether the dragged area is a 45 degrees rotated rectangle.
 
+	bool freeze;         ///< Freeze highlight in place.
+
 	Point new_pos;       ///< New value for \a pos; used to determine whether to redraw the selection.
 	Point new_size;      ///< New value for \a size; used to determine whether to redraw the selection.
 	Point new_offs;      ///< New value for \a offs; used to determine whether to redraw the selection.

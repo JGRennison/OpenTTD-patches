@@ -93,7 +93,7 @@ public:
 	bool replace_old_only;
 
 	// Things derived from a virtual train
-	OwnerByte owner;
+	Owner owner;
 
 	EngineID engine_type;               ///< The type of engine used for this vehicle.
 	CargoID cargo_type;                 ///< type of cargo this vehicle is carrying
@@ -101,7 +101,7 @@ public:
 	byte cargo_subtype;
 
 	byte subtype;
-	RailTypeByte railtype;
+	RailType railtype;
 
 	VehicleID index;
 

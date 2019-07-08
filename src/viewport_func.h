@@ -42,6 +42,7 @@ void CheckMarkDirtyFocusedRoutePaths(const Vehicle *veh);
 bool DoZoomInOutWindow(ZoomStateChange how, Window *w);
 void ZoomInOrOutToCursorWindow(bool in, Window * w);
 Point GetTileZoomCenterWindow(bool in, Window * w);
+void FixTitleGameZoom();
 void HandleZoomMessage(Window *w, const ViewPort *vp, byte widget_zoom_in, byte widget_zoom_out);
 
 /**
@@ -116,5 +117,9 @@ void ViewportMapInvalidateTunnelCacheByTile(const TileIndex tile);
 
 void DrawTileSelectionRect(const TileInfo *ti, PaletteID pal);
 void DrawSelectionSprite(SpriteID image, PaletteID pal, const TileInfo *ti, int z_offset, FoundationPart foundation_part, const SubSprite *sub = nullptr);
+
+struct Town;
+void SetViewportCatchmentStation(const Station *st, bool sel);
+void SetViewportCatchmentTown(const Town *t, bool sel);
 
 #endif /* VIEWPORT_FUNC_H */

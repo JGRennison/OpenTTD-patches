@@ -51,7 +51,7 @@ enum RoadStopType {
 };
 
 /** The facilities a station might be having */
-enum StationFacility {
+enum StationFacility : byte {
 	FACIL_NONE       = 0,      ///< The station has no facilities at all
 	FACIL_TRAIN      = 1 << 0, ///< Station with train station
 	FACIL_TRUCK_STOP = 1 << 1, ///< Station with truck stops
@@ -61,10 +61,9 @@ enum StationFacility {
 	FACIL_WAYPOINT   = 1 << 7, ///< Station is a waypoint
 };
 DECLARE_ENUM_AS_BIT_SET(StationFacility)
-typedef SimpleTinyEnumT<StationFacility, byte> StationFacilityByte;
 
 /** The vehicles that may have visited a station */
-enum StationHadVehicleOfType {
+enum StationHadVehicleOfType : byte {
 	HVOT_NONE     = 0,      ///< Station has seen no vehicles
 	HVOT_TRAIN    = 1 << 1, ///< Station has seen a train
 	HVOT_BUS      = 1 << 2, ///< Station has seen a bus
@@ -75,7 +74,6 @@ enum StationHadVehicleOfType {
 	HVOT_WAYPOINT = 1 << 6, ///< Station is a waypoint (NewGRF only!)
 };
 DECLARE_ENUM_AS_BIT_SET(StationHadVehicleOfType)
-typedef SimpleTinyEnumT<StationHadVehicleOfType, byte> StationHadVehicleOfTypeByte;
 
 /** The different catchment areas used */
 enum CatchmentArea {

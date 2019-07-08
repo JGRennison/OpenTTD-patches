@@ -287,9 +287,9 @@ public:
 	int32 x_pos;                        ///< x coordinate.
 	int32 y_pos;                        ///< y coordinate.
 	int32 z_pos;                        ///< z coordinate.
-	DirectionByte direction;            ///< facing
+	Direction direction;                ///< facing
 
-	OwnerByte owner;                    ///< Which company owns the vehicle?
+	Owner owner;                        ///< Which company owns the vehicle?
 	/**
 	 * currently displayed sprite index
 	 * 0xfd == custom sprite, 0xfe == custom second head sprite
@@ -347,7 +347,7 @@ public:
 	uint16 load_unload_ticks;           ///< Ticks to wait before starting next cycle.
 	GroupID group_id;                   ///< Index of group Pool array
 	byte subtype;                       ///< subtype (Filled with values from #AircraftSubType/#DisasterSubType/#EffectVehicleType/#GroundVehicleSubtypeFlags)
-	DirectionByte cur_image_valid_dir;  ///< NOSAVE: direction for which cur_image does not need to be regenerated on the next tick
+	Direction cur_image_valid_dir;      ///< NOSAVE: direction for which cur_image does not need to be regenerated on the next tick
 
 	NewGRFCache grf_cache;              ///< Cache of often used calculated NewGRF values
 	VehicleCache vcache;                ///< Cache of often used vehicle values.

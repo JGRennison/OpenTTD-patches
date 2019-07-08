@@ -35,7 +35,7 @@ template <> struct EnumPropsT<RoadType> : MakeEnumPropsT<RoadType, byte, ROADTYP
  * The different roadtypes we support, but then a bitmask of them
  * @note currently only roadtypes with ROADTYPE_ROAD and ROADTYPE_TRAM are supported.
  */
-enum RoadTypes {
+enum RoadTypes : byte {
 	ROADTYPES_NONE     = 0,                                ///< No roadtypes
 	ROADTYPES_ROAD     = 1 << ROADTYPE_ROAD,               ///< Road
 	ROADTYPES_TRAM     = 1 << ROADTYPE_TRAM,               ///< Trams
@@ -45,7 +45,6 @@ enum RoadTypes {
 };
 DECLARE_ENUM_AS_BIT_SET(RoadTypes)
 template <> struct EnumPropsT<RoadTypes> : MakeEnumPropsT<RoadTypes, byte, ROADTYPES_NONE, ROADTYPES_END, INVALID_ROADTYPES, 2> {};
-typedef SimpleTinyEnumT<RoadTypes, byte> RoadTypesByte;
 
 
 /**

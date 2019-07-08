@@ -120,7 +120,7 @@ void AfterLoadTemplateVehiclesUpdateImage()
 
 	FOR_ALL_TEMPLATES(tv) {
 		if (tv->Prev() == nullptr) {
-			Backup<CompanyByte> cur_company(_current_company, tv->owner, FILE_LINE);
+			Backup<CompanyID> cur_company(_current_company, tv->owner, FILE_LINE);
 			StringID err;
 			Train* t = VirtualTrainFromTemplateVehicle(tv, err);
 			if (t != nullptr) {

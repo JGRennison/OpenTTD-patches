@@ -249,7 +249,7 @@ void CargoPacket::PayDeferredPayments()
 {
 	if (this->flags & CPF_HAS_DEFERRED_PAYMENT) {
 		IterateCargoPacketDeferredPayments(this->index, true, [&](Money &payment, CompanyID cid, VehicleType type) {
-			Backup<CompanyByte> cur_company(_current_company, cid, FILE_LINE);
+			Backup<CompanyID> cur_company(_current_company, cid, FILE_LINE);
 
 			ExpensesType exp;
 			switch (type) {

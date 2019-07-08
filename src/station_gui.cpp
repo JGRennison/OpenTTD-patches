@@ -84,15 +84,66 @@ int DrawStationCoverageAreaText(int left, int right, int top, StationCoverageTyp
 }
 
 /**
+ * Find stations adjacent to the current tile highlight area, so that existing coverage
+ * area can be drawn.
+ */
+static void FindStationsAroundSelection()
+{
+	/* With distant join we don't know which station will be selected, so don't show any */
+	if (_ctrl_pressed) {
+		SetViewportCatchmentStation(nullptr, true);
+		return;
+	}
+
+	/* Tile area for TileHighlightData */
+	TileArea location(TileVirtXY(_thd.pos.x, _thd.pos.y), _thd.size.x / TILE_SIZE - 1, _thd.size.y / TILE_SIZE - 1);
+
+	/* Extended area by one tile */
+	uint x = TileX(location.tile);
+	uint y = TileY(location.tile);
+
+	int max_c = 1;
+	TileArea ta(TileXY(max<int>(0, x - max_c), max<int>(0, y - max_c)), TileXY(min<int>(MapMaxX(), x + location.w + max_c), min<int>(MapMaxY(), y + location.h + max_c)));
+
+	Station *adjacent = nullptr;
+
+	/* Direct loop instead of FindStationsAroundTiles as we are not interested in catchment area */
+	TILE_AREA_LOOP(tile, ta) {
+		if (IsTileType(tile, MP_STATION) && GetTileOwner(tile) == _local_company) {
+			Station *st = Station::GetByTile(tile);
+			if (st == nullptr) continue;
+			if (adjacent != nullptr && st != adjacent) {
+				/* Multiple nearby, distant join is required. */
+				adjacent = nullptr;
+				break;
+			}
+			adjacent = st;
+		}
+	}
+	SetViewportCatchmentStation(adjacent, true);
+}
+
+/**
  * Check whether we need to redraw the station coverage text.
  * If it is needed actually make the window for redrawing.
  * @param w the window to check.
  */
 void CheckRedrawStationCoverage(const Window *w)
 {
+	/* Test if ctrl state changed */
+	static bool _last_ctrl_pressed;
+	if (_ctrl_pressed != _last_ctrl_pressed) {
+		_thd.dirty = 0xff;
+		_last_ctrl_pressed = _ctrl_pressed;
+	}
+
 	if (_thd.dirty & 1) {
 		_thd.dirty &= ~1;
 		w->SetDirty();
+
+		if (_settings_client.gui.station_show_coverage && _thd.drawstyle == HT_RECT) {
+			FindStationsAroundSelection();
+		}
 	}
 }
 
@@ -779,6 +830,7 @@ static const NWidgetPart _nested_station_view_widgets[] = {
 		EndContainer(),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SV_CLOSE_AIRPORT), SetMinimalSize(45, 12), SetResize(1, 0), SetFill(1, 1),
 				SetDataTip(STR_STATION_VIEW_CLOSE_AIRPORT, STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SV_CATCHMENT), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_BUTTON_CATCHMENT, STR_TOOLTIP_CATCHMENT),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SV_TRAINS), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_TRAIN, STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SV_ROADVEHS), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_LORRY, STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SV_SHIPS), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_SHIP, STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP),
@@ -1301,6 +1353,8 @@ struct StationViewWindow : public Window {
 		DeleteWindowById(WC_ROADVEH_LIST,  VehicleListIdentifier(VL_STATION_LIST, VEH_ROAD,     this->owner, this->window_number).Pack(), false);
 		DeleteWindowById(WC_SHIPS_LIST,    VehicleListIdentifier(VL_STATION_LIST, VEH_SHIP,     this->owner, this->window_number).Pack(), false);
 		DeleteWindowById(WC_AIRCRAFT_LIST, VehicleListIdentifier(VL_STATION_LIST, VEH_AIRCRAFT, this->owner, this->window_number).Pack(), false);
+
+		SetViewportCatchmentStation(Station::Get(this->window_number), false);
 	}
 
 	/**
@@ -1395,6 +1449,10 @@ struct StationViewWindow : public Window {
 		this->SetWidgetDisabledState(WID_SV_PLANES,   !(st->facilities & FACIL_AIRPORT) && !HasBit(have_veh_types, VEH_AIRCRAFT));
 		this->SetWidgetDisabledState(WID_SV_CLOSE_AIRPORT, !(st->facilities & FACIL_AIRPORT) || st->owner != _local_company || st->owner == OWNER_NONE); // Also consider SE, where _local_company == OWNER_NONE
 		this->SetWidgetLoweredState(WID_SV_CLOSE_AIRPORT, (st->facilities & FACIL_AIRPORT) && (st->airport.flags & AIRPORT_CLOSED_block) != 0);
+
+		extern const Station *_viewport_highlight_station;
+		this->SetWidgetDisabledState(WID_SV_CATCHMENT, st->facilities == FACIL_NONE);
+		this->SetWidgetLoweredState(WID_SV_CATCHMENT, _viewport_highlight_station == st);
 
 		this->DrawWidgets();
 
@@ -1877,6 +1935,10 @@ struct StationViewWindow : public Window {
 				this->HandleCargoWaitingClick(this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_SV_WAITING, WD_FRAMERECT_TOP, FONT_HEIGHT_NORMAL) - this->vscroll->GetPosition());
 				break;
 
+			case WID_SV_CATCHMENT:
+				SetViewportCatchmentStation(Station::Get(this->window_number), !this->IsWidgetLowered(WID_SV_CATCHMENT));
+				break;
+
 			case WID_SV_LOCATION:
 				if (_ctrl_pressed) {
 					ShowExtraViewPortWindow(Station::Get(this->window_number)->xy);
@@ -2254,6 +2316,15 @@ struct SelectStationWindow : Window {
 		this->GetWidget<NWidgetCore>(WID_JS_CAPTION)->widget_data = T::EXPECTED_FACIL == FACIL_WAYPOINT ? STR_JOIN_WAYPOINT_CAPTION : STR_JOIN_STATION_CAPTION;
 		this->FinishInitNested(0);
 		this->OnInvalidateData(0);
+
+		_thd.freeze = true;
+	}
+
+	~SelectStationWindow()
+	{
+		if (_settings_client.gui.station_show_coverage) SetViewportCatchmentStation(nullptr, true);
+
+		_thd.freeze = false;
 	}
 
 	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
@@ -2342,6 +2413,23 @@ struct SelectStationWindow : Window {
 		FindStationsNearby<T>(this->area, true);
 		this->vscroll->SetCount((uint)_stations_nearby_list.size() + 1);
 		this->SetDirty();
+	}
+
+	void OnMouseOver(Point pt, int widget) override
+	{
+		if (widget != WID_JS_PANEL || T::EXPECTED_FACIL == FACIL_WAYPOINT) {
+			SetViewportCatchmentStation(nullptr, true);
+			return;
+		}
+
+		/* Show coverage area of station under cursor */
+		uint st_index = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_JS_PANEL, WD_FRAMERECT_TOP);
+		if (st_index == 0 || st_index > _stations_nearby_list.size()) {
+			SetViewportCatchmentStation(nullptr, true);
+		} else {
+			st_index--;
+			SetViewportCatchmentStation(Station::Get(_stations_nearby_list[st_index]), true);
+		}
 	}
 };
 

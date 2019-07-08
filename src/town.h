@@ -51,7 +51,7 @@ struct TownCache {
 	uint32 num_houses;                        ///< Amount of houses
 	uint32 population;                        ///< Current population of people
 	ViewportSign sign;                        ///< Location of name sign, UpdateVirtCoord updates this
-	PartOfSubsidyByte part_of_subsidy;        ///< Is this town a source/destination of a subsidy?
+	PartOfSubsidy part_of_subsidy;            ///< Is this town a source/destination of a subsidy?
 	uint32 squared_town_zone_radius[HZB_END]; ///< UpdateTownRadius updates this given the house count
 	BuildingCounts<uint16> building_counts;   ///< The number of each type of building in the town
 };
@@ -78,7 +78,7 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	/* Company ratings. */
 	CompanyMask have_ratings;      ///< which companies have a rating
 	uint8 unwanted[MAX_COMPANIES]; ///< how many months companies aren't wanted by towns (bribe)
-	CompanyByte exclusivity;       ///< which company has exclusivity
+	CompanyID exclusivity;         ///< which company has exclusivity
 	uint8 exclusive_counter;       ///< months till the exclusivity expires
 	int16 ratings[MAX_COMPANIES];  ///< ratings of each company for this town
 	StringID town_label;           ///< Label dependent on _local_company rating.
@@ -97,16 +97,16 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	CargoTypes cargo_accepted_total; ///< NOSAVE: Bitmap of all cargoes accepted by houses in this town.
 	StationList stations_near;       ///< NOSAVE: List of nearby stations.
 
-	uint16 time_until_rebuild;     ///< time until we rebuild a house
+	uint16 time_until_rebuild;       ///< time until we rebuild a house
 
-	uint16 grow_counter;           ///< counter to count when to grow, value is smaller than or equal to growth_rate
-	uint16 growth_rate;            ///< town growth rate
+	uint16 grow_counter;             ///< counter to count when to grow, value is smaller than or equal to growth_rate
+	uint16 growth_rate;              ///< town growth rate
 
-	byte fund_buildings_months;    ///< fund buildings program in action?
-	byte road_build_months;        ///< fund road reconstruction in action?
+	byte fund_buildings_months;      ///< fund buildings program in action?
+	byte road_build_months;          ///< fund road reconstruction in action?
 
-	bool larger_town;              ///< if this is a larger town and should grow more quickly
-	TownLayoutByte layout;         ///< town specific road layout
+	bool larger_town;                ///< if this is a larger town and should grow more quickly
+	TownLayout layout;               ///< town specific road layout
 
 	std::list<PersistentStorage *> psa_list;
 

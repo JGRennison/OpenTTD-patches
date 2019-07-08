@@ -36,8 +36,6 @@
 /* Default of 4MB spritecache */
 uint _sprite_cache_size = 4;
 
-typedef SimpleTinyEnumT<SpriteType, byte> SpriteTypeByte;
-
 static size_t _spritecache_bytes_used = 0;
 
 PACK_N(class SpriteDataBuffer {

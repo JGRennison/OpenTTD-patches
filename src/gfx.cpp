@@ -46,7 +46,7 @@ bool _screen_disable_anim = false;   ///< Disable palette animation (important f
 bool _exit_game;
 GameMode _game_mode;
 SwitchMode _switch_mode;  ///< The next mainloop command.
-PauseModeByte _pause_mode;
+PauseMode _pause_mode;
 Palette _cur_palette;
 
 static byte _stringwidth_table[FS_END][224]; ///< Cache containing width of often used characters. @see GetCharacterWidth()
@@ -58,8 +58,8 @@ static void GfxMainBlitter(const Sprite *sprite, int x, int y, BlitterMode mode,
 
 static ReusableBuffer<uint8> _cursor_backup;
 
-ZoomLevelByte _gui_zoom; ///< GUI Zoom level
-ZoomLevelByte _font_zoom; ///< Font Zoom level
+ZoomLevel _gui_zoom; ///< GUI Zoom level
+ZoomLevel _font_zoom; ///< Font Zoom level
 
 /**
  * The rect for repaint.

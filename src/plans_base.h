@@ -158,7 +158,7 @@ struct PlanLine {
 };
 
 struct Plan : PlanPool::PoolItem<&_plan_pool> {
-	OwnerByte owner;
+	Owner owner;
 	PlanLineVector lines;
 	PlanLine *temp_line;
 	bool visible;

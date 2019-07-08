@@ -123,10 +123,9 @@ static inline void SetBridgeMiddle(TileIndex t, Axis a)
  * @param bridgetype the type of bridge this bridge ramp belongs to
  * @param d          the direction this ramp must be facing
  * @param tt         the transport type of the bridge
- * @param rt         the road or rail type
  * @note this function should not be called directly.
  */
-static inline void MakeBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, DiagDirection d, TransportType tt, uint rt)
+static inline void MakeBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, DiagDirection d, TransportType tt)
 {
 	SetTileType(t, MP_TUNNELBRIDGE);
 	SetTileOwner(t, o);
@@ -136,7 +135,7 @@ static inline void MakeBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, D
 	_m[t].m5 = 1 << 7 | tt << 2 | d;
 	SB(_me[t].m6, 2, 4, bridgetype);
 	_me[t].m7 = 0;
-	_me[t].m8 = rt;
+	_me[t].m8 = 0;
 }
 
 /**
@@ -147,18 +146,18 @@ static inline void MakeBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, D
  * @param owner_tram the new owner of the tram on the bridge
  * @param bridgetype the type of bridge this bridge ramp belongs to
  * @param d          the direction this ramp must be facing
- * @param r          the road type of the bridge
+ * @param rts        the road types of the bridge
  * @param upgrade    whether the bridge is an upgrade instead of a totally new bridge
  */
-static inline void MakeRoadBridgeRamp(TileIndex t, Owner o, Owner owner_road, Owner owner_tram, BridgeType bridgetype, DiagDirection d, RoadTypes r, bool upgrade)
+static inline void MakeRoadBridgeRamp(TileIndex t, Owner o, Owner owner_road, Owner owner_tram, BridgeType bridgetype, DiagDirection d, RoadTypes rts, bool upgrade)
 {
 	// Backup custom bridgehead data.
 	uint custom_bridge_head_backup = GB(_m[t].m2, 0, 8);
 
-	MakeBridgeRamp(t, o, bridgetype, d, TRANSPORT_ROAD, 0);
+	MakeBridgeRamp(t, o, bridgetype, d, TRANSPORT_ROAD);
 	SetRoadOwner(t, ROADTYPE_ROAD, owner_road);
 	if (owner_tram != OWNER_TOWN) SetRoadOwner(t, ROADTYPE_TRAM, owner_tram);
-	SetRoadTypes(t, r);
+	SetRoadTypes(t, rts);
 
 	// Restore custom bridgehead data if we're upgrading an existing bridge.
 	if (upgrade) SB(_m[t].m2, 0, 8, custom_bridge_head_backup);
@@ -170,10 +169,10 @@ static inline void MakeRoadBridgeRamp(TileIndex t, Owner o, Owner owner_road, Ow
  * @param o          the new owner of the bridge ramp
  * @param bridgetype the type of bridge this bridge ramp belongs to
  * @param d          the direction this ramp must be facing
- * @param r          the rail type of the bridge
+ * @param rt         the rail type of the bridge
  * @param upgrade    whether the bridge is an upgrade instead of a totally new bridge
  */
-static inline void MakeRailBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, DiagDirection d, RailType r, bool upgrade)
+static inline void MakeRailBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, DiagDirection d, RailType rt, bool upgrade)
 {
 	/* Backup bridge signal and custom bridgehead data. */
 	auto m2_backup = _m[t].m2;
@@ -182,7 +181,8 @@ static inline void MakeRailBridgeRamp(TileIndex t, Owner o, BridgeType bridgetyp
 	auto m6_backup = _me[t].m6;
 	auto m8_backup = _me[t].m8;
 
-	MakeBridgeRamp(t, o, bridgetype, d, TRANSPORT_RAIL, r);
+	MakeBridgeRamp(t, o, bridgetype, d, TRANSPORT_RAIL);
+	_me[t].m8 = rt;
 
 	if (upgrade) {
 		/* Restore bridge signal and custom bridgehead data if we're upgrading an existing bridge. */
@@ -206,7 +206,7 @@ static inline void MakeRailBridgeRamp(TileIndex t, Owner o, BridgeType bridgetyp
  */
 static inline void MakeAqueductBridgeRamp(TileIndex t, Owner o, DiagDirection d)
 {
-	MakeBridgeRamp(t, o, 0, d, TRANSPORT_WATER, 0);
+	MakeBridgeRamp(t, o, 0, d, TRANSPORT_WATER);
 }
 
 /**

@@ -79,10 +79,8 @@ enum Ratings {
 	RATING_BRIBE_DOWN_TO = -50        // XXX SHOULD BE SOMETHING LOWER?
 };
 
-/**
- * Town Layouts
- */
-enum TownLayout {
+/** Town Layouts. It needs to be 8bits, because we save and load it as such */
+enum TownLayout : byte {
 	TL_BEGIN = 0,
 	TL_ORIGINAL = 0,     ///< Original algorithm (min. 1 distance between roads)
 	TL_BETTER_ROADS,     ///< Extended original algorithm (min. 2 distance between roads)
@@ -94,19 +92,15 @@ enum TownLayout {
 	NUM_TLS,             ///< Number of town layouts
 };
 template <> struct EnumPropsT<TownLayout> : MakeEnumPropsT<TownLayout, byte, TL_BEGIN, NUM_TLS, NUM_TLS, 3> {};
-/** It needs to be 8bits, because we save and load it as such */
-typedef SimpleTinyEnumT<TownLayout, byte> TownLayoutByte; // typedefing-enumification of TownLayout
 
-/** Town founding setting values */
-enum TownFounding {
+/** Town founding setting values. It needs to be 8bits, because we save and load it as such */
+enum TownFounding : byte {
 	TF_BEGIN = 0,     ///< Used for iterations and limit testing
 	TF_FORBIDDEN = 0, ///< Forbidden
 	TF_ALLOWED,       ///< Allowed
 	TF_CUSTOM_LAYOUT, ///< Allowed, with custom town layout
 	TF_END,           ///< Used for iterations and limit testing
 };
-/** It needs to be 8bits, because we save and load it as such */
-typedef SimpleTinyEnumT<TownFounding, byte> TownFoundingByte;
 
 /** Town cargo generation modes */
 enum TownCargoGenMode : byte {

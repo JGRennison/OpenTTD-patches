@@ -482,7 +482,7 @@ static const Command _command_proc_table[] = {
 /**
  * List of flags for a command log entry
  */
-enum CommandLogEntryFlagEnum {
+enum CommandLogEntryFlag : byte {
 	CLEF_NONE                = 0x00, ///< no flag is set
 	CLEF_CMD_FAILED          = 0x01, ///< command failed
 	CLEF_GENERATING_WORLD    = 0x02, ///< generating world
@@ -493,8 +493,7 @@ enum CommandLogEntryFlagEnum {
 	CLEF_BINARY              = 0x40, ///< binary_length is > 0
 	CLEF_SCRIPT              = 0x80, ///< command run by AI/game script
 };
-DECLARE_ENUM_AS_BIT_SET(CommandLogEntryFlagEnum)
-typedef SimpleTinyEnumT<CommandLogEntryFlagEnum, byte> CommandLogEntryFlag;
+DECLARE_ENUM_AS_BIT_SET(CommandLogEntryFlag)
 
 struct CommandLogEntry {
 	TileIndex tile;
@@ -504,8 +503,8 @@ struct CommandLogEntry {
 	Date date;
 	DateFract date_fract;
 	uint8 tick_skip_counter;
-	CompanyByte current_company;
-	CompanyByte local_company;
+	CompanyID current_company;
+	CompanyID local_company;
 	CommandLogEntryFlag log_flags;
 
 	CommandLogEntry() { }
@@ -544,7 +543,7 @@ char *DumpCommandLog(char *buffer, const char *last)
 		}
 		const CommandLogEntry &entry = command_log[log_index];
 
-		auto fc = [&](CommandLogEntryFlagEnum flag, char c) -> char {
+		auto fc = [&](CommandLogEntryFlag flag, char c) -> char {
 			return entry.log_flags & flag ? c : '-';
 		};
 
@@ -917,7 +916,7 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd,
 		return_dcpi(CMD_ERROR);
 	}
 
-	Backup<CompanyByte> cur_company(_current_company, FILE_LINE);
+	Backup<CompanyID> cur_company(_current_company, FILE_LINE);
 	if (exec_as_spectator) cur_company.Change(COMPANY_SPECTATOR);
 
 	bool test_and_exec_can_differ = (cmd_flags & CMD_NO_TEST) != 0;

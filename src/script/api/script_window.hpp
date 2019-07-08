@@ -1622,6 +1622,7 @@ public:
 	enum QueryStringWidgets {
 		WID_QS_CAPTION                               = ::WID_QS_CAPTION,                               ///< Caption of the window.
 		WID_QS_TEXT                                  = ::WID_QS_TEXT,                                  ///< Text of the query.
+		WID_QS_WARNING                               = ::WID_QS_WARNING,                               ///< Warning label about password security
 		WID_QS_DEFAULT                               = ::WID_QS_DEFAULT,                               ///< Default button.
 		WID_QS_CANCEL                                = ::WID_QS_CANCEL,                                ///< Cancel button.
 		WID_QS_OK                                    = ::WID_QS_OK,                                    ///< OK button.
@@ -1841,6 +1842,7 @@ public:
 		WID_NCP_LABEL                                = ::WID_NCP_LABEL,                                ///< Label in front of the password field.
 		WID_NCP_PASSWORD                             = ::WID_NCP_PASSWORD,                             ///< Input field for the password.
 		WID_NCP_SAVE_AS_DEFAULT_PASSWORD             = ::WID_NCP_SAVE_AS_DEFAULT_PASSWORD,             ///< Toggle 'button' for saving the current password as default password.
+		WID_NCP_WARNING                              = ::WID_NCP_WARNING,                              ///< Warning text about password security
 		WID_NCP_CANCEL                               = ::WID_NCP_CANCEL,                               ///< Close the window without changing anything.
 		WID_NCP_OK                                   = ::WID_NCP_OK,                                   ///< Safe the password etc.
 	};
@@ -2328,6 +2330,7 @@ public:
 		WID_SV_ROADVEHS                              = ::WID_SV_ROADVEHS,                              ///< List of scheduled road vehs button.
 		WID_SV_SHIPS                                 = ::WID_SV_SHIPS,                                 ///< List of scheduled ships button.
 		WID_SV_PLANES                                = ::WID_SV_PLANES,                                ///< List of scheduled planes button.
+		WID_SV_CATCHMENT                             = ::WID_SV_CATCHMENT,                             ///< Toggle catchment area highlight.
 	};
 
 	/** Widgets of the #CompanyStationsWindow class. */
@@ -2539,6 +2542,7 @@ public:
 		WID_TV_CENTER_VIEW                           = ::WID_TV_CENTER_VIEW,                           ///< Center the main view on this town.
 		WID_TV_SHOW_AUTHORITY                        = ::WID_TV_SHOW_AUTHORITY,                        ///< Show the town authority window.
 		WID_TV_CHANGE_NAME                           = ::WID_TV_CHANGE_NAME,                           ///< Change the name of this town.
+		WID_TV_CATCHMENT                             = ::WID_TV_CATCHMENT,                             ///< Toggle catchment area highlight.
 		WID_TV_EXPAND                                = ::WID_TV_EXPAND,                                ///< Expand this town (scenario editor only).
 		WID_TV_DELETE                                = ::WID_TV_DELETE,                                ///< Delete this town (scenario editor only).
 	};

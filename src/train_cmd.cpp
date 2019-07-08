@@ -3692,7 +3692,7 @@ static Vehicle *CheckTrainAtSignal(Vehicle *v, void *data)
 struct FindSpaceBetweenTrainsChecker {
 	int32 pos;
 	uint16 distance;
-	DiagDirectionByte direction;
+	DiagDirection direction;
 };
 
 /** Find train in front and keep distance between trains in tunnel/bridge. */
@@ -4230,7 +4230,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 				v->wait_counter -= TILE_SIZE;
 
 				if (leaving) { // Reset counters.
-					v->force_proceed = 0;
+					v->force_proceed = TFP_NONE;
 					v->wait_counter = 0;
 					v->tunnel_bridge_signal_num = 0;
 					update_signal_tunbridge_exit = true;

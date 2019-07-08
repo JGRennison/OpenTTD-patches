@@ -20,7 +20,7 @@
  * @see VarTypes
  * @see SettingDescBase
  */
-enum SettingDescTypeLong {
+enum SettingDescType : byte {
 	/* 4 bytes allocated a maximum of 16 types for GenericType */
 	SDT_BEGIN       = 0,
 	SDT_NUMX        = 0, ///< any number-type
@@ -32,10 +32,9 @@ enum SettingDescTypeLong {
 	SDT_END,
 	/* 10 more possible primitives */
 };
-typedef SimpleTinyEnumT<SettingDescTypeLong, byte> SettingDescType;
 
 
-enum SettingGuiFlagLong {
+enum SettingGuiFlag : uint16 {
 	/* 1 byte allocated for a maximum of 8 flags
 	 * Flags directing saving/loading of a variable */
 	SGF_NONE = 0,
@@ -52,8 +51,7 @@ enum SettingGuiFlagLong {
 	SGF_ENUM         = 1 << 10,///< the setting can take one of the values given by an array of struct SettingDescEnumEntry
 	SGF_NO_NEWGAME   = 1 << 11,///< the setting does not apply and is not shown in a new game context
 };
-DECLARE_ENUM_AS_BIT_SET(SettingGuiFlagLong)
-typedef SimpleTinyEnumT<SettingGuiFlagLong, uint16> SettingGuiFlag;
+DECLARE_ENUM_AS_BIT_SET(SettingGuiFlag)
 
 /**
  * A SettingCategory defines a grouping of the settings.

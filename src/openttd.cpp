@@ -63,6 +63,7 @@
 #include "town.h"
 #include "subsidy_func.h"
 #include "gfx_layout.h"
+#include "viewport_func.h"
 #include "viewport_sprite_sorter.h"
 #include "framerate_type.h"
 #include "programmable_signals.h"
@@ -419,6 +420,7 @@ static void LoadIntroGame(bool load_newgrfs = true)
 		SetLocalCompany(COMPANY_FIRST);
 	}
 
+	FixTitleGameZoom();
 	_pause_mode = PM_UNPAUSED;
 	_cursor.fix_at = false;
 
@@ -1707,7 +1709,7 @@ void StateGameLoop()
 
 		/* All these actions has to be done from OWNER_NONE
 		 *  for multiplayer compatibility */
-		Backup<CompanyByte> cur_company(_current_company, OWNER_NONE, FILE_LINE);
+		Backup<CompanyID> cur_company(_current_company, OWNER_NONE, FILE_LINE);
 
 		BasePersistentStorageArray::SwitchMode(PSM_ENTER_GAMELOOP);
 		_tick_skip_counter++;

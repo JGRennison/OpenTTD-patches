@@ -472,7 +472,7 @@ static void NotifyAllViewports(ViewportMapType map_type)
 	}
 }
 
-/** Vehicle colours in #SMT_VEHICLES mode. Indexed by #VehicleTypeByte. */
+/** Vehicle colours in #SMT_VEHICLES mode. Indexed by #VehicleType. */
 static const byte _vehicle_type_colours[6] = {
 	PC_RED, PC_YELLOW, PC_LIGHT_BLUE, PC_WHITE, PC_BLACK, PC_RED
 };

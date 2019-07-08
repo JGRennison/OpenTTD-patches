@@ -80,8 +80,8 @@ static inline TLG GetTLG(TileIndex t)
 }
 
 struct DualTrackBits {
-	TrackBitsByte primary;
-	TrackBitsByte secondary;
+	TrackBits primary;
+	TrackBits secondary;
 };
 
 /**
@@ -177,7 +177,7 @@ static TrackBits MaskWireBits(TileIndex t, TrackBits tracks)
 	/* If the tracks from either a diagonal crossing or don't overlap, both
 	 * trackdirs have to be marked to mask the corresponding track bit. Else
 	 * one marked trackdir is enough the mask the track bit. */
-	TrackBitsByte mask;
+	TrackBits mask;
 	if (tracks == TRACK_BIT_CROSS || !TracksOverlap(tracks)) {
 		/* If the tracks form either a diagonal crossing or don't overlap, both
 		 * trackdirs have to be marked to mask the corresponding track bit. */

@@ -64,8 +64,8 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 	std::unique_ptr<const char, FreeDeleter> cached_name; ///< NOSAVE: Cache of the resolved name of the station, if not using a custom name
 
 	Town *town;                     ///< The town this station is associated with
-	OwnerByte owner;                ///< The owner of this station
-	StationFacilityByte facilities; ///< The facilities that this station has
+	Owner owner;                    ///< The owner of this station
+	StationFacility facilities;     ///< The facilities that this station has
 
 	uint8 num_specs;                ///< Number of specs in the speclist
 	StationSpecList *speclist;      ///< List of station specs of this station

@@ -1032,7 +1032,7 @@ Vehicle::~Vehicle()
 
 	if (this->breakdowns_since_last_service) _vehicles_to_pay_repair.erase(this->index);
 
-	if (this->type < VEH_BEGIN || this->type >= VEH_COMPANY_END) {
+	if (this->type >= VEH_COMPANY_END) {
 		/* sometimes, eg. for disaster vehicles, when company bankrupts, when removing crashed/flooded vehicles,
 		 * it may happen that vehicle chain is deleted when visible.
 		 * Do not redo this for vehicle types where it is done in PreDestructor(). */
@@ -1349,7 +1349,7 @@ void CallVehicleTicks()
 	v = nullptr;
 
 	/* do Template Replacement */
-	Backup<CompanyByte> sell_cur_company(_current_company, FILE_LINE);
+	Backup<CompanyID> sell_cur_company(_current_company, FILE_LINE);
 	for (VehicleID index : _vehicles_to_sell) {
 		Vehicle *v = Vehicle::Get(index);
 		SCOPE_INFO_FMT([v], "CallVehicleTicks: sell: %s", scope_dumper().VehicleInfo(v));
@@ -1377,7 +1377,7 @@ void CallVehicleTicks()
 	sell_cur_company.Restore();
 
 	/* do Template Replacement */
-	Backup<CompanyByte> tmpl_cur_company(_current_company, FILE_LINE);
+	Backup<CompanyID> tmpl_cur_company(_current_company, FILE_LINE);
 	for (VehicleID index : _vehicles_to_templatereplace) {
 		Train *t = Train::Get(index);
 
@@ -1424,7 +1424,7 @@ void CallVehicleTicks()
 	tmpl_cur_company.Restore();
 
 	/* do Auto Replacement */
-	Backup<CompanyByte> cur_company(_current_company, FILE_LINE);
+	Backup<CompanyID> cur_company(_current_company, FILE_LINE);
 	for (auto &it : _vehicles_to_autoreplace) {
 		v = Vehicle::Get(it.first);
 		/* Autoreplace needs the current company set as the vehicle owner */
@@ -1460,7 +1460,7 @@ void CallVehicleTicks()
 	}
 	cur_company.Restore();
 
-	Backup<CompanyByte> repair_cur_company(_current_company, FILE_LINE);
+	Backup<CompanyID> repair_cur_company(_current_company, FILE_LINE);
 	for (VehicleID index : _vehicles_to_pay_repair) {
 		Vehicle *v = Vehicle::Get(index);
 		SCOPE_INFO_FMT([v], "CallVehicleTicks: repair: %s", scope_dumper().VehicleInfo(v));
@@ -2200,7 +2200,7 @@ void VehicleEnterDepot(Vehicle *v)
 		}
 
 		if (v->current_order.IsRefit()) {
-			Backup<CompanyByte> cur_company(_current_company, v->owner, FILE_LINE);
+			Backup<CompanyID> cur_company(_current_company, v->owner, FILE_LINE);
 			CommandCost cost = DoCommand(v->tile, v->index, v->current_order.GetRefitCargo() | 0xFF << 8, DC_EXEC, GetCmdRefitVeh(v));
 			cur_company.Restore();
 
@@ -3988,7 +3988,7 @@ void DumpVehicleStats(char *buffer, const char *last)
 		vtypestats virt_train;
 		vtypestats template_train;
 	};
-	std::map<OwnerByte, cstats> cstatmap;
+	std::map<Owner, cstats> cstatmap;
 
 	Vehicle *v;
 	FOR_ALL_VEHICLES(v) {

@@ -57,7 +57,7 @@ static size_t ConvertLandscape(const char *value);
  */
 
 #define NSD_GENERAL(name, def, cmd, guiflags, min, max, interval, many, str, strhelp, strval, proc, load, cat, enumlist)\
-	{name, (const void*)(size_t)(def), {(byte)cmd}, {(uint16)guiflags}, min, max, interval, many, str, strhelp, strval, proc, load, cat, enumlist}
+	{name, (const void*)(size_t)(def), cmd, guiflags, min, max, interval, many, str, strhelp, strval, proc, load, cat, enumlist}
 
 /* Macros for various objects to go in the configuration file.
  * This section is for global variables */
@@ -89,9 +89,9 @@ static size_t ConvertLandscape(const char *value);
 	SDTG_GENERAL(name, SDT_MANYOFMANY, SL_VAR, type, flags, guiflags, var, 0, def, 0, 0, 0, full, str, strhelp, strval, proc, from, to, cat, extver, patxname)
 
 #define SDTG_NULL(length, from, to, extver)\
-	{{"", nullptr, {0}, {0}, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, SC_NONE, nullptr}, SLEG_NULL_X(length, from, to, extver), nullptr, nullptr, nullptr}
+	{{"", nullptr, SDT_NUMX, SGF_NONE, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, SC_NONE, nullptr}, SLEG_NULL_X(length, from, to, extver), nullptr, nullptr, nullptr}
 
-#define SDTG_END() {{nullptr, nullptr, {0}, {0}, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, SC_NONE, nullptr}, SLEG_END(), nullptr, nullptr, nullptr}
+#define SDTG_END() {{nullptr, nullptr, SDT_NUMX, SGF_NONE, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, SC_NONE, nullptr}, SLEG_END(), nullptr, nullptr, nullptr}
 
 /* Macros for various objects to go in the configuration file.
  * This section is for structures where their various members are saved */
@@ -126,7 +126,7 @@ static size_t ConvertLandscape(const char *value);
 	SDT_GENERAL(#var, SDT_MANYOFMANY, SL_VAR, type, flags, guiflags, base, var, 1, def, 0, 0, 0, full, str, strhelp, strval, proc, nullptr, from, to, cat, extver, patxname)
 
 #define SDT_NULL(length, from, to, extver)\
-	{{"", nullptr, {0}, {0}, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, SC_NONE, nullptr}, SLE_CONDNULL_X(length, from, to, extver), nullptr, nullptr, nullptr}
+	{{"", nullptr, SDT_NUMX, SGF_NONE, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, SC_NONE, nullptr}, SLE_CONDNULL_X(length, from, to, extver), nullptr, nullptr, nullptr}
 
 
 #define SDTC_VAR(var, type, flags, guiflags, def, min, max, interval, str, strhelp, strval, proc, from, to, cat, extver, patxname, orderproc)\
@@ -148,7 +148,7 @@ static size_t ConvertLandscape(const char *value);
 	SDTG_GENERAL(#var, SDT_ONEOFMANY, SL_VAR, type, flags, guiflags, _settings_client.var, 1, def, 0, max, 0, full, str, strhelp, strval, proc, from, to, cat, extver, patxname)
 
 #define SDT_XREF(from, to, extver, xref)\
-	{{"", nullptr, {0}, {0}, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, SC_NONE, nullptr}, SLE_CONDNULL_X(0, from, to, extver), nullptr, xref, nullptr}
+	{{"", nullptr, SDT_NUMX, SGF_NONE, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, SC_NONE, nullptr}, SLE_CONDNULL_X(0, from, to, extver), nullptr, xref, nullptr}
 
-#define SDT_END() {{nullptr, nullptr, {0}, {0}, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, SC_NONE, nullptr}, SLE_END(), nullptr, nullptr, nullptr}
+#define SDT_END() {{nullptr, nullptr, SDT_NUMX, SGF_NONE, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, SC_NONE, nullptr}, SLE_END(), nullptr, nullptr, nullptr}
 

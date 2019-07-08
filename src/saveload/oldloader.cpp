@@ -315,7 +315,7 @@ bool LoadOldSaveGame(const char *file)
 		return false;
 	}
 
-	_pause_mode = 2;
+	_pause_mode = PM_PAUSED_SAVELOAD;
 
 	return true;
 }

@@ -409,9 +409,7 @@ public:
 			while (pNode->m_parent != nullptr) {
 				steps--;
 				if (pNode->GetIsChoice() && steps < YAPF_ROADVEH_PATH_CACHE_SEGMENTS) {
-					TrackdirByte td;
-					td = pNode->GetTrackdir();
-					path_cache.td.push_front(td);
+					path_cache.td.push_front(pNode->GetTrackdir());
 					path_cache.tile.push_front(pNode->GetTile());
 				}
 				pNode = pNode->m_parent;

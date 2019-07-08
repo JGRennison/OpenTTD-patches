@@ -57,16 +57,16 @@ struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 	uint16 counter;                                        ///< used for animation and/or production (if available cargo)
 
 	IndustryType type;                  ///< type of industry.
-	OwnerByte owner;                    ///< owner of the industry.  Which SHOULD always be (imho) OWNER_NONE
+	Owner owner;                        ///< owner of the industry.  Which SHOULD always be (imho) OWNER_NONE
 	byte random_colour;                 ///< randomized colour of the industry, for display purpose
 	Year last_prod_year;                ///< last year of production
 	byte was_cargo_delivered;           ///< flag that indicate this has been the closest industry chosen for cargo delivery by a station. see DeliverGoodsToIndustry
 
-	PartOfSubsidyByte part_of_subsidy;  ///< NOSAVE: is this industry a source/destination of a subsidy?
+	PartOfSubsidy part_of_subsidy;      ///< NOSAVE: is this industry a source/destination of a subsidy?
 	StationList stations_near;          ///< NOSAVE: List of nearby stations.
 	std::unique_ptr<const char, FreeDeleter> cached_name; ///< NOSAVE: Cache of the resolved name of the industry
 
-	OwnerByte founder;                  ///< Founder of the industry
+	Owner founder;                      ///< Founder of the industry
 	Date construction_date;             ///< Date of the construction of the industry
 	uint8 construction_type;            ///< Way the industry was constructed (@see IndustryConstructionType)
 	Date last_cargo_accepted_at[INDUSTRY_NUM_INPUTS]; ///< Last day each cargo type was accepted by this industry

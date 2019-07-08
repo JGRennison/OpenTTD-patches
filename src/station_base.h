@@ -315,7 +315,7 @@ struct Airport : public TileArea {
 	uint64 flags;       ///< stores which blocks on the airport are taken. was 16 bit earlier on, then 32
 	byte type;          ///< Type of this airport, @see AirportTypes
 	byte layout;        ///< Airport layout number.
-	DirectionByte rotation; ///< How this airport is rotated.
+	Direction rotation; ///< How this airport is rotated.
 
 	PersistentStorage *psa; ///< Persistent storage for NewGRF airports.
 
@@ -476,7 +476,7 @@ public:
 
 	BitmapTileArea catchment_tiles; ///< NOSAVE: Set of individual tiles covered by catchment area
 
-	StationHadVehicleOfTypeByte had_vehicle_of_type;
+	StationHadVehicleOfType had_vehicle_of_type;
 
 	byte time_since_load;
 	byte time_since_unload;
