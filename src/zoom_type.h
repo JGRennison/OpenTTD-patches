@@ -15,7 +15,7 @@
 #include "core/enum_type.hpp"
 
 static uint const ZOOM_LVL_SHIFT = 2;
-static uint const ZOOM_LVL_BASE  = 1 << ZOOM_LVL_SHIFT;
+static int const ZOOM_LVL_BASE  = 1 << ZOOM_LVL_SHIFT;
 
 /** All zoom levels we know. */
 enum ZoomLevel : byte {
