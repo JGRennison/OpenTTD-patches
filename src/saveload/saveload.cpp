@@ -2663,6 +2663,9 @@ static inline void ClearSaveLoadState()
 
 	delete _sl.lf;
 	_sl.lf = nullptr;
+
+	extern void GamelogStopActionIfStarted();
+	GamelogStopActionIfStarted();
 }
 
 /**
