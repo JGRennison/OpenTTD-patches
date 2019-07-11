@@ -928,6 +928,21 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 
 				RoadBits added_pieces = (existing | pieces) & ~existing;
 				uint added_pieces_count = CountBits(added_pieces);
+
+				RoadType existing_rt = GetRoadType(tile, rtt);
+				if (existing_rt != INVALID_ROADTYPE && existing_rt != rt) {
+					if (HasPowerOnRoad(rt, existing_rt)) {
+						rt = existing_rt;
+					} else if (HasPowerOnRoad(existing_rt, rt)) {
+						cost.AddCost(CountBits(existing) * RoadConvertCost(existing_rt, rt));
+						if (existing & entrance_piece) {
+							cost.AddCost((CountBits(GetCustomBridgeHeadRoadBits(other_end, rtt)) + (GetTunnelBridgeLength(tile, other_end) * 2)) * RoadConvertCost(existing_rt, rt));
+						}
+					} else {
+						return CMD_ERROR;
+					}
+				}
+
 				RoadBits other_end_added_pieces = ROAD_NONE;
 				RoadBits other_end_existing = ROAD_NONE;
 
@@ -947,6 +962,15 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 						 */
 						other_end_added_pieces = axial_pieces;
 						added_pieces_count++;
+					} else {
+						RoadType other_end_rt = GetRoadType(other_end, rtt);
+						if (other_end_rt != rt) {
+							if (HasPowerOnRoad(other_end_rt, rt)) {
+								cost.AddCost(CountBits(other_end_existing) * RoadConvertCost(other_end_rt, rt));
+							} else {
+								return CMD_ERROR;
+							}
+						}
 					}
 				}
 
@@ -955,17 +979,19 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 				if (flags & DC_EXEC) {
 					SubtractRoadTunnelBridgeInfrastructure(tile, other_end);
 
+					SetRoadType(tile, rtt, rt);
 					if (!existing) {
-						SetRoadType(tile, rtt, rt);
 						SetRoadOwner(tile, rtt, company);
 					}
 					SetCustomBridgeHeadRoadBits(tile, rtt, existing | pieces);
 					if (other_end_added_pieces) {
+						SetRoadType(other_end, rtt, rt);
 						if (!other_end_existing) {
-							SetRoadType(other_end, rtt, rt);
 							SetRoadOwner(other_end, rtt, company);
 						}
 						SetCustomBridgeHeadRoadBits(other_end, rtt, other_end_existing | other_end_added_pieces);
+					} else if (existing & entrance_piece) {
+						SetRoadType(other_end, rtt, rt);
 					}
 
 					MarkBridgeDirty(tile);
