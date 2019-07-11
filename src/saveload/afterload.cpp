@@ -3464,7 +3464,9 @@ bool AfterLoadGame()
 		/* convert wait for cargo orders to ordinary load if possible */
 		Order *order;
 		FOR_ALL_ORDERS(order) {
-			if (order->GetLoadType() == static_cast<OrderLoadFlags>(1)) order->SetLoadType(OLF_LOAD_IF_POSSIBLE);
+			if ((order->IsType(OT_GOTO_STATION) || order->IsType(OT_LOADING) || order->IsType(OT_IMPLICIT)) && order->GetLoadType() == static_cast<OrderLoadFlags>(1)) {
+				order->SetLoadType(OLF_LOAD_IF_POSSIBLE);
+			}
 		}
 	}
 
