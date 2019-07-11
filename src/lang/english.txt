@@ -947,6 +947,9 @@ STR_GAME_OPTIONS_CURRENCY_GEL                                   :Georgian Lari (
 STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iranian Rial (IRR)
 STR_GAME_OPTIONS_CURRENCY_RUB                                   :New Russian Ruble (RUB)
 STR_GAME_OPTIONS_CURRENCY_MXN                                   :Mexican Peso (MXN)
+STR_GAME_OPTIONS_CURRENCY_NTD                                   :New Taiwan Dollar (NTD)
+STR_GAME_OPTIONS_CURRENCY_CNY                                   :Chinese Renminbi (CNY)
+STR_GAME_OPTIONS_CURRENCY_HKD                                   :Hong Kong Dollar (HKD)
 ############ end of currency region
 
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Road vehicles
@@ -1619,6 +1622,9 @@ STR_CONFIG_SETTING_AI_IN_MULTIPLAYER                            :Allow AIs in mu
 STR_CONFIG_SETTING_AI_IN_MULTIPLAYER_HELPTEXT                   :Allow AI computer players to participate in multiplayer games
 STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES                           :#opcodes before scripts are suspended: {STRING2}
 STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES_HELPTEXT                  :Maximum number of computation steps that a script can take in one turn
+STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY                            :Max memory usage per script: {STRING2}
+STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY_HELPTEXT                   :How much memory a single script may consume before it's forcibly terminated. This may need to be increased for large maps.
+STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY_VALUE                      :{COMMA} MiB
 
 STR_CONFIG_SETTING_SHARING_RAIL                                 :Enable sharing of railways: {STRING2}
 STR_CONFIG_SETTING_SHARING_ROAD                                 :Enable sharing of road stops and depots: {STRING2}
@@ -3282,6 +3288,7 @@ STR_FRAMERATE_SPEED_FACTOR                                      :{BLACK}Current 
 STR_FRAMERATE_SPEED_FACTOR_TOOLTIP                              :{BLACK}How fast the game is currently running, compared to the expected speed at normal simulation rate.
 STR_FRAMERATE_CURRENT                                           :{WHITE}Current
 STR_FRAMERATE_AVERAGE                                           :{WHITE}Average
+STR_FRAMERATE_MEMORYUSE                                         :{WHITE}Memory
 STR_FRAMERATE_DATA_POINTS                                       :{BLACK}Data based on {COMMA} measurements
 STR_FRAMERATE_MS_GOOD                                           :{LTBLUE}{DECIMAL} ms
 STR_FRAMERATE_MS_WARN                                           :{YELLOW}{DECIMAL} ms
@@ -3289,6 +3296,9 @@ STR_FRAMERATE_MS_BAD                                            :{RED}{DECIMAL} 
 STR_FRAMERATE_FPS_GOOD                                          :{LTBLUE}{DECIMAL} frames/s
 STR_FRAMERATE_FPS_WARN                                          :{YELLOW}{DECIMAL} frames/s
 STR_FRAMERATE_FPS_BAD                                           :{RED}{DECIMAL} frames/s
+STR_FRAMERATE_BYTES_GOOD                                        :{LTBLUE}{BYTES}
+STR_FRAMERATE_BYTES_WARN                                        :{YELLOW}{BYTES}
+STR_FRAMERATE_BYTES_BAD                                         :{RED}{BYTES}
 STR_FRAMERATE_GRAPH_MILLISECONDS                                :{TINY_FONT}{COMMA} ms
 STR_FRAMERATE_GRAPH_SECONDS                                     :{TINY_FONT}{COMMA} s
 ############ Leave those lines in this order!!
@@ -5244,7 +5254,6 @@ STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... this
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... road facing in the wrong direction
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... drive through stops can't have corners
 STR_ERROR_DRIVE_THROUGH_JUNCTION                                :{WHITE}... drive through stops can't have junctions
-STR_ERROR_DRIVE_THROUGH_ON_ONEWAY_ROAD                          :{WHITE}... road is one way or blocked
 
 # Station destruction related errors
 STR_ERROR_CAN_T_REMOVE_PART_OF_STATION                          :{WHITE}Can't remove part of station...

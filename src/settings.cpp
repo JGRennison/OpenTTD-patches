@@ -39,7 +39,7 @@
 #include "sound_func.h"
 #include "company_func.h"
 #include "rev.h"
-#ifdef WITH_FREETYPE
+#if defined(WITH_FREETYPE) || defined(_WIN32)
 #include "fontcache.h"
 #endif
 #include "textbuf_gui.h"
@@ -71,6 +71,10 @@
 #include "void_map.h"
 #include "station_base.h"
 #include "infrastructure_func.h"
+
+#if defined(WITH_FREETYPE) || defined(_WIN32)
+#define HAS_TRUETYPE_FONT
+#endif
 
 #include "table/strings.h"
 #include "table/settings.h"

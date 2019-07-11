@@ -3331,7 +3331,7 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeStation(StationID id)
 	item.id.station = id;
 
 	Station *st = Station::Get(id);
-	Point pt = RemapCoords2(TileX(st->xy) * TILE_SIZE, TileY(st->xy) * TILE_SIZE);
+	Point pt = RemapCoords(TileX(st->xy) * TILE_SIZE, TileY(st->xy) * TILE_SIZE, GetTileMaxZ(st->xy) * TILE_HEIGHT);
 
 	pt.y -= 32 * ZOOM_LVL_BASE;
 	if ((st->facilities & FACIL_AIRPORT) && st->airport.type == AT_OILRIG) pt.y -= 16 * ZOOM_LVL_BASE;
@@ -3364,7 +3364,7 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeWaypoint(StationID id)
 	item.id.station = id;
 
 	Waypoint *st = Waypoint::Get(id);
-	Point pt = RemapCoords2(TileX(st->xy) * TILE_SIZE, TileY(st->xy) * TILE_SIZE);
+	Point pt = RemapCoords(TileX(st->xy) * TILE_SIZE, TileY(st->xy) * TILE_SIZE, GetTileMaxZ(st->xy) * TILE_HEIGHT);
 
 	pt.y -= 32 * ZOOM_LVL_BASE;
 
@@ -3396,7 +3396,9 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeTown(TownID id)
 	item.id.town = id;
 
 	const Town *town = Town::Get(id);
-	Point pt = RemapCoords2(TileX(town->xy) * TILE_SIZE, TileY(town->xy) * TILE_SIZE);
+	/* Avoid using RemapCoords2, it has dependency on the foundations status of the tile, and that can be unavailable during saveload, leading to crashes.
+	 * Instead "fake" foundations by taking the highest Z coordinate of any corner of the tile. */
+	Point pt = RemapCoords(TileX(town->xy) * TILE_SIZE, TileY(town->xy) * TILE_SIZE, GetTileMaxZ(town->xy) * TILE_HEIGHT);
 
 	pt.y -= 24 * ZOOM_LVL_BASE;
 

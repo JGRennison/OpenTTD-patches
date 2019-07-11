@@ -88,6 +88,7 @@ jobs:
   - template: windows-build.yml
     parameters:
       BuildPlatform: $(BuildPlatform)
+      BuildConfiguration: Release
   - bash: |
       set -ex
       make -f Makefile.msvc bundle_pdb bundle_zip PLATFORM=$(BundlePlatform) BUNDLE_NAME=openttd-$(Build.BuildNumber)-windows-$(BundlePlatform)
@@ -110,14 +111,22 @@ jobs:
 
     strategy:
       matrix:
-        linux-ubuntu-xenial-i386-gcc: {}
-        linux-ubuntu-xenial-amd64-gcc: {}
-        linux-ubuntu-bionic-i386-gcc: {}
-        linux-ubuntu-bionic-amd64-gcc: {}
-        linux-debian-jessie-i386-gcc: {}
-        linux-debian-jessie-amd64-gcc: {}
-        linux-debian-stretch-i386-gcc: {}
-        linux-debian-stretch-amd64-gcc: {}
+        linux-ubuntu-xenial-i386-gcc:
+          Tag: 'linux-ubuntu-xenial-i386-gcc'
+        linux-ubuntu-xenial-amd64-gcc:
+          Tag: 'linux-ubuntu-xenial-amd64-gcc'
+        linux-ubuntu-bionic-i386-gcc:
+          Tag: 'linux-ubuntu-bionic-i386-gcc'
+        linux-ubuntu-bionic-amd64-gcc:
+          Tag: 'linux-ubuntu-bionic-amd64-gcc'
+        linux-debian-jessie-i386-gcc:
+          Tag: 'linux-debian-jessie-i386-gcc'
+        linux-debian-jessie-amd64-gcc:
+          Tag: 'linux-debian-jessie-amd64-gcc'
+        linux-debian-stretch-i386-gcc:
+          Tag: 'linux-debian-stretch-i386-gcc'
+        linux-debian-stretch-amd64-gcc:
+          Tag: 'linux-debian-stretch-amd64-gcc'
 
     steps:
     - template: release-fetch-source.yml
@@ -125,7 +134,7 @@ jobs:
       parameters:
         Image: compile-farm
         ContainerCommand: '$(Build.BuildNumber)'
-        Tag: $(Agent.JobName)
+        Tag: $(Tag)
     - template: linux-claim-bundles.yml
     - template: release-bundles.yml
 

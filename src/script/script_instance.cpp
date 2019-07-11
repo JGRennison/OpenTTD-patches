@@ -95,7 +95,7 @@ void ScriptInstance::Initialize(const char *main_script, const char *instance_na
 			return;
 		}
 		ScriptObject::SetAllowDoCommand(true);
-	} catch (Script_FatalError e) {
+	} catch (Script_FatalError &e) {
 		this->is_dead = true;
 		this->engine->ThrowError(e.GetErrorMessage());
 		this->engine->ResumeError();
@@ -153,6 +153,8 @@ void ScriptInstance::Died()
 	DEBUG(script, 0, "The script died unexpectedly.");
 	this->is_dead = true;
 
+	this->last_allocated_memory = this->GetAllocatedMemory(); // Update cache
+
 	if (this->instance != nullptr) this->engine->ReleaseObject(this->instance);
 	delete this->engine;
 	this->instance = nullptr;
@@ -186,7 +188,7 @@ void ScriptInstance::GameLoop()
 		}
 		try {
 			this->callback(this);
-		} catch (Script_Suspend e) {
+		} catch (Script_Suspend &e) {
 			this->suspend  = e.GetSuspendTime();
 			this->callback = e.GetSuspendCallback();
 
@@ -216,10 +218,10 @@ void ScriptInstance::GameLoop()
 			ScriptObject::SetAllowDoCommand(true);
 			/* Start the script by calling Start() */
 			if (!this->engine->CallMethod(*this->instance, "Start",  _settings_game.script.script_max_opcode_till_suspend) || !this->engine->IsSuspended()) this->Died();
-		} catch (Script_Suspend e) {
+		} catch (Script_Suspend &e) {
 			this->suspend  = e.GetSuspendTime();
 			this->callback = e.GetSuspendCallback();
-		} catch (Script_FatalError e) {
+		} catch (Script_FatalError &e) {
 			this->is_dead = true;
 			this->engine->ThrowError(e.GetErrorMessage());
 			this->engine->ResumeError();
@@ -237,10 +239,10 @@ void ScriptInstance::GameLoop()
 	/* Continue the VM */
 	try {
 		if (!this->engine->Resume(_settings_game.script.script_max_opcode_till_suspend)) this->Died();
-	} catch (Script_Suspend e) {
+	} catch (Script_Suspend &e) {
 		this->suspend  = e.GetSuspendTime();
 		this->callback = e.GetSuspendCallback();
-	} catch (Script_FatalError e) {
+	} catch (Script_FatalError &e) {
 		this->is_dead = true;
 		this->engine->ThrowError(e.GetErrorMessage());
 		this->engine->ResumeError();
@@ -494,7 +496,7 @@ void ScriptInstance::Save()
 				this->engine->CrashOccurred();
 				return;
 			}
-		} catch (Script_FatalError e) {
+		} catch (Script_FatalError &e) {
 			/* If we don't mark the script as dead here cleaning up the squirrel
 			 * stack could throw Script_FatalError again. */
 			this->is_dead = true;
@@ -697,4 +699,10 @@ void ScriptInstance::InsertEvent(class ScriptEvent *event)
 	ScriptObject::ActiveInstance active(this);
 
 	ScriptEventController::InsertEvent(event);
+}
+
+size_t ScriptInstance::GetAllocatedMemory() const
+{
+	if (this->engine == nullptr) return this->last_allocated_memory;
+	return this->engine->GetAllocatedMemory();
 }

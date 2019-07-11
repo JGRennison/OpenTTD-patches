@@ -85,8 +85,8 @@ void ResolveRoadTypeGUISprites(RoadTypeInfo *rti)
 {
 	SpriteID cursors_base = GetCustomRoadSprite(rti, INVALID_TILE, ROTSG_CURSORS);
 	if (cursors_base != 0) {
-		rti->gui_sprites.build_x_road = cursors_base +  0;
-		rti->gui_sprites.build_y_road = cursors_base +  1;
+		rti->gui_sprites.build_y_road = cursors_base +  0;
+		rti->gui_sprites.build_x_road = cursors_base +  1;
 		rti->gui_sprites.auto_road    = cursors_base +  2;
 		rti->gui_sprites.build_depot  = cursors_base +  3;
 		rti->gui_sprites.build_tunnel = cursors_base +  4;
@@ -1431,7 +1431,7 @@ static CommandCost ClearTile_Road(TileIndex tile, DoCommandFlag flags)
 			/* Must iterate over the roadtypes in a reverse manner because
 			 * tram tracks must be removed before the road bits. */
 			for (RoadTramType rtt : { RTT_TRAM, RTT_ROAD }) {
-				if (GetRoadType(tile, rtt) == INVALID_ROADTYPE) continue;
+				if (!MayHaveRoad(tile) || GetRoadType(tile, rtt) == INVALID_ROADTYPE) continue;
 
 				CommandCost tmp_ret = RemoveRoad(tile, flags, GetCrossingRoadBits(tile), rtt, false);
 				if (tmp_ret.Failed()) return tmp_ret;
