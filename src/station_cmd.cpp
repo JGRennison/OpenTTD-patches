@@ -1059,7 +1059,7 @@ static CommandCost CheckFlatLandRoadStop(TileArea tile_area, DoCommandFlag flags
 					if (RoadTypeIsRoad(rt) && !HasPowerOnRoad(rt, road_rt)) return_cmd_error(STR_ERROR_NO_SUITABLE_ROAD);
 
 					if (GetDisallowedRoadDirections(cur_tile) != DRD_NONE) {
-						CommandCost ret = CheckOwnership(road_owner);
+						CommandCost ret = CheckOwnership(road_owner, cur_tile);
 						if (ret.Failed()) return ret;
 					}
 
