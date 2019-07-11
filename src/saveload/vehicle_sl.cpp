@@ -252,8 +252,13 @@ void AfterLoadVehicles(bool part_of_load)
 
 	FOR_ALL_VEHICLES(v) {
 		/* Reinstate the previous pointer */
-		if (v->Next() != NULL) v->Next()->previous = v;
-		if (v->NextShared() != NULL) v->NextShared()->previous_shared = v;
+		if (v->Next() != nullptr) {
+			v->Next()->previous = v;
+			if (HasBit(v->subtype, GVSF_VIRTUAL) != HasBit(v->Next()->subtype, GVSF_VIRTUAL)) {
+				SlErrorCorrupt("Mixed virtual/non-virtual vehicle consist");
+			}
+		}
+		if (v->NextShared() != nullptr) v->NextShared()->previous_shared = v;
 
 		if (part_of_load) v->fill_percent_te_id = INVALID_TE_ID;
 		v->first = NULL;
