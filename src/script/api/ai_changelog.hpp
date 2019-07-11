@@ -26,6 +26,14 @@
  * \li AIGroup::GetSecondaryColour
  * \li AIVehicle::BuildVehicleWithRefit
  * \li AIVehicle::GetBuildWithRefitCapacity
+ * \li AIRoad::GetName
+ * \li AIRoad::RoadVehCanRunOnRoad
+ * \li AIRoad::RoadVehHasPowerOnRoad
+ * \li AIRoad::ConvertRoadType
+ * \li AIRoad::GetMaxSpeed
+ * \li AIEngine::CanRunOnRoad
+ * \li AIEngine::HasPowerOnRoad
+ * \li AIRoadTypeList::RoadTypeList
  *
  * \b 1.9.0
  *
@@ -45,6 +53,9 @@
  * \b 1.8.0
  *
  * No changes
+ *
+ * API additions:
+ * \li AIRoad::ERR_ROADTYPE_DISALLOWS_CROSSING
  *
  * \b 1.7.0 - 1.7.2
  *

@@ -33,7 +33,7 @@ struct CFollowTrackT
 	enum ErrorCode {
 		EC_NONE,
 		EC_OWNER,
-		EC_RAIL_TYPE,
+		EC_RAIL_ROAD_TYPE,
 		EC_90DEG,
 		EC_NO_WAY,
 		EC_RESERVED,
@@ -61,6 +61,7 @@ struct CFollowTrackT
 
 	inline CFollowTrackT(Owner o, RailTypes railtype_override = INVALID_RAILTYPES, CPerformanceTimer *pPerf = nullptr)
 	{
+		assert(IsRailTT());
 		m_veh = nullptr;
 		Init(o, railtype_override, pPerf);
 	}
@@ -93,7 +94,7 @@ struct CFollowTrackT
 	inline static TransportType TT() { return Ttr_type_; }
 	inline static bool IsWaterTT() { return TT() == TRANSPORT_WATER; }
 	inline static bool IsRailTT() { return TT() == TRANSPORT_RAIL; }
-	inline bool IsTram() { return IsRoadTT() && HasBit(RoadVehicle::From(m_veh)->compatible_roadtypes, ROADTYPE_TRAM); }
+	inline bool IsTram() { return IsRoadTT() && RoadTypeIsTram(RoadVehicle::From(m_veh)->roadtype); }
 	inline static bool IsRoadTT() { return TT() == TRANSPORT_ROAD; }
 	inline static bool Allow90degTurns() { return T90deg_turns_allowed_; }
 	inline static bool DoTrackMasking() { return Tmask_reserved_tracks; }
@@ -105,7 +106,7 @@ struct CFollowTrackT
 
 		const bool is_bridge = IsRoadCustomBridgeHeadTile(tile);
 		if (is_bridge || IsNormalRoadTile(tile)) {
-			RoadBits rb = is_bridge ? GetCustomBridgeHeadRoadBits(tile, ROADTYPE_TRAM) : GetRoadBits(tile, ROADTYPE_TRAM);
+			RoadBits rb = is_bridge ? GetCustomBridgeHeadRoadBits(tile, RTT_TRAM) : GetRoadBits(tile, RTT_TRAM);
 			switch (rb) {
 				case ROAD_NW: return DIAGDIR_NW;
 				case ROAD_SW: return DIAGDIR_SW;
@@ -128,7 +129,7 @@ struct CFollowTrackT
 		m_err = EC_NONE;
 		assert_tile(
 			((TrackStatusToTrackdirBits(
-				GetTileTrackStatus(m_old_tile, TT(), (IsRoadTT() && m_veh != nullptr) ? RoadVehicle::From(m_veh)->compatible_roadtypes : 0)
+				GetTileTrackStatus(m_old_tile, TT(), (IsRoadTT() && m_veh != nullptr) ? (this->IsTram() ? RTT_TRAM : RTT_ROAD) : 0)
 			) & TrackdirToTrackdirBits(m_old_td)) != 0) ||
 			(IsTram() && GetSingleTramBit(m_old_tile) != INVALID_DIAGDIR), // Disable the assertion for single tram bits
 			m_old_tile
@@ -154,7 +155,7 @@ struct CFollowTrackT
 			if (IsRoadTT() && !IsTram() && TryReverse()) return true;
 
 			/* CanEnterNewTile already set a reason.
-			 * Do NOT overwrite it (important for example for EC_RAIL_TYPE).
+			 * Do NOT overwrite it (important for example for EC_RAIL_ROAD_TYPE).
 			 * Only set a reason if CanEnterNewTile was not called */
 			if (m_new_td_bits == TRACKDIR_BIT_NONE) m_err = EC_NO_WAY;
 
@@ -244,7 +245,7 @@ protected:
 		if (IsRailTT() && IsPlainRailTile(m_new_tile)) {
 			m_new_td_bits = (TrackdirBits)(GetTrackBits(m_new_tile) * 0x101);
 		} else {
-			m_new_td_bits = TrackStatusToTrackdirBits(GetTileTrackStatus(m_new_tile, TT(), IsRoadTT() ? RoadVehicle::From(m_veh)->compatible_roadtypes : 0));
+			m_new_td_bits = TrackStatusToTrackdirBits(GetTileTrackStatus(m_new_tile, TT(), IsRoadTT() ? (this->IsTram() ? RTT_TRAM : RTT_ROAD) : 0));
 
 			if (IsTram() && m_new_td_bits == TRACKDIR_BIT_NONE) {
 				/* GetTileTrackStatus() returns 0 for single tram bits.
@@ -358,7 +359,18 @@ protected:
 			RailType rail_type = GetTileRailTypeByEntryDir(m_new_tile, m_exitdir);
 			if (!HasBit(m_railtypes, rail_type)) {
 				/* incompatible rail type */
-				m_err = EC_RAIL_TYPE;
+				m_err = EC_RAIL_ROAD_TYPE;
+				return false;
+			}
+		}
+
+		/* road transport is possible only on compatible road types */
+		if (IsRoadTT()) {
+			const RoadVehicle *v = RoadVehicle::From(m_veh);
+			RoadType roadtype = GetRoadType(m_new_tile, GetRoadTramType(v->roadtype));
+			if (!HasBit(v->compatible_roadtypes, roadtype)) {
+				/* incompatible road type */
+				m_err = EC_RAIL_ROAD_TYPE;
 				return false;
 			}
 		}
@@ -380,7 +392,7 @@ protected:
 					return false;
 				}
 				if (!m_is_bridge && IsRoadTT() && IsRoadCustomBridgeHeadTile(m_new_tile)) {
-					if (!(DiagDirToRoadBits(ReverseDiagDir(m_exitdir)) & GetCustomBridgeHeadRoadBits(m_new_tile, IsTram() ? ROADTYPE_TRAM : ROADTYPE_ROAD))) {
+					if (!(DiagDirToRoadBits(ReverseDiagDir(m_exitdir)) & GetCustomBridgeHeadRoadBits(m_new_tile, IsTram() ? RTT_TRAM : RTT_ROAD))) {
 						m_err = EC_NO_WAY;
 						return false;
 					}

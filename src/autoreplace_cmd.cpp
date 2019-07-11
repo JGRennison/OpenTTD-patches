@@ -21,6 +21,7 @@
 #include "tracerestrict.h"
 #include "core/random_func.hpp"
 #include "vehiclelist.h"
+#include "road.h"
 
 #include "table/strings.h"
 
@@ -75,6 +76,9 @@ bool CheckAutoreplaceValidity(EngineID from, EngineID to, CompanyID company)
 		}
 
 		case VEH_ROAD:
+			/* make sure the roadtypes are compatible */
+			if ((GetRoadTypeInfo(e_from->u.road.roadtype)->powered_roadtypes & GetRoadTypeInfo(e_to->u.road.roadtype)->powered_roadtypes) == ROADTYPES_NONE) return false;
+
 			/* make sure that we do not replace a tram with a normal road vehicles or vice versa */
 			if (HasBit(e_from->info.misc_flags, EF_ROAD_TRAM) != HasBit(e_to->info.misc_flags, EF_ROAD_TRAM)) return false;
 			break;

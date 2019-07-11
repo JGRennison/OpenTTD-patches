@@ -131,11 +131,11 @@ static inline void MakeBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, D
 	SetTileOwner(t, o);
 	_m[t].m2 = 0;
 	_m[t].m3 = 0;
-	_m[t].m4 = 0;
+	_m[t].m4 = INVALID_ROADTYPE;
 	_m[t].m5 = 1 << 7 | tt << 2 | d;
 	SB(_me[t].m6, 2, 4, bridgetype);
 	_me[t].m7 = 0;
-	_me[t].m8 = 0;
+	_me[t].m8 = INVALID_ROADTYPE << 6;
 }
 
 /**
@@ -146,18 +146,19 @@ static inline void MakeBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, D
  * @param owner_tram the new owner of the tram on the bridge
  * @param bridgetype the type of bridge this bridge ramp belongs to
  * @param d          the direction this ramp must be facing
- * @param rts        the road types of the bridge
+ * @param road_rt    the road type of the bridge
+ * @param tram_rt    the tram type of the bridge
  * @param upgrade    whether the bridge is an upgrade instead of a totally new bridge
  */
-static inline void MakeRoadBridgeRamp(TileIndex t, Owner o, Owner owner_road, Owner owner_tram, BridgeType bridgetype, DiagDirection d, RoadTypes rts, bool upgrade)
+static inline void MakeRoadBridgeRamp(TileIndex t, Owner o, Owner owner_road, Owner owner_tram, BridgeType bridgetype, DiagDirection d, RoadType road_rt, RoadType tram_rt, bool upgrade)
 {
 	// Backup custom bridgehead data.
 	uint custom_bridge_head_backup = GB(_m[t].m2, 0, 8);
 
 	MakeBridgeRamp(t, o, bridgetype, d, TRANSPORT_ROAD);
-	SetRoadOwner(t, ROADTYPE_ROAD, owner_road);
-	if (owner_tram != OWNER_TOWN) SetRoadOwner(t, ROADTYPE_TRAM, owner_tram);
-	SetRoadTypes(t, rts);
+	SetRoadOwner(t, RTT_ROAD, owner_road);
+	if (owner_tram != OWNER_TOWN) SetRoadOwner(t, RTT_TRAM, owner_tram);
+	SetRoadTypes(t, road_rt, tram_rt);
 
 	// Restore custom bridgehead data if we're upgrading an existing bridge.
 	if (upgrade) SB(_m[t].m2, 0, 8, custom_bridge_head_backup);
@@ -182,6 +183,7 @@ static inline void MakeRailBridgeRamp(TileIndex t, Owner o, BridgeType bridgetyp
 	auto m8_backup = _me[t].m8;
 
 	MakeBridgeRamp(t, o, bridgetype, d, TRANSPORT_RAIL);
+	_m[t].m4 = 0;
 	_me[t].m8 = rt;
 
 	if (upgrade) {
@@ -234,15 +236,15 @@ static inline bool IsRoadCustomBridgeHeadTile(TileIndex t)
 /**
  * Returns the road bits for a (possibly custom) road bridge head
  * @param t The tile to analyze
- * @param rt Road type.
+ * @param rtt Road/tram type.
  * @pre IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD
  * @return road bits for the bridge head
  */
-static inline RoadBits GetCustomBridgeHeadRoadBits(TileIndex t, RoadType rt)
+static inline RoadBits GetCustomBridgeHeadRoadBits(TileIndex t, RoadTramType rtt)
 {
 	assert_tile(IsBridgeTile(t), t);
-	if (!HasTileRoadType(t, rt)) return (RoadBits) 0;
-	RoadBits bits = (GB(_m[t].m5, 0, 1) ? ROAD_Y : ROAD_X) ^ (RoadBits) GB(_m[t].m2, rt == ROADTYPE_TRAM ? 4 : 0, 4);
+	if (!HasTileRoadType(t, rtt)) return (RoadBits) 0;
+	RoadBits bits = (GB(_m[t].m5, 0, 1) ? ROAD_Y : ROAD_X) ^ (RoadBits) GB(_m[t].m2, rtt == RTT_TRAM ? 4 : 0, 4);
 	return bits;
 }
 
@@ -254,26 +256,26 @@ static inline RoadBits GetCustomBridgeHeadRoadBits(TileIndex t, RoadType rt)
  */
 static inline RoadBits GetCustomBridgeHeadAllRoadBits(TileIndex t)
 {
-	return GetCustomBridgeHeadRoadBits(t, ROADTYPE_ROAD) | GetCustomBridgeHeadRoadBits(t, ROADTYPE_TRAM);
+	return GetCustomBridgeHeadRoadBits(t, RTT_ROAD) | GetCustomBridgeHeadRoadBits(t, RTT_TRAM);
 }
 
 /**
  * Sets the road bits for a (possibly custom) road bridge head
  * @param t The tile to modify
- * @param rt Road type.
+ * @param rtt Road/tram type.
  * @param bits The road bits.
  * @pre IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD
  * @pre HasTileRoadType() must be set correctly before calling this
  */
-static inline void SetCustomBridgeHeadRoadBits(TileIndex t, RoadType rt, RoadBits bits)
+static inline void SetCustomBridgeHeadRoadBits(TileIndex t, RoadTramType rtt, RoadBits bits)
 {
 	assert_tile(IsBridgeTile(t), t);
-	if (HasTileRoadType(t, rt)) {
+	if (HasTileRoadType(t, rtt)) {
 		assert(bits != ROAD_NONE);
-		SB(_m[t].m2, rt == ROADTYPE_TRAM ? 4 : 0, 4, bits ^ (GB(_m[t].m5, 0, 1) ? ROAD_Y : ROAD_X));
+		SB(_m[t].m2, rtt == RTT_TRAM ? 4 : 0, 4, bits ^ (GB(_m[t].m5, 0, 1) ? ROAD_Y : ROAD_X));
 	} else {
 		assert(bits == ROAD_NONE);
-		SB(_m[t].m2, rt == ROADTYPE_TRAM ? 4 : 0, 4, 0);
+		SB(_m[t].m2, rtt == RTT_TRAM ? 4 : 0, 4, 0);
 	}
 }
 

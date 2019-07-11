@@ -177,7 +177,10 @@ public:
 		td.railtype2 = STR_NULL;
 		td.rail_speed = 0;
 		td.rail_speed2 = 0;
+		td.roadtype = STR_NULL;
 		td.road_speed = 0;
+		td.tramtype = STR_NULL;
+		td.tram_speed = 0;
 
 		td.grf = nullptr;
 
@@ -312,10 +315,31 @@ public:
 			line_nr++;
 		}
 
+		/* Road type name */
+		if (td.roadtype != STR_NULL) {
+			SetDParam(0, td.roadtype);
+			GetString(this->landinfo_data[line_nr], STR_LANG_AREA_INFORMATION_ROAD_TYPE, lastof(this->landinfo_data[line_nr]));
+			line_nr++;
+		}
+
 		/* Road speed limit */
 		if (td.road_speed != 0) {
 			SetDParam(0, td.road_speed);
 			GetString(this->landinfo_data[line_nr], STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT, lastof(this->landinfo_data[line_nr]));
+			line_nr++;
+		}
+
+		/* Tram type name */
+		if (td.tramtype != STR_NULL) {
+			SetDParam(0, td.tramtype);
+			GetString(this->landinfo_data[line_nr], STR_LANG_AREA_INFORMATION_TRAM_TYPE, lastof(this->landinfo_data[line_nr]));
+			line_nr++;
+		}
+
+		/* Tram speed limit */
+		if (td.tram_speed != 0) {
+			SetDParam(0, td.tram_speed);
+			GetString(this->landinfo_data[line_nr], STR_LANG_AREA_INFORMATION_TRAM_SPEED_LIMIT, lastof(this->landinfo_data[line_nr]));
 			line_nr++;
 		}
 

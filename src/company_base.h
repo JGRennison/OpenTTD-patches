@@ -44,6 +44,9 @@ struct CompanyInfrastructure {
 		return total;
 	}
 
+	uint32 GetRoadTotal() const;
+	uint32 GetTramTotal() const;
+
 	char *Dump(char *buffer, const char *last) const;
 };
 

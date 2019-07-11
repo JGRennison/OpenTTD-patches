@@ -519,8 +519,8 @@ void DumpMapStats(char *b, const char *last)
 				if (IsTunnelBridgeSignalSimulationBidirectional(t)) bucket |= TBB_SIGNALLED_BIDI;
 			}
 			if (GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD) {
-				if (HasTileRoadType(t, ROADTYPE_ROAD)) bucket |= TBB_ROAD;
-				if (HasTileRoadType(t, ROADTYPE_TRAM)) bucket |= TBB_TRAM;
+				if (HasTileRoadType(t, RTT_ROAD)) bucket |= TBB_ROAD;
+				if (HasTileRoadType(t, RTT_TRAM)) bucket |= TBB_TRAM;
 			}
 			if (GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL) bucket |= TBB_RAIL;
 			if (GetTunnelBridgeTransportType(t) == TRANSPORT_WATER) bucket |= TBB_WATER;
