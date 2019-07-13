@@ -2,6 +2,15 @@
 
 * * *
 
+### v0.31.3 (2019-07-13)
+* Fix the target order number of conditional order jumps being loaded incorrectly from SpringPP savegames.
+* Fix order backups not being restored when using buy and refit.
+* Fix rendering error when waypoint sign is moved.
+* Fix virtual trains in the template train replacement editing window reserving a unit number.
+* Re-add previously removed group collapse and expand all buttons.
+* Fix compilation on MSVC.
+* Bump trunk base from commit 66cd32a252ee0edab11448b560371878b2189223 to commit 21edf67f89c60351d5a0d84625455aa296b6b950.
+
 ### v0.31.2 (2019-06-18)
 * Fix through load orders which use full load any cargo, with multi-cargo trains.
 * Fix PBS reservations not being shortened or extended when adding or removing signals to bridges/tunnels.

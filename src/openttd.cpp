@@ -404,6 +404,9 @@ static void ShutdownGame()
  */
 static void LoadIntroGame(bool load_newgrfs = true)
 {
+	Window *v;
+	FOR_ALL_WINDOWS_FROM_FRONT(v) delete v;
+
 	_game_mode = GM_MENU;
 
 	if (load_newgrfs) ResetGRFConfig(false);

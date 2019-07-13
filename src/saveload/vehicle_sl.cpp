@@ -254,7 +254,12 @@ void AfterLoadVehicles(bool part_of_load)
 	SCOPE_INFO_FMT([&v], "AfterLoadVehicles: %s", scope_dumper().VehicleInfo(v));
 	FOR_ALL_VEHICLES(v) {
 		/* Reinstate the previous pointer */
-		if (v->Next() != nullptr) v->Next()->previous = v;
+		if (v->Next() != nullptr) {
+			v->Next()->previous = v;
+			if (HasBit(v->subtype, GVSF_VIRTUAL) != HasBit(v->Next()->subtype, GVSF_VIRTUAL)) {
+				SlErrorCorrupt("Mixed virtual/non-virtual vehicle consist");
+			}
+		}
 		if (v->NextShared() != nullptr) v->NextShared()->previous_shared = v;
 
 		if (part_of_load) v->fill_percent_te_id = INVALID_TE_ID;
