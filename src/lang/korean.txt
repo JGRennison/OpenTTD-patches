@@ -4479,7 +4479,7 @@ STR_VEHICLE_STATUS_STOPPED                                      :{RED}정지함
 STR_VEHICLE_STATUS_BROKEN_DOWN_VEL                              :{RED}고장 - {STRING}, {LTBLUE} {VELOCITY}
 STR_VEHICLE_STATUS_BROKEN_DOWN_VEL_SHORT                        :{RED}고장 - {STRING}
 STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL                           :{RED}멈추는 중, {VELOCITY}
-STR_VEHICLE_STATUS_TRAIN_NO_POWER                               :{RED}기관차 없음
+STR_VEHICLE_STATUS_TRAIN_NO_POWER                               :{RED}동력 없음
 STR_VEHICLE_STATUS_TRAIN_STUCK                                  :{ORANGE}빈 경로 탐색중
 STR_VEHICLE_STATUS_TRAIN_STUCK_WAIT_RESTRICTION                 :{ORANGE}경로 제한 신호기에 의해 대기 중
 STR_VEHICLE_STATUS_AIRCRAFT_TOO_FAR                             :{ORANGE}다음 목적지가 너무 멀리 있습니다

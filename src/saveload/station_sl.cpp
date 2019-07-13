@@ -13,7 +13,6 @@
 #include "../station_base.h"
 #include "../waypoint_base.h"
 #include "../roadstop_base.h"
-#include "../dock_base.h"
 #include "../vehicle_base.h"
 #include "../newgrf_station.h"
 
@@ -127,11 +126,6 @@ void AfterLoadStations()
 			Station *sta = Station::From(st);
 			for (const RoadStop *rs = sta->bus_stops; rs != nullptr; rs = rs->next) sta->bus_station.Add(rs->xy);
 			for (const RoadStop *rs = sta->truck_stops; rs != nullptr; rs = rs->next) sta->truck_station.Add(rs->xy);
-
-			for (const Dock *d = sta->docks; d != nullptr; d = d->next) {
-				sta->dock_station.Add(d->sloped);
-				sta->dock_station.Add(d->flat);
-			}
 		}
 
 		StationUpdateCachedTriggers(st);
@@ -175,14 +169,6 @@ static const SaveLoad _roadstop_desc[] = {
 	SLE_END()
 };
 
-static const SaveLoad _dock_desc[] = {
-	SLE_VAR(Dock, sloped,       SLE_UINT32),
-	SLE_VAR(Dock, flat,         SLE_UINT32),
-	SLE_REF(Dock, next,         REF_DOCKS),
-
-	SLE_END()
-};
-
 static const SaveLoad _old_station_desc[] = {
 	SLE_CONDVAR(Station, xy,                         SLE_FILE_U16 | SLE_VAR_U32,  SL_MIN_VERSION, SLV_6),
 	SLE_CONDVAR(Station, xy,                         SLE_UINT32,                  SLV_6, SL_MAX_VERSION),
@@ -191,8 +177,8 @@ static const SaveLoad _old_station_desc[] = {
 	SLE_CONDVAR(Station, train_station.tile,         SLE_UINT32,                  SLV_6, SL_MAX_VERSION),
 	SLE_CONDVAR(Station, airport.tile,               SLE_FILE_U16 | SLE_VAR_U32,  SL_MIN_VERSION, SLV_6),
 	SLE_CONDVAR(Station, airport.tile,               SLE_UINT32,                  SLV_6, SL_MAX_VERSION),
-	SLE_CONDVAR(Station, dock_station.tile,          SLE_FILE_U16 | SLE_VAR_U32,  SL_MIN_VERSION, SLV_6),
-	SLE_CONDVAR(Station, dock_station.tile,          SLE_UINT32,                  SLV_6, SL_MAX_VERSION),
+	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_6),
+	SLE_CONDNULL(4, SLV_6, SLV_MULTITILE_DOCKS),
 	    SLE_REF(Station, town,                       REF_TOWN),
 	    SLE_VAR(Station, train_station.w,            SLE_FILE_U8 | SLE_VAR_U16),
 	SLE_CONDVAR(Station, train_station.h,            SLE_FILE_U8 | SLE_VAR_U16,   SLV_2, SL_MAX_VERSION),
@@ -447,8 +433,15 @@ static const SaveLoad _station_desc[] = {
 
 	      SLE_REF(Station, bus_stops,                  REF_ROADSTOPS),
 	      SLE_REF(Station, truck_stops,                REF_ROADSTOPS),
-    SLE_CONDVAR_X(Station, dock_station.tile,          SLE_UINT32,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MULTIPLE_DOCKS, 0, 0)),
-    SLE_CONDREF_X(Station, docks,                      REF_DOCKS,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MULTIPLE_DOCKS, 1)),
+	SLE_CONDVAR_X(Station, ship_station.tile,          SLE_UINT32,                SL_MIN_VERSION,      SLV_MULTITILE_DOCKS, SlXvFeatureTest(XSLFTO_AND, XSLFI_MULTIPLE_DOCKS, 0, 0)),
+	SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MULTIPLE_DOCKS, 1, 1)),
+	  SLE_CONDVAR(Station, ship_station.tile,          SLE_UINT32,                SLV_MULTITILE_DOCKS, SL_MAX_VERSION),
+	  SLE_CONDVAR(Station, ship_station.w,             SLE_FILE_U8 | SLE_VAR_U16, SLV_MULTITILE_DOCKS, SL_MAX_VERSION),
+	  SLE_CONDVAR(Station, ship_station.h,             SLE_FILE_U8 | SLE_VAR_U16, SLV_MULTITILE_DOCKS, SL_MAX_VERSION),
+	  SLE_CONDVAR(Station, docking_station.tile,       SLE_UINT32,                SLV_MULTITILE_DOCKS, SL_MAX_VERSION),
+	  SLE_CONDVAR(Station, docking_station.w,          SLE_FILE_U8 | SLE_VAR_U16, SLV_MULTITILE_DOCKS, SL_MAX_VERSION),
+	  SLE_CONDVAR(Station, docking_station.h,          SLE_FILE_U8 | SLE_VAR_U16, SLV_MULTITILE_DOCKS, SL_MAX_VERSION),
+	SLE_CONDVARVEC_X(Station, docking_tiles,           SLE_UINT32,                     SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MULTIPLE_DOCKS, 2)),
 	      SLE_VAR(Station, airport.tile,               SLE_UINT32),
 	  SLE_CONDVAR(Station, airport.w,                  SLE_FILE_U8 | SLE_VAR_U16, SLV_140, SL_MAX_VERSION),
 	  SLE_CONDVAR(Station, airport.h,                  SLE_FILE_U8 | SLE_VAR_U16, SLV_140, SL_MAX_VERSION),
@@ -681,38 +674,15 @@ static void Ptrs_ROADSTOP()
 	}
 }
 
-static void Save_DOCK()
-{
-	Dock *d;
-
-	FOR_ALL_DOCKS(d) {
-		SlSetArrayIndex(d->index);
-		SlObject(d, _dock_desc);
-	}
-}
-
 static void Load_DOCK()
 {
-	int index;
-
-	while ((index = SlIterateArray()) != -1) {
-		Dock *d = new (index) Dock();
-
-		SlObject(d, _dock_desc);
-	}
-}
-
-static void Ptrs_DOCK()
-{
-	Dock *d;
-	FOR_ALL_DOCKS(d) {
-		SlObject(d, _dock_desc);
-	}
+	extern void SlSkipArray();
+	SlSkipArray();
 }
 
 extern const ChunkHandler _station_chunk_handlers[] = {
 	{ 'STNS', nullptr,       Load_STNS,     Ptrs_STNS,     nullptr, CH_ARRAY },
 	{ 'STNN', Save_STNN,     Load_STNN,     Ptrs_STNN,     nullptr, CH_ARRAY },
 	{ 'ROAD', Save_ROADSTOP, Load_ROADSTOP, Ptrs_ROADSTOP, nullptr, CH_ARRAY},
-	{ 'DOCK', Save_DOCK,     Load_DOCK,     Ptrs_DOCK,     nullptr, CH_ARRAY | CH_LAST},
+	{ 'DOCK', nullptr,       Load_DOCK,     nullptr,       nullptr, CH_ARRAY | CH_LAST},
 };

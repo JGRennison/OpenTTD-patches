@@ -19,6 +19,7 @@
 #include "midifile.hpp"
 #include "midi.h"
 #include "../base_media_base.h"
+#include <mutex>
 
 #include "../safeguards.h"
 
@@ -29,20 +30,20 @@ struct PlaybackSegment {
 };
 
 static struct {
-	UINT time_period;      ///< obtained timer precision value
-	HMIDIOUT midi_out;     ///< handle to open midiOut
-	UINT timer_id;         ///< ID of active multimedia timer
-	CRITICAL_SECTION lock; ///< synchronization for playback status fields
+	UINT time_period;    ///< obtained timer precision value
+	HMIDIOUT midi_out;   ///< handle to open midiOut
+	UINT timer_id;       ///< ID of active multimedia timer
+	std::mutex lock;     ///< synchronization for playback status fields
 
 	bool playing;        ///< flag indicating that playback is active
-	bool do_start;       ///< flag for starting playback of next_file at next opportunity
+	int do_start;        ///< flag for starting playback of next_file at next opportunity
 	bool do_stop;        ///< flag for stopping playback at next opportunity
 	byte current_volume; ///< current effective volume setting
 	byte new_volume;     ///< volume setting to change to
 
 	MidiFile current_file;           ///< file currently being played from
 	PlaybackSegment current_segment; ///< segment info for current playback
-	size_t playback_start_time;      ///< timestamp current file began playback
+	DWORD playback_start_time;       ///< timestamp current file began playback
 	size_t current_block;            ///< next block index to send
 	MidiFile next_file;              ///< upcoming file to play
 	PlaybackSegment next_segment;    ///< segment info for upcoming file
@@ -73,10 +74,10 @@ static void TransmitChannelMsg(byte status, byte p1, byte p2 = 0)
 	midiOutShortMsg(_midi.midi_out, status | (p1 << 8) | (p2 << 16));
 }
 
-static void TransmitSysex(byte *&msg_start, size_t &remaining)
+static void TransmitSysex(const byte *&msg_start, size_t &remaining)
 {
 	/* find end of message */
-	byte *msg_end = msg_start;
+	const byte *msg_end = msg_start;
 	while (*msg_end != MIDIST_ENDSYSEX) msg_end++;
 	msg_end++; /* also include sysex end byte */
 
@@ -97,9 +98,11 @@ static void TransmitSysex(byte *&msg_start, size_t &remaining)
 	msg_start = msg_end;
 }
 
-static void TransmitSysexConst(byte *msg_start, size_t length)
+static void TransmitStandardSysex(MidiSysexMessage msg)
 {
-	TransmitSysex(msg_start, length);
+	size_t length = 0;
+	const byte *data = MidiGetStandardSysexMessage(msg, length);
+	TransmitSysex(data, length);
 }
 
 /**
@@ -108,82 +111,89 @@ static void TransmitSysexConst(byte *msg_start, size_t length)
  */
 void CALLBACK TimerCallback(UINT uTimerID, UINT, DWORD_PTR dwUser, DWORD_PTR, DWORD_PTR)
 {
-	/* Try to check playback status changes.
-	 * If _midi is already locked, skip checking for this cycle and try again
-	 * next cycle, instead of waiting for locks in the realtime callback. */
-	if (TryEnterCriticalSection(&_midi.lock)) {
-		/* check for stop */
-		if (_midi.do_stop) {
-			DEBUG(driver, 2, "Win32-MIDI: timer: do_stop is set");
-			midiOutReset(_midi.midi_out);
-			_midi.playing = false;
-			_midi.do_stop = false;
-			LeaveCriticalSection(&_midi.lock);
+	/* Ensure only one timer callback is running at once, and prevent races on status flags */
+	std::unique_lock<std::mutex> mutex_lock(_midi.lock, std::defer_lock);
+	if (!mutex_lock.try_lock()) return;
+
+	/* check for stop */
+	if (_midi.do_stop) {
+		DEBUG(driver, 2, "Win32-MIDI: timer: do_stop is set");
+		midiOutReset(_midi.midi_out);
+		_midi.playing = false;
+		_midi.do_stop = false;
+		return;
+	}
+
+	/* check for start/restart/change song */
+	if (_midi.do_start != 0) {
+		/* Have a delay between playback start steps, prevents jumbled-together notes at the start of song */
+		if (timeGetTime() - _midi.playback_start_time < 50) {
 			return;
 		}
+		DEBUG(driver, 2, "Win32-MIDI: timer: do_start step %d", _midi.do_start);
 
-		/* check for start/restart/change song */
-		if (_midi.do_start) {
-			DEBUG(driver, 2, "Win32-MIDI: timer: do_start is set");
-			if (_midi.playing) {
-				midiOutReset(_midi.midi_out);
-				/* Some songs change the "Pitch bend range" registered
-				 * parameter. If this doesn't get reset, everything else
-				 * will start sounding wrong. */
-				for (int ch = 0; ch < 16; ch++) {
-					/* Running status, only need status for first message */
-					/* Select RPN 00.00, set value to 02.00, and unselect again */
-					TransmitChannelMsg(MIDIST_CONTROLLER | ch, MIDICT_RPN_SELECT_LO, 0x00);
-					TransmitChannelMsg(MIDICT_RPN_SELECT_HI, 0x00);
-					TransmitChannelMsg(MIDICT_DATAENTRY,     0x02);
-					TransmitChannelMsg(MIDICT_DATAENTRY_LO,  0x00);
-					TransmitChannelMsg(MIDICT_RPN_SELECT_LO, 0x7F);
-					TransmitChannelMsg(MIDICT_RPN_SELECT_HI, 0x7F);
-				}
-			}
+		if (_midi.do_start == 1) {
+			/* Send "all notes off" */
+			midiOutReset(_midi.midi_out);
+			_midi.playback_start_time = timeGetTime();
+			_midi.do_start = 2;
+
+			return;
+		} else if (_midi.do_start == 2) {
+			/* Reset the device to General MIDI defaults */
+			TransmitStandardSysex(MidiSysexMessage::ResetGM);
+			_midi.playback_start_time = timeGetTime();
+			_midi.do_start = 3;
+
+			return;
+		} else if (_midi.do_start == 3) {
+			/* Set up device-specific effects */
+			TransmitStandardSysex(MidiSysexMessage::RolandSetReverb);
+			_midi.playback_start_time = timeGetTime();
+			_midi.do_start = 4;
+
+			return;
+		} else if (_midi.do_start == 4) {
+			/* Load the new file */
 			_midi.current_file.MoveFrom(_midi.next_file);
 			std::swap(_midi.next_segment, _midi.current_segment);
 			_midi.current_segment.start_block = 0;
 			_midi.playback_start_time = timeGetTime();
 			_midi.playing = true;
-			_midi.do_start = false;
+			_midi.do_start = 0;
 			_midi.current_block = 0;
 
 			MemSetT<byte>(_midi.channel_volumes, 127, lengthof(_midi.channel_volumes));
-		} else if (!_midi.playing) {
-			/* not playing, stop the timer */
-			DEBUG(driver, 2, "Win32-MIDI: timer: not playing, stopping timer");
-			timeKillEvent(uTimerID);
-			_midi.timer_id = 0;
-			LeaveCriticalSection(&_midi.lock);
-			return;
 		}
+	} else if (!_midi.playing) {
+		/* not playing, stop the timer */
+		DEBUG(driver, 2, "Win32-MIDI: timer: not playing, stopping timer");
+		timeKillEvent(uTimerID);
+		_midi.timer_id = 0;
+		return;
+	}
 
-		/* check for volume change */
-		static int volume_throttle = 0;
-		if (_midi.current_volume != _midi.new_volume) {
-			if (volume_throttle == 0) {
-				DEBUG(driver, 2, "Win32-MIDI: timer: volume change");
-				_midi.current_volume = _midi.new_volume;
-				volume_throttle = 20 / _midi.time_period;
-				for (int ch = 0; ch < 16; ch++) {
-					int vol = ScaleVolume(_midi.channel_volumes[ch], _midi.current_volume);
-					TransmitChannelMsg(MIDIST_CONTROLLER | ch, MIDICT_CHANVOLUME, vol);
-				}
+	/* check for volume change */
+	static int volume_throttle = 0;
+	if (_midi.current_volume != _midi.new_volume) {
+		if (volume_throttle == 0) {
+			DEBUG(driver, 2, "Win32-MIDI: timer: volume change");
+			_midi.current_volume = _midi.new_volume;
+			volume_throttle = 20 / _midi.time_period;
+			for (int ch = 0; ch < 16; ch++) {
+				byte vol = ScaleVolume(_midi.channel_volumes[ch], _midi.current_volume);
+				TransmitChannelMsg(MIDIST_CONTROLLER | ch, MIDICT_CHANVOLUME, vol);
 			}
-			else {
-				volume_throttle--;
-			}
+		} else {
+			volume_throttle--;
 		}
-
-		LeaveCriticalSection(&_midi.lock);
 	}
 
 	/* skip beginning of file? */
 	if (_midi.current_segment.start > 0 && _midi.current_block == 0 && _midi.current_segment.start_block == 0) {
 		/* find first block after start time and pretend playback started earlier
-		* this is to allow all blocks prior to the actual start to still affect playback,
-		* as they may contain important controller and program changes */
+		 * this is to allow all blocks prior to the actual start to still affect playback,
+		 * as they may contain important controller and program changes */
 		size_t preload_bytes = 0;
 		for (size_t bl = 0; bl < _midi.current_file.blocks.size(); bl++) {
 			MidiFile::DataBlock &block = _midi.current_file.blocks[bl];
@@ -200,7 +210,7 @@ void CALLBACK TimerCallback(UINT uTimerID, UINT, DWORD_PTR dwUser, DWORD_PTR, DW
 					 * The delay compensation is needed to avoid time-compression of following messages.
 					 */
 					DEBUG(driver, 2, "Win32-MIDI: timer: start from block %d (ticktime %d, realtime %.3f, bytes %d)", (int)bl, (int)block.ticktime, ((int)block.realtime) / 1000.0, (int)preload_bytes);
-					_midi.playback_start_time -= block.realtime / 1000 - preload_bytes * 1000 / 3125;
+					_midi.playback_start_time -= block.realtime / 1000 - (DWORD)(preload_bytes * 1000 / 3125);
 					break;
 				}
 			}
@@ -210,7 +220,7 @@ void CALLBACK TimerCallback(UINT uTimerID, UINT, DWORD_PTR dwUser, DWORD_PTR, DW
 
 	/* play pending blocks */
 	DWORD current_time = timeGetTime();
-	size_t playback_time = current_time - _midi.playback_start_time;
+	DWORD playback_time = current_time - _midi.playback_start_time;
 	while (_midi.current_block < _midi.current_file.blocks.size()) {
 		MidiFile::DataBlock &block = _midi.current_file.blocks[_midi.current_block];
 
@@ -229,7 +239,7 @@ void CALLBACK TimerCallback(UINT uTimerID, UINT, DWORD_PTR dwUser, DWORD_PTR, DW
 			break;
 		}
 
-		byte *data = block.data.data();
+		const byte *data = block.data.data();
 		size_t remaining = block.data.size();
 		byte last_status = 0;
 		while (remaining > 0) {
@@ -313,55 +323,50 @@ void CALLBACK TimerCallback(UINT uTimerID, UINT, DWORD_PTR dwUser, DWORD_PTR, DW
 void MusicDriver_Win32::PlaySong(const MusicSongInfo &song)
 {
 	DEBUG(driver, 2, "Win32-MIDI: PlaySong: entry");
-	EnterCriticalSection(&_midi.lock);
 
-	if (!_midi.next_file.LoadSong(song)) {
-		LeaveCriticalSection(&_midi.lock);
-		return;
-	}
+	MidiFile new_song;
+	if (!new_song.LoadSong(song)) return;
+	DEBUG(driver, 2, "Win32-MIDI: PlaySong: Loaded song");
 
+	std::lock_guard mutex_lock(_midi.lock);
+
+	_midi.next_file.MoveFrom(new_song);
 	_midi.next_segment.start = song.override_start;
 	_midi.next_segment.end = song.override_end;
 	_midi.next_segment.loop = song.loop;
 
 	DEBUG(driver, 2, "Win32-MIDI: PlaySong: setting flag");
 	_midi.do_stop = _midi.playing;
-	_midi.do_start = true;
+	_midi.do_start = 1;
 
 	if (_midi.timer_id == 0) {
 		DEBUG(driver, 2, "Win32-MIDI: PlaySong: starting timer");
 		_midi.timer_id = timeSetEvent(_midi.time_period, _midi.time_period, TimerCallback, (DWORD_PTR)this, TIME_PERIODIC | TIME_CALLBACK_FUNCTION);
 	}
-
-	LeaveCriticalSection(&_midi.lock);
 }
 
 void MusicDriver_Win32::StopSong()
 {
 	DEBUG(driver, 2, "Win32-MIDI: StopSong: entry");
-	EnterCriticalSection(&_midi.lock);
+	std::lock_guard mutex_lock(_midi.lock);
 	DEBUG(driver, 2, "Win32-MIDI: StopSong: setting flag");
 	_midi.do_stop = true;
-	LeaveCriticalSection(&_midi.lock);
 }
 
 bool MusicDriver_Win32::IsSongPlaying()
 {
-	return _midi.playing || _midi.do_start;
+	return _midi.playing || (_midi.do_start != 0);
 }
 
 void MusicDriver_Win32::SetVolume(byte vol)
 {
-	EnterCriticalSection(&_midi.lock);
+	std::lock_guard mutex_lock(_midi.lock);
 	_midi.new_volume = vol;
-	LeaveCriticalSection(&_midi.lock);
 }
 
 const char *MusicDriver_Win32::Start(const char * const *parm)
 {
 	DEBUG(driver, 2, "Win32-MIDI: Start: initializing");
-
-	InitializeCriticalSection(&_midi.lock);
 
 	int resolution = GetDriverParamInt(parm, "resolution", 5);
 	int port = GetDriverParamInt(parm, "port", -1);
@@ -381,14 +386,6 @@ const char *MusicDriver_Win32::Start(const char * const *parm)
 
 	midiOutReset(_midi.midi_out);
 
-	/* Standard "Enable General MIDI" message */
-	static byte gm_enable_sysex[] = { 0xF0, 0x7E, 0x00, 0x09, 0x01, 0xF7 };
-	TransmitSysexConst(&gm_enable_sysex[0], sizeof(gm_enable_sysex));
-
-	/* Roland-specific reverb room control, used by the original game */
-	static byte roland_reverb_sysex[] = { 0xF0, 0x41, 0x10, 0x42, 0x12, 0x40, 0x01, 0x30, 0x02, 0x04, 0x00, 0x40, 0x40, 0x00, 0x00, 0x09, 0xF7 };
-	TransmitSysexConst(&roland_reverb_sysex[0], sizeof(roland_reverb_sysex));
-
 	/* prepare multimedia timer */
 	TIMECAPS timecaps;
 	if (timeGetDevCaps(&timecaps, sizeof(timecaps)) == MMSYSERR_NOERROR) {
@@ -405,7 +402,7 @@ const char *MusicDriver_Win32::Start(const char * const *parm)
 
 void MusicDriver_Win32::Stop()
 {
-	EnterCriticalSection(&_midi.lock);
+	std::lock_guard mutex_lock(_midi.lock);
 
 	if (_midi.timer_id) {
 		timeKillEvent(_midi.timer_id);
@@ -415,7 +412,4 @@ void MusicDriver_Win32::Stop()
 	timeEndPeriod(_midi.time_period);
 	midiOutReset(_midi.midi_out);
 	midiOutClose(_midi.midi_out);
-
-	LeaveCriticalSection(&_midi.lock);
-	DeleteCriticalSection(&_midi.lock);
 }

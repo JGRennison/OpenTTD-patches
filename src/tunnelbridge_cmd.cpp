@@ -49,6 +49,7 @@
 #include "industry_map.h"
 #include "object_map.h"
 #include "newgrf_station.h"
+#include "station_func.h"
 
 #include "table/strings.h"
 #include "table/bridge_land.h"
@@ -626,6 +627,8 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 				if (is_new_owner && c != nullptr) c->infrastructure.water += (bridge_len + 2) * TUNNELBRIDGE_TRACKBIT_FACTOR;
 				MakeAqueductBridgeRamp(tile_start, owner, dir);
 				MakeAqueductBridgeRamp(tile_end,   owner, ReverseDiagDir(dir));
+				CheckForDockingTile(tile_start);
+				CheckForDockingTile(tile_end);
 				break;
 
 			default:
@@ -1200,6 +1203,9 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 			find_train_reservations(endtile);
 		}
 
+		bool removetile = false;
+		bool removeendtile = false;
+
 		/* Update company infrastructure counts. */
 		if (rail) {
 			SubtractRailTunnelBridgeInfrastructure(tile, endtile);
@@ -1213,6 +1219,8 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 			}
 		} else { // Aqueduct
 			if (Company::IsValidID(owner)) Company::Get(owner)->infrastructure.water -= len * TUNNELBRIDGE_TRACKBIT_FACTOR;
+			removetile    = IsDockingTile(tile);
+			removeendtile = IsDockingTile(endtile);
 		}
 		DirtyAllCompanyInfrastructureWindows();
 
@@ -1221,6 +1229,9 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 
 		DoClearSquare(tile);
 		DoClearSquare(endtile);
+
+		if (removetile)    RemoveDockingTile(tile);
+		if (removeendtile) RemoveDockingTile(endtile);
 		for (TileIndex c = tile + delta; c != endtile; c += delta) {
 			/* do not let trees appear from 'nowhere' after removing bridge */
 			if (IsNormalRoadTile(c) && GetRoadside(c) == ROADSIDE_TREES) {

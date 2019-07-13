@@ -17,7 +17,6 @@
 #include "../../debug.h"
 #include "../../vehicle_base.h"
 #include "../../roadstop_base.h"
-#include "../../dock_base.h"
 #include "../../depot_base.h"
 #include "../../station_base.h"
 #include "../../waypoint_base.h"
@@ -262,8 +261,10 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 				TILE_AREA_LOOP(t, st->train_station) {
 					if (st->TileBelongsToRailStation(t)) return t;
 				}
-			} else if (st->docks != nullptr) {
-				return st->docks->flat;
+			} else if (st->ship_station.tile != INVALID_TILE) {
+				TILE_AREA_LOOP(t, st->ship_station) {
+					if (IsDockTile(t) && GetStationIndex(t) == st->index) return t;
+				}
 			} else if (st->bus_stops != nullptr) {
 				return st->bus_stops->xy;
 			} else if (st->truck_stops != nullptr) {

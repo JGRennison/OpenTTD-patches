@@ -255,6 +255,7 @@
    <td valign=top nowrap>&nbsp;</td>
    <td>
     <ul>
+     <li>m1 bit 7: Ship docking tile status (for half-tile with water)</li>
      <li>m1 bits 4..0: <a href="#OwnershipInfo">owner</a> of the tile</li>
      <li>m2: see signals</li>
      <li>m3 bits 7..4: see signals</li>
@@ -885,6 +886,7 @@
    <td valign=top nowrap>&nbsp;</td>
    <td>
     <ul>
+     <li>m1 bit 7: Ship docking tile status (for buoys)</li>
      <li>m1 bits 6..5: water class for buoys, water part of docks and for airport tiles</li>
      <li>m1 bits 4..0: <a href="#OwnershipInfo">owner</a> of the station</li>
      <li>m2: index into the array of stations</li>
@@ -1022,6 +1024,7 @@
    <td valign=top nowrap>&nbsp;</td>
    <td>
     <ul>
+     <li>m1 bit 7: Ship docking tile status</li>
      <li>m1 bits 6..5 : Water class (sea, canal or river)
      <li>m1 bits 4..0: <a href="#OwnershipInfo">owner</a> (for sea, rivers, and coasts normally <tt>11</tt>)</li>
      <li>m2: Depot index (for depots only)</li>
@@ -1473,6 +1476,7 @@
    <td valign=top nowrap>&nbsp;</td>
    <td>
     <ul>
+     <li>m1 bit 7: Ship docking tile status (for aqueducts)</li>
      <li>m1 bits 4..0: <a href="#OwnershipInfo">owner</a></li>
      <li style="color: blue">m2 bits 7..0: custom road bridge heads (flat bridge heads only)<br>
       Road/tram bits below are XORed with the axial bridge direction road bits.<br>

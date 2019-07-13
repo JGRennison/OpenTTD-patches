@@ -467,10 +467,11 @@ public:
 	TileArea bus_station;   ///< Tile area the bus 'station' part covers
 	RoadStop *truck_stops;  ///< All the truck stops
 	TileArea truck_station; ///< Tile area the truck 'station' part covers
-	Dock *docks;            ///< All the docks
-	TileArea dock_station;  ///< Tile area dock 'station' part covers
 
-	Airport airport;        ///< Tile area the airport covers
+	Airport airport;          ///< Tile area the airport covers
+	TileArea ship_station;    ///< Tile area the ship 'station' part covers
+	TileArea docking_station; ///< Tile area the docking tiles cover
+	std::vector<TileIndex> docking_tiles; ///< Tile vector the docking tiles cover
 
 	IndustryType indtype;   ///< Industry type to get the name from
 
@@ -506,8 +507,6 @@ public:
 	void RecomputeCatchment();
 	static void RecomputeCatchmentForAll();
 
-	Dock *GetPrimaryDock() const { return docks; }
-
 	uint GetCatchmentRadius() const;
 	Rect GetCatchmentRectUsingRadius(uint radius) const;
 	inline Rect GetCatchmentRect() const
@@ -533,7 +532,6 @@ public:
 		return IsAirportTile(tile) && GetStationIndex(tile) == this->index;
 	}
 
-	bool IsDockingTile(TileIndex tile) const;
 	bool IsWithinRangeOfDockingTile(TileIndex tile, uint max_distance) const;
 
 	uint32 GetNewGRFVariable(const ResolverObject &object, byte variable, byte parameter, bool *available) const override;

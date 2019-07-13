@@ -11,7 +11,6 @@
 
 #include "stdafx.h"
 #include "ship.h"
-#include "dock_base.h"
 #include "landscape.h"
 #include "timetable.h"
 #include "news_func.h"
@@ -36,6 +35,8 @@
 #include "tunnelbridge_map.h"
 #include "zoom_func.h"
 #include "framerate_type.h"
+#include "industry.h"
+#include "industry_map.h"
 
 #include "table/strings.h"
 
@@ -300,7 +301,7 @@ TileIndex Ship::GetOrderStationLocation(StationID station)
 	if (station == this->last_station_visited) this->last_station_visited = INVALID_STATION;
 
 	const Station *st = Station::Get(station);
-	if (st->HasFacilities(FACIL_DOCK)) {
+	if (CanVehicleUseStation(this, st)) {
 		return st->xy;
 	} else {
 		this->IncrementRealOrderIndex();
@@ -764,6 +765,28 @@ static bool ShipMoveUpDownOnLock(Ship *v)
 	return true;
 }
 
+/**
+ * Test if a tile is a docking tile for the given station.
+ * @param tile Docking tile to test.
+ * @param station Destination station.
+ * @return true iff docking tile is next to station.
+ */
+bool IsShipDestinationTile(TileIndex tile, StationID station)
+{
+	assert(IsDockingTile(tile));
+	/* Check each tile adjacent to docking tile. */
+	for (DiagDirection d = DIAGDIR_BEGIN; d != DIAGDIR_END; d++) {
+		TileIndex t = tile + TileOffsByDiagDir(d);
+		if (!IsValidTile(t)) continue;
+		if (IsDockTile(t) && GetStationIndex(t) == station && IsValidDockingDirectionForDock(t, d)) return true;
+		if (IsTileType(t, MP_INDUSTRY)) {
+			const Industry *i = Industry::GetByTile(t);
+			if (i->neutral_station != nullptr && i->neutral_station->index == station) return true;
+		}
+	}
+	return false;
+}
+
 static void ShipController(Ship *v)
 {
 	uint32 r;
@@ -832,17 +855,18 @@ static void ShipController(Ship *v)
 						UpdateVehicleTimetable(v, true);
 						v->IncrementRealOrderIndex();
 						v->current_order.MakeDummy();
-					} else if (v->current_order.IsType(OT_GOTO_DEPOT)) {
-						if (v->dest_tile == gp.new_tile && (gp.x & 0xF) == 8 && (gp.y & 0xF) == 8) {
+					} else if (v->current_order.IsType(OT_GOTO_DEPOT) &&
+						v->dest_tile == gp.new_tile) {
+						/* Depot orders really need to reach the tile */
+						if ((gp.x & 0xF) == 8 && (gp.y & 0xF) == 8) {
 							VehicleEnterDepot(v);
 							return;
 						}
-					} else if (v->current_order.IsType(OT_GOTO_STATION)) {
+					} else if (v->current_order.IsType(OT_GOTO_STATION) && IsDockingTile(gp.new_tile)) {
+						/* Process station in the orderlist. */
 						Station *st = Station::Get(v->current_order.GetDestination());
-						if (st->IsDockingTile(gp.new_tile)) {
-							v->last_station_visited = v->current_order.GetDestination();
-
-							/* Process station in the orderlist. */
+						if (st->docking_station.Contains(gp.new_tile) && IsShipDestinationTile(gp.new_tile, st->index)) {
+							v->last_station_visited = st->index;
 							if (st->facilities & FACIL_DOCK) { // ugly, ugly workaround for problem with ships able to drop off cargo at wrong stations
 								ShipArrivesAt(v, st);
 								v->BeginLoading();

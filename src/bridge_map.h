@@ -14,6 +14,7 @@
 
 #include "road_map.h"
 #include "bridge.h"
+#include "water_map.h"
 
 /**
  * Checks if this is a bridge, instead of a tunnel
@@ -129,6 +130,7 @@ static inline void MakeBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, D
 {
 	SetTileType(t, MP_TUNNELBRIDGE);
 	SetTileOwner(t, o);
+	SetDockingTile(t, false);
 	_m[t].m2 = 0;
 	_m[t].m3 = 0;
 	_m[t].m4 = INVALID_ROADTYPE;

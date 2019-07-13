@@ -40,7 +40,6 @@
 #include "station_base.h"
 #include "station_kdtree.h"
 #include "roadstop_base.h"
-#include "dock_base.h"
 #include "newgrf_railtype.h"
 #include "newgrf_roadtype.h"
 #include "waypoint_base.h"
@@ -58,6 +57,7 @@
 #include "linkgraph/refresh.h"
 #include "widgets/station_widget.h"
 #include "zoning.h"
+#include "tunnelbridge_map.h"
 
 #include "table/strings.h"
 
@@ -403,7 +403,7 @@ void Station::GetTileArea(TileArea *ta, StationType type) const
 
 		case STATION_DOCK:
 		case STATION_OILRIG:
-			*ta = this->dock_station;
+			*ta = this->docking_station;
 			break;
 
 		default: NOT_REACHED();
@@ -1578,16 +1578,14 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 	return cost;
 }
 
-static void MakeRailStationAreaSmaller(BaseStation *st)
+static TileArea MakeStationAreaSmaller(BaseStation *st, TileArea ta, bool (*func)(BaseStation *, TileIndex))
 {
-	TileArea ta = st->train_station;
-
 restart:
 
 	/* too small? */
 	if (ta.w != 0 && ta.h != 0) {
 		/* check the left side, x = constant, y changes */
-		for (uint i = 0; !st->TileBelongsToRailStation(ta.tile + TileDiffXY(0, i));) {
+		for (uint i = 0; !func(st, ta.tile + TileDiffXY(0, i));) {
 			/* the left side is unused? */
 			if (++i == ta.h) {
 				ta.tile += TileDiffXY(1, 0);
@@ -1597,7 +1595,7 @@ restart:
 		}
 
 		/* check the right side, x = constant, y changes */
-		for (uint i = 0; !st->TileBelongsToRailStation(ta.tile + TileDiffXY(ta.w - 1, i));) {
+		for (uint i = 0; !func(st, ta.tile + TileDiffXY(ta.w - 1, i));) {
 			/* the right side is unused? */
 			if (++i == ta.h) {
 				ta.w--;
@@ -1606,7 +1604,7 @@ restart:
 		}
 
 		/* check the upper side, y = constant, x changes */
-		for (uint i = 0; !st->TileBelongsToRailStation(ta.tile + TileDiffXY(i, 0));) {
+		for (uint i = 0; !func(st, ta.tile + TileDiffXY(i, 0));) {
 			/* the left side is unused? */
 			if (++i == ta.w) {
 				ta.tile += TileDiffXY(0, 1);
@@ -1616,7 +1614,7 @@ restart:
 		}
 
 		/* check the lower side, y = constant, x changes */
-		for (uint i = 0; !st->TileBelongsToRailStation(ta.tile + TileDiffXY(i, ta.h - 1));) {
+		for (uint i = 0; !func(st, ta.tile + TileDiffXY(i, ta.h - 1));) {
 			/* the left side is unused? */
 			if (++i == ta.w) {
 				ta.h--;
@@ -1627,7 +1625,28 @@ restart:
 		ta.Clear();
 	}
 
-	st->train_station = ta;
+	return ta;
+}
+
+static bool TileBelongsToRailStation(BaseStation *st, TileIndex tile)
+{
+	return st->TileBelongsToRailStation(tile);
+}
+
+static void MakeRailStationAreaSmaller(BaseStation *st)
+{
+	st->train_station = MakeStationAreaSmaller(st, st->train_station, TileBelongsToRailStation);
+}
+
+static bool TileBelongsToShipStation(BaseStation *st, TileIndex tile)
+{
+	return IsDockTile(tile) && GetStationIndex(tile) == st->index;
+}
+
+static void MakeShipStationAreaSmaller(Station *st)
+{
+	st->ship_station = MakeStationAreaSmaller(st, st->ship_station, TileBelongsToShipStation);
+	UpdateStationDockingTiles(st);
 }
 
 /**
@@ -2756,20 +2775,13 @@ CommandCost CmdBuildDock(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 	/* Distant join */
 	if (st == nullptr && distant_join) st = Station::GetIfValid(station_to_join);
 
-	if (!Dock::CanAllocateItem()) return_cmd_error(STR_ERROR_TOO_MANY_DOCKS);
-
 	ret = BuildStationPart(&st, flags, reuse, dock_area, STATIONNAMING_DOCK);
 	if (ret.Failed()) return ret;
 
 	if (flags & DC_EXEC) {
-		/* Create the dock and insert it into the list of docks. */
-		Dock *dock = new Dock(slope_tile, flat_tile);
-		dock->next = st->docks;
-		st->docks = dock;
-
-		st->dock_station.Add(slope_tile);
-		st->dock_station.Add(flat_tile);
-		st->AddFacility(FACIL_DOCK, slope_tile);
+		st->ship_station.Add(tile);
+		st->ship_station.Add(tile + TileOffsByDiagDir(direction));
+		st->AddFacility(FACIL_DOCK, tile);
 
 		st->rect.BeforeAddRect(dock_area.tile, dock_area.w, dock_area.h, StationRect::ADD_TRY);
 
@@ -2780,13 +2792,93 @@ CommandCost CmdBuildDock(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 		}
 		Company::Get(st->owner)->infrastructure.station += 2;
 
-		MakeDock(slope_tile, st->owner, st->index, direction, wc);
+		MakeDock(tile, st->owner, st->index, direction, wc);
+		UpdateStationDockingTiles(st);
 
 		st->AfterStationTileSetChange(true, STATION_DOCK);
 		ZoningMarkDirtyStationCoverageArea(st);
 	}
 
 	return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_STATION_DOCK]);
+}
+
+void RemoveDockingTile(TileIndex t)
+{
+	for (DiagDirection d = DIAGDIR_BEGIN; d != DIAGDIR_END; d++) {
+		TileIndex tile = t + TileOffsByDiagDir(d);
+		if (!IsValidTile(tile)) continue;
+
+		if (IsTileType(tile, MP_STATION)) {
+			UpdateStationDockingTiles(Station::GetByTile(tile));
+		} else if (IsTileType(tile, MP_INDUSTRY)) {
+			UpdateStationDockingTiles(Industry::GetByTile(tile)->neutral_station);
+		}
+	}
+}
+
+/**
+ * Clear docking tile status from tiles around a removed dock, if the tile has
+ * no neighbours which would keep it as a docking tile.
+ * @param tile Ex-dock tile to check.
+ */
+void ClearDockingTilesCheckingNeighbours(TileIndex tile)
+{
+	assert(IsValidTile(tile));
+
+	/* Clear and maybe re-set docking tile */
+	for (DiagDirection d = DIAGDIR_BEGIN; d != DIAGDIR_END; d++) {
+		TileIndex docking_tile = tile + TileOffsByDiagDir(d);
+		if (!IsValidTile(docking_tile)) continue;
+
+		if (IsPossibleDockingTile(docking_tile)) {
+			SetDockingTile(docking_tile, false);
+			CheckForDockingTile(docking_tile);
+		}
+	}
+}
+
+/**
+ * Check if a dock tile can be docked from the given direction.
+ * @param t Tile index of dock.
+ * @param d DiagDirection adjacent to dock being tested.
+ * @return True iff the dock can be docked from the given direction.
+ */
+bool IsValidDockingDirectionForDock(TileIndex t, DiagDirection d)
+{
+	assert(IsDockTile(t));
+
+	/** Bitmap of valid directions for each dock tile part. */
+	static const uint8 _valid_docking_tile[] = {
+		0, 0, 0, 0,                        // No docking against the slope part.
+		1 << DIAGDIR_NE | 1 << DIAGDIR_SW, // Docking permitted at the end
+		1 << DIAGDIR_NW | 1 << DIAGDIR_SE, // of the flat piers.
+	};
+
+	StationGfx gfx = GetStationGfx(t);
+	assert(gfx < lengthof(_valid_docking_tile));
+	return HasBit(_valid_docking_tile[gfx], d);
+}
+
+/**
+ * Find the part of a dock that is land-based
+ * @param t Dock tile to find land part of
+ * @return tile of land part of dock
+ */
+static TileIndex FindDockLandPart(TileIndex t)
+{
+	assert(IsDockTile(t));
+
+	StationGfx gfx = GetStationGfx(t);
+	if (gfx < GFX_DOCK_BASE_WATER_PART) return t;
+
+	for (DiagDirection d = DIAGDIR_BEGIN; d != DIAGDIR_END; d++) {
+		TileIndex tile = t + TileOffsByDiagDir(d);
+		if (!IsValidTile(tile)) continue;
+		if (!IsDockTile(tile)) continue;
+		if (GetStationGfx(tile) < GFX_DOCK_BASE_WATER_PART && tile + TileOffsByDiagDir(GetDockDirection(tile)) == t) return tile;
+	}
+
+	return INVALID_TILE;
 }
 
 /**
@@ -2801,14 +2893,11 @@ static CommandCost RemoveDock(TileIndex tile, DoCommandFlag flags)
 	CommandCost ret = CheckOwnership(st->owner);
 	if (ret.Failed()) return ret;
 
-	Dock *removing_dock = Dock::GetByTile(tile);
-	assert(removing_dock != nullptr);
+	if (!IsDockTile(tile)) return CMD_ERROR;
 
-	TileIndex tile1 = removing_dock->sloped;
-	TileIndex tile2 = removing_dock->flat;
-
-	DiagDirection direction = DiagdirBetweenTiles(removing_dock->sloped, removing_dock->flat);
-	TileIndex docking_location = removing_dock->flat + TileOffsByDiagDir(direction);
+	TileIndex tile1 = FindDockLandPart(tile);
+	if (tile1 == INVALID_TILE) return CMD_ERROR;
+	TileIndex tile2 = tile1 + TileOffsByDiagDir(GetDockDirection(tile1));
 
 	ret = EnsureNoVehicleOnGround(tile1);
 	if (ret.Succeeded()) ret = EnsureNoVehicleOnGround(tile2);
@@ -2817,22 +2906,6 @@ static CommandCost RemoveDock(TileIndex tile, DoCommandFlag flags)
 	if (flags & DC_EXEC) {
 		ZoningMarkDirtyStationCoverageArea(st);
 
-		if (st->docks == removing_dock) {
-			/* The first dock in the list is removed. */
-			st->docks = removing_dock->next;
-			/* Last dock is removed. */
-			if (st->docks == nullptr) {
-				st->facilities &= ~FACIL_DOCK;
-			}
-		} else {
-			/* Tell the predecessor in the list to skip this dock. */
-			Dock *pred = st->docks;
-			while (pred->next != removing_dock) pred = pred->next;
-			pred->next = removing_dock->next;
-		}
-
-		delete removing_dock;
-
 		DoClearSquare(tile1);
 		MarkTileDirtyByTile(tile1);
 		MakeWaterKeepingClass(tile2, st->owner);
@@ -2840,29 +2913,35 @@ static CommandCost RemoveDock(TileIndex tile, DoCommandFlag flags)
 		st->rect.AfterRemoveTile(st, tile1);
 		st->rect.AfterRemoveTile(st, tile2);
 
-		st->dock_station.Clear();
-		for (Dock *dock = st->docks; dock != nullptr; dock = dock->next) {
-			st->dock_station.Add(dock->flat);
-			st->dock_station.Add(dock->sloped);
+		MakeShipStationAreaSmaller(st);
+		if (st->ship_station.tile == INVALID_TILE) {
+			st->ship_station.Clear();
+			st->docking_station.Clear();
+			st->docking_tiles.clear();
+			st->facilities &= ~FACIL_DOCK;
 		}
 
 		Company::Get(st->owner)->infrastructure.station -= 2;
 
 		st->AfterStationTileSetChange(false, STATION_DOCK);
 
+		ClearDockingTilesCheckingNeighbours(tile1);
+		ClearDockingTilesCheckingNeighbours(tile2);
+
 		/* All ships that were going to our station, can't go to it anymore.
 		 * Just clear the order, then automatically the next appropriate order
 		 * will be selected and in case of no appropriate order it will just
 		 * wander around the world. */
-		Ship *s;
-		FOR_ALL_SHIPS(s) {
-			if (s->current_order.IsType(OT_LOADING) && s->tile == docking_location) {
-				s->LeaveStation();
-			}
+		if (!(st->facilities & FACIL_DOCK)) {
+			Ship *s;
+			FOR_ALL_SHIPS(s) {
+				if (s->current_order.IsType(OT_LOADING) && s->current_order.GetDestination() == st->index) {
+					s->LeaveStation();
+				}
 
-			if (s->dest_tile == docking_location) {
-				s->SetDestTile(0);
-				s->current_order.Free();
+				if (s->current_order.IsType(OT_GOTO_STATION) && s->current_order.GetDestination() == st->index) {
+					s->SetDestTile(s->GetOrderStationLocation(st->index));
+				}
 			}
 		}
 	}
@@ -3111,7 +3190,7 @@ draw_default_foundation:
 		} else {
 			assert_tile(IsDock(ti->tile), ti->tile);
 			TileIndex water_tile = ti->tile + TileOffsByDiagDir(GetDockDirection(ti->tile));
-			WaterClass wc = GetWaterClass(water_tile);
+			WaterClass wc = HasTileWaterClass(water_tile) ? GetWaterClass(water_tile) : WATER_CLASS_INVALID;
 			if (wc == WATER_CLASS_SEA) {
 				DrawShoreTile(ti->tileh);
 			} else {
@@ -4243,6 +4322,33 @@ uint MoveGoodsToStation(CargoID type, uint amount, SourceType source_type, Sourc
 	return moved + UpdateStationWaiting(st2, type, worst_cargo, source_type, source_id);
 }
 
+void UpdateStationDockingTiles(Station *st)
+{
+	st->docking_station.Clear();
+	st->docking_tiles.clear();
+
+	/* For neutral stations, start with the industry area instead of dock area */
+	const TileArea *area = st->industry != nullptr ? &st->industry->location : &st->ship_station;
+
+	if (area->tile == INVALID_TILE) return;
+
+	int x = TileX(area->tile);
+	int y = TileY(area->tile);
+
+	/* Expand the area by a tile on each side while
+	 * making sure that we remain inside the map. */
+	int x2 = min(x + area->w + 1, MapSizeX());
+	int x1 = max(x - 1, 0);
+
+	int y2 = min(y + area->h + 1, MapSizeY());
+	int y1 = max(y - 1, 0);
+
+	TileArea ta(TileXY(x1, y1), TileXY(x2 - 1, y2 - 1));
+	TILE_AREA_LOOP(tile, ta) {
+		if (IsValidTile(tile) && IsPossibleDockingTile(tile)) CheckForDockingTile(tile);
+	}
+}
+
 void BuildOilRig(TileIndex tile)
 {
 	if (!Station::CanAllocateItem()) {
@@ -4266,18 +4372,10 @@ void BuildOilRig(TileIndex tile)
 	st->owner = OWNER_NONE;
 	st->airport.type = AT_OILRIG;
 	st->airport.Add(tile);
-	st->dock_station.tile = tile;
-	st->facilities = FACIL_AIRPORT;
-
-	if (!Dock::CanAllocateItem()) {
-		DEBUG(misc, 0, "Can't allocate dock for oilrig at 0x%X, reverting to oilrig with airport only", tile);
-	} else {
-		st->docks = new Dock(tile, tile + ToTileIndexDiff({1, 0}));
-		st->dock_station.tile = tile;
-		st->facilities |= FACIL_DOCK;
-	}
-
+	st->ship_station.Add(tile);
+	st->facilities = FACIL_AIRPORT | FACIL_DOCK;
 	st->build_date = _date;
+	UpdateStationDockingTiles(st);
 
 	st->rect.BeforeAddTile(tile, StationRect::ADD_FORCE);
 
@@ -4295,20 +4393,46 @@ void DeleteOilRig(TileIndex tile)
 
 	MakeWaterKeepingClass(tile, OWNER_NONE);
 
-	st->dock_station.tile = INVALID_TILE;
-	if (st->docks != nullptr) {
-		delete st->docks;
-		st->docks = nullptr;
+	assert(st->facilities == (FACIL_AIRPORT | FACIL_DOCK) && st->airport.type == AT_OILRIG);
+	delete st;
+	return;
+
+	MakeShipStationAreaSmaller(st);
+	if (st->ship_station.tile == INVALID_TILE) {
+		st->ship_station.Clear();
+		st->docking_station.Clear();
+		st->docking_tiles.clear();
+		st->facilities &= ~FACIL_DOCK;
 	}
 	st->airport.Clear();
-	st->facilities &= ~(FACIL_AIRPORT | FACIL_DOCK);
+	st->facilities &= ~FACIL_AIRPORT;
 	st->airport.flags = 0;
 
 	st->rect.AfterRemoveTile(st, tile);
 
 	st->UpdateVirtCoord();
 	st->RecomputeCatchment();
-	if (!st->IsInUse()) delete st;
+	if (!st->IsInUse()) {
+		delete st;
+	} else {
+		st->industry = nullptr;
+		/* All ships that were going to our station, can't go to it anymore.
+		 * Just clear the order, then automatically the next appropriate order
+		 * will be selected and in case of no appropriate order it will just
+		 * wander around the world. */
+		if (!(st->facilities & FACIL_DOCK)) {
+			Ship *s;
+			FOR_ALL_SHIPS(s) {
+				if (s->current_order.IsType(OT_LOADING) && s->current_order.GetDestination() == st->index) {
+					s->LeaveStation();
+				}
+
+				if (s->current_order.IsType(OT_GOTO_STATION) && s->current_order.GetDestination() == st->index) {
+					s->SetDestTile(s->GetOrderStationLocation(st->index));
+				}
+			}
+		}
+	}
 }
 
 static void ChangeTileOwner_Station(TileIndex tile, Owner old_owner, Owner new_owner)

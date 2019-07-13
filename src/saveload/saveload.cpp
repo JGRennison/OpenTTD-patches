@@ -25,7 +25,6 @@
 #include "../stdafx.h"
 #include "../debug.h"
 #include "../station_base.h"
-#include "../dock_base.h"
 #include "../thread.h"
 #include "../town.h"
 #include "../network/network.h"
@@ -1192,7 +1191,6 @@ static size_t ReferenceToInt(const void *obj, SLRefType rt)
 		case REF_STORAGE:        return ((const PersistentStorage*)obj)->index + 1;
 		case REF_LINK_GRAPH:     return ((const         LinkGraph*)obj)->index + 1;
 		case REF_LINK_GRAPH_JOB: return ((const      LinkGraphJob*)obj)->index + 1;
-		case REF_DOCKS:          return ((const              Dock*)obj)->index + 1;
 		default: NOT_REACHED();
 	}
 }
@@ -1257,10 +1255,6 @@ static void *IntToReference(size_t index, SLRefType rt)
 		case REF_ROADSTOPS:
 			if (RoadStop::IsValidID(index)) return RoadStop::Get(index);
 			SlErrorCorrupt("Referencing invalid RoadStop");
-
-		case REF_DOCKS:
-			if (Dock::IsValidID(index)) return Dock::Get(index);
-			SlErrorCorrupt("Referencing invalid Dock");
 
 		case REF_ENGINE_RENEWS:
 			if (EngineRenew::IsValidID(index)) return EngineRenew::Get(index);

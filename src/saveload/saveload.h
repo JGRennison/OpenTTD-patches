@@ -304,6 +304,7 @@ enum SaveLoadVersion : uint16 {
 	SLV_ROAD_TYPES,                         ///< 214  PR#6811 NewGRF road types.
 
 	SLV_SCRIPT_MEMLIMIT,                    ///< 215  PR#7516 Limit on AI/GS memory consumption.
+	SLV_MULTITILE_DOCKS,                    ///< 216  PR#7380 Multiple docks per station.
 
 	SL_MAX_VERSION,                         ///< Highest possible saveload version
 
@@ -396,7 +397,6 @@ enum SLRefType {
 	REF_LINK_GRAPH       = 10,	///< Load/save a reference to a link graph.
 	REF_LINK_GRAPH_JOB   = 11,	///< Load/save a reference to a link graph job.
 	REF_TEMPLATE_VEHICLE = 12,	///< Load/save a reference to a template vehicle
-	REF_DOCKS            = 13,	///< Load/save a reference to a dock.
 };
 
 /** Flags of a chunk. */
