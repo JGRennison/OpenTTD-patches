@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.31.3
+## JGR's Patchpack version 0.32-rc1
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 

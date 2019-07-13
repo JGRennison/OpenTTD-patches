@@ -2,6 +2,10 @@
 
 * * *
 
+### v0.32-rc1 (2019-07-13)
+* Include NotRoadTypes (NRT).
+* Bump trunk base from commit 21edf67f89c60351d5a0d84625455aa296b6b950 to commit a52bbb72a8a2cbcbefb0ff91b559f33c34094239.
+
 ### v0.31.3 (2019-07-13)
 * Fix the target order number of conditional order jumps being loaded incorrectly from SpringPP savegames.
 * Fix order backups not being restored when using buy and refit.
