@@ -2190,35 +2190,43 @@ static void GetTileDesc_TunnelBridge(TileIndex tile, TileDesc *td)
 	}
 	td->owner[0] = GetTileOwner(tile);
 
-	Owner road_owner = INVALID_OWNER;
-	Owner tram_owner = INVALID_OWNER;
-	RoadType road_rt = GetRoadTypeRoad(tile);
-	RoadType tram_rt = GetRoadTypeTram(tile);
-	if (road_rt != INVALID_ROADTYPE) {
-		const RoadTypeInfo *rti = GetRoadTypeInfo(road_rt);
-		td->roadtype = rti->strings.name;
-		td->road_speed = rti->max_speed / 2;
-		road_owner = GetRoadOwner(tile, RTT_ROAD);
-	}
-	if (tram_rt != INVALID_ROADTYPE) {
-		const RoadTypeInfo *rti = GetRoadTypeInfo(tram_rt);
-		td->tramtype = rti->strings.name;
-		td->tram_speed = rti->max_speed / 2;
-		tram_owner = GetRoadOwner(tile, RTT_TRAM);
-	}
-
-	/* Is there a mix of owners? */
-	if ((tram_owner != INVALID_OWNER && tram_owner != td->owner[0]) ||
-			(road_owner != INVALID_OWNER && road_owner != td->owner[0])) {
-		uint i = 1;
-		if (road_owner != INVALID_OWNER) {
-			td->owner_type[i] = STR_LAND_AREA_INFORMATION_ROAD_OWNER;
-			td->owner[i] = road_owner;
-			i++;
+	if (tt == TRANSPORT_ROAD) {
+		Owner road_owner = INVALID_OWNER;
+		Owner tram_owner = INVALID_OWNER;
+		RoadType road_rt = GetRoadTypeRoad(tile);
+		RoadType tram_rt = GetRoadTypeTram(tile);
+		if (road_rt != INVALID_ROADTYPE) {
+			const RoadTypeInfo *rti = GetRoadTypeInfo(road_rt);
+			td->roadtype = rti->strings.name;
+			td->road_speed = rti->max_speed / 2;
+			road_owner = GetRoadOwner(tile, RTT_ROAD);
 		}
-		if (tram_owner != INVALID_OWNER) {
-			td->owner_type[i] = STR_LAND_AREA_INFORMATION_TRAM_OWNER;
-			td->owner[i] = tram_owner;
+		if (tram_rt != INVALID_ROADTYPE) {
+			const RoadTypeInfo *rti = GetRoadTypeInfo(tram_rt);
+			td->tramtype = rti->strings.name;
+			td->tram_speed = rti->max_speed / 2;
+			tram_owner = GetRoadOwner(tile, RTT_TRAM);
+		}
+
+		/* Is there a mix of owners? */
+		if ((tram_owner != INVALID_OWNER && tram_owner != td->owner[0]) ||
+				(road_owner != INVALID_OWNER && road_owner != td->owner[0])) {
+			uint i = 1;
+			if (road_owner != INVALID_OWNER) {
+				td->owner_type[i] = STR_LAND_AREA_INFORMATION_ROAD_OWNER;
+				td->owner[i] = road_owner;
+				i++;
+			}
+			if (tram_owner != INVALID_OWNER) {
+				td->owner_type[i] = STR_LAND_AREA_INFORMATION_TRAM_OWNER;
+				td->owner[i] = tram_owner;
+			}
+		}
+
+		if (!IsTunnel(tile)) {
+			uint16 spd = GetBridgeSpec(GetBridgeType(tile))->speed;
+			if (road_rt != INVALID_ROADTYPE && (td->road_speed == 0 || spd < td->road_speed)) td->road_speed = spd;
+			if (tram_rt != INVALID_ROADTYPE && (td->tram_speed == 0 || spd < td->tram_speed)) td->tram_speed = spd;
 		}
 	}
 
@@ -2240,10 +2248,6 @@ static void GetTileDesc_TunnelBridge(TileIndex tile, TileDesc *td)
 				td->rail_speed = spd;
 			}
 		}
-	} else if (tt == TRANSPORT_ROAD && !IsTunnel(tile)) {
-		uint16 spd = GetBridgeSpec(GetBridgeType(tile))->speed;
-		if (road_rt != INVALID_ROADTYPE && (td->road_speed == 0 || spd < td->road_speed)) td->road_speed = spd;
-		if (tram_rt != INVALID_ROADTYPE && (td->tram_speed == 0 || spd < td->tram_speed)) td->tram_speed = spd;
 	}
 }
 
