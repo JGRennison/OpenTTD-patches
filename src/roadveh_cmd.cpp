@@ -468,7 +468,7 @@ int RoadVehicle::GetEffectiveMaxSpeed() const
  */
 inline int RoadVehicle::GetCurrentMaxSpeed() const
 {
-	int max_speed = this->GetEffectiveMaxSpeed();
+	int max_speed = min(this->GetEffectiveMaxSpeed(), this->gcache.cached_max_track_speed);
 
 	/* Limit speed to 50% while reversing, 75% in curves. */
 	for (const RoadVehicle *u = this; u != nullptr; u = u->Next()) {
