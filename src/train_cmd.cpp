@@ -5255,6 +5255,8 @@ Train* CmdBuildVirtualRailVehicle(EngineID eid, StringID &error)
 		return nullptr;
 	}
 
+	RegisterGameEvents(GEF_VIRT_TRAIN);
+
 	if (rvi->railveh_type == RAILVEH_WAGON) {
 		return CmdBuildVirtualRailWagon(e);
 	}
@@ -5445,6 +5447,8 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 			}
 		}
 	}
+
+	if (need_replacement || (need_refit && use_refit)) RegisterGameEvents(GEF_TBTR_REPLACEMENT);
 
 	/* define replacement behavior */
 	bool reuseDepot = tv->IsSetReuseDepotVehicles();

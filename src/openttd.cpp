@@ -1839,5 +1839,8 @@ char *DumpGameEventFlags(GameEventFlags events, char *b, const char *last)
 	dump('t', GEF_TBTR_REPLACEMENT);
 	dump('D', GEF_DISASTER_VEH);
 	dump('c', GEF_TRAIN_CRASH);
+	dump('i', GEF_INDUSTRY_CREATE);
+	dump('j', GEF_INDUSTRY_DELETE);
+	dump('v', GEF_VIRT_TRAIN);
 	return b;
 }

@@ -343,7 +343,7 @@ char *CrashLog::LogGamelog(char *buffer, const char *last) const
 char *CrashLog::LogRecentNews(char *buffer, const char *last) const
 {
 	uint total = 0;
-	for (NewsItem *news = _latest_news; news != nullptr; news = news->next) {
+	for (NewsItem *news = _latest_news; news != nullptr; news = news->prev) {
 		total++;
 	}
 	uint show = min<uint>(total, 32);
