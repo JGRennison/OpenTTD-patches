@@ -5446,6 +5446,8 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 		}
 	}
 
+	if (need_replacement || (need_refit && use_refit)) RegisterGameEvents(GEF_TBTR_REPLACEMENT);
+
 	/* define replacement behavior */
 	bool reuseDepot = tv->IsSetReuseDepotVehicles();
 	bool keepRemainders = tv->IsSetKeepRemainingVehicles();

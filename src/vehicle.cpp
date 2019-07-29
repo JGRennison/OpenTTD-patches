@@ -1388,8 +1388,6 @@ void CallVehicleTicks()
 		bool leaveDepot = it->second;
 		_vehicles_to_autoreplace.erase(it);
 
-		RegisterGameEvents(GEF_TBTR_REPLACEMENT);
-
 		/* Store the position of the effect as the vehicle pointer will become invalid later */
 		int x = t->x_pos;
 		int y = t->y_pos;
