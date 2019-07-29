@@ -186,6 +186,8 @@ Industry::~Industry()
 	for (Station *st : this->stations_near) {
 		st->industries_near.erase(this);
 	}
+
+	if (_game_mode == GM_NORMAL) RegisterGameEvents(GEF_INDUSTRY_DELETE);
 }
 
 /**
@@ -1865,6 +1867,7 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 	InvalidateWindowData(WC_INDUSTRY_DIRECTORY, 0, 0);
 
 	if (!_generating_world) PopulateStationsNearby(i);
+	if (_game_mode == GM_NORMAL) RegisterGameEvents(GEF_INDUSTRY_CREATE);
 }
 
 /**
