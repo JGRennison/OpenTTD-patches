@@ -1912,8 +1912,10 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 			auto check_reservation = [&](TileIndex t) {
 				if (HasAcrossTunnelBridgeReservation(t)) {
 					Train *v = GetTrainForReservation(t, FindFirstTrack(GetAcrossTunnelBridgeReservationTrackBits(t)));
-					if (v != nullptr) FreeTrainTrackReservation(v);
-					re_reserve_trains.push_back(v);
+					if (v != nullptr) {
+						FreeTrainTrackReservation(v);
+						re_reserve_trains.push_back(v);
+					}
 				}
 			};
 			check_reservation(tile);
