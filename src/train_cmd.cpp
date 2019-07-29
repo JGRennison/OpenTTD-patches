@@ -5255,6 +5255,8 @@ Train* CmdBuildVirtualRailVehicle(EngineID eid, StringID &error)
 		return nullptr;
 	}
 
+	RegisterGameEvents(GEF_VIRT_TRAIN);
+
 	if (rvi->railveh_type == RAILVEH_WAGON) {
 		return CmdBuildVirtualRailWagon(e);
 	}
