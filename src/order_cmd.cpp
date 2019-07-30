@@ -63,6 +63,7 @@ void IntialiseOrderDestinationRefcountMap()
 	ClearOrderDestinationRefcountMap();
 	const Vehicle *v;
 	FOR_ALL_VEHICLES(v) {
+		if (v != v->FirstShared()) continue;
 		const Order *order;
 		FOR_VEHICLE_ORDERS(v, order) {
 			if (order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT) || order->IsType(OT_IMPLICIT)) {
