@@ -1634,6 +1634,12 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 
 	if (!CargoPacket::ValidateDeferredCargoPayments()) CCLOG("Cargo packets deferred payments validation failed");
 
+	if (_order_destination_refcount_map_valid) {
+		btree::btree_map<uint32, uint32> saved_order_destination_refcount_map = std::move(_order_destination_refcount_map);
+		IntialiseOrderDestinationRefcountMap();
+		if (saved_order_destination_refcount_map != _order_destination_refcount_map) CCLOG("Order destination refcount map mismatch");
+	}
+
 #undef CCLOG
 }
 
