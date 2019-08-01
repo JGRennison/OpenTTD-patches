@@ -336,10 +336,9 @@ static void Load_TOWN()
 				uint arr_len = t->cargo_accepted.area.w / AcceptanceMatrix::GRID * t->cargo_accepted.area.h / AcceptanceMatrix::GRID;
 				t->cargo_accepted.data = MallocT<CargoTypes>(arr_len);
 				SlArray(t->cargo_accepted.data, arr_len, SLE_UINT64);
-
-				/* Rebuild total cargo acceptance. */
-				UpdateTownCargoTotal(t);
 			}
+			/* Rebuild total cargo acceptance. */
+			UpdateTownCargoTotal(t);
 		}
 	}
 }
