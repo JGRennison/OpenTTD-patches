@@ -37,6 +37,7 @@
 #include "disaster_vehicle.h"
 #include "newgrf_airporttiles.h"
 #include "framerate_type.h"
+#include "core/checksum_func.hpp"
 
 #include "table/strings.h"
 
@@ -2066,6 +2067,7 @@ static bool AircraftEventHandler(Aircraft *v, int loop)
 
 bool Aircraft::Tick()
 {
+	UpdateStateChecksum((((uint64) this->x_pos) << 32) | this->y_pos);
 	if (!this->IsNormalAircraft()) return true;
 
 	PerformanceAccumulator framerate(PFE_GL_AIRCRAFT);

@@ -116,6 +116,7 @@ extern uint32 _sync_seed_1;
 #ifdef NETWORK_SEND_DOUBLE_SEED
 extern uint32 _sync_seed_2;
 #endif
+extern uint64 _sync_state_checksum;
 extern uint32 _sync_frame;
 extern bool _network_first_time;
 /* Vars needed for the join-GUI */

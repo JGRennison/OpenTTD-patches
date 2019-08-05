@@ -34,6 +34,7 @@
 #include "newgrf.h"
 #include "zoom_func.h"
 #include "framerate_type.h"
+#include "core/checksum_func.hpp"
 
 #include "table/strings.h"
 
@@ -990,6 +991,7 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 
 		default: NOT_REACHED();
 	}
+	UpdateStateChecksum((((uint64) v->index) << 32) | (path_found << 16) | best_track);
 	v->HandlePathfindingResult(path_found);
 
 found_best_track:;
@@ -1633,6 +1635,9 @@ bool RoadVehicle::Tick()
 	PerformanceAccumulator framerate(PFE_GL_ROADVEHS);
 
 	this->tick_counter++;
+
+	UpdateStateChecksum((((uint64) this->x_pos) << 32) | this->y_pos);
+	UpdateStateChecksum((((uint64) this->state) << 32) | this->frame);
 
 	if (this->IsFrontEngine()) {
 		if (!(this->vehstatus & VS_STOPPED)) this->running_ticks++;

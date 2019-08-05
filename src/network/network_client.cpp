@@ -29,6 +29,7 @@
 #include "../core/backup_type.hpp"
 #include "../thread.h"
 #include "../crashlog.h"
+#include "../core/checksum_func.hpp"
 
 #include "table/strings.h"
 
@@ -277,9 +278,9 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 	if (_sync_frame != 0) {
 		if (_sync_frame == _frame_counter) {
 #ifdef NETWORK_SEND_DOUBLE_SEED
-			if (_sync_seed_1 != _random.state[0] || _sync_seed_2 != _random.state[1]) {
+			if (_sync_seed_1 != _random.state[0] || _sync_seed_2 != _random.state[1] || _sync_state_checksum != _state_checksum.state) {
 #else
-			if (_sync_seed_1 != _random.state[0]) {
+			if (_sync_seed_1 != _random.state[0] || _sync_state_checksum != _state_checksum.state) {
 #endif
 				NetworkError(STR_NETWORK_ERROR_DESYNC);
 				DEBUG(desync, 1, "sync_err: %08x; %02x", _date, _date_fract);
@@ -945,6 +946,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_FRAME(Packet *p
 #ifdef NETWORK_SEND_DOUBLE_SEED
 		_sync_seed_2 = p->Recv_uint32();
 #endif
+		_sync_state_checksum = p->Recv_uint64();
 	}
 #endif
 	/* Receive the token. */
@@ -972,6 +974,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_SYNC(Packet *p)
 #ifdef NETWORK_SEND_DOUBLE_SEED
 	_sync_seed_2 = p->Recv_uint32();
 #endif
+	_sync_state_checksum = p->Recv_uint64();
 
 	return NETWORK_RECV_STATUS_OKAY;
 }

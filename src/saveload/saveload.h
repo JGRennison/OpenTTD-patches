@@ -303,6 +303,8 @@ enum SaveLoadVersion : uint16 {
 	SLV_TRADING_AGE,                        ///< 217  PR#7780 Configurable company trading age.
 	SLV_ENDING_YEAR,                        ///< 218  PR#7747 v1.10 Configurable ending year.
 
+	SLV_DESYNC_STATE_CHECKSUM = 1000,       ///< 1000 NB: not a proper savegame version, this is done correctly in source branch
+
 	SL_MAX_VERSION,                         ///< Highest possible saveload version
 };
 

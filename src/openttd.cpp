@@ -65,7 +65,7 @@
 #include "viewport_sprite_sorter.h"
 #include "framerate_type.h"
 #include "industry.h"
-#include "string_func.h"
+#include "core/checksum_func.hpp"
 
 #include "linkgraph/linkgraphschedule.h"
 
@@ -88,6 +88,8 @@ extern void ShowOSErrorBox(const char *buf, bool system);
 extern char *_config_file;
 
 time_t _game_load_time;
+
+SimpleChecksum64 _state_checksum;
 
 /**
  * Error handling for fatal user errors.
@@ -1535,6 +1537,10 @@ void StateGameLoop()
 		CallWindowGameTickEvent();
 		NewsLoop();
 		cur_company.Restore();
+
+		for (const Company *c : Company::Iterate()) {
+			UpdateStateChecksum(c->money);
+		}
 	}
 
 	assert(IsLocalCompany());

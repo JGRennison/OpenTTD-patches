@@ -16,6 +16,7 @@
 #include "../gfx_func.h"
 #include "../core/random_func.hpp"
 #include "../fios.h"
+#include "../core/checksum_func.hpp"
 
 #include "saveload.h"
 
@@ -82,6 +83,7 @@ static const SaveLoadGlobVarList _date_desc[] = {
 	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_120),
 	    SLEG_VAR(_random.state[0],        SLE_UINT32),
 	    SLEG_VAR(_random.state[1],        SLE_UINT32),
+	SLEG_CONDVAR(_state_checksum.state, SLE_UINT64,         SLV_DESYNC_STATE_CHECKSUM, SL_MAX_VERSION),
 	SLE_CONDNULL(1,  SL_MIN_VERSION,  SLV_10),
 	SLE_CONDNULL(4, SLV_10, SLV_120),
 	    SLEG_VAR(_cur_company_tick_index, SLE_FILE_U8  | SLE_VAR_U32),
@@ -107,6 +109,7 @@ static const SaveLoadGlobVarList _date_check_desc[] = {
 	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_120),
 	    SLE_NULL(4),                       // _random.state[0]
 	    SLE_NULL(4),                       // _random.state[1]
+	SLE_CONDNULL(8, SLV_DESYNC_STATE_CHECKSUM, SL_MAX_VERSION), // _state_checksum.state
 	SLE_CONDNULL(1,  SL_MIN_VERSION,  SLV_10),
 	SLE_CONDNULL(4, SLV_10, SLV_120),
 	    SLE_NULL(1),                       // _cur_company_tick_index
