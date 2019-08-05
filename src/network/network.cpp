@@ -893,7 +893,7 @@ void NetworkGameLoop()
 			/* We don't want to log multiple times if paused. */
 			static Date last_log;
 			if (last_log != _date) {
-				DEBUG(desync, 1, "sync: date{%08x; %02x; %02x}; %08x; %08x", _date, _date_fract, _tick_skip_counter, _random.state[0], _random.state[1]);
+				DEBUG(desync, 2, "sync: date{%08x; %02x; %02x}; %08x; %08x", _date, _date_fract, _tick_skip_counter, _random.state[0], _random.state[1]);
 				last_log = _date;
 			}
 		}
