@@ -1173,6 +1173,9 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet *p
 	if (errorno == NETWORK_ERROR_DESYNC) {
 		CrashLog::DesyncCrashLog(&(this->desync_log), nullptr);
 
+		// decrease the sync frequency for this point onwards
+		_settings_client.network.sync_freq = min<uint16>(_settings_client.network.sync_freq, 16);
+
 		// have the server and all clients run some sanity checks
 		NetworkSendCommand(0, 0, 0, CMD_DESYNC_CHECK, nullptr, nullptr, _local_company, 0);
 	}
