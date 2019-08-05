@@ -35,6 +35,7 @@
 #include "../core/pool_func.hpp"
 #include "../gfx_func.h"
 #include "../error.h"
+#include "../core/checksum_func.hpp"
 
 #include "../safeguards.h"
 
@@ -74,6 +75,7 @@ uint32 _sync_seed_1;                  ///< Seed to compare during sync checks.
 #ifdef NETWORK_SEND_DOUBLE_SEED
 uint32 _sync_seed_2;                  ///< Second part of the seed.
 #endif
+uint64 _sync_state_checksum;          ///< State checksum to compare during sync checks.
 uint32 _sync_frame;                   ///< The frame to perform the sync check.
 bool _network_first_time;             ///< Whether we have finished joining or not.
 bool _network_udp_server;             ///< Is the UDP server started?
@@ -1028,6 +1030,7 @@ void NetworkGameLoop()
 #ifdef NETWORK_SEND_DOUBLE_SEED
 		_sync_seed_2 = _random.state[1];
 #endif
+		_sync_state_checksum = _state_checksum.state;
 
 		NetworkServer_Tick(send_frame);
 	} else {

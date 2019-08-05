@@ -18,6 +18,7 @@
 #include "animated_tile_func.h"
 #include "effectvehicle_func.h"
 #include "effectvehicle_base.h"
+#include "core/checksum_func.hpp"
 
 #include <algorithm>
 
@@ -670,6 +671,7 @@ EffectVehicle *CreateEffectVehicleRel(const Vehicle *v, int x, int y, int z, Eff
 
 bool EffectVehicle::Tick()
 {
+	UpdateStateChecksum((((uint64) this->x_pos) << 32) | this->y_pos);
 	return _effect_tick_procs[this->subtype](this);
 }
 

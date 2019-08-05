@@ -77,6 +77,7 @@
 #include "string_func_extra.h"
 #include "industry.h"
 #include "cargopacket.h"
+#include "core/checksum_func.hpp"
 
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
@@ -102,6 +103,8 @@ GameEventFlags _game_events_since_load;
 GameEventFlags _game_events_overall;
 
 time_t _game_load_time;
+
+SimpleChecksum64 _state_checksum;
 
 /**
  * Error handling for fatal user errors.
@@ -1749,6 +1752,11 @@ void StateGameLoop()
 		CallWindowGameTickEvent();
 		NewsLoop();
 		cur_company.Restore();
+
+		Company *c;
+		FOR_ALL_COMPANIES(c) {
+			UpdateStateChecksum(c->money);
+		}
 	}
 
 	assert(IsLocalCompany());

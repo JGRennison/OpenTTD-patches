@@ -36,6 +36,7 @@
 #include "tunnelbridge_map.h"
 #include "zoom_func.h"
 #include "framerate_type.h"
+#include "core/checksum_func.hpp"
 
 #include "table/strings.h"
 
@@ -523,6 +524,7 @@ static Track ChooseShipTrack(Ship *v, TileIndex tile, DiagDirection enterdir, Tr
 			default: NOT_REACHED();
 		}
 	}
+	UpdateStateChecksum((((uint64) v->index) << 32) | (path_found << 16) | track);
 
 	v->HandlePathfindingResult(path_found);
 	return track;
@@ -948,6 +950,7 @@ reverse_direction:
 
 bool Ship::Tick()
 {
+	UpdateStateChecksum((((uint64) this->x_pos) << 32) | this->y_pos);
 	if (!(this->vehstatus & VS_STOPPED)) this->running_ticks++;
 
 	ShipController(this);

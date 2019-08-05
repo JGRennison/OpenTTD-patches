@@ -689,6 +689,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendFrame()
 #ifdef NETWORK_SEND_DOUBLE_SEED
 	p->Send_uint32(_sync_seed_2);
 #endif
+	p->Send_uint64(_sync_state_checksum);
 #endif
 
 	/* If token equals 0, we need to make a new token and send that. */
@@ -711,6 +712,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendSync()
 #ifdef NETWORK_SEND_DOUBLE_SEED
 	p->Send_uint32(_sync_seed_2);
 #endif
+	p->Send_uint64(_sync_state_checksum);
 	this->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;
 }

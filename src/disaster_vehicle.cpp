@@ -47,6 +47,7 @@
 #include "company_base.h"
 #include "core/random_func.hpp"
 #include "core/backup_type.hpp"
+#include "core/checksum_func.hpp"
 
 #include "table/strings.h"
 
@@ -707,6 +708,7 @@ static DisasterVehicleTickProc * const _disastervehicle_tick_procs[] = {
 
 bool DisasterVehicle::Tick()
 {
+	UpdateStateChecksum((((uint64) this->x_pos) << 32) | this->y_pos);
 	return _disastervehicle_tick_procs[this->subtype](this);
 }
 
