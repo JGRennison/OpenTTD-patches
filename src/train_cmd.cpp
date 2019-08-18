@@ -4222,7 +4222,10 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 				}
 				if (v->Next() == nullptr) {
 					if (v->tunnel_bridge_signal_num > 0 && distance == (TILE_SIZE * _settings_game.construction.simulated_wormhole_signals) - TILE_SIZE) HandleSignalBehindTrain(v, v->tunnel_bridge_signal_num - 2);
-					if (old_tile == v->tile) {
+					DiagDirection tunnel_bridge_dir = GetTunnelBridgeDirection(v->tile);
+					Axis axis = DiagDirToAxis(tunnel_bridge_dir);
+					DiagDirection axial_dir = DirToDiagDirAlongAxis(v->direction, axis);
+					if (old_tile == ((axial_dir == tunnel_bridge_dir) ? v->tile : GetOtherTunnelBridgeEnd(v->tile))) {
 						/* We left ramp into wormhole. */
 						v->x_pos = gp.x;
 						v->y_pos = gp.y;
