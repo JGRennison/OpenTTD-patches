@@ -373,6 +373,18 @@ static inline bool IsTunnelBridgeSignalSimulationEntrance(TileIndex t)
 }
 
 /**
+ * Is this a tunnel/bridge entrance tile with signal only?
+ * @param t the tile that might be a tunnel/bridge.
+ * @pre IsTileType(t, MP_TUNNELBRIDGE)
+ * @return true if and only if this tile is a tunnel/bridge entrance only.
+ */
+static inline bool IsTunnelBridgeSignalSimulationEntranceOnly(TileIndex t)
+{
+	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
+	return HasBit(_m[t].m5, 5) && !HasBit(_m[t].m5, 6);
+}
+
+/**
  * Is this a tunnel/bridge exit?
  * @param t the tile that might be a tunnel/bridge.
  * @pre IsTileType(t, MP_TUNNELBRIDGE)
