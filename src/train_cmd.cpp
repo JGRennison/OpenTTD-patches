@@ -2176,6 +2176,32 @@ void ReverseTrainDirection(Train *v)
 	/* Clear path reservation in front if train is not stuck. */
 	if (!HasBit(v->flags, VRF_TRAIN_STUCK)) FreeTrainTrackReservation(v);
 
+	std::vector<Train *> re_reserve_trains;
+	{
+		/* Temporarily clear and restore reservations to bidi tunnel/bridge entrances when reversing train inside,
+		 * to avoid outgoing and incoming reservations becoming merged */
+		auto find_train_reservations = [&re_reserve_trains, &v](TileIndex tile) {
+			TrackBits reserved = GetAcrossTunnelBridgeReservationTrackBits(tile);
+			Track track;
+			while ((track = RemoveFirstTrack(&reserved)) != INVALID_TRACK) {
+				Train *res_train = GetTrainForReservation(tile, track);
+				if (res_train != nullptr && res_train != v) {
+					FreeTrainTrackReservation(res_train);
+					re_reserve_trains.push_back(res_train);
+				}
+			}
+		};
+		if (IsTunnelBridgeWithSignalSimulation(v->tile) && IsTunnelBridgeSignalSimulationBidirectional(v->tile)) {
+			find_train_reservations(v->tile);
+			find_train_reservations(GetOtherTunnelBridgeEnd(v->tile));
+		}
+		Train *last = v->Last();
+		if (IsTunnelBridgeWithSignalSimulation(last->tile) && IsTunnelBridgeSignalSimulationBidirectional(last->tile)) {
+			find_train_reservations(last->tile);
+			find_train_reservations(GetOtherTunnelBridgeEnd(last->tile));
+		}
+	}
+
 	if ((v->track & TRACK_BIT_WORMHOLE) && IsTunnelBridgeWithSignalSimulation(v->tile)) {
 		/* Clear exit tile reservation if train was on approach to exit and had reserved it */
 		Axis axis = DiagDirToAxis(GetTunnelBridgeDirection(v->tile));
@@ -2235,6 +2261,10 @@ void ReverseTrainDirection(Train *v)
 	/* maybe we are approaching crossing now, after reversal */
 	crossing = TrainApproachingCrossingTile(v);
 	if (crossing != INVALID_TILE) MaybeBarCrossingWithSound(crossing);
+
+	for (uint i = 0; i < re_reserve_trains.size(); ++i) {
+		TryPathReserve(re_reserve_trains[i], true);
+	}
 
 	/* If we are inside a depot after reversing, don't bother with path reserving. */
 	if (v->track == TRACK_BIT_DEPOT) {
