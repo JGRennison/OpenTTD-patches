@@ -2176,6 +2176,27 @@ void ReverseTrainDirection(Train *v)
 	/* Clear path reservation in front if train is not stuck. */
 	if (!HasBit(v->flags, VRF_TRAIN_STUCK)) FreeTrainTrackReservation(v);
 
+	if ((v->track & TRACK_BIT_WORMHOLE) && IsTunnelBridgeWithSignalSimulation(v->tile)) {
+		/* Clear exit tile reservation if train was on approach to exit and had reserved it */
+		Axis axis = DiagDirToAxis(GetTunnelBridgeDirection(v->tile));
+		DiagDirection axial_dir = DirToDiagDirAlongAxis(v->direction, axis);
+		TileIndex next_tile = TileVirtXY(v->x_pos, v->y_pos) + TileOffsByDiagDir(axial_dir);
+		if (next_tile == v->tile || next_tile == GetOtherTunnelBridgeEnd(v->tile)) {
+			Trackdir exit_td = TrackEnterdirToTrackdir(FindFirstTrack(GetAcrossTunnelBridgeTrackBits(next_tile)), ReverseDiagDir(GetTunnelBridgeDirection(next_tile)));
+			CFollowTrackRail ft(GetTileOwner(next_tile), GetRailTypeInfo(v->railtype)->compatible_railtypes);
+			if (ft.Follow(next_tile, exit_td)) {
+				TrackdirBits reserved = ft.m_new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.m_new_tile));
+				if (reserved == TRACKDIR_BIT_NONE) {
+					UnreserveAcrossRailTunnelBridge(next_tile);
+					MarkTileDirtyByTile(next_tile, ZOOM_LVL_DRAW_MAP);
+				}
+			} else {
+				UnreserveAcrossRailTunnelBridge(next_tile);
+				MarkTileDirtyByTile(next_tile, ZOOM_LVL_DRAW_MAP);
+			}
+		}
+	}
+
 	/* Check if we were approaching a rail/road-crossing */
 	TileIndex crossing = TrainApproachingCrossingTile(v);
 
