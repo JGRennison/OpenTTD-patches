@@ -198,6 +198,13 @@ inline uint8 FindFirstBit(uint32 x)
 	return __builtin_ctz(x);
 }
 
+inline uint8 FindFirstBit64(uint64 x)
+{
+	if (x == 0) return 0;
+
+	return __builtin_ctzll(x);
+}
+
 #else
 
 /** Lookup table to check which bit is set in a 6 bit variable */
