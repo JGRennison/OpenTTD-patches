@@ -630,8 +630,8 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 			break;
 
 		case TRVT_CARGO_ID:
-			assert(_sorted_standard_cargo_specs_size > 0);
-			SetTraceRestrictValue(item, _sorted_cargo_specs[0]->Index());
+			assert(_standard_cargo_mask != 0);
+			SetTraceRestrictValue(item, FindFirstBit64(_standard_cargo_mask));
 			SetTraceRestrictAuxField(item, 0);
 			break;
 

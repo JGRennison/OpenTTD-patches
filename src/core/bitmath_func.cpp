@@ -53,6 +53,13 @@ uint8 FindFirstBit(uint32 x)
 	return pos;
 }
 
+uint8 FindFirstBit64(uint64 x)
+{
+	if (x == 0) return 0;
+	if ((x & 0x00000000ffffffffULL) != 0) return FindFirstBit(x);
+	return FindFirstBit(x >> 32) + 32;
+}
+
 /**
  * Search the last set bit in a 64 bit variable.
  *
