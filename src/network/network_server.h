@@ -72,6 +72,8 @@ public:
 	ClientStatus status;         ///< Status of this client
 	CommandQueue outgoing_queue; ///< The command-queue awaiting delivery
 	int receive_limit;           ///< Amount of bytes that we can receive at this moment
+	uint32 server_hash_bits;     ///< Server password hash entropy bits
+	uint32 rcon_hash_bits;       ///< Rcon password hash entropy bits
 
 	struct PacketWriter *savegame; ///< Writer used to write the savegame.
 	NetworkAddress client_address; ///< IP-address of the client (so he can be banned)

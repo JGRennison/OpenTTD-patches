@@ -216,6 +216,8 @@ ServerNetworkGameSocketHandler::ServerNetworkGameSocketHandler(SOCKET s) : Netwo
 	this->status = STATUS_INACTIVE;
 	this->client_id = _network_client_id++;
 	this->receive_limit = _settings_client.network.bytes_per_frame_burst;
+	this->server_hash_bits = InteractiveRandom();
+	this->rcon_hash_bits = InteractiveRandom();
 
 	/* The Socket and Info pools need to be the same in size. After all,
 	 * each Socket will be associated with at most one Info object. As
@@ -492,6 +494,8 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendNeedGamePassword()
 	this->last_frame = this->last_frame_server = _frame_counter;
 
 	Packet *p = new Packet(PACKET_SERVER_NEED_GAME_PASSWORD);
+	p->Send_uint32(_settings_game.game_creation.generation_seed ^ this->server_hash_bits);
+	p->Send_string(_settings_client.network.network_id);
 	this->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -531,6 +535,8 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendWelcome()
 	p = new Packet(PACKET_SERVER_WELCOME);
 	p->Send_uint32(this->client_id);
 	p->Send_uint32(_settings_game.game_creation.generation_seed);
+	p->Send_uint32(_settings_game.game_creation.generation_seed ^ this->server_hash_bits);
+	p->Send_uint32(_settings_game.game_creation.generation_seed ^ this->rcon_hash_bits);
 	p->Send_string(_settings_client.network.network_id);
 	this->SendPacket(p);
 
@@ -972,7 +978,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_GAME_PASSWORD(P
 
 	/* Check game password. Allow joining if we cleared the password meanwhile */
 	if (!StrEmpty(_settings_client.network.server_password) &&
-			strcmp(password, _settings_client.network.server_password) != 0) {
+			strcmp(password, GenerateCompanyPasswordHash(_settings_client.network.server_password, _settings_client.network.network_id, _settings_game.game_creation.generation_seed ^ this->server_hash_bits)) != 0) {
 		/* Password is invalid */
 		return this->SendError(NETWORK_ERROR_WRONG_PASSWORD);
 	}
@@ -1481,7 +1487,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_RCON(Packet *p)
 	p->Recv_string(pass, sizeof(pass));
 	p->Recv_string(command, sizeof(command));
 
-	if (strcmp(pass, _settings_client.network.rcon_password) != 0) {
+	if (strcmp(pass, GenerateCompanyPasswordHash(_settings_client.network.rcon_password, _settings_client.network.network_id, _settings_game.game_creation.generation_seed ^ this->rcon_hash_bits)) != 0) {
 		DEBUG(net, 0, "[rcon] wrong password from client-id %d", this->client_id);
 		return NETWORK_RECV_STATUS_OKAY;
 	}
