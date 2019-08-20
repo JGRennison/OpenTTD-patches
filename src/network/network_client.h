@@ -49,6 +49,7 @@ protected:
 	NetworkRecvStatus Receive_SERVER_CLIENT_INFO(Packet *p) override;
 	NetworkRecvStatus Receive_SERVER_NEED_GAME_PASSWORD(Packet *p) override;
 	NetworkRecvStatus Receive_SERVER_NEED_COMPANY_PASSWORD(Packet *p) override;
+	NetworkRecvStatus Receive_SERVER_SETTINGS_ACCESS(Packet *p) override;
 	NetworkRecvStatus Receive_SERVER_WELCOME(Packet *p) override;
 	NetworkRecvStatus Receive_SERVER_WAIT(Packet *p) override;
 	NetworkRecvStatus Receive_SERVER_MAP_BEGIN(Packet *p) override;
@@ -92,6 +93,7 @@ public:
 
 	static NetworkRecvStatus SendGamePassword(const char *password);
 	static NetworkRecvStatus SendCompanyPassword(const char *password);
+	static NetworkRecvStatus SendSettingsPassword(const char *password);
 
 	static NetworkRecvStatus SendChat(NetworkAction action, DestType type, int dest, const char *msg, NetworkTextMessageData data);
 	static NetworkRecvStatus SendSetPassword(const char *password);

@@ -63,6 +63,8 @@ enum PacketGameType {
 	PACKET_CLIENT_GAME_PASSWORD,         ///< Clients sends the (hashed) game password.
 	PACKET_SERVER_NEED_COMPANY_PASSWORD, ///< Server requests the (hashed) company password.
 	PACKET_CLIENT_COMPANY_PASSWORD,      ///< Client sends the (hashed) company password.
+	PACKET_CLIENT_SETTINGS_PASSWORD,     ///< Client sends the (hashed) settings password.
+	PACKET_SERVER_SETTINGS_ACCESS,       ///< Server sends the settings access state.
 
 	/* The server welcomes the authenticated client and sends information of other clients. */
 	PACKET_SERVER_WELCOME,               ///< Server welcomes you and gives you your #ClientID.
@@ -261,6 +263,21 @@ protected:
 	 * @param p The packet that was just received.
 	 */
 	virtual NetworkRecvStatus Receive_CLIENT_COMPANY_PASSWORD(Packet *p);
+
+	/**
+	 * Send a password to the server to authorize
+	 * uint8   Password type (see NetworkPasswordType).
+	 * string  The password.
+	 * @param p The packet that was just received.
+	 */
+	virtual NetworkRecvStatus Receive_CLIENT_SETTINGS_PASSWORD(Packet *p);
+
+	/**
+	 * Indication to the client that the setting access state has changed
+	 * bool setting access state
+	 * @param p The packet that was just received.
+	 */
+	virtual NetworkRecvStatus Receive_SERVER_SETTINGS_ACCESS(Packet *p);
 
 	/**
 	 * The client is joined and ready to receive his map:

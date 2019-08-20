@@ -79,6 +79,8 @@ NetworkRecvStatus NetworkGameSocketHandler::HandlePacket(Packet *p)
 		case PACKET_SERVER_NEED_COMPANY_PASSWORD: return this->Receive_SERVER_NEED_COMPANY_PASSWORD(p);
 		case PACKET_CLIENT_GAME_PASSWORD:         return this->Receive_CLIENT_GAME_PASSWORD(p);
 		case PACKET_CLIENT_COMPANY_PASSWORD:      return this->Receive_CLIENT_COMPANY_PASSWORD(p);
+		case PACKET_CLIENT_SETTINGS_PASSWORD:     return this->Receive_CLIENT_SETTINGS_PASSWORD(p);
+		case PACKET_SERVER_SETTINGS_ACCESS:       return this->Receive_SERVER_SETTINGS_ACCESS(p);
 		case PACKET_SERVER_WELCOME:               return this->Receive_SERVER_WELCOME(p);
 		case PACKET_CLIENT_GETMAP:                return this->Receive_CLIENT_GETMAP(p);
 		case PACKET_SERVER_WAIT:                  return this->Receive_SERVER_WAIT(p);
@@ -166,6 +168,8 @@ NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_NEED_GAME_PASSWORD(Pa
 NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_NEED_COMPANY_PASSWORD(Packet *p) { return this->ReceiveInvalidPacket(PACKET_SERVER_NEED_COMPANY_PASSWORD); }
 NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_GAME_PASSWORD(Packet *p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_GAME_PASSWORD); }
 NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_COMPANY_PASSWORD(Packet *p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_COMPANY_PASSWORD); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_SETTINGS_PASSWORD(Packet *p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_SETTINGS_PASSWORD); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_SETTINGS_ACCESS(Packet *p) { return this->ReceiveInvalidPacket(PACKET_SERVER_SETTINGS_ACCESS); }
 NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_WELCOME(Packet *p) { return this->ReceiveInvalidPacket(PACKET_SERVER_WELCOME); }
 NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_GETMAP(Packet *p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_GETMAP); }
 NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_WAIT(Packet *p) { return this->ReceiveInvalidPacket(PACKET_SERVER_WAIT); }

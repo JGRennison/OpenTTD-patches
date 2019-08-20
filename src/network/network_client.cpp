@@ -159,6 +159,7 @@ ClientNetworkGameSocketHandler::~ClientNetworkGameSocketHandler()
 {
 	assert(ClientNetworkGameSocketHandler::my_client == this);
 	ClientNetworkGameSocketHandler::my_client = nullptr;
+	_network_settings_access = false;
 
 	delete this->savegame;
 }
@@ -331,6 +332,8 @@ static uint32 _server_password_game_seed;
 /** One bit of 'entropy' used to generate a salt for the rcon passwords. */
 static uint32 _rcon_password_game_seed;
 /** One bit of 'entropy' used to generate a salt for the settings passwords. */
+static uint32 _settings_password_game_seed;
+/** The other bit of 'entropy' used to generate a salt for the company, server, rcon, and settings passwords. */
 static char _password_server_id[NETWORK_SERVER_ID_LENGTH];
 
 /** Maximum number of companies of the currently joined server. */
@@ -411,6 +414,18 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendCompanyPassword(const char
 {
 	Packet *p = new Packet(PACKET_CLIENT_COMPANY_PASSWORD);
 	p->Send_string(GenerateCompanyPasswordHash(password, _password_server_id, _company_password_game_seed));
+	my_client->SendPacket(p);
+	return NETWORK_RECV_STATUS_OKAY;
+}
+
+/**
+ * Set the game password as requested.
+ * @param password The game password.
+ */
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendSettingsPassword(const char *password)
+{
+	Packet *p = new Packet(PACKET_CLIENT_SETTINGS_PASSWORD);
+	p->Send_string(GenerateCompanyPasswordHash(password, _password_server_id, _settings_password_game_seed));
 	my_client->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -821,6 +836,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_WELCOME(Packet 
 	_company_password_game_seed = p->Recv_uint32();
 	_server_password_game_seed = p->Recv_uint32();
 	_rcon_password_game_seed = p->Recv_uint32();
+	_settings_password_game_seed = p->Recv_uint32();
 	p->Recv_string(_password_server_id, sizeof(_password_server_id));
 
 	/* Start receiving the map */
@@ -1209,6 +1225,17 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_COMPANY_UPDATE(
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
+NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_SETTINGS_ACCESS(Packet *p)
+{
+	if (this->status < STATUS_ACTIVE) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
+
+	_network_settings_access = p->Recv_bool();
+
+	ReInitAllWindows();
+
+	return NETWORK_RECV_STATUS_OKAY;
+}
+
 /**
  * Check the connection's state, i.e. is the connection still up?
  */
@@ -1261,6 +1288,16 @@ void NetworkClient_Connected()
 void NetworkClientSendRcon(const char *password, const char *command)
 {
 	MyClient::SendRCon(password, command);
+}
+
+/**
+ * Send settings password.
+ * @param password The password.
+ * @param command The command to execute.
+ */
+void NetworkClientSendSettingsPassword(const char *password)
+{
+	MyClient::SendSettingsPassword(password);
 }
 
 /**

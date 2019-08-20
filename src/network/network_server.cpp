@@ -218,6 +218,7 @@ ServerNetworkGameSocketHandler::ServerNetworkGameSocketHandler(SOCKET s) : Netwo
 	this->receive_limit = _settings_client.network.bytes_per_frame_burst;
 	this->server_hash_bits = InteractiveRandom();
 	this->rcon_hash_bits = InteractiveRandom();
+	this->settings_hash_bits = InteractiveRandom();
 
 	/* The Socket and Info pools need to be the same in size. After all,
 	 * each Socket will be associated with at most one Info object. As
@@ -537,6 +538,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendWelcome()
 	p->Send_uint32(_settings_game.game_creation.generation_seed);
 	p->Send_uint32(_settings_game.game_creation.generation_seed ^ this->server_hash_bits);
 	p->Send_uint32(_settings_game.game_creation.generation_seed ^ this->rcon_hash_bits);
+	p->Send_uint32(_settings_game.game_creation.generation_seed ^ this->settings_hash_bits);
 	p->Send_string(_settings_client.network.network_id);
 	this->SendPacket(p);
 
@@ -860,6 +862,15 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendConfigUpdate()
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
+NetworkRecvStatus ServerNetworkGameSocketHandler::SendSettingsAccessUpdate(bool ok)
+{
+	Packet *p = new Packet(PACKET_SERVER_SETTINGS_ACCESS);
+	p->Send_bool(ok);
+	this->SendPacket(p);
+	return NETWORK_RECV_STATUS_OKAY;
+}
+
+
 /***********
  * Receiving functions
  *   DEF_SERVER_RECEIVE_COMMAND has parameter: NetworkClientSocket *cs, Packet *p
@@ -1014,6 +1025,29 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMPANY_PASSWOR
 	return this->SendWelcome();
 }
 
+NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_SETTINGS_PASSWORD(Packet *p)
+{
+	if (this->status != STATUS_ACTIVE) {
+		/* Illegal call, return error and ignore the packet */
+		return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
+	}
+
+	char password[NETWORK_PASSWORD_LENGTH];
+	p->Recv_string(password, sizeof(password));
+
+	/* Check settings password. Deny if no password is set */
+	if (StrEmpty(_settings_client.network.settings_password) ||
+			strcmp(password, GenerateCompanyPasswordHash(_settings_client.network.settings_password, _settings_client.network.network_id, _settings_game.game_creation.generation_seed ^ this->settings_hash_bits)) != 0) {
+		DEBUG(net, 0, "[settings-ctrl] wrong password from client-id %d", this->client_id);
+		this->settings_authed = false;
+	} else {
+		DEBUG(net, 0, "[settings-ctrl] client-id %d", this->client_id);
+		this->settings_authed = true;
+	}
+
+	return this->SendSettingsAccessUpdate(this->settings_authed);
+}
+
 NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_GETMAP(Packet *p)
 {
 	NetworkClientSocket *new_cs;
@@ -1108,12 +1142,12 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet 
 	}
 
 
-	if ((GetCommandFlags(cp.cmd) & CMD_SERVER) && ci->client_id != CLIENT_ID_SERVER) {
+	if ((GetCommandFlags(cp.cmd) & CMD_SERVER) && ci->client_id != CLIENT_ID_SERVER && !this->settings_authed) {
 		IConsolePrintF(CC_ERROR, "WARNING: server only command from: client %d (IP: %s), kicking...", ci->client_id, this->GetClientIP());
 		return this->SendError(NETWORK_ERROR_KICKED);
 	}
 
-	if ((GetCommandFlags(cp.cmd) & CMD_SPECTATOR) == 0 && !Company::IsValidID(cp.company) && ci->client_id != CLIENT_ID_SERVER) {
+	if ((GetCommandFlags(cp.cmd) & CMD_SPECTATOR) == 0 && !Company::IsValidID(cp.company) && ci->client_id != CLIENT_ID_SERVER && !this->settings_authed) {
 		IConsolePrintF(CC_ERROR, "WARNING: spectator issuing command from client %d (IP: %s), kicking...", ci->client_id, this->GetClientIP());
 		return this->SendError(NETWORK_ERROR_KICKED);
 	}
@@ -1123,7 +1157,8 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet 
 	 * to match the company in the packet. If it doesn't, the client has done
 	 * something pretty naughty (or a bug), and will be kicked
 	 */
-	if (!(cp.cmd == CMD_COMPANY_CTRL && cp.p1 == 0 && ci->client_playas == COMPANY_NEW_COMPANY) && ci->client_playas != cp.company) {
+	if (!(cp.cmd == CMD_COMPANY_CTRL && cp.p1 == 0 && ci->client_playas == COMPANY_NEW_COMPANY) && ci->client_playas != cp.company &&
+			!((GetCommandFlags(cp.cmd) & CMD_SERVER) && this->settings_authed)) {
 		IConsolePrintF(CC_ERROR, "WARNING: client %d (IP: %s) tried to execute a command as company %d, kicking...",
 		               ci->client_playas + 1, this->GetClientIP(), cp.company + 1);
 		return this->SendError(NETWORK_ERROR_COMPANY_MISMATCH);

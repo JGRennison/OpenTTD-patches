@@ -29,6 +29,7 @@ protected:
 	NetworkRecvStatus Receive_CLIENT_COMPANY_INFO(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_GAME_PASSWORD(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_COMPANY_PASSWORD(Packet *p) override;
+	NetworkRecvStatus Receive_CLIENT_SETTINGS_PASSWORD(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_GETMAP(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_MAP_OK(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_ACK(Packet *p) override;
@@ -74,6 +75,8 @@ public:
 	int receive_limit;           ///< Amount of bytes that we can receive at this moment
 	uint32 server_hash_bits;     ///< Server password hash entropy bits
 	uint32 rcon_hash_bits;       ///< Rcon password hash entropy bits
+	uint32 settings_hash_bits;   ///< Settings password hash entropy bits
+	bool settings_authed = false;///< Authorised to control all game settings
 
 	struct PacketWriter *savegame; ///< Writer used to write the savegame.
 	NetworkAddress client_address; ///< IP-address of the client (so he can be banned)
@@ -104,6 +107,7 @@ public:
 	NetworkRecvStatus SendCommand(const CommandPacket *cp);
 	NetworkRecvStatus SendCompanyUpdate();
 	NetworkRecvStatus SendConfigUpdate();
+	NetworkRecvStatus SendSettingsAccessUpdate(bool ok);
 
 	static void Send();
 	static void AcceptConnection(SOCKET s, const NetworkAddress &address);

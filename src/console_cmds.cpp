@@ -703,6 +703,21 @@ DEF_CONSOLE_CMD(ConRcon)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConSettingsAccess)
+{
+	if (argc == 0) {
+		IConsoleHelp("Enable changing game settings from this client. Usage: 'settings_access <password>'");
+		return true;
+	}
+
+	if (argc < 2) return false;
+
+	if (!_network_server) {
+		NetworkClientSendSettingsPassword(argv[1]);
+	}
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConStatus)
 {
 	if (argc == 0) {
@@ -2356,6 +2371,7 @@ void IConsoleStdLibRegister()
 	IConsoleAliasRegister("info",          "server_info");
 	IConsoleCmdRegister("reconnect",       ConNetworkReconnect, ConHookClientOnly);
 	IConsoleCmdRegister("rcon",            ConRcon, ConHookNeedNetwork);
+	IConsoleCmdRegister("settings_access", ConSettingsAccess, ConHookNeedNetwork);
 
 	IConsoleCmdRegister("join",            ConJoinCompany, ConHookNeedNetwork);
 	IConsoleAliasRegister("spectate",      "join 255");
@@ -2380,6 +2396,8 @@ void IConsoleStdLibRegister()
 	IConsoleAliasRegister("server_password",       "setting server_password %+");
 	IConsoleAliasRegister("rcon_pw",               "setting rcon_password %+");
 	IConsoleAliasRegister("rcon_password",         "setting rcon_password %+");
+	IConsoleAliasRegister("settings_pw",           "setting settings_password %+");
+	IConsoleAliasRegister("settings_password",     "setting settings_password %+");
 	IConsoleAliasRegister("name",                  "setting client_name %+");
 	IConsoleAliasRegister("server_name",           "setting server_name %+");
 	IConsoleAliasRegister("server_port",           "setting server_port %+");

@@ -57,6 +57,7 @@ bool _network_server;     ///< network-server is active
 bool _network_available;  ///< is network mode available?
 bool _network_dedicated;  ///< are we a dedicated server?
 bool _is_network_server;  ///< Does this client wants to be a network-server?
+bool _network_settings_access; ///< Can this client change server settings?
 NetworkServerGameInfo _network_game_info; ///< Information about our game.
 NetworkCompanyState *_network_company_states = nullptr; ///< Statistics about some companies.
 ClientID _network_own_client_id;      ///< Our client identifier.
