@@ -719,9 +719,12 @@ bool NewHouseTileLoop(TileIndex tile)
 
 	/* Check callback 21, which determines if a house should be destroyed. */
 	if (HasBit(hs->callback_mask, CBM_HOUSE_DESTRUCTION)) {
-		uint16 callback_res = GetHouseCallback(CBID_HOUSE_DESTRUCTION, 0, 0, GetHouseType(tile), Town::GetByTile(tile), tile);
+		Town *t = Town::GetByTile(tile);
+		uint16 callback_res = GetHouseCallback(CBID_HOUSE_DESTRUCTION, 0, 0, GetHouseType(tile), t, tile);
 		if (callback_res != CALLBACK_FAILED && Convert8bitBooleanCallback(hs->grf_prop.grffile, CBID_HOUSE_DESTRUCTION, callback_res)) {
-			ClearTownHouse(Town::GetByTile(tile), tile);
+			ClearTownHouse(t, tile);
+			extern void RemoveNearbyStations(Town *t);
+			RemoveNearbyStations(t);
 			return false;
 		}
 	}
