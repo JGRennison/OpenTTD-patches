@@ -1550,6 +1550,7 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 				TraceRestrictRemoveVehicleFromAllSlots(src->index);
 				ClrBit(src->flags, VRF_HAVE_SLOT);
 			}
+			OrderBackup::ClearVehicle(src);
 		}
 
 		/* We weren't a front engine but are becoming one. So
