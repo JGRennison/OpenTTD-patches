@@ -516,8 +516,8 @@ void CDECL HandleCrash(int signum, siginfo_t *si, void *context)
 	}
 }
 
-/* static */ void CrashLog::DesyncCrashLog(const std::string *log_in, std::string *log_out)
+/* static */ void CrashLog::DesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info)
 {
 	CrashLogOSX log(CrashLogOSX::DesyncTag{});
-	log.MakeDesyncCrashLog(log_in, log_out);
+	log.MakeDesyncCrashLog(log_in, log_out, info);
 }

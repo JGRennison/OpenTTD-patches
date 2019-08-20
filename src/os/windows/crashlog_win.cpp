@@ -612,10 +612,10 @@ static void CDECL CustomAbort(int signal)
 	SetUnhandledExceptionFilter(ExceptionHandler);
 }
 
-/* static */ void CrashLog::DesyncCrashLog(const std::string *log_in, std::string *log_out)
+/* static */ void CrashLog::DesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info)
 {
 	CrashLogWindows log(nullptr);
-	log.MakeDesyncCrashLog(log_in, log_out);
+	log.MakeDesyncCrashLog(log_in, log_out, info);
 }
 
 /* The crash log GUI */
