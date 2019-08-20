@@ -384,12 +384,22 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
  * @param last   The last position in the buffer to write to.
  * @return the position of the \c '\0' character after the buffer.
  */
-char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last) const
+char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncExtraInfo &info) const
 {
 	time_t cur_time = time(nullptr);
 	buffer += seprintf(buffer, last, "*** OpenTTD Multiplayer %s Desync Report ***\n\n", _network_server ? "Server" : "Client");
 
 	buffer += seprintf(buffer, last, "Desync at: %s", asctime(gmtime(&cur_time)));
+	if (!_network_server && info.flags) {
+		auto flag_check = [&](DesyncExtraInfo::Flags flag, const char *str) {
+			return info.flags & flag ? str : "";
+		};
+		buffer += seprintf(buffer, last, "Flags: %s%s%s%s\n",
+				flag_check(DesyncExtraInfo::DEIF_RAND1, "R"),
+				flag_check(DesyncExtraInfo::DEIF_RAND2, "Z"),
+				flag_check(DesyncExtraInfo::DEIF_STATE, "S"),
+				flag_check(DesyncExtraInfo::DEIF_DBL_RAND, "D"));
+	}
 
 	YearMonthDay ymd;
 	ConvertDateToYMD(_date, &ymd);
@@ -564,7 +574,7 @@ bool CrashLog::MakeCrashLog() const
  * information like paths to the console.
  * @return true when everything is made successfully.
  */
-bool CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_out) const
+bool CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info) const
 {
 	char filename[MAX_PATH];
 	char buffer[65536 * 2];
@@ -578,7 +588,7 @@ bool CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_ou
 	strftime(name_buffer_date, lastof(name_buffer) - name_buffer_date, "%Y%m%dT%H%M%SZ", gmtime(&cur_time));
 
 	printf("Desync encountered (%s), generating desync log...\n", mode);
-	char *b = this->FillDesyncCrashLog(buffer, lastof(buffer));
+	char *b = this->FillDesyncCrashLog(buffer, lastof(buffer), info);
 
 	if (log_in && !log_in->empty()) {
 		b = strecpy(b, "\n", lastof(buffer), true);

@@ -282,13 +282,21 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 #else
 			if (_sync_seed_1 != _random.state[0] || _sync_state_checksum != _state_checksum.state) {
 #endif
+				DesyncExtraInfo info;
+				if (_sync_seed_1 != _random.state[0]) info.flags |= DesyncExtraInfo::DEIF_RAND1;
+#ifdef NETWORK_SEND_DOUBLE_SEED
+				if (_sync_seed_2 != _random.state[1]) info.flags |= DesyncExtraInfo::DEIF_RAND2;
+				info.flags |= DesyncExtraInfo::DEIF_DBL_RAND;
+#endif
+				if (_sync_state_checksum != _state_checksum.state) info.flags |= DesyncExtraInfo::DEIF_STATE;
+
 				NetworkError(STR_NETWORK_ERROR_DESYNC);
 				DEBUG(desync, 1, "sync_err: %08x; %02x, {%x, " OTTD_PRINTFHEX64 "} != {%x, " OTTD_PRINTFHEX64 "}",
 						_date, _date_fract, _sync_seed_1, _sync_state_checksum, _random.state[0], _state_checksum.state);
 				DEBUG(net, 0, "Sync error detected!");
 
 				std::string desync_log;
-				CrashLog::DesyncCrashLog(nullptr, &desync_log);
+				CrashLog::DesyncCrashLog(nullptr, &desync_log, info);
 				my_client->SendDesyncLog(desync_log);
 				my_client->ClientError(NETWORK_RECV_STATUS_DESYNC);
 				return false;
