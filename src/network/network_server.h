@@ -61,6 +61,7 @@ public:
 		STATUS_DONE_MAP,      ///< The client has downloaded the map.
 		STATUS_PRE_ACTIVE,    ///< The client is catching up the delayed frames.
 		STATUS_ACTIVE,        ///< The client is active within in the game.
+		STATUS_CLOSE_PENDING, ///< The client connection is pending closure.
 		STATUS_END,           ///< Must ALWAYS be on the end of this list!! (period).
 	};
 
@@ -93,6 +94,7 @@ public:
 
 	NetworkRecvStatus SendClientInfo(NetworkClientInfo *ci);
 	NetworkRecvStatus SendError(NetworkErrorCode error, const char *reason = nullptr);
+	NetworkRecvStatus SendDesyncLog(const std::string &log);
 	NetworkRecvStatus SendChat(NetworkAction action, ClientID client_id, bool self_send, const char *msg, int64 data);
 	NetworkRecvStatus SendJoin(ClientID client_id);
 	NetworkRecvStatus SendFrame();

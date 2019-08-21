@@ -30,10 +30,14 @@ private:
 		STATUS_MAP_WAIT,      ///< The client is waiting as someone else is downloading the map.
 		STATUS_MAP,           ///< The client is downloading the map.
 		STATUS_ACTIVE,        ///< The client is active within in the game.
+		STATUS_CLOSING,       ///< The client connection is in the process of being closed.
 		STATUS_END,           ///< Must ALWAYS be on the end of this list!! (period)
 	};
 
 	ServerStatus status; ///< Status of the connection with the server.
+
+	FILE *desync_log_file = nullptr;
+	std::string server_desync_log;
 
 protected:
 	friend void NetworkExecuteLocalCommandQueue();
@@ -60,6 +64,7 @@ protected:
 	NetworkRecvStatus Receive_SERVER_CHAT(Packet *p) override;
 	NetworkRecvStatus Receive_SERVER_QUIT(Packet *p) override;
 	NetworkRecvStatus Receive_SERVER_ERROR_QUIT(Packet *p) override;
+	NetworkRecvStatus Receive_SERVER_DESYNC_LOG(Packet *p) override;
 	NetworkRecvStatus Receive_SERVER_SHUTDOWN(Packet *p) override;
 	NetworkRecvStatus Receive_SERVER_NEWGAME(Packet *p) override;
 	NetworkRecvStatus Receive_SERVER_RCON(Packet *p) override;
