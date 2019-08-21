@@ -124,6 +124,7 @@ enum PacketGameType {
 	PACKET_CLIENT_ERROR,                 ///< A client reports an error to the server.
 	PACKET_SERVER_ERROR_QUIT,            ///< A server tells that a client has hit an error and did quit.
 	PACKET_CLIENT_DESYNC_LOG,            ///< A client reports a desync log
+	PACKET_SERVER_DESYNC_LOG,            ///< A server reports a desync log
 
 	PACKET_END,                          ///< Must ALWAYS be on the end of this list!! (period)
 };
@@ -160,6 +161,7 @@ private:
 	NetworkClientInfo *info;  ///< Client info related to this socket
 
 protected:
+	bool ignore_close = false;
 	NetworkRecvStatus ReceiveInvalidPacket(PacketGameType type);
 
 	/**
@@ -445,6 +447,7 @@ protected:
 	 */
 	virtual NetworkRecvStatus Receive_CLIENT_ERROR(Packet *p);
 	virtual NetworkRecvStatus Receive_CLIENT_DESYNC_LOG(Packet *p);
+	virtual NetworkRecvStatus Receive_SERVER_DESYNC_LOG(Packet *p);
 
 	/**
 	 * Notification that a client left the game:

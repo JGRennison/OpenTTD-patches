@@ -323,7 +323,14 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::CloseConnection(NetworkRecvSta
 	NetworkClientSocket *cs;
 	FOR_ALL_CLIENT_SOCKETS(cs) {
 		if (cs->writable) {
-			if (cs->SendPackets() != SPS_CLOSED && cs->status == STATUS_MAP) {
+			if (cs->status == STATUS_CLOSE_PENDING) {
+				SendPacketsState send_state = cs->SendPackets(true);
+				if (send_state == SPS_CLOSED) {
+					cs->CloseConnection(NETWORK_RECV_STATUS_CONN_LOST);
+				} else if (send_state != SPS_PARTLY_SENT && send_state != SPS_NONE_SENT) {
+					ShutdownSocket(cs->sock, true, false, 2);
+				}
+			} else if (cs->SendPackets() != SPS_CLOSED && cs->status == STATUS_MAP) {
 				/* This client is in the middle of a map-send, call the function for that */
 				cs->SendMap();
 			}
@@ -462,6 +469,20 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendError(NetworkErrorCode err
 
 	/* The client made a mistake, so drop his connection now! */
 	return this->CloseConnection(NETWORK_RECV_STATUS_SERVER_ERROR);
+}
+
+NetworkRecvStatus ServerNetworkGameSocketHandler::SendDesyncLog(const std::string &log)
+{
+	for (size_t offset = 0; offset < log.size();) {
+		Packet *p = new Packet(PACKET_SERVER_DESYNC_LOG);
+		size_t size = min<size_t>(log.size() - offset, SHRT_MAX - 2 - p->size);
+		p->Send_uint16(size);
+		p->Send_binary(log.data() + offset, size);
+		this->SendPacket(p);
+
+		offset += size;
+	}
+	return NETWORK_RECV_STATUS_OKAY;
 }
 
 /** Send the check for the NewGRFs. */
@@ -1214,15 +1235,22 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet *p
 	NetworkAdminClientError(this->client_id, errorno);
 
 	if (errorno == NETWORK_ERROR_DESYNC) {
-		CrashLog::DesyncCrashLog(&(this->desync_log), nullptr, DesyncExtraInfo{});
+		std::string server_desync_log;
+		CrashLog::DesyncCrashLog(&(this->desync_log), &server_desync_log, DesyncExtraInfo{});
+		this->SendDesyncLog(server_desync_log);
 
 		// decrease the sync frequency for this point onwards
 		_settings_client.network.sync_freq = min<uint16>(_settings_client.network.sync_freq, 16);
 
 		// have the server and all clients run some sanity checks
 		NetworkSendCommand(0, 0, 0, CMD_DESYNC_CHECK, nullptr, nullptr, _local_company, 0);
-	}
 
+		SendPacketsState send_state = this->SendPackets(true);
+		if (send_state != SPS_CLOSED) {
+			this->status = STATUS_CLOSE_PENDING;
+			return NETWORK_RECV_STATUS_OKAY;
+		}
+	}
 	return this->CloseConnection(NETWORK_RECV_STATUS_CONN_LOST);
 }
 
@@ -1956,6 +1984,7 @@ void NetworkServer_Tick(bool send_frame)
 				break;
 
 			case NetworkClientSocket::STATUS_MAP_WAIT:
+			case NetworkClientSocket::STATUS_CLOSE_PENDING:
 				/* This is an internal state where we do not wait
 				 * on the client to move to a different state. */
 				break;
@@ -1965,7 +1994,7 @@ void NetworkServer_Tick(bool send_frame)
 				NOT_REACHED();
 		}
 
-		if (cs->status >= NetworkClientSocket::STATUS_PRE_ACTIVE) {
+		if (cs->status >= NetworkClientSocket::STATUS_PRE_ACTIVE && cs->status != NetworkClientSocket::STATUS_CLOSE_PENDING) {
 			/* Check if we can send command, and if we have anything in the queue */
 			NetworkHandleCommandQueue(cs);
 
@@ -2027,7 +2056,8 @@ void NetworkServerShowStatusToConsole()
 		"loading map",
 		"map done",
 		"ready",
-		"active"
+		"active",
+		"close pending"
 	};
 	assert_compile(lengthof(stat_str) == NetworkClientSocket::STATUS_END);
 

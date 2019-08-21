@@ -509,7 +509,7 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
  * @param filename_last The last position in the filename buffer.
  * @return true when the crash log was successfully written.
  */
-bool CrashLog::WriteCrashLog(const char *buffer, char *filename, const char *filename_last, const char *name) const
+bool CrashLog::WriteCrashLog(const char *buffer, char *filename, const char *filename_last, const char *name, FILE **crashlog_file) const
 {
 	seprintf(filename, filename_last, "%s%s.log", _personal_dir, name);
 
@@ -519,7 +519,11 @@ bool CrashLog::WriteCrashLog(const char *buffer, char *filename, const char *fil
 	size_t len = strlen(buffer);
 	size_t written = fwrite(buffer, 1, len, file);
 
-	FioFCloseFile(file);
+	if (crashlog_file) {
+		*crashlog_file = file;
+	} else {
+		FioFCloseFile(file);
+	}
 	return len == written;
 }
 
@@ -653,14 +657,14 @@ bool CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_ou
 	printf("Desync encountered (%s), generating desync log...\n", mode);
 	char *b = this->FillDesyncCrashLog(buffer, lastof(buffer), info);
 
+	if (log_out) log_out->assign(buffer);
+
 	if (log_in && !log_in->empty()) {
 		b = strecpy(b, "\n", lastof(buffer), true);
 		b = strecpy(b, log_in->c_str(), lastof(buffer), true);
 	}
 
-	if (log_out) log_out->assign(buffer);
-
-	bool bret = this->WriteCrashLog(buffer, filename, lastof(filename), name_buffer);
+	bool bret = this->WriteCrashLog(buffer, filename, lastof(filename), name_buffer, info.log_file);
 	if (bret) {
 		printf("Desync log written to %s. Please add this file to any bug reports.\n\n", filename);
 	} else {

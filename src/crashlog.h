@@ -25,6 +25,7 @@ struct DesyncExtraInfo {
 	};
 
 	Flags flags = DEIF_NONE;
+	FILE **log_file = nullptr; ///< save unclosed log file handle here
 };
 DECLARE_ENUM_AS_BIT_SET(DesyncExtraInfo::Flags)
 
@@ -128,7 +129,7 @@ public:
 
 	char *FillCrashLog(char *buffer, const char *last) const;
 	char *FillDesyncCrashLog(char *buffer, const char *last, const DesyncExtraInfo &info) const;
-	bool WriteCrashLog(const char *buffer, char *filename, const char *filename_last, const char *name = "crash") const;
+	bool WriteCrashLog(const char *buffer, char *filename, const char *filename_last, const char *name = "crash", FILE **crashlog_file = nullptr) const;
 
 	/**
 	 * Write the (crash) dump to a file.
