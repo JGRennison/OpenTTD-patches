@@ -136,6 +136,7 @@ void ClientNetworkEmergencySave()
 {
 	if (!_settings_client.gui.autosave_on_network_disconnect) return;
 	if (!_networking) return;
+	if (!ClientNetworkGameSocketHandler::EmergencySavePossible()) return;
 
 	const char *filename = "netsave.sav";
 	DEBUG(net, 0, "Client: Performing emergency save (%s)", filename);
@@ -341,6 +342,14 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 		}
 	}
 
+	return true;
+}
+
+/* static */ bool ClientNetworkGameSocketHandler::EmergencySavePossible()
+{
+	if (!my_client) return false;
+	if (my_client->emergency_save_done) return false;
+	my_client->emergency_save_done = true;
 	return true;
 }
 

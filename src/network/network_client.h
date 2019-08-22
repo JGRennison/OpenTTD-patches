@@ -40,6 +40,7 @@ private:
 
 	FILE *desync_log_file = nullptr;
 	std::string server_desync_log;
+	bool emergency_save_done = false;
 
 protected:
 	friend void NetworkExecuteLocalCommandQueue();
@@ -111,6 +112,8 @@ public:
 	static void Send();
 	static bool Receive();
 	static bool GameLoop();
+
+	static bool EmergencySavePossible();
 };
 
 /** Helper to make the code look somewhat nicer. */
