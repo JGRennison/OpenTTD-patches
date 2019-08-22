@@ -553,7 +553,7 @@ char *DumpCommandLog(char *buffer, const char *last)
 		buffer += seprintf(buffer, last, "%c%c%c%c%c%c%c%c | ",
 				fc(CLEF_SCRIPT, 'a'), fc(CLEF_BINARY, 'b'), fc(CLEF_MY_CMD, 'm'), fc(CLEF_ONLY_SENDING, 's'),
 				fc(CLEF_ESTIMATE_ONLY, 'e'), fc(CLEF_TEXT, 't'), fc(CLEF_GENERATING_WORLD, 'g'), fc(CLEF_CMD_FAILED, 'f'));
-		buffer += seprintf(buffer, last, " %7d x %7d, p1: 0x%08X, p2: 0x%08X, cc: %2u, lc: %2u, cmd: 0x%08X (%s)\n",
+		buffer += seprintf(buffer, last, " %7d x %7d, p1: 0x%08X, p2: 0x%08X, cc: %3u, lc: %3u, cmd: 0x%08X (%s)\n",
 				TileX(entry.tile), TileY(entry.tile), entry.p1, entry.p2, (uint) entry.current_company, (uint) entry.local_company, entry.cmd, GetCommandName(entry.cmd));
 	}
 	return buffer;
