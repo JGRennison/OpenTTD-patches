@@ -406,6 +406,7 @@ static void ShutdownGame()
  */
 static void LoadIntroGame(bool load_newgrfs = true)
 {
+	UnshowCriticalError();
 	Window *v;
 	FOR_ALL_WINDOWS_FROM_FRONT(v) delete v;
 
