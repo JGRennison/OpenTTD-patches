@@ -2,6 +2,11 @@
 
 * * *
 
+### v0.32-rc2 (2019-08-24)
+* Fix crash when using query tool on non-road bridges.
+* Fix road vehicles not being limited by the road type max speed.
+* Bump trunk base from commit a52bbb72a8a2cbcbefb0ff91b559f33c34094239 to commit dabccf70b4c02f68ebf51aca807376ca4f2a0e15.
+
 ### v0.32-rc1 (2019-07-13)
 * Include NotRoadTypes (NRT).
 * Bump trunk base from commit 21edf67f89c60351d5a0d84625455aa296b6b950 to commit a52bbb72a8a2cbcbefb0ff91b559f33c34094239.
