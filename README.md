@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.31.3
+## JGR's Patchpack version 0.31.4
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -246,6 +246,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add news/advice setting to warn if no depot order in vehicle schedule. (added in v0.31.1).  
   * Enable vehicle list buttons in station window when the list would be non-empty. (added in v0.31.1).  
   * Enable vehicle group management actions on other companies' stations. (added in v0.31.1).  
+  * Add a password mechanism to change network game settings from a network client. (added in v0.31.4).  
+  * Change network protocol to send server/join and rcon passwords in hashed form instead of in clear text. (added in v0.31.4).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
   * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).
