@@ -31,17 +31,22 @@
 #include "townname_func.h"
 #include "core/geometry_func.hpp"
 #include "genworld.h"
+#include "stringfilter_type.h"
 #include "widgets/dropdown_func.h"
 #include "newgrf_config.h"
 #include "newgrf_house.h"
 #include "date_func.h"
 #include "core/random_func.hpp"
+#include "town_kdtree.h"
+
 #include "widgets/town_widget.h"
 #include "table/strings.h"
 #include "newgrf_debug.h"
 #include <algorithm>
 
 #include "safeguards.h"
+
+TownKdtree _town_local_authority_kdtree(&Kdtree_TownXYFunc);
 
 typedef GUIList<const Town*> GUITownList;
 
@@ -51,6 +56,7 @@ static const NWidgetPart _nested_town_authority_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
 		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_TA_CAPTION), SetDataTip(STR_LOCAL_AUTHORITY_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_TA_ZONE_BUTTON), SetMinimalSize(50, 0), SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 2), SetDataTip(STR_LOCAL_AUTHORITY_ZONE, STR_LOCAL_AUTHORITY_ZONE_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
 		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
@@ -118,6 +124,7 @@ public:
 			this->sel_index = -1;
 		}
 
+		this->SetWidgetLoweredState(WID_TA_ZONE_BUTTON, this->town->show_zone);
 		this->SetWidgetDisabledState(WID_TA_EXECUTE, this->sel_index == -1);
 
 		this->DrawWidgets();
@@ -263,6 +270,18 @@ public:
 	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
+			case WID_TA_ZONE_BUTTON: {
+				bool new_show_state = !this->town->show_zone;
+				TownID index = this->town->index;
+
+				new_show_state ? _town_local_authority_kdtree.Insert(index) : _town_local_authority_kdtree.Remove(index);
+
+				this->town->show_zone = new_show_state;
+				this->SetWidgetLoweredState(widget, new_show_state);
+				MarkWholeScreenDirty();
+				break;
+			}
+
 			case WID_TA_COMMAND_LIST: {
 				int y = this->GetRowFromWidget(pt.y, WID_TA_COMMAND_LIST, 1, FONT_HEIGHT_NORMAL);
 				if (!IsInsideMM(y, 0, 5)) return;
@@ -651,7 +670,7 @@ static const NWidgetPart _nested_town_directory_widgets[] = {
 			NWidget(NWID_HORIZONTAL),
 				NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_TD_SORT_ORDER), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
 				NWidget(WWT_DROPDOWN, COLOUR_BROWN, WID_TD_SORT_CRITERIA), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
-				NWidget(WWT_PANEL, COLOUR_BROWN), SetResize(1, 0), EndContainer(),
+				NWidget(WWT_EDITBOX, COLOUR_BROWN, WID_TD_FILTER), SetFill(35, 12), SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 			EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_BROWN, WID_TD_LIST), SetMinimalSize(196, 0), SetDataTip(0x0, STR_TOWN_DIRECTORY_LIST_TOOLTIP),
 							SetFill(1, 0), SetResize(0, 10), SetScrollbar(WID_TD_SCROLLBAR), EndContainer(),
@@ -676,6 +695,9 @@ private:
 	/* Constants for sorting towns */
 	static const StringID sorter_names[];
 	static GUITownList::SortFunction * const sorter_funcs[];
+
+	StringFilter string_filter;             ///< Filter for towns
+	QueryString townname_editbox;           ///< Filter editbox
 
 	GUITownList towns;
 
@@ -739,7 +761,7 @@ private:
 	}
 
 public:
-	TownDirectoryWindow(WindowDesc *desc) : Window(desc)
+	TownDirectoryWindow(WindowDesc *desc) : Window(desc), townname_editbox(MAX_LENGTH_TOWN_NAME_CHARS * MAX_CHAR_LENGTH, MAX_LENGTH_TOWN_NAME_CHARS)
 	{
 		this->CreateNestedTree();
 
@@ -751,6 +773,9 @@ public:
 		this->BuildSortTownList();
 
 		this->FinishInitNested(0);
+
+		this->querystrings[WID_TD_FILTER] = &this->townname_editbox;
+		this->townname_editbox.cancel_button = QueryString::ACTION_CLEAR;
 	}
 
 	void SetStringParameters(int widget) const override
@@ -941,6 +966,14 @@ public:
 		this->vscroll->SetCapacityFromWidget(this, WID_TD_LIST);
 	}
 
+	virtual void OnEditboxChanged(int wid)
+	{
+		if (wid == WID_TD_FILTER) {
+			this->string_filter.SetFilterTerm(this->townname_editbox.text.buf);
+			this->InvalidateData(TDIWD_FILTER_CHANGES);
+		}
+	}
+
 	/**
 	 * Some data on this window has become invalid.
 	 * @param data Information about the changed data.
@@ -948,11 +981,41 @@ public:
 	 */
 	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
-		if (data == 0) {
-			/* This needs to be done in command-scope to enforce rebuilding before resorting invalid data */
-			this->towns.ForceRebuild();
-		} else {
-			this->towns.ForceResort();
+		char buf[MAX_LENGTH_TOWN_NAME_CHARS * MAX_CHAR_LENGTH];
+
+		switch (data) {
+			case TDIWD_FORCE_REBUILD:
+				/* This needs to be done in command-scope to enforce rebuilding before resorting invalid data */
+				this->towns.ForceRebuild();
+				break;
+
+			case TDIWD_FILTER_CHANGES:
+				if (this->string_filter.IsEmpty()) {
+					this->towns.ForceRebuild();
+				} else {
+					this->towns.clear();
+
+					const Town *t;
+					FOR_ALL_TOWNS(t) {
+						this->string_filter.ResetState();
+
+						SetDParam(0, t->index);
+						GetString(buf, STR_TOWN_NAME, lastof(buf));
+
+						this->string_filter.AddLine(buf);
+						if (this->string_filter.GetState()) this->towns.push_back(t);
+					}
+
+					this->towns.SetListing(this->last_sorting);
+					this->towns.ForceResort();
+					this->towns.Sort();
+					this->towns.shrink_to_fit();
+					this->towns.RebuildDone();
+					this->vscroll->SetCount(this->towns.size()); // Update scrollbar as well.
+				}
+				break;
+			default:
+				this->towns.ForceResort();
 		}
 	}
 };
@@ -1958,4 +2021,9 @@ static void PlaceProc_House(TileIndex tile)
 		if (!_settings_client.gui.persistent_buildingtools) DeleteWindowById(WC_BUILD_HOUSE, 0);
 		ShowSelectTownWindow(towns, cmd);
 	}
+}
+
+void InitializeTownGui()
+{
+	_town_local_authority_kdtree.Clear();
 }

@@ -108,6 +108,8 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	bool larger_town;                ///< if this is a larger town and should grow more quickly
 	TownLayout layout;               ///< town specific road layout
 
+	bool show_zone;                  ///< NOSAVE: mark town to show the local authority zone in the viewports
+
 	std::list<PersistentStorage *> psa_list;
 
 	/**
@@ -198,6 +200,12 @@ enum TownRatingCheckType {
 	ROAD_REMOVE         = 0,      ///< Removal of a road owned by the town.
 	TUNNELBRIDGE_REMOVE = 1,      ///< Removal of a tunnel or bridge owned by the towb.
 	TOWN_RATING_CHECK_TYPE_COUNT, ///< Number of town checking action types.
+};
+
+/** Special values for town list window for the data parameter of #InvalidateWindowData. */
+enum TownDirectoryInvalidateWindowData {
+	TDIWD_FORCE_REBUILD,
+	TDIWD_FILTER_CHANGES,        ///< The filename filter has changed (via the editbox)
 };
 
 /**

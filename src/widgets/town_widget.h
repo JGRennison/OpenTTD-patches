@@ -16,6 +16,7 @@
 enum TownDirectoryWidgets {
 	WID_TD_SORT_ORDER,       ///< Direction of sort dropdown.
 	WID_TD_SORT_CRITERIA,    ///< Criteria of sort dropdown.
+	WID_TD_FILTER,           ///< Filter of name.
 	WID_TD_LIST,             ///< List of towns.
 	WID_TD_SCROLLBAR,        ///< Scrollbar for the town list.
 	WID_TD_WORLD_POPULATION, ///< The world's population.
@@ -24,6 +25,7 @@ enum TownDirectoryWidgets {
 /** Widgets of the #TownAuthorityWindow class. */
 enum TownAuthorityWidgets {
 	WID_TA_CAPTION,      ///< Caption of window.
+	WID_TA_ZONE_BUTTON,  ///< Turn on/off showing local authority zone.
 	WID_TA_RATING_INFO,  ///< Overview with ratings for each company.
 	WID_TA_COMMAND_LIST, ///< List of commands for the player.
 	WID_TA_SCROLLBAR,    ///< Scrollbar of the list of commands.

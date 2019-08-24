@@ -232,7 +232,7 @@ void Town::UpdateLabel()
 
 void Town::FillCachedName()
 {
-	char buf[256];
+	char buf[MAX_LENGTH_TOWN_NAME_CHARS * MAX_CHAR_LENGTH];
 	char *end = GetTownName(buf, this, lastof(buf));
 	char *alloced = MallocT<char>(end - buf + 1);
 	memcpy(alloced, buf, end - buf + 1);
@@ -1942,6 +1942,7 @@ static void DoCreateTown(Town *t, TileIndex tile, uint32 townnameparts, TownSize
 	 * similar towns they're unlikely to grow all in one tick */
 	t->grow_counter = t->index % TOWN_GROWTH_TICKS;
 	t->growth_rate = TownTicksToGameTicks(250);
+	t->show_zone = false;
 
 	_town_kdtree.Insert(t->index);
 
