@@ -223,6 +223,7 @@ extern const uint8 _ffb_64[64];
 #define FIND_FIRST_BIT(x) _ffb_64[(x)]
 
 uint8 FindFirstBit(uint32 x);
+uint8 FindFirstBit64(uint64 x);
 
 #endif
 
