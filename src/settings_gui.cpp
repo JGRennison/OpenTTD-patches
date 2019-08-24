@@ -228,7 +228,7 @@ struct GameOptionsWindow : Window {
 				/* You can only change the drive side if you are in the menu or ingame with
 				 * no vehicles present. In a networking game only the server can change it */
 				extern bool RoadVehiclesAreBuilt();
-				if ((_game_mode != GM_MENU && RoadVehiclesAreBuilt()) || (_networking && !_network_server)) {
+				if ((_game_mode != GM_MENU && RoadVehiclesAreBuilt()) || (_networking && !(_network_server || _network_settings_access))) {
 					disabled = ~(1 << this->opt->vehicle.road_side); // disable the other value
 				}
 

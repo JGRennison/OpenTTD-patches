@@ -322,9 +322,6 @@ public:
 		this->flags |= WF_DISABLE_VP_SCROLL;
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_TV_VIEWPORT);
 		nvp->InitializeViewport(this, this->town->xy, ZOOM_LVL_NEWS);
-
-		/* disable renaming town in network games if you are not the server */
-		this->SetWidgetDisabledState(WID_TV_CHANGE_NAME, _networking && !_network_server);
 	}
 
 	~TownViewWindow()
@@ -341,6 +338,7 @@ public:
 	{
 		extern const Town *_viewport_highlight_town;
 		this->SetWidgetLoweredState(WID_TV_CATCHMENT, _viewport_highlight_town == this->town);
+		this->SetWidgetDisabledState(WID_TV_CHANGE_NAME, _networking && !(_network_server || _network_settings_access));
 
 		this->DrawWidgets();
 	}

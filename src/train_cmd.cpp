@@ -43,6 +43,7 @@
 #include "engine_func.h"
 #include "bridge_signal_map.h"
 #include "scope_info.h"
+#include "core/checksum_func.hpp"
 
 #include "table/strings.h"
 #include "table/train_cmd.h"
@@ -1549,6 +1550,7 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 				TraceRestrictRemoveVehicleFromAllSlots(src->index);
 				ClrBit(src->flags, VRF_HAVE_SLOT);
 			}
+			OrderBackup::ClearVehicle(src);
 		}
 
 		/* We weren't a front engine but are becoming one. So
@@ -2175,6 +2177,53 @@ void ReverseTrainDirection(Train *v)
 	/* Clear path reservation in front if train is not stuck. */
 	if (!HasBit(v->flags, VRF_TRAIN_STUCK)) FreeTrainTrackReservation(v);
 
+	std::vector<Train *> re_reserve_trains;
+	{
+		/* Temporarily clear and restore reservations to bidi tunnel/bridge entrances when reversing train inside,
+		 * to avoid outgoing and incoming reservations becoming merged */
+		auto find_train_reservations = [&re_reserve_trains, &v](TileIndex tile) {
+			TrackBits reserved = GetAcrossTunnelBridgeReservationTrackBits(tile);
+			Track track;
+			while ((track = RemoveFirstTrack(&reserved)) != INVALID_TRACK) {
+				Train *res_train = GetTrainForReservation(tile, track);
+				if (res_train != nullptr && res_train != v) {
+					FreeTrainTrackReservation(res_train);
+					re_reserve_trains.push_back(res_train);
+				}
+			}
+		};
+		if (IsTunnelBridgeWithSignalSimulation(v->tile) && IsTunnelBridgeSignalSimulationBidirectional(v->tile)) {
+			find_train_reservations(v->tile);
+			find_train_reservations(GetOtherTunnelBridgeEnd(v->tile));
+		}
+		Train *last = v->Last();
+		if (IsTunnelBridgeWithSignalSimulation(last->tile) && IsTunnelBridgeSignalSimulationBidirectional(last->tile)) {
+			find_train_reservations(last->tile);
+			find_train_reservations(GetOtherTunnelBridgeEnd(last->tile));
+		}
+	}
+
+	if ((v->track & TRACK_BIT_WORMHOLE) && IsTunnelBridgeWithSignalSimulation(v->tile)) {
+		/* Clear exit tile reservation if train was on approach to exit and had reserved it */
+		Axis axis = DiagDirToAxis(GetTunnelBridgeDirection(v->tile));
+		DiagDirection axial_dir = DirToDiagDirAlongAxis(v->direction, axis);
+		TileIndex next_tile = TileVirtXY(v->x_pos, v->y_pos) + TileOffsByDiagDir(axial_dir);
+		if (next_tile == v->tile || next_tile == GetOtherTunnelBridgeEnd(v->tile)) {
+			Trackdir exit_td = TrackEnterdirToTrackdir(FindFirstTrack(GetAcrossTunnelBridgeTrackBits(next_tile)), ReverseDiagDir(GetTunnelBridgeDirection(next_tile)));
+			CFollowTrackRail ft(GetTileOwner(next_tile), GetRailTypeInfo(v->railtype)->compatible_railtypes);
+			if (ft.Follow(next_tile, exit_td)) {
+				TrackdirBits reserved = ft.m_new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.m_new_tile));
+				if (reserved == TRACKDIR_BIT_NONE) {
+					UnreserveAcrossRailTunnelBridge(next_tile);
+					MarkTileDirtyByTile(next_tile, ZOOM_LVL_DRAW_MAP);
+				}
+			} else {
+				UnreserveAcrossRailTunnelBridge(next_tile);
+				MarkTileDirtyByTile(next_tile, ZOOM_LVL_DRAW_MAP);
+			}
+		}
+	}
+
 	/* Check if we were approaching a rail/road-crossing */
 	TileIndex crossing = TrainApproachingCrossingTile(v);
 
@@ -2213,6 +2262,10 @@ void ReverseTrainDirection(Train *v)
 	/* maybe we are approaching crossing now, after reversal */
 	crossing = TrainApproachingCrossingTile(v);
 	if (crossing != INVALID_TILE) MaybeBarCrossingWithSound(crossing);
+
+	for (uint i = 0; i < re_reserve_trains.size(); ++i) {
+		TryPathReserve(re_reserve_trains[i], true);
+	}
 
 	/* If we are inside a depot after reversing, don't bother with path reserving. */
 	if (v->track == TRACK_BIT_DEPOT) {
@@ -2724,6 +2777,9 @@ void FreeTrainTrackReservation(const Train *v, TileIndex origin, Trackdir orig_t
 	/* Don't free reservation if it's not ours. */
 	if (TracksOverlap(GetReservedTrackbits(tile) | TrackToTrackBits(TrackdirToTrack(td)))) return;
 
+	/* Do not attempt to unreserve out of a signalled tunnel/bridge entrance, as this would unreserve the reservations of another train coming in */
+	if (IsTunnelBridgeWithSignalSimulation(tile) && TrackdirExitsTunnelBridge(tile, td) && IsTunnelBridgeSignalSimulationEntranceOnly(tile)) return;
+
 	CFollowTrackRail ft(v, GetRailTypeInfo(v->railtype)->compatible_railtypes);
 	while (ft.Follow(tile, td)) {
 		tile = ft.m_new_tile;
@@ -3127,6 +3183,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 		TileIndex new_tile = res_dest.tile;
 
 		Track next_track = DoTrainPathfind(v, new_tile, dest_enterdir, tracks, path_found, do_track_reservation, &res_dest);
+		UpdateStateChecksum((((uint64) v->index) << 32) | (path_found << 16) | next_track);
 		if (new_tile == tile) best_track = next_track;
 		v->HandlePathfindingResult(path_found);
 	}
@@ -4217,7 +4274,10 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 				}
 				if (v->Next() == nullptr) {
 					if (v->tunnel_bridge_signal_num > 0 && distance == (TILE_SIZE * _settings_game.construction.simulated_wormhole_signals) - TILE_SIZE) HandleSignalBehindTrain(v, v->tunnel_bridge_signal_num - 2);
-					if (old_tile == v->tile) {
+					DiagDirection tunnel_bridge_dir = GetTunnelBridgeDirection(v->tile);
+					Axis axis = DiagDirToAxis(tunnel_bridge_dir);
+					DiagDirection axial_dir = DirToDiagDirAlongAxis(v->direction, axis);
+					if (old_tile == ((axial_dir == tunnel_bridge_dir) ? v->tile : GetOtherTunnelBridgeEnd(v->tile))) {
 						/* We left ramp into wormhole. */
 						v->x_pos = gp.x;
 						v->y_pos = gp.y;
@@ -4971,6 +5031,7 @@ Money Train::GetRunningCost() const
  */
 bool Train::Tick()
 {
+	UpdateStateChecksum((((uint64) this->x_pos) << 32) | (this->y_pos << 16) | this->track );
 	if (this->IsFrontEngine()) {
 		if (!(this->vehstatus & VS_STOPPED) || this->cur_speed > 0) this->running_ticks++;
 

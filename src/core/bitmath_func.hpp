@@ -198,6 +198,13 @@ inline uint8 FindFirstBit(uint32 x)
 	return __builtin_ctz(x);
 }
 
+inline uint8 FindFirstBit64(uint64 x)
+{
+	if (x == 0) return 0;
+
+	return __builtin_ctzll(x);
+}
+
 #else
 
 /** Lookup table to check which bit is set in a 6 bit variable */
@@ -216,6 +223,7 @@ extern const uint8 _ffb_64[64];
 #define FIND_FIRST_BIT(x) _ffb_64[(x)]
 
 uint8 FindFirstBit(uint32 x);
+uint8 FindFirstBit64(uint64 x);
 
 #endif
 
@@ -395,14 +403,14 @@ static inline T ROR(const T x, const uint8 n)
 	 * (since it will use hardware swapping if available).
 	 * Even though they should return uint16 and uint32, we get
 	 * warnings if we don't cast those (why?) */
-	#define BSWAP64(x) ((uint64)CFSwapInt64(x))
-	#define BSWAP32(x) ((uint32)CFSwapInt32(x))
-	#define BSWAP16(x) ((uint16)CFSwapInt16(x))
+	#define BSWAP64(x) ((uint64)CFSwapInt64((uint64)x))
+	#define BSWAP32(x) ((uint32)CFSwapInt32((uint32)x))
+	#define BSWAP16(x) ((uint16)CFSwapInt16((uint16)x))
 #elif defined(_MSC_VER)
 	/* MSVC has intrinsics for swapping, resulting in faster code */
-	#define BSWAP64(x) (_byteswap_uint64(x))
-	#define BSWAP32(x) (_byteswap_ulong(x))
-	#define BSWAP16(x) (_byteswap_ushort(x))
+	#define BSWAP64(x) ((uint64)_byteswap_uint64((uint64)x))
+	#define BSWAP32(x) ((uint32)_byteswap_ulong((uint32)x))
+	#define BSWAP16(x) ((uint16)_byteswap_ushort((uint16)x))
 #else
 	/**
 	 * Perform a 64 bits endianness bitswap on x.
@@ -430,7 +438,7 @@ static inline T ROR(const T x, const uint8 n)
 	{
 #if !defined(__ICC) && (defined(__GNUC__) || defined(__clang__))
 		/* GCC >= 4.3 provides a builtin, resulting in faster code */
-		return (uint32)__builtin_bswap32((int32)x);
+		return (uint32)__builtin_bswap32((uint32)x);
 #else
 		return ((x >> 24) & 0xFF) | ((x >> 8) & 0xFF00) | ((x << 8) & 0xFF0000) | ((x << 24) & 0xFF000000);
 #endif /* __GNUC__ || __clang__ */
@@ -443,7 +451,12 @@ static inline T ROR(const T x, const uint8 n)
 	 */
 	static inline uint16 BSWAP16(uint16 x)
 	{
+#if !defined(__ICC) && (defined(__GNUC__) || defined(__clang__))
+		/* GCC >= 4.3 provides a builtin, resulting in faster code */
+		return (uint16)__builtin_bswap16((uint16)x);
+#else
 		return (x >> 8) | (x << 8);
+#endif /* __GNUC__ || __clang__ */
 	}
 #endif /* __APPLE__ */
 

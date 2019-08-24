@@ -179,6 +179,13 @@ char *CrashLog::LogOpenTTDVersion(char *buffer, const char *last) const
  */
 char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 {
+	auto pathfinder_name = [](uint8 pf) -> const char * {
+		switch (pf) {
+			case VPF_NPF: return "NPF";
+			case VPF_YAPF: return "YAPF";
+			default: return "-";
+		};
+	};
 	buffer += seprintf(buffer, last,
 			"Configuration:\n"
 			" Blitter:      %s\n"
@@ -189,7 +196,8 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 			" Network:      %s\n"
 			" Sound driver: %s\n"
 			" Sound set:    %s (%u)\n"
-			" Video driver: %s\n\n",
+			" Video driver: %s\n"
+			" Pathfinder:   %s %s %s\n\n",
 			BlitterFactory::GetCurrentBlitter() == nullptr ? "none" : BlitterFactory::GetCurrentBlitter()->GetName(),
 			BaseGraphics::GetUsedSet() == nullptr ? "none" : BaseGraphics::GetUsedSet()->name,
 			BaseGraphics::GetUsedSet() == nullptr ? UINT32_MAX : BaseGraphics::GetUsedSet()->version,
@@ -201,7 +209,8 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 			SoundDriver::GetInstance() == nullptr ? "none" : SoundDriver::GetInstance()->GetName(),
 			BaseSounds::GetUsedSet() == nullptr ? "none" : BaseSounds::GetUsedSet()->name,
 			BaseSounds::GetUsedSet() == nullptr ? UINT32_MAX : BaseSounds::GetUsedSet()->version,
-			VideoDriver::GetInstance() == nullptr ? "none" : VideoDriver::GetInstance()->GetName()
+			VideoDriver::GetInstance() == nullptr ? "none" : VideoDriver::GetInstance()->GetName(),
+			pathfinder_name(_settings_game.pf.pathfinder_for_trains), pathfinder_name(_settings_game.pf.pathfinder_for_roadvehs), pathfinder_name(_settings_game.pf.pathfinder_for_ships)
 	);
 
 	buffer += seprintf(buffer, last,
@@ -396,7 +405,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 
 	YearMonthDay ymd;
 	ConvertDateToYMD(_date, &ymd);
-	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i)\n", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter);
+	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u)\n", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, _settings_game.economy.day_length_factor);
 	if (_game_load_time != 0) {
 		buffer += seprintf(buffer, last, "Game loaded at: %i-%02i-%02i (%i, %i), %s",
 				_game_load_cur_date_ymd.year, _game_load_cur_date_ymd.month + 1, _game_load_cur_date_ymd.day, _game_load_date_fract, _game_load_tick_skip_counter, asctime(gmtime(&_game_load_time)));
@@ -440,16 +449,26 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
  * @param last   The last position in the buffer to write to.
  * @return the position of the \c '\0' character after the buffer.
  */
-char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last) const
+char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncExtraInfo &info) const
 {
 	time_t cur_time = time(nullptr);
 	buffer += seprintf(buffer, last, "*** OpenTTD Multiplayer %s Desync Report ***\n\n", _network_server ? "Server" : "Client");
 
 	buffer += seprintf(buffer, last, "Desync at: %s", asctime(gmtime(&cur_time)));
+	if (!_network_server && info.flags) {
+		auto flag_check = [&](DesyncExtraInfo::Flags flag, const char *str) {
+			return info.flags & flag ? str : "";
+		};
+		buffer += seprintf(buffer, last, "Flags: %s%s%s%s\n",
+				flag_check(DesyncExtraInfo::DEIF_RAND1, "R"),
+				flag_check(DesyncExtraInfo::DEIF_RAND2, "Z"),
+				flag_check(DesyncExtraInfo::DEIF_STATE, "S"),
+				flag_check(DesyncExtraInfo::DEIF_DBL_RAND, "D"));
+	}
 
 	YearMonthDay ymd;
 	ConvertDateToYMD(_date, &ymd);
-	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i)\n", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter);
+	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u)\n", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, _settings_game.economy.day_length_factor);
 	if (_game_load_time != 0) {
 		buffer += seprintf(buffer, last, "Game loaded at: %i-%02i-%02i (%i, %i), %s",
 				_game_load_cur_date_ymd.year, _game_load_cur_date_ymd.month + 1, _game_load_cur_date_ymd.day, _game_load_date_fract, _game_load_tick_skip_counter, asctime(gmtime(&_game_load_time)));
@@ -490,7 +509,7 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last) const
  * @param filename_last The last position in the filename buffer.
  * @return true when the crash log was successfully written.
  */
-bool CrashLog::WriteCrashLog(const char *buffer, char *filename, const char *filename_last, const char *name) const
+bool CrashLog::WriteCrashLog(const char *buffer, char *filename, const char *filename_last, const char *name, FILE **crashlog_file) const
 {
 	seprintf(filename, filename_last, "%s%s.log", _personal_dir, name);
 
@@ -500,7 +519,11 @@ bool CrashLog::WriteCrashLog(const char *buffer, char *filename, const char *fil
 	size_t len = strlen(buffer);
 	size_t written = fwrite(buffer, 1, len, file);
 
-	FioFCloseFile(file);
+	if (crashlog_file) {
+		*crashlog_file = file;
+	} else {
+		FioFCloseFile(file);
+	}
 	return len == written;
 }
 
@@ -618,7 +641,7 @@ bool CrashLog::MakeCrashLog() const
  * information like paths to the console.
  * @return true when everything is made successfully.
  */
-bool CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_out) const
+bool CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info) const
 {
 	char filename[MAX_PATH];
 	char buffer[65536 * 2];
@@ -632,16 +655,16 @@ bool CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_ou
 	strftime(name_buffer_date, lastof(name_buffer) - name_buffer_date, "%Y%m%dT%H%M%SZ", gmtime(&cur_time));
 
 	printf("Desync encountered (%s), generating desync log...\n", mode);
-	char *b = this->FillDesyncCrashLog(buffer, lastof(buffer));
+	char *b = this->FillDesyncCrashLog(buffer, lastof(buffer), info);
+
+	if (log_out) log_out->assign(buffer);
 
 	if (log_in && !log_in->empty()) {
 		b = strecpy(b, "\n", lastof(buffer), true);
 		b = strecpy(b, log_in->c_str(), lastof(buffer), true);
 	}
 
-	if (log_out) log_out->assign(buffer);
-
-	bool bret = this->WriteCrashLog(buffer, filename, lastof(filename), name_buffer);
+	bool bret = this->WriteCrashLog(buffer, filename, lastof(filename), name_buffer, info.log_file);
 	if (bret) {
 		printf("Desync log written to %s. Please add this file to any bug reports.\n\n", filename);
 	} else {

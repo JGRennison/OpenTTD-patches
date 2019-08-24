@@ -54,6 +54,7 @@ void NetworkClientsToSpectators(CompanyID cid);
 void NetworkClientConnectGame(NetworkAddress address, CompanyID join_as, const char *join_server_password = nullptr, const char *join_company_password = nullptr);
 void NetworkClientRequestMove(CompanyID company, const char *pass = "");
 void NetworkClientSendRcon(const char *password, const char *command);
+void NetworkClientSendSettingsPassword(const char *password);
 void NetworkClientSendChat(NetworkAction action, DestType type, int dest, const char *msg, NetworkTextMessageData data = NetworkTextMessageData());
 bool NetworkClientPreferTeamChat(const NetworkClientInfo *cio);
 bool NetworkCompanyIsPassworded(CompanyID company_id);

@@ -12,7 +12,22 @@
 #ifndef CRASHLOG_H
 #define CRASHLOG_H
 
+#include "core/enum_type.hpp"
 #include <string>
+
+struct DesyncExtraInfo {
+	enum Flags {
+		DEIF_NONE       = 0,      ///< no flags
+		DEIF_RAND1      = 1 << 0, ///< random 1 mismatch
+		DEIF_RAND2      = 1 << 1, ///< random 2 mismatch
+		DEIF_STATE      = 1 << 2, ///< state mismatch
+		DEIF_DBL_RAND   = 1 << 3, ///< double-seed sent
+	};
+
+	Flags flags = DEIF_NONE;
+	FILE **log_file = nullptr; ///< save unclosed log file handle here
+};
+DECLARE_ENUM_AS_BIT_SET(DesyncExtraInfo::Flags)
 
 /**
  * Helper class for creating crash logs.
@@ -113,8 +128,8 @@ public:
 	virtual ~CrashLog() {}
 
 	char *FillCrashLog(char *buffer, const char *last) const;
-	char *FillDesyncCrashLog(char *buffer, const char *last) const;
-	bool WriteCrashLog(const char *buffer, char *filename, const char *filename_last, const char *name = "crash") const;
+	char *FillDesyncCrashLog(char *buffer, const char *last, const DesyncExtraInfo &info) const;
+	bool WriteCrashLog(const char *buffer, char *filename, const char *filename_last, const char *name = "crash", FILE **crashlog_file = nullptr) const;
 
 	/**
 	 * Write the (crash) dump to a file.
@@ -130,7 +145,7 @@ public:
 	bool WriteScreenshot(char *filename, const char *filename_last, const char *name = "crash") const;
 
 	bool MakeCrashLog() const;
-	bool MakeDesyncCrashLog(const std::string *log_in, std::string *log_out) const;
+	bool MakeDesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info) const;
 	bool MakeCrashSavegameAndScreenshot() const;
 
 	/**
@@ -140,7 +155,7 @@ public:
 	 */
 	static void InitialiseCrashLog();
 
-	static void DesyncCrashLog(const std::string *log_in, std::string *log_out);
+	static void DesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info);
 
 	static void SetErrorMessage(const char *message);
 	static void AfterCrashLogCleanup();

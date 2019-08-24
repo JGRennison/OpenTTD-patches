@@ -1082,9 +1082,6 @@ struct BuildVehicleWindow : Window {
 			this->GetWidget<NWidgetStacked>(WID_BV_BUILD_SEL)->SetDisplayedPlane(SZSP_NONE);
 		}
 
-		/* disable renaming engines in network games if you are not the server */
-		this->SetWidgetDisabledState(WID_BV_RENAME, _networking && !_network_server);
-
 		NWidgetCore *widget = this->GetWidget<NWidgetCore>(WID_BV_LIST);
 		widget->tool_tip = STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP + type;
 
@@ -1588,6 +1585,9 @@ struct BuildVehicleWindow : Window {
 		this->vscroll->SetCount((uint)this->eng_list.size());
 
 		this->SetWidgetsDisabledState(this->sel_engine == INVALID_ENGINE, WID_BV_SHOW_HIDE, WID_BV_BUILD, WID_BV_RENAME, WIDGET_LIST_END);
+
+		/* disable renaming engines in network games if you are not the server */
+		this->SetWidgetDisabledState(WID_BV_RENAME, _networking && !(_network_server || _network_settings_access));
 
 		this->DrawWidgets();
 

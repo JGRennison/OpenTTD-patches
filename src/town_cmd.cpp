@@ -573,7 +573,7 @@ uint32 GetWorldPopulation()
  * Remove stations from nearby station list if a town is no longer in the catchment area of each.
  * @param t Town to work on
  */
-static void RemoveNearbyStations(Town *t)
+void RemoveNearbyStations(Town *t)
 {
 	for (StationList::iterator it = t->stations_near.begin(); it != t->stations_near.end(); /* incremented inside loop */) {
 		const Station *st = *it;
@@ -1010,11 +1010,11 @@ void UpdateTownCargoes(Town *t)
 	t->cargo_produced = 0;
 
 	const TileArea &area = t->cargo_accepted.GetArea();
-	if (area.tile == INVALID_TILE) return;
-
-	/* Update acceptance for each grid square. */
-	TILE_AREA_LOOP_STEP(tile, area, AcceptanceMatrix::GRID) {
-		UpdateTownCargoesSingleGridArea(t, tile, false);
+	if (area.tile != INVALID_TILE) {
+		/* Update acceptance for each grid square. */
+		TILE_AREA_LOOP_STEP(tile, area, AcceptanceMatrix::GRID) {
+			UpdateTownCargoesSingleGridArea(t, tile, false);
+		}
 	}
 
 	/* Update the total acceptance. */

@@ -6,6 +6,15 @@
 * Include NotRoadTypes (NRT).
 * Bump trunk base from commit 21edf67f89c60351d5a0d84625455aa296b6b950 to commit a52bbb72a8a2cbcbefb0ff91b559f33c34094239.
 
+### v0.31.4 (2019-08-24)
+* Fix crash when removing signals from tunnel/bridge with trainless reservation.
+* Fix various cases where reversing a train inside a signalled tunnel/bridge handled PBS reservations incorrectly.
+* Fix error windows being closed when returning to the main menu.
+* Add a password mechanism to change network game settings from a network client.
+* Change station tile coverage highlight colour to light blue.
+* Change network protocol to send server/join and rcon passwords in hashed form instead of in clear text.
+* Fix various possible sources of non-determinism which could potentially cause multiplayer desyncs.
+
 ### v0.31.3 (2019-07-13)
 * Fix the target order number of conditional order jumps being loaded incorrectly from SpringPP savegames.
 * Fix order backups not being restored when using buy and refit.

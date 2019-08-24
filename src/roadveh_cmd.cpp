@@ -39,6 +39,7 @@
 #include "framerate_type.h"
 #include "scope_info.h"
 #include "string_func.h"
+#include "core/checksum_func.hpp"
 
 #include "table/strings.h"
 
@@ -1067,6 +1068,7 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 
 		default: NOT_REACHED();
 	}
+	UpdateStateChecksum((((uint64) v->index) << 32) | (path_found << 16) | best_track);
 	v->HandlePathfindingResult(path_found);
 
 found_best_track:;
@@ -1746,6 +1748,8 @@ Money RoadVehicle::GetRunningCost() const
 
 bool RoadVehicle::Tick()
 {
+	UpdateStateChecksum((((uint64) this->x_pos) << 32) | this->y_pos);
+	UpdateStateChecksum((((uint64) this->state) << 32) | this->frame);
 	if (this->IsFrontEngine()) {
 		if (!(this->IsRoadVehicleStopped())) this->running_ticks++;
 		return RoadVehController(this);

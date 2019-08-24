@@ -616,6 +616,13 @@ class NIHTown : public NIHelper {
 		SetDParam(0, t->cargo_accepted_total);
 		b = GetString(b, STR_JUST_CARGO_LIST, lastof(buffer));
 		print(buffer);
+
+		seprintf(buffer, lastof(buffer), "  Nearby stations: %u", (uint) t->stations_near.size());
+		print(buffer);
+		for (const Station *st : t->stations_near) {
+			seprintf(buffer, lastof(buffer), "    %u: %s", st->index, st->GetCachedName());
+			print(buffer);
+		}
 	}
 };
 

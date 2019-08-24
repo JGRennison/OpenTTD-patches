@@ -78,6 +78,7 @@
 #include "string_func_extra.h"
 #include "industry.h"
 #include "cargopacket.h"
+#include "core/checksum_func.hpp"
 
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
@@ -103,6 +104,8 @@ GameEventFlags _game_events_since_load;
 GameEventFlags _game_events_overall;
 
 time_t _game_load_time;
+
+SimpleChecksum64 _state_checksum;
 
 /**
  * Error handling for fatal user errors.
@@ -404,6 +407,7 @@ static void ShutdownGame()
  */
 static void LoadIntroGame(bool load_newgrfs = true)
 {
+	UnshowCriticalError();
 	Window *v;
 	FOR_ALL_WINDOWS_FROM_FRONT(v) delete v;
 
@@ -1636,6 +1640,12 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 
 	if (!CargoPacket::ValidateDeferredCargoPayments()) CCLOG("Cargo packets deferred payments validation failed");
 
+	if (_order_destination_refcount_map_valid) {
+		btree::btree_map<uint32, uint32> saved_order_destination_refcount_map = std::move(_order_destination_refcount_map);
+		IntialiseOrderDestinationRefcountMap();
+		if (saved_order_destination_refcount_map != _order_destination_refcount_map) CCLOG("Order destination refcount map mismatch");
+	}
+
 #undef CCLOG
 }
 
@@ -1745,6 +1755,11 @@ void StateGameLoop()
 		CallWindowGameTickEvent();
 		NewsLoop();
 		cur_company.Restore();
+
+		Company *c;
+		FOR_ALL_COMPANIES(c) {
+			UpdateStateChecksum(c->money);
+		}
 	}
 
 	assert(IsLocalCompany());

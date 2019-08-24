@@ -810,7 +810,7 @@ void IniSaveWindowSettings(IniFile *ini, const char *grpname, void *desc)
  */
 bool SettingDesc::IsEditable(bool do_command) const
 {
-	if (!do_command && !(this->save.conv & SLF_NO_NETWORK_SYNC) && _networking && !_network_server && !(this->desc.flags & SGF_PER_COMPANY)) return false;
+	if (!do_command && !(this->save.conv & SLF_NO_NETWORK_SYNC) && _networking && !(_network_server || _network_settings_access) && !(this->desc.flags & SGF_PER_COMPANY)) return false;
 	if ((this->desc.flags & SGF_NETWORK_ONLY) && !_networking && _game_mode != GM_MENU) return false;
 	if ((this->desc.flags & SGF_NO_NETWORK) && _networking) return false;
 	if ((this->desc.flags & SGF_NEWGAME_ONLY) &&
@@ -1264,7 +1264,7 @@ static bool MaxNoAIsChange(int32 i)
 {
 	if (GetGameSettings().difficulty.max_no_competitors != 0 &&
 			AI::GetInfoList()->size() == 0 &&
-			(!_networking || _network_server)) {
+			(!_networking || (_network_server || _network_settings_access))) {
 		ShowErrorMessage(STR_WARNING_NO_SUITABLE_AI, INVALID_STRING_ID, WL_CRITICAL);
 	}
 
@@ -1494,6 +1494,15 @@ static bool UpdateRconPassword(int32 p1)
 {
 	if (strcmp(_settings_client.network.rcon_password, "*") == 0) {
 		_settings_client.network.rcon_password[0] = '\0';
+	}
+
+	return true;
+}
+
+static bool UpdateSettingsPassword(int32 p1)
+{
+	if (strcmp(_settings_client.network.settings_password, "*") == 0) {
+		_settings_client.network.settings_password[0] = '\0';
 	}
 
 	return true;
@@ -2116,7 +2125,7 @@ bool SetSettingValue(uint index, int32 value, bool force_newgame)
 	}
 
 	/* send non-company-based settings over the network */
-	if (!_networking || (_networking && _network_server)) {
+	if (!_networking || (_networking && (_network_server || _network_settings_access))) {
 		return DoCommandP(0, index, value, CMD_CHANGE_SETTING);
 	}
 	return false;
@@ -2276,7 +2285,7 @@ void IConsoleSetSetting(const char *name, const char *value, bool force_newgame)
 	}
 
 	if (!success) {
-		if (_network_server) {
+		if ((_network_server || _network_settings_access)) {
 			IConsoleError("This command/variable is not available during network games.");
 		} else {
 			IConsoleError("This command/variable is only available to a network server.");

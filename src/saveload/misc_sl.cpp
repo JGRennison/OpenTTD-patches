@@ -19,6 +19,7 @@
 #include "../core/random_func.hpp"
 #include "../fios.h"
 #include "../road_type.h"
+#include "../core/checksum_func.hpp"
 
 #include "saveload.h"
 
@@ -86,6 +87,7 @@ static const SaveLoadGlobVarList _date_desc[] = {
 	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_120),
 	    SLEG_VAR(_random.state[0],        SLE_UINT32),
 	    SLEG_VAR(_random.state[1],        SLE_UINT32),
+	SLEG_CONDVAR_X(_state_checksum.state, SLE_UINT64,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_STATE_CHECKSUM)),
 	SLE_CONDNULL(1,  SL_MIN_VERSION,  SLV_10),
 	SLE_CONDNULL(4, SLV_10, SLV_120),
 	    SLEG_VAR(_cur_company_tick_index, SLE_FILE_U8  | SLE_VAR_U32),
@@ -114,6 +116,7 @@ static const SaveLoadGlobVarList _date_check_desc[] = {
 	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_120),
 	    SLE_NULL(4),                       // _random.state[0]
 	    SLE_NULL(4),                       // _random.state[1]
+	SLE_CONDNULL_X(8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_STATE_CHECKSUM)), // _state_checksum.state
 	SLE_CONDNULL(1,  SL_MIN_VERSION,  SLV_10),
 	SLE_CONDNULL(4, SLV_10, SLV_120),
 	    SLE_NULL(1),                       // _cur_company_tick_index
