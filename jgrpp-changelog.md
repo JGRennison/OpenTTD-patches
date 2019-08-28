@@ -2,6 +2,9 @@
 
 * * *
 
+### v0.31.5 (2019-08-29)
+* Fix multiplayer desync when when moving newly built wagon
+
 ### v0.31.4 (2019-08-24)
 * Fix crash when removing signals from tunnel/bridge with trainless reservation.
 * Fix various cases where reversing a train inside a signalled tunnel/bridge handled PBS reservations incorrectly.
