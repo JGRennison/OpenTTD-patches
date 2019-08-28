@@ -573,6 +573,9 @@
     <ClInclude Include="..\src\debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\debug_settings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\video\dedicated_v.h">
       <Filter>Header Files</Filter>
     </ClInclude>

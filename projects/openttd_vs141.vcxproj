@@ -493,6 +493,7 @@
     <ClInclude Include="..\src\date_gui.h" />
     <ClInclude Include="..\src\date_type.h" />
     <ClInclude Include="..\src\debug.h" />
+    <ClInclude Include="..\src\debug_settings.h" />
     <ClInclude Include="..\src\video\dedicated_v.h" />
     <ClInclude Include="..\src\departures_func.h" />
     <ClInclude Include="..\src\departures_gui.h" />
