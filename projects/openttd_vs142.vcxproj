@@ -754,6 +754,7 @@
     <ClInclude Include="..\src\core\backup_type.hpp" />
     <ClCompile Include="..\src\core\bitmath_func.cpp" />
     <ClInclude Include="..\src\core\bitmath_func.hpp" />
+    <ClInclude Include="..\src\core\checksum_func.hpp" />
     <ClInclude Include="..\src\core\container_func.hpp" />
     <ClInclude Include="..\src\core\dyn_arena_alloc.hpp" />
     <ClInclude Include="..\src\core\endian_func.hpp" />
