@@ -59,6 +59,7 @@
 #include "tbtr_template_vehicle_func.h"
 #include "string_func.h"
 #include "scope_info.h"
+#include "debug_settings.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 
 #include "table/strings.h"
@@ -1273,7 +1274,7 @@ void CallVehicleTicks()
 		FOR_ALL_STATIONS(st) LoadUnloadStation(st);
 	}
 
-	if (!_tick_caches_valid) RebuildVehicleTickCaches();
+	if (!_tick_caches_valid || HasChickenBit(DCBF_VEH_TICK_CACHE)) RebuildVehicleTickCaches();
 
 	Vehicle *v = nullptr;
 	SCOPE_INFO_FMT([&v], "CallVehicleTicks: %s", scope_dumper().VehicleInfo(v));

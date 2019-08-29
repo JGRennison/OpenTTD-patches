@@ -2,14 +2,13 @@
 
 * * *
 
+### v0.31.5 (2019-08-29)
+* Fix multiplayer desync when when moving newly built wagon
+
 ### v0.32-rc2 (2019-08-24)
 * Fix crash when using query tool on non-road bridges.
 * Fix road vehicles not being limited by the road type max speed.
 * Bump trunk base from commit a52bbb72a8a2cbcbefb0ff91b559f33c34094239 to commit dabccf70b4c02f68ebf51aca807376ca4f2a0e15.
-
-### v0.32-rc1 (2019-07-13)
-* Include NotRoadTypes (NRT).
-* Bump trunk base from commit 21edf67f89c60351d5a0d84625455aa296b6b950 to commit a52bbb72a8a2cbcbefb0ff91b559f33c34094239.
 
 ### v0.31.4 (2019-08-24)
 * Fix crash when removing signals from tunnel/bridge with trainless reservation.
@@ -19,6 +18,10 @@
 * Change station tile coverage highlight colour to light blue.
 * Change network protocol to send server/join and rcon passwords in hashed form instead of in clear text.
 * Fix various possible sources of non-determinism which could potentially cause multiplayer desyncs.
+
+### v0.32-rc1 (2019-07-13)
+* Include NotRoadTypes (NRT).
+* Bump trunk base from commit 21edf67f89c60351d5a0d84625455aa296b6b950 to commit a52bbb72a8a2cbcbefb0ff91b559f33c34094239.
 
 ### v0.31.3 (2019-07-13)
 * Fix the target order number of conditional order jumps being loaded incorrectly from SpringPP savegames.

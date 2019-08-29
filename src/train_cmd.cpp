@@ -869,6 +869,8 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 				break;
 			}
 		}
+
+		InvalidateVehicleTickCaches();
 	}
 
 	return CommandCost();

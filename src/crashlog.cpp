@@ -227,6 +227,10 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 
 	buffer += seprintf(buffer, last, "Map size: 0x%X (%u x %u)%s\n\n", MapSize(), MapSizeX(), MapSizeY(), (!_m || !_me) ? ", NO MAP ALLOCATED" : "");
 
+	if (_settings_game.debug.chicken_bits != 0) {
+		buffer += seprintf(buffer, last, "Chicken bits: 0x%08X\n\n", _settings_game.debug.chicken_bits);
+	}
+
 	buffer += seprintf(buffer, last, "AI Configuration (local: %i) (current: %i):\n", (int)_local_company, (int)_current_company);
 	const Company *c;
 	FOR_ALL_COMPANIES(c) {

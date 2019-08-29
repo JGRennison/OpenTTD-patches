@@ -80,21 +80,11 @@ void ClearOrderDestinationRefcountMap()
 	_order_destination_refcount_map_valid = false;
 }
 
-static void UpdateOrderDestinationRefcount(const Order *order, VehicleType type, Owner owner, int delta)
+void UpdateOrderDestinationRefcount(const Order *order, VehicleType type, Owner owner, int delta)
 {
 	if (order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT) || order->IsType(OT_IMPLICIT)) {
 		_order_destination_refcount_map[OrderDestinationRefcountMapKey(order->GetDestination(), owner, order->GetType(), type)] += delta;
 	}
-}
-
-inline void RegisterOrderDestination(const Order *order, VehicleType type, Owner owner)
-{
-	if (_order_destination_refcount_map_valid) UpdateOrderDestinationRefcount(order, type, owner, 1);
-}
-
-inline void UnregisterOrderDestination(const Order *order, VehicleType type, Owner owner)
-{
-	if (_order_destination_refcount_map_valid) UpdateOrderDestinationRefcount(order, type, owner, -1);
 }
 
 /** Clean everything up. */

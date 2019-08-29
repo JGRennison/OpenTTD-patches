@@ -34,6 +34,7 @@
 #include "../crashlog.h"
 #include "../core/checksum_func.hpp"
 #include "../fileio_func.h"
+#include "../debug_settings.h"
 
 #include "table/strings.h"
 
@@ -302,9 +303,9 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 	if (_sync_frame != 0) {
 		if (_sync_frame == _frame_counter) {
 #ifdef NETWORK_SEND_DOUBLE_SEED
-			if (_sync_seed_1 != _random.state[0] || _sync_seed_2 != _random.state[1] || _sync_state_checksum != _state_checksum.state) {
+			if (_sync_seed_1 != _random.state[0] || _sync_seed_2 != _random.state[1] || (_sync_state_checksum != _state_checksum.state && !HasChickenBit(DCBF_MP_NO_STATE_CSUM_CHECK))) {
 #else
-			if (_sync_seed_1 != _random.state[0] || _sync_state_checksum != _state_checksum.state) {
+			if (_sync_seed_1 != _random.state[0] || (_sync_state_checksum != _state_checksum.state && !HasChickenBit(DCBF_MP_NO_STATE_CSUM_CHECK))) {
 #endif
 				DesyncExtraInfo info;
 				if (_sync_seed_1 != _random.state[0]) info.flags |= DesyncExtraInfo::DEIF_RAND1;

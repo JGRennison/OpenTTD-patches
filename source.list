@@ -180,6 +180,7 @@ date_func.h
 date_gui.h
 date_type.h
 debug.h
+debug_settings.h
 video/dedicated_v.h
 departures_func.h
 departures_gui.h

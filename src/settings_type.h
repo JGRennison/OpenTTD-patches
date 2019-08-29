@@ -643,6 +643,11 @@ struct CompanySettings {
 	bool advance_order_on_clone;             ///< when cloning a vehicle or copying/sharing an order list, advance the current order to a suitable point
 };
 
+/** Debug settings. */
+struct DebugSettings {
+	uint32 chicken_bits;                     ///< chicken bits
+};
+
 /** All settings together for the game. */
 struct GameSettings {
 	DifficultySettings   difficulty;         ///< settings related to the difficulty
@@ -659,6 +664,7 @@ struct GameSettings {
 	LinkGraphSettings    linkgraph;          ///< settings for link graph calculations
 	StationSettings      station;            ///< settings related to station management
 	LocaleSettings       locale;             ///< settings related to used currency/unit system in the current game
+	DebugSettings        debug;              ///< debug settings
 };
 
 /** All settings that are only important for the local client. */
