@@ -2,10 +2,14 @@
 
 * * *
 
+### v0.32-rc3 (2019-08-29)
+* Include change from v0.31.5
+
 ### v0.31.5 (2019-08-29)
 * Fix multiplayer desync when when moving newly built wagon
 
 ### v0.32-rc2 (2019-08-24)
+* Include changes from v0.31.4
 * Fix crash when using query tool on non-road bridges.
 * Fix road vehicles not being limited by the road type max speed.
 * Bump trunk base from commit a52bbb72a8a2cbcbefb0ff91b559f33c34094239 to commit dabccf70b4c02f68ebf51aca807376ca4f2a0e15.
