@@ -95,6 +95,11 @@ class NIHVehicle : public NIHelper {
 		b += seprintf(b, lastof(buffer), "  Flags: ");
 		b = v->DumpVehicleFlags(b, lastof(buffer));
 		print(buffer);
+		if (v->IsPrimaryVehicle()) {
+			seprintf(buffer, lastof(buffer), "  Order indices: real: %u, implicit: %u, tt: %u",
+					v->cur_real_order_index, v->cur_implicit_order_index, v->cur_timetable_order_index);
+			print(buffer);
+		}
 		if (v->IsGroundVehicle()) {
 			const GroundVehicleCache &gvc = *(v->GetGroundVehicleCache());
 			seprintf(buffer, lastof(buffer), "  GV Cache: weight: %u, slope res: %u, max TE: %u, axle res: %u",
