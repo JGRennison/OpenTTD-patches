@@ -667,6 +667,10 @@ public:
 	 */
 	virtual EventState OnCTRLStateChange() { return ES_NOT_HANDLED; }
 
+	/**
+	 * The state of the shift key has changed
+	 */
+	virtual void OnShiftStateChange() {}
 
 	/**
 	 * A click with the left mouse button has been made on the window.

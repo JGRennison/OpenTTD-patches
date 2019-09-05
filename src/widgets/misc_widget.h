@@ -57,4 +57,10 @@ enum TextfileWidgets {
 	WID_TF_HSCROLLBAR, ///< Horizontal scrollbar to scroll through the textfile left-to-right.
 };
 
+/** Widgets of the #TextfileWindow class. */
+enum ModifierKeyToggleWidgets {
+	WID_MKT_SHIFT,
+	WID_MKT_CTRL,
+};
+
 #endif /* WIDGETS_MISC_WIDGET_H */
