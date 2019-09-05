@@ -1928,6 +1928,17 @@ static void CheckAdvanceVehicleOrdersAfterClone(Vehicle *v, DoCommandFlag flags)
 	DoCommand(v->tile, v->index, skip_to, flags, CMD_SKIP_TO_ORDER);
 }
 
+static bool ShouldResetOrderIndicesOnOrderCopy(const Vehicle *src, const Vehicle *dst)
+{
+	const int num_orders = src->GetNumOrders();
+	if (dst->GetNumOrders() != num_orders) return true;
+
+	for (int i = 0; i < num_orders; i++) {
+		if (!src->GetOrder(i)->Equals(*dst->GetOrder(i))) return true;
+	}
+	return false;
+}
+
 /**
  * Clone/share/copy an order-list of another vehicle.
  * @param tile unused
@@ -1999,9 +2010,9 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 
 			if (flags & DC_EXEC) {
 				/* If the destination vehicle had a OrderList, destroy it.
-				 * We only reset the order indices, if the new orders are obviously different.
+				 * We reset the order indices, if the new orders are different.
 				 * (We mainly do this to keep the order indices valid and in range.) */
-				DeleteVehicleOrders(dst, false, dst->GetNumOrders() != src->GetNumOrders());
+				DeleteVehicleOrders(dst, false, ShouldResetOrderIndicesOnOrderCopy(src, dst));
 
 				dst->orders.list = src->orders.list;
 
@@ -2086,9 +2097,9 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 				Order **order_dst;
 
 				/* If the destination vehicle had an order list, destroy the chain but keep the OrderList.
-				 * We only reset the order indices, if the new orders are obviously different.
+				 * We only the order indices, if the new orders are different.
 				 * (We mainly do this to keep the order indices valid and in range.) */
-				DeleteVehicleOrders(dst, true, dst->GetNumOrders() != src->GetNumOrders());
+				DeleteVehicleOrders(dst, true, ShouldResetOrderIndicesOnOrderCopy(src, dst));
 
 				order_dst = &first;
 				FOR_VEHICLE_ORDERS(src, order) {
