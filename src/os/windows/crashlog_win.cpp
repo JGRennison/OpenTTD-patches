@@ -24,6 +24,7 @@
 #include "../../openttd.h"
 #include "../../screenshot.h"
 #include "../../debug.h"
+#include "../../settings_type.h"
 #if defined(WITH_DEMANGLE)
 #include <cxxabi.h>
 #endif
@@ -483,6 +484,8 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 
 /* virtual */ int CrashLogWindows::WriteCrashDump(char *filename, const char *filename_last) const
 {
+	if (_settings_client.gui.developer == 0) return 0;
+
 	int ret = 0;
 	HMODULE dbghelp = LoadLibrary(_T("dbghelp.dll"));
 	if (dbghelp != nullptr) {
@@ -624,7 +627,7 @@ static bool _expanded;
 
 static const TCHAR _crash_desc[] =
 	_T("A serious fault condition occurred in the game. The game will shut down.\n")
-	_T("Please send the crash information and the crash.dmp file (if any) to the patchpack developer.\n")
+	_T("Please send the crash information (log files and crash saves, if any) to the patchpack developer.\n")
 	_T("This will greatly help debugging. The correct place to do this is https://www.tt-forums.net/viewtopic.php?f=33&t=73469")
 	_T(" or https://github.com/JGRennison/OpenTTD-patches\n")
 	_T("The information contained in the report is displayed below.\n")
@@ -689,7 +692,7 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 
 			TCHAR *text = AllocaM(TCHAR, len);
 			_sntprintf(text, len, _crash_desc, OTTD2FS(CrashLogWindows::current->crashlog_filename));
-			if (OTTD2FS(CrashLogWindows::current->crashdump_filename)[0] != _T('\0')) {
+			if (_settings_client.gui.developer > 0 && OTTD2FS(CrashLogWindows::current->crashdump_filename)[0] != _T('\0')) {
 				_tcscat(text, _T("\n"));
 				_tcscat(text, OTTD2FS(CrashLogWindows::current->crashdump_filename));
 			}
