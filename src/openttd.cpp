@@ -280,7 +280,7 @@ static void WriteSavegameInfo(const char *name)
 
 	GamelogInfo(_load_check_data.gamelog_action, _load_check_data.gamelog_actions, &last_ottd_rev, &ever_modified, &removed_newgrfs);
 
-	char buf[8192];
+	char buf[65536];
 	char *p = buf;
 	p += seprintf(p, lastof(buf), "Name:         %s\n", name);
 	const char *type = "";
