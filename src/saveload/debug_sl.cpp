@@ -14,6 +14,7 @@
 #include "../debug.h"
 #include "saveload.h"
 #include "saveload_buffer.h"
+#include "../fios.h"
 
 #include "../safeguards.h"
 
@@ -37,6 +38,19 @@ static void Load_DBGL()
 	}
 }
 
+static void Check_DBGL()
+{
+	if (!_load_check_data.want_debug_log_data) {
+		SlSkipBytes(SlGetFieldLength());
+		return;
+	}
+	size_t length = SlGetFieldLength();
+	if (length) {
+		_load_check_data.debug_log_data.resize(length);
+		ReadBuffer::GetCurrent()->CopyBytes(reinterpret_cast<byte *>(const_cast<char *>(_load_check_data.debug_log_data.data())), length);
+	}
+}
+
 extern const ChunkHandler _debug_chunk_handlers[] = {
-	{ 'DBGL', Save_DBGL, Load_DBGL, nullptr, nullptr, CH_RIFF | CH_LAST},
+	{ 'DBGL', Save_DBGL, Load_DBGL, nullptr, Check_DBGL, CH_RIFF | CH_LAST},
 };

@@ -322,6 +322,40 @@ static void WriteSavegameInfo(const char *name)
 #endif
 }
 
+static void WriteSavegameDebugData(const char *name)
+{
+	char *buf = MallocT<char>(4096);
+	char *buflast = buf + 4095;
+	char *p = buf;
+	auto bump_size = [&]() {
+		size_t offset = p - buf;
+		size_t new_size = buflast - buf + 1 + 4096;
+		buf = ReallocT<char>(buf, new_size);
+		buflast = buf + new_size - 1;
+		p = buf + offset;
+	};
+	p += seprintf(p, buflast, "Name:         %s\n", name);
+	if (_load_check_data.debug_log_data.size()) {
+		p += seprintf(p, buflast, "%u bytes of debug data in savegame\n", (uint) _load_check_data.debug_log_data.size());
+		std::string buffer = _load_check_data.debug_log_data;
+		ProcessLineByLine(const_cast<char *>(buffer.data()), [&](const char *line) {
+			if (buflast - p <= 1024) bump_size();
+			p += seprintf(p, buflast, "> %s\n", line);
+		});
+	} else {
+		p += seprintf(p, buflast, "No debug data in savegame\n");
+	}
+
+	/* ShowInfo put output to stderr, but version information should go
+	 * to stdout; this is the only exception */
+#if !defined(_WIN32)
+	printf("%s\n", buf);
+#else
+	ShowInfo(buf);
+#endif
+	free(buf);
+}
+
 
 /**
  * Extract the resolution from the given string and store
@@ -611,6 +645,7 @@ static const OptionData _options[] = {
 	 GETOPT_SHORT_VALUE('c'),
 	 GETOPT_SHORT_NOVAL('x'),
 	 GETOPT_SHORT_VALUE('q'),
+	 GETOPT_SHORT_VALUE('K'),
 	 GETOPT_SHORT_NOVAL('h'),
 	 GETOPT_SHORT_VALUE('J'),
 	GETOPT_END()
@@ -729,7 +764,8 @@ int openttd_main(int argc, char *argv[])
 				scanner->generation_seed = InteractiveRandom();
 			}
 			break;
-		case 'q': {
+		case 'q':
+		case 'K': {
 			DeterminePaths(argv[0]);
 			if (StrEmpty(mgo.opt)) {
 				ret = 1;
@@ -741,6 +777,7 @@ int openttd_main(int argc, char *argv[])
 			FiosGetSavegameListCallback(SLO_LOAD, mgo.opt, strrchr(mgo.opt, '.'), title, lastof(title));
 
 			_load_check_data.Clear();
+			if (i == 'K') _load_check_data.want_debug_log_data = true;
 			SaveOrLoadResult res = SaveOrLoad(mgo.opt, SLO_CHECK, DFT_GAME_FILE, SAVE_DIR, false);
 			if (res != SL_OK || _load_check_data.HasErrors()) {
 				fprintf(stderr, "Failed to open savegame\n");
@@ -754,7 +791,11 @@ int openttd_main(int argc, char *argv[])
 				goto exit_noshutdown;
 			}
 
-			WriteSavegameInfo(title);
+			if (i == 'q') {
+				WriteSavegameInfo(title);
+			} else {
+				WriteSavegameDebugData(title);
+			}
 
 			goto exit_noshutdown;
 		}

@@ -48,6 +48,9 @@ struct LoadCheckData {
 	struct LoggedAction *gamelog_action;          ///< Gamelog actions
 	uint gamelog_actions;                         ///< Number of gamelog actions
 
+	bool want_debug_log_data = false;
+	std::string debug_log_data;
+
 	LoadCheckData() : error_data(nullptr), grfconfig(nullptr),
 			grf_compatibility(GLC_NOT_FOUND), gamelog_action(nullptr), gamelog_actions(0)
 	{
