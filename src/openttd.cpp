@@ -1292,7 +1292,11 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 				CCLOG("newgrf cache mismatch: type %i, vehicle %i, company %i, unit number %i, wagon %i", (int)v->type, v->index, (int)v->owner, v->unitnumber, length);
 			}
 			if (memcmp(&veh_cache[length], &u->vcache, sizeof(VehicleCache)) != 0) {
-				DEBUG(desync, 0, "vehicle cache mismatch: type %i, vehicle %i, company %i, unit number %i, wagon %i", (int)v->type, v->index, (int)v->owner, v->unitnumber, length);
+				CCLOG("vehicle cache mismatch: %c%c%c, type %i, vehicle %i, company %i, unit number %i, wagon %i",
+						veh_cache[length].cached_max_speed != u->vcache.cached_max_speed ? 'm' : '-',
+						veh_cache[length].cached_cargo_age_period != u->vcache.cached_cargo_age_period ? 'c' : '-',
+						veh_cache[length].cached_vis_effect != u->vcache.cached_vis_effect ? 'v' : '-',
+						(int)v->type, v->index, (int)v->owner, v->unitnumber, length);
 			}
 			if (veh_old[length]->acceleration != u->acceleration) {
 				CCLOG("acceleration mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
