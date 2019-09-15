@@ -1687,8 +1687,17 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 
 	if (_order_destination_refcount_map_valid) {
 		btree::btree_map<uint32, uint32> saved_order_destination_refcount_map = std::move(_order_destination_refcount_map);
+		for (auto iter = saved_order_destination_refcount_map.begin(); iter != saved_order_destination_refcount_map.end();) {
+			if (iter->second == 0) {
+				iter = saved_order_destination_refcount_map.erase(iter);
+			} else {
+				++iter;
+			}
+		}
 		IntialiseOrderDestinationRefcountMap();
 		if (saved_order_destination_refcount_map != _order_destination_refcount_map) CCLOG("Order destination refcount map mismatch");
+	} else {
+		CCLOG("Order destination refcount map not valid");
 	}
 
 #undef CCLOG
