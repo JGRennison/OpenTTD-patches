@@ -2867,6 +2867,8 @@ CommandCost CmdMassChangeOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 						Order new_order;
 						new_order.AssignOrder(*order);
 						new_order.SetDestination(to_dest);
+						const bool wait_fixed = new_order.IsWaitFixed();
+						const bool wait_timetabled = wait_fixed && new_order.IsWaitTimetabled();
 						new_order.SetWaitTimetabled(false);
 						new_order.SetTravelTimetabled(false);
 						if (DoCommand(0, v->index | ((index + 1) << 20), new_order.Pack(), flags, CMD_INSERT_ORDER).Succeeded()) {
@@ -2875,6 +2877,10 @@ CommandCost CmdMassChangeOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 							order = v->orders.list->GetOrderAt(index);
 							order->SetRefit(new_order.GetRefitCargo());
 							order->SetMaxSpeed(new_order.GetMaxSpeed());
+							if (wait_fixed) {
+								extern void SetOrderFixedWaitTime(Vehicle *v, VehicleOrderID order_number, uint32 wait_time, bool wait_timetabled);
+								SetOrderFixedWaitTime(v, index, new_order.GetWaitTime(), wait_timetabled);
+							}
 							changed = true;
 						}
 

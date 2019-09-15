@@ -997,3 +997,8 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
 	}
 }
+
+void SetOrderFixedWaitTime(Vehicle *v, VehicleOrderID order_number, uint32 wait_time, bool wait_timetabled) {
+	ChangeTimetable(v, order_number, wait_time, MTF_WAIT_TIME, wait_timetabled, true);
+	ChangeTimetable(v, order_number, 1, MTF_SET_WAIT_FIXED, false, true);
+}
