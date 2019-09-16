@@ -281,7 +281,7 @@ static void WriteSavegameInfo(const char *name)
 
 	GamelogInfo(_load_check_data.gamelog_action, _load_check_data.gamelog_actions, &last_ottd_rev, &ever_modified, &removed_newgrfs);
 
-	char buf[8192];
+	char buf[65536];
 	char *p = buf;
 	p += seprintf(p, lastof(buf), "Name:         %s\n", name);
 	const char *type = "";
@@ -321,6 +321,40 @@ static void WriteSavegameInfo(const char *name)
 #else
 	ShowInfo(buf);
 #endif
+}
+
+static void WriteSavegameDebugData(const char *name)
+{
+	char *buf = MallocT<char>(4096);
+	char *buflast = buf + 4095;
+	char *p = buf;
+	auto bump_size = [&]() {
+		size_t offset = p - buf;
+		size_t new_size = buflast - buf + 1 + 4096;
+		buf = ReallocT<char>(buf, new_size);
+		buflast = buf + new_size - 1;
+		p = buf + offset;
+	};
+	p += seprintf(p, buflast, "Name:         %s\n", name);
+	if (_load_check_data.debug_log_data.size()) {
+		p += seprintf(p, buflast, "%u bytes of debug data in savegame\n", (uint) _load_check_data.debug_log_data.size());
+		std::string buffer = _load_check_data.debug_log_data;
+		ProcessLineByLine(const_cast<char *>(buffer.data()), [&](const char *line) {
+			if (buflast - p <= 1024) bump_size();
+			p += seprintf(p, buflast, "> %s\n", line);
+		});
+	} else {
+		p += seprintf(p, buflast, "No debug data in savegame\n");
+	}
+
+	/* ShowInfo put output to stderr, but version information should go
+	 * to stdout; this is the only exception */
+#if !defined(_WIN32)
+	printf("%s\n", buf);
+#else
+	ShowInfo(buf);
+#endif
+	free(buf);
 }
 
 
@@ -612,6 +646,7 @@ static const OptionData _options[] = {
 	 GETOPT_SHORT_VALUE('c'),
 	 GETOPT_SHORT_NOVAL('x'),
 	 GETOPT_SHORT_VALUE('q'),
+	 GETOPT_SHORT_VALUE('K'),
 	 GETOPT_SHORT_NOVAL('h'),
 	 GETOPT_SHORT_VALUE('J'),
 	GETOPT_END()
@@ -730,7 +765,8 @@ int openttd_main(int argc, char *argv[])
 				scanner->generation_seed = InteractiveRandom();
 			}
 			break;
-		case 'q': {
+		case 'q':
+		case 'K': {
 			DeterminePaths(argv[0]);
 			if (StrEmpty(mgo.opt)) {
 				ret = 1;
@@ -742,10 +778,12 @@ int openttd_main(int argc, char *argv[])
 			FiosGetSavegameListCallback(SLO_LOAD, mgo.opt, strrchr(mgo.opt, '.'), title, lastof(title));
 
 			_load_check_data.Clear();
+			if (i == 'K') _load_check_data.want_debug_log_data = true;
 			SaveOrLoadResult res = SaveOrLoad(mgo.opt, SLO_CHECK, DFT_GAME_FILE, SAVE_DIR, false);
 			if (res != SL_OK || _load_check_data.HasErrors()) {
 				fprintf(stderr, "Failed to open savegame\n");
 				if (_load_check_data.HasErrors()) {
+					InitializeLanguagePacks();
 					char buf[256];
 					SetDParamStr(0, _load_check_data.error_data);
 					GetString(buf, _load_check_data.error, lastof(buf));
@@ -754,7 +792,11 @@ int openttd_main(int argc, char *argv[])
 				goto exit_noshutdown;
 			}
 
-			WriteSavegameInfo(title);
+			if (i == 'q') {
+				WriteSavegameInfo(title);
+			} else {
+				WriteSavegameDebugData(title);
+			}
 
 			goto exit_noshutdown;
 		}
@@ -1528,7 +1570,12 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 			}
 			if (veh_cache[length].cached_max_speed != u->vcache.cached_max_speed || veh_cache[length].cached_cargo_age_period != u->vcache.cached_cargo_age_period ||
 					veh_cache[length].cached_vis_effect != u->vcache.cached_vis_effect || HasBit(veh_cache[length].cached_veh_flags ^ u->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT)) {
-				CCLOG("vehicle cache mismatch: type %i, vehicle %i, company %i, unit number %i, wagon %i", (int)v->type, v->index, (int)v->owner, v->unitnumber, length);
+				CCLOG("vehicle cache mismatch: %c%c%c%c, type %i, vehicle %i, company %i, unit number %i, wagon %i",
+						veh_cache[length].cached_max_speed != u->vcache.cached_max_speed ? 'm' : '-',
+						veh_cache[length].cached_cargo_age_period != u->vcache.cached_cargo_age_period ? 'c' : '-',
+						veh_cache[length].cached_vis_effect != u->vcache.cached_vis_effect ? 'v' : '-',
+						HasBit(veh_cache[length].cached_veh_flags ^ u->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT) ? 'l' : '-',
+						(int)v->type, v->index, (int)v->owner, v->unitnumber, length);
 			}
 			if (u->IsGroundVehicle() && (HasBit(u->GetGroundVehicleFlags(), GVF_GOINGUP_BIT) || HasBit(u->GetGroundVehicleFlags(), GVF_GOINGDOWN_BIT)) && u->GetGroundVehicleCache()->cached_slope_resistance && HasBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST)) {
 				CCLOG("VCF_GV_ZERO_SLOPE_RESIST set incorrectly (2): type %i, vehicle %i, company %i, unit number %i, wagon %i", (int)v->type, v->index, (int)v->owner, v->unitnumber, length);
@@ -1642,8 +1689,17 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 
 	if (_order_destination_refcount_map_valid) {
 		btree::btree_map<uint32, uint32> saved_order_destination_refcount_map = std::move(_order_destination_refcount_map);
+		for (auto iter = saved_order_destination_refcount_map.begin(); iter != saved_order_destination_refcount_map.end();) {
+			if (iter->second == 0) {
+				iter = saved_order_destination_refcount_map.erase(iter);
+			} else {
+				++iter;
+			}
+		}
 		IntialiseOrderDestinationRefcountMap();
 		if (saved_order_destination_refcount_map != _order_destination_refcount_map) CCLOG("Order destination refcount map mismatch");
+	} else {
+		CCLOG("Order destination refcount map not valid");
 	}
 
 #undef CCLOG

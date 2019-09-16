@@ -1339,3 +1339,88 @@ void ShowQuery(StringID caption, StringID message, Window *parent, QueryCallback
 
 	new QueryWindow(&_query_desc, caption, message, parent, callback);
 }
+
+static const NWidgetPart _modifier_key_toggle_widgets[] = {
+	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
+		NWidget(WWT_CAPTION, COLOUR_GREY), SetDataTip(STR_MODIFIER_KEY_TOGGLE_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_SHADEBOX, COLOUR_GREY),
+		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+	EndContainer(),
+	NWidget(WWT_PANEL, COLOUR_GREY),
+		NWidget(NWID_SPACER), SetMinimalSize(0, 2),
+		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(2, 0, 2),
+			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_MKT_SHIFT), SetMinimalSize(78, 12), SetFill(1, 0),
+										SetDataTip(STR_SHIFT_KEY_NAME, STR_MODIFIER_TOGGLE_SHIFT_TOOLTIP),
+			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_MKT_CTRL), SetMinimalSize(78, 12), SetFill(1, 0),
+										SetDataTip(STR_CTRL_KEY_NAME, STR_MODIFIER_TOGGLE_CTRL_TOOLTIP),
+		EndContainer(),
+		NWidget(NWID_SPACER), SetMinimalSize(0, 2),
+	EndContainer(),
+};
+
+struct ModifierKeyToggleWindow : Window {
+	ModifierKeyToggleWindow(WindowDesc *desc, WindowNumber window_number) :
+			Window(desc)
+	{
+		this->InitNested(window_number);
+		this->UpdateButtons();
+	}
+
+	~ModifierKeyToggleWindow()
+	{
+		_invert_shift = false;
+		_invert_ctrl = false;
+	}
+
+	void UpdateButtons()
+	{
+		this->SetWidgetLoweredState(WID_MKT_SHIFT, _shift_pressed);
+		this->SetWidgetLoweredState(WID_MKT_CTRL, _ctrl_pressed);
+		this->SetDirty();
+	}
+
+	EventState OnCTRLStateChange() override
+	{
+		this->UpdateButtons();
+		return ES_NOT_HANDLED;
+	}
+
+	void OnShiftStateChange() override
+	{
+		this->UpdateButtons();
+	}
+
+	void OnClick(Point pt, int widget, int click_count) override
+	{
+		switch (widget) {
+			case WID_MKT_SHIFT:
+				_invert_shift = !_invert_shift;
+				UpdateButtons();
+				break;
+
+			case WID_MKT_CTRL:
+				_invert_ctrl = !_invert_ctrl;
+				UpdateButtons();
+				break;
+		}
+	}
+
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	{
+		if (!gui_scope) return;
+		this->UpdateButtons();
+	}
+};
+
+static WindowDesc _modifier_key_toggle_desc(
+	WDP_AUTO, "modifier_key_toggle", 0, 0,
+	WC_MODIFIER_KEY_TOGGLE, WC_NONE,
+	WDF_NO_FOCUS,
+	_modifier_key_toggle_widgets, lengthof(_modifier_key_toggle_widgets)
+);
+
+void ShowModifierKeyToggleWindow()
+{
+	AllocateWindowDescFront<ModifierKeyToggleWindow>(&_modifier_key_toggle_desc, 0);
+}

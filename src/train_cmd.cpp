@@ -1355,6 +1355,7 @@ static void NormaliseTrainHead(Train *head)
 	/* Tell the 'world' the train changed. */
 	head->ConsistChanged(CCF_ARRANGE);
 	UpdateTrainGroupID(head);
+	SetBit(head->flags, VRF_CONSIST_SPEED_REDUCTION);
 
 	/* Not a front engine, i.e. a free wagon chain. No need to do more. */
 	if (!head->IsFrontEngine()) return;

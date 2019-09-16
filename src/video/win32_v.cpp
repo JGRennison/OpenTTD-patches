@@ -1243,9 +1243,10 @@ void VideoDriver_Win32::MainLoop()
 			next_tick = cur_ticks + MILLISECONDS_PER_TICK;
 
 			bool old_ctrl_pressed = _ctrl_pressed;
+			bool old_shift_pressed = _shift_pressed;
 
-			_ctrl_pressed = _wnd.has_focus && GetAsyncKeyState(VK_CONTROL)<0;
-			_shift_pressed = _wnd.has_focus && GetAsyncKeyState(VK_SHIFT)<0;
+			_ctrl_pressed = (_wnd.has_focus && GetAsyncKeyState(VK_CONTROL) < 0) != _invert_ctrl;
+			_shift_pressed = (_wnd.has_focus && GetAsyncKeyState(VK_SHIFT) < 0) != _invert_shift;
 
 			/* determine which directional keys are down */
 			if (_wnd.has_focus) {
@@ -1259,6 +1260,7 @@ void VideoDriver_Win32::MainLoop()
 			}
 
 			if (old_ctrl_pressed != _ctrl_pressed) HandleCtrlChanged();
+			if (old_shift_pressed != _shift_pressed) HandleShiftChanged();
 
 			/* Flush GDI buffer to ensure we don't conflict with the drawing thread. */
 			GdiFlush();

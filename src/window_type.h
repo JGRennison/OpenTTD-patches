@@ -755,6 +755,11 @@ enum WindowClass {
 	WC_BUILD_VIRTUAL_TRAIN,
 	WC_CREATE_TEMPLATE,
 
+	/**
+	 * Modifier key toggle window.
+	 */
+	WC_MODIFIER_KEY_TOGGLE,
+
 	WC_INVALID = 0xFFFF, ///< Invalid window.
 };
 

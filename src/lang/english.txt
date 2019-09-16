@@ -490,6 +490,7 @@ STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Fully zoomed in
 STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Default zoom screenshot
 STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Whole map screenshot
 STR_ABOUT_MENU_SHOW_FRAMERATE                                   :Show frame rate
+STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Modifier key window
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :About 'OpenTTD'
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Sprite aligner
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Toggle bounding boxes
@@ -6186,3 +6187,9 @@ STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}This sch
 STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}Maximum delay of {STRING3} is allowed before the slot is skipped.
 STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}This schedule is not active.
 
+# Modifier key toggle window
+STR_MODIFIER_KEY_TOGGLE_CAPTION                                 :{WHITE}Modifier keys
+STR_SHIFT_KEY_NAME                                              :{BLACK}Shift
+STR_CTRL_KEY_NAME                                               :{BLACK}Ctrl
+STR_MODIFIER_TOGGLE_SHIFT_TOOLTIP                               :{BLACK}Click to invert state of Shift key
+STR_MODIFIER_TOGGLE_CTRL_TOOLTIP                                :{BLACK}Click to invert state of Ctrl key

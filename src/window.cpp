@@ -2744,6 +2744,17 @@ void HandleCtrlChanged()
 }
 
 /**
+ * State of SHIFT key has changed
+ */
+void HandleShiftChanged()
+{
+	Window *w;
+	FOR_ALL_WINDOWS_FROM_FRONT(w) {
+		w->OnShiftStateChange();
+	}
+}
+
+/**
  * Insert a text string at the cursor position into the edit box widget.
  * @param wid Edit box widget.
  * @param str Text string to insert.

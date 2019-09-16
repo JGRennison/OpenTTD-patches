@@ -499,9 +499,10 @@ void VideoDriver_Allegro::MainLoop()
 			next_tick = cur_ticks + MILLISECONDS_PER_TICK;
 
 			bool old_ctrl_pressed = _ctrl_pressed;
+			bool old_shift_pressed = _shift_pressed;
 
-			_ctrl_pressed  = !!(key_shifts & KB_CTRL_FLAG);
-			_shift_pressed = !!(key_shifts & KB_SHIFT_FLAG);
+			_ctrl_pressed  = !!(key_shifts & KB_CTRL_FLAG) != _invert_ctrl;
+			_shift_pressed = !!(key_shifts & KB_SHIFT_FLAG) != _invert_shift;
 
 			/* determine which directional keys are down */
 			_dirkeys =
@@ -511,6 +512,7 @@ void VideoDriver_Allegro::MainLoop()
 				(key[KEY_DOWN]  ? 8 : 0);
 
 			if (old_ctrl_pressed != _ctrl_pressed) HandleCtrlChanged();
+			if (old_shift_pressed != _shift_pressed) HandleShiftChanged();
 
 			GameLoop();
 

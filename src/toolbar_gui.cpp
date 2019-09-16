@@ -1079,7 +1079,7 @@ static CallBackFunction PlaceLandBlockInfo()
 
 static CallBackFunction ToolbarHelpClick(Window *w)
 {
-	PopupMainToolbMenu(w, _game_mode == GM_EDITOR ? (int)WID_TE_HELP : (int)WID_TN_HELP, STR_ABOUT_MENU_LAND_BLOCK_INFO, _settings_client.gui.newgrf_developer_tools ? 13 : 10);
+	PopupMainToolbMenu(w, _game_mode == GM_EDITOR ? (int)WID_TE_HELP : (int)WID_TN_HELP, STR_ABOUT_MENU_LAND_BLOCK_INFO, _settings_client.gui.newgrf_developer_tools ? 14 : 11);
 	return CBF_NONE;
 }
 
@@ -1182,10 +1182,11 @@ static CallBackFunction MenuClickHelp(int index)
 		case  6: MenuClickLargeWorldScreenshot(SC_DEFAULTZOOM); break;
 		case  7: MenuClickLargeWorldScreenshot(SC_WORLD);       break;
 		case  8: ShowFramerateWindow();            break;
-		case  9: ShowAboutWindow();                break;
-		case 10: ShowSpriteAlignerWindow();        break;
-		case 11: ToggleBoundingBoxes();            break;
-		case 12: ToggleDirtyBlocks();              break;
+		case  9: ShowModifierKeyToggleWindow();    break;
+		case 10: ShowAboutWindow();                break;
+		case 11: ShowSpriteAlignerWindow();        break;
+		case 12: ToggleBoundingBoxes();            break;
+		case 13: ToggleDirtyBlocks();              break;
 	}
 	return CBF_NONE;
 }

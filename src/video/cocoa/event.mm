@@ -695,11 +695,13 @@ void QZ_GameLoop()
 			next_tick = cur_ticks + MILLISECONDS_PER_TICK;
 
 			bool old_ctrl_pressed = _ctrl_pressed;
+			bool old_shift_pressed = _shift_pressed;
 
-			_ctrl_pressed = !!(_current_mods & ( _settings_client.gui.right_mouse_btn_emulation != RMBE_CONTROL ? NSControlKeyMask : NSCommandKeyMask));
-			_shift_pressed = !!(_current_mods & NSShiftKeyMask);
+			_ctrl_pressed = !!(_current_mods & ( _settings_client.gui.right_mouse_btn_emulation != RMBE_CONTROL ? NSControlKeyMask : NSCommandKeyMask)) != _invert_ctrl;
+			_shift_pressed = !!(_current_mods & NSShiftKeyMask) != _invert_shift;
 
 			if (old_ctrl_pressed != _ctrl_pressed) HandleCtrlChanged();
+			if (old_shift_pressed != _shift_pressed) HandleShiftChanged();
 
 			GameLoop();
 
