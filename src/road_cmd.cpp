@@ -2609,7 +2609,13 @@ CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				}
 			}
 
-			uint num_pieces = CountBits(GetAnyRoadBits(tile, rtt));;
+			uint num_pieces;
+			if (GetRoadTileType(tile) == ROAD_TILE_DEPOT) {
+				num_pieces = HasTileRoadType(tile, rtt) ? 2 : 0;
+			} else {
+				num_pieces = CountBits(GetAnyRoadBits(tile, rtt));
+			}
+
 			found_convertible_road = true;
 			cost.AddCost(num_pieces * RoadConvertCost(from_type, to_type));
 
