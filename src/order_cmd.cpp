@@ -58,6 +58,8 @@ INSTANTIATE_POOL_METHODS(OrderList)
 btree::btree_map<uint32, uint32> _order_destination_refcount_map;
 bool _order_destination_refcount_map_valid = false;
 
+CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID sel_ord, const Order &new_order, bool allow_load_by_cargo_type);
+
 void IntialiseOrderDestinationRefcountMap()
 {
 	ClearOrderDestinationRefcountMap();
@@ -942,7 +944,10 @@ CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	VehicleOrderID sel_ord = GB(p1, 20, 8);
 	Order new_order(p2);
 
-	Vehicle *v = Vehicle::GetIfValid(veh);
+	return CmdInsertOrderIntl(flags, Vehicle::GetIfValid(veh), sel_ord, new_order, false);
+}
+
+CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID sel_ord, const Order &new_order, bool allow_load_by_cargo_type) {
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
@@ -972,10 +977,16 @@ CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			/* Filter invalid load/unload types. */
 			switch (new_order.GetLoadType()) {
 				case OLF_LOAD_IF_POSSIBLE: case OLFB_FULL_LOAD: case OLF_FULL_LOAD_ANY: case OLFB_NO_LOAD: break;
+				case OLFB_CARGO_TYPE_LOAD:
+					if (allow_load_by_cargo_type) break;
+					return CMD_ERROR;
 				default: return CMD_ERROR;
 			}
 			switch (new_order.GetUnloadType()) {
 				case OUF_UNLOAD_IF_POSSIBLE: case OUFB_UNLOAD: case OUFB_TRANSFER: case OUFB_NO_UNLOAD: break;
+				case OUFB_CARGO_TYPE_UNLOAD:
+					if (allow_load_by_cargo_type) break;
+					return CMD_ERROR;
 				default: return CMD_ERROR;
 			}
 
@@ -2871,7 +2882,7 @@ CommandCost CmdMassChangeOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 						const bool wait_timetabled = wait_fixed && new_order.IsWaitTimetabled();
 						new_order.SetWaitTimetabled(false);
 						new_order.SetTravelTimetabled(false);
-						if (DoCommand(0, v->index | ((index + 1) << 20), new_order.Pack(), flags, CMD_INSERT_ORDER).Succeeded()) {
+						if (CmdInsertOrderIntl(flags, v, index + 1, new_order, true).Succeeded()) {
 							DoCommand(0, v->index, index, flags, CMD_DELETE_ORDER);
 
 							order = v->orders.list->GetOrderAt(index);
