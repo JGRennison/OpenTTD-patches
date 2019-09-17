@@ -1168,6 +1168,32 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 	} \
 }
 
+	auto output_veh_info = [&](char *&p, const Vehicle *u, const Vehicle *v, uint length) {
+		p += seprintf(p, lastof(cclog_buffer), ": type %i, vehicle %i (%i), company %i, unit number %i, wagon %i, engine: ",
+				(int)u->type, u->index, v->index, (int)u->owner, v->unitnumber, length);
+		SetDParam(0, u->engine_type);
+		p = GetString(p, STR_ENGINE_NAME, lastof(cclog_buffer));
+		uint32 grfid = u->GetGRFID();
+		if (grfid) {
+			p += seprintf(p, lastof(cclog_buffer), ", GRF: %08X", BSWAP32(grfid));
+			GRFConfig *grfconfig = GetGRFConfig(grfid);
+			if (grfconfig) {
+				p += seprintf(p, lastof(cclog_buffer), ", %s, %s", grfconfig->GetName(), grfconfig->filename);
+			}
+		}
+	};
+
+#define CCLOGV(...) { \
+	char *p = cclog_buffer + seprintf(cclog_buffer, lastof(cclog_buffer), __VA_ARGS__); \
+	output_veh_info(p, u, v, length); \
+	DEBUG(desync, 0, "%s", cclog_buffer); \
+	if (log) { \
+		log(cclog_buffer); \
+	} else { \
+		LogDesyncMsg(cclog_buffer); \
+	} \
+}
+
 	/* Check the town caches. */
 	std::vector<TownCache> old_town_caches;
 	std::vector<CargoTypes> old_town_cargo_accepted_totals;
@@ -1289,53 +1315,52 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
 			FillNewGRFVehicleCache(u);
 			if (memcmp(&grf_cache[length], &u->grf_cache, sizeof(NewGRFCache)) != 0) {
-				CCLOG("newgrf cache mismatch: type %i, vehicle %i, company %i, unit number %i, wagon %i", (int)v->type, v->index, (int)v->owner, v->unitnumber, length);
+				CCLOGV("newgrf cache mismatch");
 			}
 			if (memcmp(&veh_cache[length], &u->vcache, sizeof(VehicleCache)) != 0) {
-				CCLOG("vehicle cache mismatch: %c%c%c, type %i, vehicle %i, company %i, unit number %i, wagon %i",
+				CCLOGV("vehicle cache mismatch: %c%c%c",
 						veh_cache[length].cached_max_speed != u->vcache.cached_max_speed ? 'm' : '-',
 						veh_cache[length].cached_cargo_age_period != u->vcache.cached_cargo_age_period ? 'c' : '-',
-						veh_cache[length].cached_vis_effect != u->vcache.cached_vis_effect ? 'v' : '-',
-						(int)v->type, v->index, (int)v->owner, v->unitnumber, length);
+						veh_cache[length].cached_vis_effect != u->vcache.cached_vis_effect ? 'v' : '-');
 			}
 			if (veh_old[length]->acceleration != u->acceleration) {
-				CCLOG("acceleration mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+				CCLOGV("acceleration mismatch");
 			}
 			if (veh_old[length]->breakdown_chance != u->breakdown_chance) {
-				CCLOG("breakdown_chance mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+				CCLOGV("breakdown_chance mismatch");
 			}
 			if (veh_old[length]->breakdowns_since_last_service != u->breakdowns_since_last_service) {
-				CCLOG("breakdowns_since_last_service mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+				CCLOGV("breakdowns_since_last_service mismatch");
 			}
 			if (veh_old[length]->vehicle_flags != u->vehicle_flags) {
-				CCLOG("vehicle_flags mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+				CCLOGV("vehicle_flags mismatch");
 			}
 			switch (u->type) {
 				case VEH_TRAIN:
 					if (memcmp(&gro_cache[length], &Train::From(u)->gcache, sizeof(GroundVehicleCache)) != 0) {
-						CCLOG("train ground vehicle cache mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+						CCLOGV("train ground vehicle cache mismatch");
 					}
 					if (memcmp(&tra_cache[length], &Train::From(u)->tcache, sizeof(TrainCache)) != 0) {
-						CCLOG("train cache mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+						CCLOGV("train cache mismatch");
 					}
 					if (Train::From(veh_old[length])->railtype != Train::From(u)->railtype) {
-						CCLOG("railtype mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+						CCLOGV("railtype mismatch");
 					}
 					if (Train::From(veh_old[length])->compatible_railtypes != Train::From(u)->compatible_railtypes) {
-						CCLOG("compatible_railtypes mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+						CCLOGV("compatible_railtypes mismatch");
 					}
 					if (Train::From(veh_old[length])->flags != Train::From(u)->flags) {
-						CCLOG("flags mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+						CCLOGV("train flags mismatch");
 					}
 					break;
 				case VEH_ROAD:
 					if (memcmp(&gro_cache[length], &RoadVehicle::From(u)->gcache, sizeof(GroundVehicleCache)) != 0) {
-						CCLOG("road vehicle ground vehicle cache mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+						CCLOGV("road vehicle ground vehicle cache mismatch");
 					}
 					break;
 				case VEH_AIRCRAFT:
 					if (memcmp(&air_cache[length], &Aircraft::From(u)->acache, sizeof(AircraftCache)) != 0) {
-						CCLOG("Aircraft vehicle cache mismatch: vehicle %i, company %i, unit number %i, wagon %i", v->index, (int)v->owner, v->unitnumber, length);
+						CCLOGV("Aircraft vehicle cache mismatch");
 					}
 					break;
 				default:
@@ -1446,6 +1471,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		CCLOG("_town_cargoes_accepted mismatch: old: " OTTD_PRINTFHEX64 ". new: " OTTD_PRINTFHEX64, old_town_cargoes_accepted, _town_cargoes_accepted);
 	}
 
+#undef CCLOGV
 #undef CCLOG
 }
 
