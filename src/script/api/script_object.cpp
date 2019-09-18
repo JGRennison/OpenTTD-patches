@@ -25,6 +25,7 @@
 #include "../script_instance.hpp"
 #include "../script_fatalerror.hpp"
 #include "script_error.hpp"
+#include "../../debug.h"
 
 #include "../../safeguards.h"
 
@@ -83,6 +84,27 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 /* static */ ScriptObject *ScriptObject::GetDoCommandModeInstance()
 {
 	return GetStorage()->mode_instance;
+}
+
+/* static */ void ScriptObject::SetLastCommand(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+{
+	ScriptStorage *s = GetStorage();
+	DEBUG(script, 6, "SetLastCommand company=%02d tile=%06x p1=%08x p2=%08x cmd=%d", s->root_company, tile, p1, p2, cmd);
+	s->last_tile = tile;
+	s->last_p1 = p1;
+	s->last_p2 = p2;
+	s->last_cmd = cmd & CMD_ID_MASK;
+}
+
+/* static */ bool ScriptObject::CheckLastCommand(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+{
+	ScriptStorage *s = GetStorage();
+	DEBUG(script, 6, "CheckLastCommand company=%02d tile=%06x p1=%08x p2=%08x cmd=%d", s->root_company, tile, p1, p2, cmd);
+	if (s->last_tile != tile) return false;
+	if (s->last_p1 != p1) return false;
+	if (s->last_p2 != p2) return false;
+	if (s->last_cmd != (cmd & CMD_ID_MASK)) return false;
+	return true;
 }
 
 /* static */ void ScriptObject::SetDoCommandCosts(Money value)
@@ -308,6 +330,9 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 
 	SCOPE_INFO_FMT([=], "ScriptObject::DoCommand: tile: %X (%d x %d), p1: 0x%X, p2: 0x%X, company: %s, cmd: 0x%X (%s), estimate_only: %d",
 			tile, TileX(tile), TileY(tile), p1, p2, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd), estimate_only);
+
+	/* Store the command for command callback validation. */
+	if (!estimate_only && _networking && !_generating_world) SetLastCommand(tile, p1, p2, cmd);
 
 	/* Try to perform the command. */
 	CommandCost res = ::DoCommandPScript(tile, p1, p2, cmd, (_networking && !_generating_world) ? ScriptObject::GetActiveInstance()->GetDoCommandCallback() : nullptr, text, false, estimate_only, 0);

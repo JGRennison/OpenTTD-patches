@@ -1662,7 +1662,7 @@ struct BuildVehicleWindow : Window {
 	}
 };
 
-void CcAddVirtualEngine(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2)
+void CcAddVirtualEngine(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
 {
 	if (result.Failed()) return;
 

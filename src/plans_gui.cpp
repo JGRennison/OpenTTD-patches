@@ -409,7 +409,7 @@ void ShowPlansWindow()
  * Only the creator of a plan executes this function.
  * The other players should not be bothered with these changes.
  */
-void CcAddPlan(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2)
+void CcAddPlan(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
 {
 	if (result.Failed()) return;
 
