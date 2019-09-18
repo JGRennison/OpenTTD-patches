@@ -2,6 +2,16 @@
 
 * * *
 
+### v0.32-rc4 (2019-09-18)
+* Fix crash when removing docking tile adjacent to an industry without an associated station.
+* Fix crash which could occur after copying orders over an order list currently containing conditional orders.
+* Fix incorrect company infrastructure totals and multiplayer desyncs when using the road/tram type conversion tool on road/tram depots.
+* Fix mass order destination change not working with load/unload by cargo orders.
+* Fix mass order destination change not preserving locked waiting times.
+* Fix crash when using -q switch on a savegame which could not be loaded.
+* Add modifier key window for toggling shift/ctrl key states using mouse.
+* Bump trunk base from commit dabccf70b4c02f68ebf51aca807376ca4f2a0e15 to commit 1f418555a13b63379e4ce52ec96cbed6e04dca7d.
+
 ### v0.32-rc3 (2019-08-29)
 * Include change from v0.31.5
 
