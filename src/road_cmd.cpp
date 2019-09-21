@@ -1651,6 +1651,9 @@ void DrawRoadCatenary(const TileInfo *ti)
 				tram = road = DiagDirToRoadBits(GetRoadStopDir(ti->tile));
 			}
 		}
+	} else if (IsTileType(ti->tile, MP_TUNNELBRIDGE)) {
+		road = GetCustomBridgeHeadRoadBits(ti->tile, RTT_ROAD);
+		tram = GetCustomBridgeHeadRoadBits(ti->tile, RTT_TRAM);
 	} else {
 		// No road here, no catenary to draw
 		return;
