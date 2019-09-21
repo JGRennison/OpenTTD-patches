@@ -68,6 +68,7 @@ CargoTypes _town_cargoes_accepted; ///< Bitmap of all cargoes accepted by houses
 TownPool _town_pool("Town");
 INSTANTIATE_POOL_METHODS(Town)
 
+static bool CanFollowRoad(TileIndex tile, DiagDirection dir);
 
 TownKdtree _town_kdtree(&Kdtree_TownXYFunc);
 
@@ -1553,9 +1554,31 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 		bool allow_house = true; // Value which decides if we want to construct a house
 
 		/* Reached a tunnel/bridge? Then continue at the other side of it, unless
-		 * it is the starting tile. Half the time, we stay on this side then.*/
+		 * it is the starting tile. Half the time, we stay on this side then.
+		 * For custom bridge heads decide whether or not to cross depending on the available
+		 * head road bits. */
 		if (IsTileType(tile, MP_TUNNELBRIDGE)) {
-			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_ROAD && (target_dir != DIAGDIR_END || Chance16(1, 2))) {
+			if (IsRoadCustomBridgeHeadTile(tile)) {
+				if (target_dir != DIAGDIR_END) {
+					/* don't go back to the source direction */
+					cur_rb &= ~DiagDirToRoadBits(ReverseDiagDir(target_dir));
+				}
+
+				/* randomly pick a usable head road bit */
+				do {
+					if (cur_rb == ROAD_NONE) return;
+					RoadBits target_bits;
+					do {
+						target_dir = RandomDiagDir();
+						target_bits = DiagDirToRoadBits(target_dir);
+					} while (!(cur_rb & target_bits));
+					cur_rb &= ~target_bits;
+				} while (!(target_dir == GetTunnelBridgeDirection(tile) || CanFollowRoad(tile, target_dir)));
+				if (target_dir == GetTunnelBridgeDirection(tile)) {
+					/* cross the bridge */
+					*tile_ptr = GetOtherTunnelBridgeEnd(tile);
+				}
+			} else if (GetTunnelBridgeTransportType(tile) == TRANSPORT_ROAD && (target_dir != DIAGDIR_END || Chance16(1, 2))) {
 				*tile_ptr = GetOtherTunnelBridgeEnd(tile);
 			}
 			return;
@@ -1745,19 +1768,31 @@ static bool GrowTownAtRoad(Town *t, TileIndex tile)
 	do {
 		RoadBits cur_rb = GetTownRoadBits(tile); // The RoadBits of the current tile
 
+		TileIndex orig_tile = tile;
+
 		/* Try to grow the town from this point */
 		GrowTownInTile(&tile, cur_rb, target_dir, t);
 		if (_grow_town_result == GROWTH_SUCCEED) return true;
 
-		/* Exclude the source position from the bitmask
-		 * and return if no more road blocks available */
-		if (IsValidDiagDirection(target_dir)) cur_rb &= ~DiagDirToRoadBits(ReverseDiagDir(target_dir));
+		if (orig_tile == tile) {
+			/* Exclude the source position from the bitmask
+			 * and return if no more road blocks available */
+			if (IsValidDiagDirection(target_dir)) cur_rb &= ~DiagDirToRoadBits(ReverseDiagDir(target_dir));
+		} else {
+			/* Crossed bridge/tunnel, no need to mask bits */
+			cur_rb = GetTownRoadBits(tile);
+		}
 		if (cur_rb == ROAD_NONE) return false;
 
-		if (IsTileType(tile, MP_TUNNELBRIDGE)) {
+		const bool custom_bridge_head = IsRoadCustomBridgeHeadTile(tile);
+		if (IsTileType(tile, MP_TUNNELBRIDGE) && !custom_bridge_head) {
 			/* Only build in the direction away from the tunnel or bridge. */
 			target_dir = ReverseDiagDir(GetTunnelBridgeDirection(tile));
 		} else {
+			if (custom_bridge_head) {
+				/* Do not build into the bridge */
+				cur_rb &= ~DiagDirToRoadBits(GetTunnelBridgeDirection(tile));
+			}
 			/* Select a random bit from the blockmask, walk a step
 			 * and continue the search from there. */
 			do {
