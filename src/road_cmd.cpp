@@ -2610,7 +2610,7 @@ CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			}
 
 			uint num_pieces;
-			if (GetRoadTileType(tile) == ROAD_TILE_DEPOT) {
+			if (IsRoadDepotTile(tile)) {
 				num_pieces = HasTileRoadType(tile, rtt) ? 2 : 0;
 			} else {
 				num_pieces = CountBits(GetAnyRoadBits(tile, rtt));
