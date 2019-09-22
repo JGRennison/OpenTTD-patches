@@ -2,6 +2,13 @@
 
 * * *
 
+### v0.32-rc5 (2019-09-22)
+* Fix crash when using road convert tool on road station tiles.
+* Fix crash when clicking on a station from the order window where the station sign tile is not a station tile.
+* Fix road/tram catenary not being drawn on custom bridge heads.
+* Fix town growth not correctly following custom bridge heads.
+* Fix line heights of fonts on Windows in some circumstances.
+
 ### v0.32-rc4 (2019-09-18)
 * Fix crash when removing docking tile adjacent to an industry without an associated station.
 * Fix crash which could occur after copying orders over an order list currently containing conditional orders.
