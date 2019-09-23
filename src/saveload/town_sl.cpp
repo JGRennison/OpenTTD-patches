@@ -239,6 +239,17 @@ static const SaveLoad _town_received_desc_spp[] = {
 	SLE_END()
 };
 
+std::vector<SaveLoad> _filtered_town_desc;
+std::vector<SaveLoad> _filtered_town_supplied_desc;
+std::vector<SaveLoad> _filtered_town_received_desc;
+
+static void SetupDescs_TOWN()
+{
+	_filtered_town_desc = SlFilterObject(_town_desc);
+	_filtered_town_supplied_desc = SlFilterObject(_town_supplied_desc);
+	_filtered_town_received_desc = SlFilterObject(_town_received_desc);
+}
+
 static void Save_HIDS()
 {
 	Save_NewGRFMapping(_house_mngr);
@@ -264,22 +275,16 @@ const SaveLoad *GetTileMatrixDesc()
 
 static void RealSave_Town(Town *t)
 {
-	SlObject(t, _town_desc);
+	SlObjectSaveFiltered(t, _filtered_town_desc.data());
 
 	for (CargoID i = 0; i < NUM_CARGO; i++) {
-		SlObject(&t->supplied[i], _town_supplied_desc);
+		SlObjectSaveFiltered(&t->supplied[i], _filtered_town_supplied_desc.data());
 	}
-	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
-		for (int i = TE_BEGIN; i < NUM_TE; i++) {
-			SlObject(&t->received[i], _town_received_desc_spp);
-		}
-	} else {
-		for (int i = TE_BEGIN; i < NUM_TE; i++) {
-			SlObject(&t->received[i], _town_received_desc);
-		}
+	for (int i = TE_BEGIN; i < NUM_TE; i++) {
+		SlObjectSaveFiltered(&t->received[i], _filtered_town_received_desc.data());
 	}
 
-	SlObject(&t->cargo_accepted, GetTileMatrixDesc());
+	SlObjectSaveFiltered(&t->cargo_accepted, GetTileMatrixDesc()); // GetTileMatrixDesc() has no conditionals
 	if (t->cargo_accepted.area.w != 0) {
 		uint arr_len = t->cargo_accepted.area.w / AcceptanceMatrix::GRID * t->cargo_accepted.area.h / AcceptanceMatrix::GRID;
 		SlArray(t->cargo_accepted.data, arr_len, SLE_UINT64);
@@ -288,8 +293,8 @@ static void RealSave_Town(Town *t)
 
 static void Save_TOWN()
 {
+	SetupDescs_TOWN();
 	Town *t;
-
 	FOR_ALL_TOWNS(t) {
 		SlSetArrayIndex(t->index);
 		SlAutolength((AutolengthProc*)RealSave_Town, t);
@@ -298,15 +303,16 @@ static void Save_TOWN()
 
 static void Load_TOWN()
 {
+	SetupDescs_TOWN();
 	int index;
 	uint num_cargo = IsSavegameVersionBefore(SLV_EXTEND_CARGOTYPES) ? 32 : NUM_CARGO;
 
 	while ((index = SlIterateArray()) != -1) {
 		Town *t = new (index) Town();
-		SlObject(t, _town_desc);
+		SlObjectLoadFiltered(t, _filtered_town_desc.data());
 
 		for (CargoID i = 0; i < num_cargo; i++) {
-			SlObject(&t->supplied[i], _town_supplied_desc);
+			SlObjectLoadFiltered(&t->supplied[i], _filtered_town_supplied_desc.data());
 		}
 		if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
 			for (int i = TE_BEGIN; i < NUM_TE; i++) {
@@ -314,7 +320,7 @@ static void Load_TOWN()
 			}
 		} else {
 			for (int i = TE_BEGIN; i < NUM_TE; i++) {
-				SlObject(&t->received[i], _town_received_desc);
+				SlObjectLoadFiltered(&t->received[i], _filtered_town_received_desc.data());
 			}
 		}
 
@@ -331,7 +337,7 @@ static void Load_TOWN()
 			}
 		}
 		if (SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_MATRIX)) {
-			SlObject(&t->cargo_accepted, GetTileMatrixDesc());
+			SlObjectLoadFiltered(&t->cargo_accepted, GetTileMatrixDesc()); // GetTileMatrixDesc() has no conditionals
 			if (t->cargo_accepted.area.w != 0) {
 				uint arr_len = t->cargo_accepted.area.w / AcceptanceMatrix::GRID * t->cargo_accepted.area.h / AcceptanceMatrix::GRID;
 				t->cargo_accepted.data = MallocT<CargoTypes>(arr_len);
@@ -349,9 +355,10 @@ static void Ptrs_TOWN()
 	/* Don't run when savegame version lower than 161. */
 	if (IsSavegameVersionBefore(SLV_161)) return;
 
+	SetupDescs_TOWN();
 	Town *t;
 	FOR_ALL_TOWNS(t) {
-		SlObject(t, _town_desc);
+		SlObjectPtrOrNullFiltered(t, _filtered_town_desc.data());
 	}
 }
 

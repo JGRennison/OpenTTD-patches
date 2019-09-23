@@ -17,6 +17,7 @@
 #include "extended_ver_sl.h"
 
 #include <stdarg.h>
+#include <vector>
 
 /** SaveLoad versions
  * Previous savegame versions, the trunk revision where they were
@@ -1024,6 +1025,12 @@ void SlGlobList(const SaveLoadGlobVarList *sldg);
 void SlArray(void *array, size_t length, VarType conv);
 void SlObject(void *object, const SaveLoad *sld);
 bool SlObjectMember(void *object, const SaveLoad *sld);
+
+std::vector<SaveLoad> SlFilterObject(const SaveLoad *sld);
+void SlObjectSaveFiltered(void *object, const SaveLoad *sld);
+void SlObjectLoadFiltered(void *object, const SaveLoad *sld);
+void SlObjectPtrOrNullFiltered(void *object, const SaveLoad *sld);
+
 void NORETURN SlError(StringID string, const char *extra_msg = nullptr, bool already_malloced = false);
 void NORETURN SlErrorCorrupt(const char *msg, bool already_malloced = false);
 void NORETURN CDECL SlErrorFmt(StringID string, const char *msg, ...) WARN_FORMAT(2, 3);

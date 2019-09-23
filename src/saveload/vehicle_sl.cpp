@@ -951,20 +951,51 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 	return _veh_descs[vt];
 }
 
+static std::vector<SaveLoad> _filtered_train_desc;
+static std::vector<SaveLoad> _filtered_roadveh_desc;
+static std::vector<SaveLoad> _filtered_ship_desc;
+static std::vector<SaveLoad> _filtered_aircraft_desc;
+static std::vector<SaveLoad> _filtered_special_desc;
+static std::vector<SaveLoad> _filtered_disaster_desc;
+
+static std::vector<SaveLoad> * const _filtered_veh_descs[] = {
+	&_filtered_train_desc,
+	&_filtered_roadveh_desc,
+	&_filtered_ship_desc,
+	&_filtered_aircraft_desc,
+	&_filtered_special_desc,
+	&_filtered_disaster_desc,
+};
+
+const SaveLoad *GetVehicleDescriptionFiltered(VehicleType vt)
+{
+	return _filtered_veh_descs[vt]->data();
+}
+
+static void SetupDescs_VEHS()
+{
+	for (size_t i = 0; i < lengthof(_filtered_veh_descs); i++) {
+		*(_filtered_veh_descs[i]) = SlFilterObject(GetVehicleDescription((VehicleType) i));
+	}
+}
+
 /** Will be called when the vehicles need to be saved. */
 static void Save_VEHS()
 {
+	SetupDescs_VEHS();
 	Vehicle *v;
 	/* Write the vehicles */
 	FOR_ALL_VEHICLES(v) {
 		SlSetArrayIndex(v->index);
-		SlObject(v, GetVehicleDescription(v->type));
+		SlObjectSaveFiltered(v, GetVehicleDescriptionFiltered(v->type));
 	}
 }
 
 /** Will be called when vehicles need to be loaded. */
 void Load_VEHS()
 {
+	SetupDescs_VEHS();
+
 	int index;
 
 	_cargo_count = 0;
@@ -984,7 +1015,7 @@ void Load_VEHS()
 			default: SlErrorCorrupt("Invalid vehicle type");
 		}
 
-		SlObject(v, GetVehicleDescription(vtype));
+		SlObjectLoadFiltered(v, GetVehicleDescriptionFiltered(vtype));
 
 		if (_cargo_count != 0 && IsCompanyBuildableVehicleType(v) && CargoPacket::CanAllocateItem()) {
 			/* Don't construct the packet with station here, because that'll fail with old savegames */
@@ -1013,9 +1044,11 @@ void Load_VEHS()
 
 static void Ptrs_VEHS()
 {
+	SetupDescs_VEHS();
+
 	Vehicle *v;
 	FOR_ALL_VEHICLES(v) {
-		SlObject(v, GetVehicleDescription(v->type));
+		SlObjectPtrOrNullFiltered(v, GetVehicleDescriptionFiltered(v->type));
 	}
 }
 

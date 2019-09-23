@@ -119,11 +119,11 @@ const SaveLoad *GetCargoPacketDesc()
  */
 static void Save_CAPA()
 {
+	std::vector<SaveLoad> filtered_packet_desc = SlFilterObject(GetCargoPacketDesc());
 	CargoPacket *cp;
-
 	FOR_ALL_CARGOPACKETS(cp) {
 		SlSetArrayIndex(cp->index);
-		SlObject(cp, GetCargoPacketDesc());
+		SlObjectSaveFiltered(cp, filtered_packet_desc.data());
 	}
 }
 
@@ -132,11 +132,11 @@ static void Save_CAPA()
  */
 static void Load_CAPA()
 {
+	std::vector<SaveLoad> filtered_packet_desc = SlFilterObject(GetCargoPacketDesc());
 	int index;
-
 	while ((index = SlIterateArray()) != -1) {
 		CargoPacket *cp = new (index) CargoPacket();
-		SlObject(cp, GetCargoPacketDesc());
+		SlObjectLoadFiltered(cp, filtered_packet_desc.data());
 	}
 }
 

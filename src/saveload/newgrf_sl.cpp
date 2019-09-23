@@ -33,7 +33,8 @@ void Save_NewGRFMapping(const OverrideManagerBase &mapping)
 {
 	for (uint i = 0; i < mapping.GetMaxMapping(); i++) {
 		SlSetArrayIndex(i);
-		SlObject(&mapping.mapping_ID[i], _newgrf_mapping_desc);
+		SlSetLength(4 + 1 + 1);
+		SlObjectSaveFiltered(&mapping.mapping_ID[i], _newgrf_mapping_desc); // _newgrf_mapping_desc has no conditionals
 	}
 }
 
@@ -51,8 +52,8 @@ void Load_NewGRFMapping(OverrideManagerBase &mapping)
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		if ((uint)index >= max_id) SlErrorCorrupt("Too many NewGRF entity mappings");
-		SlObject(&mapping.mapping_ID[index], _newgrf_mapping_desc);
+		if (unlikely((uint)index >= max_id)) SlErrorCorrupt("Too many NewGRF entity mappings");
+		SlObjectLoadFiltered(&mapping.mapping_ID[index], _newgrf_mapping_desc); // _newgrf_mapping_desc has no conditionals
 	}
 }
 

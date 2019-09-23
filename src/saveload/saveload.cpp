@@ -889,9 +889,10 @@ void WriteValue(void *ptr, VarType conv, int64 val)
  * @param ptr The object being filled/read
  * @param conv VarType type of the current element of the struct
  */
-static void SlSaveLoadConv(void *ptr, VarType conv)
+template <SaveLoadAction action>
+static void SlSaveLoadConvGeneric(void *ptr, VarType conv)
 {
-	switch (_sl.action) {
+	switch (action) {
 		case SLA_SAVE: {
 			int64 x = ReadValue(ptr, conv);
 
@@ -933,6 +934,23 @@ static void SlSaveLoadConv(void *ptr, VarType conv)
 		}
 		case SLA_PTRS: break;
 		case SLA_NULL: break;
+		default: NOT_REACHED();
+	}
+}
+
+void SlSaveLoadConv(void *ptr, VarType conv)
+{
+	switch (_sl.action) {
+		case SLA_SAVE:
+			SlSaveLoadConvGeneric<SLA_SAVE>(ptr, conv);
+			return;
+		case SLA_LOAD_CHECK:
+		case SLA_LOAD:
+			SlSaveLoadConvGeneric<SLA_LOAD>(ptr, conv);
+			return;
+		case SLA_PTRS:
+		case SLA_NULL:
+			return;
 		default: NOT_REACHED();
 	}
 }
@@ -1679,10 +1697,94 @@ static bool IsVariableSizeRight(const SaveLoad *sld)
 
 #endif /* OTTD_ASSERT */
 
-bool SlObjectMember(void *ptr, const SaveLoad *sld)
+void SlFilterObject(const SaveLoad *sld, std::vector<SaveLoad> &save);
+
+static void SlFilterObjectMember(const SaveLoad *sld, std::vector<SaveLoad> &save)
 {
 #ifdef OTTD_ASSERT
 	assert(IsVariableSizeRight(sld));
+#endif
+
+	switch (sld->cmd) {
+		case SL_VAR:
+		case SL_REF:
+		case SL_ARR:
+		case SL_STR:
+		case SL_LST:
+		case SL_PTRDEQ:
+		case SL_VEC:
+		case SL_DEQUE:
+		case SL_STDSTR:
+		case SL_VARVEC:
+			/* CONDITIONAL saveload types depend on the savegame version */
+			if (!SlIsObjectValidInSavegame(sld)) return;
+			if (SlSkipVariableOnLoad(sld)) return;
+
+			switch (_sl.action) {
+				case SLA_SAVE:
+				case SLA_LOAD_CHECK:
+				case SLA_LOAD:
+					break;
+				case SLA_PTRS:
+				case SLA_NULL:
+					switch (sld->cmd) {
+						case SL_REF:
+						case SL_LST:
+						case SL_PTRDEQ:
+						case SL_VEC:
+							break;
+
+						/* non-ptr types do not require SLA_PTRS or SLA_NULL actions */
+						default:
+							return;
+					}
+					break;
+				default: NOT_REACHED();
+			}
+
+			save.push_back(*sld);
+			break;
+
+		/* SL_WRITEBYTE writes a value to the savegame to identify the type of an object.
+		 * When loading, the value is read explictly with SlReadByte() to determine which
+		 * object description to use. */
+		case SL_WRITEBYTE:
+			if (_sl.action == SLA_SAVE) save.push_back(*sld);
+			break;
+
+		/* SL_VEH_INCLUDE loads common code for vehicles */
+		case SL_VEH_INCLUDE:
+			SlFilterObject(GetVehicleDescription(VEH_END), save);
+			break;
+
+		case SL_ST_INCLUDE:
+			SlFilterObject(GetBaseStationDescription(), save);
+			break;
+
+		default: NOT_REACHED();
+	}
+}
+
+void SlFilterObject(const SaveLoad *sld, std::vector<SaveLoad> &save)
+{
+	for (; sld->cmd != SL_END; sld++) {
+		SlFilterObjectMember(sld, save);
+	}
+}
+
+std::vector<SaveLoad> SlFilterObject(const SaveLoad *sld)
+{
+	std::vector<SaveLoad> save;
+	SlFilterObject(sld, save);
+	save.push_back(SLE_END());
+	return save;
+}
+
+template <SaveLoadAction action, bool check_version>
+bool SlObjectMemberGeneric(void *ptr, const SaveLoad *sld)
+{
+#ifdef OTTD_ASSERT
+	if (check_version) assert(IsVariableSizeRight(sld));
 #endif
 
 	VarType conv = GB(sld->conv, 0, 8);
@@ -1698,13 +1800,15 @@ bool SlObjectMember(void *ptr, const SaveLoad *sld)
 		case SL_STDSTR:
 		case SL_VARVEC:
 			/* CONDITIONAL saveload types depend on the savegame version */
-			if (!SlIsObjectValidInSavegame(sld)) return false;
-			if (SlSkipVariableOnLoad(sld)) return false;
+			if (check_version) {
+				if (!SlIsObjectValidInSavegame(sld)) return false;
+				if (SlSkipVariableOnLoad(sld)) return false;
+			}
 
 			switch (sld->cmd) {
-				case SL_VAR: SlSaveLoadConv(ptr, conv); break;
+				case SL_VAR: SlSaveLoadConvGeneric<action>(ptr, conv); break;
 				case SL_REF: // Reference variable, translate
-					switch (_sl.action) {
+					switch (action) {
 						case SLA_SAVE:
 							SlWriteUint32((uint32)ReferenceToInt(*(void **)ptr, (SLRefType)conv));
 							break;
@@ -1747,7 +1851,7 @@ bool SlObjectMember(void *ptr, const SaveLoad *sld)
 		 * When loading, the value is read explictly with SlReadByte() to determine which
 		 * object description to use. */
 		case SL_WRITEBYTE:
-			switch (_sl.action) {
+			switch (action) {
 				case SLA_SAVE: SlWriteByte(*(uint8 *)ptr); break;
 				case SLA_LOAD_CHECK:
 				case SLA_LOAD:
@@ -1771,6 +1875,22 @@ bool SlObjectMember(void *ptr, const SaveLoad *sld)
 	return true;
 }
 
+bool SlObjectMember(void *ptr, const SaveLoad *sld)
+{
+	switch (_sl.action) {
+		case SLA_SAVE:
+			return SlObjectMemberGeneric<SLA_SAVE, true>(ptr, sld);
+		case SLA_LOAD_CHECK:
+		case SLA_LOAD:
+			return SlObjectMemberGeneric<SLA_LOAD, true>(ptr, sld);
+		case SLA_PTRS:
+			return SlObjectMemberGeneric<SLA_PTRS, true>(ptr, sld);
+		case SLA_NULL:
+			return SlObjectMemberGeneric<SLA_NULL, true>(ptr, sld);
+		default: NOT_REACHED();
+	}
+}
+
 /**
  * Main SaveLoad function.
  * @param object The object that is being saved or loaded
@@ -1786,6 +1906,48 @@ void SlObject(void *object, const SaveLoad *sld)
 	for (; sld->cmd != SL_END; sld++) {
 		void *ptr = sld->global ? sld->address : GetVariableAddress(object, sld);
 		SlObjectMember(ptr, sld);
+	}
+}
+
+template <SaveLoadAction action, bool check_version>
+void SlObjectIterateBase(void *object, const SaveLoad *sld)
+{
+	for (; sld->cmd != SL_END; sld++) {
+		void *ptr = sld->global ? sld->address : GetVariableAddress(object, sld);
+		SlObjectMemberGeneric<action, check_version>(ptr, sld);
+	}
+}
+
+void SlObjectSaveFiltered(void *object, const SaveLoad *sld)
+{
+	if (_sl.need_length != NL_NONE) {
+		_sl.need_length = NL_NONE;
+		_sl.dumper->StartAutoLength();
+		SlObjectIterateBase<SLA_SAVE, false>(object, sld);
+		auto result = _sl.dumper->StopAutoLength();
+		_sl.need_length = NL_WANTLENGTH;
+		SlSetLength(result.second);
+		_sl.dumper->CopyBytes(result.first, result.second);
+	} else {
+		SlObjectIterateBase<SLA_SAVE, false>(object, sld);
+	}
+}
+
+void SlObjectLoadFiltered(void *object, const SaveLoad *sld)
+{
+	SlObjectIterateBase<SLA_LOAD, false>(object, sld);
+}
+
+void SlObjectPtrOrNullFiltered(void *object, const SaveLoad *sld)
+{
+	switch (_sl.action) {
+		case SLA_PTRS:
+			SlObjectIterateBase<SLA_PTRS, false>(object, sld);
+			return;
+		case SLA_NULL:
+			SlObjectIterateBase<SLA_NULL, false>(object, sld);
+			return;
+		default: NOT_REACHED();
 	}
 }
 

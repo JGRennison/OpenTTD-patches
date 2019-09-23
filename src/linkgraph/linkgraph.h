@@ -534,7 +534,8 @@ protected:
 	friend class LinkGraph::Node;
 	friend const SaveLoad *GetLinkGraphDesc();
 	friend const SaveLoad *GetLinkGraphJobDesc();
-	friend void SaveLoad_LinkGraph(LinkGraph &lg);
+	friend void Save_LinkGraph(LinkGraph &lg);
+	friend void Load_LinkGraph(LinkGraph &lg);
 
 	CargoID cargo;         ///< Cargo of this component's link graph.
 	Date last_compression; ///< Last time the capacities and supplies were compressed.

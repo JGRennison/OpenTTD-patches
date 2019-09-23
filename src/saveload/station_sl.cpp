@@ -489,10 +489,31 @@ const SaveLoad *GetBaseStationDescription()
 	return _base_station_desc;
 }
 
+std::vector<SaveLoad> _filtered_station_desc;
+std::vector<SaveLoad> _filtered_waypoint_desc;
+std::vector<SaveLoad> _filtered_goods_desc;
+std::vector<SaveLoad> _filtered_station_speclist_desc;
+
+static void SetupDescs_STNN()
+{
+	_filtered_station_desc = SlFilterObject(_station_desc);
+	_filtered_waypoint_desc = SlFilterObject(_waypoint_desc);
+	_filtered_goods_desc = SlFilterObject(GetGoodsDesc());
+	_filtered_station_speclist_desc = SlFilterObject(_station_speclist_desc);
+}
+
+std::vector<SaveLoad> _filtered_roadstop_desc;
+
+static void SetupDescs_ROADSTOP()
+{
+	_filtered_roadstop_desc = SlFilterObject(_roadstop_desc);
+}
+
+
 static void RealSave_STNN(BaseStation *bst)
 {
 	bool waypoint = (bst->facilities & FACIL_WAYPOINT) != 0;
-	SlObject(bst, waypoint ? _waypoint_desc : _station_desc);
+	SlObjectSaveFiltered(bst, waypoint ? _filtered_waypoint_desc.data() : _filtered_station_desc.data());
 
 	MemoryDumper *dumper = MemoryDumper::GetCurrent();
 
@@ -504,7 +525,7 @@ static void RealSave_STNN(BaseStation *bst)
 			for (FlowStatMap::const_iterator it(st->goods[i].flows.begin()); it != st->goods[i].flows.end(); ++it) {
 				_num_flows += (uint32)it->second.GetShares()->size();
 			}
-			SlObject(&st->goods[i], GetGoodsDesc());
+			SlObjectSaveFiltered(&st->goods[i], _filtered_goods_desc.data());
 			for (FlowStatMap::const_iterator outer_it(st->goods[i].flows.begin()); outer_it != st->goods[i].flows.end(); ++outer_it) {
 				const FlowStat::SharesMap *shares = outer_it->second.GetShares();
 				uint32 sum_shares = 0;
@@ -526,18 +547,20 @@ static void RealSave_STNN(BaseStation *bst)
 				}
 			}
 			for (StationCargoPacketMap::ConstMapIterator it(st->goods[i].cargo.Packets()->begin()); it != st->goods[i].cargo.Packets()->end(); ++it) {
-				SlObject(const_cast<StationCargoPacketMap::value_type *>(&(*it)), _cargo_list_desc);
+				SlObjectSaveFiltered(const_cast<StationCargoPacketMap::value_type *>(&(*it)), _cargo_list_desc); // _cargo_list_desc has no conditionals
 			}
 		}
 	}
 
 	for (uint i = 0; i < bst->num_specs; i++) {
-		SlObject(&bst->speclist[i], _station_speclist_desc);
+		SlObjectSaveFiltered(&bst->speclist[i], _filtered_station_speclist_desc.data());
 	}
 }
 
 static void Save_STNN()
 {
+	SetupDescs_STNN();
+
 	BaseStation *st;
 	/* Write the stations */
 	FOR_ALL_BASE_STATIONS(st) {
@@ -548,6 +571,8 @@ static void Save_STNN()
 
 static void Load_STNN()
 {
+	SetupDescs_STNN();
+
 	_num_flows = 0;
 
 	const uint num_cargo = IsSavegameVersionBefore(SLV_EXTEND_CARGOTYPES) ? 32 : NUM_CARGO;
@@ -558,7 +583,7 @@ static void Load_STNN()
 		bool waypoint = (SlReadByte() & FACIL_WAYPOINT) != 0;
 
 		BaseStation *bst = waypoint ? (BaseStation *)new (index) Waypoint() : new (index) Station();
-		SlObject(bst, waypoint ? _waypoint_desc : _station_desc);
+		SlObjectLoadFiltered(bst, waypoint ? _filtered_waypoint_desc.data() : _filtered_station_desc.data());
 
 		if (!waypoint) {
 			Station *st = Station::From(bst);
@@ -572,7 +597,7 @@ static void Load_STNN()
 			}
 
 			for (CargoID i = 0; i < num_cargo; i++) {
-				SlObject(&st->goods[i], GetGoodsDesc());
+				SlObjectLoadFiltered(&st->goods[i], _filtered_goods_desc.data());
 				FlowSaveLoad flow;
 				FlowStat *fs = nullptr;
 				StationID prev_source = INVALID_STATION;
@@ -596,7 +621,7 @@ static void Load_STNN()
 				} else {
 					StationCargoPair pair;
 					for (uint j = 0; j < _num_dests; ++j) {
-						SlObject(&pair, _cargo_list_desc);
+						SlObjectLoadFiltered(&pair, _cargo_list_desc); // _cargo_list_desc has no conditionals
 						const_cast<StationCargoPacketMap &>(*(st->goods[i].cargo.Packets()))[pair.first].swap(pair.second);
 						assert(pair.second.empty());
 					}
@@ -609,7 +634,7 @@ static void Load_STNN()
 			/* Allocate speclist memory when loading a game */
 			bst->speclist = CallocT<StationSpecList>(bst->num_specs);
 			for (uint i = 0; i < bst->num_specs; i++) {
-				SlObject(&bst->speclist[i], _station_speclist_desc);
+				SlObjectLoadFiltered(&bst->speclist[i], _filtered_station_speclist_desc.data());
 			}
 		}
 	}
@@ -620,6 +645,12 @@ static void Ptrs_STNN()
 	/* Don't run when savegame version lower than 123. */
 	if (IsSavegameVersionBefore(SLV_123)) return;
 
+	SetupDescs_STNN();
+
+	if (!IsSavegameVersionBefore(SLV_183)) {
+		assert(_filtered_goods_desc[0].cmd == SL_END);
+	}
+
 	uint num_cargo = IsSavegameVersionBefore(SLV_EXTEND_CARGOTYPES) ? 32 : NUM_CARGO;
 	Station *st;
 	FOR_ALL_STATIONS(st) {
@@ -627,50 +658,51 @@ static void Ptrs_STNN()
 			GoodsEntry *ge = &st->goods[i];
 			if (IsSavegameVersionBefore(SLV_183)) {
 				SwapPackets(ge);
-				SlObject(ge, GetGoodsDesc());
+				SlObjectPtrOrNullFiltered(ge, _filtered_goods_desc.data());
 				SwapPackets(ge);
 			} else {
-				SlObject(ge, GetGoodsDesc());
+				//SlObject(ge, GetGoodsDesc());
 				for (StationCargoPacketMap::ConstMapIterator it = ge->cargo.Packets()->begin(); it != ge->cargo.Packets()->end(); ++it) {
-					SlObject(const_cast<StationCargoPair *>(&(*it)), _cargo_list_desc);
+					SlObjectPtrOrNullFiltered(const_cast<StationCargoPair *>(&(*it)), _cargo_list_desc); // _cargo_list_desc has no conditionals
 				}
 			}
 		}
-		SlObject(st, _station_desc);
+		SlObjectPtrOrNullFiltered(st, _filtered_station_desc.data());
 	}
 
 	Waypoint *wp;
 	FOR_ALL_WAYPOINTS(wp) {
-		SlObject(wp, _waypoint_desc);
+		SlObjectPtrOrNullFiltered(wp, _filtered_waypoint_desc.data());
 	}
 }
 
 static void Save_ROADSTOP()
 {
+	SetupDescs_ROADSTOP();
 	RoadStop *rs;
-
 	FOR_ALL_ROADSTOPS(rs) {
 		SlSetArrayIndex(rs->index);
-		SlObject(rs, _roadstop_desc);
+		SlObjectSaveFiltered(rs, _filtered_roadstop_desc.data());
 	}
 }
 
 static void Load_ROADSTOP()
 {
+	SetupDescs_ROADSTOP();
 	int index;
-
 	while ((index = SlIterateArray()) != -1) {
 		RoadStop *rs = new (index) RoadStop(INVALID_TILE);
 
-		SlObject(rs, _roadstop_desc);
+		SlObjectLoadFiltered(rs, _filtered_roadstop_desc.data());
 	}
 }
 
 static void Ptrs_ROADSTOP()
 {
+	SetupDescs_ROADSTOP();
 	RoadStop *rs;
 	FOR_ALL_ROADSTOPS(rs) {
-		SlObject(rs, _roadstop_desc);
+		SlObjectPtrOrNullFiltered(rs, _filtered_roadstop_desc.data());
 	}
 }
 
