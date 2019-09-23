@@ -428,10 +428,10 @@ bool Station::CatchmentCoversTown(TownID t) const
  * Recompute tiles covered in our catchment area.
  * This will additionally recompute nearby towns and industries.
  */
-void Station::RecomputeCatchment()
+void Station::RecomputeCatchment(bool no_clear_nearby_lists)
 {
 	this->industries_near.clear();
-	this->RemoveFromAllNearbyLists();
+	if (!no_clear_nearby_lists) this->RemoveFromAllNearbyLists();
 
 	if (this->rect.IsEmpty()) {
 		this->catchment_tiles.Reset();
@@ -498,8 +498,12 @@ void Station::RecomputeCatchment()
  */
 /* static */ void Station::RecomputeCatchmentForAll()
 {
+	Town *t;
+	FOR_ALL_TOWNS(t) { t->stations_near.clear(); }
+	Industry *i;
+	FOR_ALL_INDUSTRIES(i) { i->stations_near.clear(); }
 	Station *st;
-	FOR_ALL_STATIONS(st) { st->RecomputeCatchment(); }
+	FOR_ALL_STATIONS(st) { st->RecomputeCatchment(true); }
 }
 
 /************************************************************************/
