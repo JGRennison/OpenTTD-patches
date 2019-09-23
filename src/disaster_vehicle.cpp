@@ -56,6 +56,8 @@
 /** Delay counter for considering the next disaster. */
 uint16 _disaster_delay;
 
+static uint32 _disaster_vehicle_count = 0;
+
 static void DisasterClearSquare(TileIndex tile)
 {
 	if (EnsureNoVehicleOnGround(tile).Failed()) return;
@@ -121,6 +123,7 @@ DisasterVehicle::DisasterVehicle() :
 		SpecializedVehicleBase()
 {
 	RegisterGameEvents(GEF_DISASTER_VEH);
+	_disaster_vehicle_count++;
 }
 
 /**
@@ -135,6 +138,7 @@ DisasterVehicle::DisasterVehicle(int x, int y, Direction direction, DisasterSubT
 		SpecializedVehicleBase(), big_ufo_destroyer_target(big_ufo_destroyer_target)
 {
 	RegisterGameEvents(GEF_DISASTER_VEH);
+	_disaster_vehicle_count++;
 
 	this->vehstatus = VS_UNCLICKABLE;
 
@@ -181,6 +185,11 @@ DisasterVehicle::DisasterVehicle(int x, int y, Direction direction, DisasterSubT
 
 	this->UpdateImage();
 	this->UpdatePositionAndViewport();
+}
+
+DisasterVehicle::~DisasterVehicle()
+{
+	_disaster_vehicle_count--;
 }
 
 /**
@@ -970,6 +979,8 @@ void StartupDisasters()
  */
 void ReleaseDisastersTargetingIndustry(IndustryID i)
 {
+	if (!_disaster_vehicle_count) return;
+
 	DisasterVehicle *v;
 	FOR_ALL_DISASTERVEHICLES(v) {
 		/* primary disaster vehicles that have chosen target */
@@ -986,6 +997,8 @@ void ReleaseDisastersTargetingIndustry(IndustryID i)
  */
 void ReleaseDisastersTargetingVehicle(VehicleID vehicle)
 {
+	if (!_disaster_vehicle_count) return;
+
 	DisasterVehicle *v;
 	FOR_ALL_DISASTERVEHICLES(v) {
 		/* primary disaster vehicles that have chosen target */
