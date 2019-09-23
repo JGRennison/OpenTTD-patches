@@ -184,15 +184,10 @@
 	AI::KillAll();
 
 	if (keepConfig) {
-		/* Run a rescan, which indexes all AIInfos again, and check if we can
-		 *  still load all the AIS, while keeping the configs in place */
-		Rescan();
+		/* Do not bother re-scanning AI files, just reset config */
+		ResetConfig();
 	} else {
-		delete AI::scanner_info;
-		delete AI::scanner_library;
-		AI::scanner_info = nullptr;
-		AI::scanner_library = nullptr;
-
+		/* Do not bother re-scanning AI files, just delete config */
 		for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
 			if (_settings_game.ai_config[c] != nullptr) {
 				delete _settings_game.ai_config[c];

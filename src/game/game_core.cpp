@@ -107,13 +107,10 @@
 	cur_company.Restore();
 
 	if (keepConfig) {
-		Rescan();
+		/* Do not bother re-scanning game script files, just reset config */
+		ResetConfig();
 	} else {
-		delete Game::scanner_info;
-		delete Game::scanner_library;
-		Game::scanner_info = nullptr;
-		Game::scanner_library = nullptr;
-
+		/* Do not bother re-scanning game script, just delete config */
 		if (_settings_game.game_config != nullptr) {
 			delete _settings_game.game_config;
 			_settings_game.game_config = nullptr;
