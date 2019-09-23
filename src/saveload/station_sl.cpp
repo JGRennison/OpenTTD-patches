@@ -585,7 +585,7 @@ static void Load_STNN()
 					if (!IsSavegameVersionBefore(SLV_187)) flow.restricted = (buffer->ReadByte() != 0);
 
 					if (fs == nullptr || prev_source != flow.source) {
-						fs = &(st->goods[i].flows.insert(std::make_pair(flow.source, FlowStat(flow.via, flow.share, flow.restricted))).first->second);
+						fs = &(st->goods[i].flows.insert(st->goods[i].flows.end(), std::make_pair(flow.source, FlowStat(flow.via, flow.share, flow.restricted)))->second);
 					} else {
 						fs->AppendShare(flow.via, flow.share, flow.restricted);
 					}

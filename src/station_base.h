@@ -74,7 +74,8 @@ public:
 	inline void AppendShare(StationID st, uint flow, bool restricted = false)
 	{
 		assert(flow > 0);
-		this->shares[(--this->shares.end())->first + flow] = st;
+		uint32 key = (--this->shares.end())->first + flow;
+		this->shares.insert(this->shares.end(), std::make_pair(key, st));
 		if (!restricted) this->unrestricted += flow;
 	}
 
