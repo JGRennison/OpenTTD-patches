@@ -35,16 +35,16 @@
 #include "safeguards.h"
 
 /** Size of the #Fio data buffer. */
-#define FIO_BUFFER_SIZE 512
+#define FIO_BUFFER_SIZE 8192
 
 /** Structure for keeping several open files with just one data buffer. */
 struct Fio {
+	byte buffer_start[FIO_BUFFER_SIZE];    ///< local buffer when read from file
 	byte *buffer, *buffer_end;             ///< position pointer in local buffer and last valid byte of buffer
 	size_t pos;                            ///< current (system) position in file
 	FILE *cur_fh;                          ///< current file handle
 	const char *filename;                  ///< current filename
 	FILE *handles[MAX_FILE_SLOTS];         ///< array of file handles we can have open
-	byte buffer_start[FIO_BUFFER_SIZE];    ///< local buffer when read from file
 	const char *filenames[MAX_FILE_SLOTS]; ///< array of filenames we (should) have open
 	char *shortnames[MAX_FILE_SLOTS];      ///< array of short names for spriteloader's use
 #if defined(LIMITED_FDS)
