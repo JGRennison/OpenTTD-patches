@@ -24,11 +24,15 @@
 #include "bitmap_type.h"
 #include <map>
 #include <vector>
+#include <iterator>
+#include <functional>
 
 typedef Pool<BaseStation, StationID, 32, 64000> StationPool;
 extern StationPool _station_pool;
 
 static const byte INITIAL_STATION_RATING = 175;
+
+class FlowStatMap;
 
 /**
  * Flow statistics telling how much flow should be sent along a link. This is
@@ -38,6 +42,7 @@ static const byte INITIAL_STATION_RATING = 175;
  * mean anything by itself.
  */
 class FlowStat {
+	friend FlowStatMap;
 public:
 	typedef btree::btree_map<uint32, StationID> SharesMap;
 
@@ -52,15 +57,17 @@ public:
 
 	/**
 	 * Create a FlowStat with an initial entry.
-	 * @param st Station the initial entry refers to.
+	 * @param origin Origin station for this flow.
+	 * @param via Station the initial entry refers to.
 	 * @param flow Amount of flow for the initial entry.
 	 * @param restricted If the flow to be added is restricted.
 	 */
-	inline FlowStat(StationID st, uint flow, bool restricted = false)
+	inline FlowStat(StationID origin, StationID via, uint flow, bool restricted = false)
 	{
 		assert(flow > 0);
-		this->shares[flow] = st;
+		this->shares[flow] = via;
 		this->unrestricted = restricted ? 0 : flow;
+		this->origin = origin;
 	}
 
 	/**
@@ -148,14 +155,66 @@ public:
 
 	void Invalidate();
 
+	inline StationID GetOrigin() const
+	{
+		return this->origin;
+	}
+
 private:
 	SharesMap shares;  ///< Shares of flow to be sent via specified station (or consumed locally).
 	uint unrestricted; ///< Limit for unrestricted shares.
+	StationID origin;
+};
+static_assert(std::is_nothrow_move_constructible<FlowStat>::value, "FlowStat must be nothrow move constructible");
+
+template<typename cv_value, typename cv_container, typename cv_index_iter>
+class FlowStatMapIterator
+{
+	friend FlowStatMap;
+	friend FlowStatMapIterator<FlowStat, FlowStatMap, btree::btree_map<StationID, uint16>::iterator>;
+	friend FlowStatMapIterator<const FlowStat, const FlowStatMap, btree::btree_map<StationID, uint16>::const_iterator>;
+public:
+	typedef FlowStat value_type;
+	typedef cv_value& reference;
+	typedef cv_value* pointer;
+	typedef ptrdiff_t difference_type;
+	typedef std::forward_iterator_tag iterator_category;
+
+	FlowStatMapIterator(cv_container *fsm, cv_index_iter current) :
+		fsm(fsm), current(current) {}
+
+	FlowStatMapIterator(const FlowStatMapIterator<FlowStat, FlowStatMap, btree::btree_map<StationID, uint16>::iterator> &other) :
+		fsm(other.fsm), current(other.current) {}
+
+	reference operator*() const { return this->fsm->flows_storage[this->current->second]; }
+	pointer operator->() const { return &(this->fsm->flows_storage[this->current->second]); }
+
+	FlowStatMapIterator& operator++()
+	{
+		++this->current;
+		return *this;
+	}
+
+	bool operator==(const FlowStatMapIterator& rhs) const { return this->current == rhs.current; }
+	bool operator!=(const FlowStatMapIterator& rhs) const { return !(operator==(rhs)); }
+
+private:
+	cv_container *fsm;
+	cv_index_iter current;
 };
 
 /** Flow descriptions by origin stations. */
-class FlowStatMap : public std::map<StationID, FlowStat> {
+class FlowStatMap {
+	std::vector<FlowStat> flows_storage;
+	btree::btree_map<StationID, uint16> flows_index;
+
 public:
+	using iterator = FlowStatMapIterator<FlowStat, FlowStatMap, btree::btree_map<StationID, uint16>::iterator>;
+	using const_iterator = FlowStatMapIterator<const FlowStat, const FlowStatMap, btree::btree_map<StationID, uint16>::const_iterator>;
+
+	friend iterator;
+	friend const_iterator;
+
 	uint GetFlow() const;
 	uint GetFlowVia(StationID via) const;
 	uint GetFlowFrom(StationID from) const;
@@ -167,6 +226,78 @@ public:
 	void RestrictFlows(StationID via);
 	void ReleaseFlows(StationID via);
 	void FinalizeLocalConsumption(StationID self);
+
+private:
+	btree::btree_map<StationID, uint16>::iterator erase_priv(btree::btree_map<StationID, uint16>::iterator iter)
+	{
+		uint16 index = iter->second;
+		iter = this->flows_index.erase(iter);
+		if (index != this->flows_storage.size() - 1) {
+			this->flows_storage[index] = std::move(this->flows_storage.back());
+			this->flows_index[this->flows_storage[index].GetOrigin()] = index;
+		}
+		this->flows_storage.pop_back();
+		return iter;
+	}
+
+public:
+	iterator begin() { return iterator(this, this->flows_index.begin()); }
+	const_iterator begin() const { return const_iterator(this, this->flows_index.begin()); }
+	iterator end() { return iterator(this, this->flows_index.end()); }
+	const_iterator end() const { return const_iterator(this, this->flows_index.end()); }
+
+	iterator find(StationID from)
+	{
+		return iterator(this, this->flows_index.find(from));
+	}
+	const_iterator find(StationID from) const
+	{
+		return const_iterator(this, this->flows_index.find(from));
+	}
+
+	bool empty() const
+	{
+		return this->flows_index.empty();
+	}
+
+	void erase(StationID st)
+	{
+		auto iter = this->flows_index.find(st);
+		if (iter != this->flows_index.end()) {
+			this->erase_priv(iter);
+		}
+	}
+
+	iterator erase(iterator iter)
+	{
+		return iterator(this, this->erase_priv(iter.current));
+	}
+
+	std::pair<iterator, bool> insert(FlowStat flow_stat)
+	{
+		StationID st = flow_stat.GetOrigin();
+		auto res = this->flows_index.insert(std::pair<StationID, uint16>(st, this->flows_storage.size()));
+		if (res.second) {
+			this->flows_storage.push_back(std::move(flow_stat));
+		}
+		return std::make_pair(iterator(this, res.first), res.second);
+	}
+
+	iterator insert(iterator hint, FlowStat flow_stat)
+	{
+		auto res = this->flows_index.insert(hint.current, std::pair<StationID, uint16>(flow_stat.GetOrigin(), this->flows_storage.size()));
+		if (res->second == this->flows_storage.size()) {
+			this->flows_storage.push_back(std::move(flow_stat));
+		}
+		return iterator(this, res);
+	}
+
+	StationID FirstStationID() const
+	{
+		return this->flows_index.begin()->first;
+	}
+
+	void SortStorage();
 };
 
 /**
@@ -291,7 +422,7 @@ struct GoodsEntry {
 	inline StationID GetVia(StationID source) const
 	{
 		FlowStatMap::const_iterator flow_it(this->flows.find(source));
-		return flow_it != this->flows.end() ? flow_it->second.GetVia() : INVALID_STATION;
+		return flow_it != this->flows.end() ? flow_it->GetVia() : INVALID_STATION;
 	}
 
 	/**
@@ -305,7 +436,7 @@ struct GoodsEntry {
 	inline StationID GetVia(StationID source, StationID excluded, StationID excluded2 = INVALID_STATION) const
 	{
 		FlowStatMap::const_iterator flow_it(this->flows.find(source));
-		return flow_it != this->flows.end() ? flow_it->second.GetVia(excluded, excluded2) : INVALID_STATION;
+		return flow_it != this->flows.end() ? flow_it->GetVia(excluded, excluded2) : INVALID_STATION;
 	}
 };
 

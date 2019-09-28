@@ -660,7 +660,7 @@ bool VehicleCargoList::Stage(bool accepted, StationID current_station, StationID
 			if (flow_it == ge->flows.end()) {
 				cargo_next = INVALID_STATION;
 			} else {
-				FlowStat new_shares = flow_it->second;
+				FlowStat new_shares = *flow_it;
 				new_shares.ChangeShare(current_station, INT_MIN);
 				StationIDStack excluded = next_station;
 				while (!excluded.IsEmpty() && !new_shares.GetShares()->empty()) {
@@ -676,20 +676,20 @@ bool VehicleCargoList::Stage(bool accepted, StationID current_station, StationID
 			/* Rewrite an invalid source station to some random other one to
 			 * avoid keeping the cargo in the vehicle forever. */
 			if (cp->source == INVALID_STATION && !ge->flows.empty()) {
-				cp->source = ge->flows.begin()->first;
+				cp->source = ge->flows.FirstStationID();
 			}
 			bool restricted = false;
 			FlowStatMap::const_iterator flow_it(ge->flows.find(cp->source));
 			if (flow_it == ge->flows.end()) {
 				cargo_next = INVALID_STATION;
 			} else {
-				cargo_next = flow_it->second.GetViaWithRestricted(restricted);
+				cargo_next = flow_it->GetViaWithRestricted(restricted);
 			}
 			action = VehicleCargoList::ChooseAction(cp, cargo_next, current_station, accepted, next_station);
 			if (restricted && action == MTA_TRANSFER) {
 				/* If the flow is restricted we can't transfer to it. Choose an
 				 * unrestricted one instead. */
-				cargo_next = flow_it->second.GetVia();
+				cargo_next = flow_it->GetVia();
 				action = VehicleCargoList::ChooseAction(cp, cargo_next, current_station, accepted, next_station);
 			}
 		}

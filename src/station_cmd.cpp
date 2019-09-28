@@ -4866,10 +4866,10 @@ void FlowStatMap::AddFlow(StationID origin, StationID via, uint flow)
 {
 	FlowStatMap::iterator origin_it = this->find(origin);
 	if (origin_it == this->end()) {
-		this->insert(std::make_pair(origin, FlowStat(via, flow)));
+		this->insert(FlowStat(origin, via, flow));
 	} else {
-		origin_it->second.ChangeShare(via, flow);
-		assert(!origin_it->second.GetShares()->empty());
+		origin_it->ChangeShare(via, flow);
+		assert(!origin_it->GetShares()->empty());
 	}
 }
 
@@ -4885,13 +4885,13 @@ void FlowStatMap::PassOnFlow(StationID origin, StationID via, uint flow)
 {
 	FlowStatMap::iterator prev_it = this->find(origin);
 	if (prev_it == this->end()) {
-		FlowStat fs(via, flow);
+		FlowStat fs(origin, via, flow);
 		fs.AppendShare(INVALID_STATION, flow);
-		this->insert(std::make_pair(origin, fs));
+		this->insert(std::move(fs));
 	} else {
-		prev_it->second.ChangeShare(via, flow);
-		prev_it->second.ChangeShare(INVALID_STATION, flow);
-		assert(!prev_it->second.GetShares()->empty());
+		prev_it->ChangeShare(via, flow);
+		prev_it->ChangeShare(INVALID_STATION, flow);
+		assert(!prev_it->GetShares()->empty());
 	}
 }
 
@@ -4902,7 +4902,7 @@ void FlowStatMap::PassOnFlow(StationID origin, StationID via, uint flow)
 void FlowStatMap::FinalizeLocalConsumption(StationID self)
 {
 	for (FlowStatMap::iterator i = this->begin(); i != this->end(); ++i) {
-		FlowStat &fs = i->second;
+		FlowStat &fs = *i;
 		uint local = fs.GetShare(INVALID_STATION);
 		if (local > INT_MAX) { // make sure it fits in an int
 			fs.ChangeShare(self, -INT_MAX);
@@ -4928,11 +4928,11 @@ StationIDStack FlowStatMap::DeleteFlows(StationID via)
 {
 	StationIDStack ret;
 	for (FlowStatMap::iterator f_it = this->begin(); f_it != this->end();) {
-		FlowStat &s_flows = f_it->second;
+		FlowStat &s_flows = *f_it;
 		s_flows.ChangeShare(via, INT_MIN);
 		if (s_flows.GetShares()->empty()) {
-			ret.Push(f_it->first);
-			this->erase(f_it++);
+			ret.Push(f_it->GetOrigin());
+			f_it = this->erase(f_it);
 		} else {
 			++f_it;
 		}
@@ -4947,7 +4947,7 @@ StationIDStack FlowStatMap::DeleteFlows(StationID via)
 void FlowStatMap::RestrictFlows(StationID via)
 {
 	for (FlowStatMap::iterator it = this->begin(); it != this->end(); ++it) {
-		it->second.RestrictShare(via);
+		it->RestrictShare(via);
 	}
 }
 
@@ -4958,7 +4958,7 @@ void FlowStatMap::RestrictFlows(StationID via)
 void FlowStatMap::ReleaseFlows(StationID via)
 {
 	for (FlowStatMap::iterator it = this->begin(); it != this->end(); ++it) {
-		it->second.ReleaseShare(via);
+		it->ReleaseShare(via);
 	}
 }
 
@@ -4970,7 +4970,7 @@ uint FlowStatMap::GetFlow() const
 {
 	uint ret = 0;
 	for (FlowStatMap::const_iterator i = this->begin(); i != this->end(); ++i) {
-		ret += (--(i->second.GetShares()->end()))->first;
+		ret += (--(i->GetShares()->end()))->first;
 	}
 	return ret;
 }
@@ -4984,7 +4984,7 @@ uint FlowStatMap::GetFlowVia(StationID via) const
 {
 	uint ret = 0;
 	for (FlowStatMap::const_iterator i = this->begin(); i != this->end(); ++i) {
-		ret += i->second.GetShare(via);
+		ret += i->GetShare(via);
 	}
 	return ret;
 }
@@ -4998,7 +4998,7 @@ uint FlowStatMap::GetFlowFrom(StationID from) const
 {
 	FlowStatMap::const_iterator i = this->find(from);
 	if (i == this->end()) return 0;
-	return (--(i->second.GetShares()->end()))->first;
+	return (--(i->GetShares()->end()))->first;
 }
 
 /**
@@ -5011,7 +5011,20 @@ uint FlowStatMap::GetFlowFromVia(StationID from, StationID via) const
 {
 	FlowStatMap::const_iterator i = this->find(from);
 	if (i == this->end()) return 0;
-	return i->second.GetShare(via);
+	return i->GetShare(via);
+}
+
+void FlowStatMap::SortStorage()
+{
+	assert(this->flows_storage.size() == this->flows_index.size());
+	std::sort(this->flows_storage.begin(), this->flows_storage.end(), [](const FlowStat &a, const FlowStat &b) -> bool {
+		return a.origin < b.origin;
+	});
+	uint16 index = 0;
+	for (auto &it : this->flows_index) {
+		it.second = index;
+		index++;
+	}
 }
 
 extern const TileTypeProcs _tile_type_station_procs = {

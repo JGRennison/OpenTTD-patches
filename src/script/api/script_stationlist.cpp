@@ -195,11 +195,11 @@ void ScriptStationList_CargoPlanned::Add(StationID station_id, CargoID cargo, St
 	FlowStatMap::const_iterator iter = collector.GE()->flows.begin();
 	FlowStatMap::const_iterator end = collector.GE()->flows.end();
 	for (; iter != end; ++iter) {
-		const FlowStat::SharesMap *shares = iter->second.GetShares();
+		const FlowStat::SharesMap *shares = iter->GetShares();
 		uint prev = 0;
 		for (FlowStat::SharesMap::const_iterator flow_iter = shares->begin();
 				flow_iter != shares->end(); ++flow_iter) {
-			collector.Update<Tselector>(iter->first, flow_iter->second, flow_iter->first - prev);
+			collector.Update<Tselector>(iter->GetOrigin(), flow_iter->second, flow_iter->first - prev);
 			prev = flow_iter->first;
 		}
 	}
@@ -265,11 +265,11 @@ ScriptStationList_CargoPlannedFromByVia::ScriptStationList_CargoPlannedFromByVia
 
 	FlowStatMap::const_iterator iter = collector.GE()->flows.find(from);
 	if (iter == collector.GE()->flows.end()) return;
-	const FlowStat::SharesMap *shares = iter->second.GetShares();
+	const FlowStat::SharesMap *shares = iter->GetShares();
 	uint prev = 0;
 	for (FlowStat::SharesMap::const_iterator flow_iter = shares->begin();
 			flow_iter != shares->end(); ++flow_iter) {
-		collector.Update<CS_FROM_BY_VIA>(iter->first, flow_iter->second, flow_iter->first - prev);
+		collector.Update<CS_FROM_BY_VIA>(iter->GetOrigin(), flow_iter->second, flow_iter->first - prev);
 		prev = flow_iter->first;
 	}
 }

@@ -523,18 +523,18 @@ static void RealSave_STNN(BaseStation *bst)
 			_num_dests = (uint32)st->goods[i].cargo.Packets()->MapSize();
 			_num_flows = 0;
 			for (FlowStatMap::const_iterator it(st->goods[i].flows.begin()); it != st->goods[i].flows.end(); ++it) {
-				_num_flows += (uint32)it->second.GetShares()->size();
+				_num_flows += (uint32)it->GetShares()->size();
 			}
 			SlObjectSaveFiltered(&st->goods[i], _filtered_goods_desc.data());
 			for (FlowStatMap::const_iterator outer_it(st->goods[i].flows.begin()); outer_it != st->goods[i].flows.end(); ++outer_it) {
-				const FlowStat::SharesMap *shares = outer_it->second.GetShares();
+				const FlowStat::SharesMap *shares = outer_it->GetShares();
 				uint32 sum_shares = 0;
 				FlowSaveLoad flow;
-				flow.source = outer_it->first;
+				flow.source = outer_it->GetOrigin();
 				for (FlowStat::SharesMap::const_iterator inner_it(shares->begin()); inner_it != shares->end(); ++inner_it) {
 					flow.via = inner_it->second;
 					flow.share = inner_it->first - sum_shares;
-					flow.restricted = inner_it->first > outer_it->second.GetUnrestricted();
+					flow.restricted = inner_it->first > outer_it->GetUnrestricted();
 					sum_shares = inner_it->first;
 					assert(flow.share > 0);
 
@@ -610,7 +610,7 @@ static void Load_STNN()
 					if (!IsSavegameVersionBefore(SLV_187)) flow.restricted = (buffer->ReadByte() != 0);
 
 					if (fs == nullptr || prev_source != flow.source) {
-						fs = &(st->goods[i].flows.insert(st->goods[i].flows.end(), std::make_pair(flow.source, FlowStat(flow.via, flow.share, flow.restricted)))->second);
+						fs = &(*(st->goods[i].flows.insert(st->goods[i].flows.end(), FlowStat(flow.source, flow.via, flow.share, flow.restricted))));
 					} else {
 						fs->AppendShare(flow.via, flow.share, flow.restricted);
 					}

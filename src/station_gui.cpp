@@ -1513,9 +1513,9 @@ struct StationViewWindow : public Window {
 
 		const FlowStatMap &flows = st->goods[i].flows;
 		for (FlowStatMap::const_iterator it = flows.begin(); it != flows.end(); ++it) {
-			StationID from = it->first;
+			StationID from = it->GetOrigin();
 			CargoDataEntry *source_entry = cargo_entry->InsertOrRetrieve(from);
-			const FlowStat::SharesMap *shares = it->second.GetShares();
+			const FlowStat::SharesMap *shares = it->GetShares();
 			uint32 prev_count = 0;
 			for (FlowStat::SharesMap::const_iterator flow_it = shares->begin(); flow_it != shares->end(); ++flow_it) {
 				StationID via = flow_it->second;
@@ -1546,7 +1546,7 @@ struct StationViewWindow : public Window {
 			const FlowStatMap &flowmap = Station::Get(next)->goods[cargo].flows;
 			FlowStatMap::const_iterator map_it = flowmap.find(source);
 			if (map_it != flowmap.end()) {
-				const FlowStat::SharesMap *shares = map_it->second.GetShares();
+				const FlowStat::SharesMap *shares = map_it->GetShares();
 				uint32 prev_count = 0;
 				for (FlowStat::SharesMap::const_iterator i = shares->begin(); i != shares->end(); ++i) {
 					tmp.InsertOrRetrieve(i->second)->Update(i->first - prev_count);
@@ -1596,9 +1596,9 @@ struct StationViewWindow : public Window {
 	{
 		const CargoDataEntry *source_dest = this->cached_destinations.Retrieve(i);
 		for (FlowStatMap::const_iterator it = flows.begin(); it != flows.end(); ++it) {
-			StationID from = it->first;
+			StationID from = it->GetOrigin();
 			const CargoDataEntry *source_entry = source_dest->Retrieve(from);
-			const FlowStat::SharesMap *shares = it->second.GetShares();
+			const FlowStat::SharesMap *shares = it->GetShares();
 			for (FlowStat::SharesMap::const_iterator flow_it = shares->begin(); flow_it != shares->end(); ++flow_it) {
 				const CargoDataEntry *via_entry = source_entry->Retrieve(flow_it->second);
 				for (CargoDataSet::iterator dest_it = via_entry->Begin(); dest_it != via_entry->End(); ++dest_it) {

@@ -187,8 +187,8 @@ public:
 		const FlowStatMap &flows = this->job[node].Flows();
 		FlowStatMap::const_iterator it = flows.find(this->job[source].Station());
 		if (it != flows.end()) {
-			this->it = it->second.GetShares()->begin();
-			this->end = it->second.GetShares()->end();
+			this->it = it->GetShares()->begin();
+			this->end = it->GetShares()->end();
 		} else {
 			this->it = FlowStat::empty_sharesmap.begin();
 			this->end = FlowStat::empty_sharesmap.end();
