@@ -59,13 +59,13 @@ class btree_set : public btree_unique_container<
   }
 
   // Move constructor.
-  btree_set(self_type &&x)
+  btree_set(self_type &&x) noexcept
       : super_type() {
     this->swap(x);
   }
 
   // Copy/move assignment
-  self_type& operator=(self_type x) {
+  self_type& operator=(self_type x) noexcept {
     this->swap(x);
     return *this;
   }
@@ -114,13 +114,13 @@ class btree_multiset : public btree_multi_container<
   }
 
   // Move constructor.
-  btree_multiset(self_type &&x)
+  btree_multiset(self_type &&x) noexcept
       : super_type() {
     this->swap(x);
   }
 
   // Copy/move assignment
-  self_type& operator=(self_type x) {
+  self_type& operator=(self_type x) noexcept {
     this->swap(x);
     return *this;
   }
