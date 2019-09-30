@@ -523,15 +523,16 @@ static void RealSave_STNN(BaseStation *bst)
 			_num_dests = (uint32)st->goods[i].cargo.Packets()->MapSize();
 			_num_flows = 0;
 			for (FlowStatMap::const_iterator it(st->goods[i].flows.begin()); it != st->goods[i].flows.end(); ++it) {
-				_num_flows += (uint32)it->GetShares()->size();
+				_num_flows += (uint32)it->size();
 			}
 			SlObjectSaveFiltered(&st->goods[i], _filtered_goods_desc.data());
 			for (FlowStatMap::const_iterator outer_it(st->goods[i].flows.begin()); outer_it != st->goods[i].flows.end(); ++outer_it) {
-				const FlowStat::SharesMap *shares = outer_it->GetShares();
 				uint32 sum_shares = 0;
 				FlowSaveLoad flow;
 				flow.source = outer_it->GetOrigin();
-				for (FlowStat::SharesMap::const_iterator inner_it(shares->begin()); inner_it != shares->end(); ++inner_it) {
+				FlowStat::const_iterator inner_it(outer_it->begin());
+				const FlowStat::const_iterator end(outer_it->end());
+				for (; inner_it != end; ++inner_it) {
 					flow.via = inner_it->second;
 					flow.share = inner_it->first - sum_shares;
 					flow.restricted = inner_it->first > outer_it->GetUnrestricted();

@@ -22,10 +22,12 @@
 #include "3rdparty/cpp-btree/btree_map.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "bitmap_type.h"
+#include "core/endian_type.hpp"
 #include <map>
 #include <vector>
 #include <iterator>
 #include <functional>
+#include <algorithm>
 
 typedef Pool<BaseStation, StationID, 32, 64000> StationPool;
 extern StationPool _station_pool;
@@ -44,9 +46,28 @@ class FlowStatMap;
 class FlowStat {
 	friend FlowStatMap;
 public:
-	typedef btree::btree_map<uint32, StationID> SharesMap;
+	struct ShareEntry {
+#if OTTD_ALIGNMENT == 0
+		unaligned_uint32 first;
+#else
+		uint32 first;
+#endif
+		StationID second;
+	};
+	static_assert(sizeof(ShareEntry) == 6, "");
 
-	static const SharesMap empty_sharesmap;
+	friend bool operator<(const ShareEntry &a, const ShareEntry &b) noexcept
+	{
+		return a.first < b.first;
+	}
+
+	friend bool operator<(uint a, const ShareEntry &b) noexcept
+	{
+		return a < b.first;
+	}
+
+	typedef ShareEntry* iterator;
+	typedef const ShareEntry* const_iterator;
 
 	/**
 	 * Invalid constructor. This can't be called as a FlowStat must not be
@@ -65,10 +86,91 @@ public:
 	inline FlowStat(StationID origin, StationID via, uint flow, bool restricted = false)
 	{
 		assert(flow > 0);
-		this->shares[flow] = via;
+		this->storage.inline_shares[0].first = flow;
+		this->storage.inline_shares[0].second = via;
 		this->unrestricted = restricted ? 0 : flow;
+		this->count = 1;
 		this->origin = origin;
 	}
+
+private:
+	inline bool inline_mode() const
+	{
+		return this->count <= 2;
+	}
+
+	inline const ShareEntry *data() const
+	{
+		return this->inline_mode() ? this->storage.inline_shares : this->storage.ptr_shares.buffer;
+	}
+
+	inline ShareEntry *data()
+	{
+		return const_cast<ShareEntry *>(const_cast<const FlowStat*>(this)->data());
+	}
+
+	inline void clear()
+	{
+		if (!inline_mode()) {
+			free(this->storage.ptr_shares.buffer);
+		}
+		this->count = 0;
+	}
+
+	iterator erase_item(iterator iter, uint flow_reduction);
+
+	inline void CopyCommon(const FlowStat &other)
+	{
+		this->count = other.count;
+		if (!other.inline_mode()) {
+			this->storage.ptr_shares.elem_capacity = other.storage.ptr_shares.elem_capacity;
+			this->storage.ptr_shares.buffer = MallocT<ShareEntry>(other.storage.ptr_shares.elem_capacity);
+		}
+		MemCpyT(this->data(), other.data(), this->count);
+		this->unrestricted = other.unrestricted;
+		this->origin = other.origin;
+	}
+
+public:
+	inline FlowStat(const FlowStat &other)
+	{
+		this->CopyCommon(other);
+	}
+
+	inline FlowStat(FlowStat &&other) noexcept
+	{
+		this->count = 0;
+		this->SwapShares(other);
+		this->origin = other.origin;
+	}
+
+	inline ~FlowStat()
+	{
+		this->clear();
+	}
+
+	inline FlowStat &operator=(const FlowStat &other)
+	{
+		this->clear();
+		this->CopyCommon(other);
+		return *this;
+	}
+
+	inline FlowStat &operator=(FlowStat &&other) noexcept
+	{
+		this->SwapShares(other);
+		this->origin = other.origin;
+		return *this;
+	}
+
+	inline size_t size() const { return this->count; }
+	inline bool empty() const { return this->count == 0; }
+	inline iterator begin() { return this->data(); }
+	inline const_iterator begin() const { return this->data(); }
+	inline iterator end() { return this->data() + this->count; }
+	inline const_iterator end() const { return this->data() + this->count; }
+	inline iterator upper_bound(uint32 key) { return std::upper_bound(this->begin(), this->end(), key); }
+	inline const_iterator upper_bound(uint32 key) const { return std::upper_bound(this->begin(), this->end(), key); }
 
 	/**
 	 * Add some flow to the end of the shares map. Only do that if you know
@@ -81,8 +183,26 @@ public:
 	inline void AppendShare(StationID st, uint flow, bool restricted = false)
 	{
 		assert(flow > 0);
-		uint32 key = (--this->shares.end())->first + flow;
-		this->shares.insert(this->shares.end(), std::make_pair(key, st));
+		uint32 key = this->GetLastKey() + flow;
+		if (unlikely(this->count >= 2)) {
+			if (this->count == 2) {
+				// convert inline buffer to ptr
+				ShareEntry *ptr = MallocT<ShareEntry>(4);
+				ptr[0] = this->storage.inline_shares[0];
+				ptr[1] = this->storage.inline_shares[1];
+				this->storage.ptr_shares.buffer = ptr;
+				this->storage.ptr_shares.elem_capacity = 4;
+			} else if (this->count == this->storage.ptr_shares.elem_capacity) {
+				// grow buffer
+				uint16 new_size = this->storage.ptr_shares.elem_capacity * 2;
+				this->storage.ptr_shares.buffer = ReallocT<ShareEntry>(this->storage.ptr_shares.buffer, new_size);
+				this->storage.ptr_shares.elem_capacity = new_size;
+			}
+			this->storage.ptr_shares.buffer[this->count] = { key, st };
+		} else {
+			this->storage.inline_shares[this->count] = { key, st };
+		}
+		this->count++;
 		if (!restricted) this->unrestricted += flow;
 	}
 
@@ -97,13 +217,6 @@ public:
 	void ScaleToMonthly(uint runtime);
 
 	/**
-	 * Get the actual shares as a const pointer so that they can be iterated
-	 * over.
-	 * @return Actual shares.
-	 */
-	inline const SharesMap *GetShares() const { return &this->shares; }
-
-	/**
 	 * Return total amount of unrestricted shares.
 	 * @return Amount of unrestricted shares.
 	 */
@@ -116,8 +229,9 @@ public:
 	 */
 	inline void SwapShares(FlowStat &other)
 	{
-		this->shares.swap(other.shares);
-		Swap(this->unrestricted, other.unrestricted);
+		std::swap(this->storage, other.storage);
+		std::swap(this->unrestricted, other.unrestricted);
+		std::swap(this->count, other.count);
 	}
 
 	/**
@@ -130,10 +244,10 @@ public:
 	 */
 	inline StationID GetViaWithRestricted(bool &is_restricted) const
 	{
-		assert(!this->shares.empty());
-		uint rand = RandomRange((--this->shares.end())->first);
+		assert(!this->empty());
+		uint rand = RandomRange(this->GetLastKey());
 		is_restricted = rand >= this->unrestricted;
-		return this->shares.upper_bound(rand)->second;
+		return this->upper_bound(rand)->second;
 	}
 
 	/**
@@ -145,9 +259,9 @@ public:
 	 */
 	inline StationID GetVia() const
 	{
-		assert(!this->shares.empty());
+		assert(!this->empty());
 		return this->unrestricted > 0 ?
-				this->shares.upper_bound(RandomRange(this->unrestricted))->second :
+				this->upper_bound(RandomRange(this->unrestricted))->second :
 				INVALID_STATION;
 	}
 
@@ -161,11 +275,36 @@ public:
 	}
 
 private:
-	SharesMap shares;  ///< Shares of flow to be sent via specified station (or consumed locally).
+	uint32 GetLastKey() const
+	{
+		return this->data()[this->count - 1].first;
+	}
+
+	struct ptr_buffer {
+		ShareEntry *buffer;
+		uint16 elem_capacity;
+	}
+#if OTTD_ALIGNMENT == 0 && (defined(__GNUC__) || defined(__clang__))
+	__attribute__((packed, aligned(4)))
+#endif
+	;
+	union storage_union {
+		ShareEntry inline_shares[2]; ///< Small buffer optimisation: size = 1 is ~90%, size = 2 is ~9%, size >= 3 is ~1%
+		ptr_buffer ptr_shares;
+
+		// Actual construction/destruction done by class FlowStat
+		storage_union() {}
+		~storage_union() {}
+	};
+	storage_union storage; ///< Shares of flow to be sent via specified station (or consumed locally).
 	uint unrestricted; ///< Limit for unrestricted shares.
+	uint16 count;
 	StationID origin;
 };
 static_assert(std::is_nothrow_move_constructible<FlowStat>::value, "FlowStat must be nothrow move constructible");
+#if OTTD_ALIGNMENT == 0 && (defined(__GNUC__) || defined(__clang__))
+static_assert(sizeof(FlowStat) == 20, "");
+#endif
 
 template<typename cv_value, typename cv_container, typename cv_index_iter>
 class FlowStatMapIterator
@@ -224,7 +363,6 @@ public:
 	void PassOnFlow(StationID origin, StationID via, uint amount);
 	StationIDStack DeleteFlows(StationID via);
 	void RestrictFlows(StationID via);
-	void ReleaseFlows(StationID via);
 	void FinalizeLocalConsumption(StationID self);
 
 private:

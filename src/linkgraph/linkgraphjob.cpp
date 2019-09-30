@@ -155,8 +155,8 @@ void LinkGraphJob::FinaliseJob()
 					FlowStat shares(INVALID_STATION, INVALID_STATION, 1);
 					it->SwapShares(shares);
 					it = ge.flows.erase(it);
-					for (FlowStat::SharesMap::const_iterator shares_it(shares.GetShares()->begin());
-							shares_it != shares.GetShares()->end(); ++shares_it) {
+					for (FlowStat::const_iterator shares_it(shares.begin());
+							shares_it != shares.end(); ++shares_it) {
 						RerouteCargo(st, this->Cargo(), shares_it->second, st->index);
 					}
 				}

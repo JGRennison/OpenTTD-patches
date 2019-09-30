@@ -663,10 +663,10 @@ bool VehicleCargoList::Stage(bool accepted, StationID current_station, StationID
 				FlowStat new_shares = *flow_it;
 				new_shares.ChangeShare(current_station, INT_MIN);
 				StationIDStack excluded = next_station;
-				while (!excluded.IsEmpty() && !new_shares.GetShares()->empty()) {
+				while (!excluded.IsEmpty() && !new_shares.empty()) {
 					new_shares.ChangeShare(excluded.Pop(), INT_MIN);
 				}
-				if (new_shares.GetShares()->empty()) {
+				if (new_shares.empty()) {
 					cargo_next = INVALID_STATION;
 				} else {
 					cargo_next = new_shares.GetVia();

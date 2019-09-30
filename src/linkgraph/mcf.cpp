@@ -156,10 +156,10 @@ private:
 	std::vector<NodeID> station_to_node;
 
 	/** Current iterator in the shares map. */
-	FlowStat::SharesMap::const_iterator it;
+	FlowStat::const_iterator it;
 
 	/** End of the shares map. */
-	FlowStat::SharesMap::const_iterator end;
+	FlowStat::const_iterator end;
 public:
 
 	/**
@@ -187,11 +187,11 @@ public:
 		const FlowStatMap &flows = this->job[node].Flows();
 		FlowStatMap::const_iterator it = flows.find(this->job[source].Station());
 		if (it != flows.end()) {
-			this->it = it->GetShares()->begin();
-			this->end = it->GetShares()->end();
+			this->it = it->begin();
+			this->end = it->end();
 		} else {
-			this->it = FlowStat::empty_sharesmap.begin();
-			this->end = FlowStat::empty_sharesmap.end();
+			this->it = nullptr;
+			this->end = nullptr;
 		}
 	}
 
