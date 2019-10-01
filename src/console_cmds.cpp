@@ -2072,6 +2072,20 @@ DEF_CONSOLE_CMD(ConMapStats)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConStFlowStats)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump station flow stats.");
+		return true;
+	}
+
+	extern void DumpStationFlowStats(char *b, const char *last);
+	char buffer[32768];
+	DumpStationFlowStats(buffer, lastof(buffer));
+	PrintLineByLine(buffer);
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConDumpGameEvents)
 {
 	if (argc == 0) {
@@ -2442,6 +2456,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("dump_cpdp_stats", ConDumpCpdpStats, nullptr, true);
 	IConsoleCmdRegister("dump_veh_stats", ConVehicleStats, nullptr, true);
 	IConsoleCmdRegister("dump_map_stats", ConMapStats, nullptr, true);
+	IConsoleCmdRegister("dump_st_flow_stats", ConStFlowStats, nullptr, true);
 	IConsoleCmdRegister("dump_game_events", ConDumpGameEvents, nullptr, true);
 	IConsoleCmdRegister("dump_load_debug_log", ConDumpLoadDebugLog, nullptr, true);
 	IConsoleCmdRegister("check_caches", ConCheckCaches, nullptr, true);

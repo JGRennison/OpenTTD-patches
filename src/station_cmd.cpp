@@ -5007,6 +5007,24 @@ void FlowStatMap::SortStorage()
 	}
 }
 
+void DumpStationFlowStats(char *b, const char *last)
+{
+	btree::btree_map<uint, uint> count_map;
+	const Station *st;
+	FOR_ALL_STATIONS(st) {
+		for (CargoID i = 0; i < NUM_CARGO; i++) {
+			const GoodsEntry &ge = st->goods[i];
+			for (FlowStatMap::const_iterator it(ge.flows.begin()); it != ge.flows.end(); ++it) {
+				count_map[(uint32)it->size()]++;
+			}
+		}
+	}
+	b += seprintf(b, last, "Flow state shares size distribution:\n");
+	for (const auto &it : count_map) {
+		b += seprintf(b, last, "%-5u %-5u\n", it.first, it.second);
+	}
+}
+
 extern const TileTypeProcs _tile_type_station_procs = {
 	DrawTile_Station,           // draw_tile_proc
 	GetSlopePixelZ_Station,     // get_slope_z_proc
