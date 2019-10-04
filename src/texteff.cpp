@@ -20,6 +20,9 @@
 
 #include "safeguards.h"
 
+static std::vector<struct TextEffect> _text_effects; ///< Text effects are stored there
+static TextEffectID _free_text_effect = 0;
+
 /** Container for all information about a text effect */
 struct TextEffect : public ViewportSign {
 	uint64 params_1;     ///< DParam parameter
@@ -34,21 +37,23 @@ struct TextEffect : public ViewportSign {
 		this->MarkDirty();
 		this->width_normal = 0;
 		this->string_id = INVALID_STRING_ID;
+		this->params_1 = _free_text_effect;
+		_free_text_effect = this - _text_effects.data();
 	}
 };
-
-static std::vector<struct TextEffect> _text_effects; ///< Text effects are stored there
 
 /* Text Effects */
 TextEffectID AddTextEffect(StringID msg, int center, int y, uint8 duration, TextEffectMode mode)
 {
 	if (_game_mode == GM_MENU) return INVALID_TE_ID;
 
-	TextEffectID i;
-	for (i = 0; i < _text_effects.size(); i++) {
-		if (_text_effects[i].string_id == INVALID_STRING_ID) break;
+	TextEffectID i = _free_text_effect;
+	if (i == _text_effects.size()) {
+		_text_effects.emplace_back();
+		_free_text_effect++;
+	} else {
+		_free_text_effect = _text_effects[i].params_1;
 	}
-	if (i == _text_effects.size()) _text_effects.emplace_back();
 
 	TextEffect &te = _text_effects[i];
 
@@ -109,6 +114,7 @@ void InitTextEffects()
 {
 	_text_effects.clear();
 	_text_effects.shrink_to_fit();
+	_free_text_effect = 0;
 }
 
 void DrawTextEffects(DrawPixelInfo *dpi)
