@@ -1137,8 +1137,10 @@ std::vector<Train *> _tick_train_front_cache;
 std::vector<RoadVehicle *> _tick_road_veh_front_cache;
 std::vector<Aircraft *> _tick_aircraft_front_cache;
 std::vector<Ship *> _tick_ship_cache;
-std::vector<EffectVehicle *> _tick_effect_veh_cache;
 std::vector<Vehicle *> _tick_other_veh_cache;
+
+std::vector<VehicleID> _remove_from_tick_effect_veh_cache;
+btree::btree_set<VehicleID> _tick_effect_veh_cache;
 
 void ClearVehicleTickCaches()
 {
@@ -1148,6 +1150,7 @@ void ClearVehicleTickCaches()
 	_tick_aircraft_front_cache.clear();
 	_tick_ship_cache.clear();
 	_tick_effect_veh_cache.clear();
+	_remove_from_tick_effect_veh_cache.clear();
 	_tick_other_veh_cache.clear();
 }
 
@@ -1189,7 +1192,7 @@ void RebuildVehicleTickCaches()
 				break;
 
 			case VEH_EFFECT:
-				_tick_effect_veh_cache.push_back(EffectVehicle::From(v));
+				_tick_effect_veh_cache.insert(v->index);
 				break;
 		}
 	}
@@ -1209,9 +1212,11 @@ void ValidateVehicleTickCaches()
 	std::vector<RoadVehicle *> saved_tick_road_veh_front_cache = std::move(_tick_road_veh_front_cache);
 	std::vector<Aircraft *> saved_tick_aircraft_front_cache = std::move(_tick_aircraft_front_cache);
 	std::vector<Ship *> saved_tick_ship_cache = std::move(_tick_ship_cache);
-	std::vector<EffectVehicle *> saved_tick_effect_veh_cache = std::move(_tick_effect_veh_cache);
+	btree::btree_set<VehicleID> saved_tick_effect_veh_cache = std::move(_tick_effect_veh_cache);
+	for (VehicleID id : _remove_from_tick_effect_veh_cache) {
+		saved_tick_effect_veh_cache.erase(id);
+	}
 	std::vector<Vehicle *> saved_tick_other_veh_cache = std::move(_tick_other_veh_cache);
-	saved_tick_effect_veh_cache.erase(std::remove(saved_tick_effect_veh_cache.begin(), saved_tick_effect_veh_cache.end(), nullptr), saved_tick_effect_veh_cache.end());
 	saved_tick_other_veh_cache.erase(std::remove(saved_tick_other_veh_cache.begin(), saved_tick_other_veh_cache.end(), nullptr), saved_tick_other_veh_cache.end());
 
 	RebuildVehicleTickCaches();
@@ -1279,8 +1284,12 @@ void CallVehicleTicks()
 	Vehicle *v = nullptr;
 	SCOPE_INFO_FMT([&v], "CallVehicleTicks: %s", scope_dumper().VehicleInfo(v));
 	{
-		for (EffectVehicle *u : _tick_effect_veh_cache) {
-			if (!u) continue;
+		for (VehicleID id : _remove_from_tick_effect_veh_cache) {
+			_tick_effect_veh_cache.erase(id);
+		}
+		_remove_from_tick_effect_veh_cache.clear();
+		for (VehicleID id : _tick_effect_veh_cache) {
+			EffectVehicle *u = EffectVehicle::Get(id);
 			v = u;
 			u->EffectVehicle::Tick();
 		}
