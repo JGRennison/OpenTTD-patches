@@ -110,6 +110,22 @@ public:
 		return nullptr;
 	}
 
+	inline void DequeueBestOpenNode()
+	{
+		assert(!m_open_queue.IsEmpty());
+		m_open_queue.Shift();
+	}
+
+	inline void ReenqueueOpenNode(Titem_ &item)
+	{
+		m_open_queue.Include(&item);
+	}
+
+	inline Titem_& PopAlreadyDequeuedOpenNode(const Key &key)
+	{
+		return m_open.Pop(key);
+	}
+
 	/** return the open node specified by a key or nullptr if not found */
 	inline Titem_ *FindOpenNode(const Key &key)
 	{

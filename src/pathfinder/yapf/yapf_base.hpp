@@ -140,11 +140,13 @@ public:
 				break;
 			}
 
+			m_nodes.DequeueBestOpenNode();
 			Yapf().PfFollowNode(*n);
 			if (m_max_search_nodes == 0 || m_nodes.ClosedCount() < m_max_search_nodes) {
-				m_nodes.PopOpenNode(n->GetKey());
+				m_nodes.PopAlreadyDequeuedOpenNode(n->GetKey());
 				m_nodes.InsertClosedNode(*n);
 			} else {
+				m_nodes.ReenqueueOpenNode(*n);
 				bDestFound = false;
 				break;
 			}
