@@ -98,6 +98,7 @@ struct Pool : PoolBase {
 	bool cleaning;       ///< True if cleaning pool (deleting all items)
 
 	Titem **data;        ///< Pointer to array of pointers to Titem
+	uint64 *free_bitmap; ///< Pointer to free bitmap
 
 	Pool(const char *name);
 	virtual void CleanPool();

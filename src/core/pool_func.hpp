@@ -15,6 +15,8 @@
 #include "alloc_func.hpp"
 #include "mem_func.hpp"
 #include "pool_type.hpp"
+#include "math_func.hpp"
+#include "bitmath_func.hpp"
 
 /**
  * Helper for defining the method's signature.
@@ -40,6 +42,7 @@ DEFINE_POOL_METHOD(inline)::Pool(const char *name) :
 #endif /* OTTD_ASSERT */
 		cleaning(false),
 		data(nullptr),
+		free_bitmap(nullptr),
 		alloc_cache(nullptr)
 { }
 
@@ -54,10 +57,16 @@ DEFINE_POOL_METHOD(inline void)::ResizeFor(size_t index)
 	assert(index >= this->size);
 	assert(index < Tmax_size);
 
-	size_t new_size = min(Tmax_size, Align(index + 1, Tgrowth_step));
+	size_t new_size = min(Tmax_size, Align(index + 1, max<uint>(64, Tgrowth_step)));
 
 	this->data = ReallocT(this->data, new_size);
 	MemSetT(this->data + this->size, 0, new_size - this->size);
+
+	this->free_bitmap = ReallocT(this->free_bitmap, CeilDiv(new_size, 64));
+	MemSetT(this->free_bitmap + CeilDiv(this->size, 64), 0, CeilDiv(new_size, 64) - CeilDiv(this->size, 64));
+	if (new_size % 64 != 0) {
+		this->free_bitmap[new_size / 64] |= (~((uint64) 0)) << (new_size % 64);
+	}
 
 	this->size = new_size;
 }
@@ -68,25 +77,27 @@ DEFINE_POOL_METHOD(inline void)::ResizeFor(size_t index)
  */
 DEFINE_POOL_METHOD(inline size_t)::FindFirstFree()
 {
-	size_t index = this->first_free;
+	uint bitmap_index = this->first_free / 64;
+	uint bitmap_end = CeilDiv(this->first_unused, 64);
 
-	for (; index < this->first_unused; index++) {
-		if (this->data[index] == nullptr) return index;
+	for (; bitmap_index < bitmap_end; bitmap_index++) {
+		uint64 available = ~this->free_bitmap[bitmap_index];
+		if (available == 0) continue;
+		return (bitmap_index * 64) + FindFirstBit64(available);
 	}
 
-	if (index < this->size) {
-		return index;
+	if (this->first_unused < this->size) {
+		return this->first_unused;
 	}
 
-	assert(index == this->size);
 	assert(this->first_unused == this->size);
 
-	if (index < Tmax_size) {
-		this->ResizeFor(index);
-		return index;
+	if (this->first_unused < Tmax_size) {
+		this->ResizeFor(this->first_unused);
+		return this->first_unused;
 	}
 
-	assert(this->items == Tmax_size);
+	assert(this->first_unused == Tmax_size);
 
 	return NO_FREE_ITEM;
 }
@@ -121,6 +132,7 @@ DEFINE_POOL_METHOD(inline void *)::AllocateItem(size_t size, size_t index)
 		item = (Titem *)MallocT<byte>(size);
 	}
 	this->data[index] = item;
+	SetBit(this->free_bitmap[index / 64], index % 64);
 	item->index = (Tindex)(uint)index;
 	return item;
 }
@@ -189,6 +201,7 @@ DEFINE_POOL_METHOD(void)::FreeItem(size_t index)
 		free(this->data[index]);
 	}
 	this->data[index] = nullptr;
+	ClrBit(this->free_bitmap[index / 64], index % 64);
 	this->first_free = min(this->first_free, index);
 	this->items--;
 	if (!this->cleaning) Titem::PostDestructor(index);
@@ -204,8 +217,10 @@ DEFINE_POOL_METHOD(void)::CleanPool()
 	}
 	assert(this->items == 0);
 	free(this->data);
+	free(this->free_bitmap);
 	this->first_unused = this->first_free = this->size = 0;
 	this->data = nullptr;
+	this->free_bitmap = nullptr;
 	this->cleaning = false;
 
 	if (Tcache) {
