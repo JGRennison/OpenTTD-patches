@@ -568,8 +568,8 @@ check_params() {
 
 	# Export some variables to be used by pkg-config
 	#
-	# PKG_CONFIG_LIBDIR variable musn't be set if we are not willing to
-	# override the default pkg-config search path, it musn't be an empty
+	# PKG_CONFIG_LIBDIR variable mustn't be set if we are not willing to
+	# override the default pkg-config search path, it mustn't be an empty
 	# string. If the variable is empty (e.g. when an empty string comes
 	# from config.cache) then unset it. This way the "don't override" state
 	# will be properly preserved when (re)configuring.
@@ -781,7 +781,7 @@ check_params() {
 			log 1 "checking GDI video driver... not Windows, skipping"
 		fi
 
-		if [ -z "$allegro_config" ] && [ -z "$sdl_config" ] && [ "$with_cocoa" = 0 ] && [ "$os" != "MINGW" ] && [ "$os" != "CYGWIN" ]; then
+		if [ -z "$allegro_config" ] && [ -z "$sdl2_config" ] && [ -z "$sdl_config" ] && [ "$with_cocoa" = 0 ] && [ "$os" != "MINGW" ] && [ "$os" != "CYGWIN" ]; then
 			log 1 "configure: error: no video driver development files found"
 			log 1 " If you want a dedicated server use --enable-dedicated as parameter"
 			exit 1
@@ -1437,7 +1437,7 @@ make_compiler_cflags() {
 
 		if [ $cc_version -ge 402 ]; then
 			# GCC 4.2+ automatically assumes that signed overflows do
-			# not occur in signed arithmetics, whereas we are not
+			# not occur in signed arithmetic, whereas we are not
 			# sure that they will not happen. It furthermore complains
 			# about its own optimized code in some places.
 			flags="$flags -fno-strict-overflow"
@@ -2032,7 +2032,16 @@ EOL
 		fi
 	fi
 
-	if [ -n "$sdl_config" ]; then
+	if [ -n "$sdl2_config" ]; then
+		CFLAGS="$CFLAGS -DWITH_SDL2"
+		# SDL must not add _GNU_SOURCE as it breaks many platforms
+		CFLAGS="$CFLAGS `$sdl2_config --cflags | sed 's@-D_GNU_SOURCE[^ ]*@@'`"
+		if [ "$enable_static" != "0" ]; then
+			LIBS="$LIBS `$sdl2_config --static --libs`"
+		else
+			LIBS="$LIBS `$sdl2_config --libs`"
+		fi
+	elif [ -n "$sdl_config" ]; then
 		CFLAGS="$CFLAGS -DWITH_SDL"
 		# SDL must not add _GNU_SOURCE as it breaks many platforms
 		CFLAGS="$CFLAGS `$sdl_config --cflags | sed 's@-D_GNU_SOURCE[^ ]*@@'`"
@@ -2847,7 +2856,13 @@ detect_sdl() {
 		sleep 5
 	fi
 
-	detect_pkg_config "$with_sdl" "sdl" "sdl_config" "1.2"
+	if [ $with_sdl = "sdl1" ]; then
+		detect_pkg_config "2" "sdl" "sdl_config" "1.2"
+	elif [ $with_sdl = "sdl2" ] || [ -x `which sdl2-config` ]; then
+		detect_pkg_config "2" "sdl2" "sdl2_config" "2.0"
+	else
+		detect_pkg_config "$with_sdl" "sdl" "sdl_config" "1.2"
+	fi
 }
 
 detect_osx_sdk() {
@@ -3558,7 +3573,7 @@ detect_sse_capable_architecture() {
 	else
 		# It was forced, so it should be found.
 		if [ "$with_sse" != "1" ]; then
-			log 1 "configure: error: SSE couln't be found"
+			log 1 "configure: error: SSE couldn't be found"
 			log 1 "configure: error: you force enabled SSE, but it seems unavailable"
 			exit 1
 		fi
@@ -3936,7 +3951,7 @@ showhelp() {
 	echo "  --with-allegro[=\"pkg-config allegro\"]"
 	echo "                                 enables Allegro video driver support"
 	echo "  --with-cocoa                   enables COCOA video driver (OSX ONLY)"
-	echo "  --with-sdl[=\"pkg-config sdl\"]  enables SDL video driver support"
+	echo "  --with-sdl[=\"sdl1|sdl2\"]       enables SDL video driver support"
 	echo "  --with-zlib[=\"pkg-config zlib\"]"
 	echo "                                 enables zlib support"
 	echo "  --with-liblzma[=\"pkg-config liblzma\"]"

@@ -87,7 +87,7 @@ static void TransmitSysex(const byte *&msg_start, size_t &remaining)
 
 	/* prepare header */
 	MIDIHDR *hdr = CallocT<MIDIHDR>(1);
-	hdr->lpData = (LPSTR)msg_start;
+	hdr->lpData = reinterpret_cast<LPSTR>(const_cast<byte *>(msg_start));
 	hdr->dwBufferLength = msg_end - msg_start;
 	if (midiOutPrepareHeader(_midi.midi_out, hdr, sizeof(*hdr)) == MMSYSERR_NOERROR) {
 		/* transmit - just point directly into the data buffer */
@@ -373,7 +373,7 @@ const char *MusicDriver_Win32::Start(const char * const *parm)
 	DEBUG(driver, 2, "Win32-MIDI: Start: initializing");
 
 	int resolution = GetDriverParamInt(parm, "resolution", 5);
-	int port = GetDriverParamInt(parm, "port", -1);
+	uint port = (uint)GetDriverParamInt(parm, "port", UINT_MAX);
 	const char *portname = GetDriverParam(parm, "portname");
 
 	/* Enumerate ports either for selecting port by name, or for debug output */
@@ -396,7 +396,7 @@ const char *MusicDriver_Win32::Start(const char * const *parm)
 	}
 
 	UINT devid;
-	if (port < 0) {
+	if (port == UINT_MAX) {
 		devid = MIDI_MAPPER;
 	} else {
 		devid = (UINT)port;

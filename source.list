@@ -339,6 +339,7 @@ scope.h
 screenshot.h
 sound/sdl_s.h
 video/sdl_v.h
+video/sdl2_v.h
 schdispatch.h
 settings_func.h
 settings_gui.h
@@ -1154,6 +1155,9 @@ video/null_v.cpp
 	#if SDL
 		video/sdl_v.cpp
 	#end
+	#if SDL2
+		video/sdl2_v.cpp
+	#end
 	#if WIN32
 		video/win32_v.cpp
 	#end
@@ -1195,6 +1199,9 @@ sound/null_s.cpp
 	#end
 	#if SDL
 		sound/sdl_s.cpp
+	#end
+	#if SDL2
+		sound/sdl2_s.cpp
 	#end
 	#if WIN32
 		sound/win32_s.cpp

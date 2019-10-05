@@ -61,7 +61,7 @@ BuildRequires:  kernel
 BuildRequires:  pkg-config
 %endif
 
-# bulding openttd.grf is not required as it is a) part of source and
+# building openttd.grf is not required as it is a) part of source and
 # b) required only, if you want to use the original set
 %if 0%{?with_grfcodec}
 BuildRequires:  grfcodec
@@ -91,7 +91,7 @@ Group:          Amusements/Games/Strategy/Other
 Requires:       %{name}
 Conflicts:      %{name}-dedicated
 
-BuildRequires:  SDL-devel
+BuildRequires:  SDL2-devel
 BuildRequires:  fontconfig-devel
 
 %if 0%{?rhel_version} != 600

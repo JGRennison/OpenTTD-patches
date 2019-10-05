@@ -872,7 +872,7 @@ static void ShipController(Ship *v)
 							if (st->facilities & FACIL_DOCK) { // ugly, ugly workaround for problem with ships able to drop off cargo at wrong stations
 								ShipArrivesAt(v, st);
 								v->BeginLoading();
-							} else { // leave stations without docks right aways
+							} else { // leave stations without docks right away
 								v->current_order.MakeLeaveStation();
 								v->IncrementRealOrderIndex();
 							}
@@ -948,7 +948,7 @@ static void ShipController(Ship *v)
 		/* Bridge exit */
 		if (_settings_game.vehicle.ship_collision_avoidance && gp.new_tile != TileVirtXY(v->x_pos, v->y_pos)) HandleSpeedOnAqueduct(v, gp.new_tile, v->tile);
 
-		/* Ship is back on the bridge head, we need to comsume its path
+		/* Ship is back on the bridge head, we need to consume its path
 		 * cache entry here as we didn't have to choose a ship track. */
 		if (!v->path.empty()) v->path.pop_front();
 	}

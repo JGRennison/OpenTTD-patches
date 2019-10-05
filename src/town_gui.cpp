@@ -966,7 +966,7 @@ public:
 		this->vscroll->SetCapacityFromWidget(this, WID_TD_LIST);
 	}
 
-	virtual void OnEditboxChanged(int wid)
+	void OnEditboxChanged(int wid) override
 	{
 		if (wid == WID_TD_FILTER) {
 			this->string_filter.SetFilterTerm(this->townname_editbox.text.buf);
@@ -1011,7 +1011,7 @@ public:
 					this->towns.Sort();
 					this->towns.shrink_to_fit();
 					this->towns.RebuildDone();
-					this->vscroll->SetCount(this->towns.size()); // Update scrollbar as well.
+					this->vscroll->SetCount((int)this->towns.size()); // Update scrollbar as well.
 				}
 				break;
 			default:
