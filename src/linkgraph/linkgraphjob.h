@@ -393,7 +393,7 @@ public:
 	inline NodeID GetOrigin() const { return this->origin; }
 
 	/** Get the parent leg of this one. */
-	inline Path *GetParent() { return this->parent; }
+	inline Path *GetParent() { return reinterpret_cast<Path *>(this->parent_storage & ~1); }
 
 	/** Get the overall capacity of the path. */
 	inline uint GetCapacity() const { return this->capacity; }
@@ -442,14 +442,17 @@ public:
 	 */
 	inline void Detach()
 	{
-		if (this->parent != nullptr) {
-			this->parent->num_children--;
-			this->parent = nullptr;
+		if (this->GetParent() != nullptr) {
+			this->GetParent()->num_children--;
+			this->SetParent(nullptr);
 		}
 	}
 
 	uint AddFlow(uint f, LinkGraphJob &job, uint max_saturation);
 	void Fork(Path *base, uint cap, int free_cap, uint dist);
+
+	inline bool GetAnnosSetFlag() const { return HasBit(this->parent_storage, 0); }
+	inline void SetAnnosSetFlag(bool flag) { SB(this->parent_storage, 0, 1, flag ? 1 : 0); }
 
 protected:
 
@@ -469,7 +472,11 @@ protected:
 	NodeID node;       ///< Link graph node this leg passes.
 	NodeID origin;     ///< Link graph node this path originates from.
 	uint num_children; ///< Number of child legs that have been forked from this path.
-	Path *parent;      ///< Parent leg of this one.
+
+	uintptr_t parent_storage; ///< Parent leg of this one, flag in LSB of pointer
+
+	/** Get the parent leg of this one. */
+	inline void SetParent(Path *parent) { this->parent_storage = reinterpret_cast<uintptr_t>(parent) | (this->parent_storage & 1); }
 };
 
 #endif /* LINKGRAPHJOB_H */

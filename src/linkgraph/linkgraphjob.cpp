@@ -277,10 +277,10 @@ void Path::Fork(Path *base, uint cap, int free_cap, uint dist)
 	this->free_capacity = min(base->free_capacity, free_cap);
 	this->distance = base->distance + dist;
 	assert(this->distance > 0);
-	if (this->parent != base) {
+	if (this->GetParent() != base) {
 		this->Detach();
-		this->parent = base;
-		this->parent->num_children++;
+		this->SetParent(base);
+		base->num_children++;
 	}
 	this->origin = base->origin;
 }
@@ -295,8 +295,8 @@ void Path::Fork(Path *base, uint cap, int free_cap, uint dist)
  */
 uint Path::AddFlow(uint new_flow, LinkGraphJob &job, uint max_saturation)
 {
-	if (this->parent != nullptr) {
-		LinkGraphJob::Edge edge = job[this->parent->node][this->node];
+	if (this->GetParent() != nullptr) {
+		LinkGraphJob::Edge edge = job[this->GetParent()->node][this->node];
 		if (max_saturation != UINT_MAX) {
 			uint usable_cap = edge.Capacity() * max_saturation / 100;
 			if (usable_cap > edge.Flow()) {
@@ -305,9 +305,9 @@ uint Path::AddFlow(uint new_flow, LinkGraphJob &job, uint max_saturation)
 				return 0;
 			}
 		}
-		new_flow = this->parent->AddFlow(new_flow, job, max_saturation);
+		new_flow = this->GetParent()->AddFlow(new_flow, job, max_saturation);
 		if (this->flow == 0 && new_flow > 0) {
-			job[this->parent->node].Paths().push_back(this);
+			job[this->GetParent()->node].Paths().push_back(this);
 		}
 		edge.AddFlow(new_flow);
 	}
@@ -325,6 +325,6 @@ Path::Path(NodeID n, bool source) :
 	capacity(source ? UINT_MAX : 0),
 	free_capacity(source ? INT_MAX : INT_MIN),
 	flow(0), node(n), origin(source ? n : INVALID_NODE),
-	num_children(0), parent(nullptr)
+	num_children(0), parent_storage(0)
 {}
 
