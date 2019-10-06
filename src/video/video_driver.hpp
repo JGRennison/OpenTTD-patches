@@ -89,6 +89,11 @@ public:
 	}
 
 	/**
+	 * An edit box gained the input focus
+	 */
+	virtual void EditBoxGainedFocus() {}
+
+	/**
 	 * An edit box lost the input focus. Abort character compositing if necessary.
 	 */
 	virtual void EditBoxLostFocus() {}

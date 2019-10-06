@@ -37,6 +37,10 @@ public:
 
 	bool ClaimMousePointer() override;
 
+	void EditBoxGainedFocus() override;
+
+	void EditBoxLostFocus() override;
+
 	const char *GetName() const override { return "sdl"; }
 private:
 	int PollEvent();

@@ -23,6 +23,7 @@
 #include "../core/math_func.hpp"
 #include "../fileio_func.h"
 #include "../framerate_type.h"
+#include "../window_func.h"
 #include "sdl2_v.h"
 #include <SDL.h>
 #include <mutex>
@@ -59,6 +60,8 @@ static int _num_dirty_rects;
 /* Size of window */
 static int _window_size_w;
 static int _window_size_h;
+
+static std::string _editing_text;
 
 void VideoDriver_SDL::MakeDirty(int left, int top, int width, int height)
 {
@@ -358,6 +361,18 @@ bool VideoDriver_SDL::ClaimMousePointer()
 	return true;
 }
 
+void VideoDriver_SDL::EditBoxGainedFocus()
+{
+	SDL_StartTextInput();
+}
+
+void VideoDriver_SDL::EditBoxLostFocus()
+{
+	SDL_StopTextInput();
+	/* Clear any marked string from the current edit box. */
+	HandleTextInput(nullptr, true);
+}
+
 struct VkMapping {
 	SDL_Keycode vk_from;
 	byte vk_count;
@@ -574,6 +589,11 @@ int VideoDriver_SDL::PollEvent()
 			break;
 
 		case SDL_TEXTINPUT: {
+			if (EditBoxInGlobalFocus()) {
+				HandleTextInput(nullptr, true);
+				HandleTextInput(ev.text.text);
+				break;
+			}
 			WChar character;
 			SDL_Keycode kc = SDL_GetKeyFromName(ev.text.text);
 			uint keycode = ConvertSdlKeycodeIntoMy(kc);
@@ -582,6 +602,18 @@ int VideoDriver_SDL::PollEvent()
 			HandleKeypress(keycode, character);
 			break;
 		}
+
+		case SDL_TEXTEDITING: {
+			if (!EditBoxInGlobalFocus()) break;
+			if (ev.edit.start == 0) {
+				_editing_text = ev.edit.text;
+			} else {
+				_editing_text += ev.edit.text;
+			}
+			HandleTextInput(_editing_text.c_str(), true, _editing_text.c_str() + _editing_text.size());
+			break;
+		}
+
 		case SDL_WINDOWEVENT: {
 			if (ev.window.event == SDL_WINDOWEVENT_EXPOSED) {
 				// Force a redraw of the entire screen.

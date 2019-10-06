@@ -502,11 +502,20 @@ bool Window::SetFocusedWidget(int widget_index)
 		if (this->nested_focus->type == WWT_EDITBOX) VideoDriver::GetInstance()->EditBoxLostFocus();
 	}
 	this->nested_focus = this->GetWidget<NWidgetCore>(widget_index);
+	if (this->nested_focus->type == WWT_EDITBOX) VideoDriver::GetInstance()->EditBoxGainedFocus();
 	return true;
 }
 
 /**
- * Called when window looses focus
+ * Called when window gains focus
+ */
+void Window::OnFocus(Window *previously_focused_window)
+{
+	if (this->nested_focus != nullptr && this->nested_focus->type == WWT_EDITBOX) VideoDriver::GetInstance()->EditBoxGainedFocus();
+}
+
+/**
+ * Called when window loses focus
  */
 void Window::OnFocusLost(Window *newly_focused_window)
 {

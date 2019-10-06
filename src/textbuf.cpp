@@ -101,6 +101,7 @@ bool Textbuf::DeleteChar(uint16 keycode)
 	/* Move the remaining characters over the marker */
 	memmove(s, s + len, this->bytes - (s - this->buf) - len);
 	this->bytes -= len;
+	if (this->markend >= this->bytes) this->markpos = this->markend = 0;
 
 	if (backspace) this->caretpos -= len;
 
@@ -251,6 +252,7 @@ void Textbuf::DeleteText(uint16 from, uint16 to, bool update)
 	/* Strip marked characters from buffer. */
 	memmove(this->buf + from, this->buf + to, this->bytes - to);
 	this->bytes -= to - from;
+	if (this->markend >= this->bytes) this->markpos = this->markend = 0;
 	this->chars -= c;
 
 	/* Fixup caret if needed. */
