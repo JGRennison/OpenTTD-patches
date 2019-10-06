@@ -668,6 +668,11 @@ public:
 	virtual EventState OnCTRLStateChange() { return ES_NOT_HANDLED; }
 
 	/**
+	 * The state of the control key has changed, this is sent even if an OnCTRLStateChange handler has return ES_HANDLED
+	 */
+	virtual void OnCTRLStateChangeAlways() {}
+
+	/**
 	 * The state of the shift key has changed
 	 */
 	virtual void OnShiftStateChange() {}

@@ -1380,10 +1380,9 @@ struct ModifierKeyToggleWindow : Window {
 		this->SetDirty();
 	}
 
-	EventState OnCTRLStateChange() override
+	void OnCTRLStateChangeAlways() override
 	{
 		this->UpdateButtons();
-		return ES_NOT_HANDLED;
 	}
 
 	void OnShiftStateChange() override
