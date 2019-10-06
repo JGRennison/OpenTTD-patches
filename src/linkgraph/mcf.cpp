@@ -523,13 +523,18 @@ MCF1stPass::MCF1stPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 	uint size = job.Size();
 	uint accuracy = job.Settings().accuracy;
 	bool more_loops;
+	std::vector<bool> finished_sources;
+	finished_sources.resize(size);
 
 	do {
 		more_loops = false;
 		for (NodeID source = 0; source < size; ++source) {
+			if (finished_sources[source]) continue;
+
 			/* First saturate the shortest paths. */
 			this->Dijkstra<DistanceAnnotation, GraphEdgeIterator>(source, paths);
 
+			bool source_demand_left = false;
 			for (NodeID dest = 0; dest < size; ++dest) {
 				Edge edge = job[source][dest];
 				if (edge.UnsatisfiedDemand() > 0) {
@@ -547,8 +552,10 @@ MCF1stPass::MCF1stPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 							path->GetFreeCapacity() > INT_MIN) {
 						this->PushFlow(edge, path, accuracy, UINT_MAX);
 					}
+					if (edge.UnsatisfiedDemand() > 0) source_demand_left = true;
 				}
 			}
+			if (!source_demand_left) finished_sources[source] = true;
 			this->CleanupPaths(source, paths);
 		}
 	} while ((more_loops || this->EliminateCycles()) && !job.IsJobAborted());
@@ -566,18 +573,28 @@ MCF2ndPass::MCF2ndPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 	uint size = job.Size();
 	uint accuracy = job.Settings().accuracy;
 	bool demand_left = true;
+	std::vector<bool> finished_sources;
+	finished_sources.resize(size);
 	while (demand_left && !job.IsJobAborted()) {
 		demand_left = false;
 		for (NodeID source = 0; source < size; ++source) {
+			if (finished_sources[source]) continue;
+
 			this->Dijkstra<CapacityAnnotation, FlowEdgeIterator>(source, paths);
+
+			bool source_demand_left = false;
 			for (NodeID dest = 0; dest < size; ++dest) {
 				Edge edge = this->job[source][dest];
 				Path *path = paths[dest];
 				if (edge.UnsatisfiedDemand() > 0 && path->GetFreeCapacity() > INT_MIN) {
 					this->PushFlow(edge, path, accuracy, UINT_MAX);
-					if (edge.UnsatisfiedDemand() > 0) demand_left = true;
+					if (edge.UnsatisfiedDemand() > 0) {
+						demand_left = true;
+						source_demand_left = true;
+					}
 				}
 			}
+			if (!source_demand_left) finished_sources[source] = true;
 			this->CleanupPaths(source, paths);
 		}
 	}
