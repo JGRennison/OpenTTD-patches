@@ -45,6 +45,13 @@ private:
 	const Vehicle *clone;      ///< Vehicle this vehicle was a clone of.
 	Order *orders;             ///< The actual orders if the vehicle was not a clone.
 
+	std::vector<uint32> scheduled_dispatch;    ///< Scheduled dispatch time
+	uint32 scheduled_dispatch_duration;        ///< Scheduled dispatch duration
+	Date scheduled_dispatch_start_date;        ///< Scheduled dispatch start date
+	uint16 scheduled_dispatch_start_full_date_fract;///< Scheduled dispatch start full date fraction;
+	                                           /// this count to (DAY_TICK * _settings_game.economy.day_length_factor)
+	int32 scheduled_dispatch_max_delay;        ///< Maximum allowed delay
+
 	/** Creation for savegame restoration. */
 	OrderBackup() {}
 	OrderBackup(const Vehicle *v, uint32 user);

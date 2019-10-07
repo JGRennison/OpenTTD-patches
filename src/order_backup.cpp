@@ -65,6 +65,15 @@ OrderBackup::OrderBackup(const Vehicle *v, uint32 user)
 			*tail = copy;
 			tail = &copy->next;
 		}
+
+		if (v->orders.list != nullptr && HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
+			SetBit(this->vehicle_flags, VF_SCHEDULED_DISPATCH);
+			this->scheduled_dispatch = v->orders.list->GetScheduledDispatch();
+			this->scheduled_dispatch_duration = v->orders.list->GetScheduledDispatchDuration();
+			this->scheduled_dispatch_start_date = v->orders.list->GetScheduledDispatchStartDatePart();
+			this->scheduled_dispatch_start_full_date_fract = v->orders.list->GetScheduledDispatchStartDateFractPart();
+			this->scheduled_dispatch_max_delay = v->orders.list->GetScheduledDispatchDelay();
+		}
 	}
 }
 
@@ -80,6 +89,17 @@ void OrderBackup::DoRestore(Vehicle *v)
 	} else if (this->orders != nullptr && OrderList::CanAllocateItem()) {
 		v->orders.list = new OrderList(this->orders, v);
 		this->orders = nullptr;
+
+		if (HasBit(this->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
+			SetBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH);
+			v->orders.list->SetScheduledDispatchDuration(this->scheduled_dispatch_duration);
+			v->orders.list->SetScheduledDispatchDelay(this->scheduled_dispatch_max_delay);
+			v->orders.list->SetScheduledDispatchStartDate(this->scheduled_dispatch_start_date,
+					this->scheduled_dispatch_start_full_date_fract);
+			v->orders.list->SetScheduledDispatchLastDispatch(0);
+			v->orders.list->SetScheduledDispatch(std::move(this->scheduled_dispatch));
+		}
+
 		/* Make sure buoys/oil rigs are updated in the station list. */
 		InvalidateWindowClassesData(WC_STATION_LIST, 0);
 	}

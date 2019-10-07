@@ -318,6 +318,11 @@ const SaveLoad *GetOrderBackupDescription()
 		 SLE_CONDVAR(OrderBackup, vehicle_flags,            SLE_FILE_U8 | SLE_VAR_U16, SLV_176, SLV_180),
 		 SLE_CONDVAR(OrderBackup, vehicle_flags,            SLE_UINT16,                SLV_180, SL_MAX_VERSION),
 		     SLE_REF(OrderBackup, orders,                   REF_ORDER),
+		SLE_CONDVARVEC_X(OrderBackup, scheduled_dispatch,                    SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 2)),
+		SLE_CONDVAR_X(OrderBackup, scheduled_dispatch_duration,              SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 2)),
+		SLE_CONDVAR_X(OrderBackup, scheduled_dispatch_start_date,            SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 2)),
+		SLE_CONDVAR_X(OrderBackup, scheduled_dispatch_start_full_date_fract, SLE_UINT16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 2)),
+		SLE_CONDVAR_X(OrderBackup, scheduled_dispatch_max_delay,             SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 2)),
 		     SLE_END()
 	};
 
