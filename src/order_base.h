@@ -730,6 +730,7 @@ public:
 	 */
 	inline const std::vector<uint32> &GetScheduledDispatch() const { return this->scheduled_dispatch; }
 
+	void SetScheduledDispatch(std::vector<uint32> dispatch_list);
 	void AddScheduledDispatch(uint32 offset);
 	void RemoveScheduledDispatch(uint32 offset);
 	void UpdateScheduledDispatch();
@@ -757,6 +758,18 @@ public:
 		this->scheduled_dispatch_start_date = start_date;
 		this->scheduled_dispatch_start_full_date_fract = start_full_date_fract;
 	}
+
+	/**
+	 * Get the scheduled dispatch start date part
+	 * @return  scheduled dispatch start date part
+	 */
+	inline Date GetScheduledDispatchStartDatePart() const { return this->scheduled_dispatch_start_date; }
+
+	/**
+	 * Get the scheduled dispatch start date fract part
+	 * @return  scheduled dispatch start date fract part
+	 */
+	inline uint16 GetScheduledDispatchStartDateFractPart() const { return this->scheduled_dispatch_start_full_date_fract; }
 
 	/**
 	 * Get the scheduled dispatch start date, in absolute scaled tick

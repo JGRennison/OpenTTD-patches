@@ -2133,17 +2133,10 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 				if (src->orders.list != nullptr) {
 					dst->orders.list->SetScheduledDispatchDuration(src->orders.list->GetScheduledDispatchDuration());
 					dst->orders.list->SetScheduledDispatchDelay(src->orders.list->GetScheduledDispatchDelay());
-					for (const auto& slot : src->orders.list->GetScheduledDispatch()) {
-						dst->orders.list->AddScheduledDispatch(slot);
-					}
-
-					Date start_date;
-					uint16 start_full_date_fract;
-					SchdispatchConvertToFullDateFract(
-							src->orders.list->GetScheduledDispatchStartTick(),
-							&start_date, &start_full_date_fract);
-					dst->orders.list->SetScheduledDispatchStartDate(start_date, start_full_date_fract);
-					/* Don't copy last dispatch, leave it at 0 (default) */
+					dst->orders.list->SetScheduledDispatchStartDate(src->orders.list->GetScheduledDispatchStartDatePart(),
+							src->orders.list->GetScheduledDispatchStartDateFractPart());
+					dst->orders.list->SetScheduledDispatchLastDispatch(0);
+					dst->orders.list->SetScheduledDispatch(src->orders.list->GetScheduledDispatch());
 				}
 
 				/* Set automation bit if target has it. */

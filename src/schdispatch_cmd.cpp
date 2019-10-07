@@ -267,6 +267,17 @@ CommandCost CmdScheduledDispatchResetLastDispatch(TileIndex tile, DoCommandFlag 
 }
 
 /**
+ * Set scheduled dispatch slot list.
+ * @param dispatch_list The offset time list, must be correctly sorted.
+ */
+void OrderList::SetScheduledDispatch(std::vector<uint32> dispatch_list)
+{
+	this->scheduled_dispatch = std::move(dispatch_list);
+	assert(std::is_sorted(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end()));
+	this->UpdateScheduledDispatch();
+}
+
+/**
  * Add new scheduled dispatch slot at offsets time.
  * @param offset The offset time to add.
  */
@@ -329,7 +340,7 @@ void OrderList::UpdateScheduledDispatch()
 void OrderList::ResetScheduledDispatch()
 {
 	uint32 windex = this->first_shared->index;
-	
+
 	Date start_date;
 	uint16 start_full_date_fract;
 	uint32 duration;
@@ -350,7 +361,7 @@ void OrderList::ResetScheduledDispatch()
 		start_full_date_fract = 0;
 		duration = 365*DAY_TICKS;
 	}
-	
+
 	DoCommandP(0, windex, duration, CMD_SCHEDULED_DISPATCH_SET_DURATION | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 
 	uint32 p1 = 0, p2 = 0;
