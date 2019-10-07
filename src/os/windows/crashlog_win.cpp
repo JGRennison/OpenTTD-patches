@@ -621,6 +621,12 @@ static void CDECL CustomAbort(int signal)
 	log.MakeDesyncCrashLog(log_in, log_out, info);
 }
 
+/* static */ void CrashLog::VersionInfoLog()
+{
+	CrashLogWindows log(nullptr);
+	log.MakeVersionInfoLog();
+}
+
 /* The crash log GUI */
 
 static bool _expanded;

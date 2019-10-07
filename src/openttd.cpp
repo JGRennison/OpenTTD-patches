@@ -231,6 +231,7 @@ static void ShowHelp()
 		"  -c config_file      = Use 'config_file' instead of 'openttd.cfg'\n"
 		"  -x                  = Do not automatically save to config file on exit\n"
 		"  -q savegame         = Write some information about the savegame and exit\n"
+		"  -Z                  = Write detailed version information and exit\n"
 		"\n",
 		lastof(buf)
 	);
@@ -649,6 +650,7 @@ static const OptionData _options[] = {
 	 GETOPT_SHORT_VALUE('K'),
 	 GETOPT_SHORT_NOVAL('h'),
 	 GETOPT_SHORT_VALUE('J'),
+	 GETOPT_SHORT_NOVAL('Z'),
 	GETOPT_END()
 };
 
@@ -804,6 +806,10 @@ int openttd_main(int argc, char *argv[])
 		case 'c': free(_config_file); _config_file = stredup(mgo.opt); break;
 		case 'x': scanner->save_config = false; break;
 		case 'J': _quit_after_days = Clamp(atoi(mgo.opt), 0, INT_MAX); break;
+		case 'Z': {
+			CrashLog::VersionInfoLog();
+			goto exit_noshutdown;
+		}
 		case 'h':
 			i = -2; // Force printing of help.
 			break;

@@ -509,6 +509,26 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 }
 
 /**
+ * Fill the version info log buffer.
+ * @param buffer The begin where to write at.
+ * @param last   The last position in the buffer to write to.
+ * @return the position of the \c '\0' character after the buffer.
+ */
+char *CrashLog::FillVersionInfoLog(char *buffer, const char *last) const
+{
+	buffer += seprintf(buffer, last, "*** OpenTTD Version Info Report ***\n\n");
+
+	buffer = this->LogOpenTTDVersion(buffer, last);
+	buffer = this->LogOSVersion(buffer, last);
+	buffer = this->LogCompiler(buffer, last);
+	buffer = this->LogOSVersionDetail(buffer, last);
+	buffer = this->LogLibraries(buffer, last);
+
+	buffer += seprintf(buffer, last, "*** End of OpenTTD Version Info Report ***\n");
+	return buffer;
+}
+
+/**
  * Write the crash log to a file.
  * @note On success the filename will be filled with the full path of the
  *       crash log file. Make sure filename is at least \c MAX_PATH big.
@@ -703,6 +723,19 @@ bool CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_ou
 	}
 
 	return ret;
+}
+
+/**
+ * Makes a version info log, writes it to a file. It uses DEBUG to write
+ * information like paths to the console.
+ * @return true when everything is made successfully.
+ */
+bool CrashLog::MakeVersionInfoLog() const
+{
+	char buffer[65536];
+	this->FillVersionInfoLog(buffer, lastof(buffer));
+	printf("%s\n", buffer);
+	return true;
 }
 
 /**

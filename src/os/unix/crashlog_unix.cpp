@@ -625,3 +625,9 @@ static void CDECL HandleCrash(int signum)
 	CrashLogUnix log(CrashLogUnix::DesyncTag{});
 	log.MakeDesyncCrashLog(log_in, log_out, info);
 }
+
+/* static */ void CrashLog::VersionInfoLog()
+{
+	CrashLogUnix log(CrashLogUnix::DesyncTag{});
+	log.MakeVersionInfoLog();
+}

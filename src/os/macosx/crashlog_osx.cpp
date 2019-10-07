@@ -521,3 +521,9 @@ void CDECL HandleCrash(int signum, siginfo_t *si, void *context)
 	CrashLogOSX log(CrashLogOSX::DesyncTag{});
 	log.MakeDesyncCrashLog(log_in, log_out, info);
 }
+
+/* static */ void CrashLog::VersionInfoLog()
+{
+	CrashLogOSX log(CrashLogOSX::DesyncTag{});
+	log.MakeVersionInfoLog();
+}
