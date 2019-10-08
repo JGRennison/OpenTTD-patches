@@ -309,7 +309,23 @@ char *CrashLog::LogLibraries(char *buffer, const char *last) const
 #elif defined(WITH_SDL2)
 	SDL_version sdl2_v;
 	SDL_GetVersion(&sdl2_v);
-	buffer += seprintf(buffer, last, " SDL2:       %d.%d.%d\n", sdl2_v.major, sdl2_v.minor, sdl2_v.patch);
+	buffer += seprintf(buffer, last, " SDL2:       %d.%d.%d", sdl2_v.major, sdl2_v.minor, sdl2_v.patch);
+#if defined(SDL_USE_IME)
+	buffer += seprintf(buffer, last, " IME?");
+#endif
+#if defined(HAVE_FCITX_FRONTEND_H)
+	buffer += seprintf(buffer, last, " FCITX?");
+#endif
+#if defined(HAVE_IBUS_IBUS_H)
+	buffer += seprintf(buffer, last, " IBUS?");
+#endif
+#if !(defined(_WIN32) || defined(__APPLE__))
+	const char *sdl_im_module = getenv("SDL_IM_MODULE");
+	if (sdl_im_module != nullptr) buffer += seprintf(buffer, last, " (SDL_IM_MODULE=%s)", sdl_im_module);
+	const char *xmod = getenv("XMODIFIERS");
+	if (xmod != nullptr && strstr(xmod, "@im=fcitx") != nullptr) buffer += seprintf(buffer, last, " (XMODIFIERS has @im=fcitx)");
+#endif
+	buffer += seprintf(buffer, last, "\n");
 #endif
 
 #ifdef WITH_ZLIB
