@@ -24,6 +24,7 @@
 #include "../fileio_func.h"
 #include "../framerate_type.h"
 #include "../window_func.h"
+#include "../window_gui.h"
 #include "sdl2_v.h"
 #include <SDL.h>
 #include <mutex>
@@ -361,14 +362,32 @@ bool VideoDriver_SDL::ClaimMousePointer()
 	return true;
 }
 
+static void SetTextInputRect()
+{
+	SDL_Rect winrect;
+	Point pt = _focused_window->GetCaretPosition();
+	winrect.x = _focused_window->left + pt.x;
+	winrect.y = _focused_window->top  + pt.y;
+	winrect.w = 1;
+	winrect.h = FONT_HEIGHT_NORMAL;
+	SDL_SetTextInputRect(&winrect);
+}
+
 void VideoDriver_SDL::EditBoxGainedFocus()
 {
-	SDL_StartTextInput();
+	if (!this->edit_box_focused) {
+		SDL_StartTextInput();
+		this->edit_box_focused = true;
+	}
+	SetTextInputRect();
 }
 
 void VideoDriver_SDL::EditBoxLostFocus()
 {
-	SDL_StopTextInput();
+	if (this->edit_box_focused) {
+		SDL_StopTextInput();
+		this->edit_box_focused = false;
+	}
 	/* Clear any marked string from the current edit box. */
 	HandleTextInput(nullptr, true);
 }
@@ -592,6 +611,7 @@ int VideoDriver_SDL::PollEvent()
 			if (EditBoxInGlobalFocus()) {
 				HandleTextInput(nullptr, true);
 				HandleTextInput(ev.text.text);
+				SetTextInputRect();
 				break;
 			}
 			WChar character;

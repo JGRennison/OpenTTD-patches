@@ -45,6 +45,8 @@ public:
 private:
 	int PollEvent();
 	bool CreateMainSurface(uint w, uint h, bool resize);
+
+	bool edit_box_focused;
 };
 
 /** Factory for the SDL video driver. */
