@@ -22,6 +22,7 @@
 #include "string_func.h"
 #include "pathfinder/yapf/yapf_cache.h"
 #include "scope_info.h"
+#include "vehicle_func.h"
 
 #include <vector>
 #include <algorithm>
@@ -493,6 +494,11 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 					}
 
+					case TRIT_COND_LOAD_PERCENT: {
+						result = TestCondition(CalcPercentVehicleFilled(v, nullptr), condop, condvalue);
+						break;
+					}
+
 					default:
 						NOT_REACHED();
 				}
@@ -722,6 +728,7 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				case TRIT_COND_PHYS_RATIO:
 				case TRIT_COND_TRAIN_OWNER:
 				case TRIT_COND_TRAIN_STATUS:
+				case TRIT_COND_LOAD_PERCENT:
 					break;
 
 				default:
@@ -858,6 +865,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_WAIT_AT_PBS:
 		case TRVT_TRAIN_STATUS:
 		case TRVT_REVERSE:
+		case TRVT_PERCENT:
 			SetTraceRestrictValue(item, 0);
 			if (!IsTraceRestrictTypeAuxSubtype(GetTraceRestrictType(item))) {
 				SetTraceRestrictAuxField(item, 0);

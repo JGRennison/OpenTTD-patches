@@ -138,6 +138,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_SLOT_OCCUPANCY      = 22,   ///< Test train slot occupancy state
 	TRIT_COND_TRAIN_OWNER         = 24,   ///< Test train owner
 	TRIT_COND_TRAIN_STATUS        = 25,   ///< Test train status
+	TRIT_COND_LOAD_PERCENT        = 26,   ///< Test train load percentage
 
 	TRIT_COND_END                 = 48,   ///< End (exclusive) of conditional item types, note that this has the same value as TRIT_REVERSE
 	TRIT_REVERSE                  = 48,   ///< Reverse behind signal
@@ -553,6 +554,7 @@ enum TraceRestrictValueType {
 	TRVT_WAIT_AT_PBS              = 18,///< takes a TraceRestrictWaitAtPbsValueField value
 	TRVT_SLOT_INDEX               = 19,///< takes a TraceRestrictSlotID
 	TRVT_SLOT_INDEX_INT           = 20,///< takes a TraceRestrictSlotID, and an integer in the next item slot
+	TRVT_PERCENT                  = 21,///> takes a unsigned integer percentage value between 0 and 100
 	TRVT_OWNER                    = 40,///< takes a CompanyID
 	TRVT_TRAIN_STATUS             = 41,///< takes a TraceRestrictTrainStatusValueField
 	TRVT_REVERSE                  = 42,///< takes a TraceRestrictReverseValueField
@@ -675,6 +677,10 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 			case TRIT_COND_TRAIN_STATUS:
 				out.value_type = TRVT_TRAIN_STATUS;
 				out.cond_type = TRCOT_BINARY;
+				break;
+
+			case TRIT_COND_LOAD_PERCENT:
+				out.value_type = TRVT_PERCENT;
 				break;
 
 			default:

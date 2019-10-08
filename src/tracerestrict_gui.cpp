@@ -394,6 +394,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		STR_TRACE_RESTRICT_VARIABLE_NEXT_ORDER,
 		STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION,
 		STR_TRACE_RESTRICT_VARIABLE_CARGO,
+		STR_TRACE_RESTRICT_VARIABLE_LOAD_PERCENT,
 		STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION,
 		STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP,
@@ -417,6 +418,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		TRIT_COND_NEXT_ORDER,
 		TRIT_COND_LAST_STATION,
 		TRIT_COND_CARGO,
+		TRIT_COND_LOAD_PERCENT,
 		TRIT_COND_ENTRY_DIRECTION,
 		TRIT_COND_PBS_ENTRY_SIGNAL,
 		TRIT_COND_TRAIN_GROUP,
@@ -441,7 +443,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		if (_settings_client.gui.show_adv_tracerestrict_features) {
 			*hide_mask = 0;
 		} else {
-			*hide_mask = is_conditional ? 0x70000 : 0x70;
+			*hide_mask = is_conditional ? 0xE0000 : 0x70;
 		}
 	}
 	return is_conditional ? &set_cond : &set_action;
@@ -683,6 +685,7 @@ static bool IsIntegerValueType(TraceRestrictValueType type)
 		case TRVT_WEIGHT:
 		case TRVT_POWER:
 		case TRVT_FORCE:
+		case TRVT_PERCENT:
 			return true;
 
 		default:
@@ -738,6 +741,10 @@ static uint ConvertIntegerValue(TraceRestrictValueType type, uint in, bool to_di
 			break;
 
 		case TRVT_PF_PENALTY:
+			return in;
+
+		case TRVT_PERCENT:
+			if (!to_display && in > 100) return 100;
 			return in;
 
 		default:
@@ -908,6 +915,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 		} else {
 			switch (properties.value_type) {
 				case TRVT_INT:
+				case TRVT_PERCENT:
 					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER;
 					DrawInstructionStringConditionalIntegerCommon(item, properties);
 					break;

@@ -2666,6 +2666,7 @@ STR_TRACE_RESTRICT_VARIABLE_CURRENT_ORDER                       :current order
 STR_TRACE_RESTRICT_VARIABLE_NEXT_ORDER                          :next order
 STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION                :last visited station
 STR_TRACE_RESTRICT_VARIABLE_CARGO                               :cargo
+STR_TRACE_RESTRICT_VARIABLE_LOAD_PERCENT                        :load percentage
 STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION                     :entry direction
 STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL                    :PBS entry signal
 STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG               :entered signal of PBS block
