@@ -478,6 +478,7 @@ static uint ConvertSdlKeyIntoMy(SDL_Keysym *sym, WChar *character)
 #else
 	if (sym->scancode == 49) key = WKC_BACKQUOTE;
 #endif
+	if (sym->scancode == SDL_SCANCODE_GRAVE) key = WKC_BACKQUOTE;
 
 	/* META are the command keys on mac */
 	if (sym->mod & KMOD_GUI)   key |= WKC_META;
@@ -601,14 +602,16 @@ int VideoDriver_SDL::PollEvent()
 					keycode & WKC_CTRL ||
 					keycode & WKC_ALT ||
 					(keycode >= WKC_F1 && keycode <= WKC_F12) ||
-					!IsValidChar(character, CS_ALPHANUMERAL)) {
+					!IsValidChar(character, CS_ALPHANUMERAL) ||
+					!this->edit_box_focused) {
 					HandleKeypress(keycode, character);
 				}
 			}
 			break;
 
 		case SDL_TEXTINPUT: {
-			if (EditBoxInGlobalFocus()) {
+			if (EditBoxInGlobalFocus() && !(_focused_window->window_class == WC_CONSOLE &&
+					ConvertSdlKeycodeIntoMy(SDL_GetKeyFromName(ev.text.text)) == WKC_BACKQUOTE)) {
 				HandleTextInput(nullptr, true);
 				HandleTextInput(ev.text.text);
 				SetTextInputRect();
@@ -683,6 +686,9 @@ const char *VideoDriver_SDL::Start(const char * const *parm)
 	MarkWholeScreenDirty();
 
 	_draw_threaded = GetDriverParam(parm, "no_threads") == nullptr && GetDriverParam(parm, "no_thread") == nullptr;
+
+	SDL_StopTextInput();
+	this->edit_box_focused = false;
 
 	return nullptr;
 }
