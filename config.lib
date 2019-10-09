@@ -72,6 +72,7 @@ set_default() {
 	with_lzma="1"
 	with_lzo2="1"
 	with_xdg_basedir="1"
+	with_fcitx="1"
 	with_png="1"
 	enable_builtin_depend="1"
 	with_makedepend="0"
@@ -152,6 +153,7 @@ set_default() {
 		with_lzma
 		with_lzo2
 		with_xdg_basedir
+		with_fcitx
 		with_png
 		enable_builtin_depend
 		with_makedepend
@@ -363,6 +365,10 @@ detect_params() {
 			--with-libxdg-basedir)        with_xdg_basedir="2";;
 			--without-libxdg-basedir)     with_xdg_basedir="0";;
 			--with-libxdg-basedir=*)      with_xdg_basedir="$optarg";;
+
+			--with-fcitx)                 with_fcitx="2";;
+			--without-fcitx)              with_fcitx="0";;
+			--with-fcitx=*)               with_fcitx="$optarg";;
 
 			--with-png)                   with_png="2";;
 			--without-png)                with_png="0";;
@@ -895,6 +901,7 @@ check_params() {
 	fi
 
 	detect_xdg_basedir
+	detect_fcitx
 	detect_png
 	detect_freetype
 	detect_fontconfig
@@ -2107,6 +2114,39 @@ EOL
 		fi
 	fi
 
+	if [ -n "$dbus_config" ]; then
+		CFLAGS="$CFLAGS -DWITH_DBUS"
+		CFLAGS="$CFLAGS `$dbus_config --cflags | tr '\n\r' '  '`"
+
+		if [ "$enable_static" != "0" ]; then
+			LIBS="$LIBS `$dbus_config --libs --static | tr '\n\r' '  '`"
+		else
+			LIBS="$LIBS `$dbus_config --libs | tr '\n\r' '  '`"
+		fi
+	fi
+
+	if [ -n "$x11_config" ]; then
+		CFLAGS="$CFLAGS -DWITH_X11"
+		CFLAGS="$CFLAGS `$x11_config --cflags | tr '\n\r' '  '`"
+
+		if [ "$enable_static" != "0" ]; then
+			LIBS="$LIBS `$x11_config --libs --static | tr '\n\r' '  '`"
+		else
+			LIBS="$LIBS `$x11_config --libs | tr '\n\r' '  '`"
+		fi
+	fi
+
+	if [ -n "$fcitx_config" ]; then
+		CFLAGS="$CFLAGS -DWITH_FCITX"
+		CFLAGS="$CFLAGS `$fcitx_config --cflags | tr '\n\r' '  '`"
+
+		if [ "$enable_static" != "0" ]; then
+			LIBS="$LIBS `$fcitx_config --libs --static | tr '\n\r' '  '`"
+		else
+			LIBS="$LIBS `$fcitx_config --libs | tr '\n\r' '  '`"
+		fi
+	fi
+
 	# 64bit machines need -D_SQ64
 	if [ "$cpu_type" = "64" ] && [ "$enable_universal" = "0" ]; then
 		CFLAGS="$CFLAGS -D_SQ64"
@@ -3205,6 +3245,27 @@ detect_lzma() {
 
 detect_xdg_basedir() {
 	detect_pkg_config "$with_xdg_basedir" "libxdg-basedir" "xdg_basedir_config" "1.2"
+}
+
+detect_fcitx() {
+	if ([ "$with_fcitx" = "1" ] && [ "$enable_dedicated" = "0" ]) || [ "$with_fcitx" = "2" ]; then
+		detect_pkg_config "$with_fcitx" "dbus-1" "dbus_config" "1.0" "1"
+		detect_pkg_config "$with_fcitx" "x11" "x11_config" "1.0" "1"
+		if [ -z "$dbus_config" ]; then
+			log 1 "checking fcitx... no dbus, skipping"
+			fcitx_config=""
+			dbus_config=""
+			x11_config=""
+			return 0
+		elif [ -z "$x11_config" ]; then
+			log 1 "checking fcitx... no x11, skipping"
+			fcitx_config=""
+			dbus_config=""
+			x11_config=""
+			return 0
+		fi
+	fi
+	detect_pkg_config "$with_fcitx" "fcitx" "fcitx_config" "4.0" "1"
 }
 
 detect_png() {

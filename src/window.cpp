@@ -454,6 +454,21 @@ void SetFocusedWindow(Window *w)
 	if (_focused_window != nullptr) _focused_window->OnFocus(old_focused);
 }
 
+Point GetFocusedWindowCaret()
+{
+	return _focused_window->GetCaretPosition();
+}
+
+Point GetFocusedWindowTopLeft()
+{
+	return { _focused_window->left, _focused_window->top };
+}
+
+bool FocusedWindowIsConsole()
+{
+	return _focused_window && _focused_window->window_class == WC_CONSOLE;
+}
+
 /**
  * Check if an edit box is in global focus. That is if focused window
  * has a edit box as focused widget, or if a console is focused.
