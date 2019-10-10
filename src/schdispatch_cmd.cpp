@@ -274,7 +274,7 @@ void OrderList::SetScheduledDispatch(std::vector<uint32> dispatch_list)
 {
 	this->scheduled_dispatch = std::move(dispatch_list);
 	assert(std::is_sorted(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end()));
-	this->UpdateScheduledDispatch();
+	if (this->IsScheduledDispatchValid()) this->UpdateScheduledDispatch();
 }
 
 /**
