@@ -194,7 +194,8 @@ static void FcitxInit()
 	dbus_connection_send(_fcitx_dbus_session_conn, msg2, NULL);
 	dbus_connection_flush(_fcitx_dbus_session_conn);
 
-	SDL_EventState(SDL_SYSWMEVENT, 1);
+	setenv("SDL_IM_MODULE", "N/A", true);
+	setenv("IBUS_ADDRESS", "/dev/null/invalid", true);
 
 	_fcitx_mode = true;
 }
@@ -555,26 +556,6 @@ bool VideoDriver_SDL::ClaimMousePointer()
 	return true;
 }
 
-static void StartTextInput()
-{
-#if defined(WITH_FCITX)
-	if (_fcitx_mode) {
-		return;
-	}
-#endif
-	SDL_StartTextInput();
-}
-
-static void StopTextInput()
-{
-#if defined(WITH_FCITX)
-	if (_fcitx_mode) {
-		return;
-	}
-#endif
-	SDL_StopTextInput();
-}
-
 static void SetTextInputRect()
 {
 	SDL_Rect winrect;
@@ -625,9 +606,7 @@ static void SetTextInputRect()
 void VideoDriver_SDL::EditBoxGainedFocus()
 {
 	if (!this->edit_box_focused) {
-		if (!_fcitx_mode) {
-			StartTextInput();
-		}
+		SDL_StartTextInput();
 		this->edit_box_focused = true;
 	}
 	SetTextInputRect();
@@ -641,9 +620,8 @@ void VideoDriver_SDL::EditBoxLostFocus()
 			FcitxICMethod("Reset");
 			FcitxICMethod("CloseIC");
 #endif
-		} else {
-			StopTextInput();
 		}
+		SDL_StopTextInput();
 		this->edit_box_focused = false;
 	}
 	/* Clear any marked string from the current edit box. */
@@ -781,6 +759,7 @@ static uint ConvertSdlKeycodeIntoMy(SDL_Keycode kc)
 	return key;
 }
 
+static bool suppress_text_event = false;
 int VideoDriver_SDL::PollEvent()
 {
 #if defined(WITH_FCITX)
@@ -845,11 +824,13 @@ int VideoDriver_SDL::PollEvent()
 			break;
 
 		case SDL_KEYDOWN: // Toggle full-screen on ALT + ENTER/F
+			suppress_text_event = false;
 #if defined(WITH_FCITX)
 			if (_fcitx_mode && EditBoxInGlobalFocus() && !(FocusedWindowIsConsole() &&
-					ConvertSdlKeycodeIntoMy(SDL_GetKeyFromName(ev.text.text)) == WKC_BACKQUOTE)) {
+					ev.key.keysym.scancode == SDL_SCANCODE_GRAVE)) {
 				if (FcitxProcessKey(ev.key.keysym)) {
 					/* key press handled by Fcitx */
+					suppress_text_event = true;
 					break;
 				}
 			}
@@ -873,14 +854,14 @@ int VideoDriver_SDL::PollEvent()
 					keycode & WKC_ALT ||
 					(keycode >= WKC_F1 && keycode <= WKC_F12) ||
 					!IsValidChar(character, CS_ALPHANUMERAL) ||
-					!this->edit_box_focused ||
-					_fcitx_mode) {
+					!this->edit_box_focused) {
 					HandleKeypress(keycode, character);
 				}
 			}
 			break;
 
 		case SDL_TEXTINPUT: {
+			if (suppress_text_event) break;
 			if (EditBoxInGlobalFocus() && !(FocusedWindowIsConsole() &&
 					ConvertSdlKeycodeIntoMy(SDL_GetKeyFromName(ev.text.text)) == WKC_BACKQUOTE)) {
 				HandleTextInput(nullptr, true);
@@ -948,6 +929,10 @@ int VideoDriver_SDL::PollEvent()
 
 const char *VideoDriver_SDL::Start(const char * const *parm)
 {
+#if defined(WITH_FCITX)
+	FcitxInit();
+#endif
+
 	/* Explicitly disable hardware acceleration. Enabling this causes
 	 * UpdateWindowSurface() to update the window's texture instead of
 	 * its surface. */
@@ -978,7 +963,7 @@ const char *VideoDriver_SDL::Start(const char * const *parm)
 	this->edit_box_focused = false;
 
 #if defined(WITH_FCITX)
-	FcitxInit();
+	if (_fcitx_mode) SDL_EventState(SDL_SYSWMEVENT, 1);
 #endif
 
 	return nullptr;
