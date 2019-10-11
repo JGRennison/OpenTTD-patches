@@ -1386,10 +1386,7 @@ make_compiler_cflags() {
 			flags="$flags -Wno-unused-variable"
 		fi
 
-		if [ "$cc_version" -ge "303" ]; then
-			# clang completed C++11 support in version 3.3
-			flags="$flags -DCUSTOM_ALLOCATOR"
-		else
+		if [ "$cc_version" -lt "303" ]; then
 			log 1 "configure: error: clang version is too old: `$1 -v 2>&1 | grep -i version | head -n 1`, minumum: 3.3"
 			exit 1
 		fi
@@ -1472,11 +1469,6 @@ make_compiler_cflags() {
 		else
 			log 1 "configure: error: GCC version is too old: `$1 -dumpversion`, minumum: 4.7"
 			exit 1
-		fi
-
-		if [ $cc_version -ge 409 ]; then
-			# Enable use of C++11 custom allocators
-			CFLAGS="$CFLAGS -DCUSTOM_ALLOCATOR"
 		fi
 
 		if [ $cc_version -ge 600 ]; then
