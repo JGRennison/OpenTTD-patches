@@ -31,6 +31,7 @@ Sub UpdateFile(modified, isodate, version, cur_date, githash, istag, isstabletag
 	FindReplaceInFile filename, "!!ISTAG!!", istag
 	FindReplaceInFile filename, "!!ISSTABLETAG!!", isstabletag
 	FindReplaceInFile filename, "!!CONFIGURE_INVOCATION!!", ""
+	FindReplaceInFile filename, "!!CONFIGURE_DEFINES!!", ""
 End Sub
 
 Sub UpdateFiles(version)
