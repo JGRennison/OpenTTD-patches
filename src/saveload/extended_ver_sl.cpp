@@ -56,7 +56,7 @@ std::vector<uint32> _sl_xv_discardable_chunk_ids;           ///< list of chunks 
 static const uint32 _sl_xv_slxi_chunk_version = 0;          ///< current version of SLXI chunk
 
 const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
-	{ XSLFI_TRACE_RESTRICT,         XSCF_NULL,               10,  10, "tracerestrict",             nullptr, nullptr, "TRRM,TRRP,TRRS" },
+	{ XSLFI_TRACE_RESTRICT,         XSCF_NULL,               11,  11, "tracerestrict",             nullptr, nullptr, "TRRM,TRRP,TRRS" },
 	{ XSLFI_TRACE_RESTRICT_OWNER,   XSCF_NULL,                1,   1, "tracerestrict_owner",       nullptr, nullptr, nullptr        },
 	{ XSLFI_TRACE_RESTRICT_ORDRCND, XSCF_NULL,                3,   3, "tracerestrict_order_cond",  nullptr, nullptr, nullptr        },
 	{ XSLFI_TRACE_RESTRICT_STATUSCND,XSCF_NULL,               1,   1, "tracerestrict_status_cond", nullptr, nullptr, nullptr        },
