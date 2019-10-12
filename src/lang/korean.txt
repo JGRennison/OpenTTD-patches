@@ -490,6 +490,7 @@ STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :스크린샷 �
 STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :스크린샷 찍기 (창을 제외한 게임 화면만)
 STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :스크린샷 찍기 (지도 전체)
 STR_ABOUT_MENU_SHOW_FRAMERATE                                   :프레임레이트 보기
+STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :보조 키 창
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :'OpenTTD'에 대해서
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :스프라이트 정렬도구
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :박스 경계선 보기 전환
@@ -2665,6 +2666,7 @@ STR_TRACE_RESTRICT_VARIABLE_CURRENT_ORDER                       :현재 경로
 STR_TRACE_RESTRICT_VARIABLE_NEXT_ORDER                          :다음 경로
 STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION                :마지막으로 경유한 역
 STR_TRACE_RESTRICT_VARIABLE_CARGO                               :화물
+STR_TRACE_RESTRICT_VARIABLE_LOAD_PERCENT                        :적재율
 STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION                     :진입 방향
 STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL                    :경로 신호기
 STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG               :통과한 경로 신호기
@@ -2717,8 +2719,8 @@ STR_TRACE_RESTRICT_PF_ALLOW                                     :진입 허용
 STR_TRACE_RESTRICT_PF_ALLOW_LONG                                :진입 허용 (이전의 거부 취소)
 STR_TRACE_RESTRICT_RESERVE_THROUGH                              :경로 예약
 STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL                       :경로 예약 취소
-STR_TRACE_RESTRICT_LONG_RESERVE                                 :경로 장기 예약
-STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL                          :경로 장기 예약 취소
+STR_TRACE_RESTRICT_LONG_RESERVE                                 :목적지까지 경로 예약
+STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL                          :목적지까지 경로 예약 취소
 STR_TRACE_RESTRICT_WAIT_AT_PBS                                  :경로 신호기에서 대기
 STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL                           :경로 신호기에서 대기 취소
 STR_TRACE_RESTRICT_PBS_RES_END_WAIT                             :경로 예약이 여기서 끝날 때까지 입구 경로 신호기에서 대기
@@ -2783,9 +2785,9 @@ STR_TRACE_RESTRICT_GOTO_SIGNAL_TOOLTIP                          :{BLACK}신호�
 STR_TRACE_RESTRICT_SLOT_OP_TOOLTIP                              :{BLACK}슬롯 연산 종류
 STR_TRACE_RESTRICT_SLOT_GUI_LIST_TOOLTIP                        :{BLACK}슬롯 - 이 슬롯에 속한 모든 차량을 보려면 클릭하세요
 STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}슬롯을 생성하려면 클릭하세요
-STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}선택한 슬롯을 삭제합니다.
-STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}선택한 슬롯의 이름을 변경합니다.
-STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}선택한 슬롯의 최대 수용량을 설정합니다.
+STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}선택한 슬롯을 삭제합니다
+STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}선택한 슬롯의 이름을 변경합니다
+STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}선택한 슬롯의 최대 수용량을 설정합니다
 STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}경로 제한 - 슬롯 관리자
 STR_TRACE_RESTRICT_SLOT_MANAGE                                  :슬롯 관리
 STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY                           :{TINY_FONT}{COMMA} / {COMMA}
@@ -2840,11 +2842,11 @@ STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE              :{WHITE}차량�
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY           :{WHITE}이 슬롯의 최대 수용량을 설정할 수 없습니다...
 
 # Programmable Signals
-STR_PROGRAM_SIGNAL_TOOLTIP                                      :{BLACK}프로그램 신호등
+STR_PROGRAM_SIGNAL_TOOLTIP                                      :{BLACK}프로그램 신호기 설정
 
 STR_ERR_PROGSIG_INVALID_INSTRUCTION                             :{WHITE}유효하지 않은 ID로 구문 뒤에 구문을 삽입할 수 없음
 STR_ERR_PROGSIG_INVALID_OPCODE                                  :{WHITE}그 opcode로는 구문을 삽입할 수 없음
-STR_ERR_PROGSIG_NOT_THERE                                       :{WHITE}프로그램 신호등이 존재하지 않음
+STR_ERR_PROGSIG_NOT_THERE                                       :{WHITE}프로그램 신호기가 존재하지 않음
 STR_ERR_PROGSIG_INVALID_SIGNAL_STATE                            :{WHITE}신호기 상태가 유효하지 않음
 STR_ERR_PROGSIG_INVALID_CONDITION                               :{WHITE}조건이 유효하지 않음
 STR_ERR_PROGSIG_INVALID_CONDITION_FIELD                         :{WHITE}조건문 입력이 유효한 필드가 아님
@@ -4705,24 +4707,24 @@ STR_ORDER_CONDITIONAL_COMPARATOR_LESS_THAN                      :＜
 STR_ORDER_CONDITIONAL_COMPARATOR_LESS_EQUALS                    :≤
 STR_ORDER_CONDITIONAL_COMPARATOR_MORE_THAN                      :＞
 STR_ORDER_CONDITIONAL_COMPARATOR_MORE_EQUALS                    :≥
-STR_ORDER_CONDITIONAL_COMPARATOR_IS_TRUE                        :이(가) 있을 때
-STR_ORDER_CONDITIONAL_COMPARATOR_IS_FALSE                       :이(가) 없을 때
+STR_ORDER_CONDITIONAL_COMPARATOR_IS_TRUE                        :있을 때
+STR_ORDER_CONDITIONAL_COMPARATOR_IS_FALSE                       :없을 때
 
 STR_ORDER_CONDITIONAL_VALUE_TOOLTIP                             :{BLACK}비교 조건에 대한 입력값입니다
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}화물에 대한 입력값입니다.
 STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}점유되었는지 확인할 슬롯입니다.
 STR_ORDER_CONDITIONAL_VALUE_CAPT                                :{WHITE}비교할 값을 입력하세요
 
-STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS                        :을(를) 받을 때
-STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT                :을(를) 받지 않을 때
-STR_ORDER_CONDITIONAL_COMPARATOR_HAS                            :을(를) 가질 때
-STR_ORDER_CONDITIONAL_COMPARATOR_HAS_NO                         :을(를) 가지지 않을 때
+STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS                        :받을 때
+STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT                :받지 않을 때
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS                            :있을 때
+STR_ORDER_CONDITIONAL_COMPARATOR_HAS_NO                         :없을 때
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_THAN                  :보다 적을 때
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_EQUALS                :보다 적거나 같을 때
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_THAN                  :보다 많을 때
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_EQUALS                :보다 많거나 같을 때
-STR_ORDER_CONDITIONAL_COMPARATOR_FULLY_OCCUPIED                 :이(가) 모두 점유되었을 때
-STR_ORDER_CONDITIONAL_COMPARATOR_NOT_YET_FULLY_OCCUPIED         :이(가) 모두 점유되지 않았을 때
+STR_ORDER_CONDITIONAL_COMPARATOR_FULLY_OCCUPIED                 :모두 점유되었을 때
+STR_ORDER_CONDITIONAL_COMPARATOR_NOT_YET_FULLY_OCCUPIED         :모두 점유되지 않았을 때
 STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_SLOT                  :에 속할 때
 STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_SLOT              :에 속하지 않을 때
 
@@ -6186,3 +6188,9 @@ STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}이 스�
 STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}{STRING} 이상 지연되면 다음 슬롯으로 넘어갑니다.
 STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}이 스케줄은 비활성화되어 있습니다.
 
+# Modifier key toggle window
+STR_MODIFIER_KEY_TOGGLE_CAPTION                                 :{WHITE}보조 키
+STR_SHIFT_KEY_NAME                                              :{BLACK}SHIFT
+STR_CTRL_KEY_NAME                                               :{BLACK}CTRL
+STR_MODIFIER_TOGGLE_SHIFT_TOOLTIP                               :{BLACK}SHIFT 키의 상태를 바꾸려면 클릭하세요
+STR_MODIFIER_TOGGLE_CTRL_TOOLTIP                                :{BLACK}CTRL 키의 상태를 바꾸려면 클릭하세요
