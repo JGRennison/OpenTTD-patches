@@ -54,7 +54,9 @@ public:
 #endif
 		StationID second;
 	};
+#if OTTD_ALIGNMENT == 0 && (defined(__GNUC__) || defined(__clang__))
 	static_assert(sizeof(ShareEntry) == 6, "");
+#endif
 
 	friend bool operator<(const ShareEntry &a, const ShareEntry &b) noexcept
 	{
