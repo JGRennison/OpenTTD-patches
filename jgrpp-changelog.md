@@ -2,6 +2,15 @@
 
 * * *
 
+### v0.32.0 (2019-10-12)
+* Fix crash when disabling infrastructure sharing with vehicles with go to nearest depot orders.
+* Fix order backup not saving/restoring timetable automation, separation and scheduled dispatch states.
+* Fix modifier key window not always updating.
+* Routing restrictions: Add load percentage conditional.
+* Add support for IMEs on Linux/SDL2 (SDL2-supported IMEs and Fcitx).
+* Various performance improvements.
+* Bump trunk base from commit 1f418555a13b63379e4ce52ec96cbed6e04dca7d to commit e2e112baaabaaeec1f04f13c3759f24c06b42cf2.
+
 ### v0.32-rc5 (2019-09-22)
 * Fix crash when using road convert tool on road station tiles.
 * Fix crash when clicking on a station from the order window where the station sign tile is not a station tile.
