@@ -724,7 +724,6 @@ static uint ConvertSdlKeyIntoMy(SDL_Keysym *sym, WChar *character)
 
 	/* The mod keys have no character. Prevent '?' */
 	if (sym->mod & KMOD_GUI ||
-		sym->mod & KMOD_SHIFT ||
 		sym->mod & KMOD_CTRL ||
 		sym->mod & KMOD_ALT) {
 		*character = WKC_NONE;
@@ -849,7 +848,6 @@ int VideoDriver_SDL::PollEvent()
 					keycode == WKC_LEFT ||
 					keycode == WKC_RIGHT ||
 					keycode & WKC_META ||
-					keycode & WKC_SHIFT ||
 					keycode & WKC_CTRL ||
 					keycode & WKC_ALT ||
 					(keycode >= WKC_F1 && keycode <= WKC_F12) ||
