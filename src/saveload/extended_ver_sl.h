@@ -172,7 +172,7 @@ void SlXvResetState();
 
 void SlXvSetCurrentState();
 
-void SlXvCheckSpecialSavegameVersions();
+bool SlXvCheckSpecialSavegameVersions();
 
 bool SlXvIsChunkDiscardable(uint32 id);
 

@@ -83,6 +83,7 @@ char _savegame_format[8];    ///< how to compress savegames
 bool _do_autosave;           ///< are we doing an autosave at the moment?
 
 extern bool _sl_is_ext_version;
+extern bool _sl_maybe_springpp;
 
 /** What are we currently doing? */
 enum SaveLoadAction {
@@ -1990,6 +1991,19 @@ void SlAutolength(AutolengthProc *proc, void *arg)
  * by adding a further u32 field for the high bits after the existing RIFF size field.
  */
 
+inline void SlRIFFSpringPPCheck(size_t len)
+{
+	if (_sl_maybe_springpp) {
+		_sl_maybe_springpp = false;
+		if (len == 0) {
+			extern void SlXvSpringPPSpecialSavegameVersions();
+			SlXvSpringPPSpecialSavegameVersions();
+		} else if (_sl_version > SAVEGAME_VERSION) {
+			SlError(STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME);
+		}
+	}
+}
+
 /**
  * Load a chunk of data (eg vehicles, stations, etc.)
  * @param ch The chunkhandler that will be used for the operation
@@ -2027,6 +2041,7 @@ static void SlLoadChunk(const ChunkHandler *ch)
 				/* Read length */
 				len = (SlReadByte() << 16) | ((m >> 4) << 24);
 				len += SlReadUint16();
+				SlRIFFSpringPPCheck(len);
 				if (SlXvIsFeaturePresent(XSLFI_RIFF_HEADER_60_BIT)) {
 					if (len != 0) {
 						SlErrorCorrupt("RIFF chunk too large");
@@ -2101,6 +2116,7 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 				/* Read length */
 				len = (SlReadByte() << 16) | ((m >> 4) << 24);
 				len += SlReadUint16();
+				SlRIFFSpringPPCheck(len);
 				if (SlXvIsFeaturePresent(XSLFI_RIFF_HEADER_60_BIT)) {
 					if (len != 0) {
 						SlErrorCorrupt("RIFF chunk too large");
@@ -3134,17 +3150,18 @@ static SaveOrLoadResult DoLoad(LoadFilter *reader, bool load_check)
 			 * Therefore it is loaded, but never saved (or, it saves a 0 in any scenario). */
 			_sl_minor_version = (TO_BE32(hdr[1]) >> 8) & 0xFF;
 
+			bool special_version = false;
 			if (_sl_version & SAVEGAME_VERSION_EXT) {
 				_sl_version = (SaveLoadVersion)(_sl_version & ~SAVEGAME_VERSION_EXT);
 				_sl_is_ext_version = true;
 			} else {
-				SlXvCheckSpecialSavegameVersions();
+				special_version = SlXvCheckSpecialSavegameVersions();
 			}
 
-			DEBUG(sl, 1, "Loading savegame version %d%s", _sl_version, _sl_is_ext_version ? " (extended)" : "");
+			DEBUG(sl, 1, "Loading savegame version %d%s%s", _sl_version, _sl_is_ext_version ? " (extended)" : "", _sl_maybe_springpp ? " which might be SpringPP" : "");
 
 			/* Is the version higher than the current? */
-			if (_sl_version > SAVEGAME_VERSION) SlError(STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME);
+			if (_sl_version > SAVEGAME_VERSION && !special_version) SlError(STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME);
 			break;
 		}
 

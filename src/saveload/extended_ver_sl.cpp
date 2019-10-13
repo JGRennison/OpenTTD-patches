@@ -51,6 +51,7 @@
 uint16 _sl_xv_feature_versions[XSLFI_SIZE];                 ///< array of all known feature types and their current versions
 bool _sl_is_ext_version;                                    ///< is this an extended savegame version, with more info in the SLXI chunk?
 bool _sl_is_faked_ext;                                      ///< is this a faked extended savegame version, with no SLXI chunk? See: SlXvCheckSpecialSavegameVersions.
+bool _sl_maybe_springpp;                                    ///< is this possibly a SpringPP savegame?
 std::vector<uint32> _sl_xv_discardable_chunk_ids;           ///< list of chunks IDs which we can discard if no chunk loader exists
 
 static const uint32 _sl_xv_slxi_chunk_version = 0;          ///< current version of SLXI chunk
@@ -174,6 +175,7 @@ void SlXvResetState()
 {
 	_sl_is_ext_version = false;
 	_sl_is_faked_ext = false;
+	_sl_maybe_springpp = false;
 	_sl_xv_discardable_chunk_ids.clear();
 	memset(_sl_xv_feature_versions, 0, sizeof(_sl_xv_feature_versions));
 }
@@ -198,7 +200,7 @@ void SlXvSetCurrentState()
 /**
  * Check for "special" savegame versions (i.e. known patchpacks) and set correct savegame version, settings, etc.
  */
-void SlXvCheckSpecialSavegameVersions()
+bool SlXvCheckSpecialSavegameVersions()
 {
 	// Checks for special savegame versions go here
 	extern SaveLoadVersion _sl_version;
@@ -208,19 +210,32 @@ void SlXvCheckSpecialSavegameVersions()
 		_sl_version = SLV_194;
 		_sl_is_faked_ext = true;
 		_sl_xv_feature_versions[XSLFI_TRACE_RESTRICT] = 1;
+		return true;
 	}
 	if (_sl_version == SL_TRACE_RESTRICT_2001) {
 		DEBUG(sl, 1, "Loading a trace restrict patch savegame version %d as version 195", _sl_version);
 		_sl_version = SLV_195;
 		_sl_is_faked_ext = true;
 		_sl_xv_feature_versions[XSLFI_TRACE_RESTRICT] = 6;
+		return true;
 	}
 	if (_sl_version == SL_TRACE_RESTRICT_2002) {
 		DEBUG(sl, 1, "Loading a trace restrict patch savegame version %d as version 196", _sl_version);
 		_sl_version = SLV_196;
 		_sl_is_faked_ext = true;
 		_sl_xv_feature_versions[XSLFI_TRACE_RESTRICT] = 6;
+		return true;
 	}
+	if (_sl_version >= SL_SPRING_2013_v2_0_102 && _sl_version <= SL_SPRING_2013_v2_4) { /* 220 - 227 */
+		_sl_maybe_springpp = true;
+		return true;
+	}
+	return false;
+}
+
+void SlXvSpringPPSpecialSavegameVersions()
+{
+	extern SaveLoadVersion _sl_version;
 
 	if (_sl_version == SL_SPRING_2013_v2_0_102) { /* 220 */
 		DEBUG(sl, 1, "Loading a SpringPP 2013 v2.0.102 savegame version %d as version 187", _sl_version);
