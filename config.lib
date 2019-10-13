@@ -3249,6 +3249,18 @@ detect_xdg_basedir() {
 
 detect_fcitx() {
 	if ([ "$with_fcitx" = "1" ] && [ "$enable_dedicated" = "0" ]) || [ "$with_fcitx" = "2" ]; then
+		if [ -z "$sdl2_config" ]; then
+			if [ "$with_fcitx" = "2" ]; then
+				log 1 "configure: error: fcitx requires sdl2"
+				log 1 "configure: error: you supplied --with-fcitx"
+				exit 1
+			fi
+			log 1 "checking fcitx... no sdl2, skipping"
+			fcitx_config=""
+			dbus_config=""
+			x11_config=""
+			return 0
+		fi
 		detect_pkg_config "$with_fcitx" "dbus-1" "dbus_config" "1.0" "1"
 		detect_pkg_config "$with_fcitx" "x11" "x11_config" "1.0" "1"
 		if [ -z "$dbus_config" ]; then
