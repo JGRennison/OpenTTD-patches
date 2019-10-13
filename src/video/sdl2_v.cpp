@@ -84,6 +84,7 @@ static bool _fcitx_mode = false;
 static char _fcitx_service_name[64];
 static char _fcitx_ic_name[64];
 static DBusConnection *_fcitx_dbus_session_conn = nullptr;
+static bool _suppress_text_event = false;
 
 static void FcitxICMethod(const char *method)
 {
@@ -200,18 +201,19 @@ static void FcitxInit()
 	_fcitx_mode = true;
 }
 
-static uint32 _fcitx_last_keycode;
-static uint32 _fcitx_last_keysym;
-static bool FcitxProcessKey(const SDL_Keysym &key)
+static uint32 _fcitx_last_keycode = 0;
+static uint32 _fcitx_last_keysym = 0;
+static uint16 _last_sdl_key_mod;
+static bool FcitxProcessKey()
 {
 	uint32 fcitx_mods = 0;
-	if (key.mod & KMOD_SHIFT) fcitx_mods |= FcitxKeyState_Shift;
-	if (key.mod & KMOD_CAPS)  fcitx_mods |= FcitxKeyState_CapsLock;
-	if (key.mod & KMOD_CTRL)  fcitx_mods |= FcitxKeyState_Ctrl;
-	if (key.mod & KMOD_ALT)   fcitx_mods |= FcitxKeyState_Alt;
-	if (key.mod & KMOD_NUM)   fcitx_mods |= FcitxKeyState_NumLock;
-	if (key.mod & KMOD_LGUI)  fcitx_mods |= FcitxKeyState_Super;
-	if (key.mod & KMOD_RGUI)  fcitx_mods |= FcitxKeyState_Meta;
+	if (_last_sdl_key_mod & KMOD_SHIFT) fcitx_mods |= FcitxKeyState_Shift;
+	if (_last_sdl_key_mod & KMOD_CAPS)  fcitx_mods |= FcitxKeyState_CapsLock;
+	if (_last_sdl_key_mod & KMOD_CTRL)  fcitx_mods |= FcitxKeyState_Ctrl;
+	if (_last_sdl_key_mod & KMOD_ALT)   fcitx_mods |= FcitxKeyState_Alt;
+	if (_last_sdl_key_mod & KMOD_NUM)   fcitx_mods |= FcitxKeyState_NumLock;
+	if (_last_sdl_key_mod & KMOD_LGUI)  fcitx_mods |= FcitxKeyState_Super;
+	if (_last_sdl_key_mod & KMOD_RGUI)  fcitx_mods |= FcitxKeyState_Meta;
 
 	int type = FCITX_PRESS_KEY;
 	uint32 event_time = 0;
@@ -246,6 +248,11 @@ static void FcitxFocusChange(bool focused)
 
 static void FcitxSYSWMEVENT(const SDL_SysWMEvent &event)
 {
+	if (_fcitx_last_keycode != 0 || _fcitx_last_keysym != 0) {
+		DEBUG(misc, 0, "Passing pending keypress to Fcitx");
+		FcitxProcessKey();
+	}
+	_fcitx_last_keycode = _fcitx_last_keysym = 0;
 	if (event.msg->subsystem != SDL_SYSWM_X11) return;
 	XEvent &xevent = event.msg->msg.x11.event;
 	if (xevent.type == KeyPress) {
@@ -256,6 +263,7 @@ static void FcitxSYSWMEVENT(const SDL_SysWMEvent &event)
 }
 #else
 const static bool _fcitx_mode = false;
+const static bool _suppress_text_event = false;
 #endif
 
 void VideoDriver_SDL::MakeDirty(int left, int top, int width, int height)
@@ -758,7 +766,6 @@ static uint ConvertSdlKeycodeIntoMy(SDL_Keycode kc)
 	return key;
 }
 
-static bool suppress_text_event = false;
 int VideoDriver_SDL::PollEvent()
 {
 #if defined(WITH_FCITX)
@@ -823,16 +830,19 @@ int VideoDriver_SDL::PollEvent()
 			break;
 
 		case SDL_KEYDOWN: // Toggle full-screen on ALT + ENTER/F
-			suppress_text_event = false;
 #if defined(WITH_FCITX)
+			_suppress_text_event = false;
+			_last_sdl_key_mod = ev.key.keysym.mod;
 			if (_fcitx_mode && EditBoxInGlobalFocus() && !(FocusedWindowIsConsole() &&
-					ev.key.keysym.scancode == SDL_SCANCODE_GRAVE)) {
-				if (FcitxProcessKey(ev.key.keysym)) {
+					ev.key.keysym.scancode == SDL_SCANCODE_GRAVE) && (_fcitx_last_keycode != 0 || _fcitx_last_keysym != 0)) {
+				if (FcitxProcessKey()) {
 					/* key press handled by Fcitx */
-					suppress_text_event = true;
+					_suppress_text_event = true;
+					_fcitx_last_keycode = _fcitx_last_keysym = 0;
 					break;
 				}
 			}
+			_fcitx_last_keycode = _fcitx_last_keysym = 0;
 #endif
 			if ((ev.key.keysym.mod & (KMOD_ALT | KMOD_GUI)) &&
 					(ev.key.keysym.sym == SDLK_RETURN || ev.key.keysym.sym == SDLK_f)) {
@@ -859,7 +869,7 @@ int VideoDriver_SDL::PollEvent()
 			break;
 
 		case SDL_TEXTINPUT: {
-			if (suppress_text_event) break;
+			if (_suppress_text_event) break;
 			if (EditBoxInGlobalFocus() && !(FocusedWindowIsConsole() &&
 					ConvertSdlKeycodeIntoMy(SDL_GetKeyFromName(ev.text.text)) == WKC_BACKQUOTE)) {
 				HandleTextInput(nullptr, true);
