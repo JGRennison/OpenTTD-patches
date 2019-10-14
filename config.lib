@@ -2704,8 +2704,21 @@ check_version() {
 	got_minor=`echo $2 | cut -d. -f2`
 	if [ $got_minor -lt $req_minor ]; then
 		return 0
+	elif [ $got_minor -gt $req_minor ]; then
+		return 1
 	fi
-	return 1
+
+	req_micro=`echo $1 | cut -d. -f3`
+	got_micro=`echo $2 | cut -d. -f3`
+	if [ -z "$req_micro" ]; then
+		return 1
+	elif [ -z "$got_micro" ]; then
+		return 0
+	elif [ $got_micro -lt $req_micro ]; then
+		return 0
+	else
+		return 1
+	fi
 }
 
 detect_awk() {
