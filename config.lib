@@ -2906,11 +2906,11 @@ detect_sdl() {
 	if [ $with_sdl = "sdl1" ]; then
 		detect_pkg_config "2" "sdl" "sdl_config" "1.2"
 	elif [ $with_sdl = "sdl2" ]; then
-		detect_pkg_config "2" "sdl2" "sdl2_config" "2.0"
+		detect_pkg_config "2" "sdl2" "sdl2_config" "2.0.5"
 	else
 		sdl2_config=""
 		if [ -x `which sdl2-config` ]; then
-			detect_pkg_config "$with_sdl" "sdl2" "sdl2_config" "2.0"
+			detect_pkg_config "$with_sdl" "sdl2" "sdl2_config" "2.0.5"
 		fi
 		if [ -z "$sdl2_config" ]; then
 			detect_pkg_config "$with_sdl" "sdl" "sdl_config" "1.2"
