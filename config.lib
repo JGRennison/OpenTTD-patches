@@ -3747,7 +3747,7 @@ make_sed() {
 		s@!!DISTCC!!@$distcc@g;
 		s@!!NFORENUM!!@$nforenum@g;
 		s@!!GRFCODEC!!@$grfcodec@g;
-		s@!!CONFIGURE_INVOCATION!!@$CONFIGURE_INVOCATION@g;
+		s@!!CONFIGURE_INVOCATION!!@`echo "$CONFIGURE_INVOCATION" | sed 's!@!\\\\@!g;s!"!\\\\\\\\"!g'`@g;
 	"
 
 	if [ "$icon_theme_dir" != "" ]; then
