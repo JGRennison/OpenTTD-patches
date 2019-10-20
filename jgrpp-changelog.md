@@ -2,6 +2,19 @@
 
 * * *
 
+### v0.32.1 (2019-10-20)
+* Fix "undefined string" appearing in 3rd line of error message window.
+* Fix width of bottom row of template-based train replacement create/edit template window.
+* Fix link graph link usage statistics (used for the link graph overlay colours) becoming increasingly inaccurate on large networks over time.
+* SDL2 video driver (Linux):
+  * Fix handling of shift key in text-editing mode.
+  * Fix up/down keys in console window.
+  * Fix passing keypresses to Fcitx which are unknown to SDL.
+  * Fix attempting to use SDL2 versions prior to 2.0.5, which do not compile.
+  * Automatically detect and use SDL1 if SDL2 is not present and usable.
+* Fix compilation on MSVC and on Mac OSX.
+* Add Korean translations by TELK.
+
 ### v0.32.0 (2019-10-12)
 * Fix crash when disabling infrastructure sharing with vehicles with go to nearest depot orders.
 * Fix order backup not saving/restoring timetable automation, separation and scheduled dispatch states.
