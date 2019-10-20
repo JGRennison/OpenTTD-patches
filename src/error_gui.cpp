@@ -74,7 +74,7 @@ static WindowDesc _errmsg_face_desc(
  */
 ErrorMessageData::ErrorMessageData(const ErrorMessageData &data) :
 	duration(data.duration), textref_stack_grffile(data.textref_stack_grffile), textref_stack_size(data.textref_stack_size),
-	summary_msg(data.summary_msg), detailed_msg(data.detailed_msg), position(data.position), face(data.face)
+	summary_msg(data.summary_msg), detailed_msg(data.detailed_msg), extra_msg(data.extra_msg), position(data.position), face(data.face)
 {
 	memcpy(this->textref_stack, data.textref_stack, sizeof(this->textref_stack));
 	memcpy(this->decode_params, data.decode_params, sizeof(this->decode_params));
