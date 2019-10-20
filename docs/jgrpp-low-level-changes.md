@@ -15,7 +15,8 @@ This document does not describe the player-visible changes/additions described i
 * Attempt to handle segfaults which occur within the crashlog handler (Unix).
 * Emit a "crash" log, savegame and screenshot on multiplayer desync.
 * Add crash/desync information to output screenshot and savegame files.
-* Send a copy of the desync crash log to the multiplayer server.
+* Multiplayer server and client exchange desync logs after a desync occurs.
+* Decrease sync frame period when desync occurs.
 
 #### Assertions
 
@@ -52,6 +53,8 @@ Various data structures have been replaced with B-tree maps/sets (cpp-btree libr
 Various lists have been replaced with vectors or deques, etc.
 Remove mutexes from SmallStack, only used from the main thread.
 Use std::string in CommandContainer instead of a giant static buffer.
+Add a free bitmap for pool slots.
+Maintain free list for text effect entries.
 
 ### Vehicles
 
@@ -79,6 +82,14 @@ Completely change link graph job scheduling to make the duration of a job and th
 Various use of custom allocators, etc.
 Early abort link graph threads if abandoning/quitting the game.
 Various forms of caching and incremental updates to the link graph overlay.
+Change FlowStat from an RB-tree to a flat map with small-object optimisation.
+Change FlowStatMap from an RB-tree to a B-tree indexed vector.
+Replace MCF Dijkstra RB-tree with B-tree.
+Skip per source node MCF Dijkstra when all demand for that node has been satisfied.
+
+### Pathfinder
+
+YAPF: Reduce need to scan open list queue when moving best node to closed list
 
 ### Save and load
 
@@ -87,6 +98,17 @@ Extend gamelog to not truncate version strings.
 Save/load the map in a single chunk, such that it can be saved/loaded in one pass.
 Various other changes to savegame format and settings handling, see readme and code for details.
 Replace read/write accessors and buffering.
+Perform savegame decompression in a separate thread.
+Pre-filter SaveLoad descriptor arrays for current version/mode, for chunks with many objects.
+
+### Other performance improvements
+
+Use multiple threads for NewGRF scan MD5 calculations, on multi-CPU machines.
+Avoid redundant re-scans for AI and game script files.
+Avoid iterating vehicle list to release disaster vehicles if there are none.
+Avoid quadratic behaviour in updating station nearby lists in RecomputeCatchmentForAll.
+Increase FIO buffer size.
+Avoid unnecessary calls to SettingsDisableElrail in AfterLoadGame.
 
 ### Command line
 
@@ -107,3 +129,4 @@ Cache font heights.
 Cache resolved names for stations, towns and industries.
 Change inheritance model of class Window to keep UndefinedBehaviorSanitizer happy.
 Various other misc changes to reduce UndefinedBehaviorSanitizer spam.
+Add a chicken bits setting, just in case.
