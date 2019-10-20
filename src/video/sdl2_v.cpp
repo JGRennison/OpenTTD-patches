@@ -857,6 +857,8 @@ int VideoDriver_SDL::PollEvent()
 					keycode == WKC_NUM_ENTER ||
 					keycode == WKC_LEFT ||
 					keycode == WKC_RIGHT ||
+					keycode == WKC_UP ||
+					keycode == WKC_DOWN ||
 					keycode & WKC_META ||
 					keycode & WKC_CTRL ||
 					keycode & WKC_ALT ||
