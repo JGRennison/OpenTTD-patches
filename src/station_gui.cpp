@@ -1594,6 +1594,7 @@ struct StationViewWindow : public Window {
 	{
 		const CargoDataEntry *source_dest = this->cached_destinations.Retrieve(i);
 		for (FlowStatMap::const_iterator it = flows.begin(); it != flows.end(); ++it) {
+			if (it->IsInvalid()) continue;
 			StationID from = it->GetOrigin();
 			const CargoDataEntry *source_entry = source_dest->Retrieve(from);
 			for (FlowStat::const_iterator flow_it = it->begin(); flow_it != it->end(); ++flow_it) {

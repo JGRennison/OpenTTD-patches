@@ -4714,22 +4714,6 @@ StationID FlowStat::GetVia(StationID excluded, StationID excluded2) const
 }
 
 /**
- * Reduce all flows to minimum capacity so that they don't get in the way of
- * link usage statistics too much. Keep them around, though, to continue
- * routing any remaining cargo.
- */
-void FlowStat::Invalidate()
-{
-	assert(!this->empty());
-	uint i = 0;
-	for (iterator it(this->begin()); it != this->end(); ++it) {
-		if (it->first == this->unrestricted) this->unrestricted = i + 1;
-		it->first = ++i;
-	}
-	assert(!this->empty() && this->unrestricted <= (this->end() - 1)->first);
-}
-
-/**
  * Change share for specified station. By specifying INT_MIN as parameter you
  * can erase a share. Newly added flows will be unrestricted.
  * @param st Next Hop to be removed.
@@ -4950,6 +4934,7 @@ uint FlowStatMap::GetFlow() const
 {
 	uint ret = 0;
 	for (FlowStatMap::const_iterator i = this->begin(); i != this->end(); ++i) {
+		if (i->IsInvalid()) continue;
 		ret += (i->end() - 1)->first;
 	}
 	return ret;
@@ -4964,6 +4949,7 @@ uint FlowStatMap::GetFlowVia(StationID via) const
 {
 	uint ret = 0;
 	for (FlowStatMap::const_iterator i = this->begin(); i != this->end(); ++i) {
+		if (i->IsInvalid()) continue;
 		ret += i->GetShare(via);
 	}
 	return ret;
@@ -4978,6 +4964,7 @@ uint FlowStatMap::GetFlowFrom(StationID from) const
 {
 	FlowStatMap::const_iterator i = this->find(from);
 	if (i == this->end()) return 0;
+	if (i->IsInvalid()) return 0;
 	return (i->end() - 1)->first;
 }
 
@@ -4991,6 +4978,7 @@ uint FlowStatMap::GetFlowFromVia(StationID from, StationID via) const
 {
 	FlowStatMap::const_iterator i = this->find(from);
 	if (i == this->end()) return 0;
+	if (i->IsInvalid()) return 0;
 	return i->GetShare(via);
 }
 
@@ -5010,18 +4998,24 @@ void FlowStatMap::SortStorage()
 void DumpStationFlowStats(char *b, const char *last)
 {
 	btree::btree_map<uint, uint> count_map;
+	btree::btree_map<uint, uint> invalid_map;
 	const Station *st;
 	FOR_ALL_STATIONS(st) {
 		for (CargoID i = 0; i < NUM_CARGO; i++) {
 			const GoodsEntry &ge = st->goods[i];
 			for (FlowStatMap::const_iterator it(ge.flows.begin()); it != ge.flows.end(); ++it) {
 				count_map[(uint32)it->size()]++;
+				invalid_map[it->GetRawFlags() & 0x1F]++;
 			}
 		}
 	}
 	b += seprintf(b, last, "Flow state shares size distribution:\n");
 	for (const auto &it : count_map) {
 		b += seprintf(b, last, "%-5u %-5u\n", it.first, it.second);
+	}
+	b += seprintf(b, last, "Flow state shares invalid state distribution:\n");
+	for (const auto &it : invalid_map) {
+		b += seprintf(b, last, "%-2u %-5u\n", it.first, it.second);
 	}
 }
 

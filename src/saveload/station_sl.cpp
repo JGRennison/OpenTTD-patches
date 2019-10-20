@@ -521,15 +521,15 @@ static void RealSave_STNN(BaseStation *bst)
 		Station *st = Station::From(bst);
 		for (CargoID i = 0; i < NUM_CARGO; i++) {
 			_num_dests = (uint32)st->goods[i].cargo.Packets()->MapSize();
-			_num_flows = 0;
-			for (FlowStatMap::const_iterator it(st->goods[i].flows.begin()); it != st->goods[i].flows.end(); ++it) {
-				_num_flows += (uint32)it->size();
-			}
+			_num_flows = st->goods[i].flows.size();
 			SlObjectSaveFiltered(&st->goods[i], _filtered_goods_desc.data());
 			for (FlowStatMap::const_iterator outer_it(st->goods[i].flows.begin()); outer_it != st->goods[i].flows.end(); ++outer_it) {
 				uint32 sum_shares = 0;
 				FlowSaveLoad flow;
 				flow.source = outer_it->GetOrigin();
+				dumper->CheckBytes(2 + 4);
+				dumper->RawWriteUint16(flow.source);
+				dumper->RawWriteUint32(outer_it->size());
 				FlowStat::const_iterator inner_it(outer_it->begin());
 				const FlowStat::const_iterator end(outer_it->end());
 				for (; inner_it != end; ++inner_it) {
@@ -540,12 +540,12 @@ static void RealSave_STNN(BaseStation *bst)
 					assert(flow.share > 0);
 
 					// SlObject(&flow, _flow_desc); /* this is highly performance-sensitive, manually unroll */
-					dumper->CheckBytes(2 + 2 + 4 + 1);
-					dumper->RawWriteUint16(flow.source);
+					dumper->CheckBytes(2 + 4 + 1);
 					dumper->RawWriteUint16(flow.via);
 					dumper->RawWriteUint32(flow.share);
 					dumper->RawWriteByte(flow.restricted != 0);
 				}
+				SlWriteUint16(outer_it->GetRawFlags());
 			}
 			for (StationCargoPacketMap::ConstMapIterator it(st->goods[i].cargo.Packets()->begin()); it != st->goods[i].cargo.Packets()->end(); ++it) {
 				SlObjectSaveFiltered(const_cast<StationCargoPacketMap::value_type *>(&(*it)), _cargo_list_desc); // _cargo_list_desc has no conditionals
@@ -599,23 +599,46 @@ static void Load_STNN()
 
 			for (CargoID i = 0; i < num_cargo; i++) {
 				SlObjectLoadFiltered(&st->goods[i], _filtered_goods_desc.data());
-				FlowSaveLoad flow;
-				FlowStat *fs = nullptr;
 				StationID prev_source = INVALID_STATION;
-				for (uint32 j = 0; j < _num_flows; ++j) {
-					// SlObject(&flow, _flow_desc); /* this is highly performance-sensitive, manually unroll */
-					buffer->CheckBytes(2 + 2 + 4);
-					flow.source = buffer->RawReadUint16();
-					flow.via = buffer->RawReadUint16();
-					flow.share = buffer->RawReadUint32();
-					if (!IsSavegameVersionBefore(SLV_187)) flow.restricted = (buffer->ReadByte() != 0);
+				if (SlXvIsFeaturePresent(XSLFI_FLOW_STAT_FLAGS)) {
+					for (uint32 j = 0; j < _num_flows; ++j) {
+						FlowSaveLoad flow;
+						buffer->CheckBytes(2 + 4);
+						flow.source = buffer->RawReadUint16();
+						uint32 flow_count = buffer->RawReadUint32();
 
-					if (fs == nullptr || prev_source != flow.source) {
-						fs = &(*(st->goods[i].flows.insert(st->goods[i].flows.end(), FlowStat(flow.source, flow.via, flow.share, flow.restricted))));
-					} else {
-						fs->AppendShare(flow.via, flow.share, flow.restricted);
+						buffer->CheckBytes(2 + 4 + 1);
+						flow.via = buffer->RawReadUint16();
+						flow.share = buffer->RawReadUint32();
+						flow.restricted = (buffer->RawReadByte() != 0);
+						FlowStat *fs = &(*(st->goods[i].flows.insert(st->goods[i].flows.end(), FlowStat(flow.source, flow.via, flow.share, flow.restricted))));
+						for (uint32 k = 1; k < flow_count; ++k) {
+							buffer->CheckBytes(2 + 4 + 1);
+							flow.via = buffer->RawReadUint16();
+							flow.share = buffer->RawReadUint32();
+							flow.restricted = (buffer->RawReadByte() != 0);
+							fs->AppendShare(flow.via, flow.share, flow.restricted);
+						}
+						fs->SetRawFlags(SlReadUint16());
 					}
-					prev_source = flow.source;
+				} else {
+					FlowSaveLoad flow;
+					FlowStat *fs = nullptr;
+					for (uint32 j = 0; j < _num_flows; ++j) {
+						// SlObject(&flow, _flow_desc); /* this is highly performance-sensitive, manually unroll */
+						buffer->CheckBytes(2 + 2 + 4);
+						flow.source = buffer->RawReadUint16();
+						flow.via = buffer->RawReadUint16();
+						flow.share = buffer->RawReadUint32();
+						if (!IsSavegameVersionBefore(SLV_187)) flow.restricted = (buffer->ReadByte() != 0);
+
+						if (fs == nullptr || prev_source != flow.source) {
+							fs = &(*(st->goods[i].flows.insert(st->goods[i].flows.end(), FlowStat(flow.source, flow.via, flow.share, flow.restricted))));
+						} else {
+							fs->AppendShare(flow.via, flow.share, flow.restricted);
+						}
+						prev_source = flow.source;
+					}
 				}
 				if (IsSavegameVersionBefore(SLV_183)) {
 					SwapPackets(&st->goods[i]);
