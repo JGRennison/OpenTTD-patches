@@ -858,7 +858,7 @@ See the docs/Readme_OS2.txt file for more information.
 
 The following libraries are used by OpenTTD for:
 
-- libSDL/liballegro: hardware access (video, sound, mouse)
+- libSDL/libSDL2/liballegro: hardware access (video, sound, mouse)
 - zlib: (de)compressing of old (0.3.0-1.0.5) savegames, content downloads,
    heightmaps
 - liblzo2: (de)compressing of old (pre 0.3.0) savegames
@@ -872,7 +872,7 @@ The following libraries are used by OpenTTD for:
 OpenTTD does not require any of the libraries to be present, but without
 liblzma you cannot open most recent savegames and without zlib you cannot
 open most older savegames or use the content downloading system.
-Without libSDL/liballegro on non-Windows and non-macOS machines you have
+Without libSDL/libSDL2/liballegro on non-Windows and non-macOS machines you have
 no graphical user interface; you would be building a dedicated server.
 
 ### 7.2) Supported compilers
