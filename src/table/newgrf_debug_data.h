@@ -244,6 +244,21 @@ class NIHHouse : public NIHelper {
 		HouseResolverObject ro(GetHouseType(index), index, Town::GetByTile(index));
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, avail);
 	}
+
+	void ExtraInfo(uint index, std::function<void(const char *)> print) const override
+	{
+		char buffer[1024];
+		print("Debug Info:");
+		seprintf(buffer, lastof(buffer), "  House Type: %u", GetHouseType(index));
+		print(buffer);
+		const HouseSpec *hs = HouseSpec::Get(GetHouseType(index));
+		seprintf(buffer, lastof(buffer), "  building_flags: 0x%X", hs->building_flags);
+		print(buffer);
+		seprintf(buffer, lastof(buffer), "  extra_flags: 0x%X", hs->extra_flags);
+		print(buffer);
+		seprintf(buffer, lastof(buffer), "  remove_rating_decrease: %u", hs->remove_rating_decrease);
+		print(buffer);
+	}
 };
 
 static const NIFeature _nif_house = {
