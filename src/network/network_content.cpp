@@ -219,7 +219,7 @@ void ClientNetworkContentSocketHandler::RequestContentList(uint count, const Con
 		 * A packet begins with the packet size and a byte for the type.
 		 * Then this packet adds a uint16 for the count in this packet.
 		 * The rest of the packet can be used for the IDs. */
-		uint p_count = min(count, (SEND_MTU - sizeof(PacketSize) - sizeof(byte) - sizeof(uint16)) / sizeof(uint32));
+		uint p_count = min(count, (SEND_MTU_SHORT - sizeof(PacketSize) - sizeof(byte) - sizeof(uint16)) / sizeof(uint32));
 
 		Packet *p = new Packet(PACKET_CONTENT_CLIENT_INFO_ID);
 		p->Send_uint16(p_count);
@@ -245,7 +245,7 @@ void ClientNetworkContentSocketHandler::RequestContentList(ContentVector *cv, bo
 
 	this->Connect();
 
-	const uint max_per_packet = min<uint>(255, (SEND_MTU - sizeof(PacketSize) - sizeof(byte) - sizeof(uint8)) /
+	const uint max_per_packet = min<uint>(255, (SEND_MTU_SHORT - sizeof(PacketSize) - sizeof(byte) - sizeof(uint8)) /
 			(sizeof(uint8) + sizeof(uint32) + (send_md5sum ? /*sizeof(ContentInfo::md5sum)*/16 : 0))) - 1;
 
 	uint offset = 0;
@@ -361,7 +361,7 @@ void ClientNetworkContentSocketHandler::DownloadSelectedContentFallback(const Co
 		 * A packet begins with the packet size and a byte for the type.
 		 * Then this packet adds a uint16 for the count in this packet.
 		 * The rest of the packet can be used for the IDs. */
-		uint p_count = min(count, (SEND_MTU - sizeof(PacketSize) - sizeof(byte) - sizeof(uint16)) / sizeof(uint32));
+		uint p_count = min(count, (SEND_MTU_SHORT - sizeof(PacketSize) - sizeof(byte) - sizeof(uint16)) / sizeof(uint32));
 
 		Packet *p = new Packet(PACKET_CONTENT_CLIENT_CONTENT);
 		p->Send_uint16(p_count);

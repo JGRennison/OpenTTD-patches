@@ -205,7 +205,7 @@ void ServerNetworkUDPSocketHandler::Reply_CLIENT_FIND_SERVER_extended(Packet *p,
 	this->SendNetworkGameInfoExtended(&packet, ngi, flags, version);
 
 	/* Let the client know that we are here */
-	this->SendPacket(&packet, client_addr);
+	this->SendPacket(&packet, client_addr, false, false, true);
 
 	DEBUG(net, 2, "[udp] queried (extended: %u) from %s", version, client_addr->GetHostname());
 }
@@ -341,7 +341,7 @@ void ServerNetworkUDPSocketHandler::Receive_CLIENT_GET_NEWGRFS(Packet *p, Networ
 		 * The name could be an empty string, if so take the filename. */
 		size_t required_length = sizeof(info.ident.grfid) + sizeof(info.ident.md5sum) +
 				min(strlen(info.name) + 1, (size_t)NETWORK_GRF_NAME_LENGTH);
-		if (packet_len + required_length > SEND_MTU - 4) { // 4 is 3 byte header + grf count in reply
+		if (packet_len + required_length > SEND_MTU_SHORT - 4) { // 4 is 3 byte header + grf count in reply
 			flush_response();
 		}
 		packet_len += required_length;
@@ -432,7 +432,7 @@ void ClientNetworkUDPSocketHandler::Receive_SERVER_RESPONSE_Common(Packet *p, Ne
 			if (c->status != GCS_NOT_FOUND || strcmp(c->GetName(), UNKNOWN_GRF_NAME_PLACEHOLDER) != 0) continue;
 			in_request[in_request_count] = c;
 			in_request_count++;
-			if (in_request_count == NETWORK_MAX_GRF_COUNT) flush_request();
+			if (in_request_count == NETWORK_MAX_GRF_COUNT_SHORT) flush_request();
 		}
 
 		if (in_request_count > 0) flush_request();

@@ -33,6 +33,7 @@ static const uint16 NETWORK_ADMIN_PORT            = 3977;         ///< The defau
 static const uint16 NETWORK_DEFAULT_DEBUGLOG_PORT = 3982;         ///< The default port debug-log is sent to (TCP)
 
 static const uint16 SEND_MTU                      = 1460;         ///< Number of bytes we can pack in a single packet
+static const uint16 SEND_MTU_SHORT                = 1400;         ///< Number of bytes we can pack in a single packet (conservative)
 
 static const byte NETWORK_GAME_ADMIN_VERSION      =    1;         ///< What version of the admin network do we use?
 static const byte NETWORK_GAME_INFO_VERSION       =    4;         ///< What version of game-info do we use?
@@ -59,6 +60,7 @@ static const uint NETWORK_GRF_NAME_LENGTH         =   80;         ///< Maximum l
  * This limit is reached when PACKET_UDP_SERVER_RESPONSE reaches the maximum size of SEND_MTU bytes.
  */
 static const uint NETWORK_MAX_GRF_COUNT           =   62;
+static const uint NETWORK_MAX_GRF_COUNT_SHORT     =   59;
 
 static const uint NETWORK_NUM_LANGUAGES           =   36; ///< Number of known languages (to the network protocol) + 1 for 'any'.
 

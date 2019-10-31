@@ -84,15 +84,17 @@ NetworkRecvStatus NetworkUDPSocketHandler::CloseConnection(bool error)
  * @param all  send the packet using all sockets that can send it
  * @param broadcast whether to send a broadcast message
  */
-void NetworkUDPSocketHandler::SendPacket(Packet *p, NetworkAddress *recv, bool all, bool broadcast)
+void NetworkUDPSocketHandler::SendPacket(Packet *p, NetworkAddress *recv, bool all, bool broadcast, bool short_mtu)
 {
 	if (this->sockets.size() == 0) this->Listen();
 
-	if (p->size > SEND_MTU) {
+	const uint MTU = short_mtu ? SEND_MTU_SHORT : SEND_MTU;
+
+	if (p->size > MTU) {
 		p->PrepareToSend();
 
 		uint64 token = this->fragment_token++;
-		const uint PAYLOAD_MTU = SEND_MTU - (1 + 2 + 8 + 1 + 1 + 2);
+		const uint PAYLOAD_MTU = MTU - (1 + 2 + 8 + 1 + 1 + 2);
 
 		const uint8 frag_count = (p->size + PAYLOAD_MTU - 1) / PAYLOAD_MTU;
 
@@ -108,7 +110,7 @@ void NetworkUDPSocketHandler::SendPacket(Packet *p, NetworkAddress *recv, bool a
 			frag.Send_binary((const char *) p->buffer + offset, payload_size);
 			current_frag++;
 			offset += payload_size;
-			this->SendPacket(&frag, recv, all, broadcast);
+			this->SendPacket(&frag, recv, all, broadcast, short_mtu);
 			frag.ResetState(PACKET_UDP_EX_MULTI);
 		}
 		assert_msg(current_frag == frag_count, "%u, %u", current_frag, frag_count);

@@ -258,7 +258,7 @@ public:
 	bool Listen();
 	void Close() override;
 
-	void SendPacket(Packet *p, NetworkAddress *recv, bool all = false, bool broadcast = false);
+	void SendPacket(Packet *p, NetworkAddress *recv, bool all = false, bool broadcast = false, bool short_mtu = false);
 	void ReceivePackets();
 
 	void SendNetworkGameInfo(Packet *p, const NetworkGameInfo *info);
