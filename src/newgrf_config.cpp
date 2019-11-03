@@ -781,10 +781,6 @@ bool GRFFileScanner::AddFile(const char *filename, size_t basepath_length, const
 	bool added = FillGRFDetails(c, false);
 	if (added) {
 		this->grfs.push_back(c);
-	} else {
-		/* File couldn't be opened, or is either not a NewGRF or is a
-		 * 'system' NewGRF or it's already known, so forget about it. */
-		delete c;
 	}
 
 	this->num_scanned++;
@@ -801,6 +797,12 @@ bool GRFFileScanner::AddFile(const char *filename, size_t basepath_length, const
 		_modal_progress_paint_mutex.unlock();
 
 		this->next_update = _realtime_tick + MODAL_PROGRESS_REDRAW_TIMEOUT;
+	}
+
+	if (!added) {
+		/* File couldn't be opened, or is either not a NewGRF or is a
+		 * 'system' NewGRF or it's already known, so forget about it. */
+		delete c;
 	}
 
 	return added;
