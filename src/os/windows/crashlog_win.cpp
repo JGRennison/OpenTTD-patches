@@ -580,6 +580,17 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 	return EXCEPTION_EXECUTE_HANDLER;
 }
 
+static LONG WINAPI VectoredExceptionHandler(EXCEPTION_POINTERS *ep)
+{
+	if (ep->ExceptionRecord->ExceptionCode == 0xC0000374 /* heap corruption */) {
+		return ExceptionHandler(ep);
+	}
+	if (ep->ExceptionRecord->ExceptionCode == EXCEPTION_STACK_OVERFLOW) {
+		return ExceptionHandler(ep);
+	}
+	return EXCEPTION_CONTINUE_SEARCH;
+}
+
 static void CDECL CustomAbort(int signal)
 {
 	RaiseException(0xE1212012, 0, 0, nullptr);
@@ -613,6 +624,13 @@ static void CDECL CustomAbort(int signal)
 	_set_abort_behavior(0, _WRITE_ABORT_MSG);
 #endif
 	SetUnhandledExceptionFilter(ExceptionHandler);
+	AddVectoredExceptionHandler(1, VectoredExceptionHandler);
+
+	BOOL (WINAPI *SetThreadStackGuarantee)(PULONG);
+	if (LoadLibraryList((Function*)&SetThreadStackGuarantee, "kernel32.dll\0SetThreadStackGuarantee\0\0")) {
+		ULONG stacksize = 65536;
+		SetThreadStackGuarantee(&stacksize);
+	}
 }
 
 /* static */ void CrashLog::DesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info)
