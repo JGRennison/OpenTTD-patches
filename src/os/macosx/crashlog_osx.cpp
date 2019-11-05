@@ -27,9 +27,6 @@
 #ifdef WITH_UCONTEXT
 #include <sys/ucontext.h>
 #endif
-#if defined(WITH_SIGALTSTACK) && defined(WITH_UCONTEXT)
-#include <pthread.h>
-#endif
 
 #include "../../safeguards.h"
 
@@ -218,30 +215,6 @@ class CrashLogOSX : public CrashLog {
 #if defined(__ppc__) || defined(__ppc64__)
 		/* Apple says __builtin_frame_address can be broken on PPC. */
 		__asm__ volatile("mr %0, r1" : "=r" (frame));
-#elif defined(WITH_SIGALTSTACK) && defined(WITH_UCONTEXT) && (defined(__x86_64__) || defined(__i386))
-		if (this->signal_instruction_ptr_valid) {
-			print_frame(this->signal_instruction_ptr);
-			i++;
-		}
-
-		pthread_t self = pthread_self();
-		char *stacktop = (char *) pthread_get_stackaddr_np(self);
-		char *stackbot = stacktop - pthread_get_stacksize_np(self);
-		stacktop -= 2 * sizeof(void *);
-
-		ucontext_t *ucontext = static_cast<ucontext_t *>(context);
-#if defined(__x86_64__)
-		void **bp = (void **) ucontext->uc_mcontext->__ss.__rbp;
-		void **sp = (void **) ucontext->uc_mcontext->__ss.__rsp;
-#else
-		void **bp = (void **) ucontext->uc_mcontext->__ss.__ebp;
-		void **sp = (void **) ucontext->uc_mcontext->__ss.__esp;
-#endif
-		if (IS_ALIGNED(bp) && reinterpret_cast<uintptr_t>(bp) >= reinterpret_cast<uintptr_t>(sp) && reinterpret_cast<uintptr_t>(bp) >= reinterpret_cast<uintptr_t>(stackbot) && reinterpret_cast<uintptr_t>(bp) <= reinterpret_cast<uintptr_t>(stacktop)) {
-			frame = bp;
-		} else {
-			frame = nullptr;
-		}
 #else
 		frame = (void **)__builtin_frame_address(0);
 #endif
@@ -495,21 +468,10 @@ void CDECL HandleCrash(int signum, siginfo_t *si, void *context)
 
 /* static */ void CrashLog::InitialiseCrashLog()
 {
-#if defined(WITH_SIGALTSTACK) && defined(WITH_UCONTEXT)
-	const size_t stack_size = max<size_t>(SIGSTKSZ, 512*1024);
-	stack_t ss;
-	ss.ss_sp = CallocT<byte>(stack_size);
-	ss.ss_size = stack_size;
-	ss.ss_flags = 0;
-	sigaltstack(&ss, nullptr);
-#endif
 	for (const int *i = _signals_to_handle; i != endof(_signals_to_handle); i++) {
 		struct sigaction sa;
 		memset(&sa, 0, sizeof(sa));
 		sa.sa_flags = SA_SIGINFO | SA_RESTART;
-#if defined(WITH_SIGALTSTACK) && defined(WITH_UCONTEXT)
-		sa.sa_flags |= SA_ONSTACK;
-#endif
 		sigemptyset(&sa.sa_mask);
 		sa.sa_sigaction = HandleCrash;
 		sigaction(*i, &sa, nullptr);
