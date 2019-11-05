@@ -1702,6 +1702,8 @@ EOL
 			else
 				log 1 "checking libbfd... no"
 			fi
+		else
+			log 1 "checking libbfd... disabled"
 		fi
 
 		HAVE_GDB_DBG=
@@ -1748,6 +1750,8 @@ EOL
 					CFLAGS="$CFLAGS -DWITH_PRCTL_PT"
 				fi
 			fi
+		else
+			log 1 "checking dbg gdb... disabled"
 		fi
 
 		if [ -n "$LIBBFD_LIBS" -o -n "$HAVE_GDB_DBG" ]; then
@@ -1872,6 +1876,8 @@ EOL
 						CFLAGS="$CFLAGS -g1"
 					fi
 				fi
+			else
+				log 1 "checking libbfd... disabled"
 			fi
 		fi
 	fi
@@ -1940,7 +1946,7 @@ EOL
 		fi
 
 		if [ "$with_self_lldb_debug" = "0" ]; then
-			log 1 "using dbg lldb... no"
+			log 1 "using dbg lldb... disabled"
 			CFLAGS="$CFLAGS -DWITHOUT_DBG_LLDB"
 		else
 			log 1 "using dbg lldb... yes"
