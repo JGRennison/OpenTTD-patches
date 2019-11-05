@@ -2704,11 +2704,14 @@ bool AfterLoadGame()
 			/* yearly_expenses has 3*15 entries now, saveload code gave us 3*13.
 			 * Move the old data to the right place in the new array and clear the new data.
 			 * The move has to be done in reverse order (first 2, then 1). */
-			MemMoveT(&c->yearly_expenses[2][0], &c->yearly_expenses[1][11], 13);
-			MemMoveT(&c->yearly_expenses[1][0], &c->yearly_expenses[0][13], 13);
+			// MemMoveT(&c->yearly_expenses[2][0], &c->yearly_expenses[1][11], 13);
+			// MemMoveT(&c->yearly_expenses[1][0], &c->yearly_expenses[0][13], 13);
+			// The below are equivalent to the MemMoveT calls above
+			std::copy_backward(&c->yearly_expenses[1][11], &c->yearly_expenses[1][11] + 13, &c->yearly_expenses[2][0] + 13);
+			std::copy_backward(&c->yearly_expenses[0][13], &c->yearly_expenses[0][13] + 13, &c->yearly_expenses[1][0] + 13);
 			/* Clear the old location of just-moved data, so sharing income/expenses is set to 0 */
-			MemSetT(&c->yearly_expenses[0][13], 0, 2);
-			MemSetT(&c->yearly_expenses[1][13], 0, 2);
+			std::fill_n(&c->yearly_expenses[0][13], 2, 0);
+			std::fill_n(&c->yearly_expenses[1][13], 2, 0);
 		}
 	}
 

@@ -194,8 +194,7 @@ SpriteID TileZoneCheckUnservedBuildingsEvaluation(TileIndex tile, Owner owner)
 	}
 
 	CargoArray dat;
-
-	memset(&dat, 0, sizeof(dat));
+	dat.Clear();
 	AddAcceptedCargo(tile, dat, nullptr);
 	if (dat[CT_MAIL] + dat[CT_PASSENGERS] == 0) {
 		// nothing is accepted, so now test if cargo is produced

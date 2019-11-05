@@ -358,6 +358,8 @@ public:
 	FlowStatMapIterator(const FlowStatMapIterator<FlowStat, FlowStatMap, btree::btree_map<StationID, uint16>::iterator> &other) :
 		fsm(other.fsm), current(other.current) {}
 
+	FlowStatMapIterator &operator=(const FlowStatMapIterator &) = default;
+
 	reference operator*() const { return this->fsm->flows_storage[this->current->second]; }
 	pointer operator->() const { return &(this->fsm->flows_storage[this->current->second]); }
 
