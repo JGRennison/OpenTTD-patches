@@ -1993,6 +1993,9 @@ EOL
 			log 1 "checking ucontext... found"
 			CFLAGS="$CFLAGS -DWITH_UCONTEXT"
 		fi
+
+		# workaround for issues with MacOS 10.15 Catalina and stack_not_16_byte_aligned_error issues
+		CFLAGS="$CFLAGS -fno-stack-check"
 	fi
 
 	if [ "$os" = "HAIKU" ]; then
