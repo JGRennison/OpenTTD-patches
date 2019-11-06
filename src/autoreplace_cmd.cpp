@@ -22,6 +22,7 @@
 #include "core/random_func.hpp"
 #include "vehiclelist.h"
 #include "road.h"
+#include "ai/ai.hpp"
 
 #include "table/strings.h"
 
@@ -434,6 +435,8 @@ static CommandCost ReplaceFreeUnit(Vehicle **single_unit, DoCommandFlag flags, b
 			TransferCargo(old_v, new_v, false);
 
 			*single_unit = new_v;
+
+			AI::NewEvent(old_v->owner, new ScriptEventVehicleAutoReplaced(old_v->index, new_v->index));
 		}
 
 		/* Sell the old vehicle */
@@ -603,7 +606,10 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlag flags, bool wagon
 					cost.AddCost(DoCommand(0, w->index, 0, flags | DC_AUTOREPLACE, GetCmdSellVeh(w)));
 					if ((flags & DC_EXEC) != 0) {
 						old_vehs[i] = nullptr;
-						if (i == 0) old_head = nullptr;
+						if (i == 0) {
+							AI::NewEvent(old_head->owner, new ScriptEventVehicleAutoReplaced(old_head->index, new_head->index));
+							old_head = nullptr;
+						}
 					}
 				}
 
@@ -657,6 +663,8 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlag flags, bool wagon
 				if ((flags & DC_EXEC) != 0) {
 					TransferCargo(old_head, new_head, true);
 					*chain = new_head;
+
+					AI::NewEvent(old_head->owner, new ScriptEventVehicleAutoReplaced(old_head->index, new_head->index));
 				}
 
 				/* Sell the old vehicle */

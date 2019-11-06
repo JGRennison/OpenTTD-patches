@@ -552,6 +552,7 @@ struct EconomySettings {
 	bool   bribe;                            ///< enable bribing the local authority
 	bool   smooth_economy;                   ///< smooth economy
 	bool   allow_shares;                     ///< allow the buying/selling of shares
+	uint8  min_years_for_shares;             ///< minimum age of a company for it to trade shares
 	uint8  feeder_payment_share;             ///< percentage of leg payment to virtually pay in feeder systems
 	bool   feeder_payment_src_station;       ///< calculate leg payment relative to the source station, not the leg source
 	byte   dist_local_authority;             ///< distance for town local authority, default 20

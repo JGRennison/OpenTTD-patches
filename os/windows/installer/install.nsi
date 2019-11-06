@@ -63,7 +63,7 @@ Var CDDRIVE
 !define MUI_ABORTWARNING
 !define MUI_WELCOMEPAGE_TITLE_3LINES
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE "..\..\..\COPYING"
+!insertmacro MUI_PAGE_LICENSE "..\..\..\COPYING.md"
 
 !define MUI_COMPONENTSPAGE_SMALLDESC
 !insertmacro MUI_PAGE_COMPONENTS
@@ -145,8 +145,8 @@ Section "!OpenTTD" Section1
 
 	; Copy some documentation files
 	SetOutPath "$INSTDIR\docs\"
-	File ${PATH_ROOT}docs\multiplayer.txt
-	Push "$INSTDIR\docs\multiplayer.txt"
+	File ${PATH_ROOT}docs\multiplayer.md
+	Push "$INSTDIR\docs\multiplayer.md"
 	Call unix2dos
 
 	; Copy the rest of the stuff
@@ -156,8 +156,8 @@ Section "!OpenTTD" Section1
 	File ${PATH_ROOT}changelog.txt
 	Push "$INSTDIR\changelog.txt"
 	Call unix2dos
-	File ${PATH_ROOT}COPYING
-	Push "$INSTDIR\COPYING"
+	File ${PATH_ROOT}COPYING.md
+	Push "$INSTDIR\COPYING.md"
 	Call unix2dos
 	File ${PATH_ROOT}README.md
 	Push "$INSTDIR\README.md"
@@ -218,7 +218,7 @@ Section "!OpenTTD" Section1
 	CreateShortCut "$SMPROGRAMS\$SHORTCUTS\Changelog.lnk" "$INSTDIR\Changelog.txt"
 	CreateShortCut "$SMPROGRAMS\$SHORTCUTS\Known-bugs.lnk" "$INSTDIR\known-bugs.txt"
 	CreateDirectory "$SMPROGRAMS\$SHORTCUTS\Docs"
-	CreateShortCut "$SMPROGRAMS\$SHORTCUTS\Docs\Multiplayer.lnk" "$INSTDIR\docs\multiplayer.txt"
+	CreateShortCut "$SMPROGRAMS\$SHORTCUTS\Docs\Multiplayer.lnk" "$INSTDIR\docs\multiplayer.md"
 	CreateDirectory "$SMPROGRAMS\$SHORTCUTS\Scripts"
 	CreateShortCut "$SMPROGRAMS\$SHORTCUTS\Scripts\Readme.lnk" "$INSTDIR\scripts\README.md"
 	!insertmacro MUI_STARTMENU_WRITE_END
@@ -392,7 +392,7 @@ Section "Uninstall"
 	Delete "$INSTDIR\README.md"
 	Delete "$INSTDIR\known-bugs.txt"
 	Delete "$INSTDIR\openttd.exe"
-	Delete "$INSTDIR\COPYING"
+	Delete "$INSTDIR\COPYING.md"
 	Delete "$INSTDIR\INSTALL.LOG"
 	Delete "$INSTDIR\crash.log"
 	Delete "$INSTDIR\crash.dmp"
