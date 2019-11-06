@@ -2,6 +2,17 @@
 
 * * *
 
+### v0.32.2 (2019-11-06)
+* Fix crash which could occur after removing oil rig.
+* Fix crash which could occur when scanning NewGRF files.
+* MacOS: Fix crash issues on MacOS 10.15 Catalina.
+* SDL2 video driver (Linux):
+  * Fix home and end keys in text editing contexts.
+  * Fix page down key.
+  * Fix up/down and function keys printing '?' in text editing contexts.
+* Fix multiplayer issues which could occur on networks with a reduced MTU.
+* Bump trunk base from commit e2e112baaabaaeec1f04f13c3759f24c06b42cf2 to commit d5a9bd404a3ca90a18abeeaaaabdbf5185437ba7.
+
 ### v0.32.1 (2019-10-20)
 * Fix "undefined string" appearing in 3rd line of error message window.
 * Fix width of bottom row of template-based train replacement create/edit template window.
