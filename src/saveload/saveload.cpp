@@ -364,6 +364,11 @@ static void SlNullPointers()
 	assert(_sl.action == SLA_NULL);
 }
 
+struct ThreadSlErrorException {
+	StringID string;
+	const char *extra_msg;
+};
+
 /**
  * Error handler. Sets everything up to show an error message and to clean
  * up the mess of a partial savegame load.
@@ -377,6 +382,10 @@ void NORETURN SlError(StringID string, const char *extra_msg, bool already_mallo
 	char *str = nullptr;
 	if (extra_msg != nullptr) {
 		str = already_malloced ? const_cast<char *>(extra_msg) : stredup(extra_msg);
+	}
+
+	if (IsNonMainThread()) {
+		throw ThreadSlErrorException{ string, extra_msg };
 	}
 
 	/* Distinguish between loading into _load_check_data vs. normal save/load. */
@@ -3018,6 +3027,9 @@ struct ThreadedLoadFilter : LoadFilter {
 	byte read_buf[MEMORY_CHUNK_SIZE * BUFFER_COUNT]; ///< Buffers for reading from source.
 	bool no_thread = false;
 
+	bool have_exception = false;
+	ThreadSlErrorException caught_exception;
+
 	std::thread read_thread;
 
 	/**
@@ -3051,21 +3063,28 @@ struct ThreadedLoadFilter : LoadFilter {
 
 	static void RunThread(ThreadedLoadFilter *self)
 	{
-		std::unique_lock<std::mutex> lk(self->mutex);
-		while (!self->no_thread) {
-			if (self->count_ready == BUFFER_COUNT) {
-				self->full_cv.wait(lk);
-				continue;
-			}
+		try {
+			std::unique_lock<std::mutex> lk(self->mutex);
+			while (!self->no_thread) {
+				if (self->count_ready == BUFFER_COUNT) {
+					self->full_cv.wait(lk);
+					continue;
+				}
 
-			uint buf = (self->first_ready + self->count_ready) % BUFFER_COUNT;
-			lk.unlock();
-			size_t read = self->chain->Read(self->read_buf + (buf * MEMORY_CHUNK_SIZE), MEMORY_CHUNK_SIZE);
-			lk.lock();
-			self->read_offsets[buf] = 0;
-			self->read_counts[buf] = read;
-			self->count_ready++;
-			if (self->count_ready == 1) self->empty_cv.notify_one();
+				uint buf = (self->first_ready + self->count_ready) % BUFFER_COUNT;
+				lk.unlock();
+				size_t read = self->chain->Read(self->read_buf + (buf * MEMORY_CHUNK_SIZE), MEMORY_CHUNK_SIZE);
+				lk.lock();
+				self->read_offsets[buf] = 0;
+				self->read_counts[buf] = read;
+				self->count_ready++;
+				if (self->count_ready == 1) self->empty_cv.notify_one();
+			}
+		} catch (const ThreadSlErrorException &ex) {
+			std::unique_lock<std::mutex> lk(self->mutex);
+			self->caught_exception = ex;
+			self->have_exception = true;
+			self->empty_cv.notify_one();
 		}
 	}
 
@@ -3075,7 +3094,11 @@ struct ThreadedLoadFilter : LoadFilter {
 
 		size_t read = 0;
 		std::unique_lock<std::mutex> lk(this->mutex);
-		while (read < size) {
+		while (read < size || this->have_exception) {
+			if (this->have_exception) {
+				this->have_exception = false;
+				SlError(this->caught_exception.string, this->caught_exception.extra_msg);
+			}
 			if (this->count_ready == 0) {
 				this->empty_cv.wait(lk);
 				continue;
