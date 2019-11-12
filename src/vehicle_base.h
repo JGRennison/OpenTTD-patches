@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /*
  * This file is part of OpenTTD.
  * OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
@@ -764,6 +762,17 @@ public:
 	{
 		CargoStationIDStackSet set;
 		if (this->orders.list != nullptr) set.FillNextStoppingStation(this, this->orders.list);
+		return set;
+	}
+
+	/**
+	 * Get the next station the vehicle will stop at.
+	 * @return ID of the next station the vehicle will stop at or INVALID_STATION.
+	 */
+	inline StationIDStack GetNextStoppingStationCargoIndependent() const
+	{
+		StationIDStack set;
+		if (this->orders.list != nullptr) set = this->orders.list->GetNextStoppingStation(this, 0).station;
 		return set;
 	}
 

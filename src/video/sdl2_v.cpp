@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /*
  * This file is part of OpenTTD.
  * OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
@@ -611,6 +609,9 @@ static void SetTextInputRect()
 	SDL_SetTextInputRect(&winrect);
 }
 
+/**
+ * This is called to indicate that an edit box has gained focus, text input mode should be enabled.
+ */
 void VideoDriver_SDL::EditBoxGainedFocus()
 {
 	if (!this->edit_box_focused) {
@@ -620,6 +621,9 @@ void VideoDriver_SDL::EditBoxGainedFocus()
 	SetTextInputRect();
 }
 
+/**
+ * This is called to indicate that an edit box has lost focus, text input mode should be disabled.
+ */
 void VideoDriver_SDL::EditBoxLostFocus()
 {
 	if (this->edit_box_focused) {
@@ -848,7 +852,8 @@ int VideoDriver_SDL::PollEvent()
 				uint keycode = ConvertSdlKeyIntoMy(&ev.key.keysym, &character);
 				// Only handle non-text keys here. Text is handled in
 				// SDL_TEXTINPUT below.
-				if (keycode == WKC_DELETE ||
+				if (!this->edit_box_focused ||
+					keycode == WKC_DELETE ||
 					keycode == WKC_NUM_ENTER ||
 					keycode == WKC_LEFT ||
 					keycode == WKC_RIGHT ||
@@ -869,19 +874,19 @@ int VideoDriver_SDL::PollEvent()
 
 		case SDL_TEXTINPUT: {
 			if (_suppress_text_event) break;
-			if (EditBoxInGlobalFocus() && !(FocusedWindowIsConsole() &&
-					ConvertSdlKeycodeIntoMy(SDL_GetKeyFromName(ev.text.text)) == WKC_BACKQUOTE)) {
-				HandleTextInput(nullptr, true);
-				HandleTextInput(ev.text.text);
-				SetTextInputRect();
-				break;
-			}
-			WChar character;
+			if (!this->edit_box_focused) break;
 			SDL_Keycode kc = SDL_GetKeyFromName(ev.text.text);
 			uint keycode = ConvertSdlKeycodeIntoMy(kc);
 
-			Utf8Decode(&character, ev.text.text);
-			HandleKeypress(keycode, character);
+			if (keycode == WKC_BACKQUOTE && FocusedWindowIsConsole()) {
+				WChar character;
+				Utf8Decode(&character, ev.text.text);
+				HandleKeypress(keycode, character);
+			} else {
+				HandleTextInput(nullptr, true);
+				HandleTextInput(ev.text.text);
+				SetTextInputRect();
+			}
 			break;
 		}
 

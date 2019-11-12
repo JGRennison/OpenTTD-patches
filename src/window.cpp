@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /*
  * This file is part of OpenTTD.
  * OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
@@ -464,11 +462,6 @@ Point GetFocusedWindowTopLeft()
 	return { _focused_window->left, _focused_window->top };
 }
 
-bool FocusedWindowIsConsole()
-{
-	return _focused_window && _focused_window->window_class == WC_CONSOLE;
-}
-
 /**
  * Check if an edit box is in global focus. That is if focused window
  * has a edit box as focused widget, or if a console is focused.
@@ -482,6 +475,15 @@ bool EditBoxInGlobalFocus()
 	if (_focused_window->window_class == WC_CONSOLE) return true;
 
 	return _focused_window->nested_focus != nullptr && _focused_window->nested_focus->type == WWT_EDITBOX;
+}
+
+/**
+ * Check if a console is focused.
+ * @return returns true if the focused window is a console, else false
+ */
+bool FocusedWindowIsConsole()
+{
+	return _focused_window && _focused_window->window_class == WC_CONSOLE;
 }
 
 /**

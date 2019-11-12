@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /*
  * This file is part of OpenTTD.
  * OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
@@ -519,7 +517,7 @@ VehicleOrderID OrderList::GetIndexOfOrder(const Order *order) const
  * or refit at a depot or evaluate a non-trivial condition.
  * @param next The order to start looking at.
  * @param hops The number of orders we have already looked at.
- * @param cargo_mask The bit set of cargoes that the we are looking at, this may be reduced to indicate the set of cargoes that the result is valid for.
+ * @param cargo_mask The bit set of cargoes that the we are looking at, this may be reduced to indicate the set of cargoes that the result is valid for. This may be 0 to ignore cargo types entirely.
  * @return Either of
  *         \li a station order
  *         \li a refitting depot order
@@ -528,8 +526,6 @@ VehicleOrderID OrderList::GetIndexOfOrder(const Order *order) const
  */
 const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops, CargoTypes &cargo_mask) const
 {
-	assert(cargo_mask != 0);
-
 	if (hops > this->GetNumOrders() || next == nullptr) return nullptr;
 
 	if (next->IsType(OT_CONDITIONAL)) {
@@ -550,7 +546,9 @@ const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops, CargoT
 	bool can_load_or_unload = false;
 	if ((next->IsType(OT_GOTO_STATION) || next->IsType(OT_IMPLICIT)) &&
 			(next->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
-		if (next->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD || next->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
+		if (cargo_mask == 0) {
+			can_load_or_unload = true;
+		} else if (next->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD || next->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
 			/* This is a cargo-specific load/unload order.
 			 * If the first cargo is both a no-load and no-unload order, skip it.
 			 * Drop cargoes which don't match the first one. */
@@ -572,7 +570,7 @@ const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops, CargoT
 /**
  * Recursively determine the next deterministic station to stop at.
  * @param v The vehicle we're looking at.
- * @param CargoTypes cargo_mask Bit-set of the cargo IDs of interest.
+ * @param CargoTypes cargo_mask Bit-set of the cargo IDs of interest. This may be 0 to ignore cargo types entirely.
  * @param first Order to start searching at or nullptr to start at cur_implicit_order_index + 1.
  * @param hops Number of orders we have already looked at.
  * @return A CargoMaskedStationIDStack of the cargo mask the result is valid for, and the next stopping station or INVALID_STATION.
@@ -581,8 +579,6 @@ const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops, CargoT
  */
 CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, CargoTypes cargo_mask, const Order *first, uint hops) const
 {
-	assert(cargo_mask != 0);
-
 	const Order *next = first;
 	if (first == nullptr) {
 		next = this->GetOrderAt(v->cur_implicit_order_index);
@@ -627,7 +623,7 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 
 		/* Don't return a next stop if the vehicle has to unload everything. */
 		if ((next->IsType(OT_GOTO_STATION) || next->IsType(OT_IMPLICIT)) &&
-				next->GetDestination() == v->last_station_visited) {
+				next->GetDestination() == v->last_station_visited && cargo_mask != 0) {
 			/* This is a cargo-specific load/unload order.
 			 * Don't return a next stop if first cargo has transfer or unload set.
 			 * Drop cargoes which don't match the first one. */
