@@ -124,7 +124,7 @@ static StationID FindNearestHangar(const Aircraft *v)
 	const Station *st;
 	uint best = 0;
 	StationID index = INVALID_STATION;
-	TileIndex vtile = TileVirtXY(v->x_pos, v->y_pos);
+	TileIndex vtile = TileVirtXYClampedToMap(v->x_pos, v->y_pos);
 	const AircraftVehicleInfo *avi = AircraftVehInfo(v->engine_type);
 	uint max_range = v->acache.cached_max_range_sqr;
 
@@ -714,9 +714,7 @@ static int UpdateAircraftSpeed(Aircraft *v, uint speed_limit = SPEED_LIMIT_NONE,
  */
 int GetTileHeightBelowAircraft(const Vehicle *v)
 {
-	int safe_x = Clamp(v->x_pos, 0, MapMaxX() * TILE_SIZE);
-	int safe_y = Clamp(v->y_pos, 0, MapMaxY() * TILE_SIZE);
-	return TileHeight(TileVirtXY(safe_x, safe_y)) * TILE_HEIGHT;
+	return TileHeight(TileVirtXYClampedToMap(v->x_pos, v->y_pos)) * TILE_HEIGHT;
 }
 
 /**

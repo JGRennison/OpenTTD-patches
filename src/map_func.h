@@ -197,6 +197,19 @@ static inline TileIndex TileVirtXY(uint x, uint y)
 	return (y >> 4 << MapLogX()) + (x >> 4);
 }
 
+/**
+ * Get a tile from the virtual XY-coordinate.
+ * This is clamped to be within the map bounds.
+ * @param x The virtual x coordinate of the tile.
+ * @param y The virtual y coordinate of the tile.
+ * @return The TileIndex calculated by the coordinate.
+ */
+static inline TileIndex TileVirtXYClampedToMap(int x, int y)
+{
+	int safe_x = Clamp<int>(x, 0, MapMaxX() * TILE_SIZE);
+	int safe_y = Clamp<int>(y, 0, MapMaxY() * TILE_SIZE);
+	return TileVirtXY((uint) safe_x, (uint) safe_y);
+}
 
 /**
  * Get the X component of a tile
