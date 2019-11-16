@@ -1876,6 +1876,8 @@ public:
 
 		if (IsRailDepotTile(tile)) {
 			// OK
+		} else if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeWithSignalSimulation(tile)) {
+			// OK
 		} else {
 			if (!IsPlainRailTile(tile)) {
 				ShowErrorMessage(error_message, STR_ERROR_THERE_IS_NO_RAILROAD_TRACK, WL_INFO);

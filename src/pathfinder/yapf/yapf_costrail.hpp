@@ -215,6 +215,8 @@ private:
 
 				if (IsRailDepotTile(v->tile)) {
 					candidate_tile = v->tile;
+				} else if (v->track & TRACK_BIT_WORMHOLE && IsTileType(v->tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(v->tile) && IsTunnelBridgePBS(v->tile)) {
+					candidate_tile = v->tile;
 				}
 
 				CFollowTrackRail ft(v);

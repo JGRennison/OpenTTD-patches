@@ -448,6 +448,9 @@ TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const vo
 	if (IsRailDepotTile(v->tile)) {
 		return v->tile;
 	}
+	if (v->track & TRACK_BIT_WORMHOLE && IsTileType(v->tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(v->tile) && IsTunnelBridgePBS(v->tile)) {
+		return v->tile;
+	}
 
 	// scan forwards from vehicle position, for the case that train is waiting at/approaching PBS signal
 
