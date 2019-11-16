@@ -275,9 +275,6 @@ public:
 				*size = maxdim(*size, d);
 				break;
 			}
-			default:
-				size->width = ScaleGUITrad(size->width);
-				break;
 		}
 	}
 
@@ -601,7 +598,7 @@ public:
 				GfxFillRect(r.left + 1, y, r.right, y + WD_MATRIX_TOP + FONT_HEIGHT_NORMAL + WD_MATRIX_BOTTOM, _colour_gradient[COLOUR_GREY][3]);
 			}
 
-			int text_y = y + ScaleGUITrad(3);
+			int text_y = y + WD_MATRIX_TOP;
 
 			SetDParam(0, g_id);
 			StringID str = STR_GROUP_NAME;
@@ -621,14 +618,14 @@ public:
 			if (tr) {
 				const TemplateVehicle *tv = TemplateVehicle::Get(tr->sel_template);
 				const int num_trains = NumTrainsNeedTemplateReplacement(g_id, tv);
-				// Draw text
-				DrawString(left, right - ScaleGUITrad(16), text_y, STR_TMPL_NUM_TRAINS_NEED_RPL, num_trains ? TC_BLACK : TC_GREY, SA_RIGHT);
 				// Draw number
 				SetDParam(0, num_trains);
-				DrawString(left, right - ScaleGUITrad(4), text_y, STR_JUST_INT, num_trains ? TC_ORANGE : TC_GREY, SA_RIGHT);
+				int inner_right = DrawString(left, right - ScaleGUITrad(4), text_y, STR_JUST_INT, num_trains ? TC_ORANGE : TC_GREY, SA_RIGHT);
+				// Draw text
+				DrawString(left, inner_right - ScaleFontTrad(4), text_y, STR_TMPL_NUM_TRAINS_NEED_RPL, num_trains ? TC_BLACK : TC_GREY, SA_RIGHT);
 			}
 
-			y += WD_MATRIX_TOP + FONT_HEIGHT_NORMAL+ WD_MATRIX_BOTTOM;
+			y += WD_MATRIX_TOP + FONT_HEIGHT_NORMAL + WD_MATRIX_BOTTOM;
 		}
 	}
 
@@ -695,16 +692,16 @@ public:
 			TextColour color;
 
 			color = v->IsSetReuseDepotVehicles() ? TC_LIGHT_BLUE : TC_GREY;
-			DrawString(right - ScaleGUITrad(300), right, bottom_edge, STR_TMPL_CONFIG_USEDEPOT, color, SA_LEFT);
+			DrawString(right - ScaleFontTrad(300), right, bottom_edge, STR_TMPL_CONFIG_USEDEPOT, color, SA_LEFT);
 
 			color = v->IsSetKeepRemainingVehicles() ? TC_LIGHT_BLUE : TC_GREY;
-			DrawString(right - ScaleGUITrad(225), right, bottom_edge, STR_TMPL_CONFIG_KEEPREMAINDERS, color, SA_LEFT);
+			DrawString(right - ScaleFontTrad(225), right, bottom_edge, STR_TMPL_CONFIG_KEEPREMAINDERS, color, SA_LEFT);
 
 			color = v->IsSetRefitAsTemplate() ? TC_LIGHT_BLUE : TC_GREY;
-			DrawString(right - ScaleGUITrad(150), right, bottom_edge, STR_TMPL_CONFIG_REFIT, color, SA_LEFT);
+			DrawString(right - ScaleFontTrad(150), right, bottom_edge, STR_TMPL_CONFIG_REFIT, color, SA_LEFT);
 
 			color = v->IsReplaceOldOnly() ? TC_LIGHT_BLUE : TC_GREY;
-			DrawString(right - ScaleGUITrad(75), right, bottom_edge, STR_TMPL_CONFIG_OLD_ONLY, color, SA_LEFT);
+			DrawString(right - ScaleFontTrad(75), right, bottom_edge, STR_TMPL_CONFIG_OLD_ONLY, color, SA_LEFT);
 
 			y += this->bottom_matrix_item_size;
 		}
