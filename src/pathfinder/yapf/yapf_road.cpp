@@ -11,6 +11,7 @@
 #include "yapf.hpp"
 #include "yapf_node_road.hpp"
 #include "../../roadstop_base.h"
+#include "../../vehicle_func.h"
 
 #include "../../safeguards.h"
 
@@ -22,6 +23,8 @@
  * leads to major performace issues if a path is not found.
  */
 const uint MAX_RV_PF_TILES = 1 << 11;
+
+const int MAX_TARGETS = 4;
 
 template <class Types>
 class CYapfCostRoadT
@@ -68,6 +71,15 @@ protected:
 	inline int OneTileCost(TileIndex tile, Trackdir trackdir)
 	{
 		int cost = 0;
+
+		bool predictedOccupied = false;
+		for (int i = 0; i < MAX_TARGETS && Yapf().leaderTargets[i] != 0xFFFF; ++i) {
+			if (Yapf().leaderTargets[i] != tile) continue;
+			cost += Yapf().PfGetSettings().road_curve_penalty;
+			predictedOccupied = true;
+			break;
+		}
+
 		/* set base cost */
 		if (IsDiagonalTrackdir(trackdir)) {
 			cost += YAPF_TILE_LENGTH;
@@ -91,10 +103,18 @@ protected:
 							const RoadStop::Entry *entry = rs->GetEntry(dir);
 							cost += entry->GetOccupied() * Yapf().PfGetSettings().road_stop_occupied_penalty / entry->GetLength();
 						}
+
+						if (predictedOccupied) {
+							cost += Yapf().PfGetSettings().road_stop_occupied_penalty;
+						}
 					} else {
 						/* Increase cost for filled road stops */
 						cost += Yapf().PfGetSettings().road_stop_bay_occupied_penalty * (!rs->IsFreeBay(0) + !rs->IsFreeBay(1)) / 2;
+						if (predictedOccupied) {
+							cost += Yapf().PfGetSettings().road_stop_bay_occupied_penalty;
+						}
 					}
+
 					break;
 				}
 
@@ -326,7 +346,31 @@ public:
 	}
 };
 
+struct FindVehiclesOnTileProcData {
+	const Vehicle *originVehicle;
+	TileIndex (*targets)[MAX_TARGETS];
+};
 
+static Vehicle * FindVehiclesOnTileProc(Vehicle *v, void *_data)
+{
+	FindVehiclesOnTileProcData *data = (FindVehiclesOnTileProcData*)(_data);
+
+	if (data->originVehicle == v)
+		return nullptr;
+
+	TileIndex ti = v->tile + TileOffsByDir(v->direction);
+
+	for (int i = 0; i < MAX_TARGETS; i++) {
+		if ((*data->targets)[i] == 0xFFFF) {
+			(*data->targets)[i] = ti;
+			break;
+		}
+		if ((*data->targets)[i] == ti)
+			return nullptr;
+	}
+
+	return nullptr;
+}
 
 template <class Types>
 class CYapfFollowRoadT
@@ -391,6 +435,15 @@ public:
 		/* set origin and destination nodes */
 		Yapf().SetOrigin(src_tile, src_trackdirs);
 		Yapf().SetDestination(v);
+		
+		for (int i = 0; i < MAX_TARGETS; ++i) {
+			Yapf().leaderTargets[i] = 0xFFFF;
+		}
+		FindVehiclesOnTileProcData data;
+		data.originVehicle = v;
+		data.targets = &Yapf().leaderTargets;
+		TileIndex ti = v->tile + TileOffsByDir(v->direction);
+		FindVehicleOnPos(ti, &data, &FindVehiclesOnTileProc);
 
 		/* find the best path */
 		path_found = Yapf().FindPath(v);
@@ -537,11 +590,16 @@ struct CYapfRoad_TypesT
 	typedef CYapfCostRoadT<Types>             PfCost;
 };
 
-struct CYapfRoad1         : CYapfT<CYapfRoad_TypesT<CYapfRoad1        , CRoadNodeListTrackDir, CYapfDestinationTileRoadT    > > {};
-struct CYapfRoad2         : CYapfT<CYapfRoad_TypesT<CYapfRoad2        , CRoadNodeListExitDir , CYapfDestinationTileRoadT    > > {};
+template <class Types>
+struct CYapfRoadCommon : CYapfT<Types> {
+	TileIndex leaderTargets[MAX_TARGETS]; ///< the tiles targeted by vehicles in front of the current vehicle
+};
 
-struct CYapfRoadAnyDepot1 : CYapfT<CYapfRoad_TypesT<CYapfRoadAnyDepot1, CRoadNodeListTrackDir, CYapfDestinationAnyDepotRoadT> > {};
-struct CYapfRoadAnyDepot2 : CYapfT<CYapfRoad_TypesT<CYapfRoadAnyDepot2, CRoadNodeListExitDir , CYapfDestinationAnyDepotRoadT> > {};
+struct CYapfRoad1         : CYapfRoadCommon<CYapfRoad_TypesT<CYapfRoad1        , CRoadNodeListTrackDir, CYapfDestinationTileRoadT    > > {};
+struct CYapfRoad2         : CYapfRoadCommon<CYapfRoad_TypesT<CYapfRoad2        , CRoadNodeListExitDir , CYapfDestinationTileRoadT    > > {};
+
+struct CYapfRoadAnyDepot1 : CYapfRoadCommon<CYapfRoad_TypesT<CYapfRoadAnyDepot1, CRoadNodeListTrackDir, CYapfDestinationAnyDepotRoadT> > {};
+struct CYapfRoadAnyDepot2 : CYapfRoadCommon<CYapfRoad_TypesT<CYapfRoadAnyDepot2, CRoadNodeListExitDir , CYapfDestinationAnyDepotRoadT> > {};
 
 
 Trackdir YapfRoadVehicleChooseTrack(const RoadVehicle *v, TileIndex tile, DiagDirection enterdir, TrackdirBits trackdirs, bool &path_found, RoadVehPathCache &path_cache)
