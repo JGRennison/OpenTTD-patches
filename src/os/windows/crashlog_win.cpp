@@ -622,7 +622,12 @@ static void CDECL CustomAbort(int signal)
 	_set_abort_behavior(0, _WRITE_ABORT_MSG);
 #endif
 	SetUnhandledExceptionFilter(ExceptionHandler);
-	AddVectoredExceptionHandler(1, VectoredExceptionHandler);
+
+	using VEX_HANDLER_TYPE = LONG WINAPI (EXCEPTION_POINTERS *);
+	void* (WINAPI *AddVectoredExceptionHandler)(ULONG, VEX_HANDLER_TYPE*);
+	if (LoadLibraryList((Function*)&AddVectoredExceptionHandler, "kernel32.dll\0AddVectoredExceptionHandler\0\0")) {
+		AddVectoredExceptionHandler(1, VectoredExceptionHandler);
+	}
 
 	BOOL (WINAPI *SetThreadStackGuarantee)(PULONG);
 	if (LoadLibraryList((Function*)&SetThreadStackGuarantee, "kernel32.dll\0SetThreadStackGuarantee\0\0")) {
