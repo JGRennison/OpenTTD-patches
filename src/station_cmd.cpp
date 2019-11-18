@@ -852,7 +852,7 @@ CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statsp
 	BridgePiecePillarFlags disallowed_pillar_flags;
 	if (statspec && HasBit(statspec->internal_flags, SSIF_BRIDGE_DISALLOWED_PILLARS_SET)) {
 		// pillar flags set by NewGRF
-		disallowed_pillar_flags = (BridgePiecePillarFlags) statspec->bridge_height[layout];
+		disallowed_pillar_flags = (BridgePiecePillarFlags) statspec->bridge_disallowed_pillars[layout];
 	} else if (!statspec) {
 		// default stations/waypoints
 		static const uint8 st_flags[8] = { 0x50, 0xA0, 0x50, 0xA0, 0x50 | 0x26, 0xA0 | 0x1C, 0x50 | 0x89, 0xA0 | 0x43 };
