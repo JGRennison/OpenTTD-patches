@@ -68,6 +68,10 @@ extern const RoadBits _invalid_tileh_slopes_road[2][15];
 extern CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, byte layout, TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
 		BridgeType bridge_type, TransportType bridge_transport_type);
 
+extern CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, bool drive_through, DiagDirection entrance,
+		TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
+		BridgeType bridge_type, TransportType bridge_transport_type);
+
 /**
  * Mark bridge tiles dirty.
  * Note: The bridge does not need to exist, everything is passed via parameters.
@@ -435,12 +439,24 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 						break;
 					}
 
+					case STATION_BUS:
+					case STATION_TRUCK: {
+						CommandCost ret = IsRoadStopBridgeAboveOK(tile, IsDriveThroughStopTile(tile), GetRoadStopDir(tile),
+								tile_start, tile_end, z_start + 1, bridge_type, transport_type);
+						if (ret.Failed()) {
+							if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
+							ret = DoCommand(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+							if (ret.Failed()) return ret;
+						}
+						break;
+					}
+
 					case STATION_BUOY:
 						/* Buoys are always allowed */
 						break;
 
 					default:
-						if (!_settings_game.construction.allow_stations_under_bridges) {
+						if (!(GetStationType(tile) == STATION_DOCK && _settings_game.construction.allow_docks_under_bridges)) {
 							CommandCost ret = DoCommand(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
 							if (ret.Failed()) return ret;
 						}
@@ -546,12 +562,23 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 							break;
 						}
 
+						case STATION_BUS:
+						case STATION_TRUCK: {
+							CommandCost ret = IsRoadStopBridgeAboveOK(tile, IsDriveThroughStopTile(tile), GetRoadStopDir(tile),
+									tile_start, tile_end, z_start + 1, bridge_type, transport_type);
+							if (ret.Failed()) {
+								if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
+								goto not_valid_below;
+							}
+							break;
+						}
+
 						case STATION_BUOY:
 							/* Buoys are always allowed */
 							break;
 
 						default:
-							if (!_settings_game.construction.allow_stations_under_bridges) goto not_valid_below;
+							if (!(GetStationType(tile) == STATION_DOCK && _settings_game.construction.allow_docks_under_bridges)) goto not_valid_below;
 							break;
 					}
 					break;

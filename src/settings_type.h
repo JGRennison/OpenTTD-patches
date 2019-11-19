@@ -376,7 +376,9 @@ struct ConstructionSettings {
 	bool   chunnel;                          ///< allow construction of tunnels under water
 	uint8  rail_custom_bridge_heads;         ///< allow construction of rail custom bridge heads
 	bool   allow_grf_objects_under_bridges;  ///< allow all NewGRF objects under bridges
-	bool   allow_stations_under_bridges;     ///< allow all station tiles under bridges
+	bool   allow_stations_under_bridges;     ///< allow NewGRF rail station/waypoint tiles that do not specify clearance under bridges
+	bool   allow_road_stops_under_bridges;   ///< allow road/tram stops under bridges
+	bool   allow_docks_under_bridges;        ///< allow docks under bridges
 	byte   purchase_land_permitted;          ///< whether and how purchasing land is permitted
 
 	uint32 terraform_per_64k_frames;         ///< how many tile heights may, over a long period, be terraformed per 65536 frames?

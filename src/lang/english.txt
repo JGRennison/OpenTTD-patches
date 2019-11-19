@@ -1943,8 +1943,14 @@ STR_CONFIG_SETTING_ENABLE_RAIL_CUSTOM_BRIDGE_HEADS_HELPTEXT     :Allow rail brid
 STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES              :Allow all NewGRF objects under bridges: {STRING2}
 STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES_HELPTEXT     :Allow all NewGRF objects to be built under bridges, even where not otherwise enabled by the GRF.{}This may result in graphical issues.
 
-STR_CONFIG_SETTING_ALLOW_STATIONS_UNDER_BRIDGES                 :Allow stations under bridges: {STRING2}
-STR_CONFIG_SETTING_ALLOW_STATIONS_UNDER_BRIDGES_HELPTEXT        :Allow stations to be built under bridges (excluding airports, and rail stations/waypoints where the required bridge clearance is set by the GRF).{}This may result in graphical issues.
+STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES             :Allow NewGRF rail stations/waypoints under bridges: {STRING2}
+STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES_HELPTEXT    :If enabled, NewGRF rail stations/waypoints which do not specify whether they may be built under bridges will be allowed under bridges with no restrictions.{}This may result in graphical issues.
+
+STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES            :Allow road/tram stops under bridges: {STRING2}
+STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT   :Allow road/tram stops under bridges. Drive through stops require 1 height level of clearance, drive in bays require 2 height levels of clearance.
+
+STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES                    :Allow docks under bridges: {STRING2}
+STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES_HELPTEXT           :Allow docks under bridges. Docks require 2 height levels of clearance.{}This may result in graphical issues.
 
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED                      :Permit purchasing land: {STRING2}
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED_HELPTEXT             :Set whether companies are permitted to purchase tiles of land, and in what quantity
