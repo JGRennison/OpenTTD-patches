@@ -435,6 +435,10 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 						break;
 					}
 
+					case STATION_BUOY:
+						/* Buoys are always allowed */
+						break;
+
 					default:
 						if (!_settings_game.construction.allow_stations_under_bridges) {
 							CommandCost ret = DoCommand(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
@@ -541,6 +545,10 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 							}
 							break;
 						}
+
+						case STATION_BUOY:
+							/* Buoys are always allowed */
+							break;
 
 						default:
 							if (!_settings_game.construction.allow_stations_under_bridges) goto not_valid_below;
