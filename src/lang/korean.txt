@@ -1943,6 +1943,15 @@ STR_CONFIG_SETTING_ENABLE_RAIL_CUSTOM_BRIDGE_HEADS_HELPTEXT     :철교의 입 �
 STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES              :모든 NewGRF 오브젝트를 다리 밑에 설치하는 것을 허용: {STRING}
 STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES_HELPTEXT     :NewGRF의 설정과 관계 없이 모든 NewGRF 오브젝트가 다리 밑에 설치될 수 있도록 허용합니다.{}그래픽 오류가 발생할 수 있습니다.
 
+STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES             :다리 밑에 NewGRF로 추가된 역/경유지 건설 허용: {STRING}
+STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES_HELPTEXT    :이 설정을 켜면, 다리 밑에 지을 수 있는지 정해지지 않은 NewGRF 역/경유지를 제약없이 다리 밑에 짓는 것을 허용합니다.{}이 설정으로 인해 그래픽 문제가 발생할 수 있습니다.
+
+STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES            :다리 밑에 도로/전차 정류장 건설 허용: {STRING}
+STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT   :다리 밑에 도로/전차 정류장 건설을 허용합니다. 통과식 정류장은 1칸, 터미널식 정류장은 2칸의 높이가 비어있어야 합니다.
+
+STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES                    :다리 밑에 항구 건설 허용: {STRING}
+STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES_HELPTEXT           :다리 밑에 항구 건설을 허용합니다. 항구는 2칸의 높이가 비어있어야 합니다.{}이 설정으로 인해 그래픽 문제가 발생할 수 있습니다.
+
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED                      :토지 소유권 구매 허용: {STRING}
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED_HELPTEXT             :회사가 토지 소유권을 구매할 수 있을지와 어떤 방식으로 구매할지를 설정합니다.
 
