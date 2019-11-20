@@ -2,6 +2,23 @@
 
 * * *
 
+### v0.32.3 (2019-11-20)
+* Fix loading of savegames which use LZO compression.
+* Fix crash which could occur when attempting to load an unreadable/invalid savegame.
+* Fix crash which could occur when attempting to stop an aircraft which is outside the map.
+* Fix aircraft possibly being routed to the wrong hangar when using the send to hangar button on an aircraft which is outside the map.
+* Fix some trains having zero power on load for some savegame/GRF configurations.
+* Fix the give money input textbox not correctly handling money quanitities greater than 2.1 billion in local currency units.
+* Template-based train replacement: Fix various scaling and alignment issues in the template window.
+* Routing restrictions: Add support for signalled tunnel/bridges to PBS entry signal conditional.
+* Stations under bridges:
+  * Fix use of station GRF defined bridge pillar disallowed flags.
+  * Always allow buoys under bridges.
+  * Add seperate settings for allowing NewGRF rail, road and dock stations under bridges.
+* Fix compilation on MSVC (32 bit).
+* Add Korean translations by TELK.
+* Bump trunk base from commit d5a9bd404a3ca90a18abeeaaaabdbf5185437ba7 to commit ef8455f5498cc01bc60eb1c02902c38bbc332a7a.
+
 ### v0.32.2 (2019-11-06)
 * Fix crash which could occur after removing oil rig.
 * Fix crash which could occur when scanning NewGRF files.
