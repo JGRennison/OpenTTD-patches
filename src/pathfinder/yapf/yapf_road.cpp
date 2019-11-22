@@ -73,7 +73,7 @@ protected:
 		int cost = 0;
 
 		bool predictedOccupied = false;
-		for (int i = 0; i < MAX_TARGETS && Yapf().leaderTargets[i] != 0xFFFF; ++i) {
+		for (int i = 0; i < MAX_TARGETS && Yapf().leaderTargets[i] != INVALID_TILE; ++i) {
 			if (Yapf().leaderTargets[i] != tile) continue;
 			cost += Yapf().PfGetSettings().road_curve_penalty;
 			predictedOccupied = true;
@@ -361,7 +361,7 @@ static Vehicle * FindVehiclesOnTileProc(Vehicle *v, void *_data)
 	TileIndex ti = v->tile + TileOffsByDir(v->direction);
 
 	for (int i = 0; i < MAX_TARGETS; i++) {
-		if ((*data->targets)[i] == 0xFFFF) {
+		if ((*data->targets)[i] == INVALID_TILE) {
 			(*data->targets)[i] = ti;
 			break;
 		}
@@ -437,13 +437,12 @@ public:
 		Yapf().SetDestination(v);
 		
 		for (int i = 0; i < MAX_TARGETS; ++i) {
-			Yapf().leaderTargets[i] = 0xFFFF;
+			Yapf().leaderTargets[i] = INVALID_TILE;
 		}
 		FindVehiclesOnTileProcData data;
 		data.originVehicle = v;
 		data.targets = &Yapf().leaderTargets;
-		TileIndex ti = v->tile + TileOffsByDir(v->direction);
-		FindVehicleOnPos(ti, &data, &FindVehiclesOnTileProc);
+		FindVehicleOnPos(tile, &data, &FindVehiclesOnTileProc);
 
 		/* find the best path */
 		path_found = Yapf().FindPath(v);
