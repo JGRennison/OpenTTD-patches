@@ -729,7 +729,7 @@ enum WindowClass {
 	WC_TRACE_RESTRICT_SLOTS,
 
 	/**
-	 * Programmable signals window
+	 * Programmable pre-signals window
 	 */
 	WC_SIGNAL_PROGRAM,
 

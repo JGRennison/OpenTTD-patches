@@ -1354,8 +1354,8 @@ STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF                      :Show restricted
 STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF_HELPTEXT             :Show electric signals with routing restriction programs using the default signal graphics with a blue signal post, instead of using any NewGRF signal graphics. This is to make it easier to visually distinguish restricted signals.
 STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :Show advanced routing restriction features: {STRING2}
 STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :Show advanced routing restriction features. When disabled, some advanced features are not shown in the UI, but are still available to all players.
-STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES                        :Show programmable signal feature: {STRING2}
-STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :Show programmable signal feature. When disabled, the buttons to build and configure programmable signals are not shown in the UI, but are still available to all players.
+STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES                        :Show programmable pre-signal feature: {STRING2}
+STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :Show programmable pre-signal feature. When disabled, the buttons to build and configure programmable pre-signals are not shown in the UI, but are still available to all players.
 STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER                   :Show cargo type filter in vehicle lists: {STRING2}
 STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER_HELPTEXT          :Show cargo type filter in vehicle lists. When enabled vehicle list windows include an additional filter dropdown.
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES               :Show advanced loading mode features: {STRING2}
@@ -1374,8 +1374,8 @@ STR_CONFIG_SETTING_LANDSCAPE                                    :Landscape: {STR
 STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :Landscapes define basic gameplay scenarios with different cargos and town growth requirements. NewGRF and Game Scripts allow finer control though
 STR_CONFIG_SETTING_LAND_GENERATOR                               :Land generator: {STRING2}
 STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :The original generator depends on the base graphics set, and composes fixed landscape shapes. TerraGenesis is a Perlin noise based generator with finer control settings
-STR_CONFIG_SETTING_MAX_SIGNAL_EVALUATIONS                       :Maximum number of programmable signal changes permitted at once: {STRING2}
-STR_CONFIG_SETTING_MAX_SIGNAL_EVALUATIONS_HELPTEXT              :Sets the maximum number of programmable signal changes permitted at once
+STR_CONFIG_SETTING_MAX_SIGNAL_EVALUATIONS                       :Maximum number of programmable pre-signal changes permitted at once: {STRING2}
+STR_CONFIG_SETTING_MAX_SIGNAL_EVALUATIONS_HELPTEXT              :Sets the maximum number of programmable pre-signal changes permitted at once
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :Original
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
 STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Terrain type: {STRING2}
@@ -2635,14 +2635,14 @@ STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Block Si
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Entry Signal (semaphore){}Green as long as there is one or more green exit-signal from the following section of track. Otherwise it shows red
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Exit Signal (semaphore){}Behaves in the same way as a block signal but is necessary to trigger the correct colour on entry & combo pre-signals
 STR_BUILD_SIGNAL_SEMAPHORE_COMBO_TOOLTIP                        :{BLACK}Combo Signal (semaphore){}The combo signal simply acts as both an entry and exit signal. This allows you to build large "trees" of pre-signals
-STR_BUILD_SIGNAL_SEMAPHORE_PROG_TOOLTIP                         :{BLACK}Programmable-Signal (semaphore){}The programmable signal is a combo-signal which can be programmed to behave in complex ways.
+STR_BUILD_SIGNAL_SEMAPHORE_PROG_TOOLTIP                         :{BLACK}Programmable Pre-Signal (semaphore){}The programmable pre-signal is a combo-signal which can be programmed to behave in complex ways.
 STR_BUILD_SIGNAL_SEMAPHORE_PBS_TOOLTIP                          :{BLACK}Path Signal (semaphore){}A path signal allows more than one train to enter a signal block at the same time, if the train can reserve a path to a safe stopping point. Standard path signals can be passed from the back side
 STR_BUILD_SIGNAL_SEMAPHORE_PBS_OWAY_TOOLTIP                     :{BLACK}One-way Path Signal (semaphore){}A path signal allows more than one train to enter a signal block at the same time, if the train can reserve a path to a safe stopping point. One-way path signals can't be passed from the back side
 STR_BUILD_SIGNAL_ELECTRIC_NORM_TOOLTIP                          :{BLACK}Block Signal (electric){}This is the most basic type of signal, allowing only one train to be in the same block at the same time
 STR_BUILD_SIGNAL_ELECTRIC_ENTRY_TOOLTIP                         :{BLACK}Entry Signal (electric){}Green as long as there is one or more green exit-signal from the following section of track. Otherwise it shows red
 STR_BUILD_SIGNAL_ELECTRIC_EXIT_TOOLTIP                          :{BLACK}Exit Signal (electric){}Behaves in the same way as a block signal but is necessary to trigger the correct colour on entry & combo pre-signals
 STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP                         :{BLACK}Combo Signal (electric){}The combo signal simply acts as both an entry and exit signal. This allows you to build large "trees" of pre-signals
-STR_BUILD_SIGNAL_ELECTRIC_PROG_TOOLTIP                          :{BLACK}Programmable-Signal (electric){}The programmable signal is a combo-signal which can be programmed to behave in complex ways.
+STR_BUILD_SIGNAL_ELECTRIC_PROG_TOOLTIP                          :{BLACK}Programmable Pre-Signal (electric){}The programmable pre-signal is a combo-signal which can be programmed to behave in complex ways.
 STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP                           :{BLACK}Path Signal (electric){}A path signal allows more than one train to enter a signal block at the same time, if the train can reserve a path to a safe stopping point. Standard path signals can be passed from the back side
 STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP                      :{BLACK}One-way Path Signal (electric){}A path signal allows more than one train to enter a signal block at the same time, if the train can reserve a path to a safe stopping point. One-way path signals can't be passed from the back side
 STR_BUILD_SIGNAL_CONVERT_TOOLTIP                                :{BLACK}Signal Convert{}When selected, clicking an existing signal will convert it to the selected signal type and variant. Ctrl+Click will toggle the existing variant. Shift+Click shows estimated conversion cost
@@ -2847,19 +2847,19 @@ STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_ADD_VEHICLE                 :{WHITE}Can't ad
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE              :{WHITE}Can't remove the vehicle from this slot...
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY           :{WHITE}Can't set maximum occupancy of this slot...
 
-# Programmable Signals
-STR_PROGRAM_SIGNAL_TOOLTIP                                      :{BLACK}Program signal
+# Programmable Pre-Signals
+STR_PROGRAM_SIGNAL_TOOLTIP                                      :{BLACK}Program pre-signal
 
 STR_ERR_PROGSIG_INVALID_INSTRUCTION                             :{WHITE}Cannot insert instruction after instruction with invalid ID
 STR_ERR_PROGSIG_INVALID_OPCODE                                  :{WHITE}Cannot insert an instruction of that opcode
-STR_ERR_PROGSIG_NOT_THERE                                       :{WHITE}There is no programmable signal there
+STR_ERR_PROGSIG_NOT_THERE                                       :{WHITE}There is no programmable pre-signal there
 STR_ERR_PROGSIG_INVALID_SIGNAL_STATE                            :{WHITE}That signal state is invalid
 STR_ERR_PROGSIG_INVALID_CONDITION                               :{WHITE}That condition is invalid
 STR_ERR_PROGSIG_INVALID_CONDITION_FIELD                         :{WHITE}That field is not valid for the condition
 STR_ERR_PROGSIG_INVALID_COMPARATOR                              :{WHITE}That comparator is not valid
 STR_ERR_PROGSIG_INVALID_SIGNAL                                  :{WHITE}Invalid signal selected
 
-STR_PROGSIG_CAPTION                                             :{WHITE}Signal Program
+STR_PROGSIG_CAPTION                                             :{WHITE}Programmable Pre-Signal Program
 STR_PROGSIG_COND_VARIABLE_TOOLTIP                               :{BLACK}Condition to compare upon
 STR_PROGSIG_COND_COMPARATOR_TOOLTIP                             :{BLACK}Operator to use to compare variable
 STR_PROGSIG_COND_VALUE_TOOLTIP                                  :{BLACK}Value to compare variable against
@@ -2905,7 +2905,7 @@ STR_ERROR_CAN_T_MODIFY_INSTRUCTION                              :{WHITE}Can't mo
 STR_ERROR_CAN_T_REMOVE_INSTRUCTION                              :{WHITE}Can't remove instruction
 STR_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                           :{WHITE}Can't go to undefined signal
 STR_ERROR_NOT_AN_EXIT_SIGNAL                                    :{WHITE}Not an exit signal
-STR_ERROR_NOT_AN_PROG_SIGNAL                                    :{WHITE}Not an programmable signal
+STR_ERROR_NOT_AN_PROG_SIGNAL                                    :{WHITE}Not a programmable pre-signal
 STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}Can't copy program from myself
 STR_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS               :{WHITE}Cannot conditionally depend upon bidirectional signals
 STR_ERROR_INVALID_SIGNAL                                        :{WHITE}Invalid signal
@@ -3188,30 +3188,30 @@ STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Railway track w
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Railway track with pre-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Railway track with exit-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Railway track with combo-signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PROGSIGNALS                 :Railway track with programmable signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PROGSIGNALS                 :Railway track with programmable pre-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Railway track with path signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Railway track with one-way path signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Railway track with block and pre-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Railway track with block and exit-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Railway track with block and combo-signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PROGSIGNALS          :Railway track with block and programmable signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PROGSIGNALS          :Railway track with block and programmable pre-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Railway track with block and path signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Railway track with block and one-way path signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Railway track with pre- and exit-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Railway track with pre- and combo-signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PROGSIGNALS             :Railway track with pre- and programmable signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PROGSIGNALS             :Railway track with pre- and programmable pre-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Railway track with pre- and path signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Railway track with pre- and one-way path signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Railway track with exit- and combo-signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PROGSIGNALS            :Railway track with exit- and programmable signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PROGSIGNALS            :Railway track with exit- and programmable pre-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Railway track with exit- and path signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Railway track with exit- and one-way path signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PROGSIGNALS           :Railway track with combo- and programmable signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PROGSIGNALS           :Railway track with combo- and programmable pre-signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Railway track with combo- and path signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Railway track with combo- and one-way path signals
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Railway track with path and one-way path signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_PROGSIGNALS             :Railway track with path and programmable signals
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRY_PROGSIGNALS         :Railway track with one-way path and programmable signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_PROGSIGNALS             :Railway track with path and programmable pre-signals
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRY_PROGSIGNALS         :Railway track with one-way path and programmable pre-signals
 STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Railway train depot
 
 STR_LAI_RAIL_DESCRIPTION_RESTRICTED_SIGNAL                      :{STRING} (restricted)
@@ -5348,7 +5348,7 @@ STR_ERROR_THERE_ARE_NO_SIGNALS                                  :{WHITE}... ther
 
 STR_ERROR_CAN_T_CONVERT_RAIL                                    :{WHITE}Can't convert rail type here...
 
-STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}Number of programmable signal evaluations exceeded limit
+STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}Number of programmable pre-signal evaluations exceeded limit
 
 # Road construction errors
 STR_ERROR_MUST_REMOVE_ROAD_FIRST                                :{WHITE}Must remove road first

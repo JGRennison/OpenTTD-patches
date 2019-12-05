@@ -184,7 +184,7 @@ static void LoadSpriteTables()
 	_progsig_grf_file_index = i;
 	LoadGrfFile("progsignals.grf", SPR_PROGSIGNAL_BASE, i++);
 
-	/* Fill duplicate programmable signal graphics sprite block */
+	/* Fill duplicate programmable pre-signal graphics sprite block */
 	for (uint i = 0; i < PROGSIGNAL_SPRITE_COUNT; i++) {
 		DupSprite(SPR_PROGSIGNAL_BASE + i, SPR_DUP_PROGSIGNAL_BASE + i);
 	}

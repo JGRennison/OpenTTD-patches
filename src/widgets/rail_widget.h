@@ -81,14 +81,14 @@ enum BuildSignalWidgets {
 	WID_BS_SEMAPHORE_ENTRY,    ///< Build a semaphore entry block signal
 	WID_BS_SEMAPHORE_EXIT,     ///< Build a semaphore exit block signal
 	WID_BS_SEMAPHORE_COMBO,    ///< Build a semaphore combo block signal
-	WID_BS_SEMAPHORE_PROG,     ///< Build a semahore programmable signal
+	WID_BS_SEMAPHORE_PROG,     ///< Build a semahore programmable pre-signal
 	WID_BS_SEMAPHORE_PBS,      ///< Build a semaphore path signal.
 	WID_BS_SEMAPHORE_PBS_OWAY, ///< Build a semaphore one way path signal.
 	WID_BS_ELECTRIC_NORM,      ///< Build an electric normal block signal
 	WID_BS_ELECTRIC_ENTRY,     ///< Build an electric entry block signal
 	WID_BS_ELECTRIC_EXIT,      ///< Build an electric exit block signal
 	WID_BS_ELECTRIC_COMBO,     ///< Build an electric combo block signal
-	WID_BS_ELECTRIC_PROG,      ///< Build an electric programmable signal
+	WID_BS_ELECTRIC_PROG,      ///< Build an electric programmable pre-signal
 	WID_BS_ELECTRIC_PBS,       ///< Build an electric path signal.
 	WID_BS_ELECTRIC_PBS_OWAY,  ///< Build an electric one way path signal.
 	WID_BS_CONVERT,            ///< Convert the signal.

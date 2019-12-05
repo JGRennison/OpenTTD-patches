@@ -200,7 +200,7 @@ static SmallSet<Trackdir, SIG_TBU_SIZE> _tbuset("_tbuset");         ///< set of 
 static SmallSet<DiagDirection, SIG_TBD_SIZE> _tbdset("_tbdset");    ///< set of open nodes in current signal block
 static SmallSet<DiagDirection, SIG_GLOB_SIZE> _globset("_globset"); ///< set of places to be updated in following runs
 
-static uint _num_signals_evaluated; ///< Number of programmable signals evaluated
+static uint _num_signals_evaluated; ///< Number of programmable pre-signals evaluated
 
 /** Check whether there is a train on rail, not in a depot */
 static Vehicle *TrainOnTileEnum(Vehicle *v, void *)

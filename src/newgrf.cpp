@@ -8445,7 +8445,7 @@ static const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 
 /** Action14 Action5 remappable type list */
 static const Action5TypeRemapDefinition _grf_action5_remappable_types[] = {
-	Action5TypeRemapDefinition("programmable_signals", A5BLOCK_ALLOW_OFFSET, SPR_PROGSIGNAL_BASE, 1, 32, "Programmable signal graphics"),
+	Action5TypeRemapDefinition("programmable_signals", A5BLOCK_ALLOW_OFFSET, SPR_PROGSIGNAL_BASE, 1, 32, "Programmable pre-signal graphics"),
 	Action5TypeRemapDefinition(),
 };
 

@@ -253,12 +253,12 @@ static void GenericPlaceSignals(TileIndex tile)
 
 	if (_program_signal_button) {
 		if (IsPlainRailTile(tile) && HasTrack(tile, track) && HasSignalOnTrack(tile,track) && IsPresignalProgrammable(tile, track)) {
-			// Show program gui if there is a programmable signal
+			// Show program gui if there is a programmable pre-signal
 			ShowSignalProgramWindow(SignalReference(tile, track));
 			return;
 		}
 
-		// Don't display error here even though program-button is pressed and there is no programmable signal,
+		// Don't display error here even though program-button is pressed and there is no programmable pre-signal,
 		// instead just handle it normally. That way player can keep the program-button pressed all the time
 		// to build slightly faster.
 	}
@@ -1608,7 +1608,7 @@ struct BuildSignalWindow : public PickerWindowBase {
 private:
 	Dimension sig_sprite_size;     ///< Maximum size of signal GUI sprites.
 	int sig_sprite_bottom_offset;  ///< Maximum extent of signal GUI sprite from reference point towards bottom.
-	bool progsig_ui_shown;         ///< Whether programmable signal UI is shown
+	bool progsig_ui_shown;         ///< Whether programmable pre-signal UI is shown
 
 	/**
 	 * Draw dynamic a signal-sprite in a button in the signal GUI

@@ -2716,7 +2716,7 @@ STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_ADD_VEHICLE                 :{WHITE}Kann das
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE              :{WHITE}Kann das Fahrzeug nicht aus diesem Slot entfernen...
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY           :{WHITE}Kann die maximale Auslastung dieses Slots nicht setzen...
 
-# Programmable Signals
+# Programmable Pre-Signals
 STR_PROGRAM_SIGNAL_TOOLTIP                                      :{BLACK}Programmierbares Signal
 
 STR_ERR_PROGSIG_INVALID_INSTRUCTION                             :{WHITE}Kann Anweisung nicht nach einer Anweisung mit einer ungültigen ID einfügen

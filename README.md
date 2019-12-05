@@ -27,7 +27,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   As of v0.11.0 this includes the Long Reserve feature from [here](http://www.tt-forums.net/viewtopic.php?f=33&t=74365).  
   A version of this feature rebased onto [Cirdan's new map features branch](http://repo.or.cz/w/openttd/fttd.git) is in the *tracerestrict-cirdan* branch, see [this thread](http://www.tt-forums.net/viewtopic.php?f=33&t=58420)
 
-* Programmable signals: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=47690)  
+* Programmable pre-signals: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=47690)  
   This includes additions to the patch from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892)  
   These are not shown in the build signal window by default.
 

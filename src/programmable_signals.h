@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file programmable_signals.h Programmable Signals */
+/** @file programmable_signals.h Programmable Pre-Signals */
 
 #ifndef PROGRAMMABLE_SIGNALS_H
 #define PROGRAMMABLE_SIGNALS_H
@@ -13,10 +13,10 @@
 #include "core/smallvec_type.hpp"
 #include <map>
 
-/** @defgroup progsigs Programmable Signals */
+/** @defgroup progsigs Programmable Pre-Signals */
 ///@{
 
-/** The Programmable Signal virtual machine.
+/** The Programmable Pre-Signal virtual machine.
  *
  * This structure contains the state of the currently executing signal program.
  */
@@ -31,7 +31,7 @@ enum SignalProgramMgmtCode {
 	SPMC_CLONE,       ///< Clone program
 };
 
-/** The actual programmable signal information */
+/** The actual programmable pre-signal information */
 struct SignalProgram {
 	SignalProgram(TileIndex tile, Track track, bool raw = false);
 	~SignalProgram();
@@ -45,7 +45,7 @@ struct SignalProgram {
 	InstructionList instructions;
 };
 
-/** Programmable Signal opcode.
+/** Programmable Pre-Signal opcode.
  *
  * Opcode types are discriminated by this enumeration. It is primarily used for
  * code which must be able to inspect the type of a signal operation, rather than
@@ -118,7 +118,7 @@ protected:
 	SignalProgram *program;
 };
 
-/** Programmable Signal condition code.
+/** Programmable Pre-Signal condition code.
  *
  * These discriminate conditions in much the same way that SignalOpcode
  * discriminates instructions.
@@ -270,7 +270,7 @@ public:
 };
 
 /** If signal instruction. This is perhaps the most important, as without it,
- *  programmable signals are pretty useless.
+ *  programmable pre-signals are pretty useless.
  *
  * It's also the most complex!
  */

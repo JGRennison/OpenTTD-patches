@@ -102,7 +102,7 @@ static void Save_SPRG()
 			i != e; ++i) {
 		SignalReference ref = i->first;
 		if(!HasProgrammableSignals(ref)) {
-			DEBUG(sl, 0, "Programmable signal information for (%x, %d) has been leaked!",
+			DEBUG(sl, 0, "Programmable pre-signal information for (%x, %d) has been leaked!",
 						ref.tile, ref.track);
 			++i;
 			FreeSignalProgram(ref);

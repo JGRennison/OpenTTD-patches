@@ -71,7 +71,7 @@ static inline bool IsPbsSignal(SignalType type)
 	return type == SIGTYPE_PBS || type == SIGTYPE_PBS_ONEWAY;
 }
 
-/// Is this a programmable signal?
+/// Is this a programmable pre-signal?
 static inline bool IsProgrammableSignal(SignalType type)
 {
 	return type == SIGTYPE_PROG;

@@ -2847,7 +2847,7 @@ STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_ADD_VEHICLE                 :{WHITE}차량�
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE              :{WHITE}차량을 이 슬롯에서 제거할 수 없습니다...
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY           :{WHITE}이 슬롯의 최대 수용량을 설정할 수 없습니다...
 
-# Programmable Signals
+# Programmable Pre-Signals
 STR_PROGRAM_SIGNAL_TOOLTIP                                      :{BLACK}프로그램 신호기 설정
 
 STR_ERR_PROGSIG_INVALID_INSTRUCTION                             :{WHITE}유효하지 않은 ID로 구문 뒤에 구문을 삽입할 수 없음

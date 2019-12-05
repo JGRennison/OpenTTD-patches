@@ -182,7 +182,7 @@ struct GUISettings {
 	bool   show_vehicle_group_in_details;    ///< show vehicle group in vehicle details window top widget
 	bool   show_restricted_signal_default;   ///< Show restricted electric signals using the default sprite
 	bool   show_adv_tracerestrict_features;  ///< Show advanced trace restrict features in UI
-	bool   show_progsig_ui;                  ///< Show programmable signals feature in UI
+	bool   show_progsig_ui;                  ///< Show programmable pre-signals feature in UI
 	bool   show_veh_list_cargo_filter;       ///< Show cargo list filter in UI
 	uint8  osk_activation;                   ///< Mouse gesture to trigger the OSK.
 	byte   starting_colour;                  ///< default color scheme for the company to start a new game with
@@ -368,7 +368,7 @@ struct ConstructionSettings {
 	uint8  trees_around_snow_line_range;     ///< range around snowline for mixed and arctic forest.
 	bool   trees_around_snow_line_enabled;   ///< enable mixed and arctic forest around snowline, and no trees above snowline
 	uint8  command_pause_level;              ///< level/amount of commands that can't be executed while paused
-	uint16 maximum_signal_evaluations;       ///< maximum number of programmable signals which may be evaluated in one pass
+	uint16 maximum_signal_evaluations;       ///< maximum number of programmable pre-signals which may be evaluated in one pass
 	byte   simulated_wormhole_signals;       ///< simulate signals in tunnel
 	bool   enable_build_river;               ///< enable building rivers in-game
 	bool   enable_remove_water;              ///< enable removing sea and rivers in-game

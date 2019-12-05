@@ -7,7 +7,7 @@
 
 /** @file tracerestrict_gui.cpp GUI code for Trace Restrict
  *
- * This is largely based on the programmable signals patch's GUI
+ * This is largely based on the programmable pre-signals patch's GUI
  * */
 
 #include "stdafx.h"

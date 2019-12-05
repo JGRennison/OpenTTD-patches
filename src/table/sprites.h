@@ -309,7 +309,7 @@ static const uint16 EMPTY_BOUNDING_BOX_SPRITE_COUNT = 1;
 static const SpriteID SPR_PALETTE_BASE = SPR_EMPTY_BOUNDING_BOX + EMPTY_BOUNDING_BOX_SPRITE_COUNT;
 static const uint16 PALETTE_SPRITE_COUNT = 1;
 
-/* Programmable signal sprites */
+/* Programmable pre-signal sprites */
 static const SpriteID SPR_PROGSIGNAL_BASE = SPR_PALETTE_BASE + PALETTE_SPRITE_COUNT;
 static const uint16 PROGSIGNAL_SPRITE_COUNT = 32;
 static const SpriteID SPR_DUP_PROGSIGNAL_BASE = SPR_PROGSIGNAL_BASE + PROGSIGNAL_SPRITE_COUNT;

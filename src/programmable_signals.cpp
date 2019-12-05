@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file programmable_signals.cpp Programmable Signals */
+/** @file programmable_signals.cpp Programmable Pre-Signals */
 
 #include "stdafx.h"
 #include "programmable_signals.h"
@@ -51,7 +51,7 @@ struct SignalVM {
 
 	void Execute()
 	{
-		DEBUG(misc, 6, "Begining execution of programmable signal on tile %x, track %d",
+		DEBUG(misc, 6, "Begining execution of programmable pre-signal on tile %x, track %d",
 					this->program->tile, this->program->track);
 		do {
 			DEBUG(misc, 10, "  Executing instruction %d, opcode %d", this->instruction->Id(), this->instruction->Opcode());
