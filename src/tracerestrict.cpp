@@ -635,6 +635,12 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						}
 						break;
 
+					case TRIT_SPEED_RESTRICTION: {
+						out.speed_restriction = GetTraceRestrictValue(item);
+						out.flags |= TRPRF_SPEED_RETRICTION_SET;
+						break;
+					}
+
 					default:
 						NOT_REACHED();
 				}
@@ -802,6 +808,10 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 
 				case TRIT_REVERSE:
 					actions_used_flags |= TRPAUF_REVERSE;
+					break;
+
+				case TRIT_SPEED_RESTRICTION:
+					actions_used_flags |= TRPAUF_SPEED_RESTRICTION;
 					break;
 
 				default:

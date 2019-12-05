@@ -796,6 +796,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		 SLE_CONDVAR(Train, gv_flags,            SLE_UINT16,                 SLV_139, SL_MAX_VERSION),
 		SLE_CONDNULL(11, SLV_2, SLV_144), // old reserved space
 		SLE_CONDVAR_X(Train, reverse_distance,    SLE_UINT16,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REVERSE_AT_WAYPOINT)),
+		SLE_CONDVAR_X(Train, speed_restriction,   SLE_UINT16,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPEED_RESTRICTION)),
 		SLE_CONDVAR_X(Train, critical_breakdown_count, SLE_UINT8,     SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_IMPROVED_BREAKDOWNS, 2)),
 
 		     SLE_END()
@@ -1076,7 +1077,46 @@ void Load_VEOX()
 	}
 }
 
+const SaveLoad *GetVehicleSpeedRestrictionDescription()
+{
+	static const SaveLoad _vehicle_speed_restriction_desc[] = {
+		     SLE_VAR(PendingSpeedRestrictionChange, distance,                 SLE_UINT16),
+		     SLE_VAR(PendingSpeedRestrictionChange, new_speed,                SLE_UINT16),
+		     SLE_VAR(PendingSpeedRestrictionChange, prev_speed,               SLE_UINT16),
+		     SLE_VAR(PendingSpeedRestrictionChange, flags,                    SLE_UINT16),
+		SLE_END()
+	};
+
+	return _vehicle_speed_restriction_desc;
+}
+
+void Save_VESR()
+{
+	Train *t;
+	FOR_ALL_TRAINS(t) {
+		if (HasBit(t->flags, VRF_PENDING_SPEED_RESTRICTION)) {
+			auto range = pending_speed_restriction_change_map.equal_range(t->index);
+			for (auto it = range.first; it != range.second; ++it) {
+				SlSetArrayIndex(t->index);
+				PendingSpeedRestrictionChange *ptr = &(it->second);
+				SlObject(ptr, GetVehicleSpeedRestrictionDescription());
+			}
+		}
+	}
+}
+
+void Load_VESR()
+{
+	int index;
+	while ((index = SlIterateArray()) != -1) {
+		auto iter = pending_speed_restriction_change_map.insert({ index, {} });
+		PendingSpeedRestrictionChange *ptr = &(iter->second);
+		SlObject(ptr, GetVehicleSpeedRestrictionDescription());
+	}
+}
+
 extern const ChunkHandler _veh_chunk_handlers[] = {
 	{ 'VEHS', Save_VEHS, Load_VEHS, Ptrs_VEHS, nullptr, CH_SPARSE_ARRAY},
-	{ 'VEOX', Save_VEOX, Load_VEOX, nullptr,      nullptr, CH_SPARSE_ARRAY | CH_LAST},
+	{ 'VEOX', Save_VEOX, Load_VEOX, nullptr,   nullptr, CH_SPARSE_ARRAY},
+	{ 'VESR', Save_VESR, Load_VESR, nullptr,   nullptr, CH_SPARSE_ARRAY | CH_LAST},
 };

@@ -3357,6 +3357,13 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_SPEED_RESTRICTION)) {
+		Train *t;
+		FOR_ALL_TRAINS(t) {
+			t->speed_restriction = 0;
+		}
+	}
+
 	/*
 	 * Only keep order-backups for network clients (and when replaying).
 	 * If we are a network server or not networking, then we just loaded a previously

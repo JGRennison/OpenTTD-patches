@@ -142,6 +142,7 @@ enum TraceRestrictItemType {
 
 	TRIT_COND_END                 = 48,   ///< End (exclusive) of conditional item types, note that this has the same value as TRIT_REVERSE
 	TRIT_REVERSE                  = 48,   ///< Reverse behind signal
+	TRIT_SPEED_RESTRICTION        = 49,   ///< Speed restriction
 
 	/* space up to 63 */
 };
@@ -308,6 +309,7 @@ enum TraceRestrictProgramResultFlags {
 	TRPRF_WAIT_AT_PBS             = 1 << 3,  ///< Wait at PBS signal is set
 	TRPRF_PBS_RES_END_WAIT        = 1 << 4,  ///< PBS reservations ending at this signal wait is set
 	TRPRF_REVERSE                 = 1 << 5,  ///< Reverse behind signal
+	TRPRF_SPEED_RETRICTION_SET    = 1 << 6,  ///< Speed restriction field set
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramResultFlags)
 
@@ -325,11 +327,12 @@ enum TraceRestrictProgramActionsUsedFlags {
 	TRPAUF_PBS_RES_END_WAIT       = 1 << 7,  ///< PBS reservations ending at this signal wait action is present
 	TRPAUF_PBS_RES_END_SLOT       = 1 << 8,  ///< PBS reservations ending at this signal slot action is present
 	TRPAUF_REVERSE                = 1 << 9,  ///< Reverse behind signal
+	TRPAUF_SPEED_RESTRICTION      = 1 << 10, ///< Speed restriction
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
 
 /**
- * Enumeration for TraceRestrictProgram::actions_used_flags
+ * Enumeration for TraceRestrictProgramInput::permitted_slot_operations
  */
 enum TraceRestrictProgramInputSlotPermissions {
 	TRPISP_ACQUIRE                = 1 << 0,  ///< Slot acquire is permitted
@@ -364,6 +367,7 @@ struct TraceRestrictProgramInput {
 struct TraceRestrictProgramResult {
 	uint32 penalty;                          ///< Total additional pathfinder penalty
 	TraceRestrictProgramResultFlags flags;   ///< Flags of other actions to take
+	uint16 speed_restriction;                ///> Speed restriction to apply (if TRPRF_SPEED_RETRICTION_SET flag present)
 
 	TraceRestrictProgramResult()
 			: penalty(0), flags(static_cast<TraceRestrictProgramResultFlags>(0)) { }
@@ -703,6 +707,8 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 			out.value_type = TRVT_SLOT_INDEX;
 		} else if (GetTraceRestrictType(item) == TRIT_REVERSE) {
 			out.value_type = TRVT_REVERSE;
+		} else if (GetTraceRestrictType(item) == TRIT_SPEED_RESTRICTION) {
+			out.value_type = TRVT_SPEED;
 		} else {
 			out.value_type = TRVT_NONE;
 		}

@@ -103,6 +103,8 @@ INSTANTIATE_POOL_METHODS(Vehicle)
 static btree::btree_set<VehicleID> _vehicles_to_pay_repair;
 static btree::btree_set<VehicleID> _vehicles_to_sell;
 
+std::unordered_multimap<VehicleID, PendingSpeedRestrictionChange> pending_speed_restriction_change_map;
+
 /**
  * Determine shared bounds of all sprites.
  * @param[out] bounds Shared bounds.
@@ -985,6 +987,10 @@ void Vehicle::PreDestructor()
 		TraceRestrictRemoveVehicleFromAllSlots(this->index);
 		ClrBit(Train::From(this)->flags, VRF_HAVE_SLOT);
 	}
+	if (this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_PENDING_SPEED_RESTRICTION)) {
+		pending_speed_restriction_change_map.erase(this->index);
+		ClrBit(Train::From(this)->flags, VRF_PENDING_SPEED_RESTRICTION);
+	}
 
 	if (this->Previous() == nullptr) {
 		InvalidateWindowData(WC_VEHICLE_DEPOT, this->tile);
@@ -1047,6 +1053,14 @@ Vehicle::~Vehicle()
 	UpdateVehicleViewportHash(this, INVALID_COORD, 0);
 	DeleteVehicleNews(this->index, INVALID_STRING_ID);
 	DeleteNewGRFInspectWindow(GetGrfSpecFeature(this->type), this->index);
+}
+
+/**
+ * Vehicle pool is about to be cleaned
+ */
+void Vehicle::PreCleanPool()
+{
+	pending_speed_restriction_change_map.clear();
 }
 
 /**

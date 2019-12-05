@@ -25,6 +25,7 @@
 #include "network/network.h"
 #include <list>
 #include <map>
+#include <unordered_map>
 
 CommandCost CmdRefitVehicle(TileIndex, DoCommandFlag, uint32, uint32, const char*);
 
@@ -202,6 +203,18 @@ struct VehicleSpriteSeq {
 	void Draw(int x, int y, PaletteID default_pal, bool force_pal) const;
 };
 
+enum PendingSpeedRestrictionChangeFlags {
+	PSRCF_DIAGONAL                    = 0,
+};
+
+struct PendingSpeedRestrictionChange {
+	uint16 distance;
+	uint16 new_speed;
+	uint16 prev_speed;
+	uint16 flags;
+};
+extern std::unordered_multimap<VehicleID, PendingSpeedRestrictionChange> pending_speed_restriction_change_map;
+
 /** A vehicle pool for a little over 1 million vehicles. */
 typedef Pool<Vehicle, VehicleID, 512, 0xFF000> VehiclePool;
 extern VehiclePool _vehicle_pool;
@@ -236,6 +249,8 @@ public:
 	friend void FixOldVehicles();
 	friend void AfterLoadVehicles(bool part_of_load);             ///< So we can set the #previous and #first pointers while loading
 	friend bool LoadOldVehicle(LoadgameState *ls, int num);       ///< So we can set the proper next pointer while loading
+
+	static void PreCleanPool();
 
 	TileIndex tile;                     ///< Current tile index
 

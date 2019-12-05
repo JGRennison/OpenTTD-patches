@@ -617,6 +617,9 @@ int Train::GetCurrentMaxSpeed() const
 	if (HasBit(this->flags, VRF_BREAKDOWN_SPEED)) {
 		max_speed = min(max_speed, this->GetBreakdownSpeed());
 	}
+	if (this->speed_restriction != 0) {
+		max_speed = min(max_speed, this->speed_restriction);
+	}
 
 	if (this->current_order.IsType(OT_LOADING_ADVANCE)) max_speed = min(max_speed, 15);
 
@@ -824,6 +827,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 		v->track = TRACK_BIT_DEPOT;
 		v->vehstatus = VS_HIDDEN | VS_DEFPAL;
 		v->reverse_distance = 0;
+		v->speed_restriction = 0;
 
 		v->SetWagon();
 
@@ -969,6 +973,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 		v->last_station_visited = INVALID_STATION;
 		v->last_loading_station = INVALID_STATION;
 		v->reverse_distance = 0;
+		v->speed_restriction = 0;
 
 		v->engine_type = e->index;
 		v->gcache.first_engine = INVALID_ENGINE; // needs to be set before first callback
@@ -1668,6 +1673,7 @@ CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, uint16 data, uint3
 
 			/* Copy other important data from the front engine */
 			new_head->CopyVehicleConfigAndStatistics(first);
+			new_head->speed_restriction = first->speed_restriction;
 			GroupStatistics::CountVehicle(new_head, 1); // after copying over the profit
 		} else if (v->IsPrimaryVehicle() && data & (MAKE_ORDER_BACKUP_FLAG >> 20)) {
 			OrderBackup::Backup(v, user);
@@ -2266,6 +2272,20 @@ void ReverseTrainDirection(Train *v)
 
 	for (uint i = 0; i < re_reserve_trains.size(); ++i) {
 		TryPathReserve(re_reserve_trains[i], true);
+	}
+
+	if (HasBit(v->flags, VRF_PENDING_SPEED_RESTRICTION)) {
+		auto range = pending_speed_restriction_change_map.equal_range(v->index);
+		for (auto it = range.first; it != range.second;) {
+			it->second.distance = (v->gcache.cached_total_length + (HasBit(it->second.flags, PSRCF_DIAGONAL) ? 8 : 4)) - it->second.distance;
+			if (it->second.distance == 0) {
+				v->speed_restriction = it->second.prev_speed;
+				it = pending_speed_restriction_change_map.erase(it);
+			} else {
+				std::swap(it->second.prev_speed, it->second.new_speed);
+				++it;
+			}
+		}
 	}
 
 	/* If we are inside a depot after reversing, don't bother with path reserving. */
@@ -4099,7 +4119,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 							const Trackdir dir = FindFirstTrackdir(trackdirbits);
 							if (HasSignalOnTrack(gp.new_tile, TrackdirToTrack(dir))) {
 								const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(gp.new_tile, TrackdirToTrack(dir));
-								if (prog && prog->actions_used_flags & (TRPAUF_SLOT_ACQUIRE | TRPAUF_SLOT_RELEASE_FRONT | TRPAUF_REVERSE)) {
+								if (prog && prog->actions_used_flags & (TRPAUF_SLOT_ACQUIRE | TRPAUF_SLOT_RELEASE_FRONT | TRPAUF_REVERSE | TRPAUF_SPEED_RESTRICTION)) {
 									TraceRestrictProgramResult out;
 									TraceRestrictProgramInput input(gp.new_tile, dir, nullptr, nullptr);
 									input.permitted_slot_operations = TRPISP_ACQUIRE | TRPISP_RELEASE_FRONT;
@@ -4108,6 +4128,17 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 											!HasSignalOnTrackdir(gp.new_tile, dir)) {
 										v->reverse_distance = v->gcache.cached_total_length + (IsDiagonalTrack(TrackdirToTrack(dir)) ? 16 : 8);
 										SetWindowDirty(WC_VEHICLE_VIEW, v->index);
+									}
+									if (out.flags & TRPRF_SPEED_RETRICTION_SET) {
+										SetBit(v->flags, VRF_PENDING_SPEED_RESTRICTION);
+										auto range = pending_speed_restriction_change_map.equal_range(v->index);
+										for (auto it = range.first; it != range.second; ++it) {
+											if ((uint16) (out.speed_restriction + 0xFFFF) < (uint16) (it->second.new_speed + 0xFFFF)) it->second.new_speed = out.speed_restriction;
+										}
+										uint16 flags = 0;
+										if (IsDiagonalTrack(TrackdirToTrack(dir))) SetBit(flags, PSRCF_DIAGONAL);
+										pending_speed_restriction_change_map.insert({ v->index, { (uint16) (v->gcache.cached_total_length + (HasBit(flags, PSRCF_DIAGONAL) ? 8 : 4)), out.speed_restriction, v->speed_restriction, flags } });
+										if ((uint16) (out.speed_restriction + 0xFFFF) < (uint16) (v->speed_restriction + 0xFFFF)) v->speed_restriction = out.speed_restriction;
 									}
 								}
 							}
@@ -4369,6 +4400,18 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 		v->UpdatePosition();
 		if (v->reverse_distance > 1) {
 			v->reverse_distance--;
+		}
+		if (HasBit(v->flags, VRF_PENDING_SPEED_RESTRICTION)) {
+			auto range = pending_speed_restriction_change_map.equal_range(v->index);
+			if (range.first == range.second) ClrBit(v->flags, VRF_PENDING_SPEED_RESTRICTION);
+			for (auto it = range.first; it != range.second;) {
+				if (--it->second.distance == 0) {
+					v->speed_restriction = it->second.new_speed;
+					it = pending_speed_restriction_change_map.erase(it);
+				} else {
+					++it;
+				}
+			}
 		}
 
 		/* update the Z position of the vehicle */
