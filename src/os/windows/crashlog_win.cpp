@@ -35,8 +35,10 @@
 /* printf format specification for 32/64-bit addresses. */
 #ifdef _M_AMD64
 #define PRINTF_PTR "0x%016IX"
+#define PRINTF_LOC "%.16IX"
 #else
 #define PRINTF_PTR "0x%08X"
+#define PRINTF_LOC "%.8IX"
 #endif
 
 /**
@@ -108,21 +110,51 @@ public:
 
 }
 
+static const char *GetAccessViolationTypeString(uint type)
+{
+	switch (type) {
+		case 0:
+			return "read";
+		case 1:
+			return "write";
+		case 8:
+			return "user-mode DEP";
+		default:
+			return "???";
+	}
+}
+
 /* virtual */ char *CrashLogWindows::LogError(char *buffer, const char *last, const char *message) const
 {
-	return buffer + seprintf(buffer, last,
-			"Crash reason:\n"
-			" Exception: %.8X\n"
-#ifdef _M_AMD64
-			" Location:  %.16IX\n"
-#else
-			" Location:  %.8X\n"
-#endif
-			" Message:   %s\n\n",
-			(int)ep->ExceptionRecord->ExceptionCode,
-			(size_t)ep->ExceptionRecord->ExceptionAddress,
-			message == nullptr ? "<none>" : message
-	);
+	buffer += seprintf(buffer, last, "Crash reason:\n");
+	for (auto record = ep->ExceptionRecord; record != nullptr; record = record->ExceptionRecord) {
+		buffer += seprintf(buffer, last,
+				" Exception:  %.8X\n"
+				" Location:   " PRINTF_LOC "\n",
+				(int)record->ExceptionCode,
+				(size_t)record->ExceptionAddress
+		);
+		if (record->ExceptionCode == 0xC0000005 && record->NumberParameters == 2) {
+			buffer += seprintf(buffer, last,
+					" Fault type: %u (%s)\n"
+					" Fault addr: " PRINTF_LOC "\n",
+					(uint) record->ExceptionInformation[0],
+					GetAccessViolationTypeString(record->ExceptionInformation[0]),
+					record->ExceptionInformation[1]
+			);
+		} else {
+			for (uint i = 0; i < (uint) record->NumberParameters; i++) {
+				buffer += seprintf(buffer, last,
+						" Info %u:     " PRINTF_LOC "\n",
+						i,
+						record->ExceptionInformation[i]
+				);
+			}
+		}
+	}
+	buffer += seprintf(buffer, last, " Message:    %s\n\n",
+			message == nullptr ? "<none>" : message);
+	return buffer;
 }
 
 struct DebugFileInfo {
