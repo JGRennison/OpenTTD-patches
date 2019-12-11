@@ -156,6 +156,7 @@ struct GRFConfig : ZeroedMemoryAllocator {
 	GRFIdentifier ident;                        ///< grfid and md5sum to uniquely identify newgrfs
 	uint8 original_md5sum[16];                  ///< MD5 checksum of original file if only a 'compatible' file was loaded
 	char *filename;                             ///< Filename - either with or without full path
+	char *full_filename;                        ///< NOSAVE: Full filename
 	GRFTextWrapper *name;                       ///< NOSAVE: GRF name (Action 0x08)
 	GRFTextWrapper *info;                       ///< NOSAVE: GRF info (author, copyright, ...) (Action 0x08)
 	GRFTextWrapper *url;                        ///< NOSAVE: URL belonging to this GRF.
@@ -181,6 +182,11 @@ struct GRFConfig : ZeroedMemoryAllocator {
 	const char *GetName() const;
 	const char *GetDescription() const;
 	const char *GetURL() const;
+
+	const char *GetDisplayPath() const
+	{
+		return this->full_filename ? this->full_filename : this->filename;
+	}
 
 	void SetParameterDefaults();
 	void SetSuitablePalette();

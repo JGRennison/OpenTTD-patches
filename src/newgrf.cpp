@@ -386,7 +386,7 @@ void CDECL _intl_grfmsg(int severity, const char *str, ...)
 	vseprintf(buf, lastof(buf), str, va);
 	va_end(va);
 
-	DEBUG(grf, severity, "[%s:%d] %s", _cur.grfconfig->filename, _cur.nfo_line, buf);
+	DEBUG(grf, severity, "[%s:%d] %s", _cur.grfconfig->GetDisplayPath(), _cur.nfo_line, buf);
 }
 
 /**
@@ -6814,7 +6814,7 @@ static void ScanInfo(ByteReader *buf)
 
 	if (grf_version < 2 || grf_version > 8) {
 		SetBit(_cur.grfconfig->flags, GCF_INVALID);
-		DEBUG(grf, 0, "%s: NewGRF \"%s\" (GRFID %08X) uses GRF version %d, which is incompatible with this version of OpenTTD.", _cur.grfconfig->filename, name, BSWAP32(grfid), grf_version);
+		DEBUG(grf, 0, "%s: NewGRF \"%s\" (GRFID %08X) uses GRF version %d, which is incompatible with this version of OpenTTD.", _cur.grfconfig->GetDisplayPath(), name, BSWAP32(grfid), grf_version);
 	}
 
 	/* GRF IDs starting with 0xFF are reserved for internal TTDPatch use */
@@ -7519,7 +7519,7 @@ static void GRFInhibit(ByteReader *buf)
 
 		/* Unset activation flag */
 		if (file != nullptr && file != _cur.grfconfig) {
-			grfmsg(2, "GRFInhibit: Deactivating file '%s'", file->filename);
+			grfmsg(2, "GRFInhibit: Deactivating file '%s'", file->GetDisplayPath());
 			GRFError *error = DisableGrf(STR_NEWGRF_ERROR_FORCEFULLY_DISABLED, file);
 			error->data = stredup(_cur.grfconfig->GetName());
 		}
@@ -9922,13 +9922,15 @@ void LoadNewGRFFile(GRFConfig *config, uint file_index, GrfLoadingStage stage, S
 		return;
 	}
 
-	FioOpenFile(file_index, filename, subdir);
+	free(config->full_filename);
+	config->full_filename = nullptr;
+	FioOpenFile(file_index, filename, subdir, &(config->full_filename));
 	_cur.file_index = file_index; // XXX
 	_palette_remap_grf[_cur.file_index] = (config->palette & GRFP_USE_MASK);
 
 	_cur.grfconfig = config;
 
-	DEBUG(grf, 2, "LoadNewGRFFile: Reading NewGRF-file '%s'", filename);
+	DEBUG(grf, 2, "LoadNewGRFFile: Reading NewGRF-file '%s'", config->GetDisplayPath());
 
 	_cur.grf_container_ver = GetGRFContainerVersion();
 	if (_cur.grf_container_ver == 0) {
