@@ -3368,30 +3368,14 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeStation(StationID id)
 	item.type = VKI_STATION;
 	item.id.station = id;
 
-	Station *st = Station::Get(id);
-	Point pt = RemapCoords(TileX(st->xy) * TILE_SIZE, TileY(st->xy) * TILE_SIZE, GetTileMaxZ(st->xy) * TILE_HEIGHT);
-
-	pt.y -= 32 * ZOOM_LVL_BASE;
-	if ((st->facilities & FACIL_AIRPORT) && st->airport.type == AT_OILRIG) pt.y -= 16 * ZOOM_LVL_BASE;
-
-	st->viewport_sign_kdtree_pt = pt;
-
-	item.center = pt.x;
-	item.top = pt.y;
+	const Station *st = Station::Get(id);
+	assert(st->sign.kdtree_valid);
+	item.center = st->sign.center;
+	item.top = st->sign.top;
 
 	/* Assume the sign can be a candidate for drawing, so measure its width */
 	_viewport_sign_maxwidth = max<int>(_viewport_sign_maxwidth, st->sign.width_normal);
 
-	return item;
-}
-
-ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeStation(StationID id, Point pt)
-{
-	ViewportSignKdtreeItem item;
-	item.type = VKI_STATION;
-	item.id.station = id;
-	item.center = pt.x;
-	item.top = pt.y;
 	return item;
 }
 
@@ -3401,29 +3385,14 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeWaypoint(StationID id)
 	item.type = VKI_WAYPOINT;
 	item.id.station = id;
 
-	Waypoint *st = Waypoint::Get(id);
-	Point pt = RemapCoords(TileX(st->xy) * TILE_SIZE, TileY(st->xy) * TILE_SIZE, GetTileMaxZ(st->xy) * TILE_HEIGHT);
-
-	pt.y -= 32 * ZOOM_LVL_BASE;
-
-	st->viewport_sign_kdtree_pt = pt;
-
-	item.center = pt.x;
-	item.top = pt.y;
+	const Waypoint *st = Waypoint::Get(id);
+	assert(st->sign.kdtree_valid);
+	item.center = st->sign.center;
+	item.top = st->sign.top;
 
 	/* Assume the sign can be a candidate for drawing, so measure its width */
 	_viewport_sign_maxwidth = max<int>(_viewport_sign_maxwidth, st->sign.width_normal);
 
-	return item;
-}
-
-ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeWaypoint(StationID id, Point pt)
-{
-	ViewportSignKdtreeItem item;
-	item.type = VKI_WAYPOINT;
-	item.id.station = id;
-	item.center = pt.x;
-	item.top = pt.y;
 	return item;
 }
 
@@ -3434,14 +3403,9 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeTown(TownID id)
 	item.id.town = id;
 
 	const Town *town = Town::Get(id);
-	/* Avoid using RemapCoords2, it has dependency on the foundations status of the tile, and that can be unavailable during saveload, leading to crashes.
-	 * Instead "fake" foundations by taking the highest Z coordinate of any corner of the tile. */
-	Point pt = RemapCoords(TileX(town->xy) * TILE_SIZE, TileY(town->xy) * TILE_SIZE, GetTileMaxZ(town->xy) * TILE_HEIGHT);
-
-	pt.y -= 24 * ZOOM_LVL_BASE;
-
-	item.center = pt.x;
-	item.top = pt.y;
+	assert(town->cache.sign.kdtree_valid);
+	item.center = town->cache.sign.center;
+	item.top = town->cache.sign.top;
 
 	/* Assume the sign can be a candidate for drawing, so measure its width */
 	_viewport_sign_maxwidth = max<int>(_viewport_sign_maxwidth, town->cache.sign.width_normal);
@@ -3456,12 +3420,9 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeSign(SignID id)
 	item.id.sign = id;
 
 	const Sign *sign = Sign::Get(id);
-	Point pt = RemapCoords(sign->x, sign->y, sign->z);
-
-	pt.y -= 6 * ZOOM_LVL_BASE;
-
-	item.center = pt.x;
-	item.top = pt.y;
+	assert(sign->sign.kdtree_valid);
+	item.center = sign->sign.center;
+	item.top = sign->sign.top;
 
 	/* Assume the sign can be a candidate for drawing, so measure its width */
 	_viewport_sign_maxwidth = max<int>(_viewport_sign_maxwidth, sign->sign.width_normal);
@@ -3487,22 +3448,22 @@ void RebuildViewportKdtree()
 
 	const Station *st;
 	FOR_ALL_STATIONS(st) {
-		items.push_back(ViewportSignKdtreeItem::MakeStation(st->index));
+		if (st->sign.kdtree_valid) items.push_back(ViewportSignKdtreeItem::MakeStation(st->index));
 	}
 
 	const Waypoint *wp;
 	FOR_ALL_WAYPOINTS(wp) {
-		items.push_back(ViewportSignKdtreeItem::MakeWaypoint(wp->index));
+		if (wp->sign.kdtree_valid) items.push_back(ViewportSignKdtreeItem::MakeWaypoint(wp->index));
 	}
 
 	const Town *town;
 	FOR_ALL_TOWNS(town) {
-		items.push_back(ViewportSignKdtreeItem::MakeTown(town->index));
+		if (town->cache.sign.kdtree_valid) items.push_back(ViewportSignKdtreeItem::MakeTown(town->index));
 	}
 
 	const Sign *sign;
 	FOR_ALL_SIGNS(sign) {
-		items.push_back(ViewportSignKdtreeItem::MakeSign(sign->index));
+		if (sign->sign.kdtree_valid) items.push_back(ViewportSignKdtreeItem::MakeSign(sign->index));
 	}
 
 	_viewport_sign_kdtree.Build(items.begin(), items.end());

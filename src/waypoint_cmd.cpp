@@ -39,10 +39,26 @@
 void Waypoint::UpdateVirtCoord()
 {
 	Point pt = RemapCoords2(TileX(this->xy) * TILE_SIZE, TileY(this->xy) * TILE_SIZE);
+	if (_viewport_sign_kdtree_valid && this->sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeWaypoint(this->index));
+
 	SetDParam(0, this->index);
 	this->sign.UpdatePosition(pt.x, pt.y - 32 * ZOOM_LVL_BASE, STR_VIEWPORT_WAYPOINT);
+
+	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeWaypoint(this->index));
+
 	/* Recenter viewport */
 	InvalidateWindowData(WC_WAYPOINT_VIEW, this->index);
+}
+
+/**
+ * Move the waypoint main coordinate somewhere else.
+ * @param new_xy new tile location of the sign
+ */
+void Waypoint::MoveSign(TileIndex new_xy)
+{
+	if (this->xy == new_xy) return;
+
+	this->BaseStation::MoveSign(new_xy);
 }
 
 /**
@@ -237,15 +253,11 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 	}
 
 	if (flags & DC_EXEC) {
-		bool need_sign_update = false;
 		if (wp == nullptr) {
 			wp = new Waypoint(start_tile);
-			need_sign_update = true;
 		} else if (!wp->IsInUse()) {
 			/* Move existing (recently deleted) waypoint to the new location */
-			if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeWaypoint(wp->index, wp->viewport_sign_kdtree_pt));
 			wp->xy = start_tile;
-			need_sign_update = true;
 		}
 		wp->owner = GetTileOwner(start_tile);
 
@@ -260,7 +272,6 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 		if (wp->town == nullptr) MakeDefaultName(wp);
 
 		wp->UpdateVirtCoord();
-		if (need_sign_update && _viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeWaypoint(wp->index));
 
 		byte map_spec_index = AllocateSpecToStation(spec, wp, true);
 
@@ -317,7 +328,6 @@ CommandCost CmdBuildBuoy(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 			wp = new Waypoint(tile);
 		} else {
 			/* Move existing (recently deleted) buoy to the new location */
-			if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeWaypoint(wp->index, wp->viewport_sign_kdtree_pt));
 			wp->xy = tile;
 			InvalidateWindowData(WC_WAYPOINT_VIEW, wp->index);
 		}
@@ -337,7 +347,6 @@ CommandCost CmdBuildBuoy(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 		MarkTileDirtyByTile(tile);
 
 		wp->UpdateVirtCoord();
-		if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeWaypoint(wp->index));
 		InvalidateWindowData(WC_WAYPOINT_VIEW, wp->index);
 	}
 

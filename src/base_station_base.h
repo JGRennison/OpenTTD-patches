@@ -54,7 +54,7 @@ struct StationRect : public Rect {
 /** Base class for all station-ish types */
 struct BaseStation : StationPool::PoolItem<&_station_pool> {
 	TileIndex xy;                   ///< Base tile of the station
-	ViewportSign sign;              ///< NOSAVE: Dimensions of sign
+	TrackedViewportSign sign;       ///< NOSAVE: Dimensions of sign
 	byte delete_ctr;                ///< Delete counter. If greater than 0 then it is decremented until it reaches 0; the waypoint is then is deleted.
 
 	char *name;                     ///< Custom name
@@ -77,8 +77,6 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 
 	TileArea train_station;         ///< Tile area the train 'station' part covers
 	StationRect rect;               ///< NOSAVE: Station spread out rectangle maintained by StationRect::xxx() functions
-
-	Point viewport_sign_kdtree_pt;  ///< NOSAVE: Viewport sign kd tree: saved point (for tree removals)
 
 	/**
 	 * Initialize the base station.
