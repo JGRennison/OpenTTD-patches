@@ -2,6 +2,14 @@
 
 * * *
 
+### v0.32.4 (2019-12-13)
+* Fix incorrect company infrastructure totals and multiplayer desyncs when removing tram road stops.
+* Fix vehicle autoreplace AI event when autoreplacing trains.
+* Add patch: show the name of the NewGRF in the build vehicle window.
+* Routing restrictions: Add speed restriction feature.
+* Rename programmable signals to programmable pre-signals.
+* Bump trunk base from commit ef8455f5498cc01bc60eb1c02902c38bbc332a7a to commit 35dc377a58c90abb67304a0c557449b6db3c0d3f.
+
 ### v0.32.3 (2019-11-20)
 * Fix loading of savegames which use LZO compression.
 * Fix crash which could occur when attempting to load an unreadable/invalid savegame.

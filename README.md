@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.32.3
+## JGR's Patchpack version 0.32.4
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -250,6 +250,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Change network protocol to send server/join and rcon passwords in hashed form instead of in clear text. (added in v0.31.4).  
   * Add modifier key window for toggling shift/ctrl key states using mouse. (added in v0.32-rc4).  
   * Add IME support on Linux/SDL2 (SDL2-supported IMEs and Fcitx). (added in v0.32.0).  
+  * Add patch: show the name of the NewGRF in the build vehicle window. (added in v0.32.4).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
   * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).
