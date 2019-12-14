@@ -1370,6 +1370,9 @@ STR_CONFIG_SETTING_OPEN_VEHICLE_GUI_CLONE_SHARE_HELPTEXT        :이 설정을 �
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :고급 다리/터널 신호기 활성화: {STRING}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :다리와 터널 위 신호기 시뮬레이션 고급 모드를 활성화합니다. 이 설정을 끄면, 고급 모드에 있지 않은 다리와 터널을 고급 모드로 변경할 수 없지만 다른 플레이어는 이 설정을 켜서 고급 모드를 사용할 수 있습니다.
 
+STR_CONFIG_SETTING_SHOW_NEWGRF_NAME                             :차량 구입 창에서 NewGRF의 이름을 보여주기
+STR_CONFIG_SETTING_SHOW_NEWGRF_NAME_HELPTEXT                    :이 설정을 켜면 차량 구입 창의 하단에 선택한 차량이 어떤 NewGRF에서 추가된 차량인지 표시해줍니다
+
 STR_CONFIG_SETTING_LANDSCAPE                                    :지형: {STRING}
 STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :지형에 따라 화물과 도시 성장 요구 조건이 다른 게임 플레이 시나리오가 만들어집니다. NewGRF과 게임 스크립트를 통해 세밀한 조절이 가능합니다.
 STR_CONFIG_SETTING_LAND_GENERATOR                               :지형 만들기: {STRING}
@@ -2748,6 +2751,7 @@ STR_TRACE_RESTRICT_COMPANY                                      :회사
 STR_TRACE_RESTRICT_UNDEFINED_COMPANY                            :정의되지 않은 회사
 STR_TRACE_RESTRICT_SLOT_OP                                      :슬롯 연산
 STR_TRACE_RESTRICT_REVERSE                                      :회차
+STR_TRACE_RESTRICT_SPEED_RESTRICTION                            :속력 제한
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :획득 또는 대기
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :획득 시도
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :해제 (앞)
@@ -2778,6 +2782,8 @@ STR_TRACE_RESTRICT_TRAIN_STATUS_LOST                            :{G=f}경로를 
 STR_TRACE_RESTRICT_TRAIN_STATUS_REQUIRES_SERVICE                :{G=f}정비 요구 상태
 STR_TRACE_RESTRICT_REVERSE_SIG                                  :신호기 뒤에서 회차
 STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL                           :신호기 뒤에서 회차 취소
+STR_TRACE_RESTRICT_SET_SPEED_RESTRICTION                        :열차 속력 제한: {VELOCITY}
+STR_TRACE_RESTRICT_REMOVE_SPEED_RESTRICTION                     :열차 속력 제한 해제
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}값
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}경로 탐색 제한
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}경로 탐색 제한 - {COMMA}개의 신호기와 공유
@@ -4565,6 +4571,8 @@ STR_VEHICLE_INFO_CAPACITY_MULT                                  :{BLACK}수송�
 STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}수송량: {LTBLUE}{CARGO_LONG}, {CARGO_LONG}{STRING}
 
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}환승 수익: {LTBLUE}{CURRENCY_LONG}
+
+STR_VEHICLE_INFO_SPEED_RESTRICTION                              :{BLACK}속력 제한: {LTBLUE}{VELOCITY}
 
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS                     :{BLACK}정비 간격: {LTBLUE}{COMMA}일마다{BLACK}   마지막 정비 날짜: {LTBLUE}{DATE_LONG}
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{BLACK}정비 간격: {LTBLUE}{COMMA}%{BLACK} 이하일 때   마지막 정비 날짜: {LTBLUE}{DATE_LONG}
