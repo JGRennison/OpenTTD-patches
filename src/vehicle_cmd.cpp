@@ -493,6 +493,8 @@ CommandCost CmdRefitVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 	bool is_virtual_train = HasBit(p2, 31);
 	bool free_wagon = v->type == VEH_TRAIN && Train::From(front)->IsFreeWagon(); // used by autoreplace/renew
 
+	if (is_virtual_train && !(v->type == VEH_TRAIN && Train::From(front)->IsVirtual())) return CMD_ERROR;
+
 	if (is_virtual_train || (v->type == VEH_TRAIN && Train::From(front)->IsVirtual())) {
 		CommandCost ret = CheckOwnership(front->owner);
 		if (ret.Failed()) return ret;
