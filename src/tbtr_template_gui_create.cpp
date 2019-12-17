@@ -306,7 +306,7 @@ public:
 
 					int y = 4 - this->vscroll->GetPosition();
 					bool buildable = true;
-					for (Train *train = this->virtual_train; train != nullptr; train = train->Next()) {
+					for (Train *train = this->virtual_train; train != nullptr; train = train->GetNextUnit()) {
 						if (!IsEngineBuildable(train->engine_type, VEH_TRAIN, train->owner)) buildable = false;
 					}
 					if (!buildable) {

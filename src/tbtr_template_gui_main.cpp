@@ -656,7 +656,7 @@ public:
 			}
 
 			bool buildable = true;
-			for (const TemplateVehicle *u = v; u != nullptr; u = u->Next()) {
+			for (const TemplateVehicle *u = v; u != nullptr; u = u->GetNextUnit()) {
 				if (!IsEngineBuildable(u->engine_type, VEH_TRAIN, u->owner)) {
 					buildable = false;
 					break;
