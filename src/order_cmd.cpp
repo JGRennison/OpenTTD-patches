@@ -1228,6 +1228,7 @@ void InsertOrder(Vehicle *v, Order *new_o, VehicleOrderID sel_ord)
 
 	/* Make sure to rebuild the whole list */
 	InvalidateWindowClassesData(GetWindowClassForVehicleType(v->type), 0);
+	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 }
 
 /**
@@ -1246,6 +1247,7 @@ static CommandCost DecloneOrder(Vehicle *dst, DoCommandFlag flags)
 		DeleteVehicleOrders(dst);
 		InvalidateVehicleOrder(dst, VIWD_REMOVE_ALL_ORDERS);
 		InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type), 0);
+		InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 		CheckMarkDirtyFocusedRoutePaths(dst);
 	}
 	return CommandCost();
@@ -1383,6 +1385,7 @@ void DeleteOrder(Vehicle *v, VehicleOrderID sel_ord)
 	}
 
 	InvalidateWindowClassesData(GetWindowClassForVehicleType(v->type), 0);
+	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 }
 
 /**
@@ -2056,6 +2059,7 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 
 
 				InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type), 0);
+				InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 				CheckMarkDirtyFocusedRoutePaths(dst);
 
 				CheckAdvanceVehicleOrdersAfterClone(dst, flags);
@@ -2159,6 +2163,7 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 				InvalidateVehicleOrder(dst, VIWD_REMOVE_ALL_ORDERS);
 
 				InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type), 0);
+				InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 				CheckMarkDirtyFocusedRoutePaths(dst);
 
 				CheckAdvanceVehicleOrdersAfterClone(dst, flags);

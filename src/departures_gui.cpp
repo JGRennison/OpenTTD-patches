@@ -74,8 +74,15 @@ static WindowDesc _departures_desc(
 static uint cached_date_width = 0;         ///< The cached maximum width required to display a date.
 static uint cached_status_width = 0;       ///< The cached maximum width required to show the status field.
 static uint cached_date_arrow_width = 0;   ///< The cached width of the red/green arrows that may be displayed alongside times.
+static uint cached_veh_type_width = 0;     ///< The cached width of the vehicle type icon.
 static bool cached_date_display_method;    ///< Whether the above cached values refers to original (d,m,y) dates or the 24h clock.
 static bool cached_arr_dep_display_method; ///< Whether to show departures and arrivals on a single line.
+
+void FlushDeparturesWindowTextCaches()
+{
+	cached_date_width = cached_status_width = cached_date_arrow_width = cached_veh_type_width = 0;
+	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+}
 
 template<bool Twaypoint = false>
 struct DeparturesWindow : public Window {
@@ -93,6 +100,10 @@ protected:
 	bool cargo_buttons_disabled;///< Show pax/freight buttons disabled
 	uint min_width;            ///< The minimum width of this window.
 	Scrollbar *vscroll;
+	std::vector<const Vehicle *> vehicles; /// current set of vehicles
+	int veh_width;                         /// current width of vehicle field
+	int group_width;                       /// current width of group field
+	int toc_width;                         /// current width of company field
 
 	virtual uint GetMinWidth() const;
 	static void RecomputeDateWidth();
@@ -120,6 +131,81 @@ protected:
 			this->show_freight = false;
 			this->RaiseWidget(WID_DB_SHOW_FREIGHT);
 		}
+	}
+
+	void FillVehicleList()
+	{
+		this->vehicles.clear();
+		this->veh_width = 0;
+		this->group_width = 0;
+		this->toc_width = 0;
+
+		btree::btree_set<GroupID> groups;
+		CompanyMask companies = 0;
+		int unitnumber_max[4] = { -1, -1, -1, -1 };
+
+		const Vehicle *v;
+		FOR_ALL_VEHICLES(v) {
+			if (v->type < 4 && this->show_types[v->type] && v->IsPrimaryVehicle()) {
+				const Order *order;
+
+				FOR_VEHICLE_ORDERS(v, order) {
+					if ((order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT) || order->IsType(OT_IMPLICIT))
+							&& order->GetDestination() == this->station) {
+						this->vehicles.push_back(v);
+
+						if (v->name == nullptr) {
+							if (v->unitnumber > unitnumber_max[v->type]) unitnumber_max[v->type] = v->unitnumber;
+						} else {
+							SetDParam(0, (uint64)(v->index));
+							int width = (GetStringBoundingBox(STR_DEPARTURES_VEH)).width;
+							if (width > this->veh_width) this->veh_width = width;
+						}
+
+						if (v->group_id != INVALID_GROUP && v->group_id != DEFAULT_GROUP) {
+							groups.insert(v->group_id);
+						}
+
+						SetBit(companies, v->owner);
+						break;
+					}
+				}
+			}
+		}
+
+		for (uint i = 0; i < 4; i++) {
+			if (unitnumber_max[i] >= 0) {
+				uint unitnumber_digits = 2;
+				if (unitnumber_max[i] >= 10000) {
+					unitnumber_digits = 5;
+				} else if (unitnumber_max[i] >= 1000) {
+					unitnumber_digits = 4;
+				} else if (unitnumber_max[i] >= 100) {
+					unitnumber_digits = 3;
+				}
+				SetDParamMaxDigits(0, unitnumber_digits);
+				int width = (GetStringBoundingBox(STR_SV_TRAIN_NAME + i)).width;
+				if (width > this->veh_width) this->veh_width = width;
+			}
+		}
+
+		for (GroupID gid : groups) {
+			SetDParam(0, (uint64)gid);
+			int width = (GetStringBoundingBox(STR_DEPARTURES_GROUP)).width;
+			if (width > this->group_width) this->group_width = width;
+		}
+
+		uint owner;
+		FOR_EACH_SET_BIT(owner, companies) {
+			SetDParam(0, owner);
+			int width = (GetStringBoundingBox(STR_DEPARTURES_TOC)).width;
+			if (width > this->toc_width) this->toc_width = width;
+		}
+	}
+
+	void RefreshVehicleList() {
+		this->FillVehicleList();
+		this->calc_tick_countdown = 0;
 	}
 
 public:
@@ -170,6 +256,12 @@ public:
 
 			this->LowerWidget(WID_DB_SHOW_VIA);
 		}
+
+		if (cached_veh_type_width == 0) {
+			cached_veh_type_width = GetStringBoundingBox(STR_DEPARTURES_TYPE_PLANE).width;
+		}
+
+		this->RefreshVehicleList();
 
 		if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
 	}
@@ -227,7 +319,7 @@ public:
 					this->SetWidgetDirty(widget);
 				}
 				/* We need to recompute the departures list. */
-				this->calc_tick_countdown = 0;
+				this->RefreshVehicleList();
 				/* We need to redraw the button that was pressed. */
 				if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
 				break;
@@ -349,8 +441,8 @@ public:
 			this->DeleteDeparturesList(this->arrivals);
 			bool show_pax = _settings_client.gui.departure_only_passengers ? true : this->show_pax;
 			bool show_freight = _settings_client.gui.departure_only_passengers ? false : this->show_freight;
-			this->departures = (this->departure_types[0] ? MakeDepartureList(this->station, this->show_types, D_DEPARTURE, Twaypoint || this->departure_types[2], show_pax, show_freight) : new DepartureList());
-			this->arrivals   = (this->departure_types[1] && !_settings_client.gui.departure_show_both ? MakeDepartureList(this->station, this->show_types, D_ARRIVAL, false, show_pax, show_freight) : new DepartureList());
+			this->departures = (this->departure_types[0] ? MakeDepartureList(this->station, this->vehicles, D_DEPARTURE, Twaypoint || this->departure_types[2], show_pax, show_freight) : new DepartureList());
+			this->arrivals   = (this->departure_types[1] && !_settings_client.gui.departure_show_both ? MakeDepartureList(this->station, this->vehicles, D_ARRIVAL, false, show_pax, show_freight) : new DepartureList());
 			this->SetWidgetDirty(WID_DB_LIST);
 		}
 
@@ -399,6 +491,16 @@ public:
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_DB_LIST);
 		this->GetWidget<NWidgetCore>(WID_DB_LIST)->widget_data = (this->vscroll->GetCapacity() << MAT_ROW_START) + (1 << MAT_COL_START);
+	}
+
+	/**
+	 * Some data on this window has become invalid.
+	 * @param data Information about the changed data.
+	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
+	 */
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	{
+		this->RefreshVehicleList();
 	}
 };
 
@@ -459,49 +561,12 @@ uint DeparturesWindow<Twaypoint>::GetMinWidth() const
 	result = cached_date_width;
 
 	/* Vehicle type icon */
-	result += _settings_client.gui.departure_show_vehicle_type ? (GetStringBoundingBox(STR_DEPARTURES_TYPE_PLANE)).width : 0;
+	result += _settings_client.gui.departure_show_vehicle_type ? cached_veh_type_width : 0;
 
 	/* Status */
 	result += cached_status_width;
 
-	/* Find the maximum company name width. */
-	int toc_width = 0;
-
-	/* Find the maximum company name width. */
-	int group_width = 0;
-
-	/* Find the maximum vehicle name width. */
-	int veh_width = 0;
-
-	if (_settings_client.gui.departure_show_vehicle || _settings_client.gui.departure_show_company || _settings_client.gui.departure_show_group) {
-		for (uint i = 0; i < 4; ++i) {
-			VehicleList vehicles;
-
-			/* MAX_COMPANIES is probably the wrong thing to put here, but it works. GenerateVehicleSortList doesn't check the company when the type of list is VL_STATION_LIST (r20801). */
-			if (!GenerateVehicleSortList(&vehicles, VehicleListIdentifier(VL_STATION_LIST, (VehicleType)(VEH_TRAIN + i), MAX_COMPANIES, station))) {
-				/* Something went wrong: panic! */
-				continue;
-			}
-
-			for (const Vehicle *v : vehicles) {
-				SetDParam(0, (uint64)(v->index));
-				int width = (GetStringBoundingBox(STR_DEPARTURES_VEH)).width;
-				if (_settings_client.gui.departure_show_vehicle && width > veh_width) veh_width = width;
-
-				if (v->group_id != INVALID_GROUP && v->group_id != DEFAULT_GROUP) {
-					SetDParam(0, (uint64)(v->group_id));
-					width = (GetStringBoundingBox(STR_DEPARTURES_GROUP)).width;
-					if (_settings_client.gui.departure_show_group && width > group_width) group_width = width;
-				}
-
-				SetDParam(0, (uint64)(v->owner));
-				width = (GetStringBoundingBox(STR_DEPARTURES_TOC)).width;
-				if (_settings_client.gui.departure_show_company && width > toc_width) toc_width = width;
-			}
-		}
-	}
-
-	result += toc_width + veh_width + group_width;
+	result += this->toc_width + this->veh_width + this->group_width;
 
 	return result + 140;
 }
@@ -588,7 +653,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 	}
 
 	/* Vehicle type icon */
-	int type_width = _settings_client.gui.departure_show_vehicle_type ? (GetStringBoundingBox(STR_DEPARTURES_TYPE_PLANE)).width : 0;
+	int type_width = _settings_client.gui.departure_show_vehicle_type ? cached_veh_type_width : 0;
 
 	/* Find the maximum width of the status field */
 	int status_width = cached_status_width;
@@ -597,41 +662,13 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 	int calling_at_width = (GetStringBoundingBox(_settings_client.gui.departure_larger_font ? STR_DEPARTURES_CALLING_AT_LARGE : STR_DEPARTURES_CALLING_AT)).width;
 
 	/* Find the maximum company name width. */
-	int toc_width = 0;
+	int toc_width = _settings_client.gui.departure_show_company ? this->toc_width : 0;
 
 	/* Find the maximum group name width. */
-	int group_width = 0;
+	int group_width = _settings_client.gui.departure_show_group ? this->group_width : 0;
 
 	/* Find the maximum vehicle name width. */
-	int veh_width = 0;
-
-	if (_settings_client.gui.departure_show_vehicle || _settings_client.gui.departure_show_company || _settings_client.gui.departure_show_group) {
-		for (uint i = 0; i < 4; ++i) {
-			VehicleList vehicles;
-
-			/* MAX_COMPANIES is probably the wrong thing to put here, but it works. GenerateVehicleSortList doesn't check the company when the type of list is VL_STATION_LIST (r20801). */
-			if (!GenerateVehicleSortList(&vehicles, VehicleListIdentifier(VL_STATION_LIST, (VehicleType)(VEH_TRAIN + i), MAX_COMPANIES, station))) {
-				/* Something went wrong: panic! */
-				continue;
-			}
-
-			for (const Vehicle *v : vehicles) {
-				SetDParam(0, (uint64)(v->index));
-				int width = (GetStringBoundingBox(STR_DEPARTURES_VEH)).width;
-				if (_settings_client.gui.departure_show_vehicle && width > veh_width) veh_width = width;
-
-				if (v->group_id != INVALID_GROUP && v->group_id != DEFAULT_GROUP) {
-					SetDParam(0, (uint64)(v->group_id));
-					width = (GetStringBoundingBox(STR_DEPARTURES_GROUP)).width;
-					if (_settings_client.gui.departure_show_group && width > group_width) group_width = width;
-				}
-
-				SetDParam(0, (uint64)(v->owner));
-				width = (GetStringBoundingBox(STR_DEPARTURES_TOC)).width;
-				if (_settings_client.gui.departure_show_company && width > toc_width) toc_width = width;
-			}
-		}
-	}
+	int veh_width = _settings_client.gui.departure_show_vehicle ? this->veh_width : 0;
 
 	uint departure = 0;
 	uint arrival = 0;

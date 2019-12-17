@@ -195,14 +195,14 @@ static void ScheduledDispatchDepartureLocalFix(DepartureList *departure_list)
 /**
  * Compute an up-to-date list of departures for a station.
  * @param station the station to compute the departures of
- * @param show_vehicle_types the types of vehicles to include in the departure list
+ * @param vehicles set of all the vehicles stopping at this station, of all vehicles types that we are interested in
  * @param type the type of departures to get (departures or arrivals)
  * @param show_vehicles_via whether to include vehicles that have this station in their orders but do not stop at it
  * @param show_pax whether to include passenger vehicles
  * @param show_freight whether to include freight vehicles
  * @return a list of departures, which is empty if an error occurred
  */
-DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], DepartureType type, bool show_vehicles_via, bool show_pax, bool show_freight)
+DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehicle *> &vehicles, DepartureType type, bool show_vehicles_via, bool show_pax, bool show_freight)
 {
 	/* This function is the meat of the departure boards functionality. */
 	/* As an overview, it works by repeatedly considering the best possible next departure to show. */
@@ -231,24 +231,7 @@ DepartureList* MakeDepartureList(StationID station, bool show_vehicle_types[5], 
 	/* Cache for scheduled departure time */
 	schdispatch_cache_t schdispatch_last_planned_dispatch;
 
-	/* Get all the vehicles stopping at this station. */
-	/* We do this to get the order which is the first time they will stop at this station. */
-	/* This order is stored along with some more information. */
-	/* We keep a pointer to the `least' order (the one with the soonest expected completion time). */
-	for (uint i = 0; i < 4; ++i) {
-		VehicleList vehicles;
-
-		if (!show_vehicle_types[i]) {
-			/* Don't show vehicles whose type we're not interested in. */
-			continue;
-		}
-
-		/* MAX_COMPANIES is probably the wrong thing to put here, but it works. GenerateVehicleSortList doesn't check the company when the type of list is VL_STATION_LIST (r20801). */
-		if (!GenerateVehicleSortList(&vehicles, VehicleListIdentifier(VL_STATION_LIST, (VehicleType)(VEH_TRAIN + i), MAX_COMPANIES, station))) {
-			/* Something went wrong: panic! */
-			return result;
-		}
-
+	{
 		/* Get the first order for each vehicle for the station we're interested in that doesn't have No Loading set. */
 		/* We find the least order while we're at it. */
 		for (const Vehicle *v : vehicles) {

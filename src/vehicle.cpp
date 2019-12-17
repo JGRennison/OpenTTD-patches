@@ -1009,6 +1009,7 @@ void Vehicle::PreDestructor()
 		OrderBackup::ClearVehicle(this);
 	}
 	InvalidateWindowClassesData(GetWindowClassForVehicleType(this->type), 0);
+	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 
 	this->cargo.Truncate();
 	DeleteVehicleOrders(this);

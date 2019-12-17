@@ -41,6 +41,7 @@
 
 #include "safeguards.h"
 
+extern void FlushDeparturesWindowTextCaches();
 
 static const StringID _driveside_dropdown[] = {
 	STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT,
@@ -529,6 +530,7 @@ struct GameOptionsWindow : Window {
 				ClearAllCachedNames();
 				UpdateAllVirtCoords();
 				ReInitAllWindows();
+				FlushDeparturesWindowTextCaches();
 				break;
 
 			case WID_GO_RESOLUTION_DROPDOWN: // Change resolution
@@ -544,6 +546,7 @@ struct GameOptionsWindow : Window {
 				UpdateAllVirtCoords();
 				FixTitleGameZoom();
 				ReInitAllWindows();
+				FlushDeparturesWindowTextCaches();
 				break;
 
 			case WID_GO_FONT_ZOOM_DROPDOWN:
@@ -554,6 +557,7 @@ struct GameOptionsWindow : Window {
 				UpdateFontHeightCache();
 				LoadStringWidthTable();
 				UpdateAllVirtCoords();
+				FlushDeparturesWindowTextCaches();
 				break;
 
 			case WID_GO_BASE_GRF_DROPDOWN:
