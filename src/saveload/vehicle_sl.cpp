@@ -1109,7 +1109,7 @@ void Load_VESR()
 {
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		auto iter = pending_speed_restriction_change_map.insert({ index, {} });
+		auto iter = pending_speed_restriction_change_map.insert({ static_cast<VehicleID>(index), {} });
 		PendingSpeedRestrictionChange *ptr = &(iter->second);
 		SlObject(ptr, GetVehicleSpeedRestrictionDescription());
 	}
