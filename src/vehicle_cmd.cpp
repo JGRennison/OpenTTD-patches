@@ -491,12 +491,11 @@ CommandCost CmdRefitVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 	Vehicle *front = v->First();
 
 	bool auto_refit = HasBit(p2, 24);
-	bool is_virtual_train = HasBit(p2, 31);
+	bool is_virtual_train = v->type == VEH_TRAIN && Train::From(front)->IsVirtual();
+	bool virtual_train_mode = HasBit(p2, 31) || is_virtual_train;
 	bool free_wagon = v->type == VEH_TRAIN && Train::From(front)->IsFreeWagon(); // used by autoreplace/renew
 
-	if (is_virtual_train && !(v->type == VEH_TRAIN && Train::From(front)->IsVirtual())) return CMD_ERROR;
-
-	if (is_virtual_train || (v->type == VEH_TRAIN && Train::From(front)->IsVirtual())) {
+	if (virtual_train_mode) {
 		CommandCost ret = CheckOwnership(front->owner);
 		if (ret.Failed()) return ret;
 	} else {
@@ -508,15 +507,13 @@ CommandCost CmdRefitVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 	if (v != front && (v->type == VEH_SHIP || v->type == VEH_AIRCRAFT)) return CMD_ERROR;
 
 	/* Allow auto-refitting only during loading and normal refitting only in a depot. */
-	if (!is_virtual_train) {
+	if (!virtual_train_mode) {
 		if ((flags & DC_QUERY_COST) == 0 && // used by the refit GUI, including the order refit GUI.
 				!free_wagon && // used by autoreplace/renew
 				(!auto_refit || !front->current_order.IsType(OT_LOADING)) && // refit inside stations
 				!front->IsStoppedInDepot()) { // refit inside depots
 			return_cmd_error(STR_ERROR_TRAIN_MUST_BE_STOPPED_INSIDE_DEPOT + front->type);
 		}
-
-		if (front->vehstatus & VS_CRASHED) return_cmd_error(STR_ERROR_VEHICLE_IS_DESTROYED);
 	}
 
 	if (front->vehstatus & VS_CRASHED) return_cmd_error(STR_ERROR_VEHICLE_IS_DESTROYED);
@@ -531,7 +528,7 @@ CommandCost CmdRefitVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 	uint8 num_vehicles = GB(p2, 16, 8);
 
 	CommandCost cost = RefitVehicle(v, only_this, num_vehicles, new_cid, new_subtype, flags, auto_refit);
-	if (is_virtual_train) cost.MultiplyCost(0);
+	if (is_virtual_train && !(flags & DC_QUERY_COST)) cost.MultiplyCost(0);
 
 	if (flags & DC_EXEC) {
 		/* Update the cached variables */
