@@ -639,7 +639,7 @@ public:
 	 * Get number of orders in the order list.
 	 * @return number of orders in the chain.
 	 */
-	inline VehicleOrderID GetNumOrders() const { return this->order_index.size(); }
+	inline VehicleOrderID GetNumOrders() const { return static_cast<VehicleOrderID>(this->order_index.size()); }
 
 	/**
 	 * Get number of manually added orders in the order list.
