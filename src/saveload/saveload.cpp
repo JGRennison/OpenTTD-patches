@@ -2220,24 +2220,21 @@ static const ChunkHandler *SlFindChunkHandler(uint32 id)
 /** Load all chunks */
 static void SlLoadChunks()
 {
-	uint32 id;
-	const ChunkHandler *ch;
-
-	for (id = SlReadUint32(); id != 0; id = SlReadUint32()) {
+	for (uint32 id = SlReadUint32(); id != 0; id = SlReadUint32()) {
 		DEBUG(sl, 2, "Loading chunk %c%c%c%c", id >> 24, id >> 16, id >> 8, id);
 		size_t read = 0;
 		if (_debug_sl_level >= 3) read = SlGetBytesRead();
 
-		ch = SlFindChunkHandler(id);
-		if (ch == nullptr) {
-			if (SlXvIsChunkDiscardable(id)) {
-				DEBUG(sl, 1, "Discarding chunk %c%c%c%c", id >> 24, id >> 16, id >> 8, id);
-				SlLoadCheckChunk(nullptr);
-			} else {
-				SlErrorCorrupt("Unknown chunk type");
-			}
+		if (SlXvIsChunkDiscardable(id)) {
+			DEBUG(sl, 1, "Discarding chunk %c%c%c%c", id >> 24, id >> 16, id >> 8, id);
+			SlLoadCheckChunk(nullptr);
 		} else {
-			SlLoadChunk(ch);
+			const ChunkHandler *ch = SlFindChunkHandler(id);
+			if (ch == nullptr) {
+				SlErrorCorrupt("Unknown chunk type");
+			} else {
+				SlLoadChunk(ch);
+			}
 		}
 		DEBUG(sl, 3, "Loaded chunk %c%c%c%c (" PRINTF_SIZE " bytes)", id >> 24, id >> 16, id >> 8, id, SlGetBytesRead() - read);
 	}
@@ -2254,8 +2251,12 @@ static void SlLoadCheckChunks()
 		size_t read = 0;
 		if (_debug_sl_level >= 3) read = SlGetBytesRead();
 
-		ch = SlFindChunkHandler(id);
-		if (ch == nullptr && !SlXvIsChunkDiscardable(id)) SlErrorCorrupt("Unknown chunk type");
+		if (SlXvIsChunkDiscardable(id)) {
+			ch = nullptr;
+		} else {
+			ch = SlFindChunkHandler(id);
+			if (ch == nullptr) SlErrorCorrupt("Unknown chunk type");
+		}
 		SlLoadCheckChunk(ch);
 		DEBUG(sl, 3, "Loaded chunk %c%c%c%c (" PRINTF_SIZE " bytes)", id >> 24, id >> 16, id >> 8, id, SlGetBytesRead() - read);
 	}
