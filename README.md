@@ -211,8 +211,10 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Savegames from this patchpack are not loadable in trunk.  
   * Savegames from trunk up to the last savegame version which has been merged into this branch (*jgrpp*) should be loadable in this patchpack.  
   * Savegames from other branches which use the save/load code in the *save_ext* branch (usually suffixed: *-sx*) which are also merged into this branch (*jgrpp*), or where the added feature is marked as discardable/ignorable, should be loadable in this patchpack.  
-  * Savegames from other patched versions are not loadable in this patchpack except for savegames from the *tracerestrict* branch ([routing restrictions patch](http://www.tt-forums.net/viewtopic.php?f=33&t=73397)),
-    savegames from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892) v2.0 - v2.4 (subject to caveats, see below).
+  * Savegames from other patched versions are not loadable in this patchpack except for savegames from:  
+    * The *tracerestrict* branch ([routing restrictions patch](http://www.tt-forums.net/viewtopic.php?f=33&t=73397))  
+    * The [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892) v2.0 - v2.4 (subject to caveats, see below)  
+    * [Joker's Patch Pack](https://www.tt-forums.net/viewtopic.php?f=33&t=74365) v1.19 - v1.27 (subject to caveats, see below)
 
 * Miscellaneous  
   * Various improvements to the crash logger.  
@@ -276,6 +278,11 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Savegames which have aircraft approaching, landing, taking off or landed at an oil rig are rejected  
   * The inflation cost multiplier is adjusted on load
 
+#### Caveats for loading savegames from [Joker's Patch Pack](https://www.tt-forums.net/viewtopic.php?f=33&t=74365):  
+* This is not guaranteed to be bug free  
+* Logic signals are cleared, leaving ordinary signals  
+* Various vehicle separation settings and partially-automatic modes are not supported.  
+* Rail ageing/grass on tracks, trip histories, waiting cargo histories, station cargo punishment and other features not in this patch pack are dropped/ignored.
 
 #### A note on branches
 

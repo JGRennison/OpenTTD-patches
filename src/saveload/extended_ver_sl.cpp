@@ -230,6 +230,30 @@ bool SlXvCheckSpecialSavegameVersions()
 		_sl_maybe_springpp = true;
 		return true;
 	}
+	if (_sl_version >= SL_JOKER_1_19 && _sl_version <= SL_JOKER_1_27) { /* 278 - 286 */
+		DEBUG(sl, 1, "Loading a JokerPP savegame version %d as version 197", _sl_version);
+		_sl_xv_feature_versions[XSLFI_JOKERPP] = _sl_version;
+		_sl_xv_feature_versions[XSLFI_TOWN_CARGO_ADJ] = 1;
+		_sl_xv_feature_versions[XSLFI_TEMPLATE_REPLACEMENT] = 1;
+		_sl_xv_feature_versions[XSLFI_VEH_LIFETIME_PROFIT] = 1;
+		_sl_xv_feature_versions[XSLFI_TRAIN_FLAGS_EXTRA] = 1;
+		_sl_xv_feature_versions[XSLFI_SIG_TUNNEL_BRIDGE] = 5;
+		_sl_xv_feature_versions[XSLFI_REVERSE_AT_WAYPOINT] = 1;
+		_sl_xv_feature_versions[XSLFI_MULTIPLE_DOCKS] = 1;
+		_sl_xv_feature_versions[XSLFI_ST_LAST_VEH_TYPE] = 1;
+		_sl_xv_feature_versions[XSLFI_MORE_RAIL_TYPES] = 1;
+		_sl_xv_feature_versions[XSLFI_CHUNNEL] = 1;
+		_sl_xv_feature_versions[XSLFI_MORE_COND_ORDERS] = 1;
+		_sl_xv_feature_versions[XSLFI_TRACE_RESTRICT] = 1;
+		if (_sl_version >= SL_JOKER_1_21) _sl_xv_feature_versions[XSLFI_LINKGRAPH_DAY_SCALE] = 1;
+		if (_sl_version >= SL_JOKER_1_24) _sl_xv_feature_versions[XSLFI_TIMETABLE_EXTRA] = 1;
+		if (_sl_version >= SL_JOKER_1_24) _sl_xv_feature_versions[XSLFI_ORDER_EXTRA_DATA] = 1;
+		_sl_xv_discardable_chunk_ids.push_back('SPRG');
+		_sl_xv_discardable_chunk_ids.push_back('SLNK');
+		_sl_version = SLV_197;
+		_sl_is_faked_ext = true;
+		return true;
+	}
 	return false;
 }
 

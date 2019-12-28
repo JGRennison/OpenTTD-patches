@@ -794,7 +794,7 @@ bool AfterLoadGame()
 	/* The value of _date_fract got divided, so make sure that old games are converted correctly. */
 	if (IsSavegameVersionBefore(SLV_11, 1) || (IsSavegameVersionBefore(SLV_147) && _date_fract > DAY_TICKS)) _date_fract /= 885;
 
-	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
+	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP) || SlXvIsFeaturePresent(XSLFI_JOKERPP)) {
 		assert(_settings_game.economy.day_length_factor >= 1);
 		_tick_skip_counter = _date_fract % _settings_game.economy.day_length_factor;
 		_date_fract /= _settings_game.economy.day_length_factor;
@@ -803,7 +803,7 @@ bool AfterLoadGame()
 	}
 
 	/* Set day length factor to 1 if loading a pre day length savegame */
-	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH) && SlXvIsFeatureMissing(XSLFI_SPRINGPP)) {
+	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH) && SlXvIsFeatureMissing(XSLFI_SPRINGPP) && SlXvIsFeatureMissing(XSLFI_JOKERPP)) {
 		_settings_game.economy.day_length_factor = 1;
 	}
 
@@ -1424,7 +1424,7 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (IsSavegameVersionBefore(SLV_ROAD_TYPES)) {
+	if (IsSavegameVersionBefore(SLV_ROAD_TYPES) && !SlXvIsFeaturePresent(XSLFI_JOKERPP, SL_JOKER_1_27)) {
 		/* Add road subtypes */
 		for (TileIndex t = 0; t < map_size; t++) {
 			bool has_road = false;
@@ -1969,6 +1969,13 @@ bool AfterLoadGame()
 			if ((v->current_order.GetUnloadType() & (OUFB_UNLOAD | OUFB_TRANSFER)) == (OUFB_UNLOAD | OUFB_TRANSFER)) {
 				v->current_order.SetUnloadType(OUFB_TRANSFER);
 				v->current_order.SetLoadType(OLFB_NO_LOAD);
+			}
+		}
+	} else if (SlXvIsFeaturePresent(XSLFI_JOKERPP, 1, SL_JOKER_1_23)) {
+		Order* order;
+		FOR_ALL_ORDERS(order) {
+			if (order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OCV_SLOT_OCCUPANCY) {
+				order->GetXDataRef() = order->GetConditionValue();
 			}
 		}
 	}
@@ -3364,6 +3371,35 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeaturePresent(XSLFI_JOKERPP)) {
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTileType(t, MP_RAILWAY) && HasSignals(t)) {
+				if (GetSignalType(t, TRACK_LOWER) == SIGTYPE_PROG) SetSignalType(t, TRACK_LOWER, SIGTYPE_NORMAL);
+				if (GetSignalType(t, TRACK_UPPER) == SIGTYPE_PROG) SetSignalType(t, TRACK_UPPER, SIGTYPE_NORMAL);
+			}
+		}
+		Vehicle *v;
+		FOR_ALL_VEHICLES(v) {
+			SB(v->vehicle_flags, 10, 2, 0);
+		}
+		extern std::vector<OrderList *> _jokerpp_auto_separation;
+		extern std::vector<OrderList *> _jokerpp_non_auto_separation;
+		for (OrderList *list : _jokerpp_auto_separation) {
+			for (Vehicle *w = list->GetFirstSharedVehicle(); w != nullptr; w = w->NextShared()) {
+				SetBit(w->vehicle_flags, VF_TIMETABLE_SEPARATION);
+				w->ClearSeparation();
+			}
+		}
+		for (OrderList *list : _jokerpp_non_auto_separation) {
+			for (Vehicle *w = list->GetFirstSharedVehicle(); w != nullptr; w = w->NextShared()) {
+				ClrBit(w->vehicle_flags, VF_TIMETABLE_SEPARATION);
+				w->ClearSeparation();
+			}
+		}
+		_jokerpp_auto_separation.clear();
+		_jokerpp_non_auto_separation.clear();
+	}
+
 	/*
 	 * Only keep order-backups for network clients (and when replaying).
 	 * If we are a network server or not networking, then we just loaded a previously
@@ -3686,11 +3722,6 @@ bool AfterLoadGame()
 	/* Set 0.1 increment town cargo scale factor setting from old 1 increment setting */
 	if (!SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_ADJ, 2)) {
 		_settings_game.economy.town_cargo_scale_factor = _settings_game.economy.old_town_cargo_factor * 10;
-	}
-
-	/* Set day length factor to 1 if loading a pre day length savegame */
-	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH) && SlXvIsFeatureMissing(XSLFI_SPRINGPP)) {
-		_settings_game.economy.day_length_factor = 1;
 	}
 
 	if (SlXvIsFeatureMissing(XSLFI_SAFER_CROSSINGS)) {

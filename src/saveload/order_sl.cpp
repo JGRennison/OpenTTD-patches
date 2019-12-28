@@ -16,6 +16,10 @@
 
 #include "../safeguards.h"
 
+static uint32 _jokerpp_separation_mode;
+std::vector<OrderList *> _jokerpp_auto_separation;
+std::vector<OrderList *> _jokerpp_non_auto_separation;
+
 /**
  * Converts this order from an old savegame's version;
  * it moves all bits to the new location.
@@ -257,6 +261,8 @@ const SaveLoad *GetOrderListDescription()
 		SLE_CONDVAR_X(OrderList, scheduled_dispatch_start_full_date_fract, SLE_UINT16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
 		SLE_CONDVAR_X(OrderList, scheduled_dispatch_last_dispatch,         SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
 		SLE_CONDVAR_X(OrderList, scheduled_dispatch_max_delay,             SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
+		SLEG_CONDVAR_X(_jokerpp_separation_mode,                           SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP)),
+		SLE_CONDNULL_X(21,                                                             SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP)),
 		SLE_END()
 	};
 
@@ -275,12 +281,21 @@ static void Save_ORDL()
 
 static void Load_ORDL()
 {
+	_jokerpp_auto_separation.clear();
+	_jokerpp_non_auto_separation.clear();
 	int index;
 
 	while ((index = SlIterateArray()) != -1) {
 		/* set num_orders to 0 so it's a valid OrderList */
 		OrderList *list = new (index) OrderList(0);
 		SlObject(list, GetOrderListDescription());
+		if (SlXvIsFeaturePresent(XSLFI_JOKERPP)) {
+			if (_jokerpp_separation_mode == 0) {
+				_jokerpp_auto_separation.push_back(list);
+			} else {
+				_jokerpp_non_auto_separation.push_back(list);
+			}
+		}
 	}
 
 }
