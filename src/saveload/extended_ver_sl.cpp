@@ -246,6 +246,7 @@ bool SlXvCheckSpecialSavegameVersions()
 		_sl_xv_feature_versions[XSLFI_MORE_COND_ORDERS] = 1;
 		_sl_xv_feature_versions[XSLFI_TRACE_RESTRICT] = 1;
 		_sl_xv_feature_versions[XSLFI_CARGO_TYPE_ORDERS] = 1;
+		_sl_xv_feature_versions[XSLFI_RAIL_AGEING] = 1;
 		if (_sl_version >= SL_JOKER_1_21) _sl_xv_feature_versions[XSLFI_LINKGRAPH_DAY_SCALE] = 1;
 		if (_sl_version >= SL_JOKER_1_24) _sl_xv_feature_versions[XSLFI_TIMETABLE_EXTRA] = 1;
 		if (_sl_version >= SL_JOKER_1_24) _sl_xv_feature_versions[XSLFI_ORDER_EXTRA_DATA] = 1;
