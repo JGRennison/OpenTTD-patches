@@ -3284,7 +3284,7 @@ draw_default_foundation:
 			DrawRoadOverlays(ti, PAL_NONE, road_rti, tram_rti, sprite_offset, sprite_offset);
 		} else {
 			/* Non-drivethrough road stops are only valid for roads. */
-			assert(road_rt != INVALID_ROADTYPE && tram_rt == INVALID_ROADTYPE);
+			assert_tile(road_rt != INVALID_ROADTYPE && tram_rt == INVALID_ROADTYPE, ti->tile);
 
 			if (road_rti->UsesOverlay()) {
 				DiagDirection dir = GetRoadStopDir(ti->tile);
