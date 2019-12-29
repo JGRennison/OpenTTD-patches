@@ -1451,6 +1451,44 @@ bool AfterLoadGame()
 				SB(_me[t].m7, 6, 2, 0); // Clear pre-NRT road type bits.
 			}
 		}
+	} else if (SlXvIsFeaturePresent(XSLFI_JOKERPP, SL_JOKER_1_27)) {
+		uint next_road_type = 0;
+		uint next_tram_type = 0;
+		RoadType road_types[32];
+		RoadType tram_types[32];
+		MemSetT(road_types, ROADTYPE_ROAD, 31);
+		MemSetT(tram_types, ROADTYPE_TRAM, 31);
+		road_types[31] = INVALID_ROADTYPE;
+		tram_types[31] = INVALID_ROADTYPE;
+		for (RoadType rt = ROADTYPE_BEGIN; rt < ROADTYPE_END; rt++) {
+			if (RoadTypeIsRoad(rt)) {
+				if (next_road_type < 31) road_types[next_road_type++] = rt;
+			} else {
+				if (next_tram_type < 31) tram_types[next_tram_type++] = rt;
+			}
+		}
+		for (TileIndex t = 0; t < map_size; t++) {
+			bool has_road = false;
+			switch (GetTileType(t)) {
+				case MP_ROAD:
+					has_road = true;
+					break;
+				case MP_STATION:
+					has_road = IsRoadStop(t);
+					break;
+				case MP_TUNNELBRIDGE:
+					has_road = GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD;
+					break;
+				default:
+					break;
+			}
+			if (has_road) {
+				RoadType road_rt = road_types[(GB(_me[t].m7, 6, 1) << 4) | GB(_m[t].m4, 0, 4)];
+				RoadType tram_rt = tram_types[(GB(_me[t].m7, 7, 1) << 4) | GB(_m[t].m4, 4, 4)];
+				SetRoadTypes(t, road_rt, tram_rt);
+				SB(_me[t].m7, 6, 2, 0);
+			}
+		}
 	}
 
 	if (SlXvIsFeatureMissing(XSLFI_DUAL_RAIL_TYPES)) {
