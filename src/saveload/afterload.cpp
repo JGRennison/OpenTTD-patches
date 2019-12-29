@@ -3455,7 +3455,7 @@ bool AfterLoadGame()
 #endif
 	}
 
-	if (IsSavegameVersionBefore(SLV_198)) {
+	if (IsSavegameVersionBefore(SLV_198) && !SlXvIsFeaturePresent(XSLFI_JOKERPP, SL_JOKER_1_27)) {
 		/* Convert towns growth_rate and grow_counter to ticks */
 		Town *t;
 		FOR_ALL_TOWNS(t) {
