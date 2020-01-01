@@ -102,6 +102,21 @@ class NIHVehicle : public NIHelper {
 		seprintf(buffer, lastof(buffer), "  V Cache: max speed: %u, cargo age period: %u, vis effect: %u",
 				v->vcache.cached_max_speed, v->vcache.cached_cargo_age_period, v->vcache.cached_vis_effect);
 		print(buffer);
+		if (v->cargo_type != CT_INVALID) {
+			seprintf(buffer, lastof(buffer), "  V Cargo: type: %u, cap: %u, transfer: %u, deliver: %u, keep: %u, load: %u",
+					v->cargo_type, v->cargo_cap,
+					v->cargo.ActionCount(VehicleCargoList::MTA_TRANSFER), v->cargo.ActionCount(VehicleCargoList::MTA_DELIVER),
+					v->cargo.ActionCount(VehicleCargoList::MTA_KEEP), v->cargo.ActionCount(VehicleCargoList::MTA_LOAD));
+			print(buffer);
+		}
+		if (BaseStation::IsValidID(v->last_station_visited)) {
+			seprintf(buffer, lastof(buffer), "  V Last station visited: %u, %s", v->last_station_visited, BaseStation::Get(v->last_station_visited)->GetCachedName());
+			print(buffer);
+		}
+		if (BaseStation::IsValidID(v->last_loading_station)) {
+			seprintf(buffer, lastof(buffer), "  V Last loading visited: %u, %s", v->last_loading_station, BaseStation::Get(v->last_loading_station)->GetCachedName());
+			print(buffer);
+		}
 		if (v->IsGroundVehicle()) {
 			const GroundVehicleCache &gvc = *(v->GetGroundVehicleCache());
 			seprintf(buffer, lastof(buffer), "  GV Cache: weight: %u, slope res: %u, max TE: %u, axle res: %u",
