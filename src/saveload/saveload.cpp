@@ -728,7 +728,10 @@ int SlIterateArray()
 
 	/* After reading in the whole array inside the loop
 	 * we must have read in all the data, so we must be at end of current block. */
-	if (_next_offs != 0 && _sl.reader->GetSize() != _next_offs) SlErrorCorrupt("Invalid chunk size");
+	if (_next_offs != 0 && _sl.reader->GetSize() != _next_offs) {
+		DEBUG(sl, 1, "Invalid chunk size: " PRINTF_SIZE " != " PRINTF_SIZE, _sl.reader->GetSize(), _next_offs);
+		SlErrorCorrupt("Invalid chunk size");
+	}
 
 	for (;;) {
 		uint length = SlReadArrayLength();
@@ -2062,7 +2065,10 @@ static void SlLoadChunk(const ChunkHandler *ch)
 				_sl.obj_len = len;
 				endoffs = _sl.reader->GetSize() + len;
 				ch->load_proc();
-				if (_sl.reader->GetSize() != endoffs) SlErrorCorrupt("Invalid chunk size");
+				if (_sl.reader->GetSize() != endoffs) {
+					DEBUG(sl, 1, "Invalid chunk size: " PRINTF_SIZE " != " PRINTF_SIZE ", (" PRINTF_SIZE ")", _sl.reader->GetSize(), endoffs, len);
+					SlErrorCorrupt("Invalid chunk size");
+				}
 			} else {
 				SlErrorCorrupt("Invalid chunk type");
 			}
@@ -2145,7 +2151,10 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 				} else {
 					SlSkipBytes(len);
 				}
-				if (_sl.reader->GetSize() != endoffs) SlErrorCorrupt("Invalid chunk size");
+				if (_sl.reader->GetSize() != endoffs) {
+					DEBUG(sl, 1, "Invalid chunk size: " PRINTF_SIZE " != " PRINTF_SIZE ", (" PRINTF_SIZE ")", _sl.reader->GetSize(), endoffs, len);
+					SlErrorCorrupt("Invalid chunk size");
+				}
 			} else {
 				SlErrorCorrupt("Invalid chunk type");
 			}
