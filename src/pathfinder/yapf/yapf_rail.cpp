@@ -680,29 +680,31 @@ bool YapfTrainCheckReverse(const Train *v)
 		/* front in tunnel / on bridge */
 		DiagDirection dir_into_wormhole = GetTunnelBridgeDirection(tile);
 
-		if (TrackdirToExitdir(td) == dir_into_wormhole) tile = GetOtherTunnelBridgeEnd(tile);
-		/* Now 'tile' is the tunnel entry/bridge ramp the train will reach when driving forward */
-
 		/* Current position of the train in the wormhole */
 		TileIndex cur_tile = TileVirtXY(v->x_pos, v->y_pos);
 
 		/* Add distance to drive in the wormhole as penalty for the forward path, i.e. bonus for the reverse path
 		 * Note: Negative penalties are ok for the start tile. */
-		reverse_penalty -= DistanceManhattan(cur_tile, tile) * YAPF_TILE_LENGTH;
+		if (TrackdirToExitdir(td) == dir_into_wormhole) {
+			reverse_penalty += DistanceManhattan(cur_tile, tile) * YAPF_TILE_LENGTH;
+		} else {
+			reverse_penalty -= DistanceManhattan(cur_tile, tile) * YAPF_TILE_LENGTH;
+		}
 	}
 
 	if (last_veh->track & TRACK_BIT_WORMHOLE) {
 		/* back in tunnel / on bridge */
 		DiagDirection dir_into_wormhole = GetTunnelBridgeDirection(tile_rev);
 
-		if (TrackdirToExitdir(td_rev) == dir_into_wormhole) tile_rev = GetOtherTunnelBridgeEnd(tile_rev);
-		/* Now 'tile_rev' is the tunnel entry/bridge ramp the train will reach when reversing */
-
 		/* Current position of the last wagon in the wormhole */
 		TileIndex cur_tile = TileVirtXY(last_veh->x_pos, last_veh->y_pos);
 
 		/* Add distance to drive in the wormhole as penalty for the revere path. */
-		reverse_penalty += DistanceManhattan(cur_tile, tile_rev) * YAPF_TILE_LENGTH;
+		if (TrackdirToExitdir(td_rev) == dir_into_wormhole) {
+			reverse_penalty -= DistanceManhattan(cur_tile, tile_rev) * YAPF_TILE_LENGTH;
+		} else {
+			reverse_penalty += DistanceManhattan(cur_tile, tile_rev) * YAPF_TILE_LENGTH;
+		}
 	}
 
 	typedef bool (*PfnCheckReverseTrain)(const Train*, TileIndex, Trackdir, TileIndex, Trackdir, int);
