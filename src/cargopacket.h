@@ -202,6 +202,7 @@ public:
 	static void InvalidateAllFrom(SourceType src_type, SourceID src);
 	static void InvalidateAllFrom(StationID sid);
 	static void AfterLoad();
+	static void PostVehiclesAfterLoad();
 	static bool ValidateDeferredCargoPayments();
 };
 
@@ -585,6 +586,11 @@ public:
 	uint Load(uint max_move, VehicleCargoList *dest, TileIndex load_place, StationIDStack next);
 	uint Truncate(uint max_move = UINT_MAX, StationCargoAmountMap *cargo_per_source = nullptr);
 	uint Reroute(uint max_move, StationCargoList *dest, StationID avoid, StationID avoid2, const GoodsEntry *ge);
+
+	void AfterLoadIncreaseReservationCount(uint count)
+	{
+		this->reserved_count += count;
+	}
 
 	/**
 	 * Are two the two CargoPackets mergeable in the context of

@@ -794,7 +794,7 @@ bool AfterLoadGame()
 	/* The value of _date_fract got divided, so make sure that old games are converted correctly. */
 	if (IsSavegameVersionBefore(SLV_11, 1) || (IsSavegameVersionBefore(SLV_147) && _date_fract > DAY_TICKS)) _date_fract /= 885;
 
-	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP) || SlXvIsFeaturePresent(XSLFI_JOKERPP)) {
+	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP) || SlXvIsFeaturePresent(XSLFI_JOKERPP) || SlXvIsFeaturePresent(XSLFI_CHILLPP)) {
 		assert(_settings_game.economy.day_length_factor >= 1);
 		_tick_skip_counter = _date_fract % _settings_game.economy.day_length_factor;
 		_date_fract /= _settings_game.economy.day_length_factor;
@@ -803,7 +803,7 @@ bool AfterLoadGame()
 	}
 
 	/* Set day length factor to 1 if loading a pre day length savegame */
-	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH) && SlXvIsFeatureMissing(XSLFI_SPRINGPP) && SlXvIsFeatureMissing(XSLFI_JOKERPP)) {
+	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH) && SlXvIsFeatureMissing(XSLFI_SPRINGPP) && SlXvIsFeatureMissing(XSLFI_JOKERPP) && SlXvIsFeatureMissing(XSLFI_CHILLPP)) {
 		_settings_game.economy.day_length_factor = 1;
 	}
 
@@ -944,6 +944,8 @@ bool AfterLoadGame()
 
 	/* Update all vehicles */
 	AfterLoadVehicles(true);
+
+	CargoPacket::PostVehiclesAfterLoad();
 
 	/* Update template vehicles */
 	AfterLoadTemplateVehicles();
@@ -3333,6 +3335,16 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeaturePresent(XSLFI_CHILLPP)) {
+		// re-arrange vehicle_flags
+		Vehicle *v;
+		FOR_ALL_VEHICLES(v) {
+			SB(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, 1, GB(v->vehicle_flags, 7, 1));
+			SB(v->vehicle_flags, VF_PATHFINDER_LOST, 1, GB(v->vehicle_flags, 8, 1));
+			SB(v->vehicle_flags, VF_SERVINT_IS_CUSTOM, 7, 0);
+		}
+	}
+
 	if (IsSavegameVersionBefore(SLV_188)) {
 		/* Fix articulated road vehicles.
 		 * Some curves were shorter than other curves.
@@ -3436,6 +3448,14 @@ bool AfterLoadGame()
 		}
 		_jokerpp_auto_separation.clear();
 		_jokerpp_non_auto_separation.clear();
+	}
+	if (SlXvIsFeaturePresent(XSLFI_CHILLPP)) {
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTileType(t, MP_RAILWAY) && HasSignals(t)) {
+				if (GetSignalType(t, TRACK_LOWER) == 7) SetSignalType(t, TRACK_LOWER, SIGTYPE_NORMAL);
+				if (GetSignalType(t, TRACK_UPPER) == 7) SetSignalType(t, TRACK_UPPER, SIGTYPE_NORMAL);
+			}
+		}
 	}
 
 	/*

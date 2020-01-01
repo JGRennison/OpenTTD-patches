@@ -256,6 +256,23 @@ bool SlXvCheckSpecialSavegameVersions()
 		_sl_is_faked_ext = true;
 		return true;
 	}
+	if (_sl_version >= SL_CHILLPP_232 && _sl_version <= SL_CHILLPP_233) { /* 232 - 233 */
+		DEBUG(sl, 1, "Loading a ChillPP v14.7 savegame version %d as version 160", _sl_version);
+		_sl_xv_feature_versions[XSLFI_CHILLPP] = _sl_version;
+		_sl_xv_feature_versions[XSLFI_ZPOS_32_BIT] = 1;
+		_sl_xv_feature_versions[XSLFI_TOWN_CARGO_ADJ] = 1;
+		_sl_xv_feature_versions[XSLFI_TRAFFIC_LIGHTS] = 1;
+		_sl_xv_feature_versions[XSLFI_IMPROVED_BREAKDOWNS] = 1;
+		_sl_xv_feature_versions[XSLFI_INFRA_SHARING] = 1;
+		_sl_xv_feature_versions[XSLFI_AUTO_TIMETABLE] = 1;
+		_sl_xv_feature_versions[XSLFI_SIG_TUNNEL_BRIDGE] = 1;
+		_sl_xv_feature_versions[XSLFI_RAIL_AGEING] = 1;
+		_sl_xv_discardable_chunk_ids.push_back('LGRP');
+		_sl_xv_discardable_chunk_ids.push_back('SSIG');
+		_sl_version = SLV_160;
+		_sl_is_faked_ext = true;
+		return true;
+	}
 	return false;
 }
 

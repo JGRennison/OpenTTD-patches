@@ -286,8 +286,8 @@ const SaveLoad *GetGoodsDesc()
 		SLEG_CONDVAR(            _cargo_feeder_share,  SLE_FILE_U32 | SLE_VAR_I64, SLV_14, SLV_65),
 		SLEG_CONDVAR(            _cargo_feeder_share,  SLE_INT64,                  SLV_65, SLV_68),
 		 SLE_CONDVAR(GoodsEntry, amount_fract,         SLE_UINT8,                 SLV_150, SL_MAX_VERSION),
-		SLEG_CONDPTRDEQ(         _packets,             REF_CARGO_PACKET,           SLV_68, SLV_183),
-		SLEG_CONDVAR(            _num_dests,           SLE_UINT32,                SLV_183, SL_MAX_VERSION),
+		SLEG_CONDPTRDEQ_X(       _packets,             REF_CARGO_PACKET,           SLV_68, SLV_183, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, 0, 0)),
+		SLEG_CONDVAR_X(          _num_dests,           SLE_UINT32,                SLV_183, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_OR, XSLFI_CHILLPP)),
 		 SLE_CONDVAR(GoodsEntry, cargo.reserved_count, SLE_UINT,                  SLV_181, SL_MAX_VERSION),
 		 SLE_CONDVAR(GoodsEntry, link_graph,           SLE_UINT16,                SLV_183, SL_MAX_VERSION),
 		 SLE_CONDVAR(GoodsEntry, node,                 SLE_UINT16,                SLV_183, SL_MAX_VERSION),
@@ -623,7 +623,7 @@ static void Load_STNN()
 						}
 						fs->SetRawFlags(SlReadUint16());
 					}
-				} else {
+				} else if (SlXvIsFeatureMissing(XSLFI_CHILLPP)) {
 					FlowSaveLoad flow;
 					FlowStat *fs = nullptr;
 					for (uint32 j = 0; j < _num_flows; ++j) {
@@ -642,9 +642,18 @@ static void Load_STNN()
 						prev_source = flow.source;
 					}
 				}
-				if (IsSavegameVersionBefore(SLV_183)) {
+				if (IsSavegameVersionBefore(SLV_183) && SlXvIsFeatureMissing(XSLFI_CHILLPP)) {
 					SwapPackets(&st->goods[i]);
 				} else {
+					if (SlXvIsFeaturePresent(XSLFI_CHILLPP)) {
+						SlSkipBytes(8);
+						uint num_links = SlReadUint16();
+						uint num_flows = SlReadUint32();
+						SlSkipBytes(6);
+						SlSkipBytes(18 * num_links);
+						SlSkipBytes(16 * num_flows);
+					}
+
 					StationCargoPair pair;
 					for (uint j = 0; j < _num_dests; ++j) {
 						SlObjectLoadFiltered(&pair, _cargo_list_desc); // _cargo_list_desc has no conditionals
@@ -682,7 +691,7 @@ static void Ptrs_STNN()
 	FOR_ALL_STATIONS(st) {
 		for (CargoID i = 0; i < num_cargo; i++) {
 			GoodsEntry *ge = &st->goods[i];
-			if (IsSavegameVersionBefore(SLV_183)) {
+			if (IsSavegameVersionBefore(SLV_183) && SlXvIsFeatureMissing(XSLFI_CHILLPP)) {
 				SwapPackets(ge);
 				SlObjectPtrOrNullFiltered(ge, _filtered_goods_desc.data());
 				SwapPackets(ge);

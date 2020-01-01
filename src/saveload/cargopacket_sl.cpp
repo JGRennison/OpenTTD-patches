@@ -10,6 +10,7 @@
 #include "../stdafx.h"
 #include "../vehicle_base.h"
 #include "../station_base.h"
+#include "../scope_info.h"
 #include "../3rdparty/cpp-btree/btree_map.h"
 
 #include "saveload.h"
@@ -84,6 +85,27 @@ extern btree::btree_map<uint64, Money> _cargo_packet_deferred_payments;
 	if (IsSavegameVersionBefore(SLV_181)) {
 		Vehicle *v;
 		FOR_ALL_VEHICLES(v) v->cargo.KeepAll();
+	}
+}
+
+/**
+ * Savegame conversion for cargopackets.
+ */
+/* static */ void CargoPacket::PostVehiclesAfterLoad()
+{
+	if (SlXvIsFeaturePresent(XSLFI_CHILLPP)) {
+		extern std::map<VehicleID, CargoPacketList> _veh_cpp_packets;
+		for (auto &iter : _veh_cpp_packets) {
+			if (iter.second.empty()) continue;
+			Vehicle *v = Vehicle::Get(iter.first);
+			Station *st = Station::Get(v->First()->last_station_visited);
+			assert_msg(st != nullptr, "%s", scope_dumper().VehicleInfo(v));
+			for (CargoPacket *cp : iter.second) {
+				st->goods[v->cargo_type].cargo.AfterLoadIncreaseReservationCount(cp->count);
+				v->cargo.Append(cp, VehicleCargoList::MTA_LOAD);
+			}
+		}
+		_veh_cpp_packets.clear();
 	}
 }
 

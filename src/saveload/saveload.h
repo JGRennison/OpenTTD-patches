@@ -328,6 +328,8 @@ enum SaveLoadVersion : uint16 {
 	SL_JOKER_1_25 = 284,
 	SL_JOKER_1_26 = 285,
 	SL_JOKER_1_27 = 286,
+	SL_CHILLPP_232 = 232,
+	SL_CHILLPP_233 = 233,
 };
 
 /** Save or load result codes. */

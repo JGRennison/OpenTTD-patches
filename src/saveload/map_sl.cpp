@@ -67,6 +67,20 @@ static void Load_MAPT()
 
 static void Load_MAPH()
 {
+	if (SlXvIsFeaturePresent(XSLFI_CHILLPP)) {
+		if (SlGetFieldLength() != 0) {
+			_sl_xv_feature_versions[XSLFI_HEIGHT_8_BIT] = 2;
+			std::array<uint16, MAP_SL_BUF_SIZE> buf;
+			TileIndex size = MapSize();
+
+			for (TileIndex i = 0; i != size;) {
+				SlArray(buf.data(), MAP_SL_BUF_SIZE, SLE_UINT16);
+				for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].height = buf[j];
+			}
+		}
+		return;
+	}
+
 	std::array<byte, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
