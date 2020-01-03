@@ -3344,13 +3344,20 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (SlXvIsFeaturePresent(XSLFI_CHILLPP)) {
+	if (SlXvIsFeaturePresent(XSLFI_CHILLPP, SL_CHILLPP_232)) {
 		// re-arrange vehicle_flags
 		Vehicle *v;
 		FOR_ALL_VEHICLES(v) {
 			SB(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, 1, GB(v->vehicle_flags, 7, 1));
 			SB(v->vehicle_flags, VF_PATHFINDER_LOST, 1, GB(v->vehicle_flags, 8, 1));
 			SB(v->vehicle_flags, VF_SERVINT_IS_CUSTOM, 7, 0);
+		}
+	} else if (SlXvIsFeaturePresent(XSLFI_CHILLPP)) {
+		// re-arrange vehicle_flags
+		Vehicle *v;
+		FOR_ALL_VEHICLES(v) {
+			SB(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, 1, GB(v->vehicle_flags, 6, 1));
+			SB(v->vehicle_flags, VF_STOP_LOADING, 9, 0);
 		}
 	}
 
