@@ -1514,6 +1514,15 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeaturePresent(XSLFI_CHILLPP)) {
+		/* fix signal tunnel/bridge PBS */
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTileType(t, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL && IsTunnelBridgeSignalSimulationEntrance(t)) {
+				UnreserveAcrossRailTunnelBridge(t);
+			}
+		}
+	}
+
 	if (!SlXvIsFeaturePresent(XSLFI_CUSTOM_BRIDGE_HEADS, 2)) {
 		/* change map bits for rail bridge heads */
 		for (TileIndex t = 0; t < map_size; t++) {
