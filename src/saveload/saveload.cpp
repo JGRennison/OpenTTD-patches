@@ -82,6 +82,7 @@ bool _do_autosave;           ///< are we doing an autosave at the moment?
 
 extern bool _sl_is_ext_version;
 extern bool _sl_maybe_springpp;
+extern bool _sl_maybe_chillpp;
 
 /** What are we currently doing? */
 enum SaveLoadAction {
@@ -3190,7 +3191,8 @@ static SaveOrLoadResult DoLoad(LoadFilter *reader, bool load_check)
 				special_version = SlXvCheckSpecialSavegameVersions();
 			}
 
-			DEBUG(sl, 1, "Loading savegame version %d%s%s", _sl_version, _sl_is_ext_version ? " (extended)" : "", _sl_maybe_springpp ? " which might be SpringPP" : "");
+			DEBUG(sl, 1, "Loading savegame version %d%s%s%s", _sl_version, _sl_is_ext_version ? " (extended)" : "",
+					_sl_maybe_springpp ? " which might be SpringPP" : "", _sl_maybe_chillpp ? " which might be ChillPP" : "");
 
 			/* Is the version higher than the current? */
 			if (_sl_version > SAVEGAME_VERSION && !special_version) SlError(STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME);

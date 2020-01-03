@@ -23,6 +23,8 @@
 static uint32 _map_dim_x;
 static uint32 _map_dim_y;
 
+extern bool _sl_maybe_chillpp;
+
 static const SaveLoadGlobVarList _map_dimensions[] = {
 	SLEG_CONDVAR(_map_dim_x, SLE_UINT32, SLV_6, SL_MAX_VERSION),
 	SLEG_CONDVAR(_map_dim_y, SLE_UINT32, SLV_6, SL_MAX_VERSION),
@@ -65,8 +67,24 @@ static void Load_MAPT()
 	}
 }
 
+static void Check_MAPH_common()
+{
+	if (_sl_maybe_chillpp && (SlGetFieldLength() == 0 || SlGetFieldLength() == _map_dim_x * _map_dim_y * 2)) {
+		_sl_maybe_chillpp = false;
+		extern void SlXvChillPPSpecialSavegameVersions();
+		SlXvChillPPSpecialSavegameVersions();
+	}
+}
+
+static void Check_MAPH()
+{
+	Check_MAPH_common();
+	SlSkipBytes(SlGetFieldLength());
+}
+
 static void Load_MAPH()
 {
+	Check_MAPH_common();
 	if (SlXvIsFeaturePresent(XSLFI_CHILLPP)) {
 		if (SlGetFieldLength() != 0) {
 			_sl_xv_feature_versions[XSLFI_HEIGHT_8_BIT] = 2;
@@ -282,7 +300,7 @@ static void Save_WMAP()
 extern const ChunkHandler _map_chunk_handlers[] = {
 	{ 'MAPS', Save_MAPS, Load_MAPS, nullptr, Check_MAPS, CH_RIFF },
 	{ 'MAPT', nullptr,      Load_MAPT, nullptr, nullptr,       CH_RIFF },
-	{ 'MAPH', nullptr,      Load_MAPH, nullptr, nullptr,       CH_RIFF },
+	{ 'MAPH', nullptr,      Load_MAPH, nullptr, Check_MAPH,    CH_RIFF },
 	{ 'MAPO', nullptr,      Load_MAP1, nullptr, nullptr,       CH_RIFF },
 	{ 'MAP2', nullptr,      Load_MAP2, nullptr, nullptr,       CH_RIFF },
 	{ 'M3LO', nullptr,      Load_MAP3, nullptr, nullptr,       CH_RIFF },

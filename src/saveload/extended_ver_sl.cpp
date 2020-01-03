@@ -50,6 +50,7 @@ uint16 _sl_xv_feature_versions[XSLFI_SIZE];                 ///< array of all kn
 bool _sl_is_ext_version;                                    ///< is this an extended savegame version, with more info in the SLXI chunk?
 bool _sl_is_faked_ext;                                      ///< is this a faked extended savegame version, with no SLXI chunk? See: SlXvCheckSpecialSavegameVersions.
 bool _sl_maybe_springpp;                                    ///< is this possibly a SpringPP savegame?
+bool _sl_maybe_chillpp;                                     ///< is this possibly a ChillPP v8 savegame?
 std::vector<uint32> _sl_xv_discardable_chunk_ids;           ///< list of chunks IDs which we can discard if no chunk loader exists
 
 static const uint32 _sl_xv_slxi_chunk_version = 0;          ///< current version of SLXI chunk
@@ -176,6 +177,7 @@ void SlXvResetState()
 	_sl_is_ext_version = false;
 	_sl_is_faked_ext = false;
 	_sl_maybe_springpp = false;
+	_sl_maybe_chillpp = false;
 	_sl_xv_discardable_chunk_ids.clear();
 	memset(_sl_xv_feature_versions, 0, sizeof(_sl_xv_feature_versions));
 }
@@ -254,6 +256,10 @@ bool SlXvCheckSpecialSavegameVersions()
 		_sl_xv_discardable_chunk_ids.push_back('SLNK');
 		_sl_version = SLV_197;
 		_sl_is_faked_ext = true;
+		return true;
+	}
+	if (_sl_version == SL_CHILLPP_201) { /* 232 - 233 */
+		_sl_maybe_chillpp = true;
 		return true;
 	}
 	if (_sl_version >= SL_CHILLPP_232 && _sl_version <= SL_CHILLPP_233) { /* 232 - 233 */
@@ -346,6 +352,24 @@ void SlXvSpringPPSpecialSavegameVersions()
 		_sl_xv_feature_versions[XSLFI_SIG_TUNNEL_BRIDGE] = 1;
 
 		_sl_xv_discardable_chunk_ids.push_back('SNOW');
+	}
+}
+
+void SlXvChillPPSpecialSavegameVersions()
+{
+	extern SaveLoadVersion _sl_version;
+
+	if (_sl_version == SL_CHILLPP_201) { /* 201 */
+		DEBUG(sl, 1, "Loading a ChillPP v8 savegame version %d as version 143", _sl_version);
+		_sl_xv_feature_versions[XSLFI_CHILLPP] = _sl_version;
+		_sl_xv_feature_versions[XSLFI_ZPOS_32_BIT] = 1;
+		_sl_xv_feature_versions[XSLFI_TOWN_CARGO_ADJ] = 1;
+		_sl_xv_feature_versions[XSLFI_AUTO_TIMETABLE] = 1;
+		_sl_xv_feature_versions[XSLFI_SIG_TUNNEL_BRIDGE] = 1;
+		_sl_xv_feature_versions[XSLFI_RAIL_AGEING] = 1;
+		_sl_xv_discardable_chunk_ids.push_back('LGRP');
+		_sl_version = SLV_143;
+		_sl_is_faked_ext = true;
 	}
 }
 
