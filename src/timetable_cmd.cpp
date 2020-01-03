@@ -298,6 +298,9 @@ CommandCost CmdBulkChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p
 			Order *order = v->GetOrder(order_number);
 			if (order == nullptr || order->IsType(OT_IMPLICIT)) continue;
 
+			// Exclude waypoints from set all wait times command
+			if (Extract<ModifyTimetableFlags, 28, 3>(p1) == MTF_WAIT_TIME && GB(p1, 31, 1) == 0 && order->IsType(OT_GOTO_WAYPOINT)) continue;
+
 			uint32 new_p1 = p1;
 			SB(new_p1, 20, 8, order_number);
 			DoCommand(tile, new_p1, p2, flags, CMD_CHANGE_TIMETABLE);
