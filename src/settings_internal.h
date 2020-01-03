@@ -89,6 +89,7 @@ enum SettingType {
 typedef bool OnChange(int32 var);           ///< callback prototype on data modification
 typedef size_t OnConvert(const char *value); ///< callback prototype for conversion error
 typedef int OnGuiOrder(uint nth);            ///< callback prototype for GUI ordering
+typedef int64 OnXrefValueConvert(int64 val); ///< callback prototype for xref value conversion
 
 /** The last entry in an array of struct SettingDescEnumEntry must use STR_NULL. */
 struct SettingDescEnumEntry {
@@ -115,11 +116,19 @@ struct SettingDescBase {
 	const SettingDescEnumEntry *enumlist; ///< For SGF_ENUM. The last entry must use STR_NULL
 };
 
+struct SettingsXref {
+	const char *target;
+	OnXrefValueConvert *conv;
+
+	SettingsXref() : target(nullptr), conv(nullptr) {}
+	SettingsXref(const char *target_, OnXrefValueConvert *conv_) : target(target_), conv(conv_) {}
+};
+
 struct SettingDesc {
 	SettingDescBase desc;   ///< Settings structure (going to configuration file)
 	SaveLoad save;          ///< Internal structure (going to savegame, parts to config)
 	const char *patx_name;  ///< Name to save/load setting from in PATX chunk, if nullptr save/load from PATS chunk as normal
-	const char *xref;       ///< Name of SettingDesc to use instead of the contents of this one, useful for loading legacy savegames, if nullptr save/load as normal
+	SettingsXref xref;      ///< Details of SettingDesc to use instead of the contents of this one, useful for loading legacy savegames, if target field nullptr save/load as normal
 	OnGuiOrder *orderproc;  ///< Callback procedure for GUI re-ordering
 
 	bool IsEditable(bool do_command = false) const;

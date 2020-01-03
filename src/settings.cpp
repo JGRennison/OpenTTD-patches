@@ -1530,6 +1530,10 @@ static int OrderTownGrowthRate(uint nth)
 
 /* End - GUI order callbacks */
 
+/* Begin - xref conversion callbacks */
+
+/* End - xref conversion callbacks */
+
 /**
  * Prepare for reading and old diff_custom by zero-ing the memory.
  */
@@ -2368,9 +2372,9 @@ void IConsoleListSettings(const char *prefilter)
  * a pointer to a struct which is getting saved
  */
 static void LoadSettingsXref(const SettingDesc *osd, void *object) {
-	DEBUG(sl, 3, "PATS chunk: Loading xref setting: '%s'", osd->xref);
+	DEBUG(sl, 3, "PATS chunk: Loading xref setting: '%s'", osd->xref.target);
 	uint index = 0;
-	const SettingDesc *setting_xref = GetSettingFromName(osd->xref, &index, true);
+	const SettingDesc *setting_xref = GetSettingFromName(osd->xref.target, &index, true);
 	assert(setting_xref != nullptr);
 
 	// Generate a new SaveLoad from the xref target using the version params from the source
@@ -2381,7 +2385,9 @@ static void LoadSettingsXref(const SettingDesc *osd, void *object) {
 	void *ptr = GetVariableAddress(object, &sld);
 
 	if (!SlObjectMember(ptr, &sld)) return;
-	if (IsNumericType(sld.conv)) Write_ValidateSetting(ptr, setting_xref, ReadValue(ptr, sld.conv));
+	int64 val = ReadValue(ptr, sld.conv);
+	if (osd->xref.conv != nullptr) val = osd->xref.conv(val);
+	if (IsNumericType(sld.conv)) Write_ValidateSetting(ptr, setting_xref, val);
 }
 
 /**
@@ -2397,7 +2403,7 @@ static void LoadSettings(const SettingDesc *osd, void *object)
 	for (; osd->save.cmd != SL_END; osd++) {
 		if (osd->patx_name != nullptr) continue;
 		const SaveLoad *sld = &osd->save;
-		if (osd->xref != nullptr) {
+		if (osd->xref.target != nullptr) {
 			if (sld->ext_feature_test.IsFeaturePresent(_sl_version, sld->version_from, sld->version_to)) LoadSettingsXref(osd, object);
 			continue;
 		}
@@ -2422,7 +2428,7 @@ static void SaveSettings(const SettingDesc *sd, void *object)
 	size_t length = 0;
 	for (i = sd; i->save.cmd != SL_END; i++) {
 		if (i->patx_name != nullptr) continue;
-		if (i->xref != nullptr) continue;
+		if (i->xref.target != nullptr) continue;
 		length += SlCalcObjMemberLength(object, &i->save);
 	}
 	SlSetLength(length);
