@@ -289,7 +289,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 * This is not guaranteed to be bug free  
 * Speed signals are cleared, leaving ordinary signals  
 * Various vehicle, economy, town and other settings are not supported  
-* Link graph data and settings are cleared  
+* Link graph data (but not settings) is cleared  
 * Train stuck counters, traffic lights and other features not in this patch pack are dropped/ignored.
 
 #### A note on branches

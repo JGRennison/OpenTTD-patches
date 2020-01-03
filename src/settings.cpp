@@ -1532,6 +1532,11 @@ static int OrderTownGrowthRate(uint nth)
 
 /* Begin - xref conversion callbacks */
 
+static int64 LinkGraphDistModeXrefChillPP(int64 val)
+{
+	return val ^ 2;
+}
+
 /* End - xref conversion callbacks */
 
 /**
