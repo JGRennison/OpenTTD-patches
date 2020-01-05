@@ -2156,6 +2156,10 @@ static void TileLoop_Road(TileIndex tile)
 
 			if (old_rb != new_rb) {
 				RemoveRoad(tile, DC_EXEC | DC_AUTO | DC_NO_WATER, (old_rb ^ new_rb), RTT_ROAD, true);
+				if (new_rb == 0) {
+					MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+					return;
+				}
 			}
 		}
 
