@@ -1001,6 +1001,11 @@ public:
 					this->vscroll->SetCount((int)this->towns.size()); // Update scrollbar as well.
 				}
 				break;
+
+			case TDIWD_POPULATION_CHANGE:
+				if (this->towns.SortType() == 1) this->towns.ForceResort();
+				break;
+
 			default:
 				this->towns.ForceResort();
 		}
