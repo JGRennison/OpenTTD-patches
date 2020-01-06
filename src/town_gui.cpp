@@ -979,8 +979,6 @@ public:
 	 */
 	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
-		char buf[MAX_LENGTH_TOWN_NAME_CHARS * MAX_CHAR_LENGTH];
-
 		switch (data) {
 			case TDIWD_FORCE_REBUILD:
 				/* This needs to be done in command-scope to enforce rebuilding before resorting invalid data */
@@ -996,11 +994,7 @@ public:
 					const Town *t;
 					FOR_ALL_TOWNS(t) {
 						this->string_filter.ResetState();
-
-						SetDParam(0, t->index);
-						GetString(buf, STR_TOWN_NAME, lastof(buf));
-
-						this->string_filter.AddLine(buf);
+						this->string_filter.AddLine(t->GetCachedName());
 						if (this->string_filter.GetState()) this->towns.push_back(t);
 					}
 
