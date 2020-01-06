@@ -687,7 +687,6 @@ struct TownDirectoryWindow : public Window {
 private:
 	/* Runtime saved values */
 	static Listing last_sorting;
-	static const Town *last_town;
 
 	/* Constants for sorting towns */
 	static const StringID sorter_names[];
@@ -714,7 +713,6 @@ private:
 			this->vscroll->SetCount((uint)this->towns.size()); // Update scrollbar as well.
 		}
 		/* Always sort the towns. */
-		this->last_town = nullptr;
 		this->towns.Sort();
 		this->SetWidgetDirty(WID_TD_LIST); // Force repaint of the displayed towns.
 	}
@@ -1010,7 +1008,6 @@ public:
 };
 
 Listing TownDirectoryWindow::last_sorting = {false, 0};
-const Town *TownDirectoryWindow::last_town = nullptr;
 
 /** Names of the sorting functions. */
 const StringID TownDirectoryWindow::sorter_names[] = {
