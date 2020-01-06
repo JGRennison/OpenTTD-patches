@@ -207,7 +207,7 @@ Industry::~Industry()
  */
 void Industry::PostDestructor(size_t index)
 {
-	InvalidateWindowData(WC_INDUSTRY_DIRECTORY, 0, 0);
+	InvalidateWindowData(WC_INDUSTRY_DIRECTORY, 0, IDIWD_FORCE_REBUILD);
 }
 
 
@@ -1910,7 +1910,7 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 	if (GetIndustrySpec(i->type)->behaviour & INDUSTRYBEH_PLANT_ON_BUILT) {
 		for (uint j = 0; j != 50; j++) PlantRandomFarmField(i);
 	}
-	InvalidateWindowData(WC_INDUSTRY_DIRECTORY, 0, 0);
+	InvalidateWindowData(WC_INDUSTRY_DIRECTORY, 0, IDIWD_FORCE_REBUILD);
 
 	if (!_generating_world) PopulateStationsNearby(i);
 	if (_game_mode == GM_NORMAL) RegisterGameEvents(GEF_INDUSTRY_CREATE);
@@ -2857,7 +2857,7 @@ void IndustryDailyLoop()
 	cur_company.Restore();
 
 	/* production-change */
-	InvalidateWindowData(WC_INDUSTRY_DIRECTORY, 0, 1);
+	InvalidateWindowData(WC_INDUSTRY_DIRECTORY, 0, IDIWD_PRODUCTION_CHANGE);
 }
 
 void IndustryMonthlyLoop()
@@ -2879,7 +2879,7 @@ void IndustryMonthlyLoop()
 	cur_company.Restore();
 
 	/* production-change */
-	InvalidateWindowData(WC_INDUSTRY_DIRECTORY, 0, 1);
+	InvalidateWindowData(WC_INDUSTRY_DIRECTORY, 0, IDIWD_PRODUCTION_CHANGE);
 }
 
 
