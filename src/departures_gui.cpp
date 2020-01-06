@@ -144,8 +144,7 @@ protected:
 		CompanyMask companies = 0;
 		int unitnumber_max[4] = { -1, -1, -1, -1 };
 
-		const Vehicle *v;
-		FOR_ALL_VEHICLES(v) {
+		for (const Vehicle *v : Vehicle::Iterate()) {
 			if (v->type < 4 && this->show_types[v->type] && v->IsPrimaryVehicle()) {
 				const Order *order;
 

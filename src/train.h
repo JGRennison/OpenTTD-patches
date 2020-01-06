@@ -420,6 +420,4 @@ inline int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, 
 	return GetTrainStopLocation(station_id, tile, v, station_ahead, station_length, v->x_pos, v->y_pos);
 }
 
-#define FOR_ALL_TRAINS(var) FOR_ALL_VEHICLES_OF_TYPE(Train, var)
-
 #endif /* TRAIN_H */

@@ -3413,8 +3413,7 @@ void GenerateDefaultSaveName(char *buf, const char *last)
 	 * 'Spectator' as "company" name. */
 	CompanyID cid = _local_company;
 	if (!Company::IsValidID(cid)) {
-		const Company *c;
-		FOR_ALL_COMPANIES(c) {
+		for (const Company *c : Company::Iterate()) {
 			cid = c->index;
 			break;
 		}

@@ -187,8 +187,6 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 	void FillCachedName();
 };
 
-#define FOR_ALL_BASE_STATIONS(var) FOR_ALL_ITEMS_FROM(BaseStation, station_index, var, 0)
-
 /**
  * Class defining several overloaded accessors so we don't
  * have to cast base stations that often
@@ -276,10 +274,13 @@ struct SpecializedStation : public BaseStation {
 		assert(IsExpected(st));
 		return (const T *)st;
 	}
-};
 
-#define FOR_ALL_BASE_STATIONS_OF_TYPE(name, var) \
-	for (size_t station_index = 0; var = nullptr, station_index < name::GetPoolSize(); station_index++) \
-		if ((var = name::GetIfValid(station_index)) != nullptr)
+	/**
+	 * Returns an iterable ensemble of all valid stations of type T
+	 * @param from index of the first station to consider
+	 * @return an iterable ensemble of all valid stations of type T
+	 */
+	static Pool::IterateWrapper<T> Iterate(size_t from = 0) { return Pool::IterateWrapper<T>(from); }
+};
 
 #endif /* BASE_STATION_BASE_H */

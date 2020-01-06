@@ -784,9 +784,7 @@ CommandCost CmdDepotMassAutoReplace(TileIndex tile, DoCommandFlag flags, uint32 
  */
 static bool IsUniqueVehicleName(const char *name)
 {
-	const Vehicle *v;
-
-	FOR_ALL_VEHICLES(v) {
+	for (const Vehicle *v : Vehicle::Iterate()) {
 		if (v->name != nullptr && strcmp(v->name, name) == 0) return false;
 	}
 
@@ -1155,8 +1153,7 @@ CommandCost CmdReplaceTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint3
 
 		// Make sure our replacements still point to the correct thing.
 		if (old_ID != template_vehicle->index) {
-			TemplateReplacement* tr;
-			FOR_ALL_TEMPLATE_REPLACEMENTS(tr) {
+			for (TemplateReplacement *tr : TemplateReplacement::Iterate()) {
 				if (tr->GetTemplateVehicleID() == old_ID) {
 					tr->SetTemplate(template_vehicle->index);
 				}
@@ -1244,8 +1241,7 @@ CommandCost CmdDeleteTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint32
 
 	if (should_execute) {
 		// Remove corresponding template replacements if existing
-		TemplateReplacement *tr;
-		FOR_ALL_TEMPLATE_REPLACEMENTS(tr) {
+		for (TemplateReplacement *tr : TemplateReplacement::Iterate()) {
 			if (tr->Template() == del->index) {
 				delete tr;
 			}

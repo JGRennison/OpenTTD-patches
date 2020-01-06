@@ -156,8 +156,7 @@ public:
 		uint exclusive_left = rtl ? right - icon_width - exclusive_width - 2 : left + icon_width + 2;
 
 		/* Draw list of companies */
-		const Company *c;
-		FOR_ALL_COMPANIES(c) {
+		for (const Company *c : Company::Iterate()) {
 			if ((HasBit(this->town->have_ratings, c->index) || this->town->exclusivity == c->index)) {
 				DrawCompanyIcon(c->index, icon_left, y + icon_y_offset);
 
@@ -706,8 +705,7 @@ private:
 		if (this->towns.NeedRebuild()) {
 			this->towns.clear();
 
-			const Town *t;
-			FOR_ALL_TOWNS(t) {
+			for (const Town *t : Town::Iterate()) {
 				this->towns.push_back(t);
 			}
 
@@ -991,8 +989,7 @@ public:
 				} else {
 					this->towns.clear();
 
-					const Town *t;
-					FOR_ALL_TOWNS(t) {
+					for (const Town *t : Town::Iterate()) {
 						this->string_filter.ResetState();
 						this->string_filter.AddLine(t->GetCachedName());
 						if (this->string_filter.GetState()) this->towns.push_back(t);
@@ -1973,8 +1970,7 @@ static void PlaceProc_House(TileIndex tile)
 	HouseZones house_zones = HouseSpec::Get(_cur_house)->building_availability & HZ_ZONALL;
 	uint best_dist = UINT_MAX;
 	int best_zone = (int)HZB_BEGIN - 1;
-	const Town *t;
-	FOR_ALL_TOWNS(t) {
+	for (const Town *t : Town::Iterate()) {
 		HouseZonesBits town_zone = TryGetTownRadiusGroup(t, tile);
 		if (HasBit(house_zones, town_zone)) {
 			/* If CTRL is NOT pressed keep only single town on the list, the best one.

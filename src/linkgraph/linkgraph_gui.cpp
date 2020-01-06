@@ -137,8 +137,7 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 	};
 
 	const size_t previous_cached_stations_count = this->cached_stations.size();
-	const Station *sta;
-	FOR_ALL_STATIONS(sta) {
+	for (const Station *sta : Station::Iterate()) {
 		if (sta->rect.IsEmpty()) continue;
 
 		if (incremental && std::binary_search(incremental_station_exclude.begin(), incremental_station_exclude.end(), sta->index)) continue;

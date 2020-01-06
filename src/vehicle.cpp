@@ -802,16 +802,14 @@ static void UpdateVehicleViewportHash(Vehicle *v, int x, int y)
 
 void ResetVehicleHash()
 {
-	Vehicle *v;
-	FOR_ALL_VEHICLES(v) { v->hash_tile_current = nullptr; }
+	for (Vehicle *v : Vehicle::Iterate()) { v->hash_tile_current = nullptr; }
 	memset(_vehicle_viewport_hash, 0, sizeof(_vehicle_viewport_hash));
 	memset(_vehicle_tile_hash, 0, sizeof(_vehicle_tile_hash));
 }
 
 void ResetVehicleColourMap()
 {
-	Vehicle *v;
-	FOR_ALL_VEHICLES(v) { v->colourmap = PAL_NONE; }
+	for (Vehicle *v : Vehicle::Iterate()) { v->colourmap = PAL_NONE; }
 }
 
 /**
@@ -1176,12 +1174,13 @@ void RemoveFromOtherVehicleTickCache(const Vehicle *v)
 
 void RebuildVehicleTickCaches()
 {
-	Vehicle *v = nullptr;
-	SCOPE_INFO_FMT([&v], "RebuildVehicleTickCaches: %s", scope_dumper().VehicleInfo(v));
+	Vehicle *si_v = nullptr;
+	SCOPE_INFO_FMT([&si_v], "RebuildVehicleTickCaches: %s", scope_dumper().VehicleInfo(si_v));
 
 	ClearVehicleTickCaches();
 
-	FOR_ALL_VEHICLES(v) {
+	for (Vehicle *v : Vehicle::Iterate()) {
+		si_v = v;
 		switch (v->type) {
 			default:
 				_tick_other_veh_cache.push_back(v);
@@ -1287,9 +1286,12 @@ void CallVehicleTicks()
 
 	{
 		PerformanceMeasurer framerate(PFE_GL_ECONOMY);
-		Station *st = nullptr;
-		SCOPE_INFO_FMT([&st], "CallVehicleTicks: LoadUnloadStation: %s", scope_dumper().StationInfo(st));
-		FOR_ALL_STATIONS(st) LoadUnloadStation(st);
+		Station *si_st = nullptr;
+		SCOPE_INFO_FMT([&si_st], "CallVehicleTicks: LoadUnloadStation: %s", scope_dumper().StationInfo(si_st));
+		for (Station *st : Station::Iterate()) {
+			si_st = st;
+			LoadUnloadStation(st);
+		}
 	}
 
 	if (!_tick_caches_valid || HasChickenBit(DCBF_VEH_TICK_CACHE)) RebuildVehicleTickCaches();
@@ -1667,7 +1669,7 @@ void ViewportMapDrawVehicles(DrawPixelInfo *dpi)
  */
 Vehicle *CheckClickOnVehicle(const ViewPort *vp, int x, int y)
 {
-	Vehicle *found = nullptr, *v;
+	Vehicle *found = nullptr;
 	uint dist, best_dist = UINT_MAX;
 
 	if ((uint)(x -= vp->left) >= (uint)vp->width || (uint)(y -= vp->top) >= (uint)vp->height) return nullptr;
@@ -1675,7 +1677,7 @@ Vehicle *CheckClickOnVehicle(const ViewPort *vp, int x, int y)
 	x = ScaleByZoom(x, vp->zoom) + vp->virtual_left;
 	y = ScaleByZoom(y, vp->zoom) + vp->virtual_top;
 
-	FOR_ALL_VEHICLES(v) {
+	for (Vehicle *v : Vehicle::Iterate()) {
 		if (((v->vehstatus & VS_UNCLICKABLE) == 0) && v->IsDrawn() &&
 				x >= v->coord.left && x <= v->coord.right &&
 				y >= v->coord.top && y <= v->coord.bottom) {
@@ -2412,8 +2414,7 @@ VehicleEnterTileStatus VehicleEnterTile(Vehicle *v, TileIndex tile, int x, int y
 FreeUnitIDGenerator::FreeUnitIDGenerator(VehicleType type, CompanyID owner) : cache(nullptr), maxid(0), curid(0)
 {
 	/* Find maximum */
-	const Vehicle *v;
-	FOR_ALL_VEHICLES(v) {
+	for (const Vehicle *v : Vehicle::Iterate()) {
 		if (v->type == type && v->owner == owner) {
 			this->maxid = max<UnitID>(this->maxid, v->unitnumber);
 		}
@@ -2427,7 +2428,7 @@ FreeUnitIDGenerator::FreeUnitIDGenerator(VehicleType type, CompanyID owner) : ca
 	this->cache = CallocT<bool>(this->maxid + 2);
 
 	/* Fill the cache */
-	FOR_ALL_VEHICLES(v) {
+	for (const Vehicle *v : Vehicle::Iterate()) {
 		if (v->type == type && v->owner == owner) {
 			this->cache[v->unitnumber] = true;
 		}
@@ -2503,8 +2504,7 @@ bool CanBuildVehicleInfrastructure(VehicleType type, byte subtype)
 	/* We can build vehicle infrastructure when we may build the vehicle type */
 	if (max > 0) {
 		/* Can we actually build the vehicle type? */
-		const Engine *e;
-		FOR_ALL_ENGINES_OF_TYPE(e, type) {
+		for (const Engine *e : Engine::IterateType(type)) {
 			if (type == VEH_ROAD && GetRoadTramType(e->u.road.roadtype) != (RoadTramType)subtype) continue;
 			if (HasBit(e->company_avail, _local_company)) return true;
 		}
@@ -2512,9 +2512,8 @@ bool CanBuildVehicleInfrastructure(VehicleType type, byte subtype)
 	}
 
 	/* We should be able to build infrastructure when we have the actual vehicle type */
-	const Vehicle *v;
-	FOR_ALL_VEHICLES(v) {
-		if (type == VEH_ROAD && GetRoadTramType(RoadVehicle::From(v)->roadtype) != (RoadTramType)subtype) continue;
+	for (const Vehicle *v : Vehicle::Iterate()) {
+		if (v->type == VEH_ROAD && GetRoadTramType(RoadVehicle::From(v)->roadtype) != (RoadTramType)subtype) continue;
 		if (v->owner == _local_company && v->type == type) return true;
 	}
 
@@ -3834,8 +3833,7 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
 
 void VehiclesYearlyLoop()
 {
-	Vehicle *v;
-	FOR_ALL_VEHICLES(v) {
+	for (Vehicle *v : Vehicle::Iterate()) {
 		if (v->IsPrimaryVehicle()) {
 			/* show warning if vehicle is not generating enough income last 2 years (corresponds to a red icon in the vehicle list) */
 			Money profit = v->GetDisplayProfitThisYear();
@@ -4016,15 +4014,13 @@ void DumpVehicleStats(char *buffer, const char *last)
 	};
 	std::map<Owner, cstats> cstatmap;
 
-	Vehicle *v;
-	FOR_ALL_VEHICLES(v) {
+	for (Vehicle *v : Vehicle::Iterate()) {
 		cstats &cs = cstatmap[v->owner];
 		vtypestats &vs = ((v->type == VEH_TRAIN) && Train::From(v)->IsVirtual()) ? cs.virt_train : cs.vstats[v->type];
 		vs.count[v->Previous() != nullptr ? 1 : 0]++;
 	}
 
-	const TemplateVehicle *tv;
-	FOR_ALL_TEMPLATES(tv) {
+	for (const TemplateVehicle *tv : TemplateVehicle::Iterate()) {
 		cstats &cs = cstatmap[tv->owner];
 		cs.template_train.count[tv->Prev() != nullptr ? 1 : 0]++;
 	}

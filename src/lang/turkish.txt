@@ -474,9 +474,6 @@ STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Konsolu aç/kapa
 STR_ABOUT_MENU_AI_DEBUG                                         :YZ/Oyun betik hata ayıklama
 STR_ABOUT_MENU_SCREENSHOT                                       :Ekran görüntüsü
-STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Tamamen yakınlaştırılmış ekran görüntüsü
-STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Varsayılan yakınlıkta ekran görüntüsü
-STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Tüm harita ekran görüntüsü
 STR_ABOUT_MENU_SHOW_FRAMERATE                                   :Kare oranını göster
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :'OpenTTD' Hakkında
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Nesne hizalayıcı
@@ -865,6 +862,7 @@ STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Otomatik
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}{STRING} artık kullanılabilir!
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Yeni {STRING} artık kullanılabilir! - {ENGINE}
+
 
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} artık {STRING} kabul etmiyor
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} artık {STRING} veya {STRING} kabul etmiyor
@@ -4106,6 +4104,7 @@ STR_AI_LIST_ACCEPT                                              :{BLACK}Kabul et
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Vurgulanan betiği seç
 STR_AI_LIST_CANCEL                                              :{BLACK}İptal
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Betiği değiştirme
+
 
 # AI Parameters
 STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parametreler

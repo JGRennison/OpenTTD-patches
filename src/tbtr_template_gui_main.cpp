@@ -563,8 +563,7 @@ public:
 
 		GUIGroupList list;
 
-		const Group *g;
-		FOR_ALL_GROUPS(g) {
+		for (const Group *g : Group::Iterate()) {
 			if (g->owner == owner && g->vehicle_type == VEH_TRAIN) {
 				list.push_back(g);
 			}

@@ -475,9 +475,6 @@ STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Tænd/Sluk konsol
 STR_ABOUT_MENU_AI_DEBUG                                         :Computerspiller/spilscript debug
 STR_ABOUT_MENU_SCREENSHOT                                       :Skærmbillede (Ctrl-S)
-STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Fuldt zoomet skærmbillede
-STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Standard zoom skærmbillede
-STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Kæmpe skærmbillede (Ctrl-G)
 STR_ABOUT_MENU_SHOW_FRAMERATE                                   :Vis spilhastighed
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :Om 'OpenTTD'
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Spritejustering
@@ -866,6 +863,7 @@ STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Automati
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}Ny {STRING} er nu tilgængelig!
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Ny {STRING} er nu tilgængelig!  -  {ENGINE}
+
 
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} accepterer ikke længere {STRING}
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} accepterer ikke længere {STRING} eller {STRING}
@@ -4122,6 +4120,7 @@ STR_AI_LIST_ACCEPT                                              :{BLACK}Accepter
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Vælg markeret script
 STR_AI_LIST_CANCEL                                              :{BLACK}Afbryd
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Skift ikke script'et
+
 
 # AI Parameters
 STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parametre

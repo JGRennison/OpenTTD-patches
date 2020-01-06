@@ -471,9 +471,6 @@ STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Skakel terminaal
 STR_ABOUT_MENU_AI_DEBUG                                         :AI/Spel skript ontfout
 STR_ABOUT_MENU_SCREENSHOT                                       :Skermskoot
-STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Ten volle vergrote skermskoot
-STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Basiese groote skermskoot
-STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Hele kaart Skermkiekie (Ctrl+G)
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :Oor 'OpenTTD'
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :"Sprite" rigter
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :skakel beperkte bokse
@@ -856,6 +853,7 @@ STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Automati
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}Nuwe {STRING} nou beskikbaar!
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Nuwe {STRING} nou beskikbaar!  -  {ENGINE}
+
 
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} aanvaar nie meer {STRING} nie
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} aanvaar nie meer {STRING} of {STRING} nie
@@ -3998,6 +3996,7 @@ STR_AI_LIST_ACCEPT                                              :{BLACK}Aanvaar
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Kies beligte skrif
 STR_AI_LIST_CANCEL                                              :{BLACK}Kanseleer
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Moenie skrif verander nie
+
 
 # AI Parameters
 STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parameters

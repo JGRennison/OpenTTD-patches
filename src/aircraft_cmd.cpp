@@ -121,7 +121,6 @@ enum HelicopterRotorStates {
  */
 static StationID FindNearestHangar(const Aircraft *v)
 {
-	const Station *st;
 	uint best = 0;
 	StationID index = INVALID_STATION;
 	TileIndex vtile = TileVirtXYClampedToMap(v->x_pos, v->y_pos);
@@ -142,7 +141,7 @@ static StationID FindNearestHangar(const Aircraft *v)
 		}
 	}
 
-	FOR_ALL_STATIONS(st) {
+	for (const Station *st : Station::Iterate()) {
 		if (!IsInfraUsageAllowed(VEH_AIRCRAFT, v->owner, st->owner) || !(st->facilities & FACIL_AIRPORT) || !st->airport.HasHangar()) continue;
 
 		const AirportFTAClass *afc = st->airport.GetFTA();
@@ -2187,8 +2186,7 @@ void UpdateAirplanesOnNewStation(const Station *st)
 	const AirportFTAClass *ap = st->airport.GetFTA();
 	Direction rotation = st->airport.tile == INVALID_TILE ? DIR_N : st->airport.rotation;
 
-	Aircraft *v;
-	FOR_ALL_AIRCRAFT(v) {
+	for (Aircraft *v : Aircraft::Iterate()) {
 		if (!v->IsNormalAircraft() || v->targetairport != st->index) continue;
 		assert(v->state == FLYING);
 

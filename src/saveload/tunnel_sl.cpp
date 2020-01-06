@@ -25,9 +25,7 @@ static const SaveLoad _tunnel_desc[] = {
 
 static void Save_TUNN()
 {
-	Tunnel *tunnel;
-
-	FOR_ALL_TUNNELS(tunnel) {
+	for (Tunnel *tunnel : Tunnel::Iterate()) {
 		SlSetArrayIndex(tunnel->index);
 		SlObject(tunnel, _tunnel_desc);
 	}

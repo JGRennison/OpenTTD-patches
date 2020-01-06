@@ -623,9 +623,6 @@ STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Vklopi/Izklopi konzolo
 STR_ABOUT_MENU_AI_DEBUG                                         :Razhročevanje UI / skript
 STR_ABOUT_MENU_SCREENSHOT                                       :Zajemi sliko
-STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Zajemi približano sliko
-STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Zajem slike pri privzeti povečavi
-STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Zajemi celostno sliko
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :O 'OpenTTD'
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Uravnavanje sličice
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Vklop/izklop okvirjev
@@ -1009,6 +1006,7 @@ STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Samoobno
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}Novo! {STRING} sedaj na razpolago!
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Novo! {STRING} sedaj na razpolago!  -  {ENGINE}
+
 
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} ne sprejema več {STRING.r}
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} ne sprejema več {STRING.r} ali {STRING.r}
@@ -4155,6 +4153,7 @@ STR_AI_LIST_ACCEPT                                              :{BLACK}Potrdi
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Izberi označeno skripto
 STR_AI_LIST_CANCEL                                              :{BLACK}Prekliči
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Ne spremeni skripte
+
 
 # AI Parameters
 STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parametri

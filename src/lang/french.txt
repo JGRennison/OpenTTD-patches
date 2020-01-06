@@ -479,9 +479,6 @@ STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Afficher/Cacher la console
 STR_ABOUT_MENU_AI_DEBUG                                         :Débogage de scripts
 STR_ABOUT_MENU_SCREENSHOT                                       :Copie d'écran
-STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Copie d'écran au zoom maximum
-STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Copie d'écran au zoom par défaut
-STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Copie d'écran de la carte entière
 STR_ABOUT_MENU_SHOW_FRAMERATE                                   :Afficher la fréquence d'images
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :À propos d'OpenTTD
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Alignement de sprite
@@ -870,6 +867,8 @@ STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Le renou
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}Nouv{G 0 eau el elle} {STRING} disponible{NBSP}!
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Nouv{G 0 eau el elle} {STRING} disponible{NBSP}!  -  {ENGINE}
+
+STR_NEWS_SHOW_VEHICLE_GROUP_TOOLTIP                             :{BLACK}Ouvrir la fenêtre de groupe de ce véhicule
 
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} n'accepte plus {STRING}
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} n'accepte plus {STRING} ou {STRING}
@@ -1551,6 +1550,10 @@ STR_CONFIG_SETTING_NEWS_MESSAGES_FULL                           :Complet
 STR_CONFIG_SETTING_COLOURED_NEWS_YEAR                           :Les journaux en couleur apparaissent en{NBSP}: {STRING}
 STR_CONFIG_SETTING_COLOURED_NEWS_YEAR_HELPTEXT                  :Année à partir de laquelle les annonces des journaux sont imprimées en couleur. Avant cette année ils sont en noir et blanc
 STR_CONFIG_SETTING_STARTING_YEAR                                :Année de départ{NBSP}: {STRING}
+STR_CONFIG_SETTING_ENDING_YEAR                                  :Année de fin du jeu{NBSP}: {STRING}
+STR_CONFIG_SETTING_ENDING_YEAR_HELPTEXT                         :À la fin de cette année, le score de la compagnie est enregistré et la fenêtre des meilleurs scores est affichée. Il est quand même possible de continuer de jouer après, mais le score ne sera pas enregistré.{}Si le jeu commence après cette année, les meilleurs scores ne sont jamais affichés.
+STR_CONFIG_SETTING_ENDING_YEAR_VALUE                            :{NUM}
+STR_CONFIG_SETTING_ENDING_YEAR_ZERO                             :Jamais
 STR_CONFIG_SETTING_SMOOTH_ECONOMY                               :Permettre une économie stable (petits changements plus nombreux){NBSP}: {STRING}
 STR_CONFIG_SETTING_SMOOTH_ECONOMY_HELPTEXT                      :Lorsqu'il est activé, la production des industries change plus souvent, et plus faiblement. Ce paramètre est généralement sans effets si les types d'industries sont fournis par un NewGRF
 STR_CONFIG_SETTING_ALLOW_SHARES                                 :Permettre d'acheter des actions d'autres compagnies{NBSP}: {STRING}
@@ -4172,6 +4175,13 @@ STR_AI_LIST_ACCEPT                                              :{BLACK}Accepter
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Sélectionner le script en surbrillance
 STR_AI_LIST_CANCEL                                              :{BLACK}Annuler
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Ne pas modifier le script
+
+STR_SCREENSHOT_CAPTION                                          :{WHITE}Faire une capture d'écran
+STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Capture d'écran normale
+STR_SCREENSHOT_ZOOMIN_SCREENSHOT                                :{BLACK}Capture d'écran au zoom maximum
+STR_SCREENSHOT_DEFAULTZOOM_SCREENSHOT                           :{BLACK}Capture d'écran sans zoom
+STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}Capture d'écran de toute la carte
+STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Capture d'écran de la carte d'altitude
 
 # AI Parameters
 STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Paramètres

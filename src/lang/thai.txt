@@ -462,9 +462,6 @@ STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :เปิด/ปิด คอนโซล
 STR_ABOUT_MENU_AI_DEBUG                                         :ดีบัก สคริปต์ AI/Game
 STR_ABOUT_MENU_SCREENSHOT                                       :จับภาพหน้าจอ (Ctrl+S)
-STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :จับภาพหน้าจอในแบบขยายใหญ่สุด
-STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :ค่าเริ่มต้นของการขยายภาพในการจับหน้าจอ
-STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :จับภาพหน้าจอทั้งแผนที่ (Ctrl+G)
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :เกี่ยวกับ 'OpenTTD'
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :ตัวจัดแนว Sprite
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :เปิด/ปิด bounding boxes
@@ -846,6 +843,7 @@ STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}เป�
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}{STRING}รุ่นใหม่ขณะนี้มีให้สั่งผลิตแล้ว!
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}ใหม่ {STRING} มีจำหน่ายแล้ว  -  {ENGINE}
+
 
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} ไม่ต้องการรับ {STRING} อีกต่อไป
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} ไม่รับ {STRING} หรือ {STRING} แล้ว
@@ -3912,6 +3910,7 @@ STR_AI_LIST_ACCEPT                                              :{BLACK}ยื�
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}เลือก script ที่ไฮไลท์ไว้
 STR_AI_LIST_CANCEL                                              :{BLACK}ยกเลิก
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}ไม่สามารถเปลี่ยน script
+
 
 # AI Parameters
 STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parameters

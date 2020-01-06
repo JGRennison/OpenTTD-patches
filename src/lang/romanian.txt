@@ -470,9 +470,6 @@ STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Consolă pornit/oprit
 STR_ABOUT_MENU_AI_DEBUG                                         :Depanare Inteligenţă Artificială / Script Joc
 STR_ABOUT_MENU_SCREENSHOT                                       :Capturează ecranul
-STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Captură mărită
-STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Mărimea implicită a capturii
-STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Capturează toată harta
 STR_ABOUT_MENU_SHOW_FRAMERATE                                   :Arată FPS
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :Despre 'OpenTTD'
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Aliniere imagini
@@ -857,6 +854,7 @@ STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Autoreî
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}Un nou tip de {STRING} este acum disponibil!
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Un nou tip de {STRING} este acum disponibil!  -  {ENGINE}
+
 
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} nu mai acceptă {STRING}
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} nu mai acceptă {STRING} sau {STRING}
@@ -3983,6 +3981,7 @@ STR_AI_LIST_ACCEPT                                              :{BLACK}Acceptă
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Alege scriptul marcat
 STR_AI_LIST_CANCEL                                              :{BLACK}Anulează
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Nu schimba scriptul
+
 
 # AI Parameters
 STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parametrii

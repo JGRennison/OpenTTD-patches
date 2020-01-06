@@ -483,8 +483,7 @@ static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &sel
 
 	GUIGroupList list;
 
-	const Group *g;
-	FOR_ALL_GROUPS(g) {
+	for (const Group *g : Group::Iterate()) {
 		if (g->owner == owner && g->vehicle_type == VEH_TRAIN) {
 			list.push_back(g);
 		}
@@ -526,8 +525,7 @@ DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &
 	GUIList<const TraceRestrictSlot*> list;
 	DropDownList dlist;
 
-	const TraceRestrictSlot *slot;
-	FOR_ALL_TRACE_RESTRICT_SLOTS(slot) {
+	for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
 		if (slot->owner == owner) {
 			list.push_back(slot);
 		}
@@ -2473,8 +2471,7 @@ private:
 								this->EnableWidget(TR_WIDGET_SLOT_OP);
 							}
 
-							const TraceRestrictSlot *slot;
-							FOR_ALL_TRACE_RESTRICT_SLOTS(slot) {
+							for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
 								if (slot->owner == this->GetOwner()) {
 									this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
 									break;
@@ -2500,8 +2497,7 @@ private:
 							left_aux_sel->SetDisplayedPlane(DPLA_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_INT);
 
-							const TraceRestrictSlot *slot;
-							FOR_ALL_TRACE_RESTRICT_SLOTS(slot) {
+							for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
 								if (slot->owner == this->GetOwner()) {
 									this->EnableWidget(TR_WIDGET_LEFT_AUX_DROPDOWN);
 									break;
@@ -2570,8 +2566,7 @@ private:
 	{
 		DropDownList list;
 
-		Company *c;
-		FOR_ALL_COMPANIES(c) {
+		for (Company *c : Company::Iterate()) {
 			list.emplace_back(MakeCompanyDropDownListItem(c->index));
 			if (c->index == value) missing_ok = true;
 		}
@@ -2869,8 +2864,7 @@ private:
 
 		this->slots.clear();
 
-		const TraceRestrictSlot *slot;
-		FOR_ALL_TRACE_RESTRICT_SLOTS(slot) {
+		for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
 			if (slot->owner == owner) {
 				this->slots.push_back(slot);
 			}

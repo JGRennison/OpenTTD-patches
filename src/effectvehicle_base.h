@@ -37,10 +37,4 @@ struct EffectVehicle FINAL : public SpecializedVehicle<EffectVehicle, VEH_EFFECT
 	void RemoveEffectVehicleFromTickCache();
 };
 
-/**
- * Iterate over disaster vehicles.
- * @param var The variable used to iterate over.
- */
-#define FOR_ALL_EFFECTVEHICLES(var) FOR_ALL_VEHICLES_OF_TYPE(EffectVehicle, var)
-
 #endif /* EFFECTVEHICLE_BASE_H */

@@ -471,9 +471,6 @@ STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Показване/скриване на конзола
 STR_ABOUT_MENU_AI_DEBUG                                         :ИИ дебъг
 STR_ABOUT_MENU_SCREENSHOT                                       :Screenshot
-STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Напълно увеличен в кадъра.
-STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Увеличение по подразбиране
-STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Огромен Screenshot
 STR_ABOUT_MENU_SHOW_FRAMERATE                                   :Показване на честотата на кадрите
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :Относно 'OpenTTD'
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Подравнител на спрайтове
@@ -853,6 +850,7 @@ STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Неус
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}Нов {STRING} е на разположение!
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Нов {STRING} е на разположение! - {ENGINE}
+
 
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} вече не приема {STRING}
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} вече не приема {STRING} или {STRING}
@@ -3975,6 +3973,7 @@ STR_AI_LIST_ACCEPT                                              :{BLACK}Прие
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Избери маркирания AI
 STR_AI_LIST_CANCEL                                              :{BLACK}Отмени
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Не променяй AI
+
 
 # AI Parameters
 STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Параметри

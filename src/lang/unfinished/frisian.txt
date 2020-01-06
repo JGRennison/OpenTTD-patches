@@ -470,9 +470,6 @@ STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Skeakel console oan/ût
 STR_ABOUT_MENU_AI_DEBUG                                         :AI/Gamescript debug
 STR_ABOUT_MENU_SCREENSHOT                                       :Skermôfbylding
-STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Tichtby helle skermôfbylding
-STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Standerdzoom skermôfbylding
-STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Skermôfbylding fan 'e hiele wrâld
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :Oer 'OpenTTD'
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Flakken rjochtsje
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Skeakel seleksjekaders oan/út
@@ -855,6 +852,7 @@ STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Automaty
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}Neie {STRING} is no beskikber!
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Neie {STRING} is no beskikber!  -  {ENGINE}
+
 
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} akseptearret gjin {STRING} mear
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} akseptearret gjin {STRING} en {STRING} mear
@@ -3576,6 +3574,7 @@ STR_AI_LIST_ACCEPT                                              :{BLACK}Akseptea
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Selekteare highlighted script
 STR_AI_LIST_CANCEL                                              :{BLACK}Annulearje
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Skript net feroare
+
 
 # AI Parameters
 STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parameters

@@ -468,9 +468,6 @@ STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :முனையத்தை மாற்று
 STR_ABOUT_MENU_AI_DEBUG                                         :AI/வரிவடிவம் சரிபார்
 STR_ABOUT_MENU_SCREENSHOT                                       :திரைபிடிப்பு
-STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :முழுமையாக பெரிதாக்கிய நிலையில் திரைப்பிடிப்பு செய்
-STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :பெரிதாக்கிய நிலையில் திரைப்பிடிப்பு செய்
-STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :முழு வரைபடத்தையும் திரைபிடிப்பு செய்
 STR_ABOUT_MENU_SHOW_FRAMERATE                                   :பிரேம் வீதத்தைக் காட்டு
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :'OpenTTD' பற்றி
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :ஸ்ரைட்டு அலைனர்
@@ -838,6 +835,7 @@ STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}தா�
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}புதிய {STRING} இப்போது கிடைக்கும்!
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}புதிய {STRING} இப்போது கிடைக்கும்!  -  {ENGINE}
+
 
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} இனிமேல் {STRING} ஏற்றுக்கொள்ளாது
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} இனிமேல் {STRING} அல்லது {STRING} ஏற்றுக்கொள்ளாது
@@ -3627,6 +3625,7 @@ STR_AI_LIST_ACCEPT                                              :{BLACK}ஏற�
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}குறிக்கப்பட்ட வரிவடிவத்தினை தேர்ந்தெடு
 STR_AI_LIST_CANCEL                                              :{BLACK}இரத்து செய்
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}வரிவடிவத்தினை மாற்றாதே
+
 
 # AI Parameters
 STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} குணாதிசயங்கள்

@@ -29,12 +29,6 @@
 
 #include "zoom_func.h"
 
-#define FOR_ALL_TEMPLATES_FROM(var, start) FOR_ALL_ITEMS_FROM(TemplateVehicle, template_index, var, start)
-#define FOR_ALL_TEMPLATES(var) FOR_ALL_TEMPLATES_FROM(var, 0)
-
-#define FOR_ALL_TEMPLATE_REPLACEMENTS_FROM(var, start) FOR_ALL_ITEMS_FROM(TemplateReplacement, template_replacement_index, var, start)
-#define FOR_ALL_TEMPLATE_REPLACEMENTS(var) FOR_ALL_TEMPLATE_REPLACEMENTS_FROM(var, 0)
-
 struct TemplateVehicle;
 struct TemplateReplacement;
 

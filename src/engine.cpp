@@ -536,8 +536,7 @@ EngineID EngineOverrideManager::GetID(VehicleType type, uint16 grf_local_id, uin
  */
 bool EngineOverrideManager::ResetToCurrentNewGRFConfig()
 {
-	const Vehicle *v;
-	FOR_ALL_VEHICLES(v) {
+	for (const Vehicle *v : Vehicle::Iterate()) {
 		if (IsCompanyBuildableVehicleType(v)) return false;
 	}
 
@@ -628,8 +627,7 @@ void SetYearEngineAgingStops()
 	/* Determine last engine aging year, default to 2050 as previously. */
 	_year_engine_aging_stops = 2050;
 
-	const Engine *e;
-	FOR_ALL_ENGINES(e) {
+	for (const Engine *e : Engine::Iterate()) {
 		const EngineInfo *ei = &e->info;
 
 		/* Exclude certain engines */
@@ -704,17 +702,15 @@ void StartupOneEngine(Engine *e, Date aging_date)
  */
 void StartupEngines()
 {
-	Engine *e;
 	/* Aging of vehicles stops, so account for that when starting late */
 	const Date aging_date = min(_date, ConvertYMDToDate(_year_engine_aging_stops, 0, 1));
 
-	FOR_ALL_ENGINES(e) {
+	for (Engine *e : Engine::Iterate()) {
 		StartupOneEngine(e, aging_date);
 	}
 
 	/* Update the bitmasks for the vehicle lists */
-	Company *c;
-	FOR_ALL_COMPANIES(c) {
+	for (Company *c : Company::Iterate()) {
 		c->avail_railtypes = GetCompanyRailtypes(c->index);
 		c->avail_roadtypes = GetCompanyRoadTypes(c->index);
 	}
@@ -773,14 +769,12 @@ static CompanyID GetPreviewCompany(Engine *e)
 	CargoTypes cargomask = e->type != VEH_TRAIN ? GetUnionOfArticulatedRefitMasks(e->index, true) : ALL_CARGOTYPES;
 
 	int32 best_hist = -1;
-	const Company *c;
-	FOR_ALL_COMPANIES(c) {
+	for (const Company *c : Company::Iterate()) {
 		if (c->block_preview == 0 && !HasBit(e->preview_asked, c->index) &&
 				c->old_economy[0].performance_history > best_hist) {
 
 			/* Check whether the company uses similar vehicles */
-			Vehicle *v;
-			FOR_ALL_VEHICLES(v) {
+			for (const Vehicle *v : Vehicle::Iterate()) {
 				if (v->owner != c->index || v->type != e->type || HasBit(v->subtype, GVSF_VIRTUAL)) continue;
 				if (!v->GetEngine()->CanCarryCargo() || !HasBit(cargomask, v->cargo_type)) continue;
 
@@ -816,16 +810,14 @@ static bool IsVehicleTypeDisabled(VehicleType type, bool ai)
 /** Daily check to offer an exclusive engine preview to the companies. */
 void EnginesDailyLoop()
 {
-	Company *c;
-	FOR_ALL_COMPANIES(c) {
+	for (Company *c : Company::Iterate()) {
 		c->avail_railtypes = AddDateIntroducedRailTypes(c->avail_railtypes, _date);
 		c->avail_roadtypes = AddDateIntroducedRoadTypes(c->avail_roadtypes, _date);
 	}
 
 	if (_cur_year >= _year_engine_aging_stops) return;
 
-	Engine *e;
-	FOR_ALL_ENGINES(e) {
+	for (Engine *e : Engine::Iterate()) {
 		EngineID i = e->index;
 		if (e->flags & ENGINE_EXCLUSIVE_PREVIEW) {
 			if (e->preview_company != INVALID_COMPANY) {
@@ -861,8 +853,7 @@ void EnginesDailyLoop()
  */
 void ClearEnginesHiddenFlagOfCompany(CompanyID cid)
 {
-	Engine *e;
-	FOR_ALL_ENGINES(e) {
+	for (Engine *e : Engine::Iterate()) {
 		SB(e->company_hidden, cid, 1, 0);
 	}
 }
@@ -917,14 +908,12 @@ CommandCost CmdWantEnginePreview(TileIndex tile, DoCommandFlag flags, uint32 p1,
  */
 static void NewVehicleAvailable(Engine *e)
 {
-	Vehicle *v;
-	Company *c;
 	EngineID index = e->index;
 
 	/* In case the company didn't build the vehicle during the intro period,
 	 * prevent that company from getting future intro periods for a while. */
 	if (e->flags & ENGINE_EXCLUSIVE_PREVIEW) {
-		FOR_ALL_COMPANIES(c) {
+		for (Company *c : Company::Iterate()) {
 			uint block_preview = c->block_preview;
 
 			if (!HasBit(e->company_avail, c->index)) continue;
@@ -932,7 +921,7 @@ static void NewVehicleAvailable(Engine *e)
 			/* We assume the user did NOT build it.. prove me wrong ;) */
 			c->block_preview = 20;
 
-			FOR_ALL_VEHICLES(v) {
+			for (const Vehicle *v : Vehicle::Iterate()) {
 				if ((v->type == VEH_TRAIN && !HasBit(v->subtype, GVSF_VIRTUAL)) || v->type == VEH_ROAD || v->type == VEH_SHIP ||
 						(v->type == VEH_AIRCRAFT && Aircraft::From(v)->IsNormalAircraft())) {
 					if (v->owner == c->index && v->engine_type == index) {
@@ -958,11 +947,11 @@ static void NewVehicleAvailable(Engine *e)
 		/* maybe make another rail type available */
 		RailType railtype = e->u.rail.railtype;
 		assert(railtype < RAILTYPE_END);
-		FOR_ALL_COMPANIES(c) c->avail_railtypes = AddDateIntroducedRailTypes(c->avail_railtypes | GetRailTypeInfo(e->u.rail.railtype)->introduces_railtypes, _date);
+		for (Company *c : Company::Iterate()) c->avail_railtypes = AddDateIntroducedRailTypes(c->avail_railtypes | GetRailTypeInfo(e->u.rail.railtype)->introduces_railtypes, _date);
 	} else if (e->type == VEH_ROAD) {
 		/* maybe make another road type available */
 		assert(e->u.road.roadtype < ROADTYPE_END);
-		FOR_ALL_COMPANIES(c) c->avail_roadtypes = AddDateIntroducedRoadTypes(c->avail_roadtypes | GetRoadTypeInfo(e->u.road.roadtype)->introduces_roadtypes, _date);
+		for (Company* c : Company::Iterate()) c->avail_roadtypes = AddDateIntroducedRoadTypes(c->avail_roadtypes | GetRoadTypeInfo(e->u.road.roadtype)->introduces_roadtypes, _date);
 	}
 
 	/* Only broadcast event if AIs are able to build this vehicle type. */
@@ -987,8 +976,7 @@ static void NewVehicleAvailable(Engine *e)
 void EnginesMonthlyLoop()
 {
 	if (_cur_year < _year_engine_aging_stops) {
-		Engine *e;
-		FOR_ALL_ENGINES(e) {
+		for (Engine *e : Engine::Iterate()) {
 			/* Age the vehicle */
 			if ((e->flags & ENGINE_AVAILABLE) && e->age != MAX_DAY) {
 				e->age++;
@@ -1029,9 +1017,7 @@ void EnginesMonthlyLoop()
  */
 static bool IsUniqueEngineName(const char *name)
 {
-	const Engine *e;
-
-	FOR_ALL_ENGINES(e) {
+	for (const Engine *e : Engine::Iterate()) {
 		if (e->name != nullptr && strcmp(e->name, name) == 0) return false;
 	}
 
@@ -1152,10 +1138,9 @@ bool IsEngineRefittable(EngineID engine)
  */
 void CheckEngines()
 {
-	const Engine *e;
 	Date min_date = INT32_MAX;
 
-	FOR_ALL_ENGINES(e) {
+	for (const Engine *e : Engine::Iterate()) {
 		if (!e->IsEnabled()) continue;
 
 		/* We have an available engine... yay! */

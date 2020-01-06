@@ -2092,8 +2092,7 @@ void ViewportDrawPlans(const ViewPort *vp)
 	DrawPixelInfo *old_dpi = _cur_dpi;
 	_cur_dpi = &_dpi_for_text;
 
-	Plan *p;
-	FOR_ALL_PLANS(p) {
+	for (Plan *p : Plan::Iterate()) {
 		if (!p->IsVisible()) continue;
 		for (PlanLineVector::iterator it = p->lines.begin(); it != p->lines.end(); it++) {
 			PlanLine *pl = *it;
@@ -3446,23 +3445,19 @@ void RebuildViewportKdtree()
 	std::vector<ViewportSignKdtreeItem> items;
 	items.reserve(BaseStation::GetNumItems() + Town::GetNumItems() + Sign::GetNumItems());
 
-	const Station *st;
-	FOR_ALL_STATIONS(st) {
+	for (const Station *st : Station::Iterate()) {
 		if (st->sign.kdtree_valid) items.push_back(ViewportSignKdtreeItem::MakeStation(st->index));
 	}
 
-	const Waypoint *wp;
-	FOR_ALL_WAYPOINTS(wp) {
+	for (const Waypoint *wp : Waypoint::Iterate()) {
 		if (wp->sign.kdtree_valid) items.push_back(ViewportSignKdtreeItem::MakeWaypoint(wp->index));
 	}
 
-	const Town *town;
-	FOR_ALL_TOWNS(town) {
+	for (const Town *town : Town::Iterate()) {
 		if (town->cache.sign.kdtree_valid) items.push_back(ViewportSignKdtreeItem::MakeTown(town->index));
 	}
 
-	const Sign *sign;
-	FOR_ALL_SIGNS(sign) {
+	for (const Sign *sign : Sign::Iterate()) {
 		if (sign->sign.kdtree_valid) items.push_back(ViewportSignKdtreeItem::MakeSign(sign->index));
 	}
 

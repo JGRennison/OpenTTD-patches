@@ -448,9 +448,6 @@ STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Console opið ella lukka
 STR_ABOUT_MENU_AI_DEBUG                                         :AI/Spæl script debug
 STR_ABOUT_MENU_SCREENSHOT                                       :Skermmynd
-STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Suma in skermmynd
-STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Vanliga suma skermmynd
-STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Skermmynd av øllum kortinum
 STR_ABOUT_MENU_SHOW_FRAMERATE                                   :Vís mynda títtleika
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :Um 'OpenTTD'
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Sprite aligner
@@ -827,6 +824,7 @@ STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Sjálven
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}Nýtt {STRING} til sølu!
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Nýtt {STRING} til sølu!  -  {ENGINE}
+
 
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} tekur ikki longur ímóti {STRING}
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} tekur ikki longur ímóti hvørki {STRING} ella {STRING}
@@ -3525,6 +3523,7 @@ STR_AI_LIST_ACCEPT                                              :{BLACK}Góðtak
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Vel undirstrikaða scripti
 STR_AI_LIST_CANCEL                                              :{BLACK}Angra
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Ikki broyta scripti
+
 
 # AI Parameters
 STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parametur

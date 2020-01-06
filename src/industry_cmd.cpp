@@ -1206,8 +1206,7 @@ void OnTick_Industry()
 
 	if (_game_mode == GM_EDITOR) return;
 
-	Industry *i;
-	FOR_ALL_INDUSTRIES(i) {
+	for (Industry *i : Industry::Iterate()) {
 		ProduceIndustryGoods(i);
 	}
 }
@@ -1394,8 +1393,7 @@ static CommandCost FindTownForIndustry(TileIndex tile, int type, Town **t)
 
 	if (_settings_game.economy.multiple_industry_per_town) return CommandCost();
 
-	const Industry *i;
-	FOR_ALL_INDUSTRIES(i) {
+	for (const Industry *i : Industry::Iterate()) {
 		if (i->type == (byte)type && i->town == *t) {
 			*t = nullptr;
 			return_cmd_error(STR_ERROR_ONLY_ONE_ALLOWED_PER_TOWN);
@@ -1639,11 +1637,11 @@ static bool CheckIfCanLevelIndustryPlatform(TileIndex tile, DoCommandFlag flags,
 static CommandCost CheckIfFarEnoughFromConflictingIndustry(TileIndex tile, int type)
 {
 	const IndustrySpec *indspec = GetIndustrySpec(type);
-	const Industry *i = nullptr;
 
 	/* On a large map with many industries, it may be faster to check an area. */
 	static const int dmax = 14;
 	if (Industry::GetNumItems() > (size_t) (dmax * dmax * 2)) {
+		const Industry* i = nullptr;
 		TileArea tile_area = TileArea(tile, 1, 1).Expand(dmax);
 		TILE_AREA_LOOP(atile, tile_area) {
 			if (GetTileType(atile) == MP_INDUSTRY) {
@@ -1661,7 +1659,7 @@ static CommandCost CheckIfFarEnoughFromConflictingIndustry(TileIndex tile, int t
 		return CommandCost();
 	}
 
-	FOR_ALL_INDUSTRIES(i) {
+	for (const Industry *i : Industry::Iterate()) {
 		/* Within 14 tiles from another industry is considered close */
 		if (DistanceMax(tile, i->location.tile) > 14) continue;
 
@@ -1834,6 +1832,11 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 				break;
 			}
 			CargoID cargo = GetCargoTranslation(GB(res, 0, 8), indspec->grf_prop.grffile);
+			/* Industries without "unlimited" cargo types support depend on the specific order/slots of cargo types.
+			 * They need to be able to blank out specific slots without aborting the callback sequence,
+			 * and solve this by returning undefined cargo indexes. Skip these. */
+			if (cargo == CT_INVALID && !(indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED)) continue;
+			/* Verify valid cargo */
 			if (std::find(indspec->accepts_cargo, endof(indspec->accepts_cargo), cargo) == endof(indspec->accepts_cargo)) {
 				/* Cargo not in spec, error in NewGRF */
 				ErrorUnknownCallbackResult(indspec->grf_prop.grffile->grfid, CBID_INDUSTRY_INPUT_CARGO_TYPES, res);
@@ -1861,6 +1864,9 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 				break;
 			}
 			CargoID cargo = GetCargoTranslation(GB(res, 0, 8), indspec->grf_prop.grffile);
+			/* Allow older GRFs to skip slots. */
+			if (cargo == CT_INVALID && !(indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED)) continue;
+			/* Verify valid cargo */
 			if (std::find(indspec->produced_cargo, endof(indspec->produced_cargo), cargo) == endof(indspec->produced_cargo)) {
 				/* Cargo not in spec, error in NewGRF */
 				ErrorUnknownCallbackResult(indspec->grf_prop.grffile->grfid, CBID_INDUSTRY_OUTPUT_CARGO_TYPES, res);
@@ -2337,9 +2343,7 @@ void Industry::FillCachedName()
 
 void ClearAllIndustryCachedNames()
 {
-	Industry *ind;
-
-	FOR_ALL_INDUSTRIES(ind) {
+	for (Industry *ind : Industry::Iterate()) {
 		ind->cached_name.reset();
 	}
 }
@@ -2534,9 +2538,8 @@ static int WhoCanServiceIndustry(Industry *ind)
 {
 	if (ind->stations_near.size() == 0) return 0; // No stations found at all => nobody services
 
-	const Vehicle *v;
 	int result = 0;
-	FOR_ALL_VEHICLES(v) {
+	for (const Vehicle *v : Vehicle::Iterate()) {
 		/* Is it worthwhile to try this vehicle? */
 		if (v->owner != _local_company && result != 0) continue;
 
@@ -2863,8 +2866,7 @@ void IndustryMonthlyLoop()
 
 	_industry_builder.MonthlyLoop();
 
-	Industry *i;
-	FOR_ALL_INDUSTRIES(i) {
+	for (Industry *i : Industry::Iterate()) {
 		UpdateIndustryStatistics(i);
 		if (i->prod_level == PRODLEVEL_CLOSURE) {
 			delete i;

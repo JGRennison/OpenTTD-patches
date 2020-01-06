@@ -945,7 +945,7 @@ int openttd_main(int argc, char *argv[])
 	if (sounds_set == nullptr && BaseSounds::ini_set != nullptr) sounds_set = stredup(BaseSounds::ini_set);
 	if (!BaseSounds::SetSet(sounds_set)) {
 		if (StrEmpty(sounds_set) || !BaseSounds::SetSet(nullptr)) {
-			usererror("Failed to find a sounds set. Please acquire a sounds set for OpenTTD. See section 4.1 of README.md.");
+			usererror("Failed to find a sounds set. Please acquire a sounds set for OpenTTD. See section 1.4 of README.md.");
 		} else {
 			ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND);
 			msg.SetDParamStr(0, sounds_set);
@@ -958,7 +958,7 @@ int openttd_main(int argc, char *argv[])
 	if (music_set == nullptr && BaseMusic::ini_set != nullptr) music_set = stredup(BaseMusic::ini_set);
 	if (!BaseMusic::SetSet(music_set)) {
 		if (StrEmpty(music_set) || !BaseMusic::SetSet(nullptr)) {
-			usererror("Failed to find a music set. Please acquire a music set for OpenTTD. See section 4.1 of README.md.");
+			usererror("Failed to find a music set. Please acquire a music set for OpenTTD. See section 1.4 of README.md.");
 		} else {
 			ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND);
 			msg.SetDParamStr(0, music_set);
@@ -1407,8 +1407,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 	std::vector<CargoTypes> old_town_cargo_accepted_totals;
 	std::vector<CargoTypes> old_town_cargo_produced;
 	std::vector<StationList> old_town_stations_nears;
-	Town *t;
-	FOR_ALL_TOWNS(t) {
+	for (const Town *t : Town::Iterate()) {
 		old_town_caches.push_back(t->cache);
 		old_town_cargo_accepted_totals.push_back(t->cargo_accepted_total);
 		old_town_cargo_produced.push_back(t->cargo_produced);
@@ -1417,15 +1416,13 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 
 	std::vector<IndustryList> old_station_industries_nears;
 	std::vector<BitmapTileArea> old_station_catchment_tiles;
-	Station *st;
-	FOR_ALL_STATIONS(st) {
+	for (Station *st : Station::Iterate()) {
 		old_station_industries_nears.push_back(st->industries_near);
 		old_station_catchment_tiles.push_back(st->catchment_tiles);
 	}
 
 	std::vector<StationList> old_industry_stations_nears;
-	Industry *ind;
-	FOR_ALL_INDUSTRIES(ind) {
+	for (Industry *ind : Industry::Iterate()) {
 		old_industry_stations_nears.push_back(ind->stations_near);
 	}
 
@@ -1438,7 +1435,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 	Station::RecomputeCatchmentForAll();
 
 	uint i = 0;
-	FOR_ALL_TOWNS(t) {
+	for (Town *t : Town::Iterate()) {
 		if (MemCmpT(old_town_caches.data() + i, &t->cache) != 0) {
 			CCLOG("town cache mismatch: town %i", (int)t->index);
 		}
@@ -1457,7 +1454,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		CCLOG("_town_cargoes_accepted mismatch: old: " OTTD_PRINTFHEX64 ". new: " OTTD_PRINTFHEX64, old_town_cargoes_accepted, _town_cargoes_accepted);
 	}
 	i = 0;
-	FOR_ALL_STATIONS(st) {
+	for (Station *st : Station::Iterate()) {
 		if (old_station_industries_nears[i] != st->industries_near) {
 			CCLOG("station industries_near mismatch: st %i, (old size: %u, new size: %u)", (int)st->index, (uint)old_station_industries_nears[i].size(), (uint)st->industries_near.size());
 		}
@@ -1467,7 +1464,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		i++;
 	}
 	i = 0;
-	FOR_ALL_INDUSTRIES(ind) {
+	for (Industry *ind : Industry::Iterate()) {
 		if (old_industry_stations_nears[i] != ind->stations_near) {
 			CCLOG("industry stations_near mismatch: ind %i, (old size: %u, new size: %u)", (int)ind->index, (uint)old_industry_stations_nears[i].size(), (uint)ind->stations_near.size());
 		}
@@ -1488,14 +1485,13 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 
 	/* Check company infrastructure cache. */
 	std::vector<CompanyInfrastructure> old_infrastructure;
-	Company *c;
-	FOR_ALL_COMPANIES(c) old_infrastructure.push_back(c->infrastructure);
+	for (const Company *c : Company::Iterate()) old_infrastructure.push_back(c->infrastructure);
 
 	extern void AfterLoadCompanyStats();
 	AfterLoadCompanyStats();
 
 	i = 0;
-	FOR_ALL_COMPANIES(c) {
+	for (const Company *c : Company::Iterate()) {
 		if (MemCmpT(old_infrastructure.data() + i, &c->infrastructure) != 0) {
 			CCLOG("infrastructure cache mismatch: company %i", (int)c->index);
 			char buffer[4096];
@@ -1514,8 +1510,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 	}
 
 	/* Strict checking of the road stop cache entries */
-	const RoadStop *rs;
-	FOR_ALL_ROADSTOPS(rs) {
+	for (const RoadStop *rs : RoadStop::Iterate()) {
 		if (IsStandardRoadStopTile(rs->xy)) continue;
 
 		assert(rs->GetEntry(DIAGDIR_NE) != rs->GetEntry(DIAGDIR_NW));
@@ -1523,8 +1518,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		rs->GetEntry(DIAGDIR_NW)->CheckIntegrity(rs);
 	}
 
-	Vehicle *v;
-	FOR_ALL_VEHICLES(v) {
+	for (Vehicle *v : Vehicle::Iterate()) {
 		extern bool ValidateVehicleTileHash(const Vehicle *v);
 		if (!ValidateVehicleTileHash(v)) {
 			CCLOG("vehicle tile hash mismatch: type %i, vehicle %i, company %i, unit number %i", (int)v->type, v->index, (int)v->owner, v->unitnumber);
@@ -1677,14 +1671,14 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 	}
 
 	/* Check whether the caches are still valid */
-	FOR_ALL_VEHICLES(v) {
+	for (Vehicle *v : Vehicle::Iterate()) {
 		byte buff[sizeof(VehicleCargoList)];
 		memcpy(buff, &v->cargo, sizeof(VehicleCargoList));
 		v->cargo.InvalidateCache();
 		assert(memcmp(&v->cargo, buff, sizeof(VehicleCargoList)) == 0);
 	}
 
-	FOR_ALL_STATIONS(st) {
+	for (Station *st : Station::Iterate()) {
 		for (CargoID c = 0; c < NUM_CARGO; c++) {
 			byte buff[sizeof(StationCargoList)];
 			memcpy(buff, &st->goods[c].cargo, sizeof(StationCargoList));
@@ -1693,20 +1687,18 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		}
 	}
 
-	OrderList *order_list;
-	FOR_ALL_ORDER_LISTS(order_list) {
+	for (OrderList *order_list : OrderList::Iterate()) {
 		order_list->DebugCheckSanity();
 	}
 
 	extern void ValidateVehicleTickCaches();
 	ValidateVehicleTickCaches();
 
-	FOR_ALL_VEHICLES(v) {
+	for (Vehicle *v : Vehicle::Iterate()) {
 		if (v->Previous()) assert_msg(v->Previous()->Next() == v, "%u", v->index);
 		if (v->Next()) assert_msg(v->Next()->Previous() == v, "%u", v->index);
 	}
-	const TemplateVehicle *tv;
-	FOR_ALL_TEMPLATES(tv) {
+	for (const TemplateVehicle *tv : TemplateVehicle::Iterate()) {
 		if (tv->Prev()) assert_msg(tv->Prev()->Next() == tv, "%u", tv->index);
 		if (tv->Next()) assert_msg(tv->Next()->Prev() == tv, "%u", tv->index);
 	}
@@ -1842,8 +1834,7 @@ void StateGameLoop()
 		NewsLoop();
 		cur_company.Restore();
 
-		Company *c;
-		FOR_ALL_COMPANIES(c) {
+		for (Company *c : Company::Iterate()) {
 			UpdateStateChecksum(c->money);
 		}
 	}

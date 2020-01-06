@@ -913,8 +913,7 @@ static bool DeleteSelectStationWindow(int32 p1)
 
 static bool UpdateConsists(int32 p1)
 {
-	Train *t;
-	FOR_ALL_TRAINS(t) {
+	for (Train *t : Train::Iterate()) {
 		/* Update the consist of all trains so the maximum speed is set correctly. */
 		if (t->IsFrontEngine() || t->IsFreeWagon()) t->ConsistChanged(CCF_TRACK);
 	}
@@ -949,8 +948,7 @@ static bool CheckInterval(int32 p1)
 
 	if (update_vehicles) {
 		const Company *c = Company::Get(_current_company);
-		Vehicle *v;
-		FOR_ALL_VEHICLES(v) {
+		for (Vehicle *v : Vehicle::Iterate()) {
 			if (v->owner == _current_company && v->IsPrimaryVehicle() && !v->ServiceIntervalIsCustom()) {
 				v->SetServiceInterval(CompanyServiceInterval(c, v->type));
 				v->SetServiceIntervalIsPercent(p1 != 0);
@@ -980,8 +978,7 @@ static bool UpdateInterval(VehicleType type, int32 p1)
 	if (interval != p1) return false;
 
 	if (update_vehicles) {
-		Vehicle *v;
-		FOR_ALL_VEHICLES(v) {
+		for (Vehicle *v : Vehicle::Iterate()) {
 			if (v->owner == _current_company && v->type == type && v->IsPrimaryVehicle() && !v->ServiceIntervalIsCustom()) {
 				v->SetServiceInterval(p1);
 			}
@@ -1015,8 +1012,7 @@ static bool UpdateIntervalAircraft(int32 p1)
 
 static bool TrainAccelerationModelChanged(int32 p1)
 {
-	Train *t;
-	FOR_ALL_TRAINS(t) {
+	for (Train *t : Train::Iterate()) {
 		if (t->IsFrontEngine()) {
 			t->tcache.cached_max_curve_speed = t->GetCurveSpeedLimit();
 			t->UpdateAcceleration();
@@ -1038,8 +1034,7 @@ static bool TrainAccelerationModelChanged(int32 p1)
  */
 static bool TrainSlopeSteepnessChanged(int32 p1)
 {
-	Train *t;
-	FOR_ALL_TRAINS(t) {
+	for (Train *t : Train::Iterate()) {
 		if (t->IsFrontEngine()) t->CargoChanged();
 	}
 
@@ -1054,16 +1049,14 @@ static bool TrainSlopeSteepnessChanged(int32 p1)
 static bool RoadVehAccelerationModelChanged(int32 p1)
 {
 	if (_settings_game.vehicle.roadveh_acceleration_model != AM_ORIGINAL) {
-		RoadVehicle *rv;
-		FOR_ALL_ROADVEHICLES(rv) {
+		for (RoadVehicle *rv : RoadVehicle::Iterate()) {
 			if (rv->IsFrontEngine()) {
 				rv->CargoChanged();
 			}
 		}
 	}
 	if (_settings_game.vehicle.roadveh_acceleration_model == AM_ORIGINAL || !_settings_game.vehicle.improved_breakdowns) {
-		RoadVehicle *rv;
-		FOR_ALL_ROADVEHICLES(rv) {
+		for (RoadVehicle *rv : RoadVehicle::Iterate()) {
 			if (rv->IsFrontEngine()) {
 				rv->breakdown_chance_factor = 128;
 			}
@@ -1085,8 +1078,7 @@ static bool RoadVehAccelerationModelChanged(int32 p1)
  */
 static bool RoadVehSlopeSteepnessChanged(int32 p1)
 {
-	RoadVehicle *rv;
-	FOR_ALL_ROADVEHICLES(rv) {
+	for (RoadVehicle *rv : RoadVehicle::Iterate()) {
 		if (rv->IsFrontEngine()) rv->CargoChanged();
 	}
 
@@ -1298,16 +1290,14 @@ static bool CheckFreeformEdges(int32 p1)
 {
 	if (_game_mode == GM_MENU) return true;
 	if (p1 != 0) {
-		Ship *s;
-		FOR_ALL_SHIPS(s) {
+		for (Ship *s : Ship::Iterate()) {
 			/* Check if there is a ship on the northern border. */
 			if (TileX(s->tile) == 0 || TileY(s->tile) == 0) {
 				ShowErrorMessage(STR_CONFIG_SETTING_EDGES_NOT_EMPTY, INVALID_STRING_ID, WL_ERROR);
 				return false;
 			}
 		}
-		BaseStation *st;
-		FOR_ALL_BASE_STATIONS(st) {
+		for (const BaseStation *st : BaseStation::Iterate()) {
 			/* Check if there is a non-deleted buoy on the northern border. */
 			if (st->IsInUse() && (TileX(st->xy) == 0 || TileY(st->xy) == 0)) {
 				ShowErrorMessage(STR_CONFIG_SETTING_EDGES_NOT_EMPTY, INVALID_STRING_ID, WL_ERROR);
@@ -1395,8 +1385,7 @@ static bool ChangeMaxHeightLevel(int32 p1)
 static bool StationCatchmentChanged(int32 p1)
 {
 	Station::RecomputeCatchmentForAll();
-	Station *st;
-	FOR_ALL_STATIONS(st) UpdateStationAcceptance(st, true);
+	for (Station *st : Station::Iterate()) UpdateStationAcceptance(st, true);
 	MarkWholeScreenDirty();
 	return true;
 }
@@ -1432,8 +1421,7 @@ static bool MaxVehiclesChanged(int32 p1)
 
 static bool InvalidateShipPathCache(int32 p1)
 {
-	Ship *s;
-	FOR_ALL_SHIPS(s) {
+	for (Ship *s : Ship::Iterate()) {
 		s->path.clear();
 	}
 	return true;
@@ -1443,8 +1431,7 @@ static bool ImprovedBreakdownsSettingChanged(int32 p1)
 {
 	if (!_settings_game.vehicle.improved_breakdowns) return true;
 
-	Vehicle *v;
-	FOR_ALL_VEHICLES(v) {
+	for (Vehicle *v : Vehicle::Iterate()) {
 		switch(v->type) {
 			case VEH_TRAIN:
 				if (v->IsFrontEngine()) {
@@ -2727,8 +2714,7 @@ void SaveSettingsPlyx()
 	size_t length = 8;
 	uint32 companies_count = 0;
 
-	Company *c;
-	FOR_ALL_COMPANIES(c) {
+	for (Company *c : Company::Iterate()) {
 		length += 12;
 		companies_count++;
 		uint32 setting_count = 0;
@@ -2755,7 +2741,7 @@ void SaveSettingsPlyx()
 	SlWriteUint32(companies_count);            // companies count
 
 	size_t index = 0;
-	FOR_ALL_COMPANIES(c) {
+	for (Company *c : Company::Iterate()) {
 		length += 12;
 		companies_count++;
 		SlWriteUint32(c->index);               // company ID

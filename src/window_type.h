@@ -715,6 +715,11 @@ enum WindowClass {
 	 *   - 0 = #FrametimeGraphWindowWidgets
 	 */
 	WC_FRAMETIME_GRAPH,
+	/**
+	 * Screenshot window; %Window numbers:
+	 *   - 0 = #ScreenshotWidgets
+	 */
+	WC_SCREENSHOT,
 
 	/**
 	 * Trace restrict programme window; %Window numbers:

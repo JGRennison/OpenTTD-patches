@@ -448,9 +448,6 @@ STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Kveikja á stýriskjá
 STR_ABOUT_MENU_AI_DEBUG                                         :Aflúsun gervigreindar/forskrifta
 STR_ABOUT_MENU_SCREENSHOT                                       :Skjámynd
-STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Súmuð inn skjáskot
-STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Taka skjáskot af súmi
-STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Risa skjámynd
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :Um 'OpenTTD'
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Samstilla hreyfimynd
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Sýna/fela afmörkunar kassa
@@ -826,6 +823,7 @@ STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Sjálfvi
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}Ný {STRING} er nú fáanleg!
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Ný {STRING} er nú fáanleg!  -  {ENGINE}
+
 
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} tekur ekki lengur við {STRING}
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} tekur ekki lengur við {STRING} eða {STRING}
@@ -3765,6 +3763,7 @@ STR_AI_LIST_ACCEPT                                              :{BLACK}Í lagi
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Velja merkta forskrift
 STR_AI_LIST_CANCEL                                              :{BLACK}Hætta við
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Hætta við breytingar forskriftar
+
 
 # AI Parameters
 STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} breytur

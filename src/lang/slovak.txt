@@ -534,9 +534,6 @@ STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Zobraziť / skryť konzolu
 STR_ABOUT_MENU_AI_DEBUG                                         :Umelá inteligencia / Ladenie skriptov
 STR_ABOUT_MENU_SCREENSHOT                                       :Snímka
-STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Plne priblížená snímka
-STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Snímka s predvoleným priblížením
-STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Veľká snímka celej mapy
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :O hre 'OpenTTD'
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Sprite zarovnávač
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Prepnúť okrajové boxy
@@ -923,6 +920,7 @@ STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Autoobno
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}Nov{G "ý" "á" "é"} {STRING} dostupn{G 0 "ý" "á" "é"}!
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Nov{G "ý" "á" "é"} {STRING} dostupn{G "ý" "á" "é"}!  -  {ENGINE}
+
 
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} už neprijíma {STRING}
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} už neprijíma {STRING} alebo {STRING}
@@ -4065,6 +4063,7 @@ STR_AI_LIST_ACCEPT                                              :{BLACK}Potvrdi�
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Vybrať vyznačený skript
 STR_AI_LIST_CANCEL                                              :{BLACK}Zrušiť
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Nemeniť skript
+
 
 # AI Parameters
 STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parametre

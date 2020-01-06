@@ -182,10 +182,7 @@ RoadType AllocateRoadType(RoadTypeLabel label, RoadTramType rtt)
  */
 bool RoadVehiclesAreBuilt()
 {
-	const RoadVehicle *rv;
-	FOR_ALL_ROADVEHICLES(rv) return true;
-
-	return false;
+	return !RoadVehicle::Iterate().empty();
 }
 
 /**
@@ -526,8 +523,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 				if (HasRoadWorks(tile)) {
 					/* flooding tile with road works, don't forget to remove the effect vehicle too */
 					assert(_current_company == OWNER_WATER);
-					EffectVehicle *v;
-					FOR_ALL_EFFECTVEHICLES(v) {
+					for (EffectVehicle *v : EffectVehicle::Iterate()) {
 						if (TileVirtXY(v->x_pos, v->y_pos) == tile) {
 							delete v;
 						}
@@ -2156,6 +2152,8 @@ static void TileLoop_Road(TileIndex tile)
 
 			if (old_rb != new_rb) {
 				RemoveRoad(tile, DC_EXEC | DC_AUTO | DC_NO_WATER, (old_rb ^ new_rb), RTT_ROAD, true);
+
+				/* If new_rb is 0, there are now no road pieces left and the tile is no longer a road tile */
 				if (new_rb == 0) {
 					MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 					return;
@@ -2489,12 +2487,12 @@ static Vehicle *UpdateRoadVehPowerProc(Vehicle *v, void *data)
 }
 
 /**
- * Checks the tile and returns whether the current player is allowed to convert the roadtype to another roadtype
+ * Checks the tile and returns whether the current player is allowed to convert the roadtype to another roadtype without taking ownership
  * @param owner the tile owner.
  * @param rtt Road/tram type.
  * @return whether the road is convertible
  */
-static bool CanConvertRoadType(Owner owner, RoadTramType rtt)
+static bool CanConvertUnownedRoadType(Owner owner, RoadTramType rtt)
 {
 	return (owner == OWNER_NONE || (owner == OWNER_TOWN && rtt == RTT_ROAD));
 }
@@ -2590,7 +2588,7 @@ CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 		/* Trying to convert other's road */
 		Owner owner = GetRoadOwner(tile, rtt);
-		if (!CanConvertRoadType(owner, rtt)) {
+		if (!CanConvertUnownedRoadType(owner, rtt)) {
 			CommandCost ret = CheckOwnership(owner, tile);
 			if (ret.Failed()) {
 				error = ret;
@@ -2626,7 +2624,7 @@ CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 			if (flags & DC_EXEC) { // we can safely convert, too
 				/* Update the company infrastructure counters. */
-				if (!IsRoadStopTile(tile) && CanConvertRoadType(owner, rtt) && owner != OWNER_TOWN) {
+				if (!IsRoadStopTile(tile) && owner == _current_company) {
 					ConvertRoadTypeOwner(tile, num_pieces, owner, from_type, to_type);
 				} else {
 					UpdateCompanyRoadInfrastructure(from_type, owner, -num_pieces);
@@ -2696,7 +2694,7 @@ CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 			if (flags & DC_EXEC) {
 				/* Update the company infrastructure counters. */
-				if (CanConvertRoadType(owner, rtt) && owner != OWNER_TOWN) {
+				if (owner == _current_company) {
 					ConvertRoadTypeOwner(tile, tile_pieces, owner, from_type, to_type);
 					if (include_middle) {
 						ConvertRoadTypeOwner(endtile, end_pieces, owner, from_type, to_type);

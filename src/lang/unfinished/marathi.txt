@@ -436,9 +436,6 @@ STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :निरोप
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :जागाची माहिती
 STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_SCREENSHOT                                       :द्श्य
-STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :द्श्य मोठे करा
-STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :स्थिर द्श्य
-STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :संपूर्ण नकाशा स्क्रीनशॉट
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :ओपेन टीटीडी बद्दल
 ############ range ends here
 
@@ -681,6 +678,7 @@ STR_NEWS_VEHICLE_IS_LOST                                        :{WHITE}{VEHICLE
 
 
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
+
 
 
 
@@ -1486,6 +1484,7 @@ STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}वे�
 STR_AI_CONFIG_CHANGE_NONE                                       :
 
 # Available AIs window
+
 
 
 

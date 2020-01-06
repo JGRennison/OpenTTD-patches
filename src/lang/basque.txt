@@ -464,9 +464,6 @@ STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Konsola aktibatu
 STR_ABOUT_MENU_AI_DEBUG                                         :IA/Joko script-aren garbitzailea
 STR_ABOUT_MENU_SCREENSHOT                                       :Pantailan dagoenaren argazkia hartu (Ctrl+S)
-STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Pantailan dagoenaren argazkia hartu zoom-a guztiz erabiliz
-STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :zoom lehenetsikoarekin pantaila-argazkia
-STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Mapa osoaren argazkia hartu (Ctrl+G)
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :'OpenTTD'-ri buruz
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :"Sprit" lerrokatzailea
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Kaxen neurriak aldatu
@@ -845,6 +842,7 @@ STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Berritze
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}{STRING} berri bat orain erabilgarri!
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}{STRING} berri bat orain erabilgarri!  -  {ENGINE}
+
 
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION} ez du gehiago {STRING} onartzen
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION} ez du gehiago {STRING} edo {STRING} onartzen
@@ -3873,6 +3871,7 @@ STR_AI_LIST_ACCEPT                                              :{BLACK}Onartu
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Piztutako script-a aukeratu
 STR_AI_LIST_CANCEL                                              :{BLACK}Ezeztatu
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Ez aldatu script-a
+
 
 # AI Parameters
 STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parametroak

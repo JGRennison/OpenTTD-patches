@@ -470,9 +470,6 @@ STR_ABOUT_MENU_SEPARATOR                                        :―――――
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :コンソールの表示切替
 STR_ABOUT_MENU_AI_DEBUG                                         :AI/ゲームスクリプトのデバッグ
 STR_ABOUT_MENU_SCREENSHOT                                       :スクリーンショット撮影(現在のズーム)
-STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :スクリーンショット撮影(最大ズーム)
-STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :スクリーンショット撮影(標準ズーム)
-STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :スクリーンショット撮影(マップ全体)
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :OpenTTDについて
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :スプライトを整列
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :バウンディングボックスの表示切替
@@ -855,6 +852,7 @@ STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}{VEHICLE
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}{STRING}が新登場!
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}{STRING}が新登場!　-　{ENGINE}
+
 
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}{STATION}は今後{STRING}を受入れません
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}{STATION}は今後{STRING}と{STRING}を受入れません
@@ -4064,6 +4062,7 @@ STR_AI_LIST_ACCEPT                                              :{BLACK}適用
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}選択したスクリプトを使用します
 STR_AI_LIST_CANCEL                                              :{BLACK}キャンセル
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}スクリプトを変更しません
+
 
 # AI Parameters
 STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} パラメータ

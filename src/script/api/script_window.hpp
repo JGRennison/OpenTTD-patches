@@ -52,6 +52,7 @@
 #include "../../widgets/osk_widget.h"
 #include "../../widgets/rail_widget.h"
 #include "../../widgets/road_widget.h"
+#include "../../widgets/screenshot_widget.h"
 #include "../../widgets/settings_widget.h"
 #include "../../widgets/sign_widget.h"
 #include "../../widgets/smallmap_widget.h"
@@ -799,6 +800,12 @@ public:
 		 */
 		WC_FRAMETIME_GRAPH                           = ::WC_FRAMETIME_GRAPH,
 
+		/**
+		 * Screenshot window; %Window numbers:
+		 *   - 0 = #ScreenshotWidgets
+		 */
+		WC_SCREENSHOT                                = ::WC_SCREENSHOT,
+
 		WC_INVALID                                   = ::WC_INVALID,                                   ///< Invalid window.
 	};
 
@@ -1540,6 +1547,8 @@ public:
 	enum IndustryDirectoryWidgets {
 		WID_ID_DROPDOWN_ORDER                        = ::WID_ID_DROPDOWN_ORDER,                        ///< Dropdown for the order of the sort.
 		WID_ID_DROPDOWN_CRITERIA                     = ::WID_ID_DROPDOWN_CRITERIA,                     ///< Dropdown for the criteria of the sort.
+		WID_ID_FILTER_BY_ACC_CARGO                   = ::WID_ID_FILTER_BY_ACC_CARGO,                   ///< Accepted cargo filter dropdown list.
+		WID_ID_FILTER_BY_PROD_CARGO                  = ::WID_ID_FILTER_BY_PROD_CARGO,                  ///< Produced cargo filter dropdown list.
 		WID_ID_INDUSTRY_LIST                         = ::WID_ID_INDUSTRY_LIST,                         ///< Industry list.
 		WID_ID_SCROLLBAR                             = ::WID_ID_SCROLLBAR,                             ///< Scrollbar of the list.
 	};
@@ -1964,6 +1973,7 @@ public:
 		WID_N_VEH_NAME                               = ::WID_N_VEH_NAME,                               ///< Name of the new vehicle.
 		WID_N_VEH_SPR                                = ::WID_N_VEH_SPR,                                ///< Graphical display of the new vehicle.
 		WID_N_VEH_INFO                               = ::WID_N_VEH_INFO,                               ///< Some technical data of the new vehicle.
+		WID_N_SHOW_GROUP                             = ::WID_N_SHOW_GROUP,                             ///< Show vehicle's group
 	};
 
 	/** Widgets of the #MessageHistoryWindow class. */
@@ -2209,6 +2219,17 @@ public:
 		WID_BROS_LT_OFF                              = ::WID_BROS_LT_OFF,                              ///< Turn off area highlight.
 		WID_BROS_LT_ON                               = ::WID_BROS_LT_ON,                               ///< Turn on area highlight.
 		WID_BROS_INFO                                = ::WID_BROS_INFO,                                ///< Station acceptance info.
+	};
+
+	/* automatically generated from ../../widgets/screenshot_widget.h */
+	/** Widgets of the #ScreenshotWindow class. */
+	enum ScreenshotWindowWidgets {
+		WID_SC_TAKE                                  = ::WID_SC_TAKE,                                  ///< Button for taking a normal screenshot
+		WID_SC_TAKE_ZOOMIN                           = ::WID_SC_TAKE_ZOOMIN,                           ///< Button for taking a zoomed in screenshot
+		WID_SC_TAKE_DEFAULTZOOM                      = ::WID_SC_TAKE_DEFAULTZOOM,                      ///< Button for taking a screenshot at normal zoom
+		WID_SC_TAKE_WORLD                            = ::WID_SC_TAKE_WORLD,                            ///< Button for taking a screenshot of the whole world
+		WID_SC_TAKE_HEIGHTMAP                        = ::WID_SC_TAKE_HEIGHTMAP,                        ///< Button for taking a heightmap "screenshot"
+		WID_SC_TAKE_MINIMAP                          = ::WID_SC_TAKE_MINIMAP,                          ///< Button for taking a minimap screenshot
 	};
 
 	/* automatically generated from ../../widgets/settings_widget.h */

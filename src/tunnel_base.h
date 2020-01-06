@@ -43,7 +43,4 @@ struct Tunnel : TunnelPool::PoolItem<&_tunnel_pool> {
 	static void PreCleanPool();
 };
 
-#define FOR_ALL_TUNNELS_FROM(var, start) FOR_ALL_ITEMS_FROM(Tunnel, tunnel_index, var, start)
-#define FOR_ALL_TUNNELS(var) FOR_ALL_TUNNELS_FROM(var, 0)
-
 #endif /* TUNNEL_BASE_H */

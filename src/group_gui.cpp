@@ -190,8 +190,7 @@ private:
 		bool enable_expand_all = false;
 		bool enable_collapse_all = false;
 
-		const Group *g;
-		FOR_ALL_GROUPS(g) {
+		for (const Group *g : Group::Iterate()) {
 			if (g->owner == owner && g->vehicle_type == this->vli.vtype) {
 				list.push_back(g);
 				if (g->parent != INVALID_GROUP) {
@@ -361,8 +360,7 @@ private:
 
 	void SetAllGroupsFoldState(bool folded)
 	{
-		const Group *g;
-		FOR_ALL_GROUPS(g) {
+		for (const Group *g : Group::Iterate()) {
 			if (g->owner == this->owner && g->vehicle_type == this->vli.vtype) {
 				if (g->parent != INVALID_GROUP) {
 					Group::Get(g->parent)->folded = folded;
@@ -406,6 +404,7 @@ public:
 		this->groups.ForceRebuild();
 		this->groups.NeedResort();
 		this->BuildGroupList(vli.company);
+		this->group_sb->SetCount((uint)this->groups.size());
 
 		this->GetWidget<NWidgetCore>(WID_GL_CAPTION)->widget_data = STR_VEHICLE_LIST_TRAIN_CAPTION + this->vli.vtype;
 		this->GetWidget<NWidgetCore>(WID_GL_LIST_VEHICLE)->tool_tip = STR_VEHICLE_LIST_TRAIN_LIST_TOOLTIP + this->vli.vtype;
@@ -785,6 +784,10 @@ public:
 
 				this->vehicle_sel = v->index;
 
+				if (_ctrl_pressed) {
+					this->SelectGroup(v->group_id);
+				}
+
 				SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
 				SetMouseCursorVehicle(v, EIT_IN_LIST);
 				_cursor.vehchain = true;
@@ -1078,6 +1081,35 @@ public:
 	{
 		if (this->vehicle_sel == vehicle) ResetObjectToPlace();
 	}
+
+	/**
+	 * Selects the specified group in the list
+	 *
+	 * @param g_id The ID of the group to be selected
+	 */
+	void SelectGroup(const GroupID g_id)
+	{
+		if (g_id == INVALID_GROUP || g_id == this->vli.index) return;
+
+		this->vli.index = g_id;
+		if (g_id != ALL_GROUP && g_id != DEFAULT_GROUP) {
+			const Group *g = Group::Get(g_id);
+			int id_g = find_index(this->groups, g);
+			// The group's branch is maybe collapsed, so try to expand it
+			if (id_g == -1) {
+				for (auto pg = Group::GetIfValid(g->parent); pg != nullptr; pg = Group::GetIfValid(pg->parent)) {
+					pg->folded = false;
+				}
+				this->groups.ForceRebuild();
+				this->BuildGroupList(this->owner);
+				id_g = find_index(this->groups, g);
+			}
+			this->group_sb->ScrollTowards(id_g);
+		}
+		this->vehicles.ForceRebuild();
+		this->SetDirty();
+	}
+
 };
 
 
@@ -1099,18 +1131,31 @@ static WindowDesc _train_group_desc(
  * Show the group window for the given company and vehicle type.
  * @param company The company to show the window for.
  * @param vehicle_type The type of vehicle to show it for.
+ * @param group The group to be selected. Defaults to INVALID_GROUP.
+ * @param need_existing_window Whether the existing window is needed. Defaults to false.
  */
-void ShowCompanyGroup(CompanyID company, VehicleType vehicle_type)
+void ShowCompanyGroup(CompanyID company, VehicleType vehicle_type, GroupID group = INVALID_GROUP, bool need_existing_window = false)
 {
 	if (!Company::IsValidID(company)) return;
 
-	WindowNumber num = VehicleListIdentifier(VL_GROUP_LIST, vehicle_type, company).Pack();
+	const WindowNumber num = VehicleListIdentifier(VL_GROUP_LIST, vehicle_type, company).Pack();
+	VehicleGroupWindow *w;
 	if (vehicle_type == VEH_TRAIN) {
-		AllocateWindowDescFront<VehicleGroupWindow>(&_train_group_desc, num);
+		w = AllocateWindowDescFront<VehicleGroupWindow>(&_train_group_desc, num, need_existing_window);
 	} else {
 		_other_group_desc.cls = GetWindowClassForVehicleType(vehicle_type);
-		AllocateWindowDescFront<VehicleGroupWindow>(&_other_group_desc, num);
+		w = AllocateWindowDescFront<VehicleGroupWindow>(&_other_group_desc, num, need_existing_window);
 	}
+	if (w != nullptr) w->SelectGroup(group);
+}
+
+/**
+ * Show the group window for the given vehicle.
+ * @param v The vehicle to show the window for.
+ */
+void ShowCompanyGroupForVehicle(const Vehicle *v)
+{
+	ShowCompanyGroup(v->owner, v->type, v->group_id, true);
 }
 
 /**

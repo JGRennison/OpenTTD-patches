@@ -82,6 +82,7 @@ rail.cpp
 rev.cpp
 road.cpp
 roadstop.cpp
+screenshot_gui.cpp
 screenshot.cpp
 settings.cpp
 signal.cpp
@@ -337,6 +338,7 @@ roadveh.h
 safeguards.h
 scope.h
 screenshot.h
+screenshot_gui.h
 sound/sdl_s.h
 video/sdl_v.h
 video/sdl2_v.h
@@ -597,6 +599,7 @@ widgets/osk_widget.h
 widgets/plans_widget.h
 widgets/rail_widget.h
 widgets/road_widget.h
+widgets/screenshot_widget.h
 widgets/settings_widget.h
 widgets/sign_widget.h
 widgets/smallmap_widget.h

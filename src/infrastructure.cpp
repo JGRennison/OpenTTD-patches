@@ -198,8 +198,7 @@ static void FixAllReservations()
 {
 	/* if this function is called, we can safely assume that sharing of rails is being switched off */
 	assert(!_settings_game.economy.infrastructure_sharing[VEH_TRAIN]);
-	Train *v;
-	FOR_ALL_TRAINS(v) {
+	for (Train *v : Train::Iterate()) {
 		if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL)) continue;
 		/* It might happen that the train reserved additional tracks,
 		 * but FollowTrainReservation can't detect those because they are no longer reachable.
@@ -241,8 +240,7 @@ bool CheckSharingChangePossible(VehicleType type)
 	if (_settings_game.economy.infrastructure_sharing[type]) return true;
 
 	StringID error_message = STR_NULL;
-	Vehicle *v;
-	FOR_ALL_VEHICLES(v) {
+	for (Vehicle *v : Vehicle::Iterate()) {
 		if (type != v->type || HasBit(v->subtype, GVSF_VIRTUAL)) continue;
 		if (v->Previous() != nullptr) continue;
 
@@ -288,9 +286,10 @@ void HandleSharingCompanyDeletion(Owner owner)
 {
 	YapfNotifyTrackLayoutChange(INVALID_TILE, INVALID_TRACK);
 
-	Vehicle *v = nullptr;
-	SCOPE_INFO_FMT([&v], "HandleSharingCompanyDeletion: veh: %s", scope_dumper().VehicleInfo(v));
-	FOR_ALL_VEHICLES(v) {
+	Vehicle *si_v = nullptr;
+	SCOPE_INFO_FMT([&si_v], "HandleSharingCompanyDeletion: veh: %s", scope_dumper().VehicleInfo(si_v));
+	for (Vehicle *v : Vehicle::Iterate()) {
+		si_v = v;
 		if (!IsCompanyBuildableVehicleType(v) || v->Previous() != nullptr) continue;
 		/* vehicle position */
 		if (v->owner == owner || !VehiclePositionIsAllowed(v, owner)) {

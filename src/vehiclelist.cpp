@@ -72,8 +72,7 @@ void BuildDepotVehicleList(VehicleType type, TileIndex tile, VehicleList *engine
 	engines->clear();
 	if (wagons != nullptr && wagons != engines) wagons->clear();
 
-	const Vehicle *v;
-	FOR_ALL_VEHICLES(v) {
+	for (const Vehicle *v : Vehicle::Iterate()) {
 		/* General tests for all vehicle types */
 		if (v->type != type) continue;
 		if (v->tile != tile) continue;
@@ -117,10 +116,8 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 {
 	list->clear();
 
-	const Vehicle *v;
-
 	auto fill_all_vehicles = [&]() {
-		FOR_ALL_VEHICLES(v) {
+		for (const Vehicle *v : Vehicle::Iterate()) {
 			if (!HasBit(v->subtype, GVSF_VIRTUAL) && v->type == vli.vtype && v->owner == vli.company && v->IsPrimaryVehicle()) {
 				list->push_back(v);
 			}
@@ -129,7 +126,7 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 
 	switch (vli.type) {
 		case VL_STATION_LIST:
-			FOR_ALL_VEHICLES(v) {
+			for (const Vehicle *v : Vehicle::Iterate()) {
 				if (v->type == vli.vtype && v->IsPrimaryVehicle()) {
 					const Order *order;
 
@@ -144,19 +141,20 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 			}
 			break;
 
-		case VL_SHARED_ORDERS:
+		case VL_SHARED_ORDERS: {
 			/* Add all vehicles from this vehicle's shared order list */
-			v = Vehicle::GetIfValid(vli.index);
+			const Vehicle *v = Vehicle::GetIfValid(vli.index);
 			if (v == nullptr || v->type != vli.vtype || !v->IsPrimaryVehicle()) return false;
 
 			for (; v != nullptr; v = v->NextShared()) {
 				list->push_back(v);
 			}
 			break;
+		}
 
 		case VL_GROUP_LIST:
 			if (vli.index != ALL_GROUP) {
-				FOR_ALL_VEHICLES(v) {
+				for (const Vehicle *v : Vehicle::Iterate()) {
 					if (!HasBit(v->subtype, GVSF_VIRTUAL) && v->type == vli.vtype && v->IsPrimaryVehicle() &&
 							v->owner == vli.company && GroupIsInGroup(v->group_id, vli.index)) {
 						list->push_back(v);
@@ -172,7 +170,7 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 			break;
 
 		case VL_DEPOT_LIST:
-			FOR_ALL_VEHICLES(v) {
+			for (const Vehicle *v : Vehicle::Iterate()) {
 				if (v->type == vli.vtype && v->IsPrimaryVehicle()) {
 					const Order *order;
 
@@ -200,7 +198,7 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 		}
 
 		case VL_SINGLE_VEH: {
-			v = Vehicle::GetIfValid(vli.index);
+			const Vehicle *v = Vehicle::GetIfValid(vli.index);
 			if (v != nullptr) list->push_back(v);
 			break;
 		}

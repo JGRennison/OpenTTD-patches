@@ -186,6 +186,7 @@ struct GUISettings {
 	bool   show_veh_list_cargo_filter;       ///< Show cargo list filter in UI
 	uint8  osk_activation;                   ///< Mouse gesture to trigger the OSK.
 	byte   starting_colour;                  ///< default color scheme for the company to start a new game with
+	bool   show_newgrf_name;                 ///< Show the name of the NewGRF in the build vehicle window
 	bool   show_vehicle_route_steps;         ///< when a window related to a specific vehicle is focused, show route steps
 	bool   show_vehicle_list_company_colour; ///< show the company colour of vehicles which have an owner different to the owner of the vehicle list
 	bool   enable_single_veh_shared_order_gui;    ///< enable showing a single vehicle in the shared order GUI window
@@ -194,7 +195,6 @@ struct GUISettings {
 	bool   adv_sig_bridge_tun_modes;         ///< Enable advanced modes for signals on bridges/tunnels.
 	bool   show_depot_sell_gui;              ///< Show go to depot and sell in UI
 	bool   open_vehicle_gui_clone_share;     ///< Open vehicle GUI when share-cloning vehicle from depot GUI
-	bool   show_newgrf_name;                 ///< Show the name of the NewGRF in the build vehicle window
 
 	uint16 console_backlog_timeout;          ///< the minimum amount of time items should be in the console backlog before they will be removed in ~3 seconds granularity.
 	uint16 console_backlog_length;           ///< the minimum amount of items in the console backlog before items will be removed.
@@ -330,6 +330,7 @@ struct GameCreationSettings {
 	uint32 generation_seed;                  ///< noise seed for world generation
 	uint32 generation_unique_id;             ///< random id to differentiate savegames
 	Year   starting_year;                    ///< starting date
+	Year   ending_year;                      ///< scoring end date
 	uint8  map_x;                            ///< X size of map
 	uint8  map_y;                            ///< Y size of map
 	byte   land_generator;                   ///< the landscape generator

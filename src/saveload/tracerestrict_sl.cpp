@@ -107,9 +107,7 @@ static void RealSave_TRRP(TraceRestrictProgram *prog)
  */
 static void Save_TRRP()
 {
-	TraceRestrictProgram *prog;
-
-	FOR_ALL_TRACE_RESTRICT_PROGRAMS(prog) {
+	for (TraceRestrictProgram *prog : TraceRestrictProgram::Iterate()) {
 		SlSetArrayIndex(prog->index);
 		SlAutolength((AutolengthProc*) RealSave_TRRP, prog);
 	}
@@ -166,9 +164,7 @@ static void RealSave_TRRS(TraceRestrictSlot *slot)
  */
 static void Save_TRRS()
 {
-	TraceRestrictSlot *slot;
-
-	FOR_ALL_TRACE_RESTRICT_SLOTS(slot) {
+	for (TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
 		SlSetArrayIndex(slot->index);
 		SlAutolength((AutolengthProc*) RealSave_TRRS, slot);
 	}

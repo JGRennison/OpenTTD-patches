@@ -276,7 +276,4 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 	}
 };
 
-#define FOR_ALL_PLANS_FROM(var, start) FOR_ALL_ITEMS_FROM(Plan, plan_index, var, start)
-#define FOR_ALL_PLANS(var) FOR_ALL_PLANS_FROM(var, 0)
-
 #endif /* PLANS_BASE_H */

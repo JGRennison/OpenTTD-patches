@@ -1703,6 +1703,7 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.prefer_teamchat"));
 			interface->Add(new SettingEntry("gui.advanced_vehicle_list"));
 			interface->Add(new SettingEntry("gui.expenses_layout"));
+			interface->Add(new SettingEntry("gui.show_newgrf_name"));
 			interface->Add(new SettingEntry("gui.show_train_length_in_details"));
 			interface->Add(new SettingEntry("gui.show_train_weight_ratios_in_details"));
 			interface->Add(new SettingEntry("gui.show_vehicle_group_in_details"));
@@ -1713,7 +1714,6 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.adv_sig_bridge_tun_modes"));
 			interface->Add(new SettingEntry("gui.show_depot_sell_gui"));
 			interface->Add(new SettingEntry("gui.open_vehicle_gui_clone_share"));
-			interface->Add(new SettingEntry("gui.show_newgrf_name"));
 		}
 
 		SettingsPage *advisors = main->Add(new SettingsPage(STR_CONFIG_SETTING_ADVISORS));
@@ -1881,6 +1881,7 @@ static SettingsContainer &GetSettingsTree()
 			genworld->Add(new SettingEntry("economy.town_min_distance"));
 			genworld->Add(new SettingEntry("difficulty.industry_density"));
 			genworld->Add(new SettingEntry("gui.pause_on_newgame"));
+			genworld->Add(new SettingEntry("game_creation.ending_year"));
 		}
 
 		SettingsPage *environment = main->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT));

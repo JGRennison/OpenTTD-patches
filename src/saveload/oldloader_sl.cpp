@@ -109,8 +109,7 @@ static void FixTTDMapArray()
 
 static void FixTTDDepots()
 {
-	const Depot *d;
-	FOR_ALL_DEPOTS_FROM(d, 252) {
+	for (const Depot *d : Depot::Iterate(252)) {
 		if (!IsDepotTile(d->xy) || GetDepotIndex(d->xy) != d->index) {
 			/** Workaround for SVXConverter bug, depots 252-255 could be invalid */
 			delete d;
@@ -153,10 +152,8 @@ static uint32 RemapOldTownName(uint32 townnameparts, byte old_town_name_type)
 
 static void FixOldTowns()
 {
-	Town *town;
-
 	/* Convert town-names if needed */
-	FOR_ALL_TOWNS(town) {
+	for (Town *town : Town::Iterate()) {
 		if (IsInsideMM(town->townnametype, 0x20C1, 0x20C3)) {
 			town->townnametype = SPECSTR_TOWNNAME_ENGLISH + _settings_game.game_creation.town_name;
 			town->townnameparts = RemapOldTownName(town->townnameparts, _settings_game.game_creation.town_name);
@@ -173,9 +170,7 @@ static StringID *_old_vehicle_names;
  */
 void FixOldVehicles()
 {
-	Vehicle *v;
-
-	FOR_ALL_VEHICLES(v) {
+	for (Vehicle *v : Vehicle::Iterate()) {
 		if ((size_t)v->next == 0xFFFF) {
 			v->next = nullptr;
 		} else {
@@ -385,8 +380,7 @@ static bool FixTTOEngines()
 		233, 234, 235, 236, 237, 238, 253
 	};
 
-	Vehicle *v;
-	FOR_ALL_VEHICLES(v) {
+	for (Vehicle *v : Vehicle::Iterate()) {
 		if (v->engine_type >= lengthof(tto_to_ttd)) return false;
 		v->engine_type = tto_to_ttd[v->engine_type];
 	}
@@ -459,8 +453,7 @@ static bool FixTTOEngines()
 
 static void FixTTOCompanies()
 {
-	Company *c;
-	FOR_ALL_COMPANIES(c) {
+	for (Company *c : Company::Iterate()) {
 		c->cur_economy.company_value = CalculateCompanyValue(c); // company value history is zeroed
 	}
 }

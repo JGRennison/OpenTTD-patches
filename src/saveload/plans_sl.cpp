@@ -38,8 +38,7 @@ static void RealSave_PLAN(Plan *p)
 /** Save all plans. */
 static void Save_PLAN()
 {
-	Plan *p;
-	FOR_ALL_PLANS(p) {
+	for (Plan *p : Plan::Iterate()) {
 		SlSetArrayIndex(p->index);
 		SlAutolength((AutolengthProc*) RealSave_PLAN, p);
 	}
@@ -82,8 +81,7 @@ static void Load_PLANLINE()
 		SlArray(&pl->tiles[0], plsz, SLE_UINT32);
 	}
 
-	Plan *p;
-	FOR_ALL_PLANS(p) {
+	for (Plan *p : Plan::Iterate()) {
 		p->SetVisibility(false);
 	}
 }

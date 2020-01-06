@@ -693,8 +693,6 @@ void DrawRailCatenary(const TileInfo *ti)
 
 bool SettingsDisableElrail(int32 p1)
 {
-	Company *c;
-	Train *t;
 	bool disable = (p1 != 0);
 
 	/* we will now walk through all electric train engines and change their railtypes if it is the wrong one*/
@@ -702,8 +700,7 @@ bool SettingsDisableElrail(int32 p1)
 	const RailType new_railtype = disable ? RAILTYPE_RAIL : RAILTYPE_ELECTRIC;
 
 	/* walk through all train engines */
-	Engine *e;
-	FOR_ALL_ENGINES_OF_TYPE(e, VEH_TRAIN) {
+	for (Engine *e : Engine::IterateType(VEH_TRAIN)) {
 		RailVehicleInfo *rv_info = &e->u.rail;
 		/* if it is an electric rail engine and its railtype is the wrong one */
 		if (rv_info->engclass == 2 && rv_info->railtype == old_railtype) {
@@ -715,7 +712,7 @@ bool SettingsDisableElrail(int32 p1)
 	/* when disabling elrails, make sure that all existing trains can run on
 	 *  normal rail too */
 	if (disable) {
-		FOR_ALL_TRAINS(t) {
+		for (Train *t : Train::Iterate()) {
 			if (t->railtype == RAILTYPE_ELECTRIC) {
 				/* this railroad vehicle is now compatible only with elrail,
 				 *  so add there also normal rail compatibility */
@@ -727,14 +724,14 @@ bool SettingsDisableElrail(int32 p1)
 	}
 
 	/* Fix the total power and acceleration for trains */
-	FOR_ALL_TRAINS(t) {
+	for (Train *t : Train::Iterate()) {
 		/* power and acceleration is cached only for front engines */
 		if (t->IsFrontEngine()) {
 			t->ConsistChanged(CCF_TRACK);
 		}
 	}
 
-	FOR_ALL_COMPANIES(c) c->avail_railtypes = GetCompanyRailtypes(c->index);
+	for (Company *c : Company::Iterate()) c->avail_railtypes = GetCompanyRailtypes(c->index);
 
 	/* This resets the _last_built_railtype, which will be invalid for electric
 	 * rails. It may have unintended consequences if that function is ever

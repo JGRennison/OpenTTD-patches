@@ -578,7 +578,7 @@ private:
 
 		/* Disallow other company colours for the primary colour */
 		if (this->livery_class < LC_GROUP_RAIL && HasBit(this->sel, LS_DEFAULT) && primary) {
-			FOR_ALL_COMPANIES(c) {
+			for (const Company *c : Company::Iterate()) {
 				if (c->index != _local_company) SetBit(used_colours, c->colour);
 			}
 		}
@@ -662,8 +662,7 @@ private:
 			GUIGroupList list;
 			VehicleType vtype = (VehicleType)(this->livery_class - LC_GROUP_RAIL);
 
-			const Group *g;
-			FOR_ALL_GROUPS(g) {
+			for (const Group *g : Group::Iterate()) {
 				if (g->owner == owner && g->vehicle_type == vtype) {
 					list.push_back(g);
 				}
@@ -754,8 +753,7 @@ public:
 				}
 
 				/* And group names */
-				const Group *g;
-				FOR_ALL_GROUPS(g) {
+				for (const Group *g : Group::Iterate()) {
 					if (g->owner == (CompanyID)this->window_number) {
 						SetDParam(0, g->index);
 						d = maxdim(d, GetStringBoundingBox(STR_GROUP_NAME));
@@ -1829,8 +1827,7 @@ struct CompanyInfrastructureWindow : Window
 		this->roadtypes = ROADTYPES_NONE;
 
 		/* Find the used railtypes. */
-		Engine *e;
-		FOR_ALL_ENGINES_OF_TYPE(e, VEH_TRAIN) {
+		for (const Engine *e : Engine::IterateType(VEH_TRAIN)) {
 			if (!HasBit(e->info.climates, _settings_game.game_creation.landscape)) continue;
 
 			this->railtypes |= GetRailTypeInfo(e->u.rail.railtype)->introduces_railtypes;
@@ -1840,7 +1837,7 @@ struct CompanyInfrastructureWindow : Window
 		this->railtypes = AddDateIntroducedRailTypes(this->railtypes, MAX_DAY);
 
 		/* Find the used roadtypes. */
-		FOR_ALL_ENGINES_OF_TYPE(e, VEH_ROAD) {
+		for (const Engine *e : Engine::IterateType(VEH_ROAD)) {
 			if (!HasBit(e->info.climates, _settings_game.game_creation.landscape)) continue;
 
 			this->roadtypes |= GetRoadTypeInfo(e->u.road.roadtype)->introduces_roadtypes;
@@ -2419,9 +2416,7 @@ struct CompanyWindow : Window
 				break;
 
 			case WID_C_DESC_OWNERS: {
-				const Company *c2;
-
-				FOR_ALL_COMPANIES(c2) {
+				for (const Company *c2 : Company::Iterate()) {
 					SetDParamMaxValue(0, 75);
 					SetDParam(1, c2->index);
 
@@ -2523,10 +2518,9 @@ struct CompanyWindow : Window
 			}
 
 			case WID_C_DESC_OWNERS: {
-				const Company *c2;
 				uint y = r.top;
 
-				FOR_ALL_COMPANIES(c2) {
+				for (const Company *c2 : Company::Iterate()) {
 					uint amt = GetAmountOwnedBy(c, c2->index);
 					if (amt != 0) {
 						SetDParam(0, amt * 25);

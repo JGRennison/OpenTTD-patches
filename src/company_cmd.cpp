@@ -268,8 +268,7 @@ void SubtractMoneyFromCompanyFract(CompanyID company, CommandCost cst)
 /** Update the landscaping limits per company. */
 void UpdateLandscapingLimits()
 {
-	Company *c;
-	FOR_ALL_COMPANIES(c) {
+	for (Company *c : Company::Iterate()) {
 		c->terraform_limit = min(c->terraform_limit + _settings_game.construction.terraform_per_64k_frames, (uint32)_settings_game.construction.terraform_frame_burst << 16);
 		c->clear_limit     = min(c->clear_limit     + _settings_game.construction.clear_per_64k_frames,     (uint32)_settings_game.construction.clear_frame_burst << 16);
 		c->tree_limit      = min(c->tree_limit      + _settings_game.construction.tree_per_64k_frames,      (uint32)_settings_game.construction.tree_frame_burst << 16);
@@ -366,8 +365,7 @@ static void GenerateCompanyName(Company *c)
 
 verify_name:;
 		/* No companies must have this name already */
-		Company *cc;
-		FOR_ALL_COMPANIES(cc) {
+		for (const Company *cc : Company::Iterate()) {
 			if (cc->name_1 == str && cc->name_2 == strp) goto bad_town_name;
 		}
 
@@ -453,8 +451,7 @@ static Colours GenerateCompanyColour()
 	}
 
 	/* Move the colours that look similar to each company's colour to the side */
-	Company *c;
-	FOR_ALL_COMPANIES(c) {
+	for (const Company *c : Company::Iterate()) {
 		Colours pcolour = (Colours)c->colour;
 
 		for (uint i = 0; i < COLOUR_END; i++) {
@@ -500,8 +497,7 @@ restart:;
 		GetString(buffer, STR_PRESIDENT_NAME, lastof(buffer));
 		if (Utf8StringLength(buffer) >= MAX_LENGTH_PRESIDENT_NAME_CHARS) continue;
 
-		Company *cc;
-		FOR_ALL_COMPANIES(cc) {
+		for (const Company *cc : Company::Iterate()) {
 			if (c != cc) {
 				/* Reserve extra space so even overlength president names can be compared. */
 				char buffer2[(MAX_LENGTH_PRESIDENT_NAME_CHARS + 1) * MAX_CHAR_LENGTH];
@@ -527,8 +523,7 @@ void ResetCompanyLivery(Company *c)
 		c->livery[scheme].colour2 = c->colour;
 	}
 
-	Group *g;
-	FOR_ALL_GROUPS(g) {
+	for (Group *g : Group::Iterate()) {
 		if (g->owner == c->index) {
 			g->livery.in_use  = 0;
 			g->livery.colour1 = c->colour;
@@ -606,11 +601,9 @@ static bool MaybeStartNewCompany()
 {
 	if (_networking && Company::GetNumItems() >= _settings_client.network.max_companies) return false;
 
-	Company *c;
-
 	/* count number of competitors */
 	uint n = 0;
-	FOR_ALL_COMPANIES(c) {
+	for (const Company *c : Company::Iterate()) {
 		if (c->is_ai) n++;
 	}
 
@@ -679,11 +672,11 @@ static void HandleBankruptcyTakeover(Company *c)
 	/* Did we ask everyone for bankruptcy? If so, bail out. */
 	if (c->bankrupt_asked == MAX_UVALUE(CompanyMask)) return;
 
-	Company *c2, *best = nullptr;
+	Company *best = nullptr;
 	int32 best_performance = -1;
 
 	/* Ask the company with the highest performance history first */
-	FOR_ALL_COMPANIES(c2) {
+	for (Company *c2 : Company::Iterate()) {
 		if (c2->bankrupt_asked == 0 && // Don't ask companies going bankrupt themselves
 				!HasBit(c->bankrupt_asked, c2->index) &&
 				best_performance < c2->old_economy[1].performance_history &&
@@ -745,10 +738,8 @@ void OnTick_Companies()
  */
 void CompaniesYearlyLoop()
 {
-	Company *c;
-
 	/* Copy statistics */
-	FOR_ALL_COMPANIES(c) {
+	for (Company *c : Company::Iterate()) {
 		memmove(&c->yearly_expenses[1], &c->yearly_expenses[0], sizeof(c->yearly_expenses) - sizeof(c->yearly_expenses[0]));
 		memset(&c->yearly_expenses[0], 0, sizeof(c->yearly_expenses[0]));
 		SetWindowDirty(WC_FINANCES, c->index);
@@ -756,7 +747,7 @@ void CompaniesYearlyLoop()
 
 	if (_settings_client.gui.show_finances && _local_company != COMPANY_SPECTATOR) {
 		ShowCompanyFinances(_local_company);
-		c = Company::Get(_local_company);
+		Company *c = Company::Get(_local_company);
 		if (c->num_valid_stat_ent > 5 && c->old_economy[0].performance_history < c->old_economy[4].performance_history) {
 			if (_settings_client.sound.new_year) SndPlayFx(SND_01_BAD_YEAR);
 		} else {
@@ -988,8 +979,7 @@ CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 
 	/* Ensure no two companies have the same primary colour */
 	if (scheme == LS_DEFAULT && !second) {
-		const Company *cc;
-		FOR_ALL_COMPANIES(cc) {
+		for (const Company *cc : Company::Iterate()) {
 			if (cc != c && cc->colour == colour) return CMD_ERROR;
 		}
 	}
@@ -1052,8 +1042,7 @@ CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 		InvalidateWindowData(WC_SMALLMAP, 0, 1);
 
 		/* Company colour data is indirectly cached. */
-		Vehicle *v;
-		FOR_ALL_VEHICLES(v) {
+		for (Vehicle *v : Vehicle::Iterate()) {
 			if (v->owner == _current_company) v->InvalidateNewGRFCache();
 		}
 
@@ -1070,9 +1059,7 @@ CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32 p1, 
  */
 static bool IsUniqueCompanyName(const char *name)
 {
-	const Company *c;
-
-	FOR_ALL_COMPANIES(c) {
+	for (const Company *c : Company::Iterate()) {
 		if (c->name != nullptr && strcmp(c->name, name) == 0) return false;
 	}
 
@@ -1115,9 +1102,7 @@ CommandCost CmdRenameCompany(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
  */
 static bool IsUniquePresidentName(const char *name)
 {
-	const Company *c;
-
-	FOR_ALL_COMPANIES(c) {
+	for (const Company *c : Company::Iterate()) {
 		if (c->president_name != nullptr && strcmp(c->president_name, name) == 0) return false;
 	}
 

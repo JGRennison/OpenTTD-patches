@@ -103,8 +103,7 @@ void GroupStatistics::Clear()
 /* static */ void GroupStatistics::UpdateAfterLoad()
 {
 	/* Set up the engine count for all companies */
-	Company *c;
-	FOR_ALL_COMPANIES(c) {
+	for (Company *c : Company::Iterate()) {
 		for (VehicleType type = VEH_BEGIN; type < VEH_COMPANY_END; type++) {
 			c->group_all[type].Clear();
 			c->group_default[type].Clear();
@@ -112,20 +111,18 @@ void GroupStatistics::Clear()
 	}
 
 	/* Recalculate */
-	Group *g;
-	FOR_ALL_GROUPS(g) {
+	for (Group *g : Group::Iterate()) {
 		g->statistics.Clear();
 	}
 
-	const Vehicle *v;
-	FOR_ALL_VEHICLES(v) {
+	for (const Vehicle *v : Vehicle::Iterate()) {
 		if (!v->IsEngineCountable()) continue;
 
 		GroupStatistics::CountEngine(v, 1);
 		if (v->IsPrimaryVehicle()) GroupStatistics::CountVehicle(v, 1);
 	}
 
-	FOR_ALL_COMPANIES(c) {
+	for (const Company *c : Company::Iterate()) {
 		GroupStatistics::UpdateAutoreplace(c->index);
 	}
 }
@@ -191,8 +188,7 @@ void GroupStatistics::Clear()
 /* static */ void GroupStatistics::UpdateProfits()
 {
 	/* Set up the engine count for all companies */
-	Company *c;
-	FOR_ALL_COMPANIES(c) {
+	for (Company *c : Company::Iterate()) {
 		for (VehicleType type = VEH_BEGIN; type < VEH_COMPANY_END; type++) {
 			c->group_all[type].ClearProfits();
 			c->group_default[type].ClearProfits();
@@ -200,13 +196,11 @@ void GroupStatistics::Clear()
 	}
 
 	/* Recalculate */
-	Group *g;
-	FOR_ALL_GROUPS(g) {
+	for (Group *g : Group::Iterate()) {
 		g->statistics.ClearProfits();
 	}
 
-	const Vehicle *v;
-	FOR_ALL_VEHICLES(v) {
+	for (const Vehicle *v : Vehicle::Iterate()) {
 		if (v->IsPrimaryVehicle() && v->age > VEHICLE_PROFIT_MIN_AGE && !HasBit(v->subtype, GVSF_VIRTUAL)) GroupStatistics::VehicleReachedProfitAge(v);
 	}
 }
@@ -225,8 +219,7 @@ void GroupStatistics::Clear()
 	}
 
 	/* Recalculate */
-	Group *g;
-	FOR_ALL_GROUPS(g) {
+	for (Group *g : Group::Iterate()) {
 		if (g->owner != company) continue;
 		g->statistics.ClearAutoreplace();
 	}
@@ -280,8 +273,7 @@ const Livery *GetParentLivery(const Group *g)
 void PropagateChildLivery(const Group *g)
 {
 	/* Company colour data is indirectly cached. */
-	Vehicle *v;
-	FOR_ALL_VEHICLES(v) {
+	for (Vehicle *v : Vehicle::Iterate()) {
 		if (v->group_id == g->index && (!v->IsGroundVehicle() || v->IsFrontEngine())) {
 			for (Vehicle *u = v; u != nullptr; u = u->Next()) {
 				u->colourmap = PAL_NONE;
@@ -290,8 +282,7 @@ void PropagateChildLivery(const Group *g)
 		}
 	}
 
-	Group *cg;
-	FOR_ALL_GROUPS(cg) {
+	for (Group *cg : Group::Iterate()) {
 		if (cg->parent == g->index) {
 			if (!HasBit(cg->livery.in_use, 0)) cg->livery.colour1 = g->livery.colour1;
 			if (!HasBit(cg->livery.in_use, 1)) cg->livery.colour2 = g->livery.colour2;
@@ -380,8 +371,7 @@ CommandCost CmdDeleteGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	DoCommand(0, p1, 0, flags, CMD_REMOVE_ALL_VEHICLES_GROUP);
 
 	/* Delete sub-groups */
-	Group *gp;
-	FOR_ALL_GROUPS(gp) {
+	for (const Group *gp : Group::Iterate()) {
 		if (gp->parent == g->index) {
 			DoCommand(0, gp->index, 0, flags, CMD_DELETE_GROUP);
 		}
@@ -394,10 +384,9 @@ CommandCost CmdDeleteGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 		/* If we set an autoreplace for the group we delete, remove it. */
 		if (_current_company < MAX_COMPANIES) {
 			Company *c;
-			EngineRenew *er;
 
 			c = Company::Get(_current_company);
-			FOR_ALL_ENGINE_RENEWS(er) {
+			for (EngineRenew *er : EngineRenew::Iterate()) {
 				if (er->group_id == g->index) RemoveEngineReplacementForCompany(c, er->from, g->index, flags);
 			}
 		}
@@ -640,11 +629,9 @@ CommandCost CmdAddSharedVehicleGroup(TileIndex tile, DoCommandFlag flags, uint32
 	if (!Group::IsValidID(id_g) || !IsCompanyBuildableVehicleType(type)) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		Vehicle *v;
-
 		/* Find the first front engine which belong to the group id_g
 		 * then add all shared vehicles of this front engine to the group id_g */
-		FOR_ALL_VEHICLES(v) {
+		for (const Vehicle *v : Vehicle::Iterate()) {
 			if (v->type == type && v->IsPrimaryVehicle()) {
 				if (v->group_id != id_g) continue;
 
@@ -680,10 +667,8 @@ CommandCost CmdRemoveAllVehiclesGroup(TileIndex tile, DoCommandFlag flags, uint3
 	if (g == nullptr || g->owner != _current_company) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		Vehicle *v;
-
 		/* Find each Vehicle that belongs to the group old_g and add it to the default group */
-		FOR_ALL_VEHICLES(v) {
+		for (const Vehicle *v : Vehicle::Iterate()) {
 			if (v->IsPrimaryVehicle()) {
 				if (v->group_id != old_g) continue;
 
@@ -745,8 +730,7 @@ static void SetGroupReplaceProtection(Group *g, bool protect)
 {
 	g->replace_protection = protect;
 
-	Group *pg;
-	FOR_ALL_GROUPS(pg) {
+	for (Group *pg : Group::Iterate()) {
 		if (pg->parent == g->index) SetGroupReplaceProtection(pg, protect);
 	}
 }
@@ -859,8 +843,7 @@ uint GetGroupNumEngines(CompanyID company, GroupID id_g, EngineID id_e)
 {
 	uint count = 0;
 	const Engine *e = Engine::Get(id_e);
-	const Group *g;
-	FOR_ALL_GROUPS(g) {
+	for (const Group *g : Group::Iterate()) {
 		if (g->parent == id_g) count += GetGroupNumEngines(company, g->index, id_e);
 	}
 	return count + GroupStatistics::Get(company, id_g, e->type).num_engines[id_e];
@@ -877,8 +860,7 @@ uint GetGroupNumEngines(CompanyID company, GroupID id_g, EngineID id_e)
 uint GetGroupNumVehicle(CompanyID company, GroupID id_g, VehicleType type)
 {
 	uint count = 0;
-	const Group *g;
-	FOR_ALL_GROUPS(g) {
+	for (const Group *g : Group::Iterate()) {
 		if (g->parent == id_g) count += GetGroupNumVehicle(company, g->index, type);
 	}
 	return count + GroupStatistics::Get(company, id_g, type).num_vehicle;
@@ -895,8 +877,7 @@ uint GetGroupNumVehicle(CompanyID company, GroupID id_g, VehicleType type)
 uint GetGroupNumProfitVehicle(CompanyID company, GroupID id_g, VehicleType type)
 {
 	uint count = 0;
-	const Group *g;
-	FOR_ALL_GROUPS(g) {
+	for (const Group *g : Group::Iterate()) {
 		if (g->parent == id_g) count += GetGroupNumProfitVehicle(company, g->index, type);
 	}
 	return count + GroupStatistics::Get(company, id_g, type).num_profit_vehicle;
@@ -913,8 +894,7 @@ uint GetGroupNumProfitVehicle(CompanyID company, GroupID id_g, VehicleType type)
 Money GetGroupProfitLastYear(CompanyID company, GroupID id_g, VehicleType type)
 {
 	Money sum = 0;
-	const Group *g;
-	FOR_ALL_GROUPS(g) {
+	for (const Group *g : Group::Iterate()) {
 		if (g->parent == id_g) sum += GetGroupProfitLastYear(company, g->index, type);
 	}
 	return sum + GroupStatistics::Get(company, id_g, type).profit_last_year;
@@ -922,9 +902,7 @@ Money GetGroupProfitLastYear(CompanyID company, GroupID id_g, VehicleType type)
 
 void RemoveAllGroupsForCompany(const CompanyID company)
 {
-	Group *g;
-
-	FOR_ALL_GROUPS(g) {
+	for (Group *g : Group::Iterate()) {
 		if (company == g->owner) {
 			DeleteTemplateReplacementsByGroupID(g->index);
 			delete g;

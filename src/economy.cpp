@@ -117,17 +117,15 @@ Money CalculateCompanyValue(const Company *c, bool including_loan)
 {
 	Owner owner = c->index;
 
-	Station *st;
 	uint num = 0;
 
-	FOR_ALL_STATIONS(st) {
+	for (const Station *st : Station::Iterate()) {
 		if (st->owner == owner) num += CountBits((byte)st->facilities);
 	}
 
 	Money value = num * _price[PR_STATION_VALUE] * 25;
 
-	Vehicle *v;
-	FOR_ALL_VEHICLES(v) {
+	for (const Vehicle *v : Vehicle::Iterate()) {
 		if (v->owner != owner) continue;
 		if (HasBit(v->subtype, GVSF_VIRTUAL)) continue;
 
@@ -163,12 +161,11 @@ int UpdateCompanyRatingAndValue(Company *c, bool update)
 
 	/* Count vehicles */
 	{
-		Vehicle *v;
 		Money min_profit = 0;
 		bool min_profit_first = true;
 		uint num = 0;
 
-		FOR_ALL_VEHICLES(v) {
+		for (const Vehicle *v : Vehicle::Iterate()) {
 			if (v->owner != owner) continue;
 			if (IsCompanyBuildableVehicleType(v->type) && v->IsPrimaryVehicle() && !HasBit(v->subtype, GVSF_VIRTUAL)) {
 				if (v->profit_last_year > 0) num++; // For the vehicle score only count profitable vehicles
@@ -194,9 +191,7 @@ int UpdateCompanyRatingAndValue(Company *c, bool update)
 	/* Count stations */
 	{
 		uint num = 0;
-		const Station *st;
-
-		FOR_ALL_STATIONS(st) {
+		for (const Station *st : Station::Iterate()) {
 			/* Only count stations that are actually serviced */
 			if (st->owner == owner && (st->time_since_load <= 20 || st->time_since_unload <= 20)) num += CountBits((byte)st->facilities);
 		}
@@ -303,8 +298,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 		 * There are no spectators in single player, so we must pick some other company. */
 		assert(!_networking);
 		Backup<CompanyID> cur_company2(_current_company, FILE_LINE);
-		Company *c;
-		FOR_ALL_COMPANIES(c) {
+		for (const Company *c : Company::Iterate()) {
 			if (c->index != old_owner) {
 				SetLocalCompany(c->index);
 				break;
@@ -316,16 +310,13 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 
 	ClearOrderDestinationRefcountMap();
 
-	Town *t;
-
 	assert(old_owner != new_owner);
 
 	{
-		Company *c;
 		uint i;
 
 		/* See if the old_owner had shares in other companies */
-		FOR_ALL_COMPANIES(c) {
+		for (const Company *c : Company::Iterate()) {
 			for (i = 0; i < 4; i++) {
 				if (c->share_owners[i] == old_owner) {
 					/* Sell his shares */
@@ -339,7 +330,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 
 		/* Sell all the shares that people have on this company */
 		Backup<CompanyID> cur_company2(_current_company, FILE_LINE);
-		c = Company::Get(old_owner);
+		const Company *c = Company::Get(old_owner);
 		for (i = 0; i < 4; i++) {
 			cur_company2.Change(c->share_owners[i]);
 			if (_current_company != INVALID_OWNER) {
@@ -360,8 +351,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 		Company::Get(old_owner)->money = UINT64_MAX >> 2; // jackpot ;p
 	}
 
-	Subsidy *s;
-	FOR_ALL_SUBSIDIES(s) {
+	for (Subsidy *s : Subsidy::Iterate()) {
 		if (s->awarded == old_owner) {
 			if (new_owner == INVALID_OWNER) {
 				delete s;
@@ -373,7 +363,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 	if (new_owner == INVALID_OWNER) RebuildSubsidisedSourceAndDestinationCache();
 
 	/* Take care of rating and transport rights in towns */
-	FOR_ALL_TOWNS(t) {
+	for (Town *t : Town::Iterate()) {
 		/* If a company takes over, give the ratings to that company. */
 		if (new_owner != INVALID_OWNER) {
 			if (HasBit(t->have_ratings, old_owner)) {
@@ -403,8 +393,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 	}
 
 	{
-		Vehicle *v;
-		FOR_ALL_VEHICLES(v) {
+		for (Vehicle *v : Vehicle::Iterate()) {
 			if (v->owner == old_owner && IsCompanyBuildableVehicleType(v->type)) {
 				if (new_owner == INVALID_OWNER) {
 					if (v->Previous() == nullptr) {
@@ -429,8 +418,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 	if (new_owner == INVALID_OWNER) {
 		RemoveAllGroupsForCompany(old_owner);
 	} else {
-		Group *g;
-		FOR_ALL_GROUPS(g) {
+		for (Group *g : Group::Iterate()) {
 			if (g->owner == old_owner) g->owner = new_owner;
 		}
 	}
@@ -456,8 +444,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 			old_company->settings.vehicle.servint_ispercent = new_company->settings.vehicle.servint_ispercent;
 		}
 
-		Vehicle *v;
-		FOR_ALL_VEHICLES(v) {
+		for (Vehicle *v : Vehicle::Iterate()) {
 			if (v->owner == old_owner && IsCompanyBuildableVehicleType(v->type)) {
 				assert(new_owner != INVALID_OWNER);
 
@@ -503,11 +490,9 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 
 	/* Change ownership of template vehicles */
 	if (new_owner == INVALID_OWNER) {
-		TemplateVehicle *tv;
-		FOR_ALL_TEMPLATES(tv) {
+		for (TemplateVehicle *tv : TemplateVehicle::Iterate()) {
 			if (tv->owner == old_owner && tv->Prev() == nullptr) {
-				TemplateReplacement *tr;
-				FOR_ALL_TEMPLATE_REPLACEMENTS(tr) {
+				for (TemplateReplacement *tr : TemplateReplacement::Iterate()) {
 					if (tr->Template() == tv->index) {
 						delete tr;
 					}
@@ -516,8 +501,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 			}
 		}
 	} else {
-		TemplateVehicle *tv;
-		FOR_ALL_TEMPLATES(tv) {
+		for (TemplateVehicle *tv : TemplateVehicle::Iterate()) {
 			if (tv->owner == old_owner) tv->owner = new_owner;
 		}
 	}
@@ -549,8 +533,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 	if (new_owner != INVALID_OWNER) Company::Get(new_owner)->infrastructure.airport += Company::Get(old_owner)->infrastructure.airport;
 
 	/* convert owner of stations (including deleted ones, but excluding buoys) */
-	Station *st;
-	FOR_ALL_STATIONS(st) {
+	for (Station *st : Station::Iterate()) {
 		if (st->owner == old_owner) {
 			/* if a company goes bankrupt, set owner to OWNER_NONE so the sign doesn't disappear immediately
 			 * also, drawing station window would cause reading invalid company's colour */
@@ -559,29 +542,25 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 	}
 
 	/* do the same for waypoints (we need to do this here so deleted waypoints are converted too) */
-	Waypoint *wp;
-	FOR_ALL_WAYPOINTS(wp) {
+	for (Waypoint *wp : Waypoint::Iterate()) {
 		if (wp->owner == old_owner) {
 			wp->owner = new_owner == INVALID_OWNER ? OWNER_NONE : new_owner;
 		}
 	}
 
-	Sign *si;
-	FOR_ALL_SIGNS(si) {
+	for (Sign *si : Sign::Iterate()) {
 		if (si->owner == old_owner) si->owner = new_owner == INVALID_OWNER ? OWNER_NONE : new_owner;
 	}
 
 	/* Remove Game Script created Goals, CargoMonitors and Story pages. */
-	Goal *g;
-	FOR_ALL_GOALS(g) {
+	for (Goal *g : Goal::Iterate()) {
 		if (g->company == old_owner) delete g;
 	}
 
 	ClearCargoPickupMonitoring(old_owner);
 	ClearCargoDeliveryMonitoring(old_owner);
 
-	StoryPage *sp;
-	FOR_ALL_STORY_PAGES(sp) {
+	for (StoryPage *sp : StoryPage::Iterate()) {
 		if (sp->company == old_owner) delete sp;
 	}
 
@@ -702,23 +681,21 @@ static void CompanyCheckBankrupt(Company *c)
 static void CompaniesGenStatistics()
 {
 	/* Check for bankruptcy each month */
-	Company *c;
-	FOR_ALL_COMPANIES(c) {
+	for (Company *c : Company::Iterate()) {
 		CompanyCheckBankrupt(c);
 	}
 
 	Backup<CompanyID> cur_company(_current_company, FILE_LINE);
 
 	if (!_settings_game.economy.infrastructure_maintenance) {
-		Station *st;
-		FOR_ALL_STATIONS(st) {
+		for (const Station *st : Station::Iterate()) {
 			cur_company.Change(st->owner);
 			CommandCost cost(EXPENSES_PROPERTY, _price[PR_STATION_VALUE] >> 1);
 			SubtractMoneyFromCompany(cost);
 		}
 	} else {
 		/* Improved monthly infrastructure costs. */
-		FOR_ALL_COMPANIES(c) {
+		for (const Company *c : Company::Iterate()) {
 			cur_company.Change(c->index);
 
 			CommandCost cost(EXPENSES_PROPERTY);
@@ -744,7 +721,7 @@ static void CompaniesGenStatistics()
 	/* Only run the economic statics and update company stats every 3rd month (1st of quarter). */
 	if (!HasBit(1 << 0 | 1 << 3 | 1 << 6 | 1 << 9, _cur_month)) return;
 
-	FOR_ALL_COMPANIES(c) {
+	for (Company *c : Company::Iterate()) {
 		/* Drop the oldest history off the end */
 		std::copy_backward(c->old_economy, c->old_economy + MAX_HISTORY_QUARTERS - 1, c->old_economy + MAX_HISTORY_QUARTERS);
 		c->old_economy[0] = c->cur_economy;
@@ -877,10 +854,8 @@ void RecomputePrices()
 /** Let all companies pay the monthly interest on their loan. */
 static void CompaniesPayInterest()
 {
-	const Company *c;
-
 	Backup<CompanyID> cur_company(_current_company, FILE_LINE);
-	FOR_ALL_COMPANIES(c) {
+	for (const Company *c : Company::Iterate()) {
 		cur_company.Change(c->index);
 
 		/* Over a year the paid interest should be "loan * interest percentage",
@@ -1979,53 +1954,59 @@ static void LoadUnloadVehicle(Vehicle *front)
 		/* if last speed is 0, we treat that as if no vehicle has ever visited the station. */
 		ge->last_speed = min(t, 255);
 		ge->last_age = min(_cur_year - front->build_year, 255);
-		ge->time_since_pickup = 0;
 
 		assert(v->cargo_cap >= v->cargo.StoredCount());
-		/* If there's goods waiting at the station, and the vehicle
-		 * has capacity for it, load it on the vehicle. */
+		/* Capacity available for loading more cargo. */
 		uint cap_left = v->cargo_cap - v->cargo.StoredCount();
-		if (cap_left > 0 && (v->cargo.ActionCount(VehicleCargoList::MTA_LOAD) > 0 || ge->cargo.AvailableCount() > 0) && MayLoadUnderExclusiveRights(st, v)) {
-			if (v->cargo.StoredCount() == 0) TriggerVehicle(v, VEHICLE_TRIGGER_NEW_CARGO);
-			if (_settings_game.order.gradual_loading) cap_left = min(cap_left, GetLoadAmount(v));
 
-			uint loaded = ge->cargo.Load(cap_left, &v->cargo, st->xy, next_station.Get(v->cargo_type));
-			if (v->cargo.ActionCount(VehicleCargoList::MTA_LOAD) > 0) {
-				/* Remember if there are reservations left so that we don't stop
-				 * loading before they're loaded. */
-				SetBit(reservation_left, v->cargo_type);
-			}
+		if (cap_left > 0) {
+			/* If vehicle can load cargo, reset time_since_pickup. */
+			ge->time_since_pickup = 0;
 
-			/* Store whether the maximum possible load amount was loaded or not.*/
-			if (loaded == cap_left) {
-				SetBit(full_load_amount, v->cargo_type);
-			} else {
-				ClrBit(full_load_amount, v->cargo_type);
-			}
+			/* If there's goods waiting at the station, and the vehicle
+			 * has capacity for it, load it on the vehicle. */
+			if ((v->cargo.ActionCount(VehicleCargoList::MTA_LOAD) > 0 || ge->cargo.AvailableCount() > 0) && MayLoadUnderExclusiveRights(st, v)) {
+				if (v->cargo.StoredCount() == 0) TriggerVehicle(v, VEHICLE_TRIGGER_NEW_CARGO);
+				if (_settings_game.order.gradual_loading) cap_left = min(cap_left, GetLoadAmount(v));
 
-			/* TODO: Regarding this, when we do gradual loading, we
-			 * should first unload all vehicles and then start
-			 * loading them. Since this will cause
-			 * VEHICLE_TRIGGER_EMPTY to be called at the time when
-			 * the whole vehicle chain is really totally empty, the
-			 * completely_emptied assignment can then be safely
-			 * removed; that's how TTDPatch behaves too. --pasky */
-			if (loaded > 0) {
-				completely_emptied = false;
-				anything_loaded = true;
-
-				st->time_since_load = 0;
-				ge->last_vehicle_type = v->type;
-
-				if (ge->cargo.TotalCount() == 0) {
-					TriggerStationRandomisation(st, st->xy, SRT_CARGO_TAKEN, v->cargo_type);
-					TriggerStationAnimation(st, st->xy, SAT_CARGO_TAKEN, v->cargo_type);
-					AirportAnimationTrigger(st, AAT_STATION_CARGO_TAKEN, v->cargo_type);
+				uint loaded = ge->cargo.Load(cap_left, &v->cargo, st->xy, next_station.Get(v->cargo_type));
+				if (v->cargo.ActionCount(VehicleCargoList::MTA_LOAD) > 0) {
+					/* Remember if there are reservations left so that we don't stop
+					 * loading before they're loaded. */
+					SetBit(reservation_left, v->cargo_type);
 				}
 
-				new_load_unload_ticks += loaded;
+				/* Store whether the maximum possible load amount was loaded or not.*/
+				if (loaded == cap_left) {
+					SetBit(full_load_amount, v->cargo_type);
+				} else {
+					ClrBit(full_load_amount, v->cargo_type);
+				}
 
-				dirty_vehicle = dirty_station = true;
+				/* TODO: Regarding this, when we do gradual loading, we
+				 * should first unload all vehicles and then start
+				 * loading them. Since this will cause
+				 * VEHICLE_TRIGGER_EMPTY to be called at the time when
+				 * the whole vehicle chain is really totally empty, the
+				 * completely_emptied assignment can then be safely
+				 * removed; that's how TTDPatch behaves too. --pasky */
+				if (loaded > 0) {
+					completely_emptied = false;
+					anything_loaded = true;
+
+					st->time_since_load = 0;
+					ge->last_vehicle_type = v->type;
+
+					if (ge->cargo.TotalCount() == 0) {
+						TriggerStationRandomisation(st, st->xy, SRT_CARGO_TAKEN, v->cargo_type);
+						TriggerStationAnimation(st, st->xy, SAT_CARGO_TAKEN, v->cargo_type);
+						AirportAnimationTrigger(st, AAT_STATION_CARGO_TAKEN, v->cargo_type);
+					}
+
+					new_load_unload_ticks += loaded;
+
+					dirty_vehicle = dirty_station = true;
+				}
 			}
 		}
 

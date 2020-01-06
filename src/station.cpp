@@ -44,8 +44,7 @@ StationKdtree _station_kdtree(Kdtree_StationXYFunc);
 void RebuildStationKdtree()
 {
 	std::vector<StationID> stids;
-	BaseStation *st;
-	FOR_ALL_STATIONS(st) {
+	for (const Station *st : Station::Iterate()) {
 		stids.push_back(st->index);
 	}
 	_station_kdtree.Build(stids.begin(), stids.end());
@@ -100,8 +99,7 @@ Station::~Station()
 		this->loading_vehicles.front()->LeaveStation();
 	}
 
-	Aircraft *a;
-	FOR_ALL_AIRCRAFT(a) {
+	for (Aircraft *a : Aircraft::Iterate()) {
 		if (!a->IsNormalAircraft()) continue;
 		if (a->targetairport == this->index) a->targetairport = INVALID_STATION;
 	}
@@ -125,8 +123,7 @@ Station::~Station()
 		}
 	}
 
-	Vehicle *v;
-	FOR_ALL_VEHICLES(v) {
+	for (Vehicle *v : Vehicle::Iterate()) {
 		/* Forget about this station if this station is removed */
 		if (v->last_station_visited == this->index) {
 			v->last_station_visited = INVALID_STATION;
@@ -400,10 +397,8 @@ static void AddIndustryToDeliver(Industry *ind, Station *st)
  */
 void Station::RemoveFromAllNearbyLists()
 {
-	Town *t;
-	FOR_ALL_TOWNS(t) { t->stations_near.erase(this); }
-	Industry *i;
-	FOR_ALL_INDUSTRIES(i) { i->stations_near.erase(this); }
+	for (Town *t : Town::Iterate()) { t->stations_near.erase(this); }
+	for (Industry *i : Industry::Iterate()) { i->stations_near.erase(this); }
 }
 
 /**
@@ -496,12 +491,9 @@ void Station::RecomputeCatchment(bool no_clear_nearby_lists)
  */
 /* static */ void Station::RecomputeCatchmentForAll()
 {
-	Town *t;
-	FOR_ALL_TOWNS(t) { t->stations_near.clear(); }
-	Industry *i;
-	FOR_ALL_INDUSTRIES(i) { i->stations_near.clear(); }
-	Station *st;
-	FOR_ALL_STATIONS(st) { st->RecomputeCatchment(true); }
+	for (Town *t : Town::Iterate()) { t->stations_near.clear(); }
+	for (Industry *i : Industry::Iterate()) { i->stations_near.clear(); }
+	for (Station *st : Station::Iterate()) { st->RecomputeCatchment(true); }
 }
 
 /************************************************************************/
@@ -680,8 +672,7 @@ Money AirportMaintenanceCost(Owner owner)
 {
 	Money total_cost = 0;
 
-	const Station *st;
-	FOR_ALL_STATIONS(st) {
+	for (const Station *st : Station::Iterate()) {
 		if (st->owner == owner && (st->facilities & FACIL_AIRPORT)) {
 			total_cost += _price[PR_INFRASTRUCTURE_AIRPORT] * st->airport.GetSpec()->maintenance_cost;
 		}

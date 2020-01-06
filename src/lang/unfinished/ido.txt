@@ -452,6 +452,7 @@ STR_NEWS_MESSAGE_CAPTION                                        :{WHITE}Sendajo
 
 
 
+
 # Extra view window
 
 # Game options window
@@ -1149,6 +1150,7 @@ STR_AI_DEBUG_NAME_AND_VERSION                                   :{BLACK}{STRING}
 STR_AI_CONFIG_CHANGE_NONE                                       :
 
 # Available AIs window
+
 
 
 

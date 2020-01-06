@@ -272,8 +272,7 @@ void CargoPacket::PayDeferredPayments()
  */
 /* static */ void CargoPacket::InvalidateAllFrom(SourceType src_type, SourceID src)
 {
-	CargoPacket *cp;
-	FOR_ALL_CARGOPACKETS(cp) {
+	for (CargoPacket *cp : CargoPacket::Iterate()) {
 		if (cp->source_type == src_type && cp->source_id == src) cp->source_id = INVALID_SOURCE;
 	}
 }
@@ -284,8 +283,7 @@ void CargoPacket::PayDeferredPayments()
  */
 /* static */ void CargoPacket::InvalidateAllFrom(StationID sid)
 {
-	CargoPacket *cp;
-	FOR_ALL_CARGOPACKETS(cp) {
+	for (CargoPacket *cp : CargoPacket::Iterate()) {
 		if (cp->source == sid) cp->source = INVALID_STATION;
 	}
 }

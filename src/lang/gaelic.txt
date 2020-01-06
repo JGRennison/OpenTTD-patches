@@ -658,9 +658,6 @@ STR_ABOUT_MENU_SEPARATOR                                        :
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Toglaich a' chonsoil
 STR_ABOUT_MENU_AI_DEBUG                                         :Dì-bhugaich IF/sgriobt geama
 STR_ABOUT_MENU_SCREENSHOT                                       :Glacadh-sgrìn
-STR_ABOUT_MENU_ZOOMIN_SCREENSHOT                                :Glacadh-sgrìn le sùmadh a-steach as motha
-STR_ABOUT_MENU_DEFAULTZOOM_SCREENSHOT                           :Glacadh-sgrìn le sùmadh a-steach bunaiteach
-STR_ABOUT_MENU_GIANT_SCREENSHOT                                 :Glacadh-sgrìn leis a' mhapa shlàn
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :Mu dheidhinn “OpenTTD"
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Co-thaobhaichear nan sprite
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Toglaich bogsaichean-iadhaidh
@@ -1060,6 +1057,7 @@ STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Dh'fhài
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}Tha {STRING} ùr ri fhaighinn a-nis!
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Tha {STRING} ùr ri fhaighinn a-nis!  -  {ENGINE}
+
 
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO                        :{WHITE}Cha ghabh {STATION} ri {STRING} tuilleadh
 STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_OR_CARGO               :{WHITE}Cha ghabh {STATION} ri {STRING} no {STRING} tuilleadh
@@ -4292,6 +4290,7 @@ STR_AI_LIST_ACCEPT                                              :{BLACK}Gabh ris
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Cleachd an sgriobt a thagh thu
 STR_AI_LIST_CANCEL                                              :{BLACK}Sguir dheth
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Na atharraich an sgriobt
+
 
 # AI Parameters
 STR_AI_SETTINGS_CAPTION                                         :{WHITE}Paramadairean aig {STRING}

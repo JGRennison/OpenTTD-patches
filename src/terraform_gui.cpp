@@ -541,8 +541,7 @@ static void ResetLandscapeConfirmationCallback(Window *w, bool confirmed)
 		_generating_world = true;
 
 		/* Delete all companies */
-		Company *c;
-		FOR_ALL_COMPANIES(c) {
+		for (Company *c : Company::Iterate()) {
 			ChangeOwnershipOfCompanyItems(c->index, INVALID_OWNER);
 			delete c;
 		}
@@ -550,8 +549,7 @@ static void ResetLandscapeConfirmationCallback(Window *w, bool confirmed)
 		_generating_world = false;
 
 		/* Delete all station signs */
-		BaseStation *st;
-		FOR_ALL_BASE_STATIONS(st) {
+		for (BaseStation *st : BaseStation::Iterate()) {
 			/* There can be buoys, remove them */
 			if (IsBuoyTile(st->xy)) DoCommand(st->xy, 0, 0, DC_EXEC | DC_BANKRUPT, CMD_LANDSCAPE_CLEAR);
 			if (!st->IsInUse()) delete st;

@@ -1207,9 +1207,8 @@ DEF_CONSOLE_CMD(ConStartAI)
 	}
 
 	int n = 0;
-	Company *c;
 	/* Find the next free slot */
-	FOR_ALL_COMPANIES(c) {
+	for (const Company *c : Company::Iterate()) {
 		if (c->index != n) break;
 		n++;
 	}
@@ -1413,10 +1412,11 @@ DEF_CONSOLE_CMD(ConAlias)
 DEF_CONSOLE_CMD(ConScreenShot)
 {
 	if (argc == 0) {
-		IConsoleHelp("Create a screenshot of the game. Usage: 'screenshot [big | giant | no_con] [file name]'");
+		IConsoleHelp("Create a screenshot of the game. Usage: 'screenshot [big | giant | no_con | minimap] [file name]'");
 		IConsoleHelp("'big' makes a zoomed-in screenshot of the visible area, 'giant' makes a screenshot of the "
 				"whole map, 'no_con' hides the console to create the screenshot. 'big' or 'giant' "
-				"screenshots are always drawn without console");
+				"screenshots are always drawn without console. "
+				"'minimap' makes a top-viewed minimap screenshot of whole world which represents one tile by one pixel.");
 		return true;
 	}
 
@@ -1433,6 +1433,10 @@ DEF_CONSOLE_CMD(ConScreenShot)
 		} else if (strcmp(argv[1], "giant") == 0) {
 			/* screenshot giant [filename] */
 			type = SC_WORLD;
+			if (argc > 2) name = argv[2];
+		} else if (strcmp(argv[1], "minimap") == 0) {
+			/* screenshot minimap [filename] */
+			type = SC_MINIMAP;
 			if (argc > 2) name = argv[2];
 		} else if (strcmp(argv[1], "no_con") == 0) {
 			/* screenshot no_con [filename] */
@@ -1470,7 +1474,7 @@ DEF_CONSOLE_CMD(ConMinimap)
 		name = argv[2];
 	}
 
-	SaveMinimap(name);
+	MakeMinimapWorldScreenshot(name);
 	return true;
 }
 
@@ -1621,8 +1625,7 @@ DEF_CONSOLE_CMD(ConCompanies)
 		return true;
 	}
 
-	Company *c;
-	FOR_ALL_COMPANIES(c) {
+	for (const Company *c : Company::Iterate()) {
 		/* Grab the company name */
 		char company_name[512];
 		SetDParam(0, c->index);
@@ -1971,15 +1974,13 @@ DEF_CONSOLE_CMD(ConResetBlockedHeliports)
 	}
 
 	unsigned int count = 0;
-	Station *st;
-	FOR_ALL_STATIONS(st) {
+	for (Station *st : Station::Iterate()) {
 		if (st->airport.tile == INVALID_TILE) continue;
 		if (st->airport.HasHangar()) continue;
 		if (!st->airport.flags) continue;
 
 		bool occupied = false;
-		const Aircraft *a;
-		FOR_ALL_AIRCRAFT(a) {
+		for (const Aircraft *a : Aircraft::Iterate()) {
 			if (a->targetairport == st->index && a->state != FLYING) {
 				occupied = true;
 				break;

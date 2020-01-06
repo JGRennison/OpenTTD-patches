@@ -54,9 +54,6 @@ static const TraceRestrictSlotID INVALID_TRACE_RESTRICT_SLOT_ID = 0xFFFF;
 
 extern const uint16 _tracerestrict_pathfinder_penalty_preset_values[];
 
-#define FOR_ALL_TRACE_RESTRICT_PROGRAMS_FROM(var, start) FOR_ALL_ITEMS_FROM(TraceRestrictProgram, tr_index, var, start)
-#define FOR_ALL_TRACE_RESTRICT_PROGRAMS(var) FOR_ALL_TRACE_RESTRICT_PROGRAMS_FROM(var, 0)
-
 /** Type used for the TraceRestrictRefId -> TraceRestrictProgramID mapping */
 struct TraceRestrictMappingItem {
 	TraceRestrictProgramID program_id;
@@ -859,9 +856,5 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 	private:
 	void DeIndex(VehicleID id);
 };
-
-
-#define FOR_ALL_TRACE_RESTRICT_SLOTS_FROM(var, start) FOR_ALL_ITEMS_FROM(TraceRestrictSlot, slot_index, var, start)
-#define FOR_ALL_TRACE_RESTRICT_SLOTS(var) FOR_ALL_TRACE_RESTRICT_SLOTS_FROM(var, 0)
 
 #endif /* TRACERESTRICT_H */
