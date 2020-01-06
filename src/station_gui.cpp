@@ -210,7 +210,6 @@ protected:
 	static bool include_empty;            // whether we should include stations without waiting cargo
 	static const CargoTypes cargo_filter_max;
 	static CargoTypes cargo_filter;           // bitmap of cargo types to include
-	static const Station *last_station;
 
 	/* Constants for sorting stations */
 	static const StringID sorter_names[];
@@ -333,9 +332,6 @@ protected:
 	void SortStationsList()
 	{
 		if (!this->stations.Sort()) return;
-
-		/* Reset name sorter sort cache */
-		this->last_station = nullptr;
 
 		/* Set the modified widget dirty */
 		this->SetWidgetDirty(WID_STL_LIST);
@@ -694,7 +690,6 @@ byte CompanyStationsWindow::facilities = FACIL_TRAIN | FACIL_TRUCK_STOP | FACIL_
 bool CompanyStationsWindow::include_empty = true;
 const CargoTypes CompanyStationsWindow::cargo_filter_max = ALL_CARGOTYPES;
 CargoTypes CompanyStationsWindow::cargo_filter = ALL_CARGOTYPES;
-const Station *CompanyStationsWindow::last_station = nullptr;
 
 /* Available station sorting functions */
 GUIStationList::SortFunction * const CompanyStationsWindow::sorter_funcs[] = {

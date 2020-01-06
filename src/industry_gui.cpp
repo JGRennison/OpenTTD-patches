@@ -1251,7 +1251,6 @@ class IndustryDirectoryWindow : public Window {
 protected:
 	/* Runtime saved values */
 	static Listing last_sorting;
-	static const Industry *last_industry;
 
 	/* Constants for sorting stations */
 	static const StringID sorter_names[];
@@ -1349,8 +1348,6 @@ protected:
 			this->industries.shrink_to_fit();
 			this->industries.RebuildDone();
 		}
-
-		IndustryDirectoryWindow::last_industry = nullptr; // Reset name sorter sort cache
 
 		auto filter = std::make_pair(this->cargo_filter[this->accepted_cargo_filter_criteria],
 		                             this->cargo_filter[this->produced_cargo_filter_criteria]);
@@ -1712,7 +1709,6 @@ public:
 };
 
 Listing IndustryDirectoryWindow::last_sorting = {false, 0};
-const Industry *IndustryDirectoryWindow::last_industry = nullptr;
 
 /* Available station sorting functions. */
 GUIIndustryList::SortFunction * const IndustryDirectoryWindow::sorter_funcs[] = {
