@@ -1358,7 +1358,7 @@ STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER                   :차량 목록�
 STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER_HELPTEXT          :차량 목록에 화물 종류 필터를 표시합니다. 이 설정을 켜면, 차량 목록 창에 추가 필터 드롭다운이 표시됩니다.
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES               :고급 적재 모드 표시: {STRING}
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES_HELPTEXT      :고급 적재 모드(통과하며 싣기)를 표시합니다. 이 설정을 끄면, 일부 고급 적재 모드가 인터페이스에 표시되지 않습니다. 하지만 다른 플레이어까지 고급 적재 모드를 사용할 수 없도록 하지는 않습니다.
-STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS            :전체 차량에 적용되는 작업 비활성화
+STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS            :전체 차량에 적용되는 작업 비활성화: {STRING}
 STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS_HELPTEXT   :이 설정을 켜면, 모든 차량 또는 그룹에 속하지 않은 차량에 적용되는 차량기지로 보내기/운행 취소 버튼과 출발/정지 버튼을 비활성화합니다. 모든 차량에게 적용되는 작업을 실수로 실행하여 발생할 수 있는 부작용을 방지할 수 있습니다.
 STR_CONFIG_SETTING_SHOW_DEPOT_SELL_GUI                          :기지로 보내고 판매 기능 표시: {STRING}
 STR_CONFIG_SETTING_SHOW_DEPOT_SELL_GUI_HELPTEXT                 :기지로 보내고 차량을 판매하는 기능을 표시합니다. 활성화되면 차량을 기지로 보내는 버튼의 작동이 바뀝니다.
