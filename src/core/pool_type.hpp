@@ -12,7 +12,6 @@
 
 #include "smallvec_type.hpp"
 #include "enum_type.hpp"
-#include <functional>
 
 /** Various types of a pool. */
 enum PoolType {

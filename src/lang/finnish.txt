@@ -648,9 +648,6 @@ STR_MUSIC_PLAYLIST_CUSTOM_1                                     :{TINY_FONT}{BLA
 STR_MUSIC_PLAYLIST_CUSTOM_2                                     :{TINY_FONT}{BLACK}Oma 2
 STR_MUSIC_MUSIC_VOLUME                                          :{TINY_FONT}{BLACK}Musiikin voimakkuus
 STR_MUSIC_EFFECTS_VOLUME                                        :{TINY_FONT}{BLACK}Äänitehosteiden voimakkuus
-STR_MUSIC_RULER_MIN                                             :{TINY_FONT}{BLACK}MIN
-STR_MUSIC_RULER_MAX                                             :{TINY_FONT}{BLACK}MAX
-STR_MUSIC_RULER_MARKER                                          :{TINY_FONT}{BLACK}'
 STR_MUSIC_TRACK_NONE                                            :{TINY_FONT}{DKGREEN}--
 STR_MUSIC_TRACK_DIGIT                                           :{TINY_FONT}{DKGREEN}{ZEROFILL_NUM}
 STR_MUSIC_TITLE_NONE                                            :{TINY_FONT}{DKGREEN}------
@@ -1312,7 +1309,7 @@ STR_CONFIG_SETTING_POPULATION_IN_LABEL                          :Näytä kunnan 
 STR_CONFIG_SETTING_POPULATION_IN_LABEL_HELPTEXT                 :Näytä kuntien asukasluvut kartalla
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :Viivojen paksuus kuvaajissa: {STRING}
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS_HELPTEXT                :Viivan leveys kuvaajissa. Ohut viiva on tarkasti luettavissa kun taas paksumpi viiva on helpompi nähdä ja sen värit ovat helpommin havaittavissa
-STR_CONFIG_SETTING_SHOW_NEWGRF_NAME                             :Näytä NewGRF:n nimi liikennevälineikkunassa
+STR_CONFIG_SETTING_SHOW_NEWGRF_NAME                             :Näytä NewGRF:n nimi liikennevälineikkunassa: {STRING}
 STR_CONFIG_SETTING_SHOW_NEWGRF_NAME_HELPTEXT                    :Lisää liikennevälinevalikoimaikkunaan rivin, joka näyttää, mistä NewGRF:stä valittu liikenneväline on peräisin.
 
 STR_CONFIG_SETTING_LANDSCAPE                                    :Maasto: {STRING}
@@ -3403,6 +3400,10 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} ja {NUM} muuta
 STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Teollisuusmuotojen nimet - kohdista päänäkymä teollisuuslaitokseen napsauttamalla nimeä. Ctrl+Klik avaa uuden näkymäikkunan teollisuuslaitoksen sijaintiin
+STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Vastaanotettava rahti: {SILVER}{STRING}
+STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Tuotettu rahti: {SILVER}{STRING}
+STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :Kaikki rahtityypit
+STR_INDUSTRY_DIRECTORY_FILTER_NONE                              :Ei mitään
 
 # Industry view
 STR_INDUSTRY_VIEW_CAPTION                                       :{WHITE}{INDUSTRY}

@@ -1395,7 +1395,9 @@ protected:
 	/** Sort industries by name */
 	static bool IndustryNameSorter(const Industry * const &a, const Industry * const &b)
 	{
-		return strnatcmp(a->GetCachedName(), b->GetCachedName()) < 0; // Sort by name (natural sorting).
+		int r = strnatcmp(a->GetCachedName(), b->GetCachedName()); // Sort by name (natural sorting).
+		if (r == 0) return a->index < b->index;
+		return r < 0;
 	}
 
 	/** Sort industries by type and name */

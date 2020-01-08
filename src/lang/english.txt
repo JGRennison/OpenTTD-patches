@@ -655,9 +655,6 @@ STR_MUSIC_PLAYLIST_CUSTOM_1                                     :{TINY_FONT}{BLA
 STR_MUSIC_PLAYLIST_CUSTOM_2                                     :{TINY_FONT}{BLACK}Custom 2
 STR_MUSIC_MUSIC_VOLUME                                          :{TINY_FONT}{BLACK}Music Volume
 STR_MUSIC_EFFECTS_VOLUME                                        :{TINY_FONT}{BLACK}Effects Volume
-STR_MUSIC_RULER_MIN                                             :{TINY_FONT}{BLACK}MIN
-STR_MUSIC_RULER_MAX                                             :{TINY_FONT}{BLACK}MAX
-STR_MUSIC_RULER_MARKER                                          :{TINY_FONT}{BLACK}'
 STR_MUSIC_TRACK_NONE                                            :{TINY_FONT}{DKGREEN}--
 STR_MUSIC_TRACK_DIGIT                                           :{TINY_FONT}{DKGREEN}{ZEROFILL_NUM}
 STR_MUSIC_TITLE_NONE                                            :{TINY_FONT}{DKGREEN}------
@@ -1343,7 +1340,7 @@ STR_CONFIG_SETTING_POPULATION_IN_LABEL                          :Show extra info
 STR_CONFIG_SETTING_POPULATION_IN_LABEL_HELPTEXT                 :Display the population of towns in their label on the map
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :Thickness of lines in graphs: {STRING2}
 STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS_HELPTEXT                :Width of the line in the graphs. A thin line is more precisely readable, a thicker line is easier to see and colours are easier to distinguish
-STR_CONFIG_SETTING_SHOW_NEWGRF_NAME                             :Show the NewGRF's name in the build vehicle window
+STR_CONFIG_SETTING_SHOW_NEWGRF_NAME                             :Show the NewGRF's name in the build vehicle window: {STRING2}
 STR_CONFIG_SETTING_SHOW_NEWGRF_NAME_HELPTEXT                    :Add a line to the build vehicle window, showing which NewGRF the selected vehicle comes from.
 STR_CONFIG_SETTING_SHOW_TRAIN_LENGTH_IN_DETAILS                 :Show train length in details: {STRING2}
 STR_CONFIG_SETTING_SHOW_TRAIN_LENGTH_IN_DETAILS_HELPTEXT        :Show train length in the vehicle details window

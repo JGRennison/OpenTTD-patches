@@ -705,7 +705,14 @@ private:
 			this->towns.clear();
 
 			for (const Town *t : Town::Iterate()) {
-				this->towns.push_back(t);
+				if (this->string_filter.IsEmpty()) {
+					this->towns.push_back(t);
+					continue;
+				}
+				this->string_filter.ResetState();
+
+				this->string_filter.AddLine(t->GetCachedName());
+				if (this->string_filter.GetState()) this->towns.push_back(t);
 			}
 
 			this->towns.shrink_to_fit();
@@ -964,7 +971,7 @@ public:
 	{
 		if (wid == WID_TD_FILTER) {
 			this->string_filter.SetFilterTerm(this->townname_editbox.text.buf);
-			this->InvalidateData(TDIWD_FILTER_CHANGES);
+			this->InvalidateData(TDIWD_FORCE_REBUILD);
 		}
 	}
 
@@ -979,27 +986,6 @@ public:
 			case TDIWD_FORCE_REBUILD:
 				/* This needs to be done in command-scope to enforce rebuilding before resorting invalid data */
 				this->towns.ForceRebuild();
-				break;
-
-			case TDIWD_FILTER_CHANGES:
-				if (this->string_filter.IsEmpty()) {
-					this->towns.ForceRebuild();
-				} else {
-					this->towns.clear();
-
-					for (const Town *t : Town::Iterate()) {
-						this->string_filter.ResetState();
-						this->string_filter.AddLine(t->GetCachedName());
-						if (this->string_filter.GetState()) this->towns.push_back(t);
-					}
-
-					this->towns.SetListing(this->last_sorting);
-					this->towns.ForceResort();
-					this->towns.Sort();
-					this->towns.shrink_to_fit();
-					this->towns.RebuildDone();
-					this->vscroll->SetCount((int)this->towns.size()); // Update scrollbar as well.
-				}
 				break;
 
 			case TDIWD_POPULATION_CHANGE:
