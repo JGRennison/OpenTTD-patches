@@ -56,7 +56,9 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Measurement tools: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=49212)
 
-* 255 GRFs in single player mode: [imported](http://www.tt-forums.net/viewtopic.php?p=894743#p894743)
+* Increase maximum number of NewGRFs to 255  
+  * In single player mode: [imported](http://www.tt-forums.net/viewtopic.php?p=894743#p894743)  
+  * In multiplayer mode: (added in v0.25.0)
 
 * Improved breakdowns: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=39518)  
   Add a lower limit for low speed breakdowns.
@@ -202,8 +204,6 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 * Freight train through load (added in v0.24.0)  
   This is an alternative loading mode for freight trains for the case where the train is longer then the platform.
 
-* Up to 256 NewGRFs in multiplayer (added in v0.25.0)
-
 * Multiple rail types per tile (added in v0.29.0)
 
 * Save/load and savegame format changes  
@@ -253,7 +253,6 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Change network protocol to send server/join and rcon passwords in hashed form instead of in clear text. (added in v0.31.4).  
   * Add modifier key window for toggling shift/ctrl key states using mouse. (added in v0.32-rc4).  
   * Add IME support on Linux/SDL2 (SDL2-supported IMEs and Fcitx). (added in v0.32.0).  
-  * Add patch: show the name of the NewGRF in the build vehicle window. (added in v0.32.4).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
   * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).
