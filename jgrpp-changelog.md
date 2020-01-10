@@ -2,6 +2,20 @@
 
 * * *
 
+### v0.33.0 (2019-01-10)
+* Fix crash when post road-works cleanup removes all road pieces.
+* Fix crash when checking for train reverse on custom bridge heads with YAPF.
+* Template-based train replacement:
+  * Fix incorrect train not buildable warning with articulated units.
+  * Fix refitting of virtual trains costing actual money.
+* Fix set timetabled wait time for all orders command setting wait times for waypoint orders.
+* Add support for loading JokerPP v1.19 - v1.27 savegames, subject to caveats.
+* Add support for loading ChillPP v8 and v14.7 savegames, subject to caveats.
+* Improve performance of departures window.
+* Fix compilation on MSVC.
+* Add Korean translations by TELK.
+* Bump trunk base from commit 35dc377a58c90abb67304a0c557449b6db3c0d3f to commit 8b0e4bb10170d8eeb882f0fcc0ad58e80d751027.
+
 ### v0.32.4 (2019-12-13)
 * Fix incorrect company infrastructure totals and multiplayer desyncs when removing tram road stops.
 * Fix vehicle autoreplace AI event when autoreplacing trains.
