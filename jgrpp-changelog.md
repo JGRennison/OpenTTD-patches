@@ -2,7 +2,7 @@
 
 * * *
 
-### v0.33.0 (2019-01-10)
+### v0.33.0 (2020-01-10)
 * Fix crash when post road-works cleanup removes all road pieces.
 * Fix crash when checking for train reverse on custom bridge heads with YAPF.
 * Template-based train replacement:
