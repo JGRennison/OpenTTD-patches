@@ -523,8 +523,7 @@ MCF1stPass::MCF1stPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 	uint size = job.Size();
 	uint accuracy = job.Settings().accuracy;
 	bool more_loops;
-	std::vector<bool> finished_sources;
-	finished_sources.resize(size);
+	std::vector<bool> finished_sources(size);
 
 	do {
 		more_loops = false;
@@ -573,8 +572,7 @@ MCF2ndPass::MCF2ndPass(LinkGraphJob &job) : MultiCommodityFlow(job)
 	uint size = job.Size();
 	uint accuracy = job.Settings().accuracy;
 	bool demand_left = true;
-	std::vector<bool> finished_sources;
-	finished_sources.resize(size);
+	std::vector<bool> finished_sources(size);
 	while (demand_left && !job.IsJobAborted()) {
 		demand_left = false;
 		for (NodeID source = 0; source < size; ++source) {
