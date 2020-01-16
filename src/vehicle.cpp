@@ -1069,8 +1069,7 @@ void Vehicle::PreCleanPool()
 void VehicleEnteredDepotThisTick(Vehicle *v)
 {
 	/* Template Replacement Setup stuff */
-	TemplateReplacement *tr = GetTemplateReplacementByGroupID(v->group_id);
-	if (tr != nullptr) {
+	if (GetTemplateIDByGroupID(v->group_id) != INVALID_TEMPLATE) {
 		/* Vehicle should stop in the depot if it was in 'stopping' state */
 		_vehicles_to_templatereplace.insert(v->index);
 	}

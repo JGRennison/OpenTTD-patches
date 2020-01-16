@@ -500,6 +500,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 				delete tv;
 			}
 		}
+		ReindexTemplateReplacements();
 	} else {
 		for (TemplateVehicle *tv : TemplateVehicle::Iterate()) {
 			if (tv->owner == old_owner) tv->owner = new_owner;

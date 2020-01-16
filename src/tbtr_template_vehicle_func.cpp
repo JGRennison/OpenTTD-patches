@@ -204,12 +204,8 @@ Train* DeleteVirtualTrain(Train *chain, Train *to_del) {
 // retrieve template vehicle from template replacement that belongs to the given group
 TemplateVehicle* GetTemplateVehicleByGroupID(GroupID gid) {
 	if (gid >= NEW_GROUP) return nullptr;
-	for (TemplateReplacement *tr : TemplateReplacement::Iterate()) {
-		if (tr->Group() == gid) {
-			return TemplateVehicle::GetIfValid(tr->Template()); // there can be only one
-		}
-	}
-	return nullptr;
+	const TemplateID tid = GetTemplateIDByGroupID(gid);
+	return tid != INVALID_TEMPLATE ? TemplateVehicle::GetIfValid(tid) : nullptr;
 }
 
 /**

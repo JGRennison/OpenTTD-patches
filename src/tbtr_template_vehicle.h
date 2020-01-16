@@ -33,13 +33,13 @@ struct TemplateVehicle;
 struct TemplateReplacement;
 
 typedef uint16 TemplateID;
-
+static const TemplateID INVALID_TEMPLATE = 0xFFFF;
 
 static const uint16 CONSIST_HEAD = 0x0;
 static const uint16 CONSIST_TAIL = 0xffff;
 
 /** A pool allowing to store up to ~64k templates */
-typedef Pool<TemplateVehicle, TemplateID, 512, 0x10000> TemplatePool;
+typedef Pool<TemplateVehicle, TemplateID, 512, 64000> TemplatePool;
 extern TemplatePool _template_pool;
 
 /// listing/sorting templates
@@ -186,7 +186,7 @@ struct TemplateReplacement : TemplateReplacementPool::PoolItem<&_template_replac
 
 	TemplateReplacement(GroupID gid, TemplateID tid) { this->group=gid; this->sel_template=tid; }
 	TemplateReplacement() {}
-	~TemplateReplacement() {}
+	~TemplateReplacement();
 
 	inline GroupID Group() { return this->group; }
 	inline GroupID Template() { return this->sel_template; }
@@ -195,11 +195,16 @@ struct TemplateReplacement : TemplateReplacementPool::PoolItem<&_template_replac
 	inline void SetTemplate(TemplateID tid) { this->sel_template = tid; }
 
 	inline TemplateID GetTemplateVehicleID() { return sel_template; }
+
+	static void PreCleanPool();
 };
 
 TemplateReplacement* GetTemplateReplacementByGroupID(GroupID);
+TemplateID GetTemplateIDByGroupID(GroupID);
 bool IssueTemplateReplacement(GroupID, TemplateID);
 
 short DeleteTemplateReplacementsByGroupID(GroupID);
+
+void ReindexTemplateReplacements();
 
 #endif /* TEMPLATE_VEH_H */

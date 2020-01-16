@@ -48,6 +48,7 @@ INSTANTIATE_POOL_METHODS(Template)
 TemplateReplacementPool _template_replacement_pool("TemplateReplacementPool");
 INSTANTIATE_POOL_METHODS(TemplateReplacement)
 
+btree::btree_map<GroupID, TemplateID> _template_replacement_index;
 
 void TemplateVehicleImageDimensions::SetFromTrain(const Train *t)
 {
@@ -127,14 +128,35 @@ int TemplateVehicle::Length() const
 	return l;
 }
 
+TemplateReplacement::~TemplateReplacement()
+{
+	if (CleaningPool()) return;
+
+	_template_replacement_index.erase(this->Group());
+}
+
+void TemplateReplacement::PreCleanPool()
+{
+	_template_replacement_index.clear();
+}
+
 TemplateReplacement* GetTemplateReplacementByGroupID(GroupID gid)
 {
+	if (GetTemplateIDByGroupID(gid) == INVALID_TEMPLATE) return nullptr;
+
 	for (TemplateReplacement *tr : TemplateReplacement::Iterate()) {
 		if (tr->Group() == gid) {
 			return tr;
 		}
 	}
 	return nullptr;
+}
+
+TemplateID GetTemplateIDByGroupID(GroupID gid)
+{
+	auto iter = _template_replacement_index.find(gid);
+	if (iter == _template_replacement_index.end()) return INVALID_TEMPLATE;
+	return iter->second;
 }
 
 bool IssueTemplateReplacement(GroupID gid, TemplateID tid)
@@ -144,13 +166,15 @@ bool IssueTemplateReplacement(GroupID gid, TemplateID tid)
 	if (tr) {
 		/* Then set the new TemplateVehicle and return */
 		tr->SetTemplate(tid);
+		_template_replacement_index[gid] = tid;
 		return true;
 	} else if (TemplateReplacement::CanAllocateItem()) {
 		tr = new TemplateReplacement(gid, tid);
+		_template_replacement_index[gid] = tid;
 		return true;
+	} else {
+		return false;
 	}
-
-	else return false;
 }
 
 short TemplateVehicle::NumGroupsUsingTemplate() const
@@ -166,6 +190,8 @@ short TemplateVehicle::NumGroupsUsingTemplate() const
 
 short DeleteTemplateReplacementsByGroupID(GroupID g_id)
 {
+	if (GetTemplateIDByGroupID(g_id) == INVALID_TEMPLATE) return 0;
+
 	short del_amount = 0;
 	for (const TemplateReplacement *tr : TemplateReplacement::Iterate()) {
 		if (tr->group == g_id) {
@@ -174,4 +200,12 @@ short DeleteTemplateReplacementsByGroupID(GroupID g_id)
 		}
 	}
 	return del_amount;
+}
+
+void ReindexTemplateReplacements()
+{
+	_template_replacement_index.clear();
+	for (const TemplateReplacement *tr : TemplateReplacement::Iterate()) {
+		_template_replacement_index[tr->group] = tr->sel_template;
+	}
 }
