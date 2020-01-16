@@ -5659,7 +5659,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 
 	// refit, only if the template option is set so
 	if (use_refit && (need_refit || need_replacement)) {
-		CmdRefitTrainFromTemplate(new_chain, tv, flags);
+		buy.AddCost(CmdRefitTrainFromTemplate(new_chain, tv, flags));
 	}
 
 	if (new_chain && remainder_chain) {

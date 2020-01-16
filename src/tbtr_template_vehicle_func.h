@@ -46,7 +46,7 @@ int NumTrainsNeedTemplateReplacement(GroupID, const TemplateVehicle*);
 
 CommandCost TestBuyAllTemplateVehiclesInChain(TemplateVehicle *tv, TileIndex tile);
 
-void CmdRefitTrainFromTemplate(Train *t, TemplateVehicle *tv, DoCommandFlag);
+CommandCost CmdRefitTrainFromTemplate(Train *t, TemplateVehicle *tv, DoCommandFlag);
 void BreakUpRemainders(Train *t);
 
 bool TemplateVehicleContainsEngineOfRailtype(const TemplateVehicle*, RailType);

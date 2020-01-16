@@ -346,18 +346,21 @@ int NumTrainsNeedTemplateReplacement(GroupID g_id, const TemplateVehicle *tv)
 	return count;
 }
 // refit each vehicle in t as is in tv, assume t and tv contain the same types of vehicles
-void CmdRefitTrainFromTemplate(Train *t, TemplateVehicle *tv, DoCommandFlag flags)
+CommandCost CmdRefitTrainFromTemplate(Train *t, TemplateVehicle *tv, DoCommandFlag flags)
 {
+	CommandCost cost(t->GetExpenseType(false));
+
 	while (t && tv) {
 		// refit t as tv
 		uint32 cb = GetCmdRefitVeh(t);
 
-		DoCommand(t->tile, t->index, tv->cargo_type | tv->cargo_subtype << 8 | (1 << 16) | (1 << 31), flags, cb);
+		cost.AddCost(DoCommand(t->tile, t->index, tv->cargo_type | tv->cargo_subtype << 8 | (1 << 16) | (1 << 31), flags, cb));
 
 		// next
 		t = t->GetNextUnit();
 		tv = tv->GetNextUnit();
 	}
+	return cost;
 }
 
 /** using cmdtemplatereplacevehicle as test-function (i.e. with flag DC_NONE) is not a good idea as that function relies on
