@@ -5494,7 +5494,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	Train *new_chain = nullptr;
 	Train *remainder_chain = nullptr;
 	Train *tmp_chain = nullptr;
-	TemplateVehicle *tv = GetTemplateVehicleByGroupID(incoming->group_id);
+	TemplateVehicle *tv = GetTemplateVehicleByGroupIDRecursive(incoming->group_id);
 	if (tv == nullptr) {
 		if (leaveDepot) incoming->vehstatus &= ~VS_STOPPED;
 		return CMD_ERROR;

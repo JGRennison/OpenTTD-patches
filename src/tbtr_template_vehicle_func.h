@@ -38,6 +38,7 @@ void tbtr_debug_pvt(const Train*);
 #endif
 
 TemplateVehicle* GetTemplateVehicleByGroupID(GroupID);
+TemplateVehicle* GetTemplateVehicleByGroupIDRecursive(GroupID);
 bool ChainContainsVehicle(Train*, Train*);
 Train* ChainContainsEngine(EngineID, Train*);
 Train* DepotContainsEngine(TileIndex, EngineID, Train*);

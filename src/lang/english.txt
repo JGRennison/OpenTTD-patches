@@ -6152,6 +6152,7 @@ STR_TMPL_WARNING_FREE_WAGON                                     :{RED}Free Chain
 STR_TMPL_WARNING_VEH_UNAVAILABLE                                :{RED}Train not buildable: vehicle unavailable!
 STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}Template in use: {NUM}
 STR_TMP_TEMPLATE_IN_USE                                         :Template is in use
+STR_TMP_TEMPLATE_FROM_PARENT_GROUP                              :Using template from parent group
 STR_TMPL_GROUP_NUM_TRAINS                                       :{BLACK}{NUM}
 STR_TMPL_CREATEGUI_TITLE                                        :{WHITE}Create/Edit Template Vehicle
 STR_TMPL_MAINGUI_DEFINEDGROUPS                                  :{BLACK}Defined Groups for Company

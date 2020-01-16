@@ -248,7 +248,7 @@ bool Vehicle::NeedsServicing() const
 	}
 
 	if (this->type == VEH_TRAIN) {
-		TemplateVehicle *tv = GetTemplateVehicleByGroupID(this->group_id);
+		TemplateVehicle *tv = GetTemplateVehicleByGroupIDRecursive(this->group_id);
 		if (tv != nullptr) {
 			if (tv->IsReplaceOldOnly() && !this->NeedsAutorenewing(c, false)) return false;
 			Money needed_money = c->settings.engine_renew_money;
@@ -1092,7 +1092,7 @@ void Vehicle::PreCleanPool()
 void VehicleEnteredDepotThisTick(Vehicle *v)
 {
 	/* Template Replacement Setup stuff */
-	if (GetTemplateIDByGroupID(v->group_id) != INVALID_TEMPLATE) {
+	if (GetTemplateIDByGroupIDRecursive(v->group_id) != INVALID_TEMPLATE) {
 		/* Vehicle should stop in the depot if it was in 'stopping' state */
 		_vehicles_to_templatereplace.insert(v->index);
 	}

@@ -208,6 +208,12 @@ TemplateVehicle* GetTemplateVehicleByGroupID(GroupID gid) {
 	return tid != INVALID_TEMPLATE ? TemplateVehicle::GetIfValid(tid) : nullptr;
 }
 
+TemplateVehicle* GetTemplateVehicleByGroupIDRecursive(GroupID gid) {
+	if (gid >= NEW_GROUP) return nullptr;
+	const TemplateID tid = GetTemplateIDByGroupIDRecursive(gid);
+	return tid != INVALID_TEMPLATE ? TemplateVehicle::GetIfValid(tid) : nullptr;
+}
+
 /**
  * Check a template consist whether it contains any engine of the given railtype
  */

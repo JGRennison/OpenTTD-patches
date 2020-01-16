@@ -602,11 +602,14 @@ public:
 			StringID str = STR_GROUP_NAME;
 			DrawString(left + ScaleGUITrad(30 + this->indents[i] * 10), right, text_y, str, TC_BLACK);
 
-			const TemplateID tid = GetTemplateIDByGroupID(g_id);
+			const TemplateID tid = GetTemplateIDByGroupIDRecursive(g_id);
+			const TemplateID tid_self = GetTemplateIDByGroupID(g_id);
 
 			/* Draw the template in use for this group, if there is one */
 			short template_in_use = FindTemplateIndex(tid);
-			if (template_in_use >= 0) {
+			if (tid != INVALID_TEMPLATE && tid_self == INVALID_TEMPLATE) {
+				DrawString (left, right, text_y, STR_TMP_TEMPLATE_FROM_PARENT_GROUP, TC_SILVER, SA_HOR_CENTER);
+			} else if (template_in_use >= 0) {
 				SetDParam(0, template_in_use);
 				DrawString (left, right, text_y, STR_TMPL_GROUP_USES_TEMPLATE, TC_BLACK, SA_HOR_CENTER);
 			} else if (tid != INVALID_TEMPLATE) { /* If there isn't a template applied from the current group, check if there is one for another rail type */

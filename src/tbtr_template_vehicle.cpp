@@ -159,6 +159,18 @@ TemplateID GetTemplateIDByGroupID(GroupID gid)
 	return iter->second;
 }
 
+TemplateID GetTemplateIDByGroupIDRecursive(GroupID gid)
+{
+	while (gid != INVALID_GROUP) {
+		auto iter = _template_replacement_index.find(gid);
+		if (iter != _template_replacement_index.end()) return iter->second;
+		const Group *g = Group::GetIfValid(gid);
+		if (g == nullptr) break;
+		gid = Group::Get(gid)->parent;
+	}
+	return INVALID_TEMPLATE;
+}
+
 bool IssueTemplateReplacement(GroupID gid, TemplateID tid)
 {
 	TemplateReplacement *tr = GetTemplateReplacementByGroupID(gid);

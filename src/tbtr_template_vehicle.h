@@ -201,6 +201,7 @@ struct TemplateReplacement : TemplateReplacementPool::PoolItem<&_template_replac
 
 TemplateReplacement* GetTemplateReplacementByGroupID(GroupID);
 TemplateID GetTemplateIDByGroupID(GroupID);
+TemplateID GetTemplateIDByGroupIDRecursive(GroupID);
 bool IssueTemplateReplacement(GroupID, TemplateID);
 
 short DeleteTemplateReplacementsByGroupID(GroupID);
