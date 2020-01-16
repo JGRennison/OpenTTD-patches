@@ -247,6 +247,29 @@ bool Vehicle::NeedsServicing() const
 		return true;
 	}
 
+	if (this->type == VEH_TRAIN) {
+		TemplateVehicle *tv = GetTemplateVehicleByGroupID(this->group_id);
+		if (tv != nullptr) {
+			if (tv->IsReplaceOldOnly() && !this->NeedsAutorenewing(c, false)) return false;
+			Money needed_money = c->settings.engine_renew_money;
+			if (needed_money > c->money) return false;
+			bool need_replacement = !TrainMatchesTemplate(Train::From(this), tv);
+			if (need_replacement) {
+				/* Check money.
+				 * We want 2*(the price of the whole template) without looking at the value of the vehicle(s) we are going to sell, or not need to buy. */
+				for (const TemplateVehicle *tv_unit = tv; tv_unit != nullptr; tv_unit = tv_unit->GetNextUnit()) {
+					if (!HasBit(Engine::Get(tv->engine_type)->company_avail, this->owner)) return false;
+					needed_money += 2 * Engine::Get(tv->engine_type)->GetCost();
+				}
+				return needed_money <= c->money;
+			} else if (TrainMatchesTemplateRefit(Train::From(this), tv) && tv->refit_as_template) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+
 	/* Test whether there is some pending autoreplace.
 	 * Note: We do this after the service-interval test.
 	 * There are a lot more reasons for autoreplace to fail than we can test here reasonably. */
