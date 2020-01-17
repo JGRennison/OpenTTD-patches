@@ -258,10 +258,13 @@ public:
 				resize->height = WD_MATRIX_TOP + FONT_HEIGHT_NORMAL + WD_MATRIX_BOTTOM;
 				size->height = 8 * resize->height;
 				break;
-			case TRW_WIDGET_BOTTOM_MATRIX:
-				this->bottom_matrix_item_size = resize->height = WD_MATRIX_TOP + FONT_HEIGHT_NORMAL + ScaleGUITrad(GetVehicleHeight(VEH_TRAIN));
+			case TRW_WIDGET_BOTTOM_MATRIX: {
+				int base_resize = WD_MATRIX_TOP + FONT_HEIGHT_NORMAL + WD_MATRIX_BOTTOM;
+				int target_resize = WD_MATRIX_TOP + FONT_HEIGHT_NORMAL + ScaleGUITrad(GetVehicleHeight(VEH_TRAIN));
+				this->bottom_matrix_item_size = resize->height = CeilT<int>(target_resize, base_resize);
 				size->height = 4 * resize->height;
 				break;
+			}
 			case TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN: {
 				Dimension d = GetStringBoundingBox(STR_REPLACE_ALL_RAILTYPE);
 				for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
