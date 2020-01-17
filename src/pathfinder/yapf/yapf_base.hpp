@@ -60,7 +60,6 @@ public:
 protected:
 	Node                *m_pBestDestNode;      ///< pointer to the destination node found at last round
 	Node                *m_pBestIntermediateNode; ///< here should be node closest to the destination if path not found
-	const YAPFSettings  *m_settings;           ///< current settings (_settings_game.yapf)
 	int                  m_max_search_nodes;   ///< maximum number of nodes we are allowed to visit before we give up
 	const VehicleType   *m_veh;                ///< vehicle that we are trying to drive
 
@@ -81,7 +80,6 @@ public:
 	inline CYapfBaseT()
 		: m_pBestDestNode(nullptr)
 		, m_pBestIntermediateNode(nullptr)
-		, m_settings(&_settings_game.pf.yapf)
 		, m_max_search_nodes(PfGetSettings().max_search_nodes)
 		, m_veh(nullptr)
 		, m_stats_cost_calcs(0)
@@ -104,7 +102,7 @@ public:
 	/** return current settings (can be custom - company based - but later) */
 	inline const YAPFSettings& PfGetSettings() const
 	{
-		return *m_settings;
+		return _settings_game.pf.yapf;
 	}
 
 	/**
