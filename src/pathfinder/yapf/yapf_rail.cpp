@@ -17,6 +17,7 @@
 #include "../../viewport_func.h"
 #include "../../newgrf_station.h"
 #include "../../tracerestrict.h"
+#include "../../debug.h"
 
 #include "../../safeguards.h"
 
@@ -761,4 +762,19 @@ int CSegmentCostCacheBase::s_rail_change_counter = 0;
 void YapfNotifyTrackLayoutChange(TileIndex tile, Track track)
 {
 	CSegmentCostCacheBase::NotifyTrackLayoutChange(tile, track);
+}
+
+void YapfCheckRailSignalPenalties()
+{
+	bool negative = false;
+	int p0 = _settings_game.pf.yapf.rail_look_ahead_signal_p0;
+	int p1 = _settings_game.pf.yapf.rail_look_ahead_signal_p1;
+	int p2 = _settings_game.pf.yapf.rail_look_ahead_signal_p2;
+	for (int i = 0; i < (int) _settings_game.pf.yapf.rail_look_ahead_max_signals; i++) {
+		if (p0 + i * (p1 + i * p2) < 0) negative = true;
+	}
+	if (negative) {
+		DEBUG(misc, 0, "Settings: pf.yapf.rail_look_ahead_signal_p0, pf.yapf.rail_look_ahead_signal_p1, pf.yapf.rail_look_ahead_signal_p2 and pf.yapf.rail_look_ahead_max_signal "
+				"are set to incorrect values (i.e. resulting in hegative penalties), negative penalties will be truncated");
+	}
 }

@@ -1228,6 +1228,14 @@ static bool EnableSingleVehSharedOrderGuiChanged(int32)
 	return true;
 }
 
+static bool CheckYapfRailSignalPenalties(int32)
+{
+	extern void YapfCheckRailSignalPenalties();
+	YapfCheckRailSignalPenalties();
+
+	return true;
+}
+
 /** Checks if any settings are set to incorrect values, and sets them to correct values in that case. */
 static void ValidateSettings()
 {
