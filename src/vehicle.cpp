@@ -262,7 +262,7 @@ bool Vehicle::NeedsServicing() const
 					needed_money += 2 * Engine::Get(tv->engine_type)->GetCost();
 				}
 				return needed_money <= c->money;
-			} else if (TrainMatchesTemplateRefit(Train::From(this), tv) && tv->refit_as_template) {
+			} else if (!TrainMatchesTemplateRefit(Train::From(this), tv) && tv->refit_as_template) {
 				return true;
 			} else {
 				return false;
