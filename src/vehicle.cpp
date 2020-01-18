@@ -2171,7 +2171,7 @@ uint8 CalcPercentVehicleFilledOfCargo(const Vehicle *front, CargoID cargo)
 	}
 
 	/* Train without capacity */
-	if (max == 0) return 100;
+	if (max == 0) return 0;
 
 	/* Return the percentage */
 	if (count * 2 < max) {
