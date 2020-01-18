@@ -31,6 +31,7 @@
 #include "engine_func.h"
 #include "vehiclelist.h"
 #include "tracerestrict.h"
+#include "scope.h"
 
 #include "widgets/order_widget.h"
 
@@ -596,6 +597,7 @@ static const StringID _order_goto_dropdown_aircraft[] = {
 /** Variables for conditional orders; this defines the order of appearance in the dropdown box */
 static const OrderConditionVariable _order_conditional_variable[] = {
 	OCV_LOAD_PERCENTAGE,
+	OCV_CARGO_LOAD_PERCENTAGE,
 	OCV_RELIABILITY,
 	OCV_MAX_RELIABILITY,
 	OCV_MAX_SPEED,
@@ -603,6 +605,7 @@ static const OrderConditionVariable _order_conditional_variable[] = {
 	OCV_REMAINING_LIFETIME,
 	OCV_REQUIRES_SERVICE,
 	OCV_CARGO_WAITING,
+	OCV_CARGO_WAITING_AMOUNT,
 	OCV_CARGO_ACCEPTANCE,
 	OCV_FREE_PLATFORMS,
 	OCV_SLOT_OCCUPANCY,
@@ -736,13 +739,13 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 	SetDParam(0, order_index + 1);
 	DrawString(left, rtl ? right - 2 * sprite_size.width - 3 : middle, y, STR_ORDER_INDEX, colour, SA_RIGHT | SA_FORCE);
 
-	SetDParam(5, STR_EMPTY);
-	SetDParam(10, STR_EMPTY);
+	SetDParam(6, STR_EMPTY);
+	SetDParam(11, STR_EMPTY);
 
 	/* Check range for aircraft. */
 	if (v->type == VEH_AIRCRAFT && Aircraft::From(v)->GetRange() > 0 && order->IsGotoOrder()) {
 		const Order *next = order->next != nullptr ? order->next : v->GetFirstOrder();
-		if (GetOrderDistance(order, next, v) > Aircraft::From(v)->acache.cached_max_range_sqr) SetDParam(10, STR_ORDER_OUT_OF_RANGE);
+		if (GetOrderDistance(order, next, v) > Aircraft::From(v)->acache.cached_max_range_sqr) SetDParam(11, STR_ORDER_OUT_OF_RANGE);
 	}
 
 	bool timetable_wait_time_valid = false;
@@ -772,8 +775,8 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				SetDParam(3, STR_EMPTY);
 
 				if (order->GetWaitTime() > 0) {
-					SetDParam(5, order->IsWaitTimetabled() ? STR_TIMETABLE_STAY_FOR : STR_TIMETABLE_STAY_FOR_ESTIMATED);
-					SetTimetableParams(6, order->GetWaitTime());
+					SetDParam(6, order->IsWaitTimetabled() ? STR_TIMETABLE_STAY_FOR : STR_TIMETABLE_STAY_FOR_ESTIMATED);
+					SetTimetableParams(7, order->GetWaitTime());
 				}
 				timetable_wait_time_valid = true;
 			} else {
@@ -782,7 +785,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 					SetDParam(4, order->IsAutoRefit() ? STR_ORDER_AUTO_REFIT_ANY : CargoSpec::Get(order->GetRefitCargo())->name);
 				}
 				if (v->type == VEH_TRAIN && (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
-					SetDParam(5, order->GetStopLocation() + STR_ORDER_STOP_LOCATION_NEAR_END);
+					SetDParam(6, order->GetStopLocation() + STR_ORDER_STOP_LOCATION_NEAR_END);
 				}
 			}
 			break;
@@ -811,22 +814,22 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			}
 
 			if (!timetable && (order->GetDepotActionType() & ODATFB_SELL)) {
-				SetDParam(5, STR_ORDER_SELL_ORDER);
+				SetDParam(6, STR_ORDER_SELL_ORDER);
 			} else {
 				if (!timetable && (order->GetDepotActionType() & ODATFB_HALT)) {
-					SetDParam(5, STR_ORDER_STOP_ORDER);
+					SetDParam(6, STR_ORDER_STOP_ORDER);
 				}
 
 				if (!timetable && order->IsRefit()) {
-					SetDParam(5, (order->GetDepotActionType() & ODATFB_HALT) ? STR_ORDER_REFIT_STOP_ORDER : STR_ORDER_REFIT_ORDER);
-					SetDParam(6, CargoSpec::Get(order->GetRefitCargo())->name);
+					SetDParam(6, (order->GetDepotActionType() & ODATFB_HALT) ? STR_ORDER_REFIT_STOP_ORDER : STR_ORDER_REFIT_ORDER);
+					SetDParam(7, CargoSpec::Get(order->GetRefitCargo())->name);
 				}
 			}
 
 			if (timetable) {
 				if (order->GetWaitTime() > 0) {
-					SetDParam(5, order->IsWaitTimetabled() ? STR_TIMETABLE_STAY_FOR : STR_TIMETABLE_STAY_FOR_ESTIMATED);
-					SetTimetableParams(6, order->GetWaitTime());
+					SetDParam(6, order->IsWaitTimetabled() ? STR_TIMETABLE_STAY_FOR : STR_TIMETABLE_STAY_FOR_ESTIMATED);
+					SetTimetableParams(7, order->GetWaitTime());
 				}
 				timetable_wait_time_valid = !(order->GetDepotActionType() & ODATFB_HALT);
 			}
@@ -838,8 +841,8 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			SetDParam(0, str);
 			SetDParam(1, order->GetDestination());
 			if (timetable && order->IsWaitTimetabled()) {
-				SetDParam(5, STR_TIMETABLE_STAY_FOR);
-				SetTimetableParams(6, order->GetWaitTime());
+				SetDParam(6, STR_TIMETABLE_STAY_FOR);
+				SetTimetableParams(7, order->GetWaitTime());
 				timetable_wait_time_valid = true;
 			}
 			break;
@@ -876,6 +879,17 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 					SetDParam(3, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 				}
 				SetDParam(2, order->GetConditionComparator() == OCC_IS_TRUE ? STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_SLOT : STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_SLOT);
+			} else if (ocv == OCV_CARGO_LOAD_PERCENTAGE) {
+				SetDParam(0, STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY);
+				SetDParam(2, CargoSpec::Get(order->GetConditionValue())->name);
+				SetDParam(3, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator());
+				SetDParam(4, order->GetXData());
+			} else if (ocv == OCV_CARGO_WAITING_AMOUNT) {
+				SetDParam(0, STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY);
+				SetDParam(2, CargoSpec::Get(order->GetConditionValue())->name);
+				SetDParam(3, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator());
+				SetDParam(4, order->GetConditionValue());
+				SetDParam(5, order->GetXData());
 			} else {
 				OrderConditionComparator occ = order->GetConditionComparator();
 				bool is_cargo = ocv == OCV_CARGO_ACCEPTANCE || ocv == OCV_CARGO_WAITING;
@@ -901,15 +915,15 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 						/* FALL THROUGH */
 					default:
 						SetDParam(3, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + occ);
-					SetDParam(4, value);
+						SetDParam(4, value);
 				}
 			}
 
 			if (timetable && order->GetWaitTime() > 0) {
-				SetDParam(5, order->IsWaitTimetabled() ? STR_TIMETABLE_AND_TRAVEL_FOR : STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED);
-				SetTimetableParams(6, order->GetWaitTime());
+				SetDParam(6, order->IsWaitTimetabled() ? STR_TIMETABLE_AND_TRAVEL_FOR : STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED);
+				SetTimetableParams(7, order->GetWaitTime());
 			} else {
-				SetDParam(5, STR_EMPTY);
+				SetDParam(6, STR_EMPTY);
 			}
 
 			break;
@@ -1110,6 +1124,9 @@ private:
 		DP_COND_VALUE_CARGO  = 1, ///< Display dropdown widget cargo types
 		DP_COND_VALUE_SLOT   = 2, ///< Display dropdown widget tracerestrict slots
 
+		/* WID_O_SEL_COND_AUX */
+		DP_COND_AUX_CARGO = 0, ///< Display dropdown widget cargo types
+
 		DP_ROW_CONDITIONAL = 2, ///< Display the conditional order buttons in the top row of the ship/airplane order window.
 
 		/* WID_O_SEL_BOTTOM_MIDDLE */
@@ -1129,6 +1146,7 @@ private:
 	bool can_do_refit;     ///< Vehicle chain can be refitted in depot.
 	bool can_do_autorefit; ///< Vehicle chain can be auto-refitted.
 	int query_text_widget; ///< widget which most recently called ShowQueryString
+	int current_aux_plane;
 
 	/**
 	 * Return the memorised selected order.
@@ -1423,6 +1441,8 @@ public:
 		if (v->owner == _local_company) {
 			this->GetWidget<NWidgetStacked>(WID_O_SEL_OCCUPANCY)->SetDisplayedPlane(SZSP_NONE);
 		}
+		this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX)->SetDisplayedPlane(SZSP_NONE);
+		this->current_aux_plane = SZSP_NONE;
 		this->FinishInitNested(v->index);
 		if (v->owner == _local_company) {
 			this->DisableWidget(WID_O_EMPTY);
@@ -1635,6 +1655,14 @@ public:
 		NWidgetStacked *row_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_TOP_ROW);
 		assert(row_sel != nullptr || (train_row_sel != nullptr && left_sel != nullptr && middle_sel != nullptr && right_sel != nullptr));
 
+		NWidgetStacked *aux_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX);
+
+		auto aux_plane_guard = scope_guard([&]() {
+			if (this->current_aux_plane != aux_sel->shown_plane) {
+				this->current_aux_plane = aux_sel->shown_plane;
+				this->ReInit();
+			}
+		});
 
 		if (order == nullptr) {
 			if (row_sel != nullptr) {
@@ -1723,6 +1751,7 @@ public:
 					OrderConditionVariable ocv = (order == nullptr) ? OCV_LOAD_PERCENTAGE : order->GetConditionVariable();
 					bool is_cargo = (ocv == OCV_CARGO_ACCEPTANCE || ocv == OCV_CARGO_WAITING);
 					bool is_slot_occupancy = (ocv == OCV_SLOT_OCCUPANCY || ocv == OCV_TRAIN_IN_SLOT);
+					bool is_auxiliary_cargo = (ocv == OCV_CARGO_LOAD_PERCENTAGE || ocv == OCV_CARGO_WAITING_AMOUNT);
 
 					if (is_cargo) {
 						if (order == nullptr || !CargoSpec::Get(order->GetConditionValue())->IsValid()) {
@@ -1738,6 +1767,17 @@ public:
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_SLOT);
 					} else {
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_NUMBER);
+					}
+
+					if (is_auxiliary_cargo) {
+						if (order == nullptr || !CargoSpec::Get(order->GetConditionValue())->IsValid()) {
+							this->GetWidget<NWidgetCore>(WID_O_COND_AUX_CARGO)->widget_data = STR_NEWGRF_INVALID_CARGO;
+						} else {
+							this->GetWidget<NWidgetCore>(WID_O_COND_AUX_CARGO)->widget_data = CargoSpec::Get(order->GetConditionValue())->name;
+						}
+						aux_sel->SetDisplayedPlane(DP_COND_AUX_CARGO);
+					} else {
+						aux_sel->SetDisplayedPlane(SZSP_NONE);
 					}
 
 					/* Set the strings for the dropdown boxes. */
@@ -1886,8 +1926,10 @@ public:
 				const Order *order = this->vehicle->GetOrder(sel);
 
 				if (order != nullptr && order->IsType(OT_CONDITIONAL)) {
-					uint value = order->GetConditionValue();
+					OrderConditionVariable ocv = order->GetConditionVariable();
+					uint value = (ocv == OCV_CARGO_LOAD_PERCENTAGE || ocv == OCV_CARGO_WAITING_AMOUNT) ? order->GetXData() : order->GetConditionValue();
 					if (order->GetConditionVariable() == OCV_MAX_SPEED) value = ConvertSpeedToDisplaySpeed(value);
+					if (order->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT) value = ConvertCargoQuantityToDisplayQuantity(order->GetConditionValue(), value);
 					SetDParam(0, value);
 				}
 				break;
@@ -2085,14 +2127,15 @@ public:
 				break;
 			}
 
-			case WID_O_COND_CARGO: {
+			case WID_O_COND_CARGO:
+			case WID_O_COND_AUX_CARGO: {
 				uint value = this->vehicle->GetOrder(this->OrderGetSel())->GetConditionValue();
 				DropDownList list;
 				for (size_t i = 0; i < _sorted_standard_cargo_specs_size; ++i) {
 					const CargoSpec *cs = _sorted_cargo_specs[i];
 					list.emplace_back(new DropDownListStringItem(cs->name, cs->Index(), false));
 				}
-				if (!list.empty()) ShowDropDownList(this, std::move(list), value, WID_O_COND_CARGO, 0);
+				if (!list.empty()) ShowDropDownList(this, std::move(list), value, widget, 0);
 				break;
 			}
 
@@ -2127,9 +2170,11 @@ public:
 
 			case WID_O_COND_VALUE: {
 				const Order *order = this->vehicle->GetOrder(this->OrderGetSel());
-				uint value = order->GetConditionValue();
+				OrderConditionVariable ocv = order->GetConditionVariable();
+				uint value = (ocv == OCV_CARGO_LOAD_PERCENTAGE || ocv == OCV_CARGO_WAITING_AMOUNT) ? order->GetXData() : order->GetConditionValue();
 				if (order->GetConditionVariable() == OCV_MAX_SPEED) value = ConvertSpeedToDisplaySpeed(value);
-				this->query_text_widget = WID_O_COND_VALUE;
+				if (order->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT) value = ConvertCargoQuantityToDisplayQuantity(order->GetConditionValue(), value);
+				this->query_text_widget = widget;
 				SetDParam(0, value);
 				ShowQueryString(STR_JUST_INT, STR_ORDER_CONDITIONAL_VALUE_CAPT, 5, this, CS_NUMERAL, QSF_NONE);
 				break;
@@ -2167,7 +2212,12 @@ public:
 				case OCV_PERCENT:
 				case OCV_RELIABILITY:
 				case OCV_LOAD_PERCENTAGE:
+				case OCV_CARGO_LOAD_PERCENTAGE:
 					value = Clamp(value, 0, 100);
+					break;
+
+				case OCV_CARGO_WAITING_AMOUNT:
+					value = ConvertDisplayQuantityToCargoQuantity(this->vehicle->GetOrder(sel)->GetConditionValue(), value);
 					break;
 
 				default:
@@ -2224,6 +2274,10 @@ public:
 
 			case WID_O_COND_CARGO:
 				DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), MOF_COND_VALUE | index << 4, CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+				break;
+
+			case WID_O_COND_AUX_CARGO:
+				DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), MOF_COND_VALUE_2 | index << 4, CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
 				break;
 
 			case WID_O_COND_SLOT:
@@ -2444,6 +2498,10 @@ static const NWidgetPart _nested_orders_train_widgets[] = {
 			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_VARIABLE), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP), SetResize(1, 0),
+				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_COND_AUX),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_AUX_CARGO), SetMinimalSize(124, 12), SetFill(1, 0),
+													SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_CARGO_TOOLTIP), SetResize(1, 0),
+				EndContainer(),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_COMPARATOR), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP), SetResize(1, 0),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_COND_VALUE),
@@ -2532,6 +2590,10 @@ static const NWidgetPart _nested_orders_widgets[] = {
 			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_VARIABLE), SetMinimalSize(124, 12), SetFill(1, 0),
 													SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP), SetResize(1, 0),
+				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_COND_AUX),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_AUX_CARGO), SetMinimalSize(124, 12), SetFill(1, 0),
+													SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_CARGO_TOOLTIP), SetResize(1, 0),
+				EndContainer(),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_COMPARATOR), SetMinimalSize(124, 12), SetFill(1, 0),
 													SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP), SetResize(1, 0),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_COND_VALUE),

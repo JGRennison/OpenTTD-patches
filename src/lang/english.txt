@@ -4648,7 +4648,7 @@ STR_ORDERS_TIMETABLE_VIEW_TOOLTIP                               :{BLACK}Switch t
 
 STR_ORDERS_LIST_TOOLTIP                                         :{BLACK}Order list - click on an order to highlight it. Ctrl+Click scrolls to the order's destination
 STR_ORDER_INDEX                                                 :{COMMA}:{NBSP}
-STR_ORDER_TEXT                                                  :{STRING4} {STRING4} {STRING}
+STR_ORDER_TEXT                                                  :{STRING5} {STRING4} {STRING}
 
 STR_ORDERS_END_OF_ORDERS                                        :- - End of Orders - -
 STR_ORDERS_END_OF_SHARED_ORDERS                                 :- - End of Shared Orders - -
@@ -4711,6 +4711,8 @@ STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :Free platforms
 STR_ORDER_CONDITIONAL_PERCENT                                   :Percent of times
 STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :Slot occupancy
 STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :Train in slot
+STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :Cargo load percentage
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :Waiting cargo amount
 
 STR_ORDER_CONDITIONAL_REQUIRES_SERVICE_ORDER                    :Requires service {STRING}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_ORDER                       :Next station {STRING} {STRING} waiting
@@ -4862,6 +4864,8 @@ STR_ORDER_CONDITIONAL_INVALID_SLOT                              :Jump to order {
 STR_ORDER_CONDITIONAL_IN_SLOT                                   :Jump to order {COMMA} when {STRING} slot: {TRSLOT}
 STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :Jump to order {COMMA} when {STRING} {PUSH_COLOUR}{RED}{STRING} {POP_COLOUR}
 STR_ORDER_CONDITIONAL_TRUE_FALSE                                :Jump to order {COMMA} when {STRING} {STRING}
+STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :Jump to order {COMMA} when Load percentage of {STRING} {STRING} {COMMA}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :Jump to order {COMMA} when {STRING} at next station {STRING} {CARGO_SHORT}
 
 STR_INVALID_ORDER                                               :{RED} (Invalid Order)
 

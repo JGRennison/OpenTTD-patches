@@ -947,6 +947,36 @@ uint ConvertDisplayToForceWeightRatio(double in)
 	return ConvertDisplayToWeightRatio(_units_force[_settings_game.locale.units_force], in);
 }
 
+uint ConvertCargoQuantityToDisplayQuantity(CargoID cargo, uint quantity)
+{
+	switch (CargoSpec::Get(cargo)->units_volume) {
+		case STR_TONS:
+			return _units_weight[_settings_game.locale.units_weight].c.ToDisplay(quantity);
+
+		case STR_LITERS:
+			return _units_volume[_settings_game.locale.units_volume].c.ToDisplay(quantity);
+
+		default:
+			break;
+	}
+	return quantity;
+}
+
+uint ConvertDisplayQuantityToCargoQuantity(CargoID cargo, uint quantity)
+{
+	switch (CargoSpec::Get(cargo)->units_volume) {
+		case STR_TONS:
+			return _units_weight[_settings_game.locale.units_weight].c.FromDisplay(quantity);
+
+		case STR_LITERS:
+			return _units_volume[_settings_game.locale.units_volume].c.FromDisplay(quantity);
+
+		default:
+			break;
+	}
+	return quantity;
+}
+
 /**
  * Parse most format codes within a string and write the result to a buffer.
  * @param buff    The buffer to write the final string to.

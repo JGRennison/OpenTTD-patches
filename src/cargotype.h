@@ -139,6 +139,9 @@ void InitializeSortedCargoSpecs();
 extern std::vector<const CargoSpec *> _sorted_cargo_specs;
 extern uint8 _sorted_standard_cargo_specs_size;
 
+uint ConvertCargoQuantityToDisplayQuantity(CargoID cargo, uint quantity);
+uint ConvertDisplayQuantityToCargoQuantity(CargoID cargo, uint quantity);
+
 /**
  * Does cargo \a c have cargo class \a cc?
  * @param c  Cargo type.

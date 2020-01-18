@@ -46,6 +46,7 @@ bool HasVehicleOnPos(TileIndex tile, void *data, VehicleFromPosProc *proc);
 bool HasVehicleOnPosXY(int x, int y, void *data, VehicleFromPosProc *proc);
 void CallVehicleTicks();
 uint8 CalcPercentVehicleFilled(const Vehicle *v, StringID *colour);
+uint8 CalcPercentVehicleFilledOfCargo(const Vehicle *v, CargoID cargo);
 
 void VehicleLengthChanged(const Vehicle *u);
 

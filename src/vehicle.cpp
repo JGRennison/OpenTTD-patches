@@ -2158,6 +2158,31 @@ uint8 CalcPercentVehicleFilled(const Vehicle *front, StringID *colour)
 	}
 }
 
+uint8 CalcPercentVehicleFilledOfCargo(const Vehicle *front, CargoID cargo)
+{
+	int count = 0;
+	int max = 0;
+
+	/* Count up max and used */
+	for (const Vehicle *v = front; v != nullptr; v = v->Next()) {
+		if (v->cargo_type != cargo) continue;
+		count += v->cargo.StoredCount();
+		max += v->cargo_cap;
+	}
+
+	/* Train without capacity */
+	if (max == 0) return 100;
+
+	/* Return the percentage */
+	if (count * 2 < max) {
+		/* Less than 50%; round up, so that 0% means really empty. */
+		return CeilDiv(count * 100, max);
+	} else {
+		/* More than 50%; round down, so that 100% means really full. */
+		return (count * 100) / max;
+	}
+}
+
 /**
  * Vehicle entirely entered the depot, update its status, orders, vehicle windows, service it, etc.
  * @param v Vehicle that entered a depot.
