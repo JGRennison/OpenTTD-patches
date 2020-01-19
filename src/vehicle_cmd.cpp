@@ -1153,11 +1153,14 @@ CommandCost CmdReplaceTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint3
 
 		// Make sure our replacements still point to the correct thing.
 		if (old_ID != template_vehicle->index) {
+			bool reindex = false;
 			for (TemplateReplacement *tr : TemplateReplacement::Iterate()) {
 				if (tr->GetTemplateVehicleID() == old_ID) {
 					tr->SetTemplate(template_vehicle->index);
+					reindex = true;
 				}
 			}
+			if (reindex) ReindexTemplateReplacements();
 		}
 
 		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN, 0);
