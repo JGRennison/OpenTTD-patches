@@ -19,7 +19,6 @@
 #include "openttd.h"
 #include "table/strings.h"
 #include "company_func.h"
-#include "core/alloc_type.hpp"
 #include <list>
 #include <memory>
 
@@ -65,7 +64,7 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	uint16 townnametype;
 	uint32 townnameparts;
 	char *name;                    ///< Custom town name. If nullptr, the town was not renamed and uses the generated name.
-	std::unique_ptr<const char, FreeDeleter> cached_name; ///< NOSAVE: Cache of the resolved name of the town, if not using a custom town name
+	mutable std::string cached_name; ///< NOSAVE: Cache of the resolved name of the town, if not using a custom town name
 
 	byte flags;                    ///< See #TownFlags.
 
@@ -164,8 +163,8 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	inline const char *GetCachedName() const
 	{
 		if (this->name != nullptr) return this->name;
-		if (!this->cached_name) const_cast<Town *>(this)->FillCachedName();
-		return this->cached_name.get();
+		if (this->cached_name.empty()) this->FillCachedName();
+		return this->cached_name.c_str();
 	}
 
 	static inline Town *GetByTile(TileIndex tile)
@@ -176,8 +175,8 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	static Town *GetRandom();
 	static void PostDestructor(size_t index);
 
-	private:
-	void FillCachedName();
+private:
+	void FillCachedName() const;
 };
 
 uint32 GetWorldPopulation();

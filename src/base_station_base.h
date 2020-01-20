@@ -15,7 +15,6 @@
 #include "viewport_type.h"
 #include "station_map.h"
 #include "core/geometry_type.hpp"
-#include "core/alloc_type.hpp"
 #include <memory>
 
 typedef Pool<BaseStation, StationID, 32, 64000> StationPool;
@@ -59,7 +58,7 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 
 	char *name;                     ///< Custom name
 	StringID string_id;             ///< Default name (town area) of station
-	std::unique_ptr<const char, FreeDeleter> cached_name; ///< NOSAVE: Cache of the resolved name of the station, if not using a custom name
+	mutable std::string cached_name; ///< NOSAVE: Cache of the resolved name of the station, if not using a custom name
 
 	Town *town;                     ///< The town this station is associated with
 	Owner owner;                    ///< The owner of this station
@@ -115,8 +114,8 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 	inline const char *GetCachedName() const
 	{
 		if (this->name != nullptr) return this->name;
-		if (!this->cached_name) const_cast<BaseStation *>(this)->FillCachedName();
-		return this->cached_name.get();
+		if (this->cached_name.empty()) this->FillCachedName();
+		return this->cached_name.c_str();
 	}
 
 	virtual void MoveSign(TileIndex new_xy)
@@ -183,8 +182,8 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 
 	static void PostDestructor(size_t index);
 
-	private:
-	void FillCachedName();
+private:
+	void FillCachedName() const;
 };
 
 /**

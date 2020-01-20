@@ -1703,7 +1703,7 @@ public:
 				if (this->industries.SortType() == 2) this->industries.ForceResort();
 				break;
 
-			case IDIWD_FORCE_RESORT:
+			default:
 				this->industries.ForceResort();
 				break;
 		}

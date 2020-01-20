@@ -710,7 +710,6 @@ private:
 					continue;
 				}
 				this->string_filter.ResetState();
-
 				this->string_filter.AddLine(t->GetCachedName());
 				if (this->string_filter.GetState()) this->towns.push_back(t);
 			}

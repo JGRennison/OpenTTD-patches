@@ -2847,6 +2847,16 @@ extern bool AfterLoadGame();
 extern bool LoadOldSaveGame(const char *file);
 
 /**
+ * Clear temporary data that is passed between various saveload phases.
+ */
+static void ResetSaveloadData()
+{
+	ResetTempEngineData();
+	ResetLabelMaps();
+	ResetOldWaypoints();
+}
+
+/**
  * Clear/free saveload state.
  */
 static inline void ClearSaveLoadState()
@@ -3217,6 +3227,8 @@ static SaveOrLoadResult DoLoad(LoadFilter *reader, bool load_check)
 	_next_offs = 0;
 
 	if (!load_check) {
+		ResetSaveloadData();
+
 		/* Old maps were hardcoded to 256x256 and thus did not contain
 		 * any mapsize information. Pre-initialize to 256x256 to not to
 		 * confuse old games */
@@ -3322,6 +3334,8 @@ SaveOrLoadResult SaveOrLoad(const char *filename, SaveLoadOperation fop, Detaile
 	try {
 		/* Load a TTDLX or TTDPatch game */
 		if (fop == SLO_LOAD && dft == DFT_OLD_GAME_FILE) {
+			ResetSaveloadData();
+
 			InitializeGame(256, 256, true, true); // set a mapsize of 256x256 for TTDPatch games or it might get confused
 
 			/* TTD/TTO savegames have no NewGRFs, TTDP savegame have them

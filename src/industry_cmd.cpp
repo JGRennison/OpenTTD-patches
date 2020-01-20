@@ -2330,21 +2330,19 @@ void Industry::RecomputeProductionMultipliers()
 	}
 }
 
-void Industry::FillCachedName()
+void Industry::FillCachedName() const
 {
 	char buf[256];
 	int64 args_array[] = { this->index };
 	StringParameters tmp_params(args_array);
 	char *end = GetStringWithArgs(buf, STR_INDUSTRY_NAME, &tmp_params, lastof(buf));
-	char *alloced = MallocT<char>(end - buf + 1);
-	memcpy(alloced, buf, end - buf + 1);
-	this->cached_name.reset(alloced);
+	this->cached_name.assign(buf, end);
 }
 
 void ClearAllIndustryCachedNames()
 {
 	for (Industry *ind : Industry::Iterate()) {
-		ind->cached_name.reset();
+		ind->cached_name.clear();
 	}
 }
 

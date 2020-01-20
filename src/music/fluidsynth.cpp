@@ -136,6 +136,7 @@ void MusicDriver_FluidSynth::StopSong()
 	}
 	delete_fluid_player(_midi.player);
 	fluid_synth_system_reset(_midi.synth);
+	fluid_synth_all_sounds_off(_midi.synth, -1);
 	_midi.player = nullptr;
 }
 
@@ -153,7 +154,7 @@ void MusicDriver_FluidSynth::SetVolume(byte vol)
 	 * volume". Set gain using OpenTTD's volume, as a number between 0
 	 * and 0.2. */
 	double gain = (1.0 * vol) / (128.0 * 5.0);
-	if (fluid_settings_setnum(_midi.settings, "synth.gain", gain) != 1) {
+	if (fluid_settings_setnum(_midi.settings, "synth.gain", gain) != FLUID_OK) {
 		DEBUG(driver, 0, "Could not set volume");
 	}
 }
