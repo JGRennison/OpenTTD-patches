@@ -19,10 +19,10 @@ private:
 	int32 accuracy;     ///< Accuracy of the calculation.
 
 	template<class Tscaler>
-	void CalcDemand(LinkGraphJob &job, Tscaler scaler);
+	void CalcDemand(LinkGraphJob &job, const std::vector<bool> &reachable_nodes, Tscaler scaler);
 
 	template<class Tscaler>
-	void CalcMinimisedDistanceDemand(LinkGraphJob &job, Tscaler scaler);
+	void CalcMinimisedDistanceDemand(LinkGraphJob &job, const std::vector<bool> &reachable_nodes, Tscaler scaler);
 };
 
 /**

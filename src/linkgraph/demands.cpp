@@ -250,10 +250,11 @@ inline void Scaler::SetDemands(LinkGraphJob &job, NodeID from_id, NodeID to_id, 
 /**
  * Do the actual demand calculation, called from constructor.
  * @param job Job to calculate the demands for.
+ * @param reachable_nodes Bitmap of reachable nodes.
  * @tparam Tscaler Scaler to be used for scaling demands.
  */
 template<class Tscaler>
-void DemandCalculator::CalcDemand(LinkGraphJob &job, Tscaler scaler)
+void DemandCalculator::CalcDemand(LinkGraphJob &job, const std::vector<bool> &reachable_nodes, Tscaler scaler)
 {
 	NodeList supplies;
 	NodeList demands;
@@ -261,6 +262,7 @@ void DemandCalculator::CalcDemand(LinkGraphJob &job, Tscaler scaler)
 	uint num_demands = 0;
 
 	for (NodeID node = 0; node < job.Size(); node++) {
+		if (!reachable_nodes[node]) continue;
 		scaler.AddNode(job[node]);
 		if (job[node].Supply() > 0) {
 			supplies.push(node);
@@ -347,15 +349,17 @@ void DemandCalculator::CalcDemand(LinkGraphJob &job, Tscaler scaler)
 /**
  * Do the actual demand calculation, called from constructor.
  * @param job Job to calculate the demands for.
+ * @param reachable_nodes Bitmap of reachable nodes.
  * @tparam Tscaler Scaler to be used for scaling demands.
  */
 template<class Tscaler>
-void DemandCalculator::CalcMinimisedDistanceDemand(LinkGraphJob &job, Tscaler scaler)
+void DemandCalculator::CalcMinimisedDistanceDemand(LinkGraphJob &job, const std::vector<bool> &reachable_nodes, Tscaler scaler)
 {
 	std::vector<NodeID> supplies;
 	std::vector<NodeID> demands;
 
 	for (NodeID node = 0; node < job.Size(); node++) {
+		if (!reachable_nodes[node]) continue;
 		scaler.AddNode(job[node]);
 		if (job[node].Supply() > 0) {
 			supplies.push_back(node);
@@ -413,21 +417,64 @@ DemandCalculator::DemandCalculator(LinkGraphJob &job) :
 		this->mod_dist = 100 + over100 * over100;
 	}
 
-	switch (settings.GetDistributionType(cargo)) {
-		case DT_SYMMETRIC:
-			this->CalcDemand<SymmetricScaler>(job, SymmetricScaler(settings.demand_size));
-			break;
-		case DT_ASYMMETRIC:
-			this->CalcDemand<AsymmetricScaler>(job, AsymmetricScaler());
-			break;
-		case DT_ASYMMETRIC_EQ:
-			this->CalcMinimisedDistanceDemand<AsymmetricScalerEq>(job, AsymmetricScalerEq());
-			break;
-		case DT_ASYMMETRIC_NEAR:
-			this->CalcMinimisedDistanceDemand<AsymmetricScaler>(job, AsymmetricScaler());
-			break;
-		default:
-			/* Nothing to do. */
-			break;
+	const uint size = job.Size();
+
+	/* Symmetric edge matrix
+	 * Storage order: e01  e02 e12  e03 e13 e23  e04 e14 e24 e34  ... */
+	auto se_index = [](uint i, uint j) -> uint {
+		if (j < i) std::swap(i, j);
+		return i + (j * (j - 1) / 2);
+	};
+	std::vector<bool> symmetric_edges(se_index(0, size));
+
+	for (NodeID node_id = 0; node_id < size; ++node_id) {
+		Node from = job[node_id];
+		for (EdgeIterator it(from.Begin()); it != from.End(); ++it) {
+			symmetric_edges[se_index(node_id, it->first)] = true;
+		}
 	}
+	uint first_unseen = 0;
+	std::vector<bool> reachable_nodes(size);
+	do {
+		reachable_nodes.assign(size, false);
+		std::vector<NodeID> queue;
+		queue.push_back(first_unseen);
+		reachable_nodes[first_unseen] = true;
+		while (!queue.empty()) {
+			NodeID from = queue.back();
+			queue.pop_back();
+			for (NodeID to = 0; to < size; ++to) {
+				if (from == to) continue;
+				if (symmetric_edges[se_index(from, to)]) {
+					std::vector<bool>::reference bit = reachable_nodes[to];
+					if (!bit) {
+						bit = true;
+						queue.push_back(to);
+					}
+				}
+			}
+		}
+
+		switch (settings.GetDistributionType(cargo)) {
+			case DT_SYMMETRIC:
+				this->CalcDemand<SymmetricScaler>(job, reachable_nodes, SymmetricScaler(settings.demand_size));
+				break;
+			case DT_ASYMMETRIC:
+				this->CalcDemand<AsymmetricScaler>(job, reachable_nodes, AsymmetricScaler());
+				break;
+			case DT_ASYMMETRIC_EQ:
+				this->CalcMinimisedDistanceDemand<AsymmetricScalerEq>(job, reachable_nodes, AsymmetricScalerEq());
+				break;
+			case DT_ASYMMETRIC_NEAR:
+				this->CalcMinimisedDistanceDemand<AsymmetricScaler>(job, reachable_nodes, AsymmetricScaler());
+				break;
+			default:
+				/* Nothing to do. */
+				break;
+		}
+
+		while (first_unseen < size && reachable_nodes[first_unseen]) {
+			first_unseen++;
+		}
+	} while (first_unseen < size);
 }
