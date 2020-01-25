@@ -104,6 +104,15 @@ public:
 	}
 
 	/**
+	 * Nothing to do here.
+	 * @param unused.
+	 * @param unused.
+	 */
+	inline void AdjustDemandNodes(LinkGraphJob &, const std::vector<NodeID> &)
+	{
+	}
+
+	/**
 	 * Get the effective supply of one node towards another one.
 	 * @param from The supplying node.
 	 * @param unused.
@@ -142,6 +151,21 @@ public:
 	inline void SetDemandPerNode(uint num_demands)
 	{
 		this->demand_per_node = CeilDiv(this->supply_sum, num_demands);
+		this->missing_supply = (this->demand_per_node * num_demands) - this->supply_sum;
+	}
+
+	/**
+	 * Adjust demand nodes after setting demand per node.
+	 * @param job The link graph job.
+	 * @param demands List of demand nodes to adjust.
+	 */
+	inline void AdjustDemandNodes(LinkGraphJob &job, const std::vector<NodeID> &demands)
+	{
+		const uint count = min<uint>(demands.size(), this->missing_supply);
+		this->missing_supply = 0;
+		for (uint i = 0; i < count; i++) {
+			job[demands[i]].ReceiveDemand(1);
+		}
 	}
 
 	/**
@@ -171,6 +195,7 @@ public:
 private:
 	uint supply_sum;      ///< Sum of all supplies in the component.
 	uint demand_per_node; ///< Mean demand associated with each node.
+	uint missing_supply;  ///< Suppply/demand adjustment for in AdjustDemandNodes.
 };
 
 /**
@@ -343,6 +368,7 @@ void DemandCalculator::CalcMinimisedDistanceDemand(LinkGraphJob &job, Tscaler sc
 	if (supplies.empty() || demands.empty()) return;
 
 	scaler.SetDemandPerNode(demands.size());
+	scaler.AdjustDemandNodes(job, demands);
 
 	struct EdgeCandidate {
 		NodeID from_id;
