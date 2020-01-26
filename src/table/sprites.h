@@ -166,15 +166,7 @@ static const SpriteID SPR_WINDOW_DEFSIZE             = SPR_OPENTTD_BASE + 168;
 
 static const SpriteID SPR_IMG_CARGOFLOW              = SPR_OPENTTD_BASE + 174;
 
-/** Sprites for the route step marker. */
-static const SpriteID SPR_ROUTE_STEP_BASE          = SPR_OPENTTD_BASE + OPENTTD_SPRITE_COUNT;
-static const SpriteID SPR_ROUTE_STEP_TOP           = SPR_ROUTE_STEP_BASE + 0;
-static const SpriteID SPR_ROUTE_STEP_MIDDLE        = SPR_ROUTE_STEP_BASE + 1;
-static const SpriteID SPR_ROUTE_STEP_BOTTOM        = SPR_ROUTE_STEP_BASE + 2;
-static const SpriteID SPR_ROUTE_STEP_BOTTOM_SHADOW = SPR_ROUTE_STEP_BASE + 3;
-static const SpriteID ROUTE_STEP_SPRITE_COUNT = 4;
-
-static const SpriteID SPR_SIGNALS_BASE  = SPR_ROUTE_STEP_BASE + ROUTE_STEP_SPRITE_COUNT;
+static const SpriteID SPR_SIGNALS_BASE  = SPR_OPENTTD_BASE + OPENTTD_SPRITE_COUNT;
 static const uint16 PRESIGNAL_SPRITE_COUNT                   =  48;
 static const uint16 PRESIGNAL_AND_SEMAPHORE_SPRITE_COUNT     = 112;
 static const uint16 PRESIGNAL_SEMAPHORE_AND_PBS_SPRITE_COUNT = 240;
@@ -324,8 +316,16 @@ static const SpriteID SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE = SPR_ZONING_INNER_H
 static const SpriteID SPR_ZONING_INNER_HIGHLIGHT_ORANGE     = SPR_ZONING_INNER_HIGHLIGHT_BASE + 23;
 static const SpriteID SPR_ZONING_INNER_HIGHLIGHT_WHITE      = SPR_ZONING_INNER_HIGHLIGHT_BASE + 24;
 
+/* Sprites for the route step marker. */
+static const SpriteID SPR_ROUTE_STEP_BASE          = SPR_ZONING_INNER_HIGHLIGHT_BASE + ZONING_INNER_HIGHLIGHT_SPRITE_COUNT;
+static const SpriteID SPR_ROUTE_STEP_TOP           = SPR_ROUTE_STEP_BASE + 0;
+static const SpriteID SPR_ROUTE_STEP_MIDDLE        = SPR_ROUTE_STEP_BASE + 1;
+static const SpriteID SPR_ROUTE_STEP_BOTTOM        = SPR_ROUTE_STEP_BASE + 2;
+static const SpriteID SPR_ROUTE_STEP_BOTTOM_SHADOW = SPR_ROUTE_STEP_BASE + 3;
+static const SpriteID ROUTE_STEP_SPRITE_COUNT = 4;
+
 /* Tracerestrict sprites */
-static const SpriteID SPR_TRACERESTRICT_BASE = SPR_ZONING_INNER_HIGHLIGHT_BASE + ZONING_INNER_HIGHLIGHT_SPRITE_COUNT;
+static const SpriteID SPR_TRACERESTRICT_BASE = SPR_ROUTE_STEP_BASE + ROUTE_STEP_SPRITE_COUNT;
 static const uint16 TRACERESTRICT_SPRITE_COUNT = 2;
 
 /* Duplicated signal sprites */
