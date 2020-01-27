@@ -349,10 +349,19 @@ struct SchdispatchWindow : Window {
 							this->last_departure_future ? STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE : STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST);
 					y += FONT_HEIGHT_NORMAL;
 
-					const int required_vehicle = CalculateMaxRequiredVehicle(v->orders.list->GetTimetableTotalDuration(), v->orders.list->GetScheduledDispatchDuration(), v->orders.list->GetScheduledDispatch());
-					if (required_vehicle > 0) {
-						SetDParam(0, required_vehicle);
-						DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_SUMMARY_L1);
+					bool have_conditional = false;
+					for (int n = 0; n < v->GetNumOrders(); n++) {
+						const Order *order = v->GetOrder(n);
+						if (order->IsType(OT_CONDITIONAL)) {
+							have_conditional = true;
+						}
+					}
+					if (!have_conditional) {
+						const int required_vehicle = CalculateMaxRequiredVehicle(v->orders.list->GetTimetableTotalDuration(), v->orders.list->GetScheduledDispatchDuration(), v->orders.list->GetScheduledDispatch());
+						if (required_vehicle > 0) {
+							SetDParam(0, required_vehicle);
+							DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_SUMMARY_L1);
+						}
 					}
 					y += FONT_HEIGHT_NORMAL;
 
