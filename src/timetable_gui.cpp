@@ -33,6 +33,8 @@
 
 #include "safeguards.h"
 
+VehicleOrderID GetVehicleFirstWaitingLocation(const Vehicle *v);
+
 /** Container for the arrival/departure dates of a vehicle */
 struct TimetableArrivalDeparture {
 	Ticks arrival;   ///< The arrival time
@@ -111,6 +113,9 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 		table[i].arrival = table[i].departure = INVALID_TICKS;
 	}
 
+	VehicleOrderID scheduled_dispatch_order = INVALID_VEH_ORDER_ID;
+	if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) scheduled_dispatch_order = GetVehicleFirstWaitingLocation(v);
+
 	/* Cyclically loop over all orders until we reach the current one again.
 	 * As we may start at the current order, do a post-checking loop */
 	do {
@@ -124,6 +129,7 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 				table[i].arrival = sum;
 			}
 
+			if (i == scheduled_dispatch_order && !(i == start && !travelling)) return;
 			if (!CanDetermineTimeTaken(order, false)) return;
 			sum += order->GetTimetabledWait();
 			table[i].departure = sum;
