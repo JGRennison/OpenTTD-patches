@@ -64,8 +64,8 @@ HouseResolverObject::HouseResolverObject(HouseID house_id, TileIndex tile, Town 
 	assert(tile == INVALID_TILE || (not_yet_constructed ? IsValidTile(tile) : GetHouseType(tile) == house_id && Town::GetByTile(tile) == town));
 
 	this->house_scope = (tile != INVALID_TILE) ?
-			(ScopeResolver*)new HouseScopeResolver(*this, house_id, tile, town, not_yet_constructed, initial_random_bits, watched_cargo_triggers) :
-			(ScopeResolver*)new FakeHouseScopeResolver(*this, house_id);
+			(CommonHouseScopeResolver*)new HouseScopeResolver(*this, house_id, tile, town, not_yet_constructed, initial_random_bits, watched_cargo_triggers) :
+			(CommonHouseScopeResolver*)new FakeHouseScopeResolver(*this, house_id);
 
 	this->town_scope = (town != nullptr) ?
 			(ScopeResolver*)new TownScopeResolver(*this, town, not_yet_constructed) : // Don't access StorePSA if house is not yet constructed.
@@ -78,6 +78,16 @@ HouseResolverObject::HouseResolverObject(HouseID house_id, TileIndex tile, Town 
 {
 	delete this->house_scope;
 	delete this->town_scope;
+}
+
+GrfSpecFeature HouseResolverObject::GetFeature() const
+{
+	return GSF_HOUSES;
+}
+
+uint32 HouseResolverObject::GetDebugID() const
+{
+	return HouseSpec::Get(this->house_scope->house_id)->grf_prop.local_id;
 }
 
 HouseClassID AllocateHouseClassID(byte grf_class_id, uint32 grfid)

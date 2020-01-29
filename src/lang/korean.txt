@@ -1708,8 +1708,6 @@ STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :지분 거래�
 STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :지분을 사고 팔기 위해 필요한 회사의 최소 나이를 설정합니다.
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :환승시 벌어들이는 중간 수익의 비율: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :더 많은 수익을 내기 위해, 수송 관계상 중간 구간에게 주어진 수익의 비율을 설정합니다.
-STR_CONFIG_SETTING_FEEDER_PAYMENT_SRC_STATION                   :환승시 출발 역에 대한 중간 수익을 계산: {STRING}
-STR_CONFIG_SETTING_FEEDER_PAYMENT_SRC_STATION_HELPTEXT          :이 설정을 켜면, 현재의 환승시 중간 수익 계산을 각 여정 별로 계산하지 않고, 이전 환승 비용을 제외하고 출발역으로부터 현 지점까지 기준으로 계산합니다.
 STR_CONFIG_SETTING_SIMULATE_SIGNALS                             :다리와 터널에서 {STRING}마다 신호기를 설치한 것으로 계산
 STR_CONFIG_SETTING_SIMULATE_SIGNALS_VALUE                       :{COMMA} 칸
 STR_CONFIG_SETTING_DAY_LENGTH_FACTOR                            :1일의 길이 조절: {STRING}

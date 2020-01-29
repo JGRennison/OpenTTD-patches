@@ -1,6 +1,6 @@
 #!/bin/sh
 
-tag=$(git describe --tags 2>/dev/null)
+tag=$(git name-rev --name-only --tags --no-undefined HEAD 2>/dev/null | sed 's@\^0$@@')
 
 # If we are a tag, show the part of the changelog till (but excluding) the last stable
 if [ -n "$tag" ]; then
@@ -12,5 +12,5 @@ fi
 
 # In all other cases, show the git log of the last 7 days
 revdate=$(git log -1 --pretty=format:"%ci")
-last_week=$(date -u -d "$revdate -7days" +"%Y-%m-%d %H:%M")
+last_week=$(date -d "$revdate -7days" +"%Y-%m-%d %H:%M")
 git log --after="${last_week}" --pretty=fuller

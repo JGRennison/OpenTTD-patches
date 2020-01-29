@@ -16,9 +16,16 @@
 #include "newgrf_spritegroup.h"
 #include "newgrf_town.h"
 
-/** Scope resolver for houses. */
-struct HouseScopeResolver : public ScopeResolver {
+struct CommonHouseScopeResolver : public ScopeResolver {
 	HouseID house_id;              ///< Type of house being queried.
+
+	CommonHouseScopeResolver(ResolverObject &ro, HouseID house_id)
+		: ScopeResolver(ro), house_id(house_id)
+	{ }
+};
+
+/** Scope resolver for houses. */
+struct HouseScopeResolver : public CommonHouseScopeResolver {
 	TileIndex tile;                ///< Tile of this house.
 	Town *town;                    ///< Town of this house.
 	bool not_yet_constructed;      ///< True for construction check.
@@ -37,7 +44,7 @@ struct HouseScopeResolver : public ScopeResolver {
 	 */
 	HouseScopeResolver(ResolverObject &ro, HouseID house_id, TileIndex tile, Town *town,
 			bool not_yet_constructed, uint8 initial_random_bits, CargoTypes watched_cargo_triggers)
-		: ScopeResolver(ro), house_id(house_id), tile(tile), town(town), not_yet_constructed(not_yet_constructed),
+		: CommonHouseScopeResolver(ro, house_id), tile(tile), town(town), not_yet_constructed(not_yet_constructed),
 		initial_random_bits(initial_random_bits), watched_cargo_triggers(watched_cargo_triggers)
 	{
 	}
@@ -58,11 +65,9 @@ struct HouseScopeResolver : public ScopeResolver {
  * Since the building doesn't exists we have no real values that we can return.
  * Instead of failing, this resolver will return fake values.
  */
-struct FakeHouseScopeResolver : public ScopeResolver {
-	HouseID house_id; ///< Type of house being queried.
-
+struct FakeHouseScopeResolver : public CommonHouseScopeResolver {
 	FakeHouseScopeResolver(ResolverObject &ro, HouseID house_id)
-		: ScopeResolver(ro), house_id(house_id)
+		: CommonHouseScopeResolver(ro, house_id)
 	{ }
 
 	/* virtual */ uint32 GetVariable(byte variable, uint32 parameter, bool *available) const;
@@ -70,7 +75,7 @@ struct FakeHouseScopeResolver : public ScopeResolver {
 
 /** Resolver object to be used for houses (feature 07 spritegroups). */
 struct HouseResolverObject : public ResolverObject {
-	ScopeResolver *house_scope;
+	CommonHouseScopeResolver *house_scope;
 	ScopeResolver *town_scope;
 
 	HouseResolverObject(HouseID house_id, TileIndex tile = INVALID_TILE, Town *town = nullptr,
@@ -87,6 +92,9 @@ struct HouseResolverObject : public ResolverObject {
 			default: return ResolverObject::GetScope(scope, relative);
 		}
 	}
+
+	GrfSpecFeature GetFeature() const override;
+	uint32 GetDebugID() const override;
 };
 
 /**

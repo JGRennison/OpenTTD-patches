@@ -29,6 +29,7 @@
 #include "station_kdtree.h"
 #include "town_kdtree.h"
 #include "viewport_kdtree.h"
+#include "newgrf_profiling.h"
 #include "tracerestrict.h"
 #include "programmable_signals.h"
 #include "viewport_func.h"
@@ -88,6 +89,8 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	_game_load_time = 0;
 	_loadgame_DBGL_data.clear();
 	if (reset_settings) MakeNewgameSettingsLive();
+
+	_newgrf_profilers.clear();
 
 	if (reset_date) {
 		SetDate(ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1), 0);
