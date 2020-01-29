@@ -722,21 +722,9 @@ void UpdateSeparationOrder(Vehicle *v_start)
 	}
 }
 
-VehicleOrderID GetVehicleFirstWaitingLocation(const Vehicle *v)
-{
-	for (int i = 0; i < v->orders.list->GetNumOrders(); ++i) {
-		Order* order = v->orders.list->GetOrderAt(i);
-
-		if (order->IsWaitTimetabled() && !order->IsType(OT_IMPLICIT) && !order->IsType(OT_CONDITIONAL)) {
-			return i;
-		}
-	}
-	return INVALID_VEH_ORDER_ID;
-}
-
 static bool IsVehicleAtFirstWaitingLocation(const Vehicle *v)
 {
-	return (v->cur_implicit_order_index == GetVehicleFirstWaitingLocation(v));
+	return (v->cur_implicit_order_index == v->GetFirstWaitingLocation(true));
 }
 
 static DateTicksScaled GetScheduledDispatchTime(Vehicle *v, int wait_offset)

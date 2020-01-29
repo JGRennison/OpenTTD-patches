@@ -2387,6 +2387,21 @@ void Vehicle::MarkAllViewportsDirty() const
 	::MarkAllViewportsDirty(this->coord.left, this->coord.top, this->coord.right, this->coord.bottom);
 }
 
+VehicleOrderID Vehicle::GetFirstWaitingLocation(bool require_wait_timetabled) const
+{
+	for (int i = 0; i < this->GetNumOrders(); ++i) {
+		const Order* order = this->GetOrder(i);
+
+		if (order->IsWaitTimetabled() && !order->IsType(OT_IMPLICIT) && !order->IsType(OT_CONDITIONAL)) {
+			return i;
+		}
+		if (order->IsType(OT_GOTO_STATION)) {
+			return (order->IsWaitTimetabled() || !require_wait_timetabled) ? i : INVALID_VEH_ORDER_ID;
+		}
+	}
+	return INVALID_VEH_ORDER_ID;
+}
+
 /**
  * Get position information of a vehicle when moving one pixel in the direction it is facing
  * @param v Vehicle to move

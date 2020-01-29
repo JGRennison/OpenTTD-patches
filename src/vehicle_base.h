@@ -880,6 +880,8 @@ public:
 
 	inline void SetServiceIntervalIsPercent(bool on) { SB(this->vehicle_flags, VF_SERVINT_IS_PERCENT, 1, on); }
 
+	VehicleOrderID GetFirstWaitingLocation(bool require_wait_timetabled) const;
+
 private:
 	/**
 	 * Advance cur_real_order_index to the next real order.
