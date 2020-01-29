@@ -367,6 +367,7 @@ struct SchdispatchWindow : Window {
 
 					SetTimetableParams(0, v->orders.list->GetScheduledDispatchDuration());
 					SetDParam(4, v->orders.list->GetScheduledDispatchStartTick());
+					SetDParam(5, v->orders.list->GetScheduledDispatchStartTick() + v->orders.list->GetScheduledDispatchDuration());
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_SUMMARY_L2);
 					y += FONT_HEIGHT_NORMAL;
 
