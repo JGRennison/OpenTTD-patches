@@ -577,9 +577,11 @@ void HandleAircraftEnterHangar(Aircraft *v)
 
 	Aircraft *u = v->Next();
 	u->vehstatus |= VS_HIDDEN;
+	u->UpdateIsDrawn();
 	u = u->Next();
 	if (u != nullptr) {
 		u->vehstatus |= VS_HIDDEN;
+		u->UpdateIsDrawn();
 		u->cur_speed = 0;
 	}
 
@@ -1493,14 +1495,17 @@ void AircraftLeaveHangar(Aircraft *v, Direction exit_dir)
 	v->progress = 0;
 	v->direction = exit_dir;
 	v->vehstatus &= ~VS_HIDDEN;
+	v->UpdateIsDrawn();
 	{
 		Vehicle *u = v->Next();
 		u->vehstatus &= ~VS_HIDDEN;
+		u->UpdateIsDrawn();
 
 		/* Rotor blades */
 		u = u->Next();
 		if (u != nullptr) {
 			u->vehstatus &= ~VS_HIDDEN;
+			u->UpdateIsDrawn();
 			u->cur_speed = 80;
 		}
 	}

@@ -1119,6 +1119,7 @@ static bool RoadVehLeaveDepot(RoadVehicle *v, bool first)
 	v->cur_image_valid_dir = INVALID_DIR;
 	v->state = tdir;
 	v->frame = RVC_DEPOT_START_FRAME;
+	v->UpdateIsDrawn();
 
 	v->x_pos = x;
 	v->y_pos = y;

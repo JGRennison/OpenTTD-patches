@@ -180,6 +180,7 @@ DisasterVehicle::DisasterVehicle(int x, int y, Direction direction, DisasterSubT
 	this->owner = OWNER_NONE;
 	this->image_override = 0;
 	this->current_order.Free();
+	this->UpdateIsDrawn();
 
 	this->UpdateImage();
 	this->UpdatePositionAndViewport();

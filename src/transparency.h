@@ -70,6 +70,9 @@ static inline bool IsInvisibilitySet(TransparencyOption to)
 static inline void ToggleTransparency(TransparencyOption to)
 {
 	ToggleBit(_transparency_opt, to);
+
+	extern void UpdateAllVehiclesIsDrawn();
+	if (to == TO_TUNNELS) UpdateAllVehiclesIsDrawn();
 }
 
 /**

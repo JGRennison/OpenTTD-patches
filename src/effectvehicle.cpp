@@ -632,6 +632,8 @@ EffectVehicle *CreateEffectVehicle(int x, int y, int z, EffectVehicleType type)
 
 	_effect_init_procs[type](v);
 
+	v->UpdateIsDrawn();
+
 	v->UpdatePositionAndViewport();
 
 	v->AddEffectVehicleToTickCache();

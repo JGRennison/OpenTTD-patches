@@ -3795,6 +3795,8 @@ bool AfterLoadGame()
 	InvalidateVehicleTickCaches();
 	ClearVehicleTickCaches();
 
+	UpdateAllVehiclesIsDrawn();
+
 	extern void YapfCheckRailSignalPenalties();
 	YapfCheckRailSignalPenalties();
 

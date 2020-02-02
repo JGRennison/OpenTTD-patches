@@ -358,15 +358,22 @@ uint Vehicle::Crash(bool flooded)
 }
 
 /**
- * Get whether a the vehicle should be drawn (i.e. if it isn't hidden, or it is in a tunnel but being shown transparently)
+ * Update cache of whether the vehicle should be drawn (i.e. if it isn't hidden, or it is in a tunnel but being shown transparently)
  * @return whether to show vehicle
  */
-bool Vehicle::IsDrawn() const
+void Vehicle::UpdateIsDrawn()
 {
-	return !(HasBit(this->subtype, GVSF_VIRTUAL)) && (!(this->vehstatus & VS_HIDDEN) ||
+	bool drawn = !(HasBit(this->subtype, GVSF_VIRTUAL)) && (!(this->vehstatus & VS_HIDDEN) ||
 			(IsTransparencySet(TO_TUNNELS) &&
 				((this->type == VEH_TRAIN && Train::From(this)->track == TRACK_BIT_WORMHOLE) ||
 				(this->type == VEH_ROAD && RoadVehicle::From(this)->state == RVSB_WORMHOLE))));
+
+	SB(this->vcache.cached_veh_flags, VCF_IS_DRAWN, 1, drawn ? 1 : 0);
+}
+
+void UpdateAllVehiclesIsDrawn()
+{
+	for (Vehicle *v : Vehicle::Iterate()) { v->UpdateIsDrawn(); }
 }
 
 /**
@@ -2240,6 +2247,7 @@ void VehicleEnterDepot(Vehicle *v)
 	SetWindowDirty(WC_VEHICLE_DEPOT, v->tile);
 
 	v->vehstatus |= VS_HIDDEN;
+	v->UpdateIsDrawn();
 	v->cur_speed = 0;
 
 	VehicleServiceInDepot(v);
@@ -3847,6 +3855,7 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
 	b += seprintf(b, last, ", vcf:");
 	dump('l', HasBit(this->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT));
 	dump('z', HasBit(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST));
+	dump('d', HasBit(this->vcache.cached_veh_flags, VCF_IS_DRAWN));
 	if (this->IsGroundVehicle()) {
 		uint16 gv_flags = this->GetGroundVehicleFlags();
 		b += seprintf(b, last, ", gvf:");

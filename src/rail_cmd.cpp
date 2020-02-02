@@ -3671,6 +3671,7 @@ static VehicleEnterTileStatus VehicleEnter_Track(Vehicle *u, TileIndex tile, int
 
 			v->track = TRACK_BIT_DEPOT,
 			v->vehstatus |= VS_HIDDEN; // hide it
+			v->UpdateIsDrawn();
 			v->direction = ReverseDir(v->direction);
 			if (v->Next() == nullptr) VehicleEnterDepot(v->First());
 			v->tile = tile;
@@ -3684,6 +3685,7 @@ static VehicleEnterTileStatus VehicleEnter_Track(Vehicle *u, TileIndex tile, int
 			if ((v = v->Next()) != nullptr) {
 				v->vehstatus &= ~VS_HIDDEN;
 				v->track = (DiagDirToAxis(dir) == AXIS_X ? TRACK_BIT_X : TRACK_BIT_Y);
+				v->UpdateIsDrawn();
 			}
 		}
 	}

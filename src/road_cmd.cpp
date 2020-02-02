@@ -2362,6 +2362,7 @@ static VehicleEnterTileStatus VehicleEnter_Road(Vehicle *v, TileIndex tile, int 
 				rv->direction = ReverseDir(rv->direction);
 				if (rv->Next() == nullptr) VehicleEnterDepot(rv->First());
 				rv->tile = tile;
+				rv->UpdateIsDrawn();
 
 				InvalidateWindowData(WC_VEHICLE_DEPOT, rv->tile);
 				return VETSB_ENTERED_WORMHOLE;

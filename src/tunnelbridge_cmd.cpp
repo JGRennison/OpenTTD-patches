@@ -2566,6 +2566,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 					t->track = TRACK_BIT_WORMHOLE;
 					if (Tunnel::GetByTile(tile)->is_chunnel) SetBit(t->gv_flags, GVF_CHUNNEL_BIT);
 					t->vehstatus |= VS_HIDDEN;
+					t->UpdateIsDrawn();
 					return VETSB_ENTERED_WORMHOLE;
 				}
 			}
@@ -2577,6 +2578,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 				t->track = DiagDirToDiagTrackBits(vdir);
 				assert(t->track);
 				t->vehstatus &= ~VS_HIDDEN;
+				t->UpdateIsDrawn();
 				return VETSB_ENTERED_WORMHOLE;
 			}
 		} else if (v->type == VEH_ROAD) {
@@ -2593,6 +2595,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 					rv->state = RVSB_WORMHOLE;
 					if (Tunnel::GetByTile(tile)->is_chunnel) SetBit(rv->gv_flags, GVF_CHUNNEL_BIT);
 					rv->vehstatus |= VS_HIDDEN;
+					rv->UpdateIsDrawn();
 					return VETSB_ENTERED_WORMHOLE;
 				} else {
 					return VETSB_CONTINUE;
@@ -2607,6 +2610,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 				rv->state = DiagDirToDiagTrackdir(vdir);
 				rv->frame = TILE_SIZE - (frame + 1);
 				rv->vehstatus &= ~VS_HIDDEN;
+				rv->UpdateIsDrawn();
 				return VETSB_ENTERED_WORMHOLE;
 			}
 		}

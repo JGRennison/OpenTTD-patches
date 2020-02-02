@@ -1835,6 +1835,8 @@ static void UpdateStatusAfterSwap(Train *v)
 	/* Reverse the direction. */
 	if (v->track != TRACK_BIT_DEPOT) v->direction = ReverseDir(v->direction);
 
+	v->UpdateIsDrawn();
+
 	/* Call the proper EnterTile function unless we are in a wormhole. */
 	if (!(v->track & TRACK_BIT_WORMHOLE)) {
 		VehicleEnterTile(v, v->tile, v->x_pos, v->y_pos);
@@ -2642,6 +2644,7 @@ static bool CheckTrainStayInDepot(Train *v)
 	if (v->direction & 2) v->track = TRACK_BIT_Y;
 
 	v->vehstatus &= ~VS_HIDDEN;
+	v->UpdateIsDrawn();
 	v->cur_speed = 0;
 
 	v->UpdateViewport(true, true);

@@ -405,6 +405,7 @@ static bool CheckShipLeaveDepot(Ship *v)
 
 	v->state = AxisToTrackBits(axis);
 	v->vehstatus &= ~VS_HIDDEN;
+	v->UpdateIsDrawn();
 
 	v->cur_speed = 0;
 	v->UpdateViewport(true, true);
