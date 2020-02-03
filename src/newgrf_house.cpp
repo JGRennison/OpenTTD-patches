@@ -46,7 +46,7 @@ static const GRFFile *GetHouseSpecGrf(HouseID house_id)
 /**
  * Construct a resolver for a house.
  * @param house_id House to query.
- * @param tile %Tile containing the house. INVALID_TILE to query a house type rather then a certian house tile.
+ * @param tile %Tile containing the house.
  * @param town %Town containing the house.
  * @param callback Callback ID.
  * @param param1 First parameter (var 10) of the callback.
@@ -58,26 +58,11 @@ static const GRFFile *GetHouseSpecGrf(HouseID house_id)
 HouseResolverObject::HouseResolverObject(HouseID house_id, TileIndex tile, Town *town,
 		CallbackID callback, uint32 param1, uint32 param2,
 		bool not_yet_constructed, uint8 initial_random_bits, CargoTypes watched_cargo_triggers)
-	: ResolverObject(GetHouseSpecGrf(house_id), callback, param1, param2)
+	: ResolverObject(GetHouseSpecGrf(house_id), callback, param1, param2),
+	house_scope(*this, house_id, tile, town, not_yet_constructed, initial_random_bits, watched_cargo_triggers),
+	town_scope(*this, town, not_yet_constructed) // Don't access StorePSA if house is not yet constructed.
 {
-	assert((tile != INVALID_TILE) == (town != nullptr));
-	assert(tile == INVALID_TILE || (not_yet_constructed ? IsValidTile(tile) : GetHouseType(tile) == house_id && Town::GetByTile(tile) == town));
-
-	this->house_scope = (tile != INVALID_TILE) ?
-			(CommonHouseScopeResolver*)new HouseScopeResolver(*this, house_id, tile, town, not_yet_constructed, initial_random_bits, watched_cargo_triggers) :
-			(CommonHouseScopeResolver*)new FakeHouseScopeResolver(*this, house_id);
-
-	this->town_scope = (town != nullptr) ?
-			(ScopeResolver*)new TownScopeResolver(*this, town, not_yet_constructed) : // Don't access StorePSA if house is not yet constructed.
-			(ScopeResolver*)new FakeTownScopeResolver(*this);
-
 	this->root_spritegroup = HouseSpec::Get(house_id)->grf_prop.spritegroup[0];
-}
-
-/* virtual */ HouseResolverObject::~HouseResolverObject()
-{
-	delete this->house_scope;
-	delete this->town_scope;
 }
 
 GrfSpecFeature HouseResolverObject::GetFeature() const
@@ -87,7 +72,36 @@ GrfSpecFeature HouseResolverObject::GetFeature() const
 
 uint32 HouseResolverObject::GetDebugID() const
 {
-	return HouseSpec::Get(this->house_scope->house_id)->grf_prop.local_id;
+	return HouseSpec::Get(this->house_scope.house_id)->grf_prop.local_id;
+}
+
+/**
+ * Construct a resolver for a fake house.
+ * @param house_id House to query.
+ * @param callback Callback ID.
+ * @param param1 First parameter (var 10) of the callback.
+ * @param param2 Second parameter (var 18) of the callback.
+ * @param not_yet_constructed House is still under construction.
+ * @param initial_random_bits Random bits during construction checks.
+ * @param watched_cargo_triggers Cargo types that triggered the watched cargo callback.
+ */
+FakeHouseResolverObject::FakeHouseResolverObject(HouseID house_id,
+		CallbackID callback, uint32 param1, uint32 param2)
+	: ResolverObject(GetHouseSpecGrf(house_id), callback, param1, param2),
+	house_scope(*this, house_id),
+	town_scope(*this) // Don't access StorePSA if house is not yet constructed.
+{
+	this->root_spritegroup = HouseSpec::Get(house_id)->grf_prop.spritegroup[0];
+}
+
+GrfSpecFeature FakeHouseResolverObject::GetFeature() const
+{
+	return GSF_HOUSES;
+}
+
+uint32 FakeHouseResolverObject::GetDebugID() const
+{
+	return HouseSpec::Get(this->house_scope.house_id)->grf_prop.local_id;
 }
 
 HouseClassID AllocateHouseClassID(byte grf_class_id, uint32 grfid)
@@ -608,7 +622,7 @@ void DrawNewHouseTile(TileInfo *ti, HouseID house_id)
 
 void DrawNewHouseTileInGUI(int x, int y, HouseID house_id, bool ground)
 {
-	HouseResolverObject object(house_id);
+	FakeHouseResolverObject object(house_id);
 	const SpriteGroup *group = object.Resolve();
 	if (group != nullptr && group->type == SGT_TILELAYOUT) {
 		DrawTileLayoutInGUI(x, y, (const TileLayoutSpriteGroup*)group, house_id, ground);

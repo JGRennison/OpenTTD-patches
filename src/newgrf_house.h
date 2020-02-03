@@ -75,20 +75,39 @@ struct FakeHouseScopeResolver : public CommonHouseScopeResolver {
 
 /** Resolver object to be used for houses (feature 07 spritegroups). */
 struct HouseResolverObject : public ResolverObject {
-	CommonHouseScopeResolver *house_scope;
-	ScopeResolver *town_scope;
+	HouseScopeResolver house_scope;
+	TownScopeResolver  town_scope;
 
-	HouseResolverObject(HouseID house_id, TileIndex tile = INVALID_TILE, Town *town = nullptr,
+	HouseResolverObject(HouseID house_id, TileIndex tile, Town *town,
 			CallbackID callback = CBID_NO_CALLBACK, uint32 param1 = 0, uint32 param2 = 0,
 			bool not_yet_constructed = false, uint8 initial_random_bits = 0, CargoTypes watched_cargo_triggers = 0);
-
-	~HouseResolverObject();
 
 	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0) override
 	{
 		switch (scope) {
-			case VSG_SCOPE_SELF:   return this->house_scope;
-			case VSG_SCOPE_PARENT: return this->town_scope;
+			case VSG_SCOPE_SELF:   return &this->house_scope;
+			case VSG_SCOPE_PARENT: return &this->town_scope;
+			default: return ResolverObject::GetScope(scope, relative);
+		}
+	}
+
+	GrfSpecFeature GetFeature() const override;
+	uint32 GetDebugID() const override;
+};
+
+/** Resolver object to be used for fake houses (feature 07 spritegroups). */
+struct FakeHouseResolverObject : public ResolverObject {
+	FakeHouseScopeResolver house_scope;
+	FakeTownScopeResolver  town_scope;
+
+	FakeHouseResolverObject(HouseID house_id,
+			CallbackID callback = CBID_NO_CALLBACK, uint32 param1 = 0, uint32 param2 = 0);
+
+	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0) override
+	{
+		switch (scope) {
+			case VSG_SCOPE_SELF:   return &this->house_scope;
+			case VSG_SCOPE_PARENT: return &this->town_scope;
 			default: return ResolverObject::GetScope(scope, relative);
 		}
 	}
