@@ -1444,8 +1444,8 @@ public:
 		this->vscroll = this->GetScrollbar(WID_O_SCROLLBAR);
 		if (v->owner == _local_company) {
 			this->GetWidget<NWidgetStacked>(WID_O_SEL_OCCUPANCY)->SetDisplayedPlane(SZSP_NONE);
+			this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX)->SetDisplayedPlane(SZSP_NONE);
 		}
-		this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX)->SetDisplayedPlane(SZSP_NONE);
 		this->current_aux_plane = SZSP_NONE;
 		this->FinishInitNested(v->index);
 		if (v->owner == _local_company) {
