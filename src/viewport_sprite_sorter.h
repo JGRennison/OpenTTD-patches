@@ -9,13 +9,18 @@
 
 #include "stdafx.h"
 #include "core/smallvec_type.hpp"
+#include "core/bitmath_func.hpp"
 #include "gfx_type.h"
 
 #ifndef VIEWPORT_SPRITE_SORTER_H
 #define VIEWPORT_SPRITE_SORTER_H
 
 /** Parent sprite that should be drawn */
-struct ParentSpriteToDraw {
+#ifdef _MSC_VER
+struct __declspec(align(16)) ParentSpriteToDraw {
+#else
+struct __attribute__ ((aligned (16))) ParentSpriteToDraw {
+#endif
 	/* Block of 16B loadable in xmm register */
 	int32 xmin;                     ///< minimal world X coordinate of bounding box
 	int32 ymin;                     ///< minimal world Y coordinate of bounding box
@@ -36,8 +41,14 @@ struct ParentSpriteToDraw {
 	int32 top;                      ///< minimal screen Y coordinate of sprite (= y + sprite->y_offs), reference point for child sprites
 
 	int32 first_child;              ///< the first child to draw.
-	bool comparison_done;           ///< Used during sprite sorting: true if sprite has been compared with all other sprites
+	uint16 width;                   ///< sprite width
+	uint16 height;                  ///< sprite height, bit 15: comparison_done: used during sprite sorting: true if sprite has been compared with all other sprites
+
+	bool IsComparisonDone() const { return HasBit(this->height, 15); }
+	void SetComparisonDone(bool done) { SB(this->height, 15, 1, done ? 1 : 0); }
 };
+assert_compile((sizeof(ParentSpriteToDraw) % 16) == 0);
+assert_compile(sizeof(ParentSpriteToDraw) <= 64);
 
 typedef std::vector<ParentSpriteToDraw*> ParentSpriteToSortVector;
 

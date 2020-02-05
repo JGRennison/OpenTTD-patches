@@ -154,6 +154,7 @@ struct ChildScreenSpriteToDraw {
 	int32 x;
 	int32 y;
 	int next;                       ///< next child to draw (-1 at the end)
+	bool relative;
 };
 
 /**
@@ -235,6 +236,11 @@ struct ViewportDrawer {
 	int *last_child;
 
 	SpriteCombineMode combine_sprites;               ///< Current mode of "sprite combining". @see StartSpriteCombine
+	uint combine_psd_index;
+	int combine_left;
+	int combine_right;
+	int combine_top;
+	int combine_bottom;
 
 	int foundation[FOUNDATION_PART_END];             ///< Foundation sprites (index into parent_sprites_to_draw).
 	FoundationPart foundation_part;                  ///< Currently active foundation for ground sprite drawing.
@@ -746,14 +752,21 @@ static void AddCombinedSprite(SpriteID image, PaletteID pal, int x, int y, int z
 	Point pt = RemapCoords(x, y, z);
 	const Sprite *spr = GetSprite(image & SPRITE_MASK, ST_NORMAL);
 
-	if (pt.x + spr->x_offs >= _vd.dpi.left + _vd.dpi.width ||
-			pt.x + spr->x_offs + spr->width <= _vd.dpi.left ||
-			pt.y + spr->y_offs >= _vd.dpi.top + _vd.dpi.height ||
-			pt.y + spr->y_offs + spr->height <= _vd.dpi.top)
+	int left = pt.x + spr->x_offs;
+	int right = pt.x + spr->x_offs + spr->width;
+	int top = pt.y + spr->y_offs;
+	int bottom = pt.y + spr->y_offs + spr->height;
+	if (left >= _vd.dpi.left + _vd.dpi.width ||
+			right <= _vd.dpi.left ||
+			top >= _vd.dpi.top + _vd.dpi.height ||
+			bottom <= _vd.dpi.top)
 		return;
 
-	const ParentSpriteToDraw &pstd = _vd.parent_sprites_to_draw.back();
-	AddChildSpriteScreen(image, pal, pt.x - pstd.left, pt.y - pstd.top, false, sub, false);
+	AddChildSpriteScreen(image, pal, pt.x, pt.y, false, sub, false, false);
+	if (left < _vd.combine_left) _vd.combine_left = left;
+	if (right > _vd.combine_right) _vd.combine_right = right;
+	if (top < _vd.combine_top) _vd.combine_top = top;
+	if (bottom > _vd.combine_bottom) _vd.combine_bottom = bottom;
 }
 
 /**
@@ -802,22 +815,26 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 
 	Point pt = RemapCoords(x, y, z);
 	int tmp_left, tmp_top, tmp_x = pt.x, tmp_y = pt.y;
+	uint16 tmp_width, tmp_height;
 
 	/* Compute screen extents of sprite */
-	if (image == SPR_EMPTY_BOUNDING_BOX) {
+	if (unlikely(image == SPR_EMPTY_BOUNDING_BOX)) {
 		left = tmp_left = RemapCoords(x + w          , y + bb_offset_y, z + bb_offset_z).x;
 		right           = RemapCoords(x + bb_offset_x, y + h          , z + bb_offset_z).x + 1;
 		top  = tmp_top  = RemapCoords(x + bb_offset_x, y + bb_offset_y, z + dz         ).y;
 		bottom          = RemapCoords(x + w          , y + h          , z + bb_offset_z).y + 1;
+		tmp_width = tmp_height = 0;
 	} else {
 		const Sprite *spr = GetSprite(image & SPRITE_MASK, ST_NORMAL);
 		left = tmp_left = (pt.x += spr->x_offs);
 		right           = (pt.x +  spr->width );
 		top  = tmp_top  = (pt.y += spr->y_offs);
 		bottom          = (pt.y +  spr->height);
+		tmp_width = spr->width;
+		tmp_height = spr->height;
 	}
 
-	if (_draw_bounding_boxes && (image != SPR_EMPTY_BOUNDING_BOX)) {
+	if (unlikely(_draw_bounding_boxes && (image != SPR_EMPTY_BOUNDING_BOX))) {
 		/* Compute maximal extents of sprite and its bounding box */
 		left   = min(left  , RemapCoords(x + w          , y + bb_offset_y, z + bb_offset_z).x);
 		right  = max(right , RemapCoords(x + bb_offset_x, y + h          , z + bb_offset_z).x + 1);
@@ -853,12 +870,23 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 	ps.zmin = z + bb_offset_z;
 	ps.zmax = z + max(bb_offset_z, dz) - 1;
 
-	ps.comparison_done = false;
 	ps.first_child = -1;
+	ps.width = tmp_width;
+	ps.height = tmp_height;
+
+	/* bit 15 of ps.height */
+	// ps.comparison_done = false;
 
 	_vd.last_child = &ps.first_child;
 
-	if (_vd.combine_sprites == SPRITE_COMBINE_PENDING) _vd.combine_sprites = SPRITE_COMBINE_ACTIVE;
+	if (_vd.combine_sprites == SPRITE_COMBINE_PENDING) {
+		_vd.combine_sprites = SPRITE_COMBINE_ACTIVE;
+		_vd.combine_psd_index = _vd.parent_sprites_to_draw.size() - 1;
+		_vd.combine_left = tmp_left;
+		_vd.combine_right = right;
+		_vd.combine_top = tmp_top;
+		_vd.combine_bottom = bottom;
+	}
 }
 
 /**
@@ -892,6 +920,13 @@ void StartSpriteCombine()
 void EndSpriteCombine()
 {
 	assert(_vd.combine_sprites != SPRITE_COMBINE_NONE);
+	if (_vd.combine_sprites == SPRITE_COMBINE_ACTIVE) {
+		ParentSpriteToDraw &ps = _vd.parent_sprites_to_draw[_vd.combine_psd_index];
+		ps.left = _vd.combine_left;
+		ps.top = _vd.combine_top;
+		ps.width = _vd.combine_right - _vd.combine_left;
+		ps.height = _vd.combine_bottom - _vd.combine_top;
+	}
 	_vd.combine_sprites = SPRITE_COMBINE_NONE;
 }
 
@@ -936,12 +971,13 @@ static bool IsInsideSelectedRectangle(int x, int y)
  *
  * @param image the image to draw.
  * @param pal the provided palette.
- * @param x sprite x-offset (screen coordinates) relative to parent sprite.
- * @param y sprite y-offset (screen coordinates) relative to parent sprite.
+ * @param x sprite x-offset (screen coordinates), optionally relative to parent sprite.
+ * @param y sprite y-offset (screen coordinates), optionally relative to parent sprite.
  * @param transparent if true, switch the palette between the provided palette and the transparent palette,
  * @param sub Only draw a part of the sprite.
+ * @param relative Whether coordinates are relative.
  */
-void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool transparent, const SubSprite *sub, bool scale)
+void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool transparent, const SubSprite *sub, bool scale, bool relative)
 {
 	assert((image & SPRITE_MASK) < MAX_SPRITES);
 
@@ -964,6 +1000,7 @@ void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool tran
 	cs.x = scale ? x * ZOOM_LVL_BASE : x;
 	cs.y = scale ? y * ZOOM_LVL_BASE : y;
 	cs.next = -1;
+	cs.relative = relative;
 
 	/* Append the sprite to the active ChildSprite list.
 	 * If the active ParentSprite is a foundation, update last_foundation_child as well.
@@ -1648,17 +1685,17 @@ static void ViewportSortParentSprites(ParentSpriteToSortVector *psdv)
 	while (psd != psdvend) {
 		ParentSpriteToDraw *ps = *psd;
 
-		if (ps->comparison_done) {
+		if (ps->IsComparisonDone()) {
 			psd++;
 			continue;
 		}
 
-		ps->comparison_done = true;
+		ps->SetComparisonDone(true);
 
 		for (auto psd2 = psd + 1; psd2 != psdvend; psd2++) {
 			ParentSpriteToDraw *ps2 = *psd2;
 
-			if (ps2->comparison_done) continue;
+			if (ps2->IsComparisonDone()) continue;
 
 			/* Decide which comparator to use, based on whether the bounding
 			 * boxes overlap
@@ -1707,7 +1744,13 @@ static void ViewportDrawParentSprites(const ParentSpriteToSortVector *psd, const
 		while (child_idx >= 0) {
 			const ChildScreenSpriteToDraw *cs = csstdv->data() + child_idx;
 			child_idx = cs->next;
-			DrawSpriteViewport(cs->image, cs->pal, ps->left + cs->x, ps->top + cs->y, cs->sub);
+			int x = cs->x;
+			int y = cs->y;
+			if (cs->relative) {
+				x += ps->left;
+				y += ps->top;
+			}
+			DrawSpriteViewport(cs->image, cs->pal, x, y, cs->sub);
 		}
 	}
 }
@@ -2718,6 +2761,77 @@ void ViewportMapDraw(const ViewPort * const vp)
 	}
 }
 
+static void ViewportProcessParentSprites()
+{
+	if (_vd.parent_sprites_to_sort.size() > 60 && (_cur_dpi->width >= 256 || _cur_dpi->height >= 256) && !_draw_bounding_boxes) {
+		/* split drawing region */
+		ParentSpriteToSortVector all_sprites = std::move(_vd.parent_sprites_to_sort);
+		_vd.parent_sprites_to_sort.clear();
+		void *saved_dst_ptr = _cur_dpi->dst_ptr;
+		if (_cur_dpi->height > _cur_dpi->width) {
+			/* vertical split: upper half */
+			const int orig_height = _cur_dpi->height;
+			const int orig_top = _cur_dpi->top;
+			_cur_dpi->height = (orig_height / 2) & ScaleByZoom(-1, _cur_dpi->zoom);
+			int split = _cur_dpi->top + _cur_dpi->height;
+			for (ParentSpriteToDraw *psd : all_sprites) {
+				if (psd->top < split) _vd.parent_sprites_to_sort.push_back(psd);
+			}
+			ViewportProcessParentSprites();
+			_vd.parent_sprites_to_sort.clear();
+
+			/* vertical split: lower half */
+			_cur_dpi->dst_ptr = BlitterFactory::GetCurrentBlitter()->MoveTo(_cur_dpi->dst_ptr, 0, UnScaleByZoom(_cur_dpi->height, _cur_dpi->zoom));
+			_cur_dpi->top = split;
+			_cur_dpi->height = orig_height - _cur_dpi->height;
+
+			for (ParentSpriteToDraw *psd : all_sprites) {
+				psd->SetComparisonDone(false);
+				if (psd->top + psd->height > _cur_dpi->top) {
+					_vd.parent_sprites_to_sort.push_back(psd);
+				}
+			}
+			ViewportProcessParentSprites();
+
+			/* restore _cur_dpi */
+			_cur_dpi->height = orig_height;
+			_cur_dpi->top = orig_top;
+		} else {
+			/* horizontal split: left half */
+			const int orig_width = _cur_dpi->width;
+			const int orig_left = _cur_dpi->left;
+			_cur_dpi->width = (orig_width / 2) & ScaleByZoom(-1, _cur_dpi->zoom);
+			int split = _cur_dpi->left + _cur_dpi->width;
+			for (ParentSpriteToDraw *psd : all_sprites) {
+				if (psd->left < split) _vd.parent_sprites_to_sort.push_back(psd);
+			}
+			ViewportProcessParentSprites();
+			_vd.parent_sprites_to_sort.clear();
+
+			/* horizontal split: right half */
+			_cur_dpi->dst_ptr = BlitterFactory::GetCurrentBlitter()->MoveTo(_cur_dpi->dst_ptr, UnScaleByZoom(_cur_dpi->width, _cur_dpi->zoom), 0);
+			_cur_dpi->left = split;
+			_cur_dpi->width = orig_width - _cur_dpi->width;
+
+			for (ParentSpriteToDraw *psd : all_sprites) {
+				psd->SetComparisonDone(false);
+				if (psd->left + psd->width > _cur_dpi->left) {
+					_vd.parent_sprites_to_sort.push_back(psd);
+				}
+			}
+			ViewportProcessParentSprites();
+
+			/* restore _cur_dpi */
+			_cur_dpi->width = orig_width;
+			_cur_dpi->left = orig_left;
+		}
+		_cur_dpi->dst_ptr = saved_dst_ptr;
+	} else {
+		_vp_sprite_sorter(&_vd.parent_sprites_to_sort);
+		ViewportDrawParentSprites(&_vd.parent_sprites_to_sort, &_vd.child_screen_sprites_to_draw);
+	}
+}
+
 void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom)
 {
 	DrawPixelInfo *old_dpi = _cur_dpi;
@@ -2775,8 +2889,7 @@ void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom
 			_vd.parent_sprites_to_sort.push_back(&psd);
 		}
 
-		_vp_sprite_sorter(&_vd.parent_sprites_to_sort);
-		ViewportDrawParentSprites(&_vd.parent_sprites_to_sort, &_vd.child_screen_sprites_to_draw);
+		ViewportProcessParentSprites();
 
 		if (_draw_bounding_boxes) ViewportDrawBoundingBoxes(&_vd.parent_sprites_to_sort);
 	}
