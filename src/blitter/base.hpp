@@ -198,7 +198,7 @@ public:
 	 * @param scroll_x How much to scroll in X.
 	 * @param scroll_y How much to scroll in Y.
 	 */
-	virtual void ScrollBuffer(void *video, int &left, int &top, int &width, int &height, int scroll_x, int scroll_y) = 0;
+	virtual void ScrollBuffer(void *video, int left, int top, int width, int height, int scroll_x, int scroll_y) = 0;
 
 	/**
 	 * Calculate how much memory there is needed for an image of this size in the video-buffer.

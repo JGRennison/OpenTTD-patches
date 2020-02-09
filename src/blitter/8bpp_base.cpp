@@ -90,7 +90,7 @@ void Blitter_8bppBase::CopyImageToBuffer(const void *video, void *dst, int width
 	}
 }
 
-void Blitter_8bppBase::ScrollBuffer(void *video, int &left, int &top, int &width, int &height, int scroll_x, int scroll_y)
+void Blitter_8bppBase::ScrollBuffer(void *video, int left, int top, int width, int height, int scroll_x, int scroll_y)
 {
 	const uint8 *src;
 	uint8 *dst;

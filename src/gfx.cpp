@@ -79,21 +79,6 @@ static uint _dirty_bytes_per_line = 0;
 static byte *_dirty_blocks = nullptr;
 extern uint _dirty_block_colour;
 
-void GfxScroll(int left, int top, int width, int height, int xo, int yo)
-{
-	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
-
-	if (xo == 0 && yo == 0) return;
-
-	if (_cursor.visible) UndrawMouseCursor();
-
-	if (_networking) NetworkUndrawChatMessage();
-
-	blitter->ScrollBuffer(_screen.dst_ptr, left, top, width, height, xo, yo);
-	/* This part of the screen is now dirty. */
-	VideoDriver::GetInstance()->MakeDirty(left, top, width, height);
-}
-
 
 /**
  * Applies a certain FillRectMode-operation to a rectangle [left, right] x [top, bottom] on the screen.

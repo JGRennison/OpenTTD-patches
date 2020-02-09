@@ -44,7 +44,7 @@ public:
 	void DrawRect(void *video, int width, int height, uint8 colour) override;
 	void CopyFromBuffer(void *video, const void *src, int width, int height) override;
 	void CopyToBuffer(const void *video, void *dst, int width, int height) override;
-	void ScrollBuffer(void *video, int &left, int &top, int &width, int &height, int scroll_x, int scroll_y) override;
+	void ScrollBuffer(void *video, int left, int top, int width, int height, int scroll_x, int scroll_y) override;
 	int BufferSize(int width, int height) override;
 	void PaletteAnimate(const Palette &palette) override;
 	Blitter::PaletteAnimation UsePaletteAnimation() override;

@@ -105,6 +105,7 @@
 #include "gui.h"
 #include "core/container_func.hpp"
 #include "tunnelbridge_map.h"
+#include "video/video_driver.hpp"
 
 #include <map>
 #include <vector>
@@ -391,9 +392,15 @@ void InitializeWindowViewport(Window *w, int x, int y,
 
 static Point _vp_move_offs;
 
-static void DoSetViewportPosition(const Window *w, int left, int top, int width, int height)
+struct ViewportRedrawRegion {
+	Rect coords;
+};
+
+static std::vector<ViewportRedrawRegion> _vp_redraw_regions;
+
+static void DoViewportRedrawRegions(const Window *w, int left, int top, int width, int height)
 {
-	IncrementWindowUpdateNumber();
+	if (width <= 0 || height <= 0) return;
 
 	FOR_ALL_WINDOWS_FROM_BACK_FROM(w, w) {
 		if (left + width > w->left &&
@@ -402,26 +409,26 @@ static void DoSetViewportPosition(const Window *w, int left, int top, int width,
 				w->top + w->height > top) {
 
 			if (left < w->left) {
-				DoSetViewportPosition(w, left, top, w->left - left, height);
-				DoSetViewportPosition(w, left + (w->left - left), top, width - (w->left - left), height);
+				DoViewportRedrawRegions(w, left, top, w->left - left, height);
+				DoViewportRedrawRegions(w, left + (w->left - left), top, width - (w->left - left), height);
 				return;
 			}
 
 			if (left + width > w->left + w->width) {
-				DoSetViewportPosition(w, left, top, (w->left + w->width - left), height);
-				DoSetViewportPosition(w, left + (w->left + w->width - left), top, width - (w->left + w->width - left), height);
+				DoViewportRedrawRegions(w, left, top, (w->left + w->width - left), height);
+				DoViewportRedrawRegions(w, left + (w->left + w->width - left), top, width - (w->left + w->width - left), height);
 				return;
 			}
 
 			if (top < w->top) {
-				DoSetViewportPosition(w, left, top, width, (w->top - top));
-				DoSetViewportPosition(w, left, top + (w->top - top), width, height - (w->top - top));
+				DoViewportRedrawRegions(w, left, top, width, (w->top - top));
+				DoViewportRedrawRegions(w, left, top + (w->top - top), width, height - (w->top - top));
 				return;
 			}
 
 			if (top + height > w->top + w->height) {
-				DoSetViewportPosition(w, left, top, width, (w->top + w->height - top));
-				DoSetViewportPosition(w, left, top + (w->top + w->height - top), width, height - (w->top + w->height - top));
+				DoViewportRedrawRegions(w, left, top, width, (w->top + w->height - top));
+				DoViewportRedrawRegions(w, left, top + (w->top + w->height - top), width, height - (w->top + w->height - top));
 				return;
 			}
 
@@ -429,31 +436,132 @@ static void DoSetViewportPosition(const Window *w, int left, int top, int width,
 		}
 	}
 
-	{
-		int xo = _vp_move_offs.x;
-		int yo = _vp_move_offs.y;
+	_vp_redraw_regions.push_back({ { left, top, left + width, top + height } });
+}
 
-		if (abs(xo) >= width || abs(yo) >= height) {
-			/* fully_outside */
-			RedrawScreenRect(left, top, left + width, top + height);
+static void DoSetViewportPositionFillRegion(int left, int top, int width, int height, int xo, int yo) {
+	int src_left = left - xo;
+	int src_top = top - yo;
+	int src_right = src_left + width;
+	int src_bottom = src_top + height;
+	for (const auto &region : _vp_redraw_regions) {
+		if (region.coords.left < src_right &&
+				region.coords.right > src_left &&
+				region.coords.top < src_bottom &&
+				region.coords.bottom > src_top) {
+			/* can use this region as a source */
+			if (src_left < region.coords.left) {
+				DoSetViewportPositionFillRegion(src_left + xo, src_top + yo, region.coords.left - src_left, height, xo, yo);
+				src_left = region.coords.left;
+				width = src_right - src_left;
+			}
+			if (src_top < region.coords.top) {
+				DoSetViewportPositionFillRegion(src_left + xo, src_top + yo, width, region.coords.top - src_top, xo, yo);
+				src_top = region.coords.top;
+				height = src_bottom - src_top;
+			}
+			if (src_right > region.coords.right) {
+				DoSetViewportPositionFillRegion(region.coords.right + xo, src_top + yo, src_right - region.coords.right, height, xo, yo);
+				src_right = region.coords.right;
+				width = src_right - src_left;
+			}
+			if (src_bottom > region.coords.bottom) {
+				DoSetViewportPositionFillRegion(src_left + xo, region.coords.bottom + yo, width, src_bottom - region.coords.bottom, xo, yo);
+				src_bottom = region.coords.bottom;
+				height = src_bottom - src_top;
+			}
+
+			if (xo >= 0) {
+				/* scrolling left, moving pixels right */
+				width += xo;
+			} else {
+				/* scrolling right, moving pixels left */
+				src_left += xo;
+				width -= xo;
+			}
+			if (yo >= 0) {
+				/* scrolling down, moving pixels up */
+				height += yo;
+			} else {
+				/* scrolling up, moving pixels down */
+				src_top += yo;
+				height -= yo;
+			}
+			BlitterFactory::GetCurrentBlitter()->ScrollBuffer(_screen.dst_ptr, src_left, src_top, width, height, xo, yo);
+
 			return;
 		}
+	}
+	DrawOverlappedWindowForAll(left, top, left + width, top + height);
+};
 
-		GfxScroll(left, top, width, height, xo, yo);
+static void DoSetViewportPosition(const Window *w, const int left, const int top, const int width, const int height)
+{
+	const int xo = _vp_move_offs.x;
+	const int yo = _vp_move_offs.y;
+	if (xo == 0 && yo == 0) return;
 
-		if (xo > 0) {
-			RedrawScreenRect(left, top, xo + left, top + height);
-			left += xo;
-			width -= xo;
-		} else if (xo < 0) {
-			RedrawScreenRect(left + width + xo, top, left + width, top + height);
-			width += xo;
+
+	IncrementWindowUpdateNumber();
+
+	_vp_redraw_regions.clear();
+	DoViewportRedrawRegions(w, left, top, width, height);
+
+	if (abs(xo) >= width || abs(yo) >= height) {
+		/* fully outside */
+		for (ViewportRedrawRegion &vrr : _vp_redraw_regions) {
+			RedrawScreenRect(vrr.coords.left, vrr.coords.top, vrr.coords.right, vrr.coords.bottom);
 		}
+		return;
+	}
 
-		if (yo > 0) {
-			RedrawScreenRect(left, top, width + left, top + yo);
-		} else if (yo < 0) {
-			RedrawScreenRect(left, top + height + yo, width + left, top + height);
+	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
+
+	if (_cursor.visible) UndrawMouseCursor();
+
+	if (_networking) NetworkUndrawChatMessage();
+
+	std::sort(_vp_redraw_regions.begin(), _vp_redraw_regions.end(), [&](const ViewportRedrawRegion &a, const ViewportRedrawRegion &b) {
+		if (a.coords.right <= b.coords.left) return xo > 0;
+		if (a.coords.left >= b.coords.right) return xo < 0;
+		if (a.coords.bottom <= b.coords.top) return yo > 0;
+		if (a.coords.top >= b.coords.bottom) return yo < 0;
+		NOT_REACHED();
+	});
+
+	while (!_vp_redraw_regions.empty()) {
+		const Rect &rect = _vp_redraw_regions.back().coords;
+		int left = rect.left;
+		int top = rect.top;
+		int width = rect.right - rect.left;
+		int height = rect.bottom - rect.top;
+		_vp_redraw_regions.pop_back();
+		VideoDriver::GetInstance()->MakeDirty(left, top, width, height);
+		int fill_width = abs(xo);
+		int fill_height = abs(yo);
+		if (fill_width < width && fill_height < height) {
+			blitter->ScrollBuffer(_screen.dst_ptr, left, top, width, height, xo, yo);
+		} else {
+			if (width < fill_width) fill_width = width;
+			if (height < fill_height) fill_height = height;
+		}
+		if (xo < 0) {
+			/* scrolling right, moving pixels left, fill in on right */
+			width -= fill_width;
+			DoSetViewportPositionFillRegion(left + width, top, fill_width, height, xo, yo);
+		} else if (xo > 0) {
+			/* scrolling left, moving pixels right, fill in on left */
+			DoSetViewportPositionFillRegion(left, top, fill_width, height, xo, yo);
+			width -= fill_width;
+			left += fill_width;
+		}
+		if (yo < 0 && width > 0) {
+			/* scrolling down, moving pixels up, fill in at bottom */
+			height -= fill_height;
+			DoSetViewportPositionFillRegion(left, top + height, width, fill_height, xo, yo);
+		} else if (yo > 0 && width > 0) {
+			/* scrolling up, moving pixels down, fill in at top */
+			DoSetViewportPositionFillRegion(left, top, width, fill_height, xo, yo);
 		}
 	}
 }

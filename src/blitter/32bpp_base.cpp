@@ -101,7 +101,7 @@ void Blitter_32bppBase::CopyImageToBuffer(const void *video, void *dst, int widt
 	}
 }
 
-void Blitter_32bppBase::ScrollBuffer(void *video, int &left, int &top, int &width, int &height, int scroll_x, int scroll_y)
+void Blitter_32bppBase::ScrollBuffer(void *video, int left, int top, int width, int height, int scroll_x, int scroll_y)
 {
 	const uint32 *src;
 	uint32 *dst;

@@ -86,7 +86,6 @@ void UndrawMouseCursor();
 static const int DRAW_STRING_BUFFER = 2048;
 
 void RedrawScreenRect(int left, int top, int right, int bottom);
-void GfxScroll(int left, int top, int width, int height, int xo, int yo);
 
 Dimension GetSpriteSize(SpriteID sprid, Point *offset = nullptr, ZoomLevel zoom = ZOOM_LVL_GUI);
 void DrawSpriteViewport(SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub = nullptr);
