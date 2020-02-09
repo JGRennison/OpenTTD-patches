@@ -1688,12 +1688,12 @@ static WindowDesc _client_list_popup_desc(
 /* Here we start to define the options out of the menu */
 static void ClientList_Kick(const NetworkClientInfo *ci)
 {
-	NetworkServerKickClient(ci->client_id);
+	NetworkServerKickClient(ci->client_id, nullptr);
 }
 
 static void ClientList_Ban(const NetworkClientInfo *ci)
 {
-	NetworkServerKickOrBanIP(ci->client_id, true);
+	NetworkServerKickOrBanIP(ci->client_id, true, nullptr);
 }
 
 static void ClientList_SpeakToClient(const NetworkClientInfo *ci)

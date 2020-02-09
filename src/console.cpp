@@ -21,6 +21,7 @@
 #include "safeguards.h"
 
 static const uint ICON_TOKEN_COUNT = 20;     ///< Maximum number of tokens in one command
+static const uint ICON_MAX_RECURSE = 10;     ///< Maximum number of recursion
 
 /* console parser */
 IConsoleCmd   *_iconsole_cmds;    ///< list of registered commands
@@ -317,12 +318,17 @@ IConsoleAlias *IConsoleAliasGet(const char *name)
  * @param tokencount the number of parameters passed
  * @param *tokens are the parameters given to the original command (0 is the first param)
  */
-static void IConsoleAliasExec(const IConsoleAlias *alias, byte tokencount, char *tokens[ICON_TOKEN_COUNT])
+static void IConsoleAliasExec(const IConsoleAlias *alias, byte tokencount, char *tokens[ICON_TOKEN_COUNT], const uint recurse_count)
 {
 	char  alias_buffer[ICON_MAX_STREAMSIZE] = { '\0' };
 	char *alias_stream = alias_buffer;
 
 	DEBUG(console, 6, "Requested command is an alias; parsing...");
+
+	if (recurse_count > ICON_MAX_RECURSE) {
+		IConsoleError("Too many alias expansions, recursion limit reached. Aborting");
+		return;
+	}
 
 	for (const char *cmdptr = alias->cmdline; *cmdptr != '\0'; cmdptr++) {
 		switch (*cmdptr) {
@@ -331,7 +337,7 @@ static void IConsoleAliasExec(const IConsoleAlias *alias, byte tokencount, char 
 				break;
 
 			case ';': // Cmd separator; execute previous and start new command
-				IConsoleCmdExec(alias_buffer);
+				IConsoleCmdExec(alias_buffer, recurse_count);
 
 				alias_stream = alias_buffer;
 				*alias_stream = '\0'; // Make sure the new command is terminated.
@@ -391,7 +397,7 @@ static void IConsoleAliasExec(const IConsoleAlias *alias, byte tokencount, char 
 		}
 	}
 
-	IConsoleCmdExec(alias_buffer);
+	IConsoleCmdExec(alias_buffer, recurse_count);
 }
 
 /**
@@ -399,7 +405,7 @@ static void IConsoleAliasExec(const IConsoleAlias *alias, byte tokencount, char 
  * individual tokens (separated by spaces), then execute it if possible
  * @param cmdstr string to be parsed and executed
  */
-void IConsoleCmdExec(const char *cmdstr)
+void IConsoleCmdExec(const char *cmdstr, const uint recurse_count)
 {
 	const char *cmdptr;
 	char *tokens[ICON_TOKEN_COUNT], tokenstream[ICON_MAX_STREAMSIZE];
@@ -505,7 +511,7 @@ void IConsoleCmdExec(const char *cmdstr)
 	t_index--;
 	IConsoleAlias *alias = IConsoleAliasGet(tokens[0]);
 	if (alias != nullptr) {
-		IConsoleAliasExec(alias, t_index, &tokens[1]);
+		IConsoleAliasExec(alias, t_index, &tokens[1], recurse_count + 1);
 		return;
 	}
 
