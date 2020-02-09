@@ -6224,6 +6224,8 @@ STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}This sch
 STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}Maximum delay of {STRING3} is allowed before the slot is skipped.
 STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}This schedule is not active.
 
+STR_SCHDISPATCH_SLOT_OUTSIDE_SCHEDULE                           :{BLACK}One or more departure slots are outside the schedule duration.
+
 # Modifier key toggle window
 STR_MODIFIER_KEY_TOGGLE_CAPTION                                 :{WHITE}Modifier keys
 STR_SHIFT_KEY_NAME                                              :{BLACK}Shift

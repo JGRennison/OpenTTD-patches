@@ -737,6 +737,7 @@ static DateTicksScaled GetScheduledDispatchTime(Vehicle *v, int wait_offset)
 
 	/* Find next available slots */
 	for (auto current_offset : v->orders.list->GetScheduledDispatch()) {
+		if (current_offset >= dispatch_duration) continue;
 		if (int32(current_offset) <= last_dispatched_offset) {
 			current_offset += dispatch_duration * ((last_dispatched_offset + dispatch_duration - current_offset) / dispatch_duration);
 		}

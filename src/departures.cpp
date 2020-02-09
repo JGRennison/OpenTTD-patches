@@ -106,6 +106,7 @@ static inline bool VehicleSetNextDepartureTime(DateTicks *previous_departure, ui
 
 					/* Find next available slots */
 					for (auto current_offset : v->orders.list->GetScheduledDispatch()) {
+						if (current_offset >= dispatch_duration) continue;
 						DateTicksScaled current_departure = begin_time + current_offset;
 						while (current_departure <= earliest_departure) {
 							current_departure += dispatch_duration;
