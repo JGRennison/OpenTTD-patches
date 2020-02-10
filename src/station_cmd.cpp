@@ -2467,7 +2467,7 @@ CommandCost CmdBuildAirport(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 	/* The noise level is the noise from the airport and reduce it to account for the distance to the town center. */
 	uint dist;
 	Town *nearest = AirportGetNearestTown(as, iter, dist);
-	uint newnoise_level = GetAirportNoiseLevelForDistance(as, dist);
+	uint newnoise_level = nearest->noise_reached + GetAirportNoiseLevelForDistance(as, dist);
 
 	if (action == AIRPORT_UPGRADE) {
 		const AirportSpec *old_as = st->airport.GetSpec();
