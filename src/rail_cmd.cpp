@@ -1979,7 +1979,9 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 
 		AddTrackToSignalBuffer(tile, track, GetTileOwner(tile));
 		YapfNotifyTrackLayoutChange(tile, track);
-		if (v != nullptr) TryPathReserve(v, false);
+		if (v != nullptr && !(v->track & TRACK_BIT_WORMHOLE && IsTunnelBridgeWithSignalSimulation(v->tile))) {
+			TryPathReserve(v, false);
+		}
 
 		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 	}
