@@ -5,12 +5,14 @@ This document does not describe the player-visible changes/additions described i
 
 ### Crash logger and diagnostics
 
-* Additional logged items: current company ID, map size, configure invocation, detailed OS version (Unix), thread name, signal details (Unix, Mac), recently executed commands.
+* Additional logged items: current company ID, map size, configure invocation, thread name, recently executed commands.
+* Additional logged platform-specific items: detailed OS version (Unix), signal details (Unix, Mac), exception record data (Windows).
 * Better handling of crashes which occur in a non-main thread (ask the main thread to do the crash screenshot and savegame).
 * Support logging register values on Unix and Mac.
 * Support using libbfd for symbol lookup and line numbers (gcc/clang).
 * Support using gdb/lldb if available to add further detail to the crashlog (Unix, Mac).
-* Support using sigaction and sigaltstack for more information and correct handling of stack overflow crashes (Unix, Mac).
+* Support using sigaction and sigaltstack for more information and correct handling of stack overflow crashes (Unix).
+* Attempt to log stack overflow and heap corruption exceptions (Windows).
 * Demangle C++ symbols (Unix).
 * Attempt to handle segfaults which occur within the crashlog handler (Unix).
 * Emit a "crash" log, savegame and screenshot on multiplayer desync.
@@ -46,6 +48,8 @@ De-virtualise calls to AnimateTile().
 
 Cache bridge/tunnel start and ends.
 Cache station sign bounds.
+Split sprite sort regions when more than 60 sprites present.
+Reduce unnecessary region redraws when scrolling viewports.
 
 ### Data structures
 
@@ -64,6 +68,7 @@ Observe the operation of the NewGRF when getting the vehicle image/sprite, and e
 Add consist flag for case where no vehicles in consist are on a slope.
 Add vehicle flag to mark the last vehicle in a consist with a visual effect.
 Index the vehicle list in per type arrays for use by CallVehicleTicks.
+Cache whether the vehicle should be drawn.
 
 ### Network/multiplayer
 
@@ -85,7 +90,6 @@ Various forms of caching and incremental updates to the link graph overlay.
 Change FlowStat from an RB-tree to a flat map with small-object optimisation.
 Change FlowStatMap from an RB-tree to a B-tree indexed vector.
 Replace MCF Dijkstra RB-tree with B-tree.
-Skip per source node MCF Dijkstra when all demand for that node has been satisfied.
 
 ### Pathfinder
 
@@ -108,7 +112,6 @@ Avoid redundant re-scans for AI and game script files.
 Avoid iterating vehicle list to release disaster vehicles if there are none.
 Avoid quadratic behaviour in updating station nearby lists in RecomputeCatchmentForAll.
 Increase FIO buffer size.
-Avoid unnecessary calls to SettingsDisableElrail in AfterLoadGame.
 
 ### Command line
 
