@@ -276,7 +276,9 @@ static void OnNewDay()
 	DisasterDailyLoop();
 	IndustryDailyLoop();
 
-	SetWindowWidgetDirty(WC_STATUS_BAR, 0, 0);
+	if (!_settings_client.gui.time_in_minutes || _settings_client.gui.date_with_time > 0) {
+		SetWindowWidgetDirty(WC_STATUS_BAR, 0, 0);
+	}
 	EnginesDailyLoop();
 
 	/* Refresh after possible snowline change */
