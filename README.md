@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.33.0
+## JGR's Patchpack version 0.33.1
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -174,10 +174,6 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Minimum town distance [imported](https://www.tt-forums.net/viewtopic.php?f=33&t=33625) (added in v0.18.0)
 
-* Add setting for alternative transfer payment mode. (added in v0.19.0)  
-  Calculate leg payment as a journey from the source to the transfer station, minus previous transfers.  
-  This is to more fairly distribute profits between transfer vehicles and avoid large negative payments on the final leg.
-
 * Level crossing improvements (added in v0.19.0)  
   * Prevent road vehicles from being stopped on level crossings.  
   * Add setting to enable improved level crossing safety.
@@ -266,7 +262,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Label threads with a descriptive name on supported Unixy platforms (added in v0.8.1), in trunk as of r27670.  
   * Add a 32bpp SSE2 palette animator. This is ~4x faster than the non-accelerated palette animator (added in v0.9.0), in trunk as of commit 17257b96.  
   * Increase number of available rail track types from 16 to 32 [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=74365) (added in v0.13.0), this is increased to 64 rail track types in trunk as of commit bf8d7df7, (added in v0.26.0).  
-  * Towns build bridges over rails [imported](https://www.tt-forums.net/viewtopic.php?f=33t=76052) (added in v0.21.0), in trunk as of commit 50a0cf19.
+  * Towns build bridges over rails [imported](https://www.tt-forums.net/viewtopic.php?f=33t=76052) (added in v0.21.0), in trunk as of commit 50a0cf19.  
+  * Add setting for alternative transfer payment mode (added in v0.19.0), in trunk and unconditionally enabled as of commit 2fee030a.
 
 #### Caveats for loading savegames from the [Spring 2013 Patch Pack](http://www.tt-forums.net/viewtopic.php?f=33&t=66892):  
 * This is not guaranteed to be bug free  

@@ -2,6 +2,28 @@
 
 * * *
 
+### v0.33.1 (2020-02-13)
+* Template-based train replacement:
+  * Fix template replacement refits having 0 cost.
+  * Fix drawing artefacts when resizing replacement window.
+  * Send train to depot when replacement due but servicing is disabled.
+  * Template replacements now also apply to child groups.
+* Link graph:
+  * Fix demand allocation in partitioned graphs.
+  * Fix slightly uneven demand allocation in asymmetric (equal) mode.
+* Scheduled dispatch:
+  * Various improvements to the user interface.
+  * Fix times shown in timetable window when using scheduled dispatch.
+  * Fix handling of wait time associated with scheduled dispatch order.
+  * No longer require order list to be fully timetabled.
+  * Invalid departure slots are now ignored.
+* Fix incorrect town noise level when a town had multiple airports.
+* Fix incorrect reservation when a signal is removed from under a train when the front is in a signalled tunnel/bridge.
+* Add conditional orders for cargo load percentage and waiting cargo amount.
+* Adjust timetable automation to bias wait time adjustments in positive direction.
+* Various viewport rendering performance improvements.
+* Bump trunk base from commit 8b0e4bb10170d8eeb882f0fcc0ad58e80d751027 to commit 2b6df2544fd2896e09eac24598721e5259ff791f.
+
 ### v0.33.0 (2020-01-10)
 * Fix crash when post road-works cleanup removes all road pieces.
 * Fix crash when checking for train reverse on custom bridge heads with YAPF.
