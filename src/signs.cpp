@@ -51,7 +51,8 @@ void Sign::UpdateVirtCoord()
 	if (_viewport_sign_kdtree_valid && this->sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeSign(this->index));
 
 	SetDParam(0, this->index);
-	this->sign.UpdatePosition(pt.x, pt.y - 6 * ZOOM_LVL_BASE, STR_WHITE_SIGN);
+	bool shown = HasBit(_display_opt, DO_SHOW_SIGNS) && !(this->IsCompetitorOwned() && !HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS));
+	this->sign.UpdatePosition(shown ? ZOOM_LVL_DRAW_SPR : ZOOM_LVL_END, pt.x, pt.y - 6 * ZOOM_LVL_BASE, STR_WHITE_SIGN);
 
 	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeSign(this->index));
 }

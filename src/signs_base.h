@@ -14,6 +14,7 @@
 #include "viewport_type.h"
 #include "core/pool_type.hpp"
 #include "company_type.h"
+#include "company_func.h"
 
 typedef Pool<Sign, SignID, 16, 64000> SignPool;
 extern SignPool _sign_pool;
@@ -28,6 +29,11 @@ struct Sign : SignPool::PoolItem<&_sign_pool> {
 
 	Sign(Owner owner = INVALID_OWNER);
 	~Sign();
+
+	bool IsCompetitorOwned() const
+	{
+		return _local_company != this->owner && this->owner != OWNER_DEITY;
+	}
 
 	void UpdateVirtCoord();
 };

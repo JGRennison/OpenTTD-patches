@@ -1677,7 +1677,7 @@ static void ViewportAddKdtreeSigns(DrawPixelInfo *dpi, bool towns_only)
 				/* Don't draw if sign is owned by another company and competitor signs should be hidden.
 				* Note: It is intentional that also signs owned by OWNER_NONE are hidden. Bankrupt
 				* companies can leave OWNER_NONE signs after them. */
-				if (!show_competitors && _local_company != si->owner && si->owner != OWNER_DEITY) break;
+				if (!show_competitors && si->IsCompetitorOwned()) break;
 
 				signs.push_back(si);
 				break;
@@ -1725,9 +1725,9 @@ static void ViewportAddKdtreeSigns(DrawPixelInfo *dpi, bool towns_only)
  * @param str    the string to show in the sign
  * @param str_small the string to show when zoomed out. STR_NULL means same as \a str
  */
-void ViewportSign::UpdatePosition(int center, int top, StringID str, StringID str_small)
+void ViewportSign::UpdatePosition(ZoomLevel maxzoom, int center, int top, StringID str, StringID str_small)
 {
-	if (this->width_normal != 0) this->MarkDirty();
+	if (this->width_normal != 0) this->MarkDirty(maxzoom);
 
 	this->top = top;
 
@@ -1743,7 +1743,7 @@ void ViewportSign::UpdatePosition(int center, int top, StringID str, StringID st
 	}
 	this->width_small = VPSM_LEFT + Align(GetStringBoundingBox(buffer, FS_SMALL).width, 2) + VPSM_RIGHT;
 
-	this->MarkDirty();
+	this->MarkDirty(maxzoom);
 }
 
 /**
@@ -1754,6 +1754,8 @@ void ViewportSign::UpdatePosition(int center, int top, StringID str, StringID st
  */
 void ViewportSign::MarkDirty(ZoomLevel maxzoom) const
 {
+	if (maxzoom == ZOOM_LVL_END) return;
+
 	Rect zoomlevels[ZOOM_LVL_COUNT];
 
 	for (ZoomLevel zoom = ZOOM_LVL_BEGIN; zoom != ZOOM_LVL_END; zoom++) {

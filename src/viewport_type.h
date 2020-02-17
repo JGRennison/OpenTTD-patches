@@ -62,8 +62,8 @@ struct ViewportSign {
 	uint16 width_normal; ///< The width when not zoomed out (normal font)
 	uint16 width_small;  ///< The width when zoomed out (small font)
 
-	void UpdatePosition(int center, int top, StringID str, StringID str_small = STR_NULL);
-	void MarkDirty(ZoomLevel maxzoom = ZOOM_LVL_MAX) const;
+	void UpdatePosition(ZoomLevel maxzoom, int center, int top, StringID str, StringID str_small = STR_NULL);
+	void MarkDirty(ZoomLevel maxzoom) const;
 };
 
 /** Specialised ViewportSign that tracks whether it is valid for entering into a Kdtree */
@@ -74,10 +74,10 @@ struct TrackedViewportSign : ViewportSign {
 	 * Update the position of the viewport sign.
 	 * Note that this function hides the base class function.
 	 */
-	void UpdatePosition(int center, int top, StringID str, StringID str_small = STR_NULL)
+	void UpdatePosition(ZoomLevel maxzoom, int center, int top, StringID str, StringID str_small = STR_NULL)
 	{
 		this->kdtree_valid = true;
-		this->ViewportSign::UpdatePosition(center, top, str, str_small);
+		this->ViewportSign::UpdatePosition(maxzoom, center, top, str, str_small);
 	}
 
 

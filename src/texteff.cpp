@@ -32,7 +32,7 @@ struct TextEffect : public ViewportSign {
 	/** Reset the text effect */
 	void Reset()
 	{
-		this->MarkDirty();
+		this->MarkDirty(ZOOM_LVL_OUT_8X);
 		this->width_normal = 0;
 		this->string_id = INVALID_STRING_ID;
 		this->params_1 = _free_text_effect;
@@ -64,7 +64,7 @@ TextEffectID AddTextEffect(StringID msg, int center, int y, uint8 duration, Text
 
 	/* Make sure we only dirty the new area */
 	te.width_normal = 0;
-	te.UpdatePosition(center, y, msg);
+	te.UpdatePosition(ZOOM_LVL_OUT_8X, center, y, msg);
 
 	return i;
 }
@@ -78,7 +78,7 @@ void UpdateTextEffect(TextEffectID te_id, StringID msg)
 	te->params_1 = GetDParam(0);
 	te->params_2 = GetDParam(1);
 
-	te->UpdatePosition(te->center, te->top, msg);
+	te->UpdatePosition(ZOOM_LVL_OUT_8X, te->center, te->top, msg);
 }
 
 void RemoveTextEffect(TextEffectID te_id)

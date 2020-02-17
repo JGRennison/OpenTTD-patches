@@ -64,7 +64,10 @@ BaseStation::~BaseStation()
 	DeleteWindowById(WC_AIRCRAFT_LIST, VehicleListIdentifier(VL_STATION_LIST, VEH_AIRCRAFT, this->owner, this->index).Pack());
 	DeleteWindowById(WC_DEPARTURES_BOARD, this->index);
 
-	this->sign.MarkDirty();
+	if (HasBit(_display_opt, Station::IsExpected(this) ? DO_SHOW_STATION_NAMES : DO_SHOW_WAYPOINT_NAMES) &&
+			!(_local_company != this->owner && this->owner != OWNER_NONE && !HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS))) {
+		this->sign.MarkDirty(ZOOM_LVL_DRAW_SPR);
+	}
 }
 
 Station::Station(TileIndex tile) :
