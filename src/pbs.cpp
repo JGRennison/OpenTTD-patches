@@ -106,7 +106,7 @@ bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 		if (IsBridgeTile(tile)) {
 			MarkBridgeDirty(tile, ZOOM_LVL_DRAW_MAP);
 		} else {
-			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileGroundDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 		}
 	}
 
@@ -155,7 +155,7 @@ bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL) {
 				if (IsTunnel(tile) && !HasTunnelReservation(tile)) {
 					SetTunnelReservation(tile, true);
-					MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+					MarkTileGroundDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 					return true;
 				}
 				if (IsBridge(tile)) {
@@ -200,7 +200,7 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 		if (IsBridgeTile(tile)) {
 			MarkBridgeDirty(tile, ZOOM_LVL_DRAW_MAP);
 		} else {
-			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileGroundDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 		}
 	}
 

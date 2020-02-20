@@ -104,6 +104,8 @@ static inline void MarkTileDirtyByTile(TileIndex tile, const ZoomLevel mark_dirt
 	MarkTileDirtyByTile(tile, mark_dirty_if_zoomlevel_is_below, bridge_level_offset, TileHeight(tile));
 }
 
+void MarkTileGroundDirtyByTile(TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below);
+
 ViewportMapType ChangeRenderMode(const ViewPort *vp, bool down);
 
 Point GetViewportStationMiddle(const ViewPort *vp, const Station *st);
