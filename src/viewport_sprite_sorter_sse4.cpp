@@ -17,7 +17,11 @@
 #include "safeguards.h"
 
 assert_compile((sizeof(ParentSpriteToDraw) % 16) == 0);
-#define LOAD_128 _mm_load_si128
+#ifdef _SQ64
+	#define LOAD_128 _mm_load_si128
+#else
+	#define LOAD_128 _mm_loadu_si128
+#endif
 
 /** Sort parent sprites pointer array using SSE4.1 optimizations. */
 void ViewportSortParentSpritesSSE41(ParentSpriteToSortVector *psdv)
