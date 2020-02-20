@@ -2379,7 +2379,7 @@ static uint GetSaveSlopeZ(uint x, uint y, Track track)
 	return GetSlopePixelZ(x, y);
 }
 
-void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, SignalState condition, SignalOffsets image, uint pos, SignalType type, SignalVariant variant, bool show_restricted)
+static void GetSignalXY(TileIndex tile, uint pos, uint &x, uint &y)
 {
 	bool side;
 	switch (_settings_game.construction.train_signal_side) {
@@ -2401,8 +2401,21 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 		}
 	};
 
-	uint x = TileX(tile) * TILE_SIZE + SignalPositions[side][pos].x;
-	uint y = TileY(tile) * TILE_SIZE + SignalPositions[side][pos].y;
+	x = TileX(tile) * TILE_SIZE + SignalPositions[side][pos].x;
+	y = TileY(tile) * TILE_SIZE + SignalPositions[side][pos].y;
+}
+
+static bool _signal_sprite_oversized = false;
+
+static const int SIGNAL_DIRTY_LEFT   =  7 * ZOOM_LVL_BASE;
+static const int SIGNAL_DIRTY_RIGHT  =  7 * ZOOM_LVL_BASE;
+static const int SIGNAL_DIRTY_TOP    = 30 * ZOOM_LVL_BASE;
+static const int SIGNAL_DIRTY_BOTTOM =  5 * ZOOM_LVL_BASE;
+
+void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, SignalState condition, SignalOffsets image, uint pos, SignalType type, SignalVariant variant, bool show_restricted)
+{
+	uint x, y;
+	GetSignalXY(tile, pos, x, y);
 
 	SpriteID sprite;
 	bool is_custom_sprite;
@@ -2457,6 +2470,10 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 	} else {
 		AddSortableSpriteToDraw(sprite, PAL_NONE, x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, GetSaveSlopeZ(x, y, track));
 	}
+	const Sprite *sp = GetSprite(sprite, ST_NORMAL);
+	if (sp->x_offs < -SIGNAL_DIRTY_LEFT || sp->x_offs + sp->width > SIGNAL_DIRTY_RIGHT || sp->y_offs < -SIGNAL_DIRTY_TOP || sp->y_offs + sp->height > SIGNAL_DIRTY_BOTTOM) {
+		_signal_sprite_oversized = true;
+	}
 }
 
 static void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, SignalState condition, SignalOffsets image, uint pos)
@@ -2466,6 +2483,44 @@ static void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track trac
 
 	bool show_restricted = (variant == SIG_ELECTRIC) && IsRestrictedSignal(tile) && (GetExistingTraceRestrictProgram(tile, track) != nullptr);
 	DrawSingleSignal(tile, rti, track, condition, image, pos, type, variant, show_restricted);
+}
+
+void MarkSingleSignalDirty(TileIndex tile, Trackdir td)
+{
+	if (_signal_sprite_oversized || td >= TRACKDIR_END) {
+		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+		return;
+	}
+
+	static const uint8 trackdir_to_pos[TRACKDIR_END] = {
+		8,  // TRACKDIR_X_NE
+		10, // TRACKDIR_Y_SE
+		4,  // TRACKDIR_UPPER_E
+		6,  // TRACKDIR_LOWER_E
+		0,  // TRACKDIR_LEFT_S
+		2,  // TRACKDIR_RIGHT_S
+		0,  // TRACKDIR_RVREV_NE
+		0,  // TRACKDIR_RVREV_SE
+		9,  // TRACKDIR_X_SW
+		11, // TRACKDIR_Y_NW
+		5,  // TRACKDIR_UPPER_W
+		7,  // TRACKDIR_LOWER_W
+		1,  // TRACKDIR_LEFT_N
+		3,  // TRACKDIR_RIGHT_N
+		0,  // TRACKDIR_RVREV_SW
+		0,  // TRACKDIR_RVREV_NW
+	};
+
+	uint x, y;
+	GetSignalXY(tile, trackdir_to_pos[td], x, y);
+	Point pt = RemapCoords(x, y, GetSaveSlopeZ(x, y, TrackdirToTrack(td)));
+	MarkAllViewportsDirty(
+			pt.x - SIGNAL_DIRTY_LEFT,
+			pt.y - SIGNAL_DIRTY_TOP,
+			pt.x + SIGNAL_DIRTY_RIGHT,
+			pt.y + SIGNAL_DIRTY_BOTTOM,
+			ZOOM_LVL_DRAW_MAP
+	);
 }
 
 static uint32 _drawtile_track_palette;

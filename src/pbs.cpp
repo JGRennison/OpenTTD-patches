@@ -84,6 +84,7 @@ bool TryReserveRailTrackdir(TileIndex tile, Trackdir td, bool trigger_stations)
 	bool success = TryReserveRailTrack(tile, TrackdirToTrack(td), trigger_stations);
 	if (success && HasPbsSignalOnTrackdir(tile, td)) {
 		SetSignalStateByTrackdir(tile, td, SIGNAL_STATE_GREEN);
+		MarkSingleSignalDirty(tile, td);
 	}
 	return success;
 }
@@ -183,6 +184,7 @@ void UnreserveRailTrackdir(TileIndex tile, Trackdir td)
 {
 	if (HasPbsSignalOnTrackdir(tile, td)) {
 		SetSignalStateByTrackdir(tile, td, SIGNAL_STATE_RED);
+		MarkSingleSignalDirty(tile, td);
 	}
 	UnreserveRailTrack(tile, TrackdirToTrack(td));
 }
