@@ -1017,7 +1017,7 @@ bool FloodHalftile(TileIndex t)
 			if (IsSteepSlope(tileh) || IsSlopeWithThreeCornersRaised(tileh)) {
 				flooded = true;
 				SetRailGroundType(t, RAIL_GROUND_WATER);
-				MarkTileDirtyByTile(t);
+				MarkTileDirtyByTile(t, ZOOM_LVL_DRAW_MAP);
 			}
 		}
 	}
@@ -3327,7 +3327,7 @@ static void TileLoop_Track(TileIndex tile)
 set_ground:
 	if (old_ground != new_ground) {
 		SetRailGroundType(tile, new_ground);
-		MarkTileDirtyByTile(tile);
+		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
 	}
 }
 
