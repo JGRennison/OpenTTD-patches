@@ -2,6 +2,11 @@
 
 * * *
 
+### v0.33.2 (2020-02-21)
+* Fix crash on 32-bit platforms.
+* Fix crash which could occur when moving new cargo to nearby stations.
+* Bump trunk base from commit 2b6df2544fd2896e09eac24598721e5259ff791f to commit 75031c9693ee0525c75e8e02ead345b1f8264735.
+
 ### v0.33.1 (2020-02-13)
 * Template-based train replacement:
   * Fix template replacement refits having 0 cost.
