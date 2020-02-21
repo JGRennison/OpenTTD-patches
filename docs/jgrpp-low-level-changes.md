@@ -50,6 +50,16 @@ Cache bridge/tunnel start and ends.
 Cache station sign bounds.
 Split sprite sort regions when more than 60 sprites present.
 Reduce unnecessary region redraws when scrolling viewports.
+Reduce viewport invalidation region size of track reservation and signal state changes.
+
+### Rendering
+
+Track dirty viewport areas seperately form general screen redraws, using a zoom-level dependant sized grid.
+Use a rectangle array for general screen redraws instead of a block grid.
+Add a dirty bit to windows and widgets, for redrawing entire windows or widgets.
+Clip drawing of window widgets which are not in the redraw area.
+Reduce unnecessary status bar redraws.
+Filter out tile parts which are entirely outside the drawing area, within DrawTileProc handlers.
 
 ### Data structures
 
