@@ -4349,9 +4349,12 @@ uint MoveGoodsToStation(CargoID type, uint amount, SourceType source_type, Sourc
 			return b.first->goods[type].rating < a.first->goods[type].rating;
 		});
 
-		assert(amount - moving <= used_stations.size());
-		for (uint i = 0; i < amount - moving; i++) {
-			used_stations[i].second++;
+		uint to_deliver = amount - moving;
+		uint step_size = CeilDivT<uint>(to_deliver, used_stations.size());
+		for (uint i = 0; i < used_stations.size() && to_deliver > 0; i++) {
+			uint delivery = min<uint>(to_deliver, step_size);
+			used_stations[i].second += delivery;
+			to_deliver -= delivery;
 		}
 	}
 
