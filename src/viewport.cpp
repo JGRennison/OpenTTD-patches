@@ -320,6 +320,12 @@ static void SetRailSnapMode(RailSnapMode mode);
 static TileIndex GetRailSnapTile();
 static void SetRailSnapTile(TileIndex tile);
 
+enum ViewportDebugFlags {
+	VDF_DIRTY_BLOCK_PER_DRAW,
+	VDF_DIRTY_WHOLE_VIEWPORT,
+};
+uint32 _viewport_debug_flags;
+
 static Point MapXYZToViewport(const ViewPort *vp, int x, int y, int z)
 {
 	Point p = RemapCoords(x, y, z);
@@ -588,6 +594,10 @@ inline void UpdateViewportDirtyBlockLeftMargin(ViewPort *vp)
 
 static void SetViewportPosition(Window *w, int x, int y, bool force_update_overlay)
 {
+	if (unlikely(HasBit(_viewport_debug_flags, VDF_DIRTY_WHOLE_VIEWPORT))) {
+		w->flags |= WF_DIRTY;
+	}
+
 	ViewPort *vp = w->viewport;
 	int old_left = vp->virtual_left;
 	int old_top = vp->virtual_top;
@@ -3069,7 +3079,10 @@ void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom
 
 		if (_draw_bounding_boxes) ViewportDrawBoundingBoxes(&_vd.parent_sprites_to_sort);
 	}
-	if (_draw_dirty_blocks) ViewportDrawDirtyBlocks();
+	if (_draw_dirty_blocks) {
+		ViewportDrawDirtyBlocks();
+		if (HasBit(_viewport_debug_flags, VDF_DIRTY_BLOCK_PER_DRAW)) ++_dirty_block_colour;
+	}
 
 	DrawPixelInfo dp = _vd.dpi;
 	ZoomLevel zoom = _vd.dpi.zoom;

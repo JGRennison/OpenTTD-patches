@@ -2218,6 +2218,45 @@ DEF_CONSOLE_CMD(ConShowIndustryWindow)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConViewportDebug)
+{
+	if (argc < 1 || argc > 2) {
+		IConsoleHelp("Debug: viewports flags.  Usage: 'viewport_debug [<flags>]'");
+		return true;
+	}
+
+	extern uint32 _viewport_debug_flags;
+	if (argc == 1) {
+		IConsolePrintF(CC_DEFAULT, "Viewport debug flags: %X", _viewport_debug_flags);
+	} else {
+		_viewport_debug_flags = strtoul(argv[1], nullptr, 16);
+	}
+
+	return true;
+}
+
+DEF_CONSOLE_CMD(ConViewportMarkDirty)
+{
+	if (argc < 3 || argc > 5) {
+		IConsoleHelp("Debug: Mark main viewport dirty.  Usage: 'viewport_mark_dirty <x> <y> [<w> <h>]'");
+		return true;
+	}
+
+	ViewPort *vp = FindWindowByClass(WC_MAIN_WINDOW)->viewport;
+	uint l = strtoul(argv[1], nullptr, 0);
+	uint t = strtoul(argv[2], nullptr, 0);
+	uint r = min<uint>(l + ((argc > 3) ? strtoul(argv[3], nullptr, 0) : 1), vp->dirty_blocks_per_row);
+	uint b = min<uint>(t + ((argc > 4) ? strtoul(argv[4], nullptr, 0) : 1), vp->dirty_blocks_per_column);
+	for (uint x = l; x < r; x++) {
+		for (uint y = t; y < b; y++) {
+			vp->dirty_blocks[(x * vp->dirty_blocks_per_column) + y] = true;
+		}
+	}
+	vp->is_dirty = true;
+
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConDoDisaster)
 {
 	if (argc == 0) {
@@ -2612,6 +2651,8 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("show_town_window", ConShowTownWindow, nullptr, true);
 	IConsoleCmdRegister("show_station_window", ConShowStationWindow, nullptr, true);
 	IConsoleCmdRegister("show_industry_window", ConShowIndustryWindow, nullptr, true);
+	IConsoleCmdRegister("viewport_debug", ConViewportDebug, nullptr, true);
+	IConsoleCmdRegister("viewport_mark_dirty", ConViewportMarkDirty, nullptr, true);
 
 	/* NewGRF development stuff */
 	IConsoleCmdRegister("reload_newgrfs",  ConNewGRFReload, ConHookNewGRFDeveloperTool);
