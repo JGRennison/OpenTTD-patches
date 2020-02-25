@@ -511,9 +511,14 @@ static uint32 GetDistanceFromNearbyHouse(uint8 parameter, TileIndex tile, HouseI
 uint16 GetHouseCallback(CallbackID callback, uint32 param1, uint32 param2, HouseID house_id, Town *town, TileIndex tile,
 		bool not_yet_constructed, uint8 initial_random_bits, CargoTypes watched_cargo_triggers)
 {
-	HouseResolverObject object(house_id, tile, town, callback, param1, param2,
-			not_yet_constructed, initial_random_bits, watched_cargo_triggers);
-	return object.ResolveCallback();
+	if (tile != INVALID_TILE) {
+		HouseResolverObject object(house_id, tile, town, callback, param1, param2,
+				not_yet_constructed, initial_random_bits, watched_cargo_triggers);
+		return object.ResolveCallback();
+	} else {
+		FakeHouseResolverObject object(house_id, callback, param1, param2);
+		return object.ResolveCallback();
+	}
 }
 
 /**
