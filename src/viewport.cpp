@@ -1759,7 +1759,8 @@ void ViewportSign::MarkDirty(ZoomLevel maxzoom) const
 	Rect zoomlevels[ZOOM_LVL_COUNT];
 
 	for (ZoomLevel zoom = ZOOM_LVL_BEGIN; zoom != ZOOM_LVL_END; zoom++) {
-		const int width = zoom >= ZOOM_LVL_OUT_16X ? this->width_small : this->width_normal ;
+		const ZoomLevel small_from = (maxzoom == ZOOM_LVL_OUT_8X) ? ZOOM_LVL_OUT_8X : ZOOM_LVL_OUT_16X;
+		const int width = (zoom >= small_from) ? this->width_small : this->width_normal ;
 		zoomlevels[zoom].left   = this->center - ScaleByZoom(width / 2 + 1, zoom);
 		zoomlevels[zoom].top    = this->top    - ScaleByZoom(1, zoom);
 		zoomlevels[zoom].right  = this->center + ScaleByZoom(width / 2 + 1, zoom);
