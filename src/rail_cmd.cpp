@@ -3094,13 +3094,15 @@ static void DrawSignals(TileIndex tile, TrackBits rails, const RailtypeInfo *rti
 	}
 }
 
-static void DrawTile_Track(TileInfo *ti)
+static void DrawTile_Track(TileInfo *ti, DrawTileProcParams params)
 {
 	const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(ti->tile));
 
 	_drawtile_track_palette = COMPANY_SPRITE_COLOUR(GetTileOwner(ti->tile));
 
 	if (IsPlainRail(ti->tile)) {
+		if (!IsBridgeAbove(ti->tile) && params.min_visible_height > max<int>(SIGNAL_DIRTY_TOP, (TILE_HEIGHT + BB_HEIGHT_UNDER_BRIDGE) * ZOOM_LVL_BASE) && !_signal_sprite_oversized) return;
+
 		TrackBits rails = GetTrackBits(ti->tile);
 
 		DrawTrackBits(ti, rails);

@@ -3025,7 +3025,7 @@ bool SplitGroundSpriteForOverlay(const TileInfo *ti, SpriteID *ground, RailTrack
 	return true;
 }
 
-static void DrawTile_Station(TileInfo *ti)
+static void DrawTile_Station(TileInfo *ti, DrawTileProcParams params)
 {
 	const NewGRFSpriteLayout *layout = nullptr;
 	DrawTileSprites tmp_rail_layout;

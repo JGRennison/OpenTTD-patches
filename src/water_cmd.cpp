@@ -918,16 +918,16 @@ void DrawWaterClassGround(const TileInfo *ti)
 	}
 }
 
-static void DrawTile_Water(TileInfo *ti)
+static void DrawTile_Water(TileInfo *ti, DrawTileProcParams params)
 {
 	switch (GetWaterTileType(ti->tile)) {
 		case WATER_TILE_CLEAR:
-			DrawWaterClassGround(ti);
+			if (!params.no_ground_tiles) DrawWaterClassGround(ti);
 			DrawBridgeMiddle(ti);
 			break;
 
 		case WATER_TILE_COAST: {
-			DrawShoreTile(ti->tileh);
+			if (!params.no_ground_tiles) DrawShoreTile(ti->tileh);
 			DrawBridgeMiddle(ti);
 			break;
 		}

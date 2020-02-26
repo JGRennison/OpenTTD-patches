@@ -555,13 +555,15 @@ struct TreeListEnt : PalSpriteID {
 	byte x, y;
 };
 
-static void DrawTile_Trees(TileInfo *ti)
+static void DrawTile_Trees(TileInfo *ti, DrawTileProcParams params)
 {
-	switch (GetTreeGround(ti->tile)) {
-		case TREE_GROUND_SHORE: DrawShoreTile(ti->tileh); break;
-		case TREE_GROUND_GRASS: DrawClearLandTile(ti, GetTreeDensity(ti->tile)); break;
-		case TREE_GROUND_ROUGH: DrawHillyLandTile(ti); break;
-		default: DrawGroundSprite(_clear_land_sprites_snow_desert[GetTreeDensity(ti->tile)] + SlopeToSpriteOffset(ti->tileh), PAL_NONE); break;
+	if (!params.no_ground_tiles) {
+		switch (GetTreeGround(ti->tile)) {
+			case TREE_GROUND_SHORE: DrawShoreTile(ti->tileh); break;
+			case TREE_GROUND_GRASS: DrawClearLandTile(ti, GetTreeDensity(ti->tile)); break;
+			case TREE_GROUND_ROUGH: DrawHillyLandTile(ti); break;
+			default: DrawGroundSprite(_clear_land_sprites_snow_desert[GetTreeDensity(ti->tile)] + SlopeToSpriteOffset(ti->tileh), PAL_NONE); break;
+		}
 	}
 
 	/* Do not draw trees when the invisible trees setting is set */

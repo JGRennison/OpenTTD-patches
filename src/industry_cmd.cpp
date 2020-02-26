@@ -317,7 +317,7 @@ static IndustryDrawTileProc * const _industry_draw_tile_procs[5] = {
 	IndustryDrawCoalPlantSparks,
 };
 
-static void DrawTile_Industry(TileInfo *ti)
+static void DrawTile_Industry(TileInfo *ti, DrawTileProcParams params)
 {
 	IndustryGfx gfx = GetIndustryGfx(ti->tile);
 	Industry *ind = Industry::GetByTile(ti->tile);

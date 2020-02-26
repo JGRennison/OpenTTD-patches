@@ -123,29 +123,31 @@ static void DrawClearLandFence(const TileInfo *ti)
 	EndSpriteCombine();
 }
 
-static void DrawTile_Clear(TileInfo *ti)
+static void DrawTile_Clear(TileInfo *ti, DrawTileProcParams params)
 {
 	switch (GetClearGround(ti->tile)) {
 		case CLEAR_GRASS:
-			DrawClearLandTile(ti, GetClearDensity(ti->tile));
+			if (!params.no_ground_tiles) DrawClearLandTile(ti, GetClearDensity(ti->tile));
 			break;
 
 		case CLEAR_ROUGH:
-			DrawHillyLandTile(ti);
+			if (!params.no_ground_tiles) DrawHillyLandTile(ti);
 			break;
 
 		case CLEAR_ROCKS:
-			DrawGroundSprite(GetSpriteIDForRocks(ti->tileh, TileHash(ti->x, ti->y)), PAL_NONE);
+			if (!params.no_ground_tiles) DrawGroundSprite(GetSpriteIDForRocks(ti->tileh, TileHash(ti->x, ti->y)), PAL_NONE);
 			break;
 
 		case CLEAR_FIELDS:
-			DrawGroundSprite(GetSpriteIDForFields(ti->tileh, GetFieldType(ti->tile)), PAL_NONE);
-			DrawClearLandFence(ti);
+			if (params.min_visible_height <= 4 * ZOOM_LVL_BASE) {
+				DrawGroundSprite(GetSpriteIDForFields(ti->tileh, GetFieldType(ti->tile)), PAL_NONE);
+				DrawClearLandFence(ti);
+			}
 			break;
 
 		case CLEAR_SNOW:
 		case CLEAR_DESERT:
-			DrawGroundSprite(GetSpriteIDForSnowDesert(ti->tileh, GetClearDensity(ti->tile)), PAL_NONE);
+			if (!params.no_ground_tiles) DrawGroundSprite(GetSpriteIDForSnowDesert(ti->tileh, GetClearDensity(ti->tile)), PAL_NONE);
 			break;
 	}
 

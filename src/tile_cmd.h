@@ -70,11 +70,16 @@ struct TileDesc {
 	uint16 tram_speed;          ///< Speed limit of tram (bridges and track)
 };
 
+struct DrawTileProcParams {
+	int min_visible_height;
+	bool no_ground_tiles;
+};
+
 /**
  * Tile callback function signature for drawing a tile and its contents to the screen
  * @param ti Information about the tile to draw
  */
-typedef void DrawTileProc(TileInfo *ti);
+typedef void DrawTileProc(TileInfo *ti, DrawTileProcParams params);
 typedef int GetSlopeZProc(TileIndex tile, uint x, uint y);
 typedef CommandCost ClearTileProc(TileIndex tile, DoCommandFlag flags);
 

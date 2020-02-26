@@ -284,7 +284,7 @@ static inline DiagDirection RandomDiagDir()
  * Part of the tile loop process
  * @param ti TileInfo of the tile to draw
  */
-static void DrawTile_Town(TileInfo *ti)
+static void DrawTile_Town(TileInfo *ti, DrawTileProcParams params)
 {
 	HouseID house_id = GetHouseType(ti->tile);
 

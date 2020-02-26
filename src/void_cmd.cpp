@@ -18,7 +18,7 @@
 
 #include "safeguards.h"
 
-static void DrawTile_Void(TileInfo *ti)
+static void DrawTile_Void(TileInfo *ti, DrawTileProcParams params)
 {
 	DrawGroundSprite(SPR_FLAT_BARE_LAND + SlopeToSpriteOffset(ti->tileh), PALETTE_ALL_BLACK);
 }

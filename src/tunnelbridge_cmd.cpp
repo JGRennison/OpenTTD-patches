@@ -1676,7 +1676,7 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
  * </ul>
  * Please note that in this code, "roads" are treated as railtype 1, whilst the real railtypes are 0, 2 and 3
  */
-static void DrawTile_TunnelBridge(TileInfo *ti)
+static void DrawTile_TunnelBridge(TileInfo *ti, DrawTileProcParams params)
 {
 	TransportType transport_type = GetTunnelBridgeTransportType(ti->tile);
 	DiagDirection tunnelbridge_direction = GetTunnelBridgeDirection(ti->tile);

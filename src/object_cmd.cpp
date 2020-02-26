@@ -418,7 +418,7 @@ CommandCost CmdPurchaseLandArea(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 
 static Foundation GetFoundation_Object(TileIndex tile, Slope tileh);
 
-static void DrawTile_Object(TileInfo *ti)
+static void DrawTile_Object(TileInfo *ti, DrawTileProcParams params)
 {
 	ObjectType type = GetObjectType(ti->tile);
 	const ObjectSpec *spec = ObjectSpec::Get(type);

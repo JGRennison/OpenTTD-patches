@@ -1587,8 +1587,9 @@ static void ViewportAddLandscape()
 				_vd.last_foundation_child[0] = nullptr;
 				_vd.last_foundation_child[1] = nullptr;
 
-				_tile_type_procs[tile_type]->draw_tile_proc(&tile_info);
-				if (tile_info.tile != INVALID_TILE && min_visible_height <= (int)(ZOOM_LVL_BASE * 2 * TILE_HEIGHT)) {
+				bool no_ground_tiles = (column == left_column || column == right_column) || min_visible_height > 0;
+				_tile_type_procs[tile_type]->draw_tile_proc(&tile_info, { min_visible_height, no_ground_tiles });
+				if (tile_info.tile != INVALID_TILE && min_visible_height <= 0) {
 					DrawTileSelection(&tile_info);
 					DrawTileZoning(&tile_info);
 				}
