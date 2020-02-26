@@ -3587,6 +3587,7 @@ void Vehicle::ShowVisualEffect() const
 				IsTunnelTile(v->tile) ||
 				(v->type == VEH_TRAIN &&
 				!HasPowerOnRail(Train::From(v)->railtype, GetTileRailTypeByTrackBit(v->tile, Train::From(v)->track)))) {
+			if (HasBit(v->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT)) break;
 			continue;
 		}
 
