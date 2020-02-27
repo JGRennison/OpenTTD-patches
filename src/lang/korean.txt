@@ -6222,7 +6222,7 @@ STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}최근 �
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}최근 출발: {DATE_WALLCLOCK_TINY}.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}최근 배차된 열차가 아직 출발하지 않았습니다. {DATE_WALLCLOCK_TINY}에 출발할 예정입니다.
 STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}이 스케줄에는 {COMMA}대의 열차가 필요합니다.
-STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}이 스케줄은 {STRING}마다 반복되고 {DATE_WALLCLOCK_TINY}에 시작됩니다.
+STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}이 스케줄은 {STRING}마다 반복되고 {DATE_WALLCLOCK_TINY}에 시작되어서 {DATE_WALLCLOCK_TINY}에 끝납니다.
 STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}{STRING} 이상 지연되면 다음 슬롯으로 넘어갑니다.
 STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}이 스케줄은 비활성화되어 있습니다.
 
