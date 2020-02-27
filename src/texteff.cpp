@@ -15,6 +15,7 @@
 #include "viewport_func.h"
 #include "settings_type.h"
 #include "guitimer_func.h"
+#include "zoom_func.h"
 
 #include "safeguards.h"
 
@@ -120,9 +121,13 @@ void DrawTextEffects(DrawPixelInfo *dpi)
 	/* Don't draw the text effects when zoomed out a lot */
 	if (dpi->zoom > ZOOM_LVL_OUT_8X) return;
 
+	const int bottom_threshold = dpi->top + dpi->height;
+	const int top_threshold = dpi->top - ScaleByZoom(VPSM_TOP + FONT_HEIGHT_NORMAL + VPSM_BOTTOM, dpi->zoom);
+	const bool show_loading = (_settings_client.gui.loading_indicators && !IsTransparencySet(TO_LOADING));
+
 	for (TextEffect &te : _text_effects) {
 		if (te.string_id == INVALID_STRING_ID) continue;
-		if (te.mode == TE_RISING || (_settings_client.gui.loading_indicators && !IsTransparencySet(TO_LOADING))) {
+		if ((te.mode == TE_RISING || show_loading) && te.top > top_threshold && te.top < bottom_threshold) {
 			ViewportAddString(dpi, ZOOM_LVL_OUT_8X, &te, te.string_id, te.string_id - 1, STR_NULL, te.params_1, te.params_2);
 		}
 	}
