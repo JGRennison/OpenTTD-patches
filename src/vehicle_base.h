@@ -864,7 +864,16 @@ public:
 	void UpdateVisualEffect(bool allow_power_change = true);
 	void ShowVisualEffect() const;
 
-	void UpdatePosition();
+	/**
+	 * Update the position of the vehicle. This will update the hash that tells
+	 *  which vehicles are on a tile.
+	 */
+	void UpdatePosition()
+	{
+		extern void UpdateVehicleTileHash(Vehicle *v, bool remove);
+		if (this->type < VEH_COMPANY_END) UpdateVehicleTileHash(this, false);
+	}
+
 	void UpdateViewport(bool dirty);
 	void UpdatePositionAndViewport();
 	void MarkAllViewportsDirty() const;

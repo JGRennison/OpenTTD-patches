@@ -760,7 +760,7 @@ CommandCost EnsureNoTrainOnTrackBits(TileIndex tile, TrackBits track_bits)
 	return CommandCost();
 }
 
-static void UpdateVehicleTileHash(Vehicle *v, bool remove)
+void UpdateVehicleTileHash(Vehicle *v, bool remove)
 {
 	Vehicle **old_hash = v->hash_tile_current;
 	Vehicle **new_hash;
@@ -1078,7 +1078,7 @@ Vehicle::~Vehicle()
 
 	delete v;
 
-	UpdateVehicleTileHash(this, true);
+	if (this->type < VEH_COMPANY_END) UpdateVehicleTileHash(this, true);
 	UpdateVehicleViewportHash(this, INVALID_COORD, 0);
 	DeleteVehicleNews(this->index, INVALID_STRING_ID);
 	DeleteNewGRFInspectWindow(GetGrfSpecFeature(this->type), this->index);
@@ -2328,16 +2328,6 @@ void VehicleEnterDepot(Vehicle *v)
 		}
 		v->current_order.MakeDummy();
 	}
-}
-
-
-/**
- * Update the position of the vehicle. This will update the hash that tells
- *  which vehicles are on a tile.
- */
-void Vehicle::UpdatePosition()
-{
-	UpdateVehicleTileHash(this, false);
 }
 
 /**
