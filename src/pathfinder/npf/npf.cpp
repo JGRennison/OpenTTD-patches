@@ -307,7 +307,7 @@ static Vehicle *CountShipProc(Vehicle *v, void *data)
 {
 	uint *count = (uint *)data;
 	/* Ignore other vehicles (aircraft) and ships inside depot. */
-	if (v->type == VEH_SHIP && (v->vehstatus & VS_HIDDEN) == 0) (*count)++;
+	if ((v->vehstatus & VS_HIDDEN) == 0) (*count)++;
 
 	return nullptr;
 }
@@ -331,7 +331,7 @@ static int32 NPFWaterPathCost(AyStar *as, AyStarNode *current, OpenListNode *par
 	if (IsDockingTile(current->tile)) {
 		/* Check docking tile for occupancy */
 		uint count = 1;
-		HasVehicleOnPos(current->tile, &count, &CountShipProc);
+		HasVehicleOnPos(current->tile, VEH_SHIP, &count, &CountShipProc);
 		cost += count * 3 * _trackdir_length[trackdir];
 	}
 

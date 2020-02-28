@@ -560,8 +560,7 @@ static Vehicle *EnumCheckRoadVehCrashTrain(Vehicle *v, void *data)
 {
 	CheckRoadVehCrashTrainInfo *info = (CheckRoadVehCrashTrainInfo*) data;
 
-	if (v->type == VEH_TRAIN &&
-			abs(v->z_pos - info->u->z_pos) <= 6 &&
+	if (abs(v->z_pos - info->u->z_pos) <= 6 &&
 			abs(v->x_pos - info->u->x_pos) <= 4 &&
 			abs(v->y_pos - info->u->y_pos) <= 4) {
 		info->found = true;
@@ -617,7 +616,7 @@ static bool RoadVehCheckTrainCrash(RoadVehicle *v)
 		if (!IsLevelCrossingTile(tile)) continue;
 
 		CheckRoadVehCrashTrainInfo info(u);
-		FindVehicleOnPosXY(v->x_pos, v->y_pos, &info, EnumCheckRoadVehCrashTrain);
+		FindVehicleOnPosXY(v->x_pos, v->y_pos, VEH_TRAIN, &info, EnumCheckRoadVehCrashTrain);
 		if (info.found) {
 			RoadVehCrash(v);
 			return true;
@@ -671,8 +670,7 @@ static Vehicle *EnumCheckRoadVehClose(Vehicle *v, void *data)
 	short x_diff = v->x_pos - rvf->x;
 	short y_diff = v->y_pos - rvf->y;
 
-	if (v->type == VEH_ROAD &&
-			!v->IsInDepot() &&
+	if (!v->IsInDepot() &&
 			abs(v->z_pos - rvf->veh->z_pos) < 6 &&
 			v->direction == rvf->dir &&
 			rvf->veh->First() != v->First() &&
@@ -705,10 +703,10 @@ static RoadVehicle *RoadVehFindCloseTo(RoadVehicle *v, int x, int y, Direction d
 	rvf.best_diff = UINT_MAX;
 
 	if (front->state == RVSB_WORMHOLE) {
-		FindVehicleOnPos(v->tile, &rvf, EnumCheckRoadVehClose);
-		FindVehicleOnPos(GetOtherTunnelBridgeEnd(v->tile), &rvf, EnumCheckRoadVehClose);
+		FindVehicleOnPos(v->tile, VEH_ROAD, &rvf, EnumCheckRoadVehClose);
+		FindVehicleOnPos(GetOtherTunnelBridgeEnd(v->tile), VEH_ROAD, &rvf, EnumCheckRoadVehClose);
 	} else {
-		FindVehicleOnPosXY(x, y, &rvf, EnumCheckRoadVehClose);
+		FindVehicleOnPosXY(x, y, VEH_ROAD, &rvf, EnumCheckRoadVehClose);
 	}
 
 	/* This code protects a roadvehicle from being blocked for ever
@@ -822,7 +820,7 @@ static Vehicle *EnumFindVehBlockingOvertake(Vehicle *v, void *data)
 {
 	const OvertakeData *od = (OvertakeData*)data;
 
-	return (v->type == VEH_ROAD && v->First() == v && v != od->u && v != od->v) ? v : nullptr;
+	return (v->First() == v && v != od->u && v != od->v) ? v : nullptr;
 }
 
 /**
@@ -843,7 +841,7 @@ static bool CheckRoadBlockedForOvertaking(OvertakeData *od)
 	if (!HasBit(trackdirbits, od->trackdir) || (trackbits & ~TRACK_BIT_CROSS) || (red_signals != TRACKDIR_BIT_NONE)) return true;
 
 	/* Are there more vehicles on the tile except the two vehicles involved in overtaking */
-	return HasVehicleOnPos(od->tile, od, EnumFindVehBlockingOvertake);
+	return HasVehicleOnPos(od->tile, VEH_ROAD, od, EnumFindVehBlockingOvertake);
 }
 
 static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
