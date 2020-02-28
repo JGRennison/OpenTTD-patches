@@ -2407,8 +2407,8 @@ static void GetSignalXY(TileIndex tile, uint pos, uint &x, uint &y)
 
 static bool _signal_sprite_oversized = false;
 
-static const int SIGNAL_DIRTY_LEFT   =  7 * ZOOM_LVL_BASE;
-static const int SIGNAL_DIRTY_RIGHT  =  7 * ZOOM_LVL_BASE;
+static const int SIGNAL_DIRTY_LEFT   = 14 * ZOOM_LVL_BASE;
+static const int SIGNAL_DIRTY_RIGHT  = 14 * ZOOM_LVL_BASE;
 static const int SIGNAL_DIRTY_TOP    = 30 * ZOOM_LVL_BASE;
 static const int SIGNAL_DIRTY_BOTTOM =  5 * ZOOM_LVL_BASE;
 
