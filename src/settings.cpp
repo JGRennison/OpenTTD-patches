@@ -1244,6 +1244,13 @@ static bool CheckYapfRailSignalPenalties(int32)
 	return true;
 }
 
+static bool ViewportMapShowTunnelModeChanged(int32 p1)
+{
+	extern void ViewportMapBuildTunnelCache();
+	ViewportMapBuildTunnelCache();
+	return RedrawScreen(p1);
+}
+
 /** Checks if any settings are set to incorrect values, and sets them to correct values in that case. */
 static void ValidateSettings()
 {

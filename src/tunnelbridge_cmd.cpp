@@ -999,7 +999,9 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 		if(start_tile > end_tile) Swap(tn, ts);
 
 		if (!Tunnel::CanAllocateItem()) return_cmd_error(STR_ERROR_TUNNEL_TOO_MANY);
-		const Tunnel *t = new Tunnel(tn, ts, TileHeight(tn), is_chunnel);
+		const int height = TileHeight(tn);
+		const Tunnel *t = new Tunnel(tn, ts, height, is_chunnel);
+		ViewportMapStoreTunnel(tn, ts, height, true);
 
 		if (transport_type == TRANSPORT_RAIL) {
 			if (!IsTunnelTile(start_tile) && c != nullptr) c->infrastructure.rail[railtype] += num_pieces;
@@ -1080,6 +1082,7 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 	CommandCost ret = CheckAllowRemoveTunnelBridge(tile);
 	if (ret.Failed()) return ret;
 
+	const Axis axis = DiagDirToAxis(GetTunnelBridgeDirection(tile));
 	TileIndex endtile = GetOtherTunnelEnd(tile);
 
 	ret = TunnelBridgeIsFree(tile, endtile);
@@ -1153,8 +1156,7 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 			DoClearSquare(tile);
 			DoClearSquare(endtile);
 		}
-		ViewportMapInvalidateTunnelCacheByTile(tile);
-		ViewportMapInvalidateTunnelCacheByTile(endtile);
+		ViewportMapInvalidateTunnelCacheByTile(tile < endtile ? tile : endtile, axis);
 	}
 	return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_TUNNEL] * len * (is_chunnel ? 2 : 1));
 }

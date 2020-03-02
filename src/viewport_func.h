@@ -112,8 +112,10 @@ Point GetViewportStationMiddle(const ViewPort *vp, const Station *st);
 
 void ShowTooltipForTile(Window *w, const TileIndex tile);
 
+void ViewportMapStoreTunnel(const TileIndex tile, const TileIndex tile_south, const int tunnel_z, const bool insert_sorted);
 void ViewportMapClearTunnelCache();
-void ViewportMapInvalidateTunnelCacheByTile(const TileIndex tile);
+void ViewportMapInvalidateTunnelCacheByTile(const TileIndex tile, const Axis axis);
+void ViewportMapBuildTunnelCache();
 
 void DrawTileSelectionRect(const TileInfo *ti, PaletteID pal);
 void DrawSelectionSprite(SpriteID image, PaletteID pal, const TileInfo *ti, int z_offset, FoundationPart foundation_part, const SubSprite *sub = nullptr);

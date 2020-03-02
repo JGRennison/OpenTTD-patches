@@ -206,6 +206,15 @@ struct PolylineInfo {
 	uint second_len;       ///< size of the second segment - number of track pieces.
 };
 
+struct TunnelToMap {
+	TunnelBridgeToMap tb;
+	int y_intercept;
+	uint8 tunnel_z;
+};
+struct TunnelToMapStorage {
+	std::vector<TunnelToMap> tunnels;
+};
+
 struct BridgeSetXComparator {
 	bool operator() (const TileIndex a, const TileIndex b) const
 	{
@@ -229,8 +238,8 @@ struct ViewportDrawer {
 	ParentSpriteToDrawVector parent_sprites_to_draw;
 	ParentSpriteToSortVector parent_sprites_to_sort; ///< Parent sprite pointer array used for sorting
 	ChildScreenSpriteToDrawVector child_screen_sprites_to_draw;
-	TunnelBridgeToMapVector tunnel_to_map;
-	btree::btree_set<TileIndex> tunnel_tiles;
+	TunnelToMapStorage tunnel_to_map_x;
+	TunnelToMapStorage tunnel_to_map_y;
 	btree::btree_map<TileIndex, TileIndex, BridgeSetXComparator> bridge_to_map_x;
 	btree::btree_map<TileIndex, TileIndex, BridgeSetYComparator> bridge_to_map_y;
 
@@ -1941,7 +1950,7 @@ static void ViewportMapStoreBridge(const ViewPort * const vp, const TileIndex ti
 	}
 }
 
-static void ViewportMapStoreTunnel(const ViewPort * const vp, const TileIndex tile)
+void ViewportMapStoreTunnel(const TileIndex tile, const TileIndex tile_south, const int tunnel_z, const bool insert_sorted)
 {
 	extern LegendAndColour _legend_land_owners[NUM_NO_COMPANY_ENTRIES + MAX_COMPANIES + 1];
 	extern uint _company_to_list_pos[MAX_COMPANIES];
@@ -1951,42 +1960,65 @@ static void ViewportMapStoreTunnel(const ViewPort * const vp, const TileIndex ti
 	const Owner o = GetTileOwner(tile);
 	if (o < MAX_COMPANIES && !_legend_land_owners[_company_to_list_pos[o]].show_on_map) return;
 
-	/* Check if already stored */
-	if (_vd.tunnel_tiles.count(tile)) return;
-
-	/* It's a new one, add it to the list */
-	_vd.tunnel_to_map.emplace_back();
-	TunnelBridgeToMap &tbtm = _vd.tunnel_to_map.back();
-	TileIndex other_end = GetOtherTunnelBridgeEnd(tile);
-	_vd.tunnel_tiles.insert(tile);
-	_vd.tunnel_tiles.insert(other_end);
+	const Axis axis = (TileX(tile) == TileX(tile_south)) ? AXIS_Y : AXIS_X;
+	const Point viewport_pt = RemapCoords(TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE, tunnel_z);
+	int y_intercept;
+	if (axis == AXIS_X) {
+		/* NE to SW */
+		y_intercept = viewport_pt.y + (viewport_pt.x / 2);
+	} else {
+		/* NW to SE */
+		y_intercept = viewport_pt.y - (viewport_pt.x / 2);
+	}
+	TunnelToMapStorage &storage = (axis == AXIS_X) ? _vd.tunnel_to_map_x : _vd.tunnel_to_map_y;
+	TunnelToMap *tbtm;
+	if (insert_sorted) {
+		auto iter = std::upper_bound(storage.tunnels.begin(), storage.tunnels.end(), y_intercept, [](int a, const TunnelToMap &b) -> bool {
+			return a < b.y_intercept;
+		});
+		tbtm = &(*(storage.tunnels.emplace(iter)));
+	} else {
+		storage.tunnels.emplace_back();
+		tbtm = &(storage.tunnels.back());
+	}
 
 	/* ensure deterministic ordering, to avoid render flicker */
-	if (other_end > tile) {
-		tbtm.from_tile = other_end;
-		tbtm.to_tile = tile;
-	} else {
-		tbtm.from_tile = tile;
-		tbtm.to_tile = other_end;
-	}
+	tbtm->tb.from_tile = tile;
+	tbtm->tb.to_tile = tile_south;
+	tbtm->y_intercept = y_intercept;
+	tbtm->tunnel_z = tunnel_z;
 }
 
 void ViewportMapClearTunnelCache()
 {
-	_vd.tunnel_to_map.clear();
-	_vd.tunnel_tiles.clear();
+	_vd.tunnel_to_map_x.tunnels.clear();
+	_vd.tunnel_to_map_y.tunnels.clear();
 }
 
-void ViewportMapInvalidateTunnelCacheByTile(const TileIndex tile)
+void ViewportMapInvalidateTunnelCacheByTile(const TileIndex tile, const Axis axis)
 {
-	if (!_vd.tunnel_tiles.count(tile)) return;
-	TunnelBridgeToMapVector * const tbtmv = &_vd.tunnel_to_map;
-	for (auto tbtm = tbtmv->begin(); tbtm != tbtmv->end(); tbtm++) {
-		if (tbtm->from_tile == tile || tbtm->to_tile == tile) {
-			*tbtm = tbtmv->back();
-			tbtmv->pop_back();
+	if (!_settings_client.gui.show_tunnels_on_map) return;
+	std::vector<TunnelToMap> &tbtmv = (axis == AXIS_X) ? _vd.tunnel_to_map_x.tunnels : _vd.tunnel_to_map_y.tunnels;
+	for (auto tbtm = tbtmv.begin(); tbtm != tbtmv.end(); tbtm++) {
+		if (tbtm->tb.from_tile == tile) {
+			tbtmv.erase(tbtm);
 			return;
 		}
+	}
+}
+
+void ViewportMapBuildTunnelCache()
+{
+	ViewportMapClearTunnelCache();
+	if (_settings_client.gui.show_tunnels_on_map) {
+		for (Tunnel *tunnel : Tunnel::Iterate()) {
+			ViewportMapStoreTunnel(tunnel->tile_n, tunnel->tile_s, tunnel->height, false);
+		}
+		auto sorter = [](const TunnelToMap &a, const TunnelToMap &b) -> bool {
+			return a.y_intercept < b.y_intercept;
+		};
+		std::sort(_vd.tunnel_to_map_x.tunnels.begin(), _vd.tunnel_to_map_x.tunnels.end(), sorter);
+		std::sort(_vd.tunnel_to_map_y.tunnels.begin(), _vd.tunnel_to_map_y.tunnels.end(), sorter);
 	}
 }
 
@@ -2592,9 +2624,7 @@ static inline TileIndex ViewportMapGetMostSignificantTileType(const ViewPort * c
 			*tile_type = ttype;
 			if (IsBridgeAbove(from_tile)) ViewportMapStoreBridgeAboveTile(vp, from_tile);
 		} else {
-			if (IsTunnel(from_tile)) {
-				ViewportMapStoreTunnel(vp, from_tile);
-			} else {
+			if (IsBridge(from_tile)) {
 				ViewportMapStoreBridge(vp, from_tile);
 			}
 			switch (GetTunnelBridgeTransportType(from_tile)) {
@@ -2629,9 +2659,7 @@ static inline TileIndex ViewportMapGetMostSignificantTileType(const ViewPort * c
 	/* Store bridges and tunnels. */
 	*tile_type = GetTileType(result);
 	if (*tile_type == MP_TUNNELBRIDGE) {
-		if (IsTunnel(result)) {
-			ViewportMapStoreTunnel(vp, result);
-		} else {
+		if (IsBridge(result)) {
 			ViewportMapStoreBridge(vp, result);
 		}
 		switch (GetTunnelBridgeTransportType(result)) {
@@ -2838,12 +2866,15 @@ void ViewportMapDraw(const ViewPort * const vp)
 		b += incr_b;
 	} while (++j < h);
 
-	/* Render tunnels */
-	if (_settings_client.gui.show_tunnels_on_map && _vd.tunnel_to_map.size() != 0) {
-		for (const TunnelBridgeToMap &tbtm : _vd.tunnel_to_map) { // For each tunnel
-			const int tunnel_z = GetTileZ(tbtm.from_tile) * TILE_HEIGHT;
-			const Point pt_from = RemapCoords(TileX(tbtm.from_tile) * TILE_SIZE, TileY(tbtm.from_tile) * TILE_SIZE, tunnel_z);
-			const Point pt_to = RemapCoords(TileX(tbtm.to_tile) * TILE_SIZE, TileY(tbtm.to_tile) * TILE_SIZE, tunnel_z);
+	auto draw_tunnels = [&](const int y_intercept_min, const int y_intercept_max, const TunnelToMapStorage &storage) {
+		auto iter = std::lower_bound(storage.tunnels.begin(), storage.tunnels.end(), y_intercept_min, [](const TunnelToMap &a, int b) -> bool {
+			return a.y_intercept < b;
+		});
+		for (; iter != storage.tunnels.end() && iter->y_intercept <= y_intercept_max; ++iter) {
+			const TunnelToMap &ttm = *iter;
+			const int tunnel_z = ttm.tunnel_z * TILE_HEIGHT;
+			const Point pt_from = RemapCoords(TileX(ttm.tb.from_tile) * TILE_SIZE, TileY(ttm.tb.from_tile) * TILE_SIZE, tunnel_z);
+			const Point pt_to = RemapCoords(TileX(ttm.tb.to_tile) * TILE_SIZE, TileY(ttm.tb.to_tile) * TILE_SIZE, tunnel_z);
 
 			/* check if tunnel is wholly outside redrawing area */
 			const int x_from = UnScaleByZoomLower(pt_from.x - _vd.dpi.left, _vd.dpi.zoom);
@@ -2853,8 +2884,20 @@ void ViewportMapDraw(const ViewPort * const vp)
 			const int y_to = UnScaleByZoomLower(pt_to.y - _vd.dpi.top, _vd.dpi.zoom);
 			if ((y_from < 0 && y_to < 0) || (y_from > h && y_to > h)) continue;
 
-			ViewportMapDrawBridgeTunnel(vp, &tbtm, tunnel_z, true, w, h, blitter);
+			ViewportMapDrawBridgeTunnel(vp, &ttm.tb, tunnel_z, true, w, h, blitter);
 		}
+	};
+
+	/* Render tunnels */
+	if (_settings_client.gui.show_tunnels_on_map && _vd.tunnel_to_map_x.tunnels.size() != 0) {
+		const int y_intercept_min = _vd.dpi.top + (_vd.dpi.left / 2);
+		const int y_intercept_max = _vd.dpi.top + _vd.dpi.height + ((_vd.dpi.left + _vd.dpi.width) / 2);
+		draw_tunnels(y_intercept_min, y_intercept_max, _vd.tunnel_to_map_x);
+	}
+	if (_settings_client.gui.show_tunnels_on_map && _vd.tunnel_to_map_y.tunnels.size() != 0) {
+		const int y_intercept_min = _vd.dpi.top - ((_vd.dpi.left + _vd.dpi.width) / 2);
+		const int y_intercept_max = _vd.dpi.top + _vd.dpi.height - (_vd.dpi.left / 2);
+		draw_tunnels(y_intercept_min, y_intercept_max, _vd.tunnel_to_map_y);
 	}
 
 	/* Render bridges */
