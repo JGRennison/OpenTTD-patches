@@ -29,6 +29,11 @@ enum ViewportMapType {
 	VPMT_MAX = VPMT_INDUSTRY,
 };
 
+struct ViewPortMapDrawVehiclesCache {
+	uint64 done_hash_bits[64];
+	std::vector<bool> vehicle_pixels;
+};
+
 /**
  * Data structure for viewport, display of a part of the world
  */
@@ -54,6 +59,7 @@ struct ViewPort {
 	uint8 dirty_block_left_margin;
 	bool is_dirty = false;
 	bool is_drawn = false;
+	ViewPortMapDrawVehiclesCache map_draw_vehicles_cache;
 
 	uint GetDirtyBlockWidthShift() const { return this->GetDirtyBlockShift(); }
 	uint GetDirtyBlockHeightShift() const { return this->GetDirtyBlockShift(); }

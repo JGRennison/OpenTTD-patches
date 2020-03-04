@@ -23,6 +23,8 @@ static const int TILE_HEIGHT_STEP = 50; ///< One Z unit tile height difference i
 
 void SetSelectionRed(bool);
 
+void ClearViewPortCache(ViewPort *vp);
+void ClearViewPortCaches();
 void DeleteWindowViewport(Window *w);
 void InitializeWindowViewport(Window *w, int x, int y, int width, int height, uint32 follow_flags, ZoomLevel zoom);
 ViewPort *IsPtInWindowViewport(const Window *w, int x, int y);
@@ -73,7 +75,7 @@ void SetRedErrorSquare(TileIndex tile);
 void SetTileSelectSize(int w, int h);
 void SetTileSelectBigSize(int ox, int oy, int sx, int sy);
 
-void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom);
+void ViewportDoDraw(ViewPort *vp, int left, int top, int right, int bottom);
 
 bool ScrollWindowToTile(TileIndex tile, Window *w, bool instant = false);
 bool ScrollWindowTo(int x, int y, int z, Window *w, bool instant = false);

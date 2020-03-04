@@ -334,6 +334,21 @@ static Point MapXYZToViewport(const ViewPort *vp, int x, int y, int z)
 	return p;
 }
 
+void ClearViewPortCache(ViewPort *vp)
+{
+	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
+		memset(vp->map_draw_vehicles_cache.done_hash_bits, 0, sizeof(vp->map_draw_vehicles_cache.done_hash_bits));
+		vp->map_draw_vehicles_cache.vehicle_pixels.assign(vp->map_draw_vehicles_cache.vehicle_pixels.size(), false);
+	}
+}
+
+void ClearViewPortCaches()
+{
+	for (ViewPort *vp : _viewport_window_cache) {
+		ClearViewPortCache(vp);
+	}
+}
+
 void DeleteWindowViewport(Window *w)
 {
 	if (w->viewport == nullptr) return;
@@ -512,11 +527,10 @@ static void DoSetViewportPositionFillRegion(int left, int top, int width, int he
 	DrawOverlappedWindowForAll(left, top, left + width, top + height);
 };
 
-static void DoSetViewportPosition(const Window *w, const int left, const int top, const int width, const int height)
+static void DoSetViewportPosition(Window *w, const int left, const int top, const int width, const int height)
 {
 	const int xo = _vp_move_offs.x;
 	const int yo = _vp_move_offs.y;
-	if (xo == 0 && yo == 0) return;
 
 
 	IncrementWindowUpdateNumber();
@@ -648,7 +662,10 @@ static void SetViewportPosition(Window *w, int x, int y, bool force_update_overl
 		i = top + height - _screen.height;
 		if (i >= 0) height -= i;
 
-		if (height > 0) DoSetViewportPosition((const Window *) w->z_front, left, top, width, height);
+		if (height > 0 && (_vp_move_offs.x != 0 || _vp_move_offs.y != 0)) {
+			DoSetViewportPosition((Window *) w->z_front, left, top, width, height);
+			ClearViewPortCache(w->viewport);
+		}
 	}
 }
 
@@ -3009,7 +3026,7 @@ static void ViewportProcessParentSprites()
 	}
 }
 
-void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom)
+void ViewportDoDraw(ViewPort *vp, int left, int top, int right, int bottom)
 {
 	DrawPixelInfo *old_dpi = _cur_dpi;
 	_cur_dpi = &_vd.dpi;
@@ -3048,7 +3065,7 @@ void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom
 			if (_settings_client.gui.show_slopes_on_viewport_map) ViewportMapDraw<false, true>(vp);
 			else ViewportMapDraw<false, false>(vp);
 		}
-		ViewportMapDrawVehicles(&_vd.dpi);
+		ViewportMapDrawVehicles(&_vd.dpi, vp);
 		if (_scrolling_viewport && _settings_client.gui.show_scrolling_viewport_on_map) ViewportMapDrawScrollingViewportBox(vp);
 		if (vp->zoom < ZOOM_LVL_OUT_256X) ViewportAddKdtreeSigns(&_vd.dpi, true);
 	} else {
@@ -3124,7 +3141,7 @@ void ViewportDoDraw(const ViewPort *vp, int left, int top, int right, int bottom
  * Make sure we don't draw a too big area at a time.
  * If we do, the sprite sorter will run into major performance problems and the sprite memory may overflow.
  */
-void ViewportDrawChk(const ViewPort *vp, int left, int top, int right, int bottom)
+void ViewportDrawChk(ViewPort *vp, int left, int top, int right, int bottom)
 {
 	if ((vp->zoom < ZOOM_LVL_DRAW_MAP) && ((int64)ScaleByZoom(bottom - top, vp->zoom) * (int64)ScaleByZoom(right - left, vp->zoom) > (int64)(1000000 * ZOOM_LVL_BASE * ZOOM_LVL_BASE))) {
 		if ((bottom - top) > (right - left)) {
@@ -3265,6 +3282,12 @@ void UpdateViewportSizeZoom(ViewPort *vp)
 	uint size = vp->dirty_blocks_per_row * vp->dirty_blocks_per_column;
 	vp->dirty_blocks.assign(size, false);
 	UpdateViewportDirtyBlockLeftMargin(vp);
+	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
+		memset(vp->map_draw_vehicles_cache.done_hash_bits, 0, sizeof(vp->map_draw_vehicles_cache.done_hash_bits));
+		vp->map_draw_vehicles_cache.vehicle_pixels.assign(vp->width * vp->height, false);
+	} else {
+		vp->map_draw_vehicles_cache.vehicle_pixels.clear();
+	}
 }
 
 void UpdateActiveScrollingViewport(Window *w)

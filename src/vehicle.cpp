@@ -1593,13 +1593,13 @@ void ViewportAddVehicles(DrawPixelInfo *dpi)
 	}
 }
 
-void ViewportMapDrawVehicles(DrawPixelInfo *dpi)
+void ViewportMapDrawVehicles(DrawPixelInfo *dpi, ViewPort *vp)
 {
-	/* The bounding rectangle */
-	const int l = dpi->left;
-	const int r = dpi->left + dpi->width;
-	const int t = dpi->top;
-	const int b = dpi->top + dpi->height;
+	/* The save rectangle */
+	const int l = vp->virtual_left;
+	const int r = vp->virtual_left + vp->virtual_width;
+	const int t = vp->virtual_top;
+	const int b = vp->virtual_top + vp->virtual_height;
 
 	/* The hash area to scan */
 	const ViewportHashBound vhb = GetViewportHashBound(l, r, t, b);
@@ -1607,24 +1607,42 @@ void ViewportMapDrawVehicles(DrawPixelInfo *dpi)
 	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 	for (int y = vhb.yl;; y = (y + (1 << 6)) & (0x3F << 6)) {
 		for (int x = vhb.xl;; x = (x + 1) & 0x3F) {
-			const Vehicle *v = _vehicle_viewport_hash[x + y]; // already masked & 0xFFF
+			if (!HasBit(vp->map_draw_vehicles_cache.done_hash_bits[y >> 6], x)) {
+				SetBit(vp->map_draw_vehicles_cache.done_hash_bits[y >> 6], x);
+				const Vehicle *v = _vehicle_viewport_hash[x + y]; // already masked & 0xFFF
 
-			while (v != nullptr) {
-				if (!(v->vehstatus & (VS_HIDDEN | VS_UNCLICKABLE)) && (v->type != VEH_EFFECT)) {
-					Point pt = RemapCoords(v->x_pos, v->y_pos, v->z_pos);
-					if (pt.x >= l && pt.x < r && pt.y >= t && pt.y < b) {
-						const int pixel_x = UnScaleByZoomLower(pt.x - dpi->left, dpi->zoom);
-						const int pixel_y = UnScaleByZoomLower(pt.y - dpi->top, dpi->zoom);
-						blitter->SetPixel(dpi->dst_ptr, pixel_x, pixel_y, PC_WHITE);
+				while (v != nullptr) {
+					if (!(v->vehstatus & (VS_HIDDEN | VS_UNCLICKABLE)) && (v->type != VEH_EFFECT)) {
+						Point pt = RemapCoords(v->x_pos, v->y_pos, v->z_pos);
+						if (pt.x >= l && pt.x < r && pt.y >= t && pt.y < b) {
+							const int pixel_x = UnScaleByZoomLower(pt.x - l, dpi->zoom);
+							const int pixel_y = UnScaleByZoomLower(pt.y - t, dpi->zoom);
+							vp->map_draw_vehicles_cache.vehicle_pixels[pixel_x + (pixel_y) * vp->width] = true;
+						}
 					}
+					v = v->hash_viewport_next;
 				}
-				v = v->hash_viewport_next;
 			}
 
 			if (x == vhb.xu) break;
 		}
 
 		if (y == vhb.yu) break;
+	}
+
+	/* The drawing rectangle */
+	int mask = ScaleByZoom(-1, vp->zoom);
+	const int dl = UnScaleByZoomLower(dpi->left - (vp->virtual_left & mask), dpi->zoom);
+	const int dr = UnScaleByZoomLower(dpi->left + dpi->width - (vp->virtual_left & mask), dpi->zoom);
+	const int dt = UnScaleByZoomLower(dpi->top - (vp->virtual_top & mask), dpi->zoom);
+	const int db = UnScaleByZoomLower(dpi->top + dpi->height - (vp->virtual_top & mask), dpi->zoom);
+	int y_ptr = vp->width * dt;
+	for (int y = dt; y < db; y++, y_ptr += vp->width) {
+		for (int x = dl; x < dr; x++) {
+			if (vp->map_draw_vehicles_cache.vehicle_pixels[y_ptr + x]) {
+				blitter->SetPixel(dpi->dst_ptr, x - dl, y - dt, PC_WHITE);
+			}
+		}
 	}
 }
 

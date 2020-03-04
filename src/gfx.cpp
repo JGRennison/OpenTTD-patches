@@ -1423,7 +1423,7 @@ void RedrawScreenRect(int left, int top, int right, int bottom)
 }
 
 static std::vector<Rect> _dirty_viewport_occlusions;
-static const ViewPort *_dirty_viewport;
+static ViewPort *_dirty_viewport;
 static NWidgetDisplay _dirty_viewport_disp_flags;
 
 static void DrawDirtyViewport(uint occlusion, int left, int top, int right, int bottom)
@@ -1677,6 +1677,9 @@ void DrawDirtyBlocks()
 
 	_dirty_blocks.clear();
 	++_dirty_block_colour;
+
+	extern void ClearViewPortCaches();
+	ClearViewPortCaches();
 }
 
 void UnsetDirtyBlocks(int left, int top, int right, int bottom)
