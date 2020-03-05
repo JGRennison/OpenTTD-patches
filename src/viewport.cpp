@@ -2222,41 +2222,29 @@ static bool ViewportMapPrepareVehicleRoute(const Vehicle * const veh)
 /** Draw the route of a vehicle. */
 static void ViewportMapDrawVehicleRoute(const ViewPort *vp)
 {
-	const Vehicle *veh = GetVehicleFromWindow(_focused_window);
-	if (!veh) {
-		if (!_vp_route_paths.empty()) {
-			// make sure we remove any leftover paths
-			MarkRoutePathsDirty(_vp_route_paths);
-			_vp_route_paths.clear();
-			_vp_route_paths_last_mark_dirty.clear();
-			DEBUG(misc, 1, "ViewportMapDrawVehicleRoute: redrawing dirty paths 0");
-		}
-		return;
-	}
-
 	switch (_settings_client.gui.show_vehicle_route) {
 		/* case 0: return; // No */
 		case 1: { // Simple
-			if (!ViewportMapPrepareVehicleRoute(veh)) {
-				if (!_vp_route_paths.empty()) {
-					// make sure we remove any leftover paths
-					MarkRoutePathsDirty(_vp_route_paths);
-					_vp_route_paths.clear();
-					DEBUG(misc, 1, "ViewportMapDrawVehicleRoute: redrawing dirty paths 1");
-				}
-				return;
-			}
-
 			DrawPixelInfo *old_dpi = _cur_dpi;
 			_cur_dpi = &_dpi_for_text;
 
 			for (const auto &iter : _vp_route_paths) {
-				const Point from_pt = RemapCoords2(TileX(iter.from_tile) * TILE_SIZE + TILE_SIZE / 2, TileY(iter.from_tile) * TILE_SIZE + TILE_SIZE / 2);
+				const int from_tile_x = TileX(iter.from_tile) * TILE_SIZE + TILE_SIZE / 2;
+				const int from_tile_y = TileY(iter.from_tile) * TILE_SIZE + TILE_SIZE / 2;
+				Point from_pt = RemapCoords(from_tile_x, from_tile_y, 0);
 				const int from_x = UnScaleByZoom(from_pt.x, vp->zoom);
-				const int from_y = UnScaleByZoom(from_pt.y, vp->zoom);
 
-				const Point to_pt = RemapCoords2(TileX(iter.to_tile) * TILE_SIZE + TILE_SIZE / 2, TileY(iter.to_tile) * TILE_SIZE + TILE_SIZE / 2);
+				const int to_tile_x = TileX(iter.to_tile) * TILE_SIZE + TILE_SIZE / 2;
+				const int to_tile_y = TileY(iter.to_tile) * TILE_SIZE + TILE_SIZE / 2;
+				Point to_pt = RemapCoords(to_tile_x, to_tile_y, 0);
 				const int to_x = UnScaleByZoom(to_pt.x, vp->zoom);
+
+				if (from_x < _cur_dpi->left - 1 && to_x < _cur_dpi->left - 1) continue;
+				if (from_x > _cur_dpi->left + _cur_dpi->width + 1 && to_x > _cur_dpi->left + _cur_dpi->width + 1) continue;
+
+				from_pt.y -= GetSlopePixelZ(from_tile_x, from_tile_y) * ZOOM_LVL_BASE;
+				to_pt.y -= GetSlopePixelZ(to_tile_x, to_tile_y) * ZOOM_LVL_BASE;
+				const int from_y = UnScaleByZoom(from_pt.y, vp->zoom);
 				const int to_y = UnScaleByZoom(to_pt.y, vp->zoom);
 
 				int line_width = 3;
@@ -2265,13 +2253,6 @@ static void ViewportMapDrawVehicleRoute(const ViewPort *vp)
 					line_width = 1;
 				}
 				GfxDrawLine(from_x, from_y, to_x, to_y, iter.order_match ? PC_WHITE : PC_YELLOW, line_width, _settings_client.gui.dash_level_of_route_lines);
-			}
-
-			if (_vp_route_paths_last_mark_dirty != _vp_route_paths) {
-				// make sure we're not drawing a partial path
-				MarkRoutePathsDirty(_vp_route_paths);
-				_vp_route_paths_last_mark_dirty = _vp_route_paths;
-				DEBUG(misc, 1, "ViewportMapDrawVehicleRoute: redrawing dirty paths 2");
 			}
 
 			_cur_dpi = old_dpi;
@@ -2284,11 +2265,16 @@ static inline void DrawRouteStep(const ViewPort * const vp, const TileIndex tile
 {
 	if (tile == INVALID_TILE) return;
 	const uint step_count = list.size() > max_rank_order_type_count ? 1 : list.size();
-	const Point pt = RemapCoords2(TileX(tile) * TILE_SIZE + TILE_SIZE / 2, TileY(tile) * TILE_SIZE + TILE_SIZE / 2);
+	const int x_pos = TileX(tile) * TILE_SIZE + TILE_SIZE / 2;
+	const int y_pos = TileY(tile) * TILE_SIZE + TILE_SIZE / 2;
+	Point pt = RemapCoords(x_pos, y_pos, 0);
 	const int x = UnScaleByZoomLower(pt.x - _vd.dpi.left, _vd.dpi.zoom) - (_vp_route_step_width / 2);
+	if (x >= _cur_dpi->width || (x + _vp_route_step_width) <= 0) return;
+	pt.y -= GetSlopePixelZ(x_pos, y_pos) * ZOOM_LVL_BASE;
 	const int char_height = GetCharacterHeight(FS_SMALL) + 1;
 	const int rsth = _vp_route_step_height_top + (int) step_count * char_height + _vp_route_step_height_bottom;
 	const int y = UnScaleByZoomLower(pt.y - _vd.dpi.top,  _vd.dpi.zoom) - rsth;
+	if (y >= _cur_dpi->height || (y + rsth) <= 0) return;
 
 	/* Draw the background. */
 	DrawSprite(SPR_ROUTE_STEP_TOP, PAL_NONE, _cur_dpi->left + x, _cur_dpi->top + y);
@@ -2362,20 +2348,52 @@ static bool ViewportPrepareVehicleRouteSteps(const Vehicle * const veh)
 	return true;
 }
 
-/** Draw the route steps of a vehicle. */
-static void ViewportDrawVehicleRouteSteps(const ViewPort * const vp)
+void ViewportPrepareVehicleRoute()
 {
+	if (!_settings_client.gui.show_vehicle_route_steps && !_settings_client.gui.show_vehicle_route) return;
 	const Vehicle * const veh = GetVehicleFromWindow(_focused_window);
-	if (veh && ViewportPrepareVehicleRouteSteps(veh)) {
+	if (_settings_client.gui.show_vehicle_route_steps && veh && ViewportPrepareVehicleRouteSteps(veh)) {
 		if (_vp_route_steps != _vp_route_steps_last_mark_dirty) {
 			for (RouteStepsMap::const_iterator cit = _vp_route_steps.begin(); cit != _vp_route_steps.end(); cit++) {
 				MarkRouteStepDirty(cit);
 			}
 			_vp_route_steps_last_mark_dirty = _vp_route_steps;
 		}
-		for (RouteStepsMap::const_iterator cit = _vp_route_steps.begin(); cit != _vp_route_steps.end(); cit++) {
-			DrawRouteStep(vp, cit->first, cit->second);
+	}
+	if (_settings_client.gui.show_vehicle_route) {
+		if (!veh) {
+			if (!_vp_route_paths.empty()) {
+				// make sure we remove any leftover paths
+				MarkRoutePathsDirty(_vp_route_paths);
+				_vp_route_paths.clear();
+				_vp_route_paths_last_mark_dirty.clear();
+			}
+			return;
+		} else {
+			if (ViewportMapPrepareVehicleRoute(veh)) {
+				if (_vp_route_paths_last_mark_dirty != _vp_route_paths) {
+					// make sure we're not drawing a partial path
+					MarkRoutePathsDirty(_vp_route_paths);
+					_vp_route_paths_last_mark_dirty = _vp_route_paths;
+				}
+			} else {
+				if (!_vp_route_paths.empty()) {
+					// make sure we remove any leftover paths
+					MarkRoutePathsDirty(_vp_route_paths);
+					_vp_route_paths.clear();
+					_vp_route_paths_last_mark_dirty.clear();
+				}
+				return;
+			}
 		}
+	}
+}
+
+/** Draw the route steps of a vehicle. */
+static void ViewportDrawVehicleRouteSteps(const ViewPort * const vp)
+{
+	for (RouteStepsMap::const_iterator cit = _vp_route_steps.begin(); cit != _vp_route_steps.end(); cit++) {
+		DrawRouteStep(vp, cit->first, cit->second);
 	}
 }
 

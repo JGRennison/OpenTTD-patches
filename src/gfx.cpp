@@ -1510,6 +1510,9 @@ void DrawDirtyBlocks()
 		if (_switch_mode != SM_NONE && !HasModalProgress()) return;
 	}
 
+	extern void ViewportPrepareVehicleRoute();
+	ViewportPrepareVehicleRoute();
+
 	if (_whole_screen_dirty) {
 		RedrawScreenRect(0, 0, _screen.width, _screen.height);
 		Window *w;
