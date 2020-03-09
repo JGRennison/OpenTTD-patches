@@ -49,6 +49,7 @@ void CcBuildWagon(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p
 		DoCommandP(0, _new_vehicle_id, found->index, CMD_MOVE_RAIL_VEHICLE);
 		InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS, 0);
+		InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 	}
 }
 

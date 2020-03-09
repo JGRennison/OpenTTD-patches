@@ -90,6 +90,7 @@ protected:
 	StationID station;         ///< The station whose departures we're showing.
 	DepartureList *departures; ///< The current list of departures from this station.
 	DepartureList *arrivals;   ///< The current list of arrivals from this station.
+	bool departures_invalid;   ///< The departures and arrivals list are currently invalid.
 	uint entry_height;         ///< The height of an entry in the departures list.
 	uint tick_count;           ///< The number of ticks that have elapsed since the window was created. Used for scrolling text.
 	int calc_tick_countdown;   ///< The number of ticks to wait until recomputing the departure list. Signed in case it goes below zero.
@@ -213,6 +214,7 @@ public:
 		station(window_number),
 		departures(new DepartureList()),
 		arrivals(new DepartureList()),
+		departures_invalid(true),
 		entry_height(1 + FONT_HEIGHT_NORMAL + 1 + (_settings_client.gui.departure_larger_font ? FONT_HEIGHT_NORMAL : FONT_HEIGHT_SMALL) + 1 + 1),
 		tick_count(0),
 		calc_tick_countdown(0),
@@ -356,6 +358,8 @@ public:
 				break;
 
 			case WID_DB_LIST: {  // Matrix to show departures
+				if (this->departures_invalid) return;
+
 				/* We need to find the departure corresponding to where the user clicked. */
 				uint32 id_v = (pt.y - this->GetWidget<NWidgetBase>(WID_DB_LIST)->pos_y) / this->entry_height;
 
@@ -442,6 +446,7 @@ public:
 			bool show_freight = _settings_client.gui.departure_only_passengers ? false : this->show_freight;
 			this->departures = (this->departure_types[0] ? MakeDepartureList(this->station, this->vehicles, D_DEPARTURE, Twaypoint || this->departure_types[2], show_pax, show_freight) : new DepartureList());
 			this->arrivals   = (this->departure_types[1] && !_settings_client.gui.departure_show_both ? MakeDepartureList(this->station, this->vehicles, D_ARRIVAL, false, show_pax, show_freight) : new DepartureList());
+			this->departures_invalid = false;
 			this->SetWidgetDirty(WID_DB_LIST);
 		}
 
@@ -460,6 +465,13 @@ public:
 			this->entry_height = new_height;
 			this->SetWidgetDirty(WID_DB_LIST);
 			this->ReInit();
+		}
+	}
+
+	virtual void OnRealtimeTick(uint delta_ms) override
+	{
+		if (_pause_mode != PM_UNPAUSED && this->calc_tick_countdown <= 0) {
+			this->OnGameTick();
 		}
 	}
 
@@ -500,6 +512,7 @@ public:
 	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		this->RefreshVehicleList();
+		this->departures_invalid = true;
 	}
 };
 

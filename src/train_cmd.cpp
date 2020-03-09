@@ -1593,6 +1593,7 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 			InvalidateWindowData(WC_VEHICLE_DEPOT, src->tile);
 			InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
 			InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS, 0);
+			InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 		}
 	} else {
 		/* We don't want to execute what we're just tried. */
@@ -1684,6 +1685,7 @@ CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, uint16 data, uint3
 			InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
 			InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
 			InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS, 0);
+			InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 		}
 
 		/* Actually delete the sold 'goods' */

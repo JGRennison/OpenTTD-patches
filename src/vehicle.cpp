@@ -350,6 +350,7 @@ uint Vehicle::Crash(bool flooded)
 	SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
 	SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
 	SetWindowDirty(WC_VEHICLE_DEPOT, this->tile);
+	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 
 	delete this->cargo_payment;
 	assert(this->cargo_payment == nullptr); // cleared by ~CargoPayment
