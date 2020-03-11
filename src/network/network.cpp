@@ -940,7 +940,8 @@ void NetworkGameLoop()
 				cp.reset(new CommandPacket());
 				int company;
 				cp->text.resize(MAX_CMD_TEXT_LENGTH);
-				int ret = sscanf(p, "date{%x; %x; %x}; company: %x; tile: %x (%*u x %*u); p1: %x; p2: %x; cmd: %x; \"%[^\"]\"", &next_date, &next_date_fract, &next_tick_skip_counter, &company, &cp->tile, &cp->p1, &cp->p2, &cp->cmd, const_cast<char *>(cp->text.c_str()));
+				assert_compile(MAX_CMD_TEXT_LENGTH > 8192);
+				int ret = sscanf(p, "date{%x; %x; %x}; company: %x; tile: %x (%*u x %*u); p1: %x; p2: %x; cmd: %x; \"%8192[^\"]\"", &next_date, &next_date_fract, &next_tick_skip_counter, &company, &cp->tile, &cp->p1, &cp->p2, &cp->cmd, const_cast<char *>(cp->text.c_str()));
 				/* There are 9 pieces of data to read, however the last is a
 				 * string that might or might not exist. Ignore it if that
 				 * string misses because in 99% of the time it's not used. */
