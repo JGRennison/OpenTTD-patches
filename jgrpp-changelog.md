@@ -2,6 +2,15 @@
 
 * * *
 
+### v0.34-rc1 (2019-03-11)
+* Fix crash when using house pick/place tool with NewGRF houses.
+* Fix crash which could occur when using a high town cargo generation factor.
+* Fix crash which could occur when re-arranging a train displayed in a departure board window.
+* Fix text rendering issue with scheduled dispatch tag in timetable/order list.
+* Various viewport rendering performance improvements, especially at higher zoom levels.
+* Minor performance improvements to vehicle collision detection.
+* Bump trunk base from commit 75031c9693ee0525c75e8e02ead345b1f8264735 to commit 71913607540088819b60f12b765504ab7dfe7a64.
+
 ### v0.33.2 (2020-02-21)
 * Fix crash on 32-bit platforms.
 * Fix crash which could occur when moving new cargo to nearby stations.
