@@ -1007,6 +1007,7 @@ static void GfxBlitter(const Sprite * const sprite, int x, int y, BlitterMode mo
 
 	if (sub == nullptr) {
 		/* No clipping. */
+		if (sprite->width <= 0 || sprite->height <= 0) return;
 		bp.skip_left = 0;
 		bp.skip_top = 0;
 		bp.width = UnScaleByZoom(sprite->width, zoom);
@@ -1040,9 +1041,6 @@ static void GfxBlitter(const Sprite * const sprite, int x, int y, BlitterMode mo
 	bp.dst = dpi->dst_ptr;
 	bp.pitch = dpi->pitch;
 	bp.remap = _colour_remap_ptr;
-
-	assert(sprite->width > 0);
-	assert(sprite->height > 0);
 
 	if (bp.width <= 0) return;
 	if (bp.height <= 0) return;
