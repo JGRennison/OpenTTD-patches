@@ -3740,7 +3740,7 @@ static void UpdateStationRating(Station *st)
 				 * waiting cargo ratings must not be executed. */
 
 				/* NewGRFs expect last speed to be 0xFF when no vehicle has arrived yet. */
-				uint last_speed = ge->HasVehicleEverTriedLoading() ? ge->last_speed : 0xFF;
+				uint last_speed = ge->HasVehicleEverTriedLoading() && ge->IsSupplyAllowed() ? ge->last_speed : 0xFF;
 
 				uint32 var18 = min(ge->time_since_pickup, 0xFF) | (min(ge->max_waiting_cargo, 0xFFFF) << 8) | (min(last_speed, 0xFF) << 24);
 				/* Convert to the 'old' vehicle types */
@@ -4179,6 +4179,37 @@ CommandCost CmdRenameStation(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 	return CommandCost();
 }
 
+/**
+ * Change whether a cargo may be supplied to a station
+ * @param tile unused
+ * @param flags operation to perform
+ * @param p1 station ID
+ * @param p2 various bitstuffed elements
+ * - p2 = (bit  0- 7) - cargo ID
+ * - p2 = (bit     8) - whether to allow supply
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdSetStationCargoAllowedSupply(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	Station *st = Station::GetIfValid(p1);
+	if (st == nullptr) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(st->owner);
+	if (ret.Failed()) return ret;
+
+	CargoID cid = GB(p2, 0, 8);
+	if (cid >= NUM_CARGO) return CMD_ERROR;
+
+	if (flags & DC_EXEC) {
+		GoodsEntry &ge = st->goods[cid];
+		SB(ge.status, GoodsEntry::GES_NO_CARGO_SUPPLY, 1, HasBit(p2, 8) ? 0 : 1);
+		InvalidateWindowData(WC_STATION_VIEW, st->index, -1);
+	}
+
+	return CommandCost();
+}
+
 static void AddNearbyStationsByCatchment(TileIndex tile, StationList *stations, StationList &nearby)
 {
 	for (Station *st : nearby) {
@@ -4260,6 +4291,8 @@ static bool CanMoveGoodsToStation(const Station *st, CargoID type)
 
 	/* Lowest possible rating, better not to give cargo anymore. */
 	if (st->goods[type].rating == 0) return false;
+
+	if (!st->goods[type].IsSupplyAllowed()) return false;
 
 	/* Selectively servicing stations, and not this one. */
 	if (_settings_game.order.selectgoods && !st->goods[type].HasVehicleEverTriedLoading()) return false;

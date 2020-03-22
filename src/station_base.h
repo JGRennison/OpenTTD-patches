@@ -521,6 +521,11 @@ struct GoodsEntry {
 		 * This flag is reset every STATION_ACCEPTANCE_TICKS ticks.
 		 */
 		GES_ACCEPTED_BIGTICK,
+
+		/**
+		 * Set when cargo is not permitted to be supplied by nearby industries/houses.
+		 */
+		GES_NO_CARGO_SUPPLY = 7,
 	};
 
 	GoodsEntry() :
@@ -573,6 +578,11 @@ struct GoodsEntry {
 	NodeID node;            ///< ID of node in link graph referring to this goods entry.
 	FlowStatMap flows;      ///< Planned flows through this station.
 	uint max_waiting_cargo; ///< Max cargo from this station waiting at any station.
+
+	bool IsSupplyAllowed() const
+	{
+		return !HasBit(this->status, GES_NO_CARGO_SUPPLY);
+	}
 
 	/**
 	 * Reports whether a vehicle has ever tried to load the cargo at this station.
