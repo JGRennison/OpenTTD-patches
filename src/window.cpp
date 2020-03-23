@@ -974,6 +974,11 @@ void DrawOverlappedWindowForAll(int left, int top, int right, int bottom)
 	_cur_dpi = old_dpi;
 }
 
+static void SetWindowDirtyPending(Window *w)
+{
+	SetPendingDirtyBlocks(w->left, w->top, w->left + w->width, w->top + w->height);
+}
+
 /**
  * Mark entire window as dirty (in need of re-paint)
  * @ingroup dirty
@@ -989,7 +994,12 @@ void Window::SetDirty()
  */
 void Window::SetDirtyAsBlocks()
 {
-	SetDirtyBlocks(this->left, this->top, this->left + this->width, this->top + this->height);
+	extern bool _gfx_draw_active;
+	if (_gfx_draw_active) {
+		SetWindowDirtyPending(this);
+	} else {
+		SetDirtyBlocks(this->left, this->top, this->left + this->width, this->top + this->height);
+	}
 }
 
 /**
@@ -2180,7 +2190,12 @@ void ResizeWindow(Window *w, int delta_x, int delta_y, bool clamp_to_screen)
 
 	/* Always call OnResize to make sure everything is initialised correctly if it needs to be. */
 	w->OnResize();
-	w->SetDirty();
+	extern bool _gfx_draw_active;
+	if (_gfx_draw_active) {
+		SetWindowDirtyPending(w);
+	} else {
+		w->SetDirty();
+	}
 }
 
 /**
