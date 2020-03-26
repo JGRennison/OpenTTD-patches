@@ -184,21 +184,21 @@ protected:
 					unitnumber_digits = 3;
 				}
 				SetDParamMaxDigits(0, unitnumber_digits);
-				int width = (GetStringBoundingBox(STR_SV_TRAIN_NAME + i)).width;
+				int width = (GetStringBoundingBox(STR_SV_TRAIN_NAME + i)).width + 4;
 				if (width > this->veh_width) this->veh_width = width;
 			}
 		}
 
 		for (GroupID gid : groups) {
 			SetDParam(0, (uint64)gid);
-			int width = (GetStringBoundingBox(STR_DEPARTURES_GROUP)).width;
+			int width = (GetStringBoundingBox(STR_DEPARTURES_GROUP)).width + 4;
 			if (width > this->group_width) this->group_width = width;
 		}
 
 		uint owner;
 		FOR_EACH_SET_BIT(owner, companies) {
 			SetDParam(0, owner);
-			int width = (GetStringBoundingBox(STR_DEPARTURES_TOC)).width;
+			int width = (GetStringBoundingBox(STR_DEPARTURES_TOC)).width + 4;
 			if (width > this->toc_width) this->toc_width = width;
 		}
 	}
