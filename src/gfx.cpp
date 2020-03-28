@@ -1559,7 +1559,7 @@ void DrawDirtyBlocks()
 				w->flags &= ~WF_WIDGETS_DIRTY;
 			}
 
-			if (w->viewport != nullptr) {
+			if (w->viewport != nullptr && !w->IsShaded()) {
 				ViewPort *vp = w->viewport;
 				if (vp->is_drawn) {
 					vp->ClearDirty();
