@@ -556,6 +556,9 @@ static const int LEVEL_WIDTH = 10; ///< Indenting width of a sub-group in pixels
 
 typedef GUIList<const Group*> GUIGroupList;
 
+/* cached values for GroupNameSorter to spare many GetString() calls */
+static const Group *_last_group[2] = { nullptr, nullptr };
+
 /** Company livery colour scheme window. */
 struct SelectCompanyLiveryWindow : public Window {
 private:
@@ -621,17 +624,16 @@ private:
 
 	static bool GroupNameSorter(const Group * const &a, const Group * const &b)
 	{
-		static const Group *last_group[2] = { nullptr, nullptr };
 		static char         last_name[2][64] = { "", "" };
 
-		if (a != last_group[0]) {
-			last_group[0] = a;
+		if (a != _last_group[0]) {
+			_last_group[0] = a;
 			SetDParam(0, a->index);
 			GetString(last_name[0], STR_GROUP_NAME, lastof(last_name[0]));
 		}
 
-		if (b != last_group[1]) {
-			last_group[1] = b;
+		if (b != _last_group[1]) {
+			_last_group[1] = b;
 			SetDParam(0, b->index);
 			GetString(last_name[1], STR_GROUP_NAME, lastof(last_name[1]));
 		}
@@ -669,6 +671,10 @@ private:
 			}
 
 			list.ForceResort();
+
+			/* invalidate cached values for name sorter - group names could change */
+			_last_group[0] = _last_group[1] = nullptr;
+
 			list.Sort(&GroupNameSorter);
 
 			AddChildren(&list, INVALID_GROUP, 0);
