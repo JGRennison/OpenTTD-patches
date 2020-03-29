@@ -553,11 +553,11 @@ static void DoSetViewportPosition(Window *w, const int left, const int top, cons
 	if (_networking) NetworkUndrawChatMessage();
 
 	std::sort(_vp_redraw_regions.begin(), _vp_redraw_regions.end(), [&](const ViewportRedrawRegion &a, const ViewportRedrawRegion &b) {
-		if (a.coords.right <= b.coords.left) return xo > 0;
-		if (a.coords.left >= b.coords.right) return xo < 0;
-		if (a.coords.bottom <= b.coords.top) return yo > 0;
-		if (a.coords.top >= b.coords.bottom) return yo < 0;
-		NOT_REACHED();
+		if (a.coords.right <= b.coords.left && xo > 0) return true;
+		if (a.coords.left >= b.coords.right && xo < 0) return true;
+		if (a.coords.bottom <= b.coords.top && yo > 0) return true;
+		if (a.coords.top >= b.coords.bottom && yo < 0) return true;
+		return false;
 	});
 
 	while (!_vp_redraw_regions.empty()) {
