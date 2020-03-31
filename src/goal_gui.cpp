@@ -19,6 +19,7 @@
 #include "core/geometry_func.hpp"
 #include "company_func.h"
 #include "company_base.h"
+#include "company_gui.h"
 #include "story_base.h"
 #include "command_func.h"
 #include "string_func.h"
@@ -86,7 +87,7 @@ struct GoalListWindow : public Window {
 		if (y < 0) return;
 
 		for (const Goal *s : Goal::Iterate()) {
-			if (s->company == this->window_number) {
+			if (s->company == this->window_number && s->company != INVALID_COMPANY) {
 				y--;
 				if (y == 0) {
 					this->HandleClick(s);
@@ -106,7 +107,12 @@ struct GoalListWindow : public Window {
 		TileIndex xy;
 		switch (s->type) {
 			case GT_NONE: return;
-			case GT_COMPANY: return;
+
+			case GT_COMPANY:
+				/* s->dst here is not a tile, but a CompanyID.
+				 * Show the window with the overview of the company instead. */
+				ShowCompany((CompanyID)s->dst);
+				return;
 
 			case GT_TILE:
 				if (!IsValidTile(s->dst)) return;

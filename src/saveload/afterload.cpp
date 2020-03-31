@@ -3664,12 +3664,8 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (IsSavegameVersionBefore(SLV_MULTITILE_DOCKS) || !SlXvIsFeaturePresent(XSLFI_MULTIPLE_DOCKS, 2)) {
-		/* Scan for docking tiles */
-		for (Station *st : Station::Iterate()) {
-			if (st->ship_station.tile != INVALID_TILE) UpdateStationDockingTiles(st);
-		}
-	}
+	/* Update station docking tiles. */
+	AfterLoadScanDockingTiles();
 
 	/* Compute station catchment areas. This is needed here in case UpdateStationAcceptance is called below. */
 	Station::RecomputeCatchmentForAll();
