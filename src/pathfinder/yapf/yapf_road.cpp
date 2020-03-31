@@ -358,6 +358,10 @@ static Vehicle * FindVehiclesOnTileProc(Vehicle *v, void *_data)
 	if (data->originVehicle == v)
 		return nullptr;
 
+	/* only consider vehicles going to the same station as us */
+	if(data->originVehicle->current_order.GetDestination() != v->current_order.GetDestination())
+		return nullptr;
+
 	TileIndex ti = v->tile + TileOffsByDir(v->direction);
 
 	for (int i = 0; i < MAX_TARGETS; i++) {
@@ -442,7 +446,7 @@ public:
 		FindVehiclesOnTileProcData data;
 		data.originVehicle = v;
 		data.targets = &Yapf().leaderTargets;
-		FindVehicleOnPos(tile, &data, &FindVehiclesOnTileProc);
+		FindVehicleOnPos(tile, VEH_ROAD, &data, &FindVehiclesOnTileProc);
 
 		/* find the best path */
 		path_found = Yapf().FindPath(v);
