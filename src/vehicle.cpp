@@ -92,7 +92,7 @@ static const uint GEN_HASHY_BUCKET_BITS = 6;
 //static const uint GEN_HASHY_MASK = ((1 << GEN_HASHY_BITS) - 1) << GEN_HASHX_BITS;
 
 VehicleID _new_vehicle_id;
-uint16 _returned_refit_capacity;      ///< Stores the capacity after a refit operation.
+uint _returned_refit_capacity;        ///< Stores the capacity after a refit operation.
 uint16 _returned_mail_refit_capacity; ///< Stores the mail capacity after a refit operation (Aircraft only).
 
 

@@ -74,7 +74,10 @@ enum NetworkPasswordType {
 	NETWORK_COMPANY_PASSWORD, ///< The password of the company.
 };
 
-/** Destination of our chat messages. */
+/**
+ * Destination of our chat messages.
+ * @warning The values of the enum items are part of the admin network API. Only append at the end.
+ */
 enum DestType {
 	DESTTYPE_BROADCAST, ///< Send message/notice to all clients (All)
 	DESTTYPE_TEAM,      ///< Send message/notice to everyone playing the same company (Team)
@@ -82,11 +85,13 @@ enum DestType {
 	DESTTYPE_BROADCAST_SS, ///< Send message/notice to all clients (All), but tag the broadcast to self as a self-send
 };
 
-/** Actions that can be used for NetworkTextMessage */
+/**
+ * Actions that can be used for NetworkTextMessage.
+ * @warning The values of the enum items are part of the admin network API. Only append at the end.
+ */
 enum NetworkAction {
 	NETWORK_ACTION_JOIN,
 	NETWORK_ACTION_LEAVE,
-	NETWORK_ACTION_KICKED,
 	NETWORK_ACTION_SERVER_MESSAGE,
 	NETWORK_ACTION_CHAT,
 	NETWORK_ACTION_CHAT_COMPANY,
@@ -96,9 +101,13 @@ enum NetworkAction {
 	NETWORK_ACTION_COMPANY_SPECTATOR,
 	NETWORK_ACTION_COMPANY_JOIN,
 	NETWORK_ACTION_COMPANY_NEW,
+	NETWORK_ACTION_KICKED,
 };
 
-/** The error codes we send around in the protocols. */
+/**
+ * The error codes we send around in the protocols.
+ * @warning The values of the enum items are part of the admin network API. Only append at the end.
+ */
 enum NetworkErrorCode {
 	NETWORK_ERROR_GENERAL, // Try to use this one like never
 
