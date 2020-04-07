@@ -2,6 +2,17 @@
 
 * * *
 
+### v0.34.0 (2019-04-07)
+* Fix crash when attempting to draw zero-size or invalid sprite.
+* Fix crash which could occur when scrolling the viewport on some platforms.
+* Fix crash which could occur when renaming a vehicle group or engine, when the list window is open and sorted by name, on some platforms.
+* Fix crash which could occur when changing company colours when invalid NewGRF objects are present.
+* Add support for allowing/disallowing supply to a station, per cargo, by ctrl-clicking the station cargo rating.
+* Open train vehicle details window on total cargo tab if shift pressed, instead of ctrl.
+* Increase margin between right-hand columns in depatures window.
+* Fix window/viewport rendering regressions from v0.34-rc1.
+* Bump trunk base from commit 71913607540088819b60f12b765504ab7dfe7a64 to commit b50d77b831c60f9f162a6f1d2bc9ca19e702784e.
+
 ### v0.34-rc1 (2019-03-11)
 * Fix crash when using house pick/place tool with NewGRF houses.
 * Fix crash which could occur when using a high town cargo generation factor.
