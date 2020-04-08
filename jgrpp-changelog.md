@@ -2,7 +2,7 @@
 
 * * *
 
-### v0.34.0 (2019-04-07)
+### v0.34.0 (2020-04-07)
 * Fix crash when attempting to draw zero-size or invalid sprite.
 * Fix crash which could occur when scrolling the viewport on some platforms.
 * Fix crash which could occur when renaming a vehicle group or engine, when the list window is open and sorted by name, on some platforms.
@@ -13,7 +13,7 @@
 * Fix window/viewport rendering regressions from v0.34-rc1.
 * Bump trunk base from commit 71913607540088819b60f12b765504ab7dfe7a64 to commit b50d77b831c60f9f162a6f1d2bc9ca19e702784e.
 
-### v0.34-rc1 (2019-03-11)
+### v0.34-rc1 (2020-03-11)
 * Fix crash when using house pick/place tool with NewGRF houses.
 * Fix crash which could occur when using a high town cargo generation factor.
 * Fix crash which could occur when re-arranging a train displayed in a departure board window.
