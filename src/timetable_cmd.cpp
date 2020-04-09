@@ -48,6 +48,13 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32 val,
 			}
 			order->SetWaitTime(val);
 			order->SetWaitTimetabled(timetabled);
+			if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && timetabled && order->IsWaitTimetabled() && v->GetFirstWaitingLocation(true) == order_number) {
+				for (Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
+					if (u->cur_implicit_order_index == order_number && (u->last_station_visited == order->GetDestination())) {
+						u->lateness_counter += timetable_delta;
+					}
+				}
+			}
 			break;
 
 		case MTF_TRAVEL_TIME:
