@@ -787,9 +787,10 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 	}
 
 	bool just_started = false;
+	bool set_scheduled_dispatch = false;
 
 	/* Start scheduled dispatch at first opportunity */
-	if (!HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED) && HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
+	if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
 		if (IsVehicleAtFirstWaitingLocation(v) && travelling) {
 			/* Update scheduled information */
 			v->orders.list->UpdateScheduledDispatch();
@@ -800,6 +801,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 				SetBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 				v->lateness_counter = _scaled_date_ticks - slot + wait_offset;
 				v->orders.list->SetScheduledDispatchLastDispatch(slot - v->orders.list->GetScheduledDispatchStartTick());
+				set_scheduled_dispatch = true;
 			}
 		}
 	}
@@ -955,28 +957,14 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 	 * when this happens. */
 	if (timetabled == 0 && (travelling || v->lateness_counter >= 0)) return;
 
-	if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION) && HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) {
+	if (set_scheduled_dispatch) {
+		// do nothing
+	} else if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION) && HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) {
 		v->current_order_time = time_taken;
 		v->current_loading_time = time_loading;
 		UpdateSeparationOrder(v);
 		v->current_order_time = 0;
 		v->current_loading_time = 0;
-	} else if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) {
-		const bool is_first_waiting = IsVehicleAtFirstWaitingLocation(v);
-		if (is_first_waiting && travelling) {
-			/* Update scheduled information */
-			v->orders.list->UpdateScheduledDispatch();
-			const int wait_offset = real_timetable_order->GetTimetabledWait();
-			DateTicksScaled slot = GetScheduledDispatchTime(v, wait_offset);
-			if (slot > -1) {
-				v->lateness_counter = _scaled_date_ticks - slot + wait_offset;
-				v->orders.list->SetScheduledDispatchLastDispatch(slot - v->orders.list->GetScheduledDispatchStartTick());
-			} else {
-				v->lateness_counter -= (timetabled - time_taken);
-			}
-		} else {
-			v->lateness_counter -= (timetabled - time_taken);
-		}
 	} else {
 		v->lateness_counter -= (timetabled - time_taken);
 	}
