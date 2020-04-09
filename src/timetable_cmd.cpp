@@ -750,7 +750,7 @@ static DateTicksScaled GetScheduledDispatchTime(Vehicle *v, int wait_offset)
 		}
 
 		DateTicksScaled current_departure = begin_time + current_offset;
-		int32 minimum = _scaled_date_ticks + wait_offset - max_delay;
+		DateTicksScaled minimum = _scaled_date_ticks + wait_offset - max_delay;
 		if (current_departure < minimum) {
 			current_departure += dispatch_duration * ((minimum + dispatch_duration - current_departure - 1) / dispatch_duration);
 		}
