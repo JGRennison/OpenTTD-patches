@@ -802,7 +802,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 			/* Update scheduled information */
 			v->orders.list->UpdateScheduledDispatch();
 
-			const int wait_offset = (real_timetable_order == nullptr) ? 0 : real_timetable_order->GetTimetabledWait();
+			const int wait_offset = real_current_order->GetTimetabledWait();
 			DateTicksScaled slot = GetScheduledDispatchTime(v, wait_offset);
 			if (slot > -1) {
 				SetBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
