@@ -110,7 +110,7 @@ static void NetworkFindBroadcastIPsInternal(NetworkAddressList *broadcast) // Wi
 	if (sock == INVALID_SOCKET) return;
 
 	DWORD len = 0;
-	int num = 2;
+	int num = 8;
 	INTERFACE_INFO *ifo = CallocT<INTERFACE_INFO>(num);
 
 	for (;;) {
@@ -123,6 +123,7 @@ static void NetworkFindBroadcastIPsInternal(NetworkAddressList *broadcast) // Wi
 		num *= 2;
 		ifo = CallocT<INTERFACE_INFO>(num);
 	}
+	assert(len <= num * sizeof(*ifo));
 
 	for (uint j = 0; j < len / sizeof(*ifo); j++) {
 		if (ifo[j].iiFlags & IFF_LOOPBACK) continue;
