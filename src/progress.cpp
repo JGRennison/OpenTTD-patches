@@ -10,6 +10,14 @@
 #include "stdafx.h"
 #include "progress.h"
 
+#include <chrono>
+#include <mutex>
+#include <condition_variable>
+#if defined(__MINGW32__)
+#include "3rdparty/mingw-std-threads/mingw.mutex.h"
+#include "3rdparty/mingw-std-threads/mingw.condition_variable.h"
+#endif
+
 #include "safeguards.h"
 
 /** Are we in a modal progress or not? */
@@ -22,6 +30,9 @@ std::mutex _modal_progress_work_mutex;
 /** Rights for the painting. */
 std::mutex _modal_progress_paint_mutex;
 
+static std::mutex _modal_progress_cv_mutex;
+static std::condition_variable _modal_progress_cv;
+
 /**
  * Set the modal progress state.
  * @note Makes IsFirstModalProgressLoop return true for the next call.
@@ -29,8 +40,11 @@ std::mutex _modal_progress_paint_mutex;
  */
 void SetModalProgress(bool state)
 {
+	_modal_progress_cv_mutex.lock();
 	_in_modal_progress = state;
 	_first_in_modal_loop = true;
+	_modal_progress_cv_mutex.unlock();
+	if (!state) _modal_progress_cv.notify_all();
 }
 
 /**
@@ -43,4 +57,10 @@ bool IsFirstModalProgressLoop()
 	bool ret = _first_in_modal_loop;
 	_first_in_modal_loop = false;
 	return ret;
+}
+
+void SleepWhileModalProgress(int milliseconds)
+{
+	std::unique_lock<std::mutex> lk(_modal_progress_cv_mutex);
+	_modal_progress_cv.wait_for(lk, std::chrono::milliseconds(milliseconds), []{ return !_in_modal_progress; });
 }

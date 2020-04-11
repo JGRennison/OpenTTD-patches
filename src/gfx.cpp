@@ -1495,7 +1495,7 @@ void DrawDirtyBlocks()
 		_modal_progress_work_mutex.unlock();
 
 		/* Wait a while and update _realtime_tick so we are given the rights */
-		if (!is_first_modal_progress_loop) CSleep(MODAL_PROGRESS_REDRAW_TIMEOUT);
+		if (!is_first_modal_progress_loop) SleepWhileModalProgress(MODAL_PROGRESS_REDRAW_TIMEOUT);
 #if defined(__GNUC__) || defined(__clang__)
 		__atomic_add_fetch(&_realtime_tick, MODAL_PROGRESS_REDRAW_TIMEOUT, __ATOMIC_RELAXED);
 #else
