@@ -1268,6 +1268,7 @@ void VideoDriver_Win32::MainLoop()
 			if (_draw_threaded) draw_lock.unlock();
 			GameLoop();
 			if (_draw_threaded) draw_lock.lock();
+			GameLoopPaletteAnimations();
 
 			if (_force_full_redraw) MarkWholeScreenDirty();
 

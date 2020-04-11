@@ -654,7 +654,10 @@ void QZ_GameLoop()
 	_cocoa_subdriver->Draw(true);
 	CSleep(1);
 
-	for (int i = 0; i < 2; i++) GameLoop();
+	for (int i = 0; i < 2; i++) {
+		GameLoop();
+		GameLoopPaletteAnimations();
+	}
 
 	UpdateWindows();
 	QZ_CheckPaletteAnim();
@@ -702,6 +705,7 @@ void QZ_GameLoop()
 			if (old_shift_pressed != _shift_pressed) HandleShiftChanged();
 
 			GameLoop();
+			GameLoopPaletteAnimations();
 
 			UpdateWindows();
 			QZ_CheckPaletteAnim();

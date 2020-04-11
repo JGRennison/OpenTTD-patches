@@ -299,6 +299,7 @@ void VideoDriver_Dedicated::MainLoop()
 			next_tick = cur_ticks + MILLISECONDS_PER_TICK;
 
 			GameLoop();
+			GameLoopPaletteAnimations();
 			UpdateWindows();
 		}
 

@@ -44,6 +44,7 @@
 #include "string_type.h"
 
 void GameLoop();
+void GameLoopPaletteAnimations();
 
 void CreateConsole();
 

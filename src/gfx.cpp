@@ -1238,6 +1238,11 @@ void DoPaletteAnimations()
 	}
 }
 
+void GameLoopPaletteAnimations()
+{
+	if (!_pause_mode && HasBit(_display_opt, DO_FULL_ANIMATION)) DoPaletteAnimations();
+}
+
 /**
  * Determine a contrasty text colour for a coloured background.
  * @param background Background colour.

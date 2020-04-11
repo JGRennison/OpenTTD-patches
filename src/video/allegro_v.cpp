@@ -513,6 +513,7 @@ void VideoDriver_Allegro::MainLoop()
 			if (old_shift_pressed != _shift_pressed) HandleShiftChanged();
 
 			GameLoop();
+			GameLoopPaletteAnimations();
 
 			UpdateWindows();
 			CheckPaletteAnim();
