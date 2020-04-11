@@ -721,8 +721,13 @@ class GRFFileScanner : FileScanner {
 	std::vector<GRFConfig *> grfs;
 
 public:
-	GRFFileScanner() : next_update(_realtime_tick), num_scanned(0)
+	GRFFileScanner() : num_scanned(0)
 	{
+#if defined(__GNUC__) || defined(__clang__)
+		this->next_update = __atomic_load_n(&_realtime_tick, __ATOMIC_RELAXED);
+#else
+		this->next_update = _realtime_tick;
+#endif
 	}
 
 	bool AddFile(const char *filename, size_t basepath_length, const char *tar_filename) override;
@@ -783,7 +788,12 @@ bool GRFFileScanner::AddFile(const char *filename, size_t basepath_length, const
 	}
 
 	this->num_scanned++;
-	if (this->next_update <= _realtime_tick) {
+#if defined(__GNUC__) || defined(__clang__)
+	const uint32 now = __atomic_load_n(&_realtime_tick, __ATOMIC_RELAXED);
+#else
+	const uint32 now = _realtime_tick;
+#endif
+	if (this->next_update <= now) {
 		_modal_progress_work_mutex.unlock();
 		_modal_progress_paint_mutex.lock();
 
@@ -795,7 +805,7 @@ bool GRFFileScanner::AddFile(const char *filename, size_t basepath_length, const
 		_modal_progress_work_mutex.lock();
 		_modal_progress_paint_mutex.unlock();
 
-		this->next_update = _realtime_tick + MODAL_PROGRESS_REDRAW_TIMEOUT;
+		this->next_update = now + MODAL_PROGRESS_REDRAW_TIMEOUT;
 	}
 
 	if (!added) {
