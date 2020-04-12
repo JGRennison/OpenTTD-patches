@@ -44,6 +44,24 @@ static bool _has_console;
 static bool _cursor_disable = true;
 static bool _cursor_visible = true;
 
+static DWORD _tlsdata_key;
+
+struct TLSData {
+	char utf8_buf[512];
+	TCHAR system_buf[512];
+	char locale_retbuf[6];
+};
+
+TLSData *GetTLSData()
+{
+	TLSData *data = (TLSData *) TlsGetValue(_tlsdata_key);
+	if (data == nullptr) {
+		data = CallocT<TLSData>(1);
+		TlsSetValue(_tlsdata_key, data);
+	}
+	return data;
+}
+
 bool MyShowCursor(bool show, bool toggle)
 {
 	if (toggle) _cursor_disable = !_cursor_disable;
@@ -418,6 +436,8 @@ void ShowInfo(const char *str)
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+	_tlsdata_key = TlsAlloc();
+
 	int argc;
 	char *argv[64]; // max 64 command line arguments
 
@@ -566,8 +586,8 @@ bool GetClipboardContents(char *buffer, const char *last)
  */
 const char *FS2OTTD(const TCHAR *name)
 {
-	static char utf8_buf[512];
-	return convert_from_fs(name, utf8_buf, lengthof(utf8_buf));
+	TLSData *data = GetTLSData();
+	return convert_from_fs(name, data->utf8_buf, lengthof(data->utf8_buf));
 }
 
 /**
@@ -584,8 +604,8 @@ const char *FS2OTTD(const TCHAR *name)
  */
 const TCHAR *OTTD2FS(const char *name, bool console_cp)
 {
-	static TCHAR system_buf[512];
-	return convert_to_fs(name, system_buf, lengthof(system_buf), console_cp);
+	TLSData *data = GetTLSData();
+	return convert_to_fs(name, data->system_buf, lengthof(data->system_buf), console_cp);
 }
 
 
@@ -728,8 +748,14 @@ const char *GetCurrentLocale(const char *)
 		return nullptr;
 	}
 	/* Format it as 'en_us'. */
-	static char retbuf[6] = {lang[0], lang[1], '_', country[0], country[1], 0};
-	return retbuf;
+	TLSData *data = GetTLSData();
+	data->locale_retbuf[0] = lang[0];
+	data->locale_retbuf[1] = lang[1];
+	data->locale_retbuf[2] = '_';
+	data->locale_retbuf[3] = country[0];
+	data->locale_retbuf[4] = country[1];
+	data->locale_retbuf[5] = 0;
+	return data->locale_retbuf;
 }
 
 
