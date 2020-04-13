@@ -2,6 +2,16 @@
 
 * * *
 
+### v0.34.1 (2020-04-13)
+* Fix crash which could occur at startup for some combinations of resolution and zoom settings.
+* Fix crash which could occur on WINE on systems with more than two network interfaces.
+* Scheduled dispatch:
+  * Fix double dispatch request when timetable is not started.
+  * Fix lateness not being updated when timetabled waiting time at dispatch point changes.
+  * Fix dispatch order timetabled waiting time being taken as zero in some circumstances.
+* Various changes to improve thread safety/data races.
+* Bump trunk base from commit b50d77b831c60f9f162a6f1d2bc9ca19e702784e to commit 9339e4dcad8aa74ff1b2723ea63a2e31c23f5d44.
+
 ### v0.34.0 (2020-04-07)
 * Fix crash when attempting to draw zero-size or invalid sprite.
 * Fix crash which could occur when scrolling the viewport on some platforms.
