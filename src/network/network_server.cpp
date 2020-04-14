@@ -1157,7 +1157,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet 
 	}
 
 
-	if ((GetCommandFlags(cp.cmd) & CMD_SERVER) && ci->client_id != CLIENT_ID_SERVER && !this->settings_authed) {
+	if ((GetCommandFlags(cp.cmd) & (CMD_SERVER | CMD_SERVER_NS)) && ci->client_id != CLIENT_ID_SERVER && !this->settings_authed) {
 		IConsolePrintF(CC_ERROR, "WARNING: server only command from: client %d (IP: %s), kicking...", ci->client_id, this->GetClientIP());
 		return this->SendError(NETWORK_ERROR_KICKED);
 	}
@@ -1173,7 +1173,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet 
 	 * something pretty naughty (or a bug), and will be kicked
 	 */
 	if (!(cp.cmd == CMD_COMPANY_CTRL && cp.p1 == 0 && ci->client_playas == COMPANY_NEW_COMPANY) && ci->client_playas != cp.company &&
-			!((GetCommandFlags(cp.cmd) & CMD_SERVER) && this->settings_authed)) {
+			!((GetCommandFlags(cp.cmd) & (CMD_SERVER | CMD_SERVER_NS)) && this->settings_authed)) {
 		IConsolePrintF(CC_ERROR, "WARNING: client %d (IP: %s) tried to execute a command as company %d, kicking...",
 		               ci->client_playas + 1, this->GetClientIP(), cp.company + 1);
 		return this->SendError(NETWORK_ERROR_COMPANY_MISMATCH);
