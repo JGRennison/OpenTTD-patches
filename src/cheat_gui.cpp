@@ -27,6 +27,7 @@
 #include "tile_map.h"
 #include "newgrf.h"
 #include "error.h"
+#include "network/network.h"
 
 #include "widgets/cheat_widget.h"
 
@@ -147,20 +148,6 @@ static int32 ClickChangeMaxHlCheat(int32 p1, int32 p2)
 	return _settings_game.construction.max_heightlevel;
 }
 
-/** Available cheats. */
-enum CheatNumbers {
-	CHT_MONEY,           ///< Change amount of money.
-	CHT_CHANGE_COMPANY,  ///< Switch company.
-	CHT_EXTRA_DYNAMITE,  ///< Dynamite anything.
-	CHT_CROSSINGTUNNELS, ///< Allow tunnels to cross each other.
-	CHT_NO_JETCRASH,     ///< Disable jet-airplane crashes.
-	CHT_SETUP_PROD,      ///< Allow manually editing of industry production.
-	CHT_EDIT_MAX_HL,     ///< Edit maximum allowed heightlevel
-	CHT_CHANGE_DATE,     ///< Do time traveling.
-
-	CHT_NUM_CHEATS,      ///< Number of cheats.
-};
-
 /**
  * Signature of handler function when user clicks at a cheat.
  * @param p1 The new value.
@@ -168,8 +155,14 @@ enum CheatNumbers {
  */
 typedef int32 CheckButtonClick(int32 p1, int32 p2);
 
+enum CheatNetworkMode {
+	CNM_ALL,
+	CNM_LOCAL_ONLY,
+};
+
 /** Information of a cheat. */
 struct CheatEntry {
+	CheatNetworkMode mode; ///< network/local mode
 	VarType type;          ///< type of selector
 	StringID str;          ///< string with descriptive text
 	void *variable;        ///< pointer to the variable
@@ -182,14 +175,14 @@ struct CheatEntry {
  * Order matches with the values of #CheatNumbers
  */
 static const CheatEntry _cheats_ui[] = {
-	{SLE_INT32, STR_CHEAT_MONEY,           &_money_cheat_amount,                    &_cheats.money.been_used,            &ClickMoneyCheat         },
-	{SLE_UINT8, STR_CHEAT_CHANGE_COMPANY,  &_local_company,                         &_cheats.switch_company.been_used,   &ClickChangeCompanyCheat },
-	{SLE_BOOL,  STR_CHEAT_EXTRA_DYNAMITE,  &_cheats.magic_bulldozer.value,          &_cheats.magic_bulldozer.been_used,  nullptr                     },
-	{SLE_BOOL,  STR_CHEAT_CROSSINGTUNNELS, &_cheats.crossing_tunnels.value,         &_cheats.crossing_tunnels.been_used, nullptr                     },
-	{SLE_BOOL,  STR_CHEAT_NO_JETCRASH,     &_cheats.no_jetcrash.value,              &_cheats.no_jetcrash.been_used,      nullptr                     },
-	{SLE_BOOL,  STR_CHEAT_SETUP_PROD,      &_cheats.setup_prod.value,               &_cheats.setup_prod.been_used,       &ClickSetProdCheat       },
-	{SLE_UINT8, STR_CHEAT_EDIT_MAX_HL,     &_settings_game.construction.max_heightlevel, &_cheats.edit_max_hl.been_used, &ClickChangeMaxHlCheat   },
-	{SLE_INT32, STR_CHEAT_CHANGE_DATE,     &_cur_year,                              &_cheats.change_date.been_used,      &ClickChangeDateCheat    },
+	{CNM_LOCAL_ONLY, SLE_INT32, STR_CHEAT_MONEY,           &_money_cheat_amount,                    &_cheats.money.been_used,            &ClickMoneyCheat         },
+	{CNM_LOCAL_ONLY, SLE_UINT8, STR_CHEAT_CHANGE_COMPANY,  &_local_company,                         &_cheats.switch_company.been_used,   &ClickChangeCompanyCheat },
+	{CNM_ALL,        SLE_BOOL,  STR_CHEAT_EXTRA_DYNAMITE,  &_cheats.magic_bulldozer.value,          &_cheats.magic_bulldozer.been_used,  nullptr                  },
+	{CNM_ALL,        SLE_BOOL,  STR_CHEAT_CROSSINGTUNNELS, &_cheats.crossing_tunnels.value,         &_cheats.crossing_tunnels.been_used, nullptr                  },
+	{CNM_ALL,        SLE_BOOL,  STR_CHEAT_NO_JETCRASH,     &_cheats.no_jetcrash.value,              &_cheats.no_jetcrash.been_used,      nullptr                  },
+	{CNM_LOCAL_ONLY, SLE_BOOL,  STR_CHEAT_SETUP_PROD,      &_cheats.setup_prod.value,               &_cheats.setup_prod.been_used,       &ClickSetProdCheat       },
+	{CNM_LOCAL_ONLY, SLE_UINT8, STR_CHEAT_EDIT_MAX_HL,     &_settings_game.construction.max_heightlevel, &_cheats.edit_max_hl.been_used, &ClickChangeMaxHlCheat   },
+	{CNM_LOCAL_ONLY, SLE_INT32, STR_CHEAT_CHANGE_DATE,     &_cur_year,                              &_cheats.change_date.been_used,      &ClickChangeDateCheat    },
 };
 
 assert_compile(CHT_NUM_CHEATS == lengthof(_cheats_ui));
@@ -237,6 +230,7 @@ struct CheatWindow : Window {
 
 		for (int i = 0; i != lengthof(_cheats_ui); i++) {
 			const CheatEntry *ce = &_cheats_ui[i];
+			if (_networking && ce->mode == CNM_LOCAL_ONLY) continue;
 
 			DrawSprite((*ce->been_used) ? SPR_BOX_CHECKED : SPR_BOX_EMPTY, PAL_NONE, box_left, y + icon_y_offset + 2);
 
@@ -286,8 +280,11 @@ struct CheatWindow : Window {
 		if (widget != WID_C_PANEL) return;
 
 		uint width = 0;
+		uint lines = 0;
 		for (int i = 0; i != lengthof(_cheats_ui); i++) {
 			const CheatEntry *ce = &_cheats_ui[i];
+			if (_networking && ce->mode == CNM_LOCAL_ONLY) continue;
+			lines++;
 			switch (ce->type) {
 				case SLE_BOOL:
 					SetDParam(0, STR_CONFIG_SETTING_ON);
@@ -325,7 +322,7 @@ struct CheatWindow : Window {
 
 		size->width = width + 20 + this->box_width + SETTING_BUTTON_WIDTH /* stuff on the left */ + 10 /* extra spacing on right */;
 		this->header_height = GetStringHeight(STR_CHEATS_WARNING, size->width - WD_FRAMERECT_LEFT - WD_FRAMERECT_RIGHT) + WD_PAR_VSEP_WIDE;
-		size->height = this->header_height + WD_FRAMERECT_TOP + WD_PAR_VSEP_NORMAL + WD_FRAMERECT_BOTTOM + this->line_height * lengthof(_cheats_ui);
+		size->height = this->header_height + WD_FRAMERECT_TOP + WD_PAR_VSEP_NORMAL + WD_FRAMERECT_BOTTOM + this->line_height * lines;
 	}
 
 	void OnClick(Point pt, int widget, int click_count) override
@@ -335,6 +332,11 @@ struct CheatWindow : Window {
 		int x = pt.x - wid->pos_x;
 		bool rtl = _current_text_dir == TD_RTL;
 		if (rtl) x = wid->current_x - x;
+
+		for (uint i = 0; i != lengthof(_cheats_ui) && i <= btn; i++) {
+			const CheatEntry *ce = &_cheats_ui[i];
+			if (_networking && ce->mode == CNM_LOCAL_ONLY) btn++;
+		}
 
 		if (btn >= lengthof(_cheats_ui)) return;
 
@@ -358,12 +360,12 @@ struct CheatWindow : Window {
 		/* Not clicking a button? */
 		if (!IsInsideMM(x, 10 + this->box_width, 10 + this->box_width + SETTING_BUTTON_WIDTH)) return;
 
-		*ce->been_used = true;
+		if (!_networking) *ce->been_used = true;
 
 		switch (ce->type) {
 			case SLE_BOOL:
 				value ^= 1;
-				if (ce->proc != nullptr) ce->proc(value, 0);
+				if (ce->proc != nullptr && !_networking) ce->proc(value, 0);
 				break;
 
 			default:
@@ -375,7 +377,13 @@ struct CheatWindow : Window {
 				break;
 		}
 
-		if (value != oldvalue) WriteValue(ce->variable, ce->type, (int64)value);
+		if (value != oldvalue) {
+			if (_networking) {
+				DoCommandP(0, (uint32)btn, (uint32)value, CMD_CHEAT_SETTING);
+			} else {
+				WriteValue(ce->variable, ce->type, (int64)value);
+			}
+		}
 
 		this->SetTimeout();
 
@@ -390,6 +398,8 @@ struct CheatWindow : Window {
 
 	void OnQueryTextFinished(char *str) override
 	{
+		if (_networking) return;
+
 		/* Was 'cancel' pressed or nothing entered? */
 		if (str == nullptr || StrEmpty(str)) return;
 

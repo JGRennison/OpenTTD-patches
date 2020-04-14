@@ -1286,6 +1286,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_SETTINGS_ACCESS
 
 	_network_settings_access = p->Recv_bool();
 
+	DeleteWindowById(WC_CHEATS, 0);
 	ReInitAllWindows();
 
 	return NETWORK_RECV_STATUS_OKAY;

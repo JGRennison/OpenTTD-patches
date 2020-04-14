@@ -160,6 +160,7 @@ CommandProc CmdClearArea;
 CommandProc CmdGiveMoney;
 CommandProc CmdMoneyCheat;
 CommandProc CmdChangeBankBalance;
+CommandProc CmdCheatSetting;
 CommandProc CmdBuildCanal;
 CommandProc CmdBuildLock;
 
@@ -380,6 +381,7 @@ static const Command _command_proc_table[] = {
 
 	DEF_CMD(CmdMoneyCheat,                           CMD_OFFLINE, CMDT_CHEAT                 ), // CMD_MONEY_CHEAT
 	DEF_CMD(CmdChangeBankBalance,                      CMD_DEITY, CMDT_MONEY_MANAGEMENT      ), // CMD_CHANGE_BANK_BALANCE
+	DEF_CMD(CmdCheatSetting,                          CMD_SERVER, CMDT_CHEAT                 ), // CMD_CHEAT_SETTING
 	DEF_CMD(CmdBuildCanal,                              CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_CANAL
 	DEF_CMD(CmdCreateSubsidy,                          CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_CREATE_SUBSIDY
 	DEF_CMD(CmdCompanyCtrl, CMD_SPECTATOR | CMD_CLIENT_ID | CMD_NO_EST, CMDT_SERVER_SETTING  ), // CMD_COMPANY_CTRL

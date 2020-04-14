@@ -20,6 +20,7 @@
 #include "company_gui.h"
 #include "company_base.h"
 #include "core/backup_type.hpp"
+#include "cheat_type.h"
 
 #include "table/strings.h"
 
@@ -198,6 +199,42 @@ CommandCost CmdPause(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, 
 CommandCost CmdMoneyCheat(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	return CommandCost(EXPENSES_OTHER, -(int32)p1);
+}
+
+/**
+ * Change the value of a cheat setting.
+ * @param tile unused
+ * @param flags operation to perform
+ * @param p1 the cheat number
+ * @param p2 the cheat value
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdCheatSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	Cheat *cht = nullptr;
+	switch ((CheatNumbers) p1) {
+		case CHT_EXTRA_DYNAMITE:
+			cht = &_cheats.magic_bulldozer;
+			break;
+
+		case CHT_CROSSINGTUNNELS:
+			cht = &_cheats.crossing_tunnels;
+			break;
+
+		case CHT_NO_JETCRASH:
+			cht = &_cheats.no_jetcrash;
+			break;
+
+		default:
+			return CMD_ERROR;
+	}
+	if (flags & DC_EXEC) {
+		cht->value  = p2;
+		cht->been_used = true;
+		SetWindowDirty(WC_CHEATS, 0);
+	}
+	return CommandCost();
 }
 
 /**

@@ -2154,7 +2154,7 @@ struct MainToolbarWindow : Window {
 			case MTHK_ZOOMEDIN_SCREENSHOT: MenuClickScreenshot(SC_ZOOMEDIN); break;
 			case MTHK_DEFAULTZOOM_SCREENSHOT: MenuClickScreenshot(SC_DEFAULTZOOM); break;
 			case MTHK_GIANT_SCREENSHOT: MenuClickScreenshot(SC_WORLD); break;
-			case MTHK_CHEATS: if (!_networking) ShowCheatWindow(); break;
+			case MTHK_CHEATS: if (!_networking || _network_server || _network_settings_access) ShowCheatWindow(); break;
 			case MTHK_TERRAFORM: ShowTerraformToolbar(); break;
 			case MTHK_EXTRA_VIEWPORT: ShowExtraViewPortWindowForTileUnderCursor(); break;
 			case MTHK_CLIENT_LIST: if (_networking) ShowClientList(); break;
