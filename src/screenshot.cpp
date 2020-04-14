@@ -908,7 +908,7 @@ bool MakeScreenshot(ScreenshotType t, const char *name)
 		}
 
 		case SC_MINIMAP:
-			ret = MakeMinimapWorldScreenshot(nullptr);
+			ret = MakeMinimapWorldScreenshot(name);
 			break;
 
 		default:
