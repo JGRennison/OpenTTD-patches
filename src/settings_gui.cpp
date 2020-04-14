@@ -1983,6 +1983,7 @@ static SettingsContainer &GetSettingsTree()
 			ai->Add(new SettingEntry("economy.give_money"));
 			ai->Add(new SettingEntry("economy.allow_shares"));
 			ai->Add(new SettingEntry("economy.min_years_for_shares"));
+			ai->Add(new SettingEntry("difficulty.money_cheat_in_multiplayer"));
 		}
 
 		main->Init();

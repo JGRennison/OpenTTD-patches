@@ -317,6 +317,7 @@ enum Commands {
 	CMD_CLEAR_AREA,                   ///< clear an area
 
 	CMD_MONEY_CHEAT,                  ///< do the money cheat
+	CMD_MONEY_CHEAT_ADMIN,            ///< do the money cheat (admin mode)
 	CMD_CHANGE_BANK_BALANCE,          ///< change bank balance to charge costs or give money from a GS
 	CMD_CHEAT_SETTING,                ///< change a cheat setting
 	CMD_BUILD_CANAL,                  ///< build a canal

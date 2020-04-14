@@ -67,6 +67,7 @@ struct DifficultySettings {
 	bool   line_reverse_mode;                ///< reversing at stations or not
 	bool   disasters;                        ///< are disasters enabled
 	byte   town_council_tolerance;           ///< minimum required town ratings to be allowed to demolish stuff
+	bool   money_cheat_in_multiplayer;       ///< is the money cheat permitted for non-admin multiplayer clients
 };
 
 /** Settings relating to viewport/smallmap scrolling. */

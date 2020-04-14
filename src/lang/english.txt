@@ -1188,6 +1188,8 @@ STR_CONFIG_SETTING_DISASTERS                                    :Disasters: {STR
 STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Toggle disasters which may occasionally block or destroy vehicles or infrastructure
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Town council's attitude towards area restructuring: {STRING2}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Choose how much noise and environmental damage by companies affect their town rating and further construction actions in their area
+STR_MONEY_CHEAT_MULTIPLAYER                                     :Allow multiplayer clients to use the money cheat: {STRING2}
+STR_MONEY_CHEAT_MULTIPLAYER_HELPTEXT                            :If enabled, non-admin multiplayer clients can use the money cheat. The money cheat is always available in single-player mode, and to the multiplayer server admin.
 
 STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Maximum map height: {STRING2}
 STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Set the maximum allowed height for mountains on the map

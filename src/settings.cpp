@@ -1273,6 +1273,12 @@ static bool DifficultyNoiseChange(int32 i)
 	return true;
 }
 
+static bool DifficultyMoneyCheatMultiplayerChange(int32 i)
+{
+	DeleteWindowById(WC_CHEATS, 0);
+	return true;
+}
+
 static bool MaxNoAIsChange(int32 i)
 {
 	if (GetGameSettings().difficulty.max_no_competitors != 0 &&

@@ -54,7 +54,7 @@ static int32 _money_cheat_amount = 10000000;
  */
 static int32 ClickMoneyCheat(int32 p1, int32 p2)
 {
-	DoCommandP(0, (uint32)(p2 * _money_cheat_amount), 0, CMD_MONEY_CHEAT);
+	DoCommandP(0, (uint32)(p2 * _money_cheat_amount), 0, _network_server || _network_settings_access ? CMD_MONEY_CHEAT_ADMIN : CMD_MONEY_CHEAT);
 	return _money_cheat_amount;
 }
 
@@ -158,6 +158,7 @@ typedef int32 CheckButtonClick(int32 p1, int32 p2);
 enum CheatNetworkMode {
 	CNM_ALL,
 	CNM_LOCAL_ONLY,
+	CNM_MONEY,
 };
 
 /** Information of a cheat. */
@@ -175,7 +176,7 @@ struct CheatEntry {
  * Order matches with the values of #CheatNumbers
  */
 static const CheatEntry _cheats_ui[] = {
-	{CNM_LOCAL_ONLY, SLE_INT32, STR_CHEAT_MONEY,           &_money_cheat_amount,                    &_cheats.money.been_used,            &ClickMoneyCheat         },
+	{CNM_MONEY,      SLE_INT32, STR_CHEAT_MONEY,           &_money_cheat_amount,                    &_cheats.money.been_used,            &ClickMoneyCheat         },
 	{CNM_LOCAL_ONLY, SLE_UINT8, STR_CHEAT_CHANGE_COMPANY,  &_local_company,                         &_cheats.switch_company.been_used,   &ClickChangeCompanyCheat },
 	{CNM_ALL,        SLE_BOOL,  STR_CHEAT_EXTRA_DYNAMITE,  &_cheats.magic_bulldozer.value,          &_cheats.magic_bulldozer.been_used,  nullptr                  },
 	{CNM_ALL,        SLE_BOOL,  STR_CHEAT_CROSSINGTUNNELS, &_cheats.crossing_tunnels.value,         &_cheats.crossing_tunnels.been_used, nullptr                  },
@@ -184,6 +185,21 @@ static const CheatEntry _cheats_ui[] = {
 	{CNM_LOCAL_ONLY, SLE_UINT8, STR_CHEAT_EDIT_MAX_HL,     &_settings_game.construction.max_heightlevel, &_cheats.edit_max_hl.been_used, &ClickChangeMaxHlCheat   },
 	{CNM_LOCAL_ONLY, SLE_INT32, STR_CHEAT_CHANGE_DATE,     &_cur_year,                              &_cheats.change_date.been_used,      &ClickChangeDateCheat    },
 };
+
+static bool IsCheatAllowed(CheatNetworkMode mode)
+{
+	switch (mode) {
+		case CNM_ALL:
+			return !_networking || _network_server || _network_settings_access;
+
+		case CNM_LOCAL_ONLY:
+			return !_networking;
+
+		case CNM_MONEY:
+			return !_networking || _network_server || _network_settings_access || _settings_game.difficulty.money_cheat_in_multiplayer;
+	}
+	return false;
+}
 
 assert_compile(CHT_NUM_CHEATS == lengthof(_cheats_ui));
 
@@ -230,7 +246,7 @@ struct CheatWindow : Window {
 
 		for (int i = 0; i != lengthof(_cheats_ui); i++) {
 			const CheatEntry *ce = &_cheats_ui[i];
-			if (_networking && ce->mode == CNM_LOCAL_ONLY) continue;
+			if (!IsCheatAllowed(ce->mode)) continue;
 
 			DrawSprite((*ce->been_used) ? SPR_BOX_CHECKED : SPR_BOX_EMPTY, PAL_NONE, box_left, y + icon_y_offset + 2);
 
@@ -283,7 +299,7 @@ struct CheatWindow : Window {
 		uint lines = 0;
 		for (int i = 0; i != lengthof(_cheats_ui); i++) {
 			const CheatEntry *ce = &_cheats_ui[i];
-			if (_networking && ce->mode == CNM_LOCAL_ONLY) continue;
+			if (!IsCheatAllowed(ce->mode)) continue;
 			lines++;
 			switch (ce->type) {
 				case SLE_BOOL:
@@ -335,7 +351,7 @@ struct CheatWindow : Window {
 
 		for (uint i = 0; i != lengthof(_cheats_ui) && i <= btn; i++) {
 			const CheatEntry *ce = &_cheats_ui[i];
-			if (_networking && ce->mode == CNM_LOCAL_ONLY) btn++;
+			if (!IsCheatAllowed(ce->mode)) btn++;
 		}
 
 		if (btn >= lengthof(_cheats_ui)) return;
@@ -379,7 +395,7 @@ struct CheatWindow : Window {
 
 		if (value != oldvalue) {
 			if (_networking) {
-				DoCommandP(0, (uint32)btn, (uint32)value, CMD_CHEAT_SETTING);
+				if (btn != CHT_MONEY) DoCommandP(0, (uint32)btn, (uint32)value, CMD_CHEAT_SETTING);
 			} else {
 				WriteValue(ce->variable, ce->type, (int64)value);
 			}
@@ -426,5 +442,7 @@ static WindowDesc _cheats_desc(
 void ShowCheatWindow()
 {
 	DeleteWindowById(WC_CHEATS, 0);
-	new CheatWindow(&_cheats_desc);
+	if (!_networking || _network_server || _network_settings_access || _settings_game.difficulty.money_cheat_in_multiplayer) {
+		new CheatWindow(&_cheats_desc);
+	}
 }
