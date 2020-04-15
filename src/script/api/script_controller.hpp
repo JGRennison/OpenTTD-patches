@@ -127,6 +127,11 @@ public:
 	static int GetOpsTillSuspend();
 
 	/**
+	 * Decrease the number of operations the script can execute before being suspended.
+	 */
+	static void DecreaseOps(int amount);
+
+	/**
 	 * Get the value of one of your settings you set via info.nut.
 	 * @param name The name of the setting.
 	 * @return the value for the setting, or -1 if the setting is not known.

@@ -95,6 +95,11 @@ ScriptController::~ScriptController()
 	return ScriptObject::GetActiveInstance()->GetOpsTillSuspend();
 }
 
+/* static */ void ScriptController::DecreaseOps(int amount)
+{
+	Squirrel::DecreaseOps(ScriptObject::GetActiveInstance()->engine->GetVM(), amount);
+}
+
 /* static */ int ScriptController::GetSetting(const char *name)
 {
 	return ScriptObject::GetActiveInstance()->GetSetting(name);

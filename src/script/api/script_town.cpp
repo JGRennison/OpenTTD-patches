@@ -11,6 +11,7 @@
 #include "script_town.hpp"
 #include "script_map.hpp"
 #include "script_error.hpp"
+#include "script_controller.hpp"
 #include "../../town.h"
 #include "../../townname_func.h"
 #include "../../string_func.h"
@@ -280,6 +281,8 @@
 
 /* static */ bool ScriptTown::FoundTown(TileIndex tile, TownSize size, bool city, RoadLayout layout, Text *name)
 {
+	ScriptController::DecreaseOps(5000);
+
 	CCountedPtr<Text> counter(name);
 
 	EnforcePrecondition(false, ScriptObject::GetCompany() == OWNER_DEITY || _settings_game.economy.found_town != TF_FORBIDDEN);
@@ -301,6 +304,7 @@
 	}
 	uint32 townnameparts;
 	if (!GenerateTownName(&townnameparts)) {
+		ScriptController::DecreaseOps(50000);
 		ScriptObject::SetLastError(ScriptError::ERR_NAME_IS_NOT_UNIQUE);
 		return false;
 	}
