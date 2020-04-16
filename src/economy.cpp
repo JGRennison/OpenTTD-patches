@@ -2031,12 +2031,13 @@ static void LoadUnloadVehicle(Vehicle *front)
 
 	ClrBit(front->vehicle_flags, VF_STOP_LOADING);
 
-	bool has_full_load_order = front->current_order.GetLoadType() & OLFB_FULL_LOAD;
-	if (front->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
+	CargoTypes full_load_cargo_mask = 0;
+	if (front->current_order.GetLoadType() & OLFB_FULL_LOAD) {
+		full_load_cargo_mask = ALL_CARGOTYPES;
+	} else if (front->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
 		for (Vehicle *v = front; v != nullptr; v = v->Next()) {
 			if (front->current_order.GetCargoLoadTypeRaw(v->cargo_type) & OLFB_FULL_LOAD) {
-				has_full_load_order = true;
-				break;
+				SetBit(full_load_cargo_mask, v->cargo_type);
 			}
 		}
 	}
@@ -2050,7 +2051,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 		}
 		/* We loaded less cargo than possible for all cargo types and it's not full
 		 * load and we're not supposed to wait any longer: stop loading. */
-		if (!anything_unloaded && full_load_amount == 0 && reservation_left == 0 && !has_full_load_order &&
+		if (!anything_unloaded && full_load_amount == 0 && reservation_left == 0 && full_load_cargo_mask == 0 &&
 				(front->current_order_time >= (uint)max<int>(front->current_order.GetTimetabledWait() - front->lateness_counter, 0) ||
 				front->current_order.GetLeaveType() == OLT_LEAVE_EARLY)) {
 			SetBit(front->vehicle_flags, VF_STOP_LOADING);
@@ -2060,7 +2061,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 	} else {
 		UpdateLoadUnloadTicks(front, st, 20, platform_length_left); // We need the ticks for link refreshing.
 		bool finished_loading = true;
-		if (has_full_load_order) {
+		if (full_load_cargo_mask != 0) {
 			const bool full_load_any_order = front->current_order.GetLoadType() == OLF_FULL_LOAD_ANY;
 			if (full_load_any_order) {
 				/* if the aircraft carries passengers and is NOT full, then
@@ -2069,7 +2070,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 						(cargo_not_full != 0 && ((cargo_full | beyond_platform_end_cargo_full) & ~cargo_not_full) == 0)) { // There are still non-full cargoes
 					finished_loading = false;
 				}
-			} else if (cargo_not_full != 0) {
+			} else if ((cargo_not_full & full_load_cargo_mask) != 0) {
 				finished_loading = false;
 			}
 			if (finished_loading && pull_through_mode) {
