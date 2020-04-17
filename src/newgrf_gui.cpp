@@ -965,8 +965,14 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 					GRFConfig *c = *pc;
 					if (c->next == this->active_sel) {
 						c->next = this->active_sel->next;
-						this->active_sel->next = c;
-						*pc = this->active_sel;
+						if (_ctrl_pressed) {
+							this->active_sel->next = this->actives;
+							this->actives = this->active_sel;
+							pos = 0;
+						} else {
+							this->active_sel->next = c;
+							*pc = this->active_sel;
+						}
 						break;
 					}
 				}
@@ -986,7 +992,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 						*pc = c->next;
 						c->next = c->next->next;
 						(*pc)->next = c;
-						break;
+						if (!_ctrl_pressed || c->next == nullptr) break;
 					}
 				}
 				this->vscroll->ScrollTowards(pos);
