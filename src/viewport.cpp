@@ -3013,9 +3013,10 @@ static void ViewportProcessParentSprites()
 			const int orig_width = _cur_dpi->width;
 			const int orig_left = _cur_dpi->left;
 			_cur_dpi->width = (orig_width / 2) & ScaleByZoom(-1, _cur_dpi->zoom);
-			int split = _cur_dpi->left + _cur_dpi->width;
+			const int margin = UnScaleByZoom(128, _cur_dpi->zoom); // Half tile (1 column) margin either side of split
+			const int split = _cur_dpi->left + _cur_dpi->width;
 			for (ParentSpriteToDraw *psd : all_sprites) {
-				if (psd->left < split) _vd.parent_sprites_to_sort.push_back(psd);
+				if (psd->left < split + margin) _vd.parent_sprites_to_sort.push_back(psd);
 			}
 			ViewportProcessParentSprites();
 			_vd.parent_sprites_to_sort.clear();
@@ -3027,7 +3028,7 @@ static void ViewportProcessParentSprites()
 
 			for (ParentSpriteToDraw *psd : all_sprites) {
 				psd->SetComparisonDone(false);
-				if (psd->left + psd->width > _cur_dpi->left) {
+				if (psd->left + psd->width > _cur_dpi->left - margin) {
 					_vd.parent_sprites_to_sort.push_back(psd);
 				}
 			}
