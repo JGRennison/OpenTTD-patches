@@ -26,6 +26,8 @@ struct ExtraCheatNameDesc {
 };
 
 static ExtraCheatNameDesc _extra_cheat_descs[] = {
+	{ "inflation_cost",   &_extra_cheats.inflation_cost },
+	{ "inflation_income", &_extra_cheats.inflation_income },
 };
 
 /**

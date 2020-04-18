@@ -38,6 +38,8 @@ struct Cheats {
 };
 
 struct ExtraCheats {
+	Cheat inflation_cost;   ///< inflation cost factor
+	Cheat inflation_income; ///< inflation income factor
 };
 
 /** Available cheats. */
@@ -50,6 +52,8 @@ enum CheatNumbers {
 	CHT_SETUP_PROD,      ///< Allow manually editing of industry production.
 	CHT_EDIT_MAX_HL,     ///< Edit maximum allowed heightlevel
 	CHT_CHANGE_DATE,     ///< Do time traveling.
+	CHT_INFLATION_COST,  ///< Change inflation cost factor
+	CHT_INFLATION_INCOME,///< Change inflation income factor
 
 	CHT_NUM_CHEATS,      ///< Number of cheats.
 };

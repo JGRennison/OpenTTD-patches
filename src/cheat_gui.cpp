@@ -176,14 +176,16 @@ struct CheatEntry {
  * Order matches with the values of #CheatNumbers
  */
 static const CheatEntry _cheats_ui[] = {
-	{CNM_MONEY,      SLE_INT32, STR_CHEAT_MONEY,           &_money_cheat_amount,                    &_cheats.money.been_used,            &ClickMoneyCheat         },
-	{CNM_LOCAL_ONLY, SLE_UINT8, STR_CHEAT_CHANGE_COMPANY,  &_local_company,                         &_cheats.switch_company.been_used,   &ClickChangeCompanyCheat },
-	{CNM_ALL,        SLE_BOOL,  STR_CHEAT_EXTRA_DYNAMITE,  &_cheats.magic_bulldozer.value,          &_cheats.magic_bulldozer.been_used,  nullptr                  },
-	{CNM_ALL,        SLE_BOOL,  STR_CHEAT_CROSSINGTUNNELS, &_cheats.crossing_tunnels.value,         &_cheats.crossing_tunnels.been_used, nullptr                  },
-	{CNM_ALL,        SLE_BOOL,  STR_CHEAT_NO_JETCRASH,     &_cheats.no_jetcrash.value,              &_cheats.no_jetcrash.been_used,      nullptr                  },
-	{CNM_LOCAL_ONLY, SLE_BOOL,  STR_CHEAT_SETUP_PROD,      &_cheats.setup_prod.value,               &_cheats.setup_prod.been_used,       &ClickSetProdCheat       },
-	{CNM_LOCAL_ONLY, SLE_UINT8, STR_CHEAT_EDIT_MAX_HL,     &_settings_game.construction.max_heightlevel, &_cheats.edit_max_hl.been_used, &ClickChangeMaxHlCheat   },
-	{CNM_LOCAL_ONLY, SLE_INT32, STR_CHEAT_CHANGE_DATE,     &_cur_year,                              &_cheats.change_date.been_used,      &ClickChangeDateCheat    },
+	{CNM_MONEY,      SLE_INT32,       STR_CHEAT_MONEY,            &_money_cheat_amount,                    &_cheats.money.been_used,                  &ClickMoneyCheat           },
+	{CNM_LOCAL_ONLY, SLE_UINT8,       STR_CHEAT_CHANGE_COMPANY,   &_local_company,                         &_cheats.switch_company.been_used,         &ClickChangeCompanyCheat   },
+	{CNM_ALL,        SLE_BOOL,        STR_CHEAT_EXTRA_DYNAMITE,   &_cheats.magic_bulldozer.value,          &_cheats.magic_bulldozer.been_used,        nullptr                    },
+	{CNM_ALL,        SLE_BOOL,        STR_CHEAT_CROSSINGTUNNELS,  &_cheats.crossing_tunnels.value,         &_cheats.crossing_tunnels.been_used,       nullptr                    },
+	{CNM_ALL,        SLE_BOOL,        STR_CHEAT_NO_JETCRASH,      &_cheats.no_jetcrash.value,              &_cheats.no_jetcrash.been_used,            nullptr                    },
+	{CNM_LOCAL_ONLY, SLE_BOOL,        STR_CHEAT_SETUP_PROD,       &_cheats.setup_prod.value,               &_cheats.setup_prod.been_used,             &ClickSetProdCheat         },
+	{CNM_LOCAL_ONLY, SLE_UINT8,       STR_CHEAT_EDIT_MAX_HL,      &_settings_game.construction.max_heightlevel, &_cheats.edit_max_hl.been_used,       &ClickChangeMaxHlCheat     },
+	{CNM_LOCAL_ONLY, SLE_INT32,       STR_CHEAT_CHANGE_DATE,      &_cur_year,                              &_cheats.change_date.been_used,            &ClickChangeDateCheat      },
+	{CNM_ALL,        SLF_NOT_IN_SAVE, STR_CHEAT_INFLATION_COST,   &_economy.inflation_prices,              &_extra_cheats.inflation_cost.been_used,   nullptr                    },
+	{CNM_ALL,        SLF_NOT_IN_SAVE, STR_CHEAT_INFLATION_INCOME, &_economy.inflation_payment,             &_extra_cheats.inflation_income.been_used, nullptr                    },
 };
 
 static bool IsCheatAllowed(CheatNetworkMode mode)
@@ -251,6 +253,18 @@ struct CheatWindow : Window {
 			DrawSprite((*ce->been_used) ? SPR_BOX_CHECKED : SPR_BOX_EMPTY, PAL_NONE, box_left, y + icon_y_offset + 2);
 
 			switch (ce->type) {
+				case SLF_NOT_IN_SAVE: {
+					/* Change inflation factors */
+
+					/* Draw [<][>] boxes for settings of an integer-type */
+					DrawArrowButtons(button_left, y + icon_y_offset, COLOUR_YELLOW, clicked - (i * 2), true, true);
+
+					uint64 val = (uint64)ReadValue(ce->variable, SLE_UINT64);
+					SetDParam(0, val * 1000 >> 16);
+					SetDParam(1, 3);
+					break;
+				}
+
 				case SLE_BOOL: {
 					bool on = (*(bool*)ce->variable);
 
@@ -302,6 +316,10 @@ struct CheatWindow : Window {
 			if (!IsCheatAllowed(ce->mode)) continue;
 			lines++;
 			switch (ce->type) {
+				case SLF_NOT_IN_SAVE:
+					/* Change inflation factors */
+					break;
+
 				case SLE_BOOL:
 					SetDParam(0, STR_CONFIG_SETTING_ON);
 					width = max(width, GetStringBoundingBox(ce->str).width);
@@ -371,6 +389,17 @@ struct CheatWindow : Window {
 			SetDParam(0, value);
 			ShowQueryString(STR_JUST_INT, STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT, 8, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 			return;
+		} else if (ce->type == SLF_NOT_IN_SAVE && x >= 20 + this->box_width + SETTING_BUTTON_WIDTH) {
+			clicked_widget = btn;
+			uint64 val = (uint64)ReadValue(ce->variable, SLE_UINT64);
+			SetDParam(0, val * 1000 >> 16);
+			SetDParam(1, 3);
+			StringID str = (btn == CHT_INFLATION_COST) ? STR_CHEAT_INFLATION_COST_QUERY_CAPT : STR_CHEAT_INFLATION_INCOME_QUERY_CAPT;
+			char *saved = _settings_game.locale.digit_group_separator;
+			_settings_game.locale.digit_group_separator = const_cast<char*>("");
+			ShowQueryString(STR_JUST_DECIMAL, str, 12, this, CS_NUMERAL_DECIMAL, QSF_ACCEPT_UNCHANGED);
+			_settings_game.locale.digit_group_separator = saved;
+			return;
 		}
 
 		/* Not clicking a button? */
@@ -379,6 +408,14 @@ struct CheatWindow : Window {
 		if (!_networking) *ce->been_used = true;
 
 		switch (ce->type) {
+			case SLF_NOT_IN_SAVE: {
+				/* Change inflation factors */
+				uint64 value = (uint64)ReadValue(ce->variable, SLE_UINT64) + (((x >= 10 + this->box_width + SETTING_BUTTON_WIDTH / 2) ? 1 : -1) << 16);
+				value = Clamp<uint64>(value, 1 << 16, MAX_INFLATION);
+				DoCommandP(0, (uint32)btn, (uint32)value, CMD_CHEAT_SETTING);
+				break;
+			}
+
 			case SLE_BOOL:
 				value ^= 1;
 				if (ce->proc != nullptr && !_networking) ce->proc(value, 0);
@@ -414,12 +451,20 @@ struct CheatWindow : Window {
 
 	void OnQueryTextFinished(char *str) override
 	{
-		if (_networking) return;
-
 		/* Was 'cancel' pressed or nothing entered? */
 		if (str == nullptr || StrEmpty(str)) return;
 
 		const CheatEntry *ce = &_cheats_ui[clicked_widget];
+
+		if (ce->type == SLF_NOT_IN_SAVE) {
+			char tmp_buffer[32];
+			strecpy(tmp_buffer, str, lastof(tmp_buffer));
+			str_replace_wchar(tmp_buffer, lastof(tmp_buffer), GetDecimalSeparatorChar(), '.');
+			DoCommandP(0, (uint32)clicked_widget, (uint32)Clamp<uint64>(atof(tmp_buffer) * 65536.0, 1 << 16, MAX_INFLATION), CMD_CHEAT_SETTING);
+			return;
+		}
+
+		if (_networking) return;
 		int oldvalue = (int32)ReadValue(ce->variable, ce->type);
 		int value = atoi(str);
 		*ce->been_used = true;

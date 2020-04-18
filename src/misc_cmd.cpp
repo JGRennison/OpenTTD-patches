@@ -249,6 +249,32 @@ CommandCost CmdCheatSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 			cht = &_cheats.no_jetcrash;
 			break;
 
+		case CHT_INFLATION_INCOME:
+			if (flags & DC_EXEC) {
+				_extra_cheats.inflation_income.been_used = true;
+				_economy.inflation_payment = Clamp<uint64>(p2, 1 << 16, MAX_INFLATION);
+				if (_economy.inflation_payment > _economy.inflation_prices) {
+					_economy.inflation_prices = _economy.inflation_payment;
+					_extra_cheats.inflation_cost.been_used = true;
+				}
+				RecomputePrices();
+				SetWindowDirty(WC_CHEATS, 0);
+			}
+			return CommandCost();
+
+		case CHT_INFLATION_COST:
+			if (flags & DC_EXEC) {
+				_extra_cheats.inflation_cost.been_used = true;
+				_economy.inflation_prices = Clamp<uint64>(p2, 1 << 16, MAX_INFLATION);
+				if (_economy.inflation_payment > _economy.inflation_prices) {
+					_economy.inflation_payment = _economy.inflation_prices;
+					_extra_cheats.inflation_income.been_used = true;
+				}
+				RecomputePrices();
+				SetWindowDirty(WC_CHEATS, 0);
+			}
+			return CommandCost();
+
 		default:
 			return CMD_ERROR;
 	}
