@@ -3097,18 +3097,8 @@ void ViewportDoDraw(ViewPort *vp, int left, int top, int right, int bottom)
 
 		if (_vd.tile_sprites_to_draw.size() != 0) ViewportDrawTileSprites(&_vd.tile_sprites_to_draw);
 
-		{
-			const int vd_left = _vd.dpi.left;
-			const int vd_top = _vd.dpi.top;
-			const int vd_right = _vd.dpi.left + _vd.dpi.width;
-			const int vd_bottom = _vd.dpi.top + _vd.dpi.height;
-			for (auto &psd : _vd.parent_sprites_to_draw) {
-				if (psd.left >= vd_right) continue;
-				if (psd.top >= vd_bottom) continue;
-				if (psd.left + psd.width <= vd_left) continue;
-				if (psd.top + psd.height <= vd_top) continue;
-				_vd.parent_sprites_to_sort.push_back(&psd);
-			}
+		for (auto &psd : _vd.parent_sprites_to_draw) {
+			_vd.parent_sprites_to_sort.push_back(&psd);
 		}
 
 		ViewportProcessParentSprites();
