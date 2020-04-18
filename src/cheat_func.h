@@ -13,6 +13,7 @@
 #include "cheat_type.h"
 
 extern Cheats _cheats;
+extern ExtraCheats _extra_cheats;
 
 void ShowCheatWindow();
 

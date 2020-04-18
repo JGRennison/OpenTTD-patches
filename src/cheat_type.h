@@ -37,6 +37,9 @@ struct Cheats {
 	Cheat edit_max_hl;      ///< edit the maximum heightlevel; this is a cheat because of the fact that it needs to reset NewGRF game state and doing so as a simple configuration breaks the expectation of many
 };
 
+struct ExtraCheats {
+};
+
 /** Available cheats. */
 enum CheatNumbers {
 	CHT_MONEY,           ///< Change amount of money.
@@ -52,5 +55,6 @@ enum CheatNumbers {
 };
 
 extern Cheats _cheats;
+extern ExtraCheats _extra_cheats;
 
 #endif /* CHEAT_TYPE_H */
