@@ -981,7 +981,8 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 		right           = RemapCoords(x + bb_offset_x, y + h          , z + bb_offset_z).x + 1;
 		top  = tmp_top  = RemapCoords(x + bb_offset_x, y + bb_offset_y, z + dz         ).y;
 		bottom          = RemapCoords(x + w          , y + h          , z + bb_offset_z).y + 1;
-		tmp_width = tmp_height = 0;
+		tmp_width = right - left;
+		tmp_height = bottom - top;
 	} else {
 		const Sprite *spr = GetSprite(image & SPRITE_MASK, ST_NORMAL);
 		left = tmp_left = (pt.x += spr->x_offs);
