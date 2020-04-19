@@ -323,6 +323,8 @@ static void SetRailSnapTile(TileIndex tile);
 enum ViewportDebugFlags {
 	VDF_DIRTY_BLOCK_PER_DRAW,
 	VDF_DIRTY_WHOLE_VIEWPORT,
+	VDF_DIRTY_BLOCK_PER_SPLIT,
+	VDF_DISABLE_DRAW_SPLIT,
 };
 uint32 _viewport_debug_flags;
 
@@ -2975,7 +2977,7 @@ void ViewportMapDraw(const ViewPort * const vp)
 
 static void ViewportProcessParentSprites()
 {
-	if (_vd.parent_sprites_to_sort.size() > 60 && (_cur_dpi->width >= 256 || _cur_dpi->height >= 256) && !_draw_bounding_boxes) {
+	if (_vd.parent_sprites_to_sort.size() > 60 && (_cur_dpi->width >= 256 || _cur_dpi->height >= 256) && !_draw_bounding_boxes && !HasBit(_viewport_debug_flags, VDF_DISABLE_DRAW_SPLIT)) {
 		/* split drawing region */
 		ParentSpriteToSortVector all_sprites = std::move(_vd.parent_sprites_to_sort);
 		_vd.parent_sprites_to_sort.clear();
@@ -3042,6 +3044,11 @@ static void ViewportProcessParentSprites()
 	} else {
 		_vp_sprite_sorter(&_vd.parent_sprites_to_sort);
 		ViewportDrawParentSprites(&_vd.parent_sprites_to_sort, &_vd.child_screen_sprites_to_draw);
+
+		if (_draw_dirty_blocks && HasBit(_viewport_debug_flags, VDF_DIRTY_BLOCK_PER_SPLIT)) {
+			ViewportDrawDirtyBlocks();
+			++_dirty_block_colour;
+		}
 	}
 }
 
@@ -3106,7 +3113,7 @@ void ViewportDoDraw(ViewPort *vp, int left, int top, int right, int bottom)
 
 		if (_draw_bounding_boxes) ViewportDrawBoundingBoxes(&_vd.parent_sprites_to_sort);
 	}
-	if (_draw_dirty_blocks) {
+	if (_draw_dirty_blocks && !(HasBit(_viewport_debug_flags, VDF_DIRTY_BLOCK_PER_SPLIT) && vp->zoom < ZOOM_LVL_DRAW_MAP)) {
 		ViewportDrawDirtyBlocks();
 		if (HasBit(_viewport_debug_flags, VDF_DIRTY_BLOCK_PER_DRAW)) ++_dirty_block_colour;
 	}
