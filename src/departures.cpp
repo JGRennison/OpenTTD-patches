@@ -276,7 +276,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 				status = D_CANCELLED;
 			}
 
-			if (v->current_order.IsAnyLoadingType()) {
+			if (v->current_order.IsAnyLoadingType() || v->current_order.IsType(OT_WAITING)) {
 				/* Account for the vehicle having reached the current order and being in the loading phase. */
 				status = D_ARRIVED;
 				start_date -= order->GetTravelTime() + ((v->lateness_counter < 0) ? v->lateness_counter : 0);
@@ -362,7 +362,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 					}
 
 					/* If we are early, use the scheduled date as the expected date. We also take lateness to be zero. */
-					if (!should_reset_lateness && v->lateness_counter < 0 && !v->current_order.IsAnyLoadingType()) {
+					if (!should_reset_lateness && v->lateness_counter < 0 && !(v->current_order.IsAnyLoadingType() || v->current_order.IsType(OT_WAITING))) {
 						od->expected_date -= v->lateness_counter;
 					}
 
