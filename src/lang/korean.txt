@@ -1188,6 +1188,8 @@ STR_CONFIG_SETTING_DISASTERS                                    :재앙: {STRING
 STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :일정 구역이나 차량, 기반시설을 간혹 파괴할 수도 있는 재앙을 켜거나 끕니다.
 STR_CONFIG_SETTING_CITY_APPROVAL                                :지역 개발에 대한 도시의 태도: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :회사가 유발하는 소음과 환경 파괴가 회사에 대한 도시의 평가치와 향후 해당 지역에서 건설하는 행동에 얼마나 영향을 미칠지 선택하십시오.
+STR_MONEY_CHEAT_MULTIPLAYER                                     :멑티플레이 유저들이 돈 치트를 사용할 수 있게 허용: {STRING}
+STR_MONEY_CHEAT_MULTIPLAYER_HELPTEXT                            :이 설정을 켜면, 관리자가 아닌 멀티플레이 유저가 돈 치트를 사용할 수 있습니다. 돈 치트는 싱글플레이 모드에서는 언제나 사용 가능하며, 서버 관리자는 멀티플레이 모드에서도 사용 가능합니다.
 
 STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :최대 지형 높이: {STRING}
 STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :지도에 생성되는 산이 가질 수 있는 최대 높이를 설정합니다.
@@ -2078,6 +2080,10 @@ STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :장난감나라
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}날짜 변경: {ORANGE}{DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}현재의 연도를 변경
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}1차 산업시설 생산량 조절 허용: {ORANGE}{STRING}
+STR_CHEAT_INFLATION_COST                                        :{LTBLUE}인플레이션 지출 배수 변경: {ORANGE}{DECIMAL}
+STR_CHEAT_INFLATION_COST_QUERY_CAPT                             :{WHITE}인플레이션 지출 배수를 변경합니다.
+STR_CHEAT_INFLATION_INCOME                                      :{LTBLUE}인플레이션 수익 배수 변경: {ORANGE}{DECIMAL}
+STR_CHEAT_INFLATION_INCOME_QUERY_CAPT                           :{WHITE}인플레이션 수익 배수를 변경합니다.
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} - 색상
