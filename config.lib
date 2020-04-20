@@ -1914,6 +1914,29 @@ EOL
 		CFLAGS="$CFLAGS -DWITH_BITMATH_BUILTINS"
 	fi
 
+	log 2 "executing $cc_host $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.overflow-builtins -x c++ -"
+	"$cc_host" $CFLAGS $LDFLAGS $STATIC_FLAGS -o tmp.config.overflow-builtins -x c++ - 2> /dev/null << EOL
+		#include <cstdint>
+		int main() {
+			int64_t a = 0;
+			int64_t b = 0;
+			int64_t c = 0;
+			bool res1 = __builtin_add_overflow(a, b, &c);
+			bool res2 = __builtin_sub_overflow(a, b, &c);
+			bool res3 = __builtin_mul_overflow(a, b, &c);
+			return (res1 || res2 || res3) ? 1 : 0;
+		}
+EOL
+	ret=$?
+	rm -f tmp.config.overflow-builtins
+	log 2 "  exit code $ret"
+	if [ $ret -ne 0 ]; then
+		log 1 "checking overflow builtins... no"
+	else
+		log 1 "checking overflow builtins... found"
+		CFLAGS="$CFLAGS -DWITH_OVERFLOW_BUILTINS"
+	fi
+
 	if [ "$os" != "CYGWIN" ] && [ "$os" != "HAIKU" ] && [ "$os" != "MORPHOS" ] && [ "$os" != "OSX" ] && [ "$os" != "DOS" ] && [ "$os" != "WINCE" ] && [ "$os" != "PSP" ] && [ "$os" != "OS2" ]; then
 		log 2 "executing $cc_host $CFLAGS $CFLAGS_ENV $LDFLAGS $LDFLAGS_ENV -o tmp.config.demangle -x c++ - -lstdc++"
 		"$cc_host" $CFLAGS $CFLAGS_ENV $LDFLAGS $LDFLAGS_ENV -o tmp.config.demangle -x c++ - -lstdc++ 2> /dev/null << EOL

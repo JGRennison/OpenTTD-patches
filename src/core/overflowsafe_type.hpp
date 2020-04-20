@@ -46,12 +46,30 @@ public:
 	 */
 	inline OverflowSafeInt& operator += (const OverflowSafeInt& other)
 	{
+#ifdef WITH_OVERFLOW_BUILTINS
+		if (unlikely(__builtin_add_overflow(this->m_value, other.m_value, &this->m_value))) {
+			this->m_value = (other.m_value < 0) ? T_MIN : T_MAX;
+		}
+#else
 		if ((T_MAX - abs(other.m_value)) < abs(this->m_value) &&
 				(this->m_value < 0) == (other.m_value < 0)) {
 			this->m_value = (this->m_value < 0) ? T_MIN : T_MAX ;
 		} else {
 			this->m_value += other.m_value;
 		}
+#endif
+		return *this;
+	}
+
+	inline OverflowSafeInt& operator -= (const OverflowSafeInt& other)
+	{
+#ifdef WITH_OVERFLOW_BUILTINS
+		if (unlikely(__builtin_sub_overflow(this->m_value, other.m_value, &this->m_value))) {
+			this->m_value = (other.m_value < 0) ? T_MAX : T_MIN;
+		}
+#else
+		*this += (-other);
+#endif
 		return *this;
 	}
 
@@ -59,7 +77,6 @@ public:
 	inline OverflowSafeInt  operator +  (const OverflowSafeInt& other) const { OverflowSafeInt result = *this; result += other; return result; }
 	inline OverflowSafeInt  operator +  (const int              other) const { OverflowSafeInt result = *this; result += (int64)other; return result; }
 	inline OverflowSafeInt  operator +  (const uint             other) const { OverflowSafeInt result = *this; result += (int64)other; return result; }
-	inline OverflowSafeInt& operator -= (const OverflowSafeInt& other)       { return *this += (-other); }
 	inline OverflowSafeInt  operator -  (const OverflowSafeInt& other) const { OverflowSafeInt result = *this; result -= other; return result; }
 	inline OverflowSafeInt  operator -  (const int              other) const { OverflowSafeInt result = *this; result -= (int64)other; return result; }
 	inline OverflowSafeInt  operator -  (const uint             other) const { OverflowSafeInt result = *this; result -= (int64)other; return result; }
@@ -77,11 +94,17 @@ public:
 	 */
 	inline OverflowSafeInt& operator *= (const int factor)
 	{
+#ifdef WITH_OVERFLOW_BUILTINS
+		if (unlikely(__builtin_mul_overflow(this->m_value, factor, &this->m_value))) {
+			this->m_value = ((this->m_value < 0) == (factor < 0)) ? T_MAX : T_MIN;
+		}
+#else
 		if (factor != 0 && (T_MAX / abs(factor)) < abs(this->m_value)) {
 			 this->m_value = ((this->m_value < 0) == (factor < 0)) ? T_MAX : T_MIN ;
 		} else {
 			this->m_value *= factor ;
 		}
+#endif
 		return *this;
 	}
 
