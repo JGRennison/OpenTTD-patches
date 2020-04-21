@@ -2129,7 +2129,7 @@ DEF_CONSOLE_CMD(ConDumpLoadDebugLog)
 	}
 
 	std::string dbgl = _loadgame_DBGL_data;
-	PrintLineByLine(const_cast<char *>(_loadgame_DBGL_data.c_str()));
+	PrintLineByLine(const_cast<char *>(dbgl.c_str()));
 	return true;
 }
 
