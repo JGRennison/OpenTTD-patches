@@ -2133,6 +2133,18 @@ DEF_CONSOLE_CMD(ConDumpLoadDebugLog)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConDumpLoadDebugConfig)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump load debug config.");
+		return true;
+	}
+
+	std::string dbgc = _loadgame_DBGC_data;
+	PrintLineByLine(const_cast<char *>(dbgc.c_str()));
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConCheckCaches)
 {
 	if (argc == 0) {
@@ -2647,6 +2659,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("dump_st_flow_stats", ConStFlowStats, nullptr, true);
 	IConsoleCmdRegister("dump_game_events", ConDumpGameEvents, nullptr, true);
 	IConsoleCmdRegister("dump_load_debug_log", ConDumpLoadDebugLog, nullptr, true);
+	IConsoleCmdRegister("dump_load_debug_config", ConDumpLoadDebugConfig, nullptr, true);
 	IConsoleCmdRegister("check_caches", ConCheckCaches, nullptr, true);
 	IConsoleCmdRegister("show_town_window", ConShowTownWindow, nullptr, true);
 	IConsoleCmdRegister("show_station_window", ConShowStationWindow, nullptr, true);

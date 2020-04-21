@@ -401,6 +401,7 @@ public:
 
 		printf("Writing crash savegame...\n");
 		_savegame_DBGL_data = buffer;
+		_save_DBGC_data = true;
 		if (!this->WriteSavegame(filename_save, lastof(filename_save))) {
 			filename_save[0] = '\0';
 			ret = false;

@@ -335,14 +335,24 @@ static void WriteSavegameDebugData(const char *name)
 	};
 	p += seprintf(p, buflast, "Name:         %s\n", name);
 	if (_load_check_data.debug_log_data.size()) {
-		p += seprintf(p, buflast, "%u bytes of debug data in savegame\n", (uint) _load_check_data.debug_log_data.size());
+		p += seprintf(p, buflast, "%u bytes of debug log data in savegame\n", (uint) _load_check_data.debug_log_data.size());
 		std::string buffer = _load_check_data.debug_log_data;
 		ProcessLineByLine(const_cast<char *>(buffer.data()), [&](const char *line) {
 			if (buflast - p <= 1024) bump_size();
 			p += seprintf(p, buflast, "> %s\n", line);
 		});
 	} else {
-		p += seprintf(p, buflast, "No debug data in savegame\n");
+		p += seprintf(p, buflast, "No debug log data in savegame\n");
+	}
+	if (_load_check_data.debug_config_data.size()) {
+		p += seprintf(p, buflast, "%u bytes of debug config data in savegame\n", (uint) _load_check_data.debug_config_data.size());
+		std::string buffer = _load_check_data.debug_config_data;
+		ProcessLineByLine(const_cast<char *>(buffer.data()), [&](const char *line) {
+			if (buflast - p <= 1024) bump_size();
+			p += seprintf(p, buflast, "> %s\n", line);
+		});
+	} else {
+		p += seprintf(p, buflast, "No debug config data in savegame\n");
 	}
 
 	/* ShowInfo put output to stderr, but version information should go
@@ -431,6 +441,7 @@ static void ShutdownGame()
 	_game_load_tick_skip_counter = 0;
 	_game_load_time = 0;
 	_loadgame_DBGL_data.clear();
+	_loadgame_DBGC_data.clear();
 }
 
 /**
@@ -777,7 +788,7 @@ int openttd_main(int argc, char *argv[])
 			FiosGetSavegameListCallback(SLO_LOAD, mgo.opt, strrchr(mgo.opt, '.'), title, lastof(title));
 
 			_load_check_data.Clear();
-			if (i == 'K') _load_check_data.want_debug_log_data = true;
+			if (i == 'K') _load_check_data.want_debug_data = true;
 			SaveOrLoadResult res = SaveOrLoad(mgo.opt, SLO_CHECK, DFT_GAME_FILE, SAVE_DIR, false);
 			if (res != SL_OK || _load_check_data.HasErrors()) {
 				fprintf(stderr, "Failed to open savegame\n");

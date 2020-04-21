@@ -59,6 +59,8 @@ extern int _debug_random_level;
 
 extern const char *_savegame_DBGL_data;
 extern std::string _loadgame_DBGL_data;
+extern bool _save_DBGC_data;
+extern std::string _loadgame_DBGC_data;
 
 void CDECL debug(const char *dbg, const char *format, ...) WARN_FORMAT(2, 3);
 

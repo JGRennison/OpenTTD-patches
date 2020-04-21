@@ -88,6 +88,7 @@ GameSettings _settings_game;     ///< Game settings of a running game or the sce
 GameSettings _settings_newgame;  ///< Game settings for new games (updated from the intro screen).
 VehicleDefaultSettings _old_vds; ///< Used for loading default vehicles settings from old savegames
 char *_config_file; ///< Configuration file of OpenTTD
+std::string _config_file_text;
 
 typedef std::list<ErrorMessageData> ErrorList;
 static ErrorList _settings_error_list; ///< Errors while loading minimal settings.
@@ -1891,7 +1892,7 @@ static void HandleSettingDescs(IniFile *ini, SettingDescProc *proc, SettingDescP
 static IniFile *IniLoadConfig()
 {
 	IniFile *ini = new IniFile(_list_group_names);
-	ini->LoadFromDisk(_config_file, NO_DIRECTORY);
+	ini->LoadFromDisk(_config_file, NO_DIRECTORY, &_config_file_text);
 	return ini;
 }
 

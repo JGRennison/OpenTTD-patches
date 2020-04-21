@@ -38,7 +38,7 @@ static void Load_DBGL()
 
 static void Check_DBGL()
 {
-	if (!_load_check_data.want_debug_log_data) {
+	if (!_load_check_data.want_debug_data) {
 		SlSkipBytes(SlGetFieldLength());
 		return;
 	}
@@ -49,6 +49,44 @@ static void Check_DBGL()
 	}
 }
 
+static void Save_DBGC()
+{
+	extern std::string _config_file_text;
+	const char header[] = "*** openttd.cfg start ***\n";
+	const char footer[] = "*** openttd.cfg end ***\n";
+	if (_save_DBGC_data) {
+		SlSetLength(lengthof(header) + _config_file_text.size() + lengthof(footer) - 2);
+		MemoryDumper::GetCurrent()->CopyBytes(reinterpret_cast<const byte *>(header), lengthof(header) - 1);
+		MemoryDumper::GetCurrent()->CopyBytes(reinterpret_cast<const byte *>(_config_file_text.data()), _config_file_text.size());
+		MemoryDumper::GetCurrent()->CopyBytes(reinterpret_cast<const byte *>(footer), lengthof(footer) - 1);
+	} else {
+		SlSetLength(0);
+	}
+}
+
+static void Load_DBGC()
+{
+	size_t length = SlGetFieldLength();
+	if (length) {
+		_loadgame_DBGC_data.resize(length);
+		ReadBuffer::GetCurrent()->CopyBytes(reinterpret_cast<byte *>(const_cast<char *>(_loadgame_DBGC_data.data())), length);
+	}
+}
+
+static void Check_DBGC()
+{
+	if (!_load_check_data.want_debug_data) {
+		SlSkipBytes(SlGetFieldLength());
+		return;
+	}
+	size_t length = SlGetFieldLength();
+	if (length) {
+		_load_check_data.debug_config_data.resize(length);
+		ReadBuffer::GetCurrent()->CopyBytes(reinterpret_cast<byte *>(const_cast<char *>(_load_check_data.debug_config_data.data())), length);
+	}
+}
+
 extern const ChunkHandler _debug_chunk_handlers[] = {
-	{ 'DBGL', Save_DBGL, Load_DBGL, nullptr, Check_DBGL, CH_RIFF | CH_LAST},
+	{ 'DBGL', Save_DBGL, Load_DBGL, nullptr, Check_DBGL, CH_RIFF},
+	{ 'DBGC', Save_DBGC, Load_DBGC, nullptr, Check_DBGC, CH_RIFF | CH_LAST},
 };

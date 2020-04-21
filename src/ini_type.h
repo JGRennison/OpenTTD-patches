@@ -62,7 +62,7 @@ struct IniLoadFile {
 	IniGroup *GetGroup(const char *name, size_t len = 0, bool create_new = true);
 	void RemoveGroup(const char *name);
 
-	void LoadFromDisk(const char *filename, Subdirectory subdir);
+	void LoadFromDisk(const char *filename, Subdirectory subdir, std::string *save = nullptr);
 
 	/**
 	 * Open the INI file.

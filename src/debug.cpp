@@ -56,6 +56,8 @@ int _debug_random_level;
 
 const char *_savegame_DBGL_data = nullptr;
 std::string _loadgame_DBGL_data;
+bool _save_DBGC_data = false;
+std::string _loadgame_DBGC_data;
 
 uint32 _realtime_tick = 0;
 

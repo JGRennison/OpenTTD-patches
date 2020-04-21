@@ -829,6 +829,7 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 					ExitProcess(2);
 				case 13: // Emergency save
 					_savegame_DBGL_data = CrashLogWindows::current->crashlog;
+					_save_DBGC_data = true;
 					char filename[MAX_PATH];
 					if (CrashLogWindows::current->WriteSavegame(filename, lastof(filename))) {
 						size_t len = _tcslen(_save_succeeded) + _tcslen(OTTD2FS(filename)) + 1;
@@ -839,6 +840,7 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 						MessageBox(wnd, _T("Save failed"), _T("Save failed"), MB_ICONINFORMATION);
 					}
 					_savegame_DBGL_data = nullptr;
+					_save_DBGC_data = false;
 					break;
 				case 15: // Expand window to show crash-message
 					_expanded ^= 1;
