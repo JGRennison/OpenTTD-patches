@@ -482,8 +482,8 @@ public:
 			int y1 = 2 * TileY(prev.tile);
 			int x2 = 2 * TileX(cur.tile);
 			int y2 = 2 * TileY(cur.tile);
-			int dx = abs(x1 - x2);
-			int dy = abs(y1 - y2);
+			int dx = abs(x1 - x2) + 1;
+			int dy = abs(y1 - y2) + 1;
 			int dmin = min(dx, dy);
 			int dxy = abs(dx - dy);
 			segment_entry_cost += dmin * YAPF_TILE_CORNER_LENGTH + (dxy - 1) * (YAPF_TILE_LENGTH / 2);
