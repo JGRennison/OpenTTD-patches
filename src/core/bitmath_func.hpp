@@ -401,14 +401,14 @@ static inline T ROR(const T x, const uint8 n)
 	 * (since it will use hardware swapping if available).
 	 * Even though they should return uint16 and uint32, we get
 	 * warnings if we don't cast those (why?) */
-	#define BSWAP64(x) ((uint64)CFSwapInt64((uint64)x))
-	#define BSWAP32(x) ((uint32)CFSwapInt32((uint32)x))
-	#define BSWAP16(x) ((uint16)CFSwapInt16((uint16)x))
+	#define BSWAP64(x) ((uint64)CFSwapInt64((uint64)(x)))
+	#define BSWAP32(x) ((uint32)CFSwapInt32((uint32)(x)))
+	#define BSWAP16(x) ((uint16)CFSwapInt16((uint16)(x)))
 #elif defined(_MSC_VER)
 	/* MSVC has intrinsics for swapping, resulting in faster code */
-	#define BSWAP64(x) ((uint64)_byteswap_uint64((uint64)x))
-	#define BSWAP32(x) ((uint32)_byteswap_ulong((uint32)x))
-	#define BSWAP16(x) ((uint16)_byteswap_ushort((uint16)x))
+	#define BSWAP64(x) ((uint64)_byteswap_uint64((uint64)(x)))
+	#define BSWAP32(x) ((uint32)_byteswap_ulong((uint32)(x)))
+	#define BSWAP16(x) ((uint16)_byteswap_ushort((uint16)(x)))
 #else
 	/**
 	 * Perform a 64 bits endianness bitswap on x.
