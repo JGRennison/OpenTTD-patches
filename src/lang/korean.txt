@@ -1188,8 +1188,8 @@ STR_CONFIG_SETTING_DISASTERS                                    :재앙: {STRING
 STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :일정 구역이나 차량, 기반시설을 간혹 파괴할 수도 있는 재앙을 켜거나 끕니다.
 STR_CONFIG_SETTING_CITY_APPROVAL                                :지역 개발에 대한 도시의 태도: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :회사가 유발하는 소음과 환경 파괴가 회사에 대한 도시의 평가치와 향후 해당 지역에서 건설하는 행동에 얼마나 영향을 미칠지 선택하십시오.
-STR_MONEY_CHEAT_MULTIPLAYER                                     :멀티플레이 유저들이 돈 치트를 사용할 수 있게 허용: {STRING}
-STR_MONEY_CHEAT_MULTIPLAYER_HELPTEXT                            :이 설정을 켜면, 관리자가 아닌 멀티플레이 유저가 돈 치트를 사용할 수 있습니다. 돈 치트는 싱글플레이 모드에서는 언제나 사용 가능하며, 서버 관리자는 멀티플레이 모드에서도 사용 가능합니다.
+STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER                      :멀티플레이 유저들이 돈 치트를 사용할 수 있게 허용: {STRING}
+STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER_HELPTEXT             :이 설정을 켜면, 관리자가 아닌 멀티플레이 유저가 돈 치트를 사용할 수 있습니다. 돈 치트는 싱글플레이 모드에서는 언제나 사용 가능하며, 서버 관리자는 멀티플레이 모드에서도 사용 가능합니다.
 
 STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :최대 지형 높이: {STRING}
 STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :지도에 생성되는 산이 가질 수 있는 최대 높이를 설정합니다.
