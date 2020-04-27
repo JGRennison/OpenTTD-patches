@@ -16,6 +16,8 @@
 #include "station_base.h"
 #include "waypoint_base.h"
 #include "map_func.h"
+#include "window_func.h"
+#include "window_gui.h"
 #include "table/strings.h"
 
 #include "safeguards.h"
@@ -131,5 +133,11 @@ const char *scope_dumper::StationInfo(const BaseStation *st)
 const char *scope_dumper::TileInfo(TileIndex tile)
 {
 	DumpTileInfo(this->buffer, lastof(this->buffer), tile);
+	return this->buffer;
+}
+
+const char *scope_dumper::WindowInfo(const Window *w)
+{
+	DumpWindowInfo(this->buffer, lastof(this->buffer), w);
 	return this->buffer;
 }

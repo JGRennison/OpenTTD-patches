@@ -106,6 +106,7 @@
 #include "core/container_func.hpp"
 #include "tunnelbridge_map.h"
 #include "video/video_driver.hpp"
+#include "scope_info.h"
 
 #include <map>
 #include <vector>
@@ -665,6 +666,7 @@ static void SetViewportPosition(Window *w, int x, int y, bool force_update_overl
 		if (i >= 0) height -= i;
 
 		if (height > 0 && (_vp_move_offs.x != 0 || _vp_move_offs.y != 0)) {
+			SCOPE_INFO_FMT([&], "DoSetViewportPosition: %d, %d, %d, %d, %d, %d, %s", left, top, width, height, _vp_move_offs.x, _vp_move_offs.y, scope_dumper().WindowInfo(w));
 			DoSetViewportPosition((Window *) w->z_front, left, top, width, height);
 			ClearViewPortCache(w->viewport);
 		}

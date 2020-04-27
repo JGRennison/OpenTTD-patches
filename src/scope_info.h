@@ -17,6 +17,7 @@
 
 struct Vehicle;
 struct BaseStation;
+struct Window;
 
 #ifdef USE_SCOPE_INFO
 
@@ -71,6 +72,7 @@ struct scope_dumper {
 	const char *VehicleInfo(const Vehicle *v);
 	const char *StationInfo(const BaseStation *st);
 	const char *TileInfo(TileIndex tile);
+	const char *WindowInfo(const Window *w);
 
 private:
 	char buffer[512];
