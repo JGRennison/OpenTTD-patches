@@ -626,7 +626,7 @@ bool CrashLog::WriteScreenshot(char *filename, const char *filename_last, const 
  * information like paths to the console.
  * @return true when everything is made successfully.
  */
-bool CrashLog::MakeCrashLog() const
+bool CrashLog::MakeCrashLog()
 {
 	/* Don't keep looping logging crashes. */
 	static bool crashlogged = false;
@@ -637,13 +637,17 @@ bool CrashLog::MakeCrashLog() const
 	char buffer[65536 * 4];
 	bool ret = true;
 
+	char *name_buffer_date = this->name_buffer + seprintf(this->name_buffer, lastof(this->name_buffer), "crash-");
+	time_t cur_time = time(nullptr);
+	strftime(name_buffer_date, lastof(this->name_buffer) - name_buffer_date, "%Y%m%dT%H%M%SZ", gmtime(&cur_time));
+
 	printf("Crash encountered, generating crash log...\n");
 	this->FillCrashLog(buffer, lastof(buffer));
 	printf("%s\n", buffer);
 	printf("Crash log generated.\n\n");
 
 	printf("Writing crash log to disk...\n");
-	bool bret = this->WriteCrashLog(buffer, filename, lastof(filename));
+	bool bret = this->WriteCrashLog(buffer, filename, lastof(filename), this->name_buffer);
 	if (bret) {
 		printf("Crash log written to %s. Please add this file to any bug reports.\n\n", filename);
 	} else {
@@ -767,7 +771,7 @@ bool CrashLog::MakeCrashSavegameAndScreenshot() const
 	bool ret = true;
 
 	printf("Writing crash savegame...\n");
-	bool bret = this->WriteSavegame(filename, lastof(filename));
+	bool bret = this->WriteSavegame(filename, lastof(filename), this->name_buffer);
 	if (bret) {
 		printf("Crash savegame written to %s. Please add this file and the last (auto)save to any bug reports.\n\n", filename);
 	} else {
@@ -776,7 +780,7 @@ bool CrashLog::MakeCrashSavegameAndScreenshot() const
 	}
 
 	printf("Writing crash screenshot...\n");
-	bret = this->WriteScreenshot(filename, lastof(filename));
+	bret = this->WriteScreenshot(filename, lastof(filename), this->name_buffer);
 	if (bret) {
 		printf("Crash screenshot written to %s. Please add this file to any bug reports.\n\n", filename);
 	} else {
