@@ -3711,3 +3711,25 @@ PickerWindowBase::~PickerWindowBase()
 	this->window_class = WC_INVALID; // stop the ancestor from freeing the already (to be) child
 	ResetObjectToPlace();
 }
+
+char *DumpWindowInfo(char *b, const char *last, const Window *w)
+{
+	if (w == nullptr) {
+		b += seprintf(b, last, "window: nullptr");
+		return b;
+	}
+	b += seprintf(b, last, "window: class: %u, num: %u, flags: 0x%X, l: %d, t: %d, w: %d, h: %d, owner: %d",
+			w->window_class, w->window_number, w->flags, w->left, w->top, w->width, w->height, w->owner);
+	if (w->viewport != nullptr) {
+		const ViewportData *vd = w->viewport;
+		b += seprintf(b, last, ", viewport: (veh: 0x%X, x: (%d, %d), y: (%d, %d), z: %u, l: %d, t: %d, w: %d, h: %d, vl: %d, vt: %d, vw: %d, vh: %d, dbc: %u, dbr: %u, dblm: %u, db: %u)",
+				vd->follow_vehicle, vd->scrollpos_x, vd->dest_scrollpos_x, vd->scrollpos_y, vd->dest_scrollpos_y, vd->zoom, vd->left, vd->top, vd->width, vd->height,
+				vd->virtual_left, vd->virtual_top, vd->virtual_width, vd->virtual_height, vd->dirty_blocks_per_column, vd->dirty_blocks_per_row, vd->dirty_block_left_margin,
+				(uint) vd->dirty_blocks.size());
+	}
+	if (w->parent != nullptr) {
+		b += seprintf(b, last, ", parent ");
+		b = DumpWindowInfo(b, last, w->parent);
+	}
+	return b;
+}
