@@ -137,6 +137,7 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 	 * test it. */
 	DoCommandFlag subflags = flags;
 	if (refitting) subflags |= DC_EXEC;
+	if (refitting && (flags & DC_EXEC) == 0 && type == VEH_TRAIN) SetBit(p1, 16);
 
 	/* Vehicle construction needs random bits, so we have to save the random
 	 * seeds to prevent desyncs. */
