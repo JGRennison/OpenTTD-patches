@@ -934,6 +934,11 @@ CommandCost CmdRemoveSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 					if (v != nullptr) FreeTrainTrackReservation(v);
 				}
 
+				if (future == TRACK_BIT_HORZ || future == TRACK_BIT_VERT) {
+					// Changing to two separate tracks with separate rail types
+					SetSecondaryRailType(tile, GetRailType(tile));
+				}
+
 				SetCustomBridgeHeadTrackBits(tile, future);
 				AddRailTunnelBridgeInfrastructure(tile, other_end);
 				DirtyCompanyInfrastructureWindows(_current_company);
