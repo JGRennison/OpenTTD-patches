@@ -448,7 +448,6 @@ zoning.h
 	music/extmidi.h
 	music/fluidsynth.h
 	music/os2_m.h
-	music/qtmidi.h
 	os/macosx/macos.h
 	os/macosx/osx_stdafx.h
 	os/macosx/splash.h
@@ -1220,17 +1219,10 @@ sound/null_s.cpp
 # OSX Files
 	os/macosx/macos.mm
 
-	#if DEDICATED
-	#else
-		music/qtmidi.cpp
-	#end
-
 	#if COCOA
 		video/cocoa/cocoa_v.mm
 		video/cocoa/event.mm
-		video/cocoa/fullscreen.mm
 		video/cocoa/wnd_quartz.mm
-		video/cocoa/wnd_quickdraw.mm
 		music/cocoa_m.cpp
 		sound/cocoa_s.cpp
 		os/macosx/splash.cpp
