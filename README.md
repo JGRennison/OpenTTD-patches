@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.34.1
+## JGR's Patchpack version 0.34.2
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -202,6 +202,11 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Multiple rail types per tile (added in v0.29.0)
 
+* More cheats and cheats in multiplayer (added in v0.34.2)  
+  * Add support for server admin use of money, magic bulldozer, tunnels and jet crashes cheats in multiplayer.  
+  * Add setting to allow non server admins to use the money cheat in multiplayer.  
+  * Add cheats to set inflation income and cost factors.
+
 * Save/load and savegame format changes  
   * Various changes to improve handling of savegames which use features not in trunk.  
   * Savegames from this patchpack are not loadable in trunk.  
@@ -251,6 +256,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add IME support on Linux/SDL2 (SDL2-supported IMEs and Fcitx). (added in v0.32.0).  
   * Add support for allowing/disallowing supply to a station, per cargo, by ctrl-clicking the station cargo rating. (added in v0.34.0).  
   * Open train vehicle details window on total cargo tab if shift pressed. (added in v0.34.0).  
+  * Ctrl-click up/down in NewGRF window to move to top or bottom. (added in v0.34.2).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
   * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).
