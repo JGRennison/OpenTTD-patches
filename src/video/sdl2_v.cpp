@@ -38,6 +38,7 @@
 #include <SDL_syswm.h>
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
+#include <X11/Xutil.h>
 #include <unistd.h>
 #endif
 
@@ -254,7 +255,9 @@ static void FcitxSYSWMEVENT(const SDL_SysWMEvent &event)
 	if (event.msg->subsystem != SDL_SYSWM_X11) return;
 	XEvent &xevent = event.msg->msg.x11.event;
 	if (xevent.type == KeyPress) {
-		KeySym keysym = XLookupKeysym(&xevent.xkey, 0);
+		char text[8];
+		KeySym keysym = 0;
+		XLookupString(&xevent.xkey, text, lengthof(text), &keysym, nullptr);
 		_fcitx_last_keycode = xevent.xkey.keycode;
 		_fcitx_last_keysym = keysym;
 	}
