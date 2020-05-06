@@ -659,7 +659,7 @@ void NetworkRebuildHostList()
 	_network_host_list.clear();
 
 	for (NetworkGameList *item = _network_game_list; item != nullptr; item = item->next) {
-		if (item->manually) _network_host_list.emplace_back(item->address.GetAddressAsString(false));
+		if (item->manually) _network_host_list.emplace_back(NetworkAddressDumper().GetAddressAsString(&(item->address), false));
 	}
 }
 

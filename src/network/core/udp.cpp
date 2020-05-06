@@ -135,10 +135,10 @@ void NetworkUDPSocketHandler::SendPacket(Packet *p, NetworkAddress *recv, bool a
 
 		/* Send the buffer */
 		int res = sendto(s.second, (const char*)p->buffer, p->size, 0, (const struct sockaddr *)send.GetAddress(), send.GetAddressLength());
-		DEBUG(net, 7, "[udp] sendto(%s)", send.GetAddressAsString());
+		DEBUG(net, 7, "[udp] sendto(%s)", NetworkAddressDumper().GetAddressAsString(&send));
 
 		/* Check for any errors, but ignore it otherwise */
-		if (res == -1) DEBUG(net, 1, "[udp] sendto(%s) failed with: %i", send.GetAddressAsString(), GET_LAST_ERROR());
+		if (res == -1) DEBUG(net, 1, "[udp] sendto(%s) failed with: %i", NetworkAddressDumper().GetAddressAsString(&send), GET_LAST_ERROR());
 
 		if (!all) break;
 	}
@@ -171,7 +171,7 @@ void NetworkUDPSocketHandler::ReceivePackets()
 			/* If the size does not match the packet must be corrupted.
 			 * Otherwise it will be marked as corrupted later on. */
 			if (nbytes != p.size) {
-				DEBUG(net, 1, "received a packet with mismatching size from %s, (%u, %u)", address.GetAddressAsString(), nbytes, p.size);
+				DEBUG(net, 1, "received a packet with mismatching size from %s, (%u, %u)", NetworkAddressDumper().GetAddressAsString(&address), nbytes, p.size);
 				continue;
 			}
 
@@ -468,9 +468,9 @@ void NetworkUDPSocketHandler::HandleUDPPacket(Packet *p, NetworkAddress *client_
 
 		default:
 			if (this->HasClientQuit()) {
-				DEBUG(net, 0, "[udp] received invalid packet type %d from %s", type, client_addr->GetAddressAsString());
+				DEBUG(net, 0, "[udp] received invalid packet type %d from %s", type, NetworkAddressDumper().GetAddressAsString(client_addr));
 			} else {
-				DEBUG(net, 0, "[udp] received illegal packet from %s", client_addr->GetAddressAsString());
+				DEBUG(net, 0, "[udp] received illegal packet from %s", NetworkAddressDumper().GetAddressAsString(client_addr));
 			}
 			break;
 	}
@@ -484,7 +484,7 @@ void NetworkUDPSocketHandler::Receive_EX_MULTI(Packet *p, NetworkAddress *client
 	uint16 payload_size = p->Recv_uint16();
 
 	DEBUG(net, 6, "[udp] received multi-part packet from %s: " OTTD_PRINTFHEX64 ", %u/%u, %u bytes",
-			client_addr->GetAddressAsString(), token, index, total, payload_size);
+			NetworkAddressDumper().GetAddressAsString(client_addr), token, index, total, payload_size);
 
 	if (total == 0 || index >= total) return;
 	if (!p->CanReadFromPacket(payload_size)) return;
@@ -502,7 +502,7 @@ void NetworkUDPSocketHandler::Receive_EX_MULTI(Packet *p, NetworkAddress *client
 		}
 
 		DEBUG(net, 6, "[udp] merged multi-part packet from %s: " OTTD_PRINTFHEX64 ", %u bytes",
-				client_addr->GetAddressAsString(), token, total_payload);
+				NetworkAddressDumper().GetAddressAsString(client_addr), token, total_payload);
 
 		Packet merged(this);
 		for (auto &frag : fs.fragments) {
@@ -514,7 +514,7 @@ void NetworkUDPSocketHandler::Receive_EX_MULTI(Packet *p, NetworkAddress *client
 		 * Otherwise it will be marked as corrupted later on. */
 		if (total_payload != merged.size) {
 			DEBUG(net, 1, "received an extended packet with mismatching size from %s, (%u, %u)",
-					client_addr->GetAddressAsString(), total_payload, merged.size);
+					NetworkAddressDumper().GetAddressAsString(client_addr), total_payload, merged.size);
 		} else {
 			this->HandleUDPPacket(&merged, client_addr);
 		}
@@ -551,7 +551,7 @@ void NetworkUDPSocketHandler::Receive_EX_MULTI(Packet *p, NetworkAddress *client
  */
 void NetworkUDPSocketHandler::ReceiveInvalidPacket(PacketUDPType type, NetworkAddress *client_addr)
 {
-	DEBUG(net, 0, "[udp] received packet type %d on wrong port from %s", type, client_addr->GetAddressAsString());
+	DEBUG(net, 0, "[udp] received packet type %d on wrong port from %s", type, NetworkAddressDumper().GetAddressAsString(client_addr));
 }
 
 void NetworkUDPSocketHandler::Receive_CLIENT_FIND_SERVER(Packet *p, NetworkAddress *client_addr) { this->ReceiveInvalidPacket(PACKET_UDP_CLIENT_FIND_SERVER, client_addr); }

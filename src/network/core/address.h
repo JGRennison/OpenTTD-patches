@@ -91,7 +91,6 @@ public:
 
 	const char *GetHostname();
 	void GetAddressAsString(char *buffer, const char *last, bool with_family = true);
-	const char *GetAddressAsString(bool with_family = true);
 	const sockaddr_storage *GetAddress();
 
 	/**
@@ -177,6 +176,19 @@ public:
 
 	static const char *SocketTypeAsString(int socktype);
 	static const char *AddressFamilyAsString(int family);
+};
+
+/**
+ * The use of a struct is so that when used as an argument to /seprintf/etc, the buffer lives
+ * on the stack with a lifetime which lasts until the end of the statement.
+ * This avoids using a static buffer which is thread-unsafe, or needing to call malloc, which would then nee to be freed.
+ */
+struct NetworkAddressDumper {
+	const char *GetAddressAsString(NetworkAddress *addr, bool with_family = true);
+
+private:
+	/* 6 = for the : and 5 for the decimal port number */
+	char buf[NETWORK_HOSTNAME_LENGTH + 6 + 7];
 };
 
 #endif /* NETWORK_CORE_ADDRESS_H */
