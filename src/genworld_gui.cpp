@@ -1344,7 +1344,12 @@ static void _SetGeneratingWorldProgress(GenWorldProgress cls, uint progress, uin
 	}
 
 	/* Don't update the screen too often. So update it once in every once in a while... */
-	if (!_network_dedicated && _gws.timer != 0 && _realtime_tick - _gws.timer < MODAL_PROGRESS_REDRAW_TIMEOUT) return;
+#if defined(__GNUC__) || defined(__clang__)
+	const uint32 now = __atomic_load_n(&_realtime_tick, __ATOMIC_RELAXED);
+#else
+	const uint32 now = _realtime_tick;
+#endif
+	if (!_network_dedicated && _gws.timer != 0 && now - _gws.timer < MODAL_PROGRESS_REDRAW_TIMEOUT) return;
 
 	/* Percentage is about the number of completed tasks, so 'current - 1' */
 	_gws.percent = percent_table[cls] + (percent_table[cls + 1] - percent_table[cls]) * (_gws.current == 0 ? 0 : _gws.current - 1) / _gws.total;
@@ -1380,7 +1385,11 @@ static void _SetGeneratingWorldProgress(GenWorldProgress cls, uint progress, uin
 	_modal_progress_work_mutex.lock();
 	_modal_progress_paint_mutex.unlock();
 
+#if defined(__GNUC__) || defined(__clang__)
+	_gws.timer = __atomic_load_n(&_realtime_tick, __ATOMIC_RELAXED);
+#else
 	_gws.timer = _realtime_tick;
+#endif
 }
 
 /**
