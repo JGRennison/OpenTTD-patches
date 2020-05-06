@@ -26,7 +26,6 @@ Packet::Packet(NetworkSocketHandler *cs)
 	assert(cs != nullptr);
 
 	this->cs     = cs;
-	this->next   = nullptr;
 	this->pos    = 0; // We start reading from here
 	this->size   = 0;
 	this->buffer = MallocT<byte>(SHRT_MAX);
@@ -53,7 +52,6 @@ Packet::~Packet()
 void Packet::ResetState(PacketType type)
 {
 	this->cs                   = nullptr;
-	this->next                 = nullptr;
 
 	/* Skip the size so we can write that in before sending the packet */
 	this->pos                  = 0;
@@ -66,7 +64,7 @@ void Packet::ResetState(PacketType type)
  */
 void Packet::PrepareToSend()
 {
-	assert(this->cs == nullptr && this->next == nullptr);
+	assert(this->cs == nullptr);
 
 	this->buffer[0] = GB(this->size, 0, 8);
 	this->buffer[1] = GB(this->size, 8, 8);
@@ -204,7 +202,7 @@ bool Packet::CanReadFromPacket(uint bytes_to_read, bool non_fatal)
  */
 void Packet::ReadRawPacketSize()
 {
-	assert(this->cs != nullptr && this->next == nullptr);
+	assert(this->cs != nullptr);
 	this->size  = (PacketSize)this->buffer[0];
 	this->size += (PacketSize)this->buffer[1] << 8;
 }

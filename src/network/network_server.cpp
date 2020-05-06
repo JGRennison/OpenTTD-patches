@@ -60,9 +60,9 @@ template SocketList TCPListenHandler<ServerNetworkGameSocketHandler, PACKET_SERV
 /** Writing a savegame directly to a number of packets. */
 struct PacketWriter : SaveFilter {
 	ServerNetworkGameSocketHandler *cs; ///< Socket we are associated with.
-	Packet *current;                    ///< The packet we're currently writing to.
+	std::unique_ptr<Packet> current;    ///< The packet we're currently writing to.
 	size_t total_size;                  ///< Total size of the compressed savegame.
-	Packet *packets;                    ///< Packet queue of the savegame; send these "slowly" to the client.
+	std::deque<std::unique_ptr<Packet>> packets; ///< Packet queue of the savegame; send these "slowly" to the client.
 	std::mutex mutex;                   ///< Mutex for making threaded saving safe.
 	std::condition_variable exit_sig;   ///< Signal for threaded destruction of this packet writer.
 
@@ -70,7 +70,7 @@ struct PacketWriter : SaveFilter {
 	 * Create the packet writer.
 	 * @param cs The socket handler we're making the packets for.
 	 */
-	PacketWriter(ServerNetworkGameSocketHandler *cs) : SaveFilter(nullptr), cs(cs), current(nullptr), total_size(0), packets(nullptr)
+	PacketWriter(ServerNetworkGameSocketHandler *cs) : SaveFilter(nullptr), cs(cs), total_size(0)
 	{
 	}
 
@@ -83,13 +83,8 @@ struct PacketWriter : SaveFilter {
 
 		/* This must all wait until the Destroy function is called. */
 
-		while (this->packets != nullptr) {
-			Packet *p = this->packets->next;
-			delete this->packets;
-			this->packets = p;
-		}
-
-		delete this->current;
+		this->packets.clear();
+		this->current.reset();
 	}
 
 	/**
@@ -129,21 +124,19 @@ struct PacketWriter : SaveFilter {
 	{
 		std::lock_guard<std::mutex> lock(this->mutex);
 
-		return this->packets != nullptr;
+		return !this->packets.empty();
 	}
 
 	/**
 	 * Pop a single created packet from the queue with packets.
 	 */
-	Packet *PopPacket()
+	std::unique_ptr<Packet> PopPacket()
 	{
 		std::lock_guard<std::mutex> lock(this->mutex);
 
-		Packet *p = this->packets;
-		if (p == nullptr) return nullptr;
-		this->packets = p->next;
-		p->next = nullptr;
-
+		if (this->packets.empty()) return nullptr;
+		std::unique_ptr<Packet> p = std::move(this->packets.front());
+		this->packets.pop_front();
 		return p;
 	}
 
@@ -152,13 +145,14 @@ struct PacketWriter : SaveFilter {
 	{
 		if (this->current == nullptr) return;
 
-		Packet **p = &this->packets;
-		while (*p != nullptr) {
-			p = &(*p)->next;
-		}
-		*p = this->current;
+		this->packets.push_back(std::move(this->current));
+	}
 
-		this->current = nullptr;
+	void PrependQueue(std::unique_ptr<Packet> p)
+	{
+		if (p == nullptr) return;
+
+		this->packets.push_front(std::move(p));
 	}
 
 	void Write(byte *buf, size_t size) override
@@ -166,7 +160,7 @@ struct PacketWriter : SaveFilter {
 		/* We want to abort the saving when the socket is closed. */
 		if (this->cs == nullptr) SlError(STR_NETWORK_ERROR_LOSTCONNECTION);
 
-		if (this->current == nullptr) this->current = new Packet(PACKET_SERVER_MAP_DATA);
+		if (this->current == nullptr) this->current.reset(new Packet(PACKET_SERVER_MAP_DATA));
 
 		std::lock_guard<std::mutex> lock(this->mutex);
 
@@ -179,7 +173,7 @@ struct PacketWriter : SaveFilter {
 
 			if (this->current->size == SHRT_MAX) {
 				this->AppendQueue();
-				if (buf != bufe) this->current = new Packet(PACKET_SERVER_MAP_DATA);
+				if (buf != bufe) this->current.reset(new Packet(PACKET_SERVER_MAP_DATA));
 			}
 		}
 
@@ -197,13 +191,13 @@ struct PacketWriter : SaveFilter {
 		this->AppendQueue();
 
 		/* Add a packet stating that this is the end to the queue. */
-		this->current = new Packet(PACKET_SERVER_MAP_DONE);
+		this->current.reset(new Packet(PACKET_SERVER_MAP_DONE));
 		this->AppendQueue();
 
 		/* Fast-track the size to the client. */
-		Packet *p = new Packet(PACKET_SERVER_MAP_SIZE);
+		std::unique_ptr<Packet> p(new Packet(PACKET_SERVER_MAP_SIZE));
 		p->Send_uint32((uint32)this->total_size);
-		this->cs->NetworkTCPSocketHandler::SendPacket(p);
+		this->PrependQueue(std::move(p));
 	}
 };
 
@@ -241,7 +235,7 @@ ServerNetworkGameSocketHandler::~ServerNetworkGameSocketHandler()
 	}
 }
 
-Packet *ServerNetworkGameSocketHandler::ReceivePacket()
+std::unique_ptr<Packet> ServerNetworkGameSocketHandler::ReceivePacket()
 {
 	/* Only allow receiving when we have some buffer free; this value
 	 * can go negative, but eventually it will become positive again. */
@@ -249,7 +243,7 @@ Packet *ServerNetworkGameSocketHandler::ReceivePacket()
 
 	/* We can receive a packet, so try that and if needed account for
 	 * the amount of received data. */
-	Packet *p = this->NetworkTCPSocketHandler::ReceivePacket();
+	std::unique_ptr<Packet> p = this->NetworkTCPSocketHandler::ReceivePacket();
 	if (p != nullptr) this->receive_limit -= p->size;
 	return p;
 }
@@ -627,14 +621,14 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendMap()
 		bool has_packets = true;
 
 		for (uint i = 0; i < sent_packets; i++) {
-			Packet *p = this->savegame->PopPacket();
+			std::unique_ptr<Packet> p = this->savegame->PopPacket();
 			if (p == nullptr) {
 				has_packets = false;
 				break;
 			}
 			last_packet = p->buffer[2] == PACKET_SERVER_MAP_DONE;
 
-			this->SendPacket(p);
+			this->SendPacket(std::move(p));
 
 			if (last_packet) {
 				/* There is no more data, so break the for */

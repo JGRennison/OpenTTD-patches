@@ -39,8 +39,6 @@ typedef uint8  PacketType; ///< Identifier for the packet
  *     (year % 4 == 0) and ((year % 100 != 0) or (year % 400 == 0))
  */
 struct Packet {
-	/** The next packet. Used for queueing packets before sending. */
-	Packet *next;
 	/**
 	 * The size of the whole packet for received packets. For packets
 	 * that will be sent, the value is filled in just before the

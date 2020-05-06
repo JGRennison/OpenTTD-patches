@@ -22,7 +22,6 @@
  */
 NetworkTCPSocketHandler::NetworkTCPSocketHandler(SOCKET s) :
 		NetworkSocketHandler(),
-		packet_queue(nullptr), packet_recv(nullptr),
 		sock(s), writable(false)
 {
 }
@@ -41,13 +40,8 @@ NetworkRecvStatus NetworkTCPSocketHandler::CloseConnection(bool error)
 	NetworkSocketHandler::CloseConnection(error);
 
 	/* Free all pending and partially received packets */
-	while (this->packet_queue != nullptr) {
-		Packet *p = this->packet_queue->next;
-		delete this->packet_queue;
-		this->packet_queue = p;
-	}
-	delete this->packet_recv;
-	this->packet_recv = nullptr;
+	this->packet_queue.clear();
+	this->packet_recv.reset();
 
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -58,9 +52,8 @@ NetworkRecvStatus NetworkTCPSocketHandler::CloseConnection(bool error)
  * if the OS-network-buffer is full)
  * @param packet the packet to send
  */
-void NetworkTCPSocketHandler::SendPacket(Packet *packet)
+void NetworkTCPSocketHandler::SendPacket(std::unique_ptr<Packet> packet)
 {
-	Packet *p;
 	assert(packet != nullptr);
 
 	packet->PrepareToSend();
@@ -70,16 +63,7 @@ void NetworkTCPSocketHandler::SendPacket(Packet *packet)
 	 * to do a denial of service attack! */
 	if (packet->size < ((SHRT_MAX * 2) / 3)) packet->buffer = ReallocT(packet->buffer, packet->size);
 
-	/* Locate last packet buffered for the client */
-	p = this->packet_queue;
-	if (p == nullptr) {
-		/* No packets yet */
-		this->packet_queue = packet;
-	} else {
-		/* Skip to the last packet */
-		while (p->next != nullptr) p = p->next;
-		p->next = packet;
-	}
+	this->packet_queue.push_back(std::move(packet));
 }
 
 /**
@@ -95,14 +79,13 @@ void NetworkTCPSocketHandler::SendPacket(Packet *packet)
 SendPacketsState NetworkTCPSocketHandler::SendPackets(bool closing_down)
 {
 	ssize_t res;
-	Packet *p;
 
 	/* We can not write to this socket!! */
 	if (!this->writable) return SPS_NONE_SENT;
 	if (!this->IsConnected()) return SPS_CLOSED;
 
-	p = this->packet_queue;
-	while (p != nullptr) {
+	while (!this->packet_queue.empty()) {
+		Packet *p = this->packet_queue.front().get();
 		res = send(this->sock, (const char*)p->buffer + p->pos, p->size - p->pos, 0);
 		if (res == -1) {
 			int err = GET_LAST_ERROR();
@@ -127,9 +110,7 @@ SendPacketsState NetworkTCPSocketHandler::SendPackets(bool closing_down)
 		/* Is this packet sent? */
 		if (p->pos == p->size) {
 			/* Go to the next packet */
-			this->packet_queue = p->next;
-			delete p;
-			p = this->packet_queue;
+			this->packet_queue.pop_front();
 		} else {
 			return SPS_PARTLY_SENT;
 		}
@@ -142,17 +123,17 @@ SendPacketsState NetworkTCPSocketHandler::SendPackets(bool closing_down)
  * Receives a packet for the given client
  * @return The received packet (or nullptr when it didn't receive one)
  */
-Packet *NetworkTCPSocketHandler::ReceivePacket()
+std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 {
 	ssize_t res;
 
 	if (!this->IsConnected()) return nullptr;
 
 	if (this->packet_recv == nullptr) {
-		this->packet_recv = new Packet(this);
+		this->packet_recv.reset(new Packet(this));
 	}
 
-	Packet *p = this->packet_recv;
+	Packet *p = this->packet_recv.get();
 
 	/* Read packet size */
 	if (p->pos < sizeof(PacketSize)) {
@@ -205,11 +186,11 @@ Packet *NetworkTCPSocketHandler::ReceivePacket()
 		p->pos += res;
 	}
 
-	/* Prepare for receiving a new packet */
-	this->packet_recv = nullptr;
 
 	p->PrepareToRead();
-	return p;
+
+	/* Prepare for receiving a new packet */
+	return std::move(this->packet_recv);
 }
 
 /**
