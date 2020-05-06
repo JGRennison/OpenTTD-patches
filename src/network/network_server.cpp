@@ -127,6 +127,8 @@ struct PacketWriter : SaveFilter {
 	 */
 	bool HasPackets()
 	{
+		std::lock_guard<std::mutex> lock(this->mutex);
+
 		return this->packets != nullptr;
 	}
 
@@ -138,6 +140,7 @@ struct PacketWriter : SaveFilter {
 		std::lock_guard<std::mutex> lock(this->mutex);
 
 		Packet *p = this->packets;
+		if (p == nullptr) return nullptr;
 		this->packets = p->next;
 		p->next = nullptr;
 
@@ -621,10 +624,14 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendMap()
 
 	if (this->status == STATUS_MAP) {
 		bool last_packet = false;
-		bool has_packets = false;
+		bool has_packets = true;
 
-		for (uint i = 0; (has_packets = this->savegame->HasPackets()) && i < sent_packets; i++) {
+		for (uint i = 0; i < sent_packets; i++) {
 			Packet *p = this->savegame->PopPacket();
+			if (p == nullptr) {
+				has_packets = false;
+				break;
+			}
 			last_packet = p->buffer[2] == PACKET_SERVER_MAP_DONE;
 
 			this->SendPacket(p);
@@ -634,6 +641,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendMap()
 				break;
 			}
 		}
+		if (has_packets) has_packets = this->savegame->HasPackets();
 
 		if (last_packet) {
 			/* Done reading, make sure saving is done as well */
