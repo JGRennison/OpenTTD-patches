@@ -17,6 +17,7 @@
 
 #include <deque>
 #include <memory>
+#include <atomic>
 
 /** The states of sending the packets. */
 enum SendPacketsState {
@@ -70,8 +71,8 @@ public:
  */
 class TCPConnecter {
 private:
-	bool connected;             ///< Whether we succeeded in making the connection
-	bool aborted;               ///< Whether we bailed out (i.e. connection making failed)
+	std::atomic<bool> connected;///< Whether we succeeded in making the connection
+	std::atomic<bool> aborted;  ///< Whether we bailed out (i.e. connection making failed)
 	bool killed;                ///< Whether we got killed
 	SOCKET sock;                ///< The socket we're connecting with
 
