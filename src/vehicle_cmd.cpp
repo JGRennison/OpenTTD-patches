@@ -136,8 +136,7 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 	/* If we are refitting we need to temporarily purchase the vehicle to be able to
 	 * test it. */
 	DoCommandFlag subflags = flags;
-	if (refitting) subflags |= DC_EXEC;
-	if (refitting && (flags & DC_EXEC) == 0 && type == VEH_TRAIN) SetBit(p1, 16);
+	if (refitting && !(flags & DC_EXEC)) subflags |= DC_EXEC | DC_AUTOREPLACE;
 
 	/* Vehicle construction needs random bits, so we have to save the random
 	 * seeds to prevent desyncs. */
@@ -154,13 +153,14 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 	}
 
 	if (value.Succeeded()) {
-		if (refitting || (flags & DC_EXEC)) {
+		if (subflags & DC_EXEC) {
 			v->unitnumber = unit_num;
 			v->value      = value.GetCost();
 		}
 
 		if (refitting) {
-			value.AddCost(CmdRefitVehicle(tile, flags, v->index, cargo, nullptr));
+			/* Refit only one vehicle. If we purchased an engine, it may have gained free wagons. */
+			value.AddCost(CmdRefitVehicle(tile, flags, v->index, cargo | (1 << 16), nullptr));
 		} else {
 			/* Fill in non-refitted capacities */
 			_returned_refit_capacity = e->GetDisplayDefaultCapacity(&_returned_mail_refit_capacity);
@@ -176,21 +176,20 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 			}
 		}
 
-		if (refitting || (flags & DC_EXEC)) {
+		if (subflags & DC_EXEC) {
 			GroupStatistics::CountEngine(v, 1);
 			GroupStatistics::UpdateAutoreplace(_current_company);
 
 			if (v->IsPrimaryVehicle()) {
 				GroupStatistics::CountVehicle(v, 1);
+				if (!(subflags & DC_AUTOREPLACE)) OrderBackup::Restore(v, p2);
 			}
 		}
 
 
 		/* If we are not in DC_EXEC undo everything */
-		if (refitting && (flags & DC_EXEC) == 0) {
+		if (flags != subflags) {
 			DoCommand(0, v->index, 0, DC_EXEC, GetCmdSellVeh(v));
-		} else if ((flags & DC_EXEC) && v->IsPrimaryVehicle()) {
-			OrderBackup::Restore(v, p2);
 		}
 	}
 

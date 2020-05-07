@@ -13,6 +13,7 @@
 extern const char _openttd_revision[];
 extern const char _openttd_build_date[];
 extern const char _openttd_revision_hash[];
+extern const char _openttd_revision_year[];
 extern const char _openttd_build_configure[];
 extern const char _openttd_build_configure_defines[];
 extern const byte _openttd_revision_modified;
