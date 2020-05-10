@@ -546,6 +546,8 @@ public:
 		return this->count;
 	}
 
+	uint AvailableViaCount(StationID next) const;
+
 	/**
 	 * Returns sum of cargo reserved for loading onto vehicles.
 	 * @return Cargo reserved for loading.

@@ -946,6 +946,15 @@ uint StationCargoList::ShiftCargo(Taction action, StationIDStack next, bool incl
 	return max_move - action.MaxMove();
 }
 
+uint StationCargoList::AvailableViaCount(StationID next) const
+{
+	uint count = 0;
+	for (ConstIterator it = this->packets.lower_bound(next); it != this->packets.end() && it.GetKey() == next; ++it) {
+		count += (*it)->count;
+	}
+	return count;
+}
+
 /**
  * Truncates where each destination loses roughly the same percentage of its
  * cargo. This is done by randomizing the selection of packets to be removed.
