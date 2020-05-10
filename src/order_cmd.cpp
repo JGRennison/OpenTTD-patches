@@ -1833,6 +1833,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 					case OCV_CARGO_WAITING_AMOUNT:
 						if (!old_var_was_cargo) order->SetConditionValue((uint16) GetFirstValidCargo());
 						order->GetXDataRef() = 0;
+						order->SetConditionComparator(OCC_EQUALS);
 						break;
 					case OCV_REQUIRES_SERVICE:
 						if (old_var_was_cargo || old_var_was_slot) order->SetConditionValue(0);
