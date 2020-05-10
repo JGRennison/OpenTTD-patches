@@ -906,8 +906,7 @@ void StationCargoList::Append(CargoPacket *cp, StationID next)
 template <class Taction>
 bool StationCargoList::ShiftCargo(Taction &action, StationID next)
 {
-	std::pair<Iterator, Iterator> range(this->packets.equal_range(next));
-	for (Iterator it(range.first); it != range.second && it.GetKey() == next;) {
+	for (Iterator it = this->packets.lower_bound(next); it != this->packets.end() && it.GetKey() == next;) {
 		if (action.MaxMove() == 0) return false;
 		CargoPacket *cp = *it;
 		if (action(cp)) {
