@@ -3051,7 +3051,7 @@ public:
 					this->v->current_order = *order;
 					return UpdateOrderDest(this->v, order, 0, true);
 				case OT_CONDITIONAL: {
-					VehicleOrderID next = ProcessConditionalOrder(order, this->v);
+					VehicleOrderID next = ProcessConditionalOrder(order, this->v, true);
 					if (next != INVALID_VEH_ORDER_ID) {
 						depth++;
 						this->index = next;

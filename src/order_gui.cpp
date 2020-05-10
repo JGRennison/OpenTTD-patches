@@ -663,8 +663,8 @@ static const StringID _order_conditional_condition_is_fully_occupied[] = {
 };
 
 static const StringID _order_conditional_condition_is_in_slot[] = {
-	STR_NULL,
-	STR_NULL,
+	STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_ACQUIRE_SLOT,
+	STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_ACQUIRE_SLOT,
 	STR_NULL,
 	STR_NULL,
 	STR_NULL,
@@ -878,7 +878,22 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 					SetDParam(0, STR_ORDER_CONDITIONAL_IN_INVALID_SLOT);
 					SetDParam(3, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 				}
-				SetDParam(2, order->GetConditionComparator() == OCC_IS_TRUE ? STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_SLOT : STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_SLOT);
+				switch (order->GetConditionComparator()) {
+					case OCC_IS_TRUE:
+						SetDParam(2, STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_SLOT);
+						break;
+					case OCC_IS_FALSE:
+						SetDParam(2, STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_SLOT);
+						break;
+					case OCC_EQUALS:
+						SetDParam(2, STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_ACQUIRE_SLOT);
+						break;
+					case OCC_NOT_EQUALS:
+						SetDParam(2, STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_ACQUIRE_SLOT);
+						break;
+					default:
+						NOT_REACHED();
+				}
 			} else if (ocv == OCV_CARGO_LOAD_PERCENTAGE) {
 				SetDParam(0, STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY);
 				SetDParam(2, CargoSpec::Get(order->GetConditionValue())->name);
@@ -2218,13 +2233,24 @@ public:
 
 			case WID_O_COND_COMPARATOR: {
 				const Order *o = this->vehicle->GetOrder(this->OrderGetSel());
-				OrderConditionVariable cond_var = o->GetConditionVariable();
-				ShowDropDownMenu(this, GetComparatorStrings(o), o->GetConditionComparator(), WID_O_COND_COMPARATOR, 0,
-					(cond_var == OCV_REQUIRES_SERVICE ||
-					 cond_var == OCV_CARGO_ACCEPTANCE ||
-					 cond_var == OCV_CARGO_WAITING ||
-					 cond_var == OCV_SLOT_OCCUPANCY ||
-					 cond_var == OCV_TRAIN_IN_SLOT) ? 0x3F : 0xC0, 0, DDSF_LOST_FOCUS);
+				uint mask;
+				switch (o->GetConditionVariable()) {
+					case OCV_REQUIRES_SERVICE:
+					case OCV_CARGO_ACCEPTANCE:
+					case OCV_CARGO_WAITING:
+					case OCV_SLOT_OCCUPANCY:
+						mask = 0x3F;
+						break;
+
+					case OCV_TRAIN_IN_SLOT:
+						mask = 0x3C;
+						break;
+
+					default:
+						mask = 0xC0;
+						break;
+				}
+				ShowDropDownMenu(this, GetComparatorStrings(o), o->GetConditionComparator(), WID_O_COND_COMPARATOR, 0, mask, 0, DDSF_LOST_FOCUS);
 				break;
 			}
 
