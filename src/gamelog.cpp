@@ -63,7 +63,7 @@ void GamelogStopAction()
 	if (print) GamelogPrintDebug(5);
 }
 
-void GamelogStopActionIfStarted()
+void GamelogStopAnyAction()
 {
 	if (_gamelog_action_type != GLAT_NONE) GamelogStopAction();
 }
