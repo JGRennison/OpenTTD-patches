@@ -12,6 +12,8 @@
 
 #include "fileio_type.h"
 
+#include <string>
+
 /** Types of groups */
 enum IniGroupType {
 	IGT_VARIABLES = 0, ///< Values of the form "landscape = hilly".
