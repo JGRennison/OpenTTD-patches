@@ -1554,8 +1554,8 @@ static void DrawTunnelBridgeRampSingleSignal(const TileInfo *ti, bool is_green, 
 		}
 	};
 
-	uint x = TileX(ti->tile) * TILE_SIZE + SignalPositions[side != show_exit][position ^ show_exit].x;
-	uint y = TileY(ti->tile) * TILE_SIZE + SignalPositions[side != show_exit][position ^ show_exit].y;
+	uint x = TileX(ti->tile) * TILE_SIZE + SignalPositions[side != show_exit][position ^ (show_exit ? 1 : 0)].x;
+	uint y = TileY(ti->tile) * TILE_SIZE + SignalPositions[side != show_exit][position ^ (show_exit ? 1 : 0)].y;
 	uint z = ti->z;
 
 	if (ti->tileh == SLOPE_FLAT && side == show_exit && dir == DIAGDIR_SE) z += 2;
