@@ -2,6 +2,19 @@
 
 * * *
 
+### v0.34.3 (2020-05-14)
+* Fix crash which could occur when using the reverse behind signal feature.
+* Fix text entry using modifier keys when using Fcitx on Linux/SDL2.
+* Continue waiting at rail waypoint if the next order is a wait order for the same waypoint.
+* Conditional orders:
+  * Fix comparison operator not being reset when switching variable to load percentage or waiting cargo amount.
+  * Add mode to waiting cargo amount variable to check waiting station cargo via next node.
+  * Add slot acquire modes to train in slot conditional.
+  * Improve cargo dist link refresher handling of complex conditional orders.
+* Fix compilation on MSVC.
+* Various changes to improve thread safety/data races.
+* Bump trunk base from commit 1f1345de098294a4744981d0043512569a35102a to commit 83cd040c61cf6ce966e78cc496c058d42977b387.
+
 ### v0.34.2 (2020-05-01)
 * Fix crash which could occur when scrolling the viewport.
 * Fix crash which could occur when using the reverse behind signal feature.

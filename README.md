@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.34.2
+## JGR's Patchpack version 0.34.3
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -257,6 +257,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add support for allowing/disallowing supply to a station, per cargo, by ctrl-clicking the station cargo rating. (added in v0.34.0).  
   * Open train vehicle details window on total cargo tab if shift pressed. (added in v0.34.0).  
   * Ctrl-click up/down in NewGRF window to move to top or bottom. (added in v0.34.2).  
+  * Additional conditional order types/modes. (added in v0.24.0, v0.33.1, v0.34.3).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
   * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).
