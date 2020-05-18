@@ -588,6 +588,7 @@ static inline bool IsSnowRailGround(TileIndex t)
 	return GetRailGroundType(t) == RAIL_GROUND_ICE_DESERT;
 }
 
+RailGroundType GetTunnelBridgeGroundType(TileIndex tile);
 
 static inline void MakeRailNormal(TileIndex t, Owner o, TrackBits b, RailType r)
 {

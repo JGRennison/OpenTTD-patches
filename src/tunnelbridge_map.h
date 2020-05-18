@@ -47,6 +47,12 @@ static inline TransportType GetTunnelBridgeTransportType(TileIndex t)
 	return (TransportType)GB(_m[t].m5, 2, 2);
 }
 
+static inline uint8 GetTunnelBridgeGroundBits(TileIndex t)
+{
+	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
+	return GB(_me[t].m7, 5, 3);
+}
+
 /**
  * Tunnel: Is this tunnel entrance in a snowy or desert area?
  * Bridge: Does the bridge ramp lie in a snow or desert area?
@@ -56,10 +62,8 @@ static inline TransportType GetTunnelBridgeTransportType(TileIndex t)
  */
 static inline bool HasTunnelBridgeSnowOrDesert(TileIndex t)
 {
-	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
-	return HasBit(_me[t].m7, 5);
+	return GetTunnelBridgeGroundBits(t) == 1;
 }
-
 
 /**
 * Is this a rail bridge or tunnel?
@@ -73,6 +77,12 @@ static inline bool IsRailTunnelBridgeTile(TileIndex t)
 	return IsTileType(t, MP_TUNNELBRIDGE) && (tt == TRANSPORT_RAIL);
 }
 
+static inline void SetTunnelBridgeGroundBits(TileIndex t, uint8 bits)
+{
+	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
+	SB(_me[t].m7, 5, 3, bits);
+}
+
 /**
  * Tunnel: Places this tunnel entrance in a snowy or desert area, or takes it out of there.
  * Bridge: Sets whether the bridge ramp lies in a snow or desert area.
@@ -83,8 +93,7 @@ static inline bool IsRailTunnelBridgeTile(TileIndex t)
  */
 static inline void SetTunnelBridgeSnowOrDesert(TileIndex t, bool snow_or_desert)
 {
-	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
-	SB(_me[t].m7, 5, 1, snow_or_desert);
+	SetTunnelBridgeGroundBits(t, snow_or_desert ? 1 : 0);
 }
 
 /**

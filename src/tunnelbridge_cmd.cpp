@@ -1805,7 +1805,12 @@ static void DrawTile_TunnelBridge(TileInfo *ti, DrawTileProcParams params)
 			return;
 		}
 		if (transport_type == TRANSPORT_RAIL && IsRailCustomBridgeHead(ti->tile)) {
+			const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(ti->tile));
 			DrawTrackBits(ti, GetCustomBridgeHeadTrackBits(ti->tile));
+			if (HasBit(_display_opt, DO_FULL_DETAIL)) {
+				extern void DrawTrackDetails(const TileInfo *ti, const RailtypeInfo *rti, const RailGroundType rgt);
+				DrawTrackDetails(ti, rti, GetTunnelBridgeGroundType(ti->tile));
+			}
 			if (HasRailCatenaryDrawn(GetRailType(ti->tile), GetTileSecondaryRailTypeIfValid(ti->tile))) {
 				DrawRailCatenary(ti);
 			}
@@ -1816,7 +1821,6 @@ static void DrawTile_TunnelBridge(TileInfo *ti, DrawTileProcParams params)
 
 				DiagDirection dir = GetTunnelBridgeDirection(ti->tile);
 				SignalVariant variant = IsTunnelBridgeSemaphore(ti->tile) ? SIG_SEMAPHORE : SIG_ELECTRIC;
-				const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(ti->tile));
 
 				Track t = FindFirstTrack(GetAcrossTunnelBridgeTrackBits(ti->tile));
 				auto draw_signals = [&](uint position, SignalOffsets image, DiagDirection towards) {
@@ -2293,32 +2297,132 @@ static void GetTileDesc_TunnelBridge(TileIndex tile, TileDesc *td)
 	}
 }
 
+static const RailGroundType _tunnel_bridge_fence_table[4][5] = {
+	{ // DIAGDIR_NE
+		RAIL_GROUND_FENCE_NW,
+		RAIL_GROUND_FENCE_SE,
+		RAIL_GROUND_FENCE_SW,
+		RAIL_GROUND_FENCE_VERT2,
+		RAIL_GROUND_FENCE_HORIZ1,
+	},
+	{ // DIAGDIR_SE
+		RAIL_GROUND_FENCE_NW,
+		RAIL_GROUND_FENCE_NE,
+		RAIL_GROUND_FENCE_SW,
+		RAIL_GROUND_FENCE_VERT2,
+		RAIL_GROUND_FENCE_HORIZ2,
+	},
+	{ // DIAGDIR_SW
+		RAIL_GROUND_FENCE_NW,
+		RAIL_GROUND_FENCE_SE,
+		RAIL_GROUND_FENCE_NE,
+		RAIL_GROUND_FENCE_VERT1,
+		RAIL_GROUND_FENCE_HORIZ2,
+	},
+	{ // DIAGDIR_NW
+		RAIL_GROUND_FENCE_SE,
+		RAIL_GROUND_FENCE_NE,
+		RAIL_GROUND_FENCE_SW,
+		RAIL_GROUND_FENCE_VERT1,
+		RAIL_GROUND_FENCE_HORIZ1,
+	},
+};
+
+RailGroundType GetTunnelBridgeGroundType(TileIndex tile)
+{
+	uint8 ground_bits = GetTunnelBridgeGroundBits(tile);
+	if (ground_bits == 0) return RAIL_GROUND_GRASS;
+	if (ground_bits == 1) return RAIL_GROUND_ICE_DESERT;
+	if (ground_bits == 2) return RAIL_GROUND_BARREN;
+	return _tunnel_bridge_fence_table[GetTunnelBridgeDirection(tile)][ground_bits - 3];
+}
+
+static uint8 MapTunnelBridgeGroundTypeBits(TileIndex tile, RailGroundType type)
+{
+	uint8 ground_bits;
+	switch (type) {
+		case RAIL_GROUND_BARREN:
+			ground_bits = 2;
+			break;
+
+		case RAIL_GROUND_GRASS:
+			ground_bits = 0;
+			break;
+
+		case RAIL_GROUND_FENCE_NW:
+			ground_bits = 3;
+			break;
+
+		case RAIL_GROUND_FENCE_SE:
+			ground_bits = GetTunnelBridgeDirection(tile) == DIAGDIR_NW ? 3 : 4;
+			break;
+
+		case RAIL_GROUND_FENCE_NE:
+			ground_bits = GetTunnelBridgeDirection(tile) == DIAGDIR_SW ? 5 : 4;
+			break;
+
+		case RAIL_GROUND_FENCE_SW:
+			ground_bits = 5;
+			break;
+
+		case RAIL_GROUND_FENCE_VERT1:
+		case RAIL_GROUND_FENCE_VERT2:
+			ground_bits = 6;
+			break;
+
+		case RAIL_GROUND_FENCE_HORIZ1:
+		case RAIL_GROUND_FENCE_HORIZ2:
+			ground_bits = 7;
+			break;
+
+		case RAIL_GROUND_ICE_DESERT:
+			ground_bits = 1;
+			break;
+
+		default:
+			NOT_REACHED();
+	}
+	return ground_bits;
+}
 
 static void TileLoop_TunnelBridge(TileIndex tile)
 {
-	bool snow_or_desert = HasTunnelBridgeSnowOrDesert(tile);
+	const uint8 old_ground_bits = GetTunnelBridgeGroundBits(tile);
+	bool snow_or_desert = false;
 	switch (_settings_game.game_creation.landscape) {
 		case LT_ARCTIC: {
 			/* As long as we do not have a snow density, we want to use the density
 			 * from the entry edge. For tunnels this is the lowest point for bridges the highest point.
 			 * (Independent of foundations) */
 			int z = IsBridge(tile) ? GetTileMaxZ(tile) : GetTileZ(tile);
-			if (snow_or_desert != (z > GetSnowLine())) {
-				SetTunnelBridgeSnowOrDesert(tile, !snow_or_desert);
-				MarkTileDirtyByTile(tile);
-			}
+			snow_or_desert = (z > GetSnowLine());
 			break;
 		}
 
 		case LT_TROPIC:
-			if (GetTropicZone(tile) == TROPICZONE_DESERT && !snow_or_desert) {
-				SetTunnelBridgeSnowOrDesert(tile, true);
-				MarkTileDirtyByTile(tile);
-			}
+			snow_or_desert = (GetTropicZone(tile) == TROPICZONE_DESERT);
 			break;
 
 		default:
 			break;
+	}
+
+	RailGroundType new_ground;
+	if (snow_or_desert) {
+		new_ground = RAIL_GROUND_ICE_DESERT;
+	} else {
+		new_ground = RAIL_GROUND_GRASS;
+		if (IsRailCustomBridgeHeadTile(tile) && old_ground_bits != 2) { // wait until bottom is green
+			/* determine direction of fence */
+			TrackBits rail = GetCustomBridgeHeadTrackBits(tile);
+			extern RailGroundType RailTrackToFence(TileIndex tile, TrackBits rail);
+			new_ground = RailTrackToFence(tile, rail);
+		}
+	}
+	uint8 ground_bits = MapTunnelBridgeGroundTypeBits(tile, new_ground);
+	if (ground_bits != old_ground_bits) {
+		SetTunnelBridgeGroundBits(tile, ground_bits);
+		MarkTileDirtyByTile(tile);
 	}
 }
 

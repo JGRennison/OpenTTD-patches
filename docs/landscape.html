@@ -1757,7 +1757,49 @@
       </table>
      </li>
      <li>m7 bits 4..0: <a href="#OwnershipInfo">owner</a> of road</li>
-     <li>m7 bit 5 set = on snow or desert</li>
+     <li style="color: blue">m7 bits 7..5: ground type, values greater than 1 are only valid for rail custom bridge heads
+      <table>
+       <tr>
+        <td nowrap valign=top><tt>0</tt>&nbsp; </td>
+        <td align=left colspan=4>on grass, no fences</td>
+       </tr>
+
+       <tr>
+        <td nowrap valign=top><tt>1</tt>&nbsp; </td>
+        <td align=left>on snow or desert</td>
+       </tr>
+
+       <tr style="color: blue">
+        <td nowrap valign=top><tt>2</tt>&nbsp; </td>
+        <td align=left>on bare land</td>
+       </tr>
+
+       <tr style="color: blue">
+        <td nowrap valign=top><tt>3</tt>&nbsp; </td>
+        <td align=left>facing NE, SE, SW: fence on the NW side, facing NW: fence on the SE side</td>
+       </tr>
+
+       <tr style="color: blue">
+        <td nowrap valign=top><tt>4</tt>&nbsp; </td>
+        <td align=left>facing NE, SW: fence on the SE side, facing SE, NW: fence on the NE side</td>
+       </tr>
+
+       <tr style="color: blue">
+        <td nowrap valign=top><tt>5</tt>&nbsp; </td>
+        <td align=left>facing NE, SE, NW: fence on the SW side, facing SW: fence on the NE side</td>
+       </tr>
+
+       <tr style="color: blue">
+        <td nowrap valign=top><tt>6</tt>&nbsp; </td>
+        <td align=left>facing NE, SE: fence on the W side (track in the E corner), facing: SW, NW: fence on the E side (track in the W corner)</td>
+       </tr>
+
+       <tr style="color: blue">
+        <td nowrap valign=top><tt>7</tt>&nbsp; </td>
+        <td align=left>facing NE, NW: fence on the S side (track in the N corner), facing: SE, SW: fence on the N side (track in the S corner)</td>
+       </tr>
+      </table>
+     </li>
      <li>m8 bits 11..6: <a href="#TramType">Tramtype</a></li>
      <li>m8 bits 5..0: <a href="#TrackType">track type</a> for railway</li>
      <li style="color: blue">m8 bits 11..6 = <a name="TrackType">secondary track type</a> for railway (used for bridge-bypassing track when two parallel tracks on custom bridge head)</li>
