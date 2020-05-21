@@ -154,7 +154,7 @@ protected:
 							&& order->GetDestination() == this->station) {
 						this->vehicles.push_back(v);
 
-						if (v->name == nullptr) {
+						if (v->name.empty()) {
 							if (v->unitnumber > unitnumber_max[v->type]) unitnumber_max[v->type] = v->unitnumber;
 						} else {
 							SetDParam(0, (uint64)(v->index));

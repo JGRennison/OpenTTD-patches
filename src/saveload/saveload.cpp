@@ -44,6 +44,7 @@
 #include "../fios.h"
 #include "../error.h"
 #include <atomic>
+#include <string>
 
 #include "../tbtr_template_vehicle.h"
 
@@ -891,7 +892,7 @@ void WriteValue(void *ptr, VarType conv, int64 val)
 		case SLE_VAR_U32: *(uint32*)ptr = val; break;
 		case SLE_VAR_I64: *(int64 *)ptr = val; break;
 		case SLE_VAR_U64: *(uint64*)ptr = val; break;
-		case SLE_VAR_NAME: *(char**)ptr = CopyFromOldName(val); break;
+		case SLE_VAR_NAME: *reinterpret_cast<std::string *>(ptr) = CopyFromOldName(val); break;
 		case SLE_VAR_NULL: break;
 		default: NOT_REACHED();
 	}
@@ -1110,8 +1111,8 @@ static void SlString(void *ptr, size_t length, VarType conv)
 }
 
 /**
- * Save/Load a std::string.
- * @param ptr the std::string being manipulated
+ * Save/Load a \c std::string.
+ * @param ptr the string being manipulated
  * @param conv must be SLE_FILE_STRING
  */
 static void SlStdString(std::string &str, VarType conv)
@@ -1131,11 +1132,15 @@ static void SlStdString(std::string &str, VarType conv)
 			StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK;
 			if ((conv & SLF_ALLOW_CONTROL) != 0) {
 				settings = settings | SVS_ALLOW_CONTROL_CODE;
+				if (IsSavegameVersionBefore(SLV_169)) {
+					char *buf = const_cast<char *>(str.c_str());
+					str.resize(str_fix_scc_encoded(buf, buf + str.size()) - buf);
+				}
 			}
 			if ((conv & SLF_ALLOW_NEWLINE) != 0) {
 				settings = settings | SVS_ALLOW_NEWLINE;
 			}
-			str_validate(str, settings);
+			str_validate_inplace(str, settings);
 			break;
 		}
 		case SLA_PTRS: break;
@@ -1692,6 +1697,8 @@ static bool IsVariableSizeRight(const SaveLoad *sld)
 				case SLE_VAR_I64:
 				case SLE_VAR_U64:
 					return sld->size == sizeof(int64);
+				case SLE_VAR_NAME:
+					return sld->size == sizeof(std::string);
 				default:
 					return sld->size == sizeof(void *);
 			}
@@ -1704,6 +1711,7 @@ static bool IsVariableSizeRight(const SaveLoad *sld)
 			return sld->size == sizeof(void *) || sld->size == sld->length;
 
 		case SL_STDSTR:
+			/* These should be all pointers to std::string. */
 			return sld->size == sizeof(std::string);
 
 		default:

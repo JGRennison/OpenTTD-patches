@@ -18,6 +18,7 @@
 
 #include <stdarg.h>
 #include <ctype.h> /* required for tolower() */
+#include <sstream>
 
 #ifdef _MSC_VER
 #include <errno.h> // required by vsnprintf implementation for MSVC
@@ -192,8 +193,9 @@ std::string CDECL stdstr_fmt(const char *str, ...)
  * it's new, static value.
  * @param str the string to scan
  * @param last the last valid character of str
+ * @return Pointer to new null terminator.
  */
-void str_fix_scc_encoded(char *str, const char *last)
+const char *str_fix_scc_encoded(char *str, const char *last)
 {
 	while (str <= last && *str != '\0') {
 		size_t len = Utf8EncodedCharLen(*str);
@@ -209,14 +211,15 @@ void str_fix_scc_encoded(char *str, const char *last)
 		str += Utf8Encode(str, c);
 	}
 	*str = '\0';
+	return str;
 }
 
 
-char *str_validate_intl(char *str, const char *last, StringValidationSettings settings)
+template <class T>
+static void str_validate(T &dst, const char *str, const char *last, StringValidationSettings settings)
 {
 	/* Assume the ABSOLUTE WORST to be in str as it comes from the outside. */
 
-	char *dst = str;
 	while (str <= last && *str != '\0') {
 		size_t len = Utf8EncodedCharLen(*str);
 		/* If the character is unknown, i.e. encoded length is 0
@@ -240,7 +243,7 @@ char *str_validate_intl(char *str, const char *last, StringValidationSettings se
 			do {
 				*dst++ = *str++;
 			} while (--len != 0);
-		} else if ((settings & SVS_ALLOW_NEWLINE) != 0  && c == '\n') {
+		} else if ((settings & SVS_ALLOW_NEWLINE) != 0 && c == '\n') {
 			*dst++ = *str++;
 		} else {
 			if ((settings & SVS_ALLOW_NEWLINE) != 0 && c == '\r' && str[1] == '\n') {
@@ -252,8 +255,40 @@ char *str_validate_intl(char *str, const char *last, StringValidationSettings se
 			if ((settings & SVS_REPLACE_WITH_QUESTION_MARK) != 0) *dst++ = '?';
 		}
 	}
+}
 
+/**
+ * Scans the string for valid characters and if it finds invalid ones,
+ * replaces them with a question mark '?' (if not ignored)
+ * @param str the string to validate
+ * @param last the last valid character of str
+ * @param settings the settings for the string validation.
+ * @return pointer to terminating 0.
+ */
+char *str_validate(char *str, const char *last, StringValidationSettings settings)
+{
+	char *dst = str;
+	str_validate(dst, str, last, settings);
+	*dst = '\0';
 	return dst;
+}
+
+/**
+ * Scans the string for valid characters and if it finds invalid ones,
+ * replaces them with a question mark '?' (if not ignored)
+ * @param str the string to validate
+ * @param settings the settings for the string validation.
+ */
+std::string str_validate(const std::string &str, StringValidationSettings settings)
+{
+	auto buf = str.data();
+	auto last = buf + str.size();
+
+	std::ostringstream dst;
+	std::ostreambuf_iterator<char> dst_iter(dst);
+	str_validate(dst_iter, buf, last, settings);
+
+	return dst.str();
 }
 
 /**
@@ -556,11 +591,13 @@ size_t Utf8Decode(WChar *c, const char *s)
 
 /**
  * Encode a unicode character and place it in the buffer.
+ * @tparam T Type of the buffer.
  * @param buf Buffer to place character.
  * @param c   Unicode character to encode.
  * @return Number of characters in the encoded sequence.
  */
-size_t Utf8Encode(char *buf, WChar c)
+template <class T>
+inline size_t Utf8Encode(T buf, WChar c)
 {
 	if (c < 0x80) {
 		*buf = c;
@@ -585,6 +622,16 @@ size_t Utf8Encode(char *buf, WChar c)
 	/* DEBUG(misc, 1, "[utf8] can't UTF-8 encode value 0x%X", c); */
 	*buf = '?';
 	return 1;
+}
+
+size_t Utf8Encode(char *buf, WChar c)
+{
+	return Utf8Encode<char *>(buf, c);
+}
+
+size_t Utf8Encode(std::ostreambuf_iterator<char> &buf, WChar c)
+{
+	return Utf8Encode<std::ostreambuf_iterator<char> &>(buf, c);
 }
 
 /**

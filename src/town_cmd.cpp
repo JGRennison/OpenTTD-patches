@@ -107,9 +107,6 @@ static bool TestTownOwnsBridge(TileIndex tile, const Town *t)
 
 Town::~Town()
 {
-	free(this->name);
-	free(this->text);
-
 	if (CleaningPool()) return;
 
 	/* Delete town authority window
@@ -563,13 +560,22 @@ uint32 GetWorldPopulation()
 
 /**
  * Remove stations from nearby station list if a town is no longer in the catchment area of each.
+ * To improve performance only checks stations that cover the provided house area (doesn't need to contain an actual house).
  * @param t Town to work on
+ * @param tile Location of house area (north part)
+ * @param flags BuildingFlags containing the size of house area
  */
-void RemoveNearbyStations(Town *t)
+static void RemoveNearbyStations(Town *t, TileIndex tile, BuildingFlags flags)
 {
 	for (StationList::iterator it = t->stations_near.begin(); it != t->stations_near.end(); /* incremented inside loop */) {
 		const Station *st = *it;
-		if (!st->CatchmentCoversTown(t->index)) {
+
+		bool covers_area = st->TileIsInCatchment(tile);
+		if (flags & BUILDING_2_TILES_Y)   covers_area |= st->TileIsInCatchment(tile + TileDiffXY(0, 1));
+		if (flags & BUILDING_2_TILES_X)   covers_area |= st->TileIsInCatchment(tile + TileDiffXY(1, 0));
+		if (flags & BUILDING_HAS_4_TILES) covers_area |= st->TileIsInCatchment(tile + TileDiffXY(1, 1));
+
+		if (covers_area && !st->CatchmentCoversTown(t->index)) {
 			it = t->stations_near.erase(it);
 		} else {
 			++it;
@@ -781,11 +787,7 @@ static void TileLoop_Town(TileIndex tile)
 		ClearTownHouse(t, tile);
 
 		/* Rebuild with another house? */
-		bool built = (GB(r, 24, 8) >= 12 && BuildTownHouse(t, tile));
-		if (!built || ((hs->building_flags & BUILDING_HAS_1_TILE & ~HouseSpec::Get(GetHouseType(tile))->building_flags) != 0)) {
-			/* House wasn't replaced, or replacement was smaller/different shape, so remove it */
-			if (!_generating_world) RemoveNearbyStations(t);
-		}
+		if (GB(r, 24, 8) >= 12) BuildTownHouse(t, tile);
 	}
 
 	cur_company.Restore();
@@ -814,7 +816,6 @@ static CommandCost ClearTile_Town(TileIndex tile, DoCommandFlag flags)
 	ChangeTownRating(t, -rating, RATING_HOUSE_MINIMUM, flags);
 	if (flags & DC_EXEC) {
 		ClearTownHouse(t, tile);
-		RemoveNearbyStations(t);
 	}
 
 	return cost;
@@ -2063,7 +2064,7 @@ static CommandCost TownCanBePlacedHere(TileIndex tile)
 static bool IsUniqueTownName(const char *name)
 {
 	for (const Town *t : Town::Iterate()) {
-		if (t->name != nullptr && strcmp(t->name, name) == 0) return false;
+		if (!t->name.empty() && t->name == name) return false;
 	}
 
 	return true;
@@ -2954,16 +2955,17 @@ void ClearTownHouse(Town *t, TileIndex tile)
 	}
 
 	/* Do the actual clearing of tiles */
-	uint eflags = hs->building_flags;
 	DoClearTownHouseHelper(tile, t, house);
-	if (eflags & BUILDING_2_TILES_Y)   DoClearTownHouseHelper(tile + TileDiffXY(0, 1), t, ++house);
-	if (eflags & BUILDING_2_TILES_X)   DoClearTownHouseHelper(tile + TileDiffXY(1, 0), t, ++house);
-	if (eflags & BUILDING_HAS_4_TILES) DoClearTownHouseHelper(tile + TileDiffXY(1, 1), t, ++house);
+	if (hs->building_flags & BUILDING_2_TILES_Y)   DoClearTownHouseHelper(tile + TileDiffXY(0, 1), t, ++house);
+	if (hs->building_flags & BUILDING_2_TILES_X)   DoClearTownHouseHelper(tile + TileDiffXY(1, 0), t, ++house);
+	if (hs->building_flags & BUILDING_HAS_4_TILES) DoClearTownHouseHelper(tile + TileDiffXY(1, 1), t, ++house);
+
+	RemoveNearbyStations(t, tile, hs->building_flags);
 
 	UpdateTownRadius(t);
 
 	/* Update cargo acceptance. */
-	UpdateTownCargoesHouse(t, tile, eflags & BUILDING_2_TILES_X, eflags & BUILDING_2_TILES_Y);
+	UpdateTownCargoesHouse(t, tile, hs->building_flags & BUILDING_2_TILES_X, hs->building_flags & BUILDING_2_TILES_Y);
 }
 
 /**
@@ -2989,8 +2991,11 @@ CommandCost CmdRenameTown(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 
 	if (flags & DC_EXEC) {
 		t->cached_name.clear();
-		free(t->name);
-		t->name = reset ? nullptr : stredup(text);
+		if (reset) {
+			t->name.clear();
+		} else {
+			t->name = text;
+		}
 
 		t->UpdateVirtCoord();
 		InvalidateWindowData(WC_TOWN_DIRECTORY, 0, TDIWD_FORCE_RESORT);
@@ -3066,8 +3071,8 @@ CommandCost CmdTownSetText(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	if (t == nullptr) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		free(t->text);
-		t->text = StrEmpty(text) ? nullptr : stredup(text);
+		t->text.clear();
+		if (!StrEmpty(text)) t->text = text;
 		InvalidateWindowData(WC_TOWN_VIEW, p1);
 	}
 

@@ -77,6 +77,9 @@ static size_t ConvertLandscape(const char *value);
 #define SDTG_LIST(name, type, length, flags, guiflags, var, def, str, strhelp, strval, proc, from, to, cat, extver, patxname)\
 	SDTG_GENERAL(name, SDT_INTLIST, SL_ARR, type, flags, guiflags, var, length, def, 0, 0, 0, nullptr, str, strhelp, strval, proc, from, to, cat, extver, patxname)
 
+#define SDTG_SSTR(name, type, flags, guiflags, var, def, str, strhelp, strval, proc, from, to, cat, extver, patxname)\
+	SDTG_GENERAL(name, SDT_STDSTRING, SL_STDSTR, type, flags, guiflags, var, sizeof(var), def, 0, 0, 0, nullptr, str, strhelp, strval, proc, from, to, cat, extver, patxname)
+
 #define SDTG_STR(name, type, flags, guiflags, var, def, str, strhelp, strval, proc, from, to, cat, extver, patxname)\
 	SDTG_GENERAL(name, SDT_STRING, SL_STR, type, flags, guiflags, var, sizeof(var), def, 0, 0, 0, nullptr, str, strhelp, strval, proc, from, to, cat, extver, patxname)
 

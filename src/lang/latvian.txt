@@ -244,6 +244,7 @@ STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Aizvērt
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Loga virsraksts - vilkt to, lai pārvietotu logu
 STR_TOOLTIP_SHADE                                               :{BLACK}Aizēnot logu - rādīt tikai virsrakstu
 STR_TOOLTIP_DEBUG                                               :{BLACK}Rādīt NewGRF atkļūdošanas informāciju
+STR_TOOLTIP_DEFSIZE                                             :{BLACK}Mainīt loga izmēru uz tā noklusējuma izmēru. Ctrl+klikšķis, lai saglabātu esošo izmēru kā noklusējuma
 STR_TOOLTIP_STICKY                                              :{BLACK}Atzīmēt šo logu kā neaizveramu ar "Aizvērt visus logus" taustiņu. Ctrl+klikšķis, lai saglabātu stāvokli kā noklusējumu
 STR_TOOLTIP_RESIZE                                              :{BLACK}Klikšķināt un vilkt, lai mainītu šī loga lielumu
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Pārslēgties starp lielu/mazu loga izmēru
@@ -361,6 +362,7 @@ STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Ainavas 
 STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Pilsētu radīšana
 STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}Ražotņu radīšana
 STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Ceļu būvēšana
+STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}Tramvaju sliežu ceļu būvniecība
 STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Stādīt kokus. Shift pārslēdz būvēšanu/izmaksu tāmes rādīšanu
 STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Novietot zīmi
 STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Novietot objektu. Shift pārslēdz būvēšanu/izmaksu tāmes rādīšanu
@@ -651,6 +653,7 @@ STR_MUSIC_EFFECTS_VOLUME                                        :{TINY_FONT}{BLA
 STR_MUSIC_TRACK_NONE                                            :{TINY_FONT}{DKGREEN}--
 STR_MUSIC_TRACK_DIGIT                                           :{TINY_FONT}{DKGREEN}{ZEROFILL_NUM}
 STR_MUSIC_TITLE_NONE                                            :{TINY_FONT}{DKGREEN}------
+STR_MUSIC_TITLE_NOMUSIC                                         :{TINY_FONT}{DKGREEN}Mūzika nav pieejama
 STR_MUSIC_TITLE_NAME                                            :{TINY_FONT}{DKGREEN}"{STRING}"
 STR_MUSIC_TRACK                                                 :{TINY_FONT}{BLACK}Celiņš
 STR_MUSIC_XTITLE                                                :{TINY_FONT}{BLACK}Nosaukums
@@ -884,10 +887,10 @@ STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION                           :{BIG_FONT}{BLAC
 
 # Extra view window
 STR_EXTRA_VIEW_PORT_TITLE                                       :{WHITE}Skatvieta {COMMA}
-STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Kopēt uz skatvietu
+STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Mainīt skatvietu
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Kopēt galvenā skata atrašanās vietu uz šo skatvietu
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Kopēt no skatvietas
-STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Ielīmēt šīs skatvietas atrašanās vietu uz galveno skatu
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Mainīt galveno skatu
+STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Kopēt šīs skatvietas atrašanās vietu uz galveno skatu
 
 # Game options window
 STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Spēles opcijas
@@ -933,6 +936,7 @@ STR_GAME_OPTIONS_CURRENCY_RUB                                   :Jaunais Krievij
 STR_GAME_OPTIONS_CURRENCY_MXN                                   :Meksikas peso (MXN)
 STR_GAME_OPTIONS_CURRENCY_NTD                                   :Jaunais Taivānas dolārs (NTD)
 STR_GAME_OPTIONS_CURRENCY_CNY                                   :Ķīnas juaņa (CNY)
+STR_GAME_OPTIONS_CURRENCY_HKD                                   :Honkongas dolārs (HKD)
 STR_GAME_OPTIONS_CURRENCY_INR                                   :Indijas rūpija (INR)
 ############ end of currency region
 
@@ -997,6 +1001,7 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Divkāršs
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Četrkāršs
 
 STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Fonta izmērs
+STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Izvēlieties saskarnes fonta izmēru
 
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normāls
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Divkāršs izmērs
@@ -1016,6 +1021,7 @@ STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :{BLACK}Atlasīt
 STR_GAME_OPTIONS_BASE_MUSIC_STATUS                              :{RED}{NUM} bojāt{P s i u} fail{P s i u}
 STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}Papildinformācija par pamata mūzikas kopu
 
+STR_ERROR_RESOLUTION_LIST_FAILED                                :{WHITE}Neizdevās saņemt sarakstu ar atbalstītajām izšķirtspējām
 STR_ERROR_FULLSCREEN_FAILED                                     :{WHITE}Pilnekrāna spēles iestatīšana neizdevās
 
 # Custom currency window
@@ -1133,6 +1139,7 @@ STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_INGAME                    :Spēles iestat�
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_MENU                   :Uzņēmuma iestatījumi (tiek iekļauti saglabājumos, ietekmē tikai jaunās spēles)
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_INGAME                 :Uzņēmuma iestatījumi (tiek iekļauti saglabājumā, ietekmē tikai pašreizējo uzņēmumu)
 STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK}Rādīt visus meklēšanas rezultātus, iestatot{}{SILVER}Kategoriju {BLACK}uz {WHITE}{STRING}
+STR_CONFIG_SETTING_TYPE_HIDES                                   :{BLACK}Rādīt visus meklēšanas rezultātus, iestatot{}{SILVER}Veidu {BLACK}uz {WHITE}Visi iestatījumu veidi
 STR_CONFIG_SETTING_CATEGORY_AND_TYPE_HIDES                      :{BLACK}Rādīt visus meklēšanas rezultātus, iestatot{}{SILVER}Kategorija {BLACK}uz {WHITE}{STRING} {BLACK}un {SILVER}Tips {BLACK}uz {WHITE}Visi iestatījumu veidi
 STR_CONFIG_SETTINGS_NONE                                        :{WHITE}-Nav-
 
@@ -1157,17 +1164,21 @@ STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Maksimālais ai
 STR_CONFIG_SETTING_INTEREST_RATE                                :Procentu likme: {STRING}
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Aizdevumu procentu likme; ja ieslēgts, ietekmē arī inflāciju
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Kārtējās izmaksas: {STRING}
+STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Iestaties uzturēšanas un ekspluatācijas izmaksu līmeni transportlīdzekļiem un infrastruktūrai
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Būvēšanas ātrums: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :MI (mākslīgā intelekta) būvniecības darbību daudzuma ierobežošana
 STR_CONFIG_SETTING_VEHICLE_BREAKDOWNS                           :Transportlīdzekļu bojāšanās: {STRING}
+STR_CONFIG_SETTING_VEHICLE_BREAKDOWNS_HELPTEXT                  :Nosaka, cik bieži var salūzt nepietiekami apkalpoti transportlīdzekļi
 STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER                           :Subsīdiju reizinātājs: {STRING}
 STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER_HELPTEXT                  :Iestatīt, cik daudz maksāt par subsidētajiem savienojumiem
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Būvēšanas izmaksas: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Iestatīt būvēšanas un pirkumu izmaksas
 STR_CONFIG_SETTING_RECESSIONS                                   :Lejupslīde: {STRING}
+STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Ja ieslēgts, ik pa laikam var gadīties recesijas. To laikā visa ražošana būtiski samazinās (tā atgriežas sākotnējā līmenī pēc recesijas beigām).
 STR_CONFIG_SETTING_TRAIN_REVERSING                              :Neatļaut vilcienu apgriešanos stacijās: {STRING}
 STR_CONFIG_SETTING_TRAIN_REVERSING_HELPTEXT                     :Ja ieslēgts, stacijās vilcieni negriezīsies pretējā virzienā, pat ja braucot tādā veidā tie atrastu īsāku ceļu un nākamo pieturu; izņēmums ir gala stacijas
 STR_CONFIG_SETTING_DISASTERS                                    :Katastrofas: {STRING}
+STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Pārslēgt katastrofas, kas laiku pa laikam var bloķēt vai iznīcināt transportlīdzekļus un infrastruktūru
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Pilsētu domju attieksme pret platības pārstrukturēšanu: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Izvēlieties, cik lielā mērā trokšņi un vides bojājumi ietekmē uzņēmuma reitingu un turpmākās būvniecības darbības viņu teritorijā
 
@@ -1178,6 +1189,8 @@ STR_CONFIG_SETTING_AUTOSLOPE                                    :Atļaut ainavas
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Atļauj ainavas veidošanu zem ekām un ceļiem bez to nojaukšanas
 STR_CONFIG_SETTING_CATCHMENT                                    :Atļaut realistiskākas, palielinātas apkalpojamās platības: {STRING}
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Atšķirīga lieluma apkalpojamās platības dažādu veidu stacijām un lidostām
+STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Uzņēmumu stacijas var apkalpot industrijas, kurām ir pievienotas neitrālas stacijas: {STRING}
+STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Ja ieslēgts, industrijas ar pievienotām stacijām (piemēram, naftas ieguves platformas) var apkalpot arī netālu esošās uzņēmumumam piederošās stacijas. Ja izslēgts, šīs industrijas var apkalpot tikai to pašu stacijas. Tuvumā esošās uzņēmumu stacijas nevarēs tās apkalpot, un pievienotās stacijas neapkalpos preču veidus, kas nav atbilstošas attiecīgajai industrijai.
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Atļaut pilsētai piederošo ceļu, tiltu un tuneļu nojaukšanu: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Padara vieglāku pilsētai piederošas infrastruktūras un ēku nojaukšanu
 STR_CONFIG_SETTING_TRAIN_LENGTH                                 :Maksimālais vilcienu garums: {STRING}
@@ -1194,8 +1207,8 @@ STR_CONFIG_SETTING_TRAIN_SLOPE_STEEPNESS_HELPTEXT               :Slīpu lauciņu
 STR_CONFIG_SETTING_PERCENTAGE                                   :{COMMA}%
 STR_CONFIG_SETTING_ROAD_VEHICLE_SLOPE_STEEPNESS                 :Nogāžu stāvums autotransporta līdzekļiem: {STRING}
 STR_CONFIG_SETTING_ROAD_VEHICLE_SLOPE_STEEPNESS_HELPTEXT        :Slīpu lauciņu nogāžu stāvums autotransporta līdzekļiem. Augstākas vērtības apgrūtina uzbraukšanu uzkalnā
-STR_CONFIG_SETTING_FORBID_90_DEG                                :Aizliegt vilcieniem un kuģiem veikt 90 grādu pagriezienus: {STRING}
-STR_CONFIG_SETTING_FORBID_90_DEG_HELPTEXT                       :90 grādu pagriezieni rodas, ja horizontālam sliežu ceļa posmam tieši seko vertikāls sliežu ceļa posms uz blakus esošā lauciņa. Tādējādi vilciens, šķērsojot lauciņu malas, veic 90 grādu pagriezienu, nevis parasto 45 grādu kā citām sliežu ceļu kombinācijām. Tas attiecas arī uz kuģu pagrieziena lenķiem
+STR_CONFIG_SETTING_FORBID_90_DEG                                :Aizliegt vilcieniem veikt 90° pagriezienus: {STRING}
+STR_CONFIG_SETTING_FORBID_90_DEG_HELPTEXT                       :90 grādu pagriezieni rodas, ja horizontālam sliežu ceļa posmam tieši seko vertikāls sliežu ceļa posms uz blakus esošā lauciņa. Tādējādi vilciens, šķērsojot lauciņu malas, veic 90 grādu pagriezienu, nevis parasto 45 grādu kā citām sliežu ceļu kombinācijām. Tas attiecas arī uz kuģu pagrieziena leņķiem. Tas arī attiecas uz kuģu pagriešanās rādiusu.
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS                        :Atļaut savienot stacijas, kas neatrodas tieši blakus: {STRING}
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS_HELPTEXT               :Atļaut pievienot staciju daļas, tām nesaskaroties ar jau esošajām. Novietojot jaunās daļas, ir nepieciešams nospiest Ctrl+klikšķis
 STR_CONFIG_SETTING_INFLATION                                    :Inflācija: {STRING}
@@ -1240,7 +1253,7 @@ STR_CONFIG_SETTING_BRIBE_HELPTEXT                               :Lauj uzņēmumi
 STR_CONFIG_SETTING_ALLOW_EXCLUSIVE                              :Atļaut pirkt pārvadājumu izņēmuma tiesības: {STRING}
 STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT                     :Ja uzņēmums pērk pārvadājumu izņēmuma tiesības pilsētā, pretinieku stacijas (pasažieru un kravas) veselu gadu nesaņems nekādu kravu
 STR_CONFIG_SETTING_ALLOW_FUND_BUILDINGS                         :Atļaut ēku finansēšanu: {STRING}
-STR_CONFIG_SETTING_ALLOW_FUND_BUILDINGS_HELPTEXT                :Atļauj uzņēmumiem dot naudu pilsētām jaunu ēku finansēšanai
+STR_CONFIG_SETTING_ALLOW_FUND_BUILDINGS_HELPTEXT                :Atļauj uzņēmumiem dot naudu apdzīvotām vietām jaunu ēku finansēšanai
 STR_CONFIG_SETTING_ALLOW_FUND_ROAD                              :Atļaut finansēt vietējo ceļu atjaunošanu: {STRING}
 STR_CONFIG_SETTING_ALLOW_FUND_ROAD_HELPTEXT                     :Atļaut uzņēmumiem dot pilsētām naudu ceļu rekonstrukcijai, lai kaitētu ceļu pakalpojumiem pilsētās
 STR_CONFIG_SETTING_ALLOW_GIVE_MONEY                             :Atļaut pārsūtīt naudu citiem uzņēmumiem: {STRING}
@@ -1251,8 +1264,8 @@ STR_CONFIG_SETTING_PLANE_SPEED                                  :Lidmašīnu āt
 STR_CONFIG_SETTING_PLANE_SPEED_HELPTEXT                         :Iestatīt lidmašīnu nosacīto ātrumu salīdzinājumā ar citu veidu transportlīdzekļiem, lai samazinātu lidaparātu ienākumus
 STR_CONFIG_SETTING_PLANE_SPEED_VALUE                            :1 / {COMMA}
 STR_CONFIG_SETTING_PLANE_CRASHES                                :Lidmašīnu avāriju daudzums: {STRING}
-STR_CONFIG_SETTING_PLANE_CRASHES_HELPTEXT                       :Iestatīt lidaparātu avāriju notikšanas iespējamību
-STR_CONFIG_SETTING_PLANE_CRASHES_NONE                           :neviena
+STR_CONFIG_SETTING_PLANE_CRASHES_HELPTEXT                       :Iestatīt nejaušu lidaparātu avāriju iespējamību.{}* Lielām lidmašīnām vienmēr ir risks avarēt, kad piezemējas mazās lidostās
+STR_CONFIG_SETTING_PLANE_CRASHES_NONE                           :Nav*
 STR_CONFIG_SETTING_PLANE_CRASHES_REDUCED                        :samazināts
 STR_CONFIG_SETTING_PLANE_CRASHES_NORMAL                         :parasts
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :Atļaut caurbraucamas pieturvietas uz pilsētai piederošiem ceļiem: {STRING}
@@ -1308,11 +1321,12 @@ STR_CONFIG_SETTING_LAND_GENERATOR                               :Zemes radītāj
 STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :Sākotnējais ģenerators ir atkarīgs no bāzes grafikas kopas, un veido fiksētas ainavas formas. TerraGenesis ir uz Perlina trokšņa balstīts ģenerators ar smalkākiem vadības iestatījumiem.
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :Sākotnējais
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
+STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Reljefa veids: {STRING}
 STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :(Tikai TerraGenesis) Ainavas kalnainība
 STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :Industriju blīvums: {STRING}
 STR_CONFIG_SETTING_INDUSTRY_DENSITY_HELPTEXT                    :Iestatiet, cik industrijas jāģenerē un kāds līmenis jāuztur spēles laikā
-STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE                        :Maksimālais attālums no kartes malas naftas pārstrādes rūpnīcām: {STRING}
-STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :Naftas pārstrādes rūpnīcas ir būvējamas tikai kartes malu tuvumā, salu kartēm tas ir pie krasta
+STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE                        :Naftas industriju maksimālais attālums no kartes malas: {STRING}
+STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :Limits, cik tālu no kartes malām drīkst taisīt naftas pārstrādes rūpnīcas un un naftas ieguves platformas. Uz salu kartēm tas nodrošina, ka šīs konstrukcijas tiek būvētas piekrastēs. Uz kartēm, kas ir lielākas par 256 lauciņiem šī vērtība tiek palielināta.
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT                              :Sniega līnijas augstums: {STRING}
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :Noteikt, kādā augstumā sākas subarktiskā ainava. Sniegs arī ietekmē industriju rašanos un apdzīvoto vietu pieaugšanas prasības
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :Apvidus nelīdzenums: {STRING}
@@ -1331,6 +1345,7 @@ STR_CONFIG_SETTING_TREE_PLACER_NONE                             :Nav
 STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :Sākotnējais
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Uzlabotais
 STR_CONFIG_SETTING_ROAD_SIDE                                    :Autotransporta līdzekļi: {STRING}
+STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Izvēlieties braukšanas pusi
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Augstumu kartes pagriešana: {STRING}
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_COUNTER_CLOCKWISE         :Pret pulksteņa rādītāja virzienu
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_CLOCKWISE                 :Pulksteņa rādītāja virzienā
@@ -1353,8 +1368,10 @@ STR_CONFIG_SETTING_SCROLLMODE                                   :Skatvietas riti
 STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Uzvedība, kad ritina karti
 STR_CONFIG_SETTING_SCROLLMODE_DEFAULT                           :Pārvietot skatvietu ar labo peles pogu, peles pozīcija ir fiksēta
 STR_CONFIG_SETTING_SCROLLMODE_RMB_LOCKED                        :Pārvietot karti ar labo peles pogu, peles pozīcija ir fiksēta
+STR_CONFIG_SETTING_SCROLLMODE_RMB                               :Pārvietot karti ar labo peles pogu
 STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Pārvietot karti ar kreiso peles pogu
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Plūdena skatvietas ritināšana: {STRING}
+STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Noteikt, kā galvenais skats ritina uz norādīto pozīciju, kad klikšķina uz mazās kartes vai kad dod komandu ritināt uz noteiktu kartes objektu. Ja ieslēgs, skatvieta ritinās gludi. Ja izslēgts, skats pārlec uz izvēlēto punktu.
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Rādīt mērījumu rīkjoslu, izmantojot dažādus būvniecības rīkus: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Rāda lauciņu attālumus un augstuma starpības, ar vilkšanu veicot būvniecības darbības
 STR_CONFIG_SETTING_LIVERIES                                     :Rādīt uzņēmuma identitātes krāsas: {STRING}
@@ -1384,6 +1401,7 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Komanda+klikš�
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :Ctrl+klikšķis
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Izslēgta
 
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Aizvērt logu ar labo klikšķi: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Labais klikšķis logā aizver logu. Izslēdz paskaidres parādīšanu ar labo klikšķi!
 
 STR_CONFIG_SETTING_AUTOSAVE                                     :Automātiskā saglabāšana: {STRING}
@@ -1477,6 +1495,7 @@ STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY_HELPTEXT                   :Cik daudz atmi�
 STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY_VALUE                      :{COMMA} MiB
 
 STR_CONFIG_SETTING_SERVINT_ISPERCENT                            :Apkopju starplaiki procentos: {STRING}
+STR_CONFIG_SETTING_SERVINT_ISPERCENT_HELPTEXT                   :Izvēlieties, vai transportlīdzekļu apkopi veikt pēc fiksēta laika kopš iepriekšējās apkopes vai, kad uzticamība nokrīt zem kāda noteiktas daļas no maksimālās uzticamības
 STR_CONFIG_SETTING_SERVINT_TRAINS                               :Vilcienu apkopju noklusējuma starplaiks: {STRING}
 STR_CONFIG_SETTING_SERVINT_TRAINS_HELPTEXT                      :Izvēlēties jaunajiem sliežu transportlīdzekļiem apkopju noklusējuma starplaiku, ja tiem tas nav noteikts
 STR_CONFIG_SETTING_SERVINT_VALUE                                :{COMMA}{NBSP}dien{P 0 a as u}/%
@@ -1533,6 +1552,7 @@ STR_CONFIG_SETTING_COLOURED_NEWS_YEAR                           :Krāsaini avī�
 STR_CONFIG_SETTING_COLOURED_NEWS_YEAR_HELPTEXT                  :Gads kad sāk drukāt krāsainas avīzes. Pirms šā gada tās ir melnbaltas
 STR_CONFIG_SETTING_STARTING_YEAR                                :Sākuma gads: {STRING}
 STR_CONFIG_SETTING_ENDING_YEAR                                  :Vērtēšanas beigu gads: {STRING}
+STR_CONFIG_SETTING_ENDING_YEAR_HELPTEXT                         :Spēles beigas gads (tiek izmantots rezultāta noteikšanai). Šī gada beigās uzņēmuma rezultāti tiek ierakstīti un uz ekrāna tiek parādīti labākie rezultāti, bet spēlētāji var turpināt spēlēt arī pēc šī datuma.{}Ja tas ir norādīts pirms spēles sākuma datuma, labākie rezultāti nekad netiek parādīti.
 STR_CONFIG_SETTING_ENDING_YEAR_VALUE                            :{NUM}
 STR_CONFIG_SETTING_ENDING_YEAR_ZERO                             :Nekad
 STR_CONFIG_SETTING_SMOOTH_ECONOMY                               :Atļaut vienmērīgas izmaiņas ekonomikā: {STRING}
@@ -1621,12 +1641,12 @@ STR_CONFIG_SETTING_TOWN_GROWTH_SLOW                             :mazs
 STR_CONFIG_SETTING_TOWN_GROWTH_NORMAL                           :vidējs
 STR_CONFIG_SETTING_TOWN_GROWTH_FAST                             :liels
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_FAST                        :ļoti liels
-STR_CONFIG_SETTING_LARGER_TOWNS                                 :Pilsētu daļa kas kļūs par lielpilsētām: {STRING}
-STR_CONFIG_SETTING_LARGER_TOWNS_HELPTEXT                        :Pilsētu daudzums kas kļūs par lielpilsētām, tādēļ tās sākumā ir lielākas un attīstās ātrāk
+STR_CONFIG_SETTING_LARGER_TOWNS                                 :Apdzīvotu vietu proporcija, kas kļūs par pilsētām: {STRING}
+STR_CONFIG_SETTING_LARGER_TOWNS_HELPTEXT                        :Apdzīvotu vietu daudzums kas kļūs par pilsētām; tādēļ apdzīvota vieta, kas sākumā ir lielāka, augs straujāk
 STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1 pret {COMMA}
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :neviena
-STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Lielpilsētu sākuma lieluma reizinātājs: {STRING}
-STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Lielpilsētu vidējais lielums attiecībā pret parastām pilsētām spēles sākumā
+STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Pilsētu sākuma lieluma reizinātājs: {STRING}
+STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Pilsētu vidējais lielums attiecībā pret parastām apdzīvotām vietām spēles sākumā
 
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :Atjaunināt sadales grafu ik pa {STRING}{NBSP}dien{P 0:2 ai ām ām}
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL_HELPTEXT                  :Laiks starp secīgām saišu grafa pārrēķināšanām. Katra pārrēķināšana izskaitļo plānos vienai grafa komponentei. Tas nozīmē, ka šim iestatījumam vērtība X nenozīmē, ka viss grafs tiks atjaunināts ir pēc X dienām. Tikai dažas komponentes tiks pārrēķinātas. Jo mazāka iestatītā vērtība, jo vairāk laika CPU pavadīs rēķinot. Jo lielāka iestatītā vērtība, jo ilgāk nevarēs sākties kravu izplatīšana jaunos maršrutos.
@@ -1644,10 +1664,12 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :APSARGĀJAMĀ k
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Izplatīšanas modelis citām kravu klasēm: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"asimetriska" nozīmē, ka patvaļīgu kravas daudzumu var nosūtīt abos virzienos."manuāli" nozīmē, ka šīm kravām netiks veikta automātiska izplatīšana.
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Sadales precizitāte: {STRING}
+STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Jo lielāku vērtību iestatīsiet, jo vairāk CPU laika aizies saišu grafa aprēķināšanai. Ja tas aizņem pārāk daudz laika, jūs varētu pamanīt spēles iebremzēšanos. Ja iestatīsiet pārāk mazu, izplatīšana būs neprecīza un jūs varētu pamanīt, ka krava tiek nosūtīta uz negaidītām vietām.
 STR_CONFIG_SETTING_DEMAND_DISTANCE                              :Attāluma ietekme uz pieprasījumu: {STRING}
 STR_CONFIG_SETTING_DEMAND_DISTANCE_HELPTEXT                     :Ja iestatīsiet šo vērtību lielāku kā 0, attālums starp kravas izcelsmes staciju A un iespējamo galastaciju B ietekmēs sūtāmās kravas apjomu. Jo tālāk no stacijas A ir stacija B, jo mazāk kravas tiks nosūtīts. Jo augstāka vērtība, jo mazāk kravas tiks nosūtīts uz tālo staciju un vairāk kravu uz tuvo staciju.
 STR_CONFIG_SETTING_DEMAND_SIZE                                  :Atpakaļceļa kravas daudzums simetriskajā režīmā: {STRING}
 STR_CONFIG_SETTING_DEMAND_SIZE_HELPTEXT                         :Uzstādod šo mazāk par 100% liks simetriskajai sadalei izturēties vairāk kā asimetriskajai. Mazāk kravas ar varu tiks sūtīts atpakaļ ja noteikts daudzums tiks sūtīts uz piestātni. Ja jūs uzstādīsiet to uz 0% simetriskā sadale izturēsies tā pat kā asimetriskā.
+STR_CONFIG_SETTING_SHORT_PATH_SATURATION                        :Īso ceļu piesātinājums pirms sākt izmantot augstas ietilpības ceļus: {STRING}
 STR_CONFIG_SETTING_SHORT_PATH_SATURATION_HELPTEXT               :Nereti starp divām stacijām ir vairāki ceļi. Kravu sadale vispirms piesātinās īsāko maršrutu, pēc tam izmantos nākamo īsāko maršrutu līdz tas būs piesātināts, un tā tālāk. Piesātinājumu nosaka novērtējot ietilpību un plānoto izmantojumu. Kad visi ceļi ir piesātināti un vēl ir palicis pieprasījumus, tas pārslogos visus ceļus, dodot priekšroku ceļiem ar lielāko ietilpību. Algoritms visbiežāk nepareizi novērtēs ietilpību. Šis iestatījums jums atļaus norādīt, līdz cik procentiem īsākais ceļš ir jāpiesātina pirmajā piegājienā pirms izvēlēties garāku ceļu. Iestatiet to uz mazāk kā 100%, lai izvairītos no pārpildītām stacijām, ja kapacitāte ir pārvērtēta.
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY                  :Ātruma mērvienības: {STRING}
@@ -1803,8 +1825,8 @@ STR_OSNAME_SUNOS                                                :SunOS
 
 # Abandon game
 STR_ABANDON_GAME_CAPTION                                        :{WHITE}Pamest spēli
-STR_ABANDON_GAME_QUERY                                          :{YELLOW}Vai jūs tiešām vēlaties pamest šo spēli?
-STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Vai esat pārliecināts, ka vēlaties pamest šo scenāriju?
+STR_ABANDON_GAME_QUERY                                          :{YELLOW}Vai tiešām vēlaties pamest šo spēli?
+STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Vai tiešām vēlaties pamest šo scenāriju?
 
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Blēdības
@@ -2132,7 +2154,7 @@ STR_NETWORK_CHAT_ALL                                            :[Visiem] {STRIN
 STR_NETWORK_CHAT_OSKTITLE                                       :{BLACK}Ievadīt tekstu tīkla tērzēšanai
 
 # Network messages
-STR_NETWORK_ERROR_NOTAVAILABLE                                  :{WHITE}Neviena tīkla iekārta nav atrasta vai kompilēta bez ENABLE_NETWORK
+STR_NETWORK_ERROR_NOTAVAILABLE                                  :{WHITE}Nav atrasta neviena tīkla ierīce
 STR_NETWORK_ERROR_NOSERVER                                      :{WHITE}Nevar atrast nevienu tīkla spēli
 STR_NETWORK_ERROR_NOCONNECTION                                  :{WHITE}Serveris neatbild uz pieprasījumu
 STR_NETWORK_ERROR_NEWGRF_MISMATCH                               :{WHITE}Nevar pieslēgties sakarā ar NewGRF neatbilstību
@@ -2386,9 +2408,9 @@ STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP                         :{BLACK}Kombinē
 STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP                           :{BLACK}Ceļa signāls (luksofors){}Ceļa signāls ļauj vairāk kā vienam vilcienam iebraukt signāla blokā vienlaicīgi, ja vien vilciens var rezervēt drošu apstāšanās punktu. Parastiem ceļa signāliem var pabraukt garām no aizmugures
 STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP                      :{BLACK}Vienvirziena ceļa signālierīce (elektriska){}Ceļa signāls ļauj iebraukt signāla blokā vairāk kā vienam vilcienam vienlaicīgi, ja vien vilciens var rezervēt drošu apstāšanās punktu. Vienvirziena ceļa signālierīcēm nevar pabraukt garām no aizmugures
 STR_BUILD_SIGNAL_CONVERT_TOOLTIP                                :{BLACK}Signālierīču pārveidotājs{}Kad ieslēgts, klikšķis uz jau esošas signālierīces pārveidos to uz norādīto signāla tipu un variantu. Ctrl+klikšķis pārslēgs pašreizējo variantu. Shift+klikšķis rāda pārveidošanas tāmes vērtību
-STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}Vilkt signālu biežumu
+STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}Vilkto signālu attālums
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}Samazināt signālierīču attālumu
-STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_INCREASE_TOOLTIP          :{BLACK}Palielināt signālierīču biežumu
+STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_INCREASE_TOOLTIP          :{BLACK}Palielināt signālierīču atstatumu
 
 # Bridge selection window
 STR_SELECT_RAIL_BRIDGE_CAPTION                                  :{WHITE}Izvēlēties dzelzceļa tiltu
@@ -2426,6 +2448,7 @@ STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_TUNNEL                      :{BLACK}Būvēt 
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAMWAY_TUNNEL                   :{BLACK}Būvēt tramvaju tuneli. Shift pārslēdz būvēšanu/izmaksu tāmes rādīšanu
 STR_ROAD_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR_ROAD           :{BLACK}Pārslēgties starp ceļa būvēšanas/nojaukšanas režīmiem
 STR_ROAD_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR_TRAMWAYS       :{BLACK}Pārslēgt būvēt/novākt tramvaju būvei
+STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_ROAD                           :{BLACK}Pārveidot/uzlabot ceļa veidu. Shift pārslēdz būvēšanu/izmaksu novērtējumu rādīšanu
 STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_TRAM                           :{BLACK}Pārveidot/uzlabot tramvaju veidu. Shift pārslēdz būvēšanu/izmaksu novērtējumu rādīšanu
 
 STR_ROAD_NAME_ROAD                                              :Ceļš
@@ -2477,7 +2500,7 @@ STR_STATION_BUILD_AIRPORT_CLASS_LABEL                           :{BLACK}Lidostas
 STR_STATION_BUILD_AIRPORT_LAYOUT_NAME                           :{BLACK}{NUM}. izkārtojums
 
 STR_AIRPORT_SMALL                                               :Maza
-STR_AIRPORT_CITY                                                :Lielpilsēta
+STR_AIRPORT_CITY                                                :Pilsēta
 STR_AIRPORT_METRO                                               :Metropolitēns
 STR_AIRPORT_INTERNATIONAL                                       :Starptautiskā lidosta
 STR_AIRPORT_COMMUTER                                            :Ikdienas satiksme
@@ -2553,8 +2576,8 @@ STR_FOUND_TOWN_INITIAL_SIZE_MEDIUM_BUTTON                       :{BLACK}Vidējs
 STR_FOUND_TOWN_INITIAL_SIZE_LARGE_BUTTON                        :{BLACK}Liels
 STR_FOUND_TOWN_SIZE_RANDOM                                      :{BLACK}Nejaušs
 STR_FOUND_TOWN_INITIAL_SIZE_TOOLTIP                             :{BLACK}Izvēlēties pilsētas izmērus
-STR_FOUND_TOWN_CITY                                             :{BLACK}Lielpilsēta
-STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Lielpilsētas attīstās ātrāk kā pilsētas{}Atkarībā no iestatījumiem, dibināšanas brīdī tās ir lielākas
+STR_FOUND_TOWN_CITY                                             :{BLACK}Pilsēta
+STR_FOUND_TOWN_CITY_TOOLTIP                                     :{BLACK}Pilsētas aug straujāk kā parastas apdzīvotās vietas{}Atkarībā no iestatījumiem, dibināšanas brīdī pilsētas ir lielākas
 
 STR_FOUND_TOWN_ROAD_LAYOUT                                      :{YELLOW}Pilsētas ceļu izskats:
 STR_FOUND_TOWN_SELECT_TOWN_ROAD_LAYOUT                          :{BLACK}Atlasīt šajā pilsētā lietojamo ceļu izkārtojumu
@@ -2616,6 +2639,7 @@ STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Pieņem 
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
 STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Sliežu veids: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_ROAD_TYPE                             :{BLACK}Ceļu tips: {LTBLUE}{STRING}
+STR_LANG_AREA_INFORMATION_TRAM_TYPE                             :{BLACK}Tramvaja veids: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Sliežu ātruma ierobežojums: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Ceļa ātruma ierobežojums: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_TRAM_SPEED_LIMIT                      :{BLACK}Tramvaja ātruma ierobežojums: {LTBLUE}{VELOCITY}
@@ -2629,29 +2653,29 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Lauki
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Apsnigusi zeme
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Tuksnesis
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Dzelzceļš sliedes
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Dzelzceļš ceļš ar bloķēšanas signālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Dzelzceļš sliedes ar pirmssignālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Dzelzceļš sliedes ar izejas signālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Dzelzceļš sliedes ar kombinētajām signālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Dzelzceļš sliedes ar ceļa signālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Dzelzceļš sliedes ar vienvirziena ceļa signālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Dzelzceļš sliedes ar bloka un pirmssignālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Dzelzceļš sliedes ar bloka un izejas signālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Dzelzceļš sliedes ar bloka un kombinētajām signālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Dzelzceļš sliedes ar bloka un ceļa signālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Dzelzceļš sliedes ar bloka un vienvirziena ceļa signālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Dzelzceļš sliedes ar izejas un pirmssignālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Dzelzceļš sliedes ar kombinētajām un pirmssignālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Dzelzceļš sliedes ar ceļu un pirmssignālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Dzelzceļš sliedes ar vienvirziena ceļu un pirmssignālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Dzelzceļš sliedes ar izejas un kombinētajām signālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Dzelzceļš sliedes ar izejas un ceļa signālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Dzelzceļš sliedes ar izejas un vienvirziena ceļa signālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Dzelzceļš sliedes ar kombinētajām un ceļa signālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Dzelzceļš sliedes ar kombinētajām un vienvirziena ceļa signālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Dzelzceļš sliedes ar ceļa un vienvirziena ceļa signālierīcēm
-STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Dzelzceļš vilcienu depo
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Dzelzceļa sliedes
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Dzelzceļa sliedes ar bloku signālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Dzelzceļa sliedes ar pirmssignālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Dzelzceļa sliedes ar izejas signālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Dzelzceļa sliedes ar kombinētajām signālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Dzelzceļa sliedes ar ceļa signālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Dzelzceļa sliedes ar vienvirziena ceļa signālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Dzelzceļa sliedes ar bloku un pirmssignālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Dzelzceļa sliedes ar bloku un izejas signālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Dzelzceļa sliedes ar bloku un kombinētajām signālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Dzelzceļa sliedes ar bloku un ceļu signālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Dzelzceļa sliedes ar bloka un vienvirziena ceļa signālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Dzelzceļa sliedes ar izejas un pirmssignālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Dzelzceļa sliedes ar kombinētajām un pirmssignālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Dzelzceļa sliedes ar ceļu un pirmssignālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Dzelzceļa sliedes ar vienvirziena un pirmssignālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Dzelzceļa sliedes ar izejas un kombinētajām signālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Dzelzceļa sliedes ar izejas un ceļa signālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Dzelzceļa sliedes ar izejas un vienvirziena ceļa signālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Dzelzceļa sliedes ar kombinētajām un ceļa signālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Dzelzceļa sliedes ar kombinētajām un vienvirziena ceļa signālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Dzelzceļa sliedes ar ceļu un vienvirziena ceļu signālierīcēm
+STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :Dzelzceļa vilcienu depo
 
 STR_LAI_ROAD_DESCRIPTION_ROAD                                   :Ceļš
 STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Ceļš ar ielu apgaismojumu
@@ -2723,7 +2747,8 @@ STR_FRAMERATE_CAPTION_SMALL                                     :{STRING}{WHITE}
 STR_FRAMERATE_RATE_GAMELOOP                                     :{BLACK}Simulācijas ātrums: {STRING}
 STR_FRAMERATE_RATE_GAMELOOP_TOOLTIP                             :{BLACK}Spēles tikšķu skaits, ko simulēt vienā sekundē.
 STR_FRAMERATE_RATE_BLITTER                                      :{BLACK}Grafikas kadru ātrums: {STRING}
-STR_FRAMERATE_SPEED_FACTOR                                      :{WHITE}pašreizējās spēles ātruma pakāpe: {DECIMAL}x
+STR_FRAMERATE_RATE_BLITTER_TOOLTIP                              :{BLACK}Sekundē renderēto video kadru skaits.
+STR_FRAMERATE_SPEED_FACTOR                                      :{BLACK}Pašreizējās spēles ātruma pakāpe: {DECIMAL}×
 STR_FRAMERATE_SPEED_FACTOR_TOOLTIP                              :{BLACK}Cik ātri spēle šobrīd iet salīdzinot ar standarta ātrumu.
 STR_FRAMERATE_CURRENT                                           :{WHITE}Pašreizējais
 STR_FRAMERATE_AVERAGE                                           :{WHITE}Vidējais
@@ -2749,6 +2774,7 @@ STR_FRAMERATE_GL_SHIPS                                          :{BLACK}  Kuģu 
 STR_FRAMERATE_GL_AIRCRAFT                                       :{BLACK}  Lidaparātu tikšķi:
 STR_FRAMERATE_GL_LANDSCAPE                                      :{BLACK}  Pasaules tikšķi:
 STR_FRAMERATE_GL_LINKGRAPH                                      :{BLACK}  Saišu grafika aizture:
+STR_FRAMERATE_DRAWING                                           :{BLACK}Grafikas renderēšana:
 STR_FRAMERATE_DRAWING_VIEWPORTS                                 :{BLACK}  Pasaules skatvietas:
 STR_FRAMERATE_VIDEO                                             :{BLACK}Video izvade:
 STR_FRAMERATE_SOUND                                             :{BLACK}Skaņas miksēšana:
@@ -2761,6 +2787,7 @@ STR_FRAMETIME_CAPTION_GAMELOOP                                  :Spēles cikls
 STR_FRAMETIME_CAPTION_GL_ECONOMY                                : Kravu iekraušana un izkraušana
 STR_FRAMETIME_CAPTION_GL_TRAINS                                 :Vilcienu tikšķi
 STR_FRAMETIME_CAPTION_GL_ROADVEHS                               :Autotransporta tikšķi
+STR_FRAMETIME_CAPTION_GL_SHIPS                                  :Kuģu tikšķi
 STR_FRAMETIME_CAPTION_GL_AIRCRAFT                               :Lidaparātu tikšķi
 STR_FRAMETIME_CAPTION_GL_LANDSCAPE                              :Pasaules tikšķi
 STR_FRAMETIME_CAPTION_GL_LINKGRAPH                              :Saišu grafa aizture
@@ -2918,6 +2945,8 @@ STR_NEWGRF_SETTINGS_MD5SUM                                      :{BLACK}MD5sum: 
 STR_NEWGRF_SETTINGS_PALETTE                                     :{BLACK}Palete: {SILVER}{STRING}
 STR_NEWGRF_SETTINGS_PALETTE_DEFAULT                             :Noklusējuma (D)
 STR_NEWGRF_SETTINGS_PALETTE_DEFAULT_32BPP                       :Noklusējuma (D) / 32 bpp
+STR_NEWGRF_SETTINGS_PALETTE_LEGACY                              :Mantotais (W)
+STR_NEWGRF_SETTINGS_PALETTE_LEGACY_32BPP                        :Mantotais (W) / 32 bpp
 STR_NEWGRF_SETTINGS_PARAMETER                                   :{BLACK}Parametri: {SILVER}{STRING}
 STR_NEWGRF_SETTINGS_PARAMETER_NONE                              :Nav
 
@@ -2965,9 +2994,11 @@ STR_SPRITE_ALIGNER_GOTO_TOOLTIP                                 :{BLACK}Iet pie 
 STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Iepriekšējais gariņš
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Iet pie iepriekšējā parastā gariņa, izlaižot visus pseido/pārkrāsotos/fonta gariņus
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Atlasītā gariņa attēlojums. To attēlojot, izkārtojums netiek ievērots
-STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Pārvietot gariņu, lai mainītu X un Y vērtības
+STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Pārvietot gariņu, lai mainītu X un Y vērtības. Ctrl+klikšķis, lai vienā piegājienā pārvietotu gariņu par astoņām vienībām
 STR_SPRITE_ALIGNER_RESET_BUTTON                                 :{BLACK}Atiestatīt relatīvi
+STR_SPRITE_ALIGNER_RESET_TOOLTIP                                :{BLACK}Pāriestatīt paršreizējo relatīvo nobīdi
 STR_SPRITE_ALIGNER_OFFSETS_ABS                                  :{BLACK}X nobīde: {NUM}, Y nobīde: {NUM} (absolūta)
+STR_SPRITE_ALIGNER_OFFSETS_REL                                  :{BLACK}X nobīde: {NUM}, Y nobīde: {NUM} (relatīvi)
 STR_SPRITE_ALIGNER_PICKER_BUTTON                                :{BLACK}Paņemt gariņu
 STR_SPRITE_ALIGNER_PICKER_TOOLTIP                               :{BLACK}Paņemt gariņu no jebkuras vietas ekrānā
 
@@ -3033,6 +3064,7 @@ STR_NEWGRF_BUGGY                                                :{WHITE}NewGRF '
 STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{WHITE}'{1:ENGINE}' kravas pielāgošanas informācija pēc izbūves atšķiras no pārdošanas sarakstā norādītās. Tas var liegt automātiskai atjaunošanai/aizvietošanai pareizi pielāgot kravas
 STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :{WHITE}'{1:STRING}' izraisīja bezgalīgu ražošanas izsaukumu ciklu
 STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT                        :{WHITE}Izsaukums {1:HEX} atgrieza nezināmu vai nederīgu rezultātu {2:HEX}
+STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK              :{WHITE}“{1:STRING}” atgrieza nederīgu kravas veidu ražošanas atgriezeniskajā funkcijā punktā {2:HEX}
 
 # 'User removed essential NewGRFs'-placeholders for stuff without specs
 STR_NEWGRF_INVALID_CARGO                                        :<nederīga krava>
@@ -3073,7 +3105,7 @@ STR_TOWN_POPULATION                                             :{BLACK}Pasaules
 
 # Town view window
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
-STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (lielpilsēta)
+STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (pilsēta)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Iedzīvotāji: {ORANGE}{COMMA}{BLACK}  Mājas: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX                              :{BLACK}{CARGO_LIST} iepriekšējā mēnesī: {ORANGE}{COMMA}{BLACK}  maks.: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Krava nepieciešama pilsētas attīstībai:
@@ -3101,6 +3133,7 @@ STR_TOWN_VIEW_RENAME_TOWN_BUTTON                                :Pārdēvēt pil
 # Town local authority window
 STR_LOCAL_AUTHORITY_CAPTION                                     :{WHITE}{TOWN} pašvaldība
 STR_LOCAL_AUTHORITY_ZONE                                        :{BLACK}Zona
+STR_LOCAL_AUTHORITY_ZONE_TOOLTIP                                :{BLACK}Rādīt zonu pašvaldības robežās
 STR_LOCAL_AUTHORITY_COMPANY_RATINGS                             :{BLACK}Transporta uzņēmumu vērtējumi:
 STR_LOCAL_AUTHORITY_COMPANY_RATING                              :{YELLOW}{COMPANY} {COMPANY_NUM}: {ORANGE}{STRING}
 STR_LOCAL_AUTHORITY_ACTIONS_TITLE                               :{BLACK}Pieejamās darbības:
@@ -3180,6 +3213,7 @@ STR_SUBSIDIES_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                :{BLACK}Klikšķ
 # Story book window
 STR_STORY_BOOK_CAPTION                                          :{WHITE}{COMPANY} Stāstu grāmata
 STR_STORY_BOOK_SPECTATOR_CAPTION                                :{WHITE}Globālā stāstu grāmata
+STR_STORY_BOOK_SPECTATOR                                        :Globālā stāstu grāmata
 STR_STORY_BOOK_TITLE                                            :{YELLOW}{STRING}
 STR_STORY_BOOK_GENERIC_PAGE_ITEM                                :{NUM} lapa
 STR_STORY_BOOK_SEL_PAGE_TOOLTIP                                 :{BLACK}Pārlēkt uz specifisku lapu spiežot to zemāk esošajā sarakstā.
@@ -3373,6 +3407,7 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL                           :{WHITE}{CURRENC
 STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Ražotnes
 STR_INDUSTRY_DIRECTORY_NONE                                     :{G=m}{ORANGE}- Neviens -
 STR_INDUSTRY_DIRECTORY_NONE.kas                                 :{ORANGE}- Neviena -
+STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} (pārvadāti {COMMA}%){BLACK}
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
@@ -3387,7 +3422,7 @@ STR_INDUSTRY_DIRECTORY_FILTER_NONE                              :Nav
 # Industry view
 STR_INDUSTRY_VIEW_CAPTION                                       :{WHITE}{INDUSTRY}
 STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}Iepriekšējā mēnesī saražots:
-STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{STRING}{BLACK} (aizvests {COMMA}%)
+STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{STRING}{BLACK} (pārvadāti {COMMA}%)
 STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Centrēt galveno skatu uz ražotni. Ctrl+klikšķis atvērs skatu uz ražotni jaunā skatlaukā
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Ražošanas līmenis: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Nozare ir paziņojusi par nenovēršamu slēgšanu!
@@ -3396,6 +3431,7 @@ STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Pieprasa
 STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Ražo: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :, {STRING}{STRING}
 
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Pieprasa:
 STR_INDUSTRY_VIEW_ACCEPT_CARGO                                  :{YELLOW}{STRING}{BLACK}{3:STRING}
 STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING}{BLACK}: {CARGO_SHORT} gaida{STRING}
 
@@ -3466,6 +3502,7 @@ STR_GROUP_RENAME_CAPTION                                        :{BLACK}Pārdēv
 
 STR_GROUP_PROFIT_THIS_YEAR                                      :Ienākumi šajā gadā:
 STR_GROUP_PROFIT_LAST_YEAR                                      :Peļņa pērn:
+STR_GROUP_OCCUPANCY                                             :Pašreizējais lietojums:
 STR_GROUP_OCCUPANCY_VALUE                                       :{NUM}%
 
 # Build vehicle window
@@ -3485,6 +3522,7 @@ STR_BUY_VEHICLE_AIRCRAFT_CAPTION                                :Jauns lidaparā
 ############ range for vehicle availability ends
 
 STR_PURCHASE_INFO_COST_WEIGHT                                   :{BLACK}Cena: {GOLD}{CURRENCY_LONG}{BLACK} Svars: {GOLD}{WEIGHT_SHORT}
+STR_PURCHASE_INFO_COST_REFIT_WEIGHT                             :{BLACK}Cena: {GOLD}{CURRENCY_LONG}{BLACK} (Pielāgošanas izmaksas: {GOLD}{CURRENCY_LONG}{BLACK}) Svars: {GOLD}{WEIGHT_SHORT}
 STR_PURCHASE_INFO_SPEED_POWER                                   :{BLACK}Ātrums: {GOLD}{VELOCITY}{BLACK} Jauda: {GOLD}{POWER}
 STR_PURCHASE_INFO_SPEED                                         :{BLACK}Ātrums: {GOLD}{VELOCITY}
 STR_PURCHASE_INFO_SPEED_OCEAN                                   :{BLACK}Ātrums okeānā: {GOLD}{VELOCITY}
@@ -3657,6 +3695,7 @@ STR_ENGINE_PREVIEW_SHIP                                         :kuģis
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Cena: {CURRENCY_LONG} Svars: {WEIGHT_SHORT}{}Ātrums: {VELOCITY} Jauda: {POWER}{}Kārtējās izmaksas: {CURRENCY_LONG} gadā{}Ietilpība:  {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Cena: {CURRENCY_LONG} Svars: {WEIGHT_SHORT}{}Ātrums: {VELOCITY}  Jauda: {POWER}  Maks. spēks: {6:FORCE}{}Kārtējās izmaksas: {4:CURRENCY_LONG} gadā{}Ietilpība: {5:CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Cena: {CURRENCY_LONG} Maks. ātrums: {VELOCITY}{}Ietilpība: {CARGO_LONG}{}Kārtējās izmaksas: {CURRENCY_LONG} gadā
+STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_CAP_RUNCOST          :{BLACK}Cena: {CURRENCY_LONG} Maks. ātrums: {VELOCITY}{}Lidaparāta veids: {STRING}{}Ietilpība: {CARGO_LONG}, {CARGO_LONG}{}Izmaksas: {CURRENCY_LONG} gadā
 STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_RUNCOST              :{BLACK}Cena: {CURRENCY_LONG} Maks. ātrums: {VELOCITY}{}Lidaparāta veids: {STRING}{}Ietilpība: {CARGO_LONG}{}Izmaksas: {CURRENCY_LONG}/gadā
 STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_CAP_RUNCOST    :{BLACK}Cena: {CURRENCY_LONG} Maks. ātrums: {VELOCITY}{}Lidaparāta veids: {STRING} Attālums: {COMMA} lauciņi{}Ietilpība: {CARGO_LONG}, {CARGO_LONG}{}Izmaksas: {CURRENCY_LONG}/gadā
 STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_RUNCOST        :{BLACK}Cena: {CURRENCY_LONG} Maks. ātrums: {VELOCITY}{}Lidaparāta veids: {STRING} Attālums: {COMMA} lauciņi{}Ietilpība: {CARGO_LONG}{}Izmaksas: {CURRENCY_LONG}/gadā
@@ -3669,7 +3708,9 @@ STR_REPLACE_VEHICLE_SHIP                                        :Kuģis
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :Lidaparāts
 
 STR_REPLACE_VEHICLE_VEHICLES_IN_USE                             :{YELLOW}Lietošanā esošie transportlīdzekļi
+STR_REPLACE_VEHICLE_VEHICLES_IN_USE_TOOLTIP                     :{BLACK}Kolonna ar jums piederošajiem transportlīdzekļiem
 STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES                          :{YELLOW}Pieejamie transportlīdzekļi
+STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES_TOOLTIP                  :{BLACK}Kolonna ar transportlīdzekļiem, kurus var aizvietot
 
 STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Izvēlēties lokomotīves veidu, kuru vēlaties mainīt
 STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Izvēlēties jaunu lokomotīves veidu, kuru vēlaties lietot kreisajā pusē atlasītās lokomotīves vietā
@@ -3691,6 +3732,7 @@ STR_REPLACE_ALL_RAILTYPE                                        :Visi dzelzceļa
 STR_REPLACE_ALL_ROADTYPE                                        :Visi ceļu transportlīdzekļi
 
 STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}Izvēlēties sliežu veidu, kuram vēlaties nomainīt lokomotīves
+STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}Izvēlēties ceļu veidu, kuram vēlaties nomainīt dzinējus
 STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}Parāda kura lokomotīve no kreisajā pusē atlasītajām tiek nomainīta, ja vien kāda ir
 STR_REPLACE_RAIL_VEHICLES                                       :Sliežu transportlīdzekļi
 STR_REPLACE_ELRAIL_VEHICLES                                     :Elektrificētā dzelzceļa transportlīdzekļi
@@ -3784,6 +3826,8 @@ STR_VEHICLE_INFO_AGE                                            :{COMMA} gad{P s
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} gad{P s i u} ({COMMA})
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Maks. ātrums: {LTBLUE}{VELOCITY}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE                                 :{BLACK}Maks. ātrums: {LTBLUE}{VELOCITY} {BLACK}Lidaparāta veids: {LTBLUE}{STRING}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE                           :{BLACK}Maks. ātrums: {LTBLUE}{VELOCITY} {BLACK}Lidaparāta veids: {LTBLUE}{STRING} {BLACK}Attālums: {LTBLUE}{COMMA} lauciņi
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Svars: {LTBLUE}{WEIGHT_SHORT} {BLACK}Jauda: {LTBLUE}{POWER}{BLACK} Maks. ātrums: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Svars: {LTBLUE}{WEIGHT_SHORT} {BLACK}Jauda: {LTBLUE}{POWER}{BLACK} Maks. ātrums: {LTBLUE}{VELOCITY} {BLACK}Maks. spēks: {LTBLUE}{FORCE}
 
@@ -4197,6 +4241,7 @@ STR_FEEDER                                                      :{YELLOW}Pārska
 STR_FEEDER_INCOME_TINY                                          :{TINY_FONT}{YELLOW}Pārkraušana: {CURRENCY_LONG}{WHITE} / {GREEN}Ienākumi: {CURRENCY_LONG}
 STR_FEEDER_INCOME                                               :{YELLOW}Pārkraušana: {CURRENCY_LONG}{WHITE} / {GREEN}Ienākumi: {CURRENCY_LONG}
 STR_FEEDER_COST_TINY                                            :{TINY_FONT}{YELLOW}Pārkraušana: {CURRENCY_LONG}{WHITE} / {RED}Izmaksas: {CURRENCY_LONG}
+STR_FEEDER_COST                                                 :{YELLOW}Pārkraušana: {CURRENCY_LONG}{WHITE} / {RED}Izmaksas: {CURRENCY_LONG}
 STR_MESSAGE_ESTIMATED_COST                                      :{WHITE}Plānotās izmaksas: {CURRENCY_LONG}
 STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Plānotie ienākumi: {CURRENCY_LONG}
 
@@ -4448,6 +4493,7 @@ STR_ERROR_CAN_T_REMOVE_TRAMWAY_FROM                             :{WHITE}Šeit ne
 STR_ERROR_THERE_IS_NO_ROAD                                      :{WHITE}... tur nav ceļa
 STR_ERROR_THERE_IS_NO_TRAMWAY                                   :{WHITE}... tur nav tramvaju sliežu ceļa
 STR_ERROR_CAN_T_CONVERT_ROAD                                    :{WHITE}Šeit nevar mainīt ceļa veidu...
+STR_ERROR_CAN_T_CONVERT_TRAMWAY                                 :{WHITE}Šeit nevar pārveidot tramvaja veidu...
 STR_ERROR_NO_SUITABLE_ROAD                                      :{WHITE}Nav piemērota ceļa
 STR_ERROR_NO_SUITABLE_TRAMWAY                                   :{WHITE}Nav piemērotu tramvaju
 STR_ERROR_INCOMPATIBLE_ROAD                                     :{WHITE}... nesavietojams ceļš
@@ -4504,6 +4550,7 @@ STR_ERROR_GROUP_CAN_T_CREATE                                    :{WHITE}Nevar iz
 STR_ERROR_GROUP_CAN_T_DELETE                                    :{WHITE}Nevar izdzēst šo grupu...
 STR_ERROR_GROUP_CAN_T_RENAME                                    :{WHITE}Nevar pārdēvēt grupu...
 STR_ERROR_GROUP_CAN_T_SET_PARENT                                :nevar iestatīt vecāku grupu...
+STR_ERROR_GROUP_CAN_T_SET_PARENT_RECURSION                      :{WHITE}... grupu hierarhijās cikli nav atļauti
 STR_ERROR_GROUP_CAN_T_REMOVE_ALL_VEHICLES                       :{WHITE}Nevar noņemt no šīs grupas visus transportlīdzekļus...
 STR_ERROR_GROUP_CAN_T_ADD_VEHICLE                               :{WHITE}Nevar pievienot transportlīdzekļus šai grupai...
 STR_ERROR_GROUP_CAN_T_ADD_SHARED_VEHICLE                        :{WHITE}Nevar pievienot koplietojamos transportlīdzekļus šai grupai...

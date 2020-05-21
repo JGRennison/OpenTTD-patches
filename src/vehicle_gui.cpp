@@ -1784,7 +1784,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 			GfxFillRect((text_right - 1) - (FONT_HEIGHT_SMALL - 2), y + 1, text_right - 1, (y + 1) + (FONT_HEIGHT_SMALL - 2), ccolour, FILLRECT_OPAQUE);
 		}
 
-		if (v->name != nullptr) {
+		if (!v->name.empty()) {
 			/* The vehicle got a name so we will print it */
 			SetDParam(0, v->index);
 			DrawString(text_left, text_right, y, STR_TINY_BLACK_VEHICLE);

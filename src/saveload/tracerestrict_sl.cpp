@@ -125,7 +125,7 @@ static const SaveLoad _trace_restrict_slot_stub_desc[] = {
 
 static const SaveLoad _trace_restrict_slot_desc[] = {
 	SLE_VAR(TraceRestrictSlot, max_occupancy, SLE_UINT32),
-	SLE_STDSTR(TraceRestrictSlot, name, SLF_ALLOW_CONTROL),
+	SLE_SSTR(TraceRestrictSlot, name, SLF_ALLOW_CONTROL),
 	SLE_VAR(TraceRestrictSlot, owner, SLE_UINT8),
 	SLE_END()
 };

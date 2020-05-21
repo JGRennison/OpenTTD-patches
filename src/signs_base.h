@@ -15,12 +15,13 @@
 #include "core/pool_type.hpp"
 #include "company_type.h"
 #include "company_func.h"
+#include <string>
 
 typedef Pool<Sign, SignID, 16, 64000> SignPool;
 extern SignPool _sign_pool;
 
 struct Sign : SignPool::PoolItem<&_sign_pool> {
-	char               *name;
+	std::string         name;
 	TrackedViewportSign sign;
 	int32               x;
 	int32               y;

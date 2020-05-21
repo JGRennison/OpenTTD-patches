@@ -5,27 +5,29 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file sound_driver.hpp Base for all sound drivers. */
+/** @file ottd_optional.h Header to select between native. */
 
-#ifndef SOUND_SOUND_DRIVER_HPP
-#define SOUND_SOUND_DRIVER_HPP
+#ifndef OTTD_OPTIONAL_H
+#define OTTD_OPTIONAL_H
 
-#include "../driver.h"
+#if defined(__has_include)
+#	if __has_include(<version>)
+#		include <version>
+#	endif
+#endif
 
-/** Base for all sound drivers. */
-class SoundDriver : public Driver {
-public:
-	/** Called once every tick */
-	virtual void MainLoop() {}
+#if (__cplusplus >= 201703L) || (defined(__cpp_lib_optional) && __cpp_lib_optional >= 201606L)
 
-	/**
-	 * Get the currently active instance of the sound driver.
-	 */
-	static SoundDriver *GetInstance() {
-		return static_cast<SoundDriver*>(*DriverFactoryBase::GetActiveDriver(Driver::DT_SOUND));
-	}
-};
+/* Native std::optional. */
+#include <optional>
+namespace opt = std;
 
-extern std::string _ini_sounddriver;
+#else
 
-#endif /* SOUND_SOUND_DRIVER_HPP */
+/* No std::optional, use local copy instead. */
+#include "optional.hpp"
+namespace opt = std::experimental;
+
+#endif
+
+#endif /* OTTD_OPTIONAL_H */

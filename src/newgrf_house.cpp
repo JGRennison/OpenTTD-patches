@@ -749,8 +749,6 @@ bool NewHouseTileLoop(TileIndex tile)
 		uint16 callback_res = GetHouseCallback(CBID_HOUSE_DESTRUCTION, 0, 0, GetHouseType(tile), t, tile);
 		if (callback_res != CALLBACK_FAILED && Convert8bitBooleanCallback(hs->grf_prop.grffile, CBID_HOUSE_DESTRUCTION, callback_res)) {
 			ClearTownHouse(t, tile);
-			extern void RemoveNearbyStations(Town *t);
-			RemoveNearbyStations(t);
 			return false;
 		}
 	}

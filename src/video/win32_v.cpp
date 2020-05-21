@@ -1115,7 +1115,7 @@ static void FindResolutions()
 
 static FVideoDriver_Win32 iFVideoDriver_Win32;
 
-const char *VideoDriver_Win32::Start(const char * const *parm)
+const char *VideoDriver_Win32::Start(const StringList &parm)
 {
 	memset(&_wnd, 0, sizeof(_wnd));
 
@@ -1136,7 +1136,7 @@ const char *VideoDriver_Win32::Start(const char * const *parm)
 
 	MarkWholeScreenDirty();
 
-	_draw_threaded = GetDriverParam(parm, "no_threads") == nullptr && GetDriverParam(parm, "no_thread") == nullptr && std::thread::hardware_concurrency() > 1;
+	_draw_threaded = !GetDriverParamBool(parm, "no_threads") && !GetDriverParamBool(parm, "no_thread") && std::thread::hardware_concurrency() > 1;
 
 	return nullptr;
 }

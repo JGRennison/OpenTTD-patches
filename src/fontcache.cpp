@@ -94,13 +94,13 @@ SpriteFontCache::~SpriteFontCache()
 	this->ClearGlyphToSpriteMap();
 }
 
-SpriteID SpriteFontCache::GetUnicodeGlyph(GlyphID key)
+SpriteID SpriteFontCache::GetUnicodeGlyph(WChar key)
 {
 	if (this->glyph_to_spriteid_map[GB(key, 8, 8)] == nullptr) return 0;
 	return this->glyph_to_spriteid_map[GB(key, 8, 8)][GB(key, 0, 8)];
 }
 
-void SpriteFontCache::SetUnicodeGlyph(GlyphID key, SpriteID sprite)
+void SpriteFontCache::SetUnicodeGlyph(WChar key, SpriteID sprite)
 {
 	if (this->glyph_to_spriteid_map == nullptr) this->glyph_to_spriteid_map = CallocT<SpriteID*>(256);
 	if (this->glyph_to_spriteid_map[GB(key, 8, 8)] == nullptr) this->glyph_to_spriteid_map[GB(key, 8, 8)] = CallocT<SpriteID>(256);
@@ -209,7 +209,7 @@ protected:
 	int req_size;  ///< Requested font size.
 	int used_size; ///< Used font size.
 
-	typedef SmallMap<uint32, SmallPair<size_t, const void*> > FontTable; ///< Table with font table cache
+	typedef SmallMap<uint32, std::pair<size_t, const void*> > FontTable; ///< Table with font table cache
 	FontTable font_tables; ///< Cached font tables.
 
 	/** Container for information about a glyph. */
@@ -438,7 +438,7 @@ const void *TrueTypeFontCache::GetFontTable(uint32 tag, size_t &length)
 
 	const void *result = this->InternalGetFontTable(tag, length);
 
-	this->font_tables.Insert(tag, SmallPair<size_t, const void *>(length, result));
+	this->font_tables.Insert(tag, std::pair<size_t, const void *>(length, result));
 	return result;
 }
 

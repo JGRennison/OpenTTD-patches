@@ -671,17 +671,17 @@ static const OptionData _options[] = {
 int openttd_main(int argc, char *argv[])
 {
 	SetSelfAsMainThread();
-	char *musicdriver = nullptr;
-	char *sounddriver = nullptr;
-	char *videodriver = nullptr;
-	char *blitter = nullptr;
-	char *graphics_set = nullptr;
-	char *sounds_set = nullptr;
-	char *music_set = nullptr;
+	std::string musicdriver;
+	std::string sounddriver;
+	std::string videodriver;
+	std::string blitter;
+	std::string graphics_set;
+	std::string sounds_set;
+	std::string music_set;
 	Dimension resolution = {0, 0};
 	/* AfterNewGRFScan sets save_config to true after scanning completed. */
 	bool save_config = false;
-	AfterNewGRFScan *scanner = new AfterNewGRFScan(&save_config);
+	std::unique_ptr<AfterNewGRFScan> scanner(new AfterNewGRFScan(&save_config));
 	bool dedicated = false;
 	char *debuglog_conn = nullptr;
 
@@ -701,22 +701,18 @@ int openttd_main(int argc, char *argv[])
 	int i;
 	while ((i = mgo.GetOpt()) != -1) {
 		switch (i) {
-		case 'I': free(graphics_set); graphics_set = stredup(mgo.opt); break;
-		case 'S': free(sounds_set); sounds_set = stredup(mgo.opt); break;
-		case 'M': free(music_set); music_set = stredup(mgo.opt); break;
-		case 'm': free(musicdriver); musicdriver = stredup(mgo.opt); break;
-		case 's': free(sounddriver); sounddriver = stredup(mgo.opt); break;
-		case 'v': free(videodriver); videodriver = stredup(mgo.opt); break;
-		case 'b': free(blitter); blitter = stredup(mgo.opt); break;
+		case 'I': graphics_set = mgo.opt; break;
+		case 'S': sounds_set = mgo.opt; break;
+		case 'M': music_set = mgo.opt; break;
+		case 'm': musicdriver = mgo.opt; break;
+		case 's': sounddriver = mgo.opt; break;
+		case 'v': videodriver = mgo.opt; break;
+		case 'b': blitter = mgo.opt; break;
 		case 'D':
-			free(musicdriver);
-			free(sounddriver);
-			free(videodriver);
-			free(blitter);
-			musicdriver = stredup("null");
-			sounddriver = stredup("null");
-			videodriver = stredup("dedicated");
-			blitter = stredup("null");
+			musicdriver = "null";
+			sounddriver = "null";
+			videodriver = "dedicated";
+			blitter = "null";
 			dedicated = true;
 			SetDebugString("net=6");
 			if (mgo.opt != nullptr) {
@@ -780,7 +776,7 @@ int openttd_main(int argc, char *argv[])
 			DeterminePaths(argv[0]);
 			if (StrEmpty(mgo.opt)) {
 				ret = 1;
-				goto exit_noshutdown;
+				return ret;
 			}
 
 			char title[80];
@@ -799,7 +795,7 @@ int openttd_main(int argc, char *argv[])
 					GetString(buf, _load_check_data.error, lastof(buf));
 					fprintf(stderr, "%s\n", buf);
 				}
-				goto exit_noshutdown;
+				return ret;
 			}
 
 			if (i == 'q') {
@@ -807,8 +803,7 @@ int openttd_main(int argc, char *argv[])
 			} else {
 				WriteSavegameDebugData(title);
 			}
-
-			goto exit_noshutdown;
+			return ret;
 		}
 		case 'G': scanner->generation_seed = strtoul(mgo.opt, nullptr, 10); break;
 		case 'c': free(_config_file); _config_file = stredup(mgo.opt); break;
@@ -816,7 +811,7 @@ int openttd_main(int argc, char *argv[])
 		case 'J': _quit_after_days = Clamp(atoi(mgo.opt), 0, INT_MAX); break;
 		case 'Z': {
 			CrashLog::VersionInfoLog();
-			goto exit_noshutdown;
+			return ret;
 		}
 		case 'h':
 			i = -2; // Force printing of help.
@@ -837,8 +832,7 @@ int openttd_main(int argc, char *argv[])
 		BaseSounds::FindSets();
 		BaseMusic::FindSets();
 		ShowHelp();
-
-		goto exit_noshutdown;
+		return ret;
 	}
 
 	DeterminePaths(argv[0]);
@@ -881,24 +875,23 @@ int openttd_main(int argc, char *argv[])
 	InitWindowSystem();
 
 	BaseGraphics::FindSets();
-	if (graphics_set == nullptr && BaseGraphics::ini_set != nullptr) graphics_set = stredup(BaseGraphics::ini_set);
+	if (graphics_set.empty() && !BaseGraphics::ini_set.empty()) graphics_set = BaseGraphics::ini_set;
 	if (!BaseGraphics::SetSet(graphics_set)) {
-		if (!StrEmpty(graphics_set)) {
-			BaseGraphics::SetSet(nullptr);
+		if (!graphics_set.empty()) {
+			BaseGraphics::SetSet({});
 
 			ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND);
-			msg.SetDParamStr(0, graphics_set);
+			msg.SetDParamStr(0, graphics_set.c_str());
 			ScheduleErrorMessage(msg);
 		}
 	}
-	free(graphics_set);
 
 	/* Initialize game palette */
 	GfxInitPalettes();
 
 	DEBUG(misc, 1, "Loading blitter...");
-	if (blitter == nullptr && _ini_blitter != nullptr) blitter = stredup(_ini_blitter);
-	_blitter_autodetected = StrEmpty(blitter);
+	if (blitter.empty() && !_ini_blitter.empty()) blitter = _ini_blitter;
+	_blitter_autodetected = blitter.empty();
 	/* Activate the initial blitter.
 	 * This is only some initial guess, after NewGRFs have been loaded SwitchNewGRFBlitter may switch to a different one.
 	 *  - Never guess anything, if the user specified a blitter. (_blitter_autodetected)
@@ -909,16 +902,14 @@ int openttd_main(int argc, char *argv[])
 			(_support8bpp != S8BPP_NONE && (BaseGraphics::GetUsedSet() == nullptr || BaseGraphics::GetUsedSet()->blitter == BLT_8BPP)) ||
 			BlitterFactory::SelectBlitter("32bpp-anim") == nullptr) {
 		if (BlitterFactory::SelectBlitter(blitter) == nullptr) {
-			StrEmpty(blitter) ?
+			blitter.empty() ?
 				usererror("Failed to autoprobe blitter") :
-				usererror("Failed to select requested blitter '%s'; does it exist?", blitter);
+				usererror("Failed to select requested blitter '%s'; does it exist?", blitter.c_str());
 		}
 	}
-	free(blitter);
 
-	if (videodriver == nullptr && _ini_videodriver != nullptr) videodriver = stredup(_ini_videodriver);
+	if (videodriver.empty() && !_ini_videodriver.empty()) videodriver = _ini_videodriver;
 	DriverFactoryBase::SelectDriver(videodriver, Driver::DT_VIDEO);
-	free(videodriver);
 
 	InitializeSpriteSorter();
 
@@ -942,8 +933,7 @@ int openttd_main(int argc, char *argv[])
 
 	if (!HandleBootstrap()) {
 		ShutdownGame();
-
-		goto exit_bootstrap;
+		return ret;
 	}
 
 	VideoDriver::GetInstance()->ClaimMousePointer();
@@ -952,38 +942,34 @@ int openttd_main(int argc, char *argv[])
 	InitializeScreenshotFormats();
 
 	BaseSounds::FindSets();
-	if (sounds_set == nullptr && BaseSounds::ini_set != nullptr) sounds_set = stredup(BaseSounds::ini_set);
+	if (sounds_set.empty() && !BaseSounds::ini_set.empty()) sounds_set = BaseSounds::ini_set;
 	if (!BaseSounds::SetSet(sounds_set)) {
-		if (StrEmpty(sounds_set) || !BaseSounds::SetSet(nullptr)) {
+		if (sounds_set.empty() || !BaseSounds::SetSet({})) {
 			usererror("Failed to find a sounds set. Please acquire a sounds set for OpenTTD. See section 1.4 of README.md.");
 		} else {
 			ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND);
-			msg.SetDParamStr(0, sounds_set);
+			msg.SetDParamStr(0, sounds_set.c_str());
 			ScheduleErrorMessage(msg);
 		}
 	}
-	free(sounds_set);
 
 	BaseMusic::FindSets();
-	if (music_set == nullptr && BaseMusic::ini_set != nullptr) music_set = stredup(BaseMusic::ini_set);
+	if (music_set.empty() && !BaseMusic::ini_set.empty()) music_set = BaseMusic::ini_set;
 	if (!BaseMusic::SetSet(music_set)) {
-		if (StrEmpty(music_set) || !BaseMusic::SetSet(nullptr)) {
+		if (music_set.empty() || !BaseMusic::SetSet({})) {
 			usererror("Failed to find a music set. Please acquire a music set for OpenTTD. See section 1.4 of README.md.");
 		} else {
 			ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND);
-			msg.SetDParamStr(0, music_set);
+			msg.SetDParamStr(0, music_set.c_str());
 			ScheduleErrorMessage(msg);
 		}
 	}
-	free(music_set);
 
-	if (sounddriver == nullptr && _ini_sounddriver != nullptr) sounddriver = stredup(_ini_sounddriver);
+	if (sounddriver.empty() && !_ini_sounddriver.empty()) sounddriver = _ini_sounddriver;
 	DriverFactoryBase::SelectDriver(sounddriver, Driver::DT_SOUND);
-	free(sounddriver);
 
-	if (musicdriver == nullptr && _ini_musicdriver != nullptr) musicdriver = stredup(_ini_musicdriver);
+	if (musicdriver.empty() && !_ini_musicdriver.empty()) musicdriver = _ini_musicdriver;
 	DriverFactoryBase::SelectDriver(musicdriver, Driver::DT_MUSIC);
-	free(musicdriver);
 
 	/* Take our initial lock on whatever we might want to do! */
 	try {
@@ -1003,8 +989,7 @@ int openttd_main(int argc, char *argv[])
 	CheckForMissingGlyphs();
 
 	/* ScanNewGRFFiles now has control over the scanner. */
-	ScanNewGRFFiles(scanner);
-	scanner = nullptr;
+	ScanNewGRFFiles(scanner.release());
 
 	VideoDriver::GetInstance()->MainLoop();
 
@@ -1023,38 +1008,6 @@ int openttd_main(int argc, char *argv[])
 
 	/* Reset windowing system, stop drivers, free used memory, ... */
 	ShutdownGame();
-	goto exit_normal;
-
-exit_noshutdown:
-	/* These three are normally freed before bootstrap. */
-	free(graphics_set);
-	free(videodriver);
-	free(blitter);
-
-exit_bootstrap:
-	/* These are normally freed before exit, but after bootstrap. */
-	free(sounds_set);
-	free(music_set);
-	free(musicdriver);
-	free(sounddriver);
-
-exit_normal:
-	free(BaseGraphics::ini_set);
-	free(BaseSounds::ini_set);
-	free(BaseMusic::ini_set);
-
-	free(_ini_musicdriver);
-	free(_ini_sounddriver);
-	free(_ini_videodriver);
-	free(_ini_blitter);
-
-	delete scanner;
-
-	extern FILE *_log_fd;
-	if (_log_fd != nullptr) {
-		fclose(_log_fd);
-	}
-
 	return ret;
 }
 
@@ -1324,9 +1277,9 @@ void SwitchToMode(SwitchMode new_mode)
 
 		case SM_MENU: // Switch to game intro menu
 			LoadIntroGame();
-			if (BaseSounds::ini_set == nullptr && BaseSounds::GetUsedSet()->fallback) {
+			if (BaseSounds::ini_set.empty() && BaseSounds::GetUsedSet()->fallback) {
 				ShowErrorMessage(STR_WARNING_FALLBACK_SOUNDSET, INVALID_STRING_ID, WL_CRITICAL);
-				BaseSounds::ini_set = stredup(BaseSounds::GetUsedSet()->name);
+				BaseSounds::ini_set = BaseSounds::GetUsedSet()->name;
 			}
 			break;
 
