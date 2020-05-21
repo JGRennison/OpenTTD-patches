@@ -1449,6 +1449,9 @@
     <ClInclude Include="..\src\core\string_compare_type.hpp">
       <Filter>Core Source Code</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\core\tinystring_type.hpp">
+      <Filter>Core Source Code</Filter>
+    </ClInclude>
     <ClCompile Include="..\src\aircraft_gui.cpp">
       <Filter>GUI Source Code</Filter>
     </ClCompile>

@@ -784,6 +784,7 @@
     <ClInclude Include="..\src\core\smallstack_type.hpp" />
     <ClInclude Include="..\src\core\smallvec_type.hpp" />
     <ClInclude Include="..\src\core\string_compare_type.hpp" />
+    <ClInclude Include="..\src\core\tinystring_type.hpp" />
     <ClCompile Include="..\src\aircraft_gui.cpp" />
     <ClCompile Include="..\src\airport_gui.cpp" />
     <ClCompile Include="..\src\autoreplace_gui.cpp" />

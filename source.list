@@ -489,6 +489,7 @@ core/smallmatrix_type.hpp
 core/smallstack_type.hpp
 core/smallvec_type.hpp
 core/string_compare_type.hpp
+core/tinystring_type.hpp
 
 # GUI Source Code
 aircraft_gui.cpp
