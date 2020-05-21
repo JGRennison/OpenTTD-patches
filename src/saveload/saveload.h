@@ -465,8 +465,9 @@ enum VarTypes {
 	SLE_VAR_STRBQ = 11 << 4, ///< string enclosed in quotes (with pre-allocated buffer)
 	SLE_VAR_STR   = 12 << 4, ///< string pointer
 	SLE_VAR_STRQ  = 13 << 4, ///< string pointer enclosed in quotes
-	SLE_VAR_NAME  = 14 << 4, ///< old custom name to be converted to a char pointer
-	/* 1 more possible memory-primitives */
+	SLE_VAR_NAME  = 14 << 4, ///< old custom name to be converted to a std::string
+	SLE_VAR_CNAME = 15 << 4, ///< old custom name to be converted to a char pointer
+	/* 0 more possible memory-primitives */
 
 	/* Shortcut values */
 	SLE_VAR_CHAR = SLE_VAR_I8,
@@ -490,6 +491,7 @@ enum VarTypes {
 	SLE_STRING       = SLE_FILE_STRING   | SLE_VAR_STR,
 	SLE_STRINGQUOTE  = SLE_FILE_STRING   | SLE_VAR_STRQ,
 	SLE_NAME         = SLE_FILE_STRINGID | SLE_VAR_NAME,
+	SLE_CNAME        = SLE_FILE_STRINGID | SLE_VAR_CNAME,
 
 	/* Shortcut values */
 	SLE_UINT  = SLE_UINT32,

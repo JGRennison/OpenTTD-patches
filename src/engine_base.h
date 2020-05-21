@@ -13,13 +13,14 @@
 #include "engine_type.h"
 #include "vehicle_type.h"
 #include "core/pool_type.hpp"
+#include "core/tinystring_type.hpp"
 #include "newgrf_commons.h"
 
 typedef Pool<Engine, EngineID, 64, 64000> EnginePool;
 extern EnginePool _engine_pool;
 
 struct Engine : EnginePool::PoolItem<&_engine_pool> {
-	std::string name;           ///< Custom name of engine.
+	TinyString name;            ///< Custom name of engine.
 	Date intro_date;            ///< Date of introduction of the engine.
 	Date age;
 	uint16 reliability;         ///< Current reliability of the engine.

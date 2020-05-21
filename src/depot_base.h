@@ -12,13 +12,14 @@
 
 #include "depot_map.h"
 #include "core/pool_type.hpp"
+#include "core/tinystring_type.hpp"
 
 typedef Pool<Depot, DepotID, 64, 64000> DepotPool;
 extern DepotPool _depot_pool;
 
 struct Depot : DepotPool::PoolItem<&_depot_pool> {
 	Town *town;
-	std::string name;
+	TinyString name;
 
 	TileIndex xy;
 	uint16 town_cn;    ///< The N-1th depot for this town (consecutive number)

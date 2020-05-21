@@ -13,11 +13,11 @@
 #include "order_type.h"
 #include "date_type.h"
 #include "timetable.h"
-#include <string>
+#include "core/tinystring_type.hpp"
 
 /** Various front vehicle properties that are preserved when autoreplacing, using order-backup or switching front engines within a consist. */
 struct BaseConsist {
-	std::string name;                   ///< Name of vehicle
+	TinyString name;                   ///< Name of vehicle
 
 	/* Used for timetabling. */
 	uint32 current_order_time;          ///< How many ticks have passed since this order started.

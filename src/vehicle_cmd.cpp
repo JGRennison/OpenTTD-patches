@@ -801,29 +801,30 @@ static bool IsUniqueVehicleName(const char *name)
 static void CloneVehicleName(const Vehicle *src, Vehicle *dst)
 {
 	std::string buf;
+	std::string src_name = src->name.c_str();
 
 	/* Find the position of the first digit in the last group of digits. */
 	size_t number_position;
-	for (number_position = src->name.length(); number_position > 0; number_position--) {
+	for (number_position = src_name.length(); number_position > 0; number_position--) {
 		/* The design of UTF-8 lets this work simply without having to check
 		 * for UTF-8 sequences. */
-		if (src->name[number_position - 1] < '0' || src->name[number_position - 1] > '9') break;
+		if (src_name[number_position - 1] < '0' || src_name[number_position - 1] > '9') break;
 	}
 
 	/* Format buffer and determine starting number. */
 	long num;
 	byte padding = 0;
-	if (number_position == src->name.length()) {
+	if (number_position == src_name.length()) {
 		/* No digit at the end, so start at number 2. */
-		buf = src->name;
+		buf = src_name;
 		buf += " ";
 		number_position = buf.length();
 		num = 2;
 	} else {
 		/* Found digits, parse them and start at the next number. */
-		buf = src->name.substr(0, number_position);
+		buf = src_name.substr(0, number_position);
 
-		auto num_str = src->name.substr(number_position);
+		auto num_str = src_name.substr(number_position);
 		padding = (byte)num_str.length();
 
 		std::istringstream iss(num_str);

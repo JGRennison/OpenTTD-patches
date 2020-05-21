@@ -19,6 +19,7 @@
 #include "openttd.h"
 #include "table/strings.h"
 #include "company_func.h"
+#include "core/tinystring_type.hpp"
 #include <list>
 #include <memory>
 
@@ -63,7 +64,7 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	uint32 townnamegrfid;
 	uint16 townnametype;
 	uint32 townnameparts;
-	std::string name;                ///< Custom town name. If empty, the town was not renamed and uses the generated name.
+	TinyString name;                 ///< Custom town name. If empty, the town was not renamed and uses the generated name.
 	mutable std::string cached_name; ///< NOSAVE: Cache of the resolved name of the town, if not using a custom town name
 
 	byte flags;                    ///< See #TownFlags.
