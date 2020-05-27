@@ -546,6 +546,34 @@ class NIHRailType : public NIHelper {
 		RailTypeResolverObject ro(nullptr, index, TCX_NORMAL, RTSG_END);
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, avail);
 	}
+
+	void ExtraInfo(uint index, std::function<void(const char *)> print) const override
+	{
+		char buffer[1024];
+
+		RailType primary = GetTileRailType(index);
+		RailType secondary = GetTileSecondaryRailTypeIfValid(index);
+
+		auto writeRailType = [&](RailType type) {
+			const RailtypeInfo *info = GetRailTypeInfo(type);
+			seprintf(buffer, lastof(buffer), "  Type: %u", type);
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  Flags: %c%c%c%c%c%c",
+					HasBit(info->flags, RTF_CATENARY) ? 'c' : '-',
+					HasBit(info->flags, RTF_NO_LEVEL_CROSSING) ? 'l' : '-',
+					HasBit(info->flags, RTF_HIDDEN) ? 'h' : '-',
+					HasBit(info->flags, RTF_NO_SPRITE_COMBINE) ? 's' : '-',
+					HasBit(info->flags, RTF_ALLOW_90DEG) ? 'a' : '-',
+					HasBit(info->flags, RTF_DISALLOW_90DEG) ? 'd' : '-');
+			print(buffer);
+		};
+
+		print("Debug Info:");
+		writeRailType(primary);
+		if (secondary != INVALID_RAILTYPE) {
+			writeRailType(secondary);
+		}
+	}
 };
 
 static const NIFeature _nif_railtype = {
