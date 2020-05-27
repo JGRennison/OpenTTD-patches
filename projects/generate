@@ -69,6 +69,7 @@ fi
 # First, collect the list of Windows files
 allegro_config=""
 sdl_config="1"
+sdl2_config="1"
 png_config="1"
 os="MSVC"
 enable_dedicated="0"
@@ -123,6 +124,7 @@ load_main_data() {
 
 			if ($0 == "ALLEGRO"     && "'$allegro_config'" == "")      { next; }
 			if ($0 == "SDL"         && "'$sdl_config'" == "")          { next; }
+			if ($0 == "SDL2"        && "'$sdl2_config'" == "")         { next; }
 			if ($0 == "PNG"         && "'$png_config'" == "")          { next; }
 			if ($0 == "OSX"         && "'$os'" != "OSX")               { next; }
 			if ($0 == "OS2"         && "'$os'" != "OS2")               { next; }
@@ -264,19 +266,22 @@ generate() {
 	echo "Generating $2..."
 	# Everything above the !!FILTERS!! marker
 	cat "$ROOT_DIR/projects/$2".in | ${AWK} -v BINMODE=1 -v FILTERS="$3" -v FILES="$1" '
-		{ CR = (match($0, "\\r$") > 0 ? "\r" : "") }
 		/^$/ { next }
 		/!!FILTERS!!/ {
 			split(FILTERS, filters, "\n");
 			for (i = 1; filters[i] != ""; i++) {
-				print filters[i] CR;
+				line = $0
+				gsub(/!!FILTERS!!/, filters[i], line);
+				print line;
 			}
 			next;
 		}
 		/!!FILES!!/ {
 			split(FILES, files, "\n");
 			for (i = 1; files[i] != ""; i++) {
-				print files[i] CR;
+				line = $0
+				gsub(/!!FILES!!/, files[i], line);
+				print line;
 			}
 			next;
 		}
