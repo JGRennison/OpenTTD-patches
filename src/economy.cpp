@@ -1920,14 +1920,18 @@ static void LoadUnloadVehicle(Vehicle *front)
 			ClrBit(v->vehicle_flags, VF_CARGO_UNLOADING);
 		}
 
-		/* Do not pick up goods when we have no-load set or loading is stopped. */
-		if (GetLoadType(v) & OLFB_NO_LOAD || HasBit(front->vehicle_flags, VF_STOP_LOADING)) continue;
+		/* Do not pick up goods when we have no-load set or loading is stopped.
+		 * Per-cargo no-load orders can only be checked after attempting to refit. */
+		if (front->current_order.GetLoadType() & OLFB_NO_LOAD || HasBit(front->vehicle_flags, VF_STOP_LOADING)) continue;
 
 		/* This order has a refit, if this is the first vehicle part carrying cargo and the whole vehicle is empty, try refitting. */
 		if (front->current_order.IsRefit() && artic_part == 1) {
 			HandleStationRefit(v, consist_capleft, st, next_station, front->current_order.GetRefitCargo());
 			ge = &st->goods[v->cargo_type];
 		}
+
+		/* Do not pick up goods when we have no-load set. */
+		if (GetLoadType(v) & OLFB_NO_LOAD) continue;
 
 		/* As we're loading here the following link can carry the full capacity of the vehicle. */
 		v->refit_cap = v->cargo_cap;
