@@ -19,7 +19,6 @@
 #include "../../gamelog.h"
 #include "../../saveload/saveload.h"
 #include "../../video/video_driver.hpp"
-#include "../../openttd.h"
 #include "../../screenshot.h"
 #include "../../debug.h"
 #include "../../settings_type.h"
@@ -618,8 +617,6 @@ void *_safe_esp = nullptr;
 
 static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 {
-	_in_event_loop_post_crash = true;
-
 	if (CrashLogWindows::current != nullptr) {
 		CrashLog::AfterCrashLogCleanup();
 		ExitProcess(2);
