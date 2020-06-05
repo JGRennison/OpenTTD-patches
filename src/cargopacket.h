@@ -582,8 +582,8 @@ public:
 	}
 
 	/**
-	 * Are two the two CargoPackets mergeable in the context of
-	 * a list of CargoPackets for a Vehicle?
+	 * Are the two CargoPackets mergeable in the context of
+	 * a list of CargoPackets for a Station?
 	 * @param cp1 First CargoPacket.
 	 * @param cp2 Second CargoPacket.
 	 * @return True if they are mergeable.

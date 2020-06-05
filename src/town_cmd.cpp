@@ -2697,8 +2697,7 @@ static CommandCost CheckCanBuildHouse(HouseID house, const Town *t)
 {
 	const HouseSpec *hs = HouseSpec::Get(house);
 
-	if (_loaded_newgrf_features.has_newhouses && !_generating_world &&
-			_game_mode != GM_EDITOR && (hs->extra_flags & BUILDING_IS_HISTORICAL) != 0) {
+	if (!_generating_world && _game_mode != GM_EDITOR && (hs->extra_flags & BUILDING_IS_HISTORICAL) != 0) {
 		return CMD_ERROR;
 	}
 
@@ -2836,8 +2835,7 @@ static bool BuildTownHouse(Town *t, TileIndex tile)
 		if (IsHouseTypeAllowed((HouseID)i, above_snowline, zone).Failed()) continue;
 		if (IsAnotherHouseTypeAllowedInTown(t, (HouseID)i).Failed()) continue;
 
-		/* Without NewHouses, all houses have probability '1' */
-		uint cur_prob = (_loaded_newgrf_features.has_newhouses ? HouseSpec::Get(i)->probability : 1);
+		uint cur_prob = HouseSpec::Get(i)->probability;
 		probability_max += cur_prob;
 		probs[num] = cur_prob;
 		houses[num++] = (HouseID)i;
