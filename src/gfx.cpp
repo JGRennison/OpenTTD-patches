@@ -53,6 +53,7 @@ std::atomic<bool> _exit_game;
 GameMode _game_mode;
 SwitchMode _switch_mode;  ///< The next mainloop command.
 PauseMode _pause_mode;
+uint32 _pause_countdown;
 Palette _cur_palette;
 std::mutex _cur_palette_mutex;
 std::string _switch_baseset;

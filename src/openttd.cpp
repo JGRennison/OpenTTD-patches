@@ -513,6 +513,7 @@ static void LoadIntroGame(bool load_newgrfs = true)
 
 	FixTitleGameZoom();
 	_pause_mode = PM_UNPAUSED;
+	_pause_countdown = 0;
 	_cursor.fix_at = false;
 
 	CheckForMissingGlyphs();
@@ -1966,6 +1967,11 @@ void StateGameLoop()
 		cur_company.Restore();
 	}
 	if (_extra_aspects > 0) FlushDeferredAspectUpdates();
+
+	if (_pause_countdown > 0 && --_pause_countdown == 0) {
+		_pause_mode = PM_PAUSED_NORMAL;
+		SetWindowDirty(WC_MAIN_TOOLBAR, 0);
+	}
 
 	assert(IsLocalCompany());
 }

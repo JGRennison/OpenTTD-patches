@@ -807,6 +807,19 @@ DEF_CONSOLE_CMD(ConUnpauseGame)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConStepGame)
+{
+	if (argc == 0 || argc > 2) {
+		IConsoleHelp("Advances the game for a certain amount of ticks (default 1). Usage: 'step [n]'");
+		return true;
+	}
+	auto n = (argc > 1 ? atoi(argv[1]) : 1);
+
+	DoCommandP(0, PM_PAUSED_NORMAL, 0 | (n << 1), CMD_PAUSE);
+
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConRcon)
 {
 	if (argc == 0) {
@@ -3651,6 +3664,7 @@ void IConsoleStdLibRegister()
 
 	IConsole::CmdRegister("pause",                   ConPauseGame,        ConHookServerOrNoNetwork);
 	IConsole::CmdRegister("unpause",                 ConUnpauseGame,      ConHookServerOrNoNetwork);
+	IConsole::CmdRegister("step",                    ConStepGame,         ConHookNoNetwork);
 
 	IConsole::CmdRegister("company_pw",              ConCompanyPassword,  ConHookNeedNetwork);
 	IConsole::AliasRegister("company_password",      "company_pw %+");

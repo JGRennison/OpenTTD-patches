@@ -179,8 +179,9 @@ CommandCost CmdPause(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, 
 		} else {
 			PauseMode prev_mode = _pause_mode;
 
-			if (p2 == 0) {
+			if ((p2 & 1) == 0) {
 				_pause_mode = static_cast<PauseMode>(_pause_mode & (byte)~p1);
+				_pause_countdown = (p2 >> 1);
 			} else {
 				_pause_mode = static_cast<PauseMode>(_pause_mode | (byte)p1);
 			}

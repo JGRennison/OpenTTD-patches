@@ -1214,6 +1214,7 @@ void NetworkGameLoop()
 		}
 
 		NetworkExecuteLocalCommandQueue();
+		if (_pause_countdown > 0 && --_pause_countdown == 0) DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
 
 		/* Then we make the frame */
 		StateGameLoop();
