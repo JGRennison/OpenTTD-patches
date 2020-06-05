@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.34.4 (2020-06-05)
+* Fix crash which could occur when pathfinding over railtypes which prohibit 90° turns.
+* Fix vehicle refit when used with per-cargo no-load orders.
+* Add support for fences and bare land to rail custom bridge heads.
+* Bump trunk base from commit 83cd040c61cf6ce966e78cc496c058d42977b387 to commit eeed3a7613d375f66781f53b42e03729a4ca1c33.
+
 ### v0.34.3 (2020-05-14)
 * Fix crash which could occur when using the reverse behind signal feature.
 * Fix text entry using modifier keys when using Fcitx on Linux/SDL2.
