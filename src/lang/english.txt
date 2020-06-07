@@ -1205,6 +1205,8 @@ STR_CONFIG_SETTING_CATCHMENT_INCREASE                           :Increase statio
 STR_CONFIG_SETTING_CATCHMENT_INCREASE_HELPTEXT                  :Increase radius of station catchment areas by this many tiles
 STR_CONFIG_SETTING_STATION_RATING_CARGO_CLASS_WAIT_TIME         :Station rating tolerance to waiting time depends on cargo class: {STRING2}
 STR_CONFIG_SETTING_STATION_RATING_CARGO_CLASS_WAIT_TIME_HELPTEXT:When enabled, the effect of the waiting time since the last cargo pickup on the station rating for that cargo depends on the cargo class. Passengers, mail, armoured cargo, refrigerated cargo and express cargo, are varyingly less tolerant to waiting. Bulk and liquid cargos are more tolerant.
+STR_CONFIG_SETTING_STATION_RATING_SIZE_CARGO_AMOUNT             :Station cargo capacity and rating tolerance depend on station size: {STRING2}
+STR_CONFIG_SETTING_STATION_RATING_SIZE_CARGO_AMOUNT_HELPTEXT    :When enabled, the cargo capacity of stations before waiting cargo is truncated and the effect of the waiting cargo amount on the station rating for that cargo depend on the size of the station. Larger stations can store more cargo and are more tolerant of large amounts of waiting cargo.
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Allow removal of more town-owned roads, bridges and tunnels: {STRING2}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Make it easier to remove town-owned infrastructure and buildings
 STR_CONFIG_SETTING_TRAIN_LENGTH                                 :Maximum length of trains: {STRING2}

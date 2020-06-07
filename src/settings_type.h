@@ -618,7 +618,8 @@ struct StationSettings {
 	bool   never_expire_airports;            ///< never expire airports
 	byte   station_spread;                   ///< amount a station may spread
 	byte   catchment_increase;               ///< amount by which station catchment is increased
-	byte   cargo_class_rating_wait_time;     ///< station rating tolerance to time since last cargo pickup depends on cargo class
+	bool   cargo_class_rating_wait_time;     ///< station rating tolerance to time since last cargo pickup depends on cargo class
+	bool   station_size_rating_cargo_amount; ///< station rating tolerance to waiting cargo amount depends on station size
 };
 
 /** Default settings for vehicles. */

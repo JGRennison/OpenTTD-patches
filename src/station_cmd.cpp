@@ -3780,11 +3780,16 @@ static void UpdateStationRating(Station *st)
 				if (waittime <= 3) rating += 35;
 
 				rating -= 90;
-				if (ge->max_waiting_cargo <= 1500) rating += 55;
-				if (ge->max_waiting_cargo <= 1000) rating += 35;
-				if (ge->max_waiting_cargo <= 600) rating += 10;
-				if (ge->max_waiting_cargo <= 300) rating += 20;
-				if (ge->max_waiting_cargo <= 100) rating += 10;
+				uint normalised_max_waiting_cargo = ge->max_waiting_cargo;
+				if (_settings_game.station.station_size_rating_cargo_amount) {
+					normalised_max_waiting_cargo *= 8;
+					if (st->station_tiles > 1) normalised_max_waiting_cargo /= st->station_tiles;
+				}
+				if (normalised_max_waiting_cargo <= 1500) rating += 55;
+				if (normalised_max_waiting_cargo <= 1000) rating += 35;
+				if (normalised_max_waiting_cargo <= 600) rating += 10;
+				if (normalised_max_waiting_cargo <= 300) rating += 20;
+				if (normalised_max_waiting_cargo <= 100) rating += 10;
 			}
 
 			if (Company::IsValidID(st->owner) && HasBit(st->town->statues, st->owner)) rating += 26;
@@ -3826,11 +3831,17 @@ static void UpdateStationRating(Station *st)
 				static const uint WAITING_CARGO_CUT_FACTOR = 1 <<  6;
 				static const uint MAX_WAITING_CARGO        = 1 << 15;
 
-				if (waiting > WAITING_CARGO_THRESHOLD) {
-					uint difference = waiting - WAITING_CARGO_THRESHOLD;
-					waiting -= (difference / WAITING_CARGO_CUT_FACTOR);
+				uint normalised_waiting_cargo_threshold = WAITING_CARGO_THRESHOLD;
+				if (_settings_game.station.station_size_rating_cargo_amount) {
+					if (st->station_tiles > 1) normalised_waiting_cargo_threshold *= st->station_tiles;
+					normalised_waiting_cargo_threshold /= 8;
+				}
 
-					waiting = min(waiting, MAX_WAITING_CARGO);
+				if (waiting > normalised_waiting_cargo_threshold) {
+					const uint difference = waiting - normalised_waiting_cargo_threshold;
+					waiting -= (difference / WAITING_CARGO_CUT_FACTOR);
+					const uint normalised_max_waiting_cargo = normalised_waiting_cargo_threshold * (MAX_WAITING_CARGO / WAITING_CARGO_THRESHOLD);
+					waiting = min(waiting, normalised_max_waiting_cargo);
 					waiting_changed = true;
 				}
 
