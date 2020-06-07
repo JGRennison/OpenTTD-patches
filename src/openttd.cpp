@@ -1379,9 +1379,11 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 
 	std::vector<IndustryList> old_station_industries_nears;
 	std::vector<BitmapTileArea> old_station_catchment_tiles;
+	std::vector<uint> old_station_tiles;
 	for (Station *st : Station::Iterate()) {
 		old_station_industries_nears.push_back(st->industries_near);
 		old_station_catchment_tiles.push_back(st->catchment_tiles);
+		old_station_tiles.push_back(st->station_tiles);
 	}
 
 	std::vector<StationList> old_industry_stations_nears;
@@ -1423,6 +1425,9 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		}
 		if (!(old_station_catchment_tiles[i] == st->catchment_tiles)) {
 			CCLOG("station catchment_tiles mismatch: st %i", (int)st->index);
+		}
+		if (!(old_station_tiles[i] == st->station_tiles)) {
+			CCLOG("station station_tiles mismatch: st %i, (old: %u, new: %u)", (int)st->index, old_station_tiles[i], st->station_tiles);
 		}
 		i++;
 	}

@@ -738,6 +738,8 @@ class NIHStationStruct : public NIHelper {
 				seprintf(buffer, lastof(buffer), "    %u: %s", ind->index, ind->GetCachedName());
 				print(buffer);
 			}
+			seprintf(buffer, lastof(buffer), "  Station tiles: %u", st->station_tiles);
+			print(buffer);
 		}
 	}
 };

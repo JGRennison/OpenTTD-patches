@@ -447,6 +447,14 @@ void Station::RecomputeCatchment(bool no_clear_nearby_lists)
 		this->industry->stations_near.clear();
 		this->industry->stations_near.insert(this);
 		this->industries_near.insert(this->industry);
+
+		/* Loop finding all station tiles */
+		TileArea ta(TileXY(this->rect.left, this->rect.top), TileXY(this->rect.right, this->rect.bottom));
+		this->station_tiles = 0;
+		TILE_AREA_LOOP(tile, ta) {
+			if (!IsTileType(tile, MP_STATION) || GetStationIndex(tile) != this->index) continue;
+			this->station_tiles++;
+		}
 		return;
 	}
 
@@ -454,8 +462,11 @@ void Station::RecomputeCatchment(bool no_clear_nearby_lists)
 
 	/* Loop finding all station tiles */
 	TileArea ta(TileXY(this->rect.left, this->rect.top), TileXY(this->rect.right, this->rect.bottom));
+	this->station_tiles = 0;
 	TILE_AREA_LOOP(tile, ta) {
 		if (!IsTileType(tile, MP_STATION) || GetStationIndex(tile) != this->index) continue;
+
+		this->station_tiles++;
 
 		uint r = GetTileCatchmentRadius(tile, this);
 		if (r == CA_NONE) continue;
