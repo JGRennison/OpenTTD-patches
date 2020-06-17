@@ -2028,6 +2028,19 @@ DEF_CONSOLE_CMD(ConNewGRFProfile)
 	return false;
 }
 
+DEF_CONSOLE_CMD(ConDumpCommandLog)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump log of recently executed commands.");
+		return true;
+	}
+
+	char buffer[32768];
+	DumpRecentCommandLog(buffer, lastof(buffer));
+	PrintLineByLine(buffer);
+	return true;
+}
+
 #ifdef _DEBUG
 /******************
  *  debug commands
@@ -2204,6 +2217,7 @@ void IConsoleStdLibRegister()
 #endif
 	IConsoleCmdRegister("fps",     ConFramerate);
 	IConsoleCmdRegister("fps_wnd", ConFramerateWindow);
+	IConsoleCmdRegister("dump_command_log", ConDumpCommandLog);
 
 	/* NewGRF development stuff */
 	IConsoleCmdRegister("reload_newgrfs",  ConNewGRFReload, ConHookNewGRFDeveloperTool);
