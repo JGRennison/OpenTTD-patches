@@ -65,13 +65,6 @@ static ReusableBuffer<uint8> _cursor_backup;
 ZoomLevel _gui_zoom; ///< GUI Zoom level
 ZoomLevel _font_zoom; ///< Font Zoom level
 
-/**
- * The rect for repaint.
- *
- * This rectangle defines the area which should be repaint by the video driver.
- *
- * @ingroup dirty
- */
 static const byte *_colour_remap_ptr;
 static byte _string_colourremap[3]; ///< Recoloursprite for stringdrawing. The grf loader ensures that #ST_FONT sprites only use colours 0 to 2.
 
@@ -1720,51 +1713,53 @@ void DrawDirtyBlocks()
 	ClearViewPortCaches();
 }
 
+/**
+ * Exclude the specified rectangle from the collection of invalid screen rectangles, splitting as required.
+ *
+ * @param left,top,right,bottom the rectangle to be included.
+ * @see SetDirtyBlocks
+ * @ingroup dirty
+ */
 void UnsetDirtyBlocks(int left, int top, int right, int bottom)
 {
 	if (_whole_screen_dirty) return;
 
 	for (uint i = 0; i < _dirty_blocks.size(); i++) {
 		Rect &r = _dirty_blocks[i];
-		if (left < r.right &&
-				right > r.left &&
-				top < r.bottom &&
-				bottom > r.top) {
-			/* overlap of some sort */
-			if (left <= r.left &&
-					right >= r.right &&
-					top <= r.top &&
-					bottom >= r.bottom) {
-				/* dirty rect entirely in subtraction area */
-				r = _dirty_blocks.back();
-				_dirty_blocks.pop_back();
-				i--;
-				continue;
-			}
-			if (r.left < left) {
-				Rect n = { left, r.top, r.right, r.bottom };
-				r.right = left;
-				_dirty_blocks.push_back(n);
-				continue;
-			}
-			if (r.right > right) {
-				Rect n = { r.left, r.top, right, r.bottom };
-				r.left = right;
-				_dirty_blocks.push_back(n);
-				continue;
-			}
-			if (r.top < top) {
-				Rect n = { r.left, top, r.right, r.bottom };
-				r.bottom = top;
-				_dirty_blocks.push_back(n);
-				continue;
-			}
-			if (r.bottom > bottom) {
-				Rect n = { r.left, r.top, r.right, bottom };
-				r.top = bottom;
-				_dirty_blocks.push_back(n);
-				continue;
-			}
+		if (left >= r.right || right <= r.left || top >= r.bottom || bottom <= r.top) {
+			/* no overlap */
+			continue;
+		}
+		if (left <= r.left && right >= r.right && top <= r.top && bottom >= r.bottom) {
+			/* dirty rect entirely within subtraction area */
+			r = _dirty_blocks.back();
+			_dirty_blocks.pop_back();
+			i--;
+			continue;
+		}
+		if (r.left < left) {
+			/* overlap, split at left edge */
+			_dirty_blocks.push_back({ left, r.top, r.right, r.bottom });
+			r.right = left;
+			continue;
+		}
+		if (r.right > right) {
+			/* overlap, split at right edge */
+			_dirty_blocks.push_back({ r.left, r.top, right, r.bottom });
+			r.left = right;
+			continue;
+		}
+		if (r.top < top) {
+			/* overlap, split at top edge */
+			_dirty_blocks.push_back({ r.left, top, r.right, r.bottom });
+			r.bottom = top;
+			continue;
+		}
+		if (r.bottom > bottom) {
+			/* overlap, split at bottom edge */
+			_dirty_blocks.push_back({ r.left, r.top, r.right, bottom });
+			r.top = bottom;
+			continue;
 		}
 	}
 }
@@ -1785,56 +1780,50 @@ static void SplitDirtyBlocks(uint start, int left, int top, int right, int botto
 
 	for (; start < _dirty_blocks.size(); start++) {
 		Rect &r = _dirty_blocks[start];
-		if (left <= r.right &&
-				right >= r.left &&
-				top <= r.bottom &&
-				bottom >= r.top) {
-			/* overlap or contact of some sort */
-			if (left >= r.left &&
-					right <= r.right &&
-					top >= r.top &&
-					bottom <= r.bottom) {
-				/* entirely contained by existing */
-				return;
-			}
-			if (left <= r.left &&
-					right >= r.right &&
-					top <= r.top &&
-					bottom >= r.bottom) {
-				/* entirely contains existing */
-				r = _dirty_blocks.back();
-				_dirty_blocks.pop_back();
-				start--;
-				continue;
-			}
-			if (left < r.left && right > r.left) {
-				int middle = r.left;
-				SplitDirtyBlocks(start, left, top, middle, bottom);
-				SplitDirtyBlocks(start, middle, top, right, bottom);
-				return;
-			}
-			if (right > r.right && left < r.right) {
-				int middle = r.right;
-				SplitDirtyBlocks(start, left, top, middle, bottom);
-				SplitDirtyBlocks(start, middle, top, right, bottom);
-				return;
-			}
+		if (left > r.right || right < r.left || top > r.bottom || bottom < r.top) {
+			/* no overlap */
+			continue;
+		}
+		if (left >= r.left && right <= r.right && top >= r.top && bottom <= r.bottom) {
+			/* entirely contained by existing */
+			return;
+		}
+		if (left <= r.left && right >= r.right && top <= r.top && bottom >= r.bottom) {
+			/* entirely contains existing */
+			r = _dirty_blocks.back();
+			_dirty_blocks.pop_back();
+			start--;
+			continue;
+		}
+		if (left < r.left && right > r.left) {
+			/* partial overlap, split at left edge */
+			SplitDirtyBlocks(start, left, top, r.left, bottom);
+			SplitDirtyBlocks(start, r.left, top, right, bottom);
+			return;
+		}
+		if (right > r.right && left < r.right) {
+			/* partial overlap, split at right edge */
+			SplitDirtyBlocks(start, left, top, r.right, bottom);
+			SplitDirtyBlocks(start, r.right, top, right, bottom);
+			return;
+		}
 
-			if (top < r.top && bottom > r.top) {
-				int middle = r.top;
-				SplitDirtyBlocks(start, left, top, right, middle);
-				SplitDirtyBlocks(start, left, middle, right, bottom);
-				return;
-			}
+		if (top < r.top && bottom > r.top) {
+			/* partial overlap, split at top edge */
+			SplitDirtyBlocks(start, left, top, right, r.top);
+			SplitDirtyBlocks(start, left, r.top, right, bottom);
+			return;
+		}
 
-			if (bottom > r.bottom && top < r.bottom) {
-				int middle = r.bottom;
-				SplitDirtyBlocks(start, left, top, right, middle);
-				SplitDirtyBlocks(start, left, middle, right, bottom);
-				return;
-			}
+		if (bottom > r.bottom && top < r.bottom) {
+			/* partial overlap, split at bottom edge */
+			SplitDirtyBlocks(start, left, top, right, r.bottom);
+			SplitDirtyBlocks(start, left, r.bottom, right, bottom);
+			return;
 		}
 	}
+
+	/* add non-overlapping rectangle */
 	_dirty_blocks.push_back({ left, top, right, bottom });
 }
 
