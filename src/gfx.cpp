@@ -1416,6 +1416,16 @@ void DrawMouseCursor()
 	_cursor.dirty = false;
 }
 
+/**
+ * Repaints a specific rectangle of the screen.
+ *
+ * @param left,top,right,bottom The area of the screen that needs repainting
+ * @pre The rectangle is assumed to have been previously marked dirty with \c SetDirtyBlocks.
+ * @see SetDirtyBlocks
+ * @see DrawDirtyBlocks
+ * @ingroup dirty
+ *
+ */
 void RedrawScreenRect(int left, int top, int right, int bottom)
 {
 	assert(right <= _screen.width && bottom <= _screen.height);
@@ -1439,6 +1449,8 @@ void RedrawScreenRect(int left, int top, int right, int bottom)
  * Repaints the rectangle blocks which are marked as 'dirty'.
  *
  * @see SetDirtyBlocks
+ *
+ * @ingroup dirty
  */
 void DrawDirtyBlocks()
 {
@@ -1541,9 +1553,9 @@ void DrawDirtyBlocks()
 }
 
 /**
- * This function extends the internal _invalid_rect rectangle as it
- * now contains the rectangle defined by the given parameters. Note
- * the point (0,0) is top left.
+ * Add the specified rectangle to the collection of screen areas to be
+ * invalidated and redrawn.
+ * Note the point (0,0) is top left.
  *
  * @param left The left edge of the rectangle
  * @param top The top edge of the rectangle
@@ -1551,9 +1563,7 @@ void DrawDirtyBlocks()
  * @param bottom The bottom edge of the rectangle
  * @see DrawDirtyBlocks
  *
- * @todo The name of the function should be called like @c AddDirtyBlock as
- *       it neither set a dirty rect nor add several dirty rects although
- *       the function name is in plural. (Progman)
+ * @ingroup dirty
  */
 void SetDirtyBlocks(int left, int top, int right, int bottom)
 {
