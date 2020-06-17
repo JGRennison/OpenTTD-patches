@@ -153,6 +153,18 @@ void Packet::Send_string(const char *data)
 	while ((this->buffer[this->size++] = *data++) != '\0') {}
 }
 
+/**
+ * Sends a binary data over the network.
+ * @param data The data to send
+ */
+void Packet::Send_binary(const char *data, const size_t size)
+{
+	assert(data != nullptr);
+	assert(this->size + size <= SEND_MTU);
+	memcpy(&this->buffer[this->size], data, size);
+	this->size += (PacketSize) size;
+}
+
 
 /*
  * Receiving commands
@@ -305,4 +317,17 @@ void Packet::Recv_string(char *buffer, size_t size, StringValidationSettings set
 	this->pos = pos;
 
 	str_validate(bufp, last, settings);
+}
+
+/**
+ * Reads binary data.
+ * @param buffer The buffer to put the data into.
+ * @param size   The size of the buffer.
+ */
+void Packet::Recv_binary(char *buffer, size_t size)
+{
+	if (!this->CanReadFromPacket(size)) return;
+
+	memcpy(buffer, &this->buffer[this->pos], size);
+	this->pos += (PacketSize) size;
 }

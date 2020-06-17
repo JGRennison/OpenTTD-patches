@@ -69,6 +69,7 @@ public:
 	void Send_uint32(uint32 data);
 	void Send_uint64(uint64 data);
 	void Send_string(const char *data);
+	void Send_binary(const char *data, const size_t size);
 
 	/* Reading/receiving of packets */
 	void ReadRawPacketSize();
@@ -81,6 +82,7 @@ public:
 	uint32 Recv_uint32();
 	uint64 Recv_uint64();
 	void   Recv_string(char *buffer, size_t size, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK);
+	void   Recv_binary(char *buffer, size_t size);
 };
 
 #endif /* NETWORK_CORE_PACKET_H */
