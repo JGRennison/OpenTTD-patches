@@ -809,6 +809,8 @@ public:
 
 };
 
+void ShiftOrderDates(int interval);
+
 #define FOR_VEHICLE_ORDERS(v, order) for (order = (v->orders.list == nullptr) ? nullptr : v->orders.list->GetFirstOrder(); order != nullptr; order = order->next)
 
 #endif /* ORDER_BASE_H */

@@ -28,6 +28,7 @@
 #include "newgrf.h"
 #include "error.h"
 #include "network/network.h"
+#include "order_base.h"
 
 #include "widgets/cheat_widget.h"
 
@@ -108,6 +109,7 @@ static int32 ClickChangeDateCheat(int32 p1, int32 p2)
 
 	Date new_date = ConvertYMDToDate(p1, ymd.month, ymd.day);
 	LinkGraphSchedule::instance.ShiftDates(new_date - _date);
+	ShiftOrderDates(new_date - _date);
 	SetDate(new_date, _date_fract);
 	EnginesMonthlyLoop();
 	SetWindowDirty(WC_STATUS_BAR, 0);

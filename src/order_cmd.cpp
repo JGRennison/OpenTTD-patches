@@ -3004,3 +3004,12 @@ CommandCost CmdMassChangeOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	}
 	return CommandCost();
 }
+
+void ShiftOrderDates(int interval)
+{
+	for (OrderList *orderlist : OrderList::Iterate()) {
+		if (orderlist->GetScheduledDispatchStartDatePart() >= 0) {
+			orderlist->SetScheduledDispatchStartDate(orderlist->GetScheduledDispatchStartDatePart() + interval, orderlist->GetScheduledDispatchStartDateFractPart());
+		}
+	}
+}
