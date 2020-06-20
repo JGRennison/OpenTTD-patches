@@ -3012,4 +3012,9 @@ void ShiftOrderDates(int interval)
 			orderlist->SetScheduledDispatchStartDate(orderlist->GetScheduledDispatchStartDatePart() + interval, orderlist->GetScheduledDispatchStartDateFractPart());
 		}
 	}
+
+	SetWindowClassesDirty(WC_VEHICLE_ORDERS);
+	SetWindowClassesDirty(WC_VEHICLE_TIMETABLE);
+	SetWindowClassesDirty(WC_SCHDISPATCH_SLOTS);
+	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 }
