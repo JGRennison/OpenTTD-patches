@@ -38,6 +38,7 @@
 #include "zoom_func.h"
 
 #include <vector>
+#include <functional>
 
 #include "safeguards.h"
 
@@ -847,6 +848,7 @@ struct SettingsContainer {
 struct SettingsPage : BaseSettingEntry, SettingsContainer {
 	StringID title;     ///< Title of the sub-page
 	bool folded;        ///< Sub-page is folded (not visible except for its title)
+	std::function<bool()> hide_callback; ///< optional callback, returns true if this shouldbe hidden
 
 	SettingsPage(StringID title);
 
@@ -1454,6 +1456,7 @@ bool SettingsPage::UpdateFilterState(SettingFilter &filter, bool force_visible)
 	}
 
 	bool visible = SettingsContainer::UpdateFilterState(filter, force_visible);
+	if (this->hide_callback && this->hide_callback()) visible = false;
 	if (visible) {
 		CLRBITS(this->flags, SEF_FILTERED);
 	} else {
@@ -1674,11 +1677,27 @@ static SettingsContainer &GetSettingsTree()
 
 			SettingsPage *wallclock = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_WALLCLOCK));
 			{
-				wallclock->Add(new SettingEntry("gui.time_in_minutes"));
-				wallclock->Add(new SettingEntry("gui.timetable_start_text_entry"));
-				wallclock->Add(new SettingEntry("gui.ticks_per_minute"));
+				wallclock->Add(new SettingEntry("gui.override_time_settings"));
+				SettingsPage *game = wallclock->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_TIME_SAVEGAME));
+				{
+					game->hide_callback = []() -> bool {
+						return _game_mode == GM_MENU;
+					};
+					game->Add(new SettingEntry("game_time.time_in_minutes"));
+					game->Add(new SettingEntry("game_time.ticks_per_minute"));
+					game->Add(new SettingEntry("game_time.clock_offset"));
+				}
+				SettingsPage *client = wallclock->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_TIME_CLIENT));
+				{
+					client->hide_callback = []() -> bool {
+						return _game_mode != GM_MENU && !_settings_client.gui.override_time_settings;
+					};
+					client->Add(new SettingEntry("gui.time_in_minutes"));
+					client->Add(new SettingEntry("gui.ticks_per_minute"));
+					client->Add(new SettingEntry("gui.clock_offset"));
+				}
+
 				wallclock->Add(new SettingEntry("gui.date_with_time"));
-				wallclock->Add(new SettingEntry("gui.clock_offset"));
 			}
 
 			SettingsPage *timetable = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_TIMETABLE));
@@ -1686,6 +1705,7 @@ static SettingsContainer &GetSettingsTree()
 				timetable->Add(new SettingEntry("gui.timetable_in_ticks"));
 				timetable->Add(new SettingEntry("gui.timetable_leftover_ticks"));
 				timetable->Add(new SettingEntry("gui.timetable_arrival_departure"));
+				timetable->Add(new SettingEntry("gui.timetable_start_text_entry"));
 			}
 
 			SettingsPage *advsig = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_ADV_SIGNALS));

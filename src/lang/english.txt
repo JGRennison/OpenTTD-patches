@@ -1535,6 +1535,8 @@ STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Show timetable 
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Show travel times in time tables in game ticks instead of days
 STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS                     :Show leftover ticks in timetable: {STRING2}
 STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS_HELPTEXT            :When converting from ticks to days/minutes in timetables, also show any leftover ticks
+STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS                       :Use client time settings instead of savegame time settings: {STRING2}
+STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS_HELPTEXT              :Select whether to use local client settings for time display, instead of the time settings in the savegame.
 STR_CONFIG_SETTING_TIME_IN_MINUTES                              :Show time in minutes rather than days: {STRING2}
 STR_CONFIG_SETTING_TIME_IN_MINUTES_HELPTEXT                     :Select whether to use hours and minutes instead of days
 STR_CONFIG_SETTING_TICKS_PER_MINUTE                             :Ticks per minute: {STRING2}
@@ -1905,6 +1907,8 @@ STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Viewpor
 STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Construction
 STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}Departure boards
 STR_CONFIG_SETTING_INTERFACE_WALLCLOCK                          :{ORANGE}Wall clock
+STR_CONFIG_SETTING_INTERFACE_TIME_CLIENT                        :{ORANGE}Client settings
+STR_CONFIG_SETTING_INTERFACE_TIME_SAVEGAME                      :{ORANGE}Savegame settings
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}Timetables
 STR_CONFIG_SETTING_INTERFACE_ADV_SIGNALS                        :{ORANGE}Signals (advanced)
 STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}News / Advisors

@@ -79,8 +79,15 @@ enum ViewportScrollMode {
 	VSM_END,                ///< Number of scroll mode settings.
 };
 
+/** Settings related to time display. This may be loaded from the savegame and/or overriden by the client. */
+struct TimeSettings {
+	bool   time_in_minutes;                  ///< whether to use the hh:mm conversion when printing dates
+	uint16 ticks_per_minute;                 ///< how many ticks per minute
+	uint16 clock_offset;                     ///< clock offset in minutes
+};
+
 /** Settings related to the GUI and other stuff that is not saved in the savegame. */
-struct GUISettings {
+struct GUISettings : public TimeSettings {
 	bool   sg_full_load_any;                 ///< new full load calculation, any cargo must be full read from pre v93 savegames
 	bool   lost_vehicle_warn;                ///< if a vehicle can't find its destination, show a warning
 	uint8  order_review_system;              ///< perform order reviews on vehicles
@@ -153,13 +160,11 @@ struct GUISettings {
 	bool   pause_on_newgame;                 ///< whether to start new games paused or not
 	bool   enable_signal_gui;                ///< show the signal GUI when the signal button is pressed
 	Year   coloured_news_year;               ///< when does newspaper become coloured?
+	bool   override_time_settings;           ///< Whether to override time display settings stored in savegame.
 	bool   timetable_in_ticks;               ///< whether to show the timetable in ticks rather than days
 	bool   timetable_leftover_ticks;         ///< whether to show leftover ticks after converting to minutes/days, in the timetable
-	bool   time_in_minutes;                  ///< whether to use the hh:mm conversion when printing dates
 	bool   timetable_start_text_entry;       ///< whether to enter timetable start times as text (hhmm format)
-	uint16 ticks_per_minute;                 ///< how many ticks per minute
 	uint8  date_with_time;                   ///< whether to show the month and year with the time
-	uint16 clock_offset;                     ///< clock offset in minutes
 	bool   quick_goto;                       ///< Allow quick access to 'goto button' in vehicle orders window
 	bool   auto_euro;                        ///< automatically switch to euro in 2002
 	byte   drag_signals_density;             ///< many signals density
@@ -669,6 +674,7 @@ struct GameSettings {
 	StationSettings      station;            ///< settings related to station management
 	LocaleSettings       locale;             ///< settings related to used currency/unit system in the current game
 	DebugSettings        debug;              ///< debug settings
+	TimeSettings         game_time;          ///< time display settings.
 };
 
 /** All settings that are only important for the local client. */
@@ -689,6 +695,9 @@ extern GameSettings _settings_game;
 
 /** The settings values that are used for new games and/or modified in config file. */
 extern GameSettings _settings_newgame;
+
+/** The effective settings that are used for time display. */
+extern TimeSettings _settings_time;
 
 /** Old vehicle settings, which were game settings before, and are company settings now. (Needed for savegame conversion) */
 extern VehicleDefaultSettings _old_vds;

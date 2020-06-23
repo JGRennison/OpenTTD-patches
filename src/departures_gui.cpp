@@ -422,7 +422,7 @@ public:
 
 		/* Recompute the minimum date display width if the cached one is no longer valid. */
 		if (cached_date_width == 0 ||
-				_settings_client.gui.time_in_minutes != cached_date_display_method ||
+				_settings_time.time_in_minutes != cached_date_display_method ||
 				_settings_client.gui.departure_show_both != cached_arr_dep_display_method) {
 			this->RecomputeDateWidth();
 		}
@@ -539,14 +539,14 @@ void DeparturesWindow<Twaypoint>::RecomputeDateWidth()
 {
 	cached_date_width = 0;
 	cached_status_width = 0;
-	cached_date_display_method = _settings_client.gui.time_in_minutes;
+	cached_date_display_method = _settings_time.time_in_minutes;
 	cached_arr_dep_display_method = _settings_client.gui.departure_show_both;
 
 	cached_status_width = max((GetStringBoundingBox(STR_DEPARTURES_ON_TIME)).width, cached_status_width);
 	cached_status_width = max((GetStringBoundingBox(STR_DEPARTURES_DELAYED)).width, cached_status_width);
 	cached_status_width = max((GetStringBoundingBox(STR_DEPARTURES_CANCELLED)).width, cached_status_width);
 
-	uint interval = cached_date_display_method ? _settings_client.gui.ticks_per_minute : DAY_TICKS;
+	uint interval = cached_date_display_method ? _settings_time.ticks_per_minute : DAY_TICKS;
 	uint count = cached_date_display_method ? 24*60 : 365;
 
 	for (uint i = 0; i < count; ++i) {

@@ -415,7 +415,7 @@ static char *FormatBytes(char *buff, int64 number, const char *last)
 
 static char *FormatWallClockString(char *buff, DateTicksScaled ticks, const char *last, bool show_date, uint case_index)
 {
-	Minutes minutes = ticks / _settings_client.gui.ticks_per_minute + _settings_client.gui.clock_offset;
+	Minutes minutes = ticks / _settings_time.ticks_per_minute + _settings_time.clock_offset;
 	char hour[3], minute[3];
 	seprintf(hour,   lastof(hour),   "%02i", (int) MINUTES_HOUR(minutes)  );
 	seprintf(minute, lastof(minute), "%02i", (int) MINUTES_MINUTE(minutes));
@@ -1424,7 +1424,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				break;
 
 			case SCC_DATE_WALLCLOCK_LONG: { // {DATE_WALLCLOCK_LONG}
-				if (_settings_client.gui.time_in_minutes) {
+				if (_settings_time.time_in_minutes) {
 					buff = FormatWallClockString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_LONG), last, _settings_client.gui.date_with_time, next_substr_case_index);
 				} else {
 					buff = FormatYmdString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_LONG) / (DAY_TICKS * _settings_game.economy.day_length_factor), last, next_substr_case_index);
@@ -1433,7 +1433,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 			}
 
 			case SCC_DATE_WALLCLOCK_SHORT: { // {DATE_WALLCLOCK_SHORT}
-				if (_settings_client.gui.time_in_minutes) {
+				if (_settings_time.time_in_minutes) {
 					buff = FormatWallClockString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_SHORT), last, _settings_client.gui.date_with_time, next_substr_case_index);
 				} else {
 					buff = FormatYmdString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_SHORT) / (DAY_TICKS * _settings_game.economy.day_length_factor), last, next_substr_case_index);
@@ -1442,7 +1442,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 			}
 
 			case SCC_DATE_WALLCLOCK_TINY: { // {DATE_WALLCLOCK_TINY}
-				if (_settings_client.gui.time_in_minutes) {
+				if (_settings_time.time_in_minutes) {
 					buff = FormatWallClockString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_TINY), last, false, next_substr_case_index);
 				} else {
 					buff = FormatTinyOrISODate(buff, args->GetInt64(SCC_DATE_WALLCLOCK_TINY) / (DAY_TICKS * _settings_game.economy.day_length_factor), STR_FORMAT_DATE_TINY, last);
@@ -1451,7 +1451,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 			}
 
 			case SCC_DATE_WALLCLOCK_ISO: { // {DATE_WALLCLOCK_ISO}
-				if (_settings_client.gui.time_in_minutes) {
+				if (_settings_time.time_in_minutes) {
 					buff = FormatWallClockString(buff, args->GetInt64(SCC_DATE_WALLCLOCK_ISO), last, false, next_substr_case_index);
 				} else {
 					buff = FormatTinyOrISODate(buff, args->GetInt64(SCC_DATE_WALLCLOCK_ISO) / (DAY_TICKS * _settings_game.economy.day_length_factor), STR_FORMAT_DATE_ISO, last);

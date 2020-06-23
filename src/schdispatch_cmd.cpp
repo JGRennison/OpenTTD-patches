@@ -343,16 +343,16 @@ void OrderList::ResetScheduledDispatch()
 	uint16 start_full_date_fract;
 	uint32 duration;
 
-	if (_settings_client.gui.time_in_minutes) {
+	if (_settings_time.time_in_minutes) {
 		/* Set to 00:00 of today, and 1 day */
 
 		DateTicksScaled val;
 		val = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), 0, 0);
-		val -= _settings_client.gui.clock_offset;
-		val *= _settings_client.gui.ticks_per_minute;
+		val -= _settings_time.clock_offset;
+		val *= _settings_time.ticks_per_minute;
 		SchdispatchConvertToFullDateFract(val, &start_date, &start_full_date_fract);
 
-		duration = 24 * 60 * _settings_client.gui.ticks_per_minute;
+		duration = 24 * 60 * _settings_time.ticks_per_minute;
 	} else {
 		/* Set Jan 1st and 365 day */
 		start_date = DAYS_TILL(_cur_year);

@@ -61,6 +61,7 @@
 #include "../tunnel_map.h"
 #include "../bridge_signal_map.h"
 #include "../water.h"
+#include "../settings_func.h"
 
 
 #include "saveload_internal.h"
@@ -246,6 +247,8 @@ void ClearAllCachedNames()
  */
 static void InitializeWindowsAndCaches()
 {
+	SetupTimeSettings();
+
 	/* Initialize windows */
 	ResetWindowSystem();
 	SetupColoursAndInitialWindow();
