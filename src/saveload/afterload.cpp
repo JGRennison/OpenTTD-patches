@@ -1662,6 +1662,8 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_31)) {
 		_date += DAYS_TILL_ORIGINAL_BASE_YEAR;
 		_cur_year += ORIGINAL_BASE_YEAR;
+		SetScaledTickVariables();
+		ConvertDateToYMD(_date, &_cur_date_ymd);
 
 		for (Station *st : Station::Iterate())   st->build_date      += DAYS_TILL_ORIGINAL_BASE_YEAR;
 		for (Waypoint *wp : Waypoint::Iterate()) wp->build_date      += DAYS_TILL_ORIGINAL_BASE_YEAR;
