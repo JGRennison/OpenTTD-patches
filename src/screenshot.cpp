@@ -628,7 +628,7 @@ static void CurrentScreenCallback(void *userdata, void *buf, uint y, uint pitch,
  */
 static void LargeWorldCallback(void *userdata, void *buf, uint y, uint pitch, uint n)
 {
-	ViewPort *vp = (ViewPort *)userdata;
+	Viewport *vp = (Viewport *)userdata;
 	DrawPixelInfo dpi, *old_dpi;
 	int wx, left;
 
@@ -673,7 +673,7 @@ static void LargeWorldCallback(void *userdata, void *buf, uint y, uint pitch, ui
 	_screen = old_screen;
 	_screen_disable_anim = old_disable_anim;
 
-	ClearViewPortCache(vp);
+	ClearViewportCache(vp);
 }
 
 /**
@@ -725,11 +725,11 @@ static bool MakeSmallScreenshot(bool crashlog)
 }
 
 /**
- * Configure a ViewPort for rendering (a part of) the map into a screenshot.
+ * Configure a \c Viewport for rendering (a part of) the map into a screenshot.
  * @param t Screenshot type
  * @param[out] vp Result viewport
  */
-void SetupScreenshotViewport(ScreenshotType t, ViewPort *vp)
+void SetupScreenshotViewport(ScreenshotType t, Viewport *vp)
 {
 	switch(t) {
 		case SC_VIEWPORT:
@@ -801,7 +801,7 @@ void SetupScreenshotViewport(ScreenshotType t, ViewPort *vp)
  */
 static bool MakeLargeWorldScreenshot(ScreenshotType t)
 {
-	ViewPort vp;
+	Viewport vp;
 	SetupScreenshotViewport(t, &vp);
 
 	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;

@@ -1594,7 +1594,7 @@ void ViewportAddVehicles(DrawPixelInfo *dpi)
 	}
 }
 
-void ViewportMapDrawVehicles(DrawPixelInfo *dpi, ViewPort *vp)
+void ViewportMapDrawVehicles(DrawPixelInfo *dpi, Viewport *vp)
 {
 	/* The save rectangle */
 	const int l = vp->virtual_left;
@@ -1654,7 +1654,7 @@ void ViewportMapDrawVehicles(DrawPixelInfo *dpi, ViewPort *vp)
  * @param y  Y coordinate in the viewport.
  * @return Closest vehicle, or \c nullptr if none found.
  */
-Vehicle *CheckClickOnVehicle(const ViewPort *vp, int x, int y)
+Vehicle *CheckClickOnVehicle(const Viewport *vp, int x, int y)
 {
 	Vehicle *found = nullptr;
 	uint dist, best_dist = UINT_MAX;

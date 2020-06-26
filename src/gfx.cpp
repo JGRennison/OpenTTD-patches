@@ -1431,7 +1431,7 @@ void RedrawScreenRect(int left, int top, int right, int bottom)
 }
 
 static std::vector<Rect> _dirty_viewport_occlusions;
-static ViewPort *_dirty_viewport;
+static Viewport *_dirty_viewport;
 static NWidgetDisplay _dirty_viewport_disp_flags;
 
 static void DrawDirtyViewport(uint occlusion, int left, int top, int right, int bottom)
@@ -1476,7 +1476,7 @@ static void DrawDirtyViewport(uint occlusion, int left, int top, int right, int 
 	if (_game_mode == GM_MENU) {
 		RedrawScreenRect(left, top, right, bottom);
 	} else {
-		extern void ViewportDrawChk(ViewPort *vp, int left, int top, int right, int bottom);
+		extern void ViewportDrawChk(Viewport *vp, int left, int top, int right, int bottom);
 		ViewportDrawChk(_dirty_viewport, left, top, right, bottom);
 		if (_dirty_viewport_disp_flags & (ND_SHADE_GREY | ND_SHADE_DIMMED)) {
 			GfxFillRect(left, top, right, bottom,
@@ -1575,7 +1575,7 @@ void DrawDirtyBlocks()
 			}
 
 			if (w->viewport != nullptr && !w->IsShaded()) {
-				ViewPort *vp = w->viewport.get();
+				Viewport *vp = w->viewport.get();
 				if (vp->is_drawn) {
 					vp->ClearDirty();
 				} else if (vp->is_dirty) {
@@ -1709,8 +1709,8 @@ void DrawDirtyBlocks()
 	_gfx_draw_active = false;
 	++_dirty_block_colour;
 
-	extern void ClearViewPortCaches();
-	ClearViewPortCaches();
+	extern void ClearViewportCaches();
+	ClearViewportCaches();
 }
 
 /**

@@ -53,7 +53,7 @@ struct ScreenshotWindow : Window {
 	 * @param t Screenshot type: World, defaultzoom, heightmap or viewport screenshot
 	 */
 	static void TakeScreenshot(ScreenshotType st) {
-		ViewPort vp;
+		Viewport vp;
 		SetupScreenshotViewport(st, &vp);
 		if ((uint64)vp.width * (uint64)vp.height > 8192 * 8192) {
 			/* Ask for confirmation */

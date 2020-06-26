@@ -507,7 +507,7 @@ static CallBackFunction MenuClickMap(int index)
 {
 	switch (index) {
 		case MME_SHOW_SMALLMAP:       ShowSmallMap();            break;
-		case MME_SHOW_EXTRAVIEWPORTS: ShowExtraViewPortWindow(); break;
+		case MME_SHOW_EXTRAVIEWPORTS: ShowExtraViewportWindow(); break;
 		case MME_SHOW_LINKGRAPH:      ShowLinkGraphLegend();     break;
 		case MME_SHOW_SIGNLISTS:      ShowSignList();            break;
 		case MME_SHOW_TOWNDIRECTORY:  ShowTownDirectory();       break;
@@ -1101,7 +1101,7 @@ static void ScreenshotConfirmCallback(Window *w, bool confirmed)
  */
 static void MenuClickScreenshot(ScreenshotType t)
 {
-	ViewPort vp;
+	Viewport vp;
 	SetupScreenshotViewport(t, &vp);
 	if ((uint64)vp.width * (uint64)vp.height > 8192 * 8192) {
 		/* Ask for confirmation */
@@ -2157,7 +2157,7 @@ struct MainToolbarWindow : Window {
 			case MTHK_GIANT_SCREENSHOT: MenuClickScreenshot(SC_WORLD); break;
 			case MTHK_CHEATS: ShowCheatWindow(); break;
 			case MTHK_TERRAFORM: ShowTerraformToolbar(); break;
-			case MTHK_EXTRA_VIEWPORT: ShowExtraViewPortWindowForTileUnderCursor(); break;
+			case MTHK_EXTRA_VIEWPORT: ShowExtraViewportWindowForTileUnderCursor(); break;
 			case MTHK_CLIENT_LIST: if (_networking) ShowClientList(); break;
 			case MTHK_SIGN_LIST: ShowSignList(); break;
 			case MTHK_LANDINFO: cbf = PlaceLandBlockInfo(); break;
@@ -2536,7 +2536,7 @@ struct ScenarioEditorToolbarWindow : Window {
 			case MTEHK_ZOOM_OUT:               ToolbarZoomOutClick(this); break;
 			case MTEHK_TERRAFORM:              ShowEditorTerraformToolbar(); break;
 			case MTEHK_SMALLMAP:               ShowSmallMap(); break;
-			case MTEHK_EXTRA_VIEWPORT:         ShowExtraViewPortWindowForTileUnderCursor(); break;
+			case MTEHK_EXTRA_VIEWPORT:         ShowExtraViewportWindowForTileUnderCursor(); break;
 			default: return ES_NOT_HANDLED;
 		}
 		if (cbf != CBF_NONE) _last_started_action = cbf;

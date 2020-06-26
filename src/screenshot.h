@@ -27,7 +27,7 @@ enum ScreenshotType {
 
 class SmallMapWindow;
 
-void SetupScreenshotViewport(ScreenshotType t, struct ViewPort *vp);
+void SetupScreenshotViewport(ScreenshotType t, struct Viewport *vp);
 bool MakeHeightmapScreenshot(const char *filename);
 bool MakeSmallMapScreenshot(unsigned int width, unsigned int height, SmallMapWindow *window);
 bool MakeScreenshot(ScreenshotType t, const char *name);
