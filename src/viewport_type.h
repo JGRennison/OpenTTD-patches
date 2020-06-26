@@ -51,7 +51,7 @@ struct ViewPort {
 	ZoomLevel zoom;      ///< The zoom level of the viewport.
 	ViewportMapType map_type;  ///< Rendering type
 
-	LinkGraphOverlay *overlay;
+	std::shared_ptr<LinkGraphOverlay> overlay;
 
 	std::vector<bool> dirty_blocks;
 	uint dirty_blocks_per_column;

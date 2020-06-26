@@ -51,8 +51,8 @@ void LinkGraphOverlay::GetWidgetDpi(DrawPixelInfo *dpi, uint margin) const
 
 bool LinkGraphOverlay::CacheStillValid() const
 {
-	if (this->window->viewport) {
-		const ViewPort *vp = this->window->viewport;
+	if (this->window->viewport != nullptr) {
+		const ViewPort *vp = this->window->viewport.get();
 		Rect region { vp->virtual_left, vp->virtual_top,
 				vp->virtual_left + vp->virtual_width, vp->virtual_top + vp->virtual_height };
 		return (region.left >= this->cached_region.left &&
@@ -78,8 +78,8 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 
 	DrawPixelInfo dpi;
 	bool cache_all = false;
-	if (this->window->viewport) {
-		const ViewPort *vp = this->window->viewport;
+	if (this->window->viewport != nullptr) {
+		const ViewPort *vp = this->window->viewport.get();
 		const int pixel_margin = 256;
 		const int vp_margin = ScaleByZoom(pixel_margin, vp->zoom);
 		this->GetWidgetDpi(&dpi, pixel_margin);
@@ -448,7 +448,7 @@ void LinkGraphOverlay::DrawStationDots(const DrawPixelInfo *dpi) const
 Point LinkGraphOverlay::GetStationMiddle(const Station *st) const
 {
 	if (this->window->viewport != nullptr) {
-		return GetViewportStationMiddle(this->window->viewport, st);
+		return GetViewportStationMiddle(this->window->viewport.get(), st);
 	} else {
 		/* assume this is a smallmap */
 		return static_cast<const SmallMapWindow *>(this->window)->GetStationMiddle(st);
@@ -588,7 +588,7 @@ LinkGraphLegendWindow::LinkGraphLegendWindow(WindowDesc *desc, int window_number
  * Set the overlay belonging to this menu and import its company/cargo settings.
  * @param overlay New overlay for this menu.
  */
-void LinkGraphLegendWindow::SetOverlay(LinkGraphOverlay *overlay) {
+void LinkGraphLegendWindow::SetOverlay(const std::shared_ptr<LinkGraphOverlay> &overlay) {
 	this->overlay = overlay;
 	uint32 companies = this->overlay->GetCompanyMask();
 	for (uint c = 0; c < MAX_COMPANIES; c++) {

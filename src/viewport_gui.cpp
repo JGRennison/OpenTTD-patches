@@ -144,7 +144,7 @@ public:
 	{
 		if (_ctrl_pressed) {
 			/* Cycle through the drawing modes */
-			this->viewport->map_type = ChangeRenderMode(this->viewport, wheel < 0);
+			this->viewport->map_type = ChangeRenderMode(this->viewport.get(), wheel < 0);
 			this->SetDirty();
 		} else if (_settings_client.gui.scrollwheel_scrolling != 2) {
 			ZoomInOrOutToCursorWindow(wheel < 0, this);
@@ -170,7 +170,7 @@ public:
 	{
 		if (!gui_scope) return;
 		/* Only handle zoom message if intended for us (msg ZOOM_IN/ZOOM_OUT) */
-		HandleZoomMessage(this, this->viewport, WID_EV_ZOOM_IN, WID_EV_ZOOM_OUT);
+		HandleZoomMessage(this, this->viewport.get(), WID_EV_ZOOM_IN, WID_EV_ZOOM_OUT);
 	}
 };
 

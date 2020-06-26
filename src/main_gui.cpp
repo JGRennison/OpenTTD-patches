@@ -113,7 +113,7 @@ bool DoZoomInOutWindow(ZoomStateChange how, Window *w)
 	ViewPort *vp;
 
 	assert(w != nullptr);
-	vp = w->viewport;
+	vp = w->viewport.get();
 
 	switch (how) {
 		case ZOOM_NONE:
@@ -164,7 +164,7 @@ void ZoomInOrOutToCursorWindow(bool in, Window *w)
 	assert(w != nullptr);
 
 	if (_game_mode != GM_MENU) {
-		ViewPort *vp = w->viewport;
+		ViewPort *vp = w->viewport.get();
 		if ((in && vp->zoom <= _settings_client.gui.zoom_min) || (!in && vp->zoom >= _settings_client.gui.zoom_max)) return;
 
 		Point pt = GetTileZoomCenterWindow(in, w);
@@ -180,7 +180,7 @@ void FixTitleGameZoom()
 {
 	if (_game_mode != GM_MENU) return;
 
-	ViewPort *vp = FindWindowByClass(WC_MAIN_WINDOW)->viewport;
+	ViewPort *vp = FindWindowByClass(WC_MAIN_WINDOW)->viewport.get();
 	vp->zoom = _gui_zoom;
 	vp->virtual_width = ScaleByZoom(vp->width, vp->zoom);
 	vp->virtual_height = ScaleByZoom(vp->height, vp->zoom);
@@ -237,7 +237,7 @@ struct MainWindow : Window
 		nvp->InitializeViewport(this, TileXY(32, 32), ZOOM_LVL_VIEWPORT);
 
 		this->viewport->map_type = (ViewportMapType) _settings_client.gui.default_viewport_map_mode;
-		this->viewport->overlay = new LinkGraphOverlay(this, WID_M_VIEWPORT, 0, 0, 3);
+		this->viewport->overlay = std::make_shared<LinkGraphOverlay>(this, WID_M_VIEWPORT, 0, 0, 3);
 		this->refresh.SetInterval(LINKGRAPH_DELAY);
 	}
 
@@ -416,19 +416,19 @@ struct MainWindow : Window
 
 			case GHK_CHANGE_MAP_MODE_PREV:
 				if (_focused_window && _focused_window->viewport && _focused_window->viewport->zoom >= ZOOM_LVL_DRAW_MAP) {
-					_focused_window->viewport->map_type = ChangeRenderMode(_focused_window->viewport, true);
+					_focused_window->viewport->map_type = ChangeRenderMode(_focused_window->viewport.get(), true);
 					_focused_window->SetDirty();
 				} else if (this->viewport->zoom >= ZOOM_LVL_DRAW_MAP) {
-					this->viewport->map_type = ChangeRenderMode(this->viewport, true);
+					this->viewport->map_type = ChangeRenderMode(this->viewport.get(), true);
 					this->SetDirty();
 				}
 				break;
 			case GHK_CHANGE_MAP_MODE_NEXT:
 				if (_focused_window && _focused_window->viewport && _focused_window->viewport->zoom >= ZOOM_LVL_DRAW_MAP) {
-					_focused_window->viewport->map_type = ChangeRenderMode(_focused_window->viewport, false);
+					_focused_window->viewport->map_type = ChangeRenderMode(_focused_window->viewport.get(), false);
 					_focused_window->SetDirty();
 				} else if (this->viewport->zoom >= ZOOM_LVL_DRAW_MAP) {
-					this->viewport->map_type = ChangeRenderMode(this->viewport, false);
+					this->viewport->map_type = ChangeRenderMode(this->viewport.get(), false);
 					this->SetDirty();
 				}
 				break;
@@ -451,7 +451,7 @@ struct MainWindow : Window
 	{
 		if (_ctrl_pressed) {
 			/* Cycle through the drawing modes */
-			this->viewport->map_type = ChangeRenderMode(this->viewport, wheel < 0);
+			this->viewport->map_type = ChangeRenderMode(this->viewport.get(), wheel < 0);
 			this->SetDirty();
 		} else if (_settings_client.gui.scrollwheel_scrolling != 2) {
 			ZoomInOrOutToCursorWindow(wheel < 0, this);
