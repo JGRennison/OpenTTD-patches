@@ -120,16 +120,6 @@ if (WIN32)
     list(APPEND GENERATED_SOURCE_FILES "${CMAKE_BINARY_DIR}/generated/ottdres.rc")
 endif (WIN32)
 
-# Generate a target to determine version, which is execute every 'make' run
-add_custom_target(find_version
-        ${CMAKE_COMMAND}
-                -DFIND_VERSION_BINARY_DIR=${CMAKE_BINARY_DIR}/generated
-                -DCPACK_BINARY_DIR=${CMAKE_BINARY_DIR}
-                -P "${CMAKE_SOURCE_DIR}/cmake/scripts/FindVersion.cmake"
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        BYPRODUCTS ${GENERATED_SOURCE_FILES}
-)
-
 include(SourceList)
 include(Endian)
 add_endian_definition()
@@ -253,3 +243,21 @@ include(CreateRegression)
 create_regression()
 
 include(InstallAndPackage)
+
+get_property(CFG_DEFS DIRECTORY . PROPERTY COMPILE_OPTIONS)
+list(FILTER CFG_DEFS INCLUDE REGEX "^-D")
+list(TRANSFORM CFG_DEFS REPLACE "^-D" "")
+get_property(CFG_DEFS_2 DIRECTORY . PROPERTY COMPILE_DEFINITIONS)
+list(APPEND CFG_DEFS ${CFG_DEFS_2})
+list(FILTER CFG_DEFS EXCLUDE REGEX "_DIR=")
+
+# Generate a target to determine version, which is execute every 'make' run
+add_custom_target(find_version
+        ${CMAKE_COMMAND}
+                -DFIND_VERSION_BINARY_DIR=${CMAKE_BINARY_DIR}/generated
+                -DCPACK_BINARY_DIR=${CMAKE_BINARY_DIR}
+                -DCONFIGURE_DEFINES="${CFG_DEFS}"
+                -P "${CMAKE_SOURCE_DIR}/cmake/scripts/FindVersion.cmake"
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        BYPRODUCTS ${GENERATED_SOURCE_FILES}
+)

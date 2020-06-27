@@ -45,16 +45,10 @@ const char _openttd_revision[] = "${REV_VERSION}";
  */
 const char _openttd_build_date[] = __DATE__ " " __TIME__;
 
-
-/**
- * The configure invocation used to build OpenTTD
- */
-const char _openttd_build_configure[] = "!!CONFIGURE_INVOCATION!!";
-
 /**
  * The configure defines used to build OpenTTD
  */
-const char _openttd_build_configure_defines[] = "!!CONFIGURE_DEFINES!!";
+const char _openttd_build_configure_defines[] = "${CONFIGURE_DEFINES}";
 
 /**
  * The git revision hash of this version.

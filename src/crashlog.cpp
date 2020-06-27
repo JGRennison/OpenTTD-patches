@@ -144,7 +144,6 @@ char *CrashLog::LogOpenTTDVersion(char *buffer, const char *last) const
 			" Endian:     %s\n"
 			" Dedicated:  %s\n"
 			" Build date: %s\n"
-			" Configure:  %s\n"
 			" Defines:    %s\n\n",
 			_openttd_revision,
 			_openttd_revision_modified,
@@ -165,7 +164,6 @@ char *CrashLog::LogOpenTTDVersion(char *buffer, const char *last) const
 			"no",
 #endif
 			_openttd_build_date,
-			_openttd_build_configure,
 			_openttd_build_configure_defines
 	);
 }
