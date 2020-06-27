@@ -50,6 +50,8 @@ if (APPLE)
     find_library(AUDIOTOOLBOX_LIBRARY AudioToolbox)
     find_library(AUDIOUNIT_LIBRARY AudioUnit)
     find_library(COCOA_LIBRARY Cocoa)
+
+    find_package(MacUcontext)
 endif (APPLE)
 
 if (MSVC)
