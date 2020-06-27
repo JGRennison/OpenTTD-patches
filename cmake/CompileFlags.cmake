@@ -68,6 +68,11 @@ macro(compile_flags)
             -fno-strict-aliasing
         )
 
+        if(NOT CMAKE_BUILD_TYPE)
+            # Sensible default if no build type specified
+            add_compile_options(-O2 -DNDEBUG)
+        endif(NOT CMAKE_BUILD_TYPE)
+
         #add_compile_options(
             # When we are a stable release (Release build + USE_ASSERTS not set),
             # assertations are off, which trigger a lot of warnings. We disable
