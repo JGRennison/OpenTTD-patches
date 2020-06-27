@@ -97,6 +97,12 @@ macro(compile_flags)
                 "$<$<BOOL:${LIFETIME_DSE_FOUND}>:-flifetime-dse=1>"
             )
         endif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+
+        if (APPLE)
+            add_compile_options(
+                -fno-stack-check
+            )
+        endif (APPLE)
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
         add_compile_options(
             -Wall
