@@ -96,6 +96,41 @@ if (GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
 
     # Restore LC_ALL
     set(ENV{LC_ALL} "${SAVED_LC_ALL}")
+elseif (EXISTS "${CMAKE_SOURCE_DIR}/.ottdrev-vc")
+    file(READ "${CMAKE_SOURCE_DIR}/.ottdrev-vc" OTTDREVVC)
+    string(REPLACE "\n" ";" OTTDREVVC "${OTTDREVVC}")
+     list(GET OTTDREVVC 0 OTTDREV)
+     list(GET OTTDREVVC 1 SRCHASH)
+    string(REPLACE "\t" ";" OTTDREV "${OTTDREV}")
+    list(GET OTTDREV 0 REV_VERSION)
+    list(GET OTTDREV 1 REV_ISODATE)
+    list(GET OTTDREV 2 REV_MODIFIED)
+    list(GET OTTDREV 3 REV_HASH)
+    list(GET OTTDREV 4 REV_ISTAG)
+    list(GET OTTDREV 5 REV_ISSTABLETAG)
+    list(GET OTTDREV 6 REV_YEAR)
+    if (REV_MODIFIED EQUAL 2)
+        string(REGEX REPLACE "M$" "" REV_VERSION "${REV_VERSION}")
+    endif ()
+    execute_process(COMMAND ./version_utils.sh -o
+                    RESULT_VARIABLE CAN_CHECK_MODIFIED
+                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
+    if (CAN_CHECK_MODIFIED EQUAL 0)
+        execute_process(COMMAND ./version_utils.sh -s
+                        OUTPUT_VARIABLE CURRENT_HASH
+                        OUTPUT_STRIP_TRAILING_WHITESPACE
+                        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        )
+        if (NOT CURRENT_HASH STREQUAL SRCHASH)
+            set(REV_MODIFIED 2)
+            string(SUBSTRING "${CURRENT_HASH}" 0 8 SHORT_CURRENT_HASH)
+            set(REV_VERSION "${REV_VERSION}-H${SHORT_CURRENT_HASH}")
+            set(REV_MODIFIED 2)
+        endif ()
+    else ()
+        set(REV_MODIFIED 1)
+    endif ()
 elseif (EXISTS "${CMAKE_SOURCE_DIR}/.ottdrev")
     file(READ "${CMAKE_SOURCE_DIR}/.ottdrev" OTTDREV)
     string(REPLACE "\n" "" OTTDREV "${OTTDREV}")
