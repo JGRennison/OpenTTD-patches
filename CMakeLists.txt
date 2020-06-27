@@ -61,6 +61,7 @@ if (UNIX)
     find_package(Sigaction)
     find_package(Sigaltstack)
     find_package(SelfDbg)
+    find_package(Ucontext)
 endif (UNIX)
 
 find_package(SSE)
