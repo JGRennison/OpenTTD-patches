@@ -55,6 +55,11 @@ if (MSVC)
     find_package(Editbin REQUIRED)
 endif (MSVC)
 
+if (UNIX)
+    find_package(DL)
+    find_package(Demangle)
+endif (UNIX)
+
 find_package(SSE)
 find_package(Xaudio2)
 
