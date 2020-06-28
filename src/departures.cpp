@@ -254,6 +254,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 			}
 
 			const Order *order = v->GetOrder(v->cur_implicit_order_index % v->GetNumOrders());
+			if (order == nullptr) continue;
 			DateTicks start_date = date_fract_scaled - v->current_order_time;
 			if (v->cur_timetable_order_index != INVALID_VEH_ORDER_ID && v->cur_timetable_order_index != v->cur_real_order_index) {
 				/* vehicle is taking a conditional order branch, adjust start time to compensate */
