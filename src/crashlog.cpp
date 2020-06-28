@@ -853,7 +853,7 @@ static void find_address_in_section(bfd *abfd, asection *section, void *data)
 	bfd_vma vma = bfd_get_section_vma(abfd, section);
 	if (info->addr < vma) return;
 
-	bfd_size_type size = bfd_section_size(abfd, section);
+	bfd_size_type size = get_bfd_section_size(abfd, section);
 	if (info->addr >= vma + size) return;
 
 	info->found = bfd_find_nearest_line(abfd, section, info->syms, info->addr - vma,
