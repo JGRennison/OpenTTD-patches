@@ -73,6 +73,11 @@ if (UNIX)
     endif(Fcitx_FOUND)
 endif (UNIX)
 
+if (MINGW)
+    find_package(Demangle)
+    find_package(BFD)
+endif (MINGW)
+
 find_package(SSE)
 find_package(Xaudio2)
 
