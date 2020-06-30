@@ -27,7 +27,7 @@
 //  Use the standard classes for std::, if available.
 #include <condition_variable>
 
-#include <cassert>
+//#include <cassert>
 #include <chrono>
 #include <system_error>
 #include <windows.h>
