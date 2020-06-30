@@ -54,7 +54,7 @@ Reduce viewport invalidation region size of track reservation and signal state c
 
 ### Rendering
 
-Track dirty viewport areas seperately form general screen redraws, using a zoom-level dependant sized grid.
+Track dirty viewport areas seperately from general screen redraws, using a zoom-level dependant sized grid.
 Use a rectangle array for general screen redraws instead of a block grid.
 Add a dirty bit to windows and widgets, for redrawing entire windows or widgets.
 Clip drawing of window widgets which are not in the redraw area.

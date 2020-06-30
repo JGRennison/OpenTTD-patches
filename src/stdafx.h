@@ -10,6 +10,13 @@
 #ifndef STDAFX_H
 #define STDAFX_H
 
+#ifdef _MSC_VER
+	/* Stop Microsoft (and clang-cl) compilers from complaining about potentially-unsafe/potentially-non-standard functions */
+#	define _CRT_SECURE_NO_DEPRECATE
+#	define _CRT_SECURE_NO_WARNINGS
+#	define _CRT_NONSTDC_NO_WARNINGS
+#endif
+
 #if defined(__APPLE__)
 	#include "os/macosx/osx_stdafx.h"
 #endif /* __APPLE__ */
@@ -173,7 +180,6 @@
 	#endif /* (_MSC_VER < 1400) */
 	#pragma warning(disable: 4291)   // no matching operator delete found; memory will not be freed if initialization throws an exception (reason: our overloaded functions never throw an exception)
 	#pragma warning(disable: 4996)   // 'function': was declared deprecated
-	#define _CRT_SECURE_NO_DEPRECATE // all deprecated 'unsafe string functions
 	#pragma warning(disable: 6308)   // code analyzer: 'realloc' might return null pointer: assigning null pointer to 't_ptr', which is passed as an argument to 'realloc', will cause the original memory block to be leaked
 	#pragma warning(disable: 6011)   // code analyzer: Dereferencing nullptr pointer 'pfGetAddrInfo': Lines: 995, 996, 998, 999, 1001
 	#pragma warning(disable: 6326)   // code analyzer: potential comparison of a constant with another constant
@@ -194,7 +200,11 @@
 
 	#define CDECL _cdecl
 	#define WARN_FORMAT(string, args)
-	#define FINAL sealed
+#	ifndef __clang__
+#		define FINAL sealed
+#	else
+#		define FINAL
+#	endif
 
 	/* fallthrough attribute, VS 2017 */
 	#if (_MSC_VER >= 1910)
@@ -430,17 +440,14 @@ void NORETURN CDECL assert_msg_error(int line, const char *file, const char *exp
 const char *assert_tile_info(uint32 tile);
 #define NOT_REACHED() error("NOT_REACHED triggered at line %i of %s", __LINE__, __FILE__)
 
-/* For non-debug builds with assertions enabled use the special assertion handler:
- * - For MSVC: NDEBUG is set for all release builds and WITH_ASSERT overrides the disabling of asserts.
- * - For non MSVC: NDEBUG is set when assertions are disables, _DEBUG is set for non-release builds.
- */
-#if (defined(_MSC_VER) && defined(NDEBUG) && defined(WITH_ASSERT)) || (!defined(_MSC_VER) && !defined(NDEBUG) && !defined(_DEBUG))
+/* For non-debug builds with assertions enabled use the special assertion handler. */
+#if defined(NDEBUG) && defined(WITH_ASSERT)
 	#undef assert
 	#define assert(expression) if (unlikely(!(expression))) error("Assertion failed at line %i of %s: %s", __LINE__, __FILE__, #expression);
 #endif
 
-/* Asserts are enabled if NDEBUG isn't defined, or if we are using MSVC and WITH_ASSERT is defined. */
-#if !defined(NDEBUG) || (defined(_MSC_VER) && defined(WITH_ASSERT))
+/* Asserts are enabled if NDEBUG isn't defined or WITH_ASSERT is defined. */
+#if !defined(NDEBUG) || defined(WITH_ASSERT)
 	#define OTTD_ASSERT
 	#define assert_msg(expression, ...) if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, nullptr, __VA_ARGS__);
 	#define assert_msg_tile(expression, tile, ...) if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, assert_tile_info(tile), __VA_ARGS__);

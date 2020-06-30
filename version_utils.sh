@@ -80,17 +80,16 @@ function output_hash_list {
 }
 
 function read_source {
-	handle_source "source.list" "$1"
-	handle_source "config.lib" "$1"
-	handle_source "configure" "$1"
-	handle_source "Makefile.in" "$1"
-	handle_source "Makefile.bundle.in" "$1"
-	handle_source "Makefile.grf.in" "$1"
-	handle_source "Makefile.setting.in" "$1"
-	handle_source "Makefile.src.in" "$1"
+	handle_source "CMakeLists.txt" "$1"
 	while IFS=$'\n' read -r line; do
-		handle_source "src/$line" "$1"
-	done < <( sed -e 's/^[ \t]*//; s/[ \t]*$//;' -e '/^$/ d;' -e '/^#/ d;' -e '/^..\// d;' -e 's/^rev.cpp$/rev.cpp.in/;' "source.list" )
+		handle_source "$line" "$1"
+	done < <( find -L cmake -type f -name '*.cmake' -print | sort )
+	while IFS=$'\n' read -r line; do
+		handle_source "$line" "$1"
+	done < <( find -L src -type f \( -name 'CMakeLists.txt' -o -name '*.cpp' -o -name '*.c' -o -name '*.hpp' -o -name '*.h' -o -name '*.sq' -o -name '*.mm' -o -name '*.in' \) -print | sort )
+	while IFS=$'\n' read -r line; do
+		handle_source "$line" "$1"
+	done < <( find -L src/lang -type f -name '*.txt' -print | sort )
 }
 
 if [ -z "$HASH" -a -z "$NAMES" -a -z "$HASHLIST" -a -z "$TESTOK" -a -z "$WRITE" -a -z "$RELEASETAG" ]; then
