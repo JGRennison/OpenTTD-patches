@@ -25,7 +25,6 @@ install(DIRECTORY
                 ${CMAKE_SOURCE_DIR}/bin/ai
                 ${CMAKE_SOURCE_DIR}/bin/game
                 ${CMAKE_SOURCE_DIR}/bin/scripts
-                ${CMAKE_SOURCE_DIR}/bin/data
         DESTINATION ${DATA_DESTINATION_DIR}
         COMPONENT language_files)
 
