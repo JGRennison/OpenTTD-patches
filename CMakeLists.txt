@@ -80,6 +80,7 @@ endif (UNIX)
 if (MINGW)
     find_package(Demangle)
     find_package(BFD)
+    find_package(DbgHelp)
 endif (MINGW)
 
 find_package(SSE)
