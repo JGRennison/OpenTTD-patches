@@ -409,7 +409,7 @@ static inline int DivAwayFromZero(int a, uint b)
 }
 
 /**
- * Computes a / b rounded towards negative infinity for signed a and unsigned b.
+ * Computes a / b rounded towards negative infinity for b > 0.
  * @param a Numerator
  * @param b Denominator
  * @return Quotient, rounded towards negative infinity
@@ -421,7 +421,7 @@ static inline T DivTowardsNegativeInf(T a, T b)
 }
 
 /**
- * Computes a / b rounded towards positive infinity for signed a and unsigned b.
+ * Computes a / b rounded towards positive infinity for b > 0.
  * @param a Numerator
  * @param b Denominator
  * @return Quotient, rounded towards positive infinity
