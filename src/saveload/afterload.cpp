@@ -3113,22 +3113,6 @@ bool AfterLoadGame()
 	 * which is done by StartupEngines(). */
 	if (gcf_res != GLC_ALL_GOOD) StartupEngines();
 
-	if (SlXvIsFeatureMissing(XSLFI_TOWN_CARGO_MATRIX)) {
-		/* Update cargo acceptance map of towns. */
-		for (Town *town : Town::Iterate()) {
-			town->cargo_accepted.Clear();
-		}
-		for (TileIndex t = 0; t < map_size; t++) {
-			if (!IsTileType(t, MP_HOUSE)) continue;
-			Town::Get(GetTownIndex(t))->cargo_accepted.Add(t);
-		}
-
-		for (Town *town : Town::Iterate()) {
-			UpdateTownCargoes(town);
-		}
-		UpdateTownCargoBitmap();
-	}
-
 	/* Set some breakdown-related variables to the correct values. */
 	if (SlXvIsFeatureMissing(XSLFI_IMPROVED_BREAKDOWNS)) {
 		for (Train *v : Train::Iterate()) {

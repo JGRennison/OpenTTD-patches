@@ -1368,13 +1368,9 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 
 	/* Check the town caches. */
 	std::vector<TownCache> old_town_caches;
-	std::vector<CargoTypes> old_town_cargo_accepted_totals;
-	std::vector<CargoTypes> old_town_cargo_produced;
 	std::vector<StationList> old_town_stations_nears;
 	for (const Town *t : Town::Iterate()) {
 		old_town_caches.push_back(t->cache);
-		old_town_cargo_accepted_totals.push_back(t->cargo_accepted_total);
-		old_town_cargo_produced.push_back(t->cargo_produced);
 		old_town_stations_nears.push_back(t->stations_near);
 	}
 
@@ -1392,8 +1388,6 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		old_industry_stations_nears.push_back(ind->stations_near);
 	}
 
-	const CargoTypes old_town_cargoes_accepted = _town_cargoes_accepted;
-
 	extern void RebuildTownCaches(bool cargo_update_required);
 	RebuildTownCaches(false);
 	RebuildSubsidisedSourceAndDestinationCache();
@@ -1405,19 +1399,10 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		if (MemCmpT(old_town_caches.data() + i, &t->cache) != 0) {
 			CCLOG("town cache mismatch: town %i", (int)t->index);
 		}
-		if (old_town_cargo_accepted_totals[i] != t->cargo_accepted_total) {
-			CCLOG("town cargo_accepted_total mismatch: town %i, old: " OTTD_PRINTFHEX64 ". new: " OTTD_PRINTFHEX64, (int)t->index, old_town_cargo_accepted_totals[i], t->cargo_accepted_total);
-		}
-		if (old_town_cargo_produced[i] != t->cargo_produced) {
-			CCLOG("town cargo_produced mismatch: town %i, old: " OTTD_PRINTFHEX64 ". new: " OTTD_PRINTFHEX64, (int)t->index, old_town_cargo_produced[i], t->cargo_produced);
-		}
 		if (old_town_stations_nears[i] != t->stations_near) {
 			CCLOG("town stations_near mismatch: town %i, (old size: %u, new size: %u)", (int)t->index, (uint)old_town_stations_nears[i].size(), (uint)t->stations_near.size());
 		}
 		i++;
-	}
-	if (old_town_cargoes_accepted != _town_cargoes_accepted) {
-		CCLOG("_town_cargoes_accepted mismatch: old: " OTTD_PRINTFHEX64 ". new: " OTTD_PRINTFHEX64, old_town_cargoes_accepted, _town_cargoes_accepted);
 	}
 	i = 0;
 	for (Station *st : Station::Iterate()) {

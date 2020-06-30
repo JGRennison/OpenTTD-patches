@@ -31,8 +31,13 @@ macro(compile_flags)
     # it does not appear to support the $<> tags.
     add_compile_options(
         "$<$<CONFIG:Debug>:-D_DEBUG>"
-        "$<$<CONFIG:Debug>:-D_FORTIFY_SOURCE=2>"
+        "$<$<NOT:$<CONFIG:Debug>>:-D_FORTIFY_SOURCE=2>" # FORTIFY_SOURCE should only be used in non-debug builds (requires -O1+)
     )
+    if (MINGW)
+        add_link_options(
+            "$<$<NOT:$<CONFIG:Debug>>:-fstack-protector>" # Prevent undefined references when _FORTIFY_SOURCE > 0
+        )
+    endif (MINGW)
 
     # Prepare a generator that checks if we are not a debug, and don't have asserts
     # on. We need this later on to set some compile options for stable releases.
@@ -73,14 +78,34 @@ macro(compile_flags)
             add_compile_options(-O2 -DNDEBUG)
         endif(NOT CMAKE_BUILD_TYPE)
 
-        #add_compile_options(
-            # When we are a stable release (Release build + USE_ASSERTS not set),
-            # assertations are off, which trigger a lot of warnings. We disable
-            # these warnings for these releases.
-            #"$<${IS_STABLE_RELEASE}:-Wno-unused-variable>"
-            #"$<${IS_STABLE_RELEASE}:-Wno-unused-but-set-parameter>"
-            #"$<${IS_STABLE_RELEASE}:-Wno-unused-but-set-variable>"
-        #)
+        # When we are a stable release (Release build + USE_ASSERTS not set),
+        # assertations are off, which trigger a lot of warnings. We disable
+        # these warnings for these releases.
+        #if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        #    add_compile_options(
+        #        "$<${IS_STABLE_RELEASE}:-Wno-unused-variable>"
+        #        "$<${IS_STABLE_RELEASE}:-Wno-unused-but-set-parameter>"
+        #        "$<${IS_STABLE_RELEASE}:-Wno-unused-but-set-variable>"
+        #    )
+        #else (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        #    add_compile_options(
+        #        "$<${IS_STABLE_RELEASE}:-Wno-unused-variable>"
+        #        "$<${IS_STABLE_RELEASE}:-Wno-unused-parameter>"
+        #    )
+        #endif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+
+        # Ninja processes the output so the output from the compiler
+        # isn't directly to a terminal; hence, the default is
+        # non-coloured output. We can override this to get nicely
+        # coloured output, but since that might yield odd results with
+        # IDEs, we extract it to an option.
+        if (OPTION_FORCE_COLORED_OUTPUT)
+            if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+                add_compile_options (-fdiagnostics-color=always)
+            elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+                add_compile_options (-fcolor-diagnostics)
+            endif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        endif (OPTION_FORCE_COLORED_OUTPUT)
 
         if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
             include(CheckCXXCompilerFlag)

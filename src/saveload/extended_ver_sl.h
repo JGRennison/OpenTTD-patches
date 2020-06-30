@@ -72,7 +72,7 @@ enum SlXvFeatureIndex {
 	XSLFI_LINKGRAPH_MODES,                        ///< Linkgraph additional distribution modes
 	XSLFI_GAME_EVENTS,                            ///< Game event flags
 	XSLFI_ROAD_LAYOUT_CHANGE_CTR,                 ///< Road layout change counter
-	XSLFI_TOWN_CARGO_MATRIX,                      ///< Town cargo matrix savegame format changes
+	XSLFI_TOWN_CARGO_MATRIX,                      ///< Town cargo matrix savegame format changes (now obsolete)
 	XSLFI_STATE_CHECKSUM,                         ///< State checksum
 	XSLFI_DEBUG,                                  ///< Debugging info
 	XSLFI_FLOW_STAT_FLAGS,                        ///< FlowStat flags
