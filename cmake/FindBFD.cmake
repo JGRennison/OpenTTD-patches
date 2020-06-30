@@ -65,6 +65,16 @@ macro(test_compile_libbfd var libs)
         link_libraries(${libs})
     endif ()
 
+    if (BFD_FOUND)
+        if (NOT (CMAKE_BUILD_TYPE STREQUAL "DEBUG" OR CMAKE_BUILD_TYPE STREQUAL "RELWITHDEBINFO"))
+            if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+                add_compile_options(-gline-tables-only)
+            elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+                add_compile_options(-g1)
+            endif ()
+        endif ()
+    endif ()
+
     set(CMAKE_REQUIRED_LIBRARIES "")
 endmacro()
 
