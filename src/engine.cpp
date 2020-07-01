@@ -578,6 +578,18 @@ static bool IsWagon(EngineID index)
 	return e->type == VEH_TRAIN && e->u.rail.railveh_type == RAILVEH_WAGON;
 }
 
+static void RetireEngineIfPossible(Engine *e, int age_threshold)
+{
+	if (_settings_game.vehicle.no_expire_vehicles_after > 0) {
+		YearMonthDay ymd;
+		ConvertDateToYMD(e->intro_date, &ymd);
+		if ((ymd.year * 12) + ymd.month + age_threshold >= _settings_game.vehicle.no_expire_vehicles_after * 12) return;
+	}
+
+	e->company_avail = 0;
+	AddRemoveEngineFromAutoreplaceAndBuildWindows(e->type);
+}
+
 /**
  * Update #Engine::reliability and (if needed) update the engine GUIs.
  * @param e %Engine to update.
@@ -592,8 +604,7 @@ static void CalcEngineReliability(Engine *e)
 		uint retire_early_max_age = max(0, e->duration_phase_1 + e->duration_phase_2 - retire_early * 12);
 		if (retire_early != 0 && age >= retire_early_max_age) {
 			/* Early retirement is enabled and we're past the date... */
-			e->company_avail = 0;
-			AddRemoveEngineFromAutoreplaceAndBuildWindows(e->type);
+			RetireEngineIfPossible(e, retire_early_max_age);
 		}
 	}
 
@@ -608,12 +619,11 @@ static void CalcEngineReliability(Engine *e)
 		uint max = e->reliability_max;
 		e->reliability = (int)age * (int)(e->reliability_final - max) / e->duration_phase_3 + max;
 	} else {
+		e->reliability = e->reliability_final;
 		/* time's up for this engine.
 		 * We will now completely retire this design */
-		e->company_avail = 0;
-		e->reliability = e->reliability_final;
 		/* Kick this engine out of the lists */
-		AddRemoveEngineFromAutoreplaceAndBuildWindows(e->type);
+		RetireEngineIfPossible(e, e->duration_phase_1 + e->duration_phase_2 + e->duration_phase_3);
 	}
 	SetWindowClassesDirty(WC_BUILD_VEHICLE); // Update to show the new reliability
 	SetWindowClassesDirty(WC_REPLACE_VEHICLE);
