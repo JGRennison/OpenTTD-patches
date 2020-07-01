@@ -283,6 +283,7 @@ if (WIN32)
         ws2_32
         winmm
         imm32
+        usp10
     )
 endif (WIN32)
 
