@@ -59,7 +59,8 @@ ScriptInstance::ScriptInstance(const char *APIName) :
 	suspend(0),
 	is_paused(false),
 	in_shutdown(false),
-	callback(nullptr)
+	callback(nullptr),
+	APIName(APIName)
 {
 	this->storage = new ScriptStorage();
 	this->engine  = new Squirrel(APIName);
@@ -85,6 +86,12 @@ void ScriptInstance::Initialize(const char *main_script, const char *instance_na
 			if (this->engine->IsSuspended()) ScriptLog::Error("This script took too long to load script. AI is not started.");
 			this->Died();
 			return;
+		}
+
+		if (strcmp(this->APIName, "GS") == 0) {
+			if (strcmp(instance_name, "BeeRewardClass") == 0) {
+				this->LoadCompatibilityScripts("brgs", GAME_DIR);
+			}
 		}
 
 		/* Create the main-class */
