@@ -11,6 +11,7 @@
 #include "../../stdafx.h"
 #include "script_date.hpp"
 #include "../../date_func.h"
+#include "../../settings_type.h"
 
 #include "../../safeguards.h"
 
@@ -22,6 +23,11 @@
 /* static */ ScriptDate::Date ScriptDate::GetCurrentDate()
 {
 	return (ScriptDate::Date)_date;
+}
+
+/* static */ int32 ScriptDate::GetDayLengthFactor()
+{
+	return _settings_game.economy.day_length_factor;
 }
 
 /* static */ int32 ScriptDate::GetYear(ScriptDate::Date date)
