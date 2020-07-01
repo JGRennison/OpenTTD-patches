@@ -10,6 +10,7 @@
 #include "../newgrf_house.h"
 #include "../newgrf_engine.h"
 #include "../newgrf_roadtype.h"
+#include "../date_func.h"
 
 /* Helper for filling property tables */
 #define NIP(prop, base, variable, type, name) { name, (ptrdiff_t)cpp_offsetof(base, variable), cpp_sizeof(base, variable), prop, type }
@@ -127,6 +128,18 @@ class NIHVehicle : public NIHelper {
 			print(buffer);
 			seprintf(buffer, lastof(buffer), "  GV Cache: total length: %u, veh length: %u",
 					gvc.cached_total_length, gvc.cached_veh_length);
+			print(buffer);
+		}
+
+		seprintf(buffer, lastof(buffer), "  Engine: %u", v->engine_type);
+		print(buffer);
+		const Engine *e = Engine::GetIfValid(v->engine_type);
+		if (e != nullptr) {
+		YearMonthDay ymd;
+		ConvertDateToYMD(e->intro_date, &ymd);
+			seprintf(buffer, lastof(buffer), "    Intro: %4i-%02i-%02i, Age: %u, Base life: %u, Durations: %u %u %u (sum: %u)",
+					ymd.year, ymd.month + 1, ymd.day, e->age, e->info.base_life, e->duration_phase_1, e->duration_phase_2, e->duration_phase_3,
+					e->duration_phase_1 + e->duration_phase_2 + e->duration_phase_3);
 			print(buffer);
 		}
 	}
