@@ -2078,7 +2078,7 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 			MarkTileDirtyByTile(cur_tile);
 		}
 		ZoningMarkDirtyStationCoverageArea(st);
-		NotifyRoadLayoutChanged();
+		NotifyRoadLayoutChanged(true);
 	}
 
 	if (st != nullptr) {
@@ -2196,7 +2196,7 @@ static CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags)
 			for (const RoadStop *rs = st->bus_stops; rs != nullptr; rs = rs->next) st->bus_station.Add(rs->xy);
 		}
 
-		NotifyRoadLayoutChanged();
+		NotifyRoadLayoutChanged(false);
 	}
 
 	return CommandCost(EXPENSES_CONSTRUCTION, _price[is_truck ? PR_CLEAR_STATION_TRUCK : PR_CLEAR_STATION_BUS]);

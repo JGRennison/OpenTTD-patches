@@ -14,6 +14,7 @@
 #include "road.h"
 #include "economy_func.h"
 #include "transparency.h"
+#include "settings_type.h"
 
 /**
  * Whether the given roadtype is valid.
@@ -160,9 +161,19 @@ void UpdateCompanyRoadInfrastructure(RoadType rt, Owner o, int count);
 struct TileInfo;
 void DrawRoadOverlays(const TileInfo *ti, PaletteID pal, const RoadTypeInfo *road_rti, const RoadTypeInfo *tram_rit, uint road_offset, uint tram_offset);
 
+inline bool RoadLayoutChangeNotificationEnabled(bool added)
+{
+	return _settings_game.pf.reroute_rv_on_layout_change >= (added ? 2 : 1);
+}
+
 inline void NotifyRoadLayoutChanged()
 {
 	_road_layout_change_counter++;
+}
+
+inline void NotifyRoadLayoutChanged(bool added)
+{
+	if (RoadLayoutChangeNotificationEnabled(added)) NotifyRoadLayoutChanged();
 }
 
 void NotifyRoadLayoutChangedIfTileNonLeaf(TileIndex tile, RoadTramType rtt, RoadBits present_bits);

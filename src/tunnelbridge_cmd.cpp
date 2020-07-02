@@ -648,10 +648,12 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 				make_bridge_ramp(tile_start, dir);
 				make_bridge_ramp(tile_end, ReverseDiagDir(dir));
 				AddRoadTunnelBridgeInfrastructure(tile_start, tile_end);
-				if (IsRoadCustomBridgeHead(tile_start) || IsRoadCustomBridgeHead(tile_end)) {
-					NotifyRoadLayoutChanged();
-				} else {
-					NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile_start, tile_end, dir, GetRoadTramType(roadtype));
+				if (RoadLayoutChangeNotificationEnabled(true)) {
+					if (IsRoadCustomBridgeHead(tile_start) || IsRoadCustomBridgeHead(tile_end)) {
+						NotifyRoadLayoutChanged();
+					} else {
+						NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile_start, tile_end, dir, GetRoadTramType(roadtype));
+					}
 				}
 				break;
 			}
@@ -1011,7 +1013,7 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 			YapfNotifyTrackLayoutChange(start_tile, DiagDirToDiagTrack(direction));
 		} else {
 			if (c != nullptr) c->infrastructure.road[roadtype] += num_pieces * 2; // A full diagonal road has two road bits.
-			NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(start_tile, end_tile, direction, GetRoadTramType(roadtype));
+			if (RoadLayoutChangeNotificationEnabled(true)) NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(start_tile, end_tile, direction, GetRoadTramType(roadtype));
 			RoadType road_rt = RoadTypeIsRoad(roadtype) ? roadtype : INVALID_ROADTYPE;
 			RoadType tram_rt = RoadTypeIsTram(roadtype) ? roadtype : INVALID_ROADTYPE;
 			MakeRoadTunnel(start_tile, company, t->index, direction,                 road_rt, tram_rt);
@@ -1148,8 +1150,10 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 			/* A full diagonal road tile has two road bits. */
 			UpdateCompanyRoadInfrastructure(GetRoadTypeRoad(tile), GetRoadOwner(tile, RTT_ROAD), -(int)(len * 2 * TUNNELBRIDGE_TRACKBIT_FACTOR));
 			UpdateCompanyRoadInfrastructure(GetRoadTypeTram(tile), GetRoadOwner(tile, RTT_TRAM), -(int)(len * 2 * TUNNELBRIDGE_TRACKBIT_FACTOR));
-			NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile, endtile, GetTunnelBridgeDirection(tile), RTT_ROAD);
-			NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile, endtile, GetTunnelBridgeDirection(tile), RTT_TRAM);
+			if (RoadLayoutChangeNotificationEnabled(false)) {
+				NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile, endtile, GetTunnelBridgeDirection(tile), RTT_ROAD);
+				NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile, endtile, GetTunnelBridgeDirection(tile), RTT_TRAM);
+			}
 
 			delete Tunnel::GetByTile(tile);
 
@@ -1246,11 +1250,13 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 			SubtractRailTunnelBridgeInfrastructure(tile, endtile);
 		} else if (GetTunnelBridgeTransportType(tile) == TRANSPORT_ROAD) {
 			SubtractRoadTunnelBridgeInfrastructure(tile, endtile);
-			if (IsRoadCustomBridgeHead(tile) || IsRoadCustomBridgeHead(endtile)) {
-				NotifyRoadLayoutChanged();
-			} else {
-				if (HasRoadTypeRoad(tile)) NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile, endtile, direction, RTT_ROAD);
-				if (HasRoadTypeTram(tile)) NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile, endtile, direction, RTT_TRAM);
+			if (RoadLayoutChangeNotificationEnabled(false)) {
+				if (IsRoadCustomBridgeHead(tile) || IsRoadCustomBridgeHead(endtile)) {
+					NotifyRoadLayoutChanged();
+				} else {
+					if (HasRoadTypeRoad(tile)) NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile, endtile, direction, RTT_ROAD);
+					if (HasRoadTypeTram(tile)) NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile, endtile, direction, RTT_TRAM);
+				}
 			}
 		} else { // Aqueduct
 			if (Company::IsValidID(owner)) Company::Get(owner)->infrastructure.water -= len * TUNNELBRIDGE_TRACKBIT_FACTOR;

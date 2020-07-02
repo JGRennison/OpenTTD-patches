@@ -1826,6 +1826,7 @@ static SettingsContainer &GetSettingsTree()
 				routing->Add(new SettingEntry("pf.forbid_90_deg"));
 				routing->Add(new SettingEntry("pf.pathfinder_for_roadvehs"));
 				routing->Add(new SettingEntry("pf.pathfinder_for_ships"));
+				routing->Add(new SettingEntry("pf.reroute_rv_on_layout_change"));
 			}
 
 			vehicles->Add(new SettingEntry("order.no_servicing_if_no_breakdowns"));
