@@ -5167,6 +5167,10 @@ STR_GAME_SAVELOAD_ERROR_DATA_INTEGRITY_CHECK_FAILED             :Data integrity 
 STR_GAME_SAVELOAD_NOT_AVAILABLE                                 :<not available>
 STR_WARNING_LOADGAME_REMOVED_TRAMS                              :{WHITE}Game was saved in version without tram support. All trams have been removed
 
+STR_GAME_SAVELOAD_FROM_VERSION                                  : from version {PUSH_COLOUR}{ORANGE}{RAW_STRING}{POP_COLOUR}{}
+STR_GAME_SAVELOAD_ERROR_TOO_NEW_FEATURE_VERSION                 :Savegame{0:STRING1} has version {PUSH_COLOUR}{ORANGE}{2:NUM}{POP_COLOUR} of feature '{PUSH_COLOUR}{ORANGE}{1:RAW_STRING}{POP_COLOUR}', but the maximum supported version is {PUSH_COLOUR}{ORANGE}{3:NUM}{POP_COLOUR}
+STR_GAME_SAVELOAD_ERROR_UNKNOWN_FEATURE                         :Savegame{0:STRING1} has an unknown feature '{PUSH_COLOUR}{ORANGE}{1:RAW_STRING}{POP_COLOUR}' (version: {PUSH_COLOUR}{ORANGE}{2:NUM}{POP_COLOUR}), which is not supported
+
 STR_GAME_SAVELOAD_ERROR_HUGE_AIRPORTS_PRESENT                   :Savegame uses huge airports
 STR_GAME_SAVELOAD_ERROR_HELI_OILRIG_BUG                         :Savegame has a helicopter on approach to a buggy oil rig
 

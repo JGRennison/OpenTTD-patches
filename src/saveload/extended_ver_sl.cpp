@@ -43,6 +43,8 @@
 #include "../timetable.h"
 #include "../map_func.h"
 #include "../rev.h"
+#include "../strings_func.h"
+#include "table/strings.h"
 
 #include <vector>
 
@@ -521,6 +523,14 @@ static void Load_SLXI()
 		SLEG_END()
 	};
 
+	auto version_error = [](StringID str, const char *feature, int64 p1, int64 p2) {
+		char buf[256];
+		int64 args_array[] = { _sl_xv_version_label.empty() ? STR_EMPTY : STR_GAME_SAVELOAD_FROM_VERSION, (int64)(size_t)_sl_xv_version_label.c_str(), (int64)(size_t)feature, p1, p2 };
+		StringParameters tmp_params(args_array);
+		GetStringWithArgs(buf, str, &tmp_params, lastof(buf));
+		SlError(STR_JUST_RAW_STRING, buf, false);
+	};
+
 	uint32 item_count = SlReadUint32();
 	for (uint32 i = 0; i < item_count; i++) {
 		SlxiSubChunkFlags flags = static_cast<SlxiSubChunkFlags>(SlReadUint32());
@@ -548,7 +558,7 @@ static void Load_SLXI()
 					}
 					DEBUG(sl, 1, "SLXI chunk: too large version for feature: '%s', version: %d, max version: %d, ignoring", name_buffer, version, info->max_version);
 				} else {
-					SlErrorCorruptFmt("SLXI chunk: too large version for feature: '%s', version: %d, max version: %d", name_buffer, version, info->max_version);
+					version_error(STR_GAME_SAVELOAD_ERROR_TOO_NEW_FEATURE_VERSION, name_buffer, version, info->max_version);
 				}
 			} else {
 				// success path :)
@@ -580,7 +590,7 @@ static void Load_SLXI()
 				}
 				DEBUG(sl, 1, "SLXI chunk: unknown feature: '%s', version: %d, ignoring", name_buffer, version);
 			} else {
-				SlErrorCorruptFmt("SLXI chunk: unknown feature: %s, version: %d", name_buffer, version);
+				version_error(STR_GAME_SAVELOAD_ERROR_UNKNOWN_FEATURE, name_buffer, version, 0);
 			}
 		}
 
