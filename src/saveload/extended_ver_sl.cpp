@@ -38,9 +38,11 @@
 #include "../stdafx.h"
 #include "../debug.h"
 #include "saveload.h"
+#include "saveload_buffer.h"
 #include "extended_ver_sl.h"
 #include "../timetable.h"
 #include "../map_func.h"
+#include "../rev.h"
 
 #include <vector>
 
@@ -52,10 +54,15 @@ bool _sl_is_faked_ext;                                      ///< is this a faked
 bool _sl_maybe_springpp;                                    ///< is this possibly a SpringPP savegame?
 bool _sl_maybe_chillpp;                                     ///< is this possibly a ChillPP v8 savegame?
 std::vector<uint32> _sl_xv_discardable_chunk_ids;           ///< list of chunks IDs which we can discard if no chunk loader exists
+std::string _sl_xv_version_label;                           ///< optional SLXI version label
 
 static const uint32 _sl_xv_slxi_chunk_version = 0;          ///< current version of SLXI chunk
 
+static void loadVL(const SlxiSubChunkInfo *info, uint32 length);
+static uint32 saveVL(const SlxiSubChunkInfo *info, bool dry_run);
+
 const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
+	{ XSLFI_VERSION_LABEL,          XSCF_IGNORABLE_ALL,       1,   1, "version_label",             saveVL,  loadVL,  nullptr        },
 	{ XSLFI_TRACE_RESTRICT,         XSCF_NULL,               11,  11, "tracerestrict",             nullptr, nullptr, "TRRM,TRRP,TRRS" },
 	{ XSLFI_TRACE_RESTRICT_OWNER,   XSCF_NULL,                1,   1, "tracerestrict_owner",       nullptr, nullptr, nullptr        },
 	{ XSLFI_TRACE_RESTRICT_ORDRCND, XSCF_NULL,                3,   3, "tracerestrict_order_cond",  nullptr, nullptr, nullptr        },
@@ -183,6 +190,7 @@ void SlXvResetState()
 	_sl_maybe_chillpp = false;
 	_sl_xv_discardable_chunk_ids.clear();
 	memset(_sl_xv_feature_versions, 0, sizeof(_sl_xv_feature_versions));
+	_sl_xv_version_label.clear();
 }
 
 /**
@@ -589,6 +597,19 @@ static void Load_SLXI()
 			}
 		}
 	}
+}
+
+static void loadVL(const SlxiSubChunkInfo *info, uint32 length)
+{
+	_sl_xv_version_label.resize(length);
+	ReadBuffer::GetCurrent()->CopyBytes(reinterpret_cast<byte *>(const_cast<char *>(_sl_xv_version_label.c_str())), length);
+}
+
+static uint32 saveVL(const SlxiSubChunkInfo *info, bool dry_run)
+{
+	uint32 length = strlen(_openttd_revision);
+	if (!dry_run) MemoryDumper::GetCurrent()->CopyBytes(reinterpret_cast<const byte *>(_openttd_revision), length);
+	return length;
 }
 
 extern const ChunkHandler _version_ext_chunk_handlers[] = {
