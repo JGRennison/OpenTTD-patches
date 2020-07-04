@@ -461,7 +461,7 @@ struct CompanyFinancesWindow : Window {
 	{
 		const Company *c = Company::Get((CompanyID)this->window_number);
 		if (c->money > this->max_money) {
-			this->max_money = max(c->money * 2, this->max_money * 4);
+			this->max_money = max<Money>(c->money * 2, this->max_money * 4);
 			this->SetupWidgets();
 			this->ReInit();
 		}
