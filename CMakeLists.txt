@@ -181,6 +181,7 @@ endif()
 include(AddCustomXXXTimestamp)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src)
 add_subdirectory(${CMAKE_SOURCE_DIR}/media/baseset)
+add_subdirectory(${CMAKE_SOURCE_DIR}/bin)
 
 if(NOT CMAKE_CROSSCOMPILING)
     foreach(tgt IN ITEMS ${host_tools_list})
@@ -197,6 +198,7 @@ target_link_libraries(openttd
     openttd::languages
     openttd::settings
     openttd::basesets
+    openttd::binfiles
     Threads::Threads
 )
 
