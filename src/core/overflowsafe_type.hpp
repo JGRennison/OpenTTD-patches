@@ -95,7 +95,10 @@ public:
 	inline OverflowSafeInt& operator *= (const int factor)
 	{
 #ifdef WITH_OVERFLOW_BUILTINS
-		if (unlikely(__builtin_mul_overflow(this->m_value, factor, &this->m_value))) {
+		T out;
+		if (likely(!__builtin_mul_overflow(this->m_value, factor, &out))) {
+			this->m_value = out;
+		} else {
 			this->m_value = ((this->m_value < 0) == (factor < 0)) ? T_MAX : T_MIN;
 		}
 #else
