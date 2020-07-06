@@ -920,6 +920,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 				for (Vehicle *v2 = v->FirstShared(); v2 != nullptr; v2 = v2->NextShared()) {
 					v2->ClearSeparation();
 					ClrBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
+					v2->lateness_counter = 0;
 					SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
 				}
 				return;
