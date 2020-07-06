@@ -394,7 +394,7 @@ CommandCost TestBuyAllTemplateVehiclesInChain(TemplateVehicle *tv, TileIndex til
  */
 void TransferCargoForTrain(Train *old_veh, Train *new_head)
 {
-	assert(new_head->IsPrimaryVehicle());
+	assert(new_head->IsPrimaryVehicle() || new_head->IsFreeWagon());
 
 	CargoID _cargo_type = old_veh->cargo_type;
 	byte _cargo_subtype = old_veh->cargo_subtype;
