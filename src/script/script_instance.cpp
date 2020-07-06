@@ -137,7 +137,24 @@ bool ScriptInstance::LoadCompatibilityScripts(const char *api_version, Subdirect
 		return false;
 	}
 
-	ScriptLog::Warning("API compatibility script not found");
+	const char *message_suffix;
+	switch (dir) {
+		case AI_DIR:
+			message_suffix = ", please check that the 'ai/' directory is properly installed";
+			break;
+
+		case GAME_DIR:
+			message_suffix = ", please check that the 'game/' directory is properly installed";
+			break;
+
+		default:
+			message_suffix = "";
+			break;
+	}
+
+	char not_found_msg[128];
+	seprintf(not_found_msg, lastof(not_found_msg), "API compatibility script not found: %s%s", script_name, message_suffix);
+	ScriptLog::Warning(not_found_msg);
 	return true;
 }
 
