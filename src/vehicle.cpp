@@ -3666,30 +3666,36 @@ void Vehicle::ClearSeparation()
 
 void Vehicle::InitSeparation()
 {
+	extern int SeparationBetween(Vehicle *v1, Vehicle *v2);
+
 	assert(this->ahead_separation == nullptr && this->behind_separation == nullptr);
-	Vehicle *best_match = this;
-	int lowest_separation;
+
+	Vehicle *best_match = nullptr;
+	int lowest_separation = -1;
 	for (Vehicle *v_other = this->FirstShared(); v_other != nullptr; v_other = v_other->NextShared()) {
-		if ((HasBit(v_other->vehicle_flags, VF_TIMETABLE_STARTED)) && v_other != this) {
-			if (best_match == this) {
+		if (v_other->ahead_separation != nullptr && v_other != this) {
+			if (best_match == nullptr) {
 				best_match = v_other;
-				lowest_separation = 0; // TODO call SeparationBetween() here
+				lowest_separation = SeparationBetween(this, v_other);
 			} else {
-				int temp_sep = 0; // TODO call SeparationBetween() here
-				if (temp_sep < lowest_separation && temp_sep != -1) {
+				int temp_sep = SeparationBetween(this, v_other);
+				if ((lowest_separation == -1 || temp_sep < lowest_separation) && temp_sep != -1) {
 					best_match = v_other;
 					lowest_separation = temp_sep;
 				}
 			}
 		}
 	}
-	this->AddToSeparationBehind(best_match);
+	if (best_match != nullptr) {
+		this->AddToSeparationBehind(best_match);
+	} else {
+		this->ahead_separation = this->behind_separation = this;
+	}
 }
 
 void Vehicle::AddToSeparationBehind(Vehicle *v_other)
 {
-	if (v_other->ahead_separation == nullptr) v_other->ahead_separation = v_other;
-	if (v_other->behind_separation == nullptr) v_other->behind_separation = v_other;
+	assert(v_other->ahead_separation != nullptr && v_other->behind_separation != nullptr);
 
 	this->ahead_separation = v_other;
 	v_other->behind_separation->ahead_separation = this;
