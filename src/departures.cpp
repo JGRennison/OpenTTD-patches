@@ -610,7 +610,8 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 						_settings_client.gui.departure_show_all_stops) &&
 						(candidate_origin->GetType() == OT_GOTO_STATION ||
 						candidate_origin->GetType() == OT_IMPLICIT) &&
-						candidate_origin->GetDestination() != station) {
+						candidate_origin->GetDestination() != station &&
+						(candidate_origin->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
 					const Order *o = (candidate_origin->next == nullptr) ? least_order->v->GetFirstOrder() : candidate_origin->next;
 					bool found_collision = false;
 
@@ -624,7 +625,8 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 						if ((o->GetType() == OT_GOTO_STATION ||
 								o->GetType() == OT_IMPLICIT) &&
 								(o->GetDestination() == candidate_origin->GetDestination() ||
-								o->GetDestination() == station)) {
+								o->GetDestination() == station) &&
+								(o->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
 							found_collision = true;
 							break;
 						}
@@ -647,7 +649,8 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 			while (order != least_order->order) {
 				if (order->GetType() == OT_GOTO_STATION &&
 						(order->GetLoadType() != OLFB_NO_LOAD ||
-						_settings_client.gui.departure_show_all_stops)) {
+						_settings_client.gui.departure_show_all_stops) &&
+						(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
 					d->calling_at.push_back(CallAt((StationID)order->GetDestination()));
 				}
 
