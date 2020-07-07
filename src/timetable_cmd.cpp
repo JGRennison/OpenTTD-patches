@@ -917,7 +917,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		int32 new_time;
 		if (travelling) {
 			new_time = time_taken;
-			if (new_time > (int32)timetabled * 4) {
+			if (new_time > (int32)timetabled * 4 && !(real_timetable_order->IsType(OT_GOTO_DEPOT) && (real_timetable_order->GetDepotOrderType() & ODTFB_SERVICE))) {
 				/* Possible jam, clear time and restart timetable for all vehicles.
 				 * Otherwise we risk trains blocking 1-lane stations for long times. */
 				ChangeTimetable(v, v->cur_timetable_order_index, 0, travel_field ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, true);
