@@ -451,6 +451,7 @@ public:
 				this->LowerWidget(_settings_client.gui.station_show_coverage + BDSW_LT_OFF);
 				if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 				this->SetDirty();
+				SetViewportCatchmentStation(nullptr, true);
 				break;
 		}
 	}
