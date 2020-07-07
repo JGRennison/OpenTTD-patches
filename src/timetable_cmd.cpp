@@ -920,7 +920,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 			if (new_time > (int32)timetabled * 4 && !(real_timetable_order->IsType(OT_GOTO_DEPOT) && (real_timetable_order->GetDepotOrderType() & ODTFB_SERVICE))) {
 				/* Possible jam, clear time and restart timetable for all vehicles.
 				 * Otherwise we risk trains blocking 1-lane stations for long times. */
-				ChangeTimetable(v, v->cur_timetable_order_index, 0, travel_field ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, true);
+				ChangeTimetable(v, v->cur_timetable_order_index, 0, travel_field ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, false);
 				for (Vehicle *v2 = v->FirstShared(); v2 != nullptr; v2 = v2->NextShared()) {
 					/* Clear VF_TIMETABLE_STARTED but do not call ClearSeparation */
 					ClrBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
