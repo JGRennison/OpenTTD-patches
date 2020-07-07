@@ -3853,6 +3853,8 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
 	TileIndex vtile = TileVirtXY(this->x_pos, this->y_pos);
 	if (this->tile != vtile) b += seprintf(b, last, ", VirtXYTile: %X (%u x %u)", vtile, TileX(vtile), TileY(vtile));
 	if (this->cargo_payment) b += seprintf(b, last, ", CP");
+	if (this->ahead_separation && this->behind_separation) b += seprintf(b, last, ", Sp");
+	if (!!this->ahead_separation != !!this->behind_separation) b += seprintf(b, last, ", bad Sp");
 	return b;
 }
 
