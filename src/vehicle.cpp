@@ -1284,8 +1284,8 @@ void CallVehicleTicks()
 			if (HasBit(t->flags, VRF_TOO_HEAVY)) {
 				if (t->owner == _local_company) {
 					SetDParam(0, t->index);
-					SetDParam(1, STR_ERROR_TRAIN_TOO_HEAVY);
-					AddVehicleNewsItem(STR_ERROR_TRAIN_TOO_HEAVY, NT_ADVICE, t->index);
+					AddNewsItem(STR_ERROR_TRAIN_TOO_HEAVY, NT_ADVICE, NF_INCOLOUR | NF_SMALL | NF_VEHICLE_PARAM0,
+							NR_VEHICLE, t->index);
 				}
 				ClrBit(t->flags, VRF_TOO_HEAVY);
 			}
