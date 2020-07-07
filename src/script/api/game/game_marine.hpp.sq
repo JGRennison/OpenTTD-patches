@@ -40,6 +40,7 @@ void SQGSMarine_Register(Squirrel *engine)
 	SQGSMarine.DefSQStaticMethod(engine, &ScriptMarine::BuildBuoy,              "BuildBuoy",              2, ".i");
 	SQGSMarine.DefSQStaticMethod(engine, &ScriptMarine::BuildLock,              "BuildLock",              2, ".i");
 	SQGSMarine.DefSQStaticMethod(engine, &ScriptMarine::BuildCanal,             "BuildCanal",             2, ".i");
+	SQGSMarine.DefSQStaticMethod(engine, &ScriptMarine::BuildRiver,             "BuildRiver",             2, ".i");
 	SQGSMarine.DefSQStaticMethod(engine, &ScriptMarine::RemoveWaterDepot,       "RemoveWaterDepot",       2, ".i");
 	SQGSMarine.DefSQStaticMethod(engine, &ScriptMarine::RemoveDock,             "RemoveDock",             2, ".i");
 	SQGSMarine.DefSQStaticMethod(engine, &ScriptMarine::RemoveBuoy,             "RemoveBuoy",             2, ".i");

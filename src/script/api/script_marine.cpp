@@ -116,6 +116,13 @@
 	return ScriptObject::DoCommand(tile, tile, WATER_CLASS_CANAL, CMD_BUILD_CANAL);
 }
 
+/* static */ bool ScriptMarine::BuildRiver(TileIndex tile)
+{
+	EnforcePrecondition(false, ::IsValidTile(tile));
+
+	return ScriptObject::DoCommand(tile, tile, WATER_CLASS_RIVER, CMD_BUILD_CANAL);
+}
+
 /* static */ bool ScriptMarine::RemoveWaterDepot(TileIndex tile)
 {
 	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY);

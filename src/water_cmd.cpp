@@ -455,7 +455,9 @@ CommandCost CmdBuildCanal(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 	if (_game_mode != GM_EDITOR) {
 		if (HasBit(p2, 2)) return CMD_ERROR;
 		if (wc == WATER_CLASS_RIVER) {
-			if (!_settings_game.construction.enable_build_river) return CMD_ERROR;
+			if (!_settings_game.construction.enable_build_river && _current_company != OWNER_DEITY) {
+				return CMD_ERROR;
+			}
 		} else if (wc != WATER_CLASS_CANAL) {
 			return CMD_ERROR;
 		}

@@ -385,7 +385,7 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdMoneyCheatAdmin,                    CMD_SERVER_NS, CMDT_CHEAT                 ), // CMD_MONEY_CHEAT_ADMIN
 	DEF_CMD(CmdChangeBankBalance,                      CMD_DEITY, CMDT_MONEY_MANAGEMENT      ), // CMD_CHANGE_BANK_BALANCE
 	DEF_CMD(CmdCheatSetting,                          CMD_SERVER, CMDT_CHEAT                 ), // CMD_CHEAT_SETTING
-	DEF_CMD(CmdBuildCanal,                              CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_CANAL
+	DEF_CMD(CmdBuildCanal,                  CMD_DEITY | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_CANAL
 	DEF_CMD(CmdCreateSubsidy,                          CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_CREATE_SUBSIDY
 	DEF_CMD(CmdCompanyCtrl, CMD_SPECTATOR | CMD_CLIENT_ID | CMD_NO_EST, CMDT_SERVER_SETTING  ), // CMD_COMPANY_CTRL
 	DEF_CMD(CmdCustomNewsItem,          CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_CUSTOM_NEWS_ITEM
