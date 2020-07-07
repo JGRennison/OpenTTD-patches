@@ -715,14 +715,18 @@ void UpdateSeparationOrder(Vehicle *v_start)
 					break;
 				}
 			}
-			int separation_ahead = SeparationBetween(v, v->AheadSeparation());
-			int separation_behind = SeparationBetween(v->BehindSeparation(), v);
-			if (separation_ahead != -1 && separation_behind != -1) {
-				Company *owner = Company::GetIfValid(v->owner);
-				uint8 timetable_separation_rate = owner ? owner->settings.auto_timetable_separation_rate : 100;
-				int new_lateness = (separation_ahead - separation_behind) / 2;
-				v->lateness_counter = (new_lateness * timetable_separation_rate +
-						v->lateness_counter * (100 - timetable_separation_rate)) / 100;
+			if (HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED) &&
+					HasBit(v->AheadSeparation()->vehicle_flags, VF_TIMETABLE_STARTED) &&
+					HasBit(v->BehindSeparation()->vehicle_flags, VF_TIMETABLE_STARTED)) {
+				int separation_ahead = SeparationBetween(v, v->AheadSeparation());
+				int separation_behind = SeparationBetween(v->BehindSeparation(), v);
+				if (separation_ahead != -1 && separation_behind != -1) {
+					Company *owner = Company::GetIfValid(v->owner);
+					uint8 timetable_separation_rate = owner ? owner->settings.auto_timetable_separation_rate : 100;
+					int new_lateness = (separation_ahead - separation_behind) / 2;
+					v->lateness_counter = (new_lateness * timetable_separation_rate +
+							v->lateness_counter * (100 - timetable_separation_rate)) / 100;
+				}
 			}
 			v = v->AheadSeparation();
 		} while (v != v_start);
@@ -918,7 +922,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 				 * Otherwise we risk trains blocking 1-lane stations for long times. */
 				ChangeTimetable(v, v->cur_timetable_order_index, 0, travel_field ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, true);
 				for (Vehicle *v2 = v->FirstShared(); v2 != nullptr; v2 = v2->NextShared()) {
-					v2->ClearSeparation();
+					/* Clear VF_TIMETABLE_STARTED but do not call ClearSeparation */
 					ClrBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
 					v2->lateness_counter = 0;
 					SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
