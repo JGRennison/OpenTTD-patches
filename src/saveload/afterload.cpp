@@ -1661,7 +1661,6 @@ bool AfterLoadGame()
 	 * Account for this in older games by adding an offset */
 	if (IsSavegameVersionBefore(SLV_31)) {
 		_date += DAYS_TILL_ORIGINAL_BASE_YEAR;
-		_cur_year += ORIGINAL_BASE_YEAR;
 		SetScaledTickVariables();
 		ConvertDateToYMD(_date, &_cur_date_ymd);
 

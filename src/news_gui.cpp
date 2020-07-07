@@ -1007,9 +1007,9 @@ void NewsLoop()
 
 	static byte _last_clean_month = 0;
 
-	if (_last_clean_month != _cur_month) {
+	if (_last_clean_month != _cur_date_ymd.month) {
 		RemoveOldNewsItems();
-		_last_clean_month = _cur_month;
+		_last_clean_month = _cur_date_ymd.month;
 	}
 
 	if (ReadyForNextTickerItem()) MoveToNextTickerItem();
