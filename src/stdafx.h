@@ -18,14 +18,14 @@
 #endif
 
 #if defined(__APPLE__)
-	#include "os/macosx/osx_stdafx.h"
+#	include "os/macosx/osx_stdafx.h"
 #endif /* __APPLE__ */
 
 #if defined(__HAIKU__)
-	#include <SupportDefs.h>
-	#include <unistd.h>
-	#define _GNU_SOURCE
-	#define TROUBLED_INTS
+#	include <SupportDefs.h>
+#	include <unistd.h>
+#	define _GNU_SOURCE
+#	define TROUBLED_INTS
 #endif
 
 #if defined(__HAIKU__) || defined(__CYGWIN__)
@@ -37,52 +37,52 @@
  * does not have stdint.h.
  * For OSX the inclusion is already done in osx_stdafx.h. */
 #if !defined(__APPLE__) && (!defined(_MSC_VER) || _MSC_VER >= 1600)
-	#if defined(SUNOS)
+#	if defined(SUNOS)
 		/* SunOS/Solaris does not have stdint.h, but inttypes.h defines everything
 		 * stdint.h defines and we need. */
-		#include <inttypes.h>
-	#else
-		#define __STDC_LIMIT_MACROS
-		#include <stdint.h>
-	#endif
+#		include <inttypes.h>
+#	else
+#		define __STDC_LIMIT_MACROS
+#		include <stdint.h>
+#	endif
 #endif
 
 /* The conditions for these constants to be available are way too messy; so check them one by one */
 #if !defined(UINT64_MAX)
-	#define UINT64_MAX (18446744073709551615ULL)
+#	define UINT64_MAX (18446744073709551615ULL)
 #endif
 #if !defined(INT64_MAX)
-	#define INT64_MAX  (9223372036854775807LL)
+#	define INT64_MAX  (9223372036854775807LL)
 #endif
 #if !defined(INT64_MIN)
-	#define INT64_MIN  (-INT64_MAX - 1)
+#	define INT64_MIN  (-INT64_MAX - 1)
 #endif
 #if !defined(UINT32_MAX)
-	#define UINT32_MAX (4294967295U)
+#	define UINT32_MAX (4294967295U)
 #endif
 #if !defined(INT32_MAX)
-	#define INT32_MAX  (2147483647)
+#	define INT32_MAX  (2147483647)
 #endif
 #if !defined(INT32_MIN)
-	#define INT32_MIN  (-INT32_MAX - 1)
+#	define INT32_MIN  (-INT32_MAX - 1)
 #endif
 #if !defined(UINT16_MAX)
-	#define UINT16_MAX (65535U)
+#	define UINT16_MAX (65535U)
 #endif
 #if !defined(INT16_MAX)
-	#define INT16_MAX  (32767)
+#	define INT16_MAX  (32767)
 #endif
 #if !defined(INT16_MIN)
-	#define INT16_MIN  (-INT16_MAX - 1)
+#	define INT16_MIN  (-INT16_MAX - 1)
 #endif
 #if !defined(UINT8_MAX)
-	#define UINT8_MAX  (255)
+#	define UINT8_MAX  (255)
 #endif
 #if !defined(INT8_MAX)
-	#define INT8_MAX   (127)
+#	define INT8_MAX   (127)
 #endif
 #if !defined(INT8_MIN)
-	#define INT8_MIN   (-INT8_MAX - 1)
+#	define INT8_MIN   (-INT8_MAX - 1)
 #endif
 
 #include <cstdio>
@@ -94,20 +94,20 @@
 #include <memory>
 
 #ifndef SIZE_MAX
-	#define SIZE_MAX ((size_t)-1)
+#	define SIZE_MAX ((size_t)-1)
 #endif
 
 #if defined(UNIX) || defined(__MINGW32__)
-	#include <sys/types.h>
+#	include <sys/types.h>
 #endif
 
 #if defined(__OS2__)
-	#include <types.h>
-	#define strcasecmp stricmp
+#	include <types.h>
+#	define strcasecmp stricmp
 #endif
 
 #if defined(SUNOS) || defined(HPUX) || defined(__CYGWIN__)
-	#include <alloca.h>
+#	include <alloca.h>
 #endif
 
 /* Stuff for GCC */
@@ -133,33 +133,33 @@
 #endif /* __GNUC__ || __clang__ */
 
 #if defined(__WATCOMC__)
-	#define NORETURN
-	#define CDECL
-	#define WARN_FORMAT(string, args)
-	#define FINAL
-	#define FALLTHROUGH
-	#include <malloc.h>
+#	define NORETURN
+#	define CDECL
+#	define WARN_FORMAT(string, args)
+#	define FINAL
+#	define FALLTHROUGH
+#	include <malloc.h>
 #endif /* __WATCOMC__ */
 
 #if defined(__MINGW32__)
-	#include <malloc.h> // alloca()
+#	include <malloc.h> // alloca()
 #endif
 
 #if defined(_WIN32)
-	#define WIN32_LEAN_AND_MEAN     // Exclude rarely-used stuff from Windows headers
+#	define WIN32_LEAN_AND_MEAN     // Exclude rarely-used stuff from Windows headers
 #endif
 
 /* Stuff for MSVC */
 #if defined(_MSC_VER)
-	#pragma once
-	#ifdef _WIN64
+#	pragma once
+#	ifdef _WIN64
 		/* No 64-bit Windows below XP, so we can safely assume it as the target platform. */
-		#define NTDDI_VERSION NTDDI_WINXP // Windows XP
-		#define _WIN32_WINNT 0x501        // Windows XP
-		#define _WIN32_WINDOWS 0x501      // Windows XP
-		#define WINVER 0x0501             // Windows XP
-		#define _WIN32_IE_ 0x0600         // 6.0 (XP+)
-	#else
+#		define NTDDI_VERSION NTDDI_WINXP // Windows XP
+#		define _WIN32_WINNT 0x501        // Windows XP
+#		define _WIN32_WINDOWS 0x501      // Windows XP
+#		define WINVER 0x0501             // Windows XP
+#		define _WIN32_IE_ 0x0600         // 6.0 (XP+)
+#	else
 		/* Define a win32 target platform, to override defaults of the SDK
 		 * We need to define NTDDI version for Vista SDK, but win2k is minimum */
 		#define NTDDI_VERSION NTDDI_WIN2K // Windows 2000
@@ -207,23 +207,23 @@
 #	endif
 
 	/* fallthrough attribute, VS 2017 */
-	#if (_MSC_VER >= 1910)
-		#define FALLTHROUGH [[fallthrough]]
-	#else
-		#define FALLTHROUGH
-	#endif
+#	if (_MSC_VER >= 1910)
+#		define FALLTHROUGH [[fallthrough]]
+#	else
+#		define FALLTHROUGH
+#	endif
 
 #	if defined(_WIN32) && !defined(_WIN64)
-		#if !defined(_W64)
-			#define _W64
-		#endif
+#		if !defined(_W64)
+#			define _W64
+#		endif
 
 		typedef _W64 int INT_PTR, *PINT_PTR;
 		typedef _W64 unsigned int UINT_PTR, *PUINT_PTR;
 #	endif /* _WIN32 && !_WIN64 */
 
 #	if defined(_WIN64)
-		#define fseek _fseeki64
+#		define fseek _fseeki64
 #	endif /* _WIN64 */
 
 	/* zlib from vcpkg use cdecl calling convention without enforcing it in the headers */
@@ -247,13 +247,13 @@
 #		endif
 #	endif
 
-	#define strcasecmp stricmp
-	#define strncasecmp strnicmp
-	#define strtoull _strtoui64
+#	define strcasecmp stricmp
+#	define strncasecmp strnicmp
+#	define strtoull _strtoui64
 
 	/* MSVC doesn't have these :( */
-	#define S_ISDIR(mode) (mode & S_IFDIR)
-	#define S_ISREG(mode) (mode & S_IFREG)
+#	define S_ISDIR(mode) (mode & S_IFDIR)
+#	define S_ISREG(mode) (mode & S_IFREG)
 
 #endif /* defined(_MSC_VER) */
 
@@ -262,28 +262,28 @@
 #if !defined(STRGEN) && !defined(SETTINGSGEN)
 #	if defined(_WIN32)
 		char *getcwd(char *buf, size_t size);
-		#include <tchar.h>
-		#include <io.h>
+#		include <tchar.h>
+#		include <io.h>
 
 		namespace std { using ::_tfopen; }
-		#define fopen(file, mode) _tfopen(OTTD2FS(file), _T(mode))
-		#define unlink(file) _tunlink(OTTD2FS(file))
+#		define fopen(file, mode) _tfopen(OTTD2FS(file), _T(mode))
+#		define unlink(file) _tunlink(OTTD2FS(file))
 
 		const char *FS2OTTD(const TCHAR *name);
 		const TCHAR *OTTD2FS(const char *name, bool console_cp = false);
 #	else
-		#define fopen(file, mode) fopen(OTTD2FS(file), mode)
+#		define fopen(file, mode) fopen(OTTD2FS(file), mode)
 		const char *FS2OTTD(const char *name);
 		const char *OTTD2FS(const char *name);
 #	endif /* _WIN32 */
 #endif /* STRGEN || SETTINGSGEN */
 
 #if defined(_WIN32) || defined(__OS2__) && !defined(__INNOTEK_LIBC__)
-	#define PATHSEP "\\"
-	#define PATHSEPCHAR '\\'
+#	define PATHSEP "\\"
+#	define PATHSEPCHAR '\\'
 #else
-	#define PATHSEP "/"
-	#define PATHSEPCHAR '/'
+#	define PATHSEP "/"
+#	define PATHSEPCHAR '/'
 #endif
 
 #if defined(_MSC_VER) || defined(__WATCOMC__)
@@ -343,7 +343,7 @@ typedef unsigned char byte;
 #endif /* !TROUBLED_INTS */
 
 #if !defined(WITH_PERSONAL_DIR)
-	#define PERSONAL_DIR ""
+#	define PERSONAL_DIR ""
 #endif
 
 #define assert_compile(expr) static_assert(expr, #expr )
@@ -389,7 +389,7 @@ assert_compile(SIZE_MAX >= UINT32_MAX);
 
 #define cpp_offsetof(s, m)   (((size_t)&reinterpret_cast<const volatile char&>((((s*)(char*)8)->m))) - 8)
 #if !defined(offsetof)
-	#define offsetof(s, m) cpp_offsetof(s, m)
+#	define offsetof(s, m) cpp_offsetof(s, m)
 #endif /* offsetof */
 
 /**
@@ -411,9 +411,9 @@ assert_compile(SIZE_MAX >= UINT32_MAX);
 
 /* take care of some name clashes on MacOS */
 #if defined(__APPLE__)
-	#define GetString OTTD_GetString
-	#define DrawString OTTD_DrawString
-	#define CloseConnection OTTD_CloseConnection
+#	define GetString OTTD_GetString
+#	define DrawString OTTD_DrawString
+#	define CloseConnection OTTD_CloseConnection
 #endif /* __APPLE__ */
 
 #if defined(__GNUC__) || defined(__clang__)
@@ -460,17 +460,17 @@ const char *assert_tile_info(uint32 tile);
 
 #if defined(OPENBSD)
 	/* OpenBSD uses strcasecmp(3) */
-	#define _stricmp strcasecmp
+#	define _stricmp strcasecmp
 #endif
 
 #if defined(MAX_PATH)
 	/* It's already defined, no need to override */
 #elif defined(PATH_MAX) && PATH_MAX > 0
 	/* Use the value from PATH_MAX, if it exists */
-	#define MAX_PATH PATH_MAX
+#	define MAX_PATH PATH_MAX
 #else
 	/* If all else fails, hardcode something :( */
-	#define MAX_PATH 260
+#	define MAX_PATH 260
 #endif
 
 /**
@@ -489,24 +489,24 @@ static inline void free(const void *ptr)
 #define MAX_UVALUE(type) ((type)~(type)0)
 
 #if defined(_MSC_VER) && !defined(_DEBUG)
-	#define IGNORE_UNINITIALIZED_WARNING_START __pragma(warning(push)) __pragma(warning(disable:4700))
-	#define IGNORE_UNINITIALIZED_WARNING_STOP __pragma(warning(pop))
+#	define IGNORE_UNINITIALIZED_WARNING_START __pragma(warning(push)) __pragma(warning(disable:4700))
+#	define IGNORE_UNINITIALIZED_WARNING_STOP __pragma(warning(pop))
 #elif defined(__GNUC__) && !defined(_DEBUG)
-	#define HELPER0(x) #x
-	#define HELPER1(x) HELPER0(GCC diagnostic ignored x)
-	#define HELPER2(y) HELPER1(#y)
+#	define HELPER0(x) #x
+#	define HELPER1(x) HELPER0(GCC diagnostic ignored x)
+#	define HELPER2(y) HELPER1(#y)
 #if (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6))
-	#define IGNORE_UNINITIALIZED_WARNING_START \
+#	define IGNORE_UNINITIALIZED_WARNING_START \
 		_Pragma("GCC diagnostic push") \
 		_Pragma(HELPER2(-Wuninitialized)) \
 		_Pragma(HELPER2(-Wmaybe-uninitialized))
-	#define IGNORE_UNINITIALIZED_WARNING_STOP _Pragma("GCC diagnostic pop")
+#	define IGNORE_UNINITIALIZED_WARNING_STOP _Pragma("GCC diagnostic pop")
 #endif
 #endif
 
 #ifndef IGNORE_UNINITIALIZED_WARNING_START
-	#define IGNORE_UNINITIALIZED_WARNING_START
-	#define IGNORE_UNINITIALIZED_WARNING_STOP
+#	define IGNORE_UNINITIALIZED_WARNING_START
+#	define IGNORE_UNINITIALIZED_WARNING_STOP
 #endif
 
 /*
