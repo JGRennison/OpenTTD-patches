@@ -131,6 +131,20 @@ class NIHVehicle : public NIHelper {
 			print(buffer);
 		}
 
+		extern int SeparationBetween(Vehicle *v1, Vehicle *v2);
+		if (v->AheadSeparation() != nullptr) {
+			b = buffer + seprintf(buffer, lastof(buffer), "  Ahead separation: %d ticks, %u, ", SeparationBetween(v, v->AheadSeparation()), v->AheadSeparation()->index);
+			SetDParam(0, v->AheadSeparation()->index);
+			b = GetString(b, STR_VEHICLE_NAME, lastof(buffer));
+			print(buffer);
+		}
+		if (v->BehindSeparation() != nullptr) {
+			b = buffer + seprintf(buffer, lastof(buffer), "  Behind separation: %d ticks, %u, ", SeparationBetween(v->BehindSeparation(), v), v->BehindSeparation()->index);
+			SetDParam(0, v->BehindSeparation()->index);
+			b = GetString(b, STR_VEHICLE_NAME, lastof(buffer));
+			print(buffer);
+		}
+
 		seprintf(buffer, lastof(buffer), "  Engine: %u", v->engine_type);
 		print(buffer);
 		const Engine *e = Engine::GetIfValid(v->engine_type);
