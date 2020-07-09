@@ -3648,61 +3648,6 @@ void Vehicle::SetNext(Vehicle *next)
 	}
 }
 
-void Vehicle::ClearSeparation()
-{
-	if (this->ahead_separation == nullptr && this->behind_separation == nullptr) return;
-
-	assert(this->ahead_separation != nullptr);
-	assert(this->behind_separation != nullptr);
-
-	this->ahead_separation->behind_separation = this->behind_separation;
-	this->behind_separation->ahead_separation = this->ahead_separation;
-
-	this->ahead_separation = nullptr;
-	this->behind_separation = nullptr;
-
-	SetWindowDirty(WC_VEHICLE_TIMETABLE, this->index);
-}
-
-void Vehicle::InitSeparation()
-{
-	extern int SeparationBetween(Vehicle *v1, Vehicle *v2);
-
-	assert(this->ahead_separation == nullptr && this->behind_separation == nullptr);
-
-	Vehicle *best_match = nullptr;
-	int lowest_separation = -1;
-	for (Vehicle *v_other = this->FirstShared(); v_other != nullptr; v_other = v_other->NextShared()) {
-		if (v_other->ahead_separation != nullptr && v_other != this) {
-			if (best_match == nullptr) {
-				best_match = v_other;
-				lowest_separation = SeparationBetween(this, v_other);
-			} else {
-				int temp_sep = SeparationBetween(this, v_other);
-				if ((lowest_separation == -1 || temp_sep < lowest_separation) && temp_sep != -1) {
-					best_match = v_other;
-					lowest_separation = temp_sep;
-				}
-			}
-		}
-	}
-	if (best_match != nullptr) {
-		this->AddToSeparationBehind(best_match);
-	} else {
-		this->ahead_separation = this->behind_separation = this;
-	}
-}
-
-void Vehicle::AddToSeparationBehind(Vehicle *v_other)
-{
-	assert(v_other->ahead_separation != nullptr && v_other->behind_separation != nullptr);
-
-	this->ahead_separation = v_other;
-	v_other->behind_separation->ahead_separation = this;
-	this->behind_separation = v_other->behind_separation;
-	v_other->behind_separation = this;
-}
-
 /**
  * Adds this vehicle to a shared vehicle chain.
  * @param shared_chain a vehicle of the chain with shared vehicles.
@@ -3803,6 +3748,7 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
 	dump('L', HasBit(this->vehicle_flags, VF_PATHFINDER_LOST));
 	dump('c', HasBit(this->vehicle_flags, VF_SERVINT_IS_CUSTOM));
 	dump('p', HasBit(this->vehicle_flags, VF_SERVINT_IS_PERCENT));
+	dump('z', HasBit(this->vehicle_flags, VF_SEPARATION_ACTIVE));
 	dump('D', HasBit(this->vehicle_flags, VF_SCHEDULED_DISPATCH));
 	dump('x', HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP));
 	dump('s', HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION));
@@ -3853,8 +3799,6 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
 	TileIndex vtile = TileVirtXY(this->x_pos, this->y_pos);
 	if (this->tile != vtile) b += seprintf(b, last, ", VirtXYTile: %X (%u x %u)", vtile, TileX(vtile), TileY(vtile));
 	if (this->cargo_payment) b += seprintf(b, last, ", CP");
-	if (this->ahead_separation && this->behind_separation) b += seprintf(b, last, ", Sp");
-	if (!!this->ahead_separation != !!this->behind_separation) b += seprintf(b, last, ", bad Sp");
 	return b;
 }
 

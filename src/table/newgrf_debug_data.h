@@ -11,6 +11,7 @@
 #include "../newgrf_engine.h"
 #include "../newgrf_roadtype.h"
 #include "../date_func.h"
+#include "../timetable.h"
 
 /* Helper for filling property tables */
 #define NIP(prop, base, variable, type, name) { name, (ptrdiff_t)cpp_offsetof(base, variable), cpp_sizeof(base, variable), prop, type }
@@ -131,18 +132,19 @@ class NIHVehicle : public NIHelper {
 			print(buffer);
 		}
 
-		extern int SeparationBetween(Vehicle *v1, Vehicle *v2);
-		if (v->AheadSeparation() != nullptr) {
-			b = buffer + seprintf(buffer, lastof(buffer), "  Ahead separation: %d ticks, %u, ", SeparationBetween(v, v->AheadSeparation()), v->AheadSeparation()->index);
-			SetDParam(0, v->AheadSeparation()->index);
-			b = GetString(b, STR_VEHICLE_NAME, lastof(buffer));
-			print(buffer);
-		}
-		if (v->BehindSeparation() != nullptr) {
-			b = buffer + seprintf(buffer, lastof(buffer), "  Behind separation: %d ticks, %u, ", SeparationBetween(v->BehindSeparation(), v), v->BehindSeparation()->index);
-			SetDParam(0, v->BehindSeparation()->index);
-			b = GetString(b, STR_VEHICLE_NAME, lastof(buffer));
-			print(buffer);
+		if (HasBit(v->vehicle_flags, VF_SEPARATION_ACTIVE)) {
+			std::vector<TimetableProgress> progress_array = PopulateSeparationState(v);
+			if (!progress_array.empty()) {
+				print("Separation state:");
+			}
+			for (const auto &info : progress_array) {
+				b = buffer + seprintf(buffer, lastof(buffer), "  %s [%d, %d, %d], %u, ",
+						info.id == v->index ? "*" : " ", info.order_count, info.order_ticks, info.cumulative_ticks, info.id);
+				SetDParam(0, info.id);
+				b = GetString(b, STR_VEHICLE_NAME, lastof(buffer));
+				b += seprintf(b, lastof(buffer), ", lateness: %d", Vehicle::Get(info.id)->lateness_counter);
+				print(buffer);
+			}
 		}
 
 		seprintf(buffer, lastof(buffer), "  Engine: %u", v->engine_type);
