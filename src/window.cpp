@@ -2244,7 +2244,10 @@ static EventState HandleWindowDragging()
 				break;
 			}
 
-			w->SetDirtyAsBlocks();
+			if (!(w->flags & WF_DRAG_DIRTIED)) {
+				w->flags |= WF_DRAG_DIRTIED;
+				w->SetDirtyAsBlocks();
+			}
 
 			int x = _cursor.pos.x + _drag_delta.x;
 			int y = _cursor.pos.y + _drag_delta.y;
