@@ -94,8 +94,20 @@ class NIHVehicle : public NIHelper {
 		print(buffer);
 		char *b = buffer;
 		b += seprintf(b, lastof(buffer), "  Flags: ");
-		b = v->DumpVehicleFlags(b, lastof(buffer));
+		b = v->DumpVehicleFlags(b, lastof(buffer), false);
 		print(buffer);
+
+		b = buffer + seprintf(buffer, lastof(buffer), "  ");
+		b = DumpTileInfo(b, lastof(buffer), v->tile);
+		if (buffer[2] == 't') buffer[2] = 'T';
+		print(buffer);
+
+		TileIndex vtile = TileVirtXY(v->x_pos, v->y_pos);
+		if (v->tile != vtile) {
+			seprintf(buffer, lastof(buffer), "  VirtXYTile: %X (%u x %u)", vtile, TileX(vtile), TileY(vtile));
+			print(buffer);
+		}
+
 		if (v->IsPrimaryVehicle()) {
 			seprintf(buffer, lastof(buffer), "  Order indices: real: %u, implicit: %u, tt: %u",
 					v->cur_real_order_index, v->cur_implicit_order_index, v->cur_timetable_order_index);

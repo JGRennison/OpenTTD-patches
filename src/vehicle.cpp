@@ -3711,7 +3711,7 @@ void Vehicle::RemoveFromShared()
 	if (HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 }
 
-char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
+char *Vehicle::DumpVehicleFlags(char *b, const char *last, bool include_tile) const
 {
 	auto dump = [&](char c, bool flag) {
 		if (flag) b += seprintf(b, last, "%c", c);
@@ -3793,11 +3793,13 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
 		const RoadVehicle *r = RoadVehicle::From(this);
 		b += seprintf(b, last, ", rvs:%X, rvf:%X", r->state, r->frame);
 	}
-	b += seprintf(b, last, ", [");
-	b = DumpTileInfo(b, last, this->tile);
-	b += seprintf(b, last, "]");
-	TileIndex vtile = TileVirtXY(this->x_pos, this->y_pos);
-	if (this->tile != vtile) b += seprintf(b, last, ", VirtXYTile: %X (%u x %u)", vtile, TileX(vtile), TileY(vtile));
+	if (include_tile) {
+		b += seprintf(b, last, ", [");
+		b = DumpTileInfo(b, last, this->tile);
+		b += seprintf(b, last, "]");
+		TileIndex vtile = TileVirtXY(this->x_pos, this->y_pos);
+		if (this->tile != vtile) b += seprintf(b, last, ", VirtXYTile: %X (%u x %u)", vtile, TileX(vtile), TileY(vtile));
+	}
 	if (this->cargo_payment) b += seprintf(b, last, ", CP");
 	return b;
 }
