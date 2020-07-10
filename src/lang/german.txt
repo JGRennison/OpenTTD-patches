@@ -1710,6 +1710,7 @@ STR_CONFIG_SETTING_TREE_GROWTH_NORMAL                           :Normal
 STR_CONFIG_SETTING_TREE_GROWTH_SLOW                             :Langsam
 STR_CONFIG_SETTING_TREE_GROWTH_VERY_SLOW                        :Sehr langsam
 STR_CONFIG_SETTING_TREE_GROWTH_EXTREMLY_SLOW                    :Extrem langsam
+STR_CONFIG_SETTING_TREE_GROWTH_STATIC                           :Keiner
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Position der Werkzeugleiste: {STRING}
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Horizontale Position der Bauleiste am oberen Bildschirmrand

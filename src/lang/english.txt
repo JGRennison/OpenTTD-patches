@@ -1785,6 +1785,7 @@ STR_CONFIG_SETTING_TREE_GROWTH_NORMAL                           :Normal
 STR_CONFIG_SETTING_TREE_GROWTH_SLOW                             :Slow
 STR_CONFIG_SETTING_TREE_GROWTH_VERY_SLOW                        :Very slow
 STR_CONFIG_SETTING_TREE_GROWTH_EXTREMLY_SLOW                    :Extremly slow
+STR_CONFIG_SETTING_TREE_GROWTH_STATIC                           :None
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Position of main toolbar: {STRING2}
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Horizontal position of the main toolbar at the top of the screen

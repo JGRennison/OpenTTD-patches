@@ -1777,6 +1777,7 @@ STR_CONFIG_SETTING_TREE_GROWTH_NORMAL                           :보통
 STR_CONFIG_SETTING_TREE_GROWTH_SLOW                             :느림
 STR_CONFIG_SETTING_TREE_GROWTH_VERY_SLOW                        :다소 느림
 STR_CONFIG_SETTING_TREE_GROWTH_EXTREMLY_SLOW                    :매우 느림
+STR_CONFIG_SETTING_TREE_GROWTH_STATIC                           :없음
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :주메뉴의 위치: {STRING}
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :주 메뉴가 화면 상단의 어느 위치에 표시될지를 선택합니다.
