@@ -24,7 +24,7 @@
  */
 const uint MAX_RV_PF_TILES = 1 << 11;
 
-const int MAX_TARGETS = 4;
+const int MAX_RV_LEADER_TARGETS = 4;
 
 template <class Types>
 class CYapfCostRoadT
@@ -72,11 +72,11 @@ protected:
 	{
 		int cost = 0;
 
-		bool predictedOccupied = false;
-		for (int i = 0; i < MAX_TARGETS && Yapf().leaderTargets[i] != INVALID_TILE; ++i) {
-			if (Yapf().leaderTargets[i] != tile) continue;
+		bool predicted_occupied = false;
+		for (int i = 0; i < MAX_RV_LEADER_TARGETS && Yapf().leader_targets[i] != INVALID_TILE; ++i) {
+			if (Yapf().leader_targets[i] != tile) continue;
 			cost += Yapf().PfGetSettings().road_curve_penalty;
-			predictedOccupied = true;
+			predicted_occupied = true;
 			break;
 		}
 
@@ -104,13 +104,13 @@ protected:
 							cost += entry->GetOccupied() * Yapf().PfGetSettings().road_stop_occupied_penalty / entry->GetLength();
 						}
 
-						if (predictedOccupied) {
+						if (predicted_occupied) {
 							cost += Yapf().PfGetSettings().road_stop_occupied_penalty;
 						}
 					} else {
 						/* Increase cost for filled road stops */
 						cost += Yapf().PfGetSettings().road_stop_bay_occupied_penalty * (!rs->IsFreeBay(0) + !rs->IsFreeBay(1)) / 2;
-						if (predictedOccupied) {
+						if (predicted_occupied) {
 							cost += Yapf().PfGetSettings().road_stop_bay_occupied_penalty;
 						}
 					}
@@ -347,30 +347,33 @@ public:
 };
 
 struct FindVehiclesOnTileProcData {
-	const Vehicle *originVehicle;
-	TileIndex (*targets)[MAX_TARGETS];
+	const Vehicle *origin_vehicle;
+	TileIndex (*targets)[MAX_RV_LEADER_TARGETS];
 };
 
 static Vehicle * FindVehiclesOnTileProc(Vehicle *v, void *_data)
 {
 	FindVehiclesOnTileProcData *data = (FindVehiclesOnTileProcData*)(_data);
 
-	if (data->originVehicle == v)
+	if (data->origin_vehicle == v) {
 		return nullptr;
+	}
 
 	/* only consider vehicles going to the same station as us */
-	if(data->originVehicle->current_order.GetDestination() != v->current_order.GetDestination())
+	if (!v->current_order.IsType(OT_GOTO_STATION) || data->origin_vehicle->current_order.GetDestination() != v->current_order.GetDestination()) {
 		return nullptr;
+	}
 
 	TileIndex ti = v->tile + TileOffsByDir(v->direction);
 
-	for (int i = 0; i < MAX_TARGETS; i++) {
+	for (int i = 0; i < MAX_RV_LEADER_TARGETS; i++) {
 		if ((*data->targets)[i] == INVALID_TILE) {
 			(*data->targets)[i] = ti;
 			break;
 		}
-		if ((*data->targets)[i] == ti)
-			return nullptr;
+		if ((*data->targets)[i] == ti) {
+			break;
+		}
 	}
 
 	return nullptr;
@@ -439,14 +442,16 @@ public:
 		/* set origin and destination nodes */
 		Yapf().SetOrigin(src_tile, src_trackdirs);
 		Yapf().SetDestination(v);
-		
-		for (int i = 0; i < MAX_TARGETS; ++i) {
-			Yapf().leaderTargets[i] = INVALID_TILE;
+
+		for (int i = 0; i < MAX_RV_LEADER_TARGETS; ++i) {
+			Yapf().leader_targets[i] = INVALID_TILE;
 		}
-		FindVehiclesOnTileProcData data;
-		data.originVehicle = v;
-		data.targets = &Yapf().leaderTargets;
-		FindVehicleOnPos(tile, VEH_ROAD, &data, &FindVehiclesOnTileProc);
+		if (v->current_order.IsType(OT_GOTO_STATION)) {
+			FindVehiclesOnTileProcData data;
+			data.origin_vehicle = v;
+			data.targets = &Yapf().leader_targets;
+			FindVehicleOnPos(tile, VEH_ROAD, &data, &FindVehiclesOnTileProc);
+		}
 
 		/* find the best path */
 		path_found = Yapf().FindPath(v);
@@ -595,7 +600,7 @@ struct CYapfRoad_TypesT
 
 template <class Types>
 struct CYapfRoadCommon : CYapfT<Types> {
-	TileIndex leaderTargets[MAX_TARGETS]; ///< the tiles targeted by vehicles in front of the current vehicle
+	TileIndex leader_targets[MAX_RV_LEADER_TARGETS]; ///< the tiles targeted by vehicles in front of the current vehicle
 };
 
 struct CYapfRoad1         : CYapfRoadCommon<CYapfRoad_TypesT<CYapfRoad1        , CRoadNodeListTrackDir, CYapfDestinationTileRoadT    > > {};
