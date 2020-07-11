@@ -355,12 +355,14 @@ static Vehicle * FindVehiclesOnTileProc(Vehicle *v, void *_data)
 {
 	FindVehiclesOnTileProcData *data = (FindVehiclesOnTileProcData*)(_data);
 
-	if (data->origin_vehicle == v) {
+	const Vehicle *front = v->First();
+
+	if (data->origin_vehicle == front) {
 		return nullptr;
 	}
 
 	/* only consider vehicles going to the same station as us */
-	if (!v->current_order.IsType(OT_GOTO_STATION) || data->origin_vehicle->current_order.GetDestination() != v->current_order.GetDestination()) {
+	if (!front->current_order.IsType(OT_GOTO_STATION) || data->origin_vehicle->current_order.GetDestination() != front->current_order.GetDestination()) {
 		return nullptr;
 	}
 
