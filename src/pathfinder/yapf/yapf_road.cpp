@@ -445,10 +445,22 @@ public:
 		Yapf().SetOrigin(src_tile, src_trackdirs);
 		Yapf().SetDestination(v);
 
-		for (int i = 0; i < MAX_RV_LEADER_TARGETS; ++i) {
-			Yapf().leader_targets[i] = INVALID_TILE;
+		bool multiple_targets = false;
+		const Station *st = Yapf().GetDestinationStation();
+		if (st) {
+			const RoadStop *stop = st->GetPrimaryRoadStop(v);
+			if (stop != nullptr && (IsDriveThroughStopTile(stop->xy) || stop->GetNextRoadStop(v) != nullptr)) {
+				multiple_targets = true;
+			}
 		}
-		if (v->current_order.IsType(OT_GOTO_STATION)) {
+
+		Yapf().leader_targets[0] = INVALID_TILE;
+		if (multiple_targets) {
+			/* Destination station has at least 2 usable road stops, or first is a drive-through stop,
+			 * check for other vehicles headin to the same destination directly in front */
+			for (int i = 1; i < MAX_RV_LEADER_TARGETS; ++i) {
+				Yapf().leader_targets[i] = INVALID_TILE;
+			}
 			FindVehiclesOnTileProcData data;
 			data.origin_vehicle = v;
 			data.targets = &Yapf().leader_targets;
@@ -487,18 +499,14 @@ public:
 			path_cache.layout_ctr = _road_layout_change_counter;
 
 			/* Check if target is a station, and cached path ends within 8 tiles of the dest tile */
-			const Station *st = Yapf().GetDestinationStation();
-			if (st) {
-				const RoadStop *stop = st->GetPrimaryRoadStop(v);
-				if (stop != nullptr && (IsDriveThroughStopTile(stop->xy) || stop->GetNextRoadStop(v) != nullptr)) {
-					/* Destination station has at least 2 usable road stops, or first is a drive-through stop,
-					 * trim end of path cache within a number of tiles of road stop tile area */
-					TileArea non_cached_area = v->IsBus() ? st->bus_station : st->truck_station;
-					non_cached_area.Expand(YAPF_ROADVEH_PATH_CACHE_DESTINATION_LIMIT);
-					while (!path_cache.empty() && non_cached_area.Contains(path_cache.tile.back())) {
-						path_cache.td.pop_back();
-						path_cache.tile.pop_back();
-					}
+			if (multiple_targets) {
+				/* Destination station has at least 2 usable road stops, or first is a drive-through stop,
+				 * trim end of path cache within a number of tiles of road stop tile area */
+				TileArea non_cached_area = v->IsBus() ? st->bus_station : st->truck_station;
+				non_cached_area.Expand(YAPF_ROADVEH_PATH_CACHE_DESTINATION_LIMIT);
+				while (!path_cache.empty() && non_cached_area.Contains(path_cache.tile.back())) {
+					path_cache.td.pop_back();
+					path_cache.tile.pop_back();
 				}
 			}
 		}
