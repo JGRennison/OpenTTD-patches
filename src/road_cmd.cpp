@@ -2612,7 +2612,8 @@ CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				}
 
 				if (rtt == RTT_ROAD && owner == OWNER_TOWN) {
-					error.MakeError(STR_ERROR_INCOMPATIBLE_ROAD);
+					error.MakeError(STR_ERROR_OWNED_BY);
+					GetNameOfOwner(OWNER_TOWN, tile);
 					continue;
 				}
 			}
@@ -2669,7 +2670,8 @@ CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				}
 
 				if (rtt == RTT_ROAD && owner == OWNER_TOWN) {
-					error.MakeError(STR_ERROR_INCOMPATIBLE_ROAD);
+					error.MakeError(STR_ERROR_OWNED_BY);
+					GetNameOfOwner(OWNER_TOWN, tile);
 					continue;
 				}
 			}
