@@ -115,6 +115,18 @@ Replace read/write accessors and buffering.
 Perform savegame decompression in a separate thread.
 Pre-filter SaveLoad descriptor arrays for current version/mode, for chunks with many objects.
 
+### AI/GS
+
+Add AI/GS method to get current day length.
+Add GS method to create river tiles.
+Add workaround for performance issues attempting to create a town when no town names are left.
+Fixup a GS otherwise inconsistent with day length.
+
+### NewGRF
+
+[NewGRF specification additions](docs/newgrf-additions.html).
+Add workaround for a known buggy NewGRF to avoid desync issues.
+
 ### Other performance improvements
 
 Use multiple threads for NewGRF scan MD5 calculations, on multi-CPU machines.
@@ -132,10 +144,11 @@ Add savegame feature versions to output of -q.
 
 Changes to gcc/clang detection and flags
 Changes to version detection and the format of the version string.
+Minor CMake changes.
 
 ### Misc
 
-Use of __builtin_expect, byte-swap builtins, and various bitmath builtins.
+Use of __builtin_expect, byte-swap builtins, overflow builtins, and various bitmath builtins.
 Add various debug console commands.
 Increase the number of file slots.
 Cache font heights.
