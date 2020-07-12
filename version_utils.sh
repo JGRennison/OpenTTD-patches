@@ -113,7 +113,7 @@ fi
 
 if [ -n "$WRITE" ]; then
 	find_hasher
-	./findversion.sh > .ottdrev-vc-tmp
+	cmake -DGENERATE_OTTDREV=.ottdrev-vc-tmp -P cmake/scripts/FindVersion.cmake
 	output_hash_list | $HASH_CMD >> .ottdrev-vc-tmp
 	mv .ottdrev-vc-tmp .ottdrev-vc
 fi

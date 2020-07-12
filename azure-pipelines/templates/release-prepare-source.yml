@@ -18,7 +18,7 @@ steps:
     fi
 
     # Generate .ottdrev, which contains the version information
-    cmake -DGENERATE_OTTDREV=1 -P cmake/scripts/FindVersion.cmake
+    cmake -DGENERATE_OTTDREV=.ottdrev -P cmake/scripts/FindVersion.cmake
 
     ./azure-pipelines/changelog.sh > .changelog
     TZ='UTC' date +"%Y-%m-%d %H:%M UTC" > .release_date

@@ -156,8 +156,8 @@ endif ()
 message(STATUS "Version string: ${REV_VERSION}")
 
 if (GENERATE_OTTDREV)
-    message(STATUS "Generating .ottdrev")
-    file(WRITE ${CMAKE_SOURCE_DIR}/.ottdrev "${REV_VERSION}\t${REV_ISODATE}\t${REV_MODIFIED}\t${REV_HASH}\t${REV_ISTAG}\t${REV_ISSTABLETAG}\t${REV_YEAR}\n")
+    message(STATUS "Generating ${GENERATE_OTTDREV}")
+    file(WRITE ${CMAKE_SOURCE_DIR}/${GENERATE_OTTDREV} "${REV_VERSION}\t${REV_ISODATE}\t${REV_MODIFIED}\t${REV_HASH}\t${REV_ISTAG}\t${REV_ISSTABLETAG}\t${REV_YEAR}\n")
 else (GENERATE_OTTDREV)
     message(STATUS "Generating rev.cpp")
     configure_file("${CMAKE_SOURCE_DIR}/src/rev.cpp.in"
