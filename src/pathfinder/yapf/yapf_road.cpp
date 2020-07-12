@@ -446,16 +446,19 @@ public:
 		Yapf().SetDestination(v);
 
 		bool multiple_targets = false;
+		TileArea non_cached_area;
 		const Station *st = Yapf().GetDestinationStation();
 		if (st) {
 			const RoadStop *stop = st->GetPrimaryRoadStop(v);
 			if (stop != nullptr && (IsDriveThroughStopTile(stop->xy) || stop->GetNextRoadStop(v) != nullptr)) {
 				multiple_targets = true;
+				non_cached_area = v->IsBus() ? st->bus_station : st->truck_station;
+				non_cached_area.Expand(YAPF_ROADVEH_PATH_CACHE_DESTINATION_LIMIT);
 			}
 		}
 
 		Yapf().leader_targets[0] = INVALID_TILE;
-		if (multiple_targets) {
+		if (multiple_targets && non_cached_area.Contains(tile)) {
 			/* Destination station has at least 2 usable road stops, or first is a drive-through stop,
 			 * check for other vehicles headin to the same destination directly in front */
 			for (int i = 1; i < MAX_RV_LEADER_TARGETS; ++i) {
@@ -502,8 +505,6 @@ public:
 			if (multiple_targets) {
 				/* Destination station has at least 2 usable road stops, or first is a drive-through stop,
 				 * trim end of path cache within a number of tiles of road stop tile area */
-				TileArea non_cached_area = v->IsBus() ? st->bus_station : st->truck_station;
-				non_cached_area.Expand(YAPF_ROADVEH_PATH_CACHE_DESTINATION_LIMIT);
 				while (!path_cache.empty() && non_cached_area.Contains(path_cache.tile.back())) {
 					path_cache.td.pop_back();
 					path_cache.tile.pop_back();
