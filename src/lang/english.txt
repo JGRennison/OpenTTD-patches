@@ -4887,7 +4887,8 @@ STR_ORDER_OUT_OF_RANGE                                          :{RED} (Next des
 
 STR_ORDER_CONDITIONAL_UNCONDITIONAL                             :Jump to order {COMMA}
 STR_ORDER_CONDITIONAL_NUM                                       :Jump to order {COMMA} when {STRING} {STRING} {COMMA}
-STR_ORDER_CONDITIONAL_CARGO                                     :Jump to order {COMMA} when {STRING} {STRING} {STRING}
+STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :Jump to order {COMMA} when Next station {STRING} {STRING}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :Jump to order {COMMA} when Next station {STRING} {STRING}
 STR_ORDER_CONDITIONAL_SLOT                                      :Jump to order {COMMA} when {TRSLOT} {STRING}
 STR_ORDER_CONDITIONAL_INVALID_SLOT                              :Jump to order {COMMA} when {PUSH_COLOUR}{RED}{STRING} {POP_COLOUR}{STRING}
 STR_ORDER_CONDITIONAL_IN_SLOT                                   :Jump to order {COMMA} when {STRING} slot: {TRSLOT}

@@ -4626,7 +4626,8 @@ STR_ORDER_OUT_OF_RANGE                                          :{RED} (Nächste
 
 STR_ORDER_CONDITIONAL_UNCONDITIONAL                             :Springe zu Auftrag {COMMA}
 STR_ORDER_CONDITIONAL_NUM                                       :Springe zu Auftrag {COMMA}, wenn {STRING} {STRING} {COMMA} ist
-STR_ORDER_CONDITIONAL_CARGO                                     :Springe zu Auftrag {COMMA}, wenn {STRING} {STRING} {STRING}
+STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :Springe zu Auftrag {COMMA}, wenn nächste Station {STRING} {STRING}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :Springe zu Auftrag {COMMA}, wenn nächste Station {STRING} {STRING}
 STR_ORDER_CONDITIONAL_TRUE_FALSE                                :Springe zu Auftrag {COMMA}, wenn {STRING} {STRING} ist
 
 STR_INVALID_ORDER                                               :{RED} (Ungültiger Auftrag)
