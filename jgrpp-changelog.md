@@ -2,6 +2,31 @@
 
 * * *
 
+### v0.35.0 (2020-07-12)
+* Fix crash on maps larger than 64k in either axis.
+* Fix crash which could occur when displaying vehicles with no orders in the departure board window.
+* Fix crash when template replacing a train with a free wagon chain.
+* Fix incorrect calculation of town growth rate.
+* Fix incorrect scheduled dispatch timetable dates after using date change cheat.
+* Fix incorrect display date on load for savegame versions < 31.
+* Fix incorrect news window type and autoreplace behaviour for vehicle too heavy advice messages.
+* Fix general transparency hotkey not updating vehicles in tunnels.
+* Fix crash which could occur on WINE on systems with more than 8 network interfaces.
+* Fix overflowing the maximum possible amount of money being done incorrectly.
+* Fix performance issues which could occur when dragging windows.
+* Fix station catchment overlay not always being cleared when distant join window is closed.
+* Various improvements to timetable separation and automation.
+* Improve road vehicle pathfinding when multiple vehicles are simultaneously heading to a station with multiple bay/stop entrances.
+* Add setting to scale station cargo capacity and rating tolerance by size.
+* Add setting to disable vehicle expiry after a given year.
+* Add setting to control road vehicle re-routing on road layout changes.
+* Add a "none" option to the tree growth rate setting.
+* Time display settings are now stored in the savegame, with an option for client-local override.
+* Also show vehicle destination on mouseover when waiting for PBS or routing restriction.
+* Fix incorrect goal time left display when using BeeRewardGS and day length greater than 1.
+* Prevent Mop Generic NRT Vehicles GRF from causing multiplayer desyncs.
+* Bump trunk base from commit eeed3a7613d375f66781f53b42e03729a4ca1c33 to commit 00eccbe298ad7f7d656e121ce58c2a6326dabe2f.
+
 ### v0.34.4 (2020-06-05)
 * Fix crash which could occur when pathfinding over railtypes which prohibit 90° turns.
 * Fix vehicle refit when used with per-cargo no-load orders.
