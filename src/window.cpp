@@ -668,7 +668,7 @@ static void DispatchLeftClickEvent(Window *w, int x, int y, int click_count)
 	WidgetType widget_type = (nw != nullptr) ? nw->type : WWT_EMPTY;
 
 	bool focused_widget_changed = false;
-	/* If clicked on a window that previously did dot have focus */
+	/* If clicked on a window that previously did not have focus */
 	if (_focused_window != w &&                 // We already have focus, right?
 			(w->window_desc->flags & WDF_NO_FOCUS) == 0 &&  // Don't lose focus to toolbars
 			widget_type != WWT_CLOSEBOX) {          // Don't change focused window if 'X' (close button) was clicked
@@ -2244,7 +2244,10 @@ static EventState HandleWindowDragging()
 				break;
 			}
 
-			w->SetDirtyAsBlocks();
+			if (!(w->flags & WF_DRAG_DIRTIED)) {
+				w->flags |= WF_DRAG_DIRTIED;
+				w->SetDirtyAsBlocks();
+			}
 
 			int x = _cursor.pos.x + _drag_delta.x;
 			int y = _cursor.pos.y + _drag_delta.y;

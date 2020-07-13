@@ -256,6 +256,7 @@ private:
 	bool in_shutdown;                     ///< Is this instance currently being destructed?
 	Script_SuspendCallbackProc *callback; ///< Callback that should be called in the next tick the script runs.
 	size_t last_allocated_memory;         ///< Last known allocated memory value (for display for crashed scripts)
+	const char *APIName;                  ///< Name of the API used for this squirrel.
 
 	/**
 	 * Call the script Load function if it exists and data was loaded

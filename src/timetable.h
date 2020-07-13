@@ -12,9 +12,23 @@
 
 #include "date_type.h"
 #include "vehicle_type.h"
+#include <vector>
+#include <tuple>
 
 void ShowTimetableWindow(const Vehicle *v);
 void UpdateVehicleTimetable(Vehicle *v, bool travelling);
 void SetTimetableParams(int first_param, Ticks ticks);
+
+struct TimetableProgress {
+	VehicleID id;
+	int order_count;
+	int order_ticks;
+	int cumulative_ticks;
+
+	bool IsValidForSeparation() const { return this->cumulative_ticks >= 0; }
+	bool operator<(const TimetableProgress& other) const { return std::tie(this->order_count, this->order_ticks) < std::tie(other.order_count, other.order_ticks); }
+};
+
+std::vector<TimetableProgress> PopulateSeparationState(const Vehicle *v_start);
 
 #endif /* TIMETABLE_H */

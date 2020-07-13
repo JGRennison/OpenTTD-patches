@@ -61,6 +61,7 @@
 #include "../tunnel_map.h"
 #include "../bridge_signal_map.h"
 #include "../water.h"
+#include "../settings_func.h"
 
 
 #include "saveload_internal.h"
@@ -246,6 +247,8 @@ void ClearAllCachedNames()
  */
 static void InitializeWindowsAndCaches()
 {
+	SetupTimeSettings();
+
 	/* Initialize windows */
 	ResetWindowSystem();
 	SetupColoursAndInitialWindow();
@@ -1658,7 +1661,8 @@ bool AfterLoadGame()
 	 * Account for this in older games by adding an offset */
 	if (IsSavegameVersionBefore(SLV_31)) {
 		_date += DAYS_TILL_ORIGINAL_BASE_YEAR;
-		_cur_year += ORIGINAL_BASE_YEAR;
+		SetScaledTickVariables();
+		ConvertDateToYMD(_date, &_cur_date_ymd);
 
 		for (Station *st : Station::Iterate())   st->build_date      += DAYS_TILL_ORIGINAL_BASE_YEAR;
 		for (Waypoint *wp : Waypoint::Iterate()) wp->build_date      += DAYS_TILL_ORIGINAL_BASE_YEAR;
@@ -3107,22 +3111,6 @@ bool AfterLoadGame()
 	 * have been changed too. e->company_avail must be set to 0 in that case
 	 * which is done by StartupEngines(). */
 	if (gcf_res != GLC_ALL_GOOD) StartupEngines();
-
-	if (SlXvIsFeatureMissing(XSLFI_TOWN_CARGO_MATRIX)) {
-		/* Update cargo acceptance map of towns. */
-		for (Town *town : Town::Iterate()) {
-			town->cargo_accepted.Clear();
-		}
-		for (TileIndex t = 0; t < map_size; t++) {
-			if (!IsTileType(t, MP_HOUSE)) continue;
-			Town::Get(GetTownIndex(t))->cargo_accepted.Add(t);
-		}
-
-		for (Town *town : Town::Iterate()) {
-			UpdateTownCargoes(town);
-		}
-		UpdateTownCargoBitmap();
-	}
 
 	/* Set some breakdown-related variables to the correct values. */
 	if (SlXvIsFeatureMissing(XSLFI_IMPROVED_BREAKDOWNS)) {

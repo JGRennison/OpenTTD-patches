@@ -50,7 +50,7 @@ void SetTimetableParams(int first_param, Ticks ticks)
 		SetDParam(first_param, STR_TIMETABLE_TICKS);
 		SetDParam(first_param + 1, ticks);
 	} else {
-		StringID str = _settings_client.gui.time_in_minutes ? STR_TIMETABLE_MINUTES : STR_TIMETABLE_DAYS;
+		StringID str = _settings_time.time_in_minutes ? STR_TIMETABLE_MINUTES : STR_TIMETABLE_DAYS;
 		size_t ratio = DATE_UNIT_SIZE;
 		size_t units = ticks / ratio;
 		size_t leftover = ticks % ratio;
@@ -238,7 +238,7 @@ struct TimetableWindow : Window {
 			case WID_VT_ARRIVAL_DEPARTURE_PANEL:
 				SetDParamMaxValue(0, MAX_YEAR * DAYS_IN_YEAR, 0, FS_SMALL);
 				this->deparr_time_width = GetStringBoundingBox(STR_JUST_DATE_TINY).width;
-				SetDParamMaxValue(0, _settings_client.gui.time_in_minutes ? 0 : MAX_YEAR * DAYS_IN_YEAR);
+				SetDParamMaxValue(0, _settings_time.time_in_minutes ? 0 : MAX_YEAR * DAYS_IN_YEAR);
 				this->deparr_time_width = GetStringBoundingBox(STR_JUST_DATE_WALLCLOCK_TINY).width + 4;
 				this->deparr_abbr_width = max(GetStringBoundingBox(STR_TIMETABLE_ARRIVAL_ABBREVIATION).width, GetStringBoundingBox(STR_TIMETABLE_DEPARTURE_ABBREVIATION).width);
 				size->width = WD_FRAMERECT_LEFT + this->deparr_abbr_width + 10 + this->deparr_time_width + WD_FRAMERECT_RIGHT;
@@ -743,12 +743,12 @@ struct TimetableWindow : Window {
 			}
 
 			case WID_VT_START_DATE: // Change the date that the timetable starts.
-				if (_settings_client.gui.time_in_minutes && _settings_client.gui.timetable_start_text_entry) {
+				if (_settings_time.time_in_minutes && _settings_client.gui.timetable_start_text_entry) {
 					this->set_start_date_all = v->orders.list->IsCompleteTimetable() && _ctrl_pressed;
 					StringID str = STR_JUST_INT;
 					uint64 time = _scaled_date_ticks;
-					time /= _settings_client.gui.ticks_per_minute;
-					time += _settings_client.gui.clock_offset;
+					time /= _settings_time.ticks_per_minute;
+					time += _settings_time.clock_offset;
 					time %= (24 * 60);
 					time = (time % 60) + (((time / 60) % 24) * 100);
 					SetDParam(0, time);
@@ -948,10 +948,10 @@ struct TimetableWindow : Window {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;
 					DateTicksScaled time = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), hours, minutes);
-					time -= _settings_client.gui.clock_offset;
+					time -= _settings_time.clock_offset;
 
 					if (time < (CURRENT_MINUTE - 60)) time += 60 * 24;
-					time *= _settings_client.gui.ticks_per_minute;
+					time *= _settings_time.ticks_per_minute;
 					ChangeTimetableStartIntl(v->index | (this->set_start_date_all ? 1 << 20 : 0), time);
 				}
 				break;

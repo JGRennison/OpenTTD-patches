@@ -467,7 +467,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 				DirtyAllCompanyInfrastructureWindows();
 
 				/* Todo: Change this to be more fine-grained if necessary */
-				NotifyRoadLayoutChanged();
+				NotifyRoadLayoutChanged(false);
 			}
 		} else {
 			assert_tile(IsDriveThroughStopTile(tile), tile);
@@ -477,7 +477,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 				UpdateCompanyRoadInfrastructure(existing_rt, GetRoadOwner(tile, rtt), -2);
 				SetRoadType(tile, rtt, INVALID_ROADTYPE);
 				MarkTileDirtyByTile(tile);
-				NotifyRoadLayoutChanged();
+				NotifyRoadLayoutChanged(false);
 			}
 		}
 		return cost;
@@ -530,7 +530,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 					}
 				}
 
-				NotifyRoadLayoutChangedIfTileNonLeaf(tile, rtt, present | pieces);
+				if (RoadLayoutChangeNotificationEnabled(false)) NotifyRoadLayoutChangedIfTileNonLeaf(tile, rtt, present | pieces);
 				UpdateCompanyRoadInfrastructure(existing_rt, GetRoadOwner(tile, rtt), -(int)CountBits(pieces));
 
 				if (present == ROAD_NONE) {
@@ -575,7 +575,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 				UpdateCompanyRoadInfrastructure(existing_rt, GetRoadOwner(tile, rtt), -2);
 
 				Track railtrack = GetCrossingRailTrack(tile);
-				NotifyRoadLayoutChangedIfTileNonLeaf(tile, rtt, GetCrossingRoadBits(tile));
+				if (RoadLayoutChangeNotificationEnabled(false)) NotifyRoadLayoutChangedIfTileNonLeaf(tile, rtt, GetCrossingRoadBits(tile));
 				if (GetRoadType(tile, OtherRoadTramType(rtt)) == INVALID_ROADTYPE) {
 					TrackBits tracks = GetCrossingRailBits(tile);
 					bool reserved = HasCrossingReservation(tile);
@@ -860,7 +860,7 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 				MakeRoadCrossing(tile, company, company, GetTileOwner(tile), roaddir, GetRailType(tile), rtt == RTT_ROAD ? rt : INVALID_ROADTYPE, (rtt == RTT_TRAM) ? rt : INVALID_ROADTYPE, p2);
 				SetCrossingReservation(tile, reserved);
 				UpdateLevelCrossing(tile, false);
-				NotifyRoadLayoutChangedIfTileNonLeaf(tile, rtt, GetCrossingRoadBits(tile));
+				if (RoadLayoutChangeNotificationEnabled(true)) NotifyRoadLayoutChangedIfTileNonLeaf(tile, rtt, GetCrossingRoadBits(tile));
 				MarkTileDirtyByTile(tile);
 			}
 			return CommandCost(EXPENSES_CONSTRUCTION, 2 * RoadBuildCost(rt));
@@ -991,7 +991,7 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 					MarkBridgeDirty(tile);
 
 					AddRoadTunnelBridgeInfrastructure(tile, other_end);
-					NotifyRoadLayoutChanged();
+					NotifyRoadLayoutChanged(true);
 					DirtyAllCompanyInfrastructureWindows();
 				}
 
@@ -1089,7 +1089,7 @@ do_clear:;
 					if (rtt == RTT_ROAD) SetTownIndex(tile, p2);
 				}
 				if (rttype != ROAD_TILE_CROSSING) SetRoadBits(tile, existing | pieces, rtt);
-				NotifyRoadLayoutChangedIfTileNonLeaf(tile, rtt, existing | pieces);
+				if (RoadLayoutChangeNotificationEnabled(true)) NotifyRoadLayoutChangedIfTileNonLeaf(tile, rtt, existing | pieces);
 				break;
 			}
 
@@ -1108,7 +1108,7 @@ do_clear:;
 					MarkTileDirtyByTile(other_end);
 					MarkTileDirtyByTile(tile);
 				}
-				NotifyRoadLayoutChanged();
+				NotifyRoadLayoutChanged(true);
 				break;
 			}
 
@@ -1116,13 +1116,13 @@ do_clear:;
 				assert_tile(IsDriveThroughStopTile(tile), tile);
 				SetRoadType(tile, rtt, rt);
 				SetRoadOwner(tile, rtt, company);
-				NotifyRoadLayoutChanged();
+				NotifyRoadLayoutChanged(true);
 				break;
 			}
 
 			default:
 				MakeRoadNormal(tile, pieces, (rtt == RTT_ROAD) ? rt : INVALID_ROADTYPE, (rtt == RTT_TRAM) ? rt : INVALID_ROADTYPE, p2, company, company);
-				NotifyRoadLayoutChangedIfTileNonLeaf(tile, rtt, pieces);
+				if (RoadLayoutChangeNotificationEnabled(true)) NotifyRoadLayoutChangedIfTileNonLeaf(tile, rtt, pieces);
 				break;
 		}
 
@@ -1387,7 +1387,7 @@ CommandCost CmdBuildRoadDepot(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 		MarkTileDirtyByTile(tile);
 		MakeDefaultName(dep);
 
-		NotifyRoadLayoutChanged();
+		NotifyRoadLayoutChanged(true);
 	}
 	cost.AddCost(_price[PR_BUILD_DEPOT_ROAD]);
 	return cost;
@@ -1416,7 +1416,7 @@ static CommandCost RemoveRoadDepot(TileIndex tile, DoCommandFlag flags)
 		delete Depot::GetByTile(tile);
 		DoClearSquare(tile);
 
-		NotifyRoadLayoutChanged();
+		NotifyRoadLayoutChanged(false);
 	}
 
 	return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_DEPOT_ROAD]);
@@ -1671,14 +1671,15 @@ void DrawRoadCatenary(const TileInfo *ti)
  * @param dx  the offset from the top of the BB of the tile
  * @param dy  the offset from the top of the BB of the tile
  * @param h   the height of the sprite to draw
+ * @param transparent  whether the sprite should be transparent (used for roadside trees)
  */
-static void DrawRoadDetail(SpriteID img, const TileInfo *ti, int dx, int dy, int h)
+static void DrawRoadDetail(SpriteID img, const TileInfo *ti, int dx, int dy, int h, bool transparent)
 {
 	int x = ti->x | dx;
 	int y = ti->y | dy;
 	int z = ti->z;
 	if (ti->tileh != SLOPE_FLAT) z = GetSlopePixelZ(x, y);
-	AddSortableSpriteToDraw(img, PAL_NONE, x, y, 2, 2, h, z);
+	AddSortableSpriteToDraw(img, PAL_NONE, x, y, 2, 2, h, z, transparent);
 }
 
 /**
@@ -1831,9 +1832,12 @@ void DrawRoadBits(TileInfo *ti)
 	/* If there are no road bits, return, as there is nothing left to do */
 	if (HasAtMostOneBit(road)) return;
 
+	if (roadside == ROADSIDE_TREES && IsInvisibilitySet(TO_TREES)) return;
+	bool is_transparent = roadside == ROADSIDE_TREES && IsTransparencySet(TO_TREES);
+
 	/* Draw extra details. */
 	for (const DrawRoadTileStruct *drts = _road_display_table[roadside][road | tram]; drts->image != 0; drts++) {
-		DrawRoadDetail(drts->image, ti, drts->subcoord_x, drts->subcoord_y, 0x10);
+		DrawRoadDetail(drts->image, ti, drts->subcoord_x, drts->subcoord_y, 0x10, is_transparent);
 	}
 }
 
@@ -2608,7 +2612,8 @@ CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				}
 
 				if (rtt == RTT_ROAD && owner == OWNER_TOWN) {
-					error.MakeError(STR_ERROR_INCOMPATIBLE_ROAD);
+					error.MakeError(STR_ERROR_OWNED_BY);
+					GetNameOfOwner(OWNER_TOWN, tile);
 					continue;
 				}
 			}
@@ -2665,7 +2670,8 @@ CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				}
 
 				if (rtt == RTT_ROAD && owner == OWNER_TOWN) {
-					error.MakeError(STR_ERROR_INCOMPATIBLE_ROAD);
+					error.MakeError(STR_ERROR_OWNED_BY);
+					GetNameOfOwner(OWNER_TOWN, tile);
 					continue;
 				}
 			}

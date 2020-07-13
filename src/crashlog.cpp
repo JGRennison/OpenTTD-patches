@@ -144,7 +144,6 @@ char *CrashLog::LogOpenTTDVersion(char *buffer, const char *last) const
 			" Endian:     %s\n"
 			" Dedicated:  %s\n"
 			" Build date: %s\n"
-			" Configure:  %s\n"
 			" Defines:    %s\n\n",
 			_openttd_revision,
 			_openttd_revision_modified,
@@ -165,7 +164,6 @@ char *CrashLog::LogOpenTTDVersion(char *buffer, const char *last) const
 			"no",
 #endif
 			_openttd_build_date,
-			_openttd_build_configure,
 			_openttd_build_configure_defines
 	);
 }
@@ -426,8 +424,6 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 
 	buffer += seprintf(buffer, last, "Crash at: %s", asctime(gmtime(&cur_time)));
 
-	YearMonthDay ymd;
-	ConvertDateToYMD(_date, &ymd);
 	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u)\n", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, _settings_game.economy.day_length_factor);
 	if (_game_load_time != 0) {
 		buffer += seprintf(buffer, last, "Game loaded at: %i-%02i-%02i (%i, %i), %s",
@@ -489,8 +485,6 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 				flag_check(DesyncExtraInfo::DEIF_DBL_RAND, "D"));
 	}
 
-	YearMonthDay ymd;
-	ConvertDateToYMD(_date, &ymd);
 	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u)\n", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, _settings_game.economy.day_length_factor);
 	if (_game_load_time != 0) {
 		buffer += seprintf(buffer, last, "Game loaded at: %i-%02i-%02i (%i, %i), %s",
@@ -859,7 +853,7 @@ static void find_address_in_section(bfd *abfd, asection *section, void *data)
 	bfd_vma vma = bfd_get_section_vma(abfd, section);
 	if (info->addr < vma) return;
 
-	bfd_size_type size = bfd_section_size(abfd, section);
+	bfd_size_type size = get_bfd_section_size(abfd, section);
 	if (info->addr >= vma + size) return;
 
 	info->found = bfd_find_nearest_line(abfd, section, info->syms, info->addr - vma,

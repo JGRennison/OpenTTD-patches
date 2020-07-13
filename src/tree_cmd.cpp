@@ -762,7 +762,7 @@ static void TileLoop_Trees(TileIndex tile)
 	if (GetTreeCounter(tile) < 15) {
 		if (_settings_game.construction.tree_growth_rate > 0) {
 			/* slow, very slow, extremely slow */
-			uint16 grow_slowing_values[3] = { 0x10000 / 5, 0x10000 / 20, 0x10000 / 120 };
+			uint16 grow_slowing_values[4] = { 0x10000 / 5, 0x10000 / 20, 0x10000 / 120, 0 };
 
 			if (GB(Random(), 0, 16) < grow_slowing_values[_settings_game.construction.tree_growth_rate - 1]) {
 				AddTreeCounter(tile, 1);

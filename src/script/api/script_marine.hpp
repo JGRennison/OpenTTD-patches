@@ -159,6 +159,18 @@ public:
 	static bool BuildCanal(TileIndex tile);
 
 	/**
+	 * Builds a river on tile.
+	 * @param tile The tile where the canal will be build.
+	 * @pre ScriptMap::IsValidTile(tile).
+	 * @exception ScriptError::ERR_AREA_NOT_CLEAR
+	 * @exception ScriptError::ERR_LAND_SLOPED_WRONG
+	 * @exception ScriptError::ERR_OWNED_BY_ANOTHER_COMPANY
+	 * @exception ScriptError::ERR_ALREADY_BUILT
+	 * @return Whether the river has been/can be build or not.
+	 */
+	static bool BuildRiver(TileIndex tile);
+
+	/**
 	 * Removes a water depot.
 	 * @param tile Any tile of the water depot.
 	 * @pre ScriptMap::IsValidTile(tile).

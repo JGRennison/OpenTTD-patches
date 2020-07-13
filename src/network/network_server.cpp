@@ -148,11 +148,12 @@ struct PacketWriter : SaveFilter {
 		this->packets.push_back(std::move(this->current));
 	}
 
-	void PrependQueue(std::unique_ptr<Packet> p)
+	/** Prepend the current packet to the queue. */
+	void PrependQueue()
 	{
-		if (p == nullptr) return;
+		if (this->current == nullptr) return;
 
-		this->packets.push_front(std::move(p));
+		this->packets.push_front(std::move(this->current));
 	}
 
 	void Write(byte *buf, size_t size) override
@@ -195,9 +196,9 @@ struct PacketWriter : SaveFilter {
 		this->AppendQueue();
 
 		/* Fast-track the size to the client. */
-		std::unique_ptr<Packet> p(new Packet(PACKET_SERVER_MAP_SIZE));
-		p->Send_uint32((uint32)this->total_size);
-		this->PrependQueue(std::move(p));
+		this->current.reset(new Packet(PACKET_SERVER_MAP_SIZE));
+		this->current->Send_uint32((uint32)this->total_size);
+		this->PrependQueue();
 	}
 };
 
@@ -635,7 +636,6 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendMap()
 				break;
 			}
 		}
-		if (has_packets) has_packets = this->savegame->HasPackets();
 
 		if (last_packet) {
 			/* Done reading, make sure saving is done as well */
@@ -2019,7 +2019,7 @@ void NetworkServerMonthlyLoop()
 {
 	NetworkAutoCleanCompanies();
 	NetworkAdminUpdate(ADMIN_FREQUENCY_MONTHLY);
-	if ((_cur_month % 3) == 0) NetworkAdminUpdate(ADMIN_FREQUENCY_QUARTERLY);
+	if ((_cur_date_ymd.month % 3) == 0) NetworkAdminUpdate(ADMIN_FREQUENCY_QUARTERLY);
 }
 
 /** Daily "callback". Called whenever the date changes. */

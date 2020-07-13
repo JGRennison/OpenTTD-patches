@@ -35,7 +35,7 @@ bool IsReleasedVersion()
  *
  * <modified> shows a "M", if the binary is made from modified source code.
  */
-const char _openttd_revision[] = "!!VERSION!!";
+const char _openttd_revision[] = "${REV_VERSION}";
 
 /**
  * The text version of OpenTTD's build date.
@@ -45,26 +45,20 @@ const char _openttd_revision[] = "!!VERSION!!";
  */
 const char _openttd_build_date[] = __DATE__ " " __TIME__;
 
-
-/**
- * The configure invocation used to build OpenTTD
- */
-const char _openttd_build_configure[] = "!!CONFIGURE_INVOCATION!!";
-
 /**
  * The configure defines used to build OpenTTD
  */
-const char _openttd_build_configure_defines[] = "!!CONFIGURE_DEFINES!!";
+const char _openttd_build_configure_defines[] = "${CONFIGURE_DEFINES}";
 
 /**
  * The git revision hash of this version.
  */
-const char _openttd_revision_hash[] = "!!GITHASH!!";
+const char _openttd_revision_hash[] = "${REV_HASH}";
 
 /**
  * The year of this version.
  */
-const char _openttd_revision_year[] = "!!YEAR!!";
+const char _openttd_revision_year[] = "${REV_YEAR}";
 
 /**
  * Let us know if current build was modified. This detection
@@ -74,14 +68,14 @@ const char _openttd_revision_year[] = "!!YEAR!!";
  * (compiling from sources without any version control software)
  * and 2 is for modified revision.
  */
-const byte _openttd_revision_modified = !!MODIFIED!!;
+const byte _openttd_revision_modified = ${REV_MODIFIED};
 
 /**
  * Indicate whether this is a tagged version.
  * If this is non-0, then _openttd_revision is the name of the tag,
  * and the version is likely a beta, release candidate, or real release.
  */
-const byte _openttd_revision_tagged = !!ISTAG!!;
+const byte _openttd_revision_tagged = ${REV_ISTAG};
 
 /**
  * The NewGRF revision of OTTD:
@@ -96,4 +90,5 @@ const byte _openttd_revision_tagged = !!ISTAG!!;
  * final release will always have a lower version number than the released
  * version, thus making comparisons on specific revisions easy.
  */
-const uint32 _openttd_newgrf_version = 1 << 28 | 11 << 24 | 0 << 20 | !!ISSTABLETAG!! << 19 | 28004;
+/** ${REV_ISSTABLETAG} removed */
+const uint32 _openttd_newgrf_version = 1 << 28 | 11 << 24 | 0 << 20 | 0 << 19 | 28004;

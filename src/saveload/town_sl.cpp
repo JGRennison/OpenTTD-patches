@@ -48,13 +48,7 @@ void RebuildTownCaches(bool cargo_update_required)
 	/* Update the population and num_house dependent values */
 	for (Town *town : Town::Iterate()) {
 		UpdateTownRadius(town);
-		if (cargo_update_required) {
-			UpdateTownCargoes(town);
-		} else {
-			UpdateTownCargoTotal(town);
-		}
 	}
-	UpdateTownCargoBitmap();
 }
 
 /**
@@ -215,8 +209,8 @@ static const SaveLoad _town_desc[] = {
 
 	SLE_CONDLST(Town, psa_list,            REF_STORAGE,                SLV_161, SL_MAX_VERSION),
 
-	SLE_CONDVAR(Town, cargo_produced,        SLE_FILE_U32 | SLE_VAR_U64, SLV_166, SLV_EXTEND_CARGOTYPES),
-	SLE_CONDVAR(Town, cargo_produced,        SLE_UINT64,                 SLV_EXTEND_CARGOTYPES, SL_MAX_VERSION),
+	SLE_CONDNULL(4, SLV_166, SLV_EXTEND_CARGOTYPES),  ///< cargo_produced, no longer in use
+	SLE_CONDNULL(8, SLV_EXTEND_CARGOTYPES, SL_MAX_VERSION),  ///< cargo_produced, no longer in use
 
 	/* reserve extra space in savegame here. (currently 30 bytes) */
 	SLE_CONDNULL(30, SLV_2, SL_MAX_VERSION),
@@ -272,19 +266,6 @@ static void Load_HIDS()
 	Load_NewGRFMapping(_house_mngr);
 }
 
-const SaveLoad *GetTileMatrixDesc()
-{
-	/* Here due to private member vars. */
-	static const SaveLoad _tilematrix_desc[] = {
-		SLE_VAR(AcceptanceMatrix, area.tile, SLE_UINT32),
-		SLE_VAR(AcceptanceMatrix, area.w,    SLE_UINT16),
-		SLE_VAR(AcceptanceMatrix, area.h,    SLE_UINT16),
-		SLE_END()
-	};
-
-	return _tilematrix_desc;
-}
-
 static void RealSave_Town(Town *t)
 {
 	SlObjectSaveFiltered(t, _filtered_town_desc.data());
@@ -296,11 +277,10 @@ static void RealSave_Town(Town *t)
 		SlObjectSaveFiltered(&t->received[i], _filtered_town_received_desc.data());
 	}
 
-	SlObjectSaveFiltered(&t->cargo_accepted, GetTileMatrixDesc()); // GetTileMatrixDesc() has no conditionals
-	if (t->cargo_accepted.area.w != 0) {
-		uint arr_len = t->cargo_accepted.area.w / AcceptanceMatrix::GRID * t->cargo_accepted.area.h / AcceptanceMatrix::GRID;
-		SlArray(t->cargo_accepted.data, arr_len, SLE_UINT64);
-	}
+	/* Write an empty matrix to avoid bumping savegame version. */
+	SlWriteUint32(0); // tile
+	SlWriteUint16(0); // w
+	SlWriteUint16(0); // h
 }
 
 static void Save_TOWN()
@@ -339,23 +319,13 @@ static void Load_TOWN()
 			SlErrorCorrupt("Invalid town name generator");
 		}
 
-		if (!IsSavegameVersionBefore(SLV_166) && SlXvIsFeatureMissing(XSLFI_TOWN_CARGO_MATRIX)) {
+		if (!IsSavegameVersionBefore(SLV_166) || SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_MATRIX)) {
 			SlSkipBytes(4); // tile
 			uint16 w = SlReadUint16();
 			uint16 h = SlReadUint16();
 			if (w != 0) {
-				SlSkipBytes(4 * (w / 4 * h / 4));
+				SlSkipBytes((SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_MATRIX) ? 8 : 4) * (w / 4 * h / 4));
 			}
-		}
-		if (SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_MATRIX)) {
-			SlObjectLoadFiltered(&t->cargo_accepted, GetTileMatrixDesc()); // GetTileMatrixDesc() has no conditionals
-			if (t->cargo_accepted.area.w != 0) {
-				uint arr_len = t->cargo_accepted.area.w / AcceptanceMatrix::GRID * t->cargo_accepted.area.h / AcceptanceMatrix::GRID;
-				t->cargo_accepted.data = MallocT<CargoTypes>(arr_len);
-				SlArray(t->cargo_accepted.data, arr_len, SLE_UINT64);
-			}
-			/* Rebuild total cargo acceptance. */
-			UpdateTownCargoTotal(t);
 		}
 	}
 }

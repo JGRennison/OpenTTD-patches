@@ -50,6 +50,8 @@ public:
 	 */
 	static Date GetCurrentDate();
 
+	static int32 GetDayLengthFactor();
+
 	/**
 	 * Get the year of the given date.
 	 * @param date The date to get the year of.

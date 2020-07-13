@@ -38,9 +38,13 @@
 #include "../stdafx.h"
 #include "../debug.h"
 #include "saveload.h"
+#include "saveload_buffer.h"
 #include "extended_ver_sl.h"
 #include "../timetable.h"
 #include "../map_func.h"
+#include "../rev.h"
+#include "../strings_func.h"
+#include "table/strings.h"
 
 #include <vector>
 
@@ -52,10 +56,15 @@ bool _sl_is_faked_ext;                                      ///< is this a faked
 bool _sl_maybe_springpp;                                    ///< is this possibly a SpringPP savegame?
 bool _sl_maybe_chillpp;                                     ///< is this possibly a ChillPP v8 savegame?
 std::vector<uint32> _sl_xv_discardable_chunk_ids;           ///< list of chunks IDs which we can discard if no chunk loader exists
+std::string _sl_xv_version_label;                           ///< optional SLXI version label
 
 static const uint32 _sl_xv_slxi_chunk_version = 0;          ///< current version of SLXI chunk
 
+static void loadVL(const SlxiSubChunkInfo *info, uint32 length);
+static uint32 saveVL(const SlxiSubChunkInfo *info, bool dry_run);
+
 const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
+	{ XSLFI_VERSION_LABEL,          XSCF_IGNORABLE_ALL,       1,   1, "version_label",             saveVL,  loadVL,  nullptr        },
 	{ XSLFI_TRACE_RESTRICT,         XSCF_NULL,               11,  11, "tracerestrict",             nullptr, nullptr, "TRRM,TRRP,TRRS" },
 	{ XSLFI_TRACE_RESTRICT_OWNER,   XSCF_NULL,                1,   1, "tracerestrict_owner",       nullptr, nullptr, nullptr        },
 	{ XSLFI_TRACE_RESTRICT_ORDRCND, XSCF_NULL,                3,   3, "tracerestrict_order_cond",  nullptr, nullptr, nullptr        },
@@ -71,7 +80,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_IMPROVED_BREAKDOWNS,    XSCF_NULL,                6,   6, "improved_breakdowns",       nullptr, nullptr, nullptr        },
 	{ XSLFI_CONSIST_BREAKDOWN_FLAG, XSCF_NULL,                1,   1, "consist_breakdown_flag",    nullptr, nullptr, nullptr        },
 	{ XSLFI_TT_WAIT_IN_DEPOT,       XSCF_NULL,                1,   1, "tt_wait_in_depot",          nullptr, nullptr, nullptr        },
-	{ XSLFI_AUTO_TIMETABLE,         XSCF_NULL,                4,   4, "auto_timetables",           nullptr, nullptr, nullptr        },
+	{ XSLFI_AUTO_TIMETABLE,         XSCF_NULL,                5,   5, "auto_timetables",           nullptr, nullptr, nullptr        },
 	{ XSLFI_VEHICLE_REPAIR_COST,    XSCF_NULL,                2,   2, "vehicle_repair_cost",       nullptr, nullptr, nullptr        },
 	{ XSLFI_ENH_VIEWPORT_PLANS,     XSCF_IGNORABLE_ALL,       3,   3, "enh_viewport_plans",        nullptr, nullptr, "PLAN"      },
 	{ XSLFI_INFRA_SHARING,          XSCF_NULL,                2,   2, "infra_sharing",             nullptr, nullptr, "CPDP"      },
@@ -107,7 +116,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_LINKGRAPH_MODES,        XSCF_NULL,                1,   1, "linkgraph_modes",           nullptr, nullptr, nullptr        },
 	{ XSLFI_GAME_EVENTS,            XSCF_NULL,                1,   1, "game_events",               nullptr, nullptr, nullptr        },
 	{ XSLFI_ROAD_LAYOUT_CHANGE_CTR, XSCF_NULL,                1,   1, "road_layout_change_ctr",    nullptr, nullptr, nullptr        },
-	{ XSLFI_TOWN_CARGO_MATRIX,      XSCF_NULL,                1,   1, "town_cargo_matrix",         nullptr, nullptr, nullptr        },
+	{ XSLFI_TOWN_CARGO_MATRIX,      XSCF_NULL,                0,   1, "town_cargo_matrix",         nullptr, nullptr, nullptr        },
 	{ XSLFI_STATE_CHECKSUM,         XSCF_NULL,                1,   1, "state_checksum",            nullptr, nullptr, nullptr        },
 	{ XSLFI_DEBUG,                  XSCF_IGNORABLE_ALL,       1,   1, "debug",                     nullptr, nullptr, "DBGL,DBGC"    },
 	{ XSLFI_FLOW_STAT_FLAGS,        XSCF_NULL,                1,   1, "flow_stat_flags",           nullptr, nullptr, nullptr        },
@@ -183,6 +192,7 @@ void SlXvResetState()
 	_sl_maybe_chillpp = false;
 	_sl_xv_discardable_chunk_ids.clear();
 	memset(_sl_xv_feature_versions, 0, sizeof(_sl_xv_feature_versions));
+	_sl_xv_version_label.clear();
 }
 
 /**
@@ -513,6 +523,14 @@ static void Load_SLXI()
 		SLEG_END()
 	};
 
+	auto version_error = [](StringID str, const char *feature, int64 p1, int64 p2) {
+		char buf[256];
+		int64 args_array[] = { _sl_xv_version_label.empty() ? STR_EMPTY : STR_GAME_SAVELOAD_FROM_VERSION, (int64)(size_t)_sl_xv_version_label.c_str(), (int64)(size_t)feature, p1, p2 };
+		StringParameters tmp_params(args_array);
+		GetStringWithArgs(buf, str, &tmp_params, lastof(buf));
+		SlError(STR_JUST_RAW_STRING, buf, false);
+	};
+
 	uint32 item_count = SlReadUint32();
 	for (uint32 i = 0; i < item_count; i++) {
 		SlxiSubChunkFlags flags = static_cast<SlxiSubChunkFlags>(SlReadUint32());
@@ -540,7 +558,7 @@ static void Load_SLXI()
 					}
 					DEBUG(sl, 1, "SLXI chunk: too large version for feature: '%s', version: %d, max version: %d, ignoring", name_buffer, version, info->max_version);
 				} else {
-					SlErrorCorruptFmt("SLXI chunk: too large version for feature: '%s', version: %d, max version: %d", name_buffer, version, info->max_version);
+					version_error(STR_GAME_SAVELOAD_ERROR_TOO_NEW_FEATURE_VERSION, name_buffer, version, info->max_version);
 				}
 			} else {
 				// success path :)
@@ -572,7 +590,7 @@ static void Load_SLXI()
 				}
 				DEBUG(sl, 1, "SLXI chunk: unknown feature: '%s', version: %d, ignoring", name_buffer, version);
 			} else {
-				SlErrorCorruptFmt("SLXI chunk: unknown feature: %s, version: %d", name_buffer, version);
+				version_error(STR_GAME_SAVELOAD_ERROR_UNKNOWN_FEATURE, name_buffer, version, 0);
 			}
 		}
 
@@ -589,6 +607,19 @@ static void Load_SLXI()
 			}
 		}
 	}
+}
+
+static void loadVL(const SlxiSubChunkInfo *info, uint32 length)
+{
+	_sl_xv_version_label.resize(length);
+	ReadBuffer::GetCurrent()->CopyBytes(reinterpret_cast<byte *>(const_cast<char *>(_sl_xv_version_label.c_str())), length);
+}
+
+static uint32 saveVL(const SlxiSubChunkInfo *info, bool dry_run)
+{
+	uint32 length = strlen(_openttd_revision);
+	if (!dry_run) MemoryDumper::GetCurrent()->CopyBytes(reinterpret_cast<const byte *>(_openttd_revision), length);
+	return length;
 }
 
 extern const ChunkHandler _version_ext_chunk_handlers[] = {

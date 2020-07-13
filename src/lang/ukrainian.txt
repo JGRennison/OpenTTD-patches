@@ -4298,6 +4298,7 @@ STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Вибр
 STR_AI_LIST_CANCEL                                              :{BLACK}Відміна
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Не міняти скрипт
 
+STR_SCREENSHOT_CAPTION                                          :{WHITE}Зробити знімок екрану
 
 # AI Parameters
 STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Параметри
@@ -4595,7 +4596,6 @@ STR_ERROR_CAN_T_CONVERT_ROAD                                    :{WHITE}Тут �
 STR_ERROR_CAN_T_CONVERT_TRAMWAY                                 :{WHITE}Тут не можна перетворити тип трамваю ...
 STR_ERROR_NO_SUITABLE_ROAD                                      :{WHITE}Немає підходящої дороги
 STR_ERROR_NO_SUITABLE_TRAMWAY                                   :{WHITE}Немає підходящої трамвайної колії
-STR_ERROR_INCOMPATIBLE_ROAD                                     :{WHITE}... несумісна дорога
 STR_ERROR_INCOMPATIBLE_TRAMWAY                                  :{WHITE}... несумісний трамвай
 
 # Waterway construction errors

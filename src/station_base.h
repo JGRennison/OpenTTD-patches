@@ -794,6 +794,7 @@ public:
 	IndustryType indtype;   ///< Industry type to get the name from
 
 	BitmapTileArea catchment_tiles; ///< NOSAVE: Set of individual tiles covered by catchment area
+	uint station_tiles;             ///< NOSAVE: Count of station tiles owned by this station
 
 	StationHadVehicleOfType had_vehicle_of_type;
 

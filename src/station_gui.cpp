@@ -2332,7 +2332,7 @@ struct SelectStationWindow : Window {
 
 	~SelectStationWindow()
 	{
-		if (_settings_client.gui.station_show_coverage) SetViewportCatchmentStation(nullptr, true);
+		SetViewportCatchmentStation(nullptr, true);
 
 		_thd.freeze = false;
 	}

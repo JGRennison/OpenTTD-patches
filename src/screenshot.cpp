@@ -20,6 +20,7 @@
 #include "company_func.h"
 #include "strings_func.h"
 #include "error.h"
+#include "textbuf_gui.h"
 #include "window_gui.h"
 #include "window_func.h"
 #include "tile_map.h"
@@ -851,6 +852,45 @@ bool MakeHeightmapScreenshot(const char *filename)
 	return sf->proc(filename, HeightmapCallback, nullptr, MapSizeX(), MapSizeY(), 8, palette);
 }
 
+static ScreenshotType _confirmed_screenshot_type; ///< Screenshot type the current query is about to confirm.
+
+/**
+ * Callback on the confirmation window for huge screenshots.
+ * @param w Window with viewport
+ * @param confirmed true on confirmation
+ */
+static void ScreenshotConfirmationCallback(Window *w, bool confirmed)
+{
+	if (confirmed) MakeScreenshot(_confirmed_screenshot_type, nullptr);
+}
+
+/**
+ * Make a screenshot.
+ * Ask for confirmation first if the screenshot will be huge.
+ * @param t Screenshot type: World, defaultzoom, heightmap or viewport screenshot
+ * @see MakeScreenshot
+ */
+void MakeScreenshotWithConfirm(ScreenshotType t)
+{
+	ViewPort vp;
+	SetupScreenshotViewport(t, &vp);
+
+	bool heightmap_or_minimap = t == SC_HEIGHTMAP || t == SC_MINIMAP;
+	uint64_t width = (heightmap_or_minimap ? MapSizeX() : vp.width);
+	uint64_t height = (heightmap_or_minimap ? MapSizeY() : vp.height);
+
+	if (width * height > 8192 * 8192) {
+		/* Ask for confirmation */
+		_confirmed_screenshot_type = t;
+		SetDParam(0, width);
+		SetDParam(1, height);
+		ShowQuery(STR_WARNING_SCREENSHOT_SIZE_CAPTION, STR_WARNING_SCREENSHOT_SIZE_MESSAGE, nullptr, ScreenshotConfirmationCallback);
+	} else {
+		/* Less than 64M pixels, just do it */
+		MakeScreenshot(t, nullptr);
+	}
+}
+
 /**
  * Show a a success or failure message indicating the result of a screenshot action
  * @param ret  whether the screenshot action was successful
@@ -866,10 +906,12 @@ static void ShowScreenshotResultMessage(bool ret)
 }
 
 /**
- * Make an actual screenshot.
+ * Make a screenshot.
+ * Unconditionally take a screenshot of the requested type.
  * @param t    the type of screenshot to make.
  * @param name the name to give to the screenshot.
  * @return true iff the screenshot was made successfully
+ * @see MakeScreenshotWithConfirm
  */
 bool MakeScreenshot(ScreenshotType t, const char *name)
 {

@@ -96,7 +96,6 @@ void NetworkAddress::GetAddressAsString(char *buffer, const char *last, bool wit
  * Get the address as a string, e.g. 127.0.0.1:12345.
  * @param with_family whether to add the family (e.g. IPvX).
  * @return the address
- * @note NOT thread safe
  */
 const char *NetworkAddressDumper::GetAddressAsString(NetworkAddress *addr, bool with_family)
 {

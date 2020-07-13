@@ -10,6 +10,8 @@
 #include "../newgrf_house.h"
 #include "../newgrf_engine.h"
 #include "../newgrf_roadtype.h"
+#include "../date_func.h"
+#include "../timetable.h"
 
 /* Helper for filling property tables */
 #define NIP(prop, base, variable, type, name) { name, (ptrdiff_t)cpp_offsetof(base, variable), cpp_sizeof(base, variable), prop, type }
@@ -92,8 +94,20 @@ class NIHVehicle : public NIHelper {
 		print(buffer);
 		char *b = buffer;
 		b += seprintf(b, lastof(buffer), "  Flags: ");
-		b = v->DumpVehicleFlags(b, lastof(buffer));
+		b = v->DumpVehicleFlags(b, lastof(buffer), false);
 		print(buffer);
+
+		b = buffer + seprintf(buffer, lastof(buffer), "  ");
+		b = DumpTileInfo(b, lastof(buffer), v->tile);
+		if (buffer[2] == 't') buffer[2] = 'T';
+		print(buffer);
+
+		TileIndex vtile = TileVirtXY(v->x_pos, v->y_pos);
+		if (v->tile != vtile) {
+			seprintf(buffer, lastof(buffer), "  VirtXYTile: %X (%u x %u)", vtile, TileX(vtile), TileY(vtile));
+			print(buffer);
+		}
+
 		if (v->IsPrimaryVehicle()) {
 			seprintf(buffer, lastof(buffer), "  Order indices: real: %u, implicit: %u, tt: %u",
 					v->cur_real_order_index, v->cur_implicit_order_index, v->cur_timetable_order_index);
@@ -127,6 +141,33 @@ class NIHVehicle : public NIHelper {
 			print(buffer);
 			seprintf(buffer, lastof(buffer), "  GV Cache: total length: %u, veh length: %u",
 					gvc.cached_total_length, gvc.cached_veh_length);
+			print(buffer);
+		}
+
+		if (HasBit(v->vehicle_flags, VF_SEPARATION_ACTIVE)) {
+			std::vector<TimetableProgress> progress_array = PopulateSeparationState(v);
+			if (!progress_array.empty()) {
+				print("Separation state:");
+			}
+			for (const auto &info : progress_array) {
+				b = buffer + seprintf(buffer, lastof(buffer), "  %s [%d, %d, %d], %u, ",
+						info.id == v->index ? "*" : " ", info.order_count, info.order_ticks, info.cumulative_ticks, info.id);
+				SetDParam(0, info.id);
+				b = GetString(b, STR_VEHICLE_NAME, lastof(buffer));
+				b += seprintf(b, lastof(buffer), ", lateness: %d", Vehicle::Get(info.id)->lateness_counter);
+				print(buffer);
+			}
+		}
+
+		seprintf(buffer, lastof(buffer), "  Engine: %u", v->engine_type);
+		print(buffer);
+		const Engine *e = Engine::GetIfValid(v->engine_type);
+		if (e != nullptr) {
+		YearMonthDay ymd;
+		ConvertDateToYMD(e->intro_date, &ymd);
+			seprintf(buffer, lastof(buffer), "    Intro: %4i-%02i-%02i, Age: %u, Base life: %u, Durations: %u %u %u (sum: %u)",
+					ymd.year, ymd.month + 1, ymd.day, e->age, e->info.base_life, e->duration_phase_1, e->duration_phase_2, e->duration_phase_3,
+					e->duration_phase_1 + e->duration_phase_2 + e->duration_phase_3);
 			print(buffer);
 		}
 	}
@@ -670,18 +711,6 @@ class NIHTown : public NIHelper {
 		seprintf(buffer, lastof(buffer), "  Index: %u", index);
 		print(buffer);
 
-		char *b = buffer;
-		b += seprintf(b, lastof(buffer), "  cargo_produced: ");
-		SetDParam(0, t->cargo_produced);
-		b = GetString(b, STR_JUST_CARGO_LIST, lastof(buffer));
-		print(buffer);
-
-		b = buffer;
-		b += seprintf(b, lastof(buffer), "  cargo_accepted_total: ");
-		SetDParam(0, t->cargo_accepted_total);
-		b = GetString(b, STR_JUST_CARGO_LIST, lastof(buffer));
-		print(buffer);
-
 		seprintf(buffer, lastof(buffer), "  Nearby stations: %u", (uint) t->stations_near.size());
 		print(buffer);
 		for (const Station *st : t->stations_near) {
@@ -738,6 +767,10 @@ class NIHStationStruct : public NIHelper {
 				seprintf(buffer, lastof(buffer), "    %u: %s", ind->index, ind->GetCachedName());
 				print(buffer);
 			}
+			seprintf(buffer, lastof(buffer), "  Station tiles: %u", st->station_tiles);
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  Delete counter: %u", st->delete_ctr);
+			print(buffer);
 		}
 	}
 };

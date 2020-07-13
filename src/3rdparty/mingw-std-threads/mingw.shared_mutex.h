@@ -31,7 +31,7 @@
 #error A C++11 compiler is required!
 #endif
 
-#include <cassert>
+//#include <cassert>
 //  For descriptive errors.
 #include <system_error>
 //    Implementing a shared_mutex without OS support will require atomic read-

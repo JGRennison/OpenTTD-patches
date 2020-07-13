@@ -60,7 +60,7 @@ const char *scope_dumper::VehicleInfo(const Vehicle *v)
 	char *b = this->buffer;
 	const char *last = lastof(this->buffer);
 	auto dump_flags = [&](const Vehicle *u) {
-		b = u->DumpVehicleFlags(b, last);
+		b = u->DumpVehicleFlags(b, last, true);
 	};
 	if (v) {
 		b += seprintf(b, last, "veh: %u: (", v->index);

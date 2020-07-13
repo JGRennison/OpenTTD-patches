@@ -182,7 +182,7 @@ struct SchdispatchWindow : Window {
 			case WID_SCHDISPATCH_MATRIX: {
 				uint min_height = 0;
 
-				SetDParamMaxValue(0, _settings_client.gui.time_in_minutes ? 0 : MAX_YEAR * DAYS_IN_YEAR);
+				SetDParamMaxValue(0, _settings_time.time_in_minutes ? 0 : MAX_YEAR * DAYS_IN_YEAR);
 				Dimension unumber = GetStringBoundingBox(STR_JUST_DATE_WALLCLOCK_TINY);
 				const Sprite *spr = GetSprite(SPR_FLAG_VEH_STOPPED, ST_NORMAL);
 				this->flag_width  = UnScaleGUI(spr->width) + WD_FRAMERECT_RIGHT;
@@ -472,7 +472,7 @@ struct SchdispatchWindow : Window {
 			}
 
 			case WID_SCHDISPATCH_ADD: {
-				if (_settings_client.gui.time_in_minutes && _settings_client.gui.timetable_start_text_entry) {
+				if (_settings_time.time_in_minutes && _settings_client.gui.timetable_start_text_entry) {
 					ShowQueryString(STR_EMPTY, STR_SCHDISPATCH_ADD_CAPTION, 31, this, CS_NUMERAL, QSF_NONE);
 				} else {
 					ShowSetDateWindow(this, v->index, _scaled_date_ticks, _cur_year, _cur_year + 15, ScheduleAddCallback);
@@ -481,16 +481,16 @@ struct SchdispatchWindow : Window {
 			}
 
 			case WID_SCHDISPATCH_SET_DURATION: {
-				SetDParam(0, RoundDivSU(v->orders.list->GetScheduledDispatchDuration(), _settings_client.gui.ticks_per_minute ? _settings_client.gui.ticks_per_minute : DAY_TICKS));
-				ShowQueryString(STR_JUST_INT, _settings_client.gui.time_in_minutes ? STR_SCHDISPATCH_DURATION_CAPTION_MINUTE : STR_SCHDISPATCH_DURATION_CAPTION_DAY, 31, this, CS_NUMERAL, QSF_NONE);
+				SetDParam(0, RoundDivSU(v->orders.list->GetScheduledDispatchDuration(), _settings_time.ticks_per_minute ? _settings_time.ticks_per_minute : DAY_TICKS));
+				ShowQueryString(STR_JUST_INT, _settings_time.time_in_minutes ? STR_SCHDISPATCH_DURATION_CAPTION_MINUTE : STR_SCHDISPATCH_DURATION_CAPTION_DAY, 31, this, CS_NUMERAL, QSF_NONE);
 				break;
 			}
 
 			case WID_SCHDISPATCH_SET_START_DATE: {
-				if (_settings_client.gui.time_in_minutes && _settings_client.gui.timetable_start_text_entry) {
+				if (_settings_time.time_in_minutes && _settings_client.gui.timetable_start_text_entry) {
 					uint64 time = _scaled_date_ticks;
-					time /= _settings_client.gui.ticks_per_minute;
-					time += _settings_client.gui.clock_offset;
+					time /= _settings_time.ticks_per_minute;
+					time += _settings_time.clock_offset;
 					time %= (24 * 60);
 					time = (time % 60) + (((time / 60) % 24) * 100);
 					SetDParam(0, time);
@@ -502,8 +502,8 @@ struct SchdispatchWindow : Window {
 			}
 
 			case WID_SCHDISPATCH_SET_DELAY: {
-				SetDParam(0, RoundDivSU(v->orders.list->GetScheduledDispatchDelay(), _settings_client.gui.ticks_per_minute ? _settings_client.gui.ticks_per_minute : DAY_TICKS));
-				ShowQueryString(STR_JUST_INT, _settings_client.gui.time_in_minutes ? STR_SCHDISPATCH_DELAY_CAPTION_MINUTE : STR_SCHDISPATCH_DELAY_CAPTION_DAY, 31, this, CS_NUMERAL, QSF_NONE);
+				SetDParam(0, RoundDivSU(v->orders.list->GetScheduledDispatchDelay(), _settings_time.ticks_per_minute ? _settings_time.ticks_per_minute : DAY_TICKS));
+				ShowQueryString(STR_JUST_INT, _settings_time.time_in_minutes ? STR_SCHDISPATCH_DELAY_CAPTION_MINUTE : STR_SCHDISPATCH_DELAY_CAPTION_DAY, 31, this, CS_NUMERAL, QSF_NONE);
 				break;
 			}
 
@@ -532,8 +532,8 @@ struct SchdispatchWindow : Window {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;
 					DateTicksScaled slot = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), hours, minutes);
-					slot -= _settings_client.gui.clock_offset;
-					slot *= _settings_client.gui.ticks_per_minute;
+					slot -= _settings_time.clock_offset;
+					slot *= _settings_time.ticks_per_minute;
 					ScheduleAddIntl(v->index, slot);
 				}
 				break;
@@ -547,8 +547,8 @@ struct SchdispatchWindow : Window {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;
 					DateTicksScaled start = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), hours, minutes);
-					start -= _settings_client.gui.clock_offset;
-					start *= _settings_client.gui.ticks_per_minute;
+					start -= _settings_time.clock_offset;
+					start *= _settings_time.ticks_per_minute;
 					SetScheduleStartDateIntl(v->index, start);
 				}
 				break;
@@ -558,8 +558,8 @@ struct SchdispatchWindow : Window {
 				int32 val = StrEmpty(str) ? 0 : strtoul(str, nullptr, 10);
 
 				if (val > 0) {
-					if (_settings_client.gui.time_in_minutes) {
-						val *= _settings_client.gui.ticks_per_minute;
+					if (_settings_time.time_in_minutes) {
+						val *= _settings_time.ticks_per_minute;
 					} else {
 						val *= DAY_TICKS;
 					}
@@ -574,8 +574,8 @@ struct SchdispatchWindow : Window {
 				int32 val = StrEmpty(str) ? -1 : strtoul(str, &end, 10);
 
 				if (val >= 0 && end && *end == 0) {
-					if (_settings_client.gui.time_in_minutes) {
-						val *= _settings_client.gui.ticks_per_minute;
+					if (_settings_time.time_in_minutes) {
+						val *= _settings_time.ticks_per_minute;
 					} else {
 						val *= DAY_TICKS;
 					}

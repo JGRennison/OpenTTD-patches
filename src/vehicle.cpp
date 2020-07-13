@@ -1284,8 +1284,8 @@ void CallVehicleTicks()
 			if (HasBit(t->flags, VRF_TOO_HEAVY)) {
 				if (t->owner == _local_company) {
 					SetDParam(0, t->index);
-					SetDParam(1, STR_ERROR_TRAIN_TOO_HEAVY);
-					AddVehicleNewsItem(STR_ERROR_TRAIN_TOO_HEAVY, NT_ADVICE, t->index);
+					AddNewsItem(STR_ERROR_TRAIN_TOO_HEAVY, NT_ADVICE, NF_INCOLOUR | NF_SMALL | NF_VEHICLE_PARAM0,
+							NR_VEHICLE, t->index);
 				}
 				ClrBit(t->flags, VRF_TOO_HEAVY);
 			}
@@ -1443,7 +1443,7 @@ void CallVehicleTicks()
 
 		if (!IsLocalCompany()) continue;
 
-		if (res.Succeeded()) {
+		if (res.Succeeded() && res.GetCost() != 0) {
 			ShowCostOrIncomeAnimation(x, y, z, res.GetCost());
 			continue;
 		}
@@ -3648,55 +3648,6 @@ void Vehicle::SetNext(Vehicle *next)
 	}
 }
 
-void Vehicle::ClearSeparation()
-{
-	if (this->ahead_separation == nullptr && this->behind_separation == nullptr) return;
-
-	assert(this->ahead_separation != nullptr);
-	assert(this->behind_separation != nullptr);
-
-	this->ahead_separation->behind_separation = this->behind_separation;
-	this->behind_separation->ahead_separation = this->ahead_separation;
-
-	this->ahead_separation = nullptr;
-	this->behind_separation = nullptr;
-
-	SetWindowDirty(WC_VEHICLE_TIMETABLE, this->index);
-}
-
-void Vehicle::InitSeparation()
-{
-	assert(this->ahead_separation == nullptr && this->behind_separation == nullptr);
-	Vehicle *best_match = this;
-	int lowest_separation;
-	for (Vehicle *v_other = this->FirstShared(); v_other != nullptr; v_other = v_other->NextShared()) {
-		if ((HasBit(v_other->vehicle_flags, VF_TIMETABLE_STARTED)) && v_other != this) {
-			if (best_match == this) {
-				best_match = v_other;
-				lowest_separation = 0; // TODO call SeparationBetween() here
-			} else {
-				int temp_sep = 0; // TODO call SeparationBetween() here
-				if (temp_sep < lowest_separation && temp_sep != -1) {
-					best_match = v_other;
-					lowest_separation = temp_sep;
-				}
-			}
-		}
-	}
-	this->AddToSeparationBehind(best_match);
-}
-
-void Vehicle::AddToSeparationBehind(Vehicle *v_other)
-{
-	if (v_other->ahead_separation == nullptr) v_other->ahead_separation = v_other;
-	if (v_other->behind_separation == nullptr) v_other->behind_separation = v_other;
-
-	this->ahead_separation = v_other;
-	v_other->behind_separation->ahead_separation = this;
-	this->behind_separation = v_other->behind_separation;
-	v_other->behind_separation = this;
-}
-
 /**
  * Adds this vehicle to a shared vehicle chain.
  * @param shared_chain a vehicle of the chain with shared vehicles.
@@ -3760,7 +3711,7 @@ void Vehicle::RemoveFromShared()
 	if (HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 }
 
-char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
+char *Vehicle::DumpVehicleFlags(char *b, const char *last, bool include_tile) const
 {
 	auto dump = [&](char c, bool flag) {
 		if (flag) b += seprintf(b, last, "%c", c);
@@ -3797,6 +3748,7 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
 	dump('L', HasBit(this->vehicle_flags, VF_PATHFINDER_LOST));
 	dump('c', HasBit(this->vehicle_flags, VF_SERVINT_IS_CUSTOM));
 	dump('p', HasBit(this->vehicle_flags, VF_SERVINT_IS_PERCENT));
+	dump('z', HasBit(this->vehicle_flags, VF_SEPARATION_ACTIVE));
 	dump('D', HasBit(this->vehicle_flags, VF_SCHEDULED_DISPATCH));
 	dump('x', HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP));
 	dump('s', HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION));
@@ -3841,11 +3793,13 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last) const
 		const RoadVehicle *r = RoadVehicle::From(this);
 		b += seprintf(b, last, ", rvs:%X, rvf:%X", r->state, r->frame);
 	}
-	b += seprintf(b, last, ", [");
-	b = DumpTileInfo(b, last, this->tile);
-	b += seprintf(b, last, "]");
-	TileIndex vtile = TileVirtXY(this->x_pos, this->y_pos);
-	if (this->tile != vtile) b += seprintf(b, last, ", VirtXYTile: %X (%u x %u)", vtile, TileX(vtile), TileY(vtile));
+	if (include_tile) {
+		b += seprintf(b, last, ", [");
+		b = DumpTileInfo(b, last, this->tile);
+		b += seprintf(b, last, "]");
+		TileIndex vtile = TileVirtXY(this->x_pos, this->y_pos);
+		if (this->tile != vtile) b += seprintf(b, last, ", VirtXYTile: %X (%u x %u)", vtile, TileX(vtile), TileY(vtile));
+	}
 	if (this->cargo_payment) b += seprintf(b, last, ", CP");
 	return b;
 }

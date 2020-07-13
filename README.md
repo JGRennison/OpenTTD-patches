@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.34.3
+## JGR's Patchpack version 0.35.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -71,9 +71,9 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   This is modified to use an extra button in the smallmap window, instead of a console command, and use the current zoom level and display mode of the smallmap window.
 
 * Automated timetables and separation: [imported](http://www.tt-forums.net/viewtopic.php?f=33&t=46391)  
-  * Auto timetabling: Bias timetable adjustment to favour negative adjustments; this is to avoid positive feedback between congestion delays and increased timetable length. Reduce jam detection threshold.  
-  * Auto separation: Fix handling of non-station orders (e.g. waypoints and depots). Change to a per-vehicle setting. Add a company setting to scale vehicle lateness adjustments. No longer set vehicle lateness to 0 if separation fails, instead leave it as it was.  
-  * Timetable GUI: Allow clearing of timetable time fields which are at 0. Allow explicitly setting timetable time fields to 0 without clearing them.
+  * Auto timetabling: Bias timetable adjustment to favour negative adjustments; this is to avoid positive feedback between congestion delays and increased timetable length. Change jam detection threshold.  
+  * Auto separation: A large number of improvements have been made to the separation algorithm.  
+  * Timetable GUI: Allow clearing of timetable time fields which are at 0. Allow explicitly setting timetable time fields to 0 without clearing them.  
   * Add company settings to enable automatic timetabling or separation for new vehicles.  
   * Allow changing/clearing the timetabled waiting time and max speed of all of a vehicle's orders at once.  
   * Add client setting to show the remainder ticks in timetable, after dividing to days or minutes.  
@@ -258,6 +258,10 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Open train vehicle details window on total cargo tab if shift pressed. (added in v0.34.0).  
   * Ctrl-click up/down in NewGRF window to move to top or bottom. (added in v0.34.2).  
   * Additional conditional order types/modes. (added in v0.24.0, v0.33.1, v0.34.3).  
+  * Improve road vehicle pathfinding when multiple vehicles are simultaneously heading to a station with multiple bay/stop entrances. (added in v0.35.0).  
+  * Add setting to scale station cargo capacity and rating tolerance by size. (added in v0.35.0).  
+  * Add setting to disable vehicle expiry after a given year. (added in v0.35.0).  
+  * Add setting to control road vehicle re-routing on road layout changes. (added in v0.35.0).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
   * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).

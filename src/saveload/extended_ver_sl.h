@@ -21,6 +21,7 @@ enum SaveLoadVersion : uint16;
  */
 enum SlXvFeatureIndex {
 	XSLFI_NULL                          = 0,      ///< Unused value, to indicate that no extended feature test is in use
+	XSLFI_VERSION_LABEL,                          ///< Version label
 	XSLFI_TRACE_RESTRICT,                         ///< Trace restrict
 	XSLFI_TRACE_RESTRICT_OWNER,                   ///< Trace restrict: train owner test
 	XSLFI_TRACE_RESTRICT_ORDRCND,                 ///< Trace restrict: slot conditional order
@@ -72,7 +73,7 @@ enum SlXvFeatureIndex {
 	XSLFI_LINKGRAPH_MODES,                        ///< Linkgraph additional distribution modes
 	XSLFI_GAME_EVENTS,                            ///< Game event flags
 	XSLFI_ROAD_LAYOUT_CHANGE_CTR,                 ///< Road layout change counter
-	XSLFI_TOWN_CARGO_MATRIX,                      ///< Town cargo matrix savegame format changes
+	XSLFI_TOWN_CARGO_MATRIX,                      ///< Town cargo matrix savegame format changes (now obsolete)
 	XSLFI_STATE_CHECKSUM,                         ///< State checksum
 	XSLFI_DEBUG,                                  ///< Debugging info
 	XSLFI_FLOW_STAT_FLAGS,                        ///< FlowStat flags
