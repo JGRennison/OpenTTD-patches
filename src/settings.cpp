@@ -86,6 +86,7 @@
 ClientSettings _settings_client;
 GameSettings _settings_game;     ///< Game settings of a running game or the scenario editor.
 GameSettings _settings_newgame;  ///< Game settings for new games (updated from the intro screen).
+TimeSettings _settings_time; ///< The effective settings that are used for time display.
 VehicleDefaultSettings _old_vds; ///< Used for loading default vehicles settings from old savegames
 char *_config_file; ///< Configuration file of OpenTTD
 std::string _config_file_text;
@@ -1161,6 +1162,21 @@ static bool InvalidateVehTimetableWindow(int32 p1)
 {
 	InvalidateWindowClassesData(WC_VEHICLE_TIMETABLE, VIWD_MODIFY_ORDERS);
 	InvalidateWindowClassesData(WC_SCHDISPATCH_SLOTS, VIWD_MODIFY_ORDERS);
+	return true;
+}
+
+static bool UpdateTimeSettings(int32 p1)
+{
+	SetupTimeSettings();
+	InvalidateVehTimetableWindow(p1);
+	MarkWholeScreenDirty();
+	return true;
+}
+
+static bool ChangeTimeOverrideMode(int32 p1)
+{
+	InvalidateWindowClassesData(WC_GAME_OPTIONS);
+	UpdateTimeSettings(p1);
 	return true;
 }
 
@@ -2881,4 +2897,9 @@ static bool IsSignedVarMemType(VarType vt)
 			return true;
 	}
 	return false;
+}
+
+void SetupTimeSettings()
+{
+	_settings_time = (_game_mode == GM_MENU || _settings_client.gui.override_time_settings) ? _settings_client.gui : _settings_game.game_time;
 }

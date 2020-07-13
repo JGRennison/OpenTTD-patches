@@ -37,4 +37,6 @@ void SetDefaultCompanySettings(CompanyID cid);
 
 void SyncCompanySettings();
 
+void SetupTimeSettings();
+
 #endif /* SETTINGS_FUNC_H */

@@ -15,8 +15,8 @@
 #include "station_base.h"
 #include "map_func.h"
 
-inline uint16 Kdtree_StationXYFunc(StationID stid, int dim) { return (dim == 0) ? TileX(BaseStation::Get(stid)->xy) : TileY(BaseStation::Get(stid)->xy); }
-typedef Kdtree<StationID, decltype(&Kdtree_StationXYFunc), uint16, int> StationKdtree;
+inline uint32 Kdtree_StationXYFunc(StationID stid, int dim) { return (dim == 0) ? TileX(BaseStation::Get(stid)->xy) : TileY(BaseStation::Get(stid)->xy); }
+typedef Kdtree<StationID, decltype(&Kdtree_StationXYFunc), uint32, int> StationKdtree;
 extern StationKdtree _station_kdtree;
 
 /**
@@ -28,11 +28,11 @@ extern StationKdtree _station_kdtree;
 template <typename Func>
 void ForAllStationsRadius(TileIndex center, uint radius, Func func)
 {
-	uint16 x1, y1, x2, y2;
-	x1 = (uint16)max<int>(0, TileX(center) - radius);
-	x2 = (uint16)min<int>(TileX(center) + radius + 1, MapSizeX());
-	y1 = (uint16)max<int>(0, TileY(center) - radius);
-	y2 = (uint16)min<int>(TileY(center) + radius + 1, MapSizeY());
+	uint32 x1, y1, x2, y2;
+	x1 = (uint32)max<int>(0, TileX(center) - radius);
+	x2 = (uint32)min<int>(TileX(center) + radius + 1, MapSizeX());
+	y1 = (uint32)max<int>(0, TileY(center) - radius);
+	y2 = (uint32)min<int>(TileY(center) + radius + 1, MapSizeY());
 
 	_station_kdtree.FindContained(x1, y1, x2, y2, [&](StationID id) {
 		func(Station::Get(id));

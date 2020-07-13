@@ -24,8 +24,6 @@
 
 #include "safeguards.h"
 
-Year      _cur_year;   ///< Current year, starting at 0
-Month     _cur_month;  ///< Current month (0..11)
 YearMonthDay _cur_date_ymd; ///< Current date as YearMonthDay struct
 Date      _date;       ///< Current date in days (day counter)
 DateFract _date_fract; ///< Fractional part of the day.
@@ -55,8 +53,6 @@ void SetDate(Date date, DateFract fract)
 	_date = date;
 	_date_fract = fract;
 	ConvertDateToYMD(date, &ymd);
-	_cur_year = ymd.year;
-	_cur_month = ymd.month;
 	_cur_date_ymd = ymd;
 	SetScaledTickVariables();
 }
@@ -217,20 +213,21 @@ static void OnNewYear()
 	InvalidateWindowClassesData(WC_BUILD_STATION);
 	if (_network_server) NetworkServerYearlyLoop();
 
-	if (_cur_year == _settings_client.gui.semaphore_build_before) ResetSignalVariant();
+	if (_cur_date_ymd.year == _settings_client.gui.semaphore_build_before) ResetSignalVariant();
 
 	/* check if we reached end of the game (end of ending year) */
-	if (_cur_year == _settings_game.game_creation.ending_year + 1) {
+	if (_cur_date_ymd.year == _settings_game.game_creation.ending_year + 1) {
 		ShowEndGameChart();
 	/* check if we reached the maximum year, decrement dates by a year */
-	} else if (_cur_year == MAX_YEAR + 1) {
+	} else if (_cur_date_ymd.year == MAX_YEAR + 1) {
 		int days_this_year;
 
-		_cur_year--;
-		days_this_year = IsLeapYear(_cur_year) ? DAYS_IN_LEAP_YEAR : DAYS_IN_YEAR;
+		_cur_date_ymd.year--;
+		days_this_year = IsLeapYear(_cur_date_ymd.year) ? DAYS_IN_LEAP_YEAR : DAYS_IN_YEAR;
 		_date -= days_this_year;
 		for (Vehicle *v : Vehicle::Iterate()) v->date_of_last_service -= days_this_year;
 		for (LinkGraph *lg : LinkGraph::Iterate()) lg->ShiftDates(-days_this_year);
+		ShiftOrderDates(-days_this_year);
 
 		/* Because the _date wraps here, and text-messages expire by game-days, we have to clean out
 		 *  all of them if the date is set back, else those messages will hang for ever */
@@ -246,7 +243,7 @@ static void OnNewYear()
  */
 static void OnNewMonth()
 {
-	if (_settings_client.gui.autosave != 0 && (_cur_month % _autosave_months[_settings_client.gui.autosave]) == 0) {
+	if (_settings_client.gui.autosave != 0 && (_cur_date_ymd.month % _autosave_months[_settings_client.gui.autosave]) == 0) {
 		_do_autosave = true;
 		SetWindowDirty(WC_STATUS_BAR, 0);
 	}
@@ -276,7 +273,7 @@ static void OnNewDay()
 	DisasterDailyLoop();
 	IndustryDailyLoop();
 
-	if (!_settings_client.gui.time_in_minutes || _settings_client.gui.date_with_time > 0) {
+	if (!_settings_time.time_in_minutes || _settings_client.gui.date_with_time > 0) {
 		SetWindowWidgetDirty(WC_STATUS_BAR, 0, 0);
 	}
 	EnginesDailyLoop();
@@ -315,15 +312,13 @@ void IncreaseDate()
 	ConvertDateToYMD(_date, &ymd);
 
 	/* check if we entered a new month? */
-	bool new_month = ymd.month != _cur_month;
+	bool new_month = ymd.month != _cur_date_ymd.month;
 
 	/* check if we entered a new year? */
-	bool new_year = ymd.year != _cur_year;
+	bool new_year = ymd.year != _cur_date_ymd.year;
 
 	/* update internal variables before calling the daily/monthly/yearly loops */
 	_cur_date_ymd = ymd;
-	_cur_month = ymd.month;
-	_cur_year  = ymd.year;
 
 	/* yes, call various daily loops */
 	OnNewDay();

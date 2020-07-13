@@ -59,7 +59,8 @@ ScriptInstance::ScriptInstance(const char *APIName) :
 	suspend(0),
 	is_paused(false),
 	in_shutdown(false),
-	callback(nullptr)
+	callback(nullptr),
+	APIName(APIName)
 {
 	this->storage = new ScriptStorage();
 	this->engine  = new Squirrel(APIName);
@@ -85,6 +86,12 @@ void ScriptInstance::Initialize(const char *main_script, const char *instance_na
 			if (this->engine->IsSuspended()) ScriptLog::Error("This script took too long to load script. AI is not started.");
 			this->Died();
 			return;
+		}
+
+		if (strcmp(this->APIName, "GS") == 0) {
+			if (strcmp(instance_name, "BeeRewardClass") == 0) {
+				this->LoadCompatibilityScripts("brgs", GAME_DIR);
+			}
 		}
 
 		/* Create the main-class */
@@ -130,7 +137,24 @@ bool ScriptInstance::LoadCompatibilityScripts(const char *api_version, Subdirect
 		return false;
 	}
 
-	ScriptLog::Warning("API compatibility script not found");
+	const char *message_suffix;
+	switch (dir) {
+		case AI_DIR:
+			message_suffix = ", please check that the 'ai/' directory is properly installed";
+			break;
+
+		case GAME_DIR:
+			message_suffix = ", please check that the 'game/' directory is properly installed";
+			break;
+
+		default:
+			message_suffix = "";
+			break;
+	}
+
+	char not_found_msg[128];
+	seprintf(not_found_msg, lastof(not_found_msg), "API compatibility script not found: %s%s", script_name, message_suffix);
+	ScriptLog::Warning(not_found_msg);
 	return true;
 }
 

@@ -12,8 +12,6 @@
 
 #include "date_type.h"
 
-extern Year      _cur_year;
-extern Month     _cur_month;
 extern YearMonthDay _cur_date_ymd;
 extern Date      _date;
 extern DateFract _date_fract;
@@ -32,7 +30,12 @@ void ConvertDateToYMD(Date date, YearMonthDay *ymd);
 Date ConvertYMDToDate(Year year, Month month, Day day);
 void SetScaledTickVariables();
 
-#define YMD_TO_DATE(ymd) (ConvertYMDToDate(ymd.year, ymd.month, ymd.day))
+inline Date ConvertYMDToDate(const YearMonthDay &ymd)
+{
+	return ConvertYMDToDate(ymd.year, ymd.month, ymd.day);
+}
+
+#define _cur_year (static_cast<Year>(_cur_date_ymd.year))
 
 /**
  * Checks whether the given year is a leap year or not.

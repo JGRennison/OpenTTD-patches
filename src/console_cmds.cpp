@@ -47,6 +47,7 @@
 #include "town.h"
 #include "industry.h"
 #include "string_func_extra.h"
+#include "linkgraph/linkgraphjob.h"
 #include <time.h>
 
 #include "safeguards.h"
@@ -662,6 +663,7 @@ DEF_CONSOLE_CMD(ConBanList)
 	uint i = 1;
 	for (const auto &entry : _network_ban_list) {
 		IConsolePrintF(CC_DEFAULT, "  %d) %s", i, entry.c_str());
+		i++;
 	}
 
 	return true;
@@ -2021,6 +2023,17 @@ DEF_CONSOLE_CMD(ConResetBlockedHeliports)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConMergeLinkgraphJobsAsap)
+{
+	if (argc == 0) {
+		IConsoleHelp("Merge linkgraph jobs asap, for single-player use only.");
+		return true;
+	}
+
+	for (LinkGraphJob *lgj : LinkGraphJob::Iterate()) lgj->ShiftJoinDate((((_date * DAY_TICKS) + _date_fract) - lgj->JoinDateTicks()) / DAY_TICKS);
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConDumpCommandLog)
 {
 	if (argc == 0) {
@@ -2676,4 +2689,5 @@ void IConsoleStdLibRegister()
 
 	/* Bug workarounds */
 	IConsoleCmdRegister("jgrpp_bug_workaround_unblock_heliports", ConResetBlockedHeliports, ConHookNoNetwork, true);
+	IConsoleCmdRegister("merge_linkgraph_jobs_asap", ConMergeLinkgraphJobsAsap, ConHookNoNetwork, true);
 }

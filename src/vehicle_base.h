@@ -57,9 +57,10 @@ enum VehicleFlags {
 	// Additional flags not in trunk are added at the end to avoid clashing with any new
 	// flags which get added in future trunk, and to avoid re-ordering flags which are in trunk already,
 	// as this breaks savegame compatibility.
+	VF_SEPARATION_ACTIVE = 11, ///< Whether timetable auto-separation is currently active
 	VF_SCHEDULED_DISPATCH = 12, ///< Whether the vehicle should follow a timetabled dispatching schedule
 	VF_LAST_LOAD_ST_SEP = 13,   ///< Each vehicle of this chain has its last_loading_station field set separately
-	VF_TIMETABLE_SEPARATION = 14,///< Whether the vehicle should manage the timetable automatically.
+	VF_TIMETABLE_SEPARATION = 14,///< Whether timetable auto-separation is enabled
 	VF_AUTOMATE_TIMETABLE = 15, ///< Whether the vehicle should manage the timetable automatically.
 };
 
@@ -241,9 +242,6 @@ private:
 
 	Vehicle *next_shared;               ///< pointer to the next vehicle that shares the order
 	Vehicle *previous_shared;           ///< NOSAVE: pointer to the previous vehicle in the shared order chain
-
-	Vehicle *ahead_separation;
-	Vehicle *behind_separation;
 
 public:
 	friend const SaveLoad *GetVehicleDescription(VehicleType vt); ///< So we can use private/protected variables in the saveload code
@@ -701,35 +699,9 @@ public:
 	inline Order *GetFirstOrder() const { return (this->orders.list == nullptr) ? nullptr : this->orders.list->GetFirstOrder(); }
 
 	/**
-	 * Get the vehicle ahead on track.
-	 * @return the vehicle ahead on track or nullptr when there isn't one.
+	 * Clears this vehicle's separation status
 	 */
-	inline Vehicle *AheadSeparation() const { return this->ahead_separation; }
-
-	/**
-	 * Get the vehicle behind on track.
-	 * @return the vehicle behind on track or nullptr when there isn't one.
-	 */
-	inline Vehicle *BehindSeparation() const { return this->behind_separation; }
-
-	/**
-	 * Clears a vehicle's separation status, removing it from any chain.
-	 */
-	void ClearSeparation();
-
-	/**
-	 * Adds this vehicle to a shared vehicle separation chain.
-	 * @param v_other a vehicle of the separation chain
-	 * @pre !this->IsOrderListShared()
-	 */
-	void InitSeparation();
-
-	/**
-	 * Adds this vehicle behind another in a separation chain.
-	 * @param v_other a vehicle of the separation chain.
-	 * @pre !this->IsOrderListShared()
-	 */
-	void AddToSeparationBehind(Vehicle *v_other);
+	inline void ClearSeparation() { ClrBit(this->vehicle_flags, VF_SEPARATION_ACTIVE); }
 
 	void AddToShared(Vehicle *shared_chain);
 	void RemoveFromShared();
@@ -1115,7 +1087,7 @@ public:
 		this->sprite_seq_bounds = this->sprite_seq.GetBounds();
 	}
 
-	char *DumpVehicleFlags(char *b, const char *last) const;
+	char *DumpVehicleFlags(char *b, const char *last, bool include_tile) const;
 };
 
 /**

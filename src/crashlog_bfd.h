@@ -10,6 +10,16 @@
 #ifndef CRASHLOG_BFD_H
 #define CRASHLOG_BFD_H
 
+#if defined(WITH_BFD0)
+#define WITH_BFD 1
+#define get_bfd_section_size(abfd, section) bfd_section_size(abfd, section)
+#elif defined(WITH_BFD1)
+#define WITH_BFD 1
+#define bfd_get_section_flags(abfd, section) bfd_section_flags(section)
+#define bfd_get_section_vma(abfd, section) bfd_section_vma(section)
+#define get_bfd_section_size(abfd, section) bfd_section_size(section)
+#endif
+
 #if defined(WITH_BFD)
 /* this is because newer versions of libbfd insist on seeing these, even though they aren't used for anything */
 #define PACKAGE 1

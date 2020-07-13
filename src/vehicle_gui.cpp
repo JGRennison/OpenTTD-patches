@@ -3119,6 +3119,7 @@ private:
 		SEL_DC_BASEPLANE = SEL_DC_GOTO_DEPOT, ///< First plane of the #WID_VV_SELECT_DEPOT_CLONE stacked widget.
 		SEL_RT_BASEPLANE = SEL_RT_REFIT,      ///< First plane of the #WID_VV_SELECT_REFIT_TURN stacked widget.
 	};
+	bool mouse_over_start_stop = false;
 
 	/**
 	 * Display a plane in the window.
@@ -3322,7 +3323,7 @@ public:
 					SetDParam(1, percent);
 				}
 			}
-		} else if (v->vehstatus & VS_STOPPED) {
+		} else if (v->vehstatus & VS_STOPPED && (!mouse_over_start_stop || v->IsStoppedInDepot())) {
 			if (v->type == VEH_TRAIN) {
 				if (v->cur_speed == 0) {
 					if (Train::From(v)->gcache.cached_power == 0) {
@@ -3344,7 +3345,7 @@ public:
 			} else { // no train/RV
 				str = STR_VEHICLE_STATUS_STOPPED;
 			}
-		} else if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_TRAIN_STUCK) && !v->current_order.IsType(OT_LOADING)) {
+		} else if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_TRAIN_STUCK) && !v->current_order.IsType(OT_LOADING) && !mouse_over_start_stop) {
 			str = HasBit(Train::From(v)->flags, VRF_WAITING_RESTRICTION) ? STR_VEHICLE_STATUS_TRAIN_STUCK_WAIT_RESTRICTION : STR_VEHICLE_STATUS_TRAIN_STUCK;
 		} else if (v->type == VEH_TRAIN && Train::From(v)->reverse_distance > 1) {
 			str = STR_VEHICLE_STATUS_TRAIN_REVERSING;
@@ -3582,6 +3583,15 @@ public:
 				uint64 arg = STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP + v->type;
 				GuiShowTooltips(this, STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT, 1, &arg, TCC_HOVER);
 			}
+		}
+	}
+
+	void OnMouseOver(Point pt, int widget) override
+	{
+		bool start_stop = widget == WID_VV_START_STOP;
+		if (start_stop != mouse_over_start_stop) {
+			mouse_over_start_stop = start_stop;
+			this->SetWidgetDirty(WID_VV_START_STOP);
 		}
 	}
 

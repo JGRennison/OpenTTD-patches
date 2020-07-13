@@ -382,9 +382,7 @@ static void DrawSurfaceToScreen()
 	} else {
 		if (_sdl_surface != _sdl_realscreen) {
 			for (int i = 0; i < n; i++) {
-				SDL_BlitSurface(
-					_sdl_surface, &_dirty_rects[i],
-					_sdl_realscreen, &_dirty_rects[i]);
+				SDL_BlitSurface(_sdl_surface, &_dirty_rects[i], _sdl_realscreen, &_dirty_rects[i]);
 			}
 		}
 
@@ -472,12 +470,10 @@ bool VideoDriver_SDL::CreateMainSurface(uint w, uint h, bool resize)
 	seprintf(caption, lastof(caption), "OpenTTD %s", _openttd_revision);
 
 	if (_sdl_window == nullptr) {
-		Uint32 flags = SDL_WINDOW_SHOWN;
+		Uint32 flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
 
 		if (_fullscreen) {
 			flags |= SDL_WINDOW_FULLSCREEN;
-		} else {
-			flags |= SDL_WINDOW_RESIZABLE;
 		}
 
 		_sdl_window = SDL_CreateWindow(

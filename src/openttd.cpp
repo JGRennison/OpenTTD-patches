@@ -494,6 +494,7 @@ void MakeNewgameSettingsLive()
 	/* Copy newgame settings to active settings.
 	 * Also initialise old settings needed for savegame conversion. */
 	_settings_game = _settings_newgame;
+	_settings_time = _settings_game.game_time = _settings_client.gui;
 	_old_vds = _settings_client.company.vehicle;
 
 	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
@@ -1367,29 +1368,25 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 
 	/* Check the town caches. */
 	std::vector<TownCache> old_town_caches;
-	std::vector<CargoTypes> old_town_cargo_accepted_totals;
-	std::vector<CargoTypes> old_town_cargo_produced;
 	std::vector<StationList> old_town_stations_nears;
 	for (const Town *t : Town::Iterate()) {
 		old_town_caches.push_back(t->cache);
-		old_town_cargo_accepted_totals.push_back(t->cargo_accepted_total);
-		old_town_cargo_produced.push_back(t->cargo_produced);
 		old_town_stations_nears.push_back(t->stations_near);
 	}
 
 	std::vector<IndustryList> old_station_industries_nears;
 	std::vector<BitmapTileArea> old_station_catchment_tiles;
+	std::vector<uint> old_station_tiles;
 	for (Station *st : Station::Iterate()) {
 		old_station_industries_nears.push_back(st->industries_near);
 		old_station_catchment_tiles.push_back(st->catchment_tiles);
+		old_station_tiles.push_back(st->station_tiles);
 	}
 
 	std::vector<StationList> old_industry_stations_nears;
 	for (Industry *ind : Industry::Iterate()) {
 		old_industry_stations_nears.push_back(ind->stations_near);
 	}
-
-	const CargoTypes old_town_cargoes_accepted = _town_cargoes_accepted;
 
 	extern void RebuildTownCaches(bool cargo_update_required);
 	RebuildTownCaches(false);
@@ -1402,19 +1399,10 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		if (MemCmpT(old_town_caches.data() + i, &t->cache) != 0) {
 			CCLOG("town cache mismatch: town %i", (int)t->index);
 		}
-		if (old_town_cargo_accepted_totals[i] != t->cargo_accepted_total) {
-			CCLOG("town cargo_accepted_total mismatch: town %i, old: " OTTD_PRINTFHEX64 ". new: " OTTD_PRINTFHEX64, (int)t->index, old_town_cargo_accepted_totals[i], t->cargo_accepted_total);
-		}
-		if (old_town_cargo_produced[i] != t->cargo_produced) {
-			CCLOG("town cargo_produced mismatch: town %i, old: " OTTD_PRINTFHEX64 ". new: " OTTD_PRINTFHEX64, (int)t->index, old_town_cargo_produced[i], t->cargo_produced);
-		}
 		if (old_town_stations_nears[i] != t->stations_near) {
 			CCLOG("town stations_near mismatch: town %i, (old size: %u, new size: %u)", (int)t->index, (uint)old_town_stations_nears[i].size(), (uint)t->stations_near.size());
 		}
 		i++;
-	}
-	if (old_town_cargoes_accepted != _town_cargoes_accepted) {
-		CCLOG("_town_cargoes_accepted mismatch: old: " OTTD_PRINTFHEX64 ". new: " OTTD_PRINTFHEX64, old_town_cargoes_accepted, _town_cargoes_accepted);
 	}
 	i = 0;
 	for (Station *st : Station::Iterate()) {
@@ -1423,6 +1411,9 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		}
 		if (!(old_station_catchment_tiles[i] == st->catchment_tiles)) {
 			CCLOG("station catchment_tiles mismatch: st %i", (int)st->index);
+		}
+		if (!(old_station_tiles[i] == st->station_tiles)) {
+			CCLOG("station station_tiles mismatch: st %i, (old: %u, new: %u)", (int)st->index, old_station_tiles[i], st->station_tiles);
 		}
 		i++;
 	}

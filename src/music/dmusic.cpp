@@ -7,12 +7,10 @@
 
 /** @file dmusic.cpp Playing music via DirectMusic. */
 
-#ifdef WIN32_ENABLE_DIRECTMUSIC_SUPPORT
-
 #define INITGUID
 #include "../stdafx.h"
 #ifdef WIN32_LEAN_AND_MEAN
-	#undef WIN32_LEAN_AND_MEAN // Don't exclude rarely-used stuff from Windows headers
+#	undef WIN32_LEAN_AND_MEAN // Don't exclude rarely-used stuff from Windows headers
 #endif
 #include "../debug.h"
 #include "../os/windows/win32.h"
@@ -1244,6 +1242,3 @@ void MusicDriver_DMusic::SetVolume(byte vol)
 {
 	_playback.new_volume = vol;
 }
-
-
-#endif /* WIN32_ENABLE_DIRECTMUSIC_SUPPORT */

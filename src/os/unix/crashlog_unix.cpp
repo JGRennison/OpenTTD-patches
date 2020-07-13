@@ -426,12 +426,12 @@ class CrashLogUnix : public CrashLog {
 			unsigned int line_num = 0;
 #if defined(WITH_BFD)
 			/* subtract one to get the line before the return address, i.e. the function call line */
-			sym_info_bfd bfd_info(reinterpret_cast<bfd_vma>(trace[i]) - 1);
+			sym_info_bfd bfd_info(reinterpret_cast<bfd_vma>(trace[i]) - reinterpret_cast<bfd_vma>(info.dli_fbase) - 1);
 			if (dladdr_result && info.dli_fname) {
 				lookup_addr_bfd(info.dli_fname, bfd_info);
 				if (bfd_info.file_name != nullptr) file_name = bfd_info.file_name;
 				if (bfd_info.function_name != nullptr) func_name = bfd_info.function_name;
-				if (bfd_info.function_addr != 0) func_addr = reinterpret_cast<void *>(bfd_info.function_addr);
+				if (bfd_info.function_addr != 0) func_addr = reinterpret_cast<void *>(bfd_info.function_addr + reinterpret_cast<bfd_vma>(info.dli_fbase));
 				line_num = bfd_info.line;
 			}
 #endif /* WITH_BFD */

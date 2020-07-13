@@ -153,7 +153,7 @@ void MemoryDumper::AllocateBuffer()
 		return;
 	}
 	this->FinaliseBlock();
-	this->buf = CallocT<byte>(MEMORY_CHUNK_SIZE);
+	this->buf = MallocT<byte>(MEMORY_CHUNK_SIZE);
 	this->blocks.emplace_back(this->buf);
 	this->bufe = this->buf + MEMORY_CHUNK_SIZE;
 }

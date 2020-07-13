@@ -60,7 +60,6 @@
 #include "safeguards.h"
 
 TownID _new_town_id;
-CargoTypes _town_cargoes_accepted; ///< Bitmap of all cargoes accepted by houses.
 
 /* Initialize the town-pool */
 TownPool _town_pool("Town");
@@ -937,91 +936,6 @@ static TrackStatus GetTileTrackStatus_Town(TileIndex tile, TransportType mode, u
 static void ChangeTileOwner_Town(TileIndex tile, Owner old_owner, Owner new_owner)
 {
 	/* not used */
-}
-
-/** Update the total cargo acceptance of the whole town.
- * @param t The town to update.
- */
-void UpdateTownCargoTotal(Town *t)
-{
-	t->cargo_accepted_total = 0;
-
-	const TileArea &area = t->cargo_accepted.GetArea();
-	TILE_AREA_LOOP_STEP(tile, area, AcceptanceMatrix::GRID) {
-		t->cargo_accepted_total |= t->cargo_accepted[tile];
-	}
-}
-
-/**
- * Update accepted town cargoes around a specific tile.
- * @param t The town to update.
- * @param start Update the values around this tile.
- * @param update_total Set to true if the total cargo acceptance should be updated.
- */
-static void UpdateTownCargoesSingleGridArea(Town *t, TileIndex start, bool update_total = true)
-{
-	CargoArray accepted, produced;
-	CargoTypes dummy = 0;
-
-	/* Gather acceptance for all houses in an area around the start tile. */
-	TileArea area = AcceptanceMatrix::GetAreaForTile(start, 1);
-	TILE_AREA_LOOP(tile, area) {
-		if (!IsTileType(tile, MP_HOUSE) || GetTownIndex(tile) != t->index) continue;
-
-		AddAcceptedCargo_Town(tile, accepted, &dummy);
-		AddProducedCargo_Town(tile, produced);
-	}
-
-	/* Create bitmap of produced and accepted cargoes. */
-	CargoTypes acc = 0;
-	for (uint cid = 0; cid < NUM_CARGO; cid++) {
-		if (accepted[cid] >= 8) SetBit(acc, cid);
-		if (produced[cid] > 0) SetBit(t->cargo_produced, cid);
-	}
-	t->cargo_accepted[start] = acc;
-
-	if (update_total) UpdateTownCargoTotal(t);
-}
-
-static void UpdateTownCargoesHouse(Town *t, TileIndex start, bool x_two_tiles, bool y_two_tiles, bool update_total = true)
-{
-	TileIndex lower = TileAddSaturating(start, -AcceptanceMatrix::GRID, -AcceptanceMatrix::GRID);
-	TileIndex upper = TileAddSaturating(start, AcceptanceMatrix::GRID + (x_two_tiles ? 1 : 0), AcceptanceMatrix::GRID + (y_two_tiles ? 1 : 0));
-	for (uint x = TileX(lower) & ~(AcceptanceMatrix::GRID - 1); x <= TileX(upper); x += AcceptanceMatrix::GRID) {
-		for (uint y = TileY(lower) & ~(AcceptanceMatrix::GRID - 1); y <= TileY(upper); y += AcceptanceMatrix::GRID) {
-			UpdateTownCargoesSingleGridArea(t, TileXY(x, y), false);
-		}
-	}
-	if (update_total) UpdateTownCargoTotal(t);
-}
-
-/** Update cargo acceptance for the complete town.
- * @param t The town to update.
- */
-void UpdateTownCargoes(Town *t)
-{
-	t->cargo_produced = 0;
-
-	const TileArea &area = t->cargo_accepted.GetArea();
-	if (area.tile != INVALID_TILE) {
-		/* Update acceptance for each grid square. */
-		TILE_AREA_LOOP_STEP(tile, area, AcceptanceMatrix::GRID) {
-			UpdateTownCargoesSingleGridArea(t, tile, false);
-		}
-	}
-
-	/* Update the total acceptance. */
-	UpdateTownCargoTotal(t);
-}
-
-/** Updates the bitmap of all cargoes accepted by houses. */
-void UpdateTownCargoBitmap()
-{
-	_town_cargoes_accepted = 0;
-
-	for (const Town *town : Town::Iterate()) {
-		_town_cargoes_accepted |= town->cargo_accepted_total;
-	}
 }
 
 static bool GrowTown(Town *t);
@@ -2166,8 +2080,6 @@ CommandCost CmdFoundTown(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 			/* 't' can't be nullptr since 'random' is false outside scenedit */
 			assert(!random);
 
-			UpdateTownCargoBitmap();
-
 			if (_current_company == OWNER_DEITY) {
 				SetDParam(0, t->index);
 				AddTileNewsItem(STR_NEWS_NEW_TOWN_UNSPONSORED, NT_INDUSTRY_OPEN, tile);
@@ -2697,8 +2609,7 @@ static CommandCost CheckCanBuildHouse(HouseID house, const Town *t)
 {
 	const HouseSpec *hs = HouseSpec::Get(house);
 
-	if (_loaded_newgrf_features.has_newhouses && !_generating_world &&
-			_game_mode != GM_EDITOR && (hs->extra_flags & BUILDING_IS_HISTORICAL) != 0) {
+	if (!_generating_world && _game_mode != GM_EDITOR && (hs->extra_flags & BUILDING_IS_HISTORICAL) != 0) {
 		return CMD_ERROR;
 	}
 
@@ -2755,7 +2666,6 @@ static void DoBuildHouse(Town *t, TileIndex tile, HouseID house, byte random_bit
 	MakeTownHouse(tile, t, construction_counter, construction_stage, house, random_bits);
 	UpdateTownRadius(t);
 	UpdateTownGrowthRate(t);
-	UpdateTownCargoesHouse(t, tile, hs->building_flags & BUILDING_2_TILES_X, hs->building_flags & BUILDING_2_TILES_Y);
 }
 
 /**
@@ -2836,8 +2746,7 @@ static bool BuildTownHouse(Town *t, TileIndex tile)
 		if (IsHouseTypeAllowed((HouseID)i, above_snowline, zone).Failed()) continue;
 		if (IsAnotherHouseTypeAllowedInTown(t, (HouseID)i).Failed()) continue;
 
-		/* Without NewHouses, all houses have probability '1' */
-		uint cur_prob = (_loaded_newgrf_features.has_newhouses ? HouseSpec::Get(i)->probability : 1);
+		uint cur_prob = HouseSpec::Get(i)->probability;
 		probability_max += cur_prob;
 		probs[num] = cur_prob;
 		houses[num++] = (HouseID)i;
@@ -2963,9 +2872,6 @@ void ClearTownHouse(Town *t, TileIndex tile)
 	RemoveNearbyStations(t, tile, hs->building_flags);
 
 	UpdateTownRadius(t);
-
-	/* Update cargo acceptance. */
-	UpdateTownCargoesHouse(t, tile, hs->building_flags & BUILDING_2_TILES_X, hs->building_flags & BUILDING_2_TILES_Y);
 }
 
 /**
@@ -3729,9 +3635,9 @@ static uint GetNormalGrowthRate(Town *t)
 			return stat.old_max ? ((uint64) (stat.old_act << 15)) / stat.old_max : 1 << 15;
 		};
 		uint32 cargo_ratio_fix16 = calculate_cargo_ratio_fix15(t->supplied[CT_PASSENGERS]) + calculate_cargo_ratio_fix15(t->supplied[CT_MAIL]);
-		uint32 cargo_dependant_part = (((uint64) cargo_ratio_fix16) * ((uint64) inverse_m) * _settings_game.economy.town_growth_cargo_transported) >> 16;
-		uint32 non_cargo_dependant_part = ((uint64) inverse_m) * (100 - _settings_game.economy.town_growth_cargo_transported);
-		uint32 total = (cargo_dependant_part + non_cargo_dependant_part);
+		uint64 cargo_dependant_part = (((uint64) cargo_ratio_fix16) * ((uint64) inverse_m) * _settings_game.economy.town_growth_cargo_transported) >> 16;
+		uint64 non_cargo_dependant_part = ((uint64) inverse_m) * (100 - _settings_game.economy.town_growth_cargo_transported);
+		uint64 total = (cargo_dependant_part + non_cargo_dependant_part);
 		if (total == 0) {
 			ClrBit(t->flags, TOWN_IS_GROWING);
 			return UINT16_MAX;
@@ -4026,10 +3932,8 @@ void TownsMonthlyLoop()
 		UpdateTownGrowth(t);
 		UpdateTownRating(t);
 		UpdateTownUnwanted(t);
-		UpdateTownCargoes(t);
 	}
 
-	UpdateTownCargoBitmap();
 }
 
 void TownsYearlyLoop()

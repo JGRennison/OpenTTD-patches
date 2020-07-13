@@ -109,9 +109,13 @@ static void NetworkFindBroadcastIPsInternal(NetworkAddressList *broadcast) // Wi
 	SOCKET sock = socket(AF_INET, SOCK_DGRAM, 0);
 	if (sock == INVALID_SOCKET) return;
 
+	// Workaround for incorrect buffer size length check in WINE
+	// See: https://bugs.winehq.org/show_bug.cgi?id=49371
+	const int BUFFER_OVERSIZE_FACTOR = 10;
+
 	DWORD len = 0;
 	int num = 8;
-	INTERFACE_INFO *ifo = CallocT<INTERFACE_INFO>(num);
+	INTERFACE_INFO *ifo = CallocT<INTERFACE_INFO>(num * BUFFER_OVERSIZE_FACTOR);
 
 	for (;;) {
 		if (WSAIoctl(sock, SIO_GET_INTERFACE_LIST, nullptr, 0, ifo, num * sizeof(*ifo), &len, nullptr, nullptr) == 0) break;
@@ -121,9 +125,9 @@ static void NetworkFindBroadcastIPsInternal(NetworkAddressList *broadcast) // Wi
 			return;
 		}
 		num *= 2;
-		ifo = CallocT<INTERFACE_INFO>(num);
+		ifo = CallocT<INTERFACE_INFO>(num * BUFFER_OVERSIZE_FACTOR);
 	}
-	assert(len <= num * sizeof(*ifo));
+	assert(len <= num * sizeof(*ifo) * BUFFER_OVERSIZE_FACTOR);
 
 	for (uint j = 0; j < len / sizeof(*ifo); j++) {
 		if (ifo[j].iiFlags & IFF_LOOPBACK) continue;

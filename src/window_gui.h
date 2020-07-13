@@ -254,6 +254,7 @@ enum WindowFlags : uint16 {
 	WF_CENTERED          = 1 << 10, ///< Window is centered and shall stay centered after ReInit.
 	WF_DIRTY             = 1 << 11, ///< Whole window is dirty, and requires repainting.
 	WF_WIDGETS_DIRTY     = 1 << 12, ///< One or more widgets are dirty, and require repainting.
+	WF_DRAG_DIRTIED      = 1 << 13, ///< The window has already been marked dirty as blocks as part of the current drag operation
 };
 DECLARE_ENUM_AS_BIT_SET(WindowFlags)
 

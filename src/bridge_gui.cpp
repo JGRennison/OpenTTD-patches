@@ -433,9 +433,12 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 			default: break;
 		}
 
+		bool any_available = false;
+		CommandCost type_check;
 		/* loop for all bridgetypes */
 		for (BridgeType brd_type = 0; brd_type != MAX_BRIDGES; brd_type++) {
-			if (CheckBridgeAvailability(brd_type, bridge_len).Succeeded()) {
+			type_check = CheckBridgeAvailability(brd_type, bridge_len);
+			if (type_check.Succeeded()) {
 				/* Re-check bridge building possibility is initial bridge builindg query indicated a bridge type dependent failure */
 				if (query_per_bridge_type && DoCommand(end, start, type | brd_type, CommandFlagsToDCFlags(GetCommandFlags(CMD_BUILD_BRIDGE)) | DC_QUERY_COST, CMD_BUILD_BRIDGE).Failed()) continue;
 				/* bridge is accepted, add to list */
@@ -446,7 +449,13 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 				/* Add to terraforming & bulldozing costs the cost of the
 				 * bridge itself (not computed with DC_QUERY_COST) */
 				item.cost = ret.GetCost() + (((int64)tot_bridgedata_len * _price[PR_BUILD_BRIDGE] * item.spec->price) >> 8) + infra_cost;
+				any_available = true;
 			}
+		}
+		/* give error cause if no bridges available here*/
+		if (!any_available)
+		{
+			errmsg = type_check.GetErrorMessage();
 		}
 	}
 

@@ -116,6 +116,8 @@ static inline void ToggleTransparencyLock(TransparencyOption to)
 /** Set or clear all non-locked transparency options */
 static inline void ResetRestoreAllTransparency()
 {
+	const TransparencyOptionBits old_transparency_opt = _transparency_opt;
+
 	/* if none of the non-locked options are set */
 	if ((_transparency_opt & ~_transparency_lock) == 0) {
 		/* set all non-locked options */
@@ -125,6 +127,10 @@ static inline void ResetRestoreAllTransparency()
 		_transparency_opt &= _transparency_lock;
 	}
 
+	if (HasBit(old_transparency_opt ^ _transparency_opt, TO_TUNNELS)) {
+		extern void UpdateAllVehiclesIsDrawn();
+		UpdateAllVehiclesIsDrawn();
+	}
 	MarkWholeScreenDirty();
 }
 

@@ -1315,6 +1315,7 @@ STR_GAME_OPTIONS_CURRENCY_MXN                                   :Peso meksykańs
 STR_GAME_OPTIONS_CURRENCY_NTD                                   :Nowy dolar tajwański (TWD)
 STR_GAME_OPTIONS_CURRENCY_CNY                                   :Juan chiński (CNY)
 STR_GAME_OPTIONS_CURRENCY_HKD                                   :Dolar hongkoński (HKD)
+STR_GAME_OPTIONS_CURRENCY_INR                                   :Rupia Indyjska (INR)
 ############ end of currency region
 
 STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Pojazdy drogowe
@@ -4870,7 +4871,6 @@ STR_ERROR_CAN_T_CONVERT_ROAD                                    :{WHITE}Nie moż
 STR_ERROR_CAN_T_CONVERT_TRAMWAY                                 :{WHITE}Nie można zmienić typu torów tramwajowych w tym miejscu...
 STR_ERROR_NO_SUITABLE_ROAD                                      :{WHITE}Brak właściwej drogi
 STR_ERROR_NO_SUITABLE_TRAMWAY                                   :{WHITE}Brak właściwej linii tramwajowej
-STR_ERROR_INCOMPATIBLE_ROAD                                     :{WHITE}... niekompatybilna droga
 STR_ERROR_INCOMPATIBLE_TRAMWAY                                  :{WHITE}... niekompatybilne tory tramwajowe
 
 # Waterway construction errors

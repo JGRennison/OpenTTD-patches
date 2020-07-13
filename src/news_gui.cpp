@@ -671,6 +671,11 @@ static bool ReadyForNextNewsItem()
 /** Move to the next ticker item */
 static void MoveToNextTickerItem()
 {
+	/* There is no status bar, so no reason to show news;
+	 * especially important with the end game screen when
+	 * there is no status bar but possible news. */
+	if (FindWindowById(WC_STATUS_BAR, 0) == nullptr) return;
+
 	InvalidateWindowData(WC_STATUS_BAR, 0, SBI_NEWS_DELETED); // invalidate the statusbar
 
 	/* if we're not at the last item, then move on */
@@ -702,6 +707,11 @@ static void MoveToNextTickerItem()
 /** Move to the next news item */
 static void MoveToNextNewsItem()
 {
+	/* There is no status bar, so no reason to show news;
+	 * especially important with the end game screen when
+	 * there is no status bar but possible news. */
+	if (FindWindowById(WC_STATUS_BAR, 0) == nullptr) return;
+
 	DeleteWindowById(WC_NEWS_WINDOW, 0); // close the newspapers window if shown
 	_forced_news = nullptr;
 
@@ -995,16 +1005,11 @@ void NewsLoop()
 	/* no news item yet */
 	if (_total_news == 0) return;
 
-	/* There is no status bar, so no reason to show news;
-	 * especially important with the end game screen when
-	 * there is no status bar but possible news. */
-	if (FindWindowById(WC_STATUS_BAR, 0) == nullptr) return;
-
 	static byte _last_clean_month = 0;
 
-	if (_last_clean_month != _cur_month) {
+	if (_last_clean_month != _cur_date_ymd.month) {
 		RemoveOldNewsItems();
-		_last_clean_month = _cur_month;
+		_last_clean_month = _cur_date_ymd.month;
 	}
 
 	if (ReadyForNextTickerItem()) MoveToNextTickerItem();

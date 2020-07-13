@@ -571,7 +571,7 @@ public:
 			nums = min(this->num_vert_lines, max(nums, c->num_valid_stat_ent));
 		}
 
-		int mo = (_cur_month / 3 - nums) * 3;
+		int mo = (_cur_date_ymd.month / 3 - nums) * 3;
 		int yr = _cur_year;
 		while (mo < 0) {
 			yr--;

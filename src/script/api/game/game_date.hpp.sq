@@ -21,13 +21,14 @@ void SQGSDate_Register(Squirrel *engine)
 
 	SQGSDate.DefSQConst(engine, ScriptDate::DATE_INVALID, "DATE_INVALID");
 
-	SQGSDate.DefSQStaticMethod(engine, &ScriptDate::IsValidDate,    "IsValidDate",    2, ".i");
-	SQGSDate.DefSQStaticMethod(engine, &ScriptDate::GetCurrentDate, "GetCurrentDate", 1, ".");
-	SQGSDate.DefSQStaticMethod(engine, &ScriptDate::GetYear,        "GetYear",        2, ".i");
-	SQGSDate.DefSQStaticMethod(engine, &ScriptDate::GetMonth,       "GetMonth",       2, ".i");
-	SQGSDate.DefSQStaticMethod(engine, &ScriptDate::GetDayOfMonth,  "GetDayOfMonth",  2, ".i");
-	SQGSDate.DefSQStaticMethod(engine, &ScriptDate::GetDate,        "GetDate",        4, ".iii");
-	SQGSDate.DefSQStaticMethod(engine, &ScriptDate::GetSystemTime,  "GetSystemTime",  1, ".");
+	SQGSDate.DefSQStaticMethod(engine, &ScriptDate::IsValidDate,        "IsValidDate",        2, ".i");
+	SQGSDate.DefSQStaticMethod(engine, &ScriptDate::GetCurrentDate,     "GetCurrentDate",     1, ".");
+	SQGSDate.DefSQStaticMethod(engine, &ScriptDate::GetDayLengthFactor, "GetDayLengthFactor", 1, ".");
+	SQGSDate.DefSQStaticMethod(engine, &ScriptDate::GetYear,            "GetYear",            2, ".i");
+	SQGSDate.DefSQStaticMethod(engine, &ScriptDate::GetMonth,           "GetMonth",           2, ".i");
+	SQGSDate.DefSQStaticMethod(engine, &ScriptDate::GetDayOfMonth,      "GetDayOfMonth",      2, ".i");
+	SQGSDate.DefSQStaticMethod(engine, &ScriptDate::GetDate,            "GetDate",            4, ".iii");
+	SQGSDate.DefSQStaticMethod(engine, &ScriptDate::GetSystemTime,      "GetSystemTime",      1, ".");
 
 	SQGSDate.PostRegister(engine);
 }

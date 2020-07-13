@@ -224,7 +224,7 @@ struct StatusBarWindow : Window {
 	{
 		if (_pause_mode != PM_UNPAUSED) return;
 
-		if (_settings_client.gui.time_in_minutes && this->last_minute != CURRENT_MINUTE) {
+		if (_settings_time.time_in_minutes && this->last_minute != CURRENT_MINUTE) {
 			this->last_minute = CURRENT_MINUTE;
 			this->SetWidgetDirty(WID_S_LEFT);
 		}

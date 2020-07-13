@@ -28,6 +28,7 @@
 #include "newgrf.h"
 #include "error.h"
 #include "network/network.h"
+#include "order_base.h"
 
 #include "widgets/cheat_widget.h"
 
@@ -108,6 +109,7 @@ static int32 ClickChangeDateCheat(int32 p1, int32 p2)
 
 	Date new_date = ConvertYMDToDate(p1, ymd.month, ymd.day);
 	LinkGraphSchedule::instance.ShiftDates(new_date - _date);
+	ShiftOrderDates(new_date - _date);
 	SetDate(new_date, _date_fract);
 	EnginesMonthlyLoop();
 	SetWindowDirty(WC_STATUS_BAR, 0);
@@ -183,7 +185,7 @@ static const CheatEntry _cheats_ui[] = {
 	{CNM_ALL,        SLE_BOOL,        STR_CHEAT_NO_JETCRASH,      &_cheats.no_jetcrash.value,              &_cheats.no_jetcrash.been_used,            nullptr                    },
 	{CNM_LOCAL_ONLY, SLE_BOOL,        STR_CHEAT_SETUP_PROD,       &_cheats.setup_prod.value,               &_cheats.setup_prod.been_used,             &ClickSetProdCheat         },
 	{CNM_LOCAL_ONLY, SLE_UINT8,       STR_CHEAT_EDIT_MAX_HL,      &_settings_game.construction.max_heightlevel, &_cheats.edit_max_hl.been_used,       &ClickChangeMaxHlCheat     },
-	{CNM_LOCAL_ONLY, SLE_INT32,       STR_CHEAT_CHANGE_DATE,      &_cur_year,                              &_cheats.change_date.been_used,            &ClickChangeDateCheat      },
+	{CNM_LOCAL_ONLY, SLE_INT32,       STR_CHEAT_CHANGE_DATE,      &_cur_date_ymd.year,                     &_cheats.change_date.been_used,            &ClickChangeDateCheat      },
 	{CNM_ALL,        SLF_NOT_IN_SAVE, STR_CHEAT_INFLATION_COST,   &_economy.inflation_prices,              &_extra_cheats.inflation_cost.been_used,   nullptr                    },
 	{CNM_ALL,        SLF_NOT_IN_SAVE, STR_CHEAT_INFLATION_INCOME, &_economy.inflation_payment,             &_extra_cheats.inflation_income.been_used, nullptr                    },
 };

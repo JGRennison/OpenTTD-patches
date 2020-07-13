@@ -612,11 +612,6 @@ CommandCost CmdTimetableSeparation(TileIndex tile, DoCommandFlag flags, uint32 p
 
 static inline bool IsOrderUsableForSeparation(const Order *order)
 {
-	if (order->IsType(OT_CONDITIONAL)) {
-		// Auto separation is unlikely to useful work at all if one of these is present, so give up
-		return false;
-	}
-
 	if (order->GetWaitTime() == 0 && order->IsType(OT_GOTO_STATION) && !(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) {
 		// non-station orders are permitted to have 0 wait times
 		return false;
@@ -624,108 +619,107 @@ static inline bool IsOrderUsableForSeparation(const Order *order)
 
 	if (order->GetTravelTime() == 0 && !order->IsTravelTimetabled()) {
 		// 0 travel times are permitted, if explicitly timetabled
-		// this is useful for depot service orders
 		return false;
 	}
 
 	return true;
 }
 
-int TimeToFinishOrder(Vehicle *v, int n)
+std::vector<TimetableProgress> PopulateSeparationState(const Vehicle *v_start)
 {
-	int left;
-	Order *order = v->GetOrder(n);
-	int wait_time   = order->GetWaitTime();
-	int travel_time = order->GetTravelTime();
-	assert(order != nullptr);
-	if (!IsOrderUsableForSeparation(order)) return -1;
-	if ((v->cur_real_order_index == n) && (v->last_station_visited == order->GetDestination())) {
-		if (v->current_loading_time > 0) {
-			left = wait_time - v->current_order_time;
-		} else {
-			left = wait_time;
+	std::vector<TimetableProgress> out;
+	for (const Vehicle *v = v_start->FirstShared(); v != nullptr; v = v->NextShared()) {
+		if (!HasBit(v->vehicle_flags, VF_SEPARATION_ACTIVE)) continue;
+		bool separation_valid = true;
+		const int n = v->cur_real_order_index;
+		int cumulative_ticks = 0;
+		bool vehicle_ok = true;
+		int order_count = n * 2;
+		for (int i = 0; i < n; i++) {
+			const Order *order = v->GetOrder(i);
+			if (order->IsType(OT_CONDITIONAL)) {
+				vehicle_ok = false;
+				break;
+			}
+			if (!IsOrderUsableForSeparation(order)) separation_valid = false;
+			cumulative_ticks += order->GetTravelTime() + order->GetWaitTime();
 		}
-		if (left < 0) left = 0;
-	} else {
-		left = travel_time;
-		if (v->cur_real_order_index == n) left -= v->current_order_time;
-		if (left < 0) left = 0;
-		left +=wait_time;
-	}
-	return left;
-}
+		if (!vehicle_ok) continue;
 
-int SeparationBetween(Vehicle *v1, Vehicle *v2)
-{
-	if (v1 == v2) return -1;
-	int separation = 0;
-	int time;
-	int n = v1->cur_real_order_index;
-	while (n != v2->cur_real_order_index) {
-		time = TimeToFinishOrder(v1, n);
-		if (time == -1) return -1;
-		separation += time;
-		n++;
-		if (n >= v1->GetNumOrders()) n = 0;
-	}
-	int time1 = TimeToFinishOrder(v1, n);
-	int time2 = TimeToFinishOrder(v2, n);
-	if (time1 == -1 || time2 == -1) return -1;
-	time = time1 - time2;
-	if (time < 0) {
-		for (n = 0; n < v1->GetNumOrders(); n++) {
-			Order *order = v1->GetOrder(n);
-			if (!IsOrderUsableForSeparation(order)) return -1;
-			time += order->GetTravelTime() + order->GetWaitTime();
+		const Order *order = v->GetOrder(n);
+		if (order->IsType(OT_CONDITIONAL)) continue;
+		if (!IsOrderUsableForSeparation(order)) separation_valid = false;
+		if (order->IsType(OT_GOTO_DEPOT) && (order->GetDepotOrderType() & ODTFB_SERVICE || order->GetDepotActionType() & ODATFB_HALT)) {
+			// Do not try to separate vehicles on depot service or halt orders
+			separation_valid = false;
 		}
+		int order_ticks;
+		if (order->GetType() == OT_GOTO_STATION && (v->current_order.IsType(OT_LOADING) || v->current_order.IsType(OT_LOADING_ADVANCE)) &&
+				v->last_station_visited == order->GetDestination()) {
+			order_count++;
+			order_ticks = order->GetTravelTime() + v->current_loading_time;
+			cumulative_ticks += order->GetTravelTime() + min(v->current_loading_time, order->GetWaitTime());
+		} else {
+			order_ticks = v->current_order_time;
+			cumulative_ticks += min(v->current_order_time, order->GetTravelTime());
+		}
+
+		out.push_back({ v->index, order_count, order_ticks, separation_valid ? cumulative_ticks : -1 });
 	}
-	separation += time;
-	assert(separation >= 0);
-	if (separation == 0) return -1;
-	return separation;
+
+	std::sort(out.begin(), out.end());
+
+	return out;
 }
 
 void UpdateSeparationOrder(Vehicle *v_start)
 {
-	/* First check if we have a vehicle ahead, and if not search for one. */
-	if (v_start->AheadSeparation() == nullptr) {
-		v_start->InitSeparation();
-	}
-	if (v_start->AheadSeparation() == nullptr) {
-		return;
-	}
-	/* Switch positions if necessary. */
-	int swaps = 0;
-	bool done = false;
-	while (!done) {
-		done = true;
-		int min_sep = SeparationBetween(v_start, v_start->AheadSeparation());
-		Vehicle *v = v_start;
-		do {
-			if (v != v_start) {
-				int tmp_sep = SeparationBetween(v_start, v);
-				if (tmp_sep < min_sep && tmp_sep != -1) {
-					swaps++;
-					if (swaps >= 50) {
-						return;
-					}
-					done = false;
-					v_start->ClearSeparation();
-					v_start->AddToSeparationBehind(v);
-					break;
+	SetBit(v_start->vehicle_flags, VF_SEPARATION_ACTIVE);
+
+	std::vector<TimetableProgress> progress_array = PopulateSeparationState(v_start);
+	if (progress_array.size() < 2) return;
+
+	const uint duration = v_start->orders.list->GetTotalDuration();
+	Vehicle *v = Vehicle::Get(progress_array.back().id);
+	Vehicle *v_ahead = Vehicle::Get(progress_array.front().id);
+	uint behind_index = progress_array.size() - 1;
+	for (uint i = 0; i < progress_array.size(); i++) {
+		const TimetableProgress &info_behind = progress_array[behind_index];
+		behind_index = i;
+		Vehicle *v_behind = v;
+
+		const TimetableProgress &info = progress_array[i];
+		v = v_ahead;
+
+		uint ahead_index = (i + 1 == progress_array.size()) ? 0 : i + 1;
+		const TimetableProgress &info_ahead = progress_array[ahead_index];
+		v_ahead = Vehicle::Get(info_ahead.id);
+
+		if (HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED) &&
+				HasBit(v_ahead->vehicle_flags, VF_TIMETABLE_STARTED) &&
+				HasBit(v_behind->vehicle_flags, VF_TIMETABLE_STARTED)) {
+			if (info_behind.IsValidForSeparation() && info.IsValidForSeparation() && info_ahead.IsValidForSeparation()) {
+				/*
+				 * The below is equivalent to:
+				 * int separation_ahead = info_ahead.cumulative_ticks - info.cumulative_ticks;
+				 * int separation_behind = info.cumulative_ticks - info_behind.cumulative_ticks;
+				 * int separation_delta = separation_ahead - separation_behind;
+				 */
+				int separation_delta = info_ahead.cumulative_ticks + info_behind.cumulative_ticks - (2 * info.cumulative_ticks);
+
+				if (i == 0) {
+					separation_delta -= duration;
+				} else if (ahead_index == 0) {
+					separation_delta += duration;
 				}
-			}
-			int separation_ahead = SeparationBetween(v, v->AheadSeparation());
-			int separation_behind = SeparationBetween(v->BehindSeparation(), v);
-			if (separation_ahead != -1 && separation_behind != -1) {
+
 				Company *owner = Company::GetIfValid(v->owner);
 				uint8 timetable_separation_rate = owner ? owner->settings.auto_timetable_separation_rate : 100;
-				int new_lateness = (separation_ahead - separation_behind) / 2;
+				int new_lateness = separation_delta / 2;
 				v->lateness_counter = (new_lateness * timetable_separation_rate +
 						v->lateness_counter * (100 - timetable_separation_rate)) / 100;
 			}
-			v = v->AheadSeparation();
-		} while (v != v_start);
+		}
 	}
 }
 
@@ -818,7 +812,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		v->ClearSeparation();
 		SetBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 		/* If the lateness is set by scheduled dispatch above, do not reset */
-		if(!HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) v->lateness_counter = 0;
+		if (!HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) v->lateness_counter = 0;
 		if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) UpdateSeparationOrder(v);
 		for (v = v->FirstShared(); v != nullptr; v = v->NextShared()) {
 			SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
@@ -913,13 +907,14 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		int32 new_time;
 		if (travelling) {
 			new_time = time_taken;
-			if (new_time > (int32)timetabled * 4) {
+			if (new_time > (int32)timetabled * 4 && new_time > (int32)timetabled + 3000 && !(real_timetable_order->IsType(OT_GOTO_DEPOT) && (real_timetable_order->GetDepotOrderType() & ODTFB_SERVICE))) {
 				/* Possible jam, clear time and restart timetable for all vehicles.
 				 * Otherwise we risk trains blocking 1-lane stations for long times. */
-				ChangeTimetable(v, v->cur_timetable_order_index, 0, travel_field ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, true);
+				ChangeTimetable(v, v->cur_timetable_order_index, 0, travel_field ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, false);
 				for (Vehicle *v2 = v->FirstShared(); v2 != nullptr; v2 = v2->NextShared()) {
-					v2->ClearSeparation();
+					/* Clear VF_TIMETABLE_STARTED but do not call ClearSeparation */
 					ClrBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
+					v2->lateness_counter = 0;
 					SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
 				}
 				return;

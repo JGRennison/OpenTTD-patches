@@ -2455,8 +2455,6 @@ static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, con
 				if (!CargoSpec::Get(housespec->accepts_cargo[2])->IsValid()) {
 					housespec->cargo_acceptance[2] = 0;
 				}
-
-				_loaded_newgrf_features.has_newhouses = true;
 				break;
 			}
 
@@ -9194,8 +9192,6 @@ void ResetNewGRFData()
 
 	_loaded_newgrf_features.has_2CC           = false;
 	_loaded_newgrf_features.used_liveries     = 1 << LS_DEFAULT;
-	_loaded_newgrf_features.has_newhouses     = false;
-	_loaded_newgrf_features.has_newindustries = false;
 	_loaded_newgrf_features.shore             = SHORE_REPLACE_NONE;
 	_loaded_newgrf_features.tram              = TRAMWAY_REPLACE_DEPOT_NONE;
 
@@ -9715,7 +9711,6 @@ static void FinaliseIndustriesArray()
 					}
 
 					_industry_mngr.SetEntitySpec(indsp);
-					_loaded_newgrf_features.has_newindustries = true;
 				}
 			}
 		}
@@ -10323,16 +10318,16 @@ void LoadNewGRF(uint load_index, uint file_index, uint num_baseset)
 	 * so all NewGRFs are loaded equally. For this we use the
 	 * start date of the game and we set the counters, etc. to
 	 * 0 so they're the same too. */
+	YearMonthDay date_ymd = _cur_date_ymd;
 	Date date            = _date;
-	Year year            = _cur_year;
 	DateFract date_fract = _date_fract;
 	uint16 tick_counter  = _tick_counter;
 	uint8 tick_skip_counter = _tick_skip_counter;
 	byte display_opt     = _display_opt;
 
 	if (_networking) {
-		_cur_year     = _settings_game.game_creation.starting_year;
-		_date         = ConvertYMDToDate(_cur_year, 0, 1);
+		_cur_date_ymd = { _settings_game.game_creation.starting_year, 0, 1};
+		_date         = ConvertYMDToDate(_cur_date_ymd);
 		_date_fract   = 0;
 		_tick_counter = 0;
 		_tick_skip_counter = 0;
@@ -10427,7 +10422,7 @@ void LoadNewGRF(uint load_index, uint file_index, uint num_baseset)
 	AfterLoadGRFs();
 
 	/* Now revert back to the original situation */
-	_cur_year     = year;
+	_cur_date_ymd = date_ymd;
 	_date         = date;
 	_date_fract   = date_fract;
 	_tick_counter = tick_counter;
