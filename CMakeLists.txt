@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.6)
 
 if (NOT BINARY_NAME)
     set(BINARY_NAME openttd)
@@ -307,7 +307,11 @@ include(InstallAndPackage)
 
 get_property(CFG_DEFS DIRECTORY . PROPERTY COMPILE_OPTIONS)
 list(FILTER CFG_DEFS INCLUDE REGEX "^-D")
-list(TRANSFORM CFG_DEFS REPLACE "^-D" "")
+
+# list TRANSFORM requires 3.12 or later
+#list(TRANSFORM CFG_DEFS REPLACE "^-D" "")
+string(REGEX REPLACE "(^|;)-D" "\\1" CFG_DEFS "${CFG_DEFS}")
+
 get_property(CFG_DEFS_2 DIRECTORY . PROPERTY COMPILE_DEFINITIONS)
 list(APPEND CFG_DEFS ${CFG_DEFS_2})
 list(FILTER CFG_DEFS EXCLUDE REGEX "_DIR=")
