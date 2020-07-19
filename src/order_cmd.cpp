@@ -2469,6 +2469,7 @@ bool Vehicle::HasDepotOrder() const
 void DeleteVehicleOrders(Vehicle *v, bool keep_orderlist, bool reset_order_indices)
 {
 	DeleteOrderWarnings(v);
+	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 
 	if (v->IsOrderListShared()) {
 		/* Remove ourself from the shared order list. */
@@ -2476,7 +2477,6 @@ void DeleteVehicleOrders(Vehicle *v, bool keep_orderlist, bool reset_order_indic
 		v->orders.list = nullptr;
 	} else {
 		DeleteWindowById(GetWindowClassForVehicleType(v->type), VehicleListIdentifier(VL_SHARED_ORDERS, v->type, v->owner, v->index).Pack());
-		InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 		if (v->orders.list != nullptr) {
 			/* Remove the orders */
 			v->orders.list->FreeChain(keep_orderlist);
