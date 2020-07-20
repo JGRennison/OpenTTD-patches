@@ -2,6 +2,16 @@
 
 * * *
 
+### v0.35.1 (2020-07-20)
+* Fix crash which could occur when selling/replacing a vehicle which is currently displayed in a departure board window.
+* Fix colour of vehicle destination text when mousing over in vehicle window.
+* Fix missing window/taskbar icon when using SDL/SDL2.
+* Fix compilation on CMake versions prior to 3.12.
+* Add hotkey to show link graph legend window (defaults to: Y).
+* Unix: Add wrapper build scripts to invoke CMake/make.
+* Add Korean translations by TELK.
+* Add Czech translations by Lurker23.
+
 ### v0.35.0 (2020-07-12)
 * Fix crash on maps larger than 64k in either axis.
 * Fix crash which could occur when displaying vehicles with no orders in the departure board window.
