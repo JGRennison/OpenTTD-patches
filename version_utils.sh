@@ -83,13 +83,13 @@ function read_source {
 	handle_source "CMakeLists.txt" "$1"
 	while IFS=$'\n' read -r line; do
 		handle_source "$line" "$1"
-	done < <( find -L cmake -type f -name '*.cmake' -print | sort )
+	done < <( find -L cmake -type f -name '*.cmake' -print | LC_ALL=C sort )
 	while IFS=$'\n' read -r line; do
 		handle_source "$line" "$1"
-	done < <( find -L src -type f \( -name 'CMakeLists.txt' -o -name '*.cpp' -o -name '*.c' -o -name '*.hpp' -o -name '*.h' -o -name '*.sq' -o -name '*.mm' -o -name '*.in' \) -print | sort )
+	done < <( find -L src -type f \( -name 'CMakeLists.txt' -o -name '*.cpp' -o -name '*.c' -o -name '*.hpp' -o -name '*.h' -o -name '*.sq' -o -name '*.mm' -o -name '*.in' \) -print | LC_ALL=C sort )
 	while IFS=$'\n' read -r line; do
 		handle_source "$line" "$1"
-	done < <( find -L src/lang -type f -name '*.txt' -print | sort )
+	done < <( find -L src/lang -type f -name '*.txt' -print | LC_ALL=C sort )
 }
 
 if [ -z "$HASH" -a -z "$NAMES" -a -z "$HASHLIST" -a -z "$TESTOK" -a -z "$WRITE" -a -z "$RELEASETAG" ]; then
