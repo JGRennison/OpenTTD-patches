@@ -73,6 +73,7 @@ foreach(LANG_SOURCE_FILE IN LISTS LANG_SOURCE_FILES)
                     ${LANG_SOURCE_FILE}
             DEPENDS hoststrgen
             MAIN_DEPENDENCY ${LANG_SOURCE_FILE}
+            DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/english.txt
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
             COMMENT "Compiling language ${LANG_SOURCE_FILE_NAME_WE}"
     )
