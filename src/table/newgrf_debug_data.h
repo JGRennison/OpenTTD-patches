@@ -710,6 +710,8 @@ class NIHTown : public NIHelper {
 		print("Debug Info:");
 		seprintf(buffer, lastof(buffer), "  Index: %u", index);
 		print(buffer);
+		seprintf(buffer, lastof(buffer), "  Churches: %u, Stadiums: %u", t->church_count, t->stadium_count);
+		print(buffer);
 
 		seprintf(buffer, lastof(buffer), "  Nearby stations: %u", (uint) t->stations_near.size());
 		print(buffer);
