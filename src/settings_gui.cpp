@@ -2008,14 +2008,15 @@ static SettingsContainer &GetSettingsTree()
 			ai->Add(new SettingEntry("difficulty.money_cheat_in_multiplayer"));
 		}
 
-		if (_game_mode != GM_NORMAL) {
-			SettingsPage *scenario = main->Add(new SettingsPage(STR_CONFIG_SETTING_SCENARIO_EDITOR));
-			{
-				scenario->Add(new SettingEntry("scenario.multiple_buildings"));
-				scenario->Add(new SettingEntry("scenario.house_ignore_dates"));
-				scenario->Add(new SettingEntry("scenario.house_ignore_zones"));
-				scenario->Add(new SettingEntry("scenario.house_ignore_grf"));
-			}
+		SettingsPage *scenario = main->Add(new SettingsPage(STR_CONFIG_SETTING_SCENARIO_EDITOR));
+		scenario->hide_callback = []() -> bool {
+			return _game_mode == GM_NORMAL;
+		};
+		{
+			scenario->Add(new SettingEntry("scenario.multiple_buildings"));
+			scenario->Add(new SettingEntry("scenario.house_ignore_dates"));
+			scenario->Add(new SettingEntry("scenario.house_ignore_zones"));
+			scenario->Add(new SettingEntry("scenario.house_ignore_grf"));
 		}
 
 		main->Init();
