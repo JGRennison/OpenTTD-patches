@@ -659,6 +659,10 @@ struct DebugSettings {
 	uint32 chicken_bits;                     ///< chicken bits
 };
 
+/** Scenario editor settings. */
+struct ScenarioSettings {
+};
+
 /** All settings together for the game. */
 struct GameSettings {
 	DifficultySettings   difficulty;         ///< settings related to the difficulty
@@ -687,6 +691,7 @@ struct ClientSettings {
 	SoundSettings        sound;              ///< sound effect settings
 	MusicSettings        music;              ///< settings related to music/sound
 	NewsSettings         news_display;       ///< news display settings.
+	ScenarioSettings     scenario;           ///< scenario editor settings
 };
 
 /** The current settings for this game. */

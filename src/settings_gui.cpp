@@ -2008,6 +2008,12 @@ static SettingsContainer &GetSettingsTree()
 			ai->Add(new SettingEntry("difficulty.money_cheat_in_multiplayer"));
 		}
 
+		if (_game_mode != GM_NORMAL) {
+			SettingsPage *scenario = main->Add(new SettingsPage(STR_CONFIG_SETTING_SCENARIO_EDITOR));
+			{
+			}
+		}
+
 		main->Init();
 	}
 	return *main;
