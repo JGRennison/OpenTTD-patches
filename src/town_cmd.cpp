@@ -2476,7 +2476,7 @@ static inline CommandCost CanBuildHouseHere(const TileArea &ta, TownID town, int
  * @param zone return error if houses are forbidden in this house zone
  * @return success if house is avaliable, error message otherwise
  */
-static inline CommandCost IsHouseTypeAllowed(HouseID house, bool above_snowline, HouseZonesBits zone)
+static inline CommandCost IsHouseTypeAllowed(HouseID house, bool above_snowline, HouseZonesBits zone, bool manual)
  {
 	const HouseSpec *hs = HouseSpec::Get(house);
 	/* Disallow disabled and replaced houses. */
@@ -2490,6 +2490,8 @@ static inline CommandCost IsHouseTypeAllowed(HouseID house, bool above_snowline,
 	} else {
 		if (!(hs->building_availability & HZ_SUBARTC_BELOW)) return_cmd_error(STR_ERROR_BUILDING_NOT_ALLOWED_BELOW_SNOW_LINE);
 	}
+
+	if (manual && _settings_client.scenario.house_ignore_zones) return CommandCost();
 
 	/* Check if the house zone is allowed for this type of houses. */
 	if (!HasBit(hs->building_availability & HZ_ZONALL, zone)) {
@@ -2613,8 +2615,10 @@ static CommandCost CheckCanBuildHouse(HouseID house, const Town *t, bool manual)
 		return CMD_ERROR;
 	}
 
-	if (_cur_year > hs->max_year) return_cmd_error(STR_ERROR_BUILDING_IS_TOO_OLD);
-	if (_cur_year < hs->min_year) return_cmd_error(STR_ERROR_BUILDING_IS_TOO_MODERN);
+	if (!manual || !_settings_client.scenario.house_ignore_dates) {
+		if (_cur_year > hs->max_year) return_cmd_error(STR_ERROR_BUILDING_IS_TOO_OLD);
+		if (_cur_year < hs->min_year) return_cmd_error(STR_ERROR_BUILDING_IS_TOO_MODERN);
+	}
 
 	/* Special houses that there can be only one of. */
 	if (hs->building_flags & BUILDING_IS_CHURCH) {
@@ -2698,7 +2702,7 @@ CommandCost CmdBuildHouse(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 
 	bool manual = (_game_mode == GM_EDITOR);
 
-	CommandCost          ret = IsHouseTypeAllowed(house, above_snowline, TryGetTownRadiusGroup(t, tile));
+	CommandCost          ret = IsHouseTypeAllowed(house, above_snowline, TryGetTownRadiusGroup(t, tile), manual);
 	if (ret.Succeeded()) ret = IsAnotherHouseTypeAllowedInTown(t, house);
 	if (ret.Succeeded()) ret = CheckCanBuildHouse(house, t, manual);
 	if (ret.Succeeded()) {
@@ -2711,8 +2715,10 @@ CommandCost CmdBuildHouse(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 	}
 	if (ret.Failed()) return ret;
 
-	/* Check if GRF allows this house */
-	if (!HouseAllowsConstruction(house, tile, t, random_bits)) return_cmd_error(STR_ERROR_BUILDING_NOT_ALLOWED);
+	if (!manual || !_settings_client.scenario.house_ignore_grf) {
+		/* Check if GRF allows this house */
+		if (!HouseAllowsConstruction(house, tile, t, random_bits)) return_cmd_error(STR_ERROR_BUILDING_NOT_ALLOWED);
+	}
 
 	if (flags & DC_EXEC) DoBuildHouse(t, tile, house, random_bits);
 	return CommandCost();
@@ -2745,7 +2751,7 @@ static bool BuildTownHouse(Town *t, TileIndex tile)
 
 	/* Generate a list of all possible houses that can be built. */
 	for (uint i = 0; i < NUM_HOUSES; i++) {
-		if (IsHouseTypeAllowed((HouseID)i, above_snowline, zone).Failed()) continue;
+		if (IsHouseTypeAllowed((HouseID)i, above_snowline, zone, false).Failed()) continue;
 		if (IsAnotherHouseTypeAllowedInTown(t, (HouseID)i).Failed()) continue;
 
 		uint cur_prob = HouseSpec::Get(i)->probability;

@@ -2012,6 +2012,9 @@ static SettingsContainer &GetSettingsTree()
 			SettingsPage *scenario = main->Add(new SettingsPage(STR_CONFIG_SETTING_SCENARIO_EDITOR));
 			{
 				scenario->Add(new SettingEntry("scenario.multiple_buildings"));
+				scenario->Add(new SettingEntry("scenario.house_ignore_dates"));
+				scenario->Add(new SettingEntry("scenario.house_ignore_zones"));
+				scenario->Add(new SettingEntry("scenario.house_ignore_grf"));
 			}
 		}
 

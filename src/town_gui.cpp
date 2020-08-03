@@ -1959,7 +1959,7 @@ static void PlaceProc_House(TileIndex tile)
 	int best_zone = (int)HZB_BEGIN - 1;
 	for (const Town *t : Town::Iterate()) {
 		HouseZonesBits town_zone = TryGetTownRadiusGroup(t, tile);
-		if (HasBit(house_zones, town_zone)) {
+		if (HasBit(house_zones, town_zone) || (_settings_client.scenario.house_ignore_zones && town_zone != HZB_END)) {
 			/* If CTRL is NOT pressed keep only single town on the list, the best one.
 			 * Otherwise add all towns to the list so they can be shown to the player. */
 			if (!_ctrl_pressed) {
