@@ -5295,6 +5295,7 @@ STR_ERROR_TOO_MANY_HOUSE_TYPES                                  :{WHITE}... too 
 STR_ERROR_BUILDING_IS_TOO_OLD                                   :{WHITE}... building is too old.
 STR_ERROR_BUILDING_IS_TOO_MODERN                                :{WHITE}... building is too modern.
 STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN                    :{WHITE}... only one building of this type is allowed in a town.
+STR_ERROR_NO_MORE_BUILDINGS_ALLOWED_PER_TOWN                    :{WHITE}... too many buildings of this type in the town.
 STR_ERROR_BUILDING_NOT_ALLOWED                                  :{WHITE}... the building is not allowed.
 
 # Industry related errors

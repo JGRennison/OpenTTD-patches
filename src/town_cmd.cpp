@@ -2621,10 +2621,11 @@ static CommandCost CheckCanBuildHouse(HouseID house, const Town *t, bool manual)
 	}
 
 	/* Special houses that there can be only one of. */
+	bool multiple_buildings = (manual && _settings_client.scenario.multiple_buildings);
 	if (hs->building_flags & BUILDING_IS_CHURCH) {
-		if (t->church_count >= ((manual && _settings_client.scenario.multiple_buildings) ? 255 : 1)) return_cmd_error(STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN);
+		if (t->church_count >= (multiple_buildings ? UINT16_MAX : 1)) return_cmd_error(multiple_buildings ? STR_ERROR_NO_MORE_BUILDINGS_ALLOWED_PER_TOWN : STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN);
 	} else if (hs->building_flags & BUILDING_IS_STADIUM) {
-		if (t->stadium_count >= ((manual && _settings_client.scenario.multiple_buildings) ? 255 : 1)) return_cmd_error(STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN);
+		if (t->stadium_count >= (multiple_buildings ? UINT16_MAX : 1)) return_cmd_error(multiple_buildings ? STR_ERROR_NO_MORE_BUILDINGS_ALLOWED_PER_TOWN : STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN);
 	}
 
 	return CommandCost();

@@ -65,8 +65,8 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	mutable std::string cached_name; ///< NOSAVE: Cache of the resolved name of the town, if not using a custom town name
 
 	byte flags;                    ///< See #TownFlags.
-	byte church_count;             ///< Number of church buildings in the town.
-	byte stadium_count;            ///< Number of stadium buildings in the town.
+	uint16 church_count;           ///< Number of church buildings in the town.
+	uint16 stadium_count;          ///< Number of stadium buildings in the town.
 
 	uint16 noise_reached;          ///< level of noise that all the airports are generating
 
