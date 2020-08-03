@@ -2010,6 +2010,10 @@ STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_HELPTEXT         :Allow manually 
 STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_GRF                    :Ignore house GRF restrictions: {STRING2}
 STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_GRF_HELPTEXT           :Allow manually adding houses even if this is not permitted by the house GRF.
 
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_OFF              :Off
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_WITHIN_TOWN      :Within town
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_ANYWHERE         :Anywhere
+
 # Config errors
 STR_CONFIG_ERROR                                                :{WHITE}Error with the configuration file...
 STR_CONFIG_ERROR_ARRAY                                          :{WHITE}... error in array '{RAW_STRING}'

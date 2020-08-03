@@ -1959,7 +1959,7 @@ static void PlaceProc_House(TileIndex tile)
 	int best_zone = (int)HZB_BEGIN - 1;
 	for (const Town *t : Town::Iterate()) {
 		HouseZonesBits town_zone = TryGetTownRadiusGroup(t, tile);
-		if (HasBit(house_zones, town_zone) || (_settings_client.scenario.house_ignore_zones && town_zone != HZB_END)) {
+		if (HasBit(house_zones, town_zone) || (_settings_client.scenario.house_ignore_zones == 1 && town_zone != HZB_END) || _settings_client.scenario.house_ignore_zones == 2) {
 			/* If CTRL is NOT pressed keep only single town on the list, the best one.
 			 * Otherwise add all towns to the list so they can be shown to the player. */
 			if (!_ctrl_pressed) {
@@ -1977,6 +1977,13 @@ static void PlaceProc_House(TileIndex tile)
 	if (towns.size() == 0) {
 		ShowErrorMessage(STR_ERROR_CAN_T_BUILD_HOUSE_HERE, STR_ERROR_BUILDING_NOT_ALLOWED_IN_THIS_TOWN_ZONE, WL_INFO);
 		return;
+	}
+
+	if (towns.size() > 16 && _settings_client.scenario.house_ignore_zones == 2) {
+		std::sort(towns.begin(), towns.end(), [&](const TownID a, const TownID b) {
+			return DistanceSquare(tile, Town::Get(a)->xy) < DistanceSquare(tile, Town::Get(a)->xy);
+		});
+		towns.resize(16);
 	}
 
 	CommandContainer cmd = {

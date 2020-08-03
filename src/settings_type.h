@@ -663,7 +663,7 @@ struct DebugSettings {
 struct ScenarioSettings {
 	bool multiple_buildings;                 ///< allow manually adding more than one church/stadium
 	bool house_ignore_dates;                 ///< allow manually adding houses regardless of date restrictions
-	bool house_ignore_zones;                 ///< allow manually adding houses regardless of zone restrictions
+	uint8 house_ignore_zones;                ///< allow manually adding houses regardless of zone restrictions
 	bool house_ignore_grf;                   ///< allow manually adding houses regardless of GRF restrictions
 };
 
