@@ -2011,6 +2011,7 @@ static SettingsContainer &GetSettingsTree()
 		if (_game_mode != GM_NORMAL) {
 			SettingsPage *scenario = main->Add(new SettingsPage(STR_CONFIG_SETTING_SCENARIO_EDITOR));
 			{
+				scenario->Add(new SettingEntry("scenario.multiple_buildings"));
 			}
 		}
 

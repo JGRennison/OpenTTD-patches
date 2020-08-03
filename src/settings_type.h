@@ -661,6 +661,7 @@ struct DebugSettings {
 
 /** Scenario editor settings. */
 struct ScenarioSettings {
+	bool multiple_buildings;                 ///< allow manually adding more than one church/stadium
 };
 
 /** All settings together for the game. */

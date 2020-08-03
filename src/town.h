@@ -65,6 +65,8 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	mutable std::string cached_name; ///< NOSAVE: Cache of the resolved name of the town, if not using a custom town name
 
 	byte flags;                    ///< See #TownFlags.
+	byte church_count;             ///< Number of church buildings in the town.
+	byte stadium_count;            ///< Number of stadium buildings in the town.
 
 	uint16 noise_reached;          ///< level of noise that all the airports are generating
 
@@ -209,8 +211,8 @@ enum TownDirectoryInvalidateWindowData {
  */
 enum TownFlags {
 	TOWN_IS_GROWING     = 0,   ///< Conditions for town growth are met. Grow according to Town::growth_rate.
-	TOWN_HAS_CHURCH     = 1,   ///< There can be only one church by town.
-	TOWN_HAS_STADIUM    = 2,   ///< There can be only one stadium by town.
+//	TOWN_HAS_CHURCH     = 1,   ///< There can be only one church per town. Replaced by church_count.
+//	TOWN_HAS_STADIUM    = 2,   ///< There can be only one stadium per town. Replaced by stadium_count.
 	TOWN_CUSTOM_GROWTH  = 3,   ///< Growth rate is controlled by GS.
 };
 

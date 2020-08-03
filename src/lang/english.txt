@@ -2001,6 +2001,9 @@ STR_CONFIG_OCCUPANCY_SMOOTHNESS_HELPTEXT                        :0% sets the mea
 STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE                       :Advance order after cloning/copying/sharing: {STRING2}
 STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE_HELPTEXT              :After cloning a vehicle or copying/sharing orders from an existing vehicle.{}For trains, road vehicles and ships: if the vehicle is in a depot which is in the order list, skip to the order which follows one of the orders for that depot.{}For aircraft: if the aircraft is in a hangar and the associated airport is in the order list, skip to one of the orders for that airport.
 
+STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS                  :Allow multiple churches/stadiums: {STRING2}
+STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS_HELPTEXT         :Allow manually adding churches and stadiums when there is already one present in the town.
+
 # Config errors
 STR_CONFIG_ERROR                                                :{WHITE}Error with the configuration file...
 STR_CONFIG_ERROR_ARRAY                                          :{WHITE}... error in array '{RAW_STRING}'

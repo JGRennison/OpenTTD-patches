@@ -2605,7 +2605,7 @@ static TileIndex FindPlaceForTownHouseAroundTile(TileIndex tile, Town *t, HouseI
  * @param t the town
  * @return success if house can be built, error message otherwise
  */
-static CommandCost CheckCanBuildHouse(HouseID house, const Town *t)
+static CommandCost CheckCanBuildHouse(HouseID house, const Town *t, bool manual)
 {
 	const HouseSpec *hs = HouseSpec::Get(house);
 
@@ -2618,9 +2618,9 @@ static CommandCost CheckCanBuildHouse(HouseID house, const Town *t)
 
 	/* Special houses that there can be only one of. */
 	if (hs->building_flags & BUILDING_IS_CHURCH) {
-		if (HasBit(t->flags, TOWN_HAS_CHURCH)) return_cmd_error(STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN);
+		if (t->church_count >= ((manual && _settings_client.scenario.multiple_buildings) ? 255 : 1)) return_cmd_error(STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN);
 	} else if (hs->building_flags & BUILDING_IS_STADIUM) {
-		if (HasBit(t->flags, TOWN_HAS_STADIUM)) return_cmd_error(STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN);
+		if (t->stadium_count >= ((manual && _settings_client.scenario.multiple_buildings) ? 255 : 1)) return_cmd_error(STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN);
 	}
 
 	return CommandCost();
@@ -2642,9 +2642,9 @@ static void DoBuildHouse(Town *t, TileIndex tile, HouseID house, byte random_bit
 
 	/* Special houses that there can be only one of. */
 	if (hs->building_flags & BUILDING_IS_CHURCH) {
-		SetBit(t->flags, TOWN_HAS_CHURCH);
+		t->church_count++;
 	} else if (hs->building_flags & BUILDING_IS_STADIUM) {
-		SetBit(t->flags, TOWN_HAS_STADIUM);
+		t->stadium_count++;
 	}
 
 	byte construction_counter = 0;
@@ -2696,9 +2696,11 @@ CommandCost CmdBuildHouse(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 	int max_z = GetTileMaxZ(tile);
 	bool above_snowline = (_settings_game.game_creation.landscape == LT_ARCTIC) && (max_z > HighestSnowLine());
 
+	bool manual = (_game_mode == GM_EDITOR);
+
 	CommandCost          ret = IsHouseTypeAllowed(house, above_snowline, TryGetTownRadiusGroup(t, tile));
 	if (ret.Succeeded()) ret = IsAnotherHouseTypeAllowedInTown(t, house);
-	if (ret.Succeeded()) ret = CheckCanBuildHouse(house, t);
+	if (ret.Succeeded()) ret = CheckCanBuildHouse(house, t, manual);
 	if (ret.Succeeded()) {
 		/* While placing a house manually, try only at exact position and ignore the layout */
 		const HouseSpec *hs = HouseSpec::Get(house);
@@ -2777,7 +2779,7 @@ static bool BuildTownHouse(Town *t, TileIndex tile)
 		houses[i] = houses[num];
 		probs[i] = probs[num];
 
-		CommandCost ret = CheckCanBuildHouse(house, t);
+		CommandCost ret = CheckCanBuildHouse(house, t, false);
 		if (ret.Failed()) continue;
 
 		tile = FindPlaceForTownHouseAroundTile(tile, t, house);
@@ -2858,9 +2860,9 @@ void ClearTownHouse(Town *t, TileIndex tile)
 
 	/* Clear flags for houses that only may exist once/town. */
 	if (hs->building_flags & BUILDING_IS_CHURCH) {
-		ClrBit(t->flags, TOWN_HAS_CHURCH);
+		t->church_count--;
 	} else if (hs->building_flags & BUILDING_IS_STADIUM) {
-		ClrBit(t->flags, TOWN_HAS_STADIUM);
+		t->stadium_count--;
 	}
 
 	/* Do the actual clearing of tiles */
