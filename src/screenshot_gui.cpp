@@ -72,3 +72,17 @@ void ShowScreenshotWindow()
 	DeleteWindowById(WC_SCREENSHOT, 0);
 	new ScreenshotWindow(&_screenshot_window_desc);
 }
+
+void SetScreenshotWindowHidden(bool hidden)
+{
+	ScreenshotWindow *scw = (ScreenshotWindow *) FindWindowById(WC_SCREENSHOT, 0);
+	if (scw != nullptr) {
+		if (hidden) {
+			scw->SetDirtyAsBlocks();
+			SetBit(scw->left, 30);
+		} else {
+			ClrBit(scw->left, 30);
+			scw->SetDirtyAsBlocks();
+		}
+	}
+}
