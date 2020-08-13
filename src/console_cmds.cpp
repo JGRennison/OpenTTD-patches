@@ -1618,7 +1618,7 @@ DEF_CONSOLE_CMD(ConListCommands)
 
 	for (const IConsoleCmd *cmd = _iconsole_cmds; cmd != nullptr; cmd = cmd->next) {
 		if (argv[1] == nullptr || strstr(cmd->name, argv[1]) != nullptr) {
-			if (cmd->unlisted == false && (cmd->hook == nullptr || cmd->hook(false) != CHR_HIDE)) IConsolePrintF(CC_DEFAULT, "%s", cmd->name);
+			if ((_settings_client.gui.console_show_unlisted || !cmd->unlisted) && (cmd->hook == nullptr || cmd->hook(false) != CHR_HIDE)) IConsolePrintF(CC_DEFAULT, "%s", cmd->name);
 		}
 	}
 

@@ -221,6 +221,7 @@ struct GUISettings : public TimeSettings {
 	uint8  settings_restriction_mode;        ///< selected restriction mode in adv. settings GUI. @see RestrictionMode
 	bool   newgrf_show_old_versions;         ///< whether to show old versions in the NewGRF list
 	uint8  newgrf_default_palette;           ///< default palette to use for NewGRFs without action 14 palette information
+	bool   console_show_unlisted;            ///< whether to show unlisted console commands
 
 	/**
 	 * Returns true when the user has sufficient privileges to edit newgrfs on a running game
