@@ -3355,8 +3355,11 @@ public:
 			str = STR_VEHICLE_STATUS_AIRCRAFT_TOO_FAR;
 		} else { // vehicle is in a "normal" state, show current order
 			if (mouse_over_start_stop) {
-				if (v->vehstatus & VS_STOPPED) text_colour = TC_RED | TC_FORCED;
-				if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_TRAIN_STUCK) && !v->current_order.IsType(OT_LOADING)) text_colour = TC_ORANGE | TC_FORCED;
+				if (v->vehstatus & VS_STOPPED) {
+					text_colour = TC_RED | TC_FORCED;
+				} else if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_TRAIN_STUCK) && !v->current_order.IsType(OT_LOADING)) {
+					text_colour = TC_ORANGE | TC_FORCED;
+				}
 			}
 			switch (v->current_order.GetType()) {
 				case OT_GOTO_STATION: {
