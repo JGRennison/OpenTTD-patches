@@ -23,6 +23,10 @@ set(BASESET_OTHER_SOURCE_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/tracerestrict.grf
 )
 
+if (UNIX AND NOT APPLE)
+    list(APPEND BASESET_OTHER_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/../openttd.32.bmp)
+endif ()
+
 # Done by the subdirectories, if nforenum / grfcodec is installed
 if (GRFCODEC_FOUND)
     set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/openttd.grf PROPERTIES GENERATED TRUE)

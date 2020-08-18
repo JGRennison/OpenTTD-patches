@@ -236,6 +236,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 		/* Get the first order for each vehicle for the station we're interested in that doesn't have No Loading set. */
 		/* We find the least order while we're at it. */
 		for (const Vehicle *v : vehicles) {
+			if (v->GetNumOrders() == 0) continue;
 			if (show_pax != show_freight) {
 				bool carries_passengers = false;
 

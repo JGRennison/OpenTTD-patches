@@ -3773,6 +3773,13 @@ bool AfterLoadGame()
 		_settings_game.game_creation.generation_unique_id = _interactive_random.Next(UINT32_MAX-1) + 1; /* Generates between [1;UINT32_MAX] */
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_TOWN_MULTI_BUILDING)) {
+		for (Town *t : Town::Iterate()) {
+			t->church_count = HasBit(t->flags, 1) ? 1 : 0;
+			t->stadium_count = HasBit(t->flags, 2) ? 1 : 0;
+		}
+	}
+
 	/* This needs to be done after conversion. */
 	RebuildViewportKdtree();
 	ViewportMapBuildTunnelCache();

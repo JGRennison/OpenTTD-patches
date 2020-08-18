@@ -91,6 +91,7 @@ protected:
 	DepartureList *departures; ///< The current list of departures from this station.
 	DepartureList *arrivals;   ///< The current list of arrivals from this station.
 	bool departures_invalid;   ///< The departures and arrivals list are currently invalid.
+	bool vehicles_invalid;     ///< The vehicles list is currently invalid.
 	uint entry_height;         ///< The height of an entry in the departures list.
 	uint tick_count;           ///< The number of ticks that have elapsed since the window was created. Used for scrolling text.
 	int calc_tick_countdown;   ///< The number of ticks to wait until recomputing the departure list. Signed in case it goes below zero.
@@ -201,6 +202,8 @@ protected:
 			int width = (GetStringBoundingBox(STR_DEPARTURES_TOC)).width + 4;
 			if (width > this->toc_width) this->toc_width = width;
 		}
+
+		this->vehicles_invalid = false;
 	}
 
 	void RefreshVehicleList() {
@@ -215,6 +218,7 @@ public:
 		departures(new DepartureList()),
 		arrivals(new DepartureList()),
 		departures_invalid(true),
+		vehicles_invalid(true),
 		entry_height(1 + FONT_HEIGHT_NORMAL + 1 + (_settings_client.gui.departure_larger_font ? FONT_HEIGHT_NORMAL : FONT_HEIGHT_SMALL) + 1 + 1),
 		tick_count(0),
 		calc_tick_countdown(0),
@@ -437,6 +441,10 @@ public:
 		/* We need to redraw the scrolling text in its new position. */
 		this->SetWidgetDirty(WID_DB_LIST);
 
+		if (this->vehicles_invalid) {
+			this->RefreshVehicleList();
+		}
+
 		/* Recompute the list of departures if we're due to. */
 		if (this->calc_tick_countdown <= 0) {
 			this->calc_tick_countdown = _settings_client.gui.departure_calc_frequency;
@@ -511,7 +519,7 @@ public:
 	 */
 	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
-		this->RefreshVehicleList();
+		this->vehicles_invalid = true;
 		this->departures_invalid = true;
 	}
 };

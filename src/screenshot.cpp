@@ -27,6 +27,7 @@
 #include "landscape.h"
 #include "smallmap_colours.h"
 #include "smallmap_gui.h"
+#include "screenshot_gui.h"
 
 #include "table/strings.h"
 
@@ -920,8 +921,10 @@ bool MakeScreenshot(ScreenshotType t, const char *name)
 		 * of the screenshot. This way the screenshot will always show the name
 		 * of the previous screenshot in the 'successful' message instead of the
 		 * name of the new screenshot (or an empty name). */
+		SetScreenshotWindowHidden(true);
 		UndrawMouseCursor();
 		DrawDirtyBlocks();
+		SetScreenshotWindowHidden(false);
 	}
 
 	_screenshot_name[0] = '\0';

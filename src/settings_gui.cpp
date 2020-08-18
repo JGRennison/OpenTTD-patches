@@ -1579,6 +1579,7 @@ static SettingsContainer &GetSettingsTree()
 			graphics->Add(new SettingEntry("gui.zoom_min"));
 			graphics->Add(new SettingEntry("gui.zoom_max"));
 			graphics->Add(new SettingEntry("gui.smallmap_land_colour"));
+			graphics->Add(new SettingEntry("gui.linkgraph_colours"));
 			graphics->Add(new SettingEntry("gui.graph_line_thickness"));
 			graphics->Add(new SettingEntry("gui.show_vehicle_route_steps"));
 			graphics->Add(new SettingEntry("gui.show_vehicle_route"));
@@ -2006,6 +2007,17 @@ static SettingsContainer &GetSettingsTree()
 			ai->Add(new SettingEntry("economy.allow_shares"));
 			ai->Add(new SettingEntry("economy.min_years_for_shares"));
 			ai->Add(new SettingEntry("difficulty.money_cheat_in_multiplayer"));
+		}
+
+		SettingsPage *scenario = main->Add(new SettingsPage(STR_CONFIG_SETTING_SCENARIO_EDITOR));
+		scenario->hide_callback = []() -> bool {
+			return _game_mode == GM_NORMAL;
+		};
+		{
+			scenario->Add(new SettingEntry("scenario.multiple_buildings"));
+			scenario->Add(new SettingEntry("scenario.house_ignore_dates"));
+			scenario->Add(new SettingEntry("scenario.house_ignore_zones"));
+			scenario->Add(new SettingEntry("scenario.house_ignore_grf"));
 		}
 
 		main->Init();

@@ -124,6 +124,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_STATION_GOODS_EXTRA,    XSCF_NULL,                1,   1, "station_goods_extra",       nullptr, nullptr, nullptr        },
 	{ XSLFI_DOCKING_CACHE_VER,      XSCF_IGNORABLE_ALL,       1,   1, "docking_cache_ver",         nullptr, nullptr, nullptr        },
 	{ XSLFI_EXTRA_CHEATS,           XSCF_NULL,                1,   1, "extra_cheats",              nullptr, nullptr, "CHTX"         },
+	{ XSLFI_TOWN_MULTI_BUILDING,    XSCF_NULL,                1,   1, "town_multi_building",       nullptr, nullptr, nullptr        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr },// This is the end marker
 };
 

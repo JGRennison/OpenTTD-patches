@@ -53,7 +53,7 @@ public:
 	typedef std::vector<StationSupplyInfo> StationSupplyList;
 	typedef std::vector<LinkInfo> LinkList;
 
-	static const uint8 LINK_COLOURS[];
+	static const uint8 LINK_COLOURS[][12];
 
 	/**
 	 * Create a link graph overlay for the specified window.

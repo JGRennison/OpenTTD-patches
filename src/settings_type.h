@@ -201,6 +201,7 @@ struct GUISettings : public TimeSettings {
 	bool   adv_sig_bridge_tun_modes;         ///< Enable advanced modes for signals on bridges/tunnels.
 	bool   show_depot_sell_gui;              ///< Show go to depot and sell in UI
 	bool   open_vehicle_gui_clone_share;     ///< Open vehicle GUI when share-cloning vehicle from depot GUI
+	uint8  linkgraph_colours;                ///< linkgraph overlay colours
 
 	uint16 console_backlog_timeout;          ///< the minimum amount of time items should be in the console backlog before they will be removed in ~3 seconds granularity.
 	uint16 console_backlog_length;           ///< the minimum amount of items in the console backlog before items will be removed.
@@ -220,6 +221,7 @@ struct GUISettings : public TimeSettings {
 	uint8  settings_restriction_mode;        ///< selected restriction mode in adv. settings GUI. @see RestrictionMode
 	bool   newgrf_show_old_versions;         ///< whether to show old versions in the NewGRF list
 	uint8  newgrf_default_palette;           ///< default palette to use for NewGRFs without action 14 palette information
+	bool   console_show_unlisted;            ///< whether to show unlisted console commands
 
 	/**
 	 * Returns true when the user has sufficient privileges to edit newgrfs on a running game
@@ -659,6 +661,14 @@ struct DebugSettings {
 	uint32 chicken_bits;                     ///< chicken bits
 };
 
+/** Scenario editor settings. */
+struct ScenarioSettings {
+	bool multiple_buildings;                 ///< allow manually adding more than one church/stadium
+	bool house_ignore_dates;                 ///< allow manually adding houses regardless of date restrictions
+	uint8 house_ignore_zones;                ///< allow manually adding houses regardless of zone restrictions
+	bool house_ignore_grf;                   ///< allow manually adding houses regardless of GRF restrictions
+};
+
 /** All settings together for the game. */
 struct GameSettings {
 	DifficultySettings   difficulty;         ///< settings related to the difficulty
@@ -687,6 +697,7 @@ struct ClientSettings {
 	SoundSettings        sound;              ///< sound effect settings
 	MusicSettings        music;              ///< settings related to music/sound
 	NewsSettings         news_display;       ///< news display settings.
+	ScenarioSettings     scenario;           ///< scenario editor settings
 };
 
 /** The current settings for this game. */

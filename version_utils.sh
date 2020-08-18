@@ -66,9 +66,9 @@ function find_hasher {
 	if [ "`echo -n "test" | sha256sum 2> /dev/null`" == "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08  -" ]; then
 		HASH_CMD=sha256sum
 	elif [ "`echo -n "test" | shasum -a 256 2> /dev/null`" == "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08  -" ]; then
-		HASH_CMD=shasum -a 256
+		HASH_CMD="shasum -a 256"
 	elif [ "`echo -n "test" | shasum -a 256 -p 2> /dev/null`" == "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08  -" ]; then
-		HASH_CMD=shasum -a 256 -p
+		HASH_CMD="shasum -a 256 -p"
 	else
 		echo "Could not generate SHA-256" >&2
 		exit 1
@@ -83,13 +83,13 @@ function read_source {
 	handle_source "CMakeLists.txt" "$1"
 	while IFS=$'\n' read -r line; do
 		handle_source "$line" "$1"
-	done < <( find -L cmake -type f -name '*.cmake' -print | sort )
+	done < <( find -L cmake -type f -name '*.cmake' -print | LC_ALL=C sort )
 	while IFS=$'\n' read -r line; do
 		handle_source "$line" "$1"
-	done < <( find -L src -type f \( -name 'CMakeLists.txt' -o -name '*.cpp' -o -name '*.c' -o -name '*.hpp' -o -name '*.h' -o -name '*.sq' -o -name '*.mm' -o -name '*.in' \) -print | sort )
+	done < <( find -L src -type f \( -name 'CMakeLists.txt' -o -name '*.cpp' -o -name '*.c' -o -name '*.hpp' -o -name '*.h' -o -name '*.sq' -o -name '*.mm' -o -name '*.in' \) -print | LC_ALL=C sort )
 	while IFS=$'\n' read -r line; do
 		handle_source "$line" "$1"
-	done < <( find -L src/lang -type f -name '*.txt' -print | sort )
+	done < <( find -L src/lang -type f -name '*.txt' -print | LC_ALL=C sort )
 }
 
 if [ -z "$HASH" -a -z "$NAMES" -a -z "$HASHLIST" -a -z "$TESTOK" -a -z "$WRITE" -a -z "$RELEASETAG" ]; then

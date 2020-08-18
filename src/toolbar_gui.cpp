@@ -2027,6 +2027,7 @@ enum MainToolbarHotkeys {
 	MTHK_CLIENT_LIST,
 	MTHK_SIGN_LIST,
 	MTHK_PLAN_LIST,
+	MTHK_LINK_GRAPH_LEGEND,
 };
 
 /** Main toolbar. */
@@ -2129,6 +2130,7 @@ struct MainToolbarWindow : Window {
 			case MTHK_SIGN_LIST: ShowSignList(); break;
 			case MTHK_LANDINFO: cbf = PlaceLandBlockInfo(); break;
 			case MTHK_PLAN_LIST: ShowPlansWindow(); break;
+			case MTHK_LINK_GRAPH_LEGEND: ShowLinkGraphLegend(); break;
 			default: return ES_NOT_HANDLED;
 		}
 		if (cbf != CBF_NONE) _last_started_action = cbf;
@@ -2244,6 +2246,7 @@ static Hotkey maintoolbar_hotkeys[] = {
 	Hotkey((uint16)0, "sign_list", MTHK_SIGN_LIST),
 	Hotkey((uint16)0, "land_info", MTHK_LANDINFO),
 	Hotkey('P', "plan_list", MTHK_PLAN_LIST),
+	Hotkey('Y', "link_graph_legend", MTHK_LINK_GRAPH_LEGEND),
 	HOTKEY_LIST_END
 };
 HotkeyList MainToolbarWindow::hotkeys("maintoolbar", maintoolbar_hotkeys);

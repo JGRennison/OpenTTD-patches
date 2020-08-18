@@ -1374,6 +1374,13 @@ STR_CONFIG_SETTING_SHOW_DEPOT_SELL_GUI_HELPTEXT                 :Show go to depo
 STR_CONFIG_SETTING_OPEN_VEHICLE_GUI_CLONE_SHARE                 :Open new vehicle window when share-cloning: {STRING2}
 STR_CONFIG_SETTING_OPEN_VEHICLE_GUI_CLONE_SHARE_HELPTEXT        :When enabled, open the newly cloned vehicle's window when cloning a vehicle with shared orders from the depot window.
 
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS                            :Cargo flow overlay colours: {STRING2}
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS_HELPTEXT                   :Set the colour the scheme used for the cargo flow overlay.
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREEN_TO_RED               :Green to red (original)
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREEN_TO_BLUE              :Green to blue
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREY_TO_RED                :Grey to red
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREYSCALE                  :Greyscale
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Enable signals on bridges/tunnels advanced modes: {STRING2}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Enables use of advanced modes of signal simulation on bridges and tunnels. When disabled, bridges/tunnels which are not already in an advanced mode cannot be changed to an advanced mode, however other players may choose to enable this setting and use an advanced mode.
 
@@ -1936,6 +1943,7 @@ STR_CONFIG_SETTING_AI                                           :{ORANGE}Competi
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}Computer players
 STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}Map mode
 STR_CONFIG_SETTING_SHARING                                      :{ORANGE}Infrastructure sharing
+STR_CONFIG_SETTING_SCENARIO_EDITOR                              :{ORANGE}Scenario Editor
 
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Recommended)
@@ -1999,6 +2007,19 @@ STR_CONFIG_OCCUPANCY_SMOOTHNESS_HELPTEXT                        :0% sets the mea
 
 STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE                       :Advance order after cloning/copying/sharing: {STRING2}
 STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE_HELPTEXT              :After cloning a vehicle or copying/sharing orders from an existing vehicle.{}For trains, road vehicles and ships: if the vehicle is in a depot which is in the order list, skip to the order which follows one of the orders for that depot.{}For aircraft: if the aircraft is in a hangar and the associated airport is in the order list, skip to one of the orders for that airport.
+
+STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS                  :Allow multiple churches/stadiums: {STRING2}
+STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS_HELPTEXT         :Allow manually adding churches and stadiums when there is already one present in the town.
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_DATES                  :Ignore house year restrictions: {STRING2}
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_DATES_HELPTEXT         :Allow manually adding houses which are not available for the current date.
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES                  :Ignore house zone restrictions: {STRING2}
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_HELPTEXT         :Allow manually adding houses which are not suitable for the target town zone.
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_GRF                    :Ignore house GRF restrictions: {STRING2}
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_GRF_HELPTEXT           :Allow manually adding houses even if this is not permitted by the house GRF.
+
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_OFF              :Off
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_WITHIN_TOWN      :Within town
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_ANYWHERE         :Anywhere
 
 # Config errors
 STR_CONFIG_ERROR                                                :{WHITE}Error with the configuration file...
@@ -5281,6 +5302,7 @@ STR_ERROR_TOO_MANY_HOUSE_TYPES                                  :{WHITE}... too 
 STR_ERROR_BUILDING_IS_TOO_OLD                                   :{WHITE}... building is too old.
 STR_ERROR_BUILDING_IS_TOO_MODERN                                :{WHITE}... building is too modern.
 STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN                    :{WHITE}... only one building of this type is allowed in a town.
+STR_ERROR_NO_MORE_BUILDINGS_ALLOWED_PER_TOWN                    :{WHITE}... too many buildings of this type in the town.
 STR_ERROR_BUILDING_NOT_ALLOWED                                  :{WHITE}... the building is not allowed.
 
 # Industry related errors

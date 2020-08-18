@@ -1374,6 +1374,13 @@ STR_CONFIG_SETTING_SHOW_DEPOT_SELL_GUI_HELPTEXT                 :기지로 보�
 STR_CONFIG_SETTING_OPEN_VEHICLE_GUI_CLONE_SHARE                 :경로를 공유하여 복제할 때 새 차량 정보 창을 띄움: {STRING}
 STR_CONFIG_SETTING_OPEN_VEHICLE_GUI_CLONE_SHARE_HELPTEXT        :이 설정을 켜면, 차량기지/차고지/정박소/격납고 창에서 차량의 경로를 공유하여 복제할 때 복제한 차량의 정보 창을 새로 띄워줍니다.
 
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS                            :화물 흐름 오버레이 색상: {STRING}
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS_HELPTEXT                   :화물 흐름 오버레이에 사용할 색상을 설정합니다.
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREEN_TO_RED               :초록색 / 빨간색 (오리지널)
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREEN_TO_BLUE              :초록색 / 파란색
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREY_TO_RED                :회색 / 빨간색
+STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREYSCALE                  :흑백
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :고급 다리/터널 신호기 활성화: {STRING}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :다리와 터널 위 신호기 시뮬레이션 고급 모드를 활성화합니다. 이 설정을 끄면, 고급 모드에 있지 않은 다리와 터널을 고급 모드로 변경할 수 없지만 다른 플레이어는 이 설정을 켜서 고급 모드를 사용할 수 있습니다.
 
@@ -1936,6 +1943,7 @@ STR_CONFIG_SETTING_AI                                           :{ORANGE}경쟁�
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}컴퓨터 플레이어
 STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}지도 모드
 STR_CONFIG_SETTING_SHARING                                      :{ORANGE}시설 공유
+STR_CONFIG_SETTING_SCENARIO_EDITOR                              :{ORANGE}시나리오 에디터
 
 STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(권장)
@@ -1999,6 +2007,19 @@ STR_CONFIG_OCCUPANCY_SMOOTHNESS_HELPTEXT                        :0%는 가장 �
 
 STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE                       :복제/복사/공유 이후 고급 경로 사용: {STRING}
 STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE_HELPTEXT              :기존에 존재하는 차량을 복사/경로 공유하여 새 차량을 복제한 후의 행동입니다.{}열차나 차량, 선박의 경우: 차량이 경로 목록 상의 차고 안에 있는 경우, 그 차고에 해당하는 경로의 다음으로 경로를 건너뜁니다.{}항공기의 경우: 항공기가 경로 목록 상에 있는 공항에 딸린 격납고 안에 있는 경우, 그 공항에 해당하는 경로를 건너뜁니다.
+
+STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS                  :여러 개의 교회/경기장 허용: {STRING}
+STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS_HELPTEXT         :도시에 이미 교회나 경기장 건물이 있어도 수동으로 이를 추가하는 것을 허용합니다.
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_DATES                  :건물 연도 제한 무시: {STRING}
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_DATES_HELPTEXT         :현재 날짜에 건설할 수 없는 건물을 수동으로 추가할 수 있게 허용합니다.
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES                  :건물 영역 제한 무시: {STRING}
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_HELPTEXT         :해당 도시 영역에 적합하지 않은 건물을 수동으로 추가할 수 있게 허용합니다.
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_GRF                    :건물 GRF 제한 무시: {STRING}
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_GRF_HELPTEXT           :건물 GRF에 의해 건설이 허용되지 않는 건물을 수동으로 추가할 수 있게 허용합니다.
+
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_OFF              :끄기
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_WITHIN_TOWN      :도시 안에만
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_ANYWHERE         :어디에나
 
 # Config errors
 STR_CONFIG_ERROR                                                :{WHITE}설정 파일에서 오류 발생
@@ -4887,8 +4908,8 @@ STR_ORDER_OUT_OF_RANGE                                          :{RED} (다음 �
 
 STR_ORDER_CONDITIONAL_UNCONDITIONAL                             :[조건 경로] {COMMA}번 경로로 건너뛰기
 STR_ORDER_CONDITIONAL_NUM                                       :[조건 경로] {COMMA}번 경로로 건너뛰기 ({STRING} {STRING} {COMMA} 일 때)
-STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :[조건 경로] {COMMA}번 경로로 건너뛰기 (다음 역이: {2:STRING} {1:STRING})
-STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :[조건 경로] {COMMA}번 경로로 건너뛰기 (다음 역에: {2:STRING} {1:STRING})
+STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :[조건 경로] {COMMA}번 경로로 건너뛰기 (다음 역이 {2:STRING}{G 2 "을" "를"} {1:STRING})
+STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :[조건 경로] {COMMA}번 경로로 건너뛰기 (다음 역에 {2:STRING}{G 2 "이" "가"} {1:STRING})
 STR_ORDER_CONDITIONAL_SLOT                                      :[조건 경로] {COMMA}번 경로로 건너뛰기 ({TRSLOT} 슬롯이 {STRING})
 STR_ORDER_CONDITIONAL_INVALID_SLOT                              :[조건 경로] {COMMA}번 경로로 건너뛰기 ({PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} 슬롯이 {STRING})
 STR_ORDER_CONDITIONAL_IN_SLOT                                   :[조건 경로] {COMMA}번 경로로 건너뛰기 (열차가 {2:TRSLOT} 슬롯에 {1:STRING})
@@ -5281,6 +5302,7 @@ STR_ERROR_TOO_MANY_HOUSE_TYPES                                  :{WHITE}... 건�
 STR_ERROR_BUILDING_IS_TOO_OLD                                   :{WHITE}... 건물이 낡았습니다.
 STR_ERROR_BUILDING_IS_TOO_MODERN                                :{WHITE}... 아직 건물을 지을 수 없습니다.
 STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN                    :{WHITE}... 이 종류의 건물은 오직 하나만 지을 수 있습니다.
+STR_ERROR_NO_MORE_BUILDINGS_ALLOWED_PER_TOWN                    :{WHITE}... 이 도시에 이 종류의 건물이 너무 많습니다.
 STR_ERROR_BUILDING_NOT_ALLOWED                                  :{WHITE}... 허가되지 않았습니다.
 
 # Industry related errors
