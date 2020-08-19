@@ -67,6 +67,7 @@ enum CargoTypeOrdersWidgets {
 	WID_CTO_CARGO_LABEL_LAST = WID_CTO_CARGO_LABEL_FIRST + NUM_CARGO - 1,       ///< Last cargo label.
 	WID_CTO_CARGO_DROPDOWN_FIRST,                                               ///< First order dropdown.
 	WID_CTO_CARGO_DROPDOWN_LAST = WID_CTO_CARGO_DROPDOWN_FIRST + NUM_CARGO - 1, ///< Last order dropdown.
+	WID_CTO_SELECT,                                                             ///< Right column select panel
 };
 
 #endif /* WIDGETS_ORDER_WIDGET_H */

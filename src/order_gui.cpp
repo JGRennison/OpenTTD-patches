@@ -163,6 +163,7 @@ public:
 		this->CreateNestedTree(desc);
 		this->GetWidget<NWidgetCore>(WID_CTO_CAPTION)->SetDataTip(STR_CARGO_TYPE_ORDERS_LOAD_CAPTION + this->variant, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS);
 		this->GetWidget<NWidgetCore>(WID_CTO_HEADER)->SetDataTip(STR_CARGO_TYPE_ORDERS_LOAD_TITLE + this->variant, STR_NULL);
+		this->GetWidget<NWidgetStacked>(WID_CTO_SELECT)->SetDisplayedPlane((_sorted_standard_cargo_specs_size >= 32) ? 0 : SZSP_NONE);
 		this->InitDropdownSelectedTypes();
 		this->FinishInitNested(v->index);
 
@@ -317,11 +318,17 @@ public:
  * @return A vertical container of cargo type orders rows.
  * @post \c *biggest_index contains the largest used index in the tree.
  */
-static NWidgetBase *MakeCargoTypeOrdersRows(int *biggest_index)
+static NWidgetBase *MakeCargoTypeOrdersRows(int *biggest_index, bool right)
 {
+
 	NWidgetVertical *ver = new NWidgetVertical;
 
-	for (int i = 0; i < _sorted_standard_cargo_specs_size; i++) {
+	const bool dual_column = (_sorted_standard_cargo_specs_size >= 32);
+	if (right && !dual_column) return ver;
+
+	const int increment = dual_column ? 2 : 1;
+
+	for (int i = (right ? 1 : 0); i < _sorted_standard_cargo_specs_size; i += increment) {
 		/* Cargo row */
 		NWidgetBackground *panel = new NWidgetBackground(WWT_PANEL, COLOUR_GREY, WID_CTO_CARGO_ROW_FIRST + i);
 		ver->Add(panel);
@@ -343,6 +350,16 @@ static NWidgetBase *MakeCargoTypeOrdersRows(int *biggest_index)
 	return ver;
 }
 
+static NWidgetBase *MakeCargoTypeOrdersRowsLeft(int *biggest_index)
+{
+	return MakeCargoTypeOrdersRows(biggest_index, false);
+}
+
+static NWidgetBase *MakeCargoTypeOrdersRowsRight(int *biggest_index)
+{
+	return MakeCargoTypeOrdersRows(biggest_index, true);
+}
+
 /** Widgets definition of CargoTypeOrdersWindow. */
 static const NWidgetPart _nested_cargo_type_orders_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
@@ -352,7 +369,14 @@ static const NWidgetPart _nested_cargo_type_orders_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_GREY),
 		NWidget(WWT_LABEL, COLOUR_GREY, WID_CTO_HEADER), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_NULL, STR_NULL),
 	EndContainer(),
-	NWidgetFunction(MakeCargoTypeOrdersRows),
+	NWidget(WWT_PANEL, COLOUR_GREY),
+		NWidget(NWID_HORIZONTAL),
+			NWidgetFunction(MakeCargoTypeOrdersRowsLeft),
+			NWidget(NWID_SELECTION, COLOUR_GREY, WID_CTO_SELECT),
+				NWidgetFunction(MakeCargoTypeOrdersRowsRight),
+			EndContainer(),
+		EndContainer(),
+	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(1, 4), SetFill(1, 0), SetResize(1, 0), EndContainer(), // SPACER
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_PANEL, COLOUR_GREY),
