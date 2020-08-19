@@ -203,6 +203,8 @@ enum OrderDepotAction {
 enum OrderLeaveType {
 	OLT_NORMAL               = 0, ///< Leave when timetabled
 	OLT_LEAVE_EARLY          = 1, ///< Leave as soon as possible
+	OLT_LEAVE_EARLY_FULL_ANY = 2, ///< Leave as soon as possible, if any cargoes fully loaded
+	OLT_LEAVE_EARLY_FULL_ALL = 3, ///< Leave as soon as possible, if all cargoes fully loaded
 	OLT_END
 };
 
