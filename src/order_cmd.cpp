@@ -1644,7 +1644,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			break;
 
 		case MOF_CARGO_TYPE_UNLOAD:
-			if (cargo_id >= NUM_CARGO) return CMD_ERROR;
+			if (cargo_id >= NUM_CARGO && cargo_id != CT_INVALID) return CMD_ERROR;
 			if (data == OUFB_CARGO_TYPE_UNLOAD) return CMD_ERROR;
 			/* FALL THROUGH */
 		case MOF_UNLOAD:
@@ -1658,7 +1658,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			break;
 
 		case MOF_CARGO_TYPE_LOAD:
-			if (cargo_id >= NUM_CARGO) return CMD_ERROR;
+			if (cargo_id >= NUM_CARGO && cargo_id != CT_INVALID) return CMD_ERROR;
 			if (data == OLFB_CARGO_TYPE_LOAD || data == OLF_FULL_LOAD_ANY) return CMD_ERROR;
 			/* FALL THROUGH */
 		case MOF_LOAD:
@@ -1787,7 +1787,13 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				break;
 
 			case MOF_CARGO_TYPE_UNLOAD:
-				order->SetUnloadType((OrderUnloadFlags)data, cargo_id);
+				if (cargo_id == CT_INVALID) {
+					for (CargoID i = 0; i < NUM_CARGO; i++) {
+						order->SetUnloadType((OrderUnloadFlags)data, i);
+					}
+				} else {
+					order->SetUnloadType((OrderUnloadFlags)data, cargo_id);
+				}
 				break;
 
 			case MOF_LOAD:
@@ -1796,7 +1802,13 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				break;
 
 			case MOF_CARGO_TYPE_LOAD:
-				order->SetLoadType((OrderLoadFlags)data, cargo_id);
+				if (cargo_id == CT_INVALID) {
+					for (CargoID i = 0; i < NUM_CARGO; i++) {
+						order->SetLoadType((OrderLoadFlags)data, i);
+					}
+				} else {
+					order->SetLoadType((OrderLoadFlags)data, cargo_id);
+				}
 				break;
 
 			case MOF_DEPOT_ACTION: {
@@ -1948,11 +1960,23 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				}
 				switch (mof) {
 					case MOF_CARGO_TYPE_UNLOAD:
-						u->current_order.SetUnloadType((OrderUnloadFlags)data, cargo_id);
+						if (cargo_id == CT_INVALID) {
+							for (CargoID i = 0; i < NUM_CARGO; i++) {
+								u->current_order.SetUnloadType((OrderUnloadFlags)data, i);
+							}
+						} else {
+							u->current_order.SetUnloadType((OrderUnloadFlags)data, cargo_id);
+						}
 						break;
 
 					case MOF_CARGO_TYPE_LOAD:
-						u->current_order.SetLoadType((OrderLoadFlags)data, cargo_id);
+						if (cargo_id == CT_INVALID) {
+							for (CargoID i = 0; i < NUM_CARGO; i++) {
+								u->current_order.SetLoadType((OrderLoadFlags)data, i);
+							}
+						} else {
+							u->current_order.SetLoadType((OrderLoadFlags)data, cargo_id);
+						}
 						break;
 
 					default:

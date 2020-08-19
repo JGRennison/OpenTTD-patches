@@ -117,7 +117,6 @@ private:
 			uint8 order_type = (this->variant == CTOWV_LOAD) ? (uint8) order->GetCargoLoadTypeRaw(cargo_id) : (uint8) order->GetCargoUnloadTypeRaw(cargo_id);
 			this->GetWidget<NWidgetCore>(WID_CTO_CARGO_DROPDOWN_FIRST + i)->SetDataTip(this->cargo_type_order_dropdown[order_type], tooltip);
 		}
-		this->set_to_all_dropdown_sel = 0;
 		this->GetWidget<NWidgetCore>(WID_CTO_SET_TO_ALL_DROPDOWN)->widget_data = this->cargo_type_order_dropdown[this->set_to_all_dropdown_sel];
 	}
 
@@ -159,6 +158,7 @@ public:
 		this->order_id = order_id;
 		this->order_count = v->GetNumOrders();
 		this->order = v->GetOrder(order_id);
+		this->set_to_all_dropdown_sel = 0;
 
 		this->CreateNestedTree(desc);
 		this->GetWidget<NWidgetCore>(WID_CTO_CAPTION)->SetDataTip(STR_CARGO_TYPE_ORDERS_LOAD_CAPTION + this->variant, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS);
@@ -240,6 +240,7 @@ public:
 			delete this;
 			return;
 		}
+		ModifyOrderFlags mof = (this->variant == CTOWV_LOAD) ? MOF_CARGO_TYPE_LOAD : MOF_CARGO_TYPE_UNLOAD;
 		if (WID_CTO_CARGO_DROPDOWN_FIRST <= widget && widget <= WID_CTO_CARGO_DROPDOWN_LAST) {
 			const CargoSpec *cs = _sorted_cargo_specs[widget - WID_CTO_CARGO_DROPDOWN_FIRST];
 			const CargoID cargo_id = cs->Index();
@@ -247,14 +248,20 @@ public:
 
 			if (action_type == order_action_type) return;
 
-			ModifyOrderFlags mof = (this->variant == CTOWV_LOAD) ? MOF_CARGO_TYPE_LOAD : MOF_CARGO_TYPE_UNLOAD;
 			DoCommandP(this->vehicle->tile, this->vehicle->index + (this->order_id << 20), mof | (action_type << 4) | (cargo_id << 20), CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
 
 			this->GetWidget<NWidgetCore>(widget)->SetDataTip(this->cargo_type_order_dropdown[this->GetOrderActionTypeForCargo(cargo_id)], STR_CARGO_TYPE_LOAD_ORDERS_DROP_TOOLTIP + this->variant);
 			this->SetWidgetDirty(widget);
 		} else if (widget == WID_CTO_SET_TO_ALL_DROPDOWN) {
+			DoCommandP(this->vehicle->tile, this->vehicle->index + (this->order_id << 20), mof | (action_type << 4) | (CT_INVALID << 20), CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+
 			for (int i = 0; i < _sorted_standard_cargo_specs_size; i++) {
-				this->OnDropdownSelect(i + WID_CTO_CARGO_DROPDOWN_FIRST, action_type);
+				const CargoSpec *cs = _sorted_cargo_specs[i];
+				const CargoID cargo_id = cs->Index();
+				if (action_type != this->GetOrderActionTypeForCargo(cargo_id)) {
+					this->GetWidget<NWidgetCore>(i + WID_CTO_CARGO_DROPDOWN_FIRST)->SetDataTip(this->cargo_type_order_dropdown[this->GetOrderActionTypeForCargo(cargo_id)], STR_CARGO_TYPE_LOAD_ORDERS_DROP_TOOLTIP + this->variant);
+					this->SetWidgetDirty(i + WID_CTO_CARGO_DROPDOWN_FIRST);
+				}
 			}
 
 			if (action_type != (int) this->set_to_all_dropdown_sel) {
