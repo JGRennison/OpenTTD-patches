@@ -218,11 +218,12 @@ public:
 
 	/**
 	 * Update the jump_counter of this order.
-	 * @param the jump chance in %.
+	 * @param percent the jump chance in %.
+	 * @param dry_run whether this is a dry-run, so do not execute side-effects
 	 * @return whether to jump or not.
 	 * @pre IsType(OT_CONDITIONAL) && this->GetConditionVariable() == OCV_PERCENT.
 	 */
-	bool UpdateJumpCounter(uint8 percent);
+	bool UpdateJumpCounter(uint8 percent, bool dry_run);
 
 	/** How must the consist be loaded? */
 	inline OrderLoadFlags GetLoadType() const

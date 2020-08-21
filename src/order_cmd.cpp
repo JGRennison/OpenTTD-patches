@@ -169,10 +169,14 @@ void Order::MakeLoading(bool ordered)
  * Not that jump_counter is signed and may become
  * negative when a jump has been taken
  *
+ * @param percent the jump chance in %.
+ * @param dry_run whether this is a dry-run, so do not execute side-effects
+ *
  * @return true if the jump should be taken
  */
-bool Order::UpdateJumpCounter(byte percent)
+bool Order::UpdateJumpCounter(byte percent, bool dry_run)
 {
+	if (dry_run) return this->jump_counter >= 0;
 	if (this->jump_counter >= 0) {
 		this->jump_counter += (percent - 100);
 		return true;
@@ -2690,7 +2694,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, boo
 		case OCV_PERCENT: {
 			/* get a non-const reference to the current order */
 			Order *ord = const_cast<Order *>(order);
-			skip_order = ord->UpdateJumpCounter((byte)value);
+			skip_order = ord->UpdateJumpCounter((byte)value, dry_run);
 			break;
 		}
 		case OCV_REMAINING_LIFETIME: skip_order = OrderConditionCompare(occ, max(v->max_age - v->age + DAYS_IN_LEAP_YEAR - 1, 0) / DAYS_IN_LEAP_YEAR, value); break;
