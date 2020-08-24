@@ -60,6 +60,8 @@
 
 #include "table/strings.h"
 
+#include "3rdparty/cpp-btree/btree_set.h"
+
 #include "safeguards.h"
 
 /**
@@ -3893,6 +3895,13 @@ void RerouteCargo(Station *st, CargoID c, StationID avoid, StationID avoid2)
 	}
 }
 
+btree::btree_set<VehicleID> _delete_stale_links_vehicle_cache;
+
+void ClearDeleteStaleLinksVehicleCache()
+{
+	_delete_stale_links_vehicle_cache.clear();
+}
+
 /**
  * Check all next hops of cargo packets in this station for existence of a
  * a valid link they may use to travel on. Reroute any cargo not having a valid
@@ -3944,7 +3953,11 @@ void DeleteStaleLinks(Station *from)
 					while (iter != vehicles.end()) {
 						Vehicle *v = *iter;
 
-						LinkRefresher::Run(v, false); // Don't allow merging. Otherwise lg might get deleted.
+						auto res = _delete_stale_links_vehicle_cache.insert(v->index);
+						// Only run LinkRefresher if vehicle was not already in the cache
+						if (res.second) {
+							LinkRefresher::Run(v, false); // Don't allow merging. Otherwise lg might get deleted.
+						}
 						if (edge.LastUpdate() == _date) {
 							updated = true;
 							break;
@@ -4053,6 +4066,8 @@ static void StationHandleSmallTick(BaseStation *st)
 void OnTick_Station()
 {
 	if (_game_mode == GM_EDITOR) return;
+
+	ClearDeleteStaleLinksVehicleCache();
 
 	for (BaseStation *st : BaseStation::Iterate()) {
 		StationHandleSmallTick(st);
