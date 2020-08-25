@@ -1045,7 +1045,10 @@ CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 
 		/* Company colour data is indirectly cached. */
 		for (Vehicle *v : Vehicle::Iterate()) {
-			if (v->owner == _current_company) v->InvalidateNewGRFCache();
+			if (v->owner == _current_company) {
+				v->InvalidateNewGRFCache();
+				v->InvalidateImageCache();
+			}
 		}
 
 		extern void UpdateObjectColours(const Company *c);

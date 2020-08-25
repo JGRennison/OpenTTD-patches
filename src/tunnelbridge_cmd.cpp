@@ -2695,7 +2695,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 					assert_msg(frame == rv->frame + 1 || rv->frame == _tunnel_turnaround_pre_visibility_frame[dir],
 							"frame: %u, rv->frame: %u, dir: %u, _tunnel_turnaround_pre_visibility_frame[dir]: %u", frame, rv->frame, dir, _tunnel_turnaround_pre_visibility_frame[dir]);
 					rv->tile = tile;
-					rv->cur_image_valid_dir = INVALID_DIR;
+					rv->InvalidateImageCache();
 					rv->state = RVSB_WORMHOLE;
 					if (Tunnel::GetByTile(tile)->is_chunnel) SetBit(rv->gv_flags, GVF_CHUNNEL_BIT);
 					rv->vehstatus |= VS_HIDDEN;
@@ -2710,7 +2710,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 			if (dir == ReverseDiagDir(vdir) && frame == (int) (_tunnel_visibility_frame[dir] - 1) && z == 0) {
 				if (rv->tile != tile && GetOtherTunnelEnd(rv->tile) != tile) return VETSB_CONTINUE; // In chunnel
 				rv->tile = tile;
-				rv->cur_image_valid_dir = INVALID_DIR;
+				rv->InvalidateImageCache();
 				rv->state = DiagDirToDiagTrackdir(vdir);
 				rv->frame = TILE_SIZE - (frame + 1);
 				rv->vehstatus &= ~VS_HIDDEN;
@@ -2753,7 +2753,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 						if (HasRoadTypeTram(tile) && HasBit(rv->compatible_roadtypes, GetRoadTypeTram(tile))) bits |= GetCustomBridgeHeadRoadBits(tile, RTT_TRAM);
 						if (!(bits & DiagDirToRoadBits(GetTunnelBridgeDirection(tile)))) return VETSB_CONTINUE;
 					}
-					rv->cur_image_valid_dir = INVALID_DIR;
+					rv->InvalidateImageCache();
 					rv->state = RVSB_WORMHOLE;
 					/* There are no slopes inside bridges / tunnels. */
 					ClrBit(rv->gv_flags, GVF_GOINGUP_BIT);
@@ -2790,7 +2790,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 					v->tile = tile;
 					RoadVehicle *rv = RoadVehicle::From(v);
 					if (rv->state == RVSB_WORMHOLE) {
-						rv->cur_image_valid_dir = INVALID_DIR;
+						rv->InvalidateImageCache();
 						rv->state = DiagDirToDiagTrackdir(DirToDiagDir(v->direction));
 						rv->frame = 0;
 						return VETSB_ENTERED_WORMHOLE;

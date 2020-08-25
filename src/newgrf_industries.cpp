@@ -155,7 +155,7 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout
 	return count << 16 | GB(closest_dist, 0, 16);
 }
 
-/* virtual */ uint32 IndustriesScopeResolver::GetVariable(byte variable, uint32 parameter, bool *available) const
+/* virtual */ uint32 IndustriesScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	if (this->ro.callback == CBID_INDUSTRY_LOCATION) {
 		/* Variables available during construction check. */
@@ -201,7 +201,7 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout
 	if (this->industry == nullptr) {
 		DEBUG(grf, 1, "Unhandled variable 0x%X (no available industry) in callback 0x%x", variable, this->ro.callback);
 
-		*available = false;
+		extra->available = false;
 		return UINT_MAX;
 	}
 
@@ -401,7 +401,7 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout
 
 	DEBUG(grf, 1, "Unhandled industry variable 0x%X", variable);
 
-	*available = false;
+	extra->available = false;
 	return UINT_MAX;
 }
 

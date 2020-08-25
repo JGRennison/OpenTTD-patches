@@ -466,6 +466,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 				/* Owner changes, clear cache */
 				v->colourmap = PAL_NONE;
 				v->InvalidateNewGRFCache();
+				v->InvalidateImageCache();
 
 				if (v->IsEngineCountable()) {
 					GroupStatistics::CountEngine(v, 1);

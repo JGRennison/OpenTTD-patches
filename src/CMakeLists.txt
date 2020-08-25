@@ -235,6 +235,7 @@ add_files(
     newgrf_airporttiles.h
     newgrf_animation_base.h
     newgrf_animation_type.h
+    newgrf_cache_check.h
     newgrf_callbacks.h
     newgrf_canal.cpp
     newgrf_canal.h

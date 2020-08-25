@@ -39,7 +39,7 @@ struct VehicleScopeResolver : public ScopeResolver {
 	void SetVehicle(const Vehicle *v) { this->v = v; }
 
 	uint32 GetRandomBits() const override;
-	uint32 GetVariable(byte variable, uint32 parameter, bool *available) const override;
+	uint32 GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const override;
 	uint32 GetTriggers() const override;
 };
 

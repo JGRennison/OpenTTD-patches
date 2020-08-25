@@ -67,6 +67,7 @@ int GetAircraftFlightLevel(T *v, bool takeoff = false);
 struct AircraftCache {
 	uint32 cached_max_range_sqr;   ///< Cached squared maximum range.
 	uint16 cached_max_range;       ///< Cached maximum range.
+	byte image_movement_state;     ///< Cached image aircraft movement state
 };
 
 /**

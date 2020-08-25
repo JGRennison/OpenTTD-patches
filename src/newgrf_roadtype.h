@@ -23,7 +23,7 @@ struct RoadTypeScopeResolver : public ScopeResolver {
 	RoadTypeScopeResolver(ResolverObject &ro, const RoadTypeInfo *rti, TileIndex tile, TileContext context);
 
 	/* virtual */ uint32 GetRandomBits() const;
-	/* virtual */ uint32 GetVariable(byte variable, uint32 parameter, bool *available) const;
+	/* virtual */ uint32 GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const;
 };
 
 /** Resolver object for road types. */

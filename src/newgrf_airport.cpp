@@ -38,7 +38,7 @@ struct AirportScopeResolver : public ScopeResolver {
 	}
 
 	uint32 GetRandomBits() const override;
-	uint32 GetVariable(byte variable, uint32 parameter, bool *available) const override;
+	uint32 GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const override;
 	void StorePSA(uint pos, int32 value) override;
 };
 
@@ -197,14 +197,14 @@ void AirportOverrideManager::SetEntitySpec(AirportSpec *as)
 	}
 }
 
-/* virtual */ uint32 AirportScopeResolver::GetVariable(byte variable, uint32 parameter, bool *available) const
+/* virtual */ uint32 AirportScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	switch (variable) {
 		case 0x40: return this->layout;
 	}
 
 	if (this->st == nullptr) {
-		*available = false;
+		extra->available = false;
 		return UINT_MAX;
 	}
 
@@ -216,7 +216,7 @@ void AirportOverrideManager::SetEntitySpec(AirportSpec *as)
 		case 0xFA: return Clamp(this->st->build_date - DAYS_TILL_ORIGINAL_BASE_YEAR, 0, 65535);
 	}
 
-	return this->st->GetNewGRFVariable(this->ro, variable, parameter, available);
+	return this->st->GetNewGRFVariable(this->ro, variable, parameter, &(extra->available));
 }
 
 /* virtual */ const SpriteGroup *AirportResolverObject::ResolveReal(const RealSpriteGroup *group) const

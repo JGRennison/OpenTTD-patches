@@ -22,7 +22,7 @@
 	return GB(tmp, 0, 2);
 }
 
-/* virtual */ uint32 RoadTypeScopeResolver::GetVariable(byte variable, uint32 parameter, bool *available) const
+/* virtual */ uint32 RoadTypeScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	if (this->tile == INVALID_TILE) {
 		switch (variable) {
@@ -54,7 +54,7 @@
 
 	DEBUG(grf, 1, "Unhandled road type tile variable 0x%X", variable);
 
-	*available = false;
+	extra->available = false;
 	return UINT_MAX;
 }
 

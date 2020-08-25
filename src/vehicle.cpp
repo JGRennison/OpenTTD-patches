@@ -340,6 +340,7 @@ uint Vehicle::Crash(bool flooded)
 		if (IsCargoInClass(v->cargo_type, CC_PASSENGERS)) pass += v->cargo.TotalCount();
 		v->vehstatus |= VS_CRASHED;
 		v->MarkAllViewportsDirty();
+		v->InvalidateImageCache();
 	}
 
 	this->ClearSeparation();
@@ -3757,6 +3758,8 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last, bool include_tile) co
 	dump('l', HasBit(this->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT));
 	dump('z', HasBit(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST));
 	dump('d', HasBit(this->vcache.cached_veh_flags, VCF_IS_DRAWN));
+	dump('t', HasBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_TRIGGER));
+	dump('s', HasBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE));
 	if (this->IsGroundVehicle()) {
 		uint16 gv_flags = this->GetGroundVehicleFlags();
 		b += seprintf(b, last, ", gvf:");

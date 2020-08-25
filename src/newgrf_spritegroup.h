@@ -287,6 +287,14 @@ struct IndustryProductionSpriteGroup : SpriteGroup {
 
 };
 
+struct GetVariableExtra {
+	bool available;
+	uint32 mask;
+
+	GetVariableExtra(uint32 mask_ = 0xFFFFFFFF)
+			: available(true), mask(mask_) {}
+};
+
 /**
  * Interface to query and set values specific to a single #VarSpriteGroupScope (action 2 scope).
  *
@@ -302,7 +310,7 @@ struct ScopeResolver {
 	virtual uint32 GetRandomBits() const;
 	virtual uint32 GetTriggers() const;
 
-	virtual uint32 GetVariable(byte variable, uint32 parameter, bool *available) const;
+	virtual uint32 GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const;
 	virtual void StorePSA(uint reg, int32 value);
 };
 
