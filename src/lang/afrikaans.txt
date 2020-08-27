@@ -1099,6 +1099,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Koppierig
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Bergagtig
 STR_TERRAIN_TYPE_ALPINIST                                       :Alpinis
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Onverskillig
 STR_CITY_APPROVAL_PERMISSIVE                                    :Permissief
 STR_CITY_APPROVAL_TOLERANT                                      :Toelaatbaar
 STR_CITY_APPROVAL_HOSTILE                                       :Vyandelik

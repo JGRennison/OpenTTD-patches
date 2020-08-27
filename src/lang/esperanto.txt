@@ -1052,6 +1052,7 @@ STR_TERRAIN_TYPE_FLAT                                           :Ebene
 STR_TERRAIN_TYPE_HILLY                                          :Montete
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Monte
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Indiferenta
 STR_CITY_APPROVAL_PERMISSIVE                                    :Permeseme
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerante
 STR_CITY_APPROVAL_HOSTILE                                       :Gastige

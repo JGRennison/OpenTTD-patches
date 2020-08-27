@@ -1060,6 +1060,7 @@ STR_TERRAIN_TYPE_HILLY                                          :เนินเ
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :ภูเขาสูง
 STR_TERRAIN_TYPE_ALPINIST                                       :นักไต่เขา
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :ไม่แยแส
 STR_CITY_APPROVAL_PERMISSIVE                                    :อนุญาต
 STR_CITY_APPROVAL_TOLERANT                                      :พอผ่อนผันให้ได้
 STR_CITY_APPROVAL_HOSTILE                                       :ไม่เป็นมิตร

@@ -1273,6 +1273,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Brdsko-planinsk
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Planinski
 STR_TERRAIN_TYPE_ALPINIST                                       :Planinar
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Равнодушан
 STR_CITY_APPROVAL_PERMISSIVE                                    :Popustljiv
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerantan
 STR_CITY_APPROVAL_HOSTILE                                       :Neprijateljski

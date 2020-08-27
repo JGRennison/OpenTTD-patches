@@ -1094,6 +1094,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Accidentat
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Muntanyós
 STR_TERRAIN_TYPE_ALPINIST                                       :Escarpat
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Indiferent
 STR_CITY_APPROVAL_PERMISSIVE                                    :Permissiva
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerant
 STR_CITY_APPROVAL_HOSTILE                                       :Hostil

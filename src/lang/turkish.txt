@@ -1089,6 +1089,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Engebeli
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Dağlık
 STR_TERRAIN_TYPE_ALPINIST                                       :Alp Meraklısı
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Kayıtsız
 STR_CITY_APPROVAL_PERMISSIVE                                    :İzne tabi
 STR_CITY_APPROVAL_TOLERANT                                      :Töleranslı
 STR_CITY_APPROVAL_HOSTILE                                       :Düşman

@@ -1102,6 +1102,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Paugurains
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Kalnains
 STR_TERRAIN_TYPE_ALPINIST                                       :Alpu
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Vienaldzīgs
 STR_CITY_APPROVAL_PERMISSIVE                                    :pieļaujoša
 STR_CITY_APPROVAL_TOLERANT                                      :iecietīga
 STR_CITY_APPROVAL_HOSTILE                                       :naidīga

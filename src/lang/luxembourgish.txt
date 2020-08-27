@@ -1099,6 +1099,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Hiwwelech
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Bierger
 STR_TERRAIN_TYPE_ALPINIST                                       :Alpin
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Indifferent
 STR_CITY_APPROVAL_PERMISSIVE                                    :Fräizügeg
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerant
 STR_CITY_APPROVAL_HOSTILE                                       :Ofleenend

@@ -1228,6 +1228,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Hribovit
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Gorat
 STR_TERRAIN_TYPE_ALPINIST                                       :Alpinist
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Enak
 STR_CITY_APPROVAL_PERMISSIVE                                    :Dopustno
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerantno
 STR_CITY_APPROVAL_HOSTILE                                       :Sovražno

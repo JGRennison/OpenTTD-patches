@@ -1036,6 +1036,7 @@ STR_TERRAIN_TYPE_HILLY                                          :مرتفعات 
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :جبال
 STR_TERRAIN_TYPE_ALPINIST                                       :شاهق
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :غير مبال
 STR_CITY_APPROVAL_PERMISSIVE                                    :متساهل
 STR_CITY_APPROVAL_TOLERANT                                      :متقبل
 STR_CITY_APPROVAL_HOSTILE                                       :معاد

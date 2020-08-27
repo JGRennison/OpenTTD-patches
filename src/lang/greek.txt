@@ -1197,6 +1197,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Λοφώδες
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Βουνώδες
 STR_TERRAIN_TYPE_ALPINIST                                       :Αλπικό
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Αδιάφορος
 STR_CITY_APPROVAL_PERMISSIVE                                    :Ανεκτική
 STR_CITY_APPROVAL_TOLERANT                                      :Υπομονετική
 STR_CITY_APPROVAL_HOSTILE                                       :Εχθρική

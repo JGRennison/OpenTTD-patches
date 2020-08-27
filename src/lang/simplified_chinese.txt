@@ -1100,6 +1100,7 @@ STR_TERRAIN_TYPE_HILLY                                          :丘陵
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :山地
 STR_TERRAIN_TYPE_ALPINIST                                       :多山
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :冷漠
 STR_CITY_APPROVAL_PERMISSIVE                                    :宽容
 STR_CITY_APPROVAL_TOLERANT                                      :隐忍
 STR_CITY_APPROVAL_HOSTILE                                       :对立

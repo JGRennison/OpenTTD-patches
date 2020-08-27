@@ -1099,6 +1099,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Kukkulainen
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Vuoristoinen
 STR_TERRAIN_TYPE_ALPINIST                                       :Vuorikiipeilijä
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Välinpitämätön
 STR_CITY_APPROVAL_PERMISSIVE                                    :Salliva
 STR_CITY_APPROVAL_TOLERANT                                      :Suvaitseva
 STR_CITY_APPROVAL_HOSTILE                                       :Vihamielinen

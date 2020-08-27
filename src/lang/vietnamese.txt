@@ -1098,6 +1098,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Núi
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Núi Cao
 STR_TERRAIN_TYPE_ALPINIST                                       :Đồi núi
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Vô tư
 STR_CITY_APPROVAL_PERMISSIVE                                    :Dễ dãi
 STR_CITY_APPROVAL_TOLERANT                                      :Vừa phải
 STR_CITY_APPROVAL_HOSTILE                                       :Khó khăn

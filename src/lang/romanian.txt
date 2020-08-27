@@ -1077,6 +1077,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Deluros
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Muntos
 STR_TERRAIN_TYPE_ALPINIST                                       :Alpinist
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Indiferent
 STR_CITY_APPROVAL_PERMISSIVE                                    :Permisivă
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerantă
 STR_CITY_APPROVAL_HOSTILE                                       :Ostilă

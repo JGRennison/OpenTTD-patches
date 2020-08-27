@@ -1142,6 +1142,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Kopcovitý
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Horský
 STR_TERRAIN_TYPE_ALPINIST                                       :Alpinista
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :ľahostajný
 STR_CITY_APPROVAL_PERMISSIVE                                    :Pozitivny
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerantny
 STR_CITY_APPROVAL_HOSTILE                                       :Odmietavy

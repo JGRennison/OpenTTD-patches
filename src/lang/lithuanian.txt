@@ -1279,6 +1279,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Kalvos
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Kalnai
 STR_TERRAIN_TYPE_ALPINIST                                       :Statūs kalnai
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Abejingas
 STR_CITY_APPROVAL_PERMISSIVE                                    :Atlaidus
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerantiškas
 STR_CITY_APPROVAL_HOSTILE                                       :Priešiškas

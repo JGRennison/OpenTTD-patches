@@ -1196,6 +1196,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Brežuljkasto
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Brdovito
 STR_TERRAIN_TYPE_ALPINIST                                       :Alpinist
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :ravnodušan
 STR_CITY_APPROVAL_PERMISSIVE                                    :Dopustiv
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerantan
 STR_CITY_APPROVAL_HOSTILE                                       :Agresivan

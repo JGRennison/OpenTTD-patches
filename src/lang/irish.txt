@@ -1074,6 +1074,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Cnocach
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Sléibhtiúil
 STR_TERRAIN_TYPE_ALPINIST                                       :Ailpíneach
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Neamhshuimiúil
 STR_CITY_APPROVAL_PERMISSIVE                                    :Tugtar cead
 STR_CITY_APPROVAL_TOLERANT                                      :Fulangach
 STR_CITY_APPROVAL_HOSTILE                                       :Naimhdeach

@@ -1251,6 +1251,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Холмист�
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Преимущественно горный
 STR_TERRAIN_TYPE_ALPINIST                                       :Исключительно горный
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :В различных
 STR_CITY_APPROVAL_PERMISSIVE                                    :дозволяющее
 STR_CITY_APPROVAL_TOLERANT                                      :терпимое
 STR_CITY_APPROVAL_HOSTILE                                       :отрицательное

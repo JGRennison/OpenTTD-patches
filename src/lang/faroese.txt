@@ -1039,6 +1039,7 @@ STR_TERRAIN_TYPE_FLAT                                           :Flatt
 STR_TERRAIN_TYPE_HILLY                                          :Bakkaríkt
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Fjallaríkt
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Ainaani
 STR_CITY_APPROVAL_PERMISSIVE                                    :Eftirgevandi
 STR_CITY_APPROVAL_TOLERANT                                      :Tolsamir
 STR_CITY_APPROVAL_HOSTILE                                       :Fíggjindaligir

@@ -1279,6 +1279,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Cnuic
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Beanntan
 STR_TERRAIN_TYPE_ALPINIST                                       :Mòr-bheanntan
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Neo-inntinneach
 STR_CITY_APPROVAL_PERMISSIVE                                    :Coibhneil
 STR_CITY_APPROVAL_TOLERANT                                      :Ceadachail
 STR_CITY_APPROVAL_HOSTILE                                       :Nàimhdeil

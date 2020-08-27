@@ -1480,6 +1480,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Pagórkowaty
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Górzysty
 STR_TERRAIN_TYPE_ALPINIST                                       :Alpejski
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Obojętny
 STR_CITY_APPROVAL_PERMISSIVE                                    :Przyjazne
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerancyjne
 STR_CITY_APPROVAL_HOSTILE                                       :Wrogie

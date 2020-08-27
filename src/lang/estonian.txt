@@ -1139,6 +1139,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Künklik
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Mägine
 STR_TERRAIN_TYPE_ALPINIST                                       :Alpinist
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Ükskõikne
 STR_CITY_APPROVAL_PERMISSIVE                                    :Soodustav
 STR_CITY_APPROVAL_TOLERANT                                      :Salliv
 STR_CITY_APPROVAL_HOSTILE                                       :Vaenulik

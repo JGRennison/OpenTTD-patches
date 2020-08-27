@@ -1101,6 +1101,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Bakket
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Bjergrigt
 STR_TERRAIN_TYPE_ALPINIST                                       :Alpinist
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :ligeglade
 STR_CITY_APPROVAL_PERMISSIVE                                    :Passiv
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerant
 STR_CITY_APPROVAL_HOSTILE                                       :Fjendtlig

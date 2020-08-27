@@ -1391,6 +1391,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Узгорас�
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Гарыстая
 STR_TERRAIN_TYPE_ALPINIST                                       :Выключна горны
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Абыякавы
 STR_CITY_APPROVAL_PERMISSIVE                                    :Дазваляючае
 STR_CITY_APPROVAL_TOLERANT                                      :Памяркоўнае
 STR_CITY_APPROVAL_HOSTILE                                       :Варожае

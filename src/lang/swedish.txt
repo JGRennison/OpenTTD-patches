@@ -1100,6 +1100,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Kullig
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Bergig
 STR_TERRAIN_TYPE_ALPINIST                                       :Alpin
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Likgiltig
 STR_CITY_APPROVAL_PERMISSIVE                                    :Eftergiven
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerant
 STR_CITY_APPROVAL_HOSTILE                                       :Fientlig

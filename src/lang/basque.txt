@@ -1064,6 +1064,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Mendixkekin
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Menditsua
 STR_TERRAIN_TYPE_ALPINIST                                       :Alpinista
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Axolagabea
 STR_CITY_APPROVAL_PERMISSIVE                                    :Jasankorra
 STR_CITY_APPROVAL_TOLERANT                                      :Jasanbera
 STR_CITY_APPROVAL_HOSTILE                                       :Kontrakoa

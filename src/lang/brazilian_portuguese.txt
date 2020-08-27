@@ -1082,6 +1082,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Acidentado
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Montanhoso
 STR_TERRAIN_TYPE_ALPINIST                                       :Alpinista
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Indiferente
 STR_CITY_APPROVAL_PERMISSIVE                                    :Permissivo
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerante
 STR_CITY_APPROVAL_HOSTILE                                       :Hostil

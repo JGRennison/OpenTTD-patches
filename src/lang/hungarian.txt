@@ -1163,6 +1163,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Dombos
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Hegyvidéki
 STR_TERRAIN_TYPE_ALPINIST                                       :Alpesi
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Közömbös
 STR_CITY_APPROVAL_PERMISSIVE                                    :Engedékeny
 STR_CITY_APPROVAL_TOLERANT                                      :Toleráns
 STR_CITY_APPROVAL_HOSTILE                                       :Ellenséges

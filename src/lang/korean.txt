@@ -1110,6 +1110,7 @@ STR_TERRAIN_TYPE_HILLY                                          :언덕
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :산
 STR_TERRAIN_TYPE_ALPINIST                                       :매우 험한 산지
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :무관심한
 STR_CITY_APPROVAL_PERMISSIVE                                    :신경 안씀
 STR_CITY_APPROVAL_TOLERANT                                      :신경 씀
 STR_CITY_APPROVAL_HOSTILE                                       :싫어함

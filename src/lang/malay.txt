@@ -1049,6 +1049,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Berbukit
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Bergunung
 STR_TERRAIN_TYPE_ALPINIST                                       :Alpinist
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Tidak peduli
 STR_CITY_APPROVAL_PERMISSIVE                                    :Mengizinkan
 STR_CITY_APPROVAL_TOLERANT                                      :Bertoleransi
 STR_CITY_APPROVAL_HOSTILE                                       :Kurang mengizinkan

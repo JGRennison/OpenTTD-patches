@@ -1276,6 +1276,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Clivosus
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Montanus
 STR_TERRAIN_TYPE_ALPINIST                                       :Alpinus
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Indifferens
 STR_CITY_APPROVAL_PERMISSIVE                                    :Longe
 STR_CITY_APPROVAL_TOLERANT                                      :Breviter
 STR_CITY_APPROVAL_HOSTILE                                       :Brevissime

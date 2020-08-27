@@ -2290,6 +2290,8 @@ uint8 GetAirportNoiseLevelForDistance(const AirportSpec *as, uint distance)
 	 * So no need to go any further*/
 	if (as->noise_level < 2) return as->noise_level;
 
+	if (_settings_game.difficulty.town_council_tolerance == TOWN_COUNCIL_INDIFFERENT) return 1;
+
 	/* The steps for measuring noise reduction are based on the "magical" (and arbitrary) 8 base distance
 	 * adding the town_council_tolerance 4 times, as a way to graduate, depending of the tolerance.
 	 * Basically, it says that the less tolerant a town is, the bigger the distance before

@@ -1226,6 +1226,7 @@ STR_TERRAIN_TYPE_HILLY                                          :пагорис�
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :гористий
 STR_TERRAIN_TYPE_ALPINIST                                       :скелястий
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Байдужий
 STR_CITY_APPROVAL_PERMISSIVE                                    :допустиме
 STR_CITY_APPROVAL_TOLERANT                                      :терпиме
 STR_CITY_APPROVAL_HOSTILE                                       :вороже

@@ -1100,6 +1100,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Åslendt
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Berglendt
 STR_TERRAIN_TYPE_ALPINIST                                       :Alpint
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Kusava nehanya
 STR_CITY_APPROVAL_PERMISSIVE                                    :Ettergivende
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerant
 STR_CITY_APPROVAL_HOSTILE                                       :Fiendtlig

@@ -806,7 +806,10 @@ static CommandCost ClearTile_Town(TileIndex tile, DoCommandFlag flags)
 	Town *t = Town::GetByTile(tile);
 
 	if (Company::IsValidID(_current_company)) {
-		if (rating > t->ratings[_current_company] && !(flags & DC_NO_TEST_TOWN_RATING) && !_cheats.magic_bulldozer.value) {
+		if (rating > t->ratings[_current_company]
+			&& !(flags & DC_NO_TEST_TOWN_RATING)
+			&& !_cheats.magic_bulldozer.value
+			&& _settings_game.difficulty.town_council_tolerance != TOWN_COUNCIL_INDIFFERENT) {
 			SetDParam(0, t->index);
 			return_cmd_error(STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS);
 		}
@@ -3745,7 +3748,7 @@ CommandCost CheckIfAuthorityAllowsNewStation(TileIndex tile, DoCommandFlag flags
 	Town *t = ClosestTownFromTile(tile, _settings_game.economy.dist_local_authority);
 	if (t == nullptr) return CommandCost();
 
-	if (t->ratings[_current_company] > RATING_VERYPOOR) return CommandCost();
+	if (t->ratings[_current_company] > RATING_VERYPOOR || _settings_game.difficulty.town_council_tolerance == TOWN_COUNCIL_INDIFFERENT) return CommandCost();
 
 	SetDParam(0, t->index);
 	return_cmd_error(STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS);
@@ -3903,6 +3906,10 @@ CommandCost CheckforTownRating(DoCommandFlag flags, Town *t, TownRatingCheckType
 	/* if magic_bulldozer cheat is active, town doesn't restrict your destructive actions */
 	if (t == nullptr || !Company::IsValidID(_current_company) ||
 			_cheats.magic_bulldozer.value || (flags & DC_NO_TEST_TOWN_RATING)) {
+		return CommandCost();
+	}
+
+	if (_settings_game.difficulty.town_council_tolerance == TOWN_COUNCIL_INDIFFERENT) {
 		return CommandCost();
 	}
 

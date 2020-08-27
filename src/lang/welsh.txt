@@ -1077,6 +1077,7 @@ STR_TERRAIN_TYPE_HILLY                                          :Bryniog
 STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Mynyddig
 STR_TERRAIN_TYPE_ALPINIST                                       :Mynyddwr
 
+STR_CITY_APPROVAL_INDIFFERENT                                   :Yn ddifater
 STR_CITY_APPROVAL_PERMISSIVE                                    :Bodlon
 STR_CITY_APPROVAL_TOLERANT                                      :Hapus
 STR_CITY_APPROVAL_HOSTILE                                       :Gwrthwynebus
