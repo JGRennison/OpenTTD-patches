@@ -37,7 +37,7 @@ struct ViewPortMapDrawVehiclesCache {
 /**
  * Data structure for viewport, display of a part of the world
  */
-struct ViewPort {
+struct Viewport {
 	int left;    ///< Screen coordinate left edge of the viewport
 	int top;     ///< Screen coordinate top edge of the viewport
 	int width;   ///< Screen width of the viewport

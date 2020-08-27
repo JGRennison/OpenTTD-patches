@@ -23,15 +23,15 @@ static const int TILE_HEIGHT_STEP = 50; ///< One Z unit tile height difference i
 
 void SetSelectionRed(bool);
 
-void ClearViewPortCache(ViewPort *vp);
+void ClearViewPortCache(Viewport *vp);
 void ClearViewPortCaches();
 void DeleteWindowViewport(Window *w);
 void InitializeWindowViewport(Window *w, int x, int y, int width, int height, uint32 follow_flags, ZoomLevel zoom);
-ViewPort *IsPtInWindowViewport(const Window *w, int x, int y);
-Point TranslateXYToTileCoord(const ViewPort *vp, int x, int y, bool clamp_to_map = true);
+Viewport *IsPtInWindowViewport(const Window *w, int x, int y);
+Point TranslateXYToTileCoord(const Viewport *vp, int x, int y, bool clamp_to_map = true);
 Point GetTileBelowCursor();
 void UpdateViewportPosition(Window *w);
-void UpdateViewportSizeZoom(ViewPort *vp);
+void UpdateViewportSizeZoom(Viewport *vp);
 
 void MarkAllViewportsDirty(int left, int top, int right, int bottom, const ZoomLevel mark_dirty_if_zoomlevel_is_below = ZOOM_LVL_END);
 void MarkAllViewportMapsDirty(int left, int top, int right, int bottom);
@@ -44,7 +44,7 @@ bool DoZoomInOutWindow(ZoomStateChange how, Window *w);
 void ZoomInOrOutToCursorWindow(bool in, Window * w);
 Point GetTileZoomCenterWindow(bool in, Window * w);
 void FixTitleGameZoom();
-void HandleZoomMessage(Window *w, const ViewPort *vp, byte widget_zoom_in, byte widget_zoom_out);
+void HandleZoomMessage(Window *w, const Viewport *vp, byte widget_zoom_in, byte widget_zoom_out);
 
 /**
  * Zoom a viewport as far as possible in the given direction.
@@ -70,12 +70,12 @@ void StartSpriteCombine();
 void EndSpriteCombine();
 
 bool HandleViewportDoubleClicked(Window *w, int x, int y);
-bool HandleViewportClicked(const ViewPort *vp, int x, int y, bool double_click);
+bool HandleViewportClicked(const Viewport *vp, int x, int y, bool double_click);
 void SetRedErrorSquare(TileIndex tile);
 void SetTileSelectSize(int w, int h);
 void SetTileSelectBigSize(int ox, int oy, int sx, int sy);
 
-void ViewportDoDraw(ViewPort *vp, int left, int top, int right, int bottom);
+void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom);
 
 bool ScrollWindowToTile(TileIndex tile, Window *w, bool instant = false);
 bool ScrollWindowTo(int x, int y, int z, Window *w, bool instant = false);
@@ -109,9 +109,9 @@ static inline void MarkTileDirtyByTile(TileIndex tile, const ZoomLevel mark_dirt
 
 void MarkTileGroundDirtyByTile(TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below);
 
-ViewportMapType ChangeRenderMode(const ViewPort *vp, bool down);
+ViewportMapType ChangeRenderMode(const Viewport *vp, bool down);
 
-Point GetViewportStationMiddle(const ViewPort *vp, const Station *st);
+Point GetViewportStationMiddle(const Viewport *vp, const Station *st);
 
 void ShowTooltipForTile(Window *w, const TileIndex tile);
 

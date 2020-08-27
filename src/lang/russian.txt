@@ -529,7 +529,7 @@ STR_FILE_MENU_EXIT                                              :Выход
 
 # map menu
 STR_MAP_MENU_MAP_OF_WORLD                                       :Карта мира
-STR_MAP_MENU_EXTRA_VIEW_PORT                                    :Доп. окно просмотра
+STR_MAP_MENU_EXTRA_VIEWPORT                                     :Доп. окно просмотра
 STR_MAP_MENU_LINGRAPH_LEGEND                                    :Легенда грузоперевозок
 STR_MAP_MENU_SIGN_LIST                                          :Список табличек
 
@@ -1030,7 +1030,7 @@ STR_NEWS_EXCLUSIVE_RIGHTS_TITLE                                 :{BIG_FONT}{BLAC
 STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION                           :{BIG_FONT}{BLACK}Администрация г.{NBSP}{TOWN} заключила контракт с компанией «{STRING}», предоставляющий ей эксклюзивные права на транспортные услуги в городе сроком на 1{NBSP}год!
 
 # Extra view window
-STR_EXTRA_VIEW_PORT_TITLE                                       :{WHITE}Окно просмотра {COMMA}
+STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Окно просмотра {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Из основного окна
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Показать то, что отображается в основном окне
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}В основное окно
@@ -1643,7 +1643,7 @@ STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES                           :Количес�
 STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES_HELPTEXT                  :Максимальное количество операций, которое скрипт может выполнить за один цикл
 STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY                            :Макс. объём памяти для скрипта: {STRING}
 STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY_HELPTEXT                   :Объём памяти, который может использовать скрипт. При превышении этого объёма скрипт будет принудительно завершён. Для больших карт это значение, возможно, потребуется увеличить.
-STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY_VALUE                      :{COMMA} Мбайт
+STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY_VALUE                      :{COMMA} МиБ
 
 STR_CONFIG_SETTING_SERVINT_ISPERCENT                            :Интервал обслуживания в процентах: {STRING}
 STR_CONFIG_SETTING_SERVINT_ISPERCENT_HELPTEXT                   :Выберите, должно ли техническое обслуживание транспорта выполняться через определённые промежутки времени, либо при снижении надёжности транспортного средства на определённый процент от максимума
@@ -2930,7 +2930,7 @@ STR_FRAMERATE_RATE_GAMELOOP_TOOLTIP                             :{BLACK}Кол-�
 STR_FRAMERATE_RATE_BLITTER                                      :{BLACK}Вывод на экран: {STRING}
 STR_FRAMERATE_RATE_BLITTER_TOOLTIP                              :{BLACK}Кол-во отображаемых кадров в секунду.
 STR_FRAMERATE_SPEED_FACTOR                                      :{BLACK}Текущая скорость игры: {DECIMAL}x
-STR_FRAMERATE_SPEED_FACTOR_TOOLTIP                              :{BLACK}Фактическая скорость игры
+STR_FRAMERATE_SPEED_FACTOR_TOOLTIP                              :{BLACK}Фактическая скорость игры (по сравнению с ожидаемой скоростью при нормальной скорости симуляции).
 STR_FRAMERATE_CURRENT                                           :{WHITE}Сейчас
 STR_FRAMERATE_AVERAGE                                           :{WHITE}В среднем
 STR_FRAMERATE_MEMORYUSE                                         :{WHITE}Объём памяти

@@ -91,14 +91,14 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = .
+INPUT                  = . $(GENERATED_API_DIR)
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          = script_*.hpp \
                          game_*.hpp
 RECURSIVE              = YES
 EXCLUDE                =
 EXCLUDE_SYMLINKS       = NO
-EXCLUDE_PATTERNS       =
+EXCLUDE_PATTERNS       = game_includes.hpp
 EXCLUDE_SYMBOLS        = GetClassName DECLARE_ENUM_AS_BIT_SET DECLARE_POSTFIX_INCREMENT
 EXAMPLE_PATH           =
 EXAMPLE_PATTERNS       = *
