@@ -786,6 +786,7 @@ int openttd_main(int argc, char *argv[])
 
 			_load_check_data.Clear();
 			if (i == 'K') _load_check_data.want_debug_data = true;
+			_load_check_data.want_grf_compatibility = false;
 			SaveOrLoadResult res = SaveOrLoad(mgo.opt, SLO_CHECK, DFT_GAME_FILE, SAVE_DIR, false);
 			if (res != SL_OK || _load_check_data.HasErrors()) {
 				fprintf(stderr, "Failed to open savegame\n");
