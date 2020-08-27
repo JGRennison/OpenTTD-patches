@@ -67,6 +67,7 @@ void LoadCheckData::Clear()
 	ClearGRFConfigList(&this->grfconfig);
 
 	this->debug_log_data.clear();
+	this->debug_config_data.clear();
 }
 
 /** Load game/scenario with optional content download */
