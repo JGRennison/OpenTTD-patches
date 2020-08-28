@@ -152,11 +152,20 @@ void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev
 	tmp->cargo_subtype = virt->cargo_subtype;
 	tmp->cargo_cap = virt->cargo_cap;
 
-	const GroundVehicleCache *gcache = virt->GetGroundVehicleCache();
-	tmp->max_speed = virt->GetDisplayMaxSpeed();
-	tmp->power = gcache->cached_power;
-	tmp->weight = gcache->cached_weight;
-	tmp->max_te = gcache->cached_max_te / 1000;
+	if (!virt->Previous()) {
+		uint cargo_weight = 0;
+		uint full_cargo_weight = 0;
+		for (const Train *u = virt; u != nullptr; u = u->Next()) {
+			cargo_weight += u->GetCargoWeight(u->cargo.StoredCount());
+			full_cargo_weight += u->GetCargoWeight(u->cargo_cap);
+		}
+		const GroundVehicleCache *gcache = virt->GetGroundVehicleCache();
+		tmp->max_speed = virt->GetDisplayMaxSpeed();
+		tmp->power = gcache->cached_power;
+		tmp->empty_weight = max<uint32>(gcache->cached_weight - cargo_weight, 1);
+		tmp->full_weight = max<uint32>(gcache->cached_weight + full_cargo_weight - cargo_weight, 1);
+		tmp->max_te = gcache->cached_max_te;
+	}
 
 	virt->GetImage(DIR_W, EIT_IN_DEPOT, &tmp->sprite_seq);
 	tmp->image_dimensions.SetFromTrain(virt);

@@ -37,7 +37,8 @@ const SaveLoad* GTD() {
 
 		SLE_VAR(TemplateVehicle, max_speed, SLE_UINT16),
 		SLE_VAR(TemplateVehicle, power, SLE_UINT32),
-		SLE_VAR(TemplateVehicle, weight, SLE_UINT32),
+		SLE_VAR(TemplateVehicle, empty_weight, SLE_UINT32),
+		SLE_CONDVAR_X(TemplateVehicle, full_weight, SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 6)),
 		SLE_VAR(TemplateVehicle, max_te, SLE_UINT32),
 
 		SLE_CONDNULL_X(1, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 0, 3)),
@@ -135,6 +136,36 @@ void AfterLoadTemplateVehiclesUpdateImage()
 				} else {
 					DEBUG(misc, 0, "AfterLoadTemplateVehiclesUpdateImage: vehicle count mismatch: %u, %u", t_len, tv_len);
 				}
+				delete t;
+			}
+			cur_company.Restore();
+		}
+	}
+
+	RestoreRandomSeeds(saved_seeds);
+}
+
+void AfterLoadTemplateVehiclesUpdateProperties()
+{
+	SavedRandomSeeds saved_seeds;
+	SaveRandomSeeds(&saved_seeds);
+
+	for (TemplateVehicle *tv : TemplateVehicle::Iterate()) {
+		if (tv->Prev() == nullptr) {
+			Backup<CompanyID> cur_company(_current_company, tv->owner, FILE_LINE);
+			StringID err;
+			Train* t = VirtualTrainFromTemplateVehicle(tv, err);
+			if (t != nullptr) {
+				uint32 full_cargo_weight = 0;
+				for (Train *u = t; u != nullptr; u = u->Next()) {
+					full_cargo_weight += u->GetCargoWeight(u->cargo_cap);
+				}
+				const GroundVehicleCache *gcache = t->GetGroundVehicleCache();
+				tv->max_speed = t->GetDisplayMaxSpeed();
+				tv->power = gcache->cached_power;
+				tv->empty_weight = gcache->cached_weight;
+				tv->full_weight = gcache->cached_weight + full_cargo_weight;
+				tv->max_te = gcache->cached_max_te;
 				delete t;
 			}
 			cur_company.Restore();
