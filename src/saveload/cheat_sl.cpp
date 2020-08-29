@@ -124,11 +124,13 @@ static void Save_CHTX()
 	};
 
 	SlAutolength([](void *) {
-		SlWriteUint32(0);                                                     // flags
-		SlWriteUint32(lengthof(_extra_cheat_descs) + _unknown_cheats.size()); // cheat count
+		const size_t count = std::size(_extra_cheat_descs) + _unknown_cheats.size();
+		assert(count <= std::numeric_limits<uint32>::max());
+		SlWriteUint32(0);                           // flags
+		SlWriteUint32(static_cast<uint32>(count));  // cheat count
 
-		for (uint j = 0; j < lengthof(_extra_cheat_descs); j++) {
-			CheatsExtSave save = { _extra_cheat_descs[j].name, *(_extra_cheat_descs[j].cht) };
+		for (const auto &cheat : _extra_cheat_descs) {
+			CheatsExtSave save = { cheat.name, *(cheat.cht) };
 			SlObject(&save, _cheats_ext_save_desc);
 		}
 		for (const auto &iter : _unknown_cheats) {
@@ -137,6 +139,7 @@ static void Save_CHTX()
 		}
 	}, nullptr);
 }
+
 
 /**
  * Internal structure used in SaveSettingsPatx() and SaveSettingsPlyx()

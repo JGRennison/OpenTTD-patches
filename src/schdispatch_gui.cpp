@@ -219,7 +219,7 @@ struct SchdispatchWindow : Window {
 	{
 		this->item_count = 0;
 		if (this->vehicle->orders.list != nullptr) {
-			this->item_count = this->vehicle->orders.list->GetScheduledDispatch().size();
+			this->item_count = static_cast<uint>(this->vehicle->orders.list->GetScheduledDispatch().size());
 		}
 	}
 

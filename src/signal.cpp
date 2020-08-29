@@ -215,7 +215,7 @@ static Vehicle *TrainInWormholeTileEnum(Vehicle *v, void *data)
 {
 	/* Only look for front engine or last wagon. */
 	if ((v->Previous() != nullptr && v->Next() != nullptr)) return nullptr;
-	TileIndex tile = (TileIndex) reinterpret_cast<uintptr_t>(data);
+	TileIndex tile = *reinterpret_cast<TileIndex*>(data);
 	if (tile != TileVirtXY(v->x_pos, v->y_pos)) return nullptr;
 	if (!(Train::From(v)->track & TRACK_BIT_WORMHOLE) && !(Train::From(v)->track & GetAcrossTunnelBridgeTrackBits(tile))) return nullptr;
 	return v;
@@ -433,8 +433,8 @@ static SigInfo ExploreSegment(Owner owner)
 					if (enterdir == INVALID_DIAGDIR) {
 						// incoming from the wormhole, onto signal
 						if (!(info.flags & SF_TRAIN) && IsTunnelBridgeSignalSimulationExit(tile)) { // tunnel entrance is ignored
-							if (HasVehicleOnPos(GetOtherTunnelBridgeEnd(tile), VEH_TRAIN, reinterpret_cast<void *>(tile), &TrainInWormholeTileEnum)) info.flags |= SF_TRAIN;
-							if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, VEH_TRAIN, reinterpret_cast<void *>(tile), &TrainInWormholeTileEnum)) info.flags |= SF_TRAIN;
+							if (HasVehicleOnPos(GetOtherTunnelBridgeEnd(tile), VEH_TRAIN, reinterpret_cast<void *>(&tile), &TrainInWormholeTileEnum)) info.flags |= SF_TRAIN;
+							if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, VEH_TRAIN, reinterpret_cast<void *>(&tile), &TrainInWormholeTileEnum)) info.flags |= SF_TRAIN;
 						}
 						if (IsTunnelBridgeSignalSimulationExit(tile) && !_tbuset.Add(tile, INVALID_TRACKDIR)) {
 							info.flags |= SF_FULL;
@@ -456,9 +456,9 @@ static SigInfo ExploreSegment(Owner owner)
 							}
 						}
 						if (!(info.flags & SF_TRAIN)) {
-							if (HasVehicleOnPos(tile, VEH_TRAIN, reinterpret_cast<void *>(tile), &TrainInWormholeTileEnum)) info.flags |= SF_TRAIN;
+							if (HasVehicleOnPos(tile, VEH_TRAIN, reinterpret_cast<void *>(&tile), &TrainInWormholeTileEnum)) info.flags |= SF_TRAIN;
 							if (!(info.flags & SF_TRAIN) && IsTunnelBridgeSignalSimulationExit(tile)) {
-								if (HasVehicleOnPos(GetOtherTunnelBridgeEnd(tile), VEH_TRAIN, reinterpret_cast<void *>(tile), &TrainInWormholeTileEnum)) info.flags |= SF_TRAIN;
+								if (HasVehicleOnPos(GetOtherTunnelBridgeEnd(tile), VEH_TRAIN, reinterpret_cast<void *>(&tile), &TrainInWormholeTileEnum)) info.flags |= SF_TRAIN;
 							}
 						}
 						continue;

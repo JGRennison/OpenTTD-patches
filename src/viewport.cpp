@@ -1055,7 +1055,7 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 
 	if (_vd.combine_sprites == SPRITE_COMBINE_PENDING) {
 		_vd.combine_sprites = SPRITE_COMBINE_ACTIVE;
-		_vd.combine_psd_index = _vd.parent_sprites_to_draw.size() - 1;
+		_vd.combine_psd_index = static_cast<uint>(_vd.parent_sprites_to_draw.size() - 1);
 		_vd.combine_left = tmp_left;
 		_vd.combine_right = right;
 		_vd.combine_top = tmp_top;
@@ -2282,7 +2282,7 @@ static void ViewportMapDrawVehicleRoute(const ViewPort *vp)
 static inline void DrawRouteStep(const ViewPort * const vp, const TileIndex tile, const RankOrderTypeList list)
 {
 	if (tile == INVALID_TILE) return;
-	const uint step_count = list.size() > max_rank_order_type_count ? 1 : list.size();
+	const size_t step_count = list.size() > max_rank_order_type_count ? 1 : list.size();
 	const int x_pos = TileX(tile) * TILE_SIZE + TILE_SIZE / 2;
 	const int y_pos = TileY(tile) * TILE_SIZE + TILE_SIZE / 2;
 	Point pt = RemapCoords(x_pos, y_pos, 0);
@@ -2298,7 +2298,7 @@ static inline void DrawRouteStep(const ViewPort * const vp, const TileIndex tile
 	DrawSprite(SPR_ROUTE_STEP_TOP, PAL_NONE, _cur_dpi->left + x, _cur_dpi->top + y);
 	uint y2 = y + _vp_route_step_height_top;
 
-	for (uint r = step_count; r != 0; r--, y2 += char_height) {
+	for (size_t r = step_count; r != 0; r--, y2 += char_height) {
 		DrawSprite(SPR_ROUTE_STEP_MIDDLE, PAL_NONE, _cur_dpi->left + x, _cur_dpi->top + y2, &_vp_route_step_subsprite);
 	}
 
@@ -3433,8 +3433,8 @@ void MarkAllViewportsDirty(int left, int top, int right, int bottom, const ZoomL
 
 static void MarkRouteStepDirty(RouteStepsMap::const_iterator cit)
 {
-	const uint size = cit->second.size() > max_rank_order_type_count ? 1 : cit->second.size();
-	MarkRouteStepDirty(cit->first, size);
+	const size_t size = cit->second.size() > max_rank_order_type_count ? 1 : cit->second.size();
+	MarkRouteStepDirty(cit->first, static_cast<uint>(size));
 }
 
 static void MarkRouteStepDirty(const TileIndex tile, uint order_nr)
@@ -5038,10 +5038,10 @@ static HighLightStyle CalcPolyrailDrawstyle(Point pt, bool dragging)
 	if (_current_snap_lock.x != -1) {
 		snap_point = FindBestPolyline(pt, &_current_snap_lock, 1, &line);
 	} else if (snap_mode == RSM_SNAP_TO_TILE) {
-		snap_point = FindBestPolyline(pt, _tile_snap_points.data(), _tile_snap_points.size(), &line);
+		snap_point = FindBestPolyline(pt, _tile_snap_points.data(), static_cast<uint>(_tile_snap_points.size()), &line);
 	} else {
 		assert(snap_mode == RSM_SNAP_TO_RAIL);
-		snap_point = FindBestPolyline(pt, _rail_snap_points.data(), _rail_snap_points.size(), &line);
+		snap_point = FindBestPolyline(pt, _rail_snap_points.data(), static_cast<uint>(_rail_snap_points.size()), &line);
 	}
 
 	if (snap_point == nullptr) return HT_NONE; // no match

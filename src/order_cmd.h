@@ -54,9 +54,9 @@ restart:
 			UnregisterOrderDestination(order, v->type, v->owner);
 
 			/* Clear wait time */
-			if (!order->IsType(OT_CONDITIONAL)) v->orders.list->UpdateTotalDuration(-order->GetWaitTime());
+			if (!order->IsType(OT_CONDITIONAL)) v->orders.list->UpdateTotalDuration(-static_cast<Ticks>(order->GetWaitTime()));
 			if (order->IsWaitTimetabled()) {
-				if (!order->IsType(OT_CONDITIONAL)) v->orders.list->UpdateTimetableDuration(-order->GetTimetabledWait());
+				if (!order->IsType(OT_CONDITIONAL)) v->orders.list->UpdateTimetableDuration(-static_cast<Ticks>(order->GetTimetabledWait()));
 				order->SetWaitTimetabled(false);
 			}
 			order->SetWaitTime(0);

@@ -4365,7 +4365,7 @@ uint MoveGoodsToStation(CargoID type, uint amount, SourceType source_type, Sourc
 		});
 
 		uint to_deliver = amount - moving;
-		uint step_size = CeilDivT<uint>(to_deliver, used_stations.size());
+		uint step_size = static_cast<uint>(CeilDivT<size_t>(to_deliver, used_stations.size()));
 		for (uint i = 0; i < used_stations.size() && to_deliver > 0; i++) {
 			uint delivery = min<uint>(to_deliver, step_size);
 			used_stations[i].second += delivery;

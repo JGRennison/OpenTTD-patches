@@ -493,7 +493,7 @@ public:
 			this->EnableWidget(WID_DB_SHOW_DEPS);
 		}
 
-		this->vscroll->SetCount(min(_settings_client.gui.max_departures, this->departures->size() + this->arrivals->size()));
+		this->vscroll->SetCount(static_cast<int>(min<size_t>(_settings_client.gui.max_departures, this->departures->size() + this->arrivals->size())));
 		this->DrawWidgets();
 	}
 
@@ -625,7 +625,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 	int text_right = right - (rtl ? text_offset :           0);
 
 	int y = r.top + 1;
-	uint max_departures = min(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->departures->size() + this->arrivals->size());
+	size_t max_departures = min<size_t>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->departures->size() + this->arrivals->size());
 
 	if (max_departures > _settings_client.gui.max_departures) {
 		max_departures = _settings_client.gui.max_departures;
@@ -697,7 +697,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 	DateTicksScaled max_date = now_date + (_settings_client.gui.max_departure_time * DAY_TICKS * _settings_game.economy.day_length_factor);
 
 	/* Draw each departure. */
-	for (uint i = 0; i < max_departures; ++i) {
+	for (size_t i = 0; i < max_departures; ++i) {
 		const Departure *d;
 
 		if (arrival == this->arrivals->size()) {

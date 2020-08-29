@@ -19,31 +19,31 @@ typedef std::vector<byte> Buffer;
 // Variable length integers are stored in Variable Length Quantity
 // format (http://en.wikipedia.org/wiki/Variable-length_quantity)
 
-static void WriteVLI(Buffer &b, uint i)
+static void WriteVLI(Buffer &b, size_t i)
 {
-	uint lsmask =  0x7F;
-	uint msmask = ~0x7F;
+	size_t lsmask =  0x7F;
+	size_t msmask = ~lsmask;
 	while(i & msmask) {
-		byte part = (i & lsmask) | 0x80;
+		byte part = static_cast<byte>(i & lsmask) | 0x80;
 		b.push_back(part);
 		i >>= 7;
 	}
 	b.push_back((byte) i);
 }
 
-static uint ReadVLI()
+static size_t ReadVLI()
 {
 	uint shift = 0;
-	uint val = 0;
+	size_t val = 0;
 	byte b;
 
 	b = SlReadByte();
 	while(b & 0x80) {
-		val |= uint(b & 0x7F) << shift;
+		val |= size_t(b & 0x7F) << shift;
 		shift += 7;
 		b = SlReadByte();
 	}
-	val |= uint(b) << shift;
+	val |= size_t(b) << shift;
 	return val;
 }
 
@@ -78,7 +78,7 @@ static SignalCondition *ReadCondition(SignalReference this_sig)
 			SignalVariableCondition *c = new SignalVariableCondition(code);
 			c->comparator = (SignalComparator) ReadVLI();
 			if(c->comparator > SGC_LAST) NOT_REACHED();
-			c->value = ReadVLI();
+			c->value = static_cast<uint32>(ReadVLI());
 			return c;
 		}
 
@@ -163,9 +163,9 @@ static void Save_SPRG()
 		}
 	}
 
-	uint size = b.size();
+	size_t size = b.size();
 	SlSetLength(size);
-	for(uint i = 0; i < size; i++) {
+	for(size_t i = 0; i < size; i++) {
 		SlWriteByte(b[i]); // TODO Gotta be a better way
 	}
 }
@@ -189,7 +189,7 @@ struct Fixup {
 typedef std::vector<Fixup> FixupList;
 
 template<typename T>
-static void MakeFixup(FixupList &l, T *&ir, uint id, SignalOpcode op = PSO_INVALID)
+static void MakeFixup(FixupList &l, T *&ir, size_t id, SignalOpcode op = PSO_INVALID)
 {
 	ir = reinterpret_cast<T*>(id);
 	l.emplace_back(reinterpret_cast<SignalInstruction**>(&ir), op);
@@ -198,7 +198,7 @@ static void MakeFixup(FixupList &l, T *&ir, uint id, SignalOpcode op = PSO_INVAL
 static void DoFixups(FixupList &l, InstructionList &il)
 {
 	for (Fixup &i : l) {
-		uint id = reinterpret_cast<size_t>(*(i.ptr));
+		size_t id = reinterpret_cast<size_t>(*(i.ptr));
 		if (id >= il.size())
 			NOT_REACHED();
 
@@ -213,18 +213,18 @@ static void DoFixups(FixupList &l, InstructionList &il)
 
 static void Load_SPRG()
 {
-	uint count = ReadVLI();
-	for(uint i = 0; i < count; i++) {
+	size_t count = ReadVLI();
+	for(size_t i = 0; i < count; i++) {
 		FixupList l;
-		TileIndex tile    = ReadVLI();
-		Track     track   = (Track) ReadVLI();
-		uint instructions = ReadVLI();
+		TileIndex tile      = static_cast<TileIndex>(ReadVLI());
+		Track     track     = (Track) ReadVLI();
+		size_t instructions = ReadVLI();
 		SignalReference ref(tile, track);
 
 		SignalProgram *sp = new SignalProgram(tile, track, true);
 		_signal_programs[ref] = sp;
 
-		for(uint j = 0; j < instructions; j++) {
+		for(size_t j = 0; j < instructions; j++) {
 			SignalOpcode op = (SignalOpcode) ReadVLI();
 			switch(op) {
 				case PSO_FIRST: {

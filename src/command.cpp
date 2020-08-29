@@ -545,12 +545,12 @@ void ClearCommandLog()
 
 char *DumpCommandLog(char *buffer, const char *last)
 {
-	const unsigned int count = min<unsigned int>(command_log_count, command_log.size());
-	unsigned int log_index = command_log_next;
+	const size_t count = min<size_t>(command_log_count, command_log.size());
+	size_t log_index = command_log_next;
 
 	buffer += seprintf(buffer, last, "Command Log:\n Showing most recent %u of %u commands\n", count, command_log_count);
 
-	for (unsigned int i = 0 ; i < count; i++) {
+	for (size_t i = 0 ; i < count; i++) {
 		if (log_index > 0) {
 			log_index--;
 		} else {

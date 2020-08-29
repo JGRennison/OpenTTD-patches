@@ -452,7 +452,7 @@ public:
 	std::pair<iterator, bool> insert(FlowStat flow_stat)
 	{
 		StationID st = flow_stat.GetOrigin();
-		auto res = this->flows_index.insert(std::pair<StationID, uint16>(st, this->flows_storage.size()));
+		auto res = this->flows_index.insert(std::make_pair(st, static_cast<uint16>(this->flows_storage.size())));
 		if (res.second) {
 			this->flows_storage.push_back(std::move(flow_stat));
 		}
@@ -461,7 +461,7 @@ public:
 
 	iterator insert(iterator hint, FlowStat flow_stat)
 	{
-		auto res = this->flows_index.insert(hint.current, std::pair<StationID, uint16>(flow_stat.GetOrigin(), this->flows_storage.size()));
+		auto res = this->flows_index.insert(hint.current, std::make_pair(flow_stat.GetOrigin(), static_cast<uint16>(this->flows_storage.size())));
 		if (res->second == this->flows_storage.size()) {
 			this->flows_storage.push_back(std::move(flow_stat));
 		}

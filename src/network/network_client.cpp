@@ -540,7 +540,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncLog(const std::strin
 	for (size_t offset = 0; offset < log.size();) {
 		Packet *p = new Packet(PACKET_CLIENT_DESYNC_LOG);
 		size_t size = min<size_t>(log.size() - offset, SHRT_MAX - 2 - p->size);
-		p->Send_uint16(size);
+		assert(size <= std::numeric_limits<uint16>::max());
+		p->Send_uint16(static_cast<uint16>(size));
 		p->Send_binary(log.data() + offset, size);
 		my_client->SendPacket(p);
 

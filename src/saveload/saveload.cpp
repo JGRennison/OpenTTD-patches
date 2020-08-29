@@ -166,8 +166,8 @@ void MemoryDumper::Flush(SaveFilter *writer)
 {
 	this->FinaliseBlock();
 
-	uint block_count = this->blocks.size();
-	for (uint i = 0; i < block_count; i++) {
+	size_t block_count = this->blocks.size();
+	for (size_t i = 0; i < block_count; i++) {
 		writer->Write(this->blocks[i].data, this->blocks[i].size);
 	}
 
@@ -799,7 +799,7 @@ void SlSetLength(size_t length)
 					}
 					SlWriteUint32((uint32)((length & 0xFFFFFF) | ((length >> 24) << 28)));
 					if (length >= (1 << 28)) {
-						SlWriteUint32(length >> 28);
+						SlWriteUint32(static_cast<uint32>(length >> 28));
 					}
 					break;
 				case CH_ARRAY:

@@ -97,7 +97,8 @@ static void Load_TRRP()
 static void RealSave_TRRP(TraceRestrictProgram *prog)
 {
 	TraceRestrictProgramStub stub;
-	stub.length = prog->items.size();
+	assert(prog->items.size() <= std::numeric_limits<decltype(stub.length)>::max());
+	stub.length = static_cast<decltype(stub.length)>(prog->items.size());
 	SlObject(&stub, _trace_restrict_program_stub_desc);
 	SlArray(&(prog->items[0]), stub.length, SLE_UINT32);
 }
@@ -154,7 +155,8 @@ static void RealSave_TRRS(TraceRestrictSlot *slot)
 {
 	SlObject(slot, _trace_restrict_slot_desc);
 	TraceRestrictSlotStub stub;
-	stub.length = slot->occupants.size();
+	assert(slot->occupants.size() <= std::numeric_limits<decltype(stub.length)>::max());
+	stub.length = static_cast<decltype(stub.length)>(slot->occupants.size());
 	SlObject(&stub, _trace_restrict_slot_stub_desc);
 	if (stub.length) SlArray(&(slot->occupants[0]), stub.length, SLE_UINT32);
 }

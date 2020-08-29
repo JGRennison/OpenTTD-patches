@@ -37,7 +37,8 @@ static void Load_XBSS()
 static void RealSave_XBSS(const LongBridgeSignalStorage *lbss)
 {
 	LongBridgeSignalStorageStub stub;
-	stub.length = lbss->signal_red_bits.size();
+	assert(lbss->signal_red_bits.size() <= std::numeric_limits<decltype(stub.length)>::max());
+	stub.length = static_cast<decltype(stub.length)>(lbss->signal_red_bits.size());
 	SlObject(&stub, _long_bridge_signal_storage_stub_desc);
 	SlArray(const_cast<uint64*>(&(lbss->signal_red_bits[0])), stub.length, SLE_UINT64);
 }

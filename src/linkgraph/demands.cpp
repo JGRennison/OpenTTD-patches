@@ -161,9 +161,9 @@ public:
 	 */
 	inline void AdjustDemandNodes(LinkGraphJob &job, const std::vector<NodeID> &demands)
 	{
-		const uint count = min<uint>(demands.size(), this->missing_supply);
+		const size_t count = min<size_t>(demands.size(), this->missing_supply);
 		this->missing_supply = 0;
-		for (uint i = 0; i < count; i++) {
+		for (size_t i = 0; i < count; i++) {
 			job[demands[i]].ReceiveDemand(1);
 		}
 	}
@@ -371,7 +371,7 @@ void DemandCalculator::CalcMinimisedDistanceDemand(LinkGraphJob &job, const std:
 
 	if (supplies.empty() || demands.empty()) return;
 
-	scaler.SetDemandPerNode(demands.size());
+	scaler.SetDemandPerNode(static_cast<uint>(demands.size()));
 	scaler.AdjustDemandNodes(job, demands);
 
 	struct EdgeCandidate {

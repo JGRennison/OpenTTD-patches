@@ -95,7 +95,7 @@ void BuildTemplateGuiList(GUITemplateList *list, Scrollbar *vscroll, Owner oid, 
 	}
 
 	list->RebuildDone();
-	if (vscroll) vscroll->SetCount(list->size());
+	if (vscroll) vscroll->SetCount(static_cast<int>(list->size()));
 }
 
 Money CalculateOverallTemplateCost(const TemplateVehicle *tv)

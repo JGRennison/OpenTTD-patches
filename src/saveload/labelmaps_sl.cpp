@@ -43,13 +43,13 @@ void AfterLoadLabelMaps()
 	if (NeedRailTypeConversion()) {
 		RailType railtype_conversion_map[RAILTYPE_END];
 
-		for (uint i = 0; i < _railtype_list.size(); i++) {
+		for (size_t i = 0; i < _railtype_list.size(); i++) {
 			RailType r = GetRailTypeByLabel(_railtype_list[i]);
 			if (r == INVALID_RAILTYPE) r = RAILTYPE_BEGIN;
 
 			railtype_conversion_map[i] = r;
 		}
-		for (uint i = _railtype_list.size(); i < RAILTYPE_END; i++) {
+		for (size_t i = _railtype_list.size(); i < RAILTYPE_END; i++) {
 			railtype_conversion_map[i] = RAILTYPE_RAIL;
 		}
 

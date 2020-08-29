@@ -320,8 +320,8 @@ struct DesyncMsgLogEntry {
 };
 
 static std::array<DesyncMsgLogEntry, 64> desync_msg_log;
-static unsigned int desync_msg_log_count = 0;
-static unsigned int desync_msg_log_next = 0;
+static size_t desync_msg_log_count = 0;
+static size_t desync_msg_log_next = 0;
 
 void ClearDesyncMsgLog()
 {
@@ -333,13 +333,13 @@ char *DumpDesyncMsgLog(char *buffer, const char *last)
 {
 	if (!desync_msg_log_count) return buffer;
 
-	const unsigned int count = min<unsigned int>(desync_msg_log_count, desync_msg_log.size());
-	unsigned int log_index = (desync_msg_log_next + desync_msg_log.size() - count) % desync_msg_log.size();
-	unsigned int display_num = desync_msg_log_count - count;
+	const size_t count = min<size_t>(desync_msg_log_count, desync_msg_log.size());
+	size_t log_index = (desync_msg_log_next + desync_msg_log.size() - count) % desync_msg_log.size();
+	size_t display_num = desync_msg_log_count - count;
 
 	buffer += seprintf(buffer, last, "Desync Msg Log:\n Showing most recent %u of %u messages\n", count, desync_msg_log_count);
 
-	for (unsigned int i = 0 ; i < count; i++) {
+	for (size_t i = 0 ; i < count; i++) {
 		const DesyncMsgLogEntry &entry = desync_msg_log[log_index];
 
 		YearMonthDay ymd;

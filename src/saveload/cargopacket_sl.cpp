@@ -171,10 +171,10 @@ void Save_CPDP()
  */
 void Load_CPDP()
 {
-	uint count = SlGetFieldLength() / 16;
+	size_t count = SlGetFieldLength() / 16;
 	uint last_cargo_packet_id = (uint) -1;
 
-	for (uint i = 0; i < count; i++) {
+	for (size_t i = 0; i < count; i++) {
 		uint64 k = SlReadUint64();
 		uint64 v = SlReadUint64();
 		_cargo_packet_deferred_payments[k] = v;

@@ -571,8 +571,8 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 					if (_settings_client.gui.departure_smart_terminus && type == D_DEPARTURE) {
 						for (uint i = 0; i < result->size() - 1; ++i) {
 							Departure *d_first = (*result)[i];
-							uint k = d_first->calling_at.size() - 2;
-							for (uint j = d->calling_at.size(); j > 0; --j) {
+							size_t k = d_first->calling_at.size() - 2;
+							for (size_t j = d->calling_at.size(); j > 0; --j) {
 								CallAt c = CallAt(d->calling_at[j - 1]);
 
 								if (d_first->terminus >= c && d_first->calling_at.size() >= 2) {

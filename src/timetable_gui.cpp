@@ -218,7 +218,7 @@ struct TimetableWindow : Window {
 		assert(HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED));
 
 		bool travelling = (!(v->current_order.IsAnyLoadingType() || v->current_order.IsType(OT_WAITING)) || v->current_order.GetNonStopType() == ONSF_STOP_EVERYWHERE);
-		Ticks start_time = -v->current_order_time;
+		Ticks start_time = -static_cast<Ticks>(v->current_order_time);
 		if (v->cur_timetable_order_index != INVALID_VEH_ORDER_ID && v->cur_timetable_order_index != v->cur_real_order_index) {
 			/* vehicle is taking a conditional order branch, adjust start time to compensate */
 			const Order *real_current_order = v->GetOrder(v->cur_real_order_index);

@@ -2061,7 +2061,7 @@ private:
 	int GetItemCount(const TraceRestrictProgram *prog) const
 	{
 		if (prog) {
-			return 2 + prog->GetInstructionCount();
+			return 2 + static_cast<int>(prog->GetInstructionCount());
 		} else {
 			return 2;
 		}
@@ -2616,7 +2616,7 @@ private:
 
 		if (offset >= (TraceRestrictProgram::GetInstructionCount(items) + (replace ? 0 : 1))) return false; // off the end of the program
 
-		uint array_offset = TraceRestrictProgram::InstructionOffsetToArrayOffset(items, offset);
+		size_t array_offset = TraceRestrictProgram::InstructionOffsetToArrayOffset(items, offset);
 		if (replace) {
 			items[array_offset] = item;
 		} else {
@@ -3082,8 +3082,8 @@ public:
 
 		this->BuildSlotList(this->owner);
 
-		this->slot_sb->SetCount(this->slots.size());
-		this->vscroll->SetCount(this->vehicles.size());
+		this->slot_sb->SetCount(static_cast<int>(this->slots.size()));
+		this->vscroll->SetCount(static_cast<int>(this->vehicles.size()));
 
 		/* Disable the slot specific function when we select all vehicles */
 		this->SetWidgetsDisabledState(this->vli.index == ALL_TRAINS_TRACE_RESTRICT_SLOT_ID || _local_company != this->vli.company,
@@ -3119,8 +3119,8 @@ public:
 
 			case WID_TRSL_LIST_SLOTS: {
 				int y1 = r.top + WD_FRAMERECT_TOP;
-				int max = min(this->slot_sb->GetPosition() + this->slot_sb->GetCapacity(), this->slots.size());
-				for (int i = this->slot_sb->GetPosition(); i < max; ++i) {
+				size_t max = min<size_t>(this->slot_sb->GetPosition() + this->slot_sb->GetCapacity(), this->slots.size());
+				for (size_t i = this->slot_sb->GetPosition(); i < max; ++i) {
 					const TraceRestrictSlot *slot = this->slots[i];
 
 					assert(slot->owner == this->owner);

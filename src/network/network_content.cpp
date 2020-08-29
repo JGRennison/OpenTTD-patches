@@ -246,14 +246,15 @@ void ClientNetworkContentSocketHandler::RequestContentList(ContentVector *cv, bo
 	const uint max_per_packet = min<uint>(255, (SEND_MTU_SHORT - sizeof(PacketSize) - sizeof(byte) - sizeof(uint8)) /
 			(sizeof(uint8) + sizeof(uint32) + (send_md5sum ? /*sizeof(ContentInfo::md5sum)*/16 : 0))) - 1;
 
-	uint offset = 0;
+	size_t offset = 0;
 
 	while (cv->size() > offset) {
 		Packet *p = new Packet(send_md5sum ? PACKET_CONTENT_CLIENT_INFO_EXTID_MD5 : PACKET_CONTENT_CLIENT_INFO_EXTID);
-		const uint to_send = min<uint>(cv->size() - offset, max_per_packet);
-		p->Send_uint8(to_send);
+		const size_t to_send = min<size_t>(cv->size() - offset, max_per_packet);
+		assert(to_send <= std::numeric_limits<uint8>::max());
+		p->Send_uint8(static_cast<uint8>(to_send));
 
-		for (uint i = 0; i < to_send; i++) {
+		for (size_t i = 0; i < to_send; i++) {
 			const ContentInfo *ci = (*cv)[offset + i];
 			p->Send_uint8((byte)ci->type);
 			p->Send_uint32(ci->unique_id);

@@ -494,7 +494,7 @@ void NetworkUDPSocketHandler::Receive_EX_MULTI(Packet *p, NetworkAddress *client
 	auto add_to_fragment = [&](FragmentSet &fs) {
 		fs.fragments[index].assign((const char *) p->buffer + p->pos, payload_size);
 
-		uint total_payload = 0;
+		size_t total_payload = 0;
 		for (auto &frag : fs.fragments) {
 			if (!frag.size()) return;
 

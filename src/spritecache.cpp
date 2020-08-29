@@ -235,7 +235,7 @@ uint GetSpriteCountForSlot(uint file_slot, SpriteID begin, SpriteID end)
  */
 uint GetMaxSpriteID()
 {
-	return _spritecache.size();
+	return static_cast<uint>(_spritecache.size());
 }
 
 static bool ResizeSpriteIn(SpriteLoader::Sprite *sprite, ZoomLevel src, ZoomLevel tgt)
@@ -766,7 +766,8 @@ void IncreaseSpriteLRU()
 static void *AllocSprite(size_t mem_req)
 {
 	assert(_last_sprite_allocation.GetPtr() == nullptr);
-	_last_sprite_allocation.Allocate(mem_req);
+	assert(mem_req <= std::numeric_limits<uint32>::max());
+	_last_sprite_allocation.Allocate(static_cast<uint32>(mem_req));
 	return _last_sprite_allocation.GetPtr();
 }
 

@@ -2655,7 +2655,7 @@ static void SaveSettingsPatx(const SettingDesc *sd, void *object)
 	size_t length = 8;
 	for (const SettingDesc *desc = sd; desc->save.cmd != SL_END; desc++) {
 		if (desc->patx_name == nullptr) continue;
-		uint32 setting_length = SlCalcObjMemberLength(object, &desc->save);
+		uint32 setting_length = static_cast<uint32>(SlCalcObjMemberLength(object, &desc->save));
 		if (!setting_length) continue;
 
 		current_setting.name = desc->patx_name;
@@ -2672,8 +2672,8 @@ static void SaveSettingsPatx(const SettingDesc *sd, void *object)
 	}
 	SlSetLength(length);
 
-	SlWriteUint32(0);                          // flags
-	SlWriteUint32(settings_to_add.size());     // settings count
+	SlWriteUint32(0);                                           // flags
+	SlWriteUint32(static_cast<uint32>(settings_to_add.size())); // settings count
 
 	for (size_t i = 0; i < settings_to_add.size(); i++) {
 		const SettingDesc *desc = settings_to_add[i].setting;
@@ -2800,7 +2800,7 @@ void SaveSettingsPlyx()
 		uint32 setting_count = 0;
 		for (const SettingDesc *desc = _company_settings; desc->save.cmd != SL_END; desc++) {
 			if (desc->patx_name == nullptr) continue;
-			uint32 setting_length = SlCalcObjMemberLength(&(c->settings), &desc->save);
+			size_t setting_length = SlCalcObjMemberLength(&(c->settings), &desc->save);
 			if (!setting_length) continue;
 
 			current_setting.name = desc->patx_name;
@@ -2831,12 +2831,12 @@ void SaveSettingsPlyx()
 
 		for (const SettingDesc *desc = _company_settings; desc->save.cmd != SL_END; desc++) {
 			if (desc->patx_name == nullptr) continue;
-			uint32 setting_length = SlCalcObjMemberLength(&(c->settings), &desc->save);
+			size_t setting_length = SlCalcObjMemberLength(&(c->settings), &desc->save);
 			if (!setting_length) continue;
 
 			current_setting.flags = 0;
 			current_setting.name = desc->patx_name;
-			current_setting.setting_length = setting_length;
+			current_setting.setting_length = static_cast<uint32>(setting_length);
 			SlObject(&current_setting, _settings_plyx_desc);
 			void *ptr = GetVariableAddress(&(c->settings), &desc->save);
 			SlObjectMember(ptr, &desc->save);

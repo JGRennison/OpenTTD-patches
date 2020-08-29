@@ -579,7 +579,7 @@ public:
 
 		this->groups.shrink_to_fit();
 		this->groups.RebuildDone();
-		this->vscroll[0]->SetCount(groups.size());
+		this->vscroll[0]->SetCount(static_cast<int>(groups.size()));
 	}
 
 	void DrawAllGroupsFunction(const Rect &r) const
@@ -587,10 +587,10 @@ public:
 		int left = r.left + WD_MATRIX_LEFT;
 		int right = r.right - WD_MATRIX_RIGHT;
 		int y = r.top;
-		int max = min(this->vscroll[0]->GetPosition() + this->vscroll[0]->GetCapacity(), this->groups.size());
+		size_t max = min<size_t>(this->vscroll[0]->GetPosition() + this->vscroll[0]->GetCapacity(), this->groups.size());
 
 		/* Then treat all groups defined by/for the current company */
-		for (int i = this->vscroll[0]->GetPosition(); i < max; ++i) {
+		for (size_t i = this->vscroll[0]->GetPosition(); i < max; ++i) {
 			const Group *g = (this->groups)[i];
 			short g_id = g->index;
 
@@ -641,10 +641,10 @@ public:
 		int y = r.top;
 
 		Scrollbar *draw_vscroll = vscroll[1];
-		uint max = min(draw_vscroll->GetPosition() + draw_vscroll->GetCapacity(), this->templates.size());
+		size_t max = min<size_t>(draw_vscroll->GetPosition() + draw_vscroll->GetCapacity(), this->templates.size());
 
 		const TemplateVehicle *v;
-		for (uint i = draw_vscroll->GetPosition(); i < max; ++i) {
+		for (size_t i = draw_vscroll->GetPosition(); i < max; ++i) {
 			v = (this->templates)[i];
 
 			/* Fill the background of the current cell in a darker tone for the currently selected template */

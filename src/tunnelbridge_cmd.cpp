@@ -1660,7 +1660,7 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 				sprite += SPR_ORIGINAL_SIGNALS_BASE + (position << 1);
 			} else {
 				/* All other signals are picked from add on sprites. */
-				sprite += SPR_SIGNALS_BASE + (SIGTYPE_NORMAL - 1) * 16 + variant * 64 + (position << 1);
+				sprite += static_cast<int32>(SPR_SIGNALS_BASE) + (SIGTYPE_NORMAL - 1) * 16 + variant * 64 + (position << 1);
 			}
 
 			AddSortableSpriteToDraw(sprite, PAL_NONE, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);

@@ -1933,7 +1933,7 @@ static Vehicle *TrainApproachingCrossingEnum(Vehicle *v, void *data)
 	Train *t = Train::From(v);
 	if (!t->IsFrontEngine()) return nullptr;
 
-	TileIndex tile = (TileIndex) reinterpret_cast<uintptr_t>(data);
+	TileIndex tile = *reinterpret_cast<TileIndex*>(data);
 
 	if (TrainApproachingCrossingTile(t) != tile) return nullptr;
 
@@ -1954,12 +1954,12 @@ static bool TrainApproachingCrossing(TileIndex tile)
 	DiagDirection dir = AxisToDiagDir(GetCrossingRailAxis(tile));
 	TileIndex tile_from = tile + TileOffsByDiagDir(dir);
 
-	if (HasVehicleOnPos(tile_from, VEH_TRAIN, reinterpret_cast<void *>(tile), &TrainApproachingCrossingEnum)) return true;
+	if (HasVehicleOnPos(tile_from, VEH_TRAIN, reinterpret_cast<void *>(&tile), &TrainApproachingCrossingEnum)) return true;
 
 	dir = ReverseDiagDir(dir);
 	tile_from = tile + TileOffsByDiagDir(dir);
 
-	return HasVehicleOnPos(tile_from, VEH_TRAIN, reinterpret_cast<void *>(tile), &TrainApproachingCrossingEnum);
+	return HasVehicleOnPos(tile_from, VEH_TRAIN, reinterpret_cast<void *>(&tile), &TrainApproachingCrossingEnum);
 }
 
 /** Check if the crossing should be closed
@@ -2672,7 +2672,7 @@ static int GetAndClearLastBridgeEntranceSetSignalIndex(TileIndex bridge_entrance
 				if (slot_bits) {
 					uint8 i = FindLastBit(slot_bits);
 					ClrBit(slot_bits, i);
-					return 1 + BRIDGE_M2_SIGNAL_STATE_COUNT + (64 * slot) + i;
+					return static_cast<int>(1 + BRIDGE_M2_SIGNAL_STATE_COUNT + (64 * slot) + i);
 				}
 			}
 		}

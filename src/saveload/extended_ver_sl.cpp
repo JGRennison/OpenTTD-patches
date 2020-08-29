@@ -437,7 +437,7 @@ static void Save_SLXI()
 
 	// calculate lengths
 	uint32 item_count = 0;
-	uint32 length = 12;
+	size_t length = 12;
 	std::vector<uint32> extra_data_lengths;
 	std::vector<uint32> chunk_counts;
 	extra_data_lengths.resize(XSLFI_SIZE);
@@ -618,9 +618,10 @@ static void loadVL(const SlxiSubChunkInfo *info, uint32 length)
 
 static uint32 saveVL(const SlxiSubChunkInfo *info, bool dry_run)
 {
-	uint32 length = strlen(_openttd_revision);
+	size_t length = strlen(_openttd_revision);
 	if (!dry_run) MemoryDumper::GetCurrent()->CopyBytes(reinterpret_cast<const byte *>(_openttd_revision), length);
-	return length;
+	assert(length <= std::numeric_limits<uint32>::max());
+	return static_cast<uint32>(length);
 }
 
 extern const ChunkHandler _version_ext_chunk_handlers[] = {

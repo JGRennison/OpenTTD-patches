@@ -183,7 +183,7 @@ void Packet::Send_binary(const char *data, const size_t size)
  * @param non_fatal True if a false return value is considered non-fatal, and will not raise an error.
  * @return True if that is safe, otherwise false.
  */
-bool Packet::CanReadFromPacket(uint bytes_to_read, bool non_fatal)
+bool Packet::CanReadFromPacket(size_t bytes_to_read, bool non_fatal)
 {
 	/* Don't allow reading from a quit client/client who send bad data */
 	if (this->cs->HasClientQuit()) return false;
@@ -336,7 +336,7 @@ void Packet::Recv_string(std::string &buffer, StringValidationSettings settings)
 
 	size_t length = ttd_strnlen((const char *)(this->buffer + this->pos), this->size - this->pos - 1);
 	buffer.assign((const char *)(this->buffer + this->pos), length);
-	this->pos += length + 1;
+	this->pos += static_cast<PacketSize>(length + 1);
 	str_validate(const_cast<char *>(buffer.c_str()), buffer.c_str() + buffer.size(), settings);
 }
 
