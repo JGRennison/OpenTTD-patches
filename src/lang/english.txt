@@ -1315,6 +1315,8 @@ STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Enabling this s
 
 STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            :Warn if vehicle is lost: {STRING2}
 STR_CONFIG_SETTING_WARN_LOST_VEHICLE_HELPTEXT                   :Trigger messages about vehicles unable to find a path to their ordered destination
+STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE                :Warn if train is stuck due to a routing restriction: {STRING2}
+STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE_HELPTEXT       :Trigger messages about trains which are stuck waiting at a PBS signal for a long time because of a routing restriction
 STR_CONFIG_SETTING_ORDER_REVIEW                                 :Review vehicles' orders: {STRING2}
 STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :When enabled, the orders of the vehicles are periodically checked, and some obvious issues are reported with a news message when detected
 STR_CONFIG_SETTING_ORDER_REVIEW_OFF                             :No

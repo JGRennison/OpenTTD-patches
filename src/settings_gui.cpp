@@ -1751,6 +1751,7 @@ static SettingsContainer &GetSettingsTree()
 			advisors->Add(new SettingEntry("gui.no_depot_order_warn"));
 			advisors->Add(new SettingEntry("gui.vehicle_income_warn"));
 			advisors->Add(new SettingEntry("gui.lost_vehicle_warn"));
+			advisors->Add(new SettingEntry("gui.restriction_wait_vehicle_warn"));
 			advisors->Add(new SettingEntry("gui.show_finances"));
 			advisors->Add(new SettingEntry("news_display.economy"));
 			advisors->Add(new SettingEntry("news_display.subsidies"));

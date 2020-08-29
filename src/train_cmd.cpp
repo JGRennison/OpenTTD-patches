@@ -4987,7 +4987,7 @@ static bool TrainLocoHandler(Train *v, bool mode)
 
 			if (HasBit(v->flags, VRF_TRAIN_STUCK) && v->wait_counter > 2 * _settings_game.pf.wait_for_pbs_path * DAY_TICKS) {
 				/* Show message to player. */
-				if (_settings_client.gui.lost_vehicle_warn && v->owner == _local_company) {
+				if (v->owner == _local_company && (HasBit(v->flags, VRF_WAITING_RESTRICTION) ? _settings_client.gui.restriction_wait_vehicle_warn : _settings_client.gui.lost_vehicle_warn)) {
 					SetDParam(0, v->index);
 					AddVehicleAdviceNewsItem(STR_NEWS_TRAIN_IS_STUCK, v->index);
 				}
