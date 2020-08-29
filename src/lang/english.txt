@@ -2798,6 +2798,7 @@ STR_TRACE_RESTRICT_UNDEFINED_COMPANY                            :Undefined compa
 STR_TRACE_RESTRICT_SLOT_OP                                      :Slot operation
 STR_TRACE_RESTRICT_REVERSE                                      :Reverse
 STR_TRACE_RESTRICT_SPEED_RESTRICTION                            :Speed restriction
+STR_TRACE_RESTRICT_NEWS_CONTROL                                 :News control
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :Acquire or wait
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :Try to acquire
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :Release (front)
@@ -2830,6 +2831,10 @@ STR_TRACE_RESTRICT_REVERSE_SIG                                  :Reverse behind 
 STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL                           :Cancel reverse behind signal
 STR_TRACE_RESTRICT_SET_SPEED_RESTRICTION                        :Restrict train speed to: {VELOCITY}
 STR_TRACE_RESTRICT_REMOVE_SPEED_RESTRICTION                     :Remove train speed restriction
+STR_TRACE_RESTRICT_TRAIN_NOT_STUCK                              :Train is not stuck, do not show news reports about waiting at this PBS signal
+STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL                       :Cancel train is not stuck, do not show news reports about waiting at this PBS signal
+STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_SHORT                        :Train is not stuck...
+STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL_SHORT                 :Cancel train is not stuck...
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Value
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Routefinding restriction
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Routefinding restriction - shared by {COMMA} signals

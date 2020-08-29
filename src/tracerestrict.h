@@ -140,6 +140,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_END                 = 48,   ///< End (exclusive) of conditional item types, note that this has the same value as TRIT_REVERSE
 	TRIT_REVERSE                  = 48,   ///< Reverse behind signal
 	TRIT_SPEED_RESTRICTION        = 49,   ///< Speed restriction
+	TRIT_NEWS_CONTROL             = 50,   ///< News control
 
 	/* space up to 63 */
 };
@@ -246,6 +247,14 @@ enum TraceRestrictReverseValueField {
 };
 
 /**
+ * TraceRestrictItem value field, for TRIT_NEWS_CONTROL
+ */
+enum TraceRestrictNewsControlField {
+	TRRVF_TRAIN_NOT_STUCK              = 0,       ///< Train is not stuck
+	TRRVF_CANCEL_TRAIN_NOT_STUCK       = 1,       ///< Cancel train is not stuck
+};
+
+/**
  * TraceRestrictItem value field, for TRIT_COND_TRAIN_STATUS
  */
 enum TraceRestrictTrainStatusValueField {
@@ -307,6 +316,7 @@ enum TraceRestrictProgramResultFlags {
 	TRPRF_PBS_RES_END_WAIT        = 1 << 4,  ///< PBS reservations ending at this signal wait is set
 	TRPRF_REVERSE                 = 1 << 5,  ///< Reverse behind signal
 	TRPRF_SPEED_RETRICTION_SET    = 1 << 6,  ///< Speed restriction field set
+	TRPRF_TRAIN_NOT_STUCK         = 1 << 7,  ///< Train is not stuck
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramResultFlags)
 
@@ -325,6 +335,7 @@ enum TraceRestrictProgramActionsUsedFlags {
 	TRPAUF_PBS_RES_END_SLOT       = 1 << 8,  ///< PBS reservations ending at this signal slot action is present
 	TRPAUF_REVERSE                = 1 << 9,  ///< Reverse behind signal
 	TRPAUF_SPEED_RESTRICTION      = 1 << 10, ///< Speed restriction
+	TRPAUF_TRAIN_NOT_STUCK        = 1 << 11, ///< Train is not stuck
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
 
@@ -559,6 +570,7 @@ enum TraceRestrictValueType {
 	TRVT_OWNER                    = 40,///< takes a CompanyID
 	TRVT_TRAIN_STATUS             = 41,///< takes a TraceRestrictTrainStatusValueField
 	TRVT_REVERSE                  = 42,///< takes a TraceRestrictReverseValueField
+	TRVT_NEWS_CONTROL             = 43,///< takes a TraceRestrictNewsControlField
 };
 
 /**
@@ -706,6 +718,8 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 			out.value_type = TRVT_REVERSE;
 		} else if (GetTraceRestrictType(item) == TRIT_SPEED_RESTRICTION) {
 			out.value_type = TRVT_SPEED;
+		} else if (GetTraceRestrictType(item) == TRIT_NEWS_CONTROL) {
+			out.value_type = TRVT_NEWS_CONTROL;
 		} else {
 			out.value_type = TRVT_NONE;
 		}

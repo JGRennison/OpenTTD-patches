@@ -152,6 +152,7 @@ static const StringID _program_insert_str[] = {
 	STR_TRACE_RESTRICT_SLOT_OP,
 	STR_TRACE_RESTRICT_REVERSE,
 	STR_TRACE_RESTRICT_SPEED_RESTRICTION,
+	STR_TRACE_RESTRICT_NEWS_CONTROL,
 	INVALID_STRING_ID
 };
 static const uint32 _program_insert_else_hide_mask    = 8;     ///< disable bitmask for else
@@ -174,6 +175,7 @@ static const uint _program_insert_val[] = {
 	TRIT_SLOT,                                         // slot operation
 	TRIT_REVERSE,                                      // reverse
 	TRIT_SPEED_RESTRICTION,                            // speed restriction
+	TRIT_NEWS_CONTROL,                                 // news control
 };
 
 /** insert drop down list strings and values */
@@ -311,9 +313,24 @@ static const uint _reverse_value_val[] = {
 	TRRVF_CANCEL_REVERSE,
 };
 
-/** value drop down list for wait at PBS types strings and values */
+/** value drop down list for reverse types strings and values */
 static const TraceRestrictDropDownListSet _reverse_value = {
 	_reverse_value_str, _reverse_value_val,
+};
+
+static const StringID _news_control_value_str[] = {
+	STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_SHORT,
+	STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL_SHORT,
+	INVALID_STRING_ID
+};
+static const uint _news_control_value_val[] = {
+	TRRVF_REVERSE,
+	TRRVF_CANCEL_REVERSE,
+};
+
+/** value drop down list for news control types strings and values */
+static const TraceRestrictDropDownListSet _news_control_value = {
+	_news_control_value_str, _news_control_value_val,
 };
 
 /**
@@ -374,6 +391,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		STR_TRACE_RESTRICT_SLOT_OP,
 		STR_TRACE_RESTRICT_REVERSE,
 		STR_TRACE_RESTRICT_SPEED_RESTRICTION,
+		STR_TRACE_RESTRICT_NEWS_CONTROL,
 		INVALID_STRING_ID,
 	};
 	static const uint val_action[] = {
@@ -385,6 +403,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		TRIT_SLOT,
 		TRIT_REVERSE,
 		TRIT_SPEED_RESTRICTION,
+		TRIT_NEWS_CONTROL,
 	};
 	static const TraceRestrictDropDownListSet set_action = {
 		str_action, val_action,
@@ -1242,6 +1261,22 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				}
 				break;
 
+			case TRIT_NEWS_CONTROL:
+				switch (static_cast<TraceRestrictNewsControlField>(GetTraceRestrictValue(item))) {
+					case TRRVF_TRAIN_NOT_STUCK:
+						instruction_string = STR_TRACE_RESTRICT_TRAIN_NOT_STUCK;
+						break;
+
+					case TRRVF_CANCEL_TRAIN_NOT_STUCK:
+						instruction_string = STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL;
+						break;
+
+					default:
+						NOT_REACHED();
+						break;
+				}
+				break;
+
 			default:
 				NOT_REACHED();
 				break;
@@ -1538,6 +1573,10 @@ public:
 
 					case TRVT_REVERSE:
 						this->ShowDropDownListWithValue(&_reverse_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
+						break;
+
+					case TRVT_NEWS_CONTROL:
+						this->ShowDropDownListWithValue(&_news_control_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
 						break;
 
 					default:
@@ -2528,6 +2567,13 @@ private:
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
 							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
 									GetDropDownStringByValue(&_reverse_value, GetTraceRestrictValue(item));
+							break;
+
+						case TRVT_NEWS_CONTROL:
+							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
+							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
+									GetDropDownStringByValue(&_news_control_value, GetTraceRestrictValue(item));
 							break;
 
 						default:

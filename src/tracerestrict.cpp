@@ -641,6 +641,22 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 					}
 
+					case TRIT_NEWS_CONTROL:
+						switch (static_cast<TraceRestrictNewsControlField>(GetTraceRestrictValue(item))) {
+							case TRRVF_TRAIN_NOT_STUCK:
+								out.flags |= TRPRF_TRAIN_NOT_STUCK;
+								break;
+
+							case TRRVF_CANCEL_TRAIN_NOT_STUCK:
+								out.flags &= ~TRPRF_TRAIN_NOT_STUCK;
+								break;
+
+							default:
+								NOT_REACHED();
+								break;
+						}
+						break;
+
 					default:
 						NOT_REACHED();
 				}
@@ -814,6 +830,10 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 					actions_used_flags |= TRPAUF_SPEED_RESTRICTION;
 					break;
 
+				case TRIT_NEWS_CONTROL:
+					actions_used_flags |= TRPAUF_TRAIN_NOT_STUCK;
+					break;
+
 				default:
 					return_cmd_error(STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION);
 			}
@@ -876,6 +896,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_TRAIN_STATUS:
 		case TRVT_REVERSE:
 		case TRVT_PERCENT:
+		case TRVT_NEWS_CONTROL:
 			SetTraceRestrictValue(item, 0);
 			if (!IsTraceRestrictTypeAuxSubtype(GetTraceRestrictType(item))) {
 				SetTraceRestrictAuxField(item, 0);
