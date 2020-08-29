@@ -143,6 +143,12 @@ class NIHVehicle : public NIHelper {
 					gvc.cached_total_length, gvc.cached_veh_length);
 			print(buffer);
 		}
+		if (v->type == VEH_TRAIN) {
+			const Train *t = Train::From(v);
+			seprintf(buffer, lastof(buffer), "  Wait counter: %u, rev distance: %u, TBSN: %u, speed restriction: %u",
+					t->wait_counter, t->reverse_distance, t->tunnel_bridge_signal_num, t->speed_restriction);
+			print(buffer);
+		}
 
 		if (HasBit(v->vehicle_flags, VF_SEPARATION_ACTIVE)) {
 			std::vector<TimetableProgress> progress_array = PopulateSeparationState(v);
