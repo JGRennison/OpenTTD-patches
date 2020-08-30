@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.35.1
+## JGR's Patchpack version 0.36.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -234,7 +234,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Go to depot and sell vehicle orders. (added in v0.26.0).  
   * Order mode to lock timetable wait and travel times against autofill/automate changes. (added in v0.26.0 and v0.27.0 respectively).  
   * Settings to allow placing stations and all NewGRF objects under bridges. (added in v0.26.0).  
-  * Leave early order timetable flag. (added in v0.27.0).  
+  * Leave early and leave early if any/all cargoes fully loaded order timetable flags. (added in v0.27.0 and v0.36.0 respectively).  
   * Timetabled wait times at waypoints. (added in v0.27.0).  
   * Add setting to enable flipping direction of all train types in depot. (added in v0.27.1).  
   * Allow purchasing a region of tiles at once, by dragging, and add a company rate limit for land purchasing (added in v0.29.0).  
@@ -262,6 +262,10 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add setting to scale station cargo capacity and rating tolerance by size. (added in v0.35.0).  
   * Add setting to disable vehicle expiry after a given year. (added in v0.35.0).  
   * Add setting to control road vehicle re-routing on road layout changes. (added in v0.35.0).  
+  * Add news setting for trains waiting due to routing restrictions. (added in v0.36.0).  
+  * Add setting for alternative linkgraph overlay colour schemes. (added in v0.36.0).  
+  * Add basic tab-completion to the console window. (added in v0.36.0).  
+  * Add settings to enable multiple churches/stadiums and to ignore date/zone/GRF when placing houses in the scenario editor. (added in v0.36.0).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
   * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).

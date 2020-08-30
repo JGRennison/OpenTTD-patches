@@ -2,6 +2,28 @@
 
 * * *
 
+### v0.36.0 (2020-08-30)
+* Fix incorrect infrastructure totals which could cause multiplayer desyncs when using the road convert tool on bay road stops.
+* Fix vehicle window mouse over colour when both stopped and waiting/stuck.
+* Fix order lookahead changing percent of times conditional order state.
+* Hide screenshot window when taking a normal screesnhot.
+* Use two columns in the cargo type orders window when there are more than 32 cargoes.
+* Improve performance of cargodist when using refit to any cargo orders.
+* Add leave early if any/all cargoes fully loaded timetable modes.
+* Template-based train replacement: Show empty and full template train weights, and weight ratios if enabled.
+* Routing restrictions: Add feature to control news reports about stuck trains.
+* Add news setting for trains waiting due to routing restrictions.
+* Add setting for alternative linkgraph overlay colour schemes.
+* Add basic tab-completion to the console window.
+* Scenario editor:
+  * Add setting to enable multiple churches/stadiums in scenario editor.
+  * Add settings to ignore date/zone/GRF when placing houses in scenario editor.
+* Build:
+  * Fix languages not always being recompiled when updated.
+  * Fix source being incorrectly detected as modified when not using git on some locales.
+* Add Korean translations by TELK.
+* Bump trunk base from commit 00eccbe298ad7f7d656e121ce58c2a6326dabe2f to commit 9340fe9c7ceca3349df171770480683097f0e436.
+
 ### v0.35.1 (2020-07-20)
 * Fix crash which could occur when selling/replacing a vehicle which is currently displayed in a departure board window.
 * Fix colour of vehicle destination text when mousing over in vehicle window.
