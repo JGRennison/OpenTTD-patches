@@ -145,6 +145,7 @@ enum OrderConditionVariable {
 	OCV_TRAIN_IN_SLOT,      ///< Test if train is in slot
 	OCV_CARGO_LOAD_PERCENTAGE, ///< Skip based on the amount of load of a specific cargo
 	OCV_CARGO_WAITING_AMOUNT,  ///< Skip based on the amount of a specific cargo waiting at next station
+	OCV_COUNTER_VALUE,      ///< Skip based on counter value
 	OCV_END
 };
 

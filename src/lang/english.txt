@@ -4798,6 +4798,7 @@ STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :Slot occupancy
 STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :Train in slot
 STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :Cargo load percentage
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :Waiting cargo amount
+STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :Counter value
 
 STR_ORDER_CONDITIONAL_REQUIRES_SERVICE_ORDER                    :Requires service {STRING}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_ORDER                       :Next station {STRING} {STRING} waiting
@@ -4820,6 +4821,7 @@ STR_ORDER_CONDITIONAL_COMPARATOR_IS_FALSE                       :is false
 STR_ORDER_CONDITIONAL_VALUE_TOOLTIP                             :{BLACK}The value to compare the vehicle data against
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}The cargo to compare the station data against
 STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}The train slot to check the occupancy of
+STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP                           :{BLACK}The counter to check the value of
 STR_ORDER_CONDITIONAL_VALUE_CAPT                                :{WHITE}Enter value to compare against
 
 STR_ORDER_CONDITIONAL_VIA                                       :{BLACK}Via
@@ -4958,6 +4960,8 @@ STR_ORDER_CONDITIONAL_TRUE_FALSE                                :Jump to order {
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :Jump to order {COMMA} when Load percentage of {STRING} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :Jump to order {COMMA} when {STRING} at next station {STRING} {CARGO_SHORT}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :Jump to order {COMMA} when {STRING} at next station via {STATION} {STRING} {CARGO_SHORT}
+STR_ORDER_CONDITIONAL_COUNTER                                   :Jump to order {COMMA} when value of {TRCOUNTER} {STRING} {COMMA}
+STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :Jump to order {COMMA} when value of {PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {COMMA}
 
 STR_INVALID_ORDER                                               :{RED} (Invalid Order)
 

@@ -2109,8 +2109,22 @@ void TraceRestrictRemoveCounterID(TraceRestrictCounterID index)
 		}
 	}
 
+	bool changed_order = false;
+	for (Order *o : Order::Iterate()) {
+		if (o->IsType(OT_CONDITIONAL) &&
+				(o->GetConditionVariable() == OCV_COUNTER_VALUE) &&
+				GB(o->GetXData(), 16, 16) == index) {
+			SB(o->GetXDataRef(), 16, 16, INVALID_TRACE_RESTRICT_COUNTER_ID);
+			changed_order = true;
+		}
+	}
+
 	// update windows
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+	if (changed_order) {
+		InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
+		InvalidateWindowClassesData(WC_VEHICLE_TIMETABLE);
+	}
 }
 
 /**
