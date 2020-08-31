@@ -2962,8 +2962,8 @@ STR_PROGSIG_REMOVE_TOOLTIP                                      :{BLACK}Remove t
 STR_PROGSIG_REMOVE_PROGRAM_TOOLTIP                              :{BLACK}Remove entire program
 STR_PROGSIG_COPY_PROGRAM_TOOLTIP                                :{BLACK}Copy program from existing signal
 
-STR_PROGSIG_REMOVE_PROGRAM                                      :{RED}Remove program
-STR_PROGSIG_COPY_PROGRAM                                        :{BLUE}Copy program
+STR_PROGSIG_REMOVE_PROGRAM                                      :{BLACK}Remove program
+STR_PROGSIG_COPY_PROGRAM                                        :{BLACK}Copy program
 STR_PROGSIG_REMOVE                                              :{BLACK}Remove
 STR_PROGSIG_INSERT                                              :Insert
 STR_PROGSIG_INSERT_IF                                           :Condition

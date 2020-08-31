@@ -2743,8 +2743,8 @@ STR_PROGSIG_REMOVE_TOOLTIP                                      :{BLACK}Entferne
 STR_PROGSIG_REMOVE_PROGRAM_TOOLTIP                              :{BLACK}Entferne das gesamte Programm
 STR_PROGSIG_COPY_PROGRAM_TOOLTIP                                :{BLACK}Kopiere ein Programm von einem bereits vorhandenen Signal
 
-STR_PROGSIG_REMOVE_PROGRAM                                      :{RED}Entferne Programm
-STR_PROGSIG_COPY_PROGRAM                                        :{BLUE}Kopiere Programm
+STR_PROGSIG_REMOVE_PROGRAM                                      :{BLACK}Entferne Programm
+STR_PROGSIG_COPY_PROGRAM                                        :{BLACK}Kopiere Programm
 STR_PROGSIG_REMOVE                                              :{BLACK}Entfernen
 STR_PROGSIG_INSERT                                              :Einfügen
 STR_PROGSIG_INSERT_IF                                           :Bedingung

@@ -2987,8 +2987,8 @@ STR_PROGSIG_REMOVE_TOOLTIP                                      :{BLACK}Odstrani
 STR_PROGSIG_REMOVE_PROGRAM_TOOLTIP                              :{BLACK}Odstranit celý program
 STR_PROGSIG_COPY_PROGRAM_TOOLTIP                                :{BLACK}Kopírovat program ze stávajícího návěstidla
 
-STR_PROGSIG_REMOVE_PROGRAM                                      :{RED}Odstranit program
-STR_PROGSIG_COPY_PROGRAM                                        :{BLUE}Kopírovat program
+STR_PROGSIG_REMOVE_PROGRAM                                      :{BLACK}Odstranit program
+STR_PROGSIG_COPY_PROGRAM                                        :{BLACK}Kopírovat program
 STR_PROGSIG_REMOVE                                              :{BLACK}Odstranit
 STR_PROGSIG_INSERT                                              :Vložit
 STR_PROGSIG_INSERT_IF                                           :Podmínka

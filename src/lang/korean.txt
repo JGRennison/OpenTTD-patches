@@ -2923,8 +2923,8 @@ STR_PROGSIG_REMOVE_TOOLTIP                                      :{BLACK}선택�
 STR_PROGSIG_REMOVE_PROGRAM_TOOLTIP                              :{BLACK}전체 프로그램을 제거합니다.
 STR_PROGSIG_COPY_PROGRAM_TOOLTIP                                :{BLACK}존재하는 신호기로부터 프로그램을 복사합니다.
 
-STR_PROGSIG_REMOVE_PROGRAM                                      :{RED}프로그램 제거
-STR_PROGSIG_COPY_PROGRAM                                        :{BLUE}프로그램 복제
+STR_PROGSIG_REMOVE_PROGRAM                                      :{BLACK}프로그램 제거
+STR_PROGSIG_COPY_PROGRAM                                        :{BLACK}프로그램 복제
 STR_PROGSIG_REMOVE                                              :{BLACK}제거
 STR_PROGSIG_INSERT                                              :삽입
 STR_PROGSIG_INSERT_IF                                           :조건문
