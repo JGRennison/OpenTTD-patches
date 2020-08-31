@@ -113,6 +113,7 @@ static const StringID _program_comparator[] = {
 	/* SGC_IS_FALSE */           STR_ORDER_CONDITIONAL_COMPARATOR_IS_FALSE,
 	INVALID_STRING_ID
 };
+static const uint _program_comparator_hide_mask = 0xC0;
 
 static const StringID _program_sigstate[] = {
 	STR_COLOUR_RED,
@@ -288,7 +289,7 @@ public:
 				if (!IsConditionComparator(sif->condition)) return;
 				SignalVariableCondition *vc = static_cast<SignalVariableCondition*>(sif->condition);
 
-				ShowDropDownMenu(this, _program_comparator, vc->comparator, PROGRAM_WIDGET_COND_COMPARATOR, 0, 0, 0);
+				ShowDropDownMenu(this, _program_comparator, vc->comparator, PROGRAM_WIDGET_COND_COMPARATOR, 0, _program_comparator_hide_mask, 0);
 			} break;
 
 			case PROGRAM_WIDGET_COND_VALUE: {
