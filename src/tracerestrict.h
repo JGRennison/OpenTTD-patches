@@ -52,6 +52,18 @@ static const TraceRestrictSlotID NEW_TRACE_RESTRICT_SLOT_ID = 0xFFFD;        // 
 static const TraceRestrictSlotID ALL_TRAINS_TRACE_RESTRICT_SLOT_ID = 0xFFFE; // for GUI use only
 static const TraceRestrictSlotID INVALID_TRACE_RESTRICT_SLOT_ID = 0xFFFF;
 
+/** Counter pool ID type. */
+typedef uint16 TraceRestrictCounterID;
+struct TraceRestrictCounter;
+
+/** Type of the pool for trace restrict slots. */
+typedef Pool<TraceRestrictCounter, TraceRestrictCounterID, 16, 0xFFF0> TraceRestrictCounterPool;
+/** The actual pool for trace restrict nodes. */
+extern TraceRestrictCounterPool _tracerestrictcounter_pool;
+
+static const TraceRestrictCounterID NEW_TRACE_RESTRICT_COUNTER_ID = 0xFFFE;        // for GUI use only
+static const TraceRestrictCounterID INVALID_TRACE_RESTRICT_COUNTER_ID = 0xFFFF;
+
 extern const uint16 _tracerestrict_pathfinder_penalty_preset_values[];
 
 /** Type used for the TraceRestrictRefId -> TraceRestrictProgramID mapping */
@@ -136,11 +148,13 @@ enum TraceRestrictItemType {
 	TRIT_COND_TRAIN_OWNER         = 24,   ///< Test train owner
 	TRIT_COND_TRAIN_STATUS        = 25,   ///< Test train status
 	TRIT_COND_LOAD_PERCENT        = 26,   ///< Test train load percentage
+	TRIT_COND_COUNTER_VALUE       = 27,   ///< Test counter value
 
 	TRIT_COND_END                 = 48,   ///< End (exclusive) of conditional item types, note that this has the same value as TRIT_REVERSE
 	TRIT_REVERSE                  = 48,   ///< Reverse behind signal
 	TRIT_SPEED_RESTRICTION        = 49,   ///< Speed restriction
 	TRIT_NEWS_CONTROL             = 50,   ///< News control
+	TRIT_COUNTER                  = 51,   ///< Change counter value
 
 	/* space up to 63 */
 };
@@ -295,6 +309,16 @@ enum TraceRestrictSlotOccupancyCondAuxField {
 };
 
 /**
+ * TraceRestrictItem repurposed condition operator field, for counter operation type actions
+ */
+enum TraceRestrictCounterCondOpField {
+	TRCCOF_INCREASE               = 0,       ///< increase counter by value
+	TRCCOF_DECREASE               = 1,       ///< decrease counter by value
+	TRCCOF_SET                    = 2,       ///< set counter to value
+	/* space up to 8 */
+};
+
+/**
  * TraceRestrictItem pathfinder penalty preset index
  * This may not be shortened, only lengthened, as preset indexes are stored in save games
  */
@@ -336,6 +360,7 @@ enum TraceRestrictProgramActionsUsedFlags {
 	TRPAUF_REVERSE                = 1 << 9,  ///< Reverse behind signal
 	TRPAUF_SPEED_RESTRICTION      = 1 << 10, ///< Speed restriction
 	TRPAUF_TRAIN_NOT_STUCK        = 1 << 11, ///< Train is not stuck
+	TRPAUF_CHANGE_COUNTER         = 1 << 12, ///< Change counter value is present
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
 
@@ -349,6 +374,7 @@ enum TraceRestrictProgramInputSlotPermissions {
 	TRPISP_PBS_RES_END_ACQUIRE    = 1 << 3,  ///< Slot acquire (PBS reservations ending at this signal) is permitted
 	TRPISP_PBS_RES_END_ACQ_DRY    = 1 << 4,  ///< Dry-run slot acquire (PBS reservations ending at this signal) is permitted
 	TRPISP_PBS_RES_END_RELEASE    = 1 << 5,  ///< Slot release (PBS reservations ending at this signal) is permitted
+	TRPISP_CHANGE_COUNTER         = 1 << 6,  ///< Change counter value is permitted
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramInputSlotPermissions)
 
@@ -527,7 +553,7 @@ static inline bool IsTraceRestrictConditional(TraceRestrictItem item)
 static inline bool IsTraceRestrictDoubleItem(TraceRestrictItem item)
 {
 	const TraceRestrictItemType type = GetTraceRestrictType(item);
-	return type == TRIT_COND_PBS_ENTRY_SIGNAL || type == TRIT_COND_SLOT_OCCUPANCY;
+	return type == TRIT_COND_PBS_ENTRY_SIGNAL || type == TRIT_COND_SLOT_OCCUPANCY || type == TRIT_COUNTER || type == TRIT_COND_COUNTER_VALUE;
 }
 
 /**
@@ -571,6 +597,7 @@ enum TraceRestrictValueType {
 	TRVT_TRAIN_STATUS             = 41,///< takes a TraceRestrictTrainStatusValueField
 	TRVT_REVERSE                  = 42,///< takes a TraceRestrictReverseValueField
 	TRVT_NEWS_CONTROL             = 43,///< takes a TraceRestrictNewsControlField
+	TRVT_COUNTER_INDEX_INT        = 44,///< takes a TraceRestrictCounterID, and an integer in the next item slot
 };
 
 /**
@@ -696,6 +723,10 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 				out.value_type = TRVT_PERCENT;
 				break;
 
+			case TRIT_COND_COUNTER_VALUE:
+				out.value_type = TRVT_COUNTER_INDEX_INT;
+				break;
+
 			default:
 				NOT_REACHED();
 				break;
@@ -720,6 +751,8 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 			out.value_type = TRVT_SPEED;
 		} else if (GetTraceRestrictType(item) == TRIT_NEWS_CONTROL) {
 			out.value_type = TRVT_NEWS_CONTROL;
+		} else if (GetTraceRestrictType(item) == TRIT_COUNTER) {
+			out.value_type = TRVT_COUNTER_INDEX_INT;
 		} else {
 			out.value_type = TRVT_NONE;
 		}
@@ -823,6 +856,7 @@ void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint1
 void TraceRestrictRemoveGroupID(GroupID index);
 void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company);
 void TraceRestrictRemoveSlotID(TraceRestrictSlotID index);
+void TraceRestrictRemoveCounterID(TraceRestrictCounterID index);
 
 void TraceRestrictRemoveVehicleFromAllSlots(VehicleID id);
 void TraceRestrictTransferVehicleOccupantInAllSlots(VehicleID from, VehicleID to);
@@ -869,6 +903,22 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 
 	private:
 	void DeIndex(VehicleID id);
+};
+
+/**
+ * Slot type, used for slot operations
+ */
+struct TraceRestrictCounter : TraceRestrictCounterPool::PoolItem<&_tracerestrictcounter_pool> {
+	int32 value = 0;
+	std::string name;
+	Owner owner;
+
+	TraceRestrictCounter(CompanyID owner = INVALID_COMPANY)
+	{
+		this->owner = owner;
+	}
+
+	void UpdateValue(int32 new_value);
 };
 
 #endif /* TRACERESTRICT_H */

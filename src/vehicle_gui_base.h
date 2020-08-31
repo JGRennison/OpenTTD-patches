@@ -51,6 +51,7 @@ struct BaseVehicleListWindow : public Window {
 		ADI_CHANGE_ORDER,
 		ADI_CREATE_GROUP,
 		ADI_TRACERESTRICT_SLOT_MGMT,
+		ADI_TRACERESTRICT_COUNTER_MGMT,
 	};
 
 	static const StringID vehicle_depot_name[];

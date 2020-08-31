@@ -1783,6 +1783,15 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				break;
 			}
 
+			case SCC_TR_COUNTER_NAME: { // {TRCOUNTER}
+				const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(args->GetInt32(SCC_TR_SLOT_NAME));
+				if (ctr == nullptr) break;
+				int64 args_array[] = {(int64)(size_t)ctr->name.c_str()};
+				StringParameters tmp_params(args_array);
+				buff = GetStringWithArgs(buff, STR_JUST_RAW_STRING, &tmp_params, last);
+				break;
+			}
+
 			case SCC_STATION_FEATURES: { // {STATIONFEATURES}
 				buff = StationGetSpecialString(buff, args->GetInt32(SCC_STATION_FEATURES), last);
 				break;

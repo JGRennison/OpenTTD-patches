@@ -28,6 +28,7 @@ enum SlXvFeatureIndex {
 	XSLFI_TRACE_RESTRICT_STATUSCND,               ///< Trace restrict: train status condition
 	XSLFI_TRACE_RESTRICT_REVERSE,                 ///< Trace restrict: reverse
 	XSLFI_TRACE_RESTRICT_NEWSCTRL,                ///< Trace restrict: news control
+	XSLFI_TRACE_RESTRICT_COUNTER,                 ///< Trace restrict: counters
 	XSLFI_PROG_SIGS,                              ///< programmable pre-signals patch
 	XSLFI_ADJACENT_CROSSINGS,                     ///< Adjacent level crossings closure patch
 	XSLFI_SAFER_CROSSINGS,                        ///< Safer level crossings

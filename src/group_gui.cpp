@@ -1006,6 +1006,12 @@ public:
 						break;
 					}
 
+					case ADI_TRACERESTRICT_COUNTER_MGMT: {
+						extern void ShowTraceRestrictCounterWindow(CompanyID company);
+						ShowTraceRestrictCounterWindow(this->owner);
+						break;
+					}
+
 					default: NOT_REACHED();
 				}
 				break;

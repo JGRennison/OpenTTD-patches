@@ -69,6 +69,9 @@ INSTANTIATE_POOL_METHODS(TraceRestrictProgram)
 TraceRestrictSlotPool _tracerestrictslot_pool("TraceRestrictSlot");
 INSTANTIATE_POOL_METHODS(TraceRestrictSlot)
 
+TraceRestrictCounterPool _tracerestrictcounter_pool("TraceRestrictCounter");
+INSTANTIATE_POOL_METHODS(TraceRestrictCounter)
+
 /**
  * TraceRestrictRefId --> TraceRestrictProgramID (Pool ID) mapping
  * The indirection is mainly to enable shared programs
@@ -499,6 +502,15 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 					}
 
+					case TRIT_COND_COUNTER_VALUE: {
+						// TRVT_COUNTER_INDEX_INT value type uses the next slot
+						i++;
+						uint32_t value = this->items[i];
+						const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(GetTraceRestrictValue(item));
+						result = TestCondition(ctr != nullptr ? ctr->value : 0, condop, value);
+						break;
+					}
+
 					default:
 						NOT_REACHED();
 				}
@@ -657,6 +669,33 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						}
 						break;
 
+					case TRIT_COUNTER: {
+						// TRVT_COUNTER_INDEX_INT value type uses the next slot
+						i++;
+						uint32_t value = this->items[i];
+						if (!(input.permitted_slot_operations & TRPISP_CHANGE_COUNTER)) break;
+						TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(GetTraceRestrictValue(item));
+						if (ctr == nullptr) break;
+						switch (static_cast<TraceRestrictCounterCondOpField>(GetTraceRestrictCondOp(item))) {
+							case TRCCOF_INCREASE:
+								ctr->UpdateValue(ctr->value + value);
+								break;
+
+							case TRCCOF_DECREASE:
+								ctr->UpdateValue(ctr->value - value);
+								break;
+
+							case TRCCOF_SET:
+								ctr->UpdateValue(value);
+								break;
+
+							default:
+								NOT_REACHED();
+								break;
+						}
+						break;
+					}
+
 					default:
 						NOT_REACHED();
 				}
@@ -751,6 +790,7 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				case TRIT_COND_TRAIN_OWNER:
 				case TRIT_COND_TRAIN_STATUS:
 				case TRIT_COND_LOAD_PERCENT:
+				case TRIT_COND_COUNTER_VALUE:
 					break;
 
 				default:
@@ -832,6 +872,10 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 
 				case TRIT_NEWS_CONTROL:
 					actions_used_flags |= TRPAUF_TRAIN_NOT_STUCK;
+					break;
+
+				case TRIT_COUNTER:
+					actions_used_flags |= TRPAUF_CHANGE_COUNTER;
 					break;
 
 				default:
@@ -941,6 +985,10 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 
 		case TRVT_SLOT_INDEX_INT:
 			SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_SLOT_ID);
+			break;
+
+		case TRVT_COUNTER_INDEX_INT:
+			SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_COUNTER_ID);
 			break;
 
 		default:
@@ -1147,7 +1195,11 @@ static uint32 GetDualInstructionInitialValue(TraceRestrictItem item)
 			return INVALID_TILE;
 
 		case TRIT_COND_SLOT_OCCUPANCY:
+		case TRIT_COND_COUNTER_VALUE:
 			return 0;
+
+		case TRIT_COUNTER:
+			return 1;
 
 		default:
 			NOT_REACHED();
@@ -1636,9 +1688,20 @@ void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company)
 		}
 	}
 
+	for (TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
+		if (ctr->owner != old_company) continue;
+		if (new_company == INVALID_OWNER) {
+			TraceRestrictRemoveCounterID(ctr->index);
+			delete ctr;
+		} else {
+			ctr->owner = new_company;
+		}
+	}
+
 	// update windows
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+	InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);
 }
 
 static std::unordered_multimap<VehicleID, TraceRestrictSlotID> slot_vehicle_index;
@@ -1922,7 +1985,7 @@ CommandCost CmdDeleteTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint
  * @param flags type of operation
  * @param p1   index of array group
  *   - p1 bit 0-15 : GroupID
- *   - p1 bit 16: 0 - Rename grouop
+ *   - p1 bit 16: 0 - Rename group
  *                1 - Change max occupancy
  * @param p2   new max occupancy
  * @param text the new name
@@ -2008,6 +2071,151 @@ CommandCost CmdRemoveVehicleTraceRestrictSlot(TileIndex tile, DoCommandFlag flag
 
 	if (flags & DC_EXEC) {
 		slot->Vacate(v->index);
+	}
+
+	return CommandCost();
+}
+
+void TraceRestrictCounter::UpdateValue(int32 new_value)
+{
+	new_value = max<int32>(0, new_value);
+	if (new_value != this->value) {
+		this->value = new_value;
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);
+	}
+}
+
+static bool IsUniqueCounterName(const char *name)
+{
+	for (const TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
+		if (ctr->name == name) return false;
+	}
+	return true;
+}
+
+/**
+ * This is called when a counter is about to be deleted
+ * Scan program pool and change any references to it to the invalid counter ID, to avoid dangling references
+ */
+void TraceRestrictRemoveCounterID(TraceRestrictCounterID index)
+{
+	for (TraceRestrictProgram *prog : TraceRestrictProgram::Iterate()) {
+		for (size_t i = 0; i < prog->items.size(); i++) {
+			TraceRestrictItem &item = prog->items[i]; // note this is a reference,
+			if ((GetTraceRestrictType(item) == TRIT_COUNTER || GetTraceRestrictType(item) == TRIT_COND_COUNTER_VALUE) && GetTraceRestrictValue(item) == index) {
+				SetTraceRestrictValueDefault(item, TRVT_COUNTER_INDEX_INT); // this updates the instruction in-place
+			}
+			if (IsTraceRestrictDoubleItem(item)) i++;
+		}
+	}
+
+	// update windows
+	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+}
+
+/**
+ * Create a new counter.
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1   unused
+ * @param p2   unused
+ * @param text new counter name
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdCreateTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	if (!TraceRestrictCounter::CanAllocateItem()) return CMD_ERROR;
+	if (StrEmpty(text)) return CMD_ERROR;
+
+	size_t length = Utf8StringLength(text);
+	if (length <= 0) return CMD_ERROR;
+	if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
+	if (!IsUniqueCounterName(text)) return_cmd_error(STR_ERROR_NAME_MUST_BE_UNIQUE);
+
+	if (flags & DC_EXEC) {
+		TraceRestrictCounter *ctr = new TraceRestrictCounter(_current_company);
+		ctr->name = text;
+
+		// update windows
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);
+	}
+
+	return CommandCost();
+}
+
+
+/**
+ * Deletes a counter.
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1   index of array group
+ *      - p1 bit 0-15 : Counter ID
+ * @param p2   unused
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdDeleteTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(p1);
+	if (ctr == nullptr || ctr->owner != _current_company) return CMD_ERROR;
+
+	if (flags & DC_EXEC) {
+		/* notify tracerestrict that counter is about to be deleted */
+		TraceRestrictRemoveCounterID(ctr->index);
+
+		delete ctr;
+
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);
+		InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
+	}
+
+	return CommandCost();
+}
+
+/**
+ * Alter a counter
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1   index of array counter
+ *   - p1 bit 0-15 : Counter ID
+ *   - p1 bit 16: 0 - Rename counter
+ *                1 - Change value
+ * @param p2   new value
+ * @param text the new name
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdAlterTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(GB(p1, 0, 16));
+	if (ctr == nullptr || ctr->owner != _current_company) return CMD_ERROR;
+
+	if (!HasBit(p1, 16)) {
+		/* Rename counter */
+
+		if (StrEmpty(text)) return CMD_ERROR;
+		size_t length = Utf8StringLength(text);
+		if (length <= 0) return CMD_ERROR;
+		if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
+		if (!IsUniqueCounterName(text)) return_cmd_error(STR_ERROR_NAME_MUST_BE_UNIQUE);
+
+		if (flags & DC_EXEC) {
+			ctr->name = text;
+		}
+	} else {
+		/* Change value */
+
+		if (flags & DC_EXEC) {
+			ctr->UpdateValue(p2);
+		}
+	}
+
+	if (flags & DC_EXEC) {
+		// update windows
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);
+		InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
 	}
 
 	return CommandCost();

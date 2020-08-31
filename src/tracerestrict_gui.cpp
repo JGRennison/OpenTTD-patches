@@ -69,6 +69,7 @@ enum TraceRestrictWindowWidgets {
 	TR_WIDGET_CONDFLAGS,
 	TR_WIDGET_COMPARATOR,
 	TR_WIDGET_SLOT_OP,
+	TR_WIDGET_COUNTER_OP,
 	TR_WIDGET_VALUE_INT,
 	TR_WIDGET_VALUE_DECIMAL,
 	TR_WIDGET_VALUE_DROPDOWN,
@@ -100,6 +101,7 @@ enum PanelWidgets {
 
 	// Left
 	DPL_TYPE = 0,
+	DPL_COUNTER_OP,
 	DPL_BLANK,
 
 	// Left aux
@@ -153,6 +155,7 @@ static const StringID _program_insert_str[] = {
 	STR_TRACE_RESTRICT_REVERSE,
 	STR_TRACE_RESTRICT_SPEED_RESTRICTION,
 	STR_TRACE_RESTRICT_NEWS_CONTROL,
+	STR_TRACE_RESTRICT_COUNTER_OP,
 	INVALID_STRING_ID
 };
 static const uint32 _program_insert_else_hide_mask    = 8;     ///< disable bitmask for else
@@ -162,6 +165,7 @@ static const uint32 _program_wait_pbs_hide_mask = 0x100;       ///< disable bitm
 static const uint32 _program_slot_hide_mask = 0x200;           ///< disable bitmask for slot
 static const uint32 _program_reverse_hide_mask = 0x400;        ///< disable bitmask for reverse
 static const uint32 _program_speed_res_hide_mask = 0x800;      ///< disable bitmask for speed restriction
+static const uint32 _program_counter_hide_mask = 0x2000;       ///< disable bitmask for counter
 static const uint _program_insert_val[] = {
 	TRIT_COND_UNDEFINED,                               // if block
 	TRIT_COND_UNDEFINED | (TRCF_ELSE << 16),           // elif block
@@ -176,6 +180,7 @@ static const uint _program_insert_val[] = {
 	TRIT_REVERSE,                                      // reverse
 	TRIT_SPEED_RESTRICTION,                            // speed restriction
 	TRIT_NEWS_CONTROL,                                 // news control
+	TRIT_COUNTER,                                      // counter operation
 };
 
 /** insert drop down list strings and values */
@@ -392,6 +397,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		STR_TRACE_RESTRICT_REVERSE,
 		STR_TRACE_RESTRICT_SPEED_RESTRICTION,
 		STR_TRACE_RESTRICT_NEWS_CONTROL,
+		STR_TRACE_RESTRICT_COUNTER_OP,
 		INVALID_STRING_ID,
 	};
 	static const uint val_action[] = {
@@ -404,6 +410,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		TRIT_REVERSE,
 		TRIT_SPEED_RESTRICTION,
 		TRIT_NEWS_CONTROL,
+		TRIT_COUNTER,
 	};
 	static const TraceRestrictDropDownListSet set_action = {
 		str_action, val_action,
@@ -430,6 +437,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT,
 		STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY,
 		STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING,
+		STR_TRACE_RESTRICT_VARIABLE_COUNTER_VALUE,
 		STR_TRACE_RESTRICT_VARIABLE_UNDEFINED,
 		INVALID_STRING_ID,
 	};
@@ -454,6 +462,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		TRIT_COND_TRAIN_IN_SLOT,
 		TRIT_COND_SLOT_OCCUPANCY | (TRSOCAF_OCCUPANTS << 16),
 		TRIT_COND_SLOT_OCCUPANCY | (TRSOCAF_REMAINING << 16),
+		TRIT_COND_COUNTER_VALUE,
 		TRIT_COND_UNDEFINED,
 	};
 	static const TraceRestrictDropDownListSet set_cond = {
@@ -465,7 +474,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		if (_settings_client.gui.show_adv_tracerestrict_features) {
 			*hide_mask = 0;
 		} else {
-			*hide_mask = is_conditional ? 0xE0000 : 0xF0;
+			*hide_mask = is_conditional ? 0x1E0000 : 0xF0;
 		}
 	}
 	return is_conditional ? &set_cond : &set_action;
@@ -568,6 +577,46 @@ DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &
 	return dlist;
 }
 
+/** Sort counters by their name */
+static bool CounterNameSorter(const TraceRestrictCounter * const &a, const TraceRestrictCounter * const &b)
+{
+	int r = strnatcmp(a->name.c_str(), b->name.c_str()); // Sort by name (natural sorting).
+	if (r == 0) return a->index < b->index;
+	return r < 0;
+}
+
+/**
+ * Get a DropDownList of the counter list
+ */
+DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, int &selected)
+{
+	GUIList<const TraceRestrictCounter*> list;
+	DropDownList dlist;
+
+	for (const TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
+		if (ctr->owner == owner) {
+			list.push_back(ctr);
+		}
+	}
+
+	if (list.size() == 0) return dlist;
+
+	list.ForceResort();
+	list.Sort(&CounterNameSorter);
+
+	selected = -1;
+
+	for (size_t i = 0; i < list.size(); ++i) {
+		const TraceRestrictCounter *s = list[i];
+		if (ctr_id == s->index) selected = ctr_id;
+		DropDownListParamStringItem *item = new DropDownListParamStringItem(STR_TRACE_RESTRICT_COUNTER_NAME, s->index, false);
+		item->SetParam(0, s->index);
+		dlist.emplace_back(item);
+	}
+
+	return dlist;
+}
+
 static const StringID _cargo_cond_ops_str[] = {
 	STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_CARGO_EQUALS,
 	STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_CARGO_NOT_EQUALS,
@@ -618,6 +667,22 @@ static const uint _slot_op_cond_ops_val[] = {
 /** cargo conditional operators dropdown list set */
 static const TraceRestrictDropDownListSet _slot_op_cond_ops = {
 	_slot_op_cond_ops_str, _slot_op_cond_ops_val,
+};
+
+static const StringID _counter_op_cond_ops_str[] = {
+	STR_TRACE_RESTRICT_COUNTER_INCREASE,
+	STR_TRACE_RESTRICT_COUNTER_DECREASE,
+	STR_TRACE_RESTRICT_COUNTER_SET,
+	INVALID_STRING_ID,
+};
+static const uint _counter_op_cond_ops_val[] = {
+	TRCCOF_INCREASE,
+	TRCCOF_DECREASE,
+	TRCCOF_SET,
+};
+/** counter operators dropdown list set */
+static const TraceRestrictDropDownListSet _counter_op_cond_ops = {
+	_counter_op_cond_ops_str, _counter_op_cond_ops_val,
 };
 
 /**
@@ -1114,6 +1179,26 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					SetDParam(2, GetDropDownStringByValue(&_train_status_value, GetTraceRestrictValue(item)));
 					break;
 
+				case TRVT_COUNTER_INDEX_INT: {
+					assert(prog != nullptr);
+					assert(GetTraceRestrictType(item) == TRIT_COND_COUNTER_VALUE);
+					uint32 value = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
+					SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
+					if (GetTraceRestrictValue(item) == INVALID_TRACE_RESTRICT_COUNTER_ID) {
+						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR;
+						SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
+						SetDParam(2, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
+						SetDParam(3, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
+						SetDParam(4, value);
+					} else {
+						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COUNTER;
+						SetDParam(1, GetTraceRestrictValue(item));
+						SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
+						SetDParam(3, value);
+					}
+					break;
+				}
+
 				default:
 					NOT_REACHED();
 					break;
@@ -1277,6 +1362,36 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				}
 				break;
 
+			case TRIT_COUNTER: {
+				uint32 value = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
+				switch (static_cast<TraceRestrictCounterCondOpField>(GetTraceRestrictCondOp(item))) {
+					case TRCCOF_INCREASE:
+						instruction_string = STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM;
+						break;
+
+					case TRCCOF_DECREASE:
+						instruction_string = STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM;
+						break;
+
+					case TRCCOF_SET:
+						instruction_string = STR_TRACE_RESTRICT_COUNTER_SET_ITEM;
+						break;
+
+					default:
+						NOT_REACHED();
+						break;
+				}
+				if (GetTraceRestrictValue(item) == INVALID_TRACE_RESTRICT_COUNTER_ID) {
+					SetDParam(0, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
+				} else {
+					SetDParam(0, STR_TRACE_RESTRICT_COUNTER_NAME);
+					SetDParam(1, GetTraceRestrictValue(item));
+				}
+				SetDParam(2, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
+				SetDParam(3, value);
+				break;
+			}
+
 			default:
 				NOT_REACHED();
 				break;
@@ -1400,7 +1515,7 @@ public:
 						if (ElseIfInsertionDryRun(false)) disabled &= ~_program_insert_or_if_hide_mask;
 					}
 				}
-				if (!_settings_client.gui.show_adv_tracerestrict_features) hidden |= _program_slot_hide_mask | _program_wait_pbs_hide_mask | _program_reverse_hide_mask | _program_speed_res_hide_mask;
+				if (!_settings_client.gui.show_adv_tracerestrict_features) hidden |= _program_slot_hide_mask | _program_wait_pbs_hide_mask | _program_reverse_hide_mask | _program_speed_res_hide_mask | _program_counter_hide_mask;
 
 				this->ShowDropDownListWithValue(&_program_insert, 0, true, TR_WIDGET_INSERT, disabled, hidden, 0);
 				break;
@@ -1489,13 +1604,19 @@ public:
 				break;
 			}
 
+			case TR_WIDGET_COUNTER_OP: {
+				TraceRestrictItem item = this->GetSelected();
+				this->ShowDropDownListWithValue(&_counter_op_cond_ops, GetTraceRestrictCondOp(item), false, TR_WIDGET_COUNTER_OP, 0, 0, 0);
+				break;
+			}
+
 			case TR_WIDGET_VALUE_INT: {
 				TraceRestrictItem item = this->GetSelected();
 				TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
 				if (IsIntegerValueType(type)) {
 					SetDParam(0, ConvertIntegerValue(type, GetTraceRestrictValue(item), true));
 					ShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, this, CS_NUMERAL, QSF_NONE);
-				} else if (type == TRVT_SLOT_INDEX_INT) {
+				} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT) {
 					SetDParam(0, *(TraceRestrictProgram::InstructionAt(this->GetProgram()->items, this->selected_instruction - 1) + 1));
 					ShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, this, CS_NUMERAL, QSF_NONE);
 				}
@@ -1595,6 +1716,13 @@ public:
 						break;
 					}
 
+					case TRVT_COUNTER_INDEX_INT: {
+						int selected;
+						DropDownList dlist = GetCounterDropDownList(this->GetOwner(), GetTraceRestrictValue(item), selected);
+						if (!dlist.empty()) ShowDropDownList(this, std::move(dlist), selected, TR_WIDGET_LEFT_AUX_DROPDOWN);
+						break;
+					}
+
 					default:
 						break;
 				}
@@ -1670,7 +1798,7 @@ public:
 				ShowErrorMessage(STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE, STR_EMPTY, WL_INFO);
 				return;
 			}
-		} else if (type == TRVT_SLOT_INDEX_INT) {
+		} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT) {
 			value = atoi(str);
 			TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_DUAL_ITEM, this->selected_instruction - 1, value, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 			return;
@@ -1691,7 +1819,7 @@ public:
 
 		if (widget == TR_WIDGET_VALUE_DROPDOWN || widget == TR_WIDGET_LEFT_AUX_DROPDOWN) {
 			TraceRestrictTypePropertySet type = GetTraceRestrictTypeProperties(item);
-			if (this->value_drop_down_is_company || type.value_type == TRVT_GROUP_INDEX || type.value_type == TRVT_SLOT_INDEX || type.value_type == TRVT_SLOT_INDEX_INT) {
+			if (this->value_drop_down_is_company || type.value_type == TRVT_GROUP_INDEX || type.value_type == TRVT_SLOT_INDEX || type.value_type == TRVT_SLOT_INDEX_INT || type.value_type == TRVT_COUNTER_INDEX_INT) {
 				// this is a special company drop-down or group/slot-index drop-down
 				SetTraceRestrictValue(item, index);
 				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
@@ -1747,7 +1875,8 @@ public:
 			}
 
 			case TR_WIDGET_COMPARATOR:
-			case TR_WIDGET_SLOT_OP: {
+			case TR_WIDGET_SLOT_OP:
+			case TR_WIDGET_COUNTER_OP: {
 				SetTraceRestrictCondOp(item, static_cast<TraceRestrictCondOp>(value));
 				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 				break;
@@ -2023,7 +2152,7 @@ public:
 				TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
 				if (IsIntegerValueType(type)) {
 					SetDParam(0, ConvertIntegerValue(type, GetTraceRestrictValue(item), true));
-				} else if (type == TRVT_SLOT_INDEX_INT) {
+				} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT) {
 					SetDParam(0, *(TraceRestrictProgram::InstructionAt(this->GetProgram()->items, this->selected_instruction - 1) + 1));
 				}
 				break;
@@ -2068,7 +2197,7 @@ public:
 			case TR_WIDGET_LEFT_AUX_DROPDOWN: {
 				TraceRestrictItem item = this->GetSelected();
 				TraceRestrictTypePropertySet type = GetTraceRestrictTypeProperties(item);
-				if (type.value_type == TRVT_SLOT_INDEX_INT) {
+				if (type.value_type == TRVT_SLOT_INDEX_INT || type.value_type == TRVT_COUNTER_INDEX_INT) {
 					SetDParam(0, GetTraceRestrictValue(item));
 				}
 				break;
@@ -2239,6 +2368,7 @@ private:
 		this->RaiseWidget(TR_WIDGET_CONDFLAGS);
 		this->RaiseWidget(TR_WIDGET_COMPARATOR);
 		this->RaiseWidget(TR_WIDGET_SLOT_OP);
+		this->RaiseWidget(TR_WIDGET_COUNTER_OP);
 		this->RaiseWidget(TR_WIDGET_VALUE_INT);
 		this->RaiseWidget(TR_WIDGET_VALUE_DECIMAL);
 		this->RaiseWidget(TR_WIDGET_VALUE_DROPDOWN);
@@ -2259,6 +2389,7 @@ private:
 		this->DisableWidget(TR_WIDGET_CONDFLAGS);
 		this->DisableWidget(TR_WIDGET_COMPARATOR);
 		this->DisableWidget(TR_WIDGET_SLOT_OP);
+		this->DisableWidget(TR_WIDGET_COUNTER_OP);
 		this->DisableWidget(TR_WIDGET_VALUE_INT);
 		this->DisableWidget(TR_WIDGET_VALUE_DECIMAL);
 		this->DisableWidget(TR_WIDGET_VALUE_DROPDOWN);
@@ -2576,6 +2707,36 @@ private:
 									GetDropDownStringByValue(&_news_control_value, GetTraceRestrictValue(item));
 							break;
 
+						case TRVT_COUNTER_INDEX_INT: {
+							right_sel->SetDisplayedPlane(DPR_VALUE_INT);
+							left_aux_sel->SetDisplayedPlane(DPLA_DROPDOWN);
+							this->EnableWidget(TR_WIDGET_VALUE_INT);
+							if (!IsTraceRestrictConditional(item)) {
+								left_sel->SetDisplayedPlane(DPL_COUNTER_OP);
+								this->EnableWidget(TR_WIDGET_COUNTER_OP);
+								this->GetWidget<NWidgetCore>(TR_WIDGET_COUNTER_OP)->widget_data =
+										GetDropDownStringByValue(&_counter_op_cond_ops, GetTraceRestrictCondOp(item));
+							}
+
+							for (const TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
+								if (ctr->owner == this->GetOwner()) {
+									this->EnableWidget(TR_WIDGET_LEFT_AUX_DROPDOWN);
+									break;
+								}
+							}
+
+							switch (GetTraceRestrictValue(item)) {
+								case INVALID_TRACE_RESTRICT_COUNTER_ID:
+									this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->widget_data = STR_TRACE_RESTRICT_VARIABLE_UNDEFINED;
+									break;
+
+								default:
+									this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->widget_data = STR_TRACE_RESTRICT_COUNTER_NAME;
+									break;
+							}
+							break;
+						}
+
 						default:
 							break;
 					}
@@ -2728,6 +2889,8 @@ static const NWidgetPart _nested_program_widgets[] = {
 			NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_SEL_TOP_LEFT),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_TYPE_COND), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_NULL, STR_TRACE_RESTRICT_TYPE_TOOLTIP), SetResize(1, 0),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_COUNTER_OP), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_NULL, STR_TRACE_RESTRICT_COUNTER_OP_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_BLANK_L), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_EMPTY, STR_NULL), SetResize(1, 0),
 			EndContainer(),
@@ -3487,4 +3650,344 @@ void DeleteTraceRestrictSlotHighlightOfVehicle(const Vehicle *v)
 
 	TraceRestrictSlotWindow *w = FindTraceRestrictSlotWindow(v->owner);
 	if (w != nullptr) w->UnselectVehicle(v->index);
+}
+
+/** Counter GUI widget IDs */
+enum TraceRestrictCounterWindowWidgets {
+	WID_TRCL_CAPTION,
+	WID_TRCL_LIST_COUNTERS,
+	WID_TRCL_LIST_COUNTERS_SCROLLBAR,
+	WID_TRCL_CREATE_COUNTER,
+	WID_TRCL_DELETE_COUNTER,
+	WID_TRCL_RENAME_COUNTER,
+	WID_TRCL_SET_COUNTER_VALUE,
+};
+
+
+static const NWidgetPart _nested_counter_widgets[] = {
+	NWidget(NWID_HORIZONTAL), // Window header
+		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_TRCL_CAPTION), SetDataTip(STR_TRACE_RESTRICT_COUNTER_CAPTION, STR_NULL),
+		NWidget(WWT_SHADEBOX, COLOUR_GREY),
+		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
+		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+	EndContainer(),
+	NWidget(NWID_VERTICAL),
+		//NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalTextLines(1, WD_DROPDOWNTEXT_TOP + WD_DROPDOWNTEXT_BOTTOM), SetFill(1, 0), EndContainer(),
+		NWidget(NWID_HORIZONTAL),
+			NWidget(WWT_MATRIX, COLOUR_GREY, WID_TRCL_LIST_COUNTERS), SetMatrixDataTip(1, 0, STR_TRACE_RESTRICT_COUNTER_GUI_LIST_TOOLTIP),
+					SetFill(1, 1), SetResize(1, 1), SetScrollbar(WID_TRCL_LIST_COUNTERS_SCROLLBAR),
+			NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_TRCL_LIST_COUNTERS_SCROLLBAR),
+		EndContainer(),
+		NWidget(NWID_HORIZONTAL),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_TRCL_CREATE_COUNTER), SetMinimalSize(75, 12), SetFill(1, 0),
+					SetDataTip(STR_TRACE_RESTRICT_COUNTER_CREATE, STR_TRACE_RESTRICT_COUNTER_CREATE_TOOLTIP),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_TRCL_DELETE_COUNTER), SetMinimalSize(75, 12), SetFill(1, 0),
+					SetDataTip(STR_TRACE_RESTRICT_COUNTER_DELETE, STR_TRACE_RESTRICT_COUNTER_DELETE_TOOLTIP),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_TRCL_RENAME_COUNTER), SetMinimalSize(75, 12), SetFill(1, 0),
+					SetDataTip(STR_TRACE_RESTRICT_COUNTER_RENAME, STR_TRACE_RESTRICT_COUNTER_RENAME_TOOLTIP),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_TRCL_SET_COUNTER_VALUE), SetMinimalSize(75, 12), SetFill(1, 0),
+					SetDataTip(STR_TRACE_RESTRICT_COUNTER_SET_VALUE, STR_TRACE_RESTRICT_COUNTER_SET_VALUE_TOOLTIP),
+			NWidget(WWT_RESIZEBOX, COLOUR_GREY),
+		EndContainer(),
+	EndContainer(),
+};
+
+class TraceRestrictCounterWindow : public Window {
+private:
+	enum QueryTextOperation {
+		QTO_RENAME,
+		QTO_SET_VALUE,
+	};
+
+	CompanyID owner;
+	QueryTextOperation qto;             ///< Active query text operation
+	TraceRestrictCounterID ctr_qt_op;   ///< Counter being adjusted in query text operation, INVALID_TRACE_RESTRICT_COUNTER_ID if none
+	TraceRestrictCounterID ctr_confirm; ///< Counter awaiting delete confirmation
+	TraceRestrictCounterID selected;    ///< Selected counter
+	GUIList<const TraceRestrictCounter*> ctrs;   ///< List of slots
+	uint tiny_step_height; ///< Step height for the counter list
+	uint value_col_width;  ///< Value column width
+	Scrollbar *sb;
+
+	void BuildCounterList()
+	{
+		if (!this->ctrs.NeedRebuild()) return;
+
+		this->ctrs.clear();
+
+		for (const TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
+			if (ctr->owner == this->owner) {
+				this->ctrs.push_back(ctr);
+			}
+		}
+
+		this->ctrs.ForceResort();
+		this->ctrs.Sort(&CounterNameSorter);
+		this->ctrs.shrink_to_fit();
+		this->ctrs.RebuildDone();
+	}
+
+	/**
+	 * Compute tiny_step_height and column_size
+	 * @return Total width required for the group list.
+	 */
+	uint ComputeInfoSize()
+	{
+		SetDParamMaxValue(0, 9999, 3);
+		Dimension dim = GetStringBoundingBox(STR_JUST_COMMA);
+		this->tiny_step_height = dim.height + WD_MATRIX_TOP;
+		this->value_col_width = dim.width;
+
+		return WD_FRAMERECT_LEFT + 8 +
+			170 + 8 +
+			dim.width + 8 +
+			WD_FRAMERECT_RIGHT;
+	}
+
+	/**
+	 * Draw a row in the slot list.
+	 * @param y Top of the row.
+	 * @param left Left of the row.
+	 * @param right Right of the row.
+	 * @param g_id Group to list.
+	 */
+	void DrawCounterInfo(int y, int left, int right, TraceRestrictCounterID ctr_id) const
+	{
+		/* draw the selected counter in white, else we draw it in black */
+		TextColour colour = ctr_id == this->selected ? TC_WHITE : TC_BLACK;
+		bool rtl = _current_text_dir == TD_RTL;
+
+		SetDParam(0, ctr_id);
+		DrawString(left + WD_FRAMERECT_LEFT + 8 + (rtl ? this->value_col_width + 8 : 0),
+				right - WD_FRAMERECT_RIGHT - 8 - (rtl ? 0 : this->value_col_width + 8),
+				y, STR_TRACE_RESTRICT_COUNTER_NAME, colour);
+
+		SetDParam(0, TraceRestrictCounter::Get(ctr_id)->value);
+		DrawString(rtl ? left + WD_FRAMERECT_LEFT + 8 : right - WD_FRAMERECT_RIGHT - 8 - this->value_col_width,
+				rtl ? left + WD_FRAMERECT_LEFT + 8 + this->value_col_width : right - WD_FRAMERECT_RIGHT - 8,
+				y, STR_JUST_COMMA, colour, SA_RIGHT | SA_FORCE);
+	}
+
+public:
+	TraceRestrictCounterWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
+	{
+		this->owner = (CompanyID)window_number;
+		this->CreateNestedTree();
+
+		this->sb = this->GetScrollbar(WID_TRCL_LIST_COUNTERS_SCROLLBAR);
+
+		this->ctr_qt_op = INVALID_TRACE_RESTRICT_COUNTER_ID;
+		this->ctr_confirm = INVALID_TRACE_RESTRICT_COUNTER_ID;
+		this->selected = INVALID_TRACE_RESTRICT_COUNTER_ID;
+
+		this->ctrs.ForceRebuild();
+		this->ctrs.NeedResort();
+		this->BuildCounterList();
+
+		this->FinishInitNested(window_number);
+	}
+
+	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	{
+		switch (widget) {
+			case WID_TRCL_LIST_COUNTERS: {
+				size->width = max<uint>(size->width, this->ComputeInfoSize());
+				resize->height = this->tiny_step_height;
+				size->height = max<uint>(size->height, 8 * resize->height);
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Some data on this window has become invalid.
+	 * @param data Information about the changed data.
+	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
+	 */
+	virtual void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	{
+		if (data == 0) {
+			/* This needs to be done in command-scope to enforce rebuilding before resorting invalid data */
+			this->ctrs.ForceRebuild();
+		} else {
+			this->ctrs.ForceResort();
+		}
+
+		if (this->ctr_qt_op != INVALID_TRACE_RESTRICT_COUNTER_ID && this->ctr_qt_op != NEW_TRACE_RESTRICT_COUNTER_ID &&
+				!TraceRestrictCounter::IsValidID(this->ctr_qt_op)) {
+			DeleteWindowByClass(WC_QUERY_STRING);
+			this->ctr_qt_op = INVALID_TRACE_RESTRICT_COUNTER_ID;
+		}
+
+		if (this->selected != INVALID_TRACE_RESTRICT_COUNTER_ID && !TraceRestrictCounter::IsValidID(this->selected)) {
+			this->selected = INVALID_TRACE_RESTRICT_COUNTER_ID;
+		}
+
+		this->SetDirty();
+	}
+
+	virtual void OnPaint() override
+	{
+		this->BuildCounterList();
+
+		this->sb->SetCount(this->ctrs.size());
+
+		/* Disable the counter specific functions when no counter is selected */
+		this->SetWidgetsDisabledState(this->selected == INVALID_TRACE_RESTRICT_COUNTER_ID || _local_company != this->owner,
+				WID_TRCL_DELETE_COUNTER,
+				WID_TRCL_RENAME_COUNTER,
+				WID_TRCL_SET_COUNTER_VALUE,
+				WIDGET_LIST_END);
+
+		/* Disable remaining buttons for non-local companies
+		 * Needed while changing _local_company, eg. by cheats
+		 * All procedures (eg. move vehicle to a slot)
+		 *  verify, whether you are the owner of the vehicle,
+		 *  so it doesn't have to be disabled
+		 */
+		this->SetWidgetsDisabledState(_local_company != this->owner,
+				WID_TRCL_CREATE_COUNTER,
+				WIDGET_LIST_END);
+
+		this->DrawWidgets();
+	}
+
+	virtual void DrawWidget(const Rect &r, int widget) const override
+	{
+		switch (widget) {
+			case WID_TRCL_LIST_COUNTERS: {
+				int y1 = r.top + WD_FRAMERECT_TOP;
+				int max = min(this->sb->GetPosition() + this->sb->GetCapacity(), this->ctrs.size());
+				for (int i = this->sb->GetPosition(); i < max; ++i) {
+					const TraceRestrictCounter *ctr = this->ctrs[i];
+
+					assert(ctr->owner == this->owner);
+
+					DrawCounterInfo(y1, r.left, r.right, ctr->index);
+
+					y1 += this->tiny_step_height;
+				}
+				break;
+			}
+		}
+	}
+
+	static void DeleteCounterCallback(Window *win, bool confirmed)
+	{
+		if (confirmed) {
+			TraceRestrictCounterWindow *w = (TraceRestrictCounterWindow*)win;
+			w->selected = INVALID_TRACE_RESTRICT_COUNTER_ID;
+			DoCommandP(0, w->ctr_confirm, 0, CMD_DELETE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_DELETE));
+		}
+	}
+
+	virtual void OnClick(Point pt, int widget, int click_count) override
+	{
+		switch (widget) {
+			case WID_TRCL_LIST_COUNTERS: { // Matrix
+				uint id_s = this->sb->GetScrolledRowFromWidget(pt.y, this, WID_TRCL_LIST_COUNTERS, 0, this->tiny_step_height);
+				if (id_s >= this->ctrs.size()) return;
+
+				this->selected = this->ctrs[id_s]->index;
+
+				this->SetDirty();
+				break;
+			}
+
+			case WID_TRCL_CREATE_COUNTER: { // Create a new counter
+				this->ShowCreateCounterWindow();
+				break;
+			}
+
+			case WID_TRCL_DELETE_COUNTER: { // Delete the selected counter
+				this->ctr_confirm = this->selected;
+				ShowQuery(STR_TRACE_RESTRICT_COUNTER_QUERY_DELETE_CAPTION, STR_TRACE_RESTRICT_COUNTER_DELETE_QUERY_TEXT, this, DeleteCounterCallback);
+				break;
+			}
+
+			case WID_TRCL_RENAME_COUNTER: // Rename the selected counter
+				this->ShowRenameCounterWindow(this->selected);
+				break;
+
+			case WID_TRCL_SET_COUNTER_VALUE:
+				this->ShowSetCounterValueWindow(this->selected);
+				break;
+		}
+	}
+
+	virtual void OnQueryTextFinished(char *str) override
+	{
+		if (str != nullptr) {
+			switch (this->qto) {
+				case QTO_RENAME:
+					if (this->ctr_qt_op == NEW_TRACE_RESTRICT_COUNTER_ID) {
+						DoCommandP(0, 0, 0, CMD_CREATE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE), nullptr, str);
+					} else {
+						DoCommandP(0, this->ctr_qt_op, 0, CMD_ALTER_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY), nullptr, str);
+					}
+					break;
+
+				case QTO_SET_VALUE:
+					if (!StrEmpty(str)) DoCommandP(0, this->ctr_qt_op | (1 << 16), atoi(str), CMD_ALTER_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY));
+					break;
+			}
+		}
+		this->ctr_qt_op = INVALID_TRACE_RESTRICT_COUNTER_ID;
+	}
+
+	virtual void OnResize() override
+	{
+		this->sb->SetCapacityFromWidget(this, WID_TRCL_LIST_COUNTERS);
+	}
+
+	virtual void OnGameTick() override
+	{
+		if (this->ctrs.NeedResort()) {
+			this->SetDirty();
+		}
+	}
+
+	void ShowRenameCounterWindow(TraceRestrictCounterID ctr_id)
+	{
+		assert(TraceRestrictCounter::IsValidID(ctr_id));
+		this->qto = QTO_RENAME;
+		this->ctr_qt_op = ctr_id;
+		SetDParam(0, ctr_id);
+		ShowQueryString(STR_TRACE_RESTRICT_COUNTER_NAME, STR_TRACE_RESTRICT_COUNTER_RENAME_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+	}
+
+	void ShowSetCounterValueWindow(TraceRestrictCounterID ctr_id)
+	{
+		assert(TraceRestrictCounter::IsValidID(ctr_id));
+		this->qto = QTO_SET_VALUE;
+		this->ctr_qt_op = ctr_id;
+		SetDParam(0, TraceRestrictCounter::Get(ctr_id)->value);
+		ShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_COUNTER_SET_VALUE_CAPTION, 5, this, CS_NUMERAL, QSF_ENABLE_DEFAULT);
+	}
+
+	void ShowCreateCounterWindow()
+	{
+		this->qto = QTO_RENAME;
+		this->ctr_qt_op = NEW_TRACE_RESTRICT_COUNTER_ID;
+		ShowQueryString(STR_EMPTY, STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+	}
+};
+
+static WindowDesc _counter_window_desc(
+	WDP_AUTO, "list_tr_counters", 525, 246,
+	WC_TRACE_RESTRICT_COUNTERS, WC_NONE,
+	0,
+	_nested_counter_widgets, lengthof(_nested_counter_widgets)
+);
+
+/**
+ * Show the trace restrict counter window for the given company.
+ * @param company The company to show the window for.
+ */
+void ShowTraceRestrictCounterWindow(CompanyID company)
+{
+	if (!Company::IsValidID(company)) return;
+
+	AllocateWindowDescFront<TraceRestrictCounterWindow>(&_counter_window_desc, (WindowNumber)company);
 }

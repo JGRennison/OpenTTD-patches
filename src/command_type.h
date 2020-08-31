@@ -408,6 +408,9 @@ enum Commands {
 	CMD_DELETE_TRACERESTRICT_SLOT,    ///< delete a tracerestrict slot
 	CMD_ADD_VEHICLE_TRACERESTRICT_SLOT,    ///< add a vehicle to a tracerestrict slot
 	CMD_REMOVE_VEHICLE_TRACERESTRICT_SLOT, ///< remove a vehicle from a tracerestrict slot
+	CMD_CREATE_TRACERESTRICT_COUNTER, ///< create a tracerestrict counter
+	CMD_ALTER_TRACERESTRICT_COUNTER,  ///< alter a tracerestrict counter
+	CMD_DELETE_TRACERESTRICT_COUNTER, ///< delete a tracerestrict counter
 
 	CMD_INSERT_SIGNAL_INSTRUCTION,    ///< insert a signal instruction
 	CMD_MODIFY_SIGNAL_INSTRUCTION,    ///< modifies a signal instruction
