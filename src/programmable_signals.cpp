@@ -17,6 +17,7 @@
 #include "cmd_helper.h"
 
 ProgramList _signal_programs;
+bool _cleaning_signal_programs = false;
 
 SignalProgram::SignalProgram(TileIndex tile, Track track, bool raw)
 {
@@ -188,6 +189,8 @@ void SignalSlotCondition::SetSlot(TraceRestrictSlotID slot_id)
 
 /*virtual*/ SignalSlotCondition::~SignalSlotCondition()
 {
+	if (_cleaning_signal_programs) return;
+
 	if (this->IsSlotValid()) {
 		RemoveSignalSlotDependency(this->slot_id, this->this_sig);
 	}
@@ -250,6 +253,8 @@ void SignalCounterCondition::SetCounter(TraceRestrictCounterID ctr_id)
 
 /*virtual*/ SignalCounterCondition::~SignalCounterCondition()
 {
+	if (_cleaning_signal_programs) return;
+
 	if (this->IsCounterValid()) {
 		RemoveSignalCounterDependency(this->ctr_id, this->this_sig);
 	}
@@ -309,9 +314,12 @@ void SignalStateCondition::SetSignal(TileIndex tile, Trackdir track)
 
 /*virtual*/ SignalStateCondition::~SignalStateCondition()
 {
-	if (this->IsSignalValid())
+	if (_cleaning_signal_programs) return;
+
+	if (this->IsSignalValid()) {
 		RemoveSignalDependency(SignalReference(this->sig_tile, TrackdirToTrack(sig_track)),
 																					 this->this_sig);
+	}
 }
 
 /*virtual*/ bool SignalStateCondition::Evaluate(SignalVM& vm)
@@ -538,12 +546,14 @@ void FreeSignalProgram(SignalReference ref)
 
 void FreeSignalPrograms()
 {
+	_cleaning_signal_programs = true;
 	ProgramList::iterator i, e;
 	for (i = _signal_programs.begin(), e = _signal_programs.end(); i != e;) {
 		delete i->second;
 		// Must postincrement here to avoid iterator invalidation
 		_signal_programs.erase(i++);
 	}
+	_cleaning_signal_programs = false;
 }
 
 SignalState RunSignalProgram(SignalReference ref, uint num_exits, uint num_green)
