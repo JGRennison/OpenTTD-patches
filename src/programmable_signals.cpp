@@ -31,7 +31,6 @@ SignalProgram::SignalProgram(TileIndex tile, Track track, bool raw)
 
 SignalProgram::~SignalProgram()
 {
-	this->DebugPrintProgram();
 	this->first_instruction->Remove();
 	delete this->first_instruction;
 	delete this->last_instruction;

@@ -151,8 +151,6 @@ static void Save_SPRG()
 			i != e; ++i) {
 		SignalProgram *prog = i->second;
 
-		prog->DebugPrintProgram();
-
 		WriteVLI(b, prog->tile);
 		WriteVLI(b, prog->track);
 		WriteVLI(b, prog->instructions.size());
@@ -307,7 +305,6 @@ static void Load_SPRG()
 		}
 
 		DoFixups(l, sp->instructions);
-		sp->DebugPrintProgram();
 	}
 }
 
