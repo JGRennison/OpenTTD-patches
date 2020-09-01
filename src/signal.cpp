@@ -845,18 +845,23 @@ void FreeSignalDependencies()
 	_signal_dependencies.clear();
 }
 
+void UpdateSignalDependency(SignalReference sr)
+{
+	Trackdir td = TrackToTrackdir(sr.track);
+	_globset.Add(sr.tile, TrackdirToExitdir(td));
+	_globset.Add(sr.tile, TrackdirToExitdir(ReverseTrackdir(td)));
+}
+
 static void MarkDependencidesForUpdate(SignalReference on)
 {
 	SignalDependencyMap::iterator f = _signal_dependencies.find(on);
 	if (f == _signal_dependencies.end()) return;
 
 	SignalDependencyList &dependencies = f->second;
-	for (const SignalReference &i : dependencies) {
-		assert(GetTileOwner(i.tile) == GetTileOwner(on.tile));
+	for (const SignalReference &sr : dependencies) {
+		assert(GetTileOwner(sr.tile) == GetTileOwner(on.tile));
 
-		Trackdir td = TrackToTrackdir(i.track);
-		_globset.Add(i.tile, TrackdirToExitdir(td));
-		_globset.Add(i.tile, TrackdirToExitdir(ReverseTrackdir(td)));
+		UpdateSignalDependency(sr);
 	}
 }
 

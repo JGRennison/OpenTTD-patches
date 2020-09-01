@@ -64,6 +64,21 @@ static void WriteCondition(Buffer &b, SignalCondition *c)
 			WriteVLI(b, sc->sig_track);
 		} break;
 
+		case PSC_SLOT_OCC:
+		case PSC_SLOT_OCC_REM: {
+			SignalSlotCondition *cc = static_cast<SignalSlotCondition*>(c);
+			WriteVLI(b, cc->slot_id);
+			WriteVLI(b, cc->comparator);
+			WriteVLI(b, cc->value);
+		} break;
+
+		case PSC_COUNTER: {
+			SignalCounterCondition *cc = static_cast<SignalCounterCondition*>(c);
+			WriteVLI(b, cc->ctr_id);
+			WriteVLI(b, cc->comparator);
+			WriteVLI(b, cc->value);
+		} break;
+
 		default:
 			break;
 	}
@@ -86,6 +101,25 @@ static SignalCondition *ReadCondition(SignalReference this_sig)
 			TileIndex ti = (TileIndex) ReadVLI();
 			Trackdir  td = (Trackdir) ReadVLI();
 			return new SignalStateCondition(this_sig, ti, td);
+		}
+
+		case PSC_SLOT_OCC:
+		case PSC_SLOT_OCC_REM: {
+			TraceRestrictSlotID slot_id = (TraceRestrictSlotID) ReadVLI();
+			SignalSlotCondition *c = new SignalSlotCondition(code, this_sig, slot_id);
+			c->comparator = (SignalComparator) ReadVLI();
+			if(c->comparator > SGC_LAST) NOT_REACHED();
+			c->value = ReadVLI();
+			return c;
+		} break;
+
+		case PSC_COUNTER: {
+			TraceRestrictCounterID ctr_id = (TraceRestrictCounterID) ReadVLI();
+			SignalCounterCondition *c = new SignalCounterCondition(this_sig, ctr_id);
+			c->comparator = (SignalComparator) ReadVLI();
+			if(c->comparator > SGC_LAST) NOT_REACHED();
+			c->value = ReadVLI();
+			return c;
 		}
 
 		default:

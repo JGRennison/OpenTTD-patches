@@ -2961,6 +2961,8 @@ STR_PROGSIG_INSERT_TOOLTIP                                      :{BLACK}Insert a
 STR_PROGSIG_REMOVE_TOOLTIP                                      :{BLACK}Remove the selected instruction
 STR_PROGSIG_REMOVE_PROGRAM_TOOLTIP                              :{BLACK}Remove entire program
 STR_PROGSIG_COPY_PROGRAM_TOOLTIP                                :{BLACK}Copy program from existing signal
+STR_PROGSIG_COND_SLOT_TOOLTIP                                   :{BLACK}Slot to compare occupancy of
+STR_PROGSIG_COND_COUNTER_TOOLTIP                                :{BLACK}Counter to compare value of
 
 STR_PROGSIG_REMOVE_PROGRAM                                      :{BLACK}Remove program
 STR_PROGSIG_COPY_PROGRAM                                        :{BLACK}Copy program
@@ -2981,7 +2983,16 @@ STR_PROGSIG_SET_SIGNAL                                          :Make signal {ST
 STR_PROGSIG_COND_ALWAYS                                         :always
 STR_PROGSIG_COND_NEVER                                          :never
 STR_PROGSIG_COND_COMPARE                                        :{STRING} {STRING} {NUM}
+STR_PROGSIG_COND_SLOT_COMPARE                                   :occupancy of {TRSLOT} {STRING} {NUM}
+STR_PROGSIG_COND_SLOT_COMPARE_INVALID                           :occupancy of {PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {NUM}
+STR_PROGSIG_COND_SLOT_REMAINING_COMPARE                         :occupancy remaining of {TRSLOT} {STRING} {NUM}
+STR_PROGSIG_COND_SLOT_REMAINING_COMPARE_INVALID                 :occupancy remaining of {PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {NUM}
+STR_PROGSIG_COND_COUNTER_COMPARE                                :value of {TRCOUNTER} {STRING} {NUM}
+STR_PROGSIG_COND_COUNTER_COMPARE_INVALID                        :value of {PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {NUM}
 STR_PROGSIG_COND_SIGNAL_STATE                                   :signal state
+STR_PROGSIG_COND_SLOT                                           :slot occupancy
+STR_PROGSIG_COND_SLOT_REMAINING                                 :slot occupancy remaining
+STR_PROGSIG_COND_COUNTER                                        :counter value
 STR_PROGSIG_CONDVAR_SIGNAL_STATE_SPECIFIED                      :signal at {NUM} x {NUM} is green
 STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED                    :{RED}unspecified signal{STRING} is green
 STR_PROGSIG_CONDVAR_NUM_RED                                     :red signals

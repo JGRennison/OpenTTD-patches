@@ -20,6 +20,7 @@
 #include "tile_type.h"
 #include "group_type.h"
 #include "vehicle_type.h"
+#include "signal_type.h"
 #include "3rdparty/cpp-btree/btree_map.h"
 #include <map>
 #include <vector>
@@ -873,6 +874,8 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 	std::string name;
 	Owner owner;
 
+	std::vector<SignalReference> progsig_dependants;
+
 	static void RebuildVehicleIndex();
 	static bool ValidateVehicleIndex();
 	static void ValidateSlotOccupants(std::function<void(const char *)> log);
@@ -900,6 +903,7 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 	bool OccupyDryRun(VehicleID ids);
 	void Vacate(VehicleID id);
 	void Clear();
+	void UpdateSignals();
 
 	private:
 	void DeIndex(VehicleID id);
@@ -912,6 +916,8 @@ struct TraceRestrictCounter : TraceRestrictCounterPool::PoolItem<&_tracerestrict
 	int32 value = 0;
 	std::string name;
 	Owner owner;
+
+	std::vector<SignalReference> progsig_dependants;
 
 	TraceRestrictCounter(CompanyID owner = INVALID_COMPANY)
 	{
