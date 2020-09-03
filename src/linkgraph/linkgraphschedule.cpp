@@ -61,7 +61,8 @@ void LinkGraphSchedule::SpawnNext()
 	for (auto &it : this->running) {
 		total_cost += it->Graph().CalculateCostEstimate();
 	}
-	uint scaling = 1 + FindLastBit(total_cost);
+	uint log2_total_cost = FindLastBit(total_cost);
+	uint scaling = log2_total_cost > 13 ? log2_total_cost - 12 : 1;
 	uint64 cost_budget = total_cost / scaling;
 	uint64 used_budget = 0;
 	std::vector<LinkGraphJobGroup::JobInfo> jobs_to_execute;
