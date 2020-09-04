@@ -67,6 +67,11 @@ public:
 		n.m_estimate = n.m_cost;
 		return true;
 	}
+
+	inline int TeleportCost(TileIndex cur_tile, TileIndex prev_tile)
+	{
+		return 0;
+	}
 };
 
 template <class Types>
@@ -104,6 +109,11 @@ public:
 	{
 		n.m_estimate = n.m_cost;
 		return true;
+	}
+
+	inline int TeleportCost(TileIndex cur_tile, TileIndex prev_tile)
+	{
+		return 0;
 	}
 };
 
@@ -200,6 +210,22 @@ public:
 		n.m_estimate = n.m_cost + d;
 		assert(n.m_estimate >= n.m_parent->m_estimate);
 		return true;
+	}
+
+	inline int TeleportCost(TileIndex cur_tile, TileIndex prev_tile)
+	{
+		auto calculate_distance_cost = [&](TileIndex t, int d_adjust) -> int {
+			int x1 = 2 * TileX(t);
+			int y1 = 2 * TileY(t);
+			int x2 = 2 * TileX(m_destTile);
+			int y2 = 2 * TileY(m_destTile);
+			int dx = abs(x1 - x2) + d_adjust;
+			int dy = abs(y1 - y2);
+			int dmin = min(dx, dy) + d_adjust; // up to 2x track exit dir tile offsets in opposite directions
+			int dxy = abs(dx - dy) + d_adjust; // "
+			return dmin * YAPF_TILE_CORNER_LENGTH + (dxy - 1) * (YAPF_TILE_LENGTH / 2);
+		};
+		return max<int>(0, calculate_distance_cost(prev_tile, 8) - calculate_distance_cost(cur_tile, 0));
 	}
 };
 
