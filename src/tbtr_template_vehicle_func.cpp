@@ -115,7 +115,8 @@ void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y)
 	DrawPixelInfo tmp_dpi, *old_dpi;
 	int max_width = right - left + 1;
 	int height = ScaleGUITrad(14);
-	if (!FillDrawPixelInfo(&tmp_dpi, left, y, max_width, height)) return;
+	int padding = ScaleGUITrad(1);
+	if (!FillDrawPixelInfo(&tmp_dpi, left, y - padding, max_width, height + (2 * padding))) return;
 
 	old_dpi = _cur_dpi;
 	_cur_dpi = &tmp_dpi;
@@ -125,7 +126,7 @@ void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y)
 
 	while (t) {
 		PaletteID pal = GetEnginePalette(t->engine_type, _current_company);
-		t->sprite_seq.Draw(offset + t->image_dimensions.GetOffsetX(), t->image_dimensions.GetOffsetY() + ScaleGUITrad(11), pal, false);
+		t->sprite_seq.Draw(offset + t->image_dimensions.GetOffsetX(), t->image_dimensions.GetOffsetY() + ScaleGUITrad(10), pal, false);
 
 		offset += t->image_dimensions.GetDisplayImageWidth();
 		t = t->Next();
