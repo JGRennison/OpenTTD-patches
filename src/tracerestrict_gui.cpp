@@ -44,6 +44,7 @@
 #include "table/sprites.h"
 #include "toolbar_gui.h"
 #include "core/geometry_func.hpp"
+#include "infrastructure_func.h"
 
 #include "safeguards.h"
 
@@ -2033,7 +2034,7 @@ public:
 			return;
 		}
 
-		if (!IsTileOwner(tile, _local_company)) {
+		if (!IsInfraTileUsageAllowed(VEH_TRAIN, _local_company, tile)) {
 			ShowErrorMessage(error_message, STR_ERROR_AREA_IS_OWNED_BY_ANOTHER, WL_INFO);
 			return;
 		}
@@ -2049,7 +2050,7 @@ public:
 		TraceRestrictItem item = GetSelected();
 		if (GetTraceRestrictTypeProperties(item).value_type != TRVT_TILE_INDEX) return;
 
-		if (!IsTileOwner(tile, _local_company)) {
+		if (!IsInfraTileUsageAllowed(VEH_TRAIN, _local_company, tile)) {
 			ShowErrorMessage(error_message, STR_ERROR_AREA_IS_OWNED_BY_ANOTHER, WL_INFO);
 			return;
 		}
