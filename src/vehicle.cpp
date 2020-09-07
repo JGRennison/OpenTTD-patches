@@ -885,16 +885,27 @@ void Vehicle::HandlePathfindingResult(bool path_found)
 
 		/* Clear the flag as the PF's problem was solved. */
 		ClrBit(this->vehicle_flags, VF_PATHFINDER_LOST);
+		if (this->type == VEH_SHIP) {
+			Ship::From(this)->lost_count = 0;
+		}
 		/* Delete the news item. */
 		DeleteVehicleNews(this->index, STR_NEWS_VEHICLE_IS_LOST);
 		return;
 	}
 
-	/* Were we already lost? */
-	if (HasBit(this->vehicle_flags, VF_PATHFINDER_LOST)) return;
+	if (this->type == VEH_SHIP) {
+		SetBit(this->vehicle_flags, VF_PATHFINDER_LOST);
+		if (Ship::From(this)->lost_count == 255) return;
+		Ship::From(this)->lost_count++;
+		if (Ship::From(this)->lost_count != 16) return;
+	} else {
+		/* Were we already lost? */
+		if (HasBit(this->vehicle_flags, VF_PATHFINDER_LOST)) return;
 
-	/* It is first time the problem occurred, set the "lost" flag. */
-	SetBit(this->vehicle_flags, VF_PATHFINDER_LOST);
+		/* It is first time the problem occurred, set the "lost" flag. */
+		SetBit(this->vehicle_flags, VF_PATHFINDER_LOST);
+	}
+
 	/* Notify user about the event. */
 	AI::NewEvent(this->owner, new ScriptEventVehicleLost(this->index));
 	if (_settings_client.gui.lost_vehicle_warn && this->owner == _local_company) {

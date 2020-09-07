@@ -31,6 +31,7 @@ struct Ship FINAL : public SpecializedVehicle<Ship, VEH_SHIP> {
 	Direction rotation;   ///< Visible direction.
 	int16 rotation_x_pos; ///< NOSAVE: X Position before rotation.
 	int16 rotation_y_pos; ///< NOSAVE: Y Position before rotation.
+	uint8 lost_count;     ///< Count of number of failed pathfinder attempts
 
 	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */
 	Ship() : SpecializedVehicleBase() {}

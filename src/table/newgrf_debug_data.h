@@ -12,6 +12,7 @@
 #include "../newgrf_roadtype.h"
 #include "../date_func.h"
 #include "../timetable.h"
+#include "../ship.h"
 
 /* Helper for filling property tables */
 #define NIP(prop, base, variable, type, name) { name, (ptrdiff_t)cpp_offsetof(base, variable), cpp_sizeof(base, variable), prop, type }
@@ -147,6 +148,12 @@ class NIHVehicle : public NIHelper {
 			const Train *t = Train::From(v);
 			seprintf(buffer, lastof(buffer), "  Wait counter: %u, rev distance: %u, TBSN: %u, speed restriction: %u",
 					t->wait_counter, t->reverse_distance, t->tunnel_bridge_signal_num, t->speed_restriction);
+			print(buffer);
+		}
+		if (v->type == VEH_SHIP) {
+			const Ship *s = Ship::From(v);
+			seprintf(buffer, lastof(buffer), "  Lost counter: %u",
+					s->lost_count);
 			print(buffer);
 		}
 
