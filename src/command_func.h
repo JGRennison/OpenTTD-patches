@@ -135,5 +135,6 @@ CommandCallback CcDeleteVirtualTrain;
 
 /* build_vehicle_gui.cpp */
 CommandCallback CcAddVirtualEngine;
+CommandCallback CcMoveNewVirtualEngine;
 
 #endif /* COMMAND_FUNC_H */

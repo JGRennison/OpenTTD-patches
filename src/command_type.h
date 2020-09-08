@@ -198,6 +198,25 @@ public:
 	 * @return the number of bytes written
 	 */
 	int WriteSummaryMessage(char *buf, char *last, StringID cmd_msg = 0) const;
+
+	bool IsSuccessWithMessage() const
+	{
+		return this->Succeeded() && this->message != INVALID_STRING_ID;
+	}
+
+	void MakeSuccessWithMessage()
+	{
+		assert(this->message != INVALID_STRING_ID);
+		this->success = true;
+	}
+
+	CommandCost UnwrapSuccessWithMessage() const
+	{
+		assert(this->IsSuccessWithMessage());
+		CommandCost res = *this;
+		res.success = false;
+		return res;
+	}
 };
 
 /**

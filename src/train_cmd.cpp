@@ -1396,7 +1396,10 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 
 	auto check_on_failure = [&](CommandCost cost) -> CommandCost {
 		if (delete_failed_virtual && src->IsVirtual()) {
-			return DoCommand(src->tile, src->index | (1 << 21), 0, flags, CMD_SELL_VEHICLE);
+			CommandCost res = DoCommand(src->tile, src->index | (1 << 21), 0, flags, CMD_SELL_VEHICLE);
+			if (res.Failed() || cost.GetErrorMessage() == INVALID_STRING_ID) return res;
+			cost.MakeSuccessWithMessage();
+			return cost;
 		} else {
 			return cost;
 		}
