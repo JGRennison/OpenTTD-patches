@@ -117,6 +117,12 @@ void SetLocalCompany(CompanyID new_company)
 	/* Delete any construction windows... */
 	if (switching_company) DeleteConstructionWindows();
 
+	if (switching_company && Company::IsValidID(new_company)) {
+		for (Town *town : Town::Iterate()) {
+			town->UpdateLabel();
+		}
+	}
+
 	/* ... and redraw the whole screen. */
 	MarkWholeScreenDirty();
 	InvalidateWindowClassesData(WC_SIGN_LIST, -1);
