@@ -1793,7 +1793,7 @@ STR_CONFIG_SETTING_TREE_GROWTH_HELPTEXT                         :Control rate at
 STR_CONFIG_SETTING_TREE_GROWTH_NORMAL                           :Normal
 STR_CONFIG_SETTING_TREE_GROWTH_SLOW                             :Slow
 STR_CONFIG_SETTING_TREE_GROWTH_VERY_SLOW                        :Very slow
-STR_CONFIG_SETTING_TREE_GROWTH_EXTREMLY_SLOW                    :Extremly slow
+STR_CONFIG_SETTING_TREE_GROWTH_EXTREMELY_SLOW                   :Extremely slow
 STR_CONFIG_SETTING_TREE_GROWTH_STATIC                           :None
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Position of main toolbar: {STRING2}

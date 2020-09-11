@@ -1791,7 +1791,7 @@ STR_CONFIG_SETTING_TREE_GROWTH_HELPTEXT                         :게임 중에�
 STR_CONFIG_SETTING_TREE_GROWTH_NORMAL                           :보통
 STR_CONFIG_SETTING_TREE_GROWTH_SLOW                             :느림
 STR_CONFIG_SETTING_TREE_GROWTH_VERY_SLOW                        :다소 느림
-STR_CONFIG_SETTING_TREE_GROWTH_EXTREMLY_SLOW                    :매우 느림
+STR_CONFIG_SETTING_TREE_GROWTH_EXTREMELY_SLOW                   :매우 느림
 STR_CONFIG_SETTING_TREE_GROWTH_STATIC                           :없음
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :주메뉴의 위치: {STRING}

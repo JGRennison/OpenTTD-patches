@@ -1870,7 +1870,7 @@ STR_CONFIG_SETTING_TREE_GROWTH_HELPTEXT                         :Určuje tempo r
 STR_CONFIG_SETTING_TREE_GROWTH_NORMAL                           :normální
 STR_CONFIG_SETTING_TREE_GROWTH_SLOW                             :pomalá
 STR_CONFIG_SETTING_TREE_GROWTH_VERY_SLOW                        :velmi pomalá
-STR_CONFIG_SETTING_TREE_GROWTH_EXTREMLY_SLOW                    :extrémně pomalá
+STR_CONFIG_SETTING_TREE_GROWTH_EXTREMELY_SLOW                   :extrémně pomalá
 STR_CONFIG_SETTING_TREE_GROWTH_STATIC                           :nulová
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Umístění hlavní lišty: {STRING}
