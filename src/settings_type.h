@@ -391,6 +391,7 @@ struct ConstructionSettings {
 	bool   allow_road_stops_under_bridges;   ///< allow road/tram stops under bridges
 	bool   allow_docks_under_bridges;        ///< allow docks under bridges
 	byte   purchase_land_permitted;          ///< whether and how purchasing land is permitted
+	bool   build_object_area_permitted;      ///< whether building objects by area is permitted
 
 	uint32 terraform_per_64k_frames;         ///< how many tile heights may, over a long period, be terraformed per 65536 frames?
 	uint16 terraform_frame_burst;            ///< how many tile heights may, over a short period, be terraformed?

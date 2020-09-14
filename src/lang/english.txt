@@ -1985,12 +1985,17 @@ STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES_HELPTEXT           :Allow docks und
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED                      :Permit purchasing land: {STRING2}
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED_HELPTEXT             :Set whether companies are permitted to purchase tiles of land, and in what quantity
 
+STR_CONFIG_SETTING_BUILD_OBJECT_PERMITTED                       :Permit bulk construction of objects: {STRING2}
+STR_CONFIG_SETTING_BUILD_OBJECT_PERMITTED_HELPTEXT              :Set whether companies are permitted to construct objects by area, instead of one at a time
+
 STR_PURCHASE_LAND_PERMITTED_NO                                  :No
 STR_PURCHASE_LAND_PERMITTED_SINGLE                              :Yes, 1 tile at a time
 STR_PURCHASE_LAND_PERMITTED_AREA                                :Yes, large areas at a time
 
 STR_PURCHASE_LAND_NOT_PERMITTED                                 :Purchasing of land is not permitted
 STR_PURCHASE_LAND_NOT_PERMITTED_BULK                            :Purchasing of large areas of land is not permitted
+
+STR_BUILD_OBJECT_NOT_PERMITTED_BULK                             :Building large areas of objects is not permitted
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Change setting value
 

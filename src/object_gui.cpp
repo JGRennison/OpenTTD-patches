@@ -339,7 +339,7 @@ public:
 		}
 
 		if (_selected_object_index != -1) {
-			SetObjectToPlaceWnd(SPR_CURSOR_TRANSMITTER, PAL_NONE, HT_RECT, this);
+			SetObjectToPlaceWnd(SPR_CURSOR_TRANSMITTER, PAL_NONE, HT_RECT | HT_DIAGONAL, this);
 		}
 
 		this->UpdateButtons(_selected_object_class, _selected_object_index, _selected_object_view);
@@ -415,14 +415,45 @@ public:
 
 	void OnPlaceObject(Point pt, TileIndex tile) override
 	{
-		DoCommandP(tile, ObjectClass::Get(_selected_object_class)->GetSpec(_selected_object_index)->Index(),
-				_selected_object_view, CMD_BUILD_OBJECT | CMD_MSG(STR_ERROR_CAN_T_BUILD_OBJECT), CcTerraform);
+		const ObjectSpec *spec = ObjectClass::Get(_selected_object_class)->GetSpec(_selected_object_index);
+		if (_settings_game.construction.build_object_area_permitted && spec->size == 0x11) {
+			VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_BUILD_OBJECT);
+		} else {
+			DoCommandP(tile, spec->Index(),
+					_selected_object_view, CMD_BUILD_OBJECT | CMD_MSG(STR_ERROR_CAN_T_BUILD_OBJECT), CcTerraform);
+		}
 	}
 
 	void OnPlaceObjectAbort() override
 	{
 		this->UpdateButtons(_selected_object_class, -1, _selected_object_view);
 	}
+
+	void OnPlaceDrag(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt) override
+	{
+		VpSelectTilesWithMethod(pt.x, pt.y, select_method);
+	}
+
+	void OnPlaceMouseUp(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt, TileIndex start_tile, TileIndex end_tile) override
+	{
+		if (pt.x != -1) {
+			switch (select_proc) {
+				default: NOT_REACHED();
+				case DDSP_BUILD_OBJECT:
+					if (!_settings_game.construction.freeform_edges) {
+						/* When end_tile is MP_VOID, the error tile will not be visible to the
+						 * user. This happens when terraforming at the southern border. */
+						if (TileX(end_tile) == MapMaxX()) end_tile += TileDiffXY(-1, 0);
+						if (TileY(end_tile) == MapMaxY()) end_tile += TileDiffXY(0, -1);
+					}
+					DoCommandP(end_tile, start_tile,
+							(ObjectClass::Get(_selected_object_class)->GetSpec(_selected_object_index)->Index() << 3) | (_selected_object_view << 1) | (_ctrl_pressed ? 1 : 0),
+							CMD_BUILD_OBJECT_AREA | CMD_MSG(STR_ERROR_CAN_T_BUILD_OBJECT), CcTerraform);
+					break;
+			}
+		}
+	}
+
 
 	/**
 	 * Select the first available object.
