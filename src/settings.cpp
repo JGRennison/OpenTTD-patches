@@ -58,6 +58,8 @@
 #include "ai/ai.hpp"
 #include "game/game_config.hpp"
 #include "game/game.hpp"
+#include "ai/ai_instance.hpp"
+#include "game/game_instance.hpp"
 #include "ship.h"
 #include "smallmap_gui.h"
 #include "roadveh.h"
@@ -1226,6 +1228,54 @@ static bool InvalidateIndustryViewWindow(int32 p1)
 static bool InvalidateAISettingsWindow(int32 p1)
 {
 	InvalidateWindowClassesData(WC_AI_SETTINGS);
+	return true;
+}
+
+static bool ScriptMaxOpsChange(int32 p1)
+{
+	if (_networking && !_network_server) return true;
+
+	GameInstance *g = Game::GetGameInstance();
+	if (g != nullptr && !g->IsDead()) {
+		g->LimitOpsTillSuspend(p1);
+	}
+
+	for (const Company *c : Company::Iterate()) {
+		if (c->is_ai && c->ai_instance != nullptr && !c->ai_instance->IsDead()) {
+			c->ai_instance->LimitOpsTillSuspend(p1);
+		}
+	}
+
+	return true;
+}
+
+static bool ScriptMaxMemoryChange(int32 p1)
+{
+	if (_networking && !_network_server) return true;
+
+	size_t limit = static_cast<size_t>(p1) << 20;
+
+	GameInstance *g = Game::GetGameInstance();
+	if (g != nullptr && !g->IsDead()) {
+		if (g->GetAllocatedMemory() > limit) return false;
+	}
+
+	for (const Company *c : Company::Iterate()) {
+		if (c->is_ai && c->ai_instance != nullptr && !c->ai_instance->IsDead()) {
+			if (c->ai_instance->GetAllocatedMemory() > limit) return false;
+		}
+	}
+
+	if (g != nullptr && !g->IsDead()) {
+		g->SetMemoryAllocationLimit(limit);
+	}
+
+	for (const Company *c : Company::Iterate()) {
+		if (c->is_ai && c->ai_instance != nullptr && !c->ai_instance->IsDead()) {
+			c->ai_instance->SetMemoryAllocationLimit(limit);
+		}
+	}
+
 	return true;
 }
 

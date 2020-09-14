@@ -710,6 +710,16 @@ SQInteger ScriptInstance::GetOpsTillSuspend()
 	return this->engine->GetOpsTillSuspend();
 }
 
+void ScriptInstance::LimitOpsTillSuspend(SQInteger suspend)
+{
+	SQInteger current = this->GetOpsTillSuspend();
+	if (suspend < current) {
+		/* Reduce script ops. */
+		HSQUIRRELVM vm = this->engine->GetVM();
+		Squirrel::DecreaseOps(vm, current - suspend);
+	}
+}
+
 bool ScriptInstance::DoCommandCallback(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
 {
 	ScriptObject::ActiveInstance active(this);
@@ -744,6 +754,11 @@ size_t ScriptInstance::GetAllocatedMemory() const
 {
 	if (this->engine == nullptr) return this->last_allocated_memory;
 	return this->engine->GetAllocatedMemory();
+}
+
+void ScriptInstance::SetMemoryAllocationLimit(size_t limit) const
+{
+	if (this->engine != nullptr) this->engine->SetMemoryAllocationLimit(limit);
 }
 
 void ScriptInstance::ReleaseSQObject(HSQOBJECT *obj)
