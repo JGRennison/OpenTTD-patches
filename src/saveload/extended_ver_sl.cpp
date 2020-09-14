@@ -128,6 +128,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_EXTRA_CHEATS,           XSCF_NULL,                1,   1, "extra_cheats",              nullptr, nullptr, "CHTX"         },
 	{ XSLFI_TOWN_MULTI_BUILDING,    XSCF_NULL,                1,   1, "town_multi_building",       nullptr, nullptr, nullptr        },
 	{ XSLFI_SHIP_LOST_COUNTER,      XSCF_NULL,                1,   1, "ship_lost_counter",         nullptr, nullptr, nullptr        },
+	{ XSLFI_BUILD_OBJECT_RATE_LIMIT,XSCF_NULL,                1,   1, "build_object_rate_limit",   nullptr, nullptr, nullptr        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr },// This is the end marker
 };
 

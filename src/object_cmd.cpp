@@ -304,11 +304,13 @@ CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	}
 
 	int hq_score = 0;
+	int build_object_size = 0;
 	Company *c = nullptr;
 	switch (type) {
 		case OBJECT_TRANSMITTER:
 		case OBJECT_LIGHTHOUSE:
 			if (!IsTileFlat(tile)) return_cmd_error(STR_ERROR_FLAT_LAND_REQUIRED);
+			build_object_size = 1;
 			break;
 
 		case OBJECT_OWNED_LAND:
@@ -344,8 +346,18 @@ CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			/* This may never be constructed using this method. */
 			return CMD_ERROR;
 
-		default: // i.e. NewGRF provided.
+		default: { // i.e. NewGRF provided.
+			const ObjectSpec *spec = ObjectSpec::Get(type);
+			build_object_size = GB(spec->size, 0, 4) * GB(spec->size, 4, 4);
 			break;
+		}
+	}
+
+	if (build_object_size > 0) {
+		c = Company::GetIfValid(_current_company);
+		if (c != nullptr && (int)GB(c->build_object_limit, 16, 16) < build_object_size) {
+			return_cmd_error(STR_ERROR_BUILD_OBJECT_LIMIT_REACHED);
+		}
 	}
 
 	if (flags & DC_EXEC) {
@@ -355,6 +367,7 @@ CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 		if (type == OBJECT_HQ) UpdateCompanyHQ(tile, hq_score);
 
 		if (type == OBJECT_OWNED_LAND && c != nullptr) c->purchase_land_limit -= 1 << 16;
+		if (build_object_size > 0 && c != nullptr) c->build_object_limit -= build_object_size << 16;
 	}
 
 	cost.AddCost(ObjectSpec::Get(type)->GetBuildCost() * size_x * size_y);

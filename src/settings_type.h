@@ -400,6 +400,8 @@ struct ConstructionSettings {
 	uint16 tree_frame_burst;                 ///< how many trees may, over a short period, be planted?
 	uint32 purchase_land_per_64k_frames;     ///< how many tiles may, over a long period, be purchased per 65536 frames?
 	uint16 purchase_land_frame_burst;        ///< how many tiles may, over a short period, be purchased?
+	uint32 build_object_per_64k_frames;      ///< how many tiles may, over a long period, have objects built on them per 65536 frames?
+	uint16 build_object_frame_burst;         ///< how many tiles may, over a short period, have objects built on them?
 	uint8  tree_growth_rate;                 ///< tree growth rate
 };
 

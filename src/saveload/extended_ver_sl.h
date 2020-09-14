@@ -85,6 +85,7 @@ enum SlXvFeatureIndex {
 	XSLFI_EXTRA_CHEATS,                           ///< Extra cheats
 	XSLFI_TOWN_MULTI_BUILDING,                    ///< Allow multiple stadium/church buildings in a single town
 	XSLFI_SHIP_LOST_COUNTER,                      ///< Ship lost counter
+	XSLFI_BUILD_OBJECT_RATE_LIMIT,                ///< Build object rate limit
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk
