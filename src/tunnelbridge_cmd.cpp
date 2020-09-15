@@ -639,10 +639,17 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 
 					Owner owner_road = hasroad ? GetRoadOwner(t, RTT_ROAD) : company;
 					Owner owner_tram = hastram ? GetRoadOwner(t, RTT_TRAM) : company;
-					MakeRoadBridgeRamp(t, owner, owner_road, owner_tram, bridge_type, d, road_rt, tram_rt, is_upgrade);
+
 					if (is_upgrade) {
-						if (road_rt != INVALID_ROADTYPE) SetCustomBridgeHeadRoadBits(t, RTT_ROAD, GetCustomBridgeHeadRoadBits(t, RTT_ROAD) | DiagDirToRoadBits(d));
-						if (tram_rt != INVALID_ROADTYPE) SetCustomBridgeHeadRoadBits(t, RTT_TRAM, GetCustomBridgeHeadRoadBits(t, RTT_TRAM) | DiagDirToRoadBits(d));
+						RoadBits road_bits = GetCustomBridgeHeadRoadBits(t, RTT_ROAD);
+						RoadBits tram_bits = GetCustomBridgeHeadRoadBits(t, RTT_TRAM);
+						if (RoadTypeIsRoad(roadtype)) road_bits |= DiagDirToRoadBits(d);
+						if (RoadTypeIsTram(roadtype)) tram_bits |= DiagDirToRoadBits(d);
+						MakeRoadBridgeRamp(t, owner, owner_road, owner_tram, bridge_type, d, road_rt, tram_rt);
+						if (road_rt != INVALID_ROADTYPE) SetCustomBridgeHeadRoadBits(t, RTT_ROAD, road_bits);
+						if (tram_rt != INVALID_ROADTYPE) SetCustomBridgeHeadRoadBits(t, RTT_TRAM, tram_bits);
+					} else {
+						MakeRoadBridgeRamp(t, owner, owner_road, owner_tram, bridge_type, d, road_rt, tram_rt);
 					}
 				};
 				make_bridge_ramp(tile_start, dir);
