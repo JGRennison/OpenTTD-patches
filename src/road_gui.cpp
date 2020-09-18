@@ -31,6 +31,7 @@
 #include "strings_func.h"
 #include "core/geometry_func.hpp"
 #include "date_func.h"
+#include "station_map.h"
 
 #include "widgets/road_widget.h"
 
@@ -1258,11 +1259,87 @@ void InitializeRoadGui()
 	_road_station_picker_orientation = DIAGDIR_NW;
 }
 
+
+/** Set the initial (default) road and tram types to use */
+static void SetDefaultRoadGui()
+{
+	extern RoadType _last_built_roadtype;
+	extern RoadType _last_built_tramtype;
+
+	/* Clean old GUI values; railtype is (re)set by rail_gui.cpp */
+	_last_built_roadtype = ROADTYPE_ROAD;
+	_last_built_tramtype = ROADTYPE_TRAM;
+
+	if (_local_company == COMPANY_SPECTATOR || !Company::IsValidID(_local_company)) return;
+
+	auto get_first_road_type = [](RoadTramType rtt, RoadType &out) {
+		auto it = std::find_if(_sorted_roadtypes.begin(), _sorted_roadtypes.end(),
+				[&](RoadType r){ return GetRoadTramType(r) == rtt && HasRoadTypeAvail(_local_company, r); });
+		if (it != _sorted_roadtypes.end()) out = *it;
+	};
+	auto get_last_road_type = [](RoadTramType rtt, RoadType &out) {
+		auto it = std::find_if(_sorted_roadtypes.rbegin(), _sorted_roadtypes.rend(),
+				[&](RoadType r){ return GetRoadTramType(r) == rtt && HasRoadTypeAvail(_local_company, r); });
+		if (it != _sorted_roadtypes.rend()) out = *it;
+	};
+
+	switch (_settings_client.gui.default_road_type) {
+		case 3: {
+			/* Use defaults above */
+			break;
+		}
+		case 2: {
+			/* Find the most used types */
+			std::array<uint, ROADTYPE_END> road_count = {};
+			std::array<uint, ROADTYPE_END> tram_count = {};
+			for (TileIndex t = 0; t < MapSize(); t++) {
+				if (MayHaveRoad(t)) {
+					if (IsTileType(t, MP_STATION) && !IsRoadStop(t)) continue;
+					RoadType road_type = GetRoadTypeRoad(t);
+					if (road_type != INVALID_ROADTYPE) road_count[road_type]++;
+					RoadType tram_type = GetRoadTypeTram(t);
+					if (tram_type != INVALID_ROADTYPE) tram_count[tram_type]++;
+				}
+			}
+
+			auto get_best_road_type = [&](RoadTramType rtt, RoadType &out, const std::array<uint, ROADTYPE_END> &count) {
+				uint highest = 0;
+				for (RoadType rt = ROADTYPE_BEGIN; rt != ROADTYPE_END; rt++) {
+					if (count[rt] > highest && HasRoadTypeAvail(_local_company, rt)) {
+						out = rt;
+						highest = count[rt];
+					}
+				}
+				if (highest == 0) get_first_road_type(rtt, out);
+			};
+			get_best_road_type(RTT_ROAD, _last_built_roadtype, road_count);
+			get_best_road_type(RTT_TRAM, _last_built_tramtype, tram_count);
+			break;
+		}
+		case 0: {
+			/* Use first available types */
+			get_first_road_type(RTT_ROAD, _last_built_roadtype);
+			get_first_road_type(RTT_TRAM, _last_built_tramtype);
+			break;
+		}
+		case 1: {
+			/* Use last available type */
+			get_last_road_type(RTT_ROAD, _last_built_roadtype);
+			get_last_road_type(RTT_TRAM, _last_built_tramtype);
+			break;
+		}
+		default:
+			NOT_REACHED();
+	}
+}
+
 /**
  * I really don't know why rail_gui.cpp has this too, shouldn't be included in the other one?
  */
 void InitializeRoadGUI()
 {
+	SetDefaultRoadGui();
+
 	BuildRoadToolbarWindow *w = dynamic_cast<BuildRoadToolbarWindow *>(FindWindowById(WC_BUILD_TOOLBAR, TRANSPORT_ROAD));
 	if (w != nullptr) w->ModifyRoadType(_cur_roadtype);
 }

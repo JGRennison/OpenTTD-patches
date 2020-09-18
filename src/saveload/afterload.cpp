@@ -49,6 +49,7 @@
 #include "../newgrf.h"
 #include "../engine_func.h"
 #include "../rail_gui.h"
+#include "../road_gui.h"
 #include "../core/backup_type.hpp"
 #include "../core/mem_func.hpp"
 #include "../smallmap_gui.h"
@@ -3786,6 +3787,8 @@ bool AfterLoadGame()
 			t->stadium_count = HasBit(t->flags, 2) ? 1 : 0;
 		}
 	}
+
+	InitializeRoadGUI();
 
 	/* This needs to be done after conversion. */
 	RebuildViewportKdtree();

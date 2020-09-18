@@ -111,6 +111,7 @@ struct GUISettings : public TimeSettings {
 	uint8  advanced_vehicle_list;            ///< use the "advanced" vehicle list
 	uint8  loading_indicators;               ///< show loading indicators
 	uint8  default_rail_type;                ///< the default rail type for the rail GUI
+	uint8  default_road_type;                ///< the default road/tram types for the road/tram GUI
 	uint8  toolbar_pos;                      ///< position of toolbars, 0=left, 1=center, 2=right
 	uint8  statusbar_pos;                    ///< position of statusbar, 0=left, 1=center, 2=right
 	uint8  window_snap_radius;               ///< windows snap at each other if closer than this

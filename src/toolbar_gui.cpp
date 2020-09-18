@@ -2670,10 +2670,6 @@ static WindowDesc _toolb_scen_desc(
 /** Allocate the toolbar. */
 void AllocateToolbar()
 {
-	/* Clean old GUI values; railtype is (re)set by rail_gui.cpp */
-	_last_built_roadtype = ROADTYPE_ROAD;
-	_last_built_tramtype = ROADTYPE_TRAM;
-
 	if (_game_mode == GM_EDITOR) {
 		new ScenarioEditorToolbarWindow(&_toolb_scen_desc);
 	} else {
