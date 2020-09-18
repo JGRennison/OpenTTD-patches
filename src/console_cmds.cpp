@@ -2282,6 +2282,26 @@ DEF_CONSOLE_CMD(ConViewportMarkDirty)
 	return true;
 }
 
+
+DEF_CONSOLE_CMD(ConViewportMarkStationOverlayDirty)
+{
+	if (argc != 2) {
+		IConsoleHelp("Debug: Mark main viewport link graph overlay station links.  Usage: 'viewport_mark_dirty_st_overlay <station-id>'");
+		return true;
+	}
+
+	if (_game_mode != GM_NORMAL && _game_mode != GM_EDITOR) {
+		return true;
+	}
+
+	const Station *st = Station::GetIfValid(atoi(argv[1]));
+	if (st == nullptr) return true;
+	MarkAllViewportOverlayStationLinksDirty(st);
+
+	return true;
+}
+
+
 DEF_CONSOLE_CMD(ConDoDisaster)
 {
 	if (argc == 0) {
@@ -2679,6 +2699,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("show_industry_window", ConShowIndustryWindow, nullptr, true);
 	IConsoleCmdRegister("viewport_debug", ConViewportDebug, nullptr, true);
 	IConsoleCmdRegister("viewport_mark_dirty", ConViewportMarkDirty, nullptr, true);
+	IConsoleCmdRegister("viewport_mark_dirty_st_overlay", ConViewportMarkStationOverlayDirty, nullptr, true);
 
 	/* NewGRF development stuff */
 	IConsoleCmdRegister("reload_newgrfs",  ConNewGRFReload, ConHookNewGRFDeveloperTool);

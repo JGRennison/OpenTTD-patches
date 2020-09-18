@@ -259,7 +259,6 @@ struct ViewportDrawer {
 	Point foundation_offset[FOUNDATION_PART_END];    ///< Pixel offset for ground sprites on the foundations.
 };
 
-static void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bottom);
 static void MarkRouteStepDirty(RouteStepsMap::const_iterator cit);
 static void MarkRouteStepDirty(const TileIndex tile, uint order_nr);
 
@@ -3375,7 +3374,7 @@ void UpdateActiveScrollingViewport(Window *w)
  * @param bottom Bottom edge of area to repaint
  * @ingroup dirty
  */
-static void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bottom)
+void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bottom)
 {
 	/* Rounding wrt. zoom-out level */
 	right  += (1 << vp->zoom) - 1;
@@ -3479,6 +3478,22 @@ void MarkAllViewportMapsDirty(int left, int top, int right, int bottom)
 	}
 }
 
+/**
+ * Mark all viewport overlays for a specific station dirty (in need of repaint).
+ * @param st     Station
+ * @ingroup dirty
+ */
+void MarkAllViewportOverlayStationLinksDirty(const Station *st)
+{
+	Window *w;
+	FOR_ALL_WINDOWS_FROM_BACK(w) {
+		Viewport *vp = w->viewport;
+		if (vp != nullptr && vp->overlay != nullptr) {
+			vp->overlay->MarkStationViewportLinksDirty(st);
+		}
+	}
+}
+
 void ConstrainAllViewportsZoom()
 {
 	Window *w;
@@ -3520,6 +3535,40 @@ void MarkTileGroundDirtyByTile(TileIndex tile, const ZoomLevel mark_dirty_if_zoo
 	Point top = RemapCoords(x, y, GetTileMaxPixelZ(tile));
 	Point bot = RemapCoords(x + TILE_SIZE, y + TILE_SIZE, GetTilePixelZ(tile));
 	MarkAllViewportsDirty(top.x - TILE_PIXELS * ZOOM_LVL_BASE, top.y - TILE_HEIGHT * ZOOM_LVL_BASE, top.x + TILE_PIXELS * ZOOM_LVL_BASE, bot.y);
+}
+
+void MarkViewportLineDirty(Viewport * const vp, const Point from_pt, const Point to_pt, const int block_radius)
+{
+	int x1 = from_pt.x / block_radius;
+	int y1 = from_pt.y / block_radius;
+	const int x2 = to_pt.x / block_radius;
+	const int y2 = to_pt.y / block_radius;
+
+	/* http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm#Simplification */
+	const int dx = abs(x2 - x1);
+	const int dy = abs(y2 - y1);
+	const int sx = (x1 < x2) ? 1 : -1;
+	const int sy = (y1 < y2) ? 1 : -1;
+	int err = dx - dy;
+	for (;;) {
+		MarkViewportDirty(
+				vp,
+				(x1 - 2) * block_radius,
+				(y1 - 2) * block_radius,
+				(x1 + 2) * block_radius,
+				(y1 + 2) * block_radius
+		);
+		if (x1 == x2 && y1 == y2) break;
+		const int e2 = 2 * err;
+		if (e2 > -dy) {
+			err -= dy;
+			x1 += sx;
+		}
+		if (e2 < dx) {
+			err += dx;
+			y1 += sy;
+		}
+	}
 }
 
 void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile)

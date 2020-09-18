@@ -33,9 +33,12 @@ Point GetTileBelowCursor();
 void UpdateViewportPosition(Window *w);
 void UpdateViewportSizeZoom(Viewport *vp);
 
+void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bottom);
 void MarkAllViewportsDirty(int left, int top, int right, int bottom, const ZoomLevel mark_dirty_if_zoomlevel_is_below = ZOOM_LVL_END);
 void MarkAllViewportMapsDirty(int left, int top, int right, int bottom);
+void MarkAllViewportOverlayStationLinksDirty(const Station *st);
 void MarkAllRouteStepsDirty(const Vehicle *veh);
+void MarkViewportLineDirty(Viewport * const vp, const Point from_pt, const Point to_pt, const int block_radius);
 void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile);
 void MarkAllRoutePathsDirty(const Vehicle *veh);
 void CheckMarkDirtyFocusedRoutePaths(const Vehicle *veh);

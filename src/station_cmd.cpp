@@ -433,11 +433,15 @@ void Station::MoveSign(TileIndex new_xy)
 {
 	if (this->xy == new_xy) return;
 
+	MarkAllViewportOverlayStationLinksDirty(this);
+
 	_station_kdtree.Remove(this->index);
 
 	this->BaseStation::MoveSign(new_xy);
 
 	_station_kdtree.Insert(this->index);
+
+	MarkAllViewportOverlayStationLinksDirty(this);
 }
 
 /** Update the virtual coords needed to draw the station sign for all stations. */
