@@ -729,16 +729,33 @@ public:
 
 		const TemplateVehicle *tmp = this->templates[this->selected_template_index];
 
+		short top = ScaleGUITrad(4) - this->vscroll[2]->GetPosition();
+		short left = ScaleGUITrad(8);
+
 		/* Draw vehicle performance info */
+		const bool original_acceleration = (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL ||
+				GetRailTypeInfo(tmp->railtype)->acceleration_type == 2);
 		SetDParam(2, tmp->max_speed);
 		SetDParam(1, tmp->power);
-		SetDParam(0, tmp->weight);
-		SetDParam(3, tmp->max_te);
-		DrawString(8, r.right, ScaleGUITrad(4) - this->vscroll[2]->GetPosition(), STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE);
+		SetDParam(0, tmp->empty_weight);
+		SetDParam(3, tmp->max_te / 1000);
+		DrawString(left, r.right, top, original_acceleration ? STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED : STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE);
+
+		if (tmp->full_weight > tmp->empty_weight || _settings_client.gui.show_train_weight_ratios_in_details) {
+			top += FONT_HEIGHT_NORMAL;
+			SetDParam(0, tmp->full_weight);
+			if (_settings_client.gui.show_train_weight_ratios_in_details) {
+				SetDParam(1, STR_VEHICLE_INFO_WEIGHT_RATIOS);
+				SetDParam(2, (100 * tmp->power) / max<uint>(1, tmp->full_weight));
+				SetDParam(3, (tmp->max_te / 10) / max<uint>(1, tmp->full_weight));
+			} else {
+				SetDParam(1, STR_EMPTY);
+			}
+			DrawString(8, r.right, top, STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS);
+		}
 
 		/* Draw cargo summary */
-		short top = ScaleGUITrad(30) - this->vscroll[2]->GetPosition();
-		short left = ScaleGUITrad(8);
+		top += ScaleGUITrad(26);
 		short count_columns = 0;
 		short max_columns = 2;
 

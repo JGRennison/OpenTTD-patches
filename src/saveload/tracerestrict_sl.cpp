@@ -170,6 +170,44 @@ static void Save_TRRS()
 	}
 }
 
+static const SaveLoad _trace_restrict_counter_desc[] = {
+	SLE_VAR(TraceRestrictCounter, value, SLE_INT32),
+	SLE_SSTR(TraceRestrictCounter, name, SLF_ALLOW_CONTROL),
+	SLE_VAR(TraceRestrictCounter, owner, SLE_UINT8),
+	SLE_END()
+};
+
+/**
+ * Load counter pool
+ */
+static void Load_TRRC()
+{
+	int index;
+	while ((index = SlIterateArray()) != -1) {
+		TraceRestrictCounter *ctr = new (index) TraceRestrictCounter();
+		SlObject(ctr, _trace_restrict_counter_desc);
+	}
+}
+
+/**
+ * Save a counter, used by SlAutolength
+ */
+static void RealSave_TRRC(TraceRestrictCounter *ctr)
+{
+	SlObject(ctr, _trace_restrict_counter_desc);
+}
+
+/**
+ * Save counter pool
+ */
+static void Save_TRRC()
+{
+	for (TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
+		SlSetArrayIndex(ctr->index);
+		SlAutolength((AutolengthProc*) RealSave_TRRC, ctr);
+	}
+}
+
 /**
  * Update program reference counts from just-loaded mapping
  */
@@ -184,5 +222,6 @@ void AfterLoadTraceRestrict()
 extern const ChunkHandler _trace_restrict_chunk_handlers[] = {
 	{ 'TRRM', Save_TRRM, Load_TRRM, nullptr, nullptr, CH_SPARSE_ARRAY},    // Trace Restrict Mapping chunk
 	{ 'TRRP', Save_TRRP, Load_TRRP, nullptr, nullptr, CH_ARRAY},           // Trace Restrict Mapping Program Pool chunk
-	{ 'TRRS', Save_TRRS, Load_TRRS, nullptr, nullptr, CH_ARRAY | CH_LAST}, // Trace Restrict Slot Pool chunk
+	{ 'TRRS', Save_TRRS, Load_TRRS, nullptr, nullptr, CH_ARRAY},           // Trace Restrict Slot Pool chunk
+	{ 'TRRC', Save_TRRC, Load_TRRC, nullptr, nullptr, CH_ARRAY | CH_LAST}, // Trace Restrict Counter Pool chunk
 };

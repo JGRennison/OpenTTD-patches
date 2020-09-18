@@ -3290,7 +3290,7 @@ static SaveOrLoadResult DoLoad(LoadFilter *reader, bool load_check)
 
 	if (load_check) {
 		/* The only part from AfterLoadGame() we need */
-		_load_check_data.grf_compatibility = IsGoodGRFConfigList(_load_check_data.grfconfig);
+		if (_load_check_data.want_grf_compatibility) _load_check_data.grf_compatibility = IsGoodGRFConfigList(_load_check_data.grfconfig);
 	} else {
 		GamelogStartAction(GLAT_LOAD);
 

@@ -158,7 +158,7 @@ static uint32 GetAirportTileIDAtOffset(TileIndex tile, const Station *st, uint32
 	return 0xFF << 8 | ats->grf_prop.subst_id; // so just give him the substitute
 }
 
-/* virtual */ uint32 AirportTileScopeResolver::GetVariable(byte variable, uint32 parameter, bool *available) const
+/* virtual */ uint32 AirportTileScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	assert(this->st != nullptr);
 
@@ -195,7 +195,7 @@ static uint32 GetAirportTileIDAtOffset(TileIndex tile, const Station *st, uint32
 
 	DEBUG(grf, 1, "Unhandled airport tile variable 0x%X", variable);
 
-	*available = false;
+	extra->available = false;
 	return UINT_MAX;
 }
 

@@ -645,7 +645,7 @@ enum WindowClass {
 	 * Extra viewport; %Window numbers:
 	 *   - Ascending value = #ExtraViewportWidgets
 	 */
-	WC_EXTRA_VIEW_PORT,
+	WC_EXTRA_VIEWPORT,
 
 
 	/**
@@ -732,6 +732,12 @@ enum WindowClass {
 	 *   - Packed value = #SlotListWidgets / #VehicleListWidgets
 	 */
 	WC_TRACE_RESTRICT_SLOTS,
+
+	/**
+	 * Trace restrict counter window; %Window numbers:
+	 *   - Packed value = #SlotListWidgets / #VehicleListWidgets
+	 */
+	WC_TRACE_RESTRICT_COUNTERS,
 
 	/**
 	 * Programmable pre-signals window

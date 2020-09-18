@@ -1276,6 +1276,7 @@ static void HandleAircraftSmoke(Aircraft *v, bool mode)
 	if (v->state != FLYING && v->state != LANDING && v->breakdown_type == BREAKDOWN_AIRCRAFT_SPEED) {
 		v->vehstatus &= ~VS_AIRCRAFT_BROKEN;
 		v->breakdown_ctr = 0;
+		v->InvalidateImageCacheOfChain();
 		return;
 	}
 
@@ -1334,7 +1335,7 @@ TileIndex Aircraft::GetOrderStationLocation(StationID station)
 void Aircraft::MarkDirty()
 {
 	this->colourmap = PAL_NONE;
-	this->cur_image_valid_dir = INVALID_DIR;
+	this->InvalidateImageCache();
 	this->UpdateViewport(true, false);
 	if (this->subtype == AIR_HELICOPTER) {
 		Aircraft *rotor = this->Next()->Next();
@@ -2159,6 +2160,15 @@ bool Aircraft::Tick()
 	for (uint i = 0; i != 2; i++) {
 		/* stop if the aircraft was deleted */
 		if (!AircraftEventHandler(this, i)) return false;
+	}
+
+	if (HasBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE)) {
+		extern byte MapAircraftMovementState(const Aircraft *v);
+		byte state = MapAircraftMovementState(this);
+		if (state != this->acache.image_movement_state) {
+			this->InvalidateImageCacheOfChain();
+			this->acache.image_movement_state = state;
+		}
 	}
 
 	return true;

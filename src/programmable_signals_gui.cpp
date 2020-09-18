@@ -23,9 +23,13 @@
 #include "rail_map.h"
 #include "tile_cmd.h"
 #include "error.h"
+#include "scope.h"
 
 #include "table/sprites.h"
 #include "table/strings.h"
+
+DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected);
+DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, int &selected);
 
 enum ProgramWindowWidgets {
 	PROGRAM_WIDGET_CAPTION,
@@ -33,6 +37,7 @@ enum ProgramWindowWidgets {
 	PROGRAM_WIDGET_SCROLLBAR,
 
 	PROGRAM_WIDGET_SEL_TOP_LEFT,
+	PROGRAM_WIDGET_SEL_TOP_AUX,
 	PROGRAM_WIDGET_SEL_TOP_MIDDLE,
 	PROGRAM_WIDGET_SEL_TOP_RIGHT,
 
@@ -42,6 +47,8 @@ enum ProgramWindowWidgets {
 	PROGRAM_WIDGET_COND_VALUE,
 	PROGRAM_WIDGET_COND_GOTO_SIGNAL,
 	PROGRAM_WIDGET_COND_SET_SIGNAL,
+	PROGRAM_WIDGET_COND_SLOT,
+	PROGRAM_WIDGET_COND_COUNTER,
 
 	PROGRAM_WIDGET_GOTO_SIGNAL,
 	PROGRAM_WIDGET_INSERT,
@@ -55,6 +62,10 @@ enum PanelWidgets {
 	// Left
 	DPL_COND_VARIABLE = 0,
 	DPL_SET_STATE,
+
+	// Aux,
+	DPA_SLOT = 0,
+	DPA_COUNTER = 1,
 
 	// Middle
 	DPM_COND_COMPARATOR = 0,
@@ -85,6 +96,9 @@ static bool IsConditionComparator(SignalCondition *cond)
 	switch (cond->ConditionCode()) {
 		case PSC_NUM_GREEN:
 		case PSC_NUM_RED:
+		case PSC_SLOT_OCC:
+		case PSC_SLOT_OCC_REM:
+		case PSC_COUNTER:
 			return true;
 
 		default:
@@ -98,6 +112,9 @@ static const StringID _program_condvar[] = {
 	/* PSC_NUM_GREEN */   STR_PROGSIG_CONDVAR_NUM_GREEN,
 	/* PSC_NUM_RED   */   STR_PROGSIG_CONDVAR_NUM_RED,
 	/* PSC_SIGNAL_STATE*/ STR_PROGSIG_COND_SIGNAL_STATE,
+	/* PSC_SLOT_OCC*/     STR_PROGSIG_COND_SLOT,
+	/* PSC_SLOT_OCC_REM*/ STR_PROGSIG_COND_SLOT_REMAINING,
+	/* PSC_COUNTER*/      STR_PROGSIG_COND_COUNTER,
 	INVALID_STRING_ID
 };
 
@@ -113,6 +130,7 @@ static const StringID _program_comparator[] = {
 	/* SGC_IS_FALSE */           STR_ORDER_CONDITIONAL_COMPARATOR_IS_FALSE,
 	INVALID_STRING_ID
 };
+static const uint _program_comparator_hide_mask = 0xC0;
 
 static const StringID _program_sigstate[] = {
 	STR_COLOUR_RED,
@@ -124,10 +142,30 @@ static const StringID _program_sigstate[] = {
 static char *GetConditionString(SignalCondition *cond, char *buf, char *buflast, bool selected)
 {
 	StringID string = INVALID_STRING_ID;
-	bool comparator = IsConditionComparator(cond);
-
-	if (comparator) {
-		SignalVariableCondition *cv = static_cast<SignalVariableCondition*>(cond);
+	if (cond->ConditionCode() == PSC_SLOT_OCC || cond->ConditionCode() == PSC_SLOT_OCC_REM) {
+		SignalSlotCondition *scc = static_cast<SignalSlotCondition*>(cond);
+		if (scc->IsSlotValid()) {
+			string = (cond->ConditionCode() == PSC_SLOT_OCC_REM) ? STR_PROGSIG_COND_SLOT_REMAINING_COMPARE : STR_PROGSIG_COND_SLOT_COMPARE;
+			SetDParam(0, scc->slot_id);
+		} else {
+			string = (cond->ConditionCode() == PSC_SLOT_OCC_REM) ? STR_PROGSIG_COND_SLOT_REMAINING_COMPARE_INVALID : STR_PROGSIG_COND_SLOT_COMPARE_INVALID;
+			SetDParam(0, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
+		}
+		SetDParam(1, _program_comparator[scc->comparator]);
+		SetDParam(2, scc->value);
+	} else if (cond->ConditionCode() == PSC_COUNTER) {
+		SignalCounterCondition *scc = static_cast<SignalCounterCondition*>(cond);
+		if (scc->IsCounterValid()) {
+			string = STR_PROGSIG_COND_COUNTER_COMPARE;
+			SetDParam(0, scc->ctr_id);
+		} else {
+			string = STR_PROGSIG_COND_COUNTER_COMPARE_INVALID;
+			SetDParam(0, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
+		}
+		SetDParam(1, _program_comparator[scc->comparator]);
+		SetDParam(2, scc->value);
+	} else if (IsConditionComparator(cond)) {
+		SignalConditionComparable *cv = static_cast<SignalConditionComparable*>(cond);
 		string = STR_PROGSIG_COND_COMPARE;
 		SetDParam(0, _program_condvar[cond->ConditionCode()]);
 		SetDParam(1, _program_comparator[cv->comparator]);
@@ -220,6 +258,8 @@ public:
 
 		this->CreateNestedTree(desc);
 		this->vscroll = this->GetScrollbar(PROGRAM_WIDGET_SCROLLBAR);
+		this->GetWidget<NWidgetStacked>(PROGRAM_WIDGET_SEL_TOP_AUX)->SetDisplayedPlane(SZSP_NONE);
+		this->current_aux_plane = SZSP_NONE;
 		this->FinishInitNested((ref.tile << 3) | ref.track);
 
 		program = GetSignalProgram(ref);
@@ -277,7 +317,7 @@ public:
 				if (!si || si->Opcode() != PSO_IF) return;
 				SignalIf *sif = static_cast <SignalIf*>(si);
 
-				ShowDropDownMenu(this, _program_condvar, sif->condition->ConditionCode(), PROGRAM_WIDGET_COND_VARIABLE, 0, 0, 0);
+				ShowDropDownMenu(this, _program_condvar, sif->condition->ConditionCode(), PROGRAM_WIDGET_COND_VARIABLE, 0, _settings_client.gui.show_adv_tracerestrict_features ? 0 : 0xE0, 0);
 				this->UpdateButtonState();
 			} break;
 
@@ -286,9 +326,9 @@ public:
 				if (!si || si->Opcode() != PSO_IF) return;
 				SignalIf *sif = static_cast <SignalIf*>(si);
 				if (!IsConditionComparator(sif->condition)) return;
-				SignalVariableCondition *vc = static_cast<SignalVariableCondition*>(sif->condition);
+				SignalConditionComparable *vc = static_cast<SignalConditionComparable*>(sif->condition);
 
-				ShowDropDownMenu(this, _program_comparator, vc->comparator, PROGRAM_WIDGET_COND_COMPARATOR, 0, 0, 0);
+				ShowDropDownMenu(this, _program_comparator, vc->comparator, PROGRAM_WIDGET_COND_COMPARATOR, 0, _program_comparator_hide_mask, 0);
 			} break;
 
 			case PROGRAM_WIDGET_COND_VALUE: {
@@ -296,7 +336,7 @@ public:
 				if (!si || si->Opcode() != PSO_IF) return;
 				SignalIf *sif = static_cast <SignalIf*>(si);
 				if (!IsConditionComparator(sif->condition)) return;
-				SignalVariableCondition *vc = static_cast<SignalVariableCondition*>(sif->condition);
+				SignalConditionComparable *vc = static_cast<SignalConditionComparable*>(sif->condition);
 
 				SetDParam(0, vc->value);
 				//ShowQueryString(STR_JUST_INT, STR_PROGSIG_CONDITION_VALUE_CAPT, 5, 100, this, CS_NUMERAL, QSF_NONE);
@@ -317,6 +357,30 @@ public:
 					ShowErrorMessage(STR_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL, STR_EMPTY, WL_INFO);
 				}
 				// this->RaiseWidget(PROGRAM_WIDGET_COND_GOTO_SIGNAL);
+			} break;
+
+			case PROGRAM_WIDGET_COND_SLOT: {
+				SignalInstruction *si = this->GetSelected();
+				if (!si || si->Opcode() != PSO_IF) return;
+				SignalIf *sif = static_cast <SignalIf*>(si);
+				if (sif->condition->ConditionCode() != PSC_SLOT_OCC && sif->condition->ConditionCode() != PSC_SLOT_OCC_REM) return;
+				SignalSlotCondition *sc = static_cast<SignalSlotCondition*>(sif->condition);
+
+				int selected;
+				DropDownList list = GetSlotDropDownList(this->GetOwner(), sc->slot_id, selected);
+				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, PROGRAM_WIDGET_COND_SLOT, 0, true);
+			} break;
+
+			case PROGRAM_WIDGET_COND_COUNTER: {
+				SignalInstruction *si = this->GetSelected();
+				if (!si || si->Opcode() != PSO_IF) return;
+				SignalIf *sif = static_cast <SignalIf*>(si);
+				if (sif->condition->ConditionCode() != PSC_COUNTER) return;
+				SignalCounterCondition *sc = static_cast<SignalCounterCondition*>(sif->condition);
+
+				int selected;
+				DropDownList list = GetCounterDropDownList(this->GetOwner(), sc->ctr_id, selected);
+				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, PROGRAM_WIDGET_COND_COUNTER, 0, true);
 			} break;
 
 			case PROGRAM_WIDGET_COND_SET_SIGNAL: {
@@ -522,6 +586,19 @@ public:
 				DoCommandP(this->tile, p1, p2, CMD_MODIFY_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
 				break;
 			}
+
+			case PROGRAM_WIDGET_COND_SLOT:
+			case PROGRAM_WIDGET_COND_COUNTER: {
+				uint64 p1 = 0, p2 = 0;
+				SB(p1, 0, 3, this->track);
+				SB(p1, 3, 16, ins->Id());
+
+				SB(p2, 0, 1, 1);
+				SB(p2, 1, 2, SCF_SLOT_COUNTER);
+				SB(p2, 3, 27, index);
+
+				DoCommandP(this->tile, p1, p2, CMD_MODIFY_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
+			}
 		}
 	}
 
@@ -579,8 +656,28 @@ public:
 				if (!insn || insn->Opcode() != PSO_IF) return;
 				SignalIf *si = static_cast<SignalIf*>(insn);
 				if (!IsConditionComparator(si->condition)) return;
-				SignalVariableCondition *vc = static_cast<SignalVariableCondition*>(si->condition);
+				SignalConditionComparable *vc = static_cast<SignalConditionComparable*>(si->condition);
 				SetDParam(0, vc->value);
+			} break;
+
+			case PROGRAM_WIDGET_COND_SLOT: {
+				SetDParam(0, 0);
+				SignalInstruction *insn = this->GetSelected();
+				if (!insn || insn->Opcode() != PSO_IF) return;
+				SignalIf *si = static_cast<SignalIf*>(insn);
+				if (si->condition->ConditionCode() != PSC_SLOT_OCC && si->condition->ConditionCode() != PSC_SLOT_OCC_REM) return;
+				SignalSlotCondition *sc = static_cast<SignalSlotCondition*>(si->condition);
+				SetDParam(0, sc->slot_id);
+			} break;
+
+			case PROGRAM_WIDGET_COND_COUNTER: {
+				SetDParam(0, 0);
+				SignalInstruction *insn = this->GetSelected();
+				if (!insn || insn->Opcode() != PSO_IF) return;
+				SignalIf *si = static_cast<SignalIf*>(insn);
+				if (si->condition->ConditionCode() != PSC_COUNTER) return;
+				SignalCounterCondition *sc = static_cast<SignalCounterCondition*>(si->condition);
+				SetDParam(0, sc->ctr_id);
 			} break;
 		}
 	}
@@ -696,8 +793,16 @@ private:
 		this->RaiseWidget(PROGRAM_WIDGET_COND_GOTO_SIGNAL);
 
 		NWidgetStacked *left_sel   = this->GetWidget<NWidgetStacked>(PROGRAM_WIDGET_SEL_TOP_LEFT);
+		NWidgetStacked *aux_sel    = this->GetWidget<NWidgetStacked>(PROGRAM_WIDGET_SEL_TOP_AUX);
 		NWidgetStacked *middle_sel = this->GetWidget<NWidgetStacked>(PROGRAM_WIDGET_SEL_TOP_MIDDLE);
 		NWidgetStacked *right_sel  = this->GetWidget<NWidgetStacked>(PROGRAM_WIDGET_SEL_TOP_RIGHT);
+
+		auto aux_sel_guard = scope_guard([&]() {
+			if (this->current_aux_plane != aux_sel->shown_plane) {
+				this->current_aux_plane = aux_sel->shown_plane;
+				this->ReInit();
+			}
+		});
 
 		// Disable all the modifier buttons - we will re-enable them if applicable
 		this->DisableWidget(PROGRAM_WIDGET_SET_STATE);
@@ -721,6 +826,8 @@ private:
 		SignalInstruction *insn = GetSelected();
 		if (!insn) return;
 
+		aux_sel->SetDisplayedPlane(SZSP_NONE);
+
 		switch (insn->Opcode()) {
 			case PSO_IF: {
 				SignalIf *i = static_cast<SignalIf*>(insn);
@@ -733,7 +840,7 @@ private:
 						_program_condvar[i->condition->ConditionCode()];
 
 				if (IsConditionComparator(i->condition)) {
-					SignalVariableCondition *vc = static_cast<SignalVariableCondition*>(i->condition);
+					SignalConditionComparable *vc = static_cast<SignalConditionComparable*>(i->condition);
 					this->EnableWidget(PROGRAM_WIDGET_COND_COMPARATOR);
 					this->EnableWidget(PROGRAM_WIDGET_COND_VALUE);
 
@@ -745,6 +852,17 @@ private:
 					this->EnableWidget(PROGRAM_WIDGET_COND_SET_SIGNAL);
 					middle_sel->SetDisplayedPlane(DPM_COND_GOTO_SIGNAL);
 					right_sel->SetDisplayedPlane(DPR_COND_SET_SIGNAL);
+				}
+
+				if (i->condition->ConditionCode() == PSC_SLOT_OCC || i->condition->ConditionCode() == PSC_SLOT_OCC_REM) {
+					SignalSlotCondition *scc = static_cast<SignalSlotCondition*>(i->condition);
+					this->GetWidget<NWidgetCore>(PROGRAM_WIDGET_COND_SLOT)->widget_data = scc->IsSlotValid() ? STR_TRACE_RESTRICT_SLOT_NAME : STR_TRACE_RESTRICT_VARIABLE_UNDEFINED;
+					aux_sel->SetDisplayedPlane(DPA_SLOT);
+				}
+				if (i->condition->ConditionCode() == PSC_COUNTER) {
+					SignalCounterCondition *scc = static_cast<SignalCounterCondition*>(i->condition);
+					this->GetWidget<NWidgetCore>(PROGRAM_WIDGET_COND_COUNTER)->widget_data = scc->IsCounterValid() ? STR_TRACE_RESTRICT_COUNTER_NAME : STR_TRACE_RESTRICT_VARIABLE_UNDEFINED;
+					aux_sel->SetDisplayedPlane(DPA_COUNTER);
 				}
 			} break;
 
@@ -777,6 +895,7 @@ private:
 	GuiInstructionList instructions;
 	int selected_instruction;
 	Scrollbar *vscroll;
+	int current_aux_plane;
 };
 
 static const NWidgetPart _nested_program_widgets[] = {
@@ -791,7 +910,7 @@ static const NWidgetPart _nested_program_widgets[] = {
 
 	// Program display
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_PANEL, COLOUR_GREY, PROGRAM_WIDGET_INSTRUCTION_LIST), SetMinimalSize(372, 62), SetDataTip(0x0, STR_PROGSIG_CAPTION), SetResize(1, 1), EndContainer(),
+		NWidget(WWT_PANEL, COLOUR_GREY, PROGRAM_WIDGET_INSTRUCTION_LIST), SetMinimalSize(372, 62), SetDataTip(0x0, STR_NULL), SetResize(1, 1), EndContainer(),
 		NWidget(NWID_VSCROLLBAR, COLOUR_GREY, PROGRAM_WIDGET_SCROLLBAR),
 	EndContainer(),
 
@@ -803,6 +922,12 @@ static const NWidgetPart _nested_program_widgets[] = {
 														SetDataTip(STR_NULL, STR_PROGSIG_COND_VARIABLE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, PROGRAM_WIDGET_SET_STATE), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_NULL, STR_PROGSIG_SIGNAL_STATE_TOOLTIP), SetResize(1, 0),
+			EndContainer(),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, PROGRAM_WIDGET_SEL_TOP_AUX),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, PROGRAM_WIDGET_COND_SLOT), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_NULL, STR_PROGSIG_COND_SLOT_TOOLTIP), SetResize(1, 0),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, PROGRAM_WIDGET_COND_COUNTER), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_NULL, STR_PROGSIG_COND_COUNTER_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, PROGRAM_WIDGET_SEL_TOP_MIDDLE),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, PROGRAM_WIDGET_COND_COMPARATOR), SetMinimalSize(124, 12), SetFill(1, 0),

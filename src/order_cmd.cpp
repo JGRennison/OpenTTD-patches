@@ -169,10 +169,14 @@ void Order::MakeLoading(bool ordered)
  * Not that jump_counter is signed and may become
  * negative when a jump has been taken
  *
+ * @param percent the jump chance in %.
+ * @param dry_run whether this is a dry-run, so do not execute side-effects
+ *
  * @return true if the jump should be taken
  */
-bool Order::UpdateJumpCounter(byte percent)
+bool Order::UpdateJumpCounter(byte percent, bool dry_run)
 {
+	if (dry_run) return this->jump_counter >= 0;
 	if (this->jump_counter >= 0) {
 		this->jump_counter += (percent - 100);
 		return true;
@@ -1644,7 +1648,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			break;
 
 		case MOF_CARGO_TYPE_UNLOAD:
-			if (cargo_id >= NUM_CARGO) return CMD_ERROR;
+			if (cargo_id >= NUM_CARGO && cargo_id != CT_INVALID) return CMD_ERROR;
 			if (data == OUFB_CARGO_TYPE_UNLOAD) return CMD_ERROR;
 			/* FALL THROUGH */
 		case MOF_UNLOAD:
@@ -1658,7 +1662,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			break;
 
 		case MOF_CARGO_TYPE_LOAD:
-			if (cargo_id >= NUM_CARGO) return CMD_ERROR;
+			if (cargo_id >= NUM_CARGO && cargo_id != CT_INVALID) return CMD_ERROR;
 			if (data == OLFB_CARGO_TYPE_LOAD || data == OLF_FULL_LOAD_ANY) return CMD_ERROR;
 			/* FALL THROUGH */
 		case MOF_LOAD:
@@ -1675,6 +1679,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			if (data == OCV_FREE_PLATFORMS && v->type != VEH_TRAIN) return CMD_ERROR;
 			if (data == OCV_SLOT_OCCUPANCY && v->type != VEH_TRAIN) return CMD_ERROR;
 			if (data == OCV_TRAIN_IN_SLOT && v->type != VEH_TRAIN) return CMD_ERROR;
+			if (data == OCV_COUNTER_VALUE && v->type != VEH_TRAIN) return CMD_ERROR;
 			if (data >= OCV_END) return CMD_ERROR;
 			break;
 
@@ -1726,6 +1731,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 					break;
 
 				case OCV_CARGO_WAITING_AMOUNT:
+				case OCV_COUNTER_VALUE:
 					if (data >= (1 << 16)) return CMD_ERROR;
 					break;
 
@@ -1740,6 +1746,10 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				case OCV_CARGO_LOAD_PERCENTAGE:
 				case OCV_CARGO_WAITING_AMOUNT:
 					if (!(data < NUM_CARGO && CargoSpec::Get(data)->IsValid())) return CMD_ERROR;
+					break;
+
+				case OCV_COUNTER_VALUE:
+					if (data != INVALID_TRACE_RESTRICT_COUNTER_ID && !TraceRestrictCounter::IsValidID(data)) return CMD_ERROR;
 					break;
 
 				default:
@@ -1787,7 +1797,13 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				break;
 
 			case MOF_CARGO_TYPE_UNLOAD:
-				order->SetUnloadType((OrderUnloadFlags)data, cargo_id);
+				if (cargo_id == CT_INVALID) {
+					for (CargoID i = 0; i < NUM_CARGO; i++) {
+						order->SetUnloadType((OrderUnloadFlags)data, i);
+					}
+				} else {
+					order->SetUnloadType((OrderUnloadFlags)data, cargo_id);
+				}
 				break;
 
 			case MOF_LOAD:
@@ -1796,7 +1812,13 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				break;
 
 			case MOF_CARGO_TYPE_LOAD:
-				order->SetLoadType((OrderLoadFlags)data, cargo_id);
+				if (cargo_id == CT_INVALID) {
+					for (CargoID i = 0; i < NUM_CARGO; i++) {
+						order->SetLoadType((OrderLoadFlags)data, i);
+					}
+				} else {
+					order->SetLoadType((OrderLoadFlags)data, cargo_id);
+				}
 				break;
 
 			case MOF_DEPOT_ACTION: {
@@ -1836,6 +1858,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				bool old_var_was_cargo = (order->GetConditionVariable() == OCV_CARGO_ACCEPTANCE || order->GetConditionVariable() == OCV_CARGO_WAITING
 						|| order->GetConditionVariable() == OCV_CARGO_LOAD_PERCENTAGE || order->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT);
 				bool old_var_was_slot = (order->GetConditionVariable() == OCV_SLOT_OCCUPANCY || order->GetConditionVariable() == OCV_TRAIN_IN_SLOT);
+				bool old_var_was_counter = (order->GetConditionVariable() == OCV_COUNTER_VALUE);
 				order->SetConditionVariable((OrderConditionVariable)data);
 
 				OrderConditionComparator occ = order->GetConditionComparator();
@@ -1849,6 +1872,11 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 					case OCV_TRAIN_IN_SLOT:
 						if (!old_var_was_slot) order->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_ID;
 						if (occ != OCC_IS_TRUE && occ != OCC_IS_FALSE) order->SetConditionComparator(OCC_IS_TRUE);
+						break;
+
+					case OCV_COUNTER_VALUE:
+						if (!old_var_was_counter) order->GetXDataRef() = INVALID_TRACE_RESTRICT_COUNTER_ID << 16;
+						if (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) order->SetConditionComparator(OCC_EQUALS);
 						break;
 
 					case OCV_CARGO_ACCEPTANCE:
@@ -1877,7 +1905,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 						FALLTHROUGH;
 
 					default:
-						if (old_var_was_cargo || old_var_was_slot) order->SetConditionValue(0);
+						if (old_var_was_cargo || old_var_was_slot || old_var_was_counter) order->SetConditionValue(0);
 						if (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) order->SetConditionComparator(OCC_EQUALS);
 						break;
 				}
@@ -1897,6 +1925,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 						break;
 
 					case OCV_CARGO_WAITING_AMOUNT:
+					case OCV_COUNTER_VALUE:
 						SB(order->GetXDataRef(), 0, 16, data);
 						break;
 
@@ -1907,7 +1936,15 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				break;
 
 			case MOF_COND_VALUE_2:
-				order->SetConditionValue(data);
+				switch (order->GetConditionVariable()) {
+					case OCV_COUNTER_VALUE:
+						SB(order->GetXDataRef(), 16, 16, data);
+						break;
+
+					default:
+						order->SetConditionValue(data);
+						break;
+				}
 				break;
 
 			case MOF_COND_VALUE_3:
@@ -1948,11 +1985,23 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				}
 				switch (mof) {
 					case MOF_CARGO_TYPE_UNLOAD:
-						u->current_order.SetUnloadType((OrderUnloadFlags)data, cargo_id);
+						if (cargo_id == CT_INVALID) {
+							for (CargoID i = 0; i < NUM_CARGO; i++) {
+								u->current_order.SetUnloadType((OrderUnloadFlags)data, i);
+							}
+						} else {
+							u->current_order.SetUnloadType((OrderUnloadFlags)data, cargo_id);
+						}
 						break;
 
 					case MOF_CARGO_TYPE_LOAD:
-						u->current_order.SetLoadType((OrderLoadFlags)data, cargo_id);
+						if (cargo_id == CT_INVALID) {
+							for (CargoID i = 0; i < NUM_CARGO; i++) {
+								u->current_order.SetLoadType((OrderLoadFlags)data, i);
+							}
+						} else {
+							u->current_order.SetLoadType((OrderLoadFlags)data, cargo_id);
+						}
 						break;
 
 					default:
@@ -2666,10 +2715,15 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, boo
 		case OCV_PERCENT: {
 			/* get a non-const reference to the current order */
 			Order *ord = const_cast<Order *>(order);
-			skip_order = ord->UpdateJumpCounter((byte)value);
+			skip_order = ord->UpdateJumpCounter((byte)value, dry_run);
 			break;
 		}
 		case OCV_REMAINING_LIFETIME: skip_order = OrderConditionCompare(occ, max(v->max_age - v->age + DAYS_IN_LEAP_YEAR - 1, 0) / DAYS_IN_LEAP_YEAR, value); break;
+		case OCV_COUNTER_VALUE: {
+			const TraceRestrictCounter* ctr = TraceRestrictCounter::GetIfValid(GB(order->GetXData(), 16, 16));
+			if (ctr != nullptr) skip_order = OrderConditionCompare(occ, ctr->value, GB(order->GetXData(), 0, 16));
+			break;
+		}
 		default: NOT_REACHED();
 	}
 

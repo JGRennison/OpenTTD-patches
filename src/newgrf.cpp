@@ -6354,6 +6354,19 @@ static void SkipAct5(ByteReader *buf)
  */
 bool GetGlobalVariable(byte param, uint32 *value, const GRFFile *grffile)
 {
+	if (_sprite_group_resolve_check_veh_check) {
+		switch (param) {
+			case 0x00:
+			case 0x02:
+			case 0x09:
+			case 0x0A:
+			case 0x20:
+			case 0x23:
+				_sprite_group_resolve_check_veh_check = false;
+				break;
+		}
+	}
+
 	switch (param) {
 		case 0x00: // current date
 			*value = max(_date - DAYS_TILL_ORIGINAL_BASE_YEAR, 0);

@@ -66,6 +66,7 @@ Company::Company(uint16 name_1, bool is_ai)
 	this->clear_limit     = _settings_game.construction.clear_frame_burst << 16;
 	this->tree_limit      = _settings_game.construction.tree_frame_burst << 16;
 	this->purchase_land_limit = _settings_game.construction.purchase_land_frame_burst << 16;
+	this->build_object_limit = _settings_game.construction.build_object_frame_burst << 16;
 
 	for (uint j = 0; j < 4; j++) this->share_owners[j] = COMPANY_SPECTATOR;
 	InvalidateWindowData(WC_PERFORMANCE_DETAIL, 0, INVALID_COMPANY);
@@ -116,6 +117,12 @@ void SetLocalCompany(CompanyID new_company)
 
 	/* Delete any construction windows... */
 	if (switching_company) DeleteConstructionWindows();
+
+	if (switching_company && Company::IsValidID(new_company)) {
+		for (Town *town : Town::Iterate()) {
+			town->UpdateLabel();
+		}
+	}
 
 	/* ... and redraw the whole screen. */
 	MarkWholeScreenDirty();
@@ -273,6 +280,7 @@ void UpdateLandscapingLimits()
 		c->clear_limit     = min(c->clear_limit     + _settings_game.construction.clear_per_64k_frames,     (uint32)_settings_game.construction.clear_frame_burst << 16);
 		c->tree_limit      = min(c->tree_limit      + _settings_game.construction.tree_per_64k_frames,      (uint32)_settings_game.construction.tree_frame_burst << 16);
 		c->purchase_land_limit = min(c->purchase_land_limit + _settings_game.construction.purchase_land_per_64k_frames, (uint32)_settings_game.construction.purchase_land_frame_burst << 16);
+		c->build_object_limit = min(c->build_object_limit + _settings_game.construction.build_object_per_64k_frames, (uint32)_settings_game.construction.build_object_frame_burst << 16);
 	}
 }
 
@@ -1045,7 +1053,10 @@ CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 
 		/* Company colour data is indirectly cached. */
 		for (Vehicle *v : Vehicle::Iterate()) {
-			if (v->owner == _current_company) v->InvalidateNewGRFCache();
+			if (v->owner == _current_company) {
+				v->InvalidateNewGRFCache();
+				v->InvalidateImageCache();
+			}
 		}
 
 		extern void UpdateObjectColours(const Company *c);

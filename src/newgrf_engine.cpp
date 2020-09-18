@@ -22,9 +22,12 @@
 #include "company_base.h"
 #include "newgrf_railtype.h"
 #include "newgrf_roadtype.h"
+#include "newgrf_cache_check.h"
 #include "ship.h"
 
 #include "safeguards.h"
+
+bool _sprite_group_resolve_check_veh_check = false;
 
 struct WagonOverride {
 	EngineID *train_id;
@@ -162,7 +165,7 @@ enum TTDPAircraftMovementStates {
  * Map OTTD aircraft movement states to TTDPatch style movement states
  * (VarAction 2 Variable 0xE2)
  */
-static byte MapAircraftMovementState(const Aircraft *v)
+byte MapAircraftMovementState(const Aircraft *v)
 {
 	const Station *st = GetTargetAirportIfValid(v);
 	if (st == nullptr) return AMS_TTDP_FLIGHT_TO_TOWER;
@@ -343,6 +346,14 @@ static byte MapAircraftMovementAction(const Aircraft *v)
 
 /* virtual */ uint32 VehicleScopeResolver::GetTriggers() const
 {
+	if (this->v == nullptr) {
+		return 0;
+	} else {
+		if (_sprite_group_resolve_check_veh_check) {
+			SetBit(const_cast<Vehicle*>(this->v->First())->vcache.cached_veh_flags, VCF_REDRAW_ON_TRIGGER);
+		}
+		return this->v->waiting_triggers;
+	}
 	return this->v == nullptr ? 0 : this->v->waiting_triggers;
 }
 
@@ -444,8 +455,118 @@ static uint32 PositionHelper(const Vehicle *v, bool consecutive)
 	return chain_before | chain_after << 8 | (chain_before + chain_after + consecutive) << 16;
 }
 
-static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object, byte variable, uint32 parameter, bool *available)
+static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object, byte variable, uint32 parameter, GetVariableExtra *extra)
 {
+	if (_sprite_group_resolve_check_veh_check) {
+		switch (variable) {
+			case 0xC:
+			case 0x10:
+			case 0x18:
+			case 0x1A:
+			case 0x1C:
+			case 0x25:
+			case 0x40:
+			case 0x41:
+			case 0x42:
+			case 0x43:
+			case 0x47:
+			case 0x48:
+			case 0x49:
+			case 0x4A:
+			case 0x4B:
+			case 0x4D:
+			case 0x60:
+			case 0x61:
+			case 0x7D:
+			case 0x7F:
+			case 0x80 + 0x0:
+			case 0x80 + 0x1:
+			case 0x80 + 0x4:
+			case 0x80 + 0x5:
+			case 0x80 + 0xA: // dubious
+			case 0x80 + 0xB: // dubious
+			case 0x80 + 0x39:
+			case 0x80 + 0x3A:
+			case 0x80 + 0x3B:
+			case 0x80 + 0x3C:
+			case 0x80 + 0x3D:
+			case 0x80 + 0x44:
+			case 0x80 + 0x45:
+			case 0x80 + 0x46:
+			case 0x80 + 0x47:
+			case 0x80 + 0x5A:
+			case 0x80 + 0x72:
+			case 0x80 + 0x7A:
+			case 0xFF:
+				break;
+
+			case 0x80 + 0x32:
+				if (extra->mask & (VS_HIDDEN | VS_TRAIN_SLOWING)) {
+					_sprite_group_resolve_check_veh_check = false;
+				}
+				break;
+
+			case 0x80 + 0x34:
+			case 0x80 + 0x35:
+				if (v->type == VEH_AIRCRAFT) {
+					_sprite_group_resolve_check_veh_check = false;
+				} else {
+					SetBit(v->First()->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE);
+				}
+				break;
+
+			case 0x5F:
+			case 0x80 + 0x7B:
+				SetBit(v->First()->vcache.cached_veh_flags, VCF_REDRAW_ON_TRIGGER);
+				break;
+
+			case 0x80 + 0x48:
+				// VRF_REVERSE_DIRECTION
+				if (v->type != VEH_TRAIN) {
+					_sprite_group_resolve_check_veh_check = false;
+				}
+				break;
+
+			case 0x80 + 0x62:
+				switch (v->type) {
+					case VEH_TRAIN:
+					case VEH_SHIP:
+						if (extra->mask & 0x7F) {
+							_sprite_group_resolve_check_veh_check = false;
+						}
+						break;
+
+					case VEH_ROAD:
+						break;
+
+					case VEH_AIRCRAFT:
+						if (v == v->First()) {
+							SetBit(v->First()->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE);
+						} else {
+							_sprite_group_resolve_check_veh_check = false;
+						}
+						break;
+
+					default:
+						_sprite_group_resolve_check_veh_check = false;
+						break;
+				}
+				break;
+
+			case 0xFE:
+				// vehicle is unloading, VF_CARGO_UNLOADING may disappear without the vehicle being marked dirty
+				// the vehicle is always marked dirty when VF_CARGO_UNLOADING is set
+				if (HasBit(v->vehicle_flags, VF_CARGO_UNLOADING)) {
+					_sprite_group_resolve_check_veh_check = false;
+				}
+				break;
+
+			default:
+				_sprite_group_resolve_check_veh_check = false;
+				break;
+		}
+	}
+
 	/* Calculated vehicle parameters */
 	switch (variable) {
 		case 0x25: // Get engine GRF ID
@@ -667,9 +788,12 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 
 				if (parameter == 0x5F) {
 					/* This seems to be the only variable that makes sense to access via var 61, but is not handled by VehicleGetVariable */
+					if (_sprite_group_resolve_check_veh_check) {
+						SetBit(u->First()->vcache.cached_veh_flags, VCF_REDRAW_ON_TRIGGER);
+					}
 					return (u->random_bits << 8) | u->waiting_triggers;
 				} else {
-					return VehicleGetVariable(u, object, parameter, GetRegister(0x10E), available);
+					return VehicleGetVariable(u, object, parameter, GetRegister(0x10E), extra);
 				}
 			}
 			/* Not available */
@@ -891,11 +1015,11 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 
 	DEBUG(grf, 1, "Unhandled vehicle variable 0x%X, type 0x%X", variable, (uint)v->type);
 
-	*available = false;
+	extra->available = false;
 	return UINT_MAX;
 }
 
-/* virtual */ uint32 VehicleScopeResolver::GetVariable(byte variable, uint32 parameter, bool *available) const
+/* virtual */ uint32 VehicleScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	if (this->v == nullptr) {
 		/* Vehicle does not exist, so we're in a purchase list */
@@ -922,11 +1046,11 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 			case 0xF2: return 0; // Cargo subtype
 		}
 
-		*available = false;
+		extra->available = false;
 		return UINT_MAX;
 	}
 
-	return VehicleGetVariable(const_cast<Vehicle*>(this->v), this, variable, parameter, available);
+	return VehicleGetVariable(const_cast<Vehicle*>(this->v), this, variable, parameter, extra);
 }
 
 
@@ -1206,6 +1330,9 @@ void TriggerVehicle(Vehicle *v, VehicleTrigger trigger)
 
 	v->InvalidateNewGRFCacheOfChain();
 	DoTriggerVehicle(v, trigger, 0, true);
+	if (HasBit(v->First()->vcache.cached_veh_flags, VCF_REDRAW_ON_TRIGGER)) {
+		v->First()->InvalidateImageCacheOfChain();
+	}
 	v->InvalidateNewGRFCacheOfChain();
 }
 
@@ -1325,8 +1452,8 @@ void FillNewGRFVehicleCache(const Vehicle *v)
 	for (size_t i = 0; i < lengthof(cache_entries); i++) {
 		/* Only resolve when the cache isn't valid. */
 		if (HasBit(v->grf_cache.cache_valid, cache_entries[i][1])) continue;
-		bool stub;
-		ro.GetScope(VSG_SCOPE_SELF)->GetVariable(cache_entries[i][0], 0, &stub);
+		GetVariableExtra extra;
+		ro.GetScope(VSG_SCOPE_SELF)->GetVariable(cache_entries[i][0], 0, &extra);
 	}
 
 	/* Make sure really all bits are set. */

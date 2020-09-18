@@ -340,6 +340,7 @@ uint Vehicle::Crash(bool flooded)
 		if (IsCargoInClass(v->cargo_type, CC_PASSENGERS)) pass += v->cargo.TotalCount();
 		v->vehstatus |= VS_CRASHED;
 		v->MarkAllViewportsDirty();
+		v->InvalidateImageCache();
 	}
 
 	this->ClearSeparation();
@@ -884,16 +885,27 @@ void Vehicle::HandlePathfindingResult(bool path_found)
 
 		/* Clear the flag as the PF's problem was solved. */
 		ClrBit(this->vehicle_flags, VF_PATHFINDER_LOST);
+		if (this->type == VEH_SHIP) {
+			Ship::From(this)->lost_count = 0;
+		}
 		/* Delete the news item. */
 		DeleteVehicleNews(this->index, STR_NEWS_VEHICLE_IS_LOST);
 		return;
 	}
 
-	/* Were we already lost? */
-	if (HasBit(this->vehicle_flags, VF_PATHFINDER_LOST)) return;
+	if (this->type == VEH_SHIP) {
+		SetBit(this->vehicle_flags, VF_PATHFINDER_LOST);
+		if (Ship::From(this)->lost_count == 255) return;
+		Ship::From(this)->lost_count++;
+		if (Ship::From(this)->lost_count != 16) return;
+	} else {
+		/* Were we already lost? */
+		if (HasBit(this->vehicle_flags, VF_PATHFINDER_LOST)) return;
 
-	/* It is first time the problem occurred, set the "lost" flag. */
-	SetBit(this->vehicle_flags, VF_PATHFINDER_LOST);
+		/* It is first time the problem occurred, set the "lost" flag. */
+		SetBit(this->vehicle_flags, VF_PATHFINDER_LOST);
+	}
+
 	/* Notify user about the event. */
 	AI::NewEvent(this->owner, new ScriptEventVehicleLost(this->index));
 	if (_settings_client.gui.lost_vehicle_warn && this->owner == _local_company) {
@@ -1594,7 +1606,7 @@ void ViewportAddVehicles(DrawPixelInfo *dpi)
 	}
 }
 
-void ViewportMapDrawVehicles(DrawPixelInfo *dpi, ViewPort *vp)
+void ViewportMapDrawVehicles(DrawPixelInfo *dpi, Viewport *vp)
 {
 	/* The save rectangle */
 	const int l = vp->virtual_left;
@@ -1654,7 +1666,7 @@ void ViewportMapDrawVehicles(DrawPixelInfo *dpi, ViewPort *vp)
  * @param y  Y coordinate in the viewport.
  * @return Closest vehicle, or \c nullptr if none found.
  */
-Vehicle *CheckClickOnVehicle(const ViewPort *vp, int x, int y)
+Vehicle *CheckClickOnVehicle(const Viewport *vp, int x, int y)
 {
 	Vehicle *found = nullptr;
 	uint dist, best_dist = UINT_MAX;
@@ -3757,6 +3769,8 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last, bool include_tile) co
 	dump('l', HasBit(this->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT));
 	dump('z', HasBit(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST));
 	dump('d', HasBit(this->vcache.cached_veh_flags, VCF_IS_DRAWN));
+	dump('t', HasBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_TRIGGER));
+	dump('s', HasBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE));
 	if (this->IsGroundVehicle()) {
 		uint16 gv_flags = this->GetGroundVehicleFlags();
 		b += seprintf(b, last, ", gvf:");

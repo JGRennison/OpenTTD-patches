@@ -54,8 +54,8 @@ void ShowStoryBook(CompanyID company, uint16 page_id = INVALID_STORY_PAGE);
 
 void ShowEstimatedCostOrIncome(Money cost, int x, int y);
 
-void ShowExtraViewPortWindow(TileIndex tile = INVALID_TILE);
-void ShowExtraViewPortWindowForTileUnderCursor();
+void ShowExtraViewportWindow(TileIndex tile = INVALID_TILE);
+void ShowExtraViewportWindowForTileUnderCursor();
 
 void ShowModifierKeyToggleWindow();
 

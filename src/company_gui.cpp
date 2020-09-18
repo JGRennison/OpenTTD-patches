@@ -2589,7 +2589,7 @@ struct CompanyWindow : Window
 			case WID_C_VIEW_HQ: {
 				TileIndex tile = Company::Get((CompanyID)this->window_number)->location_of_HQ;
 				if (_ctrl_pressed) {
-					ShowExtraViewPortWindow(tile);
+					ShowExtraViewportWindow(tile);
 				} else {
 					ScrollMainWindowToTile(tile);
 				}

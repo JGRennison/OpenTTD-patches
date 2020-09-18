@@ -69,7 +69,7 @@ void LinkGraphOverlay::GetWidgetDpi(DrawPixelInfo *dpi, uint margin) const
 bool LinkGraphOverlay::CacheStillValid() const
 {
 	if (this->window->viewport) {
-		const ViewPort *vp = this->window->viewport;
+		const Viewport *vp = this->window->viewport;
 		Rect region { vp->virtual_left, vp->virtual_top,
 				vp->virtual_left + vp->virtual_width, vp->virtual_top + vp->virtual_height };
 		return (region.left >= this->cached_region.left &&
@@ -96,7 +96,7 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 	DrawPixelInfo dpi;
 	bool cache_all = false;
 	if (this->window->viewport) {
-		const ViewPort *vp = this->window->viewport;
+		const Viewport *vp = this->window->viewport;
 		const int pixel_margin = 256;
 		const int vp_margin = ScaleByZoom(pixel_margin, vp->zoom);
 		this->GetWidgetDpi(&dpi, pixel_margin);

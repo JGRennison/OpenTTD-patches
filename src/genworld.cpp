@@ -205,9 +205,9 @@ static void _GenerateWorld()
 		IncreaseGeneratingWorldProgress(GWP_GAME_START);
 
 		CleanupGeneration();
-		lock.unlock();
 
 		ShowNewGRFError();
+		lock.unlock();
 
 		if (_network_dedicated) DEBUG(net, 1, "Map generated, starting game");
 		DEBUG(desync, 1, "new_map: %08x", _settings_game.game_creation.generation_seed);

@@ -278,6 +278,7 @@ void PropagateChildLivery(const Group *g)
 			for (Vehicle *u = v; u != nullptr; u = u->Next()) {
 				u->colourmap = PAL_NONE;
 				u->InvalidateNewGRFCache();
+				u->InvalidateImageCache();
 			}
 		}
 	}
@@ -544,6 +545,7 @@ static void AddVehicleToGroup(Vehicle *v, GroupID new_g)
 			for (Vehicle *u = v; u != nullptr; u = u->Next()) {
 				u->colourmap = PAL_NONE;
 				u->InvalidateNewGRFCache();
+				u->InvalidateImageCache();
 				u->UpdateViewport(true);
 			}
 			break;
@@ -794,6 +796,7 @@ void SetTrainGroupID(Train *v, GroupID new_g)
 		u->group_id = new_g;
 		u->colourmap = PAL_NONE;
 		u->InvalidateNewGRFCache();
+		u->InvalidateImageCache();
 		u->UpdateViewport(true);
 	}
 
@@ -821,6 +824,7 @@ void UpdateTrainGroupID(Train *v)
 		u->group_id = new_g;
 		u->colourmap = PAL_NONE;
 		u->InvalidateNewGRFCache();
+		u->InvalidateImageCache();
 	}
 
 	/* Update the Replace Vehicle Windows */

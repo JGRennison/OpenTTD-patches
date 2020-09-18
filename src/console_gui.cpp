@@ -154,6 +154,7 @@ static inline void IConsoleResetHistoryPos()
 
 static const char *IConsoleHistoryAdd(const char *cmd);
 static void IConsoleHistoryNavigate(int direction);
+static void IConsoleTabCompletion();
 
 static const struct NWidgetPart _nested_console_window_widgets[] = {
 	NWidget(WWT_EMPTY, INVALID_COLOUR, WID_C_BACKGROUND), SetResize(1, 1),
@@ -297,6 +298,10 @@ struct IConsoleWindow : Window
 
 			case (WKC_CTRL | 'L'):
 				IConsoleCmdExec("clear");
+				break;
+
+			case WKC_TAB:
+				IConsoleTabCompletion();
 				break;
 
 			default:
@@ -491,6 +496,69 @@ static void IConsoleHistoryNavigate(int direction)
 		_iconsole_cmdline.DeleteAll();
 	} else {
 		_iconsole_cmdline.Assign(_iconsole_history[_iconsole_historypos]);
+	}
+}
+
+static void IConsoleTabCompletion()
+{
+	const char *input = _iconsole_cmdline.buf;
+
+	/* Strip all spaces at the beginning */
+	while (IsWhitespace(*input)) input++;
+
+	/* Don't do tab completion for no input */
+	if (StrEmpty(input)) return;
+
+	const char *cmdptr = input;
+	for (; *cmdptr != '\0'; cmdptr++) {
+		switch (*cmdptr) {
+		case ' ':
+		case '"':
+		case '\\':
+			// Give up
+			return;
+		}
+	}
+	size_t length = cmdptr - input;
+	char *prefix = (char*)alloca(length + 1);
+	strecpy(prefix, input, prefix + length);
+	RemoveUnderscores(prefix);
+	size_t prefix_length = strlen(prefix);
+
+	if (prefix_length == 0) return;
+
+	char buffer[4096];
+	char *b = buffer;
+	uint matches = 0;
+	std::string common_prefix;
+	for (const IConsoleCmd *cmd = _iconsole_cmds; cmd != nullptr; cmd = cmd->next) {
+		if (strncmp(cmd->name, prefix, prefix_length) == 0) {
+			if ((_settings_client.gui.console_show_unlisted || !cmd->unlisted) && (cmd->hook == nullptr || cmd->hook(false) != CHR_HIDE)) {
+				if (matches == 0) {
+					common_prefix = cmd->name;
+				} else {
+					const char *cp = common_prefix.c_str();
+					const char *cmdp = cmd->name;
+					while (true) {
+						const char *end = cmdp;
+						WChar a = Utf8Consume(cp);
+						WChar b = Utf8Consume(cmdp);
+						if (a == 0 || b == 0 || a != b) {
+							common_prefix.resize(end - cmd->name);
+							break;
+						}
+					}
+				}
+				matches++;
+				b += seprintf(b, lastof(buffer), "%s ", cmd->name);
+			}
+		}
+	}
+	if (matches > 0) {
+		_iconsole_cmdline.Assign(common_prefix.c_str());
+		if (matches > 1) {
+			IConsolePrint(CC_WHITE, buffer);
+		}
 	}
 }
 

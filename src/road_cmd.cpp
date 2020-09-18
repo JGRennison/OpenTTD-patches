@@ -2362,7 +2362,7 @@ static VehicleEnterTileStatus VehicleEnter_Road(Vehicle *v, TileIndex tile, int 
 			RoadVehicle *rv = RoadVehicle::From(v);
 			if (rv->frame == RVC_DEPOT_STOP_FRAME &&
 					_roadveh_enter_depot_dir[GetRoadDepotDirection(tile)] == rv->state) {
-				rv->cur_image_valid_dir = INVALID_DIR;
+				rv->InvalidateImageCache();
 				rv->state = RVSB_IN_DEPOT;
 				rv->vehstatus |= VS_HIDDEN;
 				rv->direction = ReverseDir(rv->direction);
@@ -2619,7 +2619,7 @@ CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			}
 
 			uint num_pieces;
-			if (IsRoadDepotTile(tile)) {
+			if (IsRoadDepotTile(tile) || IsRoadStopTile(tile)) {
 				num_pieces = HasTileRoadType(tile, rtt) ? 2 : 0;
 			} else {
 				num_pieces = CountBits(GetAnyRoadBits(tile, rtt));

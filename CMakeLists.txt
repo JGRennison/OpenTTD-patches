@@ -39,13 +39,13 @@ find_package(PNG)
 
 if (NOT WIN32)
     find_package(Allegro)
+    find_package(Freetype)
     if (NOT APPLE)
         find_package(SDL2)
         if (NOT SDL2_FOUND)
             find_package(SDL)
         endif( NOT SDL2_FOUND)
         find_package(Fluidsynth)
-        find_package(Freetype)
         find_package(Fontconfig)
         find_package(ICU OPTIONAL_COMPONENTS i18n lx)
         find_package(XDG_basedir)
@@ -205,6 +205,7 @@ target_link_libraries(openttd
     openttd::languages
     openttd::settings
     openttd::basesets
+    openttd::script_api
     openttd::binfiles
     Threads::Threads
 )

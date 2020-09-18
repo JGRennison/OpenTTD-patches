@@ -37,7 +37,7 @@ struct ViewPortMapDrawVehiclesCache {
 /**
  * Data structure for viewport, display of a part of the world
  */
-struct ViewPort {
+struct Viewport {
 	int left;    ///< Screen coordinate left edge of the viewport
 	int top;     ///< Screen coordinate top edge of the viewport
 	int width;   ///< Screen width of the viewport
@@ -177,6 +177,7 @@ enum ViewportDragDropSelectionProcess {
 	DDSP_MEASURE,              ///< Measurement tool
 	DDSP_DRAW_PLANLINE,        ///< Draw a line for a plan
 	DDSP_BUY_LAND,             ///< Purchase land
+	DDSP_BUILD_OBJECT,         ///< Build object
 
 	/* Rail specific actions */
 	DDSP_PLACE_RAIL,           ///< Rail placement

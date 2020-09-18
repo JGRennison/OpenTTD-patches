@@ -2267,7 +2267,7 @@ DEF_CONSOLE_CMD(ConViewportMarkDirty)
 		return true;
 	}
 
-	ViewPort *vp = FindWindowByClass(WC_MAIN_WINDOW)->viewport;
+	Viewport *vp = FindWindowByClass(WC_MAIN_WINDOW)->viewport;
 	uint l = strtoul(argv[1], nullptr, 0);
 	uint t = strtoul(argv[2], nullptr, 0);
 	uint r = min<uint>(l + ((argc > 3) ? strtoul(argv[3], nullptr, 0) : 1), vp->dirty_blocks_per_row);

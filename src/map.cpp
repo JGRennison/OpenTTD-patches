@@ -486,6 +486,10 @@ void DumpMapStats(char *b, const char *last)
 	};
 	btree::btree_map<uint, uint> tunnel_bridge_stats;
 
+	for (uint type = 0; type < 16; type++) {
+		tile_types[type] = 0;
+	}
+
 	for (TileIndex t = 0; t < MapSize(); t++) {
 		tile_types[GetTileType(t)]++;
 

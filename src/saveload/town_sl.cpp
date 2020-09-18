@@ -212,10 +212,8 @@ static const SaveLoad _town_desc[] = {
 	SLE_CONDLST(Town, psa_list,            REF_STORAGE,                SLV_161, SL_MAX_VERSION),
 
 	SLE_CONDNULL(4, SLV_166, SLV_EXTEND_CARGOTYPES),  ///< cargo_produced, no longer in use
-	SLE_CONDNULL(8, SLV_EXTEND_CARGOTYPES, SL_MAX_VERSION),  ///< cargo_produced, no longer in use
-
-	/* reserve extra space in savegame here. (currently 30 bytes) */
-	SLE_CONDNULL(30, SLV_2, SL_MAX_VERSION),
+	SLE_CONDNULL(8, SLV_EXTEND_CARGOTYPES, SLV_REMOVE_TOWN_CARGO_CACHE),  ///< cargo_produced, no longer in use
+	SLE_CONDNULL(30, SLV_2, SLV_REMOVE_TOWN_CARGO_CACHE), ///< old reserved space
 
 	SLE_END()
 };
@@ -278,11 +276,6 @@ static void RealSave_Town(Town *t)
 	for (int i = TE_BEGIN; i < NUM_TE; i++) {
 		SlObjectSaveFiltered(&t->received[i], _filtered_town_received_desc.data());
 	}
-
-	/* Write an empty matrix to avoid bumping savegame version. */
-	SlWriteUint32(0); // tile
-	SlWriteUint16(0); // w
-	SlWriteUint16(0); // h
 }
 
 static void Save_TOWN()
@@ -321,7 +314,7 @@ static void Load_TOWN()
 			SlErrorCorrupt("Invalid town name generator");
 		}
 
-		if (!IsSavegameVersionBefore(SLV_166) || SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_MATRIX)) {
+		if ((!IsSavegameVersionBefore(SLV_166) && IsSavegameVersionBefore(SLV_REMOVE_TOWN_CARGO_CACHE)) || SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_MATRIX)) {
 			SlSkipBytes(4); // tile
 			uint16 w = SlReadUint16();
 			uint16 h = SlReadUint16();

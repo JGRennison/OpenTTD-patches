@@ -1396,7 +1396,10 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 
 	auto check_on_failure = [&](CommandCost cost) -> CommandCost {
 		if (delete_failed_virtual && src->IsVirtual()) {
-			return DoCommand(src->tile, src->index | (1 << 21), 0, flags, CMD_SELL_VEHICLE);
+			CommandCost res = DoCommand(src->tile, src->index | (1 << 21), 0, flags, CMD_SELL_VEHICLE);
+			if (res.Failed() || cost.GetErrorMessage() == INVALID_STRING_ID) return res;
+			cost.MakeSuccessWithMessage();
+			return cost;
 		} else {
 			return cost;
 		}
@@ -1832,7 +1835,7 @@ static void SwapTrainFlags(uint16 *swap_flag1, uint16 *swap_flag2)
  */
 static void UpdateStatusAfterSwap(Train *v)
 {
-	v->cur_image_valid_dir = INVALID_DIR;
+	v->InvalidateImageCache();
 
 	/* Reverse the direction. */
 	if (v->track != TRACK_BIT_DEPOT) v->direction = ReverseDir(v->direction);
@@ -3126,11 +3129,14 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 		if (track != INVALID_TRACK && HasPbsSignalOnTrackdir(tile, TrackEnterdirToTrackdir(track, enterdir))) {
 			if (IsRestrictedSignal(tile) && v->force_proceed != TFP_SIGNAL) {
 				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, track);
-				if (prog && prog->actions_used_flags & (TRPAUF_WAIT_AT_PBS | TRPAUF_SLOT_ACQUIRE)) {
+				if (prog && prog->actions_used_flags & (TRPAUF_WAIT_AT_PBS | TRPAUF_SLOT_ACQUIRE | TRPAUF_TRAIN_NOT_STUCK)) {
 					TraceRestrictProgramResult out;
 					TraceRestrictProgramInput input(tile, TrackEnterdirToTrackdir(track, enterdir), nullptr, nullptr);
 					input.permitted_slot_operations = TRPISP_ACQUIRE;
 					prog->Execute(v, input, out);
+					if (out.flags & TRPRF_TRAIN_NOT_STUCK) {
+						v->wait_counter = 0;
+					}
 					if (out.flags & TRPRF_WAIT_AT_PBS) {
 						if (mark_stuck) MarkTrainAsStuck(v, true);
 						return track;
@@ -3418,7 +3424,7 @@ void Train::MarkDirty()
 	Train *v = this;
 	do {
 		v->colourmap = PAL_NONE;
-		v->cur_image_valid_dir = INVALID_DIR;
+		v->InvalidateImageCache();
 		v->UpdateViewport(true, false);
 	} while ((v = v->Next()) != nullptr);
 
@@ -4120,10 +4126,10 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 							const Trackdir dir = FindFirstTrackdir(trackdirbits);
 							if (HasSignalOnTrack(gp.new_tile, TrackdirToTrack(dir))) {
 								const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(gp.new_tile, TrackdirToTrack(dir));
-								if (prog && prog->actions_used_flags & (TRPAUF_SLOT_ACQUIRE | TRPAUF_SLOT_RELEASE_FRONT | TRPAUF_REVERSE | TRPAUF_SPEED_RESTRICTION)) {
+								if (prog && prog->actions_used_flags & (TRPAUF_SLOT_ACQUIRE | TRPAUF_SLOT_RELEASE_FRONT | TRPAUF_REVERSE | TRPAUF_SPEED_RESTRICTION | TRPAUF_CHANGE_COUNTER)) {
 									TraceRestrictProgramResult out;
 									TraceRestrictProgramInput input(gp.new_tile, dir, nullptr, nullptr);
-									input.permitted_slot_operations = TRPISP_ACQUIRE | TRPISP_RELEASE_FRONT;
+									input.permitted_slot_operations = TRPISP_ACQUIRE | TRPISP_RELEASE_FRONT | TRPISP_CHANGE_COUNTER;
 									prog->Execute(v, input, out);
 									if (out.flags & TRPRF_REVERSE && GetSignalType(gp.new_tile, TrackdirToTrack(dir)) == SIGTYPE_PBS &&
 											!HasSignalOnTrackdir(gp.new_tile, dir)) {
@@ -4987,7 +4993,7 @@ static bool TrainLocoHandler(Train *v, bool mode)
 
 			if (HasBit(v->flags, VRF_TRAIN_STUCK) && v->wait_counter > 2 * _settings_game.pf.wait_for_pbs_path * DAY_TICKS) {
 				/* Show message to player. */
-				if (_settings_client.gui.lost_vehicle_warn && v->owner == _local_company) {
+				if (v->owner == _local_company && (HasBit(v->flags, VRF_WAITING_RESTRICTION) ? _settings_client.gui.restriction_wait_vehicle_warn : _settings_client.gui.lost_vehicle_warn)) {
 					SetDParam(0, v->index);
 					AddVehicleAdviceNewsItem(STR_NEWS_TRAIN_IS_STUCK, v->index);
 				}

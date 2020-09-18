@@ -14,6 +14,8 @@
 #include "newgrf_profiling.h"
 #include "core/pool_func.hpp"
 #include "vehicle_type.h"
+#include "newgrf_cache_check.h"
+#include "scope_info.h"
 
 #include "safeguards.h"
 
@@ -72,7 +74,7 @@ RandomizedSpriteGroup::~RandomizedSpriteGroup()
 	free(this->groups);
 }
 
-static inline uint32 GetVariable(const ResolverObject &object, ScopeResolver *scope, byte variable, uint32 parameter, bool *available)
+static inline uint32 GetVariable(const ResolverObject &object, ScopeResolver *scope, byte variable, uint32 parameter, GetVariableExtra *extra)
 {
 	uint32 value;
 	switch (variable) {
@@ -93,7 +95,7 @@ static inline uint32 GetVariable(const ResolverObject &object, ScopeResolver *sc
 			/* First handle variables common with Action7/9/D */
 			if (variable < 0x40 && GetGlobalVariable(variable, &value, object.grffile)) return value;
 			/* Not a common variable, so evaluate the feature specific variables */
-			return scope->GetVariable(variable, parameter, available);
+			return scope->GetVariable(variable, parameter, extra);
 	}
 }
 
@@ -122,10 +124,10 @@ static inline uint32 GetVariable(const ResolverObject &object, ScopeResolver *sc
  * @param[out] available Set to false, in case the variable does not exist.
  * @return Value
  */
-/* virtual */ uint32 ScopeResolver::GetVariable(byte variable, uint32 parameter, bool *available) const
+/* virtual */ uint32 ScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	DEBUG(grf, 1, "Unhandled scope variable 0x%X", variable);
-	*available = false;
+	extra->available = false;
 	return UINT_MAX;
 }
 
@@ -199,9 +201,6 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust *adjust, ScopeResolver
 	}
 }
 
-bool _sprite_group_resolve_check_veh_check = false;
-VehicleType _sprite_group_resolve_check_veh_type;
-
 static bool RangeHighComparator(const DeterministicSpriteGroupRange& range, uint32 value)
 {
 	return range.high < value;
@@ -219,9 +218,8 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 		DeterministicSpriteGroupAdjust *adjust = &this->adjusts[i];
 
 		/* Try to get the variable. We shall assume it is available, unless told otherwise. */
-		bool available = true;
+		GetVariableExtra extra(adjust->and_mask << adjust->shift_num);
 		if (adjust->variable == 0x7E) {
-			_sprite_group_resolve_check_veh_check = false;
 			const SpriteGroup *subgroup = SpriteGroup::Resolve(adjust->subroutine, object, false);
 			if (subgroup == nullptr) {
 				value = CALLBACK_FAILED;
@@ -232,59 +230,12 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 			/* Note: 'last_value' and 'reseed' are shared between the main chain and the procedure */
 		} else if (adjust->variable == 0x7B) {
 			_sprite_group_resolve_check_veh_check = false;
-			value = GetVariable(object, scope, adjust->parameter, last_value, &available);
+			value = GetVariable(object, scope, adjust->parameter, last_value, &extra);
 		} else {
-			if (_sprite_group_resolve_check_veh_check) {
-				switch (adjust->variable) {
-					// whitelist of variables which can be checked without requiring an immediate re-check on the next tick
-					case 0xC:
-					case 0x1A:
-					case 0x1C:
-					case 0x25:
-					case 0x40:
-					case 0x41:
-					case 0x42:
-					case 0x47:
-					case 0x49:
-					case 0x4B:
-					case 0x4D:
-					case 0x60:
-					case 0x7D:
-					case 0x7F:
-					case 0x80 + 0x0:
-					case 0x80 + 0x1:
-					case 0x80 + 0x4:
-					case 0x80 + 0x5:
-					case 0x80 + 0x39:
-					case 0x80 + 0x3A:
-					case 0x80 + 0x3B:
-					case 0x80 + 0x3C:
-					case 0x80 + 0x3D:
-					case 0x80 + 0x44:
-					case 0x80 + 0x45:
-					case 0x80 + 0x46:
-					case 0x80 + 0x47:
-					case 0x80 + 0x5A:
-					case 0x80 + 0x72:
-					case 0x80 + 0x7A:
-						break;
-
-					case 0x80 + 0x62:
-						// RoadVehicle::state
-						if (_sprite_group_resolve_check_veh_type != VEH_ROAD) {
-							_sprite_group_resolve_check_veh_check = false;
-						}
-						break;
-
-					default:
-						_sprite_group_resolve_check_veh_check = false;
-						break;
-				}
-			}
-			value = GetVariable(object, scope, adjust->variable, adjust->parameter, &available);
+			value = GetVariable(object, scope, adjust->variable, adjust->parameter, &extra);
 		}
 
-		if (!available) {
+		if (!extra.available) {
 			/* Unsupported variable: skip further processing and return either
 			 * the group from the first range or the default group. */
 			return SpriteGroup::Resolve(this->error_group, object, false);

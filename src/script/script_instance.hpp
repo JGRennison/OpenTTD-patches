@@ -174,6 +174,8 @@ public:
 	 */
 	SQInteger GetOpsTillSuspend();
 
+	void LimitOpsTillSuspend(SQInteger suspend);
+
 	/**
 	 * DoCommand callback function for all commands executed by scripts.
 	 * @param result The result of the command.
@@ -199,6 +201,8 @@ public:
 	bool IsSleeping() { return this->suspend != 0; }
 
 	size_t GetAllocatedMemory() const;
+
+	void SetMemoryAllocationLimit(size_t limit) const;
 
 	/**
 	 * Indicate whether this instance is currently being destroyed.

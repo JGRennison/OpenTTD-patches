@@ -101,7 +101,8 @@ public:
 
 	uint16 max_speed;
 	uint32 power;
-	uint32 weight;
+	uint32 empty_weight;
+	uint32 full_weight;
 	uint32 max_te;
 
 	VehicleSpriteSeq sprite_seq;                     ///< NOSAVE: Vehicle appearance.

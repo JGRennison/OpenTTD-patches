@@ -259,14 +259,14 @@ struct ViewportDrawer {
 	Point foundation_offset[FOUNDATION_PART_END];    ///< Pixel offset for ground sprites on the foundations.
 };
 
-static void MarkViewportDirty(ViewPort * const vp, int left, int top, int right, int bottom);
+static void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bottom);
 static void MarkRouteStepDirty(RouteStepsMap::const_iterator cit);
 static void MarkRouteStepDirty(const TileIndex tile, uint order_nr);
 
 static DrawPixelInfo _dpi_for_text;
 static ViewportDrawer _vd;
 
-static std::vector<ViewPort *> _viewport_window_cache;
+static std::vector<Viewport *> _viewport_window_cache;
 
 RouteStepsMap _vp_route_steps;
 RouteStepsMap _vp_route_steps_last_mark_dirty;
@@ -329,7 +329,7 @@ enum ViewportDebugFlags {
 };
 uint32 _viewport_debug_flags;
 
-static Point MapXYZToViewport(const ViewPort *vp, int x, int y, int z)
+static Point MapXYZToViewport(const Viewport *vp, int x, int y, int z)
 {
 	Point p = RemapCoords(x, y, z);
 	p.x -= vp->virtual_width / 2;
@@ -337,7 +337,7 @@ static Point MapXYZToViewport(const ViewPort *vp, int x, int y, int z)
 	return p;
 }
 
-void ClearViewPortCache(ViewPort *vp)
+void ClearViewPortCache(Viewport *vp)
 {
 	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
 		memset(vp->map_draw_vehicles_cache.done_hash_bits, 0, sizeof(vp->map_draw_vehicles_cache.done_hash_bits));
@@ -347,7 +347,7 @@ void ClearViewPortCache(ViewPort *vp)
 
 void ClearViewPortCaches()
 {
-	for (ViewPort *vp : _viewport_window_cache) {
+	for (Viewport *vp : _viewport_window_cache) {
 		ClearViewPortCache(vp);
 	}
 }
@@ -613,7 +613,7 @@ static void DoSetViewportPosition(Window *w, const int left, const int top, cons
 	}
 }
 
-inline void UpdateViewportDirtyBlockLeftMargin(ViewPort *vp)
+inline void UpdateViewportDirtyBlockLeftMargin(Viewport *vp)
 {
 	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
 		vp->dirty_block_left_margin = 0;
@@ -628,7 +628,7 @@ static void SetViewportPosition(Window *w, int x, int y, bool force_update_overl
 		w->flags |= WF_DIRTY;
 	}
 
-	ViewPort *vp = w->viewport;
+	Viewport *vp = w->viewport;
 	int old_left = vp->virtual_left;
 	int old_top = vp->virtual_top;
 	int i;
@@ -694,9 +694,9 @@ static void SetViewportPosition(Window *w, int x, int y, bool force_update_overl
  * @return Pointer to the viewport if the xy position is in the viewport of the window,
  *         otherwise \c nullptr is returned.
  */
-ViewPort *IsPtInWindowViewport(const Window *w, int x, int y)
+Viewport *IsPtInWindowViewport(const Window *w, int x, int y)
 {
-	ViewPort *vp = w->viewport;
+	Viewport *vp = w->viewport;
 
 	if (vp != nullptr &&
 			IsInsideMM(x, vp->left, vp->left + vp->width) &&
@@ -718,7 +718,7 @@ ViewPort *IsPtInWindowViewport(const Window *w, int x, int y)
  * @param clamp_to_map Clamp the coordinate outside of the map to the closest, non-void tile within the map
  * @return Tile coordinate or (-1, -1) if given x or y is not within viewport frame
  */
-Point TranslateXYToTileCoord(const ViewPort *vp, int x, int y, bool clamp_to_map)
+Point TranslateXYToTileCoord(const Viewport *vp, int x, int y, bool clamp_to_map)
 {
 	if (!IsInsideBS(x, vp->left, vp->width) || !IsInsideBS(y, vp->top, vp->height)) {
 		Point pt = { -1, -1 };
@@ -736,7 +736,7 @@ Point TranslateXYToTileCoord(const ViewPort *vp, int x, int y, bool clamp_to_map
 static Point GetTileFromScreenXY(int x, int y, int zoom_x, int zoom_y)
 {
 	Window *w;
-	ViewPort *vp;
+	Viewport *vp;
 	Point pt;
 
 	if ( (w = FindWindowFromPt(x, y)) != nullptr &&
@@ -756,7 +756,7 @@ Point GetTileBelowCursor()
 Point GetTileZoomCenterWindow(bool in, Window * w)
 {
 	int x, y;
-	ViewPort *vp = w->viewport;
+	Viewport *vp = w->viewport;
 
 	if (in) {
 		x = ((_cursor.pos.x - vp->left) >> 1) + (vp->width >> 2);
@@ -777,7 +777,7 @@ Point GetTileZoomCenterWindow(bool in, Window * w)
  * @param widget_zoom_in widget index for window with zoom-in button
  * @param widget_zoom_out widget index for window with zoom-out button
  */
-void HandleZoomMessage(Window *w, const ViewPort *vp, byte widget_zoom_in, byte widget_zoom_out)
+void HandleZoomMessage(Window *w, const Viewport *vp, byte widget_zoom_in, byte widget_zoom_out)
 {
 	w->SetWidgetDisabledState(widget_zoom_in, vp->zoom <= _settings_client.gui.zoom_min);
 	w->SetWidgetDirty(widget_zoom_in);
@@ -1834,7 +1834,7 @@ void ViewportSign::MarkDirty(ZoomLevel maxzoom) const
 		zoomlevels[zoom].bottom = this->top    + ScaleByZoom(VPSM_TOP + FONT_HEIGHT_NORMAL + VPSM_BOTTOM + 1, zoom);
 	}
 
-	for (ViewPort *vp : _viewport_window_cache) {
+	for (Viewport *vp : _viewport_window_cache) {
 		if (vp->zoom <= maxzoom) {
 			Rect &zl = zoomlevels[vp->zoom];
 			MarkViewportDirty(vp, zl.left, zl.top, zl.right, zl.bottom);
@@ -1952,7 +1952,7 @@ static void ViewportDrawBoundingBoxes(const ParentSpriteToSortVector *psd)
 	}
 }
 
-static void ViewportMapStoreBridge(const ViewPort * const vp, const TileIndex tile)
+static void ViewportMapStoreBridge(const Viewport * const vp, const TileIndex tile)
 {
 	extern LegendAndColour _legend_land_owners[NUM_NO_COMPANY_ENTRIES + MAX_COMPANIES + 1];
 	extern uint _company_to_list_pos[MAX_COMPANIES];
@@ -2238,7 +2238,7 @@ static bool ViewportMapPrepareVehicleRoute(const Vehicle * const veh)
 }
 
 /** Draw the route of a vehicle. */
-static void ViewportMapDrawVehicleRoute(const ViewPort *vp)
+static void ViewportMapDrawVehicleRoute(const Viewport *vp)
 {
 	switch (_settings_client.gui.show_vehicle_route) {
 		/* case 0: return; // No */
@@ -2279,7 +2279,7 @@ static void ViewportMapDrawVehicleRoute(const ViewPort *vp)
 	}
 }
 
-static inline void DrawRouteStep(const ViewPort * const vp, const TileIndex tile, const RankOrderTypeList list)
+static inline void DrawRouteStep(const Viewport * const vp, const TileIndex tile, const RankOrderTypeList list)
 {
 	if (tile == INVALID_TILE) return;
 	const uint step_count = list.size() > max_rank_order_type_count ? 1 : list.size();
@@ -2408,14 +2408,14 @@ void ViewportPrepareVehicleRoute()
 }
 
 /** Draw the route steps of a vehicle. */
-static void ViewportDrawVehicleRouteSteps(const ViewPort * const vp)
+static void ViewportDrawVehicleRouteSteps(const Viewport * const vp)
 {
 	for (RouteStepsMap::const_iterator cit = _vp_route_steps.begin(); cit != _vp_route_steps.end(); cit++) {
 		DrawRouteStep(vp, cit->first, cit->second);
 	}
 }
 
-void ViewportDrawPlans(const ViewPort *vp)
+void ViewportDrawPlans(const Viewport *vp)
 {
 	DrawPixelInfo *old_dpi = _cur_dpi;
 	_cur_dpi = &_dpi_for_text;
@@ -2675,7 +2675,7 @@ static inline uint32 ViewportMapGetColourOwner(const TileIndex tile, TileType t,
 	return colour;
 }
 
-static inline void ViewportMapStoreBridgeAboveTile(const ViewPort * const vp, const TileIndex tile)
+static inline void ViewportMapStoreBridgeAboveTile(const Viewport * const vp, const TileIndex tile)
 {
 	/* No need to bother for hidden things */
 	if (!_settings_client.gui.show_bridges_on_map) return;
@@ -2691,7 +2691,7 @@ static inline void ViewportMapStoreBridgeAboveTile(const ViewPort * const vp, co
 	}
 }
 
-static inline TileIndex ViewportMapGetMostSignificantTileType(const ViewPort * const vp, const TileIndex from_tile, TileType * const tile_type)
+static inline TileIndex ViewportMapGetMostSignificantTileType(const Viewport * const vp, const TileIndex from_tile, TileType * const tile_type)
 {
 	if (vp->zoom <= ZOOM_LVL_OUT_128X || !_settings_client.gui.viewport_map_scan_surroundings) {
 		const TileType ttype = GetTileType(from_tile);
@@ -2750,7 +2750,7 @@ static inline TileIndex ViewportMapGetMostSignificantTileType(const ViewPort * c
 
 /** Get the colour of a tile, can be 32bpp RGB or 8bpp palette index. */
 template <bool is_32bpp, bool show_slope>
-uint32 ViewportMapGetColour(const ViewPort * const vp, uint x, uint y, const uint colour_index)
+uint32 ViewportMapGetColour(const Viewport * const vp, uint x, uint y, const uint colour_index)
 {
 	if (!(IsInsideMM(x, TILE_SIZE, MapMaxX() * TILE_SIZE - 1) &&
 		  IsInsideMM(y, TILE_SIZE, MapMaxY() * TILE_SIZE - 1)))
@@ -2802,10 +2802,10 @@ static inline void PixelBlend(uint32 * const d, const uint32 s)
 }
 
 /** Draw the bounding boxes of the scrolling viewport (right-clicked and dragged) */
-static void ViewportMapDrawScrollingViewportBox(const ViewPort * const vp)
+static void ViewportMapDrawScrollingViewportBox(const Viewport * const vp)
 {
 	if (_scrolling_viewport && _scrolling_viewport->viewport) {
-		const ViewPort * const vp_scrolling = _scrolling_viewport->viewport;
+		const Viewport * const vp_scrolling = _scrolling_viewport->viewport;
 		if (vp_scrolling->zoom < ZOOM_LVL_DRAW_MAP) {
 			/* Check intersection of dpi and vp_scrolling */
 			const int mask = ScaleByZoom(-1, vp->zoom);
@@ -2855,7 +2855,7 @@ static void ViewportMapDrawScrollingViewportBox(const ViewPort * const vp)
 
 uint32 *_vp_map_line; ///< Buffer for drawing the map of a viewport.
 
-static void ViewportMapDrawBridgeTunnel(const ViewPort * const vp, const TunnelBridgeToMap * const tbtm, const int z,
+static void ViewportMapDrawBridgeTunnel(const Viewport * const vp, const TunnelBridgeToMap * const tbtm, const int z,
 		const bool is_tunnel, const int w, const int h, Blitter * const blitter)
 {
 	extern LegendAndColour _legend_land_owners[NUM_NO_COMPANY_ENTRIES + MAX_COMPANIES + 1];
@@ -2886,7 +2886,7 @@ static void ViewportMapDrawBridgeTunnel(const ViewPort * const vp, const TunnelB
 
 /** Draw the map on a viewport. */
 template <bool is_32bpp, bool show_slope>
-void ViewportMapDraw(const ViewPort * const vp)
+void ViewportMapDraw(const Viewport * const vp)
 {
 	assert(vp != nullptr);
 	Blitter * const blitter = BlitterFactory::GetCurrentBlitter();
@@ -3068,7 +3068,7 @@ static void ViewportProcessParentSprites()
 	}
 }
 
-void ViewportDoDraw(ViewPort *vp, int left, int top, int right, int bottom)
+void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom)
 {
 	DrawPixelInfo *old_dpi = _cur_dpi;
 	_cur_dpi = &_vd.dpi;
@@ -3173,7 +3173,7 @@ void ViewportDoDraw(ViewPort *vp, int left, int top, int right, int bottom)
  * Make sure we don't draw a too big area at a time.
  * If we do, the sprite sorter will run into major performance problems and the sprite memory may overflow.
  */
-void ViewportDrawChk(ViewPort *vp, int left, int top, int right, int bottom)
+void ViewportDrawChk(Viewport *vp, int left, int top, int right, int bottom)
 {
 	if ((vp->zoom < ZOOM_LVL_DRAW_MAP) && ((int64)ScaleByZoom(bottom - top, vp->zoom) * (int64)ScaleByZoom(right - left, vp->zoom) > (int64)(1000000 * ZOOM_LVL_BASE * ZOOM_LVL_BASE))) {
 		if ((bottom - top) > (right - left)) {
@@ -3195,7 +3195,7 @@ void ViewportDrawChk(ViewPort *vp, int left, int top, int right, int bottom)
 	}
 }
 
-static inline void ViewportDraw(ViewPort *vp, int left, int top, int right, int bottom)
+static inline void ViewportDraw(Viewport *vp, int left, int top, int right, int bottom)
 {
 	if (right <= vp->left || bottom <= vp->top) return;
 
@@ -3242,7 +3242,7 @@ void Window::DrawViewport() const
  * @param[in,out] scroll_x Viewport X scroll.
  * @param[in,out] scroll_y Viewport Y scroll.
  */
-static inline void ClampViewportToMap(const ViewPort *vp, int *scroll_x, int *scroll_y)
+static inline void ClampViewportToMap(const Viewport *vp, int *scroll_x, int *scroll_y)
 {
 	/* Centre of the viewport is hot spot. */
 	Point pt = {
@@ -3268,7 +3268,7 @@ static inline void ClampViewportToMap(const ViewPort *vp, int *scroll_x, int *sc
  */
 void UpdateViewportPosition(Window *w)
 {
-	const ViewPort *vp = w->viewport;
+	const Viewport *vp = w->viewport;
 
 	if (w->viewport->follow_vehicle != INVALID_VEHICLE) {
 		const Vehicle *veh = Vehicle::Get(w->viewport->follow_vehicle);
@@ -3307,7 +3307,7 @@ void UpdateViewportPosition(Window *w)
 	}
 }
 
-void UpdateViewportSizeZoom(ViewPort *vp)
+void UpdateViewportSizeZoom(Viewport *vp)
 {
 	vp->dirty_blocks_per_column = CeilDiv(vp->height, vp->GetDirtyBlockHeight());
 	vp->dirty_blocks_per_row = CeilDiv(vp->width, vp->GetDirtyBlockWidth());
@@ -3375,7 +3375,7 @@ void UpdateActiveScrollingViewport(Window *w)
  * @param bottom Bottom edge of area to repaint
  * @ingroup dirty
  */
-static void MarkViewportDirty(ViewPort * const vp, int left, int top, int right, int bottom)
+static void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bottom)
 {
 	/* Rounding wrt. zoom-out level */
 	right  += (1 << vp->zoom) - 1;
@@ -3425,7 +3425,7 @@ static void MarkViewportDirty(ViewPort * const vp, int left, int top, int right,
  */
 void MarkAllViewportsDirty(int left, int top, int right, int bottom, const ZoomLevel mark_dirty_if_zoomlevel_is_below)
 {
-	for (ViewPort * const vp : _viewport_window_cache) {
+	for (Viewport * const vp : _viewport_window_cache) {
 		if (vp->zoom >= mark_dirty_if_zoomlevel_is_below) continue;
 		MarkViewportDirty(vp, left, top, right, bottom);
 	}
@@ -3442,7 +3442,7 @@ static void MarkRouteStepDirty(const TileIndex tile, uint order_nr)
 	assert(tile != INVALID_TILE);
 	const Point pt = RemapCoords2(TileX(tile) * TILE_SIZE + TILE_SIZE / 2, TileY(tile) * TILE_SIZE + TILE_SIZE / 2);
 	const int char_height = GetCharacterHeight(FS_SMALL) + 1;
-	for (ViewPort * const vp : _viewport_window_cache) {
+	for (Viewport * const vp : _viewport_window_cache) {
 		const int half_width = ScaleByZoom((_vp_route_step_width / 2) + 1, vp->zoom);
 		const int height = ScaleByZoom(_vp_route_step_height_top + char_height * order_nr + _vp_route_step_height_bottom, vp->zoom);
 		MarkViewportDirty(vp, pt.x - half_width, pt.y - height, pt.x + half_width, pt.y);
@@ -3471,7 +3471,7 @@ void MarkAllViewportMapsDirty(int left, int top, int right, int bottom)
 {
 	Window *w;
 	FOR_ALL_WINDOWS_FROM_BACK(w) {
-		ViewPort *vp = w->viewport;
+		Viewport *vp = w->viewport;
 		if (vp != nullptr && vp->zoom >= ZOOM_LVL_DRAW_MAP) {
 			assert(vp->width != 0);
 			MarkViewportDirty(vp, left, top, right, bottom);
@@ -3729,7 +3729,7 @@ void SetSelectionRed(bool b)
  * @param sign the sign to check
  * @return true if the sign was hit
  */
-static bool CheckClickOnViewportSign(const ViewPort *vp, int x, int y, const ViewportSign *sign)
+static bool CheckClickOnViewportSign(const Viewport *vp, int x, int y, const ViewportSign *sign)
 {
 	bool small = (vp->zoom >= ZOOM_LVL_OUT_16X);
 	int sign_half_width = ScaleByZoom((small ? sign->width_small : sign->width_normal) / 2, vp->zoom);
@@ -3747,7 +3747,7 @@ static bool CheckClickOnViewportSign(const ViewPort *vp, int x, int y, const Vie
  * @param y Y position of click
  * @return true if the sign was hit
  */
-static bool CheckClickOnViewportSign(const ViewPort *vp, int x, int y)
+static bool CheckClickOnViewportSign(const Viewport *vp, int x, int y)
 {
 	if (_game_mode == GM_MENU) return false;
 
@@ -3927,7 +3927,7 @@ void RebuildViewportKdtree()
 }
 
 
-static bool CheckClickOnLandscape(const ViewPort *vp, int x, int y)
+static bool CheckClickOnLandscape(const Viewport *vp, int x, int y)
 {
 	Point pt = TranslateXYToTileCoord(vp, x, y);
 
@@ -3960,7 +3960,7 @@ static void PlaceObject()
 
 bool HandleViewportDoubleClicked(Window *w, int x, int y)
 {
-	ViewPort *vp = w->viewport;
+	Viewport *vp = w->viewport;
 	if (vp->zoom < ZOOM_LVL_DRAW_MAP) return false;
 
 	switch (_settings_client.gui.action_when_viewport_map_is_dblclicked) {
@@ -3971,14 +3971,14 @@ bool HandleViewportDoubleClicked(Window *w, int x, int y)
 				ZoomInOrOutToCursorWindow(true, w);
 			return true;
 		case 2: // Open an extra viewport
-			ShowExtraViewPortWindowForTileUnderCursor();
+			ShowExtraViewportWindowForTileUnderCursor();
 			return true;
 		default:
 			return false;
 	}
 }
 
-bool HandleViewportClicked(const ViewPort *vp, int x, int y, bool double_click)
+bool HandleViewportClicked(const Viewport *vp, int x, int y, bool double_click)
 {
 	/* No click in smallmap mode except for plan making. */
 	if (vp->zoom >= ZOOM_LVL_DRAW_MAP && !(_thd.place_mode == HT_POINT && _thd.select_proc == DDSP_DRAW_PLANLINE)) return true;
@@ -5413,7 +5413,7 @@ void ResetObjectToPlace()
 	SetObjectToPlace(SPR_CURSOR_MOUSE, PAL_NONE, HT_NONE, WC_MAIN_WINDOW, 0);
 }
 
-ViewportMapType ChangeRenderMode(const ViewPort *vp, bool down) {
+ViewportMapType ChangeRenderMode(const Viewport *vp, bool down) {
 	ViewportMapType map_type = vp->map_type;
 	if (vp->zoom < ZOOM_LVL_DRAW_MAP) return map_type;
 	if (down) {
@@ -5423,7 +5423,7 @@ ViewportMapType ChangeRenderMode(const ViewPort *vp, bool down) {
 	}
 }
 
-Point GetViewportStationMiddle(const ViewPort *vp, const Station *st)
+Point GetViewportStationMiddle(const Viewport *vp, const Station *st)
 {
 	int x = TileX(st->xy) * TILE_SIZE;
 	int y = TileY(st->xy) * TILE_SIZE;

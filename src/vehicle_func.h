@@ -27,7 +27,7 @@
 static const int VEHICLE_PROFIT_MIN_AGE = DAYS_IN_YEAR * 2; ///< Only vehicles older than this have a meaningful profit.
 static const Money VEHICLE_PROFIT_THRESHOLD = 10000;        ///< Threshold for a vehicle to be considered making good profit.
 
-struct ViewPort;
+struct Viewport;
 
 /**
  * Helper to check whether an image index is valid for a particular vehicle.
@@ -128,7 +128,7 @@ void ResetVehicleColourMap();
 byte GetBestFittingSubType(Vehicle *v_from, Vehicle *v_for, CargoID dest_cargo_type);
 
 void ViewportAddVehicles(DrawPixelInfo *dpi);
-void ViewportMapDrawVehicles(DrawPixelInfo *dpi, ViewPort *vp);
+void ViewportMapDrawVehicles(DrawPixelInfo *dpi, Viewport *vp);
 
 void ShowNewGrfVehicleError(EngineID engine, StringID part1, StringID part2, GRFBugs bug_type, bool critical);
 CommandCost TunnelBridgeIsFree(TileIndex tile, TileIndex endtile, const Vehicle *ignore = nullptr, bool across_only = false);

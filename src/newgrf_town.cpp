@@ -14,7 +14,7 @@
 
 #include "safeguards.h"
 
-/* virtual */ uint32 TownScopeResolver::GetVariable(byte variable, uint32 parameter, bool *available) const
+/* virtual */ uint32 TownScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	switch (variable) {
 		/* Larger towns */
@@ -113,7 +113,7 @@
 
 	DEBUG(grf, 1, "Unhandled town variable 0x%X", variable);
 
-	*available = false;
+	extra->available = false;
 	return UINT_MAX;
 }
 
@@ -148,7 +148,7 @@
 	t->psa_list.push_back(psa);
 }
 
-/* virtual */ uint32 FakeTownScopeResolver::GetVariable(byte variable, uint32 parameter, bool *available) const
+/* virtual */ uint32 FakeTownScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	switch (variable) {
 		/* Town index */
@@ -168,7 +168,7 @@
 
 	DEBUG(grf, 1, "Unhandled town variable 0x%X", variable);
 
-	*available = false;
+	extra->available = false;
 	return UINT_MAX;
 }
 

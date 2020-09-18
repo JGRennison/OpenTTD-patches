@@ -840,6 +840,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		      SLE_VAR(Ship, state,                     SLE_UINT8),
 		SLE_CONDDEQUE(Ship, path,                      SLE_UINT8,                  SLV_SHIP_PATH_CACHE, SL_MAX_VERSION),
 		  SLE_CONDVAR(Ship, rotation,                  SLE_UINT8,                  SLV_SHIP_ROTATION, SL_MAX_VERSION),
+		SLE_CONDVAR_X(Ship, lost_count,                SLE_UINT8,                     SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SHIP_LOST_COUNTER)),
 
 		SLE_CONDNULL(16, SLV_2, SLV_144), // old reserved space
 

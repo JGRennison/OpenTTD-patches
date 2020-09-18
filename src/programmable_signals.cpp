@@ -17,6 +17,7 @@
 #include "cmd_helper.h"
 
 ProgramList _signal_programs;
+bool _cleaning_signal_programs = false;
 
 SignalProgram::SignalProgram(TileIndex tile, Track track, bool raw)
 {
@@ -31,7 +32,6 @@ SignalProgram::SignalProgram(TileIndex tile, Track track, bool raw)
 
 SignalProgram::~SignalProgram()
 {
-	this->DebugPrintProgram();
 	this->first_instruction->Remove();
 	delete this->first_instruction;
 	delete this->last_instruction;
@@ -80,8 +80,23 @@ SignalSimpleCondition::SignalSimpleCondition(SignalConditionCode code)
 	}
 }
 
+bool SignalConditionComparable::EvaluateComparable(uint32 var_val)
+{
+	switch (this->comparator) {
+		case SGC_EQUALS:            return var_val == this->value;
+		case SGC_NOT_EQUALS:        return var_val != this->value;
+		case SGC_LESS_THAN:         return var_val <  this->value;
+		case SGC_LESS_THAN_EQUALS:  return var_val <= this->value;
+		case SGC_MORE_THAN:         return var_val >  this->value;
+		case SGC_MORE_THAN_EQUALS:  return var_val >= this->value;
+		case SGC_IS_TRUE:           return var_val != 0;
+		case SGC_IS_FALSE:          return !var_val;
+		default: NOT_REACHED();
+	}
+}
+
 SignalVariableCondition::SignalVariableCondition(SignalConditionCode code)
-	: SignalCondition(code)
+	: SignalConditionComparable(code)
 {
 	switch (this->cond_code) {
 		case PSC_NUM_GREEN: comparator = SGC_NOT_EQUALS; break;
@@ -99,18 +114,160 @@ SignalVariableCondition::SignalVariableCondition(SignalConditionCode code)
 		case PSC_NUM_RED:    var_val = vm.num_exits - vm.num_green; break;
 		default: NOT_REACHED();
 	}
+	return this->EvaluateComparable(var_val);
+}
 
-	switch (this->comparator) {
-		case SGC_EQUALS:            return var_val == this->value;
-		case SGC_NOT_EQUALS:        return var_val != this->value;
-		case SGC_LESS_THAN:         return var_val <  this->value;
-		case SGC_LESS_THAN_EQUALS:  return var_val <= this->value;
-		case SGC_MORE_THAN:         return var_val >  this->value;
-		case SGC_MORE_THAN_EQUALS:  return var_val >= this->value;
-		case SGC_IS_TRUE:           return var_val != 0;
-		case SGC_IS_FALSE:          return !var_val;
+void AddSignalSlotDependency(TraceRestrictSlotID on, SignalReference dep)
+{
+	TraceRestrictSlot *slot = TraceRestrictSlot::Get(on);
+	assert(slot->owner == GetTileOwner(dep.tile));
+	slot->progsig_dependants.push_back(dep);
+}
+
+void RemoveSignalSlotDependency(TraceRestrictSlotID on, SignalReference dep)
+{
+	TraceRestrictSlot *slot = TraceRestrictSlot::Get(on);
+	auto ob = std::find(slot->progsig_dependants.begin(), slot->progsig_dependants.end(), dep);
+
+	if (ob != slot->progsig_dependants.end()) slot->progsig_dependants.erase(ob);
+}
+
+void AddSignalCounterDependency(TraceRestrictCounterID on, SignalReference dep)
+{
+	TraceRestrictCounter *ctr = TraceRestrictCounter::Get(on);
+	assert(ctr->owner == GetTileOwner(dep.tile));
+	ctr->progsig_dependants.push_back(dep);
+}
+
+void RemoveSignalCounterDependency(TraceRestrictCounterID on, SignalReference dep)
+{
+	TraceRestrictCounter *ctr = TraceRestrictCounter::Get(on);
+	auto ob = std::find(ctr->progsig_dependants.begin(), ctr->progsig_dependants.end(), dep);
+
+	if (ob != ctr->progsig_dependants.end()) ctr->progsig_dependants.erase(ob);
+}
+
+SignalSlotCondition::SignalSlotCondition(SignalConditionCode code, SignalReference this_sig, TraceRestrictSlotID slot_id)
+	: SignalConditionComparable(code), this_sig(this_sig), slot_id(slot_id)
+{
+	this->comparator = SGC_EQUALS;
+	this->value = 0;
+	if (this->CheckSlotValid()) {
+		AddSignalSlotDependency(this->slot_id, this->this_sig);
+	}
+}
+
+bool SignalSlotCondition::IsSlotValid() const
+{
+	return TraceRestrictSlot::IsValidID(this->slot_id);
+}
+
+bool SignalSlotCondition::CheckSlotValid()
+{
+	bool valid = this->IsSlotValid();
+	if (!valid) {
+		this->Invalidate();
+	}
+	return valid;
+}
+
+void SignalSlotCondition::Invalidate()
+{
+	this->slot_id = INVALID_TRACE_RESTRICT_SLOT_ID;
+}
+
+void SignalSlotCondition::SetSlot(TraceRestrictSlotID slot_id)
+{
+	if (this->IsSlotValid()) {
+		RemoveSignalSlotDependency(this->slot_id, this->this_sig);
+	}
+	this->slot_id = slot_id;
+	if (this->CheckSlotValid()) {
+		AddSignalSlotDependency(this->slot_id, this->this_sig);
+	}
+}
+
+/*virtual*/ SignalSlotCondition::~SignalSlotCondition()
+{
+	if (_cleaning_signal_programs) return;
+
+	if (this->IsSlotValid()) {
+		RemoveSignalSlotDependency(this->slot_id, this->this_sig);
+	}
+}
+
+/*virtual*/ bool SignalSlotCondition::Evaluate(SignalVM& vm)
+{
+	if (!this->CheckSlotValid()) {
+		DEBUG(misc, 1, "Signal (%x, %d) has an invalid condition", this->this_sig.tile, this->this_sig.track);
+		return false;
+	}
+
+	const TraceRestrictSlot *slot = TraceRestrictSlot::Get(this->slot_id);
+	switch (this->cond_code) {
+		case PSC_SLOT_OCC:     return this->EvaluateComparable(slot->occupants.size());
+		case PSC_SLOT_OCC_REM: return this->EvaluateComparable(slot->max_occupancy > slot->occupants.size() ? slot->max_occupancy - slot->occupants.size() : 0);
 		default: NOT_REACHED();
 	}
+}
+
+SignalCounterCondition::SignalCounterCondition(SignalReference this_sig, TraceRestrictCounterID ctr_id)
+	: SignalConditionComparable(PSC_COUNTER), this_sig(this_sig), ctr_id(ctr_id)
+{
+	this->comparator = SGC_EQUALS;
+	this->value = 0;
+	if (this->CheckCounterValid()) {
+		AddSignalCounterDependency(this->ctr_id, this->this_sig);
+	}
+}
+
+bool SignalCounterCondition::IsCounterValid() const
+{
+	return TraceRestrictCounter::IsValidID(this->ctr_id);
+}
+
+bool SignalCounterCondition::CheckCounterValid()
+{
+	bool valid = this->IsCounterValid();
+	if (!valid) {
+		this->Invalidate();
+	}
+	return valid;
+}
+
+void SignalCounterCondition::Invalidate()
+{
+	this->ctr_id = INVALID_TRACE_RESTRICT_COUNTER_ID;
+}
+
+void SignalCounterCondition::SetCounter(TraceRestrictCounterID ctr_id)
+{
+	if (this->IsCounterValid()) {
+		RemoveSignalCounterDependency(this->ctr_id, this->this_sig);
+	}
+	this->ctr_id = ctr_id;
+	if (this->CheckCounterValid()) {
+		AddSignalCounterDependency(this->ctr_id, this->this_sig);
+	}
+}
+
+/*virtual*/ SignalCounterCondition::~SignalCounterCondition()
+{
+	if (_cleaning_signal_programs) return;
+
+	if (this->IsCounterValid()) {
+		RemoveSignalCounterDependency(this->ctr_id, this->this_sig);
+	}
+}
+
+/*virtual*/ bool SignalCounterCondition::Evaluate(SignalVM& vm)
+{
+	if (!this->CheckCounterValid()) {
+		DEBUG(misc, 1, "Signal (%x, %d) has an invalid condition", this->this_sig.tile, this->this_sig.track);
+		return false;
+	}
+
+	return this->EvaluateComparable(TraceRestrictCounter::Get(this->ctr_id)->value);
 }
 
 SignalStateCondition::SignalStateCondition(SignalReference this_sig,
@@ -157,9 +314,12 @@ void SignalStateCondition::SetSignal(TileIndex tile, Trackdir track)
 
 /*virtual*/ SignalStateCondition::~SignalStateCondition()
 {
-	if (this->IsSignalValid())
+	if (_cleaning_signal_programs) return;
+
+	if (this->IsSignalValid()) {
 		RemoveSignalDependency(SignalReference(this->sig_tile, TrackdirToTrack(sig_track)),
 																					 this->this_sig);
+	}
 }
 
 /*virtual*/ bool SignalStateCondition::Evaluate(SignalVM& vm)
@@ -386,12 +546,14 @@ void FreeSignalProgram(SignalReference ref)
 
 void FreeSignalPrograms()
 {
+	_cleaning_signal_programs = true;
 	ProgramList::iterator i, e;
 	for (i = _signal_programs.begin(), e = _signal_programs.end(); i != e;) {
 		delete i->second;
 		// Must postincrement here to avoid iterator invalidation
 		_signal_programs.erase(i++);
 	}
+	_cleaning_signal_programs = false;
 }
 
 SignalState RunSignalProgram(SignalReference ref, uint num_exits, uint num_green)
@@ -419,11 +581,52 @@ void RemoveProgramDependencies(SignalReference dependency_target, SignalReferenc
 			SignalIf* ifi = static_cast<SignalIf*>(insn);
 			if (ifi->condition->ConditionCode() == PSC_SIGNAL_STATE) {
 				SignalStateCondition* c = static_cast<SignalStateCondition*>(ifi->condition);
-				if(c->sig_tile == dependency_target.tile && TrackdirToTrack(c->sig_track) == dependency_target.track)
+				if (c->sig_tile == dependency_target.tile && TrackdirToTrack(c->sig_track) == dependency_target.track) {
 					c->Invalidate();
 				}
 			}
 		}
+	}
+
+	InvalidateWindowData(WC_SIGNAL_PROGRAM, (signal_to_update.tile << 3) | signal_to_update.track);
+	AddTrackToSignalBuffer(signal_to_update.tile, signal_to_update.track, GetTileOwner(signal_to_update.tile));
+	UpdateSignalsInBuffer();
+}
+
+void RemoveProgramSlotDependencies(TraceRestrictSlotID slot_being_removed, SignalReference signal_to_update)
+{
+	SignalProgram *prog = GetSignalProgram(signal_to_update);
+	for (SignalInstruction *insn : prog->instructions) {
+		if (insn->Opcode() == PSO_IF) {
+			SignalIf* ifi = static_cast<SignalIf*>(insn);
+			if (ifi->condition->ConditionCode() == PSC_SLOT_OCC || ifi->condition->ConditionCode() == PSC_SLOT_OCC_REM) {
+				SignalSlotCondition* c = static_cast<SignalSlotCondition*>(ifi->condition);
+				if (c->slot_id == slot_being_removed) {
+					c->Invalidate();
+				}
+			}
+		}
+	}
+
+	InvalidateWindowData(WC_SIGNAL_PROGRAM, (signal_to_update.tile << 3) | signal_to_update.track);
+	AddTrackToSignalBuffer(signal_to_update.tile, signal_to_update.track, GetTileOwner(signal_to_update.tile));
+	UpdateSignalsInBuffer();
+}
+
+void RemoveProgramCounterDependencies(TraceRestrictCounterID ctr_being_removed, SignalReference signal_to_update)
+{
+	SignalProgram *prog = GetSignalProgram(signal_to_update);
+	for (SignalInstruction *insn : prog->instructions) {
+		if (insn->Opcode() == PSO_IF) {
+			SignalIf* ifi = static_cast<SignalIf*>(insn);
+			if (ifi->condition->ConditionCode() == PSC_COUNTER) {
+				SignalCounterCondition* c = static_cast<SignalCounterCondition*>(ifi->condition);
+				if (c->ctr_id == ctr_being_removed) {
+					c->Invalidate();
+				}
+			}
+		}
+	}
 
 	InvalidateWindowData(WC_SIGNAL_PROGRAM, (signal_to_update.tile << 3) | signal_to_update.track);
 	AddTrackToSignalBuffer(signal_to_update.tile, signal_to_update.track, GetTileOwner(signal_to_update.tile));
@@ -586,6 +789,15 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 						cond = new SignalStateCondition(SignalReference(tile, track), INVALID_TILE, INVALID_TRACKDIR);
 						break;
 
+					case PSC_SLOT_OCC:
+					case PSC_SLOT_OCC_REM:
+						cond = new SignalSlotCondition(code, SignalReference(tile, track), INVALID_TRACE_RESTRICT_SLOT_ID);
+						break;
+
+					case PSC_COUNTER:
+						cond = new SignalCounterCondition(SignalReference(tile, track), INVALID_TRACE_RESTRICT_COUNTER_ID);
+						break;
+
 					default: NOT_REACHED();
 				}
 				si->SetCondition(cond);
@@ -622,6 +834,47 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 							return_cmd_error(STR_ERR_PROGSIG_INVALID_SIGNAL);
 						if (!exec) return CommandCost();
 						sc->SetSignal(ti, td);
+					} break;
+
+					case PSC_SLOT_OCC:
+					case PSC_SLOT_OCC_REM: {
+						SignalSlotCondition *sc = static_cast<SignalSlotCondition*>(si->condition);
+						SignalConditionField f = (SignalConditionField) GB(p2, 1, 2);
+						uint32 val = GB(p2, 3, 27);
+						if (f == SCF_COMPARATOR) {
+							if (val > SGC_LAST) return_cmd_error(STR_ERR_PROGSIG_INVALID_COMPARATOR);
+							if (!exec) return CommandCost();
+							sc->comparator = (SignalComparator) val;
+						} else if (f == SCF_VALUE) {
+							if (!exec) return CommandCost();
+							sc->value = val;
+						} else if (f == SCF_SLOT_COUNTER) {
+							if (val != INVALID_TRACE_RESTRICT_SLOT_ID && !TraceRestrictSlot::IsValidID(val)) return CMD_ERROR;
+							if (!exec) return CommandCost();
+							sc->SetSlot((TraceRestrictSlotID) val);
+						} else {
+							return_cmd_error(STR_ERR_PROGSIG_INVALID_CONDITION_FIELD);
+						}
+					} break;
+
+					case PSC_COUNTER: {
+						SignalCounterCondition *sc = static_cast<SignalCounterCondition*>(si->condition);
+						SignalConditionField f = (SignalConditionField) GB(p2, 1, 2);
+						uint32 val = GB(p2, 3, 27);
+						if (f == SCF_COMPARATOR) {
+							if (val > SGC_LAST) return_cmd_error(STR_ERR_PROGSIG_INVALID_COMPARATOR);
+							if (!exec) return CommandCost();
+							sc->comparator = (SignalComparator) val;
+						} else if (f == SCF_VALUE) {
+							if (!exec) return CommandCost();
+							sc->value = val;
+						} else if (f == SCF_SLOT_COUNTER) {
+							if (val != INVALID_TRACE_RESTRICT_COUNTER_ID && !TraceRestrictCounter::IsValidID(val)) return CMD_ERROR;
+							if (!exec) return CommandCost();
+							sc->SetCounter((TraceRestrictCounterID) val);
+						} else {
+							return_cmd_error(STR_ERR_PROGSIG_INVALID_CONDITION_FIELD);
+						}
 					} break;
 				}
 			}
@@ -736,6 +989,25 @@ static void CloneInstructions(SignalProgram *prog, SignalInstruction *insert_bef
 					case PSC_SIGNAL_STATE: {
 						SignalStateCondition *src = ((SignalStateCondition *) src_cond);
 						if_ins->SetCondition(new SignalStateCondition(SignalReference(prog->tile, prog->track), src->sig_tile, src->sig_track));
+						break;
+					}
+
+					case PSC_SLOT_OCC:
+					case PSC_SLOT_OCC_REM: {
+						SignalSlotCondition *src = ((SignalSlotCondition *) src_cond);
+						SignalSlotCondition *cond = new SignalSlotCondition(code, SignalReference(prog->tile, prog->track), src->slot_id);
+						cond->comparator = src->comparator;
+						cond->value = src->value;
+						if_ins->SetCondition(cond);
+						break;
+					}
+
+					case PSC_COUNTER: {
+						SignalCounterCondition *src = ((SignalCounterCondition *) src_cond);
+						SignalCounterCondition *cond = new SignalCounterCondition(SignalReference(prog->tile, prog->track), src->ctr_id);
+						cond->comparator = src->comparator;
+						cond->value = src->value;
+						if_ins->SetCondition(cond);
 						break;
 					}
 

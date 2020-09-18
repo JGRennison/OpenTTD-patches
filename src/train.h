@@ -221,6 +221,15 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 		return const_cast<Train *>(const_cast<const Train *>(this)->GetStationLoadingVehicle());
 	}
 
+	inline uint16 GetCargoWeight(uint cargo_amount) const
+	{
+		if (cargo_amount > 0) {
+			return (CargoSpec::Get(this->cargo_type)->weight * cargo_amount * FreightWagonMult(this->cargo_type)) / 16;
+		} else {
+			return 0;
+		}
+	}
+
 protected: // These functions should not be called outside acceleration code.
 	/**
 	 * Gets the speed a broken down train (low speed breakdown) is limited to.
@@ -272,13 +281,9 @@ protected: // These functions should not be called outside acceleration code.
 		return 0;
 	}
 
-	/**
-	 * Allows to know the weight value that this vehicle will use.
-	 * @return Weight value from the engine in tonnes.
-	 */
-	inline uint16 GetWeight() const
+	inline uint16 GetWeightWithoutCargo() const
 	{
-		uint16 weight = (CargoSpec::Get(this->cargo_type)->weight * this->cargo.StoredCount() * FreightWagonMult(this->cargo_type)) / 16;
+		uint16 weight = 0;
 
 		/* Vehicle weight is not added for articulated parts. */
 		if (!this->IsArticulatedPart()) {
@@ -291,6 +296,15 @@ protected: // These functions should not be called outside acceleration code.
 		}
 
 		return weight;
+	}
+
+	/**
+	 * Allows to know the weight value that this vehicle will use.
+	 * @return Weight value from the engine in tonnes.
+	 */
+	inline uint16 GetWeight() const
+	{
+		return this->GetWeightWithoutCargo() + this->GetCargoWeight(this->cargo.StoredCount());
 	}
 
 	/**

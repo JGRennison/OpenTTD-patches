@@ -50,7 +50,7 @@ struct HouseScopeResolver : public CommonHouseScopeResolver {
 	}
 
 	uint32 GetRandomBits() const override;
-	uint32 GetVariable(byte variable, uint32 parameter, bool *available) const override;
+	uint32 GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const override;
 	uint32 GetTriggers() const override;
 };
 
@@ -70,7 +70,7 @@ struct FakeHouseScopeResolver : public CommonHouseScopeResolver {
 		: CommonHouseScopeResolver(ro, house_id)
 	{ }
 
-	/* virtual */ uint32 GetVariable(byte variable, uint32 parameter, bool *available) const;
+	/* virtual */ uint32 GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const;
 };
 
 /** Resolver object to be used for houses (feature 07 spritegroups). */

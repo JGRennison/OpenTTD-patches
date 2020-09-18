@@ -280,6 +280,8 @@ public:
 	 * Get number of bytes allocated by this VM.
 	 */
 	size_t GetAllocatedMemory() const noexcept;
+
+	void SetMemoryAllocationLimit(size_t limit) noexcept;
 };
 
 

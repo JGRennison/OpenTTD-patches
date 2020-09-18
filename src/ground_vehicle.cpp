@@ -108,7 +108,7 @@ void GroundVehicle<T, Type>::CargoChanged()
 		weight += current_weight;
 		/* Slope steepness is in percent, result in N. */
 		u->gcache.cached_slope_resistance = current_weight * u->GetSlopeSteepness() * 100;
-		u->cur_image_valid_dir = INVALID_DIR;
+		u->InvalidateImageCache();
 	}
 	ClrBit(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST);
 

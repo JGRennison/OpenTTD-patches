@@ -403,7 +403,7 @@ STR_FILE_MENU_EXIT                                              :OpenTTD beenden
 
 # map menu
 STR_MAP_MENU_MAP_OF_WORLD                                       :Weltkarte
-STR_MAP_MENU_EXTRA_VIEW_PORT                                    :Zusatzansicht
+STR_MAP_MENU_EXTRA_VIEWPORT                                     :Zusatzansicht
 STR_MAP_MENU_LINGRAPH_LEGEND                                    :Frachtverbindungen
 STR_MAP_MENU_SIGN_LIST                                          :Schilderliste
 STR_MAP_MENU_PLAN_LIST                                          :Planliste
@@ -886,7 +886,7 @@ STR_NEWS_EXCLUSIVE_RIGHTS_TITLE                                 :{BIG_FONT}{BLAC
 STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION                           :{BIG_FONT}{BLACK}Stadtverwaltung von {TOWN} unterzeichnet Vertrag mit {STRING} über ein Jahr währende exklusive Transportrechte!
 
 # Extra view window
-STR_EXTRA_VIEW_PORT_TITLE                                       :{WHITE}Ansicht {COMMA}
+STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Ansicht {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Zusatzansicht ändern
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Aktuelle Position der Hauptansicht in diese Zusatzansicht kopieren
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Hauptansicht ändern
@@ -1709,7 +1709,7 @@ STR_CONFIG_SETTING_TREE_GROWTH_HELPTEXT                         :Lege die Rate d
 STR_CONFIG_SETTING_TREE_GROWTH_NORMAL                           :Normal
 STR_CONFIG_SETTING_TREE_GROWTH_SLOW                             :Langsam
 STR_CONFIG_SETTING_TREE_GROWTH_VERY_SLOW                        :Sehr langsam
-STR_CONFIG_SETTING_TREE_GROWTH_EXTREMLY_SLOW                    :Extrem langsam
+STR_CONFIG_SETTING_TREE_GROWTH_EXTREMELY_SLOW                   :Extrem langsam
 STR_CONFIG_SETTING_TREE_GROWTH_STATIC                           :Keiner
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Position der Werkzeugleiste: {STRING}
@@ -2743,8 +2743,8 @@ STR_PROGSIG_REMOVE_TOOLTIP                                      :{BLACK}Entferne
 STR_PROGSIG_REMOVE_PROGRAM_TOOLTIP                              :{BLACK}Entferne das gesamte Programm
 STR_PROGSIG_COPY_PROGRAM_TOOLTIP                                :{BLACK}Kopiere ein Programm von einem bereits vorhandenen Signal
 
-STR_PROGSIG_REMOVE_PROGRAM                                      :{RED}Entferne Programm
-STR_PROGSIG_COPY_PROGRAM                                        :{BLUE}Kopiere Programm
+STR_PROGSIG_REMOVE_PROGRAM                                      :{BLACK}Entferne Programm
+STR_PROGSIG_COPY_PROGRAM                                        :{BLACK}Kopiere Programm
 STR_PROGSIG_REMOVE                                              :{BLACK}Entfernen
 STR_PROGSIG_INSERT                                              :Einfügen
 STR_PROGSIG_INSERT_IF                                           :Bedingung

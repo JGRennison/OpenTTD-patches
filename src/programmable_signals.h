@@ -10,6 +10,7 @@
 #ifndef PROGRAMMABLE_SIGNALS_H
 #define PROGRAMMABLE_SIGNALS_H
 #include "rail_map.h"
+#include "tracerestrict.h"
 #include "core/smallvec_type.hpp"
 #include <map>
 
@@ -129,8 +130,11 @@ enum SignalConditionCode {
 	PSC_NUM_GREEN = 2,    ///< Number of green signals behind this signal
 	PSC_NUM_RED = 3,      ///< Number of red signals behind this signal
 	PSC_SIGNAL_STATE = 4, ///< State of another signal
+	PSC_SLOT_OCC = 5,     ///< Slot occupancy
+	PSC_SLOT_OCC_REM = 6, ///< Slot occupancy remaining
+	PSC_COUNTER = 7,      ///< Counter value
 
-	PSC_MAX = PSC_SIGNAL_STATE
+	PSC_MAX = PSC_COUNTER
 };
 
 class SignalCondition {
@@ -178,6 +182,17 @@ enum SignalComparator {
 enum SignalConditionField {
 	SCF_COMPARATOR = 0,       ///< the comparator (value from SignalComparator enum)
 	SCF_VALUE = 1,            ///< the value (integer value)
+	SCF_SLOT_COUNTER = 2,     ///< the slot or counter
+};
+
+class SignalConditionComparable: public SignalCondition {
+protected:
+	bool EvaluateComparable(uint32 var_val);
+
+public:
+	SignalConditionComparable(SignalConditionCode code) : SignalCondition(code) {}
+	SignalComparator comparator;
+	uint32 value;
 };
 
 /** A conditon based upon comparing a variable and a value. This condition can be
@@ -186,14 +201,11 @@ enum SignalConditionField {
  * The variable is specified by the conditon code, the comparison by @p comparator, and
  * the value to compare against by @p value. The condition returns the result of that value.
  */
-class SignalVariableCondition: public SignalCondition {
+class SignalVariableCondition: public SignalConditionComparable {
 public:
 	/// Constructs a condition refering to the value @p code refers to. Sets the
 	/// comparator and value to sane defaults.
 	SignalVariableCondition(SignalConditionCode code);
-
-	SignalComparator comparator;
-	uint32 value;
 
 	/// Evaluates the condition
 	virtual bool Evaluate(SignalVM &vm);
@@ -215,6 +227,40 @@ class SignalStateCondition: public SignalCondition {
 		SignalReference this_sig;
 		TileIndex sig_tile;
 		Trackdir sig_track;
+};
+
+/** A condition which is based upon the value of a slot. */
+class SignalSlotCondition: public SignalConditionComparable {
+	public:
+		SignalSlotCondition(SignalConditionCode code, SignalReference this_sig, TraceRestrictSlotID slot_id);
+
+		void SetSlot(TraceRestrictSlotID slot_id);
+		bool IsSlotValid() const;
+		bool CheckSlotValid();
+		void Invalidate();
+
+		virtual bool Evaluate(SignalVM& vm);
+		virtual ~SignalSlotCondition();
+
+		SignalReference this_sig;
+		TraceRestrictSlotID slot_id;
+};
+
+/** A condition which is based upon the value of a counter. */
+class SignalCounterCondition: public SignalConditionComparable {
+	public:
+		SignalCounterCondition(SignalReference this_sig, TraceRestrictCounterID ctr_id);
+
+		void SetCounter(TraceRestrictCounterID ctr_id);
+		bool IsCounterValid() const;
+		bool CheckCounterValid();
+		void Invalidate();
+
+		virtual bool Evaluate(SignalVM& vm);
+		virtual ~SignalCounterCondition();
+
+		SignalReference this_sig;
+		TraceRestrictCounterID ctr_id;
 };
 
 // -- Instructions

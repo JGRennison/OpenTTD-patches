@@ -367,6 +367,7 @@ DropDownList BaseVehicleListWindow::BuildActionDropdownList(bool show_autoreplac
 	}
 	if (this->vli.vtype == VEH_TRAIN && _settings_client.gui.show_adv_tracerestrict_features) {
 		list.emplace_back(new DropDownListStringItem(STR_TRACE_RESTRICT_SLOT_MANAGE, ADI_TRACERESTRICT_SLOT_MGMT, false));
+		list.emplace_back(new DropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_MANAGE, ADI_TRACERESTRICT_COUNTER_MGMT, false));
 	}
 	if (change_order_str != 0) {
 		list.emplace_back(new DropDownListStringItem(change_order_str, ADI_CHANGE_ORDER, disable));
@@ -2112,6 +2113,12 @@ public:
 					case ADI_TRACERESTRICT_SLOT_MGMT: {
 						extern void ShowTraceRestrictSlotWindow(CompanyID company);
 						ShowTraceRestrictSlotWindow(this->owner);
+						break;
+					}
+
+					case ADI_TRACERESTRICT_COUNTER_MGMT: {
+						extern void ShowTraceRestrictCounterWindow(CompanyID company);
+						ShowTraceRestrictCounterWindow(this->owner);
 						break;
 					}
 

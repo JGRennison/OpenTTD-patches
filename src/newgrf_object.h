@@ -116,7 +116,7 @@ struct ObjectScopeResolver : public ScopeResolver {
 	}
 
 	uint32 GetRandomBits() const override;
-	uint32 GetVariable(byte variable, uint32 parameter, bool *available) const override;
+	uint32 GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const override;
 };
 
 /** A resolver object to be used with feature 0F spritegroups. */

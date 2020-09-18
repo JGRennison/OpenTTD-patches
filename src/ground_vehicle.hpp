@@ -398,6 +398,9 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 		if (this->cur_speed != this->gcache.last_speed) {
 			SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
 			this->gcache.last_speed = this->cur_speed;
+			if (HasBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE)) {
+				this->InvalidateImageCacheOfChain();
+			}
 		}
 	}
 

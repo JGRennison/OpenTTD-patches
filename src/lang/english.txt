@@ -407,7 +407,7 @@ STR_FILE_MENU_EXIT                                              :Exit
 
 # map menu
 STR_MAP_MENU_MAP_OF_WORLD                                       :Map of world
-STR_MAP_MENU_EXTRA_VIEW_PORT                                    :Extra viewport
+STR_MAP_MENU_EXTRA_VIEWPORT                                     :Extra viewport
 STR_MAP_MENU_LINGRAPH_LEGEND                                    :Cargo Flow Legend
 STR_MAP_MENU_SIGN_LIST                                          :Sign list
 STR_MAP_MENU_PLAN_LIST                                          :Plan list
@@ -894,7 +894,7 @@ STR_NEWS_EXCLUSIVE_RIGHTS_TITLE                                 :{BIG_FONT}{BLAC
 STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION                           :{BIG_FONT}{BLACK}Local authority of {TOWN} signs contract with {RAW_STRING} for one year of exclusive transport rights!
 
 # Extra view window
-STR_EXTRA_VIEW_PORT_TITLE                                       :{WHITE}Viewport {COMMA}
+STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Viewport {COMMA}
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN                                :{BLACK}Change viewport
 STR_EXTRA_VIEW_MOVE_VIEW_TO_MAIN_TT                             :{BLACK}Copy the location of the main view to this viewport
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Change main view
@@ -1315,6 +1315,8 @@ STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Enabling this s
 
 STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            :Warn if vehicle is lost: {STRING2}
 STR_CONFIG_SETTING_WARN_LOST_VEHICLE_HELPTEXT                   :Trigger messages about vehicles unable to find a path to their ordered destination
+STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE                :Warn if train is stuck due to a routing restriction: {STRING2}
+STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE_HELPTEXT       :Trigger messages about trains which are stuck waiting at a PBS signal for a long time because of a routing restriction
 STR_CONFIG_SETTING_ORDER_REVIEW                                 :Review vehicles' orders: {STRING2}
 STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :When enabled, the orders of the vehicles are periodically checked, and some obvious issues are reported with a news message when detected
 STR_CONFIG_SETTING_ORDER_REVIEW_OFF                             :No
@@ -1791,7 +1793,7 @@ STR_CONFIG_SETTING_TREE_GROWTH_HELPTEXT                         :Control rate at
 STR_CONFIG_SETTING_TREE_GROWTH_NORMAL                           :Normal
 STR_CONFIG_SETTING_TREE_GROWTH_SLOW                             :Slow
 STR_CONFIG_SETTING_TREE_GROWTH_VERY_SLOW                        :Very slow
-STR_CONFIG_SETTING_TREE_GROWTH_EXTREMLY_SLOW                    :Extremly slow
+STR_CONFIG_SETTING_TREE_GROWTH_EXTREMELY_SLOW                   :Extremely slow
 STR_CONFIG_SETTING_TREE_GROWTH_STATIC                           :None
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Position of main toolbar: {STRING2}
@@ -1949,7 +1951,7 @@ STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 STR_CONFIG_SETTING_PATHFINDER_YAPF_RECOMMENDED                  :YAPF {BLUE}(Recommended)
 
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE                  :Re-route road vehicles when road layout changes: {STRING2}
-STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_HELPTEXT         :Whether to re-route all road vehicles on the map when the road layout is changed.{}This can improve road vehicle responsiveness to a changing roa dlayout at the expense of performance.{}Note that if this is set to "Yes", town growth can trigger re-routing of road vehicles which may cause slow-downs on large maps.
+STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_HELPTEXT         :Whether to re-route all road vehicles on the map when the road layout is changed.{}This can improve road vehicle responsiveness to a changing road layout at the expense of performance.{}Note that if this is set to "Yes", town growth can trigger re-routing of road vehicles which may cause slow-downs on large maps.
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_NO               :No
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_REMOVE_ONLY      :Road removal only
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_YES              :Yes
@@ -1983,12 +1985,17 @@ STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES_HELPTEXT           :Allow docks und
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED                      :Permit purchasing land: {STRING2}
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED_HELPTEXT             :Set whether companies are permitted to purchase tiles of land, and in what quantity
 
+STR_CONFIG_SETTING_BUILD_OBJECT_PERMITTED                       :Permit bulk construction of objects: {STRING2}
+STR_CONFIG_SETTING_BUILD_OBJECT_PERMITTED_HELPTEXT              :Set whether companies are permitted to construct objects by area, instead of one at a time
+
 STR_PURCHASE_LAND_PERMITTED_NO                                  :No
 STR_PURCHASE_LAND_PERMITTED_SINGLE                              :Yes, 1 tile at a time
 STR_PURCHASE_LAND_PERMITTED_AREA                                :Yes, large areas at a time
 
 STR_PURCHASE_LAND_NOT_PERMITTED                                 :Purchasing of land is not permitted
 STR_PURCHASE_LAND_NOT_PERMITTED_BULK                            :Purchasing of large areas of land is not permitted
+
+STR_BUILD_OBJECT_NOT_PERMITTED_BULK                             :Building large areas of objects is not permitted
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Change setting value
 
@@ -2729,6 +2736,7 @@ STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY                      :slot occupancy
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING            :slot occupancy remaining
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT                :occupancy
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING_SHORT      :occupancy remaining
+STR_TRACE_RESTRICT_VARIABLE_COUNTER_VALUE                       :counter value
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_WEIGHT                        :weight
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_POWER                         :power
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE                        :max T.E.
@@ -2760,6 +2768,8 @@ STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} train 
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{STRING} {STRING} of slot: {TRSLOT} {STRING} {COMMA} then
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {STRING} of slot: {STRING} {BLACK}{STRING} {STRING} {COMMA} then
 STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING} train {STRING} status: {STRING} then
+STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING} value of counter: {TRCOUNTER} {STRING} {COMMA} then
+STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} value of counter: {STRING} {BLACK}{STRING} {STRING} {COMMA} then
 STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}undefined {BLACK}{STRING}then
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}undefined {BLACK}{STRING}then
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :Add pathfinder penalty: {COMMA}
@@ -2796,6 +2806,8 @@ STR_TRACE_RESTRICT_UNDEFINED_COMPANY                            :Undefined compa
 STR_TRACE_RESTRICT_SLOT_OP                                      :Slot operation
 STR_TRACE_RESTRICT_REVERSE                                      :Reverse
 STR_TRACE_RESTRICT_SPEED_RESTRICTION                            :Speed restriction
+STR_TRACE_RESTRICT_NEWS_CONTROL                                 :News control
+STR_TRACE_RESTRICT_COUNTER_OP                                   :Counter operation
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :Acquire or wait
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :Try to acquire
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :Release (front)
@@ -2813,6 +2825,13 @@ STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :PBS reservation
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}Slot{CONSUME_ARG}{P "" s}: {LTBLUE}
 STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}, {LTBLUE}
+STR_TRACE_RESTRICT_COUNTER_NAME                                 :{TRCOUNTER}
+STR_TRACE_RESTRICT_COUNTER_INCREASE                             :Increase
+STR_TRACE_RESTRICT_COUNTER_DECREASE                             :Decrease
+STR_TRACE_RESTRICT_COUNTER_SET                                  :Set
+STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM                        :Increase counter: {STRING1}{BLACK}{STRING} by {COMMA}
+STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM                        :Decrease counter: {STRING1}{BLACK}{STRING} by {COMMA}
+STR_TRACE_RESTRICT_COUNTER_SET_ITEM                             :Set counter: {STRING1}{BLACK}{STRING} to {COMMA}
 STR_TRACE_RESTRICT_TRAIN_STATUS_EMPTY                           :empty
 STR_TRACE_RESTRICT_TRAIN_STATUS_FULL                            :full
 STR_TRACE_RESTRICT_TRAIN_STATUS_BROKEN_DOWN                     :broken down
@@ -2828,6 +2847,10 @@ STR_TRACE_RESTRICT_REVERSE_SIG                                  :Reverse behind 
 STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL                           :Cancel reverse behind signal
 STR_TRACE_RESTRICT_SET_SPEED_RESTRICTION                        :Restrict train speed to: {VELOCITY}
 STR_TRACE_RESTRICT_REMOVE_SPEED_RESTRICTION                     :Remove train speed restriction
+STR_TRACE_RESTRICT_TRAIN_NOT_STUCK                              :Train is not stuck, do not show news reports about waiting at this PBS signal
+STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL                       :Cancel train is not stuck, do not show news reports about waiting at this PBS signal
+STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_SHORT                        :Train is not stuck...
+STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL_SHORT                 :Cancel train is not stuck...
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Value
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Routefinding restriction
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Routefinding restriction - shared by {COMMA} signals
@@ -2852,6 +2875,23 @@ STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION                          :{BLACK}Create a
 STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION               :{BLACK}Set maximum occupancy of a slot
 STR_TRACE_RESTRICT_SLOT_QUERY_DELETE_CAPTION                    :{WHITE}Delete Slot
 STR_TRACE_RESTRICT_SLOT_DELETE_QUERY_TEXT                       :{WHITE}Are you sure you want to delete this slot?
+STR_TRACE_RESTRICT_COUNTER_OP_TOOLTIP                           :{BLACK}Counter operation type
+STR_TRACE_RESTRICT_COUNTER_GUI_LIST_TOOLTIP                     :{BLACK}Counters - click on a counter to modify it.
+STR_TRACE_RESTRICT_COUNTER_CREATE                               :{BLACK}Create
+STR_TRACE_RESTRICT_COUNTER_DELETE                               :{BLACK}Delete
+STR_TRACE_RESTRICT_COUNTER_RENAME                               :{BLACK}Rename
+STR_TRACE_RESTRICT_COUNTER_SET_VALUE                            :{BLACK}Set Value
+STR_TRACE_RESTRICT_COUNTER_CREATE_TOOLTIP                       :{BLACK}Click to create a counter
+STR_TRACE_RESTRICT_COUNTER_DELETE_TOOLTIP                       :{BLACK}Delete the selected counter
+STR_TRACE_RESTRICT_COUNTER_RENAME_TOOLTIP                       :{BLACK}Rename the selected counter
+STR_TRACE_RESTRICT_COUNTER_SET_VALUE_TOOLTIP                    :{BLACK}Set the value of the selected counter
+STR_TRACE_RESTRICT_COUNTER_CAPTION                              :{WHITE}Routing Restrictions - Counter Management
+STR_TRACE_RESTRICT_COUNTER_MANAGE                               :Manage counters
+STR_TRACE_RESTRICT_COUNTER_RENAME_CAPTION                       :{BLACK}Rename a counter
+STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION                       :{BLACK}Create a counter
+STR_TRACE_RESTRICT_COUNTER_SET_VALUE_CAPTION                    :{BLACK}Set counter value
+STR_TRACE_RESTRICT_COUNTER_QUERY_DELETE_CAPTION                 :{WHITE}Delete counter
+STR_TRACE_RESTRICT_COUNTER_DELETE_QUERY_TEXT                    :{WHITE}Are you sure you want to delete this counter?
 STR_TRACE_RESTRICT_INSERT                                       :{BLACK}Insert
 STR_TRACE_RESTRICT_REMOVE                                       :{BLACK}Remove
 STR_TRACE_RESTRICT_RESET                                        :{BLACK}Reset
@@ -2896,6 +2936,10 @@ STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME                      :{WHITE}Can't re
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_ADD_VEHICLE                 :{WHITE}Can't add the vehicle to this slot...
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE              :{WHITE}Can't remove the vehicle from this slot...
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY           :{WHITE}Can't set maximum occupancy of this slot...
+STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE                   :{WHITE}Can't create counter...
+STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_DELETE                   :{WHITE}Can't delete this counter...
+STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_RENAME                   :{WHITE}Can't rename counter...
+STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY                   :{WHITE}Can't modify this counter...
 
 # Programmable Pre-Signals
 STR_PROGRAM_SIGNAL_TOOLTIP                                      :{BLACK}Program pre-signal
@@ -2922,9 +2966,11 @@ STR_PROGSIG_INSERT_TOOLTIP                                      :{BLACK}Insert a
 STR_PROGSIG_REMOVE_TOOLTIP                                      :{BLACK}Remove the selected instruction
 STR_PROGSIG_REMOVE_PROGRAM_TOOLTIP                              :{BLACK}Remove entire program
 STR_PROGSIG_COPY_PROGRAM_TOOLTIP                                :{BLACK}Copy program from existing signal
+STR_PROGSIG_COND_SLOT_TOOLTIP                                   :{BLACK}Slot to compare occupancy of
+STR_PROGSIG_COND_COUNTER_TOOLTIP                                :{BLACK}Counter to compare value of
 
-STR_PROGSIG_REMOVE_PROGRAM                                      :{RED}Remove program
-STR_PROGSIG_COPY_PROGRAM                                        :{BLUE}Copy program
+STR_PROGSIG_REMOVE_PROGRAM                                      :{BLACK}Remove program
+STR_PROGSIG_COPY_PROGRAM                                        :{BLACK}Copy program
 STR_PROGSIG_REMOVE                                              :{BLACK}Remove
 STR_PROGSIG_INSERT                                              :Insert
 STR_PROGSIG_INSERT_IF                                           :Condition
@@ -2942,7 +2988,16 @@ STR_PROGSIG_SET_SIGNAL                                          :Make signal {ST
 STR_PROGSIG_COND_ALWAYS                                         :always
 STR_PROGSIG_COND_NEVER                                          :never
 STR_PROGSIG_COND_COMPARE                                        :{STRING} {STRING} {NUM}
+STR_PROGSIG_COND_SLOT_COMPARE                                   :occupancy of {TRSLOT} {STRING} {NUM}
+STR_PROGSIG_COND_SLOT_COMPARE_INVALID                           :occupancy of {PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {NUM}
+STR_PROGSIG_COND_SLOT_REMAINING_COMPARE                         :occupancy remaining of {TRSLOT} {STRING} {NUM}
+STR_PROGSIG_COND_SLOT_REMAINING_COMPARE_INVALID                 :occupancy remaining of {PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {NUM}
+STR_PROGSIG_COND_COUNTER_COMPARE                                :value of {TRCOUNTER} {STRING} {NUM}
+STR_PROGSIG_COND_COUNTER_COMPARE_INVALID                        :value of {PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {NUM}
 STR_PROGSIG_COND_SIGNAL_STATE                                   :signal state
+STR_PROGSIG_COND_SLOT                                           :slot occupancy
+STR_PROGSIG_COND_SLOT_REMAINING                                 :slot occupancy remaining
+STR_PROGSIG_COND_COUNTER                                        :counter value
 STR_PROGSIG_CONDVAR_SIGNAL_STATE_SPECIFIED                      :signal at {NUM} x {NUM} is green
 STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED                    :{RED}unspecified signal{STRING} is green
 STR_PROGSIG_CONDVAR_NUM_RED                                     :red signals
@@ -4605,6 +4660,7 @@ STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Weight: 
 
 STR_VEHICLE_INFO_TRAIN_LENGTH                                   :{BLACK}Train length {LTBLUE}{DECIMAL} tile{P "" s} {STRING4}
 STR_VEHICLE_INFO_WEIGHT_RATIOS                                  :{BLACK}Power / weight: {LTBLUE}{POWER_WEIGHT_RATIO} {BLACK} Max. T.E / weight: {LTBLUE}{FORCE_WEIGHT_RATIO}
+STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS                        :{BLACK}Full weight: {LTBLUE}{WEIGHT_SHORT} {STRING2}
 
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Profit this year: {LTBLUE}{CURRENCY_LONG} (last year: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING2} (lifetime: {CURRENCY_LONG})
@@ -4758,6 +4814,7 @@ STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :Slot occupancy
 STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :Train in slot
 STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :Cargo load percentage
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :Waiting cargo amount
+STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :Counter value
 
 STR_ORDER_CONDITIONAL_REQUIRES_SERVICE_ORDER                    :Requires service {STRING}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_ORDER                       :Next station {STRING} {STRING} waiting
@@ -4780,6 +4837,7 @@ STR_ORDER_CONDITIONAL_COMPARATOR_IS_FALSE                       :is false
 STR_ORDER_CONDITIONAL_VALUE_TOOLTIP                             :{BLACK}The value to compare the vehicle data against
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}The cargo to compare the station data against
 STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}The train slot to check the occupancy of
+STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP                           :{BLACK}The counter to check the value of
 STR_ORDER_CONDITIONAL_VALUE_CAPT                                :{WHITE}Enter value to compare against
 
 STR_ORDER_CONDITIONAL_VIA                                       :{BLACK}Via
@@ -4918,6 +4976,8 @@ STR_ORDER_CONDITIONAL_TRUE_FALSE                                :Jump to order {
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :Jump to order {COMMA} when Load percentage of {STRING} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :Jump to order {COMMA} when {STRING} at next station {STRING} {CARGO_SHORT}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :Jump to order {COMMA} when {STRING} at next station via {STATION} {STRING} {CARGO_SHORT}
+STR_ORDER_CONDITIONAL_COUNTER                                   :Jump to order {COMMA} when value of {TRCOUNTER} {STRING} {COMMA}
+STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :Jump to order {COMMA} when value of {PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {COMMA}
 
 STR_INVALID_ORDER                                               :{RED} (Invalid Order)
 
@@ -4994,11 +5054,15 @@ STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Switch b
 STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP                           :{BLACK}Lock/unlock the amount of time for the highlighted order (Ctrl+Click set lock state for all orders).{}When locked the time will not be changed by timetable autofill or automate.
 
 STR_TIMETABLE_LEAVE_EARLY_ORDER                                 :[leave early]
+STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ANY                        :[leave early if any cargo full]
+STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ALL                        :[leave early if all cargoes full]
 STR_TIMETABLE_LEAVE_NORMAL                                      :Leave as timetabled
 STR_TIMETABLE_LEAVE_EARLY                                       :Leave early
+STR_TIMETABLE_LEAVE_EARLY_FULL_ANY                              :Leave early if any full
+STR_TIMETABLE_LEAVE_EARLY_FULL_ALL                              :Leave early if all full
 
 STR_TIMETABLE_EXTRA_DROP_DOWN                                   :{BLACK}Extra
-STR_TIMETABLE_EXTRA_DROP_DOWN_TOOLTIP                           :{BLACK}Extra Options{}{}Leave as timetabled: Vehicles wait until their timetabled departure time before leaving (default).{}Leave Early: Vehicles leave as soon as loading/unloading is done, possibly before the timetabled departure time.
+STR_TIMETABLE_EXTRA_DROP_DOWN_TOOLTIP                           :{BLACK}Extra Options{}{}Leave as timetabled: Vehicles wait until their timetabled departure time before leaving (default).{}Leave Early: Vehicles leave as soon as loading/unloading is done, possibly before the timetabled departure time.{}Leave Early if Any Full: As above, if any cargo is fully loaded.{}Leave Early if All Full: As above, if all cargoes are fully loaded.
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
@@ -5502,6 +5566,7 @@ STR_ERROR_COMPANY_HEADQUARTERS_IN                               :{WHITE}... comp
 STR_ERROR_CAN_T_PURCHASE_THIS_LAND                              :{WHITE}Can't purchase this land area...
 STR_ERROR_YOU_ALREADY_OWN_IT                                    :{WHITE}... you already own it!
 STR_ERROR_PURCHASE_LAND_LIMIT_REACHED                           :{WHITE}... land area purchasing limit reached
+STR_ERROR_BUILD_OBJECT_LIMIT_REACHED                            :{WHITE}... object construction limit reached
 
 # Group related errors
 STR_ERROR_GROUP_CAN_T_CREATE                                    :{WHITE}Can't create group...

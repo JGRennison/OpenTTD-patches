@@ -22,6 +22,7 @@
 #include "group_type.h"
 #include "timetable.h"
 #include "base_consist.h"
+#include "newgrf_cache_check.h"
 #include "network/network.h"
 #include <list>
 #include <map>
@@ -137,6 +138,8 @@ enum VehicleCacheFlags {
 	VCF_LAST_VISUAL_EFFECT      = 0, ///< Last vehicle in the consist with a visual effect.
 	VCF_GV_ZERO_SLOPE_RESIST    = 1, ///< GroundVehicle: Consist has zero slope resistance (valid only for the first engine), may be false negative.
 	VCF_IS_DRAWN                = 2, ///< Vehicle is currently drawn
+	VCF_REDRAW_ON_TRIGGER       = 3, ///< Clear cur_image_valid_dir on changes to waiting_triggers (valid only for the first engine)
+	VCF_REDRAW_ON_SPEED_CHANGE  = 4, ///< Clear cur_image_valid_dir on changes to cur_speed (ground vehicles) or aircraft movement state (aircraft) (valid only for the first engine)
 };
 
 /** Cached often queried values common to all vehicles. */
@@ -499,6 +502,28 @@ public:
 	{
 		for (Vehicle *u = this; u != nullptr; u = u->Next()) {
 			u->InvalidateNewGRFCache();
+		}
+	}
+
+	/**
+	 * Invalidates cached image
+	 * @see InvalidateNewGRFCacheOfChain
+	 */
+	inline void InvalidateImageCache()
+	{
+		this->cur_image_valid_dir = INVALID_DIR;
+	}
+
+	/**
+	 * Invalidates cached image of all vehicles in the chain (after the current vehicle)
+	 * @see InvalidateImageCache
+	 */
+	inline void InvalidateImageCacheOfChain()
+	{
+		ClrBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE);
+		ClrBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_TRIGGER);
+		for (Vehicle *u = this; u != nullptr; u = u->Next()) {
+			u->InvalidateImageCache();
 		}
 	}
 
@@ -1242,16 +1267,12 @@ struct SpecializedVehicle : public Vehicle {
 		/* Skip updating sprites on dedicated servers without screen */
 		if (_network_dedicated) return;
 
-		extern bool _sprite_group_resolve_check_veh_check;
-		extern VehicleType _sprite_group_resolve_check_veh_type;
-
 		/* Explicitly choose method to call to prevent vtable dereference -
 		 * it gives ~3% runtime improvements in games with many vehicles */
 		if (update_delta) ((T *)this)->T::UpdateDeltaXY();
 		const Direction current_direction = ((T *)this)->GetMapImageDirection();
 		if (this->cur_image_valid_dir != current_direction) {
 			_sprite_group_resolve_check_veh_check = true;
-			_sprite_group_resolve_check_veh_type = EXPECTED_TYPE;
 			VehicleSpriteSeq seq;
 			((T *)this)->T::GetImage(current_direction, EIT_ON_MAP, &seq);
 			this->cur_image_valid_dir = _sprite_group_resolve_check_veh_check ? current_direction : INVALID_DIR;

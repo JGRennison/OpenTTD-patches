@@ -31,6 +31,7 @@
 #include "core/geometry_func.hpp"
 #include "autoreplace_func.h"
 #include "train.h"
+#include "error.h"
 
 #include "widgets/build_vehicle_widget.h"
 
@@ -1676,7 +1677,7 @@ struct BuildVehicleWindow : Window {
 		} else {
 			VehicleID target = (*(this->virtual_train_out))->GetLastUnit()->index;
 
-			DoCommandP(0, (1 << 23) | (1 << 21) | toadd->index, target, CMD_MOVE_RAIL_VEHICLE);
+			DoCommandP(0, (1 << 23) | (1 << 21) | toadd->index, target, CMD_MOVE_RAIL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_MOVE_VEHICLE), CcMoveNewVirtualEngine);
 		}
 		InvalidateWindowClassesData(WC_CREATE_TEMPLATE);
 		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
@@ -1691,6 +1692,21 @@ void CcAddVirtualEngine(const CommandCost &result, TileIndex tile, uint32 p1, ui
 	if (window) {
 		Train* train = Train::From(Vehicle::Get(_new_vehicle_id));
 		((BuildVehicleWindow*) window)->AddVirtualEngine(train);
+	} else {
+		DoCommandP(0, _new_vehicle_id | (1 << 21), 0, CMD_SELL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_SELL_TRAIN));
+	}
+}
+
+void CcMoveNewVirtualEngine(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+{
+	if (result.Failed()) return;
+
+	Window* window = FindWindowById(WC_BUILD_VIRTUAL_TRAIN, 0);
+	if (window) {
+		if (result.IsSuccessWithMessage()) {
+			CommandCost res = result.UnwrapSuccessWithMessage();
+			ShowErrorMessage(STR_ERROR_CAN_T_MOVE_VEHICLE, res.GetErrorMessage(), WL_INFO, 0, 0, res.GetTextRefStackGRF(), res.GetTextRefStackSize(), res.GetTextRefStack(), res.GetExtraErrorMessage());
+		}
 	}
 }
 

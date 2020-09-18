@@ -167,7 +167,7 @@ public:
 	 * @param avail Return whether the variable is available.
 	 * @return The resolved variable's value.
 	 */
-	virtual uint Resolve(uint index, uint var, uint param, bool *avail) const = 0;
+	virtual uint Resolve(uint index, uint var, uint param, GetVariableExtra *extra) const = 0;
 
 	/**
 	 * Used to decide if the PSA needs a parameter or not.
@@ -492,11 +492,11 @@ struct NewGRFInspectWindow : Window {
 		if (nif->variables != nullptr) {
 			this->DrawString(r, i++, "Variables:");
 			for (const NIVariable *niv = nif->variables; niv->name != nullptr; niv++) {
-				bool avail = true;
+				GetVariableExtra extra;
 				uint param = HasVariableParameter(niv->var) ? NewGRFInspectWindow::var60params[GetFeatureNum(this->window_number)][niv->var - 0x60] : 0;
-				uint value = nih->Resolve(index, niv->var, param, &avail);
+				uint value = nih->Resolve(index, niv->var, param, &extra);
 
-				if (!avail) continue;
+				if (!extra.available) continue;
 
 				if (HasVariableParameter(niv->var)) {
 					this->DrawString(r, i++, "  %02x[%02x]: %08x (%s)", niv->var, param, value, niv->name);
@@ -894,13 +894,17 @@ struct SpriteAlignerWindow : Window {
 
 	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
-		if (widget != WID_SA_LIST) return;
-
-		resize->height = max(11, FONT_HEIGHT_NORMAL + 1);
-		resize->width  = 1;
-
-		/* Resize to about 200 pixels (for the preview) */
-		size->height = (1 + 200 / resize->height) * resize->height;
+		switch (widget) {
+			case WID_SA_SPRITE:
+				size->height = ScaleGUITrad(200);
+				break;
+			case WID_SA_LIST:
+				resize->height = max(11, FONT_HEIGHT_NORMAL + 1);
+				resize->width  = 1;
+				break;
+			default:
+				break;
+		}
 	}
 
 	void DrawWidget(const Rect &r, int widget) const override

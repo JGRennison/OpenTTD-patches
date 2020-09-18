@@ -224,6 +224,8 @@ struct CYapfRailNodeT
 		dmp.WriteLine("m_targed_seen = %s", flags_u.flags_s.m_targed_seen ? "Yes" : "No");
 		dmp.WriteLine("m_choice_seen = %s", flags_u.flags_s.m_choice_seen ? "Yes" : "No");
 		dmp.WriteLine("m_last_signal_was_red = %s", flags_u.flags_s.m_last_signal_was_red ? "Yes" : "No");
+		dmp.WriteLine("m_reverse_pending = %s", flags_u.flags_s.m_reverse_pending ? "Yes" : "No");
+		dmp.WriteLine("m_teleport = %s", flags_u.flags_s.m_teleport ? "Yes" : "No");
 		dmp.WriteEnumT("m_last_red_signal_type", m_last_red_signal_type);
 	}
 };

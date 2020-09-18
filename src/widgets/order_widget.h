@@ -36,6 +36,7 @@ enum OrderWidgets {
 	WID_O_COND_CARGO,                ///< Choose condition cargo.
 	WID_O_COND_AUX_CARGO,            ///< Choose condition cargo.
 	WID_O_COND_SLOT,                 ///< Choose condition slot.
+	WID_O_COND_COUNTER,              ///< Choose condition counter.
 	WID_O_COND_AUX_VIA,              ///< Condition via button.
 	WID_O_SEL_COND_VALUE,            ///< Widget for conditional value or conditional cargo type.
 	WID_O_SEL_COND_AUX,              ///< Widget for auxiliary conditional cargo type.
@@ -67,6 +68,7 @@ enum CargoTypeOrdersWidgets {
 	WID_CTO_CARGO_LABEL_LAST = WID_CTO_CARGO_LABEL_FIRST + NUM_CARGO - 1,       ///< Last cargo label.
 	WID_CTO_CARGO_DROPDOWN_FIRST,                                               ///< First order dropdown.
 	WID_CTO_CARGO_DROPDOWN_LAST = WID_CTO_CARGO_DROPDOWN_FIRST + NUM_CARGO - 1, ///< Last order dropdown.
+	WID_CTO_SELECT,                                                             ///< Right column select panel
 };
 
 #endif /* WIDGETS_ORDER_WIDGET_H */

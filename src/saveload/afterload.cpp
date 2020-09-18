@@ -3750,6 +3750,13 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_BUILD_OBJECT_RATE_LIMIT)) {
+		/* Introduced build object limit. */
+		for (Company *c : Company::Iterate()) {
+			c->build_object_limit = _settings_game.construction.build_object_frame_burst << 16;
+		}
+	}
+
 	if (SlXvIsFeaturePresent(XSLFI_MORE_COND_ORDERS, 1, 1)) {
 		for (Order *order : Order::Iterate()) {
 			// Insertion of OCV_MAX_RELIABILITY between OCV_REMAINING_LIFETIME and OCV_CARGO_WAITING
@@ -3800,6 +3807,9 @@ bool AfterLoadGame()
 
 	AfterLoadTraceRestrict();
 	AfterLoadTemplateVehiclesUpdateImage();
+	if (SlXvIsFeaturePresent(XSLFI_TEMPLATE_REPLACEMENT, 1, 5)) {
+		AfterLoadTemplateVehiclesUpdateProperties();
+	}
 
 	InvalidateVehicleTickCaches();
 	ClearVehicleTickCaches();
@@ -3892,4 +3902,5 @@ void ReloadNewGRFData()
 	MarkWholeScreenDirty();
 	CheckTrainsLengths();
 	AfterLoadTemplateVehiclesUpdateImage();
+	AfterLoadTemplateVehiclesUpdateProperties();
 }

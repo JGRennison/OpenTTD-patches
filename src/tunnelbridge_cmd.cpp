@@ -639,10 +639,17 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 
 					Owner owner_road = hasroad ? GetRoadOwner(t, RTT_ROAD) : company;
 					Owner owner_tram = hastram ? GetRoadOwner(t, RTT_TRAM) : company;
-					MakeRoadBridgeRamp(t, owner, owner_road, owner_tram, bridge_type, d, road_rt, tram_rt, is_upgrade);
+
 					if (is_upgrade) {
-						if (road_rt != INVALID_ROADTYPE) SetCustomBridgeHeadRoadBits(t, RTT_ROAD, GetCustomBridgeHeadRoadBits(t, RTT_ROAD) | DiagDirToRoadBits(d));
-						if (tram_rt != INVALID_ROADTYPE) SetCustomBridgeHeadRoadBits(t, RTT_TRAM, GetCustomBridgeHeadRoadBits(t, RTT_TRAM) | DiagDirToRoadBits(d));
+						RoadBits road_bits = GetCustomBridgeHeadRoadBits(t, RTT_ROAD);
+						RoadBits tram_bits = GetCustomBridgeHeadRoadBits(t, RTT_TRAM);
+						if (RoadTypeIsRoad(roadtype)) road_bits |= DiagDirToRoadBits(d);
+						if (RoadTypeIsTram(roadtype)) tram_bits |= DiagDirToRoadBits(d);
+						MakeRoadBridgeRamp(t, owner, owner_road, owner_tram, bridge_type, d, road_rt, tram_rt);
+						if (road_rt != INVALID_ROADTYPE) SetCustomBridgeHeadRoadBits(t, RTT_ROAD, road_bits);
+						if (tram_rt != INVALID_ROADTYPE) SetCustomBridgeHeadRoadBits(t, RTT_TRAM, tram_bits);
+					} else {
+						MakeRoadBridgeRamp(t, owner, owner_road, owner_tram, bridge_type, d, road_rt, tram_rt);
 					}
 				};
 				make_bridge_ramp(tile_start, dir);
@@ -2695,7 +2702,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 					assert_msg(frame == rv->frame + 1 || rv->frame == _tunnel_turnaround_pre_visibility_frame[dir],
 							"frame: %u, rv->frame: %u, dir: %u, _tunnel_turnaround_pre_visibility_frame[dir]: %u", frame, rv->frame, dir, _tunnel_turnaround_pre_visibility_frame[dir]);
 					rv->tile = tile;
-					rv->cur_image_valid_dir = INVALID_DIR;
+					rv->InvalidateImageCache();
 					rv->state = RVSB_WORMHOLE;
 					if (Tunnel::GetByTile(tile)->is_chunnel) SetBit(rv->gv_flags, GVF_CHUNNEL_BIT);
 					rv->vehstatus |= VS_HIDDEN;
@@ -2710,7 +2717,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 			if (dir == ReverseDiagDir(vdir) && frame == (int) (_tunnel_visibility_frame[dir] - 1) && z == 0) {
 				if (rv->tile != tile && GetOtherTunnelEnd(rv->tile) != tile) return VETSB_CONTINUE; // In chunnel
 				rv->tile = tile;
-				rv->cur_image_valid_dir = INVALID_DIR;
+				rv->InvalidateImageCache();
 				rv->state = DiagDirToDiagTrackdir(vdir);
 				rv->frame = TILE_SIZE - (frame + 1);
 				rv->vehstatus &= ~VS_HIDDEN;
@@ -2753,7 +2760,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 						if (HasRoadTypeTram(tile) && HasBit(rv->compatible_roadtypes, GetRoadTypeTram(tile))) bits |= GetCustomBridgeHeadRoadBits(tile, RTT_TRAM);
 						if (!(bits & DiagDirToRoadBits(GetTunnelBridgeDirection(tile)))) return VETSB_CONTINUE;
 					}
-					rv->cur_image_valid_dir = INVALID_DIR;
+					rv->InvalidateImageCache();
 					rv->state = RVSB_WORMHOLE;
 					/* There are no slopes inside bridges / tunnels. */
 					ClrBit(rv->gv_flags, GVF_GOINGUP_BIT);
@@ -2790,7 +2797,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 					v->tile = tile;
 					RoadVehicle *rv = RoadVehicle::From(v);
 					if (rv->state == RVSB_WORMHOLE) {
-						rv->cur_image_valid_dir = INVALID_DIR;
+						rv->InvalidateImageCache();
 						rv->state = DiagDirToDiagTrackdir(DirToDiagDir(v->direction));
 						rv->frame = 0;
 						return VETSB_ENTERED_WORMHOLE;

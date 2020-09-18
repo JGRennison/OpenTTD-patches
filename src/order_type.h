@@ -145,6 +145,7 @@ enum OrderConditionVariable {
 	OCV_TRAIN_IN_SLOT,      ///< Test if train is in slot
 	OCV_CARGO_LOAD_PERCENTAGE, ///< Skip based on the amount of load of a specific cargo
 	OCV_CARGO_WAITING_AMOUNT,  ///< Skip based on the amount of a specific cargo waiting at next station
+	OCV_COUNTER_VALUE,      ///< Skip based on counter value
 	OCV_END
 };
 
@@ -203,6 +204,8 @@ enum OrderDepotAction {
 enum OrderLeaveType {
 	OLT_NORMAL               = 0, ///< Leave when timetabled
 	OLT_LEAVE_EARLY          = 1, ///< Leave as soon as possible
+	OLT_LEAVE_EARLY_FULL_ANY = 2, ///< Leave as soon as possible, if any cargoes fully loaded
+	OLT_LEAVE_EARLY_FULL_ALL = 3, ///< Leave as soon as possible, if all cargoes fully loaded
 	OLT_END
 };
 

@@ -115,7 +115,8 @@ void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y)
 	DrawPixelInfo tmp_dpi, *old_dpi;
 	int max_width = right - left + 1;
 	int height = ScaleGUITrad(14);
-	if (!FillDrawPixelInfo(&tmp_dpi, left, y, max_width, height)) return;
+	int padding = ScaleGUITrad(1);
+	if (!FillDrawPixelInfo(&tmp_dpi, left, y - padding, max_width, height + (2 * padding))) return;
 
 	old_dpi = _cur_dpi;
 	_cur_dpi = &tmp_dpi;
@@ -125,7 +126,7 @@ void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y)
 
 	while (t) {
 		PaletteID pal = GetEnginePalette(t->engine_type, _current_company);
-		t->sprite_seq.Draw(offset + t->image_dimensions.GetOffsetX(), t->image_dimensions.GetOffsetY() + ScaleGUITrad(11), pal, false);
+		t->sprite_seq.Draw(offset + t->image_dimensions.GetOffsetX(), t->image_dimensions.GetOffsetY() + ScaleGUITrad(10), pal, false);
 
 		offset += t->image_dimensions.GetDisplayImageWidth();
 		t = t->Next();
@@ -152,11 +153,20 @@ void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev
 	tmp->cargo_subtype = virt->cargo_subtype;
 	tmp->cargo_cap = virt->cargo_cap;
 
-	const GroundVehicleCache *gcache = virt->GetGroundVehicleCache();
-	tmp->max_speed = virt->GetDisplayMaxSpeed();
-	tmp->power = gcache->cached_power;
-	tmp->weight = gcache->cached_weight;
-	tmp->max_te = gcache->cached_max_te / 1000;
+	if (!virt->Previous()) {
+		uint cargo_weight = 0;
+		uint full_cargo_weight = 0;
+		for (const Train *u = virt; u != nullptr; u = u->Next()) {
+			cargo_weight += u->GetCargoWeight(u->cargo.StoredCount());
+			full_cargo_weight += u->GetCargoWeight(u->cargo_cap);
+		}
+		const GroundVehicleCache *gcache = virt->GetGroundVehicleCache();
+		tmp->max_speed = virt->GetDisplayMaxSpeed();
+		tmp->power = gcache->cached_power;
+		tmp->empty_weight = max<uint32>(gcache->cached_weight - cargo_weight, 1);
+		tmp->full_weight = max<uint32>(gcache->cached_weight + full_cargo_weight - cargo_weight, 1);
+		tmp->max_te = gcache->cached_max_te;
+	}
 
 	virt->GetImage(DIR_W, EIT_IN_DEPOT, &tmp->sprite_seq);
 	tmp->image_dimensions.SetFromTrain(virt);

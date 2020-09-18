@@ -478,15 +478,6 @@ public:
 			/* Skip the first transition cost calculation. */
 			goto no_entry_cost;
 		} else if (n.flags_u.flags_s.m_teleport) {
-			int x1 = 2 * TileX(prev.tile);
-			int y1 = 2 * TileY(prev.tile);
-			int x2 = 2 * TileX(cur.tile);
-			int y2 = 2 * TileY(cur.tile);
-			int dx = abs(x1 - x2) + 4; // up to 2x track exit dir tile offsets in opposite directions
-			int dy = abs(y1 - y2) + 4; // "
-			int dmin = min(dx, dy);
-			int dxy = abs(dx - dy);
-			segment_entry_cost += dmin * YAPF_TILE_CORNER_LENGTH + (dxy - 1) * (YAPF_TILE_LENGTH / 2);
 			goto no_entry_cost;
 		}
 
@@ -763,6 +754,10 @@ no_entry_cost: // jump here at the beginning if the node has no parent (it is th
 				/* Add penalty for the inappropriate platform length. */
 				extra_cost += PlatformLengthPenalty(platform_length);
 			}
+		}
+
+		if (has_parent && n.flags_u.flags_s.m_teleport) {
+			extra_cost += Yapf().TeleportCost(n.GetLastTile(), n.m_parent->GetLastTile());
 		}
 
 		/* total node cost */

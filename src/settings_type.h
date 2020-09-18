@@ -90,6 +90,7 @@ struct TimeSettings {
 struct GUISettings : public TimeSettings {
 	bool   sg_full_load_any;                 ///< new full load calculation, any cargo must be full read from pre v93 savegames
 	bool   lost_vehicle_warn;                ///< if a vehicle can't find its destination, show a warning
+	bool   restriction_wait_vehicle_warn;    ///< if a vehicle is waiting for an extended time due to a routing restriction, show a warning
 	uint8  order_review_system;              ///< perform order reviews on vehicles
 	bool   no_depot_order_warn;              ///< if a non-air vehicle doesn't have at least one depot order, show a warning
 	bool   vehicle_income_warn;              ///< if a vehicle isn't generating income, show a warning
@@ -390,6 +391,7 @@ struct ConstructionSettings {
 	bool   allow_road_stops_under_bridges;   ///< allow road/tram stops under bridges
 	bool   allow_docks_under_bridges;        ///< allow docks under bridges
 	byte   purchase_land_permitted;          ///< whether and how purchasing land is permitted
+	bool   build_object_area_permitted;      ///< whether building objects by area is permitted
 
 	uint32 terraform_per_64k_frames;         ///< how many tile heights may, over a long period, be terraformed per 65536 frames?
 	uint16 terraform_frame_burst;            ///< how many tile heights may, over a short period, be terraformed?
@@ -399,6 +401,8 @@ struct ConstructionSettings {
 	uint16 tree_frame_burst;                 ///< how many trees may, over a short period, be planted?
 	uint32 purchase_land_per_64k_frames;     ///< how many tiles may, over a long period, be purchased per 65536 frames?
 	uint16 purchase_land_frame_burst;        ///< how many tiles may, over a short period, be purchased?
+	uint32 build_object_per_64k_frames;      ///< how many tiles may, over a long period, have objects built on them per 65536 frames?
+	uint16 build_object_frame_burst;         ///< how many tiles may, over a short period, have objects built on them?
 	uint8  tree_growth_rate;                 ///< tree growth rate
 };
 
