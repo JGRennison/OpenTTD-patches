@@ -1148,8 +1148,19 @@ CommandCost CmdReplaceTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	if (should_execute) {
 		VehicleID old_ID = INVALID_VEHICLE;
 
+		bool restore_flags = false;
+		bool reuse_depot_vehicles = true;
+		bool keep_remaining_vehicles = false;
+		bool refit_as_template = true;
+		bool replace_old_only = false;
+
 		if (template_vehicle != nullptr) {
 			old_ID = template_vehicle->index;
+			restore_flags = true;
+			reuse_depot_vehicles = template_vehicle->reuse_depot_vehicles;
+			keep_remaining_vehicles = template_vehicle->keep_remaining_vehicles;
+			refit_as_template = template_vehicle->refit_as_template;
+			replace_old_only = template_vehicle->replace_old_only;
 			delete template_vehicle;
 			template_vehicle = nullptr;
 		}
@@ -1158,6 +1169,13 @@ CommandCost CmdReplaceTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint3
 
 		if (template_vehicle == nullptr) {
 			return CMD_ERROR;
+		}
+
+		if (restore_flags) {
+			template_vehicle->reuse_depot_vehicles = reuse_depot_vehicles;
+			template_vehicle->keep_remaining_vehicles = keep_remaining_vehicles;
+			template_vehicle->refit_as_template = refit_as_template;
+			template_vehicle->replace_old_only = replace_old_only;
 		}
 
 		// Make sure our replacements still point to the correct thing.
