@@ -118,7 +118,7 @@ public:
 		first = this;
 		engine_type = eid;
 		this->reuse_depot_vehicles = true;
-		this->keep_remaining_vehicles = true;
+		this->keep_remaining_vehicles = false;
 		this->refit_as_template = true;
 		this->replace_old_only = false;
 		this->sprite_seq.count = 1;
