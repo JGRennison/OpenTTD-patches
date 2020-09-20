@@ -44,6 +44,7 @@
 #include "../map_func.h"
 #include "../rev.h"
 #include "../strings_func.h"
+#include "../company_func.h"
 #include "table/strings.h"
 
 #include <vector>
@@ -62,6 +63,8 @@ static const uint32 _sl_xv_slxi_chunk_version = 0;          ///< current version
 
 static void loadVL(const SlxiSubChunkInfo *info, uint32 length);
 static uint32 saveVL(const SlxiSubChunkInfo *info, bool dry_run);
+static void loadLC(const SlxiSubChunkInfo *info, uint32 length);
+static uint32 saveLC(const SlxiSubChunkInfo *info, bool dry_run);
 
 const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_VERSION_LABEL,          XSCF_IGNORABLE_ALL,       1,   1, "version_label",             saveVL,  loadVL,  nullptr        },
@@ -129,6 +132,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_TOWN_MULTI_BUILDING,    XSCF_NULL,                1,   1, "town_multi_building",       nullptr, nullptr, nullptr        },
 	{ XSLFI_SHIP_LOST_COUNTER,      XSCF_NULL,                1,   1, "ship_lost_counter",         nullptr, nullptr, nullptr        },
 	{ XSLFI_BUILD_OBJECT_RATE_LIMIT,XSCF_NULL,                1,   1, "build_object_rate_limit",   nullptr, nullptr, nullptr        },
+	{ XSLFI_LOCAL_COMPANY,          XSCF_IGNORABLE_ALL,       1,   1, "local_company",             saveLC,  loadLC,  nullptr        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr },// This is the end marker
 };
 
@@ -625,6 +629,22 @@ static uint32 saveVL(const SlxiSubChunkInfo *info, bool dry_run)
 	uint32 length = strlen(_openttd_revision);
 	if (!dry_run) MemoryDumper::GetCurrent()->CopyBytes(reinterpret_cast<const byte *>(_openttd_revision), length);
 	return length;
+}
+
+static void loadLC(const SlxiSubChunkInfo *info, uint32 length)
+{
+	if (length == 1) {
+		_loaded_local_company = (CompanyID) ReadBuffer::GetCurrent()->ReadByte();
+	} else {
+		DEBUG(sl, 1, "SLXI chunk: feature: '%s', version: %d, has data of wrong length: %u", info->name, _sl_xv_feature_versions[info->index], length);
+		ReadBuffer::GetCurrent()->SkipBytes(length);
+	}
+}
+
+static uint32 saveLC(const SlxiSubChunkInfo *info, bool dry_run)
+{
+	if (!dry_run) MemoryDumper::GetCurrent()->WriteByte(_local_company);
+	return 1;
 }
 
 extern const ChunkHandler _version_ext_chunk_handlers[] = {

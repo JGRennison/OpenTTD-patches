@@ -81,6 +81,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	_cur_tileloop_tile = 1;
 	_thd.redsq = INVALID_TILE;
 	_road_layout_change_counter = 0;
+	_loaded_local_company = COMPANY_SPECTATOR;
 	_game_events_since_load = (GameEventFlags) 0;
 	_game_events_overall = (GameEventFlags) 0;
 	_game_load_cur_date_ymd = { 0, 0, 0 };

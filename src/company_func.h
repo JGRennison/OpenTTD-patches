@@ -32,6 +32,7 @@ CommandCost CheckTileOwnership(TileIndex tile);
 
 extern CompanyID _local_company;
 extern CompanyID _current_company;
+extern CompanyID _loaded_local_company;
 
 extern Colours _company_colours[MAX_COMPANIES];
 extern CompanyManagerFace _company_manager_face;
@@ -56,5 +57,7 @@ static inline bool IsInteractiveCompany(CompanyID company)
 }
 
 int CompanyServiceInterval(const Company *c, VehicleType type);
+
+CompanyID GetDefaultLocalCompany();
 
 #endif /* COMPANY_FUNC_H */

@@ -434,6 +434,7 @@ static void ShutdownGame()
 	ClearCommandLog();
 	ClearDesyncMsgLog();
 
+	_loaded_local_company = COMPANY_SPECTATOR;
 	_game_events_since_load = (GameEventFlags) 0;
 	_game_events_overall = (GameEventFlags) 0;
 	_game_load_cur_date_ymd = { 0, 0, 0 };
@@ -1233,8 +1234,8 @@ void SwitchToMode(SwitchMode new_mode)
 					EngineOverrideManager::ResetToCurrentNewGRFConfig();
 				}
 				/* Update the local company for a loaded game. It is either always
-				 * company #1 (eg 0) or in the case of a dedicated server a spectator */
-				SetLocalCompany(_network_dedicated ? COMPANY_SPECTATOR : COMPANY_FIRST);
+				 * a company or in the case of a dedicated server a spectator */
+				SetLocalCompany(_network_dedicated ? COMPANY_SPECTATOR : GetDefaultLocalCompany());
 				if (_ctrl_pressed && !_network_dedicated) {
 					DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
 				}
