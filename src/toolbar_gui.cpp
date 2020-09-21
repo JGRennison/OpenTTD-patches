@@ -2028,6 +2028,10 @@ enum MainToolbarHotkeys {
 	MTHK_SIGN_LIST,
 	MTHK_PLAN_LIST,
 	MTHK_LINK_GRAPH_LEGEND,
+	MTHK_MESSAGE_HISTORY,
+	MTHK_TEMPLATE_REPLACEMENT,
+	MTHK_TRAIN_SLOTS,
+	MTHK_TRAIN_COUNTERS,
 };
 
 /** Main toolbar. */
@@ -2087,6 +2091,10 @@ struct MainToolbarWindow : Window {
 
 	EventState OnHotkey(int hotkey) override
 	{
+		extern void ShowTemplateReplaceWindow();
+		extern void ShowTraceRestrictSlotWindow(CompanyID company);
+		extern void ShowTraceRestrictCounterWindow(CompanyID company);
+
 		CallBackFunction cbf = CBF_NONE;
 		switch (hotkey) {
 			case MTHK_PAUSE: ToolbarPauseClick(this); break;
@@ -2131,6 +2139,10 @@ struct MainToolbarWindow : Window {
 			case MTHK_LANDINFO: cbf = PlaceLandBlockInfo(); break;
 			case MTHK_PLAN_LIST: ShowPlansWindow(); break;
 			case MTHK_LINK_GRAPH_LEGEND: ShowLinkGraphLegend(); break;
+			case MTHK_MESSAGE_HISTORY: ShowMessageHistory(); break;
+			case MTHK_TEMPLATE_REPLACEMENT: ShowTemplateReplaceWindow(); break;
+			case MTHK_TRAIN_SLOTS: ShowTraceRestrictSlotWindow(_local_company); break;
+			case MTHK_TRAIN_COUNTERS: ShowTraceRestrictCounterWindow(_local_company); break;
 			default: return ES_NOT_HANDLED;
 		}
 		if (cbf != CBF_NONE) _last_started_action = cbf;
@@ -2247,6 +2259,10 @@ static Hotkey maintoolbar_hotkeys[] = {
 	Hotkey((uint16)0, "land_info", MTHK_LANDINFO),
 	Hotkey('P', "plan_list", MTHK_PLAN_LIST),
 	Hotkey('Y', "link_graph_legend", MTHK_LINK_GRAPH_LEGEND),
+	Hotkey((uint16)0, "message_history", MTHK_MESSAGE_HISTORY),
+	Hotkey((uint16)0, "template_replacement", MTHK_TEMPLATE_REPLACEMENT),
+	Hotkey((uint16)0, "train_slots", MTHK_TRAIN_SLOTS),
+	Hotkey((uint16)0, "train_counters", MTHK_TRAIN_COUNTERS),
 	HOTKEY_LIST_END
 };
 HotkeyList MainToolbarWindow::hotkeys("maintoolbar", maintoolbar_hotkeys);
