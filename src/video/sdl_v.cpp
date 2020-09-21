@@ -470,7 +470,8 @@ static const VkMapping _vk_mapping[] = {
 	AS(SDLK_QUOTE,   WKC_SINGLEQUOTE),
 	AS(SDLK_COMMA,   WKC_COMMA),
 	AS(SDLK_MINUS,   WKC_MINUS),
-	AS(SDLK_PERIOD,  WKC_PERIOD)
+	AS(SDLK_PERIOD,  WKC_PERIOD),
+	AS(SDLK_HASH,    WKC_HASH),
 };
 
 static uint ConvertSdlKeyIntoMy(SDL_keysym *sym, WChar *character)

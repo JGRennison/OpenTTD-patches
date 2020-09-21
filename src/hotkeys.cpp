@@ -86,6 +86,7 @@ static const KeycodeNames _keycode_to_name[] = {
 	{".", WKC_PERIOD}, /* deprecated, use PERIOD */
 	{"MINUS", WKC_MINUS},
 	{"-", WKC_MINUS}, /* deprecated, use MINUS */
+	{"HASH", WKC_HASH},
 	{"PAGE_UP", WKC_PAGEUP},
 	{"PAGE_DOWN", WKC_PAGEDOWN},
 };
