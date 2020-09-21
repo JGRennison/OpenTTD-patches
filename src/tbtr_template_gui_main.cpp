@@ -809,5 +809,7 @@ public:
 
 void ShowTemplateReplaceWindow()
 {
-	new TemplateReplaceWindow(&_replace_rail_vehicle_desc);
+	if (BringWindowToFrontById(WC_TEMPLATEGUI_MAIN, 0) == nullptr) {
+		new TemplateReplaceWindow(&_replace_rail_vehicle_desc);
+	}
 }
