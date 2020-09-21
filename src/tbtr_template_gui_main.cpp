@@ -190,7 +190,6 @@ class TemplateReplaceWindow : public Window {
 private:
 
 	GUIGroupList groups;          ///< List of groups
-	uint unitnumber_digits;
 
 	std::vector<int> indents; ///< Indentation levels
 
@@ -210,13 +209,10 @@ private:
 	bool editInProgress;
 
 public:
-	TemplateReplaceWindow(WindowDesc *wdesc, uint unitnumber_digits) : Window(wdesc)
+	TemplateReplaceWindow(WindowDesc *wdesc) : Window(wdesc)
 	{
 		// listing/sorting
 		templates.SetSortFuncs(this->template_sorter_funcs);
-
-		// From BaseVehicleListWindow
-		this->unitnumber_digits = unitnumber_digits;
 
 		this->sel_railtype = INVALID_RAILTYPE;
 
@@ -811,7 +807,7 @@ public:
 	}
 };
 
-void ShowTemplateReplaceWindow(uint unitnumber_digits)
+void ShowTemplateReplaceWindow()
 {
-	new TemplateReplaceWindow(&_replace_rail_vehicle_desc, unitnumber_digits);
+	new TemplateReplaceWindow(&_replace_rail_vehicle_desc);
 }

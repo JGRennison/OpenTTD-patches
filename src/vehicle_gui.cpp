@@ -2087,7 +2087,7 @@ public:
 						break;
 					case ADI_TEMPLATE_REPLACE:
 						if (vli.vtype == VEH_TRAIN) {
-							ShowTemplateReplaceWindow(this->unitnumber_digits);
+							ShowTemplateReplaceWindow();
 						}
 						break;
 					case ADI_SERVICE: // Send for servicing
