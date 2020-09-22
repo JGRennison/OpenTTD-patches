@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.36.0
+## JGR's Patchpack version 0.37.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -257,7 +257,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add support for allowing/disallowing supply to a station, per cargo, by ctrl-clicking the station cargo rating. (added in v0.34.0).  
   * Open train vehicle details window on total cargo tab if shift pressed. (added in v0.34.0).  
   * Ctrl-click up/down in NewGRF window to move to top or bottom. (added in v0.34.2).  
-  * Additional conditional order types/modes. (added in v0.24.0, v0.33.1, v0.34.3).  
+  * Additional conditional order types/modes. (added in v0.24.0, v0.33.1, v0.34.3, v0.37.0).  
   * Improve road vehicle pathfinding when multiple vehicles are simultaneously heading to a station with multiple bay/stop entrances. (added in v0.35.0).  
   * Add setting to scale station cargo capacity and rating tolerance by size. (added in v0.35.0).  
   * Add setting to disable vehicle expiry after a given year. (added in v0.35.0).  
@@ -266,6 +266,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add setting for alternative linkgraph overlay colour schemes. (added in v0.36.0).  
   * Add basic tab-completion to the console window. (added in v0.36.0).  
   * Add settings to enable multiple churches/stadiums and to ignore date/zone/GRF when placing houses in the scenario editor. (added in v0.36.0).  
+  * Add setting for default road/tram types. (added in v0.37.0).  
+  * Allow building objects by area (1x1 objects only). (added in v0.37.0).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
   * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).

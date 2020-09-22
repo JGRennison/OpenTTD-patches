@@ -2,6 +2,42 @@
 
 * * *
 
+### v0.37.0 (2020-09-22)
+* Fix crash when upgrading dual road/tram bridge, when the other road/tram type does not extend across the bridge, but is present on the upgrade tile.
+* Fix crashes or other erros which could occur after the NewGRF error window is shown after generating a new map.
+* Routing restrictions:
+  * Fix crash which could occur when using reverse behind signal.
+  * Allow referencing competitor infrastructure where allowed by sharing.
+  * Add train counters.
+* Programmable pre-signals:
+  * UI improvements.
+  * Add train slot and counter conditionals.
+* Template-based train replacement:
+  * Fix being able to open template replacement window more than once.
+  * Fix replacement flags being reset when when editing template.
+  * Fix group add/remove/rename not updating template replacement GUI in multiplayer.
+  * Fix no error message when attaching new template vehicle fails.
+  * Do not keep remaining vehicles by default.
+* Fix bulk land purchasing removing structures and water.
+* Fix excessively long time periods between updates for small link graph networks.
+* Fix town label colour not being updated when switching companies.
+* Fix connecting link graph overlay links not being redrawn when when moving station sign.
+* Only show ship is lost messages if lost for a significant time.
+* Allow building objects by area (1x1 objects only).
+* Add rate limit for object construction.
+* Add setting for default road/tram types, to match default rail type setting.
+* Add conditional order which tests counter value.
+* AI/GS:
+  * Allow changing ops limit and memory limit settings in game.
+  * Allow AI/GS developers to change game script in-game.
+* Hotkeys:
+  * Allow using the hash (#) key as a hotkey on Linux/SDL.
+  * Add empty hotkeys for message history, template replacement window, slots window, counters window.
+* On load, use previous local company or the first usable company, instead of always using the first company slot.
+* NewGRF: Fix industry probability at map generation was scaled differently when set via property or callback.
+* MacOS: Fix font support (builds did not include Freetype).
+* Bump trunk base from commit 9340fe9c7ceca3349df171770480683097f0e436 to commit 53a3d940b15ca2e769b4db19079b3b6913c48647.
+
 ### v0.36.0 (2020-08-30)
 * Fix incorrect infrastructure totals which could cause multiplayer desyncs when using the road convert tool on bay road stops.
 * Fix vehicle window mouse over colour when both stopped and waiting/stuck.
