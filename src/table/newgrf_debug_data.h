@@ -146,8 +146,8 @@ class NIHVehicle : public NIHelper {
 		}
 		if (v->type == VEH_TRAIN) {
 			const Train *t = Train::From(v);
-			seprintf(buffer, lastof(buffer), "  Wait counter: %u, rev distance: %u, TBSN: %u, speed restriction: %u",
-					t->wait_counter, t->reverse_distance, t->tunnel_bridge_signal_num, t->speed_restriction);
+			seprintf(buffer, lastof(buffer), "  Wait counter: %u, rev distance: %u, TBSN: %u, speed restriction: %u, railtype: %u, compatible_railtypes: 0x" OTTD_PRINTFHEX64,
+					t->wait_counter, t->reverse_distance, t->tunnel_bridge_signal_num, t->speed_restriction, t->railtype, t->compatible_railtypes);
 			print(buffer);
 		}
 		if (v->type == VEH_SHIP) {
@@ -176,12 +176,18 @@ class NIHVehicle : public NIHelper {
 		print(buffer);
 		const Engine *e = Engine::GetIfValid(v->engine_type);
 		if (e != nullptr) {
-		YearMonthDay ymd;
-		ConvertDateToYMD(e->intro_date, &ymd);
+			YearMonthDay ymd;
+			ConvertDateToYMD(e->intro_date, &ymd);
 			seprintf(buffer, lastof(buffer), "    Intro: %4i-%02i-%02i, Age: %u, Base life: %u, Durations: %u %u %u (sum: %u)",
 					ymd.year, ymd.month + 1, ymd.day, e->age, e->info.base_life, e->duration_phase_1, e->duration_phase_2, e->duration_phase_3,
 					e->duration_phase_1 + e->duration_phase_2 + e->duration_phase_3);
 			print(buffer);
+			if (e->type == VEH_TRAIN) {
+				const RailtypeInfo *rti = GetRailTypeInfo(e->u.rail.railtype);
+				seprintf(buffer, lastof(buffer), "    Railtype: %u (0x" OTTD_PRINTFHEX64 "), Compatible: 0x" OTTD_PRINTFHEX64 ", Powered: 0x" OTTD_PRINTFHEX64,
+						e->u.rail.railtype, (static_cast<RailTypes>(1) << e->u.rail.railtype), rti->compatible_railtypes, rti->powered_railtypes);
+				print(buffer);
+			}
 		}
 
 		seprintf(buffer, lastof(buffer), "  Current image cacheable: %s", v->cur_image_valid_dir != INVALID_DIR ? "yes" : "no");
@@ -613,7 +619,7 @@ class NIHRailType : public NIHelper {
 
 		auto writeRailType = [&](RailType type) {
 			const RailtypeInfo *info = GetRailTypeInfo(type);
-			seprintf(buffer, lastof(buffer), "  Type: %u", type);
+			seprintf(buffer, lastof(buffer), "  Type: %u (0x" OTTD_PRINTFHEX64 ")", type, (static_cast<RailTypes>(1) << type));
 			print(buffer);
 			seprintf(buffer, lastof(buffer), "  Flags: %c%c%c%c%c%c",
 					HasBit(info->flags, RTF_CATENARY) ? 'c' : '-',
