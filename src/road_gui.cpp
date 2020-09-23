@@ -32,10 +32,10 @@
 #include "core/geometry_func.hpp"
 #include "date_func.h"
 #include "station_map.h"
-
 #include "widgets/road_widget.h"
-
 #include "table/strings.h"
+
+#include <array>
 
 #include "safeguards.h"
 
