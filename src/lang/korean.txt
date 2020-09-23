@@ -1315,6 +1315,8 @@ STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :이 설정을 �
 
 STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            :차량이 길을 잃으면 경고: {STRING}
 STR_CONFIG_SETTING_WARN_LOST_VEHICLE_HELPTEXT                   :다음 목적지로 가기 위한 경로를 찾을 수 없는 차량이 있으면 뉴스 메시지로 알려줍니다.
+STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE                :열차가 경로 제한 때문에 멈춘 경우 경고: {STRING}
+STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE_HELPTEXT       :경로 제한 기능때문에 열차가 경로 신호기에서 오랫동안 멈춰있는 경우 뉴스 메시지로 알려줍니다.
 STR_CONFIG_SETTING_ORDER_REVIEW                                 :차량의 경로를 검사: {STRING}
 STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :이 설정을 켜면, 차량의 경로를 주기적으로 검사하여 문제가 발견되면 뉴스 메시지로 알려줍니다.
 STR_CONFIG_SETTING_ORDER_REVIEW_OFF                             :검사하지 않음
@@ -1573,10 +1575,13 @@ STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_HELPTEXT   :자동 시간�
 STR_CONFIG_SETTING_QUICKGOTO                                    :빠른 행선지 설정: {STRING}
 STR_CONFIG_SETTING_QUICKGOTO_HELPTEXT                           :경로 창을 열면 자동으로 '행선지' 버튼을 선택하여 곧바로 행선지를 지정할 수 있도록 합니다.
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE                            :철도 형식 기본값 설정 (게임 시작/불러온 후): {STRING}
-STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :게임을 새로 시작하거나 불러온 뒤에 사용할 철도의 종류를 선택합니다. '처음 사용 가능한 것'은 가장 오래된 철도 종류를 선택하고, '최신 기술의 철도'는 가장 최신에 나온 철도 종류를 선택하며 '가장 많이 사용한 것'은 플레이어가 가장 많이 사용한 철도 타입을 선택합니다.
+STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :게임을 새로 시작하거나 불러온 뒤에 사용할 철도의 종류를 선택합니다. '처음 사용 가능한 것'은 가장 오래된 철도 종류를 선택하고, '최신 기술의 철도'는 가장 최신에 나온 철도 종류를 선택하며 '가장 많이 사용한 것'은 현재 가장 많이 사용한 철도 종류를 선택합니다.
+STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE                            :도로/전차 형식 기본값 설정 (게임 시작/불러온 후): {STRING}
+STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_HELPTEXT                   :게임을 새로 시작하거나 불러온 뒤에 사용할 도로/전차의 종류를 선택합니다. '처음 사용 가능한 것'은 가장 오래된 도로/전차 종류를 선택하고, '최신 기술의 철도'는 가장 최신에 나온 도로/전차 종류를 선택하며 '가장 많이 사용한 것'은 현재 가장 많이 사용한 철도 종류를 선택하며, '기본값'은 기본 종류를 선택합니다.
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :처음 사용 가능한 것
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_LAST                       :가장 최근에 개발된 철도
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED                  :가장 많이 사용한 것
+STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_DEFAULT                    :기본값
 
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :차량의 다음 진행 경로 보여주기: {STRING}
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :열차가 경로 탐색 기능 때문에 폐색으로 진입할 수 없는 문제를 해결하기 위해, 열차가 진행할 경로를 별도의 어두운 색으로 표시합니다.
@@ -1983,12 +1988,17 @@ STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES_HELPTEXT           :다리 밑에 �
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED                      :토지 소유권 구매 허용: {STRING}
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED_HELPTEXT             :회사가 토지 소유권을 구매할 수 있을지와 어떤 방식으로 구매할지를 설정합니다.
 
+STR_CONFIG_SETTING_BUILD_OBJECT_PERMITTED                       :오브젝트 드래그 설치 허용: {STRING}
+STR_CONFIG_SETTING_BUILD_OBJECT_PERMITTED_HELPTEXT              :회사가 오브젝트를 설치할 때, 한 번에 하나씩 짓는 대신 드래그를 이용해 넓은 영역에 설치할 수 있도록 허용할지를 설정합니다.
+
 STR_PURCHASE_LAND_PERMITTED_NO                                  :허용하지 않음
 STR_PURCHASE_LAND_PERMITTED_SINGLE                              :허용, 한 타일씩
 STR_PURCHASE_LAND_PERMITTED_AREA                                :허용, 여러 타일씩
 
 STR_PURCHASE_LAND_NOT_PERMITTED                                 :토지 소유권 구매가 금지되어 있습니다
 STR_PURCHASE_LAND_NOT_PERMITTED_BULK                            :여러 타일의 토지 소유권 구매가 금지되어 있습니다
+
+STR_BUILD_OBJECT_NOT_PERMITTED_BULK                             :넓은 영역에 오브젝트를 건설하는 것은 금지되어 있습니다
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}설정값 변경
 
@@ -2729,6 +2739,7 @@ STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY                      :슬롯 사용�
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING            :남은 슬롯 수용량
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT                :사용량
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING_SHORT      :남은 수용량
+STR_TRACE_RESTRICT_VARIABLE_COUNTER_VALUE                       :카운터 값
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_WEIGHT                        :무게
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_POWER                         :힘
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE                        :최고 견인력
@@ -2760,8 +2771,10 @@ STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} 열차
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{STRING} 슬롯 {2:TRSLOT}의 {1:STRING} {3:STRING} {COMMA} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {2:STRING}의 {1:STRING} {BLACK}{3:STRING}{STRING} {COMMA} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING} 열차가 {2:STRING}{1:STRING}
-STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}정의되지 않음 {BLACK}{STRING}(이)라면
-STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}정의되지 않음 {BLACK}{STRING}(이)라면
+STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING} 열차의 카운터 값: {TRCOUNTER} {STRING} {COMMA} (이)라면
+STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} 열차의 카운터 값: {STRING} {BLACK}{STRING} {STRING} {COMMA} (이)라면
+STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}정의되지 않음 {BLACK}{STRING} (이)라면
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}정의되지 않음 {BLACK}{STRING} (이)라면
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :경로 탐색에서 우선순위를 {COMMA} 만큼 뒤로
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM_PRESET                       :경로 탐색에서 우선순위를 {STRING} 낮추기
 STR_TRACE_RESTRICT_WHITE                                        :{WHITE}
@@ -2796,6 +2809,8 @@ STR_TRACE_RESTRICT_UNDEFINED_COMPANY                            :정의되지 �
 STR_TRACE_RESTRICT_SLOT_OP                                      :슬롯 연산
 STR_TRACE_RESTRICT_REVERSE                                      :회차
 STR_TRACE_RESTRICT_SPEED_RESTRICTION                            :속력 제한
+STR_TRACE_RESTRICT_NEWS_CONTROL                                 :뉴스 제어
+STR_TRACE_RESTRICT_COUNTER_OP                                   :카운터 연산
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :획득 또는 대기
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :획득 시도
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :해제 (앞)
@@ -2813,6 +2828,13 @@ STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :경로 예약 �
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}슬롯{CONSUME_ARG}: {LTBLUE}
 STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}, {LTBLUE}
+STR_TRACE_RESTRICT_COUNTER_NAME                                 :{TRCOUNTER}
+STR_TRACE_RESTRICT_COUNTER_INCREASE                             :증가
+STR_TRACE_RESTRICT_COUNTER_DECREASE                             :감소
+STR_TRACE_RESTRICT_COUNTER_SET                                  :설정
+STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM                        :카운터: {0:STRING}{BLACK}{1:STRING}의 값을 {2:COMMA}만큼 증가
+STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM                        :카운터: {0:STRING}{BLACK}{1:STRING}의 값을 {2:COMMA}만큼 감소
+STR_TRACE_RESTRICT_COUNTER_SET_ITEM                             :카운터: {0:STRING}{BLACK}{1:STRING}의 값을 {2:COMMA}(으)로 설정
 STR_TRACE_RESTRICT_TRAIN_STATUS_EMPTY                           :{G=f}빈 상태
 STR_TRACE_RESTRICT_TRAIN_STATUS_FULL                            :{G=f}가득 찬 상태
 STR_TRACE_RESTRICT_TRAIN_STATUS_BROKEN_DOWN                     :{G=f}고장난 상태
@@ -2828,6 +2850,10 @@ STR_TRACE_RESTRICT_REVERSE_SIG                                  :신호기 뒤�
 STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL                           :신호기 뒤에서 회차 취소
 STR_TRACE_RESTRICT_SET_SPEED_RESTRICTION                        :열차 속력 제한: {VELOCITY}
 STR_TRACE_RESTRICT_REMOVE_SPEED_RESTRICTION                     :열차 속력 제한 해제
+STR_TRACE_RESTRICT_TRAIN_NOT_STUCK                              :이 열차는 멈춘 게 아니므로, 이 경로 신호기에서 기다리는 것에 대한 뉴스 메시지를 표시하지 않음
+STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL                       :(취소) 이 열차는 멈춘 게 아니므로, 이 경로 신호기에서 기다리는 것에 대한 뉴스 메시지를 표시하지 않음
+STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_SHORT                        :열차가 멈춘 게 아님...
+STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL_SHORT                 :(취소) 열차가 멈춘 게 아님...
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}값
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}경로 탐색 제한
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}경로 탐색 제한 - {COMMA}개의 신호기와 공유
@@ -2852,6 +2878,23 @@ STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION                          :{BLACK}슬롯 �
 STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION               :{BLACK}슬롯의 최대 수용량을 설정하세요
 STR_TRACE_RESTRICT_SLOT_QUERY_DELETE_CAPTION                    :{WHITE}슬롯 삭제
 STR_TRACE_RESTRICT_SLOT_DELETE_QUERY_TEXT                       :{WHITE}이 슬롯을 정말로 삭제하시겠습니까?
+STR_TRACE_RESTRICT_COUNTER_OP_TOOLTIP                           :{BLACK}카운터 연산 종류
+STR_TRACE_RESTRICT_COUNTER_GUI_LIST_TOOLTIP                     :{BLACK}카운터 - 수정하려는 카운터를 클릭하세요.
+STR_TRACE_RESTRICT_COUNTER_CREATE                               :{BLACK}생성
+STR_TRACE_RESTRICT_COUNTER_DELETE                               :{BLACK}삭제
+STR_TRACE_RESTRICT_COUNTER_RENAME                               :{BLACK}이름 바꾸기
+STR_TRACE_RESTRICT_COUNTER_SET_VALUE                            :{BLACK}값 설정
+STR_TRACE_RESTRICT_COUNTER_CREATE_TOOLTIP                       :{BLACK}카운터를 생성하려면 클릭하세요
+STR_TRACE_RESTRICT_COUNTER_DELETE_TOOLTIP                       :{BLACK}선택한 카운터를 삭제합니다
+STR_TRACE_RESTRICT_COUNTER_RENAME_TOOLTIP                       :{BLACK}선택한 카운터의 이름을 바꿉니다
+STR_TRACE_RESTRICT_COUNTER_SET_VALUE_TOOLTIP                    :{BLACK}선택한 카운터의 값을 바꿉니다
+STR_TRACE_RESTRICT_COUNTER_CAPTION                              :{WHITE}경로 제한 - 카운터 관리
+STR_TRACE_RESTRICT_COUNTER_MANAGE                               :카운터 관리
+STR_TRACE_RESTRICT_COUNTER_RENAME_CAPTION                       :{BLACK}카운터 이름 변경
+STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION                       :{BLACK}카운터 생성
+STR_TRACE_RESTRICT_COUNTER_SET_VALUE_CAPTION                    :{BLACK}카운터 값 설정
+STR_TRACE_RESTRICT_COUNTER_QUERY_DELETE_CAPTION                 :{WHITE}카운터 삭제
+STR_TRACE_RESTRICT_COUNTER_DELETE_QUERY_TEXT                    :{WHITE}정말 이 카운터를 삭제하시겠습니까?
 STR_TRACE_RESTRICT_INSERT                                       :{BLACK}삽입
 STR_TRACE_RESTRICT_REMOVE                                       :{BLACK}제거
 STR_TRACE_RESTRICT_RESET                                        :{BLACK}비우기
@@ -2896,6 +2939,10 @@ STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME                      :{WHITE}이 슬�
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_ADD_VEHICLE                 :{WHITE}차량을 이 슬롯에 추가할 수 없습니다...
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE              :{WHITE}차량을 이 슬롯에서 제거할 수 없습니다...
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY           :{WHITE}이 슬롯의 최대 수용량을 설정할 수 없습니다...
+STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE                   :{WHITE}카운터를 생성할 수 없습니다...
+STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_DELETE                   :{WHITE}이 카운터를 삭제할 수 없습니다...
+STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_RENAME                   :{WHITE}카운터 이름을 바꿀 수 없습니다...
+STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY                   :{WHITE}이 카운터의 값을 수정할 수 없습니다...
 
 # Programmable Pre-Signals
 STR_PROGRAM_SIGNAL_TOOLTIP                                      :{BLACK}프로그램 신호기 설정
@@ -2922,6 +2969,8 @@ STR_PROGSIG_INSERT_TOOLTIP                                      :{BLACK}구문�
 STR_PROGSIG_REMOVE_TOOLTIP                                      :{BLACK}선택된 구문을 제거합니다.
 STR_PROGSIG_REMOVE_PROGRAM_TOOLTIP                              :{BLACK}전체 프로그램을 제거합니다.
 STR_PROGSIG_COPY_PROGRAM_TOOLTIP                                :{BLACK}존재하는 신호기로부터 프로그램을 복사합니다.
+STR_PROGSIG_COND_SLOT_TOOLTIP                                   :{BLACK}사용량을 비교하려는 슬롯
+STR_PROGSIG_COND_COUNTER_TOOLTIP                                :{BLACK}값을 비교하려는 카운터
 
 STR_PROGSIG_REMOVE_PROGRAM                                      :{BLACK}프로그램 제거
 STR_PROGSIG_COPY_PROGRAM                                        :{BLACK}프로그램 복제
@@ -2942,7 +2991,16 @@ STR_PROGSIG_SET_SIGNAL                                          :신호기에 {S
 STR_PROGSIG_COND_ALWAYS                                         :항상 맞음
 STR_PROGSIG_COND_NEVER                                          :항상 아님
 STR_PROGSIG_COND_COMPARE                                        :{STRING} {STRING} {NUM}
+STR_PROGSIG_COND_SLOT_COMPARE                                   :{TRSLOT}의 사용량 {STRING} {NUM}
+STR_PROGSIG_COND_SLOT_COMPARE_INVALID                           :{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR}의 사용량 {STRING} {NUM}
+STR_PROGSIG_COND_SLOT_REMAINING_COMPARE                         :{TRSLOT}의 남은 사용량 {STRING} {NUM}
+STR_PROGSIG_COND_SLOT_REMAINING_COMPARE_INVALID                 :{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR}의 남은 사용량 {STRING} {NUM}
+STR_PROGSIG_COND_COUNTER_COMPARE                                :{TRCOUNTER}의 값 {STRING} {NUM}
+STR_PROGSIG_COND_COUNTER_COMPARE_INVALID                        :{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR}의 값 {STRING} {NUM}
 STR_PROGSIG_COND_SIGNAL_STATE                                   :신호기 상태
+STR_PROGSIG_COND_SLOT                                           :슬롯 사용량
+STR_PROGSIG_COND_SLOT_REMAINING                                 :남은 슬롯 사용량
+STR_PROGSIG_COND_COUNTER                                        :카운터 값
 STR_PROGSIG_CONDVAR_SIGNAL_STATE_SPECIFIED                      :{NUM} x {NUM} 에 위치한 신호기가 초록색
 STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED                    :{RED}정해지지 않은 신호기{STRING} 가 초록색
 STR_PROGSIG_CONDVAR_NUM_RED                                     :빨간 신호
@@ -4605,6 +4663,7 @@ STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}무게: 
 
 STR_VEHICLE_INFO_TRAIN_LENGTH                                   :{BLACK}열차 길이: {LTBLUE}{DECIMAL} 칸 {STRING}
 STR_VEHICLE_INFO_WEIGHT_RATIOS                                  :{BLACK}힘 / 무게: {LTBLUE}{POWER_WEIGHT_RATIO} {BLACK} 최고 견인력 / 무게: {LTBLUE}{FORCE_WEIGHT_RATIO}
+STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS                        :{BLACK}전체 중량: {LTBLUE}{WEIGHT_SHORT} {STRING}
 
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}올해 이익: {LTBLUE}{CURRENCY_LONG} (작년: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING} (평생: {CURRENCY_LONG})
@@ -4758,6 +4817,7 @@ STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :{G=f}슬롯 점
 STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :{G=m}열차 슬롯
 STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :{G=m}화물 적재율
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :{G=m}화물 대기량
+STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :{G=m}카운터 값
 
 STR_ORDER_CONDITIONAL_REQUIRES_SERVICE_ORDER                    :서비스 {STRING}가 필요함
 STR_ORDER_CONDITIONAL_CARGO_WAITING_ORDER                       :다음 역 {STRING} {STRING} 대기 중
@@ -4780,6 +4840,7 @@ STR_ORDER_CONDITIONAL_COMPARATOR_IS_FALSE                       :없을 때
 STR_ORDER_CONDITIONAL_VALUE_TOOLTIP                             :{BLACK}비교 조건에 대한 입력값입니다
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}화물에 대한 입력값입니다.
 STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}점유되었는지 확인할 슬롯입니다.
+STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP                           :{BLACK}비교하려는 카운터입니다
 STR_ORDER_CONDITIONAL_VALUE_CAPT                                :{WHITE}비교할 값을 입력하세요
 
 STR_ORDER_CONDITIONAL_VIA                                       :{BLACK}경유
@@ -4918,6 +4979,8 @@ STR_ORDER_CONDITIONAL_TRUE_FALSE                                :[조건 경로]
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :[조건 경로] {COMMA}번 경로로 건너뛰기 ({STRING}의 적재율 {STRING} {COMMA}일 때)
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :[조건 경로] {COMMA}번 경로로 건너뛰기 (다음 역의 {STRING} 대기량 {STRING} {CARGO_SHORT}일 때)
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :[조건 경로] {COMMA}번 경로로 건너뛰기 (다음 역에 있는 {2:STATION} 경유 {1:STRING} {3:STRING} {4:CARGO_SHORT}일 때)
+STR_ORDER_CONDITIONAL_COUNTER                                   :[조건 경로] {COMMA}번 경로로 건너뛰기 ({TRCOUNTER}의 값 {STRING} {COMMA}일 때)
+STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :[조건 경로] {COMMA}번 경로로 건너뛰기 ({PUSH_COLOUR}{RED}{STRING}{POP_COLOUR}의 값 {STRING} {COMMA}일 때)
 
 STR_INVALID_ORDER                                               :{RED} (잘못된 행선지)
 
@@ -4994,8 +5057,12 @@ STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}시간�
 STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP                           :{BLACK}선택된 경로의 시간 값을 고정하거나 고정 해제합니다.(Ctrl+클릭하면 모두 고정하거나 고정 해제).{}고정된 시간 값은 자동 시간 설정이나 자동 시간표가 변경하지 않습니다.
 
 STR_TIMETABLE_LEAVE_EARLY_ORDER                                 :[시간표 대기 무시]
+STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ANY                        :[아무 화물이나 가득 실으면 시간표 대기 무시]
+STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ALL                        :[모든 화물을 가득 실으면 시간표 대기 무시]
 STR_TIMETABLE_LEAVE_NORMAL                                      :출발 시각까지 대기
 STR_TIMETABLE_LEAVE_EARLY                                       :출발 시각 무시
+STR_TIMETABLE_LEAVE_EARLY_FULL_ANY                              :아무 화물이나 가득 실으면 출발 시각 무시
+STR_TIMETABLE_LEAVE_EARLY_FULL_ALL                              :모든 화물을 가득 실으면 출발 시각 무시
 
 STR_TIMETABLE_EXTRA_DROP_DOWN                                   :{BLACK}추가 옵션
 STR_TIMETABLE_EXTRA_DROP_DOWN_TOOLTIP                           :{BLACK}추가 옵션{}{}시간표의 출발 시각까지 대기: 차량이 시간표에 지정된 출발 시각까지 역에서 대기한 후 출발합니다. (기본값){}시간표의 출발 시각 무시: 열차가 역에서 승하차를 마치면, 즉시 설정된 출발 시간을 무시하고 역에서 출발하니다.
@@ -5501,7 +5568,8 @@ STR_ERROR_OBJECT_IN_THE_WAY                                     :{WHITE}중간�
 STR_ERROR_COMPANY_HEADQUARTERS_IN                               :{WHITE}... 중간에 회사 본사가 있습니다
 STR_ERROR_CAN_T_PURCHASE_THIS_LAND                              :{WHITE}이 지역을 매입할 수 없습니다...
 STR_ERROR_YOU_ALREADY_OWN_IT                                    :{WHITE}... 이미 소유중입니다!
-STR_ERROR_PURCHASE_LAND_LIMIT_REACHED                           :{WHITE}... 이미 가능한 모든 토지 소유권을 구매했습니다!
+STR_ERROR_PURCHASE_LAND_LIMIT_REACHED                           :{WHITE}... 토지 소유권 구매 제한에 도달했습니다
+STR_ERROR_BUILD_OBJECT_LIMIT_REACHED                            :{WHITE}... 오브젝트 건설 제한에 도달했습니다
 
 # Group related errors
 STR_ERROR_GROUP_CAN_T_CREATE                                    :{WHITE}그룹을 만들 수 없습니다...
