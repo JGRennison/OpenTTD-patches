@@ -18,6 +18,7 @@
 #include "network/network_base.h"
 #include "network/network_admin.h"
 #include "network/network_client.h"
+#include "network/network_server.h"
 #include "command_func.h"
 #include "settings_func.h"
 #include "fios.h"
@@ -1791,6 +1792,59 @@ DEF_CONSOLE_CMD(ConCompanyPassword)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConCompanyPasswordHash)
+{
+	if (argc == 0) {
+		IConsoleHelp("Change the password hash of a company. Usage: 'company_pw_hash <company-no> \"<password_hash>\"");
+		IConsoleHelp("Use \"*\" to disable the password.");
+		return true;
+	}
+
+	if (argc != 3) return false;
+
+	CompanyID company_id = (CompanyID)(atoi(argv[1]) - 1);
+	const char *password = argv[2];
+
+	if (!Company::IsValidHumanID(company_id)) {
+		IConsoleError("You have to specify the ID of a valid human controlled company.");
+		return false;
+	}
+
+	if (strcmp(password, "*") == 0) password = "";
+
+	NetworkServerSetCompanyPassword(company_id, password, true);
+
+	if (StrEmpty(password)) {
+		IConsolePrintF(CC_WARNING, "Company password hash cleared");
+	} else {
+		IConsolePrintF(CC_WARNING, "Company password hash changed to: %s", password);
+	}
+
+	return true;
+}
+
+DEF_CONSOLE_CMD(ConCompanyPasswordHashes)
+{
+	if (argc == 0) {
+		IConsoleHelp("List the password hashes of all companies in the game. Usage 'company_pw_hashes'");
+		return true;
+	}
+
+	for (const Company *c : Company::Iterate()) {
+		/* Grab the company name */
+		char company_name[512];
+		SetDParam(0, c->index);
+		GetString(company_name, STR_COMPANY_NAME, lastof(company_name));
+
+		char colour[512];
+		GetString(colour, STR_COLOUR_DARK_BLUE + _company_colours[c->index], lastof(colour));
+		IConsolePrintF(CC_INFO, "#:%d(%s) Company Name: '%s'  Hash: '%s'",
+			c->index + 1, colour, company_name, _network_company_states[c->index].password);
+	}
+
+	return true;
+}
+
 /* Content downloading only is available with ZLIB */
 #if defined(WITH_ZLIB)
 #include "network/network_content.h"
@@ -2652,6 +2706,10 @@ void IConsoleStdLibRegister()
 
 	IConsoleCmdRegister("company_pw",      ConCompanyPassword, ConHookNeedNetwork);
 	IConsoleAliasRegister("company_password",      "company_pw %+");
+	IConsoleCmdRegister("company_pw_hash", ConCompanyPasswordHash, ConHookServerOnly);
+	IConsoleAliasRegister("company_password_hash", "company_pw %+");
+	IConsoleCmdRegister("company_pw_hashes",         ConCompanyPasswordHashes, ConHookServerOnly);
+	IConsoleAliasRegister("company_password_hashes", "company_pw_hashes");
 
 	IConsoleAliasRegister("net_frame_freq",        "setting frame_freq %+");
 	IConsoleAliasRegister("net_sync_freq",         "setting sync_freq %+");
