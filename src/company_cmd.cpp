@@ -1190,7 +1190,7 @@ int CompanyServiceInterval(const Company *c, VehicleType type)
  */
 CompanyID GetDefaultLocalCompany()
 {
-	if (_loaded_local_company >= COMPANY_FIRST && _loaded_local_company < MAX_COMPANIES && Company::IsValidID(_loaded_local_company)) {
+	if (_loaded_local_company < MAX_COMPANIES && Company::IsValidID(_loaded_local_company)) {
 		return _loaded_local_company;
 	}
 	for (CompanyID i = COMPANY_FIRST; i < MAX_COMPANIES; i++) {
