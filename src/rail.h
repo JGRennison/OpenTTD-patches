@@ -44,6 +44,7 @@ DECLARE_ENUM_AS_BIT_SET(RailTypeFlags)
 /** Railtype control flags. */
 enum RailTypeCtrlFlags {
 	RTCF_PROGSIG           = 0,                          ///< Custom signal sprites enabled for programmable pre-signals.
+	RTCF_RESTRICTEDSIG     = 1,                          ///< Custom signal sprite flag enabled for restricted signals.
 };
 
 struct SpriteGroup;

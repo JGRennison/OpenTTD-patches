@@ -4354,6 +4354,11 @@ static ChangeInfoResult RailTypeChangeInfo(uint id, int numinfo, int prop, const
 				SB(rti->ctrl_flags, RTCF_PROGSIG, 1, (buf->ReadByte() != 0 ? 1 : 0));
 				break;
 
+			case A0RPI_RAILTYPE_ENABLE_RESTRICTED_SIGNALS:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				SB(rti->ctrl_flags, RTCF_RESTRICTEDSIG, 1, (buf->ReadByte() != 0 ? 1 : 0));
+				break;
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
@@ -8366,6 +8371,7 @@ static const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_bridge_pillar_flags", 1),
 	GRFFeatureInfo("action5_programmable_signals", 1),
 	GRFFeatureInfo("action0_railtype_programmable_signals", 1),
+	GRFFeatureInfo("action0_railtype_restricted_signals", 1),
 	GRFFeatureInfo(),
 };
 
@@ -8482,6 +8488,7 @@ static const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 	GRFPropertyMapDefinition(GSF_BRIDGES, A0RPI_BRIDGE_MENU_ICON, "bridge_menu_icon"),
 	GRFPropertyMapDefinition(GSF_BRIDGES, A0RPI_BRIDGE_PILLAR_FLAGS, "bridge_pillar_flags"),
 	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_ENABLE_PROGRAMMABLE_SIGNALS, "railtype_enable_programmable_signals"),
+	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_ENABLE_RESTRICTED_SIGNALS, "railtype_enable_restricted_signals"),
 	GRFPropertyMapDefinition(),
 };
 

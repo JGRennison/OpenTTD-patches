@@ -56,7 +56,7 @@ struct RailTypeResolverObject : public ResolverObject {
 };
 
 SpriteID GetCustomRailSprite(const RailtypeInfo *rti, TileIndex tile, RailTypeSpriteGroup rtsg, TileContext context = TCX_NORMAL, uint *num_results = nullptr);
-SpriteID GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, SignalState state, bool gui = false);
+SpriteID GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, SignalState state, bool gui = false, bool restricted = false);
 
 uint8 GetReverseRailTypeTranslation(RailType railtype, const GRFFile *grffile);
 

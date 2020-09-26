@@ -212,6 +212,14 @@
 	The property length is 1 byte. 0 is disabled (default). 1 is enabled.
 	</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_railtype_programmable_signals</font>, version 1</p>
+	<h4>Enable restricted signal flag for custom signal sprites (mappable property: railtype_enable_restricted_signals)</h4>
+	<p>This applies to <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Railtypes#Signal_sprites_.280B.29">Action 2/3 - Railtype custom signal sprites</a>.<br />
+	When enabled, bit 24 of variable 18 (extra callback info) is set if the signal is restricted (has a routing restriction program attached).<br />
+	When enabled, the "Show restricted electric signals using default graphics" client setting is not applied.<br />
+	This flag should only be set if the Action 2/3 actually returns a different sprite when bit 24 of variable 18 is set.
+	The property length is 1 byte. 0 is disabled (default). 1 is enabled.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_railtype_restricted_signals</font>, version 1</p>
 	<br />
 	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Stations">Variational Action 2 - Stations</a></h3>
 	<h4>Track type in purchase list (42)</h4>

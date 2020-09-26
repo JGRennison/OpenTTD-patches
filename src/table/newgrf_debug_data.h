@@ -629,8 +629,9 @@ class NIHRailType : public NIHelper {
 					HasBit(info->flags, RTF_ALLOW_90DEG) ? 'a' : '-',
 					HasBit(info->flags, RTF_DISALLOW_90DEG) ? 'd' : '-');
 			print(buffer);
-			seprintf(buffer, lastof(buffer), "  Ctrl flags: %c",
-					HasBit(info->ctrl_flags, RTCF_PROGSIG) ? 'p' : '-');
+			seprintf(buffer, lastof(buffer), "  Ctrl flags: %c%c",
+					HasBit(info->ctrl_flags, RTCF_PROGSIG) ? 'p' : '-',
+					HasBit(info->ctrl_flags, RTCF_RESTRICTEDSIG) ? 'r' : '-');
 			print(buffer);
 		};
 
