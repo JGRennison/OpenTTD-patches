@@ -2598,6 +2598,12 @@ static bool CheckTrainStayInDepot(Train *v)
 		return true;
 	}
 
+	if (v->reverse_distance > 0) {
+		v->reverse_distance--;
+		if (v->reverse_distance == 0) SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
+		return true;
+	}
+
 	SigSegState seg_state;
 
 	if (v->force_proceed == TFP_NONE) {
@@ -2626,6 +2632,53 @@ static bool CheckTrainStayInDepot(Train *v)
 		/* Service when depot has no reservation. */
 		if (!HasDepotReservation(v->tile)) VehicleEnterDepot(v);
 		return true;
+	}
+
+	if (_settings_game.pf.pathfinder_for_trains == VPF_YAPF && _settings_game.vehicle.drive_through_train_depot) {
+		const TileIndex depot_tile = v->tile;
+		const DiagDirection depot_dir = GetRailDepotDirection(depot_tile);
+		const DiagDirection behind_depot_dir = ReverseDiagDir(depot_dir);
+		const int depot_z = GetTileMaxZ(depot_tile);
+		const TileIndexDiffC tile_diff = TileIndexDiffCByDiagDir(behind_depot_dir);
+
+		TileIndex behind_depot_tile = depot_tile;
+		uint skipped = 0;
+
+		while (true) {
+			TileIndex tile = AddTileIndexDiffCWrap(behind_depot_tile, tile_diff);
+			if (tile == INVALID_TILE) break;
+			if (!IsRailDepotTile(tile)) break;
+			DiagDirection dir = GetRailDepotDirection(tile);
+			if (dir != depot_dir && dir != behind_depot_dir) break;
+			if (!HasBit(v->compatible_railtypes, GetRailType(tile))) break;
+			if (GetTileMaxZ(tile) != depot_z) break;
+			behind_depot_tile = tile;
+			skipped++;
+		}
+
+		if (skipped > 0 && GetRailDepotDirection(behind_depot_tile) == behind_depot_dir &&
+				YapfTrainCheckDepotReverse(v, depot_tile, behind_depot_tile)) {
+			Direction direction = DiagDirToDir(behind_depot_dir);
+			int x = TileX(behind_depot_tile) * TILE_SIZE | _vehicle_initial_x_fract[behind_depot_dir];
+			int y = TileY(behind_depot_tile) * TILE_SIZE | _vehicle_initial_y_fract[behind_depot_dir];
+			if (v->gcache.cached_total_length < skipped * TILE_SIZE) {
+				int delta = (skipped * TILE_SIZE) - v->gcache.cached_total_length;
+				int speed = max(1, v->GetCurrentMaxSpeed());
+				v->reverse_distance = (1 + (((192 * 3 / 2) * delta) / speed));
+				SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
+			}
+
+			for (Train *u = v; u != nullptr; u = u->Next()) {
+				u->tile = behind_depot_tile;
+				u->direction = direction;
+				u->x_pos = x;
+				u->y_pos = y;
+			}
+
+			InvalidateWindowData(WC_VEHICLE_DEPOT, depot_tile);
+			InvalidateWindowData(WC_VEHICLE_DEPOT, behind_depot_tile);
+			return true;
+		}
 	}
 
 	/* Only leave when we can reserve a path to our destination. */

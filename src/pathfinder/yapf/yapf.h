@@ -86,6 +86,8 @@ FindDepotData YapfTrainFindNearestDepot(const Train *v, int max_distance);
  */
 bool YapfTrainCheckReverse(const Train *v);
 
+bool YapfTrainCheckDepotReverse(const Train *v, TileIndex forward_depot, TileIndex reverse_depot);
+
 /**
  * Try to extend the reserved path of a train to the nearest safe tile using YAPF.
  *

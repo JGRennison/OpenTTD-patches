@@ -724,6 +724,22 @@ bool YapfTrainCheckReverse(const Train *v)
 	return reverse;
 }
 
+bool YapfTrainCheckDepotReverse(const Train *v, TileIndex forward_depot, TileIndex reverse_depot)
+{
+	typedef bool (*PfnCheckReverseTrain)(const Train*, TileIndex, Trackdir, TileIndex, Trackdir, int);
+	PfnCheckReverseTrain pfnCheckReverseTrain = CYapfRail1::stCheckReverseTrain;
+
+	/* check if non-default YAPF type needed */
+	if (_settings_game.pf.forbid_90_deg) {
+		pfnCheckReverseTrain = &CYapfRail2::stCheckReverseTrain; // Trackdir, forbid 90-deg
+	}
+
+	bool reverse = pfnCheckReverseTrain(v, forward_depot, DiagDirToDiagTrackdir(GetRailDepotDirection(forward_depot)),
+			reverse_depot, DiagDirToDiagTrackdir(GetRailDepotDirection(reverse_depot)), 1);
+
+	return reverse;
+}
+
 FindDepotData YapfTrainFindNearestDepot(const Train *v, int max_penalty)
 {
 	const Train *last_veh = v->Last();

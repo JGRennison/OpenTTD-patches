@@ -1307,6 +1307,9 @@ STR_CONFIG_SETTING_FLIP_DIRECTION_ALL_TRAINS_HELPTEXT           :Enable flipping
 STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING               :Articulated road vehicles may overtake: {STRING2}
 STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING_HELPTEXT      :Enable articulated road vehicles to overtake other road vehicles.
 
+STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT                    :Drive-through train depots: {STRING2}
+STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT_HELPTEXT           :Enable emulation of drive-through train depots. Trains can move between depots placed back to back, optionally with intermediary depots in between. Requires the YAPF pathfinder.
+
 STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR                      :Starting company colour: {STRING2}
 STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR_HELPTEXT             :Choose starting colour for the company
 
@@ -4610,6 +4613,7 @@ STR_VEHICLE_STATUS_TRAIN_STUCK_WAIT_RESTRICTION                 :{ORANGE}Waiting
 STR_VEHICLE_STATUS_AIRCRAFT_TOO_FAR                             :{ORANGE}Too far to next destination
 STR_VEHICLE_STATUS_TRAIN_WAITING_TIMETABLE                      :{ORANGE}Waiting due to timetable
 STR_VEHICLE_STATUS_TRAIN_REVERSING                              :{ORANGE}Reversing, {VELOCITY}
+STR_VEHICLE_STATUS_TRAIN_MOVING_DEPOT                           :{ORANGE}Moving in depot
 
 STR_BREAKDOWN_TYPE_CRITICAL                                     :Mechanical failure
 STR_BREAKDOWN_TYPE_EM_STOP                                      :Emergency stop

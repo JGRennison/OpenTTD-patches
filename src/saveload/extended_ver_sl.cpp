@@ -133,6 +133,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_SHIP_LOST_COUNTER,      XSCF_NULL,                1,   1, "ship_lost_counter",         nullptr, nullptr, nullptr        },
 	{ XSLFI_BUILD_OBJECT_RATE_LIMIT,XSCF_NULL,                1,   1, "build_object_rate_limit",   nullptr, nullptr, nullptr        },
 	{ XSLFI_LOCAL_COMPANY,          XSCF_IGNORABLE_ALL,       1,   1, "local_company",             saveLC,  loadLC,  nullptr        },
+	{ XSLFI_THROUGH_TRAIN_DEPOT,    XSCF_NULL,                1,   1, "drive_through_train_depot", nullptr, nullptr, nullptr        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr },// This is the end marker
 };
 
