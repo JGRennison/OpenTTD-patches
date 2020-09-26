@@ -41,6 +41,11 @@ enum RailTypeFlags {
 };
 DECLARE_ENUM_AS_BIT_SET(RailTypeFlags)
 
+/** Railtype control flags. */
+enum RailTypeCtrlFlags {
+	RTCF_PROGSIG           = 0,                          ///< Custom signal sprites enabled for programmable pre-signals.
+};
+
 struct SpriteGroup;
 
 /** Sprite groups for a railtype. */
@@ -207,6 +212,11 @@ public:
 	 * Bit mask of rail type flags
 	 */
 	RailTypeFlags flags;
+
+	/**
+	 * Bit mask of rail type control flags
+	 */
+	byte ctrl_flags;
 
 	/**
 	 * Cost multiplier for building this rail type

@@ -69,7 +69,7 @@ void ResetRailTypes()
 		{0,0,0,0,0,0,0,0,{}},
 		{0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0},
-		0, RAILTYPES_NONE, RAILTYPES_NONE, 0, 0, 0, RTFB_NONE, 0, 0, 0, 0, 0,
+		0, RAILTYPES_NONE, RAILTYPES_NONE, 0, 0, 0, RTFB_NONE, 0, 0, 0, 0, 0, 0,
 		RailTypeLabelList(), 0, 0, RAILTYPES_NONE, RAILTYPES_NONE, 0,
 		{}, {} };
 	for (; i < lengthof(_railtypes);          i++) _railtypes[i] = empty_railtype;
@@ -2489,39 +2489,38 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 	uint x, y;
 	GetSignalXY(tile, pos, x, y);
 
-	SpriteID sprite;
-	bool is_custom_sprite;
-	if (type == SIGTYPE_PROG) {
+	SpriteID sprite = GetCustomSignalSprite(rti, tile, type, variant, condition);
+	bool is_custom_sprite = (sprite != 0);
+	if (sprite != 0) {
+		sprite += image;
+	} else if (type == SIGTYPE_PROG) {
 		if (variant == SIG_SEMAPHORE) {
 			sprite = SPR_PROGSIGNAL_BASE + image * 2 + condition;
 		} else {
 			sprite = SPR_PROGSIGNAL_BASE + 16 + image * 2 + condition;
 		}
+
 		extern int _progsig_grf_file_index;
 		is_custom_sprite = (int) GetOriginFileSlot(sprite) != _progsig_grf_file_index;
 	} else {
-		sprite = GetCustomSignalSprite(rti, tile, type, variant, condition);
-		is_custom_sprite = (sprite != 0);
-		if (sprite != 0) {
-			sprite += image;
-		} else {
-			/* Normal electric signals are stored in a different sprite block than all other signals. */
-			sprite = (type == SIGTYPE_NORMAL && variant == SIG_ELECTRIC) ? SPR_ORIGINAL_SIGNALS_BASE : SPR_SIGNALS_BASE - 16;
-			sprite += type * 16 + variant * 64 + image * 2 + condition + (IsSignalSpritePBS(type) ? 64 : 0);
-		}
+		/* Normal electric signals are stored in a different sprite block than all other signals. */
+		sprite = (type == SIGTYPE_NORMAL && variant == SIG_ELECTRIC) ? SPR_ORIGINAL_SIGNALS_BASE : SPR_SIGNALS_BASE - 16;
+		sprite += type * 16 + variant * 64 + image * 2 + condition + (IsSignalSpritePBS(type) ? 64 : 0);
 
-		if (!is_custom_sprite) {
-			int origin_slot = GetOriginFileSlot(sprite);
-			extern int _first_user_grf_file_index;
-			extern int _opengfx_grf_file_index;
-			is_custom_sprite = origin_slot != _opengfx_grf_file_index && (origin_slot >= _first_user_grf_file_index);
-		}
+		int origin_slot = GetOriginFileSlot(sprite);
+		extern int _first_user_grf_file_index;
+		extern int _opengfx_grf_file_index;
+		is_custom_sprite = origin_slot != _opengfx_grf_file_index && (origin_slot >= _first_user_grf_file_index);
 	}
 
 	if (is_custom_sprite && show_restricted && _settings_client.gui.show_restricted_signal_default) {
 		/* Use duplicate sprite block, instead of GRF-specified signals */
 		if (type == SIGTYPE_PROG) {
-			sprite += SPR_DUP_PROGSIGNAL_BASE - SPR_PROGSIGNAL_BASE;
+			if (variant == SIG_SEMAPHORE) {
+				sprite = SPR_DUP_PROGSIGNAL_BASE + image * 2 + condition;
+			} else {
+				sprite = SPR_DUP_PROGSIGNAL_BASE + 16 + image * 2 + condition;
+			}
 		} else {
 			sprite = (type == SIGTYPE_NORMAL && variant == SIG_ELECTRIC) ? SPR_DUP_ORIGINAL_SIGNALS_BASE : SPR_DUP_SIGNALS_BASE - 16;
 			sprite += type * 16 + variant * 64 + image * 2 + condition + (IsSignalSpritePBS(type) ? 64 : 0);

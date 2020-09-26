@@ -77,6 +77,9 @@ static const RailtypeInfo _original_railtypes[] = {
 		/* flags */
 		RTFB_NONE,
 
+		/* control flags */
+		0,
+
 		/* cost multiplier */
 		8,
 
@@ -178,6 +181,9 @@ static const RailtypeInfo _original_railtypes[] = {
 		/* flags */
 		RTFB_CATENARY,
 
+		/* control flags */
+		0,
+
 		/* cost multiplier */
 		12,
 
@@ -275,6 +281,9 @@ static const RailtypeInfo _original_railtypes[] = {
 		/* flags */
 		RTFB_NONE,
 
+		/* control flags */
+		0,
+
 		/* cost multiplier */
 		16,
 
@@ -371,6 +380,9 @@ static const RailtypeInfo _original_railtypes[] = {
 
 		/* flags */
 		RTFB_NONE,
+
+		/* control flags */
+		0,
 
 		/* cost multiplier */
 		24,

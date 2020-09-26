@@ -127,6 +127,7 @@ SpriteID GetCustomRailSprite(const RailtypeInfo *rti, TileIndex tile, RailTypeSp
 SpriteID GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, SignalState state, bool gui)
 {
 	if (rti->group[RTSG_SIGNALS] == nullptr) return 0;
+	if (type == SIGTYPE_PROG && !HasBit(rti->ctrl_flags, RTCF_PROGSIG)) return 0;
 
 	uint32 param1 = gui ? 0x10 : 0x00;
 	uint32 param2 = (type << 16) | (var << 8) | state;
