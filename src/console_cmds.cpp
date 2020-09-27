@@ -2223,6 +2223,29 @@ DEF_CONSOLE_CMD(ConDumpLoadDebugConfig)
 	return true;
 }
 
+
+DEF_CONSOLE_CMD(ConDumpLinkgraphJobs)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump link-graph jobs.");
+		return true;
+	}
+
+	IConsolePrintF(CC_DEFAULT, PRINTF_SIZE " link graph jobs", LinkGraphJob::GetNumItems());
+	for (const LinkGraphJob *lgj : LinkGraphJob::Iterate()) {
+		YearMonthDay start_ymd;
+		ConvertDateToYMD(lgj->StartDateTicks() / DAY_TICKS, &start_ymd);
+		YearMonthDay join_ymd;
+		ConvertDateToYMD(lgj->JoinDateTicks() / DAY_TICKS, &join_ymd);
+		IConsolePrintF(CC_DEFAULT, "  Job: %5u, nodes: %u, cost: " OTTD_PRINTF64U ", start: (%u, %4i-%02i-%02i, %i), end: (%u, %4i-%02i-%02i, %i), duration: %u",
+				lgj->index, lgj->Graph().Size(), lgj->Graph().CalculateCostEstimate(),
+				lgj->StartDateTicks(), start_ymd.year, start_ymd.month + 1, start_ymd.day, lgj->StartDateTicks() % DAY_TICKS,
+				lgj->JoinDateTicks(), join_ymd.year, join_ymd.month + 1, join_ymd.day, lgj->JoinDateTicks() % DAY_TICKS,
+				lgj->JoinDateTicks() - lgj->StartDateTicks());
+	 }
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConCheckCaches)
 {
 	if (argc == 0) {
@@ -2763,6 +2786,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("dump_game_events", ConDumpGameEvents, nullptr, true);
 	IConsoleCmdRegister("dump_load_debug_log", ConDumpLoadDebugLog, nullptr, true);
 	IConsoleCmdRegister("dump_load_debug_config", ConDumpLoadDebugConfig, nullptr, true);
+	IConsoleCmdRegister("dump_linkgraph_jobs", ConDumpLinkgraphJobs, nullptr, true);
 	IConsoleCmdRegister("check_caches", ConCheckCaches, nullptr, true);
 	IConsoleCmdRegister("show_town_window", ConShowTownWindow, nullptr, true);
 	IConsoleCmdRegister("show_station_window", ConShowStationWindow, nullptr, true);
