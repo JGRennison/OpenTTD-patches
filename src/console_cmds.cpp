@@ -2088,6 +2088,17 @@ DEF_CONSOLE_CMD(ConMergeLinkgraphJobsAsap)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConGetFullDate)
+{
+	if (argc == 0) {
+		IConsoleHelp("Returns the current full date (year-month-day, date fract, tick skip, counter) of the game. Usage: 'getfulldate'");
+		return true;
+	}
+
+	IConsolePrintF(CC_DEFAULT, "Date: %04d-%02d-%02d, %i, %i", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter);
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConDumpCommandLog)
 {
 	if (argc == 0) {
@@ -2742,6 +2753,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("fps",     ConFramerate);
 	IConsoleCmdRegister("fps_wnd", ConFramerateWindow);
 
+	IConsoleCmdRegister("getfulldate",  ConGetFullDate, nullptr, true);
 	IConsoleCmdRegister("dump_command_log", ConDumpCommandLog, nullptr, true);
 	IConsoleCmdRegister("dump_inflation", ConDumpInflation, nullptr, true);
 	IConsoleCmdRegister("dump_cpdp_stats", ConDumpCpdpStats, nullptr, true);
