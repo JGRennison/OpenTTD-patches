@@ -69,6 +69,7 @@ CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			p->lines.pop_back();
 			return CMD_ERROR;
 		}
+		pl->UpdateVisualExtents();
 		if (p->IsListable()) {
 			pl->SetVisibility(p->visible);
 			if (p->visible) pl->MarkDirty();

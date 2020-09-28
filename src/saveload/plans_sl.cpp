@@ -60,6 +60,7 @@ static void Load_PLAN()
 				const size_t tile_count = SlReadUint32();
 				pl->tiles.resize(tile_count);
 				SlArray(&pl->tiles[0], tile_count, SLE_UINT32);
+				pl->UpdateVisualExtents();
 			}
 			p->SetVisibility(false);
 		}
@@ -79,6 +80,7 @@ static void Load_PLANLINE()
 		size_t plsz = SlGetFieldLength() / sizeof(TileIndex);
 		pl->tiles.resize(plsz);
 		SlArray(&pl->tiles[0], plsz, SLE_UINT32);
+		pl->UpdateVisualExtents();
 	}
 
 	for (Plan *p : Plan::Iterate()) {

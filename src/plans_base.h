@@ -31,6 +31,7 @@ struct PlanLine {
 	bool visible;
 	bool focused;
 	TileVector tiles;
+	Rect viewport_extents;
 
 	PlanLine()
 	{
@@ -153,6 +154,8 @@ struct PlanLine {
 		if (count == 0) return INVALID_TILE;
 		return TileXY(x / count, y / count);
 	}
+
+	void UpdateVisualExtents();
 };
 
 struct Plan : PlanPool::PoolItem<&_plan_pool> {
