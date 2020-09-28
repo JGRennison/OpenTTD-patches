@@ -505,16 +505,17 @@ static const Command _command_proc_table[] = {
 /**
  * List of flags for a command log entry
  */
-enum CommandLogEntryFlag : byte {
-	CLEF_NONE                = 0x00, ///< no flag is set
-	CLEF_CMD_FAILED          = 0x01, ///< command failed
-	CLEF_GENERATING_WORLD    = 0x02, ///< generating world
-	CLEF_TEXT                = 0x04, ///< have command text
-	CLEF_ESTIMATE_ONLY       = 0x08, ///< estimate only
-	CLEF_ONLY_SENDING        = 0x10, ///< only sending
-	CLEF_MY_CMD              = 0x20, ///< locally generated command
-	CLEF_BINARY              = 0x40, ///< binary_length is > 0
-	CLEF_SCRIPT              = 0x80, ///< command run by AI/game script
+enum CommandLogEntryFlag : uint16 {
+	CLEF_NONE                =  0x00, ///< no flag is set
+	CLEF_CMD_FAILED          =  0x01, ///< command failed
+	CLEF_GENERATING_WORLD    =  0x02, ///< generating world
+	CLEF_TEXT                =  0x04, ///< have command text
+	CLEF_ESTIMATE_ONLY       =  0x08, ///< estimate only
+	CLEF_ONLY_SENDING        =  0x10, ///< only sending
+	CLEF_MY_CMD              =  0x20, ///< locally generated command
+	CLEF_BINARY              =  0x40, ///< binary_length is > 0
+	CLEF_SCRIPT              =  0x80, ///< command run by AI/game script
+	CLEF_TWICE               = 0x100, ///< command logged twice (only sending and execution)
 };
 DECLARE_ENUM_AS_BIT_SET(CommandLogEntryFlag)
 
@@ -532,13 +533,9 @@ struct CommandLogEntry {
 
 	CommandLogEntry() { }
 
-	CommandLogEntry(const CommandCost &res, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandLogEntryFlag log_flags)
+	CommandLogEntry(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandLogEntryFlag log_flags)
 			: tile(tile), p1(p1), p2(p2), cmd(cmd), date(_date), date_fract(_date_fract), tick_skip_counter(_tick_skip_counter),
-			current_company(_current_company), local_company(_local_company), log_flags(log_flags)
-	{
-		if (res.Failed()) this->log_flags |= CLEF_CMD_FAILED;
-		if (_generating_world) this->log_flags |= CLEF_GENERATING_WORLD;
-	}
+			current_company(_current_company), local_company(_local_company), log_flags(log_flags) { }
 };
 
 static std::array<CommandLogEntry, 128> command_log;
@@ -573,8 +570,8 @@ char *DumpCommandLog(char *buffer, const char *last)
 		YearMonthDay ymd;
 		ConvertDateToYMD(entry.date, &ymd);
 		buffer += seprintf(buffer, last, " %3u | %4i-%02i-%02i, %2i, %3i | ", i, ymd.year, ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter);
-		buffer += seprintf(buffer, last, "%c%c%c%c%c%c%c%c | ",
-				fc(CLEF_SCRIPT, 'a'), fc(CLEF_BINARY, 'b'), fc(CLEF_MY_CMD, 'm'), fc(CLEF_ONLY_SENDING, 's'),
+		buffer += seprintf(buffer, last, "%c%c%c%c%c%c%c%c%c | ",
+				fc(CLEF_TWICE, '2'), fc(CLEF_SCRIPT, 'a'), fc(CLEF_BINARY, 'b'), fc(CLEF_MY_CMD, 'm'), fc(CLEF_ONLY_SENDING, 's'),
 				fc(CLEF_ESTIMATE_ONLY, 'e'), fc(CLEF_TEXT, 't'), fc(CLEF_GENERATING_WORLD, 'g'), fc(CLEF_CMD_FAILED, 'f'));
 		buffer += seprintf(buffer, last, " %7d x %7d, p1: 0x%08X, p2: 0x%08X, cc: %3u, lc: %3u, cmd: 0x%08X (%s)\n",
 				TileX(entry.tile), TileY(entry.tile), entry.p1, entry.p2, (uint) entry.current_company, (uint) entry.local_company, entry.cmd, GetCommandName(entry.cmd));
@@ -768,6 +765,27 @@ Money GetAvailableMoneyForCommand()
 	return Company::Get(company)->money;
 }
 
+static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandLogEntryFlag log_flags)
+{
+	if (res.Failed()) log_flags |= CLEF_CMD_FAILED;
+	if (_generating_world) log_flags |= CLEF_GENERATING_WORLD;
+
+	if (_networking && command_log_count > 0) {
+		CommandLogEntry &current = command_log[(command_log_next - 1) % command_log.size()];
+		if (current.log_flags & CLEF_ONLY_SENDING && ((current.log_flags ^ log_flags) & ~(CLEF_SCRIPT | CLEF_MY_CMD)) == CLEF_ONLY_SENDING &&
+				current.tile == tile && current.p1 == p1 && current.p2 == p2 && ((current.cmd ^ cmd) & ~CMD_NETWORK_COMMAND) == 0 && current.date == _date &&
+				current.date_fract == _date_fract && current.tick_skip_counter == _tick_skip_counter &&
+				current.current_company == _current_company && current.local_company == _local_company) {
+			current.log_flags |= log_flags | CLEF_TWICE;
+			current.log_flags &= ~CLEF_ONLY_SENDING;
+			return;
+		}
+	}
+	command_log[command_log_next] = CommandLogEntry(tile, p1, p2, cmd, log_flags);
+	command_log_next = (command_log_next + 1) % command_log.size();
+	command_log_count++;
+}
+
 /**
  * Shortcut for the long DoCommandP when having a container with the data.
  * @param container the container with information.
@@ -835,9 +853,7 @@ bool DoCommandP(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallbac
 	if (only_sending) log_flags |= CLEF_ONLY_SENDING;
 	if (my_cmd) log_flags |= CLEF_MY_CMD;
 	if (binary_length > 0) log_flags |= CLEF_BINARY;
-	command_log[command_log_next] = CommandLogEntry(res, tile, p1, p2, cmd, log_flags);
-	command_log_next = (command_log_next + 1) % command_log.size();
-	command_log_count++;
+	AppendCommandLogEntry(res, tile, p1, p2, cmd, log_flags);
 
 	if (res.Failed()) {
 		/* Only show the error when it's for us. */
@@ -871,11 +887,10 @@ CommandCost DoCommandPScript(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, C
 	log_flags = CLEF_SCRIPT;
 	if (!StrEmpty(text)) log_flags |= CLEF_TEXT;
 	if (estimate_only) log_flags |= CLEF_ESTIMATE_ONLY;
+	if (_networking && !(cmd & CMD_NETWORK_COMMAND)) log_flags |= CLEF_ONLY_SENDING;
 	if (my_cmd) log_flags |= CLEF_MY_CMD;
 	if (binary_length > 0) log_flags |= CLEF_BINARY;
-	command_log[command_log_next] = CommandLogEntry(res, tile, p1, p2, cmd, log_flags);
-	command_log_next = (command_log_next + 1) % command_log.size();
-	command_log_count++;
+	AppendCommandLogEntry(res, tile, p1, p2, cmd, log_flags);
 
 	return res;
 }
