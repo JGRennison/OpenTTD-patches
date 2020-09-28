@@ -32,10 +32,16 @@
  *
  * The cost estimate of a link graph job is C ~ N^2 log N, where
  * N is the number of nodes in the job link graph.
+ *
  * The cost estimate is summed for all running and scheduled jobs to form the total cost estimate T = sum C.
- * The nominal cycle time (in recalc intervals) required to schedule all jobs is calculated as S = 1 + log_2 T.
- * Hence the nominal duration of an individual job (in recalc intervals) is D = ceil(S * C / T)
- * The cost budget for an individual call to this method is given by T / S.
+ * The clamped total cost estimate is calculated as U = min(1 << 25, T). This is to prevent excessively high cost budgets.
+ * The nominal cycle time (in recalc intervals) required to schedule all jobs is calculated as S = 1 + max(0, log_2 U - 13).
+ * The cost budget for an individual call to this method is given by U / S.
+ * The last scheduled job may exceed the cost budget.
+ *
+ * For jobs where N <= 1600, the nominal duration of an individual job is D = N / 40
+ * For jobs where N > 1600, the nominal duration of an individual job is D = 40 * C / C(1600)
+ * Overall D(N) is linear up to N=1600, then ~N^2 log N
  *
  * The purpose of this algorithm is so that overall responsiveness is not hindered by large numbers of small/cheap
  * jobs which would previously need to be cycled through individually, but equally large/slow jobs have an extended
@@ -61,9 +67,10 @@ void LinkGraphSchedule::SpawnNext()
 	for (auto &it : this->running) {
 		total_cost += it->Graph().CalculateCostEstimate();
 	}
-	uint log2_total_cost = FindLastBit(total_cost);
-	uint scaling = log2_total_cost > 13 ? log2_total_cost - 12 : 1;
-	uint64 cost_budget = total_cost / scaling;
+	uint64 clamped_total_cost = min<uint64>(total_cost, 1 << 25);
+	uint log2_clamped_total_cost = FindLastBit(clamped_total_cost);
+	uint scaling = log2_clamped_total_cost > 13 ? log2_clamped_total_cost - 12 : 1;
+	uint64 cost_budget = clamped_total_cost / scaling;
 	uint64 used_budget = 0;
 	std::vector<LinkGraphJobGroup::JobInfo> jobs_to_execute;
 	while (used_budget < cost_budget && !this->schedule.empty()) {
@@ -73,7 +80,7 @@ void LinkGraphSchedule::SpawnNext()
 		uint64 cost = lg->CalculateCostEstimate();
 		used_budget += cost;
 		if (LinkGraphJob::CanAllocateItem()) {
-			uint duration_multiplier = cost < 4000 ? 1 : CeilDivT<uint64_t>(scaling * cost, total_cost);
+			uint duration_multiplier = lg->Size() <= 1600 ? CeilDivT<uint64_t>(lg->Size(), 40) : CeilDivT<uint64_t>(40 * cost, 108993087);
 			std::unique_ptr<LinkGraphJob> job(new LinkGraphJob(*lg, duration_multiplier));
 			jobs_to_execute.emplace_back(job.get(), cost);
 			if (this->running.empty() || job->JoinDateTicks() >= this->running.back()->JoinDateTicks()) {
