@@ -2389,6 +2389,17 @@ DEF_CONSOLE_CMD(ConViewportMarkStationOverlayDirty)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConCSleep)
+{
+	if (argc != 2) {
+		IConsoleHelp("Debug: Sleep.  Usage: 'csleep <milliseconds>'");
+		return true;
+	}
+
+	CSleep(atoi(argv[1]));
+
+	return true;
+}
 
 DEF_CONSOLE_CMD(ConDoDisaster)
 {
@@ -2794,6 +2805,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("viewport_debug", ConViewportDebug, nullptr, true);
 	IConsoleCmdRegister("viewport_mark_dirty", ConViewportMarkDirty, nullptr, true);
 	IConsoleCmdRegister("viewport_mark_dirty_st_overlay", ConViewportMarkStationOverlayDirty, nullptr, true);
+	IConsoleCmdRegister("csleep", ConCSleep, nullptr, true);
 
 	/* NewGRF development stuff */
 	IConsoleCmdRegister("reload_newgrfs",  ConNewGRFReload, ConHookNewGRFDeveloperTool);
