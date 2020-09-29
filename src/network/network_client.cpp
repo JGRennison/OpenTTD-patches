@@ -459,7 +459,11 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendCompanyPassword(const char
 NetworkRecvStatus ClientNetworkGameSocketHandler::SendSettingsPassword(const char *password)
 {
 	Packet *p = new Packet(PACKET_CLIENT_SETTINGS_PASSWORD);
-	p->Send_string(GenerateCompanyPasswordHash(password, _password_server_id, _settings_password_game_seed));
+	if (StrEmpty(password)) {
+		p->Send_string("");
+	} else {
+		p->Send_string(GenerateCompanyPasswordHash(password, _password_server_id, _settings_password_game_seed));
+	}
 	my_client->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;
 }

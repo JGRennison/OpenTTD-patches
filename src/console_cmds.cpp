@@ -730,6 +730,7 @@ DEF_CONSOLE_CMD(ConSettingsAccess)
 {
 	if (argc == 0) {
 		IConsoleHelp("Enable changing game settings from this client. Usage: 'settings_access <password>'");
+		IConsoleHelp("Send an empty password \"\" to drop access");
 		return true;
 	}
 

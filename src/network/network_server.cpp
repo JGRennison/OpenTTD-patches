@@ -1055,7 +1055,10 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_SETTINGS_PASSWO
 	p->Recv_string(password, sizeof(password));
 
 	/* Check settings password. Deny if no password is set */
-	if (StrEmpty(_settings_client.network.settings_password) ||
+	if (StrEmpty(password)) {
+		if (this->settings_authed) DEBUG(net, 0, "[settings-ctrl] client-id %d deauthed", this->client_id);
+		this->settings_authed = false;
+	} else if (StrEmpty(_settings_client.network.settings_password) ||
 			strcmp(password, GenerateCompanyPasswordHash(_settings_client.network.settings_password, _settings_client.network.network_id, _settings_game.game_creation.generation_seed ^ this->settings_hash_bits)) != 0) {
 		DEBUG(net, 0, "[settings-ctrl] wrong password from client-id %d", this->client_id);
 		this->settings_authed = false;
