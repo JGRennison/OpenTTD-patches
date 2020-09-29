@@ -3701,7 +3701,7 @@ private:
 		QTO_SET_VALUE,
 	};
 
-	CompanyID owner;
+	Owner ctr_company;                  ///< Company
 	QueryTextOperation qto;             ///< Active query text operation
 	TraceRestrictCounterID ctr_qt_op;   ///< Counter being adjusted in query text operation, INVALID_TRACE_RESTRICT_COUNTER_ID if none
 	TraceRestrictCounterID ctr_confirm; ///< Counter awaiting delete confirmation
@@ -3718,7 +3718,7 @@ private:
 		this->ctrs.clear();
 
 		for (const TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
-			if (ctr->owner == this->owner) {
+			if (ctr->owner == this->ctr_company) {
 				this->ctrs.push_back(ctr);
 			}
 		}
@@ -3773,7 +3773,7 @@ private:
 public:
 	TraceRestrictCounterWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
 	{
-		this->owner = (CompanyID)window_number;
+		this->ctr_company = (Owner)window_number;
 		this->CreateNestedTree();
 
 		this->sb = this->GetScrollbar(WID_TRCL_LIST_COUNTERS_SCROLLBAR);
@@ -3787,6 +3787,7 @@ public:
 		this->BuildCounterList();
 
 		this->FinishInitNested(window_number);
+		this->owner = this->ctr_company;
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
@@ -3835,7 +3836,7 @@ public:
 		this->sb->SetCount(this->ctrs.size());
 
 		/* Disable the counter specific functions when no counter is selected */
-		this->SetWidgetsDisabledState(this->selected == INVALID_TRACE_RESTRICT_COUNTER_ID || _local_company != this->owner,
+		this->SetWidgetsDisabledState(this->selected == INVALID_TRACE_RESTRICT_COUNTER_ID || _local_company != this->ctr_company,
 				WID_TRCL_DELETE_COUNTER,
 				WID_TRCL_RENAME_COUNTER,
 				WID_TRCL_SET_COUNTER_VALUE,
@@ -3847,7 +3848,7 @@ public:
 		 *  verify, whether you are the owner of the vehicle,
 		 *  so it doesn't have to be disabled
 		 */
-		this->SetWidgetsDisabledState(_local_company != this->owner,
+		this->SetWidgetsDisabledState(_local_company != this->ctr_company,
 				WID_TRCL_CREATE_COUNTER,
 				WIDGET_LIST_END);
 
@@ -3863,7 +3864,7 @@ public:
 				for (int i = this->sb->GetPosition(); i < max; ++i) {
 					const TraceRestrictCounter *ctr = this->ctrs[i];
 
-					assert(ctr->owner == this->owner);
+					assert(ctr->owner == this->ctr_company);
 
 					DrawCounterInfo(y1, r.left, r.right, ctr->index);
 
