@@ -107,7 +107,7 @@ struct PlansWindow : Window {
 				DoCommandP(0, _local_company, 0, CMD_ADD_PLAN, CcAddPlan);
 				break;
 			case WID_PLN_ADD_LINES:
-				if (_current_plan) HandlePlacePushButton(this, widget, SPR_CURSOR_MOUSE, HT_POINT);
+				if (_current_plan) HandlePlacePushButton(this, widget, SPR_CURSOR_MOUSE, HT_POINT | HT_MAP);
 				break;
 			case WID_PLN_DELETE:
 				if (this->selected != INT_MAX) {
@@ -416,7 +416,7 @@ void CcAddPlan(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, 
 		((PlansWindow *) w)->SelectPlan(_current_plan->index);
 		if (!w->IsWidgetLowered(WID_PLN_ADD_LINES)) {
 			w->SetWidgetDisabledState(WID_PLN_ADD_LINES, false);
-			HandlePlacePushButton(w, WID_PLN_ADD_LINES, SPR_CURSOR_MOUSE, HT_POINT);
+			HandlePlacePushButton(w, WID_PLN_ADD_LINES, SPR_CURSOR_MOUSE, HT_POINT | HT_MAP);
 		}
 	}
 }

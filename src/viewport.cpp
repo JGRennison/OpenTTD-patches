@@ -4060,7 +4060,7 @@ bool HandleViewportDoubleClicked(Window *w, int x, int y)
 bool HandleViewportClicked(const Viewport *vp, int x, int y, bool double_click)
 {
 	/* No click in smallmap mode except for plan making. */
-	if (vp->zoom >= ZOOM_LVL_DRAW_MAP && !(_thd.place_mode == HT_POINT && _thd.select_proc == DDSP_DRAW_PLANLINE)) return true;
+	if (vp->zoom >= ZOOM_LVL_DRAW_MAP && !(_thd.place_mode & HT_MAP)) return true;
 
 	const Vehicle *v = CheckClickOnVehicle(vp, x, y);
 
@@ -4085,6 +4085,8 @@ bool HandleViewportClicked(const Viewport *vp, int x, int y, bool double_click)
 		PlaceObject();
 		return true;
 	}
+
+	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) return true;
 
 	if (CheckClickOnViewportSign(vp, x, y)) return true;
 	bool result = CheckClickOnLandscape(vp, x, y);
