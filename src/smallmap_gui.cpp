@@ -977,7 +977,7 @@ void SmallMapWindow::SetupWidgetData()
 	this->GetWidget<NWidgetStacked>(WID_SM_SELECT_BUTTONS)->SetDisplayedPlane(plane);
 }
 
-SmallMapWindow::SmallMapWindow(WindowDesc *desc, int window_number) : Window(desc), refresh(GUITimer(FORCE_REFRESH_PERIOD))
+SmallMapWindow::SmallMapWindow(WindowDesc *desc, int window_number) : Window(desc), refresh(GUITimer())
 {
 	_smallmap_industry_highlight = INVALID_INDUSTRYTYPE;
 	this->overlay = new LinkGraphOverlay(this, WID_SM_MAP, 0, this->GetOverlayCompanyMask(), 1);
@@ -995,6 +995,7 @@ SmallMapWindow::SmallMapWindow(WindowDesc *desc, int window_number) : Window(des
 	this->SetZoomLevel(ZLC_INITIALIZE, nullptr);
 	this->SmallMapCenterOnCurrentPos();
 	this->SetOverlayCargoMask();
+	this->refresh.SetInterval(this->GetRefreshPeriod());
 }
 
 SmallMapWindow::~SmallMapWindow()
@@ -1214,6 +1215,7 @@ void SmallMapWindow::SwitchMapType(SmallMapType map_type)
 	if (map_type == SMT_LINKSTATS) this->overlay->SetDirty();
 	if (map_type != SMT_INDUSTRY) this->BreakIndustryChainLink();
 	this->SetDirty();
+	this->refresh.SetInterval(this->GetRefreshPeriod());
 }
 
 /**
@@ -1312,7 +1314,7 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 	}
 	if (new_highlight != _smallmap_industry_highlight) {
 		_smallmap_industry_highlight = new_highlight;
-		this->refresh.SetInterval(_smallmap_industry_highlight != INVALID_INDUSTRYTYPE ? BLINK_PERIOD : FORCE_REFRESH_PERIOD);
+		this->refresh.SetInterval(this->GetRefreshPeriod());
 		_smallmap_industry_highlight_state = true;
 		this->SetDirty();
 	}
@@ -1495,8 +1497,10 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 
 /* virtual */ void SmallMapWindow::OnRealtimeTick(uint delta_ms)
 {
+	if (_pause_mode == PM_UNPAUSED) this->unpaused_since_last_redraw = true;
+
 	/* Update the window every now and then */
-	if (!this->refresh.Elapsed(delta_ms)) return;
+	if (!this->unpaused_since_last_redraw || !this->refresh.Elapsed(delta_ms)) return;
 
 	if (this->map_type == SMT_LINKSTATS) {
 		uint32 company_mask = this->GetOverlayCompanyMask();
@@ -1508,8 +1512,26 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 	}
 	_smallmap_industry_highlight_state = !_smallmap_industry_highlight_state;
 
-	this->refresh.SetInterval(_smallmap_industry_highlight != INVALID_INDUSTRYTYPE ? BLINK_PERIOD : FORCE_REFRESH_PERIOD);
+	this->refresh.SetInterval(this->GetRefreshPeriod());
 	this->SetDirty();
+	this->unpaused_since_last_redraw = false;
+}
+
+uint SmallMapWindow::GetRefreshPeriod() const
+{
+	if (_smallmap_industry_highlight != INVALID_INDUSTRYTYPE) return BLINK_PERIOD;
+
+	switch (map_type) {
+		case SMT_CONTOUR:
+		case SMT_VEHICLES:
+			return FORCE_REFRESH_PERIOD_VEH * (1 + (this->zoom / 2));
+
+		case SMT_LINKSTATS:
+			return FORCE_REFRESH_PERIOD_LINK_GRAPH * (1 + (this->zoom / 6));
+
+		default:
+			return FORCE_REFRESH_PERIOD * (1 + (this->zoom / 6));
+	}
 }
 
 /**
