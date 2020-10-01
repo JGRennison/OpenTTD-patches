@@ -1328,9 +1328,6 @@ void ScreenSizeChanged()
 {
 	MarkWholeScreenDirty();
 
-	extern uint32 *_vp_map_line;
-	_vp_map_line = ReallocT<uint32>(_vp_map_line, _screen.width);
-
 	/* screen size changed and the old bitmap is invalid now, so we don't want to undraw it */
 	_cursor.visible = false;
 }

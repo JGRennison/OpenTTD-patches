@@ -16,6 +16,7 @@
 #include "command_func.h"
 #include "sound_func.h"
 #include "tree_map.h"
+#include "viewport_func.h"
 
 #include "widgets/tree_widget.h"
 
@@ -117,13 +118,13 @@ public:
 			case WID_BT_MANY_RANDOM: // place trees randomly over the landscape
 				if (_settings_client.sound.confirm) SndPlayFx(SND_15_BEEP);
 				PlaceTreesRandomly();
-				MarkWholeScreenDirty();
+				MarkWholeNonMapViewportsDirty();
 				break;
 
 			case WID_BT_REMOVE_ALL: // remove all trees over the landscape
 				if (_settings_client.sound.confirm) SndPlayFx(SND_15_BEEP);
 				RemoveAllTrees();
-				MarkWholeScreenDirty();
+				MarkWholeNonMapViewportsDirty();
 				break;
 
 		}

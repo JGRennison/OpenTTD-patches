@@ -88,18 +88,18 @@ void LinkGraphOverlay::MarkStationViewportLinksDirty(const Station *st)
 		Viewport *vp = this->window->viewport;
 		const Point pt = RemapCoords2(TileX(st->xy) * TILE_SIZE, TileY(st->xy) * TILE_SIZE);
 		const int padding = ScaleByZoom(3 * this->scale, vp->zoom);
-		MarkViewportDirty(vp, pt.x - padding, pt.y - padding, pt.x + padding, pt.y - padding, VMDF_NONE);
+		MarkViewportDirty(vp, pt.x - padding, pt.y - padding, pt.x + padding, pt.y - padding, VMDF_NOT_LANDSCAPE);
 
 		const int block_radius = ScaleByZoom(10, vp->zoom);
 		for (LinkList::iterator i(this->cached_links.begin()); i != this->cached_links.end(); ++i) {
 			if (i->from_id == st->index) {
 				const Station *stb = Station::GetIfValid(i->to_id);
 				if (stb == nullptr) continue;
-				MarkViewportLineDirty(vp, pt, RemapCoords2(TileX(stb->xy) * TILE_SIZE, TileY(stb->xy) * TILE_SIZE), block_radius, VMDF_NONE);
+				MarkViewportLineDirty(vp, pt, RemapCoords2(TileX(stb->xy) * TILE_SIZE, TileY(stb->xy) * TILE_SIZE), block_radius, VMDF_NOT_LANDSCAPE);
 			} else if (i->to_id == st->index) {
 			const Station *sta = Station::GetIfValid(i->from_id);
 			if (sta == nullptr) continue;
-				MarkViewportLineDirty(vp, RemapCoords2(TileX(sta->xy) * TILE_SIZE, TileY(sta->xy) * TILE_SIZE), pt, block_radius, VMDF_NONE);
+				MarkViewportLineDirty(vp, RemapCoords2(TileX(sta->xy) * TILE_SIZE, TileY(sta->xy) * TILE_SIZE), pt, block_radius, VMDF_NOT_LANDSCAPE);
 			}
 		}
 	}

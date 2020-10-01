@@ -416,19 +416,19 @@ struct MainWindow : Window
 
 			case GHK_CHANGE_MAP_MODE_PREV:
 				if (_focused_window && _focused_window->viewport && _focused_window->viewport->zoom >= ZOOM_LVL_DRAW_MAP) {
-					_focused_window->viewport->map_type = ChangeRenderMode(_focused_window->viewport, true);
+					ChangeRenderMode(_focused_window->viewport, true);
 					_focused_window->SetDirty();
 				} else if (this->viewport->zoom >= ZOOM_LVL_DRAW_MAP) {
-					this->viewport->map_type = ChangeRenderMode(this->viewport, true);
+					ChangeRenderMode(this->viewport, true);
 					this->SetDirty();
 				}
 				break;
 			case GHK_CHANGE_MAP_MODE_NEXT:
 				if (_focused_window && _focused_window->viewport && _focused_window->viewport->zoom >= ZOOM_LVL_DRAW_MAP) {
-					_focused_window->viewport->map_type = ChangeRenderMode(_focused_window->viewport, false);
+					ChangeRenderMode(_focused_window->viewport, false);
 					_focused_window->SetDirty();
 				} else if (this->viewport->zoom >= ZOOM_LVL_DRAW_MAP) {
-					this->viewport->map_type = ChangeRenderMode(this->viewport, false);
+					ChangeRenderMode(this->viewport, false);
 					this->SetDirty();
 				}
 				break;
@@ -451,7 +451,7 @@ struct MainWindow : Window
 	{
 		if (_ctrl_pressed) {
 			/* Cycle through the drawing modes */
-			this->viewport->map_type = ChangeRenderMode(this->viewport, wheel < 0);
+			ChangeRenderMode(this->viewport, wheel < 0);
 			this->SetDirty();
 		} else if (_settings_client.gui.scrollwheel_scrolling != 2) {
 			ZoomInOrOutToCursorWindow(wheel < 0, this);

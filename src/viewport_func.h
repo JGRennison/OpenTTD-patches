@@ -36,10 +36,12 @@ void UpdateViewportSizeZoom(Viewport *vp);
 void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bottom, ViewportMarkDirtyFlags flags);
 void MarkAllViewportsDirty(int left, int top, int right, int bottom, ViewportMarkDirtyFlags flags = VMDF_NONE);
 void MarkAllViewportMapsDirty(int left, int top, int right, int bottom);
+void MarkAllViewportMapLandscapesDirty();
+void MarkWholeNonMapViewportsDirty();
 void MarkAllViewportOverlayStationLinksDirty(const Station *st);
 void MarkAllRouteStepsDirty(const Vehicle *veh);
 void MarkViewportLineDirty(Viewport * const vp, const Point from_pt, const Point to_pt, const int block_radius, ViewportMarkDirtyFlags flags);
-void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile);
+void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile, ViewportMarkDirtyFlags flags);
 void MarkAllRoutePathsDirty(const Vehicle *veh);
 void CheckMarkDirtyFocusedRoutePaths(const Vehicle *veh);
 
@@ -112,7 +114,7 @@ static inline void MarkTileDirtyByTile(TileIndex tile, ViewportMarkDirtyFlags fl
 
 void MarkTileGroundDirtyByTile(TileIndex tile, ViewportMarkDirtyFlags flags);
 
-ViewportMapType ChangeRenderMode(const Viewport *vp, bool down);
+void ChangeRenderMode(Viewport *vp, bool down);
 
 Point GetViewportStationMiddle(const Viewport *vp, const Station *st);
 

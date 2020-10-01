@@ -410,7 +410,7 @@ void ZoningMarkDirtyStationCoverageArea(const Station *st, ZoningModeMask mask)
 		Rect rect = st->GetCatchmentRectUsingRadius(radius);
 		for (int y = rect.top; y <= rect.bottom; y++) {
 			for (int x = rect.left; x <= rect.right; x++) {
-				MarkTileDirtyByTile(TileXY(x, y));
+				MarkTileDirtyByTile(TileXY(x, y), VMDF_NOT_MAP_MODE);
 			}
 		}
 		auto invalidate_cache_rect = [&](btree::btree_set<uint32> &cache) {
@@ -441,7 +441,7 @@ void ZoningTownAuthorityRatingChange()
 	if (_zoning.inner == ZEM_AUTHORITY) mask |= ZMM_INNER;
 	if (_zoning.outer == ZEM_AUTHORITY) mask |= ZMM_OUTER;
 	if (mask != ZMM_NOTHING) {
-		MarkWholeScreenDirty();
+		MarkWholeNonMapViewportsDirty();
 	}
 }
 
@@ -460,5 +460,5 @@ void SetZoningMode(bool inner, ZoningEvaluationMode mode)
 
 	current_mode = mode;
 	cache.clear();
-	MarkWholeScreenDirty();
+	MarkWholeNonMapViewportsDirty();
 }

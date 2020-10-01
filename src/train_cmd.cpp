@@ -2303,7 +2303,7 @@ void ReverseTrainDirection(Train *v)
 	if (IsTunnelBridgeWithSignalSimulation(v->tile) && IsTunnelBridgeSignalSimulationEntrance(v->tile)) {
 		/* Flip signal on tunnel entrance tile red. */
 		SetTunnelBridgeEntranceSignalState(v->tile, SIGNAL_STATE_RED);
-		MarkTileDirtyByTile(v->tile);
+		MarkTileDirtyByTile(v->tile, VMDF_NOT_MAP_MODE);
 		/* Clear counters. */
 		v->wait_counter = 0;
 		v->tunnel_bridge_signal_num = 0;
@@ -2750,9 +2750,9 @@ static void HandleLastTunnelBridgeSignals(TileIndex tile, TileIndex end, DiagDir
 		int signal_offset = GetAndClearLastBridgeEntranceSetSignalIndex(end);
 		if (signal_offset) {
 			TileIndex last_signal_tile = end + (TileOffsByDiagDir(dir) * _settings_game.construction.simulated_wormhole_signals * signal_offset);
-			MarkTileDirtyByTile(last_signal_tile);
+			MarkTileDirtyByTile(last_signal_tile, VMDF_NOT_MAP_MODE);
 		}
-		MarkTileDirtyByTile(tile);
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 	}
 	if (free) {
 	/* Open up the wormhole and clear m2. */
@@ -2763,11 +2763,11 @@ static void HandleLastTunnelBridgeSignals(TileIndex tile, TileIndex end, DiagDir
 
 		if (IsTunnelBridgeSignalSimulationEntrance(end) && GetTunnelBridgeEntranceSignalState(end) == SIGNAL_STATE_RED) {
 			SetTunnelBridgeEntranceSignalState(end, SIGNAL_STATE_GREEN);
-			MarkTileDirtyByTile(end);
+			MarkTileDirtyByTile(end, VMDF_NOT_MAP_MODE);
 		}
 		if (IsTunnelBridgeSignalSimulationEntrance(tile) && GetTunnelBridgeEntranceSignalState(tile) == SIGNAL_STATE_RED) {
 			SetTunnelBridgeEntranceSignalState(tile, SIGNAL_STATE_GREEN);
-			MarkTileDirtyByTile(tile);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		}
 	}
 }
@@ -3973,11 +3973,11 @@ static void HandleSignalBehindTrain(Train *v, int signal_number)
 		/* Flip signal on ramp. */
 		if (IsTunnelBridgeSignalSimulationEntrance(tile) && GetTunnelBridgeEntranceSignalState(tile) == SIGNAL_STATE_RED) {
 			SetTunnelBridgeEntranceSignalState(tile, SIGNAL_STATE_GREEN);
-			MarkTileDirtyByTile(tile);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		}
 	} else if (IsBridge(v->tile) && signal_number >= 0) {
 		SetBridgeEntranceSimulatedSignalState(v->tile, signal_number, SIGNAL_STATE_GREEN);
-		MarkTileDirtyByTile(tile);
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 	}
 }
 
@@ -4270,12 +4270,12 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						}
 						/* Flip signal on tunnel entrance tile red. */
 						SetTunnelBridgeEntranceSignalState(gp.new_tile, SIGNAL_STATE_RED);
-						MarkTileDirtyByTile(gp.new_tile);
+						MarkTileDirtyByTile(gp.new_tile, VMDF_NOT_MAP_MODE);
 						if (IsTunnelBridgeSignalSimulationBidirectional(gp.new_tile)) {
 							/* Set incoming signal in other direction to red as well */
 							TileIndex other_end = GetOtherTunnelBridgeEnd(gp.new_tile);
 							SetTunnelBridgeEntranceSignalState(other_end, SIGNAL_STATE_RED);
-							MarkTileDirtyByTile(other_end);
+							MarkTileDirtyByTile(other_end, VMDF_NOT_MAP_MODE);
 						}
 					}
 				}
@@ -4360,7 +4360,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						/* flip signal in front to red on bridges*/
 						if (distance == 0 && IsBridge(v->tile)) {
 							SetBridgeEntranceSimulatedSignalState(v->tile, v->tunnel_bridge_signal_num, SIGNAL_STATE_RED);
-							MarkTileDirtyByTile(gp.new_tile);
+							MarkTileDirtyByTile(gp.new_tile, VMDF_NOT_MAP_MODE);
 						}
 					}
 				}

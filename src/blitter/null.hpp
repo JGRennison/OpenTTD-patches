@@ -23,8 +23,8 @@ public:
 	void SetPixel(void *video, int x, int y, uint8 colour) override {};
 	void DrawRect(void *video, int width, int height, uint8 colour) override {};
 	void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour, int width, int dash) override {};
-	void SetLine(void *video, int x, int y, uint8 *colours, uint width) override {};
-	void SetLine32(void *video, int x, int y, uint32 *colours, uint width) override {};
+	void SetRect(void *video, int x, int y, const uint8 *colours, uint lines, uint width, uint pitch) override {};
+	void SetRect32(void *video, int x, int y, const uint32 *colours, uint lines, uint width, uint pitch) override {};
 	void CopyFromBuffer(void *video, const void *src, int width, int height) override {};
 	void CopyToBuffer(const void *video, void *dst, int width, int height) override {};
 	void CopyImageToBuffer(const void *video, void *dst, int width, int height, int dst_pitch) override {};

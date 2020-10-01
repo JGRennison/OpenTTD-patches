@@ -1343,7 +1343,19 @@ static bool ViewportMapShowTunnelModeChanged(int32 p1)
 {
 	extern void ViewportMapBuildTunnelCache();
 	ViewportMapBuildTunnelCache();
-	return RedrawScreen(p1);
+
+	extern void MarkAllViewportMapLandscapesDirty();
+	MarkAllViewportMapLandscapesDirty();
+
+	return true;
+}
+
+static bool ViewportMapLandscapeModeChanged(int32 p1)
+{
+	extern void MarkAllViewportMapLandscapesDirty();
+	MarkAllViewportMapLandscapesDirty();
+
+	return true;
 }
 
 static bool UpdateLinkgraphColours(int32 p1)

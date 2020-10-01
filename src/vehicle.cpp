@@ -2332,7 +2332,7 @@ void Vehicle::UpdateViewport(bool dirty)
 					min(old_coord.top,    this->coord.top),
 					max(old_coord.right,  this->coord.right),
 					max(old_coord.bottom, this->coord.bottom),
-					this->type != VEH_EFFECT ? VMDF_NONE : VMDF_NOT_MAP_MODE
+					VMDF_NOT_LANDSCAPE | (this->type != VEH_EFFECT ? VMDF_NONE : VMDF_NOT_MAP_MODE)
 			);
 		}
 	}
@@ -2352,7 +2352,7 @@ void Vehicle::UpdatePositionAndViewport()
  */
 void Vehicle::MarkAllViewportsDirty() const
 {
-	::MarkAllViewportsDirty(this->coord.left, this->coord.top, this->coord.right, this->coord.bottom, this->type != VEH_EFFECT ? VMDF_NONE : VMDF_NOT_MAP_MODE);
+	::MarkAllViewportsDirty(this->coord.left, this->coord.top, this->coord.right, this->coord.bottom, VMDF_NOT_LANDSCAPE | (this->type != VEH_EFFECT ? VMDF_NONE : VMDF_NOT_MAP_MODE));
 }
 
 VehicleOrderID Vehicle::GetFirstWaitingLocation(bool require_wait_timetabled) const

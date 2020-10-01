@@ -56,7 +56,7 @@ struct PlanLine {
 		if (cnt > 0) {
 			const TileIndex last_tile = this->tiles[cnt - 1];
 			if (last_tile == tile) return false;
-			MarkTileLineDirty(last_tile, tile);
+			MarkTileLineDirty(last_tile, tile, VMDF_NOT_LANDSCAPE);
 
 			if (cnt > 1) {
 				const TileIndex t0 = this->tiles[cnt - 2];
@@ -72,7 +72,7 @@ struct PlanLine {
 					if (abs(x2 - x1) <= abs(x2 - x0) && abs(y2 - y1) <= abs(y2 - y0)) { // Tile i+1 is between i and i+2.
 						/* The new tile is in the continuity, just update the last tile. */
 						this->tiles[cnt - 1] = tile;
-						MarkTileLineDirty(t1, tile);
+						MarkTileLineDirty(t1, tile, VMDF_NOT_LANDSCAPE);
 						return true;
 					}
 				}
@@ -107,7 +107,7 @@ struct PlanLine {
 	{
 		const uint sz = (uint) this->tiles.size();
 		for (uint i = 1; i < sz; i++) {
-			MarkTileLineDirty(this->tiles[i-1], this->tiles[i]);
+			MarkTileLineDirty(this->tiles[i-1], this->tiles[i], VMDF_NOT_LANDSCAPE);
 		}
 	}
 

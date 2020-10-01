@@ -376,47 +376,58 @@ void Blitter_32bppAnim::DrawLine(void *video, int x, int y, int x2, int y2, int 
 	}
 }
 
-void Blitter_32bppAnim::SetLine(void *video, int x, int y, uint8 *colours, uint width)
+void Blitter_32bppAnim::SetRect(void *video, int x, int y, const uint8 *colours, uint lines, uint width, uint pitch)
 {
 	Colour *dst = (Colour *)video + x + y * _screen.pitch;
 
 	if (_screen_disable_anim) {
 		do {
-			*dst = LookupColourInPalette(*colours);
-			dst++;
-			colours++;
-		} while (--width);
+			uint w = width;
+			do {
+				*dst = LookupColourInPalette(*colours);
+				dst++;
+				colours++;
+			} while (--w);
+			dst += _screen.pitch - width;
+			colours += pitch - width;
+		} while (--lines);
 	} else {
 		uint16 *dstanim = (uint16 *)(&this->anim_buf[this->ScreenToAnimOffset((uint32 *)video) + x + y * this->anim_buf_pitch]);
 		do {
-			*dstanim = *colours | (DEFAULT_BRIGHTNESS << 8);
-			*dst = LookupColourInPalette(*colours);
-			dst++;
-			dstanim++;
-			colours++;
-		} while (--width);
+			uint w = width;
+			do {
+				*dstanim = *colours | (DEFAULT_BRIGHTNESS << 8);
+				*dst = LookupColourInPalette(*colours);
+				dst++;
+				dstanim++;
+				colours++;
+			} while (--w);
+			dst += _screen.pitch - width;
+			dstanim += this->anim_buf_pitch - width;
+			colours += pitch - width;
+		} while (--lines);
 	}
 }
 
-void Blitter_32bppAnim::SetLine32(void *video, int x, int y, uint32 *colours, uint width)
+void Blitter_32bppAnim::SetRect32(void *video, int x, int y, const uint32 *colours, uint lines, uint width, uint pitch)
 {
-	Colour *dst = (Colour *)video + x + y * _screen.pitch;
+	uint32 *dst = (uint32 *)video + x + y * _screen.pitch;
 
 	if (_screen_disable_anim) {
 		do {
-			*dst = *colours;
-			dst++;
-			colours++;
-		} while (--width);
+			memcpy(dst, colours, width * sizeof(uint32));
+			dst += _screen.pitch;
+			colours += pitch;
+		} while (--lines);
 	} else {
 		uint16 *dstanim = (uint16 *)(&this->anim_buf[this->ScreenToAnimOffset((uint32 *)video) + x + y * this->anim_buf_pitch]);
 		do {
-			*dstanim = 0;
-			*dst = *colours;
-			dst++;
-			dstanim++;
-			colours++;
-		} while (--width);
+			memcpy(dst, colours, width * sizeof(uint32));
+			memset(dstanim, 0, width * sizeof(uint16));
+			dst += _screen.pitch;
+			dstanim += this->anim_buf_pitch;
+			colours += pitch;
+		} while (--lines);
 	}
 }
 

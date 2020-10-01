@@ -233,6 +233,8 @@ struct BridgeSetYComparator {
 /** Data structure storing rendering information */
 struct ViewportDrawer {
 	DrawPixelInfo dpi;
+	int offset_x;
+	int offset_y;
 
 	StringSpriteToDrawVector string_sprites_to_draw;
 	TileSpriteToDrawVector tile_sprites_to_draw;
@@ -325,6 +327,7 @@ enum ViewportDebugFlags {
 	VDF_DIRTY_WHOLE_VIEWPORT,
 	VDF_DIRTY_BLOCK_PER_SPLIT,
 	VDF_DISABLE_DRAW_SPLIT,
+	VDF_SHOW_NO_LANDSCAPE_MAP_DRAW,
 };
 uint32 _viewport_debug_flags;
 
@@ -334,6 +337,11 @@ static Point MapXYZToViewport(const Viewport *vp, int x, int y, int z)
 	p.x -= vp->virtual_width / 2;
 	p.y -= vp->virtual_height / 2;
 	return p;
+}
+
+void ClearViewportLandPixelCache(Viewport *vp)
+{
+	vp->land_pixel_cache.assign(vp->land_pixel_cache.size(), 0xD7);
 }
 
 void ClearViewportCache(Viewport *vp)
@@ -678,6 +686,7 @@ static void SetViewportPosition(Window *w, int x, int y, bool force_update_overl
 		if (i >= 0) height -= i;
 
 		if (height > 0 && (_vp_move_offs.x != 0 || _vp_move_offs.y != 0)) {
+			ClearViewportLandPixelCache(vp);
 			SCOPE_INFO_FMT([&], "DoSetViewportPosition: %d, %d, %d, %d, %d, %d, %s", left, top, width, height, _vp_move_offs.x, _vp_move_offs.y, scope_dumper().WindowInfo(w));
 			DoSetViewportPosition((Window *) w->z_front, left, top, width, height);
 			ClearViewportCache(w->viewport);
@@ -2882,9 +2891,8 @@ static void ViewportMapDrawScrollingViewportBox(const Viewport * const vp)
 	}
 }
 
-uint32 *_vp_map_line; ///< Buffer for drawing the map of a viewport.
-
-static void ViewportMapDrawBridgeTunnel(const Viewport * const vp, const TunnelBridgeToMap * const tbtm, const int z,
+template <bool is_32bpp>
+static void ViewportMapDrawBridgeTunnel(Viewport * const vp, const TunnelBridgeToMap * const tbtm, const int z,
 		const bool is_tunnel, const int w, const int h, Blitter * const blitter)
 {
 	extern LegendAndColour _legend_land_owners[NUM_NO_COMPANY_ENTRIES + MAX_COMPANIES + 1];
@@ -2908,14 +2916,21 @@ static void ViewportMapDrawBridgeTunnel(const Viewport * const vp, const TunnelB
 		const int x = UnScaleByZoomLower(pt.x - _vd.dpi.left, _vd.dpi.zoom);
 		if (IsInsideMM(x, 0, w)) {
 			const int y = UnScaleByZoomLower(pt.y - _vd.dpi.top, _vd.dpi.zoom);
-			if (IsInsideMM(y, 0, h)) blitter->SetPixel(_vd.dpi.dst_ptr, x, y, colour);
+			if (IsInsideMM(y, 0, h)) {
+				uint idx = (x + _vd.offset_x) + ((y + _vd.offset_y) * vp->width);
+				if (is_32bpp) {
+					reinterpret_cast<uint32 *>(vp->land_pixel_cache.data())[idx] = COL8TO32(colour);
+				} else {
+					reinterpret_cast<uint8 *>(vp->land_pixel_cache.data())[idx] = colour;
+				}
+			}
 		}
 	}
 }
 
 /** Draw the map on a viewport. */
 template <bool is_32bpp, bool show_slope>
-void ViewportMapDraw(const Viewport * const vp)
+void ViewportMapDraw(Viewport * const vp)
 {
 	assert(vp != nullptr);
 	Blitter * const blitter = BlitterFactory::GetCurrentBlitter();
@@ -2942,31 +2957,41 @@ void ViewportMapDraw(const Viewport * const vp)
 	const  int h = UnScaleByZoom(_vd.dpi.height, vp->zoom);
 	int        j = 0;
 
+	const int land_cache_start = _vd.offset_x + (_vd.offset_y * vp->width);
+	uint32 *land_cache_ptr32 = reinterpret_cast<uint32 *>(vp->land_pixel_cache.data()) + land_cache_start;
+	uint8 *land_cache_ptr8 = reinterpret_cast<uint8 *>(vp->land_pixel_cache.data()) + land_cache_start;
+
+	bool cache_updated = false;
+
 	/* Render base map. */
 	do { // For each line
 		int i = w;
 		uint colour_index = colour_index_base;
 		colour_index_base ^= 2;
-		uint32 *vp_map_line_ptr32 = _vp_map_line;
-		uint8 *vp_map_line_ptr8 = (uint8*) _vp_map_line;
 		int c = b - a;
 		int d = b + a;
 		do { // For each pixel of a line
 			if (is_32bpp) {
-				*vp_map_line_ptr32 = ViewportMapGetColour<is_32bpp, show_slope>(vp, c, d, colour_index);
-				vp_map_line_ptr32++;
+				if (*land_cache_ptr32 == 0xD7D7D7D7) {
+					*land_cache_ptr32 = ViewportMapGetColour<is_32bpp, show_slope>(vp, c, d, colour_index);
+					cache_updated = true;
+				}
+				land_cache_ptr32++;
 			} else {
-				*vp_map_line_ptr8 = (uint8) ViewportMapGetColour<is_32bpp, show_slope>(vp, c, d, colour_index);
-				vp_map_line_ptr8++;
+				if (*land_cache_ptr8 == 0xD7) {
+					*land_cache_ptr8 = (uint8) ViewportMapGetColour<is_32bpp, show_slope>(vp, c, d, colour_index);
+					cache_updated = true;
+				}
+				land_cache_ptr8++;
 			}
 			colour_index = (colour_index + 1) & 3;
 			c -= incr_a;
 			d += incr_a;
 		} while (--i);
 		if (is_32bpp) {
-			blitter->SetLine32(_vd.dpi.dst_ptr, 0, j, _vp_map_line, w);
+			land_cache_ptr32 += (vp->width - w);
 		} else {
-			blitter->SetLine(_vd.dpi.dst_ptr, 0, j, (uint8*) _vp_map_line, w);
+			land_cache_ptr8 += (vp->width - w);
 		}
 		b += incr_b;
 	} while (++j < h);
@@ -2989,34 +3014,47 @@ void ViewportMapDraw(const Viewport * const vp)
 			const int y_to = UnScaleByZoomLower(pt_to.y - _vd.dpi.top, _vd.dpi.zoom);
 			if ((y_from < 0 && y_to < 0) || (y_from > h && y_to > h)) continue;
 
-			ViewportMapDrawBridgeTunnel(vp, &ttm.tb, tunnel_z, true, w, h, blitter);
+			ViewportMapDrawBridgeTunnel<is_32bpp>(vp, &ttm.tb, tunnel_z, true, w, h, blitter);
 		}
 	};
 
-	/* Render tunnels */
-	if (_settings_client.gui.show_tunnels_on_map && _vd.tunnel_to_map_x.tunnels.size() != 0) {
-		const int y_intercept_min = _vd.dpi.top + (_vd.dpi.left / 2);
-		const int y_intercept_max = _vd.dpi.top + _vd.dpi.height + ((_vd.dpi.left + _vd.dpi.width) / 2);
-		draw_tunnels(y_intercept_min, y_intercept_max, _vd.tunnel_to_map_x);
-	}
-	if (_settings_client.gui.show_tunnels_on_map && _vd.tunnel_to_map_y.tunnels.size() != 0) {
-		const int y_intercept_min = _vd.dpi.top - ((_vd.dpi.left + _vd.dpi.width) / 2);
-		const int y_intercept_max = _vd.dpi.top + _vd.dpi.height - (_vd.dpi.left / 2);
-		draw_tunnels(y_intercept_min, y_intercept_max, _vd.tunnel_to_map_y);
+	if (cache_updated) {
+		/* Render tunnels */
+		if (_settings_client.gui.show_tunnels_on_map && _vd.tunnel_to_map_x.tunnels.size() != 0) {
+			const int y_intercept_min = _vd.dpi.top + (_vd.dpi.left / 2);
+			const int y_intercept_max = _vd.dpi.top + _vd.dpi.height + ((_vd.dpi.left + _vd.dpi.width) / 2);
+			draw_tunnels(y_intercept_min, y_intercept_max, _vd.tunnel_to_map_x);
+		}
+		if (_settings_client.gui.show_tunnels_on_map && _vd.tunnel_to_map_y.tunnels.size() != 0) {
+			const int y_intercept_min = _vd.dpi.top - ((_vd.dpi.left + _vd.dpi.width) / 2);
+			const int y_intercept_max = _vd.dpi.top + _vd.dpi.height - (_vd.dpi.left / 2);
+			draw_tunnels(y_intercept_min, y_intercept_max, _vd.tunnel_to_map_y);
+		}
+
+		/* Render bridges */
+		if (_settings_client.gui.show_bridges_on_map && _vd.bridge_to_map_x.size() != 0) {
+			for (const auto &it : _vd.bridge_to_map_x) { // For each bridge
+				TunnelBridgeToMap tbtm { it.first, it.second };
+				ViewportMapDrawBridgeTunnel<is_32bpp>(vp, &tbtm, (GetBridgeHeight(tbtm.from_tile) - 1) * TILE_HEIGHT, false, w, h, blitter);
+			}
+		}
+		if (_settings_client.gui.show_bridges_on_map && _vd.bridge_to_map_y.size() != 0) {
+			for (const auto &it : _vd.bridge_to_map_y) { // For each bridge
+				TunnelBridgeToMap tbtm { it.first, it.second };
+				ViewportMapDrawBridgeTunnel<is_32bpp>(vp, &tbtm, (GetBridgeHeight(tbtm.from_tile) - 1) * TILE_HEIGHT, false, w, h, blitter);
+			}
+		}
 	}
 
-	/* Render bridges */
-	if (_settings_client.gui.show_bridges_on_map && _vd.bridge_to_map_x.size() != 0) {
-		for (const auto &it : _vd.bridge_to_map_x) { // For each bridge
-			TunnelBridgeToMap tbtm { it.first, it.second };
-			ViewportMapDrawBridgeTunnel(vp, &tbtm, (GetBridgeHeight(tbtm.from_tile) - 1) * TILE_HEIGHT, false, w, h, blitter);
-		}
+	if (is_32bpp) {
+		blitter->SetRect32(_vd.dpi.dst_ptr, 0, 0, reinterpret_cast<uint32 *>(vp->land_pixel_cache.data()) + land_cache_start, h, w, vp->width);
+	} else {
+		blitter->SetRect(_vd.dpi.dst_ptr, 0, 0, reinterpret_cast<uint8 *>(vp->land_pixel_cache.data()) + land_cache_start, h, w, vp->width);
 	}
-	if (_settings_client.gui.show_bridges_on_map && _vd.bridge_to_map_y.size() != 0) {
-		for (const auto &it : _vd.bridge_to_map_y) { // For each bridge
-			TunnelBridgeToMap tbtm { it.first, it.second };
-			ViewportMapDrawBridgeTunnel(vp, &tbtm, (GetBridgeHeight(tbtm.from_tile) - 1) * TILE_HEIGHT, false, w, h, blitter);
-		}
+
+	if (unlikely(HasBit(_viewport_debug_flags, VDF_SHOW_NO_LANDSCAPE_MAP_DRAW)) && !cache_updated) {
+		ViewportDrawDirtyBlocks();
+		++_dirty_block_colour;
 	}
 }
 
@@ -3114,8 +3152,10 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom)
 	_vd.dpi.pitch = old_dpi->pitch;
 	_vd.last_child = nullptr;
 
-	int x = UnScaleByZoomLower(_vd.dpi.left - (vp->virtual_left & mask), vp->zoom) + vp->left;
-	int y = UnScaleByZoomLower(_vd.dpi.top - (vp->virtual_top & mask), vp->zoom) + vp->top;
+	_vd.offset_x = UnScaleByZoomLower(_vd.dpi.left - (vp->virtual_left & mask), vp->zoom);
+	_vd.offset_y = UnScaleByZoomLower(_vd.dpi.top - (vp->virtual_top & mask), vp->zoom);
+	int x = _vd.offset_x + vp->left;
+	int y = _vd.offset_y + vp->top;
 
 	_vd.dpi.dst_ptr = BlitterFactory::GetCurrentBlitter()->MoveTo(old_dpi->dst_ptr, x - old_dpi->left, y - old_dpi->top);
 
@@ -3346,8 +3386,16 @@ void UpdateViewportSizeZoom(Viewport *vp)
 	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
 		memset(vp->map_draw_vehicles_cache.done_hash_bits, 0, sizeof(vp->map_draw_vehicles_cache.done_hash_bits));
 		vp->map_draw_vehicles_cache.vehicle_pixels.assign(vp->width * vp->height, false);
+
+		if (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() == 32) {
+			vp->land_pixel_cache.assign(vp->height * vp->width * 4, 0xD7);
+		} else {
+			vp->land_pixel_cache.assign(vp->height * vp->width, 0xD7);
+		}
 	} else {
 		vp->map_draw_vehicles_cache.vehicle_pixels.clear();
+		vp->land_pixel_cache.clear();
+		vp->land_pixel_cache.shrink_to_fit();
 	}
 }
 
@@ -3441,6 +3489,19 @@ void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bo
 		pos += column_skip;
 	}
 	vp->is_dirty = true;
+
+	if (unlikely(vp->zoom >= ZOOM_LVL_DRAW_MAP && !(flags & VMDF_NOT_LANDSCAPE))) {
+		uint l = UnScaleByZoomLower(left, vp->zoom);
+		uint t = UnScaleByZoomLower(top, vp->zoom);
+		uint w = UnScaleByZoom(right, vp->zoom) - l;
+		uint h = UnScaleByZoom(bottom, vp->zoom) - t;
+		uint bitdepth = BlitterFactory::GetCurrentBlitter()->GetScreenDepth() / 8;
+		uint8 *land_cache = vp->land_pixel_cache.data() + ((l + (t * vp->width)) * bitdepth);
+		while (--h) {
+			memset(land_cache, 0xD7, w * bitdepth);
+			land_cache += vp->width * bitdepth;
+		}
+	}
 }
 
 /**
@@ -3474,7 +3535,7 @@ static void MarkRouteStepDirty(const TileIndex tile, uint order_nr)
 	for (Viewport * const vp : _viewport_window_cache) {
 		const int half_width = ScaleByZoom((_vp_route_step_width / 2) + 1, vp->zoom);
 		const int height = ScaleByZoom(_vp_route_step_height_top + char_height * order_nr + _vp_route_step_height_bottom, vp->zoom);
-		MarkViewportDirty(vp, pt.x - half_width, pt.y - height, pt.x + half_width, pt.y, VMDF_NONE);
+		MarkViewportDirty(vp, pt.x - half_width, pt.y - height, pt.x + half_width, pt.y, VMDF_NOT_LANDSCAPE);
 	}
 }
 
@@ -3503,7 +3564,30 @@ void MarkAllViewportMapsDirty(int left, int top, int right, int bottom)
 		Viewport *vp = w->viewport;
 		if (vp != nullptr && vp->zoom >= ZOOM_LVL_DRAW_MAP) {
 			assert(vp->width != 0);
-			MarkViewportDirty(vp, left, top, right, bottom, VMDF_NONE);
+			MarkViewportDirty(vp, left, top, right, bottom, VMDF_NOT_LANDSCAPE);
+		}
+	}
+}
+
+void MarkAllViewportMapLandscapesDirty()
+{
+	Window *w;
+	FOR_ALL_WINDOWS_FROM_BACK(w) {
+		Viewport *vp = w->viewport;
+		if (vp != nullptr && vp->zoom >= ZOOM_LVL_DRAW_MAP) {
+			ClearViewportLandPixelCache(vp);
+			w->SetDirty();
+		}
+	}
+}
+
+void MarkWholeNonMapViewportsDirty()
+{
+	Window *w;
+	FOR_ALL_WINDOWS_FROM_BACK(w) {
+		Viewport *vp = w->viewport;
+		if (vp != nullptr && vp->zoom < ZOOM_LVL_DRAW_MAP) {
+			w->SetDirty();
 		}
 	}
 }
@@ -3602,7 +3686,7 @@ void MarkViewportLineDirty(Viewport * const vp, const Point from_pt, const Point
 	}
 }
 
-void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile)
+void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile, ViewportMarkDirtyFlags flags)
 {
 	assert(from_tile != INVALID_TILE);
 	assert(to_tile != INVALID_TILE);
@@ -3629,7 +3713,7 @@ void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile)
 				(y1 - 1) * block_radius,
 				(x1 + 1) * block_radius,
 				(y1 + 1) * block_radius,
-				VMDF_NONE
+				flags
 		);
 		if (x1 == x2 && y1 == y2) break;
 		const int e2 = 2 * err;
@@ -3647,7 +3731,7 @@ void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile)
 static void MarkRoutePathsDirty(const std::vector<DrawnPathRouteTileLine> &lines)
 {
 	for (std::vector<DrawnPathRouteTileLine>::const_iterator it = lines.begin(); it != lines.end(); ++it) {
-		MarkTileLineDirty(it->from_tile, it->to_tile);
+		MarkTileLineDirty(it->from_tile, it->to_tile, VMDF_NOT_LANDSCAPE);
 	}
 }
 
@@ -3662,7 +3746,7 @@ void MarkAllRoutePathsDirty(const Vehicle *veh)
 			break;
 	}
 	for (const auto &iter : _vp_route_paths) {
-		MarkTileLineDirty(iter.from_tile, iter.to_tile);
+		MarkTileLineDirty(iter.from_tile, iter.to_tile, VMDF_NOT_LANDSCAPE);
 	}
 	_vp_route_paths_last_mark_dirty.swap(_vp_route_paths);
 	_vp_route_paths.clear();
@@ -3758,7 +3842,7 @@ static void SetSelectionTilesDirty()
 			static const int OVERLAY_WIDTH = 4 * ZOOM_LVL_BASE; // part of selection sprites is drawn outside the selected area (in particular: terraforming)
 
 			/* For halftile foundations on SLOPE_STEEP_S the sprite extents some more towards the top */
-			MarkAllViewportsDirty(l - OVERLAY_WIDTH, t - OVERLAY_WIDTH - TILE_HEIGHT * ZOOM_LVL_BASE, r + OVERLAY_WIDTH, b + OVERLAY_WIDTH);
+			MarkAllViewportsDirty(l - OVERLAY_WIDTH, t - OVERLAY_WIDTH - TILE_HEIGHT * ZOOM_LVL_BASE, r + OVERLAY_WIDTH, b + OVERLAY_WIDTH, VMDF_NOT_MAP_MODE);
 
 			/* haven't we reached the topmost tile yet? */
 			if (top_x != x_start) {
@@ -3787,7 +3871,7 @@ static void SetSelectionTilesDirty()
 				uint y = (_thd.pos.y + (a - b) / 2) / TILE_SIZE;
 
 				if (x < MapMaxX() && y < MapMaxY()) {
-					MarkTileDirtyByTile(TileXY(x, y));
+					MarkTileDirtyByTile(TileXY(x, y), VMDF_NOT_MAP_MODE);
 				}
 			}
 		}
@@ -5495,13 +5579,14 @@ void ResetObjectToPlace()
 	SetObjectToPlace(SPR_CURSOR_MOUSE, PAL_NONE, HT_NONE, WC_MAIN_WINDOW, 0);
 }
 
-ViewportMapType ChangeRenderMode(const Viewport *vp, bool down) {
+void ChangeRenderMode(Viewport *vp, bool down) {
 	ViewportMapType map_type = vp->map_type;
-	if (vp->zoom < ZOOM_LVL_DRAW_MAP) return map_type;
+	if (vp->zoom < ZOOM_LVL_DRAW_MAP) return;
+	ClearViewportLandPixelCache(vp);
 	if (down) {
-		return (map_type == VPMT_MIN) ? VPMT_MAX : (ViewportMapType) (map_type - 1);
+		vp->map_type = (map_type == VPMT_MIN) ? VPMT_MAX : (ViewportMapType) (map_type - 1);
 	} else {
-		return (map_type == VPMT_MAX) ? VPMT_MIN : (ViewportMapType) (map_type + 1);
+		vp->map_type = (map_type == VPMT_MAX) ? VPMT_MIN : (ViewportMapType) (map_type + 1);
 	}
 }
 
@@ -5644,17 +5729,17 @@ void StoreRailPlacementEndpoints(TileIndex start_tile, TileIndex end_tile, Track
 static void MarkCatchmentTilesDirty()
 {
 	if (_viewport_highlight_town != nullptr) {
-		MarkWholeScreenDirty();
+		MarkWholeNonMapViewportsDirty();
 		return;
 	}
 	if (_viewport_highlight_station != nullptr) {
 		if (_viewport_highlight_station->catchment_tiles.tile == INVALID_TILE) {
-			MarkWholeScreenDirty();
+			MarkWholeNonMapViewportsDirty();
 			_viewport_highlight_station = nullptr;
 		} else {
 			BitmapTileIterator it(_viewport_highlight_station->catchment_tiles);
 			for (TileIndex tile = it; tile != INVALID_TILE; tile = ++it) {
-				MarkTileDirtyByTile(tile);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			}
 		}
 	}
@@ -5742,10 +5827,10 @@ void SetViewportCatchmentTown(const Town *t, bool sel)
 	if (sel && _viewport_highlight_town != t) {
 		_viewport_highlight_station = nullptr;
 		_viewport_highlight_town = t;
-		MarkWholeScreenDirty();
+		MarkWholeNonMapViewportsDirty();
 	} else if (!sel && _viewport_highlight_town == t) {
 		_viewport_highlight_town = nullptr;
-		MarkWholeScreenDirty();
+		MarkWholeNonMapViewportsDirty();
 	}
 	if (_viewport_highlight_town != nullptr) SetWindowDirty(WC_TOWN_VIEW, _viewport_highlight_town->index);
 }
