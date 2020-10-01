@@ -1998,7 +1998,7 @@ static void UpdateLevelCrossingTile(TileIndex tile, bool sound, bool is_forced, 
 			if (_settings_client.sound.ambient) SndPlayTileFx(SND_0E_LEVEL_CROSSING, tile);
 		}
 		SetCrossingBarred(tile, new_state);
-		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 	}
 }
 
@@ -2225,11 +2225,11 @@ void ReverseTrainDirection(Train *v)
 				TrackdirBits reserved = ft.m_new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.m_new_tile));
 				if (reserved == TRACKDIR_BIT_NONE) {
 					UnreserveAcrossRailTunnelBridge(next_tile);
-					MarkTileDirtyByTile(next_tile, ZOOM_LVL_DRAW_MAP);
+					MarkTileDirtyByTile(next_tile, VMDF_NOT_MAP_MODE);
 				}
 			} else {
 				UnreserveAcrossRailTunnelBridge(next_tile);
-				MarkTileDirtyByTile(next_tile, ZOOM_LVL_DRAW_MAP);
+				MarkTileDirtyByTile(next_tile, VMDF_NOT_MAP_MODE);
 			}
 		}
 	}
@@ -2691,7 +2691,7 @@ static bool CheckTrainStayInDepot(Train *v)
 	}
 
 	SetDepotReservation(v->tile, true);
-	if (_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(v->tile, ZOOM_LVL_DRAW_MAP);
+	if (_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(v->tile, VMDF_NOT_MAP_MODE);
 
 	VehicleServiceInDepot(v);
 	SetWindowClassesDirty(WC_TRAINS_LIST);
@@ -2802,17 +2802,17 @@ static void ClearPathReservation(const Train *v, TileIndex tile, Trackdir track_
 				TileIndex end = GetOtherTunnelBridgeEnd(tile);
 				UnreserveAcrossRailTunnelBridge(end);
 				if (_settings_client.gui.show_track_reservation) {
-					MarkTileDirtyByTile(end, ZOOM_LVL_DRAW_MAP);
+					MarkTileDirtyByTile(end, VMDF_NOT_MAP_MODE);
 				}
 			}
 
 			if (_settings_client.gui.show_track_reservation) {
-				MarkBridgeOrTunnelDirtyOnReservationChange(tile, ZOOM_LVL_DRAW_MAP);
+				MarkBridgeOrTunnelDirtyOnReservationChange(tile, VMDF_NOT_MAP_MODE);
 			}
 		} else {
 			UnreserveRailTrack(tile, TrackdirToTrack(track_dir));
 			if (_settings_client.gui.show_track_reservation) {
-				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			}
 		}
 	} else if (IsRailStationTile(tile)) {
@@ -3408,7 +3408,7 @@ bool TryPathReserve(Train *v, bool mark_as_stuck, bool first_tile_okay)
 	/* If we are in a depot, tentatively reserve the depot. */
 	if (v->track == TRACK_BIT_DEPOT && v->tile == origin.tile) {
 		SetDepotReservation(v->tile, true);
-		if (_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(v->tile, ZOOM_LVL_DRAW_MAP);
+		if (_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(v->tile, VMDF_NOT_MAP_MODE);
 	}
 
 	DiagDirection exitdir = TrackdirToExitdir(origin.trackdir);
@@ -3916,7 +3916,7 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 			} else {
 				SetTunnelReservation(tile, true);
 			}
-			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		}
 	}
 	bool ok = TryPathReserve(t);
@@ -4375,7 +4375,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						v->y_pos = gp.y;
 						UpdateSignalsOnSegment(old_tile, INVALID_DIAGDIR, v->owner);
 						UnreserveBridgeTunnelTile(old_tile);
-						if (_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(old_tile, ZOOM_LVL_DRAW_MAP);
+						if (_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(old_tile, VMDF_NOT_MAP_MODE);
 					}
 				}
 				if (distance == 0) v->tunnel_bridge_signal_num++;
@@ -4623,11 +4623,11 @@ static void SetSignalledBridgeTunnelGreenIfClear(TileIndex tile, TileIndex end)
 			if (IsTunnelBridgeSignalSimulationEntrance(t)) {
 				if (IsBridge(t)) {
 					SetAllBridgeEntranceSimulatedSignalsGreen(t);
-					MarkBridgeDirty(t, ZOOM_LVL_DRAW_MAP);
+					MarkBridgeDirty(t, VMDF_NOT_MAP_MODE);
 				}
 				if (IsTunnelBridgeSignalSimulationEntrance(t) && GetTunnelBridgeEntranceSignalState(t) == SIGNAL_STATE_RED) {
 					SetTunnelBridgeEntranceSignalState(t, SIGNAL_STATE_GREEN);
-					MarkTileDirtyByTile(t, ZOOM_LVL_DRAW_MAP);
+					MarkTileDirtyByTile(t, VMDF_NOT_MAP_MODE);
 				}
 			}
 		};

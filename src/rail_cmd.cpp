@@ -1023,7 +1023,7 @@ bool FloodHalftile(TileIndex t)
 			if (IsSteepSlope(tileh) || IsSlopeWithThreeCornersRaised(tileh)) {
 				flooded = true;
 				SetRailGroundType(t, RAIL_GROUND_WATER);
-				MarkTileDirtyByTile(t, ZOOM_LVL_DRAW_MAP);
+				MarkTileDirtyByTile(t, VMDF_NOT_MAP_MODE);
 			}
 		}
 	}
@@ -1583,7 +1583,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			uint mask = GetPresentSignals(tile) & SignalOnTrack(track);
 			SetSignalStates(tile, (GetSignalStates(tile) & ~mask) | ((HasBit(GetRailReservationTrackBits(tile), track) && EnsureNoVehicleOnGround(tile).Succeeded() ? UINT_MAX : 0) & mask));
 		}
-		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		AddTrackToSignalBuffer(tile, track, _current_company);
 		YapfNotifyTrackLayoutChange(tile, track);
 		if (v != nullptr) {
@@ -1989,7 +1989,7 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 			TryPathReserve(v, false);
 		}
 
-		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 	}
 
 	return CommandCost(EXPENSES_CONSTRUCTION, cost);
@@ -2214,7 +2214,7 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				SetRailType(tile, totype);
 				if (IsPlainRailTile(tile)) SetSecondaryRailType(tile, totype);
 
-				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 				/* update power of train on this tile */
 				FindVehicleOnPos(tile, VEH_TRAIN, &affected_trains, &UpdateTrainPowerProc);
 			}
@@ -2300,10 +2300,10 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 					yapf_notify_track_change(endtile, GetTunnelBridgeTrackBits(endtile));
 
 					if (IsBridge(tile)) {
-						MarkBridgeDirty(tile, ZOOM_LVL_DRAW_MAP);
+						MarkBridgeDirty(tile, VMDF_NOT_MAP_MODE);
 					} else {
-						MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
-						MarkTileDirtyByTile(endtile, ZOOM_LVL_DRAW_MAP);
+						MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+						MarkTileDirtyByTile(endtile, VMDF_NOT_MAP_MODE);
 					}
 
 					AddRailTunnelBridgeInfrastructure(tile, endtile);
@@ -2559,7 +2559,7 @@ static void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track trac
 void MarkSingleSignalDirty(TileIndex tile, Trackdir td)
 {
 	if (_signal_sprite_oversized || td >= TRACKDIR_END) {
-		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		return;
 	}
 
@@ -2590,7 +2590,7 @@ void MarkSingleSignalDirty(TileIndex tile, Trackdir td)
 			pt.y - SIGNAL_DIRTY_TOP,
 			pt.x + SIGNAL_DIRTY_RIGHT,
 			pt.y + SIGNAL_DIRTY_BOTTOM,
-			ZOOM_LVL_DRAW_MAP
+			VMDF_NOT_MAP_MODE
 	);
 }
 
@@ -3461,7 +3461,7 @@ static void TileLoop_Track(TileIndex tile)
 set_ground:
 	if (old_ground != new_ground) {
 		SetRailGroundType(tile, new_ground);
-		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 	}
 }
 

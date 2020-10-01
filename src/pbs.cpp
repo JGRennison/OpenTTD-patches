@@ -65,7 +65,7 @@ void SetRailStationPlatformReservation(TileIndex start, DiagDirection dir, bool 
 
 	do {
 		SetRailStationReservation(tile, b);
-		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		tile = TILE_ADD(tile, diff);
 	} while (IsCompatibleTrainStationTile(tile, start));
 }
@@ -105,9 +105,9 @@ bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 	if (_settings_client.gui.show_track_reservation) {
 		/* show the reserved rail if needed */
 		if (IsBridgeTile(tile)) {
-			MarkBridgeDirty(tile, ZOOM_LVL_DRAW_MAP);
+			MarkBridgeDirty(tile, VMDF_NOT_MAP_MODE);
 		} else {
-			MarkTileGroundDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileGroundDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		}
 	}
 
@@ -117,7 +117,7 @@ bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 			if (IsRailDepot(tile)) {
 				if (!HasDepotReservation(tile)) {
 					SetDepotReservation(tile, true);
-					MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP); // some GRFs change their appearance when tile is reserved
+					MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE); // some GRFs change their appearance when tile is reserved
 					return true;
 				}
 			}
@@ -147,7 +147,7 @@ bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 			if (HasStationRail(tile) && !HasStationReservation(tile)) {
 				SetRailStationReservation(tile, true);
 				if (trigger_stations && IsRailStation(tile)) TriggerStationRandomisation(nullptr, tile, SRT_PATH_RESERVATION);
-				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP); // some GRFs need redraw after reserving track
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE); // some GRFs need redraw after reserving track
 				return true;
 			}
 			break;
@@ -156,12 +156,12 @@ bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL) {
 				if (IsTunnel(tile) && !HasTunnelReservation(tile)) {
 					SetTunnelReservation(tile, true);
-					MarkTileGroundDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+					MarkTileGroundDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 					return true;
 				}
 				if (IsBridge(tile)) {
 					if (TryReserveRailBridgeHead(tile, t)) {
-						MarkBridgeOrTunnelDirtyOnReservationChange(tile, ZOOM_LVL_DRAW_MAP);
+						MarkBridgeOrTunnelDirtyOnReservationChange(tile, VMDF_NOT_MAP_MODE);
 						return true;
 					}
 				}
@@ -200,9 +200,9 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 
 	if (_settings_client.gui.show_track_reservation) {
 		if (IsBridgeTile(tile)) {
-			MarkBridgeDirty(tile, ZOOM_LVL_DRAW_MAP);
+			MarkBridgeDirty(tile, VMDF_NOT_MAP_MODE);
 		} else {
-			MarkTileGroundDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileGroundDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		}
 	}
 
@@ -210,7 +210,7 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 		case MP_RAILWAY:
 			if (IsRailDepot(tile)) {
 				SetDepotReservation(tile, false);
-				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 				break;
 			}
 			if (IsPlainRail(tile)) UnreserveTrack(tile, t);
@@ -226,7 +226,7 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 		case MP_STATION:
 			if (HasStationRail(tile)) {
 				SetRailStationReservation(tile, false);
-				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			}
 			break;
 
@@ -238,7 +238,7 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 					UnreserveRailBridgeHeadTrack(tile, t);
 				}
 				if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgePBS(tile) && IsTrackAcrossTunnelBridge(tile, t)) SetTunnelBridgeExitSignalState(tile, SIGNAL_STATE_RED);
-				MarkBridgeOrTunnelDirtyOnReservationChange(tile, ZOOM_LVL_DRAW_MAP);
+				MarkBridgeOrTunnelDirtyOnReservationChange(tile, VMDF_NOT_MAP_MODE);
 			}
 			break;
 

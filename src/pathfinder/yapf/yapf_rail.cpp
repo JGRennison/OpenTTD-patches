@@ -110,7 +110,7 @@ private:
 		do {
 			if (HasStationReservation(tile)) return false;
 			SetRailStationReservation(tile, true);
-			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			tile = TILE_ADD(tile, diff);
 		} while (IsCompatibleTrainStationTile(tile, start) && tile != m_origin_tile);
 

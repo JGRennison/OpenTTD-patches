@@ -122,7 +122,7 @@ void BuildObject(ObjectType type, TileIndex tile, CompanyID owner, Town *town, u
 			DirtyCompanyInfrastructureWindows(owner);
 		}
 		MakeObject(t, owner, o->index, wc, Random());
-		MarkTileDirtyByTile(t, ZOOM_LVL_DRAW_MAP);
+		MarkTileDirtyByTile(t, VMDF_NOT_MAP_MODE);
 	}
 
 	Object::IncTypeCount(type);
@@ -138,7 +138,7 @@ static void IncreaseAnimationStage(TileIndex tile)
 	TileArea ta = Object::GetByTile(tile)->location;
 	TILE_AREA_LOOP(t, ta) {
 		SetAnimationFrame(t, GetAnimationFrame(t) + 1);
-		MarkTileDirtyByTile(t, ZOOM_LVL_DRAW_MAP);
+		MarkTileDirtyByTile(t, VMDF_NOT_MAP_MODE);
 	}
 }
 

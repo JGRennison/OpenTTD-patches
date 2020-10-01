@@ -522,7 +522,7 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 			SignalState new_state = (info.flags & SF_TRAIN) ? SIGNAL_STATE_RED : SIGNAL_STATE_GREEN;
 			if (old_state != new_state) {
 				SetTunnelBridgeExitSignalState(tile, new_state);
-				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			}
 			continue;
 		}

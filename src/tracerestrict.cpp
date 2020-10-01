@@ -1064,7 +1064,7 @@ void TraceRestrictCreateProgramMapping(TraceRestrictRefId ref, TraceRestrictProg
 	TileIndex tile = GetTraceRestrictRefIdTileIndex(ref);
 	Track track = GetTraceRestrictRefIdTrack(ref);
 	TraceRestrictSetIsSignalRestrictedBit(tile);
-	MarkTileDirtyByTile(tile);
+	MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 	YapfNotifyTrackLayoutChange(tile, track);
 }
 
@@ -1089,7 +1089,7 @@ bool TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 		TileIndex tile = GetTraceRestrictRefIdTileIndex(ref);
 		Track track = GetTraceRestrictRefIdTrack(ref);
 		TraceRestrictSetIsSignalRestrictedBit(tile);
-		MarkTileDirtyByTile(tile);
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		YapfNotifyTrackLayoutChange(tile, track);
 
 		if (remove_other_mapping) {

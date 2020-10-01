@@ -2176,7 +2176,7 @@ void VehicleEnterDepot(Vehicle *v)
 			SetWindowClassesDirty(WC_TRACE_RESTRICT_SLOTS);
 			/* Clear path reservation */
 			SetDepotReservation(t->tile, false);
-			if (_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(t->tile, ZOOM_LVL_DRAW_MAP);
+			if (_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(t->tile, VMDF_NOT_MAP_MODE);
 
 			UpdateSignalsOnSegment(t->tile, INVALID_DIAGDIR, t->owner);
 			t->wait_counter = 0;
@@ -2332,7 +2332,7 @@ void Vehicle::UpdateViewport(bool dirty)
 					min(old_coord.top,    this->coord.top),
 					max(old_coord.right,  this->coord.right),
 					max(old_coord.bottom, this->coord.bottom),
-					this->type != VEH_EFFECT ? ZOOM_LVL_END : ZOOM_LVL_DRAW_MAP
+					this->type != VEH_EFFECT ? VMDF_NONE : VMDF_NOT_MAP_MODE
 			);
 		}
 	}
@@ -2352,7 +2352,7 @@ void Vehicle::UpdatePositionAndViewport()
  */
 void Vehicle::MarkAllViewportsDirty() const
 {
-	::MarkAllViewportsDirty(this->coord.left, this->coord.top, this->coord.right, this->coord.bottom);
+	::MarkAllViewportsDirty(this->coord.left, this->coord.top, this->coord.right, this->coord.bottom, this->type != VEH_EFFECT ? VMDF_NONE : VMDF_NOT_MAP_MODE);
 }
 
 VehicleOrderID Vehicle::GetFirstWaitingLocation(bool require_wait_timetabled) const

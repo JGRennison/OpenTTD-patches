@@ -99,7 +99,7 @@ struct AnimationBase {
 		}
 
 		SetAnimationFrame(tile, frame);
-		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 	}
 
 	/**

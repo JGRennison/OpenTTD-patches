@@ -2121,7 +2121,7 @@ static void TileLoop_Road(TileIndex tile)
 						TileY(tile) * TILE_SIZE + 7,
 						0,
 						EV_BULLDOZER);
-					MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+					MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 					return;
 				}
 			}
@@ -2146,7 +2146,7 @@ static void TileLoop_Road(TileIndex tile)
 				cur_rs = ROADSIDE_BARREN;
 			}
 			SetRoadside(tile, cur_rs);
-			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		}
 	} else if (IncreaseRoadWorksCounter(tile)) {
 		TerminateRoadWorks(tile);
@@ -2161,7 +2161,7 @@ static void TileLoop_Road(TileIndex tile)
 
 				/* If new_rb is 0, there are now no road pieces left and the tile is no longer a road tile */
 				if (new_rb == 0) {
-					MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+					MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 					return;
 				}
 			}
@@ -2175,7 +2175,7 @@ static void TileLoop_Road(TileIndex tile)
 			}
 		}
 
-		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 	}
 }
 

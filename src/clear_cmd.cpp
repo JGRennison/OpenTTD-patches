@@ -196,7 +196,7 @@ static void UpdateFences(TileIndex tile)
 		dirty = true;
 	}
 
-	if (dirty) MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+	if (dirty) MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 }
 
 
@@ -332,7 +332,7 @@ static void TileLoop_Clear(TileIndex tile)
 			return;
 	}
 
-	MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+	MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 }
 
 void GenerateClearTile()

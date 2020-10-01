@@ -241,7 +241,7 @@ void Station::MarkTilesDirty(bool cargo_change) const
 	for (h = 0; h < train_station.h; h++) {
 		for (w = 0; w < train_station.w; w++) {
 			if (this->TileBelongsToRailStation(tile)) {
-				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			}
 			tile += TileDiffXY(1, 0);
 		}

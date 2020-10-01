@@ -580,7 +580,7 @@ void AnimateTile_Industry(TileIndex tile)
 			}
 			SetAnimationFrame(tile, m);
 
-			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		}
 		break;
 
@@ -598,7 +598,7 @@ void AnimateTile_Industry(TileIndex tile)
 			}
 			SetAnimationFrame(tile, m);
 
-			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		}
 		break;
 
@@ -612,7 +612,7 @@ void AnimateTile_Industry(TileIndex tile)
 			}
 			SetAnimationFrame(tile, m);
 
-			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		}
 		break;
 
@@ -625,7 +625,7 @@ void AnimateTile_Industry(TileIndex tile)
 				DeleteAnimatedTile(tile);
 			} else {
 				SetAnimationFrame(tile, m + 1);
-				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			}
 		}
 		break;
@@ -651,7 +651,7 @@ void AnimateTile_Industry(TileIndex tile)
 			}
 
 			SetAnimationFrame(tile, m);
-			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		}
 		break;
 
@@ -664,7 +664,7 @@ void AnimateTile_Industry(TileIndex tile)
 
 			gfx = (gfx < 155) ? gfx + 1 : 148;
 			SetIndustryGfx(tile, gfx);
-			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		}
 		break;
 
@@ -683,7 +683,7 @@ void AnimateTile_Industry(TileIndex tile)
 			} else {
 				SetAnimationFrame(tile, m);
 				SetIndustryGfx(tile, gfx);
-				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			}
 		}
 		break;
@@ -709,7 +709,7 @@ void AnimateTile_Industry(TileIndex tile)
 				byte m = (GetAnimationFrame(tile) + 1) | 0x40;
 				if (m > 0xC2) m = 0xC0;
 				SetAnimationFrame(tile, m);
-				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			} else if (state >= 0x200 && state < 0x3A0) {
 				int i = (state < 0x220 || state >= 0x380) ? 7 : 3;
 				if (state & i) return;
@@ -717,7 +717,7 @@ void AnimateTile_Industry(TileIndex tile)
 				byte m = (GetAnimationFrame(tile) & 0xBF) - 1;
 				if (m < 0x80) m = 0x82;
 				SetAnimationFrame(tile, m);
-				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			}
 			break;
 		}
@@ -747,7 +747,7 @@ static void MakeIndustryTileBigger(TileIndex tile)
 	StartStopIndustryTileAnimation(tile, IAT_CONSTRUCTION_STATE_CHANGE);
 	if (stage == INDUSTRY_COMPLETED) SetIndustryCompleted(tile);
 
-	MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+	MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 
 	if (!IsIndustryCompleted(tile)) return;
 
@@ -841,7 +841,7 @@ static void TileLoop_Industry(TileIndex tile)
 			ResetIndustryConstructionStage(tile);
 			SetIndustryCompleted(tile);
 			SetIndustryGfx(tile, newgfx);
-			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			return;
 		}
 	}
@@ -852,7 +852,7 @@ static void TileLoop_Industry(TileIndex tile)
 	if (newgfx != INDUSTRYTILE_NOANIM) {
 		ResetIndustryConstructionStage(tile);
 		SetIndustryGfx(tile, newgfx);
-		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		return;
 	}
 
@@ -1055,7 +1055,7 @@ static void PlantFarmField(TileIndex tile, IndustryID industry)
 		if (IsSuitableForFarmField(cur_tile, true)) {
 			MakeField(cur_tile, field_type, industry);
 			SetClearCounter(cur_tile, counter);
-			MarkTileDirtyByTile(cur_tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileDirtyByTile(cur_tile, VMDF_NOT_MAP_MODE);
 		}
 	}
 

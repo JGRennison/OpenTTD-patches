@@ -215,4 +215,10 @@ enum FoundationPart {
 	FOUNDATION_PART_END
 };
 
+enum ViewportMarkDirtyFlags : byte {
+	VMDF_NONE                = 0,
+	VMDF_NOT_MAP_MODE        = 0x1,
+};
+DECLARE_ENUM_AS_BIT_SET(ViewportMarkDirtyFlags)
+
 #endif /* VIEWPORT_TYPE_H */

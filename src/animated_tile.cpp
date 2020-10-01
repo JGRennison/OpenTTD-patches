@@ -29,7 +29,7 @@ void DeleteAnimatedTile(TileIndex tile)
 	if (to_remove != _animated_tiles.end()) {
 		/* The order of the remaining elements must stay the same, otherwise the animation loop may miss a tile. */
 		_animated_tiles.erase(to_remove);
-		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 	}
 }
 
@@ -40,7 +40,7 @@ void DeleteAnimatedTile(TileIndex tile)
  */
 void AddAnimatedTile(TileIndex tile)
 {
-	MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+	MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 	include(_animated_tiles, tile);
 }
 

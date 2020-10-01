@@ -1836,7 +1836,7 @@ void ViewportSign::MarkDirty(ZoomLevel maxzoom) const
 	for (Viewport *vp : _viewport_window_cache) {
 		if (vp->zoom <= maxzoom) {
 			Rect &zl = zoomlevels[vp->zoom];
-			MarkViewportDirty(vp, zl.left, zl.top, zl.right, zl.bottom);
+			MarkViewportDirty(vp, zl.left, zl.top, zl.right, zl.bottom, VMDF_NONE);
 		}
 	}
 }
@@ -3404,7 +3404,7 @@ void UpdateActiveScrollingViewport(Window *w)
  * @param bottom Bottom edge of area to repaint
  * @ingroup dirty
  */
-void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bottom)
+void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bottom, ViewportMarkDirtyFlags flags)
 {
 	/* Rounding wrt. zoom-out level */
 	right  += (1 << vp->zoom) - 1;
@@ -3449,14 +3449,14 @@ void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bo
  * @param top    Top    edge of area to repaint. (viewport coordinates, that is wrt. #ZOOM_LVL_NORMAL)
  * @param right  Right  edge of area to repaint. (viewport coordinates, that is wrt. #ZOOM_LVL_NORMAL)
  * @param bottom Bottom edge of area to repaint. (viewport coordinates, that is wrt. #ZOOM_LVL_NORMAL)
- * @param mark_dirty_if_zoomlevel_is_below To tell if an update is relevant or not (for example, animations in map mode are not)
+ * @param flags  To tell if an update is relevant or not (for example, animations in map mode are not)
  * @ingroup dirty
  */
-void MarkAllViewportsDirty(int left, int top, int right, int bottom, const ZoomLevel mark_dirty_if_zoomlevel_is_below)
+void MarkAllViewportsDirty(int left, int top, int right, int bottom, ViewportMarkDirtyFlags flags)
 {
 	for (Viewport * const vp : _viewport_window_cache) {
-		if (vp->zoom >= mark_dirty_if_zoomlevel_is_below) continue;
-		MarkViewportDirty(vp, left, top, right, bottom);
+		if (flags & VMDF_NOT_MAP_MODE && vp->zoom >= ZOOM_LVL_DRAW_MAP) continue;
+		MarkViewportDirty(vp, left, top, right, bottom, flags);
 	}
 }
 
@@ -3474,7 +3474,7 @@ static void MarkRouteStepDirty(const TileIndex tile, uint order_nr)
 	for (Viewport * const vp : _viewport_window_cache) {
 		const int half_width = ScaleByZoom((_vp_route_step_width / 2) + 1, vp->zoom);
 		const int height = ScaleByZoom(_vp_route_step_height_top + char_height * order_nr + _vp_route_step_height_bottom, vp->zoom);
-		MarkViewportDirty(vp, pt.x - half_width, pt.y - height, pt.x + half_width, pt.y);
+		MarkViewportDirty(vp, pt.x - half_width, pt.y - height, pt.x + half_width, pt.y, VMDF_NONE);
 	}
 }
 
@@ -3503,7 +3503,7 @@ void MarkAllViewportMapsDirty(int left, int top, int right, int bottom)
 		Viewport *vp = w->viewport;
 		if (vp != nullptr && vp->zoom >= ZOOM_LVL_DRAW_MAP) {
 			assert(vp->width != 0);
-			MarkViewportDirty(vp, left, top, right, bottom);
+			MarkViewportDirty(vp, left, top, right, bottom, VMDF_NONE);
 		}
 	}
 }
@@ -3541,12 +3541,12 @@ void ConstrainAllViewportsZoom()
 /**
  * Mark a tile given by its index dirty for repaint.
  * @param tile The tile to mark dirty.
- * @param mark_dirty_if_zoomlevel_is_below To tell if an update is relevant or not (for example, animations in map mode are not).
+ * @param flags To tell if an update is relevant or not (for example, animations in map mode are not).
  * @param bridge_level_offset Height of bridge on tile to also mark dirty. (Height level relative to north corner.)
  * @param tile_height_override Height of the tile (#TileHeight).
  * @ingroup dirty
  */
-void MarkTileDirtyByTile(TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below, int bridge_level_offset, int tile_height_override)
+void MarkTileDirtyByTile(TileIndex tile, ViewportMarkDirtyFlags flags, int bridge_level_offset, int tile_height_override)
 {
 	Point pt = RemapCoords(TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE, tile_height_override * TILE_HEIGHT);
 	MarkAllViewportsDirty(
@@ -3554,20 +3554,20 @@ void MarkTileDirtyByTile(TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel
 			pt.y - 122 * ZOOM_LVL_BASE - ZOOM_LVL_BASE * TILE_HEIGHT * bridge_level_offset,
 			pt.x - 31  * ZOOM_LVL_BASE + 67  * ZOOM_LVL_BASE,
 			pt.y - 122 * ZOOM_LVL_BASE + 154 * ZOOM_LVL_BASE,
-			mark_dirty_if_zoomlevel_is_below
+			flags
 	);
 }
 
-void MarkTileGroundDirtyByTile(TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below)
+void MarkTileGroundDirtyByTile(TileIndex tile, ViewportMarkDirtyFlags flags)
 {
 	int x = TileX(tile) * TILE_SIZE;
 	int y = TileY(tile) * TILE_SIZE;
 	Point top = RemapCoords(x, y, GetTileMaxPixelZ(tile));
 	Point bot = RemapCoords(x + TILE_SIZE, y + TILE_SIZE, GetTilePixelZ(tile));
-	MarkAllViewportsDirty(top.x - TILE_PIXELS * ZOOM_LVL_BASE, top.y - TILE_HEIGHT * ZOOM_LVL_BASE, top.x + TILE_PIXELS * ZOOM_LVL_BASE, bot.y);
+	MarkAllViewportsDirty(top.x - TILE_PIXELS * ZOOM_LVL_BASE, top.y - TILE_HEIGHT * ZOOM_LVL_BASE, top.x + TILE_PIXELS * ZOOM_LVL_BASE, bot.y, flags);
 }
 
-void MarkViewportLineDirty(Viewport * const vp, const Point from_pt, const Point to_pt, const int block_radius)
+void MarkViewportLineDirty(Viewport * const vp, const Point from_pt, const Point to_pt, const int block_radius, ViewportMarkDirtyFlags flags)
 {
 	int x1 = from_pt.x / block_radius;
 	int y1 = from_pt.y / block_radius;
@@ -3586,7 +3586,8 @@ void MarkViewportLineDirty(Viewport * const vp, const Point from_pt, const Point
 				(x1 - 2) * block_radius,
 				(y1 - 2) * block_radius,
 				(x1 + 2) * block_radius,
-				(y1 + 2) * block_radius
+				(y1 + 2) * block_radius,
+				flags
 		);
 		if (x1 == x2 && y1 == y2) break;
 		const int e2 = 2 * err;
@@ -3628,7 +3629,7 @@ void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile)
 				(y1 - 1) * block_radius,
 				(x1 + 1) * block_radius,
 				(y1 + 1) * block_radius,
-				ZOOM_LVL_END
+				VMDF_NONE
 		);
 		if (x1 == x2 && y1 == y2) break;
 		const int e2 = 2 * err;
@@ -4200,8 +4201,8 @@ void SetRedErrorSquare(TileIndex tile)
 	_thd.redsq = tile;
 
 	if (tile != old) {
-		if (tile != INVALID_TILE) MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
-		if (old  != INVALID_TILE) MarkTileDirtyByTile(old, ZOOM_LVL_DRAW_MAP);
+		if (tile != INVALID_TILE) MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+		if (old  != INVALID_TILE) MarkTileDirtyByTile(old, VMDF_NOT_MAP_MODE);
 	}
 }
 

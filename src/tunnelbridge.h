@@ -13,10 +13,6 @@
 #include "map_func.h"
 #include "tile_map.h"
 
-void MarkBridgeDirty(TileIndex begin, TileIndex end, DiagDirection direction, uint bridge_height, const ZoomLevel mark_dirty_if_zoomlevel_is_below = ZOOM_LVL_END);
-void MarkBridgeDirty(TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below = ZOOM_LVL_END);
-void MarkBridgeOrTunnelDirty(TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below = ZOOM_LVL_END);
-void MarkBridgeOrTunnelDirtyOnReservationChange(TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below = ZOOM_LVL_END);
 uint GetTunnelBridgeSignalSimulationSignalCount(TileIndex begin, TileIndex end);
 
 /**

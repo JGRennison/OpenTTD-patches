@@ -80,35 +80,35 @@ extern CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, bool drive_through, D
  * @param direction Direction from \a begin to \a end.
  * @param bridge_height Bridge height level.
  */
-void MarkBridgeDirty(TileIndex begin, TileIndex end, DiagDirection direction, uint bridge_height, const ZoomLevel mark_dirty_if_zoomlevel_is_below)
+void MarkBridgeDirty(TileIndex begin, TileIndex end, DiagDirection direction, uint bridge_height, ViewportMarkDirtyFlags flags)
 {
 	TileIndexDiff delta = TileOffsByDiagDir(direction);
 	for (TileIndex t = begin; t != end; t += delta) {
-		MarkTileDirtyByTile(t, mark_dirty_if_zoomlevel_is_below, bridge_height - TileHeight(t));
+		MarkTileDirtyByTile(t, flags, bridge_height - TileHeight(t));
 	}
-	MarkTileDirtyByTile(end, mark_dirty_if_zoomlevel_is_below);
+	MarkTileDirtyByTile(end, flags);
 }
 
 /**
  * Mark bridge tiles dirty.
  * @param tile Bridge head.
  */
-void MarkBridgeDirty(TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below)
+void MarkBridgeDirty(TileIndex tile, ViewportMarkDirtyFlags flags)
 {
-	MarkBridgeDirty(tile, GetOtherTunnelBridgeEnd(tile), GetTunnelBridgeDirection(tile), GetBridgeHeight(tile), mark_dirty_if_zoomlevel_is_below);
+	MarkBridgeDirty(tile, GetOtherTunnelBridgeEnd(tile), GetTunnelBridgeDirection(tile), GetBridgeHeight(tile), flags);
 }
 
 /**
  * Mark bridge or tunnel tiles dirty.
  * @param tile Bridge head or tunnel entrance.
  */
-void MarkBridgeOrTunnelDirty(TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below)
+void MarkBridgeOrTunnelDirty(TileIndex tile, ViewportMarkDirtyFlags flags)
 {
 	if (IsBridge(tile)) {
-		MarkBridgeDirty(tile, mark_dirty_if_zoomlevel_is_below);
+		MarkBridgeDirty(tile, flags);
 	} else {
-		MarkTileDirtyByTile(tile, mark_dirty_if_zoomlevel_is_below);
-		MarkTileDirtyByTile(GetOtherTunnelBridgeEnd(tile), mark_dirty_if_zoomlevel_is_below);
+		MarkTileDirtyByTile(tile, flags);
+		MarkTileDirtyByTile(GetOtherTunnelBridgeEnd(tile), flags);
 	}
 }
 
@@ -116,14 +116,14 @@ void MarkBridgeOrTunnelDirty(TileIndex tile, const ZoomLevel mark_dirty_if_zooml
  * Mark bridge or tunnel tiles dirty on tunnel/bridge head reservation change
  * @param tile Bridge head or tunnel entrance.
  */
-void MarkBridgeOrTunnelDirtyOnReservationChange(TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below)
+void MarkBridgeOrTunnelDirtyOnReservationChange(TileIndex tile, ViewportMarkDirtyFlags flags)
 {
 	if (IsTunnelBridgeWithSignalSimulation(tile)) {
-		MarkTileDirtyByTile(tile, mark_dirty_if_zoomlevel_is_below);
+		MarkTileDirtyByTile(tile, flags);
 	} else if (IsBridge(tile)) {
-		MarkBridgeDirty(tile, mark_dirty_if_zoomlevel_is_below);
+		MarkBridgeDirty(tile, flags);
 	} else {
-		MarkTileDirtyByTile(tile, mark_dirty_if_zoomlevel_is_below);
+		MarkTileDirtyByTile(tile, flags);
 	}
 }
 
@@ -1287,7 +1287,7 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 				if (height < minz) SetRoadside(c, ROADSIDE_PAVED);
 			}
 			ClearBridgeMiddle(c);
-			MarkTileDirtyByTile(c, ZOOM_LVL_DRAW_MAP, height - TileHeight(c));
+			MarkTileDirtyByTile(c, VMDF_NOT_MAP_MODE, height - TileHeight(c));
 		}
 
 		if (rail) {
