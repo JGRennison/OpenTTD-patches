@@ -773,7 +773,7 @@ NWidgetBase::NWidgetBase(WidgetType tp) : ZeroedMemoryAllocator()
 void NWidgetBase::SetDirty(Window *w)
 {
 	this->base_flags |= WBF_DIRTY;
-	w->flags |= WF_DIRTY;
+	w->flags |= WF_WIDGETS_DIRTY;
 }
 
 /**
