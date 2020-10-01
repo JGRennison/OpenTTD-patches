@@ -675,7 +675,7 @@ static void LargeWorldCallback(void *userdata, void *buf, uint y, uint pitch, ui
 	_screen = old_screen;
 	_screen_disable_anim = old_disable_anim;
 
-	ClearViewPortCache(vp);
+	ClearViewportCache(vp);
 }
 
 /**

@@ -336,7 +336,7 @@ static Point MapXYZToViewport(const Viewport *vp, int x, int y, int z)
 	return p;
 }
 
-void ClearViewPortCache(Viewport *vp)
+void ClearViewportCache(Viewport *vp)
 {
 	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
 		memset(vp->map_draw_vehicles_cache.done_hash_bits, 0, sizeof(vp->map_draw_vehicles_cache.done_hash_bits));
@@ -344,10 +344,10 @@ void ClearViewPortCache(Viewport *vp)
 	}
 }
 
-void ClearViewPortCaches()
+void ClearViewportCaches()
 {
 	for (Viewport *vp : _viewport_window_cache) {
-		ClearViewPortCache(vp);
+		ClearViewportCache(vp);
 	}
 }
 
@@ -680,7 +680,7 @@ static void SetViewportPosition(Window *w, int x, int y, bool force_update_overl
 		if (height > 0 && (_vp_move_offs.x != 0 || _vp_move_offs.y != 0)) {
 			SCOPE_INFO_FMT([&], "DoSetViewportPosition: %d, %d, %d, %d, %d, %d, %s", left, top, width, height, _vp_move_offs.x, _vp_move_offs.y, scope_dumper().WindowInfo(w));
 			DoSetViewportPosition((Window *) w->z_front, left, top, width, height);
-			ClearViewPortCache(w->viewport);
+			ClearViewportCache(w->viewport);
 		}
 	}
 }

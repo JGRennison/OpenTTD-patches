@@ -1718,8 +1718,8 @@ void DrawDirtyBlocks()
 	_gfx_draw_active = false;
 	++_dirty_block_colour;
 
-	extern void ClearViewPortCaches();
-	ClearViewPortCaches();
+	extern void ClearViewportCaches();
+	ClearViewportCaches();
 }
 
 void UnsetDirtyBlocks(int left, int top, int right, int bottom)
