@@ -281,7 +281,7 @@ struct CompanyFinancesWindow : Window {
 	CompanyFinancesWindow(WindowDesc *desc, CompanyID company) : Window(desc)
 	{
 		const Company *c = Company::Get(company);
-		this->max_money = max<Money>(c->money * 2, INT32_MAX);
+		this->max_money = max<Money>(abs(c->money) * 2, INT32_MAX);
 		this->small = false;
 		this->CreateNestedTree();
 		this->SetupWidgets();
@@ -460,8 +460,8 @@ struct CompanyFinancesWindow : Window {
 	void OnHundredthTick() override
 	{
 		const Company *c = Company::Get((CompanyID)this->window_number);
-		if (c->money > this->max_money) {
-			this->max_money = max<Money>(c->money * 2, this->max_money * 4);
+		if (abs(c->money) > this->max_money) {
+			this->max_money = max<Money>(abs(c->money) * 2, this->max_money * 4);
 			this->SetupWidgets();
 			this->ReInit();
 		}
