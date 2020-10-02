@@ -51,9 +51,10 @@ public:
 			this->m_value = (other.m_value < 0) ? T_MIN : T_MAX;
 		}
 #else
-		if ((T_MAX - abs(other.m_value)) < abs(this->m_value) &&
-				(this->m_value < 0) == (other.m_value < 0)) {
-			this->m_value = (this->m_value < 0) ? T_MIN : T_MAX ;
+		if ((this->m_value > 0) && (other.m_value > 0) && (T_MAX - other.m_value) < this->m_value) {
+			this->m_value = T_MAX;
+		} else if ((this->m_value < 0) && (other.m_value < 0) && (this->m_value == T_MIN || other.m_value == T_MIN || ((T_MAX + this->m_value) + other.m_value < (T_MIN + T_MAX)))) {
+			this->m_value = T_MIN;
 		} else {
 			this->m_value += other.m_value;
 		}
@@ -68,7 +69,13 @@ public:
 			this->m_value = (other.m_value < 0) ? T_MAX : T_MIN;
 		}
 #else
-		*this += (-other);
+		if ((this->m_value > 0) && (other.m_value < 0) && (T_MAX + other.m_value) < this->m_value) {
+			this->m_value = T_MAX;
+		} else if ((this->m_value < 0) && (other.m_value > 0) && (T_MAX + this->m_value) < (T_MIN + T_MAX) + other.m_value) {
+			this->m_value = T_MIN;
+		} else {
+			this->m_value -= other.m_value;
+		}
 #endif
 		return *this;
 	}
@@ -102,10 +109,18 @@ public:
 			this->m_value = ((this->m_value < 0) == (factor < 0)) ? T_MAX : T_MIN;
 		}
 #else
-		if (factor != 0 && (T_MAX / abs(factor)) < abs(this->m_value)) {
-			 this->m_value = ((this->m_value < 0) == (factor < 0)) ? T_MAX : T_MIN ;
+		if (factor == -1) {
+			this->m_value = (this->m_value == T_MIN) ? T_MAX : -this->m_value;
+		} else if ((factor > 0) && (this->m_value > 0) && (T_MAX / factor) < this->m_value) {
+			this->m_value = T_MAX;
+		} else if ((factor > 0) && (this->m_value < 0) && (T_MIN / factor) > this->m_value) {
+			this->m_value = T_MIN;
+		} else if ((factor < 0) && (this->m_value > 0) && (T_MIN / factor) < this->m_value) {
+			this->m_value = T_MIN;
+		} else if ((factor < 0) && (this->m_value < 0) && (T_MAX / factor) > this->m_value) {
+			this->m_value = T_MAX;
 		} else {
-			this->m_value *= factor ;
+			this->m_value *= factor;
 		}
 #endif
 		return *this;
