@@ -2425,73 +2425,82 @@ static void ViewportDrawVehicleRouteSteps(const Viewport * const vp)
 
 void ViewportDrawPlans(const Viewport *vp)
 {
+	if (Plan::GetNumItems() == 0 && !(_current_plan && _current_plan->temp_line->tiles.size() > 1)) return;
+
 	DrawPixelInfo *old_dpi = _cur_dpi;
 	_cur_dpi = &_dpi_for_text;
 
-	if (Plan::GetNumItems() != 0) {
-		const Rect bounds = {
-			ScaleByZoom(_dpi_for_text.left - 2, vp->zoom),
-			ScaleByZoom(_dpi_for_text.top - 2, vp->zoom),
-			ScaleByZoom(_dpi_for_text.left + _dpi_for_text.width + 2, vp->zoom),
-			ScaleByZoom(_dpi_for_text.top + _dpi_for_text.height + 2, vp->zoom) + (int)(ZOOM_LVL_BASE * TILE_HEIGHT * _settings_game.construction.max_heightlevel)
-		};
+	const Rect bounds = {
+		ScaleByZoom(_dpi_for_text.left - 2, vp->zoom),
+		ScaleByZoom(_dpi_for_text.top - 2, vp->zoom),
+		ScaleByZoom(_dpi_for_text.left + _dpi_for_text.width + 2, vp->zoom),
+		ScaleByZoom(_dpi_for_text.top + _dpi_for_text.height + 2, vp->zoom) + (int)(ZOOM_LVL_BASE * TILE_HEIGHT * _settings_game.construction.max_heightlevel)
+	};
 
-		const int min_coord_delta = bounds.left / (int)(2 * ZOOM_LVL_BASE * TILE_SIZE);
-		const int max_coord_delta = (bounds.right / (int)(2 * ZOOM_LVL_BASE * TILE_SIZE)) + 1;
+	const int min_coord_delta = bounds.left / (int)(2 * ZOOM_LVL_BASE * TILE_SIZE);
+	const int max_coord_delta = (bounds.right / (int)(2 * ZOOM_LVL_BASE * TILE_SIZE)) + 1;
 
-		for (Plan *p : Plan::Iterate()) {
-			if (!p->IsVisible()) continue;
-			for (PlanLineVector::iterator it = p->lines.begin(); it != p->lines.end(); it++) {
-				PlanLine *pl = *it;
-				if (!pl->visible) continue;
+	for (Plan *p : Plan::Iterate()) {
+		if (!p->IsVisible()) continue;
+		for (PlanLineVector::iterator it = p->lines.begin(); it != p->lines.end(); it++) {
+			PlanLine *pl = *it;
+			if (!pl->visible) continue;
 
-				if (
-					bounds.left   > pl->viewport_extents.right ||
-					bounds.right  < pl->viewport_extents.left ||
-					bounds.top    > pl->viewport_extents.bottom ||
-					bounds.bottom < pl->viewport_extents.top
-				) {
-					continue;
-				}
+			if (
+				bounds.left   > pl->viewport_extents.right ||
+				bounds.right  < pl->viewport_extents.left ||
+				bounds.top    > pl->viewport_extents.bottom ||
+				bounds.bottom < pl->viewport_extents.top
+			) {
+				continue;
+			}
 
-				TileIndex to_tile = pl->tiles[0];
-				int to_coord_delta = (int)TileY(to_tile) - (int)TileX(to_tile);
-				for (uint i = 1; i < pl->tiles.size(); i++) {
-					const TileIndex from_tile = to_tile;
-					const int from_coord_delta = to_coord_delta;
-					to_tile = pl->tiles[i];
-					to_coord_delta = (int)TileY(to_tile) - (int)TileX(to_tile);
+			TileIndex to_tile = pl->tiles[0];
+			int to_coord_delta = (int)TileY(to_tile) - (int)TileX(to_tile);
+			for (uint i = 1; i < pl->tiles.size(); i++) {
+				const TileIndex from_tile = to_tile;
+				const int from_coord_delta = to_coord_delta;
+				to_tile = pl->tiles[i];
+				to_coord_delta = (int)TileY(to_tile) - (int)TileX(to_tile);
 
-					if (to_coord_delta < min_coord_delta && from_coord_delta < min_coord_delta) continue;
-					if (to_coord_delta > max_coord_delta && from_coord_delta > max_coord_delta) continue;
+				if (to_coord_delta < min_coord_delta && from_coord_delta < min_coord_delta) continue;
+				if (to_coord_delta > max_coord_delta && from_coord_delta > max_coord_delta) continue;
 
-					const Point from_pt = RemapCoords2(TileX(from_tile) * TILE_SIZE + TILE_SIZE / 2, TileY(from_tile) * TILE_SIZE + TILE_SIZE / 2);
-					const int from_x = UnScaleByZoom(from_pt.x, vp->zoom);
-					const int from_y = UnScaleByZoom(from_pt.y, vp->zoom);
+				const Point from_pt = RemapCoords2(TileX(from_tile) * TILE_SIZE + TILE_SIZE / 2, TileY(from_tile) * TILE_SIZE + TILE_SIZE / 2);
+				const int from_x = UnScaleByZoom(from_pt.x, vp->zoom);
+				const int from_y = UnScaleByZoom(from_pt.y, vp->zoom);
 
-					const Point to_pt = RemapCoords2(TileX(to_tile) * TILE_SIZE + TILE_SIZE / 2, TileY(to_tile) * TILE_SIZE + TILE_SIZE / 2);
-					const int to_x = UnScaleByZoom(to_pt.x, vp->zoom);
-					const int to_y = UnScaleByZoom(to_pt.y, vp->zoom);
+				const Point to_pt = RemapCoords2(TileX(to_tile) * TILE_SIZE + TILE_SIZE / 2, TileY(to_tile) * TILE_SIZE + TILE_SIZE / 2);
+				const int to_x = UnScaleByZoom(to_pt.x, vp->zoom);
+				const int to_y = UnScaleByZoom(to_pt.y, vp->zoom);
 
-					GfxDrawLine(from_x, from_y, to_x, to_y, PC_BLACK, 3);
-					if (pl->focused) {
-						GfxDrawLine(from_x, from_y, to_x, to_y, PC_RED, 1);
-					} else {
-						GfxDrawLine(from_x, from_y, to_x, to_y, PC_WHITE, 1);
-					}
+				GfxDrawLine(from_x, from_y, to_x, to_y, PC_BLACK, 3);
+				if (pl->focused) {
+					GfxDrawLine(from_x, from_y, to_x, to_y, PC_RED, 1);
+				} else {
+					GfxDrawLine(from_x, from_y, to_x, to_y, PC_WHITE, 1);
 				}
 			}
 		}
 	}
 
 	if (_current_plan && _current_plan->temp_line->tiles.size() > 1) {
-		for (uint i = 1; i < _current_plan->temp_line->tiles.size(); i++) {
-			const TileIndex from_tile = _current_plan->temp_line->tiles[i-1];
+		PlanLine *pl = _current_plan->temp_line;
+		TileIndex to_tile = pl->tiles[0];
+		int to_coord_delta = (int)TileY(to_tile) - (int)TileX(to_tile);
+		for (uint i = 1; i < pl->tiles.size(); i++) {
+			const TileIndex from_tile = to_tile;
+			const int from_coord_delta = to_coord_delta;
+			to_tile = pl->tiles[i];
+			to_coord_delta = (int)TileY(to_tile) - (int)TileX(to_tile);
+
+			if (to_coord_delta < min_coord_delta && from_coord_delta < min_coord_delta) continue;
+			if (to_coord_delta > max_coord_delta && from_coord_delta > max_coord_delta) continue;
+
 			const Point from_pt = RemapCoords2(TileX(from_tile) * TILE_SIZE + TILE_SIZE / 2, TileY(from_tile) * TILE_SIZE + TILE_SIZE / 2);
 			const int from_x = UnScaleByZoom(from_pt.x, vp->zoom);
 			const int from_y = UnScaleByZoom(from_pt.y, vp->zoom);
 
-			const TileIndex to_tile = _current_plan->temp_line->tiles[i];
 			const Point to_pt = RemapCoords2(TileX(to_tile) * TILE_SIZE + TILE_SIZE / 2, TileY(to_tile) * TILE_SIZE + TILE_SIZE / 2);
 			const int to_x = UnScaleByZoom(to_pt.x, vp->zoom);
 			const int to_y = UnScaleByZoom(to_pt.y, vp->zoom);
