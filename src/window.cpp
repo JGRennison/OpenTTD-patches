@@ -887,9 +887,9 @@ static void DispatchMouseWheelEvent(Window *w, NWidgetCore *nwid, int wheel)
  * @param top Top edge of the rectangle that should be repainted
  * @param right Right edge of the rectangle that should be repainted
  * @param bottom Bottom edge of the rectangle that should be repainted
- * @param gfx_dirty Whether to mark gfx dirty
+ * @param flags Whether to mark gfx dirty, etc.
  */
-void DrawOverlappedWindow(Window *w, int left, int top, int right, int bottom, bool gfx_dirty)
+void DrawOverlappedWindow(Window *w, int left, int top, int right, int bottom, DrawOverlappedWindowFlags flags)
 {
 	const Window *v;
 	FOR_ALL_WINDOWS_FROM_BACK_FROM(v, w->z_front) {
@@ -902,26 +902,26 @@ void DrawOverlappedWindow(Window *w, int left, int top, int right, int bottom, b
 			int x;
 
 			if (left < (x = v->left)) {
-				DrawOverlappedWindow(w, left, top, x, bottom, gfx_dirty);
-				DrawOverlappedWindow(w, x, top, right, bottom, gfx_dirty);
+				DrawOverlappedWindow(w, left, top, x, bottom, flags);
+				DrawOverlappedWindow(w, x, top, right, bottom, flags);
 				return;
 			}
 
 			if (right > (x = v->left + v->width)) {
-				DrawOverlappedWindow(w, left, top, x, bottom, gfx_dirty);
-				DrawOverlappedWindow(w, x, top, right, bottom, gfx_dirty);
+				DrawOverlappedWindow(w, left, top, x, bottom, flags);
+				DrawOverlappedWindow(w, x, top, right, bottom, flags);
 				return;
 			}
 
 			if (top < (x = v->top)) {
-				DrawOverlappedWindow(w, left, top, right, x, gfx_dirty);
-				DrawOverlappedWindow(w, left, x, right, bottom, gfx_dirty);
+				DrawOverlappedWindow(w, left, top, right, x, flags);
+				DrawOverlappedWindow(w, left, x, right, bottom, flags);
 				return;
 			}
 
 			if (bottom > (x = v->top + v->height)) {
-				DrawOverlappedWindow(w, left, top, right, x, gfx_dirty);
-				DrawOverlappedWindow(w, left, x, right, bottom, gfx_dirty);
+				DrawOverlappedWindow(w, left, top, right, x, flags);
+				DrawOverlappedWindow(w, left, x, right, bottom, flags);
 				return;
 			}
 
@@ -939,7 +939,11 @@ void DrawOverlappedWindow(Window *w, int left, int top, int right, int bottom, b
 	dp->dst_ptr = BlitterFactory::GetCurrentBlitter()->MoveTo(_screen.dst_ptr, left, top);
 	dp->zoom = ZOOM_LVL_NORMAL;
 	w->OnPaint();
-	if (gfx_dirty) {
+	if (unlikely(flags & DOWF_SHOW_DEBUG)) {
+		extern void ViewportDrawDirtyBlocks();
+		ViewportDrawDirtyBlocks();
+	}
+	if (flags & DOWF_MARK_DIRTY) {
 		VideoDriver::GetInstance()->MakeDirty(left, top, right - left, bottom - top);
 		UnsetDirtyBlocks(left, top, right, bottom);
 	}
@@ -968,7 +972,7 @@ void DrawOverlappedWindowForAll(int left, int top, int right, int bottom)
 				left < w->left + w->width &&
 				top < w->top + w->height) {
 			/* Window w intersects with the rectangle => needs repaint */
-			DrawOverlappedWindow(w, max(left, w->left), max(top, w->top), min(right, w->left + w->width), min(bottom, w->top + w->height), false);
+			DrawOverlappedWindow(w, max(left, w->left), max(top, w->top), min(right, w->left + w->width), min(bottom, w->top + w->height), DOWF_NONE);
 		}
 	}
 	_cur_dpi = old_dpi;

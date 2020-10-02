@@ -85,6 +85,13 @@ bool _gfx_draw_active = false;
 static std::vector<Rect> _dirty_blocks;
 static std::vector<Rect> _pending_dirty_blocks;
 
+enum GfxDebugFlags {
+	GDF_SHOW_WINDOW_DIRTY,
+	GDF_SHOW_WIDGET_DIRTY,
+	GDF_SHOW_RECT_DIRTY,
+};
+uint32 _gfx_debug_flags;
+
 /**
  * Applies a certain FillRectMode-operation to a rectangle [left, right] x [top, bottom] on the screen.
  *
@@ -1555,7 +1562,7 @@ void DrawDirtyBlocks()
 		DrawPixelInfo bk;
 		_cur_dpi = &bk;
 
-		extern void DrawOverlappedWindow(Window *w, int left, int top, int right, int bottom, bool gfx_dirty);
+		extern void DrawOverlappedWindow(Window *w, int left, int top, int right, int bottom, DrawOverlappedWindowFlags flags);
 
 		Window *w;
 		FOR_ALL_WINDOWS_FROM_BACK(w) {
@@ -1566,14 +1573,24 @@ void DrawDirtyBlocks()
 
 			if (w->flags & WF_DIRTY) {
 				clear_overlays();
-				DrawOverlappedWindow(w, max(0, w->left), max(0, w->top), min(_screen.width, w->left + w->width), min(_screen.height, w->top + w->height), true);
+				DrawOverlappedWindowFlags flags = DOWF_MARK_DIRTY;
+				if (unlikely(HasBit(_gfx_debug_flags, GDF_SHOW_WINDOW_DIRTY))) {
+					flags |= DOWF_SHOW_DEBUG;
+					_dirty_block_colour++;
+				}
+				DrawOverlappedWindow(w, max(0, w->left), max(0, w->top), min(_screen.width, w->left + w->width), min(_screen.height, w->top + w->height), flags);
 				w->flags &= ~(WF_DIRTY | WF_WIDGETS_DIRTY);
 			} else if (w->flags & WF_WIDGETS_DIRTY) {
 				if (w->nested_root != nullptr) {
 					clear_overlays();
 					w->nested_root->FillDirtyWidgets(dirty_widgets);
 					for (NWidgetBase *widget : dirty_widgets) {
-						DrawOverlappedWindow(w, max(0, w->left + widget->pos_x), max(0, w->top + widget->pos_y), min(_screen.width, w->left + widget->pos_x + widget->current_x), min(_screen.height, w->top + widget->pos_y + widget->current_y), true);
+						DrawOverlappedWindowFlags flags = DOWF_MARK_DIRTY;
+						if (unlikely(HasBit(_gfx_debug_flags, GDF_SHOW_WIDGET_DIRTY))) {
+							flags |= DOWF_SHOW_DEBUG;
+							_dirty_block_colour++;
+						}
+						DrawOverlappedWindow(w, max(0, w->left + widget->pos_x), max(0, w->top + widget->pos_y), min(_screen.width, w->left + widget->pos_x + widget->current_x), min(_screen.height, w->top + widget->pos_y + widget->current_y), flags);
 					}
 					dirty_widgets.clear();
 				}
@@ -1698,6 +1715,11 @@ void DrawDirtyBlocks()
 
 		for (const Rect &r : _dirty_blocks) {
 			RedrawScreenRect(r.left, r.top, r.right, r.bottom);
+		}
+		if (unlikely(HasBit(_gfx_debug_flags, GDF_SHOW_RECT_DIRTY))) {
+			for (const Rect &r : _dirty_blocks) {
+				GfxFillRect(r.left, r.top, r.right, r.bottom, _string_colourmap[++_dirty_block_colour & 0xF], FILLRECT_CHECKER);
+			}
 		}
 	}
 

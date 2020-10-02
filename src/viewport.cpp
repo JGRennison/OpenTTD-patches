@@ -2091,7 +2091,7 @@ void ViewportMapBuildTunnelCache()
 /**
  * Draw/colour the blocks that have been redrawn.
  */
-static void ViewportDrawDirtyBlocks()
+void ViewportDrawDirtyBlocks()
 {
 	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 	const DrawPixelInfo *dpi = _cur_dpi;

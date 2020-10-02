@@ -2390,6 +2390,23 @@ DEF_CONSOLE_CMD(ConViewportMarkStationOverlayDirty)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConGfxDebug)
+{
+	if (argc < 1 || argc > 2) {
+		IConsoleHelp("Debug: gfx flags.  Usage: 'gfx_debug [<flags>]'");
+		return true;
+	}
+
+	extern uint32 _gfx_debug_flags;
+	if (argc == 1) {
+		IConsolePrintF(CC_DEFAULT, "Gfx debug flags: %X", _gfx_debug_flags);
+	} else {
+		_gfx_debug_flags = strtoul(argv[1], nullptr, 16);
+	}
+
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConCSleep)
 {
 	if (argc != 2) {
@@ -2806,6 +2823,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("viewport_debug", ConViewportDebug, nullptr, true);
 	IConsoleCmdRegister("viewport_mark_dirty", ConViewportMarkDirty, nullptr, true);
 	IConsoleCmdRegister("viewport_mark_dirty_st_overlay", ConViewportMarkStationOverlayDirty, nullptr, true);
+	IConsoleCmdRegister("gfx_debug", ConGfxDebug, nullptr, true);
 	IConsoleCmdRegister("csleep", ConCSleep, nullptr, true);
 
 	/* NewGRF development stuff */
