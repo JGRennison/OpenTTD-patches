@@ -3703,36 +3703,41 @@ void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile, Viewp
 	const Point from_pt = RemapCoords2(TileX(from_tile) * TILE_SIZE + TILE_SIZE / 2, TileY(from_tile) * TILE_SIZE + TILE_SIZE / 2);
 	const Point to_pt = RemapCoords2(TileX(to_tile) * TILE_SIZE + TILE_SIZE / 2, TileY(to_tile) * TILE_SIZE + TILE_SIZE / 2);
 
-	const int block_radius = 20;
+	for (Viewport * const vp : _viewport_window_cache) {
+		if (flags & VMDF_NOT_MAP_MODE && vp->zoom >= ZOOM_LVL_DRAW_MAP) continue;
 
-	int x1 = from_pt.x / block_radius;
-	int y1 = from_pt.y / block_radius;
-	const int x2 = to_pt.x / block_radius;
-	const int y2 = to_pt.y / block_radius;
+		const int block_shift = 2 + vp->zoom;
 
-	/* http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm#Simplification */
-	const int dx = abs(x2 - x1);
-	const int dy = abs(y2 - y1);
-	const int sx = (x1 < x2) ? 1 : -1;
-	const int sy = (y1 < y2) ? 1 : -1;
-	int err = dx - dy;
-	for (;;) {
-		MarkAllViewportsDirty(
-				(x1 - 1) * block_radius,
-				(y1 - 1) * block_radius,
-				(x1 + 1) * block_radius,
-				(y1 + 1) * block_radius,
-				flags
-		);
-		if (x1 == x2 && y1 == y2) break;
-		const int e2 = 2 * err;
-		if (e2 > -dy) {
-			err -= dy;
-			x1 += sx;
-		}
-		if (e2 < dx) {
-			err += dx;
-			y1 += sy;
+		int x1 = from_pt.x >> block_shift;
+		int y1 = from_pt.y >> block_shift;
+		const int x2 = to_pt.x >> block_shift;
+		const int y2 = to_pt.y >> block_shift;
+
+		/* http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm#Simplification */
+		const int dx = abs(x2 - x1);
+		const int dy = abs(y2 - y1);
+		const int sx = (x1 < x2) ? 1 : -1;
+		const int sy = (y1 < y2) ? 1 : -1;
+		int err = dx - dy;
+		for (;;) {
+			MarkViewportDirty(
+					vp,
+					(x1 - 1) << block_shift,
+					(y1 - 1) << block_shift,
+					(x1 + 2) << block_shift,
+					(y1 + 2) << block_shift,
+					flags
+			);
+			if (x1 == x2 && y1 == y2) break;
+			const int e2 = 2 * err;
+			if (e2 > -dy) {
+				err -= dy;
+				x1 += sx;
+			}
+			if (e2 < dx) {
+				err += dx;
+				y1 += sy;
+			}
 		}
 	}
 }
