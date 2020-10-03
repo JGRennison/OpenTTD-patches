@@ -2378,8 +2378,7 @@ CommandCost CmdReverseTrainDirection(TileIndex tile, DoCommandFlag flags, uint32
 			SetWindowDirty(WC_VEHICLE_DEPOT, front->tile);
 			SetWindowDirty(WC_VEHICLE_DETAILS, front->index);
 			SetWindowDirty(WC_VEHICLE_VIEW, front->index);
-			SetWindowClassesDirty(WC_TRAINS_LIST);
-			SetWindowClassesDirty(WC_TRACE_RESTRICT_SLOTS);
+			DirtyVehicleListWindowForVehicle(front);
 		}
 	} else {
 		/* turn the whole train around */
@@ -2609,8 +2608,6 @@ static bool CheckTrainStayInDepot(Train *v)
 	if (v->force_proceed == TFP_NONE) {
 		/* force proceed was not pressed */
 		if (++v->wait_counter < 37) {
-			SetWindowClassesDirty(WC_TRAINS_LIST);
-			SetWindowClassesDirty(WC_TRACE_RESTRICT_SLOTS);
 			return true;
 		}
 
@@ -2619,8 +2616,6 @@ static bool CheckTrainStayInDepot(Train *v)
 		seg_state = _settings_game.pf.reserve_paths ? SIGSEG_PBS : UpdateSignalsOnSegment(v->tile, INVALID_DIAGDIR, v->owner);
 		if (seg_state == SIGSEG_FULL || HasDepotReservation(v->tile)) {
 			/* Full and no PBS signal in block or depot reserved, can't exit. */
-			SetWindowClassesDirty(WC_TRAINS_LIST);
-			SetWindowClassesDirty(WC_TRACE_RESTRICT_SLOTS);
 			return true;
 		}
 	} else {
@@ -2684,8 +2679,6 @@ static bool CheckTrainStayInDepot(Train *v)
 	/* Only leave when we can reserve a path to our destination. */
 	if (seg_state == SIGSEG_PBS && !TryPathReserve(v) && v->force_proceed == TFP_NONE) {
 		/* No path and no force proceed. */
-		SetWindowClassesDirty(WC_TRAINS_LIST);
-		SetWindowClassesDirty(WC_TRACE_RESTRICT_SLOTS);
 		MarkTrainAsStuck(v);
 		return true;
 	}
@@ -2694,8 +2687,7 @@ static bool CheckTrainStayInDepot(Train *v)
 	if (_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(v->tile, VMDF_NOT_MAP_MODE);
 
 	VehicleServiceInDepot(v);
-	SetWindowClassesDirty(WC_TRAINS_LIST);
-	SetWindowClassesDirty(WC_TRACE_RESTRICT_SLOTS);
+	DirtyVehicleListWindowForVehicle(v);
 	v->PlayLeaveStationSound();
 
 	v->track = TRACK_BIT_X;
@@ -5244,8 +5236,7 @@ void Train::OnNewDay()
 			SubtractMoneyFromCompanyFract(this->owner, cost);
 
 			SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
-			SetWindowClassesDirty(WC_TRAINS_LIST);
-			SetWindowClassesDirty(WC_TRACE_RESTRICT_SLOTS);
+			DirtyVehicleListWindowForVehicle(this);
 		}
 	}
 	if (IsEngine() || IsMultiheaded()) {

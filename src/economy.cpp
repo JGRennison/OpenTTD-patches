@@ -2158,7 +2158,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 	}
 
 	if (dirty_vehicle) {
-		SetWindowDirty(GetWindowClassForVehicleType(front->type), front->owner);
+		DirtyVehicleListWindowForVehicle(front);
 		SetWindowDirty(WC_VEHICLE_DETAILS, front->index);
 		front->MarkDirty();
 	}

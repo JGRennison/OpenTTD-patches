@@ -169,8 +169,6 @@ public:
 			virtual_train = nullptr;
 		}
 
-		SetWindowClassesDirty(WC_TRAINS_LIST);
-
 		/* more cleanup */
 		*create_window_open = false;
 		DeleteWindowById(WC_BUILD_VIRTUAL_TRAIN, this->window_number);

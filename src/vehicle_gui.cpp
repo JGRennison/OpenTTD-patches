@@ -2287,6 +2287,24 @@ void ShowVehicleListWindow(CompanyID company, VehicleType vehicle_type, TileInde
 	ShowVehicleListWindowLocal(company, VL_DEPOT_LIST, vehicle_type, depot_airport_index);
 }
 
+void DirtyVehicleListWindowForVehicle(const Vehicle *v)
+{
+	WindowClass cls = static_cast<WindowClass>(WC_TRAINS_LIST + v->type);
+	WindowClass cls2 = (v->type == VEH_TRAIN) ? WC_TRACE_RESTRICT_SLOTS : cls;
+	Window *w;
+	FOR_ALL_WINDOWS_FROM_BACK(w) {
+		if (w->window_class == cls || w->window_class == cls2) {
+			BaseVehicleListWindow *listwin = static_cast<BaseVehicleListWindow *>(w);
+			uint max = min(listwin->vscroll->GetPosition() + listwin->vscroll->GetCapacity(), (uint)listwin->vehicles.size());
+			for (uint i = listwin->vscroll->GetPosition(); i < max; ++i) {
+				if (v == listwin->vehicles[i]) {
+					listwin->SetWidgetDirty(0);
+					break;
+				}
+			}
+		}
+	}
+}
 
 /* Unified vehicle GUI - Vehicle Details Window */
 

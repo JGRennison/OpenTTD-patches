@@ -1833,7 +1833,7 @@ void RoadVehicle::OnNewDay()
 	SubtractMoneyFromCompanyFract(this->owner, cost);
 
 	SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
-	SetWindowClassesDirty(WC_ROADVEH_LIST);
+	DirtyVehicleListWindowForVehicle(this);
 }
 
 Trackdir RoadVehicle::GetVehicleTrackdir() const

@@ -22,6 +22,7 @@
 #include "window_func.h"
 #include "date_func.h"
 #include "vehicle_func.h"
+#include "vehicle_gui.h"
 #include "sound_func.h"
 #include "cheat_type.h"
 #include "company_base.h"
@@ -471,7 +472,7 @@ void Aircraft::OnNewDay()
 	SubtractMoneyFromCompanyFract(this->owner, cost);
 
 	SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
-	SetWindowClassesDirty(WC_AIRCRAFT_LIST);
+	DirtyVehicleListWindowForVehicle(this);
 }
 
 static void HelicopterTickHandler(Aircraft *v)
@@ -1514,7 +1515,7 @@ void AircraftLeaveHangar(Aircraft *v, Direction exit_dir)
 	VehicleServiceInDepot(v);
 	SetAircraftPosition(v, v->x_pos, v->y_pos, v->z_pos);
 	InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
-	SetWindowClassesDirty(WC_AIRCRAFT_LIST);
+	DirtyVehicleListWindowForVehicle(v);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

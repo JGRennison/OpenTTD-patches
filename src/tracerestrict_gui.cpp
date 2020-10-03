@@ -2972,6 +2972,7 @@ void ShowTraceRestrictProgramWindow(TileIndex tile, Track track)
 
 /** Slot GUI widget IDs */
 enum TraceRestrictSlotWindowWidgets {
+	WID_TRSL_LIST_VEHICLE, // this must be first, see: DirtyVehicleListWindowForVehicle
 	WID_TRSL_CAPTION,
 	WID_TRSL_ALL_VEHICLES,
 	WID_TRSL_LIST_SLOTS,
@@ -2984,7 +2985,6 @@ enum TraceRestrictSlotWindowWidgets {
 	WID_TRSL_SORT_BY_DROPDOWN,
 	WID_TRSL_FILTER_BY_CARGO,
 	WID_TRSL_FILTER_BY_CARGO_SEL,
-	WID_TRSL_LIST_VEHICLE,
 	WID_TRSL_LIST_VEHICLE_SCROLLBAR,
 };
 

@@ -1464,8 +1464,7 @@ CommandCost CmdSkipToOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	}
 
 	/* We have an aircraft/ship, they have a mini-schedule, so update them all */
-	if (v->type == VEH_AIRCRAFT) SetWindowClassesDirty(WC_AIRCRAFT_LIST);
-	if (v->type == VEH_SHIP) SetWindowClassesDirty(WC_SHIPS_LIST);
+	if (v->type == VEH_AIRCRAFT || v->type == VEH_SHIP) DirtyVehicleListWindowForVehicle(v);
 
 	return CommandCost();
 }
@@ -2958,7 +2957,7 @@ bool ProcessOrders(Vehicle *v)
 
 		case VEH_AIRCRAFT:
 		case VEH_SHIP:
-			SetWindowClassesDirty(GetWindowClassForVehicleType(v->type));
+			DirtyVehicleListWindowForVehicle(v);
 			break;
 	}
 

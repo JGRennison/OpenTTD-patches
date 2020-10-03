@@ -157,6 +157,10 @@ private:
 
 	Dimension column_size[VGC_END]; ///< Size of the columns in the group list.
 
+	Money money_this_year;
+	Money money_last_year;
+	uint32 occupancy_ratio;
+
 	/** return true if group has children */
 	void AddChildren(GUIGroupList *source, GroupID parent, int indent)
 	{
@@ -377,6 +381,31 @@ private:
 		this->SetDirty();
 	}
 
+	bool RecalculateInfoTotals()
+	{
+		Money this_year = 0;
+		Money last_year = 0;
+		uint32 occupancy = 0;
+		size_t vehicle_count = this->vehicles.size();
+
+		for (uint i = 0; i < vehicle_count; i++) {
+			const Vehicle *v = this->vehicles[i];
+			assert(v->owner == this->owner);
+
+			this_year += v->GetDisplayProfitThisYear();
+			last_year += v->GetDisplayProfitLastYear();
+			occupancy += v->trip_occupancy;
+		}
+
+		uint32 occupancy_ratio = occupancy / vehicle_count;
+
+		bool ret = (this->money_this_year != this_year) || (this->money_last_year != last_year) || (occupancy_ratio != this->occupancy_ratio);
+		this->money_this_year = this_year;
+		this->money_last_year = last_year;
+		this->occupancy_ratio = occupancy_ratio;
+		return ret;
+	}
+
 public:
 	VehicleGroupWindow(WindowDesc *desc, WindowNumber window_number) : BaseVehicleListWindow(desc, window_number)
 	{
@@ -411,6 +440,8 @@ public:
 		this->groups.NeedResort();
 		this->BuildGroupList(vli.company);
 		this->group_sb->SetCount((uint)this->groups.size());
+
+		this->RecalculateInfoTotals();
 
 		this->GetWidget<NWidgetCore>(WID_GL_CAPTION)->widget_data = STR_VEHICLE_LIST_TRAIN_CAPTION + this->vli.vtype;
 		this->GetWidget<NWidgetCore>(WID_GL_LIST_VEHICLE)->tool_tip = STR_VEHICLE_LIST_TRAIN_LIST_TOOLTIP + this->vli.vtype;
@@ -556,6 +587,7 @@ public:
 	{
 		/* If we select the all vehicles, this->list will contain all vehicles of the owner
 		 * else this->list will contain all vehicles which belong to the selected group */
+		if (this->vehicles.NeedRebuild()) this->RecalculateInfoTotals();
 		this->BuildVehicleList();
 		this->SortVehicleList();
 
@@ -621,37 +653,23 @@ public:
 				break;
 
 			case WID_GL_INFO: {
-				Money this_year = 0;
-				Money last_year = 0;
-				uint32 occupancy = 0;
-				size_t vehicle_count = this->vehicles.size();
-
-				for (uint i = 0; i < vehicle_count; i++) {
-					const Vehicle *v = this->vehicles[i];
-					assert(v->owner == this->owner);
-
-					this_year += v->GetDisplayProfitThisYear();
-					last_year += v->GetDisplayProfitLastYear();
-					occupancy += v->trip_occupancy;
-				}
-
 				const int left  = r.left + WD_FRAMERECT_LEFT + 8;
 				const int right = r.right - WD_FRAMERECT_RIGHT - 8;
 
 				int y = r.top + WD_FRAMERECT_TOP;
 				DrawString(left, right, y, STR_GROUP_PROFIT_THIS_YEAR, TC_BLACK);
-				SetDParam(0, this_year);
+				SetDParam(0, this->money_this_year);
 				DrawString(left, right, y, STR_JUST_CURRENCY_LONG, TC_BLACK, SA_RIGHT);
 
 				y += FONT_HEIGHT_NORMAL;
 				DrawString(left, right, y, STR_GROUP_PROFIT_LAST_YEAR, TC_BLACK);
-				SetDParam(0, last_year);
+				SetDParam(0, this->money_last_year);
 				DrawString(left, right, y, STR_JUST_CURRENCY_LONG, TC_BLACK, SA_RIGHT);
 
 				y += FONT_HEIGHT_NORMAL;
 				DrawString(left, right, y, STR_GROUP_OCCUPANCY, TC_BLACK);
-				if (vehicle_count > 0) {
-					SetDParam(0, occupancy / vehicle_count);
+				if (this->vehicles.size() > 0) {
+					SetDParam(0, this->occupancy_ratio);
 					DrawString(left, right, y, STR_GROUP_OCCUPANCY_VALUE, TC_BLACK, SA_RIGHT);
 				}
 
@@ -1024,7 +1042,10 @@ public:
 	void OnGameTick() override
 	{
 		if (this->groups.NeedResort() || this->vehicles.NeedResort()) {
-			this->SetDirty();
+			this->SetWidgetDirty(WID_GL_LIST_VEHICLE);
+		}
+		if (this->RecalculateInfoTotals()) {
+			this->SetWidgetDirty(WID_GL_INFO);
 		}
 	}
 

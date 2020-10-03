@@ -2172,8 +2172,6 @@ void VehicleEnterDepot(Vehicle *v)
 	switch (v->type) {
 		case VEH_TRAIN: {
 			Train *t = Train::From(v);
-			SetWindowClassesDirty(WC_TRAINS_LIST);
-			SetWindowClassesDirty(WC_TRACE_RESTRICT_SLOTS);
 			/* Clear path reservation */
 			SetDepotReservation(t->tile, false);
 			if (_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(t->tile, VMDF_NOT_MAP_MODE);
@@ -2188,11 +2186,9 @@ void VehicleEnterDepot(Vehicle *v)
 		}
 
 		case VEH_ROAD:
-			SetWindowClassesDirty(WC_ROADVEH_LIST);
 			break;
 
 		case VEH_SHIP: {
-			SetWindowClassesDirty(WC_SHIPS_LIST);
 			Ship *ship = Ship::From(v);
 			ship->state = TRACK_BIT_DEPOT;
 			ship->UpdateCache();
@@ -2202,12 +2198,12 @@ void VehicleEnterDepot(Vehicle *v)
 		}
 
 		case VEH_AIRCRAFT:
-			SetWindowClassesDirty(WC_AIRCRAFT_LIST);
 			HandleAircraftEnterHangar(Aircraft::From(v));
 			break;
 		default: NOT_REACHED();
 	}
 	SetWindowDirty(WC_VEHICLE_VIEW, v->index);
+	DirtyVehicleListWindowForVehicle(v);
 
 	if (v->type != VEH_TRAIN) {
 		/* Trains update the vehicle list when the first unit enters the depot and calls VehicleEnterDepot() when the last unit enters.
@@ -2935,7 +2931,7 @@ void Vehicle::BeginLoading()
 		PrepareUnload(this);
 	}
 
-	SetWindowDirty(GetWindowClassForVehicleType(this->type), this->owner);
+	DirtyVehicleListWindowForVehicle(this);
 	SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
 	SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
 	SetWindowDirty(WC_STATION_VIEW, this->last_station_visited);
