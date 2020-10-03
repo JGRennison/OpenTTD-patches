@@ -328,6 +328,7 @@ enum ViewportDebugFlags {
 	VDF_DIRTY_BLOCK_PER_SPLIT,
 	VDF_DISABLE_DRAW_SPLIT,
 	VDF_SHOW_NO_LANDSCAPE_MAP_DRAW,
+	VDF_DISABLE_LANDSCAPE_CACHE,
 };
 uint32 _viewport_debug_flags;
 
@@ -356,6 +357,11 @@ void ClearViewportCaches()
 {
 	for (Viewport *vp : _viewport_window_cache) {
 		ClearViewportCache(vp);
+	}
+	if (unlikely(HasBit(_viewport_debug_flags, VDF_DISABLE_LANDSCAPE_CACHE))) {
+		for (Viewport *vp : _viewport_window_cache) {
+			ClearViewportLandPixelCache(vp);
+		}
 	}
 }
 
