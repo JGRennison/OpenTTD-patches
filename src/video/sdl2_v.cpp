@@ -373,7 +373,18 @@ static void DrawSurfaceToScreen()
 
 	_num_dirty_rects = 0;
 
-	if (n > MAX_DIRTY_RECTS) {
+	bool update_whole_screen = n > MAX_DIRTY_RECTS;
+
+	if (!update_whole_screen) {
+		int area = 0;
+		for (int i = 0; i < n; i++) {
+			area += _dirty_rects[i].w * _dirty_rects[i].h;
+		}
+		// Rectangles cover more than 80% of screen area, just do the whole screen
+		if ((area * 5) / 4 >= _sdl_surface->w * _sdl_surface->h) update_whole_screen = true;
+	}
+
+	if (update_whole_screen) {
 		if (_sdl_surface != _sdl_realscreen) {
 			SDL_BlitSurface(_sdl_surface, nullptr, _sdl_realscreen, nullptr);
 		}
