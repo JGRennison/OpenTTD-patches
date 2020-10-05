@@ -396,8 +396,17 @@ static void DrawSurfaceToScreen()
 				SDL_BlitSurface(_sdl_surface, &_dirty_rects[i], _sdl_realscreen, &_dirty_rects[i]);
 			}
 		}
+		SDL_Rect update_rect = { _sdl_surface->w, _sdl_surface->h, 0, 0 };
+		for (int i = 0; i < n; i++) {
+			if (_dirty_rects[i].x < update_rect.x) update_rect.x = _dirty_rects[i].x;
+			if (_dirty_rects[i].y < update_rect.y) update_rect.y = _dirty_rects[i].y;
+			if (_dirty_rects[i].x + _dirty_rects[i].w > update_rect.w) update_rect.w = _dirty_rects[i].x + _dirty_rects[i].w;
+			if (_dirty_rects[i].y + _dirty_rects[i].h > update_rect.h) update_rect.h = _dirty_rects[i].y + _dirty_rects[i].h;
+		}
+		update_rect.w -= update_rect.x;
+		update_rect.h -= update_rect.y;
 
-		SDL_UpdateWindowSurfaceRects(_sdl_window, _dirty_rects, n);
+		SDL_UpdateWindowSurfaceRects(_sdl_window, &update_rect, 1);
 	}
 }
 
