@@ -1619,25 +1619,27 @@ void ViewportMapDrawVehicles(DrawPixelInfo *dpi, Viewport *vp)
 
 	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 	for (int y = vhb.yl;; y = (y + (1 << 6)) & (0x3F << 6)) {
-		for (int x = vhb.xl;; x = (x + 1) & 0x3F) {
-			if (!HasBit(vp->map_draw_vehicles_cache.done_hash_bits[y >> 6], x)) {
-				SetBit(vp->map_draw_vehicles_cache.done_hash_bits[y >> 6], x);
-				const Vehicle *v = _vehicle_viewport_hash[x + y]; // already masked & 0xFFF
+		if (vp->map_draw_vehicles_cache.done_hash_bits[y >> 6] != UINT64_MAX) {
+			for (int x = vhb.xl;; x = (x + 1) & 0x3F) {
+				if (!HasBit(vp->map_draw_vehicles_cache.done_hash_bits[y >> 6], x)) {
+					SetBit(vp->map_draw_vehicles_cache.done_hash_bits[y >> 6], x);
+					const Vehicle *v = _vehicle_viewport_hash[x + y]; // already masked & 0xFFF
 
-				while (v != nullptr) {
-					if (!(v->vehstatus & (VS_HIDDEN | VS_UNCLICKABLE)) && (v->type != VEH_EFFECT)) {
-						Point pt = RemapCoords(v->x_pos, v->y_pos, v->z_pos);
-						if (pt.x >= l && pt.x < r && pt.y >= t && pt.y < b) {
-							const int pixel_x = UnScaleByZoomLower(pt.x - l, dpi->zoom);
-							const int pixel_y = UnScaleByZoomLower(pt.y - t, dpi->zoom);
-							vp->map_draw_vehicles_cache.vehicle_pixels[pixel_x + (pixel_y) * vp->width] = true;
+					while (v != nullptr) {
+						if (!(v->vehstatus & (VS_HIDDEN | VS_UNCLICKABLE)) && (v->type != VEH_EFFECT)) {
+							Point pt = RemapCoords(v->x_pos, v->y_pos, v->z_pos);
+							if (pt.x >= l && pt.x < r && pt.y >= t && pt.y < b) {
+								const int pixel_x = UnScaleByZoomLower(pt.x - l, dpi->zoom);
+								const int pixel_y = UnScaleByZoomLower(pt.y - t, dpi->zoom);
+								vp->map_draw_vehicles_cache.vehicle_pixels[pixel_x + (pixel_y) * vp->width] = true;
+							}
 						}
+						v = v->hash_viewport_next;
 					}
-					v = v->hash_viewport_next;
 				}
-			}
 
-			if (x == vhb.xu) break;
+				if (x == vhb.xu) break;
+			}
 		}
 
 		if (y == vhb.yu) break;
