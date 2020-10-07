@@ -390,7 +390,7 @@ private:
 
 		for (uint i = 0; i < vehicle_count; i++) {
 			const Vehicle *v = this->vehicles[i];
-			assert(v->owner == this->owner);
+			assert(v->owner == this->vli.company);
 
 			this_year += v->GetDisplayProfitThisYear();
 			last_year += v->GetDisplayProfitLastYear();
