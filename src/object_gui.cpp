@@ -340,6 +340,11 @@ public:
 
 		if (_selected_object_index != -1) {
 			SetObjectToPlaceWnd(SPR_CURSOR_TRANSMITTER, PAL_NONE, HT_RECT | HT_DIAGONAL, this);
+		} else {
+			if (_thd.window_class == this->window_class &&
+					_thd.window_number == this->window_number) {
+				ResetObjectToPlace();
+			}
 		}
 
 		this->UpdateButtons(_selected_object_class, _selected_object_index, _selected_object_view);
@@ -416,6 +421,7 @@ public:
 	void OnPlaceObject(Point pt, TileIndex tile) override
 	{
 		const ObjectSpec *spec = ObjectClass::Get(_selected_object_class)->GetSpec(_selected_object_index);
+		if (spec == nullptr) return;
 		if (_settings_game.construction.build_object_area_permitted && spec->size == 0x11) {
 			VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_BUILD_OBJECT);
 		} else {
