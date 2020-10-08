@@ -228,7 +228,7 @@ public:
 
 		this->groups.ForceRebuild();
 		this->groups.NeedResort();
-		this->BuildGroupList(_local_company);
+		this->BuildGroupList();
 
 		this->matrixContentLeftMargin = 40;
 		this->selected_template_index = -1;
@@ -240,7 +240,8 @@ public:
 
 		this->templates.ForceRebuild();
 
-		BuildTemplateGuiList(&this->templates, this->vscroll[1], this->owner, this->sel_railtype);
+		this->templates.ForceRebuild();
+		this->BuildTemplateGuiList();
 	}
 
 	~TemplateReplaceWindow() {
@@ -306,9 +307,8 @@ public:
 
 	virtual void OnPaint()
 	{
-		BuildTemplateGuiList(&this->templates, this->vscroll[1], this->owner, this->sel_railtype);
-
-		this->BuildGroupList(_local_company);
+		this->BuildGroupList();
+		this->BuildTemplateGuiList();
 
 		/* sets the colour of that art thing */
 		this->GetWidget<NWidgetCore>(TRW_WIDGET_TRAIN_FLUFF_LEFT)->colour  = _company_colours[_local_company];
@@ -351,6 +351,9 @@ public:
 	virtual void OnClick(Point pt, int widget, int click_count)
 	{
 		if (this->editInProgress) return;
+
+		this->BuildGroupList();
+		this->BuildTemplateGuiList();
 
 		switch (widget) {
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REUSE: {
@@ -420,7 +423,7 @@ public:
 					bool succeeded = DoCommandP(0, template_index, 0, CMD_DELETE_TEMPLATE_VEHICLE, nullptr);
 
 					if (succeeded) {
-						BuildTemplateGuiList(&this->templates, this->vscroll[1], this->owner, this->sel_railtype);
+						this->templates.ForceRebuild();
 						selected_template_index = -1;
 					}
 				}
@@ -479,7 +482,7 @@ public:
 
 		if (!succeeded)	return false;
 
-		BuildTemplateGuiList(&this->templates, vscroll[1], _local_company, this->sel_railtype);
+		this->templates.ForceRebuild();
 		this->ToggleWidgetLoweredState(TRW_WIDGET_TMPL_BUTTONS_CLONE);
 		ResetObjectToPlace();
 		this->SetDirty();
@@ -500,7 +503,7 @@ public:
 		/* Reset scrollbar positions */
 		this->vscroll[0]->SetPosition(0);
 		this->vscroll[1]->SetPosition(0);
-		BuildTemplateGuiList(&this->templates, this->vscroll[1], this->owner, this->sel_railtype);
+		this->templates.ForceRebuild();
 		this->SetDirty();
 	}
 
@@ -552,7 +555,7 @@ public:
 		}
 	}
 
-	void BuildGroupList(Owner owner)
+	void BuildGroupList()
 	{
 		if (!this->groups.NeedRebuild()) return;
 
@@ -562,7 +565,7 @@ public:
 		GUIGroupList list;
 
 		for (const Group *g : Group::Iterate()) {
-			if (g->owner == owner && g->vehicle_type == VEH_TRAIN) {
+			if (g->owner == this->owner && g->vehicle_type == VEH_TRAIN) {
 				list.push_back(g);
 			}
 		}
@@ -576,6 +579,13 @@ public:
 		this->groups.shrink_to_fit();
 		this->groups.RebuildDone();
 		this->vscroll[0]->SetCount(groups.size());
+	}
+
+	void BuildTemplateGuiList()
+	{
+		if (!this->templates.NeedRebuild()) return;
+
+		::BuildTemplateGuiList(&this->templates, this->vscroll[1], this->owner, this->sel_railtype);
 	}
 
 	void DrawAllGroupsFunction(const Rect &r) const
@@ -632,6 +642,8 @@ public:
 
 	void DrawTemplateList(const Rect &r) const
 	{
+		const_cast<TemplateReplaceWindow *>(this)->BuildTemplateGuiList();
+
 		int left = r.left;
 		int right = r.right;
 		int y = r.top;
@@ -780,6 +792,9 @@ public:
 
 	void UpdateButtonState()
 	{
+		this->BuildGroupList();
+		this->BuildTemplateGuiList();
+
 		bool selected_ok = (this->selected_template_index >= 0) && (this->selected_template_index < (short)this->templates.size());
 		bool group_ok = (this->selected_group_index >= 0) && (this->selected_group_index < (short)this->groups.size());
 
