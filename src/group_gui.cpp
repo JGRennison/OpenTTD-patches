@@ -397,7 +397,7 @@ private:
 			occupancy += v->trip_occupancy;
 		}
 
-		uint32 occupancy_ratio = occupancy / vehicle_count;
+		uint32 occupancy_ratio = vehicle_count ? occupancy / vehicle_count : 0;
 
 		bool ret = (this->money_this_year != this_year) || (this->money_last_year != last_year) || (occupancy_ratio != this->occupancy_ratio);
 		this->money_this_year = this_year;
