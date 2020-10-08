@@ -1109,7 +1109,12 @@ CommandCost CmdDeleteVirtualTrain(TileIndex tile, DoCommandFlag flags, uint32 p1
 		return CMD_ERROR;
 	}
 
+	vehicle = vehicle->First();
+
 	Train* train = Train::From(vehicle);
+	if (!train->IsVirtual()) {
+		return CMD_ERROR;
+	}
 
 	bool should_execute = (flags & DC_EXEC) != 0;
 
