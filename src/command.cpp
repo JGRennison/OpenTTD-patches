@@ -374,10 +374,10 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdFoundTown,                CMD_DEITY | CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_FOUND_TOWN; founding random town can fail only in exec run
 	DEF_CMD(CmdRenameTown,                CMD_DEITY | CMD_SERVER, CMDT_OTHER_MANAGEMENT      ), // CMD_RENAME_TOWN
 	DEF_CMD(CmdDoTownAction,                                   0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_DO_TOWN_ACTION
-	DEF_CMD(CmdTownCargoGoal,                          CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_TOWN_CARGO_GOAL
-	DEF_CMD(CmdTownGrowthRate,                         CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_TOWN_GROWTH_RATE
-	DEF_CMD(CmdTownRating,                             CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_TOWN_RATING
-	DEF_CMD(CmdTownSetText,             CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_TOWN_SET_TEXT
+	DEF_CMD(CmdTownCargoGoal,            CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_TOWN_CARGO_GOAL
+	DEF_CMD(CmdTownGrowthRate,           CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_TOWN_GROWTH_RATE
+	DEF_CMD(CmdTownRating,               CMD_LOG_AUX | CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_TOWN_RATING
+	DEF_CMD(CmdTownSetText,    CMD_LOG_AUX | CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT ), // CMD_TOWN_SET_TEXT
 	DEF_CMD(CmdExpandTown,                             CMD_DEITY, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_EXPAND_TOWN
 	DEF_CMD(CmdDeleteTown,                           CMD_OFFLINE, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_DELETE_TOWN
 
@@ -538,30 +538,37 @@ struct CommandLogEntry {
 			current_company(_current_company), local_company(_local_company), log_flags(log_flags) { }
 };
 
-static std::array<CommandLogEntry, 128> command_log;
-static unsigned int command_log_count = 0;
-static unsigned int command_log_next = 0;
+struct CommandLog {
+	std::array<CommandLogEntry, 128> log;
+	unsigned int count = 0;
+	unsigned int next = 0;
+
+	void Reset()
+	{
+		this->count = 0;
+		this->next = 0;
+	}
+};
+
+static CommandLog _command_log;
+static CommandLog _command_log_aux;
 
 void ClearCommandLog()
 {
-	command_log_count = 0;
-	command_log_next = 0;
+	_command_log.Reset();
+	_command_log_aux.Reset();
 }
 
-char *DumpCommandLog(char *buffer, const char *last)
+static void DumpSubCommandLog(char *&buffer, const char *last, const CommandLog &cmd_log, const unsigned int count)
 {
-	const unsigned int count = min<unsigned int>(command_log_count, command_log.size());
-	unsigned int log_index = command_log_next;
-
-	buffer += seprintf(buffer, last, "Command Log:\n Showing most recent %u of %u commands\n", count, command_log_count);
-
+	unsigned int log_index = cmd_log.next;
 	for (unsigned int i = 0 ; i < count; i++) {
 		if (log_index > 0) {
 			log_index--;
 		} else {
-			log_index = command_log.size() - 1;
+			log_index = cmd_log.log.size() - 1;
 		}
-		const CommandLogEntry &entry = command_log[log_index];
+		const CommandLogEntry &entry = cmd_log.log[log_index];
 
 		auto fc = [&](CommandLogEntryFlag flag, char c) -> char {
 			return entry.log_flags & flag ? c : '-';
@@ -575,6 +582,19 @@ char *DumpCommandLog(char *buffer, const char *last)
 				fc(CLEF_ESTIMATE_ONLY, 'e'), fc(CLEF_TEXT, 't'), fc(CLEF_GENERATING_WORLD, 'g'), fc(CLEF_CMD_FAILED, 'f'));
 		buffer += seprintf(buffer, last, " %7d x %7d, p1: 0x%08X, p2: 0x%08X, cc: %3u, lc: %3u, cmd: 0x%08X (%s)\n",
 				TileX(entry.tile), TileY(entry.tile), entry.p1, entry.p2, (uint) entry.current_company, (uint) entry.local_company, entry.cmd, GetCommandName(entry.cmd));
+	}
+}
+
+char *DumpCommandLog(char *buffer, const char *last)
+{
+	const unsigned int count = min<unsigned int>(_command_log.count, 128);
+	buffer += seprintf(buffer, last, "Command Log:\n Showing most recent %u of %u commands\n", count, _command_log.count);
+	DumpSubCommandLog(buffer, last, _command_log, count);
+
+	if (_command_log_aux.count > 0) {
+		const unsigned int aux_count = min<unsigned int>(_command_log_aux.count, 32);
+		buffer += seprintf(buffer, last, "\n Showing most recent %u of %u commands (aux log)\n", aux_count, _command_log_aux.count);
+		DumpSubCommandLog(buffer, last, _command_log_aux, aux_count);
 	}
 	return buffer;
 }
@@ -770,8 +790,10 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32
 	if (res.Failed()) log_flags |= CLEF_CMD_FAILED;
 	if (_generating_world) log_flags |= CLEF_GENERATING_WORLD;
 
-	if (_networking && command_log_count > 0) {
-		CommandLogEntry &current = command_log[(command_log_next - 1) % command_log.size()];
+	CommandLog &cmd_log = (GetCommandFlags(cmd) & CMD_LOG_AUX) ? _command_log_aux : _command_log;
+
+	if (_networking && cmd_log.count > 0) {
+		CommandLogEntry &current = cmd_log.log[(cmd_log.next - 1) % cmd_log.log.size()];
 		if (current.log_flags & CLEF_ONLY_SENDING && ((current.log_flags ^ log_flags) & ~(CLEF_SCRIPT | CLEF_MY_CMD)) == CLEF_ONLY_SENDING &&
 				current.tile == tile && current.p1 == p1 && current.p2 == p2 && ((current.cmd ^ cmd) & ~CMD_NETWORK_COMMAND) == 0 && current.date == _date &&
 				current.date_fract == _date_fract && current.tick_skip_counter == _tick_skip_counter &&
@@ -781,9 +803,9 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32
 			return;
 		}
 	}
-	command_log[command_log_next] = CommandLogEntry(tile, p1, p2, cmd, log_flags);
-	command_log_next = (command_log_next + 1) % command_log.size();
-	command_log_count++;
+	cmd_log.log[cmd_log.next] = CommandLogEntry(tile, p1, p2, cmd, log_flags);
+	cmd_log.next = (cmd_log.next + 1) % cmd_log.log.size();
+	cmd_log.count++;
 }
 
 /**
