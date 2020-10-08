@@ -1143,6 +1143,10 @@ CommandCost CmdReplaceTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint3
 
 	Train* train = Train::From(vehicle);
 
+	if (!TemplateVehicle::CanAllocateItem(CountVehiclesInChain(train))) {
+		return CMD_ERROR;
+	}
+
 	bool should_execute = (flags & DC_EXEC) != 0;
 
 	if (should_execute) {
@@ -1166,10 +1170,6 @@ CommandCost CmdReplaceTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint3
 		}
 
 		template_vehicle = TemplateVehicleFromVirtualTrain(train);
-
-		if (template_vehicle == nullptr) {
-			return CMD_ERROR;
-		}
 
 		if (restore_flags) {
 			template_vehicle->reuse_depot_vehicles = reuse_depot_vehicles;

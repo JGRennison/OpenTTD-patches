@@ -175,14 +175,7 @@ void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev
 // create a full TemplateVehicle based train according to a virtual train
 TemplateVehicle* TemplateVehicleFromVirtualTrain(Train *virt)
 {
-	if (!virt) return nullptr;
-
 	Train *init_virt = virt;
-
-	int len = CountVehiclesInChain(virt);
-	if (!TemplateVehicle::CanAllocateItem(len)) {
-		return nullptr;
-	}
 
 	TemplateVehicle *tmp;
 	TemplateVehicle *prev = nullptr;
