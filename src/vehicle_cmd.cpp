@@ -1091,7 +1091,7 @@ CommandCost CmdVirtualTrainFromTrain(TileIndex tile, DoCommandFlag flags, uint32
 }
 
 /**
- * Create a virtual train from a template vehicle.
+ * Delete a virtual train
  * @param tile unused
  * @param flags type of operation
  * @param p1 the vehicle's index
@@ -1108,6 +1108,8 @@ CommandCost CmdDeleteVirtualTrain(TileIndex tile, DoCommandFlag flags, uint32 p1
 	if (vehicle == nullptr || vehicle->type != VEH_TRAIN) {
 		return CMD_ERROR;
 	}
+	CommandCost ret = CheckOwnership(vehicle->owner);
+	if (ret.Failed()) return ret;
 
 	vehicle = vehicle->First();
 
@@ -1145,6 +1147,8 @@ CommandCost CmdReplaceTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	if (vehicle == nullptr || vehicle->type != VEH_TRAIN) {
 		return CMD_ERROR;
 	}
+	CommandCost ret = CheckOwnership(vehicle->owner);
+	if (ret.Failed()) return ret;
 
 	Train* train = Train::From(vehicle);
 
