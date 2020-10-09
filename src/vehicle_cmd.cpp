@@ -1150,8 +1150,12 @@ CommandCost CmdReplaceTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	CommandCost ret = CheckOwnership(vehicle->owner);
 	if (ret.Failed()) return ret;
 
-	Train* train = Train::From(vehicle);
+	vehicle = vehicle->First();
 
+	Train* train = Train::From(vehicle);
+	if (!train->IsVirtual()) {
+		return CMD_ERROR;
+	}
 	if (!TemplateVehicle::CanAllocateItem(CountVehiclesInChain(train))) {
 		return CMD_ERROR;
 	}
