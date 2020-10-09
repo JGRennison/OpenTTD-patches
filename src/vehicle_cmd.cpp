@@ -993,7 +993,7 @@ CommandCost CmdVirtualTrainFromTemplateVehicle(TileIndex tile, DoCommandFlag fla
 
 	if (should_execute) {
 		StringID err = INVALID_STRING_ID;
-		Train* train = VirtualTrainFromTemplateVehicle(tv, err);
+		Train* train = VirtualTrainFromTemplateVehicle(tv, err, p2);
 
 		if (train == nullptr) {
 			return_cmd_error(err);
@@ -1005,20 +1005,20 @@ CommandCost CmdVirtualTrainFromTemplateVehicle(TileIndex tile, DoCommandFlag fla
 
 CommandCost CmdDeleteVirtualTrain(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text);
 
-Train* VirtualTrainFromTemplateVehicle(TemplateVehicle* tv, StringID &err)
+Train* VirtualTrainFromTemplateVehicle(TemplateVehicle* tv, StringID &err, uint32 user)
 {
 	CommandCost c;
 	Train *tmp, *head, *tail;
 
 	assert(tv->owner == _current_company);
 
-	head = CmdBuildVirtualRailVehicle(tv->engine_type, err);
+	head = CmdBuildVirtualRailVehicle(tv->engine_type, err, user);
 	if (!head) return nullptr;
 
 	tail = head;
 	tv = tv->GetNextUnit();
 	while (tv) {
-		tmp = CmdBuildVirtualRailVehicle(tv->engine_type, err);
+		tmp = CmdBuildVirtualRailVehicle(tv->engine_type, err, user);
 		if (!tmp) {
 			CmdDeleteVirtualTrain(INVALID_TILE, DC_EXEC, head->index, 0, nullptr);
 			return nullptr;
@@ -1042,7 +1042,7 @@ Train* VirtualTrainFromTemplateVehicle(TemplateVehicle* tv, StringID &err)
  * @param tile unused
  * @param flags type of operation
  * @param p1 the train index
- * @param p2 unused
+ * @param p2 user
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -1064,13 +1064,13 @@ CommandCost CmdVirtualTrainFromTrain(TileIndex tile, DoCommandFlag flags, uint32
 		Train *tmp, *head, *tail;
 		StringID err = INVALID_STRING_ID;
 
-		head = CmdBuildVirtualRailVehicle(train->engine_type, err);
+		head = CmdBuildVirtualRailVehicle(train->engine_type, err, p2);
 		if (!head) return_cmd_error(err);
 
 		tail = head;
 		train = train->GetNextUnit();
 		while (train) {
-			tmp = CmdBuildVirtualRailVehicle(train->engine_type, err);
+			tmp = CmdBuildVirtualRailVehicle(train->engine_type, err, p2);
 			if (!tmp) {
 				CmdDeleteVirtualTrain(tile, flags, head->index, 0, nullptr);
 				return_cmd_error(err);

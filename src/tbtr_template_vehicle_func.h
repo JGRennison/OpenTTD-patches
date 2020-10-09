@@ -15,7 +15,7 @@
 
 #include "tbtr_template_vehicle.h"
 
-Train* VirtualTrainFromTemplateVehicle(TemplateVehicle* tv, StringID &err);
+Train* VirtualTrainFromTemplateVehicle(TemplateVehicle* tv, StringID &err, uint32 user);
 
 void BuildTemplateGuiList(GUITemplateList*, Scrollbar*, Owner, RailType);
 

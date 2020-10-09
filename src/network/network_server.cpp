@@ -230,6 +230,9 @@ ServerNetworkGameSocketHandler::~ServerNetworkGameSocketHandler()
 	if (_redirect_console_to_client == this->client_id) _redirect_console_to_client = INVALID_CLIENT_ID;
 	OrderBackup::ResetUser(this->client_id);
 
+	extern void RemoveVirtualTrainsOfUser(uint32 user);
+	RemoveVirtualTrainsOfUser(this->client_id);
+
 	if (this->savegame != nullptr) {
 		this->savegame->Destroy();
 		this->savegame = nullptr;

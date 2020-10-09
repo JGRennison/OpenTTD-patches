@@ -417,8 +417,7 @@ protected: // These functions should not be called outside acceleration code.
 CommandCost CmdMoveRailVehicle(TileIndex, DoCommandFlag , uint32, uint32, const char *);
 CommandCost CmdMoveVirtualRailVehicle(TileIndex, DoCommandFlag, uint32, uint32, const char*);
 
-Train* CmdBuildVirtualRailWagon(const Engine*);
-Train* CmdBuildVirtualRailVehicle(EngineID, StringID &error);
+Train* CmdBuildVirtualRailVehicle(EngineID, StringID &error, uint32 user);
 
 int GetTileMarginInFrontOfTrain(const Train *v, int x_pos, int y_pos);
 

@@ -1508,6 +1508,20 @@ void CallVehicleTicks()
 	_vehicles_to_pay_repair.clear();
 }
 
+void RemoveVirtualTrainsOfUser(uint32 user)
+{
+	if (!_tick_caches_valid || HasChickenBit(DCBF_VEH_TICK_CACHE)) RebuildVehicleTickCaches();
+
+	Backup<CompanyID> cur_company(_current_company, FILE_LINE);
+	for (const Train *front : _tick_train_front_cache) {
+		if (front->IsVirtual() && front->motion_counter == user) {
+			cur_company.Change(front->owner);
+			DoCommandP(0, front->index, 0, CMD_DELETE_VIRTUAL_TRAIN);
+		}
+	}
+	cur_company.Restore();
+}
+
 /**
  * Add vehicle sprite for drawing to the screen.
  * @param v Vehicle to draw.

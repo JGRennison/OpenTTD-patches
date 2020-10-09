@@ -328,7 +328,7 @@ public:
 	uint16 cur_speed;                   ///< current speed
 	byte subspeed;                      ///< fractional speed
 	byte acceleration;                  ///< used by train & aircraft
-	uint32 motion_counter;              ///< counter to occasionally play a vehicle sound.
+	uint32 motion_counter;              ///< counter to occasionally play a vehicle sound. (Also used as virtual train client ID).
 	byte progress;                      ///< The percentage (if divided by 256) this vehicle already crossed the tile unit.
 
 	byte random_bits;                   ///< Bits used for determining which randomized variational spritegroups to use when drawing.

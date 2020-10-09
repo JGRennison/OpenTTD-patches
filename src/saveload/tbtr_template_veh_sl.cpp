@@ -117,7 +117,7 @@ void AfterLoadTemplateVehiclesUpdateImage()
 		if (tv->Prev() == nullptr) {
 			Backup<CompanyID> cur_company(_current_company, tv->owner, FILE_LINE);
 			StringID err;
-			Train* t = VirtualTrainFromTemplateVehicle(tv, err);
+			Train* t = VirtualTrainFromTemplateVehicle(tv, err, 0);
 			if (t != nullptr) {
 				int tv_len = 0;
 				for (TemplateVehicle *u = tv; u != nullptr; u = u->Next()) {
@@ -154,7 +154,7 @@ void AfterLoadTemplateVehiclesUpdateProperties()
 		if (tv->Prev() == nullptr) {
 			Backup<CompanyID> cur_company(_current_company, tv->owner, FILE_LINE);
 			StringID err;
-			Train* t = VirtualTrainFromTemplateVehicle(tv, err);
+			Train* t = VirtualTrainFromTemplateVehicle(tv, err, 0);
 			if (t != nullptr) {
 				uint32 full_cargo_weight = 0;
 				for (Train *u = t; u != nullptr; u = u->Next()) {

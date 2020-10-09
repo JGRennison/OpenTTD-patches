@@ -5350,7 +5350,7 @@ int GetDisplayImageWidth(Train *t, Point *offset)
 	return t->gcache.cached_veh_length * reference_width / VEHICLE_LENGTH;
 }
 
-Train* CmdBuildVirtualRailWagon(const Engine *e)
+Train* CmdBuildVirtualRailWagon(const Engine *e, uint32 user)
 {
 	const RailVehicleInfo *rvi = &e->u.rail;
 
@@ -5371,6 +5371,7 @@ Train* CmdBuildVirtualRailWagon(const Engine *e)
 	v->track = TRACK_BIT_DEPOT;
 	SetBit(v->flags, VRF_CONSIST_SPEED_REDUCTION);
 	v->vehstatus = VS_HIDDEN | VS_DEFPAL;
+	v->motion_counter = user;
 
 	v->SetWagon();
 	v->SetFreeWagon();
@@ -5407,7 +5408,7 @@ Train* CmdBuildVirtualRailWagon(const Engine *e)
 	return v;
 }
 
-Train* CmdBuildVirtualRailVehicle(EngineID eid, StringID &error)
+Train* CmdBuildVirtualRailVehicle(EngineID eid, StringID &error, uint32 user)
 {
 	const Engine *e = Engine::GetIfValid(eid);
 	if (e == nullptr || e->type != VEH_TRAIN) {
@@ -5426,7 +5427,7 @@ Train* CmdBuildVirtualRailVehicle(EngineID eid, StringID &error)
 	RegisterGameEvents(GEF_VIRT_TRAIN);
 
 	if (rvi->railveh_type == RAILVEH_WAGON) {
-		return CmdBuildVirtualRailWagon(e);
+		return CmdBuildVirtualRailWagon(e, user);
 	}
 
 	Train *v = new Train();
@@ -5444,6 +5445,7 @@ Train* CmdBuildVirtualRailVehicle(EngineID eid, StringID &error)
 	v->cargo_type = e->GetDefaultCargoType();
 	v->cargo_cap = rvi->capacity;
 	v->last_station_visited = INVALID_STATION;
+	v->motion_counter = user;
 
 	v->engine_type = e->index;
 	v->gcache.first_engine = INVALID_ENGINE; // needs to be set before first callback
@@ -5492,7 +5494,7 @@ Train* CmdBuildVirtualRailVehicle(EngineID eid, StringID &error)
  * @param p1 various bitstuffed data
  *  bits  0-15: vehicle type being built.
  *  bits 24-31: refit cargo type.
- * @param p2 unused
+ * @param p2 user
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -5512,7 +5514,7 @@ CommandCost CmdBuildVirtualRailVehicle(TileIndex tile, DoCommandFlag flags, uint
 
 	if (should_execute) {
 		StringID err = INVALID_STRING_ID;
-		Train* train = CmdBuildVirtualRailVehicle(eid, err);
+		Train* train = CmdBuildVirtualRailVehicle(eid, err, p2);
 
 		if (train == nullptr) {
 			return_cmd_error(err);
