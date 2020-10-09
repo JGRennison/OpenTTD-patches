@@ -133,6 +133,7 @@ private:
 	VehicleID vehicle_over;
 	bool sell_hovered;                ///< A vehicle is being dragged/hovered over the sell button.
 	uint32 template_index;
+	btree::btree_set<VehicleID> pending_deletions; ///< Vehicle IDs where deletion is in progress
 
 public:
 	TemplateCreateWindow(WindowDesc* _wdesc, TemplateVehicle *to_edit, bool *window_open) : Window(_wdesc)
@@ -390,8 +391,14 @@ public:
 
 				Train* train_to_delete = Train::Get(this->sel);
 
+				this->pending_deletions.insert(this->sel);
+
 				if (virtual_train == train_to_delete) {
-					virtual_train = (_ctrl_pressed) ? nullptr : virtual_train->GetNextUnit();
+					if (_ctrl_pressed) {
+						virtual_train = nullptr;
+					} else {
+						this->RearrangeVirtualTrain();
+					}
 				}
 
 				DoCommandP(0, this->sel | (sell_cmd << 20) | (1 << 21), 0, GetCmdSellVeh(VEH_TRAIN), CcDeleteVirtualTrain);
@@ -566,11 +573,20 @@ public:
 		}
 	}
 
+	void VirtualVehicleDeleted(VehicleID id)
+	{
+		this->pending_deletions.erase(id);
+		this->RearrangeVirtualTrain();
+	}
+
 	void RearrangeVirtualTrain()
 	{
-		if (!virtual_train) return;
-		virtual_train = virtual_train->First();
-		assert(HasBit(virtual_train->subtype, GVSF_VIRTUAL));
+		if (!this->virtual_train) return;
+		this->virtual_train = this->virtual_train->First();
+		assert(HasBit(this->virtual_train->subtype, GVSF_VIRTUAL));
+		for (; this->virtual_train != nullptr; this->virtual_train = this->virtual_train->GetNextUnit()) {
+			if (this->pending_deletions.count(this->virtual_train->index) == 0) break;
+		}
 	}
 
 
@@ -615,7 +631,7 @@ void CcDeleteVirtualTrain(const CommandCost &result, TileIndex tile, uint32 p1, 
 
 	Window* window = FindWindowById(WC_CREATE_TEMPLATE, 0);
 	if (window) {
-		((TemplateCreateWindow*)window)->RearrangeVirtualTrain();
+		((TemplateCreateWindow*)window)->VirtualVehicleDeleted(GB(p1, 0, 20));
 		window->InvalidateData();
 	}
 }
