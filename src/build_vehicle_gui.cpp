@@ -1674,13 +1674,12 @@ struct BuildVehicleWindow : Window {
 
 		if (*(this->virtual_train_out) == nullptr) {
 			*(this->virtual_train_out) = toadd;
+			InvalidateWindowClassesData(WC_CREATE_TEMPLATE);
 		} else {
 			VehicleID target = (*(this->virtual_train_out))->GetLastUnit()->index;
 
 			DoCommandP(0, (1 << 23) | (1 << 21) | toadd->index, target, CMD_MOVE_RAIL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_MOVE_VEHICLE), CcMoveNewVirtualEngine);
 		}
-		InvalidateWindowClassesData(WC_CREATE_TEMPLATE);
-		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
 	}
 };
 
@@ -1708,6 +1707,7 @@ void CcMoveNewVirtualEngine(const CommandCost &result, TileIndex tile, uint32 p1
 			ShowErrorMessage(STR_ERROR_CAN_T_MOVE_VEHICLE, res.GetErrorMessage(), WL_INFO, 0, 0, res.GetTextRefStackGRF(), res.GetTextRefStackSize(), res.GetTextRefStack(), res.GetExtraErrorMessage());
 		}
 	}
+	InvalidateWindowClassesData(WC_CREATE_TEMPLATE);
 }
 
 static WindowDesc _build_vehicle_desc(
