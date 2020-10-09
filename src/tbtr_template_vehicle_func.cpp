@@ -175,6 +175,8 @@ void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev
 // create a full TemplateVehicle based train according to a virtual train
 TemplateVehicle* TemplateVehicleFromVirtualTrain(Train *virt)
 {
+	assert(virt != nullptr);
+
 	Train *init_virt = virt;
 
 	TemplateVehicle *tmp;
