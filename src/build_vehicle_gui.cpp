@@ -127,6 +127,22 @@ static bool EngineIntroDateSorter(const EngineID &a, const EngineID &b)
 	return _engine_sort_direction ? r > 0 : r < 0;
 }
 
+/**
+ * Determines order of engines by vehicle count
+ * @param a first engine to compare
+ * @param b second engine to compare
+ * @return for descending order: returns true if a < b. Vice versa for ascending order
+ */
+static bool EngineVehicleCountSorter(const EngineID &a, const EngineID &b)
+{
+	const GroupStatistics &stats = GroupStatistics::Get(_local_company, ALL_GROUP, Engine::Get(a)->type);
+	const int r = ((int) stats.num_engines[a]) - ((int) stats.num_engines[b]);
+
+	/* Use EngineID to sort instead since we want consistent sorting */
+	if (r == 0) return EngineNumberSorter(a, b);
+	return _engine_sort_direction ? r > 0 : r < 0;
+}
+
 /* cached values for EngineNameSorter to spare many GetString() calls */
 static EngineID _last_engine[2] = { INVALID_ENGINE, INVALID_ENGINE };
 
@@ -430,7 +446,7 @@ static bool AircraftRangeSorter(const EngineID &a, const EngineID &b)
 }
 
 /** Sort functions for the vehicle sort criteria, for each vehicle type. */
-EngList_SortTypeFunction * const _engine_sort_functions[][11] = {{
+EngList_SortTypeFunction * const _engine_sort_functions[][12] = {{
 	/* Trains */
 	&EngineNumberSorter,
 	&EngineCostSorter,
@@ -443,6 +459,7 @@ EngList_SortTypeFunction * const _engine_sort_functions[][11] = {{
 	&EnginePowerVsRunningCostSorter,
 	&EngineReliabilitySorter,
 	&TrainEngineCapacitySorter,
+	&EngineVehicleCountSorter,
 }, {
 	/* Road vehicles */
 	&EngineNumberSorter,
@@ -456,6 +473,7 @@ EngList_SortTypeFunction * const _engine_sort_functions[][11] = {{
 	&EnginePowerVsRunningCostSorter,
 	&EngineReliabilitySorter,
 	&RoadVehEngineCapacitySorter,
+	&EngineVehicleCountSorter,
 }, {
 	/* Ships */
 	&EngineNumberSorter,
@@ -466,6 +484,7 @@ EngList_SortTypeFunction * const _engine_sort_functions[][11] = {{
 	&EngineRunningCostSorter,
 	&EngineReliabilitySorter,
 	&ShipEngineCapacitySorter,
+	&EngineVehicleCountSorter,
 }, {
 	/* Aircraft */
 	&EngineNumberSorter,
@@ -476,11 +495,12 @@ EngList_SortTypeFunction * const _engine_sort_functions[][11] = {{
 	&EngineRunningCostSorter,
 	&EngineReliabilitySorter,
 	&AircraftEngineCargoSorter,
+	&EngineVehicleCountSorter,
 	&AircraftRangeSorter,
 }};
 
 /** Dropdown menu strings for the vehicle sort criteria. */
-const StringID _engine_sort_listing[][12] = {{
+const StringID _engine_sort_listing[][13] = {{
 	/* Trains */
 	STR_SORT_BY_ENGINE_ID,
 	STR_SORT_BY_COST,
@@ -493,6 +513,7 @@ const StringID _engine_sort_listing[][12] = {{
 	STR_SORT_BY_POWER_VS_RUNNING_COST,
 	STR_SORT_BY_RELIABILITY,
 	STR_SORT_BY_CARGO_CAPACITY,
+	STR_SORT_BY_VEHICLE_COUNT,
 	INVALID_STRING_ID
 }, {
 	/* Road vehicles */
@@ -507,6 +528,7 @@ const StringID _engine_sort_listing[][12] = {{
 	STR_SORT_BY_POWER_VS_RUNNING_COST,
 	STR_SORT_BY_RELIABILITY,
 	STR_SORT_BY_CARGO_CAPACITY,
+	STR_SORT_BY_VEHICLE_COUNT,
 	INVALID_STRING_ID
 }, {
 	/* Ships */
@@ -518,6 +540,7 @@ const StringID _engine_sort_listing[][12] = {{
 	STR_SORT_BY_RUNNING_COST,
 	STR_SORT_BY_RELIABILITY,
 	STR_SORT_BY_CARGO_CAPACITY,
+	STR_SORT_BY_VEHICLE_COUNT,
 	INVALID_STRING_ID
 }, {
 	/* Aircraft */
@@ -529,6 +552,7 @@ const StringID _engine_sort_listing[][12] = {{
 	STR_SORT_BY_RUNNING_COST,
 	STR_SORT_BY_RELIABILITY,
 	STR_SORT_BY_CARGO_CAPACITY,
+	STR_SORT_BY_VEHICLE_COUNT,
 	STR_SORT_BY_RANGE,
 	INVALID_STRING_ID
 }};
