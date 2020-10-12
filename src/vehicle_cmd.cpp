@@ -1462,7 +1462,8 @@ CommandCost CmdCloneVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 		_new_vehicle_id = w_front->index;
 	}
 
-	if (flags & DC_EXEC) {
+	const Company *owner = Company::GetIfValid(_current_company);
+	if ((flags & DC_EXEC) && ((p2 & 1) || owner == nullptr || owner->settings.copy_clone_add_to_group)) {
 		/* Cloned vehicles belong to the same group */
 		DoCommand(0, v_front->group_id, w_front->index, flags, CMD_ADD_VEHICLE_GROUP);
 	}
