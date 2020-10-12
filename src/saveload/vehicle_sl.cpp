@@ -680,9 +680,9 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 			return version_in_range && (SlXvIsFeaturePresent(XSLFI_SPRINGPP, 2) || SlXvIsFeaturePresent(XSLFI_JOKERPP) || SlXvIsFeaturePresent(XSLFI_CHILLPP) || SlXvIsFeaturePresent(XSLFI_VARIABLE_DAY_LENGTH, 2));
 		})),
 
-		     SLE_VAR(Vehicle, cur_implicit_order_index,  SLE_UINT8),
-		 SLE_CONDVAR(Vehicle, cur_real_order_index,  SLE_UINT8,                  SLV_158, SL_MAX_VERSION),
-		SLE_CONDVAR_X(Vehicle, cur_timetable_order_index, SLE_UINT8,      SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA)),
+		     SLE_VAR(Vehicle, cur_implicit_order_index,   SLE_VEHORDERID),
+		 SLE_CONDVAR(Vehicle, cur_real_order_index,       SLE_VEHORDERID,        SLV_158, SL_MAX_VERSION),
+		SLE_CONDVAR_X(Vehicle, cur_timetable_order_index, SLE_VEHORDERID, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA)),
 		/* num_orders is now part of OrderList and is not saved but counted */
 		SLE_CONDNULL(1,                                                            SL_MIN_VERSION, SLV_105),
 

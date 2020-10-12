@@ -230,7 +230,7 @@ CommandProc CmdSetGroupReplaceProtection;
 CommandProc CmdSetGroupLivery;
 
 CommandProc CmdMoveOrder;
-CommandProc CmdChangeTimetable;
+CommandProcEx CmdChangeTimetable;
 CommandProc CmdBulkChangeTimetable;
 CommandProc CmdSetVehicleOnTime;
 CommandProc CmdAutofillTimetable;

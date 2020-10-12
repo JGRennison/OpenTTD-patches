@@ -305,9 +305,9 @@ const SaveLoad *GetOrderBackupDescription()
 		     SLE_STR(OrderBackup, name,                     SLE_STR, 0),
 		SLE_CONDNULL(2,                                                                  SL_MIN_VERSION, SLV_192), // clone (2 bytes of pointer, i.e. garbage)
 		 SLE_CONDREF(OrderBackup, clone,                    REF_VEHICLE,               SLV_192, SL_MAX_VERSION),
-		     SLE_VAR(OrderBackup, cur_real_order_index,     SLE_UINT8),
-		 SLE_CONDVAR(OrderBackup, cur_implicit_order_index, SLE_UINT8,                 SLV_176, SL_MAX_VERSION),
-		SLE_CONDVAR_X(OrderBackup, cur_timetable_order_index, SLE_UINT8,        SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA)),
+		     SLE_VAR(OrderBackup, cur_real_order_index,     SLE_VEHORDERID),
+		 SLE_CONDVAR(OrderBackup, cur_implicit_order_index, SLE_VEHORDERID,            SLV_176, SL_MAX_VERSION),
+		SLE_CONDVAR_X(OrderBackup, cur_timetable_order_index, SLE_VEHORDERID,   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA)),
 		 SLE_CONDVAR(OrderBackup, current_order_time,       SLE_UINT32,                SLV_176, SL_MAX_VERSION),
 		 SLE_CONDVAR(OrderBackup, lateness_counter,         SLE_INT32,                 SLV_176, SL_MAX_VERSION),
 		 SLE_CONDVAR(OrderBackup, timetable_start,          SLE_INT32,                 SLV_176, SL_MAX_VERSION),

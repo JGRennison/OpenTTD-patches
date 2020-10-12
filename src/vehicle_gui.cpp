@@ -1213,7 +1213,7 @@ struct RefitWindow : public Window {
 							delete this;
 						}
 					} else {
-						if (DoCommandP(v->tile, v->index, this->cargo->cargo | this->cargo->subtype << 8 | this->order << 16 | this->is_virtual_train << 31, CMD_ORDER_REFIT)) delete this;
+						if (DoCommandP(v->tile, v->index, this->cargo->cargo | this->cargo->subtype << 8 | this->order << 16, CMD_ORDER_REFIT)) delete this;
 					}
 				}
 				break;

@@ -68,8 +68,8 @@ restart:
 
 			for (const Vehicle *w = v->FirstShared(); w != nullptr; w = w->NextShared()) {
 				/* In GUI, simulate by removing the order and adding it back */
-				InvalidateVehicleOrder(w, id | (INVALID_VEH_ORDER_ID << 8));
-				InvalidateVehicleOrder(w, (INVALID_VEH_ORDER_ID << 8) | id);
+				InvalidateVehicleOrder(w, id | (INVALID_VEH_ORDER_ID << 16));
+				InvalidateVehicleOrder(w, (INVALID_VEH_ORDER_ID << 16) | id);
 			}
 		}
 	}

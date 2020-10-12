@@ -1131,7 +1131,7 @@ static const OldChunks vehicle_chunk[] = {
 	OCL_VAR ( OC_UINT16,   1, &_old_order ),
 
 	OCL_NULL ( 1 ), ///< num_orders, now calculated
-	OCL_SVAR(  OC_UINT8, Vehicle, cur_implicit_order_index ),
+	OCL_SVAR( OC_FILE_U8 | OC_VAR_U16, Vehicle, cur_implicit_order_index ),
 	OCL_SVAR(   OC_TILE, Vehicle, dest_tile ),
 	OCL_SVAR( OC_UINT16, Vehicle, load_unload_ticks ),
 	OCL_SVAR( OC_FILE_U16 | OC_VAR_U32, Vehicle, date_of_last_service ),
@@ -1243,6 +1243,7 @@ bool LoadOldVehicle(LoadgameState *ls, int num)
 			if (!LoadChunk(ls, v, vehicle_chunk)) return false;
 			if (v == nullptr) continue;
 			v->refit_cap = v->cargo_cap;
+			if (v->cur_implicit_order_index == 0xFF) v->cur_implicit_order_index == INVALID_VEH_ORDER_ID;
 
 			SpriteID sprite = v->sprite_seq.seq[0].sprite;
 			/* no need to override other sprites */
@@ -1321,6 +1322,7 @@ bool LoadOldVehicle(LoadgameState *ls, int num)
 
 			if (!LoadChunk(ls, v, vehicle_chunk)) return false;
 			if (v == nullptr) continue;
+			if (v->cur_implicit_order_index == 0xFF) v->cur_implicit_order_index == INVALID_VEH_ORDER_ID;
 
 			_old_vehicle_names[_current_vehicle_id] = RemapOldStringID(_old_string_id);
 

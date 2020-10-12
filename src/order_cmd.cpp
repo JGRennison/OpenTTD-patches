@@ -944,7 +944,7 @@ uint GetOrderDistance(const Order *prev, const Order *cur, const Vehicle *v, int
  * @param flags operation to perform
  * @param p1 various bitstuffed elements
  * - p1 = (bit  0 - 19) - ID of the vehicle
- * - p1 = (bit 20 - 27) - the selected order (if any). If the last order is given,
+ * - p1 = (bit 20 - 35) - the selected order (if any). If the last order is given,
  *                        the order will be inserted before that one
  *                        the maximum vehicle order id is 254.
  * @param p2 packed order to insert
@@ -954,7 +954,7 @@ uint GetOrderDistance(const Order *prev, const Order *cur, const Vehicle *v, int
 CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	VehicleID veh          = GB(p1,  0, 20);
-	VehicleOrderID sel_ord = GB(p1, 20, 8);
+	VehicleOrderID sel_ord = GB(p1, 20, 16);
 	Order new_order(p2);
 
 	return CmdInsertOrderIntl(flags, Vehicle::GetIfValid(veh), sel_ord, new_order, false);
@@ -1247,7 +1247,7 @@ void InsertOrder(Vehicle *v, Order *new_o, VehicleOrderID sel_ord)
 			}
 		}
 		/* Update any possible open window of the vehicle */
-		InvalidateVehicleOrder(u, INVALID_VEH_ORDER_ID | (sel_ord << 8));
+		InvalidateVehicleOrder(u, INVALID_VEH_ORDER_ID | (sel_ord << 16));
 	}
 
 	/* As we insert an order, the order to skip to will be 'wrong'. */
@@ -1310,14 +1310,14 @@ static CargoID GetFirstValidCargo()
  * @param tile unused
  * @param flags operation to perform
  * @param p1 the ID of the vehicle
- * @param p2 the order to delete (max 255)
+ * @param p2 the order to delete
  * @param text unused
  * @return the cost of this operation or an error
  */
 CommandCost CmdDeleteOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	VehicleID veh_id = GB(p1, 0, 20);
-	VehicleOrderID sel_ord = GB(p2, 0, 8);
+	VehicleOrderID sel_ord = GB(p2, 0, 16);
 
 	Vehicle *v = Vehicle::GetIfValid(veh_id);
 
@@ -1404,7 +1404,7 @@ void DeleteOrder(Vehicle *v, VehicleOrderID sel_ord)
 		}
 
 		/* Update any possible open window of the vehicle */
-		InvalidateVehicleOrder(u, sel_ord | (INVALID_VEH_ORDER_ID << 8));
+		InvalidateVehicleOrder(u, sel_ord | (INVALID_VEH_ORDER_ID << 16));
 	}
 
 	/* As we delete an order, the order to skip to will be 'wrong'. */
@@ -1440,7 +1440,7 @@ void DeleteOrder(Vehicle *v, VehicleOrderID sel_ord)
 CommandCost CmdSkipToOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	VehicleID veh_id = GB(p1, 0, 20);
-	VehicleOrderID sel_ord = GB(p2, 0, 8);
+	VehicleOrderID sel_ord = GB(p2, 0, 16);
 
 	Vehicle *v = Vehicle::GetIfValid(veh_id);
 
@@ -1547,7 +1547,7 @@ CommandCost CmdMoveOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 
 			assert(v->orders.list == u->orders.list);
 			/* Update any possible open window of the vehicle */
-			InvalidateVehicleOrder(u, moving_order | (target_order << 8));
+			InvalidateVehicleOrder(u, moving_order | (target_order << 16));
 		}
 
 		/* As we move an order, the order to skip to will be 'wrong'. */
@@ -1580,9 +1580,8 @@ CommandCost CmdMoveOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
  * @param flags operation to perform
  * @param p1 various bitstuffed elements
  * - p1 = (bit  0 - 19) - ID of the vehicle
- * - p1 = (bit 20 - 27) - the selected order (if any). If the last order is given,
- *                        the order will be inserted before that one
- *                        the maximum vehicle order id is 254.
+ * - p1 = (bit 20 - 35) - the selected order (if any). If the last order is given,
+ *                        the order will be inserted before that one.
  * @param p2 various bitstuffed elements
  *  - p2 = (bit 0 -  3) - what data to modify (@see ModifyOrderFlags)
  *  - p2 = (bit 4 - 19) - the data to modify
@@ -1592,7 +1591,7 @@ CommandCost CmdMoveOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
  */
 CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
-	VehicleOrderID sel_ord = GB(p1, 20,  8);
+	VehicleOrderID sel_ord = GB(p1, 20,  16);
 	VehicleID veh          = GB(p1,  0, 20);
 	ModifyOrderFlags mof   = Extract<ModifyOrderFlags, 0, 4>(p2);
 	uint16 data            = GB(p2,  4, 16);
@@ -2320,14 +2319,14 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
  * @param p1 VehicleIndex of the vehicle having the order
  * @param p2 bitmask
  *   - bit 0-7 CargoID
- *   - bit 16-23 number of order to modify
+ *   - bit 16-31 number of order to modify
  * @param text unused
  * @return the cost of this operation or an error
  */
 CommandCost CmdOrderRefit(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	VehicleID veh = GB(p1, 0, 20);
-	VehicleOrderID order_number  = GB(p2, 16, 8);
+	VehicleOrderID order_number  = GB(p2, 16, 16);
 	CargoID cargo = GB(p2, 0, 8);
 
 	if (cargo >= NUM_CARGO && cargo != CT_NO_REFIT && cargo != CT_AUTO_REFIT) return CMD_ERROR;

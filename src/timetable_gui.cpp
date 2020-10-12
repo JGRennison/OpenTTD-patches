@@ -25,6 +25,7 @@
 #include "viewport_func.h"
 #include "schdispatch.h"
 #include "vehiclelist.h"
+#include "core/endian_func.hpp"
 
 #include "widgets/timetable_widget.h"
 
@@ -303,8 +304,8 @@ struct TimetableWindow : Window {
 				 * the order is being created / removed */
 				if (this->sel_index == -1) break;
 
-				VehicleOrderID from = GB(data, 0, 8);
-				VehicleOrderID to   = GB(data, 8, 8);
+				VehicleOrderID from = GB(data, 0, 16);
+				VehicleOrderID to   = GB(data, 16, 16);
 
 				if (from == to) break; // no need to change anything
 
@@ -704,14 +705,19 @@ struct TimetableWindow : Window {
 		}
 	}
 
-	static inline uint32 PackTimetableArgs(const Vehicle *v, uint selected, bool speed, bool clear = false)
+	static inline void ExecuteTimetableCommand(const Vehicle *v, bool bulk, uint selected, ModifyTimetableFlags mtf, uint p2, bool clear)
 	{
 		uint order_number = (selected + 1) / 2;
-		ModifyTimetableFlags mtf = (selected % 2 == 1) ? (speed ? MTF_TRAVEL_SPEED : MTF_TRAVEL_TIME) : MTF_WAIT_TIME;
-
 		if (order_number >= v->GetNumOrders()) order_number = 0;
 
-		return v->index | (order_number << 20) | (mtf << 28) | (clear ? 1 << 31 : 0);
+		uint p1 = v->index | (mtf << 28) | (clear ? 1 << 31 : 0);
+		if (bulk) {
+			DoCommandP(0, p1, p2, CMD_BULK_CHANGE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+		} else {
+			char text[2];
+			*reinterpret_cast<uint16 *>(&text) = TO_LE16(order_number);
+			DoCommandP(0, p1, p2, CMD_CHANGE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, text, true, 2);
+		}
 	}
 
 	void OnClick(Point pt, int widget, int click_count) override
@@ -806,14 +812,12 @@ struct TimetableWindow : Window {
 			}
 
 			case WID_VT_CLEAR_TIME: { // Clear waiting time.
-				uint32 p1 = PackTimetableArgs(v, this->sel_index, false, true);
-				DoCommandP(0, p1, 0, (_ctrl_pressed ? CMD_BULK_CHANGE_TIMETABLE : CMD_CHANGE_TIMETABLE) | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				ExecuteTimetableCommand(v, _ctrl_pressed, this->sel_index, MTF_WAIT_TIME, 0, true);
 				break;
 			}
 
 			case WID_VT_CLEAR_SPEED: { // Clear max speed button.
-				uint32 p1 = PackTimetableArgs(v, this->sel_index, true);
-				DoCommandP(0, p1, UINT16_MAX, (_ctrl_pressed ? CMD_BULK_CHANGE_TIMETABLE : CMD_CHANGE_TIMETABLE) | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				ExecuteTimetableCommand(v, _ctrl_pressed, this->sel_index, MTF_TRAVEL_SPEED, UINT16_MAX, false);
 				break;
 			}
 
@@ -829,8 +833,7 @@ struct TimetableWindow : Window {
 					locked = (selected % 2 == 1) ? order->IsTravelFixed() : order->IsWaitFixed();
 				}
 
-				uint32 p1 = v->index | (order_number << 20) | (((selected % 2 == 1) ? MTF_SET_TRAVEL_FIXED : MTF_SET_WAIT_FIXED) << 28);
-				DoCommandP(0, p1, locked ? 0 : 1, (_ctrl_pressed ? CMD_BULK_CHANGE_TIMETABLE : CMD_CHANGE_TIMETABLE) | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				ExecuteTimetableCommand(v, _ctrl_pressed, this->sel_index, ((selected % 2 == 1) ? MTF_SET_TRAVEL_FIXED : MTF_SET_WAIT_FIXED), locked ? 0 : 1, false);
 				break;
 			}
 
@@ -903,11 +906,7 @@ struct TimetableWindow : Window {
 	{
 		switch (widget) {
 			case WID_VT_EXTRA: {
-				VehicleOrderID order_number = (this->sel_index + 1) / 2;
-				if (order_number >= this->vehicle->GetNumOrders()) order_number = 0;
-
-				uint32 p1 = this->vehicle->index | (order_number << 20) | (MTF_SET_LEAVE_TYPE << 28);
-				DoCommandP(0, p1, index, CMD_CHANGE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				ExecuteTimetableCommand(this->vehicle, false, this->sel_index, MTF_SET_LEAVE_TYPE, index, false);
 			}
 
 			default:
@@ -926,8 +925,6 @@ struct TimetableWindow : Window {
 
 			case WID_VT_CHANGE_SPEED:
 			case WID_VT_CHANGE_TIME: {
-				uint32 p1 = PackTimetableArgs(v, this->sel_index, this->query_is_speed_query);
-
 				uint64 val = StrEmpty(str) ? 0 : strtoul(str, nullptr, 10);
 				uint32 p2;
 				if (this->query_is_speed_query) {
@@ -938,7 +935,7 @@ struct TimetableWindow : Window {
 					p2 = val;
 				}
 
-				DoCommandP(0, p1, p2, (this->change_timetable_all ? CMD_BULK_CHANGE_TIMETABLE : CMD_CHANGE_TIMETABLE) | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				ExecuteTimetableCommand(v, this->change_timetable_all, this->sel_index, (this->sel_index % 2 == 1) ? (this->query_is_speed_query ? MTF_TRAVEL_SPEED : MTF_TRAVEL_TIME) : MTF_WAIT_TIME, p2, false);
 				break;
 			}
 

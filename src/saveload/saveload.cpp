@@ -920,6 +920,7 @@ static void SlSaveLoadConvGeneric(void *ptr, VarType conv)
 				case SLE_FILE_U8: assert(x >= 0 && x <= 255);        SlWriteByte(x);break;
 				case SLE_FILE_I16:assert(x >= -32768 && x <= 32767); SlWriteUint16(x);break;
 				case SLE_FILE_STRINGID:
+				case SLE_FILE_VEHORDERID:
 				case SLE_FILE_U16:assert(x >= 0 && x <= 65535);      SlWriteUint16(x);break;
 				case SLE_FILE_I32:
 				case SLE_FILE_U32:                                   SlWriteUint32((uint32)x);break;
@@ -943,6 +944,14 @@ static void SlSaveLoadConvGeneric(void *ptr, VarType conv)
 				case SLE_FILE_I64: x = (int64 )SlReadUint64(); break;
 				case SLE_FILE_U64: x = (uint64)SlReadUint64(); break;
 				case SLE_FILE_STRINGID: x = RemapOldStringID((uint16)SlReadUint16()); break;
+				case SLE_FILE_VEHORDERID:
+					if (SlXvIsFeaturePresent(XSLFI_MORE_VEHICLE_ORDERS)) {
+						x = (uint16)SlReadUint16();
+					} else {
+						VehicleOrderID id = (byte)SlReadByte();
+						x = (id == 0xFF) ? INVALID_VEH_ORDER_ID : id;
+					}
+					break;
 				default: NOT_REACHED();
 			}
 

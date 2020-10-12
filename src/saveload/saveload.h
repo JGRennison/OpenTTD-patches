@@ -449,7 +449,8 @@ enum VarTypes {
 	SLE_FILE_U64      = 7,
 	SLE_FILE_STRINGID = 8, ///< StringID offset into strings-array
 	SLE_FILE_STRING   = 9,
-	/* 6 more possible file-primitives */
+	SLE_FILE_VEHORDERID = 10,
+	/* 5 more possible file-primitives */
 
 	/* 4 bits allocated a maximum of 16 types for NumberType */
 	SLE_VAR_BL    =  0 << 4,
@@ -493,6 +494,7 @@ enum VarTypes {
 	SLE_STRINGQUOTE  = SLE_FILE_STRING   | SLE_VAR_STRQ,
 	SLE_NAME         = SLE_FILE_STRINGID | SLE_VAR_NAME,
 	SLE_CNAME        = SLE_FILE_STRINGID | SLE_VAR_CNAME,
+	SLE_VEHORDERID   = SLE_FILE_VEHORDERID  | SLE_VAR_U16,
 
 	/* Shortcut values */
 	SLE_UINT  = SLE_UINT32,

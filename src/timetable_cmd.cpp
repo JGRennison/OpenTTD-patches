@@ -19,6 +19,7 @@
 #include "company_base.h"
 #include "settings_type.h"
 #include "scope.h"
+#include "core/endian_func.hpp"
 
 #include "table/strings.h"
 
@@ -133,16 +134,16 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32 val,
  * @param flags Operation to perform.
  * @param p1 Various bitstuffed elements
  * - p1 = (bit  0-19) - Vehicle with the orders to change.
- * - p1 = (bit 20-27) - Order index to modify.
+ * - p1 = (bit 20-27) - unused
  * - p1 = (bit 28-30) - Timetable data to change (@see ModifyTimetableFlags)
  * - p1 = (bit    31) - 0 to set timetable wait/travel time, 1 to clear it
  * @param p2 The amount of time to wait.
  * - p2 =             - The data to modify as specified by p1 bits 28-30.
  *                      0 to clear times, UINT16_MAX to clear speed limit.
- * @param text unused
+ * @param text LE uint16 Order index to modify.
  * @return the cost of this operation or an error
  */
-CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text, uint32 binary_length)
 {
 	VehicleID veh = GB(p1, 0, 20);
 
@@ -152,7 +153,9 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	VehicleOrderID order_number = GB(p1, 20, 8);
+	if (binary_length != 2) return CMD_ERROR;
+	VehicleOrderID order_number = FROM_LE16(*reinterpret_cast<const uint16 *>(text));
+
 	Order *order = v->GetOrder(order_number);
 	if (order == nullptr || order->IsType(OT_IMPLICIT)) return CMD_ERROR;
 
@@ -308,9 +311,9 @@ CommandCost CmdBulkChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p
 			// Exclude waypoints from set all wait times command
 			if (Extract<ModifyTimetableFlags, 28, 3>(p1) == MTF_WAIT_TIME && GB(p1, 31, 1) == 0 && order->IsType(OT_GOTO_WAYPOINT)) continue;
 
-			uint32 new_p1 = p1;
-			SB(new_p1, 20, 8, order_number);
-			DoCommand(tile, new_p1, p2, flags, CMD_CHANGE_TIMETABLE);
+			char text[2];
+			*reinterpret_cast<uint16 *>(&text) = TO_LE16(order_number);
+			DoCommand(tile, p1, p2, flags, CMD_CHANGE_TIMETABLE, text, 2);
 		}
 	}
 
