@@ -59,6 +59,7 @@ static void CheckIfTrainNeedsService(Train *v);
 static void CheckNextTrainTile(Train *v);
 TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const void *);
 static void TrainEnterStation(Train *v, StationID station);
+static void UnreserveBridgeTunnelTile(TileIndex tile);
 
 static const byte _vehicle_initial_x_fract[4] = {10, 8, 4,  8};
 static const byte _vehicle_initial_y_fract[4] = { 8, 4, 8, 10};
@@ -2224,11 +2225,11 @@ void ReverseTrainDirection(Train *v)
 			if (ft.Follow(next_tile, exit_td)) {
 				TrackdirBits reserved = ft.m_new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.m_new_tile));
 				if (reserved == TRACKDIR_BIT_NONE) {
-					UnreserveAcrossRailTunnelBridge(next_tile);
+					UnreserveBridgeTunnelTile(next_tile);
 					MarkTileDirtyByTile(next_tile, VMDF_NOT_MAP_MODE);
 				}
 			} else {
-				UnreserveAcrossRailTunnelBridge(next_tile);
+				UnreserveBridgeTunnelTile(next_tile);
 				MarkTileDirtyByTile(next_tile, VMDF_NOT_MAP_MODE);
 			}
 		}
@@ -2830,6 +2831,26 @@ static void ClearPathReservation(const Train *v, TileIndex tile, Trackdir track_
 void FreeTrainTrackReservation(const Train *v, TileIndex origin, Trackdir orig_td)
 {
 	assert(v->IsFrontEngine());
+
+	if (origin == INVALID_TILE && v->track & TRACK_BIT_WORMHOLE && IsTunnelBridgeWithSignalSimulation(v->tile)) {
+		Axis axis = DiagDirToAxis(GetTunnelBridgeDirection(v->tile));
+		DiagDirection axial_dir = DirToDiagDirAlongAxis(v->direction, axis);
+		TileIndex next_tile = TileVirtXY(v->x_pos, v->y_pos) + TileOffsByDiagDir(axial_dir);
+		if (next_tile == v->tile || next_tile == GetOtherTunnelBridgeEnd(v->tile)) {
+			origin = next_tile;
+			if (v->track == TRACK_BIT_WORMHOLE) {
+				/* Train in tunnel or on bridge, so just use his direction and make an educated guess
+				 * given the track bits on the tunnel/bridge head tile.
+				 * If a reachable track piece is reserved, use that, otherwise use the first reachable track piece.
+				 */
+				TrackBits tracks = GetAcrossTunnelBridgeReservationTrackBits(next_tile);
+				if (!tracks) tracks = GetAcrossTunnelBridgeTrackBits(next_tile);
+				orig_td = ReverseTrackdir(TrackExitdirToTrackdir(FindFirstTrack(tracks), GetTunnelBridgeDirection(next_tile)));
+			} else {
+				orig_td = TrackDirectionToTrackdir(FindFirstTrack(v->track & TRACK_BIT_MASK), v->direction);
+			}
+		}
+	}
 
 	TileIndex tile = origin != INVALID_TILE ? origin : v->tile;
 	Trackdir  td = orig_td != INVALID_TRACKDIR ? orig_td : v->GetVehicleTrackdir();
