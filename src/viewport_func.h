@@ -24,6 +24,7 @@ static const int TILE_HEIGHT_STEP = 50; ///< One Z unit tile height difference i
 void SetSelectionRed(bool);
 
 void ClearViewportCache(Viewport *vp);
+void ClearViewportLandPixelCache(Viewport *vp);
 void ClearViewportCaches();
 void DeleteWindowViewport(Window *w);
 void InitializeWindowViewport(Window *w, int x, int y, int width, int height, uint32 follow_flags, ZoomLevel zoom);

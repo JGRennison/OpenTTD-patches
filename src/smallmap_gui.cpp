@@ -487,8 +487,10 @@ static void NotifyAllViewports(ViewportMapType map_type)
 	Window *w;
 	FOR_ALL_WINDOWS_FROM_BACK(w) {
 		if (w->viewport != nullptr)
-			if (w->viewport->zoom >= ZOOM_LVL_DRAW_MAP && w->viewport->map_type == map_type)
+			if (w->viewport->zoom >= ZOOM_LVL_DRAW_MAP && w->viewport->map_type == map_type) {
+				ClearViewportLandPixelCache(w->viewport);
 				w->InvalidateData();
+			}
 	}
 }
 
