@@ -1243,7 +1243,7 @@ bool LoadOldVehicle(LoadgameState *ls, int num)
 			if (!LoadChunk(ls, v, vehicle_chunk)) return false;
 			if (v == nullptr) continue;
 			v->refit_cap = v->cargo_cap;
-			if (v->cur_implicit_order_index == 0xFF) v->cur_implicit_order_index == INVALID_VEH_ORDER_ID;
+			if (v->cur_implicit_order_index == 0xFF) v->cur_implicit_order_index = INVALID_VEH_ORDER_ID;
 
 			SpriteID sprite = v->sprite_seq.seq[0].sprite;
 			/* no need to override other sprites */
@@ -1322,7 +1322,7 @@ bool LoadOldVehicle(LoadgameState *ls, int num)
 
 			if (!LoadChunk(ls, v, vehicle_chunk)) return false;
 			if (v == nullptr) continue;
-			if (v->cur_implicit_order_index == 0xFF) v->cur_implicit_order_index == INVALID_VEH_ORDER_ID;
+			if (v->cur_implicit_order_index == 0xFF) v->cur_implicit_order_index = INVALID_VEH_ORDER_ID;
 
 			_old_vehicle_names[_current_vehicle_id] = RemapOldStringID(_old_string_id);
 
