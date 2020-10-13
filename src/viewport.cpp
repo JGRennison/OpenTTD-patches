@@ -2728,6 +2728,66 @@ static inline uint32 ViewportMapGetColourOwner(const TileIndex tile, TileType t,
 	return colour;
 }
 
+template <bool is_32bpp, bool show_slope>
+static inline uint32 ViewportMapGetColourRoutes(const TileIndex tile, TileType t, const uint colour_index)
+{
+	uint32 colour;
+
+	switch (t) {
+		case MP_WATER:
+			if (is_32bpp) {
+				uint slope_index = 0;
+				if (IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WATER_TILE_COAST) GET_SLOPE_INDEX(slope_index);
+				return _vp_map_water_colour[slope_index];
+			} else {
+				return PC_WATER;
+			}
+
+		case MP_INDUSTRY:
+			return IS32(PC_DARK_GREY);
+
+		case MP_HOUSE:
+		case MP_OBJECT:
+			return IS32(colour_index & 1 ? PC_DARK_RED : GREY_SCALE(3));
+
+		case MP_STATION:
+			switch (GetStationType(tile)) {
+				case STATION_RAIL:    return IS32(PC_VERY_DARK_BROWN);
+				case STATION_AIRPORT: return IS32(PC_RED);
+				case STATION_TRUCK:   return IS32(PC_ORANGE);
+				case STATION_BUS:     return IS32(PC_YELLOW);
+				case STATION_DOCK:    return IS32(PC_LIGHT_BLUE);
+				default:              return IS32(0xFF);
+			}
+
+		case MP_RAILWAY: {
+			colour = GetRailTypeInfo(GetRailType(tile))->map_colour;
+			break;
+		}
+
+		case MP_ROAD: {
+			const RoadTypeInfo *rti = nullptr;
+			if (GetRoadTypeRoad(tile) != INVALID_ROADTYPE) {
+				rti = GetRoadTypeInfo(GetRoadTypeRoad(tile));
+			} else {
+				rti = GetRoadTypeInfo(GetRoadTypeTram(tile));
+			}
+			if (rti != nullptr) {
+				colour = rti->map_colour;
+				break;
+			}
+			FALLTHROUGH;
+		}
+
+		default:
+			colour = COLOUR_FROM_INDEX(_heightmap_schemes[_settings_client.gui.smallmap_land_colour].height_colours[TileHeight(tile)]);
+			break;
+	}
+
+	if (show_slope) ASSIGN_SLOPIFIED_COLOUR(tile, nullptr, colour, _lighten_colour[colour], _darken_colour[colour], colour);
+	return IS32(colour);
+}
+
 static inline void ViewportMapStoreBridgeAboveTile(const Viewport * const vp, const TileIndex tile)
 {
 	/* No need to bother for hidden things */
@@ -2832,6 +2892,7 @@ uint32 ViewportMapGetColour(const Viewport * const vp, uint x, uint y, const uin
 		default:              return ViewportMapGetColourOwner<is_32bpp, show_slope>(tile, tile_type, colour_index);
 		case VPMT_INDUSTRY:   return ViewportMapGetColourIndustries<is_32bpp, show_slope>(tile, tile_type, colour_index);
 		case VPMT_VEGETATION: return ViewportMapGetColourVegetation<is_32bpp, show_slope>(tile, tile_type, colour_index);
+		case VPMT_ROUTES:     return ViewportMapGetColourRoutes<is_32bpp, show_slope>(tile, tile_type, colour_index);
 	}
 }
 
