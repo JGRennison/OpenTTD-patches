@@ -274,6 +274,14 @@ CommandCost CheckBridgeAvailability(BridgeType bridge_type, uint bridge_len, DoC
 	return_cmd_error(STR_ERROR_BRIDGE_TOO_LONG);
 }
 
+bool MayTownBuildBridgeType(BridgeType bridge_type)
+{
+	if (bridge_type >= MAX_BRIDGES) return false;
+
+	const BridgeSpec *b = GetBridgeSpec(bridge_type);
+	return !HasBit(b->ctrl_flags, BSCF_NOT_AVAILABLE_TOWN);
+}
+
 /**
  * Build a Bridge
  * @param end_tile end tile
@@ -283,6 +291,7 @@ CommandCost CheckBridgeAvailability(BridgeType bridge_type, uint bridge_len, DoC
  * - p2 = (bit  0- 7) - bridge type (hi bh)
  * - p2 = (bit  8-13) - rail type or road types.
  * - p2 = (bit 15-16) - transport type.
+ * - p2 = (bit 17)    - script command
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -299,6 +308,8 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 	if (!IsValidTile(p1)) return_cmd_error(STR_ERROR_BRIDGE_THROUGH_MAP_BORDER);
 
 	TransportType transport_type = Extract<TransportType, 15, 2>(p2);
+
+	bool script_cmd = HasBit(p2, 17);
 
 	/* type of bridge */
 	switch (transport_type) {
@@ -354,6 +365,7 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 		/* set and test bridge length, availability */
 		CommandCost ret = CheckBridgeAvailability(bridge_type, bridge_len, flags);
 		if (ret.Failed()) return ret;
+		if (script_cmd && HasBit(GetBridgeSpec(bridge_type)->ctrl_flags, BSCF_NOT_AVAILABLE_AI_GS)) return CMD_ERROR;
 	} else {
 		if (bridge_len > _settings_game.construction.max_bridge_length) return_cmd_error(STR_ERROR_BRIDGE_TOO_LONG);
 	}
