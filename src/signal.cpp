@@ -633,8 +633,11 @@ static SigSegState UpdateSignalsInBuffer(Owner owner)
 				if (IsTunnel(tile)) assert(dir == INVALID_DIAGDIR || dir == ReverseDiagDir(GetTunnelBridgeDirection(tile)));
 				TrackBits across = GetAcrossTunnelBridgeTrackBits(tile);
 				if (dir == INVALID_DIAGDIR || _enterdir_to_trackbits[dir] & across) {
-					_tbdset.Add(tile, INVALID_DIAGDIR);  // we can safely start from wormhole centre
-					if (!IsTunnelBridgeWithSignalSimulation(tile)) {  // Don't worry with other side of tunnel.
+					if (IsTunnelBridgeWithSignalSimulation(tile)) {
+						/* Don't worry about other side of tunnel. */
+						_tbdset.Add(tile, dir);
+					} else {
+						_tbdset.Add(tile, INVALID_DIAGDIR);  // we can safely start from wormhole centre
 						_tbdset.Add(GetOtherTunnelBridgeEnd(tile), INVALID_DIAGDIR);
 					}
 					break;
