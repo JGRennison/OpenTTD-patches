@@ -587,9 +587,10 @@ public:
 	{
 		/* If we select the all vehicles, this->list will contain all vehicles of the owner
 		 * else this->list will contain all vehicles which belong to the selected group */
-		if (this->vehicles.NeedRebuild()) this->RecalculateInfoTotals();
+		bool recalculate_totals = this->vehicles.NeedRebuild();
 		this->BuildVehicleList();
 		this->SortVehicleList();
+		if (recalculate_totals) this->RecalculateInfoTotals();
 
 		this->BuildGroupList(this->owner);
 
@@ -1044,7 +1045,7 @@ public:
 		if (this->groups.NeedResort() || this->vehicles.NeedResort()) {
 			this->SetWidgetDirty(WID_GL_LIST_VEHICLE);
 		}
-		if (this->RecalculateInfoTotals()) {
+		if (!this->vehicles.NeedRebuild() && this->RecalculateInfoTotals()) {
 			this->SetWidgetDirty(WID_GL_INFO);
 		}
 	}
