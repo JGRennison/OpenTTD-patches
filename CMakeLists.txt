@@ -1,23 +1,23 @@
 cmake_minimum_required(VERSION 3.6)
 
-if (NOT BINARY_NAME)
+if(NOT BINARY_NAME)
     set(BINARY_NAME openttd)
-endif (NOT BINARY_NAME)
+endif()
 
 project(${BINARY_NAME})
 
-if (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
     message(FATAL_ERROR "In-source builds not allowed. Please run \"cmake ..\" from the bin directory")
-endif (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
+endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.9)
 
 # Use GNUInstallDirs to allow customisation
 # but set our own default data dir
-if (NOT CMAKE_INSTALL_DATADIR)
+if(NOT CMAKE_INSTALL_DATADIR)
     set(CMAKE_INSTALL_DATADIR "share/games")
-endif (NOT CMAKE_INSTALL_DATADIR)
+endif()
 include(GNUInstallDirs)
 
 include(Options)
@@ -37,19 +37,19 @@ find_package(LibLZMA)
 find_package(LZO)
 find_package(PNG)
 
-if (NOT WIN32)
+if(NOT WIN32)
     find_package(Allegro)
     find_package(Freetype)
-    if (NOT APPLE)
+    if(NOT APPLE)
         find_package(SDL2)
-        if (NOT SDL2_FOUND)
+        if(NOT SDL2_FOUND)
             find_package(SDL)
-        endif( NOT SDL2_FOUND)
+        endif()
         find_package(Fluidsynth)
         find_package(Fontconfig)
         find_package(ICU OPTIONAL_COMPONENTS i18n lx)
         find_package(XDG_basedir)
-    else (NOT APPLE)
+    else()
         find_package(Iconv)
 
         find_library(AUDIOTOOLBOX_LIBRARY AudioToolbox)
@@ -57,14 +57,14 @@ if (NOT WIN32)
         find_library(COCOA_LIBRARY Cocoa)
 
         find_package(MacUcontext)
-    endif (NOT APPLE)
-endif (NOT WIN32)
+    endif()
+endif()
 
-if (MSVC)
+if(MSVC)
     find_package(Editbin REQUIRED)
-else ()
+else()
     find_package(Builtins)
-endif (MSVC)
+endif()
 
 if (UNIX)
     find_package(DL)
@@ -94,38 +94,38 @@ find_package(Grfcodec)
 
 # IPO is only properly supported from CMake 3.9. Despite the fact we are
 # CMake 3.5, still enable IPO if we detect we are 3.9+.
-if (POLICY CMP0069)
+if(POLICY CMP0069)
     cmake_policy(SET CMP0069 NEW)
     include(CheckIPOSupported)
     check_ipo_supported(RESULT IPO_FOUND)
-endif (POLICY CMP0069)
+endif()
 
 show_options()
 
-if (UNIX AND NOT APPLE AND NOT OPTION_DEDICATED)
-    if (NOT SDL_FOUND AND NOT SDL2_FOUND)
+if(UNIX AND NOT APPLE AND NOT OPTION_DEDICATED)
+    if(NOT SDL_FOUND AND NOT SDL2_FOUND)
         message(FATAL_ERROR "SDL or SDL2 is required for this platform")
-    endif (NOT SDL_FOUND AND NOT SDL2_FOUND)
-endif (UNIX AND NOT APPLE AND NOT OPTION_DEDICATED)
-if (APPLE)
-    if (NOT AUDIOTOOLBOX_LIBRARY)
+    endif()
+endif()
+if(APPLE)
+    if(NOT AUDIOTOOLBOX_LIBRARY)
         message(FATAL_ERROR "AudioToolbox is required for this platform")
-    endif (NOT AUDIOTOOLBOX_LIBRARY)
-    if (NOT AUDIOUNIT_LIBRARY)
+    endif()
+    if(NOT AUDIOUNIT_LIBRARY)
         message(FATAL_ERROR "AudioUnit is required for this platform")
-    endif (NOT AUDIOUNIT_LIBRARY)
-    if (NOT COCOA_LIBRARY)
+    endif()
+    if(NOT COCOA_LIBRARY)
         message(FATAL_ERROR "Cocoa is required for this platform")
-    endif (NOT COCOA_LIBRARY)
-endif (APPLE)
+    endif()
+endif()
 
-if (MSVC)
+if(MSVC)
     # C++17 for MSVC
     set(CMAKE_CXX_STANDARD 17)
-else (MSVC)
+else()
     # C++11 for all other targets
     set(CMAKE_CXX_STANDARD 11)
-endif (MSVC)
+endif()
 
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 set(CMAKE_CXX_EXTENSIONS NO)
@@ -133,9 +133,9 @@ set(CMAKE_CXX_EXTENSIONS NO)
 set(CMAKE_EXPORT_COMPILE_COMMANDS YES)
 
 list(APPEND GENERATED_SOURCE_FILES "${CMAKE_BINARY_DIR}/generated/rev.cpp")
-if (WIN32)
+if(WIN32)
     list(APPEND GENERATED_SOURCE_FILES "${CMAKE_BINARY_DIR}/generated/ottdres.rc")
-endif (WIN32)
+endif()
 
 include(SourceList)
 include(Endian)
@@ -210,17 +210,17 @@ target_link_libraries(openttd
     Threads::Threads
 )
 
-if (IPO_FOUND)
+if(IPO_FOUND)
     set_target_properties(openttd PROPERTIES INTERPROCEDURAL_OPTIMIZATION_RELEASE True)
     set_target_properties(openttd PROPERTIES INTERPROCEDURAL_OPTIMIZATION_MINSIZEREL True)
     set_target_properties(openttd PROPERTIES INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO True)
-endif (IPO_FOUND)
+endif()
 set_target_properties(openttd PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 process_compile_flags()
 
-if (APPLE OR UNIX)
+if(APPLE OR UNIX)
     add_definitions(-DUNIX)
-endif (APPLE OR UNIX)
+endif()
 
 include(LinkPackage)
 link_package(PNG TARGET PNG::PNG ENCOURAGED)
@@ -229,7 +229,7 @@ link_package(LIBLZMA TARGET LibLZMA::LibLZMA ENCOURAGED)
 link_package(LZO ENCOURAGED)
 link_package(XDG_basedir)
 
-if (NOT OPTION_DEDICATED)
+if(NOT OPTION_DEDICATED)
     link_package(Fluidsynth)
     link_package(SDL)
     link_package(SDL2 TARGET SDL2::SDL2)
@@ -241,9 +241,9 @@ if (NOT OPTION_DEDICATED)
     link_package(Fcitx)
     link_package(DBus1)
     link_package(X11)
-endif (NOT OPTION_DEDICATED)
+endif()
 
-if (APPLE)
+if(APPLE)
     link_package(Iconv TARGET Iconv::Iconv)
 
     target_link_libraries(openttd
@@ -256,33 +256,33 @@ if (APPLE)
         -DWITH_COCOA
         -DENABLE_COCOA_QUARTZ
     )
-endif (APPLE)
+endif()
 
-if (NOT PERSONAL_DIR STREQUAL "(not set)")
+if(NOT PERSONAL_DIR STREQUAL "(not set)")
     add_definitions(
         -DWITH_PERSONAL_DIR
         -DPERSONAL_DIR="${PERSONAL_DIR}"
     )
-endif (NOT PERSONAL_DIR STREQUAL "(not set)")
+endif()
 
-if (NOT SHARED_DIR STREQUAL "(not set)")
+if(NOT SHARED_DIR STREQUAL "(not set)")
     add_definitions(
         -DWITH_SHARED_DIR
         -DSHARED_DIR="${SHARED_DIR}"
     )
-endif (NOT SHARED_DIR STREQUAL "(not set)")
+endif()
 
-if (NOT GLOBAL_DIR STREQUAL "(not set)")
+if(NOT GLOBAL_DIR STREQUAL "(not set)")
     add_definitions(
         -DGLOBAL_DATA_DIR="${GLOBAL_DIR}"
     )
-endif (NOT GLOBAL_DIR STREQUAL "(not set)")
+endif()
 
 link_package(SSE)
 
 add_definitions_based_on_options()
 
-if (WIN32)
+if(WIN32)
     add_definitions(
         -DUNICODE
         -D_UNICODE
@@ -295,11 +295,11 @@ if (WIN32)
         imm32
         usp10
     )
-endif (WIN32)
+endif()
 
-if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     add_definitions(-D_SQ64)
-endif (CMAKE_SIZEOF_VOID_P EQUAL 8)
+endif()
 
 include(CreateRegression)
 create_regression()

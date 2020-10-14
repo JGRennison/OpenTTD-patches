@@ -31,6 +31,8 @@
 #include "tilehighlight_func.h"
 #include "hotkeys.h"
 #include "guitimer_func.h"
+#include "error.h"
+#include "news_gui.h"
 
 #include "saveload/saveload.h"
 
@@ -215,6 +217,8 @@ enum {
 	GHK_CHAT_ALL,
 	GHK_CHAT_COMPANY,
 	GHK_CHAT_SERVER,
+	GHK_CLOSE_NEWS,
+	GHK_CLOSE_ERROR,
 	GHK_CHANGE_MAP_MODE_PREV,
 	GHK_CHANGE_MAP_MODE_NEXT,
 };
@@ -414,6 +418,14 @@ struct MainWindow : Window
 				}
 				break;
 
+			case GHK_CLOSE_NEWS: // close active news window
+				if (!HideActiveNewsMessage()) return ES_NOT_HANDLED;
+				break;
+
+			case GHK_CLOSE_ERROR: // close active error window
+				if (!HideActiveErrorMessage()) return ES_NOT_HANDLED;
+				break;
+
 			case GHK_CHANGE_MAP_MODE_PREV:
 				if (_focused_window && _focused_window->viewport && _focused_window->viewport->zoom >= ZOOM_LVL_DRAW_MAP) {
 					ChangeRenderMode(_focused_window->viewport, true);
@@ -540,6 +552,8 @@ static Hotkey global_hotkeys[] = {
 	Hotkey(_ghk_chat_all_keys, "chat_all", GHK_CHAT_ALL),
 	Hotkey(_ghk_chat_company_keys, "chat_company", GHK_CHAT_COMPANY),
 	Hotkey(_ghk_chat_server_keys, "chat_server", GHK_CHAT_SERVER),
+	Hotkey(WKC_SPACE, "close_news", GHK_CLOSE_NEWS),
+	Hotkey(WKC_SPACE, "close_error", GHK_CLOSE_ERROR),
 	Hotkey(WKC_PAGEUP,   "previous_map_mode", GHK_CHANGE_MAP_MODE_PREV),
 	Hotkey(WKC_PAGEDOWN, "next_map_mode",     GHK_CHANGE_MAP_MODE_NEXT),
 	HOTKEY_LIST_END

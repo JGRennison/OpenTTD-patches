@@ -187,6 +187,7 @@ STR_COLOUR_ORANGE                                               :Portocaliu
 STR_COLOUR_BROWN                                                :Maro
 STR_COLOUR_GREY                                                 :Gri
 STR_COLOUR_WHITE                                                :Alb
+STR_COLOUR_DEFAULT                                              :Prestabilit
 
 # Units used in OpenTTD
 STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA} mph
@@ -233,6 +234,7 @@ STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Alegeți
 STR_BUTTON_SORT_BY                                              :{BLACK}Ordonează
 STR_BUTTON_LOCATION                                             :{BLACK}Locație
 STR_BUTTON_RENAME                                               :{BLACK}Nume nou
+STR_BUTTON_CATCHMENT                                            :Arie de acoperire
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Închide fereastra
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Titlul ferestrei - trage de aici pentru a muta fereastra
@@ -836,6 +838,7 @@ STR_NEWS_VEHICLE_HAS_TOO_FEW_ORDERS                             :{WHITE}{VEHICLE
 STR_NEWS_VEHICLE_HAS_VOID_ORDER                                 :{WHITE}{VEHICLE} nu are nici un ordin
 STR_NEWS_VEHICLE_HAS_DUPLICATE_ENTRY                            :{WHITE}{VEHICLE} are ordine duplicate
 STR_NEWS_VEHICLE_HAS_INVALID_ENTRY                              :{WHITE}{VEHICLE} are o staţie invalidă în ordine
+STR_NEWS_PLANE_USES_TOO_SHORT_RUNWAY                            :{WHITE}{VEHICLE} are în ordinele sale un aeroport a cărui pistă este prea scurtă
 
 STR_NEWS_VEHICLE_IS_GETTING_OLD                                 :{WHITE}{VEHICLE} este vechi
 STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD                            :{WHITE}{VEHICLE} este foarte vechi
@@ -1444,6 +1447,7 @@ STR_CONFIG_SETTING_AI_IN_MULTIPLAYER                            :Permite Intelig
 STR_CONFIG_SETTING_AI_IN_MULTIPLAYER_HELPTEXT                   :Permite ca jucătorii controlați de AI să participe în jocuri multiplayer
 STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES                           :Număr opcodes înainte de suspendarea scripturilor: {STRING}
 STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES_HELPTEXT                  :Numărul maxim de instrucțiuni pe care un script le poate executa pe parcursul unei ture
+STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY_VALUE                      :{COMMA} MiB
 
 STR_CONFIG_SETTING_SERVINT_ISPERCENT                            :Intervaluri de service în procente: {STRING}
 STR_CONFIG_SETTING_SERVINT_ISPERCENT_HELPTEXT                   :Alege dacă întreținerea vehiculelor este activată de trecerea unei anumite perioade de timp, sau scăzând un anumit procent din gradul de rezistență al vehiculului
@@ -1647,6 +1651,7 @@ STR_CONFIG_SETTING_INTERFACE_VIEWPORTS                          :{ORANGE}Câmpur
 STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :{ORANGE}Construcţie
 STR_CONFIG_SETTING_ADVISORS                                     :{ORANGE}Știri / Consilieri
 STR_CONFIG_SETTING_COMPANY                                      :{ORANGE}Companie
+STR_CONFIG_SETTING_ACCOUNTING                                   :{ORANGE}Contabilitate
 STR_CONFIG_SETTING_VEHICLES                                     :{ORANGE}Vehicule
 STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Direcţionare
 STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}Dezastre / Accidente
@@ -2551,6 +2556,7 @@ STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Numele d
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Încărcături acceptate: {LTBLUE}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
+STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Tip șină: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT                      :{BLACK}Limită viteză pe calea ferată: {LTBLUE}{VELOCITY}
 STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT                      :{BLACK}Viteza limită a drumului: {LTBLUE}{VELOCITY}
 
@@ -2656,11 +2662,14 @@ STR_FRAMERATE_RATE_GAMELOOP_TOOLTIP                             :{BLACK}Număr d
 STR_FRAMERATE_AVERAGE                                           :{WHITE}Medie
 STR_FRAMERATE_DATA_POINTS                                       :{BLACK}Date bazate pe măsurători {COMMA}
 STR_FRAMERATE_MS_GOOD                                           :{LTBLUE}{DECIMAL} ms
+STR_FRAMERATE_FPS_BAD                                           :{RED}{DECIMAL} cadre/s
 STR_FRAMERATE_GRAPH_MILLISECONDS                                :{TINY_FONT}{COMMA} ms
 ############ Leave those lines in this order!!
 STR_FRAMERATE_VIDEO                                             :{BLACK}Ieșire video:
 ############ End of leave-in-this-order
 ############ Leave those lines in this order!!
+STR_FRAMETIME_CAPTION_GAMELOOP                                  :Buclă de joc
+STR_FRAMETIME_CAPTION_GL_ECONOMY                                :Manipularea încărcăturilor
 ############ End of leave-in-this-order
 
 
@@ -3319,6 +3328,7 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :Elimină toate 
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Redenumeşte un grup
 
+STR_GROUP_PROFIT_THIS_YEAR                                      :Profitul pe anul acesta:
 STR_GROUP_OCCUPANCY                                             :Utilizare curentă:
 STR_GROUP_OCCUPANCY_VALUE                                       :{NUM}%
 
@@ -3367,6 +3377,7 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}Cumpăr�
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}Cumpără navă
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}Cumpără aeronavă
 
+STR_BUY_VEHICLE_AIRCRAFT_BUY_REFIT_VEHICLE_BUTTON               :{BLACK}Cumpără și schimbă marfa transportată de aeronavă
 
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Cumpără vehiculul feroviar selectat. Shift+Click arată costul estimat fără să cumpere vehiculul
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Cumpără autovehiculul selectat. Shift+Click arată costul estimat fără să cumpere autovehiculul
@@ -3979,6 +3990,13 @@ STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Alege sc
 STR_AI_LIST_CANCEL                                              :{BLACK}Anulează
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Nu schimba scriptul
 
+STR_SCREENSHOT_CAPTION                                          :{WHITE}Capturează ecranul
+STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Captură de ecran obișnuită
+STR_SCREENSHOT_ZOOMIN_SCREENSHOT                                :{BLACK}Captură de hartă la mărime maximă
+STR_SCREENSHOT_DEFAULTZOOM_SCREENSHOT                           :{BLACK}Captură de hartă la mărime normală
+STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}Captură de hartă întreagă
+STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Captură de hartă topografică
+STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Captură de hartă a lumii
 
 # AI Parameters
 STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parametrii
@@ -4063,7 +4081,7 @@ STR_WARNING_FALLBACK_SOUNDSET                                   :{WHITE}Doar un 
 
 # Screenshot related messages
 STR_WARNING_SCREENSHOT_SIZE_CAPTION                             :{WHITE}Imagine de dimensiune foarte mare
-STR_WARNING_SCREENSHOT_SIZE_MESSAGE                             :{YELLOW}Imaginea capturata va avea o dimensiune de {COMMA} x {COMMA} pixeli. Realizarea unei capturi va dura puțin timp. Dorești să continui?
+STR_WARNING_SCREENSHOT_SIZE_MESSAGE                             :{YELLOW}Imaginea capturată va avea o dimensiune de {COMMA} x {COMMA} pixeli. Realizarea unei capturi va dura ceva timp. Dorești să continui?
 
 STR_MESSAGE_SCREENSHOT_SUCCESSFULLY                             :{WHITE}Imagine salvată cu succes pe disc în fişierul '{STRING}'
 STR_ERROR_SCREENSHOT_FAILED                                     :{WHITE}Imaginea nu a putut fi capturată!
@@ -4433,6 +4451,7 @@ STR_BASESOUNDS_WIN_DESCRIPTION                                  :Setul de sunete
 STR_BASESOUNDS_NONE_DESCRIPTION                                 :Un set de sunete fără nici un sunet inclus.
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :Setul de muzică original al Transport Tycoon Deluxe pentru Windows.
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :Setul de muzică original al Transport Tycoon Deluxe pentru DOS.
+STR_BASEMUSIC_TTO_DESCRIPTION                                   :Setul de muzică original al Transport (Original/World Editor) pentru DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Un set de muzică fără muzică inclusă.
 
 ##id 0x2000
