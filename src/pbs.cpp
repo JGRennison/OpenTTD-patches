@@ -369,7 +369,7 @@ PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res)
 	if (IsRailDepotTile(tile) && !GetDepotReservationTrackBits(tile)) return PBSTileInfo(tile, trackdir, false);
 
 	FindTrainOnTrackInfo ftoti;
-	ftoti.res = FollowReservation(v->owner, GetRailTypeInfo(v->railtype)->compatible_railtypes, tile, trackdir);
+	ftoti.res = FollowReservation(v->owner, GetRailTypeInfo(v->railtype)->all_compatible_railtypes, tile, trackdir);
 	ftoti.res.okay = IsSafeWaitingPosition(v, ftoti.res.tile, ftoti.res.trackdir, true, _settings_game.pf.forbid_90_deg);
 	if (train_on_res != nullptr) {
 		FindVehicleOnPos(ftoti.res.tile, VEH_TRAIN, &ftoti, FindTrainOnTrackEnum);
@@ -406,7 +406,7 @@ Train *GetTrainForReservation(TileIndex tile, Track track)
 	assert_msg_tile(HasReservedTracks(tile, TrackToTrackBits(track)), tile, "track: %u", track);
 	Trackdir  trackdir = TrackToTrackdir(track);
 
-	RailTypes rts = GetRailTypeInfo(GetTileRailTypeByTrack(tile, track))->compatible_railtypes;
+	RailTypes rts = GetRailTypeInfo(GetTileRailTypeByTrack(tile, track))->all_compatible_railtypes;
 
 	/* Follow the path from tile to both ends, one of the end tiles should
 	 * have a train on it. We need FollowReservation to ignore one-way signals
@@ -514,7 +514,7 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
 	}
 
 	/* Check next tile. For performance reasons, we check for 90 degree turns ourself. */
-	CFollowTrackRail ft(v, GetRailTypeInfo(v->railtype)->compatible_railtypes);
+	CFollowTrackRail ft(v, GetRailTypeInfo(v->railtype)->all_compatible_railtypes);
 
 	/* End of track? */
 	if (!ft.Follow(tile, trackdir)) {
@@ -621,7 +621,7 @@ bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bo
 	}
 
 	/* Check the next tile, if it's a PBS signal, it has to be free as well. */
-	CFollowTrackRail ft(v, GetRailTypeInfo(v->railtype)->compatible_railtypes);
+	CFollowTrackRail ft(v, GetRailTypeInfo(v->railtype)->all_compatible_railtypes);
 
 	if (!ft.Follow(tile, trackdir)) return true;
 

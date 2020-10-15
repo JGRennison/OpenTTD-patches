@@ -69,7 +69,7 @@ void ResetRailTypes()
 		{0,0,0,0,0,0,0,0,{}},
 		{0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0},
-		0, RAILTYPES_NONE, RAILTYPES_NONE, 0, 0, 0, RTFB_NONE, 0, 0, 0, 0, 0, 0,
+		0, RAILTYPES_NONE, RAILTYPES_NONE, RAILTYPES_NONE, 0, 0, 0, RTFB_NONE, 0, 0, 0, 0, 0, 0,
 		RailTypeLabelList(), 0, 0, RAILTYPES_NONE, RAILTYPES_NONE, 0,
 		{}, {} };
 	for (; i < lengthof(_railtypes);          i++) _railtypes[i] = empty_railtype;
@@ -149,6 +149,27 @@ void InitRailTypes()
 		}
 	}
 	std::sort(_sorted_railtypes.begin(), _sorted_railtypes.end(), CompareRailTypes);
+
+	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
+		_railtypes[rt].all_compatible_railtypes = _railtypes[rt].compatible_railtypes;
+	}
+	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
+		RailTypes compatible = _railtypes[rt].all_compatible_railtypes;
+		RailTypes to_check = compatible;
+		while (to_check) {
+			RailType i = (RailType)FindFirstBit64(to_check);
+			to_check = KillFirstBit(to_check);
+			RailTypes new_types = _railtypes[i].compatible_railtypes & (~compatible);
+			to_check |= new_types;
+			compatible |= new_types;
+		}
+		RailTypes to_update = compatible;
+		while (to_update) {
+			RailType i = (RailType)FindFirstBit64(to_update);
+			to_update = KillFirstBit(to_update);
+			_railtypes[i].all_compatible_railtypes = compatible;
+		}
+	}
 }
 
 /**

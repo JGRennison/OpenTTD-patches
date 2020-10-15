@@ -2221,7 +2221,7 @@ void ReverseTrainDirection(Train *v)
 		TileIndex next_tile = TileVirtXY(v->x_pos, v->y_pos) + TileOffsByDiagDir(axial_dir);
 		if (next_tile == v->tile || next_tile == GetOtherTunnelBridgeEnd(v->tile)) {
 			Trackdir exit_td = TrackEnterdirToTrackdir(FindFirstTrack(GetAcrossTunnelBridgeTrackBits(next_tile)), ReverseDiagDir(GetTunnelBridgeDirection(next_tile)));
-			CFollowTrackRail ft(GetTileOwner(next_tile), GetRailTypeInfo(v->railtype)->compatible_railtypes);
+			CFollowTrackRail ft(GetTileOwner(next_tile), GetRailTypeInfo(v->railtype)->all_compatible_railtypes);
 			if (ft.Follow(next_tile, exit_td)) {
 				TrackdirBits reserved = ft.m_new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.m_new_tile));
 				if (reserved == TRACKDIR_BIT_NONE) {
@@ -2871,7 +2871,7 @@ void FreeTrainTrackReservation(const Train *v, TileIndex origin, Trackdir orig_t
 	/* Do not attempt to unreserve out of a signalled tunnel/bridge entrance, as this would unreserve the reservations of another train coming in */
 	if (IsTunnelBridgeWithSignalSimulation(tile) && TrackdirExitsTunnelBridge(tile, td) && IsTunnelBridgeSignalSimulationEntranceOnly(tile)) return;
 
-	CFollowTrackRail ft(v, GetRailTypeInfo(v->railtype)->compatible_railtypes);
+	CFollowTrackRail ft(v, GetRailTypeInfo(v->railtype)->all_compatible_railtypes);
 	while (ft.Follow(tile, td)) {
 		tile = ft.m_new_tile;
 		TrackdirBits bits = ft.m_new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(tile));
@@ -3919,7 +3919,7 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 	t->tile = tile;
 	t->track = TRACK_BIT_WORMHOLE;
 	t->direction = TrackdirToDirection(td);
-	CFollowTrackRail ft(GetTileOwner(tile), GetRailTypeInfo(t->railtype)->compatible_railtypes);
+	CFollowTrackRail ft(GetTileOwner(tile), GetRailTypeInfo(t->railtype)->all_compatible_railtypes);
 	if (ft.Follow(tile, td)) {
 		TrackdirBits reserved = ft.m_new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.m_new_tile));
 		if (reserved == TRACKDIR_BIT_NONE) {
@@ -3952,7 +3952,7 @@ static bool CheckTrainStayInWormHole(Train *t, TileIndex tile)
 	}
 	SigSegState seg_state = (_settings_game.pf.reserve_paths || IsTunnelBridgePBS(tile)) ? SIGSEG_PBS : UpdateSignalsOnSegment(tile, INVALID_DIAGDIR, t->owner);
 	if (seg_state != SIGSEG_PBS) {
-		CFollowTrackRail ft(GetTileOwner(tile), GetRailTypeInfo(t->railtype)->compatible_railtypes);
+		CFollowTrackRail ft(GetTileOwner(tile), GetRailTypeInfo(t->railtype)->all_compatible_railtypes);
 		if (ft.Follow(tile, TrackEnterdirToTrackdir(FindFirstTrack(GetAcrossTunnelBridgeTrackBits(tile)), ReverseDiagDir(GetTunnelBridgeDirection(tile))))) {
 			if (ft.m_new_td_bits != TRACKDIR_BIT_NONE && KillFirstBit(ft.m_new_td_bits) == TRACKDIR_BIT_NONE) {
 				Trackdir td = FindFirstTrackdir(ft.m_new_td_bits);

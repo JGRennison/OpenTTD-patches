@@ -194,6 +194,9 @@ public:
 	/** bitmask to the OTHER railtypes on which an engine of THIS railtype can physically travel */
 	RailTypes compatible_railtypes;
 
+	/** bitmask of all directly or indirectly reachable railtypes in either direction via compatible_railtypes */
+	RailTypes all_compatible_railtypes;
+
 	/**
 	 * Bridge offset
 	 */

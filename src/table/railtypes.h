@@ -65,6 +65,9 @@ static const RailtypeInfo _original_railtypes[] = {
 		/* Compatible railtypes */
 		RAILTYPES_RAIL | RAILTYPES_ELECTRIC,
 
+		/* Computed compatible railtypes */
+		RAILTYPES_NONE,
+
 		/* bridge offset */
 		0,
 
@@ -169,6 +172,9 @@ static const RailtypeInfo _original_railtypes[] = {
 		/* Compatible railtypes */
 		RAILTYPES_ELECTRIC | RAILTYPES_RAIL,
 
+		/* Computed compatible railtypes */
+		RAILTYPES_NONE,
+
 		/* bridge offset */
 		0,
 
@@ -269,6 +275,9 @@ static const RailtypeInfo _original_railtypes[] = {
 		/* Compatible Railtypes */
 		RAILTYPES_MONO,
 
+		/* Computed compatible railtypes */
+		RAILTYPES_NONE,
+
 		/* bridge offset */
 		16,
 
@@ -368,6 +377,9 @@ static const RailtypeInfo _original_railtypes[] = {
 
 		/* Compatible Railtypes */
 		RAILTYPES_MAGLEV,
+
+		/* Computed compatible railtypes */
+		RAILTYPES_NONE,
 
 		/* bridge offset */
 		24,
