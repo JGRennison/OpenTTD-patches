@@ -184,8 +184,8 @@ class NIHVehicle : public NIHelper {
 			print(buffer);
 			if (e->type == VEH_TRAIN) {
 				const RailtypeInfo *rti = GetRailTypeInfo(e->u.rail.railtype);
-				seprintf(buffer, lastof(buffer), "    Railtype: %u (0x" OTTD_PRINTFHEX64 "), Compatible: 0x" OTTD_PRINTFHEX64 ", Powered: 0x" OTTD_PRINTFHEX64,
-						e->u.rail.railtype, (static_cast<RailTypes>(1) << e->u.rail.railtype), rti->compatible_railtypes, rti->powered_railtypes);
+				seprintf(buffer, lastof(buffer), "    Railtype: %u (0x" OTTD_PRINTFHEX64 "), Compatible: 0x" OTTD_PRINTFHEX64 ", Powered: 0x" OTTD_PRINTFHEX64 ", All compatible: 0x" OTTD_PRINTFHEX64,
+						e->u.rail.railtype, (static_cast<RailTypes>(1) << e->u.rail.railtype), rti->compatible_railtypes, rti->powered_railtypes, rti->all_compatible_railtypes);
 				print(buffer);
 			}
 		}
@@ -632,6 +632,12 @@ class NIHRailType : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  Ctrl flags: %c%c",
 					HasBit(info->ctrl_flags, RTCF_PROGSIG) ? 'p' : '-',
 					HasBit(info->ctrl_flags, RTCF_RESTRICTEDSIG) ? 'r' : '-');
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  Powered: 0x" OTTD_PRINTFHEX64, info->powered_railtypes);
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  Compatible: 0x" OTTD_PRINTFHEX64, info->compatible_railtypes);
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  All compatible: 0x" OTTD_PRINTFHEX64, info->all_compatible_railtypes);
 			print(buffer);
 		};
 
