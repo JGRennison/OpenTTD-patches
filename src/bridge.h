@@ -100,6 +100,12 @@ bool MayTownBuildBridgeType(BridgeType bridge_type);
 int CalcBridgeLenCostFactor(int x);
 BridgePiecePillarFlags GetBridgeTilePillarFlags(TileIndex tile, TileIndex northern_bridge_end, TileIndex southern_bridge_end, BridgeType bridge_type, TransportType bridge_transport_type);
 
+struct BridgePieceDebugInfo {
+	BridgePieces piece;
+	BridgePiecePillarFlags pillar_flags;
+};
+BridgePieceDebugInfo GetBridgePieceDebugInfo(TileIndex tile);
+
 void ResetBridges();
 
 #endif /* BRIDGE_H */

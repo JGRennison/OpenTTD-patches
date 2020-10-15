@@ -2052,6 +2052,19 @@ BridgePiecePillarFlags GetBridgeTilePillarFlags(TileIndex tile, TileIndex northe
 	}
 }
 
+BridgePieceDebugInfo GetBridgePieceDebugInfo(TileIndex tile)
+{
+	TileIndex rampnorth = GetNorthernBridgeEnd(tile);
+	TileIndex rampsouth = GetSouthernBridgeEnd(tile);
+
+	BridgePieces piece = CalcBridgePiece(
+		GetTunnelBridgeLength(tile, rampnorth) + 1,
+		GetTunnelBridgeLength(tile, rampsouth) + 1
+	);
+	BridgePiecePillarFlags pillar_flags = GetBridgeTilePillarFlags(tile, rampnorth, rampsouth, GetBridgeType(rampnorth), GetTunnelBridgeTransportType(rampnorth));
+	return { piece, pillar_flags };
+}
+
 /**
  * Draw the middle bits of a bridge.
  * @param ti Tile information of the tile to draw it on.
