@@ -861,6 +861,9 @@ class NIHRoadType : public NIHelper {
 					HasBit(rti->flags, ROTF_HIDDEN) ? 'h' : '-',
 					HasBit(rti->flags, ROTF_TOWN_BUILD) ? 'T' : '-');
 			print(buffer);
+			seprintf(buffer, lastof(buffer), "    Extra Flags: %c",
+					HasBit(rti->extra_flags, RXTF_NOT_AVAILABLE_AI_GS) ? 's' : '-');
+			print(buffer);
 			seprintf(buffer, lastof(buffer), "    Powered: 0x" OTTD_PRINTFHEX64, rti->powered_roadtypes);
 			print(buffer);
 		};

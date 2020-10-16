@@ -4568,6 +4568,11 @@ static ChangeInfoResult RoadTypeChangeInfo(uint id, int numinfo, int prop, const
 				for (int j = buf->ReadByte(); j != 0; j--) buf->ReadDWord();
 				break;
 
+			case A0RPI_ROADTYPE_EXTRA_FLAGS:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				rti->extra_flags = (RoadTypeExtraFlags)buf->ReadByte();
+				break;
+
 			default:
 				ret = CIR_UNKNOWN;
 				break;
@@ -8381,6 +8386,7 @@ static const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action5_programmable_signals", 1),
 	GRFFeatureInfo("action0_railtype_programmable_signals", 1),
 	GRFFeatureInfo("action0_railtype_restricted_signals", 1),
+	GRFFeatureInfo("action0_roadtype_extra_flags", 1),
 	GRFFeatureInfo(),
 };
 
@@ -8499,6 +8505,8 @@ static const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 	GRFPropertyMapDefinition(GSF_BRIDGES, A0RPI_BRIDGE_AVAILABILITY_FLAGS, "bridge_availability_flags"),
 	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_ENABLE_PROGRAMMABLE_SIGNALS, "railtype_enable_programmable_signals"),
 	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_ENABLE_RESTRICTED_SIGNALS, "railtype_enable_restricted_signals"),
+	GRFPropertyMapDefinition(GSF_ROADTYPES, A0RPI_ROADTYPE_EXTRA_FLAGS, "roadtype_extra_flags"),
+	GRFPropertyMapDefinition(GSF_TRAMTYPES, A0RPI_ROADTYPE_EXTRA_FLAGS, "roadtype_extra_flags"),
 	GRFPropertyMapDefinition(),
 };
 

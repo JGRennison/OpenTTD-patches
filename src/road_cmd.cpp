@@ -70,7 +70,7 @@ void ResetRoadTypes()
 		{ 0, 0, 0, 0, 0, 0 },
 		{ 0, 0, 0, 0, 0, 0 },
 		{ 0, 0, 0, 0, 0, 0, 0, 0, 0, {}, {}, 0, {}, {} },
-		ROADTYPES_NONE, ROTFB_NONE, 0, 0, 0, 0,
+		ROADTYPES_NONE, ROTFB_NONE, RXTFB_NONE, 0, 0, 0, 0,
 		RoadTypeLabelList(), 0, 0, ROADTYPES_NONE, ROADTYPES_NONE, 0,
 		{}, {} };
 	for (; i < lengthof(_roadtypes);          i++) _roadtypes[i] = empty_roadtype;
@@ -146,6 +146,7 @@ RoadType AllocateRoadType(RoadTypeLabel label, RoadTramType rtt)
 			rti->label = label;
 			rti->alternate_labels.clear();
 			rti->flags = ROTFB_NONE;
+			rti->extra_flags = RXTFB_NONE;
 			rti->introduction_date = INVALID_DATE;
 
 			/* Make us compatible with ourself. */
