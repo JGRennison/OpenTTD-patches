@@ -2618,6 +2618,28 @@ DEF_CONSOLE_CMD(ConNewGRFProfile)
 	return false;
 }
 
+DEF_CONSOLE_CMD(ConRoadTypeFlagCtl)
+{
+	if (argc != 3) {
+		IConsoleHelp("Debug: Road/tram type flag control.");
+		return true;
+	}
+
+	RoadType rt = (RoadType)atoi(argv[1]);
+	uint flag = atoi(argv[2]);
+
+	if (rt >= ROADTYPE_END) return true;
+	extern RoadTypeInfo _roadtypes[ROADTYPE_END];
+
+	if (flag >= 100) {
+		ToggleBit(_roadtypes[rt].extra_flags, flag - 100);
+	} else {
+		ToggleBit(_roadtypes[rt].flags, flag);
+	}
+
+	return true;
+}
+
 #ifdef _DEBUG
 /******************
  *  debug commands
@@ -2832,6 +2854,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("do_disaster", ConDoDisaster, ConHookNewGRFDeveloperTool, true);
 	IConsoleCmdRegister("bankrupt_company", ConBankruptCompany, ConHookNewGRFDeveloperTool, true);
 	IConsoleCmdRegister("delete_company", ConDeleteCompany, ConHookNewGRFDeveloperTool, true);
+	IConsoleCmdRegister("road_type_flag_ctl", ConRoadTypeFlagCtl, ConHookNewGRFDeveloperTool, true);
 
 	/* Bug workarounds */
 	IConsoleCmdRegister("jgrpp_bug_workaround_unblock_heliports", ConResetBlockedHeliports, ConHookNoNetwork, true);
