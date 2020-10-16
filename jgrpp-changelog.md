@@ -2,6 +2,44 @@
 
 * * *
 
+### v0.38.0 (2020-10-16)
+* Fix crash when placing object, when object class has no available objects.
+* Template-based train replacement:
+  * Fix various crashes which could occur in multiplayer when multiple template move/delete operations are in flight at the same time.
+  * Fix crash which could occur when replacing template.
+  * Fix appending to template not refreshing window in multiplayer.
+* Fix crash in download base graphics bootstrap mode.
+* Fix changing smallmap legends not updating viewport maps.
+* Fix PBS handling of mixed rail type layouts which could cause train crashes, when using NewGRFs which don't correctly define rail type compatibilities.
+* Signals on bridges/tunnels:
+  * Fix reversing train inside signalled bridge/tunnel not unreserving exit.
+  * Fix PBS detection outwards from PBS bridge/tunnel exit.
+* Add drive-through train depot emulation.
+* Increase per-vehicle order limit from 254 to 64k.
+* Add viewport map mode: transport routes (similar to smallmap transport routes mode).
+* Allow converting track type under trains when compatible with the new rail type.
+* Add sort by vehicle count to the vehicle purchase window.
+* Add company setting for whether to add vehicle to group on copy-clone.
+* Plans:
+  * Improve performance of plan rendering.
+  * Fix adding plan lines in viewport map mode.
+  * Fix marking plans visible/invisible not always fully updating the screen.
+* NewGRF:
+  * Allow rail type GRF to provide custom signal sprites for restricted signals and programmable pre-signals.
+  * Add bridge property to prevent towns or AI/GS building bridge type.
+  * Add road/tram type properties: not available to AI/GS, and may not be modified by towns.
+* Increase number of settings which can be changed in multiplayer.
+* Console:
+  * Add network server commands to get/set company password hashes.
+  * Allow sending an empty password to drop settings_access.
+* Make smallmap refresh period variable with map mode/zoom and pause state.
+* Various performance improvements for viewport map mode and some windows.
+* Improve scheduling of cargodist link graph updates.
+* Reduce screen-tearing on Linux/Unix (SDL2).
+* Fix build/compilation issue on MacOS.
+* Add Korean translations by TELK.
+* Bump trunk base from commit 53a3d940b15ca2e769b4db19079b3b6913c48647 to commit 313141d2f1218e487a546514831b91d794c20fde.
+
 ### v0.37.0 (2020-09-22)
 * Fix crash when upgrading dual road/tram bridge, when the other road/tram type does not extend across the bridge, but is present on the upgrade tile.
 * Fix crashes or other erros which could occur after the NewGRF error window is shown after generating a new map.
@@ -14,7 +52,7 @@
   * Add train slot and counter conditionals.
 * Template-based train replacement:
   * Fix being able to open template replacement window more than once.
-  * Fix replacement flags being reset when when editing template.
+  * Fix replacement flags being reset when editing template.
   * Fix group add/remove/rename not updating template replacement GUI in multiplayer.
   * Fix no error message when attaching new template vehicle fails.
   * Do not keep remaining vehicles by default.

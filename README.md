@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.37.0
+## JGR's Patchpack version 0.38.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -206,6 +206,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add support for server admin use of money, magic bulldozer, tunnels and jet crashes cheats in multiplayer.  
   * Add setting to allow non server admins to use the money cheat in multiplayer.  
   * Add cheats to set inflation income and cost factors.
+  
+* Drive-through train depot emulation (added in v0.38.0)
 
 * Save/load and savegame format changes  
   * Various changes to improve handling of savegames which use features not in trunk.  
@@ -268,6 +270,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add settings to enable multiple churches/stadiums and to ignore date/zone/GRF when placing houses in the scenario editor. (added in v0.36.0).  
   * Add setting for default road/tram types. (added in v0.37.0).  
   * Allow building objects by area (1x1 objects only). (added in v0.37.0).  
+  * Increase per-vehicle order limit from 254 to 64k. (added in v0.38.0).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
   * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).
