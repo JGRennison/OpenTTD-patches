@@ -832,7 +832,7 @@ class NIHRoadType : public NIHelper {
 	uint GetParent(uint index) const override            { return UINT32_MAX; }
 	const void *GetInstance(uint index) const override   { return nullptr; }
 	const void *GetSpec(uint index) const override       { return nullptr; }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE, INVALID_STRING_ID, index); }
+	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE, INVALID_STRING_ID, index); }
 	uint32 GetGRFID(uint index) const override           { return 0; }
 
 	uint Resolve(uint index, uint var, uint param, GetVariableExtra *extra) const override
@@ -842,16 +842,34 @@ class NIHRoadType : public NIHelper {
 		RoadTypeResolverObject ro(nullptr, index, TCX_NORMAL, ROTSG_END);
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
 	}
+
+	void ExtraInfo(uint index, std::function<void(const char *)> print) const override
+	{
+		print("Debug Info:");
+		auto writeInfo = [&](RoadTramType rtt) {
+			RoadType type = GetRoadType(index, rtt);
+			if (type == INVALID_ROADTYPE) return;
+
+			char buffer[1024];
+			const RoadTypeInfo* rti = GetRoadTypeInfo(type);
+			seprintf(buffer, lastof(buffer), "  %s Type: %u (0x" OTTD_PRINTFHEX64 ")", rtt == RTT_TRAM ? "Tram" : "Road", type, (static_cast<RoadTypes>(1) << type));
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "    Flags: %c%c%c%c%c",
+					HasBit(rti->flags, ROTF_CATENARY) ? 'c' : '-',
+					HasBit(rti->flags, ROTF_NO_LEVEL_CROSSING) ? 'l' : '-',
+					HasBit(rti->flags, ROTF_NO_HOUSES) ? 'X' : '-',
+					HasBit(rti->flags, ROTF_HIDDEN) ? 'h' : '-',
+					HasBit(rti->flags, ROTF_TOWN_BUILD) ? 'T' : '-');
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "    Powered: 0x" OTTD_PRINTFHEX64, rti->powered_roadtypes);
+			print(buffer);
+		};
+		writeInfo(RTT_ROAD);
+		writeInfo(RTT_TRAM);
+	}
 };
 
 static const NIFeature _nif_roadtype = {
-	nullptr,
-	nullptr,
-	_niv_roadtypes,
-	new NIHRoadType(),
-};
-
-static const NIFeature _nif_tramtype = {
 	nullptr,
 	nullptr,
 	_niv_roadtypes,
@@ -879,7 +897,7 @@ static const NIFeature * const _nifeatures[] = {
 	&_nif_railtype,     // GSF_RAILTYPES
 	&_nif_airporttile,  // GSF_AIRPORTTILES
 	&_nif_roadtype,     // GSF_ROADTYPES
-	&_nif_tramtype,     // GSF_TRAMTYPES
+	&_nif_roadtype,     // GSF_TRAMTYPES
 	&_nif_town,         // GSF_FAKE_TOWNS
 	&_nif_station_struct,  // GSF_FAKE_STATION_STRUCT
 };
