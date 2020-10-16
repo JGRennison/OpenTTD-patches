@@ -333,6 +333,8 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 	TileIndex tile_start = p1;
 	TileIndex tile_end = end_tile;
 
+	if ((flags & DC_TOWN) && !(MayTownModifyRoad(tile_start) && MayTownModifyRoad(tile_end))) return CMD_ERROR;
+
 	if (company == OWNER_DEITY) {
 		if (transport_type != TRANSPORT_ROAD) return CMD_ERROR;
 		const Town *town = CalcClosestTownFromTile(tile_start);

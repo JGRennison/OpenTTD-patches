@@ -976,6 +976,7 @@ void OnTick_Town()
 static RoadBits GetTownRoadBits(TileIndex tile)
 {
 	if (IsRoadDepotTile(tile) || IsStandardRoadStopTile(tile)) return ROAD_NONE;
+	if (!MayTownModifyRoad(tile)) return ROAD_NONE;
 
 	return GetAnyRoadBits(tile, RTT_ROAD, true);
 }
@@ -996,6 +997,7 @@ RoadType GetTownRoadType(const Town *t)
 
 		/* Can town build this road. */
 		if (!HasBit(rti->flags, ROTF_TOWN_BUILD)) continue;
+		if (HasBit(rti->extra_flags, RXTF_NO_TOWN_MODIFICATION)) continue;
 
 		/* Not yet introduced at this date. */
 		if (IsInsideMM(rti->introduction_date, 0, MAX_DAY) && rti->introduction_date > _date) continue;
@@ -1009,6 +1011,17 @@ RoadType GetTownRoadType(const Town *t)
 	}
 
 	return best_rt;
+}
+
+bool MayTownModifyRoad(TileIndex tile)
+{
+	if (MayHaveRoad(tile)) {
+		RoadType present_road = GetRoadTypeRoad(tile);
+		if (present_road != INVALID_ROADTYPE && HasBit(GetRoadTypeInfo(present_road)->extra_flags, RXTF_NO_TOWN_MODIFICATION)) return false;
+		RoadType present_tram = GetRoadTypeTram(tile);
+		if (present_tram != INVALID_ROADTYPE && HasBit(GetRoadTypeInfo(present_tram)->extra_flags, RXTF_NO_TOWN_MODIFICATION)) return false;
+	}
+	return true;
 }
 
 /**
@@ -1069,7 +1082,7 @@ static bool IsRoadAllowedHere(Town *t, TileIndex tile, DiagDirection dir)
 		 * This is to make sure that we can build a road here later. */
 		RoadType rt = GetTownRoadType(t);
 		if (DoCommand(tile, ((dir == DIAGDIR_NW || dir == DIAGDIR_SE) ? ROAD_Y : ROAD_X) | (rt << 4), 0, DC_AUTO, CMD_BUILD_ROAD).Failed() &&
-				DoCommand(tile, 0, 0, DC_AUTO, CMD_LANDSCAPE_CLEAR).Failed()) {
+				DoCommand(tile, 0, 0, DC_AUTO | DC_TOWN, CMD_LANDSCAPE_CLEAR).Failed()) {
 			return false;
 		}
 	}
@@ -1087,7 +1100,7 @@ static bool IsRoadAllowedHere(Town *t, TileIndex tile, DiagDirection dir)
 			if (!_generating_world && Chance16(1, 10)) {
 				/* Note: Do not replace "^ SLOPE_ELEVATED" with ComplementSlope(). The slope might be steep. */
 				res = DoCommand(tile, Chance16(1, 16) ? cur_slope : cur_slope ^ SLOPE_ELEVATED, 0,
-						DC_EXEC | DC_AUTO | DC_NO_WATER, CMD_TERRAFORM_LAND);
+						DC_EXEC | DC_AUTO | DC_NO_WATER | DC_TOWN, CMD_TERRAFORM_LAND);
 			}
 			if (res.Failed() && Chance16(1, 3)) {
 				/* We can consider building on the slope, though. */
@@ -1103,9 +1116,9 @@ static bool TerraformTownTile(TileIndex tile, int edges, int dir)
 {
 	assert(tile < MapSize());
 
-	CommandCost r = DoCommand(tile, edges, dir, DC_AUTO | DC_NO_WATER, CMD_TERRAFORM_LAND);
+	CommandCost r = DoCommand(tile, edges, dir, DC_AUTO | DC_NO_WATER | DC_TOWN, CMD_TERRAFORM_LAND);
 	if (r.Failed() || r.GetCost() >= (_price[PR_TERRAFORM] + 2) * 8) return false;
-	DoCommand(tile, edges, dir, DC_AUTO | DC_NO_WATER | DC_EXEC, CMD_TERRAFORM_LAND);
+	DoCommand(tile, edges, dir, DC_AUTO | DC_NO_WATER | DC_TOWN | DC_EXEC, CMD_TERRAFORM_LAND);
 	return true;
 }
 
@@ -1237,7 +1250,7 @@ static bool GrowTownWithExtraHouse(Town *t, TileIndex tile)
 static bool GrowTownWithRoad(const Town *t, TileIndex tile, RoadBits rcmd)
 {
 	RoadType rt = GetTownRoadType(t);
-	if (DoCommand(tile, rcmd | (rt << 4), t->index, DC_EXEC | DC_AUTO | DC_NO_WATER, CMD_BUILD_ROAD).Succeeded()) {
+	if (DoCommand(tile, rcmd | (rt << 4), t->index, DC_EXEC | DC_AUTO | DC_NO_WATER | DC_TOWN, CMD_BUILD_ROAD).Succeeded()) {
 		_grow_town_result = GROWTH_SUCCEED;
 		return true;
 	}
@@ -1296,6 +1309,9 @@ static bool GrowTownWithBridge(const Town *t, const TileIndex tile, const DiagDi
 	/* no water tiles in between? */
 	if (bridge_length == 1) return false;
 
+	if (!MayTownModifyRoad(bridge_tile)) return false;
+	if (IsValidTile(bridge_tile + delta) && !MayTownModifyRoad(bridge_tile + delta)) return false;
+
 	std::bitset <MAX_BRIDGES> tried;
 	uint n = MAX_BRIDGES;
 	byte bridge_type = RandomRange (n);
@@ -1303,8 +1319,8 @@ static bool GrowTownWithBridge(const Town *t, const TileIndex tile, const DiagDi
 	for (;;) {
 		/* Can we actually build the bridge? */
 		RoadType rt = GetTownRoadType(t);
-		if (MayTownBuildBridgeType(bridge_type) && DoCommand(tile, bridge_tile, bridge_type | rt << 8 | TRANSPORT_ROAD << 15, CommandFlagsToDCFlags(GetCommandFlags(CMD_BUILD_BRIDGE)), CMD_BUILD_BRIDGE).Succeeded()) {
-			DoCommand(tile, bridge_tile, bridge_type | rt << 8 | TRANSPORT_ROAD << 15, DC_EXEC | CommandFlagsToDCFlags(GetCommandFlags(CMD_BUILD_BRIDGE)), CMD_BUILD_BRIDGE);
+		if (MayTownBuildBridgeType(bridge_type) && DoCommand(tile, bridge_tile, bridge_type | rt << 8 | TRANSPORT_ROAD << 15, CommandFlagsToDCFlags(GetCommandFlags(CMD_BUILD_BRIDGE)) | DC_TOWN, CMD_BUILD_BRIDGE).Succeeded()) {
+			DoCommand(tile, bridge_tile, bridge_type | rt << 8 | TRANSPORT_ROAD << 15, DC_EXEC | CommandFlagsToDCFlags(GetCommandFlags(CMD_BUILD_BRIDGE)) | DC_TOWN, CMD_BUILD_BRIDGE);
 			_grow_town_result = GROWTH_SUCCEED;
 			return true;
 		}
@@ -1389,6 +1405,7 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 
 		if (!_settings_game.economy.allow_town_roads && !_generating_world) return;
 		if (!_settings_game.economy.allow_town_level_crossings && IsTileType(tile, MP_RAILWAY)) return;
+		if (!MayTownModifyRoad(tile)) return;
 
 		/* Remove hills etc */
 		if (!_settings_game.construction.build_on_slopes || Chance16(1, 6)) LevelTownLand(tile);
@@ -1791,9 +1808,9 @@ static bool GrowTown(Town *t)
 		for (ptr = _town_coord_mod; ptr != endof(_town_coord_mod); ++ptr) {
 			/* Only work with plain land that not already has a house */
 			if (!IsTileType(tile, MP_HOUSE) && IsTileFlat(tile)) {
-				if (DoCommand(tile, 0, 0, DC_AUTO | DC_NO_WATER, CMD_LANDSCAPE_CLEAR).Succeeded()) {
+				if (DoCommand(tile, 0, 0, DC_AUTO | DC_NO_WATER | DC_TOWN, CMD_LANDSCAPE_CLEAR).Succeeded()) {
 					RoadType rt = GetTownRoadType(t);
-					DoCommand(tile, GenRandomRoadBits() | (rt << 4), t->index, DC_EXEC | DC_AUTO, CMD_BUILD_ROAD);
+					DoCommand(tile, GenRandomRoadBits() | (rt << 4), t->index, DC_EXEC | DC_AUTO | DC_TOWN, CMD_BUILD_ROAD);
 					cur_company.Restore();
 					return true;
 				}
@@ -2366,7 +2383,7 @@ HouseZonesBits GetTownRadiusGroup(const Town *t, TileIndex tile)
  */
 static inline void ClearMakeHouseTile(TileIndex tile, Town *t, byte counter, byte stage, HouseID type, byte random_bits)
 {
-	CommandCost cc = DoCommand(tile, 0, 0, DC_EXEC | DC_AUTO | DC_NO_WATER, CMD_LANDSCAPE_CLEAR);
+	CommandCost cc = DoCommand(tile, 0, 0, DC_EXEC | DC_AUTO | DC_NO_WATER | DC_TOWN, CMD_LANDSCAPE_CLEAR);
 
 	assert(cc.Succeeded());
 
@@ -2430,7 +2447,7 @@ static inline CommandCost CanBuildHouseHere(TileIndex tile, TownID town, bool no
 	if (IsBridgeAbove(tile)) return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
 
 	/* can we clear the land? */
-	CommandCost ret = DoCommand(tile, 0, 0, DC_AUTO | DC_NO_WATER, CMD_LANDSCAPE_CLEAR);
+	CommandCost ret = DoCommand(tile, 0, 0, DC_AUTO | DC_NO_WATER | DC_TOWN, CMD_LANDSCAPE_CLEAR);
 	if (ret.Failed()) return ret;
 
 	/* do not try to build over house owned by another town */
@@ -3261,7 +3278,7 @@ static CommandCost TownActionRoadRebuild(Town *t, DoCommandFlag flags)
 static bool TryClearTile(TileIndex tile)
 {
 	Backup<CompanyID> cur_company(_current_company, OWNER_NONE, FILE_LINE);
-	CommandCost r = DoCommand(tile, 0, 0, DC_NONE, CMD_LANDSCAPE_CLEAR);
+	CommandCost r = DoCommand(tile, 0, 0, DC_TOWN, CMD_LANDSCAPE_CLEAR);
 	cur_company.Restore();
 	return r.Succeeded();
 }
@@ -3333,7 +3350,7 @@ static CommandCost TownActionBuildStatue(Town *t, DoCommandFlag flags)
 
 	if (flags & DC_EXEC) {
 		Backup<CompanyID> cur_company(_current_company, OWNER_NONE, FILE_LINE);
-		DoCommand(statue_data.best_position, 0, 0, DC_EXEC, CMD_LANDSCAPE_CLEAR);
+		DoCommand(statue_data.best_position, 0, 0, DC_EXEC | DC_TOWN, CMD_LANDSCAPE_CLEAR);
 		cur_company.Restore();
 		BuildObject(OBJECT_STATUE, statue_data.best_position, _current_company, t);
 		SetBit(t->statues, _current_company); // Once found and built, "inform" the Town.

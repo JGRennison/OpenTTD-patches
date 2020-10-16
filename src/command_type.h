@@ -477,6 +477,7 @@ enum DoCommandFlag {
 	DC_NO_MODIFY_TOWN_RATING = 0x400, ///< do not change town rating
 	DC_FORCE_CLEAR_TILE      = 0x800, ///< do not only remove the object on the tile, but also clear any water left on it
 	DC_ALLOW_REMOVE_WATER    = 0x1000,///< always allow removing water
+	DC_TOWN                  = 0x2000,///< town operation
 };
 DECLARE_ENUM_AS_BIT_SET(DoCommandFlag)
 

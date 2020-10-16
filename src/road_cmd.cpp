@@ -721,6 +721,8 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 
 	bool disable_custom_bridge_heads = HasBit(p1, 13);
 
+	if ((flags & DC_TOWN) && !MayTownModifyRoad(tile)) return CMD_ERROR;
+
 	Slope tileh = GetTileSlope(tile);
 	RoadTramType rtt = GetRoadTramType(rt);
 

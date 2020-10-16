@@ -32,6 +32,7 @@
 #include "pathfinder/npf/aystar.h"
 #include "saveload/saveload.h"
 #include "framerate_type.h"
+#include "town.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "scope_info.h"
 #include <list>
@@ -712,6 +713,8 @@ CommandCost CmdLandscapeClear(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 	if (c != nullptr && (int)GB(c->clear_limit, 16, 16) < 1) {
 		return_cmd_error(STR_ERROR_CLEARING_LIMIT_REACHED);
 	}
+
+	if ((flags & DC_TOWN) && !MayTownModifyRoad(tile)) return CMD_ERROR;
 
 	const ClearedObjectArea *coa = FindClearedObject(tile);
 
