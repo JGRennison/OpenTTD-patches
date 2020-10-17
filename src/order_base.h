@@ -77,7 +77,6 @@ private:
 	CargoID refit_cargo;  ///< Refit CargoID
 
 	uint8 occupancy;     ///< Estimate of vehicle occupancy on departure, for the current order, 0 indicates invalid, 1 - 101 indicate 0 - 100%
-	int8 jump_counter;   ///< Counter for the 'jump xx% of times' option
 
 	std::unique_ptr<OrderExtraInfo> extra; ///< Extra order info
 
@@ -325,6 +324,8 @@ public:
 	inline VehicleOrderID GetConditionSkipToOrder() const { return this->flags; }
 	/** Get the value to base the skip on. */
 	inline uint16 GetConditionValue() const { return GB(this->dest, 0, 11); }
+	/** Get counter for the 'jump xx% of times' option */
+	inline int8 GetJumpCounter() const { return GB(this->GetXData(), 0, 8); }
 
 	/** Set how the consist must be loaded. */
 	inline void SetLoadType(OrderLoadFlags load_type)
@@ -384,6 +385,8 @@ public:
 	inline void SetConditionSkipToOrder(VehicleOrderID order_id) { this->flags = order_id; }
 	/** Set the value to base the skip on. */
 	inline void SetConditionValue(uint16 value) { SB(this->dest, 0, 11, value); }
+	/** Get counter for the 'jump xx% of times' option */
+	inline void SetJumpCounter(int8 jump_counter) { SB(this->GetXDataRef(), 0, 8, jump_counter); }
 
 	/* As conditional orders write their "skip to" order all over the flags, we cannot check the
 	 * flags to find out if timetabling is enabled. However, as conditional orders are never

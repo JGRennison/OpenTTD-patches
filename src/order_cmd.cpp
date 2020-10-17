@@ -176,12 +176,13 @@ void Order::MakeLoading(bool ordered)
  */
 bool Order::UpdateJumpCounter(byte percent, bool dry_run)
 {
-	if (dry_run) return this->jump_counter >= 0;
-	if (this->jump_counter >= 0) {
-		this->jump_counter += (percent - 100);
+	const int8 jump_counter = this->GetJumpCounter();
+	if (dry_run) return jump_counter >= 0;
+	if (jump_counter >= 0) {
+		this->SetJumpCounter(jump_counter + (percent - 100));
 		return true;
 	}
-	this->jump_counter += percent;
+	this->SetJumpCounter(jump_counter + percent);
 	return false;
 }
 
@@ -320,7 +321,6 @@ Order::Order(uint32 packed)
 	this->occupancy     = 0;
 	this->wait_time     = 0;
 	this->travel_time   = 0;
-	this->jump_counter  = 0;
 	this->max_speed     = UINT16_MAX;
 }
 
@@ -361,7 +361,6 @@ void Order::AssignOrder(const Order &other)
 
 	this->wait_time   = other.wait_time;
 
-	this->jump_counter = other.jump_counter;
 	this->travel_time = other.travel_time;
 	this->max_speed   = other.max_speed;
 
