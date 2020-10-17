@@ -130,11 +130,14 @@ const SaveLoad *GetOrderDescription()
 	return _order_desc;
 }
 
+static std::vector<SaveLoad> _filtered_desc;
+
 static void Save_ORDR()
 {
+	_filtered_desc = SlFilterObject(GetOrderDescription());
 	for (Order *order : Order::Iterate()) {
 		SlSetArrayIndex(order->index);
-		SlObject(order, GetOrderDescription());
+		SlObjectSaveFiltered(order, _filtered_desc.data());
 	}
 }
 
@@ -186,11 +189,12 @@ static void Load_ORDR()
 			if (prev != nullptr) prev->next = o;
 		}
 	} else {
+		_filtered_desc = SlFilterObject(GetOrderDescription());
 		int index;
 
 		while ((index = SlIterateArray()) != -1) {
 			Order *order = new (index) Order();
-			SlObject(order, GetOrderDescription());
+			SlObjectLoadFiltered(order, _filtered_desc.data());
 		}
 	}
 }
@@ -210,22 +214,24 @@ const SaveLoad *GetOrderExtraInfoDescription()
 
 void Save_ORDX()
 {
+	_filtered_desc = SlFilterObject(GetOrderExtraInfoDescription());
 	for (Order *order : Order::Iterate()) {
 		if (order->extra) {
 			SlSetArrayIndex(order->index);
-			SlObject(order->extra.get(), GetOrderExtraInfoDescription());
+			SlObjectSaveFiltered(order->extra.get(), _filtered_desc.data());
 		}
 	}
 }
 
 void Load_ORDX()
 {
+	_filtered_desc = SlFilterObject(GetOrderExtraInfoDescription());
 	int index;
 	while ((index = SlIterateArray()) != -1) {
 		Order *order = Order::GetIfValid(index);
 		assert(order != nullptr);
 		order->AllocExtraInfo();
-		SlObject(order->extra.get(), GetOrderExtraInfoDescription());
+		SlObjectLoadFiltered(order->extra.get(), _filtered_desc.data());
 	}
 }
 
