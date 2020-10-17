@@ -870,7 +870,7 @@ bool DoCommandP(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallbac
 
 	CommandLogEntryFlag log_flags;
 	log_flags = CLEF_NONE;
-	if (!StrEmpty(text)) log_flags |= CLEF_TEXT;
+	if (binary_length == 0 && !StrEmpty(text)) log_flags |= CLEF_TEXT;
 	if (estimate_only) log_flags |= CLEF_ESTIMATE_ONLY;
 	if (only_sending) log_flags |= CLEF_ONLY_SENDING;
 	if (my_cmd) log_flags |= CLEF_MY_CMD;
@@ -907,7 +907,7 @@ CommandCost DoCommandPScript(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, C
 
 	CommandLogEntryFlag log_flags;
 	log_flags = CLEF_SCRIPT;
-	if (!StrEmpty(text)) log_flags |= CLEF_TEXT;
+	if (binary_length == 0 && !StrEmpty(text)) log_flags |= CLEF_TEXT;
 	if (estimate_only) log_flags |= CLEF_ESTIMATE_ONLY;
 	if (_networking && !(cmd & CMD_NETWORK_COMMAND)) log_flags |= CLEF_ONLY_SENDING;
 	if (my_cmd) log_flags |= CLEF_MY_CMD;
