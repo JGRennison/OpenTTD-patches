@@ -2769,6 +2769,10 @@ void Vehicle::DeleteUnreachedImplicitOrders()
 			/* Do not delete orders, only skip them */
 			ClrBit(gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS);
 			this->cur_implicit_order_index = this->cur_real_order_index;
+			if (this->cur_timetable_order_index != this->cur_real_order_index) {
+				/* Timetable order ID was not the real order, to avoid updating the wrong timetable, just clear the timetable index */
+				this->cur_timetable_order_index = INVALID_VEH_ORDER_ID;
+			}
 			InvalidateVehicleOrder(this, 0);
 			return;
 		}
