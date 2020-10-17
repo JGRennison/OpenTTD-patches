@@ -694,7 +694,8 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 
 		/* Orders for version 5 and on */
 		 SLE_CONDVAR(Vehicle, current_order.type,    SLE_UINT8,                    SLV_5, SL_MAX_VERSION),
-		 SLE_CONDVAR(Vehicle, current_order.flags,   SLE_UINT8,                    SLV_5, SL_MAX_VERSION),
+		SLE_CONDVAR_X(Vehicle, current_order.flags,  SLE_FILE_U8 | SLE_VAR_U16,    SLV_5, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_FLAGS_EXTRA, 0, 0)),
+		SLE_CONDVAR_X(Vehicle, current_order.flags,  SLE_UINT16,                   SLV_5, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_FLAGS_EXTRA, 1)),
 		 SLE_CONDVAR(Vehicle, current_order.dest,    SLE_UINT16,                   SLV_5, SL_MAX_VERSION),
 
 		/* Refit in current order */

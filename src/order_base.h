@@ -70,15 +70,15 @@ private:
 	friend void Load_VEOX();                                             ///< Saving and loading of orders.
 	friend void Save_VEOX();                                             ///< Saving and loading of orders.
 
-	uint8 type;           ///< The type of order + non-stop flags
-	uint8 flags;          ///< Load/unload types, depot order/action types.
+	std::unique_ptr<OrderExtraInfo> extra; ///< Extra order info
+
+	uint16 flags;         ///< Load/unload types, depot order/action types.
 	DestinationID dest;   ///< The destination of the order.
+	uint8 type;           ///< The type of order + non-stop flags
 
 	CargoID refit_cargo;  ///< Refit CargoID
 
 	uint8 occupancy;     ///< Estimate of vehicle occupancy on departure, for the current order, 0 indicates invalid, 1 - 101 indicate 0 - 100%
-
-	std::unique_ptr<OrderExtraInfo> extra; ///< Extra order info
 
 	TimetableTicks wait_time;    ///< How long in ticks to wait at the destination.
 	TimetableTicks travel_time;  ///< How long in ticks the journey to this destination should take.
@@ -120,7 +120,7 @@ public:
 	Order() : flags(0), refit_cargo(CT_NO_REFIT), max_speed(UINT16_MAX) {}
 	~Order();
 
-	Order(uint32 packed);
+	Order(uint64 packed);
 
 	Order(const Order& other)
 	{
@@ -504,7 +504,7 @@ public:
 	void AssignOrder(const Order &other);
 	bool Equals(const Order &other) const;
 
-	uint32 Pack() const;
+	uint64 Pack() const;
 	uint16 MapOldOrder() const;
 	void ConvertFromOldSavegame();
 };

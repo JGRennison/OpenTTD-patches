@@ -82,7 +82,17 @@ void Order::ConvertFromOldSavegame()
  */
 static Order UnpackVersion4Order(uint16 packed)
 {
-	return Order(GB(packed, 8, 8) << 16 | GB(packed, 4, 4) << 8 | GB(packed, 0, 4));
+	return Order(((uint64) GB(packed, 8, 8)) << 24 | ((uint64) GB(packed, 4, 4)) << 8 | ((uint64) GB(packed, 0, 4)));
+}
+
+/**
+ * Unpacks a order from savegames with version 5.1 and lower
+ * @param packed packed order
+ * @return unpacked order
+ */
+static Order UnpackVersion5Order(uint32 packed)
+{
+	return Order(((uint64) GB(packed, 16, 16)) << 24 | ((uint64) GB(packed, 8, 8)) << 8 | ((uint64) GB(packed, 0, 8)));
 }
 
 /**
@@ -107,7 +117,8 @@ const SaveLoad *GetOrderDescription()
 {
 	static const SaveLoad _order_desc[] = {
 		     SLE_VAR(Order, type,           SLE_UINT8),
-		     SLE_VAR(Order, flags,          SLE_UINT8),
+		SLE_CONDVAR_X(Order, flags,              SLE_FILE_U8 | SLE_VAR_U16,    SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_FLAGS_EXTRA, 0, 0)),
+		SLE_CONDVAR_X(Order, flags,              SLE_UINT16,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_FLAGS_EXTRA, 1)),
 		SLE_CONDNULL_X(1, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP)),
 		     SLE_VAR(Order, dest,           SLE_UINT16),
 		     SLE_REF(Order, next,           REF_ORDER),
@@ -169,7 +180,8 @@ static void Load_ORDR()
 			SlArray(orders, len, SLE_UINT32);
 
 			for (size_t i = 0; i < len; ++i) {
-				new (i) Order(orders[i]);
+				Order *o = new (i) Order();
+				o->AssignOrder(UnpackVersion5Order(orders[i]));
 			}
 
 			free(orders);

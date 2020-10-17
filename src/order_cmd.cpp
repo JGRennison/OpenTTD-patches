@@ -269,14 +269,14 @@ bool Order::Equals(const Order &other) const
 }
 
 /**
- * Pack this order into a 32 bits integer, or actually only
+ * Pack this order into a 64 bits integer, or actually only
  * the type, flags and destination.
  * @return the packed representation.
  * @note unpacking is done in the constructor.
  */
-uint32 Order::Pack() const
+uint64 Order::Pack() const
 {
-	return this->dest << 16 | this->flags << 8 | this->type;
+	return ((uint64) this->dest) << 24 | ((uint64) this->flags) << 8 | ((uint64) this->type);
 }
 
 /**
@@ -310,11 +310,11 @@ uint16 Order::MapOldOrder() const
  * Create an order based on a packed representation of that order.
  * @param packed the packed representation.
  */
-Order::Order(uint32 packed)
+Order::Order(uint64 packed)
 {
 	this->type    = (OrderType)GB(packed,  0,  8);
-	this->flags   = GB(packed,  8,  8);
-	this->dest    = GB(packed, 16, 16);
+	this->flags   = GB(packed,  8,  16);
+	this->dest    = GB(packed, 24, 16);
 	this->extra   = nullptr;
 	this->next    = nullptr;
 	this->refit_cargo   = CT_NO_REFIT;
@@ -943,18 +943,18 @@ uint GetOrderDistance(const Order *prev, const Order *cur, const Vehicle *v, int
  * @param flags operation to perform
  * @param p1 various bitstuffed elements
  * - p1 = (bit  0 - 19) - ID of the vehicle
- * @param p2 packed order to insert
- * @param p3 various bitstuffed elements
- *  - p3 = (bit 0 - 15) - the selected order (if any). If the last order is given,
+ * @param p2 various bitstuffed elements
+ *  - p2 = (bit 0 - 15) - the selected order (if any). If the last order is given,
  *                        the order will be inserted before that one
+ * @param p3 packed order to insert
  * @param text unused
  * @return the cost of this operation or an error
  */
 CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
 {
 	VehicleID veh          = GB(p1,  0, 20);
-	VehicleOrderID sel_ord = GB(p3,  0, 16);
-	Order new_order(p2);
+	VehicleOrderID sel_ord = GB(p2,  0, 16);
+	Order new_order(p3);
 
 	return CmdInsertOrderIntl(flags, Vehicle::GetIfValid(veh), sel_ord, new_order, false);
 }

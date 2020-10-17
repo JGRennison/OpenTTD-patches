@@ -89,6 +89,7 @@ enum SlXvFeatureIndex {
 	XSLFI_LOCAL_COMPANY,                          ///< Local company ID
 	XSLFI_THROUGH_TRAIN_DEPOT,                    ///< Drive-through train depots
 	XSLFI_MORE_VEHICLE_ORDERS,                    ///< More vehicle orders - VehicleOrderID is 16 bits instead of 8
+	XSLFI_ORDER_FLAGS_EXTRA,                      ///< Order flags field extra size
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk
