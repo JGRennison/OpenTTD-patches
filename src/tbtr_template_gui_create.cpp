@@ -602,7 +602,7 @@ void ShowTemplateCreateWindow(TemplateVehicle *to_edit, bool *create_window_open
 	new TemplateCreateWindow(&_template_create_window_desc, to_edit, create_window_open);
 }
 
-void CcSetVirtualTrain(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcSetVirtualTrain(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Failed()) return;
 
@@ -614,7 +614,7 @@ void CcSetVirtualTrain(const CommandCost &result, TileIndex tile, uint32 p1, uin
 	}
 }
 
-void CcVirtualTrainWagonsMoved(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcVirtualTrainWagonsMoved(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Failed()) return;
 
@@ -625,7 +625,7 @@ void CcVirtualTrainWagonsMoved(const CommandCost &result, TileIndex tile, uint32
 	}
 }
 
-void CcDeleteVirtualTrain(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcDeleteVirtualTrain(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Failed()) return;
 

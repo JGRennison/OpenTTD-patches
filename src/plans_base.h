@@ -230,7 +230,7 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 			const TileIndex *buffer = this->temp_line->Export(&buffer_length);
 			if (buffer) {
 				_current_plan->SetVisibility(true, false);
-				ret = DoCommandP(0, _current_plan->index, (uint32) this->temp_line->tiles.size(), CMD_ADD_PLAN_LINE, nullptr, (const char *) buffer, true, buffer_length);
+				ret = DoCommandPEx(0, _current_plan->index, (uint32) this->temp_line->tiles.size(), 0, CMD_ADD_PLAN_LINE, nullptr, (const char *) buffer, buffer_length);
 				free(buffer);
 			}
 			_current_plan->temp_line->MarkDirty();

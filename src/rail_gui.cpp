@@ -94,24 +94,22 @@ static bool IsStationAvailable(const StationSpec *statspec)
 	return Convert8bitBooleanCallback(statspec->grf_prop.grffile, CBID_STATION_AVAILABILITY, cb_res);
 }
 
-void CcPlaySound_SPLAT_RAIL(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcPlaySound_SPLAT_RAIL(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Succeeded() && _settings_client.sound.confirm) SndPlayTileFx(SND_20_SPLAT_RAIL, tile);
 }
 
 static CommandContainer GenericPlaceRailCmd(TileIndex tile, Track track)
 {
-	CommandContainer ret = {
+	CommandContainer ret = NewCommandContainerBasic(
 		tile,          // tile
 		_cur_railtype, // p1
 		track,         // p2
 		(uint32) (_remove_button_clicked ?
 				CMD_REMOVE_SINGLE_RAIL | CMD_MSG(STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK) :
 				CMD_BUILD_SINGLE_RAIL | CMD_MSG(STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK)), // cmd
-		CcPlaySound_SPLAT_RAIL, // callback
-		0,
-		""             // text
-	};
+		CcPlaySound_SPLAT_RAIL // callback
+	);
 
 	return ret;
 }
@@ -145,7 +143,7 @@ static const DiagDirection _place_depot_extra_dir[12] = {
 	DIAGDIR_NW, DIAGDIR_NE, DIAGDIR_NW, DIAGDIR_NE,
 };
 
-void CcRailDepot(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcRailDepot(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Failed()) return;
 
@@ -186,7 +184,7 @@ static void PlaceRail_Waypoint(TileIndex tile)
 	}
 }
 
-void CcStation(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcStation(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Failed()) return;
 
@@ -215,7 +213,7 @@ static void PlaceRail_Station(TileIndex tile)
 		int h = _settings_client.gui.station_platlength;
 		if (!_railstation.orientation) Swap(w, h);
 
-		CommandContainer cmdcont = { tile, p1, p2, CMD_BUILD_RAIL_STATION | CMD_MSG(STR_ERROR_CAN_T_BUILD_RAILROAD_STATION), CcStation, 0, "" };
+		CommandContainer cmdcont = NewCommandContainerBasic(tile, p1, p2, CMD_BUILD_RAIL_STATION | CMD_MSG(STR_ERROR_CAN_T_BUILD_RAILROAD_STATION), CcStation);
 		ShowSelectStationIfNeeded(cmdcont, TileArea(tile, w, h));
 	}
 }
@@ -306,7 +304,7 @@ static void PlaceRail_Bridge(TileIndex tile, Window *w)
 }
 
 /** Command callback for building a tunnel */
-void CcBuildRailTunnel(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcBuildRailTunnel(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Succeeded()) {
 		if (_settings_client.sound.confirm) SndPlayTileFx(SND_20_SPLAT_RAIL, tile);
@@ -387,17 +385,15 @@ static void BuildRailClick_Remove(Window *w)
 
 static CommandContainer DoRailroadTrackCmd(TileIndex start_tile, TileIndex end_tile, Track track)
 {
-	CommandContainer ret = {
+	CommandContainer ret = NewCommandContainerBasic(
 		start_tile,                   // tile
 		end_tile,                     // p1
 		(uint32) (_cur_railtype | (track << 6)), // p2
 		(uint32) (_remove_button_clicked ?
 				CMD_REMOVE_RAILROAD_TRACK | CMD_MSG(STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK) :
 				CMD_BUILD_RAILROAD_TRACK  | CMD_MSG(STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK)), // cmd
-		CcPlaySound_SPLAT_RAIL,       // callback
-		0,
-		""                            // text
-	};
+		CcPlaySound_SPLAT_RAIL       // callback
+	);
 
 	return ret;
 }
@@ -843,7 +839,7 @@ struct BuildRailToolbarWindow : Window {
 							uint32 p1 = _cur_railtype | (select_method == VPM_X_LIMITED ? AXIS_X : AXIS_Y) << 6 | ta.w << 8 | ta.h << 16 | _ctrl_pressed << 24;
 							uint32 p2 = STAT_CLASS_WAYP | _cur_waypoint_type << 8 | INVALID_STATION << 16;
 
-							CommandContainer cmdcont = { ta.tile, p1, p2, CMD_BUILD_RAIL_WAYPOINT | CMD_MSG(STR_ERROR_CAN_T_BUILD_TRAIN_WAYPOINT), CcPlaySound_SPLAT_RAIL, 0, "" };
+							CommandContainer cmdcont = NewCommandContainerBasic(ta.tile, p1, p2, CMD_BUILD_RAIL_WAYPOINT | CMD_MSG(STR_ERROR_CAN_T_BUILD_TRAIN_WAYPOINT), CcPlaySound_SPLAT_RAIL);
 							ShowSelectWaypointIfNeeded(cmdcont, ta);
 						}
 					}
@@ -1008,7 +1004,7 @@ static void HandleStationPlacement(TileIndex start, TileIndex end)
 	uint32 p1 = _cur_railtype | _railstation.orientation << 6 | numtracks << 8 | platlength << 16 | _ctrl_pressed << 24;
 	uint32 p2 = _railstation.station_class | _railstation.station_type << 8 | INVALID_STATION << 16;
 
-	CommandContainer cmdcont = { ta.tile, p1, p2, CMD_BUILD_RAIL_STATION | CMD_MSG(STR_ERROR_CAN_T_BUILD_RAILROAD_STATION), CcStation, 0, "" };
+	CommandContainer cmdcont = NewCommandContainerBasic(ta.tile, p1, p2, CMD_BUILD_RAIL_STATION | CMD_MSG(STR_ERROR_CAN_T_BUILD_RAILROAD_STATION), CcStation);
 	ShowSelectStationIfNeeded(cmdcont, ta);
 }
 

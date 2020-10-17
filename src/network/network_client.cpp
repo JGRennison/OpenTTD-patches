@@ -993,7 +993,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MAP_DONE(Packet
 			 * the server will give us a client-id and let us in */
 			_network_join_status = NETWORK_JOIN_STATUS_REGISTERING;
 			ShowJoinStatusWindow();
-			NetworkSendCommand(0, CCA_NEW, 0, CMD_COMPANY_CTRL, nullptr, nullptr, _local_company, 0);
+			NetworkSendCommand(0, CCA_NEW, 0, 0, CMD_COMPANY_CTRL, nullptr, nullptr, _local_company, 0);
 		}
 	} else {
 		/* take control over an existing company */

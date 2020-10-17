@@ -901,8 +901,8 @@ void NetworkGameLoop()
 		while (f != nullptr && !feof(f)) {
 			if (_date == next_date && _date_fract == next_date_fract) {
 				if (cp != nullptr) {
-					NetworkSendCommand(cp->tile, cp->p1, cp->p2, cp->cmd & ~CMD_FLAGS_MASK, nullptr, cp->text.c_str(), cp->company, cp->binary_length);
-					DEBUG(net, 0, "injecting: date{%08x; %02x; %02x}; %02x; %06x; %08x; %08x; %08x; \"%s\" (%x) (%s)", _date, _date_fract, _tick_skip_counter, (int)_current_company, cp->tile, cp->p1, cp->p2, cp->cmd, cp->text.c_str(), cp->binary_length, GetCommandName(cp->cmd));
+					NetworkSendCommand(cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd & ~CMD_FLAGS_MASK, nullptr, cp->text.c_str(), cp->company, cp->binary_length);
+					DEBUG(net, 0, "injecting: date{%08x; %02x; %02x}; %02x; %06x; %08x; %08x; " OTTD_PRINTFHEX64PAD " %08x; \"%s\" (%x) (%s)", _date, _date_fract, _tick_skip_counter, (int)_current_company, cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd, cp->text.c_str(), cp->binary_length, GetCommandName(cp->cmd));
 					cp.reset();
 				}
 				if (check_sync_state) {
@@ -941,11 +941,12 @@ void NetworkGameLoop()
 				int company;
 				cp->text.resize(MAX_CMD_TEXT_LENGTH);
 				assert_compile(MAX_CMD_TEXT_LENGTH > 8192);
-				int ret = sscanf(p, "date{%x; %x; %x}; company: %x; tile: %x (%*u x %*u); p1: %x; p2: %x; cmd: %x; \"%8192[^\"]\"", &next_date, &next_date_fract, &next_tick_skip_counter, &company, &cp->tile, &cp->p1, &cp->p2, &cp->cmd, const_cast<char *>(cp->text.c_str()));
-				/* There are 9 pieces of data to read, however the last is a
+				int ret = sscanf(p, "date{%x; %x; %x}; company: %x; tile: %x (%*u x %*u); p1: %x; p2: %x; p3: " OTTD_PRINTFHEX64 "; cmd: %x; \"%8192[^\"]\"",
+						&next_date, &next_date_fract, &next_tick_skip_counter, &company, &cp->tile, &cp->p1, &cp->p2, &cp->p3, &cp->cmd, const_cast<char *>(cp->text.c_str()));
+				/* There are 10 pieces of data to read, however the last is a
 				 * string that might or might not exist. Ignore it if that
 				 * string misses because in 99% of the time it's not used. */
-				assert(ret == 9 || ret == 8);
+				assert(ret == 10 || ret == 9);
 				cp->company = (CompanyID)company;
 				cp->binary_length = 0;
 			} else if (strncmp(p, "join: ", 6) == 0) {
@@ -959,6 +960,7 @@ void NetworkGameLoop()
 				cp->cmd = CMD_PAUSE;
 				cp->p1 = PM_PAUSED_NORMAL;
 				cp->p2 = 1;
+				cp->p3 = 0;
 				cp->callback = nullptr;
 				cp->binary_length = 0;
 				_ddc_fastforward = false;

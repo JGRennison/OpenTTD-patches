@@ -53,7 +53,7 @@ CommandCost CmdAddPlan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2
  * @param binary_length binary length of text
  * @return the cost of this operation or an error
  */
-CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text, uint32 binary_length)
+CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
 {
 	Plan *p = Plan::GetIfValid(p1);
 	if (p == nullptr) return CMD_ERROR;

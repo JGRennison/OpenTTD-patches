@@ -38,7 +38,7 @@ static void ShowBuildDocksDepotPicker(Window *parent);
 
 static Axis _ship_depot_direction;
 
-void CcBuildDocks(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcBuildDocks(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Failed()) return;
 
@@ -46,7 +46,7 @@ void CcBuildDocks(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p
 	if (!_settings_client.gui.persistent_buildingtools) ResetObjectToPlace();
 }
 
-void CcPlaySound_SPLAT_WATER(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcPlaySound_SPLAT_WATER(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Succeeded() && _settings_client.sound.confirm) SndPlayTileFx(SND_02_SPLAT_WATER, tile);
 }
@@ -196,7 +196,7 @@ struct BuildDocksToolbarWindow : Window {
 				uint32 p2 = (uint32)INVALID_STATION << 16; // no station to join
 
 				/* tile is always the land tile, so need to evaluate _thd.pos */
-				CommandContainer cmdcont = { tile, _ctrl_pressed, p2, CMD_BUILD_DOCK | CMD_MSG(STR_ERROR_CAN_T_BUILD_DOCK_HERE), CcBuildDocks, 0, "" };
+				CommandContainer cmdcont = NewCommandContainerBasic(tile, _ctrl_pressed, p2, CMD_BUILD_DOCK | CMD_MSG(STR_ERROR_CAN_T_BUILD_DOCK_HERE), CcBuildDocks);
 
 				/* Determine the watery part of the dock. */
 				DiagDirection dir = GetInclinedSlopeDirection(GetTileSlope(tile));

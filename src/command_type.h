@@ -568,7 +568,7 @@ enum CommandPauseLevel {
  * @return The CommandCost of the command, which can be succeeded or failed.
  */
 typedef CommandCost CommandProc(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text);
-typedef CommandCost CommandProcEx(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text, uint32 binary_length);
+typedef CommandCost CommandProcEx(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length);
 
 /**
  * Define a command with the flags which belongs to it.
@@ -590,9 +590,9 @@ struct Command {
 	Command(CommandProcEx *procex, const char *name, CommandFlags flags, CommandType type)
 			: procex(procex), name(name), flags(flags | CMD_PROCEX), type(type) {}
 
-	inline CommandCost Execute(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text, uint32 binary_length) const {
+	inline CommandCost Execute(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length) const {
 		if (this->flags & CMD_PROCEX) {
-			return this->procex(tile, flags, p1, p2, text, binary_length);
+			return this->procex(tile, flags, p1, p2, p3, text, binary_length);
 		} else {
 			return this->proc(tile, flags, p1, p2, text);
 		}
@@ -609,10 +609,11 @@ struct Command {
  * @param result The result of the executed command
  * @param tile The tile of the command action
  * @param p1 Additional data of the command
- * @param p1 Additional data of the command
+ * @param p2 Additional data of the command
+ * @param p3 Additional data of the command
  * @see CommandProc
  */
-typedef void CommandCallback(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd);
+typedef void CommandCallback(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd);
 
 #define MAX_CMD_TEXT_LENGTH 32000
 
@@ -624,9 +625,15 @@ struct CommandContainer {
 	uint32 p1;                       ///< parameter p1.
 	uint32 p2;                       ///< parameter p2.
 	uint32 cmd;                      ///< command being executed.
+	uint64 p3;                       ///< parameter p3. (here for alignment)
 	CommandCallback *callback;       ///< any callback function executed upon successful completion of the command.
 	uint32 binary_length;            ///< in case text contains binary data, this describes its length.
 	std::string text;                ///< possible text sent for name changes etc.
 };
+
+inline CommandContainer NewCommandContainerBasic(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback = nullptr)
+{
+	return { tile, p1, p2, cmd, 0, callback, 0, {} };
+}
 
 #endif /* COMMAND_TYPE_H */

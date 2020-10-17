@@ -143,7 +143,7 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32 val,
  * @param text LE uint16 Order index to modify.
  * @return the cost of this operation or an error
  */
-CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text, uint32 binary_length)
+CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
 {
 	VehicleID veh = GB(p1, 0, 20);
 
@@ -313,7 +313,7 @@ CommandCost CmdBulkChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p
 
 			char text[2];
 			*reinterpret_cast<uint16 *>(&text) = TO_LE16(order_number);
-			DoCommand(tile, p1, p2, flags, CMD_CHANGE_TIMETABLE, text, 2);
+			DoCommandEx(tile, p1, p2, 0, flags, CMD_CHANGE_TIMETABLE, text, 2);
 		}
 	}
 

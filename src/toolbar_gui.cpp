@@ -628,7 +628,7 @@ static CallBackFunction MenuClickCompany(int index)
 				if (_network_server) {
 					DoCommandP(0, CCA_NEW, _network_own_client_id, CMD_COMPANY_CTRL);
 				} else {
-					NetworkSendCommand(0, CCA_NEW, 0, CMD_COMPANY_CTRL, nullptr, nullptr, _local_company, 0);
+					NetworkSendCommand(0, CCA_NEW, 0, 0, CMD_COMPANY_CTRL, nullptr, nullptr, _local_company, 0);
 				}
 				return CBF_NONE;
 

@@ -720,11 +720,11 @@ void ScriptInstance::LimitOpsTillSuspend(SQInteger suspend)
 	}
 }
 
-bool ScriptInstance::DoCommandCallback(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+bool ScriptInstance::DoCommandCallback(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	ScriptObject::ActiveInstance active(this);
 
-	if (!ScriptObject::CheckLastCommand(tile, p1, p2, cmd)) {
+	if (!ScriptObject::CheckLastCommand(tile, p1, p2, p3, cmd)) {
 		DEBUG(script, 1, "DoCommandCallback terminating a script, last command does not match expected command");
 		return false;
 	}
@@ -738,7 +738,7 @@ bool ScriptInstance::DoCommandCallback(const CommandCost &result, TileIndex tile
 		ScriptObject::SetLastCost(result.GetCost());
 	}
 
-	ScriptObject::SetLastCommand(INVALID_TILE, 0, 0, CMD_END);
+	ScriptObject::SetLastCommand(INVALID_TILE, 0, 0, 0, CMD_END);
 
 	return true;
 }

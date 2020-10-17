@@ -1244,7 +1244,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet *p
 		_settings_client.network.sync_freq = min<uint16>(_settings_client.network.sync_freq, 16);
 
 		// have the server and all clients run some sanity checks
-		NetworkSendCommand(0, 0, 0, CMD_DESYNC_CHECK, nullptr, nullptr, _local_company, 0);
+		NetworkSendCommand(0, 0, 0, 0, CMD_DESYNC_CHECK, nullptr, nullptr, _local_company, 0);
 
 		SendPacketsState send_state = this->SendPackets(true);
 		if (send_state != SPS_CLOSED) {
@@ -2281,7 +2281,7 @@ void NetworkServerNewCompany(const Company *c, NetworkClientInfo *ci)
 		/* ci is nullptr when replaying, or for AIs. In neither case there is a client. */
 		ci->client_playas = c->index;
 		NetworkUpdateClientInfo(ci->client_id);
-		NetworkSendCommand(0, 0, 0, CMD_RENAME_PRESIDENT, nullptr, ci->client_name, c->index, 0);
+		NetworkSendCommand(0, 0, 0, 0, CMD_RENAME_PRESIDENT, nullptr, ci->client_name, c->index, 0);
 	}
 
 	/* Announce new company on network. */

@@ -69,17 +69,22 @@ protected:
 	/**
 	 * Executes a raw DoCommand for the script.
 	 */
-	static bool DoCommand(TileIndex tile, uint32 p1, uint32 p2, uint cmd, const char *text = nullptr, Script_SuspendCallbackProc *callback = nullptr);
+	static bool DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint cmd, const char *text = nullptr, uint32 binary_length = 0, Script_SuspendCallbackProc *callback = nullptr);
+
+	static bool DoCommand(TileIndex tile, uint32 p1, uint32 p2, uint cmd, const char *text = nullptr, Script_SuspendCallbackProc *callback = nullptr)
+	{
+		return ScriptObject::DoCommandEx(tile, p1, p2, 0, cmd, text, 0, callback);
+	}
 
 	/**
 	 * Store the latest command executed by the script.
 	 */
-	static void SetLastCommand(TileIndex tile, uint32 p1, uint32 p2, uint cmd);
+	static void SetLastCommand(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint cmd);
 
 	/**
 	 * Check if it's the latest command executed by the script.
 	 */
-	static bool CheckLastCommand(TileIndex tile, uint32 p1, uint32 p2, uint cmd);
+	static bool CheckLastCommand(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint cmd);
 
 	/**
 	 * Sets the DoCommand costs counter to a value.

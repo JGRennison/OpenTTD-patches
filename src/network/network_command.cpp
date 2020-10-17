@@ -137,13 +137,14 @@ static CommandQueue _local_execution_queue;
  * @param tile The tile to perform a command on (see #CommandProc)
  * @param p1 Additional data for the command (see #CommandProc)
  * @param p2 Additional data for the command (see #CommandProc)
+ * @param p3 Additional data for the command (see #CommandProc)
  * @param cmd The command to execute (a CMD_* value)
  * @param callback A callback function to call after the command is finished
  * @param text The text to pass
  * @param company The company that wants to send the command
  * @param binary_length The quantity of binary data in text
  */
-void NetworkSendCommand(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback, const char *text, CompanyID company, uint32 binary_length)
+void NetworkSendCommand(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, CompanyID company, uint32 binary_length)
 {
 	assert((cmd & CMD_FLAGS_MASK) == 0);
 
@@ -152,6 +153,7 @@ void NetworkSendCommand(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, Comman
 	c.tile     = tile;
 	c.p1       = p1;
 	c.p2       = p2;
+	c.p3       = p3;
 	c.cmd      = cmd;
 	c.callback = callback;
 
@@ -320,6 +322,7 @@ const char *NetworkGameSocketHandler::ReceiveCommand(Packet *p, CommandPacket *c
 
 	cp->p1      = p->Recv_uint32();
 	cp->p2      = p->Recv_uint32();
+	cp->p3      = p->Recv_uint64();
 	cp->tile    = p->Recv_uint32();
 	cp->binary_length = p->Recv_uint32();
 	if (cp->binary_length == 0) {
@@ -348,6 +351,7 @@ void NetworkGameSocketHandler::SendCommand(Packet *p, const CommandPacket *cp)
 	p->Send_uint32(cp->cmd);
 	p->Send_uint32(cp->p1);
 	p->Send_uint32(cp->p2);
+	p->Send_uint64(cp->p3);
 	p->Send_uint32(cp->tile);
 	p->Send_uint32(cp->binary_length);
 	if (cp->binary_length == 0) {

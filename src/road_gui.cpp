@@ -67,7 +67,7 @@ static RoadType _cur_roadtype;
 static DiagDirection _road_depot_orientation;
 static DiagDirection _road_station_picker_orientation;
 
-void CcPlaySound_SPLAT_OTHER(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcPlaySound_SPLAT_OTHER(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Succeeded() && _settings_client.sound.confirm) SndPlayTileFx(SND_1F_SPLAT_OTHER, tile);
 }
@@ -97,7 +97,7 @@ static void PlaceRoad_Bridge(TileIndex tile, Window *w)
  * @param p2 unused
  * @param cmd unused
  */
-void CcBuildRoadTunnel(const CommandCost &result, TileIndex start_tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcBuildRoadTunnel(const CommandCost &result, TileIndex start_tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Succeeded()) {
 		if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_SPLAT_OTHER, start_tile);
@@ -130,7 +130,7 @@ void ConnectRoadToStructure(TileIndex tile, DiagDirection direction)
 	}
 }
 
-void CcRoadDepot(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcRoadDepot(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Failed()) return;
 
@@ -156,7 +156,7 @@ void CcRoadDepot(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2
  * @param cmd Unused.
  * @see CmdBuildRoadStop
  */
-void CcRoadStop(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcRoadStop(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Failed()) return;
 
@@ -193,7 +193,7 @@ static void PlaceRoadStop(TileIndex start_tile, TileIndex end_tile, uint32 p2, u
 	p2 |= ddir << 3; // Set the DiagDirecion into p2 bits 3 and 4.
 
 	TileArea ta(start_tile, end_tile);
-	CommandContainer cmdcont = { ta.tile, (uint32)(ta.w | ta.h << 8), p2, cmd, CcRoadStop, 0, "" };
+	CommandContainer cmdcont = NewCommandContainerBasic(ta.tile, (uint32)(ta.w | ta.h << 8), p2, cmd, CcRoadStop);
 	ShowSelectStationIfNeeded(cmdcont, ta);
 }
 

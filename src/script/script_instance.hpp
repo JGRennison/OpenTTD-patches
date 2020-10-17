@@ -182,10 +182,11 @@ public:
 	 * @param tile The tile on which the command was executed.
 	 * @param p1 p1 as given to DoCommandPInternal.
 	 * @param p2 p2 as given to DoCommandPInternal.
+	 * @param p3 p3 as given to DoCommandPInternal.
 	 * @param cmd cmd as given to DoCommandPInternal.
 	 * @return true if we handled result.
 	 */
-	bool DoCommandCallback(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd);
+	bool DoCommandCallback(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd);
 
 	/**
 	 * Insert an event for this script.

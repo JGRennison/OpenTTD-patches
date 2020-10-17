@@ -98,7 +98,7 @@ ScriptInfo *AIInstance::FindLibrary(const char *library, int version)
  * @param p2 p2 as given to DoCommandPInternal.
  * @param cmd cmd as given to DoCommandPInternal.
  */
-void CcAI(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcAI(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	/*
 	 * The company might not exist anymore. Check for this.
@@ -109,7 +109,7 @@ void CcAI(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint3
 	const Company *c = Company::GetIfValid(_current_company);
 	if (c == nullptr || c->ai_instance == nullptr) return;
 
-	if (c->ai_instance->DoCommandCallback(result, tile, p1, p2, cmd)) {
+	if (c->ai_instance->DoCommandCallback(result, tile, p1, p2, p3, cmd)) {
 		c->ai_instance->Continue();
 	}
 }

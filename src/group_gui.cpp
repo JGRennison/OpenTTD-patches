@@ -1212,7 +1212,7 @@ static inline VehicleGroupWindow *FindVehicleGroupWindow(VehicleType vt, Owner o
  * @param cmd Unused.
  * @see CmdCreateGroup
  */
-void CcCreateGroup(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcCreateGroup(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Failed()) return;
 	assert(p1 <= VEH_AIRCRAFT);
@@ -1229,12 +1229,12 @@ void CcCreateGroup(const CommandCost &result, TileIndex tile, uint32 p1, uint32 
  * @param p2 Bit 0-19: Vehicle ID.
  * @param cmd Unused.
  */
-void CcAddVehicleNewGroup(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcAddVehicleNewGroup(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Failed()) return;
 	assert(Vehicle::IsValidID(GB(p2, 0, 20)));
 
-	CcCreateGroup(result, 0, Vehicle::Get(GB(p2, 0, 20))->type, 0, cmd);
+	CcCreateGroup(result, 0, Vehicle::Get(GB(p2, 0, 20))->type, 0, 0, cmd);
 }
 
 /**

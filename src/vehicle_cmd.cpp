@@ -88,7 +88,7 @@ static CommandCost GetRefitCost(const Vehicle *v, EngineID engine_type, CargoID 
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text, uint32 binary_length)
+CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	/* Elementary check for valid location. */
 	if (!IsDepotTile(tile)) return CMD_ERROR;

@@ -1027,7 +1027,7 @@ void ShowTownDirectory()
 	new TownDirectoryWindow(&_town_directory_desc);
 }
 
-void CcFoundTown(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcFoundTown(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Failed()) return;
 
@@ -1035,7 +1035,7 @@ void CcFoundTown(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2
 	if (!_settings_client.gui.persistent_buildingtools) ResetObjectToPlace();
 }
 
-void CcFoundRandomTown(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcFoundRandomTown(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Succeeded()) ScrollMainWindowToTile(Town::Get(_new_town_id)->xy);
 }
@@ -1986,15 +1986,13 @@ static void PlaceProc_House(TileIndex tile)
 		towns.resize(16);
 	}
 
-	CommandContainer cmd = {
+	CommandContainer cmd = NewCommandContainerBasic(
 		tile,
 		_cur_house, // p1 - house type and town index (town not yet set)
 		InteractiveRandom(), // p2 - random bits for the house
 		CMD_BUILD_HOUSE | CMD_MSG(STR_ERROR_CAN_T_BUILD_HOUSE_HERE),
-		CcPlaySound_SPLAT_RAIL,
-		0,
-		""
-	};
+		CcPlaySound_SPLAT_RAIL
+	);
 
 	if (!_ctrl_pressed) {
 		SB(cmd.p1, 16, 16, towns[0]); // set the town, it's alone on the list
