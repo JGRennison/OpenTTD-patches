@@ -67,6 +67,11 @@ static const uint32 _cargo_type_unload_order_drowdown_hidden_mask = 0x8; // 0100
 DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected);
 DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, int &selected);
 
+static bool ModifyOrder(const Vehicle *v, VehicleOrderID order_id, uint32 p2, bool error_msg = true)
+{
+	return DoCommandPEx(v->tile, v->index, p2, order_id, CMD_MODIFY_ORDER | (error_msg ? CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER) : 0), nullptr, nullptr, 0);
+}
+
 struct CargoTypeOrdersWindow : public Window {
 private:
 	CargoTypeOrdersWindowVariant variant;
@@ -249,12 +254,12 @@ public:
 
 			if (action_type == order_action_type) return;
 
-			DoCommandP(this->vehicle->tile, this->vehicle->index + (this->order_id << 20), mof | (action_type << 4) | (cargo_id << 20), CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+			ModifyOrder(this->vehicle, this->order_id, mof | (action_type << 4) | (cargo_id << 20));
 
 			this->GetWidget<NWidgetCore>(widget)->SetDataTip(this->cargo_type_order_dropdown[this->GetOrderActionTypeForCargo(cargo_id)], STR_CARGO_TYPE_LOAD_ORDERS_DROP_TOOLTIP + this->variant);
 			this->SetWidgetDirty(widget);
 		} else if (widget == WID_CTO_SET_TO_ALL_DROPDOWN) {
-			DoCommandP(this->vehicle->tile, this->vehicle->index + (this->order_id << 20), mof | (action_type << 4) | (CT_INVALID << 20), CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+			ModifyOrder(this->vehicle, this->order_id, mof | (action_type << 4) | (CT_INVALID << 20));
 
 			for (int i = 0; i < _sorted_standard_cargo_specs_size; i++) {
 				const CargoSpec *cs = _sorted_cargo_specs[i];
@@ -1285,6 +1290,16 @@ private:
 		}
 	}
 
+	bool InsertNewOrder(uint32 order_pack)
+	{
+		return DoCommandPEx(this->vehicle->tile, this->vehicle->index, order_pack, this->OrderGetSel(), CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER), nullptr, nullptr, 0);
+	}
+
+	bool ModifyOrder(VehicleOrderID sel_ord, uint32 p2, bool error_msg = true)
+	{
+		return ::ModifyOrder(this->vehicle, sel_ord, p2, error_msg);
+	}
+
 	/**
 	 * Handle the click on the goto button.
 	 */
@@ -1319,7 +1334,7 @@ private:
 			load_type = order->GetLoadType() == OLF_LOAD_IF_POSSIBLE ? OLF_FULL_LOAD_ANY : OLF_LOAD_IF_POSSIBLE;
 		}
 		if (order->GetLoadType() != load_type) {
-			DoCommandP(this->vehicle->tile, this->vehicle->index + (sel_ord << 20), MOF_LOAD | (load_type << 4), CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+			this->ModifyOrder(sel_ord, MOF_LOAD | (load_type << 4));
 		}
 
 		if (load_type == OLFB_CARGO_TYPE_LOAD) ShowCargoTypeOrdersWindow(this->vehicle, this, sel_ord, CTOWV_LOAD);
@@ -1345,7 +1360,7 @@ private:
 			if (order == nullptr) return;
 			i = (order->GetDepotOrderType() & ODTFB_SERVICE) ? DA_ALWAYS_GO : DA_SERVICE;
 		}
-		DoCommandP(this->vehicle->tile, this->vehicle->index + (sel_ord << 20), MOF_DEPOT_ACTION | (i << 4), CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+		this->ModifyOrder(sel_ord, MOF_DEPOT_ACTION | (i << 4));
 	}
 
 	/**
@@ -1360,7 +1375,7 @@ private:
 				(_settings_client.gui.new_nonstop || _settings_game.order.nonstop_only) && this->vehicle->IsGroundVehicle() ? ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS : ONSF_STOP_EVERYWHERE);
 		order.SetDepotActionType(ODATFB_NEAREST_DEPOT);
 
-		DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), order.Pack(), CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER));
+		this->InsertNewOrder(order.Pack());
 	}
 
 	/**
@@ -1378,12 +1393,12 @@ private:
 		}
 
 		if (order->GetUnloadType() != unload_type) {
-			DoCommandP(this->vehicle->tile, this->vehicle->index + (sel_ord << 20), MOF_UNLOAD | (unload_type << 4), CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+			this->ModifyOrder(sel_ord, MOF_UNLOAD | (unload_type << 4));
 		}
 
 		if (unload_type == OUFB_TRANSFER) {
 			/* Transfer orders with leave empty as default */
-			DoCommandP(this->vehicle->tile, this->vehicle->index + (sel_ord << 20), MOF_LOAD | (OLFB_NO_LOAD << 4), CMD_MODIFY_ORDER);
+			this->ModifyOrder(sel_ord, MOF_LOAD | (OLFB_NO_LOAD << 4), false);
 			this->SetWidgetDirty(WID_O_FULL_LOAD);
 		} else if(unload_type == OUFB_CARGO_TYPE_UNLOAD) {
 			ShowCargoTypeOrdersWindow(this->vehicle, this, sel_ord, CTOWV_UNLOAD);
@@ -1425,7 +1440,7 @@ private:
 		}
 
 		this->SetWidgetDirty(WID_O_NON_STOP);
-		DoCommandP(this->vehicle->tile, this->vehicle->index + (sel_ord << 20), MOF_NON_STOP | non_stop << 4,  CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+		this->ModifyOrder(sel_ord, MOF_NON_STOP | non_stop << 4);
 	}
 
 	/**
@@ -2103,7 +2118,7 @@ public:
 						order.index = 0;
 						order.MakeConditional(order_id);
 
-						DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), order.Pack(), CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER));
+						this->InsertNewOrder(order.Pack());
 					}
 					ResetObjectToPlace();
 					break;
@@ -2139,9 +2154,7 @@ public:
 								}
 							}
 						}
-						DoCommandP(this->vehicle->tile, this->vehicle->index + (sel << 20),
-								MOF_STOP_LOCATION | osl << 4,
-								CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+						this->ModifyOrder(sel, MOF_STOP_LOCATION | osl << 4);
 					}
 				} else {
 					/* Select clicked order */
@@ -2259,8 +2272,7 @@ public:
 
 				if (order == nullptr) break;
 
-				DoCommandP(this->vehicle->tile, this->vehicle->index + (sel_ord << 20), MOF_WAYPOINT_FLAGS | (order->GetWaypointFlags() ^ OWF_REVERSE) << 4,
-						CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+				this->ModifyOrder(sel_ord, MOF_WAYPOINT_FLAGS | (order->GetWaypointFlags() ^ OWF_REVERSE) << 4);
 				break;
 			}
 
@@ -2280,7 +2292,7 @@ public:
 				if (this->goto_type != OPOS_NONE) {
 					ResetObjectToPlace();
 				} else if (GB(this->vehicle->GetOrder(this->OrderGetSel())->GetXData(), 16, 16) != 0) {
-					DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), MOF_COND_VALUE_3 | NEW_STATION << 4, CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+					this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_3 | NEW_STATION << 4);
 				} else {
 					this->OrderClick_Goto(OPOS_COND_VIA);
 				}
@@ -2407,7 +2419,7 @@ public:
 					value = Clamp(value, 0, 2047);
 					break;
 			}
-			DoCommandP(this->vehicle->tile, this->vehicle->index + (sel << 20), MOF_COND_VALUE | value << 4, CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+			this->ModifyOrder(sel, MOF_COND_VALUE | value << 4);
 		}
 
 		if (this->query_text_widget == WID_O_ADD_VEH_GROUP) {
@@ -2449,27 +2461,27 @@ public:
 				break;
 
 			case WID_O_COND_VARIABLE:
-				DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), MOF_COND_VARIABLE | index << 4,  CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VARIABLE | index << 4);
 				break;
 
 			case WID_O_COND_COMPARATOR:
-				DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), MOF_COND_COMPARATOR | index << 4,  CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_COMPARATOR | index << 4);
 				break;
 
 			case WID_O_COND_CARGO:
-				DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), MOF_COND_VALUE | index << 4, CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE | index << 4);
 				break;
 
 			case WID_O_COND_AUX_CARGO:
-				DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), MOF_COND_VALUE_2 | index << 4, CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 4);
 				break;
 
 			case WID_O_COND_SLOT:
-				DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), MOF_COND_VALUE | index << 4, CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE | index << 4);
 				break;
 
 			case WID_O_COND_COUNTER:
-				DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), MOF_COND_VALUE_2 | index << 4, CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 4);
 				break;
 		}
 	}
@@ -2534,7 +2546,7 @@ public:
 			const Order cmd = GetOrderCmdFromTile(this->vehicle, tile);
 			if (cmd.IsType(OT_NOTHING)) return;
 
-			if (DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), cmd.Pack(), CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER))) {
+			if (this->InsertNewOrder(cmd.Pack())) {
 				/* With quick goto the Go To button stays active */
 				if (!_settings_client.gui.quick_goto) ResetObjectToPlace();
 			}
@@ -2549,7 +2561,7 @@ public:
 					st = in->neutral_station;
 				}
 				if (st != nullptr && IsInfraUsageAllowed(this->vehicle->type, this->vehicle->owner, st->owner)) {
-					if (DoCommandP(this->vehicle->tile, this->vehicle->index + (this->OrderGetSel() << 20), MOF_COND_VALUE_3 | st->index << 4, CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER))) {
+					if (this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_3 | st->index << 4)) {
 						ResetObjectToPlace();
 					}
 				}

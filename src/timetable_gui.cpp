@@ -25,7 +25,6 @@
 #include "viewport_func.h"
 #include "schdispatch.h"
 #include "vehiclelist.h"
-#include "core/endian_func.hpp"
 
 #include "widgets/timetable_widget.h"
 
@@ -714,9 +713,7 @@ struct TimetableWindow : Window {
 		if (bulk) {
 			DoCommandP(0, p1, p2, CMD_BULK_CHANGE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 		} else {
-			char text[2];
-			*reinterpret_cast<uint16 *>(&text) = TO_LE16(order_number);
-			DoCommandPEx(0, p1, p2, 0, CMD_CHANGE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, text, 2);
+			DoCommandPEx(0, p1, p2, order_number, CMD_CHANGE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
 		}
 	}
 

@@ -98,10 +98,10 @@ CommandProc CmdForceTrainProceed;
 CommandProc CmdReverseTrainDirection;
 
 CommandProc CmdClearOrderBackup;
-CommandProc CmdModifyOrder;
+CommandProcEx CmdModifyOrder;
 CommandProc CmdSkipToOrder;
 CommandProc CmdDeleteOrder;
-CommandProc CmdInsertOrder;
+CommandProcEx CmdInsertOrder;
 CommandProc CmdMassChangeOrder;
 CommandProc CmdChangeServiceInt;
 

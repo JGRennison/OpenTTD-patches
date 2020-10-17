@@ -19,7 +19,6 @@
 #include "company_base.h"
 #include "settings_type.h"
 #include "scope.h"
-#include "core/endian_func.hpp"
 
 #include "table/strings.h"
 
@@ -140,7 +139,10 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32 val,
  * @param p2 The amount of time to wait.
  * - p2 =             - The data to modify as specified by p1 bits 28-30.
  *                      0 to clear times, UINT16_MAX to clear speed limit.
- * @param text LE uint16 Order index to modify.
+ * @param p3 various bitstuffed elements
+ *  - p3 = (bit 0 - 15) - the selected order (if any). If the last order is given,
+ *                        the order will be inserted before that one
+ * @param text unused
  * @return the cost of this operation or an error
  */
 CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
@@ -153,9 +155,7 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (binary_length != 2) return CMD_ERROR;
-	VehicleOrderID order_number = FROM_LE16(*reinterpret_cast<const uint16 *>(text));
-
+	VehicleOrderID order_number = GB(p3,  0, 16);
 	Order *order = v->GetOrder(order_number);
 	if (order == nullptr || order->IsType(OT_IMPLICIT)) return CMD_ERROR;
 
@@ -311,9 +311,7 @@ CommandCost CmdBulkChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p
 			// Exclude waypoints from set all wait times command
 			if (Extract<ModifyTimetableFlags, 28, 3>(p1) == MTF_WAIT_TIME && GB(p1, 31, 1) == 0 && order->IsType(OT_GOTO_WAYPOINT)) continue;
 
-			char text[2];
-			*reinterpret_cast<uint16 *>(&text) = TO_LE16(order_number);
-			DoCommandEx(tile, p1, p2, 0, flags, CMD_CHANGE_TIMETABLE, text, 2);
+			DoCommandEx(tile, p1, p2, order_number, flags, CMD_CHANGE_TIMETABLE);
 		}
 	}
 

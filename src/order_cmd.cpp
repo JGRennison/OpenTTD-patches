@@ -944,17 +944,17 @@ uint GetOrderDistance(const Order *prev, const Order *cur, const Vehicle *v, int
  * @param flags operation to perform
  * @param p1 various bitstuffed elements
  * - p1 = (bit  0 - 19) - ID of the vehicle
- * - p1 = (bit 20 - 35) - the selected order (if any). If the last order is given,
- *                        the order will be inserted before that one
- *                        the maximum vehicle order id is 254.
  * @param p2 packed order to insert
+ * @param p3 various bitstuffed elements
+ *  - p3 = (bit 0 - 15) - the selected order (if any). If the last order is given,
+ *                        the order will be inserted before that one
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
 {
 	VehicleID veh          = GB(p1,  0, 20);
-	VehicleOrderID sel_ord = GB(p1, 20, 16);
+	VehicleOrderID sel_ord = GB(p3,  0, 16);
 	Order new_order(p2);
 
 	return CmdInsertOrderIntl(flags, Vehicle::GetIfValid(veh), sel_ord, new_order, false);
@@ -1580,18 +1580,19 @@ CommandCost CmdMoveOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
  * @param flags operation to perform
  * @param p1 various bitstuffed elements
  * - p1 = (bit  0 - 19) - ID of the vehicle
- * - p1 = (bit 20 - 35) - the selected order (if any). If the last order is given,
- *                        the order will be inserted before that one.
  * @param p2 various bitstuffed elements
  *  - p2 = (bit 0 -  3) - what data to modify (@see ModifyOrderFlags)
  *  - p2 = (bit 4 - 19) - the data to modify
  *  - p2 = (bit 20 - 27) - a CargoID for cargo type orders (MOF_CARGO_TYPE_UNLOAD or MOF_CARGO_TYPE_LOAD)
+ * @param p3 various bitstuffed elements
+ *  - p3 = (bit 0 - 15) - the selected order (if any). If the last order is given,
+ *                        the order will be inserted before that one
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
 {
-	VehicleOrderID sel_ord = GB(p1, 20,  16);
+	VehicleOrderID sel_ord = GB(p3,  0, 16);
 	VehicleID veh          = GB(p1,  0, 20);
 	ModifyOrderFlags mof   = Extract<ModifyOrderFlags, 0, 4>(p2);
 	uint16 data            = GB(p2,  4, 16);
