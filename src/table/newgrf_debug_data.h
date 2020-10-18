@@ -594,6 +594,37 @@ static const NIVariable _niv_railtypes[] = {
 	NIV_END()
 };
 
+void PrintTypeLabels(char * buffer,  const char *last, uint32 label, const uint32 *alternate_labels, size_t alternate_labels_count, std::function<void(const char *)> print)
+{
+	auto is_printable = [](uint32 l) -> bool {
+		for (uint i = 0; i < 4; i++) {
+			if ((l & 0xFF) < 0x20 || (l & 0xFF) > 0x7F) return false;
+			l >>= 8;
+		}
+		return true;
+	};
+	if (is_printable(label)) {
+		seprintf(buffer, last, "  Label: %c%c%c%c", label >> 24, label >> 16, label >> 8, label);
+	} else {
+		seprintf(buffer, last, "  Label: 0x%08X", BSWAP32(label));
+	}
+	print(buffer);
+	if (alternate_labels_count > 0) {
+		char * b = buffer;
+		b += seprintf(b, last, "  Alternate labels: ");
+		for (size_t i = 0; i < alternate_labels_count; i++) {
+			if (i != 0) b += seprintf(b, last, ", ");
+			uint32 l = alternate_labels[i];
+			if (is_printable(l)) {
+				b += seprintf(b, last, "%c%c%c%c", l >> 24, l >> 16, l >> 8, l);
+			} else {
+				b += seprintf(b, last, "0x%08X", BSWAP32(l));
+			}
+		}
+		print(buffer);
+	}
+}
+
 class NIHRailType : public NIHelper {
 	bool IsInspectable(uint index) const override        { return true; }
 	uint GetParent(uint index) const override            { return UINT32_MAX; }
@@ -639,6 +670,7 @@ class NIHRailType : public NIHelper {
 			print(buffer);
 			seprintf(buffer, lastof(buffer), "  All compatible: 0x" OTTD_PRINTFHEX64, info->all_compatible_railtypes);
 			print(buffer);
+			PrintTypeLabels(buffer, lastof(buffer), info->label, (const uint32*) info->alternate_labels.data(), info->alternate_labels.size(), print);
 		};
 
 		print("Debug Info:");
@@ -867,6 +899,7 @@ class NIHRoadType : public NIHelper {
 			print(buffer);
 			seprintf(buffer, lastof(buffer), "    Powered: 0x" OTTD_PRINTFHEX64, rti->powered_roadtypes);
 			print(buffer);
+			PrintTypeLabels(buffer, lastof(buffer), rti->label, (const uint32*) rti->alternate_labels.data(), rti->alternate_labels.size(), print);
 		};
 		writeInfo(RTT_ROAD);
 		writeInfo(RTT_TRAM);
