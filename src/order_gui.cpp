@@ -1656,11 +1656,9 @@ public:
 				break;
 
 			default:
-				if (data < 0) break;
-
 				if (gui_scope) break; // only do this once; from command scope
-				from = GB(data, 0, 8);
-				to   = GB(data, 8, 8);
+				from = GB(data, 0, 16);
+				to   = GB(data, 16, 16);
 				/* Moving an order. If one of these is INVALID_VEH_ORDER_ID, then
 				 * the order is being created / removed */
 				if (this->selected_order == -1) break;
