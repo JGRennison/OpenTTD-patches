@@ -273,6 +273,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Increase per-vehicle order limit from 254 to 64k. (added in v0.38.0).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
+  * [NML specification additions](docs/newgrf-additions-nml.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions-nml.html)).
   * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).
 
 * Translations  
