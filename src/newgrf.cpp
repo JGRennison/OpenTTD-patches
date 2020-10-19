@@ -4447,6 +4447,11 @@ static ChangeInfoResult RailTypeReserveInfo(uint id, int numinfo, int prop, cons
 				buf->ReadDWord();
 				break;
 
+			case A0RPI_RAILTYPE_ENABLE_PROGRAMMABLE_SIGNALS:
+			case A0RPI_RAILTYPE_ENABLE_RESTRICTED_SIGNALS:
+				buf->Skip(buf->ReadExtendedByte());
+				break;
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
@@ -4660,6 +4665,10 @@ static ChangeInfoResult RoadTypeReserveInfo(uint id, int numinfo, int prop, cons
 
 			case 0x17: // Introduction date
 				buf->ReadDWord();
+				break;
+
+			case A0RPI_ROADTYPE_EXTRA_FLAGS:
+				buf->Skip(buf->ReadExtendedByte());
 				break;
 
 			default:
