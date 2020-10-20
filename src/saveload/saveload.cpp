@@ -704,8 +704,9 @@ static inline uint SlCalcConvMemLen(VarType conv)
  */
 static inline byte SlCalcConvFileLen(VarType conv)
 {
-	static const byte conv_file_size[] = {1, 1, 2, 2, 4, 4, 8, 8, 2};
 	byte length = GB(conv, 0, 4);
+	if (length == SLE_FILE_VEHORDERID) return SlXvIsFeaturePresent(XSLFI_MORE_VEHICLE_ORDERS) ? 2 : 1;
+	static const byte conv_file_size[] = {1, 1, 2, 2, 4, 4, 8, 8, 2};
 	assert(length < lengthof(conv_file_size));
 	return conv_file_size[length];
 }
