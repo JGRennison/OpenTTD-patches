@@ -61,7 +61,7 @@ if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
     string(REGEX REPLACE ".*/" "" BRANCH "${BRANCH}")
 
     # Get the tag
-    execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=9
+    execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=9 --dirty=-m
                     OUTPUT_VARIABLE TAG
                     OUTPUT_STRIP_TRAILING_WHITESPACE
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -70,11 +70,11 @@ if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
     string(REGEX REPLACE "\^0$" "" TAG "${TAG}")
 
     if(REV_MODIFIED EQUAL 0)
-        set(HASHPREFIX "-g")
+        set(HASHSUFFIX "")
     elseif(REV_MODIFIED EQUAL 2)
-        set(HASHPREFIX "-m")
+        set(HASHSUFFIX "-m")
     else()
-        set(HASHPREFIX "-u")
+        set(HASHSUFFIX "-u")
     endif()
 
     # Set the version string
@@ -89,7 +89,7 @@ if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
             set(REV_ISSTABLETAG 0)
         endif()
     else()
-        set(REV_VERSION "${REV_ISODATE}-${BRANCH}${HASHPREFIX}${SHORTHASH}")
+        set(REV_VERSION "${REV_ISODATE}-${BRANCH}-g${SHORTHASH}${HASHSUFFIX}")
         set(REV_ISTAG 0)
         set(REV_ISSTABLETAG 0)
     endif()
