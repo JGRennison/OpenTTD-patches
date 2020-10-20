@@ -61,7 +61,7 @@ if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
     string(REGEX REPLACE ".*/" "" BRANCH "${BRANCH}")
 
     # Get the tag
-    execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags
+    execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=9
                     OUTPUT_VARIABLE TAG
                     OUTPUT_STRIP_TRAILING_WHITESPACE
                     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
