@@ -1221,12 +1221,14 @@ CargoPayment::~CargoPayment()
 		SndPlayVehicleFx(SND_14_CASHTILL, this->front);
 	}
 
-	if (this->visual_transfer != 0) {
-		ShowFeederIncomeAnimation(this->front->x_pos, this->front->y_pos,
-				this->front->z_pos, this->visual_transfer, -this->visual_profit);
-	} else if (this->visual_profit != 0) {
-		ShowCostOrIncomeAnimation(this->front->x_pos, this->front->y_pos,
-				this->front->z_pos, -this->visual_profit);
+	if (HasBit(_extra_display_opt, XDO_SHOW_MONEY_TEXT_EFFECTS)) {
+		if (this->visual_transfer != 0) {
+			ShowFeederIncomeAnimation(this->front->x_pos, this->front->y_pos,
+					this->front->z_pos, this->visual_transfer, -this->visual_profit);
+		} else if (this->visual_profit != 0) {
+			ShowCostOrIncomeAnimation(this->front->x_pos, this->front->y_pos,
+					this->front->z_pos, -this->visual_profit);
+		}
 	}
 
 	cur_company.Restore();

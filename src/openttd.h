@@ -48,6 +48,11 @@ enum DisplayOptions {
 	DO_SHOW_COMPETITOR_SIGNS = 7, ///< Display signs, station names and waypoint names of opponent companies. Buoys and oilrig-stations are always shown, even if this option is turned off.
 };
 
+/** Extra Display Options */
+enum ExtraDisplayOptions {
+	XDO_SHOW_MONEY_TEXT_EFFECTS = 0, ///< Display money text effects.
+};
+
 extern GameMode _game_mode;
 extern SwitchMode _switch_mode;
 extern bool _exit_game;

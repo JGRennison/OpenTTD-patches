@@ -396,6 +396,7 @@ STR_SETTINGS_MENU_FULL_ANIMATION                                :Full animation
 STR_SETTINGS_MENU_FULL_DETAIL                                   :Full detail
 STR_SETTINGS_MENU_TRANSPARENT_BUILDINGS                         :Transparent buildings
 STR_SETTINGS_MENU_TRANSPARENT_SIGNS                             :Transparent signs
+STR_SETTINGS_MENU_MONEY_TEXT_EFFECTS                            :Income/cost texts displayed
 ############ range ends here
 
 ############ range for file menu starts

@@ -621,6 +621,8 @@ void ShowEstimatedCostOrIncome(Money cost, int x, int y)
  */
 void ShowCostOrIncomeAnimation(int x, int y, int z, Money cost)
 {
+	if (!HasBit(_extra_display_opt, XDO_SHOW_MONEY_TEXT_EFFECTS)) return;
+
 	Point pt = RemapCoords(x, y, z);
 	StringID msg = STR_INCOME_FLOAT_COST;
 
@@ -642,6 +644,8 @@ void ShowCostOrIncomeAnimation(int x, int y, int z, Money cost)
  */
 void ShowFeederIncomeAnimation(int x, int y, int z, Money transfer, Money income)
 {
+	if (!HasBit(_extra_display_opt, XDO_SHOW_MONEY_TEXT_EFFECTS)) return;
+
 	Point pt = RemapCoords(x, y, z);
 
 	SetDParam(0, transfer);

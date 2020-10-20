@@ -39,6 +39,7 @@ extern TransparencyOptionBits _transparency_opt;
 extern TransparencyOptionBits _transparency_lock;
 extern TransparencyOptionBits _invisibility_opt;
 extern byte _display_opt;
+extern byte _extra_display_opt;
 
 /**
  * Check if the transparency option bit is set

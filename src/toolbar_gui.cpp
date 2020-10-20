@@ -314,6 +314,7 @@ enum OptionMenuEntries {
 	OME_FULL_DETAILS,
 	OME_TRANSPARENTBUILDINGS,
 	OME_SHOW_STATIONSIGNS,
+	OME_SHOW_MONEYTEXT,
 };
 
 /**
@@ -344,6 +345,7 @@ static CallBackFunction ToolbarOptionsClick(Window *w)
 	list.emplace_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_FULL_DETAIL,             OME_FULL_DETAILS, false, HasBit(_display_opt, DO_FULL_DETAIL)));
 	list.emplace_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_TRANSPARENT_BUILDINGS,   OME_TRANSPARENTBUILDINGS, false, IsTransparencySet(TO_HOUSES)));
 	list.emplace_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_TRANSPARENT_SIGNS,       OME_SHOW_STATIONSIGNS, false, IsTransparencySet(TO_SIGNS)));
+	list.emplace_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_MONEY_TEXT_EFFECTS,      OME_SHOW_MONEYTEXT, false, HasBit(_extra_display_opt, XDO_SHOW_MONEY_TEXT_EFFECTS)));
 
 	ShowDropDownList(w, std::move(list), 0, WID_TN_SETTINGS, 140, true, true);
 	if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
@@ -378,6 +380,7 @@ static CallBackFunction MenuClickSettings(int index)
 		case OME_FULL_DETAILS:         ToggleBit(_display_opt, DO_FULL_DETAIL);         break;
 		case OME_TRANSPARENTBUILDINGS: ToggleTransparency(TO_HOUSES);                   break;
 		case OME_SHOW_STATIONSIGNS:    ToggleTransparency(TO_SIGNS);                    break;
+		case OME_SHOW_MONEYTEXT:       ToggleBit(_extra_display_opt, XDO_SHOW_MONEY_TEXT_EFFECTS); break;
 	}
 	MarkWholeScreenDirty();
 	return CBF_NONE;
