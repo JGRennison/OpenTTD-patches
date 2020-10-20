@@ -2,6 +2,16 @@
 
 * * *
 
+### v0.38.1 (2020-10-21)
+* Orders:
+  * Fix crash when saving or joining network server games with order backups.
+  * Fix conditional order jumps to orders at positions greater than 256.
+  * Fix inserting or modifying orders at positions greater than 4096.
+  * Fix currently selected order being de-selected when inserting/moving orders.
+* Fix crash when skipping suppressed unreached implicit orders when beginning loading at a station.
+* Fix NewGRF load error when using custom rail/road/tram type properties.
+* Add display setting for income/cost text effects.
+
 ### v0.38.0 (2020-10-16)
 * Fix crash when placing object, when object class has no available objects.
 * Template-based train replacement:
