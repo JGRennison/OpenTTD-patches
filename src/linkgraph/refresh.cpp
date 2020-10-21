@@ -209,7 +209,7 @@ const Order *LinkRefresher::PredictNextOrder(const Order *cur, const Order *next
 			const Order *skip_to = this->vehicle->orders.list->GetNextDecisionNode(
 					this->vehicle->orders.list->GetOrderAt(next->GetConditionSkipToOrder()), num_hops, this_cargo_mask);
 			assert(this_cargo_mask == this->cargo_mask);
-			if (skip_to != nullptr && num_hops < this->vehicle->orders.list->GetNumOrders() && skip_to != next) {
+			if (skip_to != nullptr && num_hops < min<uint>(64, this->vehicle->orders.list->GetNumOrders()) && skip_to != next) {
 				/* Make copies of capacity tracking lists. There is potential
 				 * for optimization here: If the vehicle never refits we don't
 				 * need to copy anything. Also, if we've seen the branched link
