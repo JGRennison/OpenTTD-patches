@@ -314,6 +314,7 @@ STR_SORT_BY_INTRO_DATE                                          :도입 날짜
 STR_SORT_BY_RUNNING_COST                                        :유지비
 STR_SORT_BY_POWER_VS_RUNNING_COST                               :유지비 분의 힘
 STR_SORT_BY_CARGO_CAPACITY                                      :화물 수송량
+STR_SORT_BY_VEHICLE_COUNT                                       :차량 수
 STR_SORT_BY_RANGE                                               :항속거리
 STR_SORT_BY_POPULATION                                          :인구
 STR_SORT_BY_RATING                                              :등급
@@ -395,6 +396,7 @@ STR_SETTINGS_MENU_FULL_ANIMATION                                :완전한 애�
 STR_SETTINGS_MENU_FULL_DETAIL                                   :그래픽을 아주 상세하게
 STR_SETTINGS_MENU_TRANSPARENT_BUILDINGS                         :건물 숨기기
 STR_SETTINGS_MENU_TRANSPARENT_SIGNS                             :역명판 감추기
+STR_SETTINGS_MENU_MONEY_TEXT_EFFECTS                            :수입/지출 표시
 ############ range ends here
 
 ############ range for file menu starts
@@ -2021,6 +2023,9 @@ STR_CONFIG_OCCUPANCY_SMOOTHNESS_HELPTEXT                        :0%는 가장 �
 STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE                       :복제/복사/공유 이후 고급 경로 사용: {STRING}
 STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE_HELPTEXT              :기존에 존재하는 차량을 복사/경로 공유하여 새 차량을 복제한 후의 행동입니다.{}열차나 차량, 선박의 경우: 차량이 경로 목록 상의 차고 안에 있는 경우, 그 차고에 해당하는 경로의 다음으로 경로를 건너뜁니다.{}항공기의 경우: 항공기가 경로 목록 상에 있는 공항에 딸린 격납고 안에 있는 경우, 그 공항에 해당하는 경로를 건너뜁니다.
 
+STR_CONFIG_SETTING_COPY_CLONE_ADD_TO_GROUP                      :복사한 차량을 기존 그룹에 추가: {STRING}
+STR_CONFIG_SETTING_COPY_CLONE_ADD_TO_GROUP_HELPTEXT             :경로를 공유하지 않은 채로 복사한 차량을 기존 차량의 그룹에 추가할지 설정합니다.
+
 STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS                  :여러 개의 교회/경기장 허용: {STRING}
 STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS_HELPTEXT         :도시에 이미 교회나 경기장 건물이 있어도 수동으로 이를 추가하는 것을 허용합니다.
 STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_DATES                  :건물 연도 제한 무시: {STRING}
@@ -3642,6 +3647,7 @@ STR_NEWGRF_INSPECT_PARENT_TOOLTIP                               :{BLACK}상위 �
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT                            :{STRING}, {HEX}에서
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_OBJECT                     :오브젝트
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :철도 종류
+STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :도로/전차 종류
 
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRF 변수 60+x 매개 변수 (16진법)
 
