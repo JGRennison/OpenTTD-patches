@@ -1498,6 +1498,15 @@ static void DrawDirtyViewport(uint occlusion, int left, int top, int right, int 
 	}
 }
 
+static void DrawOverlappedWindowWithClipping(Window *w, int left, int top, int right, int bottom, DrawOverlappedWindowFlags flags)
+{
+	extern void DrawOverlappedWindow(Window *w, int left, int top, int right, int bottom, DrawOverlappedWindowFlags flags);
+
+	if (right < 0 || bottom < 0 || left >= _screen.width || top >= _screen.height) return;
+
+	DrawOverlappedWindow(w, max(0, left), max(0, top), min(_screen.width, right), min(_screen.height, bottom), flags);
+}
+
 /**
  * Repaints the rectangle blocks which are marked as 'dirty'.
  *
@@ -1562,8 +1571,6 @@ void DrawDirtyBlocks()
 		DrawPixelInfo bk;
 		_cur_dpi = &bk;
 
-		extern void DrawOverlappedWindow(Window *w, int left, int top, int right, int bottom, DrawOverlappedWindowFlags flags);
-
 		Window *w;
 		FOR_ALL_WINDOWS_FROM_BACK(w) {
 			w->flags &= ~WF_DRAG_DIRTIED;
@@ -1578,7 +1585,7 @@ void DrawDirtyBlocks()
 					flags |= DOWF_SHOW_DEBUG;
 					_dirty_block_colour++;
 				}
-				DrawOverlappedWindow(w, max(0, w->left), max(0, w->top), min(_screen.width, w->left + w->width), min(_screen.height, w->top + w->height), flags);
+				DrawOverlappedWindowWithClipping(w, w->left, w->top, w->left + w->width, w->top + w->height, flags);
 				w->flags &= ~(WF_DIRTY | WF_WIDGETS_DIRTY);
 			} else if (w->flags & WF_WIDGETS_DIRTY) {
 				if (w->nested_root != nullptr) {
@@ -1590,7 +1597,7 @@ void DrawDirtyBlocks()
 							flags |= DOWF_SHOW_DEBUG;
 							_dirty_block_colour++;
 						}
-						DrawOverlappedWindow(w, max(0, w->left + widget->pos_x), max(0, w->top + widget->pos_y), min(_screen.width, w->left + widget->pos_x + widget->current_x), min(_screen.height, w->top + widget->pos_y + widget->current_y), flags);
+						DrawOverlappedWindowWithClipping(w, w->left + widget->pos_x, w->top + widget->pos_y, w->left + widget->pos_x + widget->current_x, w->top + widget->pos_y + widget->current_y, flags);
 					}
 					dirty_widgets.clear();
 				}
