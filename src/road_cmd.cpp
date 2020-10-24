@@ -769,6 +769,7 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 							if ((flags & DC_EXEC) && IsStraightRoad(existing)) {
 								SetDisallowedRoadDirections(tile, dis_new);
 								MarkTileDirtyByTile(tile);
+								NotifyRoadLayoutChanged(CountBits(dis_existing) > CountBits(dis_new));
 							}
 							return CommandCost();
 						}
