@@ -825,7 +825,27 @@ static Vehicle *EnumFindVehBlockingOvertake(Vehicle *v, void *data)
 {
 	const OvertakeData *od = (OvertakeData*)data;
 
-	return (v->First() == v && v != od->u && v != od->v) ? v : nullptr;
+	if (v->First() == od->u || v->First() == od->v) return nullptr;
+	if (RoadVehicle::From(v)->overtaking != 0 || v->direction != od->v->direction) return v;
+
+	/* Check if other vehicle is behind */
+	switch (DirToDiagDir(v->direction)) {
+		case DIAGDIR_NE:
+			if (v->x_pos > od->v->x_pos) return nullptr;
+			break;
+		case DIAGDIR_SE:
+			if (v->y_pos < od->v->y_pos) return nullptr;
+			break;
+		case DIAGDIR_SW:
+			if (v->x_pos < od->v->x_pos) return nullptr;
+			break;
+		case DIAGDIR_NW:
+			if (v->y_pos > od->v->y_pos) return nullptr;
+			break;
+		default:
+			NOT_REACHED();
+	}
+	return v;
 }
 
 /**
