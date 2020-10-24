@@ -964,6 +964,10 @@ static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 			if (entry->GetOccupied() < opposite_entry->GetOccupied()) return;
 			break;
 		}
+		if (check_tile != v->tile && IsNormalRoadTile(check_tile) && GetDisallowedRoadDirections(check_tile) != DRD_NONE) {
+			/* one-way road, don't worry about other vehicles */
+			continue;
+		}
 		if (CheckRoadBlockedForOvertaking(&od)) return;
 	}
 	tile_count = v->gcache.cached_total_length / TILE_SIZE;
