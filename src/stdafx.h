@@ -305,10 +305,23 @@
 #   define PRINTF_SIZE "%Iu"
 #   define PRINTF_SIZEX "%IX"
 #else
+#if defined(PRId64)
+#   define OTTD_PRINTF64 "%" PRId64
+#else
 #   define OTTD_PRINTF64 "%lld"
+#endif
+#if defined(PRIu64)
+#   define OTTD_PRINTF64U "%" PRIu64
+#else
 #   define OTTD_PRINTF64U "%llu"
+#endif
+#if defined(PRIx64)
+#   define OTTD_PRINTFHEX64 "%" PRIx64
+#   define OTTD_PRINTFHEX64PAD "%016" PRIx64
+#else
 #   define OTTD_PRINTFHEX64 "%llx"
 #   define OTTD_PRINTFHEX64PAD "%016llx"
+#endif
 #   define PRINTF_SIZE "%zu"
 #   define PRINTF_SIZEX "%zX"
 #endif
