@@ -108,6 +108,8 @@ class NIHVehicle : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  VirtXYTile: %X (%u x %u)", vtile, TileX(vtile), TileY(vtile));
 			print(buffer);
 		}
+		seprintf(buffer, lastof(buffer), "  Position: %X, %X, %X", v->x_pos, v->y_pos, v->z_pos);
+		print(buffer);
 
 		if (v->IsPrimaryVehicle()) {
 			seprintf(buffer, lastof(buffer), "  Order indices: real: %u, implicit: %u, tt: %u",
@@ -148,6 +150,12 @@ class NIHVehicle : public NIHelper {
 			const Train *t = Train::From(v);
 			seprintf(buffer, lastof(buffer), "  Wait counter: %u, rev distance: %u, TBSN: %u, speed restriction: %u, railtype: %u, compatible_railtypes: 0x" OTTD_PRINTFHEX64,
 					t->wait_counter, t->reverse_distance, t->tunnel_bridge_signal_num, t->speed_restriction, t->railtype, t->compatible_railtypes);
+			print(buffer);
+		}
+		if (v->type == VEH_ROAD) {
+			const RoadVehicle *rv = RoadVehicle::From(v);
+			seprintf(buffer, lastof(buffer), "  Overtaking: %u, overtaking_ctr: %u, overtaking threshold: %u, speed: %u",
+					rv->overtaking, rv->overtaking_ctr, rv->GetOvertakingCounterThreshold(), rv->cur_speed);
 			print(buffer);
 		}
 		if (v->type == VEH_SHIP) {
