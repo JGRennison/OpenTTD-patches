@@ -369,7 +369,11 @@ static int32 NPFRoadPathCost(AyStar *as, AyStarNode *current, OpenListNode *pare
 					/* When we're the first road stop in a 'queue' of them we increase
 					 * cost based on the fill percentage of the whole queue. */
 					const RoadStop::Entry *entry = rs->GetEntry(dir);
-					cost += entry->GetOccupied() * _settings_game.pf.npf.npf_road_dt_occupied_penalty / entry->GetLength();
+					if (GetDriveThroughStopDisallowedRoadDirections(tile) != DRD_NONE) {
+						cost += (entry->GetOccupied() + rs->GetEntry(ReverseDiagDir(dir))->GetOccupied()) * _settings_game.pf.npf.npf_road_dt_occupied_penalty / (2 * entry->GetLength());
+					} else {
+						cost += entry->GetOccupied() * _settings_game.pf.npf.npf_road_dt_occupied_penalty / entry->GetLength();
+					}
 				}
 			} else {
 				/* Increase cost for filled road stops */

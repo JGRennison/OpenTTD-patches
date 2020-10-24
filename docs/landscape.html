@@ -892,6 +892,18 @@
      <li>m2: index into the array of stations</li>
      <li>m3 bits 7..4: persistent random data for railway stations/waypoints and airports)</li>
      <li>m3 bits 7..4: <a href="#OwnershipInfo">owner</a> of tram tracks (road stop)</li>
+     <li style="color: blue">m3 bits 1..0: bits to disallow vehicles to go a specific direction (drive-through road stop)
+      <table>
+       <tr>
+        <td align=left>bit 0: </td>
+        <td>set = disallow driving in south-west or south-east direction</td>
+       </tr>
+       <tr>
+        <td align=left>bit 1: </td>
+        <td>set = disallow driving in north-west or north-east direction</td>
+       </tr>
+      </table>
+     </li>
      <li>m4: custom station id; 0 means standard graphics</li>
      <li>m4: <a href="#RoadType">Roadtype</a> for road stops</li>
      <li>m5: graphics index (range from 0..255 for each station type):

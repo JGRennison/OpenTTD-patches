@@ -236,6 +236,29 @@ static inline bool IsDriveThroughStopTile(TileIndex t)
 }
 
 /**
+ * Gets the disallowed directions
+ * @param t the tile to get the directions from
+ * @return the disallowed directions
+ */
+static inline DisallowedRoadDirections GetDriveThroughStopDisallowedRoadDirections(TileIndex t)
+{
+	assert_tile(IsDriveThroughStopTile(t), t);
+	return (DisallowedRoadDirections)GB(_m[t].m3, 0, 2);
+}
+
+/**
+ * Sets the disallowed directions
+ * @param t   the tile to set the directions for
+ * @param drd the disallowed directions
+ */
+static inline void SetDriveThroughStopDisallowedRoadDirections(TileIndex t, DisallowedRoadDirections drd)
+{
+	assert_tile(IsDriveThroughStopTile(t), t);
+	assert(drd < DRD_END);
+	SB(_m[t].m3, 0, 2, drd);
+}
+
+/**
  * Get the station graphics of this airport tile
  * @param t the tile to query
  * @pre IsAirport(t)

@@ -373,6 +373,13 @@ bool RoadVehicle::FindClosestDepot(TileIndex *location, DestinationID *destinati
 	return true;
 }
 
+static bool IsOneWayRoadTile(TileIndex tile)
+{
+	if (IsNormalRoadTile(tile) && GetDisallowedRoadDirections(tile) != DRD_NONE) return true;
+	if (IsDriveThroughStopTile(tile) && GetDriveThroughStopDisallowedRoadDirections(tile) != DRD_NONE) return true;
+	return false;
+}
+
 /**
  * Turn a roadvehicle around.
  * @param tile unused
@@ -401,7 +408,7 @@ CommandCost CmdTurnRoadVeh(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 		return CMD_ERROR;
 	}
 
-	if (IsNormalRoadTile(v->tile) && GetDisallowedRoadDirections(v->tile) != DRD_NONE) return CMD_ERROR;
+	if (IsOneWayRoadTile(v->tile)) return CMD_ERROR;
 
 	if (IsTileType(v->tile, MP_TUNNELBRIDGE) && DirToDiagDir(v->direction) == GetTunnelBridgeDirection(v->tile)) return CMD_ERROR;
 
@@ -848,13 +855,7 @@ static Vehicle *EnumFindVehBlockingOvertake(Vehicle *v, void *data)
 	return v;
 }
 
-/**
- * Check if overtaking is possible on a piece of track
- *
- * @param od Information about the tile and the involved vehicles
- * @return true if we have to abort overtaking
- */
-static bool CheckRoadBlockedForOvertaking(OvertakeData *od)
+static bool CheckRoadInfraUnsuitableForOvertaking(OvertakeData *od)
 {
 	if (!HasTileAnyRoadType(od->tile, od->v->compatible_roadtypes)) return true;
 	TrackStatus ts = GetTileTrackStatus(od->tile, TRANSPORT_ROAD, GetRoadTramType(od->v->roadtype));
@@ -865,22 +866,45 @@ static bool CheckRoadBlockedForOvertaking(OvertakeData *od)
 	/* Track does not continue along overtaking direction || track has junction || levelcrossing is barred */
 	if (!HasBit(trackdirbits, od->trackdir) || (trackbits & ~TRACK_BIT_CROSS) || (red_signals != TRACKDIR_BIT_NONE)) return true;
 
+	return false;
+}
+
+/**
+ * Check if overtaking is possible on a piece of track
+ *
+ * @param od Information about the tile and the involved vehicles
+ * @return true if we have to abort overtaking
+ */
+static bool CheckRoadBlockedForOvertaking(OvertakeData *od)
+{
 	/* Are there more vehicles on the tile except the two vehicles involved in overtaking */
 	return HasVehicleOnPos(od->tile, VEH_ROAD, od, EnumFindVehBlockingOvertake);
 }
 
+/**
+ * Check if overtaking is possible on a piece of track
+ *
+ * @param od Information about the tile and the involved vehicles
+ * @return true if we have to abort overtaking
+ */
+static bool IsNonOvertakingStationTile(TileIndex tile, DiagDirection diag_dir)
+{
+	if (!IsTileType(tile, MP_STATION)) return false;
+	if (!IsDriveThroughStopTile(tile)) return true;
+	const DisallowedRoadDirections diagdir_to_drd[DIAGDIR_END] = { DRD_NORTHBOUND, DRD_NORTHBOUND, DRD_SOUTHBOUND, DRD_SOUTHBOUND };
+	return GetDriveThroughStopDisallowedRoadDirections(tile) != diagdir_to_drd[diag_dir];
+}
+
 static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 {
-	OvertakeData od;
-
-	od.v = v;
-	od.u = u;
-
 	/* Trams can't overtake other trams */
 	if (RoadTypeIsTram(v->roadtype)) return;
 
+	/* Vehicles are not driving in same direction || direction is not a diagonal direction */
+	if (v->direction != u->direction || !(v->direction & 1)) return;
+
 	/* Don't overtake in stations */
-	if (IsTileType(u->tile, MP_STATION)) return;
+	if (IsNonOvertakingStationTile(u->tile, DirToDiagDir(u->direction))) return;
 
 	/* If not permitted, articulated road vehicles can't overtake anything. */
 	if (!_settings_game.vehicle.roadveh_articulated_overtaking && v->HasArticulatedPart()) return;
@@ -888,21 +912,21 @@ static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 	/* Don't overtake if the vehicle is broken or about to break down */
 	if (v->breakdown_ctr != 0) return;
 
-	/* Vehicles are not driving in same direction || direction is not a diagonal direction */
-	if (v->direction != u->direction || !(v->direction & 1)) return;
-
 	/* Vehicles chain is too long to overtake */
 	if (v->GetOvertakingCounterThreshold() > 255) return;
 
 	for (RoadVehicle *w = v; w != nullptr; w = w->Next()) {
 		/* Don't overtake in stations */
-		if (IsTileType(w->tile, MP_STATION)) return;
+		if (IsNonOvertakingStationTile(w->tile, DirToDiagDir(w->direction))) return;
 
 		/* Don't overtake if vehicle parts not all in same direction */
 		if (w->direction != v->direction) return;
 
 		/* Check if vehicle is in a road stop, depot, tunnel or bridge or not on a straight road */
-		if (w->state >= RVSB_IN_ROAD_STOP || !IsStraightRoadTrackdir((Trackdir)(w->state & RVSB_TRACKDIR_MASK))) return;
+		if ((w->state >= RVSB_IN_ROAD_STOP || !IsStraightRoadTrackdir((Trackdir)(w->state & RVSB_TRACKDIR_MASK))) &&
+				!IsInsideMM(w->state, RVSB_IN_DT_ROAD_STOP, RVSB_IN_DT_ROAD_STOP_END)) {
+			return;
+		}
 	}
 
 	/* Can't overtake a vehicle that is moving faster than us. If the vehicle in front is
@@ -915,6 +939,9 @@ static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 		return;
 	}
 
+	OvertakeData od;
+	od.v = v;
+	od.u = u;
 	od.trackdir = DiagDirToDiagTrackdir(DirToDiagDir(v->direction));
 
 	/* Are the current and the next tile suitable for overtaking?
@@ -928,12 +955,22 @@ static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 	TileIndexDiff check_tile_diff = TileOffsByDiagDir(DirToDiagDir(v->direction));
 	for (; tile_count != 0; tile_count--, check_tile += check_tile_diff) {
 		od.tile = check_tile;
+		if (CheckRoadInfraUnsuitableForOvertaking(&od)) return;
+		if (IsDriveThroughStopTile(check_tile) && GetDriveThroughStopDisallowedRoadDirections(check_tile) != DRD_NONE) {
+			const RoadStop *rs = RoadStop::GetByTile(check_tile, GetRoadStopType(check_tile));
+			DiagDirection dir = DirToDiagDir(v->direction);
+			const RoadStop::Entry *entry = rs->GetEntry(dir);
+			const RoadStop::Entry *opposite_entry = rs->GetEntry(ReverseDiagDir(dir));
+			if (entry->GetOccupied() < opposite_entry->GetOccupied()) return;
+			break;
+		}
 		if (CheckRoadBlockedForOvertaking(&od)) return;
 	}
 	tile_count = v->gcache.cached_total_length / TILE_SIZE;
 	check_tile = v->tile - check_tile_diff;
 	for (; tile_count != 0; tile_count--, check_tile -= check_tile_diff) {
 		od.tile = check_tile;
+		if (CheckRoadInfraUnsuitableForOvertaking(&od)) return;
 		if (CheckRoadBlockedForOvertaking(&od)) return;
 	}
 
@@ -1239,14 +1276,37 @@ static bool CanBuildTramTrackOnTile(CompanyID c, TileIndex t, RoadType rt, RoadB
 	return ret.Succeeded();
 }
 
+static bool IsRoadVehicleOnOtherSideOfRoad(const RoadVehicle *v)
+{
+	bool is_right;
+	switch (DirToDiagDir(v->direction)) {
+		case DIAGDIR_NE:
+			is_right = ((TILE_UNIT_MASK & v->y_pos) == 9);
+			break;
+		case DIAGDIR_SE:
+			is_right = ((TILE_UNIT_MASK & v->x_pos) == 9);
+			break;
+		case DIAGDIR_SW:
+			is_right = ((TILE_UNIT_MASK & v->y_pos) == 5);
+			break;
+		case DIAGDIR_NW:
+			is_right = ((TILE_UNIT_MASK & v->x_pos) == 5);
+			break;
+		default:
+			NOT_REACHED();
+	}
+
+	return is_right != (bool) _settings_game.vehicle.road_side;
+}
+
 bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 {
 	SCOPE_INFO_FMT([&], "IndividualRoadVehicleController: %s, %s", scope_dumper().VehicleInfo(v), scope_dumper().VehicleInfo(prev));
 	if (v->overtaking != 0 && v->IsFrontEngine())  {
-		if (IsTileType(v->tile, MP_STATION)) {
+		if (IsNonOvertakingStationTile(v->tile, DirToDiagDir(v->direction))) {
 			/* Force us to be not overtaking! */
 			v->SetRoadVehicleOvertaking(0);
-		} else if (v->HasArticulatedPart() && (v->state >= RVSB_IN_ROAD_STOP || !IsStraightRoadTrackdir((Trackdir)v->state))) {
+		} else if (v->HasArticulatedPart() && (v->state >= RVSB_IN_ROAD_STOP || !IsStraightRoadTrackdir((Trackdir)v->state)) && !IsInsideMM(v->state, RVSB_IN_DT_ROAD_STOP, RVSB_IN_DT_ROAD_STOP_END)) {
 			/* Articulated RVs may not overtake on corners */
 			v->SetRoadVehicleOvertaking(0);
 		} else if (v->HasArticulatedPart() && IsBridgeTile(v->tile) && (IsRoadCustomBridgeHeadTile(v->tile) || IsRoadCustomBridgeHeadTile(GetOtherBridgeEnd(v->tile)))) {
@@ -1258,6 +1318,9 @@ bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 			 *  overtake if we are on straight roads */
 			if (v->overtaking_ctr >= v->GetOvertakingCounterThreshold() && v->state < RVSB_IN_ROAD_STOP && IsStraightRoadTrackdir((Trackdir)v->state)) {
 				v->SetRoadVehicleOvertaking(0);
+			} else if (v->overtaking_ctr == 0) {
+				/* prevent overflow issues */
+				v->overtaking_ctr = 255;
 			}
 		}
 	}
@@ -1396,7 +1459,7 @@ again:
 					v->cur_speed = 0;
 					return false;
 				}
-			} else if (IsNormalRoadTile(v->tile) && GetDisallowedRoadDirections(v->tile) != DRD_NONE) {
+			} else if (IsOneWayRoadTile(v->tile)) {
 				v->cur_speed = 0;
 				return false;
 			} else {
@@ -1572,14 +1635,17 @@ again:
 		if (u != nullptr) {
 			u = u->First();
 			/* There is a vehicle in front overtake it if possible */
+			byte old_overtaking = v->overtaking;
 			if (v->overtaking == 0) RoadVehCheckOvertake(v, u);
-			if (v->overtaking == 0) v->cur_speed = u->cur_speed;
+			if (v->overtaking == old_overtaking) v->cur_speed = u->cur_speed;
 
 			/* In case an RV is stopped in a road stop, why not try to load? */
 			if (v->cur_speed == 0 && IsInsideMM(v->state, RVSB_IN_DT_ROAD_STOP, RVSB_IN_DT_ROAD_STOP_END) &&
 					v->current_order.ShouldStopAtStation(v, GetStationIndex(v->tile), false) &&
 					IsInfraTileUsageAllowed(VEH_ROAD, v->owner, v->tile) && !v->current_order.IsType(OT_LEAVESTATION) &&
 					GetRoadStopType(v->tile) == (v->IsBus() ? ROADSTOP_BUS : ROADSTOP_TRUCK)) {
+				byte cur_overtaking = IsRoadVehicleOnOtherSideOfRoad(v) ? RVSB_DRIVE_SIDE : 0;
+				if (cur_overtaking != v->overtaking) v->SetRoadVehicleOvertaking(cur_overtaking);
 				Station *st = Station::GetByTile(v->tile);
 				v->last_station_visited = st->index;
 				RoadVehArrivesAt(v, st);
@@ -1785,6 +1851,17 @@ void RoadVehicle::SetDestTile(TileIndex tile)
 	if (tile == this->dest_tile) return;
 	this->path.clear();
 	this->dest_tile = tile;
+}
+
+void RoadVehicle::SetRoadVehicleOvertaking(byte overtaking)
+{
+	if (IsInsideMM(this->state, RVSB_IN_DT_ROAD_STOP, RVSB_IN_DT_ROAD_STOP_END)) RoadStop::GetByTile(this->tile, GetRoadStopType(this->tile))->Leave(this);
+
+	for (RoadVehicle *u = this; u != nullptr; u = u->Next()) {
+		u->overtaking = overtaking;
+	}
+
+	if (IsInsideMM(this->state, RVSB_IN_DT_ROAD_STOP, RVSB_IN_DT_ROAD_STOP_END)) RoadStop::GetByTile(this->tile, GetRoadStopType(this->tile))->Enter(this);
 }
 
 static void CheckIfRoadVehNeedsService(RoadVehicle *v)

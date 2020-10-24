@@ -115,6 +115,7 @@
 	uint dir_2 = 2 ^ dir_1;
 
 	DisallowedRoadDirections drd2 = IsNormalRoadTile(t2) ? GetDisallowedRoadDirections(t2) : DRD_NONE;
+	if (IsDriveThroughStopTile(t2)) drd2 = GetDriveThroughStopDisallowedRoadDirections(t2);
 
 	return HasBit(r1, dir_1) && HasBit(r2, dir_2) && drd2 != DRD_BOTH && drd2 != (dir_1 > dir_2 ? DRD_SOUTHBOUND : DRD_NORTHBOUND);
 }

@@ -136,6 +136,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_THROUGH_TRAIN_DEPOT,    XSCF_NULL,                1,   1, "drive_through_train_depot", nullptr, nullptr, nullptr        },
 	{ XSLFI_MORE_VEHICLE_ORDERS,    XSCF_NULL,                1,   1, "more_veh_orders",           nullptr, nullptr, nullptr        },
 	{ XSLFI_ORDER_FLAGS_EXTRA,      XSCF_NULL,                1,   1, "order_flags_extra",         nullptr, nullptr, nullptr        },
+	{ XSLFI_ONE_WAY_DT_ROAD_STOP,   XSCF_NULL,                1,   1, "one_way_dt_road_stop",      nullptr, nullptr, nullptr        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr },// This is the end marker
 };
 

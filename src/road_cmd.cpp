@@ -37,6 +37,7 @@
 #include "genworld.h"
 #include "company_gui.h"
 #include "road_func.h"
+#include "roadstop_base.h"
 
 #include "table/strings.h"
 #include "table/roadtypes.h"
@@ -871,7 +872,38 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 		}
 
 		case MP_STATION: {
-			if ((GetAnyRoadBits(tile, rtt) & pieces) == pieces) return_cmd_error(STR_ERROR_ALREADY_BUILT);
+			if ((GetAnyRoadBits(tile, rtt) & pieces) == pieces) {
+				if (toggle_drd != DRD_NONE && rtt == RTT_ROAD && IsDriveThroughStopTile(tile)) {
+					Owner owner = GetRoadOwner(tile, rtt);
+					if (owner != OWNER_NONE) {
+						CommandCost ret = CheckOwnership(owner, tile);
+						if (ret.Failed()) return ret;
+					}
+
+					DisallowedRoadDirections dis_existing = GetDriveThroughStopDisallowedRoadDirections(tile);
+					DisallowedRoadDirections dis_new      = dis_existing ^ toggle_drd;
+
+					/* We allow removing disallowed directions to break up
+					 * deadlocks, but adding them can break articulated
+					 * vehicles. As such, only when less is disallowed,
+					 * i.e. bits are removed, we skip the vehicle check. */
+					if (CountBits(dis_existing) <= CountBits(dis_new)) {
+						CommandCost ret = EnsureNoVehicleOnGround(tile);
+						if (ret.Failed()) return ret;
+					}
+
+					if (flags & DC_EXEC) {
+						RoadStop *rs = RoadStop::GetByTile(tile, GetRoadStopType(tile));
+						rs->ChangeDriveThroughDisallowedRoadDirections(dis_new);
+						MarkTileDirtyByTile(tile);
+						NotifyRoadLayoutChanged(CountBits(dis_existing) > CountBits(dis_new));
+					}
+					return CommandCost();
+				}
+				return_cmd_error(STR_ERROR_ALREADY_BUILT);
+			} else {
+				toggle_drd = DRD_NONE;
+			}
 			if (!IsDriveThroughStopTile(tile)) goto do_clear;
 
 			RoadBits curbits = AxisToRoadBits(DiagDirToAxis(GetRoadStopDir(tile)));
