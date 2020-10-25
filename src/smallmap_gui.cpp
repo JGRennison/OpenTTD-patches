@@ -1499,10 +1499,10 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 
 /* virtual */ void SmallMapWindow::OnRealtimeTick(uint delta_ms)
 {
-	if (_pause_mode == PM_UNPAUSED) this->unpaused_since_last_redraw = true;
+	if (_pause_mode != PM_UNPAUSED) delta_ms = this->PausedAdjustRefreshTimeDelta(delta_ms);
 
 	/* Update the window every now and then */
-	if (!this->unpaused_since_last_redraw || !this->refresh.Elapsed(delta_ms)) return;
+	if (!this->refresh.Elapsed(delta_ms)) return;
 
 	if (this->map_type == SMT_LINKSTATS) {
 		uint32 company_mask = this->GetOverlayCompanyMask();
@@ -1516,7 +1516,6 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 
 	this->refresh.SetInterval(this->GetRefreshPeriod());
 	this->SetDirty();
-	this->unpaused_since_last_redraw = false;
 }
 
 uint SmallMapWindow::GetRefreshPeriod() const
@@ -1533,6 +1532,23 @@ uint SmallMapWindow::GetRefreshPeriod() const
 
 		default:
 			return FORCE_REFRESH_PERIOD * (1 + (this->zoom / 6));
+	}
+}
+
+uint SmallMapWindow::PausedAdjustRefreshTimeDelta(uint delta_ms) const
+{
+	if (_smallmap_industry_highlight != INVALID_INDUSTRYTYPE) return delta_ms;
+
+	switch (map_type) {
+		case SMT_CONTOUR:
+		case SMT_VEHICLES:
+			return CeilDivT<uint>(delta_ms, 4);
+
+		case SMT_LINKSTATS:
+			return delta_ms;
+
+		default:
+			return CeilDivT<uint>(delta_ms, 2);
 	}
 }
 

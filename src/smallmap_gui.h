@@ -105,7 +105,6 @@ protected:
 	int zoom;        ///< Zoom level. Bigger number means more zoom-out (further away).
 
 	GUITimer refresh; ///< Refresh timer.
-	bool unpaused_since_last_redraw = false;
 	LinkGraphOverlay *overlay;
 
 	static void BreakIndustryChainLink();
@@ -179,6 +178,7 @@ protected:
 	void SwitchMapType(SmallMapType map_type);
 	void SetNewScroll(int sx, int sy, int sub);
 	uint GetRefreshPeriod() const;
+	uint PausedAdjustRefreshTimeDelta(uint delta_ms) const;
 
 	void DrawMapIndicators() const;
 	void DrawSmallMapColumn(void *dst, uint xc, uint yc, int pitch, int reps, int start_pos, int end_pos, Blitter *blitter) const;
