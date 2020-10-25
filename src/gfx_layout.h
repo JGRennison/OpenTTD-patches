@@ -64,7 +64,7 @@ struct FontState {
 	 */
 	inline void PushColour()
 	{
-		colour_stack.push(this->cur_colour);
+		colour_stack.push(this->cur_colour & ~TC_FORCED);
 	}
 
 	/**
