@@ -970,7 +970,10 @@ static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 		}
 		if (CheckRoadBlockedForOvertaking(&od)) return;
 	}
-	tile_count = v->gcache.cached_total_length / TILE_SIZE;
+	DiagDirection dir = DirToDiagDir(v->direction);
+	int tile_offset = ((DiagDirToAxis(DirToDiagDir(v->direction)) == AXIS_X) ? v->x_pos : v->y_pos) & 0xF;
+	int tile_ahead_margin = ((dir == DIAGDIR_SE || dir == DIAGDIR_SW) ? TILE_SIZE - 1 - tile_offset : tile_offset);;
+	tile_count = (v->gcache.cached_total_length + tile_ahead_margin) / TILE_SIZE;
 	check_tile = v->tile - check_tile_diff;
 	for (; tile_count != 0; tile_count--, check_tile -= check_tile_diff) {
 		od.tile = check_tile;
