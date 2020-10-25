@@ -1303,6 +1303,91 @@ static bool IsRoadVehicleOnOtherSideOfRoad(const RoadVehicle *v)
 	return is_right != (bool) _settings_game.vehicle.road_side;
 }
 
+struct FinishOvertakeData {
+	Direction direction;
+	const Vehicle *v;
+	int min_coord;
+	int max_coord;
+	uint8 not_road_pos;
+};
+
+static Vehicle *EnumFindVehBlockingFinishOvertake(Vehicle *v, void *data)
+{
+	const FinishOvertakeData *od = (FinishOvertakeData*)data;
+
+	if (v->First() == od->v) return nullptr;
+
+	/* Check if other vehicle is behind */
+	switch (DirToDiagDir(v->direction)) {
+		case DIAGDIR_NE:
+		case DIAGDIR_SW:
+			if ((v->y_pos & TILE_UNIT_MASK) == od->not_road_pos) return nullptr;
+			if (v->x_pos >= od->min_coord && v->x_pos <= od->max_coord) return v;
+			break;
+		case DIAGDIR_SE:
+		case DIAGDIR_NW:
+			if ((v->x_pos & TILE_UNIT_MASK) == od->not_road_pos) return nullptr;
+			if (v->y_pos >= od->min_coord && v->y_pos <= od->max_coord) return v;
+			break;
+		default:
+			NOT_REACHED();
+	}
+	return nullptr;
+}
+
+static void RoadVehCheckFinishOvertake(RoadVehicle *v)
+{
+	/* Cancel overtake if the vehicle is broken or about to break down */
+	if (v->breakdown_ctr != 0) {
+		v->SetRoadVehicleOvertaking(0);
+		return;
+	}
+
+	FinishOvertakeData od;
+	od.direction = v->direction;
+	od.v = v;
+	const RoadVehicle *last = v->Last();
+	const int front_margin = 10;
+	const int back_margin = 10;
+	switch (DirToDiagDir(v->direction)) {
+		case DIAGDIR_NE:
+			od.min_coord = v->x_pos - front_margin;
+			od.max_coord = last->x_pos + back_margin;
+			od.not_road_pos = (_settings_game.vehicle.road_side ? 5 : 9);
+			break;
+		case DIAGDIR_SE:
+			od.min_coord = last->y_pos - back_margin;
+			od.max_coord = v->y_pos + front_margin;
+			od.not_road_pos = (_settings_game.vehicle.road_side ? 5 : 9);
+			break;
+		case DIAGDIR_SW:
+			od.min_coord = last->x_pos - back_margin;
+			od.max_coord = v->x_pos + front_margin;
+			od.not_road_pos = (_settings_game.vehicle.road_side ? 9 : 5);
+			break;
+		case DIAGDIR_NW:
+			od.min_coord = v->y_pos - front_margin;
+			od.max_coord = last->y_pos + back_margin;
+			od.not_road_pos = (_settings_game.vehicle.road_side ? 9 : 5);
+			break;
+		default:
+			NOT_REACHED();
+	}
+
+	TileIndexDiffC ti = TileIndexDiffCByDiagDir(DirToDiagDir(v->direction));
+	TileIndex ahead_tile = TileAddWrap(v->tile, ti.x, ti.y);
+	if (ahead_tile != INVALID_TILE && HasVehicleOnPos(ahead_tile, VEH_ROAD, &od, EnumFindVehBlockingFinishOvertake)) return;
+
+	uint tile_count = 1 + CeilDiv(v->gcache.cached_total_length, TILE_SIZE);
+	TileIndex check_tile = v->tile;
+	for (; check_tile != INVALID_TILE && tile_count != 0; tile_count--, check_tile = TileAddWrap(check_tile, -ti.x, -ti.y)) {
+		if (HasVehicleOnPos(check_tile, VEH_ROAD, &od, EnumFindVehBlockingFinishOvertake)) return;
+	}
+
+	/* road on the normal side is clear, finish overtake */
+	v->SetRoadVehicleOvertaking(0);
+}
+
 bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 {
 	SCOPE_INFO_FMT([&], "IndividualRoadVehicleController: %s, %s", scope_dumper().VehicleInfo(v), scope_dumper().VehicleInfo(prev));
@@ -1321,7 +1406,11 @@ bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 			 *  if the vehicle started a corner. To protect that, only allow an abort of
 			 *  overtake if we are on straight roads */
 			if (v->overtaking_ctr >= v->GetOvertakingCounterThreshold() && v->state < RVSB_IN_ROAD_STOP && IsStraightRoadTrackdir((Trackdir)v->state)) {
-				v->SetRoadVehicleOvertaking(0);
+				if (IsOneWayRoadTile(v->tile)) {
+					RoadVehCheckFinishOvertake(v);
+				} else {
+					v->SetRoadVehicleOvertaking(0);
+				}
 			} else if (v->overtaking_ctr == 0) {
 				/* prevent overflow issues */
 				v->overtaking_ctr = 255;
