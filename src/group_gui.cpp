@@ -881,7 +881,13 @@ public:
 
 	void OnDragDrop_Group(Point pt, int widget)
 	{
-		const Group *g = Group::Get(this->group_sel);
+		const Group *g = Group::GetIfValid(this->group_sel);
+		if (g == nullptr) {
+			this->group_sel = INVALID_GROUP;
+			this->group_over = INVALID_GROUP;
+			this->SetDirty();
+			return;
+		}
 
 		switch (widget) {
 			case WID_GL_ALL_VEHICLES: // All vehicles
@@ -1055,6 +1061,7 @@ public:
 		/* abort drag & drop */
 		this->vehicle_sel = INVALID_VEHICLE;
 		this->DirtyHighlightedGroupWidget();
+		this->group_sel = INVALID_GROUP;
 		this->group_over = INVALID_GROUP;
 		this->SetWidgetDirty(WID_GL_LIST_VEHICLE);
 	}
