@@ -154,8 +154,11 @@ class NIHVehicle : public NIHelper {
 		}
 		if (v->type == VEH_ROAD) {
 			const RoadVehicle *rv = RoadVehicle::From(v);
-			seprintf(buffer, lastof(buffer), "  Overtaking: %u, overtaking_ctr: %u, overtaking threshold: %u, speed: %u",
-					rv->overtaking, rv->overtaking_ctr, rv->GetOvertakingCounterThreshold(), rv->cur_speed);
+			seprintf(buffer, lastof(buffer), "  Overtaking: %u, overtaking_ctr: %u, overtaking threshold: %u",
+					rv->overtaking, rv->overtaking_ctr, rv->GetOvertakingCounterThreshold());
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  Speed: %u, path cache length: %u",
+					rv->cur_speed, (uint) rv->path.size());
 			print(buffer);
 		}
 		if (v->type == VEH_SHIP) {
