@@ -2265,6 +2265,9 @@ static TrackStatus GetTileTrackStatus_Road(TileIndex tile, TransportType mode, u
 
 					uint multiplier = drd_to_multiplier[(rtt == RTT_TRAM) ? DRD_NONE : GetDisallowedRoadDirections(tile)];
 					if (!HasRoadWorks(tile)) trackdirbits = (TrackdirBits)(_road_trackbits[bits] * multiplier);
+
+					extern TrackdirBits MaskOneWaySideJunctionRoad(TileIndex tile, RoadBits bits);
+					if (rtt == RTT_ROAD && HasExactlyOneBit(bits ^ ROAD_ALL)) trackdirbits &= MaskOneWaySideJunctionRoad(tile, bits);
 					break;
 				}
 
