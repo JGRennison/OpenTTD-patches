@@ -1412,7 +1412,11 @@ static bool MaxNoAIsChange(int32 i)
 static bool CheckRoadSide(int p1)
 {
 	extern bool RoadVehiclesAreBuilt();
-	return _game_mode == GM_MENU || !RoadVehiclesAreBuilt();
+	if (_game_mode != GM_MENU && RoadVehiclesAreBuilt()) return false;
+
+	extern void RecalculateRoadCachedOneWayStates();
+	RecalculateRoadCachedOneWayStates();
+	return true;
 }
 
 /**
@@ -2031,6 +2035,8 @@ void LoadFromConfig(bool minimal)
 		HandleOldDiffCustom(false);
 
 		ValidateSettings();
+
+		PostZoningModeChange();
 
 		/* Display scheduled errors */
 		extern void ScheduleErrorMessage(ErrorList &datas);

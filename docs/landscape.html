@@ -124,9 +124,21 @@
     </li>
    </ul>
    <ul>
-    <li>
+    <li style="color: blue">
      <a name="RailType"></a>
      Bits 11..6: Secondary Railtype. Used for some tiles with rail (rail, tunnelbridge). Used for lower or right track when two parallel tracks on tile.
+    </li>
+    <li style="color: blue">
+     <a name="RoadCachedOneWayState"></a>
+     Bits 14..12: Road cached one way state. Used for all tiles with road (road, station, tunnelbridge).
+     <table border="1" style="width: 30em;">
+      <tr><td style="width: 5em;"><tt>00</tt></td><td align=left>road is not one-way</td></tr>
+      <tr><td><tt>01</tt></td><td align=left>road is one-way in 'A' direction</td></tr>
+      <tr><td><tt>02</tt></td><td align=left>road is one-way in 'B' direction</td></tr>
+      <tr><td><tt>03</tt></td><td align=left>road is disallowed in both directions</td></tr>
+      <tr><td><tt>04</tt></td><td align=left>road is a one-way side junction</td></tr>
+      <tr><td><tt>05</tt></td><td align=left>road is a one-way side junction, with no exit access</td></tr>
+     </table>
     </li>
    </ul>
   </li>
@@ -578,6 +590,7 @@
      <li>m3 bits 7..4: <a href="#OwnershipInfo">owner</a> of road type 1 (tram); OWNER_NONE (<tt>10</tt>) is stored as OWNER_TOWN (<tt>0F</tt>)
      <li>m4 bits 5..0: <a href="#RoadType">Roadtype</a></li>
      <li>m7 bit 5 set = on snow or desert</li>
+     <li style="color: blue">m8 bits 14..12: <a href="#RoadCachedOneWayState">Road cached one way state</a></li>
      <li>m8 bits 11..6: <a href="#TramType">Tramtype</a></li>
      <li>m5 bits 7 clear: road or level-crossing
       <ul>
@@ -1022,6 +1035,7 @@
 
      <li>m7 bits 4..0: <a href="#OwnershipInfo">owner</a> of road (road stops)</li>
      <li>m7: animation frame (railway stations/waypoints, airports)</li>
+     <li style="color: blue">m8 bits 14..12: <a href="#RoadCachedOneWayState">Road cached one way state</a></li>
      <li>m8 bits 11..6: <a href="#TramType">Tramtype</a></li>
      <li>m8 bits 5..0: <a href="#TrackType">track type</a> for railway stations/waypoints</li>
     </ul>
@@ -1812,6 +1826,7 @@
        </tr>
       </table>
      </li>
+     <li style="color: blue">m8 bits 14..12: <a href="#RoadCachedOneWayState">Road cached one way state</a></li>
      <li>m8 bits 11..6: <a href="#TramType">Tramtype</a></li>
      <li>m8 bits 5..0: <a href="#TrackType">track type</a> for railway</li>
      <li style="color: blue">m8 bits 11..6 = <a name="TrackType">secondary track type</a> for railway (used for bridge-bypassing track when two parallel tracks on custom bridge head)</li>

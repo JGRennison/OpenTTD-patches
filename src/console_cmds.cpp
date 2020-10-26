@@ -2419,6 +2419,19 @@ DEF_CONSOLE_CMD(ConCSleep)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConRecalculateRoadCachedOneWayStates)
+{
+	if (argc == 0) {
+		IConsoleHelp("Debug: Recalculate road cached one way states");
+		return true;
+	}
+
+	extern void RecalculateRoadCachedOneWayStates();
+	RecalculateRoadCachedOneWayStates();
+
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConDoDisaster)
 {
 	if (argc == 0) {
@@ -2847,6 +2860,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("viewport_mark_dirty_st_overlay", ConViewportMarkStationOverlayDirty, nullptr, true);
 	IConsoleCmdRegister("gfx_debug", ConGfxDebug, nullptr, true);
 	IConsoleCmdRegister("csleep", ConCSleep, nullptr, true);
+	IConsoleCmdRegister("recalculate_road_cached_one_way_states", ConRecalculateRoadCachedOneWayStates, ConHookNoNetwork, true);
 
 	/* NewGRF development stuff */
 	IConsoleCmdRegister("reload_newgrfs",  ConNewGRFReload, ConHookNewGRFDeveloperTool);

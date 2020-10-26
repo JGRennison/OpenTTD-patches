@@ -2082,6 +2082,7 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 		}
 		ZoningMarkDirtyStationCoverageArea(st);
 		NotifyRoadLayoutChanged(true);
+		UpdateRoadCachedOneWayStatesAroundTile(tile);
 	}
 
 	if (st != nullptr) {
@@ -2275,6 +2276,7 @@ CommandCost CmdRemoveRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 			UpdateCompanyRoadInfrastructure(road_type[RTT_ROAD], road_owner[RTT_ROAD], count);
 			UpdateCompanyRoadInfrastructure(road_type[RTT_TRAM], road_owner[RTT_TRAM], count);
 		}
+		if (flags & DC_EXEC) UpdateRoadCachedOneWayStatesAroundTile(cur_tile);
 	}
 
 	return had_success ? cost : last_error;
@@ -4588,6 +4590,13 @@ static bool CanRemoveRoadWithStop(TileIndex tile, DoCommandFlag flags)
 	return true;
 }
 
+static CommandCost RemoveRoadStopAndUpdateRoadCachedOneWayState(TileIndex tile, DoCommandFlag flags)
+{
+	CommandCost cost = RemoveRoadStop(tile, flags);
+	if ((flags & DC_EXEC) && cost.Succeeded()) UpdateRoadCachedOneWayStatesAroundTile(tile);
+	return cost;
+}
+
 /**
  * Clear a single tile of a station.
  * @param tile The tile to clear.
@@ -4620,12 +4629,12 @@ CommandCost ClearTile_Station(TileIndex tile, DoCommandFlag flags)
 			if (IsDriveThroughStopTile(tile) && !CanRemoveRoadWithStop(tile, flags)) {
 				return_cmd_error(STR_ERROR_MUST_DEMOLISH_TRUCK_STATION_FIRST);
 			}
-			return RemoveRoadStop(tile, flags);
+			return RemoveRoadStopAndUpdateRoadCachedOneWayState(tile, flags);
 		case STATION_BUS:
 			if (IsDriveThroughStopTile(tile) && !CanRemoveRoadWithStop(tile, flags)) {
 				return_cmd_error(STR_ERROR_MUST_DEMOLISH_BUS_STATION_FIRST);
 			}
-			return RemoveRoadStop(tile, flags);
+			return RemoveRoadStopAndUpdateRoadCachedOneWayState(tile, flags);
 		case STATION_BUOY:     return RemoveBuoy(tile, flags);
 		case STATION_DOCK:     return RemoveDock(tile, flags);
 		default: break;

@@ -739,6 +739,7 @@ CommandCost CmdBuildSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 							Company::Get(tram_owner)->infrastructure.road[roadtype_tram] += num_new_tram_pieces;
 							DirtyCompanyInfrastructureWindows(tram_owner);
 						}
+						UpdateRoadCachedOneWayStatesAroundTile(tile);
 					}
 					break;
 				}
@@ -847,6 +848,7 @@ CommandCost CmdRemoveSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 				DirtyCompanyInfrastructureWindows(owner);
 				MakeRoadNormal(tile, GetCrossingRoadBits(tile), GetRoadTypeRoad(tile), GetRoadTypeTram(tile), GetTownIndex(tile), GetRoadOwner(tile, RTT_ROAD), GetRoadOwner(tile, RTT_TRAM));
 				DeleteNewGRFInspectWindow(GSF_RAILTYPES, tile);
+				UpdateRoadCachedOneWayStatesAroundTile(tile);
 			}
 			break;
 		}

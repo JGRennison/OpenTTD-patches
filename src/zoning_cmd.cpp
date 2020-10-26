@@ -25,6 +25,7 @@
 #include "window_func.h"
 #include "zoning.h"
 #include "viewport_func.h"
+#include "road_map.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 
 Zoning _zoning;
@@ -282,18 +283,27 @@ inline SpriteID TileZoneCheckRoadGridEvaluation(TileIndex tile, uint grid_size)
  */
 inline SpriteID TileZoneCheckOneWayRoadEvaluation(TileIndex tile)
 {
-	extern uint8 GetOneWayRoadTileType(TileIndex tile);
+	if (!MayHaveRoad(tile)) return ZONING_INVALID_SPRITE_ID;
 
-	uint8 type = GetOneWayRoadTileType(tile);
-	switch (type) {
+	RoadCachedOneWayState rcows = GetRoadCachedOneWayState(tile);
+	switch (rcows) {
 		default:
 			return ZONING_INVALID_SPRITE_ID;
-		case 1:
-			return SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE;
-		case 2:
+		case RCOWS_NO_ACCESS:
+			return SPR_ZONING_INNER_HIGHLIGHT_RED;
+		case RCOWS_NON_JUNCTION_A:
+		case RCOWS_NON_JUNCTION_B:
+			if (IsTileType(tile, MP_STATION)) {
+				return SPR_ZONING_INNER_HIGHLIGHT_GREEN;
+			} else if (IsNormalRoadTile(tile) && GetDisallowedRoadDirections(tile) != DRD_NONE) {
+				return SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE;
+			} else {
+				return SPR_ZONING_INNER_HIGHLIGHT_PURPLE;
+			}
+		case RCOWS_SIDE_JUNCTION:
 			return SPR_ZONING_INNER_HIGHLIGHT_ORANGE;
-		case 3:
-			return SPR_ZONING_INNER_HIGHLIGHT_GREEN;
+		case RCOWS_SIDE_JUNCTION_NO_EXIT:
+			return SPR_ZONING_INNER_HIGHLIGHT_YELLOW;
 	}
 }
 
@@ -486,4 +496,11 @@ void SetZoningMode(bool inner, ZoningEvaluationMode mode)
 	current_mode = mode;
 	cache.clear();
 	MarkWholeNonMapViewportsDirty();
+	PostZoningModeChange();
+}
+
+void PostZoningModeChange()
+{
+	extern bool _mark_tile_dirty_on_road_cache_one_way_state_update;
+	_mark_tile_dirty_on_road_cache_one_way_state_update = (_zoning.inner == ZEM_ONE_WAY_ROAD) || (_zoning.outer == ZEM_ONE_WAY_ROAD);
 }

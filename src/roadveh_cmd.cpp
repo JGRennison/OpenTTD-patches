@@ -373,90 +373,20 @@ bool RoadVehicle::FindClosestDepot(TileIndex *location, DestinationID *destinati
 	return true;
 }
 
-static DisallowedRoadDirections GetOneWayRoadTileDisallowedRoadDirections(TileIndex tile)
+inline bool IsOneWayRoadTile(TileIndex tile)
 {
-	if (IsNormalRoadTile(tile)) return GetDisallowedRoadDirections(tile);
-	if (IsDriveThroughStopTile(tile)) return GetDriveThroughStopDisallowedRoadDirections(tile);
-	return DRD_NONE;
+	return MayHaveRoad(tile) && GetRoadCachedOneWayState(tile) != RCOWS_NORMAL;
 }
 
-static DiagDirection OneWaySideJunctionRoadRoadBitsToDiagDir(RoadBits bits)
+inline bool IsOneWaySideJunctionRoadTile(TileIndex tile)
 {
-	/*
-	 * Drive on left missing bit:
-	 * ROAD_SE (bit 2) -> DIAGDIR_NE (0)
-	 * ROAD_SW (bit 1) -> DIAGDIR_SE (1)
-	 * ROAD_NW (bit 0) -> DIAGDIR_SW (2)
-	 * ROAD_NE (bit 3) -> DIAGDIR_NW (3)
-	 */
-	uint8 bit = FIND_FIRST_BIT(bits ^ ROAD_ALL);
-	bit ^= 3;
-	return (DiagDirection)((bit + 3 + (_settings_game.vehicle.road_side * 2)) % 4);
+	return MayHaveRoad(tile) && (GetRoadCachedOneWayState(tile) == RCOWS_SIDE_JUNCTION || GetRoadCachedOneWayState(tile) == RCOWS_SIDE_JUNCTION_NO_EXIT);
 }
 
-inline bool IsOneWaySideJunctionRoadDRDsPresent(TileIndex tile, DiagDirection dir)
+static bool MayReverseOnOneWayRoadTile(TileIndex tile, DiagDirection dir)
 {
-	const DisallowedRoadDirections diagdir_to_drd[DIAGDIR_END] = { DRD_NORTHBOUND, DRD_NORTHBOUND, DRD_SOUTHBOUND, DRD_SOUTHBOUND };
-
-	TileIndexDiffC ti = TileIndexDiffCByDiagDir(dir);
-	TileIndex ahead = AddTileIndexDiffCWrap(tile, ti);
-	if (ahead == INVALID_TILE || GetOneWayRoadTileDisallowedRoadDirections(ahead) != diagdir_to_drd[dir]) return false;
-	TileIndex behind = AddTileIndexDiffCWrap(tile, { (int16)(-ti.x), (int16)(-ti.y) });
-	if (behind == INVALID_TILE || GetOneWayRoadTileDisallowedRoadDirections(behind) != diagdir_to_drd[dir]) return false;
-	return true;
-}
-
-static bool IsOneWaySideJunctionRoad(TileIndex tile)
-{
-	RoadBits bits = GetRoadBits(tile, RTT_ROAD);
-	if (!HasExactlyOneBit(bits ^ ROAD_ALL)) return false;
-	DiagDirection dir = OneWaySideJunctionRoadRoadBitsToDiagDir(bits);
-	return IsOneWaySideJunctionRoadDRDsPresent(tile, dir);
-}
-
-TrackdirBits MaskOneWaySideJunctionRoad(TileIndex tile, RoadBits bits)
-{
-	DiagDirection dir = OneWaySideJunctionRoadRoadBitsToDiagDir(bits);
-	if (!IsOneWaySideJunctionRoadDRDsPresent(tile, dir)) return ~TRACKDIR_BIT_NONE;
-
-	const TrackdirBits left_turns = TRACKDIR_BIT_LOWER_W | TRACKDIR_BIT_LEFT_N | TRACKDIR_BIT_UPPER_E | TRACKDIR_BIT_RIGHT_S;
-	const TrackdirBits right_turns = TRACKDIR_BIT_LOWER_E | TRACKDIR_BIT_LEFT_S | TRACKDIR_BIT_UPPER_W | TRACKDIR_BIT_RIGHT_N;
-	TrackdirBits remove = (_settings_game.vehicle.road_side ? left_turns : right_turns);
-
-	DiagDirection side_dir = (DiagDirection)((dir + 3 + (_settings_game.vehicle.road_side * 2)) % 4);
-	TileIndexDiffC ti = TileIndexDiffCByDiagDir(side_dir);
-	TileIndex side = AddTileIndexDiffCWrap(tile, ti);
-
-	const DisallowedRoadDirections diagdir_to_drd[DIAGDIR_END] = { DRD_SOUTHBOUND, DRD_SOUTHBOUND, DRD_NORTHBOUND, DRD_NORTHBOUND };
-	const TrackdirBits remove_side_trackdirs[] = {
-		TRACKDIR_BIT_RIGHT_N | TRACKDIR_BIT_UPPER_E, // DIAGDIR_NE
-		TRACKDIR_BIT_RIGHT_S | TRACKDIR_BIT_LOWER_E, // DIAGDIR_SE
-		TRACKDIR_BIT_LEFT_S  | TRACKDIR_BIT_LOWER_W, // DIAGDIR_SW
-		TRACKDIR_BIT_LEFT_N  | TRACKDIR_BIT_UPPER_W  // DIAGDIR_NW
-	};
-	if (side != INVALID_TILE && GetOneWayRoadTileDisallowedRoadDirections(side) & diagdir_to_drd[side_dir]) remove |= remove_side_trackdirs[side_dir];
-
-	return ~remove;
-}
-
-static bool IsOneWayRoadTile(TileIndex tile)
-{
-	if (IsNormalRoadTile(tile)) {
-		if (GetDisallowedRoadDirections(tile) != DRD_NONE) return true;
-		if (IsOneWaySideJunctionRoad(tile)) return true;
-	}
-	if (IsDriveThroughStopTile(tile) && GetDriveThroughStopDisallowedRoadDirections(tile) != DRD_NONE) return true;
-	return false;
-}
-
-uint8 GetOneWayRoadTileType(TileIndex tile)
-{
-	if (IsNormalRoadTile(tile)) {
-		if (GetDisallowedRoadDirections(tile) != DRD_NONE) return 1;
-		if (IsOneWaySideJunctionRoad(tile)) return 2;
-	}
-	if (IsDriveThroughStopTile(tile) && GetDriveThroughStopDisallowedRoadDirections(tile) != DRD_NONE) return 3;
-	return 0;
+	TrackdirBits bits = TrackStatusToTrackdirBits(GetTileTrackStatus(tile, TRANSPORT_ROAD, RTT_ROAD));
+	return bits & DiagdirReachesTrackdirs(ReverseDiagDir(dir));
 }
 
 /**
@@ -946,14 +876,15 @@ static bool CheckRoadInfraUnsuitableForOvertaking(OvertakeData *od)
 	if (!HasBit(trackdirbits, od->trackdir) || (red_signals != TRACKDIR_BIT_NONE)) return true;
 	/* Track has junction */
 	if (trackbits & ~TRACK_BIT_CROSS) {
-		if (IsNormalRoadTile(od->tile) && IsOneWaySideJunctionRoad(od->tile)) {
+		RoadCachedOneWayState rcows = GetRoadCachedOneWayState(od->tile);
+		if (rcows == RCOWS_SIDE_JUNCTION) {
 			const RoadVehPathCache &pc = od->v->path;
 			if (!pc.empty() && pc.tile.front() == od->tile && !IsStraightRoadTrackdir(pc.td.front())) {
 				/* cached path indicates that we are turning here, do not overtake */
 				return true;
 			}
 		} else {
-			return true;
+			return rcows != RCOWS_SIDE_JUNCTION_NO_EXIT;
 		}
 	}
 
@@ -1495,7 +1426,7 @@ bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 		} else if (v->HasArticulatedPart() && IsBridgeTile(v->tile) && (IsRoadCustomBridgeHeadTile(v->tile) || IsRoadCustomBridgeHeadTile(GetOtherBridgeEnd(v->tile)))) {
 			/* Articulated RVs may not overtake on custom bridge heads */
 			v->SetRoadVehicleOvertaking(0);
-		} else if (v->state < RVSB_IN_ROAD_STOP && !IsStraightRoadTrackdir((Trackdir)v->state) && IsOneWaySideJunctionRoad(v->tile)) {
+		} else if (v->state < RVSB_IN_ROAD_STOP && !IsStraightRoadTrackdir((Trackdir)v->state) && IsOneWaySideJunctionRoadTile(v->tile)) {
 			/* No turning to/from overtaking lane on one way side road junctions */
 			v->SetRoadVehicleOvertaking(0);
 		} else if (++v->overtaking_ctr >= RV_OVERTAKE_TIMEOUT) {
@@ -1649,7 +1580,7 @@ again:
 					v->cur_speed = 0;
 					return false;
 				}
-			} else if (IsOneWayRoadTile(v->tile)) {
+			} else if (IsOneWayRoadTile(v->tile) && !MayReverseOnOneWayRoadTile(v->tile, (DiagDirection)(rd.x & 3))) {
 				v->cur_speed = 0;
 				return false;
 			} else {

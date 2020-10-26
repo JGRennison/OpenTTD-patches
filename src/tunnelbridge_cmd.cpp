@@ -676,6 +676,8 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 						NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile_start, tile_end, dir, GetRoadTramType(roadtype));
 					}
 				}
+				UpdateRoadCachedOneWayStatesAroundTile(tile_start);
+				UpdateRoadCachedOneWayStatesAroundTile(tile_end);
 				break;
 			}
 
@@ -1039,6 +1041,8 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32 p1,
 			RoadType tram_rt = RoadTypeIsTram(roadtype) ? roadtype : INVALID_ROADTYPE;
 			MakeRoadTunnel(start_tile, company, t->index, direction,                 road_rt, tram_rt);
 			MakeRoadTunnel(end_tile,   company, t->index, ReverseDiagDir(direction), road_rt, tram_rt);
+			UpdateRoadCachedOneWayStatesAroundTile(start_tile);
+			UpdateRoadCachedOneWayStatesAroundTile(end_tile);
 		}
 		DirtyCompanyInfrastructureWindows(company);
 	}
@@ -1180,6 +1184,9 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 
 			DoClearSquare(tile);
 			DoClearSquare(endtile);
+
+			UpdateRoadCachedOneWayStatesAroundTile(tile);
+			UpdateRoadCachedOneWayStatesAroundTile(endtile);
 		}
 		ViewportMapInvalidateTunnelCacheByTile(tile < endtile ? tile : endtile, axis);
 	}
@@ -1265,6 +1272,7 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 
 		bool removetile = false;
 		bool removeendtile = false;
+		bool update_road = false;
 
 		/* Update company infrastructure counts. */
 		if (rail) {
@@ -1279,6 +1287,7 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 					if (HasRoadTypeTram(tile)) NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile, endtile, direction, RTT_TRAM);
 				}
 			}
+			update_road = true;
 		} else { // Aqueduct
 			if (Company::IsValidID(owner)) Company::Get(owner)->infrastructure.water -= len * TUNNELBRIDGE_TRACKBIT_FACTOR;
 			removetile    = IsDockingTile(tile);
@@ -1324,6 +1333,11 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 			for (uint i = 0; i < vehicles_affected.size(); ++i) {
 				TryPathReserve(vehicles_affected[i], true);
 			}
+		}
+
+		if (update_road) {
+			UpdateRoadCachedOneWayStatesAroundTile(tile);
+			UpdateRoadCachedOneWayStatesAroundTile(endtile);
 		}
 	}
 

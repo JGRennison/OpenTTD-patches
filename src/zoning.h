@@ -68,6 +68,7 @@ void ZoningStationWindowOpenClose(const Station *st);
 void ZoningTownAuthorityRatingChange();
 
 void SetZoningMode(bool inner, ZoningEvaluationMode mode);
+void PostZoningModeChange();
 
 void ClearZoningCaches();
 

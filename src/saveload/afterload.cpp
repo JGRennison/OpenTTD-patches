@@ -3795,6 +3795,11 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_ONE_WAY_ROAD_STATE)) {
+		extern void RecalculateRoadCachedOneWayStates();
+		RecalculateRoadCachedOneWayStates();
+	}
+
 	InitializeRoadGUI();
 
 	/* This needs to be done after conversion. */

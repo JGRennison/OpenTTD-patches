@@ -288,8 +288,8 @@ static inline bool HasTownOwnedRoad(TileIndex t)
 /** Which directions are disallowed ? */
 enum DisallowedRoadDirections {
 	DRD_NONE,       ///< None of the directions are disallowed
-	DRD_SOUTHBOUND, ///< All southbound traffic is disallowed
-	DRD_NORTHBOUND, ///< All northbound traffic is disallowed
+	DRD_SOUTHBOUND, ///< All southbound traffic is disallowed (Trackdir 8-13 is allowed)
+	DRD_NORTHBOUND, ///< All northbound traffic is disallowed (Trackdir 0-5 is allowed)
 	DRD_BOTH,       ///< All directions are disallowed
 	DRD_END,        ///< Sentinel
 };
@@ -318,6 +318,39 @@ static inline void SetDisallowedRoadDirections(TileIndex t, DisallowedRoadDirect
 	assert_tile(IsNormalRoad(t), t);
 	assert(drd < DRD_END);
 	SB(_m[t].m5, 4, 2, drd);
+}
+
+enum RoadCachedOneWayState {
+	RCOWS_NORMAL = 0,             ///< Road is not one-way
+	RCOWS_NON_JUNCTION_A,         ///< Road is one-way in 'A' direction (Trackdir 8-13 is allowed, same as DRD_SOUTHBOUND for straight road pieces)
+	RCOWS_NON_JUNCTION_B,         ///< Road is one-way in 'B' direction (Trackdir 0-5 is allowed, same as DRD_NORTHBOUND for straight road pieces)
+	RCOWS_NO_ACCESS,              ///< Road is disallowed in both directions
+	RCOWS_SIDE_JUNCTION,          ///< Road is a one-way side junction
+	RCOWS_SIDE_JUNCTION_NO_EXIT,  ///< Road is a one-way side junction, with no side exit
+};
+
+/**
+ * Get the road cached one-way state
+ * @param t tile to get the state from
+ * @pre MayHaveRoad(t)
+ * @return road cached one way state
+ */
+static inline RoadCachedOneWayState GetRoadCachedOneWayState(TileIndex t)
+{
+	assert(MayHaveRoad(t));
+	return (RoadCachedOneWayState)GB(_me[t].m8, 12, 3);
+}
+
+/**
+ * Set the road cached one-way state
+ * @param t tile to set the state of
+ * @param rcows road cached one way state
+ * @pre MayHaveRoad(t)
+ */
+static inline void SetRoadCachedOneWayState(TileIndex t, RoadCachedOneWayState rcows)
+{
+	assert(MayHaveRoad(t));
+	SB(_me[t].m8, 12, 3, rcows);
 }
 
 /**
