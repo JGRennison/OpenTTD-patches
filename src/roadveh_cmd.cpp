@@ -449,6 +449,16 @@ static bool IsOneWayRoadTile(TileIndex tile)
 	return false;
 }
 
+uint8 GetOneWayRoadTileType(TileIndex tile)
+{
+	if (IsNormalRoadTile(tile)) {
+		if (GetDisallowedRoadDirections(tile) != DRD_NONE) return 1;
+		if (IsOneWaySideJunctionRoad(tile)) return 2;
+	}
+	if (IsDriveThroughStopTile(tile) && GetDriveThroughStopDisallowedRoadDirections(tile) != DRD_NONE) return 3;
+	return 0;
+}
+
 /**
  * Turn a roadvehicle around.
  * @param tile unused

@@ -6264,6 +6264,7 @@ STR_ZONING_IND_UNSER                                            :Unserved indust
 STR_ZONING_TRACERESTRICT                                        :Restricted signals
 STR_ZONING_2x2_GRID                                             :2x2 town road grid
 STR_ZONING_3x3_GRID                                             :3x3 town road grid
+STR_ZONING_ONE_WAY_ROAD                                         :One way roads
 
 STR_TMPL_RPL_TITLE                                              :{WHITE}Template Replacement
 STR_TMPL_TEMPLATE_REPLACEMENT                                   :Template Replacement

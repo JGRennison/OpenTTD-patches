@@ -274,6 +274,30 @@ inline SpriteID TileZoneCheckRoadGridEvaluation(TileIndex tile, uint grid_size)
 }
 
 /**
+ * Detect whether a tile is a one way road
+ *
+ * @param TileIndex tile
+ * @param Owner owner
+ * @return red if a restricted signal, nothing otherwise
+ */
+inline SpriteID TileZoneCheckOneWayRoadEvaluation(TileIndex tile)
+{
+	extern uint8 GetOneWayRoadTileType(TileIndex tile);
+
+	uint8 type = GetOneWayRoadTileType(tile);
+	switch (type) {
+		default:
+			return ZONING_INVALID_SPRITE_ID;
+		case 1:
+			return SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE;
+		case 2:
+			return SPR_ZONING_INNER_HIGHLIGHT_ORANGE;
+		case 3:
+			return SPR_ZONING_INNER_HIGHLIGHT_GREEN;
+	}
+}
+
+/**
  * General evaluation function; calls all the other functions depending on
  * evaluation mode.
  *
@@ -297,6 +321,7 @@ SpriteID TileZoningSpriteEvaluation(TileIndex tile, Owner owner, ZoningEvaluatio
 		case ZEM_TRACERESTRICT: return TileZoneCheckTraceRestrictEvaluation(tile, owner);
 		case ZEM_2x2_GRID:      return TileZoneCheckRoadGridEvaluation(tile, 3);
 		case ZEM_3x3_GRID:      return TileZoneCheckRoadGridEvaluation(tile, 4);
+		case ZEM_ONE_WAY_ROAD:  return TileZoneCheckOneWayRoadEvaluation(tile);
 		default:                return ZONING_INVALID_SPRITE_ID;
 	}
 }
