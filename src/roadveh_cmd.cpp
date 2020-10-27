@@ -1010,8 +1010,13 @@ static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 	check_tile = v->tile - check_tile_diff;
 	for (; tile_count != 0; tile_count--, check_tile -= check_tile_diff) {
 		od.tile = check_tile;
-		if (CheckRoadInfraUnsuitableForOvertaking(&od)) return;
-		if (CheckRoadBlockedForOvertaking(&od)) return;
+		if (tile_count == 1) {
+			RoadBits rb = GetAnyRoadBits(check_tile, RTT_ROAD);
+			if ((rb & DiagDirToRoadBits(dir)) && HasVehicleOnPos(check_tile, VEH_ROAD, &od, EnumFindVehBlockingOvertakeBehind)) return;
+		} else {
+			if (CheckRoadInfraUnsuitableForOvertaking(&od)) return;
+			if (CheckRoadBlockedForOvertaking(&od)) return;
+		}
 	}
 
 	/* When the vehicle in front of us is stopped we may only take
