@@ -917,13 +917,22 @@ static bool IsNonOvertakingStationTile(TileIndex tile, DiagDirection diag_dir)
 	return GetDriveThroughStopDisallowedRoadDirections(tile) != diagdir_to_drd[diag_dir];
 }
 
+inline bool IsValidRoadVehStateForOvertake(const RoadVehicle *v)
+{
+	if (v->state == RVSB_IN_DEPOT) return false;
+	if (v->state < TRACKDIR_END && !IsDiagonalTrackdir((Trackdir)v->state)) return false;
+	return true;
+}
+
 static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 {
 	/* Trams can't overtake other trams */
 	if (RoadTypeIsTram(v->roadtype)) return;
 
-	/* Vehicles are not driving in same direction || direction is not a diagonal direction */
-	if (v->direction != u->direction || !(v->direction & 1)) return;
+	/* Other vehicle is facing the opposite direction || direction is not a diagonal direction */
+	if (v->direction == ReverseDir(u->Last()->direction) || !(v->direction & 1)) return;
+
+	if (!IsValidRoadVehStateForOvertake(v)) return;
 
 	/* Don't overtake in stations */
 	if (IsNonOvertakingStationTile(u->tile, DirToDiagDir(u->direction))) return;
@@ -938,6 +947,8 @@ static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 	if (v->GetOvertakingCounterThreshold() > 255) return;
 
 	for (RoadVehicle *w = v; w != nullptr; w = w->Next()) {
+		if (!IsValidRoadVehStateForOvertake(w)) return;
+
 		/* Don't overtake in stations */
 		if (IsNonOvertakingStationTile(w->tile, DirToDiagDir(w->direction))) return;
 
