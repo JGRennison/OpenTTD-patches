@@ -117,6 +117,7 @@ Pre-filter SaveLoad descriptor arrays for current version/mode, for chunks with 
 
 ### AI/GS
 
+[AI/GS script additions](docs/script-additions.html).
 Add AI/GS method to get current day length.
 Add GS method to create river tiles.
 Add workaround for performance issues attempting to create a town when no town names are left.

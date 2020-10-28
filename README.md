@@ -274,6 +274,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
   * [NML specification additions](docs/newgrf-additions-nml.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions-nml.html)).
+  * [AI/GS script additions](docs/script-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/script-additions.html)).
   * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).
 
 * Translations  
