@@ -2406,7 +2406,7 @@ public:
 					break;
 
 				case OCV_CARGO_WAITING_AMOUNT:
-					value = Clamp(ConvertDisplayQuantityToCargoQuantity(this->vehicle->GetOrder(sel)->GetConditionValue(), value), 0, 2047);
+					value = Clamp(ConvertDisplayQuantityToCargoQuantity(this->vehicle->GetOrder(sel)->GetConditionValue(), value), 0, 0xFFFF);
 					break;
 
 				case OCV_COUNTER_VALUE:
