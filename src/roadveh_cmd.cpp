@@ -1429,6 +1429,12 @@ static void RoadVehCheckFinishOvertake(RoadVehicle *v)
 	v->SetRoadVehicleOvertaking(0);
 }
 
+inline byte IncreaseOvertakingCounter(RoadVehicle *v)
+{
+	if (v->overtaking_ctr != 255) v->overtaking_ctr++;
+	return v->overtaking_ctr;
+}
+
 bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 {
 	SCOPE_INFO_FMT([&], "IndividualRoadVehicleController: %s, %s", scope_dumper().VehicleInfo(v), scope_dumper().VehicleInfo(prev));
@@ -1445,7 +1451,7 @@ bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 		} else if (v->state < RVSB_IN_ROAD_STOP && !IsStraightRoadTrackdir((Trackdir)v->state) && IsOneWaySideJunctionRoadTile(v->tile)) {
 			/* No turning to/from overtaking lane on one way side road junctions */
 			v->SetRoadVehicleOvertaking(0);
-		} else if (++v->overtaking_ctr >= RV_OVERTAKE_TIMEOUT) {
+		} else if (IncreaseOvertakingCounter(v) >= RV_OVERTAKE_TIMEOUT) {
 			/* If overtaking just aborts at a random moment, we can have a out-of-bound problem,
 			 *  if the vehicle started a corner. To protect that, only allow an abort of
 			 *  overtake if we are on straight roads */
@@ -1455,9 +1461,6 @@ bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 				} else {
 					v->SetRoadVehicleOvertaking(0);
 				}
-			} else if (v->overtaking_ctr == 0) {
-				/* prevent overflow issues */
-				v->overtaking_ctr = 255;
 			}
 		}
 	}
