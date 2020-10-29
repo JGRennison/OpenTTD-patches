@@ -89,6 +89,16 @@ public:
 	 * @note This uses the clock of the host system, which can skew or be set back. Use with caution.
 	 */
 	static int32 GetSystemTime();
+
+	static bool IsTimeShownInMinutes();
+
+	static int32 GetTicksPerMinute();
+
+	static DateTicksScaled GetCurrentScaledDateTicks();
+
+	static int32 GetHour(DateTicksScaled ticks);
+
+	static int32 GetMinute(DateTicksScaled ticks);
 };
 
 #endif /* SCRIPT_DATE_HPP */

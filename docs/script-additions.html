@@ -10,7 +10,7 @@
 		table      { border-collapse: collapse; empty-cells: show; }
 		.code      { font-family: "Courier New", Courier, mono; color: darkgreen; }
 		.methodtext{ margin-left: 3em; }
-		.indent    { margin-left: 1em; }
+		.indent    { margin-left: 1em; margin-bottom: 0.5em; }
 		dt         { font-weight: bold; }
 	</style>
 </head>
@@ -27,7 +27,33 @@
 		<h4>Additional Static Public Member Functions:</h4>
 		<div class="indent">
 			<div class="code">static int32 GetDayLengthFactor ()</div>
-			<div class="methodtext">Get current day length factor</div>
+			<div class="methodtext">Get current day length factor.</div>
+		</div>
+		<div class="indent">
+			<div class="code">static bool IsTimeShownInMinutes ()</div>
+			<div class="methodtext">Get whether time is shown in minutes in the game settings.</div>
+			<div class="methodtext">This ignores the "Use client time settings instead of savegame time settings" setting.</div>
+		</div>
+		<div class="indent">
+			<div class="code">static int32 GetTicksPerMinute ()</div>
+			<div class="methodtext">Get the ticks per minutes in the game settings.</div>
+			<div class="methodtext">This ignores the "Use client time settings instead of savegame time settings" setting.</div>
+		</div>
+		<div class="indent">
+			<div class="code">static DateTicksScaled GetCurrentScaledDateTicks ()</div>
+			<div class="methodtext">Get the current scaled date ticks.</div>
+			<div class="methodtext">This increments at the same rate regardless of the day length factor.</div>
+			<div class="methodtext">Changing the day length factor will also change this value.</div>
+		</div>
+		<div class="indent">
+			<div class="code">static int32 GetHour (DateTicksScaled ticks)</div>
+			<div class="methodtext">Get the hour of the given scaled date ticks value.</div>
+			<div class="methodtext">This ignores the "Use client time settings instead of savegame time settings" setting.</div>
+		</div>
+		<div class="indent">
+			<div class="code">static int32 GetMinute (DateTicksScaled ticks)</div>
+			<div class="methodtext">Get the minute of the given scaled date ticks value.</div>
+			<div class="methodtext">This ignores the "Use client time settings instead of savegame time settings" setting.</div>
 		</div>
 	</div>
 
@@ -36,8 +62,8 @@
 		<h4>Additional Static Public Member Functions:</h4>
 		<div class="indent">
 			<div class="code">static  bool BuildRiver (TileIndex tile)</div>
-			<div class="methodtext">Builds a river on tile (subject to permissions/settings)</div>
-			<div class="methodtext">All other details are the same as BuildCanal</div>
+			<div class="methodtext">Builds a river on tile (subject to permissions/settings).</div>
+			<div class="methodtext">All other details are the same as BuildCanal.</div>
 		</div>
 	</div>
 </body>

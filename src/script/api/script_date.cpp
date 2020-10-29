@@ -72,3 +72,30 @@
 	time(&t);
 	return t;
 }
+
+/* static */ bool ScriptDate::IsTimeShownInMinutes()
+{
+	return _settings_game.game_time.time_in_minutes;
+}
+
+/* static */ int32 ScriptDate::GetTicksPerMinute()
+{
+	return _settings_game.game_time.ticks_per_minute;
+}
+
+/* static */ DateTicksScaled ScriptDate::GetCurrentScaledDateTicks()
+{
+	return _scaled_date_ticks;
+}
+
+/* static */ int32 ScriptDate::GetHour(DateTicksScaled ticks)
+{
+	Minutes minutes = (ticks / _settings_game.game_time.ticks_per_minute) + _settings_game.game_time.clock_offset;
+	return MINUTES_HOUR(minutes);
+}
+
+/* static */ int32 ScriptDate::GetMinute(DateTicksScaled ticks)
+{
+	Minutes minutes = (ticks / _settings_game.game_time.ticks_per_minute) + _settings_game.game_time.clock_offset;
+	return MINUTES_MINUTE(minutes);
+}
