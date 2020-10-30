@@ -808,8 +808,8 @@ struct TimetableWindow : Window {
 				break;
 			}
 
-			case WID_VT_CLEAR_TIME: { // Clear waiting time.
-				ExecuteTimetableCommand(v, _ctrl_pressed, this->sel_index, MTF_WAIT_TIME, 0, true);
+			case WID_VT_CLEAR_TIME: { // Clear travel/waiting time.
+				ExecuteTimetableCommand(v, _ctrl_pressed, this->sel_index, (this->sel_index % 2 == 1) ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, 0, true);
 				break;
 			}
 
