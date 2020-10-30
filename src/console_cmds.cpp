@@ -2247,6 +2247,34 @@ DEF_CONSOLE_CMD(ConDumpLinkgraphJobs)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConDumpRoadTypes)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump road/tram types.");
+		return true;
+	}
+
+	extern RoadTypeInfo _roadtypes[ROADTYPE_END];
+	for (RoadType rt = ROADTYPE_BEGIN; rt < ROADTYPE_END; rt++) {
+		const RoadTypeInfo &rti = _roadtypes[rt];
+		if (rti.label == 0) continue;
+		IConsolePrintF(CC_DEFAULT, "  %02u %s %c%c%c%c, Flags: %c%c%c%c%c, Extra Flags: %c%c, %s",
+				(uint) rt,
+				RoadTypeIsTram(rt) ? "Tram" : "Road",
+				rti.label >> 24, rti.label >> 16, rti.label >> 8, rti.label,
+				HasBit(rti.flags, ROTF_CATENARY) ? 'c' : '-',
+				HasBit(rti.flags, ROTF_NO_LEVEL_CROSSING) ? 'l' : '-',
+				HasBit(rti.flags, ROTF_NO_HOUSES) ? 'X' : '-',
+				HasBit(rti.flags, ROTF_HIDDEN) ? 'h' : '-',
+				HasBit(rti.flags, ROTF_TOWN_BUILD) ? 'T' : '-',
+				HasBit(rti.extra_flags, RXTF_NOT_AVAILABLE_AI_GS) ? 's' : '-',
+				HasBit(rti.extra_flags, RXTF_NO_TOWN_MODIFICATION) ? 't' : '-',
+				GetStringPtr(rti.strings.name)
+		);
+	}
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConCheckCaches)
 {
 	if (argc == 0) {
@@ -2851,6 +2879,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("dump_load_debug_log", ConDumpLoadDebugLog, nullptr, true);
 	IConsoleCmdRegister("dump_load_debug_config", ConDumpLoadDebugConfig, nullptr, true);
 	IConsoleCmdRegister("dump_linkgraph_jobs", ConDumpLinkgraphJobs, nullptr, true);
+	IConsoleCmdRegister("dump_road_types", ConDumpRoadTypes, nullptr, true);
 	IConsoleCmdRegister("check_caches", ConCheckCaches, nullptr, true);
 	IConsoleCmdRegister("show_town_window", ConShowTownWindow, nullptr, true);
 	IConsoleCmdRegister("show_station_window", ConShowStationWindow, nullptr, true);
