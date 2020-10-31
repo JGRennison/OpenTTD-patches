@@ -475,7 +475,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		if (_settings_client.gui.show_adv_tracerestrict_features) {
 			*hide_mask = 0;
 		} else {
-			*hide_mask = is_conditional ? 0x1E0000 : 0xF0;
+			*hide_mask = is_conditional ? 0x1E0000 : 0x2F0;
 		}
 	}
 	return is_conditional ? &set_cond : &set_action;
