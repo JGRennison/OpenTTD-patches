@@ -1078,3 +1078,13 @@ uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const 
 			return 0;
 	}
 }
+
+uint32 GetStringGRFID(StringID string)
+{
+	switch (GetStringTab(string)) {
+		case TEXT_TAB_NEWGRF_START:
+			return _grf_text[GetStringIndex(string)].grfid;
+		default:
+			return 0;
+	}
+}
