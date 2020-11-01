@@ -2078,7 +2078,9 @@ BridgePieceDebugInfo GetBridgePieceDebugInfo(TileIndex tile)
 		GetTunnelBridgeLength(tile, rampsouth) + 1
 	);
 	BridgePiecePillarFlags pillar_flags = GetBridgeTilePillarFlags(tile, rampnorth, rampsouth, GetBridgeType(rampnorth), GetTunnelBridgeTransportType(rampnorth));
-	return { piece, pillar_flags };
+	const Axis axis = TileX(rampnorth) == TileX(rampsouth) ? AXIS_Y : AXIS_X;
+	uint pillar_index = piece * 2 + (axis == AXIS_Y ? 1 : 0);
+	return { piece, pillar_flags, pillar_index };
 }
 
 /**

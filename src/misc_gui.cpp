@@ -139,7 +139,7 @@ public:
 			}
 			if (IsBridgeAbove(tile)) {
 				BridgePieceDebugInfo info = GetBridgePieceDebugInfo(tile);
-				DEBUG(misc, LANDINFOD_LEVEL, "bridge above: piece: %u, pillars: %X", info.piece, info.pillar_flags);
+				DEBUG(misc, LANDINFOD_LEVEL, "bridge above: piece: %u, pillars: %X, pillar index: %u", info.piece, info.pillar_flags, info.pillar_index);
 			}
 			DEBUG(misc, LANDINFOD_LEVEL, "type   = %#x", _m[tile].type);
 			DEBUG(misc, LANDINFOD_LEVEL, "height = %#x", _m[tile].height);

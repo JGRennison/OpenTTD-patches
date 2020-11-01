@@ -103,6 +103,7 @@ BridgePiecePillarFlags GetBridgeTilePillarFlags(TileIndex tile, TileIndex northe
 struct BridgePieceDebugInfo {
 	BridgePieces piece;
 	BridgePiecePillarFlags pillar_flags;
+	uint pillar_index;
 };
 BridgePieceDebugInfo GetBridgePieceDebugInfo(TileIndex tile);
 
