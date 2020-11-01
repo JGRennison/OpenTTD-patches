@@ -2284,6 +2284,42 @@ DEF_CONSOLE_CMD(ConDumpRoadTypes)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConDumpRailTypes)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump rail types.");
+		return true;
+	}
+
+	btree::btree_set<uint32> grfids;
+	for (RailType rt = RAILTYPE_BEGIN; rt < RAILTYPE_END; rt++) {
+		const RailtypeInfo *rti = GetRailTypeInfo(rt);
+		if (rti->label == 0) continue;
+		uint32 grfid = GetStringGRFID(rti->strings.name);
+		if (grfid != 0) grfids.insert(grfid);
+		IConsolePrintF(CC_DEFAULT, "  %02u %c%c%c%c, Flags: %c%c%c%c%c%c, Ctrl Flags: %c%c, GRF: %08X, %s",
+				(uint) rt,
+				rti->label >> 24, rti->label >> 16, rti->label >> 8, rti->label,
+				HasBit(rti->flags, RTF_CATENARY) ? 'c' : '-',
+				HasBit(rti->flags, RTF_NO_LEVEL_CROSSING) ? 'l' : '-',
+				HasBit(rti->flags, RTF_HIDDEN) ? 'h' : '-',
+				HasBit(rti->flags, RTF_NO_SPRITE_COMBINE) ? 's' : '-',
+				HasBit(rti->flags, RTF_ALLOW_90DEG) ? 'a' : '-',
+				HasBit(rti->flags, RTF_DISALLOW_90DEG) ? 'd' : '-',
+				HasBit(rti->ctrl_flags, RTCF_PROGSIG) ? 'p' : '-',
+				HasBit(rti->ctrl_flags, RTCF_RESTRICTEDSIG) ? 'r' : '-',
+				BSWAP32(grfid),
+				GetStringPtr(rti->strings.name)
+		);
+	}
+	for (uint32 grfid : grfids) {
+		extern GRFFile *GetFileByGRFID(uint32 grfid);
+		const GRFFile *grffile = GetFileByGRFID(grfid);
+		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grfid), grffile ? grffile->filename : "????");
+	}
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConCheckCaches)
 {
 	if (argc == 0) {
@@ -2889,6 +2925,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("dump_load_debug_config", ConDumpLoadDebugConfig, nullptr, true);
 	IConsoleCmdRegister("dump_linkgraph_jobs", ConDumpLinkgraphJobs, nullptr, true);
 	IConsoleCmdRegister("dump_road_types", ConDumpRoadTypes, nullptr, true);
+	IConsoleCmdRegister("dump_rail_types", ConDumpRailTypes, nullptr, true);
 	IConsoleCmdRegister("check_caches", ConCheckCaches, nullptr, true);
 	IConsoleCmdRegister("show_town_window", ConShowTownWindow, nullptr, true);
 	IConsoleCmdRegister("show_station_window", ConShowStationWindow, nullptr, true);
