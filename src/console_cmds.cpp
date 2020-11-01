@@ -2255,10 +2255,13 @@ DEF_CONSOLE_CMD(ConDumpRoadTypes)
 	}
 
 	extern RoadTypeInfo _roadtypes[ROADTYPE_END];
+	btree::btree_set<uint32> grfids;
 	for (RoadType rt = ROADTYPE_BEGIN; rt < ROADTYPE_END; rt++) {
 		const RoadTypeInfo &rti = _roadtypes[rt];
 		if (rti.label == 0) continue;
-		IConsolePrintF(CC_DEFAULT, "  %02u %s %c%c%c%c, Flags: %c%c%c%c%c, Extra Flags: %c%c, %s",
+		uint32 grfid = GetStringGRFID(rti.strings.name);
+		if (grfid != 0) grfids.insert(grfid);
+		IConsolePrintF(CC_DEFAULT, "  %02u %s %c%c%c%c, Flags: %c%c%c%c%c, Extra Flags: %c%c, GRF: %08X, %s",
 				(uint) rt,
 				RoadTypeIsTram(rt) ? "Tram" : "Road",
 				rti.label >> 24, rti.label >> 16, rti.label >> 8, rti.label,
@@ -2269,8 +2272,14 @@ DEF_CONSOLE_CMD(ConDumpRoadTypes)
 				HasBit(rti.flags, ROTF_TOWN_BUILD) ? 'T' : '-',
 				HasBit(rti.extra_flags, RXTF_NOT_AVAILABLE_AI_GS) ? 's' : '-',
 				HasBit(rti.extra_flags, RXTF_NO_TOWN_MODIFICATION) ? 't' : '-',
+				BSWAP32(grfid),
 				GetStringPtr(rti.strings.name)
 		);
+	}
+	for (uint32 grfid : grfids) {
+		extern GRFFile *GetFileByGRFID(uint32 grfid);
+		const GRFFile *grffile = GetFileByGRFID(grfid);
+		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grfid), grffile ? grffile->filename : "????");
 	}
 	return true;
 }
