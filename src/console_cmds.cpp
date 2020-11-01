@@ -2320,6 +2320,52 @@ DEF_CONSOLE_CMD(ConDumpRailTypes)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConDumpBridgeTypes)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump brudge types.");
+		return true;
+	}
+
+	btree::btree_set<uint32> grfids;
+	for (BridgeType bt = 0; bt < MAX_BRIDGES; bt++) {
+		const BridgeSpec *spec = GetBridgeSpec(bt);
+		uint32 grfid = GetStringGRFID(spec->material);
+		if (grfid != 0) grfids.insert(grfid);
+		IConsolePrintF(CC_DEFAULT, "  %02u Year: %7u, Min: %3u, Max: %5u, Flags: %02X, Ctrl Flags: %c%c%c%c, Pillars: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X, GRF: %08X, %s",
+				(uint) bt,
+				spec->avail_year,
+				spec->min_length,
+				spec->max_length,
+				spec->flags,
+				HasBit(spec->ctrl_flags, BSCF_CUSTOM_PILLAR_FLAGS) ? 'c' : '-',
+				HasBit(spec->ctrl_flags, BSCF_INVALID_PILLAR_FLAGS) ? 'i' : '-',
+				HasBit(spec->ctrl_flags, BSCF_NOT_AVAILABLE_TOWN) ? 't' : '-',
+				HasBit(spec->ctrl_flags, BSCF_NOT_AVAILABLE_AI_GS) ? 's' : '-',
+				spec->pillar_flags[0],
+				spec->pillar_flags[1],
+				spec->pillar_flags[2],
+				spec->pillar_flags[3],
+				spec->pillar_flags[4],
+				spec->pillar_flags[5],
+				spec->pillar_flags[6],
+				spec->pillar_flags[7],
+				spec->pillar_flags[8],
+				spec->pillar_flags[9],
+				spec->pillar_flags[10],
+				spec->pillar_flags[11],
+				BSWAP32(grfid),
+				GetStringPtr(spec->material)
+		);
+	}
+	for (uint32 grfid : grfids) {
+		extern GRFFile *GetFileByGRFID(uint32 grfid);
+		const GRFFile *grffile = GetFileByGRFID(grfid);
+		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grfid), grffile ? grffile->filename : "????");
+	}
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConCheckCaches)
 {
 	if (argc == 0) {
@@ -2926,6 +2972,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("dump_linkgraph_jobs", ConDumpLinkgraphJobs, nullptr, true);
 	IConsoleCmdRegister("dump_road_types", ConDumpRoadTypes, nullptr, true);
 	IConsoleCmdRegister("dump_rail_types", ConDumpRailTypes, nullptr, true);
+	IConsoleCmdRegister("dump_bridge_types", ConDumpBridgeTypes, nullptr, true);
 	IConsoleCmdRegister("check_caches", ConCheckCaches, nullptr, true);
 	IConsoleCmdRegister("show_town_window", ConShowTownWindow, nullptr, true);
 	IConsoleCmdRegister("show_station_window", ConShowStationWindow, nullptr, true);
