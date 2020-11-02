@@ -412,6 +412,7 @@ enum Commands {
 	CMD_SET_GROUP_LIVERY,             ///< set the livery for a group
 
 	CMD_MOVE_ORDER,                   ///< move an order
+	CMD_REVERSE_ORDER_LIST,           ///< reverse order list
 	CMD_CHANGE_TIMETABLE,             ///< change the timetable for a vehicle
 	CMD_BULK_CHANGE_TIMETABLE,        ///< change the timetable for all orders of a vehicle
 	CMD_SET_VEHICLE_ON_TIME,          ///< set the vehicle on time feature (timetable)

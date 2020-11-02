@@ -4874,6 +4874,10 @@ STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_ACQUIRE_SLOT      :train is not in
 STR_ORDERS_SKIP_BUTTON                                          :{BLACK}Skip
 STR_ORDERS_SKIP_TOOLTIP                                         :{BLACK}Skip the current order, and start the next. Ctrl+Click skips to the selected order
 
+STR_ORDERS_MANAGE_LIST                                          :{BLACK}Manage List
+STR_ORDERS_MANAGE_LIST_TOOLTIP                                  :{BLACK}Manage this order list
+STR_ORDER_REVERSE_ORDER_LIST                                    :Reverse order list
+
 STR_ORDERS_DELETE_BUTTON                                        :{BLACK}Delete
 STR_ORDERS_DELETE_TOOLTIP                                       :{BLACK}Delete the highlighted order
 STR_ORDERS_DELETE_ALL_TOOLTIP                                   :{BLACK}Delete all orders

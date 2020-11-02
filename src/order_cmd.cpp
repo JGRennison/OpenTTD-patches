@@ -1574,6 +1574,34 @@ CommandCost CmdMoveOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 }
 
 /**
+ * Reverse an orderlist
+ * @param tile unused
+ * @param flags operation to perform
+ * @param p1 the ID of the vehicle
+ * @param p2 unused
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdReverseOrderList(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	VehicleID veh = GB(p1, 0, 20);
+
+	Vehicle *v = Vehicle::GetIfValid(veh);
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
+
+	uint order_count = v->GetNumOrders();
+	if (order_count < 2) return CMD_ERROR;
+	uint max_order = order_count - 1;
+
+	for (uint i = 0; i < max_order; i++) {
+		CommandCost cost = DoCommand(tile, p1, max_order | (i << 16), flags, CMD_MOVE_ORDER);
+		if (cost.Failed()) return cost;
+	}
+
+	return CommandCost();
+}
+
+/**
  * Modify an order in the orderlist of a vehicle.
  * @param tile unused
  * @param flags operation to perform

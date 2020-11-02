@@ -230,6 +230,7 @@ CommandProc CmdSetGroupReplaceProtection;
 CommandProc CmdSetGroupLivery;
 
 CommandProc CmdMoveOrder;
+CommandProc CmdReverseOrderList;
 CommandProcEx CmdChangeTimetable;
 CommandProc CmdBulkChangeTimetable;
 CommandProc CmdSetVehicleOnTime;
@@ -458,6 +459,7 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdSetGroupReplaceProtection,                      0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SET_GROUP_REPLACE_PROTECTION
 	DEF_CMD(CmdSetGroupLivery,                                 0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SET_GROUP_LIVERY
 	DEF_CMD(CmdMoveOrder,                                      0, CMDT_ROUTE_MANAGEMENT      ), // CMD_MOVE_ORDER
+	DEF_CMD(CmdReverseOrderList,                               0, CMDT_ROUTE_MANAGEMENT      ), // CMD_REVERSE_ORDER_LIST
 	DEF_CMD(CmdChangeTimetable,                                0, CMDT_ROUTE_MANAGEMENT      ), // CMD_CHANGE_TIMETABLE
 	DEF_CMD(CmdBulkChangeTimetable,                            0, CMDT_ROUTE_MANAGEMENT      ), // CMD_BULK_CHANGE_TIMETABLE
 	DEF_CMD(CmdSetVehicleOnTime,                               0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SET_VEHICLE_ON_TIME

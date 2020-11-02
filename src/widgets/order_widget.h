@@ -19,6 +19,7 @@ enum OrderWidgets {
 	WID_O_ORDER_LIST,                ///< Order list panel.
 	WID_O_SCROLLBAR,                 ///< Order list scrollbar.
 	WID_O_SKIP,                      ///< Skip current order.
+	WID_O_MANAGE_LIST,               ///< Manage order list.
 	WID_O_DELETE,                    ///< Delete selected order.
 	WID_O_STOP_SHARING,              ///< Stop sharing orders.
 	WID_O_NON_STOP,                  ///< Goto non-stop to destination.
@@ -46,6 +47,7 @@ enum OrderWidgets {
 	WID_O_SEL_TOP_RIGHT,             ///< #NWID_SELECTION widget for right part of the top row of the 'your train' order window.
 	WID_O_SEL_TOP_ROW_GROUNDVEHICLE, ///< #NWID_SELECTION widget for the top row of the 'your train' order window.
 	WID_O_SEL_TOP_ROW,               ///< #NWID_SELECTION widget for the top row of the 'your non-trains' order window.
+	WID_O_SEL_BOTTOM_LEFT,           ///< #NWID_SELECTION widget for the left part of the bottom row of the 'your train' order window.
 	WID_O_SEL_BOTTOM_MIDDLE,         ///< #NWID_SELECTION widget for the middle part of the bottom row of the 'your train' order window.
 	WID_O_SEL_SHARED,                ///< #NWID_SELECTION widget for WID_O_SHARED_ORDER_LIST and WID_O_ADD_VEH_GROUP
 	WID_O_SHARED_ORDER_LIST,         ///< Open list of shared vehicles.

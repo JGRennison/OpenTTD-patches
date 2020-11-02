@@ -631,6 +631,11 @@ static const StringID _order_goto_dropdown_aircraft[] = {
 	INVALID_STRING_ID
 };
 
+static const StringID _order_manage_list_dropdown[] = {
+	STR_ORDER_REVERSE_ORDER_LIST,
+	INVALID_STRING_ID
+};
+
 /** Variables for conditional orders; this defines the order of appearance in the dropdown box */
 static const OrderConditionVariable _order_conditional_variable[] = {
 	OCV_LOAD_PERCENTAGE,
@@ -1211,6 +1216,10 @@ private:
 
 		DP_ROW_CONDITIONAL = 2, ///< Display the conditional order buttons in the top row of the ship/airplane order window.
 
+		/* WID_O_SEL_BOTTOM_LEFT */
+		DP_BOTTOM_LEFT_SKIP        = 0, ///< Display 'skip' in the left button of the bottom row of the vehicle order window.
+		DP_BOTTOM_LEFT_MANAGE_LIST = 1, ///< Display 'manage list' in the left button of the bottom row of the vehicle order window.
+
 		/* WID_O_SEL_BOTTOM_MIDDLE */
 		DP_BOTTOM_MIDDLE_DELETE       = 0, ///< Display 'delete' in the middle button of the bottom row of the vehicle order window.
 		DP_BOTTOM_MIDDLE_STOP_SHARING = 1, ///< Display 'stop sharing' in the middle button of the bottom row of the vehicle order window.
@@ -1515,6 +1524,14 @@ private:
 		}
 	}
 
+	/**
+	 * Handle the click on the reverse order list button.
+	 */
+	void OrderClick_ReverseOrderList()
+	{
+		DoCommandP(this->vehicle->tile, this->vehicle->index, 0, CMD_REVERSE_ORDER_LIST | CMD_MSG(STR_ERROR_CAN_T_MOVE_THIS_ORDER));
+	}
+
 	/** Cache auto-refittability of the vehicle chain. */
 	void UpdateAutoRefitState()
 	{
@@ -1738,6 +1755,11 @@ public:
 				nwi->SetDataTip(STR_ORDERS_DELETE_BUTTON, STR_ORDERS_DELETE_TOOLTIP);
 			}
 		}
+
+		/* skip / extra menu */
+		NWidgetStacked *skip_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_BOTTOM_LEFT);
+		NWidgetLeaf *manage_list_dropdown = this->GetWidget<NWidgetLeaf>(WID_O_MANAGE_LIST);
+		skip_sel->SetDisplayedPlane((manage_list_dropdown->IsLowered() || (_ctrl_pressed && this->selected_order == this->vehicle->GetNumOrders())) ? DP_BOTTOM_LEFT_MANAGE_LIST : DP_BOTTOM_LEFT_SKIP);
 
 		/* First row. */
 		this->RaiseWidget(WID_O_FULL_LOAD);
@@ -2172,6 +2194,12 @@ public:
 				this->OrderClick_Skip();
 				break;
 
+			case WID_O_MANAGE_LIST: {
+				uint disabled_mask = (this->vehicle->GetNumOrders() < 2 ? 1 : 0);
+				ShowDropDownMenu(this, _order_manage_list_dropdown, -1, WID_O_MANAGE_LIST, disabled_mask, 0, 0, DDSF_LOST_FOCUS);
+				break;
+			}
+
 			case WID_O_DELETE:
 				this->OrderClick_Delete();
 				break;
@@ -2481,6 +2509,13 @@ public:
 			case WID_O_COND_COUNTER:
 				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 4);
 				break;
+
+			case WID_O_MANAGE_LIST:
+				switch (index) {
+					case 0: this->OrderClick_ReverseOrderList(); break;
+					default: NOT_REACHED();
+				}
+				break;
 		}
 	}
 
@@ -2640,6 +2675,14 @@ public:
 		}
 	}
 
+	void OnDropdownClose(Point pt, int widget, int index, bool instant_close) override
+	{
+		Window::OnDropdownClose(pt, widget, index, instant_close);
+		if (this->GetWidget<NWidgetStacked>(WID_O_SEL_BOTTOM_LEFT)->shown_plane == DP_BOTTOM_LEFT_MANAGE_LIST) {
+			this->UpdateButtonState();
+		}
+	}
+
 	const Vehicle *GetVehicle()
 	{
 		return this->vehicle;
@@ -2745,8 +2788,12 @@ static const NWidgetPart _nested_orders_train_widgets[] = {
 	/* Second button row. */
 	NWidget(NWID_HORIZONTAL),
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_SKIP), SetMinimalSize(124, 12), SetFill(1, 0),
-													SetDataTip(STR_ORDERS_SKIP_BUTTON, STR_ORDERS_SKIP_TOOLTIP), SetResize(1, 0),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_BOTTOM_LEFT),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_SKIP), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_ORDERS_SKIP_BUTTON, STR_ORDERS_SKIP_TOOLTIP), SetResize(1, 0),
+				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_MANAGE_LIST), SetMinimalSize(124, 12), SetFill(1, 0),
+														SetDataTip(STR_ORDERS_MANAGE_LIST, STR_ORDERS_MANAGE_LIST_TOOLTIP), SetResize(1, 0),
+			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_BOTTOM_MIDDLE),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_DELETE), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_ORDERS_DELETE_BUTTON, STR_ORDERS_DELETE_TOOLTIP), SetResize(1, 0),
@@ -2841,8 +2888,12 @@ static const NWidgetPart _nested_orders_widgets[] = {
 
 	/* Second button row. */
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_SKIP), SetMinimalSize(124, 12), SetFill(1, 0),
-											SetDataTip(STR_ORDERS_SKIP_BUTTON, STR_ORDERS_SKIP_TOOLTIP), SetResize(1, 0),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_BOTTOM_LEFT),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_SKIP), SetMinimalSize(124, 12), SetFill(1, 0),
+													SetDataTip(STR_ORDERS_SKIP_BUTTON, STR_ORDERS_SKIP_TOOLTIP), SetResize(1, 0),
+			NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_MANAGE_LIST), SetMinimalSize(124, 12), SetFill(1, 0),
+													SetDataTip(STR_ORDERS_MANAGE_LIST, STR_ORDERS_MANAGE_LIST_TOOLTIP), SetResize(1, 0),
+		EndContainer(),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_BOTTOM_MIDDLE),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_DELETE), SetMinimalSize(124, 12), SetFill(1, 0),
 													SetDataTip(STR_ORDERS_DELETE_BUTTON, STR_ORDERS_DELETE_TOOLTIP), SetResize(1, 0),
