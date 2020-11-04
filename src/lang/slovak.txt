@@ -415,7 +415,7 @@ STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Prepnú�
 # Extra tooltips for the scenario editor toolbar
 STR_SCENEDIT_TOOLBAR_TOOLTIP_SAVE_SCENARIO_LOAD_SCENARIO        :{BLACK}Uložiť scenár, nahrať scenár, opustiť editor scenára, ukončiť program
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
-STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Editor scenárov
+STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Editor scenára
 STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}Posunúť začiatok o rok dozadu
 STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}Posunúť začiatok o rok dopredu
 STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Kliknúť pre zadanie počiatočného roku
@@ -440,7 +440,7 @@ STR_SCENEDIT_FILE_MENU_QUIT                                     :Ukončiť progr
 ############ range for SE file menu starts
 
 ############ range for settings menu starts
-STR_SETTINGS_MENU_GAME_OPTIONS                                  :Nastavenia hry
+STR_SETTINGS_MENU_GAME_OPTIONS                                  :Možnosti hry
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Nastavenia
 STR_SETTINGS_MENU_SCRIPT_SETTINGS                               :Nastavenia AI/skriptu
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :Nastavenia NewGRF
@@ -911,7 +911,7 @@ STR_NEWS_SHIP_IS_WAITING                                        :{WHITE}{VEHICLE
 STR_NEWS_AIRCRAFT_IS_WAITING                                    :{WHITE}{VEHICLE} čaká v leteckom hangári
 
 # Order review system / warnings
-STR_NEWS_VEHICLE_HAS_TOO_FEW_ORDERS                             :{WHITE}{VEHICLE} má veľmi málo príkazov v poriadku
+STR_NEWS_VEHICLE_HAS_TOO_FEW_ORDERS                             :{WHITE}{VEHICLE} má nedostatok príkazov v poriadku
 STR_NEWS_VEHICLE_HAS_VOID_ORDER                                 :{WHITE}{VEHICLE} má neplatný príkaz
 STR_NEWS_VEHICLE_HAS_DUPLICATE_ENTRY                            :{WHITE}{VEHICLE} má dvojité príkazy
 STR_NEWS_VEHICLE_HAS_INVALID_ENTRY                              :{WHITE}{VEHICLE} má nesprávnu stanicu v zozname
@@ -959,7 +959,7 @@ STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW                                :{BLACK}Mapa pod
 STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TT                             :{BLACK}Nastaviť hlavný pohľad na mapu podľa tohto pohľadu
 
 # Game options window
-STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Nastavenia hry
+STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Možnosti hry
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Mena
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Výber menovej jednotky
 
@@ -1839,10 +1839,10 @@ STR_INTRO_NEW_GAME                                              :{BLACK}Nová hr
 STR_INTRO_LOAD_GAME                                             :{BLACK}Nahrať hru
 STR_INTRO_PLAY_SCENARIO                                         :{BLACK}Hrať scenár
 STR_INTRO_PLAY_HEIGHTMAP                                        :{BLACK}Hrať výškovú mapu
-STR_INTRO_SCENARIO_EDITOR                                       :{BLACK}Editor scenárov
+STR_INTRO_SCENARIO_EDITOR                                       :{BLACK}Editor scenára
 STR_INTRO_MULTIPLAYER                                           :{BLACK}Viacero hráčov
 
-STR_INTRO_GAME_OPTIONS                                          :{BLACK}Nastavenia hry
+STR_INTRO_GAME_OPTIONS                                          :{BLACK}Možnosti hry
 STR_INTRO_HIGHSCORE                                             :{BLACK}Najvyššie skóre
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Nastavenia
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Nastavenia NewGRF
@@ -1862,7 +1862,7 @@ STR_INTRO_TOOLTIP_SUB_ARCTIC_LANDSCAPE                          :{BLACK}Vybrať 
 STR_INTRO_TOOLTIP_SUB_TROPICAL_LANDSCAPE                        :{BLACK}Vybrať subtropickú krajinu
 STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Vybrať krajinu hračiek
 
-STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Zobraziť nastavenia hry
+STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Zobraziť možnosti hry
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Zobraziť tabuľku hráčov s najvyšším skóre
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Zobraziť nastavenia
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Zobraziť nastavenia NewGRF
@@ -2407,37 +2407,37 @@ STR_STATION_BUILD_SUPPLIES_CARGO                                :{BLACK}Dodáva:
 STR_JOIN_STATION_CAPTION                                        :{WHITE}Spojiť stanicu
 STR_JOIN_STATION_CREATE_SPLITTED_STATION                        :{YELLOW}Postaviť stanicu oddelene
 
-STR_JOIN_WAYPOINT_CAPTION                                       :{WHITE}Nasledovať navádzač
-STR_JOIN_WAYPOINT_CREATE_SPLITTED_WAYPOINT                      :{YELLOW}Postaviť oddelený navádzač
+STR_JOIN_WAYPOINT_CAPTION                                       :{WHITE}Spojiť smerový bod
+STR_JOIN_WAYPOINT_CREATE_SPLITTED_WAYPOINT                      :{YELLOW}Postaviť smerový bod oddelene
 
 # Rail construction toolbar
-STR_RAIL_TOOLBAR_RAILROAD_CONSTRUCTION_CAPTION                  :Železnica
-STR_RAIL_TOOLBAR_ELRAIL_CONSTRUCTION_CAPTION                    :Elektrifikovana železnica
-STR_RAIL_TOOLBAR_MONORAIL_CONSTRUCTION_CAPTION                  :Jednokoľajka - Monorail
-STR_RAIL_TOOLBAR_MAGLEV_CONSTRUCTION_CAPTION                    :Magnetická dráha - Maglev
+STR_RAIL_TOOLBAR_RAILROAD_CONSTRUCTION_CAPTION                  :Výstavba železnice
+STR_RAIL_TOOLBAR_ELRAIL_CONSTRUCTION_CAPTION                    :Výstavba elektrifikovanej železnice
+STR_RAIL_TOOLBAR_MONORAIL_CONSTRUCTION_CAPTION                  :Výstavba jednokoľajky (Monorail)
+STR_RAIL_TOOLBAR_MAGLEV_CONSTRUCTION_CAPTION                    :Výstavba magnetickej dráhy (Maglev)
 
-STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TRACK                   :{BLACK}Vybudovať železničnú trať. Ctrl prepína stavať/odobrať stavbu železnice. Shift zobrazí odhad nákladov
-STR_RAIL_TOOLBAR_TOOLTIP_BUILD_AUTORAIL                         :{BLACK}Stavba železničnej trate s režimom Autorail. Ctrl odoberie konštrukciu. Shift zobrazí výšku nákladov
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TRACK                   :{BLACK}Postaviť železničnú trať. Ctrl odstráni časť trate. Shift zobrazí odhadovanú cenu
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_AUTORAIL                         :{BLACK}Postaviť železničnú trať v automatickom režime. Ctrl odstráni časť trate. Shift zobrazí odhadovanú cenu
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_TRAIN_DEPOT_FOR_BUILDING         :{BLACK}Postaviť vlakové depo (na nákup a opravu vlakov). Shift zobrazí odhadovanú cenu
-STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_TO_WAYPOINT               :{BLACK}Konvertovať železnicu na smerové body
+STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_TO_WAYPOINT               :{BLACK}Umiestniť smerový bod. Ctrl umožní spájanie smerových bodov. Shift zobrazí odhadovanú cenu
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_STATION                 :{BLACK}Postaviť železničnú stanicu. Ctrl umožní spájanie staníc. Shift zobrazí odhadovanú cenu
-STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_SIGNALS                 :{BLACK}Postaviť železničné semafóry
-STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_BRIDGE                  :{BLACK}Postaviť železničný most
-STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TUNNEL                  :{BLACK}Postaviť železničný tunel
-STR_RAIL_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR                :{BLACK}Prepnúť stavbu/odstránenie železničných koľají, návestidiel, smerových bodov a staníc. Podržte Ctrl a budú odstránené viaceré objekty v rade za sebou
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_SIGNALS                 :{BLACK}Umiestniť železničné signály. Ctrl prepína mechanické/svetelné signály{}Ťahanie umiestní signály na rovnom úseku trate. Ctrl umiestní signály až po najbližšiu križovatku alebo signál{}Ctrl+klik prepína otvorenie okna na výber signálu. Shift zobrazí odhadovanú cenu
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_BRIDGE                  :{BLACK}Postaviť železničný most. Shift zobrazí odhadovanú cenu
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TUNNEL                  :{BLACK}Postaviť železničný tunel. Shift zobrazí odhadovanú cenu
+STR_RAIL_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR                :{BLACK}Prepnúť na odstránenie železničnej trate, signálov, smerových bodov a staníc. Ctrl odstráni aj koľaj smerového bodu a stanice
 STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL                           :{BLACK}Konvertovať/vylepšiť typ železnice. Shift zobrazí odhadovanú cenu
 
 STR_RAIL_NAME_RAILROAD                                          :Železnica
 STR_RAIL_NAME_ELRAIL                                            :Elektrifikovaná železnica
 STR_RAIL_NAME_MONORAIL                                          :Jednokoľajka
-STR_RAIL_NAME_MAGLEV                                            :Maglev
+STR_RAIL_NAME_MAGLEV                                            :Magnetická dráha
 
 # Rail depot construction window
 STR_BUILD_DEPOT_TRAIN_ORIENTATION_CAPTION                       :{WHITE}Orientácia depa
 STR_BUILD_DEPOT_TRAIN_ORIENTATION_TOOLTIP                       :{BLACK}Vybrať orientáciu vlakového depa
 
 # Rail waypoint construction window
-STR_WAYPOINT_CAPTION                                            :{WHITE}Smerovy bod
+STR_WAYPOINT_CAPTION                                            :{WHITE}Smerový bod
 STR_WAYPOINT_GRAPHICS_TOOLTIP                                   :{BLACK}Vyber typ kontrolneho bodu
 
 # Rail station construction window
@@ -2686,7 +2686,7 @@ STR_LAND_AREA_INFORMATION_REVENUE_WHEN_CLEARED                  :{BLACK}Zisk pri
 STR_LAND_AREA_INFORMATION_OWNER_N_A                             :Neznáme
 STR_LAND_AREA_INFORMATION_OWNER                                 :{BLACK}Vlastník: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_ROAD_OWNER                            :{BLACK}Vlastník cesty: {LTBLUE}{STRING}
-STR_LAND_AREA_INFORMATION_TRAM_OWNER                            :{BLACK}Vlastník elektrickovej dráhy: {LTBLUE}{STRING}
+STR_LAND_AREA_INFORMATION_TRAM_OWNER                            :{BLACK}Vlastník električkovej trate: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_RAIL_OWNER                            :{BLACK}Vlastník železnice: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_LOCAL_AUTHORITY                       :{BLACK}Miestna správa: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_LOCAL_AUTHORITY_NONE                  :Neznáme
@@ -2716,7 +2716,7 @@ STR_LAI_CLEAR_DESCRIPTION_FIELDS                                :Polia
 STR_LAI_CLEAR_DESCRIPTION_SNOW_COVERED_LAND                     :Zasnežený terén
 STR_LAI_CLEAR_DESCRIPTION_DESERT                                :Púšť
 
-STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Železnica trať
+STR_LAI_RAIL_DESCRIPTION_TRACK                                  :Železničná trať
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Železnica trať so signálmi
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Železnica trať s pre-signálmi
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Železnica trať s exit-signálmi
@@ -2793,7 +2793,7 @@ STR_LAI_BRIDGE_DESCRIPTION_ROAD_TUBULAR_STEEL                   :Kryty cestny mo
 
 STR_LAI_BRIDGE_DESCRIPTION_AQUEDUCT                             :Akvadukt
 
-STR_LAI_OBJECT_DESCRIPTION_TRANSMITTER                          :Vysielac
+STR_LAI_OBJECT_DESCRIPTION_TRANSMITTER                          :Vysielač
 STR_LAI_OBJECT_DESCRIPTION_LIGHTHOUSE                           :Maják
 STR_LAI_OBJECT_DESCRIPTION_COMPANY_HEADQUARTERS                 :Sídlo spoločnosti
 STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Spoločnosťou vlastnený pozemok
@@ -3230,7 +3230,7 @@ STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Nepou
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
 STR_GOALS_COMPANY_TITLE                                         :{BLACK}Ciele spoločnosti:
-STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Klikni pre vycentrovanie na priemysel/mesto/políčko. Ctrl+klik otvorí nové okno s priemyslom/mestom/políčkom
+STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Klikni pre vycentrovanie pohľadu na priemysel/mesto/políčko. Ctrl+klik otvorí nové okno s pohľadom na priemysel/mesto/políčko
 
 # Goal question window
 STR_GOAL_QUESTION_CAPTION_QUESTION                              :Otázka
@@ -3359,9 +3359,9 @@ STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Zakáž 
 
 # Waypoint/buoy view window
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
-STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Vycentrovať pohľad na umiestnenie navádzača
+STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Vycentrovať pohľad na pozíciu smerového bodu. Ctrl+klik otvorí nové okno s pohľadom na smerový bod
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Zmeniť meno smerového bodu
-STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Vycentrovať pohľad na umiestnenie bójky
+STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Vycentrovať pohľad na pozíciu bóje. Ctrl+klik otvorí nové okno s pohľadom na bóju
 STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Zmeniť meno bóje
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Upraviť názvy smerových bodov
@@ -3455,7 +3455,7 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_SIGNALS                         :{WHITE}Semafór
 STR_COMPANY_INFRASTRUCTURE_VIEW_ROAD_SECT                       :{GOLD}Políčka cesty:
 STR_COMPANY_INFRASTRUCTURE_VIEW_TRAM_SECT                       :{GOLD}Električkové políčka:
 STR_COMPANY_INFRASTRUCTURE_VIEW_WATER_SECT                      :{GOLD}Vodné políčka:
-STR_COMPANY_INFRASTRUCTURE_VIEW_CANALS                          :{WHITE}K Vodné kanály
+STR_COMPANY_INFRASTRUCTURE_VIEW_CANALS                          :{WHITE}Vodné kanály
 STR_COMPANY_INFRASTRUCTURE_VIEW_STATION_SECT                    :{GOLD}Stanice:
 STR_COMPANY_INFRASTRUCTURE_VIEW_STATIONS                        :{WHITE}Políčka staníc
 STR_COMPANY_INFRASTRUCTURE_VIEW_AIRPORTS                        :{WHITE}Letiská
@@ -3470,7 +3470,7 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} a {NUM} ďalšie...
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Názvy priemyslu - klikni na meno pre vycentrovanie priemyslu na stred obrazovky
+STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Názvy priemyslu - klikni na meno pre vycentrovanie pohľadu na priemysel. Ctrl+klik otvorí nové okno s pohľadom na priemysel
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Prijímaný náklad: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Produkovaný náklad: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :Všetky druhy nákladu
@@ -3480,7 +3480,7 @@ STR_INDUSTRY_DIRECTORY_FILTER_NONE                              :Žiadne
 STR_INDUSTRY_VIEW_CAPTION                                       :{WHITE}{INDUSTRY}
 STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}Produkcia minulý mesiac:
 STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{STRING}{BLACK} ({COMMA}% prepraven{P é é ých})
-STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Vycentrovať pohľad na pozíciu továrne. Ctrl+klik otvorí nové okno s pohľadom na továreň
+STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Vycentrovať pohľad na pozíciu priemyslu. Ctrl+klik otvorí nové okno s pohľadom na priemysel
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Úroveň produkcie: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Priemysel oznámil blížiace sa uzatvorenie!
 
@@ -3563,8 +3563,8 @@ STR_GROUP_OCCUPANCY                                             :Súčasné vyu�
 STR_GROUP_OCCUPANCY_VALUE                                       :{NUM}%
 
 # Build vehicle window
-STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Nove vlaky
-STR_BUY_VEHICLE_TRAIN_ELRAIL_CAPTION                            :Nové elektrické lokomotívy a vagóny
+STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :Nové vlaky
+STR_BUY_VEHICLE_TRAIN_ELRAIL_CAPTION                            :Nové elektrické vlaky
 STR_BUY_VEHICLE_TRAIN_MONORAIL_CAPTION                          :Nové jednokoľajové vlaky
 STR_BUY_VEHICLE_TRAIN_MAGLEV_CAPTION                            :Nové magnetické vlaky
 
@@ -3670,10 +3670,10 @@ STR_DEPOT_VEHICLE_TOOLTIP                                       :{BLACK}{ENGINE}
 STR_DEPOT_VEHICLE_TOOLTIP_CHAIN                                 :{BLACK}{NUM} vozid{P lo lá iel}{STRING}
 STR_DEPOT_VEHICLE_TOOLTIP_CARGO                                 :{}{CARGO_LONG} ({CARGO_SHORT})
 
-STR_DEPOT_TRAIN_LIST_TOOLTIP                                    :{BLACK}Vlaky - ťahaj ľavým kliknutím pre pridanie/odoberanie vozňa, pravým kliknutím sa zobrazia informácie o vozni a CTRL + pravé kliknutie zobrazí celkové informácie
+STR_DEPOT_TRAIN_LIST_TOOLTIP                                    :{BLACK}Vlaky - ťahaj ľavým kliknutím pre pridanie/odoberanie vozidiel, pravým kliknutím sa zobrazia informácie o vozidle. Ctrl+pravé kliknutie zobrazí celkové informácie
 STR_DEPOT_ROAD_VEHICLE_LIST_TOOLTIP                             :{BLACK}Vozidlá - pravým kliknutím na vozidlo sa zobrazia informácie
 STR_DEPOT_SHIP_LIST_TOOLTIP                                     :{BLACK}Lode - pravým kliknutím na loď sa zobrazia informácie
-STR_DEPOT_AIRCRAFT_LIST_TOOLTIP                                 :{BLACK}Lietadlo - pravý kliknutím na lietadlo sa zobrazia informácie
+STR_DEPOT_AIRCRAFT_LIST_TOOLTIP                                 :{BLACK}Lietadlá - pravým kliknutím na lietadlo sa zobrazia informácie
 
 STR_DEPOT_TRAIN_SELL_TOOLTIP                                    :{BLACK}Presunutím lokomotívy bude predaná
 STR_DEPOT_ROAD_VEHICLE_SELL_TOOLTIP                             :{BLACK}Vozidlo presunuté sem bude predané
@@ -3712,10 +3712,10 @@ STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Zakúpi 
 STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Zakúpi kópiu lode. Klikni na toto tlačidlo a následne na loď v depe alebo mimo neho. CTRL+klik skopíruje aj príkazy
 STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Zakúpi kópiu lietadla. Klikni na toto tlačidlo a potom na lietadlo v hangári alebo mimo neho. CTRL+Klik budú príkazy zdielané. Shift+klik zobrazí odhad nákladov
 
-STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Poloha depa uprostred hlavného okna. CTRL+klik otvorí nové okno s pohľadom na depo
-STR_DEPOT_ROAD_VEHICLE_LOCATION_TOOLTIP                         :{BLACK}Pohoha garáže uprostred hlavného okna. CTRL+klik otvorí nový pohľad na umiestnenie garáže
-STR_DEPOT_SHIP_LOCATION_TOOLTIP                                 :{BLACK}Poloha lodenice uprostred hlavného okna. CTRL+klik otvorí nové okno s pohľadom na lodenicu
-STR_DEPOT_AIRCRAFT_LOCATION_TOOLTIP                             :{BLACK}Poloha hangáru uprostred hlavného okna. CTRL+klik otvorí nové okno s pohľadom na hangár
+STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Vycentrovať pohľad na pozíciu depa. Ctrl+klik otvorí nové okno s pohľadom na depo
+STR_DEPOT_ROAD_VEHICLE_LOCATION_TOOLTIP                         :{BLACK}Vycentrovať pohľad na pozíciu garáže. Ctrl+klik otvorí nové okno s pohľadom na garáž
+STR_DEPOT_SHIP_LOCATION_TOOLTIP                                 :{BLACK}Vycentrovať pohľad na pozíciu lodenice. Ctrl+klik otvorí nové okno s pohľadom na lodenicu
+STR_DEPOT_AIRCRAFT_LOCATION_TOOLTIP                             :{BLACK}Vycentrovať pohľad na pozíciu hangáru. Ctrl+klik otvorí nové okno s pohľadom na hangár
 
 STR_DEPOT_VEHICLE_ORDER_LIST_TRAIN_TOOLTIP                      :{BLACK}Zobraziť zoznam všetkých vlakov, ktoré majú toto depo v zozname príkazov
 STR_DEPOT_VEHICLE_ORDER_LIST_ROAD_VEHICLE_TOOLTIP               :{BLACK}Zobraziť zoznam všetkých vozidiel, ktoré majú túto garáž v zozname príkazov
@@ -4446,7 +4446,7 @@ STR_ERROR_CAN_T_BUILD_CARGO_TRAM_STATION                        :{WHITE}Nemôže
 STR_ERROR_CAN_T_BUILD_DOCK_HERE                                 :{WHITE}Nemôžeš tu postaviť prístav...
 STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :{WHITE}Nemôžeš tu postaviť letisko...
 
-STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :{WHITE}Susedi z viacerými stanicami/výkladkami
+STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :{WHITE}Susedí z viacerými stanicami/výkladkami
 STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}... stanica je príliš veľká
 STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Príliš veľa staníc/vykládok
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Veľa častí vlakovej stanice
@@ -4479,15 +4479,15 @@ STR_ERROR_MUST_DEMOLISH_DOCK_FIRST                              :{WHITE}Prístav
 STR_ERROR_MUST_DEMOLISH_AIRPORT_FIRST                           :{WHITE}Letisko musíš najskôr zbúrať
 
 # Waypoint related errors
-STR_ERROR_WAYPOINT_ADJOINS_MORE_THAN_ONE_EXISTING               :{WHITE}Pridať viac než jeden existujúci navádzač
-STR_ERROR_TOO_CLOSE_TO_ANOTHER_WAYPOINT                         :{WHITE}Veľmi blízko k ďaľšiemu navádzaču
+STR_ERROR_WAYPOINT_ADJOINS_MORE_THAN_ONE_EXISTING               :{WHITE}Susedí z viacerými smerovými bodmi
+STR_ERROR_TOO_CLOSE_TO_ANOTHER_WAYPOINT                         :{WHITE}Príliš blízko iného smerovému bodu
 
 STR_ERROR_CAN_T_BUILD_TRAIN_WAYPOINT                            :{WHITE}Tu nie je možné postaviť železničný smerový bod...
 STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :{WHITE}Nemôžeš tu postaviť bóju...
 STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :{WHITE}Názov smerového bodu sa nedá zmeniť...
 
 STR_ERROR_CAN_T_REMOVE_TRAIN_WAYPOINT                           :{WHITE}Tu nie je možné odstrániť železničný smerový bod...
-STR_ERROR_MUST_REMOVE_RAILWAYPOINT_FIRST                        :{WHITE}Najprv musí byť odstránený železničný navádzač
+STR_ERROR_MUST_REMOVE_RAILWAYPOINT_FIRST                        :{WHITE}Najprv musí byť odstránený železničný smerový bod
 STR_ERROR_BUOY_IN_THE_WAY                                       :{WHITE}... bója v ceste
 STR_ERROR_BUOY_IS_IN_USE                                        :{WHITE}... bóju používa iná spoločnosť!
 
@@ -5108,8 +5108,8 @@ STR_FORMAT_BUOY_NAME_SERIAL                                     :{TOWN} Bója #{
 STR_FORMAT_COMPANY_NUM                                          :(Spoločnosť {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Skupina {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{1:STRING} {0:TOWN}
-STR_FORMAT_WAYPOINT_NAME                                        :Smerovy bod {TOWN}
-STR_FORMAT_WAYPOINT_NAME_SERIAL                                 :Smerovy bod {TOWN} #{COMMA}
+STR_FORMAT_WAYPOINT_NAME                                        :Smerový bod {TOWN}
+STR_FORMAT_WAYPOINT_NAME_SERIAL                                 :Smerový bod {TOWN} #{COMMA}
 
 STR_FORMAT_DEPOT_NAME_TRAIN                                     :Vlakové depo {TOWN}
 STR_FORMAT_DEPOT_NAME_TRAIN_SERIAL                              :Vlakové depo {TOWN} #{COMMA}
