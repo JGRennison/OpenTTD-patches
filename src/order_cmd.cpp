@@ -1578,7 +1578,9 @@ CommandCost CmdMoveOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
  * @param tile unused
  * @param flags operation to perform
  * @param p1 the ID of the vehicle
- * @param p2 unused
+ * @param p2 subcommand
+ *        0: reverse whole order list
+ *        1: append reversed order list
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -1590,12 +1592,53 @@ CommandCost CmdReverseOrderList(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	uint order_count = v->GetNumOrders();
-	if (order_count < 2) return CMD_ERROR;
-	uint max_order = order_count - 1;
 
-	for (uint i = 0; i < max_order; i++) {
-		CommandCost cost = DoCommand(tile, p1, max_order | (i << 16), flags, CMD_MOVE_ORDER);
-		if (cost.Failed()) return cost;
+	switch (p2) {
+		case 0: {
+			if (order_count < 2) return CMD_ERROR;
+			uint max_order = order_count - 1;
+			for (uint i = 0; i < max_order; i++) {
+				CommandCost cost = DoCommand(tile, p1, max_order | (i << 16), flags, CMD_MOVE_ORDER);
+				if (cost.Failed()) return cost;
+			}
+			break;
+		}
+
+		case 1: {
+			if (order_count < 3) return CMD_ERROR;
+			uint max_order = order_count - 1;
+			if (((order_count * 2) - 2) > MAX_VEH_ORDER_ID) return_cmd_error(STR_ERROR_TOO_MANY_ORDERS);
+			if (!Order::CanAllocateItem(order_count - 2)) return_cmd_error(STR_ERROR_NO_MORE_SPACE_FOR_ORDERS);
+			for (uint i = 0; i < order_count; i++) {
+				if (v->GetOrder(i)->IsType(OT_CONDITIONAL)) return CMD_ERROR;
+			}
+			for (uint i = 1; i < max_order; i++) {
+				Order new_order;
+				new_order.AssignOrder(*v->GetOrder(i));
+				const bool wait_fixed = new_order.IsWaitFixed();
+				const bool wait_timetabled = wait_fixed && new_order.IsWaitTimetabled();
+				new_order.SetWaitTimetabled(false);
+				new_order.SetTravelTimetabled(false);
+				new_order.SetTravelTime(0);
+				new_order.SetTravelFixed(false);
+				CommandCost cost = CmdInsertOrderIntl(flags, v, order_count, new_order, true);
+				if (cost.Failed()) return cost;
+				if (flags & DC_EXEC) {
+					Order *order = v->orders.list->GetOrderAt(order_count);
+					order->SetRefit(new_order.GetRefitCargo());
+					order->SetMaxSpeed(new_order.GetMaxSpeed());
+					if (wait_fixed) {
+						extern void SetOrderFixedWaitTime(Vehicle *v, VehicleOrderID order_number, uint32 wait_time, bool wait_timetabled);
+						SetOrderFixedWaitTime(v, order_count, new_order.GetWaitTime(), wait_timetabled);
+					}
+				}
+				new_order.Free();
+			}
+			break;
+		};
+
+		default:
+			return CMD_ERROR;
 	}
 
 	return CommandCost();

@@ -633,6 +633,7 @@ static const StringID _order_goto_dropdown_aircraft[] = {
 
 static const StringID _order_manage_list_dropdown[] = {
 	STR_ORDER_REVERSE_ORDER_LIST,
+	STR_ORDER_APPEND_REVERSED_ORDER_LIST,
 	INVALID_STRING_ID
 };
 
@@ -1527,9 +1528,9 @@ private:
 	/**
 	 * Handle the click on the reverse order list button.
 	 */
-	void OrderClick_ReverseOrderList()
+	void OrderClick_ReverseOrderList(uint subcommand)
 	{
-		DoCommandP(this->vehicle->tile, this->vehicle->index, 0, CMD_REVERSE_ORDER_LIST | CMD_MSG(STR_ERROR_CAN_T_MOVE_THIS_ORDER));
+		DoCommandP(this->vehicle->tile, this->vehicle->index, subcommand, CMD_REVERSE_ORDER_LIST | CMD_MSG(STR_ERROR_CAN_T_MOVE_THIS_ORDER));
 	}
 
 	/** Cache auto-refittability of the vehicle chain. */
@@ -2195,7 +2196,14 @@ public:
 				break;
 
 			case WID_O_MANAGE_LIST: {
-				uint disabled_mask = (this->vehicle->GetNumOrders() < 2 ? 1 : 0);
+				uint disabled_mask = (this->vehicle->GetNumOrders() < 2 ? 1 : 0) | (this->vehicle->GetNumOrders() < 3 ? 2 : 0);
+				uint order_count = this->vehicle->GetNumOrders();
+				for (uint i = 0; i < order_count; i++) {
+					if (this->vehicle->GetOrder(i)->IsType(OT_CONDITIONAL)) {
+						disabled_mask |= 2;
+						break;
+					}
+				}
 				ShowDropDownMenu(this, _order_manage_list_dropdown, -1, WID_O_MANAGE_LIST, disabled_mask, 0, 0, DDSF_LOST_FOCUS);
 				break;
 			}
@@ -2512,7 +2520,8 @@ public:
 
 			case WID_O_MANAGE_LIST:
 				switch (index) {
-					case 0: this->OrderClick_ReverseOrderList(); break;
+					case 0: this->OrderClick_ReverseOrderList(0); break;
+					case 1: this->OrderClick_ReverseOrderList(1); break;
 					default: NOT_REACHED();
 				}
 				break;
