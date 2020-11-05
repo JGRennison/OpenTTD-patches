@@ -74,6 +74,9 @@ static inline void ToggleTransparency(TransparencyOption to)
 
 	extern void UpdateAllVehiclesIsDrawn();
 	if (to == TO_TUNNELS) UpdateAllVehiclesIsDrawn();
+
+	extern void MarkAllViewportMapLandscapesDirty();
+	if (to == TO_TREES) MarkAllViewportMapLandscapesDirty();
 }
 
 /**
@@ -84,6 +87,9 @@ static inline void ToggleTransparency(TransparencyOption to)
 static inline void ToggleInvisibility(TransparencyOption to)
 {
 	ToggleBit(_invisibility_opt, to);
+
+	extern void MarkAllViewportMapLandscapesDirty();
+	if (to == TO_TREES) MarkAllViewportMapLandscapesDirty();
 }
 
 /**
@@ -131,6 +137,10 @@ static inline void ResetRestoreAllTransparency()
 	if (HasBit(old_transparency_opt ^ _transparency_opt, TO_TUNNELS)) {
 		extern void UpdateAllVehiclesIsDrawn();
 		UpdateAllVehiclesIsDrawn();
+	}
+	if (HasBit(old_transparency_opt ^ _transparency_opt, TO_TREES)) {
+		extern void MarkAllViewportMapLandscapesDirty();
+		MarkAllViewportMapLandscapesDirty();
 	}
 	MarkWholeScreenDirty();
 }
