@@ -948,7 +948,7 @@ static bool IsNonOvertakingStationTile(TileIndex tile, DiagDirection diag_dir)
 inline bool IsValidRoadVehStateForOvertake(const RoadVehicle *v)
 {
 	if (v->state == RVSB_IN_DEPOT) return false;
-	if (v->state < TRACKDIR_END && !IsDiagonalTrackdir((Trackdir)v->state)) return false;
+	if (v->state < TRACKDIR_END && !(IsValidTrackdir((Trackdir)v->state) && IsDiagonalTrackdir((Trackdir)v->state))) return false;
 	return true;
 }
 
