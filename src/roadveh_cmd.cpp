@@ -2119,7 +2119,7 @@ bool RoadVehicle::Tick()
 	UpdateStateChecksum((((uint64) this->x_pos) << 32) | this->y_pos);
 	UpdateStateChecksum((((uint64) this->state) << 32) | this->frame);
 	if (this->IsFrontEngine()) {
-		if (!(this->IsRoadVehicleStopped())) this->running_ticks++;
+		if (!(this->IsRoadVehicleStopped() || this->IsWaitingInDepot())) this->running_ticks++;
 		return RoadVehController(this);
 	}
 

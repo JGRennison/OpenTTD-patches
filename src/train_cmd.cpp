@@ -5162,7 +5162,7 @@ bool Train::Tick()
 {
 	UpdateStateChecksum((((uint64) this->x_pos) << 32) | (this->y_pos << 16) | this->track );
 	if (this->IsFrontEngine()) {
-		if (!(this->vehstatus & VS_STOPPED) || this->cur_speed > 0) this->running_ticks++;
+		if (!((this->vehstatus & VS_STOPPED) || this->IsWaitingInDepot()) || this->cur_speed > 0) this->running_ticks++;
 
 		this->current_order_time++;
 

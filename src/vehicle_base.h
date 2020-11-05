@@ -584,6 +584,11 @@ public:
 		return this->IsChainInDepot();
 	}
 
+	bool IsWaitingInDepot() const {
+		assert(this == this->First());
+		return this->current_order.IsType(OT_WAITING) && this->IsChainInDepot();
+	}
+
 	/**
 	 * Calls the tick handler of the vehicle
 	 * @return is this vehicle still valid?

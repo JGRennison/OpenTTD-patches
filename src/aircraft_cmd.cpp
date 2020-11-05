@@ -2152,7 +2152,7 @@ bool Aircraft::Tick()
 
 	this->tick_counter++;
 
-	if (!(this->vehstatus & VS_STOPPED)) this->running_ticks++;
+	if (!((this->vehstatus & VS_STOPPED) || this->IsWaitingInDepot())) this->running_ticks++;
 
 	if (this->subtype == AIR_HELICOPTER) HelicopterTickHandler(this);
 

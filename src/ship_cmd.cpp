@@ -972,7 +972,7 @@ reverse_direction:
 bool Ship::Tick()
 {
 	UpdateStateChecksum((((uint64) this->x_pos) << 32) | this->y_pos);
-	if (!(this->vehstatus & VS_STOPPED)) this->running_ticks++;
+	if (!((this->vehstatus & VS_STOPPED) || this->IsWaitingInDepot())) this->running_ticks++;
 
 	ShipController(this);
 
