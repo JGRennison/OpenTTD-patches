@@ -13,5 +13,6 @@
 #include "geometry_type.hpp"
 
 Dimension maxdim(const Dimension &d1, const Dimension &d2);
+Dimension adddim(const Dimension &d1, const Dimension &d2);
 
 #endif /* GEOMETRY_FUNC_HPP */
