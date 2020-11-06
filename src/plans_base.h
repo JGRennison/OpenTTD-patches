@@ -103,7 +103,7 @@ struct PlanLine {
 		this->visible = visible;
 	}
 
-	void MarkDirty()
+	void MarkDirty() const
 	{
 		const uint sz = (uint) this->tiles.size();
 		for (uint i = 1; i < sz; i++) {
@@ -167,6 +167,7 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 	bool show_lines;
 	Date creation_date;
 	std::string name;
+	Colours colour;
 
 	Plan(Owner owner = INVALID_OWNER)
 	{
@@ -175,6 +176,7 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 		this->visible = false;
 		this->visible_by_all = false;
 		this->show_lines = false;
+		this->colour = COLOUR_WHITE;
 		this->temp_line = new PlanLine();
 	}
 
@@ -259,6 +261,11 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 	{
 		if (_current_plan->owner == _local_company) DoCommandP(0, _current_plan->index, !this->visible_by_all, CMD_CHANGE_PLAN_VISIBILITY);
 		return this->visible_by_all;
+	}
+
+	void SetPlanColour(Colours colour)
+	{
+		if (_current_plan->owner == _local_company) DoCommandP(0, _current_plan->index, colour, CMD_CHANGE_PLAN_COLOUR);
 	}
 
 	const std::string &GetName() const

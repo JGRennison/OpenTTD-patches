@@ -2484,7 +2484,7 @@ void ViewportDrawPlans(const Viewport *vp)
 				if (pl->focused) {
 					GfxDrawLine(from_x, from_y, to_x, to_y, PC_RED, 1);
 				} else {
-					GfxDrawLine(from_x, from_y, to_x, to_y, PC_WHITE, 1);
+					GfxDrawLine(from_x, from_y, to_x, to_y, _colour_value[p->colour], 1);
 				}
 			}
 		}
@@ -2511,7 +2511,7 @@ void ViewportDrawPlans(const Viewport *vp)
 			const int to_x = UnScaleByZoom(to_pt.x, vp->zoom);
 			const int to_y = UnScaleByZoom(to_pt.y, vp->zoom);
 
-			GfxDrawLine(from_x, from_y, to_x, to_y, PC_WHITE, 3, 1);
+			GfxDrawLine(from_x, from_y, to_x, to_y, _colour_value[_current_plan->colour], 3, 1);
 		}
 	}
 

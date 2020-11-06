@@ -57,6 +57,25 @@ static byte _stringwidth_table[FS_END][224]; ///< Cache containing width of ofte
 DrawPixelInfo *_cur_dpi;
 byte _colour_gradient[COLOUR_END][8];
 
+byte _colour_value[COLOUR_END] = {
+	133, // COLOUR_DARK_BLUE
+	 99, // COLOUR_PALE_GREEN,
+	 48, // COLOUR_PINK,
+	 68, // COLOUR_YELLOW,
+	184, // COLOUR_RED,
+	152, // COLOUR_LIGHT_BLUE,
+	209, // COLOUR_GREEN,
+	 95, // COLOUR_DARK_GREEN,
+	150, // COLOUR_BLUE,
+	 79, // COLOUR_CREAM,
+	134, // COLOUR_MAUVE,
+	174, // COLOUR_PURPLE,
+	195, // COLOUR_ORANGE,
+	116, // COLOUR_BROWN,
+	  6, // COLOUR_GREY,
+	 15, // COLOUR_WHITE,
+};
+
 static void GfxMainBlitterViewport(const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub = nullptr, SpriteID sprite_id = SPR_CURSOR_MOUSE);
 static void GfxMainBlitter(const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub = nullptr, SpriteID sprite_id = SPR_CURSOR_MOUSE, ZoomLevel zoom = ZOOM_LVL_NORMAL);
 

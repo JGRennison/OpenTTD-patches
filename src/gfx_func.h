@@ -211,6 +211,7 @@ TextColour GetContrastColour(uint8 background, uint8 threshold = 128);
  * 8 colours per gradient from darkest (0) to lightest (7)
  */
 extern byte _colour_gradient[COLOUR_END][8];
+extern byte _colour_value[COLOUR_END];
 
 extern bool _palette_remap_grf[];
 

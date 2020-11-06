@@ -50,6 +50,7 @@ static const NWidgetPart _nested_plans_widgets[] = {
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_NEW), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_NEW_PLAN, STR_NULL),
 			NWidget(WWT_TEXTBTN_2, COLOUR_GREY, WID_PLN_ADD_LINES), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_ADD_LINES, STR_PLANS_ADDING_LINES),
 			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_PLN_VISIBILITY), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_VISIBILITY_PUBLIC, STR_PLANS_VISIBILITY_TOOLTIP),
+			NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_PLN_COLOUR), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_PLANS_COLOUR_TOOLTIP),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_PLN_HIDE_ALL_SEL),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_HIDE_ALL), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_HIDE_ALL, STR_PLANS_HIDE_ALL_TOOLTIP),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_SHOW_ALL), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_SHOW_ALL, STR_PLANS_SHOW_ALL_TOOLTIP),
@@ -62,7 +63,7 @@ static const NWidgetPart _nested_plans_widgets[] = {
 };
 
 static WindowDesc _plans_desc(
-	WDP_AUTO, "plans", 300, 100,
+	WDP_AUTO, "plans", 350, 100,
 	WC_PLANS, WC_NONE,
 	WDF_CONSTRUCTION,
 	_nested_plans_widgets, lengthof(_nested_plans_widgets)
@@ -148,6 +149,25 @@ struct PlansWindow : Window {
 			case WID_PLN_VISIBILITY:
 				if (_current_plan) _current_plan->ToggleVisibilityByAll();
 				break;
+			case WID_PLN_COLOUR: {
+				if (_current_plan) {
+					DropDownList list;
+					auto add_colour = [&](Colours colour) {
+						list.emplace_back(new DropDownListStringItem(STR_COLOUR_DARK_BLUE + colour, colour, false));
+					};
+					add_colour(COLOUR_WHITE);
+					add_colour(COLOUR_YELLOW);
+					add_colour(COLOUR_LIGHT_BLUE);
+					add_colour(COLOUR_BLUE);
+					add_colour(COLOUR_GREEN);
+					add_colour(COLOUR_PURPLE);
+					add_colour(COLOUR_ORANGE);
+					add_colour(COLOUR_BROWN);
+					add_colour(COLOUR_PINK);
+					ShowDropDownList(this, std::move(list), _current_plan->colour, widget);
+				}
+				break;
+			}
 			case WID_PLN_LIST: {
 				int new_selected = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_PLN_LIST, WD_FRAMERECT_TOP);
 				if (_ctrl_pressed) {
@@ -198,6 +218,17 @@ struct PlansWindow : Window {
 		}
 	}
 
+	virtual void OnDropdownSelect(int widget, int index) override
+	{
+		switch (widget) {
+			case WID_PLN_COLOUR:
+				if (_current_plan && index < COLOUR_END) {
+					_current_plan->SetPlanColour((Colours)index);
+				}
+				break;
+		}
+	}
+
 	virtual void OnQueryTextFinished(char *str)
 	{
 		if (_current_plan == nullptr || str == nullptr) return;
@@ -219,10 +250,10 @@ struct PlansWindow : Window {
 		this->SetWidgetDisabledState(WID_PLN_SHOW_ALL, this->vscroll->GetCount() == 0);
 		this->hide_all_sel->SetDisplayedPlane(this->vscroll->GetCount() != 0 && this->AllPlansHidden() ? 1 : 0);
 		if (_current_plan) {
-			this->SetWidgetsDisabledState(_current_plan->owner != _local_company, WID_PLN_ADD_LINES, WID_PLN_VISIBILITY, WID_PLN_DELETE, WID_PLN_RENAME, WIDGET_LIST_END);
+			this->SetWidgetsDisabledState(_current_plan->owner != _local_company, WID_PLN_ADD_LINES, WID_PLN_VISIBILITY, WID_PLN_DELETE, WID_PLN_RENAME, WID_PLN_COLOUR, WIDGET_LIST_END);
 			this->GetWidget<NWidgetCore>(WID_PLN_VISIBILITY)->widget_data = _current_plan->visible_by_all ? STR_PLANS_VISIBILITY_PRIVATE : STR_PLANS_VISIBILITY_PUBLIC;
 		} else {
-			this->SetWidgetsDisabledState(true, WID_PLN_ADD_LINES, WID_PLN_VISIBILITY, WID_PLN_DELETE, WID_PLN_RENAME, WIDGET_LIST_END);
+			this->SetWidgetsDisabledState(true, WID_PLN_ADD_LINES, WID_PLN_VISIBILITY, WID_PLN_DELETE, WID_PLN_RENAME, WID_PLN_COLOUR, WIDGET_LIST_END);
 		}
 		this->DrawWidgets();
 	}
@@ -271,6 +302,15 @@ struct PlansWindow : Window {
 				}
 				break;
 			}
+		}
+	}
+
+	void SetStringParameters(int widget) const override
+	{
+		switch (widget) {
+			case WID_PLN_COLOUR:
+				SetDParam(0, _current_plan ? STR_COLOUR_DARK_BLUE + _current_plan->colour : STR_PLANS_COLOUR);
+				break;
 		}
 	}
 
