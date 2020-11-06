@@ -97,7 +97,10 @@ struct PlansWindow : Window {
 	~PlansWindow()
 	{
 		this->list.clear();
-		_current_plan = nullptr;
+		if (_current_plan) {
+			_current_plan->SetFocus(false);
+			_current_plan = nullptr;
+		}
 	}
 
 	virtual void OnClick(Point pt, int widget, int click_count)
