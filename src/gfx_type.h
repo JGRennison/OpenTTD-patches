@@ -219,7 +219,7 @@ struct SubSprite {
 	int left, top, right, bottom;
 };
 
-enum Colours {
+enum Colours : uint8 {
 	COLOUR_BEGIN,
 	COLOUR_DARK_BLUE = COLOUR_BEGIN,
 	COLOUR_PALE_GREEN,
