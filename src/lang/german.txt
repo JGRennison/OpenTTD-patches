@@ -4862,7 +4862,7 @@ STR_PLANS_SHOW_ALL                                              :{BLACK}Alle zei
 STR_PLANS_SHOW_ALL_TOOLTIP                                      :{BLACK}Setze die Sichtbarkeit aller Pläne und all ihrer Strecken auf wahr
 STR_PLANS_VISIBILITY_PRIVATE                                    :{BLACK}Privat
 STR_PLANS_VISIBILITY_PUBLIC                                     :{BLACK}Öffentlich
-STR_PLANS_VISIBILITY_TOOLTIP                                    :{BLACK}Stellt die Sichtbarkeit für Mitbewerber ein (gelb ist privat, blau ist öffentlich). Öffentliche Pläne werden in der Planliste von anderen Firmen angezeigt, aber nur deren Besitzer kann diesem Strecken hinzufügen oder entfernen.
+STR_PLANS_VISIBILITY_TOOLTIP                                    :{BLACK}Stellt die Sichtbarkeit für Mitbewerber ein. Öffentliche Pläne werden in der Planliste von anderen Firmen angezeigt, aber nur deren Besitzer kann diesem Strecken hinzufügen oder entfernen.
 STR_PLANS_DELETE                                                :{BLACK}Entfernen
 STR_PLANS_DELETE_TOOLTIP                                        :{BLACK}Entferne den ausgewählten Eintrag aus der Liste
 STR_PLANS_LIST_ITEM_PLAN                                        :Plan #{NUM}: {NUM} Strecke{P 0 "" n} ({DATE_SHORT})

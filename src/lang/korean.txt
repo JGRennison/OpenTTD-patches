@@ -5218,7 +5218,7 @@ STR_PLANS_SHOW_ALL                                              :{BLACK}모두 �
 STR_PLANS_SHOW_ALL_TOOLTIP                                      :{BLACK}모든 계획을 보이게 합니다.
 STR_PLANS_VISIBILITY_PRIVATE                                    :{BLACK}개인적으로
 STR_PLANS_VISIBILITY_PUBLIC                                     :{BLACK}공용으로
-STR_PLANS_VISIBILITY_TOOLTIP                                    :{BLACK}계획의 보기 권한을 수정합니다. (개인적은 노랑, 공용은 파랑). 공용 계획은 타사가 계획 창에서 계획을 열람하거나 선을 추가할 수 있습니다.
+STR_PLANS_VISIBILITY_TOOLTIP                                    :{BLACK}계획의 보기 권한을 수정합니다. 공용 계획은 타사가 계획 창에서 계획을 열람하거나 선을 추가할 수 있습니다.
 STR_PLANS_DELETE                                                :{BLACK}삭제
 STR_PLANS_DELETE_TOOLTIP                                        :{BLACK}목록에서 선택된 계획을 삭제합니다.
 STR_PLANS_LIST_ITEM_PLAN                                        :계획 #{NUM}: 선 {NUM}개 ({DATE_SHORT})

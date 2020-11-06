@@ -283,14 +283,20 @@ struct PlansWindow : Window {
 					if (list[i].is_plan) {
 						DrawCompanyIcon(p->owner, icon_left, y + (this->resize.step_height - this->company_icon_spr_dim.height) / 2);
 						DrawBoolButton(btn_left, y + (this->resize.step_height - SETTING_BUTTON_HEIGHT) / 2, p->visible, true);
-						if (p->HasName()) {
-							SetDParamStr(0, p->GetName().c_str());
-						} else {
-							SetDParam(0, list[i].plan_id + 1);
+						uint dparam_offset = 0;
+						StringID str = p->HasName() ? STR_PLANS_LIST_ITEM_NAMED_PLAN : STR_PLANS_LIST_ITEM_PLAN;
+						if (!p->visible_by_all) {
+							SetDParam(dparam_offset++, str);
+							str = STR_PLANS_LIST_ITEM_PLAN_PRIVATE;
 						}
-						SetDParam(1, p->lines.size());
-						SetDParam(2, p->creation_date);
-						DrawString(text_left, text_right, y + (this->resize.step_height - FONT_HEIGHT_NORMAL) / 2, p->HasName() ? STR_PLANS_LIST_ITEM_NAMED_PLAN : STR_PLANS_LIST_ITEM_PLAN, p->visible_by_all ? TC_LIGHT_BLUE : TC_YELLOW);
+						if (p->HasName()) {
+							SetDParamStr(dparam_offset++, p->GetName().c_str());
+						} else {
+							SetDParam(dparam_offset++, list[i].plan_id + 1);
+						}
+						SetDParam(dparam_offset++, p->lines.size());
+						SetDParam(dparam_offset++, p->creation_date);
+						DrawString(text_left, text_right, y + (this->resize.step_height - FONT_HEIGHT_NORMAL) / 2, str, TC_IS_PALETTE_COLOUR | (TextColour)_colour_value[p->colour]);
 					} else {
 						PlanLine *pl = p->lines[list[i].line_id];
 						DrawBoolButton(btn_left, y + (this->resize.step_height - SETTING_BUTTON_HEIGHT) / 2, pl->visible, true);

@@ -4115,7 +4115,7 @@ STR_PLANS_SHOW_ALL                                              :{BLACK}全て�
 STR_PLANS_SHOW_ALL_TOOLTIP                                      :{BLACK}全ての計画を画面に表示します。
 STR_PLANS_VISIBILITY_PRIVATE                                    :{BLACK}秘匿にする
 STR_PLANS_VISIBILITY_PUBLIC                                     :{BLACK}公表にする
-STR_PLANS_VISIBILITY_TOOLTIP                                    :{BLACK}計画を秘匿にするか公表にするかを設定します。 (秘匿した計画が黄色で表示、公表した計画が青色で表示) 公表した計画は他の会社にも表示されていますが、他の会社は編集できません。
+STR_PLANS_VISIBILITY_TOOLTIP                                    :{BLACK}計画を秘匿にするか公表にするかを設定します。 公表した計画は他の会社にも表示されていますが、他の会社は編集できません。
 STR_PLANS_DELETE                                                :{BLACK}削除
 STR_PLANS_DELETE_TOOLTIP                                        :{BLACK}計画を削除します
 STR_PLANS_LIST_ITEM_PLAN                                        :第{NUM}計画: {NUM} 線 ({DATE_SHORT})
