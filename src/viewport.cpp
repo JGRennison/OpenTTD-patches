@@ -3639,7 +3639,6 @@ void MarkAllViewportMapsDirty(int left, int top, int right, int bottom)
 	FOR_ALL_WINDOWS_FROM_BACK(w) {
 		Viewport *vp = w->viewport;
 		if (vp != nullptr && vp->zoom >= ZOOM_LVL_DRAW_MAP) {
-			assert(vp->width != 0);
 			MarkViewportDirty(vp, left, top, right, bottom, VMDF_NOT_LANDSCAPE);
 		}
 	}
