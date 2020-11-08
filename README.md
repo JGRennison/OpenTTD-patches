@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.38.1
+## JGR's Patchpack version 0.39.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -19,6 +19,8 @@ See [below](#openttd) for the original OpenTTD readme.
 The thread for this patchpack can be found [here](http://www.tt-forums.net/viewtopic.php?f=33&t=73469).
 
 See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
+
+See the [wiki](https://github.com/JGRennison/OpenTTD-patches/wiki) for guides on how to use some of the included features.
 
 
 #### This patchpack contains the following
@@ -209,6 +211,14 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   
 * Drive-through train depot emulation (added in v0.38.0)
 
+* One-way road and road vehicle overtaking enhancements (added in v0.39.0)  
+  * Road between one-way road tiles is also one-way.  
+  * One way roads may have T-junctions on the drive side.  
+  * Drive-through road stops may be made one way.  
+  * Road vehicles have fewer constraints on overtaking on one-way road, and may be remain in the overtaking lane indefinitely.  
+  * Road vehicles may now start and finish overtaking on bridges and in tunnels.  
+  See the [wiki](https://github.com/JGRennison/OpenTTD-patches/wiki/One-way-roads) for full details.
+
 * Save/load and savegame format changes  
   * Various changes to improve handling of savegames which use features not in trunk.  
   * Savegames from this patchpack are not loadable in trunk.  
@@ -271,6 +281,7 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add setting for default road/tram types. (added in v0.37.0).  
   * Allow building objects by area (1x1 objects only). (added in v0.37.0).  
   * Increase per-vehicle order limit from 254 to 64k. (added in v0.38.0).  
+  * Add features to reverse the order of an order list, and to append the reverse of an order list. (added in v0.39.0).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
   * [NML specification additions](docs/newgrf-additions-nml.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions-nml.html)).

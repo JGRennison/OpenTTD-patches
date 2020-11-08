@@ -2,6 +2,37 @@
 
 * * *
 
+### v0.39.0 (2020-11-08)
+* Fix crash when mousing over the vehicle UI order bar for a stopped vehicle which is heading for sale at a depot.
+* Fix crash which could occur when re-drawing a window element which is entirely off-screen.
+* Fix crash which could occur with very large numbers of orders per vehicle.
+* Fix crash which could occur when dragging after cancelling dragging vehicles/groups in the vehicle list window.
+* Fix crash when scrolling a non-map mode extra viewport, when a shaded map mode extra viewport is present.
+* Fix multiplayer desync which could occur after programming a new programmable pre-signal.
+* Fix clearing timetable travel time clearing wait time instead.
+* Fix smallmap not refreshing when paused.
+* Fix changing tree transparency not updating vegetation map mode viewports.
+* Road vehicles/one-way roads:
+  * Allow overtaking inside (non-custom) bridges/tunnels.
+  * Allow drive-through road stops to be one-way.
+  * Road segments with no junctions between one-way road tiles in the same direction, are now also one-way.
+  * T-junctions on the driving side with one-way road tiles either side, are now also one-way.
+  * Road vehicles on one-way roads may now stay in the overtaking lane as long as necessary, and have fewer constraints to start overtaking.
+  * Various other improvements to overtaking.
+  * Add zoning mode to show one-way roads.
+* Plans:
+  * Fix selected plan not being unselected when closing window.
+  * Allow changing the colour of plans.
+* Add features to reverse the order of an order list, and to append the reverse of an order list.
+* Increase the maximum allowed value for cargo waiting amount conditional orders.
+* No longer charge vehicle running costs when waiting in depot due to timetable.
+* Upgrading an airport to an identical configuration now returns an error instead of charging the full amount again.
+* AI/GS script: Add date methods for getting time in minutes.
+* Add setting to disable continuously updating NewGRF vehicle image.
+* Improve performance of trains and road vehicles with a continuously updating NewGRF vehicle image.
+* Add Korean translations by TELK.
+* Bump trunk base from commit 313141d2f1218e487a546514831b91d794c20fde to commit cf29d23ba4ca2b9e6b638720e186bf33e11d5a0f.
+
 ### v0.38.1 (2020-10-21)
 * Orders:
   * Fix crash when saving or joining network server games with order backups.
