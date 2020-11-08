@@ -1280,7 +1280,7 @@ struct SpecializedVehicle : public Vehicle {
 			_sprite_group_resolve_check_veh_check = true;
 			VehicleSpriteSeq seq;
 			((T *)this)->T::GetImage(current_direction, EIT_ON_MAP, &seq);
-			this->cur_image_valid_dir = _sprite_group_resolve_check_veh_check ? current_direction : INVALID_DIR;
+			this->cur_image_valid_dir = (_sprite_group_resolve_check_veh_check || _settings_client.gui.disable_vehicle_image_update) ? current_direction : INVALID_DIR;
 			_sprite_group_resolve_check_veh_check = false;
 			if (force_update || this->sprite_seq != seq) {
 				this->sprite_seq = seq;

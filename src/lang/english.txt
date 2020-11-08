@@ -1388,6 +1388,9 @@ STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREEN_TO_BLUE              :Green to blue
 STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREY_TO_RED                :Grey to red
 STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREYSCALE                  :Greyscale
 
+STR_CONFIG_SETTING_DISABLE_VEHICLE_IMAGE_UPDATE                 :Disable vehicle image update: {STRING2}
+STR_CONFIG_SETTING_DISABLE_VEHICLE_IMAGE_UPDATE_HELPTEXT        :When enabled, prevent NewGRF vehicles from continuously updating the sprite used to draw vehicles as the vehicle moves. This can be used to prevent performance problems when there are many vehicles from computationally expensive NewGRFs.
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Enable signals on bridges/tunnels advanced modes: {STRING2}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Enables use of advanced modes of signal simulation on bridges and tunnels. When disabled, bridges/tunnels which are not already in an advanced mode cannot be changed to an advanced mode, however other players may choose to enable this setting and use an advanced mode.
 

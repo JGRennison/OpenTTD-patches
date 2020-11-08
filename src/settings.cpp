@@ -1364,6 +1364,14 @@ static bool UpdateLinkgraphColours(int32 p1)
 	return RedrawScreen(p1);
 }
 
+static bool InvalidateAllVehicleImageCaches(int32 p1)
+{
+	for (Vehicle *v : Vehicle::Iterate()) {
+		v->InvalidateImageCache();
+	}
+	return true;
+}
+
 /** Checks if any settings are set to incorrect values, and sets them to correct values in that case. */
 static void ValidateSettings()
 {
