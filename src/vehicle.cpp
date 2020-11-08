@@ -1542,6 +1542,17 @@ static void DoDrawVehicle(const Vehicle *v)
 		if (to != TO_INVALID && (IsTransparencySet(to) || IsInvisibilitySet(to))) return;
 	}
 
+	{
+		Vehicle *v_mutable = const_cast<Vehicle *>(v);
+		if (HasBit(v_mutable->vcache.cached_veh_flags, VCF_IMAGE_REFRESH) && v_mutable->cur_image_valid_dir != INVALID_DIR) {
+			VehicleSpriteSeq seq;
+			v_mutable->GetImage(v_mutable->cur_image_valid_dir, EIT_ON_MAP, &seq);
+			v_mutable->sprite_seq = seq;
+			v_mutable->UpdateSpriteSeqBound();
+			ClrBit(v_mutable->vcache.cached_veh_flags, VCF_IMAGE_REFRESH);
+		}
+	}
+
 	StartSpriteCombine();
 	for (uint i = 0; i < v->sprite_seq.count; ++i) {
 		PaletteID pal2 = v->sprite_seq.seq[i].pal;
@@ -3787,6 +3798,8 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last, bool include_tile) co
 	dump('d', HasBit(this->vcache.cached_veh_flags, VCF_IS_DRAWN));
 	dump('t', HasBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_TRIGGER));
 	dump('s', HasBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE));
+	dump('R', HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH));
+	dump('N', HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT));
 	if (this->IsGroundVehicle()) {
 		uint16 gv_flags = this->GetGroundVehicleFlags();
 		b += seprintf(b, last, ", gvf:");

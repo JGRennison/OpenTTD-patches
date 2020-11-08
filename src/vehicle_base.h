@@ -140,6 +140,8 @@ enum VehicleCacheFlags {
 	VCF_IS_DRAWN                = 2, ///< Vehicle is currently drawn
 	VCF_REDRAW_ON_TRIGGER       = 3, ///< Clear cur_image_valid_dir on changes to waiting_triggers (valid only for the first engine)
 	VCF_REDRAW_ON_SPEED_CHANGE  = 4, ///< Clear cur_image_valid_dir on changes to cur_speed (ground vehicles) or aircraft movement state (aircraft) (valid only for the first engine)
+	VCF_IMAGE_REFRESH           = 5, ///< Image should be refreshed before drawing
+	VCF_IMAGE_REFRESH_NEXT      = 6, ///< Set VCF_IMAGE_REFRESH in next UpdateViewport call, if the image is not updated there
 };
 
 /** Cached often queried values common to all vehicles. */
@@ -1280,15 +1282,26 @@ struct SpecializedVehicle : public Vehicle {
 			_sprite_group_resolve_check_veh_check = true;
 			VehicleSpriteSeq seq;
 			((T *)this)->T::GetImage(current_direction, EIT_ON_MAP, &seq);
-			this->cur_image_valid_dir = (_sprite_group_resolve_check_veh_check || _settings_client.gui.disable_vehicle_image_update) ? current_direction : INVALID_DIR;
+			if (EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD) {
+				ClrBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH);
+				SB(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT, 1, (_sprite_group_resolve_check_veh_check || _settings_client.gui.disable_vehicle_image_update) ? 0 : 1);
+				this->cur_image_valid_dir = current_direction;
+			} else {
+				this->cur_image_valid_dir = (_sprite_group_resolve_check_veh_check || _settings_client.gui.disable_vehicle_image_update) ? current_direction : INVALID_DIR;
+			}
 			_sprite_group_resolve_check_veh_check = false;
 			if (force_update || this->sprite_seq != seq) {
 				this->sprite_seq = seq;
 				this->UpdateSpriteSeqBound();
 				this->Vehicle::UpdateViewport(true);
 			}
-		} else if (force_update) {
-			this->Vehicle::UpdateViewport(true);
+		} else {
+			if ((EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD) && HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT)) {
+				SetBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH);
+			}
+			if (force_update) {
+				this->Vehicle::UpdateViewport(true);
+			}
 		}
 	}
 
