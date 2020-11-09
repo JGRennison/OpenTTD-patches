@@ -922,7 +922,7 @@ TileIndex Order::GetLocation(const Vehicle *v, bool airport) const
 uint GetOrderDistance(const Order *prev, const Order *cur, const Vehicle *v, int conditional_depth)
 {
 	if (cur->IsType(OT_CONDITIONAL)) {
-		if (conditional_depth > v->GetNumOrders()) return 0;
+		if (conditional_depth > min<int>(64, v->GetNumOrders())) return 0;
 
 		conditional_depth++;
 
@@ -2709,7 +2709,7 @@ static StationID GetNextRealStation(const Vehicle *v, const Order *order, int co
 		if (Station::IsValidID(order->GetDestination())) return order->GetDestination();
 	}
 	//nothing conditional about this
-	if (conditional_depth > v->GetNumOrders()) return INVALID_STATION;
+	if (conditional_depth > min<int>(64, v->GetNumOrders())) return INVALID_STATION;
 	return GetNextRealStation(v, (order->next != nullptr) ? order->next : v->GetFirstOrder(), ++conditional_depth);
 }
 
@@ -2808,7 +2808,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, boo
  */
 bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool pbs_look_ahead)
 {
-	if (conditional_depth > v->GetNumOrders()) {
+	if (conditional_depth > min<int>(64, v->GetNumOrders())) {
 		v->current_order.Free();
 		v->SetDestTile(0);
 		return false;
