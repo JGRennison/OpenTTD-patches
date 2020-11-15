@@ -314,17 +314,18 @@ struct SchdispatchWindow : Window {
 
 				/* Set the row and number of boxes in each row based on the number of boxes drawn in the matrix */
 				const NWidgetCore *wid = this->GetWidget<NWidgetCore>(WID_SCHDISPATCH_MATRIX);
-				uint16 rows_in_display = wid->current_y / wid->resize_y;
+				const uint16 rows_in_display = wid->current_y / wid->resize_y;
 
-				uint16 num = this->vscroll->GetPosition() * this->num_columns;
-				int maxval = min(this->item_count, num + (rows_in_display * this->num_columns));
-				int y;
+				uint num = this->vscroll->GetPosition() * this->num_columns;
+				if (num >= v->orders.list->GetScheduledDispatch().size()) break;
 
-				auto current_schedule = v->orders.list->GetScheduledDispatch().begin();
-				DateTicksScaled start_tick = v->orders.list->GetScheduledDispatchStartTick();
-				DateTicksScaled end_tick = v->orders.list->GetScheduledDispatchStartTick() + v->orders.list->GetScheduledDispatchDuration();
+				const uint maxval = min<uint>(this->item_count, num + (rows_in_display * this->num_columns));
 
-				for (y = r.top + 1; num < maxval; y += this->resize.step_height) { /* Draw the rows */
+				auto current_schedule = v->orders.list->GetScheduledDispatch().begin() + num;
+				const DateTicksScaled start_tick = v->orders.list->GetScheduledDispatchStartTick();
+				const DateTicksScaled end_tick = v->orders.list->GetScheduledDispatchStartTick() + v->orders.list->GetScheduledDispatchDuration();
+
+				for (int y = r.top + 1; num < maxval; y += this->resize.step_height) { /* Draw the rows */
 					for (byte i = 0; i < this->num_columns && num < maxval; i++, num++) {
 						/* Draw all departure time in the current row */
 						if (current_schedule != v->orders.list->GetScheduledDispatch().end()) {
