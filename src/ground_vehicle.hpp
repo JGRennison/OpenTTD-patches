@@ -399,8 +399,20 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 			SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
 			this->gcache.last_speed = this->cur_speed;
 			if (HasBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE) && !_settings_client.gui.disable_vehicle_image_update) {
-				this->InvalidateImageCacheOfChain();
+				this->RefreshImageCacheOfChain();
 			}
+		}
+	}
+
+	/**
+	 * Refresh cached image of all vehicles in the chain (after the current vehicle)
+	 */
+	inline void RefreshImageCacheOfChain()
+	{
+		ClrBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE);
+		ClrBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_TRIGGER);
+		for (Vehicle *u = this; u != nullptr; u = u->Next()) {
+			SetBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT);
 		}
 	}
 
