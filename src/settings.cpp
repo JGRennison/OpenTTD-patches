@@ -909,6 +909,9 @@ static bool RedrawSmallmap(int32 p1)
 	BuildLandLegend();
 	BuildOwnerLegend();
 	SetWindowClassesDirty(WC_SMALLMAP);
+
+	extern void MarkAllViewportMapLandscapesDirty();
+	MarkAllViewportMapLandscapesDirty();
 	return true;
 }
 

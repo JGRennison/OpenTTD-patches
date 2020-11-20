@@ -1052,6 +1052,9 @@ CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 		BuildOwnerLegend();
 		InvalidateWindowData(WC_SMALLMAP, 0, 1);
 
+		extern void MarkAllViewportMapLandscapesDirty();
+		MarkAllViewportMapLandscapesDirty();
+
 		/* Company colour data is indirectly cached. */
 		for (Vehicle *v : Vehicle::Iterate()) {
 			if (v->owner == _current_company) {
