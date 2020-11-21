@@ -1603,13 +1603,32 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 			if (veh_old[length]->vehicle_flags != u->vehicle_flags) {
 				CCLOGV("vehicle_flags mismatch");
 			}
+			auto print_gv_cache_diff = [&](const char *vtype, const GroundVehicleCache &a, const GroundVehicleCache &b) {
+				CCLOGV("%s ground vehicle cache mismatch: %c%c%c%c%c%c%c%c%c%c",
+						vtype,
+						a.cached_weight != b.cached_weight ? 'w' : '-',
+						a.cached_slope_resistance != b.cached_slope_resistance ? 'r' : '-',
+						a.cached_max_te != b.cached_max_te ? 't' : '-',
+						a.cached_axle_resistance != b.cached_axle_resistance ? 'a' : '-',
+						a.cached_max_track_speed != b.cached_max_track_speed ? 's' : '-',
+						a.cached_power != b.cached_power ? 'p' : '-',
+						a.cached_air_drag != b.cached_air_drag ? 'd' : '-',
+						a.cached_total_length != b.cached_total_length ? 'l' : '-',
+						a.first_engine != b.first_engine ? 'e' : '-',
+						a.cached_veh_length != b.cached_veh_length ? 'L' : '-');
+			};
 			switch (u->type) {
 				case VEH_TRAIN:
 					if (memcmp(&gro_cache[length], &Train::From(u)->gcache, sizeof(GroundVehicleCache)) != 0) {
-						CCLOGV("train ground vehicle cache mismatch");
+						print_gv_cache_diff("train", gro_cache[length], Train::From(u)->gcache);
 					}
 					if (memcmp(&tra_cache[length], &Train::From(u)->tcache, sizeof(TrainCache)) != 0) {
-						CCLOGV("train cache mismatch");
+						CCLOGV("train cache mismatch: %c%c%c%c%c",
+								tra_cache[length].cached_override != Train::From(u)->tcache.cached_override ? 'o' : '-',
+								tra_cache[length].cached_tilt != Train::From(u)->tcache.cached_tilt ? 't' : '-',
+								tra_cache[length].cached_num_engines != Train::From(u)->tcache.cached_num_engines ? 'e' : '-',
+								tra_cache[length].user_def_data != Train::From(u)->tcache.user_def_data ? 'u' : '-',
+								tra_cache[length].cached_max_curve_speed != Train::From(u)->tcache.cached_max_curve_speed ? 'c' : '-');
 					}
 					if (Train::From(veh_old[length])->railtype != Train::From(u)->railtype) {
 						CCLOGV("railtype mismatch");
@@ -1623,7 +1642,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 					break;
 				case VEH_ROAD:
 					if (memcmp(&gro_cache[length], &RoadVehicle::From(u)->gcache, sizeof(GroundVehicleCache)) != 0) {
-						CCLOGV("road vehicle ground vehicle cache mismatch");
+						print_gv_cache_diff("road vehicle", gro_cache[length], Train::From(u)->gcache);
 					}
 					break;
 				case VEH_AIRCRAFT:
