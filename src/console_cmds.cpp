@@ -2772,6 +2772,25 @@ DEF_CONSOLE_CMD(ConRoadTypeFlagCtl)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConRailTypeMapColourCtl)
+{
+	if (argc != 3) {
+		IConsoleHelp("Debug: Rail type map colour control.");
+		return true;
+	}
+
+	RailType rt = (RailType)atoi(argv[1]);
+	uint8 map_colour = atoi(argv[2]);
+
+	if (rt >= RAILTYPE_END) return true;
+	extern RailtypeInfo _railtypes[RAILTYPE_END];
+
+	_railtypes[rt].map_colour = map_colour;
+	MarkAllViewportMapLandscapesDirty();
+
+	return true;
+}
+
 #ifdef _DEBUG
 /******************
  *  debug commands
@@ -2991,6 +3010,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("bankrupt_company", ConBankruptCompany, ConHookNewGRFDeveloperTool, true);
 	IConsoleCmdRegister("delete_company", ConDeleteCompany, ConHookNewGRFDeveloperTool, true);
 	IConsoleCmdRegister("road_type_flag_ctl", ConRoadTypeFlagCtl, ConHookNewGRFDeveloperTool, true);
+	IConsoleCmdRegister("rail_type_map_colour_ctl", ConRailTypeMapColourCtl, ConHookNewGRFDeveloperTool, true);
 
 	/* Bug workarounds */
 	IConsoleCmdRegister("jgrpp_bug_workaround_unblock_heliports", ConResetBlockedHeliports, ConHookNoNetwork, true);
