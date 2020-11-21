@@ -127,6 +127,16 @@ void MarkBridgeOrTunnelDirtyOnReservationChange(TileIndex tile, ViewportMarkDirt
 	}
 }
 
+uint GetTunnelBridgeSignalSimulationSpacing(TileIndex tile)
+{
+	Owner owner = GetTileOwner(tile);
+	if (Company::IsValidID(owner)) {
+		return Company::Get(owner)->settings.simulated_wormhole_signals;
+	} else {
+		return 4;
+	}
+}
+
 /**
  * Get number of signals on bridge or tunnel with signal simulation.
  * @param begin The begin of the tunnel or bridge.
@@ -135,7 +145,7 @@ void MarkBridgeOrTunnelDirtyOnReservationChange(TileIndex tile, ViewportMarkDirt
  */
 uint GetTunnelBridgeSignalSimulationSignalCount(TileIndex begin, TileIndex end)
 {
-	uint result = 2 + (GetTunnelBridgeLength(begin, end) / _settings_game.construction.simulated_wormhole_signals);
+	uint result = 2 + (GetTunnelBridgeLength(begin, end) / GetTunnelBridgeSignalSimulationSpacing(begin));
 	if (IsTunnelBridgeSignalSimulationBidirectional(begin)) result *= 2;
 	return result;
 }
@@ -1657,10 +1667,11 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 	uint bridge_signal_position = 0;
 	int m2_position = 0;
 
-	uint bridge_section = GetTunnelBridgeLength(ti->tile, bridge_start_tile) + 1;
+	const uint bridge_section = GetTunnelBridgeLength(ti->tile, bridge_start_tile) + 1;
+	const uint simulated_wormhole_signals = GetTunnelBridgeSignalSimulationSpacing(bridge_start_tile);
 
 	while (bridge_signal_position <= bridge_section) {
-		bridge_signal_position += _settings_game.construction.simulated_wormhole_signals;
+		bridge_signal_position += simulated_wormhole_signals;
 		if (bridge_signal_position == bridge_section) {
 			bool side = (_settings_game.vehicle.road_side != 0) && _settings_game.construction.train_signal_side;
 

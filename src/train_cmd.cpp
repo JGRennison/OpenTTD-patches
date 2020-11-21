@@ -2742,7 +2742,7 @@ static void HandleLastTunnelBridgeSignals(TileIndex tile, TileIndex end, DiagDir
 		/* Clearing last bridge signal. */
 		int signal_offset = GetAndClearLastBridgeEntranceSetSignalIndex(end);
 		if (signal_offset) {
-			TileIndex last_signal_tile = end + (TileOffsByDiagDir(dir) * _settings_game.construction.simulated_wormhole_signals * signal_offset);
+			TileIndex last_signal_tile = end + (TileOffsByDiagDir(dir) * GetTunnelBridgeSignalSimulationSpacing(tile) * signal_offset);
 			MarkTileDirtyByTile(last_signal_tile, VMDF_NOT_MAP_MODE);
 		}
 		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
@@ -3973,16 +3973,18 @@ static bool CheckTrainStayInWormHole(Train *t, TileIndex tile)
 
 static void HandleSignalBehindTrain(Train *v, int signal_number)
 {
+	const uint simulated_wormhole_signals = GetTunnelBridgeSignalSimulationSpacing(v->tile);
+
 	TileIndex tile;
 	switch (v->direction) {
 		default: NOT_REACHED();
-		case DIR_NE: tile = TileVirtXY(v->x_pos + (TILE_SIZE * _settings_game.construction.simulated_wormhole_signals), v->y_pos); break;
-		case DIR_SE: tile = TileVirtXY(v->x_pos, v->y_pos - (TILE_SIZE * _settings_game.construction.simulated_wormhole_signals) ); break;
-		case DIR_SW: tile = TileVirtXY(v->x_pos - (TILE_SIZE * _settings_game.construction.simulated_wormhole_signals), v->y_pos); break;
-		case DIR_NW: tile = TileVirtXY(v->x_pos, v->y_pos + (TILE_SIZE * _settings_game.construction.simulated_wormhole_signals)); break;
+		case DIR_NE: tile = TileVirtXY(v->x_pos + (TILE_SIZE * simulated_wormhole_signals), v->y_pos); break;
+		case DIR_SE: tile = TileVirtXY(v->x_pos, v->y_pos - (TILE_SIZE * simulated_wormhole_signals) ); break;
+		case DIR_SW: tile = TileVirtXY(v->x_pos - (TILE_SIZE * simulated_wormhole_signals), v->y_pos); break;
+		case DIR_NW: tile = TileVirtXY(v->x_pos, v->y_pos + (TILE_SIZE * simulated_wormhole_signals)); break;
 	}
 
-	if(tile == v->tile) {
+	if (tile == v->tile) {
 		/* Flip signal on ramp. */
 		if (IsTunnelBridgeSignalSimulationEntrance(tile) && GetTunnelBridgeEntranceSignalState(tile) == SIGNAL_STATE_RED) {
 			SetTunnelBridgeEntranceSignalState(tile, SIGNAL_STATE_GREEN);
@@ -4343,16 +4345,17 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 			/* Handle signal simulation on tunnel/bridge. */
 			TileIndex old_tile = TileVirtXY(v->x_pos, v->y_pos);
 			if (old_tile != gp.new_tile && IsTunnelBridgeWithSignalSimulation(v->tile) && (v->IsFrontEngine() || v->Next() == nullptr)) {
+				const uint simulated_wormhole_signals = GetTunnelBridgeSignalSimulationSpacing(v->tile);
 				if (old_tile == v->tile) {
 					if (v->IsFrontEngine() && v->force_proceed == 0 && IsTunnelBridgeSignalSimulationExitOnly(v->tile)) goto invalid_rail;
 					/* Entered wormhole set counters. */
-					v->wait_counter = (TILE_SIZE * _settings_game.construction.simulated_wormhole_signals) - TILE_SIZE;
+					v->wait_counter = (TILE_SIZE * simulated_wormhole_signals) - TILE_SIZE;
 					v->tunnel_bridge_signal_num = 0;
 				}
 
 				uint distance = v->wait_counter;
 				bool leaving = false;
-				if (distance == 0) v->wait_counter = (TILE_SIZE * _settings_game.construction.simulated_wormhole_signals);
+				if (distance == 0) v->wait_counter = (TILE_SIZE * simulated_wormhole_signals);
 
 				if (v->IsFrontEngine()) {
 					/* Check if track in front is free and see if we can leave wormhole. */
@@ -4378,7 +4381,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					}
 				}
 				if (v->Next() == nullptr) {
-					if (v->tunnel_bridge_signal_num > 0 && distance == (TILE_SIZE * _settings_game.construction.simulated_wormhole_signals) - TILE_SIZE) HandleSignalBehindTrain(v, v->tunnel_bridge_signal_num - 2);
+					if (v->tunnel_bridge_signal_num > 0 && distance == (TILE_SIZE * simulated_wormhole_signals) - TILE_SIZE) HandleSignalBehindTrain(v, v->tunnel_bridge_signal_num - 2);
 					DiagDirection tunnel_bridge_dir = GetTunnelBridgeDirection(v->tile);
 					Axis axis = DiagDirToAxis(tunnel_bridge_dir);
 					DiagDirection axial_dir = DirToDiagDirAlongAxis(v->direction, axis);
@@ -4421,7 +4424,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						TrainApproachingLineEnd(v, true, false);
 					}
 				} else if (v->wait_counter == 0) {
-					if (IsTooCloseBehindTrain(v, next_tile, TILE_SIZE * _settings_game.construction.simulated_wormhole_signals, true)) {
+					if (IsTooCloseBehindTrain(v, next_tile, TILE_SIZE * GetTunnelBridgeSignalSimulationSpacing(v->tile), true)) {
 						TrainApproachingLineEnd(v, true, false);
 					}
 				}

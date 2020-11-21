@@ -1649,7 +1649,6 @@ static SettingsContainer &GetSettingsTree()
 			SettingsPage *construction = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION));
 			{
 				construction->Add(new SettingEntry("gui.link_terraform_toolbar"));
-				construction->Add(new SettingEntry("construction.simulated_wormhole_signals"));
 				construction->Add(new SettingEntry("gui.enable_signal_gui"));
 				construction->Add(new SettingEntry("gui.persistent_buildingtools"));
 				construction->Add(new SettingEntry("gui.quick_goto"));
@@ -1792,6 +1791,7 @@ static SettingsContainer &GetSettingsTree()
 			company->Add(new SettingEntry("company.infra_others_buy_in_depot[3]"));
 			company->Add(new SettingEntry("company.advance_order_on_clone"));
 			company->Add(new SettingEntry("company.copy_clone_add_to_group"));
+			company->Add(new SettingEntry("company.simulated_wormhole_signals"));
 		}
 
 		SettingsPage *accounting = main->Add(new SettingsPage(STR_CONFIG_SETTING_ACCOUNTING));

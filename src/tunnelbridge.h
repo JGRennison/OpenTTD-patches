@@ -13,6 +13,7 @@
 #include "map_func.h"
 #include "tile_map.h"
 
+uint GetTunnelBridgeSignalSimulationSpacing(TileIndex tile);
 uint GetTunnelBridgeSignalSimulationSignalCount(TileIndex begin, TileIndex end);
 
 /**

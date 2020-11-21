@@ -3574,6 +3574,12 @@ bool AfterLoadGame()
 			}
 		}
 	}
+	if (SlXvIsFeaturePresent(XSLFI_SIG_TUNNEL_BRIDGE, 1, 7)) {
+		/* spacing setting moved to company settings */
+		for (Company *c : Company::Iterate()) {
+			c->settings.simulated_wormhole_signals = _settings_game.construction.old_simulated_wormhole_signals;
+		}
+	}
 
 	if (SlXvIsFeatureMissing(XSLFI_CUSTOM_BRIDGE_HEADS)) {
 		/* ensure that previously unused custom bridge-head bits are cleared */
