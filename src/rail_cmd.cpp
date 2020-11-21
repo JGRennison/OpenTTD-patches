@@ -37,6 +37,7 @@
 #include "spritecache.h"
 #include "core/container_func.hpp"
 #include "news_func.h"
+#include "scope.h"
 
 #include "table/strings.h"
 #include "table/railtypes.h"
@@ -586,6 +587,15 @@ CommandCost CmdBuildSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 
 			if (!IsPlainRail(tile)) return DoCommand(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR); // just get appropriate error message
 
+			const RailType old_rt = GetRailType(tile);
+			const RailType old_secondary_rt = GetSecondaryRailType(tile);
+			auto rt_guard = scope_guard([&]() {
+				if (flags & DC_EXEC) {
+					SetRailType(tile, old_rt);
+					SetSecondaryRailType(tile, old_secondary_rt);
+				}
+			});
+
 			ret = CheckTrackCombination(tile, trackbit, railtype, disable_dual_rail_type, flags);
 			if (ret.Succeeded()) {
 				cost.AddCost(ret);
@@ -599,6 +609,8 @@ CommandCost CmdBuildSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 			ret = CheckRailSlope(tileh, trackbit, GetTrackBits(tile), tile);
 			if (ret.Failed()) return ret;
 			cost.AddCost(ret);
+
+			rt_guard.cancel();
 
 			if (flags & DC_EXEC) {
 				SetRailGroundType(tile, RAIL_GROUND_BARREN);
