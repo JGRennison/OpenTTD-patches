@@ -1647,7 +1647,9 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 					break;
 				case VEH_AIRCRAFT:
 					if (memcmp(&air_cache[length], &Aircraft::From(u)->acache, sizeof(AircraftCache)) != 0) {
-						CCLOGV("Aircraft vehicle cache mismatch");
+						CCLOGV("Aircraft vehicle cache mismatch: %c%c",
+								air_cache[length].cached_max_range != Aircraft::From(u)->acache.cached_max_range ? 'r' : '-',
+								air_cache[length].cached_max_range_sqr != Aircraft::From(u)->acache.cached_max_range_sqr ? 's' : '-');
 					}
 					break;
 				default:
