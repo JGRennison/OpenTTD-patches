@@ -43,6 +43,7 @@
 #include "../string_func_extra.h"
 #include "../fios.h"
 #include "../error.h"
+#include "../scope.h"
 #include <atomic>
 #include <string>
 
@@ -226,6 +227,7 @@ struct SaveLoadParams {
 
 	byte ff_state;                       ///< The state of fast-forward when saving started.
 	bool saveinprogress;                 ///< Whether there is currently a save in progress.
+	bool networkserversave;              ///< Whether this save is being sent to a network client
 };
 
 static SaveLoadParams _sl; ///< Parameters used for/at saveload.
@@ -2896,6 +2898,8 @@ static inline void ClearSaveLoadState()
 	delete _sl.lf;
 	_sl.lf = nullptr;
 
+	_sl.networkserversave = false;
+
 	GamelogStopAnyAction();
 }
 
@@ -3042,17 +3046,24 @@ static SaveOrLoadResult DoSave(SaveFilter *writer, bool threaded)
  * Save the game using a (writer) filter.
  * @param writer   The filter to write the savegame to.
  * @param threaded Whether to try to perform the saving asynchronously.
+ * @param networkserversave Whether this is a network server save.
  * @return Return the result of the action. #SL_OK or #SL_ERROR
  */
-SaveOrLoadResult SaveWithFilter(SaveFilter *writer, bool threaded)
+SaveOrLoadResult SaveWithFilter(SaveFilter *writer, bool threaded, bool networkserversave)
 {
 	try {
 		_sl.action = SLA_SAVE;
+		_sl.networkserversave = networkserversave;
 		return DoSave(writer, threaded);
 	} catch (...) {
 		ClearSaveLoadState();
 		return SL_ERROR;
 	}
+}
+
+bool IsNetworkServerSave()
+{
+	return _sl.networkserversave;
 }
 
 struct ThreadedLoadFilter : LoadFilter {
@@ -3179,6 +3190,10 @@ static SaveOrLoadResult DoLoad(LoadFilter *reader, bool load_check)
 	}
 
 	SlXvResetState();
+	SlResetVENC();
+	auto guard = scope_guard([&]() {
+		SlResetVENC();
+	});
 
 	uint32 hdr[2];
 	if (_sl.lf->Read((byte*)hdr, sizeof(hdr)) != sizeof(hdr)) SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_READABLE);
@@ -3396,6 +3411,7 @@ SaveOrLoadResult SaveOrLoad(const char *filename, SaveLoadOperation fop, Detaile
 
 			default: NOT_REACHED();
 		}
+		_sl.networkserversave = false;
 
 		FILE *fh = (fop == SLO_SAVE) ? FioFOpenFile(filename, "wb", sb) : FioFOpenFile(filename, "rb", sb);
 

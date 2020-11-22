@@ -1331,6 +1331,22 @@ void SwitchToMode(SwitchMode new_mode)
 	SmallMapWindow::RebuildColourIndexIfNecessary();
 }
 
+void WriteVehicleInfo(char *&p, const char *last, const Vehicle *u, const Vehicle *v, uint length)
+{
+	p += seprintf(p, last, ": type %i, vehicle %i (%i), company %i, unit number %i, wagon %i, engine: ",
+			(int)u->type, u->index, v->index, (int)u->owner, v->unitnumber, length);
+	SetDParam(0, u->engine_type);
+	p = GetString(p, STR_ENGINE_NAME, last);
+	uint32 grfid = u->GetGRFID();
+	if (grfid) {
+		p += seprintf(p, last, ", GRF: %08X", BSWAP32(grfid));
+		GRFConfig *grfconfig = GetGRFConfig(grfid);
+		if (grfconfig) {
+			p += seprintf(p, last, ", %s, %s", grfconfig->GetName(), grfconfig->filename);
+		}
+	}
+}
+
 /**
  * Check the validity of some of the caches.
  * Especially in the sense of desyncs between
@@ -1359,18 +1375,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 }
 
 	auto output_veh_info = [&](char *&p, const Vehicle *u, const Vehicle *v, uint length) {
-		p += seprintf(p, lastof(cclog_buffer), ": type %i, vehicle %i (%i), company %i, unit number %i, wagon %i, engine: ",
-				(int)u->type, u->index, v->index, (int)u->owner, v->unitnumber, length);
-		SetDParam(0, u->engine_type);
-		p = GetString(p, STR_ENGINE_NAME, lastof(cclog_buffer));
-		uint32 grfid = u->GetGRFID();
-		if (grfid) {
-			p += seprintf(p, lastof(cclog_buffer), ", GRF: %08X", BSWAP32(grfid));
-			GRFConfig *grfconfig = GetGRFConfig(grfid);
-			if (grfconfig) {
-				p += seprintf(p, lastof(cclog_buffer), ", %s, %s", grfconfig->GetName(), grfconfig->filename);
-			}
-		}
+		WriteVehicleInfo(p, lastof(cclog_buffer), u, v, length);
 	};
 
 #define CCLOGV(...) { \

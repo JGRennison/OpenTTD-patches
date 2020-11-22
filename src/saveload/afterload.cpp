@@ -3840,6 +3840,10 @@ bool AfterLoadGame()
 	extern void YapfCheckRailSignalPenalties();
 	YapfCheckRailSignalPenalties();
 
+	if (_networking && !_network_server) {
+		SlProcessVENC();
+	}
+
 	/* Show this message last to avoid covering up an error message if we bail out part way */
 	switch (gcf_res) {
 		case GLC_COMPATIBLE: ShowErrorMessage(STR_NEWGRF_COMPATIBLE_LOAD_WARNING, INVALID_STRING_ID, WL_CRITICAL); break;

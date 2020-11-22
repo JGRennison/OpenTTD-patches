@@ -92,6 +92,7 @@ enum SlXvFeatureIndex {
 	XSLFI_ORDER_FLAGS_EXTRA,                      ///< Order flags field extra size
 	XSLFI_ONE_WAY_DT_ROAD_STOP,                   ///< One-way drive-through road stops
 	XSLFI_ONE_WAY_ROAD_STATE,                     ///< One-way road state cache
+	XSLFI_VENC_CHUNK,                             ///< VENC chunk
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk

@@ -376,8 +376,9 @@ void WaitTillSaved();
 void ProcessAsyncSaveFinish();
 void DoExitSave();
 
-SaveOrLoadResult SaveWithFilter(struct SaveFilter *writer, bool threaded);
+SaveOrLoadResult SaveWithFilter(struct SaveFilter *writer, bool threaded, bool networkserversave);
 SaveOrLoadResult LoadWithFilter(struct LoadFilter *reader);
+bool IsNetworkServerSave();
 
 typedef void ChunkSaveLoadProc();
 typedef void AutolengthProc(void *arg);
@@ -1084,6 +1085,9 @@ void NORETURN CDECL SlErrorFmt(StringID string, const char *msg, ...) WARN_FORMA
 void NORETURN CDECL SlErrorCorruptFmt(const char *format, ...) WARN_FORMAT(1, 2);
 
 bool SaveloadCrashWithMissingNewGRFs();
+
+void SlResetVENC();
+void SlProcessVENC();
 
 extern char _savegame_format[8];
 extern bool _do_autosave;
