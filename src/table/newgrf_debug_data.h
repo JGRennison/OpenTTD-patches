@@ -346,6 +346,8 @@ class NIHHouse : public NIHelper {
 		print(buffer);
 		seprintf(buffer, lastof(buffer), "  remove_rating_decrease: %u", hs->remove_rating_decrease);
 		print(buffer);
+		seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", hs->animation.frames, hs->animation.status, hs->animation.speed, hs->animation.triggers);
+		print(buffer);
 	}
 };
 
@@ -396,6 +398,23 @@ class NIHIndustryTile : public NIHelper {
 	{
 		IndustryTileResolverObject ro(GetIndustryGfx(index), index, Industry::GetByTile(index));
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
+	}
+
+	void ExtraInfo(uint index, std::function<void(const char *)> print) const override
+	{
+		char buffer[1024];
+		print("Debug Info:");
+		seprintf(buffer, lastof(buffer), "  Gfx Index: %u", GetIndustryGfx(index));
+		print(buffer);
+		const IndustryTileSpec *indts = GetIndustryTileSpec(GetIndustryGfx(index));
+		if (indts) {
+			seprintf(buffer, lastof(buffer), "  anim_production: %u, anim_next: %u, anim_state: %u, ", indts->anim_production, indts->anim_next, indts->anim_state);
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", indts->animation.frames, indts->animation.status, indts->animation.speed, indts->animation.triggers);
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  special_flags: 0x%X, enabled: %u", indts->special_flags, indts->enabled);
+			print(buffer);
+		}
 	}
 };
 
@@ -584,6 +603,17 @@ class NIHObject : public NIHelper {
 		ObjectResolverObject ro(ObjectSpec::GetByTile(index), Object::GetByTile(index), index);
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
 	}
+
+	void ExtraInfo(uint index, std::function<void(const char *)> print) const override
+	{
+		char buffer[1024];
+		print("Debug Info:");
+		const ObjectSpec *spec = ObjectSpec::GetByTile(index);
+		if (spec) {
+			seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", spec->animation.frames, spec->animation.status, spec->animation.speed, spec->animation.triggers);
+			print(buffer);
+		}
+	}
 };
 
 static const NIFeature _nif_object = {
@@ -723,6 +753,19 @@ class NIHAirportTile : public NIHelper {
 	{
 		AirportTileResolverObject ro(AirportTileSpec::GetByTile(index), index, Station::GetByTile(index));
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
+	}
+
+	void ExtraInfo(uint index, std::function<void(const char *)> print) const override
+	{
+		char buffer[1024];
+		print("Debug Info:");
+		seprintf(buffer, lastof(buffer), "  Gfx Index: %u", GetAirportGfx(index));
+		print(buffer);
+		const AirportTileSpec *spec = AirportTileSpec::Get(GetAirportGfx(index));
+		if (spec) {
+			seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", spec->animation.frames, spec->animation.status, spec->animation.speed, spec->animation.triggers);
+			print(buffer);
+		}
 	}
 };
 
