@@ -3553,6 +3553,18 @@ void AnimateTile_Station(TileIndex tile)
 	}
 }
 
+uint8 GetAnimatedTileSpeed_Station(TileIndex tile)
+{
+	if (HasStationRail(tile)) {
+		return GetStationTileAnimationSpeed(tile);
+	}
+
+	if (IsAirport(tile)) {
+		AnimateAirportTile(tile);
+	}
+	return 0;
+}
+
 
 static bool ClickTile_Station(TileIndex tile)
 {

@@ -26,6 +26,7 @@
 #include "../engine_func.h"
 #include "../company_base.h"
 #include "../disaster_vehicle.h"
+#include "../animated_tile.h"
 #include "../core/smallvec_type.hpp"
 #include "saveload_internal.h"
 #include "oldloader.h"
@@ -483,7 +484,6 @@ static inline uint RemapOrderIndex(uint x)
 	return _savegame_type == SGT_TTO ? (x - 0x1AC4) / 2 : (x - 0x1C18) / 2;
 }
 
-extern std::vector<TileIndex> _animated_tiles;
 extern char *_old_name_array;
 
 static uint32 _old_town_index;
@@ -643,7 +643,7 @@ static bool LoadOldAnimTileList(LoadgameState *ls, int num)
 	/* The first zero in the loaded array indicates the end of the list. */
 	for (int i = 0; i < 256; i++) {
 		if (anim_list[i] == 0) break;
-		_animated_tiles.push_back(anim_list[i]);
+		_animated_tiles[anim_list[i]] = {};
 	}
 
 	return true;

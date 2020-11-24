@@ -300,6 +300,14 @@ bool StartStopIndustryTileAnimation(const Industry *ind, IndustryAnimationTrigge
 	return ret;
 }
 
+uint8 GetNewIndustryTileAnimationSpeed(TileIndex tile)
+{
+	const IndustryTileSpec *itspec = GetIndustryTileSpec(GetIndustryGfx(tile));
+	if (itspec == nullptr) return 0;
+
+	return IndustryAnimationBase::GetAnimationSpeed(itspec);
+}
+
 /**
  * Trigger random triggers for an industry tile and reseed its random bits.
  * @param tile Industry tile to trigger.

@@ -432,6 +432,14 @@ static Foundation GetFoundation_Town(TileIndex tile, Slope tileh)
 	return FlatteningFoundation(tileh);
 }
 
+uint8 GetAnimatedTileSpeed_Town(TileIndex tile)
+{
+	if (GetHouseType(tile) >= NEW_HOUSE_OFFSET) {
+		return GetNewHouseTileAnimationSpeed(tile);
+	}
+	return 2;
+}
+
 /**
  * Animate a tile for a town
  * Only certain houses can be animated

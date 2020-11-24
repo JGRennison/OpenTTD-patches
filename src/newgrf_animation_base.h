@@ -133,4 +133,10 @@ struct AnimationBase {
 		 * result are not empty, it is a sound effect. */
 		if (GB(callback, 8, 7) != 0 && _settings_client.sound.ambient) PlayTileSound(spec->grf_prop.grffile, GB(callback, 8, 7), tile);
 	}
+
+	static uint8 GetAnimationSpeed(const Tspec *spec)
+	{
+		if (HasBit(spec->callback_mask, Tbase::cbm_animation_speed)) return 0;
+		return spec->animation.speed;
+	}
 };

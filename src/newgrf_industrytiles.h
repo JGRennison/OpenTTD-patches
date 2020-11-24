@@ -64,6 +64,7 @@ CommandCost PerformIndustryTileSlopeCheck(TileIndex ind_base_tile, TileIndex ind
 void AnimateNewIndustryTile(TileIndex tile);
 bool StartStopIndustryTileAnimation(TileIndex tile, IndustryAnimationTrigger iat, uint32 random = Random());
 bool StartStopIndustryTileAnimation(const Industry *ind, IndustryAnimationTrigger iat);
+uint8 GetNewIndustryTileAnimationSpeed(TileIndex tile);
 
 
 /** Available industry tile triggers. */

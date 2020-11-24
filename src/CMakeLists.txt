@@ -38,6 +38,7 @@ add_files(
     airport.h
     airport_gui.cpp
     animated_tile.cpp
+    animated_tile.h
     animated_tile_func.h
     articulated_vehicles.cpp
     articulated_vehicles.h

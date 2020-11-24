@@ -8,6 +8,7 @@
 /** @file animated_tile_sl.cpp Code handling saving and loading of animated tiles */
 
 #include "../stdafx.h"
+#include "../animated_tile.h"
 #include "../tile_type.h"
 #include "../core/alloc_func.hpp"
 #include "../core/smallvec_type.hpp"
@@ -16,15 +17,21 @@
 
 #include "../safeguards.h"
 
-extern std::vector<TileIndex> _animated_tiles;
-
 /**
  * Save the ANIT chunk.
  */
 static void Save_ANIT()
 {
-	SlSetLength(_animated_tiles.size() * sizeof(_animated_tiles.front()));
-	SlArray(_animated_tiles.data(), _animated_tiles.size(), SLE_UINT32);
+	uint count = 0;
+	for (const auto &it : _animated_tiles) {
+		if (!it.second.pending_deletion) count++;
+	}
+	SlSetLength(count * 5);
+	for (const auto &it : _animated_tiles) {
+		if (it.second.pending_deletion) continue;
+		SlWriteUint32(it.first);
+		SlWriteByte(it.second.speed);
+	}
 }
 
 /**
@@ -40,15 +47,26 @@ static void Load_ANIT()
 
 		for (int i = 0; i < 256; i++) {
 			if (anim_list[i] == 0) break;
-			_animated_tiles.push_back(anim_list[i]);
+			_animated_tiles[anim_list[i]] = {};
 		}
 		return;
 	}
 
-	uint count = (uint)SlGetFieldLength() / sizeof(_animated_tiles.front());
 	_animated_tiles.clear();
-	_animated_tiles.resize(_animated_tiles.size() + count);
-	SlArray(_animated_tiles.data(), count, SLE_UINT32);
+	if (SlXvIsFeaturePresent(XSLFI_ANIMATED_TILE_EXTRA)) {
+		uint count = (uint)SlGetFieldLength() / 5;
+		for (uint i = 0; i < count; i++) {
+			TileIndex tile = SlReadUint32();
+			AnimatedTileInfo info = {};
+			info.speed = SlReadByte();
+			_animated_tiles[tile] = info;
+		}
+	} else {
+		uint count = (uint)SlGetFieldLength() / 4;
+		for (uint i = 0; i < count; i++) {
+			_animated_tiles[SlReadUint32()] = {};
+		}
+	}
 }
 
 /**

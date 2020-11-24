@@ -530,6 +530,14 @@ void AnimateNewObjectTile(TileIndex tile)
 	ObjectAnimationBase::AnimateTile(spec, Object::GetByTile(tile), tile, (spec->flags & OBJECT_FLAG_ANIM_RANDOM_BITS) != 0);
 }
 
+uint8 GetNewObjectTileAnimationSpeed(TileIndex tile)
+{
+	const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
+	if (spec == nullptr || !(spec->flags & OBJECT_FLAG_ANIMATION)) return 0;
+
+	return ObjectAnimationBase::GetAnimationSpeed(spec);
+}
+
 /**
  * Trigger the update of animation on a single tile.
  * @param o       The object that got triggered.

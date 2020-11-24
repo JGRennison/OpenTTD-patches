@@ -5,17 +5,19 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file animated_tile_func.h %Tile animation! */
+/** @file animated_tile.h %Tile animation! */
 
-#ifndef ANIMATED_TILE_FUNC_H
-#define ANIMATED_TILE_FUNC_H
+#ifndef ANIMATED_TILE_H
+#define ANIMATED_TILE_H
 
 #include "tile_type.h"
+#include "3rdparty/cpp-btree/btree_map.h"
 
-void AddAnimatedTile(TileIndex tile);
-void DeleteAnimatedTile(TileIndex tile);
-void AnimateAnimatedTiles();
-void UpdateAllAnimatedTileSpeeds();
-void InitializeAnimatedTiles();
+struct AnimatedTileInfo {
+	uint8 speed = 0;
+	bool pending_deletion = false;
+};
 
-#endif /* ANIMATED_TILE_FUNC_H */
+extern btree::btree_map<TileIndex, AnimatedTileInfo> _animated_tiles;
+
+#endif /* ANIMATED_TILE_H */

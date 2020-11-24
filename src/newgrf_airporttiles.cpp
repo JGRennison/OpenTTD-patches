@@ -312,3 +312,10 @@ void AirportAnimationTrigger(Station *st, AirpAnimationTrigger trigger, CargoID 
 	}
 }
 
+uint8 GetAirportTileAnimationSpeed(TileIndex tile)
+{
+	const AirportTileSpec *ats = AirportTileSpec::GetByTile(tile);
+	if (ats == nullptr) return 0;
+
+	return AirportTileAnimationBase::GetAnimationSpeed(ats);
+}

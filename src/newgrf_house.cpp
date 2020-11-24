@@ -662,6 +662,14 @@ void AnimateNewHouseConstruction(TileIndex tile)
 	}
 }
 
+uint8 GetNewHouseTileAnimationSpeed(TileIndex tile)
+{
+	const HouseSpec *hs = HouseSpec::Get(GetHouseType(tile));
+	if (hs == nullptr) return 0;
+
+	return HouseAnimationBase::GetAnimationSpeed(hs);
+}
+
 /**
  * Check if GRF allows a given house to be constructed (callback 17)
  * @param house_id house type

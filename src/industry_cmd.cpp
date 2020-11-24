@@ -724,6 +724,47 @@ void AnimateTile_Industry(TileIndex tile)
 	}
 }
 
+
+uint8 GetAnimatedTileSpeed_Industry(TileIndex tile)
+{
+	IndustryGfx gfx = GetIndustryGfx(tile);
+
+	if (GetIndustryTileSpec(gfx)->animation.status != ANIM_STATUS_NO_ANIMATION) {
+		return GetNewIndustryTileAnimationSpeed(tile);
+	}
+
+	switch (gfx) {
+	case GFX_SUGAR_MINE_SIEVE:
+		return 1;
+
+	case GFX_TOFFEE_QUARY:
+		return 2;
+
+	case GFX_BUBBLE_CATCHER:
+		return 1;
+
+	case GFX_POWERPLANT_SPARKS:
+		return 2;
+
+	case GFX_TOY_FACTORY:
+		return 1;
+
+	case GFX_PLASTIC_FOUNTAIN_ANIMATED_1: case GFX_PLASTIC_FOUNTAIN_ANIMATED_2:
+	case GFX_PLASTIC_FOUNTAIN_ANIMATED_3: case GFX_PLASTIC_FOUNTAIN_ANIMATED_4:
+	case GFX_PLASTIC_FOUNTAIN_ANIMATED_5: case GFX_PLASTIC_FOUNTAIN_ANIMATED_6:
+	case GFX_PLASTIC_FOUNTAIN_ANIMATED_7: case GFX_PLASTIC_FOUNTAIN_ANIMATED_8:
+		return 2;
+
+	case GFX_OILWELL_ANIMATED_1:
+	case GFX_OILWELL_ANIMATED_2:
+	case GFX_OILWELL_ANIMATED_3:
+		return 3;
+
+	default:
+		return 0;
+	}
+}
+
 static void CreateChimneySmoke(TileIndex tile)
 {
 	uint x = TileX(tile) * TILE_SIZE;

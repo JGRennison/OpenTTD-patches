@@ -63,6 +63,7 @@
 #include "../bridge_signal_map.h"
 #include "../water.h"
 #include "../settings_func.h"
+#include "../animated_tile.h"
 
 
 #include "saveload_internal.h"
@@ -2461,16 +2462,9 @@ bool AfterLoadGame()
 		/* Animated tiles would sometimes not be actually animated or
 		 * in case of old savegames duplicate. */
 
-		extern std::vector<TileIndex> _animated_tiles;
-
-		for (auto tile = _animated_tiles.begin(); tile < _animated_tiles.end(); /* Nothing */) {
+		for (auto tile = _animated_tiles.begin(); tile != _animated_tiles.end(); /* Nothing */) {
 			/* Remove if tile is not animated */
-			bool remove = _tile_type_procs[GetTileType(*tile)]->animate_tile_proc == nullptr;
-
-			/* and remove if duplicate */
-			for (auto j = _animated_tiles.begin(); !remove && j < tile; j++) {
-				remove = *tile == *j;
-			}
+			bool remove = _tile_type_procs[GetTileType(tile->first)]->animate_tile_proc == nullptr;
 
 			if (remove) {
 				tile = _animated_tiles.erase(tile);
@@ -3806,6 +3800,10 @@ bool AfterLoadGame()
 		RecalculateRoadCachedOneWayStates();
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_ANIMATED_TILE_EXTRA)) {
+		UpdateAllAnimatedTileSpeeds();
+	}
+
 	InitializeRoadGUI();
 
 	/* This needs to be done after conversion. */
@@ -3928,4 +3926,5 @@ void ReloadNewGRFData()
 	CheckTrainsLengths();
 	AfterLoadTemplateVehiclesUpdateImage();
 	AfterLoadTemplateVehiclesUpdateProperties();
+	UpdateAllAnimatedTileSpeeds();
 }
