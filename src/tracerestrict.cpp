@@ -699,6 +699,8 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 					default:
 						NOT_REACHED();
 				}
+			} else {
+				if (IsTraceRestrictDoubleItem(type)) i++;
 			}
 		}
 	}
