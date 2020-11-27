@@ -1585,7 +1585,7 @@ public:
 				if (type != TRIT_NULL) {
 					uint32 hide_mask = 0;
 					const TraceRestrictDropDownListSet *set = GetTypeDropDownListSet(type, &hide_mask);
-					this->ShowDropDownListWithValue(set, type, false, widget, 0, hide_mask, 0);
+					this->ShowDropDownListWithValue(set, type, false, widget, 0, hide_mask, UINT_MAX);
 				}
 				break;
 			}
