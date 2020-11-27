@@ -150,6 +150,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_TRAIN_STATUS        = 25,   ///< Test train status
 	TRIT_COND_LOAD_PERCENT        = 26,   ///< Test train load percentage
 	TRIT_COND_COUNTER_VALUE       = 27,   ///< Test counter value
+	TRIT_COND_TIME_DATE_VALUE     = 28,   ///< Test time/date value
 
 	TRIT_COND_END                 = 48,   ///< End (exclusive) of conditional item types, note that this has the same value as TRIT_REVERSE
 	TRIT_REVERSE                  = 48,   ///< Reverse behind signal
@@ -284,6 +285,15 @@ enum TraceRestrictTrainStatusValueField {
 	TRTSVF_WAITING                     =  8,      ///< Train is waiting
 	TRTSVF_LOST                        =  9,      ///< Train is lost
 	TRTSVF_REQUIRES_SERVICE            = 10,      ///< Train requires service
+};
+
+/**
+ * TraceRestrictItem value field, for TRIT_COND_TIME_DATE_VALUE
+ */
+enum TraceRestrictTimeDateValueField {
+	TRTDVF_MINUTE                 =  0,      ///< Minute
+	TRTDVF_HOUR                   =  1,      ///< Hour
+	TRTDVF_HOUR_MINUTE            =  2,      ///< Hour and minute
 };
 
 /**
@@ -554,7 +564,7 @@ static inline bool IsTraceRestrictConditional(TraceRestrictItem item)
 static inline bool IsTraceRestrictDoubleItem(TraceRestrictItem item)
 {
 	const TraceRestrictItemType type = GetTraceRestrictType(item);
-	return type == TRIT_COND_PBS_ENTRY_SIGNAL || type == TRIT_COND_SLOT_OCCUPANCY || type == TRIT_COUNTER || type == TRIT_COND_COUNTER_VALUE;
+	return type == TRIT_COND_PBS_ENTRY_SIGNAL || type == TRIT_COND_SLOT_OCCUPANCY || type == TRIT_COUNTER || type == TRIT_COND_COUNTER_VALUE || type == TRIT_COND_TIME_DATE_VALUE;
 }
 
 /**
@@ -599,6 +609,7 @@ enum TraceRestrictValueType {
 	TRVT_REVERSE                  = 42,///< takes a TraceRestrictReverseValueField
 	TRVT_NEWS_CONTROL             = 43,///< takes a TraceRestrictNewsControlField
 	TRVT_COUNTER_INDEX_INT        = 44,///< takes a TraceRestrictCounterID, and an integer in the next item slot
+	TRVT_TIME_DATE_INT            = 45,///< takes a TraceRestrictTimeDateValueField, and an integer in the next item slot
 };
 
 /**
@@ -728,6 +739,10 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 				out.value_type = TRVT_COUNTER_INDEX_INT;
 				break;
 
+			case TRIT_COND_TIME_DATE_VALUE:
+				out.value_type = TRVT_TIME_DATE_INT;
+				break;
+
 			default:
 				NOT_REACHED();
 				break;
@@ -852,6 +867,8 @@ CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictItem> &ite
 CommandCost TraceRestrictProgramMoveItemAt(std::vector<TraceRestrictItem> &items, uint32 &offset, bool up, bool shallow_mode);
 
 void ShowTraceRestrictProgramWindow(TileIndex tile, Track track);
+
+int GetTraceRestrictTimeDateValue(TraceRestrictTimeDateValueField type);
 
 void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint16 index);
 void TraceRestrictRemoveGroupID(GroupID index);

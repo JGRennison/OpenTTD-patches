@@ -436,6 +436,16 @@ static char *FormatWallClockString(char *buff, DateTicksScaled ticks, const char
 	}
 }
 
+static char *FormatTimeHHMMString(char *buff, uint time, const char *last, uint case_index)
+{
+	char hour[9], minute[3];
+	seprintf(hour,   lastof(hour),   "%02i", (int) time / 100);
+	seprintf(minute, lastof(minute), "%02i", (int) time % 100);
+	int64 args[2] = { (int64)hour, (int64)minute };
+	StringParameters tmp_params(args);
+	return FormatString(buff, GetStringPtr(STR_FORMAT_DATE_MINUTES), &tmp_params, last, case_index);
+}
+
 static char *FormatYmdString(char *buff, Date date, const char *last, uint case_index)
 {
 	YearMonthDay ymd;
@@ -1461,6 +1471,10 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 
 			case SCC_DATE_ISO: // {DATE_ISO}
 				buff = FormatTinyOrISODate(buff, args->GetInt32(), STR_FORMAT_DATE_ISO, last);
+				break;
+
+			case SCC_TIME_HHMM: // {TIME_HHMM}
+				buff = FormatTimeHHMMString(buff, args->GetInt64(SCC_TIME_HHMM), last, next_substr_case_index);
 				break;
 
 			case SCC_FORCE: { // {FORCE}

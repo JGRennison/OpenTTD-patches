@@ -339,6 +339,23 @@ static const TraceRestrictDropDownListSet _news_control_value = {
 	_news_control_value_str, _news_control_value_val,
 };
 
+static const StringID _time_date_value_str[] = {
+	STR_TRACE_RESTRICT_TIME_MINUTE,
+	STR_TRACE_RESTRICT_TIME_HOUR,
+	STR_TRACE_RESTRICT_TIME_HOUR_MINUTE,
+	INVALID_STRING_ID
+};
+static const uint _time_date_value_val[] = {
+	TRTDVF_MINUTE,
+	TRTDVF_HOUR,
+	TRTDVF_HOUR_MINUTE,
+};
+
+/** value drop down list for time/date types strings and values */
+static const TraceRestrictDropDownListSet _time_date_value = {
+	_time_date_value_str, _time_date_value_val,
+};
+
 /**
  * Get index of @p value in @p list_set
  * if @p value is not present, assert if @p missing_ok is false, otherwise return -1
@@ -439,6 +456,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY,
 		STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING,
 		STR_TRACE_RESTRICT_VARIABLE_COUNTER_VALUE,
+		STR_TRACE_RESTRICT_VARIABLE_TIME_DATE_VALUE,
 		STR_TRACE_RESTRICT_VARIABLE_UNDEFINED,
 		INVALID_STRING_ID,
 	};
@@ -464,6 +482,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		TRIT_COND_SLOT_OCCUPANCY | (TRSOCAF_OCCUPANTS << 16),
 		TRIT_COND_SLOT_OCCUPANCY | (TRSOCAF_REMAINING << 16),
 		TRIT_COND_COUNTER_VALUE,
+		TRIT_COND_TIME_DATE_VALUE,
 		TRIT_COND_UNDEFINED,
 	};
 	static const TraceRestrictDropDownListSet set_cond = {
@@ -475,8 +494,9 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		if (_settings_client.gui.show_adv_tracerestrict_features) {
 			*hide_mask = 0;
 		} else {
-			*hide_mask = is_conditional ? 0x1E0000 : 0x2F0;
+			*hide_mask = is_conditional ? 0x3E0000 : 0x2F0;
 		}
+		if (is_conditional && !_settings_game.game_time.time_in_minutes) *hide_mask |= 0x200000;
 	}
 	return is_conditional ? &set_cond : &set_action;
 }
@@ -1200,6 +1220,18 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					break;
 				}
 
+				case TRVT_TIME_DATE_INT: {
+					assert(prog != nullptr);
+					assert(GetTraceRestrictType(item) == TRIT_COND_TIME_DATE_VALUE);
+					uint32 value = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
+					SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
+					instruction_string = GetTraceRestrictValue(item) == TRTDVF_HOUR_MINUTE ? STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_TIME_HHMM : STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER;
+					SetDParam(1, STR_TRACE_RESTRICT_TIME_MINUTE_ITEM + GetTraceRestrictValue(item));
+					SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
+					SetDParam(3, value);
+					break;
+				}
+
 				default:
 					NOT_REACHED();
 					break;
@@ -1617,7 +1649,7 @@ public:
 				if (IsIntegerValueType(type)) {
 					SetDParam(0, ConvertIntegerValue(type, GetTraceRestrictValue(item), true));
 					ShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, this, CS_NUMERAL, QSF_NONE);
-				} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT) {
+				} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT || type == TRVT_TIME_DATE_INT) {
 					SetDParam(0, *(TraceRestrictProgram::InstructionAt(this->GetProgram()->items, this->selected_instruction - 1) + 1));
 					ShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, this, CS_NUMERAL, QSF_NONE);
 				}
@@ -1724,6 +1756,11 @@ public:
 						break;
 					}
 
+					case TRVT_TIME_DATE_INT: {
+						this->ShowDropDownListWithValue(&_time_date_value, GetTraceRestrictValue(item), false, TR_WIDGET_LEFT_AUX_DROPDOWN, 0, 0, UINT_MAX);
+						break;
+					}
+
 					default:
 						break;
 				}
@@ -1799,7 +1836,7 @@ public:
 				ShowErrorMessage(STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE, STR_EMPTY, WL_INFO);
 				return;
 			}
-		} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT) {
+		} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT || type == TRVT_TIME_DATE_INT) {
 			value = atoi(str);
 			TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_DUAL_ITEM, this->selected_instruction - 1, value, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 			return;
@@ -1820,7 +1857,7 @@ public:
 
 		if (widget == TR_WIDGET_VALUE_DROPDOWN || widget == TR_WIDGET_LEFT_AUX_DROPDOWN) {
 			TraceRestrictTypePropertySet type = GetTraceRestrictTypeProperties(item);
-			if (this->value_drop_down_is_company || type.value_type == TRVT_GROUP_INDEX || type.value_type == TRVT_SLOT_INDEX || type.value_type == TRVT_SLOT_INDEX_INT || type.value_type == TRVT_COUNTER_INDEX_INT) {
+			if (this->value_drop_down_is_company || type.value_type == TRVT_GROUP_INDEX || type.value_type == TRVT_SLOT_INDEX || type.value_type == TRVT_SLOT_INDEX_INT || type.value_type == TRVT_COUNTER_INDEX_INT || type.value_type == TRVT_TIME_DATE_INT) {
 				// this is a special company drop-down or group/slot-index drop-down
 				SetTraceRestrictValue(item, index);
 				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
@@ -2148,13 +2185,17 @@ public:
 	{
 		switch (widget) {
 			case TR_WIDGET_VALUE_INT: {
-				SetDParam(0, 0);
+				SetDParam(0, STR_BLACK_COMMA);
 				TraceRestrictItem item = this->GetSelected();
 				TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
+				if (type == TRVT_TIME_DATE_INT && GetTraceRestrictValue(item) == TRTDVF_HOUR_MINUTE) {
+					SetDParam(0, STR_BLACK_TIME_HHMM);
+				}
+				SetDParam(1, 0);
 				if (IsIntegerValueType(type)) {
-					SetDParam(0, ConvertIntegerValue(type, GetTraceRestrictValue(item), true));
-				} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT) {
-					SetDParam(0, *(TraceRestrictProgram::InstructionAt(this->GetProgram()->items, this->selected_instruction - 1) + 1));
+					SetDParam(1, ConvertIntegerValue(type, GetTraceRestrictValue(item), true));
+				} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT || type == TRVT_TIME_DATE_INT) {
+					SetDParam(1, *(TraceRestrictProgram::InstructionAt(this->GetProgram()->items, this->selected_instruction - 1) + 1));
 				}
 				break;
 			}
@@ -2198,7 +2239,7 @@ public:
 			case TR_WIDGET_LEFT_AUX_DROPDOWN: {
 				TraceRestrictItem item = this->GetSelected();
 				TraceRestrictTypePropertySet type = GetTraceRestrictTypeProperties(item);
-				if (type.value_type == TRVT_SLOT_INDEX_INT || type.value_type == TRVT_COUNTER_INDEX_INT) {
+				if (type.value_type == TRVT_SLOT_INDEX_INT || type.value_type == TRVT_COUNTER_INDEX_INT || type.value_type == TRVT_TIME_DATE_INT) {
 					SetDParam(0, GetTraceRestrictValue(item));
 				}
 				break;
@@ -2738,6 +2779,15 @@ private:
 							break;
 						}
 
+						case TRVT_TIME_DATE_INT: {
+							right_sel->SetDisplayedPlane(DPR_VALUE_INT);
+							left_aux_sel->SetDisplayedPlane(DPLA_DROPDOWN);
+							this->EnableWidget(TR_WIDGET_VALUE_INT);
+							this->EnableWidget(TR_WIDGET_LEFT_AUX_DROPDOWN);
+							this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->widget_data = STR_TRACE_RESTRICT_TIME_MINUTE_SHORT + GetTraceRestrictValue(item);
+							break;
+						}
+
 						default:
 							break;
 					}
@@ -2909,7 +2959,7 @@ static const NWidgetPart _nested_program_widgets[] = {
 			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_SEL_TOP_RIGHT),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_INT), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_BLACK_COMMA, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
+														SetDataTip(STR_JUST_STRING1, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_DECIMAL), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_BLACK_DECIMAL, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_VALUE_DROPDOWN), SetMinimalSize(124, 12), SetFill(1, 0),

@@ -2751,6 +2751,7 @@ STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING            :slot occupancy 
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT                :occupancy
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING_SHORT      :occupancy remaining
 STR_TRACE_RESTRICT_VARIABLE_COUNTER_VALUE                       :counter value
+STR_TRACE_RESTRICT_VARIABLE_TIME_DATE_VALUE                     :current time/date
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_WEIGHT                        :weight
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_POWER                         :power
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE                        :max T.E.
@@ -2767,6 +2768,7 @@ STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_POWER                    :{STRING} {STRIN
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_FORCE                    :{STRING} {STRING} {STRING} {FORCE} then
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_POWER_WEIGHT_RATIO       :{STRING} {STRING} {STRING} {POWER_WEIGHT_RATIO} then
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_FORCE_WEIGHT_RATIO       :{STRING} {STRING} {STRING} {FORCE_WEIGHT_RATIO} then
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_TIME_HHMM                :{STRING} {STRING} {STRING} {TIME_HHMM} then
 STR_TRACE_RESTRICT_CONDITIONAL_ORDER_STATION                    :{STRING} {STRING} {STRING} {STATION} then
 STR_TRACE_RESTRICT_CONDITIONAL_ORDER_WAYPOINT                   :{STRING} {STRING} {STRING} {WAYPOINT} then
 STR_TRACE_RESTRICT_CONDITIONAL_ORDER_DEPOT                      :{STRING} {STRING} {STRING} {DEPOT} then
@@ -2865,6 +2867,15 @@ STR_TRACE_RESTRICT_TRAIN_NOT_STUCK                              :Train is not st
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL                       :Cancel train is not stuck, do not show news reports about waiting at this PBS signal
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_SHORT                        :Train is not stuck...
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL_SHORT                 :Cancel train is not stuck...
+STR_TRACE_RESTRICT_TIME_MINUTE                                  :current minute (0 - 59)
+STR_TRACE_RESTRICT_TIME_HOUR                                    :current hour (0 - 23)
+STR_TRACE_RESTRICT_TIME_HOUR_MINUTE                             :current hour and minute (0 - 2359)
+STR_TRACE_RESTRICT_TIME_MINUTE_ITEM                             :current minute
+STR_TRACE_RESTRICT_TIME_HOUR_ITEM                               :current hour
+STR_TRACE_RESTRICT_TIME_HOUR_MINUTE_ITEM                        :current hour and minute
+STR_TRACE_RESTRICT_TIME_MINUTE_SHORT                            :minute
+STR_TRACE_RESTRICT_TIME_HOUR_SHORT                              :hour
+STR_TRACE_RESTRICT_TIME_HOUR_MINUTE_SHORT                       :hour and minute
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Value
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Routefinding restriction
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Routefinding restriction - shared by {COMMA} signals
@@ -6198,6 +6209,7 @@ STR_JUST_DATE_WALLCLOCK_TINY                                    :{DATE_WALLCLOCK
 STR_JUST_DATE_WALLCLOCK_SHORT                                   :{DATE_WALLCLOCK_SHORT}
 STR_JUST_DATE_WALLCLOCK_LONG                                    :{DATE_WALLCLOCK_LONG}
 STR_JUST_DATE_WALLCLOCK_ISO                                     :{DATE_WALLCLOCK_ISO}
+STR_JUST_TIME_HHMM                                              :{TIME_HHMM}
 STR_JUST_STRING                                                 :{STRING}
 STR_JUST_STRING1                                                :{STRING1}
 STR_JUST_STRING2                                                :{STRING2}
@@ -6221,6 +6233,7 @@ STR_WHITE_DATE_WALLCLOCK_LONG                                   :{WHITE}{DATE_WA
 STR_WHITE_DATE_WALLCLOCK_SHORT                                  :{WHITE}{DATE_WALLCLOCK_SHORT}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}
+STR_BLACK_TIME_HHMM                                             :{BLACK}{TIME_HHMM}
 STR_TINY_GROUP                                                  :{TINY_FONT}{GROUP}
 STR_BLACK_INT                                                   :{BLACK}{NUM}
 STR_ORANGE_INT                                                  :{ORANGE}{NUM}
