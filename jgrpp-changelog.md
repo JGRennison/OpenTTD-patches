@@ -2,6 +2,20 @@
 
 * * *
 
+### v0.39.1 (2020-11-28)
+* Fix crash which could occur with very large numbers of orders per vehicle.
+* Fix scrollbar functionality in schedule dispatch window.
+* Fix map-mode viewports not updating when changing company and land colours.
+* Fix case where unsuccessfully attempting to build a rail could possibly change the railtype of the existing rail on the tile.
+* Routing restrictions:
+  * Fix crash which could occur when using the set counter value action in a conditional block.
+  * Add current time conditional.
+* Prevent various types of multiplayer desync caused by incorrectly implemented NewGRFs.
+* Change tunnel/bridge signal simulation spacing to be a company setting.
+* Improve performance of animated tiles (industries, stations, objects, houses).
+* Add Korean translations by TELK.
+* Bump trunk base from commit cf29d23ba4ca2b9e6b638720e186bf33e11d5a0f to commit 0a9aed052295a98f1c1438cf1fa05b9a7e6b6607.
+
 ### v0.39.0 (2020-11-08)
 * Fix crash when mousing over the vehicle UI order bar for a stopped vehicle which is heading for sale at a depot.
 * Fix crash which could occur when re-drawing a window element which is entirely off-screen.
