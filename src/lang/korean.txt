@@ -2751,6 +2751,7 @@ STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING            :남은 슬롯 �
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT                :사용량
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING_SHORT      :남은 수용량
 STR_TRACE_RESTRICT_VARIABLE_COUNTER_VALUE                       :카운터 값
+STR_TRACE_RESTRICT_VARIABLE_TIME_DATE_VALUE                     :현재 시각/날짜
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_WEIGHT                        :무게
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_POWER                         :힘
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE                        :최고 견인력
@@ -2767,6 +2768,7 @@ STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_POWER                    :{STRING} {STRIN
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_FORCE                    :{STRING} {STRING} {STRING} {FORCE} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_POWER_WEIGHT_RATIO       :{STRING} {STRING} {STRING} {POWER_WEIGHT_RATIO} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_FORCE_WEIGHT_RATIO       :{STRING} {STRING} {STRING} {FORCE_WEIGHT_RATIO} (이)라면
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_TIME_HHMM                :{STRING} {STRING} {STRING} {TIME_HHMM} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_ORDER_STATION                    :{STRING} {STRING} {STRING} {STATION} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_ORDER_WAYPOINT                   :{STRING} {STRING} {STRING} {WAYPOINT} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_ORDER_DEPOT                      :{STRING} {STRING} {STRING} {DEPOT} (이)라면
@@ -2865,6 +2867,15 @@ STR_TRACE_RESTRICT_TRAIN_NOT_STUCK                              :이 열차는 �
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL                       :(취소) 이 열차는 멈춘 게 아니므로, 이 경로 신호기에서 기다리는 것에 대한 뉴스 메시지를 표시하지 않음
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_SHORT                        :열차가 멈춘 게 아님...
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL_SHORT                 :(취소) 열차가 멈춘 게 아님...
+STR_TRACE_RESTRICT_TIME_MINUTE                                  :현재 분(0 - 59)
+STR_TRACE_RESTRICT_TIME_HOUR                                    :현재 시(0 - 23)
+STR_TRACE_RESTRICT_TIME_HOUR_MINUTE                             :현재 시&분(0 - 2359)
+STR_TRACE_RESTRICT_TIME_MINUTE_ITEM                             :현재 분
+STR_TRACE_RESTRICT_TIME_HOUR_ITEM                               :현재 시
+STR_TRACE_RESTRICT_TIME_HOUR_MINUTE_ITEM                        :현재 시&분
+STR_TRACE_RESTRICT_TIME_MINUTE_SHORT                            :분
+STR_TRACE_RESTRICT_TIME_HOUR_SHORT                              :시
+STR_TRACE_RESTRICT_TIME_HOUR_MINUTE_SHORT                       :시분
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}값
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}경로 탐색 제한
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}경로 탐색 제한 - {COMMA}개의 신호기와 공유
@@ -6198,6 +6209,7 @@ STR_JUST_DATE_WALLCLOCK_TINY                                    :{DATE_WALLCLOCK
 STR_JUST_DATE_WALLCLOCK_SHORT                                   :{DATE_WALLCLOCK_SHORT}
 STR_JUST_DATE_WALLCLOCK_LONG                                    :{DATE_WALLCLOCK_LONG}
 STR_JUST_DATE_WALLCLOCK_ISO                                     :{DATE_WALLCLOCK_ISO}
+STR_JUST_TIME_HHMM                                              :{TIME_HHMM}
 STR_JUST_STRING                                                 :{STRING}
 STR_JUST_STRING1                                                :{STRING}
 STR_JUST_STRING2                                                :{STRING}
@@ -6221,6 +6233,7 @@ STR_WHITE_DATE_WALLCLOCK_LONG                                   :{WHITE}{DATE_WA
 STR_WHITE_DATE_WALLCLOCK_SHORT                                  :{WHITE}{DATE_WALLCLOCK_SHORT}
 STR_SHORT_DATE                                                  :{WHITE}{DATE_TINY}
 STR_DATE_LONG_SMALL                                             :{TINY_FONT}{BLACK}{DATE_LONG}
+STR_BLACK_TIME_HHMM                                             :{BLACK}{TIME_HHMM}
 STR_TINY_GROUP                                                  :{TINY_FONT}{GROUP}
 STR_BLACK_INT                                                   :{BLACK}{NUM}
 STR_ORANGE_INT                                                  :{ORANGE}{NUM}
