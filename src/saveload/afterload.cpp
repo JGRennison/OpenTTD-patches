@@ -1447,8 +1447,8 @@ bool AfterLoadGame()
 			}
 		}
 	} else if (SlXvIsFeaturePresent(XSLFI_JOKERPP, SL_JOKER_1_27)) {
-		uint next_road_type = 0;
-		uint next_tram_type = 0;
+		uint next_road_type = 2;
+		uint next_tram_type = 2;
 		RoadType road_types[32];
 		RoadType tram_types[32];
 		MemSetT(road_types, ROADTYPE_ROAD, 31);
@@ -1456,10 +1456,23 @@ bool AfterLoadGame()
 		road_types[31] = INVALID_ROADTYPE;
 		tram_types[31] = INVALID_ROADTYPE;
 		for (RoadType rt = ROADTYPE_BEGIN; rt < ROADTYPE_END; rt++) {
+			const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
 			if (RoadTypeIsRoad(rt)) {
-				if (next_road_type < 31) road_types[next_road_type++] = rt;
+				if (rti->label == 'ROAD') {
+					road_types[0] = rt;
+				} else if (rti->label == 'ELRD') {
+					road_types[1] = rt;
+				} else if (next_road_type < 31) {
+					road_types[next_road_type++] = rt;
+				}
 			} else {
-				if (next_tram_type < 31) tram_types[next_tram_type++] = rt;
+				if (rti->label == 'RAIL') {
+					tram_types[0] = rt;
+				} else if (rti->label == 'ELRL') {
+					tram_types[1] = rt;
+				} else if (next_tram_type < 31) {
+					tram_types[next_tram_type++] = rt;
+				}
 			}
 		}
 		for (TileIndex t = 0; t < map_size; t++) {
