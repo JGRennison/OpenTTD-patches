@@ -160,6 +160,9 @@ class NIHVehicle : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  Speed: %u, path cache length: %u",
 					rv->cur_speed, (uint) rv->path.size());
 			print(buffer);
+			seprintf(buffer, lastof(buffer), "  Roadtype: %u (0x" OTTD_PRINTFHEX64 "), Compatible: 0x" OTTD_PRINTFHEX64,
+					rv->roadtype, (static_cast<RoadTypes>(1) << rv->roadtype), rv->compatible_roadtypes);
+			print(buffer);
 		}
 		if (v->type == VEH_SHIP) {
 			const Ship *s = Ship::From(v);
@@ -197,6 +200,12 @@ class NIHVehicle : public NIHelper {
 				const RailtypeInfo *rti = GetRailTypeInfo(e->u.rail.railtype);
 				seprintf(buffer, lastof(buffer), "    Railtype: %u (0x" OTTD_PRINTFHEX64 "), Compatible: 0x" OTTD_PRINTFHEX64 ", Powered: 0x" OTTD_PRINTFHEX64 ", All compatible: 0x" OTTD_PRINTFHEX64,
 						e->u.rail.railtype, (static_cast<RailTypes>(1) << e->u.rail.railtype), rti->compatible_railtypes, rti->powered_railtypes, rti->all_compatible_railtypes);
+				print(buffer);
+			}
+			if (e->type == VEH_ROAD) {
+				const RoadTypeInfo* rti = GetRoadTypeInfo(e->u.road.roadtype);
+				seprintf(buffer, lastof(buffer), "    Roadtype: %u (0x" OTTD_PRINTFHEX64 "), Powered: 0x" OTTD_PRINTFHEX64,
+						e->u.road.roadtype, (static_cast<RoadTypes>(1) << e->u.road.roadtype), rti->powered_roadtypes);
 				print(buffer);
 			}
 		}
