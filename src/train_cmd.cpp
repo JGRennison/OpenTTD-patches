@@ -315,6 +315,19 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 		InvalidateWindowData(WC_VEHICLE_ORDERS, this->index, VIWD_CONSIST_CHANGED);
 		InvalidateNewGRFInspectWindow(GSF_TRAINS, this->index);
 	}
+	if (allowed_changes & CCF_LENGTH) {
+		for (Train *u = this->Next(); u != nullptr; u = u->Next()) {
+			u->vcache.cached_max_speed = 0;
+			u->gcache.cached_max_te = 0;
+			u->gcache.cached_axle_resistance = 0;
+			u->gcache.cached_max_track_speed = 0;
+			u->gcache.cached_power = 0;
+			u->gcache.cached_air_drag = 0;
+			u->tcache.cached_num_engines = 0;
+			u->tcache.cached_tilt = false;
+			u->tcache.cached_max_curve_speed = 0;
+		}
+	}
 }
 
 /**
