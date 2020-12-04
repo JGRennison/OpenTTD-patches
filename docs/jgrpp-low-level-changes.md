@@ -31,7 +31,7 @@ Scopes (in the main thread) can be annotated with a functor/lambda which is call
 
 #### NewGRF debug window
 
-Add various supplementary non-GRF information, e.g. vehicle variable and flags.
+Add various supplementary non-GRF information, e.g. vehicle variables and flags.
 
 #### Logging
 
@@ -42,7 +42,9 @@ Extend desync and random logging.
 
 Store tunnel start/end pairs in a pool, indexed in the start/end tiles.
 Set bit in map if level crossing is possibly occupied by a road vehicle.
+Cache inferred one-way state of road tiles.
 De-virtualise calls to AnimateTile().
+Cache animated tile speed.
 
 ### Viewport
 
@@ -51,6 +53,7 @@ Cache station sign bounds.
 Split sprite sort regions when more than 60 sprites present.
 Reduce unnecessary region redraws when scrolling viewports.
 Reduce viewport invalidation region size of track reservation and signal state changes.
+Cache landscape background in map mode.
 
 ### Rendering
 
@@ -58,7 +61,7 @@ Track dirty viewport areas seperately from general screen redraws, using a zoom-
 Use a rectangle array for general screen redraws instead of a block grid.
 Add a dirty bit to windows and widgets, for redrawing entire windows or widgets.
 Clip drawing of window widgets which are not in the redraw area.
-Reduce unnecessary status bar redraws.
+Reduce unnecessary status bar and vehicle list window redraws.
 Filter out tile parts which are entirely outside the drawing area, within DrawTileProc handlers.
 
 ### Data structures
@@ -67,14 +70,17 @@ Various data structures have been replaced with B-tree maps/sets (cpp-btree libr
 Various lists have been replaced with vectors or deques, etc.
 Remove mutexes from SmallStack, only used from the main thread.
 Use std::string in CommandContainer instead of a giant static buffer.
+Add a third parameter p3 to DoCommand/CommandContainer.
 Add a free bitmap for pool slots.
 Maintain free list for text effect entries.
+Many fields have been widened.
 
 ### Vehicles
 
 Cache the sprite_seq bounds.
 Index the order list in vector.
 Observe the operation of the NewGRF when getting the vehicle image/sprite, and elide further calls to the NewGRF if it can be determined that the result will be the same.
+Update train/road vehicle image/sprite on demand (i.e. when on screen) when image is continuously updated by GRF.
 Add consist flag for case where no vehicles in consist are on a slope.
 Add vehicle flag to mark the last vehicle in a consist with a visual effect.
 Index the vehicle list in per type arrays for use by CallVehicleTicks.
@@ -85,6 +91,7 @@ Cache whether the vehicle should be drawn.
 Add supplementary information to find server UDP packets and reply in an extended format with more info/wider fields if detected.
 Paginate UDP packets longer than the MTU across multiple packets.
 Use larger "packets" where useful in TCP connections.
+Send vehicle caches from network server to clients to avoid desyncs caused by non-deterministic NewGRFs.
 
 ### Sprites/blitter
 
@@ -100,6 +107,7 @@ Various forms of caching and incremental updates to the link graph overlay.
 Change FlowStat from an RB-tree to a flat map with small-object optimisation.
 Change FlowStatMap from an RB-tree to a B-tree indexed vector.
 Replace MCF Dijkstra RB-tree with B-tree.
+Reduce performance issues when deleting stale links with refit to any cargo.
 
 ### Pathfinder
 
@@ -128,6 +136,11 @@ Fixup a GS otherwise inconsistent with day length.
 [NewGRF specification additions](docs/newgrf-additions.html).
 Add workaround for a known buggy NewGRF to avoid desync issues.
 
+### SDL2
+Update whole window surface if >= 80% needs updating.
+Only pass a single rectangle to SDL_UpdateWindowSurfaceRects to prevent screen tearing.
+Allow using the hash key (#) as a hotkey.
+
 ### Other performance improvements
 
 Use multiple threads for NewGRF scan MD5 calculations, on multi-CPU machines.
@@ -155,5 +168,5 @@ Increase the number of file slots.
 Cache font heights.
 Cache resolved names for stations, towns and industries.
 Change inheritance model of class Window to keep UndefinedBehaviorSanitizer happy.
-Various other misc changes to reduce UndefinedBehaviorSanitizer spam.
+Various other misc changes and fixes to reduce UndefinedBehaviorSanitizer and ThreadSanitizer spam.
 Add a chicken bits setting, just in case.
