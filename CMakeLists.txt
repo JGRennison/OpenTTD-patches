@@ -137,6 +137,9 @@ if(WIN32)
     list(APPEND GENERATED_SOURCE_FILES "${CMAKE_BINARY_DIR}/generated/ottdres.rc")
 endif()
 
+# An empty target for the tools
+add_custom_target(tools)
+
 include(SourceList)
 include(Endian)
 add_endian_definition()
@@ -226,7 +229,7 @@ include(LinkPackage)
 link_package(PNG TARGET PNG::PNG ENCOURAGED)
 link_package(ZLIB TARGET ZLIB::ZLIB ENCOURAGED)
 link_package(LIBLZMA TARGET LibLZMA::LibLZMA ENCOURAGED)
-link_package(LZO ENCOURAGED)
+link_package(LZO)
 link_package(XDG_basedir)
 
 if(NOT OPTION_DEDICATED)
