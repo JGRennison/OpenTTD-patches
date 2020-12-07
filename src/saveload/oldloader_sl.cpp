@@ -446,7 +446,7 @@ static bool FixTTOEngines()
 		e->preview_company = INVALID_COMPANY;
 		e->preview_asked = (CompanyMask)-1;
 		e->preview_wait = 0;
-		e->name = std::string{};
+		e->name = nullptr;
 	}
 
 	return true;
