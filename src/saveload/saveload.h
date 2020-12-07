@@ -1041,6 +1041,7 @@ static inline void *GetVariableAddress(const void *object, const SaveLoad *sld)
 	/* Entry is a global address. */
 	if (sld->global) return sld->address;
 
+#ifdef _DEBUG
 	/* Entry is a null-variable, mostly used to read old savegames etc. */
 	if (GetVarMemType(sld->conv) == SLE_VAR_NULL) {
 		assert(sld->address == nullptr);
@@ -1049,6 +1050,7 @@ static inline void *GetVariableAddress(const void *object, const SaveLoad *sld)
 
 	/* Everything else should be a non-null pointer. */
 	assert(object != nullptr);
+#endif
 	return const_cast<byte *>((const byte *)object + (ptrdiff_t)sld->address);
 }
 
