@@ -1510,7 +1510,7 @@ static void DrawDirtyViewport(uint occlusion, int left, int top, int right, int 
 		extern void ViewportDrawChk(Viewport *vp, int left, int top, int right, int bottom);
 		ViewportDrawChk(_dirty_viewport, left, top, right, bottom);
 		if (_dirty_viewport_disp_flags & (ND_SHADE_GREY | ND_SHADE_DIMMED)) {
-			GfxFillRect(left, top, right, bottom,
+			GfxFillRect(left, top, right - 1, bottom - 1,
 					(_dirty_viewport_disp_flags & ND_SHADE_DIMMED) ? PALETTE_TO_TRANSPARENT : PALETTE_NEWSPAPER, FILLRECT_RECOLOUR);
 		}
 		VideoDriver::GetInstance()->MakeDirty(left, top, right - left, bottom - top);
