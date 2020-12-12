@@ -35,6 +35,7 @@
 #include "tbtr_template_vehicle_func.h"
 #include <sstream>
 #include <iomanip>
+#include <cctype>
 
 #include "table/strings.h"
 
@@ -782,7 +783,7 @@ CommandCost CmdDepotMassAutoReplace(TileIndex tile, DoCommandFlag flags, uint32 
 /**
  * Test if a name is unique among vehicle names.
  * @param name Name to test.
- * @return True ifffffff the name is unique.
+ * @return True if the name is unique.
  */
 static bool IsUniqueVehicleName(const char *name)
 {
@@ -800,51 +801,32 @@ static bool IsUniqueVehicleName(const char *name)
  */
 static void CloneVehicleName(const Vehicle *src, Vehicle *dst)
 {
-	std::string buf;
-	std::string src_name = src->name.c_str();
+	std::string new_name = src->name.c_str();
 
-	/* Find the position of the first digit in the last group of digits. */
-	size_t number_position;
-	for (number_position = src_name.length(); number_position > 0; number_position--) {
-		/* The design of UTF-8 lets this work simply without having to check
-		 * for UTF-8 sequences. */
-		if (src_name[number_position - 1] < '0' || src_name[number_position - 1] > '9') break;
+	if (!std::isdigit(*new_name.rbegin())) {
+		// No digit at the end, so start at number 1 (this will get incremented to 2)
+		new_name += " 1";
 	}
 
-	/* Format buffer and determine starting number. */
-	long num;
-	byte padding = 0;
-	if (number_position == src_name.length()) {
-		/* No digit at the end, so start at number 2. */
-		buf = src_name;
-		buf += " ";
-		number_position = buf.length();
-		num = 2;
-	} else {
-		/* Found digits, parse them and start at the next number. */
-		buf = src_name.substr(0, number_position);
-
-		auto num_str = src_name.substr(number_position);
-		padding = (byte)num_str.length();
-
-		std::istringstream iss(num_str);
-		iss >> num;
-		num++;
-	}
-
-	/* Check if this name is already taken. */
-	for (int max_iterations = 1000; max_iterations > 0; max_iterations--, num++) {
-		std::ostringstream oss;
-
-		/* Attach the number to the temporary name. */
-		oss << buf << std::setw(padding) << std::setfill('0') << std::internal << num;
-
-		/* Check the name is unique. */
-		auto new_name = oss.str();
-		if (IsUniqueVehicleName(new_name.c_str())) {
-			dst->name = new_name;
-			break;
+	int max_iterations = 1000;
+	do {
+		size_t pos = new_name.length() - 1;
+		// Handle any carrying
+		for (; pos != std::string::npos && new_name[pos] == '9'; --pos) {
+			new_name[pos] = '0';
 		}
+
+		if (pos != std::string::npos && std::isdigit(new_name[pos])) {
+			++new_name[pos];
+		} else {
+			new_name[++pos] = '1';
+			new_name.push_back('0');
+		}
+		--max_iterations;
+	} while(max_iterations > 0 && !IsUniqueVehicleName(new_name.c_str()));
+
+	if (max_iterations > 0) {
+		dst->name = new_name;
 	}
 
 	/* All done. If we didn't find a name, it'll just use its default. */
