@@ -58,9 +58,6 @@ jobs:
     - name: Build
       run: cd build && make -j2
 
-    - name: Test
-      run: cd build && make -j2 test
-
   windows:
     name: Windows
 
@@ -99,11 +96,6 @@ jobs:
         rm -f opengfx-all.zip
       shell: bash
 
-    - name: Test
-      run: |
-        cd ${{ runner.workspace }}/build
-        ctest -C Debug
-
   macos:
     name: Mac OS
 
@@ -137,6 +129,3 @@ jobs:
     - uses: ammaraskar/gcc-problem-matcher@master
     - name: Build
       run: cd build && make -j2
-
-    - name: Test
-      run: cd build && make -j2 test
