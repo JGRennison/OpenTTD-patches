@@ -357,6 +357,28 @@ void str_strip_colours(char *str)
 	*dst = '\0';
 }
 
+std::string str_strip_all_scc(const char *str)
+{
+	std::string out;
+	if (!str) return out;
+
+	WChar c;
+	size_t len;
+
+	for (len = Utf8Decode(&c, str); c != '\0'; len = Utf8Decode(&c, str)) {
+		if (c < SCC_CONTROL_START || c > SCC_SPRITE_END) {
+			/* Copy the characters */
+			do {
+				out.push_back(*str++);
+			} while (--len != 0);
+		} else {
+			/* Just skip (strip) the control codes */
+			str += len;
+		}
+	}
+	return out;
+}
+
 /** Scans the string for a wchar and replace it with another wchar
  * @param str The string buffer
  * @param last The pointer to the last element of the string buffer
