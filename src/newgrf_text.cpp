@@ -644,6 +644,21 @@ const char *GetGRFStringFromGRFText(const GRFTextList &text_list)
 	return default_text;
 }
 
+const char *GetDefaultLangGRFStringFromGRFText(const GRFTextList &text_list)
+{
+	const char *default_text = nullptr;
+
+	for (const auto &text : text_list) {
+		/* If the current string is English or American, set it as the
+		 * fallback language if the specific language isn't available. */
+		if (text.langid == GRFLX_UNSPECIFIED || (default_text == nullptr && (text.langid == GRFLX_ENGLISH || text.langid == GRFLX_AMERICAN))) {
+			default_text = text.text.c_str();
+		}
+	}
+
+	return default_text;
+}
+
 static std::array<std::pair<uint16, const char *>, 16> _grf_string_ptr_log;
 static unsigned int _grf_string_ptr_log_next = 0;
 
@@ -657,6 +672,11 @@ static unsigned int _grf_string_ptr_log_next = 0;
 const char *GetGRFStringFromGRFText(const GRFTextWrapper &text)
 {
 	return text ? GetGRFStringFromGRFText(*text) : nullptr;
+}
+
+const char *GetDefaultLangGRFStringFromGRFText(const GRFTextWrapper &text)
+{
+	return text ? GetDefaultLangGRFStringFromGRFText(*text) : nullptr;
 }
 
 /**

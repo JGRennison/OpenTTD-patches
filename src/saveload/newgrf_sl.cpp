@@ -55,6 +55,7 @@ void Load_NewGRFMapping(OverrideManagerBase &mapping)
 	}
 }
 
+static std::string _grf_name;
 
 static const SaveLoad _grfconfig_desc[] = {
 	    SLE_STR(GRFConfig, filename,         SLE_STR,    0x40),
@@ -64,6 +65,7 @@ static const SaveLoad _grfconfig_desc[] = {
 	    SLE_ARR(GRFConfig, param,            SLE_UINT32, 0x80),
 	    SLE_VAR(GRFConfig, num_params,       SLE_UINT8),
 	SLE_CONDVAR(GRFConfig, palette,          SLE_UINT8,  SLV_101, SL_MAX_VERSION),
+	SLEG_CONDSSTR_X(_grf_name, 0,                        SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_NEWGRF_INFO_EXTRA)),
 	SLE_END()
 };
 
@@ -75,6 +77,7 @@ static void Save_NGRF()
 	for (GRFConfig *c = _grfconfig; c != nullptr; c = c->next) {
 		if (HasBit(c->flags, GCF_STATIC)) continue;
 		SlSetArrayIndex(index++);
+		_grf_name = str_strip_all_scc(GetDefaultLangGRFStringFromGRFText(c->name));
 		SlObject(c, _grfconfig_desc);
 	}
 }
@@ -86,6 +89,9 @@ static void Load_NGRF_common(GRFConfig *&grfconfig)
 	while (SlIterateArray() != -1) {
 		GRFConfig *c = new GRFConfig();
 		SlObject(c, _grfconfig_desc);
+		if (SlXvIsFeaturePresent(XSLFI_NEWGRF_INFO_EXTRA)) {
+			AddGRFTextToList(c->name, 0x7F, c->ident.grfid, false, _grf_name.c_str());
+		}
 		if (IsSavegameVersionBefore(SLV_101)) c->SetSuitablePalette();
 		AppendToGRFConfigList(&grfconfig, c);
 	}

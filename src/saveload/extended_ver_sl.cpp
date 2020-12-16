@@ -141,6 +141,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_ONE_WAY_ROAD_STATE,     XSCF_NULL,                1,   1, "one_way_road_state",        nullptr, nullptr, nullptr        },
 	{ XSLFI_VENC_CHUNK,             XSCF_IGNORABLE_ALL,       1,   1, "venc_chunk",                nullptr, nullptr, "VENC"         },
 	{ XSLFI_ANIMATED_TILE_EXTRA,    XSCF_NULL,                1,   1, "animated_tile_extra",       nullptr, nullptr, nullptr        },
+	{ XSLFI_NEWGRF_INFO_EXTRA,      XSCF_NULL,                1,   1, "newgrf_info_extra",         nullptr, nullptr, nullptr        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr },// This is the end marker
 };
 
