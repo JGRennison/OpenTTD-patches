@@ -634,7 +634,7 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param to       Last savegame version that has the string.
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  */
-#define SLE_CONDSSSTR_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_STDSTR, base, variable, type, 0, from, to, extver)
+#define SLE_CONDSSTR_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_STDSTR, base, variable, type, 0, from, to, extver)
 #define SLE_CONDSSTR(base, variable, type, from, to) SLE_GENERAL(SL_STDSTR, base, variable, type, 0, from, to)
 
 /**
@@ -854,6 +854,7 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param from     First savegame version that has the string.
  * @param to       Last savegame version that has the string.
  */
+#define SLEG_CONDSSTR_X(variable, type, from, to, extver) SLEG_GENERAL_X(SL_STDSTR, variable, type, 0, from, to, extver)
 #define SLEG_CONDSSTR(variable, type, from, to) SLEG_GENERAL(SL_STDSTR, variable, type, 0, from, to)
 
 /**
