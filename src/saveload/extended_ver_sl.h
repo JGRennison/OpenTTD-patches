@@ -96,6 +96,7 @@ enum SlXvFeatureIndex {
 	XSLFI_VENC_CHUNK,                             ///< VENC chunk
 	XSLFI_ANIMATED_TILE_EXTRA,                    ///< Animated tile extra info
 	XSLFI_NEWGRF_INFO_EXTRA,                      ///< Extra NewGRF info in savegame
+	XSLFI_INDUSTRY_CARGO_ADJ,                     ///< Industry cargo adjustment patch
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk

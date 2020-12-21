@@ -1193,7 +1193,11 @@ static void ProduceIndustryGoods(Industry *i)
 
 		IndustryBehaviour indbehav = indsp->behaviour;
 		for (size_t j = 0; j < lengthof(i->produced_cargo_waiting); j++) {
-			i->produced_cargo_waiting[j] = min(0xffff, i->produced_cargo_waiting[j] + i->production_rate[j]);
+			uint amount = i->production_rate[j];
+			if (amount != 0) {
+				amount = ScaleQuantity(amount, _settings_game.economy.industry_cargo_scale_factor);
+			}
+			i->produced_cargo_waiting[j] = min(0xffff, i->produced_cargo_waiting[j] + amount);
 		}
 
 		if ((indbehav & INDUSTRYBEH_PLANT_FIELDS) != 0) {

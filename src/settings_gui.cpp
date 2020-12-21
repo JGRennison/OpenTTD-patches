@@ -1943,6 +1943,7 @@ static SettingsContainer &GetSettingsTree()
 				industries->Add(new SettingEntry("game_creation.oil_refinery_limit"));
 				industries->Add(new SettingEntry("economy.smooth_economy"));
 				industries->Add(new SettingEntry("station.serve_neutral_industries"));
+				industries->Add(new SettingEntry("economy.industry_cargo_scale_factor"));
 			}
 
 			SettingsPage *cdist = environment->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST));
