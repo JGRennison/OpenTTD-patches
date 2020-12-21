@@ -2397,3 +2397,35 @@ CommandCost CmdBuyCompany(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 	}
 	return cost;
 }
+
+uint ScaleQuantity(uint amount, int scale_factor)
+{
+	scale_factor += 200; // ensure factor is positive
+	assert(scale_factor >= 0);
+	int cf = (scale_factor / 10) - 20;
+	int fine = scale_factor % 10;
+	return ScaleQuantity(amount, cf, fine);
+}
+
+uint ScaleQuantity(uint amount, int cf, int fine)
+{
+	if (fine != 0) {
+		// 2^0.1 << 16 to 2^0.9 << 16
+		const uint32 adj[9] = {70239, 75281, 80684, 86475, 92681, 99334, 106463, 114104, 122294};
+		uint64 scaled_amount = ((uint64) amount) * ((uint64) adj[fine - 1]);
+		amount = scaled_amount >> 16;
+	}
+
+	// apply scale factor
+	if (cf < 0) {
+		// approx (amount / 2^cf)
+		// adjust with a constant offset of {(2 ^ cf) - 1} (i.e. add cf * 1-bits) before dividing to ensure that it doesn't become zero
+		// this skews the curve a little so that isn't entirely exponential, but will still decrease
+		amount = (amount + ((1 << -cf) - 1)) >> -cf;
+	} else if (cf > 0) {
+		// approx (amount * 2^cf)
+		amount = amount << cf;
+	}
+
+	return amount;
+}

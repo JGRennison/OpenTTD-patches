@@ -639,38 +639,12 @@ static void MakeTownHouseBigger(TileIndex tile)
  */
 static void TownGenerateCargo (Town *t, CargoID ct, uint amount, StationFinder &stations, bool economy_adjust)
 {
-	// custom cargo generation factor
-	int factor = _settings_game.economy.town_cargo_scale_factor;
-
 	// when the economy flunctuates, everyone wants to stay at home
 	if (economy_adjust && EconomyIsInRecession()) {
 		amount = (amount + 1) >> 1;
 	}
 
-	factor += 200; // ensure factor is positive
-	assert(factor >= 0);
-	int cf = (factor / 10) - 20;
-	int fine = factor % 10;
-	if (fine != 0) {
-		// 2^0.1 << 16 to 2^0.9 << 16
-		const uint32 adj[9] = {70239, 75281, 80684, 86475, 92681, 99334, 106463, 114104, 122294};
-		uint64 scaled_amount = ((uint64) amount) * ((uint64) adj[fine - 1]);
-		amount = scaled_amount >> 16;
-	}
-
-	// apply custom factor?
-	if (cf < 0) {
-		// approx (amount / 2^cf)
-		// adjust with a constant offset of {(2 ^ cf) - 1} (i.e. add cf * 1-bits) before dividing to ensure that it doesn't become zero
-		// this skews the curve a little so that isn't entirely exponential, but will still decrease
-		amount = (amount + ((1 << -cf) - 1)) >> -cf;
-	}
-
-	else if (cf > 0) {
-		// approx (amount * 2^cf)
-		// XXX: overflow?
-		amount = amount << cf;
-	}
+	amount = ScaleQuantity(amount, _settings_game.economy.town_cargo_scale_factor);
 
 	// calculate for town stats
 

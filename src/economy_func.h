@@ -49,4 +49,7 @@ static inline bool EconomyIsInRecession()
 	return _economy.fluct <= 0;
 }
 
+uint ScaleQuantity(uint amount, int scale_factor);
+uint ScaleQuantity(uint amount, int cf, int fine);
+
 #endif /* ECONOMY_FUNC_H */
