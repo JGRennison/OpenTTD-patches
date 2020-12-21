@@ -480,9 +480,9 @@ bool IsValidChar(WChar key, CharSetFilter afilter)
 		case CS_ALPHANUMERAL:  return IsPrintable(key);
 		case CS_NUMERAL:       return (key >= '0' && key <= '9');
 #if !defined(STRGEN) && !defined(SETTINGSGEN)
-		case CS_NUMERAL_DECIMAL: return (key >= '0' && key <= '9') || key == '.' || key == GetDecimalSeparatorChar();
+		case CS_NUMERAL_DECIMAL: return (key >= '0' && key <= '9') || key == '.' || key == '-' || key == GetDecimalSeparatorChar();
 #else
-		case CS_NUMERAL_DECIMAL: return (key >= '0' && key <= '9') || key == '.';
+		case CS_NUMERAL_DECIMAL: return (key >= '0' && key <= '9') || key == '.' || key == '-';
 #endif
 		case CS_NUMERAL_SPACE: return (key >= '0' && key <= '9') || key == ' ';
 		case CS_ALPHA:         return IsPrintable(key) && !(key >= '0' && key <= '9');
