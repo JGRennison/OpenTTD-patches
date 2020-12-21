@@ -555,6 +555,23 @@ class NIHIndustry : public NIHelper {
 				seprintf(buffer, lastof(buffer), "    %u: %s", st->index, st->GetCachedName());
 				print(buffer);
 			}
+			print("  Produces:");
+			for (uint i = 0; i < lengthof(ind->produced_cargo); i++) {
+				if (ind->produced_cargo[i] != CT_INVALID) {
+					seprintf(buffer, lastof(buffer), "    %s: waiting: %u, rate: %u, this month: production: %u, transported: %u, last month: production: %u, transported: %u, (%u/255)",
+							GetStringPtr(CargoSpec::Get(ind->produced_cargo[i])->name), ind->produced_cargo_waiting[i], ind->production_rate[i], ind->this_month_production[i],
+							ind->this_month_transported[i], ind->last_month_production[i], ind->last_month_transported[i], ind->last_month_pct_transported[i]);
+					print(buffer);
+				}
+			}
+			print("  Accepts:");
+			for (uint i = 0; i < lengthof(ind->accepts_cargo); i++) {
+				if (ind->accepts_cargo[i] != CT_INVALID) {
+					seprintf(buffer, lastof(buffer), "    %s: waiting: %u",
+							GetStringPtr(CargoSpec::Get(ind->accepts_cargo[i])->name), ind->incoming_cargo_waiting[i]);
+					print(buffer);
+				}
+			}
 		}
 	}
 };
