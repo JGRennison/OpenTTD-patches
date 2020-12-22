@@ -1825,6 +1825,7 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 	i->was_cargo_delivered = false;
 	i->last_prod_year = _cur_year;
 	i->founder = founder;
+	i->ctlflags = INDCTL_NONE;
 
 	i->construction_date = _date;
 	i->construction_type = (_game_mode == GM_EDITOR) ? ICT_SCENARIO_EDITOR :
@@ -2122,6 +2123,43 @@ CommandCost CmdBuildIndustry(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 	return CommandCost(EXPENSES_OTHER, indspec->GetConstructionCost());
 }
 
+/**
+ * Change industry properties
+ * @param tile Unused.
+ * @param flags Type of operation.
+ * @param p1 IndustryID
+ * @param p2 various bitstuffed elements
+ * - p2 = (bit 0 - 7) - action to perform:
+ *                      0 = set control flags
+ * - p2 = (bit 8 - 15) - IndustryControlFlags
+ *                       (only used with set control flags)
+ * @param text unused
+ * @return Empty cost or an error.
+ */
+CommandCost CmdIndustryCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	if (_current_company != OWNER_DEITY) return CMD_ERROR;
+
+	Industry *ind = Industry::GetIfValid(p1);
+	if (ind == nullptr) return CMD_ERROR;
+
+	uint8 action = GB(p2, 0, 8);
+
+	switch (action) {
+		case 0: {
+			IndustryControlFlags ctlflags = (IndustryControlFlags)GB(p2, 8, 8) & INDCTL_MASK;
+
+			if (flags & DC_EXEC) ind->ctlflags = ctlflags;
+
+			break;
+		}
+
+		default:
+			NOT_REACHED();
+	}
+
+	return CommandCost();
+}
 
 /**
  * Create a new industry of random layout.
@@ -2732,7 +2770,7 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 				}
 			}
 		} else if (_settings_game.economy.type == ET_SMOOTH) {
-			closeit = true;
+			closeit = !(i->ctlflags & (INDCTL_NO_CLOSURE | INDCTL_NO_PRODUCTION_DECREASE));
 			for (byte j = 0; j < lengthof(i->produced_cargo); j++) {
 				if (i->produced_cargo[j] == CT_INVALID) continue;
 				uint32 r = Random();
@@ -2765,6 +2803,10 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 					new_prod = Clamp(new_prod, 0, 16);
 				}
 
+				/* If override flags are set, prevent actually changing production if any was decided on */
+				if ((i->ctlflags & INDCTL_NO_PRODUCTION_DECREASE) && new_prod < old_prod) continue;
+				if ((i->ctlflags & INDCTL_NO_PRODUCTION_INCREASE) && new_prod > old_prod) continue;
+
 				/* Do not stop closing the industry when it has the lowest possible production rate */
 				if (new_prod == old_prod && old_prod > 1) {
 					closeit = false;
@@ -2784,6 +2826,10 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 		}
 	}
 
+	/* If override flags are set, prevent actually changing production if any was decided on */
+	if ((i->ctlflags & INDCTL_NO_PRODUCTION_DECREASE) && (div > 0 || increment < 0)) return;
+	if ((i->ctlflags & INDCTL_NO_PRODUCTION_INCREASE) && (mul > 0 || increment > 0)) return;
+
 	if (!callback_enabled && (indspec->life_type & INDUSTRYLIFE_PROCESSING)) {
 		if ( (byte)(_cur_year - i->last_prod_year) >= 5 && Chance16(1, original_economy ? 2 : 180)) {
 			closeit = true;
@@ -2801,6 +2847,7 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 	while (div-- != 0 && !closeit) {
 		if (i->prod_level == PRODLEVEL_MINIMUM) {
 			closeit = true;
+			break;
 		} else {
 			i->prod_level = max(i->prod_level / 2, (int)PRODLEVEL_MINIMUM); // typecast to int required to please MSVC
 			recalculate_multipliers = true;
@@ -2823,7 +2870,7 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 	if (recalculate_multipliers) i->RecomputeProductionMultipliers();
 
 	/* Close if needed and allowed */
-	if (closeit && !CheckIndustryCloseDownProtection(i->type)) {
+	if (closeit && !CheckIndustryCloseDownProtection(i->type) && !(i->ctlflags & INDCTL_NO_CLOSURE)) {
 		i->prod_level = PRODLEVEL_CLOSURE;
 		SetWindowDirty(WC_INDUSTRY_VIEW, i->index);
 		str = indspec->closure_text;
