@@ -572,6 +572,12 @@ class NIHIndustry : public NIHelper {
 					print(buffer);
 				}
 			}
+
+			const IndustrySpec *indsp = GetIndustrySpec(ind->type);
+			seprintf(buffer, lastof(buffer), "  CBM_IND_PRODUCTION_CARGO_ARRIVAL: %s", HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_CARGO_ARRIVAL) ? "yes" : "no");
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  CBM_IND_PRODUCTION_256_TICKS: %s", HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS) ? "yes" : "no");
+			print(buffer);
 		}
 	}
 };
