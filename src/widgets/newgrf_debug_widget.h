@@ -19,6 +19,7 @@ enum NewGRFInspectWidgets {
 	WID_NGRFI_VEH_CHAIN, ///< Display for vehicle chain.
 	WID_NGRFI_MAINPANEL, ///< Panel widget containing the actual data.
 	WID_NGRFI_SCROLLBAR, ///< Scrollbar.
+	WID_NGRFI_REFRESH,   ///< Refresh toggle.
 };
 
 /** Widgets of the #SpriteAlignerWindow class. */
