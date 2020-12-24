@@ -579,6 +579,12 @@ class NIHIndustry : public NIHelper {
 			print(buffer);
 			seprintf(buffer, lastof(buffer), "  CBM_IND_PRODUCTION_256_TICKS: %s", HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS) ? "yes" : "no");
 			print(buffer);
+			seprintf(buffer, lastof(buffer), "  Counter: %u", ind->counter);
+			print(buffer);
+			if ((_settings_game.economy.industry_cargo_scale_factor != 0) && HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS)) {
+				seprintf(buffer, lastof(buffer), "  Counter production interval: %u", ScaleQuantity(INDUSTRY_PRODUCE_TICKS, -_settings_game.economy.industry_cargo_scale_factor));
+				print(buffer);
+			}
 		}
 	}
 };

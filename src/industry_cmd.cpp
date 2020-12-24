@@ -1165,6 +1165,19 @@ static void ChopLumberMillTrees(Industry *i)
 	}
 }
 
+static void ProduceIndustryGoodsFromRate(Industry *i, bool scale)
+{
+	for (size_t j = 0; j < lengthof(i->produced_cargo_waiting); j++) {
+		uint amount = i->production_rate[j];
+		if (amount != 0 && scale) {
+			amount = ScaleQuantity(amount, _settings_game.economy.industry_cargo_scale_factor);
+		}
+		i->produced_cargo_waiting[j] = min(0xffff, i->produced_cargo_waiting[j] + amount);
+	}
+}
+
+static uint _scaled_production_ticks;
+
 static void ProduceIndustryGoods(Industry *i)
 {
 	const IndustrySpec *indsp = GetIndustrySpec(i->type);
@@ -1187,19 +1200,22 @@ static void ProduceIndustryGoods(Industry *i)
 
 	i->counter--;
 
+	const bool scale_ticks = (_settings_game.economy.industry_cargo_scale_factor != 0) && HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS);
+	if (scale_ticks) {
+		if ((i->counter % _scaled_production_ticks) == 0) {
+			if (HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS)) IndustryProductionCallback(i, 1);
+			ProduceIndustryGoodsFromRate(i, false);
+		}
+	}
+
 	/* produce some cargo */
 	if ((i->counter % INDUSTRY_PRODUCE_TICKS) == 0) {
-		if (HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS)) IndustryProductionCallback(i, 1);
-
-		IndustryBehaviour indbehav = indsp->behaviour;
-		for (size_t j = 0; j < lengthof(i->produced_cargo_waiting); j++) {
-			uint amount = i->production_rate[j];
-			if (amount != 0) {
-				amount = ScaleQuantity(amount, _settings_game.economy.industry_cargo_scale_factor);
-			}
-			i->produced_cargo_waiting[j] = min(0xffff, i->produced_cargo_waiting[j] + amount);
+		if (!scale_ticks) {
+			if (HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS)) IndustryProductionCallback(i, 1);
+			ProduceIndustryGoodsFromRate(i, true);
 		}
 
+		IndustryBehaviour indbehav = indsp->behaviour;
 		if ((indbehav & INDUSTRYBEH_PLANT_FIELDS) != 0) {
 			uint16 cb_res = CALLBACK_FAILED;
 			if (HasBit(indsp->callback_mask, CBM_IND_SPECIAL_EFFECT)) {
@@ -1251,6 +1267,7 @@ void OnTick_Industry()
 
 	if (_game_mode == GM_EDITOR) return;
 
+	_scaled_production_ticks = ScaleQuantity(INDUSTRY_PRODUCE_TICKS, -_settings_game.economy.industry_cargo_scale_factor);
 	for (Industry *i : Industry::Iterate()) {
 		ProduceIndustryGoods(i);
 	}
