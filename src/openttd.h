@@ -55,6 +55,7 @@ enum ExtraDisplayOptions {
 
 extern GameMode _game_mode;
 extern SwitchMode _switch_mode;
+extern bool _check_special_modes;
 extern bool _exit_game;
 
 /** Modes of pausing we've got */

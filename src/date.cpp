@@ -245,6 +245,7 @@ static void OnNewMonth()
 {
 	if (_settings_client.gui.autosave != 0 && (_cur_date_ymd.month % _autosave_months[_settings_client.gui.autosave]) == 0) {
 		_do_autosave = true;
+		_check_special_modes = true;
 		SetWindowDirty(WC_STATUS_BAR, 0);
 	}
 

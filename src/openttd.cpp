@@ -1889,6 +1889,28 @@ static void DoAutosave()
 	}
 }
 
+void GameLoopSpecial()
+{
+	/* autosave game? */
+	if (_do_autosave) {
+		DoAutosave();
+		_do_autosave = false;
+		SetWindowDirty(WC_STATUS_BAR, 0);
+	}
+
+	extern std::string _switch_baseset;
+	if (!_switch_baseset.empty()) {
+		if (BaseGraphics::GetUsedSet()->name != _switch_baseset) {
+			BaseGraphics::SetSet(_switch_baseset);
+
+			ReloadNewGRFData();
+		}
+		_switch_baseset.clear();
+	}
+
+	_check_special_modes = false;
+}
+
 void GameLoop()
 {
 	if (_game_mode == GM_BOOTSTRAP) {
@@ -1900,12 +1922,7 @@ void GameLoop()
 
 	ProcessAsyncSaveFinish();
 
-	/* autosave game? */
-	if (_do_autosave) {
-		DoAutosave();
-		_do_autosave = false;
-		SetWindowDirty(WC_STATUS_BAR, 0);
-	}
+	if (unlikely(_check_special_modes)) GameLoopSpecial();
 
 	/* switch game mode? */
 	if (_switch_mode != SM_NONE && !HasModalProgress()) {

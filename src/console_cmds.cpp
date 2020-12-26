@@ -49,6 +49,7 @@
 #include "industry.h"
 #include "string_func_extra.h"
 #include "linkgraph/linkgraphjob.h"
+#include "base_media_base.h"
 #include <time.h>
 
 #include "safeguards.h"
@@ -2810,6 +2811,27 @@ DEF_CONSOLE_CMD(ConRailTypeMapColourCtl)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConSwitchBaseset)
+{
+	if (argc != 2) {
+		IConsoleHelp("Debug: Try to switch baseset and reload NewGRFs. Usage: 'switch_baseset <baseset-name>'");
+		return true;
+	}
+
+	for (int i = 0; i < BaseGraphics::GetNumSets(); i++) {
+		const GraphicsSet *basegfx = BaseGraphics::GetSet(i);
+		if (argv[1] == basegfx->name) {
+			extern std::string _switch_baseset;
+			_switch_baseset = basegfx->name;
+			_check_special_modes = true;
+			return true;
+		}
+	}
+
+	IConsolePrintF(CC_WARNING, "No such baseset: %s.", argv[1]);
+	return 1;
+}
+
 #ifdef _DEBUG
 /******************
  *  debug commands
@@ -3031,6 +3053,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("delete_company", ConDeleteCompany, ConHookNewGRFDeveloperTool, true);
 	IConsoleCmdRegister("road_type_flag_ctl", ConRoadTypeFlagCtl, ConHookNewGRFDeveloperTool, true);
 	IConsoleCmdRegister("rail_type_map_colour_ctl", ConRailTypeMapColourCtl, ConHookNewGRFDeveloperTool, true);
+	IConsoleCmdRegister("switch_baseset", ConSwitchBaseset, ConHookNewGRFDeveloperTool, true);
 
 	/* Bug workarounds */
 	IConsoleCmdRegister("jgrpp_bug_workaround_unblock_heliports", ConResetBlockedHeliports, ConHookNoNetwork, true);
