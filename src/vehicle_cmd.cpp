@@ -987,10 +987,11 @@ CommandCost CmdVirtualTrainFromTemplateVehicle(TileIndex tile, DoCommandFlag fla
 
 CommandCost CmdDeleteVirtualTrain(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text);
 
-Train* VirtualTrainFromTemplateVehicle(TemplateVehicle* tv, StringID &err, uint32 user)
+Train* VirtualTrainFromTemplateVehicle(const TemplateVehicle* tv, StringID &err, uint32 user)
 {
 	CommandCost c;
 	Train *tmp, *head, *tail;
+	const TemplateVehicle* tv_head = tv;
 
 	assert(tv->owner == _current_company);
 
@@ -1006,12 +1007,15 @@ Train* VirtualTrainFromTemplateVehicle(TemplateVehicle* tv, StringID &err, uint3
 			return nullptr;
 		}
 
-		tmp->cargo_type = tv->cargo_type;
-		tmp->cargo_subtype = tv->cargo_subtype;
 		CmdMoveRailVehicle(INVALID_TILE, DC_EXEC, (1 << 21) | tmp->index, tail->index, 0);
 		tail = tmp;
 
 		tv = tv->GetNextUnit();
+	}
+
+	for (tv = tv_head, tmp = head; tv != nullptr && tmp != nullptr; tv = tv->Next(), tmp = tmp->Next()) {
+		tmp->cargo_type = tv->cargo_type;
+		tmp->cargo_subtype = tv->cargo_subtype;
 	}
 
 	_new_vehicle_id = head->index;
