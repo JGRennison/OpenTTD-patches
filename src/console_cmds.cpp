@@ -2832,6 +2832,54 @@ DEF_CONSOLE_CMD(ConSwitchBaseset)
 	return 1;
 }
 
+static bool ConConditionalCommon(byte argc, char *argv[], int value, const char *value_name, const char *name)
+{
+	if (argc < 4) {
+		IConsolePrintF(CC_WARNING, "- Execute command if %s is within the specified range. Usage: '%s <minimum> <maximum> <command...>'", value_name, name);
+		return true;
+	}
+
+	int min_value = atoi(argv[1]);
+	int max_value = atoi(argv[2]);
+
+	if (value >= min_value && value <= max_value) IConsoleCmdExecTokens(argc - 3, argv + 3);
+
+	return true;
+}
+
+DEF_CONSOLE_CMD(ConIfYear)
+{
+	return ConConditionalCommon(argc, argv, _cur_date_ymd.year, "the current year (in game)", "if_year");
+}
+
+DEF_CONSOLE_CMD(ConIfMonth)
+{
+	return ConConditionalCommon(argc, argv, _cur_date_ymd.month + 1, "the current month (in game)", "if_month");
+}
+
+DEF_CONSOLE_CMD(ConIfDay)
+{
+	return ConConditionalCommon(argc, argv, _cur_date_ymd.day, "the current day of the month (in game)", "if_day");
+}
+
+DEF_CONSOLE_CMD(ConIfHour)
+{
+	Minutes minutes = _scaled_date_ticks / _settings_time.ticks_per_minute + _settings_time.clock_offset;
+	return ConConditionalCommon(argc, argv,  MINUTES_HOUR(minutes), "the current hour (in game, assuming time is in minutes)", "if_hour");
+}
+
+DEF_CONSOLE_CMD(ConIfMinute)
+{
+	Minutes minutes = _scaled_date_ticks / _settings_time.ticks_per_minute + _settings_time.clock_offset;
+	return ConConditionalCommon(argc, argv, MINUTES_MINUTE(minutes), "the current minute (in game, assuming time is in minutes)", "if_minute");
+}
+
+DEF_CONSOLE_CMD(ConIfHourMinute)
+{
+	Minutes minutes = _scaled_date_ticks / _settings_time.ticks_per_minute + _settings_time.clock_offset;
+	return ConConditionalCommon(argc, argv, (MINUTES_HOUR(minutes) * 100) + MINUTES_MINUTE(minutes), "the current hour and minute 0000 - 2359 (in game, assuming time is in minutes)", "if_hour_minute");
+}
+
 #ifdef _DEBUG
 /******************
  *  debug commands
@@ -3011,6 +3059,14 @@ void IConsoleStdLibRegister()
 	IConsoleAliasRegister("restart_game_year",     "setting restart_game_year %+");
 	IConsoleAliasRegister("min_players",           "setting min_active_clients %+");
 	IConsoleAliasRegister("reload_cfg",            "setting reload_cfg %+");
+
+	/* conditionals */
+	IConsoleCmdRegister("if_year", ConIfYear);
+	IConsoleCmdRegister("if_month", ConIfMonth);
+	IConsoleCmdRegister("if_day", ConIfDay);
+	IConsoleCmdRegister("if_hour", ConIfHour);
+	IConsoleCmdRegister("if_minute", ConIfMinute);
+	IConsoleCmdRegister("if_hour_minute", ConIfHourMinute);
 
 	/* debugging stuff */
 #ifdef _DEBUG

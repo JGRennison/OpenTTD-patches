@@ -487,6 +487,15 @@ void IConsoleCmdExec(const char *cmdstr, const uint recurse_count)
 		DEBUG(console, 8, "Token %d is: '%s'", i, tokens[i]);
 	}
 
+	IConsoleCmdExecTokens(t_index, tokens, recurse_count);
+}
+
+/**
+ * Execute a given command passed to us as tokens
+ * @param cmdstr string to be parsed and executed
+ */
+void IConsoleCmdExecTokens(uint token_count, char *tokens[], const uint recurse_count)
+{
 	if (StrEmpty(tokens[0])) return; // don't execute empty commands
 	/* 2. Determine type of command (cmd or alias) and execute
 	 * First try commands, then aliases. Execute
@@ -498,7 +507,7 @@ void IConsoleCmdExec(const char *cmdstr, const uint recurse_count)
 		ConsoleHookResult chr = (cmd->hook == nullptr ? CHR_ALLOW : cmd->hook(true));
 		switch (chr) {
 			case CHR_ALLOW:
-				if (!cmd->proc(t_index, tokens)) { // index started with 0
+				if (!cmd->proc(token_count, tokens)) { // index started with 0
 					cmd->proc(0, nullptr); // if command failed, give help
 				}
 				return;
@@ -508,10 +517,10 @@ void IConsoleCmdExec(const char *cmdstr, const uint recurse_count)
 		}
 	}
 
-	t_index--;
+	token_count--;
 	IConsoleAlias *alias = IConsoleAliasGet(tokens[0]);
 	if (alias != nullptr) {
-		IConsoleAliasExec(alias, t_index, &tokens[1], recurse_count + 1);
+		IConsoleAliasExec(alias, token_count, &tokens[1], recurse_count + 1);
 		return;
 	}
 
