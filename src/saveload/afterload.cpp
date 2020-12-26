@@ -3838,7 +3838,7 @@ bool AfterLoadGame()
 	AfterLoadLinkGraphs();
 
 	AfterLoadTraceRestrict();
-	AfterLoadTemplateVehiclesUpdateImage();
+	AfterLoadTemplateVehiclesUpdate();
 	if (SlXvIsFeaturePresent(XSLFI_TEMPLATE_REPLACEMENT, 1, 5)) {
 		AfterLoadTemplateVehiclesUpdateProperties();
 	}
@@ -3937,7 +3937,7 @@ void ReloadNewGRFData()
 	/* redraw the whole screen */
 	MarkWholeScreenDirty();
 	CheckTrainsLengths();
-	AfterLoadTemplateVehiclesUpdateImage();
+	AfterLoadTemplateVehiclesUpdateImages();
 	AfterLoadTemplateVehiclesUpdateProperties();
 	UpdateAllAnimatedTileSpeeds();
 }

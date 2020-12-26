@@ -35,6 +35,7 @@
 #include "goal_base.h"
 #include "story_base.h"
 #include "zoning.h"
+#include "tbtr_template_vehicle_func.h"
 
 #include "table/strings.h"
 
@@ -1039,6 +1040,7 @@ CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 		}
 
 		ResetVehicleColourMap();
+		InvalidateTemplateReplacementImages();
 		MarkWholeScreenDirty();
 
 		/* All graph related to companies use the company colour. */

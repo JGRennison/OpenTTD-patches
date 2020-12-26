@@ -642,6 +642,8 @@ public:
 
 	void DrawTemplateList(const Rect &r) const
 	{
+		if (!_template_vehicle_images_valid) UpdateAllTemplateVehicleImages();
+
 		const_cast<TemplateReplaceWindow *>(this)->BuildTemplateGuiList();
 
 		int left = r.left;

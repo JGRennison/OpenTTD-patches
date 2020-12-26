@@ -19,6 +19,8 @@
 #include "core/geometry_type.hpp"
 #include "debug.h"
 #include "zoom_func.h"
+#include "core/backup_type.hpp"
+#include "core/random_func.hpp"
 
 #include "table/sprites.h"
 #include "table/strings.h"
@@ -41,7 +43,7 @@
 
 #include "safeguards.h"
 
-Vehicle *vhead, *vtmp;
+bool _template_vehicle_images_valid = false;
 
 #ifdef _DEBUG
 // debugging printing functions for convenience, usually called from gdb
@@ -125,8 +127,7 @@ void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y)
 	int offset = 0;
 
 	while (t) {
-		PaletteID pal = GetEnginePalette(t->engine_type, _current_company);
-		t->sprite_seq.Draw(offset + t->image_dimensions.GetOffsetX(), t->image_dimensions.GetOffsetY() + ScaleGUITrad(10), pal, false);
+		t->sprite_seq.Draw(offset + t->image_dimensions.GetOffsetX(), t->image_dimensions.GetOffsetY() + ScaleGUITrad(10), t->colourmap, false);
 
 		offset += t->image_dimensions.GetDisplayImageWidth();
 		t = t->Next();
@@ -170,6 +171,7 @@ void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev
 
 	virt->GetImage(DIR_W, EIT_IN_DEPOT, &tmp->sprite_seq);
 	tmp->image_dimensions.SetFromTrain(virt);
+	tmp->colourmap = GetUncachedTrainPaletteIgnoringGroup(virt);
 }
 
 // create a full TemplateVehicle based train according to a virtual train
@@ -427,4 +429,44 @@ void TransferCargoForTrain(Train *old_veh, Train *new_head)
 
 	/* Update train weight etc., the old vehicle will be sold anyway */
 	new_head->ConsistChanged(CCF_LOADUNLOAD);
+}
+
+void UpdateAllTemplateVehicleImages()
+{
+	SavedRandomSeeds saved_seeds;
+	SaveRandomSeeds(&saved_seeds);
+
+	for (TemplateVehicle *tv : TemplateVehicle::Iterate()) {
+		if (tv->Prev() == nullptr) {
+			Backup<CompanyID> cur_company(_current_company, tv->owner, FILE_LINE);
+			StringID err;
+			Train* t = VirtualTrainFromTemplateVehicle(tv, err, 0);
+			if (t != nullptr) {
+				int tv_len = 0;
+				for (TemplateVehicle *u = tv; u != nullptr; u = u->Next()) {
+					tv_len++;
+				}
+				int t_len = 0;
+				for (Train *u = t; u != nullptr; u = u->Next()) {
+					t_len++;
+				}
+				if (t_len == tv_len) {
+					Train *v = t;
+					for (TemplateVehicle *u = tv; u != nullptr; u = u->Next(), v = v->Next()) {
+						v->GetImage(DIR_W, EIT_IN_DEPOT, &u->sprite_seq);
+						u->image_dimensions.SetFromTrain(v);
+						u->colourmap = GetVehiclePalette(v);
+					}
+				} else {
+					DEBUG(misc, 0, "UpdateAllTemplateVehicleImages: vehicle count mismatch: %u, %u", t_len, tv_len);
+				}
+				delete t;
+			}
+			cur_company.Restore();
+		}
+	}
+
+	RestoreRandomSeeds(saved_seeds);
+
+	_template_vehicle_images_valid = true;
 }

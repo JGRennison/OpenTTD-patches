@@ -77,6 +77,7 @@
 #include "industry.h"
 #include "cargopacket.h"
 #include "core/checksum_func.hpp"
+#include "tbtr_template_vehicle_func.h"
 
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
@@ -431,6 +432,7 @@ static void ShutdownGame()
 	ViewportMapClearTunnelCache();
 	InvalidateVehicleTickCaches();
 	ClearVehicleTickCaches();
+	InvalidateTemplateReplacementImages();
 	ClearCommandLog();
 	ClearDesyncMsgLog();
 

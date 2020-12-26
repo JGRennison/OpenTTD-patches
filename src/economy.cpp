@@ -51,6 +51,7 @@
 #include "linkgraph/refresh.h"
 #include "tracerestrict.h"
 #include "tbtr_template_vehicle.h"
+#include "tbtr_template_vehicle_func.h"
 #include "scope_info.h"
 #include "pathfinder/yapf/yapf_cache.h"
 
@@ -577,6 +578,8 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 	YapfNotifyTrackLayoutChange(INVALID_TILE, INVALID_TRACK);
 
 	NotifyRoadLayoutChanged();
+
+	InvalidateTemplateReplacementImages();
 
 	cur_company.Restore();
 

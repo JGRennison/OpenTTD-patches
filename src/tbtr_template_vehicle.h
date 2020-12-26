@@ -42,6 +42,8 @@ static const uint16 CONSIST_TAIL = 0xffff;
 typedef Pool<TemplateVehicle, TemplateID, 512, 64000> TemplatePool;
 extern TemplatePool _template_pool;
 
+extern bool _template_vehicle_images_valid;
+
 /// listing/sorting templates
 typedef GUIList<const TemplateVehicle*> GUITemplateList;
 
@@ -107,6 +109,7 @@ public:
 
 	VehicleSpriteSeq sprite_seq;                     ///< NOSAVE: Vehicle appearance.
 	TemplateVehicleImageDimensions image_dimensions; ///< NOSAVE: image dimensions
+	SpriteID colourmap;                              ///< NOSAVE: cached colour mapping
 
 	TemplateVehicle(VehicleType type = VEH_INVALID, EngineID e = INVALID_ENGINE, byte B = 0, Owner = _local_company);
 	TemplateVehicle(EngineID, RailVehicleInfo*);

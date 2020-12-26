@@ -37,6 +37,7 @@
 #include "command_func.h"
 #include "zoning.h"
 #include "cargopacket.h"
+#include "tbtr_template_vehicle_func.h"
 
 #include "safeguards.h"
 
@@ -153,6 +154,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 
 	InvalidateVehicleTickCaches();
 	ClearVehicleTickCaches();
+	InvalidateTemplateReplacementImages();
 
 	ResetObjectToPlace();
 	ResetRailPlacementSnapping();

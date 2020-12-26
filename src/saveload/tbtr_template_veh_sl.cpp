@@ -99,7 +99,7 @@ void AfterLoadTemplateVehicles()
 	}
 }
 
-void AfterLoadTemplateVehiclesUpdateImage()
+void AfterLoadTemplateVehiclesUpdate()
 {
 	SavedRandomSeeds saved_seeds;
 	SaveRandomSeeds(&saved_seeds);
@@ -113,36 +113,14 @@ void AfterLoadTemplateVehiclesUpdateImage()
 		}
 	}
 
-	for (TemplateVehicle *tv : TemplateVehicle::Iterate()) {
-		if (tv->Prev() == nullptr) {
-			Backup<CompanyID> cur_company(_current_company, tv->owner, FILE_LINE);
-			StringID err;
-			Train* t = VirtualTrainFromTemplateVehicle(tv, err, 0);
-			if (t != nullptr) {
-				int tv_len = 0;
-				for (TemplateVehicle *u = tv; u != nullptr; u = u->Next()) {
-					tv_len++;
-				}
-				int t_len = 0;
-				for (Train *u = t; u != nullptr; u = u->Next()) {
-					t_len++;
-				}
-				if (t_len == tv_len) {
-					Train *v = t;
-					for (TemplateVehicle *u = tv; u != nullptr; u = u->Next(), v = v->Next()) {
-						v->GetImage(DIR_W, EIT_IN_DEPOT, &u->sprite_seq);
-						u->image_dimensions.SetFromTrain(v);
-					}
-				} else {
-					DEBUG(misc, 0, "AfterLoadTemplateVehiclesUpdateImage: vehicle count mismatch: %u, %u", t_len, tv_len);
-				}
-				delete t;
-			}
-			cur_company.Restore();
-		}
-	}
-
 	RestoreRandomSeeds(saved_seeds);
+
+	InvalidateTemplateReplacementImages();
+}
+
+void AfterLoadTemplateVehiclesUpdateImages()
+{
+	InvalidateTemplateReplacementImages();
 }
 
 void AfterLoadTemplateVehiclesUpdateProperties()
