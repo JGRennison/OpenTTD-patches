@@ -636,6 +636,7 @@ struct NewGRFInspectWindow : Window {
 			case WID_NGRFI_REFRESH: {
 				this->auto_refresh = !this->auto_refresh;
 				this->SetWidgetLoweredState(WID_NGRFI_REFRESH, this->auto_refresh);
+				this->SetWidgetDirty(WID_NGRFI_REFRESH);
 				break;
 			}
 		}
