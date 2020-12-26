@@ -120,8 +120,8 @@ class NIHVehicle : public NIHelper {
 				v->vcache.cached_max_speed, v->vcache.cached_cargo_age_period, v->vcache.cached_vis_effect);
 		print(buffer);
 		if (v->cargo_type != CT_INVALID) {
-			seprintf(buffer, lastof(buffer), "  V Cargo: type: %u, cap: %u, transfer: %u, deliver: %u, keep: %u, load: %u",
-					v->cargo_type, v->cargo_cap,
+			seprintf(buffer, lastof(buffer), "  V Cargo: type: %u, sub type: %u, cap: %u, transfer: %u, deliver: %u, keep: %u, load: %u",
+					v->cargo_type, v->cargo_subtype, v->cargo_cap,
 					v->cargo.ActionCount(VehicleCargoList::MTA_TRANSFER), v->cargo.ActionCount(VehicleCargoList::MTA_DELIVER),
 					v->cargo.ActionCount(VehicleCargoList::MTA_KEEP), v->cargo.ActionCount(VehicleCargoList::MTA_LOAD));
 			print(buffer);
