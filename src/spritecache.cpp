@@ -878,7 +878,6 @@ uint32 GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 	size_t file_pos = sc->file_pos;
 
 	SpriteLoader::Sprite sprites[ZOOM_LVL_COUNT];
-	SpriteLoader::Sprite *sprite = &sprites[ZOOM_LVL_SHIFT];
 	sprites[ZOOM_LVL_NORMAL].type = ST_NORMAL;
 	SpriteLoaderGrf sprite_loader(sc->container_ver);
 	uint8 sprite_avail;
@@ -887,7 +886,8 @@ uint32 GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 	/* Try to read the 32bpp sprite first. */
 	if (screen_depth == 32) {
 		sprite_avail = sprite_loader.LoadSprite(sprites, file_slot, file_pos, ST_NORMAL, true);
-		if (sprite_avail & ZOOM_LVL_BASE) {
+		if (sprite_avail != 0) {
+			SpriteLoader::Sprite *sprite = &sprites[FindFirstBit(sprite_avail)];
 			/* Return the average colour. */
 			uint32 r = 0, g = 0, b = 0, cnt = 0;
 			SpriteLoader::CommonPixel *pixel = sprite->data;
@@ -916,7 +916,8 @@ uint32 GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 
 	/* No 32bpp, try 8bpp. */
 	sprite_avail = sprite_loader.LoadSprite(sprites, file_slot, file_pos, ST_NORMAL, false);
-	if (sprite_avail & ZOOM_LVL_BASE) {
+	if (sprite_avail != 0) {
+		SpriteLoader::Sprite *sprite = &sprites[FindFirstBit(sprite_avail)];
 		SpriteLoader::CommonPixel *pixel = sprite->data;
 		if (screen_depth == 32) {
 			/* Return the average colour. */
