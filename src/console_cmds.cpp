@@ -2343,7 +2343,7 @@ DEF_CONSOLE_CMD(ConDumpRailTypes)
 DEF_CONSOLE_CMD(ConDumpBridgeTypes)
 {
 	if (argc == 0) {
-		IConsoleHelp("Dump brudge types.");
+		IConsoleHelp("Dump bridge types.");
 		return true;
 	}
 
@@ -2376,6 +2376,37 @@ DEF_CONSOLE_CMD(ConDumpBridgeTypes)
 				spec->pillar_flags[11],
 				BSWAP32(grfid),
 				GetStringPtr(spec->material)
+		);
+	}
+	for (uint32 grfid : grfids) {
+		extern GRFFile *GetFileByGRFID(uint32 grfid);
+		const GRFFile *grffile = GetFileByGRFID(grfid);
+		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grfid), grffile ? grffile->filename : "????");
+	}
+	return true;
+}
+
+DEF_CONSOLE_CMD(ConDumpCargoTypes)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump cargo types.");
+		return true;
+	}
+
+	btree::btree_set<uint32> grfids;
+	for (CargoID i = 0; i < NUM_CARGO; i++) {
+		const CargoSpec *spec = CargoSpec::Get(i);
+		if (!spec->IsValid()) continue;
+		uint32 grfid = GetStringGRFID(spec->name);
+		if (grfid != 0) grfids.insert(grfid);
+		IConsolePrintF(CC_DEFAULT, "  %02u Bit: %2u, Label: %c%c%c%c, Callback mask: 0x%02X, Cargo class: %04X, GRF: %08X, %s",
+				(uint) i,
+				spec->bitnum,
+				spec->label >> 24, spec->label >> 16, spec->label >> 8, spec->label,
+				spec->callback_mask,
+				spec->classes,
+				BSWAP32(grfid),
+				GetStringPtr(spec->name)
 		);
 	}
 	for (uint32 grfid : grfids) {
@@ -3090,6 +3121,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("dump_road_types", ConDumpRoadTypes, nullptr, true);
 	IConsoleCmdRegister("dump_rail_types", ConDumpRailTypes, nullptr, true);
 	IConsoleCmdRegister("dump_bridge_types", ConDumpBridgeTypes, nullptr, true);
+	IConsoleCmdRegister("dump_cargo_types", ConDumpCargoTypes, nullptr, true);
 	IConsoleCmdRegister("check_caches", ConCheckCaches, nullptr, true);
 	IConsoleCmdRegister("show_town_window", ConShowTownWindow, nullptr, true);
 	IConsoleCmdRegister("show_station_window", ConShowStationWindow, nullptr, true);
