@@ -13,6 +13,7 @@
 #include "../date_func.h"
 #include "../timetable.h"
 #include "../ship.h"
+#include "../aircraft.h"
 
 /* Helper for filling property tables */
 #define NIP(prop, base, variable, type, name) { name, (ptrdiff_t)cpp_offsetof(base, variable), cpp_sizeof(base, variable), prop, type }
@@ -168,6 +169,12 @@ class NIHVehicle : public NIHelper {
 			const Ship *s = Ship::From(v);
 			seprintf(buffer, lastof(buffer), "  Lost counter: %u",
 					s->lost_count);
+			print(buffer);
+		}
+		if (v->type == VEH_AIRCRAFT) {
+			const Aircraft *a = Aircraft::From(v);
+			seprintf(buffer, lastof(buffer), "  Pos: %u, prev pos: %u, state: %u, flags: 0x%X",
+					a->pos, a->previous_pos, a->state, a->flags);
 			print(buffer);
 		}
 
@@ -917,6 +924,8 @@ class NIHStationStruct : public NIHelper {
 		print(buffer);
 		const BaseStation *bst = BaseStation::GetIfValid(index);
 		if (!bst) return;
+		seprintf(buffer, lastof(buffer), "  Tile: %X (%u x %u)", bst->xy, TileX(bst->xy), TileY(bst->xy));
+		print(buffer);
 		if (bst->rect.IsEmpty()) {
 			print("  rect: empty");
 		} else {
