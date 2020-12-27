@@ -57,6 +57,7 @@ extern GameMode _game_mode;
 extern SwitchMode _switch_mode;
 extern bool _check_special_modes;
 extern bool _exit_game;
+extern bool _save_config;
 
 /** Modes of pausing we've got */
 enum PauseMode : byte {
