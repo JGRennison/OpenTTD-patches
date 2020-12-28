@@ -963,6 +963,12 @@ static bool AircraftController(Aircraft *v)
 			return false;
 		}
 
+		if (st->airport.type != AT_OILRIG) {
+			x = v->x_pos;
+			y = v->y_pos;
+			tile = TileVirtXY(x, y);
+		}
+
 		/* Vehicle is now at the airport. */
 		v->tile = tile;
 
