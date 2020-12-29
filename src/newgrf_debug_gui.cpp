@@ -200,6 +200,11 @@ public:
 		return nullptr;
 	}
 
+	virtual std::vector<uint32> GetPSAGRFIDs(uint index) const
+	{
+		return {};
+	}
+
 	virtual void ExtraInfo(uint index, std::function<void(const char *)> print) const {}
 	virtual bool ShowExtraInfoOnly(uint index) const { return false; };
 
@@ -508,25 +513,28 @@ struct NewGRFInspectWindow : Window {
 			}
 		}
 
-		uint psa_size = nih->GetPSASize(index, this->caller_grfid);
-		const int32 *psa = nih->GetPSAFirstPosition(index, this->caller_grfid);
-		if (psa_size != 0 && psa != nullptr) {
-			if (nih->PSAWithParameter()) {
-				this->DrawString(r, i++, "Persistent storage [%08X]:", BSWAP32(this->caller_grfid));
-			} else {
-				this->DrawString(r, i++, "Persistent storage:");
-			}
-			assert(psa_size % 4 == 0);
-			uint last_non_blank = 0;
-			for (uint j = 0; j < psa_size; j++) {
-				if (psa[j] != 0) last_non_blank = j;
-			}
-			const uint psa_limit = (last_non_blank + 3) & ~3;
-			for (uint j = 0; j < psa_limit; j += 4, psa += 4) {
-				this->DrawString(r, i++, "  %i: %i %i %i %i", j, psa[0], psa[1], psa[2], psa[3]);
-			}
-			if (last_non_blank != psa_size) {
-				this->DrawString(r, i++, "  %i to %i are all 0", psa_limit, psa_size - 1);
+		std::vector<uint32> psa_grfids = nih->GetPSAGRFIDs(index);
+		for (const uint32 grfid : psa_grfids) {
+			uint psa_size = nih->GetPSASize(index, grfid);
+			const int32 *psa = nih->GetPSAFirstPosition(index, grfid);
+			if (psa_size != 0 && psa != nullptr) {
+				if (nih->PSAWithParameter()) {
+					this->DrawString(r, i++, "Persistent storage [%08X]:", BSWAP32(grfid));
+				} else {
+					this->DrawString(r, i++, "Persistent storage:");
+				}
+				assert(psa_size % 4 == 0);
+				uint last_non_blank = 0;
+				for (uint j = 0; j < psa_size; j++) {
+					if (psa[j] != 0) last_non_blank = j;
+				}
+				const uint psa_limit = (last_non_blank + 3) & ~3;
+				for (uint j = 0; j < psa_limit; j += 4, psa += 4) {
+					this->DrawString(r, i++, "  %i: %i %i %i %i", j, psa[0], psa[1], psa[2], psa[3]);
+				}
+				if (last_non_blank != psa_size) {
+					this->DrawString(r, i++, "  %i to %i are all 0", psa_limit, psa_size - 1);
+				}
 			}
 		}
 

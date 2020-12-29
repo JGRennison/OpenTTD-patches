@@ -543,6 +543,11 @@ class NIHIndustry : public NIHelper {
 		return (int32 *)(&i->psa->storage);
 	}
 
+	std::vector<uint32> GetPSAGRFIDs(uint index) const override
+	{
+		return { 0 };
+	}
+
 	void ExtraInfo(uint index, std::function<void(const char *)> print) const override
 	{
 		char buffer[1024];
@@ -864,6 +869,17 @@ class NIHTown : public NIHelper {
 		}
 
 		return nullptr;
+	}
+
+	virtual std::vector<uint32> GetPSAGRFIDs(uint index) const
+	{
+		Town *t = Town::Get(index);
+
+		std::vector<uint32> output;
+		for (const auto &iter : t->psa_list) {
+			output.push_back(iter->grfid);
+		}
+		return output;
 	}
 
 	void ExtraInfo(uint index, std::function<void(const char *)> print) const override
