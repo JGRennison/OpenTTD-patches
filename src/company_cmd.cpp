@@ -545,13 +545,15 @@ void ResetCompanyLivery(Company *c)
 /**
  * Create a new company and sets all company variables default values
  *
- * @param is_ai is an AI company?
+ * @param flags oepration flags
  * @param company CompanyID to use for the new company
  * @return the company struct
  */
-Company *DoStartupNewCompany(bool is_ai, CompanyID company = INVALID_COMPANY)
+Company *DoStartupNewCompany(DoStartupNewCompanyFlag flags, CompanyID company)
 {
 	if (!Company::CanAllocateItem()) return nullptr;
+
+	const bool is_ai = (flags & DSNC_AI);
 
 	/* we have to generate colour before this company is valid */
 	Colours colour = GenerateCompanyColour();
@@ -595,7 +597,7 @@ Company *DoStartupNewCompany(bool is_ai, CompanyID company = INVALID_COMPANY)
 	AI::BroadcastNewEvent(new ScriptEventCompanyNew(c->index), c->index);
 	Game::NewEvent(new ScriptEventCompanyNew(c->index));
 
-	if (!is_ai) UpdateAllTownVirtCoords();
+	if (!is_ai && !(flags & DSNC_DURING_LOAD)) UpdateAllTownVirtCoords();
 
 	return c;
 }
@@ -849,7 +851,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			/* Delete multiplayer progress bar */
 			DeleteWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 
-			Company *c = DoStartupNewCompany(false);
+			Company *c = DoStartupNewCompany(DSNC_NONE);
 
 			/* A new company could not be created, revert to being a spectator */
 			if (c == nullptr) {
@@ -884,7 +886,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			if (!(flags & DC_EXEC)) return CommandCost();
 
 			if (company_id != INVALID_COMPANY && (company_id >= MAX_COMPANIES || Company::IsValidID(company_id))) return CMD_ERROR;
-			Company *c = DoStartupNewCompany(true, company_id);
+			Company *c = DoStartupNewCompany(DSNC_AI, company_id);
 			if (c != nullptr) {
 				NetworkServerNewCompany(c, nullptr);
 				DEBUG(desync, 1, "new_company_ai: date{%08x; %02x; %02x}, company_id: %u", _date, _date_fract, _tick_skip_counter, c->index);

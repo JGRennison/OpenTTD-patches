@@ -64,6 +64,7 @@
 #include "../water.h"
 #include "../settings_func.h"
 #include "../animated_tile.h"
+#include "../company_func.h"
 
 
 #include "saveload_internal.h"
@@ -72,8 +73,6 @@
 #include <algorithm>
 
 #include "../safeguards.h"
-
-extern Company *DoStartupNewCompany(bool is_ai, CompanyID company = INVALID_COMPANY);
 
 /**
  * Makes a tile canal or water depending on the surroundings.
@@ -972,7 +971,7 @@ bool AfterLoadGame()
 	 * 1 exception: network-games. Those can have 0 companies
 	 *   But this exception is not true for non-dedicated network servers! */
 	if (!Company::IsValidID(GetDefaultLocalCompany()) && (!_networking || (_networking && _network_server && !_network_dedicated))) {
-		Company *c = DoStartupNewCompany(false);
+		Company *c = DoStartupNewCompany(DSNC_DURING_LOAD);
 		c->settings = _settings_client.company;
 	}
 

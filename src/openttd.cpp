@@ -94,7 +94,6 @@ void ResetMusic();
 void CallWindowGameTickEvent();
 bool HandleBootstrap();
 
-extern Company *DoStartupNewCompany(bool is_ai, CompanyID company = INVALID_COMPANY);
 extern void ShowOSErrorBox(const char *buf, bool system);
 extern char *_config_file;
 
@@ -1041,7 +1040,7 @@ static void MakeNewGameDone()
 	}
 
 	/* Create a single company */
-	DoStartupNewCompany(false);
+	DoStartupNewCompany(DSNC_NONE);
 
 	Company *c = Company::Get(COMPANY_FIRST);
 	c->settings = _settings_client.company;
