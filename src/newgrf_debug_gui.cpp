@@ -517,8 +517,16 @@ struct NewGRFInspectWindow : Window {
 				this->DrawString(r, i++, "Persistent storage:");
 			}
 			assert(psa_size % 4 == 0);
-			for (uint j = 0; j < psa_size; j += 4, psa += 4) {
+			uint last_non_blank = 0;
+			for (uint j = 0; j < psa_size; j++) {
+				if (psa[j] != 0) last_non_blank = j;
+			}
+			const uint psa_limit = (last_non_blank + 3) & ~3;
+			for (uint j = 0; j < psa_limit; j += 4, psa += 4) {
 				this->DrawString(r, i++, "  %i: %i %i %i %i", j, psa[0], psa[1], psa[2], psa[3]);
+			}
+			if (last_non_blank != psa_size) {
+				this->DrawString(r, i++, "  %i to %i are all 0", psa_limit, psa_size - 1);
 			}
 		}
 
