@@ -1298,7 +1298,14 @@ struct AIDebugWindow : public Window {
 				break;
 
 			case WID_AID_RELOAD_TOGGLE:
-				if (ai_debug_company == OWNER_DEITY) break;
+				if (ai_debug_company == OWNER_DEITY) {
+					if (UserIsAllowedToChangeGameScript()) {
+						Game::Uninitialize(true);
+						Game::StartNew();
+						this->InvalidateData(-1);
+					}
+					break;
+				}
 				/* First kill the company of the AI, then start a new one. This should start the current AI again */
 				DoCommandP(0, CCA_DELETE | ai_debug_company << 16 | CRR_MANUAL << 24, 0, CMD_COMPANY_CTRL);
 				DoCommandP(0, CCA_NEW_AI | ai_debug_company << 16, 0, CMD_COMPANY_CTRL);
@@ -1418,7 +1425,7 @@ struct AIDebugWindow : public Window {
 		this->SetWidgetLoweredState(WID_AID_MATCH_CASE_BTN, this->case_sensitive_break_check);
 
 		this->SetWidgetDisabledState(WID_AID_SETTINGS, ai_debug_company == INVALID_COMPANY);
-		this->SetWidgetDisabledState(WID_AID_RELOAD_TOGGLE, ai_debug_company == INVALID_COMPANY || ai_debug_company == OWNER_DEITY);
+		this->SetWidgetDisabledState(WID_AID_RELOAD_TOGGLE, ai_debug_company == INVALID_COMPANY || (ai_debug_company == OWNER_DEITY && !UserIsAllowedToChangeGameScript()));
 		this->SetWidgetDisabledState(WID_AID_CONTINUE_BTN, ai_debug_company == INVALID_COMPANY ||
 				(ai_debug_company == OWNER_DEITY ? !Game::IsPaused() : !AI::IsPaused(ai_debug_company)));
 	}
