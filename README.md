@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.39.1
+## JGR's Patchpack version 0.39.2
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -50,6 +50,8 @@ See the [wiki](https://github.com/JGRennison/OpenTTD-patches/wiki) for guides on
 
 * Town cargo generation factor: [imported](http://www.tt-forums.net/viewtopic.php?t=46399)  
   * Allow factor to be more finely adjusted in 0.1 increments. (added in v0.16.0)
+
+* Industry cargo generation factor (added in v0.39.2)  
 
 * Vehicles visible in tunnels (transparency setting): [imported](http://dev.openttdcoop.org/projects/clientpatches/repository/changes/VehicelsInTunnels.diff)
 
@@ -282,6 +284,7 @@ See the [wiki](https://github.com/JGRennison/OpenTTD-patches/wiki) for guides on
   * Allow building objects by area (1x1 objects only). (added in v0.37.0).  
   * Increase per-vehicle order limit from 254 to 64k. (added in v0.38.0).  
   * Add features to reverse the order of an order list, and to append the reverse of an order list. (added in v0.39.0).  
+  * Add console commands for conditional execution from game date. (added in v0.39.2).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
   * [NML specification additions](docs/newgrf-additions-nml.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions-nml.html)).

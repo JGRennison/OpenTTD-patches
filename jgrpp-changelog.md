@@ -2,6 +2,26 @@
 
 * * *
 
+### v0.39.2 (2020-12-29)
+* Fix crash which could occur when loading older scenarios or savegames which do not already have a company.
+* Fix crash which could occur when using the restart command after opening the save/load window.
+* Fix crash which could occur when landing a helicopter at 180° rotated intercontinental airport.
+* Fix aircraft landing at a 180° rotated intercontinental airport taxiing at the wrong height if the northernmost missing tile is at a different height.
+* Fix road/tram type conversion when loading JokerPP v1.27 savegames.
+* Fix rendering artefacts in colour news window viewports.
+* Fix viewport map mode using the wrong colours when using extra-zoomed-in ground tile GRFs.
+* Fix decimal settings not permitting typing a '-' character.
+* Fix multiplayer clients printing spurious warning messages to the console.
+* Fix cloning a vehicle with a name ending in a very large number resulting in the new vehicle having the wrong number in its name.
+* Add setting to scale primary industry cargo production.
+* Template-based train replacement:
+  * Fix editing a template not refitting the first engine and any articulated or rear engine parts.
+  * Fix templates using the wrong colouring scheme in various circumstances.
+* Add console commands for conditional execution from game date.
+* Allow AI/GS developers to reload GSs.
+* Fix CMake looking for fctix on Apple patforms.
+* Bump trunk base from commit 0a9aed052295a98f1c1438cf1fa05b9a7e6b6607 to commit b7851e51adf0fb0d39ed34a579cf6fe68d8949be.
+
 ### v0.39.1 (2020-11-28)
 * Fix crash which could occur with very large numbers of orders per vehicle.
 * Fix scrollbar functionality in schedule dispatch window.
