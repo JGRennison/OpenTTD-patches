@@ -1791,6 +1791,8 @@ STR_CONFIG_SETTING_TOWN_CARGOGENMODE_ORIGINAL                   :제곱 (기본)
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_BITCOUNT                   :선형
 STR_CONFIG_SETTING_TOWN_CARGO_FACTOR                            :도시 화물 생성 계수 (적음 < 0 < 많음): {STRING}
 STR_CONFIG_SETTING_TOWN_CARGO_FACTOR_HELPTEXT                   :도시가 생산하는 화물의 양을 2^(생성 계수)에 근접하게 조절합니다.
+STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR                        :산업 시설 화물 생성 계수 (적음 < 0 < 많음): {STRING}
+STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR_HELPTEXT               :1차 산업 시설이 생산하는 화물의 양을 2^(생성 계수)에 근접하게 조절합니다. 나무를 베는 산업 시설에는 적용되지 않습니다.{}모든 산업 시설 관련 NewGRF와 모두 호환되지는 않을 수 있습니다.
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :게임 진행 중에 나무가 자동적으로 번식: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :게임 중에 나무가 자동적으로 번식하는지 여부를 조절합니다. 이 설정을 조정하면, 아열대 기후의 벌목소처럼 나무의 성장에 의존하는 산업시설에 영향을 끼칠 수 있습니다.
@@ -3654,6 +3656,8 @@ STR_NEWGRF_PARAMETERS_NUM_PARAM                                 :{LTBLUE}매개 
 STR_NEWGRF_INSPECT_CAPTION                                      :{WHITE}NEWGRF 검사 - {STRING}
 STR_NEWGRF_INSPECT_PARENT_BUTTON                                :{BLACK}상위 단계
 STR_NEWGRF_INSPECT_PARENT_TOOLTIP                               :{BLACK}상위 단계 범위의 오브젝트를 검사합니다.
+STR_NEWGRF_INSPECT_REFRESH                                      :{BLACK}R
+STR_NEWGRF_INSPECT_REFRESH_TOOLTIP                              :{BLACK}콘텐츠를 매 프레임마다 갱신할지를 설정합니다
 
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT                            :{STRING}, {HEX}에서
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_OBJECT                     :오브젝트
@@ -5283,6 +5287,7 @@ STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :상위 버전�
 STR_GAME_SAVELOAD_ERROR_FILE_NOT_READABLE                       :파일을 읽을 수 없습니다
 STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE                      :파일을 쓸 수 없습니다
 STR_GAME_SAVELOAD_ERROR_DATA_INTEGRITY_CHECK_FAILED             :데이터 무결성 검사에 실패하였습니다
+STR_GAME_SAVELOAD_ERROR_PATCHPACK                               :수정된 버전의 게임 저장 파일입니다
 STR_GAME_SAVELOAD_NOT_AVAILABLE                                 :<사용 불가능>
 STR_WARNING_LOADGAME_REMOVED_TRAMS                              :{WHITE}전차를 지원하지 않는 버전으로 게임이 저장되었습니다. 모든 전차는 제거되었습니다.
 
