@@ -3317,7 +3317,8 @@ public:
 		if (v->vehstatus & VS_CRASHED) {
 			str = STR_VEHICLE_STATUS_CRASHED;
 		} else if (v->breakdown_ctr == 1 || (v->type == VEH_TRAIN && Train::From(v)->flags & VRF_IS_BROKEN)) {
-			if (_settings_game.vehicle.improved_breakdowns) {
+			const Vehicle *w = (v->type == VEH_TRAIN) ? GetMostSeverelyBrokenEngine(Train::From(v)) : v;
+			if (_settings_game.vehicle.improved_breakdowns || w->breakdown_type == BREAKDOWN_RV_CRASH) {
 				str = STR_VEHICLE_STATUS_BROKEN_DOWN_VEL;
 				SetDParam(3, v->GetDisplaySpeed());
 			} else {
@@ -3332,7 +3333,6 @@ public:
 					SetDParam(1, v->current_order.GetDestination());
 				}
 			} else {
-				const Vehicle *w = (v->type == VEH_TRAIN) ? GetMostSeverelyBrokenEngine(Train::From(v)) : v;
 				SetDParam(0, STR_BREAKDOWN_TYPE_CRITICAL + w->breakdown_type);
 
 				if (w->breakdown_type == BREAKDOWN_LOW_SPEED) {
