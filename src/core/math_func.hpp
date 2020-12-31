@@ -433,5 +433,7 @@ static inline T DivTowardsPositiveInf(T a, T b)
 }
 
 uint32 IntSqrt(uint32 num);
+uint32 IntSqrt64(uint64 num);
+uint32 IntCbrt(uint64 num);
 
 #endif /* MATH_FUNC_HPP */
