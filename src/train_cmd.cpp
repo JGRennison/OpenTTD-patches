@@ -4463,6 +4463,9 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 				v->y_pos = gp.y;
 				v->UpdatePosition();
 				v->UpdateDeltaXY();
+				if (v->reverse_distance > 1) {
+					v->reverse_distance--;
+				}
 				if (HasBit(v->gv_flags, GVF_CHUNNEL_BIT)) {
 					/* update the Z position of the vehicle */
 					int old_z = v->UpdateInclination(false, false, true);
