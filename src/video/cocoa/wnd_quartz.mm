@@ -507,6 +507,8 @@ void WindowQuartzSubdriver::SetPortAlphaOpaque()
 	uint32 *pixels = (uint32*)this->window_buffer;
 	uint32  pitch  = this->window_width;
 
+	if (pixels == nullptr) return;
+
 	for (int y = 0; y < this->window_height; y++)
 		for (int x = 0; x < this->window_width; x++) {
 		pixels[y * pitch + x] |= 0xFF000000;
