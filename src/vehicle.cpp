@@ -3811,6 +3811,7 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last, bool include_tile) co
 	dump('s', HasBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE));
 	dump('R', HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH));
 	dump('N', HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT));
+	dump('c', HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE));
 	if (this->IsGroundVehicle()) {
 		uint16 gv_flags = this->GetGroundVehicleFlags();
 		b += seprintf(b, last, ", gvf:");

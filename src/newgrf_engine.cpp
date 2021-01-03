@@ -28,6 +28,7 @@
 #include "safeguards.h"
 
 bool _sprite_group_resolve_check_veh_check = false;
+bool _sprite_group_resolve_check_veh_curvature_check = false;
 
 struct WagonOverride {
 	EngineID *train_id;
@@ -692,6 +693,8 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 			 */
 			if (!v->IsGroundVehicle()) return 0;
 
+			_sprite_group_resolve_check_veh_curvature_check = false;
+
 			const Vehicle *u_p = v->Previous();
 			const Vehicle *u_n = v->Next();
 			DirDiff f = (u_p == nullptr) ?  DIRDIFF_SAME : DirDifference(u_p->direction, v->direction);
@@ -811,6 +814,8 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 
 			const Vehicle *u = v->Move((int8)parameter);
 			if (u == nullptr) return 0;
+
+			_sprite_group_resolve_check_veh_curvature_check = false;
 
 			/* Get direction difference. */
 			bool prev = (int8)parameter < 0;

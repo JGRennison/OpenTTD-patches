@@ -11,5 +11,6 @@
 #define NEWGRF_CACHE_CHECK_H
 
 extern bool _sprite_group_resolve_check_veh_check;
+extern bool _sprite_group_resolve_check_veh_curvature_check;
 
 #endif /* NEWGRF_CACHE_CHECK_H */

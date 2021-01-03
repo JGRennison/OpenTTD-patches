@@ -142,12 +142,14 @@ enum VehicleCacheFlags {
 	VCF_REDRAW_ON_SPEED_CHANGE  = 4, ///< Clear cur_image_valid_dir on changes to cur_speed (ground vehicles) or aircraft movement state (aircraft) (valid only for the first engine)
 	VCF_IMAGE_REFRESH           = 5, ///< Image should be refreshed before drawing
 	VCF_IMAGE_REFRESH_NEXT      = 6, ///< Set VCF_IMAGE_REFRESH in next UpdateViewport call, if the image is not updated there
+	VCF_IMAGE_CURVATURE         = 7, ///< Image should be refreshed if cached curvature in cached_image_curvature no longer matches curvature of neighbours
 };
 
 /** Cached often queried values common to all vehicles. */
 struct VehicleCache {
 	uint16 cached_max_speed;        ///< Maximum speed of the consist (minimum of the max speed of all vehicles in the consist).
 	uint16 cached_cargo_age_period; ///< Number of ticks before carried cargo is aged.
+	uint16 cached_image_curvature;  ///< Cached neighbour curvature, see: VCF_IMAGE_CURVATURE
 
 	byte cached_vis_effect;  ///< Visual effect to show (see #VisualEffect)
 	byte cached_veh_flags;   ///< Vehicle cache flags (see #VehicleCacheFlags)
@@ -524,6 +526,7 @@ public:
 	{
 		ClrBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE);
 		ClrBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_TRIGGER);
+		ClrBit(this->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE);
 		for (Vehicle *u = this; u != nullptr; u = u->Next()) {
 			u->InvalidateImageCache();
 		}
@@ -1274,17 +1277,42 @@ struct SpecializedVehicle : public Vehicle {
 		/* Skip updating sprites on dedicated servers without screen */
 		if (_network_dedicated) return;
 
+		auto get_vehicle_curvature = [&]() -> uint16 {
+			uint16 curvature = 0;
+			if (this->Previous() != nullptr) {
+				SB(curvature, 0, 4, this->Previous()->direction);
+				if (this->Previous()->Previous() != nullptr) SB(curvature, 4, 4, this->Previous()->Previous()->direction);
+			}
+			if (this->Next() != nullptr) {
+				SB(curvature, 8, 4, this->Next()->direction);
+				if (this->Next()->Next() != nullptr) SB(curvature, 12, 4, this->Next()->Next()->direction);
+			}
+			return curvature;
+		};
+
+		auto check_vehicle_curvature = [&]() -> bool {
+			if (!(EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD)) return false;
+			if (likely(!HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE))) return false;
+			return this->vcache.cached_image_curvature != get_vehicle_curvature();
+		};
+
 		/* Explicitly choose method to call to prevent vtable dereference -
 		 * it gives ~3% runtime improvements in games with many vehicles */
 		if (update_delta) ((T *)this)->T::UpdateDeltaXY();
 		const Direction current_direction = ((T *)this)->GetMapImageDirection();
-		if (this->cur_image_valid_dir != current_direction) {
+		if (this->cur_image_valid_dir != current_direction || check_vehicle_curvature()) {
 			_sprite_group_resolve_check_veh_check = true;
+			if (EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD) _sprite_group_resolve_check_veh_curvature_check = true;
 			VehicleSpriteSeq seq;
 			((T *)this)->T::GetImage(current_direction, EIT_ON_MAP, &seq);
 			if (EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD) {
 				ClrBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH);
 				SB(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT, 1, (_sprite_group_resolve_check_veh_check || _settings_client.gui.disable_vehicle_image_update) ? 0 : 1);
+				if (unlikely(!_sprite_group_resolve_check_veh_curvature_check)) {
+					SetBit(this->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE);
+					this->vcache.cached_image_curvature = get_vehicle_curvature();
+				}
+				_sprite_group_resolve_check_veh_curvature_check = false;
 				this->cur_image_valid_dir = current_direction;
 			} else {
 				this->cur_image_valid_dir = (_sprite_group_resolve_check_veh_check || _settings_client.gui.disable_vehicle_image_update) ? current_direction : INVALID_DIR;
