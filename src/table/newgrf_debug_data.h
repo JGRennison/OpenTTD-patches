@@ -178,6 +178,10 @@ class NIHVehicle : public NIHelper {
 			print(buffer);
 		}
 
+		seprintf(buffer, lastof(buffer), "  Cached sprite bounds: (%d, %d) to (%d, %d)",
+				v->sprite_seq_bounds.left, v->sprite_seq_bounds.top, v->sprite_seq_bounds.right, v->sprite_seq_bounds.bottom);
+		print(buffer);
+
 		if (HasBit(v->vehicle_flags, VF_SEPARATION_ACTIVE)) {
 			std::vector<TimetableProgress> progress_array = PopulateSeparationState(v);
 			if (!progress_array.empty()) {
