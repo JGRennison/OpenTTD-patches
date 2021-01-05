@@ -107,17 +107,22 @@ void SetBridgeEntranceSimulatedSignalStateExtended(TileIndex t, uint16 signal, S
 	_m[t].m2 |= BRIDGE_M2_SIGNAL_STATE_EXT_FLAG;
 }
 
-void SetAllBridgeEntranceSimulatedSignalsGreenExtended(TileIndex t)
+bool SetAllBridgeEntranceSimulatedSignalsGreenExtended(TileIndex t)
 {
+	bool changed = GB(_m[t].m2, BRIDGE_M2_SIGNAL_STATE_OFFSET, BRIDGE_M2_SIGNAL_STATE_COUNT) != 0;
 	SB(_m[t].m2, BRIDGE_M2_SIGNAL_STATE_OFFSET, BRIDGE_M2_SIGNAL_STATE_FIELD_SIZE, 0);
 	auto it = _long_bridge_signal_sim_map.find(t);
 	if (it != _long_bridge_signal_sim_map.end()) {
 		LongBridgeSignalStorage &lbss = it->second;
 		for (auto &it : lbss.signal_red_bits) {
-			it = 0;
+			if (it != 0) {
+				changed = true;
+				it = 0;
+			}
 		}
 		_m[t].m2 |= BRIDGE_M2_SIGNAL_STATE_EXT_FLAG;
 	}
+	return changed;
 }
 
 void ClearBridgeEntranceSimulatedSignalsExtended(TileIndex t)

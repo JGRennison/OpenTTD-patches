@@ -2763,8 +2763,14 @@ static void HandleLastTunnelBridgeSignals(TileIndex tile, TileIndex end, DiagDir
 	if (free) {
 	/* Open up the wormhole and clear m2. */
 		if (IsBridge(end)) {
-			if (IsTunnelBridgeSignalSimulationEntrance(tile)) SetAllBridgeEntranceSimulatedSignalsGreen(tile);
-			if (IsTunnelBridgeSignalSimulationEntrance(end)) SetAllBridgeEntranceSimulatedSignalsGreen(end);
+			bool redraw = false;
+			if (IsTunnelBridgeSignalSimulationEntrance(tile)) {
+				redraw |= SetAllBridgeEntranceSimulatedSignalsGreen(tile);
+			}
+			if (IsTunnelBridgeSignalSimulationEntrance(end)) {
+				redraw |= SetAllBridgeEntranceSimulatedSignalsGreen(end);
+			}
+			if (redraw) MarkBridgeDirty(tile, end, GetTunnelBridgeDirection(tile), GetBridgeHeight(tile), VMDF_NOT_MAP_MODE);
 		}
 
 		if (IsTunnelBridgeSignalSimulationEntrance(end) && GetTunnelBridgeEntranceSignalState(end) == SIGNAL_STATE_RED) {
