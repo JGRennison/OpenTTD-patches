@@ -104,8 +104,8 @@ bool TryReserveRailTrack(TileIndex tile, Track t, bool trigger_stations)
 
 	if (_settings_client.gui.show_track_reservation) {
 		/* show the reserved rail if needed */
-		if (IsBridgeTile(tile)) {
-			MarkBridgeDirty(tile, VMDF_NOT_MAP_MODE);
+		if (IsTileType(tile, MP_TUNNELBRIDGE)) {
+			MarkBridgeOrTunnelDirtyOnReservationChange(tile, VMDF_NOT_MAP_MODE);
 		} else {
 			MarkTileGroundDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		}
@@ -199,8 +199,8 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 	assert_msg_tile(TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_RAIL, 0)) & TrackToTrackBits(t), tile, "track: %u", t);
 
 	if (_settings_client.gui.show_track_reservation) {
-		if (IsBridgeTile(tile)) {
-			MarkBridgeDirty(tile, VMDF_NOT_MAP_MODE);
+		if (IsTileType(tile, MP_TUNNELBRIDGE)) {
+			MarkBridgeOrTunnelDirtyOnReservationChange(tile, VMDF_NOT_MAP_MODE);
 		} else {
 			MarkTileGroundDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		}

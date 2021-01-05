@@ -119,11 +119,15 @@ void MarkBridgeOrTunnelDirty(TileIndex tile, ViewportMarkDirtyFlags flags)
 void MarkBridgeOrTunnelDirtyOnReservationChange(TileIndex tile, ViewportMarkDirtyFlags flags)
 {
 	if (IsTunnelBridgeWithSignalSimulation(tile)) {
-		MarkTileDirtyByTile(tile, flags);
+		if (IsBridge(tile)) {
+			MarkTileDirtyByTile(tile, flags);
+		} else {
+			MarkTileGroundDirtyByTile(tile, flags);
+		}
 	} else if (IsBridge(tile)) {
 		MarkBridgeDirty(tile, flags);
 	} else {
-		MarkTileDirtyByTile(tile, flags);
+		MarkTileGroundDirtyByTile(tile, flags);
 	}
 }
 
