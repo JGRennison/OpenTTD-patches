@@ -2313,14 +2313,42 @@ void ReverseTrainDirection(Train *v)
 		return;
 	}
 
+	auto update_check_tunnel_bridge_signal_counters = [](Train *t) {
+		if (!(t->track & TRACK_BIT_WORMHOLE)) {
+			/* Not in wormhole, clear counters */
+			t->wait_counter = 0;
+			t->tunnel_bridge_signal_num = 0;
+			return;
+		}
+
+		DiagDirection tb_dir = GetTunnelBridgeDirection(t->tile);
+		if (DirToDiagDirAlongAxis(t->direction, DiagDirToAxis(tb_dir)) == tb_dir) {
+			/* Now going in correct direction, fix counters */
+			const uint simulated_wormhole_signals = GetTunnelBridgeSignalSimulationSpacing(t->tile);
+			const uint delta = DistanceManhattan(t->tile, TileVirtXY(t->x_pos, t->y_pos));
+			t->wait_counter = TILE_SIZE * ((simulated_wormhole_signals - 1) - (delta % simulated_wormhole_signals));
+			t->tunnel_bridge_signal_num = delta / simulated_wormhole_signals;
+		} else {
+			/* Now going in wrong direction, all bets are off.
+			 * Prevent setting the wrong signals by making wait_counter a non-integer multiple of TILE_SIZE.
+			 * Use a huge value so that the train will reverse again if there is another vehicle coming the other way.
+			 */
+			t->wait_counter = static_cast<uint16>(-(TILE_SIZE / 2));
+			t->tunnel_bridge_signal_num = 0;
+		}
+	};
+
+	Train *last = v->Last();
+	if (IsTunnelBridgeWithSignalSimulation(last->tile) && IsTunnelBridgeSignalSimulationEntrance(last->tile)) {
+		update_check_tunnel_bridge_signal_counters(last);
+	}
+
 	/* We are inside tunnel/bridge with signals, reversing will close the entrance. */
 	if (IsTunnelBridgeWithSignalSimulation(v->tile) && IsTunnelBridgeSignalSimulationEntrance(v->tile)) {
 		/* Flip signal on tunnel entrance tile red. */
 		SetTunnelBridgeEntranceSignalState(v->tile, SIGNAL_STATE_RED);
 		MarkTileDirtyByTile(v->tile, VMDF_NOT_MAP_MODE);
-		/* Clear counters. */
-		v->wait_counter = 0;
-		v->tunnel_bridge_signal_num = 0;
+		update_check_tunnel_bridge_signal_counters(v);
 		return;
 	}
 
