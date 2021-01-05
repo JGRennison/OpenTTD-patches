@@ -771,6 +771,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 					if (GetRoadType(tile, OtherRoadTramType(rtt)) == INVALID_ROADTYPE) {
 						/* Includes MarkTileDirtyByTile() */
 						DoClearSquare(tile);
+						DeleteNewGRFInspectWindow(GSF_ROADTYPES, tile);
 					} else {
 						if (rtt == RTT_ROAD && IsRoadOwner(tile, rtt, OWNER_TOWN)) {
 							/* Update nearest-town index */
@@ -825,6 +826,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 						c->infrastructure.rail[GetRailType(tile)] -= LEVELCROSSING_TRACKBIT_FACTOR - 1;
 						DirtyCompanyInfrastructureWindows(c->index);
 					}
+					DeleteNewGRFInspectWindow(GSF_ROADTYPES, tile);
 				} else {
 					SetRoadType(tile, rtt, INVALID_ROADTYPE);
 				}
@@ -1715,6 +1717,7 @@ static CommandCost RemoveRoadDepot(TileIndex tile, DoCommandFlag flags)
 		DoClearSquare(tile);
 
 		NotifyRoadLayoutChanged(false);
+		DeleteNewGRFInspectWindow(GSF_ROADTYPES, tile);
 	}
 
 	return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_DEPOT_ROAD]);

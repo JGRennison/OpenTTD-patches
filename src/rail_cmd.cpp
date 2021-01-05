@@ -2403,6 +2403,7 @@ static CommandCost RemoveTrainDepot(TileIndex tile, DoCommandFlag flags)
 		AddSideToSignalBuffer(tile, dir, owner);
 		YapfNotifyTrackLayoutChange(tile, DiagDirToDiagTrack(dir));
 		if (v != nullptr) TryPathReserve(v, true);
+		DeleteNewGRFInspectWindow(GSF_RAILTYPES, tile);
 	}
 
 	return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_DEPOT_TRAIN]);
