@@ -2420,18 +2420,41 @@ DEF_CONSOLE_CMD(ConDumpCargoTypes)
 		return true;
 	}
 
+	IConsolePrintF(CC_DEFAULT, "  Cargo classes:");
+	IConsolePrintF(CC_DEFAULT, "    p = passenger");
+	IConsolePrintF(CC_DEFAULT, "    m = mail");
+	IConsolePrintF(CC_DEFAULT, "    x = express");
+	IConsolePrintF(CC_DEFAULT, "    a = armoured");
+	IConsolePrintF(CC_DEFAULT, "    b = bulk");
+	IConsolePrintF(CC_DEFAULT, "    g = piece goods");
+	IConsolePrintF(CC_DEFAULT, "    l = liquid");
+	IConsolePrintF(CC_DEFAULT, "    r = refrigerated");
+	IConsolePrintF(CC_DEFAULT, "    h = hazardous");
+	IConsolePrintF(CC_DEFAULT, "    c = covered/sheltered");
+	IConsolePrintF(CC_DEFAULT, "    S = special");
+
 	btree::btree_set<uint32> grfids;
 	for (CargoID i = 0; i < NUM_CARGO; i++) {
 		const CargoSpec *spec = CargoSpec::Get(i);
 		if (!spec->IsValid()) continue;
 		uint32 grfid = GetStringGRFID(spec->name);
 		if (grfid != 0) grfids.insert(grfid);
-		IConsolePrintF(CC_DEFAULT, "  %02u Bit: %2u, Label: %c%c%c%c, Callback mask: 0x%02X, Cargo class: %04X, GRF: %08X, %s",
+		IConsolePrintF(CC_DEFAULT, "  %02u Bit: %2u, Label: %c%c%c%c, Callback mask: 0x%02X, Cargo class: %c%c%c%c%c%c%c%c%c%c%c, GRF: %08X, %s",
 				(uint) i,
 				spec->bitnum,
 				spec->label >> 24, spec->label >> 16, spec->label >> 8, spec->label,
 				spec->callback_mask,
-				spec->classes,
+				(spec->classes & CC_PASSENGERS)   != 0 ? 'p' : '-',
+				(spec->classes & CC_MAIL)         != 0 ? 'm' : '-',
+				(spec->classes & CC_EXPRESS)      != 0 ? 'x' : '-',
+				(spec->classes & CC_ARMOURED)     != 0 ? 'a' : '-',
+				(spec->classes & CC_BULK)         != 0 ? 'b' : '-',
+				(spec->classes & CC_PIECE_GOODS)  != 0 ? 'g' : '-',
+				(spec->classes & CC_LIQUID)       != 0 ? 'l' : '-',
+				(spec->classes & CC_REFRIGERATED) != 0 ? 'r' : '-',
+				(spec->classes & CC_HAZARDOUS)    != 0 ? 'h' : '-',
+				(spec->classes & CC_COVERED)      != 0 ? 'c' : '-',
+				(spec->classes & CC_SPECIAL)      != 0 ? 'S' : '-',
 				BSWAP32(grfid),
 				GetStringPtr(spec->name)
 		);
