@@ -2274,6 +2274,16 @@ DEF_CONSOLE_CMD(ConDumpRoadTypes)
 		return true;
 	}
 
+	IConsolePrintF(CC_DEFAULT, "  Flags:");
+	IConsolePrintF(CC_DEFAULT, "    c = catenary");
+	IConsolePrintF(CC_DEFAULT, "    l = no level crossings");
+	IConsolePrintF(CC_DEFAULT, "    X = no houses");
+	IConsolePrintF(CC_DEFAULT, "    h = hidden");
+	IConsolePrintF(CC_DEFAULT, "    T = buildable by towns");
+	IConsolePrintF(CC_DEFAULT, "  Extra flags:");
+	IConsolePrintF(CC_DEFAULT, "    s = not available to scripts (AI/GS)");
+	IConsolePrintF(CC_DEFAULT, "    t = not modifiable by towns");
+
 	extern RoadTypeInfo _roadtypes[ROADTYPE_END];
 	btree::btree_set<uint32> grfids;
 	for (RoadType rt = ROADTYPE_BEGIN; rt < ROADTYPE_END; rt++) {
@@ -2311,6 +2321,17 @@ DEF_CONSOLE_CMD(ConDumpRailTypes)
 		return true;
 	}
 
+	IConsolePrintF(CC_DEFAULT, "  Flags:");
+	IConsolePrintF(CC_DEFAULT, "    c = catenary");
+	IConsolePrintF(CC_DEFAULT, "    l = no level crossings");
+	IConsolePrintF(CC_DEFAULT, "    h = hidden");
+	IConsolePrintF(CC_DEFAULT, "    s = no sprite combine");
+	IConsolePrintF(CC_DEFAULT, "    a = allow 90° turns");
+	IConsolePrintF(CC_DEFAULT, "    d = disallow 90° turns");
+	IConsolePrintF(CC_DEFAULT, "  Ctrl flags:");
+	IConsolePrintF(CC_DEFAULT, "    p = signal graphics callback enabled for programmable pre-signals");
+	IConsolePrintF(CC_DEFAULT, "    r = signal graphics callback restricted signal flag enabled");
+
 	btree::btree_set<uint32> grfids;
 	for (RailType rt = RAILTYPE_BEGIN; rt < RAILTYPE_END; rt++) {
 		const RailtypeInfo *rti = GetRailTypeInfo(rt);
@@ -2346,6 +2367,12 @@ DEF_CONSOLE_CMD(ConDumpBridgeTypes)
 		IConsoleHelp("Dump bridge types.");
 		return true;
 	}
+
+	IConsolePrintF(CC_DEFAULT, "  Ctrl flags:");
+	IConsolePrintF(CC_DEFAULT, "    c = custom pillar flags");
+	IConsolePrintF(CC_DEFAULT, "    i = invalid pillar flags");
+	IConsolePrintF(CC_DEFAULT, "    t = not available to towns");
+	IConsolePrintF(CC_DEFAULT, "    s = not available to scripts (AI/GS)");
 
 	btree::btree_set<uint32> grfids;
 	for (BridgeType bt = 0; bt < MAX_BRIDGES; bt++) {
