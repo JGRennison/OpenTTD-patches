@@ -269,6 +269,20 @@ Train* ChainContainsEngine(EngineID eid, Train *chain) {
 	return nullptr;
 }
 
+static bool IsTrainUsableAsTemplateReplacementSource(const Train *t)
+{
+	if (t->IsFreeWagon()) return true;
+
+	if (t->IsPrimaryVehicle() && t->IsStoppedInDepot()) {
+		if (t->GetNumOrders() != 0) return false;
+		if (t->IsOrderListShared()) return false;
+		if (t->group_id != DEFAULT_GROUP) return false;
+		return true;
+	}
+
+	return false;
+}
+
 // has O(n^2)
 Train* DepotContainsEngine(TileIndex tile, EngineID eid, Train *not_in = nullptr)
 {
@@ -278,7 +292,7 @@ Train* DepotContainsEngine(TileIndex tile, EngineID eid, Train *not_in = nullptr
 		if (t->tile == tile
 				// If the veh belongs to a chain, wagons will not return true on IsStoppedInDepot(), only primary vehicles will
 				// in case of t not a primary veh, we demand it to be a free wagon to consider it for replacement
-				&& ((t->IsPrimaryVehicle() && t->IsStoppedInDepot()) || t->IsFreeWagon())
+				&& IsTrainUsableAsTemplateReplacementSource(t)
 				&& t->engine_type == eid
 				&& (not_in == nullptr || ChainContainsVehicle(not_in, t) == false)) {
 			return t;
