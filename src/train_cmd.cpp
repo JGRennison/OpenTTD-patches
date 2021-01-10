@@ -2409,7 +2409,7 @@ CommandCost CmdReverseTrainDirection(TileIndex tile, DoCommandFlag flags, uint32
 
 		Train *front = v->First();
 		/* make sure the vehicle is stopped in the depot */
-		if (!front->IsStoppedInDepot()) {
+		if (!front->IsStoppedInDepot() && !front->IsVirtual()) {
 			return_cmd_error(STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT);
 		}
 

@@ -378,7 +378,10 @@ public:
 				GetDepotVehiclePtData gdvp = { nullptr, nullptr };
 
 				if (this->GetVehicleFromDepotWndPt(pt.x - nwi->pos_x, pt.y - nwi->pos_y, &v, &gdvp) == MODE_DRAG_VEHICLE && sel != INVALID_VEHICLE) {
-					if (gdvp.wagon == nullptr || gdvp.wagon->index != sel) {
+					if (gdvp.wagon != nullptr && gdvp.wagon->index == sel && _ctrl_pressed) {
+						DoCommandP(Vehicle::Get(sel)->tile, Vehicle::Get(sel)->index, true,
+								CMD_REVERSE_TRAIN_DIRECTION | CMD_MSG(STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE));
+					} else if (gdvp.wagon == nullptr || gdvp.wagon->index != sel) {
 						this->vehicle_over = INVALID_VEHICLE;
 						TrainDepotMoveVehicle(gdvp.wagon, sel, gdvp.head);
 					}
