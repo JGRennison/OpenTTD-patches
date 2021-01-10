@@ -154,6 +154,8 @@ void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev
 	tmp->cargo_subtype = virt->cargo_subtype;
 	tmp->cargo_cap = virt->cargo_cap;
 
+	SB(tmp->ctrl_flags, TVCF_REVERSED, 1, HasBit(virt->flags, VRF_REVERSE_DIRECTION) ? 1 : 0);
+
 	if (!virt->Previous()) {
 		uint cargo_weight = 0;
 		uint full_cargo_weight = 0;
@@ -315,7 +317,7 @@ bool TrainMatchesTemplateRefit(const Train *t, const TemplateVehicle *tv)
 	}
 
 	while (t && tv) {
-		if (t->cargo_type != tv->cargo_type || t->cargo_subtype != tv->cargo_subtype) {
+		if (t->cargo_type != tv->cargo_type || t->cargo_subtype != tv->cargo_subtype || HasBit(t->flags, VRF_REVERSE_DIRECTION) != HasBit(tv->ctrl_flags, TVCF_REVERSED)) {
 			return false;
 		}
 		t = t->GetNextUnit();
@@ -368,6 +370,10 @@ CommandCost CmdRefitTrainFromTemplate(Train *t, TemplateVehicle *tv, DoCommandFl
 		uint32 cb = GetCmdRefitVeh(t);
 
 		cost.AddCost(DoCommand(t->tile, t->index, tv->cargo_type | tv->cargo_subtype << 8 | (1 << 16) | (1 << 31), flags, cb));
+
+		if (HasBit(t->flags, VRF_REVERSE_DIRECTION) != HasBit(tv->ctrl_flags, TVCF_REVERSED)) {
+			cost.AddCost(DoCommand(t->tile, t->index, true, flags, CMD_REVERSE_TRAIN_DIRECTION | CMD_MSG(STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE)));
+		}
 
 		// next
 		t = t->GetNextUnit();

@@ -80,6 +80,7 @@ TemplateVehicle::TemplateVehicle(VehicleType ty, EngineID eid, byte subtypeflag,
 	this->owner = current_owner;
 
 	this->real_consist_length = 0;
+	this->ctrl_flags = 0;
 }
 
 TemplateVehicle::~TemplateVehicle() {

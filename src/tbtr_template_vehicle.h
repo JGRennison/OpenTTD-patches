@@ -70,6 +70,11 @@ struct TemplateVehicleImageDimensions {
 	}
 };
 
+/** Template vehicle control flags. */
+enum TemplateVehicleControlFlags {
+	TVCF_REVERSED                     = 0,      ///< Vehicle is reversed (VRF_REVERSE_DIRECTION)
+};
+
 struct TemplateVehicle : TemplatePool::PoolItem<&_template_pool>, BaseVehicle {
 private:
 	TemplateVehicle *next;                      ///< pointer to the next vehicle in the chain
@@ -106,6 +111,8 @@ public:
 	uint32 empty_weight;
 	uint32 full_weight;
 	uint32 max_te;
+
+	uint32 ctrl_flags;                  ///< See: TemplateVehicleControlFlags
 
 	VehicleSpriteSeq sprite_seq;                     ///< NOSAVE: Vehicle appearance.
 	TemplateVehicleImageDimensions image_dimensions; ///< NOSAVE: image dimensions
