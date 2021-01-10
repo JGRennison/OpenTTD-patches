@@ -1154,7 +1154,7 @@ CommandCost CmdReplaceTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint3
 		VehicleID old_ID = INVALID_VEHICLE;
 
 		bool restore_flags = false;
-		bool reuse_depot_vehicles = true;
+		bool reuse_depot_vehicles = false;
 		bool keep_remaining_vehicles = false;
 		bool refit_as_template = true;
 		bool replace_old_only = false;

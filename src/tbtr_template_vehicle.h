@@ -119,7 +119,6 @@ public:
 	SpriteID colourmap;                              ///< NOSAVE: cached colour mapping
 
 	TemplateVehicle(VehicleType type = VEH_INVALID, EngineID e = INVALID_ENGINE, byte B = 0, Owner = _local_company);
-	TemplateVehicle(EngineID, RailVehicleInfo*);
 
 	TemplateVehicle(EngineID eid)
 	{
@@ -127,7 +126,7 @@ public:
 		previous = nullptr;
 		first = this;
 		engine_type = eid;
-		this->reuse_depot_vehicles = true;
+		this->reuse_depot_vehicles = false;
 		this->keep_remaining_vehicles = false;
 		this->refit_as_template = true;
 		this->replace_old_only = false;

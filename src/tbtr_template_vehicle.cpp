@@ -68,8 +68,10 @@ TemplateVehicle::TemplateVehicle(VehicleType ty, EngineID eid, byte subtypeflag,
 	this->type = ty;
 	this->engine_type = eid;
 
-	this->reuse_depot_vehicles = true;
-	this->keep_remaining_vehicles = true;
+	this->reuse_depot_vehicles = false;
+	this->keep_remaining_vehicles = false;
+	this->refit_as_template = true;
+	this->replace_old_only = false;
 
 	this->first = this;
 	this->next = 0x0;
