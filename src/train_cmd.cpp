@@ -5606,6 +5606,20 @@ CommandCost CmdBuildVirtualRailVehicle(TileIndex tile, DoCommandFlag flags, uint
 	return CommandCost();
 }
 
+void ClearVehicleWindows(const Train *v)
+{
+	if (v->IsPrimaryVehicle()) {
+		DeleteWindowById(WC_VEHICLE_VIEW, v->index);
+		DeleteWindowById(WC_VEHICLE_ORDERS, v->index);
+		DeleteWindowById(WC_VEHICLE_REFIT, v->index);
+		DeleteWindowById(WC_VEHICLE_DETAILS, v->index);
+		DeleteWindowById(WC_VEHICLE_TIMETABLE, v->index);
+		DeleteWindowById(WC_SCHDISPATCH_SLOTS, v->index);
+		DeleteWindowById(WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, v->index);
+		DeleteWindowById(WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, v->index);
+	}
+}
+
 /**
 * Replace a vehicle based on a template replacement order.
 * @param tile unused
@@ -5715,10 +5729,12 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 		} else if ((tmp_chain = ChainContainsEngine(eid, incoming)) && tmp_chain != nullptr) {                       // 2
 			// new_chain is the needed engine, move it to an empty spot in the depot
 			new_chain = tmp_chain;
+			if (flags & DC_EXEC) ClearVehicleWindows(tmp_chain);
 			move_cost.AddCost(DoCommand(tile, new_chain->index, INVALID_VEHICLE, flags, CMD_MOVE_RAIL_VEHICLE));
 			remainder_chain = incoming;
 		} else if (reuseDepot && (tmp_chain = DepotContainsEngine(tile, eid, incoming)) && tmp_chain != nullptr) {   // 3
 			new_chain = tmp_chain;
+			if (flags & DC_EXEC) ClearVehicleWindows(tmp_chain);
 			move_cost.AddCost(DoCommand(tile, new_chain->index, INVALID_VEHICLE, flags, CMD_MOVE_RAIL_VEHICLE));
 			remainder_chain = incoming;
 		} else {                                                                                                  // 4
