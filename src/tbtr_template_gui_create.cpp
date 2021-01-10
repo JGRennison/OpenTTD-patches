@@ -39,6 +39,7 @@
 #include "group.h"
 #include "company_base.h"
 #include "train.h"
+#include "newgrf_debug.h"
 
 #include "tbtr_template_gui_create.h"
 #include "tbtr_template_vehicle.h"
@@ -69,6 +70,7 @@ static const NWidgetPart _widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, TCW_CAPTION), SetDataTip(STR_TMPL_CREATEGUI_TITLE, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_DEBUGBOX, COLOUR_GREY),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -593,6 +595,18 @@ public:
 	void UpdateButtonState()
 	{
 		this->SetWidgetDisabledState(TCW_REFIT, virtual_train == nullptr);
+	}
+
+	bool IsNewGRFInspectable() const override
+	{
+		return true;
+	}
+
+	void ShowNewGRFInspectWindow() const override
+	{
+		if (this->virtual_train != nullptr) {
+			::ShowNewGRFInspectWindow(GetGrfSpecFeature(VEH_TRAIN), this->virtual_train->index);
+		}
 	}
 };
 
