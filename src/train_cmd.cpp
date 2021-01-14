@@ -3472,8 +3472,13 @@ bool TryPathReserve(Train *v, bool mark_as_stuck, bool first_tile_okay)
 	}
 
 	DiagDirection exitdir = TrackdirToExitdir(origin.trackdir);
-	TileIndex     new_tile = TileAddByDiagDir(origin.tile, exitdir);
-	TrackBits     reachable = TrackdirBitsToTrackBits(TrackStatusToTrackdirBits(GetTileTrackStatus(new_tile, TRANSPORT_RAIL, 0)) & DiagdirReachesTrackdirs(exitdir));
+	TileIndex new_tile;
+	if (IsTileType(origin.tile, MP_TUNNELBRIDGE) && GetTunnelBridgeDirection(origin.tile) == exitdir) {
+		new_tile = GetOtherTunnelBridgeEnd(origin.tile);
+	} else {
+		new_tile = TileAddByDiagDir(origin.tile, exitdir);
+	}
+	TrackBits reachable = TrackdirBitsToTrackBits(TrackStatusToTrackdirBits(GetTileTrackStatus(new_tile, TRANSPORT_RAIL, 0)) & DiagdirReachesTrackdirs(exitdir));
 
 	if (Rail90DegTurnDisallowedTilesFromDiagDir(origin.tile, new_tile, exitdir)) reachable &= ~TrackCrossesTracks(TrackdirToTrack(origin.trackdir));
 
