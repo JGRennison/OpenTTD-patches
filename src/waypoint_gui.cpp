@@ -21,6 +21,7 @@
 #include "window_func.h"
 #include "waypoint_base.h"
 #include "departures_gui.h"
+#include "newgrf_debug.h"
 
 #include "widgets/waypoint_widget.h"
 
@@ -145,6 +146,15 @@ public:
 		DoCommandP(0, this->window_number, 0, CMD_RENAME_WAYPOINT | CMD_MSG(STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME), nullptr, str);
 	}
 
+	bool IsNewGRFInspectable() const override
+	{
+		return ::IsNewGRFInspectable(GSF_FAKE_STATION_STRUCT, this->window_number);
+	}
+
+	void ShowNewGRFInspectWindow() const override
+	{
+		::ShowNewGRFInspectWindow(GSF_FAKE_STATION_STRUCT, this->window_number);
+	}
 };
 
 /** The widgets of the waypoint view. */
@@ -152,6 +162,7 @@ static const NWidgetPart _nested_waypoint_view_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_W_CAPTION), SetDataTip(STR_WAYPOINT_VIEW_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_DEBUGBOX, COLOUR_GREY),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
