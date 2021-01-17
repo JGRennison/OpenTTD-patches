@@ -4559,6 +4559,10 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 		if (update_signal_tunbridge_exit) {
 			UpdateSignalsOnSegment(gp.new_tile, INVALID_DIAGDIR, v->owner);
 			update_signal_tunbridge_exit = false;
+			if (v->IsFrontEngine() && IsTunnelBridgeSignalSimulationExit(gp.new_tile)) {
+				SetTunnelBridgeExitSignalState(gp.new_tile, SIGNAL_STATE_RED);
+				MarkTileDirtyByTile(gp.new_tile, VMDF_NOT_MAP_MODE);
+			}
 		}
 
 		if (update_signals_crossing) {
