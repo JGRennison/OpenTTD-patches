@@ -716,6 +716,7 @@ static DisasterVehicleTickProc * const _disastervehicle_tick_procs[] = {
 
 bool DisasterVehicle::Tick()
 {
+	DEBUG_UPDATESTATECHECKSUM("DisasterVehicle::Tick: v: %u, x: %d, y: %d", this->index, this->x_pos, this->y_pos);
 	UpdateStateChecksum((((uint64) this->x_pos) << 32) | this->y_pos);
 	return _disastervehicle_tick_procs[this->subtype](this);
 }

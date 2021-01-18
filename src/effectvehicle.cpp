@@ -672,6 +672,7 @@ EffectVehicle *CreateEffectVehicleRel(const Vehicle *v, int x, int y, int z, Eff
 
 bool EffectVehicle::Tick()
 {
+	DEBUG_UPDATESTATECHECKSUM("EffectVehicle::Tick: v: %u, x: %d, y: %d", this->index, this->x_pos, this->y_pos);
 	UpdateStateChecksum((((uint64) this->x_pos) << 32) | this->y_pos);
 	return _effect_tick_procs[this->subtype](this);
 }

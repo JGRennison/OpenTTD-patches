@@ -524,6 +524,7 @@ static Track ChooseShipTrack(Ship *v, TileIndex tile, DiagDirection enterdir, Tr
 			default: NOT_REACHED();
 		}
 	}
+	DEBUG_UPDATESTATECHECKSUM("ChooseShipTrack: v: %u, path_found: %d, track: %d", v->index, path_found, track);
 	UpdateStateChecksum((((uint64) v->index) << 32) | (path_found << 16) | track);
 
 	v->HandlePathfindingResult(path_found);
@@ -971,6 +972,7 @@ reverse_direction:
 
 bool Ship::Tick()
 {
+	DEBUG_UPDATESTATECHECKSUM("Ship::Tick: v: %u, x: %d, y: %d", this->index, this->x_pos, this->y_pos);
 	UpdateStateChecksum((((uint64) this->x_pos) << 32) | this->y_pos);
 	if (!((this->vehstatus & VS_STOPPED) || this->IsWaitingInDepot())) this->running_ticks++;
 
