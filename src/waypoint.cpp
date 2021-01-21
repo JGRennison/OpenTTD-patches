@@ -16,6 +16,7 @@
 #include "viewport_kdtree.h"
 #include "tracerestrict.h"
 #include "newgrf_debug.h"
+#include "news_func.h"
 
 #include "safeguards.h"
 
@@ -58,4 +59,7 @@ Waypoint::~Waypoint()
 	RemoveOrderFromAllVehicles(OT_GOTO_WAYPOINT, this->index);
 	if (_viewport_sign_kdtree_valid && this->sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeWaypoint(this->index));
 	TraceRestrictRemoveDestinationID(TROCAF_WAYPOINT, this->index);
+
+	/* Remove all news items */
+	DeleteStationNews(this->index);
 }
