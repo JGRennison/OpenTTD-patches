@@ -2200,33 +2200,30 @@ void ReverseTrainDirection(Train *v)
 
 	v->reverse_distance = 0;
 
-	/* Clear path reservation in front if train is not stuck. */
-	if (!HasBit(v->flags, VRF_TRAIN_STUCK)) FreeTrainTrackReservation(v);
-
-	std::vector<Train *> re_reserve_trains;
+	bool no_near_end_unreserve = false;
+	bool no_far_end_unreserve = false;
 	{
 		/* Temporarily clear and restore reservations to bidi tunnel/bridge entrances when reversing train inside,
 		 * to avoid outgoing and incoming reservations becoming merged */
-		auto find_train_reservations = [&re_reserve_trains, &v](TileIndex tile) {
+		auto find_train_reservations = [&v](TileIndex tile, bool &found_reservation) {
 			TrackBits reserved = GetAcrossTunnelBridgeReservationTrackBits(tile);
 			Track track;
 			while ((track = RemoveFirstTrack(&reserved)) != INVALID_TRACK) {
 				Train *res_train = GetTrainForReservation(tile, track);
 				if (res_train != nullptr && res_train != v) {
-					FreeTrainTrackReservation(res_train);
-					re_reserve_trains.push_back(res_train);
+					found_reservation = true;
 				}
 			}
 		};
 		if (IsTunnelBridgeWithSignalSimulation(v->tile) && IsTunnelBridgeSignalSimulationBidirectional(v->tile)) {
-			find_train_reservations(v->tile);
-			find_train_reservations(GetOtherTunnelBridgeEnd(v->tile));
+			find_train_reservations(v->tile, no_near_end_unreserve);
+			find_train_reservations(GetOtherTunnelBridgeEnd(v->tile), no_far_end_unreserve);
 		}
-		Train *last = v->Last();
-		if (IsTunnelBridgeWithSignalSimulation(last->tile) && IsTunnelBridgeSignalSimulationBidirectional(last->tile)) {
-			find_train_reservations(last->tile);
-			find_train_reservations(GetOtherTunnelBridgeEnd(last->tile));
-		}
+	}
+
+	/* Clear path reservation in front if train is not stuck. */
+	if (!HasBit(v->flags, VRF_TRAIN_STUCK) && !no_near_end_unreserve && !no_far_end_unreserve) {
+		FreeTrainTrackReservation(v);
 	}
 
 	if ((v->track & TRACK_BIT_WORMHOLE) && IsTunnelBridgeWithSignalSimulation(v->tile)) {
@@ -2234,7 +2231,7 @@ void ReverseTrainDirection(Train *v)
 		Axis axis = DiagDirToAxis(GetTunnelBridgeDirection(v->tile));
 		DiagDirection axial_dir = DirToDiagDirAlongAxis(v->direction, axis);
 		TileIndex next_tile = TileVirtXY(v->x_pos, v->y_pos) + TileOffsByDiagDir(axial_dir);
-		if (next_tile == v->tile || next_tile == GetOtherTunnelBridgeEnd(v->tile)) {
+		if ((!no_near_end_unreserve && next_tile == v->tile) || (!no_far_end_unreserve && next_tile == GetOtherTunnelBridgeEnd(v->tile))) {
 			Trackdir exit_td = TrackEnterdirToTrackdir(FindFirstTrack(GetAcrossTunnelBridgeTrackBits(next_tile)), ReverseDiagDir(GetTunnelBridgeDirection(next_tile)));
 			CFollowTrackRail ft(GetTileOwner(next_tile), GetRailTypeInfo(v->railtype)->all_compatible_railtypes);
 			if (ft.Follow(next_tile, exit_td)) {
@@ -2288,10 +2285,6 @@ void ReverseTrainDirection(Train *v)
 	/* maybe we are approaching crossing now, after reversal */
 	crossing = TrainApproachingCrossingTile(v);
 	if (crossing != INVALID_TILE) MaybeBarCrossingWithSound(crossing);
-
-	for (uint i = 0; i < re_reserve_trains.size(); ++i) {
-		TryPathReserve(re_reserve_trains[i], true);
-	}
 
 	if (HasBit(v->flags, VRF_PENDING_SPEED_RESTRICTION)) {
 		auto range = pending_speed_restriction_change_map.equal_range(v->index);
