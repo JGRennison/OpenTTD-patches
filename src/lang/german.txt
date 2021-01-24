@@ -2468,7 +2468,7 @@ STR_NETWORK_ERROR_WRONG_PASSWORD                                :{WHITE}Falsches
 STR_NETWORK_ERROR_SERVER_FULL                                   :{WHITE}Der Server ist voll
 STR_NETWORK_ERROR_SERVER_BANNED                                 :{WHITE}Sie sind auf diesem Server gesperrt
 STR_NETWORK_ERROR_KICKED                                        :{WHITE}Sie wurden vom Server hinausgeworfen
-STR_NETWORK_ERROR_KICK_MESSAGE                                  :{WHITE}Grund: {RAW_STRING}
+STR_NETWORK_ERROR_KICK_MESSAGE                                  :{WHITE}Grund: {STRING}
 STR_NETWORK_ERROR_CHEATER                                       :{WHITE}Mogeln ist auf diesem Server nicht erlaubt
 STR_NETWORK_ERROR_TOO_MANY_COMMANDS                             :{WHITE}Es wurden zu viele Kommandos an den Server gesendet
 STR_NETWORK_ERROR_TIMEOUT_PASSWORD                              :{WHITE}Zeit für die Eingabe des Passwortes wurde überschritten
@@ -2532,7 +2532,7 @@ STR_NETWORK_MESSAGE_MONEY_GIVEN                                 :*** {STRING} ga
 STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION                  :{STRING} ({COMPANY})
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Der Server hat das Spiel beendet
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Der Server startet neu...{}Bitte warten...
-STR_NETWORK_MESSAGE_KICKED                                      :*** {RAW_STRING} wurde hinausgeworfen. Grund: ({RAW_STRING})
+STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} wurde hinausgeworfen. Grund: ({STRING})
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Herunterladen von Erweiterungen
@@ -2835,9 +2835,9 @@ STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :Erwerbe Slot {S
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :Versuche Slot {STRING}{BLACK}{STRING} zu erwerben, oder fahre weiter
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :Löse Slot {STRING}{BLACK}{STRING} (vor dem Zug)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :Löse Slot {STRING}{BLACK}{STRING} (hinter dem Zug)
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :Pfadreservierung endet hier: Erwerbe Slot: {STRING1}{BLACK}{STRING}, oder warte am Beginn
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :Pfadreservierung endet hier: Erwerbe Slot: {STRING1}{BLACK}{STRING}, oder fahre weiter
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :Pfadreservierung endet hier: Löse Slot: {STRING1}{BLACK}{STRING}
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :Pfadreservierung endet hier: Erwerbe Slot: {STRING}{BLACK}{STRING}, oder warte am Beginn
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :Pfadreservierung endet hier: Erwerbe Slot: {STRING}{BLACK}{STRING}, oder fahre weiter
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :Pfadreservierung endet hier: Löse Slot: {STRING}{BLACK}{STRING}
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}Slot{CONSUME_ARG}{P "" s}: {LTBLUE}
 STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}, {LTBLUE}
@@ -2845,9 +2845,9 @@ STR_TRACE_RESTRICT_COUNTER_NAME                                 :{TRCOUNTER}
 STR_TRACE_RESTRICT_COUNTER_INCREASE                             :Inkrementiere
 STR_TRACE_RESTRICT_COUNTER_DECREASE                             :Dekrementiere
 STR_TRACE_RESTRICT_COUNTER_SET                                  :Setze
-STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM                        :Inkrementiere Zähler: {STRING1}{BLACK}{STRING} um {COMMA}
-STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM                        :Dekrementiere Zähler: {STRING1}{BLACK}{STRING} um {COMMA}
-STR_TRACE_RESTRICT_COUNTER_SET_ITEM                             :Setze Zähler: {STRING1}{BLACK}{STRING} auf {COMMA}
+STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM                        :Inkrementiere Zähler: {STRING}{BLACK}{STRING} um {COMMA}
+STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM                        :Dekrementiere Zähler: {STRING}{BLACK}{STRING} um {COMMA}
+STR_TRACE_RESTRICT_COUNTER_SET_ITEM                             :Setze Zähler: {STRING}{BLACK}{STRING} auf {COMMA}
 STR_TRACE_RESTRICT_TRAIN_STATUS_EMPTY                           :leer
 STR_TRACE_RESTRICT_TRAIN_STATUS_FULL                            :voll
 STR_TRACE_RESTRICT_TRAIN_STATUS_BROKEN_DOWN                     :hat eine Panne
@@ -3454,7 +3454,7 @@ STR_FRAMERATE_VIDEO                                             :{BLACK}Videoaus
 STR_FRAMERATE_SOUND                                             :{BLACK}Sound-Abmischung:
 STR_FRAMERATE_ALLSCRIPTS                                        :{BLACK}  GS/KI insgesamt:
 STR_FRAMERATE_GAMESCRIPT                                        :{BLACK}   Skript:
-STR_FRAMERATE_AI                                                :{BLACK}   KI {NUM} {RAW_STRING}
+STR_FRAMERATE_AI                                                :{BLACK}   KI {NUM} {STRING}
 ############ End of leave-in-this-order
 ############ Leave those lines in this order!!
 STR_FRAMETIME_CAPTION_GAMELOOP                                  :Spielschleife
@@ -4192,10 +4192,10 @@ STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Industri
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Keine -
 STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% transportiert){BLACK}
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {STRING4}
+STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING4}, {STRING4}, {STRING4}
-STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING4}, {STRING4}, {STRING4} und weitere {NUM}...
+STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} und weitere {NUM}...
 STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Industrienamen - Klick auf den Namen zentriert Hauptansicht auf die Industrie. Strg+Klick öffnet neue Zusatzansicht zentriert auf die Industrie
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Akzeptierte Fracht: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Produzierte Fracht: {SILVER}{STRING}
@@ -5246,7 +5246,7 @@ STR_PLANS_DELETE                                                :{BLACK}Entferne
 STR_PLANS_DELETE_TOOLTIP                                        :{BLACK}Entferne den ausgewählten Eintrag aus der Liste
 STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[Privat]: {STRING}
 STR_PLANS_LIST_ITEM_PLAN                                        :Plan #{NUM}: {NUM} Strecke{P "" n} ({DATE_SHORT})
-STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{RAW_STRING}: {NUM} Strecke{P "" n} ({DATE_SHORT})
+STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{STRING}: {NUM} Strecke{P "" n} ({DATE_SHORT})
 STR_PLANS_LIST_ITEM_LINE                                        : -- Strecke #{NUM}: {NUM} Segment{P "" e}
 STR_PLANS_LIST_TOOLTIP                                          :{BLACK}Doppelklick auf einen Eintrag, um den dazugehörigen Plan aus- bzw. einzuklappen.{}Strg+Klick, um zu dem Eintrag zu scrollen.
 STR_PLANS_QUERY_RENAME_PLAN                                     :{WHITE}Benenne Plan um
@@ -5292,9 +5292,9 @@ STR_GAME_SAVELOAD_ERROR_PATCHPACK                               :Spielstand wurd
 STR_GAME_SAVELOAD_NOT_AVAILABLE                                 :<nicht verfügbar>
 STR_WARNING_LOADGAME_REMOVED_TRAMS                              :{WHITE}Spiel wurde in einer Version ohne Straßenbahnunterstützung gespeichert. Alle Straßenbahnen wurden entfernt
 
-STR_GAME_SAVELOAD_FROM_VERSION                                  : von Version {PUSH_COLOUR}{ORANGE}{RAW_STRING}{POP_COLOUR}{}
-STR_GAME_SAVELOAD_ERROR_TOO_NEW_FEATURE_VERSION                 :Spielstand{0:STRING1} hat die Version {PUSH_COLOUR}{ORANGE}{2:NUM}{POP_COLOUR} des Features '{PUSH_COLOUR}{ORANGE}{1:RAW_STRING}{POP_COLOUR}', aber die maximal unterstützte Version ist {PUSH_COLOUR}{ORANGE}{3:NUM}{POP_COLOUR}
-STR_GAME_SAVELOAD_ERROR_UNKNOWN_FEATURE                         :Spielstand{0:STRING1} hat ein unbekanntes Feature '{PUSH_COLOUR}{ORANGE}{1:RAW_STRING}{POP_COLOUR}' (Version: {PUSH_COLOUR}{ORANGE}{2:NUM}{POP_COLOUR}), welches nicht unterstützt wird
+STR_GAME_SAVELOAD_FROM_VERSION                                  : von Version {PUSH_COLOUR}{ORANGE}{STRING}{POP_COLOUR}{}
+STR_GAME_SAVELOAD_ERROR_TOO_NEW_FEATURE_VERSION                 :Spielstand{0:STRING} hat die Version {PUSH_COLOUR}{ORANGE}{2:NUM}{POP_COLOUR} des Features '{PUSH_COLOUR}{ORANGE}{1:STRING}{POP_COLOUR}', aber die maximal unterstützte Version ist {PUSH_COLOUR}{ORANGE}{3:NUM}{POP_COLOUR}
+STR_GAME_SAVELOAD_ERROR_UNKNOWN_FEATURE                         :Spielstand{0:STRING} hat ein unbekanntes Feature '{PUSH_COLOUR}{ORANGE}{1:STRING}{POP_COLOUR}' (Version: {PUSH_COLOUR}{ORANGE}{2:NUM}{POP_COLOUR}), welches nicht unterstützt wird
 
 STR_GAME_SAVELOAD_ERROR_HUGE_AIRPORTS_PRESENT                   :Spielstand verwendet riesige Flughäfen
 STR_GAME_SAVELOAD_ERROR_HELI_OILRIG_BUG                         :Spielstand hat einen Helikopter im Anflug auf eine verbuggte Ölplattform
@@ -6214,8 +6214,8 @@ STR_JUST_DATE_WALLCLOCK_LONG                                    :{DATE_WALLCLOCK
 STR_JUST_DATE_WALLCLOCK_ISO                                     :{DATE_WALLCLOCK_ISO}
 STR_JUST_TIME_HHMM                                              :{TIME_HHMM}
 STR_JUST_STRING                                                 :{STRING}
-STR_JUST_STRING1                                                :{STRING1}
-STR_JUST_STRING2                                                :{STRING2}
+STR_JUST_STRING1                                                :{STRING}
+STR_JUST_STRING2                                                :{STRING}
 STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 STR_JUST_RAW_STRING                                             :{STRING}
 STR_JUST_BIG_RAW_STRING                                         :{BIG_FONT}{STRING}
