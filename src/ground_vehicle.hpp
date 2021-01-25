@@ -56,6 +56,11 @@ enum GroundVehicleFlags {
 	GVF_CHUNNEL_BIT              = 3,  ///< Vehicle may currently be in a chunnel. (Cached track information for inclination changes)
 };
 
+struct GroundVehicleAcceleration {
+	int acceleration;
+	int braking;
+};
+
 /**
  * Base class for all vehicles that move through ground.
  *
@@ -95,7 +100,7 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 
 	void CalculatePower(uint32& power, uint32& max_te, bool breakdowns) const;
 
-	int GetAcceleration();
+	GroundVehicleAcceleration GetAcceleration();
 
 	/**
 	 * Common code executed for crashed ground vehicles
@@ -428,12 +433,18 @@ protected:
 	 * @param accel     The acceleration we would like to give this vehicle.
 	 * @param min_speed The minimum speed here, in vehicle specific units.
 	 * @param max_speed The maximum speed here, in vehicle specific units.
+	 * @param advisory_max_speed The advisory maximum speed here, in vehicle specific units.
 	 * @return Distance to drive.
 	 */
-	inline uint DoUpdateSpeed(uint accel, int min_speed, int max_speed)
+	inline uint DoUpdateSpeed(GroundVehicleAcceleration accel, int min_speed, int max_speed, int advisory_max_speed)
 	{
-		uint spd = this->subspeed + accel;
+		const byte initial_subspeed = this->subspeed;
+		uint spd = this->subspeed + accel.acceleration;
 		this->subspeed = (byte)spd;
+
+		if (!(Type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC)) {
+			max_speed = min(max_speed, advisory_max_speed);
+		}
 
 		int tempmax = max_speed;
 
@@ -456,6 +467,10 @@ protected:
 		}
 
 		if (this->cur_speed > max_speed) {
+			if (Type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC && accel.braking >= 0) {
+				extern void TrainBrakesOverheatedBreakdown(Vehicle *v);
+				TrainBrakesOverheatedBreakdown(this);
+			}
 			tempmax = max(this->cur_speed - (this->cur_speed / 10) - 1, max_speed);
 		}
 
@@ -464,9 +479,32 @@ protected:
 		 * threshold for some reason. That makes acceleration fail and assertions
 		 * happen in Clamp. So make it explicit that min_speed overrules the maximum
 		 * speed by explicit ordering of min and max. */
-		this->cur_speed = spd = max(min(this->cur_speed + ((int)spd >> 8), tempmax), min_speed);
+		int tempspeed = min(this->cur_speed + ((int)spd >> 8), tempmax);
 
-		int scaled_spd = this->GetAdvanceSpeed(spd);
+		if (Type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC && tempspeed > advisory_max_speed && accel.braking != accel.acceleration) {
+			spd = initial_subspeed + accel.braking;
+			int braking_speed = this->cur_speed + ((int)spd >> 8);
+			if (braking_speed >= advisory_max_speed) {
+				if (braking_speed > tempmax) {
+					if (Type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC && accel.braking >= 0) {
+						extern void TrainBrakesOverheatedBreakdown(Vehicle *v);
+						TrainBrakesOverheatedBreakdown(this);
+					}
+					tempspeed = tempmax;
+					this->subspeed = 0;
+				} else {
+					tempspeed = braking_speed;
+					this->subspeed = (byte)spd;
+				}
+			} else {
+				tempspeed = advisory_max_speed;
+				this->subspeed = 0;
+			}
+		}
+
+		this->cur_speed = max(tempspeed, min_speed);
+
+		int scaled_spd = this->GetAdvanceSpeed(this->cur_speed);
 
 		scaled_spd += this->progress;
 		this->progress = 0; // set later in *Handler or *Controller

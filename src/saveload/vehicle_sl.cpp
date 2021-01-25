@@ -1148,6 +1148,9 @@ struct train_venc {
 	GroundVehicleCache gvcache;
 	bool cached_tilt;
 	uint8 cached_num_engines;
+	uint16 cached_veh_weight;
+	uint16 cached_uncapped_decel;
+	uint8 cached_deceleration;
 	byte user_def_data;
 	int cached_max_curve_speed;
 };
@@ -1212,6 +1215,9 @@ void Save_VENC()
 			write_gv_cache(t->gcache);
 			SlWriteByte(t->tcache.cached_tilt);
 			SlWriteByte(t->tcache.cached_num_engines);
+			SlWriteUint16(t->tcache.cached_veh_weight);
+			SlWriteUint16(t->tcache.cached_uncapped_decel);
+			SlWriteByte(t->tcache.cached_deceleration);
 			SlWriteByte(t->tcache.user_def_data);
 			SlWriteUint32(t->tcache.cached_max_curve_speed);
 		}
@@ -1269,6 +1275,9 @@ void Load_VENC()
 		read_gv_cache(venc.gvcache);
 		venc.cached_tilt = SlReadByte();
 		venc.cached_num_engines = SlReadByte();
+		venc.cached_veh_weight = SlReadUint16();
+		venc.cached_uncapped_decel = SlReadUint16();
+		venc.cached_deceleration = SlReadByte();
 		venc.user_def_data = SlReadByte();
 		venc.cached_max_curve_speed = SlReadUint32();
 	}
@@ -1352,6 +1361,9 @@ void SlProcessVENC()
 		check_gv_cache(t->gcache, venc.gvcache, t);
 		CheckVehicleVENCProp(t->tcache.cached_tilt, venc.cached_tilt, t, "cached_tilt");
 		CheckVehicleVENCProp(t->tcache.cached_num_engines, venc.cached_num_engines, t, "cached_num_engines");
+		CheckVehicleVENCProp(t->tcache.cached_veh_weight, venc.cached_veh_weight, t, "cached_veh_weight");
+		CheckVehicleVENCProp(t->tcache.cached_uncapped_decel, venc.cached_uncapped_decel, t, "cached_uncapped_decel");
+		CheckVehicleVENCProp(t->tcache.cached_deceleration, venc.cached_deceleration, t, "cached_deceleration");
 		CheckVehicleVENCProp(t->tcache.user_def_data, venc.user_def_data, t, "user_def_data");
 		CheckVehicleVENCProp(t->tcache.cached_max_curve_speed, venc.cached_max_curve_speed, t, "cached_max_curve_speed");
 	}
@@ -1373,9 +1385,96 @@ void SlProcessVENC()
 	}
 }
 
+const SaveLoad *GetVehicleLookAheadDescription()
+{
+	static const SaveLoad _vehicle_look_ahead_desc[] = {
+		     SLE_VAR(TrainReservationLookAhead, reservation_end_tile,         SLE_UINT32),
+		     SLE_VAR(TrainReservationLookAhead, reservation_end_trackdir,     SLE_UINT8),
+		     SLE_VAR(TrainReservationLookAhead, current_position,             SLE_INT32),
+		     SLE_VAR(TrainReservationLookAhead, reservation_end_position,     SLE_INT32),
+		     SLE_VAR(TrainReservationLookAhead, reservation_end_z,            SLE_INT16),
+		     SLE_VAR(TrainReservationLookAhead, tunnel_bridge_reserved_tiles, SLE_INT16),
+		     SLE_VAR(TrainReservationLookAhead, flags,                        SLE_UINT16),
+		     SLE_VAR(TrainReservationLookAhead, speed_restriction,            SLE_UINT16),
+		SLE_END()
+	};
+
+	return _vehicle_look_ahead_desc;
+}
+
+const SaveLoad *GetVehicleLookAheadItemDescription()
+{
+	static const SaveLoad _vehicle_look_ahead_item_desc[] = {
+		     SLE_VAR(TrainReservationLookAheadItem, start,                    SLE_INT32),
+		     SLE_VAR(TrainReservationLookAheadItem, end,                      SLE_INT32),
+		     SLE_VAR(TrainReservationLookAheadItem, z_pos,                    SLE_INT16),
+		     SLE_VAR(TrainReservationLookAheadItem, data_id,                  SLE_UINT16),
+		     SLE_VAR(TrainReservationLookAheadItem, type,                     SLE_UINT8),
+		SLE_END()
+	};
+
+	return _vehicle_look_ahead_item_desc;
+}
+
+const SaveLoad *GetVehicleLookAheadCurveDescription()
+{
+	static const SaveLoad _vehicle_look_ahead_curve_desc[] = {
+		     SLE_VAR(TrainReservationLookAheadCurve, position,                SLE_INT32),
+		     SLE_VAR(TrainReservationLookAheadCurve, dir_diff,                SLE_UINT8),
+		SLE_END()
+	};
+
+	return _vehicle_look_ahead_curve_desc;
+}
+
+static void RealSave_VLKA(TrainReservationLookAhead *lookahead)
+{
+	SlObject(lookahead, GetVehicleLookAheadDescription());
+	SlWriteUint32(lookahead->items.size());
+	for (TrainReservationLookAheadItem &item : lookahead->items) {
+		SlObject(&item, GetVehicleLookAheadItemDescription());
+	}
+	SlWriteUint32(lookahead->curves.size());
+	for (TrainReservationLookAheadCurve &curve : lookahead->curves) {
+		SlObject(&curve, GetVehicleLookAheadCurveDescription());
+	}
+}
+
+void Save_VLKA()
+{
+	for (Train *t : Train::Iterate()) {
+		if (t->lookahead != nullptr) {
+			SlSetArrayIndex(t->index);
+			SlAutolength((AutolengthProc*) RealSave_VLKA, t->lookahead.get());
+		}
+	}
+}
+
+void Load_VLKA()
+{
+	int index;
+	while ((index = SlIterateArray()) != -1) {
+		Train *t = Train::GetIfValid(index);
+		assert(t != nullptr);
+		t->lookahead.reset(new TrainReservationLookAhead());
+		SlObject(t->lookahead.get(), GetVehicleLookAheadDescription());
+		uint32 items = SlReadUint32();
+		t->lookahead->items.resize(items);
+		for (uint i = 0; i < items; i++) {
+			SlObject(&t->lookahead->items[i], GetVehicleLookAheadItemDescription());
+		}
+		uint32 curves = SlReadUint32();
+		t->lookahead->curves.resize(curves);
+		for (uint i = 0; i < curves; i++) {
+			SlObject(&t->lookahead->curves[i], GetVehicleLookAheadCurveDescription());
+		}
+	}
+}
+
 extern const ChunkHandler _veh_chunk_handlers[] = {
 	{ 'VEHS', Save_VEHS, Load_VEHS, Ptrs_VEHS, nullptr, CH_SPARSE_ARRAY},
 	{ 'VEOX', Save_VEOX, Load_VEOX, nullptr,   nullptr, CH_SPARSE_ARRAY},
 	{ 'VESR', Save_VESR, Load_VESR, nullptr,   nullptr, CH_SPARSE_ARRAY},
-	{ 'VENC', Save_VENC, Load_VENC, nullptr,   nullptr, CH_RIFF | CH_LAST},
+	{ 'VENC', Save_VENC, Load_VENC, nullptr,   nullptr, CH_RIFF},
+	{ 'VLKA', Save_VLKA, Load_VLKA, nullptr,   nullptr, CH_SPARSE_ARRAY | CH_LAST},
 };

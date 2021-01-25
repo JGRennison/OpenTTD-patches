@@ -974,6 +974,8 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlag fl
 					if (HasBit(GetRailReservationTrackBits(tile_cur), track)) {
 						Train *v = GetTrainForReservation(tile_cur, track);
 						if (v != nullptr) {
+							CommandCost ret = CheckTrainReservationPreventsTrackModification(v);
+							if (ret.Failed()) return ret;
 							affected_vehicles.push_back(v);
 						}
 					}
@@ -1497,6 +1499,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 					Train *v = GetTrainForReservation(tile, AxisToTrack(GetRailStationAxis(tile)));
 					if (v != nullptr) {
 						affected_vehicles.push_back(v);
+						/* Not necessary to call CheckTrainReservationPreventsTrackModification as that is done by CheckFlatLandRailStation */
 						FreeTrainReservation(v);
 					}
 				}
@@ -1707,6 +1710,18 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, std::vector<T *> &affected_st
 			if (ret.Failed()) continue;
 		}
 
+		Train *v = nullptr;
+		Track track = GetRailStationTrack(tile);
+		if (HasStationReservation(tile)) {
+			v = GetTrainForReservation(tile, track);
+			if (v != nullptr) {
+				CommandCost ret = CheckTrainReservationPreventsTrackModification(v);
+				error.AddCost(ret);
+				if (ret.Failed()) continue;
+				if (flags & DC_EXEC) FreeTrainReservation(v);
+			}
+		}
+
 		/* If we reached here, the tile is valid so increase the quantity of tiles we will remove */
 		quantity++;
 
@@ -1722,15 +1737,8 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, std::vector<T *> &affected_st
 
 			/* read variables before the station tile is removed */
 			uint specindex = GetCustomStationSpecIndex(tile);
-			Track track = GetRailStationTrack(tile);
 			Owner owner = GetTileOwner(tile);
 			RailType rt = GetRailType(tile);
-			Train *v = nullptr;
-
-			if (HasStationReservation(tile)) {
-				v = GetTrainForReservation(tile, track);
-				if (v != nullptr) FreeTrainReservation(v);
-			}
 
 			bool build_rail = keep_rail && !IsStationTileBlocked(tile);
 			if (!build_rail && !IsStationTileBlocked(tile)) Company::Get(owner)->infrastructure.rail[rt]--;
@@ -3629,8 +3637,25 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 			stop &= TILE_SIZE - 1;
 
 			if (x == stop) {
+				if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && front->cur_speed > 15 && !(front->lookahead != nullptr && HasBit(front->lookahead->flags, TRLF_APPLY_ADVISORY))) {
+					/* Travelling too fast, do not stop and report overshoot to player */
+					SetDParam(0, front->index);
+					SetDParam(1, IsRailWaypointTile(tile) ? STR_WAYPOINT_NAME : STR_STATION_NAME);
+					SetDParam(2, station_id);
+					AddNewsItem(STR_NEWS_TRAIN_OVERSHOT_STATION, NT_ADVICE, NF_INCOLOUR | NF_SMALL | NF_VEHICLE_PARAM0,
+							NR_VEHICLE, v->index,
+							NR_STATION, station_id);
+					for (Train *u = front; u != nullptr; u = u->Next()) {
+						ClrBit(u->flags, VRF_BEYOND_PLATFORM_END);
+					}
+					return VETSB_CONTINUE;
+				}
 				return VETSB_ENTERED_STATION | (VehicleEnterTileStatus)(station_id << VETS_STATION_ID_OFFSET); // enter station
 			} else if (x < stop) {
+				if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && front->cur_speed > 30) {
+					/* Travelling too fast, take no action */
+					return VETSB_CONTINUE;
+				}
 				front->vehstatus |= VS_TRAIN_SLOWING;
 				uint16 spd = max(0, (stop - x) * 20 - 15);
 				if (spd < front->cur_speed) front->cur_speed = spd;

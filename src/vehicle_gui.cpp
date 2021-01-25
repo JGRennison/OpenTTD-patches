@@ -3318,7 +3318,7 @@ public:
 			str = STR_VEHICLE_STATUS_CRASHED;
 		} else if (v->breakdown_ctr == 1 || (v->type == VEH_TRAIN && Train::From(v)->flags & VRF_IS_BROKEN)) {
 			const Vehicle *w = (v->type == VEH_TRAIN) ? GetMostSeverelyBrokenEngine(Train::From(v)) : v;
-			if (_settings_game.vehicle.improved_breakdowns || w->breakdown_type == BREAKDOWN_RV_CRASH) {
+			if (_settings_game.vehicle.improved_breakdowns || w->breakdown_type == BREAKDOWN_RV_CRASH || w->breakdown_type == BREAKDOWN_BRAKE_OVERHEAT) {
 				str = STR_VEHICLE_STATUS_BROKEN_DOWN_VEL;
 				SetDParam(3, v->GetDisplaySpeed());
 			} else {

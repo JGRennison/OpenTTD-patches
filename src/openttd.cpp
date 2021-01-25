@@ -1626,10 +1626,13 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 						print_gv_cache_diff("train", gro_cache[length], Train::From(u)->gcache);
 					}
 					if (memcmp(&tra_cache[length], &Train::From(u)->tcache, sizeof(TrainCache)) != 0) {
-						CCLOGV("train cache mismatch: %c%c%c%c%c",
+						CCLOGV("train cache mismatch: %c%c%c%c%c%c%c%c",
 								tra_cache[length].cached_override != Train::From(u)->tcache.cached_override ? 'o' : '-',
 								tra_cache[length].cached_tilt != Train::From(u)->tcache.cached_tilt ? 't' : '-',
 								tra_cache[length].cached_num_engines != Train::From(u)->tcache.cached_num_engines ? 'e' : '-',
+								tra_cache[length].cached_veh_weight != Train::From(u)->tcache.cached_veh_weight ? 'w' : '-',
+								tra_cache[length].cached_uncapped_decel != Train::From(u)->tcache.cached_uncapped_decel ? 'D' : '-',
+								tra_cache[length].cached_deceleration != Train::From(u)->tcache.cached_deceleration ? 'd' : '-',
 								tra_cache[length].user_def_data != Train::From(u)->tcache.user_def_data ? 'u' : '-',
 								tra_cache[length].cached_max_curve_speed != Train::From(u)->tcache.cached_max_curve_speed ? 'c' : '-');
 					}

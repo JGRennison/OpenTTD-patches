@@ -16,6 +16,8 @@
 #include "signal_type.h"
 #include "tunnel_map.h"
 #include "track_func.h"
+#include "settings_type.h"
+#include "vehicle_type.h"
 #include "core/bitmath_func.hpp"
 
 
@@ -491,6 +493,11 @@ static inline bool IsTunnelBridgePBS(TileIndex t)
 {
 	assert_tile(IsTunnelBridgeWithSignalSimulation(t), t);
 	return HasBit(_me[t].m6, 6);
+}
+
+static inline bool IsTunnelBridgeEffectivelyPBS(TileIndex t)
+{
+	return _settings_game.vehicle.train_braking_model == TBM_REALISTIC || IsTunnelBridgePBS(t);
 }
 
 static inline void SetTunnelBridgePBS(TileIndex t, bool is_pbs)

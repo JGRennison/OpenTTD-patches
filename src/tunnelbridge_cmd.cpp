@@ -402,6 +402,7 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 	Owner owner;
 	bool is_new_owner;
 	bool is_upgrade = false;
+	std::vector<Train *> vehicles_affected;
 	if (IsBridgeTile(tile_start) && IsBridgeTile(tile_end) &&
 			GetOtherBridgeEnd(tile_start) == tile_end &&
 			GetTunnelBridgeTransportType(tile_start) == transport_type) {
@@ -443,6 +444,26 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 		/* Do not allow replacing another company's bridges. */
 		if (!IsTileOwner(tile_start, company) && !IsTileOwner(tile_start, OWNER_TOWN) && !IsTileOwner(tile_start, OWNER_NONE)) {
 			return_cmd_error(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER);
+		}
+
+		if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && GetBridgeSpec(bridge_type)->speed < GetBridgeSpec(GetBridgeType(tile_start))->speed) {
+			CommandCost ret = CheckTrainInTunnelBridgePreventsTrackModification(tile_start, tile_end);
+			if (ret.Failed()) return ret;
+			for (TileIndex t : { tile_start, tile_end }) {
+				TrackBits reserved = GetBridgeReservationTrackBits(t);
+				Track track;
+				while ((track = RemoveFirstTrack(&reserved)) != INVALID_TRACK) {
+					Train *v = GetTrainForReservation(t, track);
+					if (v != nullptr) {
+						CommandCost ret = CheckTrainReservationPreventsTrackModification(v);
+						if (ret.Failed()) return ret;
+						if (flags & DC_EXEC) {
+							FreeTrainTrackReservation(v);
+							vehicles_affected.push_back(v);
+						}
+					}
+				}
+			}
 		}
 
 		cost.AddCost((bridge_len + 1) * _price[PR_CLEAR_BRIDGE]); // The cost of clearing the current bridge.
@@ -716,6 +737,9 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 		Track track = AxisToTrack(direction);
 		AddSideToSignalBuffer(tile_start, INVALID_DIAGDIR, company);
 		YapfNotifyTrackLayoutChange(tile_start, track);
+		for (uint i = 0; i < vehicles_affected.size(); ++i) {
+			TryPathReserve(vehicles_affected[i], true);
+		}
 	}
 
 	/* Human players that build bridges get a selection to choose from (DC_QUERY_COST)
@@ -1141,6 +1165,15 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 		if (ret.Failed()) return ret;
 	}
 
+	if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+		DiagDirection dir = GetTunnelBridgeDirection(tile);
+		Track track = DiagDirToDiagTrack(dir);
+		CommandCost ret = CheckTrainReservationPreventsTrackModification(tile, track);
+		if (ret.Failed()) return ret;
+		ret = CheckTrainReservationPreventsTrackModification(endtile, track);
+		if (ret.Failed()) return ret;
+	}
+
 	/* checks if the owner is town then decrease town rating by RATING_TUNNEL_BRIDGE_DOWN_STEP until
 	 * you have a "Poor" (0) town rating */
 	if (IsTileOwner(tile, OWNER_TOWN) && _game_mode != GM_EDITOR) {
@@ -1261,8 +1294,17 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 		tile_tracks = GetCustomBridgeHeadTrackBits(tile);
 		endtile_tracks = GetCustomBridgeHeadTrackBits(endtile);
 		cost.AddCost(RailClearCost(GetRailType(tile)) * (CountBits(GetPrimaryTunnelBridgeTrackBits(tile)) + CountBits(GetPrimaryTunnelBridgeTrackBits(endtile)) - 2));
-		if (GetSecondaryTunnelBridgeTrackBits(tile)) cost.AddCost(RailClearCost(GetSecondaryRailType(tile)));
-		if (GetSecondaryTunnelBridgeTrackBits(endtile)) cost.AddCost(RailClearCost(GetSecondaryRailType(endtile)));
+		for (TileIndex t : { tile, endtile }) {
+			if (GetSecondaryTunnelBridgeTrackBits(t)) cost.AddCost(RailClearCost(GetSecondaryRailType(t)));
+			if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+				TrackBits reserved = GetBridgeReservationTrackBits(t);
+				Track track;
+				while ((track = RemoveFirstTrack(&reserved)) != INVALID_TRACK) {
+					CommandCost ret = CheckTrainReservationPreventsTrackModification(t, track);
+					if (ret.Failed()) return ret;
+				}
+			}
+		}
 	}
 
 	Money base_cost = (GetTunnelBridgeTransportType(tile) != TRANSPORT_WATER) ? _price[PR_CLEAR_BRIDGE] : _price[PR_CLEAR_AQUEDUCT];

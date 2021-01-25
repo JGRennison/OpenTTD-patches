@@ -313,12 +313,14 @@ static SigInfo ExploreSegment(Owner owner)
 
 				if (IsRailDepot(tile)) {
 					if (enterdir == INVALID_DIAGDIR) { // from 'inside' - train just entered or left the depot
+						if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) info.flags |= SF_PBS;
 						if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, VEH_TRAIN, nullptr, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
 						exitdir = GetRailDepotDirection(tile);
 						tile += TileOffsByDiagDir(exitdir);
 						enterdir = ReverseDiagDir(exitdir);
 						break;
 					} else if (enterdir == GetRailDepotDirection(tile)) { // entered a depot
+						if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) info.flags |= SF_PBS;
 						if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, VEH_TRAIN, nullptr, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
 						continue;
 					} else {
@@ -349,7 +351,7 @@ static SigInfo ExploreSegment(Owner owner)
 						 * ANY conventional signal in REVERSE direction
 						 * (if it is a presignal EXIT and it changes, it will be added to 'to-be-done' set later) */
 						if (HasSignalOnTrackdir(tile, reversedir)) {
-							if (IsPbsSignal(sig)) {
+							if (IsPbsSignalNonExtended(sig)) {
 								info.flags |= SF_PBS;
 							} else if (!_tbuset.Add(tile, reversedir)) {
 								info.flags |= SF_FULL;
@@ -515,9 +517,14 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 	Trackdir trackdir = INVALID_TRACKDIR;
 	Track track = INVALID_TRACK;
 
+	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+		if (_tbuset.Items() > 1) info.flags |= SF_PBS;
+		if (info.flags & SF_PBS) info.flags |= SF_TRAIN;
+	}
+
 	while (_tbuset.Get(&tile, &trackdir)) {
 		if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(tile)) {
-			if (IsTunnelBridgePBS(tile)) continue;
+			if (IsTunnelBridgePBS(tile) || (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && HasAcrossTunnelBridgeReservation(tile))) continue;
 			SignalState old_state = GetTunnelBridgeExitSignalState(tile);
 			SignalState new_state = (info.flags & SF_TRAIN) ? SIGNAL_STATE_RED : SIGNAL_STATE_GREEN;
 			if (old_state != new_state) {
@@ -532,6 +539,9 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 		track = TrackdirToTrack(trackdir);
 		SignalType sig = GetSignalType(tile, track);
 		SignalState newstate = SIGNAL_STATE_GREEN;
+
+		/* don't change signal state if tile is reserved in realistic braking mode */
+		if ((_settings_game.vehicle.train_braking_model == TBM_REALISTIC && HasBit(GetRailReservationTrackBits(tile), track))) continue;
 
 		/* determine whether the new state is red */
 		if (info.flags & SF_TRAIN) {
@@ -703,6 +713,8 @@ static SigSegState UpdateSignalsInBuffer(Owner owner)
 
 		UpdateSignalsAroundSegment(info);
 	}
+
+	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) state = SIGSEG_PBS;
 
 	return state;
 }

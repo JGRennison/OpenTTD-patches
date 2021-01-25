@@ -18,6 +18,7 @@
 #include "engine_base.h"
 #include "rail_map.h"
 #include "ground_vehicle.hpp"
+#include "pbs.h"
 
 struct Train;
 
@@ -74,7 +75,7 @@ byte FreightWagonMult(CargoID cargo);
 
 void CheckTrainsLengths();
 
-void FreeTrainTrackReservation(const Train *v, TileIndex origin = INVALID_TILE, Trackdir orig_td = INVALID_TRACKDIR);
+void FreeTrainTrackReservation(Train *v, TileIndex origin = INVALID_TILE, Trackdir orig_td = INVALID_TRACKDIR);
 bool TryPathReserve(Train *v, bool mark_as_stuck = false, bool first_tile_okay = false);
 
 void DeleteVisibleTrain(Train *v);
@@ -87,14 +88,17 @@ struct TrainCache {
 	/* Cached wagon override spritegroup */
 	const struct SpriteGroup *cached_override;
 
-	/* cached values, recalculated on load and each time a vehicle is added to/removed from the consist. */
-	bool cached_tilt;           ///< train can tilt; feature provides a bonus in curves
-	uint8 cached_num_engines;   ///< total number of engines, including rear ends of multiheaded engines
-
-	byte user_def_data;         ///< Cached property 0x25. Can be set by Callback 0x36.
-
 	/* cached max. speed / acceleration data */
-	int cached_max_curve_speed; ///< max consist speed limited by curves
+	int cached_max_curve_speed;   ///< max consist speed limited by curves
+
+	/* cached values, recalculated on load and each time a vehicle is added to/removed from the consist. */
+	bool cached_tilt;             ///< train can tilt; feature provides a bonus in curves
+	uint8 cached_num_engines;     ///< total number of engines, including rear ends of multiheaded engines
+	uint16 cached_veh_weight;     ///< Cached individual vehicle weight
+	uint16 cached_uncapped_decel; ///< Uncapped cached deceleration for realistic braking lookahead purposes
+	uint8 cached_deceleration;    ///< Cached deceleration for realistic braking lookahead purposes
+
+	byte user_def_data;           ///< Cached property 0x25. Can be set by Callback 0x36.
 };
 
 /**
@@ -105,6 +109,8 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 
 	/* Link between the two ends of a multiheaded engine */
 	Train *other_multiheaded_part;
+
+	std::unique_ptr<TrainReservationLookAhead> lookahead;
 
 	uint32 flags;
 
@@ -158,6 +164,12 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 	int UpdateSpeed();
 
 	void UpdateAcceleration();
+
+	struct MaxSpeedInfo {
+		int strict_max_speed;
+		int advisory_max_speed;
+	};
+	MaxSpeedInfo GetCurrentMaxSpeedInfo() const;
 
 	int GetCurrentMaxSpeed() const;
 

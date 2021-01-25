@@ -179,6 +179,15 @@ public:
 	}
 
 	/**
+	 * Is this an order with a BaseStation destination?
+	 * @return True if the type is either #OT_IMPLICIT, #OT_GOTO_STATION or #OT_GOTO_WAYPOINT.
+	 */
+	inline bool IsBaseStationOrder() const
+	{
+		return IsType(OT_IMPLICIT) || IsType(OT_GOTO_STATION) || IsType(OT_GOTO_WAYPOINT);
+	}
+
+	/**
 	 * Gets the destination of this order.
 	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION).
 	 * @return the destination of the order.

@@ -109,7 +109,8 @@ class NIHVehicle : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  VirtXYTile: %X (%u x %u)", vtile, TileX(vtile), TileY(vtile));
 			print(buffer);
 		}
-		seprintf(buffer, lastof(buffer), "  Position: %X, %X, %X", v->x_pos, v->y_pos, v->z_pos);
+		b = buffer + seprintf(buffer, lastof(buffer), "  Position: %X, %X, %X", v->x_pos, v->y_pos, v->z_pos);
+		if (v->type == VEH_TRAIN) seprintf(b, lastof(buffer), ", tile margin: %d", GetTileMarginInFrontOfTrain(Train::From(v)));
 		print(buffer);
 
 		if (v->IsPrimaryVehicle()) {
@@ -149,9 +150,68 @@ class NIHVehicle : public NIHelper {
 		}
 		if (v->type == VEH_TRAIN) {
 			const Train *t = Train::From(v);
-			seprintf(buffer, lastof(buffer), "  Wait counter: %u, rev distance: %u, TBSN: %u, speed restriction: %u, railtype: %u, compatible_railtypes: 0x" OTTD_PRINTFHEX64,
-					t->wait_counter, t->reverse_distance, t->tunnel_bridge_signal_num, t->speed_restriction, t->railtype, t->compatible_railtypes);
+			seprintf(buffer, lastof(buffer), "  T cache: tilt: %u, engines: %u, decel: %u, uncapped decel: %u",
+					t->tcache.cached_tilt, t->tcache.cached_num_engines, t->tcache.cached_deceleration, t->tcache.cached_uncapped_decel);
 			print(buffer);
+			seprintf(buffer, lastof(buffer), "  T cache: veh weight: %u, user data: %u, curve speed: %u",
+					t->tcache.cached_veh_weight, t->tcache.user_def_data, t->tcache.cached_max_curve_speed);
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  Wait counter: %u, rev distance: %u, TBSN: %u, speed restriction: %u",
+					t->wait_counter, t->reverse_distance, t->tunnel_bridge_signal_num, t->speed_restriction);
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  Railtype: %u, compatible_railtypes: 0x" OTTD_PRINTFHEX64,
+					t->railtype, t->compatible_railtypes);
+			print(buffer);
+			if (t->lookahead != nullptr) {
+				print ("  Look ahead:");
+				const TrainReservationLookAhead &l = *t->lookahead;
+				seprintf(buffer, lastof(buffer), "    Position: current: %d, end: %d, remaining: %d", l.current_position, l.reservation_end_position, l.reservation_end_position - l.current_position);
+				print(buffer);
+				seprintf(buffer, lastof(buffer), "    Reservation ends at %X (%u x %u), trackdir: %02X, z: %d",
+						l.reservation_end_tile, TileX(l.reservation_end_tile), TileY(l.reservation_end_tile), l.reservation_end_trackdir, l.reservation_end_z);
+				print(buffer);
+				b = buffer + seprintf(buffer, lastof(buffer), "    TB reserved tiles: %d, flags:", l.tunnel_bridge_reserved_tiles);
+				if (HasBit(l.flags, TRLF_TB_EXIT_FREE)) b += seprintf(b, lastof(buffer), "x");
+				if (HasBit(l.flags, TRLF_DEPOT_END)) b += seprintf(b, lastof(buffer), "d");
+				if (HasBit(l.flags, TRLF_APPLY_ADVISORY)) b += seprintf(b, lastof(buffer), "a");
+				if (HasBit(l.flags, TRLF_CHUNNEL)) b += seprintf(b, lastof(buffer), "c");
+				print(buffer);
+
+				seprintf(buffer, lastof(buffer), "    Items: %u", (uint)l.items.size());
+				print(buffer);
+				for (const TrainReservationLookAheadItem &item : l.items) {
+					b = buffer + seprintf(buffer, lastof(buffer), "      Start: %d (dist: %d), end: %d (dist: %d), z: %d, ",
+							item.start, item.start - l.current_position, item.end, item.end - l.current_position, item.z_pos);
+					switch (item.type) {
+						case TRLIT_STATION:
+							b += seprintf(b, lastof(buffer), "station: %u, %s", item.data_id, BaseStation::IsValidID(item.data_id) ? BaseStation::Get(item.data_id)->GetCachedName() : "[invalid]");
+							break;
+						case TRLIT_REVERSE:
+							b += seprintf(b, lastof(buffer), "reverse");
+							break;
+						case TRLIT_TRACK_SPEED:
+							b += seprintf(b, lastof(buffer), "track speed: %u", item.data_id);
+							break;
+						case TRLIT_SPEED_RESTRICTION:
+							b += seprintf(b, lastof(buffer), "speed restriction: %u", item.data_id);
+							break;
+						case TRLIT_SIGNAL:
+							b += seprintf(b, lastof(buffer), "signal: target speed: %u", item.data_id);
+							break;
+						case TRLIT_CURVE_SPEED:
+							b += seprintf(b, lastof(buffer), "curve speed: %u", item.data_id);
+							break;
+					}
+					print(buffer);
+				}
+
+				seprintf(buffer, lastof(buffer), "    Curves: %u", (uint)l.curves.size());
+				print(buffer);
+				for (const TrainReservationLookAheadCurve &curve : l.curves) {
+					seprintf(buffer, lastof(buffer), "      Pos: %d (dist: %d), dir diff: %d", curve.position, curve.position - l.current_position, curve.dir_diff);
+					print(buffer);
+				}
+			}
 		}
 		if (v->type == VEH_ROAD) {
 			const RoadVehicle *rv = RoadVehicle::From(v);

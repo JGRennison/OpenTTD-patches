@@ -849,11 +849,16 @@ CommandCost CmdRemoveSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 
 			cost.AddCost(RailClearCost(GetRailType(tile)));
 
-			if (flags & DC_EXEC) {
-				if (HasReservedTracks(tile, trackbit)) {
-					v = GetTrainForReservation(tile, track);
-					if (v != nullptr) FreeTrainTrackReservation(v);
+			if (HasReservedTracks(tile, trackbit)) {
+				v = GetTrainForReservation(tile, track);
+				if (v != nullptr) {
+					CommandCost ret = CheckTrainReservationPreventsTrackModification(v);
+					if (ret.Failed()) return ret;
 				}
+			}
+
+			if (flags & DC_EXEC) {
+				if (v != nullptr) FreeTrainTrackReservation(v);
 
 				owner = GetTileOwner(tile);
 				Company::Get(owner)->infrastructure.rail[GetRailType(tile)] -= LEVELCROSSING_TRACKBIT_FACTOR;
@@ -890,11 +895,16 @@ CommandCost CmdRemoveSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 				cost.AddCost(DoCommand(tile, track, 0, flags, CMD_REMOVE_SIGNALS));
 			}
 
-			if (flags & DC_EXEC) {
-				if (HasReservedTracks(tile, trackbit)) {
-					v = GetTrainForReservation(tile, track);
-					if (v != nullptr) FreeTrainTrackReservation(v);
+			if (HasReservedTracks(tile, trackbit)) {
+				v = GetTrainForReservation(tile, track);
+				if (v != nullptr) {
+					CommandCost ret = CheckTrainReservationPreventsTrackModification(v);
+					if (ret.Failed()) return ret;
 				}
+			}
+
+			if (flags & DC_EXEC) {
+				if (v != nullptr) FreeTrainTrackReservation(v);
 
 				owner = GetTileOwner(tile);
 
@@ -958,16 +968,21 @@ CommandCost CmdRemoveSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 			}
 			if (ret.Failed()) return ret;
 
+			if (HasReservedTracks(tile, trackbit)) {
+				v = GetTrainForReservation(tile, track);
+				if (v != nullptr) {
+					CommandCost ret = CheckTrainReservationPreventsTrackModification(v);
+					if (ret.Failed()) return ret;
+				}
+			}
+
 			cost.AddCost(RailClearCost(GetTileRailTypeByTrackBit(tile, trackbit)));
 
 			if (flags & DC_EXEC) {
 				SubtractRailTunnelBridgeInfrastructure(tile, other_end);
 				owner = GetTileOwner(tile);
 
-				if (HasReservedTracks(tile, trackbit)) {
-					v = GetTrainForReservation(tile, track);
-					if (v != nullptr) FreeTrainTrackReservation(v);
-				}
+				if (v != nullptr) FreeTrainTrackReservation(v);
 
 				if (future == TRACK_BIT_HORZ || future == TRACK_BIT_VERT) {
 					// Changing to two separate tracks with separate rail types
@@ -1346,6 +1361,8 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 
 	uint which_signals = GB(p1, 9, 6);
 
+	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsSignalTypeUnsuitableForRealisticBraking(sigtype)) return CMD_ERROR;
+
 	/* You can only build signals on plain rail tiles or tunnel/bridges, and the selected track must exist */
 	if (IsTileType(tile, MP_TUNNELBRIDGE)) {
 		if (GetTunnelBridgeTransportType(tile) != TRANSPORT_RAIL) return CMD_ERROR;
@@ -1414,15 +1431,30 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			SetTunnelBridgeEntranceSignalState(t, SIGNAL_STATE_GREEN);
 			SetTunnelBridgeSignalSimulationExit(t);
 		};
+
+		if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+			for (TileIndex t : { tile, tile_exit }) {
+				if (HasAcrossTunnelBridgeReservation(t)) {
+					CommandCost ret = CheckTrainReservationPreventsTrackModification(t, FindFirstTrack(GetAcrossTunnelBridgeReservationTrackBits(t)));
+					if (ret.Failed()) return ret;
+				}
+			}
+		}
+
 		if (flags & DC_EXEC) {
 			Company * const c = Company::Get(GetTileOwner(tile));
-			Train *re_reserve_train = nullptr;
+			std::vector<Train *> re_reserve_trains;
 			if (IsTunnelBridgeWithSignalSimulation(tile)) {
 				c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, tile_exit);
 			} else {
-				if (HasAcrossTunnelBridgeReservation(tile)) {
-					re_reserve_train = GetTrainForReservation(tile, FindFirstTrack(GetAcrossTunnelBridgeReservationTrackBits(tile)));
-					if (re_reserve_train != nullptr) FreeTrainTrackReservation(re_reserve_train);
+				for (TileIndex t : { tile, tile_exit }) {
+					if (HasAcrossTunnelBridgeReservation(t)) {
+						Train *re_reserve_train = GetTrainForReservation(t, FindFirstTrack(GetAcrossTunnelBridgeReservationTrackBits(t)));
+						if (re_reserve_train != nullptr) {
+							FreeTrainTrackReservation(re_reserve_train);
+							re_reserve_trains.push_back(re_reserve_train);
+						}
+					}
 				}
 			}
 			if (!p2_active && IsTunnelBridgeWithSignalSimulation(tile)) { // Toggle signal if already signals present.
@@ -1481,8 +1513,8 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 					if (!IsTunnelBridgePBS(tile)) remove_pbs_bidi();
 				}
 			}
-			if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgePBS(tile) && !HasAcrossTunnelBridgeReservation(tile)) SetTunnelBridgeExitSignalState(tile, SIGNAL_STATE_RED);
-			if (IsTunnelBridgeSignalSimulationExit(tile_exit) && IsTunnelBridgePBS(tile_exit) && !HasAcrossTunnelBridgeReservation(tile_exit)) SetTunnelBridgeExitSignalState(tile_exit, SIGNAL_STATE_RED);
+			if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgeEffectivelyPBS(tile) && !HasAcrossTunnelBridgeReservation(tile)) SetTunnelBridgeExitSignalState(tile, SIGNAL_STATE_RED);
+			if (IsTunnelBridgeSignalSimulationExit(tile_exit) && IsTunnelBridgeEffectivelyPBS(tile_exit) && !HasAcrossTunnelBridgeReservation(tile_exit)) SetTunnelBridgeExitSignalState(tile_exit, SIGNAL_STATE_RED);
 			MarkBridgeOrTunnelDirty(tile);
 			AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
 			AddSideToSignalBuffer(tile_exit, INVALID_DIAGDIR, GetTileOwner(tile));
@@ -1490,7 +1522,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			YapfNotifyTrackLayoutChange(tile_exit, track);
 			if (IsTunnelBridgeWithSignalSimulation(tile)) c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(tile, tile_exit);
 			DirtyCompanyInfrastructureWindows(GetTileOwner(tile));
-			if (re_reserve_train != nullptr) {
+			for (Train *re_reserve_train : re_reserve_trains) {
 				ReReserveTrainPath(re_reserve_train);
 			}
 		}
@@ -1530,16 +1562,20 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 		}
 	}
 
-	if (flags & DC_EXEC) {
-		Train *v = nullptr;
-		/* The new/changed signal could block our path. As this can lead to
-		 * stale reservations, we clear the path reservation here and try
-		 * to redo it later on. */
-		if (HasReservedTracks(tile, TrackToTrackBits(track))) {
-			v = GetTrainForReservation(tile, track);
-			if (v != nullptr) FreeTrainTrackReservation(v);
+	Train *v = nullptr;
+	/* The new/changed signal could block our path. As this can lead to
+	 * stale reservations, we clear the path reservation here and try
+	 * to redo it later on. */
+	if (HasReservedTracks(tile, TrackToTrackBits(track))) {
+		v = GetTrainForReservation(tile, track);
+		if (v != nullptr) {
+			CommandCost ret = CheckTrainReservationPreventsTrackModification(v);
+			if (ret.Failed()) return ret;
+			if (flags & DC_EXEC) FreeTrainTrackReservation(v);
 		}
+	}
 
+	if (flags & DC_EXEC) {
 		if (!HasSignals(tile)) {
 			/* there are no signals at all on this tile yet */
 			SetHasSignals(tile, true);
@@ -1555,7 +1591,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 		if (p2 == 0) {
 			if (!HasSignalOnTrack(tile, track)) {
 				/* build new signals */
-				SetPresentSignals(tile, GetPresentSignals(tile) | (IsPbsSignal(sigtype) ? KillFirstBit(SignalOnTrack(track)) : SignalOnTrack(track)));
+				SetPresentSignals(tile, GetPresentSignals(tile) | ((IsPbsSignal(sigtype) || _settings_game.vehicle.train_braking_model == TBM_REALISTIC) ? KillFirstBit(SignalOnTrack(track)) : SignalOnTrack(track)));
 				SetSignalType(tile, track, sigtype);
 				SetSignalVariant(tile, track, sigvar);
 				while (num_dir_cycle-- > 0) CycleSignalSide(tile, track);
@@ -1569,8 +1605,9 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 						sigtype = GetSignalType(tile, track);
 					} else {
 						/* convert the present signal to the chosen type and variant */
-						if (IsPresignalProgrammable(tile, track))
+						if (IsPresignalProgrammable(tile, track)) {
 							FreeSignalProgram(SignalReference(tile, track));
+						}
 						SetSignalType(tile, track, sigtype);
 						SetSignalVariant(tile, track, sigvar);
 						if (IsPbsSignal(sigtype) && (GetPresentSignals(tile) & SignalOnTrack(track)) == SignalOnTrack(track)) {
@@ -1584,7 +1621,9 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 					if(IsProgrammableSignal(sigtype))
 						FreeSignalProgram(SignalReference(tile, track));
 
-					sigtype = NextSignalType(sigtype, which_signals);
+					do {
+						sigtype = NextSignalType(sigtype, which_signals);
+					} while (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsSignalTypeUnsuitableForRealisticBraking(sigtype));
 
 					SetSignalType(tile, track, sigtype);
 					if (IsPbsSignal(sigtype) && (GetPresentSignals(tile) & SignalOnTrack(track)) == SignalOnTrack(track)) {
@@ -1613,7 +1652,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 		Company::Get(GetTileOwner(tile))->infrastructure.signal += CountBits(GetPresentSignals(tile));
 		DirtyCompanyInfrastructureWindows(GetTileOwner(tile));
 
-		if (IsPbsSignal(sigtype)) {
+		if (IsPbsSignalNonExtended(sigtype) || (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && HasBit(GetRailReservationTrackBits(tile), track))) {
 			/* PBS signals should show red unless they are on reserved tiles without a train. */
 			uint mask = GetPresentSignals(tile) & SignalOnTrack(track);
 			SetSignalStates(tile, (GetSignalStates(tile) & ~mask) | ((HasBit(GetRailReservationTrackBits(tile), track) && EnsureNoVehicleOnGround(tile).Succeeded() ? UINT_MAX : 0) & mask));
@@ -1956,54 +1995,60 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 		if (ret.Failed()) return ret;
 	}
 
-	/* Do it? */
-	if (flags & DC_EXEC) {
-
-		if (IsTunnelBridgeWithSignalSimulation(tile)) { // handle tunnel/bridge signals.
-			TileIndex end = GetOtherTunnelBridgeEnd(tile);
-			std::vector<Train *> re_reserve_trains;
-			auto check_reservation = [&](TileIndex t) {
-				if (HasAcrossTunnelBridgeReservation(t)) {
-					Train *v = GetTrainForReservation(t, FindFirstTrack(GetAcrossTunnelBridgeReservationTrackBits(t)));
-					if (v != nullptr) {
+	if (IsTunnelBridgeWithSignalSimulation(tile)) { // handle tunnel/bridge signals.
+		TileIndex end = GetOtherTunnelBridgeEnd(tile);
+		std::vector<Train *> re_reserve_trains;
+		for (TileIndex t : { tile, end }) {
+			if (HasAcrossTunnelBridgeReservation(t)) {
+				Train *v = GetTrainForReservation(t, FindFirstTrack(GetAcrossTunnelBridgeReservationTrackBits(t)));
+				if (v != nullptr) {
+					CommandCost ret = CheckTrainReservationPreventsTrackModification(v);
+					if (ret.Failed()) return ret;
+					if (flags & DC_EXEC) {
 						FreeTrainTrackReservation(v);
 						re_reserve_trains.push_back(v);
 					}
 				}
-			};
-			check_reservation(tile);
-			check_reservation(end);
-			Company::Get(GetTileOwner(tile))->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, end);
-			ClearBridgeTunnelSignalSimulation(end, tile);
-			ClearBridgeTunnelSignalSimulation(tile, end);
-			MarkBridgeOrTunnelDirty(tile);
-			AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
-			AddSideToSignalBuffer(end, INVALID_DIAGDIR, GetTileOwner(tile));
-			YapfNotifyTrackLayoutChange(tile, track);
-			YapfNotifyTrackLayoutChange(end, track);
-			DirtyCompanyInfrastructureWindows(GetTileOwner(tile));
-			for (Train *v : re_reserve_trains) {
-				ReReserveTrainPath(v);
 			}
-			return CommandCost(EXPENSES_CONSTRUCTION, cost);
 		}
+		Company::Get(GetTileOwner(tile))->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, end);
+		ClearBridgeTunnelSignalSimulation(end, tile);
+		ClearBridgeTunnelSignalSimulation(tile, end);
+		MarkBridgeOrTunnelDirty(tile);
+		AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
+		AddSideToSignalBuffer(end, INVALID_DIAGDIR, GetTileOwner(tile));
+		YapfNotifyTrackLayoutChange(tile, track);
+		YapfNotifyTrackLayoutChange(end, track);
+		DirtyCompanyInfrastructureWindows(GetTileOwner(tile));
+		for (Train *v : re_reserve_trains) {
+			ReReserveTrainPath(v);
+		}
+		return CommandCost(EXPENSES_CONSTRUCTION, cost);
+	}
 
-		Train *v = nullptr;
-		if (HasReservedTracks(tile, TrackToTrackBits(track))) {
-			v = GetTrainForReservation(tile, track);
-		} else if (IsPbsSignal(GetSignalType(tile, track))) {
-			/* PBS signal, might be the end of a path reservation. */
-			Trackdir td = TrackToTrackdir(track);
-			for (int i = 0; v == nullptr && i < 2; i++, td = ReverseTrackdir(td)) {
-				/* Only test the active signal side. */
-				if (!HasSignalOnTrackdir(tile, ReverseTrackdir(td))) continue;
-				TileIndex next = TileAddByDiagDir(tile, TrackdirToExitdir(td));
-				TrackBits tracks = TrackdirBitsToTrackBits(TrackdirReachesTrackdirs(td));
-				if (HasReservedTracks(next, tracks)) {
-					v = GetTrainForReservation(next, TrackBitsToTrack(GetReservedTrackbits(next) & tracks));
-				}
+	Train *v = nullptr;
+	if (HasReservedTracks(tile, TrackToTrackBits(track))) {
+		v = GetTrainForReservation(tile, track);
+	} else if (IsPbsSignal(GetSignalType(tile, track))) {
+		/* PBS signal, might be the end of a path reservation. */
+		Trackdir td = TrackToTrackdir(track);
+		for (int i = 0; v == nullptr && i < 2; i++, td = ReverseTrackdir(td)) {
+			/* Only test the active signal side. */
+			if (!HasSignalOnTrackdir(tile, ReverseTrackdir(td))) continue;
+			TileIndex next = TileAddByDiagDir(tile, TrackdirToExitdir(td));
+			TrackBits tracks = TrackdirBitsToTrackBits(TrackdirReachesTrackdirs(td));
+			if (HasReservedTracks(next, tracks)) {
+				v = GetTrainForReservation(next, TrackBitsToTrack(GetReservedTrackbits(next) & tracks));
 			}
 		}
+	}
+	if (v != nullptr) {
+		CommandCost ret = CheckTrainReservationPreventsTrackModification(v);
+		if (ret.Failed()) return ret;
+	}
+
+	/* Do it? */
+	if (flags & DC_EXEC) {
 		Company::Get(GetTileOwner(tile))->infrastructure.signal -= CountBits(GetPresentSignals(tile));
 		CheckRemoveSignal(tile, track);
 		SetPresentSignals(tile, GetPresentSignals(tile) & ~SignalOnTrack(track));
@@ -2196,16 +2241,35 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 		std::vector<Train *> vehicles_affected;
 
-		auto find_train_reservations = [&vehicles_affected, &totype](TileIndex tile, TrackBits reserved) {
+		auto find_train_reservations = [&vehicles_affected, &totype, &flags](TileIndex tile, TrackBits reserved) -> CommandCost {
+			if (!(flags & DC_EXEC) && _settings_game.vehicle.train_braking_model != TBM_REALISTIC) {
+				/* Nothing to do */
+				return CommandCost();
+			}
 			Track track;
 			while ((track = RemoveFirstTrack(&reserved)) != INVALID_TRACK) {
 				Train *v = GetTrainForReservation(tile, track);
+				bool check_train = false;
 				if (v != nullptr && !HasPowerOnRail(v->railtype, totype)) {
+					check_train = true;
+				} else if (v != nullptr && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+					RailType original = GetRailTypeByTrack(tile, track);
+					if ((uint)(GetRailTypeInfo(original)->max_speed - 1) > (uint)(GetRailTypeInfo(totype)->max_speed - 1)) {
+						check_train = true;
+					}
+				}
+				if (check_train) {
+					CommandCost ret = CheckTrainReservationPreventsTrackModification(v);
+					if (ret.Failed()) return ret;
+
 					/* No power on new rail type, reroute. */
-					FreeTrainTrackReservation(v);
-					vehicles_affected.push_back(v);
+					if (flags & DC_EXEC) {
+						FreeTrainTrackReservation(v);
+						vehicles_affected.push_back(v);
+					}
 				}
 			}
+			return CommandCost();
 		};
 
 		auto yapf_notify_track_change = [](TileIndex tile, TrackBits tracks) {
@@ -2224,9 +2288,9 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 					continue;
 				}
 			}
+			CommandCost ret = find_train_reservations(tile, GetReservedTrackbits(tile));
+			if (ret.Failed()) return ret;
 			if (flags & DC_EXEC) { // we can safely convert, too
-				find_train_reservations(tile, GetReservedTrackbits(tile));
-
 				/* Update the company infrastructure counters. */
 				if (!IsRailStationTile(tile) || !IsStationTileBlocked(tile)) {
 					Company *c = Company::Get(GetTileOwner(tile));
@@ -2316,11 +2380,17 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				if (raw_secondary_type != INVALID_RAILTYPE) cost.AddCost(RailConvertCost(raw_secondary_type, totype));
 				if (end_secondary_type != INVALID_RAILTYPE) cost.AddCost(RailConvertCost(end_secondary_type, totype));
 
+				CommandCost ret = find_train_reservations(tile, GetTunnelBridgeReservationTrackBits(tile));
+				if (ret.Failed()) return ret;
+				ret = find_train_reservations(endtile, GetTunnelBridgeReservationTrackBits(endtile));
+				if (ret.Failed()) return ret;
+				if ((uint)(GetRailTypeInfo(type)->max_speed - 1) > (uint)(GetRailTypeInfo(totype)->max_speed - 1)) {
+					ret = CheckTrainInTunnelBridgePreventsTrackModification(tile, endtile);
+					if (ret.Failed()) return ret;
+				}
+
 				if (flags & DC_EXEC) {
 					SubtractRailTunnelBridgeInfrastructure(tile, endtile);
-
-					find_train_reservations(tile, GetTunnelBridgeReservationTrackBits(tile));
-					find_train_reservations(endtile, GetTunnelBridgeReservationTrackBits(endtile));
 
 					SetRailType(tile, totype);
 					SetRailType(endtile, totype);
@@ -2384,16 +2454,23 @@ static CommandCost RemoveTrainDepot(TileIndex tile, DoCommandFlag flags)
 	CommandCost ret = EnsureNoVehicleOnGround(tile);
 	if (ret.Failed()) return ret;
 
+	/* read variables before the depot is removed */
+	DiagDirection dir = GetRailDepotDirection(tile);
+
+	Train *v = nullptr;
+	if (HasDepotReservation(tile)) {
+		v = GetTrainForReservation(tile, DiagDirToDiagTrack(dir));
+		if (v != nullptr) {
+			CommandCost ret = CheckTrainReservationPreventsTrackModification(v);
+			if (ret.Failed()) return ret;
+		}
+	}
+
 	if (flags & DC_EXEC) {
 		/* read variables before the depot is removed */
-		DiagDirection dir = GetRailDepotDirection(tile);
 		Owner owner = GetTileOwner(tile);
-		Train *v = nullptr;
 
-		if (HasDepotReservation(tile)) {
-			v = GetTrainForReservation(tile, DiagDirToDiagTrack(dir));
-			if (v != nullptr) FreeTrainTrackReservation(v);
-		}
+		if (v != nullptr) FreeTrainTrackReservation(v);
 
 		Company::Get(owner)->infrastructure.rail[GetRailType(tile)]--;
 		DirtyCompanyInfrastructureWindows(owner);

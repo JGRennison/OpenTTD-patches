@@ -105,6 +105,7 @@ void GroundVehicle<T, Type>::CargoChanged()
 
 	for (T *u = T::From(this); u != nullptr; u = u->Next()) {
 		uint32 current_weight = u->GetWeight();
+		if (Type == VEH_TRAIN) Train::From(u)->tcache.cached_veh_weight = current_weight;
 		weight += current_weight;
 		/* Slope steepness is in percent, result in N. */
 		u->gcache.cached_slope_resistance = current_weight * u->GetSlopeSteepness() * 100;
@@ -123,10 +124,10 @@ void GroundVehicle<T, Type>::CargoChanged()
 
 /**
  * Calculates the acceleration of the vehicle under its current conditions.
- * @return Current acceleration of the vehicle.
+ * @return Current upper and lower bounds of acceleration of the vehicle.
  */
 template <class T, VehicleType Type>
-int GroundVehicle<T, Type>::GetAcceleration()
+GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 {
 	/* Templated class used for function calls for performance reasons. */
 	const T *v = T::From(this);
@@ -172,6 +173,8 @@ int GroundVehicle<T, Type>::GetAcceleration()
 	/* This value allows to know if the vehicle is accelerating or braking. */
 	AccelStatus mode = v->GetAccelerationStatus();
 
+	const int braking_power = power;
+
 	/* handle breakdown power reduction */
 	uint32 max_te = this->gcache.cached_max_te; // [N]
 	if (Type == VEH_TRAIN && mode == AS_ACCEL && HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER)) {
@@ -185,23 +188,36 @@ int GroundVehicle<T, Type>::GetAcceleration()
 	/* Constructued from power, with need to multiply by 18 and assuming
 	 * low speed, it needs to be a 64 bit integer too. */
 	int64 force;
+	int64 braking_force;
 	if (speed > 0) {
 		if (!maglev) {
 			/* Conversion factor from km/h to m/s is 5/18 to get [N] in the end. */
 			force = power * 18 / (speed * 5);
+			braking_force = force;
 			if (mode == AS_ACCEL && force > (int)max_te) force = max_te;
 		} else {
 			force = power / 25;
+			braking_force = force;
 		}
 	} else {
 		/* "Kickoff" acceleration. */
 		force = (mode == AS_ACCEL && !maglev) ? min(max_te, power) : power;
 		force = max(force, (mass * 8) + resistance);
+		braking_force = force;
 	}
 
 	/* If power is 0 because of a breakdown, we make the force 0 if accelerating */
 	if (Type == VEH_TRAIN && mode == AS_ACCEL && HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER) && power == 0) {
 		force = 0;
+	}
+
+	if (power != braking_power) {
+		if (!maglev && speed > 0) {
+			/* Conversion factor from km/h to m/s is 5/18 to get [N] in the end. */
+			braking_force = braking_power * 18 / (speed * 5);
+		} else {
+			braking_force = braking_power / 25;
+		}
 	}
 
 	/* Calculate the breakdown chance */
@@ -225,9 +241,23 @@ int GroundVehicle<T, Type>::GetAcceleration()
 		this->breakdown_chance_factor = max(breakdown_factor >> 16, (uint64)5);
 	}
 
+	int braking_accel;
+	if (Type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+		/* Assume that every part of a train is braked, not just the engine.
+		 * Exceptionally heavy freight trains should still have a sensible braking distance.
+		 * The total braking force is generally larger than the total tractive force. */
+		braking_accel = ClampToI32((-braking_force - resistance - (this->gcache.cached_total_length * 300)) / mass);
+
+		/* Defensive driving: prevent ridiculously fast deceleration.
+		 * -130 corresponds to a braking distance of about 6.2 tiles from 160 km/h. */
+		braking_accel = max(braking_accel, -130);
+	} else {
+		braking_accel = ClampToI32(min(-braking_force - resistance, -10000) / mass);
+	}
+
 	if (mode == AS_ACCEL) {
 		/* Easy way out when there is no acceleration. */
-		if (force == resistance) return 0;
+		if (force == resistance) return { 0, braking_accel };
 
 		/* When we accelerate, make sure we always keep doing that, even when
 		 * the excess force is more than the mass. Otherwise a vehicle going
@@ -256,9 +286,9 @@ int GroundVehicle<T, Type>::GetAcceleration()
 			}
 		}
 
-		return accel;
+		return { accel, braking_accel };
 	} else {
-		return ClampToI32(min(-force - resistance, -10000) / mass);
+		return { braking_accel, braking_accel };
 	}
 }
 

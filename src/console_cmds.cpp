@@ -3005,6 +3005,35 @@ DEF_CONSOLE_CMD(ConFramerateWindow)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConFindNonRealisticBrakingSignal)
+{
+	if (argc == 0) {
+		IConsoleHelp("Find next signal tile which prevents enabling of realitic braking");
+		return true;
+	}
+
+	for (TileIndex t = 0; t < MapSize(); t++) {
+		if (IsTileType(t, MP_RAILWAY) && GetRailTileType(t) == RAIL_TILE_SIGNALS) {
+			uint signals = GetPresentSignals(t);
+			if ((signals & 0x3) & ((signals & 0x3) - 1) || (signals & 0xC) & ((signals & 0xC) - 1)) {
+				/* Signals in both directions */
+				ScrollMainWindowToTile(t);
+				SetRedErrorSquare(t);
+				return true;
+			}
+			if (((signals & 0x3) && IsSignalTypeUnsuitableForRealisticBraking(GetSignalType(t, TRACK_LOWER))) ||
+					((signals & 0xC) && IsSignalTypeUnsuitableForRealisticBraking(GetSignalType(t, TRACK_UPPER)))) {
+				/* Banned signal types present */
+				ScrollMainWindowToTile(t);
+				SetRedErrorSquare(t);
+				return true;
+			}
+		}
+	}
+
+	return true;
+}
+
 /*******************************
  * console command registration
  *******************************/
@@ -3155,6 +3184,8 @@ void IConsoleStdLibRegister()
 #endif
 	IConsoleCmdRegister("fps",     ConFramerate);
 	IConsoleCmdRegister("fps_wnd", ConFramerateWindow);
+
+	IConsoleCmdRegister("find_non_realistic_braking_signal", ConFindNonRealisticBrakingSignal);
 
 	IConsoleCmdRegister("getfulldate",  ConGetFullDate, nullptr, true);
 	IConsoleCmdRegister("dump_command_log", ConDumpCommandLog, nullptr, true);

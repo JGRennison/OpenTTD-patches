@@ -16,6 +16,8 @@
 #include "direction_type.h"
 #include "company_type.h"
 #include "debug.h"
+#include "settings_type.h"
+#include "vehicle_type.h"
 
 /**
  * Maps a trackdir to the bit that stores its status in the map arrays, in the
@@ -68,6 +70,12 @@ static inline bool IsComboSignal(SignalType type)
 /// Is a given signal type a PBS signal?
 static inline bool IsPbsSignal(SignalType type)
 {
+	return _settings_game.vehicle.train_braking_model == TBM_REALISTIC || type == SIGTYPE_PBS || type == SIGTYPE_PBS_ONEWAY;
+}
+
+/// Is a given signal type a PBS signal?
+static inline bool IsPbsSignalNonExtended(SignalType type)
+{
 	return type == SIGTYPE_PBS || type == SIGTYPE_PBS_ONEWAY;
 }
 
@@ -75,6 +83,12 @@ static inline bool IsPbsSignal(SignalType type)
 static inline bool IsProgrammableSignal(SignalType type)
 {
 	return type == SIGTYPE_PROG;
+}
+
+/// Is this signal type unsuitable for realistic braking?
+static inline bool IsSignalTypeUnsuitableForRealisticBraking(SignalType type)
+{
+	return type == SIGTYPE_ENTRY || type == SIGTYPE_EXIT || type == SIGTYPE_COMBO || type == SIGTYPE_PROG;
 }
 
 /// Does a given signal have a PBS sprite?

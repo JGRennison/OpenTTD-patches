@@ -666,6 +666,125 @@ CommandCost TunnelBridgeIsFree(TileIndex tile, TileIndex endtile, const Vehicle 
 	return CommandCost();
 }
 
+struct FindTrainClosestToTunnelBridgeEndInfo {
+	Train *best;     ///< The currently "best" vehicle we have found.
+	int32 best_pos;
+	DiagDirection direction;
+
+	FindTrainClosestToTunnelBridgeEndInfo(DiagDirection direction) : best(nullptr), best_pos(INT32_MIN), direction(direction) {}
+};
+
+/** Callback for Has/FindVehicleOnPos to find a train in a signalled tunnel/bridge */
+static Vehicle *FindClosestTrainToTunnelBridgeEndEnum(Vehicle *v, void *data)
+{
+	FindTrainClosestToTunnelBridgeEndInfo *info = (FindTrainClosestToTunnelBridgeEndInfo *)data;
+
+	/* Only look for train heads and tails. */
+	if (v->Previous() != nullptr && v->Next() != nullptr) return nullptr;
+
+	if ((v->vehstatus & VS_CRASHED)) return nullptr;
+
+	Train *t = Train::From(v);
+
+	if (!IsDiagonalDirection(t->direction)) {
+		/* Check for vehicles on non-across track pieces of custom bridge head */
+		if ((GetAcrossTunnelBridgeTrackBits(t->tile) & t->track & TRACK_BIT_ALL) == TRACK_BIT_NONE) return nullptr;
+	}
+
+	int32 pos;
+	switch (info->direction) {
+		default: NOT_REACHED();
+		case DIAGDIR_NE: pos = -v->x_pos; break; // X: lower is better
+		case DIAGDIR_SE: pos =  v->y_pos; break; // Y: higher is better
+		case DIAGDIR_SW: pos =  v->x_pos; break; // X: higher is better
+		case DIAGDIR_NW: pos = -v->y_pos; break; // Y: lower is better
+	}
+
+	/* ALWAYS return the lowest ID (anti-desync!) if the coordinate is the same */
+	if (pos > info->best_pos || (pos == info->best_pos && t->First()->index < info->best->index)) {
+		info->best = t->First();
+		info->best_pos = pos;
+	}
+
+	return t;
+}
+
+Train *GetTrainClosestToTunnelBridgeEnd(TileIndex tile, TileIndex other_tile)
+{
+	FindTrainClosestToTunnelBridgeEndInfo info(ReverseDiagDir(GetTunnelBridgeDirection(tile)));
+	FindVehicleOnPos(tile, VEH_TRAIN, &info, FindClosestTrainToTunnelBridgeEndEnum);
+	FindVehicleOnPos(other_tile, VEH_TRAIN, &info, FindClosestTrainToTunnelBridgeEndEnum);
+	return info.best;
+}
+
+
+struct GetAvailableFreeTilesInSignalledTunnelBridgeChecker {
+	DiagDirection direction;
+	int pos;
+	int lowest_seen;
+};
+
+static Vehicle *GetAvailableFreeTilesInSignalledTunnelBridgeEnum(Vehicle *v, void *data)
+{
+	/* Don't look at wagons between front and back of train. */
+	if ((v->Previous() != nullptr && v->Next() != nullptr)) return nullptr;
+
+	if (!IsDiagonalDirection(v->direction)) {
+		/* Check for vehicles on non-across track pieces of custom bridge head */
+		if ((GetAcrossTunnelBridgeTrackBits(v->tile) & Train::From(v)->track & TRACK_BIT_ALL) == TRACK_BIT_NONE) return nullptr;
+	}
+
+	GetAvailableFreeTilesInSignalledTunnelBridgeChecker *checker = (GetAvailableFreeTilesInSignalledTunnelBridgeChecker*) data;
+	int v_pos;
+
+	switch (checker->direction) {
+		default: NOT_REACHED();
+		case DIAGDIR_NE: v_pos = -v->x_pos + TILE_UNIT_MASK; break;
+		case DIAGDIR_SE: v_pos =  v->y_pos; break;
+		case DIAGDIR_SW: v_pos =  v->x_pos; break;
+		case DIAGDIR_NW: v_pos = -v->y_pos + TILE_UNIT_MASK; break;
+	}
+	if (v_pos > checker->pos && v_pos < checker->lowest_seen) {
+		checker->lowest_seen = v_pos;
+	}
+
+	return nullptr;
+}
+
+int GetAvailableFreeTilesInSignalledTunnelBridgeWithStartOffset(TileIndex entrance, TileIndex exit, int offset)
+{
+	if (offset < 0) offset = 0;
+	TileIndex tile = entrance;
+	if (offset > 0) tile += offset * TileOffsByDiagDir(GetTunnelBridgeDirection(entrance));
+	int free_tiles = GetAvailableFreeTilesInSignalledTunnelBridge(entrance, exit, tile);
+	if (free_tiles != INT_MAX && offset > 0) free_tiles += offset;
+	return free_tiles;
+}
+
+int GetAvailableFreeTilesInSignalledTunnelBridge(TileIndex entrance, TileIndex exit, TileIndex tile)
+{
+	GetAvailableFreeTilesInSignalledTunnelBridgeChecker checker;
+	checker.direction = GetTunnelBridgeDirection(entrance);
+	checker.lowest_seen = INT_MAX;
+	switch (checker.direction) {
+		default: NOT_REACHED();
+		case DIAGDIR_NE: checker.pos = -(TileX(tile) * TILE_SIZE); break;
+		case DIAGDIR_SE: checker.pos =  (TileY(tile) * TILE_SIZE); break;
+		case DIAGDIR_SW: checker.pos =  (TileX(tile) * TILE_SIZE); break;
+		case DIAGDIR_NW: checker.pos = -(TileY(tile) * TILE_SIZE); break;
+	}
+
+	FindVehicleOnPos(entrance, VEH_TRAIN, &checker, &GetAvailableFreeTilesInSignalledTunnelBridgeEnum);
+	FindVehicleOnPos(exit, VEH_TRAIN, &checker, &GetAvailableFreeTilesInSignalledTunnelBridgeEnum);
+
+	if (checker.lowest_seen == INT_MAX) {
+		/* Remainder of bridge/tunnel is clear */
+		return INT_MAX;
+	}
+
+	return (checker.lowest_seen - checker.pos) / TILE_SIZE;
+}
+
 static Vehicle *EnsureNoTrainOnTrackProc(Vehicle *v, void *data)
 {
 	TrackBits rail_bits = *(TrackBits *)data;
@@ -1961,6 +2080,10 @@ bool Vehicle::HandleBreakdown()
 							CheckBreakdownFlags(Train::From(this->First()));
 							SetBit(Train::From(this->First())->flags, VRF_BREAKDOWN_STOPPED);
 							break;
+						case BREAKDOWN_BRAKE_OVERHEAT:
+							CheckBreakdownFlags(Train::From(this->First()));
+							SetBit(Train::From(this->First())->flags, VRF_BREAKDOWN_STOPPED);
+							break;
 						case BREAKDOWN_LOW_SPEED:
 							CheckBreakdownFlags(Train::From(this->First()));
 							SetBit(Train::From(this->First())->flags, VRF_BREAKDOWN_SPEED);
@@ -2042,7 +2165,8 @@ bool Vehicle::HandleBreakdown()
 					}
 				}
 			}
-			return (this->breakdown_type == BREAKDOWN_CRITICAL || this->breakdown_type == BREAKDOWN_EM_STOP || this->breakdown_type == BREAKDOWN_RV_CRASH);
+			return (this->breakdown_type == BREAKDOWN_CRITICAL || this->breakdown_type == BREAKDOWN_EM_STOP ||
+					this->breakdown_type == BREAKDOWN_RV_CRASH || this->breakdown_type == BREAKDOWN_BRAKE_OVERHEAT);
 
 		default:
 			if (!this->current_order.IsType(OT_LOADING)) this->breakdown_ctr--;
@@ -2209,6 +2333,7 @@ void VehicleEnterDepot(Vehicle *v)
 			ClrBit(t->flags, VRF_TOGGLE_REVERSE);
 			t->ConsistChanged(CCF_ARRANGE);
 			t->reverse_distance = 0;
+			t->lookahead.reset();
 			break;
 		}
 
@@ -3513,7 +3638,7 @@ static void SpawnAdvancedVisualEffect(const Vehicle *v)
 	}
 }
 
-uint16 ReversingDistanceTargetSpeed(const Train *v);
+int ReversingDistanceTargetSpeed(const Train *v);
 
 /**
  * Draw visual effects (smoke and/or sparks) for a vehicle chain.
@@ -3542,13 +3667,15 @@ void Vehicle::ShowVisualEffect() const
 		const Train *t = Train::From(this);
 		/* For trains, do not show any smoke when:
 		 * - the train is reversing
+		 * - the train is exceeding the max speed
 		 * - is entering a station with an order to stop there and its speed is equal to maximum station entering speed
 		 * - is approaching a reversing point and its speed is equal to maximum approach speed
 		 */
 		if (HasBit(t->flags, VRF_REVERSING) ||
+				t->cur_speed > max_speed ||
 				(HasStationTileRail(t->tile) && t->IsFrontEngine() && t->current_order.ShouldStopAtStation(t, GetStationIndex(t->tile), IsRailWaypoint(t->tile)) &&
 				t->cur_speed >= max_speed) ||
-				(t->reverse_distance >= 1 && t->cur_speed >= ReversingDistanceTargetSpeed(t))) {
+				(t->reverse_distance >= 1 && (int)t->cur_speed >= ReversingDistanceTargetSpeed(t))) {
 			return;
 		}
 	}

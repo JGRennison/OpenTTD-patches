@@ -826,6 +826,12 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 						c->infrastructure.rail[GetRailType(tile)] -= LEVELCROSSING_TRACKBIT_FACTOR - 1;
 						DirtyCompanyInfrastructureWindows(c->index);
 					}
+
+					if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+						AddTrackToSignalBuffer(tile, railtrack, GetTileOwner(tile));
+						UpdateSignalsInBuffer();
+					}
+
 					DeleteNewGRFInspectWindow(GSF_ROADTYPES, tile);
 				} else {
 					SetRoadType(tile, rtt, INVALID_ROADTYPE);
@@ -1108,6 +1114,10 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 				if (RoadLayoutChangeNotificationEnabled(true)) NotifyRoadLayoutChangedIfTileNonLeaf(tile, rtt, GetCrossingRoadBits(tile));
 				if (rtt == RTT_ROAD) {
 					UpdateRoadCachedOneWayStatesAroundTile(tile);
+				}
+				if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+					AddTrackToSignalBuffer(tile, railtrack, GetTileOwner(tile));
+					UpdateSignalsInBuffer();
 				}
 				MarkTileDirtyByTile(tile);
 			}

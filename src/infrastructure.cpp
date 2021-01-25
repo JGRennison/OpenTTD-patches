@@ -205,7 +205,7 @@ static void FixAllReservations()
 		 * detect this by first finding the end of the reservation,
 		 * then switch sharing on and try again. If these two ends differ,
 		 * unreserve the path, switch sharing off and try to reserve a new path */
-		PBSTileInfo end_tile_info = FollowTrainReservation(v);
+		PBSTileInfo end_tile_info = FollowTrainReservation(v, nullptr, FTRF_IGNORE_LOOKAHEAD);
 
 		/* first do a quick test to determine whether the next tile has any reservation at all */
 		TileIndex next_tile = end_tile_info.tile + TileOffsByDiagDir(TrackdirToExitdir(end_tile_info.trackdir));
@@ -214,7 +214,7 @@ static void FixAllReservations()
 
 		/* change sharing setting temporarily */
 		_settings_game.economy.infrastructure_sharing[VEH_TRAIN] = true;
-		PBSTileInfo end_tile_info2 = FollowTrainReservation(v);
+		PBSTileInfo end_tile_info2 = FollowTrainReservation(v, nullptr, FTRF_IGNORE_LOOKAHEAD);
 		/* if these two reservation ends differ, unreserve the path and try to reserve a new path */
 		if (end_tile_info.tile != end_tile_info2.tile || end_tile_info.trackdir != end_tile_info2.trackdir) {
 			FreeTrainTrackReservation(v);
