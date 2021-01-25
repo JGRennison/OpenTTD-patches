@@ -629,6 +629,7 @@ static inline bool IsOrderUsableForSeparation(const Order *order)
 std::vector<TimetableProgress> PopulateSeparationState(const Vehicle *v_start)
 {
 	std::vector<TimetableProgress> out;
+	if (v_start->GetNumOrders() == 0) return out;
 	for (const Vehicle *v = v_start->FirstShared(); v != nullptr; v = v->NextShared()) {
 		if (!HasBit(v->vehicle_flags, VF_SEPARATION_ACTIVE)) continue;
 		bool separation_valid = true;
