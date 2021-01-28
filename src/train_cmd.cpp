@@ -4119,7 +4119,7 @@ bool TryPathReserve(Train *v, bool mark_as_stuck, bool first_tile_okay)
 
 			if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
 				/* Initialise a lookahead if there isn't one already */
-				if (v->lookahead == nullptr) TryCreateLookAheadForTrainInTunnelBridge(v);
+				if (v->lookahead == nullptr) FillTrainReservationLookAhead(v);
 				if (v->lookahead != nullptr && !LookaheadWithinCurrentTunnelBridge(v)) {
 					/* Try to extend the reservation beyond the tunnel/bridge exit */
 					TryLongReserveChooseTrainTrackFromReservationEnd(v, true);
@@ -4639,7 +4639,7 @@ static bool IsTooCloseBehindTrain(Train *t, TileIndex tile, uint16 distance, boo
 
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
 		if (unlikely(t->lookahead == nullptr)) {
-			TryCreateLookAheadForTrainInTunnelBridge(t);
+			FillTrainReservationLookAhead(t);
 		}
 		if (likely(t->lookahead != nullptr)) {
 			if (LookaheadWithinCurrentTunnelBridge(t)) {
@@ -4726,7 +4726,7 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
 		if (unlikely(t->lookahead == nullptr)) {
-			TryCreateLookAheadForTrainInTunnelBridge(t);
+			FillTrainReservationLookAhead(t);
 		}
 		if (likely(t->lookahead != nullptr)) {
 			if (!HasAcrossTunnelBridgeReservation(tile)) return false;
