@@ -4181,8 +4181,6 @@ bool TryPathReserve(Train *v, bool mark_as_stuck, bool first_tile_okay)
 	bool res_made = false;
 	if (reachable != TRACK_BIT_NONE) {
 		ChooseTrainTrack(v, new_tile, exitdir, reachable, true, &res_made, mark_as_stuck);
-	} else if (mark_as_stuck) {
-		MarkTrainAsStuck(v, true);
 	}
 
 	if (!res_made) {
