@@ -662,6 +662,7 @@ PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res, Follo
 	if (!(flags & FTRF_IGNORE_LOOKAHEAD) && _settings_game.vehicle.train_braking_model == TBM_REALISTIC && v->lookahead != nullptr) {
 		tile = v->lookahead->reservation_end_tile;
 		trackdir = v->lookahead->reservation_end_trackdir;
+		if (HasBit(v->lookahead->flags, TRLF_DEPOT_END)) return PBSTileInfo(tile, trackdir, false);
 		if (HasBit(v->lookahead->flags, TRLF_TB_EXIT_FREE)) {
 			TileIndex exit_tile = GetOtherTunnelBridgeEnd(tile);
 			if (GetTunnelBridgeExitSignalState(exit_tile) == SIGNAL_STATE_GREEN && HasAcrossTunnelBridgeReservation(exit_tile)) {
