@@ -928,15 +928,7 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfo() const
 				int distance_to_go = station_ahead / TILE_SIZE - (station_length - stop_at) / TILE_SIZE;
 
 				if (distance_to_go > 0) {
-					int st_max_speed = 120;
-
-					int delta_v = this->cur_speed / (distance_to_go + 1);
-					if (advisory_max_speed > (this->cur_speed - delta_v)) {
-						st_max_speed = this->cur_speed - (delta_v / 10);
-					}
-
-					st_max_speed = max(st_max_speed, 25 * distance_to_go);
-					advisory_max_speed = min(advisory_max_speed, st_max_speed);
+					advisory_max_speed = min(advisory_max_speed, 15 * distance_to_go);
 				}
 			}
 		}
