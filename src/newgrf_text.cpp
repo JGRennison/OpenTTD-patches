@@ -684,7 +684,14 @@ const char *GetDefaultLangGRFStringFromGRFText(const GRFTextWrapper &text)
  */
 const char *GetGRFStringPtr(uint16 stringid)
 {
+#if 0
 	assert_msg(_grf_text[stringid].grfid != 0, "stringid: %u", stringid);
+#endif
+
+	if (_grf_text[stringid].grfid == 0) {
+		DEBUG(misc, 0, "Invalid NewGRF string ID: %d", stringid);
+		return "(invalid StringID)";
+	}
 
 	const char *str = GetGRFStringFromGRFText(_grf_text[stringid].textholder);
 	if (str == nullptr) {
