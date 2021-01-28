@@ -1120,13 +1120,13 @@ static bool TrainBrakingModelChanged(int32 p1)
 		for (Train *v : Train::Iterate()) {
 			v_cur = v;
 			if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL) || v->track == TRACK_BIT_DEPOT) continue;
-			TryPathReserve(v, v->current_order.GetType() != OT_LOADING, HasStationTileRail(v->tile));
+			TryPathReserve(v, true, HasStationTileRail(v->tile));
 		}
 		_long_reserve_disabled = false;
 		for (Train *v : Train::Iterate()) {
 			v_cur = v;
 			if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL) || v->track == TRACK_BIT_DEPOT) continue;
-			TryPathReserve(v, v->current_order.GetType() != OT_LOADING, HasStationTileRail(v->tile));
+			TryPathReserve(v, true, HasStationTileRail(v->tile));
 			if (v->lookahead != nullptr) SetBit(v->lookahead->flags, TRLF_APPLY_ADVISORY);
 		}
 	} else if (p1 == TBM_ORIGINAL && (_game_mode == GM_NORMAL || _game_mode == GM_EDITOR)) {
@@ -1142,7 +1142,7 @@ static bool TrainBrakingModelChanged(int32 p1)
 				_settings_game.vehicle.train_braking_model = TBM_REALISTIC;
 				FreeTrainTrackReservation(v);
 				_settings_game.vehicle.train_braking_model = p1;
-				TryPathReserve(v, v->current_order.GetType() != OT_LOADING, HasStationTileRail(v->tile));
+				TryPathReserve(v, true, HasStationTileRail(v->tile));
 			} else {
 				v->lookahead.reset();
 			}
