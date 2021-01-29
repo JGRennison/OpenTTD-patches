@@ -1602,6 +1602,11 @@ STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}पू�
 
 # Translatable descriptions in media/baseset/*.ob* files
 
+STR_TRADITIONAL_TRAIN_NAME                                      :रेल्वे {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :रस्त्यावरील वाहन {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :जहाज {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :विमान {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_HOTEL_1                                  :हॉटेल

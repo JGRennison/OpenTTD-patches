@@ -4552,6 +4552,11 @@ STR_BASEMUSIC_WIN_DESCRIPTION                                   :Algse Transport
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :Algse Transport Tycoon Deluxe DOSi versiooni muusika.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Muusikakogu ilma muusikata.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Rong {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Mootorsõiduk {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Laev {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Õhusõiduk {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Kõrge büroohoone

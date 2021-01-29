@@ -5735,6 +5735,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Original Transp
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Original Transport Tycoon (Original/World Editor) DOS edition music.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Ein Musikset ohne Musik.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Zug {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Straßenfahrzeug {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Schiff {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Flugzeug {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Hohes Geschäftshaus

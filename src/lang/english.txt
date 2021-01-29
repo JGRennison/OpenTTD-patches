@@ -1399,6 +1399,12 @@ STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREYSCALE                  :Greyscale
 STR_CONFIG_SETTING_DISABLE_VEHICLE_IMAGE_UPDATE                 :Disable vehicle image update: {STRING2}
 STR_CONFIG_SETTING_DISABLE_VEHICLE_IMAGE_UPDATE_HELPTEXT        :When enabled, prevent NewGRF vehicles from continuously updating the sprite used to draw vehicles as the vehicle moves. This can be used to prevent performance problems when there are many vehicles from computationally expensive NewGRFs.
 
+STR_CONFIG_SETTING_VEHICLE_NAMES                                :Vehicle names: {STRING2}
+STR_CONFIG_SETTING_VEHICLE_NAMES_HELPTEXT                       :Set the naming scheme used for vehicle names. This does not apply to vehicles which have a custom name.
+STR_CONFIG_SETTING_VEHICLE_NAMES_TRADITIONAL                    :Traditional
+STR_CONFIG_SETTING_VEHICLE_NAMES_MODERN                         :Modern
+STR_CONFIG_SETTING_VEHICLE_NAMES_LONG                           :Long
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Enable signals on bridges/tunnels advanced modes: {STRING2}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Enables use of advanced modes of signal simulation on bridges and tunnels. When disabled, bridges/tunnels which are not already in an advanced mode cannot be changed to an advanced mode, however other players may choose to enable this setting and use an advanced mode.
 
@@ -5744,6 +5750,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Original Transp
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Original Transport Tycoon (Original/World Editor) DOS edition music.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :A music pack without actual music.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Train {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Road Vehicle {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Ship {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aircraft {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Tall office block
@@ -6139,6 +6150,8 @@ STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA
 STR_FORMAT_INDUSTRY_NAME                                        :{TOWN} {STRING}
 STR_FORMAT_WAYPOINT_NAME                                        :{TOWN} Waypoint
 STR_FORMAT_WAYPOINT_NAME_SERIAL                                 :{TOWN} Waypoint #{COMMA}
+
+STR_FORMAT_GROUP_VEHICLE_NAME_LONG                              :{GROUP} - {STRING1}
 
 STR_FORMAT_DEPOT_NAME_TRAIN                                     :{TOWN} Train Depot
 STR_FORMAT_DEPOT_NAME_TRAIN_SERIAL                              :{TOWN} Train Depot #{COMMA}

@@ -1758,22 +1758,26 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 					int64 args_array[] = {(int64)(size_t)v->name.c_str()};
 					StringParameters tmp_params(args_array);
 					buff = GetStringWithArgs(buff, STR_JUST_RAW_STRING, &tmp_params, last);
-				} else if (v->group_id != DEFAULT_GROUP) {
+				} else if (v->group_id != DEFAULT_GROUP && _settings_client.gui.vehicle_names != 0 && v->type < VEH_COMPANY_END) {
 					/* The vehicle has no name, but is member of a group, so print group name */
-					int64 args_array[] = {v->group_id, v->unitnumber};
-					StringParameters tmp_params(args_array);
-					buff = GetStringWithArgs(buff, STR_FORMAT_GROUP_VEHICLE_NAME, &tmp_params, last);
+					if (_settings_client.gui.vehicle_names == 1) {
+						int64 args_array[] = {v->group_id, v->unitnumber};
+						StringParameters tmp_params(args_array);
+						buff = GetStringWithArgs(buff, STR_FORMAT_GROUP_VEHICLE_NAME, &tmp_params, last);
+					} else {
+						int64 args_array[] = {v->group_id, STR_TRADITIONAL_TRAIN_NAME + v->type, v->unitnumber};
+						StringParameters tmp_params(args_array);
+						buff = GetStringWithArgs(buff, STR_FORMAT_GROUP_VEHICLE_NAME_LONG, &tmp_params, last);
+					}
 				} else {
 					int64 args_array[] = {v->unitnumber};
 					StringParameters tmp_params(args_array);
 
 					StringID str;
-					switch (v->type) {
-						default:           str = STR_INVALID_VEHICLE; break;
-						case VEH_TRAIN:    str = STR_SV_TRAIN_NAME; break;
-						case VEH_ROAD:     str = STR_SV_ROAD_VEHICLE_NAME; break;
-						case VEH_SHIP:     str = STR_SV_SHIP_NAME; break;
-						case VEH_AIRCRAFT: str = STR_SV_AIRCRAFT_NAME; break;
+					if (v->type < VEH_COMPANY_END) {
+						str = ((_settings_client.gui.vehicle_names == 1) ? STR_SV_TRAIN_NAME : STR_TRADITIONAL_TRAIN_NAME) + v->type;
+					} else {
+						str = STR_INVALID_VEHICLE;
 					}
 
 					buff = GetStringWithArgs(buff, str, &tmp_params, last);

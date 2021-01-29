@@ -4672,6 +4672,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Musica original
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Musica originale di Transport Tycoon (edizione Original/World).
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Un pacchetto musicale non contenente alcuna musica.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Treno {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Automezzo {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Nave {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aeromobile {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Grattacielo di uffici

@@ -5734,6 +5734,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :오리지널 �
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :오리지널 트랜스포트 타이쿤 (오리지널/월드 에디터) DOS 에디션의 음악입니다.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :실제 음악이 없는 음악 팩입니다.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :열차 {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :차량 {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :선박 {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :항공기 {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :고층 사무 구획

@@ -4641,6 +4641,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Original Transp
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Original Transport Tycoon (Original/World Editor) DOS Editioun-Musik.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :E Musikpack ouni aktuell Musik.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Zuch {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Stroossegefier {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Schëff {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Fliger {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Héije Büroblock

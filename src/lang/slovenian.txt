@@ -4597,6 +4597,11 @@ STR_BASEMUSIC_WIN_DESCRIPTION                                   :Originalna glas
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :Originalna glasba Transport Tycoon Deluxe DOS različice
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Glasbeni paket z vključeno glasbo.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Vlak {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Cestno vozilo {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Ladja {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Letalo {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Visok pisarniški blok

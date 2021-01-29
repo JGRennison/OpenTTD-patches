@@ -4643,6 +4643,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Música Origina
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Música Original do Transport Tycoon DOS
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Um pacote de músicas sem músicas.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Trem {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Automóvel {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Embarcação {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aeronave {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Edifício alto de escritórios

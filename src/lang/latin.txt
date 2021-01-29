@@ -4734,6 +4734,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Musica ex editi
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Musica ex editione originale Transport Tycoon (Originale/World Editor) DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Sarcina musicae sine ulla musica.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Tramen {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Vehiculum Viarium {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Navis {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aeroplanum {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Altum multizonium officinarum

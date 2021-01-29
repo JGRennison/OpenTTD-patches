@@ -3805,6 +3805,11 @@ STR_DESKTOP_SHORTCUT_COMMENT                                    :Al simulado lud
 
 # Translatable descriptions in media/baseset/*.ob* files
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Trajno {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Stratveturilo {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Ŝipo {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aviadilo {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Vasta oficejaro

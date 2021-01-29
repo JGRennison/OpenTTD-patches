@@ -4706,6 +4706,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Az eredeti Tran
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Az eredeti Transport Tycoon (az első változat és a World Editor) DOS verziójának zenéje.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Zenei alapcsomag zene nélkül.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Vonat {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Közúti jármű {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Hajó {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Repülő {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Magas irodaház

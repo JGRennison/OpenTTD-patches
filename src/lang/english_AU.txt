@@ -4387,6 +4387,11 @@ STR_BASESOUNDS_NONE_DESCRIPTION                                 :A sound pack wi
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :Original Transport Tycoon Deluxe Windows edition music.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :A music pack without actual music.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Train {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Road Vehicle {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Ship {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aircraft {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Tall office block

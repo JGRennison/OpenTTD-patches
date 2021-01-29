@@ -4642,6 +4642,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Musik orisinil 
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Musik orisinil Transport Tycoon (Orisinil/Editor Dunia) versi DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Paket musik tanpa musik sungguhan.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Kereta {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Kendaraan Jalan Raya {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Kapal {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Pesawat {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Gedung perkantoran tinggi

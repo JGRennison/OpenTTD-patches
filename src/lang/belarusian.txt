@@ -4925,6 +4925,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Набор му
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Набор музычнага афармлення з гульні Transport Tycoon (Original/World Editor) для DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :"Пусты" набор музычнага афармлення, які не зьмяшчае ніякай музыкі.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Цягнiк {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Аўтамабiль {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Карабель {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Самалёт {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Вышынны офісны будынак

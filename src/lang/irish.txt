@@ -4438,6 +4438,11 @@ STR_BASESOUNDS_NONE_DESCRIPTION                                 :Pacáiste fuaim
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :Ceol bunaidh Transport Tycoon Deluxe, eagrán Windows.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Pacáiste ceoil gan aon cheol iarbhír ann.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Traein {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Feithicil Bóthair {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Long {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aerárthach {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Bloc oifigí ard

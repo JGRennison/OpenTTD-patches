@@ -4514,6 +4514,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :מנגינות 
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :מנגינות Transport Tycoon Deluxe (Original/World Editor) המקורי בגרסת DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :אוסף מנגינות ללא מנגינות.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :רכבת {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :רכב {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :כלי שייט {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :כלי טייס {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :בניין משרדים גבוה

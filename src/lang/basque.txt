@@ -4320,6 +4320,11 @@ STR_BASESOUNDS_WIN_DESCRIPTION                                  :Transport Tycoo
 STR_BASESOUNDS_NONE_DESCRIPTION                                 :Soinurik gabeko soinu pakete bat
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Musika gabeko musika paketea.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Trena {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Errepide ibilgailua {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Itsasontzia {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Hegazkina {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Ofizina eraikin handia

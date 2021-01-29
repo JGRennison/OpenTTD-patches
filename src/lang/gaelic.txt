@@ -4735,6 +4735,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Ceòl aig an de
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Ceòl aig an deasachadh DOS tùsail aig Transport Tycoon Deluxe (Original/World Editor).
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Pacaid ciùil anns nach eil fonn sam bith.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :{G=f}Trèan {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Carbad-rathaid {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :{G=f}Long {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Carbad-adhair {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :{G=m}Ionad oifisean àrd

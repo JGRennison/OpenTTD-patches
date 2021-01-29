@@ -4650,6 +4650,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Alkuperäinen T
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Alkuperäinen Transport Tycoonin (alkuperäinen / World Editor) DOS-version musiikki.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Musiikkipaketti, jossa ei ole musiikkia.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Juna {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Ajoneuvo {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Laiva {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Ilma-alus {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Korkea toimistorakennus

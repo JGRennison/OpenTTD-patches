@@ -3904,6 +3904,11 @@ STR_BASESOUNDS_NONE_DESCRIPTION                                 :مجموعة ص
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :النسخة الاصلية من ترانسبورت تايكون ديلوكس الموسيقية نسخة وندوز
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :مجموعة موسيقى بدون موسيقى
 
+STR_TRADITIONAL_TRAIN_NAME                                      :قطار {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :عربة {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :سفينة {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :طائرة {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :مبنى مكاتب عالي

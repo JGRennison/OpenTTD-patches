@@ -4548,6 +4548,11 @@ STR_BASESOUNDS_NONE_DESCRIPTION                                 :空の効果音
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :Transport Tycoon Deluxe オリジナル版 音楽 (Windows)
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :空の音楽パック
 
+STR_TRADITIONAL_TRAIN_NAME                                      :列車{COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :車両{COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :船舶{COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :航空機{COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :超高層ビル

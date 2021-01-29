@@ -4738,6 +4738,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Originalna glaz
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Originalna glazba za Transport Tycoon (original/editor svijeta) DOS izdanje.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Glazbeni paket bez ikakve glazbe.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Vlak {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Cestovno vozilo {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Brod {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Zrakoplov {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Visoki uredski blok

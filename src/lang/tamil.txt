@@ -4186,6 +4186,11 @@ STR_BASEMUSIC_WIN_DESCRIPTION                                   :அசல் �
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :அசல் டிரான்ஸ்ஃபோர்ட் டைகூன் டீலக்ஸ் DOS பதிப்பு இசை.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :இசை இல்லாத இசைத்தொகுப்பு.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :இரயில் {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :சாலை வாகனம் {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :கப்பல் {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :விமானம் {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :உயரமான அலுவலுக கட்டம்

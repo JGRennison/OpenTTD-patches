@@ -4642,6 +4642,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Nhạc của ng
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Nhạc của nguyên bản Transport Tycoon (Original/World Editor) cho DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Gói âm nhạc này không có nhạc nào.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Đoàn tàu {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Ôtô {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Tàu thuỷ {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Máy bay {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Cao ốc văn phòng

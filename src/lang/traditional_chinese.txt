@@ -4445,6 +4445,11 @@ STR_BASESOUNDS_NONE_DESCRIPTION                                 :不含任何音
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :原版 Transport Tycoon Deluxe Windows 版的音樂。
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :不含任何音樂的音樂集。
 
+STR_TRADITIONAL_TRAIN_NAME                                      :列車 {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :車輛 {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :船舶 {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :飛機 {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :摩天辦公大樓

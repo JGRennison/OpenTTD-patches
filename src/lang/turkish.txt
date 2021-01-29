@@ -4643,6 +4643,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Özgün Transpo
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Özgün Transport Tycoon Deluxe (Original/World Editor) DOS sürümü müzikleri.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Müzik içermeyen boş bir müzik paketi.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Tren {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Karayolu Aracı {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Gemi {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Uçak {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Yüksek ofis binasi

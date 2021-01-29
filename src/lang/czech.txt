@@ -5273,6 +5273,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Původní hudba
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Původní hudba Transport Tycoon (verze pro DOS).
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Prázná hudební sada.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :{G=m}Vlak {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :{G=n}Silniční vozidlo {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :{G=f}Loď {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :{G=n}Letadlo {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Vysoký kancelářský blok

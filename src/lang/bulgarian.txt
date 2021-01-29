@@ -4419,6 +4419,11 @@ STR_BASEMUSIC_WIN_DESCRIPTION                                   :Оригина�
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Оригинална Transport Tycoon (Original/World Editor) музика за DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Празен музикален пакет.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Влак {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Автомобил {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Кораб {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Самолет {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Висока офис сграда

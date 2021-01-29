@@ -3600,6 +3600,11 @@ STR_BASESOUNDS_NONE_DESCRIPTION                                 :یک بسته �
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :موزیک اصلی بازی ترانسپورت تایکون نسخه ویندوز
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :یک بسته موسیقی که حاوی هیچ موزیکی نیست
 
+STR_TRADITIONAL_TRAIN_NAME                                      :قطار {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :خودرو جاده ای {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :کشتی {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :هواپیما {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :ساختمان اداری بلند

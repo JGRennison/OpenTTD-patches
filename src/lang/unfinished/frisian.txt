@@ -3993,6 +3993,11 @@ STR_BASESOUNDS_NONE_DESCRIPTION                                 :In lûdspakket 
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :Orizjinele musyk fan de Transport Tycoon Deluxe Windows-edysje.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :In musykpakket sûnder wiere musyk.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Trein {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Lânfartúg {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Skip {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Fleantúg {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Heech kantoargebou

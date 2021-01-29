@@ -4349,6 +4349,11 @@ STR_BASESOUNDS_NONE_DESCRIPTION                                 :ชุดเส
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :เพลงต้นตำหรับชอง Transport Tycoon Deluxe Windows edition
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :ชุดเพลงประกอบแบบไม่มีเสียงเพลง
 
+STR_TRADITIONAL_TRAIN_NAME                                      :รถไฟ {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :พาหนะทางบก {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :พาหนะทางน้ำ {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :อากาศยาน {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :ตึกสูง

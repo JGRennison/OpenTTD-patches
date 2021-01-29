@@ -4642,6 +4642,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :运输大亨DOS
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :原版运输大亨（DOS版及地图编辑器扩展）音乐。
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :一个没有实际内容的音乐包.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :列车 {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :汽车 {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :船只 {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :飞机 {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :高层写字楼

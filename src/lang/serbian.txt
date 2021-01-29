@@ -4682,6 +4682,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Originalna muzi
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Originalna muzika TTD (Original / World Editor) DOS izdanja.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Prazan skup muzičkih numera.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Voz {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Drumsko Vozilo {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Brod {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Letilica {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Visoka radionica

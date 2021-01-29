@@ -4607,6 +4607,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Oorspronklike T
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Oorspronklike Transport Tycoon (Original/World Editor) musiek van die DOS-uitgawe.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :'n Musiek stel sonder enige musiek.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Trein {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Pad Voertuig {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Skip {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Vliegtuig {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Hoog kantoor blok

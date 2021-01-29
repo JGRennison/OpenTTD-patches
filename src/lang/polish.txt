@@ -5028,6 +5028,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Oryginalna edyc
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Oryginalna edycja utworów muzycznych dla Transport Tycoon DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Zestaw utworów muzycznych nie zawierający żadnej muzyki.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Pociąg {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Pojazd {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Statek {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Samolot {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Wysoki biurowiec

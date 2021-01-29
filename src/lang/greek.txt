@@ -4686,6 +4686,15 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Αρχική μ
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Αρχική μουσική από το Transport Tycoon (Αρχικός Επεξεργαστής Κόσμου) έκδοση DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Ένα πάκετο μουσικής χωρίς πραγματική μουσική.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :{G=n}Τρένο {COMMA}
+STR_TRADITIONAL_TRAIN_NAME.geniki                               :Τρένου {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :{G=n}Όχημα Δρόμου {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME.geniki                        :Οχήματος Δρόμου {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :{G=n}Πλοίο {COMMA}
+STR_TRADITIONAL_SHIP_NAME.geniki                                :Πλοίου {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :{G=n}Αεροσκάφος {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME.geniki                            :Αεροσκάφους {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Ψηλό συγκρότημα γραφείων

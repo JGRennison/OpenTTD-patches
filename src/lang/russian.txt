@@ -4853,6 +4853,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Набор му
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Набор музыкального оформления из игры Transport Tycoon Deluxe для DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :"Пустой" набор музыкального оформления, не содержащий никакой музыки.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Поезд №{COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Автомобиль №{COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Судно №{COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Борт №{COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Высотное офисное здание

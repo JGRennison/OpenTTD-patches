@@ -4773,6 +4773,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Оригіна�
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Оригінальна музика Transport Tycoon Deluxe(DOS)
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Порожній набір музики.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Поїзд №{COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Автотранспорт №{COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Судно №{COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Борт №{COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Великий офіс

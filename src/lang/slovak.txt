@@ -4713,6 +4713,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Pôvodná hudba
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Pôvodná hudba z Transport Tycoon (DOS).
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Sada hudby neobsahujúca hudbu.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :{G=m}Vlak {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :{G=s}Cestné vozidlo {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :{G=z}Loď {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :{G=s}Lietadlo {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :{G=z}Vysoká kancelárska budova

@@ -4197,6 +4197,11 @@ STR_BASESOUNDS_NONE_DESCRIPTION                                 :Hljóðpakki á
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :Upprunalega tónlistin úr Transport Tycoon Deluxe Windows útgáfunni.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Tónlistarpakki sem er í raun án tónlistar.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Lest {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Bifreið {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Skip {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Flugvél {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Há skrifstofubygging

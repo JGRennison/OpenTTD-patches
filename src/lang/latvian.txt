@@ -4653,6 +4653,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Oriģinālā Tr
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Oriģinālā Transport Tycoon (Original/World Editor) DOS laidiena mūzika.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Mūzikas kopa bez mūzikas
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Vilciens {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Autotransporta līdzeklis {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Kuģis {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Lidaparāts {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Biroju augstceltne

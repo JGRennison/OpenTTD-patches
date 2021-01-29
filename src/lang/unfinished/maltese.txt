@@ -1152,6 +1152,11 @@ STR_DESKTOP_SHORTCUT_COMMENT                                    :Logħba simulaz
 
 # Translatable descriptions in media/baseset/*.ob* files
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Ferrovija {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Vettura tat-triq {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Vapur {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Ajruplan {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_FOUNTAIN_1                               :Funtana

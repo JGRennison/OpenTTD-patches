@@ -4477,6 +4477,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Cerddoriaeth gw
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Cerddoriaeth gwreiddiol fersion DOS o Transport Tycoon Deluxe (Gwreiddiol/Golygydd Byd).
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Pecyn cerddoriaeth heb unrhyw gerddoriaeth ynddo.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Trên {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Cerbyd Ffordd {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Llong {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Awyren {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Bloc swyddfa uchel

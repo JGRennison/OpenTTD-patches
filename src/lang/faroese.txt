@@ -3947,6 +3947,11 @@ STR_DESKTOP_SHORTCUT_COMMENT                                    :Eitt eftirgerð
 
 # Translatable descriptions in media/baseset/*.ob* files
 
+STR_TRADITIONAL_TRAIN_NAME                                      :{G=n}Tok {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :{G=n}Akfar {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :{G=n}Skip {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :{G=n}Flogfar {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Høgur skrivstovu bygningur

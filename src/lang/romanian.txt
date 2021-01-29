@@ -4454,6 +4454,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Setul de muzic�
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Setul de muzică original al Transport (Original/World Editor) pentru DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Un set de muzică fără muzică inclusă.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Trenul {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Autovehiculul {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Nava {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aeronava {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Clădire înaltă de birouri

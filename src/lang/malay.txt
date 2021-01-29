@@ -4112,6 +4112,11 @@ STR_BASEMUSIC_WIN_DESCRIPTION                                   :Muzik asal Tran
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :Muzik asal Transport Tycoon Deluxe edisi DOS
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Pek muzik tanpa muzik sebenar.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Keretapi {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Kenderaan {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Kapal {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Pesawat {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Bangunan pejabat tinggi

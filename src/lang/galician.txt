@@ -4622,6 +4622,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Música da edic
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Temazos orixinais da edición DOS de Transport Tycoon.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Un conxunto de músicas sen ningunha música.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Tren {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Vehículo de estrada {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Barco {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aeronave {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Bloque alto de oficinas

@@ -4644,6 +4644,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Original Transp
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Original Transport Tycoon (Original/World Editor) DOS edition music.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :En musikkpakke uten noe musikk.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Tog {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Kjøretøy {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Skip {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Luftfartøy {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Høyhus

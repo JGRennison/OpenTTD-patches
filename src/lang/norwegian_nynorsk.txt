@@ -4355,6 +4355,11 @@ STR_BASESOUNDS_NONE_DESCRIPTION                                 :Ei lydpakke uta
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :Original musikk frå Transport Tycoon Deluxe for Windows.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Ei musikkpakke utan noko musikk.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Tog {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Køyretøy {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Skip {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Luftfartøy {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Høghus
