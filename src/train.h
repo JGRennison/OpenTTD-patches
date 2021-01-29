@@ -169,7 +169,20 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 		int strict_max_speed;
 		int advisory_max_speed;
 	};
-	MaxSpeedInfo GetCurrentMaxSpeedInfo() const;
+
+private:
+	MaxSpeedInfo GetCurrentMaxSpeedInfoInternal(bool update_state) const;
+
+public:
+	MaxSpeedInfo GetCurrentMaxSpeedInfo() const
+	{
+		return this->GetCurrentMaxSpeedInfoInternal(false);
+	}
+
+	MaxSpeedInfo GetCurrentMaxSpeedInfoAndUpdate()
+	{
+		return this->GetCurrentMaxSpeedInfoInternal(true);
+	}
 
 	int GetCurrentMaxSpeed() const;
 
@@ -438,11 +451,11 @@ inline int GetTileMarginInFrontOfTrain(const Train *v)
 	return GetTileMarginInFrontOfTrain(v, v->x_pos, v->y_pos);
 }
 
-int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, int *station_ahead, int *station_length, int x_pos, int y_pos);
+int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, bool update_train_state, int *station_ahead, int *station_length, int x_pos, int y_pos);
 
-inline int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, int *station_ahead, int *station_length)
+inline int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, bool update_train_state, int *station_ahead, int *station_length)
 {
-	return GetTrainStopLocation(station_id, tile, v, station_ahead, station_length, v->x_pos, v->y_pos);
+	return GetTrainStopLocation(station_id, tile, v, update_train_state, station_ahead, station_length, v->x_pos, v->y_pos);
 }
 
 #endif /* TRAIN_H */

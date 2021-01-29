@@ -398,13 +398,14 @@ int GetTileMarginInFrontOfTrain(const Train *v, int x_pos, int y_pos)
  * @param station_id     the ID of the station where we're stopping
  * @param tile           the tile where the vehicle currently is
  * @param v              the vehicle to get the stop location of
+ * @param update_train_state whether the state of the train v may be changed
  * @param station_ahead  'return' the amount of 1/16th tiles in front of the train
  * @param station_length 'return' the station length in 1/16th tiles
  * @param x_pos          vehicle x position
  * @param y_pos          vehicle y position
  * @return the location, calculated from the begin of the station to stop at.
  */
-int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, int *station_ahead, int *station_length, int x_pos, int y_pos)
+int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, bool update_train_state, int *station_ahead, int *station_length, int x_pos, int y_pos)
 {
 	Train *front = v->First();
 	if (IsRailWaypoint(tile)) {
@@ -439,7 +440,7 @@ int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, int *st
 	if (osl == OSL_PLATFORM_THROUGH && overhang > 0) {
 		/* The train is longer than the station, and we can run through the station to load/unload */
 		for (Train *u = v; u != nullptr; u = u->Next()) {
-			if (overhang > 0 && !HasBit(u->flags, VRF_BEYOND_PLATFORM_END) && !u->IsArticulatedPart()) {
+			if (update_train_state && overhang > 0 && !HasBit(u->flags, VRF_BEYOND_PLATFORM_END) && !u->IsArticulatedPart()) {
 				bool skip = true;
 				for (const Train *part = u; part != nullptr; part = part->HasArticulatedPart() ? part->GetNextArticulatedPart() : nullptr) {
 					if (part->cargo_cap != 0) {
@@ -903,7 +904,7 @@ static void AdvanceLookAheadPosition(Train *v)
  * Calculates the maximum speed information of the vehicle under its current conditions.
  * @return Maximum speed information of the vehicle.
  */
-Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfo() const
+Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) const
 {
 	int max_speed = _settings_game.vehicle.train_acceleration_model == AM_ORIGINAL ?
 			this->gcache.cached_max_track_speed :
@@ -921,7 +922,7 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfo() const
 			if (this->current_order.ShouldStopAtStation(this, sid, IsRailWaypoint(platform_tile))) {
 				int station_ahead;
 				int station_length;
-				int stop_at = GetTrainStopLocation(sid, platform_tile, v_platform, &station_ahead, &station_length);
+				int stop_at = GetTrainStopLocation(sid, platform_tile, v_platform, update_state, &station_ahead, &station_length);
 
 				/* The distance to go is whatever is still ahead of the train minus the
 				 * distance from the train's stop location to the end of the platform */
@@ -4260,7 +4261,7 @@ void Train::MarkDirty()
 int Train::UpdateSpeed()
 {
 	AccelStatus accel_status = this->GetAccelerationStatus();
-	MaxSpeedInfo max_speed_info = this->GetCurrentMaxSpeedInfo();
+	MaxSpeedInfo max_speed_info = this->GetCurrentMaxSpeedInfoAndUpdate();
 	if (this->lookahead != nullptr && HasBit(this->lookahead->flags, TRLF_APPLY_ADVISORY) && this->cur_speed <= max_speed_info.strict_max_speed) {
 		ClrBit(this->lookahead->flags, TRLF_APPLY_ADVISORY);
 	}
