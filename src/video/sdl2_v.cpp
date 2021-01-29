@@ -31,6 +31,10 @@
 #include "../3rdparty/mingw-std-threads/mingw.mutex.h"
 #include "../3rdparty/mingw-std-threads/mingw.condition_variable.h"
 #endif
+#ifdef __EMSCRIPTEN__
+#	include <emscripten.h>
+#	include <emscripten/html5.h>
+#endif
 
 #if defined(WITH_FCITX)
 #include <fcitx/frontend.h>
@@ -60,6 +64,11 @@ static std::condition_variable_any *_draw_signal = nullptr;
 static volatile bool _draw_continue;
 static Palette _local_palette;
 static SDL_Palette *_sdl_palette;
+
+#ifdef __EMSCRIPTEN__
+/** Whether we just had a window-enter event. */
+static bool _cursor_new_in_window = false;
+#endif
 
 #define MAX_DIRTY_RECTS 100
 static SDL_Rect _dirty_rects[MAX_DIRTY_RECTS];
@@ -578,6 +587,9 @@ bool VideoDriver_SDL::CreateMainSurface(uint w, uint h, bool resize)
 bool VideoDriver_SDL::ClaimMousePointer()
 {
 	SDL_ShowCursor(0);
+#ifdef __EMSCRIPTEN__
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+#endif
 	return true;
 }
 
@@ -796,9 +808,27 @@ int VideoDriver_SDL::PollEvent()
 
 	switch (ev.type) {
 		case SDL_MOUSEMOTION:
+#ifdef __EMSCRIPTEN__
+			if (_cursor_new_in_window) {
+				/* The cursor just moved into the window; this means we don't
+				* know the absolutely position yet to move relative from.
+				* Before this time, SDL didn't know it either, and this is
+				* why we postpone it till now. Update the absolute position
+				* for this once, and work relative after. */
+				_cursor.pos.x = ev.motion.x;
+				_cursor.pos.y = ev.motion.y;
+				_cursor.dirty = true;
+
+				_cursor_new_in_window = false;
+				SDL_SetRelativeMouseMode(SDL_TRUE);
+			} else {
+				_cursor.UpdateCursorPositionRelative(ev.motion.xrel, ev.motion.yrel);
+			}
+#else
 			if (_cursor.UpdateCursorPosition(ev.motion.x, ev.motion.y, true)) {
 				SDL_WarpMouseInWindow(_sdl_window, _cursor.pos.x, _cursor.pos.y);
 			}
+#endif
 			HandleMouseEvents();
 			break;
 
@@ -932,6 +962,12 @@ int VideoDriver_SDL::PollEvent()
 			} else if (ev.window.event == SDL_WINDOWEVENT_ENTER) {
 				// mouse entered the window, enable cursor
 				_cursor.in_window = true;
+#ifdef __EMSCRIPTEN__
+				/* Disable relative mouse mode for the first mouse motion,
+				 * so we can pick up the absolutely position again. */
+				_cursor_new_in_window = true;
+				SDL_SetRelativeMouseMode(SDL_FALSE);
+#endif
 			} else if (ev.window.event == SDL_WINDOWEVENT_LEAVE) {
 				// mouse left the window, undraw cursor
 				UndrawMouseCursor();
@@ -968,7 +1004,8 @@ const char *VideoDriver_SDL::Start(const StringList &parm)
 	/* Explicitly disable hardware acceleration. Enabling this causes
 	 * UpdateWindowSurface() to update the window's texture instead of
 	 * its surface. */
-	SDL_SetHint(SDL_HINT_FRAMEBUFFER_ACCELERATION , "0");
+	SDL_SetHint(SDL_HINT_FRAMEBUFFER_ACCELERATION, "0");
+	SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_WARP, "1");
 
 	/* Just on the offchance the audio subsystem started before the video system,
 	 * check whether any part of SDL has been initialised before getting here.
@@ -1012,19 +1049,114 @@ void VideoDriver_SDL::Stop()
 	}
 }
 
-void VideoDriver_SDL::MainLoop()
+void VideoDriver_SDL::LoopOnce()
 {
-	uint32 cur_ticks = SDL_GetTicks();
-	uint32 last_cur_ticks = cur_ticks;
-	uint32 next_tick = cur_ticks + MILLISECONDS_PER_TICK;
 	uint32 mod;
 	int numkeys;
 	const Uint8 *keys;
+	uint32 prev_cur_ticks = cur_ticks; // to check for wrapping
+	InteractiveRandom(); // randomness
+
+	while (PollEvent() == -1) {}
+	if (_exit_game) {
+#ifdef __EMSCRIPTEN__
+		/* Emscripten is event-driven, and as such the main loop is inside
+		 * the browser. So if _exit_game goes true, the main loop ends (the
+		 * cancel call), but we still have to call the cleanup that is
+		 * normally done at the end of the main loop for non-Emscripten.
+		 * After that, Emscripten just halts, and the HTML shows a nice
+		 * "bye, see you next time" message. */
+		emscripten_cancel_main_loop();
+		MainLoopCleanup();
+#endif
+		return;
+	}
+
+	mod = SDL_GetModState();
+	keys = SDL_GetKeyboardState(&numkeys);
+
+#if defined(_DEBUG)
+	if (_shift_pressed)
+#else
+	/* Speedup when pressing tab, except when using ALT+TAB
+	 * to switch to another application */
+	if (keys[SDL_SCANCODE_TAB] && (mod & KMOD_ALT) == 0)
+#endif /* defined(_DEBUG) */
+	{
+		if (!_networking && _game_mode != GM_MENU) _fast_forward |= 2;
+	} else if (_fast_forward & 2) {
+		_fast_forward = 0;
+	}
+
+	cur_ticks = SDL_GetTicks();
+	if (SDL_TICKS_PASSED(cur_ticks, next_tick) || (_fast_forward && !_pause_mode) || cur_ticks < prev_cur_ticks) {
+		_realtime_tick += cur_ticks - last_cur_ticks;
+		last_cur_ticks = cur_ticks;
+		next_tick = cur_ticks + MILLISECONDS_PER_TICK;
+
+		bool old_ctrl_pressed = _ctrl_pressed;
+		bool old_shift_pressed = _shift_pressed;
+
+		_ctrl_pressed  = !!(mod & KMOD_CTRL) != _invert_ctrl;
+		_shift_pressed = !!(mod & KMOD_SHIFT) != _invert_shift;
+
+		/* determine which directional keys are down */
+		_dirkeys =
+			(keys[SDL_SCANCODE_LEFT]  ? 1 : 0) |
+			(keys[SDL_SCANCODE_UP]    ? 2 : 0) |
+			(keys[SDL_SCANCODE_RIGHT] ? 4 : 0) |
+			(keys[SDL_SCANCODE_DOWN]  ? 8 : 0);
+		if (old_ctrl_pressed != _ctrl_pressed) HandleCtrlChanged();
+		if (old_shift_pressed != _shift_pressed) HandleShiftChanged();
+
+		/* The gameloop is the part that can run asynchronously. The rest
+		 * except sleeping can't. */
+		if (_draw_mutex != nullptr) draw_lock.unlock();
+
+		GameLoop();
+
+		if (_draw_mutex != nullptr) draw_lock.lock();
+
+		GameLoopPaletteAnimations();
+
+		UpdateWindows();
+		_local_palette = _cur_palette;
+	} else {
+		/* Release the thread while sleeping */
+		if (_draw_mutex != nullptr) {
+			draw_lock.unlock();
+			CSleep(1);
+			draw_lock.lock();
+		} else {
+/* Emscripten is running an event-based mainloop; there is already some
+ * downtime between each iteration, so no need to sleep. */
+#ifndef __EMSCRIPTEN__
+			CSleep(1);
+#endif
+		}
+
+		NetworkDrawChatMessage();
+		DrawMouseCursor();
+	}
+
+	/* End of the critical part. */
+	if (_draw_mutex != nullptr && !HasModalProgress()) {
+		_draw_signal->notify_one();
+	} else {
+		/* Oh, we didn't have threads, then just draw unthreaded */
+		CheckPaletteAnim();
+		DrawSurfaceToScreen();
+	}
+}
+
+void VideoDriver_SDL::MainLoop()
+{
+	cur_ticks = SDL_GetTicks();
+	last_cur_ticks = cur_ticks;
+	next_tick = cur_ticks + MILLISECONDS_PER_TICK;
 
 	CheckPaletteAnim();
 
-	std::thread draw_thread;
-	std::unique_lock<std::recursive_mutex> draw_lock;
 	if (_draw_threaded) {
 		/* Initialise the mutex first, because that's the thing we *need*
 		 * directly in the newly created thread. */
@@ -1055,82 +1187,20 @@ void VideoDriver_SDL::MainLoop()
 
 	DEBUG(driver, 1, "SDL2: using %sthreads", _draw_threaded ? "" : "no ");
 
-	for (;;) {
-		uint32 prev_cur_ticks = cur_ticks; // to check for wrapping
-		InteractiveRandom(); // randomness
-
-		while (PollEvent() == -1) {}
-		if (_exit_game) break;
-
-		mod = SDL_GetModState();
-		keys = SDL_GetKeyboardState(&numkeys);
-
-#if defined(_DEBUG)
-		if (_shift_pressed)
+#ifdef __EMSCRIPTEN__
+	/* Run the main loop event-driven, based on RequestAnimationFrame. */
+	emscripten_set_main_loop_arg(&this->EmscriptenLoop, this, 0, 1);
 #else
-		/* Speedup when pressing tab, except when using ALT+TAB
-		 * to switch to another application */
-		if (keys[SDL_SCANCODE_TAB] && (mod & KMOD_ALT) == 0)
-#endif /* defined(_DEBUG) */
-		{
-			if (!_networking && _game_mode != GM_MENU) _fast_forward |= 2;
-		} else if (_fast_forward & 2) {
-			_fast_forward = 0;
-		}
-
-		cur_ticks = SDL_GetTicks();
-		if (SDL_TICKS_PASSED(cur_ticks, next_tick) || (_fast_forward && !_pause_mode) || cur_ticks < prev_cur_ticks) {
-			_realtime_tick += cur_ticks - last_cur_ticks;
-			last_cur_ticks = cur_ticks;
-			next_tick = cur_ticks + MILLISECONDS_PER_TICK;
-
-			bool old_ctrl_pressed = _ctrl_pressed;
-			bool old_shift_pressed = _shift_pressed;
-
-			_ctrl_pressed  = !!(mod & KMOD_CTRL) != _invert_ctrl;
-			_shift_pressed = !!(mod & KMOD_SHIFT) != _invert_shift;
-
-			/* determine which directional keys are down */
-			_dirkeys =
-				(keys[SDL_SCANCODE_LEFT]  ? 1 : 0) |
-				(keys[SDL_SCANCODE_UP]    ? 2 : 0) |
-				(keys[SDL_SCANCODE_RIGHT] ? 4 : 0) |
-				(keys[SDL_SCANCODE_DOWN]  ? 8 : 0);
-			if (old_ctrl_pressed != _ctrl_pressed) HandleCtrlChanged();
-			if (old_shift_pressed != _shift_pressed) HandleShiftChanged();
-
-			/* The gameloop is the part that can run asynchronously. The rest
-			 * except sleeping can't. */
-			if (_draw_mutex != nullptr) draw_lock.unlock();
-
-			GameLoop();
-
-			if (_draw_mutex != nullptr) draw_lock.lock();
-
-			GameLoopPaletteAnimations();
-
-			UpdateWindows();
-			_local_palette = _cur_palette;
-		} else {
-			/* Release the thread while sleeping */
-			if (_draw_mutex != nullptr) draw_lock.unlock();
-			CSleep(1);
-			if (_draw_mutex != nullptr) draw_lock.lock();
-
-			NetworkDrawChatMessage();
-			DrawMouseCursor();
-		}
-
-		/* End of the critical part. */
-		if (_draw_mutex != nullptr && !HasModalProgress()) {
-			_draw_signal->notify_one();
-		} else {
-			/* Oh, we didn't have threads, then just draw unthreaded */
-			CheckPaletteAnim();
-			DrawSurfaceToScreen();
-		}
+	while (!_exit_game) {
+		LoopOnce();
 	}
 
+	MainLoopCleanup();
+#endif
+}
+
+void VideoDriver_SDL::MainLoopCleanup()
+{
 	if (_draw_mutex != nullptr) {
 		_draw_continue = false;
 		/* Sending signal if there is no thread blocked
@@ -1146,6 +1216,15 @@ void VideoDriver_SDL::MainLoop()
 		_draw_mutex = nullptr;
 		_draw_signal = nullptr;
 	}
+
+#ifdef __EMSCRIPTEN__
+	emscripten_exit_pointerlock();
+	/* In effect, the game ends here. As emscripten_set_main_loop() caused
+	 * the stack to be unwound, the code after MainLoop() in
+	 * openttd_main() is never executed. */
+	EM_ASM(if (window["openttd_syncfs"]) openttd_syncfs());
+	EM_ASM(if (window["openttd_exit"]) openttd_exit());
+#endif
 }
 
 bool VideoDriver_SDL::ChangeResolution(int w, int h)

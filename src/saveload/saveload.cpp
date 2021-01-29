@@ -46,6 +46,9 @@
 #include "../scope.h"
 #include <atomic>
 #include <string>
+#ifdef __EMSCRIPTEN__
+#	include <emscripten.h>
+#endif
 
 #include "../tbtr_template_vehicle.h"
 
@@ -2928,6 +2931,10 @@ static void SaveFileDone()
 
 	InvalidateWindowData(WC_STATUS_BAR, 0, SBI_SAVELOAD_FINISH);
 	_sl.saveinprogress = false;
+
+#ifdef __EMSCRIPTEN__
+	EM_ASM(if (window["openttd_syncfs"]) openttd_syncfs());
+#endif
 }
 
 /** Set the error message from outside of the actual loading/saving of the game (AfterLoadGame and friends) */

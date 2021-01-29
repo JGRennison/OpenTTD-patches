@@ -99,6 +99,16 @@ typedef unsigned long in_addr_t;
 #	include <errno.h>
 #	include <sys/time.h>
 #	include <netdb.h>
+
+#   if defined(__EMSCRIPTEN__)
+/* Emscripten doesn't support AI_ADDRCONFIG and errors out on it. */
+#		undef AI_ADDRCONFIG
+#		define AI_ADDRCONFIG 0
+/* Emscripten says it supports FD_SETSIZE fds, but it really only supports 64.
+ * https://github.com/emscripten-core/emscripten/issues/1711 */
+#		undef FD_SETSIZE
+#		define FD_SETSIZE 64
+#   endif
 #endif /* UNIX */
 
 /* OS/2 stuff */
@@ -160,6 +170,28 @@ typedef unsigned long in_addr_t;
 
 #endif /* OS/2 */
 
+#ifdef __EMSCRIPTEN__
+/**
+ * Emscripten doesn't set 'addrlen' for accept(), getsockname(), getpeername()
+ * and recvfrom(), which confuses other functions and causes them to crash.
+ * This function needs to be called after these four functions to make sure
+ * 'addrlen' is patched up.
+ *
+ * https://github.com/emscripten-core/emscripten/issues/12996
+ *
+ * @param address The address returned by those four functions.
+ * @return The correct value for addrlen.
+ */
+static inline socklen_t FixAddrLenForEmscripten(struct sockaddr_storage &address)
+{
+	switch (address.ss_family) {
+		case AF_INET6: return sizeof(struct sockaddr_in6);
+		case AF_INET: return sizeof(struct sockaddr_in);
+		default: NOT_REACHED();
+	}
+}
+#endif
+
 /**
  * Try to set the socket into non-blocking mode.
  * @param d The socket to set the non-blocking more for.
@@ -167,12 +199,16 @@ typedef unsigned long in_addr_t;
  */
 static inline bool SetNonBlocking(SOCKET d)
 {
-#ifdef _WIN32
-	u_long nonblocking = 1;
+#ifdef __EMSCRIPTEN__
+	return true;
 #else
+#	ifdef _WIN32
+	u_long nonblocking = 1;
+#	else
 	int nonblocking = 1;
-#endif
+#	endif
 	return ioctlsocket(d, FIONBIO, &nonblocking) == 0;
+#endif
 }
 
 /**
@@ -197,10 +233,14 @@ static inline bool SetBlocking(SOCKET d)
  */
 static inline bool SetNoDelay(SOCKET d)
 {
+#ifdef __EMSCRIPTEN__
+	return true;
+#else
 	/* XXX should this be done at all? */
 	int b = 1;
 	/* The (const char*) cast is needed for windows */
 	return setsockopt(d, IPPROTO_TCP, TCP_NODELAY, (const char*)&b, sizeof(b)) == 0;
+#endif
 }
 
 

@@ -1122,3 +1122,14 @@ bool IsNetworkCompatibleVersion(const char *other, bool extended)
 {
 	return strncmp(_openttd_revision, other, (extended ? NETWORK_LONG_REVISION_LENGTH : NETWORK_REVISION_LENGTH) - 1) == 0;
 }
+
+#ifdef __EMSCRIPTEN__
+extern "C" {
+
+void CDECL em_openttd_add_server(const char *host, int port)
+{
+	NetworkUDPQueryServer(NetworkAddress(host, port), true);
+}
+
+}
+#endif

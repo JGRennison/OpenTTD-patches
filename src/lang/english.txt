@@ -5825,10 +5825,10 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :Sugar Mine
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :Unnamed
-STR_SV_TRAIN_NAME                                               :Train {COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :Road Vehicle {COMMA}
-STR_SV_SHIP_NAME                                                :Ship {COMMA}
-STR_SV_AIRCRAFT_NAME                                            :Aircraft {COMMA}
+STR_SV_TRAIN_NAME                                               :Train #{COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :Road Vehicle #{COMMA}
+STR_SV_SHIP_NAME                                                :Ship #{COMMA}
+STR_SV_AIRCRAFT_NAME                                            :Aircraft #{COMMA}
 
 STR_SV_STNAME                                                   :{STRING1}
 STR_SV_STNAME_NORTH                                             :{STRING1} North
@@ -6135,6 +6135,7 @@ STR_FORMAT_BUOY_NAME                                            :{TOWN} Buoy
 STR_FORMAT_BUOY_NAME_SERIAL                                     :{TOWN} Buoy #{COMMA}
 STR_FORMAT_COMPANY_NUM                                          :(Company {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Group {COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{TOWN} {STRING}
 STR_FORMAT_WAYPOINT_NAME                                        :{TOWN} Waypoint
 STR_FORMAT_WAYPOINT_NAME_SERIAL                                 :{TOWN} Waypoint #{COMMA}

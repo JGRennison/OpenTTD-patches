@@ -265,6 +265,18 @@ SOCKET NetworkAddress::Resolve(int family, int socktype, int flags, SocketList *
 			this->address_length = (int)runp->ai_addrlen;
 			assert(sizeof(this->address) >= runp->ai_addrlen);
 			memcpy(&this->address, runp->ai_addr, runp->ai_addrlen);
+#ifdef __EMSCRIPTEN__
+			/* Emscripten doesn't zero sin_zero, but as we compare addresses
+			 * to see if they are the same address, we need them to be zero'd.
+			 * Emscripten is, as far as we know, the only OS not doing this.
+			 *
+			 * https://github.com/emscripten-core/emscripten/issues/12998
+			 */
+			if (this->address.ss_family == AF_INET) {
+				sockaddr_in *address_ipv4 = (sockaddr_in *)&this->address;
+				memset(address_ipv4->sin_zero, 0, sizeof(address_ipv4->sin_zero));
+			}
+#endif
 			break;
 		}
 
@@ -297,7 +309,15 @@ static SOCKET ConnectLoopProc(addrinfo *runp)
 
 	if (!SetNoDelay(sock)) DEBUG(net, 1, "[%s] setting TCP_NODELAY failed", type);
 
-	if (connect(sock, runp->ai_addr, (int)runp->ai_addrlen) != 0) {
+	int err = connect(sock, runp->ai_addr, (int)runp->ai_addrlen);
+#ifdef __EMSCRIPTEN__
+	/* Emscripten is asynchronous, and as such a connect() is still in
+	 * progress by the time the call returns. */
+	if (err != 0 && errno != EINPROGRESS)
+#else
+	if (err != 0)
+#endif
+	{
 		DEBUG(net, 1, "[%s] could not connect %s socket: %s", type, family, strerror(errno));
 		closesocket(sock);
 		return INVALID_SOCKET;

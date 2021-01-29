@@ -442,8 +442,7 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 				/* Re-check bridge building possibility is initial bridge builindg query indicated a bridge type dependent failure */
 				if (query_per_bridge_type && DoCommand(end, start, type | brd_type, CommandFlagsToDCFlags(GetCommandFlags(CMD_BUILD_BRIDGE)) | DC_QUERY_COST, CMD_BUILD_BRIDGE).Failed()) continue;
 				/* bridge is accepted, add to list */
-				/*C++17: BuildBridgeData &item = */ bl->emplace_back();
-				BuildBridgeData &item = bl->back();
+				BuildBridgeData &item = bl->emplace_back();
 				item.index = brd_type;
 				item.spec = GetBridgeSpec(brd_type);
 				/* Add to terraforming & bulldozing costs the cost of the
