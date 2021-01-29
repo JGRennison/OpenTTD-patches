@@ -7,7 +7,11 @@ if(OPTION_INSTALL_FHS)
     set(DOCS_DESTINATION_DIR "${CMAKE_INSTALL_DOCDIR}")
     set(MAN_DESTINATION_DIR "${CMAKE_INSTALL_MANDIR}")
 else()
-    set(BINARY_DESTINATION_DIR ".")
+    if(APPLE)
+        set(BINARY_DESTINATION_DIR "../MacOS")
+    else()
+        set(BINARY_DESTINATION_DIR ".")
+    endif()
     set(DATA_DESTINATION_DIR ".")
     set(DOCS_DESTINATION_DIR ".")
     set(MAN_DESTINATION_DIR ".")
@@ -73,6 +77,9 @@ if(WIN32)
         set(ARCHITECTURE "win32")
     endif()
 endif()
+if(APPLE AND CMAKE_OSX_ARCHITECTURES)
+    string(TOLOWER "${CMAKE_OSX_ARCHITECTURES}" ARCHITECTURE)
+endif()
 
 set(CPACK_SYSTEM_NAME "${ARCHITECTURE}")
 
@@ -95,7 +102,7 @@ if(APPLE)
     set(CPACK_GENERATOR "Bundle")
     include(PackageBundle)
 
-    set(CPACK_PACKAGE_FILE_NAME "openttd-#CPACK_PACKAGE_VERSION#-macosx")
+    set(CPACK_PACKAGE_FILE_NAME "openttd-#CPACK_PACKAGE_VERSION#-macosx-${CPACK_SYSTEM_NAME}")
 elseif(WIN32)
     set(CPACK_GENERATOR "ZIP")
     if(OPTION_USE_NSIS)
@@ -115,7 +122,24 @@ elseif(UNIX)
         set(CPACK_GENERATOR "TXZ")
     endif()
 
-    set(CPACK_PACKAGE_FILE_NAME "openttd-#CPACK_PACKAGE_VERSION#-linux-${CPACK_SYSTEM_NAME}")
+    find_program(LSB_RELEASE_EXEC lsb_release)
+    execute_process(COMMAND ${LSB_RELEASE_EXEC} -is
+        OUTPUT_VARIABLE LSB_RELEASE_ID
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    if(NOT LSB_RELEASE_ID)
+        set(PLATFORM "generic")
+    elseif(LSB_RELEASE_ID STREQUAL "Ubuntu" OR LSB_RELEASE_ID STREQUAL "Debian")
+        execute_process(COMMAND ${LSB_RELEASE_EXEC} -cs
+            OUTPUT_VARIABLE LSB_RELEASE_CODENAME
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+        string(TOLOWER "${LSB_RELEASE_ID}-${LSB_RELEASE_CODENAME}" PLATFORM)
+    else()
+        message(FATAL_ERROR "Unknown Linux distribution found for packaging; please consider creating a Pull Request to add support for this distribution.")
+    endif()
+
+    set(CPACK_PACKAGE_FILE_NAME "openttd-#CPACK_PACKAGE_VERSION#-linux-${PLATFORM}-${CPACK_SYSTEM_NAME}")
 else()
     message(FATAL_ERROR "Unknown OS found for packaging; please consider creating a Pull Request to add support for this OS.")
 endif()

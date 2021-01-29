@@ -249,11 +249,11 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 	}
 
 	this->SendPackets();
+	this->CloseConnection(res);
 
 	ClientNetworkEmergencySave();
 
 	_switch_mode = SM_MENU;
-	this->CloseConnection(res);
 	_networking = false;
 }
 
