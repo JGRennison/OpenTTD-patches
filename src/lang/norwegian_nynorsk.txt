@@ -50,9 +50,9 @@ STR_CARGO_PLURAL_WHEAT                                          :Kveite
 STR_CARGO_PLURAL_RUBBER                                         :Gummi
 STR_CARGO_PLURAL_SUGAR                                          :Sukker
 STR_CARGO_PLURAL_TOYS                                           :Leiketøy
-STR_CARGO_PLURAL_CANDY                                          :Godteri
+STR_CARGO_PLURAL_SWEETS                                         :Godteri
 STR_CARGO_PLURAL_COLA                                           :Cola
-STR_CARGO_PLURAL_COTTON_CANDY                                   :Sukkerspinn
+STR_CARGO_PLURAL_CANDYFLOSS                                     :Sukkerspinn
 STR_CARGO_PLURAL_BUBBLES                                        :Bobler
 STR_CARGO_PLURAL_TOFFEE                                         :Karamell
 STR_CARGO_PLURAL_BATTERIES                                      :Batteri
@@ -84,9 +84,9 @@ STR_CARGO_SINGULAR_WHEAT                                        :Kveite
 STR_CARGO_SINGULAR_RUBBER                                       :Gummi
 STR_CARGO_SINGULAR_SUGAR                                        :Sukker
 STR_CARGO_SINGULAR_TOY                                          :Leiketøy
-STR_CARGO_SINGULAR_CANDY                                        :Godteri
+STR_CARGO_SINGULAR_SWEETS                                       :Godteri
 STR_CARGO_SINGULAR_COLA                                         :Cola
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :Sukkerspinn
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :Sukkerspinn
 STR_CARGO_SINGULAR_BUBBLE                                       :Boble
 STR_CARGO_SINGULAR_TOFFEE                                       :Karamell
 STR_CARGO_SINGULAR_BATTERY                                      :Batteri
@@ -311,6 +311,8 @@ STR_SORT_BY_CARGO_CAPACITY                                      :Varekapasitet
 STR_SORT_BY_RANGE                                               :Rekkevidde
 STR_SORT_BY_POPULATION                                          :Innbyggjartal
 STR_SORT_BY_RATING                                              :Vurdering
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Pause
@@ -1487,9 +1489,6 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :tillete
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :tillete, eigendefinert oppsett av by
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Plassering av tre i spelet: {STRING}
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :ingen {RED}(øydelegg sagbruk)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :kun i regnskogen
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :over alt
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Plassering av hovudverktøylinje: {STRING}
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Plassering av verktøylinja øvst på skjermen
@@ -1797,10 +1796,6 @@ STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Byt slip
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Fleirspelar
-STR_NETWORK_SERVER_LIST_ADVERTISED                              :{BLACK}Kunngjort
-STR_NETWORK_SERVER_LIST_ADVERTISED_TOOLTIP                      :{BLACK}Vel mellom spel på internett (kunngjort) og spel på lokalt nett (ikkje kunngjort)
-STR_NETWORK_SERVER_LIST_ADVERTISED_NO                           :Nei
-STR_NETWORK_SERVER_LIST_ADVERTISED_YES                          :Ja
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Spelarnamn:
 STR_NETWORK_SERVER_LIST_ENTER_NAME_TOOLTIP                      :{BLACK}Dette er namnet andre spelarar vil identifisere deg med
 
@@ -1841,8 +1836,6 @@ STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}Bli med 
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}Oppdater tenar
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}Oppdater tenarinformasjon
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}Finn tenar
-STR_NETWORK_SERVER_LIST_FIND_SERVER_TOOLTIP                     :{BLACK}Søk på nettverket etter ein tenar
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}Legg til tenar
 STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP                      :{BLACK}Legg til ein tenar i lista over tenarar som alltid vil verte sjekka for aktive spel.
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Start tenar
@@ -1859,6 +1852,8 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Spelnamn
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Set passord
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Beskytt spelet ditt med passord så ikkje kven som helst kan verte med på det
 
+STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Kunngjort
+STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Vel mellom spel på internett (kunngjort) og spel på lokalt nett (ikkje kunngjort)
 STR_NETWORK_START_SERVER_UNADVERTISED                           :Nei
 STR_NETWORK_START_SERVER_ADVERTISED                             :Ja
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} klient{P "" er}

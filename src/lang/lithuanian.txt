@@ -194,13 +194,13 @@ STR_CARGO_PLURAL_TOYS.kam                                       :žaislams
 STR_CARGO_PLURAL_TOYS.ka                                        :žaislus
 STR_CARGO_PLURAL_TOYS.kuo                                       :žaislais
 STR_CARGO_PLURAL_TOYS.kur                                       :žaisluose
-STR_CARGO_PLURAL_CANDY                                          :Saldumynai
-STR_CARGO_PLURAL_CANDY.kas                                      :saldumynai
-STR_CARGO_PLURAL_CANDY.ko                                       :saldumynų
-STR_CARGO_PLURAL_CANDY.kam                                      :saldumynams
-STR_CARGO_PLURAL_CANDY.ka                                       :saldumynus
-STR_CARGO_PLURAL_CANDY.kuo                                      :saldumynais
-STR_CARGO_PLURAL_CANDY.kur                                      :saldumynuose
+STR_CARGO_PLURAL_SWEETS                                         :Saldumynai
+STR_CARGO_PLURAL_SWEETS.kas                                     :saldumynai
+STR_CARGO_PLURAL_SWEETS.ko                                      :saldumynų
+STR_CARGO_PLURAL_SWEETS.kam                                     :saldumynams
+STR_CARGO_PLURAL_SWEETS.ka                                      :saldumynus
+STR_CARGO_PLURAL_SWEETS.kuo                                     :saldumynais
+STR_CARGO_PLURAL_SWEETS.kur                                     :saldumynuose
 STR_CARGO_PLURAL_COLA                                           :Kola
 STR_CARGO_PLURAL_COLA.kas                                       :kola
 STR_CARGO_PLURAL_COLA.ko                                        :kolos
@@ -208,13 +208,13 @@ STR_CARGO_PLURAL_COLA.kam                                       :kolai
 STR_CARGO_PLURAL_COLA.ka                                        :kolą
 STR_CARGO_PLURAL_COLA.kuo                                       :kola
 STR_CARGO_PLURAL_COLA.kur                                       :koloje
-STR_CARGO_PLURAL_COTTON_CANDY                                   :Cukraus vata
-STR_CARGO_PLURAL_COTTON_CANDY.kas                               :cukraus vata
-STR_CARGO_PLURAL_COTTON_CANDY.ko                                :cukraus vatos
-STR_CARGO_PLURAL_COTTON_CANDY.kam                               :cukraus vatai
-STR_CARGO_PLURAL_COTTON_CANDY.ka                                :cukraus vatą
-STR_CARGO_PLURAL_COTTON_CANDY.kuo                               :cukraus vata
-STR_CARGO_PLURAL_COTTON_CANDY.kur                               :cukraus vatoje
+STR_CARGO_PLURAL_CANDYFLOSS                                     :Cukraus vata
+STR_CARGO_PLURAL_CANDYFLOSS.kas                                 :cukraus vata
+STR_CARGO_PLURAL_CANDYFLOSS.ko                                  :cukraus vatos
+STR_CARGO_PLURAL_CANDYFLOSS.kam                                 :cukraus vatai
+STR_CARGO_PLURAL_CANDYFLOSS.ka                                  :cukraus vatą
+STR_CARGO_PLURAL_CANDYFLOSS.kuo                                 :cukraus vata
+STR_CARGO_PLURAL_CANDYFLOSS.kur                                 :cukraus vatoje
 STR_CARGO_PLURAL_BUBBLES                                        :Burbulai
 STR_CARGO_PLURAL_BUBBLES.kas                                    :burbulai
 STR_CARGO_PLURAL_BUBBLES.ko                                     :burbulų
@@ -276,9 +276,9 @@ STR_CARGO_SINGULAR_WHEAT                                        :Kviečių
 STR_CARGO_SINGULAR_RUBBER                                       :Kaučiuko
 STR_CARGO_SINGULAR_SUGAR                                        :Cukraus
 STR_CARGO_SINGULAR_TOY                                          :Žaislų
-STR_CARGO_SINGULAR_CANDY                                        :Saldumynų
+STR_CARGO_SINGULAR_SWEETS                                       :Saldumynų
 STR_CARGO_SINGULAR_COLA                                         :Kolos
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :Cukraus vatos
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :Cukraus vatos
 STR_CARGO_SINGULAR_BUBBLE                                       :Burbulų
 STR_CARGO_SINGULAR_TOFFEE                                       :Karamelės
 STR_CARGO_SINGULAR_BATTERY                                      :Baterijų
@@ -505,6 +505,8 @@ STR_SORT_BY_CARGO_CAPACITY                                      :vagono talpą
 STR_SORT_BY_RANGE                                               :atstumą
 STR_SORT_BY_POPULATION                                          :populiaciją
 STR_SORT_BY_RATING                                              :reitingą
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Pristabdyti žaidimą
@@ -1766,9 +1768,6 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Leista, pasirin
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Savaiminis medžių atsiradimas: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :Savaiminio medžių išdygimo nuostatos. Atkreipkite dėmesį, kad šios nuostatos gali paveikti kai kurių pramonės įmonių, pvz., lentpjūvių, darbą
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :nėra {RED}(trukdo lentpjūvėms)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :tik tropiniuose miškuose
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :Visur
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Pagrindinės įrankių juostos pozicija: {STRING}
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Pagrindinės įrankių lentelės horizontali padėtis ekrano viršuje
@@ -2102,10 +2101,6 @@ STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Pakeisti
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Žaidimas tinkle
-STR_NETWORK_SERVER_LIST_ADVERTISED                              :{BLACK}Reklamuoti
-STR_NETWORK_SERVER_LIST_ADVERTISED_TOOLTIP                      :{BLACK}Pasirinkite tarp reklamuojamo (internetas) ir nereklamuojamo (Vietinis Tinklas, LAN) žaidimo
-STR_NETWORK_SERVER_LIST_ADVERTISED_NO                           :Ne
-STR_NETWORK_SERVER_LIST_ADVERTISED_YES                          :Taip
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Žaidėjo vardas:
 STR_NETWORK_SERVER_LIST_ENTER_NAME_TOOLTIP                      :{BLACK}Tai vardas, pagal kurį kiti žaidėjai jus atpažins
 
@@ -2146,8 +2141,6 @@ STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}Jungtis
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}Atnaujinti serverį
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}Atnaujinti serverio informaciją
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}Rasti serveri
-STR_NETWORK_SERVER_LIST_FIND_SERVER_TOOLTIP                     :{BLACK}Ieškoti serverio
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}Pridėti serverį
 STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP                      :{BLACK}Prideda serverį į sąrašą, kuris tikrinamas ieškant žaidimų
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Sukurti serverį
@@ -2164,6 +2157,8 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Žaidimo
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Nustatyti slaptažodi
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Apsaugokite savo žaidimą slaptažodžiu, jei nenorite, kad jis būtų viešai prieinamas
 
+STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Reklamuoti
+STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Pasirinkite tarp reklamuojamo (internetas) ir nereklamuojamo (Vietinis Tinklas, LAN) žaidimo
 STR_NETWORK_START_SERVER_UNADVERTISED                           :Ne
 STR_NETWORK_START_SERVER_ADVERTISED                             :Taip
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} klient{P as ai ų}

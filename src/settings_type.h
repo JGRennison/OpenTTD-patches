@@ -317,7 +317,6 @@ struct NetworkSettings {
 	char   admin_password[NETWORK_PASSWORD_LENGTH];       ///< password for the admin network
 	char   settings_password[NETWORK_PASSWORD_LENGTH];    ///< password for game settings (server side)
 	bool   server_advertise;                              ///< advertise the server to the masterserver
-	uint8  lan_internet;                                  ///< search on the LAN or internet for servers
 	char   client_name[NETWORK_CLIENT_NAME_LENGTH];       ///< name of the player (as client)
 	char   default_company_pass[NETWORK_PASSWORD_LENGTH]; ///< default password for new companies in encrypted form
 	char   connect_to_ip[NETWORK_HOSTNAME_LENGTH];        ///< default for the "Add server" query

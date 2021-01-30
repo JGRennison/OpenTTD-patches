@@ -48,9 +48,9 @@ STR_CARGO_PLURAL_WHEAT                                          :Gandum
 STR_CARGO_PLURAL_RUBBER                                         :Getah
 STR_CARGO_PLURAL_SUGAR                                          :Gula
 STR_CARGO_PLURAL_TOYS                                           :Mainan
-STR_CARGO_PLURAL_CANDY                                          :Gula-gula
+STR_CARGO_PLURAL_SWEETS                                         :Gula-gula
 STR_CARGO_PLURAL_COLA                                           :Minuman cola
-STR_CARGO_PLURAL_COTTON_CANDY                                   :Gula kapas
+STR_CARGO_PLURAL_CANDYFLOSS                                     :Gula kapas
 STR_CARGO_PLURAL_BUBBLES                                        :Buih
 STR_CARGO_PLURAL_TOFFEE                                         :Tofi
 STR_CARGO_PLURAL_BATTERIES                                      :Bateri
@@ -82,9 +82,9 @@ STR_CARGO_SINGULAR_WHEAT                                        :Gandum
 STR_CARGO_SINGULAR_RUBBER                                       :Getah
 STR_CARGO_SINGULAR_SUGAR                                        :Gula
 STR_CARGO_SINGULAR_TOY                                          :Mainan
-STR_CARGO_SINGULAR_CANDY                                        :Manisan
+STR_CARGO_SINGULAR_SWEETS                                       :Manisan
 STR_CARGO_SINGULAR_COLA                                         :Minuman cola
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :Gula kapas
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :Gula kapas
 STR_CARGO_SINGULAR_BUBBLE                                       :Buih
 STR_CARGO_SINGULAR_TOFFEE                                       :Tofi
 STR_CARGO_SINGULAR_BATTERY                                      :Bateri
@@ -294,6 +294,8 @@ STR_SORT_BY_POWER_VS_RUNNING_COST                               :Kuasa/Kos Penge
 STR_SORT_BY_CARGO_CAPACITY                                      :Muatan Kargo
 STR_SORT_BY_RANGE                                               :Jarak
 STR_SORT_BY_POPULATION                                          :Jumlah Penduduk
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Henti Sebentar Permainan
@@ -1393,9 +1395,6 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Dibenarkan
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Dibenarkan, susunan bandar sendiri
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Peletakan pokok-pokok dalam permainan: {STRING}
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :Tiada {RED}(kilang kayu tidak berfungsi)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :Hanya di hutan hujan
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :Setiap tempat
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Kedudukan palang alat utama: {STRING}
 STR_CONFIG_SETTING_STATUSBAR_POS                                :Kedudukan bar status: {STRING}
@@ -1675,8 +1674,6 @@ STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}Sertai p
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}Kemaskini
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}Kemaskini maklumat pelayan
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}Cari pelayan
-STR_NETWORK_SERVER_LIST_FIND_SERVER_TOOLTIP                     :{BLACK}Cari rangkaian untuk pelayan
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}Tambah pelayan
 STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP                      :{BLACK}Memasukkan pelayan ke dalam senarai yang sentiasa akan disemak untuk permainan yang sedang berjalan.
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Mulakan pelayan

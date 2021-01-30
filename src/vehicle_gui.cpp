@@ -43,27 +43,41 @@
 #include "depot_base.h"
 
 #include <vector>
+#include <algorithm>
 
 #include "safeguards.h"
 
 
-Sorting _sorting;
+BaseVehicleListWindow::GroupBy _grouping[VLT_END][VEH_COMPANY_END];
+Sorting _sorting[BaseVehicleListWindow::GB_END];
 
-static GUIVehicleList::SortFunction VehicleNumberSorter;
-static GUIVehicleList::SortFunction VehicleNameSorter;
-static GUIVehicleList::SortFunction VehicleAgeSorter;
-static GUIVehicleList::SortFunction VehicleProfitThisYearSorter;
-static GUIVehicleList::SortFunction VehicleProfitLifetimeSorter;
-static GUIVehicleList::SortFunction VehicleProfitLastYearSorter;
-static GUIVehicleList::SortFunction VehicleCargoSorter;
-static GUIVehicleList::SortFunction VehicleReliabilitySorter;
-static GUIVehicleList::SortFunction VehicleMaxSpeedSorter;
-static GUIVehicleList::SortFunction VehicleModelSorter;
-static GUIVehicleList::SortFunction VehicleValueSorter;
-static GUIVehicleList::SortFunction VehicleLengthSorter;
-static GUIVehicleList::SortFunction VehicleTimeToLiveSorter;
-static GUIVehicleList::SortFunction VehicleTimetableDelaySorter;
-static GUIVehicleList::SortFunction VehicleAverageOrderOccupancySorter;
+static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleNumberSorter;
+static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleNameSorter;
+static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleAgeSorter;
+static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleProfitThisYearSorter;
+static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleProfitLastYearSorter;
+static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleProfitLifetimeSorter;
+static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleCargoSorter;
+static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleReliabilitySorter;
+static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleMaxSpeedSorter;
+static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleModelSorter;
+static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleValueSorter;
+static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleLengthSorter;
+static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleTimeToLiveSorter;
+static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleTimetableDelaySorter;
+static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleAverageOrderOccupancySorter;
+static BaseVehicleListWindow::VehicleGroupSortFunction VehicleGroupLengthSorter;
+static BaseVehicleListWindow::VehicleGroupSortFunction VehicleGroupTotalProfitThisYearSorter;
+static BaseVehicleListWindow::VehicleGroupSortFunction VehicleGroupTotalProfitLastYearSorter;
+static BaseVehicleListWindow::VehicleGroupSortFunction VehicleGroupAverageProfitThisYearSorter;
+static BaseVehicleListWindow::VehicleGroupSortFunction VehicleGroupAverageProfitLastYearSorter;
+
+/** Wrapper to convert a VehicleIndividualSortFunction to a VehicleGroupSortFunction */
+template <BaseVehicleListWindow::VehicleIndividualSortFunction func>
+static bool VehicleIndividualToGroupSorterWrapper(GUIVehicleGroup const &a, GUIVehicleGroup const &b)
+{
+	return func(*(a.vehicles_begin), *(b.vehicles_begin));
+}
 
 enum VehicleSortType
 {
@@ -84,25 +98,25 @@ enum VehicleSortType
 	VST_AVERAGE_ORDER_OCCUPANCY,
 };
 
-GUIVehicleList::SortFunction * const BaseVehicleListWindow::vehicle_sorter_funcs[] = {
-	&VehicleNumberSorter,
-	&VehicleNameSorter,
-	&VehicleAgeSorter,
-	&VehicleProfitThisYearSorter,
-	&VehicleProfitLastYearSorter,
-	&VehicleProfitLifetimeSorter,
-	&VehicleCargoSorter,
-	&VehicleReliabilitySorter,
-	&VehicleMaxSpeedSorter,
-	&VehicleModelSorter,
-	&VehicleValueSorter,
-	&VehicleLengthSorter,
-	&VehicleTimeToLiveSorter,
-	&VehicleTimetableDelaySorter,
-	&VehicleAverageOrderOccupancySorter,
+BaseVehicleListWindow::VehicleGroupSortFunction * const BaseVehicleListWindow::vehicle_group_none_sorter_funcs[] = {
+	&VehicleIndividualToGroupSorterWrapper<VehicleNumberSorter>,
+	&VehicleIndividualToGroupSorterWrapper<VehicleNameSorter>,
+	&VehicleIndividualToGroupSorterWrapper<VehicleAgeSorter>,
+	&VehicleIndividualToGroupSorterWrapper<VehicleProfitThisYearSorter>,
+	&VehicleIndividualToGroupSorterWrapper<VehicleProfitLastYearSorter>,
+	&VehicleIndividualToGroupSorterWrapper<VehicleProfitLifetimeSorter>,
+	&VehicleIndividualToGroupSorterWrapper<VehicleCargoSorter>,
+	&VehicleIndividualToGroupSorterWrapper<VehicleReliabilitySorter>,
+	&VehicleIndividualToGroupSorterWrapper<VehicleMaxSpeedSorter>,
+	&VehicleIndividualToGroupSorterWrapper<VehicleModelSorter>,
+	&VehicleIndividualToGroupSorterWrapper<VehicleValueSorter>,
+	&VehicleIndividualToGroupSorterWrapper<VehicleLengthSorter>,
+	&VehicleIndividualToGroupSorterWrapper<VehicleTimeToLiveSorter>,
+	&VehicleIndividualToGroupSorterWrapper<VehicleTimetableDelaySorter>,
+	&VehicleIndividualToGroupSorterWrapper<VehicleAverageOrderOccupancySorter>,
 };
 
-const StringID BaseVehicleListWindow::vehicle_sorter_names[] = {
+const StringID BaseVehicleListWindow::vehicle_group_none_sorter_names[] = {
 	STR_SORT_BY_NUMBER,
 	STR_SORT_BY_NAME,
 	STR_SORT_BY_AGE,
@@ -121,6 +135,29 @@ const StringID BaseVehicleListWindow::vehicle_sorter_names[] = {
 	INVALID_STRING_ID
 };
 
+BaseVehicleListWindow::VehicleGroupSortFunction * const BaseVehicleListWindow::vehicle_group_shared_orders_sorter_funcs[] = {
+	&VehicleGroupLengthSorter,
+	&VehicleGroupTotalProfitThisYearSorter,
+	&VehicleGroupTotalProfitLastYearSorter,
+	&VehicleGroupAverageProfitThisYearSorter,
+	&VehicleGroupAverageProfitLastYearSorter,
+};
+
+const StringID BaseVehicleListWindow::vehicle_group_shared_orders_sorter_names[] = {
+	STR_SORT_BY_NUM_VEHICLES,
+	STR_SORT_BY_TOTAL_PROFIT_THIS_YEAR,
+	STR_SORT_BY_TOTAL_PROFIT_LAST_YEAR,
+	STR_SORT_BY_AVERAGE_PROFIT_THIS_YEAR,
+	STR_SORT_BY_AVERAGE_PROFIT_LAST_YEAR,
+	INVALID_STRING_ID
+};
+
+const StringID BaseVehicleListWindow::vehicle_group_by_names[] = {
+	STR_GROUP_BY_NONE,
+	STR_GROUP_BY_SHARED_ORDERS,
+	INVALID_STRING_ID
+};
+
 const StringID BaseVehicleListWindow::vehicle_depot_name[] = {
 	STR_VEHICLE_LIST_SEND_TRAIN_TO_DEPOT,
 	STR_VEHICLE_LIST_SEND_ROAD_VEHICLE_TO_DEPOT,
@@ -135,6 +172,32 @@ const StringID BaseVehicleListWindow::vehicle_depot_sell_name[] = {
 	STR_VEHICLE_LIST_SEND_AIRCRAFT_TO_HANGAR_SELL
 };
 
+BaseVehicleListWindow::BaseVehicleListWindow(WindowDesc *desc, WindowNumber wno) : Window(desc), vli(VehicleListIdentifier::UnPack(wno))
+{
+	this->grouping = _grouping[vli.type][vli.vtype];
+	this->vehicle_sel = INVALID_VEHICLE;
+	this->UpdateSortingFromGrouping();
+}
+
+/**
+ * Get the number of digits of space required for the given number.
+ * @param number The number.
+ * @return The number of digits to allocate space for.
+ */
+uint CountDigitsForAllocatingSpace(uint number)
+{
+	if (number >= 10000) return 5;
+	if (number >= 1000) return 4;
+	if (number >= 100) return 3;
+
+	/*
+	 * When the smallest unit number is less than 10, it is
+	 * quite likely that it will expand to become more than
+	 * 10 quite soon.
+	 */
+	return 2;
+}
+
 /**
  * Get the number of digits the biggest unit number of a set of vehicles has.
  * @param vehicles The list of vehicles.
@@ -147,42 +210,74 @@ uint GetUnitNumberDigits(VehicleList &vehicles)
 		unitnumber = max<uint>(unitnumber, v->unitnumber);
 	}
 
-	if (unitnumber >= 10000) return 5;
-	if (unitnumber >=  1000) return 4;
-	if (unitnumber >=   100) return 3;
-
-	/*
-	 * When the smallest unit number is less than 10, it is
-	 * quite likely that it will expand to become more than
-	 * 10 quite soon.
-	 */
-	return 2;
+	return CountDigitsForAllocatingSpace(unitnumber);
 }
 
 void BaseVehicleListWindow::CountOwnVehicles()
 {
 	this->own_vehicles = 0;
-	for (const Vehicle *v : vehicles) {
-		if (v->owner == _local_company) this->own_vehicles++;
+	for (const GUIVehicleGroup &vg : this->vehgroups) {
+		if ((*(vg.vehicles_begin))->owner == _local_company) this->own_vehicles++;
 	}
 	this->own_company = _local_company;
 }
 
 void BaseVehicleListWindow::BuildVehicleList()
 {
-	if (!this->vehicles.NeedRebuild()) return;
+	if (!this->vehgroups.NeedRebuild()) return;
 
 	DEBUG(misc, 3, "Building vehicle list type %d for company %d given index %d", this->vli.type, this->vli.company, this->vli.index);
 
+	this->vehgroups.clear();
+
 	GenerateVehicleSortList(&this->vehicles, this->vli);
 
-	this->FilterVehicleList();
+	if (this->grouping == GB_NONE) {
+		uint max_unitnumber = 0;
+		for (auto it = this->vehicles.begin(); it != this->vehicles.end(); ++it) {
+			this->vehgroups.emplace_back(it, it + 1, (*it)->GetDisplayProfitThisYear(), (*it)->GetDisplayProfitLastYear(), (*it)->age);
 
-	this->unitnumber_digits = GetUnitNumberDigits(this->vehicles);
+			max_unitnumber = max<uint>(max_unitnumber, (*it)->unitnumber);
+		}
+		this->unitnumber_digits = CountDigitsForAllocatingSpace(max_unitnumber);
+	} else {
+		/* Sort by the primary vehicle; we just want all vehicles that share the same orders to form a contiguous range. */
+		std::stable_sort(this->vehicles.begin(), this->vehicles.end(), [](const Vehicle * const &u, const Vehicle * const &v) {
+			return u->FirstShared() < v->FirstShared();
+		});
+
+		uint max_num_vehicles = 0;
+
+		VehicleList::const_iterator begin = this->vehicles.begin();
+		while (begin != this->vehicles.end()) {
+			VehicleList::const_iterator end = std::find_if_not(begin, this->vehicles.cend(), [first_shared = (*begin)->FirstShared()](const Vehicle * const &v) {
+				return v->FirstShared() == first_shared;
+			});
+
+			Money display_profit_this_year = 0;
+			Money display_profit_last_year = 0;
+			Date age = 0;
+			for (auto it = begin; it != end; ++it) {
+				const Vehicle * const v = (*it);
+				display_profit_this_year += v->GetDisplayProfitThisYear();
+				display_profit_last_year += v->GetDisplayProfitLastYear();
+				age = max<Date>(age, v->age);
+			}
+
+			this->vehgroups.emplace_back(begin, end, display_profit_this_year, display_profit_last_year, age);
+
+			max_num_vehicles = max<uint>(max_num_vehicles, static_cast<uint>(end - begin));
+
+			begin = end;
+		}
+
+		this->unitnumber_digits = CountDigitsForAllocatingSpace(max_num_vehicles);
+	}
+	this->FilterVehicleList();
 	this->CountOwnVehicles();
 
-	this->vehicles.RebuildDone();
-	this->vscroll->SetCount((uint)this->vehicles.size());
+	this->vehgroups.RebuildDone();
+	this->vscroll->SetCount(static_cast<int>(this->vehgroups.size()));
 }
 
 /** Cargo filter functions */
@@ -219,8 +314,17 @@ static bool CDECL CargoFilter(const Vehicle * const *vid, const CargoID cid)
 	}
 }
 
-static GUIVehicleList::FilterFunction * const _filter_funcs[] = {
-	&CargoFilter,
+static bool CDECL GroupCargoFilter(const GUIVehicleGroup* group, const CargoID cid)
+{
+	if (cid == BaseVehicleListWindow::CF_ANY) return true;
+	for (VehicleList::const_iterator v = group->vehicles_begin; v != group->vehicles_end; ++v) {
+		if (CargoFilter(&(*v), cid)) return true;
+	}
+	return false;
+}
+
+static GUIVehicleGroupList::FilterFunction * const _filter_funcs[] = {
+	&GroupCargoFilter,
 };
 
 /** Set cargo filter list item index. */
@@ -229,9 +333,9 @@ void BaseVehicleListWindow::SetCargoFilterIndex(int index)
 	if (this->cargo_filter_criteria != index) {
 		this->cargo_filter_criteria = index;
 		/* deactivate filter if criteria is 'Show All', activate it otherwise */
-		this->vehicles.SetFilterState(this->cargo_filter[this->cargo_filter_criteria] != CF_ANY);
-		this->vehicles.SetFilterType(0);
-		this->vehicles.ForceRebuild();
+		this->vehgroups.SetFilterState(this->cargo_filter[this->cargo_filter_criteria] != CF_ANY);
+		this->vehgroups.SetFilterType(0);
+		this->vehgroups.ForceRebuild();
 	}
 }
 
@@ -268,14 +372,14 @@ void BaseVehicleListWindow::SetCargoFilterArray()
 	/* Terminate the filter list. */
 	this->cargo_filter_texts[filter_items] = INVALID_STRING_ID;
 
-	this->vehicles.SetFilterFuncs(_filter_funcs);
-	this->vehicles.SetFilterState(this->cargo_filter[this->cargo_filter_criteria] != CF_ANY);
+	this->vehgroups.SetFilterFuncs(_filter_funcs);
+	this->vehgroups.SetFilterState(this->cargo_filter[this->cargo_filter_criteria] != CF_ANY);
 }
 
 /** Filter the engine list against the currently selected cargo filter */
 void BaseVehicleListWindow::FilterVehicleList()
 {
-	this->vehicles.Filter(this->cargo_filter[this->cargo_filter_criteria]);
+	this->vehgroups.Filter(this->cargo_filter[this->cargo_filter_criteria]);
 	if (0 == this->vehicles.size()) {
 		// no vehicle passed through the filter, invalidate the previously selected vehicle
 		this->vehicle_sel = INVALID_VEHICLE;
@@ -384,7 +488,7 @@ static const Vehicle *_last_vehicle[2] = { nullptr, nullptr };
 
 void BaseVehicleListWindow::SortVehicleList()
 {
-	if (this->vehicles.Sort()) return;
+	if (this->vehgroups.Sort()) return;
 
 	/* invalidate cached values for name sorter - vehicle names could change */
 	_last_vehicle[0] = _last_vehicle[1] = nullptr;
@@ -397,16 +501,16 @@ void DepotSortList(VehicleList *list)
 }
 
 /** draw the vehicle profit button in the vehicle list window. */
-static void DrawVehicleProfitButton(const Vehicle *v, int x, int y)
+static void DrawVehicleProfitButton(Date age, Money display_profit_last_year, uint num_vehicles, int x, int y)
 {
 	SpriteID spr;
 
 	/* draw profit-based coloured icons */
-	if (v->age <= VEHICLE_PROFIT_MIN_AGE) {
+	if (age <= VEHICLE_PROFIT_MIN_AGE) {
 		spr = SPR_PROFIT_NA;
-	} else if (v->GetDisplayProfitLastYear() < 0) {
+	} else if (display_profit_last_year < 0) {
 		spr = SPR_PROFIT_NEGATIVE;
-	} else if (v->GetDisplayProfitLastYear() < VEHICLE_PROFIT_THRESHOLD) {
+	} else if (display_profit_last_year < VEHICLE_PROFIT_THRESHOLD * num_vehicles) {
 		spr = SPR_PROFIT_SOME;
 	} else {
 		spr = SPR_PROFIT_LOT;
@@ -1346,6 +1450,36 @@ StringID GetCargoSubtypeText(const Vehicle *v)
 	return STR_EMPTY;
 }
 
+/** Sort vehicle groups by the number of vehicles in the group */
+static bool VehicleGroupLengthSorter(const GUIVehicleGroup &a, const GUIVehicleGroup &b)
+{
+	return a.NumVehicles() < b.NumVehicles();
+}
+
+/** Sort vehicle groups by the total profit this year */
+static bool VehicleGroupTotalProfitThisYearSorter(const GUIVehicleGroup &a, const GUIVehicleGroup &b)
+{
+	return a.display_profit_this_year < b.display_profit_this_year;
+}
+
+/** Sort vehicle groups by the total profit last year */
+static bool VehicleGroupTotalProfitLastYearSorter(const GUIVehicleGroup &a, const GUIVehicleGroup &b)
+{
+	return a.display_profit_last_year < b.display_profit_last_year;
+}
+
+/** Sort vehicle groups by the average profit this year */
+static bool VehicleGroupAverageProfitThisYearSorter(const GUIVehicleGroup &a, const GUIVehicleGroup &b)
+{
+	return a.display_profit_this_year * static_cast<uint>(b.NumVehicles()) < b.display_profit_this_year * static_cast<uint>(a.NumVehicles());
+}
+
+/** Sort vehicle groups by the average profit last year */
+static bool VehicleGroupAverageProfitLastYearSorter(const GUIVehicleGroup &a, const GUIVehicleGroup &b)
+{
+	return a.display_profit_last_year * static_cast<uint>(b.NumVehicles()) < b.display_profit_last_year * static_cast<uint>(a.NumVehicles());
+}
+
 /** Sort vehicles by their number */
 static bool VehicleNumberSorter(const Vehicle * const &a, const Vehicle * const &b)
 {
@@ -1484,6 +1618,7 @@ static bool VehicleAverageOrderOccupancySorter(const Vehicle * const &a, const V
 
 void InitializeGUI()
 {
+	MemSetT(&_grouping, 0);
 	MemSetT(&_sorting, 0);
 }
 
@@ -1535,13 +1670,18 @@ static const NWidgetPart _nested_vehicle_list[] = {
 	EndContainer(),
 
 	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_VL_GROUP_ORDER), SetMinimalSize(81, 12), SetFill(0, 1), SetDataTip(STR_STATION_VIEW_GROUP, STR_TOOLTIP_GROUP_ORDER),
+		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_VL_GROUP_BY_PULLDOWN), SetMinimalSize(167, 12), SetFill(0, 1), SetDataTip(0x0, STR_TOOLTIP_GROUP_ORDER),
+		NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(12, 12), SetFill(1, 1), SetResize(1, 0), EndContainer(),
+	EndContainer(),
+
+	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VL_SORT_ORDER), SetMinimalSize(81, 12), SetFill(0, 1), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
 		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_VL_SORT_BY_PULLDOWN), SetMinimalSize(167, 12), SetFill(0, 1), SetDataTip(0x0, STR_TOOLTIP_SORT_CRITERIA),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_VL_FILTER_BY_CARGO_SEL),
 			NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_VL_FILTER_BY_CARGO), SetMinimalSize(167, 12), SetFill(0, 1), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
 		EndContainer(),
-		NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(12, 12), SetFill(1, 1), SetResize(1, 0),
-		EndContainer(),
+		NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(12, 12), SetFill(1, 1), SetResize(1, 0), EndContainer(),
 	EndContainer(),
 
 	NWidget(NWID_HORIZONTAL),
@@ -1598,6 +1738,25 @@ static void DrawSmallOrderList(const Vehicle *v, int left, int right, int y, Veh
 			oid = 0;
 		}
 	} while (oid != start);
+}
+
+/** Draw small order list in the vehicle GUI, but without the little black arrow.  This is used for shared order groups. */
+static void DrawSmallOrderList(const Order *order, int left, int right, int y)
+{
+	bool rtl = _current_text_dir == TD_RTL;
+	int l_offset = rtl ? 0 : ScaleGUITrad(6);
+	int r_offset = rtl ? ScaleGUITrad(6) : 0;
+	int i = 0;
+	while (order != nullptr) {
+		if (order->IsType(OT_GOTO_STATION)) {
+			SetDParam(0, order->GetDestination());
+			DrawString(left + l_offset, right - r_offset, y, STR_TINY_BLACK_STATION);
+
+			y += FONT_HEIGHT_SMALL;
+			if (++i == 4) break;
+		}
+		order = order->next;
+	}
 }
 
 /**
@@ -1667,148 +1826,214 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 	int vehicle_button_x = rtl ? right - GetSpriteSize(SPR_PROFIT_LOT).width : left;
 
 	int y = r.top;
-	uint max = min(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), (uint)this->vehicles.size());
+	uint max = min(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), static_cast<uint>(this->vehgroups.size()));
 	for (uint i = this->vscroll->GetPosition(); i < max; ++i) {
-		const Vehicle *v = this->vehicles[i];
+		const GUIVehicleGroup &vehgroup = this->vehgroups[i];
+		if (this->grouping == GB_NONE) {
+			const Vehicle *v = vehgroup.GetSingleVehicle();
 
-		SetDParam(0, STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR);
-		SetDParam(1, v->GetDisplayProfitThisYear());
-		SetDParam(2, v->GetDisplayProfitLastYear());
+			SetDParam(0, STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR);
+			SetDParam(1, v->GetDisplayProfitThisYear());
+			SetDParam(2, v->GetDisplayProfitLastYear());
 
-		StringID str;
-		switch (this->vehicles.SortType()) {
-			case VST_AGE: {
-				str = (v->age + DAYS_IN_YEAR < v->max_age) ? STR_VEHICLE_LIST_AGE : STR_VEHICLE_LIST_AGE_RED;
-				SetDParam(3, v->age / DAYS_IN_LEAP_YEAR);
-				SetDParam(4, v->max_age / DAYS_IN_LEAP_YEAR);
-				break;
-			}
-
-			case VST_CARGO: {
-				CargoTypes cargoes = 0;
-				for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
-					if (u->cargo_cap > 0) SetBit(cargoes, u->cargo_type);
+			StringID str;
+			switch (this->vehgroups.SortType()) {
+				case VST_AGE: {
+					str = (v->age + DAYS_IN_YEAR < v->max_age) ? STR_VEHICLE_LIST_AGE : STR_VEHICLE_LIST_AGE_RED;
+					SetDParam(3, v->age / DAYS_IN_LEAP_YEAR);
+					SetDParam(4, v->max_age / DAYS_IN_LEAP_YEAR);
+					break;
 				}
-				str = STR_VEHICLE_LIST_CARGO;
-				SetDParam(3, cargoes);
-				break;
-			}
 
-			case VST_RELIABILITY: {
-				str = ToPercent16(v->reliability) >= 50 ? STR_VEHICLE_LIST_RELIABILITY : STR_VEHICLE_LIST_RELIABILITY_RED;
-				SetDParam(3, ToPercent16(v->reliability));
-				break;
-			}
-
-			case VST_MAX_SPEED: {
-				str = STR_VEHICLE_LIST_MAX_SPEED;
-				SetDParam(3, v->GetDisplayMaxSpeed());
-				break;
-			}
-
-			case VST_MODEL: {
-				str = STR_VEHICLE_LIST_ENGINE_BUILT;
-				SetDParam(3, v->engine_type);
-				SetDParam(4, v->build_year);
-				break;
-			}
-
-			case VST_VALUE: {
-				Money total_value = 0;
-				for (const Vehicle *u = v; u != nullptr; u = u->GetNextVehicle()) {
-					total_value += u->value;
+				case VST_CARGO: {
+					CargoTypes cargoes = 0;
+					for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
+						if (u->cargo_cap > 0) SetBit(cargoes, u->cargo_type);
+					}
+					str = STR_VEHICLE_LIST_CARGO;
+					SetDParam(3, cargoes);
+					break;
 				}
-				str = STR_VEHICLE_LIST_VALUE;
-				SetDParam(3, total_value);
-				break;
-			}
 
-			case VST_LENGTH: {
-				const GroundVehicleCache* gcache = v->GetGroundVehicleCache();
-				assert(gcache != nullptr);
-				str = STR_VEHICLE_LIST_LENGTH;
-				SetDParam(3, CeilDiv(gcache->cached_total_length * 10, TILE_SIZE));
-				SetDParam(4, 1);
-				break;
-			}
-
-			case VST_TIME_TO_LIVE: {
-				auto years_remaining = (v->max_age / DAYS_IN_LEAP_YEAR) - (v->age / DAYS_IN_LEAP_YEAR);
-				str = (years_remaining > 1) ? STR_VEHICLE_LIST_TIME_TO_LIVE : ((years_remaining < 0) ? STR_VEHICLE_LIST_TIME_TO_LIVE_OVERDUE : STR_VEHICLE_LIST_TIME_TO_LIVE_RED);
-				SetDParam(3, std::abs(years_remaining));
-				break;
-			}
-
-			case VST_TIMETABLE_DELAY: {
-				if (v->lateness_counter == 0 || (!_settings_client.gui.timetable_in_ticks && v->lateness_counter / DATE_UNIT_SIZE == 0)) {
-					str = STR_VEHICLE_LIST_TIMETABLE_DELAY_ON_TIME;
-				} else {
-					str = v->lateness_counter > 0 ? STR_VEHICLE_LIST_TIMETABLE_DELAY_LATE : STR_VEHICLE_LIST_TIMETABLE_DELAY_EARLY;
-					SetTimetableParams(3, std::abs(v->lateness_counter));
+				case VST_RELIABILITY: {
+					str = ToPercent16(v->reliability) >= 50 ? STR_VEHICLE_LIST_RELIABILITY : STR_VEHICLE_LIST_RELIABILITY_RED;
+					SetDParam(3, ToPercent16(v->reliability));
+					break;
 				}
-				break;
-			}
 
-			case VST_PROFIT_LIFETIME: {
-				str = STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME;
-				SetDParam(3, v->GetDisplayProfitLifetime());
-				break;
-			}
+				case VST_MAX_SPEED: {
+					str = STR_VEHICLE_LIST_MAX_SPEED;
+					SetDParam(3, v->GetDisplayMaxSpeed());
+					break;
+				}
 
-			case VST_AVERAGE_ORDER_OCCUPANCY: {
-				uint8 occupancy_average = v->GetOrderOccupancyAverage();
-				if (occupancy_average >= 16) {
-					str = STR_VEHICLE_LIST_ORDER_OCCUPANCY_AVERAGE;
-					SetDParam(3, occupancy_average - 16);
-				} else {
+				case VST_MODEL: {
+					str = STR_VEHICLE_LIST_ENGINE_BUILT;
+					SetDParam(3, v->engine_type);
+					SetDParam(4, v->build_year);
+					break;
+				}
+
+				case VST_VALUE: {
+					Money total_value = 0;
+					for (const Vehicle *u = v; u != nullptr; u = u->GetNextVehicle()) {
+						total_value += u->value;
+					}
+					str = STR_VEHICLE_LIST_VALUE;
+					SetDParam(3, total_value);
+					break;
+				}
+
+				case VST_LENGTH: {
+					const GroundVehicleCache* gcache = v->GetGroundVehicleCache();
+					assert(gcache != nullptr);
+					str = STR_VEHICLE_LIST_LENGTH;
+					SetDParam(3, CeilDiv(gcache->cached_total_length * 10, TILE_SIZE));
+					SetDParam(4, 1);
+					break;
+				}
+
+				case VST_TIME_TO_LIVE: {
+					auto years_remaining = (v->max_age / DAYS_IN_LEAP_YEAR) - (v->age / DAYS_IN_LEAP_YEAR);
+					str = (years_remaining > 1) ? STR_VEHICLE_LIST_TIME_TO_LIVE : ((years_remaining < 0) ? STR_VEHICLE_LIST_TIME_TO_LIVE_OVERDUE : STR_VEHICLE_LIST_TIME_TO_LIVE_RED);
+					SetDParam(3, std::abs(years_remaining));
+					break;
+				}
+
+				case VST_TIMETABLE_DELAY: {
+					if (v->lateness_counter == 0 || (!_settings_client.gui.timetable_in_ticks && v->lateness_counter / DATE_UNIT_SIZE == 0)) {
+						str = STR_VEHICLE_LIST_TIMETABLE_DELAY_ON_TIME;
+					} else {
+						str = v->lateness_counter > 0 ? STR_VEHICLE_LIST_TIMETABLE_DELAY_LATE : STR_VEHICLE_LIST_TIMETABLE_DELAY_EARLY;
+						SetTimetableParams(3, std::abs(v->lateness_counter));
+					}
+					break;
+				}
+
+				case VST_PROFIT_LIFETIME: {
+					str = STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME;
+					SetDParam(3, v->GetDisplayProfitLifetime());
+					break;
+				}
+
+				case VST_AVERAGE_ORDER_OCCUPANCY: {
+					uint8 occupancy_average = v->GetOrderOccupancyAverage();
+					if (occupancy_average >= 16) {
+						str = STR_VEHICLE_LIST_ORDER_OCCUPANCY_AVERAGE;
+						SetDParam(3, occupancy_average - 16);
+					} else {
+						str = STR_JUST_STRING2;
+					}
+					break;
+				}
+
+				default: {
 					str = STR_JUST_STRING2;
+					break;
 				}
-				break;
 			}
 
-			default: {
-				str = STR_JUST_STRING2;
-				break;
+			DrawVehicleImage(v, image_left, image_right, y + FONT_HEIGHT_SMALL - 1, selected_vehicle, EIT_IN_LIST, 0);
+			DrawString(text_left, text_right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 1, str);
+
+			/* company colour stripe along vehicle description row */
+			if (_settings_client.gui.show_vehicle_list_company_colour && v->owner != this->vli.company) {
+				byte ccolour = 0;
+				Company *c = Company::Get(v->owner);
+				if (c != nullptr) {
+					ccolour = _colour_gradient[c->colour][6];
+				}
+				GfxFillRect((text_right - 1) - (FONT_HEIGHT_SMALL - 2), y + 1, text_right - 1, (y + 1) + (FONT_HEIGHT_SMALL - 2), ccolour, FILLRECT_OPAQUE);
 			}
-		}
-
-		DrawVehicleImage(v, image_left, image_right, y + FONT_HEIGHT_SMALL - 1, selected_vehicle, EIT_IN_LIST, 0);
-		DrawString(text_left, text_right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 1, str);
-
-		/* company colour stripe along vehicle description row */
-		if (_settings_client.gui.show_vehicle_list_company_colour && v->owner != this->vli.company) {
-			byte ccolour = 0;
-			Company *c = Company::Get(v->owner);
-			if (c != nullptr) {
-				ccolour = _colour_gradient[c->colour][6];
-			}
-			GfxFillRect((text_right - 1) - (FONT_HEIGHT_SMALL - 2), y + 1, text_right - 1, (y + 1) + (FONT_HEIGHT_SMALL - 2), ccolour, FILLRECT_OPAQUE);
-		}
-
-		if (!v->name.empty()) {
-			/* The vehicle got a name so we will print it */
-			SetDParam(0, v->index);
-			DrawString(text_left, text_right, y, STR_TINY_BLACK_VEHICLE);
-		} else if (v->group_id != DEFAULT_GROUP) {
-			/* The vehicle has no name, but is member of a group, so print group name */
-			SetDParam(0, v->group_id);
-			DrawString(text_left, text_right, y, STR_TINY_GROUP, TC_BLACK);
-		}
-
-		if (show_orderlist) DrawSmallOrderList(v, orderlist_left, orderlist_right, y, v->cur_real_order_index);
-
-		if (v->IsChainInDepot()) {
-			str = STR_BLUE_COMMA;
 		} else {
-			str = (v->age > v->max_age - DAYS_IN_LEAP_YEAR) ? STR_RED_COMMA : STR_BLACK_COMMA;
+			SetDParam(0, vehgroup.display_profit_this_year);
+			SetDParam(1, vehgroup.display_profit_last_year);
+			DrawString(text_left, text_right, y + line_height - FONT_HEIGHT_SMALL - WD_FRAMERECT_BOTTOM - 1, STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR);
 		}
 
-		SetDParam(0, v->unitnumber);
-		DrawString(left, right, y + 2, str);
+		DrawVehicleProfitButton(vehgroup.age, vehgroup.display_profit_last_year, vehgroup.NumVehicles(), vehicle_button_x, y + FONT_HEIGHT_NORMAL + 3);
 
-		DrawVehicleProfitButton(v, vehicle_button_x, y + FONT_HEIGHT_NORMAL + 3);
+		switch (this->grouping) {
+			case GB_NONE: {
+				const Vehicle *v = vehgroup.GetSingleVehicle();
+
+				DrawVehicleImage(v, image_left, image_right, y + FONT_HEIGHT_SMALL - 1, selected_vehicle, EIT_IN_LIST, 0);
+
+				if (!v->name.empty()) {
+					/* The vehicle got a name so we will print it */
+					SetDParam(0, v->index);
+					DrawString(text_left, text_right, y, STR_TINY_BLACK_VEHICLE);
+				} else if (v->group_id != DEFAULT_GROUP) {
+					/* The vehicle has no name, but is member of a group, so print group name */
+					SetDParam(0, v->group_id);
+					DrawString(text_left, text_right, y, STR_TINY_GROUP, TC_BLACK);
+				}
+
+				if (show_orderlist) DrawSmallOrderList(v, orderlist_left, orderlist_right, y, v->cur_real_order_index);
+
+				StringID str;
+				if (v->IsChainInDepot()) {
+					str = STR_BLUE_COMMA;
+				} else {
+					str = (v->age > v->max_age - DAYS_IN_LEAP_YEAR) ? STR_RED_COMMA : STR_BLACK_COMMA;
+				}
+
+				SetDParam(0, v->unitnumber);
+				DrawString(left, right, y + 2, str);
+				break;
+			}
+
+			case GB_SHARED_ORDERS:
+
+				assert(vehgroup.NumVehicles() > 0);
+
+				for (int i = 0; i < static_cast<int>(vehgroup.NumVehicles()); ++i) {
+					if (image_left + 8 * i >= image_right) break; // Break if there is no more space to draw any more vehicles anyway.
+					DrawVehicleImage(vehgroup.vehicles_begin[i], image_left + 8 * i, image_right, y + FONT_HEIGHT_SMALL - 1, selected_vehicle, EIT_IN_LIST, 0);
+				}
+
+				if (show_orderlist) DrawSmallOrderList((vehgroup.vehicles_begin[0])->GetFirstOrder(), orderlist_left, orderlist_right, y);
+
+				SetDParam(0, vehgroup.NumVehicles());
+				DrawString(left, right, y + 2, STR_BLACK_COMMA);
+				break;
+
+			default:
+				NOT_REACHED();
+		}
 
 		y += line_height;
+	}
+}
+
+void BaseVehicleListWindow::UpdateSortingFromGrouping()
+{
+	/* Set up sorting. Make the window-specific _sorting variable
+	 * point to the correct global _sorting struct so we are freed
+	 * from having conditionals during window operation */
+	switch (this->vli.vtype) {
+		case VEH_TRAIN:    this->sorting = &_sorting[this->grouping].train; break;
+		case VEH_ROAD:     this->sorting = &_sorting[this->grouping].roadveh; break;
+		case VEH_SHIP:     this->sorting = &_sorting[this->grouping].ship; break;
+		case VEH_AIRCRAFT: this->sorting = &_sorting[this->grouping].aircraft; break;
+		default: NOT_REACHED();
+	}
+	this->vehgroups.SetSortFuncs(this->GetVehicleSorterFuncs());
+	this->vehgroups.SetListing(*this->sorting);
+	this->vehgroups.ForceRebuild();
+	this->vehgroups.NeedResort();
+}
+
+void BaseVehicleListWindow::UpdateVehicleGroupBy(GroupBy group_by)
+{
+	if (this->grouping != group_by) {
+		/* Save the old sorting option, so that if we change the grouping option back later on,
+		 * UpdateSortingFromGrouping() will automatically restore the saved sorting option. */
+		*this->sorting = this->vehgroups.GetListing();
+
+		this->grouping = group_by;
+		_grouping[this->vli.type][this->vli.vtype] = group_by;
+		this->UpdateSortingFromGrouping();
 	}
 }
 
@@ -1843,26 +2068,12 @@ private:
 public:
 	VehicleListWindow(WindowDesc *desc, WindowNumber window_number) : BaseVehicleListWindow(desc, window_number)
 	{
-		/* Set up sorting. Make the window-specific _sorting variable
-		 * point to the correct global _sorting struct so we are freed
-		 * from having conditionals during window operation */
-		switch (this->vli.vtype) {
-			case VEH_TRAIN:    this->sorting = &_sorting.train; break;
-			case VEH_ROAD:     this->sorting = &_sorting.roadveh; break;
-			case VEH_SHIP:     this->sorting = &_sorting.ship; break;
-			case VEH_AIRCRAFT: this->sorting = &_sorting.aircraft; break;
-			default: NOT_REACHED();
-		}
-
 		this->CreateNestedTree();
 
 		this->CheckCargoFilterEnableState(WID_VL_FILTER_BY_CARGO_SEL, false, this->vli.type != VL_SHARED_ORDERS && this->vli.type != VL_SINGLE_VEH);
 
 		this->vscroll = this->GetScrollbar(WID_VL_SCROLLBAR);
 
-		this->vehicles.SetListing(*this->sorting);
-		this->vehicles.ForceRebuild();
-		this->vehicles.NeedResort();
 		this->BuildVehicleList();
 		this->SortVehicleList();
 
@@ -1871,6 +2082,10 @@ public:
 
 		if (this->vli.type == VL_SHARED_ORDERS) {
 			this->GetWidget<NWidgetCore>(WID_VL_CAPTION)->widget_data = STR_VEHICLE_LIST_SHARED_ORDERS_LIST_CAPTION;
+			/* If we are in the shared orders window, then disable the group-by dropdown menu.
+			 * Remove this when the group-by dropdown menu has another option apart from grouping by shared orders. */
+			this->SetWidgetDisabledState(WID_VL_GROUP_ORDER, true);
+			this->SetWidgetDisabledState(WID_VL_GROUP_BY_PULLDOWN, true);
 		} else {
 			this->GetWidget<NWidgetCore>(WID_VL_CAPTION)->widget_data = STR_VEHICLE_LIST_TRAIN_CAPTION + this->vli.vtype;
 		}
@@ -1881,7 +2096,7 @@ public:
 
 	~VehicleListWindow()
 	{
-		*this->sorting = this->vehicles.GetListing();
+		*this->sorting = this->vehgroups.GetListing();
 	}
 
 	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
@@ -1941,26 +2156,26 @@ public:
 							 * and we should close the window when deleting the order. */
 							NOT_REACHED();
 						}
-						SetDParam(0, this->vscroll->GetCount());
+						SetDParam(0, this->vehicles.size());
 						break;
 
 					case VL_STANDARD: // Company Name
 						SetDParam(0, STR_COMPANY_NAME);
 						SetDParam(1, this->vli.index);
-						SetDParam(3, this->vscroll->GetCount());
+						SetDParam(3, this->vehicles.size());
 						break;
 
 					case VL_STATION_LIST: // Station/Waypoint Name
 						SetDParam(0, Station::IsExpected(BaseStation::Get(this->vli.index)) ? STR_STATION_NAME : STR_WAYPOINT_NAME);
 						SetDParam(1, this->vli.index);
-						SetDParam(3, this->vscroll->GetCount());
+						SetDParam(3, this->vehicles.size());
 						break;
 
 					case VL_DEPOT_LIST:
 						SetDParam(0, STR_DEPOT_CAPTION);
 						SetDParam(1, this->vli.vtype);
 						SetDParam(2, this->vli.index);
-						SetDParam(3, this->vscroll->GetCount());
+						SetDParam(3, this->vehicles.size());
 						break;
 					default: NOT_REACHED();
 				}
@@ -1974,7 +2189,7 @@ public:
 		switch (widget) {
 			case WID_VL_SORT_ORDER:
 				/* draw arrow pointing up/down for ascending/descending sorting */
-				this->DrawSortButtonState(widget, this->vehicles.IsDescSortOrder() ? SBS_DOWN : SBS_UP);
+				this->DrawSortButtonState(widget, this->vehgroups.IsDescSortOrder() ? SBS_DOWN : SBS_UP);
 				break;
 
 			case WID_VL_LIST:
@@ -2012,8 +2227,11 @@ public:
 				WIDGET_LIST_END);
 		}
 
+		/* Set text of group by dropdown widget. */
+		this->GetWidget<NWidgetCore>(WID_VL_GROUP_BY_PULLDOWN)->widget_data = this->vehicle_group_by_names[this->grouping];
+
 		/* Set text of sort by dropdown widget. */
-		this->GetWidget<NWidgetCore>(WID_VL_SORT_BY_PULLDOWN)->widget_data = this->vehicle_sorter_names[this->vehicles.SortType()];
+		this->GetWidget<NWidgetCore>(WID_VL_SORT_BY_PULLDOWN)->widget_data = this->GetVehicleSorterNames()[this->vehgroups.SortType()];
 
 		this->GetWidget<NWidgetCore>(WID_VL_FILTER_BY_CARGO)->widget_data = this->cargo_filter_texts[this->cargo_filter_criteria];
 
@@ -2024,12 +2242,16 @@ public:
 	{
 		switch (widget) {
 			case WID_VL_SORT_ORDER: // Flip sorting method ascending/descending
-				this->vehicles.ToggleSortOrder();
+				this->vehgroups.ToggleSortOrder();
 				this->SetDirty();
 				break;
 
-			case WID_VL_SORT_BY_PULLDOWN:// Select sorting criteria dropdown menu
-				ShowDropDownMenu(this, this->vehicle_sorter_names, this->vehicles.SortType(), WID_VL_SORT_BY_PULLDOWN, 0,
+			case WID_VL_GROUP_BY_PULLDOWN: // Select sorting criteria dropdown menu
+				ShowDropDownMenu(this, this->vehicle_group_by_names, this->grouping, WID_VL_GROUP_BY_PULLDOWN, 0, 0);
+				return;
+
+			case WID_VL_SORT_BY_PULLDOWN: // Select sorting criteria dropdown menu
+				ShowDropDownMenu(this, this->GetVehicleSorterNames(), this->vehgroups.SortType(), WID_VL_SORT_BY_PULLDOWN, 0,
 						(this->vli.vtype == VEH_TRAIN || this->vli.vtype == VEH_ROAD) ? 0 : this->vehicle_sorter_non_ground_veh_disable_mask, 0, DDSF_LOST_FOCUS);
 				return;
 
@@ -2039,16 +2261,32 @@ public:
 
 			case WID_VL_LIST: { // Matrix to show vehicles
 				uint id_v = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_VL_LIST);
-				if (id_v >= this->vehicles.size()) return; // click out of list bound
+				if (id_v >= this->vehgroups.size()) return; // click out of list bound
 
-				const Vehicle *v = this->vehicles[id_v];
-				if (!VehicleClicked(v)) {
-					if (_ctrl_pressed) {
-						ShowCompanyGroupForVehicle(v);
-					} else {
-						ShowVehicleViewWindow(v);
+				const GUIVehicleGroup &vehgroup = this->vehgroups[id_v];
+				switch (this->grouping) {
+					case GB_NONE: {
+						const Vehicle *v = vehgroup.GetSingleVehicle();
+						if (!VehicleClicked(v)) {
+							if (_ctrl_pressed) {
+								ShowCompanyGroupForVehicle(v);
+							} else {
+								ShowVehicleViewWindow(v);
+							}
+						}
+						break;
 					}
+
+					case GB_SHARED_ORDERS:
+						assert(vehgroup.NumVehicles() > 0);
+						/* We do not support VehicleClicked() here since the contextual action may only make sense for individual vehicles */
+
+						ShowVehicleListWindow(vehgroup.vehicles_begin[0]);
+						break;
+
+					default: NOT_REACHED();
 				}
+
 				break;
 			}
 
@@ -2074,12 +2312,18 @@ public:
 	void OnDropdownSelect(int widget, int index) override
 	{
 		switch (widget) {
-			case WID_VL_SORT_BY_PULLDOWN:
-				this->vehicles.SetSortType(index);
+			case WID_VL_GROUP_BY_PULLDOWN:
+				this->UpdateVehicleGroupBy(static_cast<GroupBy>(index));
 				break;
+
+			case WID_VL_SORT_BY_PULLDOWN:
+				this->vehgroups.SetSortType(index);
+				break;
+
 			case WID_VL_FILTER_BY_CARGO:
 				this->SetCargoFilterIndex(index);
 				break;
+
 			case WID_VL_MANAGE_VEHICLES_DROPDOWN:
 				switch (index) {
 					case ADI_REPLACE: // Replace window
@@ -2125,6 +2369,7 @@ public:
 					default: NOT_REACHED();
 				}
 				break;
+
 			default: NOT_REACHED();
 		}
 		this->SetDirty();
@@ -2181,7 +2426,7 @@ public:
 
 	void OnGameTick() override
 	{
-		if (this->vehicles.NeedResort()) {
+		if (this->vehgroups.NeedResort()) {
 			StationID station = (this->vli.type == VL_STATION_LIST) ? this->vli.index : INVALID_STATION;
 
 			DEBUG(misc, 3, "Periodic resort %d list company %d at station %d", this->vli.vtype, this->owner, station);
@@ -2205,19 +2450,19 @@ public:
 			/* Needs to be done in command-scope, so everything stays valid */
 			this->vli.index = GB(data, 0, 20);
 			this->window_number = this->vli.Pack();
-			this->vehicles.ForceRebuild();
+			this->vehgroups.ForceRebuild();
 			return;
 		}
 
 		if (data == 0) {
 			/* This needs to be done in command-scope to enforce rebuilding before resorting invalid data */
-			this->vehicles.ForceRebuild();
+			this->vehgroups.ForceRebuild();
 			if (this->vli.type == VL_SHARED_ORDERS && !_settings_client.gui.enable_single_veh_shared_order_gui && this->vehicles.size() == 1) {
 				delete this;
 				return;
 			}
 		} else {
-			this->vehicles.ForceResort();
+			this->vehgroups.ForceResort();
 		}
 
 		this->CheckCargoFilterEnableState(WID_VL_FILTER_BY_CARGO_SEL, true, this->vli.type != VL_SHARED_ORDERS && this->vli.type != VL_SINGLE_VEH);

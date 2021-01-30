@@ -49,9 +49,9 @@ STR_CARGO_PLURAL_WHEAT                                          :Hveiti
 STR_CARGO_PLURAL_RUBBER                                         :Gúmmí
 STR_CARGO_PLURAL_SUGAR                                          :Sykur
 STR_CARGO_PLURAL_TOYS                                           :Leikföng
-STR_CARGO_PLURAL_CANDY                                          :Sælgæti
+STR_CARGO_PLURAL_SWEETS                                         :Sælgæti
 STR_CARGO_PLURAL_COLA                                           :Kóladrykkir
-STR_CARGO_PLURAL_COTTON_CANDY                                   :Sykurfrauð
+STR_CARGO_PLURAL_CANDYFLOSS                                     :Sykurfrauð
 STR_CARGO_PLURAL_BUBBLES                                        :Kúlur
 STR_CARGO_PLURAL_TOFFEE                                         :Toffý
 STR_CARGO_PLURAL_BATTERIES                                      :Rafhlöður
@@ -83,9 +83,9 @@ STR_CARGO_SINGULAR_WHEAT                                        :Hveitis
 STR_CARGO_SINGULAR_RUBBER                                       :Gúmmí
 STR_CARGO_SINGULAR_SUGAR                                        :Sykur
 STR_CARGO_SINGULAR_TOY                                          :Leikfanga
-STR_CARGO_SINGULAR_CANDY                                        :Sælgætis
+STR_CARGO_SINGULAR_SWEETS                                       :Sælgætis
 STR_CARGO_SINGULAR_COLA                                         :Kóladrykkja
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :Sykurfrauðs
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :Sykurfrauðs
 STR_CARGO_SINGULAR_BUBBLE                                       :Kúlu
 STR_CARGO_SINGULAR_TOFFEE                                       :Toffý
 STR_CARGO_SINGULAR_BATTERY                                      :Rafhlöðu
@@ -291,6 +291,8 @@ STR_SORT_BY_CARGO_CAPACITY                                      :Burðargeta
 STR_SORT_BY_RANGE                                               :Drægni
 STR_SORT_BY_POPULATION                                          :Fólksfjöldi
 STR_SORT_BY_RATING                                              :Einkunn
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Stöðva leik
@@ -1485,9 +1487,6 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Leyft, sérsni�
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Staðsetning trjáa í leik: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :Stjórnar hvernig tré birtast meðan á leiknum stendur. Þessi stilling getur haft áhrif á iðnað sem byggir á trjám, til dæmis timburverksmiðjur
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :Engin {RED}(skemmir timburverksmiðjur)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :aðeins í regnskógum
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :allstaðar
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Staðsetning tækjasláar: {STRING}
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Lárétt staða aðal tækjasláar efst á skjánum
@@ -1776,8 +1775,6 @@ STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}Tengjast
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}Endurnýja þjón
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}Endurnýja upplýsingar um þjón
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}Finna þjón
-STR_NETWORK_SERVER_LIST_FIND_SERVER_TOOLTIP                     :{BLACK}Leita að þjónum á neti
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}Bæta við þjóni
 STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP                      :{BLACK}Bætir þjóni við listann, hann mun alltaf vera athugaður þegar leitað er eftir leikjum í gangi
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Hefja þjón

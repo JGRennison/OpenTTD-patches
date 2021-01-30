@@ -48,9 +48,9 @@ STR_CARGO_PLURAL_WHEAT                                          :Weet
 STR_CARGO_PLURAL_RUBBER                                         :Rubber
 STR_CARGO_PLURAL_SUGAR                                          :Sûker
 STR_CARGO_PLURAL_TOYS                                           :Boartersguod
-STR_CARGO_PLURAL_CANDY                                          :Snobbersguod
+STR_CARGO_PLURAL_SWEETS                                         :Snobbersguod
 STR_CARGO_PLURAL_COLA                                           :Kola
-STR_CARGO_PLURAL_COTTON_CANDY                                   :Sûkerspin
+STR_CARGO_PLURAL_CANDYFLOSS                                     :Sûkerspin
 STR_CARGO_PLURAL_BUBBLES                                        :Bubbels
 STR_CARGO_PLURAL_TOFFEE                                         :Toffee
 STR_CARGO_PLURAL_BATTERIES                                      :Batterijen
@@ -82,9 +82,9 @@ STR_CARGO_SINGULAR_WHEAT                                        :Weet
 STR_CARGO_SINGULAR_RUBBER                                       :Rubber
 STR_CARGO_SINGULAR_SUGAR                                        :Sûker
 STR_CARGO_SINGULAR_TOY                                          :Boartersguod
-STR_CARGO_SINGULAR_CANDY                                        :Snobbersguod
+STR_CARGO_SINGULAR_SWEETS                                       :Snobbersguod
 STR_CARGO_SINGULAR_COLA                                         :Kola
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :Sûkerspin
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :Sûkerspin
 STR_CARGO_SINGULAR_BUBBLE                                       :Bûle
 STR_CARGO_SINGULAR_TOFFEE                                       :Toffee
 STR_CARGO_SINGULAR_BATTERY                                      :Batterij
@@ -309,6 +309,8 @@ STR_SORT_BY_CARGO_CAPACITY                                      :Frachtkapasitei
 STR_SORT_BY_RANGE                                               :Beryk
 STR_SORT_BY_POPULATION                                          :Ynwenners
 STR_SORT_BY_RATING                                              :Rang
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Spul skoftsjen
@@ -1525,9 +1527,6 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Tastean
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Tastean, oanpast strittepatroan
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Bouen fan beamen yn it spul: {STRING}
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :Gjin {RED}(brekt houtseachmûne)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :Allinich yn reinwâlden
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :Oerol
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Plak fan de haad wurkbalk: {STRING}
 STR_CONFIG_SETTING_STATUSBAR_POS                                :Posysje fan statusbalke: {STRING}
@@ -1798,10 +1797,6 @@ STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Feroarje
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Multiplayer
-STR_NETWORK_SERVER_LIST_ADVERTISED                              :{BLACK}Advertearre
-STR_NETWORK_SERVER_LIST_ADVERTISED_TOOLTIP                      :{BLACK}Kies tusken in advertearre (ynternet) of in net-advertearre (LAN) spul
-STR_NETWORK_SERVER_LIST_ADVERTISED_NO                           :Nee
-STR_NETWORK_SERVER_LIST_ADVERTISED_YES                          :Ja
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Namme fan spieler:
 
 STR_NETWORK_SERVER_LIST_GAME_NAME                               :{BLACK}Namme
@@ -1833,7 +1828,6 @@ STR_NETWORK_SERVER_LIST_GRF_MISMATCH                            :{SILVER}FERKEAR
 STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}Meidwaan mei spul
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}Laad tsjinner ynfo opnij
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}Server sykje
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}Tsjinner tafoegje
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Start tsjinner
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Start dien eigen tsjinner
@@ -1847,6 +1841,8 @@ STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Start in
 STR_NETWORK_START_SERVER_NEW_GAME_NAME                          :{BLACK}Spulnamme:
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Wachtwurd ynstelle
 
+STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Advertearre
+STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Kies tusken in advertearre (ynternet) of in net-advertearre (LAN) spul
 STR_NETWORK_START_SERVER_UNADVERTISED                           :Nee
 STR_NETWORK_START_SERVER_ADVERTISED                             :Ja
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} kliïnt{P "" en}

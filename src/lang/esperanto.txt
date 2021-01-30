@@ -49,9 +49,9 @@ STR_CARGO_PLURAL_WHEAT                                          :Tritiko
 STR_CARGO_PLURAL_RUBBER                                         :Kaŭĉuko
 STR_CARGO_PLURAL_SUGAR                                          :Sukero
 STR_CARGO_PLURAL_TOYS                                           :Ludiloj
-STR_CARGO_PLURAL_CANDY                                          :Dolĉaĵoj
+STR_CARGO_PLURAL_SWEETS                                         :Dolĉaĵoj
 STR_CARGO_PLURAL_COLA                                           :Kolao
-STR_CARGO_PLURAL_COTTON_CANDY                                   :Sukerŝpinaĵoj
+STR_CARGO_PLURAL_CANDYFLOSS                                     :Sukerŝpinaĵoj
 STR_CARGO_PLURAL_BUBBLES                                        :Vezikoj
 STR_CARGO_PLURAL_TOFFEE                                         :Tofeoj
 STR_CARGO_PLURAL_BATTERIES                                      :Baterioj
@@ -83,9 +83,9 @@ STR_CARGO_SINGULAR_WHEAT                                        :Tritiko
 STR_CARGO_SINGULAR_RUBBER                                       :Kaŭĉuko
 STR_CARGO_SINGULAR_SUGAR                                        :Sukero
 STR_CARGO_SINGULAR_TOY                                          :Ludilo
-STR_CARGO_SINGULAR_CANDY                                        :Dolĉaĵo
+STR_CARGO_SINGULAR_SWEETS                                       :Dolĉaĵo
 STR_CARGO_SINGULAR_COLA                                         :Kolao
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :Sukerŝpinaĵo
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :Sukerŝpinaĵo
 STR_CARGO_SINGULAR_BUBBLE                                       :Veziko
 STR_CARGO_SINGULAR_TOFFEE                                       :Tofeo
 STR_CARGO_SINGULAR_BATTERY                                      :Baterio
@@ -303,6 +303,8 @@ STR_SORT_BY_POWER_VS_RUNNING_COST                               :Potenco/Irkosto
 STR_SORT_BY_CARGO_CAPACITY                                      :Ŝarĝkapablo
 STR_SORT_BY_RANGE                                               :Atingopovo
 STR_SORT_BY_POPULATION                                          :Enloĝantaro
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Paŭzigu la ludon
@@ -1324,9 +1326,6 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :permesate
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :permesate, kutimo urbomapo
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :En ludo metanta de arbojn: {STRING}
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :neniu {RED}(rompas ligno muelilo)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :nur en tropika praarbaroj
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :Ĉie
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Loko de ĉefa ilbreto: {STRING}
 STR_CONFIG_SETTING_STATUSBAR_POS                                :Loko de kondiĉbaro: {STRING}
@@ -1572,8 +1571,6 @@ STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}Aliĝu a
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}Refreŝigu servilon
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}Refreŝigu servilajn informojn
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}Trovu servilon
-STR_NETWORK_SERVER_LIST_FIND_SERVER_TOOLTIP                     :{BLACK}Serĉu reton por servilo
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}Aldonu servilon
 STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP                      :{BLACK}Aldonas servilon al la listo kiu ĉiam estos kontrolata pri kurantaj ludoj
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Startu servilon

@@ -14,6 +14,8 @@
 enum GroupListWidgets {
 	WID_GL_LIST_VEHICLE,             ///< List of the vehicles, this must be first, see: DirtyVehicleListWindowForVehicle
 	WID_GL_CAPTION,                  ///< Caption of the window.
+	WID_GL_GROUP_BY_ORDER,           ///< Group order.
+	WID_GL_GROUP_BY_DROPDOWN,        ///< Group by dropdown list.
 	WID_GL_SORT_BY_ORDER,            ///< Sort order.
 	WID_GL_SORT_BY_DROPDOWN,         ///< Sort by dropdown list.
 	WID_GL_FILTER_BY_CARGO,          ///< Filter vehicle by cargo type.

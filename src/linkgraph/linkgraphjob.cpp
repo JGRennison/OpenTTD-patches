@@ -49,7 +49,7 @@ LinkGraphJob::LinkGraphJob(const LinkGraph &orig, uint duration_multiplier) :
 		join_date_ticks(GetLinkGraphJobJoinDateTicks(duration_multiplier)),
 		start_date_ticks((_date * DAY_TICKS) + _date_fract),
 		job_completed(false),
-		abort_job(false)
+		job_aborted(false)
 {
 }
 
@@ -94,6 +94,11 @@ LinkGraphJob::~LinkGraphJob()
 void LinkGraphJob::FinaliseJob()
 {
 	this->JoinThread();
+
+	/* If the job has been aborted, the job state is invalid.
+	 * This should never be reached, as once the job has been marked as aborted
+	 * the only valid job operation is to clear the LinkGraphJob pool. */
+	assert(!this->IsJobAborted());
 
 	/* Link graph has been merged into another one. */
 	if (!LinkGraph::IsValidID(this->link_graph.index)) return;
@@ -173,55 +178,6 @@ void LinkGraphJob::FinaliseJob()
 		ge.flows.SortStorage();
 		InvalidateWindowData(WC_STATION_VIEW, st->index, this->Cargo());
 	}
-}
-
-/**
- * Check if job has actually finished.
- * This is allowed to spuriously return an incorrect value.
- * @return True if job has actually finished.
- */
-bool LinkGraphJob::IsJobCompleted() const
-{
-#if defined(__GNUC__) || defined(__clang__)
-	return __atomic_load_n(&job_completed, __ATOMIC_RELAXED);
-#else
-	return job_completed;
-#endif
-}
-
-/**
- * Check if job has been requested to be aborted.
- * This is allowed to spuriously return a falsely negative value.
- * @return True if job abort has been requested.
- */
-bool LinkGraphJob::IsJobAborted() const
-{
-#if defined(__GNUC__) || defined(__clang__)
-	return __atomic_load_n(&abort_job, __ATOMIC_RELAXED);
-#else
-	return abort_job;
-#endif
-}
-
-/**
- * Abort job.
- * The job may exit early at the next available opportunity.
- * After this method has been called the state of the job is undefined, and the only valid operation
- * is to join the thread and discard the job data.
- */
-void LinkGraphJob::AbortJob()
-{
-	/*
-	 * Note that this it not guaranteed to be an atomic write and there are no memory barriers or other protections.
-	 * Readers of this variable in another thread may see an out of date value.
-	 * However this is OK as if this method is called the state of the job/thread does not matter anyway.
-	 */
-
-#if defined(__GNUC__) || defined(__clang__)
-	__atomic_store_n(&(abort_job), true, __ATOMIC_RELAXED);
-#else
-	abort_job = true;
-#endif
 }
 
 /**

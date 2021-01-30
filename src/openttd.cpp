@@ -1787,7 +1787,6 @@ CommandCost CmdDesyncCheck(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 void StateGameLoop()
 {
 	if (!_networking || _network_server) {
-		extern void StateGameLoop_LinkGraphPauseControl();
 		StateGameLoop_LinkGraphPauseControl();
 	}
 

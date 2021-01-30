@@ -49,9 +49,9 @@ STR_CARGO_PLURAL_WHEAT                                          :گندم
 STR_CARGO_PLURAL_RUBBER                                         :ربڑ
 STR_CARGO_PLURAL_SUGAR                                          :چینی
 STR_CARGO_PLURAL_TOYS                                           :کھلونے
-STR_CARGO_PLURAL_CANDY                                          :مٹھایاں
+STR_CARGO_PLURAL_SWEETS                                         :مٹھایاں
 STR_CARGO_PLURAL_COLA                                           :کوئلہ
-STR_CARGO_PLURAL_COTTON_CANDY                                   :کینڈی فلاس
+STR_CARGO_PLURAL_CANDYFLOSS                                     :کینڈی فلاس
 STR_CARGO_PLURAL_BUBBLES                                        :بلبلے
 STR_CARGO_PLURAL_TOFFEE                                         :ٹافی
 STR_CARGO_PLURAL_BATTERIES                                      :بیٹریاں
@@ -83,9 +83,9 @@ STR_CARGO_SINGULAR_WHEAT                                        :گندم
 STR_CARGO_SINGULAR_RUBBER                                       :ربڑ
 STR_CARGO_SINGULAR_SUGAR                                        :چینی
 STR_CARGO_SINGULAR_TOY                                          :کھلونا
-STR_CARGO_SINGULAR_CANDY                                        :مٹھائی
+STR_CARGO_SINGULAR_SWEETS                                       :مٹھائی
 STR_CARGO_SINGULAR_COLA                                         :کولا
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :کینڈی فلاس
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :کینڈی فلاس
 STR_CARGO_SINGULAR_BUBBLE                                       :بلبلہ
 STR_CARGO_SINGULAR_TOFFEE                                       :ٹافی
 STR_CARGO_SINGULAR_BATTERY                                      :بیٹری
@@ -297,6 +297,8 @@ STR_SORT_BY_POWER_VS_RUNNING_COST                               :قیمتِ رو
 STR_SORT_BY_CARGO_CAPACITY                                      :سامان کی گنجایش
 STR_SORT_BY_RANGE                                               :پہنچ
 STR_SORT_BY_POPULATION                                          :آبادی
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK} کھیل میں وقفھ لیجیئے
@@ -1265,9 +1267,6 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :اجازت ہے
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :اپنی مرضی کے شہر کے پھیلاو کی اجازت ہے
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :کھیل میں درخت لگانے کی اجازت: {STRING}
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :کوئی نہیں {RED}(لکڑ مل ٹوٹ گئی)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :صرف بارش کے جنگلوں میں
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :ہر جگہ
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :بنیادی ٹول بار کی جگہ: {STRING}
 STR_CONFIG_SETTING_STATUSBAR_POS                                :حالات کی پٹی: {STRING}
@@ -1524,8 +1523,6 @@ STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}کھیل
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}سرور کو تازہ کریں
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}سرور کی معلومات کو تازہ کریں
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}سرور ڈھونڈیں
-STR_NETWORK_SERVER_LIST_FIND_SERVER_TOOLTIP                     :{BLACK}سرور کے لئے نیٹ ورک تلاش کریں
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}سرور شامل کریں
 STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP                      :{BLACK}سرور کو اس فہرست میں شامل کریں جو ہمیشہ کھیل شروع کرنے کے لئے پرکھی جاتی ہے
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}سرور شروع کریں

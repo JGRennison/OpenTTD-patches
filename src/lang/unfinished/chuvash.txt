@@ -48,9 +48,9 @@ STR_CARGO_PLURAL_WHEAT                                          :Тулă
 STR_CARGO_PLURAL_RUBBER                                         :Каучук
 STR_CARGO_PLURAL_SUGAR                                          :Сахăр
 STR_CARGO_PLURAL_TOYS                                           :Теттесем
-STR_CARGO_PLURAL_CANDY                                          :Канфетсем
+STR_CARGO_PLURAL_SWEETS                                         :Канфетсем
 STR_CARGO_PLURAL_COLA                                           :Кола
-STR_CARGO_PLURAL_COTTON_CANDY                                   :Сахăр ваткĕ
+STR_CARGO_PLURAL_CANDYFLOSS                                     :Сахăр ваткĕ
 STR_CARGO_PLURAL_BUBBLES                                        :Хӑмпӑҫӑмсем
 STR_CARGO_PLURAL_TOFFEE                                         :Карамель
 STR_CARGO_PLURAL_BATTERIES                                      :Батарейкасем
@@ -82,9 +82,9 @@ STR_CARGO_SINGULAR_WHEAT                                        :Тулă
 STR_CARGO_SINGULAR_RUBBER                                       :Каучук
 STR_CARGO_SINGULAR_SUGAR                                        :Сахăр
 STR_CARGO_SINGULAR_TOY                                          :Тетте
-STR_CARGO_SINGULAR_CANDY                                        :Канфетсем
+STR_CARGO_SINGULAR_SWEETS                                       :Канфетсем
 STR_CARGO_SINGULAR_COLA                                         :Кола
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :Сахăр ваткĕ
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :Сахăр ваткĕ
 STR_CARGO_SINGULAR_BUBBLE                                       :Хӑмпӑҫӑм
 STR_CARGO_SINGULAR_TOFFEE                                       :Карамель
 STR_CARGO_SINGULAR_BATTERY                                      :Батарейкасем
@@ -202,6 +202,8 @@ STR_SORT_BY_LENGTH                                              :Тӑршшӗ
 STR_SORT_BY_COST                                                :Хак
 STR_SORT_BY_POWER                                               :Хӑватлӑх
 STR_SORT_BY_POPULATION                                          :Ҫынисем
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Вӑййи тӑхтав
@@ -609,8 +611,6 @@ STR_CONFIG_SETTING_TOWN_LAYOUT_DEFAULT                          :чӑн
 STR_CONFIG_SETTING_TOWN_LAYOUT_2X2_GRID                         :2x2
 STR_CONFIG_SETTING_TOWN_LAYOUT_3X3_GRID                         :3x3
 
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :ҫук {RED}(breaks lumber mill)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :таҫта та
 
 STR_CONFIG_SETTING_TOWN_GROWTH_NONE                             :Ҫук
 STR_CONFIG_SETTING_TOWN_GROWTH_SLOW                             :Вӑрах
@@ -753,7 +753,6 @@ STR_NETWORK_SERVER_LIST_GRF_MISMATCH                            :{SILVER}ХИР�
 
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}Сервер ҫӗнет
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}Сервер туп
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}Сервер хуш
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Сервер пуҫ
 

@@ -119,18 +119,18 @@ STR_CARGO_PLURAL_TOYS                                           :igračke
 STR_CARGO_PLURAL_TOYS.big                                       :Igračke
 STR_CARGO_PLURAL_TOYS.gen                                       :igračaka
 STR_CARGO_PLURAL_TOYS.aku                                       :igračke
-STR_CARGO_PLURAL_CANDY                                          :slatkiši
-STR_CARGO_PLURAL_CANDY.big                                      :Slatkiši
-STR_CARGO_PLURAL_CANDY.gen                                      :slatkiša
-STR_CARGO_PLURAL_CANDY.aku                                      :slatkiše
+STR_CARGO_PLURAL_SWEETS                                         :slatkiši
+STR_CARGO_PLURAL_SWEETS.big                                     :Slatkiši
+STR_CARGO_PLURAL_SWEETS.gen                                     :slatkiša
+STR_CARGO_PLURAL_SWEETS.aku                                     :slatkiše
 STR_CARGO_PLURAL_COLA                                           :kola
 STR_CARGO_PLURAL_COLA.big                                       :Kola
 STR_CARGO_PLURAL_COLA.gen                                       :kole
 STR_CARGO_PLURAL_COLA.aku                                       :kolu
-STR_CARGO_PLURAL_COTTON_CANDY                                   :šećerna vuna
-STR_CARGO_PLURAL_COTTON_CANDY.big                               :Šećerna vuna
-STR_CARGO_PLURAL_COTTON_CANDY.gen                               :šećerne vune
-STR_CARGO_PLURAL_COTTON_CANDY.aku                               :šećernu vunu
+STR_CARGO_PLURAL_CANDYFLOSS                                     :šećerna vuna
+STR_CARGO_PLURAL_CANDYFLOSS.big                                 :Šećerna vuna
+STR_CARGO_PLURAL_CANDYFLOSS.gen                                 :šećerne vune
+STR_CARGO_PLURAL_CANDYFLOSS.aku                                 :šećernu vunu
 STR_CARGO_PLURAL_BUBBLES                                        :mehurići
 STR_CARGO_PLURAL_BUBBLES.big                                    :Mehurići
 STR_CARGO_PLURAL_BUBBLES.gen                                    :mehurića
@@ -246,18 +246,18 @@ STR_CARGO_SINGULAR_TOY                                          :igračka
 STR_CARGO_SINGULAR_TOY.big                                      :Igračka
 STR_CARGO_SINGULAR_TOY.gen                                      :igračke
 STR_CARGO_SINGULAR_TOY.aku                                      :igračku
-STR_CARGO_SINGULAR_CANDY                                        :slatkiš
-STR_CARGO_SINGULAR_CANDY.big                                    :Slatkiš
-STR_CARGO_SINGULAR_CANDY.gen                                    :slatkiša
-STR_CARGO_SINGULAR_CANDY.aku                                    :slatkiš
+STR_CARGO_SINGULAR_SWEETS                                       :slatkiš
+STR_CARGO_SINGULAR_SWEETS.big                                   :Slatkiš
+STR_CARGO_SINGULAR_SWEETS.gen                                   :slatkiša
+STR_CARGO_SINGULAR_SWEETS.aku                                   :slatkiš
 STR_CARGO_SINGULAR_COLA                                         :kola
 STR_CARGO_SINGULAR_COLA.big                                     :Kola
 STR_CARGO_SINGULAR_COLA.gen                                     :kole
 STR_CARGO_SINGULAR_COLA.aku                                     :kolu
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :šećerna vuna
-STR_CARGO_SINGULAR_COTTON_CANDY.big                             :Šećerna vuna
-STR_CARGO_SINGULAR_COTTON_CANDY.gen                             :šećerne vune
-STR_CARGO_SINGULAR_COTTON_CANDY.aku                             :šećernu vunu
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :šećerna vuna
+STR_CARGO_SINGULAR_CANDYFLOSS.big                               :Šećerna vuna
+STR_CARGO_SINGULAR_CANDYFLOSS.gen                               :šećerne vune
+STR_CARGO_SINGULAR_CANDYFLOSS.aku                               :šećernu vunu
 STR_CARGO_SINGULAR_BUBBLE                                       :mehurić
 STR_CARGO_SINGULAR_BUBBLE.big                                   :Mehurić
 STR_CARGO_SINGULAR_BUBBLE.gen                                   :mehurića
@@ -497,6 +497,8 @@ STR_SORT_BY_CARGO_CAPACITY                                      :Nosivosti teret
 STR_SORT_BY_RANGE                                               :Dometu
 STR_SORT_BY_POPULATION                                          :Naseljenosti
 STR_SORT_BY_RATING                                              :Rejtingu
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Pauziranje partije
@@ -1758,9 +1760,6 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :dozvoljeno, zas
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Rasejavanje drveća tokom partije: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :Kontrola nasumične pojave drveća u toku igre. Ovo može uticati na industrije koje zavise o rastu drveća, na primer pilana
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :{G=srednji}nikakvo {RED}(onesposobljava rad drvnih kombinata)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :samo u tropskim šumama
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :svuda
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Lokacija glavne trake sa alatima: {STRING}
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Horizontalna pozicija glavne trake s alatkama na vrhu ekrana
@@ -2080,10 +2079,6 @@ STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Promena 
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Mrežna partija
-STR_NETWORK_SERVER_LIST_ADVERTISED                              :{BLACK} Sa reklamama
-STR_NETWORK_SERVER_LIST_ADVERTISED_TOOLTIP                      :{BLACK}Odaberite između igre s oglasima (internet) i bez oglasa (Local Area Network, LAN)
-STR_NETWORK_SERVER_LIST_ADVERTISED_NO                           :Ne
-STR_NETWORK_SERVER_LIST_ADVERTISED_YES                          :Da
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Ime igrača:
 STR_NETWORK_SERVER_LIST_ENTER_NAME_TOOLTIP                      :{BLACK}Sa ovim imenom će Vas drugi igrači (pre)poznavati
 
@@ -2124,8 +2119,6 @@ STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}Priklju�
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}Ažuriranje servera
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}Ažurirajte podatke sa servera
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}Pronađi server
-STR_NETWORK_SERVER_LIST_FIND_SERVER_TOOLTIP                     :{BLACK}Pretražuje mrežu kako bi pronašao servere
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}Dodaj server
 STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP                      :{BLACK}Dodaje server na spisak na kojem se uvek proverava za aktivne partije
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Pokreni server
@@ -2142,6 +2135,8 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Naziv pa
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Postavi lozinku
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Ukoliko ne želite da bude javno dostupna zaštitite Vašu partiju lozinkom
 
+STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK} Sa reklamama
+STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Odaberite između igre s oglasima (internet) i bez oglasa (Local Area Network, LAN)
 STR_NETWORK_START_SERVER_UNADVERTISED                           :Ne
 STR_NETWORK_START_SERVER_ADVERTISED                             :Da
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} igrač{P "" a a}

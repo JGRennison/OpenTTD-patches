@@ -48,9 +48,9 @@ STR_CARGO_PLURAL_WHEAT                                          :Пченица
 STR_CARGO_PLURAL_RUBBER                                         :Гума
 STR_CARGO_PLURAL_SUGAR                                          :Шеќер
 STR_CARGO_PLURAL_TOYS                                           :Играчки
-STR_CARGO_PLURAL_CANDY                                          :Колачиња
+STR_CARGO_PLURAL_SWEETS                                         :Колачиња
 STR_CARGO_PLURAL_COLA                                           :Кола (сок)
-STR_CARGO_PLURAL_COTTON_CANDY                                   :Суровина за колачиња
+STR_CARGO_PLURAL_CANDYFLOSS                                     :Суровина за колачиња
 STR_CARGO_PLURAL_BUBBLES                                        :Меурчиња
 STR_CARGO_PLURAL_TOFFEE                                         :Карамели
 STR_CARGO_PLURAL_BATTERIES                                      :Батерии
@@ -82,9 +82,9 @@ STR_CARGO_SINGULAR_WHEAT                                        :Пченица
 STR_CARGO_SINGULAR_RUBBER                                       :Гума
 STR_CARGO_SINGULAR_SUGAR                                        :Шеќер
 STR_CARGO_SINGULAR_TOY                                          :Играчка
-STR_CARGO_SINGULAR_CANDY                                        :Колаче
+STR_CARGO_SINGULAR_SWEETS                                       :Колаче
 STR_CARGO_SINGULAR_COLA                                         :Кола (сок)
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :Суровина за колачиња
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :Суровина за колачиња
 STR_CARGO_SINGULAR_BUBBLE                                       :Меурче
 STR_CARGO_SINGULAR_TOFFEE                                       :Карамела
 STR_CARGO_SINGULAR_BATTERY                                      :Батерија
@@ -289,6 +289,8 @@ STR_SORT_BY_CARGO_CAPACITY                                      :Капацит�
 STR_SORT_BY_RANGE                                               :опсег
 STR_SORT_BY_POPULATION                                          :Населеност
 STR_SORT_BY_RATING                                              :Рејтинг
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Паузирај ја играта

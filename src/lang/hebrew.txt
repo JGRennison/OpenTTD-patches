@@ -50,9 +50,9 @@ STR_CARGO_PLURAL_WHEAT                                          :חיטה
 STR_CARGO_PLURAL_RUBBER                                         :גומי
 STR_CARGO_PLURAL_SUGAR                                          :סוכר
 STR_CARGO_PLURAL_TOYS                                           :צעצועים
-STR_CARGO_PLURAL_CANDY                                          :ממתקים
+STR_CARGO_PLURAL_SWEETS                                         :ממתקים
 STR_CARGO_PLURAL_COLA                                           :קולה
-STR_CARGO_PLURAL_COTTON_CANDY                                   :שערות סבתא
+STR_CARGO_PLURAL_CANDYFLOSS                                     :שערות סבתא
 STR_CARGO_PLURAL_BUBBLES                                        :בועות
 STR_CARGO_PLURAL_TOFFEE                                         :טופי
 STR_CARGO_PLURAL_BATTERIES                                      :סוללות
@@ -92,10 +92,10 @@ STR_CARGO_SINGULAR_RUBBER                                       :גומי
 STR_CARGO_SINGULAR_SUGAR                                        :סוכר
 STR_CARGO_SINGULAR_TOY                                          :צעצוע
 STR_CARGO_SINGULAR_TOY.plural                                   :צעצועים
-STR_CARGO_SINGULAR_CANDY                                        :ממתק
-STR_CARGO_SINGULAR_CANDY.plural                                 :ממתקים
+STR_CARGO_SINGULAR_SWEETS                                       :ממתק
+STR_CARGO_SINGULAR_SWEETS.plural                                :ממתקים
 STR_CARGO_SINGULAR_COLA                                         :קולה
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :צמר גפן מתוק
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :צמר גפן מתוק
 STR_CARGO_SINGULAR_BUBBLE                                       :בועה
 STR_CARGO_SINGULAR_BUBBLE.plural                                :בועות
 STR_CARGO_SINGULAR_TOFFEE                                       :טופי
@@ -323,6 +323,8 @@ STR_SORT_BY_CARGO_CAPACITY                                      :קיבולת ס
 STR_SORT_BY_RANGE                                               :טווח
 STR_SORT_BY_POPULATION                                          :אכלוסיה
 STR_SORT_BY_RATING                                              :דרוג
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}השהה משחק
@@ -1576,9 +1578,6 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :מותר, מת�
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :מיקום עצים במהלך המשחק: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :שלוט בהופעה אקראית של עצים במהלך המשחק. זה עלול להשפיע על תעשיות המסתמכות על צמיחת עצים, לדוגמא מנסרות
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :ללא {RED}(שובר מנסרת עץ)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :רק ביערות גשם
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :בכל מקום
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :{STRING} :מיקום הסרגל העיקרי
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :מיקום אופקי של סרגל הכלים הראשי בראש המסך
@@ -1899,10 +1898,6 @@ STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK} שנה 
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}משחק רשת
-STR_NETWORK_SERVER_LIST_ADVERTISED                              :{BLACK}מפורסם
-STR_NETWORK_SERVER_LIST_ADVERTISED_TOOLTIP                      :{BLACK}בחר בין משחק מפורסם (אינטרנטי) ומשחק לא מפורסם (רשת מקומית, LAN)
-STR_NETWORK_SERVER_LIST_ADVERTISED_NO                           :לא
-STR_NETWORK_SERVER_LIST_ADVERTISED_YES                          :כן
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK} :שם השחקן
 STR_NETWORK_SERVER_LIST_ENTER_NAME_TOOLTIP                      :{BLACK}זהו שמך כפי שיצפה ע"י המשתתפים האחרים
 
@@ -1943,8 +1938,6 @@ STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}הצטר
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}רענן שרת
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}רענן את המידע המוצג לגבי השרת
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}אתר שרת
-STR_NETWORK_SERVER_LIST_FIND_SERVER_TOOLTIP                     :{BLACK}סרוק את הרשת לאיתור שרת
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}הוסף שרת
 STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP                      :{BLACK}מוסיף שרת לרשימה שתמיד תבדק למשחקים פעילים.
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}הפעל שרת
@@ -1961,6 +1954,8 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}השם �
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}קבע סיסמה
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}הגן על המשחק שלך עם סיסמה אם אתה לא רוצה שהוא יהיה זמין לכולם
 
+STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}מפורסם
+STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}בחר בין משחק מפורסם (אינטרנטי) ומשחק לא מפורסם (רשת מקומית, LAN)
 STR_NETWORK_START_SERVER_UNADVERTISED                           :לא
 STR_NETWORK_START_SERVER_ADVERTISED                             :כן
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} לקוח{P "" "ות"}

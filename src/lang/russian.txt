@@ -96,15 +96,15 @@ STR_CARGO_PLURAL_SUGAR.acc                                      :сахар
 STR_CARGO_PLURAL_TOYS                                           :{G=p}Игрушки
 STR_CARGO_PLURAL_TOYS.gen                                       :игрушек
 STR_CARGO_PLURAL_TOYS.acc                                       :игрушки
-STR_CARGO_PLURAL_CANDY                                          :{G=p}Конфеты
-STR_CARGO_PLURAL_CANDY.gen                                      :конфет
-STR_CARGO_PLURAL_CANDY.acc                                      :конфеты
+STR_CARGO_PLURAL_SWEETS                                         :{G=p}Конфеты
+STR_CARGO_PLURAL_SWEETS.gen                                     :конфет
+STR_CARGO_PLURAL_SWEETS.acc                                     :конфеты
 STR_CARGO_PLURAL_COLA                                           :{G=f}Кола
 STR_CARGO_PLURAL_COLA.gen                                       :колы
 STR_CARGO_PLURAL_COLA.acc                                       :колу
-STR_CARGO_PLURAL_COTTON_CANDY                                   :{G=f}Сахарная вата
-STR_CARGO_PLURAL_COTTON_CANDY.gen                               :сахарной ваты
-STR_CARGO_PLURAL_COTTON_CANDY.acc                               :сахарную вату
+STR_CARGO_PLURAL_CANDYFLOSS                                     :{G=f}Сахарная вата
+STR_CARGO_PLURAL_CANDYFLOSS.gen                                 :сахарной ваты
+STR_CARGO_PLURAL_CANDYFLOSS.acc                                 :сахарную вату
 STR_CARGO_PLURAL_BUBBLES                                        :{G=p}Пузырьки
 STR_CARGO_PLURAL_BUBBLES.gen                                    :пузырьков
 STR_CARGO_PLURAL_BUBBLES.acc                                    :пузырьки
@@ -192,15 +192,15 @@ STR_CARGO_SINGULAR_SUGAR.acc                                    :сахар
 STR_CARGO_SINGULAR_TOY                                          :{G=p}Игрушки
 STR_CARGO_SINGULAR_TOY.gen                                      :игрушек
 STR_CARGO_SINGULAR_TOY.acc                                      :игрушки
-STR_CARGO_SINGULAR_CANDY                                        :{G=p}Конфеты
-STR_CARGO_SINGULAR_CANDY.gen                                    :конфет
-STR_CARGO_SINGULAR_CANDY.acc                                    :конфеты
+STR_CARGO_SINGULAR_SWEETS                                       :{G=p}Конфеты
+STR_CARGO_SINGULAR_SWEETS.gen                                   :конфет
+STR_CARGO_SINGULAR_SWEETS.acc                                   :конфеты
 STR_CARGO_SINGULAR_COLA                                         :{G=f}Кола
 STR_CARGO_SINGULAR_COLA.gen                                     :колы
 STR_CARGO_SINGULAR_COLA.acc                                     :колу
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :{G=f}Сахарная вата
-STR_CARGO_SINGULAR_COTTON_CANDY.gen                             :сахарной ваты
-STR_CARGO_SINGULAR_COTTON_CANDY.acc                             :сахарную вату
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :{G=f}Сахарная вата
+STR_CARGO_SINGULAR_CANDYFLOSS.gen                               :сахарной ваты
+STR_CARGO_SINGULAR_CANDYFLOSS.acc                               :сахарную вату
 STR_CARGO_SINGULAR_BUBBLE                                       :{G=p}Пузырьки
 STR_CARGO_SINGULAR_BUBBLE.gen                                   :пузырьков
 STR_CARGO_SINGULAR_BUBBLE.acc                                   :пузырьки
@@ -320,7 +320,7 @@ STR_COLOUR_DEFAULT                                              :По умолч
 STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA}{NBSP}мил{P я и ь}/ч
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}км/ч
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}м/с
-STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}клет{P ка ки ок}/день
+STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}кл./день
 
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}лс
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}лс
@@ -442,6 +442,8 @@ STR_SORT_BY_CARGO_CAPACITY                                      :Вместим�
 STR_SORT_BY_RANGE                                               :Дальность полёта
 STR_SORT_BY_POPULATION                                          :Население
 STR_SORT_BY_RATING                                              :Рейтинг
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Пауза
@@ -1765,9 +1767,6 @@ STR_CONFIG_SETTING_TOWN_CARGOGENMODE_BITCOUNT                   :линейна�
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Размножение деревьев в игре: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :Настройка возможности самостоятельного размножения деревьев в игре. Это может влиять на работоспособность некоторых предприятий, например, лесопилок.
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :отключена {RED}(лесопилки не смогут работать)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :только в тропических лесах
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :везде
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Положение главной панели инструментов: {STRING}
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Горизонтальное расположение основной панели инструментов в верхней части экрана
@@ -1834,6 +1833,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_HELPTEXT         :Показыв�
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_IMPERIAL         :английская (миль/ч)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_METRIC           :метрическая (км/ч)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_SI               :СИ (м/с)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_GAMEUNITS        :внутриигровая (клетки в день)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER                     :Система единиц для мощности: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_HELPTEXT            :Показывать значения мощности двигателей транспортных средств в выбранной системе единиц
@@ -1881,7 +1881,7 @@ STR_CONFIG_SETTING_VEHICLES_ROUTING                             :{ORANGE}Мар�
 STR_CONFIG_SETTING_LIMITATIONS                                  :{ORANGE}Ограничения
 STR_CONFIG_SETTING_ACCIDENTS                                    :{ORANGE}Аварии и катастрофы
 STR_CONFIG_SETTING_GENWORLD                                     :{ORANGE}Создание карты
-STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}Окружающая среда
+STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}Окружение
 STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}Городская администрация
 STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}Города
 STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}Предприятия
@@ -2090,10 +2090,6 @@ STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Изме
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Сетевая игра
-STR_NETWORK_SERVER_LIST_ADVERTISED                              :{BLACK}Интернет
-STR_NETWORK_SERVER_LIST_ADVERTISED_TOOLTIP                      :{BLACK}Выберите между игрой через Интернет, либо в локальной сети
-STR_NETWORK_SERVER_LIST_ADVERTISED_NO                           :Нет
-STR_NETWORK_SERVER_LIST_ADVERTISED_YES                          :Да
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Имя игрока:
 STR_NETWORK_SERVER_LIST_ENTER_NAME_TOOLTIP                      :{BLACK}Это имя, которое будет видно другим игрокам
 
@@ -2134,8 +2130,6 @@ STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}Прис
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}Обновить сервер
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}Обновить информацию о сервере
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}Обновить
-STR_NETWORK_SERVER_LIST_FIND_SERVER_TOOLTIP                     :{BLACK}Обновить список серверов, которые сейчас есть в сети
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}Добавить сервер
 STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP                      :{BLACK}Добавить сервер в список, который будет автоматически проверяться на идущие игры
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Запуск сервера
@@ -2152,6 +2146,8 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Назв
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Установить пароль
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Защитите вашу игру паролем, если не хотите, чтобы к ней могли подключиться посторонние.
 
+STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Интернет
+STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Выберите между игрой через Интернет, либо в локальной сети
 STR_NETWORK_START_SERVER_UNADVERTISED                           :Нет
 STR_NETWORK_START_SERVER_ADVERTISED                             :Да
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} клиент{P "" а ов}
@@ -5288,6 +5284,7 @@ STR_FORMAT_BUOY_NAME                                            :Буй {TOWN}
 STR_FORMAT_BUOY_NAME_SERIAL                                     :Буй {TOWN} №{COMMA}
 STR_FORMAT_COMPANY_NUM                                          :(Компания {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Группа {COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} (№{COMMA})
 STR_FORMAT_INDUSTRY_NAME                                        :{1:STRING} {0:TOWN}
 STR_FORMAT_WAYPOINT_NAME                                        :Точка пути {TOWN}
 STR_FORMAT_WAYPOINT_NAME_SERIAL                                 :Точка пути {TOWN} №{COMMA}

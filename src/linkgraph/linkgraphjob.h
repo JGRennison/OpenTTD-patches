@@ -15,6 +15,7 @@
 #include "linkgraph.h"
 #include <vector>
 #include <memory>
+#include <atomic>
 
 class LinkGraphJob;
 class Path;
@@ -68,8 +69,8 @@ protected:
 	DateTicks start_date_ticks;       ///< Date when the job was started.
 	NodeAnnotationVector nodes;       ///< Extra node data necessary for link graph calculation.
 	EdgeAnnotationMatrix edges;       ///< Extra edge data necessary for link graph calculation.
-	bool job_completed;               ///< Is the job still running. This is accessed by multiple threads and is permitted to be spuriously incorrect.
-	bool abort_job;                   ///< Abort the job at the next available opportunity. This is accessed by multiple threads.
+	std::atomic<bool> job_completed;  ///< Is the job still running. This is accessed by multiple threads and reads may be stale.
+	std::atomic<bool> job_aborted;    ///< Has the job been aborted. This is accessed by multiple threads and reads may be stale.
 
 	void EraseFlows(NodeID from);
 	void JoinThread();
@@ -78,8 +79,6 @@ protected:
 public:
 
 	DynUniformArenaAllocator path_allocator; ///< Arena allocator used for paths
-
-	bool IsJobAborted() const;
 
 	/**
 	 * A job edge. Wraps a link graph edge and an edge annotation. The
@@ -293,7 +292,7 @@ public:
 	 * settings have to be brutally const-casted in order to populate them.
 	 */
 	LinkGraphJob() : settings(_settings_game.linkgraph),
-			join_date_ticks(INVALID_DATE), start_date_ticks(INVALID_DATE), job_completed(false), abort_job(false) {}
+			join_date_ticks(INVALID_DATE), start_date_ticks(INVALID_DATE), job_completed(false), job_aborted(false) {}
 
 	LinkGraphJob(const LinkGraph &orig, uint duration_multiplier);
 	~LinkGraphJob();
@@ -301,15 +300,34 @@ public:
 	void Init();
 	void FinaliseJob();
 
-	bool IsJobCompleted() const;
-	void AbortJob();
+	/**
+	 * Check if job has actually finished.
+	 * This is allowed to spuriously return an incorrect value.
+	 * @return True if job has actually finished.
+	 */
+	inline bool IsJobCompleted() const { return this->job_completed.load(std::memory_order_acquire); }
+
+	/**
+	 * Check if job has been aborted.
+	 * This is allowed to spuriously return false incorrectly, but is not allowed to incorrectly return true.
+	 * @return True if job has been aborted.
+	 */
+	inline bool IsJobAborted() const { return this->job_aborted.load(std::memory_order_acquire); }
+
+	/**
+	 * Abort job.
+	 * The job may exit early at the next available opportunity.
+	 * After this method has been called the state of the job is undefined, and the only valid operation
+	 * is to join the thread and discard the job data.
+	 */
+	inline void AbortJob() { this->job_aborted.store(true, std::memory_order_release); }
 
 	/**
 	 * Check if job is supposed to be finished.
 	 * @param tick_offset Optional number of ticks to add to the current date
 	 * @return True if job should be finished by now, false if not.
 	 */
-	inline bool IsFinished(int tick_offset = 0) const { return this->join_date_ticks <= (_date * DAY_TICKS) + _date_fract + tick_offset; }
+	inline bool IsScheduledToBeJoined(int tick_offset = 0) const { return this->join_date_ticks <= (_date * DAY_TICKS) + _date_fract + tick_offset; }
 
 	/**
 	 * Get the date when the job should be finished.

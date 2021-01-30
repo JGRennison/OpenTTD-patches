@@ -48,9 +48,9 @@ STR_CARGO_PLURAL_WHEAT                                          :{G=m}밀
 STR_CARGO_PLURAL_RUBBER                                         :{G=f}고무
 STR_CARGO_PLURAL_SUGAR                                          :{G=m}설탕
 STR_CARGO_PLURAL_TOYS                                           :{G=m}장난감
-STR_CARGO_PLURAL_CANDY                                          :{G=m}사탕
+STR_CARGO_PLURAL_SWEETS                                         :{G=m}사탕
 STR_CARGO_PLURAL_COLA                                           :{G=f}콜라
-STR_CARGO_PLURAL_COTTON_CANDY                                   :{G=m}솜사탕
+STR_CARGO_PLURAL_CANDYFLOSS                                     :{G=m}솜사탕
 STR_CARGO_PLURAL_BUBBLES                                        :{G=m}거품
 STR_CARGO_PLURAL_TOFFEE                                         :{G=f}토피
 STR_CARGO_PLURAL_BATTERIES                                      :{G=f}건전지
@@ -82,9 +82,9 @@ STR_CARGO_SINGULAR_WHEAT                                        :{G=m}밀
 STR_CARGO_SINGULAR_RUBBER                                       :{G=f}고무
 STR_CARGO_SINGULAR_SUGAR                                        :{G=m}설탕
 STR_CARGO_SINGULAR_TOY                                          :{G=m}장난감
-STR_CARGO_SINGULAR_CANDY                                        :{G=m}사탕
+STR_CARGO_SINGULAR_SWEETS                                       :{G=m}사탕
 STR_CARGO_SINGULAR_COLA                                         :{G=f}콜라
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :{G=m}솜사탕
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :{G=m}솜사탕
 STR_CARGO_SINGULAR_BUBBLE                                       :{G=m}거품
 STR_CARGO_SINGULAR_TOFFEE                                       :{G=f}토피
 STR_CARGO_SINGULAR_BATTERY                                      :{G=f}건전지
@@ -319,6 +319,15 @@ STR_SORT_BY_VEHICLE_COUNT                                       :차량 수
 STR_SORT_BY_RANGE                                               :항속거리
 STR_SORT_BY_POPULATION                                          :인구
 STR_SORT_BY_RATING                                              :등급
+STR_SORT_BY_NUM_VEHICLES                                        :차량 수
+STR_SORT_BY_TOTAL_PROFIT_LAST_YEAR                              :작년 총 이익
+STR_SORT_BY_TOTAL_PROFIT_THIS_YEAR                              :올해 총 이익
+STR_SORT_BY_AVERAGE_PROFIT_LAST_YEAR                            :작년 평균 이익
+STR_SORT_BY_AVERAGE_PROFIT_THIS_YEAR                            :올해 평균 이익
+
+# Group by options for vehicle list
+STR_GROUP_BY_NONE                                               :없음
+STR_GROUP_BY_SHARED_ORDERS                                      :공유된 경로
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}게임을 일시 정지합니다.
@@ -780,8 +789,8 @@ STR_SMALLMAP_TOOLTIP_ENABLE_ALL_CARGOS                          :{BLACK}모든 �
 # Status bar messages
 STR_STATUSBAR_TOOLTIP_SHOW_LAST_NEWS                            :{BLACK}마지막 메시지/뉴스 보기
 STR_STATUSBAR_COMPANY_NAME                                      :{SILVER}- -  {COMPANY}  - -
-STR_STATUSBAR_PAUSED                                            :{YELLOW}*  *  일시 정지  *  *
-STR_STATUSBAR_PAUSED_LINK_GRAPH                                 :{ORANGE}*  *  일시 정지 (연결 상태 갱신을 기다리는 중) *  *
+STR_STATUSBAR_PAUSED                                            :{YELLOW}* *  일시 정지  *  *
+STR_STATUSBAR_PAUSED_LINK_GRAPH                                 :{ORANGE}*  *  일시 정지됨 (연결 상태가 업데이트되기를 기다리는 중) *  *
 STR_STATUSBAR_AUTOSAVE                                          :{RED}자동 저장
 STR_STATUSBAR_SAVING_GAME                                       :{RED}*  *  게임 저장 중  *  *
 
@@ -1803,9 +1812,6 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR_HELPTEXT               :1차 산업 시
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :게임 진행 중에 나무가 자동적으로 번식: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :게임 중에 나무가 자동적으로 번식하는지 여부를 조절합니다. 이 설정을 조정하면, 아열대 기후의 벌목소처럼 나무의 성장에 의존하는 산업시설에 영향을 끼칠 수 있습니다.
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :자라지 않음 {RED}(제재소에 의해 벌목될 수 있음)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :열대 우림 지역에서만
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :어디서나
 
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE                        :조정된 눈 쌓인 나무: {STRING}
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_HELPTEXT               :아한대 기후에서의 설선 근처의 눈 쌓인 나무의 개수를 조정합니다. 설선 위에는 나무가 적어집니다. 설선에서는 온대 기후의 나무와 눈 쌓인 나무가 공존할 것입니다. 설선 아래에선 온대 기후의 나무가 자랄 것입니다.
@@ -2247,10 +2253,6 @@ STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}넥타�
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}멀티 플레이
-STR_NETWORK_SERVER_LIST_ADVERTISED                              :{BLACK}공개 여부
-STR_NETWORK_SERVER_LIST_ADVERTISED_TOOLTIP                      :{BLACK}공개된 게임(인터넷)과 비공개된 게임(LAN) 중에서 선택하십시오.
-STR_NETWORK_SERVER_LIST_ADVERTISED_NO                           :아니요
-STR_NETWORK_SERVER_LIST_ADVERTISED_YES                          :예
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}플레이어 이름:
 STR_NETWORK_SERVER_LIST_ENTER_NAME_TOOLTIP                      :{BLACK}다른 사람들에게 보여줄 당신의 이름입니다.
 
@@ -2291,8 +2293,6 @@ STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}게임 �
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}새로고침
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}서버 정보를 새로 고칩니다.
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}서버 검색
-STR_NETWORK_SERVER_LIST_FIND_SERVER_TOOLTIP                     :{BLACK}네트워크에 등록되어 있는 서버를 검색합니다.
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}서버 추가
 STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP                      :{BLACK}서버를 목록에 수동으로 추가합니다.
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}서버 열기
@@ -2309,6 +2309,8 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}멀티�
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}비밀번호 설정
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}서버에 공개적으로 접근하는 것을 막고 싶을 때 비밀번호를 걸어 보호합니다.
 
+STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}공개 여부
+STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}공개된 게임(인터넷)과 비공개된 게임(LAN) 중에서 선택하십시오.
 STR_NETWORK_START_SERVER_UNADVERTISED                           :아니요
 STR_NETWORK_START_SERVER_ADVERTISED                             :예
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM}명
@@ -2512,17 +2514,17 @@ STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}마지�
 STR_NETWORK_SERVER_MESSAGE                                      :*** {1:STRING}
 ############ Leave those lines in this order!!
 STR_NETWORK_SERVER_MESSAGE_GAME_PAUSED                          :게임이 일시 정지되었습니다. ({STRING})
-STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_1                  :게임이 아직 일시 정지된 상태입니다. ({STRING})
-STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_2                  :게임이 아직 일시 정지된 상태입니다. ({STRING}, {STRING})
-STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_3                  :게임이 아직 일시 정지된 상태입니다. ({STRING}, {STRING}, {STRING})
-STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_4                  :게임이 아직 일시 정지된 상태입니다. ({STRING}, {STRING}, {STRING}, {STRING})
-STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_5                  :게임이 아직 일시 정지된 상태입니다. ({STRING}, {STRING}, {STRING}, {STRING}, {STRING})
+STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_1                  :게임이 아직 일시 정지된 상태입니다 ({STRING})
+STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_2                  :게임이 아직 일시 정지된 상태입니다 ({STRING}, {STRING})
+STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_3                  :게임이 아직 일시 정지된 상태입니다 ({STRING}, {STRING}, {STRING})
+STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_4                  :게임이 아직 일시 정지된 상태입니다 ({STRING}, {STRING}, {STRING}, {STRING})
+STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_5                  :게임이 아직 일시 정지된 상태입니다 ({STRING}, {STRING}, {STRING}, {STRING}, {STRING})
 STR_NETWORK_SERVER_MESSAGE_GAME_UNPAUSED                        :게임이 재개되었습니다. ({STRING})
 STR_NETWORK_SERVER_MESSAGE_GAME_REASON_NOT_ENOUGH_PLAYERS       :플레이하는 사람 수
 STR_NETWORK_SERVER_MESSAGE_GAME_REASON_CONNECTING_CLIENTS       :접속자와 연결중
 STR_NETWORK_SERVER_MESSAGE_GAME_REASON_MANUAL                   :수동
 STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT              :게임 스크립트
-STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :연결 상태 갱신을 기다리는 중
+STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :연결 상태가 업데이트되기를 기다리는 중
 ############ End of leave-in-this-order
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :게임 종료
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} 님이 입장하셨습니다
@@ -2562,7 +2564,7 @@ STR_CONTENT_OPEN_URL                                            :{BLACK}웹 사�
 STR_CONTENT_OPEN_URL_TOOLTIP                                    :{BLACK}이 컨텐츠의 웹 사이트를 방문합니다
 STR_CONTENT_DOWNLOAD_CAPTION                                    :{BLACK}다운로드
 STR_CONTENT_DOWNLOAD_CAPTION_TOOLTIP                            :{BLACK}선택한 콘텐츠의 다운로드를 시작합니다
-STR_CONTENT_TOTAL_DOWNLOAD_SIZE                                 :{SILVER}다운로드 할 파일의 총 용량: {WHITE}{BYTES}
+STR_CONTENT_TOTAL_DOWNLOAD_SIZE                                 :{SILVER}다운로드할 파일의 총 용량: {WHITE}{BYTES}
 STR_CONTENT_DETAIL_TITLE                                        :{SILVER}콘텐츠 정보
 STR_CONTENT_DETAIL_SUBTITLE_UNSELECTED                          :{SILVER}이 콘텐츠를 선택하지 않았습니다
 STR_CONTENT_DETAIL_SUBTITLE_SELECTED                            :{SILVER}이 콘텐츠를 다운로드하기 위해 선택하였습니다
@@ -2580,7 +2582,7 @@ STR_CONTENT_DETAIL_SELECTED_BECAUSE_OF                          :{WHITE}{STRING}
 STR_CONTENT_DETAIL_DEPENDENCIES                                 :{SILVER}필요한 요소: {WHITE}{STRING}
 STR_CONTENT_DETAIL_TAGS                                         :{SILVER}태그: {WHITE}{STRING}
 STR_CONTENT_NO_ZLIB                                             :{WHITE}OpenTTD가 "zlib" 지원 기능이 없는 상태에서 빌드되었습니다...
-STR_CONTENT_NO_ZLIB_SUB                                         :{WHITE}... 콘텐츠를 다운로드 할 수 없습니다!
+STR_CONTENT_NO_ZLIB_SUB                                         :{WHITE}... 콘텐츠를 다운로드할 수 없습니다!
 
 # Order of these is important!
 STR_CONTENT_TYPE_BASE_GRAPHICS                                  :{G=m}기본 그래픽
@@ -6140,6 +6142,7 @@ STR_FORMAT_BUOY_NAME                                            :{TOWN} 부표
 STR_FORMAT_BUOY_NAME_SERIAL                                     :{TOWN} 부표 #{COMMA}
 STR_FORMAT_COMPANY_NUM                                          :(회사 {COMMA})
 STR_FORMAT_GROUP_NAME                                           :그룹 {COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{TOWN} {STRING}
 STR_FORMAT_WAYPOINT_NAME                                        :{TOWN} 경유지
 STR_FORMAT_WAYPOINT_NAME_SERIAL                                 :{TOWN} 경유지 #{COMMA}

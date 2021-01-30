@@ -107,4 +107,7 @@ public:
 	static void ExecuteJobSet(std::vector<JobInfo> jobs);
 };
 
+void StateGameLoop_LinkGraphPauseControl();
+void AfterLoad_LinkGraphPauseControl();
+
 #endif /* LINKGRAPHSCHEDULE_H */

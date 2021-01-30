@@ -73,12 +73,12 @@ STR_CARGO_PLURAL_SUGAR                                          :Cukor
 STR_CARGO_PLURAL_SUGAR.g                                        :cukru
 STR_CARGO_PLURAL_TOYS                                           :Hračky
 STR_CARGO_PLURAL_TOYS.g                                         :hračiek
-STR_CARGO_PLURAL_CANDY                                          :Cukríky
-STR_CARGO_PLURAL_CANDY.g                                        :cukríkov
+STR_CARGO_PLURAL_SWEETS                                         :Cukríky
+STR_CARGO_PLURAL_SWEETS.g                                       :cukríkov
 STR_CARGO_PLURAL_COLA                                           :Kofola
 STR_CARGO_PLURAL_COLA.g                                         :kofoly
-STR_CARGO_PLURAL_COTTON_CANDY                                   :Cukrová vata
-STR_CARGO_PLURAL_COTTON_CANDY.g                                 :cukrovej vaty
+STR_CARGO_PLURAL_CANDYFLOSS                                     :Cukrová vata
+STR_CARGO_PLURAL_CANDYFLOSS.g                                   :cukrovej vaty
 STR_CARGO_PLURAL_BUBBLES                                        :Bublinky
 STR_CARGO_PLURAL_BUBBLES.g                                      :bubliniek
 STR_CARGO_PLURAL_TOFFEE                                         :Karamelky
@@ -138,12 +138,12 @@ STR_CARGO_SINGULAR_SUGAR                                        :Cukor
 STR_CARGO_SINGULAR_SUGAR.g                                      :cukru
 STR_CARGO_SINGULAR_TOY                                          :Hračka
 STR_CARGO_SINGULAR_TOY.g                                        :hračky
-STR_CARGO_SINGULAR_CANDY                                        :Cukrík
-STR_CARGO_SINGULAR_CANDY.g                                      :cukríka
+STR_CARGO_SINGULAR_SWEETS                                       :Cukrík
+STR_CARGO_SINGULAR_SWEETS.g                                     :cukríka
 STR_CARGO_SINGULAR_COLA                                         :Kofola
 STR_CARGO_SINGULAR_COLA.g                                       :kofoly
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :Cukrová vata
-STR_CARGO_SINGULAR_COTTON_CANDY.g                               :cukrovej vaty
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :Cukrová vata
+STR_CARGO_SINGULAR_CANDYFLOSS.g                                 :cukrovej vaty
 STR_CARGO_SINGULAR_BUBBLE                                       :Bublinka
 STR_CARGO_SINGULAR_BUBBLE.g                                     :bublinky
 STR_CARGO_SINGULAR_TOFFEE                                       :Karamel
@@ -379,6 +379,8 @@ STR_SORT_BY_CARGO_CAPACITY                                      :Kapacita nákla
 STR_SORT_BY_RANGE                                               :Rozsah
 STR_SORT_BY_POPULATION                                          :Populácia
 STR_SORT_BY_RATING                                              :Hodnotenie
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Pozastaviť hru
@@ -1678,9 +1680,6 @@ STR_CONFIG_SETTING_TOWN_CARGOGENMODE_BITCOUNT                   :Lineárne
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Umiestnenie stromov počas hry: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :Riadi náhodný výskyt stromov počas hry. Toto môže ovplyvniť priemysel úzko spojený s rastom stromov ako napríklad Píla.
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :žiadne {RED}(znefunkční pílu)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :Len v dažďových pralesoch
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :všade
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Pozícia hlavného menu: {STRING}
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Horizontálna poloha hlavného ovládacieho panela na vrchu obrazovky
@@ -1747,7 +1746,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_HELPTEXT         :Vždy, keď sa 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_IMPERIAL         :Imperiálne (mph)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_METRIC           :Metrické (km/h)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_SI               :SI (m/s)
-STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_GAMEUNITS        :Jednotky hry (políčka/deň)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_GAMEUNITS        :Jednotky v hre (políčka/deň)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER                     :Jednotky výkonu vozidiel: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_HELPTEXT            :Vždy, keď sa zobrazí výkon vozidla v užívateľskom rozhraní, zobrazí sa vo vybraných jednotkách
@@ -2004,10 +2003,6 @@ STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Zmeniť 
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Hra pre viac hráčov
-STR_NETWORK_SERVER_LIST_ADVERTISED                              :{BLACK}Zverejnené
-STR_NETWORK_SERVER_LIST_ADVERTISED_TOOLTIP                      :{BLACK}Vyberte medzi zverejnenou (internet) alebo nezverejnenou (lokálna sieť, LAN) hrou
-STR_NETWORK_SERVER_LIST_ADVERTISED_NO                           :Nie
-STR_NETWORK_SERVER_LIST_ADVERTISED_YES                          :Áno
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Meno hráča:
 STR_NETWORK_SERVER_LIST_ENTER_NAME_TOOLTIP                      :{BLACK}Toto je meno podla ktoreho vas ostatny identifikuju
 
@@ -2048,8 +2043,6 @@ STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}Pripojit
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}Obnoviť server
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}Obnovit info o serveri
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}Nájsť server
-STR_NETWORK_SERVER_LIST_FIND_SERVER_TOOLTIP                     :{BLACK}Hladať server po sieti
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}Pridať server
 STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP                      :{BLACK}Pridá server do zoznamu, v ktorom sa vždy budú hľadať prebiehajúce hry
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Spustiť server
@@ -2066,6 +2059,8 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Názov h
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Nastaviť heslo
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Zabezpeč hru heslom, ak nechceš povoliť verejný prístup
 
+STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Zverejnené
+STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Vyberte medzi zverejnenou (internet) alebo nezverejnenou (lokálna sieť, LAN) hrou
 STR_NETWORK_START_SERVER_UNADVERTISED                           :Nie
 STR_NETWORK_START_SERVER_ADVERTISED                             :Áno
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} klient{P "" i ov}
@@ -4805,7 +4800,7 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :{G=z}Cukrová b
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :Bez názvu
 STR_SV_TRAIN_NAME                                               :{G=m}Vlak č. {COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :{G=s}Cestné vozidlo {COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :{G=s}Cestné vozidlo č. {COMMA}
 STR_SV_SHIP_NAME                                                :{G=z}Loď č. {COMMA}
 STR_SV_AIRCRAFT_NAME                                            :{G=s}Lietadlo č. {COMMA}
 
@@ -5106,20 +5101,20 @@ STR_FORMAT_DATE_LONG                                            :{STRING} {STRIN
 STR_FORMAT_DATE_ISO                                             :{2:NUM}-{1:STRING}-{0:STRING}
 
 STR_FORMAT_BUOY_NAME                                            :{TOWN} Bója
-STR_FORMAT_BUOY_NAME_SERIAL                                     :{TOWN} Bója #{COMMA}
+STR_FORMAT_BUOY_NAME_SERIAL                                     :{TOWN} Bója č. {COMMA}
 STR_FORMAT_COMPANY_NUM                                          :(Spoločnosť {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Skupina {COMMA}
 STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} č. {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{1:STRING} {0:TOWN}
 STR_FORMAT_WAYPOINT_NAME                                        :Smerový bod {TOWN}
-STR_FORMAT_WAYPOINT_NAME_SERIAL                                 :Smerový bod {TOWN} #{COMMA}
+STR_FORMAT_WAYPOINT_NAME_SERIAL                                 :Smerový bod {TOWN} č. {COMMA}
 
 STR_FORMAT_DEPOT_NAME_TRAIN                                     :Vlakové depo {TOWN}
 STR_FORMAT_DEPOT_NAME_TRAIN_SERIAL                              :Vlakové depo {TOWN} č. {COMMA}
 STR_FORMAT_DEPOT_NAME_ROAD_VEHICLE                              :Garáž {TOWN}
-STR_FORMAT_DEPOT_NAME_ROAD_VEHICLE_SERIAL                       :Garáž {TOWN} #{COMMA}
+STR_FORMAT_DEPOT_NAME_ROAD_VEHICLE_SERIAL                       :Garáž {TOWN} č. {COMMA}
 STR_FORMAT_DEPOT_NAME_SHIP                                      :Lodenica {TOWN}
-STR_FORMAT_DEPOT_NAME_SHIP_SERIAL                               :Lodenica {TOWN} #{COMMA}
+STR_FORMAT_DEPOT_NAME_SHIP_SERIAL                               :Lodenica {TOWN} č. {COMMA}
 STR_FORMAT_DEPOT_NAME_AIRCRAFT                                  :Letecký hangár {STATION}
 
 STR_UNKNOWN_STATION                                             :neznáma stanica

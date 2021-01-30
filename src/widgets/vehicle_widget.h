@@ -62,6 +62,8 @@ enum VehicleDetailsWidgets {
 enum VehicleListWidgets {
 	WID_VL_LIST,                     ///< List of the vehicles, this must be first, see: DirtyVehicleListWindowForVehicle
 	WID_VL_CAPTION,                  ///< Caption of window.
+	WID_VL_GROUP_ORDER,              ///< Group order.
+	WID_VL_GROUP_BY_PULLDOWN,        ///< Group by dropdown list.
 	WID_VL_SORT_ORDER,               ///< Sort order.
 	WID_VL_SORT_BY_PULLDOWN,         ///< Sort by dropdown list.
 	WID_VL_FILTER_BY_CARGO,          ///< Cargo filter dropdown list

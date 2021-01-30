@@ -49,9 +49,9 @@ STR_CARGO_PLURAL_WHEAT                                          :Trigo
 STR_CARGO_PLURAL_RUBBER                                         :Borracha
 STR_CARGO_PLURAL_SUGAR                                          :Açúcar
 STR_CARGO_PLURAL_TOYS                                           :Brinquedos
-STR_CARGO_PLURAL_CANDY                                          :Doces
+STR_CARGO_PLURAL_SWEETS                                         :Doces
 STR_CARGO_PLURAL_COLA                                           :Bebida de cola
-STR_CARGO_PLURAL_COTTON_CANDY                                   :Algodão Doce
+STR_CARGO_PLURAL_CANDYFLOSS                                     :Algodão Doce
 STR_CARGO_PLURAL_BUBBLES                                        :Bolhas
 STR_CARGO_PLURAL_TOFFEE                                         :Caramelo
 STR_CARGO_PLURAL_BATTERIES                                      :Baterias
@@ -83,9 +83,9 @@ STR_CARGO_SINGULAR_WHEAT                                        :Trigo
 STR_CARGO_SINGULAR_RUBBER                                       :Borracha
 STR_CARGO_SINGULAR_SUGAR                                        :Açúcar
 STR_CARGO_SINGULAR_TOY                                          :Brinquedos
-STR_CARGO_SINGULAR_CANDY                                        :Doces
+STR_CARGO_SINGULAR_SWEETS                                       :Doces
 STR_CARGO_SINGULAR_COLA                                         :Bebida de cola
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :Algodão Doce
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :Algodão Doce
 STR_CARGO_SINGULAR_BUBBLE                                       :Bolhas
 STR_CARGO_SINGULAR_TOFFEE                                       :Caramelo
 STR_CARGO_SINGULAR_BATTERY                                      :Baterias
@@ -313,6 +313,8 @@ STR_SORT_BY_CARGO_CAPACITY                                      :Capacidade de C
 STR_SORT_BY_RANGE                                               :Alcance
 STR_SORT_BY_POPULATION                                          :População
 STR_SORT_BY_RATING                                              :Classificação
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Pausa
@@ -1592,9 +1594,6 @@ STR_CONFIG_SETTING_TOWN_CARGOGENMODE_BITCOUNT                   :Linear
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Criação de árvores no decorrer do jogo: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :Controlar o aparecimento aleatório de árvores durante o jogo. Isto poderá afectar indústrias que dependem do crescimento de árvores, como as madeireiras
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :Nenhuma {RED}(Serrações ficam inactivas)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :Apenas em florestas húmidas
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :Em todo o lado
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Posição da barra de ferramentas principal: {STRING}
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Posição horizontal da barra de ferramentas principal no topo do ecrã
@@ -1916,10 +1915,6 @@ STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Mudar gr
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Multi-jogador
-STR_NETWORK_SERVER_LIST_ADVERTISED                              :{BLACK}Anunciado
-STR_NETWORK_SERVER_LIST_ADVERTISED_TOOLTIP                      :{BLACK}Escolher entre jogo público (internet) e privado (Área de Rede Local, LAN)
-STR_NETWORK_SERVER_LIST_ADVERTISED_NO                           :Não
-STR_NETWORK_SERVER_LIST_ADVERTISED_YES                          :Sim
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Nome do jogador:
 STR_NETWORK_SERVER_LIST_ENTER_NAME_TOOLTIP                      :{BLACK}Este é o nome pelo qual os outros jogadores o irão identificar
 
@@ -1960,8 +1955,6 @@ STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}Entrar n
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}Renovar servidor
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}Renovar a informação do servidor
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}Localizar servidor
-STR_NETWORK_SERVER_LIST_FIND_SERVER_TOOLTIP                     :{BLACK}Pesquisar por um servidor na rede
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}Adicionar servidor
 STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP                      :{BLACK}Adiciona um servidor à lista que será sempre verificado se existem jogos a decorrer.
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Iniciar servidor
@@ -1978,6 +1971,8 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}O nome d
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Definir palavra-chave
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Proteja o jogo com uma senha se não desejar que pessoas indesejadas se juntem
 
+STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Anunciado
+STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Escolher entre jogo público (internet) e privado (Área de Rede Local, LAN)
 STR_NETWORK_START_SERVER_UNADVERTISED                           :Não
 STR_NETWORK_START_SERVER_ADVERTISED                             :Sim
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} cliente{P "" s}

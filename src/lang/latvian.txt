@@ -50,9 +50,9 @@ STR_CARGO_PLURAL_WHEAT                                          :Kvieši
 STR_CARGO_PLURAL_RUBBER                                         :Kaučuks
 STR_CARGO_PLURAL_SUGAR                                          :Cukurs
 STR_CARGO_PLURAL_TOYS                                           :Rotaļlietas
-STR_CARGO_PLURAL_CANDY                                          :Saldumi
+STR_CARGO_PLURAL_SWEETS                                         :Saldumi
 STR_CARGO_PLURAL_COLA                                           :Kola
-STR_CARGO_PLURAL_COTTON_CANDY                                   :Cukurvate
+STR_CARGO_PLURAL_CANDYFLOSS                                     :Cukurvate
 STR_CARGO_PLURAL_BUBBLES                                        :Burbuļi
 STR_CARGO_PLURAL_TOFFEE                                         :Īriss
 STR_CARGO_PLURAL_BATTERIES                                      :Baterijas
@@ -84,9 +84,9 @@ STR_CARGO_SINGULAR_WHEAT                                        :Kvieši
 STR_CARGO_SINGULAR_RUBBER                                       :Kaučuks
 STR_CARGO_SINGULAR_SUGAR                                        :Cukurs
 STR_CARGO_SINGULAR_TOY                                          :Rotaļlieta
-STR_CARGO_SINGULAR_CANDY                                        :Saldumi
+STR_CARGO_SINGULAR_SWEETS                                       :Saldumi
 STR_CARGO_SINGULAR_COLA                                         :Kola
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :Cukurvate
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :Cukurvate
 STR_CARGO_SINGULAR_BUBBLE                                       :Burbuļi
 STR_CARGO_SINGULAR_TOFFEE                                       :Īriss
 STR_CARGO_SINGULAR_BATTERY                                      :Baterijas
@@ -196,6 +196,7 @@ STR_COLOUR_DEFAULT                                              :Noklusējuma
 STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA}{NBSP}jūdzes stundā
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}km/h
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}m/s
+STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}lauciņi/diena
 
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}ZS
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}ZS
@@ -316,6 +317,8 @@ STR_SORT_BY_CARGO_CAPACITY                                      :kravnesības
 STR_SORT_BY_RANGE                                               :apgabala
 STR_SORT_BY_POPULATION                                          :iedzīvotāju skaita
 STR_SORT_BY_RATING                                              :vērtējuma
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Pauzēt spēli
@@ -1555,6 +1558,11 @@ STR_CONFIG_SETTING_ENDING_YEAR                                  :Vērtēšanas b
 STR_CONFIG_SETTING_ENDING_YEAR_HELPTEXT                         :Spēles beigas gads (tiek izmantots rezultāta noteikšanai). Šī gada beigās uzņēmuma rezultāti tiek ierakstīti un uz ekrāna tiek parādīti labākie rezultāti, bet spēlētāji var turpināt spēlēt arī pēc šī datuma.{}Ja tas ir norādīts pirms spēles sākuma datuma, labākie rezultāti nekad netiek parādīti.
 STR_CONFIG_SETTING_ENDING_YEAR_VALUE                            :{NUM}
 STR_CONFIG_SETTING_ENDING_YEAR_ZERO                             :Nekad
+STR_CONFIG_SETTING_ECONOMY_TYPE                                 :Ekonomikas tips: {STRING}
+STR_CONFIG_SETTING_ECONOMY_TYPE_HELPTEXT                        :Vienmērīga ekonomika liek mainīt ražošanas apjomus biežāk un mazākos soļos. Saldēta ekonomika aptur ražošanas izmaiņas un nozaru slēgšanu. Šim iestatījumam var nebūt ietekmes, ja nozares veidus nodrošina NewGRF.
+STR_CONFIG_SETTING_ECONOMY_TYPE_ORIGINAL                        :Orģināls
+STR_CONFIG_SETTING_ECONOMY_TYPE_SMOOTH                          :Gluds
+STR_CONFIG_SETTING_ECONOMY_TYPE_FROZEN                          :Saldēts
 STR_CONFIG_SETTING_ALLOW_SHARES                                 :Atļaut akciju pirkšanu no citiem uzņēmumiem: {STRING}
 STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Ja iespējots, ir atļauts pirkt un pārdodot uzņēmumu akcijas. Akcijas būs pieejamas tikai atbilstošu vecumu sasniegušiem uzņēmumiem
 STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Minimālais uzņēmuma vecums, lai tirgotos ar akcijām: {STRING}
@@ -1606,9 +1614,6 @@ STR_CONFIG_SETTING_TOWN_CARGOGENMODE_BITCOUNT                   :Lineārs
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Koku izvietojums spēlē: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :Vadīt nejaušu koku parādīšanos spēles laikā. Tas var ietekmēt no kokaudzēšanas atkarīgas ražotnes, piemēram kokzāģētavas
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :nav {RED}(nedarbosies kokzāģētavas)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :tikai lietusmežos
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :visur
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Galvenās rīkjoslas novietojums: {STRING}
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Galvenās rīkjoslas horizontālais novietojums ekrāna augšējā daļā
@@ -1675,6 +1680,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_HELPTEXT         :Vai lietotāja 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_IMPERIAL         :impērijas, britu (jūdzes stundā)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_METRIC           :metriskās (km/h)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_SI               :SI, starptautiskās (m/s)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_GAMEUNITS        :Spēles vienības (lauciņi/dienas)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER                     :Transportlīdzekļu jaudas mērvienības: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_HELPTEXT            :Vai lietotāja saskarnē rāda transporta līdzekļa jaudu, rādīt norādītajās mērvienībās
@@ -1809,6 +1815,7 @@ STR_INTRO_TRANSLATION                                           :{BLACK}Šim tul
 
 # Quit window
 STR_QUIT_CAPTION                                                :{WHITE}Iziet
+STR_QUIT_ARE_YOU_SURE_YOU_WANT_TO_EXIT_OPENTTD                  :{YELLOW}Vai esat pārliecināts ka vēlaties iziet no OpenTTD?
 STR_QUIT_YES                                                    :{BLACK}Jā
 STR_QUIT_NO                                                     :{BLACK}Nē
 
@@ -1932,10 +1939,6 @@ STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Mainīt 
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Vairākspēlētāju spēle
-STR_NETWORK_SERVER_LIST_ADVERTISED                              :{BLACK}Izsludināt
-STR_NETWORK_SERVER_LIST_ADVERTISED_TOOLTIP                      :{BLACK}Izvēlieties starp reklamēto (interneta) un nereklamēto (lokālā tīkla, LAN) spēli
-STR_NETWORK_SERVER_LIST_ADVERTISED_NO                           :Nē
-STR_NETWORK_SERVER_LIST_ADVERTISED_YES                          :Jā
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Spēlētāja vārds:
 STR_NETWORK_SERVER_LIST_ENTER_NAME_TOOLTIP                      :{BLACK}Pēc šā vārda jūs atpazīs citi spēlētāji
 
@@ -1976,8 +1979,6 @@ STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}Pievieno
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}Atsvaidzināt serveri
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}Atsvaidzināt servera informāciju
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}Atrast serveri
-STR_NETWORK_SERVER_LIST_FIND_SERVER_TOOLTIP                     :{BLACK}Meklēt serveri tīklā
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}Pievienot serveri
 STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP                      :{BLACK}Pievienot serveri sarakstam, kurš vienmēr tiks pārbaudīts vai tajā nav palaistas spēles
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Palaist serveri
@@ -1994,6 +1995,8 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Spēles 
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Uzstādīt paroli
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Aizsargā jūsu spēli ar paroli, ja nevēlaties lai tā būtu publiski pieejama
 
+STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Izsludināt
+STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Izvēlieties starp reklamēto (interneta) un nereklamēto (lokālā tīkla, LAN) spēli
 STR_NETWORK_START_SERVER_UNADVERTISED                           :Nē
 STR_NETWORK_START_SERVER_ADVERTISED                             :Jā
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} spēlētāj{P s i u}
@@ -5044,6 +5047,7 @@ STR_FORMAT_BUOY_NAME                                            :{TOWN} boja
 STR_FORMAT_BUOY_NAME_SERIAL                                     :{TOWN} boja Nr. #{COMMA}
 STR_FORMAT_COMPANY_NUM                                          :({COMMA}. uzņēmums)
 STR_FORMAT_GROUP_NAME                                           :Grupa {COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{1:STRING} {0:TOWN}
 STR_FORMAT_WAYPOINT_NAME                                        :Pieturas punkts {TOWN}
 STR_FORMAT_WAYPOINT_NAME_SERIAL                                 :Pieturas punkts {TOWN} #{COMMA}

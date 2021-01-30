@@ -72,12 +72,12 @@ STR_CARGO_PLURAL_SUGAR                                          :Suhkur
 STR_CARGO_PLURAL_SUGAR.g                                        :Suhkru
 STR_CARGO_PLURAL_TOYS                                           :Mänguasjad
 STR_CARGO_PLURAL_TOYS.g                                         :Mänguasjade
-STR_CARGO_PLURAL_CANDY                                          :Maiustused
-STR_CARGO_PLURAL_CANDY.g                                        :Maiustuste
+STR_CARGO_PLURAL_SWEETS                                         :Maiustused
+STR_CARGO_PLURAL_SWEETS.g                                       :Maiustuste
 STR_CARGO_PLURAL_COLA                                           :Koola
 STR_CARGO_PLURAL_COLA.g                                         :Koola
-STR_CARGO_PLURAL_COTTON_CANDY                                   :Suhkruvatt
-STR_CARGO_PLURAL_COTTON_CANDY.g                                 :Suhkruvati
+STR_CARGO_PLURAL_CANDYFLOSS                                     :Suhkruvatt
+STR_CARGO_PLURAL_CANDYFLOSS.g                                   :Suhkruvati
 STR_CARGO_PLURAL_BUBBLES                                        :Mullid
 STR_CARGO_PLURAL_BUBBLES.g                                      :Mullide
 STR_CARGO_PLURAL_TOFFEE                                         :Iiris
@@ -137,9 +137,9 @@ STR_CARGO_SINGULAR_SUGAR                                        :Suhkur
 STR_CARGO_SINGULAR_SUGAR.g                                      :Suhkru
 STR_CARGO_SINGULAR_TOY                                          :Mänguasjad
 STR_CARGO_SINGULAR_TOY.g                                        :Mänguasjade
-STR_CARGO_SINGULAR_CANDY                                        :Maiustus
+STR_CARGO_SINGULAR_SWEETS                                       :Maiustus
 STR_CARGO_SINGULAR_COLA                                         :Koola
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :Suhkruvatt
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :Suhkruvatt
 STR_CARGO_SINGULAR_BUBBLE                                       :Mullid
 STR_CARGO_SINGULAR_TOFFEE                                       :Iiris
 STR_CARGO_SINGULAR_TOFFEE.g                                     :Iirise
@@ -367,6 +367,8 @@ STR_SORT_BY_CARGO_CAPACITY                                      :Kandevõime
 STR_SORT_BY_RANGE                                               :Vahekaugus
 STR_SORT_BY_POPULATION                                          :Rahvaarv
 STR_SORT_BY_RATING                                              :Hinnang
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Seiska mäng
@@ -1619,9 +1621,6 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Lubatud, koos l
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Mängu jooksul kasvavad puud: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :Juhib suvalist puude kasvu mängu jooksul. See seade võib mõjutada osade tööstuste tööd, mis sõltuvad puude kasvust (näiteks saekaater)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :Ei {RED}(saeveski ei tööta)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :Ainult vihmametsades
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :Igal pool
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Peamine tarvikuriba paikneb: {STRING}
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Tarvikuriba rõhtne paiknemine ekraani ülaosas
@@ -1942,10 +1941,6 @@ STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Vaheta k
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Mitmikmäng
-STR_NETWORK_SERVER_LIST_ADVERTISED                              :{BLACK}Reklaamitav
-STR_NETWORK_SERVER_LIST_ADVERTISED_TOOLTIP                      :{BLACK}Valib reklaamitava (internet) või mittereklaamitava (kohtvõrk, LAN) mängu
-STR_NETWORK_SERVER_LIST_ADVERTISED_NO                           :Ei
-STR_NETWORK_SERVER_LIST_ADVERTISED_YES                          :Jah
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Mängija nimi:
 STR_NETWORK_SERVER_LIST_ENTER_NAME_TOOLTIP                      :{BLACK}Teised mängijad tunnevad sind selle nime järgi
 
@@ -1986,8 +1981,6 @@ STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}Liitu m�
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}Uuenda andmeid
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}Serveri info värskendamine
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}Uuenda loendit
-STR_NETWORK_SERVER_LIST_FIND_SERVER_TOOLTIP                     :{BLACK}Uuenda võrgus asuvate serverite loendit
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}Sisesta server
 STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP                      :{BLACK}Sisesta loendisse uus server, milles toimuvaid mänge jälgida
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Tee server
@@ -2004,6 +1997,8 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Serveril
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Määra salasõna
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Et server ei oleks avalik, kaitse oma mäng salasõnaga
 
+STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Reklaamitav
+STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Valib reklaamitava (internet) või mittereklaamitava (kohtvõrk, LAN) mängu
 STR_NETWORK_START_SERVER_UNADVERTISED                           :Jah
 STR_NETWORK_START_SERVER_ADVERTISED                             :Jah
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} klient{P "" i}

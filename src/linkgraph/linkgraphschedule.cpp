@@ -115,7 +115,7 @@ void LinkGraphSchedule::SpawnNext()
 bool LinkGraphSchedule::IsJoinWithUnfinishedJobDue() const
 {
 	for (JobList::const_iterator it = this->running.begin(); it != this->running.end(); ++it) {
-		if (!((*it)->IsFinished(2))) {
+		if (!((*it)->IsScheduledToBeJoined(2))) {
 			/* job is not due to be joined yet */
 			return false;
 		}
@@ -133,7 +133,7 @@ bool LinkGraphSchedule::IsJoinWithUnfinishedJobDue() const
 void LinkGraphSchedule::JoinNext()
 {
 	while (!(this->running.empty())) {
-		if (!this->running.front()->IsFinished()) return;
+		if (!this->running.front()->IsScheduledToBeJoined()) return;
 		std::unique_ptr<LinkGraphJob> next = std::move(this->running.front());
 		this->running.pop_front();
 		LinkGraphID id = next->LinkGraphIndex();
@@ -160,19 +160,16 @@ void LinkGraphSchedule::JoinNext()
 	}
 
 	/*
-	 * Note that this it not guaranteed to be an atomic write and there are no memory barriers or other protections.
 	 * Readers of this variable in another thread may see an out of date value.
-	 * However this is OK as this will only happen just as a job is completing, and the real synchronisation is provided
-	 * by the thread join operation. In the worst case the main thread will be paused for longer than strictly necessary before
-	 * joining.
-	 * This is just a hint variable to avoid performing the join excessively early and blocking the main thread.
+	 * However this is OK as this will only happen just as a job is completing,
+	 * and the real synchronisation is provided by the thread join operation.
+	 * In the worst case the main thread will be paused for longer than
+	 * strictly necessary before joining.
+	 * This is just a hint variable to avoid performing the join excessively
+	 * early and blocking the main thread.
 	 */
 
-#if defined(__GNUC__) || defined(__clang__)
-	__atomic_store_n(&(job->job_completed), true, __ATOMIC_RELAXED);
-#else
-	job->job_completed = true;
-#endif
+	job->job_completed.store(true, std::memory_order_release);
 }
 
 /**
@@ -310,9 +307,11 @@ LinkGraphJobGroup::JobInfo::JobInfo(LinkGraphJob *job) :
 		job(job), cost_estimate(job->Graph().CalculateCostEstimate()) { }
 
 /**
- * Pause the game if on the next _date_fract tick, we would do a join with the next
+ * Pause the game if in 2 _date_fract ticks, we would do a join with the next
  * link graph job, but it is still running.
- * If we previous paused, unpause if the job is now ready to be joined with
+ * The check is done 2 _date_fract ticks early instead of 1, as in multiplayer
+ * calls to DoCommandP are executed after a delay of 1 _date_fract tick.
+ * If we previously paused, unpause if the job is now ready to be joined with.
  */
 void StateGameLoop_LinkGraphPauseControl()
 {
@@ -339,8 +338,9 @@ void StateGameLoop_LinkGraphPauseControl()
 }
 
 /**
- * Pause the game on load if we would do a join with the next link graph job, but it is still running, and it would not
- * be caught by a call to StateGameLoop_LinkGraphPauseControl().
+ * Pause the game on load if we would do a join with the next link graph job,
+ * but it is still running, and it would not be caught by a call to
+ * StateGameLoop_LinkGraphPauseControl().
  */
 void AfterLoad_LinkGraphPauseControl()
 {

@@ -3222,7 +3222,8 @@ public:
 
 		this->vscroll = this->GetScrollbar(WID_TRSL_LIST_VEHICLE_SCROLLBAR);
 		this->slot_sb = this->GetScrollbar(WID_TRSL_LIST_SLOTS_SCROLLBAR);
-		this->sorting = &_sorting.train;
+		this->sorting = &_sorting[GB_NONE].train;
+		this->grouping = GB_NONE;
 
 		this->vli.index = ALL_TRAINS_TRACE_RESTRICT_SLOT_ID;
 		this->slot_sel = INVALID_TRACE_RESTRICT_SLOT_ID;
@@ -3230,9 +3231,9 @@ public:
 		this->slot_set_max_occupancy = false;
 		this->slot_over = INVALID_TRACE_RESTRICT_SLOT_ID;
 
-		this->vehicles.SetListing(*this->sorting);
-		this->vehicles.ForceRebuild();
-		this->vehicles.NeedResort();
+		this->vehgroups.SetListing(*this->sorting);
+		this->vehgroups.ForceRebuild();
+		this->vehgroups.NeedResort();
 
 		this->BuildVehicleList();
 		this->SortVehicleList();
@@ -3247,7 +3248,7 @@ public:
 
 	~TraceRestrictSlotWindow()
 	{
-		*this->sorting = this->vehicles.GetListing();
+		*this->sorting = this->vehgroups.GetListing();
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
@@ -3301,10 +3302,10 @@ public:
 	{
 		if (data == 0) {
 			/* This needs to be done in command-scope to enforce rebuilding before resorting invalid data */
-			this->vehicles.ForceRebuild();
+			this->vehgroups.ForceRebuild();
 			this->slots.ForceRebuild();
 		} else {
-			this->vehicles.ForceResort();
+			this->vehgroups.ForceResort();
 			this->slots.ForceResort();
 		}
 
@@ -3343,7 +3344,7 @@ public:
 		this->BuildSlotList(this->owner);
 
 		this->slot_sb->SetCount(this->slots.size());
-		this->vscroll->SetCount(this->vehicles.size());
+		this->vscroll->SetCount(this->vehgroups.size());
 
 		/* Disable the slot specific function when we select all vehicles */
 		this->SetWidgetsDisabledState(this->vli.index == ALL_TRAINS_TRACE_RESTRICT_SLOT_ID || _local_company != this->vli.company,
@@ -3363,7 +3364,7 @@ public:
 				WIDGET_LIST_END);
 
 		/* Set text of sort by dropdown */
-		this->GetWidget<NWidgetCore>(WID_TRSL_SORT_BY_DROPDOWN)->widget_data = this->vehicle_sorter_names[this->vehicles.SortType()];
+		this->GetWidget<NWidgetCore>(WID_TRSL_SORT_BY_DROPDOWN)->widget_data = this->vehicle_group_none_sorter_names[this->vehgroups.SortType()];
 
 		this->GetWidget<NWidgetCore>(WID_TRSL_FILTER_BY_CARGO)->widget_data = this->cargo_filter_texts[this->cargo_filter_criteria];
 
@@ -3393,7 +3394,7 @@ public:
 			}
 
 			case WID_TRSL_SORT_BY_ORDER:
-				this->DrawSortButtonState(WID_TRSL_SORT_BY_ORDER, this->vehicles.IsDescSortOrder() ? SBS_DOWN : SBS_UP);
+				this->DrawSortButtonState(WID_TRSL_SORT_BY_ORDER, this->vehgroups.IsDescSortOrder() ? SBS_DOWN : SBS_UP);
 				break;
 
 			case WID_TRSL_LIST_VEHICLE:
@@ -3415,12 +3416,12 @@ public:
 	{
 		switch (widget) {
 			case WID_TRSL_SORT_BY_ORDER: // Flip sorting method ascending/descending
-				this->vehicles.ToggleSortOrder();
+				this->vehgroups.ToggleSortOrder();
 				this->SetDirty();
 				break;
 
 			case WID_TRSL_SORT_BY_DROPDOWN: // Select sorting criteria dropdown menu
-				ShowDropDownMenu(this, this->vehicle_sorter_names, this->vehicles.SortType(),  WID_TRSL_SORT_BY_DROPDOWN, 0, 0);
+				ShowDropDownMenu(this, this->vehicle_group_none_sorter_names, this->vehgroups.SortType(),  WID_TRSL_SORT_BY_DROPDOWN, 0, 0);
 				return;
 
 			case WID_TRSL_FILTER_BY_CARGO: // Cargo filter dropdown
@@ -3431,7 +3432,7 @@ public:
 				if (this->vli.index != ALL_TRAINS_TRACE_RESTRICT_SLOT_ID) {
 					this->vli.index = ALL_TRAINS_TRACE_RESTRICT_SLOT_ID;
 					this->slot_sel = INVALID_TRACE_RESTRICT_SLOT_ID;
-					this->vehicles.ForceRebuild();
+					this->vehgroups.ForceRebuild();
 					this->SetDirty();
 				}
 				break;
@@ -3442,14 +3443,14 @@ public:
 
 				this->slot_sel = this->vli.index = this->slots[id_s]->index;
 
-				this->vehicles.ForceRebuild();
+				this->vehgroups.ForceRebuild();
 				this->SetDirty();
 				break;
 			}
 
 			case WID_TRSL_LIST_VEHICLE: { // Matrix Vehicle
 				uint id_v = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_TRSL_LIST_VEHICLE);
-				if (id_v >= this->vehicles.size()) return; // click out of list bound
+				if (id_v >= this->vehgroups.size()) return; // click out of list bound
 
 				const Vehicle *v = this->vehicles[id_v];
 				if (VehicleClicked(v)) break;
@@ -3523,7 +3524,7 @@ public:
 				this->SetDirty();
 
 				uint id_v = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_TRSL_LIST_VEHICLE);
-				if (id_v >= this->vehicles.size()) return; // click out of list bound
+				if (id_v >= this->vehgroups.size()) return; // click out of list bound
 
 				const Vehicle *v = this->vehicles[id_v];
 				if (!VehicleClicked(v) && vindex == v->index) {
@@ -3565,7 +3566,7 @@ public:
 	{
 		switch (widget) {
 			case WID_TRSL_SORT_BY_DROPDOWN:
-				this->vehicles.SetSortType(index);
+				this->vehgroups.SetSortType(index);
 				break;
 
 			case WID_TRSL_FILTER_BY_CARGO: // Select a cargo filter criteria
@@ -3580,7 +3581,7 @@ public:
 
 	virtual void OnGameTick() override
 	{
-		if (this->slots.NeedResort() || this->vehicles.NeedResort()) {
+		if (this->slots.NeedResort() || this->vehgroups.NeedResort()) {
 			this->SetDirty();
 		}
 	}
