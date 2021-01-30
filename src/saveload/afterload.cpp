@@ -3831,6 +3831,10 @@ bool AfterLoadGame()
 		UpdateAllAnimatedTileSpeeds();
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_INFLATION_FIXED_DATES)) {
+		_settings_game.economy.inflation_fixed_dates = !IsSavegameVersionBefore(SLV_GS_INDUSTRY_CONTROL);
+	}
+
 	InitializeRoadGUI();
 
 	/* This needs to be done after conversion. */

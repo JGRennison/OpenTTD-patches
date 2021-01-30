@@ -571,6 +571,7 @@ struct VehicleSettings {
 /** Settings related to the economy. */
 struct EconomySettings {
 	bool   inflation;                        ///< disable inflation
+	bool   inflation_fixed_dates;            ///< whether inflation is applied between fixed dates
 	bool   bribe;                            ///< enable bribing the local authority
 	EconomyType type;                        ///< economy type (original/smooth/frozen)
 	bool   allow_shares;                     ///< allow the buying/selling of shares
