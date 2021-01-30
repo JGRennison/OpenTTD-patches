@@ -133,10 +133,20 @@ macro(compile_flags)
             )
         endif()
 
-        if(APPLE)
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
             add_compile_options(
                 -fno-stack-check
             )
+
+            include(CheckCXXCompilerFlag)
+            check_cxx_compiler_flag("-mno-sse4" NO_SSE4_FOUND)
+
+            if(NO_SSE4_FOUND)
+                add_compile_options(
+                    # Don't use SSE4 for general sources to increase compatibility.
+                    -mno-sse4
+                )
+            endif()
         endif()
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
         add_compile_options(

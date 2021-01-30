@@ -148,9 +148,7 @@ protected:
 
 		for (const Vehicle *v : Vehicle::Iterate()) {
 			if (v->type < 4 && this->show_types[v->type] && v->IsPrimaryVehicle()) {
-				const Order *order;
-
-				FOR_VEHICLE_ORDERS(v, order) {
+				for(const Order *order : v->Orders()) {
 					if ((order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT) || order->IsType(OT_IMPLICIT))
 							&& order->GetDestination() == this->station) {
 						this->vehicles.push_back(v);

@@ -59,37 +59,37 @@ STR_CARGO_PLURAL_FIZZY_DRINKS                                   :Sihijuomaa
 
 # Singular cargo name
 STR_CARGO_SINGULAR_NOTHING                                      :
-STR_CARGO_SINGULAR_PASSENGER                                    :Matkustaja
-STR_CARGO_SINGULAR_COAL                                         :Kivihiili
-STR_CARGO_SINGULAR_MAIL                                         :Posti
-STR_CARGO_SINGULAR_OIL                                          :Öljy
-STR_CARGO_SINGULAR_LIVESTOCK                                    :Karja
-STR_CARGO_SINGULAR_GOODS                                        :Tavara
-STR_CARGO_SINGULAR_GRAIN                                        :Vilja
-STR_CARGO_SINGULAR_WOOD                                         :Raakapuu
-STR_CARGO_SINGULAR_IRON_ORE                                     :Rautamalmi
-STR_CARGO_SINGULAR_STEEL                                        :Teräs
-STR_CARGO_SINGULAR_VALUABLES                                    :Arvotavara
-STR_CARGO_SINGULAR_COPPER_ORE                                   :Kuparimalmi
-STR_CARGO_SINGULAR_MAIZE                                        :Maissi
-STR_CARGO_SINGULAR_FRUIT                                        :Hedelmä
-STR_CARGO_SINGULAR_DIAMOND                                      :Jalokivi
-STR_CARGO_SINGULAR_FOOD                                         :Ruoka
-STR_CARGO_SINGULAR_PAPER                                        :Paperi
-STR_CARGO_SINGULAR_GOLD                                         :Kulta
-STR_CARGO_SINGULAR_WATER                                        :Vesi
-STR_CARGO_SINGULAR_WHEAT                                        :Vehnä
-STR_CARGO_SINGULAR_RUBBER                                       :Kumi
-STR_CARGO_SINGULAR_SUGAR                                        :Sokeri
-STR_CARGO_SINGULAR_TOY                                          :Lelu
-STR_CARGO_SINGULAR_SWEETS                                       :Karkki
-STR_CARGO_SINGULAR_COLA                                         :Limsa
-STR_CARGO_SINGULAR_CANDYFLOSS                                   :Hattara
-STR_CARGO_SINGULAR_BUBBLE                                       :Kupla
-STR_CARGO_SINGULAR_TOFFEE                                       :Toffee
-STR_CARGO_SINGULAR_BATTERY                                      :Paristo
-STR_CARGO_SINGULAR_PLASTIC                                      :Muovi
-STR_CARGO_SINGULAR_FIZZY_DRINK                                  :Sihijuoma
+STR_CARGO_SINGULAR_PASSENGER                                    :matkustaja
+STR_CARGO_SINGULAR_COAL                                         :kivihiili
+STR_CARGO_SINGULAR_MAIL                                         :posti
+STR_CARGO_SINGULAR_OIL                                          :öljy
+STR_CARGO_SINGULAR_LIVESTOCK                                    :karja
+STR_CARGO_SINGULAR_GOODS                                        :tavara
+STR_CARGO_SINGULAR_GRAIN                                        :vilja
+STR_CARGO_SINGULAR_WOOD                                         :raakapuu
+STR_CARGO_SINGULAR_IRON_ORE                                     :rautamalmi
+STR_CARGO_SINGULAR_STEEL                                        :teräs
+STR_CARGO_SINGULAR_VALUABLES                                    :arvotavara
+STR_CARGO_SINGULAR_COPPER_ORE                                   :kuparimalmi
+STR_CARGO_SINGULAR_MAIZE                                        :maissi
+STR_CARGO_SINGULAR_FRUIT                                        :hedelmä
+STR_CARGO_SINGULAR_DIAMOND                                      :timantti
+STR_CARGO_SINGULAR_FOOD                                         :ruoka
+STR_CARGO_SINGULAR_PAPER                                        :paperi
+STR_CARGO_SINGULAR_GOLD                                         :kulta
+STR_CARGO_SINGULAR_WATER                                        :vesi
+STR_CARGO_SINGULAR_WHEAT                                        :vehnä
+STR_CARGO_SINGULAR_RUBBER                                       :kumi
+STR_CARGO_SINGULAR_SUGAR                                        :sokeri
+STR_CARGO_SINGULAR_TOY                                          :lelu
+STR_CARGO_SINGULAR_SWEETS                                       :karkki
+STR_CARGO_SINGULAR_COLA                                         :limsa
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :hattara
+STR_CARGO_SINGULAR_BUBBLE                                       :kupla
+STR_CARGO_SINGULAR_TOFFEE                                       :toffee
+STR_CARGO_SINGULAR_BATTERY                                      :paristo
+STR_CARGO_SINGULAR_PLASTIC                                      :muovi
+STR_CARGO_SINGULAR_FIZZY_DRINK                                  :sihijuoma
 
 # Quantity of cargo
 STR_QUANTITY_NOTHING                                            :
@@ -688,10 +688,10 @@ STR_PLAYLIST_TRACK_INDEX                                        :{TINY_FONT}{BLA
 STR_PLAYLIST_PROGRAM                                            :{TINY_FONT}{BLACK}Soittolista – ”{STRING}”
 STR_PLAYLIST_CLEAR                                              :{TINY_FONT}{BLACK}Tyhjennä
 STR_PLAYLIST_CHANGE_SET                                         :{BLACK}Vaihda kokoelma
-STR_PLAYLIST_TOOLTIP_CLEAR_CURRENT_PROGRAM_CUSTOM1              :{BLACK}Tyhjennä nykyinen soittolista (vain Oma1 tai Oma2)
+STR_PLAYLIST_TOOLTIP_CLEAR_CURRENT_PROGRAM_CUSTOM1              :{BLACK}Tyhjennä nykyinen soittolista (vain oma{NBSP}1 tai oma{NBSP}2)
 STR_PLAYLIST_TOOLTIP_CHANGE_SET                                 :{BLACK}Valitse toinen asennettu kokoelma musiikkivalikoimaksesi
-STR_PLAYLIST_TOOLTIP_CLICK_TO_ADD_TRACK                         :{BLACK}Valitse musiikkiraita lisätäksesi sen nykyiseen soittolistaan (vain Oma1 tai Oma2).
-STR_PLAYLIST_TOOLTIP_CLICK_TO_REMOVE_TRACK                      :{BLACK}Poista musiikkiraita nykyseiltä soittolistalta napsauttamalla (ainoastaan Custom1 tai Custom2)
+STR_PLAYLIST_TOOLTIP_CLICK_TO_ADD_TRACK                         :{BLACK}Valitse musiikkiraita lisätäksesi sen nykyiseen soittolistaan (vain oma{NBSP}1 tai oma{NBSP}2).
+STR_PLAYLIST_TOOLTIP_CLICK_TO_REMOVE_TRACK                      :{BLACK}Poista musiikkiraita nykyiseltä soittolistalta napsauttamalla (vain oma{NBSP}1 tai oma{NBSP}2)
 
 # Highscore window
 STR_HIGHSCORE_TOP_COMPANIES_WHO_REACHED                         :{BIG_FONT}{BLACK}Parhaat yhtiöt, jotka saavuttivat vuoden {NUM}
@@ -2539,13 +2539,19 @@ STR_OBJECT_BUILD_SIZE                                           :{BLACK}Koko: {G
 STR_OBJECT_CLASS_LTHS                                           :Majakat
 STR_OBJECT_CLASS_TRNS                                           :Lähettimet
 
-# Tree planting window (last two for SE only)
+# Tree planting window (last eight for SE only)
 STR_PLANT_TREE_CAPTION                                          :{WHITE}Puita
 STR_PLANT_TREE_TOOLTIP                                          :{BLACK}Valitse istutettava puutyyppi. Jos ruudussa on jo puu, tämä lisää uusia puita riippumatta valitun puun tyypistä
 STR_TREES_RANDOM_TYPE                                           :{BLACK}Sattumanvaraisia puita
 STR_TREES_RANDOM_TYPE_TOOLTIP                                   :{BLACK}Aseta sattumanvaraisia puita. Shift vaihtaa istutustilan ja kustannusarvion välillä
 STR_TREES_RANDOM_TREES_BUTTON                                   :{BLACK}Satunnaisia puita.
 STR_TREES_RANDOM_TREES_TOOLTIP                                  :{BLACK}Istuta puita satunnaisesti maastoon
+STR_TREES_MODE_NORMAL_BUTTON                                    :{BLACK}Tavallinen
+STR_TREES_MODE_NORMAL_TOOLTIP                                   :{BLACK}Istuta yksittäisiä puita vetämällä.
+STR_TREES_MODE_FOREST_SM_BUTTON                                 :{BLACK}Metsikkö
+STR_TREES_MODE_FOREST_SM_TOOLTIP                                :{BLACK}Istuta pieniä metsiä vetämällä.
+STR_TREES_MODE_FOREST_LG_BUTTON                                 :{BLACK}Metsä
+STR_TREES_MODE_FOREST_LG_TOOLTIP                                :{BLACK}Istuta isoja metsiä vetämällä.
 
 # Land generation window (SE)
 STR_TERRAFORM_TOOLBAR_LAND_GENERATION_CAPTION                   :{WHITE}Maanrakennus
@@ -3175,10 +3181,10 @@ STR_GOALS_COMPANY_TITLE                                         :{BLACK}Yhtiön 
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Keskitä päänäkymä laitokseen/kuntaan/ruutuun napsauttamalla tavoitetta. Ctrl+Klik avaa uuden näkymän laitoksen/kunnan/ruudun sijaintiin
 
 # Goal question window
-STR_GOAL_QUESTION_CAPTION_QUESTION                              :Kysymys
-STR_GOAL_QUESTION_CAPTION_INFORMATION                           :Tietoa
-STR_GOAL_QUESTION_CAPTION_WARNING                               :Varoitus
-STR_GOAL_QUESTION_CAPTION_ERROR                                 :Virhe
+STR_GOAL_QUESTION_CAPTION_QUESTION                              :{BLACK}Kysymys
+STR_GOAL_QUESTION_CAPTION_INFORMATION                           :{BLACK}Tietoa
+STR_GOAL_QUESTION_CAPTION_WARNING                               :{BLACK}Varoitus
+STR_GOAL_QUESTION_CAPTION_ERROR                                 :{YELLOW}Virhe
 
 ############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :Peruuta
@@ -3252,7 +3258,7 @@ STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Näytä 
 STR_STATION_VIEW_SUPPLY_RATINGS_TITLE                           :{BLACK}Kuukausittainen tarjonta ja paikallinen arvio:
 STR_STATION_VIEW_CARGO_SUPPLY_RATING                            :{WHITE}{STRING}: {YELLOW}{COMMA} / {STRING} ({COMMA}{NBSP}%)
 
-STR_STATION_VIEW_GROUP                                          :{BLACK}Järjestä
+STR_STATION_VIEW_GROUP                                          :{BLACK}Ryhmittele
 STR_STATION_VIEW_WAITING_STATION                                :Asema: Odottaa
 STR_STATION_VIEW_WAITING_AMOUNT                                 :Määrä: Odottaa
 STR_STATION_VIEW_PLANNED_STATION                                :Asema: Suunniteltu
@@ -3685,11 +3691,11 @@ STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :sähköradan ve
 STR_ENGINE_PREVIEW_MONORAIL_LOCOMOTIVE                          :yksiraiteisen veturi
 STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :Maglev-veturi
 
-STR_ENGINE_PREVIEW_ROAD_VEHICLE                                 :ajoneuvon
-STR_ENGINE_PREVIEW_TRAM_VEHICLE                                 :raitiovaunun
+STR_ENGINE_PREVIEW_ROAD_VEHICLE                                 :ajoneuvo
+STR_ENGINE_PREVIEW_TRAM_VEHICLE                                 :raitiovaunu
 
-STR_ENGINE_PREVIEW_AIRCRAFT                                     :ilma-aluksen
-STR_ENGINE_PREVIEW_SHIP                                         :laivan
+STR_ENGINE_PREVIEW_AIRCRAFT                                     :ilma-alus
+STR_ENGINE_PREVIEW_SHIP                                         :laiva
 
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Hinta: {CURRENCY_LONG} Paino: {WEIGHT_SHORT}{}Nopeus: {VELOCITY}  Teho: {POWER}{}Käyttökustannukset: {CURRENCY_LONG}/vuosi{}Kapasiteetti: {CARGO_LONG}
 STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Hinta: {CURRENCY_LONG} Paino: {WEIGHT_SHORT}{}Nopeus: {VELOCITY}  Teho: {POWER}  Maks. vetovoima: {6:FORCE}{}Käyttökustannukset: {4:CURRENCY_LONG}/v{}Kapasiteetti: {5:CARGO_LONG}
@@ -3894,7 +3900,7 @@ STR_REFIT_SHIP_LIST_TOOLTIP                                     :{BLACK}Valitse 
 STR_REFIT_AIRCRAFT_LIST_TOOLTIP                                 :{BLACK}Valitse kuljetettavan rahdin tyyppi
 
 STR_REFIT_TRAIN_REFIT_BUTTON                                    :{BLACK}Sovita juna
-STR_REFIT_ROAD_VEHICLE_REFIT_BUTTON                             :{BLACK}Korjaa ajoneuvo.
+STR_REFIT_ROAD_VEHICLE_REFIT_BUTTON                             :{BLACK}Sovita ajoneuvo
 STR_REFIT_SHIP_REFIT_BUTTON                                     :{BLACK}Sovita laiva
 STR_REFIT_AIRCRAFT_REFIT_BUTTON                                 :{BLACK}Sovita ilma-alus
 
@@ -4561,7 +4567,7 @@ STR_ERROR_SHIP_IN_THE_WAY                                       :{WHITE}Laiva on
 STR_ERROR_AIRCRAFT_IN_THE_WAY                                   :{WHITE}Ilma-alus on tiellä
 
 STR_ERROR_CAN_T_REFIT_TRAIN                                     :{WHITE}Junaa ei voi sovittaa...
-STR_ERROR_CAN_T_REFIT_ROAD_VEHICLE                              :{WHITE}Ajoneuvoa ei voida korjata.
+STR_ERROR_CAN_T_REFIT_ROAD_VEHICLE                              :{WHITE}Ajoneuvoa ei voi sovittaa…
 STR_ERROR_CAN_T_REFIT_SHIP                                      :{WHITE}Laivaa ei voi sovittaa...
 STR_ERROR_CAN_T_REFIT_AIRCRAFT                                  :{WHITE}Ilma-alusta ei voi sovittaa...
 
@@ -4724,7 +4730,7 @@ STR_INDUSTRY_NAME_FOOD_PROCESSING_PLANT                         :Ruoanjalostamo
 STR_INDUSTRY_NAME_PAPER_MILL                                    :Paperitehdas
 STR_INDUSTRY_NAME_GOLD_MINE                                     :Kultakaivos
 STR_INDUSTRY_NAME_BANK_TROPIC_ARCTIC                            :Pankki
-STR_INDUSTRY_NAME_DIAMOND_MINE                                  :Jalokivikaivos
+STR_INDUSTRY_NAME_DIAMOND_MINE                                  :Timanttikaivos
 STR_INDUSTRY_NAME_IRON_ORE_MINE                                 :Rautakaivos
 STR_INDUSTRY_NAME_FRUIT_PLANTATION                              :Hedelmäviljelmä
 STR_INDUSTRY_NAME_RUBBER_PLANTATION                             :Kumiviljelmä

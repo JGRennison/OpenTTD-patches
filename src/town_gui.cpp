@@ -1283,7 +1283,7 @@ protected:
 		int ret = (a_set != nullptr) - (b_set != nullptr);
 		if (ret == 0) {
 			if (a_set != nullptr) {
-				assert_compile(sizeof(a_set->grfid) <= sizeof(int));
+				static_assert(sizeof(a_set->grfid) <= sizeof(int));
 				ret = a_set->grfid - b_set->grfid;
 				if (ret == 0) ret = a_hs->grf_prop.local_id - b_hs->grf_prop.local_id;
 			} else {

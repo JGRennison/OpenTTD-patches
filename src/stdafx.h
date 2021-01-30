@@ -112,24 +112,24 @@
 
 /* Stuff for GCC */
 #if defined(__GNUC__) || defined(__clang__)
-	#define NORETURN __attribute__ ((noreturn))
-	#define CDECL
-	#define __int64 long long
+#	define NORETURN __attribute__ ((noreturn))
+#	define CDECL
+#	define __int64 long long
 	/* Warn about functions using 'printf' format syntax. First argument determines which parameter
 	 * is the format string, second argument is start of values passed to printf. */
 	#define WARN_FORMAT(string, args) __attribute__ ((format (printf, string, args)))
 	#define FINAL final
 
 	/* Use fallthrough attribute where supported */
-	#if __GNUC__ >= 7
-		#if __cplusplus > 201402L // C++17
-			#define FALLTHROUGH [[fallthrough]]
-		#else
-			#define FALLTHROUGH __attribute__((fallthrough))
-		#endif
-	#else
-		#define FALLTHROUGH
-	#endif
+#	if __GNUC__ >= 7
+#		if __cplusplus > 201402L // C++17
+#			define FALLTHROUGH [[fallthrough]]
+#		else
+#			define FALLTHROUGH __attribute__((fallthrough))
+#		endif
+#	else
+#		define FALLTHROUGH
+#	endif
 #endif /* __GNUC__ || __clang__ */
 
 #if defined(__WATCOMC__)
@@ -361,15 +361,17 @@ typedef unsigned char byte;
 #	define PERSONAL_DIR ""
 #endif
 
-#define assert_compile(expr) static_assert(expr, #expr )
-#define assert_tcompile(expr) assert_compile(expr)
+/* Define the the platforms that use XDG */
+#if defined(WITH_PERSONAL_DIR) && defined(UNIX) && !defined(__APPLE__)
+#	define USE_XDG
+#endif
 
 /* Check if the types have the bitsizes like we are using them */
-assert_compile(sizeof(uint64) == 8);
-assert_compile(sizeof(uint32) == 4);
-assert_compile(sizeof(uint16) == 2);
-assert_compile(sizeof(uint8)  == 1);
-assert_compile(SIZE_MAX >= UINT32_MAX);
+static_assert(sizeof(uint64) == 8);
+static_assert(sizeof(uint32) == 4);
+static_assert(sizeof(uint16) == 2);
+static_assert(sizeof(uint8)  == 1);
+static_assert(SIZE_MAX >= UINT32_MAX);
 
 #ifndef M_PI_2
 #define M_PI_2 1.57079632679489661923
@@ -432,11 +434,11 @@ assert_compile(SIZE_MAX >= UINT32_MAX);
 #endif /* __APPLE__ */
 
 #if defined(__GNUC__) || defined(__clang__)
-#define likely(x)       __builtin_expect(!!(x), 1)
-#define unlikely(x)     __builtin_expect(!!(x), 0)
+#	define likely(x)   __builtin_expect(!!(x), 1)
+#	define unlikely(x) __builtin_expect(!!(x), 0)
 #else
-#define likely(x)       (x)
-#define unlikely(x)     (x)
+#	define likely(x)   (x)
+#	define unlikely(x) (x)
 #endif /* __GNUC__ || __clang__ */
 
 #if defined(__GNUC__) || defined(__clang__)
@@ -457,20 +459,20 @@ const char *assert_tile_info(uint32 tile);
 
 /* For non-debug builds with assertions enabled use the special assertion handler. */
 #if defined(NDEBUG) && defined(WITH_ASSERT)
-	#undef assert
-	#define assert(expression) if (unlikely(!(expression))) error("Assertion failed at line %i of %s: %s", __LINE__, __FILE__, #expression);
+#	undef assert
+#	define assert(expression) if (unlikely(!(expression))) error("Assertion failed at line %i of %s: %s", __LINE__, __FILE__, #expression);
 #endif
 
 /* Asserts are enabled if NDEBUG isn't defined or WITH_ASSERT is defined. */
 #if !defined(NDEBUG) || defined(WITH_ASSERT)
-	#define OTTD_ASSERT
-	#define assert_msg(expression, ...) if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, nullptr, __VA_ARGS__);
-	#define assert_msg_tile(expression, tile, ...) if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, assert_tile_info(tile), __VA_ARGS__);
-	#define assert_tile(expression, tile) if (unlikely(!(expression))) error("Assertion failed at line %i of %s: %s\n\t%s", __LINE__, __FILE__, #expression, assert_tile_info(tile));
+#	define OTTD_ASSERT
+#	define assert_msg(expression, ...) if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, nullptr, __VA_ARGS__);
+#	define assert_msg_tile(expression, tile, ...) if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, assert_tile_info(tile), __VA_ARGS__);
+#	define assert_tile(expression, tile) if (unlikely(!(expression))) error("Assertion failed at line %i of %s: %s\n\t%s", __LINE__, __FILE__, #expression, assert_tile_info(tile));
 #else
-	#define assert_msg(expression, ...)
-	#define assert_msg_tile(expression, tile, ...)
-	#define assert_tile(expression, tile)
+#	define assert_msg(expression, ...)
+#	define assert_msg_tile(expression, tile, ...)
+#	define assert_tile(expression, tile)
 #endif
 
 #if defined(OPENBSD)

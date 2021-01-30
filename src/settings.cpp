@@ -92,7 +92,7 @@ GameSettings _settings_game;     ///< Game settings of a running game or the sce
 GameSettings _settings_newgame;  ///< Game settings for new games (updated from the intro screen).
 TimeSettings _settings_time; ///< The effective settings that are used for time display.
 VehicleDefaultSettings _old_vds; ///< Used for loading default vehicles settings from old savegames
-char *_config_file; ///< Configuration file of OpenTTD
+std::string _config_file; ///< Configuration file of OpenTTD
 std::string _config_file_text;
 
 typedef std::list<ErrorMessageData> ErrorList;

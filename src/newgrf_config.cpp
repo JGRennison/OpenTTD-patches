@@ -89,7 +89,6 @@ GRFConfig::~GRFConfig()
 		free(this->filename);
 		delete this->error;
 	}
-	free(this->full_filename);
 
 	for (uint i = 0; i < this->param_info.size(); i++) delete this->param_info[i];
 }
@@ -683,7 +682,7 @@ public:
 #endif
 	}
 
-	bool AddFile(const char *filename, size_t basepath_length, const char *tar_filename) override;
+	bool AddFile(const std::string &filename, size_t basepath_length, const std::string &tar_filename) override;
 
 	/** Do the scan for GRFs. */
 	static uint DoScan()
@@ -731,9 +730,9 @@ public:
 	}
 };
 
-bool GRFFileScanner::AddFile(const char *filename, size_t basepath_length, const char *tar_filename)
+bool GRFFileScanner::AddFile(const std::string &filename, size_t basepath_length, const std::string &tar_filename)
 {
-	GRFConfig *c = new GRFConfig(filename + basepath_length);
+	GRFConfig *c = new GRFConfig(filename.c_str() + basepath_length);
 
 	bool added = FillGRFDetails(c, false);
 	if (added) {

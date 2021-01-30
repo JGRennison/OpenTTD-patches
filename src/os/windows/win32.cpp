@@ -29,6 +29,7 @@
 #include <sys/stat.h>
 #include "../../language.h"
 #include "../../thread.h"
+#include <array>
 #include <map>
 #include <mutex>
 #if defined(__MINGW32__)
@@ -477,76 +478,84 @@ char *getcwd(char *buf, size_t size)
 	return buf;
 }
 
-extern char *_config_file;
+extern std::string _config_file;
 
 void DetermineBasePaths(const char *exe)
 {
-	char tmp[MAX_PATH];
+	extern std::array<std::string, NUM_SEARCHPATHS> _searchpaths;
+
 	TCHAR path[MAX_PATH];
 #ifdef WITH_PERSONAL_DIR
 	if (SUCCEEDED(OTTDSHGetFolderPath(nullptr, CSIDL_PERSONAL, nullptr, SHGFP_TYPE_CURRENT, path))) {
-		strecpy(tmp, FS2OTTD(path), lastof(tmp));
-		AppendPathSeparator(tmp, lastof(tmp));
-		strecat(tmp, PERSONAL_DIR, lastof(tmp));
-		AppendPathSeparator(tmp, lastof(tmp));
-		_searchpaths[SP_PERSONAL_DIR] = stredup(tmp);
+		std::string tmp(FS2OTTD(path));
+		AppendPathSeparator(tmp);
+		tmp += PERSONAL_DIR;
+		AppendPathSeparator(tmp);
+		_searchpaths[SP_PERSONAL_DIR] = tmp;
+
+		tmp += "content_download";
+		AppendPathSeparator(tmp);
+		_searchpaths[SP_AUTODOWNLOAD_PERSONAL_DIR] = tmp;
 	} else {
-		_searchpaths[SP_PERSONAL_DIR] = nullptr;
+		_searchpaths[SP_PERSONAL_DIR].clear();
 	}
 
 	if (SUCCEEDED(OTTDSHGetFolderPath(nullptr, CSIDL_COMMON_DOCUMENTS, nullptr, SHGFP_TYPE_CURRENT, path))) {
-		strecpy(tmp, FS2OTTD(path), lastof(tmp));
-		AppendPathSeparator(tmp, lastof(tmp));
-		strecat(tmp, PERSONAL_DIR, lastof(tmp));
-		AppendPathSeparator(tmp, lastof(tmp));
-		_searchpaths[SP_SHARED_DIR] = stredup(tmp);
+		std::string tmp(FS2OTTD(path));
+		AppendPathSeparator(tmp);
+		tmp += PERSONAL_DIR;
+		AppendPathSeparator(tmp);
+		_searchpaths[SP_SHARED_DIR] = tmp;
 	} else {
-		_searchpaths[SP_SHARED_DIR] = nullptr;
+		_searchpaths[SP_SHARED_DIR].clear();
 	}
 #else
-	_searchpaths[SP_PERSONAL_DIR] = nullptr;
-	_searchpaths[SP_SHARED_DIR]   = nullptr;
+	_searchpaths[SP_PERSONAL_DIR].clear();
+	_searchpaths[SP_SHARED_DIR].clear();
 #endif
 
-	if (_config_file == nullptr) {
-		/* Get the path to working directory of OpenTTD. */
-		getcwd(tmp, lengthof(tmp));
-		AppendPathSeparator(tmp, lastof(tmp));
-		_searchpaths[SP_WORKING_DIR] = stredup(tmp);
+	if (_config_file.empty()) {
+		char cwd[MAX_PATH];
+		getcwd(cwd, lengthof(cwd));
+		std::string cwd_s(cwd);
+		AppendPathSeparator(cwd_s);
+		_searchpaths[SP_WORKING_DIR] = cwd_s;
 	} else {
 		/* Use the folder of the config file as working directory. */
 		TCHAR config_dir[MAX_PATH];
-		_tcsncpy(path, convert_to_fs(_config_file, path, lengthof(path)), lengthof(path));
+		_tcsncpy(path, convert_to_fs(_config_file.c_str(), path, lengthof(path)), lengthof(path));
 		if (!GetFullPathName(path, lengthof(config_dir), config_dir, nullptr)) {
 			DEBUG(misc, 0, "GetFullPathName failed (%lu)\n", GetLastError());
-			_searchpaths[SP_WORKING_DIR] = nullptr;
+			_searchpaths[SP_WORKING_DIR].clear();
 		} else {
-			strecpy(tmp, convert_from_fs(config_dir, tmp, lengthof(tmp)), lastof(tmp));
-			char *s = strrchr(tmp, PATHSEPCHAR);
-			*(s + 1) = '\0';
-			_searchpaths[SP_WORKING_DIR] = stredup(tmp);
+			std::string tmp(FS2OTTD(config_dir));
+			auto pos = tmp.find_last_of(PATHSEPCHAR);
+			if (pos != std::string::npos) tmp.erase(pos + 1);
+
+			_searchpaths[SP_WORKING_DIR] = tmp;
 		}
 	}
 
 	if (!GetModuleFileName(nullptr, path, lengthof(path))) {
 		DEBUG(misc, 0, "GetModuleFileName failed (%lu)\n", GetLastError());
-		_searchpaths[SP_BINARY_DIR] = nullptr;
+		_searchpaths[SP_BINARY_DIR].clear();
 	} else {
 		TCHAR exec_dir[MAX_PATH];
 		_tcsncpy(path, convert_to_fs(exe, path, lengthof(path)), lengthof(path));
 		if (!GetFullPathName(path, lengthof(exec_dir), exec_dir, nullptr)) {
 			DEBUG(misc, 0, "GetFullPathName failed (%lu)\n", GetLastError());
-			_searchpaths[SP_BINARY_DIR] = nullptr;
+			_searchpaths[SP_BINARY_DIR].clear();
 		} else {
-			strecpy(tmp, convert_from_fs(exec_dir, tmp, lengthof(tmp)), lastof(tmp));
-			char *s = strrchr(tmp, PATHSEPCHAR);
-			*(s + 1) = '\0';
-			_searchpaths[SP_BINARY_DIR] = stredup(tmp);
+			std::string tmp(FS2OTTD(exec_dir));
+			auto pos = tmp.find_last_of(PATHSEPCHAR);
+			if (pos != std::string::npos) tmp.erase(pos + 1);
+
+			_searchpaths[SP_BINARY_DIR] = tmp;
 		}
 	}
 
-	_searchpaths[SP_INSTALLATION_DIR]       = nullptr;
-	_searchpaths[SP_APPLICATION_BUNDLE_DIR] = nullptr;
+	_searchpaths[SP_INSTALLATION_DIR].clear();
+	_searchpaths[SP_APPLICATION_BUNDLE_DIR].clear();
 }
 
 

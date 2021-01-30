@@ -90,7 +90,7 @@ const uint16 _tracerestrict_pathfinder_penalty_preset_values[] = {
 	8000,
 };
 
-assert_compile(lengthof(_tracerestrict_pathfinder_penalty_preset_values) == TRPPPI_END);
+static_assert(lengthof(_tracerestrict_pathfinder_penalty_preset_values) == TRPPPI_END);
 
 /**
  * This should be used when all pools have been or are immediately about to be also cleared

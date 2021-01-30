@@ -123,17 +123,16 @@ bool ScriptInstance::LoadCompatibilityScripts(const char *api_version, Subdirect
 {
 	char script_name[32];
 	seprintf(script_name, lastof(script_name), "compat_%s.nut", api_version);
-	char buf[MAX_PATH];
 	Searchpath sp;
 	FOR_ALL_SEARCHPATHS(sp) {
-		FioAppendDirectory(buf, lastof(buf), sp, dir);
-		strecat(buf, script_name, lastof(buf));
+		std::string buf = FioGetDirectory(sp, dir);
+		buf += script_name;
 		if (!FileExists(buf)) continue;
 
-		if (this->engine->LoadScript(buf)) return true;
+		if (this->engine->LoadScript(buf.c_str())) return true;
 
 		ScriptLog::Error("Failed to load API compatibility script");
-		DEBUG(script, 0, "Error compiling / running API compatibility script: %s", buf);
+		DEBUG(script, 0, "Error compiling / running API compatibility script: %s", buf.c_str());
 		return false;
 	}
 

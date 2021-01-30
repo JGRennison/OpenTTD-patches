@@ -205,7 +205,7 @@ static bool IsCheatAllowed(CheatNetworkMode mode)
 	return false;
 }
 
-assert_compile(CHT_NUM_CHEATS == lengthof(_cheats_ui));
+static_assert(CHT_NUM_CHEATS == lengthof(_cheats_ui));
 
 /** Widget definitions of the cheat GUI. */
 static const NWidgetPart _nested_cheat_widgets[] = {

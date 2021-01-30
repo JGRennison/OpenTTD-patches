@@ -258,8 +258,7 @@ bool CheckSharingChangePossible(VehicleType type)
 
 		/* Check order list */
 		if (v->FirstShared() != v) continue;
-		Order *o;
-		FOR_VEHICLE_ORDERS(v, o) {
+		for(const Order *o : v->Orders()) {
 			if (!OrderDestinationIsAllowed(o, v)) {
 				error_message = STR_CONFIG_SETTING_SHARING_ORDERS_TO_OTHERS;
 			}

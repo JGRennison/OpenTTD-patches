@@ -200,7 +200,7 @@ union Colour {
 	}
 };
 
-assert_compile(sizeof(Colour) == sizeof(uint32));
+static_assert(sizeof(Colour) == sizeof(uint32));
 
 
 /** Available font sizes */

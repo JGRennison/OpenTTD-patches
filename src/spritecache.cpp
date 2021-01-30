@@ -108,7 +108,7 @@ PACK_N(struct SpriteCache {
 	bool GetWarned() const { return GB(this->type_field, 7, 1); }
 	void SetWarned(bool warned) { SB(this->type_field, 7, 1, warned ? 1 : 0); }
 }, 4);
-assert_compile(sizeof(SpriteCache) <= 32);
+static_assert(sizeof(SpriteCache) <= 32);
 
 static std::vector<SpriteCache> _spritecache;
 static SpriteDataBuffer _last_sprite_allocation;

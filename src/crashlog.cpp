@@ -548,7 +548,7 @@ char *CrashLog::FillVersionInfoLog(char *buffer, const char *last) const
  */
 bool CrashLog::WriteCrashLog(const char *buffer, char *filename, const char *filename_last, const char *name, FILE **crashlog_file) const
 {
-	seprintf(filename, filename_last, "%s%s.log", _personal_dir, name);
+	seprintf(filename, filename_last, "%s%s.log", _personal_dir.c_str(), name);
 
 	FILE *file = FioFOpenFile(filename, "w", NO_DIRECTORY);
 	if (file == nullptr) return false;
@@ -587,7 +587,7 @@ bool CrashLog::WriteSavegame(char *filename, const char *filename_last, const ch
 	try {
 		GamelogEmergency();
 
-		seprintf(filename, filename_last, "%s%s.sav", _personal_dir, name);
+		seprintf(filename, filename_last, "%s%s.sav", _personal_dir.c_str(), name);
 
 		/* Don't do a threaded saveload. */
 		return SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, NO_DIRECTORY, false) == SL_OK;

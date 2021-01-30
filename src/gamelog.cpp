@@ -144,7 +144,7 @@ static const char * const la_text[] = {
 	"emergency savegame",
 };
 
-assert_compile(lengthof(la_text) == GLAT_END);
+static_assert(lengthof(la_text) == GLAT_END);
 
 /**
  * Information about the presence of a Grf at a certain point during gamelog history

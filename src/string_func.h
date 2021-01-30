@@ -51,6 +51,7 @@ void str_strip_colours(char *str);
 std::string str_strip_all_scc(const char *str);
 char *str_replace_wchar(char *str, const char *last, WChar find, WChar replace);
 bool strtolower(char *str);
+bool strtolower(std::string &str, std::string::size_type offs = 0);
 
 bool StrValid(const char *str, const char *last);
 

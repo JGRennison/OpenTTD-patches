@@ -34,9 +34,8 @@ inline void UnregisterOrderDestination(const Order *order, VehicleType type, Own
  */
 template <typename F> void RemoveVehicleOrdersIf(Vehicle * const v, F order_predicate) {
 	/* Clear the order from the order-list */
-	Order *order;
 	int id = -1;
-	FOR_VEHICLE_ORDERS(v, order) {
+	for(Order *order = v->GetFirstOrder(); order != nullptr; order = order->next) {
 		id++;
 restart:
 

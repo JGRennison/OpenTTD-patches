@@ -107,7 +107,6 @@ if(NOT WIN32)
         find_package(Fluidsynth)
         find_package(Fontconfig)
         find_package(ICU OPTIONAL_COMPONENTS i18n lx)
-        find_package(XDG_basedir)
     else()
         find_package(Iconv)
 
@@ -264,7 +263,6 @@ link_package(PNG TARGET PNG::PNG ENCOURAGED)
 link_package(ZLIB TARGET ZLIB::ZLIB ENCOURAGED)
 link_package(LIBLZMA TARGET LibLZMA::LibLZMA ENCOURAGED)
 link_package(LZO)
-link_package(XDG_basedir)
 
 if(NOT OPTION_DEDICATED)
     link_package(Fluidsynth)
@@ -291,7 +289,6 @@ if(APPLE)
 
     add_definitions(
         -DWITH_COCOA
-        -DENABLE_COCOA_QUARTZ
     )
 endif()
 
@@ -301,6 +298,8 @@ if(EMSCRIPTEN)
     # Allow heap-growth, and start with a bigger memory size.
     target_link_libraries(WASM::WASM INTERFACE "-s ALLOW_MEMORY_GROWTH=1")
     target_link_libraries(WASM::WASM INTERFACE "-s INITIAL_MEMORY=33554432")
+    target_link_libraries(WASM::WASM INTERFACE "-s DISABLE_EXCEPTION_CATCHING=0")
+    add_definitions(-s DISABLE_EXCEPTION_CATCHING=0)
 
     # Export functions to Javascript.
     target_link_libraries(WASM::WASM INTERFACE "-s EXPORTED_FUNCTIONS='[\"_main\", \"_em_openttd_add_server\"]' -s EXTRA_EXPORTED_RUNTIME_METHODS='[\"cwrap\"]'")

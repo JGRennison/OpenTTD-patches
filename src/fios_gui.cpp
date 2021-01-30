@@ -373,22 +373,24 @@ public:
 
 		/* Select the initial directory. */
 		o_dir.type = FIOS_TYPE_DIRECT;
+		std::string dir;
 		switch (this->abstract_filetype) {
 			case FT_SAVEGAME:
-				FioGetDirectory(o_dir.name, lastof(o_dir.name), SAVE_DIR);
+				dir = FioFindDirectory(SAVE_DIR);
 				break;
 
 			case FT_SCENARIO:
-				FioGetDirectory(o_dir.name, lastof(o_dir.name), SCENARIO_DIR);
+				dir = FioFindDirectory(SCENARIO_DIR);
 				break;
 
 			case FT_HEIGHTMAP:
-				FioGetDirectory(o_dir.name, lastof(o_dir.name), HEIGHTMAP_DIR);
+				dir = FioFindDirectory(HEIGHTMAP_DIR);
 				break;
 
 			default:
-				strecpy(o_dir.name, _personal_dir, lastof(o_dir.name));
+				dir = _personal_dir;
 		}
+		strecpy(o_dir.name, dir.c_str(), lastof(o_dir.name));
 
 		switch (this->fop) {
 			case SLO_SAVE:
@@ -785,7 +787,7 @@ public:
 			}
 		} else if (this->IsWidgetLowered(WID_SL_SAVE_GAME)) { // Save button clicked
 			if (this->abstract_filetype == FT_SAVEGAME || this->abstract_filetype == FT_SCENARIO) {
-				FiosMakeSavegameName(_file_to_saveload.name, this->filename_editbox.text.buf, lastof(_file_to_saveload.name));
+				_file_to_saveload.name = FiosMakeSavegameName(this->filename_editbox.text.buf);
 				const bool known_id = _load_check_data.settings.game_creation.generation_unique_id != 0;
 				const bool different_id = known_id && _load_check_data.settings.game_creation.generation_unique_id != _settings_game.game_creation.generation_unique_id;
 				if (_settings_client.gui.savegame_overwrite_confirm >= 1 && different_id) {
@@ -798,7 +800,7 @@ public:
 					_switch_mode = SM_SAVE_GAME;
 				}
 			} else {
-				FiosMakeHeightmapName(_file_to_saveload.name, this->filename_editbox.text.buf, lastof(_file_to_saveload.name));
+				_file_to_saveload.name = FiosMakeHeightmapName(this->filename_editbox.text.buf);
 				if (_settings_client.gui.savegame_overwrite_confirm >= 1 && FioCheckFileExists(_file_to_saveload.name, Subdirectory::SAVE_DIR)) {
 					ShowQuery(STR_SAVELOAD_OVERWRITE_TITLE, STR_SAVELOAD_OVERWRITE_WARNING, this, SaveLoadWindow::SaveHeightmapConfirmationCallback);
 				} else {

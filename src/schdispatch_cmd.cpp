@@ -30,7 +30,7 @@
 /* We squeeze this amount into 14 bit of data, so we must guarantee that
    DAY_TICKS * (max_day_length_factor+1) can fit in 14-bit
    See CmdScheduledDispatchSetStartDate */
-assert_compile(DAY_TICKS * 126 < 16384);
+static_assert(DAY_TICKS * 126 < 16384);
 
 /**
  * Enable or disable scheduled dispatch
@@ -166,7 +166,7 @@ CommandCost CmdScheduledDispatchSetDuration(TileIndex tile, DoCommandFlag flags,
  * which only have topmost bit available. However, if the date reached 31 bits, that means it is over 1,000,000 years,
  * so I think it is safe to steal another bit here.
  *
- * See also the assert_compile at the top of the file.
+ * See also the static_assert at the top of the file.
  *
  * @param tile Not used.
  * @param flags Operation to perform.

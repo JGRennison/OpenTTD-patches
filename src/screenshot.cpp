@@ -93,7 +93,7 @@ PACK(struct BitmapFileHeader {
 	uint32 reserved;
 	uint32 off_bits;
 });
-assert_compile(sizeof(BitmapFileHeader) == 14);
+static_assert(sizeof(BitmapFileHeader) == 14);
 
 /** BMP Info Header (stored in little endian) */
 struct BitmapInfoHeader {
@@ -102,13 +102,13 @@ struct BitmapInfoHeader {
 	uint16 planes, bitcount;
 	uint32 compression, sizeimage, xpels, ypels, clrused, clrimp;
 };
-assert_compile(sizeof(BitmapInfoHeader) == 40);
+static_assert(sizeof(BitmapInfoHeader) == 40);
 
 /** Format of palette data in BMP header */
 struct RgbQuad {
 	byte blue, green, red, reserved;
 };
-assert_compile(sizeof(RgbQuad) == 4);
+static_assert(sizeof(RgbQuad) == 4);
 
 /**
  * Generic .BMP writer
@@ -437,7 +437,7 @@ struct PcxHeader {
 	uint16 height;
 	byte filler[54];
 };
-assert_compile(sizeof(PcxHeader) == 128);
+static_assert(sizeof(PcxHeader) == 128);
 
 /**
  * Generic .PCX file image writer.
@@ -701,7 +701,7 @@ static const char *MakeScreenshotName(const char *default_fn, const char *ext, b
 	size_t len = strlen(_screenshot_name);
 	seprintf(&_screenshot_name[len], lastof(_screenshot_name), ".%s", ext);
 
-	const char *screenshot_dir = crashlog ? _personal_dir : FiosGetScreenshotDir();
+	const char *screenshot_dir = crashlog ? _personal_dir.c_str() : FiosGetScreenshotDir();
 
 	for (uint serial = 1;; serial++) {
 		if (seprintf(_full_screenshot_name, lastof(_full_screenshot_name), "%s%s", screenshot_dir, _screenshot_name) >= (int)lengthof(_full_screenshot_name)) {

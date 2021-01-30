@@ -1129,4 +1129,4 @@ static const NIFeature * const _nifeatures[] = {
 	&_nif_town,         // GSF_FAKE_TOWNS
 	&_nif_station_struct,  // GSF_FAKE_STATION_STRUCT
 };
-assert_compile(lengthof(_nifeatures) == GSF_FAKE_END);
+static_assert(lengthof(_nifeatures) == GSF_FAKE_END);
