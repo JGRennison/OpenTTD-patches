@@ -261,11 +261,13 @@ enum FollowReservationFlags {
 };
 DECLARE_ENUM_AS_BIT_SET(FollowReservationFlags)
 
-static void CheckCurveLookAhead(const Train *v, TrainReservationLookAhead *lookahead, int end_position, int z)
+static void CheckCurveLookAhead(const Train *v, TrainReservationLookAhead *lookahead, int end_position, int z, RailType rt)
 {
 	while (!lookahead->curves.empty() && lookahead->curves.front().position < end_position - v->gcache.cached_total_length) {
 		lookahead->curves.pop_front();
 	}
+
+	if (lookahead->curves.empty()) return;
 
 	static const int absolute_max_speed = UINT16_MAX;
 	int max_speed = absolute_max_speed;
@@ -317,7 +319,7 @@ static void CheckCurveLookAhead(const Train *v, TrainReservationLookAhead *looka
 
 	if (max_speed != absolute_max_speed) {
 		/* Apply the engine's rail type curve speed advantage, if it slowed by curves */
-		const RailtypeInfo *rti = GetRailTypeInfo(v->railtype);
+		const RailtypeInfo *rti = GetRailTypeInfo(rt);
 		max_speed += (max_speed / 2) * rti->curve_speed;
 
 		if (v->tcache.cached_tilt) {
@@ -385,6 +387,9 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 		if (new_rt != rt) {
 			uint16 rail_speed = GetRailTypeInfo(new_rt)->max_speed;
 			if (rail_speed > 0) lookahead->AddTrackSpeedLimit(rail_speed, offset, 4, z);
+			if (GetRailTypeInfo(rt)->curve_speed != GetRailTypeInfo(new_rt)->curve_speed) {
+				CheckCurveLookAhead(v, lookahead, lookahead->RealEndPosition() + 4 + offset, z, new_rt);
+			}
 			rt = new_rt;
 		}
 	};
@@ -395,7 +400,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 		int end = lookahead->RealEndPosition() + 4;
 		lookahead->curves.push_back({ end + offset, dirdiff });
 		dir = new_dir;
-		CheckCurveLookAhead(v, lookahead, end + offset, z);
+		CheckCurveLookAhead(v, lookahead, end + offset, z, rt);
 	};
 
 	/* Do not disallow 90 deg turns as the setting might have changed between reserving and now. */
