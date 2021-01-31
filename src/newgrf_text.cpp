@@ -718,6 +718,11 @@ void SetCurrentGrfLangID(byte language_id)
 	_currentLangID = language_id;
 }
 
+byte GetCurrentGrfLangID()
+{
+	return _currentLangID;
+}
+
 bool CheckGrfLangID(byte lang_id, byte grf_version)
 {
 	if (grf_version < 7) {

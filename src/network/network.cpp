@@ -250,20 +250,24 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 		case NETWORK_ACTION_LEAVE:          strid = STR_NETWORK_MESSAGE_CLIENT_LEFT; break;
 		case NETWORK_ACTION_NAME_CHANGE:    strid = STR_NETWORK_MESSAGE_NAME_CHANGE; break;
 
-		case NETWORK_ACTION_GIVE_MONEY:
+		case NETWORK_ACTION_GIVE_MONEY: {
 			SetDParamStr(0, name);
 			SetDParam(1, data.auxdata >> 16);
 			GetString(message_src, STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION, lastof(message_src));
 			name = message_src;
-			if (self_send) {
+
+			extern byte GetCurrentGrfLangID();
+			byte lang_id = GetCurrentGrfLangID();
+			bool use_specific_string = lang_id <= 2 || lang_id == 0x15 || lang_id == 0x3A || lang_id == 0x3D; // English, German, Korean, Czech
+			if (use_specific_string && self_send) {
 				strid = STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY;
-			} else if ((CompanyID) (data.auxdata & 0xFFFF) == _local_company) {
+			} else if (use_specific_string && (CompanyID) (data.auxdata & 0xFFFF) == _local_company) {
 				strid = STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE;
 			} else {
 				strid = STR_NETWORK_MESSAGE_GIVE_MONEY;
-				SetDParam(3, data.auxdata & 0xFFFF);
 			}
 			break;
+		}
 
 		case NETWORK_ACTION_CHAT_COMPANY:   strid = self_send ? STR_NETWORK_CHAT_TO_COMPANY : STR_NETWORK_CHAT_COMPANY; break;
 		case NETWORK_ACTION_CHAT_CLIENT:    strid = self_send ? STR_NETWORK_CHAT_TO_CLIENT  : STR_NETWORK_CHAT_CLIENT;  break;
