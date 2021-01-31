@@ -270,7 +270,7 @@ static CommandCost EnsureNoTrainOnTrack(TileIndex tile, Track track)
  * @param flags    Flags of the operation.
  * @return Succeeded or failed command.
  */
-static CommandCost CheckTrackCombination(TileIndex tile, TrackBits to_build, RailType railtype, bool disable_dual_rail_type, DoCommandFlag flags)
+static CommandCost CheckTrackCombination(TileIndex tile, TrackBits to_build, RailType railtype, bool disable_dual_rail_type, DoCommandFlag flags, bool auto_remove_signals)
 {
 	if (!IsPlainRail(tile)) return_cmd_error(STR_ERROR_IMPOSSIBLE_TRACK_COMBINATION);
 
@@ -301,6 +301,15 @@ static CommandCost CheckTrackCombination(TileIndex tile, TrackBits to_build, Rai
 			}
 		}
 		return CommandCost();
+	}
+
+	/* Let's see if we may build this */
+	if (HasSignals(tile) && !auto_remove_signals) {
+		/* If we are not allowed to overlap (flag is on for ai companies or we have
+		 * signals on the tile), check that */
+		if (future != TRACK_BIT_HORZ && future != TRACK_BIT_VERT) {
+			return_cmd_error(STR_ERROR_MUST_REMOVE_SIGNALS_FIRST);
+		}
 	}
 
 	RailType rt = INVALID_RAILTYPE;
@@ -357,10 +366,6 @@ static CommandCost CheckTrackCombination(TileIndex tile, TrackBits to_build, Rai
 	if (rt != INVALID_RAILTYPE) {
 		ret = DoCommand(tile, tile, rt, flags, CMD_CONVERT_RAIL);
 		if (ret.Failed()) return ret;
-	}
-
-	if (HasSignalOnTrack(tile, TRACK_UPPER) || HasSignalOnTrack(tile, TRACK_LOWER)) {
-		return_cmd_error(STR_ERROR_MUST_REMOVE_SIGNALS_FIRST);
 	}
 
 	if (flags & DC_EXEC) {
@@ -590,7 +595,7 @@ CommandCost CmdBuildSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 				}
 			});
 
-			ret = CheckTrackCombination(tile, trackbit, railtype, disable_dual_rail_type, flags);
+			ret = CheckTrackCombination(tile, trackbit, railtype, disable_dual_rail_type, flags, auto_remove_signals);
 			if (ret.Succeeded()) {
 				cost.AddCost(ret);
 				ret = EnsureNoTrainOnTrack(tile, track);
