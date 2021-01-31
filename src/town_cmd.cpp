@@ -768,7 +768,28 @@ static void TileLoop_Town(TileIndex tile)
 		ClearTownHouse(t, tile);
 
 		/* Rebuild with another house? */
-		if (GB(r, 24, 8) >= 12) BuildTownHouse(t, tile);
+		if (GB(r, 24, 8) >= 12) {
+			/* If we are multi-tile houses, make sure to replace the house
+			 * closest to city center. If we do not do this, houses tend to
+			 * wander away from roads and other houses. */
+			if (hs->building_flags & BUILDING_HAS_2_TILES) {
+				/* House tiles are always the most north tile. Move the new
+				 * house to the south if we are north of the city center. */
+				TileIndexDiffC grid_pos = TileIndexToTileIndexDiffC(t->xy, tile);
+				int x = Clamp(grid_pos.x, 0, 1);
+				int y = Clamp(grid_pos.y, 0, 1);
+
+				if (hs->building_flags & TILE_SIZE_2x2) {
+					tile = TILE_ADDXY(tile, x, y);
+				} else if (hs->building_flags & TILE_SIZE_1x2) {
+					tile = TILE_ADDXY(tile, 0, y);
+				} else if (hs->building_flags & TILE_SIZE_2x1) {
+					tile = TILE_ADDXY(tile, x, 0);
+				}
+			}
+
+			BuildTownHouse(t, tile);
+		}
 	}
 
 	cur_company.Restore();
@@ -1311,10 +1332,15 @@ static bool GrowTownWithBridge(const Town *t, const TileIndex tile, const DiagDi
 
 	const int delta = TileOffsByDiagDir(bridge_dir);
 
+	/* To prevent really small towns from building disproportionately
+	 * long bridges, make the max a function of its population. */
+	int base_bridge_length = 5;
+	int max_bridge_length = t->cache.population / 1000 + base_bridge_length;
+
 	if (slope == SLOPE_FLAT) {
 		/* Bridges starting on flat tiles are only allowed when crossing rivers, rails or one-way roads. */
 		do {
-			if (bridge_length++ >= 4) {
+			if (bridge_length++ >= base_bridge_length) {
 				/* Allow to cross rivers, not big lakes, nor large amounts of rails or one-way roads. */
 				return false;
 			}
@@ -1322,8 +1348,8 @@ static bool GrowTownWithBridge(const Town *t, const TileIndex tile, const DiagDi
 		} while (IsValidTile(bridge_tile) && ((IsWaterTile(bridge_tile) && !IsSea(bridge_tile)) || IsPlainRailTile(bridge_tile) || (IsNormalRoadTile(bridge_tile) && GetDisallowedRoadDirections(bridge_tile) != DRD_NONE)));
 	} else {
 		do {
-			if (bridge_length++ >= 11) {
-				/* Max 11 tile long bridges */
+			if (bridge_length++ >= max_bridge_length) {
+				/* Ensure the bridge is not longer than the max allowed length. */
 				return false;
 			}
 			bridge_tile += delta;

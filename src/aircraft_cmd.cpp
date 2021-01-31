@@ -963,6 +963,9 @@ static bool AircraftController(Aircraft *v)
 			return false;
 		}
 
+		/* Vehicle is now at the airport.
+		 * Helicopter has arrived at the target landing pad, so the current position is also where it should land.
+		 * Except for Oilrigs which are special due to being a 1x1 station, and helicopters land outside it. */
 		if (st->airport.type != AT_OILRIG) {
 			x = v->x_pos;
 			y = v->y_pos;
@@ -1115,8 +1118,12 @@ static bool AircraftController(Aircraft *v)
 			z = GetAircraftFlightLevel(v);
 		}
 
-		/* Some airports (like a rotated intercontinental) are non-rectangular and their primary (north-most) tile might not be at the same height as the runway.
-		 * Therefore, as the hangar must be on flat ground (and we must have a hangar, as we're landing/braking and so not a helicopter), use that as the z position instead. */
+		/* NewGRF airports (like a rotated intercontinental from OpenGFX+Airports) can be non-rectangular
+		 * and their primary (north-most) tile does not have to be part of the airport.
+		 * As such, the height of the primary tile can be different from the rest of the airport.
+		 * Given we are landing/breaking, and as such are not a helicopter, we know that there has to be a hangar.
+		 * We also know that the airport itself has to be completely flat (otherwise it is not a valid airport).
+		 * Therefore, use the height of this hangar to calculate our z-value. */
 		int airport_z = v->z_pos;
 		if ((amd.flag & (AMED_LAND | AMED_BRAKE)) && st != nullptr) {
 			assert(st->airport.HasHangar());
@@ -1395,7 +1402,7 @@ static void CrashAirplane(Aircraft *v)
 	AI::NewEvent(v->owner, new ScriptEventVehicleCrashed(v->index, v->tile, st == nullptr ? ScriptEventVehicleCrashed::CRASH_AIRCRAFT_NO_AIRPORT : ScriptEventVehicleCrashed::CRASH_PLANE_LANDING));
 	Game::NewEvent(new ScriptEventVehicleCrashed(v->index, v->tile, st == nullptr ? ScriptEventVehicleCrashed::CRASH_AIRCRAFT_NO_AIRPORT : ScriptEventVehicleCrashed::CRASH_PLANE_LANDING));
 
-	AddVehicleNewsItem(newsitem, NT_ACCIDENT, v->index, st != nullptr ? st->index : INVALID_STATION);
+	AddTileNewsItem(newsitem, NT_ACCIDENT, v->tile, nullptr, st != nullptr ? st->index : INVALID_STATION);
 
 	ModifyStationRatingAround(v->tile, v->owner, -160, 30);
 	if (_settings_client.sound.disaster) SndPlayVehicleFx(SND_12_EXPLOSION, v);

@@ -258,9 +258,9 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 			if (self_send) {
 				strid = STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY;
 			} else if ((CompanyID) (data.auxdata & 0xFFFF) == _local_company) {
-				strid = STR_NETWORK_MESSAGE_GIVE_MONEY;
+				strid = STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE;
 			} else {
-				strid = STR_NETWORK_MESSAGE_MONEY_GIVEN;
+				strid = STR_NETWORK_MESSAGE_GIVE_MONEY;
 				SetDParam(3, data.auxdata & 0xFFFF);
 			}
 			break;

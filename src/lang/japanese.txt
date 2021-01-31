@@ -2157,8 +2157,6 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} �
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} が新会社 (#{2:NUM}) を設立しました
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} が退出しました({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} は名前を {STRING} に変更しました
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} が {2:CURRENCY_LONG} を送金してくれました
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** {1:STRING} に {2:CURRENCY_LONG} を送金しました
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}サーバがセッションを終了しました
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}このサーバーは再起動中です…{}しばらくお待ちください…
 

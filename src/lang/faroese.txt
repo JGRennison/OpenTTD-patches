@@ -1873,7 +1873,6 @@ STR_NETWORK_SERVER                                              :Servari
 STR_NETWORK_CLIENT                                              :Klient
 STR_NETWORK_SPECTATORS                                          :Eygleiðarar
 
-
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Goym ikki skrivaða loyniorðið
 STR_COMPANY_PASSWORD_OK                                         :{BLACK}Gev fyritøkuni tað nýggja loyniorðið
@@ -1973,8 +1972,6 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} er
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} hevur stovnað eina nýggja fyritøku (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} er farin úr spælinum ({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} hevur broytt sítt navn til {STRING}
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} handaði tínari fyritøku {2:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** Tú handaði {1:STRING} {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Servarin endaði setuna
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Servarin endurbyrjar...{}Vinarliga bíða...
 

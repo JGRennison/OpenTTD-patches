@@ -2008,8 +2008,6 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} ho
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} stofnaði nýtt fyrirtæki (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} yfirgefur leikinn ({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} heitir nú {STRING}
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} sendi þér {2:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** Þú gafst {1:STRING} {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Þjónninn sleit tengingunni
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Verið er að endurræsa þjóninn...{}Vinsamlega bíðið...
 

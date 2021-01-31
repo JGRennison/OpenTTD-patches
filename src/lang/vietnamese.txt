@@ -2208,8 +2208,6 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} v�
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} khai trương công ty mới (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} rời bỏ ván chơi ({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} đổi tên thành {STRING}
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} tặng công ty bạn {2:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** Bạn cho {1:STRING} {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Server kết thúc phiên
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Server khởi động lại...{}Xin chờ...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} đã bị đá khỏi ván chơi. Lý do: ({STRING})

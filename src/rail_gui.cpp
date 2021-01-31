@@ -104,7 +104,7 @@ static CommandContainer GenericPlaceRailCmd(TileIndex tile, Track track)
 	CommandContainer ret = NewCommandContainerBasic(
 		tile,          // tile
 		_cur_railtype, // p1
-		track,         // p2
+		track | (_settings_client.gui.auto_remove_signals << 3), // p2
 		(uint32) (_remove_button_clicked ?
 				CMD_REMOVE_SINGLE_RAIL | CMD_MSG(STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK) :
 				CMD_BUILD_SINGLE_RAIL | CMD_MSG(STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK)), // cmd
@@ -123,10 +123,11 @@ static CommandContainer GenericPlaceRailCmd(TileIndex tile, Track track)
  */
 static void PlaceExtraDepotRail(TileIndex tile, DiagDirection dir, Track track)
 {
-	if (GetRailTileType(tile) != RAIL_TILE_NORMAL) return;
+	if (GetRailTileType(tile) == RAIL_TILE_DEPOT) return;
+	if (GetRailTileType(tile) == RAIL_TILE_SIGNALS && !_settings_client.gui.auto_remove_signals) return;
 	if ((GetTrackBits(tile) & DiagdirReachesTracks(dir)) == 0) return;
 
-	DoCommandP(tile, _cur_railtype, track, CMD_BUILD_SINGLE_RAIL);
+	DoCommandP(tile, _cur_railtype, track | (_settings_client.gui.auto_remove_signals << 3), CMD_BUILD_SINGLE_RAIL);
 }
 
 /** Additional pieces of track to add at the entrance of a depot. */
@@ -388,7 +389,7 @@ static CommandContainer DoRailroadTrackCmd(TileIndex start_tile, TileIndex end_t
 	CommandContainer ret = NewCommandContainerBasic(
 		start_tile,                   // tile
 		end_tile,                     // p1
-		(uint32) (_cur_railtype | (track << 6)), // p2
+		(uint32) (_cur_railtype | (track << 6) | (_settings_client.gui.auto_remove_signals << 13)), // p2
 		(uint32) (_remove_button_clicked ?
 				CMD_REMOVE_RAILROAD_TRACK | CMD_MSG(STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK) :
 				CMD_BUILD_RAILROAD_TRACK  | CMD_MSG(STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK)), // cmd

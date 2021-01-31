@@ -2507,8 +2507,6 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} д
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} распачаў новую кампанію (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} выйшаў з гульні ({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} зьмяніў сваё імя на {STRING}
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} перадаў вашай кампаніі {2:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** Вы перадалі {1:STRING} {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Гэты сэрвэр закрыў сэсію
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Гэты сэрвэр перазапускаецца...{}Пачакайце, калі ласка
 

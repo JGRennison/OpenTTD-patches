@@ -2206,8 +2206,6 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} ki
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} heeft een nieuw bedrijf opgericht (nr. {2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} heeft het spel verlaten ({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} heeft zijn/haar naam gewijzigd naar {STRING}
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} gaf je bedrijf {2:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** Je gaf {2:CURRENCY_LONG} aan {1:STRING}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}De server heeft de sessie gesloten
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}De server wordt opnieuw gestart...{}Wacht alstublieft...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} is eruit geschopt. Reden: ({STRING})

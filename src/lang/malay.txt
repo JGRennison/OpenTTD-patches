@@ -1809,7 +1809,6 @@ STR_NETWORK_SERVER                                              :Pelayan
 STR_NETWORK_CLIENT                                              :Klien
 STR_NETWORK_SPECTATORS                                          :Penyaksi
 
-
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Jangan simpan kata laluan ini
 STR_COMPANY_PASSWORD_OK                                         :{BLACK}Berikan syarikat kata laluan yang baru
@@ -1909,8 +1908,6 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} te
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} telah menubuhkan syarikat baru (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} sudah meninggalkan permainan ini ({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} telah menukar namanya kepada {STRING}
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} telah memberi syarikat anda {2:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** Anda memberi {1:STRING} {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Pelayan telah menutup sesi ini
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Pelayan sedang dimulakan semula...{}Harap bersabar...
 

@@ -2766,8 +2766,10 @@ CommandCost CmdBuildDock(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 
 	if (IsBridgeAbove(slope_tile) && !_settings_game.construction.allow_docks_under_bridges) return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
 
+	CommandCost cost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_STATION_DOCK]);
 	ret = DoCommand(slope_tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
 	if (ret.Failed()) return ret;
+	cost.AddCost(ret);
 
 	if (!IsTileType(flat_tile, MP_WATER) || !IsTileFlat(flat_tile)) {
 		return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
@@ -2821,7 +2823,7 @@ CommandCost CmdBuildDock(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 		ZoningMarkDirtyStationCoverageArea(st);
 	}
 
-	return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_STATION_DOCK]);
+	return cost;
 }
 
 void RemoveDockingTile(TileIndex t)

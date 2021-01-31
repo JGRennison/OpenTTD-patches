@@ -2270,8 +2270,6 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} cs
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} új vállalatot alapított (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} kilépett a játékból ({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} nevet változtatott. Új neve: {STRING}
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} a következő összeget utalta vállalatodnak: {2:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** {1:STRING} vállalatnak sikeresen átutaltál {2:CURRENCY_LONG}-t
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}A szerver leállította a játékot
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}A szerver újraindul...{}Türelem...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} ki lett rúgva. Oka: ({STRING})

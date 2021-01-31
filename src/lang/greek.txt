@@ -2291,8 +2291,6 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} σ
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} ξεκίνησε μια νέα εταιρία (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} αποχώρησε από το παιχνίδι ({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} άλλαξαν το όνομά τους σε {STRING}
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} έδωσαν στην εταιρία σας {2:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** Δώσατε {1:STRING} {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Ο διακομιστής έκλεισε την συνεδρία
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Ο διακομιστής επανεκκινεί...{}Παρακαλώ περιμένετε...
 

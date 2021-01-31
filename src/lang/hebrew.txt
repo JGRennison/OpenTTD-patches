@@ -2175,8 +2175,6 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :.הצטרף ל�
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :{2:NUM} הקים חברה חדשה {NBSP}{0:STRING} ***
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :({2:STRING}) עזב את המשחק {NBSP}{0:STRING} ***
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :{STRING} שינה את שמו ל {STRING} ***
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :{2:CURRENCY_LONG} נתן לחברתך {NBSP}{0:STRING} ***
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :{2:CURRENCY_LONG} {1:STRING} נתת ל ***
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}השרת סגר את המשחק
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}השרת מופעל מחדש...{}אנא המתן...
 

@@ -2206,8 +2206,6 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} �
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} 成立了新公司 (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} 已离开游戏 ({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} 已更改姓名为 {STRING}
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} 送给您的公司 {2:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** 您送了 {2:CURRENCY_LONG} 给 {1:STRING}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}服务器关闭了进程
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}服务器正在重新启动。{}请等待……
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} 被踢出服务器。原因：({STRING})

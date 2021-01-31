@@ -1622,6 +1622,8 @@ STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS                     :Keep building t
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS_HELPTEXT            :Keep the building tools for bridges, tunnels, etc. open after use
 STR_CONFIG_SETTING_EXPENSES_LAYOUT                              :Group expenses in company finance window: {STRING2}
 STR_CONFIG_SETTING_EXPENSES_LAYOUT_HELPTEXT                     :Define the layout for the company expenses window
+STR_CONFIG_SETTING_AUTO_REMOVE_SIGNALS                          :Automatically remove signals during rail construction: {STRING2}
+STR_CONFIG_SETTING_AUTO_REMOVE_SIGNALS_HELPTEXT                 :Automatically remove signals during rail construction if the signals are in the way. Note that this can potentially lead to train crashes.
 
 STR_CONFIG_SETTING_ENABLE_BUILD_RIVER                           :Enable building rivers: {STRING2}
 STR_CONFIG_SETTING_ENABLE_BUILD_RIVER_HELPTEXT                  :Enable building rivers outside of the scenario editor
@@ -2550,9 +2552,9 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {RAW_STRING
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {RAW_STRING} has started a new company (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {RAW_STRING} has left the game ({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {RAW_STRING} has changed his/her name to {RAW_STRING}
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {RAW_STRING} gave your company {2:CURRENCY_LONG}
+STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {RAW_STRING} gave your company {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** You gave {1:RAW_STRING} {2:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_MONEY_GIVEN                                 :*** {RAW_STRING} gave {1:RAW_STRING} {2:CURRENCY_LONG}
+STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {RAW_STRING} gave {2:CURRENCY_LONG} to {1:RAW_STRING}
 STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION                  :{RAW_STRING} ({COMPANY})
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}The server closed the session
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}The server is restarting...{}Please wait...
@@ -5407,6 +5409,7 @@ STR_ERROR_LOAN_ALREADY_REPAYED                                  :{WHITE}... no l
 STR_ERROR_CURRENCY_REQUIRED                                     :{WHITE}... {CURRENCY_LONG} required
 STR_ERROR_CAN_T_REPAY_LOAN                                      :{WHITE}Can't repay loan...
 STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Can't give away money that is loaned from the bank...
+STR_ERROR_CAN_T_GIVE_MONEY                                      :{WHITE}Can't give away money to this company...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Can't buy company...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Can't build company headquarters...
 STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Can't buy 25% share in this company...

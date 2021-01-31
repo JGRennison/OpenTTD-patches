@@ -303,15 +303,6 @@ static CommandCost CheckTrackCombination(TileIndex tile, TrackBits to_build, Rai
 		return CommandCost();
 	}
 
-	/* Let's see if we may build this */
-	if ((flags & DC_NO_RAIL_OVERLAP) || HasSignals(tile)) {
-		/* If we are not allowed to overlap (flag is on for ai companies or we have
-		 * signals on the tile), check that */
-		if (future != TRACK_BIT_HORZ && future != TRACK_BIT_VERT) {
-			return_cmd_error((flags & DC_NO_RAIL_OVERLAP) ? STR_ERROR_IMPOSSIBLE_TRACK_COMBINATION : STR_ERROR_MUST_REMOVE_SIGNALS_FIRST);
-		}
-	}
-
 	RailType rt = INVALID_RAILTYPE;
 	if (current == TRACK_BIT_HORZ || current == TRACK_BIT_VERT) {
 		RailType rt1 = GetRailType(tile);
@@ -561,7 +552,9 @@ static inline bool ValParamTrackOrientation(Track track)
  * @param tile tile  to build on
  * @param flags operation to perform
  * @param p1 railtype of being built piece (normal, mono, maglev)
- * @param p2 rail track to build
+ * @param p2 various bitstuffed elements
+ *           - (bit  0- 2) - track-orientation, valid values: 0-5 (@see Track)
+ *           - (bit  3)    - 0 = error on signal in the way, 1 = auto remove signals when in the way
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -569,6 +562,7 @@ CommandCost CmdBuildSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 {
 	RailType railtype = Extract<RailType, 0, 6>(p1);
 	Track track = Extract<Track, 0, 3>(p2);
+	bool auto_remove_signals = HasBit(p2, 3);
 	bool disable_custom_bridge_heads = HasBit(p2, 4);
 	bool disable_dual_rail_type = HasBit(p2, 5);
 	CommandCost cost(EXPENSES_CONSTRUCTION);
@@ -604,6 +598,19 @@ CommandCost CmdBuildSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 			if (ret.Failed()) {
 				if (ret.GetErrorMessage() == STR_ERROR_ALREADY_BUILT) _rail_track_endtile = tile;
 				return ret;
+			}
+
+			if (HasSignals(tile) && TracksOverlap(GetTrackBits(tile) | TrackToTrackBits(track))) {
+				/* If adding the new track causes any overlap, all signals must be removed first */
+				if (!auto_remove_signals) return_cmd_error(STR_ERROR_MUST_REMOVE_SIGNALS_FIRST);
+
+				for (Track track_it = TRACK_BEGIN; track_it < TRACK_END; track_it++) {
+					if (HasTrack(tile, track_it) && HasSignalOnTrack(tile, track_it)) {
+						CommandCost ret_remove_signals = DoCommand(tile, track_it, 0, flags, CMD_REMOVE_SIGNALS);
+						if (ret_remove_signals.Failed()) return ret_remove_signals;
+						cost.AddCost(ret_remove_signals);
+					}
+				}
 			}
 
 			ret = CheckRailSlope(tileh, trackbit, GetTrackBits(tile), tile);
@@ -658,9 +665,9 @@ CommandCost CmdBuildSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 
 			if (existing == future) return_cmd_error(STR_ERROR_ALREADY_BUILT);
 
-			if (flags & DC_NO_RAIL_OVERLAP || IsTunnelBridgeWithSignalSimulation(tile)) {
+			if (IsTunnelBridgeWithSignalSimulation(tile)) {
 				if (future != TRACK_BIT_HORZ && future != TRACK_BIT_VERT) {
-					return_cmd_error((flags & DC_NO_RAIL_OVERLAP) ? STR_ERROR_IMPOSSIBLE_TRACK_COMBINATION : STR_ERROR_MUST_REMOVE_SIGNALS_FIRST);
+					return_cmd_error(STR_ERROR_MUST_REMOVE_SIGNALS_FIRST);
 				}
 			}
 
@@ -1147,6 +1154,7 @@ static CommandCost ValidateAutoDrag(Trackdir *trackdir, TileIndex start, TileInd
  * - p2 = (bit 6-8) - track-orientation, valid values: 0-5 (Track enum)
  * - p2 = (bit 9)   - 0 = build, 1 = remove tracks
  * - p2 = (bit 10)  - 0 = build up to an obstacle, 1 = fail if an obstacle is found (used for AIs).
+ * - p2 = (bit 13)  - 0 = error on signal in the way, 1 = auto remove signals when in the way
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -1159,6 +1167,7 @@ static CommandCost CmdRailTrackHelper(TileIndex tile, DoCommandFlag flags, uint3
 	bool fail_if_obstacle = HasBit(p2, 10);
 	bool no_custom_bridge_heads = HasBit(p2, 11);
 	bool no_dual_rail_type = HasBit(p2, 12);
+	bool auto_remove_signals = HasBit(p2, 13);
 
 	_rail_track_endtile = INVALID_TILE;
 
@@ -1174,7 +1183,7 @@ static CommandCost CmdRailTrackHelper(TileIndex tile, DoCommandFlag flags, uint3
 	CommandCost last_error = CMD_ERROR;
 	for (;;) {
 		TileIndex last_endtile = _rail_track_endtile;
-		CommandCost ret = DoCommand(tile, remove ? 0 : railtype, TrackdirToTrack(trackdir) | (no_custom_bridge_heads ? 1 << 4 : 0) | (no_dual_rail_type ? 1 << 5 : 0), flags, remove ? CMD_REMOVE_SINGLE_RAIL : CMD_BUILD_SINGLE_RAIL);
+		CommandCost ret = DoCommand(tile, remove ? 0 : railtype, TrackdirToTrack(trackdir) | (auto_remove_signals << 3) | (no_custom_bridge_heads ? 1 << 4 : 0) | (no_dual_rail_type ? 1 << 5 : 0), flags, remove ? CMD_REMOVE_SINGLE_RAIL : CMD_BUILD_SINGLE_RAIL);
 
 		if (ret.Failed()) {
 			last_error = ret;

@@ -2612,8 +2612,7 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} do
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} założył nową firmę (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} opuścił grę ({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} zmienił/zmieniła swoje imię na {STRING}
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} dał/dała twojemu przedsiębiorstwu {2:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** Dałeś {1:STRING} {2:CURRENCY_LONG}
+STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** Firma {STRING} przekazała firmie {1:STRING} {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Serwer zamknął sesję
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Restart serwera...{}Proszę czekać...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} został wyrzucony. Powód: ({STRING})
@@ -3048,23 +3047,23 @@ STR_LAI_RAIL_DESCRIPTION_TRACK                                  :{G=m}Tor kolejo
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_SIGNALS              :Tor kolejowy z semaforam blokowymi
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRESIGNALS                  :Tor kolejowy z semaforami wejściowymi
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXITSIGNALS                 :Tor kolejowy z semaforem wyjściowym
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Tor kolejowy z semaforami złożonymi (combo)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBOSIGNALS                :Tor kolejowy z semaforami złożonymi
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBSSIGNALS                  :Tor kolejowy z semaforami trasy
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NOENTRYSIGNALS              :Tor kolejowy z jednokierunkowymi semaforami trasy
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PRESIGNALS           :Tor kolejowy z semaforami blokowymi i semaforami wejścia
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_EXITSIGNALS          :Tor kolejowy z semaforami blokowymi i semaforami wyjścia
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Tor kolejowy z semaforami blokowymi i semaforami złożonymi (combo)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_COMBOSIGNALS         :Tor kolejowy z semaforami blokowymi i semaforami złożonymi
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_PBSSIGNALS           :Tor kolejowy z semaforami blokowymi i semaforami trasy
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_NORMAL_NOENTRYSIGNALS       :Tor kolejowy z semaforami blokowymi i jednokierunkowymi semaforami trasy
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_EXITSIGNALS             :Tor kolejowy z semaforami wejścia i wyjścia
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Tor kolejowy z semaforami wejścia i semaforami złożonymi (combo)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_COMBOSIGNALS            :Tor kolejowy z semaforami wejścia i semaforami złożonymi
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_PBSSIGNALS              :Tor kolejowy z semaforami wejścia i semaforami trasy
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PRE_NOENTRYSIGNALS          :Tor kolejowy z semaforami wejścia i jednokierunkowymi semaforami trasy
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Tor kolejowy z semaforami wyjścia i semaforami złożonymi (combo)
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_COMBOSIGNALS           :Tor kolejowy z semaforami wyjścia i semaforami złożonymi
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_PBSSIGNALS             :Tor kolejowy z semaforami wyjścia i semaforami trasy
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_EXIT_NOENTRYSIGNALS         :Tor kolejowy z semaforami wyjścia i jednokierunkowymi semaforami trasy
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Tor kolejowy z semaforami złożonymi (combo) i semaforami trasy
-STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Tor kolejowy z semaforami złożonymi (combo) i jednokierunkowymi semaforami trasy
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_PBSSIGNALS            :Tor kolejowy z semaforami złożonymi i semaforami trasy
+STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_COMBO_NOENTRYSIGNALS        :Tor kolejowy z semaforami złożonymi i jednokierunkowymi semaforami trasy
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PBS_NOENTRYSIGNALS          :Tor kolejowy z semaforami trasy i jednokierunkowymi semaforami trasy
 STR_LAI_RAIL_DESCRIPTION_TRAIN_DEPOT                            :{G=f}Warsztaty kolejowe
 
@@ -3447,7 +3446,7 @@ STR_NEWGRF_BROKEN                                               :{WHITE}Zachowan
 STR_NEWGRF_BROKEN_POWERED_WAGON                                 :{WHITE}Zmieniony stan wagonu silnikowego '{1:ENGINE}', gdy był poza halą warsztatów
 STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :{WHITE}Zmiana długości pojazdu '{1:ENGINE}' , który nie jest zatrzymany w hali
 STR_NEWGRF_BROKEN_CAPACITY                                      :{WHITE}Zmieniono ładowność pojazdu na '{1:ENGINE}', kiedy nie był w hali warsztatów lub w trakcie przebudowy
-STR_BROKEN_VEHICLE_LENGTH                                       :{WHITE}Pociąg '{VEHICLE}' należący do '{COMPANY}' ma niepoprawną długość. Prawdopodobnie spowodowane jest to problemami z NewGRF'ami. Gra może się odsychronizować lub się zawiesić
+STR_BROKEN_VEHICLE_LENGTH                                       :{WHITE}Pociąg '{VEHICLE}' należący do '{COMPANY}' ma niepoprawną długość. Prawdopodobnie spowodowane jest to problemami z NewGRF'ami. Gra może się odsychronizować lub zawiesić
 
 STR_NEWGRF_BUGGY                                                :{WHITE}NewGRF '{0:STRING}' dostarcza niepoprawnych danych
 STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{WHITE}Informacje o ładunku/naprawie dla '{1:ENGINE}' różnią się od listy zakupu po zbudowaniu. Może to spowodować, że autoodnowienie/-zamiana nie wykona remontu poprawnie
@@ -3754,7 +3753,8 @@ STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Przenie�
 STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Zbuduj siedzibę główną w innym miejscu za cenę 1% wartości firmy. Shift+klik pokazuje szacunkowy koszt bez przenoszenia siedziby
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Szczegóły
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Zobacz szczegółowe wartości infrastruktury
-STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Przekazanie pieniędzy
+STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Przekaż pieniądze
+STR_COMPANY_VIEW_GIVE_MONEY_TOOLTIP                             :{BLACK}Przekaż część pieniędzy tej firmie
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nowa twarz
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Wybierz nową twarz prezesa
@@ -3772,7 +3772,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Sprzedaj
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Nazwa firmy
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Nazwisko prezesa
-STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Wprowadź ilość pieniędzy, które chcesz przekazać
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Wpisz kwotę, jaką chcesz przekazać
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Szukamy firmy transportowej, która przejęłaby naszą firmę.{}{}Chcesz zakupić {COMPANY} za {CURRENCY_LONG}?
 
@@ -4730,6 +4730,7 @@ STR_ERROR_LOAN_ALREADY_REPAYED                                  :{WHITE}... poż
 STR_ERROR_CURRENCY_REQUIRED                                     :{WHITE}...{CURRENCY_LONG} wymagane
 STR_ERROR_CAN_T_REPAY_LOAN                                      :{WHITE}Nie można zwrócić pożyczki...
 STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Nie możesz wydać pieniędzy, które są pożyczone z banku...
+STR_ERROR_CAN_T_GIVE_MONEY                                      :{WHITE}Nie możesz przekazać pieniędzy tej firmie...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Nie można kupić firmy...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Nie można zbudować siedziby firmy...
 STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Nie można kupić 25% udziałów w tej firmie...

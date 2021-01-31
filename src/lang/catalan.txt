@@ -2233,8 +2233,6 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} s'
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} ha començat una nova companyia (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} ha deixat la partida ({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} ha canviat el seu nom a {STRING}
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} ha donat a la teva companyia {2:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** Has donat {1:STRING} {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}El servidor ha tancat la sessió
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}El servidor està reiniciant...{}Espera un moment...
 STR_NETWORK_MESSAGE_KICKED                                      :*** S'ha expulsat {STRING}. Motiu: {STRING}

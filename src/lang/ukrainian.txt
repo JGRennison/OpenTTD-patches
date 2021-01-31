@@ -2334,8 +2334,6 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} с
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} заснував нову компанію (№{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} покинув гру ({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} змінив(-ла) своє ім'я на {STRING}
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} дав Вашій компанії {2:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** Ви дали {1:STRING} {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Сервер закрив сеанс
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Перезавантаження сервера...{}Зачекайте...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} відключено. Причина: ({STRING})

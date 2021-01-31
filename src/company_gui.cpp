@@ -2185,30 +2185,30 @@ static const NWidgetPart _nested_company_widgets[] = {
 					EndContainer(),
 					NWidget(NWID_VERTICAL), SetPIP(4, 2, 4),
 						NWidget(NWID_SELECTION, INVALID_COLOUR, WID_C_SELECT_VIEW_BUILD_HQ),
-							NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_C_VIEW_HQ), SetFill(1, 0), SetDataTip(STR_COMPANY_VIEW_VIEW_HQ_BUTTON, STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP),
-							NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_C_BUILD_HQ), SetFill(1, 0), SetDataTip(STR_COMPANY_VIEW_BUILD_HQ_BUTTON, STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP),
+							NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_C_VIEW_HQ), SetDataTip(STR_COMPANY_VIEW_VIEW_HQ_BUTTON, STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP),
+							NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_C_BUILD_HQ), SetDataTip(STR_COMPANY_VIEW_BUILD_HQ_BUTTON, STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP),
 						EndContainer(),
 						NWidget(NWID_SELECTION, INVALID_COLOUR, WID_C_SELECT_RELOCATE),
-							NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_C_RELOCATE_HQ), SetFill(1, 0), SetDataTip(STR_COMPANY_VIEW_RELOCATE_HQ, STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS),
-							NWidget(NWID_SPACER), SetMinimalSize(90, 0),
+							NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_C_RELOCATE_HQ), SetDataTip(STR_COMPANY_VIEW_RELOCATE_HQ, STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS),
+							NWidget(NWID_SPACER),
 						EndContainer(),
 						NWidget(NWID_SPACER), SetFill(0, 1),
 					EndContainer(),
 				EndContainer(),
 				NWidget(WWT_TEXT, COLOUR_GREY, WID_C_DESC_COMPANY_VALUE), SetDataTip(STR_COMPANY_VIEW_COMPANY_VALUE, STR_NULL), SetFill(1, 0),
-					NWidget(NWID_VERTICAL), SetPIP(4, 2, 4),
-						NWidget(NWID_HORIZONTAL), SetPIP(0, 4, 0),
-							NWidget(NWID_VERTICAL),
-								NWidget(WWT_TEXT, COLOUR_GREY, WID_C_DESC_INFRASTRUCTURE), SetDataTip(STR_COMPANY_VIEW_INFRASTRUCTURE, STR_NULL),
-								NWidget(NWID_SPACER), SetFill(0, 1),
-							EndContainer(),
-							NWidget(WWT_EMPTY, INVALID_COLOUR, WID_C_DESC_INFRASTRUCTURE_COUNTS), SetMinimalTextLines(5, 0), SetFill(1, 0),
-							NWidget(NWID_VERTICAL),
-								NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_C_VIEW_INFRASTRUCTURE), SetDataTip(STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON, STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP),
-								NWidget(NWID_SPACER), SetFill(0, 1), SetMinimalSize(90, 0),
-							EndContainer(),
+				NWidget(NWID_VERTICAL), SetPIP(4, 2, 4),
+					NWidget(NWID_HORIZONTAL), SetPIP(0, 4, 0),
+						NWidget(NWID_VERTICAL),
+							NWidget(WWT_TEXT, COLOUR_GREY, WID_C_DESC_INFRASTRUCTURE), SetDataTip(STR_COMPANY_VIEW_INFRASTRUCTURE, STR_NULL),
+							NWidget(NWID_SPACER), SetFill(0, 1),
+						EndContainer(),
+						NWidget(WWT_EMPTY, INVALID_COLOUR, WID_C_DESC_INFRASTRUCTURE_COUNTS), SetMinimalTextLines(5, 0), SetFill(1, 0),
+						NWidget(NWID_VERTICAL),
+							NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_C_VIEW_INFRASTRUCTURE), SetDataTip(STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON, STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP),
+							NWidget(NWID_SPACER),
 						EndContainer(),
 					EndContainer(),
+				EndContainer(),
 				NWidget(NWID_HORIZONTAL),
 					NWidget(NWID_SELECTION, INVALID_COLOUR, WID_C_SELECT_DESC_OWNERS),
 						NWidget(NWID_VERTICAL), SetPIP(5, 5, 4),
@@ -2430,6 +2430,21 @@ struct CompanyWindow : Window
 				}
 				break;
 			}
+
+			case WID_C_VIEW_HQ:
+			case WID_C_BUILD_HQ:
+			case WID_C_RELOCATE_HQ:
+			case WID_C_VIEW_INFRASTRUCTURE:
+			case WID_C_COMPANY_PASSWORD:
+			case WID_C_COMPANY_JOIN:
+				size->width = max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_VIEW_HQ_BUTTON).width);
+				size->width = max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_BUILD_HQ_BUTTON).width);
+				size->width = max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_RELOCATE_HQ).width);
+				size->width = max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON).width);
+				size->width = max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_PASSWORD).width);
+				size->width = max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_JOIN).width);
+				break;
+
 
 			case WID_C_HAS_PASSWORD:
 				*size = maxdim(*size, GetSpriteSize(SPR_LOCK));
@@ -2687,7 +2702,7 @@ struct CompanyWindow : Window
 			default: NOT_REACHED();
 
 			case WID_C_GIVE_MONEY:
-				DoCommandP(0, (strtoull(str, nullptr, 10) / _currency->rate), this->window_number, CMD_GIVE_MONEY | CMD_MSG(STR_ERROR_INSUFFICIENT_FUNDS), CcGiveMoney, str);
+				DoCommandP(0, (strtoull(str, nullptr, 10) / _currency->rate), this->window_number, CMD_GIVE_MONEY | CMD_MSG(STR_ERROR_CAN_T_GIVE_MONEY), CcGiveMoney, str);
 				break;
 
 			case WID_C_PRESIDENT_NAME:
