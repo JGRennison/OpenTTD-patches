@@ -317,7 +317,6 @@ jobs:
           liblzma-dev \
           liblzo2-dev \
           libsdl2-dev \
-          libxdg-basedir-dev \
           lsb-release \
           zlib1g-dev \
           # EOF
@@ -495,6 +494,29 @@ jobs:
       run: |
         cd build-x64
         ../os/macosx/notarize.sh
+
+    - name: Build zip
+      run: |
+        cd build-x64
+
+        pushd _CPack_Packages/*/Bundle/openttd-*/
+
+        # Remove the Applications symlink from the staging folder
+        rm -f Applications
+
+        # Remove the original dmg built by CPack to avoid a conflict when resolving
+        # the zip_filename variable below
+        rm -f ../*.dmg
+
+        zip_filename=(../openttd-*)
+
+        # Package up the existing, notarised .app into a zip file
+        zip -r -9 ${zip_filename}.zip OpenTTD.app
+
+        popd
+
+        # Now move it into place to be uploaded
+        mv _CPack_Packages/*/Bundle/openttd-*.zip bundles/
 
     - name: Store bundles
       uses: actions/upload-artifact@v2

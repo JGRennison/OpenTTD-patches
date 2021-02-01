@@ -7,8 +7,6 @@
 
 /** @file sdl2_v.cpp Implementation of the SDL2 video driver. */
 
-#ifdef WITH_SDL2
-
 #include "../stdafx.h"
 #include "../openttd.h"
 #include "../gfx_func.h"
@@ -52,7 +50,8 @@ static FVideoDriver_SDL iFVideoDriver_SDL;
 
 static SDL_Window *_sdl_window;
 static SDL_Surface *_sdl_surface;
-static SDL_Surface *_sdl_realscreen;
+static SDL_Surface *_sdl_rgb_surface;
+static SDL_Surface *_sdl_real_surface;
 
 /** Whether the drawing is/may be done in a separate thread. */
 static bool _draw_threaded;
@@ -287,7 +286,7 @@ void VideoDriver_SDL::MakeDirty(int left, int top, int width, int height)
 	_num_dirty_rects++;
 }
 
-static void UpdatePalette(bool init = false)
+static void UpdatePalette()
 {
 	SDL_Color pal[256];
 
@@ -300,8 +299,19 @@ static void UpdatePalette(bool init = false)
 
 	SDL_SetPaletteColors(_sdl_palette, pal, _local_palette.first_dirty, _local_palette.count_dirty);
 	SDL_SetSurfacePalette(_sdl_surface, _sdl_palette);
+}
 
-	if (_sdl_surface != _sdl_realscreen && init) {
+static void MakePalette()
+{
+	if (_sdl_palette == nullptr) {
+		_sdl_palette = SDL_AllocPalette(256);
+		if (_sdl_palette == nullptr) usererror("SDL2: Couldn't allocate palette: %s", SDL_GetError());
+	}
+
+	_local_palette = _cur_palette;
+	UpdatePalette();
+
+	if (_sdl_surface != _sdl_real_surface) {
 		/* When using a shadow surface, also set our palette on the real screen. This lets SDL
 		 * allocate as many colors (or approximations) as
 		 * possible, instead of using only the default SDL
@@ -322,35 +332,24 @@ static void UpdatePalette(bool init = false)
 		 * palette change and the blitting below, so we only set
 		 * the real palette during initialisation.
 		 */
-		SDL_SetSurfacePalette(_sdl_realscreen, _sdl_palette);
-	}
-
-	if (_sdl_surface != _sdl_realscreen && !init) {
-		/* We're not using real hardware palette, but are letting SDL
-		 * approximate the palette during shadow -> screen copy. To
-		 * change the palette, we need to recopy the entire screen.
-		 *
-		 * Note that this operation can slow down the rendering
-		 * considerably, especially since changing the shadow
-		 * palette will need the next blit to re-detect the
-		 * best mapping of shadow palette colors to real palette
-		 * colors from scratch.
-		 */
-		SDL_BlitSurface(_sdl_surface, nullptr, _sdl_realscreen, nullptr);
-		SDL_UpdateWindowSurface(_sdl_window);
+		SDL_SetSurfacePalette(_sdl_real_surface, _sdl_palette);
 	}
 }
 
-static void InitPalette()
+void VideoDriver_SDL::CheckPaletteAnim()
 {
+	if (_cur_palette.count_dirty == 0) return;
+
 	_local_palette = _cur_palette;
-	_local_palette.first_dirty = 0;
-	_local_palette.count_dirty = 256;
-	UpdatePalette(true);
+	this->MakeDirty(0, 0, _screen.width, _screen.height);
 }
 
-static void CheckPaletteAnim()
+static void DrawSurfaceToScreen()
 {
+	PerformanceMeasurer framerate(PFE_VIDEO);
+
+	if (_num_dirty_rects == 0) return;
+
 	if (_cur_palette.count_dirty != 0) {
 		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 
@@ -371,11 +370,6 @@ static void CheckPaletteAnim()
 		}
 		_cur_palette.count_dirty = 0;
 	}
-}
-
-static void DrawSurfaceToScreen()
-{
-	PerformanceMeasurer framerate(PFE_VIDEO);
 
 	int n = _num_dirty_rects;
 	if (n == 0) return;
@@ -394,15 +388,15 @@ static void DrawSurfaceToScreen()
 	}
 
 	if (update_whole_screen) {
-		if (_sdl_surface != _sdl_realscreen) {
-			SDL_BlitSurface(_sdl_surface, nullptr, _sdl_realscreen, nullptr);
+		if (_sdl_surface != _sdl_real_surface) {
+			SDL_BlitSurface(_sdl_surface, nullptr, _sdl_real_surface, nullptr);
 		}
 
 		SDL_UpdateWindowSurface(_sdl_window);
 	} else {
-		if (_sdl_surface != _sdl_realscreen) {
-			for (int i = 0; i < n; i++) {
-				SDL_BlitSurface(_sdl_surface, &_dirty_rects[i], _sdl_realscreen, &_dirty_rects[i]);
+		if (_sdl_surface != _sdl_real_surface) {
+			for (int i = 0; i < _num_dirty_rects; i++) {
+				SDL_BlitSurface(_sdl_surface, &_dirty_rects[i], _sdl_real_surface, &_dirty_rects[i]);
 			}
 		}
 		SDL_Rect update_rect = { _sdl_surface->w, _sdl_surface->h, 0, 0 };
@@ -417,6 +411,8 @@ static void DrawSurfaceToScreen()
 
 		SDL_UpdateWindowSurfaceRects(_sdl_window, &update_rect, 1);
 	}
+
+	_num_dirty_rects = 0;
 }
 
 static void DrawSurfaceToScreenThread()
@@ -429,33 +425,44 @@ static void DrawSurfaceToScreenThread()
 	_draw_signal->wait(*_draw_mutex);
 
 	while (_draw_continue) {
-		CheckPaletteAnim();
 		/* Then just draw and wait till we stop */
 		DrawSurfaceToScreen();
 		_draw_signal->wait(lock);
 	}
 }
 
-static void GetVideoModes()
-{
-	int modes = SDL_GetNumDisplayModes(0);
-	if (modes == 0) usererror("sdl: no modes available");
+static const Dimension default_resolutions[] = {
+	{  640,  480 },
+	{  800,  600 },
+	{ 1024,  768 },
+	{ 1152,  864 },
+	{ 1280,  800 },
+	{ 1280,  960 },
+	{ 1280, 1024 },
+	{ 1400, 1050 },
+	{ 1600, 1200 },
+	{ 1680, 1050 },
+	{ 1920, 1200 }
+};
 
+static void FindResolutions()
+{
 	_resolutions.clear();
 
-	SDL_DisplayMode mode;
-	for (int i = 0; i < modes; i++) {
+	for (int i = 0; i < SDL_GetNumDisplayModes(0); i++) {
+		SDL_DisplayMode mode;
 		SDL_GetDisplayMode(0, i, &mode);
 
-		uint w = mode.w;
-		uint h = mode.h;
-
-		if (w < 640 || h < 480) continue; // reject too small resolutions
-
-		if (std::find(_resolutions.begin(), _resolutions.end(), Dimension(w, h)) != _resolutions.end()) continue;
-		_resolutions.emplace_back(w, h);
+		if (mode.w < 640 || mode.h < 480) continue;
+		if (std::find(_resolutions.begin(), _resolutions.end(), Dimension(mode.w, mode.h)) != _resolutions.end()) continue;
+		_resolutions.emplace_back(mode.w, mode.h);
 	}
-	if (_resolutions.empty()) usererror("No usable screen resolutions found!\n");
+
+	/* We have found no resolutions, show the default list */
+	if (_resolutions.empty()) {
+		_resolutions.assign(std::begin(default_resolutions), std::end(default_resolutions));
+	}
+
 	SortResolutions();
 }
 
@@ -481,109 +488,127 @@ static void GetAvailableVideoMode(uint *w, uint *h)
 	*h = _resolutions[best].height;
 }
 
-bool VideoDriver_SDL::CreateMainSurface(uint w, uint h, bool resize)
+static uint FindStartupDisplay(uint startup_display)
 {
-	SDL_Surface *newscreen;
-	char caption[50];
-	int bpp = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
+	int num_displays = SDL_GetNumVideoDisplays();
 
-	GetAvailableVideoMode(&w, &h);
+	/* If the user indicated a valid monitor, use that. */
+	if (IsInsideBS(startup_display, 0, num_displays)) return startup_display;
 
-	DEBUG(driver, 1, "SDL2: using mode %ux%ux%d", w, h, bpp);
-
-	/* Free any previously allocated shadow surface */
-	if (_sdl_surface != nullptr && _sdl_surface != _sdl_realscreen) SDL_FreeSurface(_sdl_surface);
-
-	seprintf(caption, lastof(caption), "OpenTTD %s", _openttd_revision);
-
-	if (_sdl_window == nullptr) {
-		Uint32 flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
-
-		if (_fullscreen) {
-			flags |= SDL_WINDOW_FULLSCREEN;
-		}
-
-		int x = SDL_WINDOWPOS_UNDEFINED, y = SDL_WINDOWPOS_UNDEFINED;
+	/* Mouse position decides which display to use. */
+	int mx, my;
+	SDL_GetGlobalMouseState(&mx, &my);
+	for (int display = 0; display < num_displays; ++display) {
 		SDL_Rect r;
-		if (SDL_GetDisplayBounds(this->startup_display, &r) == 0) {
-			x = r.x + std::max(0, r.w - static_cast<int>(w)) / 2;
-			y = r.y + std::max(0, r.h - static_cast<int>(h)) / 4; // decent desktops have taskbars at the bottom
-		}
-		_sdl_window = SDL_CreateWindow(
-			caption,
-			x, y,
-			w, h,
-			flags);
-
-		if (_sdl_window == nullptr) {
-			DEBUG(driver, 0, "SDL2: Couldn't allocate a window to draw on");
-			return false;
-		}
-
-		std::string icon_path = FioFindFullPath(BASESET_DIR, "openttd.32.bmp");
-		if (!icon_path.empty()) {
-			/* Give the application an icon */
-			SDL_Surface *icon = SDL_LoadBMP(icon_path.c_str());
-			if (icon != nullptr) {
-				/* Get the colourkey, which will be magenta */
-				uint32 rgbmap = SDL_MapRGB(icon->format, 255, 0, 255);
-
-				SDL_SetColorKey(icon, SDL_TRUE, rgbmap);
-				SDL_SetWindowIcon(_sdl_window, icon);
-				SDL_FreeSurface(icon);
-			}
+		if (SDL_GetDisplayBounds(display, &r) == 0 && IsInsideBS(mx, r.x, r.w) && IsInsideBS(my, r.y, r.h)) {
+			DEBUG(driver, 1, "SDL2: Mouse is at (%d, %d), use display %d (%d, %d, %d, %d)", mx, my, display, r.x, r.y, r.w, r.h);
+			return display;
 		}
 	}
 
+	return 0;
+}
+
+bool VideoDriver_SDL::CreateMainWindow(uint w, uint h)
+{
+	if (_sdl_window != nullptr) return true;
+
+	Uint32 flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
+
+	if (_fullscreen) {
+		flags |= SDL_WINDOW_FULLSCREEN;
+	}
+
+	int x = SDL_WINDOWPOS_UNDEFINED, y = SDL_WINDOWPOS_UNDEFINED;
+	SDL_Rect r;
+	if (SDL_GetDisplayBounds(this->startup_display, &r) == 0) {
+		x = r.x + std::max(0, r.w - static_cast<int>(w)) / 2;
+		y = r.y + std::max(0, r.h - static_cast<int>(h)) / 4; // decent desktops have taskbars at the bottom
+	}
+
+	char caption[50];
+	seprintf(caption, lastof(caption), "OpenTTD %s", _openttd_revision);
+	_sdl_window = SDL_CreateWindow(
+		caption,
+		x, y,
+		w, h,
+		flags);
+
+	if (_sdl_window == nullptr) {
+		DEBUG(driver, 0, "SDL2: Couldn't allocate a window to draw on: %s", SDL_GetError());
+		return false;
+	}
+
+	std::string icon_path = FioFindFullPath(BASESET_DIR, "openttd.32.bmp");
+	if (!icon_path.empty()) {
+		/* Give the application an icon */
+		SDL_Surface *icon = SDL_LoadBMP(icon_path.c_str());
+		if (icon != nullptr) {
+			/* Get the colourkey, which will be magenta */
+			uint32 rgbmap = SDL_MapRGB(icon->format, 255, 0, 255);
+
+			SDL_SetColorKey(icon, SDL_TRUE, rgbmap);
+			SDL_SetWindowIcon(_sdl_window, icon);
+			SDL_FreeSurface(icon);
+		}
+	}
+
+	return true;
+}
+
+bool VideoDriver_SDL::CreateMainSurface(uint w, uint h, bool resize)
+{
+	int bpp = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
+
+	GetAvailableVideoMode(&w, &h);
+	DEBUG(driver, 1, "SDL2: using mode %ux%ux%d", w, h, bpp);
+
+	if (!this->CreateMainWindow(w, h)) return false;
 	if (resize) SDL_SetWindowSize(_sdl_window, w, h);
 
-	newscreen = SDL_GetWindowSurface(_sdl_window);
-	if (newscreen == NULL) {
+	_sdl_real_surface = SDL_GetWindowSurface(_sdl_window);
+	if (_sdl_real_surface == nullptr) {
 		DEBUG(driver, 0, "SDL2: Couldn't get window surface: %s", SDL_GetError());
 		return false;
 	}
 
-	_sdl_realscreen = newscreen;
+	/* Free any previously allocated rgb surface. */
+	if (_sdl_rgb_surface != nullptr) {
+		SDL_FreeSurface(_sdl_rgb_surface);
+		_sdl_rgb_surface = nullptr;
+	}
 
 	if (bpp == 8) {
-		newscreen = SDL_CreateRGBSurface(0, w, h, 8, 0, 0, 0, 0);
+		_sdl_rgb_surface = SDL_CreateRGBSurface(0, w, h, 8, 0, 0, 0, 0);
 
-		if (newscreen == nullptr) {
+		if (_sdl_rgb_surface == nullptr) {
 			DEBUG(driver, 0, "SDL2: Couldn't allocate shadow surface: %s", SDL_GetError());
 			return false;
 		}
-	}
 
-	if (_sdl_palette == nullptr) {
-		_sdl_palette = SDL_AllocPalette(256);
-	}
-
-	if (_sdl_palette == nullptr) {
-		DEBUG(driver, 0, "SDL_AllocPalette() failed: %s", SDL_GetError());
-		return false;
+		_sdl_surface = _sdl_rgb_surface;
+	} else {
+		_sdl_surface = _sdl_real_surface;
 	}
 
 	/* Delay drawing for this cycle; the next cycle will redraw the whole screen */
 	_num_dirty_rects = 0;
 
-	_screen.width = newscreen->w;
-	_screen.height = newscreen->h;
-	_screen.pitch = newscreen->pitch / (bpp / 8);
-	_screen.dst_ptr = newscreen->pixels;
-	_sdl_surface = newscreen;
+	_screen.width = _sdl_surface->w;
+	_screen.height = _sdl_surface->h;
+	_screen.pitch = _sdl_surface->pitch / (bpp / 8);
+	_screen.dst_ptr = _sdl_surface->pixels;
+
+	MakePalette();
 
 	/* When in full screen, we will always have the mouse cursor
 	 * within the window, even though SDL does not give us the
 	 * appropriate event to know this. */
 	if (_fullscreen) _cursor.in_window = true;
 
-	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
-	blitter->PostResize();
-
-	InitPalette();
+	BlitterFactory::GetCurrentBlitter()->PostResize();
 
 	GameSizeChanged();
-
 	return true;
 }
 
@@ -957,7 +982,7 @@ int VideoDriver_SDL::PollEvent()
 		case SDL_WINDOWEVENT: {
 			if (ev.window.event == SDL_WINDOWEVENT_EXPOSED) {
 				// Force a redraw of the entire screen.
-				_num_dirty_rects = MAX_DIRTY_RECTS + 1;
+				this->MakeDirty(0, 0, _screen.width, _screen.height);
 			} else if (ev.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
 				int w = std::max(ev.window.data1, 64);
 				int h = std::max(ev.window.data2, 64);
@@ -1021,26 +1046,12 @@ const char *VideoDriver_SDL::Start(const StringList &parm)
 	}
 	if (ret_code < 0) return SDL_GetError();
 
-	this->startup_display = GetDriverParamInt(parm, "display", -1);
-	int num_displays = SDL_GetNumVideoDisplays();
-	if (!IsInsideBS(this->startup_display, 0, num_displays)) {
-		/* Mouse position decides which display to use */
-		int mx, my;
-		SDL_GetGlobalMouseState(&mx, &my);
-		this->startup_display = 0; // used when mouse is on no screen...
-		for (int display = 0; display < num_displays; ++display) {
-			SDL_Rect r;
-			if (SDL_GetDisplayBounds(display, &r) == 0 && IsInsideBS(mx, r.x, r.w) && IsInsideBS(my, r.y, r.h)) {
-				DEBUG(driver, 1, "SDL2: Mouse is at (%d, %d), use display %d (%d, %d, %d, %d)", mx, my, display, r.x, r.y, r.w, r.h);
-				this->startup_display = display;
-				break;
-			}
-		}
-	}
-
 	this->UpdateAutoResolution();
 
-	GetVideoModes();
+	FindResolutions();
+
+	this->startup_display = FindStartupDisplay(GetDriverParamInt(parm, "display", -1));
+
 	if (!CreateMainSurface(_cur_resolution.width, _cur_resolution.height, false)) {
 		return SDL_GetError();
 	}
@@ -1144,7 +1155,7 @@ void VideoDriver_SDL::LoopOnce()
 		GameLoopPaletteAnimations();
 
 		UpdateWindows();
-		_local_palette = _cur_palette;
+		this->CheckPaletteAnim();
 	} else {
 		/* Release the thread while sleeping */
 		if (_draw_mutex != nullptr) {
@@ -1168,7 +1179,6 @@ void VideoDriver_SDL::LoopOnce()
 		_draw_signal->notify_one();
 	} else {
 		/* Oh, we didn't have threads, then just draw unthreaded */
-		CheckPaletteAnim();
 		DrawSurfaceToScreen();
 	}
 }
@@ -1179,7 +1189,7 @@ void VideoDriver_SDL::MainLoop()
 	last_cur_ticks = cur_ticks;
 	next_tick = cur_ticks + MILLISECONDS_PER_TICK;
 
-	CheckPaletteAnim();
+	this->CheckPaletteAnim();
 
 	if (_draw_threaded) {
 		/* Initialise the mutex first, because that's the thing we *need*
@@ -1315,5 +1325,3 @@ Dimension VideoDriver_SDL::GetScreenSize() const
 
 	return { static_cast<uint>(mode.w), static_cast<uint>(mode.h) };
 }
-
-#endif /* WITH_SDL2 */

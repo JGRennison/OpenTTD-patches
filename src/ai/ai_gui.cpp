@@ -1424,7 +1424,8 @@ struct AIDebugWindow : public Window {
 		this->SetWidgetLoweredState(WID_AID_MATCH_CASE_BTN, this->case_sensitive_break_check);
 
 		this->SetWidgetDisabledState(WID_AID_SETTINGS, ai_debug_company == INVALID_COMPANY);
-		this->SetWidgetDisabledState(WID_AID_RELOAD_TOGGLE, ai_debug_company == INVALID_COMPANY || (ai_debug_company == OWNER_DEITY && !UserIsAllowedToChangeGameScript()));
+		extern CompanyID _local_company;
+		this->SetWidgetDisabledState(WID_AID_RELOAD_TOGGLE, ai_debug_company == INVALID_COMPANY || ai_debug_company == _local_company || (ai_debug_company == OWNER_DEITY && !UserIsAllowedToChangeGameScript()));
 		this->SetWidgetDisabledState(WID_AID_CONTINUE_BTN, ai_debug_company == INVALID_COMPANY ||
 				(ai_debug_company == OWNER_DEITY ? !Game::IsPaused() : !AI::IsPaused(ai_debug_company)));
 	}
