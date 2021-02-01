@@ -360,15 +360,6 @@ jobs:
     name: MacOS
     needs: source
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-        - arch: x64
-          full_arch: x86_64
-        - arch: arm64
-          full_arch: arm64
-
     runs-on: macos-10.15
     env:
       MACOSX_DEPLOYMENT_TARGET: 10.9
@@ -383,22 +374,21 @@ jobs:
       run: |
         tar -xf source.tar.gz --strip-components=1
 
-    # The following step can be removed and the default vcpkg installation
-    # (/usr/local/share/vcpkg) restored when the build VM is updated with a revision of
-    # vcpkg dating from roughly 01/01/2021 or later.
+    # The following step can be removed when the build VM is updated with a revision of
+    # vcpkg dating from roughly 01/01/2021 or later. At that point, `doNotUpdateVcpkg`
+    # can be set to `true` and the `vcpkgGitCommitId` can be removed.
     - name: Update vcpkg
       run: |
-        cd /tmp
-        git clone https://github.com/Microsoft/vcpkg
+        cd /usr/local/share/vcpkg
+        git fetch --unshallow
 
     - name: Prepare vcpkg (with cache)
       uses: lukka/run-vcpkg@v6
       with:
-        vcpkgDirectory: '/tmp/vcpkg'
+        vcpkgDirectory: '/usr/local/share/vcpkg'
         doNotUpdateVcpkg: false
         vcpkgGitCommitId: 2a42024b53ebb512fb5dd63c523338bf26c8489c
-        vcpkgArguments: 'freetype liblzma lzo'
-        vcpkgTriplet: '${{ matrix.arch }}-osx'
+        vcpkgArguments: 'freetype:x64-osx liblzma:x64-osx lzo:x64-osx freetype:arm64-osx liblzma:arm64-osx lzo:arm64-osx'
 
     - name: Build tools
       run: |
@@ -420,20 +410,66 @@ jobs:
     - name: Install GCC problem matcher
       uses: ammaraskar/gcc-problem-matcher@master
 
-    - name: Build
+    - name: Import code signing certificates
+      uses: Apple-Actions/import-codesign-certs@v1
+      with:
+        # The certificates in a PKCS12 file encoded as a base64 string
+        p12-file-base64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
+        # The password used to import the PKCS12 file.
+        p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
+      # If this is run on a fork, there may not be a certificate set up - continue in this case
+      continue-on-error: true
+
+    - name: Build arm64
       run: |
-        mkdir build
-        cd build
+        mkdir build-arm64
+        cd build-arm64
 
         echo "::group::CMake"
         cmake ${GITHUB_WORKSPACE} \
-          -DCMAKE_OSX_ARCHITECTURES=${{ matrix.full_arch }} \
-          -DVCPKG_TARGET_TRIPLET=${{ matrix.arch }}-osx \
-          -DCMAKE_TOOLCHAIN_FILE=/tmp/vcpkg/scripts/buildsystems/vcpkg.cmake \
+          -DCMAKE_OSX_ARCHITECTURES=arm64 \
+          -DVCPKG_TARGET_TRIPLET=arm64-osx \
+          -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake \
           -DHOST_BINARY_DIR=${GITHUB_WORKSPACE}/build-host \
           -DCMAKE_BUILD_TYPE=RelWithDebInfo \
           # EOF
         echo "::endgroup::"
+
+        echo "::group::Build"
+        echo "Running on $(sysctl -n hw.logicalcpu) cores"
+        make -j$(sysctl -n hw.logicalcpu)
+        echo "::endgroup::"
+
+    - name: Build x64
+      run: |
+        mkdir build-x64
+        cd build-x64
+
+        echo "::group::CMake"
+        cmake ${GITHUB_WORKSPACE} \
+          -DCMAKE_OSX_ARCHITECTURES=x86_64 \
+          -DVCPKG_TARGET_TRIPLET=x64-osx \
+          -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake \
+          -DHOST_BINARY_DIR=${GITHUB_WORKSPACE}/build-host \
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+          -DCPACK_BUNDLE_APPLE_CERT_APP=${{ secrets.APPLE_DEVELOPER_CERTIFICATE_ID }} \
+          "-DCPACK_BUNDLE_APPLE_CODESIGN_PARAMETER=--deep -f --options runtime" \
+          -DAPPLE_UNIVERSAL_PACKAGE=1 \
+          # EOF
+        echo "::endgroup::"
+
+        echo "::group::Build"
+        echo "Running on $(sysctl -n hw.logicalcpu) cores"
+        make -j$(sysctl -n hw.logicalcpu)
+        echo "::endgroup::"
+
+    - name: Build package
+      run: |
+        cd build-x64
+
+        # Combine the `openttd` binaries from each build into a single file
+        lipo -create -output openttd-universal ../build-*/openttd
+        mv openttd-universal openttd
 
         echo "::group::Build"
         echo "Running on $(sysctl -n hw.logicalcpu) cores"
@@ -444,11 +480,27 @@ jobs:
         # the end of this workflow.
         rm -f bundles/*.sha256
 
+    - name: Install gon
+      env:
+        HOMEBREW_NO_AUTO_UPDATE: 1
+        HOMEBREW_NO_INSTALL_CLEANUP: 1
+      run: |
+        brew tap mitchellh/gon
+        brew install mitchellh/gon/gon
+
+    - name: Notarize
+      env:
+        AC_USERNAME: ${{ secrets.APPLE_DEVELOPER_APP_USERNAME }}
+        AC_PASSWORD: ${{ secrets.APPLE_DEVELOPER_APP_PASSWORD }}
+      run: |
+        cd build-x64
+        ../os/macosx/notarize.sh
+
     - name: Store bundles
       uses: actions/upload-artifact@v2
       with:
-        name: openttd-macos-${{ matrix.arch }}
-        path: build/bundles
+        name: openttd-macos-universal
+        path: build-x64/bundles
         retention-days: 5
 
   windows:
@@ -461,6 +513,7 @@ jobs:
         include:
         - arch: x86
         - arch: x64
+        - arch: arm64
 
     runs-on: windows-latest
 
@@ -474,6 +527,18 @@ jobs:
       shell: bash
       run: |
         tar -xf source.tar.gz --strip-components=1
+
+    # "restore-cache" which is done by "run-vcpkg" uses Windows tar.
+    # A git clone on windows marks a few files as read-only; when Windows tar
+    # tries to extract the cache over this folder, it fails, despite the files
+    # being identical. This failure shows up as an warning in the logs. We
+    # avoid this by simply removing the read-only mark from the git folder.
+    # In other words: this is a hack!
+    # See: https://github.com/lukka/run-vcpkg/issues/61
+    - name: Remove read-only flag from vcpkg git folder
+      shell: powershell
+      run: |
+        attrib -r "c:\vcpkg\.git\*.*" /s
 
     - name: Prepare vcpkg (with cache)
       uses: lukka/run-vcpkg@v6
@@ -496,7 +561,7 @@ jobs:
       uses: ammaraskar/msvc-problem-matcher@master
 
     - name: Build (with installer)
-      if: needs.source.outputs.is_tag == 'true' && matrix.arch != 'arm64'
+      if: needs.source.outputs.is_tag == 'true'
       uses: lukka/run-cmake@v3
       with:
         cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
@@ -505,7 +570,7 @@ jobs:
         cmakeAppendedArgs: ' -GNinja -DOPTION_USE_NSIS=ON -DHOST_BINARY_DIR=${{ github.workspace }}/build-host -DCMAKE_BUILD_TYPE=RelWithDebInfo'
 
     - name: Build (without installer)
-      if: needs.source.outputs.is_tag != 'true' || matrix.arch == 'arm64'
+      if: needs.source.outputs.is_tag != 'true'
       uses: lukka/run-cmake@v3
       with:
         cmakeListsOrSettingsJson: CMakeListsTxtAdvanced

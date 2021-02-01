@@ -613,7 +613,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Wybierz 
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Wybierz kryterium sortowania
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Wybierz kryteria filtrowania
 STR_BUTTON_SORT_BY                                              :{BLACK}Sortuj wg
-STR_BUTTON_LOCATION                                             :{BLACK}Położenie
 STR_BUTTON_RENAME                                               :{BLACK}Zmień nazwę
 STR_BUTTON_CATCHMENT                                            :{BLACK}Zasięg
 STR_TOOLTIP_CATCHMENT                                           :{BLACK}Przełącz wyświetlanie zasięgu
@@ -1129,6 +1128,7 @@ STR_SMALLMAP_LEGENDA_DOCK                                       :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_ROUGH_LAND                                 :{TINY_FONT}{BLACK}Wyboisty teren
 STR_SMALLMAP_LEGENDA_GRASS_LAND                                 :{TINY_FONT}{BLACK}Trawa
 STR_SMALLMAP_LEGENDA_BARE_LAND                                  :{TINY_FONT}{BLACK}Odsłonięta ziemia
+STR_SMALLMAP_LEGENDA_RAINFOREST                                 :{TINY_FONT}{BLACK}Las deszczowy
 STR_SMALLMAP_LEGENDA_FIELDS                                     :{TINY_FONT}{BLACK}Pola
 STR_SMALLMAP_LEGENDA_TREES                                      :{TINY_FONT}{BLACK}Drzewa
 STR_SMALLMAP_LEGENDA_ROCKS                                      :{TINY_FONT}{BLACK}Skały
@@ -1385,7 +1385,7 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :inna
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Rozmiar interfejsu
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Wybierz rozmiar elementów interfejsu
 
-STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normalne
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normalny
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Podwójny
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Poczwórny
 
@@ -1448,7 +1448,7 @@ STR_NUM_VERY_LOW                                                :Bardzo mało
 STR_NUM_LOW                                                     :Mało
 STR_NUM_NORMAL                                                  :Średnio
 STR_NUM_HIGH                                                    :Dużo
-STR_NUM_CUSTOM                                                  :Własne
+STR_NUM_CUSTOM                                                  :Własna
 STR_NUM_CUSTOM_NUMBER                                           :Własna ({NUM})
 
 STR_VARIETY_NONE                                                :Brak
@@ -2194,7 +2194,7 @@ STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Wybierz 
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Wyświetl opcje gry
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Wyświetl tabelę wyników
-STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Ustawienia wyświetlania
+STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Wyświetl ustawienia gry
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Wyświetl ustawienia NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Poszukaj nowych lub zaktualizowanych dodatków do pobrania
 STR_INTRO_TOOLTIP_SCRIPT_SETTINGS                               :{BLACK}Pokaż ustawienia SI / Game Script
@@ -3012,6 +3012,7 @@ STR_INDUSTRY_CARGOES_SELECT_INDUSTRY_TOOLTIP                    :{BLACK}Wybierz 
 
 # Land area window
 STR_LAND_AREA_INFORMATION_CAPTION                               :{WHITE}Informacja o terenie
+STR_LAND_AREA_INFORMATION_LOCATION_TOOLTIP                      :{BLACK}Wyśrodkuj główny widok na lokalizacji kawałka terenu. Ctrl+Klik otworzy nowy podgląd na jego lokalizacji
 STR_LAND_AREA_INFORMATION_COST_TO_CLEAR_N_A                     :{BLACK}Koszt czyszczenia: {LTBLUE}N/D
 STR_LAND_AREA_INFORMATION_COST_TO_CLEAR                         :{BLACK}Koszt czyszczenia: {RED}{CURRENCY_LONG}
 STR_LAND_AREA_INFORMATION_REVENUE_WHEN_CLEARED                  :{BLACK}Zysk gdy czyszczone: {LTBLUE}{CURRENCY_LONG}
@@ -3338,12 +3339,12 @@ STR_NEWGRF_SETTINGS_VERSION                                     :{BLACK}Wersja: 
 STR_NEWGRF_SETTINGS_MIN_VERSION                                 :{BLACK}Kompatybilność z wersją min.: {SILVER}{NUM}
 STR_NEWGRF_SETTINGS_MD5SUM                                      :{BLACK}Suma MD5: {SILVER}{STRING}
 STR_NEWGRF_SETTINGS_PALETTE                                     :{BLACK}Paleta: {SILVER}{STRING}
-STR_NEWGRF_SETTINGS_PALETTE_DEFAULT                             :Domyslny (D)
+STR_NEWGRF_SETTINGS_PALETTE_DEFAULT                             :Domyślna (D)
 STR_NEWGRF_SETTINGS_PALETTE_DEFAULT_32BPP                       :Domyślna (D) / 32 bpp
 STR_NEWGRF_SETTINGS_PALETTE_LEGACY                              :Dawna (W)
 STR_NEWGRF_SETTINGS_PALETTE_LEGACY_32BPP                        :Dawna (W) / 32 bpp
 STR_NEWGRF_SETTINGS_PARAMETER                                   :{BLACK}Parametry: {SILVER}{STRING}
-STR_NEWGRF_SETTINGS_PARAMETER_NONE                              :Żadne
+STR_NEWGRF_SETTINGS_PARAMETER_NONE                              :Brak
 
 STR_NEWGRF_SETTINGS_NO_INFO                                     :{BLACK}Brak dostępnych informacji
 STR_NEWGRF_SETTINGS_NOT_FOUND                                   :{RED}Nie znaleziono pasującego pliku
@@ -3482,6 +3483,7 @@ STR_SIGN_LIST_MATCH_CASE_TOOLTIP                                :{BLACK}Przełą
 
 # Sign window
 STR_EDIT_SIGN_CAPTION                                           :{WHITE}Edycja tekstu napisu
+STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Wyśrodkuj główny widok na pozycji napisu. Ctrl+Klik otwiera nowy podgląd wyśrodkowany na niej
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Idź do następnego napisu
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Idź do poprzedniego napisu
 
@@ -4144,10 +4146,10 @@ STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}Autowymi
 # Vehicle view
 STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE}
 
-STR_VEHICLE_VIEW_TRAIN_LOCATION_TOOLTIP                         :{BLACK}Centruj główny widok na pozycji pociągu. Ctrl+klik by podążać za pociągiem w głównym oknie
-STR_VEHICLE_VIEW_ROAD_VEHICLE_LOCATION_TOOLTIP                  :{BLACK}Centruj główne okno na pozycji pojazdu. Ctrl+klik by podążać za pojazdem w głównym oknie
-STR_VEHICLE_VIEW_SHIP_LOCATION_TOOLTIP                          :{BLACK}Centruj główny widok na pozycji statku. Ctrl+klik by podążać za statkiem w głównym oknie
-STR_VEHICLE_VIEW_AIRCRAFT_LOCATION_TOOLTIP                      :{BLACK}Centruj główny widok na pozycji samolotu. Ctrl+klik by podążać za samolotem w głównym oknie
+STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP                           :{BLACK}Wyśrodkuj główny widok na lokalizacji pociągu. Podwójne kliknięcie włączy podążanie za pociągiem. Ctrl+Klik otworzy nowy podgląd na jego lokalizacji
+STR_VEHICLE_VIEW_ROAD_VEHICLE_CENTER_TOOLTIP                    :{BLACK}Wyśrodkuj główny widok na lokalizacji pojazdu. Podwójne kliknięcie włączy podążanie za pojazdem. Ctrl+Klik otworzy nowy podgląd na jego lokalizacji
+STR_VEHICLE_VIEW_SHIP_CENTER_TOOLTIP                            :{BLACK}Wyśrodkuj główny widok na lokalizacji statku. Podwójne kliknięcie włączy podążanie za statkiem. Ctrl+Klik otworzy nowy podgląd na jego lokalizacji
+STR_VEHICLE_VIEW_AIRCRAFT_CENTER_TOOLTIP                        :{BLACK}Wyśrodkuj główny widok na lokalizacji samolotu. Podwójne kliknięcie włączy podążanie za samolotem. Ctrl+Klik otworzy nowy podgląd na jego lokalizacji
 
 STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP                    :{BLACK}Wyślij pociąg do warsztatów. Ctrl - tylko serwis
 STR_VEHICLE_VIEW_ROAD_VEHICLE_SEND_TO_DEPOT_TOOLTIP             :{BLACK}Wyślij pojazd do zajezdni. Ctrl - tylko serwis
@@ -4179,10 +4181,12 @@ STR_VEHICLE_VIEW_ROAD_VEHICLE_SHOW_DETAILS_TOOLTIP              :{BLACK}Pokaż s
 STR_VEHICLE_VIEW_SHIP_SHOW_DETAILS_TOOLTIP                      :{BLACK}Pokaż szczegóły statku
 STR_VEHICLE_VIEW_AIRCRAFT_SHOW_DETAILS_TOOLTIP                  :{BLACK}Pokaż szczegóły samolotu
 
-STR_VEHICLE_VIEW_TRAIN_STATE_START_STOP_TOOLTIP                 :{BLACK}Obecny stan pociągu - kliknij aby zatrzymać/ruszyć pociąg. Ctrl+klik by przejść do punktu docelowego
-STR_VEHICLE_VIEW_ROAD_VEHICLE_STATE_START_STOP_TOOLTIP          :{BLACK}Obecny stan pojazdu - kliknij aby zatrzymać/ruszyć pojazd. Ctrl+klik by przejść do punktu docelowego
-STR_VEHICLE_VIEW_SHIP_STATE_START_STOP_TOOLTIP                  :{BLACK}Obecny stan statku - kliknij aby zatrzymać/ruszyć statek. Ctrl+klik by przejść do punktu docelowego
-STR_VEHICLE_VIEW_AIRCRAFT_STATE_START_STOP_TOOLTIP              :{BLACK}Obecny stan samolotu - kliknij aby zatrzymać/ruszyć samolot. Ctrl+klik by przejść do punktu docelowego
+STR_VEHICLE_VIEW_TRAIN_STATUS_START_STOP_TOOLTIP                :{BLACK}Obecny stan pociągu - kliknij, aby zatrzymać/ruszyć pociąg
+STR_VEHICLE_VIEW_ROAD_VEHICLE_STATUS_START_STOP_TOOLTIP         :{BLACK}Obecny stan pojazdu - kliknij, aby zatrzymać/ruszyć pojazd
+STR_VEHICLE_VIEW_SHIP_STATE_STATUS_STOP_TOOLTIP                 :{BLACK}Obecny stan statku - kliknij, aby zatrzymać/ruszyć statek
+STR_VEHICLE_VIEW_AIRCRAFT_STATUS_START_STOP_TOOLTIP             :{BLACK}Obecny stan samolotu - kliknij aby zatrzymać/ruszyć samolot
+
+STR_VEHICLE_VIEW_ORDER_LOCATION_TOOLTIP                         :{BLACK}Wyśrodkuj główny widok na celu polecenia. Ctrl+Klik otwiera nowy podgląd na celu
 
 # Messages in the start stop button in the vehicle view
 STR_VEHICLE_STATUS_LOADING_UNLOADING                            :{LTBLUE}Załadunek / Wyładunek

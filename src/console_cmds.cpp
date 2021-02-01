@@ -37,6 +37,8 @@
 #include "newgrf_profiling.h"
 #include "console_func.h"
 #include "engine_base.h"
+#include "road.h"
+#include "rail.h"
 #include "game/game.hpp"
 #include "table/strings.h"
 #include "aircraft.h"
@@ -2318,32 +2320,40 @@ DEF_CONSOLE_CMD(ConDumpRoadTypes)
 	IConsolePrintF(CC_DEFAULT, "    s = not available to scripts (AI/GS)");
 	IConsolePrintF(CC_DEFAULT, "    t = not modifiable by towns");
 
-	extern RoadTypeInfo _roadtypes[ROADTYPE_END];
-	btree::btree_set<uint32> grfids;
+	btree::btree_map<uint32, const GRFFile *> grfs;
 	for (RoadType rt = ROADTYPE_BEGIN; rt < ROADTYPE_END; rt++) {
-		const RoadTypeInfo &rti = _roadtypes[rt];
-		if (rti.label == 0) continue;
-		uint32 grfid = GetStringGRFID(rti.strings.name);
-		if (grfid != 0) grfids.insert(grfid);
+		const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
+		if (rti->label == 0) continue;
+		uint32 grfid = 0;
+		const GRFFile *grf = rti->grffile[ROTSG_GROUND];
+		if (grf == nullptr) {
+			uint32 str_grfid = GetStringGRFID(rti->strings.name);
+			if (str_grfid != 0) {
+				extern GRFFile *GetFileByGRFID(uint32 grfid);
+				grf = GetFileByGRFID(grfid);
+			}
+		}
+		if (grf != nullptr) {
+			grfid = grf->grfid;
+			grfs.insert(std::pair<uint32, const GRFFile *>(grfid, grf));
+		}
 		IConsolePrintF(CC_DEFAULT, "  %02u %s %c%c%c%c, Flags: %c%c%c%c%c, Extra Flags: %c%c, GRF: %08X, %s",
 				(uint) rt,
 				RoadTypeIsTram(rt) ? "Tram" : "Road",
-				rti.label >> 24, rti.label >> 16, rti.label >> 8, rti.label,
-				HasBit(rti.flags, ROTF_CATENARY) ? 'c' : '-',
-				HasBit(rti.flags, ROTF_NO_LEVEL_CROSSING) ? 'l' : '-',
-				HasBit(rti.flags, ROTF_NO_HOUSES) ? 'X' : '-',
-				HasBit(rti.flags, ROTF_HIDDEN) ? 'h' : '-',
-				HasBit(rti.flags, ROTF_TOWN_BUILD) ? 'T' : '-',
-				HasBit(rti.extra_flags, RXTF_NOT_AVAILABLE_AI_GS) ? 's' : '-',
-				HasBit(rti.extra_flags, RXTF_NO_TOWN_MODIFICATION) ? 't' : '-',
+				rti->label >> 24, rti->label >> 16, rti->label >> 8, rti->label,
+				HasBit(rti->flags, ROTF_CATENARY)                   ? 'c' : '-',
+				HasBit(rti->flags, ROTF_NO_LEVEL_CROSSING)          ? 'l' : '-',
+				HasBit(rti->flags, ROTF_NO_HOUSES)                  ? 'X' : '-',
+				HasBit(rti->flags, ROTF_HIDDEN)                     ? 'h' : '-',
+				HasBit(rti->flags, ROTF_TOWN_BUILD)                 ? 'T' : '-',
+				HasBit(rti->extra_flags, RXTF_NOT_AVAILABLE_AI_GS)  ? 's' : '-',
+				HasBit(rti->extra_flags, RXTF_NO_TOWN_MODIFICATION) ? 't' : '-',
 				BSWAP32(grfid),
-				GetStringPtr(rti.strings.name)
+				GetStringPtr(rti->strings.name)
 		);
 	}
-	for (uint32 grfid : grfids) {
-		extern GRFFile *GetFileByGRFID(uint32 grfid);
-		const GRFFile *grffile = GetFileByGRFID(grfid);
-		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grfid), grffile ? grffile->filename : "????");
+	for (const auto &grf : grfs) {
+		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grf.first), grf.second->filename);
 	}
 	return true;
 }
@@ -2366,31 +2376,40 @@ DEF_CONSOLE_CMD(ConDumpRailTypes)
 	IConsolePrintF(CC_DEFAULT, "    p = signal graphics callback enabled for programmable pre-signals");
 	IConsolePrintF(CC_DEFAULT, "    r = signal graphics callback restricted signal flag enabled");
 
-	btree::btree_set<uint32> grfids;
+	btree::btree_map<uint32, const GRFFile *> grfs;
 	for (RailType rt = RAILTYPE_BEGIN; rt < RAILTYPE_END; rt++) {
 		const RailtypeInfo *rti = GetRailTypeInfo(rt);
 		if (rti->label == 0) continue;
-		uint32 grfid = GetStringGRFID(rti->strings.name);
-		if (grfid != 0) grfids.insert(grfid);
+		uint32 grfid = 0;
+		const GRFFile *grf = rti->grffile[RTSG_GROUND];
+		if (grf == nullptr) {
+			uint32 str_grfid = GetStringGRFID(rti->strings.name);
+			if (str_grfid != 0) {
+				extern GRFFile *GetFileByGRFID(uint32 grfid);
+				grf = GetFileByGRFID(grfid);
+			}
+		}
+		if (grf != nullptr) {
+			grfid = grf->grfid;
+			grfs.insert(std::pair<uint32, const GRFFile *>(grfid, grf));
+		}
 		IConsolePrintF(CC_DEFAULT, "  %02u %c%c%c%c, Flags: %c%c%c%c%c%c, Ctrl Flags: %c%c, GRF: %08X, %s",
 				(uint) rt,
 				rti->label >> 24, rti->label >> 16, rti->label >> 8, rti->label,
-				HasBit(rti->flags, RTF_CATENARY) ? 'c' : '-',
-				HasBit(rti->flags, RTF_NO_LEVEL_CROSSING) ? 'l' : '-',
-				HasBit(rti->flags, RTF_HIDDEN) ? 'h' : '-',
-				HasBit(rti->flags, RTF_NO_SPRITE_COMBINE) ? 's' : '-',
-				HasBit(rti->flags, RTF_ALLOW_90DEG) ? 'a' : '-',
-				HasBit(rti->flags, RTF_DISALLOW_90DEG) ? 'd' : '-',
-				HasBit(rti->ctrl_flags, RTCF_PROGSIG) ? 'p' : '-',
+				HasBit(rti->flags, RTF_CATENARY)            ? 'c' : '-',
+				HasBit(rti->flags, RTF_NO_LEVEL_CROSSING)   ? 'l' : '-',
+				HasBit(rti->flags, RTF_HIDDEN)              ? 'h' : '-',
+				HasBit(rti->flags, RTF_NO_SPRITE_COMBINE)   ? 's' : '-',
+				HasBit(rti->flags, RTF_ALLOW_90DEG)         ? 'a' : '-',
+				HasBit(rti->flags, RTF_DISALLOW_90DEG)      ? 'd' : '-',
+				HasBit(rti->ctrl_flags, RTCF_PROGSIG)       ? 'p' : '-',
 				HasBit(rti->ctrl_flags, RTCF_RESTRICTEDSIG) ? 'r' : '-',
 				BSWAP32(grfid),
 				GetStringPtr(rti->strings.name)
 		);
 	}
-	for (uint32 grfid : grfids) {
-		extern GRFFile *GetFileByGRFID(uint32 grfid);
-		const GRFFile *grffile = GetFileByGRFID(grfid);
-		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grfid), grffile ? grffile->filename : "????");
+	for (const auto &grf : grfs) {
+		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grf.first), grf.second->filename);
 	}
 	return true;
 }
@@ -2467,12 +2486,23 @@ DEF_CONSOLE_CMD(ConDumpCargoTypes)
 	IConsolePrintF(CC_DEFAULT, "    c = covered/sheltered");
 	IConsolePrintF(CC_DEFAULT, "    S = special");
 
-	btree::btree_set<uint32> grfids;
+	btree::btree_map<uint32, const GRFFile *> grfs;
 	for (CargoID i = 0; i < NUM_CARGO; i++) {
 		const CargoSpec *spec = CargoSpec::Get(i);
 		if (!spec->IsValid()) continue;
-		uint32 grfid = GetStringGRFID(spec->name);
-		if (grfid != 0) grfids.insert(grfid);
+		uint32 grfid = 0;
+		const GRFFile *grf = spec->grffile;
+		if (grf == nullptr) {
+			uint32 str_grfid = GetStringGRFID(spec->name);
+			if (str_grfid != 0) {
+				extern GRFFile *GetFileByGRFID(uint32 grfid);
+				grf = GetFileByGRFID(grfid);
+			}
+		}
+		if (grf != nullptr) {
+			grfid = grf->grfid;
+			grfs.insert(std::pair<uint32, const GRFFile *>(grfid, grf));
+		}
 		IConsolePrintF(CC_DEFAULT, "  %02u Bit: %2u, Label: %c%c%c%c, Callback mask: 0x%02X, Cargo class: %c%c%c%c%c%c%c%c%c%c%c, GRF: %08X, %s",
 				(uint) i,
 				spec->bitnum,
@@ -2493,10 +2523,8 @@ DEF_CONSOLE_CMD(ConDumpCargoTypes)
 				GetStringPtr(spec->name)
 		);
 	}
-	for (uint32 grfid : grfids) {
-		extern GRFFile *GetFileByGRFID(uint32 grfid);
-		const GRFFile *grffile = GetFileByGRFID(grfid);
-		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grfid), grffile ? grffile->filename : "????");
+	for (const auto &grf : grfs) {
+		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grf.first), grf.second->filename);
 	}
 	return true;
 }
@@ -3068,6 +3096,33 @@ DEF_CONSOLE_CMD(ConFindNonRealisticBrakingSignal)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConDumpInfo)
+{
+	if (argc != 2) {
+		IConsoleHelp("Dump debugging information.");
+		IConsoleHelp("Usage: dump_info roadtypes|railtypes|cargotypes");
+		IConsoleHelp("  Show information about road/tram types, rail types or cargo types.");
+		return true;
+	}
+
+	if (strcasecmp(argv[1], "roadtypes") == 0) {
+		ConDumpRoadTypes(argc, argv);
+		return true;
+	}
+
+	if (strcasecmp(argv[1], "railtypes") == 0) {
+		ConDumpRailTypes(argc, argv);
+		return true;
+	}
+
+	if (strcasecmp(argv[1], "cargotypes") == 0) {
+		ConDumpCargoTypes(argc, argv);
+		return true;
+	}
+
+	return false;
+}
+
 /*******************************
  * console command registration
  *******************************/
@@ -3252,6 +3307,7 @@ void IConsoleStdLibRegister()
 	/* NewGRF development stuff */
 	IConsoleCmdRegister("reload_newgrfs",  ConNewGRFReload, ConHookNewGRFDeveloperTool);
 	IConsoleCmdRegister("newgrf_profile",  ConNewGRFProfile, ConHookNewGRFDeveloperTool);
+	IConsoleCmdRegister("dump_info", ConDumpInfo);
 	IConsoleCmdRegister("do_disaster", ConDoDisaster, ConHookNewGRFDeveloperTool, true);
 	IConsoleCmdRegister("bankrupt_company", ConBankruptCompany, ConHookNewGRFDeveloperTool, true);
 	IConsoleCmdRegister("delete_company", ConDeleteCompany, ConHookNewGRFDeveloperTool, true);

@@ -234,7 +234,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}정렬 �
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}정렬 기준을 선택하십시오.
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}검색 기준 선택
 STR_BUTTON_SORT_BY                                              :{BLACK}정렬
-STR_BUTTON_LOCATION                                             :{BLACK}위치
 STR_BUTTON_RENAME                                               :{BLACK}이름 바꾸기
 STR_BUTTON_CATCHMENT                                            :{BLACK}역세권
 STR_TOOLTIP_CATCHMENT                                           :{BLACK}이 역의 역세권을 표시하거나 끕니다.
@@ -758,6 +757,7 @@ STR_SMALLMAP_LEGENDA_DOCK                                       :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_ROUGH_LAND                                 :{TINY_FONT}{BLACK}거친 땅
 STR_SMALLMAP_LEGENDA_GRASS_LAND                                 :{TINY_FONT}{BLACK}잔디 땅
 STR_SMALLMAP_LEGENDA_BARE_LAND                                  :{TINY_FONT}{BLACK}맨 땅
+STR_SMALLMAP_LEGENDA_RAINFOREST                                 :{TINY_FONT}{BLACK}열대우림
 STR_SMALLMAP_LEGENDA_FIELDS                                     :{TINY_FONT}{BLACK}들판
 STR_SMALLMAP_LEGENDA_TREES                                      :{TINY_FONT}{BLACK}나무
 STR_SMALLMAP_LEGENDA_ROCKS                                      :{TINY_FONT}{BLACK}바위
@@ -3304,6 +3304,7 @@ STR_INDUSTRY_CARGOES_SELECT_INDUSTRY_TOOLTIP                    :{BLACK}표시�
 
 # Land area window
 STR_LAND_AREA_INFORMATION_CAPTION                               :{WHITE}이 지역의 지형 정보
+STR_LAND_AREA_INFORMATION_LOCATION_TOOLTIP                      :{BLACK}이 칸의 위치로 이동합니다. CTRL+클릭하면 이 칸의 위치를 기준으로 새로운 외부 화면을 엽니다
 STR_LAND_AREA_INFORMATION_COST_TO_CLEAR_N_A                     :{BLACK}초기화 가격: {LTBLUE}없음
 STR_LAND_AREA_INFORMATION_COST_TO_CLEAR                         :{BLACK}초기화 가격: {RED}{CURRENCY_LONG}
 STR_LAND_AREA_INFORMATION_REVENUE_WHEN_CLEARED                  :{BLACK}제거시 들어오는 환불금: {LTBLUE}{CURRENCY_LONG}
@@ -3801,6 +3802,7 @@ STR_SIGN_LIST_MATCH_CASE_TOOLTIP                                :{BLACK}팻말�
 
 # Sign window
 STR_EDIT_SIGN_CAPTION                                           :{WHITE}팻말 내용 고치기
+STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}이 팻말의 위치로 이동합니다. CTRL+클릭하면 이 팻말 위치를 기준으로 새로운 외부 화면을 엽니다
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}다음 팻말로 가기
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}이전 팻말로 가기
 
@@ -4111,7 +4113,7 @@ STR_CONFIG_DEPARTURE_MERGE_IDENTICAL_HELPTEXT                   :동일한 정�
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}이 경유지의 위치로 시점을 변경합니다. CTRL+클릭하면 이 경유지 위치를 기준으로 새로운 외부 화면을 엽니다
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}이 경유지의 이름을 변경합니다
-STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}이 부표의 위치로 시점을 변경합니다. CTRL+클릭하면 이 부표 위치를 기준으로 새로운 외부 화면을 엽니다
+STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}이 부표의 위치로 이동합니다. CTRL+클릭하면 이 부표 위치를 기준으로 새로운 외부 화면을 엽니다
 STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}부표 이름 바꾸기
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}경유지 이름 설정
@@ -4603,10 +4605,10 @@ STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}자동 �
 # Vehicle view
 STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE}
 
-STR_VEHICLE_VIEW_TRAIN_LOCATION_TOOLTIP                         :{BLACK}이 열차가 있는 곳으로 이동합니다. CTRL+클릭하면 이 열차를 따라갑니다
-STR_VEHICLE_VIEW_ROAD_VEHICLE_LOCATION_TOOLTIP                  :{BLACK}이 차량이 있는 곳으로 이동합니다. CTRL+클릭하면 이 차량을 따라갑니다
-STR_VEHICLE_VIEW_SHIP_LOCATION_TOOLTIP                          :{BLACK}이 선박이 있는 곳으로 이동합니다. CTRL+클릭하면 이 선박을 따라갑니다
-STR_VEHICLE_VIEW_AIRCRAFT_LOCATION_TOOLTIP                      :{BLACK}이 항공기가 있는 곳으로 이동합니다. CTRL+클릭하면 이 항공기를 따라갑니다
+STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP                           :{BLACK}이 열차의 위치로 화면을 이동합니다. 더블 클릭하면 이 열차를 따라 화면이 움직입니다. CTRL+클릭하면 이 열차 위치를 기준으로 외부 화면을 엽니다
+STR_VEHICLE_VIEW_ROAD_VEHICLE_CENTER_TOOLTIP                    :{BLACK}이 차량의 위치로 화면을 이동합니다. 더블 클릭하면 이 차량을 따라 화면이 움직입니다. CTRL+클릭하면 이 차량 위치를 기준으로 외부 화면을 엽니다
+STR_VEHICLE_VIEW_SHIP_CENTER_TOOLTIP                            :{BLACK}이 선박의 위치로 화면을 이동합니다. 더블 클릭하면 이 선박을 따라 화면이 움직입니다. CTRL+클릭하면 이 선박 위치를 기준으로 외부 화면을 엽니다
+STR_VEHICLE_VIEW_AIRCRAFT_CENTER_TOOLTIP                        :{BLACK}이 항공기의 위치로 화면을 이동합니다. 더블 클릭하면 이 항공기를 따라 화면이 움직입니다. CTRL+클릭하면 이 항공기 위치를 기준으로 외부 화면을 엽니다
 
 STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP                    :{BLACK}열차를 차량기지로 보냅니다. CTRL+클릭하면 정비를 하러 차량기지에 들르기만 합니다
 STR_VEHICLE_VIEW_ROAD_VEHICLE_SEND_TO_DEPOT_TOOLTIP             :{BLACK}차량을 차고지로 보냅니다. CTRL+클릭하면 정비를 하러 차고지에 들르기만 합니다
@@ -4641,10 +4643,12 @@ STR_VEHICLE_VIEW_ROAD_VEHICLE_SHOW_DETAILS_TOOLTIP              :{BLACK}차량�
 STR_VEHICLE_VIEW_SHIP_SHOW_DETAILS_TOOLTIP                      :{BLACK}선박의 상세정보를 보여줍니다
 STR_VEHICLE_VIEW_AIRCRAFT_SHOW_DETAILS_TOOLTIP                  :{BLACK}항공기의 상세정보를 보여줍니다
 
-STR_VEHICLE_VIEW_TRAIN_STATE_START_STOP_TOOLTIP                 :{BLACK}현재 열차 행동 - 열차를 운행/정지시키려면 클릭하세요. CTRL+클릭하면 목적지를 볼 수 있습니다.
-STR_VEHICLE_VIEW_ROAD_VEHICLE_STATE_START_STOP_TOOLTIP          :{BLACK}현재 차량 행동 - 운행/정지시키려면 클릭하세요. CTRL+클릭하면 목적지를 볼 수 있습니다.
-STR_VEHICLE_VIEW_SHIP_STATE_START_STOP_TOOLTIP                  :{BLACK}현재 선박 행동 - 선박을 운행/중지시키려면 클릭하세요. CTRL+클릭하면 목적지를 볼 수 있습니다.
-STR_VEHICLE_VIEW_AIRCRAFT_STATE_START_STOP_TOOLTIP              :{BLACK}현재 항공기 행동 - 항공기를 운행/중지시키려면 여기를 클릭하세요. CTRL+클릭하면 목적지를 볼 수 있습니다.
+STR_VEHICLE_VIEW_TRAIN_STATUS_START_STOP_TOOLTIP                :{BLACK}현재 열차 행동 - 열차 운행을 시작/정지하려면 클릭하세요
+STR_VEHICLE_VIEW_ROAD_VEHICLE_STATUS_START_STOP_TOOLTIP         :{BLACK}현재 차량 행동 - 차량 운행을 시작/정지하려면 클릭하세요
+STR_VEHICLE_VIEW_SHIP_STATE_STATUS_STOP_TOOLTIP                 :{BLACK}현재 선박 행동 - 선박 운행을 시작/정지하려면 클릭하세요
+STR_VEHICLE_VIEW_AIRCRAFT_STATUS_START_STOP_TOOLTIP             :{BLACK}현재 항공기 행동 - 항공기 운행을 시작/정지하려면 클릭하세요
+
+STR_VEHICLE_VIEW_ORDER_LOCATION_TOOLTIP                         :{BLACK}이 경로의 위치로 화면을 이동합니다. CTRL+클릭하면 이 경로의 위치를 기준으로 외부 화면을 엽니다
 
 # Messages in the start stop button in the vehicle view
 STR_VEHICLE_STATUS_LOADING_UNLOADING                            :{LTBLUE}싣는 중 / 내리는 중
@@ -5529,12 +5533,12 @@ STR_ERROR_AIRCRAFT_MUST_BE_STOPPED_INSIDE_HANGAR                :{WHITE}... 격�
 
 STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT             :{WHITE}차량기지 내에서 정지한 경우에만 개조할 수 있습니다
 STR_ERROR_TRAIN_TOO_LONG                                        :{WHITE}열차가 너무 깁니다!
-STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE                  :{WHITE}차량을 유턴시킬 수 없습니다...
+STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE                  :{WHITE}차량을 뒤집을 수 없습니다...
 STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE_MULTIPLE_UNITS   :{WHITE}여러 대가 연결된 차량은 뒤집을 수 없습니다...
 STR_ERROR_INCOMPATIBLE_RAIL_TYPES                               :알맞지 않은 철도 타입입니다
 
 STR_ERROR_CAN_T_MOVE_VEHICLE                                    :{WHITE}차량을 옮길 수 없습니다...
-STR_ERROR_REAR_ENGINE_FOLLOW_FRONT                              :{WHITE}뒷쪽 기관차는 앞쪽 기관차를 항상 따라다닐 것입니다
+STR_ERROR_REAR_ENGINE_FOLLOW_FRONT                              :{WHITE}뒷쪽 기관차는 앞쪽 기관차와 항상 붙어있어야 합니다
 STR_ERROR_UNABLE_TO_FIND_ROUTE_TO                               :{WHITE}근처에 있는 차량기지로 가는 길을 찾을 수 없습니다
 STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT                            :{WHITE}근처에 있는 차고지를 찾을 수 없습니다
 

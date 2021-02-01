@@ -913,6 +913,13 @@ public:
 				}
 			}
 		}
+
+		if (!i->text.empty()) {
+			SetDParamStr(0, i->text.c_str());
+			y += WD_PAR_VSEP_WIDE;
+			y = DrawStringMultiLine(left + WD_FRAMERECT_LEFT, right - WD_FRAMERECT_RIGHT, y, UINT16_MAX, STR_JUST_RAW_STRING, TC_BLACK);
+		}
+
 		return y + WD_FRAMERECT_BOTTOM;
 	}
 
@@ -1114,6 +1121,7 @@ static const NWidgetPart _nested_industry_view_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_CREAM),
 		NWidget(WWT_CAPTION, COLOUR_CREAM, WID_IV_CAPTION), SetDataTip(STR_INDUSTRY_VIEW_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_PUSHIMGBTN, COLOUR_CREAM, WID_IV_GOTO), SetMinimalSize(12, 14), SetDataTip(SPR_GOTO_LOCATION, STR_INDUSTRY_VIEW_LOCATION_TOOLTIP),
 		NWidget(WWT_DEBUGBOX, COLOUR_CREAM),
 		NWidget(WWT_SHADEBOX, COLOUR_CREAM),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_CREAM),
@@ -1127,7 +1135,6 @@ static const NWidgetPart _nested_industry_view_widgets[] = {
 	NWidget(WWT_PANEL, COLOUR_CREAM, WID_IV_INFO), SetMinimalSize(260, 2), SetResize(1, 0),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_CREAM, WID_IV_GOTO), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_BUTTON_LOCATION, STR_INDUSTRY_VIEW_LOCATION_TOOLTIP),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_CREAM, WID_IV_DISPLAY), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_INDUSTRY_DISPLAY_CHAIN, STR_INDUSTRY_DISPLAY_CHAIN_TOOLTIP),
 		NWidget(WWT_RESIZEBOX, COLOUR_CREAM),
 	EndContainer(),

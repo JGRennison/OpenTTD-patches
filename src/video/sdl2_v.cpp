@@ -491,8 +491,6 @@ bool VideoDriver_SDL::CreateMainSurface(uint w, uint h, bool resize)
 
 	DEBUG(driver, 1, "SDL2: using mode %ux%ux%d", w, h, bpp);
 
-	if (bpp == 0) usererror("Can't use a blitter that blits 0 bpp for normal visuals");
-
 	/* Free any previously allocated shadow surface */
 	if (_sdl_surface != nullptr && _sdl_surface != _sdl_realscreen) SDL_FreeSurface(_sdl_surface);
 
@@ -505,10 +503,15 @@ bool VideoDriver_SDL::CreateMainSurface(uint w, uint h, bool resize)
 			flags |= SDL_WINDOW_FULLSCREEN;
 		}
 
+		int x = SDL_WINDOWPOS_UNDEFINED, y = SDL_WINDOWPOS_UNDEFINED;
+		SDL_Rect r;
+		if (SDL_GetDisplayBounds(this->startup_display, &r) == 0) {
+			x = r.x + std::max(0, r.w - static_cast<int>(w)) / 2;
+			y = r.y + std::max(0, r.h - static_cast<int>(h)) / 4; // decent desktops have taskbars at the bottom
+		}
 		_sdl_window = SDL_CreateWindow(
 			caption,
-			SDL_WINDOWPOS_UNDEFINED,
-			SDL_WINDOWPOS_UNDEFINED,
+			x, y,
 			w, h,
 			flags);
 
@@ -997,6 +1000,8 @@ int VideoDriver_SDL::PollEvent()
 
 const char *VideoDriver_SDL::Start(const StringList &parm)
 {
+	if (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() == 0) return "Only real blitters supported";
+
 #if defined(WITH_FCITX)
 	FcitxInit();
 #endif
@@ -1015,6 +1020,25 @@ const char *VideoDriver_SDL::Start(const StringList &parm)
 		ret_code = SDL_InitSubSystem(SDL_INIT_VIDEO);
 	}
 	if (ret_code < 0) return SDL_GetError();
+
+	this->startup_display = GetDriverParamInt(parm, "display", -1);
+	int num_displays = SDL_GetNumVideoDisplays();
+	if (!IsInsideBS(this->startup_display, 0, num_displays)) {
+		/* Mouse position decides which display to use */
+		int mx, my;
+		SDL_GetGlobalMouseState(&mx, &my);
+		this->startup_display = 0; // used when mouse is on no screen...
+		for (int display = 0; display < num_displays; ++display) {
+			SDL_Rect r;
+			if (SDL_GetDisplayBounds(display, &r) == 0 && IsInsideBS(mx, r.x, r.w) && IsInsideBS(my, r.y, r.h)) {
+				DEBUG(driver, 1, "SDL2: Mouse is at (%d, %d), use display %d (%d, %d, %d, %d)", mx, my, display, r.x, r.y, r.w, r.h);
+				this->startup_display = display;
+				break;
+			}
+		}
+	}
+
+	this->UpdateAutoResolution();
 
 	GetVideoModes();
 	if (!CreateMainSurface(_cur_resolution.width, _cur_resolution.height, false)) {
@@ -1268,6 +1292,7 @@ bool VideoDriver_SDL::ToggleFullscreen(bool fullscreen)
 
 bool VideoDriver_SDL::AfterBlitterChange()
 {
+	assert(BlitterFactory::GetCurrentBlitter()->GetScreenDepth() != 0);
 	int w, h;
 	SDL_GetWindowSize(_sdl_window, &w, &h);
 	return CreateMainSurface(w, h, false);
@@ -1281,6 +1306,14 @@ void VideoDriver_SDL::AcquireBlitterLock()
 void VideoDriver_SDL::ReleaseBlitterLock()
 {
 	if (_draw_mutex != nullptr) _draw_mutex->unlock();
+}
+
+Dimension VideoDriver_SDL::GetScreenSize() const
+{
+	SDL_DisplayMode mode;
+	if (SDL_GetCurrentDisplayMode(this->startup_display, &mode) != 0) return VideoDriver::GetScreenSize();
+
+	return { static_cast<uint>(mode.w), static_cast<uint>(mode.h) };
 }
 
 #endif /* WITH_SDL2 */

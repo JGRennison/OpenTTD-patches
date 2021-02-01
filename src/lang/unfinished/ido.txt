@@ -216,7 +216,6 @@ STR_UNITS_HEIGHT_SI                                             :{COMMA} m
 # Common window strings
 
 STR_BUTTON_SORT_BY                                              :{BLACK}Ordinas per
-STR_BUTTON_LOCATION                                             :{BLACK}Loko
 STR_BUTTON_RENAME                                               :{BLACK}Rinomizar
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Klozas fenestro
@@ -1034,6 +1033,7 @@ STR_REPLACE_VEHICLE_AIRCRAFT                                    :Aeronavo
 
 # Vehicle view
 STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE}
+
 
 
 

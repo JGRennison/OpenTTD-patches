@@ -284,11 +284,10 @@ STR_LIST_FILTER_OSKTITLE                                        :{BLACK}Sisesta 
 STR_LIST_FILTER_TOOLTIP                                         :{BLACK}Sisesta märksõna mida loendist otsida
 
 STR_TOOLTIP_GROUP_ORDER                                         :{BLACK}Vali rühmitamise järjestus
-STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Vali järjekord (kahanev/kasvav)
-STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Vali järjekord
+STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Vali järjestus (kahanev/kasvav)
+STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Vali järjestus
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Vali sõelumisalused
-STR_BUTTON_SORT_BY                                              :{BLACK}Järjekord:
-STR_BUTTON_LOCATION                                             :{BLACK}Asukoht
+STR_BUTTON_SORT_BY                                              :{BLACK}Järjestus:
 STR_BUTTON_RENAME                                               :{BLACK}Nimevahetus
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Sulge aken
@@ -481,7 +480,7 @@ STR_GRAPH_MENU_CARGO_PAYMENT_RATES                              :Veotasude mää
 ############ range for company league menu starts
 STR_GRAPH_MENU_COMPANY_LEAGUE_TABLE                             :Ettevõtete edetabel
 STR_GRAPH_MENU_DETAILED_PERFORMANCE_RATING                      :Täpsustatud tulemushinnang
-STR_GRAPH_MENU_HIGHSCORE                                        :Punktitabel
+STR_GRAPH_MENU_HIGHSCORE                                        :Edetabel
 ############ range ends here
 
 ############ range for industry menu starts
@@ -1042,6 +1041,7 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Tavaline
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Topeltsuurus
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Ruudu suurus
 
+STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Kirja suurus
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Vali kasutatav liideseelementide suurus
 
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Ruudu suurus
@@ -1780,14 +1780,14 @@ STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Pildipuh
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}Uus mäng
-STR_INTRO_LOAD_GAME                                             :{BLACK}Jätkuv mäng
+STR_INTRO_LOAD_GAME                                             :{BLACK}Mängu jätk
 STR_INTRO_PLAY_SCENARIO                                         :{BLACK}Stsenaarium
 STR_INTRO_PLAY_HEIGHTMAP                                        :{BLACK}Kõrguskaart
 STR_INTRO_SCENARIO_EDITOR                                       :{BLACK}Stsenaariumiredaktor
 STR_INTRO_MULTIPLAYER                                           :{BLACK}Mitmikmäng
 
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}Liidese seadistus
-STR_INTRO_HIGHSCORE                                             :{BLACK}Punktitabel
+STR_INTRO_HIGHSCORE                                             :{BLACK}Edetabel
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Seaded
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF-i seadistus
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Aineste allalaadimine
@@ -1807,7 +1807,7 @@ STR_INTRO_TOOLTIP_SUB_TROPICAL_LANDSCAPE                        :{BLACK}Vali 'l�
 STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Vali 'mänguasjamaa' maastik
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Ava liidese seadistamine
-STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Ava punktitabel
+STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Ava edetabel
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Ava seaded
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Ava NewGRF-i seadistamine
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Otsi allalaadimiseks uusi ja uuendatud aineseid
@@ -2772,6 +2772,7 @@ STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}Mängust
 STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}Andmed puuduvad
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
 STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF: {WHITE}{STRING}
+STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Märksõna:
 
 STR_SAVELOAD_OSKTITLE                                           :{BLACK}Sisesta salvestatavale mängule nimi
 
@@ -3341,7 +3342,7 @@ STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Tööstu
 
 # Industry view
 STR_INDUSTRY_VIEW_CAPTION                                       :{WHITE}{INDUSTRY}
-STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}Eelmise kuu valmistoodang:
+STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}Eelmise kuu toodang:
 STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{STRING}{BLACK} ({COMMA}% veetud)
 STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Vaate keskendamine tööstusele
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Tootlikkuse tase: {YELLOW}{COMMA}%
@@ -3350,6 +3351,7 @@ STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Tööst
 STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Vajab: {YELLOW}{STRING}{STRING}
 STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :, {STRING}{STRING}
 
+STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Nõuab:
 
 STR_CONFIG_GAME_PRODUCTION                                      :{WHITE}Tootlikuse muutmine (kaheksaga jaguv, kuni 2040)
 STR_CONFIG_GAME_PRODUCTION_LEVEL                                :{WHITE}Muuda tootlikkuse taset (protsent, kuni 800%)
@@ -3365,7 +3367,7 @@ STR_VEHICLE_LIST_ROAD_VEHICLE_TOOLTIP                           :{BLACK}Veokid -
 STR_VEHICLE_LIST_SHIP_TOOLTIP                                   :{BLACK}Laevad - info saamiseks klõpsa laevale
 STR_VEHICLE_LIST_AIRCRAFT_TOOLTIP                               :{BLACK}Lennuk - info saamiseks vajuta lennukile
 
-STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR                     :{TINY_FONT}{BLACK}Kasum sellel aastal: {CURRENCY_LONG} (eelneval: {CURRENCY_LONG})
+STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR                     :{TINY_FONT}{BLACK}Selle aasta kasum: {CURRENCY_LONG} (eelneval: {CURRENCY_LONG})
 
 STR_VEHICLE_LIST_AVAILABLE_TRAINS                               :Saadaval rongid
 STR_VEHICLE_LIST_AVAILABLE_ROAD_VEHICLES                        :Saadaval sõidukid
@@ -3414,7 +3416,9 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :Eemalda kõik s
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Rühma nime vahetamine
 
-STR_GROUP_PROFIT_THIS_YEAR                                      :Kasum sellel aastal:
+STR_GROUP_PROFIT_THIS_YEAR                                      :Selle aasta kasum:
+STR_GROUP_PROFIT_LAST_YEAR                                      :Eelmise aasta kasum:
+STR_GROUP_OCCUPANCY                                             :Kasutuses:
 STR_GROUP_OCCUPANCY_VALUE                                       :{NUM}%
 
 # Build vehicle window
@@ -3640,10 +3644,6 @@ STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}Sunni au
 # Vehicle view
 STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE}
 
-STR_VEHICLE_VIEW_TRAIN_LOCATION_TOOLTIP                         :{BLACK}Vaate viimine rongi asukohale
-STR_VEHICLE_VIEW_ROAD_VEHICLE_LOCATION_TOOLTIP                  :{BLACK}Keskenda vaade veovahendile
-STR_VEHICLE_VIEW_SHIP_LOCATION_TOOLTIP                          :{BLACK}Vii vaade laeva asukohale
-STR_VEHICLE_VIEW_AIRCRAFT_LOCATION_TOOLTIP                      :{BLACK}Vii peavaade lennukile
 
 STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP                    :{BLACK}Saada rong depoosse
 STR_VEHICLE_VIEW_ROAD_VEHICLE_SEND_TO_DEPOT_TOOLTIP             :{BLACK}Saada sõiduk garaaži. Ctrl+klõps, et ainult teenindada
@@ -3675,10 +3675,7 @@ STR_VEHICLE_VIEW_ROAD_VEHICLE_SHOW_DETAILS_TOOLTIP              :{BLACK}Näita m
 STR_VEHICLE_VIEW_SHIP_SHOW_DETAILS_TOOLTIP                      :{BLACK}Näita laeva täpsustusi
 STR_VEHICLE_VIEW_AIRCRAFT_SHOW_DETAILS_TOOLTIP                  :{BLACK}Näita lennuki täpsustusi
 
-STR_VEHICLE_VIEW_TRAIN_STATE_START_STOP_TOOLTIP                 :{BLACK}Praegune rongi tegevus - rongi käivitamiseks või peatamiseks vajuta siia. Ctrl+klõps näitab sihtkohta
-STR_VEHICLE_VIEW_ROAD_VEHICLE_STATE_START_STOP_TOOLTIP          :{BLACK}Transpordivahendi praegune tegevus - sõiduki peatamiseks või startimiseks klõpsa siia. Ctrl+klõps näitab sihtkohta
-STR_VEHICLE_VIEW_SHIP_STATE_START_STOP_TOOLTIP                  :{BLACK}Praegune laeva tegevus - Laeva käivitamiseks või peatamiseks vajuta siia. Ctrl+klõps näitab sihtkohta
-STR_VEHICLE_VIEW_AIRCRAFT_STATE_START_STOP_TOOLTIP              :{BLACK}Praegune lennuki tegevus - lennuki peatamiseks või käivitamiseks vajuta siia. Ctrl+klõps näitab sihtkohta
+
 
 # Messages in the start stop button in the vehicle view
 STR_VEHICLE_STATUS_LOADING_UNLOADING                            :{LTBLUE}Veose ümberlaadimine

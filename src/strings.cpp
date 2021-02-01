@@ -2316,11 +2316,9 @@ const char *GetCurrentLanguageIsoCode()
 
 /**
  * Check whether there are glyphs missing in the current language.
- * @param[out] str Pointer to an address for storing the text pointer.
  * @return If glyphs are missing, return \c true, else return \c false.
- * @post If \c true is returned and str is not nullptr, *str points to a string that is found to contain at least one missing glyph.
  */
-bool MissingGlyphSearcher::FindMissingGlyphs(const char **str)
+bool MissingGlyphSearcher::FindMissingGlyphs()
 {
 	InitFreeType(this->Monospace());
 	const Sprite *question_mark[FS_END];
@@ -2332,12 +2330,22 @@ bool MissingGlyphSearcher::FindMissingGlyphs(const char **str)
 	this->Reset();
 	for (const char *text = this->NextString(); text != nullptr; text = this->NextString()) {
 		FontSize size = this->DefaultSize();
-		if (str != nullptr) *str = text;
 		for (WChar c = Utf8Consume(&text); c != '\0'; c = Utf8Consume(&text)) {
 			if (c >= SCC_FIRST_FONT && c <= SCC_LAST_FONT) {
 				size = (FontSize)(c - SCC_FIRST_FONT);
 			} else if (!IsInsideMM(c, SCC_SPRITE_START, SCC_SPRITE_END) && IsPrintable(c) && !IsTextDirectionChar(c) && c != '?' && GetGlyph(size, c) == question_mark[size]) {
 				/* The character is printable, but not in the normal font. This is the case we were testing for. */
+				std::string size_name;
+
+				switch (size) {
+					case 0: size_name = "medium"; break;
+					case 1: size_name = "small"; break;
+					case 2: size_name = "large"; break;
+					case 3: size_name = "mono"; break;
+					default: NOT_REACHED();
+				}
+
+				DEBUG(freetype, 0, "Font is missing glyphs to display char 0x%X in %s font size", c, size_name.c_str());
 				return true;
 			}
 		}
@@ -2413,7 +2421,7 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 {
 	static LanguagePackGlyphSearcher pack_searcher;
 	if (searcher == nullptr) searcher = &pack_searcher;
-	bool bad_font = !base_font || searcher->FindMissingGlyphs(nullptr);
+	bool bad_font = !base_font || searcher->FindMissingGlyphs();
 #if defined(WITH_FREETYPE) || defined(_WIN32)
 	if (bad_font) {
 		/* We found an unprintable character... lets try whether we can find
@@ -2430,6 +2438,19 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 		free(_freetype.medium.os_handle);
 
 		memcpy(&_freetype, &backup, sizeof(backup));
+
+		if (!bad_font) {
+			/* Show that we loaded fallback font. To do this properly we have
+			 * to set the colour of the string, otherwise we end up with a lot
+			 * of artifacts.* The colour 'character' might change in the
+			 * future, so for safety we just Utf8 Encode it into the string,
+			 * which takes exactly three characters, so it replaces the "XXX"
+			 * with the colour marker. */
+			static char *err_str = stredup("XXXThe current font is missing some of the characters used in the texts for this language. Using system fallback font instead.");
+			Utf8Encode(err_str, SCC_YELLOW);
+			SetDParamStr(0, err_str);
+			ShowErrorMessage(STR_JUST_RAW_STRING, INVALID_STRING_ID, WL_WARNING);
+		}
 
 		if (bad_font && base_font) {
 			/* Our fallback font does miss characters too, so keep the
