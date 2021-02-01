@@ -146,7 +146,7 @@ static DBusHandlerResult FcitxDBusMessageFilter(DBusConnection *connection, DBus
 		if (!dbus_message_get_args(message, nullptr, DBUS_TYPE_STRING, &text, DBUS_TYPE_INT32, &cursor, DBUS_TYPE_INVALID)) return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 
 		if (text != nullptr && EditBoxInGlobalFocus()) {
-			HandleTextInput(text, true, text + min<uint>(cursor, strlen(text)));
+			HandleTextInput(text, true, text + std::min<uint>(cursor, strlen(text)));
 		}
 		return DBUS_HANDLER_RESULT_HANDLED;
 	}
@@ -956,8 +956,8 @@ int VideoDriver_SDL::PollEvent()
 				// Force a redraw of the entire screen.
 				_num_dirty_rects = MAX_DIRTY_RECTS + 1;
 			} else if (ev.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-				int w = max(ev.window.data1, 64);
-				int h = max(ev.window.data2, 64);
+				int w = std::max(ev.window.data1, 64);
+				int h = std::max(ev.window.data2, 64);
 				CreateMainSurface(w, h, w != ev.window.data1 || h != ev.window.data2);
 			} else if (ev.window.event == SDL_WINDOWEVENT_ENTER) {
 				// mouse entered the window, enable cursor

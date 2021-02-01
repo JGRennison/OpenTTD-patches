@@ -333,8 +333,8 @@ public:
 						SetDParam(0, full_weight);
 						if (_settings_client.gui.show_train_weight_ratios_in_details) {
 							SetDParam(1, STR_VEHICLE_INFO_WEIGHT_RATIOS);
-							SetDParam(2, (100 * this->virtual_train->gcache.cached_power) / max<uint>(1, full_weight));
-							SetDParam(3, (this->virtual_train->gcache.cached_max_te / 10) / max<uint>(1, full_weight));
+							SetDParam(2, (100 * this->virtual_train->gcache.cached_power) / std::max<uint>(1, full_weight));
+							SetDParam(3, (this->virtual_train->gcache.cached_max_te / 10) / std::max<uint>(1, full_weight));
 						} else {
 							SetDParam(1, STR_EMPTY);
 						}
@@ -494,10 +494,10 @@ public:
 			}
 		}
 
-		min_width = max(min_width, width);
+		min_width = std::max(min_width, width);
 		this->hscroll->SetCount(min_width + 50);
 
-		min_height = max(min_height, height);
+		min_height = std::max(min_height, height);
 		this->vscroll->SetCount(min_height);
 
 		this->DrawWidgets();

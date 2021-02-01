@@ -333,7 +333,7 @@ struct PlansWindow : Window {
 		switch (widget) {
 			case WID_PLN_LIST:
 				this->company_icon_spr_dim = GetSpriteSize(SPR_COMPANY_ICON);
-				resize->height = max<int>(FONT_HEIGHT_NORMAL, SETTING_BUTTON_HEIGHT);
+				resize->height = std::max<int>(FONT_HEIGHT_NORMAL, SETTING_BUTTON_HEIGHT);
 				size->height = resize->height * 5 + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
 				break;
 

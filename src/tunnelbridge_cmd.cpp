@@ -281,7 +281,7 @@ CommandCost CheckBridgeAvailability(BridgeType bridge_type, uint bridge_len, DoC
 	const BridgeSpec *b = GetBridgeSpec(bridge_type);
 	if (b->avail_year > _cur_year) return CMD_ERROR;
 
-	uint max = min(b->max_length, _settings_game.construction.max_bridge_length);
+	uint max = std::min(b->max_length, _settings_game.construction.max_bridge_length);
 
 	if (b->min_length > bridge_len) return CMD_ERROR;
 	if (bridge_len <= max) return CommandCost();
@@ -294,6 +294,42 @@ bool MayTownBuildBridgeType(BridgeType bridge_type)
 
 	const BridgeSpec *b = GetBridgeSpec(bridge_type);
 	return !HasBit(b->ctrl_flags, BSCF_NOT_AVAILABLE_TOWN);
+}
+
+/**
+ * Calculate the base cost of clearing a tunnel/bridge per tile.
+ * @param tile Start tile of the tunnel/bridge.
+ * @return How much clearing this tunnel/bridge costs per tile.
+ */
+static Money TunnelBridgeClearCost(TileIndex tile, Price base_price)
+{
+	Money base_cost = _price[base_price];
+
+	/* Add the cost of the transport that is on the tunnel/bridge. */
+	switch (GetTunnelBridgeTransportType(tile)) {
+		case TRANSPORT_ROAD: {
+			RoadType road_rt = GetRoadTypeRoad(tile);
+			RoadType tram_rt = GetRoadTypeTram(tile);
+
+			auto check_rtt = [&](RoadTramType rtt) -> bool {
+				return IsTunnel(tile) || DiagDirToRoadBits(GetTunnelBridgeDirection(tile)) & GetCustomBridgeHeadRoadBits(tile, rtt);
+			};
+
+			if (road_rt != INVALID_ROADTYPE && check_rtt(RTT_ROAD)) {
+				base_cost += 2 * RoadClearCost(road_rt);
+			}
+			if (tram_rt != INVALID_ROADTYPE && check_rtt(RTT_TRAM)) {
+				base_cost += 2 * RoadClearCost(tram_rt);
+			}
+		} break;
+
+		case TRANSPORT_RAIL: base_cost += RailClearCost(GetRailType(tile)); break;
+		/* Aquaducts have their own clear price. */
+		case TRANSPORT_WATER: base_cost = _price[PR_CLEAR_AQUEDUCT]; break;
+		default: break;
+	}
+
+	return base_cost;
 }
 
 /**
@@ -385,6 +421,7 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 	} else {
 		if (bridge_len > _settings_game.construction.max_bridge_length) return_cmd_error(STR_ERROR_BRIDGE_TOO_LONG);
 	}
+	bridge_len += 2; // begin and end tiles/ramps
 
 	int z_start;
 	int z_end;
@@ -466,7 +503,8 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 			}
 		}
 
-		cost.AddCost((bridge_len + 1) * _price[PR_CLEAR_BRIDGE]); // The cost of clearing the current bridge.
+		/* The cost of clearing the current bridge. */
+		cost.AddCost(bridge_len * TunnelBridgeClearCost(tile_start, PR_CLEAR_BRIDGE));
 		owner = GetTileOwner(tile_start);
 
 		/* If bridge belonged to bankrupt company, it has a new owner now */
@@ -717,7 +755,7 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 			}
 
 			case TRANSPORT_WATER:
-				if (is_new_owner && c != nullptr) c->infrastructure.water += (bridge_len + 2) * TUNNELBRIDGE_TRACKBIT_FACTOR;
+				if (is_new_owner && c != nullptr) c->infrastructure.water += bridge_len * TUNNELBRIDGE_TRACKBIT_FACTOR;
 				MakeAqueductBridgeRamp(tile_start, owner, dir);
 				MakeAqueductBridgeRamp(tile_end,   owner, ReverseDiagDir(dir));
 				CheckForDockingTile(tile_start);
@@ -748,8 +786,6 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 	 * For (non-spectated) AI, Towns this has to be of course calculated. */
 	Company *c = Company::GetIfValid(company);
 	if (!(flags & DC_QUERY_COST) || (c != nullptr && c->is_ai && company != _local_company)) {
-		bridge_len += 2; // begin and end tiles/ramps
-
 		switch (transport_type) {
 			case TRANSPORT_ROAD: {
 				cost.AddCost(bridge_len * 2 * RoadBuildCost(roadtype));
@@ -1181,6 +1217,7 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 
 	const bool is_chunnel = Tunnel::GetByTile(tile)->is_chunnel;
 
+	Money base_cost = TunnelBridgeClearCost(tile, PR_CLEAR_TUNNEL);
 	uint len = GetTunnelBridgeLength(tile, endtile) + 2; // Don't forget the end tiles.
 
 	if (flags & DC_EXEC) {
@@ -1245,7 +1282,8 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 		}
 		ViewportMapInvalidateTunnelCacheByTile(tile < endtile ? tile : endtile, axis);
 	}
-	return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_TUNNEL] * len * (is_chunnel ? 2 : 1));
+
+	return CommandCost(EXPENSES_CONSTRUCTION, len * base_cost * (is_chunnel ? 2 : 1));
 }
 
 
@@ -1306,7 +1344,7 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 		}
 	}
 
-	Money base_cost = (GetTunnelBridgeTransportType(tile) != TRANSPORT_WATER) ? _price[PR_CLEAR_BRIDGE] : _price[PR_CLEAR_AQUEDUCT];
+	Money base_cost = TunnelBridgeClearCost(tile, PR_CLEAR_BRIDGE);
 	uint middle_len = GetTunnelBridgeLength(tile, endtile);
 	uint len = middle_len + 2; // Don't forget the end tiles.
 
@@ -1495,8 +1533,8 @@ static void DrawBridgePillars(const PalSpriteID *psid, const TileInfo *ti, Axis 
 	GetSlopePixelZOnEdge(ti->tileh, ReverseDiagDir(south_dir), &z_front_north, &z_back_north);
 
 	/* Shared height of pillars */
-	int z_front = max(z_front_north, z_front_south);
-	int z_back = max(z_back_north, z_back_south);
+	int z_front = std::max(z_front_north, z_front_south);
+	int z_back = std::max(z_back_north, z_back_south);
 
 	/* x and y size of bounding-box of pillars */
 	int w = bounding_box_size[axis];
@@ -2841,7 +2879,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 
 			if (v->type == VEH_ROAD) spd *= 2;
 			Vehicle *first = v->First();
-			first->cur_speed = min(first->cur_speed, spd);
+			first->cur_speed = std::min(first->cur_speed, spd);
 		}
 
 		const Direction bridge_dir = DiagDirToDir(dir);

@@ -29,6 +29,7 @@
 #include "hotkeys.h"
 #include "aircraft.h"
 #include "engine_func.h"
+#include "vehicle_func.h"
 #include "vehiclelist.h"
 #include "tracerestrict.h"
 #include "scope.h"
@@ -103,12 +104,12 @@ private:
 		this->max_cargo_name_width = 0;
 		for (int i = 0; i < _sorted_standard_cargo_specs_size; i++) {
 			SetDParam(0, _sorted_cargo_specs[i]->name);
-			this->max_cargo_name_width = max(this->max_cargo_name_width, GetStringBoundingBox(STR_JUST_STRING).width);
+			this->max_cargo_name_width = std::max(this->max_cargo_name_width, GetStringBoundingBox(STR_JUST_STRING).width);
 		}
 		this->max_cargo_dropdown_width = 0;
 		for (int i = 0; this->cargo_type_order_dropdown[i] != INVALID_STRING_ID; i++) {
 			SetDParam(0, this->cargo_type_order_dropdown[i]);
-			this->max_cargo_dropdown_width = max(this->max_cargo_dropdown_width, GetStringBoundingBox(STR_JUST_STRING).width);
+			this->max_cargo_dropdown_width = std::max(this->max_cargo_dropdown_width, GetStringBoundingBox(STR_JUST_STRING).width);
 		}
 	}
 
@@ -186,16 +187,16 @@ public:
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) OVERRIDE
 	{
 		if (widget == WID_CTO_HEADER) {
-			(*size).height = max((*size).height, (uint) WD_FRAMERECT_TOP + FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM);
+			(*size).height = std::max((*size).height, (uint) WD_FRAMERECT_TOP + FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM);
 		} else if (WID_CTO_CARGO_LABEL_FIRST <= widget && widget <= WID_CTO_CARGO_LABEL_LAST) {
-			(*size).width  = max((*size).width,  WD_FRAMERECT_LEFT + this->CARGO_ICON_WIDTH + WD_FRAMETEXT_LEFT + this->max_cargo_name_width + WD_FRAMETEXT_RIGHT + padding.width);
-			(*size).height = max((*size).height, (uint) WD_FRAMERECT_TOP + FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM);
+			(*size).width  = std::max((*size).width,  WD_FRAMERECT_LEFT + this->CARGO_ICON_WIDTH + WD_FRAMETEXT_LEFT + this->max_cargo_name_width + WD_FRAMETEXT_RIGHT + padding.width);
+			(*size).height = std::max((*size).height, (uint) WD_FRAMERECT_TOP + FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM);
 		} else if ((WID_CTO_CARGO_DROPDOWN_FIRST <= widget && widget <= WID_CTO_CARGO_DROPDOWN_LAST) || widget == WID_CTO_SET_TO_ALL_DROPDOWN) {
-			(*size).width  = max((*size).width,  WD_DROPDOWNTEXT_LEFT + this->max_cargo_dropdown_width + WD_DROPDOWNTEXT_RIGHT + NWidgetLeaf::dropdown_dimension.width);
-			(*size).height = max((*size).height, (uint) WD_DROPDOWNTEXT_TOP + FONT_HEIGHT_NORMAL + WD_DROPDOWNTEXT_BOTTOM);
+			(*size).width  = std::max((*size).width,  WD_DROPDOWNTEXT_LEFT + this->max_cargo_dropdown_width + WD_DROPDOWNTEXT_RIGHT + NWidgetLeaf::dropdown_dimension.width);
+			(*size).height = std::max((*size).height, (uint) WD_DROPDOWNTEXT_TOP + FONT_HEIGHT_NORMAL + WD_DROPDOWNTEXT_BOTTOM);
 		} else if (widget == WID_CTO_SET_TO_ALL_LABEL) {
-			(*size).width = max((*size).width, this->max_cargo_name_width + WD_FRAMETEXT_RIGHT + padding.width);
-			(*size).height = max((*size).height, (uint) WD_FRAMERECT_TOP + FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM);
+			(*size).width = std::max((*size).width, this->max_cargo_name_width + WD_FRAMETEXT_RIGHT + padding.width);
+			(*size).height = std::max((*size).height, (uint) WD_FRAMERECT_TOP + FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM);
 		}
 	}
 
@@ -810,8 +811,9 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 		case OT_GOTO_STATION: {
 			OrderLoadFlags load = order->GetLoadType();
 			OrderUnloadFlags unload = order->GetUnloadType();
+			bool valid_station = CanVehicleUseStation(v, Station::Get(order->GetDestination()));
 
-			SetDParam(0, STR_ORDER_GO_TO_STATION);
+			SetDParam(0, valid_station ? STR_ORDER_GO_TO_STATION : STR_ORDER_GO_TO_STATION_CAN_T_USE_STATION);
 			SetDParam(1, STR_ORDER_GO_TO + (v->IsGroundVehicle() ? order->GetNonStopType() : 0));
 			SetDParam(2, order->GetDestination());
 
@@ -1998,8 +2000,8 @@ public:
 				if (i != this->selected_order && i == this->order_over) {
 					/* Highlight dragged order destination. */
 					int top = (this->order_over < this->selected_order ? y : y + line_height) - WD_FRAMERECT_TOP;
-					int bottom = min(top + 2, r.bottom - WD_FRAMERECT_BOTTOM);
-					top = max(top - 3, r.top + WD_FRAMERECT_TOP);
+					int bottom = std::min(top + 2, r.bottom - WD_FRAMERECT_BOTTOM);
+					top = std::max(top - 3, r.top + WD_FRAMERECT_TOP);
 					GfxFillRect(r.left + WD_FRAMETEXT_LEFT, top, r.right - WD_FRAMETEXT_RIGHT, bottom, _colour_gradient[COLOUR_GREY][7]);
 					break;
 				}

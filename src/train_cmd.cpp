@@ -112,7 +112,7 @@ void CheckTrainsLengths()
 			for (const Train *u = v, *w = v->Next(); w != nullptr; u = w, w = w->Next()) {
 				if (u->track != TRACK_BIT_DEPOT) {
 					if ((w->track != TRACK_BIT_DEPOT &&
-							max(abs(u->x_pos - w->x_pos), abs(u->y_pos - w->y_pos)) != u->CalcNextVehicleOffset()) ||
+							std::max(abs(u->x_pos - w->x_pos), abs(u->y_pos - w->y_pos)) != u->CalcNextVehicleOffset()) ||
 							(w->track == TRACK_BIT_DEPOT && TicksToLeaveDepot(u) <= 0)) {
 						SetDParam(0, v->index);
 						SetDParam(1, v->owner);
@@ -166,15 +166,15 @@ uint16 GetTrainVehicleMaxSpeed(const Train *u, const RailVehicleInfo *rvi_u, con
 	uint16 speed = base_speed;
 	if (HasBit(u->flags, VRF_NEED_REPAIR) && front->IsFrontEngine()) {
 		for (uint i = 0; i < u->critical_breakdown_count; i++) {
-			speed = min(speed - (speed / (front->tcache.cached_num_engines + 2)) + 1, speed);
+			speed = std::min<uint16>(speed - (speed / (front->tcache.cached_num_engines + 2)) + 1, speed);
 		}
 	}
 
 	/* clamp speed to be no less than lower of 5mph and 1/8 of base speed */
-	speed = max<uint16>(speed, min<uint16>(5, (base_speed + 7) >> 3));
+	speed = std::max<uint16>(speed, std::min<uint16>(5, (base_speed + 7) >> 3));
 
 	if (HasBit(u->flags, VRF_HAS_HIT_RV) && front->IsFrontEngine()) {
-		speed = min(speed, 30);
+		speed = std::min<uint16>(speed, 30);
 	}
 	return speed;
 }
@@ -274,7 +274,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 			/* max speed is the minimum of the speed limits of all vehicles in the consist */
 			if ((rvi_u->railveh_type != RAILVEH_WAGON || _settings_game.vehicle.wagon_speed_limits) && !UsesWagonOverride(u)) {
 				uint16 speed = GetTrainVehicleMaxSpeed(u, rvi_u, this);
-				if (speed != 0) max_speed = min(speed, max_speed);
+				if (speed != 0) max_speed = std::min(speed, max_speed);
 			}
 		}
 
@@ -282,7 +282,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 		if (allowed_changes & CCF_CAPACITY) {
 			/* Update vehicle capacity. */
 			if (u->cargo_cap > new_cap) u->cargo.Truncate(new_cap);
-			u->refit_cap = min(new_cap, u->refit_cap);
+			u->refit_cap = std::min(new_cap, u->refit_cap);
 			u->cargo_cap = new_cap;
 		} else {
 			/* Verify capacity hasn't changed. */
@@ -515,7 +515,7 @@ int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, bool up
 				/* next tile is an effective dead end */
 				int current_platform_remaining = *station_ahead - TILE_SIZE + GetTileMarginInFrontOfTrain(v);
 				int limit = GetTileMarginInFrontOfTrain(front) + (*station_length - current_platform_remaining) - ((v->gcache.cached_veh_length + 1) / 2);
-				result = min(limit, result);
+				result = std::min(limit, result);
 			}
 		}
 	}
@@ -739,7 +739,7 @@ static int64 GetRealisticBrakingDistanceForSpeed(const TrainDecelerationStats &s
 	if (z_delta < 0 && _settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
 		/* descending */
 		int64 slope_dist = (ke_delta - (z_delta * 400 * _settings_game.vehicle.train_slope_steepness)) / stats.uncapped_deceleration_x2;
-		dist = max<int64>(dist, slope_dist);
+		dist = std::max<int64>(dist, slope_dist);
 	}
 	return dist;
 }
@@ -794,11 +794,11 @@ static int GetRealisticBrakingSpeedForDistance(const TrainDecelerationStats &sta
 				}
 				int64 v_calc_sq = sqr(v_calc);
 				if (v_calc_sq < speed_sqr) {
-					return max((int)REALISTIC_BRAKING_MIN_SPEED, v_calc);
+					return std::max((int)REALISTIC_BRAKING_MIN_SPEED, v_calc);
 				}
 			}
 		}
-		speed_sqr = min<int64>(speed_sqr, slope_speed_sqr);
+		speed_sqr = std::min<int64>(speed_sqr, slope_speed_sqr);
 	}
 	if (speed_sqr <= REALISTIC_BRAKING_MIN_SPEED * REALISTIC_BRAKING_MIN_SPEED) return REALISTIC_BRAKING_MIN_SPEED;
 	if (speed_sqr > UINT_MAX) speed_sqr = UINT_MAX;
@@ -809,7 +809,7 @@ static int GetRealisticBrakingSpeedForDistance(const TrainDecelerationStats &sta
 static void LimitSpeedFromLookAhead(int &max_speed, const TrainDecelerationStats &stats, int current_position, int position, int end_speed, int z_delta)
 {
 	if (position <= current_position) {
-		max_speed = min(max_speed, max(15, end_speed));
+		max_speed = std::min(max_speed, std::max(15, end_speed));
 	} else if (end_speed < max_speed) {
 		int64 distance = GetRealisticBrakingDistanceForSpeed(stats, max_speed, end_speed, z_delta);
 		if (distance + current_position > position) {
@@ -818,7 +818,7 @@ static void LimitSpeedFromLookAhead(int &max_speed, const TrainDecelerationStats
 				/* Reduce z delta near target to compensate for target z not taking into account that z varies across the whole train */
 				z_delta = (z_delta * (position - current_position)) / stats.t->gcache.cached_total_length;
 			}
-			max_speed = min(max_speed, GetRealisticBrakingSpeedForDistance(stats, position - current_position, end_speed, z_delta));
+			max_speed = std::min(max_speed, GetRealisticBrakingSpeedForDistance(stats, position - current_position, end_speed, z_delta));
 		}
 	}
 }
@@ -828,7 +828,7 @@ static void ApplyLookAheadItem(const Train *v, const TrainReservationLookAheadIt
 {
 	auto limit_speed = [&](int position, int end_speed, int z) {
 		LimitSpeedFromLookAhead(max_speed, stats, current_position, position, end_speed, z - stats.z_pos);
-		advisory_max_speed = min(advisory_max_speed, max_speed);
+		advisory_max_speed = std::min(advisory_max_speed, max_speed);
 	};
 	auto limit_advisory_speed = [&](int position, int end_speed, int z) {
 		LimitSpeedFromLookAhead(advisory_max_speed, stats, current_position, position, end_speed, z - stats.z_pos);
@@ -908,9 +908,9 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 {
 	int max_speed = _settings_game.vehicle.train_acceleration_model == AM_ORIGINAL ?
 			this->gcache.cached_max_track_speed :
-			min(this->tcache.cached_max_curve_speed, this->gcache.cached_max_track_speed);
+			std::min<int>(this->tcache.cached_max_curve_speed, this->gcache.cached_max_track_speed);
 
-	if (this->current_order.IsType(OT_LOADING_ADVANCE)) max_speed = min(max_speed, 15);
+	if (this->current_order.IsType(OT_LOADING_ADVANCE)) max_speed = std::min(max_speed, 15);
 
 	int advisory_max_speed = max_speed;
 
@@ -929,7 +929,7 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 				int distance_to_go = station_ahead / TILE_SIZE - (station_length - stop_at) / TILE_SIZE;
 
 				if (distance_to_go > 0) {
-					advisory_max_speed = min(advisory_max_speed, 15 * distance_to_go);
+					advisory_max_speed = std::min(advisory_max_speed, 15 * distance_to_go);
 				}
 			}
 		}
@@ -941,7 +941,7 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 			if (u->track == TRACK_BIT_DEPOT) {
 				SetBit(const_cast<Train *>(this)->flags, VRF_CONSIST_SPEED_REDUCTION);
 				if (_settings_game.vehicle.train_acceleration_model == AM_REALISTIC) {
-					max_speed = min(max_speed, 61);
+					max_speed = std::min(max_speed, 61);
 				}
 				continue;
 			}
@@ -949,20 +949,20 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 			/* Vehicle is on the middle part of a bridge. */
 			if (u->track & TRACK_BIT_WORMHOLE && !(u->vehstatus & VS_HIDDEN)) {
 				SetBit(const_cast<Train *>(this)->flags, VRF_CONSIST_SPEED_REDUCTION);
-				max_speed = min(max_speed, GetBridgeSpec(GetBridgeType(u->tile))->speed);
+				max_speed = std::min<int>(max_speed, GetBridgeSpec(GetBridgeType(u->tile))->speed);
 			}
 		}
 	}
 
-	advisory_max_speed = min(advisory_max_speed, this->current_order.GetMaxSpeed());
+	advisory_max_speed = std::min<int>(advisory_max_speed, this->current_order.GetMaxSpeed());
 	if (HasBit(this->flags, VRF_BREAKDOWN_SPEED)) {
-		advisory_max_speed = min(advisory_max_speed, this->GetBreakdownSpeed());
+		advisory_max_speed = std::min<int>(advisory_max_speed, this->GetBreakdownSpeed());
 	}
 	if (this->speed_restriction != 0) {
-		advisory_max_speed = min(advisory_max_speed, this->speed_restriction);
+		advisory_max_speed = std::min<int>(advisory_max_speed, this->speed_restriction);
 	}
 	if (this->reverse_distance > 1) {
-		advisory_max_speed = min(advisory_max_speed, ReversingDistanceTargetSpeed(this));
+		advisory_max_speed = std::min<int>(advisory_max_speed, ReversingDistanceTargetSpeed(this));
 	}
 
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
@@ -978,10 +978,10 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 				ApplyLookAheadItem(this, item, max_speed, advisory_max_speed, current_order_index, stats, this->lookahead->current_position);
 			}
 			if (HasBit(this->lookahead->flags, TRLF_APPLY_ADVISORY)) {
-				max_speed = min(max_speed, advisory_max_speed);
+				max_speed = std::min(max_speed, advisory_max_speed);
 			}
 		} else {
-			advisory_max_speed = min(advisory_max_speed, 30);
+			advisory_max_speed = std::min(advisory_max_speed, 30);
 		}
 	}
 
@@ -995,7 +995,7 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 int Train::GetCurrentMaxSpeed() const
 {
 	MaxSpeedInfo info = this->GetCurrentMaxSpeedInfo();
-	return min(info.strict_max_speed, info.advisory_max_speed);
+	return std::min(info.strict_max_speed, info.advisory_max_speed);
 }
 
 /** Update acceleration of the train from the cached power and weight. */
@@ -1039,7 +1039,7 @@ void Train::UpdateAcceleration()
 					int area = 14;
 					if (this->gcache.cached_air_drag > 0) {
 						uint64 v_3 = 1800 * (uint64)power_w / (area * this->gcache.cached_air_drag);
-						evaluation_speed = min(evaluation_speed, IntCbrt(v_3));
+						evaluation_speed = std::min<int>(evaluation_speed, IntCbrt(v_3));
 					}
 					if (evaluation_speed > 0) {
 						min_braking_force += power_w * 18 / (evaluation_speed * 5);
@@ -1069,7 +1069,7 @@ void Train::UpdateAcceleration()
 
 	if (_settings_game.vehicle.improved_breakdowns) {
 		if (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL) {
-			this->breakdown_chance_factor = max(128 * 3 / (this->tcache.cached_num_engines + 2), 5);
+			this->breakdown_chance_factor = std::max(128 * 3 / (this->tcache.cached_num_engines + 2), 5);
 		}
 	}
 }
@@ -1214,9 +1214,9 @@ void GetTrainSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, 
 
 		/* Calculate values relative to an imaginary center between the two sprites. */
 		width = ScaleGUITrad(TRAININFO_DEFAULT_VEHICLE_WIDTH) + UnScaleGUI(rect.right) - xoffs;
-		height = max<uint>(height, UnScaleGUI(rect.bottom - rect.top + 1));
+		height = std::max<uint>(height, UnScaleGUI(rect.bottom - rect.top + 1));
 		xoffs  = xoffs - ScaleGUITrad(TRAININFO_DEFAULT_VEHICLE_WIDTH) / 2;
-		yoffs  = min(yoffs, UnScaleGUI(rect.top));
+		yoffs  = std::min(yoffs, UnScaleGUI(rect.top));
 	}
 }
 
@@ -1297,8 +1297,9 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 					!(w->vehstatus & VS_CRASHED) && ///< Not crashed/flooded
 					w->owner == v->owner &&         ///< Same owner
 					!w->IsVirtual()) {              ///< Not virtual
-				DoCommand(0, v->index | 1 << 20, w->Last()->index, DC_EXEC, CMD_MOVE_RAIL_VEHICLE);
-				break;
+					if (DoCommand(0, v->index | 1 << 20, w->Last()->index, DC_EXEC, CMD_MOVE_RAIL_VEHICLE).Succeeded()) {
+						break;
+					}
 			}
 		}
 
@@ -1624,11 +1625,24 @@ static CommandCost CheckNewTrain(Train *original_dst, Train *dst, Train *origina
 static CommandCost CheckTrainAttachment(Train *t)
 {
 	/* No multi-part train, no need to check. */
-	if (t == nullptr || t->Next() == nullptr || !t->IsEngine()) return CommandCost();
+	if (t == nullptr || t->Next() == nullptr) return CommandCost();
 
 	/* The maximum length for a train. For each part we decrease this by one
 	 * and if the result is negative the train is simply too long. */
 	int allowed_len = _settings_game.vehicle.max_train_length * TILE_SIZE - t->gcache.cached_veh_length;
+
+	/* For free-wagon chains, check if they are within the max_train_length limit. */
+	if (!t->IsEngine()) {
+		t = t->Next();
+		while (t != nullptr) {
+			allowed_len -= t->gcache.cached_veh_length;
+
+			t = t->Next();
+		}
+
+		if (allowed_len < 0) return_cmd_error(STR_ERROR_TRAIN_TOO_LONG);
+		return CommandCost();
+	}
 
 	Train *head = t;
 	Train *prev = t;
@@ -3118,7 +3132,7 @@ static bool CheckTrainStayInDepot(Train *v)
 			int y = TileY(behind_depot_tile) * TILE_SIZE | _vehicle_initial_y_fract[behind_depot_dir];
 			if (v->gcache.cached_total_length < skipped * TILE_SIZE) {
 				int delta = (skipped * TILE_SIZE) - v->gcache.cached_total_length;
-				int speed = max(1, v->GetCurrentMaxSpeed());
+				int speed = std::max(1, v->GetCurrentMaxSpeed());
 				v->reverse_distance = (1 + (((192 * 3 / 2) * delta) / speed));
 				SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
 			}
@@ -3719,7 +3733,7 @@ static bool IsReservationLookAheadLongEnough(const Train *v, const ChooseTrainTr
 				if (item.data_id > 0) LimitSpeedFromLookAhead(signal_speed, stats, signal_position, item.start, item.data_id, item.z_pos - stats.z_pos);
 			}
 		} else if (item.type == TRLIT_SIGNAL && item.start > v->lookahead->current_position + 24) {
-			signal_speed = min(item.data_id > 0 ? item.data_id : UINT16_MAX, v->vcache.cached_max_speed);
+			signal_speed = std::min<int>(item.data_id > 0 ? item.data_id : UINT16_MAX, v->vcache.cached_max_speed);
 			signal_position = item.start;
 			signal_z = item.z_pos;
 			found_signal = true;
@@ -4869,7 +4883,7 @@ int ReversingDistanceTargetSpeed(const Train *v)
 	} else {
 		target_speed = (v->reverse_distance - 1) * 10 - 5;
 	}
-	return max(0, target_speed);
+	return std::max(0, target_speed);
 }
 
 /**

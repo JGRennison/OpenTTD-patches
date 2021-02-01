@@ -873,7 +873,7 @@ void FillTrainReservationLookAhead(Train *v)
 		 * but v->x_pos and v->y_pos can still use the cordinates on the old tile,
 		 * GetTileMarginInFrontOfTrain could erroneously return -5 if the old and
 		 * new directions don't match. */
-		v->lookahead->reservation_end_position = max(GetTileMarginInFrontOfTrain(v), -4);
+		v->lookahead->reservation_end_position = std::max(GetTileMarginInFrontOfTrain(v), -4);
 
 		v->lookahead->tunnel_bridge_reserved_tiles = 0;
 		v->lookahead->flags = 0;

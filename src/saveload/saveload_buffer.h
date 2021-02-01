@@ -117,7 +117,7 @@ struct ReadBuffer {
 			if (unlikely(this->bufp == this->bufe)) {
 				this->AcquireBytes();
 			}
-			size_t to_copy = min<size_t>(this->bufe - this->bufp, length);
+			size_t to_copy = std::min<size_t>(this->bufe - this->bufp, length);
 			memcpy(ptr, this->bufp, to_copy);
 			this->bufp += to_copy;
 			ptr += to_copy;
@@ -201,7 +201,7 @@ struct MemoryDumper {
 			if (unlikely(this->buf == this->bufe)) {
 				this->AllocateBuffer();
 			}
-			size_t to_copy = min<size_t>(this->bufe - this->buf, length);
+			size_t to_copy = std::min<size_t>(this->bufe - this->buf, length);
 			memcpy(this->buf, ptr, to_copy);
 			this->buf += to_copy;
 			ptr += to_copy;

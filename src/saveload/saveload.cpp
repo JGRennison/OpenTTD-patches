@@ -996,7 +996,7 @@ void SlSaveLoadConv(void *ptr, VarType conv)
 static inline size_t SlCalcNetStringLen(const char *ptr, size_t length)
 {
 	if (ptr == nullptr) return 0;
-	return min(strlen(ptr), length - 1);
+	return std::min(strlen(ptr), length - 1);
 }
 
 /**

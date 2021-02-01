@@ -1345,7 +1345,7 @@ void ValidateVehicleTickCaches()
 void VehicleTickCargoAging(Vehicle *v)
 {
 	if (v->vcache.cached_cargo_age_period != 0) {
-		v->cargo_age_counter = min(v->cargo_age_counter, v->vcache.cached_cargo_age_period);
+		v->cargo_age_counter = std::min(v->cargo_age_counter, v->vcache.cached_cargo_age_period);
 		if (--v->cargo_age_counter == 0) {
 			v->cargo.AgeCargo();
 			v->cargo_age_counter = v->vcache.cached_cargo_age_period;
@@ -1827,7 +1827,7 @@ Vehicle *CheckClickOnVehicle(const Viewport *vp, int x, int y)
 				x >= v->coord.left && x <= v->coord.right &&
 				y >= v->coord.top && y <= v->coord.bottom) {
 
-			dist = max(
+			dist = std::max(
 				abs(((v->coord.left + v->coord.right) >> 1) - x),
 				abs(((v->coord.top + v->coord.bottom) >> 1) - y)
 			);
@@ -1901,8 +1901,8 @@ void DetermineBreakdownType(Vehicle *v, uint32 r) {
 		if (rand <= breakdown_type_chance[BREAKDOWN_AIRCRAFT_SPEED]) {
 			v->breakdown_type = BREAKDOWN_AIRCRAFT_SPEED;
 			/* all speed values here are 1/8th of the real max speed in km/h */
-			byte max_speed = max(1, min(v->vcache.cached_max_speed >> 3, 255));
-			byte min_speed = max(1, min(15 + (max_speed >> 2), v->vcache.cached_max_speed >> 4));
+			byte max_speed = std::max(1, std::min(v->vcache.cached_max_speed >> 3, 255));
+			byte min_speed = std::max(1, std::min(15 + (max_speed >> 2), v->vcache.cached_max_speed >> 4));
 			v->breakdown_severity = min_speed + (((v->reliability + GB(r, 16, 16)) * (max_speed - min_speed)) >> 17);
 		} else if (rand <= breakdown_type_chance[BREAKDOWN_AIRCRAFT_DEPOT]) {
 			v->breakdown_type = BREAKDOWN_AIRCRAFT_DEPOT;
@@ -1941,9 +1941,9 @@ void DetermineBreakdownType(Vehicle *v, uint32 r) {
 			(v->type == VEH_SHIP) ?
 			GetVehicleProperty(v, PROP_SHIP_SPEED, ShipVehInfo(v->engine_type)->max_speed ) :
 			GetVehicleProperty(v, PROP_AIRCRAFT_SPEED, AircraftVehInfo(v->engine_type)->max_speed);
-		byte min_speed = min(41, max_speed >> 2);
+		byte min_speed = std::min(41, max_speed >> 2);
 		/* we use the min() function here because we want to use the real value of max_speed for the min_speed calculation */
-		max_speed = min(max_speed, 255);
+		max_speed = std::min<uint16>(max_speed, 255);
 		v->breakdown_severity = Clamp((max_speed * rand2) >> 16, min_speed, max_speed);
 	} else if (rand <= breakdown_type_chance[BREAKDOWN_LOW_POWER]) {
 		v->breakdown_type = BREAKDOWN_LOW_POWER;
@@ -1966,7 +1966,7 @@ void CheckVehicleBreakdown(Vehicle *v)
 	/* decrease reliability */
 	if (!_settings_game.order.no_servicing_if_no_breakdowns ||
 			_settings_game.difficulty.vehicle_breakdowns != 0) {
-		v->reliability = rel = max((rel_old = v->reliability) - v->reliability_spd_dec, 0);
+		v->reliability = rel = std::max((rel_old = v->reliability) - v->reliability_spd_dec, 0);
 		if ((rel_old >> 8) != (rel >> 8)) SetWindowDirty(WC_VEHICLE_DETAILS, v->First()->index);
 	}
 
@@ -1983,7 +1983,7 @@ void CheckVehicleBreakdown(Vehicle *v)
 	/* increase chance of failure */
 	int chance = v->breakdown_chance + 1;
 	if (Chance16I(1, 25, r)) chance += 25;
-	chance = min(255, chance);
+	chance = std::min(255, chance);
 	v->breakdown_chance = chance;
 
 	if (_settings_game.vehicle.improved_breakdowns) {
@@ -2476,10 +2476,10 @@ void Vehicle::UpdateViewport(bool dirty)
 			this->MarkAllViewportsDirty();
 		} else {
 			::MarkAllViewportsDirty(
-					min(old_coord.left,   this->coord.left),
-					min(old_coord.top,    this->coord.top),
-					max(old_coord.right,  this->coord.right),
-					max(old_coord.bottom, this->coord.bottom),
+					std::min(old_coord.left,   this->coord.left),
+					std::min(old_coord.top,    this->coord.top),
+					std::max(old_coord.right,  this->coord.right),
+					std::max(old_coord.bottom, this->coord.bottom),
 					VMDF_NOT_LANDSCAPE | (this->type != VEH_EFFECT ? VMDF_NONE : VMDF_NOT_MAP_MODE)
 			);
 		}
@@ -2594,7 +2594,7 @@ FreeUnitIDGenerator::FreeUnitIDGenerator(VehicleType type, CompanyID owner) : ca
 	/* Find maximum */
 	for (const Vehicle *v : Vehicle::Iterate()) {
 		if (v->type == type && v->owner == owner) {
-			this->maxid = max<UnitID>(this->maxid, v->unitnumber);
+			this->maxid = std::max<UnitID>(this->maxid, v->unitnumber);
 		}
 	}
 
@@ -2662,7 +2662,6 @@ bool CanBuildVehicleInfrastructure(VehicleType type, byte subtype)
 	assert(IsCompanyBuildableVehicleType(type));
 
 	if (!Company::IsValidID(_local_company)) return false;
-	if (!_settings_client.gui.disable_unsuitable_building) return true;
 
 	UnitID max;
 	switch (type) {
@@ -2969,7 +2968,7 @@ static void VehicleIncreaseStats(const Vehicle *front)
 			 * As usage is not such an important figure anyway we just
 			 * ignore the additional cargo then.*/
 			IncreaseStats(Station::Get(last_loading_station), v->cargo_type, front->last_station_visited, v->refit_cap,
-				min(v->refit_cap, v->cargo.StoredCount()), EUM_INCREASE);
+				std::min<uint>(v->refit_cap, v->cargo.StoredCount()), EUM_INCREASE);
 		}
 	}
 }
@@ -3324,7 +3323,7 @@ void Vehicle::HandleLoading(bool mode)
 {
 	switch (this->current_order.GetType()) {
 		case OT_LOADING: {
-			TimetableTicks wait_time = max<int>(this->current_order.GetTimetabledWait() - this->lateness_counter, 0);
+			TimetableTicks wait_time = std::max<int>(this->current_order.GetTimetabledWait() - this->lateness_counter, 0);
 
 			/* Save time just loading took since that is what goes into the timetable */
 			if (!HasBit(this->vehicle_flags, VF_LOADING_FINISHED)) {
@@ -3371,7 +3370,7 @@ void Vehicle::HandleWaiting(bool stop_waiting)
 {
 	switch (this->current_order.GetType()) {
 		case OT_WAITING: {
-			uint wait_time = max<int>(this->current_order.GetTimetabledWait() - this->lateness_counter, 0);
+			uint wait_time = std::max<int>(this->current_order.GetTimetabledWait() - this->lateness_counter, 0);
 			/* Vehicles holds on until waiting Timetabled time expires. */
 			if (!stop_waiting && this->current_order_time < wait_time && this->current_order.GetLeaveType() != OLT_LEAVE_EARLY) {
 				return;

@@ -194,7 +194,7 @@ static bool MakeBMPImage(const char *name, ScreenshotCallback *callb, void *user
 
 	/* Start at the bottom, since bitmaps are stored bottom up */
 	do {
-		uint n = min(h, maxlines);
+		uint n = std::min(h, maxlines);
 		h -= n;
 
 		/* Render the pixels */
@@ -393,7 +393,7 @@ static bool MakePNGImage(const char *name, ScreenshotCallback *callb, void *user
 	y = 0;
 	do {
 		/* determine # lines to write */
-		n = min(h - y, maxlines);
+		n = std::min(h - y, maxlines);
 
 		/* render the pixels into the buffer */
 		callb(userdata, buff, y, w, n);
@@ -500,7 +500,7 @@ static bool MakePCXImage(const char *name, ScreenshotCallback *callb, void *user
 	y = 0;
 	do {
 		/* determine # lines to write */
-		uint n = min(h - y, maxlines);
+		uint n = std::min(h - y, maxlines);
 		uint i;
 
 		/* render the pixels into the buffer */
@@ -658,7 +658,7 @@ static void LargeWorldCallback(void *userdata, void *buf, uint y, uint pitch, ui
 	/* Render viewport in blocks of 1600 pixels width */
 	left = 0;
 	while (vp->width - left != 0) {
-		wx = min(vp->width - left, 1600);
+		wx = std::min(vp->width - left, 1600);
 		left += wx;
 
 		ViewportDoDraw(vp,

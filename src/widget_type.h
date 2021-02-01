@@ -305,6 +305,7 @@ public:
 
 	void SetIndex(int index);
 	void SetDataTip(uint32 widget_data, StringID tool_tip);
+	void SetToolTip(StringID tool_tip);
 
 	inline void SetLowered(bool lowered);
 	inline bool IsLowered() const;
@@ -713,7 +714,7 @@ public:
 		assert(capacity <= MAX_UVALUE(uint16));
 
 		this->cap = capacity;
-		if (this->cap + this->pos > this->count) this->pos = max(0, this->count - this->cap);
+		if (this->cap + this->pos > this->count) this->pos = std::max(0, this->count - this->cap);
 	}
 
 	void SetCapacityFromWidget(Window *w, int widget, int padding = 0);
@@ -743,7 +744,7 @@ public:
 			case SS_BIG:   difference *= this->cap; break;
 			default: break;
 		}
-		this->SetPosition(Clamp(this->pos + difference, 0, max(this->count - this->cap, 0)));
+		this->SetPosition(Clamp(this->pos + difference, 0, std::max(this->count - this->cap, 0)));
 	}
 
 	/**

@@ -240,19 +240,19 @@ struct TimetableWindow : Window {
 				this->deparr_time_width = GetStringBoundingBox(STR_JUST_DATE_TINY).width;
 				SetDParamMaxValue(0, _settings_time.time_in_minutes ? 0 : MAX_YEAR * DAYS_IN_YEAR);
 				this->deparr_time_width = GetStringBoundingBox(STR_JUST_DATE_WALLCLOCK_TINY).width + 4;
-				this->deparr_abbr_width = max(GetStringBoundingBox(STR_TIMETABLE_ARRIVAL_ABBREVIATION).width, GetStringBoundingBox(STR_TIMETABLE_DEPARTURE_ABBREVIATION).width);
+				this->deparr_abbr_width = std::max(GetStringBoundingBox(STR_TIMETABLE_ARRIVAL_ABBREVIATION).width, GetStringBoundingBox(STR_TIMETABLE_DEPARTURE_ABBREVIATION).width);
 				size->width = WD_FRAMERECT_LEFT + this->deparr_abbr_width + 10 + this->deparr_time_width + WD_FRAMERECT_RIGHT;
 				FALLTHROUGH;
 
 			case WID_VT_ARRIVAL_DEPARTURE_SELECTION:
 			case WID_VT_TIMETABLE_PANEL:
-				resize->height = max<int>(FONT_HEIGHT_NORMAL, GetSpriteSize(SPR_LOCK).height);
+				resize->height = std::max<int>(FONT_HEIGHT_NORMAL, GetSpriteSize(SPR_LOCK).height);
 				size->height = WD_FRAMERECT_TOP + 8 * resize->height + WD_FRAMERECT_BOTTOM;
 				break;
 
 			case WID_VT_SUMMARY_PANEL: {
 				Dimension d = GetSpriteSize(SPR_WARNING_SIGN);
-				size->height = WD_FRAMERECT_TOP + 2 * FONT_HEIGHT_NORMAL + this->summary_warnings * max<int>(d.height, FONT_HEIGHT_NORMAL) + WD_FRAMERECT_BOTTOM;
+				size->height = WD_FRAMERECT_TOP + 2 * FONT_HEIGHT_NORMAL + this->summary_warnings * std::max<int>(d.height, FONT_HEIGHT_NORMAL) + WD_FRAMERECT_BOTTOM;
 				break;
 			}
 		}
@@ -260,7 +260,7 @@ struct TimetableWindow : Window {
 
 	int GetOrderFromTimetableWndPt(int y, const Vehicle *v)
 	{
-		int sel = (y - this->GetWidget<NWidgetBase>(WID_VT_TIMETABLE_PANEL)->pos_y - WD_FRAMERECT_TOP) / max<int>(FONT_HEIGHT_NORMAL, GetSpriteSize(SPR_LOCK).height);
+		int sel = (y - this->GetWidget<NWidgetBase>(WID_VT_TIMETABLE_PANEL)->pos_y - WD_FRAMERECT_TOP) / std::max<int>(FONT_HEIGHT_NORMAL, GetSpriteSize(SPR_LOCK).height);
 
 		if ((uint)sel >= this->vscroll->GetCapacity()) return INVALID_ORDER;
 
@@ -449,7 +449,7 @@ struct TimetableWindow : Window {
 				int y = r.top + WD_FRAMERECT_TOP;
 				int i = this->vscroll->GetPosition();
 				Dimension lock_d = GetSpriteSize(SPR_LOCK);
-				int line_height = max<int>(FONT_HEIGHT_NORMAL, lock_d.height);
+				int line_height = std::max<int>(FONT_HEIGHT_NORMAL, lock_d.height);
 				VehicleOrderID order_id = (i + 1) / 2;
 				bool final_order = false;
 
@@ -539,7 +539,7 @@ struct TimetableWindow : Window {
 
 				int y = r.top + WD_FRAMERECT_TOP;
 				Dimension lock_d = GetSpriteSize(SPR_LOCK);
-				int line_height = max<int>(FONT_HEIGHT_NORMAL, lock_d.height);
+				int line_height = std::max<int>(FONT_HEIGHT_NORMAL, lock_d.height);
 
 				bool show_late = this->show_expected && v->lateness_counter > DATE_UNIT_SIZE;
 				Ticks offset = show_late ? 0 : -v->lateness_counter;
@@ -643,7 +643,7 @@ struct TimetableWindow : Window {
 					}
 
 					const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
-					const int step_height = max<int>(warning_dimensions.height, FONT_HEIGHT_NORMAL);
+					const int step_height = std::max<int>(warning_dimensions.height, FONT_HEIGHT_NORMAL);
 					const int text_offset_y = (step_height - FONT_HEIGHT_NORMAL) / 2;
 					const int warning_offset_y = (step_height - warning_dimensions.height) / 2;
 					const bool rtl = _current_text_dir == TD_RTL;
@@ -926,7 +926,7 @@ struct TimetableWindow : Window {
 				uint32 p2;
 				if (this->query_is_speed_query) {
 					val = ConvertDisplaySpeedToKmhishSpeed(val);
-					p2 = minu(val, UINT16_MAX);
+					p2 = std::min<uint>(val, UINT16_MAX);
 				} else {
 					if (!_settings_client.gui.timetable_in_ticks) val *= DATE_UNIT_SIZE;
 					p2 = val;

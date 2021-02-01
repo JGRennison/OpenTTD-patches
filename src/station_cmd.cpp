@@ -1174,10 +1174,10 @@ CommandCost CanExpandRailStation(const BaseStation *st, TileArea &new_ta, Axis a
 	TileArea cur_ta = st->train_station;
 
 	/* determine new size of train station region.. */
-	int x = min(TileX(cur_ta.tile), TileX(new_ta.tile));
-	int y = min(TileY(cur_ta.tile), TileY(new_ta.tile));
-	new_ta.w = max(TileX(cur_ta.tile) + cur_ta.w, TileX(new_ta.tile) + new_ta.w) - x;
-	new_ta.h = max(TileY(cur_ta.tile) + cur_ta.h, TileY(new_ta.tile) + new_ta.h) - y;
+	int x = std::min(TileX(cur_ta.tile), TileX(new_ta.tile));
+	int y = std::min(TileY(cur_ta.tile), TileY(new_ta.tile));
+	new_ta.w = std::max(TileX(cur_ta.tile) + cur_ta.w, TileX(new_ta.tile) + new_ta.w) - x;
+	new_ta.h = std::max(TileY(cur_ta.tile) + cur_ta.h, TileY(new_ta.tile) + new_ta.h) - y;
 	new_ta.tile = TileXY(x, y);
 
 	/* make sure the final size is not too big. */
@@ -1456,7 +1456,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 		/* Perform NewStation checks */
 
 		/* Check if the station size is permitted */
-		if (HasBit(statspec->disallowed_platforms, min(numtracks - 1, 7)) || HasBit(statspec->disallowed_lengths, min(plat_len - 1, 7))) {
+		if (HasBit(statspec->disallowed_platforms, std::min(numtracks - 1, 7)) || HasBit(statspec->disallowed_lengths, std::min(plat_len - 1, 7))) {
 			return CMD_ERROR;
 		}
 
@@ -2172,7 +2172,7 @@ static CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags)
 		/* Update company infrastructure counts. */
 		FOR_ALL_ROADTRAMTYPES(rtt) {
 			RoadType rt = GetRoadType(tile, rtt);
-			UpdateCompanyRoadInfrastructure(rt, GetRoadOwner(tile, rtt), -ROAD_STOP_TRACKBIT_FACTOR);
+			UpdateCompanyRoadInfrastructure(rt, GetRoadOwner(tile, rtt), -static_cast<int>(ROAD_STOP_TRACKBIT_FACTOR));
 		}
 
 		Company::Get(st->owner)->infrastructure.station--;
@@ -3659,7 +3659,7 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 					return VETSB_CONTINUE;
 				}
 				front->vehstatus |= VS_TRAIN_SLOWING;
-				uint16 spd = max(0, (stop - x) * 20 - 15);
+				uint16 spd = std::max(0, (stop - x) * 20 - 15);
 				if (spd < front->cur_speed) front->cur_speed = spd;
 			}
 		}
@@ -3751,7 +3751,7 @@ static void TruncateCargo(const CargoSpec *cs, GoodsEntry *ge, uint amount = UIN
 		if (source_station == nullptr) continue;
 
 		GoodsEntry &source_ge = source_station->goods[cs->Index()];
-		source_ge.max_waiting_cargo = max(source_ge.max_waiting_cargo, i->second);
+		source_ge.max_waiting_cargo = std::max(source_ge.max_waiting_cargo, i->second);
 	}
 }
 
@@ -3807,7 +3807,9 @@ static void UpdateStationRating(Station *st)
 				/* NewGRFs expect last speed to be 0xFF when no vehicle has arrived yet. */
 				uint last_speed = ge->HasVehicleEverTriedLoading() && ge->IsSupplyAllowed() ? ge->last_speed : 0xFF;
 
-				uint32 var18 = min(ge->time_since_pickup, 0xFF) | (min(ge->max_waiting_cargo, 0xFFFF) << 8) | (min(last_speed, 0xFF) << 24);
+				uint32 var18 = std::min<uint>(ge->time_since_pickup, 0xFFu)
+					| (std::min<uint>(ge->max_waiting_cargo, 0xFFFFu) << 8)
+					| (std::min<uint>(last_speed, 0xFFu) << 24);
 				/* Convert to the 'old' vehicle types */
 				uint32 var10 = (ge->last_vehicle_type == VEH_INVALID) ? 0x0 : (ge->last_vehicle_type + 0x10);
 				uint16 callback = GetCargoCallback(CBID_CARGO_STATION_RATING_CALC, var10, var18, cs);
@@ -3882,7 +3884,7 @@ static void UpdateStationRating(Station *st)
 					uint32 r = Random();
 					if (rating <= (int)GB(r, 0, 7)) {
 						/* Need to have int, otherwise it will just overflow etc. */
-						waiting = max((int)waiting - (int)((GB(r, 8, 2) - 1) * num_dests), 0);
+						waiting = std::max((int)waiting - (int)((GB(r, 8, 2) - 1) * num_dests), 0);
 						waiting_changed = true;
 					}
 				}
@@ -3904,7 +3906,7 @@ static void UpdateStationRating(Station *st)
 					const uint difference = waiting - normalised_waiting_cargo_threshold;
 					waiting -= (difference / WAITING_CARGO_CUT_FACTOR);
 					const uint normalised_max_waiting_cargo = normalised_waiting_cargo_threshold * (MAX_WAITING_CARGO / WAITING_CARGO_THRESHOLD);
-					waiting = min(waiting, normalised_max_waiting_cargo);
+					waiting = std::min(waiting, normalised_max_waiting_cargo);
 					waiting_changed = true;
 				}
 
@@ -3985,7 +3987,7 @@ void DeleteStaleLinks(Station *from)
 			assert(to->goods[c].node == it->first);
 			++it; // Do that before removing the edge. Anything else may crash.
 			assert(_date >= edge.LastUpdate());
-			uint timeout = max<uint>((LinkGraph::MIN_TIMEOUT_DISTANCE + (DistanceManhattan(from->xy, to->xy) >> 3)) / _settings_game.economy.day_length_factor, 1);
+			uint timeout = std::max<uint>((LinkGraph::MIN_TIMEOUT_DISTANCE + (DistanceManhattan(from->xy, to->xy) >> 3)) / _settings_game.economy.day_length_factor, 1);
 			if ((uint)(_date - edge.LastUpdate()) > timeout) {
 				bool updated = false;
 
@@ -4051,7 +4053,7 @@ void DeleteStaleLinks(Station *from)
 			}
 		}
 		assert(_date >= lg->LastCompression());
-		if ((uint)(_date - lg->LastCompression()) > max<uint>(LinkGraph::COMPRESSION_INTERVAL / _settings_game.economy.day_length_factor, 1)) {
+		if ((uint)(_date - lg->LastCompression()) > std::max<uint>(LinkGraph::COMPRESSION_INTERVAL / _settings_game.economy.day_length_factor, 1)) {
 			lg->Compress();
 		}
 	}
@@ -4429,7 +4431,7 @@ uint MoveGoodsToStation(CargoID type, uint amount, SourceType source_type, Sourc
 		uint to_deliver = amount - moving;
 		uint step_size = CeilDivT<uint>(to_deliver, used_stations.size());
 		for (uint i = 0; i < used_stations.size() && to_deliver > 0; i++) {
-			uint delivery = min<uint>(to_deliver, step_size);
+			uint delivery = std::min<uint>(to_deliver, step_size);
 			used_stations[i].second += delivery;
 			to_deliver -= delivery;
 		}
@@ -4458,11 +4460,11 @@ void UpdateStationDockingTiles(Station *st)
 
 	/* Expand the area by a tile on each side while
 	 * making sure that we remain inside the map. */
-	int x2 = min(x + area->w + 1, MapSizeX());
-	int x1 = max(x - 1, 0);
+	int x2 = std::min<int>(x + area->w + 1, MapSizeX());
+	int x1 = std::max<int>(x - 1, 0);
 
-	int y2 = min(y + area->h + 1, MapSizeY());
-	int y1 = max(y - 1, 0);
+	int y2 = std::min<int>(y + area->h + 1, MapSizeY());
+	int y1 = std::max<int>(y - 1, 0);
 
 	TileArea ta(TileXY(x1, y1), TileXY(x2 - 1, y2 - 1));
 	TILE_AREA_LOOP(tile, ta) {
@@ -4922,7 +4924,7 @@ void FlowStat::ScaleToMonthly(uint runtime)
 	assert(runtime > 0);
 	uint share = 0;
 	for (iterator i = this->begin(); i != this->end(); ++i) {
-		share = max(share + 1, i->first * 30 / runtime);
+		share = std::max(share + 1, i->first * 30 / runtime);
 		if (this->unrestricted == i->first) this->unrestricted = share;
 		i->first = share;
 	}

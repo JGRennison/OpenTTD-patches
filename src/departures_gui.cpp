@@ -491,7 +491,7 @@ public:
 			this->EnableWidget(WID_DB_SHOW_DEPS);
 		}
 
-		this->vscroll->SetCount(min(_settings_client.gui.max_departures, this->departures->size() + this->arrivals->size()));
+		this->vscroll->SetCount(std::min<uint>(_settings_client.gui.max_departures, this->departures->size() + this->arrivals->size()));
 		this->DrawWidgets();
 	}
 
@@ -548,9 +548,9 @@ void DeparturesWindow<Twaypoint>::RecomputeDateWidth()
 	cached_date_display_method = _settings_time.time_in_minutes;
 	cached_arr_dep_display_method = _settings_client.gui.departure_show_both;
 
-	cached_status_width = max((GetStringBoundingBox(STR_DEPARTURES_ON_TIME)).width, cached_status_width);
-	cached_status_width = max((GetStringBoundingBox(STR_DEPARTURES_DELAYED)).width, cached_status_width);
-	cached_status_width = max((GetStringBoundingBox(STR_DEPARTURES_CANCELLED)).width, cached_status_width);
+	cached_status_width = std::max((GetStringBoundingBox(STR_DEPARTURES_ON_TIME)).width, cached_status_width);
+	cached_status_width = std::max((GetStringBoundingBox(STR_DEPARTURES_DELAYED)).width, cached_status_width);
+	cached_status_width = std::max((GetStringBoundingBox(STR_DEPARTURES_CANCELLED)).width, cached_status_width);
 
 	uint interval = cached_date_display_method ? _settings_time.ticks_per_minute : DAY_TICKS;
 	uint count = cached_date_display_method ? 24*60 : 365;
@@ -558,8 +558,8 @@ void DeparturesWindow<Twaypoint>::RecomputeDateWidth()
 	for (uint i = 0; i < count; ++i) {
 		SetDParam(0, INT_MAX - (i*interval));
 		SetDParam(1, INT_MAX - (i*interval));
-		cached_date_width = max(GetStringBoundingBox(cached_arr_dep_display_method ? STR_DEPARTURES_TIME_BOTH : STR_DEPARTURES_TIME_DEP).width, cached_date_width);
-		cached_status_width = max((GetStringBoundingBox(STR_DEPARTURES_EXPECTED)).width, cached_status_width);
+		cached_date_width = std::max(GetStringBoundingBox(cached_arr_dep_display_method ? STR_DEPARTURES_TIME_BOTH : STR_DEPARTURES_TIME_DEP).width, cached_date_width);
+		cached_status_width = std::max((GetStringBoundingBox(STR_DEPARTURES_EXPECTED)).width, cached_status_width);
 	}
 
 	SetDParam(0, 0);
@@ -623,7 +623,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 	int text_right = right - (rtl ? text_offset :           0);
 
 	int y = r.top + 1;
-	uint max_departures = min(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->departures->size() + this->arrivals->size());
+	uint max_departures = std::min<uint>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->departures->size() + this->arrivals->size());
 
 	if (max_departures > _settings_client.gui.max_departures) {
 		max_departures = _settings_client.gui.max_departures;

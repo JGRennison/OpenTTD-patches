@@ -341,7 +341,7 @@ public:
 				}
 			}
 
-			min_height = max(min_height, height);
+			min_height = std::max(min_height, height);
 			this->vscroll[2]->SetCount(min_height);
 		}
 
@@ -593,7 +593,7 @@ public:
 		int left = r.left + WD_MATRIX_LEFT;
 		int right = r.right - WD_MATRIX_RIGHT;
 		int y = r.top;
-		int max = min(this->vscroll[0]->GetPosition() + this->vscroll[0]->GetCapacity(), this->groups.size());
+		int max = std::min<int>(this->vscroll[0]->GetPosition() + this->vscroll[0]->GetCapacity(), this->groups.size());
 
 		/* Then treat all groups defined by/for the current company */
 		for (int i = this->vscroll[0]->GetPosition(); i < max; ++i) {
@@ -651,7 +651,7 @@ public:
 		int y = r.top;
 
 		Scrollbar *draw_vscroll = vscroll[1];
-		uint max = min(draw_vscroll->GetPosition() + draw_vscroll->GetCapacity(), this->templates.size());
+		uint max = std::min<uint>(draw_vscroll->GetPosition() + draw_vscroll->GetCapacity(), this->templates.size());
 
 		const TemplateVehicle *v;
 		for (uint i = draw_vscroll->GetPosition(); i < max; ++i) {
@@ -756,8 +756,8 @@ public:
 			SetDParam(0, tmp->full_weight);
 			if (_settings_client.gui.show_train_weight_ratios_in_details) {
 				SetDParam(1, STR_VEHICLE_INFO_WEIGHT_RATIOS);
-				SetDParam(2, (100 * tmp->power) / max<uint>(1, tmp->full_weight));
-				SetDParam(3, (tmp->max_te / 10) / max<uint>(1, tmp->full_weight));
+				SetDParam(2, (100 * tmp->power) / std::max<uint>(1, tmp->full_weight));
+				SetDParam(3, (tmp->max_te / 10) / std::max<uint>(1, tmp->full_weight));
 			} else {
 				SetDParam(1, STR_EMPTY);
 			}

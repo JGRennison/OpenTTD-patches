@@ -1452,6 +1452,8 @@ STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS                     :Conserver les o
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS_HELPTEXT            :Garde les outils de construction de ponts, tunnels, etc. ouverts après usage
 STR_CONFIG_SETTING_EXPENSES_LAYOUT                              :Regrouper les dépenses dans la fenêtre des finances{NBSP}: {STRING}
 STR_CONFIG_SETTING_EXPENSES_LAYOUT_HELPTEXT                     :Définit la mise en forme de la fenêtre des dépenses de la compagnie
+STR_CONFIG_SETTING_AUTO_REMOVE_SIGNALS                          :Retire automatiquement les signaux durant la construction de la voie ferrée: {STRING}
+STR_CONFIG_SETTING_AUTO_REMOVE_SIGNALS_HELPTEXT                 :Retire automatiquement les signaux durant la construction de la voie ferrée si les signaux sont sur le chemin. A noter que ça peut potentiellement mener à des accidents de trains.
 
 STR_CONFIG_SETTING_SOUND_TICKER                                 :Bulletin{NBSP}: {STRING}
 STR_CONFIG_SETTING_SOUND_TICKER_HELPTEXT                        :Jouer un son pour les bulletins
@@ -1836,7 +1838,7 @@ STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Êtes-v
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Triches
 STR_CHEATS_TOOLTIP                                              :{BLACK}Les cases à cocher montrent si vous avez déjà utilisé cette triche auparavant
-STR_CHEATS_WARNING                                              :{BLACK}Attention{NBSP}! Vous êtes sur le point de trahir vos adversaires. Vous et votre famille serez déshonoré pour l'éternité.
+STR_CHEATS_NOTE                                                 :{BLACK}Note{}: tout usage de ces paramètres sera enregistré dans la sauvegarde
 STR_CHEAT_MONEY                                                 :{LTBLUE}Augmenter l'argent de {CURRENCY_LONG}
 STR_CHEAT_CHANGE_COMPANY                                        :{LTBLUE}Jouer en tant que compagnie{NBSP}: {ORANGE}{COMMA}
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}Bulldozer magique (enlèvement des industries et des objets fixes){NBSP}: {ORANGE}{STRING}
@@ -2233,6 +2235,7 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} a 
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} a lancé une nouvelle compagnie (n°{NBSP}{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} a quitté la partie ({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} a changé son nom en {STRING}
+STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} a donné {2:CURRENCY_LONG} à {1:STRING}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Le serveur a fermé la session
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Le serveur redémarre...{}Veuillez patienter...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} a été exclu. Raison{NBSP}: ({STRING})
@@ -2350,6 +2353,9 @@ STR_JOIN_STATION_CREATE_SPLITTED_STATION                        :{YELLOW}Constru
 
 STR_JOIN_WAYPOINT_CAPTION                                       :{WHITE}Joindre un point de contrôle
 STR_JOIN_WAYPOINT_CREATE_SPLITTED_WAYPOINT                      :{YELLOW}Construire un point de contrôle séparé
+
+# Generic toolbar
+STR_TOOLBAR_DISABLED_NO_VEHICLE_AVAILABLE                       :{BLACK}Désactivé car aucun véhicule n'est actuellement disponible pour cette infrastructure
 
 # Rail construction toolbar
 STR_RAIL_TOOLBAR_RAILROAD_CONSTRUCTION_CAPTION                  :Construction de voie ferrée
@@ -3374,6 +3380,7 @@ STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Reconstr
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Détails
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Afficher le détail des calculs d'infrastructure
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Donner de l'argent
+STR_COMPANY_VIEW_GIVE_MONEY_TOOLTIP                             :{BLACK}Donner de l’argent à cette compagnie
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nouveau visage
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Choix d'un nouveau visage pour le P.D.G.
@@ -3391,7 +3398,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Vendre 2
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Nom de la société
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Nom du P.D.G.
-STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Entrer le montant que vous voulez donner
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Entrer le montant que vous souhaiter donner
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Nous sommes à la recherche d'un repreneur pour notre compagnie{}{}Voulez-vous acheter {COMPANY} pour {CURRENCY_LONG}{NBSP}?
 
@@ -4018,6 +4025,7 @@ STR_ORDER_REFIT_STOP_ORDER                                      :(Réaménager p
 STR_ORDER_STOP_ORDER                                            :(Arrêt)
 
 STR_ORDER_GO_TO_STATION                                         :{STRING} {STATION} {STRING}
+STR_ORDER_GO_TO_STATION_CAN_T_USE_STATION                       :{PUSH_COLOUR}{RED}(Station inutilisable){POP_COLOUR} {STRING} {STATION} {STRING}
 
 STR_ORDER_IMPLICIT                                              :(Implicite)
 
@@ -4343,6 +4351,7 @@ STR_ERROR_LOAN_ALREADY_REPAYED                                  :{WHITE}... empr
 STR_ERROR_CURRENCY_REQUIRED                                     :{WHITE}... {CURRENCY_LONG} nécessaires
 STR_ERROR_CAN_T_REPAY_LOAN                                      :{WHITE}Impossible de rembourser...
 STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Impossible de distribuer de l'argent emprunté à la banque...
+STR_ERROR_CAN_T_GIVE_MONEY                                      :{WHITE}Vous ne pouvez pas donner de l’argent à cette compagnie
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Impossible d'acheter la compagnie...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Impossible de construire le siège...
 STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Impossible d'acheter 25{NBSP}% des parts...
@@ -4469,6 +4478,8 @@ STR_ERROR_DEPOT_WRONG_DEPOT_TYPE                                :Dépôt incompa
 STR_ERROR_TRAIN_TOO_LONG_AFTER_REPLACEMENT                      :{WHITE}{VEHICLE} est trop long après remplacement
 STR_ERROR_AUTOREPLACE_NOTHING_TO_DO                             :{WHITE}Aucune règle de remplacement/renouvellement automatique appliquée
 STR_ERROR_AUTOREPLACE_MONEY_LIMIT                               :(limite d'argent)
+STR_ERROR_AUTOREPLACE_INCOMPATIBLE_CARGO                        :{WHITE}Le nouveau véhicule ne peut pas transporter {STRING}
+STR_ERROR_AUTOREPLACE_INCOMPATIBLE_REFIT                        :{WHITE}Le nouveau véhicule ne peut être réaménagé à l'ordre {NUM}
 
 # Rail construction errors
 STR_ERROR_IMPOSSIBLE_TRACK_COMBINATION                          :{WHITE}Combinaison de rails impossible

@@ -742,7 +742,7 @@ uint VehicleCargoList::Reassign(uint max_move, TileOrStationID)
 {
 	static_assert(Tfrom != MTA_TRANSFER && Tto != MTA_TRANSFER);
 	static_assert(Tfrom - Tto == 1 || Tto - Tfrom == 1);
-	max_move = min(this->action_counts[Tfrom], max_move);
+	max_move = std::min(this->action_counts[Tfrom], max_move);
 	this->action_counts[Tfrom] -= max_move;
 	this->action_counts[Tto] += max_move;
 	return max_move;
@@ -758,7 +758,7 @@ uint VehicleCargoList::Reassign(uint max_move, TileOrStationID)
 template<>
 uint VehicleCargoList::Reassign<VehicleCargoList::MTA_DELIVER, VehicleCargoList::MTA_TRANSFER>(uint max_move, TileOrStationID next_station)
 {
-	max_move = min(this->action_counts[MTA_DELIVER], max_move);
+	max_move = std::min(this->action_counts[MTA_DELIVER], max_move);
 
 	uint sum = 0;
 	for (Iterator it(this->packets.begin()); sum < this->action_counts[MTA_TRANSFER] + max_move;) {
@@ -791,7 +791,7 @@ uint VehicleCargoList::Reassign<VehicleCargoList::MTA_DELIVER, VehicleCargoList:
  */
 uint VehicleCargoList::Return(uint max_move, StationCargoList *dest, StationID next)
 {
-	max_move = min(this->action_counts[MTA_LOAD], max_move);
+	max_move = std::min(this->action_counts[MTA_LOAD], max_move);
 	this->PopCargo(CargoReturn(this, dest, max_move, next));
 	return max_move;
 }
@@ -804,7 +804,7 @@ uint VehicleCargoList::Return(uint max_move, StationCargoList *dest, StationID n
  */
 uint VehicleCargoList::Shift(uint max_move, VehicleCargoList *dest)
 {
-	max_move = min(this->count, max_move);
+	max_move = std::min(this->count, max_move);
 	this->PopCargo(CargoShift(this, dest, max_move));
 	return max_move;
 }
@@ -821,12 +821,12 @@ uint VehicleCargoList::Unload(uint max_move, StationCargoList *dest, CargoPaymen
 {
 	uint moved = 0;
 	if (this->action_counts[MTA_TRANSFER] > 0) {
-		uint move = min(this->action_counts[MTA_TRANSFER], max_move);
+		uint move = std::min(this->action_counts[MTA_TRANSFER], max_move);
 		this->ShiftCargo(CargoTransfer(this, dest, move));
 		moved += move;
 	}
 	if (this->action_counts[MTA_TRANSFER] == 0 && this->action_counts[MTA_DELIVER] > 0 && moved < max_move) {
-		uint move = min(this->action_counts[MTA_DELIVER], max_move - moved);
+		uint move = std::min(this->action_counts[MTA_DELIVER], max_move - moved);
 		this->ShiftCargo(CargoDelivery(this, move, payment));
 		moved += move;
 	}
@@ -841,7 +841,7 @@ uint VehicleCargoList::Unload(uint max_move, StationCargoList *dest, CargoPaymen
  */
 uint VehicleCargoList::Truncate(uint max_move)
 {
-	max_move = min(this->count, max_move);
+	max_move = std::min(this->count, max_move);
 	if (max_move > this->ActionCount(MTA_KEEP)) this->KeepAll();
 	this->PopCargo(CargoRemoval<VehicleCargoList>(this, max_move));
 	return max_move;
@@ -857,7 +857,7 @@ uint VehicleCargoList::Truncate(uint max_move)
  */
 uint VehicleCargoList::Reroute(uint max_move, VehicleCargoList *dest, StationID avoid, StationID avoid2, const GoodsEntry *ge)
 {
-	max_move = min(this->action_counts[MTA_TRANSFER], max_move);
+	max_move = std::min(this->action_counts[MTA_TRANSFER], max_move);
 	this->ShiftCargoWithFrontInsert(VehicleCargoReroute(this, dest, max_move, avoid, avoid2, ge));
 	return max_move;
 }
@@ -965,7 +965,7 @@ uint StationCargoList::AvailableViaCount(StationID next) const
  */
 uint StationCargoList::Truncate(uint max_move, StationCargoAmountMap *cargo_per_source)
 {
-	max_move = min(max_move, this->count);
+	max_move = std::min(max_move, this->count);
 	uint prev_count = this->count;
 	uint moved = 0;
 	uint loop = 0;
@@ -1036,7 +1036,7 @@ uint StationCargoList::Reserve(uint max_move, VehicleCargoList *dest, TileIndex 
  */
 uint StationCargoList::Load(uint max_move, VehicleCargoList *dest, TileIndex load_place, StationIDStack next_station)
 {
-	uint move = min(dest->ActionCount(VehicleCargoList::MTA_LOAD), max_move);
+	uint move = std::min(dest->ActionCount(VehicleCargoList::MTA_LOAD), max_move);
 	if (move > 0) {
 		this->reserved_count -= move;
 		dest->Reassign<VehicleCargoList::MTA_LOAD, VehicleCargoList::MTA_KEEP>(move);

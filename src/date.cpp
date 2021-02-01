@@ -37,8 +37,6 @@ YearMonthDay _game_load_cur_date_ymd;
 DateFract _game_load_date_fract;
 uint8 _game_load_tick_skip_counter;
 
-int32 _old_ending_year_slv_105; ///< Old ending year for savegames before SLV_105
-
 /**
  * Set the date.
  * @param date  New date
@@ -215,11 +213,13 @@ static void OnNewYear()
 
 	if (_cur_date_ymd.year == _settings_client.gui.semaphore_build_before) ResetSignalVariant();
 
-	/* check if we reached end of the game (end of ending year) */
-	if (_cur_date_ymd.year == _settings_game.game_creation.ending_year + 1) {
+	/* check if we reached end of the game (end of ending year); 0 = never */
+	if (_cur_date_ymd.year == _settings_game.game_creation.ending_year + 1 && _settings_game.game_creation.ending_year != 0) {
 		ShowEndGameChart();
+	}
+
 	/* check if we reached the maximum year, decrement dates by a year */
-	} else if (_cur_date_ymd.year == MAX_YEAR + 1) {
+	if (_cur_date_ymd.year == MAX_YEAR + 1) {
 		int days_this_year;
 
 		_cur_date_ymd.year--;

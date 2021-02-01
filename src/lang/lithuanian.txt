@@ -1990,7 +1990,6 @@ STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Ar tikr
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Sukčiavimai
 STR_CHEATS_TOOLTIP                                              :{BLACK}Laukeliai rodo ar jus naudojote šį triuką prieš tai
-STR_CHEATS_WARNING                                              :{BLACK}Dėmesio! Tu bandai išduoti vargšus savo varžovus. Tai bus tavo gėda visiems laikams ir niekada neužmiršta.
 STR_CHEAT_MONEY                                                 :{LTBLUE}Padauginti pinigų {CURRENCY_LONG}
 STR_CHEAT_CHANGE_COMPANY                                        :{LTBLUE}Žaidiama už kompaniją: {ORANGE}{COMMA}
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}Magiškas buldozeris (pašalina gamyklas ir nepajudinamus objektus): {ORANGE}{STRING}
@@ -2493,6 +2492,8 @@ STR_JOIN_STATION_CREATE_SPLITTED_STATION                        :{YELLOW}Statyti
 
 STR_JOIN_WAYPOINT_CAPTION                                       :{WHITE}Sujungti kontrolės punktus
 STR_JOIN_WAYPOINT_CREATE_SPLITTED_WAYPOINT                      :{YELLOW}Statyti atskirą kontrolės punktą
+
+# Generic toolbar
 
 # Rail construction toolbar
 STR_RAIL_TOOLBAR_RAILROAD_CONSTRUCTION_CAPTION                  :Geležinkelio tiesimas

@@ -1943,7 +1943,6 @@ STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Ви д
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Гратиму нечесно
 STR_CHEATS_TOOLTIP                                              :{BLACK}Галка показує, що Ви стали грати нечесно
-STR_CHEATS_WARNING                                              :{BLACK}Попередження! Ви збираєтесь обманути своїх конкурентів. Пам'ятайте, що подібне безчестя буде запам'ятовано назавжди
 STR_CHEAT_MONEY                                                 :{LTBLUE}Збільшити кошти на {CURRENCY_LONG}
 STR_CHEAT_CHANGE_COMPANY                                        :{LTBLUE}Грає як компанія: {ORANGE}{COMMA}
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}Супербульдозер (руйнує все): {ORANGE}{STRING}
@@ -2454,6 +2453,8 @@ STR_JOIN_STATION_CREATE_SPLITTED_STATION                        :{YELLOW}Поб�
 
 STR_JOIN_WAYPOINT_CAPTION                                       :{WHITE}З'єднати точку маршруту
 STR_JOIN_WAYPOINT_CREATE_SPLITTED_WAYPOINT                      :{YELLOW}Створити окрему точку маршруту
+
+# Generic toolbar
 
 # Rail construction toolbar
 STR_RAIL_TOOLBAR_RAILROAD_CONSTRUCTION_CAPTION                  :Будівництво залізниці

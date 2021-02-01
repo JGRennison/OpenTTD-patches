@@ -99,10 +99,10 @@ CommandCost CmdDecreaseLoan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 	switch (p2 & 3) {
 		default: return CMD_ERROR; // Invalid method
 		case 0: // Pay back one step
-			loan = min(c->current_loan, (Money)LOAN_INTERVAL);
+			loan = std::min(c->current_loan, (Money)LOAN_INTERVAL);
 			break;
 		case 1: // Pay back as much as possible
-			loan = max(min(c->current_loan, c->money), (Money)LOAN_INTERVAL);
+			loan = std::max(std::min(c->current_loan, c->money), (Money)LOAN_INTERVAL);
 			loan -= loan % LOAN_INTERVAL;
 			break;
 		case 2: // Repay the given amount of loan
@@ -340,7 +340,7 @@ CommandCost CmdGiveMoney(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 	if (!_settings_game.economy.give_money) return CMD_ERROR;
 
 	const Company *c = Company::Get(_current_company);
-	CommandCost amount(EXPENSES_OTHER, min((Money)p1, (Money)20000000LL));
+	CommandCost amount(EXPENSES_OTHER, std::min((Money)p1, (Money)20000000LL));
 	CompanyID dest_company = (CompanyID)p2;
 
 	/* You can only transfer funds that is in excess of your loan */

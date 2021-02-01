@@ -278,11 +278,11 @@ void SubtractMoneyFromCompanyFract(CompanyID company, const CommandCost &cst)
 void UpdateLandscapingLimits()
 {
 	for (Company *c : Company::Iterate()) {
-		c->terraform_limit = min(c->terraform_limit + _settings_game.construction.terraform_per_64k_frames, (uint32)_settings_game.construction.terraform_frame_burst << 16);
-		c->clear_limit     = min(c->clear_limit     + _settings_game.construction.clear_per_64k_frames,     (uint32)_settings_game.construction.clear_frame_burst << 16);
-		c->tree_limit      = min(c->tree_limit      + _settings_game.construction.tree_per_64k_frames,      (uint32)_settings_game.construction.tree_frame_burst << 16);
-		c->purchase_land_limit = min(c->purchase_land_limit + _settings_game.construction.purchase_land_per_64k_frames, (uint32)_settings_game.construction.purchase_land_frame_burst << 16);
-		c->build_object_limit = min(c->build_object_limit + _settings_game.construction.build_object_per_64k_frames, (uint32)_settings_game.construction.build_object_frame_burst << 16);
+		c->terraform_limit = std::min(c->terraform_limit + _settings_game.construction.terraform_per_64k_frames, (uint32)_settings_game.construction.terraform_frame_burst << 16);
+		c->clear_limit     = std::min(c->clear_limit     + _settings_game.construction.clear_per_64k_frames,     (uint32)_settings_game.construction.clear_frame_burst << 16);
+		c->tree_limit      = std::min(c->tree_limit      + _settings_game.construction.tree_per_64k_frames,      (uint32)_settings_game.construction.tree_frame_burst << 16);
+		c->purchase_land_limit = std::min(c->purchase_land_limit + _settings_game.construction.purchase_land_per_64k_frames, (uint32)_settings_game.construction.purchase_land_frame_burst << 16);
+		c->build_object_limit = std::min(c->build_object_limit + _settings_game.construction.build_object_per_64k_frames, (uint32)_settings_game.construction.build_object_frame_burst << 16);
 	}
 }
 
@@ -571,7 +571,7 @@ Company *DoStartupNewCompany(DoStartupNewCompanyFlag flags, CompanyID company)
 	ResetCompanyLivery(c);
 	_company_colours[c->index] = (Colours)c->colour;
 
-	c->money = c->current_loan = (min(INITIAL_LOAN, _economy.max_loan) * _economy.inflation_prices >> 16) / 50000 * 50000;
+	c->money = c->current_loan = (std::min<int64>(INITIAL_LOAN, _economy.max_loan) * _economy.inflation_prices >> 16) / 50000 * 50000;
 
 	c->share_owners[0] = c->share_owners[1] = c->share_owners[2] = c->share_owners[3] = INVALID_OWNER;
 
@@ -727,7 +727,7 @@ void OnTick_Companies()
 
 	if (_next_competitor_start == 0) {
 		/* AI::GetStartNextTime() can return 0. */
-		_next_competitor_start = max(1, AI::GetStartNextTime() * DAY_TICKS);
+		_next_competitor_start = std::max(1, AI::GetStartNextTime() * DAY_TICKS);
 	}
 
 	if (_game_mode != GM_MENU && AI::CanStartNew() && --_next_competitor_start == 0) {

@@ -541,7 +541,7 @@ VehicleOrderID OrderList::GetIndexOfOrder(const Order *order) const
  */
 const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops, CargoTypes &cargo_mask) const
 {
-	if (hops > min<uint>(64, this->GetNumOrders()) || next == nullptr) return nullptr;
+	if (hops > std::min<uint>(64, this->GetNumOrders()) || next == nullptr) return nullptr;
 
 	if (next->IsType(OT_CONDITIONAL)) {
 		if (next->GetConditionVariable() != OCV_UNCONDITIONALLY) return next;
@@ -921,13 +921,13 @@ TileIndex Order::GetLocation(const Vehicle *v, bool airport) const
 uint GetOrderDistance(const Order *prev, const Order *cur, const Vehicle *v, int conditional_depth)
 {
 	if (cur->IsType(OT_CONDITIONAL)) {
-		if (conditional_depth > min<int>(64, v->GetNumOrders())) return 0;
+		if (conditional_depth > std::min<int>(64, v->GetNumOrders())) return 0;
 
 		conditional_depth++;
 
 		int dist1 = GetOrderDistance(prev, v->GetOrder(cur->GetConditionSkipToOrder()), v, conditional_depth);
 		int dist2 = GetOrderDistance(prev, cur->next == nullptr ? v->orders.list->GetFirstOrder() : cur->next, v, conditional_depth);
-		return max(dist1, dist2);
+		return std::max(dist1, dist2);
 	}
 
 	TileIndex prev_tile = prev->GetLocation(v, true);
@@ -1410,7 +1410,7 @@ void DeleteOrder(Vehicle *v, VehicleOrderID sel_ord)
 		if (order->IsType(OT_CONDITIONAL)) {
 			VehicleOrderID order_id = order->GetConditionSkipToOrder();
 			if (order_id >= sel_ord) {
-				order_id = max(order_id - 1, 0);
+				order_id = std::max(order_id - 1, 0);
 			}
 			if (order_id == cur_order_id) {
 				order_id = (order_id + 1) % v->GetNumOrders();
@@ -2696,7 +2696,7 @@ static StationID GetNextRealStation(const Vehicle *v, const Order *order, int co
 		if (Station::IsValidID(order->GetDestination())) return order->GetDestination();
 	}
 	//nothing conditional about this
-	if (conditional_depth > min<int>(64, v->GetNumOrders())) return INVALID_STATION;
+	if (conditional_depth > std::min<int>(64, v->GetNumOrders())) return INVALID_STATION;
 	return GetNextRealStation(v, (order->next != nullptr) ? order->next : v->GetFirstOrder(), ++conditional_depth);
 }
 
@@ -2774,7 +2774,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, boo
 			skip_order = ord->UpdateJumpCounter((byte)value, dry_run);
 			break;
 		}
-		case OCV_REMAINING_LIFETIME: skip_order = OrderConditionCompare(occ, max(v->max_age - v->age + DAYS_IN_LEAP_YEAR - 1, 0) / DAYS_IN_LEAP_YEAR, value); break;
+		case OCV_REMAINING_LIFETIME: skip_order = OrderConditionCompare(occ, std::max(v->max_age - v->age + DAYS_IN_LEAP_YEAR - 1, 0) / DAYS_IN_LEAP_YEAR, value); break;
 		case OCV_COUNTER_VALUE: {
 			const TraceRestrictCounter* ctr = TraceRestrictCounter::GetIfValid(GB(order->GetXData(), 16, 16));
 			if (ctr != nullptr) skip_order = OrderConditionCompare(occ, ctr->value, GB(order->GetXData(), 0, 16));
@@ -2795,7 +2795,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, boo
  */
 bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool pbs_look_ahead)
 {
-	if (conditional_depth > min<int>(64, v->GetNumOrders())) {
+	if (conditional_depth > std::min<int>(64, v->GetNumOrders())) {
 		v->current_order.Free();
 		v->SetDestTile(0);
 		return false;

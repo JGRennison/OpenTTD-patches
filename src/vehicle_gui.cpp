@@ -207,7 +207,7 @@ uint GetUnitNumberDigits(VehicleList &vehicles)
 {
 	uint unitnumber = 0;
 	for (const Vehicle *v : vehicles) {
-		unitnumber = max<uint>(unitnumber, v->unitnumber);
+		unitnumber = std::max<uint>(unitnumber, v->unitnumber);
 	}
 
 	return CountDigitsForAllocatingSpace(unitnumber);
@@ -237,7 +237,7 @@ void BaseVehicleListWindow::BuildVehicleList()
 		for (auto it = this->vehicles.begin(); it != this->vehicles.end(); ++it) {
 			this->vehgroups.emplace_back(it, it + 1, (*it)->GetDisplayProfitThisYear(), (*it)->GetDisplayProfitLastYear(), (*it)->age);
 
-			max_unitnumber = max<uint>(max_unitnumber, (*it)->unitnumber);
+			max_unitnumber = std::max<uint>(max_unitnumber, (*it)->unitnumber);
 		}
 		this->unitnumber_digits = CountDigitsForAllocatingSpace(max_unitnumber);
 	} else {
@@ -261,12 +261,12 @@ void BaseVehicleListWindow::BuildVehicleList()
 				const Vehicle * const v = (*it);
 				display_profit_this_year += v->GetDisplayProfitThisYear();
 				display_profit_last_year += v->GetDisplayProfitLastYear();
-				age = max<Date>(age, v->age);
+				age = std::max<Date>(age, v->age);
 			}
 
 			this->vehgroups.emplace_back(begin, end, display_profit_this_year, display_profit_last_year, age);
 
-			max_num_vehicles = max<uint>(max_num_vehicles, static_cast<uint>(end - begin));
+			max_num_vehicles = std::max<uint>(max_num_vehicles, static_cast<uint>(end - begin));
 
 			begin = end;
 		}
@@ -662,7 +662,7 @@ static void DrawVehicleRefitWindow(const SubtypeList list[NUM_CARGO], const int 
 	uint current = 0;
 
 	bool rtl = _current_text_dir == TD_RTL;
-	uint iconwidth = max(GetSpriteSize(SPR_CIRCLE_FOLDED).width, GetSpriteSize(SPR_CIRCLE_UNFOLDED).width);
+	uint iconwidth = std::max(GetSpriteSize(SPR_CIRCLE_FOLDED).width, GetSpriteSize(SPR_CIRCLE_UNFOLDED).width);
 	uint iconheight = GetSpriteSize(SPR_CIRCLE_FOLDED).height;
 	int linecolour = _colour_gradient[COLOUR_ORANGE][4];
 
@@ -1004,7 +1004,7 @@ struct RefitWindow : public Window {
 
 		/* Calculate sprite position. */
 		NWidgetCore *vehicle_panel_display = this->GetWidget<NWidgetCore>(WID_VR_VEHICLE_PANEL_DISPLAY);
-		int sprite_width = max(0, ((int)vehicle_panel_display->current_x - this->vehicle_width) / 2);
+		int sprite_width = std::max(0, ((int)vehicle_panel_display->current_x - this->vehicle_width) / 2);
 		this->sprite_left = vehicle_panel_display->pos_x;
 		this->sprite_right = vehicle_panel_display->pos_x + vehicle_panel_display->current_x - 1;
 		if (_current_text_dir == TD_RTL) {
@@ -1124,7 +1124,7 @@ struct RefitWindow : public Window {
 								}
 
 								int right = Clamp(left + width, 0, r.right);
-								left = max(0, left);
+								left = std::max(0, left);
 
 								if (_current_text_dir == TD_RTL) {
 									right = this->GetWidget<NWidgetCore>(WID_VR_VEHICLE_PANEL_DISPLAY)->current_x - left;
@@ -1197,7 +1197,7 @@ struct RefitWindow : public Window {
 						StringID string = this->GetCapacityString(&list[i][j]);
 						if (string != INVALID_STRING_ID) {
 							Dimension dim = GetStringBoundingBox(string);
-							max_width = max(dim.width, max_width);
+							max_width = std::max(dim.width, max_width);
 						}
 					}
 				}
@@ -1231,8 +1231,8 @@ struct RefitWindow : public Window {
 	{
 		drag_x = GetClickPosition(drag_x);
 
-		int left_x  = min(this->click_x, drag_x);
-		int right_x = max(this->click_x, drag_x);
+		int left_x  = std::min(this->click_x, drag_x);
+		int right_x = std::max(this->click_x, drag_x);
 		this->num_vehicles = 0;
 
 		Vehicle *v = Vehicle::Get(this->window_number);
@@ -1790,7 +1790,7 @@ uint GetVehicleListHeight(VehicleType type, uint divisor)
 	/* Name + vehicle + profit */
 	uint base = ScaleGUITrad(GetVehicleHeight(type)) + 2 * FONT_HEIGHT_SMALL;
 	/* Drawing of the 4 small orders + profit*/
-	if (type >= VEH_SHIP) base = max(base, 5U * FONT_HEIGHT_SMALL);
+	if (type >= VEH_SHIP) base = std::max(base, 5U * FONT_HEIGHT_SMALL);
 
 	if (divisor == 1) return base;
 
@@ -1812,13 +1812,13 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 	int width = right - left;
 	bool rtl = _current_text_dir == TD_RTL;
 
-	int text_offset = max<int>(GetSpriteSize(SPR_PROFIT_LOT).width, GetDigitWidth() * this->unitnumber_digits) + WD_FRAMERECT_RIGHT;
+	int text_offset = std::max<int>(GetSpriteSize(SPR_PROFIT_LOT).width, GetDigitWidth() * this->unitnumber_digits) + WD_FRAMERECT_RIGHT;
 	int text_left  = left  + (rtl ?           0 : text_offset);
 	int text_right = right - (rtl ? text_offset :           0);
 
 	bool show_orderlist = this->vli.vtype >= VEH_SHIP;
-	int orderlist_left  = left  + (rtl ? 0 : max(ScaleGUITrad(100) + text_offset, width / 2));
-	int orderlist_right = right - (rtl ? max(ScaleGUITrad(100) + text_offset, width / 2) : 0);
+	int orderlist_left  = left  + (rtl ? 0 : std::max(ScaleGUITrad(100) + text_offset, width / 2));
+	int orderlist_right = right - (rtl ? std::max(ScaleGUITrad(100) + text_offset, width / 2) : 0);
 
 	int image_left  = (rtl && show_orderlist) ? orderlist_right : text_left;
 	int image_right = (!rtl && show_orderlist) ? orderlist_left : text_right;
@@ -1826,7 +1826,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 	int vehicle_button_x = rtl ? right - GetSpriteSize(SPR_PROFIT_LOT).width : left;
 
 	int y = r.top;
-	uint max = min(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), static_cast<uint>(this->vehgroups.size()));
+	uint max = static_cast<uint>(std::min<size_t>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->vehgroups.size()));
 	for (uint i = this->vscroll->GetPosition(); i < max; ++i) {
 		const GUIVehicleGroup &vehgroup = this->vehgroups[i];
 		if (this->grouping == GB_NONE) {
@@ -2540,7 +2540,7 @@ void DirtyVehicleListWindowForVehicle(const Vehicle *v)
 	FOR_ALL_WINDOWS_FROM_BACK(w) {
 		if (w->window_class == cls || w->window_class == cls2) {
 			BaseVehicleListWindow *listwin = static_cast<BaseVehicleListWindow *>(w);
-			uint max = min(listwin->vscroll->GetPosition() + listwin->vscroll->GetCapacity(), (uint)listwin->vehicles.size());
+			uint max = std::min<uint>(listwin->vscroll->GetPosition() + listwin->vscroll->GetCapacity(), (uint)listwin->vehicles.size());
 			for (uint i = listwin->vscroll->GetPosition(); i < max; ++i) {
 				if (v == listwin->vehicles[i]) {
 					listwin->SetWidgetDirty(0);
@@ -2819,7 +2819,7 @@ struct VehicleDetailsWindow : Window {
 			}
 
 			case WID_VD_MATRIX:
-				resize->height = max(ScaleGUITrad(14), WD_MATRIX_TOP + FONT_HEIGHT_NORMAL + WD_MATRIX_BOTTOM);
+				resize->height = std::max(ScaleGUITrad(14), WD_MATRIX_TOP + FONT_HEIGHT_NORMAL + WD_MATRIX_BOTTOM);
 				size->height = 4 * resize->height;
 				break;
 
@@ -2836,7 +2836,10 @@ struct VehicleDetailsWindow : Window {
 			case WID_VD_SERVICING_INTERVAL:
 				SetDParamMaxValue(0, MAX_SERVINT_DAYS); // Roughly the maximum interval
 				SetDParamMaxValue(1, MAX_YEAR * DAYS_IN_YEAR); // Roughly the maximum year
-				size->width = max(GetStringBoundingBox(STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT).width, GetStringBoundingBox(STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS).width) + WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
+				size->width = std::max(
+					GetStringBoundingBox(STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT).width,
+					GetStringBoundingBox(STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS).width
+				) + WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
 				size->height = WD_FRAMERECT_TOP + FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
 				break;
 		}
@@ -2932,8 +2935,8 @@ struct VehicleDetailsWindow : Window {
 
 				bool should_show_weight_ratio = this->ShouldShowWeightRatioLine(v);
 				if (should_show_weight_ratio) {
-					SetDParam(0, (100 * Train::From(v)->gcache.cached_power) / max<uint>(1, Train::From(v)->gcache.cached_weight));
-					SetDParam(1, (Train::From(v)->gcache.cached_max_te / 10) / max<uint>(1, Train::From(v)->gcache.cached_weight));
+					SetDParam(0, (100 * Train::From(v)->gcache.cached_power) / std::max<uint>(1, Train::From(v)->gcache.cached_weight));
+					SetDParam(1, (Train::From(v)->gcache.cached_max_te / 10) / std::max<uint>(1, Train::From(v)->gcache.cached_weight));
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_VEHICLE_INFO_WEIGHT_RATIOS);
 					y += FONT_HEIGHT_NORMAL;
 				}
@@ -3507,7 +3510,7 @@ public:
 		const Vehicle *v = Vehicle::Get(this->window_number);
 		switch (widget) {
 			case WID_VV_START_STOP:
-				size->height = max(size->height, max(GetSpriteSize(SPR_FLAG_VEH_STOPPED).height, GetSpriteSize(SPR_FLAG_VEH_RUNNING).height) + WD_IMGBTN_TOP + WD_IMGBTN_BOTTOM);
+				size->height = std::max(size->height, std::max(GetSpriteSize(SPR_FLAG_VEH_STOPPED).height, GetSpriteSize(SPR_FLAG_VEH_RUNNING).height) + WD_IMGBTN_TOP + WD_IMGBTN_BOTTOM);
 				break;
 
 			case WID_VV_FORCE_PROCEED:
@@ -3581,7 +3584,7 @@ public:
 				SetDParam(0, STR_BREAKDOWN_TYPE_CRITICAL + w->breakdown_type);
 
 				if (w->breakdown_type == BREAKDOWN_LOW_SPEED) {
-					SetDParam(1, min(w->First()->GetDisplayMaxSpeed(), w->breakdown_severity >> ((v->type == VEH_TRAIN) ? 0 : 1)));
+					SetDParam(1, std::min(w->First()->GetDisplayMaxSpeed(), w->breakdown_severity >> ((v->type == VEH_TRAIN) ? 0 : 1)));
 				} else if (w->breakdown_type == BREAKDOWN_LOW_POWER) {
 					int percent;
 					if (v->type == VEH_TRAIN) {
@@ -3707,7 +3710,7 @@ public:
 
 		/* Draw the flag plus orders. */
 		bool rtl = (_current_text_dir == TD_RTL);
-		uint text_offset = max(GetSpriteSize(SPR_FLAG_VEH_STOPPED).width, GetSpriteSize(SPR_FLAG_VEH_RUNNING).width) + WD_IMGBTN_LEFT + WD_IMGBTN_RIGHT;
+		uint text_offset = std::max(GetSpriteSize(SPR_FLAG_VEH_STOPPED).width, GetSpriteSize(SPR_FLAG_VEH_RUNNING).width) + WD_IMGBTN_LEFT + WD_IMGBTN_RIGHT;
 		int text_left = r.left + (rtl ? (uint)WD_FRAMERECT_LEFT : text_offset);
 		int text_right = r.right - (rtl ? text_offset : (uint)WD_FRAMERECT_RIGHT);
 		int image_left = (rtl ? text_right + 1 : r.left) + WD_IMGBTN_LEFT;

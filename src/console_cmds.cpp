@@ -1148,6 +1148,23 @@ DEF_CONSOLE_CMD(ConRestart)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConReload)
+{
+	if (argc == 0) {
+		IConsoleHelp("Reload game. Usage: 'reload'");
+		IConsoleHelp("Reloads a game.");
+		IConsoleHelp(" * if you started from a savegame / scenario / heightmap, that exact same savegame / scenario / heightmap will be loaded.");
+		IConsoleHelp(" * if you started from a new game, this acts the same as 'restart'.");
+		return true;
+	}
+
+	/* Don't copy the _newgame pointers to the real pointers, so call SwitchToMode directly */
+	_settings_game.game_creation.map_x = MapLogX();
+	_settings_game.game_creation.map_y = FindFirstBit(MapSizeY());
+	_switch_mode = SM_RELOADGAME;
+	return true;
+}
+
 /**
  * Print a text buffer line by line to the console. Lines are separated by '\n'.
  * @param buf The buffer to print.
@@ -2596,8 +2613,8 @@ DEF_CONSOLE_CMD(ConViewportMarkDirty)
 	Viewport *vp = FindWindowByClass(WC_MAIN_WINDOW)->viewport;
 	uint l = strtoul(argv[1], nullptr, 0);
 	uint t = strtoul(argv[2], nullptr, 0);
-	uint r = min<uint>(l + ((argc > 3) ? strtoul(argv[3], nullptr, 0) : 1), vp->dirty_blocks_per_row);
-	uint b = min<uint>(t + ((argc > 4) ? strtoul(argv[4], nullptr, 0) : 1), vp->dirty_blocks_per_column);
+	uint r = std::min<uint>(l + ((argc > 3) ? strtoul(argv[3], nullptr, 0) : 1), vp->dirty_blocks_per_row);
+	uint b = std::min<uint>(t + ((argc > 4) ? strtoul(argv[4], nullptr, 0) : 1), vp->dirty_blocks_per_column);
 	for (uint x = l; x < r; x++) {
 		for (uint y = t; y < b; y++) {
 			vp->dirty_blocks[(x * vp->dirty_blocks_per_column) + y] = true;
@@ -2832,7 +2849,7 @@ DEF_CONSOLE_CMD(ConNewGRFProfile)
 		if (started > 0) {
 			IConsolePrintF(CC_DEBUG, "Started profiling for GRFID%s %s", (started > 1) ? "s" : "", grfids.c_str());
 			if (argc >= 3) {
-				int days = max(atoi(argv[2]), 1);
+				int days = std::max(atoi(argv[2]), 1);
 				_newgrf_profile_end_date = _date + days;
 
 				char datestrbuf[32]{ 0 };
@@ -3069,6 +3086,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("list_aliases", ConListAliases);
 	IConsoleCmdRegister("newgame",      ConNewGame);
 	IConsoleCmdRegister("restart",      ConRestart);
+	IConsoleCmdRegister("reload",       ConReload);
 	IConsoleCmdRegister("getseed",      ConGetSeed);
 	IConsoleCmdRegister("getdate",      ConGetDate);
 	IConsoleCmdRegister("getsysdate",   ConGetSysDate);

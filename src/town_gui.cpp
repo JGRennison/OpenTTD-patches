@@ -252,7 +252,7 @@ public:
 				size->height = WD_FRAMERECT_TOP + 5 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
 				size->width = GetStringBoundingBox(STR_LOCAL_AUTHORITY_ACTIONS_TITLE).width;
 				for (uint i = 0; i < TACT_COUNT; i++ ) {
-					size->width = max(size->width, GetStringBoundingBox(STR_LOCAL_AUTHORITY_ACTION_SMALL_ADVERTISING_CAMPAIGN + i).width);
+					size->width = std::max(size->width, GetStringBoundingBox(STR_LOCAL_AUTHORITY_ACTION_SMALL_ADVERTISING_CAMPAIGN + i).width);
 				}
 				size->width += WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
 				break;
@@ -882,7 +882,7 @@ public:
 				}
 				Dimension icon_size = GetSpriteSize(SPR_TOWN_RATING_GOOD);
 				d.width += icon_size.width + 2;
-				d.height = max(d.height, icon_size.height);
+				d.height = std::max(d.height, icon_size.height);
 				resize->height = d.height;
 				d.height *= 5;
 				d.width += padding.width + WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
@@ -1635,9 +1635,9 @@ public:
 			case WID_HP_HOUSE_SETS: {
 				uint max_w = 0;
 				for (uint i = 0; i < this->house_list.NumHouseSets(); i++) {
-					max_w = max(max_w, GetStringBoundingBox(this->house_list.GetNameOfHouseSet(i)).width);
+					max_w = std::max(max_w, GetStringBoundingBox(this->house_list.GetNameOfHouseSet(i)).width);
 				}
-				size->width = max(size->width, max_w + padding.width);
+				size->width = std::max(size->width, max_w + padding.width);
 				this->line_height = FONT_HEIGHT_NORMAL + WD_MATRIX_TOP + WD_MATRIX_BOTTOM;
 				size->height = this->house_list.NumHouseSets() * this->line_height;
 				break;
@@ -1648,13 +1648,13 @@ public:
 				break;
 
 			case WID_HP_HISTORICAL_BUILDING:
-				size->width = max(size->width, GetStringBoundingBox(STR_HOUSE_BUILD_HISTORICAL_BUILDING).width + padding.width);
+				size->width = std::max(size->width, GetStringBoundingBox(STR_HOUSE_BUILD_HISTORICAL_BUILDING).width + padding.width);
 				break;
 
 			case WID_HP_HOUSE_POPULATION:
 				SetDParam(0, 0);
 				/* max popultion is 255 - 3 digits */
-				size->width = max(size->width, GetStringBoundingBox(STR_HOUSE_BUILD_HOUSE_POPULATION).width + 3 * GetDigitWidth() + padding.width);
+				size->width = std::max(size->width, GetStringBoundingBox(STR_HOUSE_BUILD_HOUSE_POPULATION).width + 3 * GetDigitWidth() + padding.width);
 				break;
 
 			case WID_HP_HOUSE_ZONES: {
@@ -1662,7 +1662,7 @@ public:
 					SetDParam(2 * i, STR_HOUSE_BUILD_HOUSE_ZONE_ENABLED); // colour
 					SetDParam(2 * i + 1, i + 1); // digit: 1(center)/2/3/4/5(edge)
 				}
-				size->width = max(size->width, GetStringBoundingBox(STR_HOUSE_BUILD_HOUSE_ZONES).width + padding.width);
+				size->width = std::max(size->width, GetStringBoundingBox(STR_HOUSE_BUILD_HOUSE_ZONES).width + padding.width);
 				break;
 			}
 
@@ -1884,7 +1884,7 @@ struct SelectTownWindow : Window {
 		if (widget != WID_ST_PANEL) return;
 
 		uint y = r.top + WD_FRAMERECT_TOP;
-		uint end = min(this->vscroll->GetCount(), this->vscroll->GetPosition() + this->vscroll->GetCapacity());
+		uint end = std::min<uint>(this->vscroll->GetCount(), this->vscroll->GetPosition() + this->vscroll->GetCapacity());
 		for (uint i = this->vscroll->GetPosition(); i < end; i++) {
 			SetDParam(0, this->towns[i]);
 			DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SELECT_TOWN_LIST_ITEM);

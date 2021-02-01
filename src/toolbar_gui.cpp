@@ -143,7 +143,7 @@ public:
 
 	uint Height(uint width) const override
 	{
-		return max(max(this->icon_size.height, this->lock_size.height) + 2U, (uint)FONT_HEIGHT_NORMAL);
+		return std::max(std::max(this->icon_size.height, this->lock_size.height) + 2U, (uint)FONT_HEIGHT_NORMAL);
 	}
 
 	void Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const override
@@ -1374,10 +1374,10 @@ public:
 		/* First initialise some variables... */
 		for (NWidgetBase *child_wid = this->head; child_wid != nullptr; child_wid = child_wid->next) {
 			child_wid->SetupSmallestSize(w, init_array);
-			this->smallest_y = max(this->smallest_y, child_wid->smallest_y + child_wid->padding_top + child_wid->padding_bottom);
+			this->smallest_y = std::max(this->smallest_y, child_wid->smallest_y + child_wid->padding_top + child_wid->padding_bottom);
 			if (this->IsButton(child_wid->type)) {
 				nbuttons++;
-				this->smallest_x = max(this->smallest_x, child_wid->smallest_x + child_wid->padding_left + child_wid->padding_right);
+				this->smallest_x = std::max(this->smallest_x, child_wid->smallest_x + child_wid->padding_left + child_wid->padding_right);
 			} else if (child_wid->type == NWID_SPACER) {
 				this->spacers++;
 			}
@@ -1419,7 +1419,7 @@ public:
 
 		/* Now assign the widgets to their rightful place */
 		uint position = 0; // Place to put next child relative to origin of the container.
-		uint spacer_space = max(0, (int)given_width - (int)(button_count * this->smallest_x)); // Remaining spacing for 'spacer' widgets
+		uint spacer_space = std::max(0, (int)given_width - (int)(button_count * this->smallest_x)); // Remaining spacing for 'spacer' widgets
 		uint button_space = given_width - spacer_space; // Remaining spacing for the buttons
 		uint spacer_i = 0;
 		uint button_i = 0;
@@ -1817,7 +1817,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 		};
 
 		/* If at least BIGGEST_ARRANGEMENT fit, just spread all the buttons nicely */
-		uint full_buttons = max(CeilDiv(width, this->smallest_x), SMALLEST_ARRANGEMENT);
+		uint full_buttons = std::max(CeilDiv(width, this->smallest_x), SMALLEST_ARRANGEMENT);
 		if (full_buttons > BIGGEST_ARRANGEMENT) {
 			button_count = arrangable_count = lengthof(arrange_all);
 			spacer_count = this->spacers;
@@ -2071,11 +2071,6 @@ struct MainToolbarWindow : Window {
 		this->SetWidgetDisabledState(WID_TN_GOAL, Goal::GetNumItems() == 0);
 		this->SetWidgetDisabledState(WID_TN_STORY, StoryPage::GetNumItems() == 0);
 
-		this->SetWidgetDisabledState(WID_TN_RAILS, !CanBuildVehicleInfrastructure(VEH_TRAIN));
-		this->SetWidgetDisabledState(WID_TN_ROADS, !CanBuildVehicleInfrastructure(VEH_ROAD, RTT_ROAD));
-		this->SetWidgetDisabledState(WID_TN_TRAMS, !CanBuildVehicleInfrastructure(VEH_ROAD, RTT_TRAM));
-		this->SetWidgetDisabledState(WID_TN_AIR, !CanBuildVehicleInfrastructure(VEH_AIRCRAFT));
-
 		this->SetWidgetDisabledState(WID_TN_PAUSE, _networking && !(_network_server || _network_settings_access)); // if not server, disable pause button
 
 		this->DrawWidgets();
@@ -2122,11 +2117,11 @@ struct MainToolbarWindow : Window {
 			case MTHK_AIRCRAFT_LIST: ShowVehicleListWindow(_local_company, VEH_AIRCRAFT); break;
 			case MTHK_ZOOM_IN: ToolbarZoomInClick(this); break;
 			case MTHK_ZOOM_OUT: ToolbarZoomOutClick(this); break;
-			case MTHK_BUILD_RAIL: if (CanBuildVehicleInfrastructure(VEH_TRAIN)) ShowBuildRailToolbar(_last_built_railtype); break;
+			case MTHK_BUILD_RAIL: ShowBuildRailToolbar(_last_built_railtype); break;
 			case MTHK_BUILD_ROAD: ShowBuildRoadToolbar(_last_built_roadtype); break;
-			case MTHK_BUILD_TRAM: if (CanBuildVehicleInfrastructure(VEH_ROAD, RTT_TRAM)) ShowBuildRoadToolbar(_last_built_tramtype); break;
+			case MTHK_BUILD_TRAM: ShowBuildRoadToolbar(_last_built_tramtype); break;
 			case MTHK_BUILD_DOCKS: ShowBuildDocksToolbar(); break;
-			case MTHK_BUILD_AIRPORT: if (CanBuildVehicleInfrastructure(VEH_AIRCRAFT)) ShowBuildAirToolbar(); break;
+			case MTHK_BUILD_AIRPORT: ShowBuildAirToolbar(); break;
 			case MTHK_BUILD_TREES: ShowBuildTreesToolbar(); break;
 			case MTHK_MUSIC: ShowMusicWindow(); break;
 			case MTHK_AI_DEBUG: ShowAIDebugWindow(); break;
@@ -2322,7 +2317,7 @@ static NWidgetBase *MakeMainToolbar(int *biggest_index)
 		hor->Add(new NWidgetLeaf(i == WID_TN_SAVE ? WWT_IMGBTN_2 : WWT_IMGBTN, COLOUR_GREY, i, toolbar_button_sprites[i], STR_TOOLBAR_TOOLTIP_PAUSE_GAME + i));
 	}
 
-	*biggest_index = max<int>(*biggest_index, WID_TN_SWITCH_BAR);
+	*biggest_index = std::max<int>(*biggest_index, WID_TN_SWITCH_BAR);
 	return hor;
 }
 
@@ -2474,13 +2469,13 @@ struct ScenarioEditorToolbarWindow : Window {
 	{
 		switch (widget) {
 			case WID_TE_SPACER:
-				size->width = max(GetStringBoundingBox(STR_SCENEDIT_TOOLBAR_OPENTTD).width, GetStringBoundingBox(STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR).width) + WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
+				size->width = std::max(GetStringBoundingBox(STR_SCENEDIT_TOOLBAR_OPENTTD).width, GetStringBoundingBox(STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR).width) + WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
 				break;
 
 			case WID_TE_DATE:
 				SetDParam(0, ConvertYMDToDate(MAX_YEAR, 0, 1));
 				*size = GetStringBoundingBox(STR_WHITE_DATE_LONG);
-				size->height = max(size->height, GetSpriteSize(SPR_IMG_SAVE).height + WD_IMGBTN_TOP + WD_IMGBTN_BOTTOM);
+				size->height = std::max(size->height, GetSpriteSize(SPR_IMG_SAVE).height + WD_IMGBTN_TOP + WD_IMGBTN_BOTTOM);
 				break;
 		}
 	}

@@ -188,7 +188,7 @@ struct SchdispatchWindow : Window {
 				this->flag_width  = UnScaleGUI(spr->width) + WD_FRAMERECT_RIGHT;
 				this->flag_height = UnScaleGUI(spr->height);
 
-				min_height = max<uint>(unumber.height + WD_MATRIX_TOP, UnScaleGUI(spr->height));
+				min_height = std::max<uint>(unumber.height + WD_MATRIX_TOP, UnScaleGUI(spr->height));
 				this->header_width = this->flag_width + WD_FRAMERECT_LEFT;
 				this->base_width = unumber.width + this->header_width + 4;
 
@@ -206,7 +206,7 @@ struct SchdispatchWindow : Window {
 				size->height = WD_FRAMERECT_TOP + 4 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
 				if (warning_count > 0) {
 					const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
-					size->height += warning_count * max<int>(warning_dimensions.height, FONT_HEIGHT_NORMAL);
+					size->height += warning_count * std::max<int>(warning_dimensions.height, FONT_HEIGHT_NORMAL);
 				}
 				break;
 		}
@@ -319,7 +319,7 @@ struct SchdispatchWindow : Window {
 				uint num = this->vscroll->GetPosition() * this->num_columns;
 				if (num >= v->orders.list->GetScheduledDispatch().size()) break;
 
-				const uint maxval = min<uint>(this->item_count, num + (rows_in_display * this->num_columns));
+				const uint maxval = std::min<uint>(this->item_count, num + (rows_in_display * this->num_columns));
 
 				auto current_schedule = v->orders.list->GetScheduledDispatch().begin() + num;
 				const DateTicksScaled start_tick = v->orders.list->GetScheduledDispatchStartTick();
@@ -386,7 +386,7 @@ struct SchdispatchWindow : Window {
 					uint warnings = 0;
 					auto draw_warning = [&](StringID text) {
 						const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
-						int step_height = max<int>(warning_dimensions.height, FONT_HEIGHT_NORMAL);
+						int step_height = std::max<int>(warning_dimensions.height, FONT_HEIGHT_NORMAL);
 						int left = r.left + WD_FRAMERECT_LEFT;
 						int right = r.right - WD_FRAMERECT_RIGHT;
 						const bool rtl = (_current_text_dir == TD_RTL);

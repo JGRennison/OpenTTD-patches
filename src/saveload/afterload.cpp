@@ -669,8 +669,8 @@ bool AfterLoadGame()
 			int dx = TileX(t) - TileX(st->train_station.tile);
 			int dy = TileY(t) - TileY(st->train_station.tile);
 			assert(dx >= 0 && dy >= 0);
-			st->train_station.w = max<uint>(st->train_station.w, dx + 1);
-			st->train_station.h = max<uint>(st->train_station.h, dy + 1);
+			st->train_station.w = std::max<uint>(st->train_station.w, dx + 1);
+			st->train_station.h = std::max<uint>(st->train_station.h, dy + 1);
 		}
 	}
 
@@ -843,12 +843,7 @@ bool AfterLoadGame()
 		_settings_game.linkgraph.distribution_default = DT_MANUAL;
 	}
 
-	if (IsSavegameVersionBefore(SLV_105)) {
-		extern int32 _old_ending_year_slv_105; // in date.cpp
-		_settings_game.game_creation.ending_year = _old_ending_year_slv_105 - 1;
-	} else if (IsSavegameVersionBefore(SLV_ENDING_YEAR)) {
-		/* Ending year was a GUI setting before SLV_105, was removed in revision 683b65ee1 (svn r14755). */
-		/* This also converts scenarios, both when loading them into the editor, and when starting a new game. */
+	if (IsSavegameVersionBefore(SLV_ENDING_YEAR)) {
 		_settings_game.game_creation.ending_year = DEF_END_YEAR;
 	}
 
@@ -2745,7 +2740,7 @@ bool AfterLoadGame()
 						uint per_proc = _me[t].m7;
 						_me[t].m7 = GB(_me[t].m6, 2, 6) | (GB(_m[t].m3, 5, 1) << 6);
 						SB(_m[t].m3, 5, 1, 0);
-						SB(_me[t].m6, 2, 6, min(per_proc, 63));
+						SB(_me[t].m6, 2, 6, std::min(per_proc, 63U));
 					}
 					break;
 
@@ -3001,7 +2996,7 @@ bool AfterLoadGame()
 		_settings_game.pf.reverse_at_signals = IsSavegameVersionBefore(SLV_100) || (_settings_game.pf.wait_oneway_signal != 255 && _settings_game.pf.wait_twoway_signal != 255 && _settings_game.pf.wait_for_pbs_path != 255);
 
 		for (Train *t : Train::Iterate()) {
-			_settings_game.vehicle.max_train_length = max<uint8>(_settings_game.vehicle.max_train_length, CeilDiv(t->gcache.cached_total_length, TILE_SIZE));
+			_settings_game.vehicle.max_train_length = std::max<uint8>(_settings_game.vehicle.max_train_length, CeilDiv(t->gcache.cached_total_length, TILE_SIZE));
 		}
 	}
 
@@ -3127,7 +3122,7 @@ bool AfterLoadGame()
 				 * Set it to the reliability of the front engine or the maximum, whichever is lower. */
 				const Engine *e = Engine::Get(v->engine_type);
 				v->reliability_spd_dec = e->reliability_spd_dec;
-				v->reliability = min(v->First()->reliability, e->reliability);
+				v->reliability = std::min(v->First()->reliability, e->reliability);
 			}
 		}
 	}
@@ -3158,7 +3153,7 @@ bool AfterLoadGame()
 			switch(v->type) {
 				case VEH_AIRCRAFT:
 					if (v->breakdown_type == BREAKDOWN_AIRCRAFT_SPEED && v->breakdown_severity == 0) {
-						v->breakdown_severity = max(1, min(v->vcache.cached_max_speed >> 4, 255));
+						v->breakdown_severity = std::max(1, std::min(v->vcache.cached_max_speed >> 4, 255));
 					}
 					break;
 

@@ -1879,7 +1879,6 @@ STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Biztosa
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Csalások
 STR_CHEATS_TOOLTIP                                              :{BLACK}A kijelölőnégyzetek jelzik a csalások eddigi használatát
-STR_CHEATS_WARNING                                              :{BLACK}Figyelem! Te épp a versenytársaidat készülöd elárulni. Sose felejtsd el, hogy egy ilyen szégyenletes tett sose merül feledésbe
 STR_CHEAT_MONEY                                                 :{LTBLUE}Tőkeemelés {CURRENCY_LONG}
 STR_CHEAT_CHANGE_COMPANY                                        :{LTBLUE}Irányított vállalat: {ORANGE}{COMMA}
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}Csodabuldózer (lerombol gazdasági épületeket, mozgathatatlan objektumokat): {ORANGE}{STRING}
@@ -2387,6 +2386,8 @@ STR_JOIN_STATION_CREATE_SPLITTED_STATION                        :{YELLOW}Külön
 
 STR_JOIN_WAYPOINT_CAPTION                                       :{WHITE}Ellenőrző pont egyesítése
 STR_JOIN_WAYPOINT_CREATE_SPLITTED_WAYPOINT                      :{YELLOW}Különálló ellenőrző pont építése
+
+# Generic toolbar
 
 # Rail construction toolbar
 STR_RAIL_TOOLBAR_RAILROAD_CONSTRUCTION_CAPTION                  :Vasút építése

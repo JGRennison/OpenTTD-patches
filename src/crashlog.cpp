@@ -376,7 +376,7 @@ char *CrashLog::LogRecentNews(char *buffer, const char *last) const
 	for (NewsItem *news = _latest_news; news != nullptr; news = news->prev) {
 		total++;
 	}
-	uint show = min<uint>(total, 32);
+	uint show = std::min<uint>(total, 32);
 	buffer += seprintf(buffer, last, "Recent news messages (%u of %u):\n", show, total);
 
 	int i = 0;

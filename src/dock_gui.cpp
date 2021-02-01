@@ -72,7 +72,7 @@ static TileIndex GetOtherAqueductEnd(TileIndex tile_from, TileIndex *tile_to = n
 	/* Direction the aqueduct is built to. */
 	TileIndexDiff offset = TileOffsByDiagDir(ReverseDiagDir(dir));
 	/* The maximum length of the aqueduct. */
-	int max_length = min(_settings_game.construction.max_bridge_length, DistanceFromEdgeDir(tile_from, ReverseDiagDir(dir)) - 1);
+	int max_length = std::min<int>(_settings_game.construction.max_bridge_length, DistanceFromEdgeDir(tile_from, ReverseDiagDir(dir)) - 1);
 
 	TileIndex endtile = tile_from;
 	for (int length = 0; IsValidTile(endtile) && TileX(endtile) != 0 && TileY(endtile) != 0; length++) {
@@ -127,6 +127,19 @@ struct BuildDocksToolbarWindow : Window {
 			DeleteWindowById(WC_BUILD_STATION, TRANSPORT_WATER);
 			DeleteWindowById(WC_BUILD_DEPOT, TRANSPORT_WATER);
 		}
+
+		if (_game_mode != GM_EDITOR) {
+			if (!can_build) {
+				/* Show in the tooltip why this button is disabled. */
+				this->GetWidget<NWidgetCore>(WID_DT_DEPOT)->SetToolTip(STR_TOOLBAR_DISABLED_NO_VEHICLE_AVAILABLE);
+				this->GetWidget<NWidgetCore>(WID_DT_STATION)->SetToolTip(STR_TOOLBAR_DISABLED_NO_VEHICLE_AVAILABLE);
+				this->GetWidget<NWidgetCore>(WID_DT_BUOY)->SetToolTip(STR_TOOLBAR_DISABLED_NO_VEHICLE_AVAILABLE);
+			} else {
+				this->GetWidget<NWidgetCore>(WID_DT_DEPOT)->SetToolTip(STR_WATERWAYS_TOOLBAR_BUILD_DEPOT_TOOLTIP);
+				this->GetWidget<NWidgetCore>(WID_DT_STATION)->SetToolTip(STR_WATERWAYS_TOOLBAR_BUILD_DOCK_TOOLTIP);
+				this->GetWidget<NWidgetCore>(WID_DT_BUOY)->SetToolTip(STR_WATERWAYS_TOOLBAR_BUOY_TOOLTIP);
+			}
+		}
 	}
 
 	void OnClick(Point pt, int widget, int click_count) override
@@ -145,17 +158,14 @@ struct BuildDocksToolbarWindow : Window {
 				break;
 
 			case WID_DT_DEPOT: // Build depot button
-				if (!CanBuildVehicleInfrastructure(VEH_SHIP)) return;
 				if (HandlePlacePushButton(this, WID_DT_DEPOT, SPR_CURSOR_SHIP_DEPOT, HT_RECT)) ShowBuildDocksDepotPicker(this);
 				break;
 
 			case WID_DT_STATION: // Build station button
-				if (!CanBuildVehicleInfrastructure(VEH_SHIP)) return;
 				if (HandlePlacePushButton(this, WID_DT_STATION, SPR_CURSOR_DOCK, HT_SPECIAL)) ShowBuildDockStationPicker(this);
 				break;
 
 			case WID_DT_BUOY: // Build buoy button
-				if (!CanBuildVehicleInfrastructure(VEH_SHIP)) return;
 				HandlePlacePushButton(this, WID_DT_BUOY, SPR_CURSOR_BUOY, HT_RECT);
 				break;
 

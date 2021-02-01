@@ -283,8 +283,8 @@ void GfxFillPolygon(const std::vector<Point> &shape, int colour, FillRectMode mo
 		std::sort(intersections.begin(), intersections.end());
 		for (size_t i = 1; i < intersections.size(); i += 2) {
 			/* Check clipping. */
-			const int x1 = max(0, intersections[i - 1]);
-			const int x2 = min(intersections[i], dpi->width);
+			const int x1 = std::max(0, intersections[i - 1]);
+			const int x2 = std::min(intersections[i], dpi->width);
 			if (x2 < 0) continue;
 			if (x1 >= dpi->width) continue;
 
@@ -347,7 +347,7 @@ static inline void GfxDoDrawLine(void *video, int x, int y, int x2, int y2, int 
 
 	/* prevent integer overflows. */
 	int margin = 1;
-	while (INT_MAX / abs(grade_y) < max(abs(clip.left - x), abs(clip.right - x))) {
+	while (INT_MAX / abs(grade_y) < std::max(abs(clip.left - x), abs(clip.right - x))) {
 		grade_y /= 2;
 		grade_x /= 2;
 		margin  *= 2; // account for rounding errors
@@ -656,7 +656,7 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 int DrawString(int left, int right, int top, const char *str, TextColour colour, StringAlignment align, bool underline, FontSize fontsize)
 {
 	/* The string may contain control chars to change the font, just use the biggest font for clipping. */
-	int max_height = max(max(FONT_HEIGHT_SMALL, FONT_HEIGHT_NORMAL), max(FONT_HEIGHT_LARGE, FONT_HEIGHT_MONO));
+	int max_height = std::max({FONT_HEIGHT_SMALL, FONT_HEIGHT_NORMAL, FONT_HEIGHT_LARGE, FONT_HEIGHT_MONO});
 
 	/* Funny glyphs may extent outside the usual bounds, so relax the clipping somewhat. */
 	int extra = max_height / 2;
@@ -936,8 +936,8 @@ Dimension GetSpriteSize(SpriteID sprid, Point *offset, ZoomLevel zoom)
 	}
 
 	Dimension d;
-	d.width  = max<int>(0, UnScaleByZoom(sprite->x_offs + sprite->width, zoom));
-	d.height = max<int>(0, UnScaleByZoom(sprite->y_offs + sprite->height, zoom));
+	d.width  = std::max<int>(0, UnScaleByZoom(sprite->x_offs + sprite->width, zoom));
+	d.height = std::max<int>(0, UnScaleByZoom(sprite->y_offs + sprite->height, zoom));
 	return d;
 }
 
@@ -1045,10 +1045,10 @@ static void GfxBlitter(const Sprite * const sprite, int x, int y, BlitterMode mo
 		bp.height = UnScaleByZoom(sprite->height, zoom);
 	} else {
 		/* Amount of pixels to clip from the source sprite */
-		int clip_left   = max(0,                   -sprite->x_offs +  sub->left        * ZOOM_BASE );
-		int clip_top    = max(0,                   -sprite->y_offs +  sub->top         * ZOOM_BASE );
-		int clip_right  = max(0, sprite->width  - (-sprite->x_offs + (sub->right + 1)  * ZOOM_BASE));
-		int clip_bottom = max(0, sprite->height - (-sprite->y_offs + (sub->bottom + 1) * ZOOM_BASE));
+		int clip_left   = std::max(0,                   -sprite->x_offs +  sub->left        * ZOOM_BASE );
+		int clip_top    = std::max(0,                   -sprite->y_offs +  sub->top         * ZOOM_BASE );
+		int clip_right  = std::max(0, sprite->width  - (-sprite->x_offs + (sub->right + 1)  * ZOOM_BASE));
+		int clip_bottom = std::max(0, sprite->height - (-sprite->y_offs + (sub->bottom + 1) * ZOOM_BASE));
 
 		if (clip_left + clip_right >= sprite->width) return;
 		if (clip_top + clip_bottom >= sprite->height) return;
@@ -1328,7 +1328,7 @@ byte GetDigitWidth(FontSize size)
 {
 	byte width = 0;
 	for (char c = '0'; c <= '9'; c++) {
-		width = max(GetCharacterWidth(size, c), width);
+		width = std::max(GetCharacterWidth(size, c), width);
 	}
 	return width;
 }
@@ -1525,7 +1525,7 @@ static void DrawOverlappedWindowWithClipping(Window *w, int left, int top, int r
 
 	if (right < 0 || bottom < 0 || left >= _screen.width || top >= _screen.height) return;
 
-	DrawOverlappedWindow(w, max(0, left), max(0, top), min(_screen.width, right), min(_screen.height, bottom), flags);
+	DrawOverlappedWindow(w, std::max(0, left), std::max(0, top), std::min(_screen.width, right), std::min(_screen.height, bottom), flags);
 }
 
 /**
@@ -1722,10 +1722,10 @@ void DrawDirtyBlocks()
 								no_more_coalesc:
 
 								assert(_cur_dpi == &bk);
-								int draw_left = max<int>(0, ((left == 0) ? 0 : vp->dirty_block_left_margin + (left << vp->GetDirtyBlockWidthShift())) + vp->left);
-								int draw_top = max<int>(0, (top << vp->GetDirtyBlockHeightShift()) + vp->top);
-								int draw_right = min<int>(_screen.width, min<int>((right << vp->GetDirtyBlockWidthShift()) + vp->dirty_block_left_margin, vp->width) + vp->left);
-								int draw_bottom = min<int>(_screen.height, min<int>(bottom << vp->GetDirtyBlockHeightShift(), vp->height) + vp->top);
+								int draw_left = std::max<int>(0, ((left == 0) ? 0 : vp->dirty_block_left_margin + (left << vp->GetDirtyBlockWidthShift())) + vp->left);
+								int draw_top = std::max<int>(0, (top << vp->GetDirtyBlockHeightShift()) + vp->top);
+								int draw_right = std::min<int>(_screen.width, std::min<int>((right << vp->GetDirtyBlockWidthShift()) + vp->dirty_block_left_margin, vp->width) + vp->left);
+								int draw_bottom = std::min<int>(_screen.height, std::min<int>(bottom << vp->GetDirtyBlockHeightShift(), vp->height) + vp->top);
 								if (draw_left < draw_right && draw_top < draw_bottom) {
 									DrawDirtyViewport(0, draw_left, draw_top, draw_right, draw_bottom);
 								}
@@ -2001,8 +2001,8 @@ void UpdateCursorSize()
 			_cursor.total_offs = offs;
 			_cursor.total_size = size;
 		} else {
-			int right  = max(_cursor.total_offs.x + _cursor.total_size.x, offs.x + size.x);
-			int bottom = max(_cursor.total_offs.y + _cursor.total_size.y, offs.y + size.y);
+			int right  = std::max(_cursor.total_offs.x + _cursor.total_size.x, offs.x + size.x);
+			int bottom = std::max(_cursor.total_offs.y + _cursor.total_size.y, offs.y + size.y);
 			if (offs.x < _cursor.total_offs.x) _cursor.total_offs.x = offs.x;
 			if (offs.y < _cursor.total_offs.y) _cursor.total_offs.y = offs.y;
 			_cursor.total_size.x = right  - _cursor.total_offs.x;

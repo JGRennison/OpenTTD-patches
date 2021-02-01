@@ -166,8 +166,8 @@ void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev
 		const GroundVehicleCache *gcache = virt->GetGroundVehicleCache();
 		tmp->max_speed = virt->GetDisplayMaxSpeed();
 		tmp->power = gcache->cached_power;
-		tmp->empty_weight = max<uint32>(gcache->cached_weight - cargo_weight, 1);
-		tmp->full_weight = max<uint32>(gcache->cached_weight + full_cargo_weight - cargo_weight, 1);
+		tmp->empty_weight = std::max<uint32>(gcache->cached_weight - cargo_weight, 1);
+		tmp->full_weight = std::max<uint32>(gcache->cached_weight + full_cargo_weight - cargo_weight, 1);
 		tmp->max_te = gcache->cached_max_te;
 	}
 
@@ -433,7 +433,7 @@ void TransferCargoForTrain(Train *old_veh, Train *new_head)
 		if (tmp->cargo_type == _cargo_type && tmp->cargo_subtype == _cargo_subtype) {
 			// calculate the free space for new cargo on the current vehicle
 			uint curCap = tmp->cargo_cap - tmp->cargo.TotalCount();
-			uint moveAmount = min(remainingAmount, curCap);
+			uint moveAmount = std::min(remainingAmount, curCap);
 			// move (parts of) the old vehicle's cargo onto the current vehicle of the new chain
 			if (moveAmount > 0) {
 				old_veh->cargo.Shift(moveAmount, &tmp->cargo);

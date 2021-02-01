@@ -1682,7 +1682,6 @@ STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}¿Segur
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Trukoak
 STR_CHEATS_TOOLTIP                                              :{BLACK}Kontrol laukiek erakutsiko dute trukoak erabili badituzu
-STR_CHEATS_WARNING                                              :{BLACK}Abisua! Zure kideak traizionatzear zaude. Gogoratu traizioa ez dela inoiz ahaztuko
 STR_CHEAT_MONEY                                                 :{LTBLUE}Dirua {CURRENCY_LONG}-etan areagotu
 STR_CHEAT_CHANGE_COMPANY                                        :{LTBLUE} {ORANGE}{COMMA} konpainiarekin jolastu
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}Bulldozer magikoa (edozer ezabatzen du): {ORANGE}{STRING}
@@ -2176,6 +2175,8 @@ STR_JOIN_STATION_CREATE_SPLITTED_STATION                        :{YELLOW}Geltoki
 
 STR_JOIN_WAYPOINT_CAPTION                                       :{WHITE}Bidepuntua lotu
 STR_JOIN_WAYPOINT_CREATE_SPLITTED_WAYPOINT                      :{YELLOW}Ibilbide puntu bereizitua eraiki
+
+# Generic toolbar
 
 # Rail construction toolbar
 STR_RAIL_TOOLBAR_RAILROAD_CONSTRUCTION_CAPTION                  :Trenbidea eraiki

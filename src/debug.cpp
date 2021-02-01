@@ -335,7 +335,7 @@ char *DumpDesyncMsgLog(char *buffer, const char *last)
 {
 	if (!desync_msg_log_count) return buffer;
 
-	const unsigned int count = min<unsigned int>(desync_msg_log_count, desync_msg_log.size());
+	const unsigned int count = std::min<unsigned int>(desync_msg_log_count, desync_msg_log.size());
 	unsigned int log_index = (desync_msg_log_next + desync_msg_log.size() - count) % desync_msg_log.size();
 	unsigned int display_num = desync_msg_log_count - count;
 

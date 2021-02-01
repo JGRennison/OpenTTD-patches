@@ -71,7 +71,7 @@ protected:
 		int p2 = Yapf().PfGetSettings().rail_look_ahead_signal_p2;
 		int *pen = m_sig_look_ahead_costs.GrowSizeNC(Yapf().PfGetSettings().rail_look_ahead_max_signals);
 		for (int i = 0; i < (int) Yapf().PfGetSettings().rail_look_ahead_max_signals; i++) {
-			pen[i] = max<int>(0, p0 + i * (p1 + i * p2));
+			pen[i] = std::max<int>(0, p0 + i * (p1 + i * p2));
 		}
 	}
 

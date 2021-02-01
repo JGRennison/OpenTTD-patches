@@ -37,7 +37,7 @@ void GroundVehicle<T, Type>::PowerChanged()
 
 		/* Get minimum max speed for this track. */
 		uint16 track_speed = u->GetMaxTrackSpeed();
-		if (track_speed > 0) max_track_speed = min(max_track_speed, track_speed);
+		if (track_speed > 0) max_track_speed = std::min(max_track_speed, track_speed);
 	}
 
 	byte air_drag;
@@ -47,7 +47,7 @@ void GroundVehicle<T, Type>::PowerChanged()
 	if (air_drag_value == 0) {
 		uint16 max_speed = v->GetDisplayMaxSpeed();
 		/* Simplification of the method used in TTDPatch. It uses <= 10 to change more steadily from 128 to 196. */
-		air_drag = (max_speed <= 10) ? 192 : max(2048 / max_speed, 1);
+		air_drag = (max_speed <= 10) ? 192 : std::max(2048 / max_speed, 1);
 	} else {
 		/* According to the specs, a value of 0x01 in the air drag property means "no air drag". */
 		air_drag = (air_drag_value == 1) ? 0 : air_drag_value;
@@ -114,7 +114,7 @@ void GroundVehicle<T, Type>::CargoChanged()
 	ClrBit(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST);
 
 	/* Store consist weight in cache. */
-	this->gcache.cached_weight = max<uint32>(1, weight);
+	this->gcache.cached_weight = std::max(1u, weight);
 	/* Friction in bearings and other mechanical parts is 0.1% of the weight (result in N). */
 	this->gcache.cached_axle_resistance = 10 * weight;
 
@@ -201,8 +201,8 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 		}
 	} else {
 		/* "Kickoff" acceleration. */
-		force = (mode == AS_ACCEL && !maglev) ? min(max_te, power) : power;
-		force = max(force, (mass * 8) + resistance);
+		force = (mode == AS_ACCEL && !maglev) ? std::min<uint64>(max_te, power) : power;
+		force = std::max(force, (mass * 8) + resistance);
 		braking_force = force;
 	}
 
@@ -230,15 +230,15 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 		 * @note A seperate correction for multiheaded engines is done in CheckVehicleBreakdown. We can't do that here because it would affect the whole consist.
 		 */
 		uint64 breakdown_factor = (uint64)abs(resistance) * (uint64)(this->cur_speed << 16);
-		breakdown_factor /= (max(force, (int64)100) * this->gcache.cached_max_track_speed);
-		breakdown_factor = min((64 << 16) + (breakdown_factor * 128), 255 << 16);
+		breakdown_factor /= (std::max(force, (int64)100) * this->gcache.cached_max_track_speed);
+		breakdown_factor = std::min<uint64>((64 << 16) + (breakdown_factor * 128), 255 << 16);
 		if (Type == VEH_TRAIN && Train::From(this)->tcache.cached_num_engines > 1) {
 			/* For multiengine trains, breakdown chance is multiplied by 3 / (num_engines + 2) */
 			breakdown_factor *= 3;
 			breakdown_factor /= (Train::From(this)->tcache.cached_num_engines + 2);
 		}
 		/* breakdown_chance is at least 5 (5 / 128 = ~4% of the normal chance) */
-		this->breakdown_chance_factor = max(breakdown_factor >> 16, (uint64)5);
+		this->breakdown_chance_factor = std::max(breakdown_factor >> 16, (uint64)5);
 	}
 
 	int braking_accel;
@@ -250,9 +250,9 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 
 		/* Defensive driving: prevent ridiculously fast deceleration.
 		 * -130 corresponds to a braking distance of about 6.2 tiles from 160 km/h. */
-		braking_accel = max(braking_accel, -130);
+		braking_accel = std::max(braking_accel, -130);
 	} else {
-		braking_accel = ClampToI32(min(-braking_force - resistance, -10000) / mass);
+		braking_accel = ClampToI32(std::min<int64>(-braking_force - resistance, -10000) / mass);
 	}
 
 	if (mode == AS_ACCEL) {
@@ -265,7 +265,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 		 * a hill will never speed up enough to (eventually) get back to the
 		 * same (maximum) speed. */
 		int accel = ClampToI32((force - resistance) / (mass * 4));
-		accel = force < resistance ? min(-1, accel) : max(1, accel);
+		accel = force < resistance ? std::min(-1, accel) : std::max(1, accel);
 		if (this->type == VEH_TRAIN) {
 			if(_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL &&
 					HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER)) {

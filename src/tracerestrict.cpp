@@ -415,11 +415,11 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 					case TRIT_COND_PHYS_RATIO: {
 						switch (static_cast<TraceRestrictPhysPropRatioCondAuxField>(GetTraceRestrictAuxField(item))) {
 							case TRPPRCAF_POWER_WEIGHT:
-								result = TestCondition(min<uint>(UINT16_MAX, (100 * v->gcache.cached_power) / max<uint>(1, v->gcache.cached_weight)), condop, condvalue);
+								result = TestCondition(std::min<uint>(UINT16_MAX, (100 * v->gcache.cached_power) / std::max<uint>(1, v->gcache.cached_weight)), condop, condvalue);
 								break;
 
 							case TRPPRCAF_MAX_TE_WEIGHT:
-								result = TestCondition(min<uint>(UINT16_MAX, (v->gcache.cached_max_te / 10) / max<uint>(1, v->gcache.cached_weight)), condop, condvalue);
+								result = TestCondition(std::min<uint>(UINT16_MAX, (v->gcache.cached_max_te / 10) / std::max<uint>(1, v->gcache.cached_weight)), condop, condvalue);
 								break;
 
 							default:
@@ -2130,7 +2130,7 @@ CommandCost CmdRemoveVehicleTraceRestrictSlot(TileIndex tile, DoCommandFlag flag
 
 void TraceRestrictCounter::UpdateValue(int32 new_value)
 {
-	new_value = max<int32>(0, new_value);
+	new_value = std::max<int32>(0, new_value);
 	if (new_value != this->value) {
 		this->value = new_value;
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);

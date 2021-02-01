@@ -475,11 +475,11 @@ int RoadVehicle::GetEffectiveMaxSpeed() const
 	if (this->critical_breakdown_count == 0) return max_speed;
 
 	for (uint i = 0; i < this->critical_breakdown_count; i++) {
-		max_speed = min(max_speed - (max_speed / 3) + 1, max_speed);
+		max_speed = std::min(max_speed - (max_speed / 3) + 1, max_speed);
 	}
 
 	/* clamp speed to be no less than lower of 5mph and 1/8 of base speed */
-	return max<uint16>(max_speed, min<uint16>(10, (this->vcache.cached_max_speed + 7) >> 3));
+	return std::max<uint16>(max_speed, std::min<uint16>(10, (this->vcache.cached_max_speed + 7) >> 3));
 }
 
 /**
@@ -488,7 +488,7 @@ int RoadVehicle::GetEffectiveMaxSpeed() const
  */
 inline int RoadVehicle::GetCurrentMaxSpeed() const
 {
-	int max_speed = min(this->GetEffectiveMaxSpeed(), this->gcache.cached_max_track_speed);
+	int max_speed = std::min<int>(this->GetEffectiveMaxSpeed(), this->gcache.cached_max_track_speed);
 
 	/* Limit speed to 50% while reversing, 75% in curves. */
 	for (const RoadVehicle *u = this; u != nullptr; u = u->Next()) {
@@ -503,11 +503,11 @@ inline int RoadVehicle::GetCurrentMaxSpeed() const
 
 		/* Vehicle is on the middle part of a bridge. */
 		if (u->state == RVSB_WORMHOLE && !(u->vehstatus & VS_HIDDEN)) {
-			max_speed = min(max_speed, GetBridgeSpec(GetBridgeType(u->tile))->speed * 2);
+			max_speed = std::min(max_speed, GetBridgeSpec(GetBridgeType(u->tile))->speed * 2);
 		}
 	}
 
-	return min(max_speed, this->current_order.GetMaxSpeed() * 2);
+	return std::min(max_speed, this->current_order.GetMaxSpeed() * 2);
 }
 
 /**

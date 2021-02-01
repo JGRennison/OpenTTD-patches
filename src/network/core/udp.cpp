@@ -100,7 +100,7 @@ void NetworkUDPSocketHandler::SendPacket(Packet *p, NetworkAddress *recv, bool a
 		uint8 current_frag = 0;
 		uint16 offset = 0;
 		while (offset < p->size) {
-			uint16 payload_size = min<uint>(PAYLOAD_MTU, p->size - offset);
+			uint16 payload_size = std::min<uint>(PAYLOAD_MTU, p->size - offset);
 			frag.Send_uint64(token);
 			frag.Send_uint8 (current_frag);
 			frag.Send_uint8 (frag_count);
@@ -215,7 +215,7 @@ void NetworkUDPSocketHandler::SendNetworkGameInfo(Packet *p, const NetworkGameIn
 		for (c = info->grfconfig; c != nullptr; c = c->next) {
 			if (!HasBit(c->flags, GCF_STATIC)) count++;
 		}
-		p->Send_uint8(min<uint>(count, NETWORK_MAX_GRF_COUNT)); // Send number of GRFs
+		p->Send_uint8(std::min<uint>(count, NETWORK_MAX_GRF_COUNT)); // Send number of GRFs
 
 		/* Send actual GRF Identifications */
 		uint index = 0;

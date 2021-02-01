@@ -396,8 +396,8 @@ static void ParseResolution(Dimension *res, const char *s)
 		return;
 	}
 
-	res->width  = max(strtoul(s, nullptr, 0), 64UL);
-	res->height = max(strtoul(t + 1, nullptr, 0), 64UL);
+	res->width  = std::max(strtoul(s, nullptr, 0), 64UL);
+	res->height = std::max(strtoul(t + 1, nullptr, 0), 64UL);
 }
 
 
@@ -1105,6 +1105,10 @@ static void FixConfigMapSize()
 static void MakeNewGame(bool from_heightmap, bool reset_settings)
 {
 	_game_mode = GM_NORMAL;
+	if (!from_heightmap) {
+		/* "reload" command needs to know what mode we were in. */
+		_file_to_saveload.SetMode(SLO_INVALID, FT_INVALID, DFT_INVALID);
+	}
 
 	ResetGRFConfig(true);
 
@@ -1124,6 +1128,8 @@ static void MakeNewEditorWorldDone()
 static void MakeNewEditorWorld()
 {
 	_game_mode = GM_EDITOR;
+	/* "reload" command needs to know what mode we were in. */
+	_file_to_saveload.SetMode(SLO_INVALID, FT_INVALID, DFT_INVALID);
 
 	ResetGRFConfig(true);
 
@@ -1222,9 +1228,9 @@ void SwitchToMode(SwitchMode new_mode)
 			MakeNewEditorWorld();
 			break;
 
-		case SM_RESTARTGAME: // Restart --> Current settings preserved
+		case SM_RELOADGAME: // Reload with what-ever started the game
 			if (_file_to_saveload.abstract_ftype == FT_SAVEGAME || _file_to_saveload.abstract_ftype == FT_SCENARIO) {
-				/* Restart current savegame/scenario */
+				/* Reload current savegame/scenario */
 				_switch_mode = _game_mode == GM_EDITOR ? SM_LOAD_SCENARIO : SM_LOAD_GAME;
 				SwitchToMode(_switch_mode);
 				break;
@@ -1234,10 +1240,11 @@ void SwitchToMode(SwitchMode new_mode)
 				SwitchToMode(_switch_mode);
 				break;
 			}
-			/* No break here, to enter the next case:
-			 * Restart --> 'Random game' with current settings */
-			FALLTHROUGH;
 
+			MakeNewGame(false, new_mode == SM_NEWGAME);
+			break;
+
+		case SM_RESTARTGAME: // Restart --> 'Random game' with current settings
 		case SM_NEWGAME: // New Game --> 'Random game'
 			if (_network_server) {
 				seprintf(_network_game_info.map_name, lastof(_network_game_info.map_name), "Random Map");

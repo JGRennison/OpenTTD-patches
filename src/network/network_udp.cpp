@@ -336,7 +336,7 @@ void ServerNetworkUDPSocketHandler::Receive_CLIENT_GET_NEWGRFS(Packet *p, Networ
 		 * the current list and do not send the other data.
 		 * The name could be an empty string, if so take the filename. */
 		size_t required_length = sizeof(info.ident.grfid) + sizeof(info.ident.md5sum) +
-				min(strlen(info.name) + 1, (size_t)NETWORK_GRF_NAME_LENGTH);
+				std::min(strlen(info.name) + 1, (size_t)NETWORK_GRF_NAME_LENGTH);
 		if (packet_len + required_length > SEND_MTU_SHORT - 4) { // 4 is 3 byte header + grf count in reply
 			flush_response();
 		}

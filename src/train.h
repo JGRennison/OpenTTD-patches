@@ -269,7 +269,7 @@ protected: // These functions should not be called outside acceleration code.
 
 		for (const Train *w = this; w != nullptr; w = w->Next()) {
 			if (w->breakdown_ctr == 1 && w->breakdown_type == BREAKDOWN_LOW_SPEED) {
-				speed = min(speed, w->breakdown_severity);
+				speed = std::min<uint16>(speed, w->breakdown_severity);
 			}
 		}
 		return speed;

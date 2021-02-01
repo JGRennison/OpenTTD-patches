@@ -1815,7 +1815,6 @@ STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Är du 
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Fusk
 STR_CHEATS_TOOLTIP                                              :{BLACK}Checkboxar indikerar om du använt det här fusket förut
-STR_CHEATS_WARNING                                              :{BLACK}Varning! Du är på väg att förråda dina motståndare. Kom ihåg att detta inte kommer glömmas
 STR_CHEAT_MONEY                                                 :{LTBLUE}Öka pengar med {CURRENCY_LONG}
 STR_CHEAT_CHANGE_COMPANY                                        :{LTBLUE}Spelar som företag:: {ORANGE}{COMMA}
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}Magisk bulldozer (ta bort industrier, oflyttbara objekt etc.): {ORANGE}{STRING}
@@ -2323,6 +2322,8 @@ STR_JOIN_STATION_CREATE_SPLITTED_STATION                        :{YELLOW}Bygg en
 
 STR_JOIN_WAYPOINT_CAPTION                                       :{WHITE}Slå ihop riktmärken
 STR_JOIN_WAYPOINT_CREATE_SPLITTED_WAYPOINT                      :{YELLOW}Bygg ett separat riktmärke
+
+# Generic toolbar
 
 # Rail construction toolbar
 STR_RAIL_TOOLBAR_RAILROAD_CONSTRUCTION_CAPTION                  :Bygg järnväg

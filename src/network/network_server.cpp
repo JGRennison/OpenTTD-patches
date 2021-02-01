@@ -167,7 +167,7 @@ struct PacketWriter : SaveFilter {
 
 		byte *bufe = buf + size;
 		while (buf != bufe) {
-			size_t to_write = min(SHRT_MAX - this->current->size, bufe - buf);
+			size_t to_write = std::min<size_t>(SHRT_MAX - this->current->size, bufe - buf);
 			memcpy(this->current->buffer + this->current->size, buf, to_write);
 			this->current->size += (PacketSize)to_write;
 			buf += to_write;
@@ -475,7 +475,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendDesyncLog(const std::strin
 {
 	for (size_t offset = 0; offset < log.size();) {
 		Packet *p = new Packet(PACKET_SERVER_DESYNC_LOG);
-		size_t size = min<size_t>(log.size() - offset, SHRT_MAX - 2 - p->size);
+		size_t size = std::min<size_t>(log.size() - offset, SHRT_MAX - 2 - p->size);
 		p->Send_uint16(size);
 		p->Send_binary(log.data() + offset, size);
 		this->SendPacket(p);
@@ -1241,7 +1241,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet *p
 		this->SendDesyncLog(server_desync_log);
 
 		// decrease the sync frequency for this point onwards
-		_settings_client.network.sync_freq = min<uint16>(_settings_client.network.sync_freq, 16);
+		_settings_client.network.sync_freq = std::min<uint16>(_settings_client.network.sync_freq, 16);
 
 		// have the server and all clients run some sanity checks
 		NetworkSendCommand(0, 0, 0, 0, CMD_DESYNC_CHECK, nullptr, nullptr, _local_company, 0);
@@ -1906,7 +1906,7 @@ void NetworkServer_Tick(bool send_frame)
 	for (NetworkClientSocket *cs : NetworkClientSocket::Iterate()) {
 		/* We allow a number of bytes per frame, but only to the burst amount
 		 * to be available for packet receiving at any particular time. */
-		cs->receive_limit = min(cs->receive_limit + _settings_client.network.bytes_per_frame,
+		cs->receive_limit = std::min<int>(cs->receive_limit + _settings_client.network.bytes_per_frame,
 				_settings_client.network.bytes_per_frame_burst);
 
 		/* Check if the speed of the client is what we can expect from a client */

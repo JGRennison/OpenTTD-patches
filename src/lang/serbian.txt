@@ -1968,7 +1968,6 @@ STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Da li s
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Varanja
 STR_CHEATS_TOOLTIP                                              :{BLACK}Štiklirano polje označava da ste i ranije koristili ovu opciju
-STR_CHEATS_WARNING                                              :{BLACK}Upozorenje! Upravo ćete prevariti vaše saradnike. Imajte na umu da će takav loš postupak biti trajno upamćen
 STR_CHEAT_MONEY                                                 :{LTBLUE}Dodati još {CURRENCY_LONG}
 STR_CHEAT_CHANGE_COMPANY                                        :{LTBLUE}Upravljanje preduzećem: {ORANGE}{COMMA}
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}Magični buldožer (uklanja fabrike, nepokretnosti): {ORANGE}{STRING}
@@ -2472,6 +2471,8 @@ STR_JOIN_STATION_CREATE_SPLITTED_STATION                        :{YELLOW}Izgradi
 
 STR_JOIN_WAYPOINT_CAPTION                                       :{WHITE}Spoji putanje
 STR_JOIN_WAYPOINT_CREATE_SPLITTED_WAYPOINT                      :{YELLOW}Napravi zasebnu putanju
+
+# Generic toolbar
 
 # Rail construction toolbar
 STR_RAIL_TOOLBAR_RAILROAD_CONSTRUCTION_CAPTION                  :Izgradnja železnice
