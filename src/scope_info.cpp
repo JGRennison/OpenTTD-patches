@@ -82,6 +82,10 @@ const char *scope_dumper::VehicleInfo(const Vehicle *v)
 				b = GetString(b, STR_VEHICLE_NAME, last);
 				break;
 		}
+		if (v->type < VEH_COMPANY_END) {
+			const char veh_type_chars[] = "TRSA";
+			b += seprintf(b, last, ", (%c%u)", veh_type_chars[v->type], v->unitnumber);
+		}
 		b += seprintf(b, last, ", c:%d, ", (int) v->owner);
 		dump_flags(v);
 		if (v->First() && v->First() != v) {
