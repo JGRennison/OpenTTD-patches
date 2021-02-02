@@ -884,6 +884,20 @@ static void AdvanceLookAheadPosition(Train *v)
 		return;
 	}
 
+	if (unlikely(v->lookahead->current_position >= (1 << 30))) {
+		/* Prevent signed overflow by rebasing all position values */
+		const int32 old_position = v->lookahead->current_position;
+		v->lookahead->current_position = 0;
+		v->lookahead->reservation_end_position -= old_position;
+		for (TrainReservationLookAheadItem &item : v->lookahead->items) {
+			item.start -= old_position;
+			item.end -= old_position;
+		}
+		for (TrainReservationLookAheadCurve &curve : v->lookahead->curves) {
+			curve.position -= old_position;
+		}
+	}
+
 	while (!v->lookahead->items.empty() && v->lookahead->items.front().end < v->lookahead->current_position) {
 		if (v->lookahead->items.front().type == TRLIT_STATION) {
 			int trim_position = v->lookahead->current_position - 4;
