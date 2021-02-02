@@ -2,6 +2,32 @@
 
 * * *
 
+### v0.40.0 (2021-02-02)
+* Fix crash in auto-separation when all orders removed.
+* Fix crash when removing rail depot or road when debug window open on tile.
+* Signals on bridges/tunnels:
+  * Fix handling of bridge signals when reversing inside.
+  * Fix reversing behind waypoint/signal when front is inside a bridge/tunnel.
+  * Fix bridges not being redrawn after all signals reset when cleared.
+  * Fix reservation not being cleared from far end of signalled tunnel when removing.
+  * Fix handling of entrance availability when reversing inside bidrectionally signalled bridges/tunnels.
+  * Fix train crash which could occur when reversing trains on both sides of a bidirectional bridge/tunnel entrance tile.
+  * Set tunnel/bridge PBS exit to red when leaving.
+* Template-based train replacement:
+  * Add support for flipping engine/wagon directions.
+  * No longer use idle vehicles in depots by default.
+  * Use idle vehicles in depot no longer uses vehicles which have orders/shared orders, or are in a group.
+  * Fix vehicle window not being closed when acquiring idle vehicle for replacement.
+* Fix false positive desync warning messages for vehicle cached weight/length.
+* Add feature: realistic train braking.
+* Add setting for dates over which inflation is applied.
+* Add client setting for vehicle naming scheme.
+* Reduce clipping and graphical issues with NewGRF vehicle sets where the sprite bounds vary with overall curvature.
+* Show if train breakdown is due to collision with road vehicle, even if improved breakdowns is disabled.
+* Print warning instead of asserting for invalid NewGRF string IDs.
+* Add Korean translations by TELK.
+* Bump trunk base from commit b7851e51adf0fb0d39ed34a579cf6fe68d8949be to commit 069fb5425302edc93a77ca54b3665a7102747f5a.
+
 ### v0.39.2 (2020-12-29)
 * Fix crash which could occur when loading older scenarios or savegames which do not already have a company.
 * Fix crash which could occur when using the restart command after opening the save/load window.
