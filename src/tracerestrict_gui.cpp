@@ -2124,6 +2124,10 @@ public:
 				resize->height = FONT_HEIGHT_NORMAL;
 				size->height = 6 * resize->height + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
 				break;
+
+			case TR_WIDGET_GOTO_SIGNAL:
+				size->width = std::max<uint>(12, NWidgetScrollbar::GetVerticalDimension().width);
+				break;
 		}
 	}
 
@@ -2972,7 +2976,7 @@ static const NWidgetPart _nested_program_widgets[] = {
 														SetDataTip(STR_EMPTY, STR_NULL), SetResize(1, 0),
 			EndContainer(),
 		EndContainer(),
-		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, TR_WIDGET_GOTO_SIGNAL), SetMinimalSize(12, 12), SetDataTip(SPR_ARROW_RIGHT, STR_TRACE_RESTRICT_GOTO_SIGNAL_TOOLTIP),
+		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, TR_WIDGET_GOTO_SIGNAL), SetMinimalSize(12, 12), SetDataTip(SPR_GOTO_LOCATION, STR_TRACE_RESTRICT_GOTO_SIGNAL_TOOLTIP),
 	EndContainer(),
 
 	/* Second button row. */
