@@ -83,6 +83,11 @@ void DeleteVisibleTrain(Train *v);
 void CheckBreakdownFlags(Train *v);
 void GetTrainSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, int &yoffs, EngineImageType image_type);
 
+inline int GetTrainRealisticBrakingTargetDecelerationLimit(int acceleration_type)
+{
+	return 120 + (acceleration_type * 48);
+}
+
 /** Variables that are cached to improve performance and such */
 struct TrainCache {
 	/* Cached wagon override spritegroup */
