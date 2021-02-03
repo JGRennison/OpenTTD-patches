@@ -1884,7 +1884,7 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
 				last_suitable_ctr = signal_ctr;
 				last_suitable_tile = tile;
 				last_suitable_trackdir = trackdir;
-			} else if (!test_only && last_suitable_tile != INVALID_TILE) {
+			} else if (!test_only && last_suitable_tile != INVALID_TILE && ret.GetErrorMessage() != STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING) {
 				/* If a signal can't be placed, place it at the last possible position. */
 				SB(p1, 0, 3, TrackdirToTrack(last_suitable_trackdir));
 				ClrBit(p1, 17);
