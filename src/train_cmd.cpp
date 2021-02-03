@@ -1068,7 +1068,7 @@ void Train::UpdateAcceleration()
 					 * Braking force does not decrease with speed,
 					 * therefore air drag can be omitted.
 					 * There is no rolling/axle drag. */
-					min_braking_force += power / 25;
+					min_braking_force += power_w / 25;
 				}
 				min_braking_force -= (min_braking_force >> 3); // Slightly underestimate braking for defensive driving purposes
 				this->tcache.cached_uncapped_decel = Clamp(min_braking_force / weight, 1, UINT16_MAX);
