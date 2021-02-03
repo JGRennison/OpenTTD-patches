@@ -1026,7 +1026,7 @@ void Train::UpdateAcceleration()
 		switch (_settings_game.vehicle.train_acceleration_model) {
 			default: NOT_REACHED();
 			case AM_ORIGINAL:
-				this->tcache.cached_deceleration = Clamp((this->acceleration * 7) / 2, 1, 200);
+				this->tcache.cached_uncapped_decel = this->tcache.cached_deceleration = Clamp((this->acceleration * 7) / 2, 1, 200);
 				break;
 
 			case AM_REALISTIC: {
