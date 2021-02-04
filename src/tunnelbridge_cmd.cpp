@@ -1200,7 +1200,7 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 		if (ret.Failed()) return ret;
 	}
 
-	if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+	if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && _settings_game.vehicle.train_braking_model == TBM_REALISTIC && HasTunnelReservation(tile)) {
 		DiagDirection dir = GetTunnelBridgeDirection(tile);
 		Track track = DiagDirToDiagTrack(dir);
 		CommandCost ret = CheckTrainReservationPreventsTrackModification(tile, track);
