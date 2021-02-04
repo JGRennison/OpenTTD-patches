@@ -3421,7 +3421,10 @@ void FreeTrainTrackReservation(Train *v, TileIndex origin, Trackdir orig_td)
 
 		/* Don't free first station/bridge/tunnel if we are on it. */
 		if (free_tile || (!(ft.m_is_station && GetStationIndex(ft.m_new_tile) == station_id) && !ft.m_is_tunnel && !ft.m_is_bridge)) ClearPathReservation(v, tile, td);
-		if (update_signal) UpdateSignalsOnSegment(tile, TrackdirToExitdir(td), GetTileOwner(tile));
+		if (update_signal) {
+			AddSideToSignalBuffer(tile, TrackdirToExitdir(td), GetTileOwner(tile));
+			UpdateSignalsInBuffer();
+		}
 
 		free_tile = true;
 	}
