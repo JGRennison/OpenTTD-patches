@@ -2025,17 +2025,19 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 				}
 			}
 		}
-		Company::Get(GetTileOwner(tile))->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, end);
-		ClearBridgeTunnelSignalSimulation(end, tile);
-		ClearBridgeTunnelSignalSimulation(tile, end);
-		MarkBridgeOrTunnelDirty(tile);
-		AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
-		AddSideToSignalBuffer(end, INVALID_DIAGDIR, GetTileOwner(tile));
-		YapfNotifyTrackLayoutChange(tile, track);
-		YapfNotifyTrackLayoutChange(end, track);
-		DirtyCompanyInfrastructureWindows(GetTileOwner(tile));
-		for (Train *v : re_reserve_trains) {
-			ReReserveTrainPath(v);
+		if (flags & DC_EXEC) {
+			Company::Get(GetTileOwner(tile))->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, end);
+			ClearBridgeTunnelSignalSimulation(end, tile);
+			ClearBridgeTunnelSignalSimulation(tile, end);
+			MarkBridgeOrTunnelDirty(tile);
+			AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
+			AddSideToSignalBuffer(end, INVALID_DIAGDIR, GetTileOwner(tile));
+			YapfNotifyTrackLayoutChange(tile, track);
+			YapfNotifyTrackLayoutChange(end, track);
+			DirtyCompanyInfrastructureWindows(GetTileOwner(tile));
+			for (Train *v : re_reserve_trains) {
+				ReReserveTrainPath(v);
+			}
 		}
 		return CommandCost(EXPENSES_CONSTRUCTION, cost);
 	}
