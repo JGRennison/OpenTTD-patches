@@ -3588,6 +3588,8 @@ private:
 	TileIndex      old_dest_tile;
 	StationID      old_last_station_visited;
 	VehicleOrderID old_index;
+	VehicleOrderID old_impl_index;
+	VehicleOrderID old_tt_index;
 	bool           suppress_implicit_orders;
 
 public:
@@ -3597,6 +3599,8 @@ public:
 		old_dest_tile(_v->dest_tile),
 		old_last_station_visited(_v->last_station_visited),
 		old_index(_v->cur_real_order_index),
+		old_impl_index(_v->cur_implicit_order_index),
+		old_tt_index(_v->cur_timetable_order_index),
 		suppress_implicit_orders(HasBit(_v->gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS))
 	{
 	}
@@ -3607,6 +3611,8 @@ public:
 		this->v->dest_tile = this->old_dest_tile;
 		this->v->last_station_visited = this->old_last_station_visited;
 		this->v->cur_real_order_index = this->old_index;
+		this->v->cur_implicit_order_index = this->old_impl_index;
+		this->v->cur_timetable_order_index = this->old_tt_index;
 		SB(this->v->gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS, 1, suppress_implicit_orders ? 1: 0);
 	}
 
