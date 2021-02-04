@@ -1425,7 +1425,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			} else if (!is_pbs) {
 				will_be_bidi = false;
 			}
-			if ((!p2_active && (sigvar == SIG_SEMAPHORE) != IsTunnelBridgeSemaphore(tile)) ||
+			if ((p2_active && (sigvar == SIG_SEMAPHORE) != IsTunnelBridgeSemaphore(tile)) ||
 					(convert_signal && (ctrl_pressed || (sigvar == SIG_SEMAPHORE) != IsTunnelBridgeSemaphore(tile)))) {
 				flip_variant = true;
 				cost = CommandCost(EXPENSES_CONSTRUCTION, ((_price[PR_BUILD_SIGNALS] * (will_be_bidi ? 2 : 1)) + (_price[PR_CLEAR_SIGNALS] * (is_bidi ? 2 : 1))) *
