@@ -156,8 +156,8 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 	 */
 	int64 resistance = 0;
 
-	int accleration_type = v->GetAccelerationType();
-	bool maglev = (accleration_type == 2);
+	int acceleration_type = v->GetAccelerationType();
+	bool maglev = (acceleration_type == 2);
 
 	const int area = v->GetAirDragArea();
 	if (!maglev) {
@@ -251,7 +251,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 
 		/* Defensive driving: prevent ridiculously fast deceleration.
 		 * -130 corresponds to a braking distance of about 6.2 tiles from 160 km/h. */
-		braking_accel = std::max(braking_accel, -(GetTrainRealisticBrakingTargetDecelerationLimit(accleration_type) + 10));
+		braking_accel = std::max(braking_accel, -(GetTrainRealisticBrakingTargetDecelerationLimit(acceleration_type) + 10));
 	} else {
 		braking_accel = ClampToI32(std::min<int64>(-braking_force - resistance, -10000) / mass);
 	}

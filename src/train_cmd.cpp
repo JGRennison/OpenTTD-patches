@@ -1030,8 +1030,8 @@ void Train::UpdateAcceleration()
 				break;
 
 			case AM_REALISTIC: {
-				int accleration_type = this->GetAccelerationType();
-				bool maglev = (accleration_type == 2);
+				int acceleration_type = this->GetAccelerationType();
+				bool maglev = (acceleration_type == 2);
 				int64 power_w = power * 746ll;
 				int64 min_braking_force = this->gcache.cached_total_length * 300;
 				if (!maglev) {
@@ -1073,7 +1073,7 @@ void Train::UpdateAcceleration()
 				}
 				min_braking_force -= (min_braking_force >> 3); // Slightly underestimate braking for defensive driving purposes
 				this->tcache.cached_uncapped_decel = Clamp(min_braking_force / weight, 1, UINT16_MAX);
-				this->tcache.cached_deceleration = Clamp(this->tcache.cached_uncapped_decel, 1, GetTrainRealisticBrakingTargetDecelerationLimit(accleration_type));
+				this->tcache.cached_deceleration = Clamp(this->tcache.cached_uncapped_decel, 1, GetTrainRealisticBrakingTargetDecelerationLimit(acceleration_type));
 				break;
 			}
 		}
