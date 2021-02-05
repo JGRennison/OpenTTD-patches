@@ -2,6 +2,21 @@
 
 * * *
 
+### v0.40.1 (2021-02-05)
+* Fix crash when removing signals from bridge or tunnel.
+* Fix left mouse button scrolling in viewport map mode.
+* Fix clicking trains in slots window, when a slot is selected.
+* Fix timetable crash which could occur when all rail tiles are removed from the station of a train order.
+* Realistic braking:
+  * Fix crash when downgrading road bridge when realistic braking enabled.
+  * Fix crash when removing tunnel which is not currently reserved when realistic braking enabled.
+  * Fix crash which could occur when a track edit command causes the reservation of a stationary train to be freed.
+  * Fix maglevs having braking parameters calculated incorrectly, and braking excessively slowly.
+  * Fix signal dragging placing the final signal too early when obstructed by a train reservation.
+  * Fix curve speed limit prediction being too pessimistic in some circumstances.
+  * Give monorail and maglev higher limits for realistic braking deceleration.
+* Fix players being charged to cycle tunnel/bridge signal type with CTRL, when it should be free.
+
 ### v0.40.0 (2021-02-02)
 * Fix crash in auto-separation when all orders removed.
 * Fix crash when removing rail depot or road when debug window open on tile.
