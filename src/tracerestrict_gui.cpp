@@ -3456,7 +3456,7 @@ public:
 				uint id_v = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_TRSL_LIST_VEHICLE);
 				if (id_v >= this->vehgroups.size()) return; // click out of list bound
 
-				const Vehicle *v = this->vehgroups[id_v].GetSingleVehicle();;
+				const Vehicle *v = this->vehgroups[id_v].GetSingleVehicle();
 				if (VehicleClicked(v)) break;
 
 				this->vehicle_sel = v->index;
@@ -3530,7 +3530,7 @@ public:
 				uint id_v = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_TRSL_LIST_VEHICLE);
 				if (id_v >= this->vehgroups.size()) return; // click out of list bound
 
-				const Vehicle *v = this->vehicles[id_v];
+				const Vehicle *v = this->vehgroups[id_v].GetSingleVehicle();
 				if (!VehicleClicked(v) && vindex == v->index) {
 					ShowVehicleViewWindow(v);
 				}
