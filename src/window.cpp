@@ -2995,15 +2995,18 @@ static void MouseLoop(MouseClick click, int mousewheel)
 			case MC_DOUBLE_LEFT:
 				if (HandleViewportDoubleClicked(w, x, y)) break;
 				/* FALL THROUGH */
-			case MC_LEFT:
-				if (HandleViewportClicked(vp, x, y, click == MC_DOUBLE_LEFT)) return;
+			case MC_LEFT: {
+				HandleViewportClickedResult result = HandleViewportClicked(vp, x, y, click == MC_DOUBLE_LEFT);
+				if (result == HVCR_DENY) return;
 				if (!(w->flags & WF_DISABLE_VP_SCROLL) &&
 						_settings_client.gui.scroll_mode == VSM_MAP_LMB) {
 					_scrolling_viewport = w;
 					_cursor.fix_at = false;
 					return;
 				}
+				if (result != HVCR_ALLOW) return;
 				break;
+			}
 
 			case MC_RIGHT:
 				if (!(w->flags & WF_DISABLE_VP_SCROLL) &&

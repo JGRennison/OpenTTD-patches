@@ -75,8 +75,14 @@ void ViewportAddString(const DrawPixelInfo *dpi, ZoomLevel small_from, const Vie
 void StartSpriteCombine();
 void EndSpriteCombine();
 
+enum HandleViewportClickedResult {
+	HVCR_DENY,
+	HVCR_SCROLL_ONLY,
+	HVCR_ALLOW,
+};
+
 bool HandleViewportDoubleClicked(Window *w, int x, int y);
-bool HandleViewportClicked(const Viewport *vp, int x, int y, bool double_click);
+HandleViewportClickedResult HandleViewportClicked(const Viewport *vp, int x, int y, bool double_click);
 void SetRedErrorSquare(TileIndex tile);
 void SetTileSelectSize(int w, int h);
 void SetTileSelectBigSize(int ox, int oy, int sx, int sy);

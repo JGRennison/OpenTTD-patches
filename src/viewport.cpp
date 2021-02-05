@@ -4215,15 +4215,15 @@ bool HandleViewportDoubleClicked(Window *w, int x, int y)
 	}
 }
 
-bool HandleViewportClicked(const Viewport *vp, int x, int y, bool double_click)
+HandleViewportClickedResult HandleViewportClicked(const Viewport *vp, int x, int y, bool double_click)
 {
-	/* No click in smallmap mode except for plan making. */
-	if (vp->zoom >= ZOOM_LVL_DRAW_MAP && !(_thd.place_mode & HT_MAP)) return true;
+	/* No click in smallmap mode except for plan making and left-button scrolling. */
+	if (vp->zoom >= ZOOM_LVL_DRAW_MAP && !(_thd.place_mode & HT_MAP)) return HVCR_SCROLL_ONLY;
 
 	const Vehicle *v = CheckClickOnVehicle(vp, x, y);
 
 	if (_thd.place_mode & HT_VEHICLE) {
-		if (v != nullptr && VehicleClicked(v)) return true;
+		if (v != nullptr && VehicleClicked(v)) return HVCR_DENY;
 	}
 
 	/* Vehicle placement mode already handled above. */
@@ -4235,18 +4235,18 @@ bool HandleViewportClicked(const Viewport *vp, int x, int y, bool double_click)
 			static bool stop_snap_on_double_click = false;
 			if (double_click && stop_snap_on_double_click) {
 				SetRailSnapMode(RSM_NO_SNAP);
-				return true;
+				return HVCR_DENY;
 			}
 			stop_snap_on_double_click = !(_thd.drawstyle & HT_LINE) || (_thd.dir2 == HT_DIR_END);
 		}
 
 		PlaceObject();
-		return true;
+		return HVCR_DENY;
 	}
 
-	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) return true;
+	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) return HVCR_SCROLL_ONLY;
 
-	if (CheckClickOnViewportSign(vp, x, y)) return true;
+	if (CheckClickOnViewportSign(vp, x, y)) return HVCR_DENY;
 	bool result = CheckClickOnLandscape(vp, x, y);
 
 	if (v != nullptr) {
@@ -4260,9 +4260,9 @@ bool HandleViewportClicked(const Viewport *vp, int x, int y, bool double_click)
 				ShowVehicleViewWindow(v);
 			}
 		}
-		return true;
+		return HVCR_DENY;
 	}
-	return result;
+	return result ? HVCR_DENY : HVCR_ALLOW;
 }
 
 void RebuildViewportOverlay(Window *w, bool incremental)
