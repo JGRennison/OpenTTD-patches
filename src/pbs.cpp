@@ -263,11 +263,12 @@ DECLARE_ENUM_AS_BIT_SET(FollowReservationFlags)
 
 static void CheckCurveLookAhead(const Train *v, TrainReservationLookAhead *lookahead, int end_position, int z, RailType rt)
 {
+	/* Coarse filter: remove curves beyond train length */
 	while (!lookahead->curves.empty() && lookahead->curves.front().position < end_position - v->gcache.cached_total_length) {
 		lookahead->curves.pop_front();
 	}
 
-	if (lookahead->curves.empty()) return;
+	if (lookahead->curves.empty() || v->Next() == nullptr) return;
 
 	static const int absolute_max_speed = UINT16_MAX;
 	int max_speed = absolute_max_speed;
@@ -279,15 +280,22 @@ static void CheckCurveLookAhead(const Train *v, TrainReservationLookAhead *looka
 	int sum = 0;
 	int pos = 0;
 	int lastpos = -1;
-	const Train *u = v->Last();
-	int veh_offset = v->gcache.cached_total_length - u->gcache.cached_veh_length;
-	for (const TrainReservationLookAheadCurve &curve : lookahead->curves) {
+	const Train *u = v->Next();
+	int veh_offset = v->CalcNextVehicleOffset();
+	for (auto iter = lookahead->curves.rbegin(); iter != lookahead->curves.rend(); ++iter) {
+		const TrainReservationLookAheadCurve &curve = *iter;
 		int delta = end_position - curve.position;
-		while (veh_offset > delta && u->Previous() != nullptr) {
-			veh_offset -= u->gcache.cached_veh_length;
-			pos++;
-			u = u->Previous();
+		while (delta >= veh_offset) {
+			if (u->Next() != nullptr) {
+				veh_offset += u->CalcNextVehicleOffset();
+				u = u->Next();
+				pos++;
+			} else {
+				u = nullptr;
+				break;
+			}
 		}
+		if (u == nullptr) break;
 
 		if (curve.dir_diff == DIRDIFF_45LEFT) curvecount[0]++;
 		if (curve.dir_diff == DIRDIFF_45RIGHT) curvecount[1]++;
