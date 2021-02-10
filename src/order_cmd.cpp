@@ -235,6 +235,12 @@ void Order::MakeLoadingAdvance(StationID destination)
 	this->dest = destination;
 }
 
+void Order::MakeReleaseSlot()
+{
+	this->type = OT_RELEASE_SLOT;
+	this->dest = INVALID_TRACE_RESTRICT_SLOT_ID;
+}
+
 /**
  * Make this depot/station order also a refit order.
  * @param cargo   the cargo type to change to.
@@ -647,7 +653,7 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 			});
 			if (invalid) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION);
 		}
-	} while (next->IsType(OT_GOTO_DEPOT) || next->GetDestination() == v->last_station_visited);
+	} while (next->IsType(OT_GOTO_DEPOT) || next->IsType(OT_RELEASE_SLOT) || next->GetDestination() == v->last_station_visited);
 
 	return CargoMaskedStationIDStack(cargo_mask, next->GetDestination());
 }
@@ -1173,6 +1179,13 @@ CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID s
 			break;
 		}
 
+		case OT_RELEASE_SLOT: {
+			if (v->type != VEH_TRAIN) return CMD_ERROR;
+			TraceRestrictSlotID slot = new_order.GetDestination();
+			if (slot != INVALID_TRACE_RESTRICT_SLOT_ID && !TraceRestrictSlot::IsValidID(slot)) return CMD_ERROR;
+			break;
+		}
+
 		default: return CMD_ERROR;
 	}
 
@@ -1693,6 +1706,10 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			if (mof != MOF_COND_VARIABLE && mof != MOF_COND_COMPARATOR && mof != MOF_COND_VALUE && mof != MOF_COND_VALUE_2 && mof != MOF_COND_VALUE_3 && mof != MOF_COND_DESTINATION) return CMD_ERROR;
 			break;
 
+		case OT_RELEASE_SLOT:
+			if (mof != MOF_SLOT) return CMD_ERROR;
+			break;
+
 		default:
 			return CMD_ERROR;
 	}
@@ -1844,6 +1861,10 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 		case MOF_WAYPOINT_FLAGS:
 			if (data != (data & OWF_REVERSE)) return CMD_ERROR;
+			break;
+
+		case MOF_SLOT:
+			if (data != INVALID_TRACE_RESTRICT_SLOT_ID && !TraceRestrictSlot::IsValidID(data)) return CMD_ERROR;
 			break;
 	}
 
@@ -2034,6 +2055,10 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 			case MOF_WAYPOINT_FLAGS:
 				order->SetWaypointFlags((OrderWaypointFlags)data);
+				break;
+
+			case MOF_SLOT:
+				order->SetDestination(data);
 				break;
 
 			default: NOT_REACHED();
@@ -2905,6 +2930,16 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 			}
 			break;
 		}
+
+		case OT_RELEASE_SLOT:
+			assert(!pbs_look_ahead);
+			if (order->GetDestination() != INVALID_TRACE_RESTRICT_SLOT_ID) {
+				TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(order->GetDestination());
+				if (slot != nullptr) slot->Vacate(v->index);
+			}
+			UpdateVehicleTimetable(v, true);
+			v->IncrementRealOrderIndex();
+			break;
 
 		default:
 			v->SetDestTile(0);

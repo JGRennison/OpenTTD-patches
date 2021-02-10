@@ -1943,6 +1943,10 @@ void TraceRestrictRemoveSlotID(TraceRestrictSlotID index)
 			o->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_ID;
 			changed_order = true;
 		}
+		if (o->IsType(OT_RELEASE_SLOT) && o->GetDestination() == index) {
+			o->SetDestination(INVALID_TRACE_RESTRICT_SLOT_ID);
+			changed_order = true;
+		}
 	}
 
 	// update windows
