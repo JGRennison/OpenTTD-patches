@@ -79,6 +79,12 @@ static bool IsArrival(const Order *order, StationID station) {
 			!(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION));
 }
 
+static uint8 GetDepartureConditionalOrderMode(const Order *order)
+{
+	if (order->GetConditionVariable() == OCV_UNCONDITIONALLY) return 1;
+	return _settings_client.gui.departure_conditionals;
+}
+
 static inline bool VehicleSetNextDepartureTime(DateTicks *previous_departure, uint *waiting_time, const DateTicksScaled date_only_scaled, const Vehicle *v, const Order *order, bool arrived_at_timing_point, schdispatch_cache_t &dept_schedule_last)
 {
 	if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
@@ -298,7 +304,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 
 				/* If the order is a conditional branch, handle it. */
 				if (order->IsType(OT_CONDITIONAL)) {
-					switch(_settings_client.gui.departure_conditionals) {
+					switch(GetDepartureConditionalOrderMode(order)) {
 							case 0: {
 								/* Give up */
 								break;
@@ -458,7 +464,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 
 				/* If the order is a conditional branch, handle it. */
 				if (order->IsType(OT_CONDITIONAL)) {
-					switch(_settings_client.gui.departure_conditionals) {
+					switch(GetDepartureConditionalOrderMode(order)) {
 							case 0: {
 								/* Give up */
 								break;
@@ -696,7 +702,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 		for (int i = least_order->v->GetNumOrders(); i > 0; --i) {
 			/* If the order is a conditional branch, handle it. */
 			if (order->IsType(OT_CONDITIONAL)) {
-				switch(_settings_client.gui.departure_conditionals) {
+				switch(GetDepartureConditionalOrderMode(order)) {
 						case 0: {
 							/* Give up */
 							break;
