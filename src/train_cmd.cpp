@@ -943,7 +943,19 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 				int distance_to_go = station_ahead / TILE_SIZE - (station_length - stop_at) / TILE_SIZE;
 
 				if (distance_to_go > 0) {
-					advisory_max_speed = std::min(advisory_max_speed, 15 * distance_to_go);
+					if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+						advisory_max_speed = std::min(advisory_max_speed, 15 * distance_to_go);
+					} else {
+						int st_max_speed = 120;
+
+						int delta_v = this->cur_speed / (distance_to_go + 1);
+						if (max_speed > (this->cur_speed - delta_v)) {
+							st_max_speed = this->cur_speed - (delta_v / 10);
+						}
+
+						st_max_speed = std::max(st_max_speed, 25 * distance_to_go);
+						max_speed = std::min(max_speed, st_max_speed);
+					}
 				}
 			}
 		}
