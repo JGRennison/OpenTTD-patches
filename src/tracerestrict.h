@@ -294,6 +294,7 @@ enum TraceRestrictTimeDateValueField {
 	TRTDVF_MINUTE                 =  0,      ///< Minute
 	TRTDVF_HOUR                   =  1,      ///< Hour
 	TRTDVF_HOUR_MINUTE            =  2,      ///< Hour and minute
+	TRTDVF_END                    =  3,      ///< End tag
 };
 
 /**

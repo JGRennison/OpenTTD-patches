@@ -655,6 +655,7 @@ static const OrderConditionVariable _order_conditional_variable[] = {
 	OCV_SLOT_OCCUPANCY,
 	OCV_TRAIN_IN_SLOT,
 	OCV_COUNTER_VALUE,
+	OCV_TIME_DATE,
 	OCV_PERCENT,
 	OCV_UNCONDITIONALLY,
 };
@@ -746,6 +747,13 @@ static int DepotActionStringIndex(const Order *order)
 static const StringID _order_refit_action_dropdown[] = {
 	STR_ORDER_DROP_REFIT_AUTO,
 	STR_ORDER_DROP_REFIT_AUTO_ANY,
+	INVALID_STRING_ID
+};
+
+static const StringID _order_time_date_dropdown[] = {
+	STR_TRACE_RESTRICT_TIME_MINUTE,
+	STR_TRACE_RESTRICT_TIME_HOUR,
+	STR_TRACE_RESTRICT_TIME_HOUR_MINUTE,
 	INVALID_STRING_ID
 };
 
@@ -970,6 +978,11 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				}
 				SetDParam(3, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator());
 				SetDParam(4, GB(order->GetXData(), 0, 16));
+			} else if (ocv == OCV_TIME_DATE) {
+				SetDParam(0, (order->GetConditionValue() == TRTDVF_HOUR_MINUTE) ? STR_ORDER_CONDITIONAL_TIME_HHMM : STR_ORDER_CONDITIONAL_NUM);
+				SetDParam(2, STR_TRACE_RESTRICT_TIME_MINUTE_ITEM + order->GetConditionValue());
+				SetDParam(3, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator());
+				SetDParam(4, order->GetXData());
 			} else {
 				OrderConditionComparator occ = order->GetConditionComparator();
 				SetDParam(0, (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) ? STR_ORDER_CONDITIONAL_TRUE_FALSE : STR_ORDER_CONDITIONAL_NUM);
@@ -1212,7 +1225,8 @@ private:
 
 		/* WID_O_SEL_COND_AUX */
 		DP_COND_AUX_CARGO = 0, ///< Display dropdown widget cargo types
-		DP_COND_COUNTER = 1,   ///< Display dropdown widget counters
+		DP_COND_TIME_DATE = 1, ///< Display dropdown for current time/date field
+		DP_COND_COUNTER = 2,   ///< Display dropdown widget counters
 
 		/* WID_O_SEL_COND_AUX2 */
 		DP_COND_AUX2_VIA = 0, ///< Display via button
@@ -1881,6 +1895,7 @@ public:
 					bool is_slot_occupancy = (ocv == OCV_SLOT_OCCUPANCY || ocv == OCV_TRAIN_IN_SLOT);
 					bool is_auxiliary_cargo = (ocv == OCV_CARGO_LOAD_PERCENTAGE || ocv == OCV_CARGO_WAITING_AMOUNT);
 					bool is_counter = (ocv == OCV_COUNTER_VALUE);
+					bool is_time_date = (ocv == OCV_TIME_DATE);
 
 					if (is_cargo) {
 						if (order == nullptr || !CargoSpec::Get(order->GetConditionValue())->IsValid()) {
@@ -1910,6 +1925,9 @@ public:
 
 						this->GetWidget<NWidgetCore>(WID_O_COND_COUNTER)->widget_data = (ctr_id != INVALID_TRACE_RESTRICT_COUNTER_ID) ? STR_TRACE_RESTRICT_COUNTER_NAME : STR_TRACE_RESTRICT_VARIABLE_UNDEFINED;
 						aux_sel->SetDisplayedPlane(DP_COND_COUNTER);
+					} else if (is_time_date) {
+						this->GetWidget<NWidgetCore>(WID_O_COND_TIME_DATE)->widget_data = STR_TRACE_RESTRICT_TIME_MINUTE_ITEM + order->GetConditionValue();
+						aux_sel->SetDisplayedPlane(DP_COND_TIME_DATE);
 					} else {
 						aux_sel->SetDisplayedPlane(SZSP_NONE);
 					}
@@ -1923,6 +1941,7 @@ public:
 					/* Set the strings for the dropdown boxes. */
 					this->GetWidget<NWidgetCore>(WID_O_COND_VARIABLE)->widget_data   = STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE + ocv;
 					this->GetWidget<NWidgetCore>(WID_O_COND_COMPARATOR)->widget_data = GetComparatorStrings(order)[order->GetConditionComparator()];
+					this->GetWidget<NWidgetCore>(WID_O_COND_VALUE)->widget_data = (ocv == OCV_TIME_DATE && order->GetConditionValue() == TRTDVF_HOUR_MINUTE) ? STR_BLACK_TIME_HHMM : STR_BLACK_COMMA;
 					this->SetWidgetDisabledState(WID_O_COND_COMPARATOR, ocv == OCV_UNCONDITIONALLY || ocv == OCV_PERCENT);
 					this->SetWidgetDisabledState(WID_O_COND_VALUE, ocv == OCV_REQUIRES_SERVICE || ocv == OCV_UNCONDITIONALLY);
 					break;
@@ -2070,6 +2089,7 @@ public:
 					uint value;
 					switch (order->GetConditionVariable()) {
 						case OCV_CARGO_LOAD_PERCENTAGE:
+						case OCV_TIME_DATE:
 							value = order->GetXData();
 							break;
 
@@ -2301,6 +2321,12 @@ public:
 				break;
 			}
 
+			case WID_O_COND_TIME_DATE: {
+				ShowDropDownMenu(this, _order_time_date_dropdown, this->vehicle->GetOrder(this->OrderGetSel())->GetConditionValue(),
+						WID_O_COND_TIME_DATE, 0, 0, UINT_MAX);
+				break;
+			}
+
 			case WID_O_REVERSE: {
 				VehicleOrderID sel_ord = this->OrderGetSel();
 				const Order *order = this->vehicle->GetOrder(sel_ord);
@@ -2351,6 +2377,7 @@ public:
 								_order_conditional_variable[i] == OCV_COUNTER_VALUE) && !_settings_client.gui.show_adv_tracerestrict_features) {
 							continue;
 						}
+						if (_order_conditional_variable[i] == OCV_TIME_DATE && !_settings_game.game_time.time_in_minutes) continue;
 					}
 					list.emplace_back(new DropDownListStringItem(STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE + _order_conditional_variable[i], _order_conditional_variable[i], false));
 				}
@@ -2386,6 +2413,7 @@ public:
 				uint value;
 				switch (order->GetConditionVariable()) {
 					case OCV_CARGO_LOAD_PERCENTAGE:
+					case OCV_TIME_DATE:
 						value = order->GetXData();
 						break;
 
@@ -2447,6 +2475,7 @@ public:
 					break;
 
 				case OCV_COUNTER_VALUE:
+				case OCV_TIME_DATE:
 					value = Clamp(value, 0, 0xFFFF);
 					break;
 
@@ -2516,6 +2545,10 @@ public:
 				break;
 
 			case WID_O_COND_COUNTER:
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 4);
+				break;
+
+			case WID_O_COND_TIME_DATE:
 				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 4);
 				break;
 
@@ -2769,6 +2802,8 @@ static const NWidgetPart _nested_orders_train_widgets[] = {
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_COND_AUX),
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_AUX_CARGO), SetMinimalSize(124, 12), SetFill(1, 0),
 													SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_CARGO_TOOLTIP), SetResize(1, 0),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_TIME_DATE), SetMinimalSize(124, 12), SetFill(1, 0),
+															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP), SetResize(1, 0),
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_COUNTER), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP), SetResize(1, 0),
 				EndContainer(),
@@ -2871,6 +2906,8 @@ static const NWidgetPart _nested_orders_widgets[] = {
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_COND_AUX),
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_AUX_CARGO), SetMinimalSize(124, 12), SetFill(1, 0),
 													SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_CARGO_TOOLTIP), SetResize(1, 0),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_TIME_DATE), SetMinimalSize(124, 12), SetFill(1, 0),
+															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP), SetResize(1, 0),
 				EndContainer(),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_COND_AUX2),
 					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_O_COND_AUX_VIA), SetMinimalSize(36, 12),

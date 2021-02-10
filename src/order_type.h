@@ -146,6 +146,7 @@ enum OrderConditionVariable {
 	OCV_CARGO_LOAD_PERCENTAGE, ///< Skip based on the amount of load of a specific cargo
 	OCV_CARGO_WAITING_AMOUNT,  ///< Skip based on the amount of a specific cargo waiting at next station
 	OCV_COUNTER_VALUE,      ///< Skip based on counter value
+	OCV_TIME_DATE,          ///< Skip based on current time/date
 	OCV_END
 };
 
