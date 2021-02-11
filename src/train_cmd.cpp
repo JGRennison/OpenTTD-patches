@@ -3977,7 +3977,6 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 			return FindFirstTrack(tracks);
 		}
 		if (res_dest.okay) {
-			if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) FillTrainReservationLookAhead(v);
 			bool long_reserve = (CheckLongReservePbsTunnelBridgeOnTrackdir(v, res_dest.tile, res_dest.trackdir) != INVALID_TILE);
 			if (!long_reserve) {
 				CFollowTrackRail ft(v);
