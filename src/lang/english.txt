@@ -2784,6 +2784,7 @@ STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT                :occupancy
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING_SHORT      :occupancy remaining
 STR_TRACE_RESTRICT_VARIABLE_COUNTER_VALUE                       :counter value
 STR_TRACE_RESTRICT_VARIABLE_TIME_DATE_VALUE                     :current time/date
+STR_TRACE_RESTRICT_VARIABLE_RESERVED_TILES_AHEAD                :reserved tiles ahead
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_WEIGHT                        :weight
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_POWER                         :power
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE                        :max T.E.

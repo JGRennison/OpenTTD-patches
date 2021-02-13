@@ -458,6 +458,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING,
 		STR_TRACE_RESTRICT_VARIABLE_COUNTER_VALUE,
 		STR_TRACE_RESTRICT_VARIABLE_TIME_DATE_VALUE,
+		STR_TRACE_RESTRICT_VARIABLE_RESERVED_TILES_AHEAD,
 		STR_TRACE_RESTRICT_VARIABLE_UNDEFINED,
 		INVALID_STRING_ID,
 	};
@@ -485,6 +486,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		TRIT_COND_SLOT_OCCUPANCY | (TRSOCAF_REMAINING << 16),
 		TRIT_COND_COUNTER_VALUE,
 		TRIT_COND_TIME_DATE_VALUE,
+		TRIT_COND_RESERVED_TILES,
 		TRIT_COND_UNDEFINED,
 	};
 	static const TraceRestrictDropDownListSet set_cond = {
@@ -496,10 +498,10 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		if (_settings_client.gui.show_adv_tracerestrict_features) {
 			*hide_mask = 0;
 		} else {
-			*hide_mask = is_conditional ? 0x7C0000 : 0x2F0;
+			*hide_mask = is_conditional ? 0xFC0000 : 0x2F0;
 		}
 		if (is_conditional && !_settings_game.game_time.time_in_minutes) *hide_mask |= 0x400000;
-		if (is_conditional && _settings_game.vehicle.train_braking_model != TBM_REALISTIC) *hide_mask |= 0x200;
+		if (is_conditional && _settings_game.vehicle.train_braking_model != TBM_REALISTIC) *hide_mask |= 0x800200;
 	}
 	return is_conditional ? &set_cond : &set_action;
 }

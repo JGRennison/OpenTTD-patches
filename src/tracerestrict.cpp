@@ -524,6 +524,15 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 					}
 
+					case TRIT_COND_RESERVED_TILES: {
+						uint tiles_ahead = 0;
+						if (v->lookahead != nullptr) {
+							tiles_ahead = std::max<int>(0, v->lookahead->reservation_end_position - v->lookahead->current_position) / TILE_SIZE;
+						}
+						result = TestCondition(tiles_ahead, condop, condvalue);
+						break;
+					}
+
 					default:
 						NOT_REACHED();
 				}
@@ -807,6 +816,7 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				case TRIT_COND_LOAD_PERCENT:
 				case TRIT_COND_COUNTER_VALUE:
 				case TRIT_COND_TIME_DATE_VALUE:
+				case TRIT_COND_RESERVED_TILES:
 					break;
 
 				default:

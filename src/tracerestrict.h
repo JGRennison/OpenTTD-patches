@@ -151,6 +151,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_LOAD_PERCENT        = 26,   ///< Test train load percentage
 	TRIT_COND_COUNTER_VALUE       = 27,   ///< Test counter value
 	TRIT_COND_TIME_DATE_VALUE     = 28,   ///< Test time/date value
+	TRIT_COND_RESERVED_TILES      = 29,   ///< Test reserved tiles ahead of train
 
 	TRIT_COND_END                 = 48,   ///< End (exclusive) of conditional item types, note that this has the same value as TRIT_REVERSE
 	TRIT_REVERSE                  = 48,   ///< Reverse behind signal
@@ -751,6 +752,10 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 
 			case TRIT_COND_TIME_DATE_VALUE:
 				out.value_type = TRVT_TIME_DATE_INT;
+				break;
+
+			case TRIT_COND_RESERVED_TILES:
+				out.value_type = TRVT_INT;
 				break;
 
 			default:
