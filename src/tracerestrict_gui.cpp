@@ -1125,7 +1125,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					} else {
 						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_OWNER;
 						SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
-						SetDParam(1, GetTypeString(GetTraceRestrictType(item)));
+						SetDParam(1, GetTypeString(item));
 						SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
 						SetDParam(3, cid);
 						SetDParam(4, cid);
