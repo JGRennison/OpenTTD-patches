@@ -331,6 +331,15 @@ enum TraceRestrictCounterCondOpField {
 };
 
 /**
+ * TraceRestrictItem auxiliary type field, for TRIT_COND_PBS_ENTRY_SIGNAL
+ */
+enum TraceRestrictPBSEntrySignalAuxField {
+	TRPESAF_VEH_POS               = 0,       ///< vehicle position signal
+	TRPESAF_RES_END               = 1,       ///< reservation end signal
+	/* space up to 3 */
+};
+
+/**
  * TraceRestrictItem pathfinder penalty preset index
  * This may not be shortened, only lengthened, as preset indexes are stored in save games
  */
@@ -394,7 +403,7 @@ DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramInputSlotPermissions)
  * Execution input of a TraceRestrictProgram
  */
 struct TraceRestrictProgramInput {
-	typedef TileIndex PreviousSignalProc(const Train *v, const void *ptr);
+	typedef TileIndex PreviousSignalProc(const Train *v, const void *ptr, TraceRestrictPBSEntrySignalAuxField mode);
 
 	TileIndex tile;                               ///< Tile of restrict signal, for direction testing
 	Trackdir trackdir;                            ///< Track direction on tile of restrict signal, for direction testing
@@ -785,6 +794,7 @@ static inline bool IsTraceRestrictTypeAuxSubtype(TraceRestrictItemType type)
 		case TRIT_COND_PHYS_PROP:
 		case TRIT_COND_PHYS_RATIO:
 		case TRIT_COND_SLOT_OCCUPANCY:
+		case TRIT_COND_PBS_ENTRY_SIGNAL:
 			return true;
 
 		default:

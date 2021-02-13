@@ -213,7 +213,7 @@ public:
 		if (restricted_signal_info.tile != INVALID_TILE) {
 			const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(restricted_signal_info.tile, TrackdirToTrack(restricted_signal_info.trackdir));
 			if (prog && prog->actions_used_flags & TRPAUF_PBS_RES_END_SLOT) {
-				extern TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const void *);
+				extern TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const void *, TraceRestrictPBSEntrySignalAuxField mode);
 
 				TraceRestrictProgramResult out;
 				TraceRestrictProgramInput input(restricted_signal_info.tile, restricted_signal_info.trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr);

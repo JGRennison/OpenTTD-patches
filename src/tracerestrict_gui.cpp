@@ -444,6 +444,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		STR_TRACE_RESTRICT_VARIABLE_LOAD_PERCENT,
 		STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION,
 		STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL,
+		STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_STATUS,
@@ -469,7 +470,8 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		TRIT_COND_CARGO,
 		TRIT_COND_LOAD_PERCENT,
 		TRIT_COND_ENTRY_DIRECTION,
-		TRIT_COND_PBS_ENTRY_SIGNAL,
+		TRIT_COND_PBS_ENTRY_SIGNAL | (TRPESAF_VEH_POS << 16),
+		TRIT_COND_PBS_ENTRY_SIGNAL | (TRPESAF_RES_END << 16),
 		TRIT_COND_TRAIN_GROUP,
 		TRIT_COND_TRAIN_OWNER,
 		TRIT_COND_TRAIN_STATUS,
@@ -494,9 +496,10 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		if (_settings_client.gui.show_adv_tracerestrict_features) {
 			*hide_mask = 0;
 		} else {
-			*hide_mask = is_conditional ? 0x3E0000 : 0x2F0;
+			*hide_mask = is_conditional ? 0x7C0000 : 0x2F0;
 		}
-		if (is_conditional && !_settings_game.game_time.time_in_minutes) *hide_mask |= 0x200000;
+		if (is_conditional && !_settings_game.game_time.time_in_minutes) *hide_mask |= 0x400000;
+		if (is_conditional && _settings_game.vehicle.train_braking_model != TBM_REALISTIC) *hide_mask |= 0x200;
 	}
 	return is_conditional ? &set_cond : &set_action;
 }
@@ -1090,10 +1093,21 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					} else {
 						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX;
 						SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
-						SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG);
 						SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
 						SetDParam(3, TileX(tile));
 						SetDParam(4, TileY(tile));
+					}
+					switch (static_cast<TraceRestrictPBSEntrySignalAuxField>(GetTraceRestrictAuxField(item))) {
+						case TRPESAF_VEH_POS:
+							SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG);
+							break;
+
+						case TRPESAF_RES_END:
+							SetDParam(1, _settings_game.vehicle.train_braking_model == TBM_REALISTIC ? STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG : STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG_WARN);
+							break;
+
+						default:
+							NOT_REACHED();
 					}
 					break;
 				}

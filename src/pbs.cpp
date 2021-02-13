@@ -1043,19 +1043,26 @@ CommandCost CheckTrainInTunnelBridgePreventsTrackModification(TileIndex start, T
  * This is called to retrieve the previous signal, as required
  * This is not run all the time as it is somewhat expensive and most restrictions will not test for the previous signal
  */
-TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const void *)
+TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const void *, TraceRestrictPBSEntrySignalAuxField mode)
 {
-	if (IsRailDepotTile(v->tile)) {
-		return v->tile;
-	}
-	if (v->track & TRACK_BIT_WORMHOLE && IsTileType(v->tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(v->tile) && IsTunnelBridgeEffectivelyPBS(v->tile)) {
-		return v->tile;
+	TileIndex tile;
+	Trackdir  trackdir;
+
+	if (mode == TRPESAF_RES_END && v->lookahead != nullptr) {
+		tile = v->lookahead->reservation_end_tile;
+		trackdir = v->lookahead->reservation_end_trackdir;
+	} else {
+		if (IsRailDepotTile(v->tile)) {
+			return v->tile;
+		}
+		if (v->track & TRACK_BIT_WORMHOLE && IsTileType(v->tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(v->tile) && IsTunnelBridgeEffectivelyPBS(v->tile)) {
+			return v->tile;
+		}
+		tile = v->tile;
+		trackdir = v->GetVehicleTrackdir();
 	}
 
 	// scan forwards from vehicle position, for the case that train is waiting at/approaching PBS signal
-
-	TileIndex tile = v->tile;
-	Trackdir  trackdir = v->GetVehicleTrackdir();
 
 	CFollowTrackRail ft(v);
 
@@ -1068,6 +1075,10 @@ TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const vo
 				// wrong type of signal
 				return INVALID_TILE;
 			}
+		}
+
+		if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgeEffectivelyPBS(tile) && TrackdirExitsTunnelBridge(tile, trackdir)) {
+			return tile;
 		}
 
 		// advance to next tile

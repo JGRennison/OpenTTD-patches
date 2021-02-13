@@ -178,14 +178,15 @@ private:
 	 * This is called to retrieve the previous signal, as required
 	 * This is not run all the time as it is somewhat expensive and most restrictions will not test for the previous signal
 	 */
-	static TileIndex TraceRestrictPreviousSignalCallback(const Train *v, const void *node_ptr)
+	static TileIndex TraceRestrictPreviousSignalCallback(const Train *v, const void *node_ptr, TraceRestrictPBSEntrySignalAuxField mode)
 	{
 		const Node *node = static_cast<const Node *>(node_ptr);
 		for (;;) {
 			TileIndex last_signal_tile = node->m_last_non_reserve_through_signal_tile;
 			if (last_signal_tile != INVALID_TILE) {
 				Trackdir last_signal_trackdir = node->m_last_non_reserve_through_signal_td;
-				if (HasPbsSignalOnTrackdir(last_signal_tile, last_signal_trackdir)) {
+				if (HasPbsSignalOnTrackdir(last_signal_tile, last_signal_trackdir) ||
+						(IsTileType(last_signal_tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(last_signal_tile) && IsTunnelBridgeEffectivelyPBS(last_signal_tile) && TrackdirExitsTunnelBridge(last_signal_tile, last_signal_trackdir))) {
 					return last_signal_tile;
 				} else {
 					return INVALID_TILE;
@@ -208,15 +209,21 @@ private:
 				TileIndex origin_tile = node->GetTile();
 				Trackdir origin_trackdir = node->GetTrackdir();
 
-				TileIndex tile = v->tile;
-				Trackdir  trackdir = v->GetVehicleTrackdir();
-
 				TileIndex candidate_tile = INVALID_TILE;
 
-				if (IsRailDepotTile(v->tile)) {
-					candidate_tile = v->tile;
-				} else if (v->track & TRACK_BIT_WORMHOLE && IsTileType(v->tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(v->tile) && IsTunnelBridgeEffectivelyPBS(v->tile)) {
-					candidate_tile = v->tile;
+				TileIndex tile;
+				Trackdir  trackdir;
+				if (mode == TRPESAF_RES_END && v->lookahead != nullptr) {
+					tile = v->lookahead->reservation_end_tile;
+					trackdir = v->lookahead->reservation_end_trackdir;
+				} else {
+					tile = v->tile;
+					trackdir = v->GetVehicleTrackdir();
+					if (IsRailDepotTile(v->tile)) {
+						candidate_tile = v->tile;
+					} else if (v->track & TRACK_BIT_WORMHOLE && IsTileType(v->tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(v->tile) && IsTunnelBridgeEffectivelyPBS(v->tile)) {
+						candidate_tile = v->tile;
+					}
 				}
 
 				CFollowTrackRail ft(v);
@@ -380,6 +387,11 @@ public:
 		if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExitOnly(tile) && TrackdirEntersTunnelBridge(tile, trackdir)) {
 			/* Entering a signalled bridge/tunnel from the wrong side, equivalent to encountering a one-way signal from the wrong side */
 			n.m_segment->m_end_segment_reason |= ESRB_DEAD_END;
+		}
+		if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgeEffectivelyPBS(tile) && TrackdirExitsTunnelBridge(tile, trackdir)) {
+			/* Exiting a PBS signalled tunnel/bridge, record the last non-reserve through signal */
+			n.m_last_non_reserve_through_signal_tile = tile;
+			n.m_last_non_reserve_through_signal_td = trackdir;
 		}
 		return cost;
 	}

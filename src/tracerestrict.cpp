@@ -244,8 +244,8 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 	static std::vector<TraceRestrictCondStackFlags> condstack;
 	condstack.clear();
 
-	bool have_previous_signal = false;
-	TileIndex previous_signal_tile = INVALID_TILE;
+	byte have_previous_signal = 0;
+	TileIndex previous_signal_tile[2];
 
 	size_t size = this->items.size();
 	for (size_t i = 0; i < size; i++) {
@@ -344,17 +344,21 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 					}
 
 					case TRIT_COND_PBS_ENTRY_SIGNAL: {
-						// TRVT_TILE_INDEX value type uses the next slot
+						// TRIT_COND_PBS_ENTRY_SIGNAL value type uses the next slot
 						i++;
+						TraceRestrictPBSEntrySignalAuxField mode = static_cast<TraceRestrictPBSEntrySignalAuxField>(GetTraceRestrictAuxField(item));
+						assert(mode == TRPESAF_VEH_POS || mode == TRPESAF_RES_END);
 						uint32_t signal_tile = this->items[i];
-						if (!have_previous_signal) {
+						if (!HasBit(have_previous_signal, mode)) {
 							if (input.previous_signal_callback) {
-								previous_signal_tile = input.previous_signal_callback(v, input.previous_signal_ptr);
+								previous_signal_tile[mode] = input.previous_signal_callback(v, input.previous_signal_ptr, mode);
+							} else {
+								previous_signal_tile[mode] = INVALID_TILE;
 							}
-							have_previous_signal = true;
+							SetBit(have_previous_signal, mode);
 						}
 						bool match = (signal_tile != INVALID_TILE)
-								&& (previous_signal_tile == signal_tile);
+								&& (previous_signal_tile[mode] == signal_tile);
 						result = TestBinaryConditionCommon(item, match);
 						break;
 					}
