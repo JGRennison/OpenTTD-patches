@@ -574,11 +574,13 @@ static void _DoCommandReturnSetOrderFlags(class ScriptInstance *instance)
 	VehicleID vehicle_id = (VehicleID)ScriptObject::GetCallbackVariable(0);
 	OrderPosition order_position = (OrderPosition)ScriptObject::GetCallbackVariable(1);
 	ScriptOrderFlags order_flags = (ScriptOrderFlags)ScriptObject::GetCallbackVariable(2);
-	if (_settings_game.order.nonstop_only && ::Vehicle::Get(vehicle_id)->IsGroundVehicle()) order_flags |= OF_NON_STOP_INTERMEDIATE;
 
 	order_position = ScriptOrder::ResolveOrderPosition(vehicle_id, order_position);
 
 	EnforcePrecondition(false, IsValidVehicleOrder(vehicle_id, order_position));
+
+	if (_settings_game.order.nonstop_only && ::Vehicle::Get(vehicle_id)->IsGroundVehicle()) order_flags |= OF_NON_STOP_INTERMEDIATE;
+
 	EnforcePrecondition(false, AreOrderFlagsValid(GetOrderDestination(vehicle_id, order_position), order_flags));
 
 	const Order *order = ::ResolveOrder(vehicle_id, order_position);
