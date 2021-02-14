@@ -107,6 +107,7 @@
 #include "tunnelbridge_map.h"
 #include "video/video_driver.hpp"
 #include "scope_info.h"
+#include "scope.h"
 
 #include <map>
 #include <vector>
@@ -2192,13 +2193,16 @@ static inline TileIndex GetLastValidOrderLocation(const Vehicle *veh)
 	return result;
 }
 
-static inline const Order *GetFinalOrder(const Vehicle *veh, const Order *order)
+static inline std::pair<const Order *, bool> GetFinalOrder(const Vehicle *veh, const Order *order)
 {
 	// Use Floyd's cycle-finding algorithm to prevent endless loop
 	// due to a cycle formed by confitional orders.
 	auto cycle_check = order;
 
+	bool is_conditional = false;
+
 	while (order->IsType(OT_CONDITIONAL)) {
+		if (order->GetConditionVariable() != OCV_UNCONDITIONALLY) is_conditional = true;
 		order = veh->GetOrder(order->GetConditionSkipToOrder());
 
 		if (cycle_check->IsType(OT_CONDITIONAL)) {
@@ -2211,10 +2215,10 @@ static inline const Order *GetFinalOrder(const Vehicle *veh, const Order *order)
 
 		bool cycle_detected = (order->IsType(OT_CONDITIONAL) && (order == cycle_check));
 
-		if (cycle_detected) return nullptr;
+		if (cycle_detected) return std::pair<const Order *, bool>(nullptr, is_conditional);
 	}
 
-	return order;
+	return std::pair<const Order *, bool>(order, is_conditional);
 }
 
 static bool ViewportMapPrepareVehicleRoute(const Vehicle * const veh)
@@ -2226,14 +2230,21 @@ static bool ViewportMapPrepareVehicleRoute(const Vehicle * const veh)
 		if (from_tile == INVALID_TILE) return false;
 
 		for(const Order *order : veh->Orders()) {
-			const Order *final_order = GetFinalOrder(veh, order);
+			auto guard = scope_guard([&]() {
+				if (order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OCV_UNCONDITIONALLY) from_tile = INVALID_TILE;
+			});
+			const Order *final_order;
+			bool conditional;
+			std::tie(final_order, conditional) = GetFinalOrder(veh, order);
 			if (final_order == nullptr) continue;
 			const TileIndex to_tile = final_order->GetLocation(veh, veh->type == VEH_AIRCRAFT);
 			if (to_tile == INVALID_TILE) continue;
 
-			DrawnPathRouteTileLine path = { from_tile, to_tile, (final_order == order) };
-			if (path.from_tile > path.to_tile) std::swap(path.from_tile, path.to_tile);
-			_vp_route_paths.push_back(path);
+			if (from_tile != INVALID_TILE) {
+				DrawnPathRouteTileLine path = { from_tile, to_tile, !conditional };
+				if (path.from_tile > path.to_tile) std::swap(path.from_tile, path.to_tile);
+				_vp_route_paths.push_back(path);
+			}
 
 			const OrderType ot = order->GetType();
 			if (ot == OT_GOTO_STATION || ot == OT_GOTO_DEPOT || ot == OT_GOTO_WAYPOINT || ot == OT_IMPLICIT) from_tile = to_tile;
