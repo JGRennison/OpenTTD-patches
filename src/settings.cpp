@@ -70,6 +70,8 @@
 #include "zoning.h"
 #include "vehicle_func.h"
 #include "scope_info.h"
+#include "viewport_func.h"
+#include "gui.h"
 
 #include "void_map.h"
 #include "station_base.h"
@@ -1090,12 +1092,16 @@ static bool TrainBrakingModelChanged(int32 p1)
 				if ((signals & 0x3) & ((signals & 0x3) - 1) || (signals & 0xC) & ((signals & 0xC) - 1)) {
 					/* Signals in both directions */
 					ShowErrorMessage(STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED, INVALID_STRING_ID, WL_ERROR);
+					ShowExtraViewportWindow(t);
+					SetRedErrorSquare(t);
 					return false;
 				}
 				if (((signals & 0x3) && IsSignalTypeUnsuitableForRealisticBraking(GetSignalType(t, TRACK_LOWER))) ||
 						((signals & 0xC) && IsSignalTypeUnsuitableForRealisticBraking(GetSignalType(t, TRACK_UPPER)))) {
 					/* Banned signal types present */
 					ShowErrorMessage(STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED, INVALID_STRING_ID, WL_ERROR);
+					ShowExtraViewportWindow(t);
+					SetRedErrorSquare(t);
 					return false;
 				}
 			}
