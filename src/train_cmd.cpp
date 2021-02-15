@@ -4362,6 +4362,7 @@ static void TrainEnterStation(Train *v, StationID station)
 		SetWindowDirty(WC_VEHICLE_VIEW, v->index);
 		v->current_order.MakeWaiting();
 		v->current_order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
+		v->cur_speed = 0;
 		return;
 	}
 
