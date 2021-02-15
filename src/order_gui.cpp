@@ -1677,6 +1677,17 @@ public:
 				SetDParamMaxValue(0, 100);
 				size->width = WD_FRAMERECT_LEFT + GetStringBoundingBox(STR_ORDERS_OCCUPANCY_PERCENT).width + 10 + WD_FRAMERECT_RIGHT;
 				break;
+
+			case WID_O_TIMETABLE_VIEW: {
+				Dimension d = GetStringBoundingBox(STR_ORDERS_TIMETABLE_VIEW);
+				Dimension spr_d = GetSpriteSize(SPR_WARNING_SIGN);
+				d.width += spr_d.width + 2;
+				d.height = std::max(d.height, spr_d.height);
+				d.width += padding.width;
+				d.height += padding.height;
+				*size = maxdim(*size, d);
+				break;
+			}
 		}
 	}
 
@@ -2034,6 +2045,10 @@ public:
 			case WID_O_OCCUPANCY_LIST:
 				DrawOccupancyListWidget(r);
 				break;
+
+			case WID_O_TIMETABLE_VIEW:
+				DrawTimetableButtonWidget(r);
+				break;
 		}
 	}
 
@@ -2115,6 +2130,36 @@ public:
 			i++;
 			order = order->next;
 		}
+	}
+
+	void DrawTimetableButtonWidget(const Rect &r) const
+	{
+		const bool rtl = _current_text_dir == TD_RTL;
+		bool clicked = this->GetWidget<NWidgetCore>(WID_O_TIMETABLE_VIEW)->IsLowered();
+		Dimension d = GetStringBoundingBox(STR_ORDERS_TIMETABLE_VIEW);
+
+		int left = r.left + clicked;
+		int right = r.right + clicked;
+
+		extern void ProcessTimetableWarnings(const Vehicle *v, std::function<void(StringID, bool)> handler);
+
+		bool show_warning = false;
+		ProcessTimetableWarnings(this->vehicle, [&](StringID text, bool warning) {
+			if (warning) show_warning = true;
+		});
+
+		if (show_warning) {
+			const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
+			int spr_offset = std::max(0, ((int)(r.bottom - r.top + 1) - (int)warning_dimensions.height) / 2); // Offset for rendering the sprite vertically centered
+			DrawSprite(SPR_WARNING_SIGN, 0, rtl ? right - warning_dimensions.width - 2 : left + 2, r.top + spr_offset);
+			if (rtl) {
+				right -= warning_dimensions.width;
+			} else {
+				left += warning_dimensions.width;
+			}
+		}
+		int offset = std::max(0, ((int)(r.bottom - r.top + 1) - (int)d.height) / 2); // Offset for rendering the text vertically centered
+		DrawString(left, right, r.top + offset + clicked, STR_ORDERS_TIMETABLE_VIEW, TC_FROMSTRING, SA_HOR_CENTER);
 	}
 
 	void SetStringParameters(int widget) const override
@@ -2819,7 +2864,7 @@ static const NWidgetPart _nested_orders_train_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_O_CAPTION), SetDataTip(STR_ORDERS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_TIMETABLE_VIEW), SetMinimalSize(61, 14), SetDataTip(STR_ORDERS_TIMETABLE_VIEW, STR_ORDERS_TIMETABLE_VIEW_TOOLTIP),
+		NWidget(WWT_PUSHBTN, COLOUR_GREY, WID_O_TIMETABLE_VIEW), SetMinimalSize(61, 14), SetDataTip(0x0, STR_ORDERS_TIMETABLE_VIEW_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -2935,7 +2980,7 @@ static const NWidgetPart _nested_orders_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_O_CAPTION), SetDataTip(STR_ORDERS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_TIMETABLE_VIEW), SetMinimalSize(61, 14), SetDataTip(STR_ORDERS_TIMETABLE_VIEW, STR_ORDERS_TIMETABLE_VIEW_TOOLTIP),
+		NWidget(WWT_PUSHBTN, COLOUR_GREY, WID_O_TIMETABLE_VIEW), SetMinimalSize(61, 14), SetDataTip(0x0, STR_ORDERS_TIMETABLE_VIEW_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -3036,7 +3081,7 @@ static const NWidgetPart _nested_other_orders_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_O_CAPTION), SetDataTip(STR_ORDERS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_TIMETABLE_VIEW), SetMinimalSize(61, 14), SetDataTip(STR_ORDERS_TIMETABLE_VIEW, STR_ORDERS_TIMETABLE_VIEW_TOOLTIP),
+		NWidget(WWT_PUSHBTN, COLOUR_GREY, WID_O_TIMETABLE_VIEW), SetMinimalSize(61, 14), SetDataTip(0x0, STR_ORDERS_TIMETABLE_VIEW_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
