@@ -461,7 +461,7 @@ using mingw_stdthread::recursive_timed_mutex;
 using mingw_stdthread::timed_mutex;
 using mingw_stdthread::once_flag;
 using mingw_stdthread::call_once;
-#elif !defined(MINGW_STDTHREAD_REDUNDANCY_WARNING)  //  Skip repetition
+#elif !defined(MINGW_STDTHREAD_REDUNDANCY_WARNING) && defined(_DEBUG)  //  Skip repetition
 #define MINGW_STDTHREAD_REDUNDANCY_WARNING
 #pragma message "This version of MinGW seems to include a win32 port of\
  pthreads, and probably already has C++11 std threading classes implemented,\

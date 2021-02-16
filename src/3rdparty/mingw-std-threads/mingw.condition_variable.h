@@ -536,7 +536,7 @@ namespace std
 using mingw_stdthread::cv_status;
 using mingw_stdthread::condition_variable;
 using mingw_stdthread::condition_variable_any;
-#elif !defined(MINGW_STDTHREAD_REDUNDANCY_WARNING)  //  Skip repetition
+#elif !defined(MINGW_STDTHREAD_REDUNDANCY_WARNING) && defined(_DEBUG)  //  Skip repetition
 #define MINGW_STDTHREAD_REDUNDANCY_WARNING
 #pragma message "This version of MinGW seems to include a win32 port of\
  pthreads, and probably already has C++11 std threading classes implemented,\
