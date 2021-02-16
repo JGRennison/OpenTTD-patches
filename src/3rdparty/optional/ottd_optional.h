@@ -16,7 +16,7 @@
 #	endif
 #endif
 
-#if (__cplusplus >= 201703L) || (defined(__cpp_lib_optional) && __cpp_lib_optional >= 201606L)
+#if !defined(__APPLE__) && ((__cplusplus >= 201703L) || (defined(__cpp_lib_optional) && __cpp_lib_optional >= 201606L))
 
 /* Native std::optional. */
 #include <optional>
@@ -26,7 +26,7 @@ namespace opt = std;
 
 /* No std::optional, use local copy instead. */
 #include "optional.hpp"
-namespace opt = std::experimental;
+namespace opt = ottd_optional;
 
 #endif
 

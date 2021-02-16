@@ -20,7 +20,7 @@
 #include "tar_type.h"
 #include <sys/stat.h>
 #include <functional>
-#include <optional>
+#include "3rdparty/optional/ottd_optional.h"
 
 #ifndef _WIN32
 # include <unistd.h>
@@ -495,7 +495,7 @@ FiosType FiosGetSavegameListCallback(SaveLoadOperation fop, const std::string &f
  */
 void FiosGetSavegameList(SaveLoadOperation fop, FileList &file_list)
 {
-	static std::optional<std::string> fios_save_path;
+	static opt::optional<std::string> fios_save_path;
 
 	if (!fios_save_path) fios_save_path = FioFindDirectory(SAVE_DIR);
 
@@ -544,7 +544,7 @@ static FiosType FiosGetScenarioListCallback(SaveLoadOperation fop, const std::st
  */
 void FiosGetScenarioList(SaveLoadOperation fop, FileList &file_list)
 {
-	static std::optional<std::string> fios_scn_path;
+	static opt::optional<std::string> fios_scn_path;
 
 	/* Copy the default path on first run or on 'New Game' */
 	if (!fios_scn_path) fios_scn_path = FioFindDirectory(SCENARIO_DIR);
@@ -606,7 +606,7 @@ static FiosType FiosGetHeightmapListCallback(SaveLoadOperation fop, const std::s
  */
 void FiosGetHeightmapList(SaveLoadOperation fop, FileList &file_list)
 {
-	static std::optional<std::string> fios_hmap_path;
+	static opt::optional<std::string> fios_hmap_path;
 
 	if (!fios_hmap_path) fios_hmap_path = FioFindDirectory(HEIGHTMAP_DIR);
 
@@ -623,7 +623,7 @@ void FiosGetHeightmapList(SaveLoadOperation fop, FileList &file_list)
  */
 const char *FiosGetScreenshotDir()
 {
-	static std::optional<std::string> fios_screenshot_path;
+	static opt::optional<std::string> fios_screenshot_path;
 
 	if (!fios_screenshot_path) fios_screenshot_path = FioFindDirectory(SCREENSHOT_DIR);
 

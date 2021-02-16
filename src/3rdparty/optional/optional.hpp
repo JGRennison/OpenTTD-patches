@@ -97,9 +97,8 @@
 #   define OPTIONAL_MUTABLE_CONSTEXPR constexpr
 # endif
 
-namespace std{
-
-namespace experimental{
+namespace ottd_optional{
+using namespace std;
 
 // BEGIN workaround for missing is_trivially_destructible
 # if defined TR2_OPTIONAL_GCC_4_8_AND_HIGHER___
@@ -1032,16 +1031,15 @@ constexpr optional<X&> make_optional(reference_wrapper<X> v)
 }
 
 
-} // namespace experimental
-} // namespace std
+} // namespace ottd_optional
 
 namespace std
 {
   template <typename T>
-  struct hash<std::experimental::optional<T>>
+  struct hash<ottd_optional::optional<T>>
   {
     typedef typename hash<T>::result_type result_type;
-    typedef std::experimental::optional<T> argument_type;
+    typedef ottd_optional::optional<T> argument_type;
 
     constexpr result_type operator()(argument_type const& arg) const {
       return arg ? std::hash<T>{}(*arg) : result_type{};
@@ -1049,10 +1047,10 @@ namespace std
   };
 
   template <typename T>
-  struct hash<std::experimental::optional<T&>>
+  struct hash<ottd_optional::optional<T&>>
   {
     typedef typename hash<T>::result_type result_type;
-    typedef std::experimental::optional<T&> argument_type;
+    typedef ottd_optional::optional<T&> argument_type;
 
     constexpr result_type operator()(argument_type const& arg) const {
       return arg ? std::hash<T>{}(*arg) : result_type{};
