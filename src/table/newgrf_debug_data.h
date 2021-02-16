@@ -427,6 +427,8 @@ class NIHHouse : public NIHelper {
 		print(buffer);
 		seprintf(buffer, lastof(buffer), "  remove_rating_decrease: %u", hs->remove_rating_decrease);
 		print(buffer);
+		seprintf(buffer, lastof(buffer), "  population: %u, mail_generation: %u", hs->population, hs->mail_generation);
+		print(buffer);
 		seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", hs->animation.frames, hs->animation.status, hs->animation.speed, hs->animation.triggers);
 		print(buffer);
 	}
