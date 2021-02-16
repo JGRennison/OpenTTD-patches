@@ -54,7 +54,9 @@ struct BaseVehicleListWindow : public Window {
 	};
 
 	GroupBy grouping;                         ///< How we want to group the list.
+protected:
 	VehicleList vehicles;                     ///< List of vehicles.  This is the buffer for `vehgroups` to point into; if this is structurally modified, `vehgroups` must be rebuilt.
+public:
 	uint own_vehicles = 0;                    ///< Count of vehicles of the local company
 	CompanyID own_company;                    ///< Company ID used for own_vehicles
 	GUIVehicleGroupList vehgroups;            ///< List of (groups of) vehicles.  This stores iterators of `vehicles`, and should be rebuilt if `vehicles` is structurally changed.

@@ -2540,12 +2540,30 @@ void DirtyVehicleListWindowForVehicle(const Vehicle *v)
 	FOR_ALL_WINDOWS_FROM_BACK(w) {
 		if (w->window_class == cls || w->window_class == cls2) {
 			BaseVehicleListWindow *listwin = static_cast<BaseVehicleListWindow *>(w);
-			uint max = std::min<uint>(listwin->vscroll->GetPosition() + listwin->vscroll->GetCapacity(), (uint)listwin->vehicles.size());
-			for (uint i = listwin->vscroll->GetPosition(); i < max; ++i) {
-				if (v == listwin->vehicles[i]) {
-					listwin->SetWidgetDirty(0);
+			uint max = std::min<uint>(listwin->vscroll->GetPosition() + listwin->vscroll->GetCapacity(), (uint)listwin->vehgroups.size());
+			switch (listwin->grouping) {
+				case BaseVehicleListWindow::GB_NONE:
+					for (uint i = listwin->vscroll->GetPosition(); i < max; ++i) {
+						if (v == listwin->vehgroups[i].vehicles_begin[0]) {
+							listwin->SetWidgetDirty(0);
+							break;
+						}
+					}
+					break;
+
+				case BaseVehicleListWindow::GB_SHARED_ORDERS: {
+					const Vehicle *v_first_shared = v->FirstShared();
+					for (uint i = listwin->vscroll->GetPosition(); i < max; ++i) {
+						if (v_first_shared == listwin->vehgroups[i].vehicles_begin[0]->FirstShared()) {
+							listwin->SetWidgetDirty(0);
+							break;
+						}
+					}
 					break;
 				}
+
+				default:
+					NOT_REACHED();
 			}
 		}
 	}
