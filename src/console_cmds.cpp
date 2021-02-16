@@ -2620,6 +2620,12 @@ DEF_CONSOLE_CMD(ConViewportDebug)
 {
 	if (argc < 1 || argc > 2) {
 		IConsoleHelp("Debug: viewports flags.  Usage: 'viewport_debug [<flags>]'");
+		IConsoleHelp("   1: VDF_DIRTY_BLOCK_PER_DRAW");
+		IConsoleHelp("   2: VDF_DIRTY_WHOLE_VIEWPORT");
+		IConsoleHelp("   4: VDF_DIRTY_BLOCK_PER_SPLIT");
+		IConsoleHelp("   8: VDF_DISABLE_DRAW_SPLIT");
+		IConsoleHelp("  10: VDF_SHOW_NO_LANDSCAPE_MAP_DRAW");
+		IConsoleHelp("  20: VDF_DISABLE_LANDSCAPE_CACHE");
 		return true;
 	}
 
@@ -2678,6 +2684,9 @@ DEF_CONSOLE_CMD(ConGfxDebug)
 {
 	if (argc < 1 || argc > 2) {
 		IConsoleHelp("Debug: gfx flags.  Usage: 'gfx_debug [<flags>]'");
+		IConsoleHelp("  1: GDF_SHOW_WINDOW_DIRTY");
+		IConsoleHelp("  2: GDF_SHOW_WIDGET_DIRTY");
+		IConsoleHelp("  4: GDF_SHOW_RECT_DIRTY");
 		return true;
 	}
 
