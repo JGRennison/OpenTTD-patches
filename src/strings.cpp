@@ -185,6 +185,8 @@ static char *FormatString(char *buff, const char *str, StringParameters *args, c
 
 struct LanguagePack : public LanguagePackHeader {
 	char data[]; // list of strings
+
+	inline void operator delete(void *ptr) { ::operator delete (ptr); }
 };
 
 struct LoadedLanguagePack {
