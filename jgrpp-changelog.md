@@ -2,6 +2,26 @@
 
 * * *
 
+### v0.40.2 (2021-02-17)
+* Fix upgrading road bridge with opposite road/tram type producing broken bridge ramps where required road/tram pieces are missing.
+* Fix crash if AI attempts to set order flags of invalid vehicle's order and the no non-stop orders setting is enabled.
+* Fix case where reservations could become detached from trains when a restricted signal returns inconsistent reserve through results in the realistic braking model.
+* Fix trains slowing down too much when stopping at stations in the original braking model.
+* Fix train speed not being set to 0 for timetabled wait at waypoint orders.
+* Fix departure boards not handling unconditional order jumps.
+* Fix viewport order lines not handling unconditional jump orders.
+* Fix autorenew failure advice due to bad refit being shown to all companies.
+* Add conditional order for current time/date.
+* Add release slot train order.
+* Add "indifferent" mode to the town council attitude to area restructuring setting.
+* Show warning icon in order window if there are timetable warnings.
+* If realistic braking can't be enabled, show an extra viewport on the signal preventing enabling.
+* Routing restrictions:
+  * Add PBS end signal conditional for use with realistic braking.
+  * Add reserved tiles ahead conditional for use with realistic braking.
+  * Change PBS entry signal conditional to be in the advanced category in the UI.
+* Fix building on Apple MacOS 10.12.
+
 ### v0.40.1 (2021-02-05)
 * Fix crash when removing signals from bridge or tunnel.
 * Fix left mouse button scrolling in viewport map mode.
