@@ -1249,6 +1249,8 @@ STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS                        :역이 같은 �
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS_HELPTEXT               :이미 존재하는 역을 직접 건드리지 않고도 역의 일부분을 새로 추가/확장하는 것을 허용합니다. 인접한 칸에 기존과 다른 새로운 역을 놓을 때에는 CTRL+클릭해야 합니다.
 STR_CONFIG_SETTING_INFLATION                                    :인플레이션(화폐 가치 하락) 사용: {STRING}
 STR_CONFIG_SETTING_INFLATION_HELPTEXT                           :경제에 인플레이션 효과를 적용합니다. 벌어들이는 수익보다 지출하는 경비가 조금 더 빨리 상승하게 됩니다.
+STR_CONFIG_SETTING_INFLATION_FIXED_DATES                        :인플레이션을 1920년부터 2090년까지 적용: {STRING}
+STR_CONFIG_SETTING_INFLATION_FIXED_DATES_HELPTEXT               :이 설정을 켜면, OpenTTD 1.11 부터 사용되는 인플레이션 모델을 적용해서, 게임 시작 연도에 관계없이 인플레이션이 항상 1920년부터 2090년까지 적용됩니다. 이 설정을 끄면, OpenTTD 1.10 이전까지 사용하던 인플레이션 모델을 적용해서, 인플레이션이 게임 시작 날짜부터 시작해서 170년 동안 적용됩니다.
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH                            :다리의 최대 건설 길이: {STRING}
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH_HELPTEXT                   :다리의 최대 길이를 제한할 수 있습니다.
 STR_CONFIG_SETTING_MAX_BRIDGE_HEIGHT                            :최대 다리 건설 높이: {STRING}
@@ -1408,6 +1410,12 @@ STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREYSCALE                  :흑백
 
 STR_CONFIG_SETTING_DISABLE_VEHICLE_IMAGE_UPDATE                 :차량 이미지 업데이트 비활성화: {STRING}
 STR_CONFIG_SETTING_DISABLE_VEHICLE_IMAGE_UPDATE_HELPTEXT        :이 설정을 켜면, NewGRF 차량이 움직임에 따라 그래픽을 지속적으로 업데이트하는 것을 방지합니다. 이 설정을 통해 계산에 부하가 많이 걸리는 NewGRF를 많이 사용했을 때 성능 문제가 발생하는 것을 방지할 수 있습니다.
+
+STR_CONFIG_SETTING_VEHICLE_NAMES                                :차량 이름: {STRING}
+STR_CONFIG_SETTING_VEHICLE_NAMES_HELPTEXT                       :기본적으로 사용할 차량 이름입니다. 직접 이름을 지정한 차량에는 적용되지 않습니다.
+STR_CONFIG_SETTING_VEHICLE_NAMES_TRADITIONAL                    :이전 방식
+STR_CONFIG_SETTING_VEHICLE_NAMES_MODERN                         :현재 방식
+STR_CONFIG_SETTING_VEHICLE_NAMES_LONG                           :긴 이름
 
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :고급 다리/터널 신호기 활성화: {STRING}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :다리와 터널 위 신호기 시뮬레이션 고급 모드를 활성화합니다. 이 설정을 끄면, 고급 모드에 있지 않은 다리와 터널을 고급 모드로 변경할 수 없지만 다른 플레이어는 이 설정을 켜서 고급 모드를 사용할 수 있습니다.
@@ -2766,6 +2774,9 @@ STR_TRACE_RESTRICT_VARIABLE_LOAD_PERCENT                        :적재율
 STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION                     :진입 방향
 STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL                    :경로 신호기
 STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG               :통과한 경로 신호기
+STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL                  :끝 경로 신호기
+STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG             :현재 예약된 경로의 끝에 있는 신호기
+STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG_WARN        :현재 예약된 경로의 끝에 있는 신호기 {PUSH_COLOUR}{RED}(현실적인 감속을 켜야 함){POP_COLOUR}
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP                         :열차 그룹
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :열차 슬롯
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY                      :슬롯 사용량
@@ -2774,6 +2785,7 @@ STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT                :사용량
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING_SHORT      :남은 수용량
 STR_TRACE_RESTRICT_VARIABLE_COUNTER_VALUE                       :카운터 값
 STR_TRACE_RESTRICT_VARIABLE_TIME_DATE_VALUE                     :현재 시각/날짜
+STR_TRACE_RESTRICT_VARIABLE_RESERVED_TILES_AHEAD                :전방에 예약된 칸 개수
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_WEIGHT                        :무게
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_POWER                         :힘
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE                        :최고 견인력
@@ -4877,6 +4889,7 @@ STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :{G=m}열차 슬
 STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :{G=m}화물 적재율
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :{G=m}화물 대기량
 STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :{G=m}카운터 값
+STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :{G=f}현재 시각/날짜
 
 STR_ORDER_CONDITIONAL_REQUIRES_SERVICE_ORDER                    :서비스 {STRING}가 필요함
 STR_ORDER_CONDITIONAL_CARGO_WAITING_ORDER                       :다음 역 {STRING} {STRING} 대기 중
@@ -4897,10 +4910,11 @@ STR_ORDER_CONDITIONAL_COMPARATOR_IS_TRUE                        :있을 때
 STR_ORDER_CONDITIONAL_COMPARATOR_IS_FALSE                       :없을 때
 
 STR_ORDER_CONDITIONAL_VALUE_TOOLTIP                             :{BLACK}비교 조건에 대한 입력값입니다
-STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}화물에 대한 입력값입니다.
-STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}점유되었는지 확인할 슬롯입니다.
-STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP                           :{BLACK}비교하려는 카운터입니다
-STR_ORDER_CONDITIONAL_VALUE_CAPT                                :{WHITE}비교할 값을 입력하세요
+STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}비교할 화물을 선택하세요
+STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}점유되었는지 확인할 슬롯을 선택하세요
+STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP                           :{BLACK}비교하려는 카운터를 선택하세요
+STR_ORDER_CONDITIONAL_VALUE_CAPT                                :{WHITE}비교할 값을 선택하세요
+STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP                         :{BLACK}비교할 현재 시각/날짜를 선택하세요
 
 STR_ORDER_CONDITIONAL_VIA                                       :{BLACK}경유
 STR_ORDER_CONDITIONAL_VIA_TOOLTIP                               :{BLACK}대기 화물량을 확인할 경유 역을 선택하세요
@@ -4939,7 +4953,10 @@ STR_ORDER_GO_TO_NEAREST_DEPOT                                   :가까운 차�
 STR_ORDER_GO_TO_NEAREST_HANGAR                                  :가까운 격납고로
 STR_ORDER_CONDITIONAL                                           :조건부 경로 건너뛰기
 STR_ORDER_SHARE                                                 :경로 공유하기
+STR_ORDER_RELEASE_SLOT_BUTTON                                   :슬롯 해제
 STR_ORDERS_GO_TO_TOOLTIP                                        :{BLACK}선택된 경로 바로 전이나 목록 맨 끝에 새 경로를 삽입합니다. CTRL 키와 함께 누르면, 역에서는 '아무 화물이나 가득 싣기'로, 경유지에서는 '직행'으로, 차량기지에서는 '점검'으로 지정됩니다. '공유된 경로'를 클릭하거나 CTRL 키를 누르면 선택했던 차량과 이 차량의 경로를 공유하게 됩니다. 단순히 클릭하면 그 차량의 경로를 복사하기만 합니다. 차량기지를 경로에 포함시키면 이 차량은 자동 정비를 할 수 없게 됩니다
+
+STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}해제할 슬롯을 선택하세요
 
 STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP                  :{BLACK}이 경로를 공유하고 있는 모든 차량을 표시합니다.
 
@@ -5046,6 +5063,9 @@ STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :[조건 경로]
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :[조건 경로] {COMMA}번 경로로 건너뛰기 (다음 역에 있는 {2:STATION} 경유 {1:STRING} {3:STRING} {4:CARGO_SHORT}일 때)
 STR_ORDER_CONDITIONAL_COUNTER                                   :[조건 경로] {COMMA}번 경로로 건너뛰기 ({TRCOUNTER}의 값 {STRING} {COMMA}일 때)
 STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :[조건 경로] {COMMA}번 경로로 건너뛰기 ({PUSH_COLOUR}{RED}{STRING}{POP_COLOUR}의 값 {STRING} {COMMA}일 때)
+STR_ORDER_CONDITIONAL_TIME_HHMM                                 :[조건 경로] {COMMA}번 경로로 건너뛰기 ({STRING} {STRING} {TIME_HHMM}일 때)
+
+STR_ORDER_RELEASE_SLOT                                          :슬롯 해제: {STRING}
 
 STR_INVALID_ORDER                                               :{RED} (잘못된 행선지)
 
@@ -6174,6 +6194,8 @@ STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} {COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{TOWN} {STRING}
 STR_FORMAT_WAYPOINT_NAME                                        :{TOWN} 경유지
 STR_FORMAT_WAYPOINT_NAME_SERIAL                                 :{TOWN} 경유지 #{COMMA}
+
+STR_FORMAT_GROUP_VEHICLE_NAME_LONG                              :{GROUP} - {STRING}
 
 STR_FORMAT_DEPOT_NAME_TRAIN                                     :{TOWN} 차량기지
 STR_FORMAT_DEPOT_NAME_TRAIN_SERIAL                              :{TOWN} 차량기지 #{COMMA}
