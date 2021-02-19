@@ -668,18 +668,14 @@ compatible_grf:
 
 /** Helper for scanning for files with GRF as extension */
 class GRFFileScanner : FileScanner {
-	uint next_update; ///< The next (realtime tick) we do update the screen.
+	std::chrono::steady_clock::time_point next_update; ///< The next moment we do update the screen.
 	uint num_scanned; ///< The number of GRFs we have scanned.
 	std::vector<GRFConfig *> grfs;
 
 public:
 	GRFFileScanner() : num_scanned(0)
 	{
-#if defined(__GNUC__) || defined(__clang__)
-		this->next_update = __atomic_load_n(&_realtime_tick, __ATOMIC_RELAXED);
-#else
-		this->next_update = _realtime_tick;
-#endif
+		this->next_update = std::chrono::steady_clock::now();
 	}
 
 	bool AddFile(const std::string &filename, size_t basepath_length, const std::string &tar_filename) override;
@@ -740,12 +736,10 @@ bool GRFFileScanner::AddFile(const std::string &filename, size_t basepath_length
 	}
 
 	this->num_scanned++;
-#if defined(__GNUC__) || defined(__clang__)
-	const uint32 now = __atomic_load_n(&_realtime_tick, __ATOMIC_RELAXED);
-#else
-	const uint32 now = _realtime_tick;
-#endif
-	if (this->next_update <= now) {
+	const auto now = std::chrono::steady_clock::now();
+	if (now >= this->next_update) {
+		this->next_update = now + std::chrono::milliseconds(MODAL_PROGRESS_REDRAW_TIMEOUT);
+
 		_modal_progress_work_mutex.unlock();
 		_modal_progress_paint_mutex.lock();
 
@@ -756,8 +750,6 @@ bool GRFFileScanner::AddFile(const std::string &filename, size_t basepath_length
 
 		_modal_progress_work_mutex.lock();
 		_modal_progress_paint_mutex.unlock();
-
-		this->next_update = now + MODAL_PROGRESS_REDRAW_TIMEOUT;
 	}
 
 	if (!added) {
