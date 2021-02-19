@@ -1017,8 +1017,6 @@ STR_GAME_OPTIONS_CURRENCY_HKD                                   :Hongkongský do
 STR_GAME_OPTIONS_CURRENCY_INR                                   :Indická rupia (INR)
 ############ end of currency region
 
-STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Cestné vozidlá
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Výber strany, po ktorej jazdia cestné vozidlá
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Jazdia naľavo
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Jazdia napravo
 
@@ -1073,6 +1071,7 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :iné
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Veľkosť rozhrania
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Výber veľkosti prvkov rozhrania
 
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(automaticky zistené)
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normálna
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dvojnásobná veľkosť
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Štvornásobná veľkosť
@@ -1080,6 +1079,7 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Štvornásobná
 STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Veľkosť písma
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Výber veľkosti písma v rozhraní
 
+STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(automaticky zistené)
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normálna
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Dvojnásobná veľkosť
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Štvornásobná veľkosť
@@ -2646,7 +2646,7 @@ STR_FOUND_TOWN_NEW_TOWN_TOOLTIP                                 :{BLACK}Založi�
 STR_FOUND_TOWN_RANDOM_TOWN_BUTTON                               :{BLACK}Nahodné mesto
 STR_FOUND_TOWN_RANDOM_TOWN_TOOLTIP                              :{BLACK}Postaviť mesto na náhodnej pozícii
 STR_FOUND_TOWN_MANY_RANDOM_TOWNS                                :{BLACK}Veľa náhodných miest
-STR_FOUND_TOWN_RANDOM_TOWNS_TOOLTIP                             :{BLACK}Pokryt mapu nahodne umiestnenymi mestami
+STR_FOUND_TOWN_RANDOM_TOWNS_TOOLTIP                             :{BLACK}Pokryť mapu náhodne umiestnenými mestami
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}Meno mesta:
 STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}Vložte meno mesta
@@ -2674,12 +2674,18 @@ STR_FOUND_TOWN_SELECT_LAYOUT_RANDOM                             :{BLACK}Náhodn�
 # Fund new industry window
 STR_FUND_INDUSTRY_CAPTION                                       :{WHITE}Financovať nový priemysel
 STR_FUND_INDUSTRY_SELECTION_TOOLTIP                             :{BLACK}Vyberte vhodný typ priemyslu zo zoznamu
-STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES                        :Veľa náhodného priemyslu
-STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES_TOOLTIP                :{BLACK}Pokryt mapu nahodne umiestnenym priemyslom
+STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES                        :{BLACK}Vytvoriť náhodný priemysel
+STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES_TOOLTIP                :{BLACK}Pokryť mapu náhodne umiestneným priemyslom
+STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES_CAPTION                :{WHITE}Vytvoriť náhodný priemysel
+STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES_QUERY                  :{YELLOW}Ste si istý, že chcete vytvoriť veľké množstvo náhodného priemyslu?
 STR_FUND_INDUSTRY_INDUSTRY_BUILD_COST                           :{BLACK}Cena: {YELLOW}{CURRENCY_LONG}
 STR_FUND_INDUSTRY_PROSPECT_NEW_INDUSTRY                         :{BLACK}Vyhladat
-STR_FUND_INDUSTRY_BUILD_NEW_INDUSTRY                            :{BLACK}Postavit
-STR_FUND_INDUSTRY_FUND_NEW_INDUSTRY                             :{BLACK}Založit
+STR_FUND_INDUSTRY_BUILD_NEW_INDUSTRY                            :{BLACK}Postaviť
+STR_FUND_INDUSTRY_FUND_NEW_INDUSTRY                             :{BLACK}Založiť
+STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES                         :{BLACK}Odstrániť všetok priemysel
+STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES_TOOLTIP                 :{BLACK}Odstrániť všetok priemysel umiestnený na mape
+STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES_CAPTION                 :{WHITE}Odstrániť všetok priemysel
+STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES_QUERY                   :{YELLOW}Ste si istý, že chcete odstrániť všetok priemysel?
 
 # Industry cargoes window
 STR_INDUSTRY_CARGOES_INDUSTRY_CAPTION                           :{WHITE}Reťazec pre priemysel: {STRING}
@@ -2892,7 +2898,7 @@ STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}Uložiť
 STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Nahrať scenár
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Nahrať výškovú mapu
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Uložiť Výškovú mapu
-STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Kliknutim sem sa presuniete do sucasneho vychodzieho adresara pre ukladanie
+STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Kliknutím sem sa presuniete do súčasného predvoleného priečinku pre ukladanie
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} voľných
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Zoznam diskov, adresárov a súborov s uloženou hrou
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}Vybraný názov pre uloženie hry
@@ -2910,6 +2916,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF:
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Filtrovací reťazec:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Prepísanie súboru
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Ste si istý, že chcete prepísať existujúci súbor?
+STR_SAVELOAD_DIRECTORY                                          :{STRING} (Priečinok)
+STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (Nadradený priečinok)
 
 STR_SAVELOAD_OSKTITLE                                           :{BLACK}Zadajte názov pre uloženie hry
 
@@ -2928,7 +2936,6 @@ STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Výška 
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Zvýšiť výšku hranice snehu o jedno
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Znížiť výšku hranice snehu o jedno
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Generátor krajiny:
-STR_MAPGEN_TREE_PLACER                                          :{BLACK}Generátor stromov:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Typ terénu:
 STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Rozloha mora:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Rieky:
@@ -4445,11 +4452,11 @@ STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... v ce
 
 # Industry related errors
 STR_ERROR_TOO_MANY_INDUSTRIES                                   :{WHITE}... príliš veľa priemyslu
-STR_ERROR_CAN_T_GENERATE_INDUSTRIES                             :{WHITE}Nemozno vygenerovat priemysel ...
+STR_ERROR_CAN_T_GENERATE_INDUSTRIES                             :{WHITE}Nemožno vygenerovať priemysel...
 STR_ERROR_CAN_T_BUILD_HERE                                      :{WHITE}{STRING} sa tu nedá postaviť...
 STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY                         :{WHITE}Nemôžeš tu postaviť tento typ priemyslu...
 STR_ERROR_INDUSTRY_TOO_CLOSE                                    :{WHITE}... príliš blízko iného priemyslu
-STR_ERROR_MUST_FOUND_TOWN_FIRST                                 :{WHITE}... najskor treba postavit mesto...
+STR_ERROR_MUST_FOUND_TOWN_FIRST                                 :{WHITE}... najskôr je potrebné založiť mesto
 STR_ERROR_ONLY_ONE_ALLOWED_PER_TOWN                             :{WHITE}... povolené len jedno pre 1mesto
 STR_ERROR_CAN_ONLY_BE_BUILT_IN_TOWNS_WITH_POPULATION_OF_1200    :{WHITE}... môže byť postavené v mestách z populáciou väčšou ako 1200
 STR_ERROR_CAN_ONLY_BE_BUILT_IN_RAINFOREST                       :{WHITE}... môže byť postavené len v dažďovom pralese

@@ -925,6 +925,7 @@ int openttd_main(int argc, char *argv[])
 
 	/* Initialize the zoom level of the screen to normal */
 	_screen.zoom = ZOOM_LVL_NORMAL;
+	UpdateGUIZoom();
 
 	NetworkStartUp(); // initialize network-core
 
@@ -1931,7 +1932,6 @@ void GameLoop()
 	if (_game_mode == GM_BOOTSTRAP) {
 		/* Check for UDP stuff */
 		if (_network_available) NetworkBackgroundLoop();
-		InputLoop();
 		return;
 	}
 
@@ -1963,8 +1963,6 @@ void GameLoop()
 		/* Singleplayer */
 		StateGameLoop();
 	}
-
-	InputLoop();
 
 	SoundDriver::GetInstance()->MainLoop();
 	MusicLoop();

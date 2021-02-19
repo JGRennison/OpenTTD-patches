@@ -164,7 +164,7 @@ add_files(
     fios_gui.cpp
     fontcache.cpp
     fontcache.h
-    fontdetection.cpp
+    fontcache_internal.h
     fontdetection.h
     framerate_gui.cpp
     framerate_type.h

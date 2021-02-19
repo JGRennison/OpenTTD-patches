@@ -134,6 +134,15 @@ const char *GetLogPrefix();
 /** The real time in the game. */
 extern uint32 _realtime_tick;
 
+inline void IncreaseRealtimeTick(uint32 increase)
+{
+#if defined(__GNUC__) || defined(__clang__)
+	__atomic_add_fetch(&_realtime_tick, increase, __ATOMIC_RELAXED);
+#else
+	_realtime_tick += increase;
+#endif
+}
+
 void ClearDesyncMsgLog();
 void LogDesyncMsg(std::string msg);
 char *DumpDesyncMsgLog(char *buffer, const char *last);

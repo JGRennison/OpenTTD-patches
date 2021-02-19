@@ -62,9 +62,10 @@ private:
 	 */
 	bool edit_box_focused;
 
-	uint32 cur_ticks;
-	uint32 last_cur_ticks;
-	uint32 next_tick;
+	std::chrono::steady_clock::time_point cur_ticks;
+	std::chrono::steady_clock::time_point last_realtime_tick;
+	std::chrono::steady_clock::time_point next_game_tick;
+	std::chrono::steady_clock::time_point next_draw_tick;
 
 	int startup_display;
 	std::thread draw_thread;

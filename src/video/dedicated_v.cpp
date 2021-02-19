@@ -21,6 +21,7 @@
 #include "../core/random_func.hpp"
 #include "../saveload/saveload.h"
 #include "../thread.h"
+#include "../window_func.h"
 #include "dedicated_v.h"
 
 #ifdef __OS2__
@@ -195,24 +196,11 @@ static bool InputWaiting()
 	return select(STDIN + 1, &readfds, nullptr, nullptr, &tv) > 0;
 }
 
-static uint32 GetTime()
-{
-	struct timeval tim;
-
-	gettimeofday(&tim, nullptr);
-	return tim.tv_usec / 1000 + tim.tv_sec * 1000;
-}
-
 #else
 
 static bool InputWaiting()
 {
 	return WaitForSingleObject(_hInputReady, 1) == WAIT_OBJECT_0;
-}
-
-static uint32 GetTime()
-{
-	return GetTickCount();
 }
 
 #endif
@@ -248,8 +236,9 @@ static void DedicatedHandleKeyInput()
 
 void VideoDriver_Dedicated::MainLoop()
 {
-	uint32 cur_ticks = GetTime();
-	uint32 next_tick = cur_ticks + MILLISECONDS_PER_TICK;
+	auto cur_ticks = std::chrono::steady_clock::now();
+	auto last_realtime_tick = cur_ticks;
+	auto next_game_tick = cur_ticks;
 
 	/* Signal handlers */
 #if defined(UNIX)
@@ -290,18 +279,31 @@ void VideoDriver_Dedicated::MainLoop()
 	}
 
 	while (!_exit_game) {
-		uint32 prev_cur_ticks = cur_ticks; // to check for wrapping
 		InteractiveRandom(); // randomness
 
 		if (!_dedicated_forks) DedicatedHandleKeyInput();
 
-		cur_ticks = GetTime();
-		_realtime_tick += cur_ticks - prev_cur_ticks;
-		if (cur_ticks >= next_tick || cur_ticks < prev_cur_ticks || _ddc_fastforward) {
-			next_tick = cur_ticks + MILLISECONDS_PER_TICK;
+		cur_ticks = std::chrono::steady_clock::now();
+
+		/* If more than a millisecond has passed, increase the _realtime_tick. */
+		if (cur_ticks - last_realtime_tick > std::chrono::milliseconds(1)) {
+			auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(cur_ticks - last_realtime_tick);
+			IncreaseRealtimeTick(delta.count());
+			last_realtime_tick += delta;
+		}
+
+		if (cur_ticks >= next_game_tick || _ddc_fastforward) {
+			if (_ddc_fastforward) {
+				next_game_tick = cur_ticks + this->GetGameInterval();
+			} else {
+				next_game_tick += this->GetGameInterval();
+				/* Avoid next_game_tick getting behind more and more if it cannot keep up. */
+				if (next_game_tick < cur_ticks - ALLOWED_DRIFT * this->GetGameInterval()) next_game_tick = cur_ticks;
+			}
 
 			GameLoop();
 			GameLoopPaletteAnimations();
+			InputLoop();
 			UpdateWindows();
 		}
 
@@ -310,9 +312,14 @@ void VideoDriver_Dedicated::MainLoop()
 			/* Sleep longer on a dedicated server, if the game is paused and no clients connected.
 			 * That can allow the CPU to better use deep sleep states. */
 			if (_pause_mode != 0 && !HasClients()) {
-				CSleep(100);
+				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			} else {
-				CSleep(1);
+				/* See how much time there is till we have to process the next event, and try to hit that as close as possible. */
+				auto now = std::chrono::steady_clock::now();
+
+				if (next_game_tick > now) {
+					std::this_thread::sleep_for(next_game_tick - now);
+				}
 			}
 		}
 	}

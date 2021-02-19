@@ -80,6 +80,7 @@ void UpdateWindows();
 void DrawMouseCursor();
 void ScreenSizeChanged();
 void GameSizeChanged();
+void UpdateGUIZoom();
 void UndrawMouseCursor();
 
 /** Size of the buffer used for drawing strings. */

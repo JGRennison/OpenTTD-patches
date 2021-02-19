@@ -21,6 +21,7 @@
 #include "../core/math_func.hpp"
 #include "../fileio_func.h"
 #include "../framerate_type.h"
+#include "../window_func.h"
 #include "sdl_v.h"
 #include <SDL.h>
 #include <mutex>
@@ -408,7 +409,7 @@ bool VideoDriver_SDL::ClaimMousePointer()
 	return true;
 }
 
-struct VkMapping {
+struct SDLVkMapping {
 #if SDL_VERSION_ATLEAST(1, 3, 0)
 	SDL_Keycode vk_from;
 #else
@@ -421,7 +422,7 @@ struct VkMapping {
 #define AS(x, z) {x, 0, z}
 #define AM(x, y, z, w) {x, (byte)(y - x), z}
 
-static const VkMapping _vk_mapping[] = {
+static const SDLVkMapping _vk_mapping[] = {
 	/* Pageup stuff + up/down */
 	AM(SDLK_PAGEUP, SDLK_PAGEDOWN, WKC_PAGEUP, WKC_PAGEDOWN),
 	AS(SDLK_UP,     WKC_UP),
@@ -476,7 +477,7 @@ static const VkMapping _vk_mapping[] = {
 
 static uint ConvertSdlKeyIntoMy(SDL_keysym *sym, WChar *character)
 {
-	const VkMapping *map;
+	const SDLVkMapping *map;
 	uint key = 0;
 
 	for (map = _vk_mapping; map != endof(_vk_mapping); ++map) {
@@ -654,9 +655,10 @@ void VideoDriver_SDL::Stop()
 
 void VideoDriver_SDL::MainLoop()
 {
-	uint32 cur_ticks = SDL_GetTicks();
-	uint32 last_cur_ticks = cur_ticks;
-	uint32 next_tick = cur_ticks + MILLISECONDS_PER_TICK;
+	auto cur_ticks = std::chrono::steady_clock::now();
+	auto last_realtime_tick = cur_ticks;
+	auto next_game_tick = cur_ticks;
+	auto next_draw_tick = cur_ticks;
 	uint32 mod;
 	int numkeys;
 	Uint8 *keys;
@@ -696,7 +698,6 @@ void VideoDriver_SDL::MainLoop()
 	DEBUG(driver, 1, "SDL: using %sthreads", _draw_threaded ? "" : "no ");
 
 	for (;;) {
-		uint32 prev_cur_ticks = cur_ticks; // to check for wrapping
 		InteractiveRandom(); // randomness
 
 		while (PollEvent() == -1) {}
@@ -725,11 +726,37 @@ void VideoDriver_SDL::MainLoop()
 			_fast_forward = 0;
 		}
 
-		cur_ticks = SDL_GetTicks();
-		if (cur_ticks >= next_tick || (_fast_forward && !_pause_mode) || cur_ticks < prev_cur_ticks) {
-			_realtime_tick += cur_ticks - last_cur_ticks;
-			last_cur_ticks = cur_ticks;
-			next_tick = cur_ticks + MILLISECONDS_PER_TICK;
+		cur_ticks = std::chrono::steady_clock::now();
+
+		/* If more than a millisecond has passed, increase the _realtime_tick. */
+		if (cur_ticks - last_realtime_tick > std::chrono::milliseconds(1)) {
+			auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(cur_ticks - last_realtime_tick);
+			IncreaseRealtimeTick(delta.count());
+			last_realtime_tick += delta;
+		}
+
+		if (cur_ticks >= next_game_tick || (_fast_forward && !_pause_mode)) {
+			if (_fast_forward && !_pause_mode) {
+				next_game_tick = cur_ticks + this->GetGameInterval();
+			} else {
+				next_game_tick += this->GetGameInterval();
+				/* Avoid next_game_tick getting behind more and more if it cannot keep up. */
+				if (next_game_tick < cur_ticks - ALLOWED_DRIFT * this->GetGameInterval()) next_game_tick = cur_ticks;
+			}
+
+			/* The gameloop is the part that can run asynchronously. The rest
+			 * except sleeping can't. */
+			if (_draw_mutex != nullptr) draw_lock.unlock();
+			GameLoop();
+			if (_draw_mutex != nullptr) draw_lock.lock();
+			GameLoopPaletteAnimations();
+		}
+
+		/* Prevent drawing when switching mode, as windows can be removed when they should still appear. */
+		if (cur_ticks >= next_draw_tick && (_switch_mode == SM_NONE || HasModalProgress())) {
+			next_draw_tick += this->GetDrawInterval();
+			/* Avoid next_draw_tick getting behind more and more if it cannot keep up. */
+			if (next_draw_tick < cur_ticks - ALLOWED_DRIFT * this->GetDrawInterval()) next_draw_tick = cur_ticks;
 
 			bool old_ctrl_pressed = _ctrl_pressed;
 			bool old_shift_pressed = _shift_pressed;
@@ -753,35 +780,29 @@ void VideoDriver_SDL::MainLoop()
 			if (old_ctrl_pressed != _ctrl_pressed) HandleCtrlChanged();
 			if (old_shift_pressed != _shift_pressed) HandleShiftChanged();
 
-			/* The gameloop is the part that can run asynchronously. The rest
-			 * except sleeping can't. */
-			if (_draw_mutex != nullptr) draw_lock.unlock();
-
-			GameLoop();
-
-			if (_draw_mutex != nullptr) draw_lock.lock();
-
-			GameLoopPaletteAnimations();
-
+			InputLoop();
 			UpdateWindows();
 			_local_palette = _cur_palette;
-		} else {
-			/* Release the thread while sleeping */
-			if (_draw_mutex != nullptr) draw_lock.unlock();
-			CSleep(1);
-			if (_draw_mutex != nullptr) draw_lock.lock();
 
-			NetworkDrawChatMessage();
-			DrawMouseCursor();
+			if (_draw_mutex != nullptr && !HasModalProgress()) {
+				_draw_signal->notify_one();
+			} else {
+				CheckPaletteAnim();
+				DrawSurfaceToScreen();
+			}
 		}
 
-		/* End of the critical part. */
-		if (_draw_mutex != nullptr && !HasModalProgress()) {
-			_draw_signal->notify_one();
-		} else {
-			/* Oh, we didn't have threads, then just draw unthreaded */
-			CheckPaletteAnim();
-			DrawSurfaceToScreen();
+		/* If we are not in fast-forward, create some time between calls to ease up CPU usage. */
+		if (!_fast_forward || _pause_mode) {
+			/* See how much time there is till we have to process the next event, and try to hit that as close as possible. */
+			auto next_tick = std::min(next_draw_tick, next_game_tick);
+			auto now = std::chrono::steady_clock::now();
+
+			if (next_tick > now) {
+				if (_draw_mutex != nullptr) draw_lock.unlock();
+				std::this_thread::sleep_for(next_tick - now);
+				if (_draw_mutex != nullptr) draw_lock.lock();
+			}
 		}
 	}
 

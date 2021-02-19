@@ -17,6 +17,8 @@
 #include "../progress.h"
 #include "../core/random_func.hpp"
 #include "../core/math_func.hpp"
+#include "../core/mem_func.hpp"
+#include "../core/geometry_func.hpp"
 #include "../fileio_func.h"
 #include "../framerate_type.h"
 #include "../scope.h"
@@ -69,13 +71,7 @@ static SDL_Palette *_sdl_palette;
 static bool _cursor_new_in_window = false;
 #endif
 
-#define MAX_DIRTY_RECTS 100
-static SDL_Rect _dirty_rects[MAX_DIRTY_RECTS];
-static int _num_dirty_rects;
-
-/* Size of window */
-static int _window_size_w;
-static int _window_size_h;
+static Rect _dirty_rect;
 
 static std::string _editing_text;
 
@@ -85,6 +81,7 @@ Point GetFocusedWindowCaret();
 Point GetFocusedWindowTopLeft();
 bool FocusedWindowIsConsole();
 bool EditBoxInGlobalFocus();
+void InputLoop();
 
 #if defined(WITH_FCITX)
 static bool _fcitx_mode = false;
@@ -277,13 +274,8 @@ const static bool _suppress_text_event = false;
 
 void VideoDriver_SDL::MakeDirty(int left, int top, int width, int height)
 {
-	if (_num_dirty_rects < MAX_DIRTY_RECTS) {
-		_dirty_rects[_num_dirty_rects].x = left;
-		_dirty_rects[_num_dirty_rects].y = top;
-		_dirty_rects[_num_dirty_rects].w = width;
-		_dirty_rects[_num_dirty_rects].h = height;
-	}
-	_num_dirty_rects++;
+	Rect r = {left, top, left + width, top + height};
+	_dirty_rect = BoundingRect(_dirty_rect, r);
 }
 
 static void UpdatePalette()
@@ -308,6 +300,8 @@ static void MakePalette()
 		if (_sdl_palette == nullptr) usererror("SDL2: Couldn't allocate palette: %s", SDL_GetError());
 	}
 
+	_cur_palette.first_dirty = 0;
+	_cur_palette.count_dirty = 256;
 	_local_palette = _cur_palette;
 	UpdatePalette();
 
@@ -344,11 +338,11 @@ void VideoDriver_SDL::CheckPaletteAnim()
 	this->MakeDirty(0, 0, _screen.width, _screen.height);
 }
 
-static void DrawSurfaceToScreen()
+static void Paint()
 {
 	PerformanceMeasurer framerate(PFE_VIDEO);
 
-	if (_num_dirty_rects == 0) return;
+	if (IsEmptyRect(_dirty_rect) && _cur_palette.count_dirty == 0) return;
 
 	if (_cur_palette.count_dirty != 0) {
 		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
@@ -371,51 +365,17 @@ static void DrawSurfaceToScreen()
 		_cur_palette.count_dirty = 0;
 	}
 
-	int n = _num_dirty_rects;
-	if (n == 0) return;
+	SDL_Rect r = { _dirty_rect.left, _dirty_rect.top, _dirty_rect.right - _dirty_rect.left, _dirty_rect.bottom - _dirty_rect.top };
 
-	_num_dirty_rects = 0;
-
-	bool update_whole_screen = n > MAX_DIRTY_RECTS;
-
-	if (!update_whole_screen) {
-		int area = 0;
-		for (int i = 0; i < n; i++) {
-			area += _dirty_rects[i].w * _dirty_rects[i].h;
-		}
-		// Rectangles cover more than 80% of screen area, just do the whole screen
-		if ((area * 5) / 4 >= _sdl_surface->w * _sdl_surface->h) update_whole_screen = true;
+	if (_sdl_surface != _sdl_real_surface) {
+		SDL_BlitSurface(_sdl_surface, &r, _sdl_real_surface, &r);
 	}
+	SDL_UpdateWindowSurfaceRects(_sdl_window, &r, 1);
 
-	if (update_whole_screen) {
-		if (_sdl_surface != _sdl_real_surface) {
-			SDL_BlitSurface(_sdl_surface, nullptr, _sdl_real_surface, nullptr);
-		}
-
-		SDL_UpdateWindowSurface(_sdl_window);
-	} else {
-		if (_sdl_surface != _sdl_real_surface) {
-			for (int i = 0; i < _num_dirty_rects; i++) {
-				SDL_BlitSurface(_sdl_surface, &_dirty_rects[i], _sdl_real_surface, &_dirty_rects[i]);
-			}
-		}
-		SDL_Rect update_rect = { _sdl_surface->w, _sdl_surface->h, 0, 0 };
-		for (int i = 0; i < n; i++) {
-			if (_dirty_rects[i].x < update_rect.x) update_rect.x = _dirty_rects[i].x;
-			if (_dirty_rects[i].y < update_rect.y) update_rect.y = _dirty_rects[i].y;
-			if (_dirty_rects[i].x + _dirty_rects[i].w > update_rect.w) update_rect.w = _dirty_rects[i].x + _dirty_rects[i].w;
-			if (_dirty_rects[i].y + _dirty_rects[i].h > update_rect.h) update_rect.h = _dirty_rects[i].y + _dirty_rects[i].h;
-		}
-		update_rect.w -= update_rect.x;
-		update_rect.h -= update_rect.y;
-
-		SDL_UpdateWindowSurfaceRects(_sdl_window, &update_rect, 1);
-	}
-
-	_num_dirty_rects = 0;
+	MemSetT(&_dirty_rect, 0);
 }
 
-static void DrawSurfaceToScreenThread()
+static void PaintThread()
 {
 	/* First tell the main thread we're started */
 	std::unique_lock<std::recursive_mutex> lock(*_draw_mutex);
@@ -426,7 +386,7 @@ static void DrawSurfaceToScreenThread()
 
 	while (_draw_continue) {
 		/* Then just draw and wait till we stop */
-		DrawSurfaceToScreen();
+		Paint();
 		_draw_signal->wait(lock);
 	}
 }
@@ -591,8 +551,12 @@ bool VideoDriver_SDL::CreateMainSurface(uint w, uint h, bool resize)
 		_sdl_surface = _sdl_real_surface;
 	}
 
-	/* Delay drawing for this cycle; the next cycle will redraw the whole screen */
-	_num_dirty_rects = 0;
+	/* X11 doesn't appreciate it if we invalidate areas outside the window
+	 * if shared memory is enabled (read: it crashes). So, as we might have
+	 * gotten smaller, reset our dirty rects. GameSizeChanged() a bit lower
+	 * will mark the whole screen dirty again anyway, but this time with the
+	 * new dimensions. */
+	MemSetT(&_dirty_rect, 0);
 
 	_screen.width = _sdl_surface->w;
 	_screen.height = _sdl_surface->h;
@@ -699,7 +663,7 @@ void VideoDriver_SDL::EditBoxLostFocus()
 	HandleTextInput(nullptr, true);
 }
 
-struct VkMapping {
+struct SDLVkMapping {
 	SDL_Keycode vk_from;
 	byte vk_count;
 	byte map_to;
@@ -711,7 +675,7 @@ struct VkMapping {
 #define AS_UP(x, z) {x, 0, z, true}
 #define AM_UP(x, y, z, w) {x, (byte)(y - x), z, true}
 
-static const VkMapping _vk_mapping[] = {
+static const SDLVkMapping _vk_mapping[] = {
 	/* Pageup stuff + up/down */
 	AS_UP(SDLK_PAGEUP,   WKC_PAGEUP),
 	AS_UP(SDLK_PAGEDOWN, WKC_PAGEDOWN),
@@ -767,7 +731,7 @@ static const VkMapping _vk_mapping[] = {
 
 static uint ConvertSdlKeyIntoMy(SDL_Keysym *sym, WChar *character)
 {
-	const VkMapping *map;
+	const SDLVkMapping *map;
 	uint key = 0;
 	bool unprintable = false;
 
@@ -807,7 +771,7 @@ static uint ConvertSdlKeyIntoMy(SDL_Keysym *sym, WChar *character)
  */
 static uint ConvertSdlKeycodeIntoMy(SDL_Keycode kc)
 {
-	const VkMapping *map;
+	const SDLVkMapping *map;
 	uint key = 0;
 
 	for (map = _vk_mapping; map != endof(_vk_mapping); ++map) {
@@ -818,7 +782,7 @@ static uint ConvertSdlKeycodeIntoMy(SDL_Keycode kc)
 	}
 
 	/* check scancode for BACKQUOTE key, because we want the key left
-	   of "1", not anything else (on non-US keyboards) */
+	 * of "1", not anything else (on non-US keyboards) */
 	SDL_Scancode sc = SDL_GetScancodeFromKey(kc);
 	if (sc == SDL_SCANCODE_GRAVE) key = WKC_BACKQUOTE;
 
@@ -839,10 +803,10 @@ int VideoDriver_SDL::PollEvent()
 #ifdef __EMSCRIPTEN__
 			if (_cursor_new_in_window) {
 				/* The cursor just moved into the window; this means we don't
-				* know the absolutely position yet to move relative from.
-				* Before this time, SDL didn't know it either, and this is
-				* why we postpone it till now. Update the absolute position
-				* for this once, and work relative after. */
+				 * know the absolutely position yet to move relative from.
+				 * Before this time, SDL didn't know it either, and this is
+				 * why we postpone it till now. Update the absolute position
+				 * for this once, and work relative after. */
 				_cursor.pos.x = ev.motion.x;
 				_cursor.pos.y = ev.motion.y;
 				_cursor.dirty = true;
@@ -1062,6 +1026,17 @@ const char *VideoDriver_SDL::Start(const StringList &parm)
 	MarkWholeScreenDirty();
 
 	_draw_threaded = !GetDriverParamBool(parm, "no_threads") && !GetDriverParamBool(parm, "no_thread");
+	/* Wayland SDL video driver uses EGL to render the game. SDL created the
+	 * EGL context from the main-thread, and with EGL you are not allowed to
+	 * draw in another thread than the context was created. The function of
+	 * _draw_threaded is to do exactly this: draw in another thread than the
+	 * window was created, and as such, this fails on Wayland SDL video
+	 * driver. So, we disable threading by default if Wayland SDL video
+	 * driver is detected.
+	 */
+	if (strcmp(dname, "wayland") == 0) {
+		_draw_threaded = false;
+	}
 
 	SDL_StopTextInput();
 	this->edit_box_focused = false;
@@ -1089,7 +1064,6 @@ void VideoDriver_SDL::LoopOnce()
 	uint32 mod;
 	int numkeys;
 	const Uint8 *keys;
-	uint32 prev_cur_ticks = cur_ticks; // to check for wrapping
 	InteractiveRandom(); // randomness
 
 	while (PollEvent() == -1) {}
@@ -1123,11 +1097,37 @@ void VideoDriver_SDL::LoopOnce()
 		_fast_forward = 0;
 	}
 
-	cur_ticks = SDL_GetTicks();
-	if (SDL_TICKS_PASSED(cur_ticks, next_tick) || (_fast_forward && !_pause_mode) || cur_ticks < prev_cur_ticks) {
-		_realtime_tick += cur_ticks - last_cur_ticks;
-		last_cur_ticks = cur_ticks;
-		next_tick = cur_ticks + MILLISECONDS_PER_TICK;
+	cur_ticks = std::chrono::steady_clock::now();
+
+	/* If more than a millisecond has passed, increase the _realtime_tick. */
+	if (cur_ticks - last_realtime_tick > std::chrono::milliseconds(1)) {
+		auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(cur_ticks - last_realtime_tick);
+		IncreaseRealtimeTick(delta.count());
+		last_realtime_tick += delta;
+	}
+
+	if (cur_ticks >= next_game_tick || (_fast_forward && !_pause_mode)) {
+		if (_fast_forward && !_pause_mode) {
+			next_game_tick = cur_ticks + this->GetGameInterval();
+		} else {
+			next_game_tick += this->GetGameInterval();
+			/* Avoid next_game_tick getting behind more and more if it cannot keep up. */
+			if (next_game_tick < cur_ticks - ALLOWED_DRIFT * this->GetGameInterval()) next_game_tick = cur_ticks;
+		}
+
+		/* The gameloop is the part that can run asynchronously. The rest
+		 * except sleeping can't. */
+		if (_draw_mutex != nullptr) draw_lock.unlock();
+		GameLoop();
+		if (_draw_mutex != nullptr) draw_lock.lock();
+		GameLoopPaletteAnimations();
+	}
+
+	/* Prevent drawing when switching mode, as windows can be removed when they should still appear. */
+	if (cur_ticks >= next_draw_tick && (_switch_mode == SM_NONE || HasModalProgress())) {
+		next_draw_tick += this->GetDrawInterval();
+		/* Avoid next_draw_tick getting behind more and more if it cannot keep up. */
+		if (next_draw_tick < cur_ticks - ALLOWED_DRIFT * this->GetDrawInterval()) next_draw_tick = cur_ticks;
 
 		bool old_ctrl_pressed = _ctrl_pressed;
 		bool old_shift_pressed = _shift_pressed;
@@ -1144,50 +1144,40 @@ void VideoDriver_SDL::LoopOnce()
 		if (old_ctrl_pressed != _ctrl_pressed) HandleCtrlChanged();
 		if (old_shift_pressed != _shift_pressed) HandleShiftChanged();
 
-		/* The gameloop is the part that can run asynchronously. The rest
-		 * except sleeping can't. */
-		if (_draw_mutex != nullptr) draw_lock.unlock();
-
-		GameLoop();
-
-		if (_draw_mutex != nullptr) draw_lock.lock();
-
-		GameLoopPaletteAnimations();
-
+		InputLoop();
 		UpdateWindows();
 		this->CheckPaletteAnim();
-	} else {
-		/* Release the thread while sleeping */
-		if (_draw_mutex != nullptr) {
-			draw_lock.unlock();
-			CSleep(1);
-			draw_lock.lock();
+
+		if (_draw_mutex != nullptr && !HasModalProgress()) {
+			_draw_signal->notify_one();
 		} else {
+			Paint();
+		}
+	}
+
 /* Emscripten is running an event-based mainloop; there is already some
  * downtime between each iteration, so no need to sleep. */
 #ifndef __EMSCRIPTEN__
-			CSleep(1);
-#endif
+	/* If we are not in fast-forward, create some time between calls to ease up CPU usage. */
+	if (!_fast_forward || _pause_mode) {
+		/* See how much time there is till we have to process the next event, and try to hit that as close as possible. */
+		auto next_tick = std::min(next_draw_tick, next_game_tick);
+		auto now = std::chrono::steady_clock::now();
+
+		if (next_tick > now) {
+			if (_draw_mutex != nullptr) draw_lock.unlock();
+			std::this_thread::sleep_for(next_tick - now);
+			if (_draw_mutex != nullptr) draw_lock.lock();
 		}
-
-		NetworkDrawChatMessage();
-		DrawMouseCursor();
 	}
-
-	/* End of the critical part. */
-	if (_draw_mutex != nullptr && !HasModalProgress()) {
-		_draw_signal->notify_one();
-	} else {
-		/* Oh, we didn't have threads, then just draw unthreaded */
-		DrawSurfaceToScreen();
-	}
+#endif
 }
 
 void VideoDriver_SDL::MainLoop()
 {
-	cur_ticks = SDL_GetTicks();
-	last_cur_ticks = cur_ticks;
-	next_tick = cur_ticks + MILLISECONDS_PER_TICK;
+	cur_ticks = std::chrono::steady_clock::now();
+	last_realtime_tick = cur_ticks;
+	next_game_tick = cur_ticks;
 
 	this->CheckPaletteAnim();
 
@@ -1202,7 +1192,7 @@ void VideoDriver_SDL::MainLoop()
 			_draw_signal = new std::condition_variable_any();
 			_draw_continue = true;
 
-			_draw_threaded = StartNewThread(&draw_thread, "ottd:draw-sdl", &DrawSurfaceToScreenThread);
+			_draw_threaded = StartNewThread(&draw_thread, "ottd:draw-sdl", &PaintThread);
 
 			/* Free the mutex if we won't be able to use it. */
 			if (!_draw_threaded) {
@@ -1274,9 +1264,11 @@ bool VideoDriver_SDL::ToggleFullscreen(bool fullscreen)
 	std::unique_lock<std::recursive_mutex> lock;
 	if (_draw_mutex != nullptr) lock = std::unique_lock<std::recursive_mutex>(*_draw_mutex);
 
+	int w, h;
+
 	/* Remember current window size */
 	if (fullscreen) {
-		SDL_GetWindowSize(_sdl_window, &_window_size_w, &_window_size_h);
+		SDL_GetWindowSize(_sdl_window, &w, &h);
 
 		/* Find fullscreen window size */
 		SDL_DisplayMode dm;
@@ -1292,7 +1284,7 @@ bool VideoDriver_SDL::ToggleFullscreen(bool fullscreen)
 	if (ret == 0) {
 		/* Switching resolution succeeded, set fullscreen value of window. */
 		_fullscreen = fullscreen;
-		if (!fullscreen) SDL_SetWindowSize(_sdl_window, _window_size_w, _window_size_h);
+		if (!fullscreen) SDL_SetWindowSize(_sdl_window, w, h);
 	} else {
 		DEBUG(driver, 0, "SDL_SetWindowFullscreen() failed: %s", SDL_GetError());
 	}

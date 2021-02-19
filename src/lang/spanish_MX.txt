@@ -950,8 +950,6 @@ STR_GAME_OPTIONS_CURRENCY_HKD                                   :Dólar honkoné
 STR_GAME_OPTIONS_CURRENCY_INR                                   :Rupia india (INR)
 ############ end of currency region
 
-STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Vehículos de carretera
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Elegir de qué lado irá la circulación
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Manejar por la izquierda
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Manejar por la derecha
 
@@ -2607,12 +2605,18 @@ STR_FOUND_TOWN_SELECT_LAYOUT_RANDOM                             :{BLACK}Aleatori
 # Fund new industry window
 STR_FUND_INDUSTRY_CAPTION                                       :{WHITE}Fundación de una nueva industria
 STR_FUND_INDUSTRY_SELECTION_TOOLTIP                             :{BLACK}Elegir de la lista la industria adecuada
-STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES                        :Muchas industrias al azar
+STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES                        :{BLACK}Crear industrias al azar
 STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES_TOOLTIP                :{BLACK}Cubrir el mapa con industrias colocadas al azar
+STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES_CAPTION                :{WHITE}Crear industrias al azar
+STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES_QUERY                  :{YELLOW}¿Seguro de crear muchas industrias al azar?
 STR_FUND_INDUSTRY_INDUSTRY_BUILD_COST                           :{BLACK}Costo: {YELLOW}{CURRENCY_LONG}
 STR_FUND_INDUSTRY_PROSPECT_NEW_INDUSTRY                         :{BLACK}Prospección
 STR_FUND_INDUSTRY_BUILD_NEW_INDUSTRY                            :{BLACK}Construir
 STR_FUND_INDUSTRY_FUND_NEW_INDUSTRY                             :{BLACK}Fundar
+STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES                         :{BLACK}Eliminar todas las industrias
+STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES_TOOLTIP                 :{BLACK}Eliminar todas las industrias que haya en el mapa
+STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES_CAPTION                 :{WHITE}Eliminar todas las industrias
+STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES_QUERY                   :{YELLOW}¿Seguro de eliminar todas las industrias?
 
 # Industry cargoes window
 STR_INDUSTRY_CARGOES_INDUSTRY_CAPTION                           :{WHITE}Cadena industrial para la industria de {STRING}
@@ -2861,7 +2865,6 @@ STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Nivel de
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Mover el nivel de inicio de nieve hacia arriba
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Mover el nivel de inicio de nieve hacia abajo
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Generador de terreno:
-STR_MAPGEN_TREE_PLACER                                          :{BLACK}Algoritmo de árboles:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Tipo de terreno
 STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Nivel del mar:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Ríos:

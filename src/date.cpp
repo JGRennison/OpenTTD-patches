@@ -21,6 +21,7 @@
 #include "newgrf_profiling.h"
 #include "console_func.h"
 #include "debug.h"
+#include "widgets/statusbar_widget.h"
 
 #include "safeguards.h"
 
@@ -275,7 +276,7 @@ static void OnNewDay()
 	IndustryDailyLoop();
 
 	if (!_settings_time.time_in_minutes || _settings_client.gui.date_with_time > 0) {
-		SetWindowWidgetDirty(WC_STATUS_BAR, 0, 0);
+		SetWindowWidgetDirty(WC_STATUS_BAR, 0, WID_S_LEFT);
 	}
 	EnginesDailyLoop();
 

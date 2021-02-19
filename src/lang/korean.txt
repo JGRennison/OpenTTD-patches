@@ -961,8 +961,6 @@ STR_GAME_OPTIONS_CURRENCY_HKD                                   :홍콩 달러 (
 STR_GAME_OPTIONS_CURRENCY_INR                                   :인도 루피 (INR)
 ############ end of currency region
 
-STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}차량 통행 방식
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}차량 통행 방법 선택
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :좌측통행
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :우측통행
 
@@ -1017,6 +1015,7 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :기타
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}인터페이스 크기
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}인터페이스의 크기를 선택합니다.
 
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(자동 탐지)
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :기본 크기
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :2배 크기
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :4배 크기
@@ -1024,6 +1023,7 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :4배 크기
 STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}글씨 크기
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}인터페이스에서 사용할 글씨 크기를 선택하세요
 
+STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(자동 탐지)
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :기본 크기
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :2배 크기
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :4배 크기
@@ -3291,12 +3291,18 @@ STR_FOUND_TOWN_SELECT_LAYOUT_RANDOM                             :{BLACK}임의
 # Fund new industry window
 STR_FUND_INDUSTRY_CAPTION                                       :{WHITE}새 산업시설 건설
 STR_FUND_INDUSTRY_SELECTION_TOOLTIP                             :{BLACK}목록에서 적당한 산업시설을 선택하세요
-STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES                        :무작위 산업시설 건설
+STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES                        :{BLACK}무작위 산업시설 건설
 STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES_TOOLTIP                :{BLACK}무작위로 산업시설을 건설합니다
+STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES_CAPTION                :{WHITE}무작위 산업시설 건설
+STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES_QUERY                  :{YELLOW}정말 산업시설을 무작위로 건설하시겠습니까?
 STR_FUND_INDUSTRY_INDUSTRY_BUILD_COST                           :{BLACK}가격: {YELLOW}{CURRENCY_LONG}
 STR_FUND_INDUSTRY_PROSPECT_NEW_INDUSTRY                         :{BLACK}답사
 STR_FUND_INDUSTRY_BUILD_NEW_INDUSTRY                            :{BLACK}건설
 STR_FUND_INDUSTRY_FUND_NEW_INDUSTRY                             :{BLACK}투자
+STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES                         :{BLACK}모든 산업시설 제거
+STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES_TOOLTIP                 :{BLACK}현재 지도 상에 있는 모든 산업시설을 제거합니다
+STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES_CAPTION                 :{WHITE}모든 산업시설 제거
+STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES_QUERY                   :{YELLOW}정말 모든 산업시설을 제거하시겠습니까?
 
 # Industry cargoes window
 STR_INDUSTRY_CARGOES_INDUSTRY_CAPTION                           :{WHITE}{STRING}{G 0 "과" "와"} 관련된 산업시설 연계도
@@ -3541,6 +3547,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF:
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}검색할 문자열:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}파일 덮어쓰기
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}정말로 이미 존재하는 파일에 덮어씌우시겠습니까?
+STR_SAVELOAD_DIRECTORY                                          :{STRING} (폴더)
+STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (상위 폴더)
 STR_SAVELOAD_UNKNOWN_ID                                         :{YELLOW}이 파일은 다른 맵일 수 있습니다.
 STR_SAVELOAD_DIFFERENT_ID                                       :{YELLOW}이 파일은 다른 맵입니다.
 STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_ID                       :{WHITE}파일 덮어쓰기 (다른 맵)
@@ -3563,7 +3571,6 @@ STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}설선 �
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}설선 고도를 1칸 높입니다
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}설선 고도를 1칸 낮춥니다
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}지형 만들기:
-STR_MAPGEN_TREE_PLACER                                          :{BLACK}나무 알고리즘:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}지형 종류:
 STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}해수면:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}강:

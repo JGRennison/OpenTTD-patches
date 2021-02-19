@@ -86,6 +86,10 @@ static ReusableBuffer<uint8> _cursor_backup;
 ZoomLevel _gui_zoom; ///< GUI Zoom level
 ZoomLevel _font_zoom; ///< Font Zoom level
 
+int8 _gui_zoom_cfg;  ///< GUI zoom level in config.
+int8 _font_zoom_cfg; ///< Font zoom level in config.
+
+
 /**
  * The rect for repaint.
  *
@@ -1546,13 +1550,8 @@ void DrawDirtyBlocks()
 		_modal_progress_paint_mutex.unlock();
 		_modal_progress_work_mutex.unlock();
 
-		/* Wait a while and update _realtime_tick so we are given the rights */
-		if (!is_first_modal_progress_loop) SleepWhileModalProgress(MODAL_PROGRESS_REDRAW_TIMEOUT);
-#if defined(__GNUC__) || defined(__clang__)
-		__atomic_add_fetch(&_realtime_tick, MODAL_PROGRESS_REDRAW_TIMEOUT, __ATOMIC_RELAXED);
-#else
-		_realtime_tick += MODAL_PROGRESS_REDRAW_TIMEOUT;
-#endif
+		/* Wait a while and hope the modal gives us a bit of time to draw the GUI. */
+		if (!is_first_modal_progress_loop) CSleep(MODAL_PROGRESS_REDRAW_TIMEOUT);
 
 		/* Modal progress thread may need blitter access while we are waiting for it. */
 		VideoDriver::GetInstance()->ReleaseBlitterLock();
@@ -2181,4 +2180,24 @@ bool ToggleFullScreen(bool fs)
 void SortResolutions()
 {
 	std::sort(_resolutions.begin(), _resolutions.end());
+}
+
+/**
+ * Resolve GUI zoom level, if auto-suggestion is requested.
+ */
+void UpdateGUIZoom()
+{
+	/* Determine real GUI zoom to use. */
+	if (_gui_zoom_cfg == ZOOM_LVL_CFG_AUTO) {
+		_gui_zoom = static_cast<ZoomLevel>(Clamp(VideoDriver::GetInstance()->GetSuggestedUIZoom(), _settings_client.gui.zoom_min, _settings_client.gui.zoom_max));
+	} else {
+		_gui_zoom = static_cast<ZoomLevel>(_gui_zoom_cfg);
+	}
+
+	/* Determine real font zoom to use. */
+	if (_font_zoom_cfg == ZOOM_LVL_CFG_AUTO) {
+		_font_zoom = static_cast<ZoomLevel>(VideoDriver::GetInstance()->GetSuggestedUIZoom());
+	} else {
+		_font_zoom = static_cast<ZoomLevel>(_font_zoom_cfg);
+	}
 }

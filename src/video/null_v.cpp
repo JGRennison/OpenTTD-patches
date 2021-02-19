@@ -10,6 +10,7 @@
 #include "../stdafx.h"
 #include "../gfx_func.h"
 #include "../blitter/factory.hpp"
+#include "../window_func.h"
 #include "null_v.h"
 
 #include "../safeguards.h"
@@ -51,12 +52,14 @@ void VideoDriver_Null::MainLoop()
 		while (!_exit_game) {
 			GameLoop();
 			GameLoopPaletteAnimations();
+			InputLoop();
 			UpdateWindows();
 		}
 	} else {
 		for (int i = 0; i < this->ticks; i++) {
 			GameLoop();
 			GameLoopPaletteAnimations();
+			InputLoop();
 			UpdateWindows();
 		}
 	}

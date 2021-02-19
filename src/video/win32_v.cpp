@@ -119,7 +119,7 @@ bool VideoDriver_Win32::ClaimMousePointer()
 	return true;
 }
 
-struct VkMapping {
+struct Win32VkMapping {
 	byte vk_from;
 	byte vk_count;
 	byte map_to;
@@ -128,7 +128,7 @@ struct VkMapping {
 #define AS(x, z) {x, 0, z}
 #define AM(x, y, z, w) {x, y - x, z}
 
-static const VkMapping _vk_mapping[] = {
+static const Win32VkMapping _vk_mapping[] = {
 	/* Pageup stuff + up/down */
 	AM(VK_PRIOR, VK_DOWN, WKC_PAGEUP, WKC_DOWN),
 	/* Map letters & digits */
@@ -171,7 +171,7 @@ static const VkMapping _vk_mapping[] = {
 
 static uint MapWindowsKey(uint sym)
 {
-	const VkMapping *map;
+	const Win32VkMapping *map;
 	uint key = 0;
 
 	for (map = _vk_mapping; map != endof(_vk_mapping); ++map) {
@@ -1138,9 +1138,10 @@ static void CheckPaletteAnim()
 void VideoDriver_Win32::MainLoop()
 {
 	MSG mesg;
-	uint32 cur_ticks = GetTickCount();
-	uint32 last_cur_ticks = cur_ticks;
-	uint32 next_tick = cur_ticks + MILLISECONDS_PER_TICK;
+	auto cur_ticks = std::chrono::steady_clock::now();
+	auto last_realtime_tick = cur_ticks;
+	auto next_game_tick = cur_ticks;
+	auto next_draw_tick = cur_ticks;
 
 	std::thread draw_thread;
 	std::unique_lock<std::recursive_mutex> draw_lock;
@@ -1181,8 +1182,6 @@ void VideoDriver_Win32::MainLoop()
 
 	CheckPaletteAnim();
 	for (;;) {
-		uint32 prev_cur_ticks = cur_ticks; // to check for wrapping
-
 		while (PeekMessage(&mesg, nullptr, 0, 0, PM_REMOVE)) {
 			InteractiveRandom(); // randomness
 			/* Convert key messages to char messages if we want text input. */
@@ -1203,11 +1202,40 @@ void VideoDriver_Win32::MainLoop()
 			_fast_forward = 0;
 		}
 
-		cur_ticks = GetTickCount();
-		if (cur_ticks >= next_tick || (_fast_forward && !_pause_mode) || cur_ticks < prev_cur_ticks) {
-			_realtime_tick += cur_ticks - last_cur_ticks;
-			last_cur_ticks = cur_ticks;
-			next_tick = cur_ticks + MILLISECONDS_PER_TICK;
+		cur_ticks = std::chrono::steady_clock::now();
+
+		/* If more than a millisecond has passed, increase the _realtime_tick. */
+		if (cur_ticks - last_realtime_tick > std::chrono::milliseconds(1)) {
+			auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(cur_ticks - last_realtime_tick);
+			IncreaseRealtimeTick(delta.count());
+			last_realtime_tick += delta;
+		}
+
+		if (cur_ticks >= next_game_tick || (_fast_forward && !_pause_mode)) {
+			if (_fast_forward && !_pause_mode) {
+				next_game_tick = cur_ticks + this->GetGameInterval();
+			} else {
+				next_game_tick += this->GetGameInterval();
+				/* Avoid next_game_tick getting behind more and more if it cannot keep up. */
+				if (next_game_tick < cur_ticks - ALLOWED_DRIFT * this->GetGameInterval()) next_game_tick = cur_ticks;
+			}
+
+			/* Flush GDI buffer to ensure we don't conflict with the drawing thread. */
+			GdiFlush();
+
+			/* The game loop is the part that can run asynchronously.
+			 * The rest except sleeping can't. */
+			if (_draw_threaded) draw_lock.unlock();
+			GameLoop();
+			if (_draw_threaded) draw_lock.lock();
+			GameLoopPaletteAnimations();
+		}
+
+		/* Prevent drawing when switching mode, as windows can be removed when they should still appear. */
+		if (cur_ticks >= next_draw_tick && (_switch_mode == SM_NONE || HasModalProgress())) {
+			next_draw_tick += this->GetDrawInterval();
+			/* Avoid next_draw_tick getting behind more and more if it cannot keep up. */
+			if (next_draw_tick < cur_ticks - ALLOWED_DRIFT * this->GetDrawInterval()) next_draw_tick = cur_ticks;
 
 			bool old_ctrl_pressed = _ctrl_pressed;
 			bool old_shift_pressed = _shift_pressed;
@@ -1229,31 +1257,30 @@ void VideoDriver_Win32::MainLoop()
 			if (old_ctrl_pressed != _ctrl_pressed) HandleCtrlChanged();
 			if (old_shift_pressed != _shift_pressed) HandleShiftChanged();
 
-			/* Flush GDI buffer to ensure we don't conflict with the drawing thread. */
-			GdiFlush();
-
-			/* The game loop is the part that can run asynchronously.
-			 * The rest except sleeping can't. */
-			if (_draw_threaded) draw_lock.unlock();
-			GameLoop();
-			if (_draw_threaded) draw_lock.lock();
-			GameLoopPaletteAnimations();
-
 			if (_force_full_redraw) MarkWholeScreenDirty();
 
-			UpdateWindows();
-			CheckPaletteAnim();
-		} else {
 			/* Flush GDI buffer to ensure we don't conflict with the drawing thread. */
 			GdiFlush();
 
-			/* Release the thread while sleeping */
-			if (_draw_threaded) draw_lock.unlock();
-			CSleep(1);
-			if (_draw_threaded) draw_lock.lock();
+			InputLoop();
+			UpdateWindows();
+			CheckPaletteAnim();
+		}
 
-			NetworkDrawChatMessage();
-			DrawMouseCursor();
+		/* If we are not in fast-forward, create some time between calls to ease up CPU usage. */
+		if (!_fast_forward || _pause_mode) {
+			/* See how much time there is till we have to process the next event, and try to hit that as close as possible. */
+			auto next_tick = std::min(next_draw_tick, next_game_tick);
+			auto now = std::chrono::steady_clock::now();
+
+			if (next_tick > now) {
+				/* Flush GDI buffer to ensure we don't conflict with the drawing thread. */
+				GdiFlush();
+
+				if (_draw_mutex != nullptr) draw_lock.unlock();
+				std::this_thread::sleep_for(next_tick - now);
+				if (_draw_mutex != nullptr) draw_lock.lock();
+			}
 		}
 	}
 
@@ -1323,4 +1350,44 @@ void VideoDriver_Win32::EditBoxLostFocus()
 Dimension VideoDriver_Win32::GetScreenSize() const
 {
 	return { static_cast<uint>(GetSystemMetrics(SM_CXSCREEN)), static_cast<uint>(GetSystemMetrics(SM_CYSCREEN)) };
+}
+
+float VideoDriver_Win32::GetDPIScale()
+{
+	typedef UINT (WINAPI *PFNGETDPIFORWINDOW)(HWND hwnd);
+	typedef UINT (WINAPI *PFNGETDPIFORSYSTEM)(VOID);
+	typedef HRESULT (WINAPI *PFNGETDPIFORMONITOR)(HMONITOR hMonitor, int dpiType, UINT *dpiX, UINT *dpiY);
+
+	static PFNGETDPIFORWINDOW _GetDpiForWindow = nullptr;
+	static PFNGETDPIFORSYSTEM _GetDpiForSystem = nullptr;
+	static PFNGETDPIFORMONITOR _GetDpiForMonitor = nullptr;
+
+	static bool init_done = false;
+	if (!init_done) {
+		init_done = true;
+
+		_GetDpiForWindow = (PFNGETDPIFORWINDOW)GetProcAddress(GetModuleHandle(_T("User32")), "GetDpiForWindow");
+		_GetDpiForSystem = (PFNGETDPIFORSYSTEM)GetProcAddress(GetModuleHandle(_T("User32")), "GetDpiForSystem");
+		_GetDpiForMonitor = (PFNGETDPIFORMONITOR)GetProcAddress(LoadLibrary(_T("Shcore.dll")), "GetDpiForMonitor");
+	}
+
+	UINT cur_dpi = 0;
+
+	if (cur_dpi == 0 && _GetDpiForWindow != nullptr && _wnd.main_wnd != nullptr) {
+		/* Per window DPI is supported since Windows 10 Ver 1607. */
+		cur_dpi = _GetDpiForWindow(_wnd.main_wnd);
+	}
+	if (cur_dpi == 0 && _GetDpiForMonitor != nullptr && _wnd.main_wnd != nullptr) {
+		/* Per monitor is supported since Windows 8.1. */
+		UINT dpiX, dpiY;
+		if (SUCCEEDED(_GetDpiForMonitor(MonitorFromWindow(_wnd.main_wnd, MONITOR_DEFAULTTOPRIMARY), 0 /* MDT_EFFECTIVE_DPI */, &dpiX, &dpiY))) {
+			cur_dpi = dpiX; // X and Y are always identical.
+		}
+	}
+	if (cur_dpi == 0 && _GetDpiForSystem != nullptr) {
+		/* Fall back to system DPI. */
+		cur_dpi = _GetDpiForSystem();
+	}
+
+	return cur_dpi > 0 ? cur_dpi / 96.0f : 1.0f; // Default Windows DPI value is 96.
 }

@@ -24,12 +24,18 @@
 
 #include "../../openttd.h"
 #include "../../debug.h"
+#include "../../rev.h"
 #include "cocoa_v.h"
 #include "cocoa_wnd.h"
+#include "../../settings_type.h"
 #include "../../string_func.h"
 #include "../../gfx_func.h"
 #include "../../window_func.h"
 #include "../../window_gui.h"
+
+
+/* Table data for key mapping. */
+#include "cocoa_keys.h"
 
 
 /**
@@ -40,13 +46,82 @@
  * Read http://developer.apple.com/releasenotes/Cocoa/Objective-C++.html for more information.
  */
 
+bool _allow_hidpi_window = true; // Referenced from table/misc_settings.ini
+
 @interface OTTDMain : NSObject <NSApplicationDelegate>
 @end
 
 NSString *OTTDMainLaunchGameEngine = @"ottdmain_launch_game_engine";
 
+bool _tab_is_down;
+
 static bool _cocoa_video_dialog = false;
 static OTTDMain *_ottd_main;
+
+
+/**
+ * Count the number of UTF-16 code points in a range of an UTF-8 string.
+ * @param from Start of the range.
+ * @param to End of the range.
+ * @return Number of UTF-16 code points in the range.
+ */
+static NSUInteger CountUtf16Units(const char *from, const char *to)
+{
+	NSUInteger i = 0;
+
+	while (from < to) {
+		WChar c;
+		size_t len = Utf8Decode(&c, from);
+		i += len < 4 ? 1 : 2; // Watch for surrogate pairs.
+		from += len;
+	}
+
+	return i;
+}
+
+/**
+ * Advance an UTF-8 string by a number of equivalent UTF-16 code points.
+ * @param str UTF-8 string.
+ * @param count Number of UTF-16 code points to advance the string by.
+ * @return Advanced string pointer.
+ */
+static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
+{
+	for (NSUInteger i = 0; i < count && *str != '\0'; ) {
+		WChar c;
+		size_t len = Utf8Decode(&c, str);
+		i += len < 4 ? 1 : 2; // Watch for surrogates.
+		str += len;
+	}
+
+	return str;
+}
+
+/**
+ * Convert a NSString to an UTF-32 encoded string.
+ * @param s String to convert.
+ * @return Vector of UTF-32 characters.
+ */
+static std::vector<WChar> NSStringToUTF32(NSString *s)
+{
+	std::vector<WChar> unicode_str;
+
+	unichar lead = 0;
+	for (NSUInteger i = 0; i < s.length; i++) {
+		unichar c = [ s characterAtIndex:i ];
+		if (Utf16IsLeadSurrogate(c)) {
+			lead = c;
+			continue;
+		} else if (Utf16IsTrailSurrogate(c)) {
+			if (lead != 0) unicode_str.push_back(Utf16DecodeSurrogate(lead, c));
+		} else {
+			unicode_str.push_back(c);
+		}
+	}
+
+	return unicode_str;
+}
+
 
 /**
  * The main class of the application, the application's delegate.
@@ -69,11 +144,15 @@ static OTTDMain *_ottd_main;
  */
 - (void)launchGameEngine: (NSNotification*) note
 {
+	auto *drv = static_cast<VideoDriver_Cocoa *>(VideoDriver::GetInstance());
+
 	/* Setup cursor for the current _game_mode. */
-	[ _cocoa_subdriver->cocoaview resetCursorRects ];
+	NSEvent *e = [ [ NSEvent alloc ] init ];
+	[ drv->cocoaview cursorUpdate:e ];
+	[ e release ];
 
 	/* Hand off to main application code. */
-	static_cast<VideoDriver_Cocoa *>(VideoDriver::GetInstance())->GameLoop();
+	drv->GameLoop();
 
 	/* We are done, thank you for playing. */
 	[ self performSelectorOnMainThread:@selector(stopEngine) withObject:nil waitUntilDone:FALSE ];
@@ -98,7 +177,7 @@ static OTTDMain *_ottd_main;
 {
 	HandleExitGameRequest();
 
-	return NSTerminateCancel; // NSTerminateLater ?
+	return NSTerminateCancel;
 }
 
 /**
@@ -203,6 +282,7 @@ bool CocoaSetupApplication()
 	}
 
 	/* Become the front process, important when start from the command line. */
+	[ [ NSApplication sharedApplication ] setActivationPolicy:NSApplicationActivationPolicyRegular ];
 	[ [ NSApplication sharedApplication ] activateIgnoringOtherApps:YES ];
 
 	/* Set up the menubar */
@@ -218,7 +298,7 @@ bool CocoaSetupApplication()
 }
 
 /**
- *
+ * Deregister app delegate.
  */
 void CocoaExitApplication()
 {
@@ -247,15 +327,17 @@ void CocoaDialog(const char *title, const char *message, const char *buttonLabel
 		return;
 	}
 
-	NSAlert *alert = [ [ NSAlert alloc ] init ];
-	[ alert setAlertStyle: NSCriticalAlertStyle ];
-	[ alert setMessageText:[ NSString stringWithUTF8String:title ] ];
-	[ alert setInformativeText:[ NSString stringWithUTF8String:message ] ];
-	[ alert addButtonWithTitle: [ NSString stringWithUTF8String:buttonLabel ] ];
-	[ alert runModal ];
-	[ alert release ];
+	@autoreleasepool {
+		NSAlert *alert = [ [ NSAlert alloc ] init ];
+		[ alert setAlertStyle: NSCriticalAlertStyle ];
+		[ alert setMessageText:[ NSString stringWithUTF8String:title ] ];
+		[ alert setInformativeText:[ NSString stringWithUTF8String:message ] ];
+		[ alert addButtonWithTitle: [ NSString stringWithUTF8String:buttonLabel ] ];
+		[ alert runModal ];
+		[ alert release ];
+	}
 
-	if (!wasstarted && VideoDriver::GetInstance() != NULL) VideoDriver::GetInstance()->Stop();
+	if (!wasstarted && VideoDriver::GetInstance() != nullptr) VideoDriver::GetInstance()->Stop();
 
 	_cocoa_video_dialog = false;
 }
@@ -280,21 +362,28 @@ void CocoaDialog(const char *title, const char *message, const char *buttonLabel
 }
 @end
 
-@implementation OTTD_CocoaWindow
-
-- (void)setDriver:(CocoaSubdriver*)drv
-{
-	driver = drv;
+@implementation OTTD_CocoaWindow {
+	VideoDriver_Cocoa *driver;
 }
-/**
- * Minimize the window
- */
-- (void)miniaturize:(id)sender
-{
-	/* window is hidden now */
-	driver->active = false;
 
-	[ super miniaturize:sender ];
+/**
+ * Initialize event system for the application rectangle
+ */
+- (instancetype)initWithContentRect:(NSRect)contentRect styleMask:(NSUInteger)styleMask backing:(NSBackingStoreType)backingType defer:(BOOL)flag driver:(VideoDriver_Cocoa *)drv
+{
+	if (self = [ super initWithContentRect:contentRect styleMask:styleMask backing:backingType defer:flag ]) {
+		self->driver = drv;
+
+		[ self setContentMinSize:NSMakeSize(64.0f, 64.0f) ];
+
+		std::string caption = std::string{"OpenTTD "} + _openttd_revision;
+		NSString *nsscaption = [ [ NSString alloc ] initWithUTF8String:caption.c_str() ];
+		[ self setTitle:nsscaption ];
+		[ self setMiniwindowTitle:nsscaption ];
+		[ nsscaption release ];
+	}
+
+	return self;
 }
 
 /**
@@ -313,9 +402,6 @@ void CocoaDialog(const char *title, const char *message, const char *buttonLabel
 
 	/* restore visible surface */
 	[ self restoreCachedImage ];
-
-	/* window is visible again */
-	driver->active = true;
 }
 /**
  * Define the rectangle we draw our window in
@@ -324,106 +410,41 @@ void CocoaDialog(const char *title, const char *message, const char *buttonLabel
 {
 	[ super setFrame:frameRect display:flag ];
 
-	/* Don't do anything if the window is currently being created */
-	if (driver->setup) return;
-
-	if (!driver->WindowResized()) error("Cocoa: Failed to resize window.");
-}
-/**
- * Handle hiding of the application
- */
-- (void)appDidHide:(NSNotification*)note
-{
-	driver->active = false;
-}
-/**
- * Unhide and restore display plane and re-activate driver
- */
-- (void)appDidUnhide:(NSNotification*)note
-{
-	driver->active = true;
-}
-/**
- * Initialize event system for the application rectangle
- */
-- (id)initWithContentRect:(NSRect)contentRect styleMask:(NSUInteger)styleMask backing:(NSBackingStoreType)backingType defer:(BOOL)flag
-{
-	/* Make our window subclass receive these application notifications */
-	[ [ NSNotificationCenter defaultCenter ] addObserver:self
-		selector:@selector(appDidHide:) name:NSApplicationDidHideNotification object:NSApp ];
-
-	[ [ NSNotificationCenter defaultCenter ] addObserver:self
-		selector:@selector(appDidUnhide:) name:NSApplicationDidUnhideNotification object:NSApp ];
-
-	return [ super initWithContentRect:contentRect styleMask:styleMask backing:backingType defer:flag ];
+	driver->AllocateBackingStore();
 }
 
 @end
 
+@implementation OTTD_CocoaView {
+	float _current_magnification;
+	NSUInteger _current_mods;
+	bool _emulated_down;
+	bool _use_hidpi; ///< Render content in native resolution?
+}
 
-
-/**
- * Count the number of UTF-16 code points in a range of an UTF-8 string.
- * @param from Start of the range.
- * @param to End of the range.
- * @return Number of UTF-16 code points in the range.
- */
-static NSUInteger CountUtf16Units(const char *from, const char *to)
+- (instancetype)initWithFrame:(NSRect)frameRect
 {
-	NSUInteger i = 0;
-
-	while (from < to) {
-		WChar c;
-		size_t len = Utf8Decode(&c, from);
-		i += len < 4 ? 1 : 2; // Watch for surrogate pairs.
-		from += len;
+	if (self = [ super initWithFrame:frameRect ]) {
+		self->_use_hidpi = _allow_hidpi_window && [ self respondsToSelector:@selector(convertRectToBacking:) ] && [ self respondsToSelector:@selector(convertRectFromBacking:) ];
 	}
-
-	return i;
+	return self;
 }
 
-/**
- * Advance an UTF-8 string by a number of equivalent UTF-16 code points.
- * @param str UTF-8 string.
- * @param count Number of UTF-16 code points to advance the string by.
- * @return Advanced string pointer.
- */
-static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
+- (NSRect)getRealRect:(NSRect)rect
 {
-	for (NSUInteger i = 0; i < count && *str != '\0'; ) {
-		WChar c;
-		size_t len = Utf8Decode(&c, str);
-		i += len < 4 ? 1 : 2; // Watch for surrogates.
-		str += len;
-	}
-
-	return str;
+	return _use_hidpi ? [ self convertRectToBacking:rect ] : rect;
 }
 
-@implementation OTTD_CocoaView
-/**
- * Initialize the driver
- */
-- (void)setDriver:(CocoaSubdriver*)drv
+- (NSRect)getVirtualRect:(NSRect)rect
 {
-	driver = drv;
+	return _use_hidpi ? [ self convertRectFromBacking:rect ] : rect;
 }
-/**
- * Define the opaqueness of the window / screen
- * @return opaqueness of window / screen
- */
-- (BOOL)isOpaque
+
+- (CGFloat)getContentsScale
 {
-	return YES;
+	return _use_hidpi && self.window != nil ? [ self.window backingScaleFactor ] : 1.0f;
 }
-/**
- * Draws a rectangle on the screen.
- * It's overwritten by the individual drivers but must be defined
- */
-- (void)drawRect:(NSRect)invalidRect
-{
-	return;
-}
+
 /**
  * Allow to handle events
  */
@@ -431,53 +452,35 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 {
 	return YES;
 }
-/**
- * Actually handle events
- */
-- (BOOL)becomeFirstResponder
+
+- (void)setNeedsDisplayInRect:(NSRect)invalidRect
 {
-	return YES;
+	/* Drawing is handled by our sub-views. Just pass it along. */
+	for ( NSView *v in [ self subviews ]) {
+		[ v setNeedsDisplayInRect:[ v convertRect:invalidRect fromView:self ] ];
+	}
 }
-/**
- * Define the rectangle where we draw our application window
- */
-- (void)setTrackingRect
+
+/** Update mouse cursor to use for this view. */
+- (void)cursorUpdate:(NSEvent *)event
 {
-	NSPoint loc = [ self convertPoint:[ [ self window ] mouseLocationOutsideOfEventStream ] fromView:nil ];
-	BOOL inside = ([ self hitTest:loc ]==self);
-	if (inside) [ [ self window ] makeFirstResponder:self ];
-	trackingtag = [ self addTrackingRect:[ self visibleRect ] owner:self userData:nil assumeInside:inside ];
+	[ (_game_mode == GM_BOOTSTRAP ? [ NSCursor arrowCursor ] : [ NSCursor clearCocoaCursor ]) set ];
 }
-/**
- * Return responsibility for the application window to system
- */
-- (void)clearTrackingRect
-{
-	[ self removeTrackingRect:trackingtag ];
-}
-/**
- * Declare responsibility for the cursor within our application rect
- */
-- (void)resetCursorRects
-{
-	[ super resetCursorRects ];
-	[ self clearTrackingRect ];
-	[ self setTrackingRect ];
-	[ self addCursorRect:[ self bounds ] cursor:(_game_mode == GM_BOOTSTRAP ? [ NSCursor arrowCursor ] : [ NSCursor clearCocoaCursor ]) ];
-}
-/**
- * Prepare for moving the application window
- */
+
 - (void)viewWillMoveToWindow:(NSWindow *)win
 {
-	if (!win && [ self window ]) [ self clearTrackingRect ];
+	for (NSTrackingArea *a in [ self trackingAreas ]) {
+		[ self removeTrackingArea:a ];
+	}
 }
-/**
- * Restore our responsibility for our application window after moving
- */
+
 - (void)viewDidMoveToWindow
 {
-	if ([ self window ]) [ self setTrackingRect ];
+	/* Install mouse tracking area. */
+	NSTrackingAreaOptions track_opt = NSTrackingInVisibleRect | NSTrackingActiveInActiveApp | NSTrackingMouseEnteredAndExited | NSTrackingMouseMoved | NSTrackingCursorUpdate;
+	NSTrackingArea *track = [ [ NSTrackingArea alloc ] initWithRect:[ self bounds ] options:track_opt owner:self userInfo:nil ];
+	[ self addTrackingArea:track ];
+	[ track release ];
 }
 /**
  * Make OpenTTD aware that it has control over the mouse
@@ -491,8 +494,291 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
  */
 - (void)mouseExited:(NSEvent *)theEvent
 {
-	if (_cocoa_subdriver != NULL) UndrawMouseCursor();
+	if ([ self window ] != nil) UndrawMouseCursor();
 	_cursor.in_window = false;
+}
+
+/**
+ * Return the mouse location
+ * @param event UI event
+ * @return mouse location as NSPoint
+ */
+- (NSPoint)mousePositionFromEvent:(NSEvent *)e
+{
+	NSPoint pt = e.locationInWindow;
+	if ([ e window ] == nil) pt = [ self.window convertRectFromScreen:NSMakeRect(pt.x, pt.y, 0, 0) ].origin;
+	pt = [ self convertPoint:pt fromView:nil ];
+
+	return [ self getRealRect:NSMakeRect(pt.x, self.bounds.size.height - pt.y, 0, 0) ].origin;
+}
+
+- (void)internalMouseMoveEvent:(NSEvent *)event
+{
+	if (_cursor.fix_at) {
+		_cursor.UpdateCursorPositionRelative(event.deltaX * self.getContentsScale, event.deltaY * self.getContentsScale);
+	} else {
+		NSPoint pt = [ self mousePositionFromEvent:event ];
+		_cursor.UpdateCursorPosition(pt.x, pt.y, false);
+	}
+
+	HandleMouseEvents();
+}
+
+- (void)internalMouseButtonEvent
+{
+	bool cur_fix = _cursor.fix_at;
+	HandleMouseEvents();
+
+	/* Cursor fix mode was changed, synchronize with OS. */
+	if (cur_fix != _cursor.fix_at) CGAssociateMouseAndMouseCursorPosition(!_cursor.fix_at);
+}
+
+- (BOOL)emulateRightButton:(NSEvent *)event
+{
+	uint32 keymask = 0;
+	if (_settings_client.gui.right_mouse_btn_emulation == RMBE_COMMAND) keymask |= NSCommandKeyMask;
+	if (_settings_client.gui.right_mouse_btn_emulation == RMBE_CONTROL) keymask |= NSControlKeyMask;
+
+	return (event.modifierFlags & keymask) != 0;
+}
+
+- (void)mouseMoved:(NSEvent *)event
+{
+	[ self internalMouseMoveEvent:event ];
+}
+
+- (void)mouseDragged:(NSEvent *)event
+{
+	[ self internalMouseMoveEvent:event ];
+}
+- (void)mouseDown:(NSEvent *)event
+{
+	if ([ self emulateRightButton:event ]) {
+		self->_emulated_down = true;
+		[ self rightMouseDown:event ];
+	} else {
+		_left_button_down = true;
+		[ self internalMouseButtonEvent ];
+	}
+}
+- (void)mouseUp:(NSEvent *)event
+{
+	if (self->_emulated_down) {
+		self->_emulated_down = false;
+		[ self rightMouseUp:event ];
+	} else {
+		_left_button_down = false;
+		_left_button_clicked = false;
+		[ self internalMouseButtonEvent ];
+	}
+}
+
+- (void)rightMouseDragged:(NSEvent *)event
+{
+	[ self internalMouseMoveEvent:event ];
+}
+- (void)rightMouseDown:(NSEvent *)event
+{
+	_right_button_down = true;
+	_right_button_clicked = true;
+	[ self internalMouseButtonEvent ];
+}
+- (void)rightMouseUp:(NSEvent *)event
+{
+	_right_button_down = false;
+	[ self internalMouseButtonEvent ];
+}
+
+- (void)scrollWheel:(NSEvent *)event
+{
+	if ([ event deltaY ] > 0.0) { /* Scroll up */
+		_cursor.wheel--;
+	} else if ([ event deltaY ] < 0.0) { /* Scroll down */
+		_cursor.wheel++;
+	} /* else: deltaY was 0.0 and we don't want to do anything */
+
+	/* Update the scroll count for 2D scrolling */
+	CGFloat deltaX;
+	CGFloat deltaY;
+
+	/* Use precise scrolling-specific deltas if they're supported. */
+	if ([ event respondsToSelector:@selector(hasPreciseScrollingDeltas) ]) {
+		/* No precise deltas indicates a scroll wheel is being used, so we don't want 2D scrolling. */
+		if (![ event hasPreciseScrollingDeltas ]) return;
+
+		deltaX = [ event scrollingDeltaX ] * 0.5f;
+		deltaY = [ event scrollingDeltaY ] * 0.5f;
+	} else {
+		deltaX = [ event deltaX ] * 5;
+		deltaY = [ event deltaY ] * 5;
+	}
+
+	_cursor.h_wheel -= (int)(deltaX * _settings_client.gui.scrollwheel_multiplier);
+	_cursor.v_wheel -= (int)(deltaY * _settings_client.gui.scrollwheel_multiplier);
+}
+
+- (void)magnifyWithEvent:(NSEvent *)event
+{
+	/* Pinch open or close gesture. */
+	self->_current_magnification += [ event magnification ] * 5.0f;
+
+	while (self->_current_magnification >= 1.0f) {
+		self->_current_magnification -= 1.0f;
+		_cursor.wheel--;
+		HandleMouseEvents();
+	}
+	while (self->_current_magnification <= -1.0f) {
+		self->_current_magnification += 1.0f;
+		_cursor.wheel++;
+		HandleMouseEvents();
+	}
+}
+
+- (void)endGestureWithEvent:(NSEvent *)event
+{
+	/* Gesture ended. */
+	self->_current_magnification = 0.0f;
+}
+
+
+- (BOOL)internalHandleKeycode:(unsigned short)keycode unicode:(WChar)unicode pressed:(BOOL)down modifiers:(NSUInteger)modifiers
+{
+	switch (keycode) {
+		case QZ_UP:    SB(_dirkeys, 1, 1, down); break;
+		case QZ_DOWN:  SB(_dirkeys, 3, 1, down); break;
+		case QZ_LEFT:  SB(_dirkeys, 0, 1, down); break;
+		case QZ_RIGHT: SB(_dirkeys, 2, 1, down); break;
+
+		case QZ_TAB: _tab_is_down = down; break;
+
+		case QZ_RETURN:
+		case QZ_f:
+			if (down && (modifiers & NSCommandKeyMask)) {
+				VideoDriver::GetInstance()->ToggleFullscreen(!_fullscreen);
+			}
+			break;
+
+		case QZ_v:
+			if (down && EditBoxInGlobalFocus() && (modifiers & (NSCommandKeyMask | NSControlKeyMask))) {
+				HandleKeypress(WKC_CTRL | 'V', unicode);
+			}
+			break;
+		case QZ_u:
+			if (down && EditBoxInGlobalFocus() && (modifiers & (NSCommandKeyMask | NSControlKeyMask))) {
+				HandleKeypress(WKC_CTRL | 'U', unicode);
+			}
+			break;
+	}
+
+	BOOL interpret_keys = YES;
+	if (down) {
+		/* Map keycode to OTTD code. */
+		auto vk = std::find_if(std::begin(_vk_mapping), std::end(_vk_mapping), [=](const CocoaVkMapping &m) { return m.vk_from == keycode; });
+		uint32 pressed_key = vk != std::end(_vk_mapping) ? vk->map_to : 0;
+
+		if (modifiers & NSShiftKeyMask)     pressed_key |= WKC_SHIFT;
+		if (modifiers & NSControlKeyMask)   pressed_key |= (_settings_client.gui.right_mouse_btn_emulation != RMBE_CONTROL ? WKC_CTRL : WKC_META);
+		if (modifiers & NSAlternateKeyMask) pressed_key |= WKC_ALT;
+		if (modifiers & NSCommandKeyMask)   pressed_key |= (_settings_client.gui.right_mouse_btn_emulation != RMBE_CONTROL ? WKC_META : WKC_CTRL);
+
+		static bool console = false;
+
+		/* The second backquote may have a character, which we don't want to interpret. */
+		if (pressed_key == WKC_BACKQUOTE && (console || unicode == 0)) {
+			if (!console) {
+				/* Backquote is a dead key, require a double press for hotkey behaviour (i.e. console). */
+				console = true;
+				return YES;
+			} else {
+				/* Second backquote, don't interpret as text input. */
+				interpret_keys = NO;
+			}
+		}
+		console = false;
+
+		/* Don't handle normal characters if an edit box has the focus. */
+		if (!EditBoxInGlobalFocus() || IsInsideMM(pressed_key & ~WKC_SPECIAL_KEYS, WKC_F1, WKC_PAUSE + 1)) {
+			HandleKeypress(pressed_key, unicode);
+		}
+		DEBUG(driver, 2, "cocoa_v: QZ_KeyEvent: %x (%x), down, mapping: %x", keycode, unicode, pressed_key);
+	} else {
+		DEBUG(driver, 2, "cocoa_v: QZ_KeyEvent: %x (%x), up", keycode, unicode);
+	}
+
+	return interpret_keys;
+}
+
+- (void)keyDown:(NSEvent *)event
+{
+	/* Quit, hide and minimize */
+	switch (event.keyCode) {
+		case QZ_q:
+		case QZ_h:
+		case QZ_m:
+			if (event.modifierFlags & NSCommandKeyMask) {
+				[ self interpretKeyEvents:[ NSArray arrayWithObject:event ] ];
+			}
+			break;
+	}
+
+	/* Convert UTF-16 characters to UCS-4 chars. */
+	std::vector<WChar> unicode_str = NSStringToUTF32([ event characters ]);
+	if (unicode_str.empty()) unicode_str.push_back(0);
+
+	if (EditBoxInGlobalFocus()) {
+		if ([ self internalHandleKeycode:event.keyCode unicode:unicode_str[0] pressed:YES modifiers:event.modifierFlags ]) {
+			[ self interpretKeyEvents:[ NSArray arrayWithObject:event ] ];
+		}
+	} else {
+		[ self internalHandleKeycode:event.keyCode unicode:unicode_str[0] pressed:YES modifiers:event.modifierFlags ];
+		for (size_t i = 1; i < unicode_str.size(); i++) {
+			[ self internalHandleKeycode:0 unicode:unicode_str[i] pressed:YES modifiers:event.modifierFlags ];
+		}
+	}
+}
+
+- (void)keyUp:(NSEvent *)event
+{
+	/* Quit, hide and minimize */
+	switch (event.keyCode) {
+		case QZ_q:
+		case QZ_h:
+		case QZ_m:
+			if (event.modifierFlags & NSCommandKeyMask) {
+				[ self interpretKeyEvents:[ NSArray arrayWithObject:event ] ];
+			}
+			break;
+	}
+
+	/* Convert UTF-16 characters to UCS-4 chars. */
+	std::vector<WChar> unicode_str = NSStringToUTF32([ event characters ]);
+	if (unicode_str.empty()) unicode_str.push_back(0);
+
+	[ self internalHandleKeycode:event.keyCode unicode:unicode_str[0] pressed:NO modifiers:event.modifierFlags ];
+}
+
+- (void)flagsChanged:(NSEvent *)event
+{
+	const int mapping[] = { QZ_CAPSLOCK, QZ_LSHIFT, QZ_LCTRL, QZ_LALT, QZ_LMETA };
+
+	NSUInteger newMods = event.modifierFlags;
+	if (self->_current_mods == newMods) return;
+
+	/* Iterate through the bits, testing each against the current modifiers */
+	for (unsigned int i = 0, bit = NSAlphaShiftKeyMask; bit <= NSCommandKeyMask; bit <<= 1, ++i) {
+		unsigned int currentMask, newMask;
+
+		currentMask = self->_current_mods & bit;
+		newMask     = newMods & bit;
+
+		if (currentMask && currentMask != newMask) { // modifier up event
+			[ self internalHandleKeycode:mapping[i] unicode:0 pressed:NO modifiers:newMods ];
+		} else if (newMask && currentMask != newMask) { // modifier down event
+			[ self internalHandleKeycode:mapping[i] unicode:0 pressed:YES modifiers:newMods ];
+		}
+	}
+
+	_current_mods = newMods;
 }
 
 
@@ -555,7 +841,7 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 /** Unmark the current marked text. */
 - (void)unmarkText
 {
-	HandleTextInput(NULL, true);
+	HandleTextInput(nullptr, true);
 }
 
 /** Get the caret position. */
@@ -574,7 +860,7 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 
 	size_t mark_len;
 	const char *mark = _focused_window->GetMarkedText(&mark_len);
-	if (mark != NULL) {
+	if (mark != nullptr) {
 		NSUInteger start = CountUtf16Units(_focused_window->GetFocusedText(), mark);
 		NSUInteger len = CountUtf16Units(mark, mark + mark_len);
 
@@ -590,7 +876,7 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 	if (!EditBoxInGlobalFocus()) return NO;
 
 	size_t len;
-	return _focused_window->GetMarkedText(&len) != NULL;
+	return _focused_window->GetMarkedText(&len) != nullptr;
 }
 
 /** Get a string corresponding to the given range. */
@@ -601,7 +887,7 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 	NSString *s = [ NSString stringWithUTF8String:_focused_window->GetFocusedText() ];
 	NSRange valid_range = NSIntersectionRange(NSMakeRange(0, [ s length ]), theRange);
 
-	if (actualRange != NULL) *actualRange = valid_range;
+	if (actualRange != nullptr) *actualRange = valid_range;
 	if (valid_range.length == 0) return nil;
 
 	return [ [ [ NSAttributedString alloc ] initWithString:[ s substringWithRange:valid_range ] ] autorelease ];
@@ -610,7 +896,7 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 /** Get a string corresponding to the given range. */
 - (NSAttributedString *)attributedSubstringFromRange:(NSRange)theRange
 {
-	return [ self attributedSubstringForProposedRange:theRange actualRange:NULL ];
+	return [ self attributedSubstringForProposedRange:theRange actualRange:nil ];
 }
 
 /** Get the current edit box string. */
@@ -631,7 +917,7 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 	Point pt = { (int)view_pt.x, (int)[ self frame ].size.height - (int)view_pt.y };
 
 	const char *ch = _focused_window->GetTextCharacterAtPosition(pt);
-	if (ch == NULL) return NSNotFound;
+	if (ch == nullptr) return NSNotFound;
 
 	return CountUtf16Units(_focused_window->GetFocusedText(), ch);
 }
@@ -807,12 +1093,17 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 @end
 
 
+@implementation OTTD_CocoaWindowDelegate {
+	VideoDriver_Cocoa *driver;
+}
 
-@implementation OTTD_CocoaWindowDelegate
 /** Initialize the video driver */
-- (void)setDriver:(CocoaSubdriver*)drv
+- (instancetype)initWithDriver:(VideoDriver_Cocoa *)drv
 {
-	driver = drv;
+	if (self = [ super init ]) {
+		self->driver = drv;
+	}
+	return self;
 }
 /** Handle closure requests */
 - (BOOL)windowShouldClose:(id)sender
@@ -820,26 +1111,6 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 	HandleExitGameRequest();
 
 	return NO;
-}
-/** Handle key acceptance */
-- (void)windowDidBecomeKey:(NSNotification*)aNotification
-{
-	driver->active = true;
-}
-/** Resign key acceptance */
-- (void)windowDidResignKey:(NSNotification*)aNotification
-{
-	driver->active = false;
-}
-/** Handle becoming main window */
-- (void)windowDidBecomeMain:(NSNotification*)aNotification
-{
-	driver->active = true;
-}
-/** Resign being main window */
-- (void)windowDidResignMain:(NSNotification*)aNotification
-{
-	driver->active = false;
 }
 /** Window entered fullscreen mode (10.7). */
 - (void)windowDidEnterFullScreen:(NSNotification *)aNotification
@@ -854,10 +1125,11 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 		[ e release ];
 	}
 }
-/** The colour profile of the screen the window is on changed. */
-- (void)windowDidChangeScreenProfile:(NSNotification *)aNotification
+/** Screen the window is on changed. */
+- (void)windowDidChangeBackingProperties:(NSNotification *)notification
 {
-	if (!driver->setup) driver->WindowResized();
+	/* Reallocate screen buffer if necessary. */
+	driver->AllocateBackingStore();
 }
 
 /** Presentation options to use for fullsreen mode. */
@@ -867,4 +1139,5 @@ static const char *Utf8AdvanceByUtf16Units(const char *str, NSUInteger count)
 }
 
 @end
+
 #endif /* WITH_COCOA */

@@ -21,6 +21,7 @@ enum GenerateLandscapeWidgets {
 	WID_GL_MAPSIZE_Y_PULLDOWN,          ///< Dropdown 'map Y size'.
 
 	WID_GL_TOWN_PULLDOWN,               ///< Dropdown 'No. of towns'.
+	WID_GL_TOWNNAME_DROPDOWN,           ///< Dropdown 'Townnames'.
 	WID_GL_INDUSTRY_PULLDOWN,           ///< Dropdown 'No. of industries'.
 
 	WID_GL_GENERATE_BUTTON,             ///< 'Generate' button.
@@ -37,7 +38,6 @@ enum GenerateLandscapeWidgets {
 	WID_GL_SNOW_LEVEL_TEXT,             ///< Snow level.
 	WID_GL_SNOW_LEVEL_UP,               ///< Increase snow level.
 
-	WID_GL_TREE_PULLDOWN,               ///< Dropdown 'Tree algorithm'.
 	WID_GL_LANDSCAPE_PULLDOWN,          ///< Dropdown 'Land generator'.
 
 	WID_GL_HEIGHTMAP_NAME_TEXT,         ///< Heightmap name.

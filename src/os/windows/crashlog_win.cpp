@@ -27,6 +27,7 @@
 #endif
 
 #include <windows.h>
+#include <mmsystem.h>
 #include <signal.h>
 
 #include "../../safeguards.h"
@@ -617,6 +618,9 @@ void *_safe_esp = nullptr;
 
 static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 {
+	/* Restore system timer resolution. */
+	timeEndPeriod(1);
+
 	/* Disable our event loop. */
 	SetWindowLongPtr(GetActiveWindow(), GWLP_WNDPROC, (LONG_PTR)&DefWindowProc);
 

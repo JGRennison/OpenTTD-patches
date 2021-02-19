@@ -340,11 +340,11 @@ void Ship::UpdateDeltaXY()
 }
 
 /**
- * Test-procedure for HasVehicleOnPos to check for a ship.
+ * Test-procedure for HasVehicleOnPos to check for any ships which are visible and not stopped by the player.
  */
-static Vehicle *EnsureNoVisibleShipProc(Vehicle *v, void *data)
+static Vehicle *EnsureNoMovingShipProc(Vehicle *v, void *data)
 {
-	return (v->vehstatus & VS_HIDDEN) == 0 ? v : nullptr;
+	return (v->vehstatus & (VS_HIDDEN | VS_STOPPED)) == 0 ? v : nullptr;
 }
 
 static bool CheckShipLeaveDepot(Ship *v)
@@ -370,7 +370,7 @@ static bool CheckShipLeaveDepot(Ship *v)
 
 	/* Don't leave depot if another vehicle is already entering/leaving */
 	/* This helps avoid CPU load if many ships are set to start at the same time */
-	if (HasVehicleOnPos(v->tile, VEH_SHIP, nullptr, &EnsureNoVisibleShipProc)) return true;
+	if (HasVehicleOnPos(v->tile, VEH_SHIP, nullptr, &EnsureNoMovingShipProc)) return true;
 
 	TileIndex tile = v->tile;
 	Axis axis = GetShipDepotAxis(tile);

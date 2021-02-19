@@ -14,6 +14,7 @@
 #include "../../fileio_func.h"
 #include <windows.h>
 #include <fcntl.h>
+#include <mmsystem.h>
 #include <regstr.h>
 #define NO_SHOBJIDL_SORTDIRECTION // Avoid multiple definition of SORT_ASCENDING
 #include <shlobj.h> /* SHGetFolderPath */
@@ -439,6 +440,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	int argc;
 	char *argv[64]; // max 64 command line arguments
 
+	/* Set system timer resolution to 1ms. */
+	timeBeginPeriod(1);
+
 	CrashLog::InitialiseCrashLog();
 
 #if defined(UNICODE)
@@ -466,6 +470,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	for (int i = 0; i < argc; i++) ValidateString(argv[i]);
 
 	openttd_main(argc, argv);
+
+	/* Restore system timer resolution. */
+	timeEndPeriod(1);
+
 	free(cmdline);
 	return 0;
 }

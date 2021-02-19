@@ -12,7 +12,14 @@
 
 #import <Cocoa/Cocoa.h>
 
-class CocoaSubdriver;
+class VideoDriver_Cocoa;
+
+/* Right Mouse Button Emulation enum */
+enum RightMouseButtonEmulationState {
+	RMBE_COMMAND = 0,
+	RMBE_CONTROL = 1,
+	RMBE_OFF     = 2,
+};
 
 extern NSString *OTTDMainLaunchGameEngine;
 
@@ -22,51 +29,28 @@ extern NSString *OTTDMainLaunchGameEngine;
 @end
 
 /** Subclass of NSWindow to cater our special needs */
-@interface OTTD_CocoaWindow : NSWindow {
-	CocoaSubdriver *driver;
-}
+@interface OTTD_CocoaWindow : NSWindow
+- (instancetype)initWithContentRect:(NSRect)contentRect styleMask:(NSUInteger)styleMask backing:(NSBackingStoreType)backingType defer:(BOOL)flag driver:(VideoDriver_Cocoa *)drv;
 
-- (void)setDriver:(CocoaSubdriver*)drv;
-
-- (void)miniaturize:(id)sender;
 - (void)display;
 - (void)setFrame:(NSRect)frameRect display:(BOOL)flag;
-- (void)appDidHide:(NSNotification*)note;
-- (void)appDidUnhide:(NSNotification*)note;
-- (id)initWithContentRect:(NSRect)contentRect styleMask:(NSUInteger)styleMask backing:(NSBackingStoreType)backingType defer:(BOOL)flag;
 @end
 
-/** Subclass of NSView to fix Quartz rendering and mouse awareness */
+/** Subclass of NSView to support mouse awareness and text input. */
 @interface OTTD_CocoaView : NSView <NSTextInputClient>
-{
-	CocoaSubdriver *driver;
-	NSTrackingRectTag trackingtag;
-}
-- (void)setDriver:(CocoaSubdriver*)drv;
-- (void)drawRect:(NSRect)rect;
-- (BOOL)isOpaque;
-- (BOOL)acceptsFirstResponder;
-- (BOOL)becomeFirstResponder;
-- (void)setTrackingRect;
-- (void)clearTrackingRect;
-- (void)resetCursorRects;
-- (void)viewWillMoveToWindow:(NSWindow *)win;
-- (void)viewDidMoveToWindow;
-- (void)mouseEntered:(NSEvent *)theEvent;
-- (void)mouseExited:(NSEvent *)theEvent;
+- (NSRect)getRealRect:(NSRect)rect;
+- (NSRect)getVirtualRect:(NSRect)rect;
+- (CGFloat)getContentsScale;
+- (NSPoint)mousePositionFromEvent:(NSEvent *)e;
 @end
 
 /** Delegate for our NSWindow to send ask for quit on close */
 @interface OTTD_CocoaWindowDelegate : NSObject <NSWindowDelegate>
-{
-	CocoaSubdriver *driver;
-}
-
-- (void)setDriver:(CocoaSubdriver*)drv;
+- (instancetype)initWithDriver:(VideoDriver_Cocoa *)drv;
 
 - (BOOL)windowShouldClose:(id)sender;
 - (void)windowDidEnterFullScreen:(NSNotification *)aNotification;
-- (void)windowDidChangeScreenProfile:(NSNotification *)aNotification;
+- (void)windowDidChangeBackingProperties:(NSNotification *)notification;
 - (NSApplicationPresentationOptions)window:(NSWindow *)window willUseFullScreenPresentationOptions:(NSApplicationPresentationOptions)proposedOptions;
 @end
 

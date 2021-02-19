@@ -151,6 +151,10 @@ namespace {
 			/* Total duration covered by collected points */
 			TimingMeasurement total = 0;
 
+			/* We have nothing to compare the first point against */
+			point--;
+			if (point < 0) point = NUM_FRAMERATE_POINTS - 1;
+
 			while (point != last_point) {
 				/* Only record valid data points, but pretend the gaps in measurements aren't there */
 				if (this->durations[point] != INVALID_DURATION) {
@@ -185,7 +189,7 @@ namespace {
 		PerformanceData(1),                     // PFE_ACC_GL_AIRCRAFT
 		PerformanceData(1),                     // PFE_GL_LANDSCAPE
 		PerformanceData(1),                     // PFE_GL_LINKGRAPH
-		PerformanceData(GL_RATE),               // PFE_DRAWING
+		PerformanceData(1000.0 / 30),           // PFE_DRAWING
 		PerformanceData(1),                     // PFE_ACC_DRAWWORLD
 		PerformanceData(60.0),                  // PFE_VIDEO
 		PerformanceData(1000.0 * 8192 / 44100), // PFE_SOUND
@@ -464,7 +468,7 @@ struct FramerateWindow : Window {
 		this->speed_gameloop.SetRate(gl_rate / _pf_data[PFE_GAMELOOP].expected_rate, 1.0);
 		if (this->small) return; // in small mode, this is everything needed
 
-		this->rate_drawing.SetRate(_pf_data[PFE_DRAWING].GetRate(), _pf_data[PFE_DRAWING].expected_rate);
+		this->rate_drawing.SetRate(_pf_data[PFE_DRAWING].GetRate(), _settings_client.gui.refresh_rate);
 
 		int new_active = 0;
 		for (PerformanceElement e = PFE_FIRST; e < PFE_MAX; e++) {

@@ -88,11 +88,11 @@ jobs:
 
         echo "::group::Install dependencies"
         sudo apt-get install -y --no-install-recommends \
+          liballegro4-dev \
           libfontconfig-dev \
           libicu-dev \
           liblzma-dev \
           liblzo2-dev \
-          libsdl1.2-dev \
           libsdl2-dev \
           zlib1g-dev \
           # EOF
@@ -154,8 +154,9 @@ jobs:
       uses: lukka/run-vcpkg@v6
       with:
         vcpkgDirectory: '/usr/local/share/vcpkg'
-        doNotUpdateVcpkg: true
-        vcpkgArguments: 'freetype liblzma lzo'
+        doNotUpdateVcpkg: false
+        vcpkgGitCommitId: 2a42024b53ebb512fb5dd63c523338bf26c8489c
+        vcpkgArguments: 'liblzma libpng lzo'
         vcpkgTriplet: '${{ matrix.arch }}-osx'
 
     - name: Install OpenGFX
@@ -200,11 +201,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-        - arch: x86
-        - arch: x64
+        os: [windows-latest, windows-2016]
+        arch: [x86, x64]
 
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
 
     steps:
     - name: Checkout
