@@ -15,7 +15,7 @@
 #include "3rdparty/mingw-std-threads/mingw.mutex.h"
 #endif
 
-static const uint MODAL_PROGRESS_REDRAW_TIMEOUT = 200; ///< Timeout between redraws
+static const uint MODAL_PROGRESS_REDRAW_TIMEOUT = 100; ///< Timeout between redraws
 
 /**
  * Check if we are currently in a modal progress state.
