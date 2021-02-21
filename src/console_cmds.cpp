@@ -2531,6 +2531,58 @@ DEF_CONSOLE_CMD(ConDumpCargoTypes)
 	return true;
 }
 
+/**
+ * Dump the state of a tile on the map.
+ * param x tile number or tile x coordinate.
+ * param y optional y coordinate.
+ * @note When only one argument is given it is interpreted as the tile number.
+ *       When two arguments are given, they are interpreted as the tile's x
+ *       and y coordinates.
+ * @return True when either console help was shown or a proper amount of parameters given.
+ */
+DEF_CONSOLE_CMD(ConDumpTile)
+{
+	char buffer[128];
+
+	switch (argc) {
+		case 0:
+			IConsoleHelp("Dump the map state of a given tile.");
+			IConsoleHelp("Usage: 'dump_tile <tile>' or 'dump_tile <x> <y>'");
+			IConsoleHelp("Numbers can be either decimal (34161) or hexadecimal (0x4a5B).");
+			return true;
+
+		case 2: {
+			uint32 result;
+			if (GetArgumentInteger(&result, argv[1])) {
+				if (result >= MapSize()) {
+					IConsolePrint(CC_ERROR, "Tile does not exist");
+					return true;
+				}
+				DumpTileInfo(buffer, lastof(buffer), (TileIndex)result);
+				IConsolePrintF(CC_DEFAULT, "  %s", buffer);
+				return true;
+			}
+			break;
+		}
+
+		case 3: {
+			uint32 x, y;
+			if (GetArgumentInteger(&x, argv[1]) && GetArgumentInteger(&y, argv[2])) {
+				if (x >= MapSizeX() || y >= MapSizeY()) {
+					IConsolePrint(CC_ERROR, "Tile does not exist");
+					return true;
+				}
+				DumpTileInfo(buffer, lastof(buffer), TileXY(x, y));
+				IConsolePrintF(CC_DEFAULT, "  %s", buffer);
+				return true;
+			}
+			break;
+		}
+	}
+
+	return false;
+}
+
 DEF_CONSOLE_CMD(ConCheckCaches)
 {
 	if (argc == 0) {
@@ -3304,6 +3356,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("dump_rail_types", ConDumpRailTypes, nullptr, true);
 	IConsoleCmdRegister("dump_bridge_types", ConDumpBridgeTypes, nullptr, true);
 	IConsoleCmdRegister("dump_cargo_types", ConDumpCargoTypes, nullptr, true);
+	IConsoleCmdRegister("dump_tile", ConDumpTile, nullptr, true);
 	IConsoleCmdRegister("check_caches", ConCheckCaches, nullptr, true);
 	IConsoleCmdRegister("show_town_window", ConShowTownWindow, nullptr, true);
 	IConsoleCmdRegister("show_station_window", ConShowStationWindow, nullptr, true);
