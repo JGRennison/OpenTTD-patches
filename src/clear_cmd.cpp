@@ -203,7 +203,13 @@ static void UpdateFences(TileIndex tile)
 /** Convert to or from snowy tiles. */
 static void TileLoopClearAlps(TileIndex tile)
 {
-	int k = GetTileZ(tile) - GetSnowLine() + 1;
+	int k;
+	if ((int)TileHeight(tile) < GetSnowLine() - 1) {
+		/* Fast path to avoid needing to check all 4 corners */
+		k = -1;
+	} else {
+		k = GetTileZ(tile) - GetSnowLine() + 1;
+	}
 
 	if (k < 0) {
 		/* Below the snow line, do nothing if no snow. */
