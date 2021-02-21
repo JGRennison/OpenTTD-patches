@@ -338,7 +338,7 @@ void VideoDriver_SDL::CheckPaletteAnim()
 	this->MakeDirty(0, 0, _screen.width, _screen.height);
 }
 
-static void Paint()
+void VideoDriver_SDL::Paint()
 {
 	PerformanceMeasurer framerate(PFE_VIDEO);
 
@@ -372,10 +372,10 @@ static void Paint()
 	}
 	SDL_UpdateWindowSurfaceRects(_sdl_window, &r, 1);
 
-	MemSetT(&_dirty_rect, 0);
+	_dirty_rect = {};
 }
 
-static void PaintThread()
+void VideoDriver_SDL::PaintThread()
 {
 	/* First tell the main thread we're started */
 	std::unique_lock<std::recursive_mutex> lock(*_draw_mutex);
@@ -386,9 +386,14 @@ static void PaintThread()
 
 	while (_draw_continue) {
 		/* Then just draw and wait till we stop */
-		Paint();
+		this->Paint();
 		_draw_signal->wait(lock);
 	}
+}
+
+/* static */ void VideoDriver_SDL::PaintThreadThunk(VideoDriver_SDL *drv)
+{
+	drv->PaintThread();
 }
 
 static const Dimension default_resolutions[] = {
@@ -556,7 +561,7 @@ bool VideoDriver_SDL::CreateMainSurface(uint w, uint h, bool resize)
 	 * gotten smaller, reset our dirty rects. GameSizeChanged() a bit lower
 	 * will mark the whole screen dirty again anyway, but this time with the
 	 * new dimensions. */
-	MemSetT(&_dirty_rect, 0);
+	_dirty_rect = {};
 
 	_screen.width = _sdl_surface->w;
 	_screen.height = _sdl_surface->h;
@@ -1059,11 +1064,43 @@ void VideoDriver_SDL::Stop()
 	}
 }
 
+void VideoDriver_SDL::InputLoop()
+{
+	uint32 mod = SDL_GetModState();
+	const Uint8 *keys = SDL_GetKeyboardState(NULL);
+
+	bool old_ctrl_pressed = _ctrl_pressed;
+	bool old_shift_pressed = _shift_pressed;
+
+	_ctrl_pressed  = !!(mod & KMOD_CTRL) != _invert_ctrl;
+	_shift_pressed = !!(mod & KMOD_SHIFT) != _invert_shift;
+
+#if defined(_DEBUG)
+	if (_shift_pressed)
+#else
+	/* Speedup when pressing tab, except when using ALT+TAB
+	 * to switch to another application. */
+	if (keys[SDL_SCANCODE_TAB] && (mod & KMOD_ALT) == 0)
+#endif /* defined(_DEBUG) */
+	{
+		if (!_networking && _game_mode != GM_MENU) _fast_forward |= 2;
+	} else if (_fast_forward & 2) {
+		_fast_forward = 0;
+	}
+
+	/* Determine which directional keys are down. */
+	_dirkeys =
+		(keys[SDL_SCANCODE_LEFT]  ? 1 : 0) |
+		(keys[SDL_SCANCODE_UP]    ? 2 : 0) |
+		(keys[SDL_SCANCODE_RIGHT] ? 4 : 0) |
+		(keys[SDL_SCANCODE_DOWN]  ? 8 : 0);
+
+	if (old_ctrl_pressed != _ctrl_pressed) HandleCtrlChanged();
+	if (old_shift_pressed != _shift_pressed) HandleShiftChanged();
+}
+
 void VideoDriver_SDL::LoopOnce()
 {
-	uint32 mod;
-	int numkeys;
-	const Uint8 *keys;
 	InteractiveRandom(); // randomness
 
 	while (PollEvent() == -1) {}
@@ -1081,106 +1118,23 @@ void VideoDriver_SDL::LoopOnce()
 		return;
 	}
 
-	mod = SDL_GetModState();
-	keys = SDL_GetKeyboardState(&numkeys);
-
-#if defined(_DEBUG)
-	if (_shift_pressed)
-#else
-	/* Speedup when pressing tab, except when using ALT+TAB
-	 * to switch to another application */
-	if (keys[SDL_SCANCODE_TAB] && (mod & KMOD_ALT) == 0)
-#endif /* defined(_DEBUG) */
-	{
-		if (!_networking && _game_mode != GM_MENU) _fast_forward |= 2;
-	} else if (_fast_forward & 2) {
-		_fast_forward = 0;
-	}
-
-	cur_ticks = std::chrono::steady_clock::now();
-
-	/* If more than a millisecond has passed, increase the _realtime_tick. */
-	if (cur_ticks - last_realtime_tick > std::chrono::milliseconds(1)) {
-		auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(cur_ticks - last_realtime_tick);
-		IncreaseRealtimeTick(delta.count());
-		last_realtime_tick += delta;
-	}
-
-	if (cur_ticks >= next_game_tick || (_fast_forward && !_pause_mode)) {
-		if (_fast_forward && !_pause_mode) {
-			next_game_tick = cur_ticks + this->GetGameInterval();
-		} else {
-			next_game_tick += this->GetGameInterval();
-			/* Avoid next_game_tick getting behind more and more if it cannot keep up. */
-			if (next_game_tick < cur_ticks - ALLOWED_DRIFT * this->GetGameInterval()) next_game_tick = cur_ticks;
-		}
-
-		/* The gameloop is the part that can run asynchronously. The rest
-		 * except sleeping can't. */
-		if (_draw_mutex != nullptr) draw_lock.unlock();
-		GameLoop();
-		if (_draw_mutex != nullptr) draw_lock.lock();
-		GameLoopPaletteAnimations();
-	}
-
-	/* Prevent drawing when switching mode, as windows can be removed when they should still appear. */
-	if (cur_ticks >= next_draw_tick && (_switch_mode == SM_NONE || HasModalProgress())) {
-		next_draw_tick += this->GetDrawInterval();
-		/* Avoid next_draw_tick getting behind more and more if it cannot keep up. */
-		if (next_draw_tick < cur_ticks - ALLOWED_DRIFT * this->GetDrawInterval()) next_draw_tick = cur_ticks;
-
-		bool old_ctrl_pressed = _ctrl_pressed;
-		bool old_shift_pressed = _shift_pressed;
-
-		_ctrl_pressed  = !!(mod & KMOD_CTRL) != _invert_ctrl;
-		_shift_pressed = !!(mod & KMOD_SHIFT) != _invert_shift;
-
-		/* determine which directional keys are down */
-		_dirkeys =
-			(keys[SDL_SCANCODE_LEFT]  ? 1 : 0) |
-			(keys[SDL_SCANCODE_UP]    ? 2 : 0) |
-			(keys[SDL_SCANCODE_RIGHT] ? 4 : 0) |
-			(keys[SDL_SCANCODE_DOWN]  ? 8 : 0);
-		if (old_ctrl_pressed != _ctrl_pressed) HandleCtrlChanged();
-		if (old_shift_pressed != _shift_pressed) HandleShiftChanged();
-
-		InputLoop();
-		UpdateWindows();
-		this->CheckPaletteAnim();
-
+	if (VideoDriver::Tick()) {
 		if (_draw_mutex != nullptr && !HasModalProgress()) {
 			_draw_signal->notify_one();
 		} else {
-			Paint();
+			this->Paint();
 		}
 	}
 
 /* Emscripten is running an event-based mainloop; there is already some
  * downtime between each iteration, so no need to sleep. */
 #ifndef __EMSCRIPTEN__
-	/* If we are not in fast-forward, create some time between calls to ease up CPU usage. */
-	if (!_fast_forward || _pause_mode) {
-		/* See how much time there is till we have to process the next event, and try to hit that as close as possible. */
-		auto next_tick = std::min(next_draw_tick, next_game_tick);
-		auto now = std::chrono::steady_clock::now();
-
-		if (next_tick > now) {
-			if (_draw_mutex != nullptr) draw_lock.unlock();
-			std::this_thread::sleep_for(next_tick - now);
-			if (_draw_mutex != nullptr) draw_lock.lock();
-		}
-	}
+	this->SleepTillNextTick();
 #endif
 }
 
 void VideoDriver_SDL::MainLoop()
 {
-	cur_ticks = std::chrono::steady_clock::now();
-	last_realtime_tick = cur_ticks;
-	next_game_tick = cur_ticks;
-
-	this->CheckPaletteAnim();
-
 	if (_draw_threaded) {
 		/* Initialise the mutex first, because that's the thing we *need*
 		 * directly in the newly created thread. */
@@ -1192,7 +1146,7 @@ void VideoDriver_SDL::MainLoop()
 			_draw_signal = new std::condition_variable_any();
 			_draw_continue = true;
 
-			_draw_threaded = StartNewThread(&draw_thread, "ottd:draw-sdl", &PaintThread);
+			_draw_threaded = StartNewThread(&draw_thread, "ottd:draw-sdl", &VideoDriver_SDL::PaintThreadThunk, this);
 
 			/* Free the mutex if we won't be able to use it. */
 			if (!_draw_threaded) {
@@ -1316,4 +1270,15 @@ Dimension VideoDriver_SDL::GetScreenSize() const
 	if (SDL_GetCurrentDisplayMode(this->startup_display, &mode) != 0) return VideoDriver::GetScreenSize();
 
 	return { static_cast<uint>(mode.w), static_cast<uint>(mode.h) };
+}
+
+bool VideoDriver_SDL::LockVideoBuffer()
+{
+	if (_draw_threaded) this->draw_lock.lock();
+	return true;
+}
+
+void VideoDriver_SDL::UnlockVideoBuffer()
+{
+	if (_draw_threaded) this->draw_lock.unlock();
 }

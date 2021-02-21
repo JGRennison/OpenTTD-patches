@@ -43,8 +43,18 @@ public:
 
 protected:
 	Dimension GetScreenSize() const override;
-
 	float GetDPIScale() override;
+	void InputLoop() override;
+	bool LockVideoBuffer() override;
+	void UnlockVideoBuffer() override;
+	void Paint() override;
+	void PaintThread() override;
+	void CheckPaletteAnim() override;
+
+private:
+	std::unique_lock<std::recursive_mutex> draw_lock;
+
+	static void PaintThreadThunk(VideoDriver_Win32 *drv);
 };
 
 /** The factory for Windows' video driver. */

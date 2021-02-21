@@ -32,10 +32,8 @@ private:
 	void *pixel_buffer;   ///< used for direct pixel access
 	void *window_buffer;  ///< Colour translation from palette to screen
 
-	static const int MAX_DIRTY_RECTS = 100;
+	Rect dirty_rect;      ///< Region of the screen that needs redrawing.
 
-	Rect dirty_rects[MAX_DIRTY_RECTS]; ///< dirty rectangles
-	uint num_dirty_rects;  ///< Number of dirty rectangles
 	uint32 palette[256];  ///< Colour Palette
 
 public:
@@ -74,6 +72,9 @@ public:
 protected:
 	Dimension GetScreenSize() const override;
 	float GetDPIScale() override;
+	void InputLoop() override;
+	void Paint() override;
+	void CheckPaletteAnim() override;
 
 private:
 	bool PollEvent();
@@ -86,9 +87,7 @@ private:
 	bool MakeWindow(int width, int height);
 
 	void UpdatePalette(uint first_color, uint num_colors);
-	void CheckPaletteAnim();
 
-	void Draw(bool force_update = false);
 	void BlitIndexedToView32(int left, int top, int right, int bottom);
 };
 

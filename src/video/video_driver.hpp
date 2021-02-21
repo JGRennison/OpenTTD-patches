@@ -156,6 +156,50 @@ protected:
 		}
 	}
 
+	/**
+	 * Handle input logic, is CTRL pressed, should we fast-forward, etc.
+	 */
+	virtual void InputLoop() {}
+
+	/**
+	 * Make sure the video buffer is ready for drawing.
+	 * @returns True if the video buffer has to be unlocked.
+	 */
+	virtual bool LockVideoBuffer() {
+		return false;
+	}
+
+	/**
+	 * Unlock a previously locked video buffer.
+	 */
+	virtual void UnlockVideoBuffer() {}
+
+	/**
+	 * Paint the window.
+	 */
+	virtual void Paint() {}
+
+	/**
+	 * Thread function for threaded drawing.
+	 */
+	virtual void PaintThread() {}
+
+	/**
+	 * Process any pending palette animation.
+	 */
+	virtual void CheckPaletteAnim() {}
+
+	/**
+	 * Run the game for a single tick, processing boththe game-tick and draw-tick.
+	 * @returns True if the driver should redraw the screen.
+	 */
+	bool Tick();
+
+	/**
+	 * Sleep till the next tick is about to happen.
+	 */
+	void SleepTillNextTick();
+
 	std::chrono::steady_clock::duration GetGameInterval()
 	{
 		return std::chrono::milliseconds(MILLISECONDS_PER_TICK);
@@ -165,6 +209,10 @@ protected:
 	{
 		return std::chrono::microseconds(1000000 / _settings_client.gui.refresh_rate);
 	}
+
+	std::chrono::steady_clock::time_point last_realtime_tick;
+	std::chrono::steady_clock::time_point next_game_tick;
+	std::chrono::steady_clock::time_point next_draw_tick;
 };
 
 #endif /* VIDEO_VIDEO_DRIVER_HPP */

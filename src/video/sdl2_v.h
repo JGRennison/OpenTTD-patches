@@ -43,6 +43,12 @@ public:
 
 protected:
 	Dimension GetScreenSize() const override;
+	void InputLoop() override;
+	bool LockVideoBuffer() override;
+	void UnlockVideoBuffer() override;
+	void Paint() override;
+	void PaintThread() override;
+	void CheckPaletteAnim() override;
 
 private:
 	int PollEvent();
@@ -50,7 +56,6 @@ private:
 	void MainLoopCleanup();
 	bool CreateMainSurface(uint w, uint h, bool resize);
 	bool CreateMainWindow(uint w, uint h);
-	void CheckPaletteAnim();
 
 #ifdef __EMSCRIPTEN__
 	/* Convert a constant pointer back to a non-constant pointer to a member function. */
@@ -62,14 +67,11 @@ private:
 	 */
 	bool edit_box_focused;
 
-	std::chrono::steady_clock::time_point cur_ticks;
-	std::chrono::steady_clock::time_point last_realtime_tick;
-	std::chrono::steady_clock::time_point next_game_tick;
-	std::chrono::steady_clock::time_point next_draw_tick;
-
 	int startup_display;
 	std::thread draw_thread;
 	std::unique_lock<std::recursive_mutex> draw_lock;
+
+	static void PaintThreadThunk(VideoDriver_SDL *drv);
 };
 
 /** Factory for the SDL video driver. */

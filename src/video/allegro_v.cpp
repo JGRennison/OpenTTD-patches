@@ -56,7 +56,7 @@ void VideoDriver_Allegro::MakeDirty(int left, int top, int width, int height)
 	_num_dirty_rects++;
 }
 
-static void DrawSurfaceToScreen()
+void VideoDriver_Allegro::Paint()
 {
 	PerformanceMeasurer framerate(PFE_VIDEO);
 
@@ -95,7 +95,7 @@ static void InitPalette()
 	UpdatePalette(0, 256);
 }
 
-static void CheckPaletteAnim()
+void VideoDriver_Allegro::CheckPaletteAnim()
 {
 	if (_cur_palette.count_dirty != 0) {
 		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
@@ -447,95 +447,49 @@ void VideoDriver_Allegro::Stop()
 	if (--_allegro_instance_count == 0) allegro_exit();
 }
 
+void VideoDriver_Allegro::InputLoop()
+{
+	bool old_ctrl_pressed = _ctrl_pressed;
+
+	_ctrl_pressed  = !!(key_shifts & KB_CTRL_FLAG) != _invert_ctrl;
+	_shift_pressed = !!(key_shifts & KB_SHIFT_FLAG) != _invert_shift;
+
+#if defined(_DEBUG)
+	if (_shift_pressed)
+#else
+	/* Speedup when pressing tab, except when using ALT+TAB
+	 * to switch to another application. */
+	if (key[KEY_TAB] && (key_shifts & KB_ALT_FLAG) == 0)
+#endif
+	{
+		if (!_networking && _game_mode != GM_MENU) _fast_forward |= 2;
+	} else if (_fast_forward & 2) {
+		_fast_forward = 0;
+	}
+
+	/* Determine which directional keys are down. */
+	_dirkeys =
+		(key[KEY_LEFT]  ? 1 : 0) |
+		(key[KEY_UP]    ? 2 : 0) |
+		(key[KEY_RIGHT] ? 4 : 0) |
+		(key[KEY_DOWN]  ? 8 : 0);
+
+	if (old_ctrl_pressed != _ctrl_pressed) HandleCtrlChanged();
+	if (old_shift_pressed != _shift_pressed) HandleShiftChanged();
+}
+
 void VideoDriver_Allegro::MainLoop()
 {
-	auto cur_ticks = std::chrono::steady_clock::now();
-	auto last_realtime_tick = cur_ticks;
-	auto next_game_tick = cur_ticks;
-	auto next_draw_tick = cur_ticks;
-
-	CheckPaletteAnim();
-
 	for (;;) {
 		InteractiveRandom(); // randomness
 
 		PollEvent();
 		if (_exit_game) return;
 
-#if defined(_DEBUG)
-		if (_shift_pressed)
-#else
-		/* Speedup when pressing tab, except when using ALT+TAB
-		 * to switch to another application */
-		if (key[KEY_TAB] && (key_shifts & KB_ALT_FLAG) == 0)
-#endif
-		{
-			if (!_networking && _game_mode != GM_MENU) _fast_forward |= 2;
-		} else if (_fast_forward & 2) {
-			_fast_forward = 0;
+		if (this->Tick()) {
+			this->Paint();
 		}
-
-		cur_ticks = std::chrono::steady_clock::now();
-
-		/* If more than a millisecond has passed, increase the _realtime_tick. */
-		if (cur_ticks - last_realtime_tick > std::chrono::milliseconds(1)) {
-			auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(cur_ticks - last_realtime_tick);
-			IncreaseRealtimeTick(delta.count());
-			last_realtime_tick += delta;
-		}
-
-		if (cur_ticks >= next_game_tick || (_fast_forward && !_pause_mode)) {
-			if (_fast_forward && !_pause_mode) {
-				next_game_tick = cur_ticks + this->GetGameInterval();
-			} else {
-				next_game_tick += this->GetGameInterval();
-				/* Avoid next_game_tick getting behind more and more if it cannot keep up. */
-				if (next_game_tick < cur_ticks - ALLOWED_DRIFT * this->GetGameInterval()) next_game_tick = cur_ticks;
-			}
-
-			GameLoop();
-			GameLoopPaletteAnimations();
-		}
-
-		/* Prevent drawing when switching mode, as windows can be removed when they should still appear. */
-		if (cur_ticks >= next_draw_tick && (_switch_mode == SM_NONE || HasModalProgress())) {
-			next_draw_tick += this->GetDrawInterval();
-			/* Avoid next_draw_tick getting behind more and more if it cannot keep up. */
-			if (next_draw_tick < cur_ticks - ALLOWED_DRIFT * this->GetDrawInterval()) next_draw_tick = cur_ticks;
-
-			bool old_ctrl_pressed = _ctrl_pressed;
-			bool old_shift_pressed = _shift_pressed;
-
-			_ctrl_pressed  = !!(key_shifts & KB_CTRL_FLAG) != _invert_ctrl;
-			_shift_pressed = !!(key_shifts & KB_SHIFT_FLAG) != _invert_shift;
-
-			/* determine which directional keys are down */
-			_dirkeys =
-				(key[KEY_LEFT]  ? 1 : 0) |
-				(key[KEY_UP]    ? 2 : 0) |
-				(key[KEY_RIGHT] ? 4 : 0) |
-				(key[KEY_DOWN]  ? 8 : 0);
-
-			if (old_ctrl_pressed != _ctrl_pressed) HandleCtrlChanged();
-			if (old_shift_pressed != _shift_pressed) HandleShiftChanged();
-
-			InputLoop();
-			UpdateWindows();
-			CheckPaletteAnim();
-
-			DrawSurfaceToScreen();
-		}
-
-		/* If we are not in fast-forward, create some time between calls to ease up CPU usage. */
-		if (!_fast_forward || _pause_mode) {
-			/* See how much time there is till we have to process the next event, and try to hit that as close as possible. */
-			auto next_tick = std::min(next_draw_tick, next_game_tick);
-			auto now = std::chrono::steady_clock::now();
-
-			if (next_tick > now) {
-				std::this_thread::sleep_for(next_tick - now);
-			}
-		}
+		this->SleepTillNextTick();
 	}
 }
 

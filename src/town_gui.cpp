@@ -1027,7 +1027,7 @@ void CcFoundTown(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2
 {
 	if (result.Failed()) return;
 
-	if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_SPLAT_OTHER, tile);
+	if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_CONSTRUCTION_OTHER, tile);
 	if (!_settings_client.gui.persistent_buildingtools) ResetObjectToPlace();
 }
 
@@ -1987,7 +1987,7 @@ static void PlaceProc_House(TileIndex tile)
 		_cur_house, // p1 - house type and town index (town not yet set)
 		InteractiveRandom(), // p2 - random bits for the house
 		CMD_BUILD_HOUSE | CMD_MSG(STR_ERROR_CAN_T_BUILD_HOUSE_HERE),
-		CcPlaySound_SPLAT_RAIL
+		CcPlaySound_CONSTRUCTION_RAIL
 	);
 
 	if (!_ctrl_pressed) {

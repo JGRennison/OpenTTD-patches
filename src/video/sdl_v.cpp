@@ -128,8 +128,10 @@ static void InitPalette()
 	UpdatePalette(true);
 }
 
-static void CheckPaletteAnim()
+void VideoDriver_SDL::CheckPaletteAnim()
 {
+	_local_palette = _cur_palette;
+
 	if (_cur_palette.count_dirty != 0) {
 		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 
@@ -152,7 +154,7 @@ static void CheckPaletteAnim()
 	}
 }
 
-static void DrawSurfaceToScreen()
+void VideoDriver_SDL::Paint()
 {
 	PerformanceMeasurer framerate(PFE_VIDEO);
 
@@ -178,7 +180,7 @@ static void DrawSurfaceToScreen()
 	}
 }
 
-static void DrawSurfaceToScreenThread()
+void VideoDriver_SDL::PaintThread()
 {
 	/* First tell the main thread we're started */
 	std::unique_lock<std::recursive_mutex> lock(*_draw_mutex);
@@ -188,11 +190,15 @@ static void DrawSurfaceToScreenThread()
 	_draw_signal->wait(*_draw_mutex);
 
 	while (_draw_continue) {
-		CheckPaletteAnim();
 		/* Then just draw and wait till we stop */
-		DrawSurfaceToScreen();
+		this->Paint();
 		_draw_signal->wait(lock);
 	}
+}
+
+/* static */ void VideoDriver_SDL::PaintThreadThunk(VideoDriver_SDL *drv)
+{
+	drv->PaintThread();
 }
 
 static const Dimension _default_resolutions[] = {
@@ -410,11 +416,7 @@ bool VideoDriver_SDL::ClaimMousePointer()
 }
 
 struct SDLVkMapping {
-#if SDL_VERSION_ATLEAST(1, 3, 0)
-	SDL_Keycode vk_from;
-#else
 	uint16 vk_from;
-#endif
 	byte vk_count;
 	byte map_to;
 };
@@ -653,20 +655,45 @@ void VideoDriver_SDL::Stop()
 	}
 }
 
+void VideoDriver_SDL::InputLoop()
+{
+	uint32 mod = SDL_GetModState();
+	int numkeys;
+	Uint8 *keys = SDL_GetKeyState(&numkeys);
+
+	bool old_ctrl_pressed = _ctrl_pressed;
+	bool old_shift_pressed = _shift_pressed;
+
+	_ctrl_pressed  = !!(mod & KMOD_CTRL) != _invert_ctrl;
+	_shift_pressed = !!(mod & KMOD_SHIFT) != _invert_shift;
+
+#if defined(_DEBUG)
+	if (_shift_pressed)
+#else
+	/* Speedup when pressing tab, except when using ALT+TAB
+	 * to switch to another application. */
+	if (keys[SDLK_TAB] && (mod & KMOD_ALT) == 0)
+#endif /* defined(_DEBUG) */
+	{
+		if (!_networking && _game_mode != GM_MENU) _fast_forward |= 2;
+	} else if (_fast_forward & 2) {
+		_fast_forward = 0;
+	}
+
+	/* Determine which directional keys are down. */
+	_dirkeys =
+		(keys[SDLK_LEFT]  ? 1 : 0) |
+		(keys[SDLK_UP]    ? 2 : 0) |
+		(keys[SDLK_RIGHT] ? 4 : 0) |
+		(keys[SDLK_DOWN]  ? 8 : 0);
+
+	if (old_ctrl_pressed != _ctrl_pressed) HandleCtrlChanged();
+	if (old_shift_pressed != _shift_pressed) HandleShiftChanged();
+}
+
 void VideoDriver_SDL::MainLoop()
 {
-	auto cur_ticks = std::chrono::steady_clock::now();
-	auto last_realtime_tick = cur_ticks;
-	auto next_game_tick = cur_ticks;
-	auto next_draw_tick = cur_ticks;
-	uint32 mod;
-	int numkeys;
-	Uint8 *keys;
-
-	CheckPaletteAnim();
-
 	std::thread draw_thread;
-	std::unique_lock<std::recursive_mutex> draw_lock;
 	if (_draw_threaded) {
 		/* Initialise the mutex first, because that's the thing we *need*
 		 * directly in the newly created thread. */
@@ -674,16 +701,16 @@ void VideoDriver_SDL::MainLoop()
 		if (_draw_mutex == nullptr) {
 			_draw_threaded = false;
 		} else {
-			draw_lock = std::unique_lock<std::recursive_mutex>(*_draw_mutex);
+			this->draw_lock = std::unique_lock<std::recursive_mutex>(*_draw_mutex);
 			_draw_signal = new std::condition_variable_any();
 			_draw_continue = true;
 
-			_draw_threaded = StartNewThread(&draw_thread, "ottd:draw-sdl", &DrawSurfaceToScreenThread);
+			_draw_threaded = StartNewThread(&draw_thread, "ottd:draw-sdl", &VideoDriver_SDL::PaintThreadThunk, this);
 
 			/* Free the mutex if we won't be able to use it. */
 			if (!_draw_threaded) {
-				draw_lock.unlock();
-				draw_lock.release();
+				this->draw_lock.unlock();
+				this->draw_lock.release();
 				delete _draw_mutex;
 				delete _draw_signal;
 				_draw_mutex = nullptr;
@@ -703,107 +730,14 @@ void VideoDriver_SDL::MainLoop()
 		while (PollEvent() == -1) {}
 		if (_exit_game) break;
 
-		mod = SDL_GetModState();
-#if SDL_VERSION_ATLEAST(1, 3, 0)
-		keys = SDL_GetKeyboardState(&numkeys);
-#else
-		keys = SDL_GetKeyState(&numkeys);
-#endif
-#if defined(_DEBUG)
-		if (_shift_pressed)
-#else
-		/* Speedup when pressing tab, except when using ALT+TAB
-		 * to switch to another application */
-#if SDL_VERSION_ATLEAST(1, 3, 0)
-		if (keys[SDL_SCANCODE_TAB] && (mod & KMOD_ALT) == 0)
-#else
-		if (keys[SDLK_TAB] && (mod & KMOD_ALT) == 0)
-#endif /* SDL_VERSION_ATLEAST(1, 3, 0) */
-#endif /* defined(_DEBUG) */
-		{
-			if (!_networking && _game_mode != GM_MENU) _fast_forward |= 2;
-		} else if (_fast_forward & 2) {
-			_fast_forward = 0;
-		}
-
-		cur_ticks = std::chrono::steady_clock::now();
-
-		/* If more than a millisecond has passed, increase the _realtime_tick. */
-		if (cur_ticks - last_realtime_tick > std::chrono::milliseconds(1)) {
-			auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(cur_ticks - last_realtime_tick);
-			IncreaseRealtimeTick(delta.count());
-			last_realtime_tick += delta;
-		}
-
-		if (cur_ticks >= next_game_tick || (_fast_forward && !_pause_mode)) {
-			if (_fast_forward && !_pause_mode) {
-				next_game_tick = cur_ticks + this->GetGameInterval();
-			} else {
-				next_game_tick += this->GetGameInterval();
-				/* Avoid next_game_tick getting behind more and more if it cannot keep up. */
-				if (next_game_tick < cur_ticks - ALLOWED_DRIFT * this->GetGameInterval()) next_game_tick = cur_ticks;
-			}
-
-			/* The gameloop is the part that can run asynchronously. The rest
-			 * except sleeping can't. */
-			if (_draw_mutex != nullptr) draw_lock.unlock();
-			GameLoop();
-			if (_draw_mutex != nullptr) draw_lock.lock();
-			GameLoopPaletteAnimations();
-		}
-
-		/* Prevent drawing when switching mode, as windows can be removed when they should still appear. */
-		if (cur_ticks >= next_draw_tick && (_switch_mode == SM_NONE || HasModalProgress())) {
-			next_draw_tick += this->GetDrawInterval();
-			/* Avoid next_draw_tick getting behind more and more if it cannot keep up. */
-			if (next_draw_tick < cur_ticks - ALLOWED_DRIFT * this->GetDrawInterval()) next_draw_tick = cur_ticks;
-
-			bool old_ctrl_pressed = _ctrl_pressed;
-			bool old_shift_pressed = _shift_pressed;
-
-			_ctrl_pressed  = !!(mod & KMOD_CTRL) != _invert_ctrl;
-			_shift_pressed = !!(mod & KMOD_SHIFT) != _invert_shift;
-
-			/* determine which directional keys are down */
-			_dirkeys =
-#if SDL_VERSION_ATLEAST(1, 3, 0)
-				(keys[SDL_SCANCODE_LEFT]  ? 1 : 0) |
-				(keys[SDL_SCANCODE_UP]    ? 2 : 0) |
-				(keys[SDL_SCANCODE_RIGHT] ? 4 : 0) |
-				(keys[SDL_SCANCODE_DOWN]  ? 8 : 0);
-#else
-				(keys[SDLK_LEFT]  ? 1 : 0) |
-				(keys[SDLK_UP]    ? 2 : 0) |
-				(keys[SDLK_RIGHT] ? 4 : 0) |
-				(keys[SDLK_DOWN]  ? 8 : 0);
-#endif
-			if (old_ctrl_pressed != _ctrl_pressed) HandleCtrlChanged();
-			if (old_shift_pressed != _shift_pressed) HandleShiftChanged();
-
-			InputLoop();
-			UpdateWindows();
-			_local_palette = _cur_palette;
-
+		if (this->Tick()) {
 			if (_draw_mutex != nullptr && !HasModalProgress()) {
 				_draw_signal->notify_one();
 			} else {
-				CheckPaletteAnim();
-				DrawSurfaceToScreen();
+				this->Paint();
 			}
 		}
-
-		/* If we are not in fast-forward, create some time between calls to ease up CPU usage. */
-		if (!_fast_forward || _pause_mode) {
-			/* See how much time there is till we have to process the next event, and try to hit that as close as possible. */
-			auto next_tick = std::min(next_draw_tick, next_game_tick);
-			auto now = std::chrono::steady_clock::now();
-
-			if (next_tick > now) {
-				if (_draw_mutex != nullptr) draw_lock.unlock();
-				std::this_thread::sleep_for(next_tick - now);
-				if (_draw_mutex != nullptr) draw_lock.lock();
-			}
-		}
+		this->SleepTillNextTick();
 	}
 
 	if (_draw_mutex != nullptr) {
@@ -811,8 +745,8 @@ void VideoDriver_SDL::MainLoop()
 		/* Sending signal if there is no thread blocked
 		 * is very valid and results in noop */
 		_draw_signal->notify_one();
-		if (draw_lock.owns_lock()) draw_lock.unlock();
-		draw_lock.release();
+		if (this->draw_lock.owns_lock()) this->draw_lock.unlock();
+		this->draw_lock.release();
 		draw_thread.join();
 
 		delete _draw_mutex;
@@ -861,6 +795,17 @@ void VideoDriver_SDL::AcquireBlitterLock()
 void VideoDriver_SDL::ReleaseBlitterLock()
 {
 	if (_draw_mutex != nullptr) _draw_mutex->unlock();
+}
+
+bool VideoDriver_SDL::LockVideoBuffer()
+{
+	if (_draw_threaded) this->draw_lock.lock();
+	return true;
+}
+
+void VideoDriver_SDL::UnlockVideoBuffer()
+{
+	if (_draw_threaded) this->draw_lock.unlock();
 }
 
 #endif /* WITH_SDL */

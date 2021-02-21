@@ -32,6 +32,11 @@ public:
 	bool ClaimMousePointer() override;
 
 	const char *GetName() const override { return "allegro"; }
+
+protected:
+	void InputLoop() override;
+	void Paint() override;
+	void CheckPaletteAnim() override;
 };
 
 /** Factory for the allegro video driver. */

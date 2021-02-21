@@ -14,6 +14,7 @@
 #include "../rev.h"
 #include "../blitter/factory.hpp"
 #include "../network/network.h"
+#include "../core/geometry_func.hpp"
 #include "../core/math_func.hpp"
 #include "../core/random_func.hpp"
 #include "../texteff.hpp"
@@ -49,7 +50,6 @@ static struct {
 	HBITMAP dib_sect;     ///< System bitmap object referencing our rendering buffer.
 	void *buffer_bits;    ///< Internal rendering buffer.
 	HPALETTE gdi_palette; ///< Palette object for 8bpp blitter.
-	RECT update_rect;     ///< Current dirty rect.
 	int width;            ///< Width in pixels of our display surface.
 	int height;           ///< Height in pixels of our display surface.
 	int width_org;        ///< Original monitor resolution width, before we changed it.
@@ -59,9 +59,7 @@ static struct {
 	bool running;         ///< Is the main loop running?
 } _wnd;
 
-bool _force_full_redraw;
 bool _window_maximize;
-uint _display_hz;
 static Dimension _bck_resolution;
 DWORD _imm_props;
 
@@ -75,6 +73,8 @@ static std::condition_variable_any *_draw_signal = nullptr;
 static volatile bool _draw_continue;
 /** Local copy of the palette for use in the drawing thread. */
 static Palette _local_palette;
+/** Region of the screen that needs redrawing. */
+static Rect _dirty_rect;
 
 static void MakePalette()
 {
@@ -256,12 +256,10 @@ bool VideoDriver_Win32::MakeWindow(bool full_screen)
 		settings.dmFields =
 			DM_BITSPERPEL |
 			DM_PELSWIDTH |
-			DM_PELSHEIGHT |
-			(_display_hz != 0 ? DM_DISPLAYFREQUENCY : 0);
+			DM_PELSHEIGHT;
 		settings.dmBitsPerPel = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 		settings.dmPelsWidth  = _wnd.width_org;
 		settings.dmPelsHeight = _wnd.height_org;
-		settings.dmDisplayFrequency = _display_hz;
 
 		/* Check for 8 bpp support. */
 		if (settings.dmBitsPerPel == 8 &&
@@ -335,9 +333,23 @@ bool VideoDriver_Win32::MakeWindow(bool full_screen)
 }
 
 /** Do palette animation and blit to the window. */
-static void PaintWindow(HDC dc)
+void VideoDriver_Win32::Paint()
 {
 	PerformanceMeasurer framerate(PFE_VIDEO);
+
+	if (IsEmptyRect(_dirty_rect)) return;
+
+	/* Convert update region from logical to device coordinates. */
+	POINT pt = {0, 0};
+	ClientToScreen(_wnd.main_wnd, &pt);
+
+	RECT r = { _dirty_rect.left, _dirty_rect.top, _dirty_rect.right, _dirty_rect.bottom };
+	OffsetRect(&r, pt.x, pt.y);
+
+	/* Create a device context that is clipped to the region we need to draw.
+	 * GetDCEx 'consumes' the update region, so we may not destroy it ourself. */
+	HRGN rgn = CreateRectRgnIndirect(&r);
+	HDC dc = GetDCEx(_wnd.main_wnd, rgn, DCX_CLIPSIBLINGS | DCX_CLIPCHILDREN | DCX_INTERSECTRGN);
 
 	HDC dc2 = CreateCompatibleDC(dc);
 	HBITMAP old_bmp = (HBITMAP)SelectObject(dc2, _wnd.dib_sect);
@@ -368,9 +380,13 @@ static void PaintWindow(HDC dc)
 	SelectPalette(dc, old_palette, TRUE);
 	SelectObject(dc2, old_bmp);
 	DeleteDC(dc2);
+
+	ReleaseDC(_wnd.main_wnd, dc);
+
+	_dirty_rect = {};
 }
 
-static void PaintWindowThread()
+void VideoDriver_Win32::PaintThread()
 {
 	/* First tell the main thread we're started */
 	std::unique_lock<std::recursive_mutex> lock(*_draw_mutex);
@@ -380,27 +396,18 @@ static void PaintWindowThread()
 	_draw_signal->wait(*_draw_mutex);
 
 	while (_draw_continue) {
-		/* Convert update region from logical to device coordinates. */
-		POINT pt = {0, 0};
-		ClientToScreen(_wnd.main_wnd, &pt);
-		OffsetRect(&_wnd.update_rect, pt.x, pt.y);
-
-		/* Create a device context that is clipped to the region we need to draw.
-		 * GetDCEx 'consumes' the update region, so we may not destroy it ourself. */
-		HRGN rgn = CreateRectRgnIndirect(&_wnd.update_rect);
-		HDC dc = GetDCEx(_wnd.main_wnd, rgn, DCX_CLIPSIBLINGS | DCX_CLIPCHILDREN | DCX_INTERSECTRGN);
-
-		PaintWindow(dc);
-
-		/* Clear update rect. */
-		SetRectEmpty(&_wnd.update_rect);
-		ReleaseDC(_wnd.main_wnd, dc);
+		this->Paint();
 
 		/* Flush GDI buffer to ensure drawing here doesn't conflict with any GDI usage in the main WndProc. */
 		GdiFlush();
 
 		_draw_signal->wait(*_draw_mutex);
 	}
+}
+
+/* static */ void VideoDriver_Win32::PaintThreadThunk(VideoDriver_Win32 *drv)
+{
+	drv->PaintThread();
 }
 
 /** Forward key presses to the window system. */
@@ -606,7 +613,6 @@ static LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 {
 	static uint32 keycode = 0;
 	static bool console = false;
-	static bool in_sizemove = false;
 
 	switch (msg) {
 		case WM_CREATE:
@@ -615,32 +621,14 @@ static LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 			_imm_props = ImmGetProperty(GetKeyboardLayout(0), IGP_PROPERTY);
 			break;
 
-		case WM_ENTERSIZEMOVE:
-			in_sizemove = true;
-			break;
+		case WM_PAINT: {
+			RECT r;
+			GetUpdateRect(hwnd, &r, FALSE);
+			static_cast<VideoDriver_Win32 *>(VideoDriver::GetInstance())->MakeDirty(r.left, r.top, r.right - r.left, r.bottom - r.top);
 
-		case WM_EXITSIZEMOVE:
-			in_sizemove = false;
-			break;
-
-		case WM_PAINT:
-			if (!in_sizemove && _draw_mutex != nullptr && !HasModalProgress()) {
-				/* Get the union of the old update rect and the new update rect. */
-				RECT r;
-				GetUpdateRect(hwnd, &r, FALSE);
-				UnionRect(&_wnd.update_rect, &_wnd.update_rect, &r);
-
-				/* Mark the window as updated, otherwise Windows would send more WM_PAINT messages. */
-				ValidateRect(hwnd, nullptr);
-				_draw_signal->notify_one();
-			} else {
-				PAINTSTRUCT ps;
-
-				BeginPaint(hwnd, &ps);
-				PaintWindow(ps.hdc);
-				EndPaint(hwnd, &ps);
-			}
+			ValidateRect(hwnd, nullptr);
 			return 0;
+		}
 
 		case WM_PALETTECHANGED:
 			if ((HWND)wParam == hwnd) return 0;
@@ -653,7 +641,9 @@ static LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 
 			SelectPalette(hDC, hOldPalette, TRUE);
 			ReleaseDC(hwnd, hDC);
-			if (nChanged != 0) InvalidateRect(hwnd, nullptr, FALSE);
+			if (nChanged != 0) {
+				static_cast<VideoDriver_Win32 *>(VideoDriver::GetInstance())->MakeDirty(0, 0, _screen.width, _screen.height);
+			}
 			return 0;
 		}
 
@@ -1122,29 +1112,59 @@ void VideoDriver_Win32::Stop()
 
 void VideoDriver_Win32::MakeDirty(int left, int top, int width, int height)
 {
-	RECT r = { left, top, left + width, top + height };
-
-	InvalidateRect(_wnd.main_wnd, &r, FALSE);
+	Rect r = {left, top, left + width, top + height};
+	_dirty_rect = BoundingRect(_dirty_rect, r);
 }
 
-static void CheckPaletteAnim()
+void VideoDriver_Win32::CheckPaletteAnim()
 {
 	if (_cur_palette.count_dirty == 0) return;
 
 	_local_palette = _cur_palette;
-	InvalidateRect(_wnd.main_wnd, nullptr, FALSE);
+	this->MakeDirty(0, 0, _screen.width, _screen.height);
+}
+
+void VideoDriver_Win32::InputLoop()
+{
+	bool old_ctrl_pressed = _ctrl_pressed;
+	bool old_shift_pressed = _shift_pressed;
+
+	_ctrl_pressed = (_wnd.has_focus && GetAsyncKeyState(VK_CONTROL) < 0) != _invert_ctrl;
+	_shift_pressed = (_wnd.has_focus && GetAsyncKeyState(VK_SHIFT) < 0) != _invert_shift;
+
+#if defined(_DEBUG)
+	if (_shift_pressed)
+#else
+	/* Speedup when pressing tab, except when using ALT+TAB
+	 * to switch to another application. */
+	if (_wnd.has_focus && GetAsyncKeyState(VK_TAB) < 0 && GetAsyncKeyState(VK_MENU) >= 0)
+#endif
+	{
+		if (!_networking && _game_mode != GM_MENU) _fast_forward |= 2;
+	} else if (_fast_forward & 2) {
+		_fast_forward = 0;
+	}
+
+	/* Determine which directional keys are down. */
+	if (_wnd.has_focus) {
+		_dirkeys =
+			(GetAsyncKeyState(VK_LEFT) < 0 ? 1 : 0) +
+			(GetAsyncKeyState(VK_UP) < 0 ? 2 : 0) +
+			(GetAsyncKeyState(VK_RIGHT) < 0 ? 4 : 0) +
+			(GetAsyncKeyState(VK_DOWN) < 0 ? 8 : 0);
+	} else {
+		_dirkeys = 0;
+	}
+
+	if (old_ctrl_pressed != _ctrl_pressed) HandleCtrlChanged();
+	if (old_shift_pressed != _shift_pressed) HandleShiftChanged();
 }
 
 void VideoDriver_Win32::MainLoop()
 {
 	MSG mesg;
-	auto cur_ticks = std::chrono::steady_clock::now();
-	auto last_realtime_tick = cur_ticks;
-	auto next_game_tick = cur_ticks;
-	auto next_draw_tick = cur_ticks;
 
 	std::thread draw_thread;
-	std::unique_lock<std::recursive_mutex> draw_lock;
 
 	if (_draw_threaded) {
 		/* Initialise the mutex first, because that's the thing we *need*
@@ -1157,15 +1177,15 @@ void VideoDriver_Win32::MainLoop()
 		}
 
 		if (_draw_threaded) {
-			draw_lock = std::unique_lock<std::recursive_mutex>(*_draw_mutex);
+			this->draw_lock = std::unique_lock<std::recursive_mutex>(*_draw_mutex);
 
 			_draw_continue = true;
-			_draw_threaded = StartNewThread(&draw_thread, "ottd:draw-win32", &PaintWindowThread);
+			_draw_threaded = StartNewThread(&draw_thread, "ottd:draw-win32", &VideoDriver_Win32::PaintThreadThunk, this);
 
 			/* Free the mutex if we won't be able to use it. */
 			if (!_draw_threaded) {
-				draw_lock.unlock();
-				draw_lock.release();
+				this->draw_lock.unlock();
+				this->draw_lock.release();
 				delete _draw_mutex;
 				delete _draw_signal;
 				_draw_mutex = nullptr;
@@ -1180,108 +1200,27 @@ void VideoDriver_Win32::MainLoop()
 
 	_wnd.running = true;
 
-	CheckPaletteAnim();
 	for (;;) {
+		InteractiveRandom(); // randomness
+
 		while (PeekMessage(&mesg, nullptr, 0, 0, PM_REMOVE)) {
-			InteractiveRandom(); // randomness
 			/* Convert key messages to char messages if we want text input. */
 			if (EditBoxInGlobalFocus()) TranslateMessage(&mesg);
 			DispatchMessage(&mesg);
 		}
 		if (_exit_game) break;
 
-#if defined(_DEBUG)
-		if (_wnd.has_focus && GetAsyncKeyState(VK_SHIFT) < 0 &&
-#else
-		/* Speed up using TAB, but disable for ALT+TAB of course */
-		if (_wnd.has_focus && GetAsyncKeyState(VK_TAB) < 0 && GetAsyncKeyState(VK_MENU) >= 0 &&
-#endif
-			  !_networking && _game_mode != GM_MENU) {
-			_fast_forward |= 2;
-		} else if (_fast_forward & 2) {
-			_fast_forward = 0;
-		}
+		/* Flush GDI buffer to ensure we don't conflict with the drawing thread. */
+		GdiFlush();
 
-		cur_ticks = std::chrono::steady_clock::now();
-
-		/* If more than a millisecond has passed, increase the _realtime_tick. */
-		if (cur_ticks - last_realtime_tick > std::chrono::milliseconds(1)) {
-			auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(cur_ticks - last_realtime_tick);
-			IncreaseRealtimeTick(delta.count());
-			last_realtime_tick += delta;
-		}
-
-		if (cur_ticks >= next_game_tick || (_fast_forward && !_pause_mode)) {
-			if (_fast_forward && !_pause_mode) {
-				next_game_tick = cur_ticks + this->GetGameInterval();
+		if (this->Tick()) {
+			if (_draw_mutex != nullptr && !HasModalProgress()) {
+				_draw_signal->notify_one();
 			} else {
-				next_game_tick += this->GetGameInterval();
-				/* Avoid next_game_tick getting behind more and more if it cannot keep up. */
-				if (next_game_tick < cur_ticks - ALLOWED_DRIFT * this->GetGameInterval()) next_game_tick = cur_ticks;
-			}
-
-			/* Flush GDI buffer to ensure we don't conflict with the drawing thread. */
-			GdiFlush();
-
-			/* The game loop is the part that can run asynchronously.
-			 * The rest except sleeping can't. */
-			if (_draw_threaded) draw_lock.unlock();
-			GameLoop();
-			if (_draw_threaded) draw_lock.lock();
-			GameLoopPaletteAnimations();
-		}
-
-		/* Prevent drawing when switching mode, as windows can be removed when they should still appear. */
-		if (cur_ticks >= next_draw_tick && (_switch_mode == SM_NONE || HasModalProgress())) {
-			next_draw_tick += this->GetDrawInterval();
-			/* Avoid next_draw_tick getting behind more and more if it cannot keep up. */
-			if (next_draw_tick < cur_ticks - ALLOWED_DRIFT * this->GetDrawInterval()) next_draw_tick = cur_ticks;
-
-			bool old_ctrl_pressed = _ctrl_pressed;
-			bool old_shift_pressed = _shift_pressed;
-
-			_ctrl_pressed = (_wnd.has_focus && GetAsyncKeyState(VK_CONTROL) < 0) != _invert_ctrl;
-			_shift_pressed = (_wnd.has_focus && GetAsyncKeyState(VK_SHIFT) < 0) != _invert_shift;
-
-			/* determine which directional keys are down */
-			if (_wnd.has_focus) {
-				_dirkeys =
-					(GetAsyncKeyState(VK_LEFT) < 0 ? 1 : 0) +
-					(GetAsyncKeyState(VK_UP) < 0 ? 2 : 0) +
-					(GetAsyncKeyState(VK_RIGHT) < 0 ? 4 : 0) +
-					(GetAsyncKeyState(VK_DOWN) < 0 ? 8 : 0);
-			} else {
-				_dirkeys = 0;
-			}
-
-			if (old_ctrl_pressed != _ctrl_pressed) HandleCtrlChanged();
-			if (old_shift_pressed != _shift_pressed) HandleShiftChanged();
-
-			if (_force_full_redraw) MarkWholeScreenDirty();
-
-			/* Flush GDI buffer to ensure we don't conflict with the drawing thread. */
-			GdiFlush();
-
-			InputLoop();
-			UpdateWindows();
-			CheckPaletteAnim();
-		}
-
-		/* If we are not in fast-forward, create some time between calls to ease up CPU usage. */
-		if (!_fast_forward || _pause_mode) {
-			/* See how much time there is till we have to process the next event, and try to hit that as close as possible. */
-			auto next_tick = std::min(next_draw_tick, next_game_tick);
-			auto now = std::chrono::steady_clock::now();
-
-			if (next_tick > now) {
-				/* Flush GDI buffer to ensure we don't conflict with the drawing thread. */
-				GdiFlush();
-
-				if (_draw_mutex != nullptr) draw_lock.unlock();
-				std::this_thread::sleep_for(next_tick - now);
-				if (_draw_mutex != nullptr) draw_lock.lock();
+				this->Paint();
 			}
 		}
+		this->SleepTillNextTick();
 	}
 
 	if (_draw_threaded) {
@@ -1289,8 +1228,8 @@ void VideoDriver_Win32::MainLoop()
 		/* Sending signal if there is no thread blocked
 		 * is very valid and results in noop */
 		_draw_signal->notify_all();
-		if (draw_lock.owns_lock()) draw_lock.unlock();
-		draw_lock.release();
+		if (this->draw_lock.owns_lock()) this->draw_lock.unlock();
+		this->draw_lock.release();
 		draw_thread.join();
 
 		delete _draw_mutex;
@@ -1390,4 +1329,15 @@ float VideoDriver_Win32::GetDPIScale()
 	}
 
 	return cur_dpi > 0 ? cur_dpi / 96.0f : 1.0f; // Default Windows DPI value is 96.
+}
+
+bool VideoDriver_Win32::LockVideoBuffer()
+{
+	if (_draw_threaded) this->draw_lock.lock();
+	return true;
+}
+
+void VideoDriver_Win32::UnlockVideoBuffer()
+{
+	if (_draw_threaded) this->draw_lock.unlock();
 }
