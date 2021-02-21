@@ -10387,6 +10387,7 @@ void LoadNewGRF(uint load_index, uint file_index, uint num_baseset)
 		_tick_counter = 0;
 		_tick_skip_counter = 0;
 		_display_opt  = 0;
+		UpdateCachedSnowLine();
 		SetScaledTickVariables();
 	}
 
@@ -10483,6 +10484,7 @@ void LoadNewGRF(uint load_index, uint file_index, uint num_baseset)
 	_tick_counter = tick_counter;
 	_tick_skip_counter = tick_skip_counter;
 	_display_opt  = display_opt;
+	UpdateCachedSnowLine();
 	SetScaledTickVariables();
 }
 

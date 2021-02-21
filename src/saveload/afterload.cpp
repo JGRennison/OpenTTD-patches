@@ -627,6 +627,7 @@ bool AfterLoadGame()
 
 	RebuildTownKdtree();
 	RebuildStationKdtree();
+	UpdateCachedSnowLine();
 
 	_viewport_sign_kdtree_valid = false;
 
@@ -1671,6 +1672,7 @@ bool AfterLoadGame()
 		_date += DAYS_TILL_ORIGINAL_BASE_YEAR;
 		SetScaledTickVariables();
 		ConvertDateToYMD(_date, &_cur_date_ymd);
+		UpdateCachedSnowLine();
 
 		for (Station *st : Station::Iterate())   st->build_date      += DAYS_TILL_ORIGINAL_BASE_YEAR;
 		for (Waypoint *wp : Waypoint::Iterate()) wp->build_date      += DAYS_TILL_ORIGINAL_BASE_YEAR;
@@ -3061,6 +3063,7 @@ bool AfterLoadGame()
 	/* This triggers only when old snow_lines were copied into the snow_line_height. */
 	if (IsSavegameVersionBefore(SLV_164) && _settings_game.game_creation.snow_line_height >= MIN_SNOWLINE_HEIGHT * TILE_HEIGHT && SlXvIsFeatureMissing(XSLFI_CHILLPP)) {
 		_settings_game.game_creation.snow_line_height /= TILE_HEIGHT;
+		UpdateCachedSnowLine();
 	}
 
 	if (IsSavegameVersionBefore(SLV_164) && !IsSavegameVersionBefore(SLV_32)) {

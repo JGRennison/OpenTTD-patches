@@ -21,6 +21,7 @@
 #include "newgrf_profiling.h"
 #include "console_func.h"
 #include "debug.h"
+#include "landscape.h"
 #include "widgets/statusbar_widget.h"
 
 #include "safeguards.h"
@@ -54,6 +55,7 @@ void SetDate(Date date, DateFract fract)
 	ConvertDateToYMD(date, &ymd);
 	_cur_date_ymd = ymd;
 	SetScaledTickVariables();
+	UpdateCachedSnowLine();
 }
 
 void SetScaledTickVariables()
@@ -321,6 +323,8 @@ void IncreaseDate()
 
 	/* update internal variables before calling the daily/monthly/yearly loops */
 	_cur_date_ymd = ymd;
+
+	UpdateCachedSnowLine();
 
 	/* yes, call various daily loops */
 	OnNewDay();

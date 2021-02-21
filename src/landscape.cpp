@@ -92,6 +92,8 @@ extern const byte _slope_to_sprite_offset[32] = {
  */
 static SnowLine *_snow_line = nullptr;
 
+byte _cached_snowline = 0;
+
 /**
  * Map 2D viewport or smallmap coordinate to 3D world or tile coordinate.
  * Function takes into account height of tiles and foundations.
@@ -643,6 +645,8 @@ void SetSnowLine(byte table[SNOW_LINE_MONTHS][SNOW_LINE_DAYS])
 			_snow_line->lowest_value = std::min(_snow_line->lowest_value, table[i][j]);
 		}
 	}
+
+	UpdateCachedSnowLine();
 }
 
 /**
@@ -650,11 +654,16 @@ void SetSnowLine(byte table[SNOW_LINE_MONTHS][SNOW_LINE_DAYS])
  * @return the snow line height.
  * @ingroup SnowLineGroup
  */
-byte GetSnowLine()
+byte GetSnowLineUncached()
 {
 	if (_snow_line == nullptr) return _settings_game.game_creation.snow_line_height;
 
 	return _snow_line->table[_cur_date_ymd.month][_cur_date_ymd.day];
+}
+
+void UpdateCachedSnowLine()
+{
+	_cached_snowline = GetSnowLineUncached();
 }
 
 /**
@@ -685,6 +694,7 @@ void ClearSnowLine()
 {
 	free(_snow_line);
 	_snow_line = nullptr;
+	UpdateCachedSnowLine();
 }
 
 /**
