@@ -146,6 +146,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_INDUSTRY_CARGO_ADJ,     XSCF_IGNORABLE_UNKNOWN,   1,   1, "industry_cargo_adj",        nullptr, nullptr, nullptr        },
 	{ XSLFI_REALISTIC_TRAIN_BRAKING,XSCF_NULL,                1,   1, "realistic_train_braking",   nullptr, nullptr, "VLKA"         },
 	{ XSLFI_INFLATION_FIXED_DATES,  XSCF_IGNORABLE_ALL,       1,   1, "inflation_fixed_dates",     nullptr, nullptr, nullptr        },
+	{ XSLFI_WATER_FLOODING,         XSCF_NULL,                1,   1, "water_flooding",            nullptr, nullptr, nullptr        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr },// This is the end marker
 };
 
