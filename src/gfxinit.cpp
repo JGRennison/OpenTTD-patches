@@ -461,17 +461,30 @@ void GfxDetermineMainColours()
 	}
 
 	/* Trees. */
-	extern uint32 _vp_map_vegetation_tree_colours[5][MAX_TREE_COUNT_BY_LANDSCAPE];
+	extern uint32 _vp_map_vegetation_tree_colours[16][5][MAX_TREE_COUNT_BY_LANDSCAPE];
 	const uint base  = _tree_base_by_landscape[_settings_game.game_creation.landscape];
 	const uint count = _tree_count_by_landscape[_settings_game.game_creation.landscape];
 	for (uint tg = 0; tg < 5; tg++) {
 		for (uint i = base; i < base + count; i++) {
-			_vp_map_vegetation_tree_colours[tg][i - base] = GetSpriteMainColour(_tree_sprites[i].sprite, _tree_sprites[i].pal);
+			_vp_map_vegetation_tree_colours[0][tg][i - base] = GetSpriteMainColour(_tree_sprites[i].sprite, _tree_sprites[i].pal);
 		}
 		const int diff = MAX_TREE_COUNT_BY_LANDSCAPE - count;
 		if (diff > 0) {
 			for (uint i = count; i < MAX_TREE_COUNT_BY_LANDSCAPE; i++)
-				_vp_map_vegetation_tree_colours[tg][i] = _vp_map_vegetation_tree_colours[tg][i - count];
+				_vp_map_vegetation_tree_colours[0][tg][i] = _vp_map_vegetation_tree_colours[0][tg][i - count];
+		}
+	}
+	for (int s = 1; s <= SLOPE_ELEVATED; ++s) {
+		extern int GetSlopeTreeBrightnessAdjust(Slope slope);
+		int brightness_adjust = (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() == 32) ? GetSlopeTreeBrightnessAdjust((Slope)s) * 2 : 0;
+		if (brightness_adjust != 0) {
+			for (uint tg = 0; tg < 5; tg++) {
+				for (uint i = 0; i < MAX_TREE_COUNT_BY_LANDSCAPE; i++) {
+					_vp_map_vegetation_tree_colours[s][tg][i] = Blitter_32bppBase::AdjustBrightness(Colour(_vp_map_vegetation_tree_colours[0][tg][i]), Blitter_32bppBase::DEFAULT_BRIGHTNESS + brightness_adjust).data;
+				}
+			}
+		} else {
+			memcpy(&(_vp_map_vegetation_tree_colours[s]), &(_vp_map_vegetation_tree_colours[0]), sizeof(_vp_map_vegetation_tree_colours[0]));
 		}
 	}
 }

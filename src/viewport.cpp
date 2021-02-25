@@ -108,6 +108,7 @@
 #include "video/video_driver.hpp"
 #include "scope_info.h"
 #include "scope.h"
+#include "blitter/32bpp_base.hpp"
 
 #include <map>
 #include <vector>
@@ -2552,7 +2553,7 @@ void ViewportDrawPlans(const Viewport *vp)
 
 /* Variables containing Colour if 32bpp or palette index if 8bpp. */
 uint32 _vp_map_vegetation_clear_colours[16][6][8]; ///< [Slope][ClearGround][Multi (see LoadClearGroundMainColours())]
-uint32 _vp_map_vegetation_tree_colours[5][MAX_TREE_COUNT_BY_LANDSCAPE]; ///< [TreeGround][max of _tree_count_by_landscape]
+uint32 _vp_map_vegetation_tree_colours[16][5][MAX_TREE_COUNT_BY_LANDSCAPE]; ///< [Slope][TreeGround][max of _tree_count_by_landscape]
 uint32 _vp_map_water_colour[5]; ///< [Slope]
 
 static inline uint ViewportMapGetColourIndexMulti(const TileIndex tile, const ClearGround cg)
@@ -2603,10 +2604,10 @@ static inline uint32 ViewportMapGetColourVegetation(const TileIndex tile, TileTy
 		case MP_TREES: {
 			const TreeGround tg = GetTreeGround(tile);
 			const uint td = GetTreeDensity(tile);
+			Slope slope = show_slope ? (Slope) (GetTileSlope(tile, nullptr) & 15) : SLOPE_FLAT;
 			if (IsTransparencySet(TO_TREES)) {
 				ClearGround cg = _treeground_to_clearground[tg];
 				if (cg == CLEAR_SNOW && _settings_game.game_creation.landscape == LT_TROPIC) cg = CLEAR_DESERT;
-				Slope slope = show_slope ? (Slope) (GetTileSlope(tile, nullptr) & 15) : SLOPE_FLAT;
 				uint32 ground_colour = _vp_map_vegetation_clear_colours[slope][cg][td];
 
 				if (IsInvisibilitySet(TO_TREES)) {
@@ -2624,10 +2625,10 @@ static inline uint32 ViewportMapGetColourVegetation(const TileIndex tile, TileTy
 				}
 			} else {
 				if (tg == TREE_GROUND_SNOW_DESERT || tg == TREE_GROUND_ROUGH_SNOW) {
-					return _vp_map_vegetation_clear_colours[colour_index][_settings_game.game_creation.landscape == LT_TROPIC ? CLEAR_DESERT : CLEAR_SNOW][td];
+					return _vp_map_vegetation_clear_colours[colour_index ^ slope][_settings_game.game_creation.landscape == LT_TROPIC ? CLEAR_DESERT : CLEAR_SNOW][td];
 				} else {
 					const uint rnd = std::min<uint>(GetTreeCount(tile) ^ (((tile & 3) ^ (TileY(tile) & 3)) * td), MAX_TREE_COUNT_BY_LANDSCAPE - 1);
-					return _vp_map_vegetation_tree_colours[tg][rnd];
+					return _vp_map_vegetation_tree_colours[slope][tg][rnd];
 				}
 			}
 		}
@@ -5938,4 +5939,35 @@ void SetViewportCatchmentTown(const Town *t, bool sel)
 		MarkWholeNonMapViewportsDirty();
 	}
 	if (_viewport_highlight_town != nullptr) SetWindowDirty(WC_TOWN_VIEW, _viewport_highlight_town->index);
+}
+
+int GetSlopeTreeBrightnessAdjust(Slope slope)
+{
+	switch (slope) {
+		case SLOPE_NW:
+		case SLOPE_STEEP_N:
+		case SLOPE_STEEP_W:
+			return 8;
+		case SLOPE_N:
+		case SLOPE_W:
+		case SLOPE_ENW:
+		case SLOPE_NWS:
+			return 4;
+		case SLOPE_SE:
+			return -10;
+		case SLOPE_STEEP_S:
+		case SLOPE_STEEP_E:
+			return -4;
+		case SLOPE_NE:
+			return -8;
+		case SLOPE_SW:
+			return -4;
+		case SLOPE_S:
+		case SLOPE_E:
+		case SLOPE_SEN:
+		case SLOPE_WSE:
+			return -6;
+		default:
+			return 0;
+	}
 }
