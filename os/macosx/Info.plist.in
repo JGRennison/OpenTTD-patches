@@ -14,7 +14,7 @@
         <key>CFBundleIconFile</key>
         <string>${CPACK_BUNDLE_NAME}.icns</string>
         <key>CFBundleIdentifier</key>
-        <string>org.openttd.openttd</string>
+        <string>org.openttd.openttd.jgrpp</string>
         <key>CFBundleInfoDictionaryVersion</key>
         <string>6.0</string>
         <key>CFBundleName</key>

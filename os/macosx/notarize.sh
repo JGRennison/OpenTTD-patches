@@ -48,7 +48,7 @@ cat <<EOF > notarize.json
    "notarize": [
       {
          "path": "${dmg_filename[0]}",
-         "bundle_id": "org.openttd.openttd",
+         "bundle_id": "org.openttd.openttd.jgrpp",
          "staple": true
       }
    ]
