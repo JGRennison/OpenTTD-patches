@@ -19,13 +19,6 @@ bool VideoDriver::Tick()
 {
 	auto cur_ticks = std::chrono::steady_clock::now();
 
-	/* If more than a millisecond has passed, increase the _realtime_tick. */
-	if (cur_ticks - this->last_realtime_tick > std::chrono::milliseconds(1)) {
-		auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(cur_ticks - this->last_realtime_tick);
-		_realtime_tick += delta.count();
-		this->last_realtime_tick += delta;
-	}
-
 	if (cur_ticks >= this->next_game_tick || (_fast_forward && !_pause_mode)) {
 		if (_fast_forward && !_pause_mode) {
 			this->next_game_tick = cur_ticks + this->GetGameInterval();
