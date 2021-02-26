@@ -637,9 +637,19 @@ static void DrawTile_Trees(TileInfo *ti, DrawTileProcParams params)
 	/* put the trees to draw in a list */
 	uint trees = GetTreeCount(ti->tile);
 
+	PaletteID palette_adjust = 0;
+	if (_settings_client.gui.shade_trees_on_slopes && ti->tileh != SLOPE_FLAT) {
+		extern int GetSlopeTreeBrightnessAdjust(Slope slope);
+		int adjust = GetSlopeTreeBrightnessAdjust(ti->tileh);
+		if (adjust != 0) {
+			SetBit(palette_adjust, PALETTE_BRIGHTNESS_MODIFY);
+			SB(palette_adjust, PALETTE_BRIGHTNESS_OFFSET, PALETTE_BRIGHTNESS_WIDTH, adjust & ((1 << PALETTE_BRIGHTNESS_WIDTH) - 1));
+		}
+	}
+
 	for (uint i = 0; i < trees; i++) {
 		SpriteID sprite = s[0].sprite + (i == trees - 1 ? GetTreeGrowth(ti->tile) : 3);
-		PaletteID pal = s[0].pal;
+		PaletteID pal = s[0].pal | palette_adjust;
 
 		te[i].sprite = sprite;
 		te[i].pal    = pal;
