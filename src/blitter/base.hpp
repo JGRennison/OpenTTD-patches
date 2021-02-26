@@ -23,6 +23,8 @@ enum BlitterMode {
 	BM_TRANSPARENT,  ///< Perform transparency colour remapping.
 	BM_CRASH_REMAP,  ///< Perform a crash remapping.
 	BM_BLACK_REMAP,  ///< Perform remapping to a completely blackened sprite
+	BM_NORMAL_WITH_BRIGHTNESS,       ///< Perform a simple blitting with brightness adjustment
+	BM_COLOUR_REMAP_WITH_BRIGHTNESS, ///< Perform a colour remapping with brightness adjustment
 };
 
 /** Helper for using specialised functions designed to prevent whenever it's possible things like:
@@ -47,6 +49,7 @@ public:
 	struct BlitterParams {
 		const void *sprite; ///< Pointer to the sprite how ever the encoder stored it
 		const byte *remap;  ///< XXX -- Temporary storage for remap array
+		int brightness_adjust; ///< Brightness adjustment
 
 		int skip_left;      ///< How much pixels of the source to skip on the left (based on zoom of dst)
 		int skip_top;       ///< How much pixels of the source to skip on the top (based on zoom of dst)

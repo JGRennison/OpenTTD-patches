@@ -111,15 +111,18 @@ inline void Blitter_32bppOptimized::Draw(const Blitter::BlitterParams *bp, ZoomL
 
 			switch (mode) {
 				case BM_COLOUR_REMAP:
+				case BM_COLOUR_REMAP_WITH_BRIGHTNESS:
 					if (src_px->a == 255) {
 						do {
 							uint m = *src_n;
 							/* In case the m-channel is zero, do not remap this pixel in any way */
 							if (m == 0) {
-								*dst = src_px->data;
+								Colour c = *src_px;
+								if (mode == BM_COLOUR_REMAP_WITH_BRIGHTNESS) c = AdjustBrightness(c, DEFAULT_BRIGHTNESS + bp->brightness_adjust);
+								*dst = c;
 							} else {
 								uint r = remap[GB(m, 0, 8)];
-								if (r != 0) *dst = this->AdjustBrightness(this->LookupColourInPalette(r), GB(m, 8, 8));
+								if (r != 0) *dst = this->AdjustBrightness(this->LookupColourInPalette(r), GB(m, 8, 8) + ((mode == BM_COLOUR_REMAP_WITH_BRIGHTNESS) ? bp->brightness_adjust : 0));
 							}
 							dst++;
 							src_px++;
@@ -129,10 +132,12 @@ inline void Blitter_32bppOptimized::Draw(const Blitter::BlitterParams *bp, ZoomL
 						do {
 							uint m = *src_n;
 							if (m == 0) {
-								*dst = ComposeColourRGBANoCheck(src_px->r, src_px->g, src_px->b, src_px->a, *dst);
+								Colour c = *src_px;
+								if (mode == BM_COLOUR_REMAP_WITH_BRIGHTNESS) c = AdjustBrightness(c, DEFAULT_BRIGHTNESS + bp->brightness_adjust);
+								*dst = ComposeColourRGBANoCheck(c.r, c.g, c.b, c.a, *dst);
 							} else {
 								uint r = remap[GB(m, 0, 8)];
-								if (r != 0) *dst = ComposeColourPANoCheck(this->AdjustBrightness(this->LookupColourInPalette(r), GB(m, 8, 8)), src_px->a, *dst);
+								if (r != 0) *dst = ComposeColourPANoCheck(this->AdjustBrightness(this->LookupColourInPalette(r), GB(m, 8, 8) + ((mode == BM_COLOUR_REMAP_WITH_BRIGHTNESS) ? bp->brightness_adjust : 0)), src_px->a, *dst);
 							}
 							dst++;
 							src_px++;
@@ -211,14 +216,18 @@ inline void Blitter_32bppOptimized::Draw(const Blitter::BlitterParams *bp, ZoomL
 						/* faster than memcpy(), n is usually low */
 						src_n += n;
 						do {
-							*dst = src_px->data;
+							Colour c = *src_px;
+							if (mode == BM_NORMAL_WITH_BRIGHTNESS) c = AdjustBrightness(c, DEFAULT_BRIGHTNESS + bp->brightness_adjust);
+							*dst = c;
 							dst++;
 							src_px++;
 						} while (--n != 0);
 					} else {
 						src_n += n;
 						do {
-							*dst = ComposeColourRGBANoCheck(src_px->r, src_px->g, src_px->b, src_px->a, *dst);
+							Colour c = *src_px;
+							if (mode == BM_NORMAL_WITH_BRIGHTNESS) c = AdjustBrightness(c, DEFAULT_BRIGHTNESS + bp->brightness_adjust);
+							*dst = ComposeColourRGBANoCheck(c.r, c.g, c.b, c.a, *dst);
 							dst++;
 							src_px++;
 						} while (--n != 0);
@@ -249,6 +258,8 @@ void Blitter_32bppOptimized::Draw(Blitter::BlitterParams *bp, BlitterMode mode, 
 		case BM_TRANSPARENT:  Draw<BM_TRANSPARENT> (bp, zoom); return;
 		case BM_CRASH_REMAP:  Draw<BM_CRASH_REMAP> (bp, zoom); return;
 		case BM_BLACK_REMAP:  Draw<BM_BLACK_REMAP> (bp, zoom); return;
+		case BM_NORMAL_WITH_BRIGHTNESS:  Draw<BM_NORMAL_WITH_BRIGHTNESS> (bp, zoom); return;
+		case BM_COLOUR_REMAP_WITH_BRIGHTNESS:  Draw<BM_COLOUR_REMAP_WITH_BRIGHTNESS> (bp, zoom); return;
 	}
 }
 

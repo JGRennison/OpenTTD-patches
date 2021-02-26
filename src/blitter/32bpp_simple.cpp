@@ -45,6 +45,18 @@ void Blitter_32bppSimple::Draw(Blitter::BlitterParams *bp, BlitterMode mode, Zoo
 					}
 					break;
 
+				case BM_COLOUR_REMAP_WITH_BRIGHTNESS:
+					/* In case the m-channel is zero, do not remap this pixel in any way */
+					if (src->m == 0) {
+						if (src->a != 0) {
+							Colour c = AdjustBrightness(Colour(src->r, src->g, src->b, src->a), DEFAULT_BRIGHTNESS + bp->brightness_adjust);
+							*dst = ComposeColourRGBA(c.r, c.g, c.b, c.a, *dst);
+						}
+					} else {
+						if (bp->remap[src->m] != 0) *dst = ComposeColourPA(this->AdjustBrightness(this->LookupColourInPalette(bp->remap[src->m]), Clamp(src->v + bp->brightness_adjust, 0, 255)), src->a, *dst);
+					}
+					break;
+
 				case BM_CRASH_REMAP:
 					if (src->m == 0) {
 						if (src->a != 0) {
@@ -69,6 +81,13 @@ void Blitter_32bppSimple::Draw(Blitter::BlitterParams *bp, BlitterMode mode, Zoo
 
 					/* Make the current colour a bit more black, so it looks like this image is transparent */
 					if (src->a != 0) *dst = MakeTransparent(*dst, 192);
+					break;
+
+				case BM_NORMAL_WITH_BRIGHTNESS:
+					if (src->a != 0) {
+						Colour c = AdjustBrightness(Colour(src->r, src->g, src->b, src->a), DEFAULT_BRIGHTNESS + bp->brightness_adjust);
+						*dst = ComposeColourRGBA(c.r, c.g, c.b, c.a, *dst);
+					}
 					break;
 
 				default:

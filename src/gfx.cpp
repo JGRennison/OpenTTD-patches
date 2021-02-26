@@ -99,6 +99,7 @@ int8 _font_zoom_cfg; ///< Font zoom level in config.
  */
 static const byte *_colour_remap_ptr;
 static byte _string_colourremap[3]; ///< Recoloursprite for stringdrawing. The grf loader ensures that #ST_FONT sprites only use colours 0 to 2.
+static int _sprite_brightness_adjust;
 
 static const uint DIRTY_BLOCK_HEIGHT   = 8;
 static const uint DIRTY_BLOCK_WIDTH    = 64;
@@ -952,6 +953,9 @@ Dimension GetSpriteSize(SpriteID sprid, Point *offset, ZoomLevel zoom)
  */
 static BlitterMode GetBlitterMode(PaletteID pal)
 {
+	if (HasBit(pal, PALETTE_BRIGHTNESS_MODIFY)) {
+		return GB(pal, 0, PALETTE_WIDTH) != PAL_NONE ? BM_COLOUR_REMAP_WITH_BRIGHTNESS : BM_NORMAL_WITH_BRIGHTNESS;
+	}
 	switch (pal) {
 		case PAL_NONE:          return BM_NORMAL;
 		case PALETTE_CRASH:     return BM_CRASH_REMAP;
@@ -977,8 +981,14 @@ void DrawSpriteViewport(SpriteID img, PaletteID pal, int x, int y, const SubSpri
 	} else if (pal != PAL_NONE) {
 		if (HasBit(pal, PALETTE_TEXT_RECOLOUR)) {
 			SetColourRemap((TextColour)GB(pal, 0, PALETTE_WIDTH));
-		} else {
+		} else if (GB(pal, 0, PALETTE_WIDTH) != PAL_NONE) {
 			_colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1;
+		}
+		if (HasBit(pal, PALETTE_BRIGHTNESS_MODIFY)) {
+			int adjust = GB(pal, PALETTE_BRIGHTNESS_OFFSET, PALETTE_BRIGHTNESS_WIDTH);
+			/* Sign extend */
+			int sign_bit = 1 << (PALETTE_BRIGHTNESS_WIDTH - 1);
+			_sprite_brightness_adjust = (adjust ^ sign_bit) - sign_bit;
 		}
 		GfxMainBlitterViewport(GetSprite(real_sprite, ST_NORMAL), x, y, GetBlitterMode(pal), sub, real_sprite);
 	} else {
@@ -1076,6 +1086,7 @@ static void GfxBlitter(const Sprite * const sprite, int x, int y, BlitterMode mo
 	bp.dst = dpi->dst_ptr;
 	bp.pitch = dpi->pitch;
 	bp.remap = _colour_remap_ptr;
+	bp.brightness_adjust = _sprite_brightness_adjust;
 
 	if (bp.width <= 0) return;
 	if (bp.height <= 0) return;

@@ -1552,6 +1552,9 @@ enum SpriteSetup {
 
 	/* This bit is applied to palette ID */
 	PALETTE_TEXT_RECOLOUR = 31, ///< Set if palette is actually a magic text recolour
+	PALETTE_BRIGHTNESS_MODIFY = 30, ///< Set if palette has a brightness adjustment
+	PALETTE_BRIGHTNESS_OFFSET = 24, ///< Palette brightness adjustment bit offset
+	PALETTE_BRIGHTNESS_WIDTH = 5,   ///< Palette brightness adjustment width
 
 	PALETTE_WIDTH = 24,         ///< number of bits of the sprite containing the recolour palette
 	SPRITE_WIDTH = 24,          ///< number of bits for the sprite number
