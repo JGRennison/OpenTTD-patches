@@ -191,6 +191,12 @@ static void RemoveAndSellVehicle(Vehicle *v, bool give_money)
 	}
 }
 
+void ConsoleRemoveVehicle(VehicleID id)
+{
+	Vehicle *v = Vehicle::GetIfValid(id);
+	if (v->Previous() == nullptr) RemoveAndSellVehicle(v, false);
+}
+
 /**
  * Check all path reservations, and reserve a new path if the current path is invalid.
  */

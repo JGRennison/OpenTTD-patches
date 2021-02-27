@@ -2134,6 +2134,27 @@ DEF_CONSOLE_CMD(ConMergeLinkgraphJobsAsap)
 	return true;
 }
 
+#ifdef _DEBUG
+DEF_CONSOLE_CMD(ConDeleteVehicleID)
+{
+	if (argc == 0) {
+		IConsoleHelp("Delete vehicle ID, for emergency single-player use only.");
+		return true;
+	}
+
+	if (argc == 2) {
+		uint32 result;
+		if (GetArgumentInteger(&result, argv[1])) {
+			extern void ConsoleRemoveVehicle(VehicleID id);
+			ConsoleRemoveVehicle(result);
+			return true;
+		}
+	}
+
+	return false;
+}
+#endif
+
 DEF_CONSOLE_CMD(ConGetFullDate)
 {
 	if (argc == 0) {
@@ -3382,4 +3403,8 @@ void IConsoleStdLibRegister()
 	/* Bug workarounds */
 	IConsoleCmdRegister("jgrpp_bug_workaround_unblock_heliports", ConResetBlockedHeliports, ConHookNoNetwork, true);
 	IConsoleCmdRegister("merge_linkgraph_jobs_asap", ConMergeLinkgraphJobsAsap, ConHookNoNetwork, true);
+
+#ifdef _DEBUG
+	IConsoleCmdRegister("delete_vehicle_id", ConDeleteVehicleID, ConHookNoNetwork, true);
+#endif
 }
