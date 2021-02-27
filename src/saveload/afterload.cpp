@@ -1542,6 +1542,48 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeaturePresent(XSLFI_CUSTOM_BRIDGE_HEADS, 1, 3)) {
+		/* fix any mismatched road/tram bits */
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD) {
+				for (RoadTramType rtt : { RTT_TRAM, RTT_ROAD }) {
+					RoadType rt = GetRoadType(t, rtt);
+					if (rt == INVALID_ROADTYPE) continue;
+					RoadBits rb = GetCustomBridgeHeadRoadBits(t, rtt);
+					DiagDirection dir = GetTunnelBridgeDirection(t);
+					if (!(rb & DiagDirToRoadBits(dir))) continue;
+
+					if (HasAtMostOneBit(rb)) {
+						DEBUG(misc, 0, "Fixing road bridge head state (case A) at tile 0x%X", t);
+						rb |= DiagDirToRoadBits(ReverseDiagDir(dir));
+						SetCustomBridgeHeadRoadBits(t, rtt, rb);
+					}
+
+					TileIndex end = GetOtherBridgeEnd(t);
+					if (GetRoadType(end, rtt) == INVALID_ROADTYPE) {
+						DEBUG(misc, 0, "Fixing road bridge head state (case B) at tile 0x%X -> 0x%X", t, end);
+						SetRoadType(end, rtt, rt);
+						SetCustomBridgeHeadRoadBits(end, rtt, AxisToRoadBits(DiagDirToAxis(dir)));
+						continue;
+					}
+
+					if (GetRoadType(end, rtt) != rt) {
+						DEBUG(misc, 0, "Fixing road bridge head state (case C) at tile 0x%X -> 0x%X", t, end);
+						SetRoadType(end, rtt, rt);
+					}
+
+					RoadBits end_rb = GetCustomBridgeHeadRoadBits(end, rtt);
+					if (!(end_rb & DiagDirToRoadBits(ReverseDiagDir(dir)))) {
+						DEBUG(misc, 0, "Fixing road bridge head state (case D) at tile 0x%X -> 0x%X", t, end);
+						end_rb |= DiagDirToRoadBits(ReverseDiagDir(dir));
+						if (HasAtMostOneBit(end_rb)) end_rb |= DiagDirToRoadBits(dir);
+						SetCustomBridgeHeadRoadBits(end, rtt, end_rb);
+					}
+				}
+			}
+		}
+	}
+
 	/* Elrails got added in rev 24 */
 	if (IsSavegameVersionBefore(SLV_24)) {
 		RailType min_rail = RAILTYPE_ELECTRIC;
