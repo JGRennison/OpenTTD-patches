@@ -630,6 +630,9 @@ void AdvanceOrderIndex(const Vehicle *v, VehicleOrderID &index)
 		++index;
 		depth++;
 	} while (depth < v->GetNumOrders());
+
+	/* Wrap around. */
+	if (index >= v->GetNumOrders()) index = 0;
 }
 
 int PredictStationStoppingLocation(const Train *v, const Order *order, int station_length, DestinationID dest)
