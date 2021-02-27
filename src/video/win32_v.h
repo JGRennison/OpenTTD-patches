@@ -12,10 +12,10 @@
 
 #include "video_driver.hpp"
 
-/** The video driver for windows. */
-class VideoDriver_Win32 : public VideoDriver {
+/** Base class for Windows video drivers. */
+class VideoDriver_Win32Base : public VideoDriver {
 public:
-	const char *Start(const StringList &param) override;
+	VideoDriver_Win32Base() : main_wnd(nullptr), fullscreen(false) {}
 
 	void Stop() override;
 
@@ -27,8 +27,6 @@ public:
 
 	bool ToggleFullscreen(bool fullscreen) override;
 
-	bool AfterBlitterChange() override;
-
 	void AcquireBlitterLock() override;
 
 	void ReleaseBlitterLock() override;
@@ -37,31 +35,71 @@ public:
 
 	void EditBoxLostFocus() override;
 
-	const char *GetName() const override { return "win32"; }
-
-	bool MakeWindow(bool full_screen);
-
 protected:
+	HWND    main_wnd;      ///< Handle to system window.
+	bool    fullscreen;    ///< Whether to use (true) fullscreen mode.
+
 	Dimension GetScreenSize() const override;
 	float GetDPIScale() override;
 	void InputLoop() override;
 	bool LockVideoBuffer() override;
 	void UnlockVideoBuffer() override;
-	void Paint() override;
-	void PaintThread() override;
 	void CheckPaletteAnim() override;
+
+	void Initialize();
+	bool MakeWindow(bool full_screen);
+	virtual uint8 GetFullscreenBpp();
+
+	/** (Re-)create the backing store. */
+	virtual bool AllocateBackingStore(int w, int h, bool force = false) = 0;
+	/** Palette of the window has changed. */
+	virtual void PaletteChanged(HWND hWnd) = 0;
 
 private:
 	std::unique_lock<std::recursive_mutex> draw_lock;
 
-	static void PaintThreadThunk(VideoDriver_Win32 *drv);
+	void ClientSizeChanged(int w, int h);
+
+	static void PaintThreadThunk(VideoDriver_Win32Base *drv);
+
+	friend LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+};
+/** The GDI video driver for windows. */
+class VideoDriver_Win32GDI : public VideoDriver_Win32Base {
+public:
+	VideoDriver_Win32GDI() : dib_sect(nullptr), gdi_palette(nullptr) {}
+
+	const char *Start(const StringList &param) override;
+
+	void Stop() override;
+
+	bool AfterBlitterChange() override;
+
+	const char *GetName() const override { return "win32"; }
+
+protected:
+	HBITMAP  dib_sect;      ///< System bitmap object referencing our rendering buffer.
+	HPALETTE gdi_palette;   ///< Palette object for 8bpp blitter.
+
+	void Paint() override;
+	void PaintThread() override;
+
+	bool AllocateBackingStore(int w, int h, bool force = false) override;
+	void PaletteChanged(HWND hWnd) override;
+	void MakePalette();
+	void UpdatePalette(HDC dc, uint start, uint count);
+
+#ifdef _DEBUG
+public:
+	static int RedrawScreenDebug();
+#endif
 };
 
 /** The factory for Windows' video driver. */
-class FVideoDriver_Win32 : public DriverFactoryBase {
+class FVideoDriver_Win32GDI : public DriverFactoryBase {
 public:
-	FVideoDriver_Win32() : DriverFactoryBase(Driver::DT_VIDEO, 10, "win32", "Win32 GDI Video Driver") {}
-	Driver *CreateInstance() const override { return new VideoDriver_Win32(); }
+	FVideoDriver_Win32GDI() : DriverFactoryBase(Driver::DT_VIDEO, 10, "win32", "Win32 GDI Video Driver") {}
+	Driver *CreateInstance() const override { return new VideoDriver_Win32GDI(); }
 };
 
 #endif /* VIDEO_WIN32_H */
