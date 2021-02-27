@@ -45,7 +45,6 @@ protected:
 	NetworkRecvStatus SendCompanyInfo();
 	NetworkRecvStatus SendNewGRFCheck();
 	NetworkRecvStatus SendWelcome();
-	NetworkRecvStatus SendWait();
 	NetworkRecvStatus SendNeedGamePassword();
 	NetworkRecvStatus SendNeedCompanyPassword();
 
@@ -91,6 +90,7 @@ public:
 
 	void CheckNextClientToSendMap(NetworkClientSocket *ignore_cs = nullptr);
 
+	NetworkRecvStatus SendWait();
 	NetworkRecvStatus SendMap();
 	NetworkRecvStatus SendErrorQuit(ClientID client_id, NetworkErrorCode errorno);
 	NetworkRecvStatus SendQuit(ClientID client_id);
