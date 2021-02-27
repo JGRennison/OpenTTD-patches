@@ -155,6 +155,8 @@ static DualTrackBits GetRailTrackBitsUniversal(TileIndex t, byte *override)
  */
 static TrackBits MaskWireBits(TileIndex t, TrackBits tracks)
 {
+	if (likely(HasAtMostOneBit(tracks))) return tracks;
+
 	if (!IsPlainRailTile(t)) return tracks;
 
 	TrackdirBits neighbour_tdb = TRACKDIR_BIT_NONE;
