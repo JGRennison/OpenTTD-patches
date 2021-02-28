@@ -9,6 +9,7 @@
 
 #include "../stdafx.h"
 #include "../debug.h"
+#include "../network/network.h"
 #include "../gfx_func.h"
 #include "../progress.h"
 #include "../thread.h"
@@ -19,14 +20,10 @@ bool VideoDriver::Tick()
 {
 	auto cur_ticks = std::chrono::steady_clock::now();
 
-	if (cur_ticks >= this->next_game_tick || (_fast_forward && !_pause_mode)) {
-		if (_fast_forward && !_pause_mode) {
-			this->next_game_tick = cur_ticks + this->GetGameInterval();
-		} else {
-			this->next_game_tick += this->GetGameInterval();
-			/* Avoid next_game_tick getting behind more and more if it cannot keep up. */
-			if (this->next_game_tick < cur_ticks - ALLOWED_DRIFT * this->GetGameInterval()) this->next_game_tick = cur_ticks;
-		}
+	if (cur_ticks >= this->next_game_tick) {
+		this->next_game_tick += this->GetGameInterval();
+		/* Avoid next_game_tick getting behind more and more if it cannot keep up. */
+		if (this->next_game_tick < cur_ticks - ALLOWED_DRIFT * this->GetGameInterval()) this->next_game_tick = cur_ticks;
 
 		/* The game loop is the part that can run asynchronously.
 		 * The rest except sleeping can't. */
@@ -50,6 +47,16 @@ bool VideoDriver::Tick()
 		if (this->next_draw_tick < cur_ticks - ALLOWED_DRIFT * this->GetDrawInterval()) this->next_draw_tick = cur_ticks;
 
 		this->InputLoop();
+
+		/* Check if the fast-forward button is still pressed. */
+		if (fast_forward_key_pressed && !_networking && _game_mode != GM_MENU) {
+			ChangeGameSpeed(true);
+			this->fast_forward_via_key = true;
+		} else if (this->fast_forward_via_key) {
+			ChangeGameSpeed(false);
+			this->fast_forward_via_key = false;
+		}
+
 		::InputLoop();
 		UpdateWindows();
 		this->CheckPaletteAnim();
@@ -62,16 +69,13 @@ bool VideoDriver::Tick()
 
 void VideoDriver::SleepTillNextTick()
 {
-	/* If we are not in fast-forward, create some time between calls to ease up CPU usage. */
-	if (!_fast_forward || _pause_mode) {
-		/* See how much time there is till we have to process the next event, and try to hit that as close as possible. */
-		auto next_tick = std::min(this->next_draw_tick, this->next_game_tick);
-		auto now = std::chrono::steady_clock::now();
+	/* See how much time there is till we have to process the next event, and try to hit that as close as possible. */
+	auto next_tick = std::min(this->next_draw_tick, this->next_game_tick);
+	auto now = std::chrono::steady_clock::now();
 
-		if (next_tick > now) {
-			this->UnlockVideoBuffer();
-			std::this_thread::sleep_for(next_tick - now);
-			this->LockVideoBuffer();
-		}
+	if (next_tick > now) {
+		this->UnlockVideoBuffer();
+		std::this_thread::sleep_for(next_tick - now);
+		this->LockVideoBuffer();
 	}
 }

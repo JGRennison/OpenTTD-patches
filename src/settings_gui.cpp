@@ -1624,6 +1624,7 @@ static SettingsContainer &GetSettingsTree()
 				advsig->Add(new SettingEntry("gui.show_adv_tracerestrict_features"));
 			}
 
+			interface->Add(new SettingEntry("gui.fast_forward_speed_limit"));
 			interface->Add(new SettingEntry("gui.autosave"));
 			interface->Add(new SettingEntry("gui.autosave_on_network_disconnect"));
 			interface->Add(new SettingEntry("gui.savegame_overwrite_confirm"));
