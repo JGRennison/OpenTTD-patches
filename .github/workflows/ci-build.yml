@@ -97,6 +97,7 @@ jobs:
           libfontconfig-dev \
           libicu-dev \
           liblzma-dev \
+          libzstd-dev \
           liblzo2-dev \
           ${{ matrix.libsdl }} \
           zlib1g-dev \
@@ -161,7 +162,7 @@ jobs:
         vcpkgDirectory: '/usr/local/share/vcpkg'
         doNotUpdateVcpkg: false
         vcpkgGitCommitId: 2a42024b53ebb512fb5dd63c523338bf26c8489c
-        vcpkgArguments: 'liblzma libpng lzo'
+        vcpkgArguments: 'liblzma libpng lzo zstd'
         vcpkgTriplet: '${{ matrix.arch }}-osx'
 
     - name: Install OpenGFX
@@ -232,7 +233,7 @@ jobs:
       with:
         vcpkgDirectory: 'c:/vcpkg'
         doNotUpdateVcpkg: true
-        vcpkgArguments: 'liblzma libpng lzo zlib'
+        vcpkgArguments: 'liblzma libpng lzo zlib zstd'
         vcpkgTriplet: '${{ matrix.arch }}-windows-static'
 
     - name: Install OpenGFX

@@ -297,6 +297,7 @@ jobs:
           SDL2-devel \
           wget \
           xz-devel \
+          libzstd-devel \
           zlib-devel \
           # EOF
         echo "::endgroup::"
@@ -403,6 +404,7 @@ jobs:
           libfluidsynth-dev \
           libicu-dev \
           liblzma-dev \
+          libzstd-dev \
           liblzo2-dev \
           libsdl2-dev \
           lsb-release \
@@ -482,7 +484,7 @@ jobs:
         vcpkgDirectory: '/usr/local/share/vcpkg'
         doNotUpdateVcpkg: false
         vcpkgGitCommitId: 2a42024b53ebb512fb5dd63c523338bf26c8489c
-        vcpkgArguments: 'liblzma:x64-osx libpng:x64-osx lzo:x64-osx liblzma:arm64-osx libpng:arm64-osx lzo:arm64-osx'
+        vcpkgArguments: 'liblzma:x64-osx libpng:x64-osx lzo:x64-osx zstd:x64-osx liblzma:arm64-osx libpng:arm64-osx lzo:arm64-osx zstd:arm64-osx'
 
     - name: Build tools
       run: |
@@ -667,7 +669,7 @@ jobs:
       with:
         vcpkgDirectory: 'c:/vcpkg'
         doNotUpdateVcpkg: true
-        vcpkgArguments: 'liblzma libpng lzo zlib'
+        vcpkgArguments: 'liblzma libpng lzo zlib zstd'
         vcpkgTriplet: '${{ matrix.arch }}-windows-static'
 
     - name: Build tools
