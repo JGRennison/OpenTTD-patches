@@ -2801,6 +2801,7 @@ struct ZSTDLoadFilter : LoadFilter {
 			if (this->input.pos == this->input.size) {
 				this->input.size = this->chain->Read(this->fread_buf, sizeof(this->fread_buf));
 				this->input.pos = 0;
+				if (this->input.size == 0) break;
 			}
 
 			size_t ret = ZSTD_decompressStream(this->zstd, &output, &this->input);
