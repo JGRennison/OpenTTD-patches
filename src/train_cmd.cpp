@@ -4319,7 +4319,7 @@ int Train::UpdateSpeed()
 	switch (_settings_game.vehicle.train_acceleration_model) {
 		default: NOT_REACHED();
 		case AM_ORIGINAL:
-			return this->DoUpdateSpeed({ this->acceleration * 2, this->acceleration * -4 }, 0, max_speed_info.strict_max_speed, max_speed_info.advisory_max_speed);
+			return this->DoUpdateSpeed({ this->acceleration * (this->GetAccelerationStatus() == AS_BRAKE ? -4 : 2), this->acceleration * -4 }, 0, max_speed_info.strict_max_speed, max_speed_info.advisory_max_speed);
 
 		case AM_REALISTIC:
 			return this->DoUpdateSpeed(this->GetAcceleration(), accel_status == AS_BRAKE ? 0 : 2, max_speed_info.strict_max_speed, max_speed_info.advisory_max_speed);
