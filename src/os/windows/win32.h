@@ -33,7 +33,7 @@ TCHAR *convert_to_fs(const char *name, TCHAR *utf16_buf, size_t buflen, bool con
 
 HRESULT OTTDSHGetFolderPath(HWND, int, HANDLE, DWORD, LPTSTR);
 
-#if defined(__MINGW32__) && !defined(__MINGW64__)
+#if defined(__MINGW32__) && !defined(__MINGW64__) && !(_WIN32_IE >= 0x0500)
 #define SHGFP_TYPE_CURRENT 0
 #endif /* __MINGW32__ */
 
