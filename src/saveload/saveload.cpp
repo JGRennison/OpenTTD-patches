@@ -3096,6 +3096,8 @@ static SaveOrLoadResult SaveFileToDisk(bool threaded)
 		byte compression;
 		const SaveLoadFormat *fmt = GetSavegameFormat(_savegame_format, &compression, _sl.save_flags);
 
+		DEBUG(sl, 3, "Using compression format: %s, level: %u", fmt->name, compression);
+
 		/* We have written our stuff to memory, now write it to file! */
 		uint32 hdr[2] = { fmt->tag, TO_BE32((uint32) (SAVEGAME_VERSION | SAVEGAME_VERSION_EXT) << 16) };
 		_sl.sf->Write((byte*)hdr, sizeof(hdr));
