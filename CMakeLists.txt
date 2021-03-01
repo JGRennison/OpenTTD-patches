@@ -292,7 +292,7 @@ link_package(PNG TARGET PNG::PNG ENCOURAGED)
 link_package(ZLIB TARGET ZLIB::ZLIB ENCOURAGED)
 link_package(LIBLZMA TARGET LibLZMA::LibLZMA ENCOURAGED)
 link_package(LZO)
-link_package(ZSTD TARGET ZSTD::ZSTD ENCOURAGED)
+link_package(ZSTD TARGET ZSTD::ZSTD RECOMMENDED)
 
 if(NOT OPTION_DEDICATED)
     link_package(Fluidsynth)
