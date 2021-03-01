@@ -2782,8 +2782,8 @@ struct ZSTDLoadFilter : LoadFilter {
 	ZSTDLoadFilter(LoadFilter *chain) : LoadFilter(chain)
 	{
 		this->zstd = ZSTD_createDCtx();
-	    if (!this->zstd) SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, "cannot initialize compressor");
-	    this->input = {this->fread_buf, 0, 0};
+		if (!this->zstd) SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, "cannot initialize compressor");
+		this->input = {this->fread_buf, 0, 0};
 	}
 
 	/** Clean everything up. */
@@ -2823,12 +2823,12 @@ struct ZSTDSaveFilter : SaveFilter {
 	 */
 	ZSTDSaveFilter(SaveFilter *chain, byte compression_level) : SaveFilter(chain)
 	{
-	    this->zstd = ZSTD_createCCtx();
-	    if (!this->zstd) SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, "cannot initialize compressor");
-	    if (ZSTD_isError(ZSTD_CCtx_setParameter(this->zstd, ZSTD_c_compressionLevel, (int)compression_level - 100))) {
+		this->zstd = ZSTD_createCCtx();
+		if (!this->zstd) SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, "cannot initialize compressor");
+		if (ZSTD_isError(ZSTD_CCtx_setParameter(this->zstd, ZSTD_c_compressionLevel, (int)compression_level - 100))) {
 			ZSTD_freeCCtx(this->zstd);
 			SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, "invalid compresison level");
-	    }
+		}
 	}
 
 	/** Clean up what we allocated. */
