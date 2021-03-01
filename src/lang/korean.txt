@@ -4038,8 +4038,8 @@ STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}공항 �
 STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}이 공항에 항공기가 착륙하는 것을 금지합니다
 
 # Departures window
-STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION} - 실시간 위치 정보
-STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} - 실시간 위치 정보
+STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION} - 실시간 운행 정보
+STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} - 실시간 운행 정보
 STR_DEPARTURES_PAX                                              :{BLACK}{TINY_FONT}여
 STR_DEPARTURES_FREIGHT                                          :{BLACK}{TINY_FONT}화
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}발
@@ -4321,7 +4321,7 @@ STR_VEHICLE_LIST_MANAGE_LIST                                    :{BLACK}관리
 STR_VEHICLE_LIST_MANAGE_LIST_TOOLTIP                            :{BLACK}이 목록에 있는 모든 열차에 지시를 내려 관리합니다
 STR_VEHICLE_LIST_REPLACE_VEHICLES                               :차량 교체
 STR_VEHICLE_LIST_SEND_FOR_SERVICING                             :정비하러 보내기
-STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE                           :운행 취소 후 보내기
+STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE                           :점검/보내기 취소
 
 STR_VEHICLE_LIST_SEND_TRAIN_TO_DEPOT                            :차량기지로 보내기
 STR_VEHICLE_LIST_SEND_ROAD_VEHICLE_TO_DEPOT                     :차고지로 보내기
@@ -6398,7 +6398,7 @@ STR_TMPL_TEMPLATE_OVR_VALUE_notinyfont                          :{BLACK}구입 �
 STR_TMPL_TEMPLATE_OVR_VALUE_notinyfontandblack                  :구입 가격: {GOLD}{CURRENCY_LONG}
 STR_TMPL_WARNING_FREE_WAGON                                     :{RED}객차/화차만 있음: 운행할 수 없습니다!
 STR_TMPL_WARNING_VEH_UNAVAILABLE                                :{RED}열차 구성 불가: 차량을 사용할 수 없습니다!
-STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}사용 중인 템플릿: {NUM}
+STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}{NUM}번 템플릿 사용 중
 STR_TMP_TEMPLATE_IN_USE                                         :템플릿이 사용 중입니다.
 STR_TMP_TEMPLATE_FROM_PARENT_GROUP                              :상위 그룹의 템플릿 사용
 STR_TMPL_GROUP_NUM_TRAINS                                       :{BLACK}{NUM}
@@ -6448,8 +6448,8 @@ STR_SCHDISPATCH_DURATION                                        :{BLACK}반복 �
 STR_SCHDISPATCH_DURATION_TOOLTIP                                :{BLACK}이 스케줄의 반복 주기를 설정합니다.
 STR_SCHDISPATCH_DURATION_CAPTION_MINUTE                         :{BLACK}반복 주기 (분)
 STR_SCHDISPATCH_DURATION_CAPTION_DAY                            :{BLACK}반복 주기 (일)
-STR_SCHDISPATCH_START                                           :{BLACK}시작 일자
-STR_SCHDISPATCH_START_TOOLTIP                                   :{BLACK}이 스케줄의 시작 일자를 설정합니다.
+STR_SCHDISPATCH_START                                           :{BLACK}시작 일시
+STR_SCHDISPATCH_START_TOOLTIP                                   :{BLACK}이 스케줄의 시작 일시를 설정합니다.
 STR_SCHDISPATCH_START_CAPTION_MINUTE                            :{BLACK}시작 시각 (hhmm)
 STR_SCHDISPATCH_DELAY                                           :{BLACK}지연
 STR_SCHDISPATCH_DELAY_TOOLTIP                                   :{BLACK}허용할 수 있는 최대 지연 시간을 설정합니다.
@@ -6458,7 +6458,7 @@ STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}지연 (
 STR_SCHDISPATCH_RESET_LAST_DISPATCH                             :{BLACK}최근 일정 재설정
 STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}최근 배차 일정을 재설정합니다. 먼 미래의 차량에 대해 오작동할 때 사용하십시오.
 
-STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}최근 출발: {DATE_WALLCLOCK_TINY}.
+STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}최근 출발: {DATE_WALLCLOCK_TINY}
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}최근 배차된 열차가 아직 출발하지 않았습니다. {DATE_WALLCLOCK_TINY}에 출발할 예정입니다.
 STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}이 스케줄에는 {COMMA}대의 열차가 필요합니다.
 STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}이 스케줄은 {STRING}마다 반복되고 {DATE_WALLCLOCK_TINY}에 시작되어서 {DATE_WALLCLOCK_TINY}에 끝납니다.
