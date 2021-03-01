@@ -139,7 +139,7 @@ void ClientNetworkEmergencySave()
 
 	const char *filename = "netsave.sav";
 	DEBUG(net, 0, "Client: Performing emergency save (%s)", filename);
-	SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, false);
+	SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, false, SMF_ZSTD_OK);
 }
 
 
