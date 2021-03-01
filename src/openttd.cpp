@@ -1006,8 +1006,10 @@ int openttd_main(int argc, char *argv[])
 
 	CrashLog::MainThreadExitCheckPendingCrashlog();
 
+	AbortScanNewGRFFiles();
 	WaitTillSaved();
 	WaitTillGeneratedWorld(); // Make sure any generate world threads have been joined.
+	WaitUntilModalProgressCompleted();
 
 	/* only save config if we have to */
 	if (_save_config) {

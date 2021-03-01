@@ -344,6 +344,7 @@ static std::vector<GRFMD5SumState> _grf_md5_pending;
 static std::condition_variable _grf_md5_full_cv;
 static std::condition_variable _grf_md5_empty_cv;
 static std::condition_variable _grf_md5_done_cv;
+static std::atomic<bool> _abort_grf_scan;
 static const uint GRF_MD5_PENDING_MAX = 8;
 
 static void CalcGRFMD5SumFromState(const GRFMD5SumState &state)
@@ -373,7 +374,7 @@ void CalcGRFMD5Thread()
 			_grf_md5_pending.pop_back();
 			lk.unlock();
 			if (full) _grf_md5_full_cv.notify_one();
-			CalcGRFMD5SumFromState(state);
+			if (!_abort_grf_scan.load(std::memory_order_relaxed)) CalcGRFMD5SumFromState(state);
 			lk.lock();
 		}
 	}
@@ -728,6 +729,8 @@ public:
 
 bool GRFFileScanner::AddFile(const std::string &filename, size_t basepath_length, const std::string &tar_filename)
 {
+	if (_abort_grf_scan.load(std::memory_order_relaxed)) return false;
+
 	GRFConfig *c = new GRFConfig(filename.c_str() + basepath_length);
 
 	bool added = FillGRFDetails(c, false);
@@ -844,6 +847,11 @@ void ScanNewGRFFiles(NewGRFScanCallback *callback)
 	} else {
 		UpdateNewGRFScanStatus(0, nullptr);
 	}
+}
+
+void AbortScanNewGRFFiles()
+{
+	_abort_grf_scan.store(true, std::memory_order_relaxed);
 }
 
 /**

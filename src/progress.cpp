@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "progress.h"
+#include "video/video_driver.hpp"
 
 #include <chrono>
 #include <mutex>
@@ -63,4 +64,23 @@ void SleepWhileModalProgress(int milliseconds)
 {
 	std::unique_lock<std::mutex> lk(_modal_progress_cv_mutex);
 	_modal_progress_cv.wait_for(lk, std::chrono::milliseconds(milliseconds), []{ return !_in_modal_progress; });
+}
+
+void WaitUntilModalProgressCompleted()
+{
+	if (HasModalProgress()) {
+		_modal_progress_paint_mutex.unlock();
+		_modal_progress_work_mutex.unlock();
+
+		{
+			std::unique_lock<std::mutex> lk(_modal_progress_cv_mutex);
+			_modal_progress_cv.wait(lk, []{ return !_in_modal_progress; });
+		}
+
+		/* Modal progress thread may need blitter access while we are waiting for it. */
+		VideoDriver::GetInstance()->ReleaseBlitterLock();
+		_modal_progress_paint_mutex.lock();
+		VideoDriver::GetInstance()->AcquireBlitterLock();
+		_modal_progress_work_mutex.lock();
+	}
 }
