@@ -482,6 +482,11 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendGetMap()
 	my_client->status = STATUS_MAP_WAIT;
 
 	Packet *p = new Packet(PACKET_CLIENT_GETMAP);
+#if defined(WITH_ZSTD)
+	p->Send_bool(true);
+#else
+	p->Send_bool(false);
+#endif
 	my_client->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;
 }

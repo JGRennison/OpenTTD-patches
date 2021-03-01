@@ -654,7 +654,9 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendMap()
 		sent_packets = 4; // We start with trying 4 packets
 
 		/* Make a dump of the current game */
-		if (SaveWithFilter(this->savegame, true, true) != SL_OK) usererror("network savedump failed");
+		SaveModeFlags flags = SMF_NET_SERVER;
+		if (this->supports_zstd) flags |= SMF_ZSTD_OK;
+		if (SaveWithFilter(this->savegame, true, flags) != SL_OK) usererror("network savedump failed");
 	}
 
 	if (this->status == STATUS_MAP) {
@@ -1097,6 +1099,8 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_GETMAP(Packet *
 	if (this->status < STATUS_AUTHORIZED || this->HasClientQuit()) {
 		return this->SendError(NETWORK_ERROR_NOT_AUTHORIZED);
 	}
+
+	this->supports_zstd = p->Recv_bool();
 
 	/* Check if someone else is receiving the map */
 	for (NetworkClientSocket *new_cs : NetworkClientSocket::Iterate()) {

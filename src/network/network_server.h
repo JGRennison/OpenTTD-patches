@@ -75,6 +75,7 @@ public:
 	uint32 rcon_hash_bits;       ///< Rcon password hash entropy bits
 	uint32 settings_hash_bits;   ///< Settings password hash entropy bits
 	bool settings_authed = false;///< Authorised to control all game settings
+	bool supports_zstd = false;  ///< Client supports zstd compression
 
 	struct PacketWriter *savegame; ///< Writer used to write the savegame.
 	NetworkAddress client_address; ///< IP-address of the client (so he can be banned)
