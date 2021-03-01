@@ -1418,6 +1418,9 @@ STR_CONFIG_SETTING_VEHICLE_NAMES_TRADITIONAL                    :이전 방식
 STR_CONFIG_SETTING_VEHICLE_NAMES_MODERN                         :현재 방식
 STR_CONFIG_SETTING_VEHICLE_NAMES_LONG                           :긴 이름
 
+STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES                       :경사 위의 나무를 어둡게: {STRING}
+STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES_HELPTEXT              :경사 위에 있는 나무의 밝기를 다르게 표시합니다. 산악 지역에 덮인 나무 지역의 외관을 보기 좋게 개선해줍니다.
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :고급 다리/터널 신호기 활성화: {STRING}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :다리와 터널 위 신호기 시뮬레이션 고급 모드를 활성화합니다. 이 설정을 끄면, 고급 모드에 있지 않은 다리와 터널을 고급 모드로 변경할 수 없지만 다른 플레이어는 이 설정을 켜서 고급 모드를 사용할 수 있습니다.
 
