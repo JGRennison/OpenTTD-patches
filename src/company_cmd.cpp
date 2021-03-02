@@ -65,11 +65,11 @@ Company::Company(uint16 name_1, bool is_ai)
 	this->name_1 = name_1;
 	this->location_of_HQ = INVALID_TILE;
 	this->is_ai = is_ai;
-	this->terraform_limit = _settings_game.construction.terraform_frame_burst << 16;
+	this->terraform_limit = (uint32)_settings_game.construction.terraform_frame_burst << 16;
 	this->clear_limit     = _settings_game.construction.clear_frame_burst << 16;
-	this->tree_limit      = _settings_game.construction.tree_frame_burst << 16;
-	this->purchase_land_limit = _settings_game.construction.purchase_land_frame_burst << 16;
-	this->build_object_limit = _settings_game.construction.build_object_frame_burst << 16;
+	this->tree_limit      = (uint32)(uint32)_settings_game.construction.tree_frame_burst << 16;
+	this->purchase_land_limit = (uint32)_settings_game.construction.purchase_land_frame_burst << 16;
+	this->build_object_limit = (uint32)_settings_game.construction.build_object_frame_burst << 16;
 
 	for (uint j = 0; j < 4; j++) this->share_owners[j] = COMPANY_SPECTATOR;
 	InvalidateWindowData(WC_PERFORMANCE_DETAIL, 0, INVALID_COMPANY);
@@ -279,11 +279,11 @@ void SubtractMoneyFromCompanyFract(CompanyID company, const CommandCost &cst)
 void UpdateLandscapingLimits()
 {
 	for (Company *c : Company::Iterate()) {
-		c->terraform_limit = std::min(c->terraform_limit + _settings_game.construction.terraform_per_64k_frames, (uint32)_settings_game.construction.terraform_frame_burst << 16);
-		c->clear_limit     = std::min(c->clear_limit     + _settings_game.construction.clear_per_64k_frames,     (uint32)_settings_game.construction.clear_frame_burst << 16);
-		c->tree_limit      = std::min(c->tree_limit      + _settings_game.construction.tree_per_64k_frames,      (uint32)_settings_game.construction.tree_frame_burst << 16);
-		c->purchase_land_limit = std::min(c->purchase_land_limit + _settings_game.construction.purchase_land_per_64k_frames, (uint32)_settings_game.construction.purchase_land_frame_burst << 16);
-		c->build_object_limit = std::min(c->build_object_limit + _settings_game.construction.build_object_per_64k_frames, (uint32)_settings_game.construction.build_object_frame_burst << 16);
+		c->terraform_limit = std::min<uint64>((uint64)c->terraform_limit + _settings_game.construction.terraform_per_64k_frames, (uint64)_settings_game.construction.terraform_frame_burst << 16);
+		c->clear_limit     = std::min<uint64>((uint64)c->clear_limit     + _settings_game.construction.clear_per_64k_frames,     (uint64)_settings_game.construction.clear_frame_burst << 16);
+		c->tree_limit      = std::min<uint64>((uint64)c->tree_limit      + _settings_game.construction.tree_per_64k_frames,      (uint64)_settings_game.construction.tree_frame_burst << 16);
+		c->purchase_land_limit = std::min<uint64>((uint64)c->purchase_land_limit + _settings_game.construction.purchase_land_per_64k_frames, (uint64)_settings_game.construction.purchase_land_frame_burst << 16);
+		c->build_object_limit = std::min<uint64>((uint64)c->build_object_limit + _settings_game.construction.build_object_per_64k_frames, (uint64)_settings_game.construction.build_object_frame_burst << 16);
 	}
 }
 

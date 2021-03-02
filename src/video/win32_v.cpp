@@ -138,7 +138,7 @@ bool VideoDriver_Win32Base::MakeWindow(bool full_screen)
 	_fullscreen = full_screen;
 
 	/* recreate window? */
-	if ((full_screen || this->fullscreen) && this->main_wnd) {
+	if ((full_screen != this->fullscreen) && this->main_wnd) {
 		DestroyWindow(this->main_wnd);
 		this->main_wnd = 0;
 	}
@@ -716,7 +716,9 @@ LRESULT CALLBACK WndProcGdi(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			if (video_driver->fullscreen) {
 				if (active && minimized) {
 					/* Restore the game window */
+					Dimension d = _bck_resolution; // Save current non-fullscreen window size as it will be overwritten by ShowWindow.
 					ShowWindow(hwnd, SW_RESTORE);
+					_bck_resolution = d;
 					video_driver->MakeWindow(true);
 				} else if (!active && !minimized) {
 					/* Minimise the window and restore desktop */

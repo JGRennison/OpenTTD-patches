@@ -274,6 +274,7 @@ void PerformanceMeasurer::SetExpectedRate(double rate)
  */
 /* static */ void PerformanceMeasurer::Paused(PerformanceElement elem)
 {
+	PerformanceMeasurer::SetInactive(elem);
 	_pf_data[elem].AddPause(GetPerformanceTimer());
 }
 
@@ -399,7 +400,6 @@ struct FramerateWindow : Window {
 		{
 			const double threshold_good = target * 0.95;
 			const double threshold_bad = target * 2 / 3;
-			value = std::min(9999.99, value);
 			this->value = (uint32)(value * 100);
 			this->strid = (value > threshold_good) ? STR_FRAMERATE_FPS_GOOD : (value < threshold_bad) ? STR_FRAMERATE_FPS_BAD : STR_FRAMERATE_FPS_WARN;
 		}
@@ -408,7 +408,6 @@ struct FramerateWindow : Window {
 		{
 			const double threshold_good = target / 3;
 			const double threshold_bad = target;
-			value = std::min(9999.99, value);
 			this->value = (uint32)(value * 100);
 			this->strid = (value < threshold_good) ? STR_FRAMERATE_MS_GOOD : (value > threshold_bad) ? STR_FRAMERATE_MS_BAD : STR_FRAMERATE_MS_WARN;
 		}
