@@ -66,7 +66,7 @@ public:
 	SpriteID GetUnicodeGlyph(WChar key) override { return this->parent->GetUnicodeGlyph(key); }
 	void SetUnicodeGlyph(WChar key, SpriteID sprite) override { this->parent->SetUnicodeGlyph(key, sprite); }
 
-	virtual void InitializeUnicodeGlyphMap()
+	virtual void InitializeUnicodeGlyphMap() override
 	{
 		this->parent->InitializeUnicodeGlyphMap();
 		font_height_cache[this->fs] = this->GetHeight();

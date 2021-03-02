@@ -107,7 +107,7 @@ struct PlansWindow : Window {
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	virtual void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_PLN_NEW:
@@ -232,7 +232,7 @@ struct PlansWindow : Window {
 		}
 	}
 
-	virtual void OnQueryTextFinished(char *str)
+	virtual void OnQueryTextFinished(char *str) override
 	{
 		if (_current_plan == nullptr || str == nullptr) return;
 
@@ -247,7 +247,7 @@ struct PlansWindow : Window {
 		return true;
 	}
 
-	virtual void OnPaint()
+	virtual void OnPaint() override
 	{
 		this->SetWidgetDisabledState(WID_PLN_HIDE_ALL, this->vscroll->GetCount() == 0);
 		this->SetWidgetDisabledState(WID_PLN_SHOW_ALL, this->vscroll->GetCount() == 0);
@@ -261,7 +261,7 @@ struct PlansWindow : Window {
 		this->DrawWidgets();
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	virtual void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch (widget) {
 			case WID_PLN_LIST: {
@@ -323,12 +323,12 @@ struct PlansWindow : Window {
 		}
 	}
 
-	virtual void OnResize()
+	virtual void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_PLN_LIST, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM);
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_PLN_LIST:
@@ -369,14 +369,14 @@ struct PlansWindow : Window {
 	}
 
 	/** The drawing of a line starts. */
-	virtual void OnPlaceObject(Point pt, TileIndex tile)
+	virtual void OnPlaceObject(Point pt, TileIndex tile) override
 	{
 		/* A player can't add lines to a public plan of another company. */
 		if (_current_plan && _current_plan->owner == _local_company) VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_DRAW_PLANLINE);
 	}
 
 	/** The drawing of a line is in progress. */
-	virtual void OnPlaceDrag(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt)
+	virtual void OnPlaceDrag(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt) override
 	{
 		const Point p = GetTileBelowCursor();
 		const TileIndex tile = TileVirtXY(p.x, p.y);
@@ -387,13 +387,13 @@ struct PlansWindow : Window {
 	}
 
 	/** The drawing of a line ends up normally. */
-	virtual void OnPlaceMouseUp(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt, TileIndex start_tile, TileIndex end_tile)
+	virtual void OnPlaceMouseUp(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt, TileIndex start_tile, TileIndex end_tile) override
 	{
 		if (_current_plan) _current_plan->ValidateNewLine();
 	}
 
 	/** The drawing of a line is aborted. */
-	virtual void OnPlaceObjectAbort()
+	virtual void OnPlaceObjectAbort() override
 	{
 		if (_current_plan) {
 			_current_plan->temp_line->MarkDirty();

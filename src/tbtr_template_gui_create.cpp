@@ -191,7 +191,7 @@ public:
 		UpdateButtonState();
 	}
 
-	virtual void OnResize()
+	virtual void OnResize() override
 	{
 		NWidgetCore *template_panel = this->GetWidget<NWidgetCore>(TCW_NEW_TMPL_PANEL);
 		this->hscroll->SetCapacity(template_panel->current_x);
@@ -201,7 +201,7 @@ public:
 	}
 
 
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	virtual void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if(!gui_scope) return;
 
@@ -215,7 +215,7 @@ public:
 		UpdateButtonState();
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	virtual void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch(widget) {
 			case TCW_NEW_TMPL_PANEL: {
@@ -259,7 +259,7 @@ public:
 		}
 	}
 
-	virtual bool OnVehicleSelect(const Vehicle *v)
+	virtual bool OnVehicleSelect(const Vehicle *v) override
 	{
 		// throw away the current virtual train
 		if (virtual_train != nullptr) {
@@ -276,7 +276,7 @@ public:
 		return true;
 	}
 
-	virtual void OnPlaceObjectAbort()
+	virtual void OnPlaceObjectAbort() override
 	{
 		this->sel = INVALID_VEHICLE;
 		this->vehicle_over = INVALID_VEHICLE;
@@ -284,7 +284,7 @@ public:
 		this->SetDirty();
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	virtual void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch(widget) {
 			case TCW_NEW_TMPL_PANEL: {
@@ -364,7 +364,7 @@ public:
 		}
 	}
 
-	virtual void OnDragDrop(Point pt, int widget)
+	virtual void OnDragDrop(Point pt, int widget) override
 	{
 		switch (widget) {
 			case TCW_NEW_TMPL_PANEL: {
@@ -425,7 +425,7 @@ public:
 		this->SetDirty();
 	}
 
-	virtual void OnMouseDrag(Point pt, int widget)
+	virtual void OnMouseDrag(Point pt, int widget) override
 	{
 		if (this->sel == INVALID_VEHICLE) return;
 
@@ -470,7 +470,7 @@ public:
 		this->SetWidgetDirty(widget);
 	}
 
-	virtual void OnPaint()
+	virtual void OnPaint() override
 	{
 		uint min_width = 32;
 		uint min_height = 30;

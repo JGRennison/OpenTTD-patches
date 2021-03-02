@@ -947,7 +947,7 @@ class NIHTown : public NIHelper {
 		return nullptr;
 	}
 
-	virtual std::vector<uint32> GetPSAGRFIDs(uint index) const
+	virtual std::vector<uint32> GetPSAGRFIDs(uint index) const override
 	{
 		Town *t = Town::Get(index);
 

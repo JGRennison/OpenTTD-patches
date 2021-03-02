@@ -72,7 +72,7 @@ public:
 	~SpriteFontCache();
 	virtual SpriteID GetUnicodeGlyph(WChar key);
 	virtual void SetUnicodeGlyph(WChar key, SpriteID sprite);
-	virtual void InitializeUnicodeGlyphMap();
+	virtual void InitializeUnicodeGlyphMap() override;
 	virtual void ClearFontCache();
 	virtual const Sprite *GetGlyph(GlyphID key);
 	virtual uint GetGlyphWidth(GlyphID key);
