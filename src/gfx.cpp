@@ -101,9 +101,6 @@ static const byte *_colour_remap_ptr;
 static byte _string_colourremap[3]; ///< Recoloursprite for stringdrawing. The grf loader ensures that #ST_FONT sprites only use colours 0 to 2.
 static int _sprite_brightness_adjust;
 
-static const uint DIRTY_BLOCK_HEIGHT   = 8;
-static const uint DIRTY_BLOCK_WIDTH    = 64;
-
 extern uint _dirty_block_colour;
 static bool _whole_screen_dirty = false;
 bool _gfx_draw_active = false;
