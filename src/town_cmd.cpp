@@ -213,11 +213,11 @@ void Town::UpdateLabel()
 {
 	if (!(_game_mode == GM_EDITOR) && (_local_company < MAX_COMPANIES)) {
 		int r = this->ratings[_local_company];
-		(this->town_label = 0, r <= RATING_VERYPOOR)  || // Appalling and Very Poor
-		(this->town_label++,   r <= RATING_MEDIOCRE)  || // Poor and Mediocre
-		(this->town_label++,   r <= RATING_GOOD)      || // Good
-		(this->town_label++,   r <= RATING_VERYGOOD)  || // Very Good
-		(this->town_label++,   true);                    // Excellent and Outstanding
+		this->town_label = 0;                         // Appalling and Very Poor
+		if (r > RATING_VERYPOOR)  this->town_label++; // Poor and Mediocre
+		if (r > RATING_MEDIOCRE)  this->town_label++; // Good
+		if (r > RATING_GOOD)      this->town_label++; // Very Good
+		if (r > RATING_VERYGOOD)  this->town_label++; // Excellent and Outstanding
 	}
 }
 
