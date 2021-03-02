@@ -102,7 +102,7 @@ find_package(Threads REQUIRED)
 find_package(ZLIB)
 find_package(LibLZMA)
 find_package(LZO)
-find_package(ZSTD)
+find_package(ZSTD 1.4)
 find_package(PNG)
 
 if(NOT WIN32)
