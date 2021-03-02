@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.40.2
+## JGR's Patchpack version 0.40.3
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -293,6 +293,8 @@ See the [wiki](https://github.com/JGRennison/OpenTTD-patches/wiki) for guides on
   * Add client setting for vehicle naming scheme. (added in v0.40.0).  
   * Add setting to control dates over which inflation is applied. (added in v0.40.0).  
   * Add "indifferent" mode to the town council attitude to area restructuring setting. (added in v0.40.2).  
+  * Add support for zstd savegame compression for autosaves and network joins. (added in v0.40.3).  
+  * Add setting for shading trees on slopes in viewports (default on). (added in v0.40.3).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
   * [NML specification additions](docs/newgrf-additions-nml.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions-nml.html)).

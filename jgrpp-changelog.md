@@ -2,6 +2,23 @@
 
 * * *
 
+### v0.40.3 (2021-03-02)
+* Fix crashes with trains with no valid orders when using the realistic braking model.
+* Fix trains with no orders no stopping at stations when using the realistic braking model.
+* Fix trains passing signals when using both the original acceleration and original braking models.
+* Fix various issues with ship collision avoidance which could result in a group of ships being routed in a circle.
+* Fix for crash when exiting whilst NewGRF scan still in progress.
+* Add support for zstd savegame compression for autosaves and network joins.
+* Add setting for shading trees on slopes in viewports (default on).
+* Improve visibility of slopes under trees in viewport map vegetation mode.
+* Improve performance of water flooding checks.
+* Improve performance of snow line checks in the arctic climate.
+* Improve performance of drawing rail catenary.
+* Fix compilation on ARM Windows with MSVC.
+* MacOS: Change bundle identifier.
+* Add Korean translations by TELK.
+* Bump trunk base from commit 069fb5425302edc93a77ca54b3665a7102747f5a to commit c656633bea39d2002330eddee54522c8db542785.
+
 ### v0.40.2 (2021-02-17)
 * Fix upgrading road bridge with opposite road/tram type producing broken bridge ramps where required road/tram pieces are missing.
 * Fix crash if AI attempts to set order flags of invalid vehicle's order and the no non-stop orders setting is enabled.
