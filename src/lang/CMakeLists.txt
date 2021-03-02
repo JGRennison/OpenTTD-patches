@@ -65,6 +65,7 @@ set(LANG_BINARY_DIR ${CMAKE_BINARY_DIR}/lang)
 
 if (HOST_BINARY_DIR)
     include(${HOST_BINARY_DIR}/strgen.cmake)
+    add_executable(hoststrgen ALIAS strgen)
 endif()
 
 # Walk over all the (finished) language files, and generate a command to compile them

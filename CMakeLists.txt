@@ -243,7 +243,9 @@ set_target_properties(openttd PROPERTIES OUTPUT_NAME "${BINARY_NAME}")
 
 set(host_tools_list strgen settingsgen)
 
-if(CMAKE_CROSSCOMPILING)
+if(HOST_BINARY_DIR)
+    # Host tools already exist, nothing to do
+elseif(CMAKE_CROSSCOMPILING)
     # Pawn off the creation of the host utilities into its own dedicated space
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/host_tools)
     file(TO_NATIVE_PATH ${CMAKE_COMMAND} native_cmake_command)
@@ -280,7 +282,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src)
 add_subdirectory(${CMAKE_SOURCE_DIR}/media/baseset)
 add_subdirectory(${CMAKE_SOURCE_DIR}/bin)
 
-if(NOT CMAKE_CROSSCOMPILING)
+if(NOT CMAKE_CROSSCOMPILING AND NOT HOST_BINARY_DIR)
     foreach(tgt IN ITEMS ${host_tools_list})
         add_executable(host${tgt} ALIAS ${tgt})
     endforeach()
