@@ -132,7 +132,7 @@ jobs:
         echo "::endgroup::"
 
         echo "Release Date: $(cat .release_date)"
-        echo "Revision: $(cat .ottdrev)"
+        echo "Revision: $(cat .ottdrev-vc)"
         echo "Version: $(cat .version)"
         echo "Is tag: ${IS_TAG}"
         echo "Folder on CDN: ${FOLDER}"
