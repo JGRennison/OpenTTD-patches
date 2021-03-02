@@ -833,7 +833,7 @@ jobs:
     # "always()" is important here, it is the keyword to use to stop skipping
     # this job if any dependency is skipped. It looks a bit silly, but it is
     # how GitHub Actions work ;)
-    if: always() && needs.source.result == 'success' && needs.docs.result == 'success' && needs.linux.result == 'success' && (needs.linux-distro.result == 'success' || needs.linux-distro.result == 'skipped') && needs.macos.result == 'success' && needs.windows.result == 'success'
+    if: ${{ false }} # always() && needs.source.result == 'success' && needs.docs.result == 'success' && needs.linux.result == 'success' && (needs.linux-distro.result == 'success' || needs.linux-distro.result == 'skipped') && needs.macos.result == 'success' && needs.windows.result == 'success'
 
     runs-on: ubuntu-20.04
 
@@ -886,7 +886,7 @@ jobs:
     - macos
     - windows
 
-    if: needs.source.outputs.trigger_type == 'new-master' || needs.source.outputs.trigger_type == 'new-tag'
+    if: ${{ false }} # needs.source.outputs.trigger_type == 'new-master' || needs.source.outputs.trigger_type == 'new-tag'
 
     runs-on: ubuntu-20.04
 
