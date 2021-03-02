@@ -526,7 +526,7 @@ static inline void free(const void *ptr)
  * Using _mm_prefetch() with gcc implies the compile flag -msse.
  * This is not the case with __builtin_prefetch() so the latter can be used in normal .cpp files.
  */
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_X64))
 	#define INCLUDE_FOR_PREFETCH_NTA <xmmintrin.h>
 	#define PREFETCH_NTA(address) _mm_prefetch((const char *) (address), _MM_HINT_NTA);
 #elif defined(__GNUC__) || defined(__clang__)
