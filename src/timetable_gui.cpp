@@ -409,7 +409,7 @@ struct TimetableWindow : Window {
 		}
 	}
 
-	virtual EventState OnCTRLStateChange() OVERRIDE
+	virtual EventState OnCTRLStateChange() override
 	{
 		this->UpdateSelectionStates();
 		this->SetDirty();

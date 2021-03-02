@@ -266,7 +266,7 @@ public:
 		RebuildInstructionList();
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count) OVERRIDE
+	virtual void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case PROGRAM_WIDGET_INSTRUCTION_LIST: {
@@ -415,7 +415,7 @@ public:
 		}
 	}
 
-	virtual void OnPlaceObject(Point pt, TileIndex tile1) OVERRIDE
+	virtual void OnPlaceObject(Point pt, TileIndex tile1) override
 	{
 		if (this->IsWidgetLowered(PROGRAM_WIDGET_COPY_PROGRAM)) {
 			//Copy program from another progsignal
@@ -514,7 +514,7 @@ public:
 		//OnPaint(); // this appears to cause visual artefacts
 	}
 
-	virtual void OnQueryTextFinished(char *str) OVERRIDE
+	virtual void OnQueryTextFinished(char *str) override
 	{
 		if (!StrEmpty(str)) {
 			SignalInstruction *si = this->GetSelected();
@@ -536,7 +536,7 @@ public:
 		}
 	}
 
-	virtual void OnDropdownSelect(int widget, int index) OVERRIDE
+	virtual void OnDropdownSelect(int widget, int index) override
 	{
 		SignalInstruction *ins = this->GetSelected();
 		if (!ins) return;
@@ -602,7 +602,7 @@ public:
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) OVERRIDE
+	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case PROGRAM_WIDGET_INSTRUCTION_LIST:
@@ -612,18 +612,18 @@ public:
 		}
 	}
 
-	virtual void OnResize() OVERRIDE
+	virtual void OnResize() override
 	{
 		/* Update the scroll bar */
 		this->vscroll->SetCapacityFromWidget(this, PROGRAM_WIDGET_INSTRUCTION_LIST);
 	}
 
-	virtual void OnPaint() OVERRIDE
+	virtual void OnPaint() override
 	{
 		this->DrawWidgets();
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const OVERRIDE
+	virtual void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget != PROGRAM_WIDGET_INSTRUCTION_LIST) return;
 
@@ -640,14 +640,14 @@ public:
 		}
 	}
 
-	virtual void OnInvalidateData(int data, bool gui_scope) OVERRIDE {
+	virtual void OnInvalidateData(int data, bool gui_scope) override {
 		if (gui_scope) {
 			this->RebuildInstructionList();
 		}
 	}
 
 
-	virtual void SetStringParameters(int widget) const OVERRIDE
+	virtual void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case PROGRAM_WIDGET_COND_VALUE: {

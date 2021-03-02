@@ -436,7 +436,7 @@ struct PlansWindow : Window {
 		this->vscroll->SetCount(sbcnt);
 	}
 
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	virtual void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (data != INVALID_PLAN && this->selected != INT_MAX) {
 			if (this->list[this->selected].plan_id == data) {

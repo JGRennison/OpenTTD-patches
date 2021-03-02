@@ -184,7 +184,7 @@ public:
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) OVERRIDE
+	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		if (widget == WID_CTO_HEADER) {
 			(*size).height = std::max((*size).height, (uint) WD_FRAMERECT_TOP + FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM);
@@ -200,7 +200,7 @@ public:
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const OVERRIDE
+	virtual void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (WID_CTO_CARGO_LABEL_FIRST <= widget && widget <= WID_CTO_CARGO_LABEL_LAST) {
 			const CargoSpec *cs = _sorted_cargo_specs[widget - WID_CTO_CARGO_LABEL_FIRST];
@@ -223,7 +223,7 @@ public:
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count) OVERRIDE
+	virtual void OnClick(Point pt, int widget, int click_count) override
 	{
 		if (!this->CheckOrderStillValid()) {
 			delete this;
@@ -241,7 +241,7 @@ public:
 		}
 	}
 
-	virtual void OnDropdownSelect(int widget, int action_type) OVERRIDE
+	virtual void OnDropdownSelect(int widget, int action_type) override
 	{
 		if (!this->CheckOrderStillValid()) {
 			delete this;
@@ -279,7 +279,7 @@ public:
 		}
 	}
 
-	virtual void SetStringParameters(int widget) const OVERRIDE
+	virtual void SetStringParameters(int widget) const override
 	{
 		if (!this->CheckOrderStillValid()) {
 			return;
@@ -291,7 +291,7 @@ public:
 		}
 	}
 
-	virtual void OnFocus(Window *previously_focused_window) OVERRIDE
+	virtual void OnFocus(Window *previously_focused_window) override
 	{
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
 			MarkAllRoutePathsDirty(this->vehicle);
@@ -299,7 +299,7 @@ public:
 		}
 	}
 
-	virtual void OnFocusLost(Window *newly_focused_window) OVERRIDE
+	virtual void OnFocusLost(Window *newly_focused_window) override
 	{
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
 			MarkAllRoutePathsDirty(this->vehicle);
@@ -312,7 +312,7 @@ public:
 	 * @param data Information about the changed data.
 	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
 	 */
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true) OVERRIDE
+	virtual void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!this->CheckOrderStillValid()) {
 			delete this;
@@ -1750,7 +1750,7 @@ public:
 		}
 	}
 
-	virtual EventState OnCTRLStateChange() OVERRIDE
+	virtual EventState OnCTRLStateChange() override
 	{
 		this->UpdateButtonState();
 		return ES_NOT_HANDLED;
@@ -2791,7 +2791,7 @@ public:
 		this->vscroll->SetCapacityFromWidget(this, WID_O_ORDER_LIST);
 	}
 
-	virtual void OnFocus(Window *previously_focused_window) OVERRIDE
+	virtual void OnFocus(Window *previously_focused_window) override
 	{
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
 			MarkAllRoutePathsDirty(this->vehicle);
@@ -2799,7 +2799,7 @@ public:
 		}
 	}
 
-	virtual void OnFocusLost(Window *newly_focused_window) OVERRIDE
+	virtual void OnFocusLost(Window *newly_focused_window) override
 	{
 		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
 			MarkAllRoutePathsDirty(this->vehicle);

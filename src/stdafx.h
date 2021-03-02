@@ -517,11 +517,6 @@ static inline void free(const void *ptr)
 #	define IGNORE_UNINITIALIZED_WARNING_STOP
 #endif
 
-/*
- * Define for the override keyword.
- */
-#define OVERRIDE override
-
 /**
  * Using _mm_prefetch() with gcc implies the compile flag -msse.
  * This is not the case with __builtin_prefetch() so the latter can be used in normal .cpp files.
