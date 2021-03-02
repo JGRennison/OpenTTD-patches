@@ -46,6 +46,8 @@ This document does not describe the player-visible changes/additions described i
 * Cache inferred one-way state of road tiles.
 * De-virtualise calls to AnimateTile().
 * Cache animated tile speed.
+* Cache whether water tiles have water for all neighbouring tiles.
+* Improve performance of arctic snow line checks.
 
 ### Viewport
 
@@ -64,6 +66,7 @@ This document does not describe the player-visible changes/additions described i
 * Clip drawing of window widgets which are not in the redraw area.
 * Reduce unnecessary status bar and vehicle list window redraws.
 * Filter out tile parts which are entirely outside the drawing area, within DrawTileProc handlers.
+* Improve performance of drawing rail catenary.
 
 ### Data structures
 
@@ -98,6 +101,7 @@ This document does not describe the player-visible changes/additions described i
 
 * Add a fast path to Blitter_32bppAnim::Draw.
 * Replace sprite cache implementation.
+* Add brightness adjusting modes to non-8bpp blitters.
 
 ### Link graph
 
@@ -123,6 +127,7 @@ This document does not describe the player-visible changes/additions described i
 * Replace read/write accessors and buffering.
 * Perform savegame decompression in a separate thread.
 * Pre-filter SaveLoad descriptor arrays for current version/mode, for chunks with many objects.
+* Support zstd compression for autosaves and network joins.
 
 ### AI/GS
 
