@@ -274,7 +274,6 @@ void PerformanceMeasurer::SetExpectedRate(double rate)
  */
 /* static */ void PerformanceMeasurer::Paused(PerformanceElement elem)
 {
-	PerformanceMeasurer::SetInactive(elem);
 	_pf_data[elem].AddPause(GetPerformanceTimer());
 }
 
