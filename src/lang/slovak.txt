@@ -641,8 +641,8 @@ STR_MONTH_DEC                                                   :December
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Vyb.
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Vybrať položky na grafe
-STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}{} {STRING}
-STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{} {STRING}{}{NUM}
+STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}
+STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{}{NUM}
 STR_GRAPH_Y_LABEL                                               :{TINY_FONT}{STRING}
 STR_GRAPH_Y_LABEL_NUMBER                                        :{TINY_FONT}{COMMA}
 
@@ -760,9 +760,9 @@ STR_PLAYLIST_TOOLTIP_CLICK_TO_REMOVE_TRACK                      :{BLACK}Kliknite
 STR_HIGHSCORE_TOP_COMPANIES_WHO_REACHED                         :{BIG_FONT}{BLACK}Najlepšie spoločnosti, ktoré dosiahli rok {NUM}
 STR_HIGHSCORE_TOP_COMPANIES_NETWORK_GAME                        :{BIG_FONT}{BLACK}Tabuľka spoločnosti v roku {NUM}
 STR_HIGHSCORE_POSITION                                          :{BIG_FONT}{BLACK}{COMMA}.
-STR_HIGHSCORE_PERFORMANCE_TITLE_BUSINESSMAN                     :{G=z}Obchodníčka
+STR_HIGHSCORE_PERFORMANCE_TITLE_BUSINESSMAN                     :Obchodník
 STR_HIGHSCORE_PERFORMANCE_TITLE_BUSINESSMAN.g                   :Obchodníci
-STR_HIGHSCORE_PERFORMANCE_TITLE_ENTREPRENEUR                    :{G=z}Podnikateľka
+STR_HIGHSCORE_PERFORMANCE_TITLE_ENTREPRENEUR                    :{G=m}Podnikateľ
 STR_HIGHSCORE_PERFORMANCE_TITLE_INDUSTRIALIST                   :{G=m}Priemyselník
 STR_HIGHSCORE_PERFORMANCE_TITLE_CAPITALIST                      :{G=m}Kapitalista
 STR_HIGHSCORE_PERFORMANCE_TITLE_MAGNATE                         :{G=m}Magnát
@@ -1015,6 +1015,7 @@ STR_GAME_OPTIONS_CURRENCY_NTD                                   :Taiwanský dol�
 STR_GAME_OPTIONS_CURRENCY_CNY                                   :Čínsky jüan (CNY)
 STR_GAME_OPTIONS_CURRENCY_HKD                                   :Hongkongský dolár (HKD)
 STR_GAME_OPTIONS_CURRENCY_INR                                   :Indická rupia (INR)
+STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonézska rupia (IDR)
 ############ end of currency region
 
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Jazdia naľavo

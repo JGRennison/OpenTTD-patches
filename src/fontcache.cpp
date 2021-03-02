@@ -274,17 +274,12 @@ void TrueTypeFontCache::SetGlyphPtr(GlyphID key, const GlyphEntry *glyph, bool d
 	this->glyph_to_sprite[GB(key, 8, 8)][GB(key, 0, 8)].duplicate = duplicate;
 }
 
-void *AllocateFont(size_t size)
-{
-	return MallocT<byte>(size);
-}
-
 
 /* Check if a glyph should be rendered with anti-aliasing. */
-static bool GetFontAAState(FontSize size)
+static bool GetFontAAState(FontSize size, bool check_blitter = true)
 {
 	/* AA is only supported for 32 bpp */
-	if (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() != 32) return false;
+	if (check_blitter && BlitterFactory::GetCurrentBlitter()->GetScreenDepth() != 32) return false;
 
 	switch (size) {
 		default: NOT_REACHED();
@@ -348,10 +343,11 @@ const Sprite *TrueTypeFontCache::GetGlyph(GlyphID key)
 				0,  // x_offs
 				0,  // y_offs
 				ST_FONT,
+				SCC_PAL,
 				builtin_questionmark_data
 			};
 
-			Sprite *spr = BlitterFactory::GetCurrentBlitter()->Encode(&builtin_questionmark, AllocateFont);
+			Sprite *spr = BlitterFactory::GetCurrentBlitter()->Encode(&builtin_questionmark, SimpleSpriteAlloc);
 			assert(spr != nullptr);
 			GlyphEntry new_glyph;
 			new_glyph.sprite = spr;
@@ -613,6 +609,7 @@ const Sprite *FreeTypeFontCache::InternalGetGlyph(GlyphID key, bool aa)
 	SpriteLoader::Sprite sprite;
 	sprite.AllocateData(ZOOM_LVL_NORMAL, width * height);
 	sprite.type = ST_FONT;
+	sprite.colours = (aa ? SCC_PAL | SCC_ALPHA : SCC_PAL);
 	sprite.width = width;
 	sprite.height = height;
 	sprite.x_offs = slot->bitmap_left;
@@ -640,7 +637,7 @@ const Sprite *FreeTypeFontCache::InternalGetGlyph(GlyphID key, bool aa)
 	}
 
 	GlyphEntry new_glyph;
-	new_glyph.sprite = BlitterFactory::GetCurrentBlitter()->Encode(&sprite, AllocateFont);
+	new_glyph.sprite = BlitterFactory::GetCurrentBlitter()->Encode(&sprite, SimpleSpriteAlloc);
 	new_glyph.width  = slot->advance.x >> 6;
 
 	this->SetGlyphPtr(key, &new_glyph);
@@ -675,7 +672,6 @@ const void *FreeTypeFontCache::InternalGetFontTable(uint32 tag, size_t &length)
 	length = len;
 	return result;
 }
-
 #endif /* WITH_FREETYPE */
 
 
@@ -717,6 +713,19 @@ void UninitFreeType()
 	FT_Done_FreeType(_library);
 	_library = nullptr;
 #endif /* WITH_FREETYPE */
+}
+
+/**
+ * Should any of the active fonts be anti-aliased?
+ * @return True if any of the loaded fonts want anti-aliased drawing.
+ */
+bool HasAntialiasedFonts()
+{
+	for (FontSize fs = FS_BEGIN; fs < FS_END; fs++) {
+		if (!FontCache::Get(fs)->IsBuiltInFont() && GetFontAAState(fs, false)) return true;
+	}
+
+	return false;
 }
 
 #if !defined(_WIN32) && !defined(__APPLE__) && !defined(WITH_FONTCONFIG) && !defined(WITH_COCOA)

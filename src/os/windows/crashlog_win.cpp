@@ -191,7 +191,7 @@ static uint32 CalcCRC(byte *data, uint size, uint32 crc)
 	return crc;
 }
 
-static void GetFileInfo(DebugFileInfo *dfi, const TCHAR *filename)
+static void GetFileInfo(DebugFileInfo *dfi, const wchar_t *filename)
 {
 	HANDLE file;
 	memset(dfi, 0, sizeof(*dfi));
@@ -224,7 +224,7 @@ static void GetFileInfo(DebugFileInfo *dfi, const TCHAR *filename)
 
 static char *PrintModuleInfo(char *output, const char *last, HMODULE mod)
 {
-	TCHAR buffer[MAX_PATH];
+	wchar_t buffer[MAX_PATH];
 	DebugFileInfo dfi;
 
 	GetModuleFileName(mod, buffer, MAX_PATH);
@@ -568,7 +568,7 @@ char *CrashLogWindows::AppendDecodedStacktrace(char *buffer, const char *last) c
 	if (_settings_client.gui.developer == 0) return 0;
 
 	int ret = 0;
-	HMODULE dbghelp = LoadLibrary(_T("dbghelp.dll"));
+	HMODULE dbghelp = LoadLibrary(L"dbghelp.dll");
 	if (dbghelp != nullptr) {
 		typedef BOOL (WINAPI *MiniDumpWriteDump_t)(HANDLE, DWORD, HANDLE,
 				MINIDUMP_TYPE,
@@ -631,10 +631,10 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 
 	const char *abort_reason = CrashLog::GetAbortCrashlogReason();
 	if (abort_reason != nullptr) {
-		TCHAR _emergency_crash[512];
-		_sntprintf(_emergency_crash, lengthof(_emergency_crash),
-				_T("A serious fault condition occurred in the game. The game will shut down. (%s)\n"), OTTD2FS(abort_reason));
-		MessageBox(nullptr, _emergency_crash, _T("Fatal Application Failure"), MB_ICONERROR);
+		wchar_t _emergency_crash[512];
+		_snwprintf(_emergency_crash, lengthof(_emergency_crash),
+				L"A serious fault condition occurred in the game. The game will shut down. (%s)\n", OTTD2FS(abort_reason));
+		MessageBox(nullptr, _emergency_crash, L"Fatal Application Failure", MB_ICONERROR);
 		ExitProcess(3);
 	}
 
@@ -750,20 +750,20 @@ static void CDECL CustomAbort(int signal)
 static bool _expanded;
 
 static const TCHAR _crash_desc[] =
-	_T("A serious fault condition occurred in the game. The game will shut down.\n")
-	_T("Please send the crash information (log files and crash saves, if any) to the patchpack developer.\n")
-	_T("This will greatly help debugging. The correct place to do this is https://www.tt-forums.net/viewtopic.php?f=33&t=73469")
-	_T(" or https://github.com/JGRennison/OpenTTD-patches\n")
-	_T("The information contained in the report is displayed below.\n")
-	_T("Press \"Emergency save\" to attempt saving the game. Generated file(s):\n")
-	_T("%s");
+	L"A serious fault condition occurred in the game. The game will shut down.\n"
+	L"Please send the crash information (log files and crash saves, if any) to the patchpack developer.\n"
+	L"This will greatly help debugging. The correct place to do this is https://www.tt-forums.net/viewtopic.php?f=33&t=73469"
+	L" or https://github.com/JGRennison/OpenTTD-patches\n"
+	L"The information contained in the report is displayed below.\n"
+	L"Press \"Emergency save\" to attempt saving the game. Generated file(s):\n"
+	L"%s";
 
-static const TCHAR _save_succeeded[] =
-	_T("Emergency save succeeded.\nIts location is '%s'.\n")
-	_T("Be aware that critical parts of the internal game state may have become ")
-	_T("corrupted. The saved game is not guaranteed to work.");
+static const wchar_t _save_succeeded[] =
+	L"Emergency save succeeded.\nIts location is '%s'.\n"
+	L"Be aware that critical parts of the internal game state may have become "
+	L"corrupted. The saved game is not guaranteed to work.";
 
-static const TCHAR * const _expand_texts[] = {_T("S&how report >>"), _T("&Hide report <<") };
+static const wchar_t * const _expand_texts[] = {L"S&how report >>", L"&Hide report <<" };
 
 static void SetWndSize(HWND wnd, int mode)
 {
@@ -786,17 +786,13 @@ static void SetWndSize(HWND wnd, int mode)
 	}
 }
 
-/* When TCHAR is char, then _sntprintf becomes snprintf. When TCHAR is wchar it doesn't. Likewise for strcat. */
-#undef snprintf
-#undef strcat
-
 static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg) {
 		case WM_INITDIALOG: {
 			/* We need to put the crash-log in a separate buffer because the default
-			 * buffer in MB_TO_WIDE is not large enough (512 chars) */
-			TCHAR crash_msgW[lengthof(CrashLogWindows::current->crashlog)];
+			 * buffer in OTTD2FS is not large enough (512 chars) */
+			wchar_t crash_msgW[lengthof(CrashLogWindows::current->crashlog)];
 			/* Convert unix -> dos newlines because the edit box only supports that properly :( */
 			const char *unix_nl = CrashLogWindows::current->crashlog;
 			char dos_nl[lengthof(CrashLogWindows::current->crashlog)];
@@ -809,20 +805,20 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 			*p = '\0';
 
 			/* Add path to crash.log and crash.dmp (if any) to the crash window text */
-			size_t len = _tcslen(_crash_desc) + 2;
-			len += _tcslen(OTTD2FS(CrashLogWindows::current->crashlog_filename)) + 2;
-			len += _tcslen(OTTD2FS(CrashLogWindows::current->crashdump_filename)) + 2;
-			len += _tcslen(OTTD2FS(CrashLogWindows::current->screenshot_filename)) + 1;
+			size_t len = wcslen(_crash_desc) + 2;
+			len += wcslen(OTTD2FS(CrashLogWindows::current->crashlog_filename)) + 2;
+			len += wcslen(OTTD2FS(CrashLogWindows::current->crashdump_filename)) + 2;
+			len += wcslen(OTTD2FS(CrashLogWindows::current->screenshot_filename)) + 1;
 
-			TCHAR *text = AllocaM(TCHAR, len);
-			_sntprintf(text, len, _crash_desc, OTTD2FS(CrashLogWindows::current->crashlog_filename));
-			if (_settings_client.gui.developer > 0 && OTTD2FS(CrashLogWindows::current->crashdump_filename)[0] != _T('\0')) {
-				_tcscat(text, _T("\n"));
-				_tcscat(text, OTTD2FS(CrashLogWindows::current->crashdump_filename));
+			wchar_t *text = AllocaM(wchar_t, len);
+			_snwprintf(text, len, _crash_desc, OTTD2FS(CrashLogWindows::current->crashlog_filename));
+			if (_settings_client.gui.developer > 0 && OTTD2FS(CrashLogWindows::current->crashdump_filename)[0] != L'\0') {
+				wcscat(text, L"\n");
+				wcscat(text, OTTD2FS(CrashLogWindows::current->crashdump_filename));
 			}
-			if (OTTD2FS(CrashLogWindows::current->screenshot_filename)[0] != _T('\0')) {
-				_tcscat(text, _T("\n"));
-				_tcscat(text, OTTD2FS(CrashLogWindows::current->screenshot_filename));
+			if (OTTD2FS(CrashLogWindows::current->screenshot_filename)[0] != L'\0') {
+				wcscat(text, L"\n");
+				wcscat(text, OTTD2FS(CrashLogWindows::current->screenshot_filename));
 			}
 
 			SetDlgItemText(wnd, 10, text);
@@ -840,12 +836,12 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 					_save_DBGC_data = true;
 					char filename[MAX_PATH];
 					if (CrashLogWindows::current->WriteSavegame(filename, lastof(filename), CrashLogWindows::current->name_buffer)) {
-						size_t len = _tcslen(_save_succeeded) + _tcslen(OTTD2FS(filename)) + 1;
-						TCHAR *text = AllocaM(TCHAR, len);
-						_sntprintf(text, len, _save_succeeded, OTTD2FS(filename));
-						MessageBox(wnd, text, _T("Save successful"), MB_ICONINFORMATION);
+						size_t len = wcslen(_save_succeeded) + wcslen(OTTD2FS(filename)) + 1;
+						wchar_t *text = AllocaM(wchar_t, len);
+						_snwprintf(text, len, _save_succeeded, OTTD2FS(filename));
+						MessageBox(wnd, text, L"Save successful", MB_ICONINFORMATION);
 					} else {
-						MessageBox(wnd, _T("Save failed"), _T("Save failed"), MB_ICONINFORMATION);
+						MessageBox(wnd, L"Save failed", L"Save failed", MB_ICONINFORMATION);
 					}
 					_savegame_DBGL_data = nullptr;
 					_save_DBGC_data = false;

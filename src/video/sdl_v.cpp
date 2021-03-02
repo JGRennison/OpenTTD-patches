@@ -512,11 +512,11 @@ static uint ConvertSdlKeyIntoMy(SDL_keysym *sym, WChar *character)
 	return key;
 }
 
-int VideoDriver_SDL::PollEvent()
+bool VideoDriver_SDL::PollEvent()
 {
 	SDL_Event ev;
 
-	if (!SDL_PollEvent(&ev)) return -2;
+	if (!SDL_PollEvent(&ev)) return false;
 
 	switch (ev.type) {
 		case SDL_MOUSEMOTION:
@@ -603,7 +603,8 @@ int VideoDriver_SDL::PollEvent()
 			break;
 		}
 	}
-	return -1;
+
+	return true;
 }
 
 const char *VideoDriver_SDL::Start(const StringList &parm)
@@ -719,9 +720,6 @@ void VideoDriver_SDL::MainLoop()
 	DEBUG(driver, 1, "SDL: using %sthreads", _draw_threaded ? "" : "no ");
 
 	for (;;) {
-		InteractiveRandom(); // randomness
-
-		while (PollEvent() == -1) {}
 		if (_exit_game) break;
 
 		if (this->Tick()) {

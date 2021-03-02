@@ -151,7 +151,7 @@ const char *VideoDriver_Dedicated::Start(const StringList &parm)
 	/* For win32 we need to allocate a console (debug mode does the same) */
 	CreateConsole();
 	CreateWindowsConsoleThread();
-	SetConsoleTitle(_T("OpenTTD Dedicated Server"));
+	SetConsoleTitle(L"OpenTTD Dedicated Server");
 #endif
 
 #ifdef _MSC_VER
@@ -275,8 +275,6 @@ void VideoDriver_Dedicated::MainLoop()
 	}
 
 	while (!_exit_game) {
-		InteractiveRandom(); // randomness
-
 		if (!_dedicated_forks) DedicatedHandleKeyInput();
 
 		ChangeGameSpeed(_ddc_fastforward);

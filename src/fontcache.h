@@ -237,5 +237,6 @@ extern FreeTypeSettings _freetype;
 
 void InitFreeType(bool monospace);
 void UninitFreeType();
+bool HasAntialiasedFonts();
 
 #endif /* FONTCACHE_H */

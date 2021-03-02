@@ -89,6 +89,11 @@ if(OPTION_TOOLS_ONLY)
     return()
 endif()
 
+if(APPLE)
+	# Avoid searching for headers in Frameworks, and libraries in LIBDIR.
+	set(CMAKE_FIND_FRAMEWORK LAST)
+endif()
+
 # Prefer -pthread over -lpthread, which is often the better option of the two.
 set(CMAKE_THREAD_PREFER_PTHREAD YES)
 # Make sure we have Threads available.
@@ -121,6 +126,10 @@ if(NOT WIN32)
 
         find_package(MacUcontext)
     endif()
+endif()
+
+if(NOT EMSCRIPTEN)
+    find_package(OpenGL COMPONENTS OpenGL)
 endif()
 
 if(MSVC)
@@ -306,6 +315,16 @@ if(NOT OPTION_DEDICATED)
     link_package(Fcitx)
     link_package(DBus1)
     link_package(X11)
+
+    if(SDL2_FOUND AND OPENGL_FOUND AND UNIX)
+        # SDL2 dynamically loads OpenGL if needed, so do not link to OpenGL when
+        # on Linux. For Windows, we need to link to OpenGL as we also have a win32
+        # driver using it.
+        add_definitions(-DWITH_OPENGL)
+        message(STATUS "OpenGL found -- -DWITH_OPENGL -- (via SDL2)")
+    else()
+        link_package(OpenGL TARGET OpenGL::GL)
+    endif()
 endif()
 
 if(APPLE)

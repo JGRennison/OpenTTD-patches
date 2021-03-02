@@ -87,6 +87,20 @@ public:
 	}
 
 	/**
+	 * Get whether the mouse cursor is drawn by the video driver.
+	 * @return True if cursor drawing is done by the video driver.
+	 */
+	virtual bool UseSystemCursor()
+	{
+		return false;
+	}
+
+	/**
+	 * Clear all cached sprites.
+	 */
+	virtual void ClearSystemSprites() {}
+
+	/**
 	 * Whether the driver has a graphical user interface with the end user.
 	 * Or in other words, whether we should spawn a thread for world generation
 	 * and NewGRF scanning so the graphical updates can keep coming. Otherwise
@@ -100,14 +114,41 @@ public:
 	}
 
 	/**
-	 * An edit box gained the input focus
+	 * Has this video driver an efficient code path for palette animated 8-bpp sprites?
+	 * @return True if the driver has an efficient code path for 8-bpp.
 	 */
-	virtual void EditBoxGainedFocus() {}
+	virtual bool HasEfficient8Bpp() const
+	{
+		return false;
+	}
+
+	/**
+	 * Does this video driver support a separate animation buffer in addition to the colour buffer?
+	 * @return True if a separate animation buffer is supported.
+	 */
+	virtual bool HasAnimBuffer()
+	{
+		return false;
+	}
+
+	/**
+	 * Get a pointer to the animation buffer of the video back-end.
+	 * @return Pointer to the buffer or nullptr if no animation buffer is supported.
+	 */
+	virtual uint8 *GetAnimBuffer()
+	{
+		return nullptr;
+	}
 
 	/**
 	 * An edit box lost the input focus. Abort character compositing if necessary.
 	 */
 	virtual void EditBoxLostFocus() {}
+
+	/**
+	 * An edit box gained the input focus
+	 */
+	virtual void EditBoxGainedFocus() {}
 
 	/**
 	 * Get a suggested default GUI zoom taking screen DPI into account.
@@ -127,6 +168,25 @@ public:
 	static VideoDriver *GetInstance() {
 		return static_cast<VideoDriver*>(*DriverFactoryBase::GetActiveDriver(Driver::DT_VIDEO));
 	}
+
+	/**
+	 * Helper struct to ensure the video buffer is locked and ready for drawing. The destructor
+	 * will make sure the buffer is unlocked no matter how the scope is exited.
+	 */
+	struct VideoBufferLocker {
+		VideoBufferLocker()
+		{
+			this->unlock = VideoDriver::GetInstance()->LockVideoBuffer();
+		}
+
+		~VideoBufferLocker()
+		{
+			if (this->unlock) VideoDriver::GetInstance()->UnlockVideoBuffer();
+		}
+
+	private:
+		bool unlock; ///< Stores if the lock did anything that has to be undone.
+	};
 
 protected:
 	const uint ALLOWED_DRIFT = 5; ///< How many times videodriver can miss deadlines without it being overly compensated.
@@ -189,6 +249,12 @@ protected:
 	 * Process any pending palette animation.
 	 */
 	virtual void CheckPaletteAnim() {}
+
+	/**
+	 * Process a single system event.
+	 * @returns False if there are no more events to process.
+	 */
+	virtual bool PollEvent() { return false; };
 
 	/**
 	 * Run the game for a single tick, processing boththe game-tick and draw-tick.

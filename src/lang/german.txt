@@ -587,8 +587,8 @@ STR_MONTH_DEC                                                   :Dezember
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Legende
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Legende des Diagramms anzeigen
-STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}{} {STRING}
-STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{} {STRING}{}{NUM}
+STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}
+STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{}{NUM}
 STR_GRAPH_Y_LABEL                                               :{TINY_FONT}{STRING}
 STR_GRAPH_Y_LABEL_NUMBER                                        :{TINY_FONT}{COMMA}
 
@@ -924,14 +924,14 @@ STR_GAME_OPTIONS_CURRENCY_USD                                   :US-Dollar (USD)
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro (EUR)
 STR_GAME_OPTIONS_CURRENCY_JPY                                   :Japanische Yen (JPY)
 STR_GAME_OPTIONS_CURRENCY_ATS                                   :Österreichische Schilling (ATS)
-STR_GAME_OPTIONS_CURRENCY_BEF                                   :Belgische Francs (BEF)
+STR_GAME_OPTIONS_CURRENCY_BEF                                   :Belgische Franken (BEF)
 STR_GAME_OPTIONS_CURRENCY_CHF                                   :Schweizer Franken (CHF)
 STR_GAME_OPTIONS_CURRENCY_CZK                                   :Tschechische Kronen (CZK)
 STR_GAME_OPTIONS_CURRENCY_DEM                                   :Deutsche Mark (DEM)
 STR_GAME_OPTIONS_CURRENCY_DKK                                   :Dänische Kronen (DKK)
 STR_GAME_OPTIONS_CURRENCY_ESP                                   :Spanische Peseten (ESP)
 STR_GAME_OPTIONS_CURRENCY_FIM                                   :Finnische Mark (FIM)
-STR_GAME_OPTIONS_CURRENCY_FRF                                   :Französische Francs (FRF)
+STR_GAME_OPTIONS_CURRENCY_FRF                                   :Französische Franken (FRF)
 STR_GAME_OPTIONS_CURRENCY_GRD                                   :Griechische Drachmen (GRD)
 STR_GAME_OPTIONS_CURRENCY_HUF                                   :Ungarische Forint (HUF)
 STR_GAME_OPTIONS_CURRENCY_ISK                                   :Isländische Kronen (ISK)
@@ -948,17 +948,18 @@ STR_GAME_OPTIONS_CURRENCY_SKK                                   :Slowakische Kro
 STR_GAME_OPTIONS_CURRENCY_BRL                                   :Brasilianische Reais (BRL)
 STR_GAME_OPTIONS_CURRENCY_EEK                                   :Estnische Kronen (EEK)
 STR_GAME_OPTIONS_CURRENCY_LTL                                   :Litauische Litas (LTL)
-STR_GAME_OPTIONS_CURRENCY_KRW                                   :Südkoreanischer Won (KRW)
-STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Südafrikanischer Rand (ZAR)
+STR_GAME_OPTIONS_CURRENCY_KRW                                   :Südkoreanische Won (KRW)
+STR_GAME_OPTIONS_CURRENCY_ZAR                                   :Südafrikanische Rand (ZAR)
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Eigene ...
-STR_GAME_OPTIONS_CURRENCY_GEL                                   :Georgischer Lari (GEL)
-STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iranischer Rial (IRR)
+STR_GAME_OPTIONS_CURRENCY_GEL                                   :Georgische Lari (GEL)
+STR_GAME_OPTIONS_CURRENCY_IRR                                   :Iranische Rial (IRR)
 STR_GAME_OPTIONS_CURRENCY_RUB                                   :Neue Russische Rubel (RUB)
-STR_GAME_OPTIONS_CURRENCY_MXN                                   :Mexikanischer Peso (MXN)
+STR_GAME_OPTIONS_CURRENCY_MXN                                   :Mexikanische Pesos (MXN)
 STR_GAME_OPTIONS_CURRENCY_NTD                                   :Neuer Taiwan-Dollar (NTD)
-STR_GAME_OPTIONS_CURRENCY_CNY                                   :Chinesischer Yuan (CNY)
+STR_GAME_OPTIONS_CURRENCY_CNY                                   :Chinesische Yuan (CNY)
 STR_GAME_OPTIONS_CURRENCY_HKD                                   :Hongkong-Dollar (HKD)
 STR_GAME_OPTIONS_CURRENCY_INR                                   :Indische Rupie (INR)
+STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonesische Rupiah (IDR)
 ############ end of currency region
 
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Linksverkehr
@@ -2172,11 +2173,11 @@ STR_LIVERY_PANEL_TOOLTIP                                        :{BLACK}Farbsche
 STR_LIVERY_DEFAULT                                              :Standardlackierung
 STR_LIVERY_STEAM                                                :Dampflok
 STR_LIVERY_DIESEL                                               :Diesellok
-STR_LIVERY_ELECTRIC                                             :E-Lok
+STR_LIVERY_ELECTRIC                                             :Elektrolok
 STR_LIVERY_MONORAIL                                             :Einschienenbahn
 STR_LIVERY_MAGLEV                                               :Magnetschwebebahn
-STR_LIVERY_DMU                                                  :VT
-STR_LIVERY_EMU                                                  :ET
+STR_LIVERY_DMU                                                  :Dieseltriebwagen
+STR_LIVERY_EMU                                                  :Elektrotriebwagen
 STR_LIVERY_PASSENGER_WAGON_STEAM                                :Passagierwaggon (Dampf)
 STR_LIVERY_PASSENGER_WAGON_DIESEL                               :Passagierwaggon (Diesel)
 STR_LIVERY_PASSENGER_WAGON_ELECTRIC                             :Passagierwaggon (Elektrisch)
@@ -4538,12 +4539,12 @@ STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Nachrich
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Wir haben {G "einen" "eine" "ein" ""} neue{G n "" s ""} {0:STRING} entwickelt.{}Besteht Interesse, {G 0 den die das die} {0:STRING} ein Jahr lang exklusiv zu nutzen, so dass wir die Funktionen testen können, bevor {G 0 er sie es sie} allgemein zur Verfügung gestellt {G 0 wird wird wird werden}?
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :{G=w}Lokomotive
-STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :Elektrifizierte Lokomotive
+STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :Elektrolokomotive
 STR_ENGINE_PREVIEW_MONORAIL_LOCOMOTIVE                          :{G=w}Einschienenbahn
 STR_ENGINE_PREVIEW_MAGLEV_LOCOMOTIVE                            :{G=w}Magnetschwebebahn
 
 STR_ENGINE_PREVIEW_ROAD_VEHICLE                                 :{G=n}Straßenfahrzeug
-STR_ENGINE_PREVIEW_TRAM_VEHICLE                                 :Straßenbahnfahrzeug
+STR_ENGINE_PREVIEW_TRAM_VEHICLE                                 :Straßenbahn
 
 STR_ENGINE_PREVIEW_AIRCRAFT                                     :{G=n}Flugzeug
 STR_ENGINE_PREVIEW_SHIP                                         :{G=n}Schiff
@@ -5875,9 +5876,9 @@ STR_SV_STNAME_LAKESIDE                                          :{STRING} Seebli
 STR_SV_STNAME_EXCHANGE                                          :{STRING} Abzweigung
 STR_SV_STNAME_AIRPORT                                           :{STRING} Flughafen
 STR_SV_STNAME_OILFIELD                                          :{STRING} Ölfeld
-STR_SV_STNAME_MINES                                             :{STRING} Mine
+STR_SV_STNAME_MINES                                             :{STRING} Bergwerk
 STR_SV_STNAME_DOCKS                                             :{STRING} Hafen
-STR_SV_STNAME_BUOY                                              :{STRING}
+STR_SV_STNAME_BUOY                                              :{STRING} Boje
 STR_SV_STNAME_WAYPOINT                                          :{STRING}
 ##id 0x6020
 STR_SV_STNAME_ANNEXE                                            :{STRING} Anbau

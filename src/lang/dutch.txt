@@ -577,8 +577,8 @@ STR_MONTH_DEC                                                   :December
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Legenda
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Legenda bij deze grafiek weergeven
-STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}{} {STRING}
-STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{} {STRING}{}{NUM}
+STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}
+STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{}{NUM}
 STR_GRAPH_Y_LABEL                                               :{TINY_FONT}{STRING}
 STR_GRAPH_Y_LABEL_NUMBER                                        :{TINY_FONT}{COMMA}
 
@@ -947,6 +947,7 @@ STR_GAME_OPTIONS_CURRENCY_NTD                                   :Nieuwe Taiwanse
 STR_GAME_OPTIONS_CURRENCY_CNY                                   :Chinese Renminbi (CNY)
 STR_GAME_OPTIONS_CURRENCY_HKD                                   :Hong Kong Dollar (HKD)
 STR_GAME_OPTIONS_CURRENCY_INR                                   :Indiase rupee (INR)
+STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonesische roepia (IDR)
 ############ end of currency region
 
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Links rijden

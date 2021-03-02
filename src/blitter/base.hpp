@@ -43,7 +43,7 @@ DECLARE_ENUM_AS_BIT_SET(BlitterSpriteFlags);
 /**
  * How all blitters should look like. Extend this class to make your own.
  */
-class Blitter {
+class Blitter : public SpriteEncoder {
 public:
 	/** Parameters related to blitting. */
 	struct BlitterParams {
@@ -77,6 +77,11 @@ public:
 	 */
 	virtual uint8 GetScreenDepth() = 0;
 
+	bool Is32BppSupported() override
+	{
+		return this->GetScreenDepth() > 8;
+	}
+
 	/**
 	 * Draw an image to the screen, given an amount of params defined above.
 	 */
@@ -92,11 +97,6 @@ public:
 	 * @param pal the palette to use.
 	 */
 	virtual void DrawColourMappingRect(void *dst, int width, int height, PaletteID pal) = 0;
-
-	/**
-	 * Convert a sprite from the loader to our own format.
-	 */
-	virtual Sprite *Encode(const SpriteLoader::Sprite *sprite, AllocatorProc *allocator) = 0;
 
 	/**
 	 * Move the destination pointer the requested amount x and y, keeping in mind
@@ -227,6 +227,14 @@ public:
 	 * @return True if it uses palette animation.
 	 */
 	virtual Blitter::PaletteAnimation UsePaletteAnimation() = 0;
+
+	/**
+	 * Does this blitter require a separate animation buffer from the video backend?
+	 */
+	virtual bool NeedsAnimationBuffer()
+	{
+		return false;
+	}
 
 	/**
 	 * Get the name of the blitter, the same as the Factory-instance returns.

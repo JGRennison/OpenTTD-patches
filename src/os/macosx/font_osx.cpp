@@ -286,6 +286,7 @@ const Sprite *CoreTextFontCache::InternalGetGlyph(GlyphID key, bool use_aa)
 	SpriteLoader::Sprite sprite;
 	sprite.AllocateData(ZOOM_LVL_NORMAL, width * height);
 	sprite.type = ST_FONT;
+	sprite.colours = (use_aa ? SCC_PAL | SCC_ALPHA : SCC_PAL);
 	sprite.width = width;
 	sprite.height = height;
 	sprite.x_offs = (int16)std::round(CGRectGetMinX(bounds));
@@ -332,7 +333,7 @@ const Sprite *CoreTextFontCache::InternalGetGlyph(GlyphID key, bool use_aa)
 	}
 
 	GlyphEntry new_glyph;
-	new_glyph.sprite = BlitterFactory::GetCurrentBlitter()->Encode(&sprite, AllocateFont);
+	new_glyph.sprite = BlitterFactory::GetCurrentBlitter()->Encode(&sprite, SimpleSpriteAlloc);
 	new_glyph.width = (byte)std::round(CTFontGetAdvancesForGlyphs(this->font.get(), kCTFontOrientationDefault, &glyph, nullptr, 1));
 	this->SetGlyphPtr(key, &new_glyph);
 

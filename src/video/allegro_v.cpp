@@ -328,7 +328,7 @@ static uint32 ConvertAllegroKeyIntoMy(WChar *character)
 static const uint LEFT_BUTTON  = 0;
 static const uint RIGHT_BUTTON = 1;
 
-static void PollEvent()
+bool VideoDriver_Allegro::PollEvent()
 {
 	poll_mouse();
 
@@ -402,6 +402,8 @@ static void PollEvent()
 		uint keycode = ConvertAllegroKeyIntoMy(&character);
 		HandleKeypress(keycode, character);
 	}
+
+	return false;
 }
 
 /**
@@ -475,9 +477,6 @@ void VideoDriver_Allegro::InputLoop()
 void VideoDriver_Allegro::MainLoop()
 {
 	for (;;) {
-		InteractiveRandom(); // randomness
-
-		PollEvent();
 		if (_exit_game) return;
 
 		if (this->Tick()) {

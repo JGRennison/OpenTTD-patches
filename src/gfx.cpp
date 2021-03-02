@@ -1377,6 +1377,9 @@ void ScreenSizeChanged()
 
 void UndrawMouseCursor()
 {
+	/* Don't undraw mouse cursor if it is handled by the video driver. */
+	if (VideoDriver::GetInstance()->UseSystemCursor()) return;
+
 	/* Don't undraw the mouse cursor if the screen is not ready */
 	if (_screen.dst_ptr == nullptr) return;
 
@@ -1390,6 +1393,9 @@ void UndrawMouseCursor()
 
 void DrawMouseCursor()
 {
+	/* Don't draw mouse cursor if it is handled by the video driver. */
+	if (VideoDriver::GetInstance()->UseSystemCursor()) return;
+
 	/* Don't draw the mouse cursor if the screen is not ready */
 	if (_screen.dst_ptr == nullptr) return;
 

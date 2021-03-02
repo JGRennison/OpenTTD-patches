@@ -263,7 +263,7 @@ void Blitter_32bppOptimized::Draw(Blitter::BlitterParams *bp, BlitterMode mode, 
 	}
 }
 
-Sprite *Blitter_32bppOptimized::Encode(const SpriteLoader::Sprite *sprite, AllocatorProc *allocator)
+template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const SpriteLoader::Sprite *sprite, AllocatorProc *allocator)
 {
 	/* streams of pixels (a, r, g, b channels)
 	 *
@@ -336,7 +336,7 @@ Sprite *Blitter_32bppOptimized::Encode(const SpriteLoader::Sprite *sprite, Alloc
 					dst_px->a = a;
 					if (a != 0 && a != 255) flags |= SF_TRANSLUCENT;
 					*dst_n = src->m;
-					if (src->m != 0) {
+					if (Tpal_to_rgb && src->m != 0) {
 						flags &= ~SF_NO_REMAP;
 						if (src->m >= PALETTE_ANIM_START) flags &= ~SF_NO_ANIM;
 
@@ -415,4 +415,12 @@ Sprite *Blitter_32bppOptimized::Encode(const SpriteLoader::Sprite *sprite, Alloc
 	}
 
 	return dest_sprite;
+}
+
+template Sprite *Blitter_32bppOptimized::EncodeInternal<true>(const SpriteLoader::Sprite *sprite, AllocatorProc *allocator);
+template Sprite *Blitter_32bppOptimized::EncodeInternal<false>(const SpriteLoader::Sprite *sprite, AllocatorProc *allocator);
+
+Sprite *Blitter_32bppOptimized::Encode(const SpriteLoader::Sprite *sprite, AllocatorProc *allocator)
+{
+	return this->EncodeInternal<true>(sprite, allocator);
 }

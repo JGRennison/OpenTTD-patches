@@ -1,5 +1,6 @@
 add_subdirectory(md5)
 add_subdirectory(squirrel)
+add_subdirectory(opengl)
 add_subdirectory(os2)
 add_subdirectory(cpp-btree)
 add_subdirectory(mingw-std-threads)

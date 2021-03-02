@@ -230,7 +230,7 @@ jobs:
         echo "::endgroup::"
 
         echo "::group::Build"
-        make docs
+        cmake --build . --target docs
         echo "::endgroup::"
 
     - name: Create bundles
@@ -317,8 +317,8 @@ jobs:
           mkdir build
           cd build
           cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=/usr
-          make -j$(nproc)
-          make install
+          cmake --build . -j $(nproc)
+          cmake --install .
         )
         echo "::endgroup::"
 
@@ -339,12 +339,21 @@ jobs:
 
         echo "::group::Build"
         echo "Running on $(nproc) cores"
-        make -j$(nproc) package
+        cmake --build . -j $(nproc)
         echo "::endgroup::"
 
+    - name: Create bundles
+      run: |
+        cd ${GITHUB_WORKSPACE}/build
+        echo "::group::Run CPack"
+        cpack
+        echo "::endgroup::"
+
+        echo "::group::Cleanup"
         # Remove the sha256 files CPack generates; we will do this ourself at
         # the end of this workflow.
         rm -f bundles/*.sha256
+        echo "::endgroup::"
 
     - name: Store bundles
       uses: actions/upload-artifact@v2
@@ -431,12 +440,22 @@ jobs:
 
         echo "::group::Build"
         echo "Running on $(nproc) cores"
-        make -j$(nproc) package
+        # Ubuntu 18.04 cmake does not support -j so we pass the option to the native tool
+        cmake --build . -- -j $(nproc)
         echo "::endgroup::"
 
+    - name: Create bundles
+      run: |
+        cd ${GITHUB_WORKSPACE}/build
+        echo "::group::Run CPack"
+        cpack
+        echo "::endgroup::"
+
+        echo "::group::Cleanup"
         # Remove the sha256 files CPack generates; we will do this ourself at
         # the end of this workflow.
         rm -f bundles/*.sha256
+        echo "::endgroup::"
 
     - name: Store bundles
       uses: actions/upload-artifact@v2
@@ -470,21 +489,34 @@ jobs:
       run: |
         brew install pandoc
 
-    # The following step can be removed when the build VM is updated with a revision of
-    # vcpkg dating from roughly 01/01/2021 or later. At that point, `doNotUpdateVcpkg`
-    # can be set to `true` and the `vcpkgGitCommitId` can be removed.
-    - name: Update vcpkg
+    - name: Prepare cache key
+      id: key
       run: |
-        cd /usr/local/share/vcpkg
-        git fetch --unshallow
+        echo "::set-output name=image::$ImageOS-$ImageVersion"
 
-    - name: Prepare vcpkg (with cache)
-      uses: lukka/run-vcpkg@v6
+    - name: Enable vcpkg cache
+      uses: actions/cache@v2
       with:
-        vcpkgDirectory: '/usr/local/share/vcpkg'
-        doNotUpdateVcpkg: false
-        vcpkgGitCommitId: 2a42024b53ebb512fb5dd63c523338bf26c8489c
-        vcpkgArguments: 'liblzma:x64-osx libpng:x64-osx lzo:x64-osx zstd:x64-osx liblzma:arm64-osx libpng:arm64-osx lzo:arm64-osx zstd:arm64-osx'
+        path: /usr/local/share/vcpkg/installed
+        key: ${{ steps.key.outputs.image }}-vcpkg-release
+
+    - name: Prepare vcpkg
+      run: |
+        vcpkg install \
+          liblzma:x64-osx \
+          liblzma:arm64-osx \
+          libpng:x64-osx \
+          libpng:arm64-osx \
+          lzo:x64-osx \
+          lzo:arm64-osx \
+          zlib:x64-osx \
+          zlib:arm64-osx \
+          zstd:x64-osx \
+          zstd:arm64-osx \
+          # EOF
+
+    - name: Install GCC problem matcher
+      uses: ammaraskar/gcc-problem-matcher@master
 
     - name: Build tools
       run: |
@@ -500,11 +532,8 @@ jobs:
 
         echo "::group::Build tools"
         echo "Running on $(sysctl -n hw.logicalcpu) cores"
-        make -j$(sysctl -n hw.logicalcpu) tools
+        cmake --build . -j $(sysctl -n hw.logicalcpu) --target tools
         echo "::endgroup::"
-
-    - name: Install GCC problem matcher
-      uses: ammaraskar/gcc-problem-matcher@master
 
     - name: Import code signing certificates
       uses: Apple-Actions/import-codesign-certs@v1
@@ -533,7 +562,7 @@ jobs:
 
         echo "::group::Build"
         echo "Running on $(sysctl -n hw.logicalcpu) cores"
-        make -j$(sysctl -n hw.logicalcpu)
+        cmake --build . -j $(sysctl -n hw.logicalcpu)
         echo "::endgroup::"
 
     - name: Build x64
@@ -556,25 +585,28 @@ jobs:
 
         echo "::group::Build"
         echo "Running on $(sysctl -n hw.logicalcpu) cores"
-        make -j$(sysctl -n hw.logicalcpu)
+        cmake --build . -j $(sysctl -n hw.logicalcpu)
         echo "::endgroup::"
 
-    - name: Build package
+    - name: Create bundles
       run: |
         cd build-x64
 
+        echo "::group::Create universal binary"
         # Combine the `openttd` binaries from each build into a single file
         lipo -create -output openttd-universal ../build-*/openttd
         mv openttd-universal openttd
-
-        echo "::group::Build"
-        echo "Running on $(sysctl -n hw.logicalcpu) cores"
-        make -j$(sysctl -n hw.logicalcpu) package
         echo "::endgroup::"
 
+        echo "::group::Run CPack"
+        cpack
+        echo "::endgroup::"
+
+        echo "::group::Cleanup"
         # Remove the sha256 files CPack generates; we will do this ourself at
         # the end of this workflow.
         rm -f bundles/*.sha256
+        echo "::endgroup::"
 
     - name: Install gon
       env:
@@ -631,8 +663,11 @@ jobs:
       matrix:
         include:
         - arch: x86
+          host: x86
         - arch: x64
+          host: x64
         - arch: arm64
+          host: x64_arm64
 
     runs-on: windows-latest
 
@@ -652,55 +687,104 @@ jobs:
       run: |
         choco install pandoc
 
-    # "restore-cache" which is done by "run-vcpkg" uses Windows tar.
-    # A git clone on windows marks a few files as read-only; when Windows tar
-    # tries to extract the cache over this folder, it fails, despite the files
-    # being identical. This failure shows up as an warning in the logs. We
-    # avoid this by simply removing the read-only mark from the git folder.
-    # In other words: this is a hack!
-    # See: https://github.com/lukka/run-vcpkg/issues/61
-    - name: Remove read-only flag from vcpkg git folder
+    - name: Prepare cache key
+      id: key
       shell: powershell
       run: |
-        attrib -r "c:\vcpkg\.git\*.*" /s
+        # Work around caching failure with GNU tar
+        New-Item -Type Junction -Path vcpkg -Target c:\vcpkg
 
-    - name: Prepare vcpkg (with cache)
-      uses: lukka/run-vcpkg@v6
-      with:
-        vcpkgDirectory: 'c:/vcpkg'
-        doNotUpdateVcpkg: true
-        vcpkgArguments: 'liblzma libpng lzo zlib zstd'
-        vcpkgTriplet: '${{ matrix.arch }}-windows-static'
+        Write-Output "::set-output name=image::$env:ImageOS-$env:ImageVersion"
 
-    - name: Build tools
-      uses: lukka/run-cmake@v3
+    - name: Enable vcpkg cache
+      uses: actions/cache@v2
       with:
-        cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
-        useVcpkgToolchainFile: false
-        buildDirectory: '${{ github.workspace }}/build-host'
-        buildWithCMakeArgs: '--target tools'
-        cmakeAppendedArgs: ' -GNinja -DOPTION_TOOLS_ONLY=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo'
+        path: vcpkg/installed
+        key: ${{ steps.key.outputs.image }}-vcpkg-${{ matrix.arch }}
+
+    - name: Prepare vcpkg
+      shell: bash
+      run: |
+        vcpkg install --triplet=${{ matrix.arch }}-windows-static \
+          liblzma \
+          libpng \
+          lzo \
+          zlib \
+          # EOF
 
     - name: Install MSVC problem matcher
       uses: ammaraskar/msvc-problem-matcher@master
 
+    - name: Configure developer command prompt for tools
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+
+    - name: Build tools
+      shell: bash
+      run: |
+        mkdir build-host
+        cd build-host
+
+        echo "::group::CMake"
+        cmake ${GITHUB_WORKSPACE} \
+          -GNinja \
+          -DOPTION_TOOLS_ONLY=ON \
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+          # EOF
+        echo "::endgroup::"
+
+        echo "::group::Build"
+        cmake --build . --target tools
+        echo "::endgroup::"
+
+    - name: Configure developer command prompt for ${{ matrix.arch }}
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: ${{ matrix.host }}
+
     - name: Build (with installer)
       if: needs.source.outputs.is_tag == 'true'
-      uses: lukka/run-cmake@v3
-      with:
-        cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
-        useVcpkgToolchainFile: true
-        buildDirectory: '${{ github.workspace }}/build'
-        cmakeAppendedArgs: ' -GNinja -DOPTION_USE_NSIS=ON -DHOST_BINARY_DIR=${{ github.workspace }}/build-host -DCMAKE_BUILD_TYPE=RelWithDebInfo'
+      shell: bash
+      run: |
+        mkdir build
+        cd build
+
+        echo "::group::CMake"
+        cmake ${GITHUB_WORKSPACE} \
+          -GNinja \
+          -DVCPKG_TARGET_TRIPLET=${{ matrix.arch }}-windows-static \
+          -DCMAKE_TOOLCHAIN_FILE="c:\vcpkg\scripts\buildsystems\vcpkg.cmake" \
+          -DOPTION_USE_NSIS=ON \
+          -DHOST_BINARY_DIR=${GITHUB_WORKSPACE}/build-host \
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+          # EOF
+        echo "::endgroup::"
+
+        echo "::group::Build"
+        cmake --build .
+        echo "::endgroup::"
 
     - name: Build (without installer)
       if: needs.source.outputs.is_tag != 'true'
-      uses: lukka/run-cmake@v3
-      with:
-        cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
-        useVcpkgToolchainFile: true
-        buildDirectory: '${{ github.workspace }}/build'
-        cmakeAppendedArgs: ' -GNinja -DHOST_BINARY_DIR=${{ github.workspace }}/build-host -DCMAKE_BUILD_TYPE=RelWithDebInfo'
+      shell: bash
+      run: |
+        mkdir build
+        cd build
+
+        echo "::group::CMake"
+        cmake ${GITHUB_WORKSPACE} \
+          -GNinja \
+          -DVCPKG_TARGET_TRIPLET=${{ matrix.arch }}-windows-static \
+          -DCMAKE_TOOLCHAIN_FILE="c:\vcpkg\scripts\buildsystems\vcpkg.cmake" \
+          -DHOST_BINARY_DIR=${GITHUB_WORKSPACE}/build-host \
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+          # EOF
+        echo "::endgroup::"
+
+        echo "::group::Build"
+        cmake --build .
+        echo "::endgroup::"
 
     - name: Create bundles
       shell: bash

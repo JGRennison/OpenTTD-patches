@@ -11,7 +11,20 @@
 #define SPRITELOADER_HPP
 
 #include "../core/alloc_type.hpp"
+#include "../core/enum_type.hpp"
 #include "../gfx_type.h"
+
+struct Sprite;
+typedef void *AllocatorProc(size_t size);
+
+/** The different colour components a sprite can have. */
+enum SpriteColourComponent {
+	SCC_RGB   = 1 << 0, ///< Sprite has RGB.
+	SCC_ALPHA = 1 << 1, ///< Sprite has alpha.
+	SCC_PAL   = 1 << 2, ///< Sprite has palette data.
+	SCC_MASK  = SCC_RGB | SCC_ALPHA | SCC_PAL, ///< Mask of valid colour bits.
+};
+DECLARE_ENUM_AS_BIT_SET(SpriteColourComponent)
 
 /** Interface for the loader of our sprites. */
 class SpriteLoader {
@@ -37,6 +50,7 @@ public:
 		int16 x_offs;                    ///< The x-offset of where the sprite will be drawn
 		int16 y_offs;                    ///< The y-offset of where the sprite will be drawn
 		SpriteType type;                 ///< The sprite type
+		SpriteColourComponent colours;   ///< The colour components of the sprite with useful information.
 		SpriteLoader::CommonPixel *data; ///< The sprite itself
 
 		/**
@@ -64,4 +78,29 @@ public:
 	virtual ~SpriteLoader() { }
 };
 
+/** Interface for something that can encode a sprite. */
+class SpriteEncoder {
+public:
+
+	virtual ~SpriteEncoder() { }
+
+	/**
+	 * Can the sprite encoder make use of RGBA sprites?
+	 */
+	virtual bool Is32BppSupported() = 0;
+
+	/**
+	 * Convert a sprite from the loader to our own format.
+	 */
+	virtual Sprite *Encode(const SpriteLoader::Sprite *sprite, AllocatorProc *allocator) = 0;
+
+	/**
+	 * Get the value which the height and width on a sprite have to be aligned by.
+	 * @return The needed alignment or 0 if any alignment is accepted.
+	 */
+	virtual uint GetSpriteAlignment()
+	{
+		return 0;
+	}
+};
 #endif /* SPRITELOADER_HPP */

@@ -9,6 +9,7 @@
 
 #include "../stdafx.h"
 #include "../debug.h"
+#include "../core/random_func.hpp"
 #include "../network/network.h"
 #include "../gfx_func.h"
 #include "../progress.h"
@@ -46,6 +47,11 @@ bool VideoDriver::Tick()
 		/* Avoid next_draw_tick getting behind more and more if it cannot keep up. */
 		if (this->next_draw_tick < cur_ticks - ALLOWED_DRIFT * this->GetDrawInterval()) this->next_draw_tick = cur_ticks;
 
+		/* Keep the interactive randomizer a bit more random by requesting
+		 * new values when-ever we can. */
+		InteractiveRandom();
+
+		while (this->PollEvent()) {}
 		this->InputLoop();
 
 		/* Check if the fast-forward button is still pressed. */
