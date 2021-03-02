@@ -217,17 +217,25 @@ inline void Blitter_40bppAnim::Draw(const Blitter::BlitterParams *bp, ZoomLevel 
 			switch (mode) {
 				case BM_COLOUR_REMAP:
 				case BM_CRASH_REMAP:
+				case BM_COLOUR_REMAP_WITH_BRIGHTNESS:
 					if (src_px->a == 255) {
 						do {
 							uint8 m = GB(*src_n, 0, 8);
 							/* In case the m-channel is zero, only apply the crash remap by darkening the RGB colour. */
 							if (m == 0) {
+								Colour c = *src_px;
+								if (mode == BM_COLOUR_REMAP_WITH_BRIGHTNESS) c = AdjustBrightness(c, DEFAULT_BRIGHTNESS + bp->brightness_adjust);
+								if (mode == BM_CRASH_REMAP) c = this->MakeDark(c);
 								*dst = mode == BM_CRASH_REMAP ? this->MakeDark(*src_px) : *src_px;
 								*anim = 0;
 							} else {
 								uint r = remap[m];
 								if (r != 0) {
-									*dst = src_px->data;
+									if (mode == BM_COLOUR_REMAP_WITH_BRIGHTNESS) {
+										*dst = Colour(GetColourBrightness(*src_px) + bp->brightness_adjust, 0, 0);
+									} else {
+										*dst = src_px->data;
+									}
 									*anim = r;
 								}
 							}
@@ -241,13 +249,17 @@ inline void Blitter_40bppAnim::Draw(const Blitter::BlitterParams *bp, ZoomLevel 
 							uint8 m = GB(*src_n, 0, 8);
 							Colour b = this->RealizeBlendedColour(*anim, *dst);
 							if (m == 0) {
-								Colour c = mode == BM_CRASH_REMAP ? this->MakeDark(*src_px) : *src_px;
+								Colour c = *src_px;
+								if (mode == BM_COLOUR_REMAP_WITH_BRIGHTNESS) c = AdjustBrightness(c, DEFAULT_BRIGHTNESS + bp->brightness_adjust);
+								if (mode == BM_CRASH_REMAP) c = this->MakeDark(c);
 								*dst = this->ComposeColourRGBANoCheck(c.r, c.g, c.b, src_px->a, b);
 								*anim = 0;
 							} else {
 								uint r = remap[m];
 								if (r != 0) {
-									*dst = this->ComposeColourPANoCheck(this->LookupColourInPalette(r), src_px->a, b);
+									Colour c = this->LookupColourInPalette(r);
+									if (mode == BM_COLOUR_REMAP_WITH_BRIGHTNESS) c = AdjustBrightness(c, DEFAULT_BRIGHTNESS + bp->brightness_adjust);
+									*dst = this->ComposeColourPANoCheck(c, src_px->a, b);
 									*anim = 0; // Animation colours don't work with alpha-blending.
 								}
 							}
@@ -302,7 +314,15 @@ inline void Blitter_40bppAnim::Draw(const Blitter::BlitterParams *bp, ZoomLevel 
 					if (src_px->a == 255) {
 						do {
 							*anim++ = GB(*src_n, 0, 8);
-							*dst++ = src_px->data;
+							Colour c = *src_px;
+							if (mode == BM_NORMAL_WITH_BRIGHTNESS) {
+								if (GB(*src_n, 0, 8) == 0) {
+									c = AdjustBrightness(c, DEFAULT_BRIGHTNESS + bp->brightness_adjust);
+								} else {
+									c = Colour(GetColourBrightness(c) + bp->brightness_adjust, 0, 0);
+								}
+							}
+							*dst++ = c;
 							src_px++;
 							src_n++;
 						} while (--n != 0);
@@ -313,10 +333,14 @@ inline void Blitter_40bppAnim::Draw(const Blitter::BlitterParams *bp, ZoomLevel 
 							Colour b = this->RealizeBlendedColour(*anim, *dst);
 
 							if (m == 0) {
-								*dst = this->ComposeColourRGBANoCheck(src_px->r, src_px->g, src_px->b, src_px->a, b);
+								Colour c = *src_px;
+								if (mode == BM_NORMAL_WITH_BRIGHTNESS) c = AdjustBrightness(c, DEFAULT_BRIGHTNESS + bp->brightness_adjust);
+								*dst = this->ComposeColourRGBANoCheck(c.r, c.g, c.b, c.a, b);
 								*anim = 0;
 							} else {
-								*dst = this->ComposeColourPANoCheck(this->LookupColourInPalette(m), src_px->a, b);
+								Colour c = this->LookupColourInPalette(m);
+								if (mode == BM_NORMAL_WITH_BRIGHTNESS) c = Colour(GetColourBrightness(c) + bp->brightness_adjust, 0, 0);
+								*dst = this->ComposeColourPANoCheck(c, src_px->a, b);
 								*anim = m;
 							}
 
@@ -360,6 +384,8 @@ void Blitter_40bppAnim::Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomL
 		case BM_TRANSPARENT:  Draw<BM_TRANSPARENT> (bp, zoom); return;
 		case BM_CRASH_REMAP:  Draw<BM_CRASH_REMAP> (bp, zoom); return;
 		case BM_BLACK_REMAP:  Draw<BM_BLACK_REMAP> (bp, zoom); return;
+		case BM_NORMAL_WITH_BRIGHTNESS:  Draw<BM_NORMAL_WITH_BRIGHTNESS> (bp, zoom); return;
+		case BM_COLOUR_REMAP_WITH_BRIGHTNESS:  Draw<BM_COLOUR_REMAP_WITH_BRIGHTNESS> (bp, zoom); return;
 	}
 }
 
