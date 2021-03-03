@@ -451,6 +451,7 @@ void VideoDriver_Allegro::Stop()
 void VideoDriver_Allegro::InputLoop()
 {
 	bool old_ctrl_pressed = _ctrl_pressed;
+	bool old_shift_pressed = _shift_pressed;
 
 	_ctrl_pressed  = !!(key_shifts & KB_CTRL_FLAG) != _invert_ctrl;
 	_shift_pressed = !!(key_shifts & KB_SHIFT_FLAG) != _invert_shift;
