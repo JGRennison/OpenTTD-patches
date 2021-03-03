@@ -431,6 +431,7 @@ static SpriteID GetSpriteIDForClearGround(const ClearGround cg, const Slope slop
 /** Once the sprites are loaded, we can determine main colours of ground/water/... */
 void GfxDetermineMainColours()
 {
+#if !defined(DEDICATED)
 	/* Water. */
 	extern uint32 _vp_map_water_colour[5];
 	_vp_map_water_colour[0] = GetSpriteMainColour(SPR_FLAT_WATER_TILE, PAL_NONE);
@@ -490,6 +491,7 @@ void GfxDetermineMainColours()
 			memcpy(&(_vp_map_vegetation_tree_colours[s]), &(_vp_map_vegetation_tree_colours[0]), sizeof(_vp_map_vegetation_tree_colours[0]));
 		}
 	}
+#endif /* !DEDICATED */
 }
 
 /** Initialise and load all the sprites. */
