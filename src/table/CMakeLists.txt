@@ -13,7 +13,6 @@ set(TABLE_INI_SOURCE_FILES
 
 if (HOST_BINARY_DIR)
     include(${HOST_BINARY_DIR}/settingsgen.cmake)
-    add_executable(hostsettingsgen ALIAS settingsgen)
 endif()
 
 # Generate a command and target to create the settings table

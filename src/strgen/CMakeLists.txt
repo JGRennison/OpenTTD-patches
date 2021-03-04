@@ -18,7 +18,7 @@ if (NOT HOST_BINARY_DIR)
     include(Endian)
     add_endian_definition()
 
-    export(TARGETS strgen FILE ${CMAKE_BINARY_DIR}/strgen.cmake)
+    export(TARGETS strgen NAMESPACE host FILE ${CMAKE_BINARY_DIR}/strgen.cmake)
     add_dependencies(tools strgen)
 endif()
 
