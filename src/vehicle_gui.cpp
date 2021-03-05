@@ -3749,7 +3749,7 @@ public:
 					ShowExtraViewportWindow(TileVirtXY(v->x_pos, v->y_pos));
 				} else {
 					const Window *mainwindow = FindWindowById(WC_MAIN_WINDOW, 0);
-					if (click_count > 1 && mainwindow->viewport->zoom <= ZOOM_LVL_OUT_4X) {
+					if (click_count > 1 && mainwindow->viewport->zoom < ZOOM_LVL_DRAW_MAP) {
 						/* main window 'follows' vehicle */
 						mainwindow->viewport->follow_vehicle = v->index;
 					} else {
