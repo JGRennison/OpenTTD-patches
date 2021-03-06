@@ -755,11 +755,18 @@ void SetupScreenshotViewport(ScreenshotType t, Viewport *vp, uint32 width, uint3
 			vp->overlay = w->viewport->overlay;
 			break;
 		}
-		case SC_WORLD: {
+		case SC_WORLD:
+		case SC_WORLD_ZOOM: {
 			assert(width == 0 && height == 0);
 
 			/* Determine world coordinates of screenshot */
-			vp->zoom = ZOOM_LVL_WORLD_SCREENSHOT;
+			if (t == SC_WORLD_ZOOM) {
+				Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
+				vp->zoom =  w->viewport->zoom;
+				vp->map_type = w->viewport->map_type;
+			} else {
+				vp->zoom = ZOOM_LVL_WORLD_SCREENSHOT;
+			}
 
 			TileIndex north_tile = _settings_game.construction.freeform_edges ? TileXY(1, 1) : TileXY(0, 0);
 			TileIndex south_tile = MapSize() - 1;
@@ -965,6 +972,7 @@ bool MakeScreenshot(ScreenshotType t, const char *name, uint32 width, uint32 hei
 			break;
 
 		case SC_WORLD:
+		case SC_WORLD_ZOOM:
 			ret = MakeLargeWorldScreenshot(t);
 			break;
 

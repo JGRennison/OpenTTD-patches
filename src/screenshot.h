@@ -21,6 +21,7 @@ enum ScreenshotType {
 	SC_ZOOMEDIN,    ///< Fully zoomed in screenshot of the visible area.
 	SC_DEFAULTZOOM, ///< Zoomed to default zoom level screenshot of the visible area.
 	SC_WORLD,       ///< World screenshot.
+	SC_WORLD_ZOOM,  ///< World screenshot using current zoom level.
 	SC_HEIGHTMAP,   ///< Heightmap of the world.
 	SC_MINIMAP,     ///< Minimap screenshot.
 };

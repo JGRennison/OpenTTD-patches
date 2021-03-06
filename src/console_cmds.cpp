@@ -1476,11 +1476,12 @@ DEF_CONSOLE_CMD(ConAlias)
 DEF_CONSOLE_CMD(ConScreenShot)
 {
 	if (argc == 0) {
-		IConsoleHelp("Create a screenshot of the game. Usage: 'screenshot [viewport | normal | big | giant | heightmap | minimap] [no_con] [size <width> <height>] [<filename>]'");
+		IConsoleHelp("Create a screenshot of the game. Usage: 'screenshot [viewport | normal | big | giant | world | heightmap | minimap] [no_con] [size <width> <height>] [<filename>]'");
 		IConsoleHelp("'viewport' (default) makes a screenshot of the current viewport (including menus, windows, ..), "
 				"'normal' makes a screenshot of the visible area, "
 				"'big' makes a zoomed-in screenshot of the visible area, "
-				"'giant' makes a screenshot of the whole map, "
+				"'giant' makes a screenshot of the whole map using the default zoom level, "
+				"'world' makes a screenshot of the whole map using the current zoom level, "
 				"'heightmap' makes a heightmap screenshot of the map that can be loaded in as heightmap, "
 				"'minimap' makes a top-viewed minimap screenshot of the whole world which represents one tile by one pixel. "
 				"'no_con' hides the console to create the screenshot (only useful in combination with 'viewport'). "
@@ -1508,6 +1509,9 @@ DEF_CONSOLE_CMD(ConScreenShot)
 			arg_index += 1;
 		} else if (strcmp(argv[arg_index], "giant") == 0) {
 			type = SC_WORLD;
+			arg_index += 1;
+		} else if (strcmp(argv[arg_index], "world") == 0) {
+			type = SC_WORLD_ZOOM;
 			arg_index += 1;
 		} else if (strcmp(argv[arg_index], "heightmap") == 0) {
 			type = SC_HEIGHTMAP;
