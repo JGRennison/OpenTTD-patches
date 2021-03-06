@@ -27,11 +27,11 @@ enum ScreenshotType {
 
 class SmallMapWindow;
 
-void SetupScreenshotViewport(ScreenshotType t, struct Viewport *vp);
+void SetupScreenshotViewport(ScreenshotType t, struct Viewport *vp, uint32 width = 0, uint32 height = 0);
 bool MakeHeightmapScreenshot(const char *filename);
 bool MakeSmallMapScreenshot(unsigned int width, unsigned int height, SmallMapWindow *window);
 void MakeScreenshotWithConfirm(ScreenshotType t);
-bool MakeScreenshot(ScreenshotType t, const char *name);
+bool MakeScreenshot(ScreenshotType t, const char *name, uint32 width = 0, uint32 height = 0);
 bool MakeMinimapWorldScreenshot(const char *name);
 void SetScreenshotAuxiliaryText(const char *key, const char *value);
 inline void ClearScreenshotAuxiliaryText() { SetScreenshotAuxiliaryText(nullptr, nullptr); }
