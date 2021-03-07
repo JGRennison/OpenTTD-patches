@@ -2,9 +2,19 @@
 
 * * *
 
+### v0.40.4 (2021-03-07)
+* Fix crash when removing/upgrading airport with hangar window open.
+* Fix compiling as a dedicated server.
+* Fix compiling with Allegro.
+* Add screenshot type: whole map at current zoom level.
+* Add empty hotkey for the industry chains window.
+* Allow following vehicles at all non-map zoom levels.
+* Add Korean translations by TELK.
+* Bump trunk base from commit c656633bea39d2002330eddee54522c8db542785 to commit f70aa8fabe5eabb39a62cc50a3a27ec1c2434ded.
+
 ### v0.40.3 (2021-03-02)
 * Fix crashes with trains with no valid orders when using the realistic braking model.
-* Fix trains with no orders no stopping at stations when using the realistic braking model.
+* Fix trains with no orders not stopping at stations when using the realistic braking model.
 * Fix trains passing signals when using both the original acceleration and original braking models.
 * Fix various issues with ship collision avoidance which could result in a group of ships being routed in a circle.
 * Fix for crash when exiting whilst NewGRF scan still in progress.
