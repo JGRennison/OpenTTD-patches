@@ -5273,7 +5273,8 @@ STR_SCREENSHOT_CAPTION                                          :{WHITE}스크�
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}일반 스크린 샷
 STR_SCREENSHOT_ZOOMIN_SCREENSHOT                                :{BLACK}최대 확대 스크린 샷 (UI 없음)
 STR_SCREENSHOT_DEFAULTZOOM_SCREENSHOT                           :{BLACK}기본 확대 스크린 샷 (UI 없음)
-STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}지도 전체 스크린 샷
+STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}기본 확대 지도 전체 스크린 샷
+STR_SCREENSHOT_WORLD_SCREENSHOT_CURRENT_ZOOM                    :{BLACK}현재 확대 지도 전체 스크린 샷
 STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}높이맵 스크린 샷
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}미니맵 스크린 샷
 
