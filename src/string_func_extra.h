@@ -14,7 +14,7 @@
 static inline void str_validate_inplace(std::string &str, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
 {
 	if (str.empty()) return;
-	char *buf = const_cast<char *>(str.c_str());
+	char *buf = str.data();
 	str.resize(str_validate(buf, buf + str.size(), settings) - buf);
 }
 

@@ -32,7 +32,7 @@ static void Load_DBGL()
 	size_t length = SlGetFieldLength();
 	if (length) {
 		_loadgame_DBGL_data.resize(length);
-		ReadBuffer::GetCurrent()->CopyBytes(reinterpret_cast<byte *>(const_cast<char *>(_loadgame_DBGL_data.data())), length);
+		ReadBuffer::GetCurrent()->CopyBytes(reinterpret_cast<byte *>(_loadgame_DBGL_data.data()), length);
 	}
 }
 
@@ -45,7 +45,7 @@ static void Check_DBGL()
 	size_t length = SlGetFieldLength();
 	if (length) {
 		_load_check_data.debug_log_data.resize(length);
-		ReadBuffer::GetCurrent()->CopyBytes(reinterpret_cast<byte *>(const_cast<char *>(_load_check_data.debug_log_data.data())), length);
+		ReadBuffer::GetCurrent()->CopyBytes(reinterpret_cast<byte *>(_load_check_data.debug_log_data.data()), length);
 	}
 }
 
@@ -69,7 +69,7 @@ static void Load_DBGC()
 	size_t length = SlGetFieldLength();
 	if (length) {
 		_loadgame_DBGC_data.resize(length);
-		ReadBuffer::GetCurrent()->CopyBytes(reinterpret_cast<byte *>(const_cast<char *>(_loadgame_DBGC_data.data())), length);
+		ReadBuffer::GetCurrent()->CopyBytes(reinterpret_cast<byte *>(_loadgame_DBGC_data.data()), length);
 	}
 }
 
@@ -82,7 +82,7 @@ static void Check_DBGC()
 	size_t length = SlGetFieldLength();
 	if (length) {
 		_load_check_data.debug_config_data.resize(length);
-		ReadBuffer::GetCurrent()->CopyBytes(reinterpret_cast<byte *>(const_cast<char *>(_load_check_data.debug_config_data.data())), length);
+		ReadBuffer::GetCurrent()->CopyBytes(reinterpret_cast<byte *>(_load_check_data.debug_config_data.data()), length);
 	}
 }
 

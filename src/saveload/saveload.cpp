@@ -1132,20 +1132,20 @@ static void SlStdString(std::string &str, VarType conv)
 	switch (_sl.action) {
 		case SLA_SAVE: {
 			SlWriteArrayLength(str.size());
-			SlCopyBytes(const_cast<char *>(str.data()), str.size());
+			SlCopyBytes(str.data(), str.size());
 			break;
 		}
 		case SLA_LOAD_CHECK:
 		case SLA_LOAD: {
 			size_t len = SlReadArrayLength();
 			str.resize(len);
-			SlCopyBytes(const_cast<char *>(str.c_str()), len);
+			SlCopyBytes(str.data(), len);
 
 			StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK;
 			if ((conv & SLF_ALLOW_CONTROL) != 0) {
 				settings = settings | SVS_ALLOW_CONTROL_CODE;
 				if (IsSavegameVersionBefore(SLV_169)) {
-					char *buf = const_cast<char *>(str.c_str());
+					char *buf = str.data();
 					str.resize(str_fix_scc_encoded(buf, buf + str.size()) - buf);
 				}
 			}

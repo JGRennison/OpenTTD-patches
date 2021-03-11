@@ -353,7 +353,7 @@ static void WriteSavegameDebugData(const char *name)
 	if (_load_check_data.debug_log_data.size()) {
 		p += seprintf(p, buflast, "%u bytes of debug log data in savegame\n", (uint) _load_check_data.debug_log_data.size());
 		std::string buffer = _load_check_data.debug_log_data;
-		ProcessLineByLine(const_cast<char *>(buffer.data()), [&](const char *line) {
+		ProcessLineByLine(buffer.data(), [&](const char *line) {
 			if (buflast - p <= 1024) bump_size();
 			p += seprintf(p, buflast, "> %s\n", line);
 		});
@@ -363,7 +363,7 @@ static void WriteSavegameDebugData(const char *name)
 	if (_load_check_data.debug_config_data.size()) {
 		p += seprintf(p, buflast, "%u bytes of debug config data in savegame\n", (uint) _load_check_data.debug_config_data.size());
 		std::string buffer = _load_check_data.debug_config_data;
-		ProcessLineByLine(const_cast<char *>(buffer.data()), [&](const char *line) {
+		ProcessLineByLine(buffer.data(), [&](const char *line) {
 			if (buflast - p <= 1024) bump_size();
 			p += seprintf(p, buflast, "> %s\n", line);
 		});

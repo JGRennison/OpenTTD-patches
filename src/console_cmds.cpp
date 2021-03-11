@@ -2325,7 +2325,7 @@ DEF_CONSOLE_CMD(ConDumpLoadDebugLog)
 	}
 
 	std::string dbgl = _loadgame_DBGL_data;
-	PrintLineByLine(const_cast<char *>(dbgl.c_str()));
+	PrintLineByLine(dbgl.data());
 	return true;
 }
 
@@ -2337,7 +2337,7 @@ DEF_CONSOLE_CMD(ConDumpLoadDebugConfig)
 	}
 
 	std::string dbgc = _loadgame_DBGC_data;
-	PrintLineByLine(const_cast<char *>(dbgc.c_str()));
+	PrintLineByLine(dbgc.data());
 	return true;
 }
 

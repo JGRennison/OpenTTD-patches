@@ -635,7 +635,7 @@ static void Load_SLXI()
 static void loadVL(const SlxiSubChunkInfo *info, uint32 length)
 {
 	_sl_xv_version_label.resize(length);
-	ReadBuffer::GetCurrent()->CopyBytes(reinterpret_cast<byte *>(const_cast<char *>(_sl_xv_version_label.c_str())), length);
+	ReadBuffer::GetCurrent()->CopyBytes(reinterpret_cast<byte *>(_sl_xv_version_label.data()), length);
 }
 
 static uint32 saveVL(const SlxiSubChunkInfo *info, bool dry_run)

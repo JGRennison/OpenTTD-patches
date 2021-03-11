@@ -1280,7 +1280,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_LOG(Pack
 {
 	uint size = p->Recv_uint16();
 	this->desync_log.resize(this->desync_log.size() + size);
-	p->Recv_binary(const_cast<char *>(this->desync_log.data() + this->desync_log.size() - size), size);
+	p->Recv_binary(this->desync_log.data() + this->desync_log.size() - size, size);
 	DEBUG(net, 2, "Received %u bytes of client desync log", size);
 	this->receive_limit += p->size;
 	return NETWORK_RECV_STATUS_OKAY;
