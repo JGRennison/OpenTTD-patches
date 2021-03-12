@@ -436,6 +436,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	/* Set system timer resolution to 1ms. */
 	timeBeginPeriod(1);
 
+	PerThreadSetupInit();
 	CrashLog::InitialiseCrashLog();
 
 	/* Convert the command line to UTF-8. We need a dedicated buffer
@@ -737,6 +738,21 @@ static DWORD main_thread_id;
 void SetSelfAsMainThread()
 {
 	main_thread_id = GetCurrentThreadId();
+}
+
+static BOOL (WINAPI *_SetThreadStackGuarantee)(PULONG) = nullptr;
+
+void PerThreadSetup()
+{
+	if (_SetThreadStackGuarantee != nullptr) {
+		ULONG stacksize = 65536;
+		_SetThreadStackGuarantee(&stacksize);
+	}
+}
+
+void PerThreadSetupInit()
+{
+	LoadLibraryList((Function*)&_SetThreadStackGuarantee, "kernel32.dll\0SetThreadStackGuarantee\0\0");
 }
 
 bool IsMainThread()

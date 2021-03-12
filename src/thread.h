@@ -50,6 +50,16 @@ int GetCurrentThreadName(char *str, const char *last);
 void SetSelfAsMainThread();
 
 /**
+ * Perform per-thread setup
+ */
+void PerThreadSetup();
+
+/**
+ * Setup thread functionality required for later calls to PerThreadSetup
+ */
+void PerThreadSetupInit();
+
+/**
  * @return true if the current thread definitely the "main" thread. If in doubt returns false.
  */
 bool IsMainThread();
@@ -77,6 +87,7 @@ inline bool StartNewThread(std::thread *thr, const char *name, TFn&& _Fx, TArgs&
 	try {
 		std::thread t([] (const char *name, TFn&& F, TArgs&&... A) {
 				SetCurrentThreadName(name);
+				PerThreadSetup();
 				try {
 					/* Call user function with the given arguments. */
 					F(A...);

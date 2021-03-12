@@ -256,6 +256,7 @@ int CDECL main(int argc, char *argv[])
 		argc = 1;
 	}
 #endif
+	PerThreadSetupInit();
 	CrashLog::InitialiseCrashLog();
 
 	SetRandomSeed(time(nullptr));
@@ -347,6 +348,10 @@ void SetSelfAsMainThread()
 	main_thread = pthread_self();
 #endif
 }
+
+void PerThreadSetup() { }
+
+void PerThreadSetupInit() { }
 
 bool IsMainThread()
 {

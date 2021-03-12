@@ -219,6 +219,8 @@ void SetCurrentThreadName(const char *)
 int GetCurrentThreadName(char *str, const char *last) { return 0; }
 
 void SetSelfAsMainThread() { }
+void PerThreadSetup() { }
+void PerThreadSetupInit() { }
 
 bool IsMainThread() { return false; }
 bool IsNonMainThread() { return false; }

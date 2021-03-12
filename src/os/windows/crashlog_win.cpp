@@ -725,12 +725,6 @@ static void CDECL CustomAbort(int signal)
 	if (LoadLibraryList((Function*)&AddVectoredExceptionHandler, "kernel32.dll\0AddVectoredExceptionHandler\0\0")) {
 		AddVectoredExceptionHandler(1, VectoredExceptionHandler);
 	}
-
-	BOOL (WINAPI *SetThreadStackGuarantee)(PULONG);
-	if (LoadLibraryList((Function*)&SetThreadStackGuarantee, "kernel32.dll\0SetThreadStackGuarantee\0\0")) {
-		ULONG stacksize = 65536;
-		SetThreadStackGuarantee(&stacksize);
-	}
 }
 
 /* static */ void CrashLog::DesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info)
