@@ -22,6 +22,7 @@
 #include "../../screenshot.h"
 #include "../../debug.h"
 #include "../../settings_type.h"
+#include "../../thread.h"
 #if defined(WITH_DEMANGLE)
 #include <cxxabi.h>
 #endif
@@ -653,16 +654,31 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 	/* Close any possible log files */
 	CloseConsoleLogIfActive();
 
-	if ((VideoDriver::GetInstance() == nullptr || VideoDriver::GetInstance()->HasGUI()) && _safe_esp != nullptr) {
+	void *crash_win_esp = _safe_esp;
+	if (!IsMainThread() || crash_win_esp == nullptr) {
+		/* _safe_esp is only valid for the main thread.
+		 * Try to read the stack base from the thread environment block. */
+#ifdef _M_AMD64
+		/* The stack pointer for AMD64 must always be 16-byte aligned inside a
+		 * function. As we are simulating a function call with the safe ESP value,
+		 * we need to subtract 8 for the imaginary return address otherwise stack
+		 * alignment would be wrong in the called function. */
+		crash_win_esp = (void *)(__readgsqword(8) - 8);
+#elif defined(_M_IX86)
+		crash_win_esp = (void *)__readfsdword(4);
+#endif
+	}
+
+	if ((VideoDriver::GetInstance() == nullptr || VideoDriver::GetInstance()->HasGUI()) && crash_win_esp != nullptr) {
 #ifdef _M_AMD64
 		ep->ContextRecord->Rip = (DWORD64)ShowCrashlogWindow;
-		ep->ContextRecord->Rsp = (DWORD64)_safe_esp;
+		ep->ContextRecord->Rsp = (DWORD64)crash_win_esp;
 #elif defined(_M_IX86)
 		ep->ContextRecord->Eip = (DWORD)ShowCrashlogWindow;
-		ep->ContextRecord->Esp = (DWORD)_safe_esp;
+		ep->ContextRecord->Esp = (DWORD)crash_win_esp;
 #elif defined(_M_ARM64)
 		ep->ContextRecord->Pc = (DWORD64)ShowCrashlogWindow;
-		ep->ContextRecord->Sp = (DWORD64)_safe_esp;
+		ep->ContextRecord->Sp = (DWORD64)crash_win_esp;
 #endif
 		return EXCEPTION_CONTINUE_EXECUTION;
 	}
