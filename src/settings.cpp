@@ -1500,6 +1500,12 @@ static bool DifficultyMoneyCheatMultiplayerChange(int32 i)
 	return true;
 }
 
+static bool DifficultyRenameTownsMultiplayerChange(int32 i)
+{
+	SetWindowClassesDirty(WC_TOWN_VIEW);
+	return true;
+}
+
 static bool MaxNoAIsChange(int32 i)
 {
 	if (GetGameSettings().difficulty.max_no_competitors != 0 &&

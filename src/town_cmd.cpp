@@ -3060,6 +3060,23 @@ CommandCost CmdRenameTown(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 	return CommandCost();
 }
 
+
+/**
+ * Rename a town (non-admin use).
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1 town ID to rename
+ * @param p2 unused
+ * @param text the new name or an empty string when resetting to the default
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdRenameTownNonAdmin(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	if (_networking && !_settings_game.difficulty.rename_towns_in_multiplayer) return CMD_ERROR;
+
+	return CmdRenameTown(tile, flags, p1, p2, text);
+}
+
 /**
  * Determines the first cargo with a certain town effect
  * @param effect Town effect of interest
