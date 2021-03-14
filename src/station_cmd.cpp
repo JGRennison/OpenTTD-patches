@@ -3644,12 +3644,14 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 			if (x == stop) {
 				if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && front->cur_speed > 15 && !(front->lookahead != nullptr && HasBit(front->lookahead->flags, TRLF_APPLY_ADVISORY))) {
 					/* Travelling too fast, do not stop and report overshoot to player */
-					SetDParam(0, front->index);
-					SetDParam(1, IsRailWaypointTile(tile) ? STR_WAYPOINT_NAME : STR_STATION_NAME);
-					SetDParam(2, station_id);
-					AddNewsItem(STR_NEWS_TRAIN_OVERSHOT_STATION, NT_ADVICE, NF_INCOLOUR | NF_SMALL | NF_VEHICLE_PARAM0,
-							NR_VEHICLE, v->index,
-							NR_STATION, station_id);
+					if (front->owner == _local_company) {
+						SetDParam(0, front->index);
+						SetDParam(1, IsRailWaypointTile(tile) ? STR_WAYPOINT_NAME : STR_STATION_NAME);
+						SetDParam(2, station_id);
+						AddNewsItem(STR_NEWS_TRAIN_OVERSHOT_STATION, NT_ADVICE, NF_INCOLOUR | NF_SMALL | NF_VEHICLE_PARAM0,
+								NR_VEHICLE, v->index,
+								NR_STATION, station_id);
+					}
 					for (Train *u = front; u != nullptr; u = u->Next()) {
 						ClrBit(u->flags, VRF_BEYOND_PLATFORM_END);
 					}
