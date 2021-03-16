@@ -152,5 +152,6 @@ void SetSignalsOnBothDir(TileIndex tile, Track track, Owner owner);
 void AddTrackToSignalBuffer(TileIndex tile, Track track, Owner owner);
 void AddSideToSignalBuffer(TileIndex tile, DiagDirection side, Owner owner);
 void UpdateSignalsInBuffer();
+void UpdateSignalsInBufferIfOwnerNotAddable(Owner owner);
 
 #endif /* SIGNAL_FUNC_H */
