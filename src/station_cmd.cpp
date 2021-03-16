@@ -952,6 +952,10 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlag fl
 				} else if (*station != st) {
 					return_cmd_error(STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING);
 				}
+				if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && HasStationReservation(tile_cur)) {
+					CommandCost ret = CheckTrainReservationPreventsTrackModification(tile_cur, GetRailStationTrack(tile_cur));
+					if (ret.Failed()) return ret;
+				}
 			}
 		} else {
 			/* Rail type is only valid when building a railway station; if station to
