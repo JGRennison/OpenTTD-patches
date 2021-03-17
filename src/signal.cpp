@@ -822,9 +822,10 @@ void AddSideToSignalBuffer(TileIndex tile, DiagDirection side, Owner owner)
  */
 SigSegState UpdateSignalsOnSegment(TileIndex tile, DiagDirection side, Owner owner)
 {
-	assert(_globset.IsEmpty());
+	UpdateSignalsInBufferIfOwnerNotAddable(owner);
 	_globset.Add(tile, side);
 
+	_last_owner = INVALID_OWNER;
 	return UpdateSignalsInBuffer(owner);
 }
 

@@ -241,9 +241,7 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 					if (IsTunnelBridgePBS(tile)) {
 						SetTunnelBridgeExitSignalState(tile, SIGNAL_STATE_RED);
 					} else {
-						UpdateSignalsInBufferIfOwnerNotAddable(GetTileOwner(tile));
-						AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
-						UpdateSignalsInBuffer();
+						UpdateSignalsOnSegment(tile, INVALID_DIAGDIR, GetTileOwner(tile));
 					}
 				}
 				MarkBridgeOrTunnelDirtyOnReservationChange(tile, VMDF_NOT_MAP_MODE);
