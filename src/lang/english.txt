@@ -1361,6 +1361,10 @@ STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER                     :No vehicles exp
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_HELPTEXT            :Vehicles which would otherwise expire after this year remain available forever
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_VALUE               :{NUM}
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_ZERO                :Off
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER                  :No vehicles introduced after: {STRING2}
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_HELPTEXT         :Vehicles which would otherwise be introduced during or after this year are never introduced
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_VALUE            :{NUM}
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_ZERO             :Off
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE                            :Autorenew vehicle when it gets old: {STRING2}
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE_HELPTEXT                   :When enabled, a vehicle nearing its end of life gets automatically replaced when the renew conditions are fulfilled
 STR_CONFIG_SETTING_AUTORENEW_MONTHS                             :Autorenew when vehicle is {STRING2} maximum age

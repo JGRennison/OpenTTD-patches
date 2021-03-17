@@ -566,6 +566,7 @@ struct VehicleSettings {
 	bool   dynamic_engines;                  ///< enable dynamic allocation of engine data
 	bool   never_expire_vehicles;            ///< never expire vehicles
 	Year   no_expire_vehicles_after;         ///< do not expire vehicles ater this year
+	Year   no_introduce_vehicles_after;      ///< do not introduce vehicles ater this year
 	byte   extend_vehicle_life;              ///< extend vehicle life by this many years
 	byte   road_side;                        ///< the side of the road vehicles drive on
 	uint8  plane_crashes;                    ///< number of plane crashes, 0 = none, 1 = reduced, 2 = normal

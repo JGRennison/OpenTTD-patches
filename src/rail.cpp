@@ -315,6 +315,10 @@ RailTypes AddDateIntroducedRailTypes(RailTypes current, Date date)
 {
 	RailTypes rts = current;
 
+	if (_settings_game.vehicle.no_introduce_vehicles_after > 0) {
+		date = std::min<Date>(date, ConvertYMDToDate(_settings_game.vehicle.no_introduce_vehicles_after, 0, 1) - 1);
+	}
+
 	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
 		const RailtypeInfo *rti = GetRailTypeInfo(rt);
 		/* Unused rail type. */
@@ -348,11 +352,16 @@ RailTypes GetCompanyRailtypes(CompanyID company, bool introduces)
 {
 	RailTypes rts = RAILTYPES_NONE;
 
+	Date date = _date;
+	if (_settings_game.vehicle.no_introduce_vehicles_after > 0) {
+		date = std::min<Date>(date, ConvertYMDToDate(_settings_game.vehicle.no_introduce_vehicles_after, 0, 1) - 1);
+	}
+
 	for (const Engine *e : Engine::IterateType(VEH_TRAIN)) {
 		const EngineInfo *ei = &e->info;
 
 		if (HasBit(ei->climates, _settings_game.game_creation.landscape) &&
-				(HasBit(e->company_avail, company) || _date >= e->intro_date + DAYS_IN_YEAR)) {
+				(HasBit(e->company_avail, company) || date >= e->intro_date + DAYS_IN_YEAR)) {
 			const RailVehicleInfo *rvi = &e->u.rail;
 
 			if (rvi->railveh_type != RAILVEH_WAGON) {
