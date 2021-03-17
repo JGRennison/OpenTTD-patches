@@ -3075,6 +3075,26 @@ bool ProcessOrders(Vehicle *v)
 /**
  * Check whether the given vehicle should stop at the given station
  * based on this order and the non-stop settings.
+ * @param last_station_visited the last visited station.
+ * @param station the station to stop at.
+ * @param waypoint if station is a waypoint.
+ * @return true if the vehicle should stop.
+ */
+bool Order::ShouldStopAtStation(StationID last_station_visited, StationID station, bool waypoint) const
+{
+	if (waypoint) return this->IsType(OT_GOTO_WAYPOINT) && this->dest == station && this->IsWaitTimetabled();
+	if (this->IsType(OT_LOADING_ADVANCE) && this->dest == station) return true;
+	bool is_dest_station = this->IsType(OT_GOTO_STATION) && this->dest == station;
+
+	return (!this->IsType(OT_GOTO_DEPOT) || (this->GetDepotOrderType() & ODTFB_PART_OF_ORDERS) != 0) &&
+			(last_station_visited != station) && // Do stop only when we've not just been there
+			/* Finally do stop when there is no non-stop flag set for this type of station. */
+			!(this->GetNonStopType() & (is_dest_station ? ONSF_NO_STOP_AT_DESTINATION_STATION : ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS));
+}
+
+/**
+ * Check whether the given vehicle should stop at the given station
+ * based on this order and the non-stop settings.
  * @param v       the vehicle that might be stopping.
  * @param station the station to stop at.
  * @param waypoint if station is a waypoint.
@@ -3082,14 +3102,7 @@ bool ProcessOrders(Vehicle *v)
  */
 bool Order::ShouldStopAtStation(const Vehicle *v, StationID station, bool waypoint) const
 {
-	if (waypoint) return this->IsType(OT_GOTO_WAYPOINT) && this->dest == station && this->IsWaitTimetabled();
-	if (this->IsType(OT_LOADING_ADVANCE) && this->dest == station) return true;
-	bool is_dest_station = this->IsType(OT_GOTO_STATION) && this->dest == station;
-
-	return (!this->IsType(OT_GOTO_DEPOT) || (this->GetDepotOrderType() & ODTFB_PART_OF_ORDERS) != 0) &&
-			(v == nullptr || v->last_station_visited != station) && // Do stop only when we've not just been there
-			/* Finally do stop when there is no non-stop flag set for this type of station. */
-			!(this->GetNonStopType() & (is_dest_station ? ONSF_NO_STOP_AT_DESTINATION_STATION : ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS));
+	return this->ShouldStopAtStation(v->last_station_visited, station, waypoint);
 }
 
 /**

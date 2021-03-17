@@ -827,7 +827,7 @@ static void LimitSpeedFromLookAhead(int &max_speed, const TrainDecelerationStats
 }
 
 static void ApplyLookAheadItem(const Train *v, const TrainReservationLookAheadItem &item, int &max_speed, int &advisory_max_speed,
-		VehicleOrderID &current_order_index, const Order *&order, const TrainDecelerationStats &stats, int current_position)
+		VehicleOrderID &current_order_index, const Order *&order, StationID &last_station_visited, const TrainDecelerationStats &stats, int current_position)
 {
 	auto limit_speed = [&](int position, int end_speed, int z) {
 		LimitSpeedFromLookAhead(max_speed, stats, current_position, position, end_speed, z - stats.z_pos);
@@ -839,10 +839,12 @@ static void ApplyLookAheadItem(const Train *v, const TrainReservationLookAheadIt
 
 	switch (item.type) {
 		case TRLIT_STATION: {
-			if (order->ShouldStopAtStation(nullptr, item.data_id, Waypoint::GetIfValid(item.data_id) != nullptr)) {
+			if (order->ShouldStopAtStation(last_station_visited, item.data_id, Waypoint::GetIfValid(item.data_id) != nullptr)) {
 				limit_advisory_speed(item.start + PredictStationStoppingLocation(v, order, item.end - item.start, item.data_id), 0, item.z_pos);
+				last_station_visited = item.data_id;
 			} else if (order->IsType(OT_GOTO_WAYPOINT) && order->GetDestination() == item.data_id && (order->GetWaypointFlags() & OWF_REVERSE)) {
 				limit_advisory_speed(item.start + v->gcache.cached_total_length, 0, item.z_pos);
+				if (order->IsWaitTimetabled()) last_station_visited = item.data_id;
 			}
 			if (order->IsBaseStationOrder() && order->GetDestination() == item.data_id && v->GetNumOrders() > 0) {
 				current_order_index++;
@@ -1002,8 +1004,9 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 			}
 			VehicleOrderID current_order_index = this->cur_real_order_index;
 			const Order *order = &(this->current_order);
+			StationID last_station_visited = this->last_station_visited;
 			for (const TrainReservationLookAheadItem &item : this->lookahead->items) {
-				ApplyLookAheadItem(this, item, max_speed, advisory_max_speed, current_order_index, order, stats, this->lookahead->current_position);
+				ApplyLookAheadItem(this, item, max_speed, advisory_max_speed, current_order_index, order, last_station_visited, stats, this->lookahead->current_position);
 			}
 			if (HasBit(this->lookahead->flags, TRLF_APPLY_ADVISORY)) {
 				max_speed = std::min(max_speed, advisory_max_speed);
@@ -3697,8 +3700,9 @@ public:
 				HasStationTileRail(v->tile) && v->current_order.GetDestination() == GetStationIndex(v->tile) :
 				v->tile == v->dest_tile))) {
 			if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && v->current_order.IsBaseStationOrder()) {
-				if (v->current_order.ShouldStopAtStation(nullptr, v->current_order.GetDestination(), v->current_order.IsType(OT_GOTO_WAYPOINT))) {
+				if (v->current_order.ShouldStopAtStation(v, v->current_order.GetDestination(), v->current_order.IsType(OT_GOTO_WAYPOINT))) {
 					SetBit(state.flags, CTTLASF_STOP_FOUND);
+					v->last_station_visited = v->current_order.GetDestination();
 				}
 			}
 			if (v->current_order.IsAnyLoadingType()) SetBit(state.flags, CTTLASF_STOP_FOUND);
@@ -3717,12 +3721,14 @@ public:
 				case TRLIT_STATION:
 					if (this->v->current_order.IsBaseStationOrder()) {
 						/* we've already seen this station in the lookahead, advance current order */
-						if (this->v->current_order.ShouldStopAtStation(nullptr, item.data_id, Waypoint::GetIfValid(item.data_id) != nullptr)) {
+						if (this->v->current_order.ShouldStopAtStation(this->v, item.data_id, Waypoint::GetIfValid(item.data_id) != nullptr)) {
 							SetBit(state.flags, CTTLASF_STOP_FOUND);
+							this->v->last_station_visited = item.data_id;
 						} else if (this->v->current_order.IsType(OT_GOTO_WAYPOINT) && this->v->current_order.GetDestination() == item.data_id && (this->v->current_order.GetWaypointFlags() & OWF_REVERSE)) {
 							if (!HasBit(state.flags, CTTLASF_REVERSE_FOUND)) {
 								SetBit(state.flags, CTTLASF_REVERSE_FOUND);
 								state.reverse_dest = item.data_id;
+								if (this->v->current_order.IsWaitTimetabled()) this->v->last_station_visited = item.data_id;
 							}
 						}
 						if (this->v->current_order.GetDestination() == item.data_id) {
@@ -4058,7 +4064,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 	auto check_destination_seen = [&](TileIndex tile) {
 		if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && v->current_order.IsBaseStationOrder() &&
 				HasStationTileRail(tile)) {
-			if (v->current_order.ShouldStopAtStation(nullptr, GetStationIndex(tile), IsRailWaypoint(tile))) {
+			if (v->current_order.ShouldStopAtStation(v, GetStationIndex(tile), IsRailWaypoint(tile))) {
 				SetBit(lookahead_state.flags, CTTLASF_STOP_FOUND);
 			} else if (v->current_order.IsType(OT_GOTO_WAYPOINT) && v->current_order.GetDestination() == GetStationIndex(tile) && (v->current_order.GetWaypointFlags() & OWF_REVERSE)) {
 				if (!HasBit(lookahead_state.flags, CTTLASF_REVERSE_FOUND)) {
