@@ -713,7 +713,11 @@ void StartupOneEngine(Engine *e, Date aging_date, Date no_introduce_after_date)
 void StartupEngines()
 {
 	/* Aging of vehicles stops, so account for that when starting late */
-	const Date aging_date = std::min(_date, ConvertYMDToDate(_year_engine_aging_stops, 0, 1));
+	Year aging_stop_year = _year_engine_aging_stops;
+	if (_settings_game.vehicle.no_introduce_vehicles_after > 0 && _settings_game.vehicle.no_expire_vehicles_after > 0) {
+		aging_stop_year = std::min<Year>(aging_stop_year, std::max<Year>(_settings_game.vehicle.no_introduce_vehicles_after, _settings_game.vehicle.no_expire_vehicles_after));
+	}
+	const Date aging_date = std::min(_date, ConvertYMDToDate(aging_stop_year, 0, 1));
 
 	Date no_introduce_after_date = INT_MAX;
 	if (_settings_game.vehicle.no_introduce_vehicles_after > 0) {
@@ -1056,6 +1060,9 @@ void EnginesMonthlyLoop()
 	if (_cur_year < _year_engine_aging_stops) {
 		Date no_introduce_after = INT_MAX;
 		if (_settings_game.vehicle.no_introduce_vehicles_after > 0) {
+			if (_settings_game.vehicle.no_expire_vehicles_after > 0 && _cur_year >= std::max<Year>(_settings_game.vehicle.no_introduce_vehicles_after, _settings_game.vehicle.no_expire_vehicles_after)) {
+				return;
+			}
 			no_introduce_after = ConvertYMDToDate(_settings_game.vehicle.no_introduce_vehicles_after, 0, 1) - 1;
 		}
 
