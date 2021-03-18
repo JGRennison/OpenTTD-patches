@@ -3785,7 +3785,9 @@ static bool IsReservationLookAheadLongEnough(const Train *v, const ChooseTrainTr
 	}
 
 	if (found_signal) {
-		int64 distance = GetRealisticBrakingDistanceForSpeed(stats, signal_speed, 0, v->lookahead->reservation_end_z - signal_z);
+		int delta_z = v->lookahead->reservation_end_z - signal_z;
+		delta_z += (delta_z >> 2); // Slightly overestimate slope changes to compensate for non-uniform descents
+		int64 distance = GetRealisticBrakingDistanceForSpeed(stats, signal_speed, 0, delta_z);
 		if (signal_position + distance <= v->lookahead->reservation_end_position) return true;
 	}
 
