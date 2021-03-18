@@ -796,7 +796,7 @@ static int GetRealisticBrakingSpeedForDistance(const TrainDecelerationStats &sta
 					v_calc -= IntCbrt(-cb2);
 				}
 				int64 v_calc_sq = sqr(v_calc);
-				if (v_calc_sq < speed_sqr) {
+				if (v_calc_sq < speed_sqr && v_calc_sq > slope_speed_sqr) {
 					return std::max((int)REALISTIC_BRAKING_MIN_SPEED, v_calc);
 				}
 			}
