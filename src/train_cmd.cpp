@@ -672,8 +672,8 @@ int PredictStationStoppingLocation(const Train *v, const Order *order, int stati
 				}
 				if (skip) {
 					for (const Train *part = u; part != nullptr; part = part->HasArticulatedPart() ? part->GetNextArticulatedPart() : nullptr) {
-						overhang -= u->gcache.cached_veh_length;
-						adjust += u->gcache.cached_veh_length;
+						overhang -= part->gcache.cached_veh_length;
+						adjust += part->gcache.cached_veh_length;
 					}
 					continue;
 				}
