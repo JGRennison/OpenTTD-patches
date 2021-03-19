@@ -5485,8 +5485,9 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 		}
 
 		/* Do not check on every tick to save some computing time. */
-		if (v->IsFrontEngine() && ((v->tick_counter % _settings_game.pf.path_backoff_interval == 0) ||
-				(v->lookahead != nullptr && v->cur_speed > 0 && v->lookahead->reservation_end_position <= v->lookahead->current_position + 12))) {
+		if (v->IsFrontEngine() && (v->lookahead != nullptr && v->cur_speed > 0 && v->lookahead->reservation_end_position <= v->lookahead->current_position + 24)) {
+			TryLongReserveChooseTrainTrackFromReservationEnd(v, true);
+		} else if (v->IsFrontEngine() && (v->tick_counter % _settings_game.pf.path_backoff_interval == 0)) {
 			CheckNextTrainTile(v);
 		}
 	}
