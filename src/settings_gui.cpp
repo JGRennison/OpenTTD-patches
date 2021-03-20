@@ -1843,6 +1843,7 @@ static SettingsContainer &GetSettingsTree()
 			{
 				towns->Add(new SettingEntry("economy.town_growth_rate"));
 				towns->Add(new SettingEntry("economy.town_growth_cargo_transported"));
+				towns->Add(new SettingEntry("economy.town_zone_calc_mode"));
 				towns->Add(new SettingEntry("economy.town_zone_0_mult"));
 				towns->Add(new SettingEntry("economy.town_zone_1_mult"));
 				towns->Add(new SettingEntry("economy.town_zone_2_mult"));

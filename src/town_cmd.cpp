@@ -1952,46 +1952,55 @@ static bool GrowTown(Town *t)
 
 void UpdateTownRadius(Town *t)
 {
-	static const uint32 _town_squared_town_zone_radius_data[23][5] = {
-		{  4,  0,  0,  0,  0}, // 0
-		{ 16,  0,  0,  0,  0},
-		{ 25,  0,  0,  0,  0},
-		{ 36,  0,  0,  0,  0},
-		{ 49,  0,  4,  0,  0},
-		{ 64,  0,  4,  0,  0}, // 20
-		{ 64,  0,  9,  0,  1},
-		{ 64,  0,  9,  0,  4},
-		{ 64,  0, 16,  0,  4},
-		{ 81,  0, 16,  0,  4},
-		{ 81,  0, 16,  0,  4}, // 40
-		{ 81,  0, 25,  0,  9},
-		{ 81, 36, 25,  0,  9},
-		{ 81, 36, 25, 16,  9},
-		{ 81, 49,  0, 25,  9},
-		{ 81, 64,  0, 25,  9}, // 60
-		{ 81, 64,  0, 36,  9},
-		{ 81, 64,  0, 36, 16},
-		{100, 81,  0, 49, 16},
-		{100, 81,  0, 49, 25},
-		{121, 81,  0, 49, 25}, // 80
-		{121, 81,  0, 49, 25},
-		{121, 81,  0, 49, 36}, // 88
-	};
+	int mass = t->cache.num_houses / 8;
 
-	if (t->cache.num_houses < 92) {
-		memcpy(t->cache.squared_town_zone_radius, _town_squared_town_zone_radius_data[t->cache.num_houses / 4], sizeof(t->cache.squared_town_zone_radius));
-	} else {
-		int mass = t->cache.num_houses / 8;
-		/* Actually we are proportional to sqrt() but that's right because we are covering an area.
-		 * The offsets are to make sure the radii do not decrease in size when going from the table
-		 * to the calculated value.*/
-		 /* Here we have added in the additional parameters that allow players to change the size
-		 * of these multipliers, the multipliers default values match the values previously found.*/
-		t->cache.squared_town_zone_radius[0] = mass * _settings_game.economy.town_zone_0_mult - 40;
-		t->cache.squared_town_zone_radius[1] = mass * _settings_game.economy.town_zone_1_mult - 15;
-		t->cache.squared_town_zone_radius[2] = mass * _settings_game.economy.town_zone_2_mult;
-		t->cache.squared_town_zone_radius[3] = mass * _settings_game.economy.town_zone_3_mult - 5;
-		t->cache.squared_town_zone_radius[4] = mass * _settings_game.economy.town_zone_4_mult + 5;
+	if (_settings_game.economy.town_zone_calc_mode == true) {
+			t->cache.squared_town_zone_radius[0] = mass * _settings_game.economy.town_zone_0_mult;
+			t->cache.squared_town_zone_radius[1] = mass * _settings_game.economy.town_zone_1_mult;
+			t->cache.squared_town_zone_radius[2] = mass * _settings_game.economy.town_zone_2_mult;
+			t->cache.squared_town_zone_radius[3] = mass * _settings_game.economy.town_zone_3_mult;
+			t->cache.squared_town_zone_radius[4] = mass * _settings_game.economy.town_zone_4_mult;
+	}
+	if (_settings_game.economy.town_zone_calc_mode == false) {
+		static const uint32 _town_squared_town_zone_radius_data[23][5] = {
+			{  4,  0,  0,  0,  0}, // 0
+			{ 16,  0,  0,  0,  0},
+			{ 25,  0,  0,  0,  0},
+			{ 36,  0,  0,  0,  0},
+			{ 49,  0,  4,  0,  0},
+			{ 64,  0,  4,  0,  0}, // 20
+			{ 64,  0,  9,  0,  1},
+			{ 64,  0,  9,  0,  4},
+			{ 64,  0, 16,  0,  4},
+			{ 81,  0, 16,  0,  4},
+			{ 81,  0, 16,  0,  4}, // 40
+			{ 81,  0, 25,  0,  9},
+			{ 81, 36, 25,  0,  9},
+			{ 81, 36, 25, 16,  9},
+			{ 81, 49,  0, 25,  9},
+			{ 81, 64,  0, 25,  9}, // 60
+			{ 81, 64,  0, 36,  9},
+			{ 81, 64,  0, 36, 16},
+			{100, 81,  0, 49, 16},
+		    {100, 81,  0, 49, 25},
+		    {121, 81,  0, 49, 25}, // 80
+			{121, 81,  0, 49, 25},
+			{121, 81,  0, 49, 36}, // 88
+		};
+
+		if (t->cache.num_houses < 92) {
+			memcpy(t->cache.squared_town_zone_radius, _town_squared_town_zone_radius_data[t->cache.num_houses / 4], sizeof(t->cache.squared_town_zone_radius));
+		}
+		else {
+			/* Actually we are proportional to sqrt() but that's right because we are covering an area.
+			 * The offsets are to make sure the radii do not decrease in size when going from the table
+			 * to the calculated value.*/
+			t->cache.squared_town_zone_radius[0] = mass * 15 - 40;
+			t->cache.squared_town_zone_radius[1] = mass * 9 - 15;
+			t->cache.squared_town_zone_radius[2] = 0;
+			t->cache.squared_town_zone_radius[3] = mass * 5 - 5;
+			t->cache.squared_town_zone_radius[4] = mass * 3 + 5;
+		}
 	}
 }
 

@@ -601,11 +601,12 @@ struct EconomySettings {
 	bool   multiple_industry_per_town;       ///< allow many industries of the same type per town
 	int8   town_growth_rate;                 ///< town growth rate
 	uint8  town_growth_cargo_transported;    ///< percentage of town growth rate which depends on proportion of transported cargo in the last month
-	uint16 town_zone_0_mult;                 ///< multiplier for the size of zone 0 when towns are over 92houses
-	uint16 town_zone_1_mult;                 ///< multiplier for the size of zone 1 when towns are over 92houses
-	uint16 town_zone_2_mult;                 ///< multiplier for the size of zone 2 when towns are over 92houses
-	uint16 town_zone_3_mult;                 ///< multiplier for the size of zone 3 when towns are over 92houses
-	uint16 town_zone_4_mult;                 ///< multiplier for the size of zone 4 when towns are over 92houses
+	bool   town_zone_calc_mode;              ///< calc mode for town zones
+	uint16 town_zone_0_mult;                 ///< multiplier for the size of zone 0
+	uint16 town_zone_1_mult;                 ///< multiplier for the size of zone 1
+	uint16 town_zone_2_mult;                 ///< multiplier for the size of zone 2
+	uint16 town_zone_3_mult;                 ///< multiplier for the size of zone 3
+	uint16 town_zone_4_mult;                 ///< multiplier for the size of zone 4
 	uint8  larger_towns;                     ///< the number of cities to build. These start off larger and grow twice as fast
 	uint8  initial_city_size;                ///< multiplier for the initial size of the cities compared to towns
 	TownLayout town_layout;                  ///< select town layout, @see TownLayout
