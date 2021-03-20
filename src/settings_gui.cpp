@@ -1842,6 +1842,11 @@ static SettingsContainer &GetSettingsTree()
 			{
 				towns->Add(new SettingEntry("economy.town_growth_rate"));
 				towns->Add(new SettingEntry("economy.town_growth_cargo_transported"));
+				towns->Add(new SettingEntry("economy.town_zone_0_mult"));
+				towns->Add(new SettingEntry("economy.town_zone_1_mult"));
+				towns->Add(new SettingEntry("economy.town_zone_2_mult"));
+				towns->Add(new SettingEntry("economy.town_zone_3_mult"));
+				towns->Add(new SettingEntry("economy.town_zone_4_mult"));
 				towns->Add(new SettingEntry("economy.allow_town_roads"));
 				towns->Add(new SettingEntry("economy.allow_town_level_crossings"));
 				towns->Add(new SettingEntry("economy.found_town"));

@@ -1985,11 +1985,13 @@ void UpdateTownRadius(Town *t)
 		/* Actually we are proportional to sqrt() but that's right because we are covering an area.
 		 * The offsets are to make sure the radii do not decrease in size when going from the table
 		 * to the calculated value.*/
-		t->cache.squared_town_zone_radius[0] = mass * 15 - 40;
-		t->cache.squared_town_zone_radius[1] = mass * 9 - 15;
-		t->cache.squared_town_zone_radius[2] = 0;
-		t->cache.squared_town_zone_radius[3] = mass * 5 - 5;
-		t->cache.squared_town_zone_radius[4] = mass * 3 + 5;
+		/* Here we have added in the additional parameters that allow players to change the size
+		 * of these multipliers, the multipliers default values match the values previously found.*/
+		t->cache.squared_town_zone_radius[0] = mass * _settings_game.economy.town_zone_0_mult - 40;
+		t->cache.squared_town_zone_radius[1] = mass * _settings_game.economy.town_zone_1_mult - 15;
+		t->cache.squared_town_zone_radius[2] = mass * _settings_game.economy.town_zone_2_mult;
+		t->cache.squared_town_zone_radius[3] = mass * _settings_game.economy.town_zone_3_mult - 5;
+		t->cache.squared_town_zone_radius[4] = mass * _settings_game.economy.town_zone_4_mult + 5;
 	}
 }
 
