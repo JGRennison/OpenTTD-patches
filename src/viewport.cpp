@@ -5347,7 +5347,7 @@ static HighLightStyle CalcPolyrailDrawstyle(Point pt, bool dragging)
 	}
 
 	HighLightStyle ret = HT_LINE | (HighLightStyle)TrackdirToTrack(seldir);
-	ShowLengthMeasurement(ret, TileVirtXY(_thd.selstart.x, _thd.selstart.y), TileVirtXY(_thd.selend.x, _thd.selend.y), TCC_HOVER, true);
+	ShowLengthMeasurement(ret, TileVirtXY(_thd.selstart.x, _thd.selstart.y), TileVirtXY(_thd.selend.x, _thd.selend.y), TCC_NONE, true);
 	return ret;
 }
 
