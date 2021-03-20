@@ -1884,6 +1884,16 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_16X                             :16x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_32X                             :32x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_64X                             :64x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
+STR_CONFIG_SETTING_TOWN_ZONE_0_MULT                             :Multiplier to Zone 0: {STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_0_MULT_HELPTEXT                    :Multiplier to the size of Zone 0 when towns have greater than 92 houses.
+STR_CONFIG_SETTING_TOWN_ZONE_1_MULT                             :Multiplier to Zone 1: {STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_1_MULT_HELPTEXT                    :Multiplier to the size of Zone 1 when towns have greater than 92 houses.
+STR_CONFIG_SETTING_TOWN_ZONE_2_MULT                             :Multiplier to Zone 2: {STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_2_MULT_HELPTEXT                    :Multiplier to the size of Zone 2 when towns have greater than 92 houses.
+STR_CONFIG_SETTING_TOWN_ZONE_3_MULT                             :Multiplier to Zone 3: {STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_3_MULT_HELPTEXT                    :Multiplier to the size of Zone 3 when towns have greater than 92 houses.
+STR_CONFIG_SETTING_TOWN_ZONE_4_MULT                             :Multiplier to Zone 4: {STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_4_MULT_HELPTEXT                    :Multiplier to the size of Zone 4 when towns have greater than 92 houses.
 STR_CONFIG_SETTING_TOWN_GROWTH                                  :Town growth speed: {STRING2}
 STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT                         :Speed of town growth
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED                :Town growth speed depends on transported cargo: {STRING2}
