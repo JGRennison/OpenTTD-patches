@@ -3587,6 +3587,9 @@ STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}Decrease
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Snow line height:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Move the snow line height one up
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Move the snow line height one down
+STR_MAPGEN_RAINFOREST_LINE_HEIGHT                               :{BLACK}Rainforest line height:
+STR_MAPGEN_RAINFOREST_LINE_UP                                   :{BLACK}Move the rainforest line height one up
+STR_MAPGEN_RAINFOREST_LINE_DOWN                                 :{BLACK}Move the rainforest line height one down
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Land generator:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terrain type:
 STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Sea level:
@@ -3615,6 +3618,7 @@ STR_MAPGEN_TOO_MANY_TILES_MESSAGE                               :{YELLOW}Too man
 
 STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}Change maximum map height
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Change snow line height
+STR_MAPGEN_RAINFOREST_LINE_QUERY_CAPT                           :{WHITE}Change rainforest line height
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}Change starting year
 
 # SE Map generation
