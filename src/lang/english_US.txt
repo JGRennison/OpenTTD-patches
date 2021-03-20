@@ -1656,6 +1656,16 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_4X                              :4x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_8X                              :8x
 STR_CONFIG_SETTING_TOWN_GROWTH                                  :Town growth speed: {STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT                         :Speed of town growth
+STR_CONFIG_SETTING_TOWN_ZONE_0_MULT                             :Multiplier to Zone 0: {STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_0_MULT_HELPTEXT                    :Multiplier to the size of Zone 0 when towns have greater than 92 houses.
+STR_CONFIG_SETTING_TOWN_ZONE_1_MULT                             :Multiplier to Zone 1: {STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_1_MULT_HELPTEXT                    :Multiplier to the size of Zone 1 when towns have greater than 92 houses.
+STR_CONFIG_SETTING_TOWN_ZONE_2_MULT                             :Multiplier to Zone 2: {STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_2_MULT_HELPTEXT                    :Multiplier to the size of Zone 2 when towns have greater than 92 houses.
+STR_CONFIG_SETTING_TOWN_ZONE_3_MULT                             :Multiplier to Zone 3: {STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_3_MULT_HELPTEXT                    :Multiplier to the size of Zone 3 when towns have greater than 92 houses.
+STR_CONFIG_SETTING_TOWN_ZONE_4_MULT                             :Multiplier to Zone 4: {STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_4_MULT_HELPTEXT                    :Multiplier to the size of Zone 4 when towns have greater than 92 houses.
 STR_CONFIG_SETTING_TOWN_GROWTH_NONE                             :None
 STR_CONFIG_SETTING_TOWN_GROWTH_SLOW                             :Slow
 STR_CONFIG_SETTING_TOWN_GROWTH_NORMAL                           :Normal
