@@ -1273,6 +1273,8 @@ STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE                        :Maximum distanc
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :Oil refineries are only constructed near the map border, that is at the coast for island maps
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT                              :Snow line height: {STRING}
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :Control at what height snow starts in sub-arctic landscape. Snow also affects industry generation and town growth requirements
+STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT                        :Rainforest line height: {STRING}
+STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT_HELPTEXT               :Control at what height rainforest starts in sub-tropic landscape. Rainforests also affect industry generation and town growth requirements
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :Roughness of terrain: {STRING}
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(TerraGenesis only) Choose the frequency of hills: Smooth landscapes have fewer, more wide-spread hills. Rough landscapes have many hills, which may look repetitive
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Very Smooth
