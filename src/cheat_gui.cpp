@@ -29,6 +29,7 @@
 #include "error.h"
 #include "network/network.h"
 #include "order_base.h"
+#include "currency.h"
 
 #include "widgets/cheat_widget.h"
 
@@ -391,6 +392,11 @@ struct CheatWindow : Window {
 			SetDParam(0, value);
 			ShowQueryString(STR_JUST_INT, STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT, 8, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 			return;
+		} else if (btn == CHT_MONEY && x >= 20 + this->box_width + SETTING_BUTTON_WIDTH) {
+			clicked_widget = CHT_MONEY;
+			SetDParam(0, value);
+			ShowQueryString(STR_JUST_INT, STR_CHEAT_EDIT_MONEY_QUERY_CAPT, 20, this, CS_NUMERAL_SIGNED, QSF_ACCEPT_UNCHANGED);
+			return;
 		} else if (ce->type == SLF_NOT_IN_SAVE && x >= 20 + this->box_width + SETTING_BUTTON_WIDTH) {
 			clicked_widget = btn;
 			uint64 val = (uint64)ReadValue(ce->variable, SLE_UINT64);
@@ -463,6 +469,11 @@ struct CheatWindow : Window {
 			strecpy(tmp_buffer, str, lastof(tmp_buffer));
 			str_replace_wchar(tmp_buffer, lastof(tmp_buffer), GetDecimalSeparatorChar(), '.');
 			DoCommandP(0, (uint32)clicked_widget, (uint32)Clamp<uint64>(atof(tmp_buffer) * 65536.0, 1 << 16, MAX_INFLATION), CMD_CHEAT_SETTING);
+			return;
+		}
+		if (ce->mode == CNM_MONEY) {
+			if (!_networking) *ce->been_used = true;
+			DoCommandP(0, (strtoll(str, nullptr, 10) / _currency->rate), 0, _network_server || _network_settings_access ? CMD_MONEY_CHEAT_ADMIN : CMD_MONEY_CHEAT);
 			return;
 		}
 

@@ -490,6 +490,7 @@ bool IsValidChar(WChar key, CharSetFilter afilter)
 	switch (afilter) {
 		case CS_ALPHANUMERAL:  return IsPrintable(key);
 		case CS_NUMERAL:       return (key >= '0' && key <= '9');
+		case CS_NUMERAL_SIGNED:  return (key >= '0' && key <= '9') || key == '-';
 #if !defined(STRGEN) && !defined(SETTINGSGEN)
 		case CS_NUMERAL_DECIMAL: return (key >= '0' && key <= '9') || key == '.' || key == '-' || key == GetDecimalSeparatorChar();
 #else
