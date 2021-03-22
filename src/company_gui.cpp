@@ -266,8 +266,8 @@ static const NWidgetPart _nested_company_finances_widgets[] = {
 	EndContainer(),
 	NWidget(NWID_SELECTION, INVALID_COLOUR, WID_CF_SEL_BUTTONS),
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_CF_INCREASE_LOAN), SetFill(1, 0), SetDataTip(STR_FINANCES_BORROW_BUTTON, STR_FINANCES_BORROW_TOOLTIP),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_CF_REPAY_LOAN), SetFill(1, 0), SetDataTip(STR_FINANCES_REPAY_BUTTON, STR_FINANCES_REPAY_TOOLTIP),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_CF_INCREASE_LOAN), SetFill(1, 0), SetDataTip(STR_FINANCES_BORROW_BUTTON, STR_NULL),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_CF_REPAY_LOAN), SetFill(1, 0), SetDataTip(STR_FINANCES_REPAY_BUTTON, STR_NULL),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_CF_INFRASTRUCTURE), SetFill(1, 0), SetDataTip(STR_FINANCES_INFRASTRUCTURE_BUTTON, STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP),
 		EndContainer(),
 	EndContainer(),
@@ -277,6 +277,7 @@ static const NWidgetPart _nested_company_finances_widgets[] = {
 struct CompanyFinancesWindow : Window {
 	Money max_money;        ///< The approximate maximum amount of money a company has had over the lifetime of this window
 	bool small;             ///< Window is toggled to 'small'.
+	int query_widget;       ///< The widget associated with the current text query input.
 
 	CompanyFinancesWindow(WindowDesc *desc, CompanyID company) : Window(desc)
 	{
@@ -444,16 +445,46 @@ struct CompanyFinancesWindow : Window {
 				break;
 
 			case WID_CF_INCREASE_LOAN: // increase loan
-				DoCommandP(0, 0, _ctrl_pressed, CMD_INCREASE_LOAN | CMD_MSG(STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY));
+				if (_shift_pressed) {
+					this->query_widget = WID_CF_INCREASE_LOAN;
+					SetDParam(0, 0);
+					ShowQueryString(STR_JUST_INT, STR_FINANCES_BORROW_QUERY_CAPT, 20, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
+				} else {
+					DoCommandP(0, 0, _ctrl_pressed, CMD_INCREASE_LOAN | CMD_MSG(STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY));
+				}
 				break;
 
 			case WID_CF_REPAY_LOAN: // repay loan
-				DoCommandP(0, 0, _ctrl_pressed, CMD_DECREASE_LOAN | CMD_MSG(STR_ERROR_CAN_T_REPAY_LOAN));
+				if (_shift_pressed) {
+					this->query_widget = WID_CF_REPAY_LOAN;
+					SetDParam(0, 0);
+					ShowQueryString(STR_JUST_INT, STR_FINANCES_REPAY_QUERY_CAPT, 20, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
+				} else {
+					DoCommandP(0, 0, _ctrl_pressed, CMD_DECREASE_LOAN | CMD_MSG(STR_ERROR_CAN_T_REPAY_LOAN));
+				}
 				break;
 
 			case WID_CF_INFRASTRUCTURE: // show infrastructure details
 				ShowCompanyInfrastructure((CompanyID)this->window_number);
 				break;
+		}
+	}
+
+	void OnQueryTextFinished(char *str) override
+	{
+		/* Was 'cancel' pressed or nothing entered? */
+		if (str == nullptr || StrEmpty(str)) return;
+
+		if (this->query_widget == WID_CF_INCREASE_LOAN) {
+			const Company *c = Company::Get((CompanyID)this->window_number);
+			Money amount = std::min<Money>(strtoull(str, nullptr, 10) / _currency->rate, _economy.max_loan - c->current_loan);
+			amount = LOAN_INTERVAL * CeilDivT<Money>(amount, LOAN_INTERVAL);
+			DoCommandP(0, amount >> 32, (amount & 0xFFFFFFFC) | 2, CMD_INCREASE_LOAN | CMD_MSG(STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY));
+		} else if (this->query_widget == WID_CF_REPAY_LOAN) {
+			const Company *c = Company::Get((CompanyID)this->window_number);
+			Money amount = std::min<Money>(strtoull(str, nullptr, 10) / _currency->rate, c->current_loan);
+			amount = LOAN_INTERVAL * CeilDivT<Money>(amount, LOAN_INTERVAL);
+			DoCommandP(0, amount >> 32, (amount & 0xFFFFFFFC) | 2, CMD_DECREASE_LOAN | CMD_MSG(STR_ERROR_CAN_T_REPAY_LOAN));
 		}
 	}
 
@@ -464,6 +495,26 @@ struct CompanyFinancesWindow : Window {
 			this->max_money = std::max<Money>(abs(c->money) * 2, this->max_money * 4);
 			this->SetupWidgets();
 			this->ReInit();
+		}
+	}
+
+	bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond)
+	{
+		switch (widget) {
+			case WID_CF_INCREASE_LOAN: {
+				uint64 arg = STR_FINANCES_BORROW_TOOLTIP;
+				GuiShowTooltips(this, STR_FINANCES_BORROW_TOOLTIP_EXTRA, 1, &arg, close_cond);
+				return true;
+			}
+
+			case WID_CF_REPAY_LOAN: {
+				uint64 arg = STR_FINANCES_REPAY_TOOLTIP;
+				GuiShowTooltips(this, STR_FINANCES_REPAY_TOOLTIP_EXTRA, 1, &arg, close_cond);
+				return true;
+			}
+
+			default:
+				return false;
 		}
 	}
 };
