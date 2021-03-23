@@ -1819,7 +1819,6 @@ static SettingsContainer &GetSettingsTree()
 			genworld->Add(new SettingEntry("game_creation.amount_of_rivers"));
 			genworld->Add(new SettingEntry("game_creation.min_river_length"));
 			genworld->Add(new SettingEntry("game_creation.river_route_random"));
-			genworld->Add(new SettingEntry("game_creation.rivers_springs_higher_tiles"));
 			genworld->Add(new SettingEntry("game_creation.rivers_top_of_hill"));
 			genworld->Add(new SettingEntry("game_creation.tree_placer"));
 			genworld->Add(new SettingEntry("vehicle.road_side"));
