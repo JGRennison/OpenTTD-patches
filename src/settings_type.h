@@ -375,6 +375,8 @@ struct GameCreationSettings {
 	byte   min_river_length;                 ///< the minimum river length
 	byte   river_route_random;               ///< the amount of randomicity for the route finding
 	byte   amount_of_rivers;                 ///< the amount of rivers
+	bool   rivers_springs_higher_tiles;      ///< do rivers require tiles above them for the creation of springs?
+	bool   rivers_top_of_hill;               ///< do rivers require starting near the tops of hills?
 };
 
 /** Settings related to construction in-game */
