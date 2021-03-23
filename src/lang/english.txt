@@ -1109,8 +1109,8 @@ STR_RIVERS_NONE                                                 :None
 STR_RIVERS_FEW                                                  :Few
 STR_RIVERS_MODERATE                                             :Medium
 STR_RIVERS_LOT                                                  :Many
-STR_RIVERS_LOTS                                                 :A Bit More
-STR_RIVERS_LOTSS                                                :About a Few
+STR_RIVERS_LOTS                                                 :{RED}A Bit More
+STR_RIVERS_LOTSS                                                :{RED}About a Few
 
 STR_DISASTER_NONE                                               :None
 STR_DISASTER_REDUCED                                            :Reduced
@@ -1461,9 +1461,9 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Rough
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Very Rough
 STR_CONFIG_SETTING_VARIETY                                      :Variety distribution: {STRING2}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :(TerraGenesis only) Control whether the map contains both mountainous and flat areas. Since this only makes the map flatter, other settings should be set to mountainous
-STR_CONFIG_SETTING_RIVER_MIN_LENGTH                             :River min length: {STRING}
+STR_CONFIG_SETTING_RIVER_MIN_LENGTH                             :River min length: {NUM}
 STR_CONFIG_SETTING_RIVER_MIN_LENGTH_HELPTEXT                    :Choose how many short rivers can be before... things... happen
-STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM                           :River route randomness: {STRING}
+STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM                           :River route randomness: {NUM}
 STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM_HELPTEXT                  :Choose how much randomness...? rivers get? I don't know.
 STR_CONFIG_SETTING_RIVERS_SPRINGS_HIGHER_TILES                  :Rivers require Springs to have higher neighboring tiles:
 STR_CONFIG_SETTING_RIVERS_SPRINGS_HIGHER_TILES_HELPTEXT         :Choose whether rivers require their springs to have neighboring higher tiles.
