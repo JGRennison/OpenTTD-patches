@@ -1269,7 +1269,7 @@ static bool FlowRiver(TileIndex spring, TileIndex begin)
 				/* We don't want the lake at the entry of the valley. */
 				lakeCenter != begin &&
 				/* We don't want lakes in the desert. */
-				(_settings_game.game_creation.landscape != LT_TROPIC || GetTropicZone(lakeCenter) != TROPICZONE_DESERT) &&
+				(_settings_game.game_creation.landscape != LT_TROPIC || _settings_game.game_creation.lakes_allowed_in_deserts == true || GetTropicZone(lakeCenter) != TROPICZONE_DESERT) &&
 				/* We only want a lake if the river is long enough. */
 				DistanceManhattan(spring, lakeCenter) > _settings_game.game_creation.min_river_length) {
 			end = lakeCenter;
@@ -1277,7 +1277,7 @@ static bool FlowRiver(TileIndex spring, TileIndex begin)
 			/* Remove desert directly around the river tile. */
 			CircularTileSearch(&lakeCenter, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
 			lakeCenter = end;
-			uint range = RandomRange(8) + 3;
+			uint range = RandomRange(8) + _settings_game.game_creation.lake_size;
 			CircularTileSearch(&lakeCenter, range, MakeLake, &height);
 			/* Call the search a second time so artefacts from going circular in one direction get (mostly) hidden. */
 			lakeCenter = end;
