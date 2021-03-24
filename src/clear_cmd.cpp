@@ -365,7 +365,7 @@ void GenerateClearTile()
 
 		IncreaseGeneratingWorldProgress(GWP_ROUGH_ROCKY);
 		if (IsTileType(tile, MP_CLEAR) && !IsClearGround(tile, CLEAR_DESERT)) {
-			uint j = GB(r, 16, 4) + 5;
+			uint j = GB(r, 16, 4) + _settings_game.game_creation.amount_of_rocks;
 			for (;;) {
 				TileIndex tile_new;
 
