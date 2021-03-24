@@ -375,7 +375,7 @@ struct GameCreationSettings {
 	byte   min_river_length;                 ///< the minimum river length
 	byte   river_route_random;               ///< the amount of randomicity for the route finding
 	byte   amount_of_rivers;                 ///< the amount of rivers
-	byte   amount_of_rocks;                  ///< the amoutn of rocks
+	uint8  amount_of_rocks;                  ///< the amoutn of rocks
 };
 
 /** Settings related to construction in-game */

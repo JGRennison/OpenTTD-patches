@@ -1459,8 +1459,8 @@ STR_CONFIG_SETTING_VARIETY                                      :Variety distrib
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :(TerraGenesis only) Control whether the map contains both mountainous and flat areas. Since this only makes the map flatter, other settings should be set to mountainous
 STR_CONFIG_SETTING_RIVER_AMOUNT                                 :River amount: {STRING2}
 STR_CONFIG_SETTING_RIVER_AMOUNT_HELPTEXT                        :Choose how many rivers to generate
-STR_CONFIG_SETTING_ROCKS_AMOUNT                                 :Rocks amount: {NUM}
-STR_CONFIG_SETTING_ROCKS_AMOUNT_HELPTEXT                        :Choose how many rocky patches to generate
+STR_CONFIG_SETTING_ROCKS_AMOUNT                                 :Rocks amount: {STRING}
+STR_CONFIG_SETTING_ROCKS_AMOUNT_HELPTEXT                        :Determines the size of rocky patches. High values can cover a significant portion of the map.
 STR_CONFIG_SETTING_TREE_PLACER                                  :Tree placer algorithm: {STRING2}
 STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT                         :Choose the distribution of trees on the map: 'Original' plants trees uniformly scattered, 'Improved' plants them in groups
 STR_CONFIG_SETTING_TREE_PLACER_NONE                             :None
