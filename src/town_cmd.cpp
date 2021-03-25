@@ -1978,7 +1978,14 @@ void UpdateTownRadius(Town *t)
 		{121, 81,  0, 49, 36}, // 88
 	};
 
-	if (t->cache.num_houses < 92) {
+	if (_settings_game.economy.town_zone_calc_mode) {
+		int mass = t->cache.num_houses / 8;
+		t->cache.squared_town_zone_radius[0] = mass * _settings_game.economy.town_zone_0_mult;
+		t->cache.squared_town_zone_radius[1] = mass * _settings_game.economy.town_zone_1_mult;
+		t->cache.squared_town_zone_radius[2] = mass * _settings_game.economy.town_zone_2_mult;
+		t->cache.squared_town_zone_radius[3] = mass * _settings_game.economy.town_zone_3_mult;
+		t->cache.squared_town_zone_radius[4] = mass * _settings_game.economy.town_zone_4_mult;
+	} else if (t->cache.num_houses < 92) {
 		memcpy(t->cache.squared_town_zone_radius, _town_squared_town_zone_radius_data[t->cache.num_houses / 4], sizeof(t->cache.squared_town_zone_radius));
 	} else {
 		int mass = t->cache.num_houses / 8;
