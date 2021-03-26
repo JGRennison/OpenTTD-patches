@@ -482,9 +482,12 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 								has_status = v->current_order.IsType(OT_GOTO_DEPOT);
 								break;
 
-							case TRTSVF_LOADING:
-								has_status = v->current_order.IsType(OT_LOADING) || v->current_order.IsType(OT_LOADING_ADVANCE);
+							case TRTSVF_LOADING: {
+								extern const Order *_choose_train_track_saved_current_order;
+								const Order *o = (_choose_train_track_saved_current_order != nullptr) ? _choose_train_track_saved_current_order : &(v->current_order);
+								has_status = o->IsType(OT_LOADING) || o->IsType(OT_LOADING_ADVANCE);
 								break;
+							}
 
 							case TRTSVF_WAITING:
 								has_status = v->current_order.IsType(OT_WAITING);

@@ -3597,6 +3597,8 @@ static bool TryReserveSafeTrack(const Train *v, TileIndex tile, Trackdir td, boo
 	}
 }
 
+const Order *_choose_train_track_saved_current_order = nullptr;
+
 /** This class will save the current order of a vehicle and restore it on destruction. */
 class VehicleOrderSaver {
 private:
@@ -3608,6 +3610,7 @@ private:
 	VehicleOrderID old_impl_index;
 	VehicleOrderID old_tt_index;
 	bool           suppress_implicit_orders;
+	bool           clear_saved_order_ptr;
 
 public:
 	VehicleOrderSaver(Train *_v) :
@@ -3620,6 +3623,12 @@ public:
 		old_tt_index(_v->cur_timetable_order_index),
 		suppress_implicit_orders(HasBit(_v->gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS))
 	{
+		if (_choose_train_track_saved_current_order == nullptr) {
+			_choose_train_track_saved_current_order = &(this->old_order);
+			this->clear_saved_order_ptr = true;
+		} else {
+			this->clear_saved_order_ptr = false;
+		}
 	}
 
 	~VehicleOrderSaver()
@@ -3631,6 +3640,7 @@ public:
 		this->v->cur_implicit_order_index = this->old_impl_index;
 		this->v->cur_timetable_order_index = this->old_tt_index;
 		SB(this->v->gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS, 1, suppress_implicit_orders ? 1: 0);
+		if (this->clear_saved_order_ptr) _choose_train_track_saved_current_order = nullptr;
 	}
 
 	/**
