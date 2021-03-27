@@ -101,6 +101,7 @@ static const CmdStruct _cmd_structs[] = {
 	{"DATE_WALLCLOCK_ISO",        EmitSingleChar, SCC_DATE_WALLCLOCK_ISO,           1, -1, C_NONE},
 
 	{"TIME_HHMM",         EmitSingleChar, SCC_TIME_HHMM,          1, -1, C_NONE},
+	{"TT_TICKS",          EmitSingleChar, SCC_TT_TICKS,           1, -1, C_NONE},
 
 	{"STRING",            EmitSingleChar, SCC_STRING,             1, -1, C_CASE | C_GENDER},
 	{"RAW_STRING",        EmitSingleChar, SCC_RAW_STRING_POINTER, 1, -1, C_NONE | C_GENDER},

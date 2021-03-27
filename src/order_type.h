@@ -148,6 +148,7 @@ enum OrderConditionVariable {
 	OCV_CARGO_WAITING_AMOUNT,  ///< Skip based on the amount of a specific cargo waiting at next station
 	OCV_COUNTER_VALUE,      ///< Skip based on counter value
 	OCV_TIME_DATE,          ///< Skip based on current time/date
+	OCV_TIMETABLE,          ///< Skip based on timetable state
 	OCV_END
 };
 
@@ -210,6 +211,12 @@ enum OrderLeaveType {
 	OLT_LEAVE_EARLY_FULL_ANY = 2, ///< Leave as soon as possible, if any cargoes fully loaded
 	OLT_LEAVE_EARLY_FULL_ALL = 3, ///< Leave as soon as possible, if all cargoes fully loaded
 	OLT_END
+};
+
+enum OrderTimetableConditionMode {
+	OTCM_LATENESS            = 0, ///< Test timetable lateness
+	OTCM_EARLINESS           = 1, ///< Test timetable earliness
+	OTCM_END
 };
 
 /**

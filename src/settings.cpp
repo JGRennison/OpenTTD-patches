@@ -1267,6 +1267,12 @@ static bool InvalidateVehTimetableWindow(int32 p1)
 	return true;
 }
 
+static bool ChangeTimetableInTicksMode(int32 p1)
+{
+	SetWindowClassesDirty(WC_VEHICLE_ORDERS);
+	return InvalidateVehTimetableWindow(p1);
+}
+
 static bool UpdateTimeSettings(int32 p1)
 {
 	SetupTimeSettings();

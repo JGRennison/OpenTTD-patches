@@ -1488,6 +1488,29 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				buff = FormatTimeHHMMString(buff, args->GetInt64(SCC_TIME_HHMM), last, next_substr_case_index);
 				break;
 
+			case SCC_TT_TICKS: // {TT_TICKS}
+				if (_settings_client.gui.timetable_in_ticks) {
+					int64 args_array[1] = { args->GetInt64(SCC_TT_TICKS) };
+					StringParameters tmp_params(args_array);
+					buff = FormatString(buff, GetStringPtr(STR_TIMETABLE_TICKS), &tmp_params, last);
+				} else {
+					StringID str = _settings_time.time_in_minutes ? STR_TIMETABLE_MINUTES : STR_TIMETABLE_DAYS;
+					int64 ticks = args->GetInt64(SCC_TT_TICKS);
+					int64 ratio = DATE_UNIT_SIZE;
+					int64 units = ticks / ratio;
+					int64 leftover = ticks % ratio;
+					if (leftover) {
+						int64 args_array[3] = { str, units, leftover };
+						StringParameters tmp_params(args_array);
+						buff = FormatString(buff, GetStringPtr(STR_TIMETABLE_LEFTOVER_TICKS), &tmp_params, last);
+					} else {
+						int64 args_array[1] = { units };
+						StringParameters tmp_params(args_array);
+						buff = FormatString(buff, GetStringPtr(str), &tmp_params, last);
+					}
+				}
+				break;
+
 			case SCC_FORCE: { // {FORCE}
 				assert(_settings_game.locale.units_force < lengthof(_units_force));
 				int64 args_array[1] = {_units_force[_settings_game.locale.units_force].c.ToDisplay(args->GetInt64())};

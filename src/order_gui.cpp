@@ -658,6 +658,7 @@ static const OrderConditionVariable _order_conditional_variable[] = {
 	OCV_TRAIN_IN_SLOT,
 	OCV_COUNTER_VALUE,
 	OCV_TIME_DATE,
+	OCV_TIMETABLE,
 	OCV_PERCENT,
 	OCV_UNCONDITIONALLY,
 };
@@ -756,6 +757,12 @@ static const StringID _order_time_date_dropdown[] = {
 	STR_TRACE_RESTRICT_TIME_MINUTE,
 	STR_TRACE_RESTRICT_TIME_HOUR,
 	STR_TRACE_RESTRICT_TIME_HOUR_MINUTE,
+	INVALID_STRING_ID
+};
+
+static const StringID _order_timetable_dropdown[] = {
+	STR_TRACE_RESTRICT_TIMETABLE_LATENESS,
+	STR_TRACE_RESTRICT_TIMETABLE_EARLINESS,
 	INVALID_STRING_ID
 };
 
@@ -983,6 +990,11 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			} else if (ocv == OCV_TIME_DATE) {
 				SetDParam(0, (order->GetConditionValue() == TRTDVF_HOUR_MINUTE) ? STR_ORDER_CONDITIONAL_TIME_HHMM : STR_ORDER_CONDITIONAL_NUM);
 				SetDParam(2, STR_TRACE_RESTRICT_TIME_MINUTE_ITEM + order->GetConditionValue());
+				SetDParam(3, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator());
+				SetDParam(4, order->GetXData());
+			} else if (ocv == OCV_TIMETABLE) {
+				SetDParam(0, STR_ORDER_CONDITIONAL_TIMETABLE);
+				SetDParam(2, STR_TRACE_RESTRICT_TIMETABLE_LATENESS + order->GetConditionValue());
 				SetDParam(3, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator());
 				SetDParam(4, order->GetXData());
 			} else {
@@ -1239,7 +1251,8 @@ private:
 		/* WID_O_SEL_COND_AUX */
 		DP_COND_AUX_CARGO = 0, ///< Display dropdown widget cargo types
 		DP_COND_TIME_DATE = 1, ///< Display dropdown for current time/date field
-		DP_COND_COUNTER = 2,   ///< Display dropdown widget counters
+		DP_COND_TIMETABLE = 2, ///< Display dropdown for timetable field
+		DP_COND_COUNTER = 3,   ///< Display dropdown widget counters
 
 		/* WID_O_SEL_COND_AUX2 */
 		DP_COND_AUX2_VIA = 0, ///< Display via button
@@ -1913,6 +1926,7 @@ public:
 					bool is_auxiliary_cargo = (ocv == OCV_CARGO_LOAD_PERCENTAGE || ocv == OCV_CARGO_WAITING_AMOUNT);
 					bool is_counter = (ocv == OCV_COUNTER_VALUE);
 					bool is_time_date = (ocv == OCV_TIME_DATE);
+					bool is_timetable = (ocv == OCV_TIMETABLE);
 
 					if (is_cargo) {
 						if (order == nullptr || !CargoSpec::Get(order->GetConditionValue())->IsValid()) {
@@ -1945,6 +1959,9 @@ public:
 					} else if (is_time_date) {
 						this->GetWidget<NWidgetCore>(WID_O_COND_TIME_DATE)->widget_data = STR_TRACE_RESTRICT_TIME_MINUTE_ITEM + order->GetConditionValue();
 						aux_sel->SetDisplayedPlane(DP_COND_TIME_DATE);
+					} else if (is_timetable) {
+						this->GetWidget<NWidgetCore>(WID_O_COND_TIMETABLE)->widget_data = STR_TRACE_RESTRICT_TIMETABLE_LATENESS + order->GetConditionValue();
+						aux_sel->SetDisplayedPlane(DP_COND_TIMETABLE);
 					} else {
 						aux_sel->SetDisplayedPlane(SZSP_NONE);
 					}
@@ -2155,6 +2172,11 @@ public:
 						case OCV_CARGO_LOAD_PERCENTAGE:
 						case OCV_TIME_DATE:
 							value = order->GetXData();
+							break;
+
+						case OCV_TIMETABLE:
+							value = order->GetXData();
+							if (!_settings_client.gui.timetable_in_ticks) value /= DATE_UNIT_SIZE;
 							break;
 
 						case OCV_CARGO_WAITING_AMOUNT:
@@ -2403,6 +2425,12 @@ public:
 				break;
 			}
 
+			case WID_O_COND_TIMETABLE: {
+				ShowDropDownMenu(this, _order_timetable_dropdown, this->vehicle->GetOrder(this->OrderGetSel())->GetConditionValue(),
+						WID_O_COND_TIMETABLE, 0, 0, UINT_MAX);
+				break;
+			}
+
 			case WID_O_REVERSE: {
 				VehicleOrderID sel_ord = this->OrderGetSel();
 				const Order *order = this->vehicle->GetOrder(sel_ord);
@@ -2476,6 +2504,10 @@ public:
 						mask = 0x3C;
 						break;
 
+					case OCV_TIMETABLE:
+						mask = 0xC3;
+						break;
+
 					default:
 						mask = 0xC0;
 						break;
@@ -2491,6 +2523,11 @@ public:
 					case OCV_CARGO_LOAD_PERCENTAGE:
 					case OCV_TIME_DATE:
 						value = order->GetXData();
+						break;
+
+					case OCV_TIMETABLE:
+						value = order->GetXData();
+						if (!_settings_client.gui.timetable_in_ticks) value /= DATE_UNIT_SIZE;
 						break;
 
 					case OCV_CARGO_WAITING_AMOUNT:
@@ -2560,6 +2597,11 @@ public:
 
 				case OCV_COUNTER_VALUE:
 				case OCV_TIME_DATE:
+					value = Clamp(value, 0, 0xFFFF);
+					break;
+
+				case OCV_TIMETABLE:
+					if (!_settings_client.gui.timetable_in_ticks) value *= DATE_UNIT_SIZE;
 					value = Clamp(value, 0, 0xFFFF);
 					break;
 
@@ -2634,6 +2676,10 @@ public:
 				break;
 
 			case WID_O_COND_TIME_DATE:
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 4);
+				break;
+
+			case WID_O_COND_TIMETABLE:
 				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 4);
 				break;
 
@@ -2893,6 +2939,8 @@ static const NWidgetPart _nested_orders_train_widgets[] = {
 													SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_CARGO_TOOLTIP), SetResize(1, 0),
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_TIME_DATE), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP), SetResize(1, 0),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_TIMETABLE), SetMinimalSize(124, 12), SetFill(1, 0),
+															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP), SetResize(1, 0),
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_COUNTER), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP), SetResize(1, 0),
 				EndContainer(),
@@ -3003,6 +3051,8 @@ static const NWidgetPart _nested_orders_widgets[] = {
 													SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_CARGO_TOOLTIP), SetResize(1, 0),
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_TIME_DATE), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP), SetResize(1, 0),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_TIMETABLE), SetMinimalSize(124, 12), SetFill(1, 0),
+															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP), SetResize(1, 0),
 				EndContainer(),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_COND_AUX2),
 					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_O_COND_AUX_VIA), SetMinimalSize(36, 12),

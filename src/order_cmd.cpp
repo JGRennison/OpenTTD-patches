@@ -1783,6 +1783,10 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 					if (data != OCC_IS_TRUE && data != OCC_IS_FALSE && data != OCC_EQUALS && data != OCC_NOT_EQUALS) return CMD_ERROR;
 					break;
 
+				case OCV_TIMETABLE:
+					if (data == OCC_IS_TRUE || data == OCC_IS_FALSE || data == OCC_EQUALS || data == OCC_NOT_EQUALS) return CMD_ERROR;
+					break;
+
 				default:
 					if (data == OCC_IS_TRUE || data == OCC_IS_FALSE) return CMD_ERROR;
 					break;
@@ -1815,6 +1819,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				case OCV_CARGO_WAITING_AMOUNT:
 				case OCV_COUNTER_VALUE:
 				case OCV_TIME_DATE:
+				case OCV_TIMETABLE:
 					if (data >= (1 << 16)) return CMD_ERROR;
 					break;
 
@@ -1837,6 +1842,10 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 				case OCV_TIME_DATE:
 					if (data >= TRTDVF_END) return CMD_ERROR;
+					break;
+
+				case OCV_TIMETABLE:
+					if (data >= OTCM_END) return CMD_ERROR;
 					break;
 
 				default:
@@ -1951,6 +1960,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				bool old_var_was_slot = (order->GetConditionVariable() == OCV_SLOT_OCCUPANCY || order->GetConditionVariable() == OCV_TRAIN_IN_SLOT);
 				bool old_var_was_counter = (order->GetConditionVariable() == OCV_COUNTER_VALUE);
 				bool old_var_was_time = (order->GetConditionVariable() == OCV_TIME_DATE);
+				bool old_var_was_tt = (order->GetConditionVariable() == OCV_TIMETABLE);
 				order->SetConditionVariable((OrderConditionVariable)data);
 
 				OrderConditionComparator occ = order->GetConditionComparator();
@@ -1974,6 +1984,11 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 					case OCV_TIME_DATE:
 						if (!old_var_was_time) order->GetXDataRef() = 0;
 						if (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) order->SetConditionComparator(OCC_EQUALS);
+						break;
+
+					case OCV_TIMETABLE:
+						if (!old_var_was_tt) order->GetXDataRef() = 0;
+						if (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE || occ == OCC_EQUALS || occ == OCC_NOT_EQUALS) order->SetConditionComparator(OCC_LESS_THAN);
 						break;
 
 					case OCV_CARGO_ACCEPTANCE:
@@ -2002,7 +2017,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 						FALLTHROUGH;
 
 					default:
-						if (old_var_was_cargo || old_var_was_slot || old_var_was_counter || old_var_was_time) order->SetConditionValue(0);
+						if (old_var_was_cargo || old_var_was_slot || old_var_was_counter || old_var_was_time || old_var_was_tt) order->SetConditionValue(0);
 						if (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) order->SetConditionComparator(OCC_EQUALS);
 						break;
 				}
@@ -2019,6 +2034,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 					case OCV_TRAIN_IN_SLOT:
 					case OCV_CARGO_LOAD_PERCENTAGE:
 					case OCV_TIME_DATE:
+					case OCV_TIMETABLE:
 						order->GetXDataRef() = data;
 						break;
 
@@ -2819,6 +2835,23 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, boo
 		}
 		case OCV_TIME_DATE: {
 			skip_order = OrderConditionCompare(occ, GetTraceRestrictTimeDateValue(static_cast<TraceRestrictTimeDateValueField>(value)), order->GetXData());
+			break;
+		}
+		case OCV_TIMETABLE: {
+			int tt_value = 0;
+			switch (static_cast<OrderTimetableConditionMode>(value)) {
+				case OTCM_LATENESS:
+					tt_value = v->lateness_counter;
+					break;
+
+				case OTCM_EARLINESS:
+					tt_value = -v->lateness_counter;
+					break;
+
+				default:
+					break;
+			}
+			skip_order = OrderConditionCompare(occ, tt_value, order->GetXData());
 			break;
 		}
 		default: NOT_REACHED();

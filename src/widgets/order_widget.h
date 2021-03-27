@@ -39,6 +39,7 @@ enum OrderWidgets {
 	WID_O_COND_SLOT,                 ///< Choose condition slot.
 	WID_O_COND_COUNTER,              ///< Choose condition counter.
 	WID_O_COND_TIME_DATE,            ///< Choose time/date value.
+	WID_O_COND_TIMETABLE,            ///< Choose timetable value.
 	WID_O_COND_AUX_VIA,              ///< Condition via button.
 	WID_O_RELEASE_SLOT,              ///< Choose slot to release.
 	WID_O_SEL_COND_VALUE,            ///< Widget for conditional value or conditional cargo type.

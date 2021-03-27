@@ -2941,6 +2941,8 @@ STR_TRACE_RESTRICT_TIME_HOUR_MINUTE_ITEM                        :current hour an
 STR_TRACE_RESTRICT_TIME_MINUTE_SHORT                            :minute
 STR_TRACE_RESTRICT_TIME_HOUR_SHORT                              :hour
 STR_TRACE_RESTRICT_TIME_HOUR_MINUTE_SHORT                       :hour and minute
+STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :lateness
+STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :earliness
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Value
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Routefinding restriction
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Routefinding restriction - shared by {COMMA} signals
@@ -4936,6 +4938,7 @@ STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :Cargo load perc
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :Waiting cargo amount
 STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :Counter value
 STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :Current time/date
+STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :Timetable state
 
 STR_ORDER_CONDITIONAL_REQUIRES_SERVICE_ORDER                    :Requires service {STRING}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_ORDER                       :Next station {STRING} {STRING} waiting
@@ -4960,6 +4963,7 @@ STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}The carg
 STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}The train slot to check the occupancy of
 STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP                           :{BLACK}The counter to check the value of
 STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP                         :{BLACK}The current time/date field to check the value of
+STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP                         :{BLACK}The timetable field to check the value of
 STR_ORDER_CONDITIONAL_VALUE_CAPT                                :{WHITE}Enter value to compare against
 
 STR_ORDER_CONDITIONAL_VIA                                       :{BLACK}Via
@@ -5110,6 +5114,7 @@ STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :Jump to order {
 STR_ORDER_CONDITIONAL_COUNTER                                   :Jump to order {COMMA} when value of {TRCOUNTER} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :Jump to order {COMMA} when value of {PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_TIME_HHMM                                 :Jump to order {COMMA} when {STRING} {STRING} {TIME_HHMM}
+STR_ORDER_CONDITIONAL_TIMETABLE                                 :Jump to order {COMMA} when {STRING} {STRING} {TT_TICKS}
 
 STR_ORDER_RELEASE_SLOT                                          :Release slot: {STRING1}
 
