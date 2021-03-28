@@ -1461,6 +1461,8 @@ STR_CONFIG_SETTING_RIVER_AMOUNT                                 :River amount: {
 STR_CONFIG_SETTING_RIVER_AMOUNT_HELPTEXT                        :Choose how many rivers to generate
 STR_CONFIG_SETTING_ROCKS_AMOUNT                                 :Rocks amount: {STRING}
 STR_CONFIG_SETTING_ROCKS_AMOUNT_HELPTEXT                        :Determines the size of rocky patches. High values can cover a significant portion of the map.
+STR_CONFIG_SETTING_HEIGHT_ROCKS                                 :Rocks height modifier: {STRING}
+STR_CONFIG_SETTING_HEIGHT_ROCKS_HELPTEXT                        :Determines how much rocky patch distribution is affected by height. This is cumulative with the Rocks Amount setting and works best when the Rocks amount setting is set to lower values.
 STR_CONFIG_SETTING_TREE_PLACER                                  :Tree placer algorithm: {STRING2}
 STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT                         :Choose the distribution of trees on the map: 'Original' plants trees uniformly scattered, 'Improved' plants them in groups
 STR_CONFIG_SETTING_TREE_PLACER_NONE                             :None

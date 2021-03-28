@@ -376,6 +376,7 @@ struct GameCreationSettings {
 	byte   river_route_random;               ///< the amount of randomicity for the route finding
 	byte   amount_of_rivers;                 ///< the amount of rivers
 	uint8  amount_of_rocks;                  ///< the amount of rocks
+	uint8  height_affects_rocks;              ///< the affect that map height has on rocks
 };
 
 /** Settings related to construction in-game */
