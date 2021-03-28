@@ -2,6 +2,34 @@
 
 * * *
 
+### v0.40.5 (2021-03-29)
+* Fix through load crash when the rearmost unit of a train is longer than the whole platform and has no cargo capacity.
+* Realistic braking:
+  * Fix crash which could occur when a command caused multiple reserved signals to be unreserved.
+  * Fix unnecessary braking when leaving station with order without non-stop flag.
+  * Fix building over existing stations bypassing realistic braking moving train restrictions.
+  * Fix train overshot station advice message being shown to all companies.
+  * Improve braking behaviour when descending slopes.
+  * Increase signal sighting distance (how close the train needs to get to a signal before the driver can "see" it).
+* Map generation:
+  * Allow configuring the height at which rainforests start in the sub-tropic climate.
+  * Allow configuring the size of rocky patches and how the size of rocky patches increases with height.
+  * Add "very many" and "extremely many" modes for the number of rivers to generate.
+  * Add settings to control river and lake generation parameters, and how rivers interact with deserts in the sub-tropic climate.
+* Fix flickering of polyrail measurement tooltip.
+* Fix routing restriction train is loading status condition incorrectly evaluating as false when predicting future orders.
+* Add settings to customise the size of town zones.
+* Allow clicking the money text in the cheats window to enter a quantity.
+* Allow shift-clicking on borrow/repay money buttons to enter a quantity.
+* Add setting to disable new vehicles being introduced after a given year.
+* Add setting to enable non-admin multiplayer clients to rename towns.
+* Add timetable lateness/earliness conditional order.
+* Add additional YAPF pathfinder penalty when reversing at a waypoint which is already reserved.
+* Fix save/load errors which could occur on some GCC versions.
+* Fix Windows crash log dialog not appearing for crashes not on the main thread.
+* Packaging: Fix various issues with the package metadata for Debian/Ubuntu .deb files.
+* Add Korean translations by TELK.
+
 ### v0.40.4 (2021-03-07)
 * Fix crash when removing/upgrading airport with hangar window open.
 * Fix compiling as a dedicated server.
