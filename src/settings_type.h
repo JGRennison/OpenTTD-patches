@@ -372,9 +372,14 @@ struct GameCreationSettings {
 	uint16 custom_town_number;               ///< manually entered number of towns
 	byte   variety;                          ///< variety level applied to TGP
 	byte   custom_sea_level;                 ///< manually entered percentage of water in the map
-	byte   min_river_length;                 ///< the minimum river length
-	byte   river_route_random;               ///< the amount of randomicity for the route finding
+	uint8  min_river_length;                 ///< the minimum river length
+	uint8  river_route_random;               ///< the amount of randomicity for the route finding
 	byte   amount_of_rivers;                 ///< the amount of rivers
+	bool   rivers_top_of_hill;               ///< do rivers require starting near the tops of hills?
+	uint8  river_tropics_width;              ///< the configured width of tropics around rivers
+	uint8  lake_size;                        ///< how large can lakes get?
+	bool   lakes_allowed_in_deserts;         ///< are lakes allowed in deserts?
+
 };
 
 /** Settings related to construction in-game */

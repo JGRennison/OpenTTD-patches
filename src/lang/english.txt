@@ -1109,6 +1109,8 @@ STR_RIVERS_NONE                                                 :None
 STR_RIVERS_FEW                                                  :Few
 STR_RIVERS_MODERATE                                             :Medium
 STR_RIVERS_LOT                                                  :Many
+STR_RIVERS_LOTS                                                 :{RED}A Bit More
+STR_RIVERS_LOTSS                                                :{RED}About a Few
 
 STR_DISASTER_NONE                                               :None
 STR_DISASTER_REDUCED                                            :Reduced
@@ -1457,6 +1459,18 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Rough
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Very Rough
 STR_CONFIG_SETTING_VARIETY                                      :Variety distribution: {STRING2}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :(TerraGenesis only) Control whether the map contains both mountainous and flat areas. Since this only makes the map flatter, other settings should be set to mountainous
+STR_CONFIG_SETTING_RIVER_MIN_LENGTH                             :River min length: {STRING}
+STR_CONFIG_SETTING_RIVER_MIN_LENGTH_HELPTEXT                    :Minimum length of rivers. This also controls the creation of lakes.
+STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM                           :River route randomness: {STRING}
+STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM_HELPTEXT                  :Choose how random a rivers path may be.
+STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL                           :Rivers require their Springs to generate at the top of hills: {STRING}
+STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL_HELPTEXT                  :Choose whether rivers require their springs to generate towards the top of hills.
+STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH                          :Tropics width around rivers: {STRING}
+STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH_HELPTEXT                 :Controls the width of the tropic zone that surrounds rivers in sub-tropic landscape.
+STR_CONFIG_SETTING_LAKE_SIZE                                    :Size of lakes: {STRING}
+STR_CONFIG_SETTING_LAKE_SIZE_HELPTEXT                           :Controls the size of lakes that are generated along rivers.
+STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS                     :Lakes can be generated in Sub-Tropic climate deserts: {STRING}
+STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS_HELPTEXT            :Choose whether the lakes that spawn along rivers are allowed in deserts.
 STR_CONFIG_SETTING_RIVER_AMOUNT                                 :River amount: {STRING2}
 STR_CONFIG_SETTING_RIVER_AMOUNT_HELPTEXT                        :Choose how many rivers to generate
 STR_CONFIG_SETTING_TREE_PLACER                                  :Tree placer algorithm: {STRING2}
