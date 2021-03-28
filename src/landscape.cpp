@@ -1277,7 +1277,7 @@ static bool FlowRiver(TileIndex spring, TileIndex begin)
 			/* Remove desert directly around the river tile. */
 			CircularTileSearch(&lakeCenter, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
 			lakeCenter = end;
-			uint range = RandomRange(8) + _settings_game.game_creation.lake_size;
+			uint range = RandomRange(_settings_game.game_creation.lake_size) + 3;
 			CircularTileSearch(&lakeCenter, range, MakeLake, &height);
 			/* Call the search a second time so artefacts from going circular in one direction get (mostly) hidden. */
 			lakeCenter = end;
