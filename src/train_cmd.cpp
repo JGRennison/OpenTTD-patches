@@ -439,8 +439,19 @@ int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, bool up
 	}
 	if (osl == OSL_PLATFORM_THROUGH && overhang > 0) {
 		/* The train is longer than the station, and we can run through the station to load/unload */
+		bool advance_beyond_platform_end = false;
+		if (update_train_state) {
+			/* Only advance beyond platform end if there is at least one vehicle with capacity in the active part of the train.
+			 * This avoids the entire train being beyond the platform end. */
+			for (Train *u = v; u != nullptr; u = u->Next()) {
+				if (u->cargo_cap != 0) {
+					advance_beyond_platform_end = true;
+					break;
+				}
+			}
+		}
 		for (Train *u = v; u != nullptr; u = u->Next()) {
-			if (update_train_state && overhang > 0 && !HasBit(u->flags, VRF_BEYOND_PLATFORM_END) && !u->IsArticulatedPart()) {
+			if (advance_beyond_platform_end && overhang > 0 && !HasBit(u->flags, VRF_BEYOND_PLATFORM_END) && !u->IsArticulatedPart()) {
 				bool skip = true;
 				for (const Train *part = u; part != nullptr; part = part->HasArticulatedPart() ? part->GetNextArticulatedPart() : nullptr) {
 					if (part->cargo_cap != 0) {
