@@ -375,6 +375,10 @@ struct GameCreationSettings {
 	byte   min_river_length;                 ///< the minimum river length
 	byte   river_route_random;               ///< the amount of randomicity for the route finding
 	byte   amount_of_rivers;                 ///< the amount of rivers
+	bool   rivers_top_of_hill;               ///< do rivers require starting near the tops of hills?
+	uint8  river_tropics_width;              ///< the configured width of tropics around rivers
+	uint8  lake_size;                        ///< how large can lakes get?
+	bool   lakes_allowed_in_deserts;         ///< are lakes allowed in deserts?
 	uint8  amount_of_rocks;                  ///< the amount of rocks
 	uint8  height_affects_rocks;             ///< the affect that map height has on rocks
 };
