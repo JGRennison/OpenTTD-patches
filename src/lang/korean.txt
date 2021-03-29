@@ -1109,6 +1109,8 @@ STR_RIVERS_NONE                                                 :없음
 STR_RIVERS_FEW                                                  :적게
 STR_RIVERS_MODERATE                                             :적당히
 STR_RIVERS_LOT                                                  :많이
+STR_RIVERS_VERY_MANY                                            :{RED}매우 많이
+STR_RIVERS_EXTREMELY_MANY                                       :{RED}아주 극히 많이
 
 STR_DISASTER_NONE                                               :고장 안남
 STR_DISASTER_REDUCED                                            :적음
@@ -1211,6 +1213,8 @@ STR_CONFIG_SETTING_CITY_APPROVAL                                :지역 개발�
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :회사가 유발하는 소음과 환경 파괴가 회사에 대한 도시의 평가치와 향후 해당 지역에서 건설하는 행동에 얼마나 영향을 미칠지 선택하세요
 STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER                      :멀티플레이 유저들이 돈 치트를 사용할 수 있게 허용: {STRING}
 STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER_HELPTEXT             :이 설정을 켜면, 관리자가 아닌 멀티플레이 유저가 돈 치트를 사용할 수 있습니다. 돈 치트는 싱글플레이 모드에서는 언제나 사용 가능하며, 서버 관리자는 멀티플레이 모드에서도 사용 가능합니다.
+STR_CONFIG_SETTING_RENAME_TOWNS_MULTIPLAYER                     :멀티플레이 유저들이 도시 이름을 바꿀 수 있게 허용: {STRING}
+STR_CONFIG_SETTING_RENAME_TOWNS_MULTIPLAYER_HELPTEXT            :이 설정을 켜면, 관리자나 관전자가 아닌 멀티플레이 유저가 도시 이름을 바꿀 수 있습니다. 싱글플레이에서나 멀티플레이의 관리자는 도시 이름을 항상 변경할 수 있습니다.
 
 STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :최대 지형 높이: {STRING}
 STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :지도에 생성되는 산이 가질 수 있는 최대 높이를 설정합니다.
@@ -1359,6 +1363,10 @@ STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER                     :이 연도 이�
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_HELPTEXT            :이 연도 이후에 퇴역하는 차량은 계속 사용할 수 있게 됩니다.
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_VALUE               :{NUM}
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_ZERO                :끄기
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER                  :이 연도 이후 도입되는 차량 비활성화: {STRING}
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_HELPTEXT         :이 연도 또는 그 이후에 도입되는 차량을 도입하지 않습니다.
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_VALUE            :{NUM}
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_ZERO             :끄기
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE                            :차량이 낡으면 차량을 자동으로 교체: {STRING}
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE_HELPTEXT                   :이 설정을 켜면, 제한 수명에 다다른 차량이 교체 조건을 만족할 경우 자동으로 차량을 교체할 수 있게 됩니다.
 STR_CONFIG_SETTING_AUTORENEW_MONTHS                             :차량이 최대 수명의 {STRING}이면 자동 교체
@@ -1441,6 +1449,8 @@ STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE                        :석유 관련 �
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :정유 공장과 유전이 맵 가장자리에서 얼마나 멀리 떨어진 곳까지 건설될 수 있는지를 나타냅니다. 섬 맵에서는 이 설정을 이용해서 해당 산업 시설이 해안에 가까이 있도록 조정할 수 있습니다. 256칸보다 큰 맵의 경우에는 이 값은 더 크게 조정됩니다.
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT                              :설선 고도: {STRING}
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :아한대 기후의 설선 고도를 조절합니다. 눈은 산업시설의 생성과 도시 성장에 영향을 미칩니다.
+STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT                        :열대우림 선 높이: {STRING}
+STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT_HELPTEXT               :아열대 기후에서 어느 높이에서 열대우림이 시작할지를 조절합니다. 열대우림은 산업 시설과 도시 성장에도 영향을 미칩니다.
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :지형의 거친 정도: {STRING}
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(천지창조 전용) 언덕의 빈도수를 선택합니다. 평탄한 지형은 개수가 적고 넓게 퍼진 언덕을 만듭니다. 거친 지형은 똑같아 보일 수 있는 많은 언덕이 생기게 됩니다.
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :매우 부드럽게
@@ -1449,8 +1459,24 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :거칠게
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :매우 거칠게
 STR_CONFIG_SETTING_VARIETY                                      :산세 험준도: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :(천지창조 전용) 지도가 산지와 평지를 모두 갖도록 만들 것인 지를 결정합니다. 이 설정은 지형을 더 평평하게 만드므로, 다른 설정은 '산'으로 설정하시기 바랍니다.
+STR_CONFIG_SETTING_RIVER_MIN_LENGTH                             :강 최소 높이: {STRING}
+STR_CONFIG_SETTING_RIVER_MIN_LENGTH_HELPTEXT                    :강의 최소 높이입니다. 이 설정은 호수 생성에도 영향을 미칩니다.
+STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM                           :강 흐름 무작위성: {STRING}
+STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM_HELPTEXT                  :강의 흐름을 얼마나 무작위로 만들지 결정합니다.
+STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL                           :강은 언덕 꼭대기에 샘이 필요함: {STRING}
+STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL_HELPTEXT                  :강이 언덕 꼭대기를 향해 생성되도록 샘의 생성 유무를 설정합니다.
+STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH                          :강 주변의 열대 폭: {STRING}
+STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH_HELPTEXT                 :아열대 기후에서 강 주변의 열대 지역의 폭을 설정합니다.
+STR_CONFIG_SETTING_LAKE_SIZE                                    :호수 크기: {STRING}
+STR_CONFIG_SETTING_LAKE_SIZE_HELPTEXT                           :강을 따라 생성될 호수의 크기를 설정합니다.
+STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS                     :아열대 기후에서 호수가 만들어질 수 있음: {STRING}
+STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS_HELPTEXT            :사막에서 강을 따라 호수가 생길 수 있는지 설정합니다.
 STR_CONFIG_SETTING_RIVER_AMOUNT                                 :강의 양: {STRING}
 STR_CONFIG_SETTING_RIVER_AMOUNT_HELPTEXT                        :강을 얼마나 만들지 선택하세요
+STR_CONFIG_SETTING_ROCKS_AMOUNT                                 :바위 더미 크기: {STRING}
+STR_CONFIG_SETTING_ROCKS_AMOUNT_HELPTEXT                        :바위 더미의 크기를 결정합니다. 값을 높게 설정하면 지도의 많은 부분을 바위가 덮을 것입니다.
+STR_CONFIG_SETTING_HEIGHT_ROCKS                                 :바위 더미의 크기가 커질 높이: {STRING}
+STR_CONFIG_SETTING_HEIGHT_ROCKS_HELPTEXT                        :바위 더미의 크기가 높이에 따라 얼마나 커질지 설정합니다. 이 설정은 바위 더미 크기 설정과 함께 누적되어 적용되고 바위 크기 설정이 낮을 값으로 설정되어 있을 때 가장 잘 작동합니다.
 STR_CONFIG_SETTING_TREE_PLACER                                  :나무 배치 알고리즘: {STRING}
 STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT                         :지도의 나무 분포 형식을 선택하세요. '오리지널'을 선택하면 나무가 고르게 분포되고, '향상됨'을 선택하면 나무가 군락을 이루게 됩니다.
 STR_CONFIG_SETTING_TREE_PLACER_NONE                             :없음
@@ -1880,6 +1906,19 @@ STR_CONFIG_SETTING_TOWN_GROWTH                                  :도시 성장 �
 STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT                         :도시의 성장 속도를 설정합니다.
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED                :도시의 화물 수송량이 도시 성장 속도에 미치는 영향: {STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED_HELPTEXT       :지난 달의 도시 화물 수송량이 도시 성장 속도에 미치는 영향에 대한 백분율입니다.
+STR_CONFIG_SETTING_TOWN_ZONES                                   :{ORANGE}사용자 도시 영역
+STR_CONFIG_SETTING_TOWN_ZONE_CALC_MODE                          :사용자 도시 영역 계산 사용: {STRING}
+STR_CONFIG_SETTING_TOWN_ZONE_CALC_MODE_HELPTEXT                 :도시가 생성한 도시 구역의 크기를 수동으로 설정할 수 있습니다. 사용자 도시 구역 설정의 기본값은 기본 도시 성장과 매우 비슷합니다. 일부 구역은 조금만 바꿔도 되지만 구역 0은 특히 크게 지정하면 효과를 크게 볼 수 있습니다.
+STR_CONFIG_SETTING_TOWN_ZONE_0_MULT                             :구역 0에 적용할 계수: {STRING}
+STR_CONFIG_SETTING_TOWN_ZONE_0_MULT_HELPTEXT                    :구역 0(인도가 없는 최외곽 도로)에 적용할 계수값입니다. 이 값은 크게 주면 효과를 크게 볼 수 있습니다.
+STR_CONFIG_SETTING_TOWN_ZONE_1_MULT                             :구역 1에 적용할 계수: {STRING}
+STR_CONFIG_SETTING_TOWN_ZONE_1_MULT_HELPTEXT                    :구역 1(인도가 있는 외부 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
+STR_CONFIG_SETTING_TOWN_ZONE_2_MULT                             :구역 2에 적용할 계수: {STRING}
+STR_CONFIG_SETTING_TOWN_ZONE_2_MULT_HELPTEXT                    :구역 2(인도가 있는 외부 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
+STR_CONFIG_SETTING_TOWN_ZONE_3_MULT                             :구역 3에 적용할 계수: {STRING}
+STR_CONFIG_SETTING_TOWN_ZONE_3_MULT_HELPTEXT                    :구역 3(가로수가 있는 도로의 내부 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
+STR_CONFIG_SETTING_TOWN_ZONE_4_MULT                             :구역 4에 적용할 계수: {STRING}
+STR_CONFIG_SETTING_TOWN_ZONE_4_MULT_HELPTEXT                    :구역 4(가로등이 있는 최내곽 도로 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :매우 느림
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :더 느림
 STR_CONFIG_SETTING_TOWN_GROWTH_NONE                             :없음
@@ -1993,6 +2032,7 @@ STR_CONFIG_SETTING_ENVIRONMENT                                  :{ORANGE}환경
 STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :{ORANGE}지역 당국
 STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :{ORANGE}도시
 STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :{ORANGE}산업시설
+STR_CONFIG_SETTING_GENWORLD_RIVERS_LAKES                        :{ORANGE}강 & 호수
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :{ORANGE}화물 분배
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST_PER_CARGO_OVERRIDE     :{ORANGE}화물 분배 - 화물별
 STR_CONFIG_SETTING_ENVIRONMENT_TREES                            :{ORANGE}나무
@@ -2173,6 +2213,7 @@ STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE                    :온대 기후
 STR_CHEAT_SWITCH_CLIMATE_SUB_ARCTIC_LANDSCAPE                   :아한대 기후
 STR_CHEAT_SWITCH_CLIMATE_SUB_TROPICAL_LANDSCAPE                 :아열대 기후
 STR_CHEAT_SWITCH_CLIMATE_TOYLAND_LANDSCAPE                      :장난감나라
+STR_CHEAT_EDIT_MONEY_QUERY_CAPT                                 :{WHITE}돈을 늘리거나 줄입니다.
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}날짜 변경: {ORANGE}{DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}현재의 연도를 변경
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}1차 산업시설 생산량 조절 허용: {ORANGE}{STRING}
@@ -2919,6 +2960,8 @@ STR_TRACE_RESTRICT_TIME_HOUR_MINUTE_ITEM                        :현재 시&분
 STR_TRACE_RESTRICT_TIME_MINUTE_SHORT                            :분
 STR_TRACE_RESTRICT_TIME_HOUR_SHORT                              :시
 STR_TRACE_RESTRICT_TIME_HOUR_MINUTE_SHORT                       :시분
+STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :지연
+STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :조착
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}값
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}경로 탐색 제한
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}경로 탐색 제한 - {COMMA}개의 신호기와 공유
@@ -3579,6 +3622,9 @@ STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}최대 �
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}설선 고도:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}설선 고도를 1칸 높입니다
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}설선 고도를 1칸 낮춥니다
+STR_MAPGEN_RAINFOREST_LINE_HEIGHT                               :{BLACK}열대 우림 고도:
+STR_MAPGEN_RAINFOREST_LINE_UP                                   :{BLACK}열대 우림의 고도를 1칸 높입니다
+STR_MAPGEN_RAINFOREST_LINE_DOWN                                 :{BLACK}열대 우림의 고도를 1칸 낮춥니다
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}지형 만들기:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}지형 종류:
 STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}해수면:
@@ -3605,8 +3651,9 @@ STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}크기:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 STR_MAPGEN_TOO_MANY_TILES_MESSAGE                               :{YELLOW}지도에 너무 많은 타일이 존재합니다. 최댓값은 {NUM} 칸 이지만, {NUM} 칸을 선택했습니다.
 
-STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}최대 지형 고도값 변경
+STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}최대 지형 고도 변경
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}설선 고도 변경
+STR_MAPGEN_RAINFOREST_LINE_QUERY_CAPT                           :{WHITE}열대 우림 고도 변경
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}시작 연도 변경
 
 # SE Map generation
@@ -4177,6 +4224,11 @@ STR_FINANCES_BORROW_BUTTON                                      :{BLACK}{CURRENC
 STR_FINANCES_BORROW_TOOLTIP                                     :{BLACK}돈을 빌립니다. CTRL+클릭하면 빌릴 수 있는 만큼 빌립니다
 STR_FINANCES_REPAY_BUTTON                                       :{BLACK}{CURRENCY_LONG} 갚기
 STR_FINANCES_REPAY_TOOLTIP                                      :{BLACK}돈을 갚습니다. CTRL+클릭하면 갚을 수 있는 만큼 갚습니다
+STR_FINANCES_BORROW_TOOLTIP_EXTRA                               :{BLACK}{STRING}. SHIFT+클릭하면 빌릴 양을 직접 입력할 수 있습니다
+STR_FINANCES_REPAY_TOOLTIP_EXTRA                                :{BLACK}{STRING}. SHIFT+클릭하면 갚을 양을 직접 입력할 수 있습니다
+STR_FINANCES_BORROW_QUERY_CAPT                                  :{WHITE}빌릴 돈의 양을 입력하세요
+STR_FINANCES_REPAY_QUERY_CAPT                                   :{WHITE}갚을 돈의 양을 입력하세요
+
 STR_FINANCES_INFRASTRUCTURE_BUTTON                              :{BLACK}기반시설
 
 # Company view
@@ -4906,6 +4958,7 @@ STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :{G=m}화물 적
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :{G=m}화물 대기량
 STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :{G=m}카운터 값
 STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :{G=f}현재 시각/날짜
+STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :{G=f}시간표 상태
 
 STR_ORDER_CONDITIONAL_REQUIRES_SERVICE_ORDER                    :서비스 {STRING}가 필요함
 STR_ORDER_CONDITIONAL_CARGO_WAITING_ORDER                       :다음 역 {STRING} {STRING} 대기 중
@@ -4928,9 +4981,10 @@ STR_ORDER_CONDITIONAL_COMPARATOR_IS_FALSE                       :없을 때
 STR_ORDER_CONDITIONAL_VALUE_TOOLTIP                             :{BLACK}비교 조건에 대한 입력값입니다
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}비교할 화물을 선택하세요
 STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}점유되었는지 확인할 슬롯을 선택하세요
-STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP                           :{BLACK}비교하려는 카운터를 선택하세요
-STR_ORDER_CONDITIONAL_VALUE_CAPT                                :{WHITE}비교할 값을 선택하세요
+STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP                           :{BLACK}비교할 카운터를 선택하세요
 STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP                         :{BLACK}비교할 현재 시각/날짜를 선택하세요
+STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP                         :{BLACK}비교할 시간표 값을 선택하세요
+STR_ORDER_CONDITIONAL_VALUE_CAPT                                :{WHITE}비교할 값을 선택하세요
 
 STR_ORDER_CONDITIONAL_VIA                                       :{BLACK}경유
 STR_ORDER_CONDITIONAL_VIA_TOOLTIP                               :{BLACK}대기 화물량을 확인할 경유 역을 선택하세요
@@ -5080,6 +5134,7 @@ STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :[조건 경로]
 STR_ORDER_CONDITIONAL_COUNTER                                   :[조건 경로] {COMMA}번 경로로 건너뛰기 ({TRCOUNTER}의 값 {STRING} {COMMA}일 때)
 STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :[조건 경로] {COMMA}번 경로로 건너뛰기 ({PUSH_COLOUR}{RED}{STRING}{POP_COLOUR}의 값 {STRING} {COMMA}일 때)
 STR_ORDER_CONDITIONAL_TIME_HHMM                                 :[조건 경로] {COMMA}번 경로로 건너뛰기 ({STRING} {STRING} {TIME_HHMM}일 때)
+STR_ORDER_CONDITIONAL_TIMETABLE                                 :[조건 경로] {COMMA}번 경로로 건너뛰기 ({STRING} {STRING} {TT_TICKS}일 때)
 
 STR_ORDER_RELEASE_SLOT                                          :슬롯 해제: {STRING}
 
