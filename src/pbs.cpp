@@ -678,7 +678,7 @@ PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res, Follo
 		if (HasBit(v->lookahead->flags, TRLF_DEPOT_END)) return PBSTileInfo(tile, trackdir, false);
 		if (HasBit(v->lookahead->flags, TRLF_TB_EXIT_FREE)) {
 			TileIndex exit_tile = GetOtherTunnelBridgeEnd(tile);
-			if (GetTunnelBridgeExitSignalState(exit_tile) == SIGNAL_STATE_GREEN && HasAcrossTunnelBridgeReservation(exit_tile)) {
+			if (IsTunnelBridgeSignalSimulationExit(exit_tile) && GetTunnelBridgeExitSignalState(exit_tile) == SIGNAL_STATE_GREEN && HasAcrossTunnelBridgeReservation(exit_tile)) {
 				tile = exit_tile;
 				DiagDirection exit_dir = ReverseDiagDir(GetTunnelBridgeDirection(exit_tile));
 				trackdir = TrackEnterdirToTrackdir(FindFirstTrack(GetAcrossTunnelBridgeTrackBits(exit_tile)), exit_dir);
