@@ -816,6 +816,7 @@ static int ScanTrainPositionForLookAheadStation(Train *t, TileIndex start_tile)
 
 void TryCreateLookAheadForTrainInTunnelBridge(Train *t)
 {
+	if (IsTunnelBridgeSignalSimulationExitOnly(t->tile)) return;
 	DiagDirection tb_dir = GetTunnelBridgeDirection(t->tile);
 	if (DirToDiagDirAlongAxis(t->direction, DiagDirToAxis(tb_dir)) == tb_dir) {
 		/* going in the right direction, allocate a new lookahead */
