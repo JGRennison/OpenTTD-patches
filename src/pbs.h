@@ -137,6 +137,7 @@ struct TrainReservationLookAhead {
 enum FollowTrainReservationFlags {
 	FTRF_NONE                 = 0,        ///< No flags
 	FTRF_IGNORE_LOOKAHEAD     = 0x01,     ///< No use of cached lookahead
+	FTRF_OKAY_UNUSED          = 0x02,     ///< 'okay' return value is not used
 };
 DECLARE_ENUM_AS_BIT_SET(FollowTrainReservationFlags)
 
