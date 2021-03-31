@@ -657,6 +657,23 @@ static Vehicle *FindTrainOnTrackEnum(Vehicle *v, void *data)
 	return nullptr;
 }
 
+bool ValidateLookAhead(const Train *v)
+{
+	TileIndex tile = v->lookahead->reservation_end_tile;
+	Trackdir trackdir = v->lookahead->reservation_end_trackdir;
+
+	if (HasBit(v->lookahead->flags, TRLF_TB_EXIT_FREE)) {
+		if (!likely(IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && TrackdirEntersTunnelBridge(tile, trackdir))) {
+			return false;
+		}
+	}
+	if (HasBit(v->lookahead->flags, TRLF_DEPOT_END) && !IsRailDepotTile(tile)) return false;
+
+	TrackdirBits trackdirbits = TrackStatusToTrackdirBits(GetTileTrackStatus(tile, TRANSPORT_RAIL, 0));
+	if (!HasTrackdir(trackdirbits, trackdir)) return false;
+
+	return true;
+}
 
 /**
  * Follow a train reservation to the last tile.

@@ -67,10 +67,11 @@ struct ChooseTrainTrackLookAheadState {
 
 /** Flags for ChooseTrainTrack */
 enum ChooseTrainTrackFlags {
-	CTTF_NONE                 = 0,        ///< No flags
-	CTTF_FORCE_RES            = 0x01,     ///< Force a reservation to be made
-	CTTF_MARK_STUCK           = 0x02,     ///< The train has to be marked as stuck when needed
-	CTTF_NON_LOOKAHEAD        = 0x04,     ///< Any lookahead should not be used, if necessary reset the lookahead state
+	CTTF_NONE                   = 0,      ///< No flags
+	CTTF_FORCE_RES              = 0x01,   ///< Force a reservation to be made
+	CTTF_MARK_STUCK             = 0x02,   ///< The train has to be marked as stuck when needed
+	CTTF_NON_LOOKAHEAD          = 0x04,   ///< Any lookahead should not be used, if necessary reset the lookahead state
+	CTTF_NO_LOOKAHEAD_VALIDATE  = 0x08,   ///< Don't validate the lookahead state as it has already been done
 };
 DECLARE_ENUM_AS_BIT_SET(ChooseTrainTrackFlags)
 
@@ -89,6 +90,11 @@ extern TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, c
 static void TrainEnterStation(Train *v, StationID station);
 static void UnreserveBridgeTunnelTile(TileIndex tile);
 static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile);
+
+inline void ClearLookAheadIfInvalid(Train *v)
+{
+	if (v->lookahead != nullptr && !ValidateLookAhead(v)) v->lookahead.reset();
+}
 
 static const byte _vehicle_initial_x_fract[4] = {10, 8, 4,  8};
 static const byte _vehicle_initial_y_fract[4] = { 8, 4, 8, 10};
@@ -2984,6 +2990,8 @@ static FindDepotData FindClosestTrainDepot(Train *v, int max_distance)
 
 	if (IsRailDepotTile(v->tile)) return FindDepotData(v->tile, 0);
 
+	if (v->lookahead != nullptr && !ValidateLookAhead(v)) return FindDepotData();
+
 	PBSTileInfo origin = FollowTrainReservation(v, nullptr, FTRF_OKAY_UNUSED);
 	if (IsRailDepotTile(origin.tile)) return FindDepotData(origin.tile, 0);
 
@@ -3900,7 +3908,7 @@ static void TryLongReserveChooseTrainTrack(Train *v, TileIndex tile, Trackdir td
 				}
 				SetTunnelBridgeExitSignalState(exit_tile, SIGNAL_STATE_GREEN);
 
-				ChooseTrainTrack(v, ft.m_new_tile, ft.m_exitdir, TrackdirBitsToTrackBits(ft.m_new_td_bits), force_res ? CTTF_FORCE_RES : CTTF_NONE, nullptr, lookahead_state);
+				ChooseTrainTrack(v, ft.m_new_tile, ft.m_exitdir, TrackdirBitsToTrackBits(ft.m_new_td_bits), CTTF_NO_LOOKAHEAD_VALIDATE | (force_res ? CTTF_FORCE_RES : CTTF_NONE), nullptr, lookahead_state);
 
 				if (reserved_bits == GetReservedTrackbits(ft.m_new_tile)) {
 					/* next tile is still not reserved, so unreserve exit and restore signal state */
@@ -3921,12 +3929,14 @@ static void TryLongReserveChooseTrainTrack(Train *v, TileIndex tile, Trackdir td
 	CFollowTrackRail ft(v);
 	if (ft.Follow(tile, td) && HasLongReservePbsSignalOnTrackdir(v, ft.m_new_tile, FindFirstTrackdir(ft.m_new_td_bits), !long_enough)) {
 		// We reserved up to a LR signal, reserve past it as well. recursion
-		ChooseTrainTrack(v, ft.m_new_tile, ft.m_exitdir, TrackdirBitsToTrackBits(ft.m_new_td_bits), force_res ? CTTF_FORCE_RES : CTTF_NONE, nullptr, lookahead_state);
+		ChooseTrainTrack(v, ft.m_new_tile, ft.m_exitdir, TrackdirBitsToTrackBits(ft.m_new_td_bits), CTTF_NO_LOOKAHEAD_VALIDATE | (force_res ? CTTF_FORCE_RES : CTTF_NONE), nullptr, lookahead_state);
 	}
 }
 
 static void TryLongReserveChooseTrainTrackFromReservationEnd(Train *v, bool no_reserve_vehicle_tile)
 {
+	ClearLookAheadIfInvalid(v);
+
 	PBSTileInfo origin = FollowTrainReservation(v, nullptr, FTRF_OKAY_UNUSED);
 	if (IsRailDepotTile(origin.tile)) return;
 
@@ -4010,6 +4020,10 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 		/* We have reached a diverging junction with no reservation, yet we have a lookahead state.
 		 * Clear the lookahead state. */
 		v->lookahead.reset();
+	}
+
+	if (!(flags & CTTF_NO_LOOKAHEAD_VALIDATE)) {
+		ClearLookAheadIfInvalid(v);
 	}
 
 	PBSTileInfo   origin = FollowTrainReservation(v, nullptr, FTRF_OKAY_UNUSED);
@@ -4185,6 +4199,8 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 bool TryPathReserve(Train *v, bool mark_as_stuck, bool first_tile_okay)
 {
 	assert(v->IsFrontEngine());
+
+	ClearLookAheadIfInvalid(v);
 
 	if (v->lookahead != nullptr && HasBit(v->lookahead->flags, TRLF_DEPOT_END)) return true;
 
