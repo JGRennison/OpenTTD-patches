@@ -657,6 +657,11 @@ CommandCost CmdStartStopVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 		} else if (v->type != VEH_TRAIN) {
 			v->cur_speed = 0; // trains can stop 'slowly'
 		}
+		if (v->type == VEH_TRAIN && !(v->vehstatus & VS_STOPPED) && v->cur_speed == 0 && Train::From(v)->lookahead != nullptr) {
+			/* Starting train from stationary with a lookahead, refresh it */
+			Train::From(v)->lookahead.reset();
+			FillTrainReservationLookAhead(Train::From(v));
+		}
 		v->MarkDirty();
 		SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
 		SetWindowDirty(WC_VEHICLE_DEPOT, v->tile);
