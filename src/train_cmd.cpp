@@ -70,6 +70,7 @@ enum ChooseTrainTrackFlags {
 	CTTF_NONE                 = 0,        ///< No flags
 	CTTF_FORCE_RES            = 0x01,     ///< Force a reservation to be made
 	CTTF_MARK_STUCK           = 0x02,     ///< The train has to be marked as stuck when needed
+	CTTF_NON_LOOKAHEAD        = 0x04,     ///< Any lookahead should not be used, if necessary reset the lookahead state
 };
 DECLARE_ENUM_AS_BIT_SET(ChooseTrainTrackFlags)
 
@@ -4005,6 +4006,12 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 		best_track = track;
 	}
 
+	if ((flags & CTTF_NON_LOOKAHEAD) && v->lookahead != nullptr) {
+		/* We have reached a diverging junction with no reservation, yet we have a lookahead state.
+		 * Clear the lookahead state. */
+		v->lookahead.reset();
+	}
+
 	PBSTileInfo   origin = FollowTrainReservation(v);
 	PBSTileInfo   res_dest(tile, INVALID_TRACKDIR, false);
 	DiagDirection dest_enterdir = enterdir;
@@ -5080,7 +5087,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 				if (prev == nullptr) {
 					/* Currently the locomotive is active. Determine which one of the
 					 * available tracks to choose */
-					chosen_track = TrackToTrackBits(ChooseTrainTrack(v, gp.new_tile, enterdir, bits, CTTF_MARK_STUCK, nullptr));
+					chosen_track = TrackToTrackBits(ChooseTrainTrack(v, gp.new_tile, enterdir, bits, CTTF_MARK_STUCK | CTTF_NON_LOOKAHEAD, nullptr));
 					assert_msg_tile(chosen_track & (bits | GetReservedTrackbits(gp.new_tile)), gp.new_tile, "0x%X, 0x%X, 0x%X", chosen_track, bits, GetReservedTrackbits(gp.new_tile));
 
 					if (v->force_proceed != TFP_NONE && IsPlainRailTile(gp.new_tile) && HasSignals(gp.new_tile)) {
