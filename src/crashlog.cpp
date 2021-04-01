@@ -497,6 +497,16 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 		buffer += seprintf(buffer, last, "Game loaded at: %i-%02i-%02i (%i, %i), %s",
 				_game_load_cur_date_ymd.year, _game_load_cur_date_ymd.month + 1, _game_load_cur_date_ymd.day, _game_load_date_fract, _game_load_tick_skip_counter, asctime(gmtime(&_game_load_time)));
 	}
+	if (!_network_server) {
+		extern Date   _last_sync_date;
+		extern DateFract _last_sync_date_fract;
+		extern uint8  _last_sync_tick_skip_counter;
+
+		YearMonthDay ymd;
+		ConvertDateToYMD(_last_sync_date, &ymd);
+		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i)",
+				ymd.year, ymd.month + 1, ymd.day, _last_sync_date_fract, _last_sync_tick_skip_counter);
+	}
 	buffer += seprintf(buffer, last, "\n");
 
 	buffer = this->LogOpenTTDVersion(buffer, last);

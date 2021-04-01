@@ -118,6 +118,9 @@ extern uint32 _sync_seed_2;
 #endif
 extern uint64 _sync_state_checksum;
 extern uint32 _sync_frame;
+extern Date   _last_sync_date;
+extern DateFract _last_sync_date_fract;
+extern uint8  _last_sync_tick_skip_counter;
 extern bool _network_first_time;
 /* Vars needed for the join-GUI */
 extern NetworkJoinStatus _network_join_status;

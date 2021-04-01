@@ -76,6 +76,9 @@ uint32 _sync_seed_2;                  ///< Second part of the seed.
 #endif
 uint64 _sync_state_checksum;          ///< State checksum to compare during sync checks.
 uint32 _sync_frame;                   ///< The frame to perform the sync check.
+Date   _last_sync_date;               ///< The game date of the last successfully received sync frame
+DateFract _last_sync_date_fract;      ///< "
+uint8  _last_sync_tick_skip_counter;  ///< "
 bool _network_first_time;             ///< Whether we have finished joining or not.
 bool _network_udp_server;             ///< Is the UDP server started?
 uint16 _network_udp_broadcast;        ///< Timeout for the UDP broadcasts.
@@ -582,6 +585,10 @@ static void NetworkInitialize(bool close_admins = true)
 	_network_first_time = true;
 
 	_network_reconnect = 0;
+
+	_last_sync_date = 0;
+	_last_sync_date_fract = 0;
+	_last_sync_tick_skip_counter = 0;
 }
 
 /** Non blocking connection create to query servers */
