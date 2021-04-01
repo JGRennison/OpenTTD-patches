@@ -3944,6 +3944,7 @@ static ChangeInfoResult AirportChangeInfo(uint airport, int numinfo, int prop, c
 			}
 
 			case 0x0A: { // Set airport layout
+				byte old_num_table = as->num_table;
 				as->num_table = buf->ReadByte(); // Number of layouts
 				free(as->rotation);
 				as->rotation = MallocT<Direction>(as->num_table);
@@ -4002,6 +4003,12 @@ static ChangeInfoResult AirportChangeInfo(uint airport, int numinfo, int prop, c
 						tile_table[j] = CallocT<AirportTileTable>(size);
 						memcpy(tile_table[j], copy_from, sizeof(*copy_from) * size);
 					}
+					/* Free old layouts in the airport spec */
+					for (int j = 0; j < old_num_table; j++) {
+						/* remove the individual layouts */
+						free(as->table[j]);
+					}
+					free(as->table);
 					/* Install final layout construction in the airport spec */
 					as->table = tile_table;
 					free(att);
