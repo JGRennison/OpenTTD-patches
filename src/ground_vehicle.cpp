@@ -104,9 +104,18 @@ void GroundVehicle<T, Type>::CargoChanged()
 	uint32 weight = 0;
 	uint64 mass_offset = 0;
 	uint32 veh_offset = 0;
+	uint16 articulated_weight = 0;
 
 	for (T *u = T::From(this); u != nullptr; u = u->Next()) {
-		uint32 current_weight = u->GetWeight();
+		uint32 current_weight = u->GetCargoWeight();
+		if (u->IsArticulatedPart()) {
+			current_weight += articulated_weight;
+		} else {
+			uint16 engine_weight = u->GetWeightWithoutCargo();
+			uint part_count = u->GetEnginePartsCount();
+			articulated_weight = engine_weight / part_count;
+			current_weight += articulated_weight + (engine_weight % part_count);
+		}
 		if (Type == VEH_TRAIN) {
 			Train::From(u)->tcache.cached_veh_weight = current_weight;
 			mass_offset += current_weight * (veh_offset + (Train::From(u)->gcache.cached_veh_length / 2));

@@ -199,12 +199,12 @@ protected: // These functions should not be called outside acceleration code.
 	}
 
 	/**
-	 * Allows to know the weight value that this vehicle will use.
+	 * Allows to know the weight value that this vehicle will use (excluding cargo).
 	 * @return Weight value from the engine in tonnes.
 	 */
-	inline uint16 GetWeight() const
+	inline uint16 GetWeightWithoutCargo() const
 	{
-		uint16 weight = (CargoSpec::Get(this->cargo_type)->weight * this->cargo.StoredCount()) / 16;
+		uint16 weight = 0;
 
 		/* Vehicle weight is not added for articulated parts. */
 		if (!this->IsArticulatedPart()) {
@@ -219,6 +219,25 @@ protected: // These functions should not be called outside acceleration code.
 
 		return weight;
 	}
+
+	/**
+	 * Allows to know the weight value that this vehicle will use (cargo only).
+	 * @return Weight value from the engine in tonnes.
+	 */
+	inline uint16 GetCargoWeight() const
+	{
+		return (CargoSpec::Get(this->cargo_type)->weight * this->cargo.StoredCount()) / 16;
+	}
+
+	/**
+	 * Allows to know the weight value that this vehicle will use.
+	 * @return Weight value from the engine in tonnes.
+	 */
+	inline uint16 GetWeight() const
+	{
+		return this->GetWeightWithoutCargo() + this->GetCargoWeight();
+	}
+
 
 	/**
 	 * Allows to know the tractive effort value that this vehicle will use.

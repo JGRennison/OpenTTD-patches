@@ -69,6 +69,8 @@ struct GroundVehicleAcceleration {
  *
  * virtual uint16      GetPower() const = 0;
  * virtual uint16      GetPoweredPartPower(const T *head) const = 0;
+ * virtual uint16      GetWeightWithoutCargo() const = 0;
+ * virtual uint16      GetCargoWeight() const = 0;
  * virtual uint16      GetWeight() const = 0;
  * virtual byte        GetTractiveEffort() const = 0;
  * virtual byte        GetAirDrag() const = 0;

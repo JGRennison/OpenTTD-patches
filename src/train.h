@@ -312,6 +312,10 @@ protected: // These functions should not be called outside acceleration code.
 		return 0;
 	}
 
+	/**
+	 * Allows to know the weight value that this vehicle will use (excluding cargo).
+	 * @return Weight value from the engine in tonnes.
+	 */
 	inline uint16 GetWeightWithoutCargo() const
 	{
 		uint16 weight = 0;
@@ -330,12 +334,21 @@ protected: // These functions should not be called outside acceleration code.
 	}
 
 	/**
+	 * Allows to know the weight value that this vehicle will use (cargo only).
+	 * @return Weight value from the engine in tonnes.
+	 */
+	inline uint16 GetCargoWeight() const
+	{
+		return this->GetCargoWeight(this->cargo.StoredCount());
+	}
+
+	/**
 	 * Allows to know the weight value that this vehicle will use.
 	 * @return Weight value from the engine in tonnes.
 	 */
 	inline uint16 GetWeight() const
 	{
-		return this->GetWeightWithoutCargo() + this->GetCargoWeight(this->cargo.StoredCount());
+		return this->GetWeightWithoutCargo() + this->GetCargoWeight();
 	}
 
 	/**

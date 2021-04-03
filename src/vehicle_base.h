@@ -1052,6 +1052,17 @@ public:
 		return this->Next();
 	}
 
+	inline uint GetEnginePartsCount() const
+	{
+		uint count = 1;
+		const Vehicle *v = this->Next();
+		while (v != nullptr && v->IsArticulatedPart()) {
+			count++;
+			v = v->Next();
+		}
+		return count;
+	}
+
 	/**
 	 * Get the first part of an articulated engine.
 	 * @return First part of the engine.
