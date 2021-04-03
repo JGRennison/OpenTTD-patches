@@ -151,8 +151,8 @@ class NIHVehicle : public NIHelper {
 		}
 		if (v->type == VEH_TRAIN) {
 			const Train *t = Train::From(v);
-			seprintf(buffer, lastof(buffer), "  T cache: tilt: %u, engines: %u, decel: %u, uncapped decel: %u",
-					t->tcache.cached_tilt, t->tcache.cached_num_engines, t->tcache.cached_deceleration, t->tcache.cached_uncapped_decel);
+			seprintf(buffer, lastof(buffer), "  T cache: tilt: %u, engines: %u, decel: %u, uncapped decel: %u, centre mass: %u",
+					t->tcache.cached_tilt, t->tcache.cached_num_engines, t->tcache.cached_deceleration, t->tcache.cached_uncapped_decel, t->tcache.cached_centre_mass);
 			print(buffer);
 			seprintf(buffer, lastof(buffer), "  T cache: veh weight: %u, user data: %u, curve speed: %u",
 					t->tcache.cached_veh_weight, t->tcache.user_def_data, t->tcache.cached_max_curve_speed);

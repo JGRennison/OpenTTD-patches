@@ -99,6 +99,7 @@ struct TrainCache {
 	/* cached values, recalculated on load and each time a vehicle is added to/removed from the consist. */
 	bool cached_tilt;             ///< train can tilt; feature provides a bonus in curves
 	uint8 cached_num_engines;     ///< total number of engines, including rear ends of multiheaded engines
+	uint16 cached_centre_mass;    ///< Cached position of the centre of mass, from the front
 	uint16 cached_veh_weight;     ///< Cached individual vehicle weight
 	uint16 cached_uncapped_decel; ///< Uncapped cached deceleration for realistic braking lookahead purposes
 	uint8 cached_deceleration;    ///< Cached deceleration for realistic braking lookahead purposes

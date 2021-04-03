@@ -102,16 +102,25 @@ void GroundVehicle<T, Type>::CargoChanged()
 {
 	assert(this->First() == this);
 	uint32 weight = 0;
+	uint64 mass_offset = 0;
+	uint32 veh_offset = 0;
 
 	for (T *u = T::From(this); u != nullptr; u = u->Next()) {
 		uint32 current_weight = u->GetWeight();
-		if (Type == VEH_TRAIN) Train::From(u)->tcache.cached_veh_weight = current_weight;
+		if (Type == VEH_TRAIN) {
+			Train::From(u)->tcache.cached_veh_weight = current_weight;
+			mass_offset += current_weight * (veh_offset + (Train::From(u)->gcache.cached_veh_length / 2));
+			veh_offset += Train::From(u)->gcache.cached_veh_length;
+		}
 		weight += current_weight;
 		/* Slope steepness is in percent, result in N. */
 		u->gcache.cached_slope_resistance = current_weight * u->GetSlopeSteepness() * 100;
 		u->InvalidateImageCache();
 	}
 	ClrBit(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST);
+	if (Type == VEH_TRAIN) {
+		Train::From(this)->tcache.cached_centre_mass = (weight != 0) ? (mass_offset / weight) : (this->gcache.cached_total_length / 2);
+	}
 
 	/* Store consist weight in cache. */
 	this->gcache.cached_weight = std::max(1u, weight);

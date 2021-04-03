@@ -364,6 +364,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 			u->gcache.cached_air_drag = 0;
 			u->gcache.cached_total_length = 0;
 			u->tcache.cached_num_engines = 0;
+			u->tcache.cached_centre_mass = 0;
 			u->tcache.cached_deceleration = 0;
 			u->tcache.cached_uncapped_decel = 0;
 			u->tcache.cached_tilt = false;
@@ -847,8 +848,11 @@ static void LimitSpeedFromLookAhead(int &max_speed, const TrainDecelerationStats
 		if (distance + current_position > position) {
 			/* Speed is too fast, we would overshoot */
 			if (z_delta < 0 && (position - current_position) < stats.t->gcache.cached_total_length) {
-				/* Reduce z delta near target to compensate for target z not taking into account that z varies across the whole train */
-				z_delta = (z_delta * (position - current_position)) / stats.t->gcache.cached_total_length;
+				int effective_length = std::min<int>(stats.t->gcache.cached_total_length, stats.t->tcache.cached_centre_mass * 2);
+				if ((position - current_position) < effective_length) {
+					/* Reduce z delta near target to compensate for target z not taking into account that z varies across the whole train */
+					z_delta = (z_delta * (position - current_position)) / effective_length;
+				}
 			}
 			max_speed = std::min(max_speed, GetRealisticBrakingSpeedForDistance(stats, position - current_position, end_speed, z_delta));
 		}

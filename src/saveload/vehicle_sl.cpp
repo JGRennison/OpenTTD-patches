@@ -1148,6 +1148,7 @@ struct train_venc {
 	GroundVehicleCache gvcache;
 	bool cached_tilt;
 	uint8 cached_num_engines;
+	uint16 cached_centre_mass;
 	uint16 cached_veh_weight;
 	uint16 cached_uncapped_decel;
 	uint8 cached_deceleration;
@@ -1215,6 +1216,7 @@ void Save_VENC()
 			write_gv_cache(t->gcache);
 			SlWriteByte(t->tcache.cached_tilt);
 			SlWriteByte(t->tcache.cached_num_engines);
+			SlWriteByte(t->tcache.cached_centre_mass);
 			SlWriteUint16(t->tcache.cached_veh_weight);
 			SlWriteUint16(t->tcache.cached_uncapped_decel);
 			SlWriteByte(t->tcache.cached_deceleration);
@@ -1275,6 +1277,7 @@ void Load_VENC()
 		read_gv_cache(venc.gvcache);
 		venc.cached_tilt = SlReadByte();
 		venc.cached_num_engines = SlReadByte();
+		venc.cached_centre_mass = SlReadUint16();
 		venc.cached_veh_weight = SlReadUint16();
 		venc.cached_uncapped_decel = SlReadUint16();
 		venc.cached_deceleration = SlReadByte();
@@ -1361,6 +1364,7 @@ void SlProcessVENC()
 		check_gv_cache(t->gcache, venc.gvcache, t);
 		CheckVehicleVENCProp(t->tcache.cached_tilt, venc.cached_tilt, t, "cached_tilt");
 		CheckVehicleVENCProp(t->tcache.cached_num_engines, venc.cached_num_engines, t, "cached_num_engines");
+		CheckVehicleVENCProp(t->tcache.cached_centre_mass, venc.cached_centre_mass, t, "cached_centre_mass");
 		CheckVehicleVENCProp(t->tcache.cached_veh_weight, venc.cached_veh_weight, t, "cached_veh_weight");
 		CheckVehicleVENCProp(t->tcache.cached_uncapped_decel, venc.cached_uncapped_decel, t, "cached_uncapped_decel");
 		CheckVehicleVENCProp(t->tcache.cached_deceleration, venc.cached_deceleration, t, "cached_deceleration");
