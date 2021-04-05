@@ -842,6 +842,12 @@ struct TooltipsWindow : public Window
 					this->delete_next_mouse_loop = true;
 				}
 				break;
+
+			case TCC_EXIT_VIEWPORT: {
+				Window *w = FindWindowFromPt(_cursor.pos.x, _cursor.pos.y);
+				if (w == nullptr || IsPtInWindowViewport(w, _cursor.pos.x, _cursor.pos.y) == nullptr) this->delete_next_mouse_loop = true;
+				break;
+			}
 		}
 	}
 };

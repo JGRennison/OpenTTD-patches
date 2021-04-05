@@ -4869,7 +4869,7 @@ static int CalcHeightdiff(HighLightStyle style, uint distance, TileIndex start_t
 	return (int)(h1 - h0) * TILE_HEIGHT_STEP;
 }
 
-static void ShowLengthMeasurement(HighLightStyle style, TileIndex start_tile, TileIndex end_tile, TooltipCloseCondition close_cond = TCC_NONE, bool show_single_tile_length = false)
+static void ShowLengthMeasurement(HighLightStyle style, TileIndex start_tile, TileIndex end_tile, TooltipCloseCondition close_cond = TCC_EXIT_VIEWPORT, bool show_single_tile_length = false)
 {
 	static const StringID measure_strings_length[] = {STR_NULL, STR_MEASURE_LENGTH, STR_MEASURE_LENGTH_HEIGHTDIFF};
 
@@ -5353,7 +5353,7 @@ static HighLightStyle CalcPolyrailDrawstyle(Point pt, bool dragging)
 	}
 
 	HighLightStyle ret = HT_LINE | (HighLightStyle)TrackdirToTrack(seldir);
-	ShowLengthMeasurement(ret, TileVirtXY(_thd.selstart.x, _thd.selstart.y), TileVirtXY(_thd.selend.x, _thd.selend.y), TCC_NONE, true);
+	ShowLengthMeasurement(ret, TileVirtXY(_thd.selstart.x, _thd.selstart.y), TileVirtXY(_thd.selend.x, _thd.selend.y), TCC_EXIT_VIEWPORT, true);
 	return ret;
 }
 
@@ -5475,7 +5475,7 @@ calc_heightdiff_single_direction:;
 			params[index++] = GetTileMaxZ(t1) * TILE_HEIGHT_STEP;
 			params[index++] = heightdiff;
 			//Show always the measurement tooltip
-			GuiShowTooltips(_thd.GetCallbackWnd(),STR_MEASURE_DIST_HEIGHTDIFF, index, params, TCC_NONE);
+			GuiShowTooltips(_thd.GetCallbackWnd(),STR_MEASURE_DIST_HEIGHTDIFF, index, params, TCC_EXIT_VIEWPORT);
 			break;
 		}
 

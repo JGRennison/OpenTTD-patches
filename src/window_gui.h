@@ -285,6 +285,7 @@ enum TooltipCloseCondition {
 	TCC_NONE,
 	TCC_HOVER_VIEWPORT,
 	TCC_NEXT_LOOP,
+	TCC_EXIT_VIEWPORT,
 };
 
 struct WindowBase {
