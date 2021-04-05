@@ -518,6 +518,9 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :расна
 
 
 
+
+
+
 # Custom currency window
 
 
@@ -636,6 +639,8 @@ STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
 
 
 # Config errors
+
+# Video initalization errors
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
@@ -813,6 +818,7 @@ STR_CONTENT_DETAIL_VERSION                                      :{SILVER}Вер�
 # Content downloading progress window
 
 # Content downloading error messages
+
 
 
 # Transparency settings window

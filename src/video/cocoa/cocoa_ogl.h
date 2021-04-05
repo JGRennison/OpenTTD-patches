@@ -33,6 +33,8 @@ public:
 
 	void ClearSystemSprites() override;
 
+	void PopulateSystemSprites() override;
+
 	bool HasAnimBuffer() override { return true; }
 	uint8 *GetAnimBuffer() override { return this->anim_buffer; }
 
@@ -54,6 +56,9 @@ class FVideoDriver_CocoaOpenGL : public DriverFactoryBase {
 public:
 	FVideoDriver_CocoaOpenGL() : DriverFactoryBase(Driver::DT_VIDEO, 9, "cocoa-opengl", "Cocoa OpenGL Video Driver") {}
 	Driver *CreateInstance() const override { return new VideoDriver_CocoaOpenGL(); }
+
+protected:
+	bool UsesHardwareAcceleration() const override { return true; }
 };
 
 #endif /* VIDEO_COCOA_OGL_H */

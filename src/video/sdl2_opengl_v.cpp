@@ -75,7 +75,6 @@ const char *VideoDriver_SDL_OpenGL::Start(const StringList &param)
 	this->ClientSizeChanged(w, h, true);
 
 	SDL_GL_SetSwapInterval(GetDriverParamBool(param, "vsync") ? 1 : 0);
-	this->draw_threaded = false;
 
 	return nullptr;
 }
@@ -113,6 +112,11 @@ const char *VideoDriver_SDL_OpenGL::AllocateContext()
 	if (this->gl_context == nullptr) return "SDL2: Can't active GL context";
 
 	return OpenGLBackend::Create(&GetOGLProcAddressCallback);
+}
+
+void VideoDriver_SDL_OpenGL::PopulateSystemSprites()
+{
+	OpenGLBackend::Get()->PopulateCursorCache();
 }
 
 void VideoDriver_SDL_OpenGL::ClearSystemSprites()

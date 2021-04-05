@@ -344,7 +344,6 @@ static std::vector<GRFMD5SumState> _grf_md5_pending;
 static std::condition_variable _grf_md5_full_cv;
 static std::condition_variable _grf_md5_empty_cv;
 static std::condition_variable _grf_md5_done_cv;
-static std::atomic<bool> _abort_grf_scan;
 static const uint GRF_MD5_PENDING_MAX = 8;
 
 static void CalcGRFMD5SumFromState(const GRFMD5SumState &state)
@@ -374,7 +373,7 @@ void CalcGRFMD5Thread()
 			_grf_md5_pending.pop_back();
 			lk.unlock();
 			if (full) _grf_md5_full_cv.notify_one();
-			if (!_abort_grf_scan.load(std::memory_order_relaxed)) CalcGRFMD5SumFromState(state);
+			if (!_exit_game) CalcGRFMD5SumFromState(state);
 			lk.lock();
 		}
 	}
@@ -729,7 +728,8 @@ public:
 
 bool GRFFileScanner::AddFile(const std::string &filename, size_t basepath_length, const std::string &tar_filename)
 {
-	if (_abort_grf_scan.load(std::memory_order_relaxed)) return false;
+	/* Abort if the user stopped the game during a scan. */
+	if (_exit_game) return false;
 
 	GRFConfig *c = new GRFConfig(filename.c_str() + basepath_length);
 
@@ -739,21 +739,12 @@ bool GRFFileScanner::AddFile(const std::string &filename, size_t basepath_length
 	}
 
 	this->num_scanned++;
-	const auto now = std::chrono::steady_clock::now();
-	if (now >= this->next_update) {
-		this->next_update = now + std::chrono::milliseconds(MODAL_PROGRESS_REDRAW_TIMEOUT);
 
-		_modal_progress_work_mutex.unlock();
-		_modal_progress_paint_mutex.lock();
-
-		const char *name = nullptr;
-		if (c->name != nullptr) name = GetGRFStringFromGRFText(c->name);
-		if (name == nullptr) name = c->filename;
-		UpdateNewGRFScanStatus(this->num_scanned, name);
-
-		_modal_progress_work_mutex.lock();
-		_modal_progress_paint_mutex.unlock();
-	}
+	const char *name = nullptr;
+	if (c->name != nullptr) name = GetGRFStringFromGRFText(c->name);
+	if (name == nullptr) name = c->filename;
+	UpdateNewGRFScanStatus(this->num_scanned, name);
+	VideoDriver::GetInstance()->GameLoopPause();
 
 	if (!added) {
 		/* File couldn't be opened, or is either not a NewGRF or is a
@@ -781,8 +772,6 @@ static bool GRFSorter(GRFConfig * const &c1, GRFConfig * const &c2)
  */
 void DoScanNewGRFFiles(NewGRFScanCallback *callback)
 {
-	std::unique_lock<std::mutex> lock_work(_modal_progress_work_mutex);
-
 	ClearGRFConfigList(&_all_grfs);
 	TarScanner::DoScan(TarScanner::NEWGRF);
 
@@ -814,13 +803,10 @@ void DoScanNewGRFFiles(NewGRFScanCallback *callback)
 		NetworkAfterNewGRFScan();
 	}
 
-	lock_work.unlock();
-	std::lock_guard<std::mutex> lock_paint(_modal_progress_paint_mutex);
-
 	/* Yes... these are the NewGRF windows */
 	InvalidateWindowClassesData(WC_SAVELOAD, 0, true);
 	InvalidateWindowData(WC_GAME_OPTIONS, WN_GAME_OPTIONS_NEWGRF_STATE, GOID_NEWGRF_RESCANNED, true);
-	if (callback != nullptr) callback->OnNewGRFsScanned();
+	if (!_exit_game && callback != nullptr) callback->OnNewGRFsScanned();
 
 	DeleteWindowByClass(WC_MODAL_PROGRESS);
 	SetModalProgress(false);
@@ -838,20 +824,7 @@ void ScanNewGRFFiles(NewGRFScanCallback *callback)
 	/* Only then can we really start, especially by marking the whole screen dirty. Get those other windows hidden!. */
 	MarkWholeScreenDirty();
 
-	if (!UseThreadedModelProgress() || !VideoDriver::GetInstance()->HasGUI() || !StartNewThread(nullptr, "ottd:newgrf-scan", &DoScanNewGRFFiles, (NewGRFScanCallback *)callback)) { // Without the seemingly superfluous cast, strange compiler errors ensue.
-		_modal_progress_work_mutex.unlock();
-		_modal_progress_paint_mutex.unlock();
-		DoScanNewGRFFiles(callback);
-		_modal_progress_paint_mutex.lock();
-		_modal_progress_work_mutex.lock();
-	} else {
-		UpdateNewGRFScanStatus(0, nullptr);
-	}
-}
-
-void AbortScanNewGRFFiles()
-{
-	_abort_grf_scan.store(true, std::memory_order_relaxed);
+	DoScanNewGRFFiles(callback);
 }
 
 /**

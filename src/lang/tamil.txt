@@ -962,6 +962,7 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}தி�
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}திரை அளவினைத் தேர்ந்தெடுக்கவும்
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :மற்றவை
 
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}இடைமுக அளவு
 
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :சராசரி
@@ -973,6 +974,8 @@ STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}எழ�
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :இயல்பான
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :இரண்டு மடங்கு
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :நான்கு மடங்கு
+
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}அடிப்படை அசைவூட்டம்
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}பயன்படுத்தப்போகும் அடிப்படை அசைவூட்டத்தினை தேர்ந்தெடுக்கவும்
@@ -1570,6 +1573,8 @@ STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... அ�
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... அடிப்படை இசைத் தொகுப்பு '{STRING}' தவிர்கப்பட்டது: கிடைக்கவில்லை
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}நினைவாற்றல் நிறைந்துவிட்டது
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -2065,6 +2070,7 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}அச�
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD க்கு கிராபிக்ஸ் செயல்பட வேண்டும், ஆனால் எதுவும் கண்டுபிடிக்கப்படவில்லை. இந்த கிராபிக்ஸ் பதிவிறக்கம் செய்து நிறுவ OpenTTD ஐ அனுமதிக்கிறீர்களா?
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}ஆம், அசையூட்டங்களை பதிவிறக்கம் செய்
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}இல்லை, OpenTTD-ஐ விட்டு வெளியேறு
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}ஒளி அமைப்புகள்
@@ -2813,13 +2819,10 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{YELLOW}தங�
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} குறிக்கோள்கள்
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}உலகளாவிய குறிக்கோள்கள்
 STR_GOALS_SPECTATOR                                             :உலகளாவிய குறிக்கோள்கள்
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}உலகளாவிய குறிக்கோள்கள்:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- ஏதுமில்லை -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- இதற்கு அமையாது -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}நிறுவனத்தின் குறிக்கோள்கள்:
 
 # Goal question window
 STR_GOAL_QUESTION_CAPTION_QUESTION                              :{BLACK}கேள்வி

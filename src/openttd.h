@@ -113,4 +113,6 @@ void HandleExitGameRequest();
 
 void SwitchToMode(SwitchMode new_mode);
 
+void RequestNewGRFScan(struct NewGRFScanCallback *callback = nullptr);
+
 #endif /* OPENTTD_H */

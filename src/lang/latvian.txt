@@ -1004,6 +1004,7 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Ekrāna 
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Ekrāna izšķirtspējas izvēle
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :Cita
 
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Lietotāja saskarnes lielums
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Lietotāja saskarnes elementu lieluma izvēle
 
@@ -1019,6 +1020,8 @@ STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(automātiski n
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normāls
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Divkāršs izmērs
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Četrkāršs izmērs
+
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Pamata grafikas kopa
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Atlasīt lietošanai pamata grafikas kopu
@@ -1792,6 +1795,8 @@ STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... igno
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Nepietiek atmiņas
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Neizdevās piešķirt {BYTES} spraitu kešam. Spraitu kešs tika samazināts uz {BYTES}. Tas samazinās OpenTTD veiktspēju. Lai samazinātu prasības pret atmiņu, varat mēģināt izslēgt 32bpp grafiku un/vai tuvināšanas līmeņus
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -2321,6 +2326,7 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Trūkst 
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD vajag grafiku, lai strādātu, bet tādu nevarēja atrast. Vai ļaujat OpenTTD lejupielādēt un instalēt tādu grafiku?
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Jā, lejupielādēt grafiku
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Nē, iziet no OpenTTD
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Caurspīdības opcijas
@@ -3198,13 +3204,10 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Piekuku
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} mērķi
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Globālie mērķi
 STR_GOALS_SPECTATOR                                             :Globālie mērķi
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Globālie mērķi:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Nav -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Nav attiecināms -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Uzņēmuma mērķi:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Klikšķināt uz mērķa, lai centrētu galveno skatu uz ražotni/pilsētu/lauciņu. Ctrl+klikšķis atver jaunu skatvietu uz ražotni/pilsētu/lauciņu
 
 # Goal question window

@@ -1036,7 +1036,36 @@ void OpenGLBackend::DrawMouseCursor()
 	_cur_dpi = &_screen;
 	for (uint i = 0; i < _cursor.sprite_count; ++i) {
 		SpriteID sprite = _cursor.sprite_seq[i].sprite;
-		const Sprite *spr = GetSprite(sprite, ST_NORMAL);
+
+		/* Sprites are cached by PopulateCursorCache(). */
+		if (this->cursor_cache.Contains(sprite)) {
+			const Sprite *spr = GetSprite(sprite, ST_NORMAL);
+
+			this->RenderOglSprite((OpenGLSprite *)this->cursor_cache.Get(sprite)->data, _cursor.sprite_seq[i].pal,
+					_cursor.pos.x + _cursor.sprite_pos[i].x + UnScaleByZoom(spr->x_offs, ZOOM_LVL_GUI),
+					_cursor.pos.y + _cursor.sprite_pos[i].y + UnScaleByZoom(spr->y_offs, ZOOM_LVL_GUI),
+					ZOOM_LVL_GUI);
+		}
+	}
+}
+
+void OpenGLBackend::PopulateCursorCache()
+{
+	if (this->clear_cursor_cache) {
+		/* We have a pending cursor cache clear to do first. */
+		this->clear_cursor_cache = false;
+		this->last_sprite_pal = (PaletteID)-1;
+
+		Sprite *sp;
+		while ((sp = this->cursor_cache.Pop()) != nullptr) {
+			OpenGLSprite *sprite = (OpenGLSprite *)sp->data;
+			sprite->~OpenGLSprite();
+			free(sp);
+		}
+	}
+
+	for (uint i = 0; i < _cursor.sprite_count; ++i) {
+		SpriteID sprite = _cursor.sprite_seq[i].sprite;
 
 		if (!this->cursor_cache.Contains(sprite)) {
 			Sprite *old = this->cursor_cache.Insert(sprite, (Sprite *)GetRawSprite(sprite, ST_NORMAL, &SimpleSpriteAlloc, this));
@@ -1046,11 +1075,6 @@ void OpenGLBackend::DrawMouseCursor()
 				free(old);
 			}
 		}
-
-		this->RenderOglSprite((OpenGLSprite *)this->cursor_cache.Get(sprite)->data, _cursor.sprite_seq[i].pal,
-				_cursor.pos.x + _cursor.sprite_pos[i].x + UnScaleByZoom(spr->x_offs, ZOOM_LVL_GUI),
-				_cursor.pos.y + _cursor.sprite_pos[i].y + UnScaleByZoom(spr->y_offs, ZOOM_LVL_GUI),
-				ZOOM_LVL_GUI);
 	}
 }
 
@@ -1059,14 +1083,11 @@ void OpenGLBackend::DrawMouseCursor()
  */
 void OpenGLBackend::ClearCursorCache()
 {
-	this->last_sprite_pal = (PaletteID)-1;
-
-	Sprite *sp;
-	while ((sp = this->cursor_cache.Pop()) != nullptr) {
-		OpenGLSprite *sprite = (OpenGLSprite *)sp->data;
-		sprite->~OpenGLSprite();
-		free(sp);
-	}
+	/* If the game loop is threaded, this function might be called
+	 * from the game thread. As we can call OpenGL functions only
+	 * on the main thread, just set a flag that is handled the next
+	 * time we prepare the cursor cache for drawing. */
+	this->clear_cursor_cache = true;
 }
 
 /**

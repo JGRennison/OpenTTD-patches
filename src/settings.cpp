@@ -1304,6 +1304,13 @@ static bool ZoomMinMaxChanged(int32 p1)
 	return true;
 }
 
+static bool SpriteZoomMinChanged(int32 p1) {
+	GfxClearSpriteCache();
+	/* Force all sprites to redraw at the new chosen zoom level */
+	MarkWholeScreenDirty();
+	return true;
+}
+
 static bool InvalidateSettingsWindow(int32 p1)
 {
 	InvalidateWindowClassesData(WC_GAME_OPTIONS);

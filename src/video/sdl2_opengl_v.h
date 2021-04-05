@@ -24,6 +24,8 @@ public:
 
 	void ClearSystemSprites() override;
 
+	void PopulateSystemSprites() override;
+
 	bool HasAnimBuffer() override { return true; }
 	uint8 *GetAnimBuffer() override { return this->anim_buffer; }
 
@@ -35,8 +37,6 @@ protected:
 	void ReleaseVideoPointer() override;
 	void Paint() override;
 	bool CreateMainWindow(uint w, uint h, uint flags) override;
-
-	void PaintThread() override {}
 
 private:
 	void  *gl_context;  ///< OpenGL context.
@@ -51,4 +51,7 @@ class FVideoDriver_SDL_OpenGL : public DriverFactoryBase {
 public:
 	FVideoDriver_SDL_OpenGL() : DriverFactoryBase(Driver::DT_VIDEO, 8, "sdl-opengl", "SDL OpenGL Video Driver") {}
 	/* virtual */ Driver *CreateInstance() const override { return new VideoDriver_SDL_OpenGL(); }
+
+protected:
+	bool UsesHardwareAcceleration() const override { return true; }
 };

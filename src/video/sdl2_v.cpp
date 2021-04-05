@@ -24,10 +24,6 @@
 #include "sdl2_v.h"
 #include <SDL.h>
 #include <algorithm>
-#include <mutex>
-#if defined(__MINGW32__)
-#include "../3rdparty/mingw-std-threads/mingw.mutex.h"
-#endif
 #ifdef __EMSCRIPTEN__
 #	include <emscripten.h>
 #	include <emscripten/html5.h>
@@ -262,11 +258,6 @@ void VideoDriver_SDL_Base::CheckPaletteAnim()
 
 	this->local_palette = _cur_palette;
 	this->MakeDirty(0, 0, _screen.width, _screen.height);
-}
-
-/* static */ void VideoDriver_SDL_Base::PaintThreadThunk(VideoDriver_SDL_Base *drv)
-{
-	drv->PaintThread();
 }
 
 static const Dimension default_resolutions[] = {
@@ -514,6 +505,17 @@ void VideoDriver_SDL_Base::EditBoxLostFocus()
 	}
 	/* Clear any marked string from the current edit box. */
 	HandleTextInput(nullptr, true);
+}
+
+std::vector<int> VideoDriver_SDL_Base::GetListOfMonitorRefreshRates()
+{
+	std::vector<int> rates = {};
+	for (int i = 0; i < SDL_GetNumVideoDisplays(); i++) {
+		SDL_DisplayMode mode = {};
+		if (SDL_GetDisplayMode(i, 0, &mode) != 0) continue;
+		if (mode.refresh_rate != 0) rates.push_back(mode.refresh_rate);
+	}
+	return rates;
 }
 
 struct SDLVkMapping {
@@ -873,14 +875,14 @@ const char *VideoDriver_SDL_Base::Initialize()
 	return nullptr;
 }
 
-const char *VideoDriver_SDL_Base::Start(const StringList &parm)
+const char *VideoDriver_SDL_Base::Start(const StringList &param)
 {
 	if (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() == 0) return "Only real blitters supported";
 
 	const char *error = this->Initialize();
 	if (error != nullptr) return error;
 
-	this->startup_display = FindStartupDisplay(GetDriverParamInt(parm, "display", -1));
+	this->startup_display = FindStartupDisplay(GetDriverParamInt(param, "display", -1));
 
 	if (!CreateMainSurface(_cur_resolution.width, _cur_resolution.height, false)) {
 		return SDL_GetError();
@@ -891,24 +893,16 @@ const char *VideoDriver_SDL_Base::Start(const StringList &parm)
 
 	MarkWholeScreenDirty();
 
-	this->draw_threaded = !GetDriverParamBool(parm, "no_threads") && !GetDriverParamBool(parm, "no_thread");
-	/* Wayland SDL video driver uses EGL to render the game. SDL created the
-	 * EGL context from the main-thread, and with EGL you are not allowed to
-	 * draw in another thread than the context was created. The function of
-	 * draw_threaded is to do exactly this: draw in another thread than the
-	 * window was created, and as such, this fails on Wayland SDL video
-	 * driver. So, we disable threading by default if Wayland SDL video
-	 * driver is detected.
-	 */
-	if (strcmp(dname, "wayland") == 0) {
-		this->draw_threaded = false;
-	}
-
 	SDL_StopTextInput();
 	this->edit_box_focused = false;
 
 #if defined(WITH_FCITX)
 	if (_fcitx_mode) SDL_EventState(SDL_SYSWMEVENT, 1);
+#endif
+#ifdef __EMSCRIPTEN__
+	this->is_game_threaded = false;
+#else
+	this->is_game_threaded = !GetDriverParamBool(param, "no_threads") && !GetDriverParamBool(param, "no_thread");
 #endif
 
 	return nullptr;
@@ -966,18 +960,17 @@ void VideoDriver_SDL_Base::LoopOnce()
 		 * After that, Emscripten just halts, and the HTML shows a nice
 		 * "bye, see you next time" message. */
 		emscripten_cancel_main_loop();
-		MainLoopCleanup();
+		emscripten_exit_pointerlock();
+		/* In effect, the game ends here. As emscripten_set_main_loop() caused
+		 * the stack to be unwound, the code after MainLoop() in
+		 * openttd_main() is never executed. */
+		EM_ASM(if (window["openttd_syncfs"]) openttd_syncfs());
+		EM_ASM(if (window["openttd_exit"]) openttd_exit());
 #endif
 		return;
 	}
 
-	if (VideoDriver::Tick()) {
-		if (this->draw_mutex != nullptr && !HasModalProgress()) {
-			this->draw_signal->notify_one();
-		} else {
-			this->Paint();
-		}
-	}
+	this->Tick();
 
 /* Emscripten is running an event-based mainloop; there is already some
  * downtime between each iteration, so no need to sleep. */
@@ -988,89 +981,27 @@ void VideoDriver_SDL_Base::LoopOnce()
 
 void VideoDriver_SDL_Base::MainLoop()
 {
-	if (this->draw_threaded) {
-		/* Initialise the mutex first, because that's the thing we *need*
-		 * directly in the newly created thread. */
-		this->draw_mutex = new std::recursive_mutex();
-		if (this->draw_mutex == nullptr) {
-			this->draw_threaded = false;
-		} else {
-			draw_lock = std::unique_lock<std::recursive_mutex>(*this->draw_mutex);
-			this->draw_signal = new std::condition_variable_any();
-			this->draw_continue = true;
-
-			this->draw_threaded = StartNewThread(&draw_thread, "ottd:draw-sdl", &VideoDriver_SDL_Base::PaintThreadThunk, this);
-
-			/* Free the mutex if we won't be able to use it. */
-			if (!this->draw_threaded) {
-				draw_lock.unlock();
-				draw_lock.release();
-				delete this->draw_mutex;
-				delete this->draw_signal;
-				this->draw_mutex = nullptr;
-				this->draw_signal = nullptr;
-			} else {
-				/* Wait till the draw mutex has started itself. */
-				this->draw_signal->wait(*this->draw_mutex);
-			}
-		}
-	}
-
-	DEBUG(driver, 1, "SDL2: using %sthreads", this->draw_threaded ? "" : "no ");
-
 #ifdef __EMSCRIPTEN__
 	/* Run the main loop event-driven, based on RequestAnimationFrame. */
 	emscripten_set_main_loop_arg(&this->EmscriptenLoop, this, 0, 1);
 #else
+	this->StartGameThread();
+
 	while (!_exit_game) {
 		LoopOnce();
 	}
 
-	MainLoopCleanup();
-#endif
-}
-
-void VideoDriver_SDL_Base::MainLoopCleanup()
-{
-	if (this->draw_mutex != nullptr) {
-		this->draw_continue = false;
-		/* Sending signal if there is no thread blocked
-		 * is very valid and results in noop */
-		this->draw_signal->notify_one();
-		if (draw_lock.owns_lock()) draw_lock.unlock();
-		draw_lock.release();
-		draw_thread.join();
-
-		delete this->draw_mutex;
-		delete this->draw_signal;
-
-		this->draw_mutex = nullptr;
-		this->draw_signal = nullptr;
-	}
-
-#ifdef __EMSCRIPTEN__
-	emscripten_exit_pointerlock();
-	/* In effect, the game ends here. As emscripten_set_main_loop() caused
-	 * the stack to be unwound, the code after MainLoop() in
-	 * openttd_main() is never executed. */
-	EM_ASM(if (window["openttd_syncfs"]) openttd_syncfs());
-	EM_ASM(if (window["openttd_exit"]) openttd_exit());
+	this->StopGameThread();
 #endif
 }
 
 bool VideoDriver_SDL_Base::ChangeResolution(int w, int h)
 {
-	std::unique_lock<std::recursive_mutex> lock;
-	if (this->draw_mutex != nullptr) lock = std::unique_lock<std::recursive_mutex>(*this->draw_mutex);
-
 	return CreateMainSurface(w, h, true);
 }
 
 bool VideoDriver_SDL_Base::ToggleFullscreen(bool fullscreen)
 {
-	std::unique_lock<std::recursive_mutex> lock;
-	if (this->draw_mutex != nullptr) lock = std::unique_lock<std::recursive_mutex>(*this->draw_mutex);
-
 	int w, h;
 
 	/* Remember current window size */
@@ -1096,6 +1027,7 @@ bool VideoDriver_SDL_Base::ToggleFullscreen(bool fullscreen)
 		DEBUG(driver, 0, "SDL_SetWindowFullscreen() failed: %s", SDL_GetError());
 	}
 
+	this->InvalidateGameOptionsWindow();
 	return ret == 0;
 }
 
@@ -1105,16 +1037,6 @@ bool VideoDriver_SDL_Base::AfterBlitterChange()
 	int w, h;
 	SDL_GetWindowSize(this->sdl_window, &w, &h);
 	return CreateMainSurface(w, h, false);
-}
-
-void VideoDriver_SDL_Base::AcquireBlitterLock()
-{
-	if (this->draw_mutex != nullptr) this->draw_mutex->lock();
-}
-
-void VideoDriver_SDL_Base::ReleaseBlitterLock()
-{
-	if (this->draw_mutex != nullptr) this->draw_mutex->unlock();
 }
 
 Dimension VideoDriver_SDL_Base::GetScreenSize() const
@@ -1130,8 +1052,6 @@ bool VideoDriver_SDL_Base::LockVideoBuffer()
 	if (this->buffer_locked) return false;
 	this->buffer_locked = true;
 
-	if (this->draw_threaded) this->draw_lock.lock();
-
 	_screen.dst_ptr = this->GetVideoPointer();
 	assert(_screen.dst_ptr != nullptr);
 
@@ -1146,6 +1066,5 @@ void VideoDriver_SDL_Base::UnlockVideoBuffer()
 		_screen.dst_ptr = nullptr;
 	}
 
-	if (this->draw_threaded) this->draw_lock.unlock();
 	this->buffer_locked = false;
 }

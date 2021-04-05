@@ -664,7 +664,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		DeleteWindowByClass(WC_TEXTFILE);
 		DeleteWindowByClass(WC_SAVE_PRESET);
 
-		if (this->editable && !this->execute) {
+		if (this->editable && !this->execute && !_exit_game) {
 			CopyGRFConfigList(this->orig_list, this->actives, true);
 			ResetGRFConfig(false);
 			ReloadNewGRFData();
@@ -1136,7 +1136,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 			case WID_NS_RESCAN_FILES:
 			case WID_NS_RESCAN_FILES2:
-				ScanNewGRFFiles(this);
+				RequestNewGRFScan(this);
 				break;
 		}
 	}

@@ -990,6 +990,7 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}屏幕�
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}选择要使用的屏幕分辨率
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :其他
 
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}界面大小
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}选择使用的界面元素大小
 
@@ -1003,6 +1004,8 @@ STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}选择�
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :正常
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :两倍大小
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :四倍大小
+
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}基础图形组
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}选择要使用的基础图形组
@@ -1758,6 +1761,8 @@ STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... 禁�
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}内存溢出
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}无法分配 {BYTES} 的 Sprite 缓存。Sprite 缓存的大小已降至 {BYTES}。OpenTTD 的性能将受到影响。请尝试停用 32bpp 图形及／或减少放大倍数，以降低内存需求
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -2278,6 +2283,7 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}缺失�
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD 需要基础图形组用以绘制界面。您是否希望 OpenTTD 下载并安装以下图形组？
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}好，开始下载
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}不，退出OpenTTD
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}透明选项
@@ -3134,13 +3140,10 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}贿赂�
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} 目标
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}全球目标:
 STR_GOALS_SPECTATOR                                             :全局目标
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}全局目标:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- 无目标 -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- 不适用 -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}公司目标:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}点击使得视图移动到该工业/城镇/地块. Ctrl+左键 在该处创建一个视点.
 
 # Goal question window

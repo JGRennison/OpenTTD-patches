@@ -1557,29 +1557,6 @@ void DrawDirtyBlocks()
 {
 	static std::vector<NWidgetBase *> dirty_widgets;
 
-	if (HasModalProgress()) {
-		/* We are generating the world, so release our rights to the map and
-		 * painting while we are waiting a bit. */
-		bool is_first_modal_progress_loop = IsFirstModalProgressLoop();
-		_modal_progress_paint_mutex.unlock();
-		_modal_progress_work_mutex.unlock();
-
-		/* Wait a while and hope the modal gives us a bit of time to draw the GUI. */
-		if (!is_first_modal_progress_loop) SleepWhileModalProgress(MODAL_PROGRESS_REDRAW_TIMEOUT);
-
-		/* Modal progress thread may need blitter access while we are waiting for it. */
-		VideoDriver::GetInstance()->ReleaseBlitterLock();
-		_modal_progress_paint_mutex.lock();
-		VideoDriver::GetInstance()->AcquireBlitterLock();
-		_modal_progress_work_mutex.lock();
-
-		/* When we ended with the modal progress, do not draw the blocks.
-		 * Simply let the next run do so, otherwise we would be loading
-		 * the new state (and possibly change the blitter) when we hold
-		 * the drawing lock, which we must not do. */
-		if (_switch_mode != SM_NONE && !HasModalProgress()) return;
-	}
-
 	extern void ViewportPrepareVehicleRoute();
 	ViewportPrepareVehicleRoute();
 
@@ -2205,6 +2182,10 @@ void UpdateGUIZoom()
 	if (_gui_zoom_cfg == ZOOM_LVL_CFG_AUTO) {
 		_gui_zoom = static_cast<ZoomLevel>(Clamp(VideoDriver::GetInstance()->GetSuggestedUIZoom(), _settings_client.gui.zoom_min, _settings_client.gui.zoom_max));
 	} else {
+		/* Ensure the gui_zoom is clamped between min/max. Change the
+		 * _gui_zoom_cfg if it isn't, as this is used to visually show the
+		 * selection in the Game Options. */
+		_gui_zoom_cfg = Clamp(_gui_zoom_cfg, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max);
 		_gui_zoom = static_cast<ZoomLevel>(_gui_zoom_cfg);
 	}
 

@@ -979,6 +979,7 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Rezoluţ
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Alege rezoluţia dorită pentru joc
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :(alta/nespecificată)
 
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Mărime interfată
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Alege mărimea elementelor de interfaţa
 
@@ -988,6 +989,8 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Mărime împăt
 
 
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Mărime dublă
+
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Set grafic de bază
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Selectează setul grafic de bază utilizat în joc
@@ -1709,6 +1712,8 @@ STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... setu
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Fără memorie
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Nu s-au putut rezerva {BYTES} pentru cache al sprite-urilor. Mărimea cache-ului a fost redusă la {BYTES}. Performanța OpenTTD va fi redusă. Pentru a micșora cerințele jocului cu privire la memorie, poți încerca să dezactivezi modul grafic 32bpp și/sau reducerea numărului de nivele zoom
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -2227,6 +2232,7 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Elemente
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD necesită elemente grafice pentru a funcționa, dar niciun pachet grafic nu a fost găsit. Permiteţi ca OpenTTD să descarce și să instaleze pachetele grafice necesare?
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Da, descarcă pachetele grafice
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Nu, ieși din OpenTTD
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Optiuni transparenţă
@@ -3017,13 +3023,10 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Mituie�
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} Scopuri
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Scopuri globale
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Ţinte globale:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Nici unul -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Nu este aplicabil -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Ţintele companiei:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Click pe ţintă pentru a centra ecranul principal pe industrie/oraş/zonă. Ctrl+Click deschide o fereastră nouă de vizualizare a industriei/oraşului/zonei
 
 # Goal question window

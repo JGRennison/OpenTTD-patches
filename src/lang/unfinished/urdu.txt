@@ -940,6 +940,9 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :دیگر
 
 
 
+
+
+
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}بُنیادی گرافک سیٹ
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}بُنیادی گرافک سیٹ اختیار کریں
 STR_GAME_OPTIONS_BASE_GRF_STATUS                                :{RED}{NUM} missing/corrupted file{P "" s}
@@ -1323,6 +1326,8 @@ STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE                       :OpenTTD کے ا
 STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :نا معلوم
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :{WHITE}- - - کمپریشن کی سطح '{STRING}' درست نہیں ہے
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE} ۔ ۔ ۔ کھیل بچانے کا یہ فارمیٹ '{STRING}' دستیاب نہیں ہے۔ واپس '{STRING}' پر جا رہے ہیں
+
+# Video initalization errors
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
@@ -1823,6 +1828,7 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}گراف
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD کو چلنے کے لئے ضروری گرافکس نہیں ملے۔ کیا آپ ڈاون لوڈ کر کے انسٹال کرنا چاہتے ہیں؟
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}ہاں، گرافکس ڈاون لوڈ کریں
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}نہیں، OpenTTD سے باہر نکلو
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Transparency کے اختیارات

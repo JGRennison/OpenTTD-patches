@@ -214,6 +214,8 @@ const char *VideoDriver_CocoaOpenGL::Start(const StringList &param)
 	this->UpdateVideoModes();
 	MarkWholeScreenDirty();
 
+	this->is_game_threaded = !GetDriverParamBool(param, "no_threads") && !GetDriverParamBool(param, "no_thread");
+
 	return nullptr;
 
 }
@@ -225,6 +227,11 @@ void VideoDriver_CocoaOpenGL::Stop()
 	CGLSetCurrentContext(this->gl_context);
 	OpenGLBackend::Destroy();
 	CGLReleaseContext(this->gl_context);
+}
+
+void VideoDriver_CocoaOpenGL::PopulateSystemSprites()
+{
+	OpenGLBackend::Get()->PopulateCursorCache();
 }
 
 void VideoDriver_CocoaOpenGL::ClearSystemSprites()
@@ -265,7 +272,7 @@ void VideoDriver_CocoaOpenGL::AllocateBackingStore(bool force)
 	CGLSetCurrentContext(this->gl_context);
 	NSRect frame = [ this->cocoaview getRealRect:[ this->cocoaview frame ] ];
 	OpenGLBackend::Get()->Resize(frame.size.width, frame.size.height, force);
-	_screen.dst_ptr = this->GetVideoPointer();
+	if (this->buffer_locked) _screen.dst_ptr = this->GetVideoPointer();
 	this->dirty_rect = {};
 
 	/* Redraw screen */

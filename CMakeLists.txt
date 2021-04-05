@@ -282,7 +282,7 @@ if(MSVC)
 endif()
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/src)
-add_subdirectory(${CMAKE_SOURCE_DIR}/media/baseset)
+add_subdirectory(${CMAKE_SOURCE_DIR}/media)
 add_subdirectory(${CMAKE_SOURCE_DIR}/bin)
 
 if(NOT CMAKE_CROSSCOMPILING AND NOT HOST_BINARY_DIR)
@@ -299,6 +299,7 @@ add_dependencies(openttd
 target_link_libraries(openttd
     openttd::languages
     openttd::settings
+    openttd::media
     openttd::basesets
     openttd::script_api
     openttd::binfiles

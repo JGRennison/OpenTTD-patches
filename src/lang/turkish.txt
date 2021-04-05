@@ -991,6 +991,7 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Ekran Ç
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Kullanılacak ekran çözünürlüğünü seçin
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :diğer
 
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Arayüz boyutu
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Kullanmak üzere arayüz bileşen boyutunu seçin
 
@@ -1004,6 +1005,8 @@ STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :Arayüz boyutun
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normal
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Yazı iki kat büyük
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Dört kat büyük
+
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Temel grafik kümesi
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Kullanılacak temel grafik kümesini seçin
@@ -1759,6 +1762,8 @@ STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... Teme
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Bellek yetersiz
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}{BYTES} sprite-önbelleği ayırma işlemi başarısız. Sprite-önbelleği {BYTES}'a düşürüldü. Bu OpenTTD'nin performansını azaltacak. Bellek gereksinimini azaltmak için 32bpp grafikleri ve/veya yakınlaştırma seviyelerini kapatmayı deneyebilirsiniz
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -2279,6 +2284,7 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Eksik gr
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD çalışmak için grafiklere ihtiyaç duyuyor ancak grafik bulunamadı. OpenTTD'nin internetten bu grafikleri indirip yüklemesine izin veriyor musunuz?
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Evet, grafikleri indir
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Hayır, OpenTTD'den çık
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Şeffaflık Seçenekleri
@@ -3135,13 +3141,10 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Yakalan
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} Hedefler
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Evrensel Amaçlar
 STR_GOALS_SPECTATOR                                             :Evrensel Amaçlar
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Evrensel amaçlar:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Hiçbiri -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Kullanılamaz -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Şirket hedefleri:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Ana görünümü istenen fabrika/kasaba/kareye getirmek için hedefe tıklayın. Ctrl+Tıklama fabrika/kasaba/kare konumunda yeni bir pencerede görünüm açar
 
 # Goal question window

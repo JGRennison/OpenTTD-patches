@@ -969,11 +969,14 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Skermres
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Selektearje de skermresolutje om te brûken
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :oars
 
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Interfacegrutte
 
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normaal
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dûbele grutte
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Fjouwerdûbele grutte
+
+
 
 
 
@@ -1641,6 +1644,8 @@ STR_CONFIG_ERROR_INVALID_GRF_NOT_FOUND                          :koe net fûn wu
 STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE                       :Dat strykt net mei dizze ferzje fan OpenTTD
 STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :ûnbekind
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -2066,6 +2071,7 @@ STR_CONTENT_ERROR_COULD_NOT_EXTRACT                             :{WHITE}Kin it d
 STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Missende ôfbyldings
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Ja, ôfbyldings delheljen
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Nee, OpenTTD ôfslute
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Trochsichtigenopsjes
@@ -2779,7 +2785,6 @@ STR_GOALS_CAPTION                                               :{WHITE}{COMPANY
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Globalde doelen
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Gjin -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Net fan tapassing -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
 

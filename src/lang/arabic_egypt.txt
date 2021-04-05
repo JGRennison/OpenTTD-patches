@@ -940,12 +940,15 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}دقة �
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}اختر دقة الشاشة
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :اخرى
 
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}حجم اللوحة
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}حدد العنصر المطلوب
 
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :تقريب عادي
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :تقريب ×2
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :تقريب ×4
+
+
 
 
 
@@ -1404,6 +1407,8 @@ STR_CONFIG_ERROR_INVALID_GRF_SYSTEM                             :نظام الا
 STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE                       :غير متطابق مع هذه النسخة من OpenTTD
 STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :مجهول
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :{WHITE}... نسبة الضغط '{STRING}' غير صحيحة
+
+# Video initalization errors
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
@@ -1896,6 +1901,7 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}رسوم
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}تحتاج اللعبة الى رسومات و لم يتم التعرف على اي منها. هل قمت يتحميل الرسومات و تنصيبها؟
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}نعم, حمل الرسومات
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}لا, اغلق اللعبة
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}خيارات الشفافية

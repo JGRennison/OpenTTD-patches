@@ -1096,6 +1096,7 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Rozliše
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Zvolit rozlišení obrazovky
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :jiné
 
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Velikost rozhraní
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Zvolit velikost prvků uživatelského rozhraní
 
@@ -1111,6 +1112,8 @@ STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(zjistit automa
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Běžné
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Dvojnásobná velikost
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Čtyřnásobná velikost
+
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Základní sada grafiky
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Zvol základní sadu grafiky
@@ -2124,6 +2127,8 @@ STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... igno
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Nedostatek paměti
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Alokování {BYTES} grafické mezipaměti selhalo. Grafická mezipaměť byla zredukována na {BYTES}. To sníží výkon OpenTTD. Pro snížení paměťových nároků můžeš zkusit vypnout 32bpp grafiku a/nebo úrovně přiblížení
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -2660,6 +2665,7 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Chyběj�
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD vyžaduje grafiky, které nebyly nalezeny. Povolíte OpenTTD stáhnout a nainstalovat tyto grafiky?
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Ano, stáhnout grafiky
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Ne, ukončit OpenTTD
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Nastavení průhlednosti
@@ -3805,14 +3811,12 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Podplat
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} Cíle
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Globální cíle
 STR_GOALS_SPECTATOR                                             :Globální cíle
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Globální cíle:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Žádné -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Nelze -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
 STR_GOALS_COMPANY_TITLE                                         :{BLACK}Cíle společnosti:
-STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Klikni na cíl pro zaměření pohledu na průmysl/město/pole. Ctrl+kliknutí otevře nové okno s pohledem na průmyslu/městu/poli.
+STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Klikni na cíl pro zaměření pohledu na průmysl/město/pole. Ctrl+Klik otevře nové okno s pohledem na průmyslu/městu/poli.
 
 # Goal question window
 STR_GOAL_QUESTION_CAPTION_QUESTION                              :{BLACK}Dotaz

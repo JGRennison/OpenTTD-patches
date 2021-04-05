@@ -1000,6 +1000,7 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Resolusi
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Pilih resolusi layar yang diinginkan
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :lainnya
 
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Ukuran antarmuka
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Pilih ukuran elemen antarmuka yang akan digunakan
 
@@ -1015,6 +1016,8 @@ STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(deteksi-otomat
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normal
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Kali dua
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :4 kali
+
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Set Grafik Dasar
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Pilih grafik dasar yang digunakan
@@ -1782,6 +1785,8 @@ STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... meng
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Kehabisan memori
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Mengalokasikan {BYTES} 'spritecache' gagal. 'Spritecache' dikurangi ke {BYTES}. Ini akan kurangi kinerja OpenTTD. Untuk kurangi kebutuhan memori anda bisa coba matikan grafik 32bpp dan/atau tingkat pembesaran
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -2311,6 +2316,7 @@ STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Gambar t
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD tidak menemukan file gambar yang dibutuhkan berjalan. Ijinkan OpenTTD untuk mendownload file-file gambar?
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Ya, download file gambar
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Tidak, tutup OpenTTD
+
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Pengaturan Transparasi
@@ -3184,13 +3190,10 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Kolusi 
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} Target
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Target Global
 STR_GOALS_SPECTATOR                                             :Target Global
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Target global:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Tidak ada -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Tak terpakaikan -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Target perusahaan:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Klik pada tujuan untuk mengarahkan pandangan pada tengah industri/kota/kotak. Ctrl+klik untuk membuka jendela baru pada lokasi industri/kota/kotak
 
 # Goal question window
