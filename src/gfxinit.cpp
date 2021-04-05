@@ -369,7 +369,7 @@ void CheckBlitter()
 
 	ClearFontCache();
 	GfxClearSpriteCache();
-	ReInitAllWindows();
+	ReInitAllWindows(false);
 }
 
 static void UpdateRouteStepSpriteSize()
