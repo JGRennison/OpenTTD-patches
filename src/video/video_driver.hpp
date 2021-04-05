@@ -22,6 +22,11 @@
 #include <mutex>
 #include <thread>
 #include <vector>
+#if defined(__MINGW32__)
+#include "../3rdparty/mingw-std-threads/mingw.mutex.h"
+#include "../3rdparty/mingw-std-threads/mingw.condition_variable.h"
+#include "../3rdparty/mingw-std-threads/mingw.thread.h"
+#endif
 
 extern std::string _ini_videodriver;
 extern std::vector<Dimension> _resolutions;
