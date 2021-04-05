@@ -265,6 +265,7 @@ struct ViewportDrawer {
 
 static void MarkRouteStepDirty(RouteStepsMap::const_iterator cit);
 static void MarkRouteStepDirty(const TileIndex tile, uint order_nr);
+static void HideMeasurementTooltips();
 
 static DrawPixelInfo _dpi_for_text;
 static ViewportDrawer _vd;
@@ -4247,6 +4248,7 @@ HandleViewportClickedResult HandleViewportClicked(const Viewport *vp, int x, int
 			static bool stop_snap_on_double_click = false;
 			if (double_click && stop_snap_on_double_click) {
 				SetRailSnapMode(RSM_NO_SNAP);
+				HideMeasurementTooltips();
 				return HVCR_DENY;
 			}
 			stop_snap_on_double_click = !(_thd.drawstyle & HT_LINE) || (_thd.dir2 == HT_DIR_END);
@@ -5288,6 +5290,7 @@ static HighLightStyle CalcPolyrailDrawstyle(Point pt, bool dragging)
 	if (snap_mode == RSM_SNAP_TO_TILE && GetRailSnapTile() == TileVirtXY(pt.x, pt.y)) {
 		_thd.selend.x = pt.x;
 		_thd.selend.y = pt.y;
+		HideMeasurementTooltips();
 		return GetAutorailHT(pt.x, pt.y);
 	}
 
@@ -5307,7 +5310,10 @@ static HighLightStyle CalcPolyrailDrawstyle(Point pt, bool dragging)
 		snap_point = FindBestPolyline(pt, _rail_snap_points.data(), _rail_snap_points.size(), &line);
 	}
 
-	if (snap_point == nullptr) return HT_NONE; // no match
+	if (snap_point == nullptr) {
+		HideMeasurementTooltips();
+		return HT_NONE; // no match
+	}
 
 	if (lock_snapping && _current_snap_lock.x == -1) {
 		/* lock down the snap point */
