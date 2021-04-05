@@ -82,6 +82,11 @@
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
 
+#include <mutex>
+#if defined(__MINGW32__)
+#include "../3rdparty/mingw-std-threads/mingw.mutex.h"
+#endif
+
 #include <stdarg.h>
 #include <system_error>
 
@@ -1971,7 +1976,11 @@ void GameLoop()
 		StateGameLoop();
 	}
 
-	if (!_pause_mode && HasBit(_display_opt, DO_FULL_ANIMATION)) DoPaletteAnimations();
+	if (!_pause_mode && HasBit(_display_opt, DO_FULL_ANIMATION)) {
+		extern std::mutex _cur_palette_mutex;
+		std::lock_guard<std::mutex> lock_state(_cur_palette_mutex);
+		DoPaletteAnimations();
+	}
 
 	SoundDriver::GetInstance()->MainLoop();
 	MusicLoop();

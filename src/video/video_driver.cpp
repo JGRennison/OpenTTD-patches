@@ -174,7 +174,12 @@ void VideoDriver::Tick()
 			this->PopulateSystemSprites();
 		}
 
-		this->CheckPaletteAnim();
+		{
+			extern std::mutex _cur_palette_mutex;
+			std::lock_guard<std::mutex> lock_state(_cur_palette_mutex);
+			this->CheckPaletteAnim();
+		}
+
 		this->Paint();
 
 		this->UnlockVideoBuffer();
