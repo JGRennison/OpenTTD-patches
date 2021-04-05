@@ -94,6 +94,7 @@
 
 void CallLandscapeTick();
 void IncreaseDate();
+void DoPaletteAnimations();
 void MusicLoop();
 void ResetMusic();
 void CallWindowGameTickEvent();
@@ -1969,6 +1970,8 @@ void GameLoop()
 		/* Singleplayer */
 		StateGameLoop();
 	}
+
+	if (!_pause_mode && HasBit(_display_opt, DO_FULL_ANIMATION)) DoPaletteAnimations();
 
 	SoundDriver::GetInstance()->MainLoop();
 	MusicLoop();

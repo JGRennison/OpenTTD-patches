@@ -34,10 +34,6 @@ void VideoDriver::GameLoop()
 		std::lock_guard<std::mutex> lock(this->game_state_mutex);
 
 		::GameLoop();
-
-		// TODO: lock
-		::GameLoopPaletteAnimations();
-		// TODO: unlock
 	}
 }
 

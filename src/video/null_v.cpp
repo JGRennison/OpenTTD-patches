@@ -51,14 +51,12 @@ void VideoDriver_Null::MainLoop()
 	if (this->until_exit) {
 		while (!_exit_game) {
 			::GameLoop();
-			::GameLoopPaletteAnimations();
 			::InputLoop();
 			::UpdateWindows();
 		}
 	} else {
 		for (int i = 0; i < this->ticks; i++) {
 			::GameLoop();
-			::GameLoopPaletteAnimations();
 			::InputLoop();
 			::UpdateWindows();
 		}
