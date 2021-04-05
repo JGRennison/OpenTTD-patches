@@ -141,6 +141,7 @@ bool VideoDriver_SDL_OpenGL::AllocateBackingStore(int w, int h, bool force)
 	_cur_palette.first_dirty = 0;
 	_cur_palette.count_dirty = 256;
 	this->local_palette = _cur_palette;
+	_cur_palette.count_dirty = 0;
 
 	return res;
 }
@@ -165,7 +166,7 @@ void VideoDriver_SDL_OpenGL::Paint()
 {
 	PerformanceMeasurer framerate(PFE_VIDEO);
 
-	if (_cur_palette.count_dirty != 0) {
+	if (this->local_palette.count_dirty != 0) {
 		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 
 		/* Always push a changed palette to OpenGL. */
@@ -174,7 +175,7 @@ void VideoDriver_SDL_OpenGL::Paint()
 			blitter->PaletteAnimate(this->local_palette);
 		}
 
-		_cur_palette.count_dirty = 0;
+		this->local_palette.count_dirty = 0;
 	}
 
 	OpenGLBackend::Get()->Paint();
