@@ -136,10 +136,6 @@ void VideoDriver::Tick()
 		/* Avoid next_draw_tick getting behind more and more if it cannot keep up. */
 		if (this->next_draw_tick < now - ALLOWED_DRIFT * this->GetDrawInterval()) this->next_draw_tick = now;
 
-		/* Keep the interactive randomizer a bit more random by requesting
-		 * new values when-ever we can. */
-		InteractiveRandom();
-
 		this->InputLoop();
 
 		/* Check if the fast-forward button is still pressed. */
@@ -155,6 +151,10 @@ void VideoDriver::Tick()
 			/* Tell the game-thread to stop so we can have a go. */
 			std::lock_guard<std::mutex> lock_wait(this->game_thread_wait_mutex);
 			std::lock_guard<std::mutex> lock_state(this->game_state_mutex);
+
+			/* Keep the interactive randomizer a bit more random by requesting
+			 * new values when-ever we can. */
+			InteractiveRandom();
 
 			this->LockVideoBuffer();
 
