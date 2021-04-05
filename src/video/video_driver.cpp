@@ -132,25 +132,25 @@ void VideoDriver::Tick()
 
 	auto now = std::chrono::steady_clock::now();
 	if (this->HasGUI() && now >= this->next_draw_tick) {
-		this->next_draw_tick += this->GetDrawInterval();
-		/* Avoid next_draw_tick getting behind more and more if it cannot keep up. */
-		if (this->next_draw_tick < now - ALLOWED_DRIFT * this->GetDrawInterval()) this->next_draw_tick = now;
-
-		this->InputLoop();
-
-		/* Check if the fast-forward button is still pressed. */
-		if (fast_forward_key_pressed && !_networking && _game_mode != GM_MENU) {
-			ChangeGameSpeed(true);
-			this->fast_forward_via_key = true;
-		} else if (this->fast_forward_via_key) {
-			ChangeGameSpeed(false);
-			this->fast_forward_via_key = false;
-		}
-
 		{
 			/* Tell the game-thread to stop so we can have a go. */
 			std::lock_guard<std::mutex> lock_wait(this->game_thread_wait_mutex);
 			std::lock_guard<std::mutex> lock_state(this->game_state_mutex);
+
+			this->next_draw_tick += this->GetDrawInterval();
+			/* Avoid next_draw_tick getting behind more and more if it cannot keep up. */
+			if (this->next_draw_tick < now - ALLOWED_DRIFT * this->GetDrawInterval()) this->next_draw_tick = now;
+
+			this->InputLoop();
+
+			/* Check if the fast-forward button is still pressed. */
+			if (fast_forward_key_pressed && !_networking && _game_mode != GM_MENU) {
+				ChangeGameSpeed(true);
+				this->fast_forward_via_key = true;
+			} else if (this->fast_forward_via_key) {
+				ChangeGameSpeed(false);
+				this->fast_forward_via_key = false;
+			}
 
 			/* Keep the interactive randomizer a bit more random by requesting
 			 * new values when-ever we can. */
