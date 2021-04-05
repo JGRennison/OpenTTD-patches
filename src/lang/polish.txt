@@ -714,8 +714,8 @@ STR_TOOLBAR_TOOLTIP_DISPLAY_SUBSIDIES                           :{BLACK}Wyświet
 STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_STATIONS            :{BLACK}Wyświetl listę stacji firmy
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_FINANCES                    :{BLACK}Wyświetl informacje finansowe firmy
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_GENERAL                     :{BLACK}Wyświetl informacje ogólne firmy
-STR_TOOLBAR_TOOLTIP_DISPLAY_STORY_BOOK                          :{BLACK}Pokaż dziennik
-STR_TOOLBAR_TOOLTIP_DISPLAY_GOALS_LIST                          :{BLACK}Pokaż listę celów
+STR_TOOLBAR_TOOLTIP_DISPLAY_STORY_BOOK                          :{BLACK}Wyświetl dziennik
+STR_TOOLBAR_TOOLTIP_DISPLAY_GOALS_LIST                          :{BLACK}Wyświetl listę celów
 STR_TOOLBAR_TOOLTIP_DISPLAY_GRAPHS                              :{BLACK}Wyświetl wykresy
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_LEAGUE                      :{BLACK}Wyświetl ranking firm
 STR_TOOLBAR_TOOLTIP_FUND_CONSTRUCTION_OF_NEW                    :{BLACK}Ufunduj budowę nowego przedsiębiorstwa
@@ -731,8 +731,8 @@ STR_TOOLBAR_TOOLTIP_BUILD_TRAMWAYS                              :{BLACK}Budowa t
 STR_TOOLBAR_TOOLTIP_BUILD_SHIP_DOCKS                            :{BLACK}Budowa portów
 STR_TOOLBAR_TOOLTIP_BUILD_AIRPORTS                              :{BLACK}Budowa lotnisk
 STR_TOOLBAR_TOOLTIP_LANDSCAPING                                 :{BLACK}Zmiana terenu, podwyższanie/obniżanie lądu, sadzenie drzew, itp.
-STR_TOOLBAR_TOOLTIP_SHOW_SOUND_MUSIC_WINDOW                     :{BLACK}Pokaż okno dźwięk/muzyka
-STR_TOOLBAR_TOOLTIP_SHOW_LAST_MESSAGE_NEWS                      :{BLACK}Pokaż ostatnią wiadomość/ogłoszenie, pokaż ustawienia wiadomości
+STR_TOOLBAR_TOOLTIP_SHOW_SOUND_MUSIC_WINDOW                     :{BLACK}Wyświetl okno dźwięk/muzyka
+STR_TOOLBAR_TOOLTIP_SHOW_LAST_MESSAGE_NEWS                      :{BLACK}Wyświetl ostatnią wiadomość/ogłoszenie, wyświetl ustawienia wiadomości
 STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Informacje o terenie, konsola, debugowanie skryptów, zrzut ekranu, o grze OpenTTD
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Przełącz paski narzędzi
 
@@ -1381,7 +1381,10 @@ STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Zaznacz,
 STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Rozdzielczość ekranu
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Wybierz rozdzielczość ekranu
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :inna
+STR_GAME_OPTIONS_RESOLUTION_ITEM                                :{NUM}x{NUM}
 
+STR_GAME_OPTIONS_VIDEO_ACCELERATION                             :{BLACK}Przyspieszenie sprzętowe
+STR_GAME_OPTIONS_VIDEO_ACCELERATION_TOOLTIP                     :{BLACK}Zaznacz to pole, aby zezwolić OpenTTD na użycie przyspieszenia sprzętowego. Ustawienia zostaną zastosowane dopiero po ponownym uruchomieniu gry.
 STR_GAME_OPTIONS_VIDEO_ACCELERATION_RESTART                     :{WHITE}Ustawienie to zacznie obowiązywać dopiero po ponownym uruchomieniu gry.
 
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Rozmiar interfejsu
@@ -1400,7 +1403,13 @@ STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normalna
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Podwójna
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Poczwórna
 
+STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafika
 
+STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}Częstotliwość odświeżania obrazu
+STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :{BLACK}Wybierz częstotliwość odświeżania ekranu
+STR_GAME_OPTIONS_REFRESH_RATE_OTHER                             :inna
+STR_GAME_OPTIONS_REFRESH_RATE_ITEM                              :{NUM}Hz
+STR_GAME_OPTIONS_REFRESH_RATE_WARNING                           :{WHITE}Częstotliwość odświeżania wyższa niż 60Hz może mieć wpływ na wydajność.
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Podstawowy zestaw grafik
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Wybierz podstawowy zestaw grafik do użycia
@@ -2033,12 +2042,17 @@ STR_CONFIG_SETTING_ZOOM_MIN                                     :Maksymalne przy
 STR_CONFIG_SETTING_ZOOM_MIN_HELPTEXT                            :Maksymalne zbliżenie w dodatkowych oknach podglądu. Wyższa wartość oznacza większe zużycie pamięci
 STR_CONFIG_SETTING_ZOOM_MAX                                     :Maksymalne oddalenie: {STRING}
 STR_CONFIG_SETTING_ZOOM_MAX_HELPTEXT                            :Maksymalne oddalenie w dodatkowych oknach podglądu. Wyższa wartość może powodować opóźnienia (lagi) podczas ich używania
+STR_CONFIG_SETTING_SPRITE_ZOOM_MIN                              :Najwyższa używana rozdzielczość sprite'ów: {STRING}
+STR_CONFIG_SETTING_SPRITE_ZOOM_MIN_HELPTEXT                     :Ogranicz maksymalną rozdzielczość dla sprite'ów. Ograniczenie rozdzielczości sprite'ów spowoduje brak użycia grafiki w wysokiej rozdzielczości, nawet, jeśli jest ona dostępna. Może to pomóc w utrzymaniu jednolitego wyglądu gry, gdy używasz mieszanki plików GRF z grafiką w wysokiej rozdzielczości i bez niej.
 STR_CONFIG_SETTING_ZOOM_LVL_MIN                                 :4x
 STR_CONFIG_SETTING_ZOOM_LVL_IN_2X                               :2x
 STR_CONFIG_SETTING_ZOOM_LVL_NORMAL                              :normalne
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_2X                              :2x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_4X                              :4x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_8X                              :8x
+STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_MIN                          :4x
+STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_IN_2X                        :2x
+STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_NORMAL                       :1x
 STR_CONFIG_SETTING_TOWN_GROWTH                                  :Szybkość rozwoju miast: {STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT                         :Szybkość rozwoju miast
 STR_CONFIG_SETTING_TOWN_GROWTH_NONE                             :brak
@@ -2173,6 +2187,8 @@ STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Brak pam
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Nie powiodła się rezerwacja pamięci cache dla sprite'ów od wielkości {BYTES}. Pamięć cache sprite'ów została zredukowana do {BYTES}. Obniży to wydajność OpenTTD. By zmniejszyć zapotrzebowanie pamięci, możesz spróbować wyłączyć grafikę 32bpp i/lub poziomy zbliżenia
 
 # Video initalization errors
+STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Błąd ustawień obrazu...
+STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... nie znaleziono kompatybilnego procesora graficznego. Przyspieszenie sprzętowe wyłączone.
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
@@ -2704,6 +2720,9 @@ STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD 
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Tak, pobierz grafikę
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Nie, opuść OpenTTD
 
+STR_MISSING_GRAPHICS_ERROR_TITLE                                :{WHITE}Pobieranie nie powiodło się
+STR_MISSING_GRAPHICS_ERROR                                      :{BLACK}Pobieranie grafiki nie powiodło się.{}Proszę pobrać grafikę ręcznie.
+STR_MISSING_GRAPHICS_ERROR_QUIT                                 :{BLACK}Wyjście z OpenTTD
 
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Opcje przeźroczystości
