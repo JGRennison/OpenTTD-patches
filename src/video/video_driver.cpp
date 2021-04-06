@@ -31,7 +31,7 @@ void VideoDriver::GameLoop()
 	if (this->next_game_tick < now - ALLOWED_DRIFT * this->GetGameInterval()) this->next_game_tick = now;
 
 	{
-		std::lock_guard<std::mutex> lock(this->game_state_mutex);
+		std::lock_guard<std::recursive_mutex> lock(this->game_state_mutex);
 
 		::GameLoop();
 	}
@@ -75,8 +75,23 @@ void VideoDriver::GameLoopPause()
 	this->game_state_mutex.lock();
 }
 
+/* static */ bool VideoDriver::EmergencyAcquireGameLock(uint tries, uint delay_ms)
+{
+	VideoDriver *drv = VideoDriver::GetInstance();
+	if (drv == nullptr) return true;
+
+
+	for (uint i = 0; i < tries; i++) {
+		if (drv->game_state_mutex.try_lock()) return true;
+		CSleep(delay_ms);
+	}
+
+	return false;
+}
+
 /* static */ void VideoDriver::GameThreadThunk(VideoDriver *drv)
 {
+	SetSelfAsGameThread();
 	drv->GameThread();
 }
 
@@ -135,7 +150,7 @@ void VideoDriver::Tick()
 		{
 			/* Tell the game-thread to stop so we can have a go. */
 			std::lock_guard<std::mutex> lock_wait(this->game_thread_wait_mutex);
-			std::lock_guard<std::mutex> lock_state(this->game_state_mutex);
+			std::lock_guard<std::recursive_mutex> lock_state(this->game_state_mutex);
 
 			this->next_draw_tick += this->GetDrawInterval();
 			/* Avoid next_draw_tick getting behind more and more if it cannot keep up. */

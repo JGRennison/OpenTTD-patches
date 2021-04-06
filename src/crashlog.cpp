@@ -78,7 +78,6 @@
 /* static */ const char *CrashLog::message = nullptr;
 /* static */ char *CrashLog::gamelog_buffer = nullptr;
 /* static */ const char *CrashLog::gamelog_last = nullptr;
-/* static */ const CrashLog *CrashLog::main_thread_pending_crashlog = nullptr;
 
 char *CrashLog::LogCompiler(char *buffer, const char *last) const
 {
@@ -441,7 +440,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 	buffer = this->LogError(buffer, last, CrashLog::message);
 
 #ifdef USE_SCOPE_INFO
-	if (IsMainThread()) {
+	if (IsMainThread() || IsGameThread()) {
 		buffer += WriteScopeLog(buffer, last);
 	}
 #endif
@@ -644,6 +643,10 @@ bool CrashLog::MakeCrashLog()
 	if (crashlogged) return false;
 	crashlogged = true;
 
+	if (!VideoDriver::EmergencyAcquireGameLock(20, 2)) {
+		printf("Failed to acquire gamelock before filling crash log\n\n");
+	}
+
 	char filename[MAX_PATH];
 	char buffer[65536 * 4];
 	bool ret = true;
@@ -679,15 +682,10 @@ bool CrashLog::MakeCrashLog()
 	_savegame_DBGL_data = buffer;
 	_save_DBGC_data = true;
 
-	if (IsNonMainThread()) {
-		printf("Asking main thread to write crash savegame and screenshot...\n\n");
-		CrashLog::main_thread_pending_crashlog = this;
-		_exit_game = true;
-		CSleep(60000);
-		if (!CrashLog::main_thread_pending_crashlog) return ret;
-		printf("Main thread did not write crash savegame and screenshot within 60s, trying it from this thread...\n\n");
+	if (!VideoDriver::EmergencyAcquireGameLock(1000, 5)) {
+		printf("Failed to acquire gamelock before writing crash savegame and screenshot, proceeding without lock as current owner is probably stuck\n\n");
 	}
-	CrashLog::main_thread_pending_crashlog = nullptr;
+
 	bret = CrashLog::MakeCrashSavegameAndScreenshot();
 	if (!bret) ret = false;
 
@@ -800,18 +798,6 @@ bool CrashLog::MakeCrashSavegameAndScreenshot() const
 	}
 
 	return ret;
-}
-
-/* static */ void CrashLog::MainThreadExitCheckPendingCrashlog()
-{
-	const CrashLog *cl = CrashLog::main_thread_pending_crashlog;
-	if (cl) {
-		CrashLog::main_thread_pending_crashlog = nullptr;
-		cl->MakeCrashSavegameAndScreenshot();
-
-		CrashLog::AfterCrashLogCleanup();
-		abort();
-	}
 }
 
 /**

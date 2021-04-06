@@ -173,10 +173,6 @@ public:
 	inline const char *GetMessage() const { return this->message; }
 
 	static const char *GetAbortCrashlogReason();
-
-	static const CrashLog *main_thread_pending_crashlog;
-
-	static void MainThreadExitCheckPendingCrashlog();
 };
 
 #endif /* CRASHLOG_H */

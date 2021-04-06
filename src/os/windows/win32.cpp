@@ -734,10 +734,16 @@ int OTTDStringCompare(const char *s1, const char *s2)
 }
 
 static DWORD main_thread_id;
+static DWORD game_thread_id;
 
 void SetSelfAsMainThread()
 {
 	main_thread_id = GetCurrentThreadId();
+}
+
+void SetSelfAsGameThread()
+{
+	game_thread_id = GetCurrentThreadId();
 }
 
 static BOOL (WINAPI *_SetThreadStackGuarantee)(PULONG) = nullptr;
@@ -763,6 +769,11 @@ bool IsMainThread()
 bool IsNonMainThread()
 {
 	return main_thread_id != GetCurrentThreadId();
+}
+
+bool IsGameThread()
+{
+	return game_thread_id == GetCurrentThreadId();
 }
 
 static std::map<DWORD, std::string> _thread_name_map;

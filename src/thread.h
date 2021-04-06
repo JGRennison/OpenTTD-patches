@@ -47,6 +47,11 @@ int GetCurrentThreadName(char *str, const char *last);
 void SetSelfAsMainThread();
 
 /**
+ * Set the current thread as the "game" thread
+ */
+void SetSelfAsGameThread();
+
+/**
  * Perform per-thread setup
  */
 void PerThreadSetup();
@@ -57,14 +62,19 @@ void PerThreadSetup();
 void PerThreadSetupInit();
 
 /**
- * @return true if the current thread definitely the "main" thread. If in doubt returns false.
+ * @return true if the current thread is definitely the "main" thread. If in doubt returns false.
  */
 bool IsMainThread();
 
 /**
- * @return true if the current thread definitely a "non-main" thread. If in doubt returns false.
+ * @return true if the current thread is definitely a "non-main" thread. If in doubt returns false.
  */
 bool IsNonMainThread();
+
+/**
+ * @return true if the current thread is definitely the "game" thread. If in doubt returns false.
+ */
+bool IsGameThread();
 
 
 /**

@@ -212,6 +212,8 @@ public:
 		bool unlock; ///< Stores if the lock did anything that has to be undone.
 	};
 
+	static bool EmergencyAcquireGameLock(uint tries, uint delay_ms);
+
 protected:
 	const uint ALLOWED_DRIFT = 5; ///< How many times videodriver can miss deadlines without it being overly compensated.
 
@@ -322,7 +324,7 @@ protected:
 
 	bool is_game_threaded;
 	std::thread game_thread;
-	std::mutex game_state_mutex;
+	std::recursive_mutex game_state_mutex;
 	std::mutex game_thread_wait_mutex;
 
 	static void GameThreadThunk(VideoDriver *drv);
