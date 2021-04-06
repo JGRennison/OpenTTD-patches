@@ -818,6 +818,7 @@ void VideoDriver_Win32Base::CheckPaletteAnim()
 	if (_cur_palette.count_dirty == 0) return;
 
 	_local_palette = _cur_palette;
+	_cur_palette.count_dirty = 0;
 	this->MakeDirty(0, 0, _screen.width, _screen.height);
 }
 
