@@ -40,7 +40,7 @@ void NetworkGameListAddItemDelayed(NetworkGameList *item)
 static void NetworkGameListHandleDelayedInsert()
 {
 	while (true) {
-		NetworkGameList *ins_item = _network_game_delayed_insertion_list.load(std::memory_order_relaxed);
+		NetworkGameList *ins_item = _network_game_delayed_insertion_list.load(std::memory_order_acquire);
 		while (ins_item != nullptr && !_network_game_delayed_insertion_list.compare_exchange_weak(ins_item, ins_item->next, std::memory_order_acq_rel)) {}
 		if (ins_item == nullptr) break; // No item left.
 
