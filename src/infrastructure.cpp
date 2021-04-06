@@ -38,7 +38,7 @@ static void PaySharingFee(Vehicle *v, Owner infra_owner, Money cost)
 	Company *c = Company::Get(v->owner);
 	if (!_settings_game.economy.sharing_payment_in_debt) {
 		/* Do not allow fee payment to drop (money - loan) below 0. */
-		cost = min(cost, (c->money - c->current_loan) << 8);
+		cost = std::min(cost, (c->money - c->current_loan) << 8);
 		if (cost <= 0) return;
 	}
 	v->profit_this_year -= cost;
@@ -191,6 +191,12 @@ static void RemoveAndSellVehicle(Vehicle *v, bool give_money)
 	}
 }
 
+void ConsoleRemoveVehicle(VehicleID id)
+{
+	Vehicle *v = Vehicle::GetIfValid(id);
+	if (v->Previous() == nullptr) RemoveAndSellVehicle(v, false);
+}
+
 /**
  * Check all path reservations, and reserve a new path if the current path is invalid.
  */
@@ -205,7 +211,7 @@ static void FixAllReservations()
 		 * detect this by first finding the end of the reservation,
 		 * then switch sharing on and try again. If these two ends differ,
 		 * unreserve the path, switch sharing off and try to reserve a new path */
-		PBSTileInfo end_tile_info = FollowTrainReservation(v);
+		PBSTileInfo end_tile_info = FollowTrainReservation(v, nullptr, FTRF_IGNORE_LOOKAHEAD | FTRF_OKAY_UNUSED);
 
 		/* first do a quick test to determine whether the next tile has any reservation at all */
 		TileIndex next_tile = end_tile_info.tile + TileOffsByDiagDir(TrackdirToExitdir(end_tile_info.trackdir));
@@ -214,7 +220,7 @@ static void FixAllReservations()
 
 		/* change sharing setting temporarily */
 		_settings_game.economy.infrastructure_sharing[VEH_TRAIN] = true;
-		PBSTileInfo end_tile_info2 = FollowTrainReservation(v);
+		PBSTileInfo end_tile_info2 = FollowTrainReservation(v, nullptr, FTRF_IGNORE_LOOKAHEAD | FTRF_OKAY_UNUSED);
 		/* if these two reservation ends differ, unreserve the path and try to reserve a new path */
 		if (end_tile_info.tile != end_tile_info2.tile || end_tile_info.trackdir != end_tile_info2.trackdir) {
 			FreeTrainTrackReservation(v);
@@ -258,8 +264,7 @@ bool CheckSharingChangePossible(VehicleType type)
 
 		/* Check order list */
 		if (v->FirstShared() != v) continue;
-		Order *o;
-		FOR_VEHICLE_ORDERS(v, o) {
+		for(const Order *o : v->Orders()) {
 			if (!OrderDestinationIsAllowed(o, v)) {
 				error_message = STR_CONFIG_SETTING_SHARING_ORDERS_TO_OTHERS;
 			}

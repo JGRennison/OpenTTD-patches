@@ -27,6 +27,7 @@
 #include "tunnelbridge_map.h"
 #include "viewport_type.h"
 #include "guitimer_func.h"
+#include "viewport_func.h"
 #include "rev.h"
 
 #include "widgets/misc_widget.h"
@@ -48,6 +49,7 @@ static const NWidgetPart _nested_land_info_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY), SetDataTip(STR_LAND_AREA_INFORMATION_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_LI_LOCATION), SetMinimalSize(12, 14), SetDataTip(SPR_GOTO_LOCATION, STR_LAND_AREA_INFORMATION_LOCATION_TOOLTIP),
 		NWidget(WWT_DEBUGBOX, COLOUR_GREY),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_GREY, WID_LI_BACKGROUND), EndContainer(),
@@ -101,7 +103,7 @@ public:
 			if (StrEmpty(this->landinfo_data[i])) break;
 
 			uint width = GetStringBoundingBox(this->landinfo_data[i]).width + WD_FRAMETEXT_LEFT + WD_FRAMETEXT_RIGHT;
-			size->width = max(size->width, width);
+			size->width = std::max(size->width, width);
 
 			size->height += FONT_HEIGHT_NORMAL + WD_PAR_VSEP_NORMAL;
 			if (i == 0) size->height += 4;
@@ -109,7 +111,7 @@ public:
 
 		if (!StrEmpty(this->landinfo_data[LAND_INFO_MULTICENTER_LINE])) {
 			uint width = GetStringBoundingBox(this->landinfo_data[LAND_INFO_MULTICENTER_LINE]).width + WD_FRAMETEXT_LEFT + WD_FRAMETEXT_RIGHT;
-			size->width = max(size->width, min(300u, width));
+			size->width = std::max(size->width, std::min(300u, width));
 			SetDParamStr(0, this->landinfo_data[LAND_INFO_MULTICENTER_LINE]);
 			size->height += GetStringHeight(STR_JUST_RAW_STRING, size->width - WD_FRAMETEXT_LEFT - WD_FRAMETEXT_RIGHT);
 		}
@@ -124,24 +126,34 @@ public:
 #else
 #	define LANDINFOD_LEVEL 1
 #endif
-		DEBUG(misc, LANDINFOD_LEVEL, "TILE: %#x (%i,%i)", tile, TileX(tile), TileY(tile));
-		if(IsTunnelTile(tile)) {
-			DEBUG(misc, LANDINFOD_LEVEL, "tunnel pool size: %u", (uint)Tunnel::GetPoolSize());
-			DEBUG(misc, LANDINFOD_LEVEL, "index: %#x"          , Tunnel::GetByTile(tile)->index);
-			DEBUG(misc, LANDINFOD_LEVEL, "north tile: %#x"     , Tunnel::GetByTile(tile)->tile_n);
-			DEBUG(misc, LANDINFOD_LEVEL, "south tile: %#x"     , Tunnel::GetByTile(tile)->tile_s);
-			DEBUG(misc, LANDINFOD_LEVEL, "is chunnel: %u"      , Tunnel::GetByTile(tile)->is_chunnel);
+		if (_debug_misc_level >= LANDINFOD_LEVEL) {
+			DEBUG(misc, LANDINFOD_LEVEL, "TILE: %#x (%i,%i)", tile, TileX(tile), TileY(tile));
+			if (IsTunnelTile(tile)) {
+				DEBUG(misc, LANDINFOD_LEVEL, "tunnel pool size: %u", (uint)Tunnel::GetPoolSize());
+				DEBUG(misc, LANDINFOD_LEVEL, "index: %#x"          , Tunnel::GetByTile(tile)->index);
+				DEBUG(misc, LANDINFOD_LEVEL, "north tile: %#x"     , Tunnel::GetByTile(tile)->tile_n);
+				DEBUG(misc, LANDINFOD_LEVEL, "south tile: %#x"     , Tunnel::GetByTile(tile)->tile_s);
+				DEBUG(misc, LANDINFOD_LEVEL, "is chunnel: %u"      , Tunnel::GetByTile(tile)->is_chunnel);
+			}
+			if (IsBridgeTile(tile)) {
+				const BridgeSpec *b = GetBridgeSpec(GetBridgeType(tile));
+				DEBUG(misc, LANDINFOD_LEVEL, "bridge: flags: %X, ctrl_flags: %X", b->flags, b->ctrl_flags);
+			}
+			if (IsBridgeAbove(tile)) {
+				BridgePieceDebugInfo info = GetBridgePieceDebugInfo(tile);
+				DEBUG(misc, LANDINFOD_LEVEL, "bridge above: piece: %u, pillars: %X, pillar index: %u", info.piece, info.pillar_flags, info.pillar_index);
+			}
+			DEBUG(misc, LANDINFOD_LEVEL, "type   = %#x", _m[tile].type);
+			DEBUG(misc, LANDINFOD_LEVEL, "height = %#x", _m[tile].height);
+			DEBUG(misc, LANDINFOD_LEVEL, "m1     = %#x", _m[tile].m1);
+			DEBUG(misc, LANDINFOD_LEVEL, "m2     = %#x", _m[tile].m2);
+			DEBUG(misc, LANDINFOD_LEVEL, "m3     = %#x", _m[tile].m3);
+			DEBUG(misc, LANDINFOD_LEVEL, "m4     = %#x", _m[tile].m4);
+			DEBUG(misc, LANDINFOD_LEVEL, "m5     = %#x", _m[tile].m5);
+			DEBUG(misc, LANDINFOD_LEVEL, "m6     = %#x", _me[tile].m6);
+			DEBUG(misc, LANDINFOD_LEVEL, "m7     = %#x", _me[tile].m7);
+			DEBUG(misc, LANDINFOD_LEVEL, "m8     = %#x", _me[tile].m8);
 		}
-		DEBUG(misc, LANDINFOD_LEVEL, "type   = %#x", _m[tile].type);
-		DEBUG(misc, LANDINFOD_LEVEL, "height = %#x", _m[tile].height);
-		DEBUG(misc, LANDINFOD_LEVEL, "m1     = %#x", _m[tile].m1);
-		DEBUG(misc, LANDINFOD_LEVEL, "m2     = %#x", _m[tile].m2);
-		DEBUG(misc, LANDINFOD_LEVEL, "m3     = %#x", _m[tile].m3);
-		DEBUG(misc, LANDINFOD_LEVEL, "m4     = %#x", _m[tile].m4);
-		DEBUG(misc, LANDINFOD_LEVEL, "m5     = %#x", _m[tile].m5);
-		DEBUG(misc, LANDINFOD_LEVEL, "m6     = %#x", _me[tile].m6);
-		DEBUG(misc, LANDINFOD_LEVEL, "m7     = %#x", _me[tile].m7);
-		DEBUG(misc, LANDINFOD_LEVEL, "m8     = %#x", _me[tile].m8);
 #undef LANDINFOD_LEVEL
 	}
 
@@ -387,6 +399,19 @@ public:
 		::ShowNewGRFInspectWindow(GetGrfSpecFeature(this->tile), this->tile);
 	}
 
+	void OnClick(Point pt, int widget, int click_count) override
+	{
+		switch (widget) {
+			case WID_LI_LOCATION:
+				if (_ctrl_pressed) {
+					ShowExtraViewportWindow(this->tile);
+				} else {
+					ScrollMainWindowToTile(this->tile);
+				}
+				break;
+		}
+	}
+
 	/**
 	 * Some data on this window has become invalid.
 	 * @param data Information about the changed data.
@@ -440,73 +465,73 @@ static WindowDesc _about_desc(
 );
 
 static const char * const _credits[] = {
-	"Original design by Chris Sawyer",
-	"Original graphics by Simon Foster",
-	"",
-	"The OpenTTD team (in alphabetical order):",
-	"  Grzegorz Duczy\xC5\x84ski (adf88) - General coding (since 1.7.2)",
-	"  Albert Hofkamp (Alberth) - GUI expert (since 0.7)",
-	"  Matthijs Kooijman (blathijs) - Pathfinder-guru, Debian port (since 0.3)",
-	"  Ulf Hermann (fonsinchen) - Cargo Distribution (since 1.3)",
-	"  Christoph Elsenhans (frosch) - General coding (since 0.6)",
-	"  Lo\xC3\xAF""c Guilloux (glx) - General / Windows Expert (since 0.4.5)",
-	"  Charles Pigott (LordAro) - General / Correctness police (since 1.9)",
-	"  Michael Lutz (michi_cc) - Path based signals (since 0.7)",
-	"  Niels Martin Hansen (nielsm) - Music system, general coding (since 1.9)",
-	"  Owen Rudge (orudge) - Forum host, OS/2 port (since 0.1)",
-	"  Peter Nelson (peter1138) - Spiritual descendant from NewGRF gods (since 0.4.5)",
-	"  Ingo von Borstel (planetmaker) - General, Support (since 1.1)",
-	"  Remko Bijker (Rubidium) - Lead coder and way more (since 0.4.5)",
-	"  Jos\xC3\xA9 Soler (Terkhen) - General coding (since 1.0)",
-	"  Leif Linse (Zuu) - AI/Game Script (since 1.2)",
-	"",
-	"Inactive Developers:",
-	"  Jean-Fran\xC3\xA7ois Claeys (Belugas) - GUI, NewGRF and more (0.4.5 - 1.0)",
-	"  Bjarni Corfitzen (Bjarni) - MacOSX port, coder and vehicles (0.3 - 0.7)",
-	"  Victor Fischer (Celestar) - Programming everywhere you need him to (0.3 - 0.6)",
-	"  Jaroslav Mazanec (KUDr) - YAPG (Yet Another Pathfinder God) ;) (0.4.5 - 0.6)",
-	"  Jonathan Coome (Maedhros) - High priest of the NewGRF Temple (0.5 - 0.6)",
-	"  Attila B\xC3\xA1n (MiHaMiX) - Developer WebTranslator 1 and 2 (0.3 - 0.5)",
-	"  Zden\xC4\x9Bk Sojka (SmatZ) - Bug finder and fixer (0.6 - 1.3)",
-	"  Christoph Mallon (Tron) - Programmer, code correctness police (0.3 - 0.5)",
-	"  Patric Stout (TrueBrain) - NoAI, NoGo, Network (0.3 - 1.2), sys op (active)",
-	"  Thijs Marinussen (Yexo) - AI Framework, General (0.6 - 1.3)",
-	"",
-	"Retired Developers:",
-	"  Tam\xC3\xA1s Farag\xC3\xB3 (Darkvater) - Ex-Lead coder (0.3 - 0.5)",
-	"  Dominik Scherer (dominik81) - Lead programmer, GUI expert (0.3 - 0.3)",
-	"  Emil Djupfeld (egladil) - MacOSX (0.4.5 - 0.6)",
-	"  Simon Sasburg (HackyKid) - Many bugfixes (0.4 - 0.4.5)",
-	"  Ludvig Strigeus (ludde) - Original author of OpenTTD, main coder (0.1 - 0.3)",
-	"  Cian Duffy (MYOB) - BeOS port / manual writing (0.1 - 0.3)",
-	"  Petr Baudi\xC5\xA1 (pasky) - Many patches, NewGRF support (0.3 - 0.3)",
-	"  Benedikt Br\xC3\xBCggemeier (skidd13) - Bug fixer and code reworker (0.6 - 0.7)",
-	"  Serge Paquet (vurlix) - 2nd contributor after ludde (0.1 - 0.3)",
-	"",
-	"Special thanks go out to:",
-	"  Josef Drexler - For his great work on TTDPatch",
-	"  Marcin Grzegorczyk - Track foundations and for describing TTD internals",
-	"  Stefan Mei\xC3\x9Fner (sign_de) - For his work on the console",
-	"  Mike Ragsdale - OpenTTD installer",
-	"  Christian Rosentreter (tokai) - MorphOS / AmigaOS port",
-	"  Richard Kempton (richK) - additional airports, initial TGP implementation",
-	"",
-	"  Alberto Demichelis - Squirrel scripting language \xC2\xA9 2003-2008",
-	"  L. Peter Deutsch - MD5 implementation \xC2\xA9 1999, 2000, 2002",
-	"  Michael Blunck - Pre-signals and semaphores \xC2\xA9 2003",
-	"  George - Canal/Lock graphics \xC2\xA9 2003-2004",
-	"  Andrew Parkhouse (andythenorth) - River graphics",
-	"  David Dallaston (Pikka) - Tram tracks",
-	"  All Translators - Who made OpenTTD a truly international game",
-	"  Bug Reporters - Without whom OpenTTD would still be full of bugs!",
-	"",
-	"",
-	"Developer of this patchpack:",
-	"  Jonathan G. Rennison (JGR)",
-	"",
-	"",
-	"And last but not least:",
-	"  Chris Sawyer - For an amazing game!"
+	u8"Original design by Chris Sawyer",
+	u8"Original graphics by Simon Foster",
+	u8"",
+	u8"The OpenTTD team (in alphabetical order):",
+	u8"  Grzegorz Duczy\u0144ski (adf88) - General coding (since 1.7.2)",
+	u8"  Albert Hofkamp (Alberth) - GUI expert (since 0.7)",
+	u8"  Matthijs Kooijman (blathijs) - Pathfinder-guru, Debian port (since 0.3)",
+	u8"  Ulf Hermann (fonsinchen) - Cargo Distribution (since 1.3)",
+	u8"  Christoph Elsenhans (frosch) - General coding (since 0.6)",
+	u8"  Lo\u00efc Guilloux (glx) - General / Windows Expert (since 0.4.5)",
+	u8"  Charles Pigott (LordAro) - General / Correctness police (since 1.9)",
+	u8"  Michael Lutz (michi_cc) - Path based signals (since 0.7)",
+	u8"  Niels Martin Hansen (nielsm) - Music system, general coding (since 1.9)",
+	u8"  Owen Rudge (orudge) - Forum host, OS/2 port (since 0.1)",
+	u8"  Peter Nelson (peter1138) - Spiritual descendant from NewGRF gods (since 0.4.5)",
+	u8"  Ingo von Borstel (planetmaker) - General, Support (since 1.1)",
+	u8"  Remko Bijker (Rubidium) - Lead coder and way more (since 0.4.5)",
+	u8"  Jos\u00e9 Soler (Terkhen) - General coding (since 1.0)",
+	u8"  Leif Linse (Zuu) - AI/Game Script (since 1.2)",
+	u8"",
+	u8"Inactive Developers:",
+	u8"  Jean-Fran\u00e7ois Claeys (Belugas) - GUI, NewGRF and more (0.4.5 - 1.0)",
+	u8"  Bjarni Corfitzen (Bjarni) - MacOSX port, coder and vehicles (0.3 - 0.7)",
+	u8"  Victor Fischer (Celestar) - Programming everywhere you need him to (0.3 - 0.6)",
+	u8"  Jaroslav Mazanec (KUDr) - YAPG (Yet Another Pathfinder God) ;) (0.4.5 - 0.6)",
+	u8"  Jonathan Coome (Maedhros) - High priest of the NewGRF Temple (0.5 - 0.6)",
+	u8"  Attila B\u00e1n (MiHaMiX) - Developer WebTranslator 1 and 2 (0.3 - 0.5)",
+	u8"  Zden\u011bk Sojka (SmatZ) - Bug finder and fixer (0.6 - 1.3)",
+	u8"  Christoph Mallon (Tron) - Programmer, code correctness police (0.3 - 0.5)",
+	u8"  Patric Stout (TrueBrain) - NoAI, NoGo, Network (0.3 - 1.2), sys op (active)",
+	u8"  Thijs Marinussen (Yexo) - AI Framework, General (0.6 - 1.3)",
+	u8"",
+	u8"Retired Developers:",
+	u8"  Tam\u00e1s Farag\u00f3 (Darkvater) - Ex-Lead coder (0.3 - 0.5)",
+	u8"  Dominik Scherer (dominik81) - Lead programmer, GUI expert (0.3 - 0.3)",
+	u8"  Emil Djupfeld (egladil) - MacOSX (0.4.5 - 0.6)",
+	u8"  Simon Sasburg (HackyKid) - Many bugfixes (0.4 - 0.4.5)",
+	u8"  Ludvig Strigeus (ludde) - Original author of OpenTTD, main coder (0.1 - 0.3)",
+	u8"  Cian Duffy (MYOB) - BeOS port / manual writing (0.1 - 0.3)",
+	u8"  Petr Baudi\u0161 (pasky) - Many patches, NewGRF support (0.3 - 0.3)",
+	u8"  Benedikt Br\u00fcggemeier (skidd13) - Bug fixer and code reworker (0.6 - 0.7)",
+	u8"  Serge Paquet (vurlix) - 2nd contributor after ludde (0.1 - 0.3)",
+	u8"",
+	u8"Special thanks go out to:",
+	u8"  Josef Drexler - For his great work on TTDPatch",
+	u8"  Marcin Grzegorczyk - Track foundations and for describing TTD internals",
+	u8"  Stefan Mei\u00dfner (sign_de) - For his work on the console",
+	u8"  Mike Ragsdale - OpenTTD installer",
+	u8"  Christian Rosentreter (tokai) - MorphOS / AmigaOS port",
+	u8"  Richard Kempton (richK) - additional airports, initial TGP implementation",
+	u8"",
+	u8"  Alberto Demichelis - Squirrel scripting language \u00a9 2003-2008",
+	u8"  L. Peter Deutsch - MD5 implementation \u00a9 1999, 2000, 2002",
+	u8"  Michael Blunck - Pre-signals and semaphores \u00a9 2003",
+	u8"  George - Canal/Lock graphics \u00a9 2003-2004",
+	u8"  Andrew Parkhouse (andythenorth) - River graphics",
+	u8"  David Dallaston (Pikka) - Tram tracks",
+	u8"  All Translators - Who made OpenTTD a truly international game",
+	u8"  Bug Reporters - Without whom OpenTTD would still be full of bugs!",
+	u8"",
+	u8"",
+	u8"Developer of this patchpack:",
+	u8"  Jonathan G. Rennison (JGR)",
+	u8"",
+	u8"",
+	u8"And last but not least:",
+	u8"  Chris Sawyer - For an amazing game!"
 };
 
 struct AboutWindow : public Window {
@@ -527,7 +552,7 @@ struct AboutWindow : public Window {
 
 	void SetStringParameters(int widget) const override
 	{
-		if (widget == WID_A_WEBSITE) SetDParamStr(0, "Main project website: http://www.openttd.org");
+		if (widget == WID_A_WEBSITE) SetDParamStr(0, "Main project website: https://www.openttd.org");
 		if (widget == WID_A_WEBSITE1) SetDParamStr(0, "Patchpack thread: https://www.tt-forums.net/viewtopic.php?f=33&t=73469");
 		if (widget == WID_A_WEBSITE2) SetDParamStr(0, "Patchpack Github: https://github.com/JGRennison/OpenTTD-patches");
 		if (widget == WID_A_COPYRIGHT) SetDParamStr(0, _openttd_revision_year);
@@ -544,7 +569,7 @@ struct AboutWindow : public Window {
 
 		d.width = 0;
 		for (uint i = 0; i < lengthof(_credits); i++) {
-			d.width = max(d.width, GetStringBoundingBox(_credits[i]).width);
+			d.width = std::max(d.width, GetStringBoundingBox(_credits[i]).width);
 		}
 		*size = maxdim(*size, d);
 	}
@@ -611,6 +636,8 @@ void ShowEstimatedCostOrIncome(Money cost, int x, int y)
  */
 void ShowCostOrIncomeAnimation(int x, int y, int z, Money cost)
 {
+	if (!HasBit(_extra_display_opt, XDO_SHOW_MONEY_TEXT_EFFECTS)) return;
+
 	Point pt = RemapCoords(x, y, z);
 	StringID msg = STR_INCOME_FLOAT_COST;
 
@@ -632,6 +659,8 @@ void ShowCostOrIncomeAnimation(int x, int y, int z, Money cost)
  */
 void ShowFeederIncomeAnimation(int x, int y, int z, Money transfer, Money income)
 {
+	if (!HasBit(_extra_display_opt, XDO_SHOW_MONEY_TEXT_EFFECTS)) return;
+
 	Point pt = RemapCoords(x, y, z);
 
 	SetDParam(0, transfer);
@@ -719,7 +748,7 @@ struct TooltipsWindow : public Window
 	{
 		this->parent = parent;
 		this->string_id = str;
-		assert_compile(sizeof(this->params[0]) == sizeof(params[0]));
+		static_assert(sizeof(this->params[0]) == sizeof(params[0]));
 		assert(paramcount <= lengthof(this->params));
 		if (paramcount > 0) memcpy(this->params, params, sizeof(this->params[0]) * paramcount);
 		this->paramcount = paramcount;
@@ -750,7 +779,7 @@ struct TooltipsWindow : public Window
 		 * Clamp value to below main toolbar and above statusbar. If tooltip would
 		 * go below window, flip it so it is shown above the cursor */
 		pt.y = Clamp(_cursor.pos.y + _cursor.total_size.y + _cursor.total_offs.y + 5, scr_top, scr_bot);
-		if (pt.y + sm_height > scr_bot) pt.y = min(_cursor.pos.y + _cursor.total_offs.y - 5, scr_bot) - sm_height;
+		if (pt.y + sm_height > scr_bot) pt.y = std::min(_cursor.pos.y + _cursor.total_offs.y - 5, scr_bot) - sm_height;
 		pt.x = sm_width >= _screen.width ? 0 : Clamp(_cursor.pos.x - (sm_width >> 1), 0, _screen.width - sm_width);
 
 		return pt;
@@ -761,7 +790,7 @@ struct TooltipsWindow : public Window
 		/* There is only one widget. */
 		for (uint i = 0; i != this->paramcount; i++) SetDParam(i, this->params[i]);
 
-		size->width  = min(GetStringBoundingBox(this->string_id).width, ScaleGUITrad(194));
+		size->width  = std::min<uint>(GetStringBoundingBox(this->string_id).width, ScaleGUITrad(194));
 		size->height = GetStringHeight(this->string_id, size->width);
 
 		/* Increase slightly to have some space around the box. */
@@ -813,6 +842,12 @@ struct TooltipsWindow : public Window
 					this->delete_next_mouse_loop = true;
 				}
 				break;
+
+			case TCC_EXIT_VIEWPORT: {
+				Window *w = FindWindowFromPt(_cursor.pos.x, _cursor.pos.y);
+				if (w == nullptr || IsPtInWindowViewport(w, _cursor.pos.x, _cursor.pos.y) == nullptr) this->delete_next_mouse_loop = true;
+				break;
+			}
 		}
 	}
 };
@@ -829,7 +864,7 @@ void GuiShowTooltips(Window *parent, StringID str, uint paramcount, const uint64
 {
 	DeleteWindowById(WC_TOOLTIPS, 0);
 
-	if (str == STR_NULL) return;
+	if (str == STR_NULL || !_cursor.in_window) return;
 
 	new TooltipsWindow(parent, str, paramcount, params, close_tooltip);
 }
@@ -879,7 +914,7 @@ void QueryString::DrawEditBox(const Window *w, int wid) const
 	/* We will take the current widget length as maximum width, with a small
 	 * space reserved at the end for the caret to show */
 	const Textbuf *tb = &this->text;
-	int delta = min(0, (right - left) - tb->pixels - 10);
+	int delta = std::min(0, (right - left) - tb->pixels - 10);
 
 	if (tb->caretxoffs + delta < 0) delta = -tb->caretxoffs;
 
@@ -917,7 +952,7 @@ Point QueryString::GetCaretPosition(const Window *w, int wid) const
 
 	/* Clamp caret position to be inside out current width. */
 	const Textbuf *tb = &this->text;
-	int delta = min(0, (right - left) - tb->pixels - 10);
+	int delta = std::min(0, (right - left) - tb->pixels - 10);
 	if (tb->caretxoffs + delta < 0) delta = -tb->caretxoffs;
 
 	Point pt = {left + WD_FRAMERECT_LEFT + tb->caretxoffs + delta, (int)wi->pos_y + WD_FRAMERECT_TOP};
@@ -950,7 +985,7 @@ Rect QueryString::GetBoundingRect(const Window *w, int wid, const char *from, co
 
 	/* Clamp caret position to be inside our current width. */
 	const Textbuf *tb = &this->text;
-	int delta = min(0, (right - left) - tb->pixels - 10);
+	int delta = std::min(0, (right - left) - tb->pixels - 10);
 	if (tb->caretxoffs + delta < 0) delta = -tb->caretxoffs;
 
 	/* Get location of first and last character. */
@@ -989,7 +1024,7 @@ const char *QueryString::GetCharAtPosition(const Window *w, int wid, const Point
 
 	/* Clamp caret position to be inside our current width. */
 	const Textbuf *tb = &this->text;
-	int delta = min(0, (right - left) - tb->pixels - 10);
+	int delta = std::min(0, (right - left) - tb->pixels - 10);
 	if (tb->caretxoffs + delta < 0) delta = -tb->caretxoffs;
 
 	return ::GetCharAtPosition(tb->buf, pt.x - delta - left);

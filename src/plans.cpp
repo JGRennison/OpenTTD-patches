@@ -17,3 +17,33 @@ INSTANTIATE_POOL_METHODS(Plan)
 
 Plan *_current_plan = nullptr;
 Plan *_new_plan = nullptr;
+
+void PlanLine::UpdateVisualExtents()
+{
+	if (_network_dedicated) return;
+
+	if (this->tiles.size() < 2) {
+		this->viewport_extents = { INT_MAX, INT_MAX, INT_MAX, INT_MAX };
+		return;
+	}
+
+	int min_x = INT_MAX;
+	int max_x = INT_MIN;
+	int min_y = INT_MAX;
+	int max_y = INT_MIN;
+
+	for (TileIndex t : this->tiles) {
+		const int tile_x = TileX(t);
+		const int tile_y = TileY(t);
+		const int x = tile_y - tile_x;
+		const int y = tile_y + tile_x;
+
+		if (x < min_x) min_x = x;
+		if (x > max_x) max_x = x;
+		if (y < min_y) min_y = y;
+		if (y > max_y) max_y = y;
+	}
+
+	this->viewport_extents = { (int)(min_x * TILE_SIZE * 2 * ZOOM_LVL_BASE), (int)(min_y * TILE_SIZE * ZOOM_LVL_BASE),
+			(int)((max_x + 1) * TILE_SIZE * 2 * ZOOM_LVL_BASE), (int)((max_y + 1) * TILE_SIZE * ZOOM_LVL_BASE) };
+}

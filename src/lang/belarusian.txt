@@ -166,24 +166,24 @@ STR_CARGO_PLURAL_TOYS.dat                                       :цацкам
 STR_CARGO_PLURAL_TOYS.acc                                       :цацкі
 STR_CARGO_PLURAL_TOYS.abl                                       :цацкамі
 STR_CARGO_PLURAL_TOYS.pre                                       :цацках
-STR_CARGO_PLURAL_CANDY                                          :{G=p}Цукеркi
-STR_CARGO_PLURAL_CANDY.gen                                      :цукерак
-STR_CARGO_PLURAL_CANDY.dat                                      :цукеркам
-STR_CARGO_PLURAL_CANDY.acc                                      :цукеркі
-STR_CARGO_PLURAL_CANDY.abl                                      :цукеркамі
-STR_CARGO_PLURAL_CANDY.pre                                      :цукерках
+STR_CARGO_PLURAL_SWEETS                                         :{G=p}Цукеркi
+STR_CARGO_PLURAL_SWEETS.gen                                     :цукерак
+STR_CARGO_PLURAL_SWEETS.dat                                     :цукеркам
+STR_CARGO_PLURAL_SWEETS.acc                                     :цукеркі
+STR_CARGO_PLURAL_SWEETS.abl                                     :цукеркамі
+STR_CARGO_PLURAL_SWEETS.pre                                     :цукерках
 STR_CARGO_PLURAL_COLA                                           :{G=f}Кола
 STR_CARGO_PLURAL_COLA.gen                                       :колы
 STR_CARGO_PLURAL_COLA.dat                                       :коле
 STR_CARGO_PLURAL_COLA.acc                                       :колу
 STR_CARGO_PLURAL_COLA.abl                                       :колай
 STR_CARGO_PLURAL_COLA.pre                                       :коле
-STR_CARGO_PLURAL_COTTON_CANDY                                   :{G=f}Цукровая баўна
-STR_CARGO_PLURAL_COTTON_CANDY.gen                               :цукровай баўны
-STR_CARGO_PLURAL_COTTON_CANDY.dat                               :цукровай баўне
-STR_CARGO_PLURAL_COTTON_CANDY.acc                               :цукровую баўну
-STR_CARGO_PLURAL_COTTON_CANDY.abl                               :цукровай баўнай
-STR_CARGO_PLURAL_COTTON_CANDY.pre                               :цукровай баўне
+STR_CARGO_PLURAL_CANDYFLOSS                                     :{G=f}Цукровая баўна
+STR_CARGO_PLURAL_CANDYFLOSS.gen                                 :цукровай баўны
+STR_CARGO_PLURAL_CANDYFLOSS.dat                                 :цукровай баўне
+STR_CARGO_PLURAL_CANDYFLOSS.acc                                 :цукровую баўну
+STR_CARGO_PLURAL_CANDYFLOSS.abl                                 :цукровай баўнай
+STR_CARGO_PLURAL_CANDYFLOSS.pre                                 :цукровай баўне
 STR_CARGO_PLURAL_BUBBLES                                        :{G=p}Бурбалкi
 STR_CARGO_PLURAL_BUBBLES.gen                                    :бурбалак
 STR_CARGO_PLURAL_BUBBLES.dat                                    :бурбалкам
@@ -355,24 +355,24 @@ STR_CARGO_SINGULAR_TOY.dat                                      :цаццы
 STR_CARGO_SINGULAR_TOY.acc                                      :цацку
 STR_CARGO_SINGULAR_TOY.abl                                      :цацкай
 STR_CARGO_SINGULAR_TOY.pre                                      :цаццы
-STR_CARGO_SINGULAR_CANDY                                        :{G=f}Цукерка
-STR_CARGO_SINGULAR_CANDY.gen                                    :цукеркі
-STR_CARGO_SINGULAR_CANDY.dat                                    :цукерцы
-STR_CARGO_SINGULAR_CANDY.acc                                    :цукерку
-STR_CARGO_SINGULAR_CANDY.abl                                    :цукеркай
-STR_CARGO_SINGULAR_CANDY.pre                                    :цукерцы
+STR_CARGO_SINGULAR_SWEETS                                       :{G=f}Цукерка
+STR_CARGO_SINGULAR_SWEETS.gen                                   :цукеркі
+STR_CARGO_SINGULAR_SWEETS.dat                                   :цукерцы
+STR_CARGO_SINGULAR_SWEETS.acc                                   :цукерку
+STR_CARGO_SINGULAR_SWEETS.abl                                   :цукеркай
+STR_CARGO_SINGULAR_SWEETS.pre                                   :цукерцы
 STR_CARGO_SINGULAR_COLA                                         :{G=f}Кола
 STR_CARGO_SINGULAR_COLA.gen                                     :колы
 STR_CARGO_SINGULAR_COLA.dat                                     :коле
 STR_CARGO_SINGULAR_COLA.acc                                     :колу
 STR_CARGO_SINGULAR_COLA.abl                                     :колай
 STR_CARGO_SINGULAR_COLA.pre                                     :коле
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :{G=f}Цукровая баўна
-STR_CARGO_SINGULAR_COTTON_CANDY.gen                             :цукровай баўны
-STR_CARGO_SINGULAR_COTTON_CANDY.dat                             :цукровай баўне
-STR_CARGO_SINGULAR_COTTON_CANDY.acc                             :цукровую баўну
-STR_CARGO_SINGULAR_COTTON_CANDY.abl                             :цукровай баўнай
-STR_CARGO_SINGULAR_COTTON_CANDY.pre                             :цукровай баўне
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :{G=f}Цукровая баўна
+STR_CARGO_SINGULAR_CANDYFLOSS.gen                               :цукровай баўны
+STR_CARGO_SINGULAR_CANDYFLOSS.dat                               :цукровай баўне
+STR_CARGO_SINGULAR_CANDYFLOSS.acc                               :цукровую баўну
+STR_CARGO_SINGULAR_CANDYFLOSS.abl                               :цукровай баўнай
+STR_CARGO_SINGULAR_CANDYFLOSS.pre                               :цукровай баўне
 STR_CARGO_SINGULAR_BUBBLE                                       :{G=f}Бурбалка
 STR_CARGO_SINGULAR_BUBBLE.gen                                   :бурбалкі
 STR_CARGO_SINGULAR_BUBBLE.dat                                   :бурбалцы
@@ -545,7 +545,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Зьме
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Зьмена крытэрыю сартаваньня
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Выберыце фiльтр
 STR_BUTTON_SORT_BY                                              :{BLACK}Сартаваньне
-STR_BUTTON_LOCATION                                             :{BLACK}Агляд
 STR_BUTTON_RENAME                                               :{BLACK}Перайменаваць
 STR_BUTTON_CATCHMENT                                            :{BLACK}Ахоп
 
@@ -625,6 +624,8 @@ STR_SORT_BY_CARGO_CAPACITY                                      :Ёмiстась
 STR_SORT_BY_RANGE                                               :Далёкасьць
 STR_SORT_BY_POPULATION                                          :Насельніцтва
 STR_SORT_BY_RATING                                              :Рэйтынґ
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Паўза
@@ -878,8 +879,8 @@ STR_MONTH_DEC                                                   :Сьнежан�
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Леґенда
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Паказаць леґенду да ґрафікаў
-STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}{} {STRING}
-STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{} {STRING}{}{NUM}
+STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}
+STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{}{NUM}
 STR_GRAPH_Y_LABEL                                               :{TINY_FONT}{STRING}
 STR_GRAPH_Y_LABEL_NUMBER                                        :{TINY_FONT}{COMMA}
 
@@ -1247,8 +1248,6 @@ STR_GAME_OPTIONS_CURRENCY_HKD                                   :Ганконс�
 STR_GAME_OPTIONS_CURRENCY_INR                                   :Індыйская рупія (INR)
 ############ end of currency region
 
-STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Дарожны рух
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Па якім баку дарогі рухаецца аўтатранспарт
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Езьдзіць леваруч
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Езьдзіць праваруч
 
@@ -1300,6 +1299,7 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Выра
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Выбар вырашэньня экрана
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :Iншае
 
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Памер элементаў інтэрфейсу
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Выберыце памер элементаў інтэрфейсу
 
@@ -1311,6 +1311,8 @@ STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Паме
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Абярыце памер шрыфта, выкарыстоўванага ў гульні
 
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Звычайны
+
+
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Набор базавай ґрафікі
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Выбар базавага набору ґрафічных аб'ектаў
@@ -1854,8 +1856,6 @@ STR_CONFIG_SETTING_COLOURED_NEWS_YEAR_HELPTEXT                  :Год, у як
 STR_CONFIG_SETTING_STARTING_YEAR                                :Год пачатку гульні: {STRING}
 STR_CONFIG_SETTING_ENDING_YEAR_VALUE                            :{NUM}
 STR_CONFIG_SETTING_ENDING_YEAR_ZERO                             :Ніколі
-STR_CONFIG_SETTING_SMOOTH_ECONOMY                               :Уключыць лагодную эканоміку (больш дробных зьменаў): {STRING}
-STR_CONFIG_SETTING_SMOOTH_ECONOMY_HELPTEXT                      :Калі ўключана, вытворчасьць прадпрыемстваў зьмяняецца часьцей ды малымі крокамі. Гэтая наладка звычайна не дае эфэкту, калі тыпы прадпрыемстваў вызначае набор новай ґрафікі (NewGRF).
 STR_CONFIG_SETTING_ALLOW_SHARES                                 :Дазволіць купляць акцыі іншых кампаніяў: {STRING}
 STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Калі ўключана, дазваляецца купляць і прадаваць долі ў кампаніях. Акцыі даступны для кампаніяў, якія дасягнулі пэўнага ўзросту.
 STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Мін. узрост кампаніі для выпуску акцыяў: {STRING}
@@ -1907,9 +1907,6 @@ STR_CONFIG_SETTING_TOWN_CARGOGENMODE_BITCOUNT                   :лінейна�
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Расстаноўка дрэваў у гульні: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :Кантроль адвольнага з'яўленьня дрэваў падчас гульні. Гэта можа закрануць прадпрыемствы, якія залежаць ад росту дрэваў, напрыклад, пільні.
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :адключана {RED}(пільні ня змогуць працаваць)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :толькі ў трапічных джунґлях
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :усюды
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Разьмяшчэньне галоўнай панэлі: {STRING}
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Гарызантальнае разьмяшчэньне галоўнай панэлі інструмэнтаў зьверху экрана.
@@ -2065,6 +2062,8 @@ STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... на
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Недахоп апэратыўнай памяці
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Не атрымалася вылучыць {BYTES} для кэша спрайтаў. Памер кэша зніжаны да {BYTES}. Гэта адмоўна адаб'ецца на прадукцыйнасьці OpenTTD. Каб зьменшыць выдаткі памяці, адключыце 32-бітную ґрафіку й зьменшыце максімальны ўзровень набліжэньня.
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -2108,17 +2107,8 @@ STR_INTRO_TRANSLATION                                           :{BLACK}На г�
 
 # Quit window
 STR_QUIT_CAPTION                                                :{WHITE}Выхад
-STR_QUIT_ARE_YOU_SURE_YOU_WANT_TO_EXIT_OPENTTD                  :{YELLOW}Вы ўпэўнены, што жадаеце перапыніць гульню й вярнуцца ў {STRING}?
 STR_QUIT_YES                                                    :{BLACK}Так
 STR_QUIT_NO                                                     :{BLACK}Не
-
-# Supported OSes
-STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_UNIX                                                 :Unix
-STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_OS2                                                  :OS/2
-STR_OSNAME_SUNOS                                                :SunOS
 
 # Abandon game
 STR_ABANDON_GAME_CAPTION                                        :{WHITE}У галоўнае мэню
@@ -2128,7 +2118,6 @@ STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Вы ў
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Махлярства (чыты)
 STR_CHEATS_TOOLTIP                                              :{BLACK}Птушкі паказваюць, ці выкарыстоўвалі Вы гэты чыт раней
-STR_CHEATS_WARNING                                              :{BLACK}Увага, Вы зьбіраецеся здрадзіць сваім спаборнікам! Гэтага вам ніколі не даруюць!
 STR_CHEAT_MONEY                                                 :{LTBLUE}Дадаць {CURRENCY_LONG}
 STR_CHEAT_CHANGE_COMPANY                                        :{LTBLUE}Гульня за кампанію: {ORANGE}{COMMA}
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}Чароўны дынамiт (знос УСЯГО): {ORANGE}{STRING}
@@ -2240,10 +2229,6 @@ STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Зьмя
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Сеткавая гульня
-STR_NETWORK_SERVER_LIST_ADVERTISED                              :{BLACK}Інтэрнэт
-STR_NETWORK_SERVER_LIST_ADVERTISED_TOOLTIP                      :{BLACK}Выберыце паміж гульнёй праз Інтэрнэт або ў лакальнай сетцы
-STR_NETWORK_SERVER_LIST_ADVERTISED_NO                           :Не
-STR_NETWORK_SERVER_LIST_ADVERTISED_YES                          :Так
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Імя гульца:
 STR_NETWORK_SERVER_LIST_ENTER_NAME_TOOLTIP                      :{BLACK}Гэта ваша імя, якое будзе бачна іншым гульцам
 
@@ -2284,8 +2269,6 @@ STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}Далу
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}Абнавіць сэрвэр
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}Абнавіць iнфармацыю аб сэрвэры
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}Знайсьці сэрвэр
-STR_NETWORK_SERVER_LIST_FIND_SERVER_TOOLTIP                     :{BLACK}Знайсьці сэрвэры, якія зараз ёсьць у сетцы
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}Дадаць сэрвэр
 STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP                      :{BLACK}Дадаць сэрвэр у сьпіс, які будзе аўтаматычна правярацца на ідучыя гульні
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Запуск сэрвэра
@@ -2302,6 +2285,8 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Назв
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Усталяваць пароль
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Абараніце вашу гульню паролем, калі ня хочаце рабіць яе публічна даступнай
 
+STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Інтэрнэт
+STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Выберыце паміж гульнёй праз Інтэрнэт або ў лакальнай сетцы
 STR_NETWORK_START_SERVER_UNADVERTISED                           :Не
 STR_NETWORK_START_SERVER_ADVERTISED                             :Так
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} клiент{P "" ы аў}
@@ -2523,8 +2508,6 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} д
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} распачаў новую кампанію (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} выйшаў з гульні ({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} зьмяніў сваё імя на {STRING}
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} перадаў вашай кампаніі {2:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** Вы перадалі {1:STRING} {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Гэты сэрвэр закрыў сэсію
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Гэты сэрвэр перазапускаецца...{}Пачакайце, калі ласка
 
@@ -2617,6 +2600,7 @@ STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD 
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Так, спампаваць ґрафiку
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Не, выйсьцi з OpenTTD
 
+
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Наладкі празрыстасьці
 STR_TRANSPARENT_SIGNS_TOOLTIP                                   :{BLACK}Пераключэньне празрыстасьці надпісаў. Ctrl+пстрычка — заблякаваць.
@@ -2657,6 +2641,8 @@ STR_JOIN_STATION_CREATE_SPLITTED_STATION                        :{YELLOW}Паб�
 
 STR_JOIN_WAYPOINT_CAPTION                                       :{WHITE}Аб'яднаць пункты шляху
 STR_JOIN_WAYPOINT_CREATE_SPLITTED_WAYPOINT                      :{YELLOW}Пабудаваць асобны пункт шляху
+
+# Generic toolbar
 
 # Rail construction toolbar
 STR_RAIL_TOOLBAR_RAILROAD_CONSTRUCTION_CAPTION                  :Чыгунка
@@ -2846,7 +2832,7 @@ STR_OBJECT_BUILD_SIZE                                           :{BLACK}Паме
 STR_OBJECT_CLASS_LTHS                                           :Маякi
 STR_OBJECT_CLASS_TRNS                                           :Перадатчыкi
 
-# Tree planting window (last two for SE only)
+# Tree planting window (last eight for SE only)
 STR_PLANT_TREE_CAPTION                                          :{WHITE}Дрэвы
 STR_PLANT_TREE_TOOLTIP                                          :{BLACK}Выберыце тып дрэваў для пасадкі. Калі на ўчастку ўжо ёсьць дрэвы, будуць дададзены некалькі дрэваў рознага тыпу, незалежна ад выбранага.
 STR_TREES_RANDOM_TYPE                                           :{BLACK}Дрэвы розных відаў
@@ -3133,7 +3119,6 @@ STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Вышы
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Падняць сьнегавую лінію
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Апусьціць сьнегавую лінію
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Ґенэратар ляндшафту:
-STR_MAPGEN_TREE_PLACER                                          :{BLACK}Альґарытм дрэваў:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Тып ляндшафту:
 STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Колькасьць азёраў/мораў:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Колькасьць рэк:
@@ -3445,13 +3430,10 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Дац�
 STR_GOALS_CAPTION                                               :{WHITE}Задачы кампаніі «{COMPANY}»
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Глабальныя задачы
 STR_GOALS_SPECTATOR                                             :Агульныя задачы
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Агульныя задачы:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Няма -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Непрыстасоўна -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Задачы кампаніі:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Пстрыкніце па задачы, каб паказаць прадпрыемства/горад/клетку. Ctrl+пстрычка паказвае ў новым вакне.
 
 # Goal question window
@@ -4030,10 +4012,6 @@ STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}Дазв
 # Vehicle view
 STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE}
 
-STR_VEHICLE_VIEW_TRAIN_LOCATION_TOOLTIP                         :{BLACK}Паказаць цягнiк у галоўным вакне. Ctrl+клік — сачыць за цягнiком у галоўным вакне.
-STR_VEHICLE_VIEW_ROAD_VEHICLE_LOCATION_TOOLTIP                  :{BLACK}Паказаць аўтамабiль у галоўным вакне. Ctrl+клік — сачыць за ім у галоўным вакне.
-STR_VEHICLE_VIEW_SHIP_LOCATION_TOOLTIP                          :{BLACK}Паказаць карабель у галоўным вакне. Ctrl+клік будзе сачыць за караблём у галоўным вакне.
-STR_VEHICLE_VIEW_AIRCRAFT_LOCATION_TOOLTIP                      :{BLACK}Паказаць паветранае судна у галоўным вакне. Ctrl+клік — сачыць за ім у галоўным вакне.
 
 STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP                    :{BLACK}Паслаць цягнiк у дэпо. Ctrl+клік — толькі для абслугоўваньня.
 STR_VEHICLE_VIEW_ROAD_VEHICLE_SEND_TO_DEPOT_TOOLTIP             :{BLACK}Паслаць аўтамабiль у гараж. Ctrl+клік — толькі для абслугоўваньня.
@@ -4065,10 +4043,7 @@ STR_VEHICLE_VIEW_ROAD_VEHICLE_SHOW_DETAILS_TOOLTIP              :{BLACK}Пака
 STR_VEHICLE_VIEW_SHIP_SHOW_DETAILS_TOOLTIP                      :{BLACK}Паказаць зьвесткі аб караблi
 STR_VEHICLE_VIEW_AIRCRAFT_SHOW_DETAILS_TOOLTIP                  :{BLACK}Паказаць зьвесткі аб авiятранспарце
 
-STR_VEHICLE_VIEW_TRAIN_STATE_START_STOP_TOOLTIP                 :{BLACK}Бягучае дзеяньне цягнiка; клікніце для яго спыненьня/запуску. Ctrl+клік — агляд пункта прызначэньня.
-STR_VEHICLE_VIEW_ROAD_VEHICLE_STATE_START_STOP_TOOLTIP          :{BLACK}Бягучае дзеяньне аўтамабiля; клікніце для яго спыненьня/запуску. Ctrl+клік — агляд пункта прызначэньня.
-STR_VEHICLE_VIEW_SHIP_STATE_START_STOP_TOOLTIP                  :{BLACK}Бягучае дзеяньне карабля; клікніце для яго спыненьня/запуску. Ctrl+клік — агляд пункта прызначэньня.
-STR_VEHICLE_VIEW_AIRCRAFT_STATE_START_STOP_TOOLTIP              :{BLACK}Бягучае дзеяньне паветранага судна; клікніце для яго спыненьня/запуску. Ctrl+клік — агляд пункта прызначэньня.
+
 
 # Messages in the start stop button in the vehicle view
 STR_VEHICLE_STATUS_LOADING_UNLOADING                            :{LTBLUE}Разгрузка / Пагрузка
@@ -4935,6 +4910,11 @@ STR_BASEMUSIC_WIN_DESCRIPTION                                   :Арыґіна�
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :Набор музычнага афармленьня з гульні Transport Tycoon Deluxe для DOS.
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Набор музычнага афармлення з гульні Transport Tycoon (Original/World Editor) для DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :"Пусты" набор музычнага афармлення, які не зьмяшчае ніякай музыкі.
+
+STR_TRADITIONAL_TRAIN_NAME                                      :Цягнiк {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Аўтамабiль {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Карабель {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Самалёт {COMMA}
 
 ##id 0x2000
 # Town building names

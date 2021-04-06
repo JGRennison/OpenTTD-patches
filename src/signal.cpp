@@ -39,7 +39,7 @@ static const uint SIG_TBD_SIZE    = 256; ///< number of intersections - open nod
 static const uint SIG_GLOB_SIZE   = 128; ///< number of open blocks (block can be opened more times until detected)
 static const uint SIG_GLOB_UPDATE =  64; ///< how many items need to be in _globset to force update
 
-assert_compile(SIG_GLOB_UPDATE <= SIG_GLOB_SIZE);
+static_assert(SIG_GLOB_UPDATE <= SIG_GLOB_SIZE);
 
 /** incidating trackbits with given enterdir */
 static const TrackBits _enterdir_to_trackbits[DIAGDIR_END] = {
@@ -313,12 +313,14 @@ static SigInfo ExploreSegment(Owner owner)
 
 				if (IsRailDepot(tile)) {
 					if (enterdir == INVALID_DIAGDIR) { // from 'inside' - train just entered or left the depot
+						if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) info.flags |= SF_PBS;
 						if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, VEH_TRAIN, nullptr, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
 						exitdir = GetRailDepotDirection(tile);
 						tile += TileOffsByDiagDir(exitdir);
 						enterdir = ReverseDiagDir(exitdir);
 						break;
 					} else if (enterdir == GetRailDepotDirection(tile)) { // entered a depot
+						if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) info.flags |= SF_PBS;
 						if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, VEH_TRAIN, nullptr, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
 						continue;
 					} else {
@@ -349,7 +351,7 @@ static SigInfo ExploreSegment(Owner owner)
 						 * ANY conventional signal in REVERSE direction
 						 * (if it is a presignal EXIT and it changes, it will be added to 'to-be-done' set later) */
 						if (HasSignalOnTrackdir(tile, reversedir)) {
-							if (IsPbsSignal(sig)) {
+							if (IsPbsSignalNonExtended(sig)) {
 								info.flags |= SF_PBS;
 							} else if (!_tbuset.Add(tile, reversedir)) {
 								info.flags |= SF_FULL;
@@ -515,14 +517,19 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 	Trackdir trackdir = INVALID_TRACKDIR;
 	Track track = INVALID_TRACK;
 
+	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+		if (_tbuset.Items() > 1) info.flags |= SF_PBS;
+		if (info.flags & SF_PBS) info.flags |= SF_TRAIN;
+	}
+
 	while (_tbuset.Get(&tile, &trackdir)) {
 		if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(tile)) {
-			if (IsTunnelBridgePBS(tile)) continue;
+			if (IsTunnelBridgePBS(tile) || (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && HasAcrossTunnelBridgeReservation(tile))) continue;
 			SignalState old_state = GetTunnelBridgeExitSignalState(tile);
 			SignalState new_state = (info.flags & SF_TRAIN) ? SIGNAL_STATE_RED : SIGNAL_STATE_GREEN;
 			if (old_state != new_state) {
 				SetTunnelBridgeExitSignalState(tile, new_state);
-				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			}
 			continue;
 		}
@@ -532,6 +539,9 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 		track = TrackdirToTrack(trackdir);
 		SignalType sig = GetSignalType(tile, track);
 		SignalState newstate = SIGNAL_STATE_GREEN;
+
+		/* don't change signal state if tile is reserved in realistic braking mode */
+		if ((_settings_game.vehicle.train_braking_model == TBM_REALISTIC && HasBit(GetRailReservationTrackBits(tile), track))) continue;
 
 		/* determine whether the new state is red */
 		if (info.flags & SF_TRAIN) {
@@ -633,8 +643,11 @@ static SigSegState UpdateSignalsInBuffer(Owner owner)
 				if (IsTunnel(tile)) assert(dir == INVALID_DIAGDIR || dir == ReverseDiagDir(GetTunnelBridgeDirection(tile)));
 				TrackBits across = GetAcrossTunnelBridgeTrackBits(tile);
 				if (dir == INVALID_DIAGDIR || _enterdir_to_trackbits[dir] & across) {
-					_tbdset.Add(tile, INVALID_DIAGDIR);  // we can safely start from wormhole centre
-					if (!IsTunnelBridgeWithSignalSimulation(tile)) {  // Don't worry with other side of tunnel.
+					if (IsTunnelBridgeWithSignalSimulation(tile)) {
+						/* Don't worry about other side of tunnel. */
+						_tbdset.Add(tile, dir);
+					} else {
+						_tbdset.Add(tile, INVALID_DIAGDIR);  // we can safely start from wormhole centre
 						_tbdset.Add(GetOtherTunnelBridgeEnd(tile), INVALID_DIAGDIR);
 					}
 					break;
@@ -701,6 +714,8 @@ static SigSegState UpdateSignalsInBuffer(Owner owner)
 		UpdateSignalsAroundSegment(info);
 	}
 
+	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) state = SIGSEG_PBS;
+
 	return state;
 }
 
@@ -715,6 +730,18 @@ static Owner _last_owner = INVALID_OWNER; ///< last owner whose track was put in
 void UpdateSignalsInBuffer()
 {
 	if (!_globset.IsEmpty()) {
+		UpdateSignalsInBuffer(_last_owner);
+		_last_owner = INVALID_OWNER; // invalidate
+	}
+}
+
+/**
+ * Update signals in buffer if the owner could not be added to the current buffer
+ * Called from 'outside'
+ */
+void UpdateSignalsInBufferIfOwnerNotAddable(Owner owner)
+{
+	if (!_globset.IsEmpty() && !IsOneSignalBlock(owner, _last_owner)) {
 		UpdateSignalsInBuffer(_last_owner);
 		_last_owner = INVALID_OWNER; // invalidate
 	}
@@ -795,9 +822,10 @@ void AddSideToSignalBuffer(TileIndex tile, DiagDirection side, Owner owner)
  */
 SigSegState UpdateSignalsOnSegment(TileIndex tile, DiagDirection side, Owner owner)
 {
-	assert(_globset.IsEmpty());
+	UpdateSignalsInBufferIfOwnerNotAddable(owner);
 	_globset.Add(tile, side);
 
+	_last_owner = INVALID_OWNER;
 	return UpdateSignalsInBuffer(owner);
 }
 

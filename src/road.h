@@ -51,6 +51,17 @@ enum RoadTypeFlags {
 };
 DECLARE_ENUM_AS_BIT_SET(RoadTypeFlags)
 
+/** Roadtype extra flags. */
+enum RoadTypeExtraFlags {
+	RXTF_NOT_AVAILABLE_AI_GS = 0,                                ///< Bit number for unavailable for AI/GS
+	RXTF_NO_TOWN_MODIFICATION,                                   ///< Bit number for no town modification
+
+	RXTFB_NONE = 0,                                              ///< All flags cleared.
+	RXTFB_NOT_AVAILABLE_AI_GS = 1 << RXTF_NOT_AVAILABLE_AI_GS,   ///< Value for unavailable for AI/GS
+	RXTFB_NO_TOWN_MODIFICATION = 1 << RXTF_NO_TOWN_MODIFICATION, ///< Value for no town modification
+};
+DECLARE_ENUM_AS_BIT_SET(RoadTypeExtraFlags)
+
 struct SpriteGroup;
 
 /** Sprite groups for a roadtype. */
@@ -122,6 +133,11 @@ public:
 	 * Bit mask of road type flags
 	 */
 	RoadTypeFlags flags;
+
+	/**
+	 * Bit mask of road type extra flags
+	 */
+	RoadTypeExtraFlags extra_flags;
 
 	/**
 	 * Cost multiplier for building this road type

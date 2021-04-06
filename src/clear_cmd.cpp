@@ -196,14 +196,20 @@ static void UpdateFences(TileIndex tile)
 		dirty = true;
 	}
 
-	if (dirty) MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+	if (dirty) MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 }
 
 
 /** Convert to or from snowy tiles. */
 static void TileLoopClearAlps(TileIndex tile)
 {
-	int k = GetTileZ(tile) - GetSnowLine() + 1;
+	int k;
+	if ((int)TileHeight(tile) < GetSnowLine() - 1) {
+		/* Fast path to avoid needing to check all 4 corners */
+		k = -1;
+	} else {
+		k = GetTileZ(tile) - GetSnowLine() + 1;
+	}
 
 	if (k < 0) {
 		/* Below the snow line, do nothing if no snow. */
@@ -218,7 +224,7 @@ static void TileLoopClearAlps(TileIndex tile)
 	}
 	/* Update snow density. */
 	uint current_density = GetClearDensity(tile);
-	uint req_density = (k < 0) ? 0u : min((uint)k, 3);
+	uint req_density = (k < 0) ? 0u : std::min<uint>(k, 3u);
 
 	if (current_density < req_density) {
 		AddClearDensity(tile, 1);
@@ -332,7 +338,7 @@ static void TileLoop_Clear(TileIndex tile)
 			return;
 	}
 
-	MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+	MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 }
 
 void GenerateClearTile()
@@ -359,11 +365,12 @@ void GenerateClearTile()
 
 		IncreaseGeneratingWorldProgress(GWP_ROUGH_ROCKY);
 		if (IsTileType(tile, MP_CLEAR) && !IsClearGround(tile, CLEAR_DESERT)) {
-			uint j = GB(r, 16, 4) + 5;
+			uint j = GB(r, 16, 4) + _settings_game.game_creation.amount_of_rocks + ((int)TileHeight(tile) * _settings_game.game_creation.height_affects_rocks);
 			for (;;) {
 				TileIndex tile_new;
 
 				SetClearGroundDensity(tile, CLEAR_ROCKS, 3);
+				MarkTileDirtyByTile(tile);
 				do {
 					if (--j == 0) goto get_out;
 					tile_new = tile + TileOffsByDiagDir((DiagDirection)GB(Random(), 0, 2));

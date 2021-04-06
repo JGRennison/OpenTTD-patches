@@ -62,7 +62,7 @@ int CDECL vseprintf(char *str, const char *last, const char *format, va_list ap)
 {
 	ptrdiff_t diff = last - str;
 	if (diff < 0) return 0;
-	return min((int)diff, vsnprintf(str, diff + 1, format, ap));
+	return std::min(static_cast<int>(diff), vsnprintf(str, diff + 1, format, ap));
 }
 
 /**
@@ -357,6 +357,28 @@ void str_strip_colours(char *str)
 	*dst = '\0';
 }
 
+std::string str_strip_all_scc(const char *str)
+{
+	std::string out;
+	if (!str) return out;
+
+	WChar c;
+	size_t len;
+
+	for (len = Utf8Decode(&c, str); c != '\0'; len = Utf8Decode(&c, str)) {
+		if (c < SCC_CONTROL_START || c > SCC_SPRITE_END) {
+			/* Copy the characters */
+			do {
+				out.push_back(*str++);
+			} while (--len != 0);
+		} else {
+			/* Just skip (strip) the control codes */
+			str += len;
+		}
+	}
+	return out;
+}
+
 /** Scans the string for a wchar and replace it with another wchar
  * @param str The string buffer
  * @param last The pointer to the last element of the string buffer
@@ -442,6 +464,17 @@ bool strtolower(char *str)
 	return changed;
 }
 
+bool strtolower(std::string &str, std::string::size_type offs)
+{
+	bool changed = false;
+	for (auto ch = str.begin() + offs; ch != str.end(); ++ch) {
+		auto new_ch = static_cast<char>(tolower(static_cast<unsigned char>(*ch)));
+		changed |= new_ch != *ch;
+		*ch = new_ch;
+	}
+	return changed;
+}
+
 /**
  * Only allow certain keys. You can define the filter to be used. This makes
  *  sure no invalid keys can get into an editbox, like BELL.
@@ -457,10 +490,11 @@ bool IsValidChar(WChar key, CharSetFilter afilter)
 	switch (afilter) {
 		case CS_ALPHANUMERAL:  return IsPrintable(key);
 		case CS_NUMERAL:       return (key >= '0' && key <= '9');
+		case CS_NUMERAL_SIGNED:  return (key >= '0' && key <= '9') || key == '-';
 #if !defined(STRGEN) && !defined(SETTINGSGEN)
-		case CS_NUMERAL_DECIMAL: return (key >= '0' && key <= '9') || key == '.' || key == GetDecimalSeparatorChar();
+		case CS_NUMERAL_DECIMAL: return (key >= '0' && key <= '9') || key == '.' || key == '-' || key == GetDecimalSeparatorChar();
 #else
-		case CS_NUMERAL_DECIMAL: return (key >= '0' && key <= '9') || key == '.';
+		case CS_NUMERAL_DECIMAL: return (key >= '0' && key <= '9') || key == '.' || key == '-';
 #endif
 		case CS_NUMERAL_SPACE: return (key >= '0' && key <= '9') || key == ' ';
 		case CS_ALPHA:         return IsPrintable(key) && !(key >= '0' && key <= '9');
@@ -738,7 +772,7 @@ int strnatcmp(const char *s1, const char *s2, bool ignore_garbage_at_front)
 	}
 
 #ifdef WITH_ICU_I18N
-	if (_current_collator != nullptr) {
+	if (_current_collator) {
 		UErrorCode status = U_ZERO_ERROR;
 		int result = _current_collator->compareUTF8(s1, s2, status);
 		if (U_SUCCESS(status)) return result;

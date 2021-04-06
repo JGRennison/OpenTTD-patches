@@ -47,9 +47,9 @@ STR_CARGO_PLURAL_WHEAT                                          :Frumento
 STR_CARGO_PLURAL_RUBBER                                         :Kauchuko
 STR_CARGO_PLURAL_SUGAR                                          :Sukro
 STR_CARGO_PLURAL_TOYS                                           :Ludili
-STR_CARGO_PLURAL_CANDY                                          :Bonboni
+STR_CARGO_PLURAL_SWEETS                                         :Bonboni
 STR_CARGO_PLURAL_COLA                                           :Kolao
-STR_CARGO_PLURAL_COTTON_CANDY                                   :Kandi-lanugo
+STR_CARGO_PLURAL_CANDYFLOSS                                     :Kandi-lanugo
 STR_CARGO_PLURAL_BUBBLES                                        :Buli
 STR_CARGO_PLURAL_TOFFEE                                         :Karamelo
 STR_CARGO_PLURAL_BATTERIES                                      :Baterii
@@ -81,9 +81,9 @@ STR_CARGO_SINGULAR_WHEAT                                        :Frumento
 STR_CARGO_SINGULAR_RUBBER                                       :Kauchuko
 STR_CARGO_SINGULAR_SUGAR                                        :Sukro
 STR_CARGO_SINGULAR_TOY                                          :Ludilo
-STR_CARGO_SINGULAR_CANDY                                        :Bonbono
+STR_CARGO_SINGULAR_SWEETS                                       :Bonbono
 STR_CARGO_SINGULAR_COLA                                         :Kolao
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :Kandi-lanugo
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :Kandi-lanugo
 STR_CARGO_SINGULAR_BUBBLE                                       :Bulo
 STR_CARGO_SINGULAR_TOFFEE                                       :Karamelo
 STR_CARGO_SINGULAR_BATTERY                                      :Baterio
@@ -216,7 +216,6 @@ STR_UNITS_HEIGHT_SI                                             :{COMMA} m
 # Common window strings
 
 STR_BUTTON_SORT_BY                                              :{BLACK}Ordinas per
-STR_BUTTON_LOCATION                                             :{BLACK}Loko
 STR_BUTTON_RENAME                                               :{BLACK}Rinomizar
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Klozas fenestro
@@ -254,6 +253,8 @@ STR_SORT_BY_LENGTH                                              :Longeso
 STR_SORT_BY_FACILITY                                            :Stacion-tipo
 STR_SORT_BY_POWER                                               :Povo
 STR_SORT_BY_POPULATION                                          :Populo
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Pauzas ludo
@@ -349,8 +350,8 @@ STR_GRAPH_MENU_DELIVERED_CARGO_GRAPH                            :Livrita kargajo
 ############ range for months ends
 
 # Graph window
-STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}{} {STRING}
-STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{} {STRING}{}{NUM}
+STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}
+STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{}{NUM}
 STR_GRAPH_Y_LABEL                                               :{TINY_FONT}{STRING}
 STR_GRAPH_Y_LABEL_NUMBER                                        :{TINY_FONT}{COMMA}
 
@@ -481,6 +482,9 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :altra
 
 
 
+
+
+
 # Custom currency window
 
 
@@ -553,7 +557,6 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Violkolora
 
 
 
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :omnube
 
 
 
@@ -569,6 +572,8 @@ STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :omnube
 
 # Config errors
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -583,11 +588,8 @@ STR_INTRO_GAME_OPTIONS                                          :{BLACK}Ludo Sel
 
 # Quit window
 STR_QUIT_CAPTION                                                :{WHITE}Livas
-STR_QUIT_ARE_YOU_SURE_YOU_WANT_TO_EXIT_OPENTTD                  :{YELLOW}Kad tu esas certa ke tu volas livar OpenTTD ed rivenar a {STRING}?
 STR_QUIT_YES                                                    :{BLACK}Yes
 STR_QUIT_NO                                                     :{BLACK}Ne
-
-# Supported OSes
 
 # Abandon game
 
@@ -638,7 +640,6 @@ STR_NETWORK_SERVER_LIST_MAP_SIZE_SHORT                          :{BLACK}{COMMA}x
 # Network client list
 
 
-
 # Network set password
 
 # Network company info join/password
@@ -668,6 +669,7 @@ STR_NETWORK_SERVER_MESSAGE                                      :*** {1:STRING}
 # Content downloading error messages
 
 
+
 # Transparency settings window
 
 # Linkgraph legend window
@@ -679,6 +681,8 @@ STR_STATION_BUILD_ACCEPTS_CARGO                                 :{BLACK}Aceptas:
 
 # Join station window
 
+
+# Generic toolbar
 
 # Rail construction toolbar
 
@@ -731,7 +735,7 @@ STR_AIRPORT_CLASS_HELIPORTS                                     :Helikoptero-aer
 STR_OBJECT_BUILD_SIZE                                           :{BLACK}Grandeso: {GOLD}{NUM} x {NUM} kareli
 
 
-# Tree planting window (last two for SE only)
+# Tree planting window (last eight for SE only)
 
 # Land generation window (SE)
 
@@ -1035,6 +1039,7 @@ STR_REPLACE_VEHICLE_AIRCRAFT                                    :Aeronavo
 
 # Vehicle view
 STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE}
+
 
 
 

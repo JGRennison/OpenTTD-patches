@@ -35,6 +35,8 @@
 #include "goal_base.h"
 #include "story_base.h"
 #include "zoning.h"
+#include "tbtr_template_vehicle_func.h"
+#include "widgets/statusbar_widget.h"
 
 #include "table/strings.h"
 
@@ -44,6 +46,7 @@ void ClearEnginesHiddenFlagOfCompany(CompanyID cid);
 
 CompanyID _local_company;   ///< Company controlled by the human player at this client. Can also be #COMPANY_SPECTATOR.
 CompanyID _current_company; ///< Company currently doing an action.
+CompanyID _loaded_local_company; ///< Local company in loaded savegame
 Colours _company_colours[MAX_COMPANIES];  ///< NOSAVE: can be determined from company structs.
 CompanyManagerFace _company_manager_face; ///< for company manager face storage in openttd.cfg
 uint _next_competitor_start;              ///< the number of ticks before the next AI is started
@@ -62,11 +65,11 @@ Company::Company(uint16 name_1, bool is_ai)
 	this->name_1 = name_1;
 	this->location_of_HQ = INVALID_TILE;
 	this->is_ai = is_ai;
-	this->terraform_limit = _settings_game.construction.terraform_frame_burst << 16;
+	this->terraform_limit = (uint32)_settings_game.construction.terraform_frame_burst << 16;
 	this->clear_limit     = _settings_game.construction.clear_frame_burst << 16;
-	this->tree_limit      = _settings_game.construction.tree_frame_burst << 16;
-	this->purchase_land_limit = _settings_game.construction.purchase_land_frame_burst << 16;
-	this->build_object_limit = _settings_game.construction.build_object_frame_burst << 16;
+	this->tree_limit      = (uint32)(uint32)_settings_game.construction.tree_frame_burst << 16;
+	this->purchase_land_limit = (uint32)_settings_game.construction.purchase_land_frame_burst << 16;
+	this->build_object_limit = (uint32)_settings_game.construction.build_object_frame_burst << 16;
 
 	for (uint j = 0; j < 4; j++) this->share_owners[j] = COMPANY_SPECTATOR;
 	InvalidateWindowData(WC_PERFORMANCE_DETAIL, 0, INVALID_COMPANY);
@@ -127,6 +130,7 @@ void SetLocalCompany(CompanyID new_company)
 	/* ... and redraw the whole screen. */
 	MarkWholeScreenDirty();
 	InvalidateWindowClassesData(WC_SIGN_LIST, -1);
+	InvalidateWindowClassesData(WC_GOALS_LIST);
 	ClearZoningCaches();
 }
 
@@ -191,7 +195,7 @@ void InvalidateCompanyWindows(const Company *company)
 {
 	CompanyID cid = company->index;
 
-	if (cid == _local_company) SetWindowWidgetDirty(WC_STATUS_BAR, 0, 2);
+	if (cid == _local_company) SetWindowWidgetDirty(WC_STATUS_BAR, 0, WID_S_RIGHT);
 	SetWindowDirty(WC_FINANCES, cid);
 }
 
@@ -276,11 +280,11 @@ void SubtractMoneyFromCompanyFract(CompanyID company, const CommandCost &cst)
 void UpdateLandscapingLimits()
 {
 	for (Company *c : Company::Iterate()) {
-		c->terraform_limit = min(c->terraform_limit + _settings_game.construction.terraform_per_64k_frames, (uint32)_settings_game.construction.terraform_frame_burst << 16);
-		c->clear_limit     = min(c->clear_limit     + _settings_game.construction.clear_per_64k_frames,     (uint32)_settings_game.construction.clear_frame_burst << 16);
-		c->tree_limit      = min(c->tree_limit      + _settings_game.construction.tree_per_64k_frames,      (uint32)_settings_game.construction.tree_frame_burst << 16);
-		c->purchase_land_limit = min(c->purchase_land_limit + _settings_game.construction.purchase_land_per_64k_frames, (uint32)_settings_game.construction.purchase_land_frame_burst << 16);
-		c->build_object_limit = min(c->build_object_limit + _settings_game.construction.build_object_per_64k_frames, (uint32)_settings_game.construction.build_object_frame_burst << 16);
+		c->terraform_limit = std::min<uint64>((uint64)c->terraform_limit + _settings_game.construction.terraform_per_64k_frames, (uint64)_settings_game.construction.terraform_frame_burst << 16);
+		c->clear_limit     = std::min<uint64>((uint64)c->clear_limit     + _settings_game.construction.clear_per_64k_frames,     (uint64)_settings_game.construction.clear_frame_burst << 16);
+		c->tree_limit      = std::min<uint64>((uint64)c->tree_limit      + _settings_game.construction.tree_per_64k_frames,      (uint64)_settings_game.construction.tree_frame_burst << 16);
+		c->purchase_land_limit = std::min<uint64>((uint64)c->purchase_land_limit + _settings_game.construction.purchase_land_per_64k_frames, (uint64)_settings_game.construction.purchase_land_frame_burst << 16);
+		c->build_object_limit = std::min<uint64>((uint64)c->build_object_limit + _settings_game.construction.build_object_per_64k_frames, (uint64)_settings_game.construction.build_object_frame_burst << 16);
 	}
 }
 
@@ -543,13 +547,15 @@ void ResetCompanyLivery(Company *c)
 /**
  * Create a new company and sets all company variables default values
  *
- * @param is_ai is an AI company?
+ * @param flags oepration flags
  * @param company CompanyID to use for the new company
  * @return the company struct
  */
-Company *DoStartupNewCompany(bool is_ai, CompanyID company = INVALID_COMPANY)
+Company *DoStartupNewCompany(DoStartupNewCompanyFlag flags, CompanyID company)
 {
 	if (!Company::CanAllocateItem()) return nullptr;
+
+	const bool is_ai = (flags & DSNC_AI);
 
 	/* we have to generate colour before this company is valid */
 	Colours colour = GenerateCompanyColour();
@@ -567,7 +573,7 @@ Company *DoStartupNewCompany(bool is_ai, CompanyID company = INVALID_COMPANY)
 	ResetCompanyLivery(c);
 	_company_colours[c->index] = (Colours)c->colour;
 
-	c->money = c->current_loan = (100000ll * _economy.inflation_prices >> 16) / 50000 * 50000;
+	c->money = c->current_loan = (std::min<int64>(INITIAL_LOAN, _economy.max_loan) * _economy.inflation_prices >> 16) / 50000 * 50000;
 
 	c->share_owners[0] = c->share_owners[1] = c->share_owners[2] = c->share_owners[3] = INVALID_OWNER;
 
@@ -593,7 +599,7 @@ Company *DoStartupNewCompany(bool is_ai, CompanyID company = INVALID_COMPANY)
 	AI::BroadcastNewEvent(new ScriptEventCompanyNew(c->index), c->index);
 	Game::NewEvent(new ScriptEventCompanyNew(c->index));
 
-	if (!is_ai) UpdateAllTownVirtCoords();
+	if (!is_ai && !(flags & DSNC_DURING_LOAD)) UpdateAllTownVirtCoords();
 
 	return c;
 }
@@ -723,7 +729,7 @@ void OnTick_Companies()
 
 	if (_next_competitor_start == 0) {
 		/* AI::GetStartNextTime() can return 0. */
-		_next_competitor_start = max(1, AI::GetStartNextTime() * DAY_TICKS);
+		_next_competitor_start = std::max(1, AI::GetStartNextTime() * DAY_TICKS);
 	}
 
 	if (_game_mode != GM_MENU && AI::CanStartNew() && --_next_competitor_start == 0) {
@@ -836,22 +842,17 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 			ClientID client_id = (ClientID)p2;
 			NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(client_id);
-#ifndef DEBUG_DUMP_COMMANDS
-			/* When replaying the client ID is not a valid client; there
-			 * are actually no clients at all. However, the company has to
-			 * be created, otherwise we cannot rerun the game properly.
-			 * So only allow a nullptr client info in that case. */
-			if (ci == nullptr) return CommandCost();
-#endif /* NOT DEBUG_DUMP_COMMANDS */
 
 			/* Delete multiplayer progress bar */
 			DeleteWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 
-			Company *c = DoStartupNewCompany(false);
+			Company *c = DoStartupNewCompany(DSNC_NONE);
 
 			/* A new company could not be created, revert to being a spectator */
 			if (c == nullptr) {
-				if (_network_server) {
+				/* We check for "ci != nullptr" as a client could have left by
+				 * the time we execute this command. */
+				if (_network_server && ci != nullptr) {
 					ci->client_playas = COMPANY_SPECTATOR;
 					NetworkUpdateClientInfo(ci->client_id);
 				}
@@ -879,10 +880,17 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 		}
 
 		case CCA_NEW_AI: { // Make a new AI company
+			if (company_id != INVALID_COMPANY && company_id >= MAX_COMPANIES) return CMD_ERROR;
+
+			/* For network games, company deletion is delayed. */
+			if (!_networking && company_id != INVALID_COMPANY && Company::IsValidID(company_id)) return CMD_ERROR;
+
 			if (!(flags & DC_EXEC)) return CommandCost();
 
-			if (company_id != INVALID_COMPANY && (company_id >= MAX_COMPANIES || Company::IsValidID(company_id))) return CMD_ERROR;
-			Company *c = DoStartupNewCompany(true, company_id);
+			/* For network game, just assume deletion happened. */
+			assert(company_id == INVALID_COMPANY || !Company::IsValidID(company_id));
+
+			Company *c = DoStartupNewCompany(DSNC_AI, company_id);
 			if (c != nullptr) {
 				NetworkServerNewCompany(c, nullptr);
 				DEBUG(desync, 1, "new_company_ai: date{%08x; %02x; %02x}, company_id: %u", _date, _date_fract, _tick_skip_counter, c->index);
@@ -893,6 +901,9 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 		case CCA_DELETE: { // Delete a company
 			CompanyRemoveReason reason = (CompanyRemoveReason)GB(p1, 24, 8);
 			if (reason >= CRR_END) return CMD_ERROR;
+
+			/* We can't delete the last existing company in singleplayer mode. */
+			if (!_networking && Company::GetNumItems() == 1) return CMD_ERROR;
 
 			Company *c = Company::GetIfValid(company_id);
 			if (c == nullptr) return CMD_ERROR;
@@ -1038,6 +1049,7 @@ CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 		}
 
 		ResetVehicleColourMap();
+		InvalidateTemplateReplacementImages();
 		MarkWholeScreenDirty();
 
 		/* All graph related to companies use the company colour. */
@@ -1050,6 +1062,9 @@ CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 		/* The smallmap owner view also stores the company colours. */
 		BuildOwnerLegend();
 		InvalidateWindowData(WC_SMALLMAP, 0, 1);
+
+		extern void MarkAllViewportMapLandscapesDirty();
+		MarkAllViewportMapLandscapesDirty();
 
 		/* Company colour data is indirectly cached. */
 		for (Vehicle *v : Vehicle::Iterate()) {
@@ -1182,6 +1197,20 @@ int CompanyServiceInterval(const Company *c, VehicleType type)
 		case VEH_AIRCRAFT: return vds->servint_aircraft;
 		case VEH_SHIP:     return vds->servint_ships;
 	}
+}
+
+/**
+ * Get the default local company after loading a new game
+ */
+CompanyID GetDefaultLocalCompany()
+{
+	if (_loaded_local_company < MAX_COMPANIES && Company::IsValidID(_loaded_local_company)) {
+		return _loaded_local_company;
+	}
+	for (CompanyID i = COMPANY_FIRST; i < MAX_COMPANIES; i++) {
+		if (Company::IsValidID(i)) return i;
+	}
+	return COMPANY_FIRST;
 }
 
 /**

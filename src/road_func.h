@@ -156,6 +156,8 @@ RoadTypes AddDateIntroducedRoadTypes(RoadTypes current, Date date);
 
 void UpdateLevelCrossing(TileIndex tile, bool sound = true, bool force_close = false);
 bool IsCrossingOccupiedByRoadVehicle(TileIndex t);
+
+void UpdateRoadCachedOneWayStatesAroundTile(TileIndex tile);
 void UpdateCompanyRoadInfrastructure(RoadType rt, Owner o, int count);
 
 struct TileInfo;

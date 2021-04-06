@@ -48,9 +48,9 @@ STR_CARGO_PLURAL_WHEAT                                          :Gandum
 STR_CARGO_PLURAL_RUBBER                                         :Getah
 STR_CARGO_PLURAL_SUGAR                                          :Gula
 STR_CARGO_PLURAL_TOYS                                           :Mainan
-STR_CARGO_PLURAL_CANDY                                          :Gula-gula
+STR_CARGO_PLURAL_SWEETS                                         :Gula-gula
 STR_CARGO_PLURAL_COLA                                           :Minuman cola
-STR_CARGO_PLURAL_COTTON_CANDY                                   :Gula kapas
+STR_CARGO_PLURAL_CANDYFLOSS                                     :Gula kapas
 STR_CARGO_PLURAL_BUBBLES                                        :Buih
 STR_CARGO_PLURAL_TOFFEE                                         :Tofi
 STR_CARGO_PLURAL_BATTERIES                                      :Bateri
@@ -82,9 +82,9 @@ STR_CARGO_SINGULAR_WHEAT                                        :Gandum
 STR_CARGO_SINGULAR_RUBBER                                       :Getah
 STR_CARGO_SINGULAR_SUGAR                                        :Gula
 STR_CARGO_SINGULAR_TOY                                          :Mainan
-STR_CARGO_SINGULAR_CANDY                                        :Manisan
+STR_CARGO_SINGULAR_SWEETS                                       :Manisan
 STR_CARGO_SINGULAR_COLA                                         :Minuman cola
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :Gula kapas
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :Gula kapas
 STR_CARGO_SINGULAR_BUBBLE                                       :Buih
 STR_CARGO_SINGULAR_TOFFEE                                       :Tofi
 STR_CARGO_SINGULAR_BATTERY                                      :Bateri
@@ -225,7 +225,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Pilih be
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Pilih cara susunan
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Pilih cara penapisan
 STR_BUTTON_SORT_BY                                              :{BLACK}Menyusun mengikuti
-STR_BUTTON_LOCATION                                             :{BLACK}Lokasi
 STR_BUTTON_RENAME                                               :{BLACK}Tukar Nama
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Tutup tetingkap
@@ -294,6 +293,8 @@ STR_SORT_BY_POWER_VS_RUNNING_COST                               :Kuasa/Kos Penge
 STR_SORT_BY_CARGO_CAPACITY                                      :Muatan Kargo
 STR_SORT_BY_RANGE                                               :Jarak
 STR_SORT_BY_POPULATION                                          :Jumlah Penduduk
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Henti Sebentar Permainan
@@ -541,8 +542,8 @@ STR_MONTH_DEC                                                   :Disember
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Kunci
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Tunjukkan kunci kepada graf
-STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}{} {STRING}
-STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{} {STRING}{}{NUM}
+STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}
+STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{}{NUM}
 STR_GRAPH_Y_LABEL                                               :{TINY_FONT}{STRING}
 STR_GRAPH_Y_LABEL_NUMBER                                        :{TINY_FONT}{COMMA}
 
@@ -892,8 +893,6 @@ STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :Sesuaikan...
 STR_GAME_OPTIONS_CURRENCY_GEL                                   :Georgian Lari (GEL)
 ############ end of currency region
 
-STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Kenderaan Jalanraya
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Pilih laluan memandu kenderaan sebelah kiri atau kanan
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Memandu di sebelah kiri
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Memandu di sebelah kanan
 
@@ -945,12 +944,15 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Resolusi
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Pilih resolusi skrin untuk digunakan
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :lain
 
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Saiz Antaramuka
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Sila pilih saiz elemen antara muka untuk digunakan
 
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Biasa
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Saiz berganda
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :Saiz kuad
+
+
 
 
 
@@ -1365,7 +1367,6 @@ STR_CONFIG_SETTING_NEWS_MESSAGES_FULL                           :Penuh
 
 STR_CONFIG_SETTING_COLOURED_NEWS_YEAR                           :Berita berwarna muncul pada tahun: {STRING}
 STR_CONFIG_SETTING_STARTING_YEAR                                :Tahun permulaan: {STRING}
-STR_CONFIG_SETTING_SMOOTH_ECONOMY                               :Gunakan ekonomi baik (perubahan yang lebih kecil): {STRING}
 STR_CONFIG_SETTING_ALLOW_SHARES                                 :Benarkan membeli saham syarikat lain: {STRING}
 STR_CONFIG_SETTING_SEMAPHORE_BUILD_BEFORE_DATE                  :Bina semafor secara automatik sebelum: {STRING}
 STR_CONFIG_SETTING_SEMAPHORE_BUILD_BEFORE_DATE_HELPTEXT         :Tetapkan tahun apabila isyarat berjenis elektrik digunakan untuk landasan. Sebelum tahun ini, isyarat bukan elektrik akan digunakan (memiliki fungsi yang sama, tetapi berlainan reka bentuk)
@@ -1394,9 +1395,6 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :Dibenarkan
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :Dibenarkan, susunan bandar sendiri
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Peletakan pokok-pokok dalam permainan: {STRING}
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :Tiada {RED}(kilang kayu tidak berfungsi)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :Hanya di hutan hujan
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :Setiap tempat
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Kedudukan palang alat utama: {STRING}
 STR_CONFIG_SETTING_STATUSBAR_POS                                :Kedudukan bar status: {STRING}
@@ -1472,6 +1470,8 @@ STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE} ... aba
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE} ... abaikan set bunyi Base '{STRING}': tidak ditemui
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE} ... abaikan set grafik Base '{STRING}': tidak ditemui
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -1514,17 +1514,8 @@ STR_INTRO_TRANSLATION                                           :{BLACK}Terjemah
 
 # Quit window
 STR_QUIT_CAPTION                                                :{WHITE}Keluar
-STR_QUIT_ARE_YOU_SURE_YOU_WANT_TO_EXIT_OPENTTD                  :{YELLOW}Adakah anda pasti untuk keluar dari OpenTTD dan kembali ke {STRING}?
 STR_QUIT_YES                                                    :{BLACK}Ya
 STR_QUIT_NO                                                     :{BLACK}Tidak
-
-# Supported OSes
-STR_OSNAME_WINDOWS                                              :Tetingkap
-STR_OSNAME_UNIX                                                 :Unix
-STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_OS2                                                  :OS/2
-STR_OSNAME_SUNOS                                                :SunOS
 
 # Abandon game
 STR_ABANDON_GAME_CAPTION                                        :{WHITE}Tinggalkan Permainan
@@ -1534,7 +1525,6 @@ STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Pastika
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Penipuan (Cheats)
 STR_CHEATS_TOOLTIP                                              :{BLACK}Kotak bertanda menunjukkan anda pernah menggunakan penipuan (cheats) ini
-STR_CHEATS_WARNING                                              :{BLACK}Amaran! Anda akan mengkhianati rakan-rakan pesaing anda. Perbuatan yang mengaibkan ini tidak akan dilupakan selama-lamanya.
 STR_CHEAT_MONEY                                                 :{LTBLUE}Tambahkan wang sebanyak {CURRENCY_LONG}
 STR_CHEAT_CHANGE_COMPANY                                        :{LTBLUE}Bermain sebagai syarikat: {ORANGE}{COMMA}
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}Jentolak ajaib (buang industri dan objek lain yang biasanya tidak boleh dibuang): {ORANGE}{STRING}
@@ -1685,8 +1675,6 @@ STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}Sertai p
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}Kemaskini
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}Kemaskini maklumat pelayan
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}Cari pelayan
-STR_NETWORK_SERVER_LIST_FIND_SERVER_TOOLTIP                     :{BLACK}Cari rangkaian untuk pelayan
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}Tambah pelayan
 STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP                      :{BLACK}Memasukkan pelayan ke dalam senarai yang sentiasa akan disemak untuk permainan yang sedang berjalan.
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Mulakan pelayan
@@ -1822,7 +1810,6 @@ STR_NETWORK_SERVER                                              :Pelayan
 STR_NETWORK_CLIENT                                              :Klien
 STR_NETWORK_SPECTATORS                                          :Penyaksi
 
-
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Jangan simpan kata laluan ini
 STR_COMPANY_PASSWORD_OK                                         :{BLACK}Berikan syarikat kata laluan yang baru
@@ -1922,8 +1909,6 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} te
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} telah menubuhkan syarikat baru (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} sudah meninggalkan permainan ini ({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} telah menukar namanya kepada {STRING}
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} telah memberi syarikat anda {2:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** Anda memberi {1:STRING} {2:CURRENCY_LONG}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Pelayan telah menutup sesi ini
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Pelayan sedang dimulakan semula...{}Harap bersabar...
 
@@ -1997,6 +1982,7 @@ STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD 
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Ya, muat turun grafik
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Tidak, keluar dari OpenTTD
 
+
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Pilihan transparansi
 STR_TRANSPARENT_SIGNS_TOOLTIP                                   :{BLACK}Gulir kejernihan nama untuk isyarat stesen. Ctrl+Klik untuk mengunci.
@@ -2030,6 +2016,8 @@ STR_JOIN_STATION_CREATE_SPLITTED_STATION                        :{YELLOW}Bina st
 
 STR_JOIN_WAYPOINT_CAPTION                                       :{WHITE}Sambungkan tandatuju
 STR_JOIN_WAYPOINT_CREATE_SPLITTED_WAYPOINT                      :{YELLOW}Bina tandatuju yang berasingan
+
+# Generic toolbar
 
 # Rail construction toolbar
 STR_RAIL_TOOLBAR_RAILROAD_CONSTRUCTION_CAPTION                  :Pembinaan Landasan Keretapi
@@ -2214,7 +2202,7 @@ STR_OBJECT_BUILD_SIZE                                           :{BLACK}Saiz: {G
 STR_OBJECT_CLASS_LTHS                                           :Rumah Api
 STR_OBJECT_CLASS_TRNS                                           :Pemancar
 
-# Tree planting window (last two for SE only)
+# Tree planting window (last eight for SE only)
 STR_PLANT_TREE_CAPTION                                          :{WHITE}Pokok-pokok
 STR_PLANT_TREE_TOOLTIP                                          :{BLACK}Pilih jenis pokok untuk ditanam
 STR_TREES_RANDOM_TYPE                                           :{BLACK}Jenis pokok yang rawak
@@ -2463,7 +2451,6 @@ STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Paras ke
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Tinggikan paras garis salji satu petak
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Rendahkan paras garis salji satu petak
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Janaan tanah:
-STR_MAPGEN_TREE_PLACER                                          :{BLACK}Algoritma pokok:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Jenis rupa bumi:
 STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Paras laut:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Sungai:
@@ -2753,10 +2740,8 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}Beli ha
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Rasuah pihak berkuasa bandar untuk meninggikan penarafan anda, dengan risiko hukuman yang sangat berat.{}Kos: {CURRENCY_LONG}
 
 # Goal window
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Hasrat global:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Tiada -
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Hasrat syarikat:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Klik pada industri/bandar/petak untuk memusatkan pandangan. Ctrl+Klik akan membuka pusat pandangan di atas industri/bandar/petak
 
 # Goal question window
@@ -3245,10 +3230,6 @@ STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}Membuat 
 # Vehicle view
 STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE}
 
-STR_VEHICLE_VIEW_TRAIN_LOCATION_TOOLTIP                         :{BLACK}Pusatkan paparan utama kepada lokasi kereta api. Ctrl+Klik akan mengikuti keretapi di paparan utama
-STR_VEHICLE_VIEW_ROAD_VEHICLE_LOCATION_TOOLTIP                  :{BLACK}Pusatkan paparan utama kepada lokasi kenderaan. Ctrl+Klik akan mengikuti kenderaan di paparan utama
-STR_VEHICLE_VIEW_SHIP_LOCATION_TOOLTIP                          :{BLACK}Pusatkan pemandangan utama ke lokasi kapal. Ctrl+Klik akan mengikuti kapal di paparan utama
-STR_VEHICLE_VIEW_AIRCRAFT_LOCATION_TOOLTIP                      :{BLACK}Pusatkan paparan utama di lokasi pesawat. Ctrl+Klik akan mengikuti pesawat di paparan utama
 
 STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP                    :{BLACK}Hantar keretapi ke depoh. Ctrl+Klik akan hanya selenggara
 STR_VEHICLE_VIEW_ROAD_VEHICLE_SEND_TO_DEPOT_TOOLTIP             :{BLACK}Hantar kenderaan ke depoh. Ctrl+Klik untuk selenggara sahaja
@@ -3280,10 +3261,7 @@ STR_VEHICLE_VIEW_ROAD_VEHICLE_SHOW_DETAILS_TOOLTIP              :{BLACK}Tunjukka
 STR_VEHICLE_VIEW_SHIP_SHOW_DETAILS_TOOLTIP                      :{BLACK}Tunjukkan butiran kapal
 STR_VEHICLE_VIEW_AIRCRAFT_SHOW_DETAILS_TOOLTIP                  :{BLACK}Tunjukkan butiran pesawat
 
-STR_VEHICLE_VIEW_TRAIN_STATE_START_STOP_TOOLTIP                 :{BLACK}Pergerakan semasa keretapi - klik untuk menghentikan/menggerakkan keretapi. Ctrl+Klik untuk skrol ke destinasi
-STR_VEHICLE_VIEW_ROAD_VEHICLE_STATE_START_STOP_TOOLTIP          :{BLACK}Pergerakan semasa kenderaan - klik untuk menghentikan/menggerakkan kenderaan. Ctrl+Klik untuk skrol ke destinasi
-STR_VEHICLE_VIEW_SHIP_STATE_START_STOP_TOOLTIP                  :{BLACK}Pergerakan semasa kapal - klik untuk menghentikan/menggerakkan kapal. Ctrl+Klik untuk skrol ke destinasi
-STR_VEHICLE_VIEW_AIRCRAFT_STATE_START_STOP_TOOLTIP              :{BLACK}Pergerakan semasa pesawat - klik untuk menghentikan/menggerakkan pesawat. Ctrl+Klik untuk skrol ke destinasi
+
 
 # Messages in the start stop button in the vehicle view
 STR_VEHICLE_STATUS_LOADING_UNLOADING                            :{LTBLUE}Punggah naik / Punggah turun
@@ -4121,6 +4099,11 @@ STR_BASESOUNDS_NONE_DESCRIPTION                                 :Sebuah pek suar
 STR_BASEMUSIC_WIN_DESCRIPTION                                   :Muzik asal Transport Tycoon Deluxe edisi Windows.
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :Muzik asal Transport Tycoon Deluxe edisi DOS
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Pek muzik tanpa muzik sebenar.
+
+STR_TRADITIONAL_TRAIN_NAME                                      :Keretapi {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Kenderaan {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Kapal {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Pesawat {COMMA}
 
 ##id 0x2000
 # Town building names

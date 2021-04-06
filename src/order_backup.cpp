@@ -56,8 +56,7 @@ OrderBackup::OrderBackup(const Vehicle *v, uint32 user)
 		Order **tail = &this->orders;
 
 		/* Count the number of orders */
-		const Order *order;
-		FOR_VEHICLE_ORDERS(v, order) {
+		for (const Order *order : v->Orders()) {
 			Order *copy = new Order();
 			copy->AssignOrder(*order);
 			*tail = copy;
@@ -220,7 +219,7 @@ CommandCost CmdClearOrderBackup(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 			/* We need to circumvent the "prevention" from this command being executed
 			 * while the game is paused, so use the internal method. Nor do we want
 			 * this command to get its cost estimated when shift is pressed. */
-			DoCommandPInternal(ob->tile, 0, user, CMD_CLEAR_ORDER_BACKUP, nullptr, nullptr, true, false, 0);
+			DoCommandPInternal(ob->tile, 0, user, 0, CMD_CLEAR_ORDER_BACKUP, nullptr, nullptr, true, false, 0);
 		} else {
 			/* The command came from the game logic, i.e. the clearing of a tile.
 			 * In that case we have no need to actually sync this, just do it. */

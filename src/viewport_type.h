@@ -22,6 +22,7 @@ enum ViewportMapType {
 	VPMT_BEGIN = 0,
 	VPMT_VEGETATION = 0,
 	VPMT_OWNER,
+	VPMT_ROUTES,
 	VPMT_INDUSTRY,
 	VPMT_END,
 
@@ -60,6 +61,7 @@ struct Viewport {
 	bool is_dirty = false;
 	bool is_drawn = false;
 	ViewPortMapDrawVehiclesCache map_draw_vehicles_cache;
+	std::vector<byte> land_pixel_cache;
 
 	uint GetDirtyBlockWidthShift() const { return this->GetDirtyBlockShift(); }
 	uint GetDirtyBlockHeightShift() const { return this->GetDirtyBlockShift(); }
@@ -214,5 +216,12 @@ enum FoundationPart {
 	FOUNDATION_PART_HALFTILE = 1,     ///< Second part (halftile foundation)
 	FOUNDATION_PART_END
 };
+
+enum ViewportMarkDirtyFlags : byte {
+	VMDF_NONE                = 0,
+	VMDF_NOT_MAP_MODE        = 0x1,
+	VMDF_NOT_LANDSCAPE       = 0x2,
+};
+DECLARE_ENUM_AS_BIT_SET(ViewportMarkDirtyFlags)
 
 #endif /* VIEWPORT_TYPE_H */

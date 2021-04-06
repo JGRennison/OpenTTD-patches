@@ -116,7 +116,7 @@ void Font::getGlyphAdvance(LEGlyphID glyph, LEPoint &advance) const
 
 le_bool Font::getGlyphPoint(LEGlyphID glyph, le_int32 pointNumber, LEPoint &point) const
 {
-	return FALSE;
+	return false;
 }
 
 /**
@@ -431,7 +431,7 @@ int FallbackParagraphLayout::FallbackLine::GetLeading() const
 {
 	int leading = 0;
 	for (const auto &run : *this) {
-		leading = max(leading, run.GetLeading());
+		leading = std::max(leading, run.GetLeading());
 	}
 
 	return leading;
@@ -747,7 +747,7 @@ Dimension Layouter::GetBounds()
 {
 	Dimension d = { 0, 0 };
 	for (const auto &l : *this) {
-		d.width = max<uint>(d.width, l->GetWidth());
+		d.width = std::max<uint>(d.width, l->GetWidth());
 		d.height += l->GetLeading();
 	}
 	return d;

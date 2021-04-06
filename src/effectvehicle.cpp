@@ -524,7 +524,7 @@ static bool BubbleTick(EffectVehicle *v)
 	if (b->y == 4 && b->x == 1) {
 		if (v->z_pos > 180 || Chance16I(1, 96, Random())) {
 			v->spritenum = 5;
-			if (_settings_client.sound.ambient) SndPlayVehicleFx(SND_2F_POP, v);
+			if (_settings_client.sound.ambient) SndPlayVehicleFx(SND_2F_BUBBLE_GENERATOR_FAIL, v);
 		}
 		anim_state = 0;
 	}
@@ -533,7 +533,7 @@ static bool BubbleTick(EffectVehicle *v)
 		TileIndex tile;
 
 		anim_state++;
-		if (_settings_client.sound.ambient) SndPlayVehicleFx(SND_31_EXTRACT, v);
+		if (_settings_client.sound.ambient) SndPlayVehicleFx(SND_31_BUBBLE_GENERATOR_SUCCESS, v);
 
 		tile = TileVirtXY(v->x_pos, v->y_pos);
 		if (IsTileType(tile, MP_INDUSTRY) && GetIndustryGfx(tile) == GFX_BUBBLE_CATCHER) AddAnimatedTile(tile);
@@ -572,7 +572,7 @@ static EffectInitProc * const _effect_init_procs[] = {
 	SmokeInit,          // EV_BREAKDOWN_SMOKE_AIRCRAFT
 	SmokeInit,          // EV_COPPER_MINE_SMOKE
 };
-assert_compile(lengthof(_effect_init_procs) == EV_END);
+static_assert(lengthof(_effect_init_procs) == EV_END);
 
 /** Functions for controlling effect vehicles at each tick. */
 static EffectTickProc * const _effect_tick_procs[] = {
@@ -589,7 +589,7 @@ static EffectTickProc * const _effect_tick_procs[] = {
 	SmokeTick,          // EV_BREAKDOWN_SMOKE_AIRCRAFT
 	SmokeTick,          // EV_COPPER_MINE_SMOKE
 };
-assert_compile(lengthof(_effect_tick_procs) == EV_END);
+static_assert(lengthof(_effect_tick_procs) == EV_END);
 
 /** Transparency options affecting the effects. */
 static const TransparencyOption _effect_transparency_options[] = {
@@ -606,7 +606,7 @@ static const TransparencyOption _effect_transparency_options[] = {
 	TO_INVALID,         // EV_BREAKDOWN_SMOKE_AIRCRAFT
 	TO_INDUSTRIES,      // EV_COPPER_MINE_SMOKE
 };
-assert_compile(lengthof(_effect_transparency_options) == EV_END);
+static_assert(lengthof(_effect_transparency_options) == EV_END);
 
 
 /**
@@ -672,6 +672,7 @@ EffectVehicle *CreateEffectVehicleRel(const Vehicle *v, int x, int y, int z, Eff
 
 bool EffectVehicle::Tick()
 {
+	DEBUG_UPDATESTATECHECKSUM("EffectVehicle::Tick: v: %u, x: %d, y: %d", this->index, this->x_pos, this->y_pos);
 	UpdateStateChecksum((((uint64) this->x_pos) << 32) | this->y_pos);
 	return _effect_tick_procs[this->subtype](this);
 }

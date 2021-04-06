@@ -143,7 +143,7 @@ public:
 
 	uint Height(uint width) const override
 	{
-		return max(max(this->icon_size.height, this->lock_size.height) + 2U, (uint)FONT_HEIGHT_NORMAL);
+		return std::max(std::max(this->icon_size.height, this->lock_size.height) + 2U, (uint)FONT_HEIGHT_NORMAL);
 	}
 
 	void Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const override
@@ -290,7 +290,8 @@ static CallBackFunction ToolbarPauseClick(Window *w)
  */
 static CallBackFunction ToolbarFastForwardClick(Window *w)
 {
-	_fast_forward ^= true;
+	ChangeGameSpeed(_game_speed == 100);
+
 	if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 	return CBF_NONE;
 }
@@ -314,6 +315,7 @@ enum OptionMenuEntries {
 	OME_FULL_DETAILS,
 	OME_TRANSPARENTBUILDINGS,
 	OME_SHOW_STATIONSIGNS,
+	OME_SHOW_MONEYTEXT,
 };
 
 /**
@@ -344,6 +346,7 @@ static CallBackFunction ToolbarOptionsClick(Window *w)
 	list.emplace_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_FULL_DETAIL,             OME_FULL_DETAILS, false, HasBit(_display_opt, DO_FULL_DETAIL)));
 	list.emplace_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_TRANSPARENT_BUILDINGS,   OME_TRANSPARENTBUILDINGS, false, IsTransparencySet(TO_HOUSES)));
 	list.emplace_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_TRANSPARENT_SIGNS,       OME_SHOW_STATIONSIGNS, false, IsTransparencySet(TO_SIGNS)));
+	list.emplace_back(new DropDownListCheckedItem(STR_SETTINGS_MENU_MONEY_TEXT_EFFECTS,      OME_SHOW_MONEYTEXT, false, HasBit(_extra_display_opt, XDO_SHOW_MONEY_TEXT_EFFECTS)));
 
 	ShowDropDownList(w, std::move(list), 0, WID_TN_SETTINGS, 140, true, true);
 	if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
@@ -378,6 +381,7 @@ static CallBackFunction MenuClickSettings(int index)
 		case OME_FULL_DETAILS:         ToggleBit(_display_opt, DO_FULL_DETAIL);         break;
 		case OME_TRANSPARENTBUILDINGS: ToggleTransparency(TO_HOUSES);                   break;
 		case OME_SHOW_STATIONSIGNS:    ToggleTransparency(TO_SIGNS);                    break;
+		case OME_SHOW_MONEYTEXT:       ToggleBit(_extra_display_opt, XDO_SHOW_MONEY_TEXT_EFFECTS); break;
 	}
 	MarkWholeScreenDirty();
 	return CBF_NONE;
@@ -628,7 +632,7 @@ static CallBackFunction MenuClickCompany(int index)
 				if (_network_server) {
 					DoCommandP(0, CCA_NEW, _network_own_client_id, CMD_COMPANY_CTRL);
 				} else {
-					NetworkSendCommand(0, CCA_NEW, 0, CMD_COMPANY_CTRL, nullptr, nullptr, _local_company, 0);
+					NetworkSendCommand(0, CCA_NEW, 0, 0, CMD_COMPANY_CTRL, nullptr, nullptr, _local_company, 0);
 				}
 				return CBF_NONE;
 
@@ -1371,10 +1375,10 @@ public:
 		/* First initialise some variables... */
 		for (NWidgetBase *child_wid = this->head; child_wid != nullptr; child_wid = child_wid->next) {
 			child_wid->SetupSmallestSize(w, init_array);
-			this->smallest_y = max(this->smallest_y, child_wid->smallest_y + child_wid->padding_top + child_wid->padding_bottom);
+			this->smallest_y = std::max(this->smallest_y, child_wid->smallest_y + child_wid->padding_top + child_wid->padding_bottom);
 			if (this->IsButton(child_wid->type)) {
 				nbuttons++;
-				this->smallest_x = max(this->smallest_x, child_wid->smallest_x + child_wid->padding_left + child_wid->padding_right);
+				this->smallest_x = std::max(this->smallest_x, child_wid->smallest_x + child_wid->padding_left + child_wid->padding_right);
 			} else if (child_wid->type == NWID_SPACER) {
 				this->spacers++;
 			}
@@ -1416,7 +1420,7 @@ public:
 
 		/* Now assign the widgets to their rightful place */
 		uint position = 0; // Place to put next child relative to origin of the container.
-		uint spacer_space = max(0, (int)given_width - (int)(button_count * this->smallest_x)); // Remaining spacing for 'spacer' widgets
+		uint spacer_space = std::max(0, (int)given_width - (int)(button_count * this->smallest_x)); // Remaining spacing for 'spacer' widgets
 		uint button_space = given_width - spacer_space; // Remaining spacing for the buttons
 		uint spacer_i = 0;
 		uint button_i = 0;
@@ -1814,7 +1818,7 @@ class NWidgetMainToolbarContainer : public NWidgetToolbarContainer {
 		};
 
 		/* If at least BIGGEST_ARRANGEMENT fit, just spread all the buttons nicely */
-		uint full_buttons = max(CeilDiv(width, this->smallest_x), SMALLEST_ARRANGEMENT);
+		uint full_buttons = std::max(CeilDiv(width, this->smallest_x), SMALLEST_ARRANGEMENT);
 		if (full_buttons > BIGGEST_ARRANGEMENT) {
 			button_count = arrangable_count = lengthof(arrange_all);
 			spacer_count = this->spacers;
@@ -2002,6 +2006,7 @@ enum MainToolbarHotkeys {
 	MTHK_GRAPHS,
 	MTHK_LEAGUE,
 	MTHK_INDUSTRIES,
+	MTHK_INDUSTRY_CHAINS,
 	MTHK_TRAIN_LIST,
 	MTHK_ROADVEH_LIST,
 	MTHK_SHIP_LIST,
@@ -2028,6 +2033,10 @@ enum MainToolbarHotkeys {
 	MTHK_SIGN_LIST,
 	MTHK_PLAN_LIST,
 	MTHK_LINK_GRAPH_LEGEND,
+	MTHK_MESSAGE_HISTORY,
+	MTHK_TEMPLATE_REPLACEMENT,
+	MTHK_TRAIN_SLOTS,
+	MTHK_TRAIN_COUNTERS,
 };
 
 /** Main toolbar. */
@@ -2064,11 +2073,6 @@ struct MainToolbarWindow : Window {
 		this->SetWidgetDisabledState(WID_TN_GOAL, Goal::GetNumItems() == 0);
 		this->SetWidgetDisabledState(WID_TN_STORY, StoryPage::GetNumItems() == 0);
 
-		this->SetWidgetDisabledState(WID_TN_RAILS, !CanBuildVehicleInfrastructure(VEH_TRAIN));
-		this->SetWidgetDisabledState(WID_TN_ROADS, !CanBuildVehicleInfrastructure(VEH_ROAD, RTT_ROAD));
-		this->SetWidgetDisabledState(WID_TN_TRAMS, !CanBuildVehicleInfrastructure(VEH_ROAD, RTT_TRAM));
-		this->SetWidgetDisabledState(WID_TN_AIR, !CanBuildVehicleInfrastructure(VEH_AIRCRAFT));
-
 		this->SetWidgetDisabledState(WID_TN_PAUSE, _networking && !(_network_server || _network_settings_access)); // if not server, disable pause button
 
 		this->DrawWidgets();
@@ -2087,6 +2091,10 @@ struct MainToolbarWindow : Window {
 
 	EventState OnHotkey(int hotkey) override
 	{
+		extern void ShowTemplateReplaceWindow();
+		extern void ShowTraceRestrictSlotWindow(CompanyID company);
+		extern void ShowTraceRestrictCounterWindow(CompanyID company);
+
 		CallBackFunction cbf = CBF_NONE;
 		switch (hotkey) {
 			case MTHK_PAUSE: ToolbarPauseClick(this); break;
@@ -2105,17 +2113,18 @@ struct MainToolbarWindow : Window {
 			case MTHK_GRAPHS: ShowOperatingProfitGraph(); break;
 			case MTHK_LEAGUE: ShowCompanyLeagueTable(); break;
 			case MTHK_INDUSTRIES: ShowBuildIndustryWindow(); break;
+			case MTHK_INDUSTRY_CHAINS: ShowIndustryCargoesWindow(); break;
 			case MTHK_TRAIN_LIST: ShowVehicleListWindow(_local_company, VEH_TRAIN); break;
 			case MTHK_ROADVEH_LIST: ShowVehicleListWindow(_local_company, VEH_ROAD); break;
 			case MTHK_SHIP_LIST: ShowVehicleListWindow(_local_company, VEH_SHIP); break;
 			case MTHK_AIRCRAFT_LIST: ShowVehicleListWindow(_local_company, VEH_AIRCRAFT); break;
 			case MTHK_ZOOM_IN: ToolbarZoomInClick(this); break;
 			case MTHK_ZOOM_OUT: ToolbarZoomOutClick(this); break;
-			case MTHK_BUILD_RAIL: if (CanBuildVehicleInfrastructure(VEH_TRAIN)) ShowBuildRailToolbar(_last_built_railtype); break;
+			case MTHK_BUILD_RAIL: ShowBuildRailToolbar(_last_built_railtype); break;
 			case MTHK_BUILD_ROAD: ShowBuildRoadToolbar(_last_built_roadtype); break;
-			case MTHK_BUILD_TRAM: if (CanBuildVehicleInfrastructure(VEH_ROAD, RTT_TRAM)) ShowBuildRoadToolbar(_last_built_tramtype); break;
+			case MTHK_BUILD_TRAM: ShowBuildRoadToolbar(_last_built_tramtype); break;
 			case MTHK_BUILD_DOCKS: ShowBuildDocksToolbar(); break;
-			case MTHK_BUILD_AIRPORT: if (CanBuildVehicleInfrastructure(VEH_AIRCRAFT)) ShowBuildAirToolbar(); break;
+			case MTHK_BUILD_AIRPORT: ShowBuildAirToolbar(); break;
 			case MTHK_BUILD_TREES: ShowBuildTreesToolbar(); break;
 			case MTHK_MUSIC: ShowMusicWindow(); break;
 			case MTHK_AI_DEBUG: ShowAIDebugWindow(); break;
@@ -2131,6 +2140,10 @@ struct MainToolbarWindow : Window {
 			case MTHK_LANDINFO: cbf = PlaceLandBlockInfo(); break;
 			case MTHK_PLAN_LIST: ShowPlansWindow(); break;
 			case MTHK_LINK_GRAPH_LEGEND: ShowLinkGraphLegend(); break;
+			case MTHK_MESSAGE_HISTORY: ShowMessageHistory(); break;
+			case MTHK_TEMPLATE_REPLACEMENT: ShowTemplateReplaceWindow(); break;
+			case MTHK_TRAIN_SLOTS: ShowTraceRestrictSlotWindow(_local_company); break;
+			case MTHK_TRAIN_COUNTERS: ShowTraceRestrictCounterWindow(_local_company); break;
 			default: return ES_NOT_HANDLED;
 		}
 		if (cbf != CBF_NONE) _last_started_action = cbf;
@@ -2167,7 +2180,7 @@ struct MainToolbarWindow : Window {
 			this->SetWidgetDirty(WID_TN_PAUSE);
 		}
 
-		if (this->IsWidgetLowered(WID_TN_FAST_FORWARD) != !!_fast_forward) {
+		if (this->IsWidgetLowered(WID_TN_FAST_FORWARD) != (_game_speed != 100)) {
 			this->ToggleWidgetLoweredState(WID_TN_FAST_FORWARD);
 			this->SetWidgetDirty(WID_TN_FAST_FORWARD);
 		}
@@ -2221,6 +2234,7 @@ static Hotkey maintoolbar_hotkeys[] = {
 	Hotkey(WKC_F10, "graphs", MTHK_GRAPHS),
 	Hotkey(WKC_F11, "league", MTHK_LEAGUE),
 	Hotkey(WKC_F12, "industry_list", MTHK_INDUSTRIES),
+	Hotkey((uint16)0, "industry_chains", MTHK_INDUSTRY_CHAINS),
 	Hotkey(WKC_SHIFT | WKC_F1, "train_list", MTHK_TRAIN_LIST),
 	Hotkey(WKC_SHIFT | WKC_F2, "roadveh_list", MTHK_ROADVEH_LIST),
 	Hotkey(WKC_SHIFT | WKC_F3, "ship_list", MTHK_SHIP_LIST),
@@ -2247,6 +2261,10 @@ static Hotkey maintoolbar_hotkeys[] = {
 	Hotkey((uint16)0, "land_info", MTHK_LANDINFO),
 	Hotkey('P', "plan_list", MTHK_PLAN_LIST),
 	Hotkey('Y', "link_graph_legend", MTHK_LINK_GRAPH_LEGEND),
+	Hotkey((uint16)0, "message_history", MTHK_MESSAGE_HISTORY),
+	Hotkey((uint16)0, "template_replacement", MTHK_TEMPLATE_REPLACEMENT),
+	Hotkey((uint16)0, "train_slots", MTHK_TRAIN_SLOTS),
+	Hotkey((uint16)0, "train_counters", MTHK_TRAIN_COUNTERS),
 	HOTKEY_LIST_END
 };
 HotkeyList MainToolbarWindow::hotkeys("maintoolbar", maintoolbar_hotkeys);
@@ -2303,7 +2321,7 @@ static NWidgetBase *MakeMainToolbar(int *biggest_index)
 		hor->Add(new NWidgetLeaf(i == WID_TN_SAVE ? WWT_IMGBTN_2 : WWT_IMGBTN, COLOUR_GREY, i, toolbar_button_sprites[i], STR_TOOLBAR_TOOLTIP_PAUSE_GAME + i));
 	}
 
-	*biggest_index = max<int>(*biggest_index, WID_TN_SWITCH_BAR);
+	*biggest_index = std::max<int>(*biggest_index, WID_TN_SWITCH_BAR);
 	return hor;
 }
 
@@ -2455,13 +2473,13 @@ struct ScenarioEditorToolbarWindow : Window {
 	{
 		switch (widget) {
 			case WID_TE_SPACER:
-				size->width = max(GetStringBoundingBox(STR_SCENEDIT_TOOLBAR_OPENTTD).width, GetStringBoundingBox(STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR).width) + WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
+				size->width = std::max(GetStringBoundingBox(STR_SCENEDIT_TOOLBAR_OPENTTD).width, GetStringBoundingBox(STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR).width) + WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
 				break;
 
 			case WID_TE_DATE:
 				SetDParam(0, ConvertYMDToDate(MAX_YEAR, 0, 1));
 				*size = GetStringBoundingBox(STR_WHITE_DATE_LONG);
-				size->height = max(size->height, GetSpriteSize(SPR_IMG_SAVE).height + WD_IMGBTN_TOP + WD_IMGBTN_BOTTOM);
+				size->height = std::max(size->height, GetSpriteSize(SPR_IMG_SAVE).height + WD_IMGBTN_TOP + WD_IMGBTN_BOTTOM);
 				break;
 		}
 	}
@@ -2550,7 +2568,7 @@ struct ScenarioEditorToolbarWindow : Window {
 			this->SetDirty();
 		}
 
-		if (this->IsWidgetLowered(WID_TE_FAST_FORWARD) != !!_fast_forward) {
+		if (this->IsWidgetLowered(WID_TE_FAST_FORWARD) != (_game_speed != 100)) {
 			this->ToggleWidgetLoweredState(WID_TE_FAST_FORWARD);
 			this->SetDirty();
 		}
@@ -2670,10 +2688,6 @@ static WindowDesc _toolb_scen_desc(
 /** Allocate the toolbar. */
 void AllocateToolbar()
 {
-	/* Clean old GUI values; railtype is (re)set by rail_gui.cpp */
-	_last_built_roadtype = ROADTYPE_ROAD;
-	_last_built_tramtype = ROADTYPE_TRAM;
-
 	if (_game_mode == GM_EDITOR) {
 		new ScenarioEditorToolbarWindow(&_toolb_scen_desc);
 	} else {

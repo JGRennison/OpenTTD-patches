@@ -18,6 +18,7 @@
 #include "engine_base.h"
 #include "rail_map.h"
 #include "ground_vehicle.hpp"
+#include "pbs.h"
 
 struct Train;
 
@@ -74,7 +75,7 @@ byte FreightWagonMult(CargoID cargo);
 
 void CheckTrainsLengths();
 
-void FreeTrainTrackReservation(const Train *v, TileIndex origin = INVALID_TILE, Trackdir orig_td = INVALID_TRACKDIR);
+void FreeTrainTrackReservation(Train *v, TileIndex origin = INVALID_TILE, Trackdir orig_td = INVALID_TRACKDIR);
 bool TryPathReserve(Train *v, bool mark_as_stuck = false, bool first_tile_okay = false);
 
 void DeleteVisibleTrain(Train *v);
@@ -82,19 +83,28 @@ void DeleteVisibleTrain(Train *v);
 void CheckBreakdownFlags(Train *v);
 void GetTrainSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, int &yoffs, EngineImageType image_type);
 
+inline int GetTrainRealisticBrakingTargetDecelerationLimit(int acceleration_type)
+{
+	return 120 + (acceleration_type * 48);
+}
+
 /** Variables that are cached to improve performance and such */
 struct TrainCache {
 	/* Cached wagon override spritegroup */
 	const struct SpriteGroup *cached_override;
 
-	/* cached values, recalculated on load and each time a vehicle is added to/removed from the consist. */
-	bool cached_tilt;           ///< train can tilt; feature provides a bonus in curves
-	uint8 cached_num_engines;   ///< total number of engines, including rear ends of multiheaded engines
-
-	byte user_def_data;         ///< Cached property 0x25. Can be set by Callback 0x36.
-
 	/* cached max. speed / acceleration data */
-	int cached_max_curve_speed; ///< max consist speed limited by curves
+	int cached_max_curve_speed;   ///< max consist speed limited by curves
+
+	/* cached values, recalculated on load and each time a vehicle is added to/removed from the consist. */
+	bool cached_tilt;             ///< train can tilt; feature provides a bonus in curves
+	uint8 cached_num_engines;     ///< total number of engines, including rear ends of multiheaded engines
+	uint16 cached_centre_mass;    ///< Cached position of the centre of mass, from the front
+	uint16 cached_veh_weight;     ///< Cached individual vehicle weight
+	uint16 cached_uncapped_decel; ///< Uncapped cached deceleration for realistic braking lookahead purposes
+	uint8 cached_deceleration;    ///< Cached deceleration for realistic braking lookahead purposes
+
+	byte user_def_data;           ///< Cached property 0x25. Can be set by Callback 0x36.
 };
 
 /**
@@ -105,6 +115,8 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 
 	/* Link between the two ends of a multiheaded engine */
 	Train *other_multiheaded_part;
+
+	std::unique_ptr<TrainReservationLookAhead> lookahead;
 
 	uint32 flags;
 
@@ -158,6 +170,25 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 	int UpdateSpeed();
 
 	void UpdateAcceleration();
+
+	struct MaxSpeedInfo {
+		int strict_max_speed;
+		int advisory_max_speed;
+	};
+
+private:
+	MaxSpeedInfo GetCurrentMaxSpeedInfoInternal(bool update_state) const;
+
+public:
+	MaxSpeedInfo GetCurrentMaxSpeedInfo() const
+	{
+		return this->GetCurrentMaxSpeedInfoInternal(false);
+	}
+
+	MaxSpeedInfo GetCurrentMaxSpeedInfoAndUpdate()
+	{
+		return this->GetCurrentMaxSpeedInfoInternal(true);
+	}
 
 	int GetCurrentMaxSpeed() const;
 
@@ -244,7 +275,7 @@ protected: // These functions should not be called outside acceleration code.
 
 		for (const Train *w = this; w != nullptr; w = w->Next()) {
 			if (w->breakdown_ctr == 1 && w->breakdown_type == BREAKDOWN_LOW_SPEED) {
-				speed = min(speed, w->breakdown_severity);
+				speed = std::min<uint16>(speed, w->breakdown_severity);
 			}
 		}
 		return speed;
@@ -281,6 +312,10 @@ protected: // These functions should not be called outside acceleration code.
 		return 0;
 	}
 
+	/**
+	 * Allows to know the weight value that this vehicle will use (excluding cargo).
+	 * @return Weight value from the engine in tonnes.
+	 */
 	inline uint16 GetWeightWithoutCargo() const
 	{
 		uint16 weight = 0;
@@ -299,12 +334,21 @@ protected: // These functions should not be called outside acceleration code.
 	}
 
 	/**
+	 * Allows to know the weight value that this vehicle will use (cargo only).
+	 * @return Weight value from the engine in tonnes.
+	 */
+	inline uint16 GetCargoWeight() const
+	{
+		return this->GetCargoWeight(this->cargo.StoredCount());
+	}
+
+	/**
 	 * Allows to know the weight value that this vehicle will use.
 	 * @return Weight value from the engine in tonnes.
 	 */
 	inline uint16 GetWeight() const
 	{
-		return this->GetWeightWithoutCargo() + this->GetCargoWeight(this->cargo.StoredCount());
+		return this->GetWeightWithoutCargo() + this->GetCargoWeight();
 	}
 
 	/**
@@ -417,8 +461,7 @@ protected: // These functions should not be called outside acceleration code.
 CommandCost CmdMoveRailVehicle(TileIndex, DoCommandFlag , uint32, uint32, const char *);
 CommandCost CmdMoveVirtualRailVehicle(TileIndex, DoCommandFlag, uint32, uint32, const char*);
 
-Train* CmdBuildVirtualRailWagon(const Engine*);
-Train* CmdBuildVirtualRailVehicle(EngineID, StringID &error);
+Train* CmdBuildVirtualRailVehicle(EngineID, StringID &error, uint32 user);
 
 int GetTileMarginInFrontOfTrain(const Train *v, int x_pos, int y_pos);
 
@@ -427,11 +470,11 @@ inline int GetTileMarginInFrontOfTrain(const Train *v)
 	return GetTileMarginInFrontOfTrain(v, v->x_pos, v->y_pos);
 }
 
-int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, int *station_ahead, int *station_length, int x_pos, int y_pos);
+int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, bool update_train_state, int *station_ahead, int *station_length, int x_pos, int y_pos);
 
-inline int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, int *station_ahead, int *station_length)
+inline int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, bool update_train_state, int *station_ahead, int *station_length)
 {
-	return GetTrainStopLocation(station_id, tile, v, station_ahead, station_length, v->x_pos, v->y_pos);
+	return GetTrainStopLocation(station_id, tile, v, update_train_state, station_ahead, station_length, v->x_pos, v->y_pos);
 }
 
 #endif /* TRAIN_H */

@@ -102,7 +102,7 @@ uint32 NewGRFProfiler::Finish()
 	std::string filename = this->GetOutputFilename();
 	IConsolePrintF(CC_DEBUG, "Finished profile of NewGRF [%08X], writing %u events to %s", BSWAP32(this->grffile->grfid), (uint)this->calls.size(), filename.c_str());
 
-	FILE *f = FioFOpenFile(filename.c_str(), "wt", Subdirectory::NO_DIRECTORY);
+	FILE *f = FioFOpenFile(filename, "wt", Subdirectory::NO_DIRECTORY);
 	FileCloser fcloser(f);
 
 	uint32 total_microseconds = 0;
@@ -148,7 +148,7 @@ uint32 NewGRFProfiler::FinishAll()
 	for (NewGRFProfiler &pr : _newgrf_profilers) {
 		if (pr.active) {
 			total_microseconds += pr.Finish();
-			max_ticks = max(max_ticks, _tick_counter - pr.start_tick);
+			max_ticks = std::max(max_ticks, _tick_counter - pr.start_tick);
 		}
 	}
 

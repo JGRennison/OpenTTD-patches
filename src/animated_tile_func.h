@@ -15,6 +15,7 @@
 void AddAnimatedTile(TileIndex tile);
 void DeleteAnimatedTile(TileIndex tile);
 void AnimateAnimatedTiles();
+void UpdateAllAnimatedTileSpeeds();
 void InitializeAnimatedTiles();
 
 #endif /* ANIMATED_TILE_FUNC_H */

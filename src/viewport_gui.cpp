@@ -144,7 +144,7 @@ public:
 	{
 		if (_ctrl_pressed) {
 			/* Cycle through the drawing modes */
-			this->viewport->map_type = ChangeRenderMode(this->viewport, wheel < 0);
+			ChangeRenderMode(this->viewport, wheel < 0);
 			this->SetDirty();
 		} else if (_settings_client.gui.scrollwheel_scrolling != 2) {
 			ZoomInOrOutToCursorWindow(wheel < 0, this);

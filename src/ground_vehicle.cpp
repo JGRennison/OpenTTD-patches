@@ -37,7 +37,7 @@ void GroundVehicle<T, Type>::PowerChanged()
 
 		/* Get minimum max speed for this track. */
 		uint16 track_speed = u->GetMaxTrackSpeed();
-		if (track_speed > 0) max_track_speed = min(max_track_speed, track_speed);
+		if (track_speed > 0) max_track_speed = std::min(max_track_speed, track_speed);
 	}
 
 	byte air_drag;
@@ -47,7 +47,7 @@ void GroundVehicle<T, Type>::PowerChanged()
 	if (air_drag_value == 0) {
 		uint16 max_speed = v->GetDisplayMaxSpeed();
 		/* Simplification of the method used in TTDPatch. It uses <= 10 to change more steadily from 128 to 196. */
-		air_drag = (max_speed <= 10) ? 192 : max(2048 / max_speed, 1);
+		air_drag = (max_speed <= 10) ? 192 : std::max(2048 / max_speed, 1);
 	} else {
 		/* According to the specs, a value of 0x01 in the air drag property means "no air drag". */
 		air_drag = (air_drag_value == 1) ? 0 : air_drag_value;
@@ -102,18 +102,37 @@ void GroundVehicle<T, Type>::CargoChanged()
 {
 	assert(this->First() == this);
 	uint32 weight = 0;
+	uint64 mass_offset = 0;
+	uint32 veh_offset = 0;
+	uint16 articulated_weight = 0;
 
 	for (T *u = T::From(this); u != nullptr; u = u->Next()) {
-		uint32 current_weight = u->GetWeight();
+		uint32 current_weight = u->GetCargoWeight();
+		if (u->IsArticulatedPart()) {
+			current_weight += articulated_weight;
+		} else {
+			uint16 engine_weight = u->GetWeightWithoutCargo();
+			uint part_count = u->GetEnginePartsCount();
+			articulated_weight = engine_weight / part_count;
+			current_weight += articulated_weight + (engine_weight % part_count);
+		}
+		if (Type == VEH_TRAIN) {
+			Train::From(u)->tcache.cached_veh_weight = current_weight;
+			mass_offset += current_weight * (veh_offset + (Train::From(u)->gcache.cached_veh_length / 2));
+			veh_offset += Train::From(u)->gcache.cached_veh_length;
+		}
 		weight += current_weight;
 		/* Slope steepness is in percent, result in N. */
 		u->gcache.cached_slope_resistance = current_weight * u->GetSlopeSteepness() * 100;
 		u->InvalidateImageCache();
 	}
 	ClrBit(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST);
+	if (Type == VEH_TRAIN) {
+		Train::From(this)->tcache.cached_centre_mass = (weight != 0) ? (mass_offset / weight) : (this->gcache.cached_total_length / 2);
+	}
 
 	/* Store consist weight in cache. */
-	this->gcache.cached_weight = max<uint32>(1, weight);
+	this->gcache.cached_weight = std::max(1u, weight);
 	/* Friction in bearings and other mechanical parts is 0.1% of the weight (result in N). */
 	this->gcache.cached_axle_resistance = 10 * weight;
 
@@ -123,10 +142,10 @@ void GroundVehicle<T, Type>::CargoChanged()
 
 /**
  * Calculates the acceleration of the vehicle under its current conditions.
- * @return Current acceleration of the vehicle.
+ * @return Current upper and lower bounds of acceleration of the vehicle.
  */
 template <class T, VehicleType Type>
-int GroundVehicle<T, Type>::GetAcceleration()
+GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 {
 	/* Templated class used for function calls for performance reasons. */
 	const T *v = T::From(this);
@@ -155,7 +174,8 @@ int GroundVehicle<T, Type>::GetAcceleration()
 	 */
 	int64 resistance = 0;
 
-	bool maglev = v->GetAccelerationType() == 2;
+	int acceleration_type = v->GetAccelerationType();
+	bool maglev = (acceleration_type == 2);
 
 	const int area = v->GetAirDragArea();
 	if (!maglev) {
@@ -172,6 +192,8 @@ int GroundVehicle<T, Type>::GetAcceleration()
 	/* This value allows to know if the vehicle is accelerating or braking. */
 	AccelStatus mode = v->GetAccelerationStatus();
 
+	const int braking_power = power;
+
 	/* handle breakdown power reduction */
 	uint32 max_te = this->gcache.cached_max_te; // [N]
 	if (Type == VEH_TRAIN && mode == AS_ACCEL && HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER)) {
@@ -185,23 +207,36 @@ int GroundVehicle<T, Type>::GetAcceleration()
 	/* Constructued from power, with need to multiply by 18 and assuming
 	 * low speed, it needs to be a 64 bit integer too. */
 	int64 force;
+	int64 braking_force;
 	if (speed > 0) {
 		if (!maglev) {
 			/* Conversion factor from km/h to m/s is 5/18 to get [N] in the end. */
 			force = power * 18 / (speed * 5);
+			braking_force = force;
 			if (mode == AS_ACCEL && force > (int)max_te) force = max_te;
 		} else {
 			force = power / 25;
+			braking_force = force;
 		}
 	} else {
 		/* "Kickoff" acceleration. */
-		force = (mode == AS_ACCEL && !maglev) ? min(max_te, power) : power;
-		force = max(force, (mass * 8) + resistance);
+		force = (mode == AS_ACCEL && !maglev) ? std::min<uint64>(max_te, power) : power;
+		force = std::max(force, (mass * 8) + resistance);
+		braking_force = force;
 	}
 
 	/* If power is 0 because of a breakdown, we make the force 0 if accelerating */
 	if (Type == VEH_TRAIN && mode == AS_ACCEL && HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER) && power == 0) {
 		force = 0;
+	}
+
+	if (power != braking_power) {
+		if (!maglev && speed > 0) {
+			/* Conversion factor from km/h to m/s is 5/18 to get [N] in the end. */
+			braking_force = braking_power * 18 / (speed * 5);
+		} else {
+			braking_force = braking_power / 25;
+		}
 	}
 
 	/* Calculate the breakdown chance */
@@ -214,20 +249,34 @@ int GroundVehicle<T, Type>::GetAcceleration()
 		 * @note A seperate correction for multiheaded engines is done in CheckVehicleBreakdown. We can't do that here because it would affect the whole consist.
 		 */
 		uint64 breakdown_factor = (uint64)abs(resistance) * (uint64)(this->cur_speed << 16);
-		breakdown_factor /= (max(force, (int64)100) * this->gcache.cached_max_track_speed);
-		breakdown_factor = min((64 << 16) + (breakdown_factor * 128), 255 << 16);
+		breakdown_factor /= (std::max(force, (int64)100) * this->gcache.cached_max_track_speed);
+		breakdown_factor = std::min<uint64>((64 << 16) + (breakdown_factor * 128), 255 << 16);
 		if (Type == VEH_TRAIN && Train::From(this)->tcache.cached_num_engines > 1) {
 			/* For multiengine trains, breakdown chance is multiplied by 3 / (num_engines + 2) */
 			breakdown_factor *= 3;
 			breakdown_factor /= (Train::From(this)->tcache.cached_num_engines + 2);
 		}
 		/* breakdown_chance is at least 5 (5 / 128 = ~4% of the normal chance) */
-		this->breakdown_chance_factor = max(breakdown_factor >> 16, (uint64)5);
+		this->breakdown_chance_factor = std::max(breakdown_factor >> 16, (uint64)5);
+	}
+
+	int braking_accel;
+	if (Type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+		/* Assume that every part of a train is braked, not just the engine.
+		 * Exceptionally heavy freight trains should still have a sensible braking distance.
+		 * The total braking force is generally larger than the total tractive force. */
+		braking_accel = ClampToI32((-braking_force - resistance - (this->gcache.cached_total_length * 300)) / mass);
+
+		/* Defensive driving: prevent ridiculously fast deceleration.
+		 * -130 corresponds to a braking distance of about 6.2 tiles from 160 km/h. */
+		braking_accel = std::max(braking_accel, -(GetTrainRealisticBrakingTargetDecelerationLimit(acceleration_type) + 10));
+	} else {
+		braking_accel = ClampToI32(std::min<int64>(-braking_force - resistance, -10000) / mass);
 	}
 
 	if (mode == AS_ACCEL) {
 		/* Easy way out when there is no acceleration. */
-		if (force == resistance) return 0;
+		if (force == resistance) return { 0, braking_accel };
 
 		/* When we accelerate, make sure we always keep doing that, even when
 		 * the excess force is more than the mass. Otherwise a vehicle going
@@ -235,7 +284,7 @@ int GroundVehicle<T, Type>::GetAcceleration()
 		 * a hill will never speed up enough to (eventually) get back to the
 		 * same (maximum) speed. */
 		int accel = ClampToI32((force - resistance) / (mass * 4));
-		accel = force < resistance ? min(-1, accel) : max(1, accel);
+		accel = force < resistance ? std::min(-1, accel) : std::max(1, accel);
 		if (this->type == VEH_TRAIN) {
 			if(_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL &&
 					HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER)) {
@@ -256,9 +305,9 @@ int GroundVehicle<T, Type>::GetAcceleration()
 			}
 		}
 
-		return accel;
+		return { accel, braking_accel };
 	} else {
-		return ClampToI32(min(-force - resistance, -10000) / mass);
+		return { braking_accel, braking_accel };
 	}
 }
 
@@ -271,8 +320,8 @@ bool GroundVehicle<T, Type>::IsChainInDepot() const
 {
 	const T *v = this->First();
 	/* Is the front engine stationary in the depot? */
-	assert_compile((int)TRANSPORT_RAIL == (int)VEH_TRAIN);
-	assert_compile((int)TRANSPORT_ROAD == (int)VEH_ROAD);
+	static_assert((int)TRANSPORT_RAIL == (int)VEH_TRAIN);
+	static_assert((int)TRANSPORT_ROAD == (int)VEH_ROAD);
 	if (!IsDepotTypeTile(v->tile, (TransportType)Type) || v->cur_speed != 0) return false;
 
 	/* Check whether the rest is also already trying to enter the depot. */

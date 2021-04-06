@@ -47,7 +47,7 @@ public:
 	 */
 	inline void SetDemandPerNode(uint num_demands)
 	{
-		this->demand_per_node = max(this->supply_sum / num_demands, 1U);
+		this->demand_per_node = std::max(this->supply_sum / num_demands, 1U);
 	}
 
 	/**
@@ -59,7 +59,7 @@ public:
 	 */
 	inline uint EffectiveSupply(const Node &from, const Node &to)
 	{
-		return max(from.Supply() * max(1U, to.Supply()) * this->mod_size / 100 / this->demand_per_node, 1U);
+		return std::max(from.Supply() * std::max(1U, to.Supply()) * this->mod_size / 100 / this->demand_per_node, 1U);
 	}
 
 	/**
@@ -161,7 +161,7 @@ public:
 	 */
 	inline void AdjustDemandNodes(LinkGraphJob &job, const std::vector<NodeID> &demands)
 	{
-		const uint count = min<uint>(demands.size(), this->missing_supply);
+		const uint count = std::min<uint>(demands.size(), this->missing_supply);
 		this->missing_supply = 0;
 		for (uint i = 0; i < count; i++) {
 			job[demands[i]].ReceiveDemand(1);
@@ -177,7 +177,7 @@ public:
 	 */
 	inline uint EffectiveSupply(const Node &from, const Node &to)
 	{
-		return max<int>(min<int>(from.Supply(), ((int) this->demand_per_node) - ((int) to.ReceivedDemand())), 1);
+		return std::max<int>(std::min<int>(from.Supply(), ((int) this->demand_per_node) - ((int) to.ReceivedDemand())), 1);
 	}
 
 	/**
@@ -213,7 +213,7 @@ void SymmetricScaler::SetDemands(LinkGraphJob &job, NodeID from_id, NodeID to_id
 		uint undelivered = job[to_id].UndeliveredSupply();
 		if (demand_back > undelivered) {
 			demand_back = undelivered;
-			demand_forw = max(1U, demand_back * 100 / this->mod_size);
+			demand_forw = std::max(1U, demand_back * 100 / this->mod_size);
 		}
 		this->Scaler::SetDemands(job, to_id, from_id, demand_back);
 	}
@@ -325,7 +325,7 @@ void DemandCalculator::CalcDemand(LinkGraphJob &job, const std::vector<bool> &re
 				demand_forw = 1;
 			}
 
-			demand_forw = min(demand_forw, job[from_id].UndeliveredSupply());
+			demand_forw = std::min(demand_forw, job[from_id].UndeliveredSupply());
 
 			scaler.SetDemands(job, from_id, to_id, demand_forw);
 
@@ -380,7 +380,7 @@ void DemandCalculator::CalcMinimisedDistanceDemand(LinkGraphJob &job, const std:
 		uint distance;
 	};
 	std::vector<EdgeCandidate> candidates;
-	candidates.reserve(supplies.size() * demands.size() - min(supplies.size(), demands.size()));
+	candidates.reserve(supplies.size() * demands.size() - std::min(supplies.size(), demands.size()));
 	for (NodeID from_id : supplies) {
 		for (NodeID to_id : demands) {
 			if (from_id != to_id) {
@@ -395,7 +395,7 @@ void DemandCalculator::CalcMinimisedDistanceDemand(LinkGraphJob &job, const std:
 		if (job[candidate.from_id].UndeliveredSupply() == 0) continue;
 		if (!scaler.HasDemandLeft(job[candidate.to_id])) continue;
 
-		scaler.SetDemands(job, candidate.from_id, candidate.to_id, min(job[candidate.from_id].UndeliveredSupply(), scaler.EffectiveSupply(job[candidate.from_id], job[candidate.to_id])));
+		scaler.SetDemands(job, candidate.from_id, candidate.to_id, std::min(job[candidate.from_id].UndeliveredSupply(), scaler.EffectiveSupply(job[candidate.from_id], job[candidate.to_id])));
 	}
 }
 

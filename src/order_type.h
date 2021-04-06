@@ -12,14 +12,14 @@
 
 #include "core/enum_type.hpp"
 
-typedef byte VehicleOrderID;  ///< The index of an order within its current vehicle (not pool related)
+typedef uint16 VehicleOrderID;  ///< The index of an order within its current vehicle (not pool related)
 typedef uint32 OrderID;
 typedef uint16 OrderListID;
 typedef uint16 DestinationID;
 typedef uint32 TimetableTicks;
 
 /** Invalid vehicle order index (sentinel) */
-static const VehicleOrderID INVALID_VEH_ORDER_ID = 0xFF;
+static const VehicleOrderID INVALID_VEH_ORDER_ID = 0xFFFF;
 /** Last valid VehicleOrderID. */
 static const VehicleOrderID MAX_VEH_ORDER_ID     = INVALID_VEH_ORDER_ID - 1;
 
@@ -46,6 +46,7 @@ enum OrderType : byte {
 	OT_IMPLICIT      = 8,
 	OT_WAITING       = 9,
 	OT_LOADING_ADVANCE = 10,
+	OT_RELEASE_SLOT  = 11,
 	OT_END
 };
 
@@ -146,6 +147,8 @@ enum OrderConditionVariable {
 	OCV_CARGO_LOAD_PERCENTAGE, ///< Skip based on the amount of load of a specific cargo
 	OCV_CARGO_WAITING_AMOUNT,  ///< Skip based on the amount of a specific cargo waiting at next station
 	OCV_COUNTER_VALUE,      ///< Skip based on counter value
+	OCV_TIME_DATE,          ///< Skip based on current time/date
+	OCV_TIMETABLE,          ///< Skip based on timetable state
 	OCV_END
 };
 
@@ -183,6 +186,7 @@ enum ModifyOrderFlags {
 	MOF_WAYPOINT_FLAGS,  ///< Change the waypoint flags
 	MOF_CARGO_TYPE_UNLOAD, ///< Passes an OrderUnloadType and a CargoID.
 	MOF_CARGO_TYPE_LOAD,   ///< Passes an OrderLoadType and a CargoID.
+	MOF_SLOT,            ///< Change the slot value
 	MOF_END
 };
 template <> struct EnumPropsT<ModifyOrderFlags> : MakeEnumPropsT<ModifyOrderFlags, byte, MOF_NON_STOP, MOF_END, MOF_END, 4> {};
@@ -207,6 +211,12 @@ enum OrderLeaveType {
 	OLT_LEAVE_EARLY_FULL_ANY = 2, ///< Leave as soon as possible, if any cargoes fully loaded
 	OLT_LEAVE_EARLY_FULL_ALL = 3, ///< Leave as soon as possible, if all cargoes fully loaded
 	OLT_END
+};
+
+enum OrderTimetableConditionMode {
+	OTCM_LATENESS            = 0, ///< Test timetable lateness
+	OTCM_EARLINESS           = 1, ///< Test timetable earliness
+	OTCM_END
 };
 
 /**

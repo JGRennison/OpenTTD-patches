@@ -530,7 +530,9 @@ SignalProgram *GetSignalProgram(SignalReference ref)
 	if (!pr) {
 		pr = new SignalProgram(ref.tile, ref.track);
 		_signal_programs[ref] = pr;
-	} else assert(pr->tile == ref.tile && pr->track == ref.track);
+	} else {
+		assert(pr->tile == ref.tile && pr->track == ref.track);
+	}
 	return pr;
 }
 
@@ -558,7 +560,8 @@ void FreeSignalPrograms()
 
 SignalState RunSignalProgram(SignalReference ref, uint num_exits, uint num_green)
 {
-	SignalProgram *program = GetSignalProgram(ref);
+	SignalProgram *program = GetExistingSignalProgram(ref);
+	if (!program) return SIGNAL_STATE_RED;
 	SignalVM vm;
 	vm.program = program;
 	vm.num_exits = num_exits;
@@ -575,7 +578,8 @@ SignalState RunSignalProgram(SignalReference ref, uint num_exits, uint num_green
 
 void RemoveProgramDependencies(SignalReference dependency_target, SignalReference signal_to_update)
 {
-	SignalProgram *prog = GetSignalProgram(signal_to_update);
+	SignalProgram *prog = GetExistingSignalProgram(signal_to_update);
+	if (!prog) return;
 	for (SignalInstruction *insn : prog->instructions) {
 		if (insn->Opcode() == PSO_IF) {
 			SignalIf* ifi = static_cast<SignalIf*>(insn);
@@ -595,7 +599,8 @@ void RemoveProgramDependencies(SignalReference dependency_target, SignalReferenc
 
 void RemoveProgramSlotDependencies(TraceRestrictSlotID slot_being_removed, SignalReference signal_to_update)
 {
-	SignalProgram *prog = GetSignalProgram(signal_to_update);
+	SignalProgram *prog = GetExistingSignalProgram(signal_to_update);
+	if (!prog) return;
 	for (SignalInstruction *insn : prog->instructions) {
 		if (insn->Opcode() == PSO_IF) {
 			SignalIf* ifi = static_cast<SignalIf*>(insn);
@@ -615,7 +620,8 @@ void RemoveProgramSlotDependencies(TraceRestrictSlotID slot_being_removed, Signa
 
 void RemoveProgramCounterDependencies(TraceRestrictCounterID ctr_being_removed, SignalReference signal_to_update)
 {
-	SignalProgram *prog = GetSignalProgram(signal_to_update);
+	SignalProgram *prog = GetExistingSignalProgram(signal_to_update);
+	if (!prog) return;
 	for (SignalInstruction *insn : prog->instructions) {
 		if (insn->Opcode() == PSO_IF) {
 			SignalIf* ifi = static_cast<SignalIf*>(insn);
@@ -669,7 +675,7 @@ CommandCost CmdInsertSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 	if (!IsTileOwner(tile, _current_company))
 		return_cmd_error(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER);
 
-	SignalProgram *prog = GetExistingSignalProgram(SignalReference(tile, track));
+	SignalProgram *prog = GetSignalProgram(SignalReference(tile, track));
 	if (!prog)
 		return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
 	if (instruction_id >= prog->instructions.size())

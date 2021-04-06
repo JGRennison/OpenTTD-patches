@@ -29,15 +29,17 @@ public:
 
 	bool AfterBlitterChange() override;
 
-	void AcquireBlitterLock() override;
-
-	void ReleaseBlitterLock() override;
-
 	bool ClaimMousePointer() override;
 
 	const char *GetName() const override { return "sdl"; }
+
+protected:
+	void InputLoop() override;
+	void Paint() override;
+	void CheckPaletteAnim() override;
+	bool PollEvent() override;
+
 private:
-	int PollEvent();
 	bool CreateMainSurface(uint w, uint h);
 	void SetupKeyboard();
 };

@@ -29,6 +29,8 @@ enum SlXvFeatureIndex {
 	XSLFI_TRACE_RESTRICT_REVERSE,                 ///< Trace restrict: reverse
 	XSLFI_TRACE_RESTRICT_NEWSCTRL,                ///< Trace restrict: news control
 	XSLFI_TRACE_RESTRICT_COUNTER,                 ///< Trace restrict: counters
+	XSLFI_TRACE_RESTRICT_TIMEDATE,                ///< Trace restrict: time/date
+	XSLFI_TRACE_RESTRICT_BRKCND,                  ///< Trace restrict: realistic braking related conditionals
 	XSLFI_PROG_SIGS,                              ///< programmable pre-signals patch
 	XSLFI_ADJACENT_CROSSINGS,                     ///< Adjacent level crossings closure patch
 	XSLFI_SAFER_CROSSINGS,                        ///< Safer level crossings
@@ -86,6 +88,19 @@ enum SlXvFeatureIndex {
 	XSLFI_TOWN_MULTI_BUILDING,                    ///< Allow multiple stadium/church buildings in a single town
 	XSLFI_SHIP_LOST_COUNTER,                      ///< Ship lost counter
 	XSLFI_BUILD_OBJECT_RATE_LIMIT,                ///< Build object rate limit
+	XSLFI_LOCAL_COMPANY,                          ///< Local company ID
+	XSLFI_THROUGH_TRAIN_DEPOT,                    ///< Drive-through train depots
+	XSLFI_MORE_VEHICLE_ORDERS,                    ///< More vehicle orders - VehicleOrderID is 16 bits instead of 8
+	XSLFI_ORDER_FLAGS_EXTRA,                      ///< Order flags field extra size
+	XSLFI_ONE_WAY_DT_ROAD_STOP,                   ///< One-way drive-through road stops
+	XSLFI_ONE_WAY_ROAD_STATE,                     ///< One-way road state cache
+	XSLFI_VENC_CHUNK,                             ///< VENC chunk
+	XSLFI_ANIMATED_TILE_EXTRA,                    ///< Animated tile extra info
+	XSLFI_NEWGRF_INFO_EXTRA,                      ///< Extra NewGRF info in savegame
+	XSLFI_INDUSTRY_CARGO_ADJ,                     ///< Industry cargo adjustment patch
+	XSLFI_REALISTIC_TRAIN_BRAKING,                ///< Realistic train braking
+	XSLFI_INFLATION_FIXED_DATES,                  ///< Inflation is applied between fixed dates
+	XSLFI_WATER_FLOODING,                         ///< Water flooding map bit
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk

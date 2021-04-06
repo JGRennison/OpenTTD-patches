@@ -13,6 +13,9 @@
 #include "string_func.h"
 #include "fileio_func.h"
 #include <fstream>
+#ifdef __EMSCRIPTEN__
+#	include <emscripten.h>
+#endif
 
 #if (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 199309L) || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500)
 # include <unistd.h>
@@ -40,7 +43,7 @@ IniFile::IniFile(const char * const *list_group_names) : IniLoadFile(list_group_
  * @param filename the file to save to.
  * @return true if saving succeeded.
  */
-bool IniFile::SaveToDisk(const char *filename)
+bool IniFile::SaveToDisk(const std::string &filename)
 {
 	/*
 	 * First write the configuration to a (temporary) file and then rename
@@ -89,17 +92,15 @@ bool IniFile::SaveToDisk(const char *filename)
 #endif
 
 #if defined(_WIN32)
-	/* _tcsncpy = strcpy is TCHAR is char, but isn't when TCHAR is wchar. */
-#	undef strncpy
 	/* Allocate space for one more \0 character. */
-	TCHAR tfilename[MAX_PATH + 1], tfile_new[MAX_PATH + 1];
-	_tcsncpy(tfilename, OTTD2FS(filename), MAX_PATH);
-	_tcsncpy(tfile_new, OTTD2FS(file_new.c_str()), MAX_PATH);
+	wchar_t tfilename[MAX_PATH + 1], tfile_new[MAX_PATH + 1];
+	wcsncpy(tfilename, OTTD2FS(filename.c_str()), MAX_PATH);
+	wcsncpy(tfile_new, OTTD2FS(file_new.c_str()), MAX_PATH);
 	/* SHFileOperation wants a double '\0' terminated string. */
 	tfilename[MAX_PATH - 1] = '\0';
 	tfile_new[MAX_PATH - 1] = '\0';
-	tfilename[_tcslen(tfilename) + 1] = '\0';
-	tfile_new[_tcslen(tfile_new) + 1] = '\0';
+	tfilename[wcslen(tfilename) + 1] = '\0';
+	tfile_new[wcslen(tfile_new) + 1] = '\0';
 
 	/* Rename file without any user confirmation. */
 	SHFILEOPSTRUCT shfopt;
@@ -110,15 +111,19 @@ bool IniFile::SaveToDisk(const char *filename)
 	shfopt.pTo    = tfilename;
 	SHFileOperation(&shfopt);
 #else
-	if (rename(file_new.c_str(), filename) < 0) {
-		DEBUG(misc, 0, "Renaming %s to %s failed; configuration not saved", file_new.c_str(), filename);
+	if (rename(file_new.c_str(), filename.c_str()) < 0) {
+		DEBUG(misc, 0, "Renaming %s to %s failed; configuration not saved", file_new.c_str(), filename.c_str());
 	}
+#endif
+
+#ifdef __EMSCRIPTEN__
+	EM_ASM(if (window["openttd_syncfs"]) openttd_syncfs());
 #endif
 
 	return true;
 }
 
-/* virtual */ FILE *IniFile::OpenFile(const char *filename, Subdirectory subdir, size_t *size)
+/* virtual */ FILE *IniFile::OpenFile(const std::string &filename, Subdirectory subdir, size_t *size)
 {
 	/* Open the text file in binary mode to prevent end-of-line translations
 	 * done by ftell() and friends, as defined by K&R. */

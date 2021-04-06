@@ -69,6 +69,7 @@ public:
 
 	void RebuildCache(bool incremental = false);
 	bool CacheStillValid() const;
+	void MarkStationViewportLinksDirty(const Station *st);
 	void Draw(const DrawPixelInfo *dpi);
 	void SetCargoMask(CargoTypes cargo_mask);
 	void SetCompanyMask(uint32 company_mask);

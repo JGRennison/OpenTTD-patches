@@ -60,6 +60,9 @@
 #ifdef WITH_LIBLZMA
 #	include <lzma.h>
 #endif
+#ifdef WITH_ZSTD
+#include <zstd.h>
+#endif
 #ifdef WITH_LZO
 #include <lzo/lzo1x.h>
 #endif
@@ -292,6 +295,10 @@ char *CrashLog::LogLibraries(char *buffer, const char *last) const
 	buffer += seprintf(buffer, last, " LZMA:       %s\n", lzma_version_string());
 #endif
 
+#ifdef WITH_ZSTD
+	buffer += seprintf(buffer, last, " ZSTD:       %s\n", ZSTD_versionString());
+#endif
+
 #ifdef WITH_LZO
 	buffer += seprintf(buffer, last, " LZO:        %s\n", lzo_version_string());
 #endif
@@ -376,7 +383,7 @@ char *CrashLog::LogRecentNews(char *buffer, const char *last) const
 	for (NewsItem *news = _latest_news; news != nullptr; news = news->prev) {
 		total++;
 	}
-	uint show = min<uint>(total, 32);
+	uint show = std::min<uint>(total, 32);
 	buffer += seprintf(buffer, last, "Recent news messages (%u of %u):\n", show, total);
 
 	int i = 0;
@@ -490,6 +497,16 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 		buffer += seprintf(buffer, last, "Game loaded at: %i-%02i-%02i (%i, %i), %s",
 				_game_load_cur_date_ymd.year, _game_load_cur_date_ymd.month + 1, _game_load_cur_date_ymd.day, _game_load_date_fract, _game_load_tick_skip_counter, asctime(gmtime(&_game_load_time)));
 	}
+	if (!_network_server) {
+		extern Date   _last_sync_date;
+		extern DateFract _last_sync_date_fract;
+		extern uint8  _last_sync_tick_skip_counter;
+
+		YearMonthDay ymd;
+		ConvertDateToYMD(_last_sync_date, &ymd);
+		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i)",
+				ymd.year, ymd.month + 1, ymd.day, _last_sync_date_fract, _last_sync_tick_skip_counter);
+	}
 	buffer += seprintf(buffer, last, "\n");
 
 	buffer = this->LogOpenTTDVersion(buffer, last);
@@ -548,7 +565,7 @@ char *CrashLog::FillVersionInfoLog(char *buffer, const char *last) const
  */
 bool CrashLog::WriteCrashLog(const char *buffer, char *filename, const char *filename_last, const char *name, FILE **crashlog_file) const
 {
-	seprintf(filename, filename_last, "%s%s.log", _personal_dir, name);
+	seprintf(filename, filename_last, "%s%s.log", _personal_dir.c_str(), name);
 
 	FILE *file = FioFOpenFile(filename, "w", NO_DIRECTORY);
 	if (file == nullptr) return false;
@@ -587,7 +604,7 @@ bool CrashLog::WriteSavegame(char *filename, const char *filename_last, const ch
 	try {
 		GamelogEmergency();
 
-		seprintf(filename, filename_last, "%s%s.sav", _personal_dir, name);
+		seprintf(filename, filename_last, "%s%s.sav", _personal_dir.c_str(), name);
 
 		/* Don't do a threaded saveload. */
 		return SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, NO_DIRECTORY, false) == SL_OK;

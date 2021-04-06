@@ -90,8 +90,10 @@ protected:
 
 	static const uint LEGEND_BLOB_WIDTH = 8;              ///< Width of the coloured blob in front of a line text in the #WID_SM_LEGEND widget.
 	static const uint INDUSTRY_MIN_NUMBER_OF_COLUMNS = 2; ///< Minimal number of columns in the #WID_SM_LEGEND widget for the #SMT_INDUSTRY legend.
-	static const uint FORCE_REFRESH_PERIOD = 2850; ///< map is redrawn after that many milliseconds.
-	static const uint BLINK_PERIOD         = 450; ///< highlight blinking interval in milliseconds.
+	static const uint FORCE_REFRESH_PERIOD = 930;             ///< map is redrawn after that many milliseconds (default).
+	static const uint FORCE_REFRESH_PERIOD_VEH = 240;         ///< map is redrawn after that many milliseconds (modes with vehicles).
+	static const uint FORCE_REFRESH_PERIOD_LINK_GRAPH = 2850; ///< map is redrawn after that many milliseconds (link graph mode).
+	static const uint BLINK_PERIOD         = 450;             ///< highlight blinking interval in milliseconds.
 
 	uint min_number_of_columns;    ///< Minimal number of columns in legends.
 	uint min_number_of_fixed_rows; ///< Minimal number of rows in the legends for the fixed layouts only (all except #SMT_INDUSTRY).
@@ -175,6 +177,8 @@ protected:
 	void SelectLegendItem(int click_pos, LegendAndColour *legend, int end_legend_item, int begin_legend_item = 0);
 	void SwitchMapType(SmallMapType map_type);
 	void SetNewScroll(int sx, int sy, int sub);
+	uint GetRefreshPeriod() const;
+	uint PausedAdjustRefreshTimeDelta(uint delta_ms) const;
 
 	void DrawMapIndicators() const;
 	void DrawSmallMapColumn(void *dst, uint xc, uint yc, int pitch, int reps, int start_pos, int end_pos, Blitter *blitter) const;

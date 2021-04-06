@@ -23,6 +23,7 @@
 #include "pathfinder/yapf/yapf_cache.h"
 #include "scope_info.h"
 #include "vehicle_func.h"
+#include "date_func.h"
 
 #include <vector>
 #include <algorithm>
@@ -89,7 +90,7 @@ const uint16 _tracerestrict_pathfinder_penalty_preset_values[] = {
 	8000,
 };
 
-assert_compile(lengthof(_tracerestrict_pathfinder_penalty_preset_values) == TRPPPI_END);
+static_assert(lengthof(_tracerestrict_pathfinder_penalty_preset_values) == TRPPPI_END);
 
 /**
  * This should be used when all pools have been or are immediately about to be also cleared
@@ -243,8 +244,8 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 	static std::vector<TraceRestrictCondStackFlags> condstack;
 	condstack.clear();
 
-	bool have_previous_signal = false;
-	TileIndex previous_signal_tile = INVALID_TILE;
+	byte have_previous_signal = 0;
+	TileIndex previous_signal_tile[2];
 
 	size_t size = this->items.size();
 	for (size_t i = 0; i < size; i++) {
@@ -343,17 +344,21 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 					}
 
 					case TRIT_COND_PBS_ENTRY_SIGNAL: {
-						// TRVT_TILE_INDEX value type uses the next slot
+						// TRIT_COND_PBS_ENTRY_SIGNAL value type uses the next slot
 						i++;
+						TraceRestrictPBSEntrySignalAuxField mode = static_cast<TraceRestrictPBSEntrySignalAuxField>(GetTraceRestrictAuxField(item));
+						assert(mode == TRPESAF_VEH_POS || mode == TRPESAF_RES_END);
 						uint32_t signal_tile = this->items[i];
-						if (!have_previous_signal) {
+						if (!HasBit(have_previous_signal, mode)) {
 							if (input.previous_signal_callback) {
-								previous_signal_tile = input.previous_signal_callback(v, input.previous_signal_ptr);
+								previous_signal_tile[mode] = input.previous_signal_callback(v, input.previous_signal_ptr, mode);
+							} else {
+								previous_signal_tile[mode] = INVALID_TILE;
 							}
-							have_previous_signal = true;
+							SetBit(have_previous_signal, mode);
 						}
 						bool match = (signal_tile != INVALID_TILE)
-								&& (previous_signal_tile == signal_tile);
+								&& (previous_signal_tile[mode] == signal_tile);
 						result = TestBinaryConditionCommon(item, match);
 						break;
 					}
@@ -414,11 +419,11 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 					case TRIT_COND_PHYS_RATIO: {
 						switch (static_cast<TraceRestrictPhysPropRatioCondAuxField>(GetTraceRestrictAuxField(item))) {
 							case TRPPRCAF_POWER_WEIGHT:
-								result = TestCondition(min<uint>(UINT16_MAX, (100 * v->gcache.cached_power) / max<uint>(1, v->gcache.cached_weight)), condop, condvalue);
+								result = TestCondition(std::min<uint>(UINT16_MAX, (100 * v->gcache.cached_power) / std::max<uint>(1, v->gcache.cached_weight)), condop, condvalue);
 								break;
 
 							case TRPPRCAF_MAX_TE_WEIGHT:
-								result = TestCondition(min<uint>(UINT16_MAX, (v->gcache.cached_max_te / 10) / max<uint>(1, v->gcache.cached_weight)), condop, condvalue);
+								result = TestCondition(std::min<uint>(UINT16_MAX, (v->gcache.cached_max_te / 10) / std::max<uint>(1, v->gcache.cached_weight)), condop, condvalue);
 								break;
 
 							default:
@@ -477,9 +482,12 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 								has_status = v->current_order.IsType(OT_GOTO_DEPOT);
 								break;
 
-							case TRTSVF_LOADING:
-								has_status = v->current_order.IsType(OT_LOADING) || v->current_order.IsType(OT_LOADING_ADVANCE);
+							case TRTSVF_LOADING: {
+								extern const Order *_choose_train_track_saved_current_order;
+								const Order *o = (_choose_train_track_saved_current_order != nullptr) ? _choose_train_track_saved_current_order : &(v->current_order);
+								has_status = o->IsType(OT_LOADING) || o->IsType(OT_LOADING_ADVANCE);
 								break;
+							}
 
 							case TRTSVF_WAITING:
 								has_status = v->current_order.IsType(OT_WAITING);
@@ -508,6 +516,23 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						uint32_t value = this->items[i];
 						const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(GetTraceRestrictValue(item));
 						result = TestCondition(ctr != nullptr ? ctr->value : 0, condop, value);
+						break;
+					}
+
+					case TRIT_COND_TIME_DATE_VALUE: {
+						// TRVT_TIME_DATE_INT value type uses the next slot
+						i++;
+						uint32_t value = this->items[i];
+						result = TestCondition(GetTraceRestrictTimeDateValue(static_cast<TraceRestrictTimeDateValueField>(GetTraceRestrictValue(item))), condop, value);
+						break;
+					}
+
+					case TRIT_COND_RESERVED_TILES: {
+						uint tiles_ahead = 0;
+						if (v->lookahead != nullptr) {
+							tiles_ahead = std::max<int>(0, v->lookahead->reservation_end_position - v->lookahead->current_position) / TILE_SIZE;
+						}
+						result = TestCondition(tiles_ahead, condop, condvalue);
 						break;
 					}
 
@@ -699,6 +724,8 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 					default:
 						NOT_REACHED();
 				}
+			} else {
+				if (IsTraceRestrictDoubleItem(type)) i++;
 			}
 		}
 	}
@@ -791,6 +818,8 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				case TRIT_COND_TRAIN_STATUS:
 				case TRIT_COND_LOAD_PERCENT:
 				case TRIT_COND_COUNTER_VALUE:
+				case TRIT_COND_TIME_DATE_VALUE:
+				case TRIT_COND_RESERVED_TILES:
 					break;
 
 				default:
@@ -941,6 +970,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_REVERSE:
 		case TRVT_PERCENT:
 		case TRVT_NEWS_CONTROL:
+		case TRVT_TIME_DATE_INT:
 			SetTraceRestrictValue(item, 0);
 			if (!IsTraceRestrictTypeAuxSubtype(GetTraceRestrictType(item))) {
 				SetTraceRestrictAuxField(item, 0);
@@ -1064,7 +1094,7 @@ void TraceRestrictCreateProgramMapping(TraceRestrictRefId ref, TraceRestrictProg
 	TileIndex tile = GetTraceRestrictRefIdTileIndex(ref);
 	Track track = GetTraceRestrictRefIdTrack(ref);
 	TraceRestrictSetIsSignalRestrictedBit(tile);
-	MarkTileDirtyByTile(tile);
+	MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 	YapfNotifyTrackLayoutChange(tile, track);
 }
 
@@ -1089,7 +1119,7 @@ bool TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 		TileIndex tile = GetTraceRestrictRefIdTileIndex(ref);
 		Track track = GetTraceRestrictRefIdTrack(ref);
 		TraceRestrictSetIsSignalRestrictedBit(tile);
-		MarkTileDirtyByTile(tile);
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		YapfNotifyTrackLayoutChange(tile, track);
 
 		if (remove_other_mapping) {
@@ -1196,6 +1226,7 @@ static uint32 GetDualInstructionInitialValue(TraceRestrictItem item)
 
 		case TRIT_COND_SLOT_OCCUPANCY:
 		case TRIT_COND_COUNTER_VALUE:
+		case TRIT_COND_TIME_DATE_VALUE:
 			return 0;
 
 		case TRIT_COUNTER:
@@ -1615,6 +1646,25 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 	return CommandCost();
 }
 
+int GetTraceRestrictTimeDateValue(TraceRestrictTimeDateValueField type)
+{
+	Minutes minutes = (_scaled_date_ticks / _settings_game.game_time.ticks_per_minute) + _settings_game.game_time.clock_offset;
+
+	switch (type) {
+		case TRTDVF_MINUTE:
+			return MINUTES_MINUTE(minutes);
+
+		case TRTDVF_HOUR:
+			return MINUTES_HOUR(minutes);
+
+		case TRTDVF_HOUR_MINUTE:
+			return (MINUTES_HOUR(minutes) * 100) + MINUTES_MINUTE(minutes);
+
+		default:
+			return 0;
+	}
+}
+
 /**
  * This is called when a station, waypoint or depot is about to be deleted
  * Scan program pool and change any references to it to the invalid station ID, to avoid dangling references
@@ -1910,6 +1960,10 @@ void TraceRestrictRemoveSlotID(TraceRestrictSlotID index)
 			o->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_ID;
 			changed_order = true;
 		}
+		if (o->IsType(OT_RELEASE_SLOT) && o->GetDestination() == index) {
+			o->SetDestination(INVALID_TRACE_RESTRICT_SLOT_ID);
+			changed_order = true;
+		}
 	}
 
 	// update windows
@@ -2097,7 +2151,7 @@ CommandCost CmdRemoveVehicleTraceRestrictSlot(TileIndex tile, DoCommandFlag flag
 
 void TraceRestrictCounter::UpdateValue(int32 new_value)
 {
-	new_value = max<int32>(0, new_value);
+	new_value = std::max<int32>(0, new_value);
 	if (new_value != this->value) {
 		this->value = new_value;
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);

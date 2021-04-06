@@ -291,6 +291,7 @@ enum Commands {
 	CMD_CHANGE_SERVICE_INT,           ///< change the server interval of a vehicle
 
 	CMD_BUILD_INDUSTRY,               ///< build a new industry
+	CMD_INDUSTRY_CTRL,                ///< change industry properties
 
 	CMD_SET_COMPANY_MANAGER_FACE,     ///< set the manager's face of the company
 	CMD_SET_COMPANY_COLOUR,           ///< set the colour of the company
@@ -324,6 +325,7 @@ enum Commands {
 
 	CMD_FOUND_TOWN,                   ///< found a town
 	CMD_RENAME_TOWN,                  ///< rename a town
+	CMD_RENAME_TOWN_NON_ADMIN,        ///< rename a town, non-admin command
 	CMD_DO_TOWN_ACTION,               ///< do a action from the town detail window (like advertises or bribe)
 	CMD_TOWN_CARGO_GOAL,              ///< set the goal of a cargo for a town
 	CMD_TOWN_GROWTH_RATE,             ///< set the town growth rate
@@ -412,6 +414,7 @@ enum Commands {
 	CMD_SET_GROUP_LIVERY,             ///< set the livery for a group
 
 	CMD_MOVE_ORDER,                   ///< move an order
+	CMD_REVERSE_ORDER_LIST,           ///< reverse order list
 	CMD_CHANGE_TIMETABLE,             ///< change the timetable for a vehicle
 	CMD_BULK_CHANGE_TIMETABLE,        ///< change the timetable for all orders of a vehicle
 	CMD_SET_VEHICLE_ON_TIME,          ///< set the vehicle on time feature (timetable)
@@ -450,6 +453,7 @@ enum Commands {
 	CMD_REMOVE_PLAN,
 	CMD_REMOVE_PLAN_LINE,
 	CMD_CHANGE_PLAN_VISIBILITY,
+	CMD_CHANGE_PLAN_COLOUR,
 	CMD_RENAME_PLAN,
 
 	CMD_DESYNC_CHECK,                 ///< Force desync checks to be run
@@ -468,7 +472,7 @@ enum DoCommandFlag {
 	DC_AUTO                  = 0x002, ///< don't allow building on structures
 	DC_QUERY_COST            = 0x004, ///< query cost only,  don't build.
 	DC_NO_WATER              = 0x008, ///< don't allow building on water
-	DC_NO_RAIL_OVERLAP       = 0x010, ///< don't allow overlap of rails (used in buildrail)
+	// 0x010 is unused
 	DC_NO_TEST_TOWN_RATING   = 0x020, ///< town rating does not disallow you from building
 	DC_BANKRUPT              = 0x040, ///< company bankrupts, skip money check, skip vehicle on tile check in some cases
 	DC_AUTOREPLACE           = 0x080, ///< autoreplace/autorenew is in progress, this shall disable vehicle limits when building, and ignore certain restrictions when undoing things (like vehicle attach callback)
@@ -477,6 +481,7 @@ enum DoCommandFlag {
 	DC_NO_MODIFY_TOWN_RATING = 0x400, ///< do not change town rating
 	DC_FORCE_CLEAR_TILE      = 0x800, ///< do not only remove the object on the tile, but also clear any water left on it
 	DC_ALLOW_REMOVE_WATER    = 0x1000,///< always allow removing water
+	DC_TOWN                  = 0x2000,///< town operation
 };
 DECLARE_ENUM_AS_BIT_SET(DoCommandFlag)
 
@@ -521,6 +526,7 @@ enum CommandFlags {
 	CMD_NO_EST    =  0x400, ///< the command is never estimated.
 	CMD_PROCEX    =  0x800, ///< the command proc function has extended parameters
 	CMD_SERVER_NS = 0x1000, ///< the command can only be initiated by the server (this is not executed in spectator mode)
+	CMD_LOG_AUX   = 0x2000, ///< the command should be logged in the auxiliary log instead of the main log
 };
 DECLARE_ENUM_AS_BIT_SET(CommandFlags)
 
@@ -566,7 +572,7 @@ enum CommandPauseLevel {
  * @return The CommandCost of the command, which can be succeeded or failed.
  */
 typedef CommandCost CommandProc(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text);
-typedef CommandCost CommandProcEx(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text, uint32 binary_length);
+typedef CommandCost CommandProcEx(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length);
 
 /**
  * Define a command with the flags which belongs to it.
@@ -588,9 +594,9 @@ struct Command {
 	Command(CommandProcEx *procex, const char *name, CommandFlags flags, CommandType type)
 			: procex(procex), name(name), flags(flags | CMD_PROCEX), type(type) {}
 
-	inline CommandCost Execute(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text, uint32 binary_length) const {
+	inline CommandCost Execute(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length) const {
 		if (this->flags & CMD_PROCEX) {
-			return this->procex(tile, flags, p1, p2, text, binary_length);
+			return this->procex(tile, flags, p1, p2, p3, text, binary_length);
 		} else {
 			return this->proc(tile, flags, p1, p2, text);
 		}
@@ -607,10 +613,11 @@ struct Command {
  * @param result The result of the executed command
  * @param tile The tile of the command action
  * @param p1 Additional data of the command
- * @param p1 Additional data of the command
+ * @param p2 Additional data of the command
+ * @param p3 Additional data of the command
  * @see CommandProc
  */
-typedef void CommandCallback(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd);
+typedef void CommandCallback(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd);
 
 #define MAX_CMD_TEXT_LENGTH 32000
 
@@ -622,9 +629,15 @@ struct CommandContainer {
 	uint32 p1;                       ///< parameter p1.
 	uint32 p2;                       ///< parameter p2.
 	uint32 cmd;                      ///< command being executed.
+	uint64 p3;                       ///< parameter p3. (here for alignment)
 	CommandCallback *callback;       ///< any callback function executed upon successful completion of the command.
 	uint32 binary_length;            ///< in case text contains binary data, this describes its length.
 	std::string text;                ///< possible text sent for name changes etc.
 };
+
+inline CommandContainer NewCommandContainerBasic(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback = nullptr)
+{
+	return { tile, p1, p2, cmd, 0, callback, 0, {} };
+}
 
 #endif /* COMMAND_TYPE_H */

@@ -98,7 +98,7 @@ uint TextfileWindow::GetContentHeight()
 			resize->height = 1;
 
 			size->height = 4 * resize->height + TOP_SPACING + BOTTOM_SPACING; // At least 4 lines are visible.
-			size->width = max(200u, size->width); // At least 200 pixels wide.
+			size->width = std::max(200u, size->width); // At least 200 pixels wide.
 			break;
 	}
 }
@@ -112,7 +112,7 @@ void TextfileWindow::SetupScrollbars()
 	} else {
 		uint max_length = 0;
 		for (uint i = 0; i < this->lines.size(); i++) {
-			max_length = max(max_length, GetStringBoundingBox(this->lines[i], FS_MONO).width);
+			max_length = std::max(max_length, GetStringBoundingBox(this->lines[i], FS_MONO).width);
 		}
 		this->vscroll->SetCount((uint)this->lines.size() * FONT_HEIGHT_MONO);
 		this->hscroll->SetCount(max_length + WD_FRAMETEXT_LEFT + WD_FRAMETEXT_RIGHT);
@@ -194,9 +194,8 @@ void TextfileWindow::SetupScrollbars()
 
 /* virtual */ void TextfileWindow::SetFontNames(FreeTypeSettings *settings, const char *font_name, const void *os_data)
 {
-#if defined(WITH_FREETYPE) || defined(_WIN32)
+#if defined(WITH_FREETYPE) || defined(_WIN32) || defined(WITH_COCOA)
 	strecpy(settings->mono.font, font_name, lastof(settings->mono.font));
-	free(settings->mono.os_handle);
 	settings->mono.os_handle = os_data;
 #endif
 }
@@ -359,7 +358,7 @@ static void Xunzip(byte **bufp, size_t *sizep)
 	}
 
 	/* Check for the byte-order-mark, and skip it if needed. */
-	char *p = this->text + (strncmp("\xEF\xBB\xBF", this->text, 3) == 0 ? 3 : 0);
+	char *p = this->text + (strncmp(u8"\ufeff", this->text, 3) == 0 ? 3 : 0);
 
 	/* Make sure the string is a valid UTF-8 sequence. */
 	str_validate(p, this->text + filesize, SVS_REPLACE_WITH_QUESTION_MARK | SVS_ALLOW_NEWLINE);
@@ -390,7 +389,7 @@ const char *GetTextfile(TextfileType type, Subdirectory dir, const char *filenam
 		"changelog",
 		"license",
 	};
-	assert_compile(lengthof(prefixes) == TFT_END);
+	static_assert(lengthof(prefixes) == TFT_END);
 
 	const char *prefix = prefixes[type];
 

@@ -594,7 +594,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
   GetBankBalance():                  100000
   GetName():                         (null : 0x00000000)
   GetLoanAmount():                   100000
-  GetMaxLoanAmount():                500000
+  GetMaxLoanAmount():                2000000000
   GetLoanInterval():                 10000
   SetLoanAmount(1):                  false
   SetLoanAmount(100):                false
@@ -606,8 +606,8 @@ ERROR: IsEnd() is invalid as Begin() is never called
   GetBankBalance():                  40000
   GetLoanAmount():                   40000
   SetLoanAmount(10000):              true
-  GetBankBalance():                  500000
-  GetLoanAmount():                   500000
+  GetBankBalance():                  2000000000
+  GetLoanAmount():                   2000000000
   GetCompanyHQ():                    -1
   BuildCompanyHQ():                  true
   GetCompanyHQ():                    33151
@@ -615,177 +615,178 @@ ERROR: IsEnd() is invalid as Begin() is never called
   GetCompanyHQ():                    33153
   BuildCompanyHQ():                  false
   GetLastErrorString():              ERR_AREA_NOT_CLEAR
-  GetAutoRenewStatus();              false
-  SetAutoRenewStatus(true);          true
-  GetAutoRenewStatus();              true
-  SetAutoRenewStatus(true);          true
-  SetAutoRenewStatus(false);         true
-  GetAutoRenewMonths();              6
-  SetAutoRenewMonths(-12);           true
-  GetAutoRenewMonths();              -12
-  SetAutoRenewMonths(-12);           true
-  SetAutoRenewMonths(6);             true
-  GetAutoRenewMoney();               100000
-  SetAutoRenewMoney(200000);         true
-  GetAutoRenewMoney();               200000
-  SetAutoRenewMoney(200000);         true
-  SetAutoRenewMoney(100000);         true
+  GetAutoRenewStatus():              true
+  SetAutoRenewStatus(true):          true
+  GetAutoRenewStatus():              true
+  SetAutoRenewStatus(true):          true
+  SetAutoRenewStatus(false):         true
+  GetAutoRenewStatus():              false
+  GetAutoRenewMonths():              6
+  SetAutoRenewMonths(-12):           true
+  GetAutoRenewMonths():              -12
+  SetAutoRenewMonths(-12):           true
+  SetAutoRenewMonths(6):             true
+  GetAutoRenewMoney():               100000
+  SetAutoRenewMoney(200000):         true
+  GetAutoRenewMoney():               200000
+  SetAutoRenewMoney(200000):         true
+  SetAutoRenewMoney(100000):         true
   Quarter: -1
-    GetQuarterlyIncome();            -1
-    GetQuarterlyExpenses();          -1
-    GetQuarterlyCargoDelivered();    -1
-    GetQuarterlyPerformanceRating(); -1
-    GetQuarterlyCompanyValue();      -1
+    GetQuarterlyIncome():            -1
+    GetQuarterlyExpenses():          -1
+    GetQuarterlyCargoDelivered():    -1
+    GetQuarterlyPerformanceRating(): -1
+    GetQuarterlyCompanyValue():      -1
   Quarter: 0
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          -210
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); -1
-    GetQuarterlyCompanyValue();      1
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          -210
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): -1
+    GetQuarterlyCompanyValue():      1
   Quarter: 1
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 2
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 3
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 4
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 5
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 6
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 7
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 8
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 9
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 10
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 11
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 12
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 13
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 14
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 15
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 16
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 17
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 18
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 19
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 20
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 21
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 22
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 23
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
   Quarter: 24
-    GetQuarterlyIncome();            0
-    GetQuarterlyExpenses();          0
-    GetQuarterlyCargoDelivered();    0
-    GetQuarterlyPerformanceRating(); 0
-    GetQuarterlyCompanyValue();      0
+    GetQuarterlyIncome():            0
+    GetQuarterlyExpenses():          0
+    GetQuarterlyCargoDelivered():    0
+    GetQuarterlyPerformanceRating(): 0
+    GetQuarterlyCompanyValue():      0
 
 --AIAirport--
   IsHangarTile():       false
@@ -847,7 +848,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
   GetAirportWidth(9):               -1
   GetAirportHeight(9):              -1
   GetAirportCoverageRadius(9):      -1
-  GetBankBalance():     499790
+  GetBankBalance():     1999999790
   GetPrice():           5400
   BuildAirport():       true
   IsHangarTile():       false
@@ -857,11 +858,11 @@ ERROR: IsEnd() is invalid as Begin() is never called
   IsHangarTile():       true
   IsAirportTile():      true
   GetAirportType():     0
-  GetBankBalance():     489890
+  GetBankBalance():     1999989890
   RemoveAirport():      true
   IsHangarTile():       false
   IsAirportTile():      false
-  GetBankBalance():     489626
+  GetBankBalance():     1999989626
   BuildAirport():       true
 
 --Bridge--
@@ -1108,6 +1109,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
 --AICargo--
   Cargo -1
     IsValidCargo():          false
+    GetName():               '(null : 0x00000000)'
     GetCargoLabel():         '(null : 0x00000000)'
     IsFreight():             false
     HasCargoClass():         false
@@ -1119,6 +1121,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     GetRoadVehicleTypeForCargo(): 1
   Cargo 0
     IsValidCargo():          true
+    GetName():               'Passengers'
     GetCargoLabel():         'PASS'
     IsFreight():             false
     HasCargoClass():         true
@@ -1130,6 +1133,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     GetRoadVehicleTypeForCargo(): 0
   Cargo 1
     IsValidCargo():          true
+    GetName():               'Coal'
     GetCargoLabel():         'COAL'
     IsFreight():             true
     HasCargoClass():         false
@@ -1141,6 +1145,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     GetRoadVehicleTypeForCargo(): 1
   Cargo 2
     IsValidCargo():          true
+    GetName():               'Mail'
     GetCargoLabel():         'MAIL'
     IsFreight():             false
     HasCargoClass():         false
@@ -1152,6 +1157,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     GetRoadVehicleTypeForCargo(): 1
   Cargo 3
     IsValidCargo():          true
+    GetName():               'Oil'
     GetCargoLabel():         'OIL_'
     IsFreight():             true
     HasCargoClass():         false
@@ -1163,6 +1169,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     GetRoadVehicleTypeForCargo(): 1
   Cargo 4
     IsValidCargo():          true
+    GetName():               'Livestock'
     GetCargoLabel():         'LVST'
     IsFreight():             true
     HasCargoClass():         false
@@ -1174,6 +1181,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     GetRoadVehicleTypeForCargo(): 1
   Cargo 5
     IsValidCargo():          true
+    GetName():               'Goods'
     GetCargoLabel():         'GOOD'
     IsFreight():             true
     HasCargoClass():         false
@@ -1185,6 +1193,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     GetRoadVehicleTypeForCargo(): 1
   Cargo 6
     IsValidCargo():          true
+    GetName():               'Grain'
     GetCargoLabel():         'GRAI'
     IsFreight():             true
     HasCargoClass():         false
@@ -1196,6 +1205,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     GetRoadVehicleTypeForCargo(): 1
   Cargo 7
     IsValidCargo():          true
+    GetName():               'Wood'
     GetCargoLabel():         'WOOD'
     IsFreight():             true
     HasCargoClass():         false
@@ -1207,6 +1217,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     GetRoadVehicleTypeForCargo(): 1
   Cargo 8
     IsValidCargo():          true
+    GetName():               'Iron Ore'
     GetCargoLabel():         'IORE'
     IsFreight():             true
     HasCargoClass():         false
@@ -1218,6 +1229,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     GetRoadVehicleTypeForCargo(): 1
   Cargo 9
     IsValidCargo():          true
+    GetName():               'Steel'
     GetCargoLabel():         'STEL'
     IsFreight():             true
     HasCargoClass():         false
@@ -1229,6 +1241,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     GetRoadVehicleTypeForCargo(): 1
   Cargo 10
     IsValidCargo():          true
+    GetName():               'Valuables'
     GetCargoLabel():         'VALU'
     IsFreight():             true
     HasCargoClass():         false
@@ -1240,6 +1253,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     GetRoadVehicleTypeForCargo(): 1
   Cargo 11
     IsValidCargo():          false
+    GetName():               '(null : 0x00000000)'
     GetCargoLabel():         '(null : 0x00000000)'
     IsFreight():             false
     HasCargoClass():         false
@@ -1251,6 +1265,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     GetRoadVehicleTypeForCargo(): 1
   Cargo 12
     IsValidCargo():          false
+    GetName():               '(null : 0x00000000)'
     GetCargoLabel():         '(null : 0x00000000)'
     IsFreight():             false
     HasCargoClass():         false
@@ -1262,6 +1277,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     GetRoadVehicleTypeForCargo(): 1
   Cargo 13
     IsValidCargo():          false
+    GetName():               '(null : 0x00000000)'
     GetCargoLabel():         '(null : 0x00000000)'
     IsFreight():             false
     HasCargoClass():         false
@@ -1273,6 +1289,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
     GetRoadVehicleTypeForCargo(): 1
   Cargo 14
     IsValidCargo():          false
+    GetName():               '(null : 0x00000000)'
     GetCargoLabel():         '(null : 0x00000000)'
     IsFreight():             false
     HasCargoClass():         false
@@ -7313,7 +7330,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
   IsBuoyTile():         false
   IsLockTile():         false
   IsCanalTile():        false
-  GetBankBalance():     479664
+  GetBankBalance():     1999979304
   BuildWaterDepot():    true
   BuildDock():          true
   BuildBuoy():          true
@@ -7326,7 +7343,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
   IsBuoyTile():         true
   IsLockTile():         true
   IsCanalTile():        true
-  GetBankBalance():     465070
+  GetBankBalance():     1999964680
 
 --AIWaypointList(BUOY)--
   Count():             1
@@ -7345,7 +7362,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
   IsBuoyTile():         false
   IsLockTile():         false
   IsCanalTile():        false
-  GetBankBalance():     459675
+  GetBankBalance():     1999959285
   BuildWaterDepot():    true
   BuildDock():          true
 
@@ -9074,7 +9091,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
   --Accounting--
     GetCosts():         -5947
     Should be:          -5947
-  GetName():            Road Vehicle 1
+  GetName():            Road Vehicle #1
   SetName():            true
   GetName():            MyVehicleName
   CloneVehicle():       13

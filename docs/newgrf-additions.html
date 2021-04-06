@@ -21,6 +21,7 @@
 	<h2>Additions to NewGRF Specifications in JGR's Patchpack</h2>
 	<p>This document describes non-standard additions to the <a href="https://newgrf-specs.tt-wiki.net/wiki/Main_Page">Official OpenTTD NewGRF Specifications</a> which are present in this patchpack.
 	<p>These additions MAY also be present in other patchpacks. They MAY be removed or moved in future, if necessary.</p>
+	<p>A subset of the features listed below are also supported in a fork of NML, see the associated <a href="newgrf-additions-nml.html">NML document</a> for more details.</p>
 	<p>NewGRFs which use any of these features SHOULD use the <a href="#feature-test">feature testing</a> mechanism described below to check whether individual added features are supported.</p>
 
 	<h3 id="feature-test">Action 14 - Feature Tests</h3>
@@ -203,8 +204,46 @@
 	</table>
 	</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_bridge_pillar_flags</font>, version 1</p>
+	<h4>Bridge availability flags (mappable property: bridge_availability_flags)</h4>
+	<p>This property sets the availability flags for this bridge type.<br />
+	The property length is 1 byte. The format is:
+	<table>
+	<tr><th>Bit</th><th>Value</th><th>Meaning</th></tr>
+	<tr><td>0</td><td>1</td><td>Towns may not build this bridge type</td></tr>
+	<tr><td>1</td><td>2</td><td>Scripts (AI/GS) may not build this bridge type</td></tr>
+	</table>
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_bridge_availability_flags</font>, version 1</p>
 	<h4>More bridges (16 instead of 13)</h4>
 	<p>This is indicated by the feature name: <font face="monospace">more_bridge_types</font>, version 1</p>
+	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Railtypes">Action 0 - Railtypes</a></h3>
+	<h4>Enable custom signal sprites for programmable pre-signals (mappable property: railtype_enable_programmable_signals)</h4>
+	<p>This enables <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Railtypes#Signal_sprites_.280B.29">Action 2/3 - Railtype custom signal sprites</a> for programmable pre-signals.<br />
+	Programmable pre-signals have the signal type value: 06.<br />
+	The property length is 1 byte. 0 is disabled (default). 1 is enabled.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_railtype_programmable_signals</font>, version 1</p>
+	<h4>Enable restricted signal flag for custom signal sprites (mappable property: railtype_enable_restricted_signals)</h4>
+	<p>This applies to <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Railtypes#Signal_sprites_.280B.29">Action 2/3 - Railtype custom signal sprites</a>.<br />
+	When enabled, bit 24 of variable 18 (extra callback info) is set if the signal is restricted (has a routing restriction program attached).<br />
+	When enabled, the "Show restricted electric signals using default graphics" client setting and signal post recolouring is not applied.<br />
+	This flag should only be set if the Action 2/3 actually returns a different sprite when bit 24 of variable 18 is set.
+	The property length is 1 byte. 0 is disabled (default). 1 is enabled.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_railtype_restricted_signals</font>, version 1</p>
+	<br />
+	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Roadtypes">Action 0 - Roadtypes</a> and <a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Tramtypes">Action 0 - Tramtypes</a></h3>
+	<h4>Extra road/tram type flags (mappable property: roadtype_extra_flags)</h4>
+	<p>This property sets the extra flags for this road/tram type.<br />
+	The property length is 1 byte. The format is:
+	<table>
+	<tr><th>Bit</th><th>Value</th><th>Meaning</th></tr>
+	<tr><td>0</td><td>1</td><td>Scripts (AI/GS) may not build this road/tram type</td></tr>
+	<tr><td>1</td><td>2</td><td>Towns may not modify tiles of this road/tram type in any way whatsoever</td></tr>
+	</table>
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_roadtype_extra_flags</font>, version 1</p>
+	<br />
 	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Stations">Variational Action 2 - Stations</a></h3>
 	<h4>Track type in purchase list (42)</h4>
 	<p>This is indicated by the feature name: <font face="monospace">varaction2_station_var42</font>, version 1</p>

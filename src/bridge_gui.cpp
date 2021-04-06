@@ -59,10 +59,10 @@ typedef GUIList<BuildBridgeData> GUIBridgeList; ///< List of bridges, used in #B
  * - p2 = (bit 15-16) - transport type.
  * @param cmd unused
  */
-void CcBuildBridge(const CommandCost &result, TileIndex end_tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcBuildBridge(const CommandCost &result, TileIndex end_tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Failed()) return;
-	if (_settings_client.sound.confirm) SndPlayTileFx(SND_27_BLACKSMITH_ANVIL, end_tile);
+	if (_settings_client.sound.confirm) SndPlayTileFx(SND_27_CONSTRUCTION_BRIDGE, end_tile);
 
 	TransportType transport_type = Extract<TransportType, 15, 2>(p2);
 
@@ -200,7 +200,7 @@ public:
 				}
 				sprite_dim.height++; // Sprite is rendered one pixel down in the matrix field.
 				text_dim.height++; // Allowing the bottom row pixels to be rendered on the edge of the matrix field.
-				resize->height = max(sprite_dim.height, text_dim.height) + 2; // Max of both sizes + account for matrix edges.
+				resize->height = std::max(sprite_dim.height, text_dim.height) + 2; // Max of both sizes + account for matrix edges.
 
 				this->bridgetext_offset = WD_MATRIX_LEFT + sprite_dim.width + 1; // Left edge of text, 1 pixel distance from the sprite.
 				size->width = this->bridgetext_offset + text_dim.width + WD_MATRIX_RIGHT;
@@ -442,8 +442,7 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 				/* Re-check bridge building possibility is initial bridge builindg query indicated a bridge type dependent failure */
 				if (query_per_bridge_type && DoCommand(end, start, type | brd_type, CommandFlagsToDCFlags(GetCommandFlags(CMD_BUILD_BRIDGE)) | DC_QUERY_COST, CMD_BUILD_BRIDGE).Failed()) continue;
 				/* bridge is accepted, add to list */
-				/*C++17: BuildBridgeData &item = */ bl->emplace_back();
-				BuildBridgeData &item = bl->back();
+				BuildBridgeData &item = bl->emplace_back();
 				item.index = brd_type;
 				item.spec = GetBridgeSpec(brd_type);
 				/* Add to terraforming & bulldozing costs the cost of the

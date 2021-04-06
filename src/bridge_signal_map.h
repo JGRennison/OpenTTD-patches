@@ -53,14 +53,16 @@ static inline void SetBridgeEntranceSimulatedSignalState(TileIndex t, uint16 sig
 	}
 }
 
-void SetAllBridgeEntranceSimulatedSignalsGreenExtended(TileIndex t);
+bool SetAllBridgeEntranceSimulatedSignalsGreenExtended(TileIndex t);
 
-static inline void SetAllBridgeEntranceSimulatedSignalsGreen(TileIndex t)
+static inline bool SetAllBridgeEntranceSimulatedSignalsGreen(TileIndex t)
 {
 	if (_m[t].m2 & BRIDGE_M2_SIGNAL_STATE_EXT_FLAG) {
-		SetAllBridgeEntranceSimulatedSignalsGreenExtended(t);
+		return SetAllBridgeEntranceSimulatedSignalsGreenExtended(t);
 	} else {
+		bool changed = GB(_m[t].m2, BRIDGE_M2_SIGNAL_STATE_OFFSET, BRIDGE_M2_SIGNAL_STATE_FIELD_SIZE) != 0;
 		SB(_m[t].m2, BRIDGE_M2_SIGNAL_STATE_OFFSET, BRIDGE_M2_SIGNAL_STATE_FIELD_SIZE, 0);
+		return changed;
 	}
 }
 

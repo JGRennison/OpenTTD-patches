@@ -133,16 +133,19 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32 val,
  * @param flags Operation to perform.
  * @param p1 Various bitstuffed elements
  * - p1 = (bit  0-19) - Vehicle with the orders to change.
- * - p1 = (bit 20-27) - Order index to modify.
+ * - p1 = (bit 20-27) - unused
  * - p1 = (bit 28-30) - Timetable data to change (@see ModifyTimetableFlags)
  * - p1 = (bit    31) - 0 to set timetable wait/travel time, 1 to clear it
  * @param p2 The amount of time to wait.
  * - p2 =             - The data to modify as specified by p1 bits 28-30.
  *                      0 to clear times, UINT16_MAX to clear speed limit.
+ * @param p3 various bitstuffed elements
+ *  - p3 = (bit 0 - 15) - the selected order (if any). If the last order is given,
+ *                        the order will be inserted before that one
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
 {
 	VehicleID veh = GB(p1, 0, 20);
 
@@ -152,7 +155,7 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	VehicleOrderID order_number = GB(p1, 20, 8);
+	VehicleOrderID order_number = GB(p3,  0, 16);
 	Order *order = v->GetOrder(order_number);
 	if (order == nullptr || order->IsType(OT_IMPLICIT)) return CMD_ERROR;
 
@@ -308,9 +311,7 @@ CommandCost CmdBulkChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p
 			// Exclude waypoints from set all wait times command
 			if (Extract<ModifyTimetableFlags, 28, 3>(p1) == MTF_WAIT_TIME && GB(p1, 31, 1) == 0 && order->IsType(OT_GOTO_WAYPOINT)) continue;
 
-			uint32 new_p1 = p1;
-			SB(new_p1, 20, 8, order_number);
-			DoCommand(tile, new_p1, p2, flags, CMD_CHANGE_TIMETABLE);
+			DoCommandEx(tile, p1, p2, order_number, flags, CMD_CHANGE_TIMETABLE);
 		}
 	}
 
@@ -628,6 +629,7 @@ static inline bool IsOrderUsableForSeparation(const Order *order)
 std::vector<TimetableProgress> PopulateSeparationState(const Vehicle *v_start)
 {
 	std::vector<TimetableProgress> out;
+	if (v_start->GetNumOrders() == 0) return out;
 	for (const Vehicle *v = v_start->FirstShared(); v != nullptr; v = v->NextShared()) {
 		if (!HasBit(v->vehicle_flags, VF_SEPARATION_ACTIVE)) continue;
 		bool separation_valid = true;
@@ -653,15 +655,19 @@ std::vector<TimetableProgress> PopulateSeparationState(const Vehicle *v_start)
 			// Do not try to separate vehicles on depot service or halt orders
 			separation_valid = false;
 		}
+		if (order->IsType(OT_RELEASE_SLOT)) {
+			// Do not try to separate vehicles on release slot orders
+			separation_valid = false;
+		}
 		int order_ticks;
 		if (order->GetType() == OT_GOTO_STATION && (v->current_order.IsType(OT_LOADING) || v->current_order.IsType(OT_LOADING_ADVANCE)) &&
 				v->last_station_visited == order->GetDestination()) {
 			order_count++;
 			order_ticks = order->GetTravelTime() + v->current_loading_time;
-			cumulative_ticks += order->GetTravelTime() + min(v->current_loading_time, order->GetWaitTime());
+			cumulative_ticks += order->GetTravelTime() + std::min(v->current_loading_time, order->GetWaitTime());
 		} else {
 			order_ticks = v->current_order_time;
-			cumulative_ticks += min(v->current_order_time, order->GetTravelTime());
+			cumulative_ticks += std::min(v->current_order_time, order->GetTravelTime());
 		}
 
 		out.push_back({ v->index, order_count, order_ticks, separation_valid ? cumulative_ticks : -1 });
@@ -880,7 +886,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		 * processing of different orders when filling the timetable. */
 		Company *owner = Company::GetIfValid(v->owner);
 		uint rounding_factor = owner ? owner->settings.timetable_autofill_rounding : DAY_TICKS;
-		uint time_to_set = CeilDiv(max(time_taken, 1U), rounding_factor) * rounding_factor;
+		uint time_to_set = CeilDiv(std::max(time_taken, 1U), rounding_factor) * rounding_factor;
 
 		if (travel_field && (autofilling || !real_timetable_order->IsTravelTimetabled())) {
 			ChangeTimetable(v, v->cur_timetable_order_index, time_to_set, MTF_TRAVEL_TIME, autofilling);

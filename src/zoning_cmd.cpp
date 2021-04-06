@@ -25,6 +25,7 @@
 #include "window_func.h"
 #include "zoning.h"
 #include "viewport_func.h"
+#include "road_map.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 
 Zoning _zoning;
@@ -274,6 +275,39 @@ inline SpriteID TileZoneCheckRoadGridEvaluation(TileIndex tile, uint grid_size)
 }
 
 /**
+ * Detect whether a tile is a one way road
+ *
+ * @param TileIndex tile
+ * @param Owner owner
+ * @return red if a restricted signal, nothing otherwise
+ */
+inline SpriteID TileZoneCheckOneWayRoadEvaluation(TileIndex tile)
+{
+	if (!MayHaveRoad(tile)) return ZONING_INVALID_SPRITE_ID;
+
+	RoadCachedOneWayState rcows = GetRoadCachedOneWayState(tile);
+	switch (rcows) {
+		default:
+			return ZONING_INVALID_SPRITE_ID;
+		case RCOWS_NO_ACCESS:
+			return SPR_ZONING_INNER_HIGHLIGHT_RED;
+		case RCOWS_NON_JUNCTION_A:
+		case RCOWS_NON_JUNCTION_B:
+			if (IsTileType(tile, MP_STATION)) {
+				return SPR_ZONING_INNER_HIGHLIGHT_GREEN;
+			} else if (IsNormalRoadTile(tile) && GetDisallowedRoadDirections(tile) != DRD_NONE) {
+				return SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE;
+			} else {
+				return SPR_ZONING_INNER_HIGHLIGHT_PURPLE;
+			}
+		case RCOWS_SIDE_JUNCTION:
+			return SPR_ZONING_INNER_HIGHLIGHT_ORANGE;
+		case RCOWS_SIDE_JUNCTION_NO_EXIT:
+			return SPR_ZONING_INNER_HIGHLIGHT_YELLOW;
+	}
+}
+
+/**
  * General evaluation function; calls all the other functions depending on
  * evaluation mode.
  *
@@ -297,6 +331,7 @@ SpriteID TileZoningSpriteEvaluation(TileIndex tile, Owner owner, ZoningEvaluatio
 		case ZEM_TRACERESTRICT: return TileZoneCheckTraceRestrictEvaluation(tile, owner);
 		case ZEM_2x2_GRID:      return TileZoneCheckRoadGridEvaluation(tile, 3);
 		case ZEM_3x3_GRID:      return TileZoneCheckRoadGridEvaluation(tile, 4);
+		case ZEM_ONE_WAY_ROAD:  return TileZoneCheckOneWayRoadEvaluation(tile);
 		default:                return ZONING_INVALID_SPRITE_ID;
 	}
 }
@@ -404,13 +439,13 @@ void ZoningMarkDirtyStationCoverageArea(const Station *st, ZoningModeMask mask)
 
 	uint outer_radius = mask & ZMM_OUTER ? GetZoningModeDependantStationCoverageRadius(st, _zoning.outer) : 0;
 	uint inner_radius = mask & ZMM_INNER ? GetZoningModeDependantStationCoverageRadius(st, _zoning.inner) : 0;
-	uint radius = max<uint>(outer_radius, inner_radius);
+	uint radius = std::max<uint>(outer_radius, inner_radius);
 
 	if (radius > 0) {
 		Rect rect = st->GetCatchmentRectUsingRadius(radius);
 		for (int y = rect.top; y <= rect.bottom; y++) {
 			for (int x = rect.left; x <= rect.right; x++) {
-				MarkTileDirtyByTile(TileXY(x, y));
+				MarkTileDirtyByTile(TileXY(x, y), VMDF_NOT_MAP_MODE);
 			}
 		}
 		auto invalidate_cache_rect = [&](btree::btree_set<uint32> &cache) {
@@ -441,7 +476,7 @@ void ZoningTownAuthorityRatingChange()
 	if (_zoning.inner == ZEM_AUTHORITY) mask |= ZMM_INNER;
 	if (_zoning.outer == ZEM_AUTHORITY) mask |= ZMM_OUTER;
 	if (mask != ZMM_NOTHING) {
-		MarkWholeScreenDirty();
+		MarkWholeNonMapViewportsDirty();
 	}
 }
 
@@ -460,5 +495,12 @@ void SetZoningMode(bool inner, ZoningEvaluationMode mode)
 
 	current_mode = mode;
 	cache.clear();
-	MarkWholeScreenDirty();
+	MarkWholeNonMapViewportsDirty();
+	PostZoningModeChange();
+}
+
+void PostZoningModeChange()
+{
+	extern bool _mark_tile_dirty_on_road_cache_one_way_state_update;
+	_mark_tile_dirty_on_road_cache_one_way_state_update = (_zoning.inner == ZEM_ONE_WAY_ROAD) || (_zoning.outer == ZEM_ONE_WAY_ROAD);
 }

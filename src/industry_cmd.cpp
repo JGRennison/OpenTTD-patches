@@ -17,6 +17,7 @@
 #include "town.h"
 #include "news_func.h"
 #include "cheat_type.h"
+#include "company_base.h"
 #include "genworld.h"
 #include "tree_map.h"
 #include "tunnel_map.h"
@@ -40,6 +41,8 @@
 #include "object_base.h"
 #include "game/game.hpp"
 #include "error.h"
+#include "cmd_helper.h"
+#include "string_func.h"
 
 #include "table/strings.h"
 #include "table/industry_land.h"
@@ -533,7 +536,7 @@ static bool TransportIndustryGoods(TileIndex tile)
 	bool moved_cargo = false;
 
 	for (uint j = 0; j < lengthof(i->produced_cargo_waiting); j++) {
-		uint cw = min(i->produced_cargo_waiting[j], 255);
+		uint cw = std::min<uint>(i->produced_cargo_waiting[j], 255u);
 		if (cw > indspec->minimal_cargo && i->produced_cargo[j] != CT_INVALID) {
 			i->produced_cargo_waiting[j] -= cw;
 
@@ -542,7 +545,7 @@ static bool TransportIndustryGoods(TileIndex tile)
 
 			i->this_month_production[j] += cw;
 
-			uint am = MoveGoodsToStation(i->produced_cargo[j], cw, ST_INDUSTRY, i->index, &i->stations_near);
+			uint am = MoveGoodsToStation(i->produced_cargo[j], cw, ST_INDUSTRY, i->index, &i->stations_near, i->exclusive_consumer);
 			i->this_month_transported[j] += am;
 
 			moved_cargo |= (am != 0);
@@ -569,8 +572,8 @@ void AnimateTile_Industry(TileIndex tile)
 
 			if (_settings_client.sound.ambient) {
 				switch (m & 7) {
-					case 2: SndPlayTileFx(SND_2D_RIP_2, tile); break;
-					case 6: SndPlayTileFx(SND_29_RIP, tile); break;
+					case 2: SndPlayTileFx(SND_2D_SUGAR_MINE_1, tile); break;
+					case 6: SndPlayTileFx(SND_29_SUGAR_MINE_2, tile); break;
 				}
 			}
 
@@ -580,7 +583,7 @@ void AnimateTile_Industry(TileIndex tile)
 			}
 			SetAnimationFrame(tile, m);
 
-			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		}
 		break;
 
@@ -589,7 +592,7 @@ void AnimateTile_Industry(TileIndex tile)
 			byte m = GetAnimationFrame(tile);
 
 			if (_industry_anim_offs_toffee[m] == 0xFF && _settings_client.sound.ambient) {
-				SndPlayTileFx(SND_30_CARTOON_SOUND, tile);
+				SndPlayTileFx(SND_30_TOFFEE_QUARRY, tile);
 			}
 
 			if (++m >= 70) {
@@ -598,7 +601,7 @@ void AnimateTile_Industry(TileIndex tile)
 			}
 			SetAnimationFrame(tile, m);
 
-			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		}
 		break;
 
@@ -612,7 +615,7 @@ void AnimateTile_Industry(TileIndex tile)
 			}
 			SetAnimationFrame(tile, m);
 
-			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		}
 		break;
 
@@ -625,7 +628,7 @@ void AnimateTile_Industry(TileIndex tile)
 				DeleteAnimatedTile(tile);
 			} else {
 				SetAnimationFrame(tile, m + 1);
-				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			}
 		}
 		break;
@@ -635,9 +638,9 @@ void AnimateTile_Industry(TileIndex tile)
 			byte m = GetAnimationFrame(tile) + 1;
 
 			switch (m) {
-				case  1: if (_settings_client.sound.ambient) SndPlayTileFx(SND_2C_MACHINERY, tile); break;
-				case 23: if (_settings_client.sound.ambient) SndPlayTileFx(SND_2B_COMEDY_HIT, tile); break;
-				case 28: if (_settings_client.sound.ambient) SndPlayTileFx(SND_2A_EXTRACT_AND_POP, tile); break;
+				case  1: if (_settings_client.sound.ambient) SndPlayTileFx(SND_2C_TOY_FACTORY_1, tile); break;
+				case 23: if (_settings_client.sound.ambient) SndPlayTileFx(SND_2B_TOY_FACTORY_2, tile); break;
+				case 28: if (_settings_client.sound.ambient) SndPlayTileFx(SND_2A_TOY_FACTORY_3, tile); break;
 				default:
 					if (m >= 50) {
 						int n = GetIndustryAnimationLoop(tile) + 1;
@@ -651,7 +654,7 @@ void AnimateTile_Industry(TileIndex tile)
 			}
 
 			SetAnimationFrame(tile, m);
-			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		}
 		break;
 
@@ -664,7 +667,7 @@ void AnimateTile_Industry(TileIndex tile)
 
 			gfx = (gfx < 155) ? gfx + 1 : 148;
 			SetIndustryGfx(tile, gfx);
-			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		}
 		break;
 
@@ -683,7 +686,7 @@ void AnimateTile_Industry(TileIndex tile)
 			} else {
 				SetAnimationFrame(tile, m);
 				SetIndustryGfx(tile, gfx);
-				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			}
 		}
 		break;
@@ -700,7 +703,7 @@ void AnimateTile_Industry(TileIndex tile)
 					byte m = GetAnimationFrame(tile);
 					if (!(m & 0x40)) {
 						SetAnimationFrame(tile, m | 0x40);
-						if (_settings_client.sound.ambient) SndPlayTileFx(SND_0B_MINING_MACHINERY, tile);
+						if (_settings_client.sound.ambient) SndPlayTileFx(SND_0B_MINE, tile);
 					}
 					if (state & 7) return;
 				} else {
@@ -709,7 +712,7 @@ void AnimateTile_Industry(TileIndex tile)
 				byte m = (GetAnimationFrame(tile) + 1) | 0x40;
 				if (m > 0xC2) m = 0xC0;
 				SetAnimationFrame(tile, m);
-				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			} else if (state >= 0x200 && state < 0x3A0) {
 				int i = (state < 0x220 || state >= 0x380) ? 7 : 3;
 				if (state & i) return;
@@ -717,10 +720,51 @@ void AnimateTile_Industry(TileIndex tile)
 				byte m = (GetAnimationFrame(tile) & 0xBF) - 1;
 				if (m < 0x80) m = 0x82;
 				SetAnimationFrame(tile, m);
-				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			}
 			break;
 		}
+	}
+}
+
+
+uint8 GetAnimatedTileSpeed_Industry(TileIndex tile)
+{
+	IndustryGfx gfx = GetIndustryGfx(tile);
+
+	if (GetIndustryTileSpec(gfx)->animation.status != ANIM_STATUS_NO_ANIMATION) {
+		return GetNewIndustryTileAnimationSpeed(tile);
+	}
+
+	switch (gfx) {
+	case GFX_SUGAR_MINE_SIEVE:
+		return 1;
+
+	case GFX_TOFFEE_QUARY:
+		return 2;
+
+	case GFX_BUBBLE_CATCHER:
+		return 1;
+
+	case GFX_POWERPLANT_SPARKS:
+		return 2;
+
+	case GFX_TOY_FACTORY:
+		return 1;
+
+	case GFX_PLASTIC_FOUNTAIN_ANIMATED_1: case GFX_PLASTIC_FOUNTAIN_ANIMATED_2:
+	case GFX_PLASTIC_FOUNTAIN_ANIMATED_3: case GFX_PLASTIC_FOUNTAIN_ANIMATED_4:
+	case GFX_PLASTIC_FOUNTAIN_ANIMATED_5: case GFX_PLASTIC_FOUNTAIN_ANIMATED_6:
+	case GFX_PLASTIC_FOUNTAIN_ANIMATED_7: case GFX_PLASTIC_FOUNTAIN_ANIMATED_8:
+		return 2;
+
+	case GFX_OILWELL_ANIMATED_1:
+	case GFX_OILWELL_ANIMATED_2:
+	case GFX_OILWELL_ANIMATED_3:
+		return 3;
+
+	default:
+		return 0;
 	}
 }
 
@@ -747,7 +791,7 @@ static void MakeIndustryTileBigger(TileIndex tile)
 	StartStopIndustryTileAnimation(tile, IAT_CONSTRUCTION_STATE_CHANGE);
 	if (stage == INDUSTRY_COMPLETED) SetIndustryCompleted(tile);
 
-	MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+	MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 
 	if (!IsIndustryCompleted(tile)) return;
 
@@ -801,7 +845,7 @@ static void TileLoopIndustry_BubbleGenerator(TileIndex tile)
 		{ 49,  59, 60,  65 },
 	};
 
-	if (_settings_client.sound.ambient) SndPlayTileFx(SND_2E_EXTRACT_AND_POP, tile);
+	if (_settings_client.sound.ambient) SndPlayTileFx(SND_2E_BUBBLE_GENERATOR, tile);
 
 	int dir = Random() & 3;
 
@@ -841,7 +885,7 @@ static void TileLoop_Industry(TileIndex tile)
 			ResetIndustryConstructionStage(tile);
 			SetIndustryCompleted(tile);
 			SetIndustryGfx(tile, newgfx);
-			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			return;
 		}
 	}
@@ -852,7 +896,7 @@ static void TileLoop_Industry(TileIndex tile)
 	if (newgfx != INDUSTRYTILE_NOANIM) {
 		ResetIndustryConstructionStage(tile);
 		SetIndustryGfx(tile, newgfx);
-		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		return;
 	}
 
@@ -899,7 +943,7 @@ static void TileLoop_Industry(TileIndex tile)
 
 	case GFX_POWERPLANT_SPARKS:
 		if (Chance16(1, 3)) {
-			if (_settings_client.sound.ambient) SndPlayTileFx(SND_0C_ELECTRIC_SPARK, tile);
+			if (_settings_client.sound.ambient) SndPlayTileFx(SND_0C_POWER_STATION, tile);
 			AddAnimatedTile(tile);
 		}
 		break;
@@ -949,6 +993,9 @@ static void ChangeTileOwner_Industry(TileIndex tile, Owner old_owner, Owner new_
 	/* If the founder merges, the industry was created by the merged company */
 	Industry *i = Industry::GetByTile(tile);
 	if (i->founder == old_owner) i->founder = (new_owner == INVALID_OWNER) ? OWNER_NONE : new_owner;
+
+	if (i->exclusive_supplier == old_owner) i->exclusive_supplier = new_owner;
+	if (i->exclusive_consumer == old_owner) i->exclusive_consumer = new_owner;
 }
 
 /**
@@ -1031,7 +1078,7 @@ static void PlantFarmField(TileIndex tile, IndustryID industry)
 	uint size_x = GB(r, 0, 8);
 	uint size_y = GB(r, 8, 8);
 
-	TileArea ta(tile - TileDiffXY(min(TileX(tile), size_x / 2), min(TileY(tile), size_y / 2)), size_x, size_y);
+	TileArea ta(tile - TileDiffXY(std::min(TileX(tile), size_x / 2), std::min(TileY(tile), size_y / 2)), size_x, size_y);
 	ta.ClampToMap();
 
 	if (ta.w == 0 || ta.h == 0) return;
@@ -1055,7 +1102,7 @@ static void PlantFarmField(TileIndex tile, IndustryID industry)
 		if (IsSuitableForFarmField(cur_tile, true)) {
 			MakeField(cur_tile, field_type, industry);
 			SetClearCounter(cur_tile, counter);
-			MarkTileDirtyByTile(cur_tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileDirtyByTile(cur_tile, VMDF_NOT_MAP_MODE);
 		}
 	}
 
@@ -1095,7 +1142,7 @@ static bool SearchLumberMillTrees(TileIndex tile, void *user_data)
 
 		_industry_sound_ctr = 1;
 		_industry_sound_tile = tile;
-		if (_settings_client.sound.ambient) SndPlayTileFx(SND_38_CHAINSAW, tile);
+		if (_settings_client.sound.ambient) SndPlayTileFx(SND_38_LUMBER_MILL_1, tile);
 
 		DoCommand(tile, 0, 0, DC_EXEC, CMD_LANDSCAPE_CLEAR);
 
@@ -1120,9 +1167,22 @@ static void ChopLumberMillTrees(Industry *i)
 
 	TileIndex tile = i->location.tile;
 	if (CircularTileSearch(&tile, 40, SearchLumberMillTrees, nullptr)) { // 40x40 tiles  to search.
-		i->produced_cargo_waiting[0] = min(0xffff, i->produced_cargo_waiting[0] + 45); // Found a tree, add according value to waiting cargo.
+		i->produced_cargo_waiting[0] = std::min(0xffff, i->produced_cargo_waiting[0] + 45); // Found a tree, add according value to waiting cargo.
 	}
 }
+
+static void ProduceIndustryGoodsFromRate(Industry *i, bool scale)
+{
+	for (size_t j = 0; j < lengthof(i->produced_cargo_waiting); j++) {
+		uint amount = i->production_rate[j];
+		if (amount != 0 && scale) {
+			amount = ScaleQuantity(amount, _settings_game.economy.industry_cargo_scale_factor);
+		}
+		i->produced_cargo_waiting[j] = std::min<uint>(0xffff, i->produced_cargo_waiting[j] + amount);
+	}
+}
+
+static uint _scaled_production_ticks;
 
 static void ProduceIndustryGoods(Industry *i)
 {
@@ -1146,15 +1206,22 @@ static void ProduceIndustryGoods(Industry *i)
 
 	i->counter--;
 
+	const bool scale_ticks = (_settings_game.economy.industry_cargo_scale_factor != 0) && HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS);
+	if (scale_ticks) {
+		if ((i->counter % _scaled_production_ticks) == 0) {
+			if (HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS)) IndustryProductionCallback(i, 1);
+			ProduceIndustryGoodsFromRate(i, false);
+		}
+	}
+
 	/* produce some cargo */
 	if ((i->counter % INDUSTRY_PRODUCE_TICKS) == 0) {
-		if (HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS)) IndustryProductionCallback(i, 1);
-
-		IndustryBehaviour indbehav = indsp->behaviour;
-		for (size_t j = 0; j < lengthof(i->produced_cargo_waiting); j++) {
-			i->produced_cargo_waiting[j] = min(0xffff, i->produced_cargo_waiting[j] + i->production_rate[j]);
+		if (!scale_ticks) {
+			if (HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS)) IndustryProductionCallback(i, 1);
+			ProduceIndustryGoodsFromRate(i, true);
 		}
 
+		IndustryBehaviour indbehav = indsp->behaviour;
 		if ((indbehav & INDUSTRYBEH_PLANT_FIELDS) != 0) {
 			uint16 cb_res = CALLBACK_FAILED;
 			if (HasBit(indsp->callback_mask, CBM_IND_SPECIAL_EFFECT)) {
@@ -1197,15 +1264,16 @@ void OnTick_Industry()
 		_industry_sound_ctr++;
 
 		if (_industry_sound_ctr == 75) {
-			if (_settings_client.sound.ambient) SndPlayTileFx(SND_37_BALLOON_SQUEAK, _industry_sound_tile);
+			if (_settings_client.sound.ambient) SndPlayTileFx(SND_37_LUMBER_MILL_2, _industry_sound_tile);
 		} else if (_industry_sound_ctr == 160) {
 			_industry_sound_ctr = 0;
-			if (_settings_client.sound.ambient) SndPlayTileFx(SND_36_CARTOON_CRASH, _industry_sound_tile);
+			if (_settings_client.sound.ambient) SndPlayTileFx(SND_36_LUMBER_MILL_3, _industry_sound_tile);
 		}
 	}
 
 	if (_game_mode == GM_EDITOR) return;
 
+	_scaled_production_ticks = ScaleQuantity(INDUSTRY_PRODUCE_TICKS, -_settings_game.economy.industry_cargo_scale_factor);
 	for (Industry *i : Industry::Iterate()) {
 		ProduceIndustryGoods(i);
 	}
@@ -1746,10 +1814,10 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 	MemSetT(i->incoming_cargo_waiting,     0, lengthof(i->incoming_cargo_waiting));
 	MemSetT(i->last_cargo_accepted_at,     0, lengthof(i->last_cargo_accepted_at));
 
-	/* don't use smooth economy for industries using production related callbacks */
-	if (indspec->UsesSmoothEconomy()) {
+	/* Randomize inital production if non-original economy is used and there are no production related callbacks. */
+	if (!indspec->UsesOriginalEconomy()) {
 		for (size_t ci = 0; ci < lengthof(i->production_rate); ci++) {
-			i->production_rate[ci] = min((RandomRange(256) + 128) * i->production_rate[ci] >> 8, 255);
+			i->production_rate[ci] = std::min((RandomRange(256) + 128) * i->production_rate[ci] >> 8, 255u);
 		}
 	}
 
@@ -1763,6 +1831,7 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 	i->was_cargo_delivered = false;
 	i->last_prod_year = _cur_year;
 	i->founder = founder;
+	i->ctlflags = INDCTL_NONE;
 
 	i->construction_date = _date;
 	i->construction_type = (_game_mode == GM_EDITOR) ? ICT_SCENARIO_EDITOR :
@@ -1772,6 +1841,9 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 	 * 0 = created prior of newindustries
 	 * else, chosen layout + 1 */
 	i->selected_layout = (byte)(layout_index + 1);
+
+	i->exclusive_supplier = INVALID_OWNER;
+	i->exclusive_consumer = INVALID_OWNER;
 
 	i->prod_level = PRODLEVEL_DEFAULT;
 
@@ -2060,6 +2132,70 @@ CommandCost CmdBuildIndustry(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 	return CommandCost(EXPENSES_OTHER, indspec->GetConstructionCost());
 }
 
+/**
+ * Change industry properties
+ * @param tile Unused.
+ * @param flags Type of operation.
+ * @param p1 IndustryID
+ * @param p2 various bitstuffed elements
+ * - p2 = (bit 0 - 7) - IndustryAction to perform
+ * - p2 = (bit 8 - 15) - IndustryControlFlags
+ *                       (only used with set control flags)
+ * - p2 = (bit 16 - 23) - CompanyID to set or INVALID_OWNER (available to everyone) or
+ *                        OWNER_NONE (neutral stations only) or OWNER_DEITY (no one)
+ *                        (only used with set exclusive supplier / consumer)
+ * @param text - Additional industry text (only used with set text action)
+ * @return Empty cost or an error.
+ */
+CommandCost CmdIndustryCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	if (_current_company != OWNER_DEITY) return CMD_ERROR;
+
+	Industry *ind = Industry::GetIfValid(p1);
+	if (ind == nullptr) return CMD_ERROR;
+
+	auto action = static_cast<IndustryAction>(GB(p2, 0, 8));
+
+	switch (action) {
+		case IndustryAction::SetControlFlags: {
+			IndustryControlFlags ctlflags = (IndustryControlFlags)GB(p2, 8, 8) & INDCTL_MASK;
+
+			if (flags & DC_EXEC) ind->ctlflags = ctlflags;
+
+			break;
+		}
+
+		case IndustryAction::SetExclusiveSupplier:
+		case IndustryAction::SetExclusiveConsumer: {
+			Owner company_id = (Owner)GB(p2, 16, 8);
+
+			if (company_id != OWNER_NONE && company_id != INVALID_OWNER && company_id != OWNER_DEITY
+				&& !Company::IsValidID(company_id)) return CMD_ERROR;
+
+			if (flags & DC_EXEC) {
+				if (action == IndustryAction::SetExclusiveSupplier) {
+					ind->exclusive_supplier = company_id;
+				} else {
+					ind->exclusive_consumer = company_id;
+				}
+			}
+
+			break;
+		}
+
+		case IndustryAction::SetText: {
+			ind->text.clear();
+			if (!StrEmpty(text)) ind->text = text;
+			InvalidateWindowData(WC_INDUSTRY_VIEW, ind->index);
+			break;
+		}
+
+		default:
+			NOT_REACHED();
+	}
+
+	return CommandCost();
+}
 
 /**
  * Create a new industry of random layout.
@@ -2090,13 +2226,14 @@ static Industry *CreateNewIndustry(TileIndex tile, IndustryType type, IndustryAv
 static uint32 GetScaledIndustryGenerationProbability(IndustryType it, bool *force_at_least_one)
 {
 	const IndustrySpec *ind_spc = GetIndustrySpec(it);
-	uint32 chance = ind_spc->appear_creation[_settings_game.game_creation.landscape] * 16; // * 16 to increase precision
+	uint32 chance = ind_spc->appear_creation[_settings_game.game_creation.landscape];
 	if (!ind_spc->enabled || ind_spc->layouts.empty() ||
 			(_game_mode != GM_EDITOR && _settings_game.difficulty.industry_density == ID_FUND_ONLY) ||
 			(chance = GetIndustryProbabilityCallback(it, IACT_MAPGENERATION, chance)) == 0) {
 		*force_at_least_one = false;
 		return 0;
 	} else {
+		chance *= 16; // to increase precision
 		/* We want industries appearing at coast to appear less often on bigger maps, as length of coast increases slower than map area.
 		 * For simplicity we scale in both cases, though scaling the probabilities of all industries has no effect. */
 		chance = (ind_spc->check_proc == CHECK_REFINERY || ind_spc->check_proc == CHECK_OIL_RIG) ? ScaleByMapSize1D(chance) : ScaleByMapSize(chance);
@@ -2150,7 +2287,7 @@ static uint GetNumberOfIndustries()
 
 	assert(lengthof(numof_industry_table) == ID_END);
 	uint difficulty = (_game_mode != GM_EDITOR) ? _settings_game.difficulty.industry_density : (uint)ID_VERY_LOW;
-	return min(IndustryPool::MAX_SIZE, ScaleByMapSize(numof_industry_table[difficulty]));
+	return std::min<uint>(IndustryPool::MAX_SIZE, ScaleByMapSize(numof_industry_table[difficulty]));
 }
 
 /**
@@ -2226,7 +2363,7 @@ void IndustryBuildData::MonthlyLoop()
 
 	/* To prevent running out of unused industries for the player to connect,
 	 * add a fraction of new industries each month, but only if the manager can keep up. */
-	uint max_behind = 1 + min(99u, ScaleByMapSize(3)); // At most 2 industries for small maps, and 100 at the biggest map (about 6 months industry build attempts).
+	uint max_behind = 1 + std::min(99u, ScaleByMapSize(3)); // At most 2 industries for small maps, and 100 at the biggest map (about 6 months industry build attempts).
 	if (GetCurrentTotalNumberOfIndustries() + max_behind >= (this->wanted_inds >> 16)) {
 		this->wanted_inds += ScaleByMapSize(NEWINDS_PER_MONTH);
 	}
@@ -2294,7 +2431,7 @@ static void UpdateIndustryStatistics(Industry *i)
 			byte pct = 0;
 			if (i->this_month_production[j] != 0) {
 				i->last_prod_year = _cur_year;
-				pct = min(i->this_month_transported[j] * 256 / i->this_month_production[j], 255);
+				pct = std::min(i->this_month_transported[j] * 256 / i->this_month_production[j], 255);
 			}
 			i->last_month_pct_transported[j] = pct;
 
@@ -2314,11 +2451,11 @@ static void UpdateIndustryStatistics(Industry *i)
 void Industry::RecomputeProductionMultipliers()
 {
 	const IndustrySpec *indspec = GetIndustrySpec(this->type);
-	assert(!indspec->UsesSmoothEconomy());
+	assert(indspec->UsesOriginalEconomy());
 
 	/* Rates are rounded up, so e.g. oilrig always produces some passengers */
 	for (size_t i = 0; i < lengthof(this->production_rate); i++) {
-		this->production_rate[i] = min(CeilDiv(indspec->production_rate[i] * this->prod_level, PRODLEVEL_DEFAULT), 0xFF);
+		this->production_rate[i] = std::min(CeilDiv(indspec->production_rate[i] * this->prod_level, PRODLEVEL_DEFAULT), 0xFFu);
 	}
 }
 
@@ -2451,10 +2588,10 @@ void IndustryBuildData::TryBuildNewIndustry()
 		const Industry *ind = PlaceIndustry(it, IACT_RANDOMCREATION, false);
 		if (ind == nullptr) {
 			this->builddata[it].wait_count = this->builddata[it].max_wait + 1; // Compensate for decrementing below.
-			this->builddata[it].max_wait = min(1000, this->builddata[it].max_wait + 2);
+			this->builddata[it].max_wait = std::min(1000, this->builddata[it].max_wait + 2);
 		} else {
 			AdvertiseIndustryOpening(ind);
-			this->builddata[it].max_wait = max(this->builddata[it].max_wait / 2, 1); // Reduce waiting time of the industry type.
+			this->builddata[it].max_wait = std::max(this->builddata[it].max_wait / 2, 1); // Reduce waiting time of the industry type.
 		}
 	}
 
@@ -2551,8 +2688,7 @@ static int WhoCanServiceIndustry(Industry *ind)
 		 * We cannot check the first of shared orders only, since the first vehicle in such a chain
 		 * may have a different cargo type.
 		 */
-		const Order *o;
-		FOR_VEHICLE_ORDERS(v, o) {
+		for (const Order *o : v->Orders()) {
 			if (o->IsType(OT_GOTO_STATION) && !(o->GetUnloadType() & OUFB_TRANSFER)) {
 				/* Vehicle visits a station to load or unload */
 				Station *st = Station::Get(o->GetDestination());
@@ -2614,8 +2750,8 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 	bool standard = false;
 	bool suppress_message = false;
 	bool recalculate_multipliers = false; ///< reinitialize production_rate to match prod_level
-	/* don't use smooth economy for industries using production related callbacks */
-	bool smooth_economy = indspec->UsesSmoothEconomy();
+	/* use original economy for industries using production related callbacks */
+	bool original_economy = indspec->UsesOriginalEconomy();
 	byte div = 0;
 	byte mul = 0;
 	int8 increment = 0;
@@ -2650,7 +2786,8 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 			}
 		}
 	} else {
-		if (monthly != smooth_economy) return;
+		if (monthly == original_economy) return;
+		if (!original_economy && _settings_game.economy.type == ET_FROZEN) return;
 		if (indspec->life_type == INDUSTRYLIFE_BLACK_HOLE) return;
 	}
 
@@ -2658,8 +2795,17 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 		/* decrease or increase */
 		bool only_decrease = (indspec->behaviour & INDUSTRYBEH_DONT_INCR_PROD) && _settings_game.game_creation.landscape == LT_TEMPERATE;
 
-		if (smooth_economy) {
-			closeit = true;
+		if (original_economy) {
+			if (only_decrease || Chance16(1, 3)) {
+				/* If more than 60% transported, 66% chance of increase, else 33% chance of increase */
+				if (!only_decrease && (i->last_month_pct_transported[0] > PERCENT_TRANSPORTED_60) != Chance16(1, 3)) {
+					mul = 1; // Increase production
+				} else {
+					div = 1; // Decrease production
+				}
+			}
+		} else if (_settings_game.economy.type == ET_SMOOTH) {
+			closeit = !(i->ctlflags & (INDCTL_NO_CLOSURE | INDCTL_NO_PRODUCTION_DECREASE));
 			for (byte j = 0; j < lengthof(i->produced_cargo); j++) {
 				if (i->produced_cargo[j] == CT_INVALID) continue;
 				uint32 r = Random();
@@ -2682,15 +2828,18 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 				/* 4.5% chance for 3-23% (or 1 unit for very low productions) production change,
 				 * determined by mult value. If mult = 1 prod. increases, else (-1) it decreases. */
 				if (Chance16I(1, 22, r >> 16)) {
-					new_prod += mult * (max(((RandomRange(50) + 10) * old_prod) >> 8, 1U));
+					new_prod += mult * (std::max(((RandomRange(50) + 10) * old_prod) >> 8, 1U));
 				}
 
 				/* Prevent production to overflow or Oil Rig passengers to be over-"produced" */
 				new_prod = Clamp(new_prod, 1, 255);
-
-				if (((indspec->behaviour & INDUSTRYBEH_BUILT_ONWATER) != 0) && j == 1 && !(indspec->behaviour & INDUSTRYBEH_WATER_NO_CLAMP_PROD)) {
+				if (i->produced_cargo[j] == CT_PASSENGERS && !(indspec->behaviour & INDUSTRYBEH_NO_PAX_PROD_CLAMP)) {
 					new_prod = Clamp(new_prod, 0, 16);
 				}
+
+				/* If override flags are set, prevent actually changing production if any was decided on */
+				if ((i->ctlflags & INDCTL_NO_PRODUCTION_DECREASE) && new_prod < old_prod) continue;
+				if ((i->ctlflags & INDCTL_NO_PRODUCTION_INCREASE) && new_prod > old_prod) continue;
 
 				/* Do not stop closing the industry when it has the lowest possible production rate */
 				if (new_prod == old_prod && old_prod > 1) {
@@ -2708,27 +2857,22 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 					ReportNewsProductionChangeIndustry(i, i->produced_cargo[j], percent);
 				}
 			}
-		} else {
-			if (only_decrease || Chance16(1, 3)) {
-				/* If more than 60% transported, 66% chance of increase, else 33% chance of increase */
-				if (!only_decrease && (i->last_month_pct_transported[0] > PERCENT_TRANSPORTED_60) != Chance16(1, 3)) {
-					mul = 1; // Increase production
-				} else {
-					div = 1; // Decrease production
-				}
-			}
 		}
 	}
 
+	/* If override flags are set, prevent actually changing production if any was decided on */
+	if ((i->ctlflags & INDCTL_NO_PRODUCTION_DECREASE) && (div > 0 || increment < 0)) return;
+	if ((i->ctlflags & INDCTL_NO_PRODUCTION_INCREASE) && (mul > 0 || increment > 0)) return;
+
 	if (!callback_enabled && (indspec->life_type & INDUSTRYLIFE_PROCESSING)) {
-		if ( (byte)(_cur_year - i->last_prod_year) >= 5 && Chance16(1, smooth_economy ? 180 : 2)) {
+		if ( (byte)(_cur_year - i->last_prod_year) >= 5 && Chance16(1, original_economy ? 2 : 180)) {
 			closeit = true;
 		}
 	}
 
 	/* Increase if needed */
 	while (mul-- != 0 && i->prod_level < PRODLEVEL_MAXIMUM) {
-		i->prod_level = min(i->prod_level * 2, PRODLEVEL_MAXIMUM);
+		i->prod_level = std::min<int>(i->prod_level * 2, PRODLEVEL_MAXIMUM);
 		recalculate_multipliers = true;
 		if (str == STR_NULL) str = indspec->production_up_text;
 	}
@@ -2737,8 +2881,9 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 	while (div-- != 0 && !closeit) {
 		if (i->prod_level == PRODLEVEL_MINIMUM) {
 			closeit = true;
+			break;
 		} else {
-			i->prod_level = max(i->prod_level / 2, (int)PRODLEVEL_MINIMUM); // typecast to int required to please MSVC
+			i->prod_level = std::max<int>(i->prod_level / 2, PRODLEVEL_MINIMUM);
 			recalculate_multipliers = true;
 			if (str == STR_NULL) str = indspec->production_down_text;
 		}
@@ -2759,7 +2904,7 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 	if (recalculate_multipliers) i->RecomputeProductionMultipliers();
 
 	/* Close if needed and allowed */
-	if (closeit && !CheckIndustryCloseDownProtection(i->type)) {
+	if (closeit && !CheckIndustryCloseDownProtection(i->type) && !(i->ctlflags & INDCTL_NO_CLOSURE)) {
 		i->prod_level = PRODLEVEL_CLOSURE;
 		SetWindowDirty(WC_INDUSTRY_VIEW, i->index);
 		str = indspec->closure_text;
@@ -2830,7 +2975,7 @@ void IndustryDailyLoop()
 
 	uint perc = 3; // Between 3% and 9% chance of creating a new industry.
 	if ((_industry_builder.wanted_inds >> 16) > GetCurrentTotalNumberOfIndustries()) {
-		perc = min(9u, perc + (_industry_builder.wanted_inds >> 16) - GetCurrentTotalNumberOfIndustries());
+		perc = std::min(9u, perc + (_industry_builder.wanted_inds >> 16) - GetCurrentTotalNumberOfIndustries());
 	}
 	for (uint16 j = 0; j < change_loop; j++) {
 		if (Chance16(perc, 100)) {
@@ -2944,14 +3089,14 @@ Money IndustrySpec::GetRemovalCost() const
 }
 
 /**
- * Determines whether this industrytype uses smooth economy or whether it uses standard/newgrf production changes.
- * @return true if smooth economy is used.
+ * Determines whether this industrytype uses standard/newgrf production changes.
+ * @return true if original economy is used.
  */
-bool IndustrySpec::UsesSmoothEconomy() const
+bool IndustrySpec::UsesOriginalEconomy() const
 {
-	return _settings_game.economy.smooth_economy &&
-		!(HasBit(this->callback_mask, CBM_IND_PRODUCTION_256_TICKS) || HasBit(this->callback_mask, CBM_IND_PRODUCTION_CARGO_ARRIVAL)) && // production callbacks
-		!(HasBit(this->callback_mask, CBM_IND_MONTHLYPROD_CHANGE) || HasBit(this->callback_mask, CBM_IND_PRODUCTION_CHANGE) || HasBit(this->callback_mask, CBM_IND_PROD_CHANGE_BUILD)); // production change callbacks
+	return _settings_game.economy.type == ET_ORIGINAL ||
+		HasBit(this->callback_mask, CBM_IND_PRODUCTION_256_TICKS) || HasBit(this->callback_mask, CBM_IND_PRODUCTION_CARGO_ARRIVAL) || // production callbacks
+		HasBit(this->callback_mask, CBM_IND_MONTHLYPROD_CHANGE) || HasBit(this->callback_mask, CBM_IND_PRODUCTION_CHANGE) || HasBit(this->callback_mask, CBM_IND_PROD_CHANGE_BUILD); // production change callbacks
 }
 
 IndustrySpec::~IndustrySpec()

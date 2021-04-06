@@ -339,6 +339,23 @@ static const TraceRestrictDropDownListSet _news_control_value = {
 	_news_control_value_str, _news_control_value_val,
 };
 
+static const StringID _time_date_value_str[] = {
+	STR_TRACE_RESTRICT_TIME_MINUTE,
+	STR_TRACE_RESTRICT_TIME_HOUR,
+	STR_TRACE_RESTRICT_TIME_HOUR_MINUTE,
+	INVALID_STRING_ID
+};
+static const uint _time_date_value_val[] = {
+	TRTDVF_MINUTE,
+	TRTDVF_HOUR,
+	TRTDVF_HOUR_MINUTE,
+};
+
+/** value drop down list for time/date types strings and values */
+static const TraceRestrictDropDownListSet _time_date_value = {
+	_time_date_value_str, _time_date_value_val,
+};
+
 /**
  * Get index of @p value in @p list_set
  * if @p value is not present, assert if @p missing_ok is false, otherwise return -1
@@ -426,7 +443,6 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		STR_TRACE_RESTRICT_VARIABLE_CARGO,
 		STR_TRACE_RESTRICT_VARIABLE_LOAD_PERCENT,
 		STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION,
-		STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_STATUS,
@@ -435,10 +451,14 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_POWER_WEIGHT_RATIO,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE_WEIGHT_RATIO,
+		STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL,
+		STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT,
 		STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY,
 		STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING,
 		STR_TRACE_RESTRICT_VARIABLE_COUNTER_VALUE,
+		STR_TRACE_RESTRICT_VARIABLE_TIME_DATE_VALUE,
+		STR_TRACE_RESTRICT_VARIABLE_RESERVED_TILES_AHEAD,
 		STR_TRACE_RESTRICT_VARIABLE_UNDEFINED,
 		INVALID_STRING_ID,
 	};
@@ -451,7 +471,6 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		TRIT_COND_CARGO,
 		TRIT_COND_LOAD_PERCENT,
 		TRIT_COND_ENTRY_DIRECTION,
-		TRIT_COND_PBS_ENTRY_SIGNAL,
 		TRIT_COND_TRAIN_GROUP,
 		TRIT_COND_TRAIN_OWNER,
 		TRIT_COND_TRAIN_STATUS,
@@ -460,10 +479,14 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		TRIT_COND_PHYS_PROP | (TRPPCAF_MAX_TE << 16),
 		TRIT_COND_PHYS_RATIO | (TRPPRCAF_POWER_WEIGHT << 16),
 		TRIT_COND_PHYS_RATIO | (TRPPRCAF_MAX_TE_WEIGHT << 16),
+		TRIT_COND_PBS_ENTRY_SIGNAL | (TRPESAF_VEH_POS << 16),
+		TRIT_COND_PBS_ENTRY_SIGNAL | (TRPESAF_RES_END << 16),
 		TRIT_COND_TRAIN_IN_SLOT,
 		TRIT_COND_SLOT_OCCUPANCY | (TRSOCAF_OCCUPANTS << 16),
 		TRIT_COND_SLOT_OCCUPANCY | (TRSOCAF_REMAINING << 16),
 		TRIT_COND_COUNTER_VALUE,
+		TRIT_COND_TIME_DATE_VALUE,
+		TRIT_COND_RESERVED_TILES,
 		TRIT_COND_UNDEFINED,
 	};
 	static const TraceRestrictDropDownListSet set_cond = {
@@ -475,8 +498,10 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		if (_settings_client.gui.show_adv_tracerestrict_features) {
 			*hide_mask = 0;
 		} else {
-			*hide_mask = is_conditional ? 0x1E0000 : 0xF0;
+			*hide_mask = is_conditional ? 0xFF0000 : 0x2F0;
 		}
+		if (is_conditional && !_settings_game.game_time.time_in_minutes) *hide_mask |= 0x400000;
+		if (is_conditional && _settings_game.vehicle.train_braking_model != TBM_REALISTIC) *hide_mask |= 0x820000;
 	}
 	return is_conditional ? &set_cond : &set_action;
 }
@@ -1070,10 +1095,21 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					} else {
 						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX;
 						SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
-						SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG);
 						SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
 						SetDParam(3, TileX(tile));
 						SetDParam(4, TileY(tile));
+					}
+					switch (static_cast<TraceRestrictPBSEntrySignalAuxField>(GetTraceRestrictAuxField(item))) {
+						case TRPESAF_VEH_POS:
+							SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG);
+							break;
+
+						case TRPESAF_RES_END:
+							SetDParam(1, _settings_game.vehicle.train_braking_model == TBM_REALISTIC ? STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG : STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG_WARN);
+							break;
+
+						default:
+							NOT_REACHED();
 					}
 					break;
 				}
@@ -1105,7 +1141,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					} else {
 						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_OWNER;
 						SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
-						SetDParam(1, GetTypeString(GetTraceRestrictType(item)));
+						SetDParam(1, GetTypeString(item));
 						SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
 						SetDParam(3, cid);
 						SetDParam(4, cid);
@@ -1197,6 +1233,18 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 						SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
 						SetDParam(3, value);
 					}
+					break;
+				}
+
+				case TRVT_TIME_DATE_INT: {
+					assert(prog != nullptr);
+					assert(GetTraceRestrictType(item) == TRIT_COND_TIME_DATE_VALUE);
+					uint32 value = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
+					SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
+					instruction_string = GetTraceRestrictValue(item) == TRTDVF_HOUR_MINUTE ? STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_TIME_HHMM : STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER;
+					SetDParam(1, STR_TRACE_RESTRICT_TIME_MINUTE_ITEM + GetTraceRestrictValue(item));
+					SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
+					SetDParam(3, value);
 					break;
 				}
 
@@ -1433,7 +1481,7 @@ public:
 		this->ReloadProgramme();
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count) OVERRIDE
+	virtual void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case TR_WIDGET_INSTRUCTION_LIST: {
@@ -1585,7 +1633,7 @@ public:
 				if (type != TRIT_NULL) {
 					uint32 hide_mask = 0;
 					const TraceRestrictDropDownListSet *set = GetTypeDropDownListSet(type, &hide_mask);
-					this->ShowDropDownListWithValue(set, type, false, widget, 0, hide_mask, 0);
+					this->ShowDropDownListWithValue(set, type, false, widget, 0, hide_mask, UINT_MAX);
 				}
 				break;
 			}
@@ -1617,7 +1665,7 @@ public:
 				if (IsIntegerValueType(type)) {
 					SetDParam(0, ConvertIntegerValue(type, GetTraceRestrictValue(item), true));
 					ShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, this, CS_NUMERAL, QSF_NONE);
-				} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT) {
+				} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT || type == TRVT_TIME_DATE_INT) {
 					SetDParam(0, *(TraceRestrictProgram::InstructionAt(this->GetProgram()->items, this->selected_instruction - 1) + 1));
 					ShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, this, CS_NUMERAL, QSF_NONE);
 				}
@@ -1724,6 +1772,11 @@ public:
 						break;
 					}
 
+					case TRVT_TIME_DATE_INT: {
+						this->ShowDropDownListWithValue(&_time_date_value, GetTraceRestrictValue(item), false, TR_WIDGET_LEFT_AUX_DROPDOWN, 0, 0, UINT_MAX);
+						break;
+					}
+
 					default:
 						break;
 				}
@@ -1764,7 +1817,7 @@ public:
 		}
 	}
 
-	virtual void OnQueryTextFinished(char *str) OVERRIDE
+	virtual void OnQueryTextFinished(char *str) override
 	{
 		if (StrEmpty(str)) {
 			return;
@@ -1799,7 +1852,7 @@ public:
 				ShowErrorMessage(STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE, STR_EMPTY, WL_INFO);
 				return;
 			}
-		} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT) {
+		} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT || type == TRVT_TIME_DATE_INT) {
 			value = atoi(str);
 			TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_DUAL_ITEM, this->selected_instruction - 1, value, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 			return;
@@ -1811,7 +1864,7 @@ public:
 		TraceRestrictDoCommandP(tile, track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 	}
 
-	virtual void OnDropdownSelect(int widget, int index) OVERRIDE
+	virtual void OnDropdownSelect(int widget, int index) override
 	{
 		TraceRestrictItem item = GetSelected();
 		if (item == 0 || index < 0 || this->selected_instruction < 1) {
@@ -1820,7 +1873,7 @@ public:
 
 		if (widget == TR_WIDGET_VALUE_DROPDOWN || widget == TR_WIDGET_LEFT_AUX_DROPDOWN) {
 			TraceRestrictTypePropertySet type = GetTraceRestrictTypeProperties(item);
-			if (this->value_drop_down_is_company || type.value_type == TRVT_GROUP_INDEX || type.value_type == TRVT_SLOT_INDEX || type.value_type == TRVT_SLOT_INDEX_INT || type.value_type == TRVT_COUNTER_INDEX_INT) {
+			if (this->value_drop_down_is_company || type.value_type == TRVT_GROUP_INDEX || type.value_type == TRVT_SLOT_INDEX || type.value_type == TRVT_SLOT_INDEX_INT || type.value_type == TRVT_COUNTER_INDEX_INT || type.value_type == TRVT_TIME_DATE_INT) {
 				// this is a special company drop-down or group/slot-index drop-down
 				SetTraceRestrictValue(item, index);
 				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
@@ -1908,7 +1961,7 @@ public:
 		}
 	}
 
-	virtual void OnPlaceObject(Point pt, TileIndex tile) OVERRIDE
+	virtual void OnPlaceObject(Point pt, TileIndex tile) override
 	{
 		int widget = this->current_placement_widget;
 		this->current_placement_widget = -1;
@@ -2074,34 +2127,38 @@ public:
 		TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_DUAL_ITEM, this->selected_instruction - 1, tile, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 	}
 
-	virtual void OnPlaceObjectAbort() OVERRIDE
+	virtual void OnPlaceObjectAbort() override
 	{
 		this->RaiseButtons();
 		this->current_placement_widget = -1;
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) OVERRIDE
+	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case TR_WIDGET_INSTRUCTION_LIST:
 				resize->height = FONT_HEIGHT_NORMAL;
 				size->height = 6 * resize->height + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
 				break;
+
+			case TR_WIDGET_GOTO_SIGNAL:
+				size->width = std::max<uint>(12, NWidgetScrollbar::GetVerticalDimension().width);
+				break;
 		}
 	}
 
-	virtual void OnResize() OVERRIDE
+	virtual void OnResize() override
 	{
 		/* Update the scroll bar */
 		this->vscroll->SetCapacityFromWidget(this, TR_WIDGET_INSTRUCTION_LIST);
 	}
 
-	virtual void OnPaint() OVERRIDE
+	virtual void OnPaint() override
 	{
 		this->DrawWidgets();
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const OVERRIDE
+	virtual void DrawWidget(const Rect &r, int widget) const override
 	{
 		if (widget != TR_WIDGET_INSTRUCTION_LIST) return;
 
@@ -2137,24 +2194,28 @@ public:
 		}
 	}
 
-	virtual void OnInvalidateData(int data, bool gui_scope) OVERRIDE
+	virtual void OnInvalidateData(int data, bool gui_scope) override
 	{
 		if (gui_scope) {
 			this->ReloadProgramme();
 		}
 	}
 
-	virtual void SetStringParameters(int widget) const OVERRIDE
+	virtual void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
 			case TR_WIDGET_VALUE_INT: {
-				SetDParam(0, 0);
+				SetDParam(0, STR_BLACK_COMMA);
 				TraceRestrictItem item = this->GetSelected();
 				TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
+				if (type == TRVT_TIME_DATE_INT && GetTraceRestrictValue(item) == TRTDVF_HOUR_MINUTE) {
+					SetDParam(0, STR_BLACK_TIME_HHMM);
+				}
+				SetDParam(1, 0);
 				if (IsIntegerValueType(type)) {
-					SetDParam(0, ConvertIntegerValue(type, GetTraceRestrictValue(item), true));
-				} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT) {
-					SetDParam(0, *(TraceRestrictProgram::InstructionAt(this->GetProgram()->items, this->selected_instruction - 1) + 1));
+					SetDParam(1, ConvertIntegerValue(type, GetTraceRestrictValue(item), true));
+				} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT || type == TRVT_TIME_DATE_INT) {
+					SetDParam(1, *(TraceRestrictProgram::InstructionAt(this->GetProgram()->items, this->selected_instruction - 1) + 1));
 				}
 				break;
 			}
@@ -2198,7 +2259,7 @@ public:
 			case TR_WIDGET_LEFT_AUX_DROPDOWN: {
 				TraceRestrictItem item = this->GetSelected();
 				TraceRestrictTypePropertySet type = GetTraceRestrictTypeProperties(item);
-				if (type.value_type == TRVT_SLOT_INDEX_INT || type.value_type == TRVT_COUNTER_INDEX_INT) {
+				if (type.value_type == TRVT_SLOT_INDEX_INT || type.value_type == TRVT_COUNTER_INDEX_INT || type.value_type == TRVT_TIME_DATE_INT) {
 					SetDParam(0, GetTraceRestrictValue(item));
 				}
 				break;
@@ -2206,7 +2267,7 @@ public:
 		}
 	}
 
-	virtual EventState OnCTRLStateChange() OVERRIDE
+	virtual EventState OnCTRLStateChange() override
 	{
 		this->UpdateButtonState();
 		return ES_NOT_HANDLED;
@@ -2738,6 +2799,15 @@ private:
 							break;
 						}
 
+						case TRVT_TIME_DATE_INT: {
+							right_sel->SetDisplayedPlane(DPR_VALUE_INT);
+							left_aux_sel->SetDisplayedPlane(DPLA_DROPDOWN);
+							this->EnableWidget(TR_WIDGET_VALUE_INT);
+							this->EnableWidget(TR_WIDGET_LEFT_AUX_DROPDOWN);
+							this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->widget_data = STR_TRACE_RESTRICT_TIME_MINUTE_SHORT + GetTraceRestrictValue(item);
+							break;
+						}
+
 						default:
 							break;
 					}
@@ -2909,7 +2979,7 @@ static const NWidgetPart _nested_program_widgets[] = {
 			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_SEL_TOP_RIGHT),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_INT), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetDataTip(STR_BLACK_COMMA, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
+														SetDataTip(STR_JUST_STRING1, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_VALUE_DECIMAL), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetDataTip(STR_BLACK_DECIMAL, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_VALUE_DROPDOWN), SetMinimalSize(124, 12), SetFill(1, 0),
@@ -2922,7 +2992,7 @@ static const NWidgetPart _nested_program_widgets[] = {
 														SetDataTip(STR_EMPTY, STR_NULL), SetResize(1, 0),
 			EndContainer(),
 		EndContainer(),
-		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, TR_WIDGET_GOTO_SIGNAL), SetMinimalSize(12, 12), SetDataTip(SPR_ARROW_RIGHT, STR_TRACE_RESTRICT_GOTO_SIGNAL_TOOLTIP),
+		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, TR_WIDGET_GOTO_SIGNAL), SetMinimalSize(12, 12), SetDataTip(SPR_GOTO_LOCATION, STR_TRACE_RESTRICT_GOTO_SIGNAL_TOOLTIP),
 	EndContainer(),
 
 	/* Second button row. */
@@ -2972,6 +3042,7 @@ void ShowTraceRestrictProgramWindow(TileIndex tile, Track track)
 
 /** Slot GUI widget IDs */
 enum TraceRestrictSlotWindowWidgets {
+	WID_TRSL_LIST_VEHICLE, // this must be first, see: DirtyVehicleListWindowForVehicle
 	WID_TRSL_CAPTION,
 	WID_TRSL_ALL_VEHICLES,
 	WID_TRSL_LIST_SLOTS,
@@ -2984,7 +3055,6 @@ enum TraceRestrictSlotWindowWidgets {
 	WID_TRSL_SORT_BY_DROPDOWN,
 	WID_TRSL_FILTER_BY_CARGO,
 	WID_TRSL_FILTER_BY_CARGO_SEL,
-	WID_TRSL_LIST_VEHICLE,
 	WID_TRSL_LIST_VEHICLE_SCROLLBAR,
 };
 
@@ -3093,13 +3163,13 @@ private:
 	uint ComputeSlotInfoSize()
 	{
 		this->column_size[VGC_NAME] = GetStringBoundingBox(STR_GROUP_ALL_TRAINS);
-		this->column_size[VGC_NAME].width = max(170u, this->column_size[VGC_NAME].width);
+		this->column_size[VGC_NAME].width = std::max(170u, this->column_size[VGC_NAME].width);
 		this->tiny_step_height = this->column_size[VGC_NAME].height;
 
 		SetDParamMaxValue(0, 9999, 3, FS_SMALL);
 		SetDParamMaxValue(1, 9999, 3, FS_SMALL);
 		this->column_size[VGC_NUMBER] = GetStringBoundingBox(STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY);
-		this->tiny_step_height = max(this->tiny_step_height, this->column_size[VGC_NUMBER].height);
+		this->tiny_step_height = std::max(this->tiny_step_height, this->column_size[VGC_NUMBER].height);
 
 		this->tiny_step_height += WD_MATRIX_TOP;
 
@@ -3172,7 +3242,8 @@ public:
 
 		this->vscroll = this->GetScrollbar(WID_TRSL_LIST_VEHICLE_SCROLLBAR);
 		this->slot_sb = this->GetScrollbar(WID_TRSL_LIST_SLOTS_SCROLLBAR);
-		this->sorting = &_sorting.train;
+		this->sorting = &_sorting[GB_NONE].train;
+		this->grouping = GB_NONE;
 
 		this->vli.index = ALL_TRAINS_TRACE_RESTRICT_SLOT_ID;
 		this->slot_sel = INVALID_TRACE_RESTRICT_SLOT_ID;
@@ -3180,9 +3251,9 @@ public:
 		this->slot_set_max_occupancy = false;
 		this->slot_over = INVALID_TRACE_RESTRICT_SLOT_ID;
 
-		this->vehicles.SetListing(*this->sorting);
-		this->vehicles.ForceRebuild();
-		this->vehicles.NeedResort();
+		this->vehgroups.SetListing(*this->sorting);
+		this->vehgroups.ForceRebuild();
+		this->vehgroups.NeedResort();
 
 		this->BuildVehicleList();
 		this->SortVehicleList();
@@ -3197,7 +3268,7 @@ public:
 
 	~TraceRestrictSlotWindow()
 	{
-		*this->sorting = this->vehicles.GetListing();
+		*this->sorting = this->vehgroups.GetListing();
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
@@ -3212,9 +3283,9 @@ public:
 
 				/* ... minus the buttons at the bottom ... */
 				uint max_icon_height = GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_CREATE_SLOT)->widget_data).height;
-				max_icon_height = max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_DELETE_SLOT)->widget_data).height);
-				max_icon_height = max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_RENAME_SLOT)->widget_data).height);
-				max_icon_height = max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_SET_SLOT_MAX_OCCUPANCY)->widget_data).height);
+				max_icon_height = std::max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_DELETE_SLOT)->widget_data).height);
+				max_icon_height = std::max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_RENAME_SLOT)->widget_data).height);
+				max_icon_height = std::max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_SET_SLOT_MAX_OCCUPANCY)->widget_data).height);
 
 				/* Get a multiple of tiny_step_height of that amount */
 				size->height = Ceil(size->height - max_icon_height, tiny_step_height);
@@ -3251,10 +3322,10 @@ public:
 	{
 		if (data == 0) {
 			/* This needs to be done in command-scope to enforce rebuilding before resorting invalid data */
-			this->vehicles.ForceRebuild();
+			this->vehgroups.ForceRebuild();
 			this->slots.ForceRebuild();
 		} else {
-			this->vehicles.ForceResort();
+			this->vehgroups.ForceResort();
 			this->slots.ForceResort();
 		}
 
@@ -3293,7 +3364,7 @@ public:
 		this->BuildSlotList(this->owner);
 
 		this->slot_sb->SetCount(this->slots.size());
-		this->vscroll->SetCount(this->vehicles.size());
+		this->vscroll->SetCount(this->vehgroups.size());
 
 		/* Disable the slot specific function when we select all vehicles */
 		this->SetWidgetsDisabledState(this->vli.index == ALL_TRAINS_TRACE_RESTRICT_SLOT_ID || _local_company != this->vli.company,
@@ -3313,7 +3384,7 @@ public:
 				WIDGET_LIST_END);
 
 		/* Set text of sort by dropdown */
-		this->GetWidget<NWidgetCore>(WID_TRSL_SORT_BY_DROPDOWN)->widget_data = this->vehicle_sorter_names[this->vehicles.SortType()];
+		this->GetWidget<NWidgetCore>(WID_TRSL_SORT_BY_DROPDOWN)->widget_data = this->vehicle_group_none_sorter_names[this->vehgroups.SortType()];
 
 		this->GetWidget<NWidgetCore>(WID_TRSL_FILTER_BY_CARGO)->widget_data = this->cargo_filter_texts[this->cargo_filter_criteria];
 
@@ -3329,7 +3400,7 @@ public:
 
 			case WID_TRSL_LIST_SLOTS: {
 				int y1 = r.top + WD_FRAMERECT_TOP;
-				int max = min(this->slot_sb->GetPosition() + this->slot_sb->GetCapacity(), this->slots.size());
+				int max = std::min<int>(this->slot_sb->GetPosition() + this->slot_sb->GetCapacity(), this->slots.size());
 				for (int i = this->slot_sb->GetPosition(); i < max; ++i) {
 					const TraceRestrictSlot *slot = this->slots[i];
 
@@ -3343,7 +3414,7 @@ public:
 			}
 
 			case WID_TRSL_SORT_BY_ORDER:
-				this->DrawSortButtonState(WID_TRSL_SORT_BY_ORDER, this->vehicles.IsDescSortOrder() ? SBS_DOWN : SBS_UP);
+				this->DrawSortButtonState(WID_TRSL_SORT_BY_ORDER, this->vehgroups.IsDescSortOrder() ? SBS_DOWN : SBS_UP);
 				break;
 
 			case WID_TRSL_LIST_VEHICLE:
@@ -3365,12 +3436,12 @@ public:
 	{
 		switch (widget) {
 			case WID_TRSL_SORT_BY_ORDER: // Flip sorting method ascending/descending
-				this->vehicles.ToggleSortOrder();
+				this->vehgroups.ToggleSortOrder();
 				this->SetDirty();
 				break;
 
 			case WID_TRSL_SORT_BY_DROPDOWN: // Select sorting criteria dropdown menu
-				ShowDropDownMenu(this, this->vehicle_sorter_names, this->vehicles.SortType(),  WID_TRSL_SORT_BY_DROPDOWN, 0, 0);
+				ShowDropDownMenu(this, this->vehicle_group_none_sorter_names, this->vehgroups.SortType(),  WID_TRSL_SORT_BY_DROPDOWN, 0, 0);
 				return;
 
 			case WID_TRSL_FILTER_BY_CARGO: // Cargo filter dropdown
@@ -3381,7 +3452,7 @@ public:
 				if (this->vli.index != ALL_TRAINS_TRACE_RESTRICT_SLOT_ID) {
 					this->vli.index = ALL_TRAINS_TRACE_RESTRICT_SLOT_ID;
 					this->slot_sel = INVALID_TRACE_RESTRICT_SLOT_ID;
-					this->vehicles.ForceRebuild();
+					this->vehgroups.ForceRebuild();
 					this->SetDirty();
 				}
 				break;
@@ -3392,16 +3463,16 @@ public:
 
 				this->slot_sel = this->vli.index = this->slots[id_s]->index;
 
-				this->vehicles.ForceRebuild();
+				this->vehgroups.ForceRebuild();
 				this->SetDirty();
 				break;
 			}
 
 			case WID_TRSL_LIST_VEHICLE: { // Matrix Vehicle
 				uint id_v = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_TRSL_LIST_VEHICLE);
-				if (id_v >= this->vehicles.size()) return; // click out of list bound
+				if (id_v >= this->vehgroups.size()) return; // click out of list bound
 
-				const Vehicle *v = this->vehicles[id_v];
+				const Vehicle *v = this->vehgroups[id_v].GetSingleVehicle();
 				if (VehicleClicked(v)) break;
 
 				this->vehicle_sel = v->index;
@@ -3473,9 +3544,9 @@ public:
 				this->SetDirty();
 
 				uint id_v = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_TRSL_LIST_VEHICLE);
-				if (id_v >= this->vehicles.size()) return; // click out of list bound
+				if (id_v >= this->vehgroups.size()) return; // click out of list bound
 
-				const Vehicle *v = this->vehicles[id_v];
+				const Vehicle *v = this->vehgroups[id_v].GetSingleVehicle();
 				if (!VehicleClicked(v) && vindex == v->index) {
 					ShowVehicleViewWindow(v);
 				}
@@ -3515,7 +3586,7 @@ public:
 	{
 		switch (widget) {
 			case WID_TRSL_SORT_BY_DROPDOWN:
-				this->vehicles.SetSortType(index);
+				this->vehgroups.SetSortType(index);
 				break;
 
 			case WID_TRSL_FILTER_BY_CARGO: // Select a cargo filter criteria
@@ -3530,7 +3601,7 @@ public:
 
 	virtual void OnGameTick() override
 	{
-		if (this->slots.NeedResort() || this->vehicles.NeedResort()) {
+		if (this->slots.NeedResort() || this->vehgroups.NeedResort()) {
 			this->SetDirty();
 		}
 	}
@@ -3701,7 +3772,7 @@ private:
 		QTO_SET_VALUE,
 	};
 
-	CompanyID owner;
+	Owner ctr_company;                  ///< Company
 	QueryTextOperation qto;             ///< Active query text operation
 	TraceRestrictCounterID ctr_qt_op;   ///< Counter being adjusted in query text operation, INVALID_TRACE_RESTRICT_COUNTER_ID if none
 	TraceRestrictCounterID ctr_confirm; ///< Counter awaiting delete confirmation
@@ -3718,7 +3789,7 @@ private:
 		this->ctrs.clear();
 
 		for (const TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
-			if (ctr->owner == this->owner) {
+			if (ctr->owner == this->ctr_company) {
 				this->ctrs.push_back(ctr);
 			}
 		}
@@ -3773,7 +3844,7 @@ private:
 public:
 	TraceRestrictCounterWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
 	{
-		this->owner = (CompanyID)window_number;
+		this->ctr_company = (Owner)window_number;
 		this->CreateNestedTree();
 
 		this->sb = this->GetScrollbar(WID_TRCL_LIST_COUNTERS_SCROLLBAR);
@@ -3787,15 +3858,16 @@ public:
 		this->BuildCounterList();
 
 		this->FinishInitNested(window_number);
+		this->owner = this->ctr_company;
 	}
 
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_TRCL_LIST_COUNTERS: {
-				size->width = max<uint>(size->width, this->ComputeInfoSize());
+				size->width = std::max<uint>(size->width, this->ComputeInfoSize());
 				resize->height = this->tiny_step_height;
-				size->height = max<uint>(size->height, 8 * resize->height);
+				size->height = std::max<uint>(size->height, 8 * resize->height);
 				break;
 			}
 		}
@@ -3835,7 +3907,7 @@ public:
 		this->sb->SetCount(this->ctrs.size());
 
 		/* Disable the counter specific functions when no counter is selected */
-		this->SetWidgetsDisabledState(this->selected == INVALID_TRACE_RESTRICT_COUNTER_ID || _local_company != this->owner,
+		this->SetWidgetsDisabledState(this->selected == INVALID_TRACE_RESTRICT_COUNTER_ID || _local_company != this->ctr_company,
 				WID_TRCL_DELETE_COUNTER,
 				WID_TRCL_RENAME_COUNTER,
 				WID_TRCL_SET_COUNTER_VALUE,
@@ -3847,7 +3919,7 @@ public:
 		 *  verify, whether you are the owner of the vehicle,
 		 *  so it doesn't have to be disabled
 		 */
-		this->SetWidgetsDisabledState(_local_company != this->owner,
+		this->SetWidgetsDisabledState(_local_company != this->ctr_company,
 				WID_TRCL_CREATE_COUNTER,
 				WIDGET_LIST_END);
 
@@ -3859,11 +3931,11 @@ public:
 		switch (widget) {
 			case WID_TRCL_LIST_COUNTERS: {
 				int y1 = r.top + WD_FRAMERECT_TOP;
-				int max = min(this->sb->GetPosition() + this->sb->GetCapacity(), this->ctrs.size());
+				int max = std::min<int>(this->sb->GetPosition() + this->sb->GetCapacity(), this->ctrs.size());
 				for (int i = this->sb->GetPosition(); i < max; ++i) {
 					const TraceRestrictCounter *ctr = this->ctrs[i];
 
-					assert(ctr->owner == this->owner);
+					assert(ctr->owner == this->ctr_company);
 
 					DrawCounterInfo(y1, r.left, r.right, ctr->index);
 

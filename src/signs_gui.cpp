@@ -25,6 +25,7 @@
 #include "core/geometry_func.hpp"
 #include "hotkeys.h"
 #include "transparency.h"
+#include "gui.h"
 
 #include "widgets/sign_widget.h"
 
@@ -263,7 +264,7 @@ struct SignListWindow : Window, SignList {
 			case WID_SIL_LIST: {
 				Dimension spr_dim = GetSpriteSize(SPR_COMPANY_ICON);
 				this->text_offset = WD_FRAMETEXT_LEFT + spr_dim.width + 2; // 2 pixels space between icon and the sign text.
-				resize->height = max<uint>(FONT_HEIGHT_NORMAL, spr_dim.height);
+				resize->height = std::max<uint>(FONT_HEIGHT_NORMAL, spr_dim.height);
 				Dimension d = {(uint)(this->text_offset + WD_FRAMETEXT_RIGHT), WD_FRAMERECT_TOP + 5 * resize->height + WD_FRAMERECT_BOTTOM};
 				*size = maxdim(*size, d);
 				break;
@@ -356,29 +357,29 @@ HotkeyList SignListWindow::hotkeys("signlist", signlist_hotkeys, SignListGlobalH
 
 static const NWidgetPart _nested_sign_list_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_SIL_CAPTION), SetDataTip(STR_SIGN_LIST_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_SHADEBOX, COLOUR_GREY),
-		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
-		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
+		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_SIL_CAPTION), SetDataTip(STR_SIGN_LIST_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
+		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
+		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
 		NWidget(NWID_VERTICAL),
-			NWidget(WWT_PANEL, COLOUR_GREY, WID_SIL_LIST), SetMinimalSize(WD_FRAMETEXT_LEFT + 16 + 255 + WD_FRAMETEXT_RIGHT, 50),
+			NWidget(WWT_PANEL, COLOUR_BROWN, WID_SIL_LIST), SetMinimalSize(WD_FRAMETEXT_LEFT + 16 + 255 + WD_FRAMETEXT_RIGHT, 50),
 								SetResize(1, 10), SetFill(1, 0), SetScrollbar(WID_SIL_SCROLLBAR), EndContainer(),
 			NWidget(NWID_HORIZONTAL),
-				NWidget(WWT_PANEL, COLOUR_GREY), SetFill(1, 1),
-					NWidget(WWT_EDITBOX, COLOUR_GREY, WID_SIL_FILTER_TEXT), SetMinimalSize(80, 12), SetResize(1, 0), SetFill(1, 0), SetPadding(2, 2, 2, 2),
+				NWidget(WWT_PANEL, COLOUR_BROWN), SetFill(1, 1),
+					NWidget(WWT_EDITBOX, COLOUR_BROWN, WID_SIL_FILTER_TEXT), SetMinimalSize(80, 12), SetResize(1, 0), SetFill(1, 0), SetPadding(2, 2, 2, 2),
 							SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 				EndContainer(),
-				NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SIL_FILTER_MATCH_CASE_BTN), SetDataTip(STR_SIGN_LIST_MATCH_CASE, STR_SIGN_LIST_MATCH_CASE_TOOLTIP),
+				NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_SIL_FILTER_MATCH_CASE_BTN), SetDataTip(STR_SIGN_LIST_MATCH_CASE, STR_SIGN_LIST_MATCH_CASE_TOOLTIP),
 			EndContainer(),
 		EndContainer(),
 		NWidget(NWID_VERTICAL),
 			NWidget(NWID_VERTICAL), SetFill(0, 1),
-				NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_SIL_SCROLLBAR),
+				NWidget(NWID_VSCROLLBAR, COLOUR_BROWN, WID_SIL_SCROLLBAR),
 			EndContainer(),
-			NWidget(WWT_RESIZEBOX, COLOUR_GREY),
+			NWidget(WWT_RESIZEBOX, COLOUR_BROWN),
 		EndContainer(),
 	EndContainer(),
 };
@@ -486,6 +487,17 @@ struct SignWindow : Window, SignList {
 	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
+			case WID_QES_LOCATION: {
+				const Sign *si = Sign::Get(this->cur_sign);
+				TileIndex tile = TileVirtXY(si->x, si->y);
+				if (_ctrl_pressed) {
+					ShowExtraViewportWindow(tile);
+				} else {
+					ScrollMainWindowToTile(tile);
+				}
+				break;
+			}
+
 			case WID_QES_PREVIOUS:
 			case WID_QES_NEXT: {
 				const Sign *si = this->PrevNextSign(widget == WID_QES_NEXT);
@@ -523,6 +535,7 @@ static const NWidgetPart _nested_query_sign_edit_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_QES_CAPTION), SetDataTip(STR_WHITE_STRING, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_QES_LOCATION), SetMinimalSize(12, 14), SetDataTip(SPR_GOTO_LOCATION, STR_EDIT_SIGN_LOCATION_TOOLTIP),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_GREY),
 		NWidget(WWT_EDITBOX, COLOUR_GREY, WID_QES_TEXT), SetMinimalSize(256, 12), SetDataTip(STR_EDIT_SIGN_SIGN_OSKTITLE, STR_NULL), SetPadding(2, 2, 2, 2),

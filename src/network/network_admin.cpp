@@ -37,7 +37,7 @@ NetworkAdminSocketPool _networkadminsocket_pool("NetworkAdminSocket");
 INSTANTIATE_POOL_METHODS(NetworkAdminSocket)
 
 /** The timeout for authorisation of the client. */
-static const int ADMIN_AUTHORISATION_TIMEOUT = 10000;
+static const std::chrono::seconds ADMIN_AUTHORISATION_TIMEOUT(10);
 
 
 /** Frequencies, which may be registered for a certain update type. */
@@ -54,7 +54,7 @@ static const AdminUpdateFrequency _admin_update_type_frequencies[] = {
 	                       ADMIN_FREQUENCY_AUTOMATIC,                                                                                                      ///< ADMIN_UPDATE_GAMESCRIPT
 };
 /** Sanity check. */
-assert_compile(lengthof(_admin_update_type_frequencies) == ADMIN_UPDATE_END);
+static_assert(lengthof(_admin_update_type_frequencies) == ADMIN_UPDATE_END);
 
 /**
  * Create a new socket for the server side of the admin network.
@@ -64,7 +64,7 @@ ServerNetworkAdminSocketHandler::ServerNetworkAdminSocketHandler(SOCKET s) : Net
 {
 	_network_admins_connected++;
 	this->status = ADMIN_STATUS_INACTIVE;
-	this->realtime_connect = _realtime_tick;
+	this->connect_time = std::chrono::steady_clock::now();
 }
 
 /**
@@ -86,7 +86,7 @@ ServerNetworkAdminSocketHandler::~ServerNetworkAdminSocketHandler()
 	bool accept = !StrEmpty(_settings_client.network.admin_password) && _network_admins_connected < MAX_ADMINS;
 	/* We can't go over the MAX_ADMINS limit here. However, if we accept
 	 * the connection, there has to be space in the pool. */
-	assert_compile(NetworkAdminSocketPool::MAX_SIZE == MAX_ADMINS);
+	static_assert(NetworkAdminSocketPool::MAX_SIZE == MAX_ADMINS);
 	assert(!accept || ServerNetworkAdminSocketHandler::CanAllocateItem());
 	return accept;
 }
@@ -95,8 +95,8 @@ ServerNetworkAdminSocketHandler::~ServerNetworkAdminSocketHandler()
 /* static */ void ServerNetworkAdminSocketHandler::Send()
 {
 	for (ServerNetworkAdminSocketHandler *as : ServerNetworkAdminSocketHandler::Iterate()) {
-		if (as->status == ADMIN_STATUS_INACTIVE && as->realtime_connect + ADMIN_AUTHORISATION_TIMEOUT < _realtime_tick) {
-			DEBUG(net, 1, "[admin] Admin did not send its authorisation within %d seconds", ADMIN_AUTHORISATION_TIMEOUT / 1000);
+		if (as->status == ADMIN_STATUS_INACTIVE && std::chrono::steady_clock::now() > as->connect_time + ADMIN_AUTHORISATION_TIMEOUT) {
+			DEBUG(net, 1, "[admin] Admin did not send its authorisation within %d seconds", (uint32)std::chrono::duration_cast<std::chrono::seconds>(ADMIN_AUTHORISATION_TIMEOUT).count());
 			as->CloseConnection(true);
 			continue;
 		}
@@ -413,13 +413,13 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendCompanyEconomy()
 		p->Send_uint64(company->money);
 		p->Send_uint64(company->current_loan);
 		p->Send_uint64(income);
-		p->Send_uint16(min(UINT16_MAX, company->cur_economy.delivered_cargo.GetSum<OverflowSafeInt64>()));
+		p->Send_uint16(static_cast<uint16>(std::min<uint64>(UINT16_MAX, company->cur_economy.delivered_cargo.GetSum<OverflowSafeInt64>())));
 
 		/* Send stats for the last 2 quarters. */
 		for (uint i = 0; i < 2; i++) {
 			p->Send_uint64(company->old_economy[i].company_value);
 			p->Send_uint16(company->old_economy[i].performance_history);
-			p->Send_uint16(min(UINT16_MAX, company->old_economy[i].delivered_cargo.GetSum<OverflowSafeInt64>()));
+			p->Send_uint16(static_cast<uint16>(std::min<uint64>(UINT16_MAX, company->old_economy[i].delivered_cargo.GetSum<OverflowSafeInt64>())));
 		}
 
 		this->SendPacket(p);

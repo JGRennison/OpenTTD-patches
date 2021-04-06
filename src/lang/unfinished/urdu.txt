@@ -49,9 +49,9 @@ STR_CARGO_PLURAL_WHEAT                                          :گندم
 STR_CARGO_PLURAL_RUBBER                                         :ربڑ
 STR_CARGO_PLURAL_SUGAR                                          :چینی
 STR_CARGO_PLURAL_TOYS                                           :کھلونے
-STR_CARGO_PLURAL_CANDY                                          :مٹھایاں
+STR_CARGO_PLURAL_SWEETS                                         :مٹھایاں
 STR_CARGO_PLURAL_COLA                                           :کوئلہ
-STR_CARGO_PLURAL_COTTON_CANDY                                   :کینڈی فلاس
+STR_CARGO_PLURAL_CANDYFLOSS                                     :کینڈی فلاس
 STR_CARGO_PLURAL_BUBBLES                                        :بلبلے
 STR_CARGO_PLURAL_TOFFEE                                         :ٹافی
 STR_CARGO_PLURAL_BATTERIES                                      :بیٹریاں
@@ -83,9 +83,9 @@ STR_CARGO_SINGULAR_WHEAT                                        :گندم
 STR_CARGO_SINGULAR_RUBBER                                       :ربڑ
 STR_CARGO_SINGULAR_SUGAR                                        :چینی
 STR_CARGO_SINGULAR_TOY                                          :کھلونا
-STR_CARGO_SINGULAR_CANDY                                        :مٹھائی
+STR_CARGO_SINGULAR_SWEETS                                       :مٹھائی
 STR_CARGO_SINGULAR_COLA                                         :کولا
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :کینڈی فلاس
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :کینڈی فلاس
 STR_CARGO_SINGULAR_BUBBLE                                       :بلبلہ
 STR_CARGO_SINGULAR_TOFFEE                                       :ٹافی
 STR_CARGO_SINGULAR_BATTERY                                      :بیٹری
@@ -223,7 +223,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK} (ترت
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}ترتیب کا طریقہ منتخب کریں
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK} چھاننے کے اصول چنیئے
 STR_BUTTON_SORT_BY                                              :{BLACK}سے ترتیب دو
-STR_BUTTON_LOCATION                                             :{BLACK}جگہ
 STR_BUTTON_RENAME                                               :{BLACK} تبادلھء نام
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}کھڑکی بند کرو
@@ -297,6 +296,8 @@ STR_SORT_BY_POWER_VS_RUNNING_COST                               :قیمتِ رو
 STR_SORT_BY_CARGO_CAPACITY                                      :سامان کی گنجایش
 STR_SORT_BY_RANGE                                               :پہنچ
 STR_SORT_BY_POPULATION                                          :آبادی
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK} کھیل میں وقفھ لیجیئے
@@ -541,8 +542,8 @@ STR_MONTH_DEC                                                   :دسمبر
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK} کلید
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}مخطط کی کلیدیں دکھائیں
-STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}{} {STRING}
-STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{} {STRING}{}{NUM}
+STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}
+STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{}{NUM}
 STR_GRAPH_Y_LABEL                                               :{TINY_FONT}{STRING}
 STR_GRAPH_Y_LABEL_NUMBER                                        :{TINY_FONT}{COMMA}
 
@@ -884,8 +885,6 @@ STR_GAME_OPTIONS_CURRENCY_ZAR                                   :جنوبی اف
 STR_GAME_OPTIONS_CURRENCY_CUSTOM                                :اپنی مرضی کی ۔۔۔
 ############ end of currency region
 
-STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}گاڑیاں
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}اختیار کریں کہ گاڑی سڑک کی کس طرف چلے
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :بائیں طرف چلے
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :دائیں طرف چلے
 
@@ -936,6 +935,9 @@ STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}مُکم
 STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}اسکرین کی resolution
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}اسکرین کی resolution اختیار کریں
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :دیگر
+
+
+
 
 
 
@@ -1238,7 +1240,6 @@ STR_CONFIG_SETTING_NEWS_MESSAGES_FULL                           :مکمل
 
 STR_CONFIG_SETTING_COLOURED_NEWS_YEAR                           :رنگین خبریں کون سے سال سے شروع ہوں: {STRING}
 STR_CONFIG_SETTING_STARTING_YEAR                                :شروعاتی سال: {STRING}
-STR_CONFIG_SETTING_SMOOTH_ECONOMY                               :مستحکم معیشت فعال کریں: {STRING}
 STR_CONFIG_SETTING_ALLOW_SHARES                                 :دوسری کمپنیوں کے حصص خریدنے کی اجازت: {STRING}
 STR_CONFIG_SETTING_SEMAPHORE_BUILD_BEFORE_DATE                  :پہلے خودکار طریقے سے semaphores بنائیں: {STRING}
 STR_CONFIG_SETTING_ENABLE_SIGNAL_GUI                            :اشاروں والی GUI فعال کریں: {STRING}
@@ -1266,9 +1267,6 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED                        :اجازت ہے
 STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :اپنی مرضی کے شہر کے پھیلاو کی اجازت ہے
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :کھیل میں درخت لگانے کی اجازت: {STRING}
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :کوئی نہیں {RED}(لکڑ مل ٹوٹ گئی)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :صرف بارش کے جنگلوں میں
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :ہر جگہ
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :بنیادی ٹول بار کی جگہ: {STRING}
 STR_CONFIG_SETTING_STATUSBAR_POS                                :حالات کی پٹی: {STRING}
@@ -1329,6 +1327,8 @@ STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :نا معلوم
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :{WHITE}- - - کمپریشن کی سطح '{STRING}' درست نہیں ہے
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE} ۔ ۔ ۔ کھیل بچانے کا یہ فارمیٹ '{STRING}' دستیاب نہیں ہے۔ واپس '{STRING}' پر جا رہے ہیں
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -1367,17 +1367,8 @@ STR_INTRO_TRANSLATION                                           :{BLACK}اس ت�
 
 # Quit window
 STR_QUIT_CAPTION                                                :{WHITE}باہر نکلو
-STR_QUIT_ARE_YOU_SURE_YOU_WANT_TO_EXIT_OPENTTD                  :{YELLOW}کیا آپ واقعی OpenTTD کو چھوڑ کر واپس {STRING} میں جانا چاہتے ہیں؟
 STR_QUIT_YES                                                    :{BLACK}ہاں
 STR_QUIT_NO                                                     :{BLACK}نہیں
-
-# Supported OSes
-STR_OSNAME_WINDOWS                                              :ونڈوز
-STR_OSNAME_UNIX                                                 :یونیکس
-STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_OS2                                                  :OS/2
-STR_OSNAME_SUNOS                                                :SunOS
 
 # Abandon game
 STR_ABANDON_GAME_CAPTION                                        :{WHITE}کھیل چھوڑ دو
@@ -1387,7 +1378,6 @@ STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}کیا 
 # Cheat window
 STR_CHEATS                                                      :{WHITE}دھوکے
 STR_CHEATS_TOOLTIP                                              :{BLACK}چیک باکسز سے ظاہر ہوتا ہے کہ آپ نے یہ دھوکا پہلے بھی کیا یے
-STR_CHEATS_WARNING                                              :{BLACK}انتباہ! آپ ساتھی کھلاڑیوں کو دھوکہ دینے جا رہے ہیں
 STR_CHEAT_MONEY                                                 :{LTBLUE}رقم کو {CURRENCY_LONG} سے بڑھائیں
 STR_CHEAT_CHANGE_COMPANY                                        :{LTBLUE}اس کمپنی کی طور پر کھیلیں: {ORANGE}{COMMA}
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}جادوئی دھماکہ خیز (نہ ٹوٹنے والی چیزیں بھی توڑ دے): {ORANGE}{STRING}
@@ -1534,8 +1524,6 @@ STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}کھیل
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}سرور کو تازہ کریں
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}سرور کی معلومات کو تازہ کریں
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}سرور ڈھونڈیں
-STR_NETWORK_SERVER_LIST_FIND_SERVER_TOOLTIP                     :{BLACK}سرور کے لئے نیٹ ورک تلاش کریں
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}سرور شامل کریں
 STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP                      :{BLACK}سرور کو اس فہرست میں شامل کریں جو ہمیشہ کھیل شروع کرنے کے لئے پرکھی جاتی ہے
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}سرور شروع کریں
@@ -1670,7 +1658,6 @@ STR_NETWORK_SERVER                                              :سرور
 STR_NETWORK_CLIENT                                              :کلائینٹ
 STR_NETWORK_SPECTATORS                                          :ناظرین
 
-
 # Network set password
 STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}بتایا گیا پاس ورڈ محفوظ نہ کریں
 STR_COMPANY_PASSWORD_OK                                         :{BLACK}کمپنی کا نیا پاس ورڈ رکھیں
@@ -1770,8 +1757,6 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} ن
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} نے نئی کمپنی شروع کی ہے (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} نے کھیل چھوڑ دیا ہے ({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} نے اپنا نام بدل کر {STRING} رکھ لیا ہے
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} نے آپ کی کمپنی کو {2:CURRENCY_LONG} دئیے ہیں
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** آپ نے {1:STRING} کو {2:CURRENCY_LONG} دئیے ہیں
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}سرور نے سیشن بند کر دیا
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}سرور دوبارہ سے سٹارٹ ہو رہا ہے - - -{}برائے مہربانی انتظار فرمائیے ۔ ۔ ۔
 
@@ -1844,6 +1829,7 @@ STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD 
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}ہاں، گرافکس ڈاون لوڈ کریں
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}نہیں، OpenTTD سے باہر نکلو
 
+
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Transparency کے اختیارات
 STR_TRANSPARENT_SIGNS_TOOLTIP                                   :{BLACK}اشاروں کی شفافیت کی تدویم کریں۔ محدوظ کرنے کے لئے Ctrl+Click دبائیں
@@ -1876,6 +1862,8 @@ STR_JOIN_STATION_CREATE_SPLITTED_STATION                        :{YELLOW}الگ 
 
 STR_JOIN_WAYPOINT_CAPTION                                       :{WHITE}گزرگاہ ملائیں
 STR_JOIN_WAYPOINT_CREATE_SPLITTED_WAYPOINT                      :{YELLOW}الگ سے گزرگاہ تعمیر کریں
+
+# Generic toolbar
 
 # Rail construction toolbar
 STR_RAIL_TOOLBAR_RAILROAD_CONSTRUCTION_CAPTION                  :ریلوے کی تعمیر
@@ -2045,7 +2033,7 @@ STR_OBJECT_BUILD_SIZE                                           :{BLACK}سائز
 STR_OBJECT_CLASS_LTHS                                           :روشنی کے مینار
 STR_OBJECT_CLASS_TRNS                                           :ٹرانسمیٹرز
 
-# Tree planting window (last two for SE only)
+# Tree planting window (last eight for SE only)
 STR_PLANT_TREE_CAPTION                                          :{WHITE}درخت
 STR_TREES_RANDOM_TYPE                                           :{BLACK}مختلف اقسام کے درخت
 STR_TREES_RANDOM_TYPE_TOOLTIP                                   :{BLACK}مختلف اقسام کے درخت لگائیں۔ Shift تعمیر/اندازاّ خرچے میں تدویم کرتا ہے۔
@@ -2413,6 +2401,7 @@ STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES                          :{YELLOW}میس�
 
 # Vehicle view
 STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE}
+
 
 
 

@@ -201,7 +201,7 @@ static void StartSound(SoundID sound_id, float pan, uint volume)
 
 
 static const byte _vol_factor_by_zoom[] = {255, 255, 255, 190, 134, 87, 10, 1, 1, 1};
-assert_compile(lengthof(_vol_factor_by_zoom) == ZOOM_LVL_COUNT);
+static_assert(lengthof(_vol_factor_by_zoom) == ZOOM_LVL_COUNT);
 
 static const byte _sound_base_vol[] = {
 	128,  90, 128, 128, 128, 128, 128, 128,
@@ -275,8 +275,8 @@ static void SndPlayScreenCoordFx(SoundID sound, int left, int right, int top, in
 void SndPlayTileFx(SoundID sound, TileIndex tile)
 {
 	/* emits sound from center of the tile */
-	int x = min(MapMaxX() - 1, TileX(tile)) * TILE_SIZE + TILE_SIZE / 2;
-	int y = min(MapMaxY() - 1, TileY(tile)) * TILE_SIZE - TILE_SIZE / 2;
+	int x = std::min(MapMaxX() - 1, TileX(tile)) * TILE_SIZE + TILE_SIZE / 2;
+	int y = std::min(MapMaxY() - 1, TileY(tile)) * TILE_SIZE - TILE_SIZE / 2;
 	int z = (y < 0 ? 0 : GetSlopePixelZ(x, y));
 	Point pt = RemapCoords(x, y, z);
 	y += 2 * TILE_SIZE;

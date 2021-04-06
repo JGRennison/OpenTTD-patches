@@ -20,7 +20,7 @@
 #include "safeguards.h"
 
 HighScore _highscore_table[SP_HIGHSCORE_END][5]; ///< various difficulty-settings; top 5
-char *_highscore_file; ///< The file to store the highscore data in.
+std::string _highscore_file; ///< The file to store the highscore data in.
 
 static const StringID _endgame_perf_titles[] = {
 	STR_HIGHSCORE_PERFORMANCE_TITLE_BUSINESSMAN,
@@ -43,7 +43,7 @@ static const StringID _endgame_perf_titles[] = {
 
 StringID EndGameGetPerformanceTitleFromValue(uint value)
 {
-	value = minu(value / 64, lengthof(_endgame_perf_titles) - 1);
+	value = std::min<uint>(value / 64, lengthof(_endgame_perf_titles) - 1);
 
 	return _endgame_perf_titles[value];
 }
@@ -123,7 +123,7 @@ int8 SaveHighScoreValueNetwork()
 /** Save HighScore table to file */
 void SaveToHighScore()
 {
-	FILE *fp = fopen(_highscore_file, "wb");
+	FILE *fp = fopen(_highscore_file.c_str(), "wb");
 
 	if (fp != nullptr) {
 		uint i;
@@ -132,7 +132,7 @@ void SaveToHighScore()
 		for (i = 0; i < SP_SAVED_HIGHSCORE_END; i++) {
 			for (hs = _highscore_table[i]; hs != endof(_highscore_table[i]); hs++) {
 				/* First character is a command character, so strlen will fail on that */
-				byte length = min(sizeof(hs->company), StrEmpty(hs->company) ? 0 : (int)strlen(&hs->company[1]) + 1);
+				byte length = std::min(sizeof(hs->company), StrEmpty(hs->company) ? 0 : strlen(&hs->company[1]) + 1);
 
 				if (fwrite(&length, sizeof(length), 1, fp)       != 1 || // write away string length
 						fwrite(hs->company, length, 1, fp)           >  1 || // Yes... could be 0 bytes too
@@ -151,7 +151,7 @@ void SaveToHighScore()
 /** Initialize the highscore table to 0 and if any file exists, load in values */
 void LoadFromHighScore()
 {
-	FILE *fp = fopen(_highscore_file, "rb");
+	FILE *fp = fopen(_highscore_file.c_str(), "rb");
 
 	memset(_highscore_table, 0, sizeof(_highscore_table));
 
@@ -163,7 +163,7 @@ void LoadFromHighScore()
 			for (hs = _highscore_table[i]; hs != endof(_highscore_table[i]); hs++) {
 				byte length;
 				if (fread(&length, sizeof(length), 1, fp)                              !=  1 ||
-						fread(hs->company, min<int>(lengthof(hs->company), length), 1, fp) >   1 || // Yes... could be 0 bytes too
+						fread(hs->company, std::min<int>(lengthof(hs->company), length), 1, fp) >   1 || // Yes... could be 0 bytes too
 						fread(&hs->score, sizeof(hs->score), 1, fp)                        !=  1 ||
 						fseek(fp, 2, SEEK_CUR)                                             == -1) { // XXX - placeholder for hs->title, not saved anymore; compatibility
 					DEBUG(misc, 1, "Highscore corrupted");

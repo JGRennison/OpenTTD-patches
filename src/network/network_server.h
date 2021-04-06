@@ -45,7 +45,6 @@ protected:
 	NetworkRecvStatus SendCompanyInfo();
 	NetworkRecvStatus SendNewGRFCheck();
 	NetworkRecvStatus SendWelcome();
-	NetworkRecvStatus SendWait();
 	NetworkRecvStatus SendNeedGamePassword();
 	NetworkRecvStatus SendNeedCompanyPassword();
 
@@ -76,6 +75,7 @@ public:
 	uint32 rcon_hash_bits;       ///< Rcon password hash entropy bits
 	uint32 settings_hash_bits;   ///< Settings password hash entropy bits
 	bool settings_authed = false;///< Authorised to control all game settings
+	bool supports_zstd = false;  ///< Client supports zstd compression
 
 	struct PacketWriter *savegame; ///< Writer used to write the savegame.
 	NetworkAddress client_address; ///< IP-address of the client (so he can be banned)
@@ -89,6 +89,9 @@ public:
 	NetworkRecvStatus CloseConnection(NetworkRecvStatus status) override;
 	void GetClientName(char *client_name, const char *last) const;
 
+	void CheckNextClientToSendMap(NetworkClientSocket *ignore_cs = nullptr);
+
+	NetworkRecvStatus SendWait();
 	NetworkRecvStatus SendMap();
 	NetworkRecvStatus SendErrorQuit(ClientID client_id, NetworkErrorCode errorno);
 	NetworkRecvStatus SendQuit(ClientID client_id);

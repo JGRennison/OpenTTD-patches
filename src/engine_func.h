@@ -26,7 +26,7 @@ bool IsEngineBuildable(EngineID engine, VehicleType type, CompanyID company);
 bool IsEngineRefittable(EngineID engine);
 void GetArticulatedVehicleCargoesAndRefits(EngineID engine, CargoArray *cargoes, CargoTypes *refits, CargoID cargo_type, uint cargo_capacity);
 void SetYearEngineAgingStops();
-void StartupOneEngine(Engine *e, Date aging_date);
+void StartupOneEngine(Engine *e, Date aging_date, Date no_introduce_after_date);
 
 uint GetTotalCapacityOfArticulatedParts(EngineID engine);
 

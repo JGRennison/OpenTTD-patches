@@ -32,6 +32,7 @@
 #include "pathfinder/npf/aystar.h"
 #include "saveload/saveload.h"
 #include "framerate_type.h"
+#include "town.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "scope_info.h"
 #include <list>
@@ -91,6 +92,8 @@ extern const byte _slope_to_sprite_offset[32] = {
  */
 static SnowLine *_snow_line = nullptr;
 
+byte _cached_snowline = 0;
+
 /**
  * Map 2D viewport or smallmap coordinate to 3D world or tile coordinate.
  * Function takes into account height of tiles and foundations.
@@ -134,12 +137,12 @@ Point InverseRemapCoords2(int x, int y, bool clamp_to_map, bool *clamped)
 	 * So give it a z-malus of 4 in the first iterations. */
 	int z = 0;
 	if (clamp_to_map) {
-		for (int i = 0; i < 5; i++) z = GetSlopePixelZ(Clamp(pt.x + max(z, 4) - 4, min_coord, max_x), Clamp(pt.y + max(z, 4) - 4, min_coord, max_y)) / 2;
-		for (int m = 3; m > 0; m--) z = GetSlopePixelZ(Clamp(pt.x + max(z, m) - m, min_coord, max_x), Clamp(pt.y + max(z, m) - m, min_coord, max_y)) / 2;
+		for (int i = 0; i < 5; i++) z = GetSlopePixelZ(Clamp(pt.x + std::max(z, 4) - 4, min_coord, max_x), Clamp(pt.y + std::max(z, 4) - 4, min_coord, max_y)) / 2;
+		for (int m = 3; m > 0; m--) z = GetSlopePixelZ(Clamp(pt.x + std::max(z, m) - m, min_coord, max_x), Clamp(pt.y + std::max(z, m) - m, min_coord, max_y)) / 2;
 		for (int i = 0; i < 5; i++) z = GetSlopePixelZ(Clamp(pt.x + z,             min_coord, max_x), Clamp(pt.y + z,             min_coord, max_y)) / 2;
 	} else {
-		for (int i = 0; i < 5; i++) z = GetSlopePixelZOutsideMap(pt.x + max(z, 4) - 4, pt.y + max(z, 4) - 4) / 2;
-		for (int m = 3; m > 0; m--) z = GetSlopePixelZOutsideMap(pt.x + max(z, m) - m, pt.y + max(z, m) - m) / 2;
+		for (int i = 0; i < 5; i++) z = GetSlopePixelZOutsideMap(pt.x + std::max(z, 4) - 4, pt.y + std::max(z, 4) - 4) / 2;
+		for (int m = 3; m > 0; m--) z = GetSlopePixelZOutsideMap(pt.x + std::max(z, m) - m, pt.y + std::max(z, m) - m) / 2;
 		for (int i = 0; i < 5; i++) z = GetSlopePixelZOutsideMap(pt.x + z,             pt.y + z            ) / 2;
 	}
 
@@ -638,10 +641,12 @@ void SetSnowLine(byte table[SNOW_LINE_MONTHS][SNOW_LINE_DAYS])
 
 	for (uint i = 0; i < SNOW_LINE_MONTHS; i++) {
 		for (uint j = 0; j < SNOW_LINE_DAYS; j++) {
-			_snow_line->highest_value = max(_snow_line->highest_value, table[i][j]);
-			_snow_line->lowest_value = min(_snow_line->lowest_value, table[i][j]);
+			_snow_line->highest_value = std::max(_snow_line->highest_value, table[i][j]);
+			_snow_line->lowest_value = std::min(_snow_line->lowest_value, table[i][j]);
 		}
 	}
+
+	UpdateCachedSnowLine();
 }
 
 /**
@@ -649,11 +654,16 @@ void SetSnowLine(byte table[SNOW_LINE_MONTHS][SNOW_LINE_DAYS])
  * @return the snow line height.
  * @ingroup SnowLineGroup
  */
-byte GetSnowLine()
+byte GetSnowLineUncached()
 {
 	if (_snow_line == nullptr) return _settings_game.game_creation.snow_line_height;
 
 	return _snow_line->table[_cur_date_ymd.month][_cur_date_ymd.day];
+}
+
+void UpdateCachedSnowLine()
+{
+	_cached_snowline = GetSnowLineUncached();
 }
 
 /**
@@ -684,6 +694,7 @@ void ClearSnowLine()
 {
 	free(_snow_line);
 	_snow_line = nullptr;
+	UpdateCachedSnowLine();
 }
 
 /**
@@ -712,6 +723,8 @@ CommandCost CmdLandscapeClear(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 	if (c != nullptr && (int)GB(c->clear_limit, 16, 16) < 1) {
 		return_cmd_error(STR_ERROR_CLEARING_LIMIT_REACHED);
 	}
+
+	if ((flags & DC_TOWN) && !MayTownModifyRoad(tile)) return CMD_ERROR;
 
 	const ClearedObjectArea *coa = FindClearedObject(tile);
 
@@ -820,7 +833,7 @@ void RunTileLoop()
 		0xD8F, 0x1296, 0x2496, 0x4357, 0x8679, 0x1030E, 0x206CD, 0x403FE, 0x807B8, 0x1004B2, 0x2006A8,
 		0x4004B2, 0x800B87, 0x10004F3, 0x200072D, 0x40006AE, 0x80009E3,
 	};
-	assert_compile(lengthof(feedbacks) == MAX_MAP_TILES_BITS - 2 * MIN_MAP_SIZE_BITS + 1);
+	static_assert(lengthof(feedbacks) == MAX_MAP_TILES_BITS - 2 * MIN_MAP_SIZE_BITS + 1);
 	const uint32 feedback = feedbacks[MapLogX() + MapLogY() - 2 * MIN_MAP_SIZE_BITS];
 
 	/* We update every tile every 256 ticks, so divide the map size by 2^8 = 256 */
@@ -876,7 +889,8 @@ static void GenerateTerrain(int type, uint flag)
 	uint x = r & MapMaxX();
 	uint y = (r >> MapLogX()) & MapMaxY();
 
-	if (x < 2 || y < 2) return;
+	uint edge_distance = 1 + (_settings_game.construction.freeform_edges ? 1 : 0);
+	if (x <= edge_distance || y <= edge_distance) return;
 
 	DiagDirection direction = (DiagDirection)GB(r, 22, 2);
 	uint w = templ->width;
@@ -911,8 +925,8 @@ static void GenerateTerrain(int type, uint flag)
 		}
 	}
 
-	if (x + w >= MapMaxX() - 1) return;
-	if (y + h >= MapMaxY() - 1) return;
+	if (x + w >= MapMaxX()) return;
+	if (y + h >= MapMaxY()) return;
 
 	TileIndex tile = TileXY(x, y);
 
@@ -981,7 +995,7 @@ static void CreateDesertOrRainForest()
 {
 	TileIndex update_freq = MapSize() / 4;
 	const TileIndexDiffC *data;
-	uint max_desert_height = CeilDiv(_settings_game.construction.max_heightlevel, 4);
+	uint max_desert_height = _settings_game.game_creation.rainforest_line_height;
 
 	for (TileIndex tile = 0; tile != MapSize(); ++tile) {
 		if ((tile % update_freq) == 0) IncreaseGeneratingWorldProgress(GWP_LANDSCAPE);
@@ -1045,11 +1059,13 @@ static bool FindSpring(TileIndex tile, void *user_data)
 
 	if (num < 4) return false;
 
-	/* Are we near the top of a hill? */
-	for (int dx = -16; dx <= 16; dx++) {
-		for (int dy = -16; dy <= 16; dy++) {
-			TileIndex t = TileAddWrap(tile, dx, dy);
-			if (t != INVALID_TILE && GetTileMaxZ(t) > referenceHeight + 2) return false;
+	if (_settings_game.game_creation.rivers_top_of_hill) {
+		/* Are we near the top of a hill? */
+		for (int dx = -16; dx <= 16; dx++) {
+			for (int dy = -16; dy <= 16; dy++) {
+				TileIndex t = TileAddWrap(tile, dx, dy);
+				if (t != INVALID_TILE && GetTileMaxZ(t) > referenceHeight + 2) return false;
+			}
 		}
 	}
 
@@ -1072,9 +1088,10 @@ static bool MakeLake(TileIndex tile, void *user_data)
 		TileIndex t2 = tile + TileOffsByDiagDir(d);
 		if (IsWaterTile(t2)) {
 			MakeRiver(tile, Random());
+			MarkTileDirtyByTile(tile);
 			/* Remove desert directly around the river tile. */
 			TileIndex t = tile;
-			CircularTileSearch(&t, RIVER_OFFSET_DESERT_DISTANCE, RiverModifyDesertZone, nullptr);
+			CircularTileSearch(&t, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
 			return false;
 		}
 	}
@@ -1145,8 +1162,9 @@ static void River_FoundEndNode(AyStar *aystar, OpenListNode *current)
 		TileIndex tile = path->node.tile;
 		if (!IsWaterTile(tile)) {
 			MakeRiver(tile, Random());
+			MarkTileDirtyByTile(tile);
 			/* Remove desert directly around the river tile. */
-			CircularTileSearch(&tile, RIVER_OFFSET_DESERT_DISTANCE, RiverModifyDesertZone, nullptr);
+			CircularTileSearch(&tile, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
 		}
 	}
 }
@@ -1252,15 +1270,16 @@ static bool FlowRiver(TileIndex spring, TileIndex begin)
 				/* We don't want the lake at the entry of the valley. */
 				lakeCenter != begin &&
 				/* We don't want lakes in the desert. */
-				(_settings_game.game_creation.landscape != LT_TROPIC || GetTropicZone(lakeCenter) != TROPICZONE_DESERT) &&
+				(_settings_game.game_creation.landscape != LT_TROPIC || _settings_game.game_creation.lakes_allowed_in_deserts || GetTropicZone(lakeCenter) != TROPICZONE_DESERT) &&
 				/* We only want a lake if the river is long enough. */
 				DistanceManhattan(spring, lakeCenter) > _settings_game.game_creation.min_river_length) {
 			end = lakeCenter;
 			MakeRiver(lakeCenter, Random());
+			MarkTileDirtyByTile(lakeCenter);
 			/* Remove desert directly around the river tile. */
-			CircularTileSearch(&lakeCenter, RIVER_OFFSET_DESERT_DISTANCE, RiverModifyDesertZone, nullptr);
+			CircularTileSearch(&lakeCenter, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
 			lakeCenter = end;
-			uint range = RandomRange(8) + 3;
+			uint range = RandomRange(_settings_game.game_creation.lake_size) + 3;
 			CircularTileSearch(&lakeCenter, range, MakeLake, &height);
 			/* Call the search a second time so artefacts from going circular in one direction get (mostly) hidden. */
 			lakeCenter = end;
@@ -1315,7 +1334,7 @@ void GenerateLandscape(byte mode)
 
 	if (mode == GWM_HEIGHTMAP) {
 		SetGeneratingWorldProgress(GWP_LANDSCAPE, steps + GLS_HEIGHTMAP);
-		LoadHeightmap(_file_to_saveload.detail_ftype, _file_to_saveload.name);
+		LoadHeightmap(_file_to_saveload.detail_ftype, _file_to_saveload.name.c_str());
 		IncreaseGeneratingWorldProgress(GWP_LANDSCAPE);
 	} else if (_settings_game.game_creation.land_generator == LG_TERRAGENESIS) {
 		SetGeneratingWorldProgress(GWP_LANDSCAPE, steps + GLS_TERRAGENESIS);
@@ -1378,8 +1397,11 @@ void GenerateLandscape(byte mode)
 	/* Do not call IncreaseGeneratingWorldProgress() before FixSlopes(),
 	 * it allows screen redraw. Drawing of broken slopes crashes the game */
 	FixSlopes();
+	MarkWholeScreenDirty();
 	IncreaseGeneratingWorldProgress(GWP_LANDSCAPE);
+
 	ConvertGroundTilesIntoWaterTiles();
+	MarkWholeScreenDirty();
 	IncreaseGeneratingWorldProgress(GWP_LANDSCAPE);
 
 	if (_settings_game.game_creation.landscape == LT_TROPIC) CreateDesertOrRainForest();

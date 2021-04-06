@@ -63,6 +63,8 @@ enum BuildRailStationWidgets {
 	WID_BRAS_IMAGE,                ///< Panel used at each cell of the matrix.
 	WID_BRAS_MATRIX_SCROLL,        ///< Scrollbar of the matrix widget.
 
+	WID_BRAS_FILTER_CONTAINER,     ///< Container for the filter text box for the station class list.
+	WID_BRAS_FILTER_EDITBOX,       ///< Filter text box for the station class list.
 	WID_BRAS_SHOW_NEWST_DEFSIZE,   ///< Selection for default-size button for newstation.
 	WID_BRAS_SHOW_NEWST_ADDITIONS, ///< Selection for newstation class selection list.
 	WID_BRAS_SHOW_NEWST_MATRIX,    ///< Selection for newstation image matrix.
@@ -97,6 +99,12 @@ enum BuildSignalWidgets {
 	WID_BS_DRAG_SIGNALS_DENSITY_LABEL,    ///< The current signal density.
 	WID_BS_DRAG_SIGNALS_DENSITY_DECREASE, ///< Decrease the signal density.
 	WID_BS_DRAG_SIGNALS_DENSITY_INCREASE, ///< Increase the signal density.
+	WID_BS_SEMAPHORE_ENTRY_SEL, ///< NWID_SELECTION for WID_BS_SEMAPHORE_ENTRY
+	WID_BS_ELECTRIC_ENTRY_SEL,  ///< NWID_SELECTION for WID_BS_ELECTRIC_ENTRY
+	WID_BS_SEMAPHORE_EXIT_SEL, ///< NWID_SELECTION for WID_BS_SEMAPHORE_EXIT
+	WID_BS_ELECTRIC_EXIT_SEL,  ///< NWID_SELECTION for WID_BS_ELECTRIC_EXIT
+	WID_BS_SEMAPHORE_COMBO_SEL, ///< NWID_SELECTION for WID_BS_SEMAPHORE_COMBO
+	WID_BS_ELECTRIC_COMBO_SEL,  ///< NWID_SELECTION for WID_BS_ELECTRIC_COMBO
 	WID_BS_SEMAPHORE_PROG_SEL, ///< NWID_SELECTION for WID_BS_SEMAPHORE_PROG
 	WID_BS_ELECTRIC_PROG_SEL,  ///< NWID_SELECTION for WID_BS_ELECTRIC_PROG
 	WID_BS_PROGRAM_SEL,        ///< NWID_SELECTION for WID_BS_PROGRAM

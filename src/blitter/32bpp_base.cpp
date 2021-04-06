@@ -31,24 +31,29 @@ void Blitter_32bppBase::DrawLine(void *video, int x, int y, int x2, int y2, int 
 	});
 }
 
-void Blitter_32bppBase::SetLine(void *video, int x, int y, uint8 *colours, uint width)
+void Blitter_32bppBase::SetRect(void *video, int x, int y, const uint8 *colours, uint lines, uint width, uint pitch)
 {
 	Colour *dst = (Colour *)video + x + y * _screen.pitch;
 	do {
-		*dst = LookupColourInPalette(*colours);
-		dst++;
-		colours++;
-	} while (--width);
+		uint w = width;
+		do {
+			*dst = LookupColourInPalette(*colours);
+			dst++;
+			colours++;
+		} while (--w);
+		dst += _screen.pitch - width;
+		colours += pitch - width;
+	} while (--lines);
 }
 
-void Blitter_32bppBase::SetLine32(void *video, int x, int y, uint32 *colours, uint width)
+void Blitter_32bppBase::SetRect32(void *video, int x, int y, const uint32 *colours, uint lines, uint width, uint pitch)
 {
-	Colour *dst = (Colour *)video + x + y * _screen.pitch;
+	uint32 *dst = (uint32 *)video + x + y * _screen.pitch;
 	do {
-		*dst = *colours;
-		dst++;
-		colours++;
-	} while (--width);
+		memcpy(dst, colours, width * sizeof(uint32));
+		dst += _screen.pitch;
+		colours += pitch;
+	} while (--lines);
 }
 
 void Blitter_32bppBase::DrawRect(void *video, int width, int height, uint8 colour)
@@ -194,9 +199,9 @@ Colour Blitter_32bppBase::ReallyAdjustBrightness(Colour colour, uint8 brightness
 	/* Reduce overbright strength */
 	ob /= 2;
 	return Colour(
-		r >= 255 ? 255 : min(r + ob * (255 - r) / 256, 255),
-		g >= 255 ? 255 : min(g + ob * (255 - g) / 256, 255),
-		b >= 255 ? 255 : min(b + ob * (255 - b) / 256, 255),
+		r >= 255 ? 255 : std::min(r + ob * (255 - r) / 256, 255),
+		g >= 255 ? 255 : std::min(g + ob * (255 - g) / 256, 255),
+		b >= 255 ? 255 : std::min(b + ob * (255 - b) / 256, 255),
 		colour.a);
 }
 

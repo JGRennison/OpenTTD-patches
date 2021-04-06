@@ -20,14 +20,14 @@
 ScriptInfo::~ScriptInfo()
 {
 	/* Free all allocated strings */
-	for (ScriptConfigItemList::iterator it = this->config_list.begin(); it != this->config_list.end(); it++) {
-		free((*it).name);
-		free((*it).description);
-		if (it->labels != nullptr) {
-			for (auto &lbl_map : *(*it).labels) {
+	for (const auto &item : this->config_list) {
+		free(item.name);
+		free(item.description);
+		if (item.labels != nullptr) {
+			for (auto &lbl_map : *item.labels) {
 				free(lbl_map.second);
 			}
-			delete it->labels;
+			delete item.labels;
 		}
 	}
 	this->config_list.clear();
@@ -39,8 +39,6 @@ ScriptInfo::~ScriptInfo()
 	free(this->date);
 	free(this->instance_name);
 	free(this->url);
-	free(this->main_script);
-	free(this->tar_file);
 	free(this->SQ_instance);
 }
 
@@ -81,9 +79,8 @@ bool ScriptInfo::CheckMethod(const char *name) const
 	}
 
 	/* Get location information of the scanner */
-	info->main_script = stredup(info->scanner->GetMainScript());
-	const char *tar_name = info->scanner->GetTarFile();
-	if (tar_name != nullptr) info->tar_file = stredup(tar_name);
+	info->main_script = info->scanner->GetMainScript();
+	info->tar_file = info->scanner->GetTarFile();
 
 	/* Cache the data the info file gives us. */
 	if (!info->engine->CallStringMethodStrdup(*info->SQ_instance, "GetAuthor", &info->author, MAX_GET_OPS)) return SQ_ERROR;
@@ -232,8 +229,8 @@ SQInteger ScriptInfo::AddLabels(HSQUIRRELVM vm)
 	ValidateString(setting_name);
 
 	ScriptConfigItem *config = nullptr;
-	for (ScriptConfigItemList::iterator it = this->config_list.begin(); it != this->config_list.end(); it++) {
-		if (strcmp((*it).name, setting_name) == 0) config = &(*it);
+	for (auto &item : this->config_list) {
+		if (strcmp(item.name, setting_name) == 0) config = &item;
 	}
 
 	if (config == nullptr) {
@@ -284,22 +281,22 @@ const ScriptConfigItemList *ScriptInfo::GetConfigList() const
 
 const ScriptConfigItem *ScriptInfo::GetConfigItem(const char *name) const
 {
-	for (ScriptConfigItemList::const_iterator it = this->config_list.begin(); it != this->config_list.end(); it++) {
-		if (strcmp((*it).name, name) == 0) return &(*it);
+	for (const auto &item : this->config_list) {
+		if (strcmp(item.name, name) == 0) return &item;
 	}
 	return nullptr;
 }
 
 int ScriptInfo::GetSettingDefaultValue(const char *name) const
 {
-	for (ScriptConfigItemList::const_iterator it = this->config_list.begin(); it != this->config_list.end(); it++) {
-		if (strcmp((*it).name, name) != 0) continue;
+	for (const auto &item : this->config_list) {
+		if (strcmp(item.name, name) != 0) continue;
 		/* The default value depends on the difficulty level */
 		switch (GetGameSettings().script.settings_profile) {
-			case SP_EASY:   return (*it).easy_value;
-			case SP_MEDIUM: return (*it).medium_value;
-			case SP_HARD:   return (*it).hard_value;
-			case SP_CUSTOM: return (*it).custom_value;
+			case SP_EASY:   return item.easy_value;
+			case SP_MEDIUM: return item.medium_value;
+			case SP_HARD:   return item.hard_value;
+			case SP_CUSTOM: return item.custom_value;
 			default: NOT_REACHED();
 		}
 	}

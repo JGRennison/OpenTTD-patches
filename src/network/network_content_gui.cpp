@@ -15,6 +15,7 @@
 #include "../ai/ai.hpp"
 #include "../game/game.hpp"
 #include "../base_media_base.h"
+#include "../openttd.h"
 #include "../sortlist_type.h"
 #include "../stringfilter_type.h"
 #include "../querystring_gui.h"
@@ -236,7 +237,7 @@ public:
 					break;
 
 				case CONTENT_TYPE_NEWGRF:
-					ScanNewGRFFiles(nullptr);
+					RequestNewGRFScan();
 					break;
 
 				case CONTENT_TYPE_SCENARIO:
@@ -325,7 +326,7 @@ class NetworkContentListWindow : public Window, ContentCallback {
 		char url[1024];
 		const char *last = lastof(url);
 
-		char *pos = strecpy(url, "http://grfsearch.openttd.org/?", last);
+		char *pos = strecpy(url, "https://grfsearch.openttd.org/?", last);
 
 		if (this->auto_select) {
 			pos = strecpy(pos, "do=searchgrfid&q=", last);
@@ -575,7 +576,7 @@ public:
 			}
 
 			case WID_NCL_MATRIX:
-				resize->height = max(this->checkbox_size.height, (uint)FONT_HEIGHT_NORMAL) + WD_MATRIX_TOP + WD_MATRIX_BOTTOM;
+				resize->height = std::max(this->checkbox_size.height, (uint)FONT_HEIGHT_NORMAL) + WD_MATRIX_TOP + WD_MATRIX_BOTTOM;
 				size->height = 10 * resize->height;
 				break;
 		}
@@ -626,7 +627,7 @@ public:
 		const NWidgetBase *nwi_name = this->GetWidget<NWidgetBase>(WID_NCL_NAME);
 		const NWidgetBase *nwi_type = this->GetWidget<NWidgetBase>(WID_NCL_TYPE);
 
-		int line_height = max(this->checkbox_size.height, (uint)FONT_HEIGHT_NORMAL);
+		int line_height = std::max(this->checkbox_size.height, (uint)FONT_HEIGHT_NORMAL);
 
 		/* Fill the matrix with the information */
 		int sprite_y_offset = WD_MATRIX_TOP + (line_height - this->checkbox_size.height) / 2 - 1;
@@ -877,7 +878,7 @@ public:
 				break;
 			case WKC_PAGEDOWN:
 				/* scroll down a page */
-				this->list_pos = min(this->list_pos + this->vscroll->GetCapacity(), (int)this->content.size() - 1);
+				this->list_pos = std::min(this->list_pos + this->vscroll->GetCapacity(), (int)this->content.size() - 1);
 				break;
 			case WKC_HOME:
 				/* jump to beginning */

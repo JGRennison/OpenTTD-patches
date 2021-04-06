@@ -84,7 +84,7 @@ public:
 		offset(0),
 		num_param(Tnum_param)
 	{
-		assert_compile(sizeof(data[0]) == sizeof(uint64));
+		static_assert(sizeof(data[0]) == sizeof(uint64));
 	}
 
 	/**
@@ -174,6 +174,7 @@ extern StringParameters _global_string_params;
 char *GetString(char *buffr, StringID string, const char *last);
 char *GetStringWithArgs(char *buffr, StringID string, StringParameters *args, const char *last, uint case_index = 0, bool game_script = false);
 const char *GetStringPtr(StringID string);
+uint32 GetStringGRFID(StringID string);
 
 uint ConvertKmhishSpeedToDisplaySpeed(uint speed);
 uint ConvertDisplaySpeedToKmhishSpeed(uint speed);
@@ -279,7 +280,7 @@ public:
 	 */
 	virtual void SetFontNames(struct FreeTypeSettings *settings, const char *font_name, const void *os_data = nullptr) = 0;
 
-	bool FindMissingGlyphs(const char **str);
+	bool FindMissingGlyphs();
 };
 
 void CheckForMissingGlyphs(bool base_font = true, MissingGlyphSearcher *search = nullptr);

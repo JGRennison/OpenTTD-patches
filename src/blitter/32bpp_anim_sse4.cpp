@@ -345,6 +345,75 @@ bmcr_alpha_blend_single:
 					anim++;
 				}
 				break;
+
+			case BM_NORMAL_WITH_BRIGHTNESS:
+				for (uint x = (uint) bp->width; x > 0; x--) {
+					if (src->a == 0) {
+					} else if (src->a == 255) {
+						MapValue mv = *src_mv;
+						if (src_mv->m >= PALETTE_ANIM_START) {
+							mv.v = Clamp(mv.v + bp->brightness_adjust, 0, 255);
+							*dst = AdjustBrightneSSE(LookupColourInPalette(mv.m), mv.v);
+						} else {
+							*dst = AdjustBrightneSSE(src->data, DEFAULT_BRIGHTNESS + bp->brightness_adjust);
+						}
+						*anim = *(const uint16*) &mv;
+					} else {
+						*anim = 0;
+						__m128i srcABCD;
+						__m128i dstABCD = _mm_cvtsi32_si128(dst->data);
+						if (src_mv->m >= PALETTE_ANIM_START) {
+							Colour colour = AdjustBrightneSSE(LookupColourInPalette(src_mv->m), Clamp(src_mv->v + bp->brightness_adjust, 0, 255));
+							colour.a = src->a;
+							srcABCD = _mm_cvtsi32_si128(colour.data);
+						} else {
+							srcABCD = _mm_cvtsi32_si128(AdjustBrightneSSE(src->data, DEFAULT_BRIGHTNESS + bp->brightness_adjust).data);
+						}
+						dst->data = _mm_cvtsi128_si32(AlphaBlendTwoPixels(srcABCD, dstABCD, a_cm, pack_low_cm));
+					}
+					src_mv++;
+					dst++;
+					src++;
+					anim++;
+				}
+				break;
+
+			case BM_COLOUR_REMAP_WITH_BRIGHTNESS:
+				for (uint x = (uint) bp->width; x > 0; x--) {
+					/* In case the m-channel is zero, do not remap this pixel in any way. */
+					__m128i srcABCD;
+					if (src->a == 0) {
+					} else if (src_mv->m) {
+						MapValue mv = *src_mv;
+						mv.v = Clamp(mv.v + bp->brightness_adjust, 0, 255);
+						const uint r = remap[mv.m];
+						*anim = (animated && src->a == 255) ? r | ((uint16) mv.v << 8) : 0;
+						if (r != 0) {
+							Colour remapped_colour = AdjustBrightneSSE(this->LookupColourInPalette(r), mv.v);
+							if (src->a == 255) {
+								*dst = remapped_colour;
+							} else {
+								remapped_colour.a = src->a;
+								srcABCD = _mm_cvtsi32_si128(remapped_colour.data);
+								goto bmcr_alpha_blend_single_brightness;
+							}
+						}
+					} else {
+						*anim = 0;
+						srcABCD = _mm_cvtsi32_si128(AdjustBrightneSSE(src->data, DEFAULT_BRIGHTNESS + bp->brightness_adjust).data);
+						if (src->a < 255) {
+bmcr_alpha_blend_single_brightness:
+							__m128i dstABCD = _mm_cvtsi32_si128(dst->data);
+							srcABCD = AlphaBlendTwoPixels(srcABCD, dstABCD, a_cm, pack_low_cm);
+						}
+						dst->data = _mm_cvtsi128_si32(srcABCD);
+					}
+					src_mv++;
+					dst++;
+					src++;
+					anim++;
+				}
+				break;
 		}
 
 next_line:
@@ -407,6 +476,17 @@ bm_normal:
 		case BM_TRANSPARENT:  Draw<BM_TRANSPARENT, RM_NONE, BT_NONE, true, true>(bp, zoom); return;
 		case BM_CRASH_REMAP:  Draw<BM_CRASH_REMAP, RM_NONE, BT_NONE, true, true>(bp, zoom); return;
 		case BM_BLACK_REMAP:  Draw<BM_BLACK_REMAP, RM_NONE, BT_NONE, true, true>(bp, zoom); return;
+
+		case BM_COLOUR_REMAP_WITH_BRIGHTNESS:
+			if (!(sprite_flags & SF_NO_REMAP)) {
+				Draw<BM_COLOUR_REMAP_WITH_BRIGHTNESS, RM_NONE, BT_NONE, true, true>(bp, zoom);
+				return;
+			}
+			/* FALL THROUGH */
+
+		case BM_NORMAL_WITH_BRIGHTNESS:
+			Draw<BM_NORMAL_WITH_BRIGHTNESS, RM_NONE, BT_NONE, true, true>(bp, zoom);
+			return;
 	}
 }
 

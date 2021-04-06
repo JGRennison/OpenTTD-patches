@@ -42,6 +42,7 @@ static const StringID _zone_type_strings[] = {
 	STR_ZONING_TRACERESTRICT,
 	STR_ZONING_2x2_GRID,
 	STR_ZONING_3x3_GRID,
+	STR_ZONING_ONE_WAY_ROAD,
 	INVALID_STRING_ID
 };
 
@@ -56,6 +57,7 @@ static const ZoningEvaluationMode _zone_type_modes[] = {
 	ZEM_TRACERESTRICT,
 	ZEM_2x2_GRID,
 	ZEM_3x3_GRID,
+	ZEM_ONE_WAY_ROAD,
 };
 
 static ZoningEvaluationMode DropDownIndexToZoningEvaluationMode(int index)

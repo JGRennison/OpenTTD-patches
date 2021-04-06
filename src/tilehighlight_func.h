@@ -23,6 +23,7 @@ void SetObjectToPlace(CursorID icon, PaletteID pal, HighLightStyle mode, WindowC
 void ResetObjectToPlace();
 
 void VpSelectTilesWithMethod(int x, int y, ViewportPlaceMethod method);
+void VpStartDragging(ViewportDragDropSelectionProcess process);
 void VpStartPlaceSizing(TileIndex tile, ViewportPlaceMethod method, ViewportDragDropSelectionProcess process);
 void VpSetPresizeRange(TileIndex from, TileIndex to);
 void VpSetPlaceSizingLimit(int limit);

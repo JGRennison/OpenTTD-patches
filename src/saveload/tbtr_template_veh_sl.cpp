@@ -41,6 +41,8 @@ const SaveLoad* GTD() {
 		SLE_CONDVAR_X(TemplateVehicle, full_weight, SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 6)),
 		SLE_VAR(TemplateVehicle, max_te, SLE_UINT32),
 
+		SLE_CONDVAR_X(TemplateVehicle, ctrl_flags, SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 7)),
+
 		SLE_CONDNULL_X(1, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 0, 3)),
 		SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 0, 1)),
 		SLE_CONDNULL_X(36, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 2, 3)),
@@ -99,7 +101,7 @@ void AfterLoadTemplateVehicles()
 	}
 }
 
-void AfterLoadTemplateVehiclesUpdateImage()
+void AfterLoadTemplateVehiclesUpdate()
 {
 	SavedRandomSeeds saved_seeds;
 	SaveRandomSeeds(&saved_seeds);
@@ -113,36 +115,14 @@ void AfterLoadTemplateVehiclesUpdateImage()
 		}
 	}
 
-	for (TemplateVehicle *tv : TemplateVehicle::Iterate()) {
-		if (tv->Prev() == nullptr) {
-			Backup<CompanyID> cur_company(_current_company, tv->owner, FILE_LINE);
-			StringID err;
-			Train* t = VirtualTrainFromTemplateVehicle(tv, err);
-			if (t != nullptr) {
-				int tv_len = 0;
-				for (TemplateVehicle *u = tv; u != nullptr; u = u->Next()) {
-					tv_len++;
-				}
-				int t_len = 0;
-				for (Train *u = t; u != nullptr; u = u->Next()) {
-					t_len++;
-				}
-				if (t_len == tv_len) {
-					Train *v = t;
-					for (TemplateVehicle *u = tv; u != nullptr; u = u->Next(), v = v->Next()) {
-						v->GetImage(DIR_W, EIT_IN_DEPOT, &u->sprite_seq);
-						u->image_dimensions.SetFromTrain(v);
-					}
-				} else {
-					DEBUG(misc, 0, "AfterLoadTemplateVehiclesUpdateImage: vehicle count mismatch: %u, %u", t_len, tv_len);
-				}
-				delete t;
-			}
-			cur_company.Restore();
-		}
-	}
-
 	RestoreRandomSeeds(saved_seeds);
+
+	InvalidateTemplateReplacementImages();
+}
+
+void AfterLoadTemplateVehiclesUpdateImages()
+{
+	InvalidateTemplateReplacementImages();
 }
 
 void AfterLoadTemplateVehiclesUpdateProperties()
@@ -154,7 +134,7 @@ void AfterLoadTemplateVehiclesUpdateProperties()
 		if (tv->Prev() == nullptr) {
 			Backup<CompanyID> cur_company(_current_company, tv->owner, FILE_LINE);
 			StringID err;
-			Train* t = VirtualTrainFromTemplateVehicle(tv, err);
+			Train* t = VirtualTrainFromTemplateVehicle(tv, err, 0);
 			if (t != nullptr) {
 				uint32 full_cargo_weight = 0;
 				for (Train *u = t; u != nullptr; u = u->Next()) {

@@ -50,9 +50,9 @@ STR_CARGO_PLURAL_WHEAT                                          :חיטה
 STR_CARGO_PLURAL_RUBBER                                         :גומי
 STR_CARGO_PLURAL_SUGAR                                          :סוכר
 STR_CARGO_PLURAL_TOYS                                           :צעצועים
-STR_CARGO_PLURAL_CANDY                                          :ממתקים
+STR_CARGO_PLURAL_SWEETS                                         :ממתקים
 STR_CARGO_PLURAL_COLA                                           :קולה
-STR_CARGO_PLURAL_COTTON_CANDY                                   :שערות סבתא
+STR_CARGO_PLURAL_CANDYFLOSS                                     :שערות סבתא
 STR_CARGO_PLURAL_BUBBLES                                        :בועות
 STR_CARGO_PLURAL_TOFFEE                                         :טופי
 STR_CARGO_PLURAL_BATTERIES                                      :סוללות
@@ -92,10 +92,10 @@ STR_CARGO_SINGULAR_RUBBER                                       :גומי
 STR_CARGO_SINGULAR_SUGAR                                        :סוכר
 STR_CARGO_SINGULAR_TOY                                          :צעצוע
 STR_CARGO_SINGULAR_TOY.plural                                   :צעצועים
-STR_CARGO_SINGULAR_CANDY                                        :ממתק
-STR_CARGO_SINGULAR_CANDY.plural                                 :ממתקים
+STR_CARGO_SINGULAR_SWEETS                                       :ממתק
+STR_CARGO_SINGULAR_SWEETS.plural                                :ממתקים
 STR_CARGO_SINGULAR_COLA                                         :קולה
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :צמר גפן מתוק
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :צמר גפן מתוק
 STR_CARGO_SINGULAR_BUBBLE                                       :בועה
 STR_CARGO_SINGULAR_BUBBLE.plural                                :בועות
 STR_CARGO_SINGULAR_TOFFEE                                       :טופי
@@ -245,7 +245,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}(בחר(
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}בחר\י קרטריון מיון
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}בחר קריטריון סינון
 STR_BUTTON_SORT_BY                                              :{BLACK}מיון לפי
-STR_BUTTON_LOCATION                                             :{BLACK}מיקום
 STR_BUTTON_RENAME                                               :{BLACK}שנה שם
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}סגור חלון
@@ -323,6 +322,8 @@ STR_SORT_BY_CARGO_CAPACITY                                      :קיבולת ס
 STR_SORT_BY_RANGE                                               :טווח
 STR_SORT_BY_POPULATION                                          :אכלוסיה
 STR_SORT_BY_RATING                                              :דרוג
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}השהה משחק
@@ -574,8 +575,8 @@ STR_MONTH_DEC                                                   :דצמבר
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}הצג מפתחות לגרפים
-STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}{} {STRING}
-STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{} {STRING}{}{NUM}
+STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}
+STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{}{NUM}
 STR_GRAPH_Y_LABEL                                               :{TINY_FONT}{STRING}
 STR_GRAPH_Y_LABEL_NUMBER                                        :{TINY_FONT}{COMMA}
 
@@ -936,8 +937,6 @@ STR_GAME_OPTIONS_CURRENCY_IRR                                   :ריאל איר
 STR_GAME_OPTIONS_CURRENCY_RUB                                   :רובל רוסי (RUB)
 ############ end of currency region
 
-STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}רכבי כביש
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}בחר את צד הכביש בו יסעו כלי הרכב
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :סע בצד שמאל
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :סע בצד ימין
 
@@ -989,12 +988,15 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}רזלו
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}בחר את רזולוציית המסך
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :אחר
 
+
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}גודל ממשק
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}בחר את ממשק גודל העצם לשימוש
 
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :רגיל
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :גודל כפול
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :גודל מרובע
+
+
 
 
 
@@ -1531,8 +1533,6 @@ STR_CONFIG_SETTING_NEWS_MESSAGES_FULL                           :מלא
 STR_CONFIG_SETTING_COLOURED_NEWS_YEAR                           :{STRING} :הצג חדשות צבעוניות החל משנת
 STR_CONFIG_SETTING_COLOURED_NEWS_YEAR_HELPTEXT                  :השנה בה הודעות העיתונות מודפסות בצבע. לפני שנה זו הן מודפסות בשחור-לבן.
 STR_CONFIG_SETTING_STARTING_YEAR                                :{STRING} :שנת התחלה
-STR_CONFIG_SETTING_SMOOTH_ECONOMY                               :אפשר כלכלה עדינה (יותר, שינויים קטנים יותר): {STRING}
-STR_CONFIG_SETTING_SMOOTH_ECONOMY_HELPTEXT                      :כאשר מאופשר, הייצור של תעשיה משתנה לעיתים קרובות יותר, ובצעדים קטנים יותר. להגדרה זו בדרך כלל אין שום השפעה אם סוגי תעשיות מסופקים ע"י NewGRF
 STR_CONFIG_SETTING_ALLOW_SHARES                                 :אפשר קניית מניות מחברות אחרות: {STRING}
 STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :כאשר מאופשר, מתיר קנייה ומכירה של מניות של חברות. מניות יהיו זמינות רק עבור חברות המגיעות לגיל מסוים
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :אחוז הרווח מקטע נסיעה לתשלום במערכות הזנה: {STRING}
@@ -1578,9 +1578,6 @@ STR_CONFIG_SETTING_TOWN_FOUNDING_ALLOWED_CUSTOM_LAYOUT          :מותר, מת�
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :מיקום עצים במהלך המשחק: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :שלוט בהופעה אקראית של עצים במהלך המשחק. זה עלול להשפיע על תעשיות המסתמכות על צמיחת עצים, לדוגמא מנסרות
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :ללא {RED}(שובר מנסרת עץ)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :רק ביערות גשם
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :בכל מקום
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :{STRING} :מיקום הסרגל העיקרי
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :מיקום אופקי של סרגל הכלים הראשי בראש המסך
@@ -1736,6 +1733,8 @@ STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... מת
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}הזיכרון התמלא
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE} הקצאת {BYTES} בתים של מטמון נכשלה. המטמון הופחת ל-{BYTES} בתים. דבר זה יפחית את הביצועים של OpenTTD. כדי להפחית את דרישות הזיכרון ניתן לנסות לבטל את הגרפיקה ב-32bbp ו/או רמות ה-זום-אין
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -1779,17 +1778,8 @@ STR_INTRO_TRANSLATION                                           :{BLACK}בתרג
 
 # Quit window
 STR_QUIT_CAPTION                                                :{WHITE}צא
-STR_QUIT_ARE_YOU_SURE_YOU_WANT_TO_EXIT_OPENTTD                  :{YELLOW}אתה בטוח שברצונך לצאת ולחזור ל{STRING}?
 STR_QUIT_YES                                                    :{BLACK}כן
 STR_QUIT_NO                                                     :{BLACK}לא
-
-# Supported OSes
-STR_OSNAME_WINDOWS                                              :חלונות
-STR_OSNAME_UNIX                                                 :יוניקס
-STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_HAIKU                                                :הייקו
-STR_OSNAME_OS2                                                  :מערכת הפעלה או.אס שתיים
-STR_OSNAME_SUNOS                                                :סולריס
 
 # Abandon game
 STR_ABANDON_GAME_CAPTION                                        :{WHITE}עזיבת משחק
@@ -1799,7 +1789,6 @@ STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}האם 
 # Cheat window
 STR_CHEATS                                                      :{WHITE}(cheats) טריקים
 STR_CHEATS_TOOLTIP                                              :{BLACK}תיבות הסימון מציינות האם השתמשת בטריק הנתון בעבר
-STR_CHEATS_WARNING                                              :{BLACK}אזהרה! את/ה עומ/ת לבגוד בחבריך למשחק. קח/י בחשבון שחרפה כזו תיזכר לנצח.
 STR_CHEAT_MONEY                                                 :{LTBLUE}{CURRENCY_LONG}- הגדל את כמות הכסף במאזנך ל
 STR_CHEAT_CHANGE_COMPANY                                        :{ORANGE}{COMMA}{LTBLUE} :שחק כבעלי החברה
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}טרקטור אימתני (הסרת מפעלים, רכיבים שאי אפשר להזיז): {ORANGE}{STRING}
@@ -1910,10 +1899,6 @@ STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK} שנה 
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}משחק רשת
-STR_NETWORK_SERVER_LIST_ADVERTISED                              :{BLACK}מפורסם
-STR_NETWORK_SERVER_LIST_ADVERTISED_TOOLTIP                      :{BLACK}בחר בין משחק מפורסם (אינטרנטי) ומשחק לא מפורסם (רשת מקומית, LAN)
-STR_NETWORK_SERVER_LIST_ADVERTISED_NO                           :לא
-STR_NETWORK_SERVER_LIST_ADVERTISED_YES                          :כן
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK} :שם השחקן
 STR_NETWORK_SERVER_LIST_ENTER_NAME_TOOLTIP                      :{BLACK}זהו שמך כפי שיצפה ע"י המשתתפים האחרים
 
@@ -1954,8 +1939,6 @@ STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}הצטר
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}רענן שרת
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}רענן את המידע המוצג לגבי השרת
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}אתר שרת
-STR_NETWORK_SERVER_LIST_FIND_SERVER_TOOLTIP                     :{BLACK}סרוק את הרשת לאיתור שרת
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}הוסף שרת
 STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP                      :{BLACK}מוסיף שרת לרשימה שתמיד תבדק למשחקים פעילים.
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}הפעל שרת
@@ -1972,6 +1955,8 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}השם �
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}קבע סיסמה
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}הגן על המשחק שלך עם סיסמה אם אתה לא רוצה שהוא יהיה זמין לכולם
 
+STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}מפורסם
+STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}בחר בין משחק מפורסם (אינטרנטי) ומשחק לא מפורסם (רשת מקומית, LAN)
 STR_NETWORK_START_SERVER_UNADVERTISED                           :לא
 STR_NETWORK_START_SERVER_ADVERTISED                             :כן
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} לקוח{P "" "ות"}
@@ -2191,8 +2176,6 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :.הצטרף ל�
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :{2:NUM} הקים חברה חדשה {NBSP}{0:STRING} ***
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :({2:STRING}) עזב את המשחק {NBSP}{0:STRING} ***
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :{STRING} שינה את שמו ל {STRING} ***
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :{2:CURRENCY_LONG} נתן לחברתך {NBSP}{0:STRING} ***
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :{2:CURRENCY_LONG} {1:STRING} נתת ל ***
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}השרת סגר את המשחק
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}השרת מופעל מחדש...{}אנא המתן...
 
@@ -2269,6 +2252,7 @@ STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD 
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}כן, הורד את הגרפיקה
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}לא, צא מ-OpenTTD
 
+
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}הגדרות שקיפות
 STR_TRANSPARENT_SIGNS_TOOLTIP                                   :{BLACK} שנה שקיפות עבור שלטי תחנות. Ctrl+לחיצה לנעילה
@@ -2308,6 +2292,8 @@ STR_JOIN_STATION_CREATE_SPLITTED_STATION                        :{YELLOW}בנה 
 
 STR_JOIN_WAYPOINT_CAPTION                                       :{WHITE}חבר נקודות ציון
 STR_JOIN_WAYPOINT_CREATE_SPLITTED_WAYPOINT                      :{YELLOW}בנה נקודת ציון נפרדת
+
+# Generic toolbar
 
 # Rail construction toolbar
 STR_RAIL_TOOLBAR_RAILROAD_CONSTRUCTION_CAPTION                  :בניית מסילות
@@ -2492,7 +2478,7 @@ STR_OBJECT_BUILD_SIZE                                           :{BLACK}גודל
 STR_OBJECT_CLASS_LTHS                                           :מגדלורים
 STR_OBJECT_CLASS_TRNS                                           :אנטנות
 
-# Tree planting window (last two for SE only)
+# Tree planting window (last eight for SE only)
 STR_PLANT_TREE_CAPTION                                          :{WHITE}עצים
 STR_PLANT_TREE_TOOLTIP                                          :{BLACK}בחר סוג עץ לנטיעה. במידה ויש עץ במשבצת, יתווספו עצים נוספים מסוגים שונים ללא קשר לסוג הנבחר
 STR_TREES_RANDOM_TYPE                                           :{BLACK}עצים מסוג אקראי
@@ -2773,7 +2759,6 @@ STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}גובה
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}הגבה את קו השלג
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}הנמך את קו השלג
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK} :מחולל פני שטח
-STR_MAPGEN_TREE_PLACER                                          :{BLACK}אלגוריתם העצים:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK} :סוג הקרקע
 STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK} :כמות ימים/אגמים
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}נהרות:
@@ -3077,13 +3062,10 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}שחד 
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} מטרות
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}מטרות גלובליות
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}מטרות גלובליות:
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- אין -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- לא זמין -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}מטרות חברה:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}הקלק על מטרה כדי למרכז את התצוגה הראשית על תעשיה/עיירה/משבצת. קליק תוך כדי לחיצה על מקש Ctrl פותח חלון תצוגה חדש במיקום התעשיה/העיירה/המשבצת
 
 # Goal question window
@@ -3623,10 +3605,6 @@ STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}שמור
 # Vehicle view
 STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE}
 
-STR_VEHICLE_VIEW_TRAIN_LOCATION_TOOLTIP                         :{BLACK}מרכז את התצוגה על מיקום הרכבת. Ctrl+לחיצה יעקוב אחרי הרכבת בתצוגה הראשית
-STR_VEHICLE_VIEW_ROAD_VEHICLE_LOCATION_TOOLTIP                  :{BLACK}מרכז את התצוגה על מיקומו של כלי הרכב. Ctrl+לחיצה יעקוב אחרי כלי הרכב בתצוגה הראשית
-STR_VEHICLE_VIEW_SHIP_LOCATION_TOOLTIP                          :{BLACK}מקד את התצוגה הראשית על כלי השייט. Ctrl+לחיצה יעקוב אחרי כל השייט בתצוגה הראשית
-STR_VEHICLE_VIEW_AIRCRAFT_LOCATION_TOOLTIP                      :{BLACK}מקד את התצוגה הראשית על כלי הטייס. Ctrl+לחיצה יעקוב אחרי כלי הטייס בתצוגה הראשית
 
 STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP                    :{BLACK}.שלח את הרכבת למוסך
 STR_VEHICLE_VIEW_ROAD_VEHICLE_SEND_TO_DEPOT_TOOLTIP             :{BLACK}.שלח את כלי הרכב למוסך
@@ -3658,10 +3636,7 @@ STR_VEHICLE_VIEW_ROAD_VEHICLE_SHOW_DETAILS_TOOLTIP              :{BLACK}הצג �
 STR_VEHICLE_VIEW_SHIP_SHOW_DETAILS_TOOLTIP                      :{BLACK}הצג פרטי כלי שייט
 STR_VEHICLE_VIEW_AIRCRAFT_SHOW_DETAILS_TOOLTIP                  :{BLACK}הצג פרטי כלי טייס
 
-STR_VEHICLE_VIEW_TRAIN_STATE_START_STOP_TOOLTIP                 :{BLACK}פעולה רכבת נוכחית - לחץ כדי לעצור/להפעיל את הרכבת. Ctrl+לחיצה על מנת לגרור ליעד
-STR_VEHICLE_VIEW_ROAD_VEHICLE_STATE_START_STOP_TOOLTIP          :{BLACK}פעולת כלי רכב נוכחי - לחץ כדי לעצור/להפעיל את כלי הרכב. Ctrl+לחיצה כדי לגלול ליעד
-STR_VEHICLE_VIEW_SHIP_STATE_START_STOP_TOOLTIP                  :{BLACK}פעולת כלי שייט נוכחי - לחץ כדי לעצור/להפעיל את כלי השייט. Ctrl+לחיצה כדי לגלול ליעד
-STR_VEHICLE_VIEW_AIRCRAFT_STATE_START_STOP_TOOLTIP              :{BLACK}פעולת כלי טייס נוכחי - לחץ כדי לעצור/להפעיל את כלי השייט. Ctrl+לחיצה כדי לגלול ליעד
+
 
 # Messages in the start stop button in the vehicle view
 STR_VEHICLE_STATUS_LOADING_UNLOADING                            :{LTBLUE}טעינה / פריקה
@@ -4524,6 +4499,11 @@ STR_BASEMUSIC_WIN_DESCRIPTION                                   :מנגינות 
 STR_BASEMUSIC_DOS_DESCRIPTION                                   :מנגינות Transport Tycoon Deluxe המקורי בגרסת DOS.
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :מנגינות Transport Tycoon Deluxe (Original/World Editor) המקורי בגרסת DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :אוסף מנגינות ללא מנגינות.
+
+STR_TRADITIONAL_TRAIN_NAME                                      :רכבת {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :רכב {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :כלי שייט {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :כלי טייס {COMMA}
 
 ##id 0x2000
 # Town building names

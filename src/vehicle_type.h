@@ -89,6 +89,7 @@ enum BreakdownType {
 	BREAKDOWN_LOW_SPEED = 2, ///< Lower max speed
 	BREAKDOWN_LOW_POWER = 3, ///< Power reduction
 	BREAKDOWN_RV_CRASH  = 4, ///< Train hit road vehicle
+	BREAKDOWN_BRAKE_OVERHEAT = 5, ///< Train brakes overheated due to excessive slope or speed change
 
 	BREAKDOWN_AIRCRAFT_SPEED      = BREAKDOWN_CRITICAL,  ///< Lower speed until the next airport
 	BREAKDOWN_AIRCRAFT_DEPOT      = BREAKDOWN_EM_STOP,   ///< We have to visit a depot at the next airport
@@ -99,6 +100,12 @@ enum BreakdownType {
 enum AccelerationModel {
 	AM_ORIGINAL,
 	AM_REALISTIC,
+};
+
+/** Train braking models. */
+enum TrainBrakingModel {
+	TBM_ORIGINAL,
+	TBM_REALISTIC,
 };
 
 /** Visualisation contexts of vehicles and engines. */

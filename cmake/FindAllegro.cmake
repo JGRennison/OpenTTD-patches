@@ -31,7 +31,7 @@ The following cache variables may also be set:
 #]=======================================================================]
 
 find_package(PkgConfig QUIET)
-pkg_check_modules(PC_Allegro QUIET allegro)
+pkg_check_modules(PC_Allegro QUIET allegro<5)
 
 find_path(Allegro_INCLUDE_DIR
     NAMES allegro.h
@@ -54,10 +54,10 @@ find_package_handle_standard_args(Allegro
     VERSION_VAR Allegro_VERSION
 )
 
-if (Allegro_FOUND)
+if(Allegro_FOUND)
     set(Allegro_LIBRARIES ${Allegro_LIBRARY})
     set(Allegro_INCLUDE_DIRS ${Allegro_INCLUDE_DIR})
-endif ()
+endif()
 
 mark_as_advanced(
     Allegro_INCLUDE_DIR

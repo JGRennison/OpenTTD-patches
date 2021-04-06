@@ -27,6 +27,7 @@ enum ZoningEvaluationMode {
 	ZEM_TRACERESTRICT, ///< Check for restricted signals
 	ZEM_2x2_GRID,      ///< Show 2x2 town road grid
 	ZEM_3x3_GRID,      ///< Show 3x3 town road grid
+	ZEM_ONE_WAY_ROAD,  ///< Show one way roads
 
 	ZEM_END,           ///< End marker
 };
@@ -67,6 +68,7 @@ void ZoningStationWindowOpenClose(const Station *st);
 void ZoningTownAuthorityRatingChange();
 
 void SetZoningMode(bool inner, ZoningEvaluationMode mode);
+void PostZoningModeChange();
 
 void ClearZoningCaches();
 

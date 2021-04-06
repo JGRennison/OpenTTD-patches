@@ -13,6 +13,7 @@
 #include "../date_func.h"
 #include "../timetable.h"
 #include "../ship.h"
+#include "../aircraft.h"
 
 /* Helper for filling property tables */
 #define NIP(prop, base, variable, type, name) { name, (ptrdiff_t)cpp_offsetof(base, variable), cpp_sizeof(base, variable), prop, type }
@@ -66,7 +67,8 @@ static const NIVariable _niv_vehicles[] = {
 	NIV(0x4D, "position in articulated vehicle"),
 	NIV(0x60, "count vehicle id occurrences"),
 	// 0x61 not useful, since it requires register 0x10F
-	NIV(0x62, "Curvature/position difference to other vehicle"),
+	NIV(0x62, "curvature/position difference to other vehicle"),
+	NIV(0x63, "tile compatibility wrt. track-type"),
 	NIV_END()
 };
 
@@ -108,6 +110,9 @@ class NIHVehicle : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  VirtXYTile: %X (%u x %u)", vtile, TileX(vtile), TileY(vtile));
 			print(buffer);
 		}
+		b = buffer + seprintf(buffer, lastof(buffer), "  Position: %X, %X, %X", v->x_pos, v->y_pos, v->z_pos);
+		if (v->type == VEH_TRAIN) seprintf(b, lastof(buffer), ", tile margin: %d", GetTileMarginInFrontOfTrain(Train::From(v)));
+		print(buffer);
 
 		if (v->IsPrimaryVehicle()) {
 			seprintf(buffer, lastof(buffer), "  Order indices: real: %u, implicit: %u, tt: %u",
@@ -118,8 +123,8 @@ class NIHVehicle : public NIHelper {
 				v->vcache.cached_max_speed, v->vcache.cached_cargo_age_period, v->vcache.cached_vis_effect);
 		print(buffer);
 		if (v->cargo_type != CT_INVALID) {
-			seprintf(buffer, lastof(buffer), "  V Cargo: type: %u, cap: %u, transfer: %u, deliver: %u, keep: %u, load: %u",
-					v->cargo_type, v->cargo_cap,
+			seprintf(buffer, lastof(buffer), "  V Cargo: type: %u, sub type: %u, cap: %u, transfer: %u, deliver: %u, keep: %u, load: %u",
+					v->cargo_type, v->cargo_subtype, v->cargo_cap,
 					v->cargo.ActionCount(VehicleCargoList::MTA_TRANSFER), v->cargo.ActionCount(VehicleCargoList::MTA_DELIVER),
 					v->cargo.ActionCount(VehicleCargoList::MTA_KEEP), v->cargo.ActionCount(VehicleCargoList::MTA_LOAD));
 			print(buffer);
@@ -146,8 +151,79 @@ class NIHVehicle : public NIHelper {
 		}
 		if (v->type == VEH_TRAIN) {
 			const Train *t = Train::From(v);
+			seprintf(buffer, lastof(buffer), "  T cache: tilt: %u, engines: %u, decel: %u, uncapped decel: %u, centre mass: %u",
+					t->tcache.cached_tilt, t->tcache.cached_num_engines, t->tcache.cached_deceleration, t->tcache.cached_uncapped_decel, t->tcache.cached_centre_mass);
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  T cache: veh weight: %u, user data: %u, curve speed: %u",
+					t->tcache.cached_veh_weight, t->tcache.user_def_data, t->tcache.cached_max_curve_speed);
+			print(buffer);
 			seprintf(buffer, lastof(buffer), "  Wait counter: %u, rev distance: %u, TBSN: %u, speed restriction: %u",
 					t->wait_counter, t->reverse_distance, t->tunnel_bridge_signal_num, t->speed_restriction);
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  Railtype: %u, compatible_railtypes: 0x" OTTD_PRINTFHEX64,
+					t->railtype, t->compatible_railtypes);
+			print(buffer);
+			if (t->lookahead != nullptr) {
+				print ("  Look ahead:");
+				const TrainReservationLookAhead &l = *t->lookahead;
+				seprintf(buffer, lastof(buffer), "    Position: current: %d, end: %d, remaining: %d", l.current_position, l.reservation_end_position, l.reservation_end_position - l.current_position);
+				print(buffer);
+				seprintf(buffer, lastof(buffer), "    Reservation ends at %X (%u x %u), trackdir: %02X, z: %d",
+						l.reservation_end_tile, TileX(l.reservation_end_tile), TileY(l.reservation_end_tile), l.reservation_end_trackdir, l.reservation_end_z);
+				print(buffer);
+				b = buffer + seprintf(buffer, lastof(buffer), "    TB reserved tiles: %d, flags:", l.tunnel_bridge_reserved_tiles);
+				if (HasBit(l.flags, TRLF_TB_EXIT_FREE)) b += seprintf(b, lastof(buffer), "x");
+				if (HasBit(l.flags, TRLF_DEPOT_END)) b += seprintf(b, lastof(buffer), "d");
+				if (HasBit(l.flags, TRLF_APPLY_ADVISORY)) b += seprintf(b, lastof(buffer), "a");
+				if (HasBit(l.flags, TRLF_CHUNNEL)) b += seprintf(b, lastof(buffer), "c");
+				print(buffer);
+
+				seprintf(buffer, lastof(buffer), "    Items: %u", (uint)l.items.size());
+				print(buffer);
+				for (const TrainReservationLookAheadItem &item : l.items) {
+					b = buffer + seprintf(buffer, lastof(buffer), "      Start: %d (dist: %d), end: %d (dist: %d), z: %d, ",
+							item.start, item.start - l.current_position, item.end, item.end - l.current_position, item.z_pos);
+					switch (item.type) {
+						case TRLIT_STATION:
+							b += seprintf(b, lastof(buffer), "station: %u, %s", item.data_id, BaseStation::IsValidID(item.data_id) ? BaseStation::Get(item.data_id)->GetCachedName() : "[invalid]");
+							break;
+						case TRLIT_REVERSE:
+							b += seprintf(b, lastof(buffer), "reverse");
+							break;
+						case TRLIT_TRACK_SPEED:
+							b += seprintf(b, lastof(buffer), "track speed: %u", item.data_id);
+							break;
+						case TRLIT_SPEED_RESTRICTION:
+							b += seprintf(b, lastof(buffer), "speed restriction: %u", item.data_id);
+							break;
+						case TRLIT_SIGNAL:
+							b += seprintf(b, lastof(buffer), "signal: target speed: %u", item.data_id);
+							break;
+						case TRLIT_CURVE_SPEED:
+							b += seprintf(b, lastof(buffer), "curve speed: %u", item.data_id);
+							break;
+					}
+					print(buffer);
+				}
+
+				seprintf(buffer, lastof(buffer), "    Curves: %u", (uint)l.curves.size());
+				print(buffer);
+				for (const TrainReservationLookAheadCurve &curve : l.curves) {
+					seprintf(buffer, lastof(buffer), "      Pos: %d (dist: %d), dir diff: %d", curve.position, curve.position - l.current_position, curve.dir_diff);
+					print(buffer);
+				}
+			}
+		}
+		if (v->type == VEH_ROAD) {
+			const RoadVehicle *rv = RoadVehicle::From(v);
+			seprintf(buffer, lastof(buffer), "  Overtaking: %u, overtaking_ctr: %u, overtaking threshold: %u",
+					rv->overtaking, rv->overtaking_ctr, rv->GetOvertakingCounterThreshold());
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  Speed: %u, path cache length: %u",
+					rv->cur_speed, (uint) rv->path.size());
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  Roadtype: %u (0x" OTTD_PRINTFHEX64 "), Compatible: 0x" OTTD_PRINTFHEX64,
+					rv->roadtype, (static_cast<RoadTypes>(1) << rv->roadtype), rv->compatible_roadtypes);
 			print(buffer);
 		}
 		if (v->type == VEH_SHIP) {
@@ -156,6 +232,16 @@ class NIHVehicle : public NIHelper {
 					s->lost_count);
 			print(buffer);
 		}
+		if (v->type == VEH_AIRCRAFT) {
+			const Aircraft *a = Aircraft::From(v);
+			seprintf(buffer, lastof(buffer), "  Pos: %u, prev pos: %u, state: %u, flags: 0x%X",
+					a->pos, a->previous_pos, a->state, a->flags);
+			print(buffer);
+		}
+
+		seprintf(buffer, lastof(buffer), "  Cached sprite bounds: (%d, %d) to (%d, %d)",
+				v->sprite_seq_bounds.left, v->sprite_seq_bounds.top, v->sprite_seq_bounds.right, v->sprite_seq_bounds.bottom);
+		print(buffer);
 
 		if (HasBit(v->vehicle_flags, VF_SEPARATION_ACTIVE)) {
 			std::vector<TimetableProgress> progress_array = PopulateSeparationState(v);
@@ -176,12 +262,24 @@ class NIHVehicle : public NIHelper {
 		print(buffer);
 		const Engine *e = Engine::GetIfValid(v->engine_type);
 		if (e != nullptr) {
-		YearMonthDay ymd;
-		ConvertDateToYMD(e->intro_date, &ymd);
+			YearMonthDay ymd;
+			ConvertDateToYMD(e->intro_date, &ymd);
 			seprintf(buffer, lastof(buffer), "    Intro: %4i-%02i-%02i, Age: %u, Base life: %u, Durations: %u %u %u (sum: %u)",
 					ymd.year, ymd.month + 1, ymd.day, e->age, e->info.base_life, e->duration_phase_1, e->duration_phase_2, e->duration_phase_3,
 					e->duration_phase_1 + e->duration_phase_2 + e->duration_phase_3);
 			print(buffer);
+			if (e->type == VEH_TRAIN) {
+				const RailtypeInfo *rti = GetRailTypeInfo(e->u.rail.railtype);
+				seprintf(buffer, lastof(buffer), "    Railtype: %u (0x" OTTD_PRINTFHEX64 "), Compatible: 0x" OTTD_PRINTFHEX64 ", Powered: 0x" OTTD_PRINTFHEX64 ", All compatible: 0x" OTTD_PRINTFHEX64,
+						e->u.rail.railtype, (static_cast<RailTypes>(1) << e->u.rail.railtype), rti->compatible_railtypes, rti->powered_railtypes, rti->all_compatible_railtypes);
+				print(buffer);
+			}
+			if (e->type == VEH_ROAD) {
+				const RoadTypeInfo* rti = GetRoadTypeInfo(e->u.road.roadtype);
+				seprintf(buffer, lastof(buffer), "    Roadtype: %u (0x" OTTD_PRINTFHEX64 "), Powered: 0x" OTTD_PRINTFHEX64,
+						e->u.road.roadtype, (static_cast<RoadTypes>(1) << e->u.road.roadtype), rti->powered_roadtypes);
+				print(buffer);
+			}
 		}
 
 		seprintf(buffer, lastof(buffer), "  Current image cacheable: %s", v->cur_image_valid_dir != INVALID_DIR ? "yes" : "no");
@@ -329,6 +427,10 @@ class NIHHouse : public NIHelper {
 		print(buffer);
 		seprintf(buffer, lastof(buffer), "  remove_rating_decrease: %u", hs->remove_rating_decrease);
 		print(buffer);
+		seprintf(buffer, lastof(buffer), "  population: %u, mail_generation: %u", hs->population, hs->mail_generation);
+		print(buffer);
+		seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", hs->animation.frames, hs->animation.status, hs->animation.speed, hs->animation.triggers);
+		print(buffer);
 	}
 };
 
@@ -379,6 +481,23 @@ class NIHIndustryTile : public NIHelper {
 	{
 		IndustryTileResolverObject ro(GetIndustryGfx(index), index, Industry::GetByTile(index));
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
+	}
+
+	void ExtraInfo(uint index, std::function<void(const char *)> print) const override
+	{
+		char buffer[1024];
+		print("Debug Info:");
+		seprintf(buffer, lastof(buffer), "  Gfx Index: %u", GetIndustryGfx(index));
+		print(buffer);
+		const IndustryTileSpec *indts = GetIndustryTileSpec(GetIndustryGfx(index));
+		if (indts) {
+			seprintf(buffer, lastof(buffer), "  anim_production: %u, anim_next: %u, anim_state: %u, ", indts->anim_production, indts->anim_next, indts->anim_state);
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", indts->animation.frames, indts->animation.status, indts->animation.speed, indts->animation.triggers);
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  special_flags: 0x%X, enabled: %u", indts->special_flags, indts->enabled);
+			print(buffer);
+		}
 	}
 };
 
@@ -463,11 +582,21 @@ static const NIVariable _niv_industries[] = {
 	NIV(0x66, "get square of Euclidean distance of closes town"),
 	NIV(0x67, "count of industry and distance of closest instance"),
 	NIV(0x68, "count of industry and distance of closest instance with layout filter"),
+	NIV(0x69, "produced cargo waiting"),
+	NIV(0x6A, "cargo produced this month"),
+	NIV(0x6B, "cargo transported this month"),
+	NIV(0x6C, "cargo produced last month"),
+	NIV(0x6D, "cargo transported last month"),
+	NIV(0x6E, "date since cargo was delivered"),
+	NIV(0x6F, "waiting input cargo"),
+	NIV(0x70, "production rate"),
+	NIV(0x71, "percentage of cargo transported last month"),
 	NIV_END()
 };
 
 class NIHIndustry : public NIHelper {
-	bool IsInspectable(uint index) const override        { return GetIndustrySpec(Industry::Get(index)->type)->grf_prop.grffile != nullptr; }
+	bool IsInspectable(uint index) const override        { return true; }
+	bool ShowExtraInfoOnly(uint index) const override    { return GetIndustrySpec(Industry::Get(index)->type)->grf_prop.grffile == nullptr; }
 	uint GetParent(uint index) const override            { return GetInspectWindowNumber(GSF_FAKE_TOWNS, Industry::Get(index)->town->index); }
 	const void *GetInstance(uint index)const override    { return Industry::Get(index); }
 	const void *GetSpec(uint index) const override       { return GetIndustrySpec(Industry::Get(index)->type); }
@@ -490,6 +619,11 @@ class NIHIndustry : public NIHelper {
 		return (int32 *)(&i->psa->storage);
 	}
 
+	std::vector<uint32> GetPSAGRFIDs(uint index) const override
+	{
+		return { 0 };
+	}
+
 	void ExtraInfo(uint index, std::function<void(const char *)> print) const override
 	{
 		char buffer[1024];
@@ -508,6 +642,35 @@ class NIHIndustry : public NIHelper {
 			print(buffer);
 			for (const Station *st : ind->stations_near) {
 				seprintf(buffer, lastof(buffer), "    %u: %s", st->index, st->GetCachedName());
+				print(buffer);
+			}
+			print("  Produces:");
+			for (uint i = 0; i < lengthof(ind->produced_cargo); i++) {
+				if (ind->produced_cargo[i] != CT_INVALID) {
+					seprintf(buffer, lastof(buffer), "    %s: waiting: %u, rate: %u, this month: production: %u, transported: %u, last month: production: %u, transported: %u, (%u/255)",
+							GetStringPtr(CargoSpec::Get(ind->produced_cargo[i])->name), ind->produced_cargo_waiting[i], ind->production_rate[i], ind->this_month_production[i],
+							ind->this_month_transported[i], ind->last_month_production[i], ind->last_month_transported[i], ind->last_month_pct_transported[i]);
+					print(buffer);
+				}
+			}
+			print("  Accepts:");
+			for (uint i = 0; i < lengthof(ind->accepts_cargo); i++) {
+				if (ind->accepts_cargo[i] != CT_INVALID) {
+					seprintf(buffer, lastof(buffer), "    %s: waiting: %u",
+							GetStringPtr(CargoSpec::Get(ind->accepts_cargo[i])->name), ind->incoming_cargo_waiting[i]);
+					print(buffer);
+				}
+			}
+
+			const IndustrySpec *indsp = GetIndustrySpec(ind->type);
+			seprintf(buffer, lastof(buffer), "  CBM_IND_PRODUCTION_CARGO_ARRIVAL: %s", HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_CARGO_ARRIVAL) ? "yes" : "no");
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  CBM_IND_PRODUCTION_256_TICKS: %s", HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS) ? "yes" : "no");
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  Counter: %u", ind->counter);
+			print(buffer);
+			if ((_settings_game.economy.industry_cargo_scale_factor != 0) && HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS)) {
+				seprintf(buffer, lastof(buffer), "  Counter production interval: %u", ScaleQuantity(INDUSTRY_PRODUCE_TICKS, -_settings_game.economy.industry_cargo_scale_factor));
 				print(buffer);
 			}
 		}
@@ -567,6 +730,17 @@ class NIHObject : public NIHelper {
 		ObjectResolverObject ro(ObjectSpec::GetByTile(index), Object::GetByTile(index), index);
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
 	}
+
+	void ExtraInfo(uint index, std::function<void(const char *)> print) const override
+	{
+		char buffer[1024];
+		print("Debug Info:");
+		const ObjectSpec *spec = ObjectSpec::GetByTile(index);
+		if (spec) {
+			seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", spec->animation.frames, spec->animation.status, spec->animation.speed, spec->animation.triggers);
+			print(buffer);
+		}
+	}
 };
 
 static const NIFeature _nif_object = {
@@ -587,6 +761,37 @@ static const NIVariable _niv_railtypes[] = {
 	NIV(0x44, "town zone"),
 	NIV_END()
 };
+
+void PrintTypeLabels(char * buffer,  const char *last, uint32 label, const uint32 *alternate_labels, size_t alternate_labels_count, std::function<void(const char *)> print)
+{
+	auto is_printable = [](uint32 l) -> bool {
+		for (uint i = 0; i < 4; i++) {
+			if ((l & 0xFF) < 0x20 || (l & 0xFF) > 0x7F) return false;
+			l >>= 8;
+		}
+		return true;
+	};
+	if (is_printable(label)) {
+		seprintf(buffer, last, "  Label: %c%c%c%c", label >> 24, label >> 16, label >> 8, label);
+	} else {
+		seprintf(buffer, last, "  Label: 0x%08X", BSWAP32(label));
+	}
+	print(buffer);
+	if (alternate_labels_count > 0) {
+		char * b = buffer;
+		b += seprintf(b, last, "  Alternate labels: ");
+		for (size_t i = 0; i < alternate_labels_count; i++) {
+			if (i != 0) b += seprintf(b, last, ", ");
+			uint32 l = alternate_labels[i];
+			if (is_printable(l)) {
+				b += seprintf(b, last, "%c%c%c%c", l >> 24, l >> 16, l >> 8, l);
+			} else {
+				b += seprintf(b, last, "0x%08X", BSWAP32(l));
+			}
+		}
+		print(buffer);
+	}
+}
 
 class NIHRailType : public NIHelper {
 	bool IsInspectable(uint index) const override        { return true; }
@@ -613,7 +818,7 @@ class NIHRailType : public NIHelper {
 
 		auto writeRailType = [&](RailType type) {
 			const RailtypeInfo *info = GetRailTypeInfo(type);
-			seprintf(buffer, lastof(buffer), "  Type: %u", type);
+			seprintf(buffer, lastof(buffer), "  Type: %u (0x" OTTD_PRINTFHEX64 ")", type, (static_cast<RailTypes>(1) << type));
 			print(buffer);
 			seprintf(buffer, lastof(buffer), "  Flags: %c%c%c%c%c%c",
 					HasBit(info->flags, RTF_CATENARY) ? 'c' : '-',
@@ -623,6 +828,17 @@ class NIHRailType : public NIHelper {
 					HasBit(info->flags, RTF_ALLOW_90DEG) ? 'a' : '-',
 					HasBit(info->flags, RTF_DISALLOW_90DEG) ? 'd' : '-');
 			print(buffer);
+			seprintf(buffer, lastof(buffer), "  Ctrl flags: %c%c",
+					HasBit(info->ctrl_flags, RTCF_PROGSIG) ? 'p' : '-',
+					HasBit(info->ctrl_flags, RTCF_RESTRICTEDSIG) ? 'r' : '-');
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  Powered: 0x" OTTD_PRINTFHEX64, info->powered_railtypes);
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  Compatible: 0x" OTTD_PRINTFHEX64, info->compatible_railtypes);
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  All compatible: 0x" OTTD_PRINTFHEX64, info->all_compatible_railtypes);
+			print(buffer);
+			PrintTypeLabels(buffer, lastof(buffer), info->label, (const uint32*) info->alternate_labels.data(), info->alternate_labels.size(), print);
 		};
 
 		print("Debug Info:");
@@ -664,6 +880,19 @@ class NIHAirportTile : public NIHelper {
 	{
 		AirportTileResolverObject ro(AirportTileSpec::GetByTile(index), index, Station::GetByTile(index));
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
+	}
+
+	void ExtraInfo(uint index, std::function<void(const char *)> print) const override
+	{
+		char buffer[1024];
+		print("Debug Info:");
+		seprintf(buffer, lastof(buffer), "  Gfx Index: %u", GetAirportGfx(index));
+		print(buffer);
+		const AirportTileSpec *spec = AirportTileSpec::Get(GetAirportGfx(index));
+		if (spec) {
+			seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", spec->animation.frames, spec->animation.status, spec->animation.speed, spec->animation.triggers);
+			print(buffer);
+		}
 	}
 };
 
@@ -718,6 +947,17 @@ class NIHTown : public NIHelper {
 		return nullptr;
 	}
 
+	virtual std::vector<uint32> GetPSAGRFIDs(uint index) const override
+	{
+		Town *t = Town::Get(index);
+
+		std::vector<uint32> output;
+		for (const auto &iter : t->psa_list) {
+			output.push_back(iter->grfid);
+		}
+		return output;
+	}
+
 	void ExtraInfo(uint index, std::function<void(const char *)> print) const override
 	{
 		const Town *t = Town::Get(index);
@@ -734,6 +974,15 @@ class NIHTown : public NIHelper {
 		for (const Station *st : t->stations_near) {
 			seprintf(buffer, lastof(buffer), "    %u: %s", st->index, st->GetCachedName());
 			print(buffer);
+		}
+
+		if (t->have_ratings != 0) {
+			print("  Company ratings:");
+			uint8 bit;
+			FOR_EACH_SET_BIT(bit, t->have_ratings) {
+				seprintf(buffer, lastof(buffer), "    %u: %d", bit, t->ratings[bit]);
+				print(buffer);
+			}
 		}
 	}
 };
@@ -767,6 +1016,8 @@ class NIHStationStruct : public NIHelper {
 		print(buffer);
 		const BaseStation *bst = BaseStation::GetIfValid(index);
 		if (!bst) return;
+		seprintf(buffer, lastof(buffer), "  Tile: %X (%u x %u)", bst->xy, TileX(bst->xy), TileY(bst->xy));
+		print(buffer);
 		if (bst->rect.IsEmpty()) {
 			print("  rect: empty");
 		} else {
@@ -816,7 +1067,7 @@ class NIHRoadType : public NIHelper {
 	uint GetParent(uint index) const override            { return UINT32_MAX; }
 	const void *GetInstance(uint index) const override   { return nullptr; }
 	const void *GetSpec(uint index) const override       { return nullptr; }
-	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE, INVALID_STRING_ID, index); }
+	void SetStringParameters(uint index) const override  { this->SetObjectAtStringParameters(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE, INVALID_STRING_ID, index); }
 	uint32 GetGRFID(uint index) const override           { return 0; }
 
 	uint Resolve(uint index, uint var, uint param, GetVariableExtra *extra) const override
@@ -826,16 +1077,39 @@ class NIHRoadType : public NIHelper {
 		RoadTypeResolverObject ro(nullptr, index, TCX_NORMAL, ROTSG_END);
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
 	}
+
+	void ExtraInfo(uint index, std::function<void(const char *)> print) const override
+	{
+		print("Debug Info:");
+		auto writeInfo = [&](RoadTramType rtt) {
+			RoadType type = GetRoadType(index, rtt);
+			if (type == INVALID_ROADTYPE) return;
+
+			char buffer[1024];
+			const RoadTypeInfo* rti = GetRoadTypeInfo(type);
+			seprintf(buffer, lastof(buffer), "  %s Type: %u (0x" OTTD_PRINTFHEX64 ")", rtt == RTT_TRAM ? "Tram" : "Road", type, (static_cast<RoadTypes>(1) << type));
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "    Flags: %c%c%c%c%c",
+					HasBit(rti->flags, ROTF_CATENARY) ? 'c' : '-',
+					HasBit(rti->flags, ROTF_NO_LEVEL_CROSSING) ? 'l' : '-',
+					HasBit(rti->flags, ROTF_NO_HOUSES) ? 'X' : '-',
+					HasBit(rti->flags, ROTF_HIDDEN) ? 'h' : '-',
+					HasBit(rti->flags, ROTF_TOWN_BUILD) ? 'T' : '-');
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "    Extra Flags: %c%c",
+					HasBit(rti->extra_flags, RXTF_NOT_AVAILABLE_AI_GS) ? 's' : '-',
+					HasBit(rti->extra_flags, RXTF_NO_TOWN_MODIFICATION) ? 't' : '-');
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "    Powered: 0x" OTTD_PRINTFHEX64, rti->powered_roadtypes);
+			print(buffer);
+			PrintTypeLabels(buffer, lastof(buffer), rti->label, (const uint32*) rti->alternate_labels.data(), rti->alternate_labels.size(), print);
+		};
+		writeInfo(RTT_ROAD);
+		writeInfo(RTT_TRAM);
+	}
 };
 
 static const NIFeature _nif_roadtype = {
-	nullptr,
-	nullptr,
-	_niv_roadtypes,
-	new NIHRoadType(),
-};
-
-static const NIFeature _nif_tramtype = {
 	nullptr,
 	nullptr,
 	_niv_roadtypes,
@@ -863,8 +1137,8 @@ static const NIFeature * const _nifeatures[] = {
 	&_nif_railtype,     // GSF_RAILTYPES
 	&_nif_airporttile,  // GSF_AIRPORTTILES
 	&_nif_roadtype,     // GSF_ROADTYPES
-	&_nif_tramtype,     // GSF_TRAMTYPES
+	&_nif_roadtype,     // GSF_TRAMTYPES
 	&_nif_town,         // GSF_FAKE_TOWNS
 	&_nif_station_struct,  // GSF_FAKE_STATION_STRUCT
 };
-assert_compile(lengthof(_nifeatures) == GSF_FAKE_END);
+static_assert(lengthof(_nifeatures) == GSF_FAKE_END);

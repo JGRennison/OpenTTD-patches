@@ -23,8 +23,9 @@ static const int TILE_HEIGHT_STEP = 50; ///< One Z unit tile height difference i
 
 void SetSelectionRed(bool);
 
-void ClearViewPortCache(Viewport *vp);
-void ClearViewPortCaches();
+void ClearViewportCache(Viewport *vp);
+void ClearViewportLandPixelCache(Viewport *vp);
+void ClearViewportCaches();
 void DeleteWindowViewport(Window *w);
 void InitializeWindowViewport(Window *w, int x, int y, int width, int height, uint32 follow_flags, ZoomLevel zoom);
 Viewport *IsPtInWindowViewport(const Window *w, int x, int y);
@@ -33,10 +34,15 @@ Point GetTileBelowCursor();
 void UpdateViewportPosition(Window *w);
 void UpdateViewportSizeZoom(Viewport *vp);
 
-void MarkAllViewportsDirty(int left, int top, int right, int bottom, const ZoomLevel mark_dirty_if_zoomlevel_is_below = ZOOM_LVL_END);
+void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bottom, ViewportMarkDirtyFlags flags);
+void MarkAllViewportsDirty(int left, int top, int right, int bottom, ViewportMarkDirtyFlags flags = VMDF_NONE);
 void MarkAllViewportMapsDirty(int left, int top, int right, int bottom);
+void MarkAllViewportMapLandscapesDirty();
+void MarkWholeNonMapViewportsDirty();
+void MarkAllViewportOverlayStationLinksDirty(const Station *st);
 void MarkAllRouteStepsDirty(const Vehicle *veh);
-void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile);
+void MarkViewportLineDirty(Viewport * const vp, const Point from_pt, const Point to_pt, const int block_radius, ViewportMarkDirtyFlags flags);
+void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile, ViewportMarkDirtyFlags flags);
 void MarkAllRoutePathsDirty(const Vehicle *veh);
 void CheckMarkDirtyFocusedRoutePaths(const Vehicle *veh);
 
@@ -69,8 +75,14 @@ void ViewportAddString(const DrawPixelInfo *dpi, ZoomLevel small_from, const Vie
 void StartSpriteCombine();
 void EndSpriteCombine();
 
+enum HandleViewportClickedResult {
+	HVCR_DENY,
+	HVCR_SCROLL_ONLY,
+	HVCR_ALLOW,
+};
+
 bool HandleViewportDoubleClicked(Window *w, int x, int y);
-bool HandleViewportClicked(const Viewport *vp, int x, int y, bool double_click);
+HandleViewportClickedResult HandleViewportClicked(const Viewport *vp, int x, int y, bool double_click);
 void SetRedErrorSquare(TileIndex tile);
 void SetTileSelectSize(int w, int h);
 void SetTileSelectBigSize(int ox, int oy, int sx, int sy);
@@ -93,23 +105,23 @@ void ClearAllCachedNames();
 
 extern Point _tile_fract_coords;
 
-void MarkTileDirtyByTile(const TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below, int bridge_level_offset, int tile_height_override);
+void MarkTileDirtyByTile(const TileIndex tile, ViewportMarkDirtyFlags flags, int bridge_level_offset, int tile_height_override);
 
 /**
  * Mark a tile given by its index dirty for repaint.
  * @param tile The tile to mark dirty.
- * @param mark_dirty_if_zoomlevel_is_below To tell if an update is relevant or not (for example, animations in map mode are not).
+ * @param flags To tell if an update is relevant or not (for example, animations in map mode are not).
  * @param bridge_level_offset Height of bridge on tile to also mark dirty. (Height level relative to north corner.)
  * @ingroup dirty
  */
-static inline void MarkTileDirtyByTile(TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below = ZOOM_LVL_END, int bridge_level_offset = 0)
+static inline void MarkTileDirtyByTile(TileIndex tile, ViewportMarkDirtyFlags flags = VMDF_NONE, int bridge_level_offset = 0)
 {
-	MarkTileDirtyByTile(tile, mark_dirty_if_zoomlevel_is_below, bridge_level_offset, TileHeight(tile));
+	MarkTileDirtyByTile(tile, flags, bridge_level_offset, TileHeight(tile));
 }
 
-void MarkTileGroundDirtyByTile(TileIndex tile, const ZoomLevel mark_dirty_if_zoomlevel_is_below);
+void MarkTileGroundDirtyByTile(TileIndex tile, ViewportMarkDirtyFlags flags);
 
-ViewportMapType ChangeRenderMode(const Viewport *vp, bool down);
+void ChangeRenderMode(Viewport *vp, bool down);
 
 Point GetViewportStationMiddle(const Viewport *vp, const Station *st);
 
@@ -126,5 +138,10 @@ void DrawSelectionSprite(SpriteID image, PaletteID pal, const TileInfo *ti, int 
 struct Town;
 void SetViewportCatchmentStation(const Station *st, bool sel);
 void SetViewportCatchmentTown(const Town *t, bool sel);
+
+void MarkBridgeDirty(TileIndex begin, TileIndex end, DiagDirection direction, uint bridge_height, ViewportMarkDirtyFlags flags = VMDF_NONE);
+void MarkBridgeDirty(TileIndex tile, ViewportMarkDirtyFlags flags = VMDF_NONE);
+void MarkBridgeOrTunnelDirty(TileIndex tile, ViewportMarkDirtyFlags flags = VMDF_NONE);
+void MarkBridgeOrTunnelDirtyOnReservationChange(TileIndex tile, ViewportMarkDirtyFlags flags = VMDF_NONE);
 
 #endif /* VIEWPORT_FUNC_H */

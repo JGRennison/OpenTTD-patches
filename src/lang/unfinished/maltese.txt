@@ -48,9 +48,9 @@ STR_CARGO_PLURAL_WHEAT                                          :Qamħ
 STR_CARGO_PLURAL_RUBBER                                         :Lastku
 STR_CARGO_PLURAL_SUGAR                                          :Zokkor
 STR_CARGO_PLURAL_TOYS                                           :Ġugarelli
-STR_CARGO_PLURAL_CANDY                                          :Ħelu
+STR_CARGO_PLURAL_SWEETS                                         :Ħelu
 STR_CARGO_PLURAL_COLA                                           :Koka
-STR_CARGO_PLURAL_COTTON_CANDY                                   :Kandifloss
+STR_CARGO_PLURAL_CANDYFLOSS                                     :Kandifloss
 STR_CARGO_PLURAL_BUBBLES                                        :Bżieżaq
 STR_CARGO_PLURAL_TOFFEE                                         :Tofija
 STR_CARGO_PLURAL_BATTERIES                                      :Batteriji
@@ -82,9 +82,9 @@ STR_CARGO_SINGULAR_WHEAT                                        :Qamħ
 STR_CARGO_SINGULAR_RUBBER                                       :Lastku
 STR_CARGO_SINGULAR_SUGAR                                        :Zokkor
 STR_CARGO_SINGULAR_TOY                                          :Ġugarell
-STR_CARGO_SINGULAR_CANDY                                        :Ħelwa
+STR_CARGO_SINGULAR_SWEETS                                       :Ħelwa
 STR_CARGO_SINGULAR_COLA                                         :Koka
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :Kandiflos
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :Kandiflos
 STR_CARGO_SINGULAR_BUBBLE                                       :Bużżieqa
 STR_CARGO_SINGULAR_TOFFEE                                       :Tofija
 STR_CARGO_SINGULAR_BATTERY                                      :Batterija
@@ -175,7 +175,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Għazel 
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Għazel il-kriterju biex tissortja
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Għazel il-kriterju biex tiffilterja
 STR_BUTTON_SORT_BY                                              :{BLACK}Issortja b'dan
-STR_BUTTON_LOCATION                                             :{BLACK}Lokal
 STR_BUTTON_RENAME                                               :{BLACK}Semmi mil-ġdid
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Għalaq it-tieqa
@@ -240,6 +239,8 @@ STR_SORT_BY_POWER_VS_RUNNING_COST                               :Saħħa/Kemm Ta
 STR_SORT_BY_CARGO_CAPACITY                                      :Kapaċita ta' merkanzija
 STR_SORT_BY_RANGE                                               :Kemm Twassal
 STR_SORT_BY_POPULATION                                          :Popolazzjoni
+
+# Group by options for vehicle list
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Waqfa temporanja mil-logħba
@@ -318,8 +319,8 @@ STR_FILE_MENU_SEPARATOR                                         :
 ############ range for months ends
 
 # Graph window
-STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}{} {STRING}
-STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{} {STRING}{}{NUM}
+STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}
+STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{}{NUM}
 STR_GRAPH_Y_LABEL                                               :{TINY_FONT}{STRING}
 STR_GRAPH_Y_LABEL_NUMBER                                        :{TINY_FONT}{COMMA}
 
@@ -414,6 +415,9 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :oħrajn
 
 
 
+
+
+
 # Custom currency window
 
 
@@ -499,6 +503,8 @@ STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS_HELPTEXT              :Ippermetti l-uz
 
 # Config errors
 
+# Video initalization errors
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -509,8 +515,6 @@ STR_INTRO_CAPTION                                               :{WHITE}OpenTTD 
 
 
 # Quit window
-
-# Supported OSes
 
 # Abandon game
 
@@ -564,7 +568,6 @@ STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} 
 # Network client list
 
 
-
 # Network set password
 
 # Network company info join/password
@@ -595,6 +598,7 @@ STR_NETWORK_SERVER_MESSAGE                                      :*** {1:STRING}
 # Content downloading error messages
 
 
+
 # Transparency settings window
 
 # Linkgraph legend window
@@ -605,6 +609,8 @@ STR_NETWORK_SERVER_MESSAGE                                      :*** {1:STRING}
 
 # Join station window
 
+
+# Generic toolbar
 
 # Rail construction toolbar
 
@@ -650,7 +656,7 @@ STR_SELECT_BRIDGE_SCENEDIT_INFO                                 :{GOLD}{STRING},
 STR_OBJECT_BUILD_CLASS_TOOLTIP                                  :{BLACK}Aghzel il-klassi tal-oggett li se tibni
 
 
-# Tree planting window (last two for SE only)
+# Tree planting window (last eight for SE only)
 
 # Land generation window (SE)
 
@@ -913,6 +919,7 @@ STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE
 
 
 
+
 # Messages in the start stop button in the vehicle view
 
 
@@ -1153,6 +1160,11 @@ STR_ERROR_CAN_T_SKIP_ORDER                                      :{WHITE}Ma tista
 STR_DESKTOP_SHORTCUT_COMMENT                                    :Logħba simulazzjoni bbażata fuq Transport Tycoon Deluxe
 
 # Translatable descriptions in media/baseset/*.ob* files
+
+STR_TRADITIONAL_TRAIN_NAME                                      :Ferrovija {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Vettura tat-triq {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Vapur {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Ajruplan {COMMA}
 
 ##id 0x2000
 # Town building names

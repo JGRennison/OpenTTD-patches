@@ -124,18 +124,42 @@ SpriteID GetCustomRailSprite(const RailtypeInfo *rti, TileIndex tile, RailTypeSp
  * @param gui Is the sprite being used on the map or in the GUI?
  * @return The sprite to draw.
  */
-SpriteID GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, SignalState state, bool gui)
+SpriteID GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, SignalState state, bool gui, bool restricted)
 {
 	if (rti->group[RTSG_SIGNALS] == nullptr) return 0;
+	if (type == SIGTYPE_PROG && !HasBit(rti->ctrl_flags, RTCF_PROGSIG)) return 0;
 
 	uint32 param1 = gui ? 0x10 : 0x00;
 	uint32 param2 = (type << 16) | (var << 8) | state;
+	if (restricted && HasBit(rti->ctrl_flags, RTCF_RESTRICTEDSIG)) SetBit(param2, 24);
 	RailTypeResolverObject object(rti, tile, TCX_NORMAL, RTSG_SIGNALS, param1, param2);
 
 	const SpriteGroup *group = object.Resolve();
 	if (group == nullptr || group->GetNumResults() == 0) return 0;
 
 	return group->GetResult();
+}
+
+/**
+ * Translate an index to the GRF-local railtype-translation table into a RailType.
+ * @param railtype  Index into GRF-local translation table.
+ * @param grffile   Originating GRF file.
+ * @return RailType or INVALID_RAILTYPE if the railtype is unknown.
+ */
+RailType GetRailTypeTranslation(uint8 railtype, const GRFFile *grffile)
+{
+	if (grffile == nullptr || grffile->railtype_list.size() == 0) {
+		/* No railtype table present. Return railtype as-is (if valid), so it works for original railtypes. */
+		if (railtype >= RAILTYPE_END || GetRailTypeInfo(static_cast<RailType>(railtype))->label == 0) return INVALID_RAILTYPE;
+
+		return static_cast<RailType>(railtype);
+	} else {
+		/* Railtype table present, but invalid index, return invalid type. */
+		if (railtype >= grffile->railtype_list.size()) return INVALID_RAILTYPE;
+
+		/* Look up railtype including alternate labels. */
+		return GetRailTypeByLabel(grffile->railtype_list[railtype]);
+	}
 }
 
 /**

@@ -21,6 +21,8 @@
 #include "newgrf_profiling.h"
 #include "console_func.h"
 #include "debug.h"
+#include "landscape.h"
+#include "widgets/statusbar_widget.h"
 
 #include "safeguards.h"
 
@@ -36,8 +38,6 @@ uint32    _quit_after_days;  ///< Quit after this many days of run time
 YearMonthDay _game_load_cur_date_ymd;
 DateFract _game_load_date_fract;
 uint8 _game_load_tick_skip_counter;
-
-int32 _old_ending_year_slv_105; ///< Old ending year for savegames before SLV_105
 
 /**
  * Set the date.
@@ -55,6 +55,7 @@ void SetDate(Date date, DateFract fract)
 	ConvertDateToYMD(date, &ymd);
 	_cur_date_ymd = ymd;
 	SetScaledTickVariables();
+	UpdateCachedSnowLine();
 }
 
 void SetScaledTickVariables()
@@ -215,11 +216,13 @@ static void OnNewYear()
 
 	if (_cur_date_ymd.year == _settings_client.gui.semaphore_build_before) ResetSignalVariant();
 
-	/* check if we reached end of the game (end of ending year) */
-	if (_cur_date_ymd.year == _settings_game.game_creation.ending_year + 1) {
+	/* check if we reached end of the game (end of ending year); 0 = never */
+	if (_cur_date_ymd.year == _settings_game.game_creation.ending_year + 1 && _settings_game.game_creation.ending_year != 0) {
 		ShowEndGameChart();
+	}
+
 	/* check if we reached the maximum year, decrement dates by a year */
-	} else if (_cur_date_ymd.year == MAX_YEAR + 1) {
+	if (_cur_date_ymd.year == MAX_YEAR + 1) {
 		int days_this_year;
 
 		_cur_date_ymd.year--;
@@ -245,6 +248,7 @@ static void OnNewMonth()
 {
 	if (_settings_client.gui.autosave != 0 && (_cur_date_ymd.month % _autosave_months[_settings_client.gui.autosave]) == 0) {
 		_do_autosave = true;
+		_check_special_modes = true;
 		SetWindowDirty(WC_STATUS_BAR, 0);
 	}
 
@@ -274,7 +278,7 @@ static void OnNewDay()
 	IndustryDailyLoop();
 
 	if (!_settings_time.time_in_minutes || _settings_client.gui.date_with_time > 0) {
-		SetWindowWidgetDirty(WC_STATUS_BAR, 0, 0);
+		SetWindowWidgetDirty(WC_STATUS_BAR, 0, WID_S_LEFT);
 	}
 	EnginesDailyLoop();
 
@@ -319,6 +323,8 @@ void IncreaseDate()
 
 	/* update internal variables before calling the daily/monthly/yearly loops */
 	_cur_date_ymd = ymd;
+
+	UpdateCachedSnowLine();
 
 	/* yes, call various daily loops */
 	OnNewDay();

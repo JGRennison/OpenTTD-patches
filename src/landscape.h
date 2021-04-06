@@ -28,10 +28,17 @@ struct SnowLine {
 
 bool IsSnowLineSet();
 void SetSnowLine(byte table[SNOW_LINE_MONTHS][SNOW_LINE_DAYS]);
-byte GetSnowLine();
+byte GetSnowLineUncached();
+void UpdateCachedSnowLine();
 byte HighestSnowLine();
 byte LowestSnowLine();
 void ClearSnowLine();
+
+inline byte GetSnowLine()
+{
+	extern byte _cached_snowline;
+	return _cached_snowline;
+}
 
 int GetSlopeZInCorner(Slope tileh, Corner corner);
 Slope GetFoundationSlope(TileIndex tile, int *z = nullptr);

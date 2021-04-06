@@ -43,14 +43,14 @@
 
 #include "safeguards.h"
 
-char _config_language_file[MAX_PATH];             ///< The file (name) stored in the configuration.
+std::string _config_language_file;                ///< The file (name) stored in the configuration.
 LanguageList _languages;                          ///< The actual list of language meta data.
 const LanguageMetadata *_current_language = nullptr; ///< The currently loaded language.
 
 TextDirection _current_text_dir; ///< Text direction of the currently selected language.
 
 #ifdef WITH_ICU_I18N
-icu::Collator *_current_collator = nullptr;          ///< Collator for the language currently in use.
+std::unique_ptr<icu::Collator> _current_collator;    ///< Collator for the language currently in use.
 #endif /* WITH_ICU_I18N */
 
 static uint64 _global_string_params_data[20];     ///< Global array of string parameters. To access, use #SetDParam.
@@ -110,7 +110,7 @@ void SetDParamMaxValue(uint n, uint64 max_value, uint min_count, FontSize size)
 		num_digits++;
 		max_value /= 10;
 	}
-	SetDParamMaxDigits(n, max(min_count, num_digits), size);
+	SetDParamMaxDigits(n, std::max(min_count, num_digits), size);
 }
 
 /**
@@ -185,12 +185,21 @@ static char *FormatString(char *buff, const char *str, StringParameters *args, c
 
 struct LanguagePack : public LanguagePackHeader {
 	char data[]; // list of strings
+
+	inline void operator delete(void *ptr) { ::operator delete (ptr); }
 };
 
-static char **_langpack_offs;
-static LanguagePack *_langpack;
-static uint _langtab_num[TEXT_TAB_END];   ///< Offset into langpack offs
-static uint _langtab_start[TEXT_TAB_END]; ///< Offset into langpack offs
+struct LoadedLanguagePack {
+	std::unique_ptr<LanguagePack> langpack;
+
+	std::vector<char *> offsets;
+
+	std::array<uint, TEXT_TAB_END> langtab_num;   ///< Offset into langpack offs
+	std::array<uint, TEXT_TAB_END> langtab_start; ///< Offset into langpack offs
+};
+
+static LoadedLanguagePack _langpack;
+
 static bool _scan_for_gender_data = false;  ///< Are we scanning for the gender of the current string? (instead of formatting it)
 
 
@@ -201,7 +210,7 @@ const char *GetStringPtr(StringID string)
 		/* 0xD0xx and 0xD4xx IDs have been converted earlier. */
 		case TEXT_TAB_OLD_NEWGRF: NOT_REACHED();
 		case TEXT_TAB_NEWGRF_START: return GetGRFStringPtr(GetStringIndex(string));
-		default: return _langpack_offs[_langtab_start[GetStringTab(string)] + GetStringIndex(string)];
+		default: return _langpack.offsets[_langpack.langtab_start[GetStringTab(string)] + GetStringIndex(string)];
 	}
 }
 
@@ -255,7 +264,7 @@ char *GetStringWithArgs(char *buffr, StringID string, StringParameters *args, co
 			break;
 	}
 
-	if (index >= _langtab_num[tab]) {
+	if (index >= _langpack.langtab_num[tab]) {
 		if (game_script) {
 			return GetStringWithArgs(buffr, STR_UNDEFINED, args, last);
 		}
@@ -320,7 +329,7 @@ static char *FormatNumber(char *buff, int64 number, const char *last, const char
 	for (int i = 0; i < max_digits; i++) {
 		if (i == max_digits - fractional_digits) {
 			const char *decimal_separator = _settings_game.locale.digit_decimal_separator;
-			if (decimal_separator == nullptr) decimal_separator = _langpack->digit_decimal_separator;
+			if (decimal_separator == nullptr) decimal_separator = _langpack.langpack->digit_decimal_separator;
 			buff += seprintf(buff, last, "%s", decimal_separator);
 		}
 
@@ -345,7 +354,7 @@ static char *FormatNumber(char *buff, int64 number, const char *last, const char
 static char *FormatCommaNumber(char *buff, int64 number, const char *last, int fractional_digits = 0)
 {
 	const char *separator = _settings_game.locale.digit_group_separator;
-	if (separator == nullptr) separator = _langpack->digit_group_separator;
+	if (separator == nullptr) separator = _langpack.langpack->digit_group_separator;
 	return FormatNumber(buff, number, last, separator, 1, fractional_digits);
 }
 
@@ -368,7 +377,7 @@ WChar GetDecimalSeparatorChar()
 {
 	WChar decimal_char = '.';
 	const char *decimal_separator = _settings_game.locale.digit_decimal_separator;
-	if (decimal_separator == nullptr) decimal_separator = _langpack->digit_decimal_separator;
+	if (decimal_separator == nullptr) decimal_separator = _langpack.langpack->digit_decimal_separator;
 	if (decimal_separator != nullptr) Utf8Decode(&decimal_char, decimal_separator);
 	return decimal_char;
 }
@@ -393,7 +402,7 @@ static char *FormatBytes(char *buff, int64 number, const char *last)
 	}
 
 	const char *decimal_separator = _settings_game.locale.digit_decimal_separator;
-	if (decimal_separator == nullptr) decimal_separator = _langpack->digit_decimal_separator;
+	if (decimal_separator == nullptr) decimal_separator = _langpack.langpack->digit_decimal_separator;
 
 	if (number < 1024) {
 		id = 0;
@@ -434,6 +443,16 @@ static char *FormatWallClockString(char *buff, DateTicksScaled ticks, const char
 		StringParameters tmp_params(args);
 		return FormatString(buff, GetStringPtr(STR_FORMAT_DATE_MINUTES), &tmp_params, last, case_index);
 	}
+}
+
+static char *FormatTimeHHMMString(char *buff, uint time, const char *last, uint case_index)
+{
+	char hour[9], minute[3];
+	seprintf(hour,   lastof(hour),   "%02i", (int) time / 100);
+	seprintf(minute, lastof(minute), "%02i", (int) time % 100);
+	int64 args[2] = { (int64)hour, (int64)minute };
+	StringParameters tmp_params(args);
+	return FormatString(buff, GetStringPtr(STR_FORMAT_DATE_MINUTES), &tmp_params, last, case_index);
 }
 
 static char *FormatYmdString(char *buff, Date date, const char *last, uint case_index)
@@ -511,7 +530,7 @@ static char *FormatGenericCurrency(char *buff, const CurrencySpec *spec, Money n
 
 	const char *separator = _settings_game.locale.digit_group_separator_currency;
 	if (separator == nullptr && !StrEmpty(_currency->separator)) separator = _currency->separator;
-	if (separator == nullptr) separator = _langpack->digit_group_separator_currency;
+	if (separator == nullptr) separator = _langpack.langpack->digit_group_separator_currency;
 	buff = FormatNumber(buff, number, last, separator);
 	buff = strecpy(buff, multiplier, last);
 
@@ -699,6 +718,7 @@ struct UnitConversion {
 struct Units {
 	UnitConversion c; ///< Conversion
 	StringID s;       ///< String for the unit
+	unsigned int decimal_places; ///< Number of decimal places embedded in the value. For example, 1 if the value is in tenths, and 3 if the value is in thousandths.
 };
 
 /** Information about a specific unit system with a long variant. */
@@ -710,16 +730,17 @@ struct UnitsLong {
 
 /** Unit conversions for velocity. */
 static const Units _units_velocity[] = {
-	{ {   1,  0}, STR_UNITS_VELOCITY_IMPERIAL },
-	{ { 103,  6}, STR_UNITS_VELOCITY_METRIC   },
-	{ {1831, 12}, STR_UNITS_VELOCITY_SI       },
+	{ {    1,  0}, STR_UNITS_VELOCITY_IMPERIAL,     0 },
+	{ {  103,  6}, STR_UNITS_VELOCITY_METRIC,       0 },
+	{ { 1831, 12}, STR_UNITS_VELOCITY_SI,           0 },
+	{ {37888, 16}, STR_UNITS_VELOCITY_GAMEUNITS,    1 },
 };
 
 /** Unit conversions for velocity. */
 static const Units _units_power[] = {
-	{ {   1,  0}, STR_UNITS_POWER_IMPERIAL },
-	{ {4153, 12}, STR_UNITS_POWER_METRIC   },
-	{ {6109, 13}, STR_UNITS_POWER_SI       },
+	{ {   1,  0}, STR_UNITS_POWER_IMPERIAL, 0 },
+	{ {4153, 12}, STR_UNITS_POWER_METRIC,   0 },
+	{ {6109, 13}, STR_UNITS_POWER_SI,       0 },
 };
 
 /** Unit conversions for weight. */
@@ -738,16 +759,16 @@ static const UnitsLong _units_volume[] = {
 
 /** Unit conversions for force. */
 static const Units _units_force[] = {
-	{ {3597,  4}, STR_UNITS_FORCE_IMPERIAL },
-	{ {3263,  5}, STR_UNITS_FORCE_METRIC   },
-	{ {   1,  0}, STR_UNITS_FORCE_SI       },
+	{ {3597,  4}, STR_UNITS_FORCE_IMPERIAL, 0 },
+	{ {3263,  5}, STR_UNITS_FORCE_METRIC,   0 },
+	{ {   1,  0}, STR_UNITS_FORCE_SI,       0 },
 };
 
 /** Unit conversions for height. */
 static const Units _units_height[] = {
-	{ {   3,  0}, STR_UNITS_HEIGHT_IMPERIAL }, // "Wrong" conversion factor for more nicer GUI values
-	{ {   1,  0}, STR_UNITS_HEIGHT_METRIC   },
-	{ {   1,  0}, STR_UNITS_HEIGHT_SI       },
+	{ {   3,  0}, STR_UNITS_HEIGHT_IMPERIAL, 0 }, // "Wrong" conversion factor for more nicer GUI values
+	{ {   1,  0}, STR_UNITS_HEIGHT_METRIC,   0 },
+	{ {   1,  0}, STR_UNITS_HEIGHT_SI,       0 },
 };
 
 /**
@@ -1463,6 +1484,33 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				buff = FormatTinyOrISODate(buff, args->GetInt32(), STR_FORMAT_DATE_ISO, last);
 				break;
 
+			case SCC_TIME_HHMM: // {TIME_HHMM}
+				buff = FormatTimeHHMMString(buff, args->GetInt64(SCC_TIME_HHMM), last, next_substr_case_index);
+				break;
+
+			case SCC_TT_TICKS: // {TT_TICKS}
+				if (_settings_client.gui.timetable_in_ticks) {
+					int64 args_array[1] = { args->GetInt64(SCC_TT_TICKS) };
+					StringParameters tmp_params(args_array);
+					buff = FormatString(buff, GetStringPtr(STR_TIMETABLE_TICKS), &tmp_params, last);
+				} else {
+					StringID str = _settings_time.time_in_minutes ? STR_TIMETABLE_MINUTES : STR_TIMETABLE_DAYS;
+					int64 ticks = args->GetInt64(SCC_TT_TICKS);
+					int64 ratio = DATE_UNIT_SIZE;
+					int64 units = ticks / ratio;
+					int64 leftover = ticks % ratio;
+					if (leftover) {
+						int64 args_array[3] = { str, units, leftover };
+						StringParameters tmp_params(args_array);
+						buff = FormatString(buff, GetStringPtr(STR_TIMETABLE_LEFTOVER_TICKS), &tmp_params, last);
+					} else {
+						int64 args_array[1] = { units };
+						StringParameters tmp_params(args_array);
+						buff = FormatString(buff, GetStringPtr(str), &tmp_params, last);
+					}
+				}
+				break;
+
 			case SCC_FORCE: { // {FORCE}
 				assert(_settings_game.locale.units_force < lengthof(_units_force));
 				int64 args_array[1] = {_units_force[_settings_game.locale.units_force].c.ToDisplay(args->GetInt64())};
@@ -1489,8 +1537,9 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 
 			case SCC_VELOCITY: { // {VELOCITY}
 				assert(_settings_game.locale.units_velocity < lengthof(_units_velocity));
-				int64 args_array[] = {ConvertKmhishSpeedToDisplaySpeed(args->GetInt64(SCC_VELOCITY))};
-				StringParameters tmp_params(args_array);
+				unsigned int decimal_places = _units_velocity[_settings_game.locale.units_velocity].decimal_places;
+				uint64 args_array[] = {ConvertKmhishSpeedToDisplaySpeed(args->GetInt64(SCC_VELOCITY)), decimal_places};
+				StringParameters tmp_params(args_array, decimal_places ? 2 : 1, nullptr);
 				buff = FormatString(buff, GetStringPtr(_units_velocity[_settings_game.locale.units_velocity].s), &tmp_params, last);
 				break;
 			}
@@ -1741,17 +1790,26 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 					int64 args_array[] = {(int64)(size_t)v->name.c_str()};
 					StringParameters tmp_params(args_array);
 					buff = GetStringWithArgs(buff, STR_JUST_RAW_STRING, &tmp_params, last);
+				} else if (v->group_id != DEFAULT_GROUP && _settings_client.gui.vehicle_names != 0 && v->type < VEH_COMPANY_END) {
+					/* The vehicle has no name, but is member of a group, so print group name */
+					if (_settings_client.gui.vehicle_names == 1) {
+						int64 args_array[] = {v->group_id, v->unitnumber};
+						StringParameters tmp_params(args_array);
+						buff = GetStringWithArgs(buff, STR_FORMAT_GROUP_VEHICLE_NAME, &tmp_params, last);
+					} else {
+						int64 args_array[] = {v->group_id, STR_TRADITIONAL_TRAIN_NAME + v->type, v->unitnumber};
+						StringParameters tmp_params(args_array);
+						buff = GetStringWithArgs(buff, STR_FORMAT_GROUP_VEHICLE_NAME_LONG, &tmp_params, last);
+					}
 				} else {
 					int64 args_array[] = {v->unitnumber};
 					StringParameters tmp_params(args_array);
 
 					StringID str;
-					switch (v->type) {
-						default:           str = STR_INVALID_VEHICLE; break;
-						case VEH_TRAIN:    str = STR_SV_TRAIN_NAME; break;
-						case VEH_ROAD:     str = STR_SV_ROAD_VEHICLE_NAME; break;
-						case VEH_SHIP:     str = STR_SV_SHIP_NAME; break;
-						case VEH_AIRCRAFT: str = STR_SV_AIRCRAFT_NAME; break;
+					if (v->type < VEH_COMPANY_END) {
+						str = ((_settings_client.gui.vehicle_names == 1) ? STR_SV_TRAIN_NAME : STR_TRADITIONAL_TRAIN_NAME) + v->type;
+					} else {
+						str = STR_INVALID_VEHICLE;
 					}
 
 					buff = GetStringWithArgs(buff, str, &tmp_params, last);
@@ -1947,7 +2005,7 @@ static char *GetSpecialNameString(char *buff, int ind, StringParameters *args, c
 {
 	switch (ind) {
 		case 1: // not used
-			return strecpy(buff, _silly_company_names[min(args->GetInt32() & 0xFFFF, lengthof(_silly_company_names) - 1)], last);
+			return strecpy(buff, _silly_company_names[std::min<uint>(args->GetInt32() & 0xFFFF, lengthof(_silly_company_names) - 1)], last);
 
 		case 2: // used for Foobar & Co company names
 			return GenAndCoName(buff, args->GetInt32(), last);
@@ -1960,22 +2018,6 @@ static char *GetSpecialNameString(char *buff, int ind, StringParameters *args, c
 	if (IsInsideMM(ind - 6, 0, SPECSTR_TOWNNAME_LAST - SPECSTR_TOWNNAME_START + 1)) {
 		buff = GetSpecialTownNameString(buff, ind - 6, args->GetInt32(), last);
 		return strecpy(buff, " Transport", last);
-	}
-
-	/* language name? */
-	if (IsInsideMM(ind, (SPECSTR_LANGUAGE_START - 0x70E4), (SPECSTR_LANGUAGE_END - 0x70E4) + 1)) {
-		int i = ind - (SPECSTR_LANGUAGE_START - 0x70E4);
-		return strecpy(buff,
-			&_languages[i] == _current_language ? _current_language->own_name : _languages[i].name, last);
-	}
-
-	/* resolution size? */
-	if (IsInsideBS(ind, (SPECSTR_RESOLUTION_START - 0x70E4), _resolutions.size())) {
-		int i = ind - (SPECSTR_RESOLUTION_START - 0x70E4);
-		buff += seprintf(
-			buff, last, "%ux%u", _resolutions[i].width, _resolutions[i].height
-		);
-		return buff;
 	}
 
 	NOT_REACHED();
@@ -2012,16 +2054,15 @@ bool LanguagePackHeader::IsValid() const
 bool ReadLanguagePack(const LanguageMetadata *lang)
 {
 	/* Current language pack */
-	size_t len;
-	LanguagePack *lang_pack = (LanguagePack *)ReadFileToMem(lang->file, &len, 1U << 20);
-	if (lang_pack == nullptr) return false;
+	size_t len = 0;
+	std::unique_ptr<LanguagePack> lang_pack(reinterpret_cast<LanguagePack *>(ReadFileToMem(lang->file, len, 1U << 20).release()));
+	if (!lang_pack) return false;
 
 	/* End of read data (+ terminating zero added in ReadFileToMem()) */
-	const char *end = (char *)lang_pack + len + 1;
+	const char *end = (char *)lang_pack.get() + len + 1;
 
 	/* We need at least one byte of lang_pack->data */
 	if (end <= lang_pack->data || !lang_pack->IsValid()) {
-		free(lang_pack);
 		return false;
 	}
 
@@ -2031,55 +2072,46 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	}
 #endif /* TTD_ENDIAN == TTD_BIG_ENDIAN */
 
+	std::array<uint, TEXT_TAB_END> tab_start, tab_num;
+
 	uint count = 0;
 	for (uint i = 0; i < TEXT_TAB_END; i++) {
 		uint16 num = lang_pack->offsets[i];
-		if (num > TAB_SIZE) {
-			free(lang_pack);
-			return false;
-		}
+		if (num > TAB_SIZE) return false;
 
-		_langtab_start[i] = count;
-		_langtab_num[i] = num;
+		tab_start[i] = count;
+		tab_num[i] = num;
 		count += num;
 	}
 
 	/* Allocate offsets */
-	char **langpack_offs = MallocT<char *>(count);
+	std::vector<char *> offs(count);
 
 	/* Fill offsets */
 	char *s = lang_pack->data;
 	len = (byte)*s++;
 	for (uint i = 0; i < count; i++) {
-		if (s + len >= end) {
-			free(lang_pack);
-			free(langpack_offs);
-			return false;
-		}
+		if (s + len >= end) return false;
+
 		if (len >= 0xC0) {
 			len = ((len & 0x3F) << 8) + (byte)*s++;
-			if (s + len >= end) {
-				free(lang_pack);
-				free(langpack_offs);
-				return false;
-			}
+			if (s + len >= end) return false;
 		}
-		langpack_offs[i] = s;
+		offs[i] = s;
 		s += len;
 		len = (byte)*s;
 		*s++ = '\0'; // zero terminate the string
 	}
 
-	free(_langpack);
-	_langpack = lang_pack;
-
-	free(_langpack_offs);
-	_langpack_offs = langpack_offs;
+	_langpack.langpack = std::move(lang_pack);
+	_langpack.offsets = std::move(offs);
+	_langpack.langtab_num = tab_num;
+	_langpack.langtab_start = tab_start;
 
 	_current_language = lang;
 	_current_text_dir = (TextDirection)_current_language->text_dir;
 	const char *c_file = strrchr(_current_language->file, PATHSEPCHAR) + 1;
-	strecpy(_config_language_file, c_file, lastof(_config_language_file));
+	_config_language_file = c_file;
 	SetCurrentGrfLangID(_current_language->newgrflangid);
 
 #ifdef _WIN32
@@ -2093,21 +2125,14 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 #endif
 
 #ifdef WITH_ICU_I18N
-	/* Delete previous collator. */
-	if (_current_collator != nullptr) {
-		delete _current_collator;
-		_current_collator = nullptr;
-	}
-
 	/* Create a collator instance for our current locale. */
 	UErrorCode status = U_ZERO_ERROR;
-	_current_collator = icu::Collator::createInstance(icu::Locale(_current_language->isocode), status);
+	_current_collator.reset(icu::Collator::createInstance(icu::Locale(_current_language->isocode), status));
 	/* Sort number substrings by their numerical value. */
-	if (_current_collator != nullptr) _current_collator->setAttribute(UCOL_NUMERIC_COLLATION, UCOL_ON, status);
+	if (_current_collator) _current_collator->setAttribute(UCOL_NUMERIC_COLLATION, UCOL_ON, status);
 	/* Avoid using the collator if it is not correctly set. */
 	if (U_FAILURE(status)) {
-		delete _current_collator;
-		_current_collator = nullptr;
+		_current_collator.reset();
 	}
 #endif /* WITH_ICU_I18N */
 
@@ -2251,9 +2276,8 @@ void InitializeLanguagePacks()
 	Searchpath sp;
 
 	FOR_ALL_SEARCHPATHS(sp) {
-		char path[MAX_PATH];
-		FioAppendDirectory(path, lastof(path), sp, LANG_DIR);
-		GetLanguageList(path);
+		std::string path = FioGetDirectory(sp, LANG_DIR);
+		GetLanguageList(path.c_str());
 	}
 	if (_languages.size() == 0) usererror("No available language packs (invalid versions?)");
 
@@ -2271,7 +2295,7 @@ void InitializeLanguagePacks()
 		 * configuration file, local environment and last, if nothing found,
 		 * English. */
 		const char *lang_file = strrchr(lng.file, PATHSEPCHAR) + 1;
-		if (strcmp(lang_file, _config_language_file) == 0) {
+		if (_config_language_file == lang_file) {
 			chosen_language = &lng;
 			break;
 		}
@@ -2296,16 +2320,14 @@ void InitializeLanguagePacks()
  */
 const char *GetCurrentLanguageIsoCode()
 {
-	return _langpack->isocode;
+	return _langpack.langpack->isocode;
 }
 
 /**
  * Check whether there are glyphs missing in the current language.
- * @param[out] str Pointer to an address for storing the text pointer.
  * @return If glyphs are missing, return \c true, else return \c false.
- * @post If \c true is returned and str is not nullptr, *str points to a string that is found to contain at least one missing glyph.
  */
-bool MissingGlyphSearcher::FindMissingGlyphs(const char **str)
+bool MissingGlyphSearcher::FindMissingGlyphs()
 {
 	InitFreeType(this->Monospace());
 	const Sprite *question_mark[FS_END];
@@ -2317,12 +2339,22 @@ bool MissingGlyphSearcher::FindMissingGlyphs(const char **str)
 	this->Reset();
 	for (const char *text = this->NextString(); text != nullptr; text = this->NextString()) {
 		FontSize size = this->DefaultSize();
-		if (str != nullptr) *str = text;
 		for (WChar c = Utf8Consume(&text); c != '\0'; c = Utf8Consume(&text)) {
 			if (c >= SCC_FIRST_FONT && c <= SCC_LAST_FONT) {
 				size = (FontSize)(c - SCC_FIRST_FONT);
 			} else if (!IsInsideMM(c, SCC_SPRITE_START, SCC_SPRITE_END) && IsPrintable(c) && !IsTextDirectionChar(c) && c != '?' && GetGlyph(size, c) == question_mark[size]) {
 				/* The character is printable, but not in the normal font. This is the case we were testing for. */
+				std::string size_name;
+
+				switch (size) {
+					case 0: size_name = "medium"; break;
+					case 1: size_name = "small"; break;
+					case 2: size_name = "large"; break;
+					case 3: size_name = "mono"; break;
+					default: NOT_REACHED();
+				}
+
+				DEBUG(freetype, 0, "Font is missing glyphs to display char 0x%X in %s font size", c, size_name.c_str());
 				return true;
 			}
 		}
@@ -2350,10 +2382,10 @@ class LanguagePackGlyphSearcher : public MissingGlyphSearcher {
 	{
 		if (this->i >= TEXT_TAB_END) return nullptr;
 
-		const char *ret = _langpack_offs[_langtab_start[this->i] + this->j];
+		const char *ret = _langpack.offsets[_langpack.langtab_start[this->i] + this->j];
 
 		this->j++;
-		while (this->i < TEXT_TAB_END && this->j >= _langtab_num[this->i]) {
+		while (this->i < TEXT_TAB_END && this->j >= _langpack.langtab_num[this->i]) {
 			this->i++;
 			this->j = 0;
 		}
@@ -2368,12 +2400,11 @@ class LanguagePackGlyphSearcher : public MissingGlyphSearcher {
 
 	void SetFontNames(FreeTypeSettings *settings, const char *font_name, const void *os_data) override
 	{
-#if defined(WITH_FREETYPE) || defined(_WIN32)
+#if defined(WITH_FREETYPE) || defined(_WIN32) || defined(WITH_COCOA)
 		strecpy(settings->small.font,  font_name, lastof(settings->small.font));
 		strecpy(settings->medium.font, font_name, lastof(settings->medium.font));
 		strecpy(settings->large.font,  font_name, lastof(settings->large.font));
 
-		free(settings->medium.os_handle); // Only free one, they are all the same pointer.
 		settings->small.os_handle = os_data;
 		settings->medium.os_handle = os_data;
 		settings->large.os_handle = os_data;
@@ -2398,8 +2429,8 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 {
 	static LanguagePackGlyphSearcher pack_searcher;
 	if (searcher == nullptr) searcher = &pack_searcher;
-	bool bad_font = !base_font || searcher->FindMissingGlyphs(nullptr);
-#if defined(WITH_FREETYPE) || defined(_WIN32)
+	bool bad_font = !base_font || searcher->FindMissingGlyphs();
+#if defined(WITH_FREETYPE) || defined(_WIN32) || defined(WITH_COCOA)
 	if (bad_font) {
 		/* We found an unprintable character... lets try whether we can find
 		 * a fallback font that can print the characters in the current language. */
@@ -2409,12 +2440,22 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 		_freetype.mono.os_handle = nullptr;
 		_freetype.medium.os_handle = nullptr;
 
-		bad_font = !SetFallbackFont(&_freetype, _langpack->isocode, _langpack->winlangid, searcher);
-
-		free(_freetype.mono.os_handle);
-		free(_freetype.medium.os_handle);
+		bad_font = !SetFallbackFont(&_freetype, _langpack.langpack->isocode, _langpack.langpack->winlangid, searcher);
 
 		memcpy(&_freetype, &backup, sizeof(backup));
+
+		if (!bad_font) {
+			/* Show that we loaded fallback font. To do this properly we have
+			 * to set the colour of the string, otherwise we end up with a lot
+			 * of artifacts.* The colour 'character' might change in the
+			 * future, so for safety we just Utf8 Encode it into the string,
+			 * which takes exactly three characters, so it replaces the "XXX"
+			 * with the colour marker. */
+			static char *err_str = stredup("XXXThe current font is missing some of the characters used in the texts for this language. Using system fallback font instead.");
+			Utf8Encode(err_str, SCC_YELLOW);
+			SetDParamStr(0, err_str);
+			ShowErrorMessage(STR_JUST_RAW_STRING, INVALID_STRING_ID, WL_WARNING);
+		}
 
 		if (bad_font && base_font) {
 			/* Our fallback font does miss characters too, so keep the

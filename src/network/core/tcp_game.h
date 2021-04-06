@@ -17,6 +17,7 @@
 #include "../network_type.h"
 #include "../../core/pool_type.hpp"
 #include <memory>
+#include <chrono>
 
 /**
  * Enum with all types of TCP packets.
@@ -544,7 +545,7 @@ public:
 	uint32 last_frame;           ///< Last frame we have executed
 	uint32 last_frame_server;    ///< Last frame the server has executed
 	CommandQueue incoming_queue; ///< The command-queue awaiting handling
-	uint last_packet;            ///< Time we received the last frame.
+	std::chrono::steady_clock::time_point last_packet; ///< Time we received the last frame.
 
 	NetworkRecvStatus CloseConnection(bool error = true) override;
 

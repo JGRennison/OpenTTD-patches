@@ -53,7 +53,7 @@ CommandCost CmdAddPlan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2
  * @param binary_length binary length of text
  * @return the cost of this operation or an error
  */
-CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text, uint32 binary_length)
+CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
 {
 	Plan *p = Plan::GetIfValid(p1);
 	if (p == nullptr) return CMD_ERROR;
@@ -69,6 +69,7 @@ CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			p->lines.pop_back();
 			return CMD_ERROR;
 		}
+		pl->UpdateVisualExtents();
 		if (p->IsListable()) {
 			pl->SetVisibility(p->visible);
 			if (p->visible) pl->MarkDirty();
@@ -98,6 +99,34 @@ CommandCost CmdChangePlanVisibility(TileIndex tile, DoCommandFlag flags, uint32 
 		p->visible_by_all = p2 != 0;
 		Window *w = FindWindowById(WC_PLANS, 0);
 		if (w) w->InvalidateData(INVALID_PLAN, false);
+	}
+	return CommandCost();
+}
+
+/**
+ * Edit the colour of a plan.
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1 plan id
+ * @param p2 colour
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdChangePlanColour(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	Plan *p = Plan::GetIfValid(p1);
+	if (p == nullptr) return CMD_ERROR;
+	if (p2 >= COLOUR_END) return CMD_ERROR;
+	CommandCost ret = CheckOwnership(p->owner);
+	if (ret.Failed()) return ret;
+	if (flags & DC_EXEC) {
+		p->colour = (Colours)p2;
+		Window *w = FindWindowById(WC_PLANS, 0);
+		if (w) w->InvalidateData(INVALID_PLAN, false);
+		for (const PlanLine *line : p->lines) {
+			if (line->visible) line->MarkDirty();
+		}
+		if (p->temp_line) p->temp_line->MarkDirty();
 	}
 	return CommandCost();
 }

@@ -29,10 +29,10 @@ template <typename Func>
 void ForAllStationsRadius(TileIndex center, uint radius, Func func)
 {
 	uint32 x1, y1, x2, y2;
-	x1 = (uint32)max<int>(0, TileX(center) - radius);
-	x2 = (uint32)min<int>(TileX(center) + radius + 1, MapSizeX());
-	y1 = (uint32)max<int>(0, TileY(center) - radius);
-	y2 = (uint32)min<int>(TileY(center) + radius + 1, MapSizeY());
+	x1 = (uint32)std::max<int>(0, TileX(center) - radius);
+	x2 = (uint32)std::min<int>(TileX(center) + radius + 1, MapSizeX());
+	y1 = (uint32)std::max<int>(0, TileY(center) - radius);
+	y2 = (uint32)std::min<int>(TileY(center) + radius + 1, MapSizeY());
 
 	_station_kdtree.FindContained(x1, y1, x2, y2, [&](StationID id) {
 		func(Station::Get(id));

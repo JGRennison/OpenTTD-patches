@@ -15,8 +15,6 @@ enum GameOptionsWidgets {
 	WID_GO_BACKGROUND,             ///< Background of the window.
 	WID_GO_CURRENCY_DROPDOWN,      ///< Currency dropdown.
 	WID_GO_DISTANCE_DROPDOWN,      ///< Measuring unit dropdown.
-	WID_GO_ROADSIDE_DROPDOWN,      ///< Dropdown to select the road side (to set the right side ;)).
-	WID_GO_TOWNNAME_DROPDOWN,      ///< Town name dropdown.
 	WID_GO_AUTOSAVE_DROPDOWN,      ///< Dropdown to say how often to autosave.
 	WID_GO_LANG_DROPDOWN,          ///< Language dropdown.
 	WID_GO_RESOLUTION_DROPDOWN,    ///< Dropdown for the resolution.
@@ -34,6 +32,8 @@ enum GameOptionsWidgets {
 	WID_GO_BASE_MUSIC_TEXTFILE,    ///< Open base music readme, changelog (+1) or license (+2).
 	WID_GO_BASE_MUSIC_DESCRIPTION = WID_GO_BASE_MUSIC_TEXTFILE + TFT_END, ///< Description of selected base music set.
 	WID_GO_FONT_ZOOM_DROPDOWN,     ///< Dropdown for the font zoom level.
+	WID_GO_VIDEO_ACCEL_BUTTON,     ///< Toggle for video acceleration.
+	WID_GO_REFRESH_RATE_DROPDOWN,  ///< Dropdown for all available refresh rates.
 };
 
 /** Widgets of the #GameSettingsWindow class. */

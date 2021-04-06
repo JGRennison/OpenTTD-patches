@@ -10,7 +10,6 @@
 #ifndef INDUSTRY_H
 #define INDUSTRY_H
 
-#include <algorithm>
 #include "newgrf_storage.h"
 #include "subsidy_type.h"
 #include "industry_map.h"
@@ -33,6 +32,33 @@ enum ProductionLevels {
 	PRODLEVEL_DEFAULT = 0x10,  ///< default level set when the industry is created
 	PRODLEVEL_MAXIMUM = 0x80,  ///< the industry is running at full speed
 };
+
+enum class IndustryAction : byte {
+	SetControlFlags = 0,       ///< Set IndustryControlFlags
+	SetExclusiveSupplier = 1,  ///< Set exclusive supplier
+	SetExclusiveConsumer = 2,  ///< Set exclusive consumer
+	SetText = 3,               ///< Set additional text
+};
+
+/**
+ * Flags to control/override the behaviour of an industry.
+ * These flags are controlled by game scripts.
+ */
+enum IndustryControlFlags : byte {
+	/** No flags in effect */
+	INDCTL_NONE                   = 0,
+	/** When industry production change is evaluated, rolls to decrease are ignored. */
+	INDCTL_NO_PRODUCTION_DECREASE = 1 << 0,
+	/** When industry production change is evaluated, rolls to increase are ignored. */
+	INDCTL_NO_PRODUCTION_INCREASE = 1 << 1,
+	/**
+	 * Industry can not close regardless of production level or time since last delivery.
+	 * This does not prevent a closure already announced. */
+	INDCTL_NO_CLOSURE             = 1 << 2,
+	/** Mask of all flags set */
+	INDCTL_MASK = INDCTL_NO_PRODUCTION_DECREASE | INDCTL_NO_PRODUCTION_INCREASE | INDCTL_NO_CLOSURE,
+};
+DECLARE_ENUM_AS_BIT_SET(IndustryControlFlags);
 
 /**
  * Defines the internal data of a functional industry.
@@ -59,6 +85,7 @@ struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 	byte random_colour;                 ///< randomized colour of the industry, for display purpose
 	Year last_prod_year;                ///< last year of production
 	byte was_cargo_delivered;           ///< flag that indicate this has been the closest industry chosen for cargo delivery by a station. see DeliverGoodsToIndustry
+	IndustryControlFlags ctlflags;      ///< flags overriding standard behaviours
 
 	PartOfSubsidy part_of_subsidy;      ///< NOSAVE: is this industry a source/destination of a subsidy?
 	StationList stations_near;          ///< NOSAVE: List of nearby stations.
@@ -69,6 +96,9 @@ struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 	uint8 construction_type;            ///< Way the industry was constructed (@see IndustryConstructionType)
 	Date last_cargo_accepted_at[INDUSTRY_NUM_INPUTS]; ///< Last day each cargo type was accepted by this industry
 	byte selected_layout;               ///< Which tile layout was used when creating the industry
+	Owner exclusive_supplier;           ///< Which company has exclusive rights to deliver cargo (INVALID_OWNER = anyone)
+	Owner exclusive_consumer;           ///< Which company has exclusive rights to take cargo (INVALID_OWNER = anyone)
+	std::string text;                   ///< General text with additional information.
 
 	uint16 random;                      ///< Random value used for randomisation of all kinds of things
 

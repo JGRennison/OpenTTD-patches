@@ -16,6 +16,7 @@
 
 #include <stdarg.h>
 #include <vector>
+#include <string>
 
 /** SaveLoad versions
  * Previous savegame versions, the trunk revision where they were
@@ -308,6 +309,26 @@ enum SaveLoadVersion : uint16 {
 	SLV_ENDING_YEAR,                        ///< 218  PR#7747 v1.10 Configurable ending year.
 	SLV_REMOVE_TOWN_CARGO_CACHE,            ///< 219  PR#8258 Remove town cargo acceptance and production caches.
 
+	/* Patchpacks for a while considered it a good idea to jump a few versions
+	 * above our version for their savegames. But as time continued, this gap
+	 * has been closing, up to the point we would start to reuse versions from
+	 * their patchpacks. This is not a problem from our perspective: the
+	 * savegame will simply fail to load because they all contain chunks we
+	 * cannot digest. But, this gives for ugly errors. As we have plenty of
+	 * versions anyway, we simply skip the versions we know belong to
+	 * patchpacks. This way we can present the user with a clean error
+	 * indicate he is loading a savegame from a patchpack.
+	 * For future patchpack creators: please follow a system like JGRPP, where
+	 * the version is masked with 0x8000, and the true version is stored in
+	 * its own chunk with feature toggles.
+	 */
+	SLV_START_PATCHPACKS,                   ///< 220  First known patchpack to use a version just above ours.
+	SLV_END_PATCHPACKS = 286,               ///< 286  Last known patchpack to use a version just above ours.
+
+	SLV_GS_INDUSTRY_CONTROL,                ///< 287  PR#7912 and PR#8115 GS industry control.
+	SLV_VEH_MOTION_COUNTER,                 ///< 288  PR#8591 Desync safe motion counter
+	SLV_INDUSTRY_TEXT,                      ///< 289  PR#8576 v1.11 Additional GS text for industries.
+
 	SL_MAX_VERSION,                         ///< Highest possible saveload version
 
 	SL_SPRING_2013_v2_0_102 = 220,
@@ -347,7 +368,7 @@ struct FileToSaveLoad {
 	SaveLoadOperation file_op;           ///< File operation to perform.
 	DetailedFileType detail_ftype;   ///< Concrete file type (PNG, BMP, old save, etc).
 	AbstractFileType abstract_ftype; ///< Abstract type of file (scenario, heightmap, etc).
-	char name[MAX_PATH];             ///< Name of the file.
+	std::string name;                ///< Name of the file.
 	char title[255];                 ///< Internal name of the game.
 
 	void SetMode(FiosType ft);
@@ -366,18 +387,26 @@ enum SavegameType {
 	SGT_INVALID = 0xFF, ///< broken savegame (used internally)
 };
 
+enum SaveModeFlags : byte {
+	SMF_NONE             = 0,
+	SMF_NET_SERVER       = 1 << 0, ///< Network server save
+	SMF_ZSTD_OK          = 1 << 1, ///< Zstd OK
+};
+DECLARE_ENUM_AS_BIT_SET(SaveModeFlags);
+
 extern FileToSaveLoad _file_to_saveload;
 
 void GenerateDefaultSaveName(char *buf, const char *last);
 void SetSaveLoadError(StringID str);
 const char *GetSaveLoadErrorString();
-SaveOrLoadResult SaveOrLoad(const char *filename, SaveLoadOperation fop, DetailedFileType dft, Subdirectory sb, bool threaded = true);
+SaveOrLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileType dft, Subdirectory sb, bool threaded = true, SaveModeFlags flags = SMF_NONE);
 void WaitTillSaved();
 void ProcessAsyncSaveFinish();
 void DoExitSave();
 
-SaveOrLoadResult SaveWithFilter(struct SaveFilter *writer, bool threaded);
+SaveOrLoadResult SaveWithFilter(struct SaveFilter *writer, bool threaded, SaveModeFlags flags);
 SaveOrLoadResult LoadWithFilter(struct LoadFilter *reader);
+bool IsNetworkServerSave();
 
 typedef void ChunkSaveLoadProc();
 typedef void AutolengthProc(void *arg);
@@ -449,7 +478,8 @@ enum VarTypes {
 	SLE_FILE_U64      = 7,
 	SLE_FILE_STRINGID = 8, ///< StringID offset into strings-array
 	SLE_FILE_STRING   = 9,
-	/* 6 more possible file-primitives */
+	SLE_FILE_VEHORDERID = 10,
+	/* 5 more possible file-primitives */
 
 	/* 4 bits allocated a maximum of 16 types for NumberType */
 	SLE_VAR_BL    =  0 << 4,
@@ -493,6 +523,7 @@ enum VarTypes {
 	SLE_STRINGQUOTE  = SLE_FILE_STRING   | SLE_VAR_STRQ,
 	SLE_NAME         = SLE_FILE_STRINGID | SLE_VAR_NAME,
 	SLE_CNAME        = SLE_FILE_STRINGID | SLE_VAR_CNAME,
+	SLE_VEHORDERID   = SLE_FILE_VEHORDERID  | SLE_VAR_U16,
 
 	/* Shortcut values */
 	SLE_UINT  = SLE_UINT32,
@@ -631,7 +662,7 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param to       Last savegame version that has the string.
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  */
-#define SLE_CONDSSSTR_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_STDSTR, base, variable, type, 0, from, to, extver)
+#define SLE_CONDSSTR_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_STDSTR, base, variable, type, 0, from, to, extver)
 #define SLE_CONDSSTR(base, variable, type, from, to) SLE_GENERAL(SL_STDSTR, base, variable, type, 0, from, to)
 
 /**
@@ -851,6 +882,7 @@ typedef SaveLoad SaveLoadGlobVarList;
  * @param from     First savegame version that has the string.
  * @param to       Last savegame version that has the string.
  */
+#define SLEG_CONDSSTR_X(variable, type, from, to, extver) SLEG_GENERAL_X(SL_STDSTR, variable, type, 0, from, to, extver)
 #define SLEG_CONDSSTR(variable, type, from, to) SLEG_GENERAL(SL_STDSTR, variable, type, 0, from, to)
 
 /**
@@ -1035,7 +1067,20 @@ static inline bool IsNumericType(VarType conv)
  */
 static inline void *GetVariableAddress(const void *object, const SaveLoad *sld)
 {
-	return const_cast<byte *>((const byte*)(sld->global ? nullptr : object) + (ptrdiff_t)sld->address);
+	/* Entry is a global address. */
+	if (sld->global) return sld->address;
+
+#ifdef _DEBUG
+	/* Entry is a null-variable, mostly used to read old savegames etc. */
+	if (GetVarMemType(sld->conv) == SLE_VAR_NULL) {
+		assert(sld->address == nullptr);
+		return nullptr;
+	}
+
+	/* Everything else should be a non-null pointer. */
+	assert(object != nullptr);
+#endif
+	return const_cast<byte *>((const byte *)object + (ptrdiff_t)sld->address);
 }
 
 int64 ReadValue(const void *ptr, VarType conv);
@@ -1082,6 +1127,9 @@ void NORETURN CDECL SlErrorFmt(StringID string, const char *msg, ...) WARN_FORMA
 void NORETURN CDECL SlErrorCorruptFmt(const char *format, ...) WARN_FORMAT(1, 2);
 
 bool SaveloadCrashWithMissingNewGRFs();
+
+void SlResetVENC();
+void SlProcessVENC();
 
 extern char _savegame_format[8];
 extern bool _do_autosave;

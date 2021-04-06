@@ -1,3 +1,11 @@
+add_subdirectory(script)
+add_subdirectory(settingsgen)
+add_subdirectory(strgen)
+
+if(OPTION_TOOLS_ONLY)
+    return()
+endif()
+
 add_subdirectory(3rdparty)
 add_subdirectory(ai)
 add_subdirectory(blitter)
@@ -11,11 +19,8 @@ add_subdirectory(network)
 add_subdirectory(os)
 add_subdirectory(pathfinder)
 add_subdirectory(saveload)
-add_subdirectory(script)
-add_subdirectory(settingsgen)
 add_subdirectory(sound)
 add_subdirectory(spriteloader)
-add_subdirectory(strgen)
 add_subdirectory(table)
 add_subdirectory(video)
 add_subdirectory(widgets)
@@ -24,11 +29,11 @@ add_files(
     viewport_sprite_sorter_sse4.cpp
     CONDITION SSE_FOUND
 )
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     set_compile_flags(
         viewport_sprite_sorter_sse4.cpp
         COMPILE_FLAGS -msse4.1)
-endif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+endif()
 
 add_files(
     aircraft.h
@@ -38,6 +43,7 @@ add_files(
     airport.h
     airport_gui.cpp
     animated_tile.cpp
+    animated_tile.h
     animated_tile_func.h
     articulated_vehicles.cpp
     articulated_vehicles.h
@@ -158,7 +164,7 @@ add_files(
     fios_gui.cpp
     fontcache.cpp
     fontcache.h
-    fontdetection.cpp
+    fontcache_internal.h
     fontdetection.h
     framerate_gui.cpp
     framerate_type.h

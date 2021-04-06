@@ -332,7 +332,8 @@ function Regression::Cargo()
 	for (local i = -1; i < 15; i++) {
 		print("  Cargo " + i);
 		print("    IsValidCargo():          " + AICargo.IsValidCargo(i));
-		print("    GetCargoLabel():         '" + AICargo.GetCargoLabel(i)+ "'");
+		print("    GetName():               '" + AICargo.GetName(i) + "'");
+		print("    GetCargoLabel():         '" + AICargo.GetCargoLabel(i) + "'");
 		print("    IsFreight():             " + AICargo.IsFreight(i));
 		print("    HasCargoClass():         " + AICargo.HasCargoClass(i, AICargo.CC_PASSENGERS));
 		print("    GetTownEffect():         " + AICargo.GetTownEffect(i));
@@ -426,30 +427,31 @@ function Regression::Company()
 	print("  GetCompanyHQ():                    " + AICompany.GetCompanyHQ(AICompany.COMPANY_SELF));
 	print("  BuildCompanyHQ():                  " + AICompany.BuildCompanyHQ(AIMap.GetTileIndex(129, 129)));
 	print("  GetCompanyHQ():                    " + AICompany.GetCompanyHQ(AICompany.COMPANY_SELF));
-	print("  BuildCompanyHQ():                  " + AICompany.BuildCompanyHQ(AIMap.GetTileIndex(129, 128)));
+	print("  BuildCompanyHQ():                  " + AICompany.BuildCompanyHQ(AIMap.GetTileIndex(239, 76)));
 	print("  GetLastErrorString():              " + AIError.GetLastErrorString());
-	print("  GetAutoRenewStatus();              " + AICompany.GetAutoRenewStatus(AICompany.COMPANY_SELF));
-	print("  SetAutoRenewStatus(true);          " + AICompany.SetAutoRenewStatus(true));
-	print("  GetAutoRenewStatus();              " + AICompany.GetAutoRenewStatus(AICompany.COMPANY_SELF));
-	print("  SetAutoRenewStatus(true);          " + AICompany.SetAutoRenewStatus(true));
-	print("  SetAutoRenewStatus(false);         " + AICompany.SetAutoRenewStatus(false));
-	print("  GetAutoRenewMonths();              " + AICompany.GetAutoRenewMonths(AICompany.COMPANY_SELF));
-	print("  SetAutoRenewMonths(-12);           " + AICompany.SetAutoRenewMonths(-12));
-	print("  GetAutoRenewMonths();              " + AICompany.GetAutoRenewMonths(AICompany.COMPANY_SELF));
-	print("  SetAutoRenewMonths(-12);           " + AICompany.SetAutoRenewMonths(-12));
-	print("  SetAutoRenewMonths(6);             " + AICompany.SetAutoRenewMonths(6));
-	print("  GetAutoRenewMoney();               " + AICompany.GetAutoRenewMoney(AICompany.COMPANY_SELF));
-	print("  SetAutoRenewMoney(200000);         " + AICompany.SetAutoRenewMoney(200000));
-	print("  GetAutoRenewMoney();               " + AICompany.GetAutoRenewMoney(AICompany.COMPANY_SELF));
-	print("  SetAutoRenewMoney(200000);         " + AICompany.SetAutoRenewMoney(200000));
-	print("  SetAutoRenewMoney(100000);         " + AICompany.SetAutoRenewMoney(100000));
+	print("  GetAutoRenewStatus():              " + AICompany.GetAutoRenewStatus(AICompany.COMPANY_SELF));
+	print("  SetAutoRenewStatus(true):          " + AICompany.SetAutoRenewStatus(true));
+	print("  GetAutoRenewStatus():              " + AICompany.GetAutoRenewStatus(AICompany.COMPANY_SELF));
+	print("  SetAutoRenewStatus(true):          " + AICompany.SetAutoRenewStatus(true));
+	print("  SetAutoRenewStatus(false):         " + AICompany.SetAutoRenewStatus(false));
+	print("  GetAutoRenewStatus():              " + AICompany.GetAutoRenewStatus(AICompany.COMPANY_SELF));
+	print("  GetAutoRenewMonths():              " + AICompany.GetAutoRenewMonths(AICompany.COMPANY_SELF));
+	print("  SetAutoRenewMonths(-12):           " + AICompany.SetAutoRenewMonths(-12));
+	print("  GetAutoRenewMonths():              " + AICompany.GetAutoRenewMonths(AICompany.COMPANY_SELF));
+	print("  SetAutoRenewMonths(-12):           " + AICompany.SetAutoRenewMonths(-12));
+	print("  SetAutoRenewMonths(6):             " + AICompany.SetAutoRenewMonths(6));
+	print("  GetAutoRenewMoney():               " + AICompany.GetAutoRenewMoney(AICompany.COMPANY_SELF));
+	print("  SetAutoRenewMoney(200000):         " + AICompany.SetAutoRenewMoney(200000));
+	print("  GetAutoRenewMoney():               " + AICompany.GetAutoRenewMoney(AICompany.COMPANY_SELF));
+	print("  SetAutoRenewMoney(200000):         " + AICompany.SetAutoRenewMoney(200000));
+	print("  SetAutoRenewMoney(100000):         " + AICompany.SetAutoRenewMoney(100000));
 	for (local i = -1; i <= AICompany.EARLIEST_QUARTER; i++) {
 		print("  Quarter: " + i);
-		print("    GetQuarterlyIncome();            " + AICompany.GetQuarterlyIncome(AICompany.COMPANY_SELF, i));
-		print("    GetQuarterlyExpenses();          " + AICompany.GetQuarterlyExpenses(AICompany.COMPANY_SELF, i));
-		print("    GetQuarterlyCargoDelivered();    " + AICompany.GetQuarterlyCargoDelivered(AICompany.COMPANY_SELF, i));
-		print("    GetQuarterlyPerformanceRating(); " + AICompany.GetQuarterlyPerformanceRating(AICompany.COMPANY_SELF, i));
-		print("    GetQuarterlyCompanyValue();      " + AICompany.GetQuarterlyCompanyValue(AICompany.COMPANY_SELF, i));
+		print("    GetQuarterlyIncome():            " + AICompany.GetQuarterlyIncome(AICompany.COMPANY_SELF, i));
+		print("    GetQuarterlyExpenses():          " + AICompany.GetQuarterlyExpenses(AICompany.COMPANY_SELF, i));
+		print("    GetQuarterlyCargoDelivered():    " + AICompany.GetQuarterlyCargoDelivered(AICompany.COMPANY_SELF, i));
+		print("    GetQuarterlyPerformanceRating(): " + AICompany.GetQuarterlyPerformanceRating(AICompany.COMPANY_SELF, i));
+		print("    GetQuarterlyCompanyValue():      " + AICompany.GetQuarterlyCompanyValue(AICompany.COMPANY_SELF, i));
 	}
 }
 

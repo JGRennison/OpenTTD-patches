@@ -253,7 +253,7 @@ bool DistanceAnnotation::IsBetter(const DistanceAnnotation *base, uint cap,
 bool CapacityAnnotation::IsBetter(const CapacityAnnotation *base, uint cap,
 		int free_cap, uint dist) const
 {
-	int min_cap = Path::GetCapacityRatio(min(base->free_capacity, free_cap), min(base->capacity, cap));
+	int min_cap = Path::GetCapacityRatio(std::min(base->free_capacity, free_cap), std::min(base->capacity, cap));
 	int this_cap = this->GetAnnotation();
 	if (min_cap == this_cap) {
 		/* If the capacities are the same and the other path isn't disconnected
@@ -288,7 +288,7 @@ void MultiCommodityFlow::Dijkstra(NodeID source_node, PathVector &paths)
 		Tannotation *anno = new (this->job.path_allocator.Allocate()) Tannotation(node, node == source_node);
 		anno->UpdateAnnotation();
 		if (node == source_node) {
-			annos.insert(AnnoSetItem<Tannotation>(anno)).first;
+			annos.insert(AnnoSetItem<Tannotation>(anno));
 			anno->SetAnnosSetFlag(true);
 		}
 		paths[node] = anno;
@@ -379,7 +379,7 @@ uint MCF1stPass::FindCycleFlow(const PathVector &path, const Path *cycle_begin)
 	uint flow = UINT_MAX;
 	const Path *cycle_end = cycle_begin;
 	do {
-		flow = min(flow, cycle_begin->GetFlow());
+		flow = std::min(flow, cycle_begin->GetFlow());
 		cycle_begin = path[cycle_begin->GetNode()];
 	} while (cycle_begin != cycle_end);
 	return flow;

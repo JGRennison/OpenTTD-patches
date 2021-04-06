@@ -119,13 +119,13 @@ uint32 GetPlatformInfo(Axis axis, byte tile, int platforms, int length, int x, i
 		SB(retval,  0, 4, y & 0xF);
 		SB(retval,  4, 4, x & 0xF);
 	} else {
-		SB(retval,  0, 4, min(15, y));
-		SB(retval,  4, 4, min(15, length - y - 1));
-		SB(retval,  8, 4, min(15, x));
-		SB(retval, 12, 4, min(15, platforms - x - 1));
+		SB(retval,  0, 4, std::min(15, y));
+		SB(retval,  4, 4, std::min(15, length - y - 1));
+		SB(retval,  8, 4, std::min(15, x));
+		SB(retval, 12, 4, std::min(15, platforms - x - 1));
 	}
-	SB(retval, 16, 4, min(15, length));
-	SB(retval, 20, 4, min(15, platforms));
+	SB(retval, 16, 4, std::min(15, length));
+	SB(retval, 20, 4, std::min(15, platforms));
 	SB(retval, 24, 4, tile);
 
 	return retval;
@@ -424,16 +424,16 @@ uint32 Station::GetNewGRFVariable(const ResolverObject &object, byte variable, b
 		const GoodsEntry *ge = &this->goods[c];
 
 		switch (variable) {
-			case 0x60: return min(ge->cargo.TotalCount(), 4095);
+			case 0x60: return std::min<uint32>(ge->cargo.TotalCount(), 4095);
 			case 0x61: return ge->HasVehicleEverTriedLoading() && ge->IsSupplyAllowed() ? ge->time_since_pickup : 0;
 			case 0x62: return ge->HasRating() ? ge->rating : 0xFFFFFFFF;
 			case 0x63: return ge->cargo.DaysInTransit();
 			case 0x64: return ge->HasVehicleEverTriedLoading() && ge->IsSupplyAllowed() ? ge->last_speed | (ge->last_age << 8) : 0xFF00;
 			case 0x65: return GB(ge->status, GoodsEntry::GES_ACCEPTANCE, 1) << 3;
 			case 0x69: {
-				assert_compile((int)GoodsEntry::GES_EVER_ACCEPTED + 1 == (int)GoodsEntry::GES_LAST_MONTH);
-				assert_compile((int)GoodsEntry::GES_EVER_ACCEPTED + 2 == (int)GoodsEntry::GES_CURRENT_MONTH);
-				assert_compile((int)GoodsEntry::GES_EVER_ACCEPTED + 3 == (int)GoodsEntry::GES_ACCEPTED_BIGTICK);
+				static_assert((int)GoodsEntry::GES_EVER_ACCEPTED + 1 == (int)GoodsEntry::GES_LAST_MONTH);
+				static_assert((int)GoodsEntry::GES_EVER_ACCEPTED + 2 == (int)GoodsEntry::GES_CURRENT_MONTH);
+				static_assert((int)GoodsEntry::GES_EVER_ACCEPTED + 3 == (int)GoodsEntry::GES_ACCEPTED_BIGTICK);
 				return GB(ge->status, GoodsEntry::GES_EVER_ACCEPTED, 4);
 			}
 		}
@@ -444,7 +444,7 @@ uint32 Station::GetNewGRFVariable(const ResolverObject &object, byte variable, b
 		const GoodsEntry *g = &this->goods[GB(variable - 0x8C, 3, 4)];
 		switch (GB(variable - 0x8C, 0, 3)) {
 			case 0: return g->cargo.TotalCount();
-			case 1: return GB(min(g->cargo.TotalCount(), 4095), 0, 4) | (GB(g->status, GoodsEntry::GES_ACCEPTANCE, 1) << 7);
+			case 1: return GB(std::min(g->cargo.TotalCount(), 4095u), 0, 4) | (GB(g->status, GoodsEntry::GES_ACCEPTANCE, 1) << 7);
 			case 2: return g->time_since_pickup;
 			case 3: return g->rating;
 			case 4: return g->cargo.Source();
@@ -520,7 +520,7 @@ uint32 Waypoint::GetNewGRFVariable(const ResolverObject &object, byte variable, 
 	}
 
 	if (HasBit(this->station_scope.statspec->flags, SSF_DIV_BY_STATION_SIZE)) cargo /= (st->train_station.w + st->train_station.h);
-	cargo = min(0xfff, cargo);
+	cargo = std::min(0xfffu, cargo);
 
 	if (cargo > this->station_scope.statspec->cargo_threshold) {
 		if (group->num_loading > 0) {
@@ -924,6 +924,14 @@ void AnimateStationTile(TileIndex tile)
 	StationAnimationBase::AnimateTile(ss, BaseStation::GetByTile(tile), tile, HasBit(ss->flags, SSF_CB141_RANDOM_BITS));
 }
 
+uint8 GetStationTileAnimationSpeed(TileIndex tile)
+{
+	const StationSpec *ss = GetStationSpec(tile);
+	if (ss == nullptr) return 0;
+
+	return StationAnimationBase::GetAnimationSpeed(ss);
+}
+
 void TriggerStationAnimation(BaseStation *st, TileIndex tile, StationAnimationTrigger trigger, CargoID cargo_type)
 {
 	/* List of coverage areas for each animation trigger */
@@ -1029,7 +1037,7 @@ void TriggerStationRandomisation(Station *st, TileIndex tile, StationRandomTrigg
 					random_bits |= Random() & reseed;
 					SetStationTileRandomBits(tile, random_bits);
 
-					MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+					MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 				}
 			}
 		}

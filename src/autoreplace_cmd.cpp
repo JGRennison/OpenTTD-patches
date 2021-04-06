@@ -21,6 +21,8 @@
 #include "vehiclelist.h"
 #include "road.h"
 #include "ai/ai.hpp"
+#include "news_func.h"
+#include "strings_func.h"
 
 #include "table/strings.h"
 
@@ -116,7 +118,7 @@ void CheckCargoCapacity(Vehicle *v)
 			assert(dest->cargo.TotalCount() == dest->cargo.ActionCount(VehicleCargoList::MTA_KEEP));
 			if (dest->cargo.TotalCount() >= dest->cargo_cap || dest->cargo_type != src->cargo_type) continue;
 
-			uint amount = min(to_spread, dest->cargo_cap - dest->cargo.TotalCount());
+			uint amount = std::min(to_spread, dest->cargo_cap - dest->cargo.TotalCount());
 			src->cargo.Shift(amount, &dest->cargo);
 			to_spread -= amount;
 		}
@@ -158,7 +160,7 @@ static void TransferCargo(Vehicle *old_veh, Vehicle *new_head, bool part_of_chai
 			}
 			if (dest->cargo_type != src->cargo_type) continue;
 
-			uint amount = min(src->cargo.TotalCount(), dest->cargo_cap - dest->cargo.TotalCount());
+			uint amount = std::min(src->cargo.TotalCount(), dest->cargo_cap - dest->cargo.TotalCount());
 			if (amount <= 0) continue;
 
 			src->cargo.Shift(amount, &dest->cargo);
@@ -180,9 +182,8 @@ static bool VerifyAutoreplaceRefitForOrders(const Vehicle *v, EngineID engine_ty
 	CargoTypes union_refit_mask_a = GetUnionOfArticulatedRefitMasks(v->engine_type, false);
 	CargoTypes union_refit_mask_b = GetUnionOfArticulatedRefitMasks(engine_type, false);
 
-	const Order *o;
 	const Vehicle *u = (v->type == VEH_TRAIN) ? v->First() : v;
-	FOR_VEHICLE_ORDERS(u, o) {
+	for (const Order *o : u->Orders()) {
 		if (!o->IsRefit() || o->IsAutoRefit()) continue;
 		CargoID cargo_type = o->GetRefitCargo();
 
@@ -191,6 +192,29 @@ static bool VerifyAutoreplaceRefitForOrders(const Vehicle *v, EngineID engine_ty
 	}
 
 	return true;
+}
+
+/**
+ * Gets the index of the first refit order that is incompatible with the requested engine type
+ * @param v The vehicle to be replaced
+ * @param engine_type The type we want to replace with
+ * @return index of the incompatible order or -1 if none were found
+ */
+static int GetIncompatibleRefitOrderIdForAutoreplace(const Vehicle *v, EngineID engine_type)
+{
+	CargoTypes union_refit_mask = GetUnionOfArticulatedRefitMasks(engine_type, false);
+
+	const Order *o;
+	const Vehicle *u = (v->type == VEH_TRAIN) ? v->First() : v;
+
+	const OrderList *orders = u->orders.list;
+	for (VehicleOrderID i = 0; i < orders->GetNumOrders(); i++) {
+		o = orders->GetOrderAt(i);
+		if (!o->IsRefit()) continue;
+		if (!HasBit(union_refit_mask, o->GetRefitCargo())) return i;
+	}
+
+	return -1;
 }
 
 /**
@@ -299,7 +323,25 @@ static CommandCost BuildReplacementVehicle(Vehicle *old_veh, Vehicle **new_vehic
 
 	/* Does it need to be refitted */
 	CargoID refit_cargo = GetNewCargoTypeForReplace(old_veh, e, part_of_chain);
-	if (refit_cargo == CT_INVALID) return CommandCost(); // incompatible cargoes
+	if (refit_cargo == CT_INVALID) {
+		if (!IsLocalCompany()) return CommandCost();
+
+		SetDParam(0, old_veh->index);
+
+		int order_id = GetIncompatibleRefitOrderIdForAutoreplace(old_veh, e);
+		if (order_id != -1) {
+			/* Orders contained a refit order that is incompatible with the new vehicle. */
+			SetDParam(1, STR_ERROR_AUTOREPLACE_INCOMPATIBLE_REFIT);
+			SetDParam(2, order_id + 1); // 1-based indexing for display
+		} else {
+			/* Current cargo is incompatible with the new vehicle. */
+			SetDParam(1, STR_ERROR_AUTOREPLACE_INCOMPATIBLE_CARGO);
+			SetDParam(2, CargoSpec::Get(old_veh->cargo_type)->name);
+		}
+
+		AddVehicleAdviceNewsItem(STR_NEWS_VEHICLE_AUTORENEW_FAILED, old_veh->index);
+		return CommandCost();
+	}
 
 	/* Build the new vehicle */
 	cost = DoCommand(old_veh->tile, e | (CT_INVALID << 24), 0, DC_EXEC | DC_AUTOREPLACE, GetCmdBuildVeh(old_veh));

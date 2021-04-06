@@ -64,7 +64,7 @@ static const uint16 _roadveh_full_adder[] = {
 	 0,  16,  16,   0,   8,   8,   8,   8,
 	 0,   0,   0,   8,   8,   8,   8
 };
-assert_compile(lengthof(_roadveh_images) == lengthof(_roadveh_full_adder));
+static_assert(lengthof(_roadveh_images) == lengthof(_roadveh_full_adder));
 
 template <>
 bool IsValidImageIndex<VEH_ROAD>(uint8 image_index)
@@ -373,6 +373,22 @@ bool RoadVehicle::FindClosestDepot(TileIndex *location, DestinationID *destinati
 	return true;
 }
 
+inline bool IsOneWayRoadTile(TileIndex tile)
+{
+	return MayHaveRoad(tile) && GetRoadCachedOneWayState(tile) != RCOWS_NORMAL;
+}
+
+inline bool IsOneWaySideJunctionRoadTile(TileIndex tile)
+{
+	return MayHaveRoad(tile) && (GetRoadCachedOneWayState(tile) == RCOWS_SIDE_JUNCTION || GetRoadCachedOneWayState(tile) == RCOWS_SIDE_JUNCTION_NO_EXIT);
+}
+
+static bool MayReverseOnOneWayRoadTile(TileIndex tile, DiagDirection dir)
+{
+	TrackdirBits bits = TrackStatusToTrackdirBits(GetTileTrackStatus(tile, TRANSPORT_ROAD, RTT_ROAD));
+	return bits & DiagdirReachesTrackdirs(ReverseDiagDir(dir));
+}
+
 /**
  * Turn a roadvehicle around.
  * @param tile unused
@@ -401,7 +417,7 @@ CommandCost CmdTurnRoadVeh(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 		return CMD_ERROR;
 	}
 
-	if (IsNormalRoadTile(v->tile) && GetDisallowedRoadDirections(v->tile) != DRD_NONE) return CMD_ERROR;
+	if (IsOneWayRoadTile(v->tile)) return CMD_ERROR;
 
 	if (IsTileType(v->tile, MP_TUNNELBRIDGE) && DirToDiagDir(v->direction) == GetTunnelBridgeDirection(v->tile)) return CMD_ERROR;
 
@@ -459,11 +475,11 @@ int RoadVehicle::GetEffectiveMaxSpeed() const
 	if (this->critical_breakdown_count == 0) return max_speed;
 
 	for (uint i = 0; i < this->critical_breakdown_count; i++) {
-		max_speed = min(max_speed - (max_speed / 3) + 1, max_speed);
+		max_speed = std::min(max_speed - (max_speed / 3) + 1, max_speed);
 	}
 
 	/* clamp speed to be no less than lower of 5mph and 1/8 of base speed */
-	return max<uint16>(max_speed, min<uint16>(10, (this->vcache.cached_max_speed + 7) >> 3));
+	return std::max<uint16>(max_speed, std::min<uint16>(10, (this->vcache.cached_max_speed + 7) >> 3));
 }
 
 /**
@@ -472,7 +488,7 @@ int RoadVehicle::GetEffectiveMaxSpeed() const
  */
 inline int RoadVehicle::GetCurrentMaxSpeed() const
 {
-	int max_speed = min(this->GetEffectiveMaxSpeed(), this->gcache.cached_max_track_speed);
+	int max_speed = std::min<int>(this->GetEffectiveMaxSpeed(), this->gcache.cached_max_track_speed);
 
 	/* Limit speed to 50% while reversing, 75% in curves. */
 	for (const RoadVehicle *u = this; u != nullptr; u = u->Next()) {
@@ -487,11 +503,11 @@ inline int RoadVehicle::GetCurrentMaxSpeed() const
 
 		/* Vehicle is on the middle part of a bridge. */
 		if (u->state == RVSB_WORMHOLE && !(u->vehstatus & VS_HIDDEN)) {
-			max_speed = min(max_speed, GetBridgeSpec(GetBridgeType(u->tile))->speed * 2);
+			max_speed = std::min(max_speed, GetBridgeSpec(GetBridgeType(u->tile))->speed * 2);
 		}
 	}
 
-	return min(max_speed, this->current_order.GetMaxSpeed() * 2);
+	return std::min(max_speed, this->current_order.GetMaxSpeed() * 2);
 }
 
 /**
@@ -600,12 +616,8 @@ static void RoadVehCrash(RoadVehicle *v)
 	Game::NewEvent(new ScriptEventVehicleCrashed(v->index, v->tile, ScriptEventVehicleCrashed::CRASH_RV_LEVEL_CROSSING));
 
 	SetDParam(0, pass);
-	AddVehicleNewsItem(
-		(pass == 1) ?
-			STR_NEWS_ROAD_VEHICLE_CRASH_DRIVER : STR_NEWS_ROAD_VEHICLE_CRASH,
-		NT_ACCIDENT,
-		v->index
-	);
+	StringID newsitem = (pass == 1) ? STR_NEWS_ROAD_VEHICLE_CRASH_DRIVER : STR_NEWS_ROAD_VEHICLE_CRASH;
+	AddTileNewsItem(newsitem, NT_ACCIDENT, v->tile);
 
 	ModifyStationRatingAround(v->tile, v->owner, -160, 22);
 	if (_settings_client.sound.disaster) SndPlayVehicleFx(SND_12_EXPLOSION, v);
@@ -649,8 +661,8 @@ static void StartRoadVehSound(const RoadVehicle *v)
 {
 	if (!PlayVehicleSound(v, VSE_START)) {
 		SoundID s = RoadVehInfo(v->engine_type)->sfx;
-		if (s == SND_19_BUS_START_PULL_AWAY && (v->tick_counter & 3) == 0) {
-			s = SND_1A_BUS_START_PULL_AWAY_WITH_HORN;
+		if (s == SND_19_DEPARTURE_OLD_RV_1 && (v->tick_counter & 3) == 0) {
+			s = SND_1A_DEPARTURE_OLD_RV_2;
 		}
 		SndPlayVehicleFx(s, v);
 	}
@@ -778,13 +790,19 @@ static void RoadVehArrivesAt(const RoadVehicle *v, Station *st)
  */
 int RoadVehicle::UpdateSpeed()
 {
+	int max_speed = this->GetCurrentMaxSpeed();
 	switch (_settings_game.vehicle.roadveh_acceleration_model) {
 		default: NOT_REACHED();
-		case AM_ORIGINAL:
-			return this->DoUpdateSpeed(this->overtaking != 0 ? 512 : 256, 0, this->GetCurrentMaxSpeed());
+		case AM_ORIGINAL: {
+			int acceleration = this->overtaking != 0 ? 512 : 256;
+			return this->DoUpdateSpeed({ acceleration, acceleration }, 0, max_speed, max_speed);
+		}
 
-		case AM_REALISTIC:
-			return this->DoUpdateSpeed(this->GetAcceleration() + (this->overtaking != 0 ? 256 : 0), this->GetAccelerationStatus() == AS_BRAKE ? 0 : 4, this->GetCurrentMaxSpeed());
+		case AM_REALISTIC: {
+			GroundVehicleAcceleration acceleration = this->GetAcceleration();
+			if (this->overtaking != 0) acceleration.acceleration += 256;
+			return this->DoUpdateSpeed(acceleration, this->GetAccelerationStatus() == AS_BRAKE ? 0 : 4, max_speed, max_speed);
+		}
 	}
 }
 
@@ -819,13 +837,88 @@ struct OvertakeData {
 	const RoadVehicle *v;
 	TileIndex tile;
 	Trackdir trackdir;
+	int tunnelbridge_min;
+	int tunnelbridge_max;
 };
 
 static Vehicle *EnumFindVehBlockingOvertake(Vehicle *v, void *data)
 {
 	const OvertakeData *od = (OvertakeData*)data;
 
-	return (v->First() == v && v != od->u && v != od->v) ? v : nullptr;
+	if (v->First() == od->u || v->First() == od->v) return nullptr;
+	if (RoadVehicle::From(v)->overtaking != 0 || v->direction != od->v->direction) return v;
+
+	/* Check if other vehicle is behind */
+	switch (DirToDiagDir(v->direction)) {
+		case DIAGDIR_NE:
+			if (v->x_pos > od->v->x_pos) return nullptr;
+			break;
+		case DIAGDIR_SE:
+			if (v->y_pos < od->v->y_pos) return nullptr;
+			break;
+		case DIAGDIR_SW:
+			if (v->x_pos < od->v->x_pos) return nullptr;
+			break;
+		case DIAGDIR_NW:
+			if (v->y_pos > od->v->y_pos) return nullptr;
+			break;
+		default:
+			NOT_REACHED();
+	}
+	return v;
+}
+
+static Vehicle *EnumFindVehBlockingOvertakeTunnelBridge(Vehicle *v, void *data)
+{
+	const OvertakeData *od = (OvertakeData*)data;
+
+	switch (DiagDirToAxis(DirToDiagDir(v->direction))) {
+		case AXIS_X:
+			if (v->x_pos < od->tunnelbridge_min || v->x_pos > od->tunnelbridge_max) return nullptr;
+			break;
+		case AXIS_Y:
+			if (v->y_pos < od->tunnelbridge_min || v->y_pos > od->tunnelbridge_max) return nullptr;
+			break;
+		default:
+			NOT_REACHED();
+	}
+	return EnumFindVehBlockingOvertake(v, data);
+}
+
+static Vehicle *EnumFindVehBlockingOvertakeBehind(Vehicle *v, void *data)
+{
+	const OvertakeData *od = (OvertakeData*)data;
+
+	if (v->First() == od->u || v->First() == od->v) return nullptr;
+	if (RoadVehicle::From(v)->overtaking != 0 && TileVirtXY(v->x_pos, v->y_pos) == od->tile) return v;
+	return nullptr;
+}
+
+static bool CheckRoadInfraUnsuitableForOvertaking(OvertakeData *od)
+{
+	if (!HasTileAnyRoadType(od->tile, od->v->compatible_roadtypes)) return true;
+	TrackStatus ts = GetTileTrackStatus(od->tile, TRANSPORT_ROAD, GetRoadTramType(od->v->roadtype));
+	TrackdirBits trackdirbits = TrackStatusToTrackdirBits(ts);
+	TrackdirBits red_signals = TrackStatusToRedSignals(ts); // barred level crossing
+	TrackBits trackbits = TrackdirBitsToTrackBits(trackdirbits);
+
+	/* Track does not continue along overtaking direction || levelcrossing is barred */
+	if (!HasBit(trackdirbits, od->trackdir) || (red_signals != TRACKDIR_BIT_NONE)) return true;
+	/* Track has junction */
+	if (trackbits & ~TRACK_BIT_CROSS) {
+		RoadCachedOneWayState rcows = GetRoadCachedOneWayState(od->tile);
+		if (rcows == RCOWS_SIDE_JUNCTION) {
+			const RoadVehPathCache &pc = od->v->path;
+			if (!pc.empty() && pc.tile.front() == od->tile && !IsStraightRoadTrackdir(pc.td.front())) {
+				/* cached path indicates that we are turning here, do not overtake */
+				return true;
+			}
+		} else {
+			return rcows == RCOWS_NORMAL || rcows == RCOWS_NO_ACCESS;
+		}
+	}
+
+	return false;
 }
 
 /**
@@ -836,31 +929,71 @@ static Vehicle *EnumFindVehBlockingOvertake(Vehicle *v, void *data)
  */
 static bool CheckRoadBlockedForOvertaking(OvertakeData *od)
 {
-	if (!HasTileAnyRoadType(od->tile, od->v->compatible_roadtypes)) return true;
-	TrackStatus ts = GetTileTrackStatus(od->tile, TRANSPORT_ROAD, GetRoadTramType(od->v->roadtype));
-	TrackdirBits trackdirbits = TrackStatusToTrackdirBits(ts);
-	TrackdirBits red_signals = TrackStatusToRedSignals(ts); // barred level crossing
-	TrackBits trackbits = TrackdirBitsToTrackBits(trackdirbits);
-
-	/* Track does not continue along overtaking direction || track has junction || levelcrossing is barred */
-	if (!HasBit(trackdirbits, od->trackdir) || (trackbits & ~TRACK_BIT_CROSS) || (red_signals != TRACKDIR_BIT_NONE)) return true;
-
 	/* Are there more vehicles on the tile except the two vehicles involved in overtaking */
 	return HasVehicleOnPos(od->tile, VEH_ROAD, od, EnumFindVehBlockingOvertake);
 }
 
+/**
+ * Check if overtaking is possible on a piece of track
+ *
+ * @param od Information about the tile and the involved vehicles
+ * @return true if we have to abort overtaking
+ */
+static bool IsNonOvertakingStationTile(TileIndex tile, DiagDirection diag_dir)
+{
+	if (!IsTileType(tile, MP_STATION)) return false;
+	if (!IsDriveThroughStopTile(tile)) return true;
+	const DisallowedRoadDirections diagdir_to_drd[DIAGDIR_END] = { DRD_NORTHBOUND, DRD_NORTHBOUND, DRD_SOUTHBOUND, DRD_SOUTHBOUND };
+	return GetDriveThroughStopDisallowedRoadDirections(tile) != diagdir_to_drd[diag_dir];
+}
+
+inline bool IsValidRoadVehStateForOvertake(const RoadVehicle *v)
+{
+	if (v->state == RVSB_IN_DEPOT) return false;
+	if (v->state < TRACKDIR_END && !(IsValidTrackdir((Trackdir)v->state) && IsDiagonalTrackdir((Trackdir)v->state))) return false;
+	return true;
+}
+
+static bool CheckTunnelBridgeBlockedForOvertaking(OvertakeData *od, TileIndex behind_end, TileIndex ahead_end, TileIndex pos, int ahead_extent, int behind_extent)
+{
+	switch (DirToDiagDir(od->v->direction)) {
+		case DIAGDIR_NE:
+			od->tunnelbridge_min = (TileX(pos) - ahead_extent) * TILE_SIZE;
+			od->tunnelbridge_max = ((TileX(pos) + behind_extent) * TILE_SIZE) + TILE_UNIT_MASK;
+			break;
+		case DIAGDIR_SE:
+			od->tunnelbridge_min = (TileY(pos) - behind_extent) * TILE_SIZE;
+			od->tunnelbridge_max = ((TileY(pos) + ahead_extent) * TILE_SIZE) + TILE_UNIT_MASK;
+			break;
+		case DIAGDIR_SW:
+			od->tunnelbridge_min = (TileX(pos) - behind_extent) * TILE_SIZE;
+			od->tunnelbridge_max = ((TileX(pos) + ahead_extent) * TILE_SIZE) + TILE_UNIT_MASK;
+			break;
+		case DIAGDIR_NW:
+			od->tunnelbridge_min = (TileY(pos) - ahead_extent) * TILE_SIZE;
+			od->tunnelbridge_max = ((TileY(pos) + behind_extent) * TILE_SIZE) + TILE_UNIT_MASK;
+			break;
+		default:
+			NOT_REACHED();
+	}
+
+	if (HasVehicleOnPos(behind_end, VEH_ROAD, od, EnumFindVehBlockingOvertakeTunnelBridge)) return true;
+	if (HasVehicleOnPos(ahead_end, VEH_ROAD, od, EnumFindVehBlockingOvertakeTunnelBridge)) return true;
+	return false;
+}
+
 static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 {
-	OvertakeData od;
-
-	od.v = v;
-	od.u = u;
-
 	/* Trams can't overtake other trams */
 	if (RoadTypeIsTram(v->roadtype)) return;
 
+	/* Other vehicle is facing the opposite direction || direction is not a diagonal direction */
+	if (v->direction == ReverseDir(u->Last()->direction) || !(v->direction & 1)) return;
+
+	if (!IsValidRoadVehStateForOvertake(v)) return;
+
 	/* Don't overtake in stations */
-	if (IsTileType(u->tile, MP_STATION)) return;
+	if (IsNonOvertakingStationTile(u->tile, DirToDiagDir(u->direction))) return;
 
 	/* If not permitted, articulated road vehicles can't overtake anything. */
 	if (!_settings_game.vehicle.roadveh_articulated_overtaking && v->HasArticulatedPart()) return;
@@ -868,33 +1001,38 @@ static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 	/* Don't overtake if the vehicle is broken or about to break down */
 	if (v->breakdown_ctr != 0) return;
 
-	/* Vehicles are not driving in same direction || direction is not a diagonal direction */
-	if (v->direction != u->direction || !(v->direction & 1)) return;
-
 	/* Vehicles chain is too long to overtake */
 	if (v->GetOvertakingCounterThreshold() > 255) return;
 
 	for (RoadVehicle *w = v; w != nullptr; w = w->Next()) {
+		if (!IsValidRoadVehStateForOvertake(w)) return;
+
 		/* Don't overtake in stations */
-		if (IsTileType(w->tile, MP_STATION)) return;
+		if (IsNonOvertakingStationTile(w->tile, DirToDiagDir(w->direction))) return;
 
 		/* Don't overtake if vehicle parts not all in same direction */
 		if (w->direction != v->direction) return;
 
-		/* Check if vehicle is in a road stop, depot, tunnel or bridge or not on a straight road */
-		if (w->state >= RVSB_IN_ROAD_STOP || !IsStraightRoadTrackdir((Trackdir)(w->state & RVSB_TRACKDIR_MASK))) return;
+		/* Check if vehicle is in a road stop, depot, or not on a straight road */
+		if ((w->state >= RVSB_IN_ROAD_STOP || !IsStraightRoadTrackdir((Trackdir)(w->state & RVSB_TRACKDIR_MASK))) &&
+				!IsInsideMM(w->state, RVSB_IN_DT_ROAD_STOP, RVSB_IN_DT_ROAD_STOP_END) && w->state != RVSB_WORMHOLE) {
+			return;
+		}
 	}
 
 	/* Can't overtake a vehicle that is moving faster than us. If the vehicle in front is
 	 * accelerating, take the maximum speed for the comparison, else the current speed.
 	 * Original acceleration always accelerates, so always use the maximum speed. */
-	int u_speed = (_settings_game.vehicle.roadveh_acceleration_model == AM_ORIGINAL || u->GetAcceleration() > 0) ? u->GetCurrentMaxSpeed() : u->cur_speed;
+	int u_speed = (_settings_game.vehicle.roadveh_acceleration_model == AM_ORIGINAL || u->GetAcceleration().acceleration > 0) ? u->GetCurrentMaxSpeed() : u->cur_speed;
 	if (u_speed >= v->GetCurrentMaxSpeed() &&
 			!(u->vehstatus & VS_STOPPED) &&
 			u->cur_speed != 0) {
 		return;
 	}
 
+	OvertakeData od;
+	od.v = v;
+	od.u = u;
 	od.trackdir = DiagDirToDiagTrackdir(DirToDiagDir(v->direction));
 
 	/* Are the current and the next tile suitable for overtaking?
@@ -903,18 +1041,72 @@ static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 	 *  - No barred levelcrossing
 	 *  - No other vehicles in the way
 	 */
-	uint tile_count = 1 + CeilDiv(v->gcache.cached_total_length, TILE_SIZE);
+	int tile_count = 1 + CeilDiv(v->gcache.cached_total_length, TILE_SIZE);
 	TileIndex check_tile = v->tile;
+	DiagDirection dir = DirToDiagDir(v->direction);
 	TileIndexDiff check_tile_diff = TileOffsByDiagDir(DirToDiagDir(v->direction));
-	for (; tile_count != 0; tile_count--, check_tile += check_tile_diff) {
+	TileIndex behind_check_tile = v->tile - check_tile_diff;
+
+	int tile_offset = ((DiagDirToAxis(DirToDiagDir(v->direction)) == AXIS_X) ? v->x_pos : v->y_pos) & 0xF;
+	int tile_ahead_margin = ((dir == DIAGDIR_SE || dir == DIAGDIR_SW) ? TILE_SIZE - 1 - tile_offset : tile_offset);;
+	int behind_tile_count = (v->gcache.cached_total_length + tile_ahead_margin) / TILE_SIZE;
+
+	if (IsTileType(check_tile, MP_TUNNELBRIDGE)) {
+		TileIndex behind_end = GetOtherTunnelBridgeEnd(check_tile);
+		if (IsBridgeTile(check_tile) && (IsRoadCustomBridgeHeadTile(check_tile) || IsRoadCustomBridgeHeadTile(behind_end))) return;
+		if (GetTunnelBridgeDirection(check_tile) == dir) std::swap(check_tile, behind_end);
+		TileIndex veh_tile = TileVirtXY(v->x_pos, v->y_pos);
+		bool one_way = GetRoadCachedOneWayState(check_tile) != RCOWS_NORMAL;
+		if (CheckTunnelBridgeBlockedForOvertaking(&od, behind_end, check_tile, veh_tile, one_way ? 0 : (tile_count  - 1), behind_tile_count)) return;
+
+		tile_count -= DistanceManhattan(check_tile, veh_tile);
+		behind_tile_count -= DistanceManhattan(behind_end, veh_tile);
+		check_tile += check_tile_diff;
+		behind_check_tile = behind_end - check_tile_diff;
+	}
+	for (; tile_count > 0; tile_count--, check_tile += check_tile_diff) {
 		od.tile = check_tile;
+		if (CheckRoadInfraUnsuitableForOvertaking(&od)) return;
+		if (IsTileType(check_tile, MP_TUNNELBRIDGE)) {
+			TileIndex ahead_end = GetOtherTunnelBridgeEnd(check_tile);
+			if (IsBridgeTile(check_tile) && (IsRoadCustomBridgeHeadTile(check_tile) || IsRoadCustomBridgeHeadTile(ahead_end))) return;
+			if (GetRoadCachedOneWayState(check_tile) == RCOWS_NORMAL && CheckTunnelBridgeBlockedForOvertaking(&od, check_tile, ahead_end, check_tile, tile_count - 1, 0)) return;
+			tile_count -= DistanceManhattan(check_tile, ahead_end);
+			check_tile = ahead_end;
+			continue;
+		}
+		if (IsDriveThroughStopTile(check_tile) && GetDriveThroughStopDisallowedRoadDirections(check_tile) != DRD_NONE) {
+			const RoadStop *rs = RoadStop::GetByTile(check_tile, GetRoadStopType(check_tile));
+			DiagDirection dir = DirToDiagDir(v->direction);
+			const RoadStop::Entry *entry = rs->GetEntry(dir);
+			const RoadStop::Entry *opposite_entry = rs->GetEntry(ReverseDiagDir(dir));
+			if (entry->GetOccupied() < opposite_entry->GetOccupied()) return;
+			break;
+		}
+		if (check_tile != v->tile && GetRoadCachedOneWayState(check_tile) != RCOWS_NORMAL) {
+			/* one-way road, don't worry about other vehicles */
+			continue;
+		}
 		if (CheckRoadBlockedForOvertaking(&od)) return;
 	}
-	tile_count = v->gcache.cached_total_length / TILE_SIZE;
-	check_tile = v->tile - check_tile_diff;
-	for (; tile_count != 0; tile_count--, check_tile -= check_tile_diff) {
-		od.tile = check_tile;
-		if (CheckRoadBlockedForOvertaking(&od)) return;
+
+	for (; behind_tile_count > 0; behind_tile_count--, behind_check_tile -= check_tile_diff) {
+		od.tile = behind_check_tile;
+		if (behind_tile_count == 1) {
+			RoadBits rb = GetAnyRoadBits(behind_check_tile, RTT_ROAD);
+			if ((rb & DiagDirToRoadBits(dir)) && HasVehicleOnPos(behind_check_tile, VEH_ROAD, &od, EnumFindVehBlockingOvertakeBehind)) return;
+		} else {
+			if (CheckRoadInfraUnsuitableForOvertaking(&od)) return;
+			if (IsTileType(behind_check_tile, MP_TUNNELBRIDGE)) {
+				TileIndex behind_end = GetOtherTunnelBridgeEnd(behind_check_tile);
+				if (IsBridgeTile(behind_check_tile) && (IsRoadCustomBridgeHeadTile(behind_check_tile) || IsRoadCustomBridgeHeadTile(behind_end))) return;
+				if (CheckTunnelBridgeBlockedForOvertaking(&od, behind_check_tile, behind_end, behind_check_tile, 0, behind_tile_count - 1)) return;
+				behind_tile_count -= DistanceManhattan(behind_check_tile, behind_end);
+				check_tile = behind_end;
+				continue;
+			}
+			if (CheckRoadBlockedForOvertaking(&od)) return;
+		}
 	}
 
 	/* When the vehicle in front of us is stopped we may only take
@@ -1069,6 +1261,7 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 
 		default: NOT_REACHED();
 	}
+	DEBUG_UPDATESTATECHECKSUM("RoadFindPathToDest: v: %u, path_found: %d, best_track: %d", v->index, path_found, best_track);
 	UpdateStateChecksum((((uint64) v->index) << 32) | (path_found << 16) | best_track);
 	v->HandlePathfindingResult(path_found);
 
@@ -1219,25 +1412,177 @@ static bool CanBuildTramTrackOnTile(CompanyID c, TileIndex t, RoadType rt, RoadB
 	return ret.Succeeded();
 }
 
+static bool IsRoadVehicleOnOtherSideOfRoad(const RoadVehicle *v)
+{
+	bool is_right;
+	switch (DirToDiagDir(v->direction)) {
+		case DIAGDIR_NE:
+			is_right = ((TILE_UNIT_MASK & v->y_pos) == 9);
+			break;
+		case DIAGDIR_SE:
+			is_right = ((TILE_UNIT_MASK & v->x_pos) == 9);
+			break;
+		case DIAGDIR_SW:
+			is_right = ((TILE_UNIT_MASK & v->y_pos) == 5);
+			break;
+		case DIAGDIR_NW:
+			is_right = ((TILE_UNIT_MASK & v->x_pos) == 5);
+			break;
+		default:
+			NOT_REACHED();
+	}
+
+	return is_right != (bool) _settings_game.vehicle.road_side;
+}
+
+struct FinishOvertakeData {
+	Direction direction;
+	const Vehicle *v;
+	int min_coord;
+	int max_coord;
+	uint8 not_road_pos;
+};
+
+static Vehicle *EnumFindVehBlockingFinishOvertake(Vehicle *v, void *data)
+{
+	const FinishOvertakeData *od = (FinishOvertakeData*)data;
+
+	if (v->First() == od->v) return nullptr;
+
+	/* Check if other vehicle is behind */
+	switch (DirToDiagDir(v->direction)) {
+		case DIAGDIR_NE:
+		case DIAGDIR_SW:
+			if ((v->y_pos & TILE_UNIT_MASK) == od->not_road_pos) return nullptr;
+			if (v->x_pos >= od->min_coord && v->x_pos <= od->max_coord) return v;
+			break;
+		case DIAGDIR_SE:
+		case DIAGDIR_NW:
+			if ((v->x_pos & TILE_UNIT_MASK) == od->not_road_pos) return nullptr;
+			if (v->y_pos >= od->min_coord && v->y_pos <= od->max_coord) return v;
+			break;
+		default:
+			NOT_REACHED();
+	}
+	return nullptr;
+}
+
+static void RoadVehCheckFinishOvertake(RoadVehicle *v)
+{
+	/* Cancel overtake if the vehicle is broken or about to break down */
+	if (v->breakdown_ctr != 0) {
+		v->SetRoadVehicleOvertaking(0);
+		return;
+	}
+
+	FinishOvertakeData od;
+	od.direction = v->direction;
+	od.v = v;
+	const RoadVehicle *last = v->Last();
+	const int front_margin = 10;
+	const int back_margin = 10;
+	DiagDirection dir = DirToDiagDir(v->direction);
+	switch (dir) {
+		case DIAGDIR_NE:
+			od.min_coord = v->x_pos - front_margin;
+			od.max_coord = last->x_pos + back_margin;
+			od.not_road_pos = (_settings_game.vehicle.road_side ? 5 : 9);
+			break;
+		case DIAGDIR_SE:
+			od.min_coord = last->y_pos - back_margin;
+			od.max_coord = v->y_pos + front_margin;
+			od.not_road_pos = (_settings_game.vehicle.road_side ? 5 : 9);
+			break;
+		case DIAGDIR_SW:
+			od.min_coord = last->x_pos - back_margin;
+			od.max_coord = v->x_pos + front_margin;
+			od.not_road_pos = (_settings_game.vehicle.road_side ? 9 : 5);
+			break;
+		case DIAGDIR_NW:
+			od.min_coord = v->y_pos - front_margin;
+			od.max_coord = last->y_pos + back_margin;
+			od.not_road_pos = (_settings_game.vehicle.road_side ? 9 : 5);
+			break;
+		default:
+			NOT_REACHED();
+	}
+
+	TileIndexDiffC ti = TileIndexDiffCByDiagDir(DirToDiagDir(v->direction));
+	bool check_ahead = true;
+	int tiles_behind = 1 + CeilDiv(v->gcache.cached_total_length, TILE_SIZE);
+
+	TileIndex check_tile = v->tile;
+	if (IsTileType(check_tile, MP_TUNNELBRIDGE)) {
+		TileIndex ahead = GetOtherTunnelBridgeEnd(check_tile);
+		if (v->state == RVSB_WORMHOLE) {
+			check_ahead = false;
+		}
+		if (GetTunnelBridgeDirection(check_tile) == dir) {
+			check_ahead = false;
+		} else if (GetTunnelBridgeDirection(check_tile) == ReverseDiagDir(dir)) {
+			std::swap(ahead, check_tile);
+		}
+
+		if (HasVehicleOnPos(ahead, VEH_ROAD, &od, EnumFindVehBlockingFinishOvertake)) return;
+		if (HasVehicleOnPos(check_tile, VEH_ROAD, &od, EnumFindVehBlockingFinishOvertake)) return;
+		tiles_behind -= 1 + DistanceManhattan(check_tile, TileVirtXY(v->x_pos, v->y_pos));
+		check_tile = TileAddWrap(check_tile, -ti.x, -ti.y);
+	}
+
+	if (check_ahead > 0) {
+		TileIndex ahead_tile = TileAddWrap(check_tile, ti.x, ti.y);
+		if (ahead_tile != INVALID_TILE) {
+			if (HasVehicleOnPos(ahead_tile, VEH_ROAD, &od, EnumFindVehBlockingFinishOvertake)) return;
+			if (IsTileType(ahead_tile, MP_TUNNELBRIDGE) && HasVehicleOnPos(GetOtherTunnelBridgeEnd(ahead_tile), VEH_ROAD, &od, EnumFindVehBlockingFinishOvertake)) return;
+		}
+	}
+
+	for (; check_tile != INVALID_TILE && tiles_behind > 0; tiles_behind--, check_tile = TileAddWrap(check_tile, -ti.x, -ti.y)) {
+		if (HasVehicleOnPos(check_tile, VEH_ROAD, &od, EnumFindVehBlockingFinishOvertake)) return;
+		if (IsTileType(check_tile, MP_TUNNELBRIDGE)) {
+			TileIndex other_end = GetOtherTunnelBridgeEnd(check_tile);
+			tiles_behind -= DistanceManhattan(other_end, check_tile);
+			if (HasVehicleOnPos(other_end, VEH_ROAD, &od, EnumFindVehBlockingFinishOvertake)) return;
+			check_tile = other_end;
+		}
+	}
+
+	/* road on the normal side is clear, finish overtake */
+	v->SetRoadVehicleOvertaking(0);
+}
+
+inline byte IncreaseOvertakingCounter(RoadVehicle *v)
+{
+	if (v->overtaking_ctr != 255) v->overtaking_ctr++;
+	return v->overtaking_ctr;
+}
+
 bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 {
 	SCOPE_INFO_FMT([&], "IndividualRoadVehicleController: %s, %s", scope_dumper().VehicleInfo(v), scope_dumper().VehicleInfo(prev));
-	if (v->overtaking != 0 && v->IsFrontEngine())  {
-		if (IsTileType(v->tile, MP_STATION)) {
+	if (v->overtaking & RVSB_DRIVE_SIDE && v->IsFrontEngine())  {
+		if (IsNonOvertakingStationTile(v->tile, DirToDiagDir(v->direction))) {
 			/* Force us to be not overtaking! */
 			v->SetRoadVehicleOvertaking(0);
-		} else if (v->HasArticulatedPart() && (v->state >= RVSB_IN_ROAD_STOP || !IsStraightRoadTrackdir((Trackdir)v->state))) {
+		} else if (v->HasArticulatedPart() && (v->state >= RVSB_IN_ROAD_STOP || !IsStraightRoadTrackdir((Trackdir)v->state)) && !IsInsideMM(v->state, RVSB_IN_DT_ROAD_STOP, RVSB_IN_DT_ROAD_STOP_END) && v->state != RVSB_WORMHOLE) {
 			/* Articulated RVs may not overtake on corners */
 			v->SetRoadVehicleOvertaking(0);
 		} else if (v->HasArticulatedPart() && IsBridgeTile(v->tile) && (IsRoadCustomBridgeHeadTile(v->tile) || IsRoadCustomBridgeHeadTile(GetOtherBridgeEnd(v->tile)))) {
 			/* Articulated RVs may not overtake on custom bridge heads */
 			v->SetRoadVehicleOvertaking(0);
-		} else if (++v->overtaking_ctr >= RV_OVERTAKE_TIMEOUT) {
+		} else if (v->state < RVSB_IN_ROAD_STOP && !IsStraightRoadTrackdir((Trackdir)v->state) && IsOneWaySideJunctionRoadTile(v->tile)) {
+			/* No turning to/from overtaking lane on one way side road junctions */
+			v->SetRoadVehicleOvertaking(0);
+		} else if (IncreaseOvertakingCounter(v) >= RV_OVERTAKE_TIMEOUT) {
 			/* If overtaking just aborts at a random moment, we can have a out-of-bound problem,
 			 *  if the vehicle started a corner. To protect that, only allow an abort of
 			 *  overtake if we are on straight roads */
-			if (v->overtaking_ctr >= v->GetOvertakingCounterThreshold() && v->state < RVSB_IN_ROAD_STOP && IsStraightRoadTrackdir((Trackdir)v->state)) {
-				v->SetRoadVehicleOvertaking(0);
+			if (v->overtaking_ctr >= v->GetOvertakingCounterThreshold() && (v->state == RVSB_WORMHOLE || (v->state < RVSB_IN_ROAD_STOP && IsStraightRoadTrackdir((Trackdir)v->state)))) {
+				if (IsOneWayRoadTile(v->tile)) {
+					RoadVehCheckFinishOvertake(v);
+				} else {
+					v->SetRoadVehicleOvertaking(0);
+				}
 			}
 		}
 	}
@@ -1252,14 +1597,35 @@ bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 	if (v->state == RVSB_WORMHOLE) {
 		/* Vehicle is entering a depot or is on a bridge or in a tunnel */
 		GetNewVehiclePosResult gp = GetNewVehiclePos(v);
-
+		if (v->overtaking & 1) {
+			DiagDirection dir = DirToDiagDir(v->direction);
+			switch (dir) {
+				case DIAGDIR_NE:
+				case DIAGDIR_SW:
+					SB(gp.y, 0, 4, (_settings_game.vehicle.road_side ^ (dir >> 1) ^ (v->overtaking >> RVS_DRIVE_SIDE)) ? 9 : 5);
+					break;
+				case DIAGDIR_SE:
+				case DIAGDIR_NW:
+					SB(gp.x, 0, 4, (_settings_game.vehicle.road_side ^ (dir >> 1) ^ (v->overtaking >> RVS_DRIVE_SIDE)) ? 9 : 5);
+					break;
+				default:
+					NOT_REACHED();
+			}
+		}
 		if (v->IsFrontEngine()) {
-			const Vehicle *u = RoadVehFindCloseTo(v, gp.x, gp.y, v->direction);
+			RoadVehicle *u = RoadVehFindCloseTo(v, gp.x, gp.y, v->direction);
 			if (u != nullptr) {
-				v->cur_speed = u->First()->cur_speed;
+				u = u->First();
+				/* There is a vehicle in front overtake it if possible */
+				byte old_overtaking = v->overtaking;
+				if (v->overtaking == 0) RoadVehCheckOvertake(v, u);
+				if (v->overtaking == old_overtaking) {
+					v->cur_speed = u->cur_speed;
+				}
 				return false;
 			}
 		}
+		v->overtaking &= ~1;
 
 		if (IsTileType(gp.new_tile, MP_TUNNELBRIDGE) && HasBit(VehicleEnterTile(v, gp.new_tile, gp.x, gp.y), VETS_ENTERED_WORMHOLE)) {
 			if (IsRoadCustomBridgeHeadTile(gp.new_tile)) {
@@ -1376,7 +1742,7 @@ again:
 					v->cur_speed = 0;
 					return false;
 				}
-			} else if (IsNormalRoadTile(v->tile) && GetDisallowedRoadDirections(v->tile) != DRD_NONE) {
+			} else if (IsOneWayRoadTile(v->tile) && !MayReverseOnOneWayRoadTile(v->tile, (DiagDirection)(rd.x & 3))) {
 				v->cur_speed = 0;
 				return false;
 			} else {
@@ -1505,7 +1871,16 @@ again:
 		int y = TileY(v->tile) * TILE_SIZE + rdp[turn_around_start_frame].y;
 
 		Direction new_dir = RoadVehGetSlidingDirection(v, x, y);
-		if (v->IsFrontEngine() && RoadVehFindCloseTo(v, x, y, new_dir) != nullptr) return false;
+		if (v->IsFrontEngine() && RoadVehFindCloseTo(v, x, y, new_dir) != nullptr) {
+			/* We are blocked. */
+			v->cur_speed = 0;
+			if (!v->path.empty()) {
+				/* Prevent pathfinding rerun as we already know where we are heading to. */
+				v->path.tile.push_front(v->tile);
+				v->path.td.push_front(dir);
+			}
+			return false;
+		}
 
 		uint32 r = VehicleEnterTile(v, v->tile, x, y);
 		if (HasBit(r, VETS_CANNOT_ENTER)) {
@@ -1552,14 +1927,17 @@ again:
 		if (u != nullptr) {
 			u = u->First();
 			/* There is a vehicle in front overtake it if possible */
+			byte old_overtaking = v->overtaking;
 			if (v->overtaking == 0) RoadVehCheckOvertake(v, u);
-			if (v->overtaking == 0) v->cur_speed = u->cur_speed;
+			if (v->overtaking == old_overtaking) v->cur_speed = u->cur_speed;
 
 			/* In case an RV is stopped in a road stop, why not try to load? */
 			if (v->cur_speed == 0 && IsInsideMM(v->state, RVSB_IN_DT_ROAD_STOP, RVSB_IN_DT_ROAD_STOP_END) &&
 					v->current_order.ShouldStopAtStation(v, GetStationIndex(v->tile), false) &&
 					IsInfraTileUsageAllowed(VEH_ROAD, v->owner, v->tile) && !v->current_order.IsType(OT_LEAVESTATION) &&
 					GetRoadStopType(v->tile) == (v->IsBus() ? ROADSTOP_BUS : ROADSTOP_TRUCK)) {
+				byte cur_overtaking = IsRoadVehicleOnOtherSideOfRoad(v) ? RVSB_DRIVE_SIDE : 0;
+				if (cur_overtaking != v->overtaking) v->SetRoadVehicleOvertaking(cur_overtaking);
 				Station *st = Station::GetByTile(v->tile);
 				v->last_station_visited = st->index;
 				RoadVehArrivesAt(v, st);
@@ -1750,10 +2128,12 @@ Money RoadVehicle::GetRunningCost() const
 
 bool RoadVehicle::Tick()
 {
+	DEBUG_UPDATESTATECHECKSUM("RoadVehicle::Tick 1: v: %u, x: %d, y: %d", this->index, this->x_pos, this->y_pos);
 	UpdateStateChecksum((((uint64) this->x_pos) << 32) | this->y_pos);
+	DEBUG_UPDATESTATECHECKSUM("RoadVehicle::Tick 2: v: %u, state: %d, frame: %d", this->index, this->state, this->frame);
 	UpdateStateChecksum((((uint64) this->state) << 32) | this->frame);
 	if (this->IsFrontEngine()) {
-		if (!(this->IsRoadVehicleStopped())) this->running_ticks++;
+		if (!(this->IsRoadVehicleStopped() || this->IsWaitingInDepot())) this->running_ticks++;
 		return RoadVehController(this);
 	}
 
@@ -1765,6 +2145,18 @@ void RoadVehicle::SetDestTile(TileIndex tile)
 	if (tile == this->dest_tile) return;
 	this->path.clear();
 	this->dest_tile = tile;
+}
+
+void RoadVehicle::SetRoadVehicleOvertaking(byte overtaking)
+{
+	if (IsInsideMM(this->state, RVSB_IN_DT_ROAD_STOP, RVSB_IN_DT_ROAD_STOP_END)) RoadStop::GetByTile(this->tile, GetRoadStopType(this->tile))->Leave(this);
+
+	for (RoadVehicle *u = this; u != nullptr; u = u->Next()) {
+		u->overtaking = overtaking;
+		if (u->state == RVSB_WORMHOLE) u->overtaking |= 1;
+	}
+
+	if (IsInsideMM(this->state, RVSB_IN_DT_ROAD_STOP, RVSB_IN_DT_ROAD_STOP_END)) RoadStop::GetByTile(this->tile, GetRoadStopType(this->tile))->Enter(this);
 }
 
 static void CheckIfRoadVehNeedsService(RoadVehicle *v)
@@ -1833,7 +2225,7 @@ void RoadVehicle::OnNewDay()
 	SubtractMoneyFromCompanyFract(this->owner, cost);
 
 	SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
-	SetWindowClassesDirty(WC_ROADVEH_LIST);
+	DirtyVehicleListWindowForVehicle(this);
 }
 
 Trackdir RoadVehicle::GetVehicleTrackdir() const

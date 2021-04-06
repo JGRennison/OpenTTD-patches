@@ -55,6 +55,7 @@ extern int _debug_linkgraph_level;
 extern int _debug_sound_level;
 #ifdef RANDOM_DEBUG
 extern int _debug_random_level;
+extern int _debug_statecsum_level;
 #endif
 
 extern const char *_savegame_DBGL_data;
@@ -129,9 +130,6 @@ void ShowInfo(const char *str);
 void CDECL ShowInfoF(const char *str, ...) WARN_FORMAT(1, 2);
 
 const char *GetLogPrefix();
-
-/** The real time in the game. */
-extern uint32 _realtime_tick;
 
 void ClearDesyncMsgLog();
 void LogDesyncMsg(std::string msg);

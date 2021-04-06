@@ -110,10 +110,10 @@ struct GraphLegendWindow : Window {
 static NWidgetBase *MakeNWidgetCompanyLines(int *biggest_index)
 {
 	NWidgetVertical *vert = new NWidgetVertical();
-	uint line_height = max<uint>(GetSpriteSize(SPR_COMPANY_ICON).height, FONT_HEIGHT_NORMAL) + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
+	uint line_height = std::max<uint>(GetSpriteSize(SPR_COMPANY_ICON).height, FONT_HEIGHT_NORMAL) + WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
 
 	for (int widnum = WID_GL_FIRST_COMPANY; widnum <= WID_GL_LAST_COMPANY; widnum++) {
-		NWidgetBackground *panel = new NWidgetBackground(WWT_PANEL, COLOUR_GREY, widnum);
+		NWidgetBackground *panel = new NWidgetBackground(WWT_PANEL, COLOUR_BROWN, widnum);
 		panel->SetMinimalSize(246, line_height);
 		panel->SetFill(1, 0);
 		panel->SetDataTip(0x0, STR_GRAPH_KEY_COMPANY_SELECTION_TOOLTIP);
@@ -125,12 +125,12 @@ static NWidgetBase *MakeNWidgetCompanyLines(int *biggest_index)
 
 static const NWidgetPart _nested_graph_legend_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY), SetDataTip(STR_GRAPH_KEY_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_SHADEBOX, COLOUR_GREY),
-		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
+		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_GRAPH_KEY_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
+		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_GREY, WID_GL_BACKGROUND),
+	NWidget(WWT_PANEL, COLOUR_BROWN, WID_GL_BACKGROUND),
 		NWidget(NWID_SPACER), SetMinimalSize(0, 2),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(NWID_SPACER), SetMinimalSize(2, 0),
@@ -165,8 +165,14 @@ struct ValuesInterval {
 struct BaseGraphWindow : Window {
 protected:
 	static const int GRAPH_MAX_DATASETS     =  64;
-	static const int GRAPH_AXIS_LINE_COLOUR = PC_BLACK;
+	static const int GRAPH_BASE_COLOUR      =  GREY_SCALE(2);
+	static const int GRAPH_GRID_COLOUR      =  GREY_SCALE(3);
+	static const int GRAPH_AXIS_LINE_COLOUR =  GREY_SCALE(1);
+	static const int GRAPH_ZERO_LINE_COLOUR =  GREY_SCALE(8);
+	static const int GRAPH_YEAR_LINE_COLOUR =  GREY_SCALE(5);
 	static const int GRAPH_NUM_MONTHS       =  24; ///< Number of months displayed in the graph.
+
+	static const TextColour GRAPH_AXIS_LABEL_COLOUR = TC_BLACK; ///< colour of the graph axis label.
 
 	static const int MIN_GRAPH_NUM_LINES_Y  =   9; ///< Minimal number of horizontal lines to draw.
 	static const int MIN_GRID_PIXEL_SIZE    =  20; ///< Minimum distance between graph lines.
@@ -175,7 +181,6 @@ protected:
 	byte num_dataset;
 	byte num_on_x_axis;
 	byte num_vert_lines;
-	static const TextColour graph_axis_label_colour = TC_BLACK; ///< colour of the graph axis label.
 
 	/* The starting month and year that values are plotted against. If month is
 	 * 0xFF, use x_values_start and x_values_increment below instead. */
@@ -212,8 +217,8 @@ protected:
 				OverflowSafeInt64 datapoint = this->cost[i][j];
 
 				if (datapoint != INVALID_DATAPOINT) {
-					current_interval.highest = max(current_interval.highest, datapoint);
-					current_interval.lowest  = min(current_interval.lowest, datapoint);
+					current_interval.highest = std::max(current_interval.highest, datapoint);
+					current_interval.lowest  = std::min(current_interval.lowest, datapoint);
 				}
 			}
 		}
@@ -240,7 +245,7 @@ protected:
 			/* Get the required grid size for each side and use the maximum one. */
 			int64 grid_size_higher = (abs_higher > 0) ? ((int64)abs_higher + num_pos_grids - 1) / num_pos_grids : 0;
 			int64 grid_size_lower = (abs_lower > 0) ? ((int64)abs_lower + num_hori_lines - num_pos_grids - 1) / (num_hori_lines - num_pos_grids) : 0;
-			grid_size = max(grid_size_higher, grid_size_lower);
+			grid_size = std::max(grid_size_higher, grid_size_lower);
 		} else {
 			/* If both values are zero, show an empty graph. */
 			num_pos_grids = num_hori_lines / 2;
@@ -289,15 +294,13 @@ protected:
 
 		/* the colours and cost array of GraphDrawer must accommodate
 		 * both values for cargo and companies. So if any are higher, quit */
-		assert_compile(GRAPH_MAX_DATASETS >= (int)NUM_CARGO && GRAPH_MAX_DATASETS >= (int)MAX_COMPANIES);
+		static_assert(GRAPH_MAX_DATASETS >= (int)NUM_CARGO && GRAPH_MAX_DATASETS >= (int)MAX_COMPANIES);
 		assert(this->num_vert_lines > 0);
-
-		byte grid_colour = _colour_gradient[COLOUR_GREY][4];
 
 		/* Rect r will be adjusted to contain just the graph, with labels being
 		 * placed outside the area. */
 		r.top    += 5 + GetCharacterHeight(FS_SMALL) / 2;
-		r.bottom -= (this->month == 0xFF ? 1 : 3) * GetCharacterHeight(FS_SMALL) + 4;
+		r.bottom -= (this->month == 0xFF ? 1 : 2) * GetCharacterHeight(FS_SMALL) + 4;
 		r.left   += 9;
 		r.right  -= 5;
 
@@ -325,13 +328,16 @@ protected:
 		/* Where to draw the X axis. Use floating point to avoid overflowing and results of zero. */
 		x_axis_offset = (int)((r.bottom - r.top) * (double)interval.highest / (double)interval_size);
 
+		/* Draw the background of the graph itself. */
+		GfxFillRect(r.left, r.top, r.right, r.bottom, GRAPH_BASE_COLOUR);
+
 		/* Draw the vertical grid lines. */
 
 		/* Don't draw the first line, as that's where the axis will be. */
 		x = r.left + x_sep;
 
 		for (int i = 0; i < this->num_vert_lines; i++) {
-			GfxFillRect(x, r.top, x, r.bottom, grid_colour);
+			GfxFillRect(x, r.top, x, r.bottom, GRAPH_GRID_COLOUR);
 			x += x_sep;
 		}
 
@@ -340,7 +346,7 @@ protected:
 
 		for (int i = 0; i < (num_hori_lines + 1); i++) {
 			GfxFillRect(r.left - 3, y, r.left - 1, y, GRAPH_AXIS_LINE_COLOUR);
-			GfxFillRect(r.left, y, r.right, y, grid_colour);
+			GfxFillRect(r.left, y, r.right, y, GRAPH_GRID_COLOUR);
 			y -= y_sep;
 		}
 
@@ -349,7 +355,7 @@ protected:
 
 		/* Draw the x axis. */
 		y = x_axis_offset + r.top;
-		GfxFillRect(r.left, y, r.right, y, GRAPH_AXIS_LINE_COLOUR);
+		GfxFillRect(r.left, y, r.right, y, GRAPH_ZERO_LINE_COLOUR);
 
 		/* Find the largest value that will be drawn. */
 		if (this->num_on_x_axis == 0) return;
@@ -366,13 +372,13 @@ protected:
 		for (int i = 0; i < (num_hori_lines + 1); i++) {
 			SetDParam(0, this->format_str_y_axis);
 			SetDParam(1, y_label);
-			DrawString(r.left - label_width - 4, r.left - 4, y, STR_GRAPH_Y_LABEL, graph_axis_label_colour, SA_RIGHT);
+			DrawString(r.left - label_width - 4, r.left - 4, y, STR_GRAPH_Y_LABEL, GRAPH_AXIS_LABEL_COLOUR, SA_RIGHT);
 
 			y_label -= y_label_separation;
 			y += y_sep;
 		}
 
-		/* draw strings on the x axis */
+		/* Draw x-axis labels and markings for graphs based on financial quarters and years.  */
 		if (this->month != 0xFF) {
 			x = r.left;
 			y = r.bottom + 2;
@@ -380,26 +386,28 @@ protected:
 			Year year  = this->year;
 			for (int i = 0; i < this->num_on_x_axis; i++) {
 				SetDParam(0, month + STR_MONTH_ABBREV_JAN);
-				SetDParam(1, month + STR_MONTH_ABBREV_JAN + 2);
-				SetDParam(2, year);
-				DrawStringMultiLine(x, x + x_sep, y, this->height, month == 0 ? STR_GRAPH_X_LABEL_MONTH_YEAR : STR_GRAPH_X_LABEL_MONTH, graph_axis_label_colour);
+				SetDParam(1, year);
+				DrawStringMultiLine(x, x + x_sep, y, this->height, month == 0 ? STR_GRAPH_X_LABEL_MONTH_YEAR : STR_GRAPH_X_LABEL_MONTH, GRAPH_AXIS_LABEL_COLOUR, SA_LEFT);
 
 				month += 3;
 				if (month >= 12) {
 					month = 0;
 					year++;
+
+					/* Draw a lighter grid line between years. Top and bottom adjustments ensure we don't draw over top and bottom horizontal grid lines. */
+					GfxFillRect(x + x_sep, r.top + 1, x + x_sep, r.bottom - 1, GRAPH_YEAR_LINE_COLOUR);
 				}
 				x += x_sep;
 			}
 		} else {
-			/* Draw the label under the data point rather than on the grid line. */
+			/* Draw x-axis labels for graphs not based on quarterly performance (cargo payment rates). */
 			x = r.left;
 			y = r.bottom + 2;
 			uint16 label = this->x_values_start;
 
 			for (int i = 0; i < this->num_on_x_axis; i++) {
 				SetDParam(0, label);
-				DrawString(x + 1, x + x_sep - 1, y, STR_GRAPH_Y_LABEL_NUMBER, graph_axis_label_colour, SA_HOR_CENTER);
+				DrawString(x + 1, x + x_sep - 1, y, STR_GRAPH_Y_LABEL_NUMBER, GRAPH_AXIS_LABEL_COLOUR, SA_HOR_CENTER);
 
 				label += this->x_values_increment;
 				x += x_sep;
@@ -435,7 +443,7 @@ protected:
 						 * least significant bits are removed.
 						 */
 						int mult_range = FindLastBit(x_axis_offset) + FindLastBit(abs(datapoint));
-						int reduce_range = max(mult_range - 31, 0);
+						int reduce_range = std::max(mult_range - 31, 0);
 
 						/* Handle negative values differently (don't shift sign) */
 						if (datapoint < 0) {
@@ -489,14 +497,14 @@ public:
 
 		uint x_label_width = 0;
 
+		/* Draw x-axis labels and markings for graphs based on financial quarters and years.  */
 		if (this->month != 0xFF) {
 			byte month = this->month;
 			Year year  = this->year;
 			for (int i = 0; i < this->num_on_x_axis; i++) {
 				SetDParam(0, month + STR_MONTH_ABBREV_JAN);
-				SetDParam(1, month + STR_MONTH_ABBREV_JAN + 2);
-				SetDParam(2, year);
-				x_label_width = max(x_label_width, GetStringBoundingBox(month == 0 ? STR_GRAPH_X_LABEL_MONTH_YEAR : STR_GRAPH_X_LABEL_MONTH).width);
+				SetDParam(1, year);
+				x_label_width = std::max(x_label_width, GetStringBoundingBox(month == 0 ? STR_GRAPH_X_LABEL_MONTH_YEAR : STR_GRAPH_X_LABEL_MONTH).width);
 
 				month += 3;
 				if (month >= 12) {
@@ -505,7 +513,7 @@ public:
 				}
 			}
 		} else {
-			/* Draw the label under the data point rather than on the grid line. */
+			/* Draw x-axis labels for graphs not based on quarterly performance (cargo payment rates). */
 			SetDParamMaxValue(0, this->x_values_start + this->num_on_x_axis * this->x_values_increment, 0, FS_SMALL);
 			x_label_width = GetStringBoundingBox(STR_GRAPH_Y_LABEL_NUMBER).width;
 		}
@@ -514,9 +522,9 @@ public:
 		SetDParam(1, INT64_MAX);
 		uint y_label_width = GetStringBoundingBox(STR_GRAPH_Y_LABEL).width;
 
-		size->width  = max<uint>(size->width,  5 + y_label_width + this->num_on_x_axis * (x_label_width + 5) + 9);
-		size->height = max<uint>(size->height, 5 + (1 + MIN_GRAPH_NUM_LINES_Y * 2 + (this->month != 0xFF ? 3 : 1)) * FONT_HEIGHT_SMALL + 4);
-		size->height = max<uint>(size->height, size->width / 3);
+		size->width  = std::max<uint>(size->width,  5 + y_label_width + this->num_on_x_axis * (x_label_width + 5) + 9);
+		size->height = std::max<uint>(size->height, 5 + (1 + MIN_GRAPH_NUM_LINES_Y * 2 + (this->month != 0xFF ? 3 : 1)) * FONT_HEIGHT_SMALL + 4);
+		size->height = std::max<uint>(size->height, size->width / 3);
 	}
 
 	void DrawWidget(const Rect &r, int widget) const override
@@ -568,7 +576,7 @@ public:
 
 		byte nums = 0;
 		for (const Company *c : Company::Iterate()) {
-			nums = min(this->num_vert_lines, max(nums, c->num_valid_stat_ent));
+			nums = std::min(this->num_vert_lines, std::max(nums, c->num_valid_stat_ent));
 		}
 
 		int mo = (_cur_date_ymd.month / 3 - nums) * 3;
@@ -626,19 +634,19 @@ struct OperatingProfitGraphWindow : BaseGraphWindow {
 
 static const NWidgetPart _nested_operating_profit_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY), SetDataTip(STR_GRAPH_OPERATING_PROFIT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_CV_KEY_BUTTON), SetMinimalSize(50, 0), SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 2), SetDataTip(STR_GRAPH_KEY_BUTTON, STR_GRAPH_KEY_TOOLTIP),
-		NWidget(WWT_SHADEBOX, COLOUR_GREY),
-		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
-		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
+		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_GRAPH_OPERATING_PROFIT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CV_KEY_BUTTON), SetMinimalSize(50, 0), SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 2), SetDataTip(STR_GRAPH_KEY_BUTTON, STR_GRAPH_KEY_TOOLTIP),
+		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
+		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
+		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_GREY, WID_CV_BACKGROUND),
+	NWidget(WWT_PANEL, COLOUR_BROWN, WID_CV_BACKGROUND),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_EMPTY, COLOUR_GREY, WID_CV_GRAPH), SetMinimalSize(576, 160), SetFill(1, 1), SetResize(1, 1),
+			NWidget(WWT_EMPTY, COLOUR_BROWN, WID_CV_GRAPH), SetMinimalSize(576, 160), SetFill(1, 1), SetResize(1, 1),
 			NWidget(NWID_VERTICAL),
 				NWidget(NWID_SPACER), SetFill(0, 1), SetResize(0, 1),
-				NWidget(WWT_RESIZEBOX, COLOUR_GREY, WID_CV_RESIZE),
+				NWidget(WWT_RESIZEBOX, COLOUR_BROWN, WID_CV_RESIZE),
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),
@@ -677,19 +685,19 @@ struct IncomeGraphWindow : BaseGraphWindow {
 
 static const NWidgetPart _nested_income_graph_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY), SetDataTip(STR_GRAPH_INCOME_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_CV_KEY_BUTTON), SetMinimalSize(50, 0), SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 2), SetDataTip(STR_GRAPH_KEY_BUTTON, STR_GRAPH_KEY_TOOLTIP),
-		NWidget(WWT_SHADEBOX, COLOUR_GREY),
-		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
-		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
+		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_GRAPH_INCOME_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CV_KEY_BUTTON), SetMinimalSize(50, 0), SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 2), SetDataTip(STR_GRAPH_KEY_BUTTON, STR_GRAPH_KEY_TOOLTIP),
+		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
+		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
+		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_GREY, WID_CV_BACKGROUND),
+	NWidget(WWT_PANEL, COLOUR_BROWN, WID_CV_BACKGROUND),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_EMPTY, COLOUR_GREY, WID_CV_GRAPH), SetMinimalSize(576, 128), SetFill(1, 1), SetResize(1, 1),
+			NWidget(WWT_EMPTY, COLOUR_BROWN, WID_CV_GRAPH), SetMinimalSize(576, 128), SetFill(1, 1), SetResize(1, 1),
 			NWidget(NWID_VERTICAL),
 				NWidget(NWID_SPACER), SetFill(0, 1), SetResize(0, 1),
-				NWidget(WWT_RESIZEBOX, COLOUR_GREY, WID_CV_RESIZE),
+				NWidget(WWT_RESIZEBOX, COLOUR_BROWN, WID_CV_RESIZE),
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),
@@ -726,19 +734,19 @@ struct DeliveredCargoGraphWindow : BaseGraphWindow {
 
 static const NWidgetPart _nested_delivered_cargo_graph_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY), SetDataTip(STR_GRAPH_CARGO_DELIVERED_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_CV_KEY_BUTTON), SetMinimalSize(50, 0), SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 2), SetDataTip(STR_GRAPH_KEY_BUTTON, STR_GRAPH_KEY_TOOLTIP),
-		NWidget(WWT_SHADEBOX, COLOUR_GREY),
-		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
-		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
+		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_GRAPH_CARGO_DELIVERED_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CV_KEY_BUTTON), SetMinimalSize(50, 0), SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 2), SetDataTip(STR_GRAPH_KEY_BUTTON, STR_GRAPH_KEY_TOOLTIP),
+		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
+		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
+		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_GREY, WID_CV_BACKGROUND),
+	NWidget(WWT_PANEL, COLOUR_BROWN, WID_CV_BACKGROUND),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_EMPTY, COLOUR_GREY, WID_CV_GRAPH), SetMinimalSize(576, 128), SetFill(1, 1), SetResize(1, 1),
+			NWidget(WWT_EMPTY, COLOUR_BROWN, WID_CV_GRAPH), SetMinimalSize(576, 128), SetFill(1, 1), SetResize(1, 1),
 			NWidget(NWID_VERTICAL),
 				NWidget(NWID_SPACER), SetFill(0, 1), SetResize(0, 1),
-				NWidget(WWT_RESIZEBOX, COLOUR_GREY, WID_CV_RESIZE),
+				NWidget(WWT_RESIZEBOX, COLOUR_BROWN, WID_CV_RESIZE),
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),
@@ -781,20 +789,20 @@ struct PerformanceHistoryGraphWindow : BaseGraphWindow {
 
 static const NWidgetPart _nested_performance_history_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY), SetDataTip(STR_GRAPH_COMPANY_PERFORMANCE_RATINGS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PHG_DETAILED_PERFORMANCE), SetMinimalSize(50, 0), SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 2), SetDataTip(STR_PERFORMANCE_DETAIL_KEY, STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PHG_KEY), SetMinimalSize(50, 0), SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 2), SetDataTip(STR_GRAPH_KEY_BUTTON, STR_GRAPH_KEY_TOOLTIP),
-		NWidget(WWT_SHADEBOX, COLOUR_GREY),
-		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
-		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
+		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_GRAPH_COMPANY_PERFORMANCE_RATINGS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_PHG_DETAILED_PERFORMANCE), SetMinimalSize(50, 0), SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 2), SetDataTip(STR_PERFORMANCE_DETAIL_KEY, STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_PHG_KEY), SetMinimalSize(50, 0), SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 2), SetDataTip(STR_GRAPH_KEY_BUTTON, STR_GRAPH_KEY_TOOLTIP),
+		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
+		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
+		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_GREY, WID_PHG_BACKGROUND),
+	NWidget(WWT_PANEL, COLOUR_BROWN, WID_PHG_BACKGROUND),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_EMPTY, COLOUR_GREY, WID_PHG_GRAPH), SetMinimalSize(576, 224), SetFill(1, 1), SetResize(1, 1),
+			NWidget(WWT_EMPTY, COLOUR_BROWN, WID_PHG_GRAPH), SetMinimalSize(576, 224), SetFill(1, 1), SetResize(1, 1),
 			NWidget(NWID_VERTICAL),
 				NWidget(NWID_SPACER), SetFill(0, 1), SetResize(0, 1),
-				NWidget(WWT_RESIZEBOX, COLOUR_GREY, WID_PHG_RESIZE),
+				NWidget(WWT_RESIZEBOX, COLOUR_BROWN, WID_PHG_RESIZE),
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),
@@ -831,19 +839,19 @@ struct CompanyValueGraphWindow : BaseGraphWindow {
 
 static const NWidgetPart _nested_company_value_graph_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY), SetDataTip(STR_GRAPH_COMPANY_VALUES_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_CV_KEY_BUTTON), SetMinimalSize(50, 0), SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 2), SetDataTip(STR_GRAPH_KEY_BUTTON, STR_GRAPH_KEY_TOOLTIP),
-		NWidget(WWT_SHADEBOX, COLOUR_GREY),
-		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
-		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
+		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_GRAPH_COMPANY_VALUES_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CV_KEY_BUTTON), SetMinimalSize(50, 0), SetMinimalTextLines(1, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM + 2), SetDataTip(STR_GRAPH_KEY_BUTTON, STR_GRAPH_KEY_TOOLTIP),
+		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
+		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
+		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_GREY, WID_CV_BACKGROUND),
+	NWidget(WWT_PANEL, COLOUR_BROWN, WID_CV_BACKGROUND),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_EMPTY, COLOUR_GREY, WID_CV_GRAPH), SetMinimalSize(576, 224), SetFill(1, 1), SetResize(1, 1),
+			NWidget(WWT_EMPTY, COLOUR_BROWN, WID_CV_GRAPH), SetMinimalSize(576, 224), SetFill(1, 1), SetResize(1, 1),
 			NWidget(NWID_VERTICAL),
 				NWidget(NWID_SPACER), SetFill(0, 1), SetResize(0, 1),
-				NWidget(WWT_RESIZEBOX, COLOUR_GREY, WID_CV_RESIZE),
+				NWidget(WWT_RESIZEBOX, COLOUR_BROWN, WID_CV_RESIZE),
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),
@@ -946,7 +954,7 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 			bool lowered = !HasBit(_legend_excluded_cargo, cs->Index());
 
 			/* Redraw box if lowered */
-			if (lowered) DrawFrameRect(r.left, y, r.right, y + this->line_height - 1, COLOUR_ORANGE, lowered ? FR_LOWERED : FR_NONE);
+			if (lowered) DrawFrameRect(r.left, y, r.right, y + this->line_height - 1, COLOUR_BROWN, lowered ? FR_LOWERED : FR_NONE);
 
 			byte clk_dif = lowered ? 1 : 0;
 			int rect_x = clk_dif + (rtl ? r.right - 12 : r.left + WD_FRAMERECT_LEFT);
@@ -1041,28 +1049,28 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 
 static const NWidgetPart _nested_cargo_payment_rates_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY), SetDataTip(STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_SHADEBOX, COLOUR_GREY),
-		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
-		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
+		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
+		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
+		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_GREY, WID_CPR_BACKGROUND), SetMinimalSize(568, 128),
+	NWidget(WWT_PANEL, COLOUR_BROWN, WID_CPR_BACKGROUND), SetMinimalSize(568, 128),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(NWID_SPACER), SetFill(1, 0), SetResize(1, 0),
-			NWidget(WWT_TEXT, COLOUR_GREY, WID_CPR_HEADER), SetMinimalSize(0, 6), SetPadding(2, 0, 2, 0), SetDataTip(STR_GRAPH_CARGO_PAYMENT_RATES_TITLE, STR_NULL),
+			NWidget(WWT_TEXT, COLOUR_BROWN, WID_CPR_HEADER), SetMinimalSize(0, 6), SetPadding(2, 0, 2, 0), SetDataTip(STR_GRAPH_CARGO_PAYMENT_RATES_TITLE, STR_NULL),
 			NWidget(NWID_SPACER), SetFill(1, 0), SetResize(1, 0),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_EMPTY, COLOUR_GREY, WID_CPR_GRAPH), SetMinimalSize(495, 0), SetFill(1, 1), SetResize(1, 1),
+			NWidget(WWT_EMPTY, COLOUR_BROWN, WID_CPR_GRAPH), SetMinimalSize(495, 0), SetFill(1, 1), SetResize(1, 1),
 			NWidget(NWID_VERTICAL),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 24), SetFill(0, 1),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_CPR_ENABLE_CARGOES), SetDataTip(STR_GRAPH_CARGO_ENABLE_ALL, STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL), SetFill(1, 0),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_CPR_DISABLE_CARGOES), SetDataTip(STR_GRAPH_CARGO_DISABLE_ALL, STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CPR_ENABLE_CARGOES), SetDataTip(STR_GRAPH_CARGO_ENABLE_ALL, STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CPR_DISABLE_CARGOES), SetDataTip(STR_GRAPH_CARGO_DISABLE_ALL, STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL), SetFill(1, 0),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 4),
 				NWidget(NWID_HORIZONTAL),
-					NWidget(WWT_MATRIX, COLOUR_ORANGE, WID_CPR_MATRIX), SetResize(0, 2), SetMatrixDataTip(1, 0, STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO), SetScrollbar(WID_CPR_MATRIX_SCROLLBAR),
-					NWidget(NWID_VSCROLLBAR, COLOUR_ORANGE, WID_CPR_MATRIX_SCROLLBAR),
+					NWidget(WWT_MATRIX, COLOUR_BROWN, WID_CPR_MATRIX), SetResize(0, 2), SetMatrixDataTip(1, 0, STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO), SetScrollbar(WID_CPR_MATRIX_SCROLLBAR),
+					NWidget(NWID_VSCROLLBAR, COLOUR_BROWN, WID_CPR_MATRIX_SCROLLBAR),
 				EndContainer(),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 24), SetFill(0, 1),
 			EndContainer(),
@@ -1070,9 +1078,9 @@ static const NWidgetPart _nested_cargo_payment_rates_widgets[] = {
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(NWID_SPACER), SetMinimalSize(WD_RESIZEBOX_WIDTH, 0), SetFill(1, 0), SetResize(1, 0),
-			NWidget(WWT_TEXT, COLOUR_GREY, WID_CPR_FOOTER), SetMinimalSize(0, 6), SetPadding(2, 0, 2, 0), SetDataTip(STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL, STR_NULL),
+			NWidget(WWT_TEXT, COLOUR_BROWN, WID_CPR_FOOTER), SetMinimalSize(0, 6), SetPadding(2, 0, 2, 0), SetDataTip(STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL, STR_NULL),
 			NWidget(NWID_SPACER), SetFill(1, 0), SetResize(1, 0),
-			NWidget(WWT_RESIZEBOX, COLOUR_GREY, WID_CPR_RESIZE),
+			NWidget(WWT_RESIZEBOX, COLOUR_BROWN, WID_CPR_RESIZE),
 		EndContainer(),
 	EndContainer(),
 };
@@ -1115,7 +1123,7 @@ static const StringID _performance_titles[] = {
 
 static inline StringID GetPerformanceTitleFromValue(uint value)
 {
-	return _performance_titles[minu(value, 1000) >> 6];
+	return _performance_titles[std::min(value, 1000u) >> 6];
 }
 
 class CompanyLeagueWindow : public Window {
@@ -1199,7 +1207,7 @@ public:
 
 		this->ordinal_width = 0;
 		for (uint i = 0; i < MAX_COMPANIES; i++) {
-			this->ordinal_width = max(this->ordinal_width, GetStringBoundingBox(STR_ORDINAL_NUMBER_1ST + i).width);
+			this->ordinal_width = std::max(this->ordinal_width, GetStringBoundingBox(STR_ORDINAL_NUMBER_1ST + i).width);
 		}
 		this->ordinal_width += 5; // Keep some extra spacing
 
@@ -1215,13 +1223,13 @@ public:
 
 		Dimension d = GetSpriteSize(SPR_COMPANY_ICON);
 		this->icon_width = d.width + 2;
-		this->line_height = max<int>(d.height + 2, FONT_HEIGHT_NORMAL);
+		this->line_height = std::max<int>(d.height + 2, FONT_HEIGHT_NORMAL);
 
 		for (const Company *c : Company::Iterate()) {
 			SetDParam(0, c->index);
 			SetDParam(1, c->index);
 			SetDParam(2, _performance_titles[widest_title]);
-			widest_width = max(widest_width, GetStringBoundingBox(STR_COMPANY_LEAGUE_COMPANY_NAME).width);
+			widest_width = std::max(widest_width, GetStringBoundingBox(STR_COMPANY_LEAGUE_COMPANY_NAME).width);
 		}
 
 		this->text_width = widest_width + 30; // Keep some extra spacing
@@ -1256,12 +1264,12 @@ public:
 
 static const NWidgetPart _nested_company_league_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY), SetDataTip(STR_COMPANY_LEAGUE_TABLE_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_SHADEBOX, COLOUR_GREY),
-		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
+		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_COMPANY_LEAGUE_TABLE_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
+		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_GREY, WID_CL_BACKGROUND), SetMinimalSize(400, 0), SetMinimalTextLines(15, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM),
+	NWidget(WWT_PANEL, COLOUR_BROWN, WID_CL_BACKGROUND), SetMinimalSize(400, 0), SetMinimalTextLines(15, WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM),
 };
 
 static WindowDesc _company_league_desc(
@@ -1321,7 +1329,7 @@ struct PerformanceRatingDetailWindow : Window {
 
 				uint score_info_width = 0;
 				for (uint i = SCORE_BEGIN; i < SCORE_END; i++) {
-					score_info_width = max(score_info_width, GetStringBoundingBox(STR_PERFORMANCE_DETAIL_VEHICLES + i).width);
+					score_info_width = std::max(score_info_width, GetStringBoundingBox(STR_PERFORMANCE_DETAIL_VEHICLES + i).width);
 				}
 				SetDParamMaxValue(0, 1000);
 				score_info_width += GetStringBoundingBox(STR_BLACK_COMMA).width + WD_FRAMERECT_LEFT;
@@ -1527,11 +1535,11 @@ static NWidgetBase *MakePerformanceDetailPanels(int *biggest_index)
 		STR_PERFORMANCE_DETAIL_TOTAL_TOOLTIP,
 	};
 
-	assert_compile(lengthof(performance_tips) == SCORE_END - SCORE_BEGIN);
+	static_assert(lengthof(performance_tips) == SCORE_END - SCORE_BEGIN);
 
 	NWidgetVertical *vert = new NWidgetVertical(NC_EQUALSIZE);
 	for (int widnum = WID_PRD_SCORE_FIRST; widnum <= WID_PRD_SCORE_LAST; widnum++) {
-		NWidgetBackground *panel = new NWidgetBackground(WWT_PANEL, COLOUR_GREY, widnum);
+		NWidgetBackground *panel = new NWidgetBackground(WWT_PANEL, COLOUR_BROWN, widnum);
 		panel->SetFill(1, 1);
 		panel->SetDataTip(0x0, performance_tips[widnum - WID_PRD_SCORE_FIRST]);
 		vert->Add(panel);
@@ -1543,17 +1551,17 @@ static NWidgetBase *MakePerformanceDetailPanels(int *biggest_index)
 /** Make a number of rows with buttons for each company for the performance rating detail window. */
 NWidgetBase *MakeCompanyButtonRowsGraphGUI(int *biggest_index)
 {
-	return MakeCompanyButtonRows(biggest_index, WID_PRD_COMPANY_FIRST, WID_PRD_COMPANY_LAST, 8, STR_PERFORMANCE_DETAIL_SELECT_COMPANY_TOOLTIP);
+	return MakeCompanyButtonRows(biggest_index, WID_PRD_COMPANY_FIRST, WID_PRD_COMPANY_LAST, COLOUR_BROWN, 8, STR_PERFORMANCE_DETAIL_SELECT_COMPANY_TOOLTIP);
 }
 
 static const NWidgetPart _nested_performance_rating_detail_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY), SetDataTip(STR_PERFORMANCE_DETAIL, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_SHADEBOX, COLOUR_GREY),
-		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
+		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_PERFORMANCE_DETAIL, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
+		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_GREY),
+	NWidget(WWT_PANEL, COLOUR_BROWN),
 		NWidgetFunction(MakeCompanyButtonRowsGraphGUI), SetPadding(0, 1, 1, 2),
 	EndContainer(),
 	NWidgetFunction(MakePerformanceDetailPanels),

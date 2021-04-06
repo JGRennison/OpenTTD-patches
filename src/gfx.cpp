@@ -40,22 +40,44 @@ bool _ctrl_pressed;   ///< Is Ctrl pressed?
 bool _shift_pressed;  ///< Is Shift pressed?
 bool _invert_ctrl;
 bool _invert_shift;
-byte _fast_forward;
+uint16 _game_speed = 100; ///< Current game-speed; 100 is 1x, 0 is infinite.
 bool _left_button_down;     ///< Is left mouse button pressed?
 bool _left_button_clicked;  ///< Is left mouse button clicked?
 bool _right_button_down;    ///< Is right mouse button pressed?
 bool _right_button_clicked; ///< Is right mouse button clicked?
 DrawPixelInfo _screen;
 bool _screen_disable_anim = false;   ///< Disable palette animation (important for 32bpp-anim blitter during giant screenshot)
+bool _check_special_modes;
 bool _exit_game;
 GameMode _game_mode;
 SwitchMode _switch_mode;  ///< The next mainloop command.
 PauseMode _pause_mode;
 Palette _cur_palette;
+std::mutex _cur_palette_mutex;
+std::string _switch_baseset;
 
 static byte _stringwidth_table[FS_END][224]; ///< Cache containing width of often used characters. @see GetCharacterWidth()
 DrawPixelInfo *_cur_dpi;
 byte _colour_gradient[COLOUR_END][8];
+
+byte _colour_value[COLOUR_END] = {
+	133, // COLOUR_DARK_BLUE
+	 99, // COLOUR_PALE_GREEN,
+	 48, // COLOUR_PINK,
+	 68, // COLOUR_YELLOW,
+	184, // COLOUR_RED,
+	152, // COLOUR_LIGHT_BLUE,
+	209, // COLOUR_GREEN,
+	 95, // COLOUR_DARK_GREEN,
+	150, // COLOUR_BLUE,
+	 79, // COLOUR_CREAM,
+	134, // COLOUR_MAUVE,
+	174, // COLOUR_PURPLE,
+	195, // COLOUR_ORANGE,
+	116, // COLOUR_BROWN,
+	  6, // COLOUR_GREY,
+	 15, // COLOUR_WHITE,
+};
 
 static void GfxMainBlitterViewport(const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub = nullptr, SpriteID sprite_id = SPR_CURSOR_MOUSE);
 static void GfxMainBlitter(const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub = nullptr, SpriteID sprite_id = SPR_CURSOR_MOUSE, ZoomLevel zoom = ZOOM_LVL_NORMAL);
@@ -64,6 +86,10 @@ static ReusableBuffer<uint8> _cursor_backup;
 
 ZoomLevel _gui_zoom; ///< GUI Zoom level
 ZoomLevel _font_zoom; ///< Font Zoom level
+
+int8 _gui_zoom_cfg;  ///< GUI zoom level in config.
+int8 _font_zoom_cfg; ///< Font zoom level in config.
+
 
 /**
  * The rect for repaint.
@@ -74,9 +100,7 @@ ZoomLevel _font_zoom; ///< Font Zoom level
  */
 static const byte *_colour_remap_ptr;
 static byte _string_colourremap[3]; ///< Recoloursprite for stringdrawing. The grf loader ensures that #ST_FONT sprites only use colours 0 to 2.
-
-static const uint DIRTY_BLOCK_HEIGHT   = 8;
-static const uint DIRTY_BLOCK_WIDTH    = 64;
+static int _sprite_brightness_adjust;
 
 extern uint _dirty_block_colour;
 static bool _whole_screen_dirty = false;
@@ -84,6 +108,13 @@ bool _gfx_draw_active = false;
 
 static std::vector<Rect> _dirty_blocks;
 static std::vector<Rect> _pending_dirty_blocks;
+
+enum GfxDebugFlags {
+	GDF_SHOW_WINDOW_DIRTY,
+	GDF_SHOW_WIDGET_DIRTY,
+	GDF_SHOW_RECT_DIRTY,
+};
+uint32 _gfx_debug_flags;
 
 /**
  * Applies a certain FillRectMode-operation to a rectangle [left, right] x [top, bottom] on the screen.
@@ -255,8 +286,8 @@ void GfxFillPolygon(const std::vector<Point> &shape, int colour, FillRectMode mo
 		std::sort(intersections.begin(), intersections.end());
 		for (size_t i = 1; i < intersections.size(); i += 2) {
 			/* Check clipping. */
-			const int x1 = max(0, intersections[i - 1]);
-			const int x2 = min(intersections[i], dpi->width);
+			const int x1 = std::max(0, intersections[i - 1]);
+			const int x2 = std::min(intersections[i], dpi->width);
 			if (x2 < 0) continue;
 			if (x1 >= dpi->width) continue;
 
@@ -319,7 +350,7 @@ static inline void GfxDoDrawLine(void *video, int x, int y, int x2, int y2, int 
 
 	/* prevent integer overflows. */
 	int margin = 1;
-	while (INT_MAX / abs(grade_y) < max(abs(clip.left - x), abs(clip.right - x))) {
+	while (INT_MAX / abs(grade_y) < std::max(abs(clip.left - x), abs(clip.right - x))) {
 		grade_y /= 2;
 		grade_x /= 2;
 		margin  *= 2; // account for rounding errors
@@ -628,7 +659,7 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 int DrawString(int left, int right, int top, const char *str, TextColour colour, StringAlignment align, bool underline, FontSize fontsize)
 {
 	/* The string may contain control chars to change the font, just use the biggest font for clipping. */
-	int max_height = max(max(FONT_HEIGHT_SMALL, FONT_HEIGHT_NORMAL), max(FONT_HEIGHT_LARGE, FONT_HEIGHT_MONO));
+	int max_height = std::max({FONT_HEIGHT_SMALL, FONT_HEIGHT_NORMAL, FONT_HEIGHT_LARGE, FONT_HEIGHT_MONO});
 
 	/* Funny glyphs may extent outside the usual bounds, so relax the clipping somewhat. */
 	int extra = max_height / 2;
@@ -908,8 +939,8 @@ Dimension GetSpriteSize(SpriteID sprid, Point *offset, ZoomLevel zoom)
 	}
 
 	Dimension d;
-	d.width  = max<int>(0, UnScaleByZoom(sprite->x_offs + sprite->width, zoom));
-	d.height = max<int>(0, UnScaleByZoom(sprite->y_offs + sprite->height, zoom));
+	d.width  = std::max<int>(0, UnScaleByZoom(sprite->x_offs + sprite->width, zoom));
+	d.height = std::max<int>(0, UnScaleByZoom(sprite->y_offs + sprite->height, zoom));
 	return d;
 }
 
@@ -920,6 +951,9 @@ Dimension GetSpriteSize(SpriteID sprid, Point *offset, ZoomLevel zoom)
  */
 static BlitterMode GetBlitterMode(PaletteID pal)
 {
+	if (HasBit(pal, PALETTE_BRIGHTNESS_MODIFY)) {
+		return GB(pal, 0, PALETTE_WIDTH) != PAL_NONE ? BM_COLOUR_REMAP_WITH_BRIGHTNESS : BM_NORMAL_WITH_BRIGHTNESS;
+	}
 	switch (pal) {
 		case PAL_NONE:          return BM_NORMAL;
 		case PALETTE_CRASH:     return BM_CRASH_REMAP;
@@ -945,8 +979,14 @@ void DrawSpriteViewport(SpriteID img, PaletteID pal, int x, int y, const SubSpri
 	} else if (pal != PAL_NONE) {
 		if (HasBit(pal, PALETTE_TEXT_RECOLOUR)) {
 			SetColourRemap((TextColour)GB(pal, 0, PALETTE_WIDTH));
-		} else {
+		} else if (GB(pal, 0, PALETTE_WIDTH) != PAL_NONE) {
 			_colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1;
+		}
+		if (HasBit(pal, PALETTE_BRIGHTNESS_MODIFY)) {
+			int adjust = GB(pal, PALETTE_BRIGHTNESS_OFFSET, PALETTE_BRIGHTNESS_WIDTH);
+			/* Sign extend */
+			int sign_bit = 1 << (PALETTE_BRIGHTNESS_WIDTH - 1);
+			_sprite_brightness_adjust = (adjust ^ sign_bit) - sign_bit;
 		}
 		GfxMainBlitterViewport(GetSprite(real_sprite, ST_NORMAL), x, y, GetBlitterMode(pal), sub, real_sprite);
 	} else {
@@ -1017,10 +1057,10 @@ static void GfxBlitter(const Sprite * const sprite, int x, int y, BlitterMode mo
 		bp.height = UnScaleByZoom(sprite->height, zoom);
 	} else {
 		/* Amount of pixels to clip from the source sprite */
-		int clip_left   = max(0,                   -sprite->x_offs +  sub->left        * ZOOM_BASE );
-		int clip_top    = max(0,                   -sprite->y_offs +  sub->top         * ZOOM_BASE );
-		int clip_right  = max(0, sprite->width  - (-sprite->x_offs + (sub->right + 1)  * ZOOM_BASE));
-		int clip_bottom = max(0, sprite->height - (-sprite->y_offs + (sub->bottom + 1) * ZOOM_BASE));
+		int clip_left   = std::max(0,                   -sprite->x_offs +  sub->left        * ZOOM_BASE );
+		int clip_top    = std::max(0,                   -sprite->y_offs +  sub->top         * ZOOM_BASE );
+		int clip_right  = std::max(0, sprite->width  - (-sprite->x_offs + (sub->right + 1)  * ZOOM_BASE));
+		int clip_bottom = std::max(0, sprite->height - (-sprite->y_offs + (sub->bottom + 1) * ZOOM_BASE));
 
 		if (clip_left + clip_right >= sprite->width) return;
 		if (clip_top + clip_bottom >= sprite->height) return;
@@ -1044,6 +1084,7 @@ static void GfxBlitter(const Sprite * const sprite, int x, int y, BlitterMode mo
 	bp.dst = dpi->dst_ptr;
 	bp.pitch = dpi->pitch;
 	bp.remap = _colour_remap_ptr;
+	bp.brightness_adjust = _sprite_brightness_adjust;
 
 	if (bp.width <= 0) return;
 	if (bp.height <= 0) return;
@@ -1122,6 +1163,7 @@ void DoPaletteAnimations();
 
 void GfxInitPalettes()
 {
+	std::lock_guard<std::mutex> lock_state(_cur_palette_mutex);
 	memcpy(&_cur_palette, &_palette, sizeof(_cur_palette));
 	DoPaletteAnimations();
 }
@@ -1239,11 +1281,6 @@ void DoPaletteAnimations()
 	}
 }
 
-void GameLoopPaletteAnimations()
-{
-	if (!_pause_mode && HasBit(_display_opt, DO_FULL_ANIMATION)) DoPaletteAnimations();
-}
-
 /**
  * Determine a contrasty text colour for a coloured background.
  * @param background Background colour.
@@ -1300,7 +1337,7 @@ byte GetDigitWidth(FontSize size)
 {
 	byte width = 0;
 	for (char c = '0'; c <= '9'; c++) {
-		width = max(GetCharacterWidth(size, c), width);
+		width = std::max(GetCharacterWidth(size, c), width);
 	}
 	return width;
 }
@@ -1328,15 +1365,15 @@ void ScreenSizeChanged()
 {
 	MarkWholeScreenDirty();
 
-	extern uint32 *_vp_map_line;
-	_vp_map_line = ReallocT<uint32>(_vp_map_line, _screen.width);
-
 	/* screen size changed and the old bitmap is invalid now, so we don't want to undraw it */
 	_cursor.visible = false;
 }
 
 void UndrawMouseCursor()
 {
+	/* Don't undraw mouse cursor if it is handled by the video driver. */
+	if (VideoDriver::GetInstance()->UseSystemCursor()) return;
+
 	/* Don't undraw the mouse cursor if the screen is not ready */
 	if (_screen.dst_ptr == nullptr) return;
 
@@ -1350,6 +1387,9 @@ void UndrawMouseCursor()
 
 void DrawMouseCursor()
 {
+	/* Don't draw mouse cursor if it is handled by the video driver. */
+	if (VideoDriver::GetInstance()->UseSystemCursor()) return;
+
 	/* Don't draw the mouse cursor if the screen is not ready */
 	if (_screen.dst_ptr == nullptr) return;
 
@@ -1487,11 +1527,20 @@ static void DrawDirtyViewport(uint occlusion, int left, int top, int right, int 
 		extern void ViewportDrawChk(Viewport *vp, int left, int top, int right, int bottom);
 		ViewportDrawChk(_dirty_viewport, left, top, right, bottom);
 		if (_dirty_viewport_disp_flags & (ND_SHADE_GREY | ND_SHADE_DIMMED)) {
-			GfxFillRect(left, top, right, bottom,
+			GfxFillRect(left, top, right - 1, bottom - 1,
 					(_dirty_viewport_disp_flags & ND_SHADE_DIMMED) ? PALETTE_TO_TRANSPARENT : PALETTE_NEWSPAPER, FILLRECT_RECOLOUR);
 		}
 		VideoDriver::GetInstance()->MakeDirty(left, top, right - left, bottom - top);
 	}
+}
+
+static void DrawOverlappedWindowWithClipping(Window *w, int left, int top, int right, int bottom, DrawOverlappedWindowFlags flags)
+{
+	extern void DrawOverlappedWindow(Window *w, int left, int top, int right, int bottom, DrawOverlappedWindowFlags flags);
+
+	if (right < 0 || bottom < 0 || left >= _screen.width || top >= _screen.height) return;
+
+	DrawOverlappedWindow(w, std::max(0, left), std::max(0, top), std::min(_screen.width, right), std::min(_screen.height, bottom), flags);
 }
 
 /**
@@ -1504,34 +1553,6 @@ static void DrawDirtyViewport(uint occlusion, int left, int top, int right, int 
 void DrawDirtyBlocks()
 {
 	static std::vector<NWidgetBase *> dirty_widgets;
-
-	if (HasModalProgress()) {
-		/* We are generating the world, so release our rights to the map and
-		 * painting while we are waiting a bit. */
-		bool is_first_modal_progress_loop = IsFirstModalProgressLoop();
-		_modal_progress_paint_mutex.unlock();
-		_modal_progress_work_mutex.unlock();
-
-		/* Wait a while and update _realtime_tick so we are given the rights */
-		if (!is_first_modal_progress_loop) SleepWhileModalProgress(MODAL_PROGRESS_REDRAW_TIMEOUT);
-#if defined(__GNUC__) || defined(__clang__)
-		__atomic_add_fetch(&_realtime_tick, MODAL_PROGRESS_REDRAW_TIMEOUT, __ATOMIC_RELAXED);
-#else
-		_realtime_tick += MODAL_PROGRESS_REDRAW_TIMEOUT;
-#endif
-
-		/* Modal progress thread may need blitter access while we are waiting for it. */
-		VideoDriver::GetInstance()->ReleaseBlitterLock();
-		_modal_progress_paint_mutex.lock();
-		VideoDriver::GetInstance()->AcquireBlitterLock();
-		_modal_progress_work_mutex.lock();
-
-		/* When we ended with the modal progress, do not draw the blocks.
-		 * Simply let the next run do so, otherwise we would be loading
-		 * the new state (and possibly change the blitter) when we hold
-		 * the drawing lock, which we must not do. */
-		if (_switch_mode != SM_NONE && !HasModalProgress()) return;
-	}
 
 	extern void ViewportPrepareVehicleRoute();
 	ViewportPrepareVehicleRoute();
@@ -1558,8 +1579,6 @@ void DrawDirtyBlocks()
 		DrawPixelInfo bk;
 		_cur_dpi = &bk;
 
-		extern void DrawOverlappedWindow(Window *w, int left, int top, int right, int bottom, bool gfx_dirty);
-
 		Window *w;
 		FOR_ALL_WINDOWS_FROM_BACK(w) {
 			w->flags &= ~WF_DRAG_DIRTIED;
@@ -1569,14 +1588,24 @@ void DrawDirtyBlocks()
 
 			if (w->flags & WF_DIRTY) {
 				clear_overlays();
-				DrawOverlappedWindow(w, max(0, w->left), max(0, w->top), min(_screen.width, w->left + w->width), min(_screen.height, w->top + w->height), true);
+				DrawOverlappedWindowFlags flags = DOWF_MARK_DIRTY;
+				if (unlikely(HasBit(_gfx_debug_flags, GDF_SHOW_WINDOW_DIRTY))) {
+					flags |= DOWF_SHOW_DEBUG;
+					_dirty_block_colour++;
+				}
+				DrawOverlappedWindowWithClipping(w, w->left, w->top, w->left + w->width, w->top + w->height, flags);
 				w->flags &= ~(WF_DIRTY | WF_WIDGETS_DIRTY);
 			} else if (w->flags & WF_WIDGETS_DIRTY) {
 				if (w->nested_root != nullptr) {
 					clear_overlays();
 					w->nested_root->FillDirtyWidgets(dirty_widgets);
 					for (NWidgetBase *widget : dirty_widgets) {
-						DrawOverlappedWindow(w, max(0, w->left + widget->pos_x), max(0, w->top + widget->pos_y), min(_screen.width, w->left + widget->pos_x + widget->current_x), min(_screen.height, w->top + widget->pos_y + widget->current_y), true);
+						DrawOverlappedWindowFlags flags = DOWF_MARK_DIRTY;
+						if (unlikely(HasBit(_gfx_debug_flags, GDF_SHOW_WIDGET_DIRTY))) {
+							flags |= DOWF_SHOW_DEBUG;
+							_dirty_block_colour++;
+						}
+						DrawOverlappedWindowWithClipping(w, w->left + widget->pos_x, w->top + widget->pos_y, w->left + widget->pos_x + widget->current_x, w->top + widget->pos_y + widget->current_y, flags);
 					}
 					dirty_widgets.clear();
 				}
@@ -1680,10 +1709,10 @@ void DrawDirtyBlocks()
 								no_more_coalesc:
 
 								assert(_cur_dpi == &bk);
-								int draw_left = max<int>(0, ((left == 0) ? 0 : vp->dirty_block_left_margin + (left << vp->GetDirtyBlockWidthShift())) + vp->left);
-								int draw_top = max<int>(0, (top << vp->GetDirtyBlockHeightShift()) + vp->top);
-								int draw_right = min<int>(_screen.width, min<int>((right << vp->GetDirtyBlockWidthShift()) + vp->dirty_block_left_margin, vp->width) + vp->left);
-								int draw_bottom = min<int>(_screen.height, min<int>(bottom << vp->GetDirtyBlockHeightShift(), vp->height) + vp->top);
+								int draw_left = std::max<int>(0, ((left == 0) ? 0 : vp->dirty_block_left_margin + (left << vp->GetDirtyBlockWidthShift())) + vp->left);
+								int draw_top = std::max<int>(0, (top << vp->GetDirtyBlockHeightShift()) + vp->top);
+								int draw_right = std::min<int>(_screen.width, std::min<int>((right << vp->GetDirtyBlockWidthShift()) + vp->dirty_block_left_margin, vp->width) + vp->left);
+								int draw_bottom = std::min<int>(_screen.height, std::min<int>(bottom << vp->GetDirtyBlockHeightShift(), vp->height) + vp->top);
 								if (draw_left < draw_right && draw_top < draw_bottom) {
 									DrawDirtyViewport(0, draw_left, draw_top, draw_right, draw_bottom);
 								}
@@ -1702,6 +1731,11 @@ void DrawDirtyBlocks()
 		for (const Rect &r : _dirty_blocks) {
 			RedrawScreenRect(r.left, r.top, r.right, r.bottom);
 		}
+		if (unlikely(HasBit(_gfx_debug_flags, GDF_SHOW_RECT_DIRTY))) {
+			for (const Rect &r : _dirty_blocks) {
+				GfxFillRect(r.left, r.top, r.right, r.bottom, _string_colourmap[++_dirty_block_colour & 0xF], FILLRECT_CHECKER);
+			}
+		}
 	}
 
 	_dirty_blocks.clear();
@@ -1718,8 +1752,8 @@ void DrawDirtyBlocks()
 	_gfx_draw_active = false;
 	++_dirty_block_colour;
 
-	extern void ClearViewPortCaches();
-	ClearViewPortCaches();
+	extern void ClearViewportCaches();
+	ClearViewportCaches();
 }
 
 void UnsetDirtyBlocks(int left, int top, int right, int bottom)
@@ -1940,7 +1974,7 @@ void UpdateCursorSize()
 	/* Ignore setting any cursor before the sprites are loaded. */
 	if (GetMaxSpriteID() == 0) return;
 
-	assert_compile(lengthof(_cursor.sprite_seq) == lengthof(_cursor.sprite_pos));
+	static_assert(lengthof(_cursor.sprite_seq) == lengthof(_cursor.sprite_pos));
 	assert(_cursor.sprite_count <= lengthof(_cursor.sprite_seq));
 	for (uint i = 0; i < _cursor.sprite_count; ++i) {
 		const Sprite *p = GetSprite(GB(_cursor.sprite_seq[i].sprite, 0, SPRITE_WIDTH), ST_NORMAL);
@@ -1954,8 +1988,8 @@ void UpdateCursorSize()
 			_cursor.total_offs = offs;
 			_cursor.total_size = size;
 		} else {
-			int right  = max(_cursor.total_offs.x + _cursor.total_size.x, offs.x + size.x);
-			int bottom = max(_cursor.total_offs.y + _cursor.total_size.y, offs.y + size.y);
+			int right  = std::max(_cursor.total_offs.x + _cursor.total_size.x, offs.x + size.x);
+			int bottom = std::max(_cursor.total_offs.y + _cursor.total_size.y, offs.y + size.y);
 			if (offs.x < _cursor.total_offs.x) _cursor.total_offs.x = offs.x;
 			if (offs.y < _cursor.total_offs.y) _cursor.total_offs.y = offs.y;
 			_cursor.total_size.x = right  - _cursor.total_offs.x;
@@ -2044,6 +2078,30 @@ void SetAnimatedMouseCursor(const AnimCursor *table)
 }
 
 /**
+ * Update cursor position on mouse movement for relative modes.
+ * @param delta_x How much change in the X position.
+ * @param delta_y How much change in the Y position.
+ */
+void CursorVars::UpdateCursorPositionRelative(int delta_x, int delta_y)
+{
+	if (this->fix_at) {
+		this->delta.x = delta_x;
+		this->delta.y = delta_y;
+	} else {
+		int last_position_x = this->pos.x;
+		int last_position_y = this->pos.y;
+
+		this->pos.x = Clamp(this->pos.x + delta_x, 0, _cur_resolution.width - 1);
+		this->pos.y = Clamp(this->pos.y + delta_y, 0, _cur_resolution.height - 1);
+
+		this->delta.x = last_position_x - this->pos.x;
+		this->delta.y = last_position_y - this->pos.y;
+
+		this->dirty = true;
+	}
+}
+
+/**
  * Update cursor position on mouse movement.
  * @param x New X position.
  * @param y New Y position.
@@ -2110,4 +2168,37 @@ bool ToggleFullScreen(bool fs)
 void SortResolutions()
 {
 	std::sort(_resolutions.begin(), _resolutions.end());
+}
+
+/**
+ * Resolve GUI zoom level, if auto-suggestion is requested.
+ */
+void UpdateGUIZoom()
+{
+	/* Determine real GUI zoom to use. */
+	if (_gui_zoom_cfg == ZOOM_LVL_CFG_AUTO) {
+		_gui_zoom = static_cast<ZoomLevel>(Clamp(VideoDriver::GetInstance()->GetSuggestedUIZoom(), _settings_client.gui.zoom_min, _settings_client.gui.zoom_max));
+	} else {
+		/* Ensure the gui_zoom is clamped between min/max. Change the
+		 * _gui_zoom_cfg if it isn't, as this is used to visually show the
+		 * selection in the Game Options. */
+		_gui_zoom_cfg = Clamp(_gui_zoom_cfg, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max);
+		_gui_zoom = static_cast<ZoomLevel>(_gui_zoom_cfg);
+	}
+
+	/* Determine real font zoom to use. */
+	if (_font_zoom_cfg == ZOOM_LVL_CFG_AUTO) {
+		_font_zoom = static_cast<ZoomLevel>(VideoDriver::GetInstance()->GetSuggestedUIZoom());
+	} else {
+		_font_zoom = static_cast<ZoomLevel>(_font_zoom_cfg);
+	}
+}
+
+void ChangeGameSpeed(bool enable_fast_forward)
+{
+	if (enable_fast_forward) {
+		_game_speed = _settings_client.gui.fast_forward_speed_limit;
+	} else {
+		_game_speed = 100;
+	}
 }

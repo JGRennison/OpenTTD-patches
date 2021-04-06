@@ -41,6 +41,12 @@ enum RailTypeFlags {
 };
 DECLARE_ENUM_AS_BIT_SET(RailTypeFlags)
 
+/** Railtype control flags. */
+enum RailTypeCtrlFlags {
+	RTCF_PROGSIG           = 0,                          ///< Custom signal sprites enabled for programmable pre-signals.
+	RTCF_RESTRICTEDSIG     = 1,                          ///< Custom signal sprite flag enabled for restricted signals.
+};
+
 struct SpriteGroup;
 
 /** Sprite groups for a railtype. */
@@ -188,6 +194,9 @@ public:
 	/** bitmask to the OTHER railtypes on which an engine of THIS railtype can physically travel */
 	RailTypes compatible_railtypes;
 
+	/** bitmask of all directly or indirectly reachable railtypes in either direction via compatible_railtypes */
+	RailTypes all_compatible_railtypes;
+
 	/**
 	 * Bridge offset
 	 */
@@ -207,6 +216,11 @@ public:
 	 * Bit mask of rail type flags
 	 */
 	RailTypeFlags flags;
+
+	/**
+	 * Bit mask of rail type control flags
+	 */
+	byte ctrl_flags;
 
 	/**
 	 * Cost multiplier for building this rail type
@@ -404,7 +418,7 @@ static inline Money RailClearCost(RailType railtype)
 	 * cost.
 	 */
 	assert(railtype < RAILTYPE_END);
-	return max(_price[PR_CLEAR_RAIL], -RailBuildCost(railtype) * 3 / 4);
+	return std::max(_price[PR_CLEAR_RAIL], -RailBuildCost(railtype) * 3 / 4);
 }
 
 /**
@@ -424,8 +438,8 @@ static inline Money RailConvertCost(RailType from, RailType to)
 	 * build costs, if the target type is more expensive (material upgrade costs).
 	 * Upgrade can never be more expensive than re-building. */
 	if (HasPowerOnRail(from, to) || HasPowerOnRail(to, from)) {
-		Money upgradecost = RailBuildCost(to) / 8 + max((Money)0, RailBuildCost(to) - RailBuildCost(from));
-		return min(upgradecost, rebuildcost);
+		Money upgradecost = RailBuildCost(to) / 8 + std::max((Money)0, RailBuildCost(to) - RailBuildCost(from));
+		return std::min(upgradecost, rebuildcost);
 	}
 
 	/* make the price the same as remove + build new type for rail types

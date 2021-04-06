@@ -8,6 +8,7 @@ The following libraries are used by OpenTTD for:
    heightmaps
 - liblzo2: (de)compressing of old (pre 0.3.0) savegames
 - liblzma: (de)compressing of savegames (1.1.0 and later)
+- libzstd: (de)compressing of savegames (1.11.0 and later)
 - libpng: making screenshots and loading heightmaps
 - libfreetype: loading generic fonts and rendering them
 - libfontconfig: searching for fonts, resolving font names to actual fonts
@@ -45,6 +46,7 @@ After this, you can install the dependencies OpenTTD needs. We advise to use
 the `static` versions, and OpenTTD currently needs the following dependencies:
 
 - liblzma
+- libzstd
 - libpng
 - lzo
 - zlib
@@ -52,11 +54,14 @@ the `static` versions, and OpenTTD currently needs the following dependencies:
 To install both the x64 (64bit) and x86 (32bit) variants (though only one is necessary), you can use:
 
 ```ps
-.\vcpkg install liblzma:x64-windows-static libpng:x64-windows-static lzo:x64-windows-static zlib:x64-windows-static
-.\vcpkg install liblzma:x86-windows-static libpng:x86-windows-static lzo:x86-windows-static zlib:x86-windows-static
+.\vcpkg install liblzma:x64-windows-static zstd:x64-windows-static libpng:x64-windows-static lzo:x64-windows-static zlib:x64-windows-static
+.\vcpkg install liblzma:x86-windows-static zstd:x86-windows-static libpng:x86-windows-static lzo:x86-windows-static zlib:x86-windows-static
 ```
 
 You can open the folder (as a CMake project). CMake will be detected, and you can compile from there.
+If libraries are installed but not found, you need to set VCPKG_TARGET_TRIPLET in CMake parameters.
+For Visual Studio 2017 you also need to set CMAKE_TOOLCHAIN_FILE.
+(Typical values are shown in the MSVC project file command line example)
 
 Alternatively, you can create a MSVC project file via CMake. For this
 either download CMake from https://cmake.org/download/ or use the version
@@ -73,6 +78,7 @@ in the build folder are MSVC project files. MSVC can rebuild the project
 files himself via the `ZERO_CHECK` project.
 
 ## All other platforms
+Minimum required version of CMake is 3.9.
 
 ```bash
 mkdir build
@@ -81,11 +87,14 @@ cmake ..
 make
 ```
 
+For more information on how to use CMake (including how to make Release builds),
+we urge you to read [their excellent manual](https://cmake.org/cmake/help/latest/guide/user-interaction/index.html).
+
 ## Supported compilers
 
-Every compiler that is supported by CMake and supports C++11, should be
+Every compiler that is supported by CMake and supports C++17, should be
 able to compile OpenTTD. As the exact list of compilers changes constantly,
-we refer to the compiler manual to see if it supports C++11, and to CMake
+we refer to the compiler manual to see if it supports C++17, and to CMake
 to see if it supports your compiler.
 
 ## Compilation of base sets

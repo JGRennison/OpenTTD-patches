@@ -23,7 +23,7 @@ static CommandCallback * const _callback_table[] = {
 	/* 0x01 */ CcBuildPrimaryVehicle,
 	/* 0x02 */ CcBuildAirport,
 	/* 0x03 */ CcBuildBridge,
-	/* 0x04 */ CcPlaySound_SPLAT_WATER,
+	/* 0x04 */ CcPlaySound_CONSTRUCTION_WATER,
 	/* 0x05 */ CcBuildDocks,
 	/* 0x06 */ CcFoundTown,
 	/* 0x07 */ CcBuildRoadTunnel,
@@ -33,8 +33,8 @@ static CommandCallback * const _callback_table[] = {
 	/* 0x0B */ CcRailDepot,
 	/* 0x0C */ CcPlaceSign,
 	/* 0x0D */ CcPlaySound_EXPLOSION,
-	/* 0x0E */ CcPlaySound_SPLAT_OTHER,
-	/* 0x0F */ CcPlaySound_SPLAT_RAIL,
+	/* 0x0E */ CcPlaySound_CONSTRUCTION_OTHER,
+	/* 0x0F */ CcPlaySound_CONSTRUCTION_RAIL,
 	/* 0x10 */ CcStation,
 	/* 0x11 */ CcTerraform,
 	/* 0x12 */ CcAI,
@@ -137,13 +137,14 @@ static CommandQueue _local_execution_queue;
  * @param tile The tile to perform a command on (see #CommandProc)
  * @param p1 Additional data for the command (see #CommandProc)
  * @param p2 Additional data for the command (see #CommandProc)
+ * @param p3 Additional data for the command (see #CommandProc)
  * @param cmd The command to execute (a CMD_* value)
  * @param callback A callback function to call after the command is finished
  * @param text The text to pass
  * @param company The company that wants to send the command
  * @param binary_length The quantity of binary data in text
  */
-void NetworkSendCommand(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback, const char *text, CompanyID company, uint32 binary_length)
+void NetworkSendCommand(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, CompanyID company, uint32 binary_length)
 {
 	assert((cmd & CMD_FLAGS_MASK) == 0);
 
@@ -152,6 +153,7 @@ void NetworkSendCommand(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, Comman
 	c.tile     = tile;
 	c.p1       = p1;
 	c.p2       = p2;
+	c.p3       = p3;
 	c.cmd      = cmd;
 	c.callback = callback;
 
@@ -315,11 +317,12 @@ const char *NetworkGameSocketHandler::ReceiveCommand(Packet *p, CommandPacket *c
 	cp->company = (CompanyID)p->Recv_uint8();
 	cp->cmd     = p->Recv_uint32();
 	if (!IsValidCommand(cp->cmd))               return "invalid command";
-	if (GetCommandFlags(cp->cmd) & CMD_OFFLINE) return "offline only command";
+	if (GetCommandFlags(cp->cmd) & CMD_OFFLINE) return "single-player only command";
 	if ((cp->cmd & CMD_FLAGS_MASK) != 0)        return "invalid command flag";
 
 	cp->p1      = p->Recv_uint32();
 	cp->p2      = p->Recv_uint32();
+	cp->p3      = p->Recv_uint64();
 	cp->tile    = p->Recv_uint32();
 	cp->binary_length = p->Recv_uint32();
 	if (cp->binary_length == 0) {
@@ -348,6 +351,7 @@ void NetworkGameSocketHandler::SendCommand(Packet *p, const CommandPacket *cp)
 	p->Send_uint32(cp->cmd);
 	p->Send_uint32(cp->p1);
 	p->Send_uint32(cp->p2);
+	p->Send_uint64(cp->p3);
 	p->Send_uint32(cp->tile);
 	p->Send_uint32(cp->binary_length);
 	if (cp->binary_length == 0) {

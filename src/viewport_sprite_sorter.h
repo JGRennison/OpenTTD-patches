@@ -47,8 +47,8 @@ struct __attribute__ ((aligned (16))) ParentSpriteToDraw {
 	bool IsComparisonDone() const { return HasBit(this->height, 15); }
 	void SetComparisonDone(bool done) { SB(this->height, 15, 1, done ? 1 : 0); }
 };
-assert_compile((sizeof(ParentSpriteToDraw) % 16) == 0);
-assert_compile(sizeof(ParentSpriteToDraw) <= 64);
+static_assert((sizeof(ParentSpriteToDraw) % 16) == 0);
+static_assert(sizeof(ParentSpriteToDraw) <= 64);
 
 typedef std::vector<ParentSpriteToDraw*> ParentSpriteToSortVector;
 

@@ -56,6 +56,11 @@ enum GroundVehicleFlags {
 	GVF_CHUNNEL_BIT              = 3,  ///< Vehicle may currently be in a chunnel. (Cached track information for inclination changes)
 };
 
+struct GroundVehicleAcceleration {
+	int acceleration;
+	int braking;
+};
+
 /**
  * Base class for all vehicles that move through ground.
  *
@@ -64,6 +69,8 @@ enum GroundVehicleFlags {
  *
  * virtual uint16      GetPower() const = 0;
  * virtual uint16      GetPoweredPartPower(const T *head) const = 0;
+ * virtual uint16      GetWeightWithoutCargo() const = 0;
+ * virtual uint16      GetCargoWeight() const = 0;
  * virtual uint16      GetWeight() const = 0;
  * virtual byte        GetTractiveEffort() const = 0;
  * virtual byte        GetAirDrag() const = 0;
@@ -95,7 +102,7 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 
 	void CalculatePower(uint32& power, uint32& max_te, bool breakdowns) const;
 
-	int GetAcceleration();
+	GroundVehicleAcceleration GetAcceleration();
 
 	/**
 	 * Common code executed for crashed ground vehicles
@@ -398,9 +405,21 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 		if (this->cur_speed != this->gcache.last_speed) {
 			SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
 			this->gcache.last_speed = this->cur_speed;
-			if (HasBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE)) {
-				this->InvalidateImageCacheOfChain();
+			if (HasBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE) && !_settings_client.gui.disable_vehicle_image_update) {
+				this->RefreshImageCacheOfChain();
 			}
+		}
+	}
+
+	/**
+	 * Refresh cached image of all vehicles in the chain (after the current vehicle)
+	 */
+	inline void RefreshImageCacheOfChain()
+	{
+		ClrBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE);
+		ClrBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_TRIGGER);
+		for (Vehicle *u = this; u != nullptr; u = u->Next()) {
+			SetBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT);
 		}
 	}
 
@@ -416,12 +435,18 @@ protected:
 	 * @param accel     The acceleration we would like to give this vehicle.
 	 * @param min_speed The minimum speed here, in vehicle specific units.
 	 * @param max_speed The maximum speed here, in vehicle specific units.
+	 * @param advisory_max_speed The advisory maximum speed here, in vehicle specific units.
 	 * @return Distance to drive.
 	 */
-	inline uint DoUpdateSpeed(uint accel, int min_speed, int max_speed)
+	inline uint DoUpdateSpeed(GroundVehicleAcceleration accel, int min_speed, int max_speed, int advisory_max_speed)
 	{
-		uint spd = this->subspeed + accel;
+		const byte initial_subspeed = this->subspeed;
+		uint spd = this->subspeed + accel.acceleration;
 		this->subspeed = (byte)spd;
+
+		if (!(Type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC)) {
+			max_speed = std::min(max_speed, advisory_max_speed);
+		}
 
 		int tempmax = max_speed;
 
@@ -437,14 +462,18 @@ protected:
 					}
 				}
 			} else if (this->breakdown_type == BREAKDOWN_LOW_SPEED) {
-				tempmax = min(max_speed, this->breakdown_severity);
+				tempmax = std::min<int>(max_speed, this->breakdown_severity);
 			} else {
 				tempmax = this->cur_speed;
 			}
 		}
 
 		if (this->cur_speed > max_speed) {
-			tempmax = max(this->cur_speed - (this->cur_speed / 10) - 1, max_speed);
+			if (Type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC && accel.braking >= 0) {
+				extern void TrainBrakesOverheatedBreakdown(Vehicle *v);
+				TrainBrakesOverheatedBreakdown(this);
+			}
+			tempmax = std::max(this->cur_speed - (this->cur_speed / 10) - 1, max_speed);
 		}
 
 		/* Enforce a maximum and minimum speed. Normally we would use something like
@@ -452,9 +481,32 @@ protected:
 		 * threshold for some reason. That makes acceleration fail and assertions
 		 * happen in Clamp. So make it explicit that min_speed overrules the maximum
 		 * speed by explicit ordering of min and max. */
-		this->cur_speed = spd = max(min(this->cur_speed + ((int)spd >> 8), tempmax), min_speed);
+		int tempspeed = std::min(this->cur_speed + ((int)spd >> 8), tempmax);
 
-		int scaled_spd = this->GetAdvanceSpeed(spd);
+		if (Type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC && tempspeed > advisory_max_speed && accel.braking != accel.acceleration) {
+			spd = initial_subspeed + accel.braking;
+			int braking_speed = this->cur_speed + ((int)spd >> 8);
+			if (braking_speed >= advisory_max_speed) {
+				if (braking_speed > tempmax) {
+					if (Type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC && accel.braking >= 0) {
+						extern void TrainBrakesOverheatedBreakdown(Vehicle *v);
+						TrainBrakesOverheatedBreakdown(this);
+					}
+					tempspeed = tempmax;
+					this->subspeed = 0;
+				} else {
+					tempspeed = braking_speed;
+					this->subspeed = (byte)spd;
+				}
+			} else {
+				tempspeed = advisory_max_speed;
+				this->subspeed = 0;
+			}
+		}
+
+		this->cur_speed = std::max(tempspeed, min_speed);
+
+		int scaled_spd = this->GetAdvanceSpeed(this->cur_speed);
 
 		scaled_spd += this->progress;
 		this->progress = 0; // set later in *Handler or *Controller

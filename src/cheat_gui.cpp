@@ -29,6 +29,7 @@
 #include "error.h"
 #include "network/network.h"
 #include "order_base.h"
+#include "currency.h"
 
 #include "widgets/cheat_widget.h"
 
@@ -205,7 +206,7 @@ static bool IsCheatAllowed(CheatNetworkMode mode)
 	return false;
 }
 
-assert_compile(CHT_NUM_CHEATS == lengthof(_cheats_ui));
+static_assert(CHT_NUM_CHEATS == lengthof(_cheats_ui));
 
 /** Widget definitions of the cheat GUI. */
 static const NWidgetPart _nested_cheat_widgets[] = {
@@ -216,12 +217,14 @@ static const NWidgetPart _nested_cheat_widgets[] = {
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_GREY, WID_C_PANEL), SetDataTip(0x0, STR_CHEATS_TOOLTIP), EndContainer(),
+	NWidget(WWT_PANEL, COLOUR_GREY),
+		NWidget(WWT_LABEL, COLOUR_GREY, WID_C_NOTE), SetFill(1, 1), SetDataTip(STR_CHEATS_NOTE, STR_NULL), SetPadding(WD_PAR_VSEP_NORMAL, 4, WD_PAR_VSEP_NORMAL, 4),
+	EndContainer(),
 };
 
 /** GUI for the cheats. */
 struct CheatWindow : Window {
 	int clicked;
-	int header_height;
 	int clicked_widget;
 	uint line_height;
 	int box_width;
@@ -236,8 +239,7 @@ struct CheatWindow : Window {
 	{
 		if (widget != WID_C_PANEL) return;
 
-		int y = r.top + WD_FRAMERECT_TOP + this->header_height;
-		DrawStringMultiLine(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_LEFT, r.top + WD_FRAMERECT_TOP, y, STR_CHEATS_WARNING, TC_FROMSTRING, SA_CENTER);
+		int y = r.top + WD_FRAMERECT_TOP + WD_PAR_VSEP_NORMAL;
 
 		bool rtl = _current_text_dir == TD_RTL;
 		uint box_left    = rtl ? r.right - this->box_width - 5 : r.left + 5;
@@ -324,9 +326,9 @@ struct CheatWindow : Window {
 
 				case SLE_BOOL:
 					SetDParam(0, STR_CONFIG_SETTING_ON);
-					width = max(width, GetStringBoundingBox(ce->str).width);
+					width = std::max(width, GetStringBoundingBox(ce->str).width);
 					SetDParam(0, STR_CONFIG_SETTING_OFF);
-					width = max(width, GetStringBoundingBox(ce->str).width);
+					width = std::max(width, GetStringBoundingBox(ce->str).width);
 					break;
 
 				default:
@@ -334,37 +336,36 @@ struct CheatWindow : Window {
 						/* Display date for change date cheat */
 						case STR_CHEAT_CHANGE_DATE:
 							SetDParam(0, ConvertYMDToDate(MAX_YEAR, 11, 31));
-							width = max(width, GetStringBoundingBox(ce->str).width);
+							width = std::max(width, GetStringBoundingBox(ce->str).width);
 							break;
 
 						/* Draw coloured flag for change company cheat */
 						case STR_CHEAT_CHANGE_COMPANY:
 							SetDParamMaxValue(0, MAX_COMPANIES);
-							width = max(width, GetStringBoundingBox(ce->str).width + 10 + 10);
+							width = std::max(width, GetStringBoundingBox(ce->str).width + 10 + 10);
 							break;
 
 						default:
 							SetDParam(0, INT64_MAX);
-							width = max(width, GetStringBoundingBox(ce->str).width);
+							width = std::max(width, GetStringBoundingBox(ce->str).width);
 							break;
 					}
 					break;
 			}
 		}
 
-		this->line_height = max(GetSpriteSize(SPR_BOX_CHECKED).height, GetSpriteSize(SPR_BOX_EMPTY).height);
-		this->line_height = max<uint>(this->line_height, SETTING_BUTTON_HEIGHT);
-		this->line_height = max<uint>(this->line_height, FONT_HEIGHT_NORMAL) + WD_PAR_VSEP_NORMAL;
+		this->line_height = std::max(GetSpriteSize(SPR_BOX_CHECKED).height, GetSpriteSize(SPR_BOX_EMPTY).height);
+		this->line_height = std::max<uint>(this->line_height, SETTING_BUTTON_HEIGHT);
+		this->line_height = std::max<uint>(this->line_height, FONT_HEIGHT_NORMAL) + WD_PAR_VSEP_NORMAL;
 
 		size->width = width + 20 + this->box_width + SETTING_BUTTON_WIDTH /* stuff on the left */ + 10 /* extra spacing on right */;
-		this->header_height = GetStringHeight(STR_CHEATS_WARNING, size->width - WD_FRAMERECT_LEFT - WD_FRAMERECT_RIGHT) + WD_PAR_VSEP_WIDE;
-		size->height = this->header_height + WD_FRAMERECT_TOP + WD_PAR_VSEP_NORMAL + WD_FRAMERECT_BOTTOM + this->line_height * lines;
+		size->height = WD_FRAMERECT_TOP + WD_PAR_VSEP_NORMAL + WD_FRAMERECT_BOTTOM + this->line_height * lines;
 	}
 
 	void OnClick(Point pt, int widget, int click_count) override
 	{
 		const NWidgetBase *wid = this->GetWidget<NWidgetBase>(WID_C_PANEL);
-		uint btn = (pt.y - wid->pos_y - WD_FRAMERECT_TOP - this->header_height) / this->line_height;
+		uint btn = (pt.y - wid->pos_y - WD_FRAMERECT_TOP - WD_PAR_VSEP_NORMAL) / this->line_height;
 		int x = pt.x - wid->pos_x;
 		bool rtl = _current_text_dir == TD_RTL;
 		if (rtl) x = wid->current_x - x;
@@ -390,6 +391,11 @@ struct CheatWindow : Window {
 			clicked_widget = CHT_EDIT_MAX_HL;
 			SetDParam(0, value);
 			ShowQueryString(STR_JUST_INT, STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT, 8, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
+			return;
+		} else if (btn == CHT_MONEY && x >= 20 + this->box_width + SETTING_BUTTON_WIDTH) {
+			clicked_widget = CHT_MONEY;
+			SetDParam(0, value);
+			ShowQueryString(STR_JUST_INT, STR_CHEAT_EDIT_MONEY_QUERY_CAPT, 20, this, CS_NUMERAL_SIGNED, QSF_ACCEPT_UNCHANGED);
 			return;
 		} else if (ce->type == SLF_NOT_IN_SAVE && x >= 20 + this->box_width + SETTING_BUTTON_WIDTH) {
 			clicked_widget = btn;
@@ -463,6 +469,11 @@ struct CheatWindow : Window {
 			strecpy(tmp_buffer, str, lastof(tmp_buffer));
 			str_replace_wchar(tmp_buffer, lastof(tmp_buffer), GetDecimalSeparatorChar(), '.');
 			DoCommandP(0, (uint32)clicked_widget, (uint32)Clamp<uint64>(atof(tmp_buffer) * 65536.0, 1 << 16, MAX_INFLATION), CMD_CHEAT_SETTING);
+			return;
+		}
+		if (ce->mode == CNM_MONEY) {
+			if (!_networking) *ce->been_used = true;
+			DoCommandP(0, (strtoll(str, nullptr, 10) / _currency->rate), 0, _network_server || _network_settings_access ? CMD_MONEY_CHEAT_ADMIN : CMD_MONEY_CHEAT);
 			return;
 		}
 

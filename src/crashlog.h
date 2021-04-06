@@ -158,6 +158,12 @@ public:
 	 */
 	static void InitialiseCrashLog();
 
+	/**
+	 * Prepare crash log handler for a newly started thread.
+	 * @note must be implemented by all implementers of CrashLog.
+	 */
+	static void InitThread();
+
 	static void DesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info);
 	static void VersionInfoLog();
 

@@ -45,8 +45,8 @@
 /* DestinationID must be at least as large as every these below, because it can
  * be any of them
  */
-assert_compile(sizeof(DestinationID) >= sizeof(DepotID));
-assert_compile(sizeof(DestinationID) >= sizeof(StationID));
+static_assert(sizeof(DestinationID) >= sizeof(DepotID));
+static_assert(sizeof(DestinationID) >= sizeof(StationID));
 
 OrderPool _order_pool("Order");
 INSTANTIATE_POOL_METHODS(Order)
@@ -63,8 +63,7 @@ void IntialiseOrderDestinationRefcountMap()
 	ClearOrderDestinationRefcountMap();
 	for (const Vehicle *v : Vehicle::Iterate()) {
 		if (v != v->FirstShared()) continue;
-		const Order *order;
-		FOR_VEHICLE_ORDERS(v, order) {
+		for(const Order *order : v->Orders()) {
 			if (order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT) || order->IsType(OT_IMPLICIT)) {
 				_order_destination_refcount_map[OrderDestinationRefcountMapKey(order->GetDestination(), v->owner, order->GetType(), v->type)]++;
 			}
@@ -176,12 +175,13 @@ void Order::MakeLoading(bool ordered)
  */
 bool Order::UpdateJumpCounter(byte percent, bool dry_run)
 {
-	if (dry_run) return this->jump_counter >= 0;
-	if (this->jump_counter >= 0) {
-		this->jump_counter += (percent - 100);
+	const int8 jump_counter = this->GetJumpCounter();
+	if (dry_run) return jump_counter >= 0;
+	if (jump_counter >= 0) {
+		this->SetJumpCounter(jump_counter + (percent - 100));
 		return true;
 	}
-	this->jump_counter += percent;
+	this->SetJumpCounter(jump_counter + percent);
 	return false;
 }
 
@@ -235,6 +235,12 @@ void Order::MakeLoadingAdvance(StationID destination)
 	this->dest = destination;
 }
 
+void Order::MakeReleaseSlot()
+{
+	this->type = OT_RELEASE_SLOT;
+	this->dest = INVALID_TRACE_RESTRICT_SLOT_ID;
+}
+
 /**
  * Make this depot/station order also a refit order.
  * @param cargo   the cargo type to change to.
@@ -268,14 +274,14 @@ bool Order::Equals(const Order &other) const
 }
 
 /**
- * Pack this order into a 32 bits integer, or actually only
+ * Pack this order into a 64 bits integer, or actually only
  * the type, flags and destination.
  * @return the packed representation.
  * @note unpacking is done in the constructor.
  */
-uint32 Order::Pack() const
+uint64 Order::Pack() const
 {
-	return this->dest << 16 | this->flags << 8 | this->type;
+	return ((uint64) this->dest) << 24 | ((uint64) this->flags) << 8 | ((uint64) this->type);
 }
 
 /**
@@ -309,18 +315,17 @@ uint16 Order::MapOldOrder() const
  * Create an order based on a packed representation of that order.
  * @param packed the packed representation.
  */
-Order::Order(uint32 packed)
+Order::Order(uint64 packed)
 {
 	this->type    = (OrderType)GB(packed,  0,  8);
-	this->flags   = GB(packed,  8,  8);
-	this->dest    = GB(packed, 16, 16);
+	this->flags   = GB(packed,  8,  16);
+	this->dest    = GB(packed, 24, 16);
 	this->extra   = nullptr;
 	this->next    = nullptr;
 	this->refit_cargo   = CT_NO_REFIT;
 	this->occupancy     = 0;
 	this->wait_time     = 0;
 	this->travel_time   = 0;
-	this->jump_counter  = 0;
 	this->max_speed     = UINT16_MAX;
 }
 
@@ -361,7 +366,6 @@ void Order::AssignOrder(const Order &other)
 
 	this->wait_time   = other.wait_time;
 
-	this->jump_counter = other.jump_counter;
 	this->travel_time = other.travel_time;
 	this->max_speed   = other.max_speed;
 
@@ -543,7 +547,7 @@ VehicleOrderID OrderList::GetIndexOfOrder(const Order *order) const
  */
 const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops, CargoTypes &cargo_mask) const
 {
-	if (hops > this->GetNumOrders() || next == nullptr) return nullptr;
+	if (hops > std::min<uint>(64, this->GetNumOrders()) || next == nullptr) return nullptr;
 
 	if (next->IsType(OT_CONDITIONAL)) {
 		if (next->GetConditionVariable() != OCV_UNCONDITIONALLY) return next;
@@ -649,7 +653,7 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 			});
 			if (invalid) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION);
 		}
-	} while (next->IsType(OT_GOTO_DEPOT) || next->GetDestination() == v->last_station_visited);
+	} while (next->IsType(OT_GOTO_DEPOT) || next->IsType(OT_RELEASE_SLOT) || next->GetDestination() == v->last_station_visited);
 
 	return CargoMaskedStationIDStack(cargo_mask, next->GetDestination());
 }
@@ -923,13 +927,13 @@ TileIndex Order::GetLocation(const Vehicle *v, bool airport) const
 uint GetOrderDistance(const Order *prev, const Order *cur, const Vehicle *v, int conditional_depth)
 {
 	if (cur->IsType(OT_CONDITIONAL)) {
-		if (conditional_depth > v->GetNumOrders()) return 0;
+		if (conditional_depth > std::min<int>(64, v->GetNumOrders())) return 0;
 
 		conditional_depth++;
 
 		int dist1 = GetOrderDistance(prev, v->GetOrder(cur->GetConditionSkipToOrder()), v, conditional_depth);
 		int dist2 = GetOrderDistance(prev, cur->next == nullptr ? v->orders.list->GetFirstOrder() : cur->next, v, conditional_depth);
-		return max(dist1, dist2);
+		return std::max(dist1, dist2);
 	}
 
 	TileIndex prev_tile = prev->GetLocation(v, true);
@@ -944,18 +948,18 @@ uint GetOrderDistance(const Order *prev, const Order *cur, const Vehicle *v, int
  * @param flags operation to perform
  * @param p1 various bitstuffed elements
  * - p1 = (bit  0 - 19) - ID of the vehicle
- * - p1 = (bit 20 - 27) - the selected order (if any). If the last order is given,
+ * @param p2 various bitstuffed elements
+ *  - p2 = (bit 0 - 15) - the selected order (if any). If the last order is given,
  *                        the order will be inserted before that one
- *                        the maximum vehicle order id is 254.
- * @param p2 packed order to insert
+ * @param p3 packed order to insert
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
 {
 	VehicleID veh          = GB(p1,  0, 20);
-	VehicleOrderID sel_ord = GB(p1, 20, 8);
-	Order new_order(p2);
+	VehicleOrderID sel_ord = GB(p2,  0, 16);
+	Order new_order(p3);
 
 	return CmdInsertOrderIntl(flags, Vehicle::GetIfValid(veh), sel_ord, new_order, false);
 }
@@ -1175,6 +1179,13 @@ CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID s
 			break;
 		}
 
+		case OT_RELEASE_SLOT: {
+			if (v->type != VEH_TRAIN) return CMD_ERROR;
+			TraceRestrictSlotID slot = new_order.GetDestination();
+			if (slot != INVALID_TRACE_RESTRICT_SLOT_ID && !TraceRestrictSlot::IsValidID(slot)) return CMD_ERROR;
+			break;
+		}
+
 		default: return CMD_ERROR;
 	}
 
@@ -1247,13 +1258,12 @@ void InsertOrder(Vehicle *v, Order *new_o, VehicleOrderID sel_ord)
 			}
 		}
 		/* Update any possible open window of the vehicle */
-		InvalidateVehicleOrder(u, INVALID_VEH_ORDER_ID | (sel_ord << 8));
+		InvalidateVehicleOrder(u, INVALID_VEH_ORDER_ID | (sel_ord << 16));
 	}
 
 	/* As we insert an order, the order to skip to will be 'wrong'. */
 	VehicleOrderID cur_order_id = 0;
-	Order *order;
-	FOR_VEHICLE_ORDERS(v, order) {
+	for (Order *order : v->Orders()) {
 		if (order->IsType(OT_CONDITIONAL)) {
 			VehicleOrderID order_id = order->GetConditionSkipToOrder();
 			if (order_id >= sel_ord) {
@@ -1310,14 +1320,14 @@ static CargoID GetFirstValidCargo()
  * @param tile unused
  * @param flags operation to perform
  * @param p1 the ID of the vehicle
- * @param p2 the order to delete (max 255)
+ * @param p2 the order to delete
  * @param text unused
  * @return the cost of this operation or an error
  */
 CommandCost CmdDeleteOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	VehicleID veh_id = GB(p1, 0, 20);
-	VehicleOrderID sel_ord = GB(p2, 0, 8);
+	VehicleOrderID sel_ord = GB(p2, 0, 16);
 
 	Vehicle *v = Vehicle::GetIfValid(veh_id);
 
@@ -1404,17 +1414,16 @@ void DeleteOrder(Vehicle *v, VehicleOrderID sel_ord)
 		}
 
 		/* Update any possible open window of the vehicle */
-		InvalidateVehicleOrder(u, sel_ord | (INVALID_VEH_ORDER_ID << 8));
+		InvalidateVehicleOrder(u, sel_ord | (INVALID_VEH_ORDER_ID << 16));
 	}
 
 	/* As we delete an order, the order to skip to will be 'wrong'. */
 	VehicleOrderID cur_order_id = 0;
-	Order *order = nullptr;
-	FOR_VEHICLE_ORDERS(v, order) {
+	for (Order *order : v->Orders()) {
 		if (order->IsType(OT_CONDITIONAL)) {
 			VehicleOrderID order_id = order->GetConditionSkipToOrder();
 			if (order_id >= sel_ord) {
-				order_id = max(order_id - 1, 0);
+				order_id = std::max(order_id - 1, 0);
 			}
 			if (order_id == cur_order_id) {
 				order_id = (order_id + 1) % v->GetNumOrders();
@@ -1440,7 +1449,7 @@ void DeleteOrder(Vehicle *v, VehicleOrderID sel_ord)
 CommandCost CmdSkipToOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	VehicleID veh_id = GB(p1, 0, 20);
-	VehicleOrderID sel_ord = GB(p2, 0, 8);
+	VehicleOrderID sel_ord = GB(p2, 0, 16);
 
 	Vehicle *v = Vehicle::GetIfValid(veh_id);
 
@@ -1464,8 +1473,7 @@ CommandCost CmdSkipToOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	}
 
 	/* We have an aircraft/ship, they have a mini-schedule, so update them all */
-	if (v->type == VEH_AIRCRAFT) SetWindowClassesDirty(WC_AIRCRAFT_LIST);
-	if (v->type == VEH_SHIP) SetWindowClassesDirty(WC_SHIPS_LIST);
+	if (v->type == VEH_AIRCRAFT || v->type == VEH_SHIP) DirtyVehicleListWindowForVehicle(v);
 
 	return CommandCost();
 }
@@ -1548,12 +1556,11 @@ CommandCost CmdMoveOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 
 			assert(v->orders.list == u->orders.list);
 			/* Update any possible open window of the vehicle */
-			InvalidateVehicleOrder(u, moving_order | (target_order << 8));
+			InvalidateVehicleOrder(u, moving_order | (target_order << 16));
 		}
 
 		/* As we move an order, the order to skip to will be 'wrong'. */
-		Order *order;
-		FOR_VEHICLE_ORDERS(v, order) {
+		for (Order *order : v->Orders()) {
 			if (order->IsType(OT_CONDITIONAL)) {
 				VehicleOrderID order_id = order->GetConditionSkipToOrder();
 				if (order_id == moving_order) {
@@ -1576,24 +1583,95 @@ CommandCost CmdMoveOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 }
 
 /**
+ * Reverse an orderlist
+ * @param tile unused
+ * @param flags operation to perform
+ * @param p1 the ID of the vehicle
+ * @param p2 subcommand
+ *        0: reverse whole order list
+ *        1: append reversed order list
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdReverseOrderList(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	VehicleID veh = GB(p1, 0, 20);
+
+	Vehicle *v = Vehicle::GetIfValid(veh);
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
+
+	uint order_count = v->GetNumOrders();
+
+	switch (p2) {
+		case 0: {
+			if (order_count < 2) return CMD_ERROR;
+			uint max_order = order_count - 1;
+			for (uint i = 0; i < max_order; i++) {
+				CommandCost cost = DoCommand(tile, p1, max_order | (i << 16), flags, CMD_MOVE_ORDER);
+				if (cost.Failed()) return cost;
+			}
+			break;
+		}
+
+		case 1: {
+			if (order_count < 3) return CMD_ERROR;
+			uint max_order = order_count - 1;
+			if (((order_count * 2) - 2) > MAX_VEH_ORDER_ID) return_cmd_error(STR_ERROR_TOO_MANY_ORDERS);
+			if (!Order::CanAllocateItem(order_count - 2)) return_cmd_error(STR_ERROR_NO_MORE_SPACE_FOR_ORDERS);
+			for (uint i = 0; i < order_count; i++) {
+				if (v->GetOrder(i)->IsType(OT_CONDITIONAL)) return CMD_ERROR;
+			}
+			for (uint i = 1; i < max_order; i++) {
+				Order new_order;
+				new_order.AssignOrder(*v->GetOrder(i));
+				const bool wait_fixed = new_order.IsWaitFixed();
+				const bool wait_timetabled = wait_fixed && new_order.IsWaitTimetabled();
+				new_order.SetWaitTimetabled(false);
+				new_order.SetTravelTimetabled(false);
+				new_order.SetTravelTime(0);
+				new_order.SetTravelFixed(false);
+				CommandCost cost = CmdInsertOrderIntl(flags, v, order_count, new_order, true);
+				if (cost.Failed()) return cost;
+				if (flags & DC_EXEC) {
+					Order *order = v->orders.list->GetOrderAt(order_count);
+					order->SetRefit(new_order.GetRefitCargo());
+					order->SetMaxSpeed(new_order.GetMaxSpeed());
+					if (wait_fixed) {
+						extern void SetOrderFixedWaitTime(Vehicle *v, VehicleOrderID order_number, uint32 wait_time, bool wait_timetabled);
+						SetOrderFixedWaitTime(v, order_count, new_order.GetWaitTime(), wait_timetabled);
+					}
+				}
+				new_order.Free();
+			}
+			break;
+		};
+
+		default:
+			return CMD_ERROR;
+	}
+
+	return CommandCost();
+}
+
+/**
  * Modify an order in the orderlist of a vehicle.
  * @param tile unused
  * @param flags operation to perform
  * @param p1 various bitstuffed elements
  * - p1 = (bit  0 - 19) - ID of the vehicle
- * - p1 = (bit 20 - 27) - the selected order (if any). If the last order is given,
- *                        the order will be inserted before that one
- *                        the maximum vehicle order id is 254.
  * @param p2 various bitstuffed elements
  *  - p2 = (bit 0 -  3) - what data to modify (@see ModifyOrderFlags)
  *  - p2 = (bit 4 - 19) - the data to modify
  *  - p2 = (bit 20 - 27) - a CargoID for cargo type orders (MOF_CARGO_TYPE_UNLOAD or MOF_CARGO_TYPE_LOAD)
+ * @param p3 various bitstuffed elements
+ *  - p3 = (bit 0 - 15) - the selected order (if any). If the last order is given,
+ *                        the order will be inserted before that one
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
 {
-	VehicleOrderID sel_ord = GB(p1, 20,  8);
+	VehicleOrderID sel_ord = GB(p3,  0, 16);
 	VehicleID veh          = GB(p1,  0, 20);
 	ModifyOrderFlags mof   = Extract<ModifyOrderFlags, 0, 4>(p2);
 	uint16 data            = GB(p2,  4, 16);
@@ -1626,6 +1704,10 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 		case OT_CONDITIONAL:
 			if (mof != MOF_COND_VARIABLE && mof != MOF_COND_COMPARATOR && mof != MOF_COND_VALUE && mof != MOF_COND_VALUE_2 && mof != MOF_COND_VALUE_3 && mof != MOF_COND_DESTINATION) return CMD_ERROR;
+			break;
+
+		case OT_RELEASE_SLOT:
+			if (mof != MOF_SLOT) return CMD_ERROR;
 			break;
 
 		default:
@@ -1701,6 +1783,10 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 					if (data != OCC_IS_TRUE && data != OCC_IS_FALSE && data != OCC_EQUALS && data != OCC_NOT_EQUALS) return CMD_ERROR;
 					break;
 
+				case OCV_TIMETABLE:
+					if (data == OCC_IS_TRUE || data == OCC_IS_FALSE || data == OCC_EQUALS || data == OCC_NOT_EQUALS) return CMD_ERROR;
+					break;
+
 				default:
 					if (data == OCC_IS_TRUE || data == OCC_IS_FALSE) return CMD_ERROR;
 					break;
@@ -1732,6 +1818,8 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 				case OCV_CARGO_WAITING_AMOUNT:
 				case OCV_COUNTER_VALUE:
+				case OCV_TIME_DATE:
+				case OCV_TIMETABLE:
 					if (data >= (1 << 16)) return CMD_ERROR;
 					break;
 
@@ -1750,6 +1838,14 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 				case OCV_COUNTER_VALUE:
 					if (data != INVALID_TRACE_RESTRICT_COUNTER_ID && !TraceRestrictCounter::IsValidID(data)) return CMD_ERROR;
+					break;
+
+				case OCV_TIME_DATE:
+					if (data >= TRTDVF_END) return CMD_ERROR;
+					break;
+
+				case OCV_TIMETABLE:
+					if (data >= OTCM_END) return CMD_ERROR;
 					break;
 
 				default:
@@ -1774,6 +1870,10 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 		case MOF_WAYPOINT_FLAGS:
 			if (data != (data & OWF_REVERSE)) return CMD_ERROR;
+			break;
+
+		case MOF_SLOT:
+			if (data != INVALID_TRACE_RESTRICT_SLOT_ID && !TraceRestrictSlot::IsValidID(data)) return CMD_ERROR;
 			break;
 	}
 
@@ -1859,6 +1959,8 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 						|| order->GetConditionVariable() == OCV_CARGO_LOAD_PERCENTAGE || order->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT);
 				bool old_var_was_slot = (order->GetConditionVariable() == OCV_SLOT_OCCUPANCY || order->GetConditionVariable() == OCV_TRAIN_IN_SLOT);
 				bool old_var_was_counter = (order->GetConditionVariable() == OCV_COUNTER_VALUE);
+				bool old_var_was_time = (order->GetConditionVariable() == OCV_TIME_DATE);
+				bool old_var_was_tt = (order->GetConditionVariable() == OCV_TIMETABLE);
 				order->SetConditionVariable((OrderConditionVariable)data);
 
 				OrderConditionComparator occ = order->GetConditionComparator();
@@ -1877,6 +1979,16 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 					case OCV_COUNTER_VALUE:
 						if (!old_var_was_counter) order->GetXDataRef() = INVALID_TRACE_RESTRICT_COUNTER_ID << 16;
 						if (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) order->SetConditionComparator(OCC_EQUALS);
+						break;
+
+					case OCV_TIME_DATE:
+						if (!old_var_was_time) order->GetXDataRef() = 0;
+						if (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) order->SetConditionComparator(OCC_EQUALS);
+						break;
+
+					case OCV_TIMETABLE:
+						if (!old_var_was_tt) order->GetXDataRef() = 0;
+						if (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE || occ == OCC_EQUALS || occ == OCC_NOT_EQUALS) order->SetConditionComparator(OCC_LESS_THAN);
 						break;
 
 					case OCV_CARGO_ACCEPTANCE:
@@ -1905,7 +2017,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 						FALLTHROUGH;
 
 					default:
-						if (old_var_was_cargo || old_var_was_slot || old_var_was_counter) order->SetConditionValue(0);
+						if (old_var_was_cargo || old_var_was_slot || old_var_was_counter || old_var_was_time || old_var_was_tt) order->SetConditionValue(0);
 						if (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) order->SetConditionComparator(OCC_EQUALS);
 						break;
 				}
@@ -1921,6 +2033,8 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 					case OCV_SLOT_OCCUPANCY:
 					case OCV_TRAIN_IN_SLOT:
 					case OCV_CARGO_LOAD_PERCENTAGE:
+					case OCV_TIME_DATE:
+					case OCV_TIMETABLE:
 						order->GetXDataRef() = data;
 						break;
 
@@ -1957,6 +2071,10 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 			case MOF_WAYPOINT_FLAGS:
 				order->SetWaypointFlags((OrderWaypointFlags)data);
+				break;
+
+			case MOF_SLOT:
+				order->SetDestination(data);
 				break;
 
 			default: NOT_REACHED();
@@ -2125,9 +2243,7 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 			/* Is the vehicle already in the shared list? */
 			if (src->FirstShared() == dst->FirstShared()) return CMD_ERROR;
 
-			const Order *order;
-
-			FOR_VEHICLE_ORDERS(src, order) {
+			for (const Order *order : src->Orders()) {
 				if (OrderGoesToStation(dst, order)) {
 					/* Allow copying unreachable destinations if they were already unreachable for the source.
 					 * This is basically to allow cloning / autorenewing / autoreplacing vehicles, while the stations
@@ -2214,8 +2330,7 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 
 			/* Trucks can't copy all the orders from busses (and visa versa),
 			 * and neither can helicopters and aircraft. */
-			const Order *order;
-			FOR_VEHICLE_ORDERS(src, order) {
+			for (const Order *order : src->Orders()) {
 				if (OrderGoesToStation(dst, order) &&
 						!CanVehicleUseStation(dst, Station::Get(order->GetDestination()))) {
 					return_cmd_error(STR_ERROR_CAN_T_COPY_SHARE_ORDER);
@@ -2239,7 +2354,6 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 			}
 
 			if (flags & DC_EXEC) {
-				const Order *order;
 				Order *first = nullptr;
 				Order **order_dst;
 
@@ -2249,7 +2363,7 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 				DeleteVehicleOrders(dst, true, ShouldResetOrderIndicesOnOrderCopy(src, dst));
 
 				order_dst = &first;
-				FOR_VEHICLE_ORDERS(src, order) {
+				for (const Order *order : src->Orders()) {
 					*order_dst = new Order();
 					(*order_dst)->AssignOrder(*order);
 					order_dst = &(*order_dst)->next;
@@ -2321,14 +2435,14 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
  * @param p1 VehicleIndex of the vehicle having the order
  * @param p2 bitmask
  *   - bit 0-7 CargoID
- *   - bit 16-23 number of order to modify
+ *   - bit 16-31 number of order to modify
  * @param text unused
  * @return the cost of this operation or an error
  */
 CommandCost CmdOrderRefit(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	VehicleID veh = GB(p1, 0, 20);
-	VehicleOrderID order_number  = GB(p2, 16, 8);
+	VehicleOrderID order_number  = GB(p2, 16, 16);
 	CargoID cargo = GB(p2, 0, 8);
 
 	if (cargo >= NUM_CARGO && cargo != CT_NO_REFIT && cargo != CT_AUTO_REFIT) return CMD_ERROR;
@@ -2394,14 +2508,13 @@ void CheckOrders(const Vehicle *v)
 	/* Only check every 20 days, so that we don't flood the message log */
 	/* The check is skipped entirely in case the current vehicle is virtual (a.k.a a 'template train') */
 	if (v->owner == _local_company && v->day_counter % 20 == 0 && !HasBit(v->subtype, GVSF_VIRTUAL)) {
-		const Order *order;
 		StringID message = INVALID_STRING_ID;
 
 		/* Check the order list */
 		int n_st = 0;
 		bool has_depot_order = false;
 
-		FOR_VEHICLE_ORDERS(v, order) {
+		for (const Order *order : v->Orders()) {
 			/* Dummy order? */
 			if (order->IsType(OT_DUMMY)) {
 				message = STR_NEWS_VEHICLE_HAS_VOID_ORDER;
@@ -2497,9 +2610,7 @@ void RemoveOrderFromAllVehicles(OrderType type, DestinationID destination, bool 
  */
 bool Vehicle::HasDepotOrder() const
 {
-	const Order *order;
-
-	FOR_VEHICLE_ORDERS(this, order) {
+	for (const Order *order : this->Orders()) {
 		if (order->IsType(OT_GOTO_DEPOT)) return true;
 	}
 
@@ -2563,9 +2674,7 @@ uint16 GetServiceIntervalClamped(uint interval, bool ispercent)
  */
 static bool CheckForValidOrders(const Vehicle *v)
 {
-	const Order *order;
-
-	FOR_VEHICLE_ORDERS(v, order) {
+	for (const Order *order : v->Orders()) {
 		switch (order->GetType()) {
 			case OT_GOTO_STATION:
 			case OT_GOTO_DEPOT:
@@ -2640,7 +2749,7 @@ static StationID GetNextRealStation(const Vehicle *v, const Order *order, int co
 		if (Station::IsValidID(order->GetDestination())) return order->GetDestination();
 	}
 	//nothing conditional about this
-	if (conditional_depth > v->GetNumOrders()) return INVALID_STATION;
+	if (conditional_depth > std::min<int>(64, v->GetNumOrders())) return INVALID_STATION;
 	return GetNextRealStation(v, (order->next != nullptr) ? order->next : v->GetFirstOrder(), ++conditional_depth);
 }
 
@@ -2718,10 +2827,31 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, boo
 			skip_order = ord->UpdateJumpCounter((byte)value, dry_run);
 			break;
 		}
-		case OCV_REMAINING_LIFETIME: skip_order = OrderConditionCompare(occ, max(v->max_age - v->age + DAYS_IN_LEAP_YEAR - 1, 0) / DAYS_IN_LEAP_YEAR, value); break;
+		case OCV_REMAINING_LIFETIME: skip_order = OrderConditionCompare(occ, std::max(v->max_age - v->age + DAYS_IN_LEAP_YEAR - 1, 0) / DAYS_IN_LEAP_YEAR, value); break;
 		case OCV_COUNTER_VALUE: {
 			const TraceRestrictCounter* ctr = TraceRestrictCounter::GetIfValid(GB(order->GetXData(), 16, 16));
 			if (ctr != nullptr) skip_order = OrderConditionCompare(occ, ctr->value, GB(order->GetXData(), 0, 16));
+			break;
+		}
+		case OCV_TIME_DATE: {
+			skip_order = OrderConditionCompare(occ, GetTraceRestrictTimeDateValue(static_cast<TraceRestrictTimeDateValueField>(value)), order->GetXData());
+			break;
+		}
+		case OCV_TIMETABLE: {
+			int tt_value = 0;
+			switch (static_cast<OrderTimetableConditionMode>(value)) {
+				case OTCM_LATENESS:
+					tt_value = v->lateness_counter;
+					break;
+
+				case OTCM_EARLINESS:
+					tt_value = -v->lateness_counter;
+					break;
+
+				default:
+					break;
+			}
+			skip_order = OrderConditionCompare(occ, tt_value, order->GetXData());
 			break;
 		}
 		default: NOT_REACHED();
@@ -2739,7 +2869,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, boo
  */
 bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool pbs_look_ahead)
 {
-	if (conditional_depth > v->GetNumOrders()) {
+	if (conditional_depth > std::min<int>(64, v->GetNumOrders())) {
 		v->current_order.Free();
 		v->SetDestTile(0);
 		return false;
@@ -2833,6 +2963,16 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 			}
 			break;
 		}
+
+		case OT_RELEASE_SLOT:
+			assert(!pbs_look_ahead);
+			if (order->GetDestination() != INVALID_TRACE_RESTRICT_SLOT_ID) {
+				TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(order->GetDestination());
+				if (slot != nullptr) slot->Vacate(v->index);
+			}
+			UpdateVehicleTimetable(v, true);
+			v->IncrementRealOrderIndex();
+			break;
 
 		default:
 			v->SetDestTile(0);
@@ -2958,11 +3098,31 @@ bool ProcessOrders(Vehicle *v)
 
 		case VEH_AIRCRAFT:
 		case VEH_SHIP:
-			SetWindowClassesDirty(GetWindowClassForVehicleType(v->type));
+			DirtyVehicleListWindowForVehicle(v);
 			break;
 	}
 
 	return UpdateOrderDest(v, order) && may_reverse;
+}
+
+/**
+ * Check whether the given vehicle should stop at the given station
+ * based on this order and the non-stop settings.
+ * @param last_station_visited the last visited station.
+ * @param station the station to stop at.
+ * @param waypoint if station is a waypoint.
+ * @return true if the vehicle should stop.
+ */
+bool Order::ShouldStopAtStation(StationID last_station_visited, StationID station, bool waypoint) const
+{
+	if (waypoint) return this->IsType(OT_GOTO_WAYPOINT) && this->dest == station && this->IsWaitTimetabled();
+	if (this->IsType(OT_LOADING_ADVANCE) && this->dest == station) return true;
+	bool is_dest_station = this->IsType(OT_GOTO_STATION) && this->dest == station;
+
+	return (!this->IsType(OT_GOTO_DEPOT) || (this->GetDepotOrderType() & ODTFB_PART_OF_ORDERS) != 0) &&
+			(last_station_visited != station) && // Do stop only when we've not just been there
+			/* Finally do stop when there is no non-stop flag set for this type of station. */
+			!(this->GetNonStopType() & (is_dest_station ? ONSF_NO_STOP_AT_DESTINATION_STATION : ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS));
 }
 
 /**
@@ -2975,14 +3135,7 @@ bool ProcessOrders(Vehicle *v)
  */
 bool Order::ShouldStopAtStation(const Vehicle *v, StationID station, bool waypoint) const
 {
-	if (waypoint) return this->IsType(OT_GOTO_WAYPOINT) && this->dest == station && this->IsWaitTimetabled();
-	if (this->IsType(OT_LOADING_ADVANCE) && this->dest == station) return true;
-	bool is_dest_station = this->IsType(OT_GOTO_STATION) && this->dest == station;
-
-	return (!this->IsType(OT_GOTO_DEPOT) || (this->GetDepotOrderType() & ODTFB_PART_OF_ORDERS) != 0) &&
-			v->last_station_visited != station && // Do stop only when we've not just been there
-			/* Finally do stop when there is no non-stop flag set for this type of station. */
-			!(this->GetNonStopType() & (is_dest_station ? ONSF_NO_STOP_AT_DESTINATION_STATION : ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS));
+	return this->ShouldStopAtStation(v->last_station_visited, station, waypoint);
 }
 
 /**
@@ -3021,11 +3174,10 @@ CommandCost CmdMassChangeOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	if (flags & DC_EXEC) {
 		for (Vehicle *v : Vehicle::Iterate()) {
 			if (v->type == vehtype && v->IsPrimaryVehicle() && CheckOwnership(v->owner).Succeeded()) {
-				Order *order;
 				int index = 0;
 				bool changed = false;
 
-				FOR_VEHICLE_ORDERS(v, order) {
+				for(Order *order : v->Orders()) {
 					if (order->GetDestination() == from_dest && order->IsType(order_type) &&
 							!(order_type == OT_GOTO_DEPOT && order->GetDepotActionType() & ODATFB_NEAREST_DEPOT)) {
 						Order new_order;

@@ -132,6 +132,9 @@ void ViewportMapDrawVehicles(DrawPixelInfo *dpi, Viewport *vp);
 
 void ShowNewGrfVehicleError(EngineID engine, StringID part1, StringID part2, GRFBugs bug_type, bool critical);
 CommandCost TunnelBridgeIsFree(TileIndex tile, TileIndex endtile, const Vehicle *ignore = nullptr, bool across_only = false);
+Train *GetTrainClosestToTunnelBridgeEnd(TileIndex tile, TileIndex other_tile);
+int GetAvailableFreeTilesInSignalledTunnelBridge(TileIndex entrance, TileIndex exit, TileIndex tile);
+int GetAvailableFreeTilesInSignalledTunnelBridgeWithStartOffset(TileIndex entrance, TileIndex exit, int offset);
 
 void DecreaseVehicleValue(Vehicle *v);
 void CheckVehicleBreakdown(Vehicle *v);
@@ -183,10 +186,11 @@ static inline bool IsCompanyBuildableVehicleType(const BaseVehicle *v)
 }
 
 LiveryScheme GetEngineLiveryScheme(EngineID engine_type, EngineID parent_engine_type, const Vehicle *v);
-const struct Livery *GetEngineLivery(EngineID engine_type, CompanyID company, EngineID parent_engine_type, const Vehicle *v, byte livery_setting);
+const struct Livery *GetEngineLivery(EngineID engine_type, CompanyID company, EngineID parent_engine_type, const Vehicle *v, byte livery_setting, bool ignore_group = false);
 
 SpriteID GetEnginePalette(EngineID engine_type, CompanyID company);
 SpriteID GetVehiclePalette(const Vehicle *v);
+SpriteID GetUncachedTrainPaletteIgnoringGroup(const Train *v);
 
 extern const uint32 _veh_build_proc_table[];
 extern const uint32 _veh_sell_proc_table[];

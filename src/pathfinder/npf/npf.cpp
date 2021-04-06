@@ -118,7 +118,7 @@ static uint NPFDistanceTrack(TileIndex t0, TileIndex t1)
 	const uint dx = Delta(TileX(t0), TileX(t1));
 	const uint dy = Delta(TileY(t0), TileY(t1));
 
-	const uint straightTracks = 2 * min(dx, dy); // The number of straight (not full length) tracks
+	const uint straightTracks = 2 * std::min(dx, dy); // The number of straight (not full length) tracks
 	/* OPTIMISATION:
 	 * Original: diagTracks = max(dx, dy) - min(dx,dy);
 	 * Proof:
@@ -287,14 +287,14 @@ static void NPFMarkTile(TileIndex tile)
 			/* DEBUG: mark visited tiles by mowing the grass under them ;-) */
 			if (!IsRailDepot(tile)) {
 				SetRailGroundType(tile, RAIL_GROUND_BARREN);
-				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			}
 			break;
 
 		case MP_ROAD:
 			if (!IsRoadDepot(tile)) {
 				SetRoadside(tile, ROADSIDE_BARREN);
-				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			}
 			break;
 
@@ -369,7 +369,11 @@ static int32 NPFRoadPathCost(AyStar *as, AyStarNode *current, OpenListNode *pare
 					/* When we're the first road stop in a 'queue' of them we increase
 					 * cost based on the fill percentage of the whole queue. */
 					const RoadStop::Entry *entry = rs->GetEntry(dir);
-					cost += entry->GetOccupied() * _settings_game.pf.npf.npf_road_dt_occupied_penalty / entry->GetLength();
+					if (GetDriveThroughStopDisallowedRoadDirections(tile) != DRD_NONE) {
+						cost += (entry->GetOccupied() + rs->GetEntry(ReverseDiagDir(dir))->GetOccupied()) * _settings_game.pf.npf.npf_road_dt_occupied_penalty / (2 * entry->GetLength());
+					} else {
+						cost += entry->GetOccupied() * _settings_game.pf.npf.npf_road_dt_occupied_penalty / entry->GetLength();
+					}
 				}
 			} else {
 				/* Increase cost for filled road stops */

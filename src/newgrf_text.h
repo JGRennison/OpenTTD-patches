@@ -36,6 +36,8 @@ StringID AddGRFString(uint32 grfid, uint16 stringid, byte langid, bool new_schem
 StringID GetGRFStringID(uint32 grfid, StringID stringid);
 const char *GetGRFStringFromGRFText(const GRFTextList &text_list);
 const char *GetGRFStringFromGRFText(const GRFTextWrapper &text);
+const char *GetDefaultLangGRFStringFromGRFText(const GRFTextList &text_list);
+const char *GetDefaultLangGRFStringFromGRFText(const GRFTextWrapper &text);
 const char *GetGRFStringPtr(uint16 stringid);
 void CleanUpStrings();
 void SetCurrentGrfLangID(byte language_id);

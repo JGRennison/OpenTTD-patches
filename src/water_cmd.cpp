@@ -88,6 +88,13 @@ static void MarkCanalsAndRiversAroundDirty(TileIndex tile)
 	}
 }
 
+static void ClearNeighbourNonFloodingStates(TileIndex tile)
+{
+	for (Direction dir = DIR_BEGIN; dir < DIR_END; dir++) {
+		TileIndex dest = tile + TileOffsByDir(dir);
+		if (IsValidTile(dest) && IsTileType(dest, MP_WATER)) SetNonFloodingWaterTile(dest, false);
+	}
+}
 
 /**
  * Build a ship depot.
@@ -400,6 +407,7 @@ static CommandCost RemoveLock(TileIndex tile, DoCommandFlag flags)
 			MakeRiver(tile, Random());
 		} else {
 			DoClearSquare(tile);
+			ClearNeighbourNonFloodingStates(tile);
 		}
 		MakeWaterKeepingClass(tile + delta, GetTileOwner(tile + delta));
 		MakeWaterKeepingClass(tile - delta, GetTileOwner(tile - delta));
@@ -471,7 +479,7 @@ CommandCost CmdBuildCanal(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 
-	TileIterator *iter = HasBit(p2, 2) ? (TileIterator *)new DiagonalTileIterator(tile, p1) : new OrthogonalTileIterator(tile, p1);
+	std::unique_ptr<TileIterator> iter(HasBit(p2, 2) ? (TileIterator *)new DiagonalTileIterator(tile, p1) : new OrthogonalTileIterator(tile, p1));
 	for (; *iter != INVALID_TILE; ++(*iter)) {
 		TileIndex tile = *iter;
 		CommandCost ret;
@@ -496,7 +504,7 @@ CommandCost CmdBuildCanal(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 					MakeRiver(tile, Random());
 					if (_game_mode == GM_EDITOR) {
 						TileIndex tile2 = tile;
-						CircularTileSearch(&tile2, RIVER_OFFSET_DESERT_DISTANCE, RiverModifyDesertZone, nullptr);
+						CircularTileSearch(&tile2, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
 					}
 					break;
 
@@ -570,6 +578,7 @@ static CommandCost ClearTile_Water(TileIndex tile, DoCommandFlag flags)
 				DoClearSquare(tile);
 				MarkCanalsAndRiversAroundDirty(tile);
 				if (remove) RemoveDockingTile(tile);
+				ClearNeighbourNonFloodingStates(tile);
 			}
 
 			return CommandCost(EXPENSES_CONSTRUCTION, base_cost);
@@ -593,6 +602,7 @@ static CommandCost ClearTile_Water(TileIndex tile, DoCommandFlag flags)
 				DoClearSquare(tile);
 				MarkCanalsAndRiversAroundDirty(tile);
 				if (remove) RemoveDockingTile(tile);
+				ClearNeighbourNonFloodingStates(tile);
 			}
 			return ret;
 		}
@@ -1005,7 +1015,7 @@ static void FloodVehicle(Vehicle *v)
 	AI::NewEvent(v->owner, new ScriptEventVehicleCrashed(v->index, v->tile, ScriptEventVehicleCrashed::CRASH_FLOODED));
 	Game::NewEvent(new ScriptEventVehicleCrashed(v->index, v->tile, ScriptEventVehicleCrashed::CRASH_FLOODED));
 	SetDParam(0, pass);
-	AddVehicleNewsItem(STR_NEWS_DISASTER_FLOOD_VEHICLE, NT_ACCIDENT, v->index);
+	AddTileNewsItem(STR_NEWS_DISASTER_FLOOD_VEHICLE, NT_ACCIDENT, v->tile);
 	CreateEffectVehicleRel(v, 4, 4, 8, EV_EXPLOSION_LARGE);
 	if (_settings_client.sound.disaster) SndPlayVehicleFx(SND_12_EXPLOSION, v);
 }
@@ -1220,7 +1230,7 @@ static void DoDryUp(TileIndex tile)
 
 		case MP_TREES:
 			SetTreeGroundDensity(tile, TREE_GROUND_GRASS, 3);
-			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			break;
 
 		case MP_WATER:
@@ -1248,13 +1258,18 @@ void TileLoop_Water(TileIndex tile)
 {
 	if (IsTileType(tile, MP_WATER)) AmbientSoundEffect(tile);
 
+	if (IsNonFloodingWaterTile(tile)) return;
+
 	switch (GetFloodingBehaviour(tile)) {
-		case FLOOD_ACTIVE:
+		case FLOOD_ACTIVE: {
+			int non_water_neighbours = 0;
 			for (Direction dir = DIR_BEGIN; dir < DIR_END; dir++) {
 				TileIndex dest = tile + TileOffsByDir(dir);
 				if (!IsValidTile(dest)) continue;
 				/* do not try to flood water tiles - increases performance a lot */
 				if (IsTileType(dest, MP_WATER)) continue;
+
+				non_water_neighbours++;
 
 				/* TREE_GROUND_SHORE is the sign of a previous flood. */
 				if (IsTileType(dest, MP_TREES) && GetTreeGround(dest) == TREE_GROUND_SHORE) continue;
@@ -1267,7 +1282,9 @@ void TileLoop_Water(TileIndex tile)
 
 				DoFloodTile(dest);
 			}
+			if (non_water_neighbours == 0 && IsTileType(tile, MP_WATER)) SetNonFloodingWaterTile(tile, true);
 			break;
+		}
 
 		case FLOOD_DRYUP: {
 			Slope slope_here = GetFoundationSlope(tile) & ~SLOPE_HALFTILE_MASK & ~SLOPE_STEEP;

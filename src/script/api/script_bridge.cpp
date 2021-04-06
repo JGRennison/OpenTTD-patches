@@ -20,7 +20,9 @@
 
 /* static */ bool ScriptBridge::IsValidBridge(BridgeID bridge_id)
 {
-	return bridge_id < MAX_BRIDGES && ::GetBridgeSpec(bridge_id)->avail_year <= _cur_year;
+	if (bridge_id >= MAX_BRIDGES) return false;
+	const BridgeSpec *b = ::GetBridgeSpec(bridge_id);
+	return b->avail_year <= _cur_year && !HasBit(b->ctrl_flags, BSCF_NOT_AVAILABLE_AI_GS);
 }
 
 /* static */ bool ScriptBridge::IsBridgeTile(TileIndex tile)
@@ -77,7 +79,7 @@ static void _DoCommandReturnBuildBridge1(class ScriptInstance *instance)
 	EnforcePrecondition(false, vehicle_type != ScriptVehicle::VT_ROAD || ScriptRoad::IsRoadTypeAvailable(ScriptRoad::GetCurrentRoadType()));
 	EnforcePrecondition(false, ScriptObject::GetCompany() != OWNER_DEITY || vehicle_type == ScriptVehicle::VT_ROAD);
 
-	uint type = 0;
+	uint type = (1 << 17);
 	switch (vehicle_type) {
 		case ScriptVehicle::VT_ROAD:
 			type |= (TRANSPORT_ROAD << 15);
@@ -160,7 +162,7 @@ static void _DoCommandReturnBuildBridge1(class ScriptInstance *instance)
 {
 	if (!IsValidBridge(bridge_id)) return -1;
 
-	return min(::GetBridgeSpec(bridge_id)->max_length, _settings_game.construction.max_bridge_length) + 2;
+	return std::min(::GetBridgeSpec(bridge_id)->max_length, _settings_game.construction.max_bridge_length) + 2;
 }
 
 /* static */ int32 ScriptBridge::GetMinLength(BridgeID bridge_id)

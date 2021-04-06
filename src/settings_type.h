@@ -11,6 +11,7 @@
 #define SETTINGS_TYPE_H
 
 #include "date_type.h"
+#include "economy_type.h"
 #include "town_type.h"
 #include "transport_type.h"
 #include "network/core/config.h"
@@ -20,6 +21,15 @@
 #include "zoom_type.h"
 #include "openttd.h"
 
+/* Used to validate sizes of "max" value in settings. */
+const size_t MAX_SLE_UINT8 = UINT8_MAX;
+const size_t MAX_SLE_UINT16 = UINT16_MAX;
+const size_t MAX_SLE_UINT32 = UINT32_MAX;
+const size_t MAX_SLE_UINT = UINT_MAX;
+const size_t MAX_SLE_INT8 = INT8_MAX;
+const size_t MAX_SLE_INT16 = INT16_MAX;
+const size_t MAX_SLE_INT32 = INT32_MAX;
+const size_t MAX_SLE_INT = INT_MAX;
 
 /** Settings profiles and highscore tables. */
 enum SettingsProfile {
@@ -68,6 +78,7 @@ struct DifficultySettings {
 	bool   disasters;                        ///< are disasters enabled
 	byte   town_council_tolerance;           ///< minimum required town ratings to be allowed to demolish stuff
 	bool   money_cheat_in_multiplayer;       ///< is the money cheat permitted for non-admin multiplayer clients
+	bool   rename_towns_in_multiplayer;      ///< is renaming towns permitted for non-admin multiplayer clients
 };
 
 /** Settings relating to viewport/smallmap scrolling. */
@@ -111,13 +122,14 @@ struct GUISettings : public TimeSettings {
 	uint8  advanced_vehicle_list;            ///< use the "advanced" vehicle list
 	uint8  loading_indicators;               ///< show loading indicators
 	uint8  default_rail_type;                ///< the default rail type for the rail GUI
+	uint8  default_road_type;                ///< the default road/tram types for the road/tram GUI
 	uint8  toolbar_pos;                      ///< position of toolbars, 0=left, 1=center, 2=right
 	uint8  statusbar_pos;                    ///< position of statusbar, 0=left, 1=center, 2=right
 	uint8  window_snap_radius;               ///< windows snap at each other if closer than this
 	uint8  window_soft_limit;                ///< soft limit of maximum number of non-stickied non-vital windows (0 = no limit)
 	ZoomLevel zoom_min;                      ///< minimum zoom out level
 	ZoomLevel zoom_max;                      ///< maximum zoom out level
-	bool   disable_unsuitable_building;      ///< disable infrastructure building when no suitable vehicles are available
+	ZoomLevel sprite_zoom_min;               ///< maximum zoom level at which higher-resolution alternative sprites will be used (if available) instead of scaling a lower resolution sprite
 	byte   autosave;                         ///< how often should we do autosaves?
 	bool   threaded_saves;                   ///< should we do threaded saves?
 	bool   keep_all_autosave;                ///< name the autosave in a different way
@@ -194,6 +206,9 @@ struct GUISettings : public TimeSettings {
 	uint8  osk_activation;                   ///< Mouse gesture to trigger the OSK.
 	byte   starting_colour;                  ///< default color scheme for the company to start a new game with
 	bool   show_newgrf_name;                 ///< Show the name of the NewGRF in the build vehicle window
+	bool   auto_remove_signals;              ///< automatically remove signals when in the way during rail construction
+	uint16 refresh_rate;                     ///< How often we refresh the screen (time between draw-ticks).
+	uint16 fast_forward_speed_limit;         ///< Game speed to use when fast-forward is enabled.
 	bool   show_vehicle_route_steps;         ///< when a window related to a specific vehicle is focused, show route steps
 	bool   show_vehicle_list_company_colour; ///< show the company colour of vehicles which have an owner different to the owner of the vehicle list
 	bool   enable_single_veh_shared_order_gui;    ///< enable showing a single vehicle in the shared order GUI window
@@ -203,6 +218,9 @@ struct GUISettings : public TimeSettings {
 	bool   show_depot_sell_gui;              ///< Show go to depot and sell in UI
 	bool   open_vehicle_gui_clone_share;     ///< Open vehicle GUI when share-cloning vehicle from depot GUI
 	uint8  linkgraph_colours;                ///< linkgraph overlay colours
+	bool   disable_vehicle_image_update;     ///< Disable NewGRFs from continuously updating vehicle images
+	uint8  vehicle_names;                    ///< Vehicle naming scheme
+	bool   shade_trees_on_slopes;            ///< Shade trees on slopes
 
 	uint16 console_backlog_timeout;          ///< the minimum amount of time items should be in the console backlog before they will be removed in ~3 seconds granularity.
 	uint16 console_backlog_length;           ///< the minimum amount of items in the console backlog before items will be removed.
@@ -313,7 +331,6 @@ struct NetworkSettings {
 	char   admin_password[NETWORK_PASSWORD_LENGTH];       ///< password for the admin network
 	char   settings_password[NETWORK_PASSWORD_LENGTH];    ///< password for game settings (server side)
 	bool   server_advertise;                              ///< advertise the server to the masterserver
-	uint8  lan_internet;                                  ///< search on the LAN or internet for servers
 	char   client_name[NETWORK_CLIENT_NAME_LENGTH];       ///< name of the player (as client)
 	char   default_company_pass[NETWORK_PASSWORD_LENGTH]; ///< default password for new companies in encrypted form
 	char   connect_to_ip[NETWORK_HOSTNAME_LENGTH];        ///< default for the "Add server" query
@@ -345,6 +362,7 @@ struct GameCreationSettings {
 	byte   land_generator;                   ///< the landscape generator
 	byte   oil_refinery_limit;               ///< distance oil refineries allowed from map edge
 	byte   snow_line_height;                 ///< the configured snow line height
+	byte   rainforest_line_height;           ///< the configured rainforest line height
 	byte   tgen_smoothness;                  ///< how rough is the terrain from 0-3
 	byte   tree_placer;                      ///< the tree placer algorithm
 	byte   heightmap_rotation;               ///< rotation director for the heightmap
@@ -358,6 +376,12 @@ struct GameCreationSettings {
 	byte   min_river_length;                 ///< the minimum river length
 	byte   river_route_random;               ///< the amount of randomicity for the route finding
 	byte   amount_of_rivers;                 ///< the amount of rivers
+	bool   rivers_top_of_hill;               ///< do rivers require starting near the tops of hills?
+	uint8  river_tropics_width;              ///< the configured width of tropics around rivers
+	uint8  lake_size;                        ///< how large can lakes get?
+	bool   lakes_allowed_in_deserts;         ///< are lakes allowed in deserts?
+	uint8  amount_of_rocks;                  ///< the amount of rocks
+	uint8  height_affects_rocks;             ///< the affect that map height has on rocks
 };
 
 /** Settings related to construction in-game */
@@ -380,7 +404,6 @@ struct ConstructionSettings {
 	bool   trees_around_snow_line_enabled;   ///< enable mixed and arctic forest around snowline, and no trees above snowline
 	uint8  command_pause_level;              ///< level/amount of commands that can't be executed while paused
 	uint16 maximum_signal_evaluations;       ///< maximum number of programmable pre-signals which may be evaluated in one pass
-	byte   simulated_wormhole_signals;       ///< simulate signals in tunnel
 	bool   enable_build_river;               ///< enable building rivers in-game
 	bool   enable_remove_water;              ///< enable removing sea and rivers in-game
 	uint8  road_custom_bridge_heads;         ///< allow construction of road custom bridge heads
@@ -404,6 +427,8 @@ struct ConstructionSettings {
 	uint32 build_object_per_64k_frames;      ///< how many tiles may, over a long period, have objects built on them per 65536 frames?
 	uint16 build_object_frame_burst;         ///< how many tiles may, over a short period, have objects built on them?
 	uint8  tree_growth_rate;                 ///< tree growth rate
+
+	byte   old_simulated_wormhole_signals;   ///< moved to company settings: simulate signals in tunnel
 };
 
 /** Settings related to the AI. */
@@ -534,6 +559,7 @@ struct VehicleSettings {
 	uint8  max_train_length;                 ///< maximum length for trains
 	uint8  smoke_amount;                     ///< amount of smoke/sparks locomotives produce
 	uint8  train_acceleration_model;         ///< realistic acceleration for trains
+	uint8  train_braking_model;              ///< braking model for trains
 	uint8  roadveh_acceleration_model;       ///< realistic acceleration for road vehicles
 	uint8  train_slope_steepness;            ///< Steepness of hills for trains when using realistic acceleration
 	uint8  roadveh_slope_steepness;          ///< Steepness of hills for road vehicles when using realistic acceleration
@@ -548,6 +574,7 @@ struct VehicleSettings {
 	bool   dynamic_engines;                  ///< enable dynamic allocation of engine data
 	bool   never_expire_vehicles;            ///< never expire vehicles
 	Year   no_expire_vehicles_after;         ///< do not expire vehicles ater this year
+	Year   no_introduce_vehicles_after;      ///< do not introduce vehicles ater this year
 	byte   extend_vehicle_life;              ///< extend vehicle life by this many years
 	byte   road_side;                        ///< the side of the road vehicles drive on
 	uint8  plane_crashes;                    ///< number of plane crashes, 0 = none, 1 = reduced, 2 = normal
@@ -560,13 +587,15 @@ struct VehicleSettings {
 	bool   no_train_crash_other_company;     ///< trains cannot crash with trains from other companies
 	bool   flip_direction_all_trains;        ///< enable flipping direction in depot for all train engine types
 	bool   roadveh_articulated_overtaking;   ///< enable articulated road vehicles overtaking other vehicles
+	bool   drive_through_train_depot;        ///< enable drive-through train depot emulation
 };
 
 /** Settings related to the economy. */
 struct EconomySettings {
 	bool   inflation;                        ///< disable inflation
+	bool   inflation_fixed_dates;            ///< whether inflation is applied between fixed dates
 	bool   bribe;                            ///< enable bribing the local authority
-	bool   smooth_economy;                   ///< smooth economy
+	EconomyType type;                        ///< economy type (original/smooth/frozen)
 	bool   allow_shares;                     ///< allow the buying/selling of shares
 	uint8  min_years_for_shares;             ///< minimum age of a company for it to trade shares
 	uint8  feeder_payment_share;             ///< percentage of leg payment to virtually pay in feeder systems
@@ -579,6 +608,12 @@ struct EconomySettings {
 	bool   multiple_industry_per_town;       ///< allow many industries of the same type per town
 	int8   town_growth_rate;                 ///< town growth rate
 	uint8  town_growth_cargo_transported;    ///< percentage of town growth rate which depends on proportion of transported cargo in the last month
+	bool   town_zone_calc_mode;              ///< calc mode for town zones
+	uint16 town_zone_0_mult;                 ///< multiplier for the size of zone 0
+	uint16 town_zone_1_mult;                 ///< multiplier for the size of zone 1
+	uint16 town_zone_2_mult;                 ///< multiplier for the size of zone 2
+	uint16 town_zone_3_mult;                 ///< multiplier for the size of zone 3
+	uint16 town_zone_4_mult;                 ///< multiplier for the size of zone 4
 	uint8  larger_towns;                     ///< the number of cities to build. These start off larger and grow twice as fast
 	uint8  initial_city_size;                ///< multiplier for the initial size of the cities compared to towns
 	TownLayout town_layout;                  ///< select town layout, @see TownLayout
@@ -594,6 +629,7 @@ struct EconomySettings {
 	bool   allow_town_level_crossings;       ///< towns are allowed to build level crossings
 	int8   old_town_cargo_factor;            ///< old power-of-two multiplier for town (passenger, mail) generation. May be negative.
 	int16  town_cargo_scale_factor;          ///< scaled power-of-two multiplier for town (passenger, mail) generation. May be negative.
+	int16  industry_cargo_scale_factor;      ///< scaled power-of-two multiplier for primary industry generation. May be negative.
 	bool   infrastructure_maintenance;       ///< enable monthly maintenance fee for owner infrastructure
 	uint8  day_length_factor;                ///< factor which the length of day is multiplied
 	uint16 random_road_reconstruction;       ///< chance out of 1000 per tile loop for towns to start random road re-construction
@@ -658,6 +694,8 @@ struct CompanySettings {
 	bool infra_others_buy_in_depot[4];       ///< other companies can buy/autorenew in this companies depots (where infra sharing enabled)
 	uint16 timetable_autofill_rounding;      ///< round up timetable times to be a multiple of this number of ticks
 	bool advance_order_on_clone;             ///< when cloning a vehicle or copying/sharing an order list, advance the current order to a suitable point
+	bool copy_clone_add_to_group;            ///< whether to add cloned vehicles to the source vehicle's group, when cloning a vehicle without sharing orders
+	byte simulated_wormhole_signals;         ///< tunnel/bridge signal simulation spacing
 };
 
 /** Debug settings. */

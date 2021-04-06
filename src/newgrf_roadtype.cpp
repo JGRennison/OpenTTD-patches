@@ -45,7 +45,7 @@
 			const Town *t = nullptr;
 			if (IsRoadDepotTile(this->tile)) {
 				t = Depot::GetByTile(this->tile)->town;
-			} else if (IsTileType(this->tile, MP_ROAD)) {
+			} else {
 				t = ClosestTownFromTile(this->tile, UINT_MAX);
 			}
 			return t != nullptr ? GetTownRadiusGroup(t, this->tile) : HZB_TOWN_EDGE;
@@ -130,6 +130,37 @@ SpriteID GetCustomRoadSprite(const RoadTypeInfo *rti, TileIndex tile, RoadTypeSp
 	if (num_results) *num_results = group->GetNumResults();
 
 	return group->GetResult();
+}
+
+/**
+ * Translate an index to the GRF-local road/tramtype-translation table into a RoadType.
+ * @param rtt       Whether to index the road- or tramtype-table.
+ * @param tracktype Index into GRF-local translation table.
+ * @param grffile   Originating GRF file.
+ * @return RoadType or INVALID_ROADTYPE if the roadtype is unknown.
+ */
+RoadType GetRoadTypeTranslation(RoadTramType rtt, uint8 tracktype, const GRFFile *grffile)
+{
+	/* Because OpenTTD mixes RoadTypes and TramTypes into the same type,
+	 * the mapping of the original road- and tramtypes does not match the default GRF-local mapping.
+	 * So, this function cannot provide any similar behavior to GetCargoTranslation() and GetRailTypeTranslation()
+	 * when the GRF defines no translation table.
+	 * But since there is only one default road/tram-type, this makes little sense anyway.
+	 * So for GRF without translation table, we always return INVALID_ROADTYPE.
+	 */
+
+	if (grffile == nullptr) return INVALID_ROADTYPE;
+
+	const auto &list = rtt == RTT_TRAM ? grffile->tramtype_list : grffile->roadtype_list;
+	if (tracktype >= list.size()) return INVALID_ROADTYPE;
+
+	/* Look up roadtype including alternate labels. */
+	RoadType result = GetRoadTypeByLabel(list[tracktype]);
+
+	/* Check whether the result is actually the wanted road/tram-type */
+	if (result != INVALID_ROADTYPE && GetRoadTramType(result) != rtt) return INVALID_ROADTYPE;
+
+	return result;
 }
 
 /**

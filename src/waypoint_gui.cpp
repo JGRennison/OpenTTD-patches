@@ -21,6 +21,7 @@
 #include "window_func.h"
 #include "waypoint_base.h"
 #include "departures_gui.h"
+#include "newgrf_debug.h"
 
 #include "widgets/waypoint_widget.h"
 
@@ -145,13 +146,25 @@ public:
 		DoCommandP(0, this->window_number, 0, CMD_RENAME_WAYPOINT | CMD_MSG(STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME), nullptr, str);
 	}
 
+	bool IsNewGRFInspectable() const override
+	{
+		return ::IsNewGRFInspectable(GSF_FAKE_STATION_STRUCT, this->window_number);
+	}
+
+	void ShowNewGRFInspectWindow() const override
+	{
+		::ShowNewGRFInspectWindow(GSF_FAKE_STATION_STRUCT, this->window_number);
+	}
 };
 
 /** The widgets of the waypoint view. */
 static const NWidgetPart _nested_waypoint_view_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
+		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_W_RENAME), SetMinimalSize(12, 14), SetDataTip(SPR_RENAME, STR_BUOY_VIEW_CHANGE_BUOY_NAME),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_W_CAPTION), SetDataTip(STR_WAYPOINT_VIEW_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_W_CENTER_VIEW), SetMinimalSize(12, 14), SetDataTip(SPR_GOTO_LOCATION, STR_BUOY_VIEW_CENTER_TOOLTIP),
+		NWidget(WWT_DEBUGBOX, COLOUR_GREY),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -162,8 +175,6 @@ static const NWidgetPart _nested_waypoint_view_widgets[] = {
 		EndContainer(),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_W_CENTER_VIEW), SetMinimalSize(100, 12), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_BUTTON_LOCATION, STR_BUOY_VIEW_CENTER_TOOLTIP),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_W_RENAME), SetMinimalSize(100, 12), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_BUTTON_RENAME, STR_BUOY_VIEW_CHANGE_BUOY_NAME),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_W_DEPARTURES), SetMinimalSize(100, 12), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_STATION_VIEW_DEPARTURES_BUTTON, STR_STATION_VIEW_DEPARTURES_TOOLTIP),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_W_SHOW_VEHICLES), SetMinimalSize(15, 12), SetDataTip(STR_SHIP, STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP),
 		NWidget(WWT_RESIZEBOX, COLOUR_GREY),

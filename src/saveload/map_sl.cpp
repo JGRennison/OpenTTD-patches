@@ -214,8 +214,8 @@ static void Load_MAP8()
 
 static void Load_WMAP()
 {
-	assert_compile(sizeof(Tile) == 8);
-	assert_compile(sizeof(TileExtended) == 4);
+	static_assert(sizeof(Tile) == 8);
+	static_assert(sizeof(TileExtended) == 4);
 	assert(_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 1 || _sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 2);
 
 	ReadBuffer *reader = ReadBuffer::GetCurrent();
@@ -264,8 +264,8 @@ static void Load_WMAP()
 
 static void Save_WMAP()
 {
-	assert_compile(sizeof(Tile) == 8);
-	assert_compile(sizeof(TileExtended) == 4);
+	static_assert(sizeof(Tile) == 8);
+	static_assert(sizeof(TileExtended) == 4);
 	assert(_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 2);
 
 	MemoryDumper *dumper = MemoryDumper::GetCurrent();

@@ -19,8 +19,9 @@ static const SaveLoad _plan_desc[] = {
 	SLE_VAR(Plan, visible,        SLE_BOOL),
 	SLE_VAR(Plan, visible_by_all, SLE_BOOL),
 	SLE_VAR(Plan, creation_date,  SLE_INT32),
-	SLE_CONDSSSTR_X(Plan, name, 0, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ENH_VIEWPORT_PLANS, 3)),
-	SLE_CONDSSSTR_X(Plan, name, 0, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP, SL_JOKER_1_20)),
+	SLE_CONDSSTR_X(Plan, name, 0, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ENH_VIEWPORT_PLANS, 3)),
+	SLE_CONDSSTR_X(Plan, name, 0, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP, SL_JOKER_1_20)),
+	SLE_CONDVAR_X(Plan, colour, SLE_UINT8,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ENH_VIEWPORT_PLANS, 4)),
 	SLE_END()
 };
 
@@ -60,6 +61,7 @@ static void Load_PLAN()
 				const size_t tile_count = SlReadUint32();
 				pl->tiles.resize(tile_count);
 				SlArray(&pl->tiles[0], tile_count, SLE_UINT32);
+				pl->UpdateVisualExtents();
 			}
 			p->SetVisibility(false);
 		}
@@ -79,6 +81,7 @@ static void Load_PLANLINE()
 		size_t plsz = SlGetFieldLength() / sizeof(TileIndex);
 		pl->tiles.resize(plsz);
 		SlArray(&pl->tiles[0], plsz, SLE_UINT32);
+		pl->UpdateVisualExtents();
 	}
 
 	for (Plan *p : Plan::Iterate()) {

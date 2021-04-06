@@ -110,7 +110,7 @@ private:
 		do {
 			if (HasStationReservation(tile)) return false;
 			SetRailStationReservation(tile, true);
-			MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			tile = TILE_ADD(tile, diff);
 		} while (IsCompatibleTrainStationTile(tile, start) && tile != m_origin_tile);
 
@@ -213,7 +213,7 @@ public:
 		if (restricted_signal_info.tile != INVALID_TILE) {
 			const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(restricted_signal_info.tile, TrackdirToTrack(restricted_signal_info.trackdir));
 			if (prog && prog->actions_used_flags & TRPAUF_PBS_RES_END_SLOT) {
-				extern TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const void *);
+				extern TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const void *, TraceRestrictPBSEntrySignalAuxField mode);
 
 				TraceRestrictProgramResult out;
 				TraceRestrictProgramInput input(restricted_signal_info.tile, restricted_signal_info.trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr);
@@ -540,7 +540,7 @@ public:
 		if (target != nullptr) target->tile = INVALID_TILE;
 
 		/* set origin and destination nodes */
-		PBSTileInfo origin = FollowTrainReservation(v);
+		PBSTileInfo origin = FollowTrainReservation(v, nullptr, FTRF_OKAY_UNUSED);
 		Yapf().SetOrigin(origin.tile, origin.trackdir, INVALID_TILE, INVALID_TRACKDIR, 1, true);
 		Yapf().SetDestination(v);
 
@@ -724,11 +724,27 @@ bool YapfTrainCheckReverse(const Train *v)
 	return reverse;
 }
 
+bool YapfTrainCheckDepotReverse(const Train *v, TileIndex forward_depot, TileIndex reverse_depot)
+{
+	typedef bool (*PfnCheckReverseTrain)(const Train*, TileIndex, Trackdir, TileIndex, Trackdir, int);
+	PfnCheckReverseTrain pfnCheckReverseTrain = CYapfRail1::stCheckReverseTrain;
+
+	/* check if non-default YAPF type needed */
+	if (_settings_game.pf.forbid_90_deg) {
+		pfnCheckReverseTrain = &CYapfRail2::stCheckReverseTrain; // Trackdir, forbid 90-deg
+	}
+
+	bool reverse = pfnCheckReverseTrain(v, forward_depot, DiagDirToDiagTrackdir(GetRailDepotDirection(forward_depot)),
+			reverse_depot, DiagDirToDiagTrackdir(GetRailDepotDirection(reverse_depot)), 1);
+
+	return reverse;
+}
+
 FindDepotData YapfTrainFindNearestDepot(const Train *v, int max_penalty)
 {
 	const Train *last_veh = v->Last();
 
-	PBSTileInfo origin = FollowTrainReservation(v);
+	PBSTileInfo origin = FollowTrainReservation(v, nullptr, FTRF_OKAY_UNUSED);
 	TileIndex last_tile = last_veh->tile;
 	Trackdir td_rev = ReverseTrackdir(last_veh->GetVehicleTrackdir());
 

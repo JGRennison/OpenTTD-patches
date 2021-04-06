@@ -144,7 +144,7 @@ static const char * const la_text[] = {
 	"emergency savegame",
 };
 
-assert_compile(lengthof(la_text) == GLAT_END);
+static_assert(lengthof(la_text) == GLAT_END);
 
 /**
  * Information about the presence of a Grf at a certain point during gamelog history
@@ -790,7 +790,7 @@ void GamelogInfo(LoggedAction *gamelog_action, uint gamelog_actions, uint32 *las
 
 				case GLCT_REVISION:
 					*last_ottd_rev = lc->revision.newgrf;
-					*ever_modified = max(*ever_modified, lc->revision.modified);
+					*ever_modified = std::max(*ever_modified, lc->revision.modified);
 					break;
 
 				case GLCT_GRFREM:

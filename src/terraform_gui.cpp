@@ -39,10 +39,10 @@
 
 #include "safeguards.h"
 
-void CcTerraform(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcTerraform(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Succeeded()) {
-		if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_SPLAT_OTHER, tile);
+		if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_CONSTRUCTION_OTHER, tile);
 	} else {
 		extern TileIndex _terraform_err_tile;
 		SetRedErrorSquare(_terraform_err_tile);
@@ -92,7 +92,7 @@ static void GenerateRockyArea(TileIndex end, TileIndex start)
 		success = true;
 	}
 
-	if (success && _settings_client.sound.confirm) SndPlayTileFx(SND_1F_SPLAT_OTHER, end);
+	if (success && _settings_client.sound.confirm) SndPlayTileFx(SND_1F_CONSTRUCTION_OTHER, end);
 }
 
 /**
@@ -133,7 +133,7 @@ bool GUIPlaceProcDragXY(ViewportDragDropSelectionProcess proc, TileIndex start_t
 			GenerateDesertArea(end_tile, start_tile);
 			break;
 		case DDSP_BUY_LAND:
-			DoCommandP(end_tile, start_tile, _ctrl_pressed ? 1 : 0, CMD_PURCHASE_LAND_AREA | CMD_MSG(STR_ERROR_CAN_T_PURCHASE_THIS_LAND), CcPlaySound_SPLAT_RAIL);
+			DoCommandP(end_tile, start_tile, _ctrl_pressed ? 1 : 0, CMD_PURCHASE_LAND_AREA | CMD_MSG(STR_ERROR_CAN_T_PURCHASE_THIS_LAND), CcPlaySound_CONSTRUCTION_RAIL);
 			break;
 		default:
 			return false;
@@ -255,7 +255,7 @@ struct TerraformToolbarWindow : Window {
 				switch (_settings_game.construction.purchase_land_permitted) {
 					case 0:
 					case 1:
-						DoCommandP(tile, OBJECT_OWNED_LAND, 0, CMD_BUILD_OBJECT | CMD_MSG(STR_ERROR_CAN_T_PURCHASE_THIS_LAND), CcPlaySound_SPLAT_RAIL);
+						DoCommandP(tile, OBJECT_OWNED_LAND, 0, CMD_BUILD_OBJECT | CMD_MSG(STR_ERROR_CAN_T_PURCHASE_THIS_LAND), CcPlaySound_CONSTRUCTION_RAIL);
 						break;
 
 					case 2:
@@ -440,20 +440,20 @@ static void CommonRaiseLowerBigLand(TileIndex tile, int mode)
 
 		if (ta.w == 0 || ta.h == 0) return;
 
-		if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_SPLAT_OTHER, tile);
+		if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_CONSTRUCTION_OTHER, tile);
 
 		uint h;
 		if (mode != 0) {
 			/* Raise land */
 			h = MAX_TILE_HEIGHT;
 			TILE_AREA_LOOP(tile2, ta) {
-				h = min(h, TileHeight(tile2));
+				h = std::min(h, TileHeight(tile2));
 			}
 		} else {
 			/* Lower land */
 			h = 0;
 			TILE_AREA_LOOP(tile2, ta) {
-				h = max(h, TileHeight(tile2));
+				h = std::max(h, TileHeight(tile2));
 			}
 		}
 
@@ -588,8 +588,8 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 	{
 		if (widget != WID_ETT_DOTS) return;
 
-		size->width  = max<uint>(size->width,  ScaleGUITrad(59));
-		size->height = max<uint>(size->height, ScaleGUITrad(31));
+		size->width  = std::max<uint>(size->width,  ScaleGUITrad(59));
+		size->height = std::max<uint>(size->height, ScaleGUITrad(31));
 	}
 
 	void DrawWidget(const Rect &r, int widget) const override

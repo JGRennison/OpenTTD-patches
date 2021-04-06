@@ -99,7 +99,7 @@ struct AnimationBase {
 		}
 
 		SetAnimationFrame(tile, frame);
-		MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 	}
 
 	/**
@@ -132,5 +132,11 @@ struct AnimationBase {
 		/* If the lower 7 bits of the upper byte of the callback
 		 * result are not empty, it is a sound effect. */
 		if (GB(callback, 8, 7) != 0 && _settings_client.sound.ambient) PlayTileSound(spec->grf_prop.grffile, GB(callback, 8, 7), tile);
+	}
+
+	static uint8 GetAnimationSpeed(const Tspec *spec)
+	{
+		if (HasBit(spec->callback_mask, Tbase::cbm_animation_speed)) return 0;
+		return spec->animation.speed;
 	}
 };

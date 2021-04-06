@@ -39,6 +39,7 @@
 #include "group.h"
 #include "company_base.h"
 #include "train.h"
+#include "newgrf_debug.h"
 
 #include "tbtr_template_gui_create.h"
 #include "tbtr_template_vehicle.h"
@@ -51,7 +52,7 @@ class TemplateReplaceWindow;
 // some space in front of the virtual train in the matrix
 uint16 TRAIN_FRONT_SPACE = 16;
 
-enum TemplateReplaceWindowWidgets {
+enum TemplateReplaceCreateWindowWidgets {
 	TCW_CAPTION,
 	TCW_NEW_TMPL_PANEL,
 	TCW_INFO_PANEL,
@@ -69,6 +70,7 @@ static const NWidgetPart _widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, TCW_CAPTION), SetDataTip(STR_TMPL_CREATEGUI_TITLE, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_DEBUGBOX, COLOUR_GREY),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -133,6 +135,7 @@ private:
 	VehicleID vehicle_over;
 	bool sell_hovered;                ///< A vehicle is being dragged/hovered over the sell button.
 	uint32 template_index;
+	btree::btree_set<VehicleID> pending_deletions; ///< Vehicle IDs where deletion is in progress
 
 public:
 	TemplateCreateWindow(WindowDesc* _wdesc, TemplateVehicle *to_edit, bool *window_open) : Window(_wdesc)
@@ -169,8 +172,6 @@ public:
 			virtual_train = nullptr;
 		}
 
-		SetWindowClassesDirty(WC_TRAINS_LIST);
-
 		/* more cleanup */
 		*create_window_open = false;
 		DeleteWindowById(WC_BUILD_VIRTUAL_TRAIN, this->window_number);
@@ -190,7 +191,7 @@ public:
 		UpdateButtonState();
 	}
 
-	virtual void OnResize()
+	virtual void OnResize() override
 	{
 		NWidgetCore *template_panel = this->GetWidget<NWidgetCore>(TCW_NEW_TMPL_PANEL);
 		this->hscroll->SetCapacity(template_panel->current_x);
@@ -200,7 +201,7 @@ public:
 	}
 
 
-	virtual void OnInvalidateData(int data = 0, bool gui_scope = true)
+	virtual void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if(!gui_scope) return;
 
@@ -214,7 +215,7 @@ public:
 		UpdateButtonState();
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count)
+	virtual void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch(widget) {
 			case TCW_NEW_TMPL_PANEL: {
@@ -258,7 +259,7 @@ public:
 		}
 	}
 
-	virtual bool OnVehicleSelect(const Vehicle *v)
+	virtual bool OnVehicleSelect(const Vehicle *v) override
 	{
 		// throw away the current virtual train
 		if (virtual_train != nullptr) {
@@ -275,7 +276,7 @@ public:
 		return true;
 	}
 
-	virtual void OnPlaceObjectAbort()
+	virtual void OnPlaceObjectAbort() override
 	{
 		this->sel = INVALID_VEHICLE;
 		this->vehicle_over = INVALID_VEHICLE;
@@ -283,7 +284,7 @@ public:
 		this->SetDirty();
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	virtual void DrawWidget(const Rect &r, int widget) const override
 	{
 		switch(widget) {
 			case TCW_NEW_TMPL_PANEL: {
@@ -332,8 +333,8 @@ public:
 						SetDParam(0, full_weight);
 						if (_settings_client.gui.show_train_weight_ratios_in_details) {
 							SetDParam(1, STR_VEHICLE_INFO_WEIGHT_RATIOS);
-							SetDParam(2, (100 * this->virtual_train->gcache.cached_power) / max<uint>(1, full_weight));
-							SetDParam(3, (this->virtual_train->gcache.cached_max_te / 10) / max<uint>(1, full_weight));
+							SetDParam(2, (100 * this->virtual_train->gcache.cached_power) / std::max<uint>(1, full_weight));
+							SetDParam(3, (this->virtual_train->gcache.cached_max_te / 10) / std::max<uint>(1, full_weight));
 						} else {
 							SetDParam(1, STR_EMPTY);
 						}
@@ -363,7 +364,7 @@ public:
 		}
 	}
 
-	virtual void OnDragDrop(Point pt, int widget)
+	virtual void OnDragDrop(Point pt, int widget) override
 	{
 		switch (widget) {
 			case TCW_NEW_TMPL_PANEL: {
@@ -377,7 +378,10 @@ public:
 				GetDepotVehiclePtData gdvp = { nullptr, nullptr };
 
 				if (this->GetVehicleFromDepotWndPt(pt.x - nwi->pos_x, pt.y - nwi->pos_y, &v, &gdvp) == MODE_DRAG_VEHICLE && sel != INVALID_VEHICLE) {
-					if (gdvp.wagon == nullptr || gdvp.wagon->index != sel) {
+					if (gdvp.wagon != nullptr && gdvp.wagon->index == sel && _ctrl_pressed) {
+						DoCommandP(Vehicle::Get(sel)->tile, Vehicle::Get(sel)->index, true,
+								CMD_REVERSE_TRAIN_DIRECTION | CMD_MSG(STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE));
+					} else if (gdvp.wagon == nullptr || gdvp.wagon->index != sel) {
 						this->vehicle_over = INVALID_VEHICLE;
 						TrainDepotMoveVehicle(gdvp.wagon, sel, gdvp.head);
 					}
@@ -392,8 +396,14 @@ public:
 
 				Train* train_to_delete = Train::Get(this->sel);
 
+				this->pending_deletions.insert(this->sel);
+
 				if (virtual_train == train_to_delete) {
-					virtual_train = (_ctrl_pressed) ? nullptr : virtual_train->GetNextUnit();
+					if (_ctrl_pressed) {
+						virtual_train = nullptr;
+					} else {
+						this->RearrangeVirtualTrain();
+					}
 				}
 
 				DoCommandP(0, this->sel | (sell_cmd << 20) | (1 << 21), 0, GetCmdSellVeh(VEH_TRAIN), CcDeleteVirtualTrain);
@@ -415,7 +425,7 @@ public:
 		this->SetDirty();
 	}
 
-	virtual void OnMouseDrag(Point pt, int widget)
+	virtual void OnMouseDrag(Point pt, int widget) override
 	{
 		if (this->sel == INVALID_VEHICLE) return;
 
@@ -460,7 +470,7 @@ public:
 		this->SetWidgetDirty(widget);
 	}
 
-	virtual void OnPaint()
+	virtual void OnPaint() override
 	{
 		uint min_width = 32;
 		uint min_height = 30;
@@ -484,10 +494,10 @@ public:
 			}
 		}
 
-		min_width = max(min_width, width);
+		min_width = std::max(min_width, width);
 		this->hscroll->SetCount(min_width + 50);
 
-		min_height = max(min_height, height);
+		min_height = std::max(min_height, height);
 		this->vscroll->SetCount(min_height);
 
 		this->DrawWidgets();
@@ -568,17 +578,38 @@ public:
 		}
 	}
 
+	void VirtualVehicleDeleted(VehicleID id)
+	{
+		this->pending_deletions.erase(id);
+		this->RearrangeVirtualTrain();
+	}
+
 	void RearrangeVirtualTrain()
 	{
-		if (!virtual_train) return;
-		virtual_train = virtual_train->First();
-		assert(HasBit(virtual_train->subtype, GVSF_VIRTUAL));
+		if (!this->virtual_train) return;
+		this->virtual_train = this->virtual_train->First();
+		assert(HasBit(this->virtual_train->subtype, GVSF_VIRTUAL));
+		for (; this->virtual_train != nullptr; this->virtual_train = this->virtual_train->GetNextUnit()) {
+			if (this->pending_deletions.count(this->virtual_train->index) == 0) break;
+		}
 	}
 
 
 	void UpdateButtonState()
 	{
 		this->SetWidgetDisabledState(TCW_REFIT, virtual_train == nullptr);
+	}
+
+	bool IsNewGRFInspectable() const override
+	{
+		return true;
+	}
+
+	void ShowNewGRFInspectWindow() const override
+	{
+		if (this->virtual_train != nullptr) {
+			::ShowNewGRFInspectWindow(GetGrfSpecFeature(VEH_TRAIN), this->virtual_train->index);
+		}
 	}
 };
 
@@ -588,7 +619,7 @@ void ShowTemplateCreateWindow(TemplateVehicle *to_edit, bool *create_window_open
 	new TemplateCreateWindow(&_template_create_window_desc, to_edit, create_window_open);
 }
 
-void CcSetVirtualTrain(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcSetVirtualTrain(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Failed()) return;
 
@@ -600,7 +631,7 @@ void CcSetVirtualTrain(const CommandCost &result, TileIndex tile, uint32 p1, uin
 	}
 }
 
-void CcVirtualTrainWagonsMoved(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcVirtualTrainWagonsMoved(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Failed()) return;
 
@@ -611,13 +642,13 @@ void CcVirtualTrainWagonsMoved(const CommandCost &result, TileIndex tile, uint32
 	}
 }
 
-void CcDeleteVirtualTrain(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcDeleteVirtualTrain(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Failed()) return;
 
 	Window* window = FindWindowById(WC_CREATE_TEMPLATE, 0);
 	if (window) {
-		((TemplateCreateWindow*)window)->RearrangeVirtualTrain();
+		((TemplateCreateWindow*)window)->VirtualVehicleDeleted(GB(p1, 0, 20));
 		window->InvalidateData();
 	}
 }

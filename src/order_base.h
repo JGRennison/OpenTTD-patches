@@ -33,8 +33,8 @@ extern bool _order_destination_refcount_map_valid;
 
 inline uint32 OrderDestinationRefcountMapKey(DestinationID dest, CompanyID cid, OrderType order_type, VehicleType veh_type)
 {
-	assert_compile(sizeof(dest) == 2);
-	assert_compile(OT_END <= 16);
+	static_assert(sizeof(dest) == 2);
+	static_assert(OT_END <= 16);
 	return (((uint32) dest) << 16) | (((uint32) cid) << 8) | (((uint32) order_type) << 4) | ((uint32) veh_type);
 }
 
@@ -70,16 +70,15 @@ private:
 	friend void Load_VEOX();                                             ///< Saving and loading of orders.
 	friend void Save_VEOX();                                             ///< Saving and loading of orders.
 
-	uint8 type;           ///< The type of order + non-stop flags
-	uint8 flags;          ///< Load/unload types, depot order/action types.
+	std::unique_ptr<OrderExtraInfo> extra; ///< Extra order info
+
+	uint16 flags;         ///< Load/unload types, depot order/action types.
 	DestinationID dest;   ///< The destination of the order.
+	uint8 type;           ///< The type of order + non-stop flags
 
 	CargoID refit_cargo;  ///< Refit CargoID
 
 	uint8 occupancy;     ///< Estimate of vehicle occupancy on departure, for the current order, 0 indicates invalid, 1 - 101 indicate 0 - 100%
-	int8 jump_counter;   ///< Counter for the 'jump xx% of times' option
-
-	std::unique_ptr<OrderExtraInfo> extra; ///< Extra order info
 
 	TimetableTicks wait_time;    ///< How long in ticks to wait at the destination.
 	TimetableTicks travel_time;  ///< How long in ticks the journey to this destination should take.
@@ -121,7 +120,7 @@ public:
 	Order() : flags(0), refit_cargo(CT_NO_REFIT), max_speed(UINT16_MAX) {}
 	~Order();
 
-	Order(uint32 packed);
+	Order(uint64 packed);
 
 	Order(const Order& other)
 	{
@@ -169,6 +168,7 @@ public:
 	void MakeImplicit(StationID destination);
 	void MakeWaiting();
 	void MakeLoadingAdvance(StationID destination);
+	void MakeReleaseSlot();
 
 	/**
 	 * Is this a 'goto' order with a real destination?
@@ -180,8 +180,17 @@ public:
 	}
 
 	/**
+	 * Is this an order with a BaseStation destination?
+	 * @return True if the type is either #OT_IMPLICIT, #OT_GOTO_STATION or #OT_GOTO_WAYPOINT.
+	 */
+	inline bool IsBaseStationOrder() const
+	{
+		return IsType(OT_IMPLICIT) || IsType(OT_GOTO_STATION) || IsType(OT_GOTO_WAYPOINT);
+	}
+
+	/**
 	 * Gets the destination of this order.
-	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION).
+	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsType(OT_RELEASE_SLOT).
 	 * @return the destination of the order.
 	 */
 	inline DestinationID GetDestination() const { return this->dest; }
@@ -189,7 +198,7 @@ public:
 	/**
 	 * Sets the destination of this order.
 	 * @param destination the new destination of the order.
-	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION).
+	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsType(OT_RELEASE_SLOT).
 	 */
 	inline void SetDestination(DestinationID destination) { this->dest = destination; }
 
@@ -325,6 +334,8 @@ public:
 	inline VehicleOrderID GetConditionSkipToOrder() const { return this->flags; }
 	/** Get the value to base the skip on. */
 	inline uint16 GetConditionValue() const { return GB(this->dest, 0, 11); }
+	/** Get counter for the 'jump xx% of times' option */
+	inline int8 GetJumpCounter() const { return GB(this->GetXData(), 0, 8); }
 
 	/** Set how the consist must be loaded. */
 	inline void SetLoadType(OrderLoadFlags load_type)
@@ -384,6 +395,8 @@ public:
 	inline void SetConditionSkipToOrder(VehicleOrderID order_id) { this->flags = order_id; }
 	/** Set the value to base the skip on. */
 	inline void SetConditionValue(uint16 value) { SB(this->dest, 0, 11, value); }
+	/** Get counter for the 'jump xx% of times' option */
+	inline void SetJumpCounter(int8 jump_counter) { SB(this->GetXDataRef(), 0, 8, jump_counter); }
 
 	/* As conditional orders write their "skip to" order all over the flags, we cannot check the
 	 * flags to find out if timetabling is enabled. However, as conditional orders are never
@@ -482,6 +495,7 @@ public:
 	 */
 	inline void SetOccupancy(uint8 occupancy) { this->occupancy = occupancy; }
 
+	bool ShouldStopAtStation(StationID last_station_visited, StationID station, bool waypoint) const;
 	bool ShouldStopAtStation(const Vehicle *v, StationID station, bool waypoint) const;
 	bool CanLeaveWithCargo(bool has_cargo, CargoID cargo) const;
 
@@ -501,7 +515,7 @@ public:
 	void AssignOrder(const Order &other);
 	bool Equals(const Order &other) const;
 
-	uint32 Pack() const;
+	uint64 Pack() const;
 	uint16 MapOldOrder() const;
 	void ConvertFromOldSavegame();
 };
@@ -811,7 +825,5 @@ public:
 };
 
 void ShiftOrderDates(int interval);
-
-#define FOR_VEHICLE_ORDERS(v, order) for (order = (v->orders.list == nullptr) ? nullptr : v->orders.list->GetFirstOrder(); order != nullptr; order = order->next)
 
 #endif /* ORDER_BASE_H */

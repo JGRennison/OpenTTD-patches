@@ -16,6 +16,7 @@
 #include "../viewport_func.h"
 #include "../smallmap_gui.h"
 #include "../zoom_func.h"
+#include "../landscape.h"
 #include "../core/geometry_func.hpp"
 #include "../widgets/link_graph_legend_widget.h"
 
@@ -78,6 +79,29 @@ bool LinkGraphOverlay::CacheStillValid() const
 				region.bottom <= this->cached_region.bottom);
 	} else {
 		return true;
+	}
+}
+
+void LinkGraphOverlay::MarkStationViewportLinksDirty(const Station *st)
+{
+	if (this->window->viewport) {
+		Viewport *vp = this->window->viewport;
+		const Point pt = RemapCoords2(TileX(st->xy) * TILE_SIZE, TileY(st->xy) * TILE_SIZE);
+		const int padding = ScaleByZoom(3 * this->scale, vp->zoom);
+		MarkViewportDirty(vp, pt.x - padding, pt.y - padding, pt.x + padding, pt.y - padding, VMDF_NOT_LANDSCAPE);
+
+		const int block_radius = ScaleByZoom(10, vp->zoom);
+		for (LinkList::iterator i(this->cached_links.begin()); i != this->cached_links.end(); ++i) {
+			if (i->from_id == st->index) {
+				const Station *stb = Station::GetIfValid(i->to_id);
+				if (stb == nullptr) continue;
+				MarkViewportLineDirty(vp, pt, RemapCoords2(TileX(stb->xy) * TILE_SIZE, TileY(stb->xy) * TILE_SIZE), block_radius, VMDF_NOT_LANDSCAPE);
+			} else if (i->to_id == st->index) {
+			const Station *sta = Station::GetIfValid(i->from_id);
+			if (sta == nullptr) continue;
+				MarkViewportLineDirty(vp, RemapCoords2(TileX(sta->xy) * TILE_SIZE, TileY(sta->xy) * TILE_SIZE), pt, block_radius, VMDF_NOT_LANDSCAPE);
+			}
+		}
 	}
 }
 
@@ -326,7 +350,7 @@ inline bool LinkGraphOverlay::IsLinkVisible(Point pta, Point ptb, const DrawPixe
 {
 	/* multiply the numbers by 32 in order to avoid comparing to 0 too often. */
 	if (cargo.capacity == 0 ||
-			max(cargo.usage, cargo.planned) * 32 / (cargo.capacity + 1) < max(new_usg, new_plan) * 32 / (new_cap + 1)) {
+			std::max(cargo.usage, cargo.planned) * 32 / (cargo.capacity + 1) < std::max(new_usg, new_plan) * 32 / (new_cap + 1)) {
 		cargo.capacity = new_cap;
 		cargo.usage = new_usg;
 		cargo.planned = new_plan;
@@ -393,7 +417,7 @@ void LinkGraphOverlay::DrawLinks(const DrawPixelInfo *dpi) const
  */
 void LinkGraphOverlay::DrawContent(Point pta, Point ptb, const LinkProperties &cargo) const
 {
-	uint usage_or_plan = min(cargo.capacity * 2 + 1, max(cargo.usage, cargo.planned));
+	uint usage_or_plan = std::min(cargo.capacity * 2 + 1, std::max(cargo.usage, cargo.planned));
 	int colour = LinkGraphOverlay::LINK_COLOURS[_settings_client.gui.linkgraph_colours][usage_or_plan * lengthof(LinkGraphOverlay::LINK_COLOURS[0]) / (cargo.capacity * 2 + 2)];
 	int dash = cargo.shared ? this->scale * 4 : 0;
 
@@ -424,7 +448,7 @@ void LinkGraphOverlay::DrawStationDots(const DrawPixelInfo *dpi) const
 		const Station *st = Station::GetIfValid(i->id);
 		if (st == nullptr) continue;
 
-		uint r = this->scale * 2 + this->scale * 2 * min(200, i->quantity) / 200;
+		uint r = this->scale * 2 + this->scale * 2 * std::min<uint>(200, i->quantity) / 200;
 
 		LinkGraphOverlay::DrawVertex(pt.x, pt.y, r,
 				_colour_gradient[st->owner != OWNER_NONE ?
@@ -497,7 +521,7 @@ void LinkGraphOverlay::SetCompanyMask(uint32 company_mask)
 /** Make a number of rows with buttons for each company for the linkgraph legend window. */
 NWidgetBase *MakeCompanyButtonRowsLinkGraphGUI(int *biggest_index)
 {
-	return MakeCompanyButtonRows(biggest_index, WID_LGL_COMPANY_FIRST, WID_LGL_COMPANY_LAST, 3, STR_NULL);
+	return MakeCompanyButtonRows(biggest_index, WID_LGL_COMPANY_FIRST, WID_LGL_COMPANY_LAST, COLOUR_GREY, 3, STR_NULL);
 }
 
 NWidgetBase *MakeSaturationLegendLinkGraphGUI(int *biggest_index)
@@ -576,7 +600,7 @@ static const NWidgetPart _nested_linkgraph_legend_widgets[] = {
 	EndContainer()
 };
 
-assert_compile(WID_LGL_SATURATION_LAST - WID_LGL_SATURATION_FIRST ==
+static_assert(WID_LGL_SATURATION_LAST - WID_LGL_SATURATION_FIRST ==
 		lengthof(LinkGraphOverlay::LINK_COLOURS[0]) - 1);
 
 static WindowDesc _linkgraph_legend_desc(

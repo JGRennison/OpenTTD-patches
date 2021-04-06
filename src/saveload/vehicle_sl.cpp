@@ -650,6 +650,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		     SLE_VAR(Vehicle, cur_speed,             SLE_UINT16),
 		     SLE_VAR(Vehicle, subspeed,              SLE_UINT8),
 		     SLE_VAR(Vehicle, acceleration,          SLE_UINT8),
+		 SLE_CONDVAR(Vehicle, motion_counter,        SLE_UINT32,                   SLV_VEH_MOTION_COUNTER, SL_MAX_VERSION),
 		     SLE_VAR(Vehicle, progress,              SLE_UINT8),
 
 		     SLE_VAR(Vehicle, vehstatus,             SLE_UINT8),
@@ -680,9 +681,9 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 			return version_in_range && (SlXvIsFeaturePresent(XSLFI_SPRINGPP, 2) || SlXvIsFeaturePresent(XSLFI_JOKERPP) || SlXvIsFeaturePresent(XSLFI_CHILLPP) || SlXvIsFeaturePresent(XSLFI_VARIABLE_DAY_LENGTH, 2));
 		})),
 
-		     SLE_VAR(Vehicle, cur_implicit_order_index,  SLE_UINT8),
-		 SLE_CONDVAR(Vehicle, cur_real_order_index,  SLE_UINT8,                  SLV_158, SL_MAX_VERSION),
-		SLE_CONDVAR_X(Vehicle, cur_timetable_order_index, SLE_UINT8,      SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA)),
+		     SLE_VAR(Vehicle, cur_implicit_order_index,   SLE_VEHORDERID),
+		 SLE_CONDVAR(Vehicle, cur_real_order_index,       SLE_VEHORDERID,        SLV_158, SL_MAX_VERSION),
+		SLE_CONDVAR_X(Vehicle, cur_timetable_order_index, SLE_VEHORDERID, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA)),
 		/* num_orders is now part of OrderList and is not saved but counted */
 		SLE_CONDNULL(1,                                                            SL_MIN_VERSION, SLV_105),
 
@@ -694,7 +695,8 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 
 		/* Orders for version 5 and on */
 		 SLE_CONDVAR(Vehicle, current_order.type,    SLE_UINT8,                    SLV_5, SL_MAX_VERSION),
-		 SLE_CONDVAR(Vehicle, current_order.flags,   SLE_UINT8,                    SLV_5, SL_MAX_VERSION),
+		SLE_CONDVAR_X(Vehicle, current_order.flags,  SLE_FILE_U8 | SLE_VAR_U16,    SLV_5, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_FLAGS_EXTRA, 0, 0)),
+		SLE_CONDVAR_X(Vehicle, current_order.flags,  SLE_UINT16,                   SLV_5, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_FLAGS_EXTRA, 1)),
 		 SLE_CONDVAR(Vehicle, current_order.dest,    SLE_UINT16,                   SLV_5, SL_MAX_VERSION),
 
 		/* Refit in current order */
@@ -1136,8 +1138,347 @@ void Load_VESR()
 	}
 }
 
+struct vehicle_venc {
+	VehicleID id;
+	VehicleCache vcache;
+};
+
+struct train_venc {
+	VehicleID id;
+	GroundVehicleCache gvcache;
+	bool cached_tilt;
+	uint8 cached_num_engines;
+	uint16 cached_centre_mass;
+	uint16 cached_veh_weight;
+	uint16 cached_uncapped_decel;
+	uint8 cached_deceleration;
+	byte user_def_data;
+	int cached_max_curve_speed;
+};
+
+struct roadvehicle_venc {
+	VehicleID id;
+	GroundVehicleCache gvcache;
+};
+
+struct aircraft_venc {
+	VehicleID id;
+	uint16 cached_max_range;
+};
+
+static std::vector<vehicle_venc> _vehicle_vencs;
+static std::vector<train_venc> _train_vencs;
+static std::vector<roadvehicle_venc> _roadvehicle_vencs;
+static std::vector<aircraft_venc> _aircraft_vencs;
+
+void Save_VENC()
+{
+	if (!IsNetworkServerSave()) {
+		SlSetLength(0);
+		return;
+	}
+
+	SlAutolength([](void *) {
+		int types[4] = {};
+		int total = 0;
+		for (Vehicle *v : Vehicle::Iterate()) {
+			total++;
+			if (v->type < VEH_COMPANY_END) types[v->type]++;
+		}
+
+		/* vehicle cache */
+		SlWriteUint32(total);
+		for (Vehicle *v : Vehicle::Iterate()) {
+			SlWriteUint32(v->index);
+			SlWriteUint16(v->vcache.cached_max_speed);
+			SlWriteUint16(v->vcache.cached_cargo_age_period);
+			SlWriteByte(v->vcache.cached_vis_effect);
+			SlWriteByte(v->vcache.cached_veh_flags);
+		}
+
+		auto write_gv_cache = [&](const GroundVehicleCache &cache) {
+			SlWriteUint32(cache.cached_weight);
+			SlWriteUint32(cache.cached_slope_resistance);
+			SlWriteUint32(cache.cached_max_te);
+			SlWriteUint32(cache.cached_axle_resistance);
+			SlWriteUint32(cache.cached_max_track_speed);
+			SlWriteUint32(cache.cached_power);
+			SlWriteUint32(cache.cached_air_drag);
+			SlWriteUint16(cache.cached_total_length);
+			SlWriteUint16(cache.first_engine);
+			SlWriteByte(cache.cached_veh_length);
+		};
+
+		/* train */
+		SlWriteUint32(types[VEH_TRAIN]);
+		for (Train *t : Train::Iterate()) {
+			SlWriteUint32(t->index);
+			write_gv_cache(t->gcache);
+			SlWriteByte(t->tcache.cached_tilt);
+			SlWriteByte(t->tcache.cached_num_engines);
+			SlWriteByte(t->tcache.cached_centre_mass);
+			SlWriteUint16(t->tcache.cached_veh_weight);
+			SlWriteUint16(t->tcache.cached_uncapped_decel);
+			SlWriteByte(t->tcache.cached_deceleration);
+			SlWriteByte(t->tcache.user_def_data);
+			SlWriteUint32(t->tcache.cached_max_curve_speed);
+		}
+
+		/* road vehicle */
+		SlWriteUint32(types[VEH_ROAD]);
+		for (RoadVehicle *rv : RoadVehicle::Iterate()) {
+			SlWriteUint32(rv->index);
+			write_gv_cache(rv->gcache);
+		}
+
+		/* aircraft */
+		SlWriteUint32(types[VEH_AIRCRAFT]);
+		for (Aircraft *a : Aircraft::Iterate()) {
+			SlWriteUint32(a->index);
+			SlWriteUint16(a->acache.cached_max_range);
+		}
+	}, nullptr);
+}
+
+void Load_VENC()
+{
+	if (SlGetFieldLength() == 0) return;
+
+	if (!_networking || _network_server) {
+		SlSkipBytes(SlGetFieldLength());
+		return;
+	}
+
+	_vehicle_vencs.resize(SlReadUint32());
+	for (vehicle_venc &venc : _vehicle_vencs) {
+		venc.id = SlReadUint32();
+		venc.vcache.cached_max_speed = SlReadUint16();
+		venc.vcache.cached_cargo_age_period = SlReadUint16();
+		venc.vcache.cached_vis_effect = SlReadByte();
+		venc.vcache.cached_veh_flags = SlReadByte();
+	}
+
+	auto read_gv_cache = [&](GroundVehicleCache &cache) {
+		cache.cached_weight = SlReadUint32();
+		cache.cached_slope_resistance = SlReadUint32();
+		cache.cached_max_te = SlReadUint32();
+		cache.cached_axle_resistance = SlReadUint32();
+		cache.cached_max_track_speed = SlReadUint32();
+		cache.cached_power = SlReadUint32();
+		cache.cached_air_drag = SlReadUint32();
+		cache.cached_total_length = SlReadUint16();
+		cache.first_engine = SlReadUint16();
+		cache.cached_veh_length = SlReadByte();
+	};
+
+	_train_vencs.resize(SlReadUint32());
+	for (train_venc &venc : _train_vencs) {
+		venc.id = SlReadUint32();
+		read_gv_cache(venc.gvcache);
+		venc.cached_tilt = SlReadByte();
+		venc.cached_num_engines = SlReadByte();
+		venc.cached_centre_mass = SlReadUint16();
+		venc.cached_veh_weight = SlReadUint16();
+		venc.cached_uncapped_decel = SlReadUint16();
+		venc.cached_deceleration = SlReadByte();
+		venc.user_def_data = SlReadByte();
+		venc.cached_max_curve_speed = SlReadUint32();
+	}
+
+	_roadvehicle_vencs.resize(SlReadUint32());
+	for (roadvehicle_venc &venc : _roadvehicle_vencs) {
+		venc.id = SlReadUint32();
+		read_gv_cache(venc.gvcache);
+	}
+
+	_aircraft_vencs.resize(SlReadUint32());
+	for (aircraft_venc &venc : _aircraft_vencs) {
+		venc.id = SlReadUint32();
+		venc.cached_max_range = SlReadUint16();
+	}
+}
+
+void SlResetVENC()
+{
+	_vehicle_vencs.clear();
+	_train_vencs.clear();
+	_roadvehicle_vencs.clear();
+	_aircraft_vencs.clear();
+}
+
+static void LogVehicleVENCMessage(const Vehicle *v, const char *var)
+{
+	char log_buffer[1024];
+
+	char *p = log_buffer + seprintf(log_buffer, lastof(log_buffer), "[load]: vehicle cache mismatch: %s", var);
+
+	extern void WriteVehicleInfo(char *&p, const char *last, const Vehicle *u, const Vehicle *v, uint length);
+	uint length = 0;
+	for (const Vehicle *u = v->First(); u != v; u = u->Next()) {
+		length++;
+	}
+	WriteVehicleInfo(p, lastof(log_buffer), v, v->First(), length);
+	DEBUG(desync, 0, "%s", log_buffer);
+	LogDesyncMsg(log_buffer);
+}
+
+template <typename T>
+void CheckVehicleVENCProp(T &v_prop, T venc_prop, const Vehicle *v, const char *var)
+{
+	if (v_prop != venc_prop) {
+		v_prop = venc_prop;
+		LogVehicleVENCMessage(v, var);
+	}
+}
+
+void SlProcessVENC()
+{
+	for (const vehicle_venc &venc : _vehicle_vencs) {
+		Vehicle *v = Vehicle::GetIfValid(venc.id);
+		if (v == nullptr) continue;
+		CheckVehicleVENCProp(v->vcache.cached_max_speed, venc.vcache.cached_max_speed, v, "cached_max_speed");
+		CheckVehicleVENCProp(v->vcache.cached_cargo_age_period, venc.vcache.cached_cargo_age_period, v, "cached_cargo_age_period");
+		CheckVehicleVENCProp(v->vcache.cached_vis_effect, venc.vcache.cached_vis_effect, v, "cached_vis_effect");
+		if (HasBit(v->vcache.cached_veh_flags ^ venc.vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT)) {
+			SB(v->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT, 1, HasBit(venc.vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT) ? 1 : 0);
+			LogVehicleVENCMessage(v, "VCF_LAST_VISUAL_EFFECT");
+		}
+	}
+
+	auto check_gv_cache = [&](GroundVehicleCache &v_gvcache, const GroundVehicleCache &venc_gvcache, const Vehicle *v) {
+		CheckVehicleVENCProp(v_gvcache.cached_weight, venc_gvcache.cached_weight, v, "cached_weight");
+		CheckVehicleVENCProp(v_gvcache.cached_slope_resistance, venc_gvcache.cached_slope_resistance, v, "cached_slope_resistance");
+		CheckVehicleVENCProp(v_gvcache.cached_max_te, venc_gvcache.cached_max_te, v, "cached_max_te");
+		CheckVehicleVENCProp(v_gvcache.cached_axle_resistance, venc_gvcache.cached_axle_resistance, v, "cached_axle_resistance");
+		CheckVehicleVENCProp(v_gvcache.cached_max_track_speed, venc_gvcache.cached_max_track_speed, v, "cached_max_track_speed");
+		CheckVehicleVENCProp(v_gvcache.cached_power, venc_gvcache.cached_power, v, "cached_power");
+		CheckVehicleVENCProp(v_gvcache.cached_air_drag, venc_gvcache.cached_air_drag, v, "cached_air_drag");
+		CheckVehicleVENCProp(v_gvcache.cached_total_length, venc_gvcache.cached_total_length, v, "cached_total_length");
+		CheckVehicleVENCProp(v_gvcache.first_engine, venc_gvcache.first_engine, v, "first_engine");
+		CheckVehicleVENCProp(v_gvcache.cached_veh_length, venc_gvcache.cached_veh_length, v, "cached_veh_length");
+	};
+
+	for (const train_venc &venc : _train_vencs) {
+		Train *t = Train::GetIfValid(venc.id);
+		if (t == nullptr) continue;
+		check_gv_cache(t->gcache, venc.gvcache, t);
+		CheckVehicleVENCProp(t->tcache.cached_tilt, venc.cached_tilt, t, "cached_tilt");
+		CheckVehicleVENCProp(t->tcache.cached_num_engines, venc.cached_num_engines, t, "cached_num_engines");
+		CheckVehicleVENCProp(t->tcache.cached_centre_mass, venc.cached_centre_mass, t, "cached_centre_mass");
+		CheckVehicleVENCProp(t->tcache.cached_veh_weight, venc.cached_veh_weight, t, "cached_veh_weight");
+		CheckVehicleVENCProp(t->tcache.cached_uncapped_decel, venc.cached_uncapped_decel, t, "cached_uncapped_decel");
+		CheckVehicleVENCProp(t->tcache.cached_deceleration, venc.cached_deceleration, t, "cached_deceleration");
+		CheckVehicleVENCProp(t->tcache.user_def_data, venc.user_def_data, t, "user_def_data");
+		CheckVehicleVENCProp(t->tcache.cached_max_curve_speed, venc.cached_max_curve_speed, t, "cached_max_curve_speed");
+	}
+
+	for (const roadvehicle_venc &venc : _roadvehicle_vencs) {
+		RoadVehicle *rv = RoadVehicle::GetIfValid(venc.id);
+		if (rv == nullptr) continue;
+		check_gv_cache(rv->gcache, venc.gvcache, rv);
+	}
+
+	for (const aircraft_venc &venc : _aircraft_vencs) {
+		Aircraft *a = Aircraft::GetIfValid(venc.id);
+		if (a == nullptr) continue;
+		if (a->acache.cached_max_range != venc.cached_max_range) {
+			a->acache.cached_max_range = venc.cached_max_range;
+			a->acache.cached_max_range_sqr = venc.cached_max_range * venc.cached_max_range;
+			LogVehicleVENCMessage(a, "cached_max_range");
+		}
+	}
+}
+
+const SaveLoad *GetVehicleLookAheadDescription()
+{
+	static const SaveLoad _vehicle_look_ahead_desc[] = {
+		     SLE_VAR(TrainReservationLookAhead, reservation_end_tile,         SLE_UINT32),
+		     SLE_VAR(TrainReservationLookAhead, reservation_end_trackdir,     SLE_UINT8),
+		     SLE_VAR(TrainReservationLookAhead, current_position,             SLE_INT32),
+		     SLE_VAR(TrainReservationLookAhead, reservation_end_position,     SLE_INT32),
+		     SLE_VAR(TrainReservationLookAhead, reservation_end_z,            SLE_INT16),
+		     SLE_VAR(TrainReservationLookAhead, tunnel_bridge_reserved_tiles, SLE_INT16),
+		     SLE_VAR(TrainReservationLookAhead, flags,                        SLE_UINT16),
+		     SLE_VAR(TrainReservationLookAhead, speed_restriction,            SLE_UINT16),
+		SLE_END()
+	};
+
+	return _vehicle_look_ahead_desc;
+}
+
+const SaveLoad *GetVehicleLookAheadItemDescription()
+{
+	static const SaveLoad _vehicle_look_ahead_item_desc[] = {
+		     SLE_VAR(TrainReservationLookAheadItem, start,                    SLE_INT32),
+		     SLE_VAR(TrainReservationLookAheadItem, end,                      SLE_INT32),
+		     SLE_VAR(TrainReservationLookAheadItem, z_pos,                    SLE_INT16),
+		     SLE_VAR(TrainReservationLookAheadItem, data_id,                  SLE_UINT16),
+		     SLE_VAR(TrainReservationLookAheadItem, type,                     SLE_UINT8),
+		SLE_END()
+	};
+
+	return _vehicle_look_ahead_item_desc;
+}
+
+const SaveLoad *GetVehicleLookAheadCurveDescription()
+{
+	static const SaveLoad _vehicle_look_ahead_curve_desc[] = {
+		     SLE_VAR(TrainReservationLookAheadCurve, position,                SLE_INT32),
+		     SLE_VAR(TrainReservationLookAheadCurve, dir_diff,                SLE_UINT8),
+		SLE_END()
+	};
+
+	return _vehicle_look_ahead_curve_desc;
+}
+
+static void RealSave_VLKA(TrainReservationLookAhead *lookahead)
+{
+	SlObject(lookahead, GetVehicleLookAheadDescription());
+	SlWriteUint32(lookahead->items.size());
+	for (TrainReservationLookAheadItem &item : lookahead->items) {
+		SlObject(&item, GetVehicleLookAheadItemDescription());
+	}
+	SlWriteUint32(lookahead->curves.size());
+	for (TrainReservationLookAheadCurve &curve : lookahead->curves) {
+		SlObject(&curve, GetVehicleLookAheadCurveDescription());
+	}
+}
+
+void Save_VLKA()
+{
+	for (Train *t : Train::Iterate()) {
+		if (t->lookahead != nullptr) {
+			SlSetArrayIndex(t->index);
+			SlAutolength((AutolengthProc*) RealSave_VLKA, t->lookahead.get());
+		}
+	}
+}
+
+void Load_VLKA()
+{
+	int index;
+	while ((index = SlIterateArray()) != -1) {
+		Train *t = Train::GetIfValid(index);
+		assert(t != nullptr);
+		t->lookahead.reset(new TrainReservationLookAhead());
+		SlObject(t->lookahead.get(), GetVehicleLookAheadDescription());
+		uint32 items = SlReadUint32();
+		t->lookahead->items.resize(items);
+		for (uint i = 0; i < items; i++) {
+			SlObject(&t->lookahead->items[i], GetVehicleLookAheadItemDescription());
+		}
+		uint32 curves = SlReadUint32();
+		t->lookahead->curves.resize(curves);
+		for (uint i = 0; i < curves; i++) {
+			SlObject(&t->lookahead->curves[i], GetVehicleLookAheadCurveDescription());
+		}
+	}
+}
+
 extern const ChunkHandler _veh_chunk_handlers[] = {
 	{ 'VEHS', Save_VEHS, Load_VEHS, Ptrs_VEHS, nullptr, CH_SPARSE_ARRAY},
 	{ 'VEOX', Save_VEOX, Load_VEOX, nullptr,   nullptr, CH_SPARSE_ARRAY},
-	{ 'VESR', Save_VESR, Load_VESR, nullptr,   nullptr, CH_SPARSE_ARRAY | CH_LAST},
+	{ 'VESR', Save_VESR, Load_VESR, nullptr,   nullptr, CH_SPARSE_ARRAY},
+	{ 'VENC', Save_VENC, Load_VENC, nullptr,   nullptr, CH_RIFF},
+	{ 'VLKA', Save_VLKA, Load_VLKA, nullptr,   nullptr, CH_SPARSE_ARRAY | CH_LAST},
 };

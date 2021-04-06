@@ -78,6 +78,9 @@ enum StringControlCode {
 	SCC_DATE_WALLCLOCK_LONG,
 	SCC_DATE_WALLCLOCK_ISO,
 
+	SCC_TIME_HHMM,
+	SCC_TT_TICKS,
+
 	/* Must be consecutive */
 	SCC_STRING1,
 	SCC_STRING2,

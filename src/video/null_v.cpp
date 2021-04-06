@@ -10,6 +10,7 @@
 #include "../stdafx.h"
 #include "../gfx_func.h"
 #include "../blitter/factory.hpp"
+#include "../window_func.h"
 #include "null_v.h"
 
 #include "../safeguards.h"
@@ -25,6 +26,8 @@ const char *VideoDriver_Null::Start(const StringList &parm)
 	/* Disable the MSVC assertion message box. */
 	_set_error_mode(_OUT_TO_STDERR);
 #endif
+
+	this->UpdateAutoResolution();
 
 	this->ticks = GetDriverParamInt(parm, "ticks", 1000);
 	this->until_exit = GetDriverParamBool(parm, "until_exit");
@@ -47,15 +50,15 @@ void VideoDriver_Null::MainLoop()
 {
 	if (this->until_exit) {
 		while (!_exit_game) {
-			GameLoop();
-			GameLoopPaletteAnimations();
-			UpdateWindows();
+			::GameLoop();
+			::InputLoop();
+			::UpdateWindows();
 		}
 	} else {
 		for (int i = 0; i < this->ticks; i++) {
-			GameLoop();
-			GameLoopPaletteAnimations();
-			UpdateWindows();
+			::GameLoop();
+			::InputLoop();
+			::UpdateWindows();
 		}
 	}
 }

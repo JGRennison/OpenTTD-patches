@@ -83,7 +83,7 @@ DropDownListIconItem::DropDownListIconItem(SpriteID sprite, PaletteID pal, Strin
 
 uint DropDownListIconItem::Height(uint width) const
 {
-	return max(this->dim.height, (uint)FONT_HEIGHT_NORMAL);
+	return std::max(this->dim.height, (uint)FONT_HEIGHT_NORMAL);
 }
 
 uint DropDownListIconItem::Width() const
@@ -402,7 +402,7 @@ void ShowDropDownListAt(Window *w, DropDownList &&list, int selected, int button
 
 	for (const auto &item : list) {
 		height += item->Height(width);
-		if (auto_width) max_item_width = max(max_item_width, item->Width() + 5);
+		if (auto_width) max_item_width = std::max(max_item_width, item->Width() + 5);
 	}
 
 	/* Scrollbar needed? */
@@ -412,12 +412,12 @@ void ShowDropDownListAt(Window *w, DropDownList &&list, int selected, int button
 	bool above = false;
 
 	/* Available height below (or above, if the dropdown is placed above the widget). */
-	uint available_height = (uint)max(GetMainViewBottom() - top - 4, 0);
+	uint available_height = std::max(GetMainViewBottom() - top - 4, 0);
 
 	/* If the dropdown doesn't fully fit below the widget... */
 	if (height > available_height) {
 
-		uint available_height_above = (uint)max(w->top + wi_rect.top - GetMainViewTop() - 4, 0);
+		uint available_height_above = std::max(w->top + wi_rect.top - GetMainViewTop() - 4, 0);
 
 		/* Put the dropdown above if there is more available space. */
 		if (available_height_above > available_height) {
@@ -447,7 +447,7 @@ void ShowDropDownListAt(Window *w, DropDownList &&list, int selected, int button
 		}
 	}
 
-	if (auto_width) width = max(width, max_item_width);
+	if (auto_width) width = std::max(width, max_item_width);
 
 	Point dw_pos = { w->left + (_current_text_dir == TD_RTL ? wi_rect.right + 1 - (int)width : wi_rect.left), top};
 	Dimension dw_size = {width, height};
@@ -510,7 +510,7 @@ void ShowDropDownList(Window *w, DropDownList &&list, int selected, int button, 
  * @param button        Button widget number of the parent window \a w that wants the dropdown menu.
  * @param disabled_mask Bitmask for disabled items (items with their bit set are displayed, but not selectable in the dropdown list).
  * @param hidden_mask   Bitmask for hidden items (items with their bit set are not copied to the dropdown list).
- * @param width         Width of the dropdown menu. If \c 0, use the width of parent widget \a button.
+ * @param width         Width of the dropdown menu. If \c 0, use the width of parent widget \a button. If \c UINT_MAX, use the width of parent widget \a button, and use auto_width.
  */
 void ShowDropDownMenu(Window *w, const StringID *strings, int selected, int button, uint32 disabled_mask, uint32 hidden_mask, uint width, DropDownSyncFocus sync_parent_focus)
 {
@@ -522,7 +522,13 @@ void ShowDropDownMenu(Window *w, const StringID *strings, int selected, int butt
 		}
 	}
 
-	if (!list.empty()) ShowDropDownList(w, std::move(list), selected, button, width, false, false, sync_parent_focus);
+	bool auto_width = false;
+	if (width == UINT_MAX) {
+		width = 0;
+		auto_width = true;
+	}
+
+	if (!list.empty()) ShowDropDownList(w, std::move(list), selected, button, width, auto_width, false, sync_parent_focus);
 }
 
 /**

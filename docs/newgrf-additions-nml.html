@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>JGR's Patchpack - Additions to NewGRF Specifications (NML)</title>
+	<style type="text/css">
+		td li      { white-space: nowrap; text-align: left; }
+		th         { white-space: nowrap; text-align: center; }
+		td, th     { border: 1px solid #CCCCCC; padding: 0px 5px; }
+		table      { border-collapse: collapse; empty-cells: show; }
+		span.code  { font-family: "Courier New", Courier, mono; color: darkgreen; }
+		dt         { font-weight: bold; }
+	</style>
+</head>
+<body>
+	<h2>Additions to NewGRF Specifications in JGR's Patchpack in NML</h2>
+	<p>This document describes non-standard additions to the <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Main">Official OpenTTD NML Specifications</a> which are present in this patchpack and the associated <a href="https://github.com/JGRennison/nml">NML fork</a>.
+	<p>These additions MAY also be present in other patchpacks. They MAY be removed or moved in future, if necessary.</p>
+
+	<p>Not all standard NewGRF features are supported by NML, consequently not all non-standard additions to the specifications are supported by this patchpack's associated NML fork, or are listed in this document.<br />
+	See the associated <a href="newgrf-additions.html">non-NML document</a> for more details.</p>
+
+	<p>All of the non-standard features listed below will automatically emit suitable feature tests, conditionals, etc. such that NewGRFs which use these features will work correctly
+	on OpenTTD versions which do not support these features, including standard trunk OpenTTD and older/other patchpack versions.</p>
+
+	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#Railtype_properties">Railtypes properties</a></h3>
+	<table>
+	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
+	<tr><td>enable_programmable_pre_signals</td><td>0 or 1</td>
+		<td>
+			Enable programmable pre-signal graphics in <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#signals">railtype signals</a>.<br />
+			Programmable pre-signals have a signal type (<span class="code">getbits(extra_callback_info2, 16, 8)</span>) of 6.
+		</td>
+	</tr>
+	<tr><td>enable_restricted_signals</td><td>0 or 1</td>
+		<td>
+			Enable restricted signal flag in <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#signals">railtype signals</a>.<br />
+			When enabled, bit 24 of variable <span class="code">extra_callback_info2</span> is set if the signal is restricted (has a routing restriction program attached).<br />
+			When enabled, the "Show restricted electric signals using default graphics" client setting and signal post recolouring is not applied.<br />
+			This flag must only be set if a different sprite is returned when bit 24 of <span class="code">extra_callback_info2</span> is set.
+		</td>
+	</tr>
+	</table>
+	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Roadtypes#Roadtype_properties">Roadtype properties</a></h3>
+	<table>
+	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
+	<tr><td>roadtype_extra_flags</td><td>bitmask(ROADTYPE_EXTRA_FLAG_XXX, ...)</td>
+		<td>
+			<dl>
+				<dt>NO_SCRIPT_BUILD</dt>
+				<dd>Scripts (AI/GS) may not build this roadtype</dd>
+				<dt>NO_TOWN_MODIFY</dt>
+				<dd>Towns may not modify tiles of this roadtype in any way whatsoever</dd>
+			</dl>
+		</td>
+	</tr>
+	</table>
+	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Tramtypes#Tramtype_properties">Tramtype properties</a></h3>
+	<table>
+	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
+	<tr><td>tramtype_extra_flags</td><td>bitmask(TRAMTYPE_EXTRA_FLAG_XXX, ...)</td>
+		<td>
+			<dl>
+				<dt>NO_SCRIPT_BUILD</dt>
+				<dd>Scripts (AI/GS) may not build this tramtype</dd>
+				<dt>NO_TOWN_MODIFY</dt>
+				<dd>Towns may not modify tiles of this tramtype in any way whatsoever</dd>
+			</dl>
+		</td>
+	</tr>
+	</table>
+	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Replace_new_sprites">Replace new sprites</a></h3>
+	<table>
+	<tr><th>Type</th><th>Number of sprites </th><th>Comment</th></tr>
+	<tr><td>PROGRAMMABLE_PRE_SIGNAL</td><td>32</td>
+		<td>
+			<b>Programmable pre-signals</b>
+			<p>Signal graphics come in groups of 16. These groups contain sprites in the same order as sprites 1275-1290 in trg1[r].grf and <a href="https://newgrf-specs.tt-wiki.net/wiki/Action5#04_Signal_graphics.">Action 5 type 4 (signals)</a>;
+				red, then green, for each of: SW-facing, NE-facing, NW-facing, SE-facing, E-facing, W-facing, S-facing, N-facing.
+			<table>
+				<tr><th>Group</th><th>Contents</th></tr>
+				<tr><td>0</td><td>Semaphore programmable pre-signals</td></tr>
+				<tr><td>1</td><td>Lighted programmable pre-signals</td></tr>
+			</table>
+		</td>
+	</tr>
+	</table>
+</body>
+</html>

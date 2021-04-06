@@ -32,6 +32,7 @@ CommandCost CheckTileOwnership(TileIndex tile);
 
 extern CompanyID _local_company;
 extern CompanyID _current_company;
+extern CompanyID _loaded_local_company;
 
 extern Colours _company_colours[MAX_COMPANIES];
 extern CompanyManagerFace _company_manager_face;
@@ -56,5 +57,19 @@ static inline bool IsInteractiveCompany(CompanyID company)
 }
 
 int CompanyServiceInterval(const Company *c, VehicleType type);
+
+CompanyID GetDefaultLocalCompany();
+
+/**
+ * List of flags for DoStartupNewCompany.
+ */
+enum DoStartupNewCompanyFlag {
+	DSNC_NONE                = 0x000, ///< no flag is set
+	DSNC_AI                  = 0x001, ///< start an AI company
+	DSNC_DURING_LOAD         = 0x002, ///< the save is currently being loaded, do not perform operations which require that loading has completed
+};
+DECLARE_ENUM_AS_BIT_SET(DoStartupNewCompanyFlag)
+
+Company *DoStartupNewCompany(DoStartupNewCompanyFlag flags, CompanyID company = INVALID_COMPANY);
 
 #endif /* COMPANY_FUNC_H */

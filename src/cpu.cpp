@@ -16,11 +16,18 @@
 
 /* rdtsc for MSC_VER, uses simple inline assembly, or _rdtsc
  * from external win64.asm because VS2005 does not support inline assembly */
-#if defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_X64)) && !defined(RDTSC_AVAILABLE)
+#if defined(_MSC_VER) && !defined(RDTSC_AVAILABLE)
 #include <intrin.h>
+#include <windows.h>
 uint64 ottd_rdtsc()
 {
+#if defined(_M_ARM)
+	return __rdpmccntr64();
+#elif defined(_M_ARM64)
+	return _ReadStatusReg(ARM64_PMCCNTR_EL0);
+#else
 	return __rdtsc();
+#endif
 }
 #define RDTSC_AVAILABLE
 #endif
@@ -63,6 +70,12 @@ uint64 ottd_rdtsc()
 				  );
 	return ((uint64)high << 32) | low;
 }
+# define RDTSC_AVAILABLE
+#endif
+
+#if defined(__EMSCRIPTEN__) && !defined(RDTSC_AVAILABLE)
+/* On emscripten doing TIC/TOC would be ill-advised */
+uint64 ottd_rdtsc() {return 0;}
 # define RDTSC_AVAILABLE
 #endif
 

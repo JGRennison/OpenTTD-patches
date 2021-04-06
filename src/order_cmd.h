@@ -34,9 +34,8 @@ inline void UnregisterOrderDestination(const Order *order, VehicleType type, Own
  */
 template <typename F> void RemoveVehicleOrdersIf(Vehicle * const v, F order_predicate) {
 	/* Clear the order from the order-list */
-	Order *order;
 	int id = -1;
-	FOR_VEHICLE_ORDERS(v, order) {
+	for(Order *order = v->GetFirstOrder(); order != nullptr; order = order->next) {
 		id++;
 restart:
 
@@ -68,8 +67,8 @@ restart:
 
 			for (const Vehicle *w = v->FirstShared(); w != nullptr; w = w->NextShared()) {
 				/* In GUI, simulate by removing the order and adding it back */
-				InvalidateVehicleOrder(w, id | (INVALID_VEH_ORDER_ID << 8));
-				InvalidateVehicleOrder(w, (INVALID_VEH_ORDER_ID << 8) | id);
+				InvalidateVehicleOrder(w, id | (INVALID_VEH_ORDER_ID << 16));
+				InvalidateVehicleOrder(w, (INVALID_VEH_ORDER_ID << 16) | id);
 			}
 		}
 	}

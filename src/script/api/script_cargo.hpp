@@ -57,6 +57,7 @@ public:
 		/* Note: these values represent part of the in-game CargoTypes enum */
 		CT_AUTO_REFIT = ::CT_AUTO_REFIT, ///< Automatically choose cargo type when doing auto-refitting.
 		CT_NO_REFIT   = ::CT_NO_REFIT,   ///< Do not refit cargo of a vehicle.
+		CT_INVALID    = ::CT_INVALID,    ///< An invalid cargo type.
 	};
 
 	/**
@@ -82,6 +83,14 @@ public:
 	 * @return True if and only if the town effect type is valid.
 	 */
 	static bool IsValidTownEffect(TownEffect towneffect_type);
+
+	/**
+	 * Get the name of the cargo type.
+	 * @param cargo_type The cargo type to get the name of.
+	 * @pre IsValidCargo(cargo_type).
+	 * @return The name of the cargo type.
+	 */
+	static char *GetName(CargoID cargo_type);
 
 	/**
 	 * Gets the string representation of the cargo label.

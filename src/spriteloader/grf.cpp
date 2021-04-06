@@ -11,6 +11,7 @@
 #include "../gfx_func.h"
 #include "../fileio_func.h"
 #include "../debug.h"
+#include "../settings_type.h"
 #include "../strings_func.h"
 #include "table/strings.h"
 #include "../error.h"
@@ -22,15 +23,6 @@
 #include "../safeguards.h"
 
 extern const byte _palmap_w2d[];
-
-/** The different colour components a sprite can have. */
-enum SpriteColourComponent {
-	SCC_RGB   = 1 << 0, ///< Sprite has RGB.
-	SCC_ALPHA = 1 << 1, ///< Sprite has alpha.
-	SCC_PAL   = 1 << 2, ///< Sprite has palette data.
-	SCC_MASK  = SCC_RGB | SCC_ALPHA | SCC_PAL, ///< Mask of valid colour bits.
-};
-DECLARE_ENUM_AS_BIT_SET(SpriteColourComponent)
 
 /**
  * We found a corrupted sprite. This means that the sprite itself
@@ -164,7 +156,7 @@ bool DecodeSingleSprite(SpriteLoader::Sprite *sprite, uint file_slot, size_t fil
 					if (colour_fmt & SCC_PAL) {
 						switch (sprite_type) {
 							case ST_NORMAL: data->m = _palette_remap_grf[file_slot] ? _palmap_w2d[*dest] : *dest; break;
-							case ST_FONT:   data->m = min(*dest, 2u); break;
+							case ST_FONT:   data->m = std::min<uint>(*dest, 2u); break;
 							default:        data->m = *dest; break;
 						}
 						/* Magic blue. */
@@ -200,7 +192,7 @@ bool DecodeSingleSprite(SpriteLoader::Sprite *sprite, uint file_slot, size_t fil
 			if (colour_fmt & SCC_PAL) {
 				switch (sprite_type) {
 					case ST_NORMAL: sprite->data[i].m = _palette_remap_grf[file_slot] ? _palmap_w2d[*pixel] : *pixel; break;
-					case ST_FONT:   sprite->data[i].m = min(*pixel, 2u); break;
+					case ST_FONT:   sprite->data[i].m = std::min<uint>(*pixel, 2u); break;
 					default:        sprite->data[i].m = *pixel; break;
 				}
 				/* Magic blue. */
@@ -234,6 +226,7 @@ uint8 LoadSpriteV1(SpriteLoader::Sprite *sprite, uint file_slot, size_t file_pos
 	sprite[zoom_lvl].width  = FioReadWord();
 	sprite[zoom_lvl].x_offs = FioReadWord();
 	sprite[zoom_lvl].y_offs = FioReadWord();
+	sprite[zoom_lvl].colours = SCC_PAL;
 
 	if (sprite[zoom_lvl].width > INT16_MAX) {
 		WarnCorruptSprite(file_slot, file_pos, __LINE__);
@@ -277,7 +270,16 @@ uint8 LoadSpriteV2(SpriteLoader::Sprite *sprite, uint file_slot, size_t file_pos
 		byte colour = type & SCC_MASK;
 		byte zoom = FioReadByte();
 
-		if (colour != 0 && (load_32bpp ? colour != SCC_PAL : colour == SCC_PAL) && (sprite_type != ST_MAPGEN ? zoom < lengthof(zoom_lvl_map) : zoom == 0)) {
+		bool is_wanted_colour_depth = (colour != 0 && (load_32bpp ? colour != SCC_PAL : colour == SCC_PAL));
+		bool is_wanted_zoom_lvl;
+
+		if (sprite_type != ST_MAPGEN) {
+			is_wanted_zoom_lvl = (zoom < lengthof(zoom_lvl_map) && zoom_lvl_map[zoom] >= _settings_client.gui.sprite_zoom_min);
+		} else {
+			is_wanted_zoom_lvl = (zoom == 0);
+		}
+
+		if (is_wanted_colour_depth && is_wanted_zoom_lvl) {
 			ZoomLevel zoom_lvl = (sprite_type != ST_MAPGEN) ? zoom_lvl_map[zoom] : ZOOM_LVL_NORMAL;
 
 			if (HasBit(loaded_sprites, zoom_lvl)) {
@@ -305,6 +307,8 @@ uint8 LoadSpriteV2(SpriteLoader::Sprite *sprite, uint file_slot, size_t file_pos
 			if (colour & SCC_RGB)   bpp += 3; // Has RGB data.
 			if (colour & SCC_ALPHA) bpp++;    // Has alpha data.
 			if (colour & SCC_PAL)   bpp++;    // Has palette data.
+
+			sprite[zoom_lvl].colours = (SpriteColourComponent)colour;
 
 			/* For chunked encoding we store the decompressed size in the file,
 			 * otherwise we can calculate it from the image dimensions. */

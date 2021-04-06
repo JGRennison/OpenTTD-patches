@@ -173,6 +173,72 @@ static void ChangeTimetableStartCallback(const Window *w, DateTicksScaled date)
 	ChangeTimetableStartIntl(w->window_number, date);
 }
 
+void ProcessTimetableWarnings(const Vehicle *v, std::function<void(StringID, bool)> handler)
+{
+	Ticks total_time = v->orders.list != nullptr ? v->orders.list->GetTimetableDurationIncomplete() : 0;
+
+	bool have_conditional = false;
+	bool have_missing_wait = false;
+	bool have_missing_travel = false;
+	bool have_bad_full_load = false;
+	bool have_non_timetabled_conditional_branch = false;
+
+	const bool assume_timetabled = HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE) || HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE);
+	for (int n = 0; n < v->GetNumOrders(); n++) {
+		const Order *order = v->GetOrder(n);
+		if (order->IsType(OT_CONDITIONAL)) {
+			have_conditional = true;
+			if (!order->IsWaitTimetabled()) have_non_timetabled_conditional_branch = true;
+		} else {
+			if (order->GetWaitTime() == 0 && order->IsType(OT_GOTO_STATION) && !(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) {
+				have_missing_wait = true;
+			}
+			if (order->GetTravelTime() == 0 && !order->IsTravelTimetabled()) {
+				have_missing_travel = true;
+			}
+		}
+
+		if (order->IsType(OT_GOTO_STATION) && !have_bad_full_load && (assume_timetabled || order->IsWaitTimetabled())) {
+			if (order->GetLoadType() & OLFB_FULL_LOAD) have_bad_full_load = true;
+			if (order->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
+				for (CargoID c = 0; c < NUM_CARGO; c++) {
+					if (order->GetCargoLoadTypeRaw(c) & OLFB_FULL_LOAD) {
+						have_bad_full_load = true;
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
+		if (have_conditional) handler(STR_TIMETABLE_WARNING_AUTOSEP_CONDITIONAL, true);
+		if (have_missing_wait || have_missing_travel) {
+			if (assume_timetabled) {
+				handler(STR_TIMETABLE_AUTOSEP_TIMETABLE_INCOMPLETE, false);
+			} else {
+				handler(STR_TIMETABLE_WARNING_AUTOSEP_MISSING_TIMINGS, true);
+			}
+		} else if (v->GetNumOrders() == 0) {
+			handler(STR_TIMETABLE_AUTOSEP_TIMETABLE_INCOMPLETE, false);
+		} else if (!have_conditional) {
+			handler(v->IsOrderListShared() ? STR_TIMETABLE_AUTOSEP_OK : STR_TIMETABLE_AUTOSEP_SINGLE_VEH, false);
+		}
+	}
+	if (have_bad_full_load) handler(STR_TIMETABLE_WARNING_FULL_LOAD, true);
+	if (have_conditional && HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE)) handler(STR_TIMETABLE_WARNING_AUTOFILL_CONDITIONAL, true);
+	if (total_time && have_non_timetabled_conditional_branch) handler(STR_TIMETABLE_NON_TIMETABLED_BRANCH, false);
+	if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
+		VehicleOrderID n = v->GetFirstWaitingLocation(false);
+		if (n == INVALID_VEH_ORDER_ID) {
+			handler(STR_TIMETABLE_WARNING_NO_SCHEDULED_DISPATCH_ORDER, true);
+		} else if (!v->GetOrder(n)->IsWaitTimetabled()) {
+			handler(STR_TIMETABLE_WARNING_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME, true);
+		}
+	}
+}
+
+
 struct TimetableWindow : Window {
 	int sel_index;
 	const Vehicle *vehicle; ///< Vehicle monitored by the window.
@@ -240,19 +306,19 @@ struct TimetableWindow : Window {
 				this->deparr_time_width = GetStringBoundingBox(STR_JUST_DATE_TINY).width;
 				SetDParamMaxValue(0, _settings_time.time_in_minutes ? 0 : MAX_YEAR * DAYS_IN_YEAR);
 				this->deparr_time_width = GetStringBoundingBox(STR_JUST_DATE_WALLCLOCK_TINY).width + 4;
-				this->deparr_abbr_width = max(GetStringBoundingBox(STR_TIMETABLE_ARRIVAL_ABBREVIATION).width, GetStringBoundingBox(STR_TIMETABLE_DEPARTURE_ABBREVIATION).width);
+				this->deparr_abbr_width = std::max(GetStringBoundingBox(STR_TIMETABLE_ARRIVAL_ABBREVIATION).width, GetStringBoundingBox(STR_TIMETABLE_DEPARTURE_ABBREVIATION).width);
 				size->width = WD_FRAMERECT_LEFT + this->deparr_abbr_width + 10 + this->deparr_time_width + WD_FRAMERECT_RIGHT;
 				FALLTHROUGH;
 
 			case WID_VT_ARRIVAL_DEPARTURE_SELECTION:
 			case WID_VT_TIMETABLE_PANEL:
-				resize->height = max<int>(FONT_HEIGHT_NORMAL, GetSpriteSize(SPR_LOCK).height);
+				resize->height = std::max<int>(FONT_HEIGHT_NORMAL, GetSpriteSize(SPR_LOCK).height);
 				size->height = WD_FRAMERECT_TOP + 8 * resize->height + WD_FRAMERECT_BOTTOM;
 				break;
 
 			case WID_VT_SUMMARY_PANEL: {
 				Dimension d = GetSpriteSize(SPR_WARNING_SIGN);
-				size->height = WD_FRAMERECT_TOP + 2 * FONT_HEIGHT_NORMAL + this->summary_warnings * max<int>(d.height, FONT_HEIGHT_NORMAL) + WD_FRAMERECT_BOTTOM;
+				size->height = WD_FRAMERECT_TOP + 2 * FONT_HEIGHT_NORMAL + this->summary_warnings * std::max<int>(d.height, FONT_HEIGHT_NORMAL) + WD_FRAMERECT_BOTTOM;
 				break;
 			}
 		}
@@ -260,7 +326,7 @@ struct TimetableWindow : Window {
 
 	int GetOrderFromTimetableWndPt(int y, const Vehicle *v)
 	{
-		int sel = (y - this->GetWidget<NWidgetBase>(WID_VT_TIMETABLE_PANEL)->pos_y - WD_FRAMERECT_TOP) / max<int>(FONT_HEIGHT_NORMAL, GetSpriteSize(SPR_LOCK).height);
+		int sel = (y - this->GetWidget<NWidgetBase>(WID_VT_TIMETABLE_PANEL)->pos_y - WD_FRAMERECT_TOP) / std::max<int>(FONT_HEIGHT_NORMAL, GetSpriteSize(SPR_LOCK).height);
 
 		if ((uint)sel >= this->vscroll->GetCapacity()) return INVALID_ORDER;
 
@@ -303,8 +369,8 @@ struct TimetableWindow : Window {
 				 * the order is being created / removed */
 				if (this->sel_index == -1) break;
 
-				VehicleOrderID from = GB(data, 0, 8);
-				VehicleOrderID to   = GB(data, 8, 8);
+				VehicleOrderID from = GB(data, 0, 16);
+				VehicleOrderID to   = GB(data, 16, 16);
 
 				if (from == to) break; // no need to change anything
 
@@ -343,7 +409,7 @@ struct TimetableWindow : Window {
 		}
 	}
 
-	virtual EventState OnCTRLStateChange() OVERRIDE
+	virtual EventState OnCTRLStateChange() override
 	{
 		this->UpdateSelectionStates();
 		this->SetDirty();
@@ -449,7 +515,7 @@ struct TimetableWindow : Window {
 				int y = r.top + WD_FRAMERECT_TOP;
 				int i = this->vscroll->GetPosition();
 				Dimension lock_d = GetSpriteSize(SPR_LOCK);
-				int line_height = max<int>(FONT_HEIGHT_NORMAL, lock_d.height);
+				int line_height = std::max<int>(FONT_HEIGHT_NORMAL, lock_d.height);
 				VehicleOrderID order_id = (i + 1) / 2;
 				bool final_order = false;
 
@@ -539,7 +605,7 @@ struct TimetableWindow : Window {
 
 				int y = r.top + WD_FRAMERECT_TOP;
 				Dimension lock_d = GetSpriteSize(SPR_LOCK);
-				int line_height = max<int>(FONT_HEIGHT_NORMAL, lock_d.height);
+				int line_height = std::max<int>(FONT_HEIGHT_NORMAL, lock_d.height);
 
 				bool show_late = this->show_expected && v->lateness_counter > DATE_UNIT_SIZE;
 				Ticks offset = show_late ? 0 : -v->lateness_counter;
@@ -608,49 +674,15 @@ struct TimetableWindow : Window {
 				y += FONT_HEIGHT_NORMAL;
 
 				{
-					bool have_conditional = false;
-					bool have_missing_wait = false;
-					bool have_missing_travel = false;
-					bool have_bad_full_load = false;
-					bool have_non_timetabled_conditional_branch = false;
-
-					const bool assume_timetabled = HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE) || HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE);
-					for (int n = 0; n < v->GetNumOrders(); n++) {
-						const Order *order = v->GetOrder(n);
-						if (order->IsType(OT_CONDITIONAL)) {
-							have_conditional = true;
-							if (!order->IsWaitTimetabled()) have_non_timetabled_conditional_branch = true;
-						} else {
-							if (order->GetWaitTime() == 0 && order->IsType(OT_GOTO_STATION) && !(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) {
-								have_missing_wait = true;
-							}
-							if (order->GetTravelTime() == 0 && !order->IsTravelTimetabled()) {
-								have_missing_travel = true;
-							}
-						}
-
-						if (order->IsType(OT_GOTO_STATION) && !have_bad_full_load && (assume_timetabled || order->IsWaitTimetabled())) {
-							if (order->GetLoadType() & OLFB_FULL_LOAD) have_bad_full_load = true;
-							if (order->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
-								for (CargoID c = 0; c < NUM_CARGO; c++) {
-									if (order->GetCargoLoadTypeRaw(c) & OLFB_FULL_LOAD) {
-										have_bad_full_load = true;
-										break;
-									}
-								}
-							}
-						}
-					}
-
 					const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
-					const int step_height = max<int>(warning_dimensions.height, FONT_HEIGHT_NORMAL);
+					const int step_height = std::max<int>(warning_dimensions.height, FONT_HEIGHT_NORMAL);
 					const int text_offset_y = (step_height - FONT_HEIGHT_NORMAL) / 2;
 					const int warning_offset_y = (step_height - warning_dimensions.height) / 2;
 					const bool rtl = _current_text_dir == TD_RTL;
 
 					int warning_count = 0;
 
-					auto draw_info = [&](StringID text, bool warning) {
+					ProcessTimetableWarnings(v, [&](StringID text, bool warning) {
 						int left = r.left + WD_FRAMERECT_LEFT;
 						int right = r.right - WD_FRAMERECT_RIGHT;
 						if (warning) {
@@ -664,33 +696,7 @@ struct TimetableWindow : Window {
 						DrawString(left, right, y + text_offset_y, text);
 						y += step_height;
 						warning_count++;
-					};
-
-					if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
-						if (have_conditional) draw_info(STR_TIMETABLE_WARNING_AUTOSEP_CONDITIONAL, true);
-						if (have_missing_wait || have_missing_travel) {
-							if (assume_timetabled) {
-								draw_info(STR_TIMETABLE_AUTOSEP_TIMETABLE_INCOMPLETE, false);
-							} else {
-								draw_info(STR_TIMETABLE_WARNING_AUTOSEP_MISSING_TIMINGS, true);
-							}
-						} else if (v->GetNumOrders() == 0) {
-							draw_info(STR_TIMETABLE_AUTOSEP_TIMETABLE_INCOMPLETE, false);
-						} else if (!have_conditional) {
-							draw_info(v->IsOrderListShared() ? STR_TIMETABLE_AUTOSEP_OK : STR_TIMETABLE_AUTOSEP_SINGLE_VEH, false);
-						}
-					}
-					if (have_bad_full_load) draw_info(STR_TIMETABLE_WARNING_FULL_LOAD, true);
-					if (have_conditional && HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE)) draw_info(STR_TIMETABLE_WARNING_AUTOFILL_CONDITIONAL, true);
-					if (total_time && have_non_timetabled_conditional_branch) draw_info(STR_TIMETABLE_NON_TIMETABLED_BRANCH, false);
-					if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
-						VehicleOrderID n = v->GetFirstWaitingLocation(false);
-						if (n == INVALID_VEH_ORDER_ID) {
-							draw_info(STR_TIMETABLE_WARNING_NO_SCHEDULED_DISPATCH_ORDER, true);
-						} else if (!v->GetOrder(n)->IsWaitTimetabled()) {
-							draw_info(STR_TIMETABLE_WARNING_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME, true);
-						}
-					}
+					});
 
 					if (warning_count != this->summary_warnings) {
 						TimetableWindow *mutable_this = const_cast<TimetableWindow *>(this);
@@ -704,14 +710,17 @@ struct TimetableWindow : Window {
 		}
 	}
 
-	static inline uint32 PackTimetableArgs(const Vehicle *v, uint selected, bool speed, bool clear = false)
+	static inline void ExecuteTimetableCommand(const Vehicle *v, bool bulk, uint selected, ModifyTimetableFlags mtf, uint p2, bool clear)
 	{
 		uint order_number = (selected + 1) / 2;
-		ModifyTimetableFlags mtf = (selected % 2 == 1) ? (speed ? MTF_TRAVEL_SPEED : MTF_TRAVEL_TIME) : MTF_WAIT_TIME;
-
 		if (order_number >= v->GetNumOrders()) order_number = 0;
 
-		return v->index | (order_number << 20) | (mtf << 28) | (clear ? 1 << 31 : 0);
+		uint p1 = v->index | (mtf << 28) | (clear ? 1 << 31 : 0);
+		if (bulk) {
+			DoCommandP(0, p1, p2, CMD_BULK_CHANGE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+		} else {
+			DoCommandPEx(0, p1, p2, order_number, CMD_CHANGE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
+		}
 	}
 
 	void OnClick(Point pt, int widget, int click_count) override
@@ -805,15 +814,13 @@ struct TimetableWindow : Window {
 				break;
 			}
 
-			case WID_VT_CLEAR_TIME: { // Clear waiting time.
-				uint32 p1 = PackTimetableArgs(v, this->sel_index, false, true);
-				DoCommandP(0, p1, 0, (_ctrl_pressed ? CMD_BULK_CHANGE_TIMETABLE : CMD_CHANGE_TIMETABLE) | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+			case WID_VT_CLEAR_TIME: { // Clear travel/waiting time.
+				ExecuteTimetableCommand(v, _ctrl_pressed, this->sel_index, (this->sel_index % 2 == 1) ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, 0, true);
 				break;
 			}
 
 			case WID_VT_CLEAR_SPEED: { // Clear max speed button.
-				uint32 p1 = PackTimetableArgs(v, this->sel_index, true);
-				DoCommandP(0, p1, UINT16_MAX, (_ctrl_pressed ? CMD_BULK_CHANGE_TIMETABLE : CMD_CHANGE_TIMETABLE) | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				ExecuteTimetableCommand(v, _ctrl_pressed, this->sel_index, MTF_TRAVEL_SPEED, UINT16_MAX, false);
 				break;
 			}
 
@@ -829,8 +836,7 @@ struct TimetableWindow : Window {
 					locked = (selected % 2 == 1) ? order->IsTravelFixed() : order->IsWaitFixed();
 				}
 
-				uint32 p1 = v->index | (order_number << 20) | (((selected % 2 == 1) ? MTF_SET_TRAVEL_FIXED : MTF_SET_WAIT_FIXED) << 28);
-				DoCommandP(0, p1, locked ? 0 : 1, (_ctrl_pressed ? CMD_BULK_CHANGE_TIMETABLE : CMD_CHANGE_TIMETABLE) | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				ExecuteTimetableCommand(v, _ctrl_pressed, this->sel_index, ((selected % 2 == 1) ? MTF_SET_TRAVEL_FIXED : MTF_SET_WAIT_FIXED), locked ? 0 : 1, false);
 				break;
 			}
 
@@ -903,11 +909,7 @@ struct TimetableWindow : Window {
 	{
 		switch (widget) {
 			case WID_VT_EXTRA: {
-				VehicleOrderID order_number = (this->sel_index + 1) / 2;
-				if (order_number >= this->vehicle->GetNumOrders()) order_number = 0;
-
-				uint32 p1 = this->vehicle->index | (order_number << 20) | (MTF_SET_LEAVE_TYPE << 28);
-				DoCommandP(0, p1, index, CMD_CHANGE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				ExecuteTimetableCommand(this->vehicle, false, this->sel_index, MTF_SET_LEAVE_TYPE, index, false);
 			}
 
 			default:
@@ -926,19 +928,17 @@ struct TimetableWindow : Window {
 
 			case WID_VT_CHANGE_SPEED:
 			case WID_VT_CHANGE_TIME: {
-				uint32 p1 = PackTimetableArgs(v, this->sel_index, this->query_is_speed_query);
-
 				uint64 val = StrEmpty(str) ? 0 : strtoul(str, nullptr, 10);
 				uint32 p2;
 				if (this->query_is_speed_query) {
 					val = ConvertDisplaySpeedToKmhishSpeed(val);
-					p2 = minu(val, UINT16_MAX);
+					p2 = std::min<uint>(val, UINT16_MAX);
 				} else {
 					if (!_settings_client.gui.timetable_in_ticks) val *= DATE_UNIT_SIZE;
 					p2 = val;
 				}
 
-				DoCommandP(0, p1, p2, (this->change_timetable_all ? CMD_BULK_CHANGE_TIMETABLE : CMD_CHANGE_TIMETABLE) | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				ExecuteTimetableCommand(v, this->change_timetable_all, this->sel_index, (this->sel_index % 2 == 1) ? (this->query_is_speed_query ? MTF_TRAVEL_SPEED : MTF_TRAVEL_TIME) : MTF_WAIT_TIME, p2, false);
 				break;
 			}
 

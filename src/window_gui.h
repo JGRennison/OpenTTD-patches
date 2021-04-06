@@ -285,6 +285,7 @@ enum TooltipCloseCondition {
 	TCC_NONE,
 	TCC_HOVER_VIEWPORT,
 	TCC_NEXT_LOOP,
+	TCC_EXIT_VIEWPORT,
 };
 
 struct WindowBase {
@@ -754,7 +755,9 @@ public:
 	virtual void OnGameTick() {}
 
 	/**
-	 * Called once every 100 (game) ticks.
+	 * Called once every 100 (game) ticks, or once every 3s, whichever comes last.
+	 * In normal game speed the frequency is 1 call every 100 ticks (can be more than 3s).
+	 * In fast-forward the frequency is 1 call every ~3s (can be more than 100 ticks).
 	 */
 	virtual void OnHundredthTick() {}
 
@@ -995,9 +998,10 @@ extern bool _mouse_hovering;
 /** Mouse modes. */
 enum SpecialMouseMode {
 	WSM_NONE,     ///< No special mouse mode.
-	WSM_DRAGDROP, ///< Dragging an object.
+	WSM_DRAGDROP, ///< Drag&drop an object.
 	WSM_SIZING,   ///< Sizing mode.
 	WSM_PRESIZE,  ///< Presizing mode (docks, tunnels).
+	WSM_DRAGGING, ///< Dragging mode (trees).
 };
 extern SpecialMouseMode _special_mouse_mode;
 

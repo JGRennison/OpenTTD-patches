@@ -192,7 +192,7 @@ void IniLoadFile::RemoveGroup(const char *name)
  * @param subdir the sub directory to load the file from.
  * @pre nothing has been loaded yet.
  */
-void IniLoadFile::LoadFromDisk(const char *filename, Subdirectory subdir, std::string *save)
+void IniLoadFile::LoadFromDisk(const std::string &filename, Subdirectory subdir, std::string *save)
 {
 	assert(this->last_group == &this->group);
 
@@ -232,7 +232,7 @@ void IniLoadFile::LoadFromDisk(const char *filename, Subdirectory subdir, std::s
 			uint a = comment_alloc;
 			/* add to comment */
 			if (ns > a) {
-				a = max(a, 128U);
+				a = std::max(a, 128U);
 				do a *= 2; while (a < ns);
 				comment = ReallocT(comment, comment_alloc = a);
 			}

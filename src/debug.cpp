@@ -52,14 +52,13 @@ int _debug_linkgraph_level;
 int _debug_sound_level;
 #ifdef RANDOM_DEBUG
 int _debug_random_level;
+int _debug_statecsum_level;
 #endif
 
 const char *_savegame_DBGL_data = nullptr;
 std::string _loadgame_DBGL_data;
 bool _save_DBGC_data = false;
 std::string _loadgame_DBGC_data;
-
-uint32 _realtime_tick = 0;
 
 struct DebugLevel {
 	const char *name;
@@ -88,6 +87,7 @@ struct DebugLevel {
 	DEBUG_LEVEL(sound),
 #ifdef RANDOM_DEBUG
 	DEBUG_LEVEL(random),
+	DEBUG_LEVEL(statecsum),
 #endif
 	};
 #undef DEBUG_LEVEL
@@ -140,7 +140,7 @@ static void debug_print(const char *dbg, const char *buf)
 			fflush(f);
 		}
 #ifdef RANDOM_DEBUG
-	} else if (strcmp(dbg, "random") == 0) {
+	} else if (strcmp(dbg, "random") == 0 || strcmp(dbg, "statecsum") == 0) {
 #if defined(UNIX) && defined(__GLIBC__)
 		static bool have_inited = false;
 		static FILE *f = nullptr;
@@ -182,7 +182,7 @@ static void debug_print(const char *dbg, const char *buf)
 	 * crashing, and NetworkTextMessage includes these */
 #if defined(_WIN32)
 	if (strcmp(dbg, "desync") != 0) {
-		TCHAR system_buf[512];
+		wchar_t system_buf[512];
 		convert_to_fs(buffer, system_buf, lengthof(system_buf), true);
 		_fputts(system_buf, stderr);
 	}
@@ -333,7 +333,7 @@ char *DumpDesyncMsgLog(char *buffer, const char *last)
 {
 	if (!desync_msg_log_count) return buffer;
 
-	const unsigned int count = min<unsigned int>(desync_msg_log_count, desync_msg_log.size());
+	const unsigned int count = std::min<unsigned int>(desync_msg_log_count, desync_msg_log.size());
 	unsigned int log_index = (desync_msg_log_next + desync_msg_log.size() - count) % desync_msg_log.size();
 	unsigned int display_num = desync_msg_log_count - count;
 

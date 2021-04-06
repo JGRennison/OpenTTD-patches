@@ -38,7 +38,7 @@
 #include "sound_func.h"
 #include "company_func.h"
 #include "rev.h"
-#if defined(WITH_FREETYPE) || defined(_WIN32)
+#if defined(WITH_FREETYPE) || defined(_WIN32) || defined(WITH_COCOA)
 #include "fontcache.h"
 #endif
 #include "textbuf_gui.h"
@@ -68,12 +68,16 @@
 #include "string_func.h"
 #include "debug.h"
 #include "zoning.h"
+#include "vehicle_func.h"
+#include "scope_info.h"
+#include "viewport_func.h"
+#include "gui.h"
 
 #include "void_map.h"
 #include "station_base.h"
 #include "infrastructure_func.h"
 
-#if defined(WITH_FREETYPE) || defined(_WIN32)
+#if defined(WITH_FREETYPE) || defined(_WIN32) || defined(WITH_COCOA)
 #define HAS_TRUETYPE_FONT
 #endif
 
@@ -90,14 +94,14 @@ GameSettings _settings_game;     ///< Game settings of a running game or the sce
 GameSettings _settings_newgame;  ///< Game settings for new games (updated from the intro screen).
 TimeSettings _settings_time; ///< The effective settings that are used for time display.
 VehicleDefaultSettings _old_vds; ///< Used for loading default vehicles settings from old savegames
-char *_config_file; ///< Configuration file of OpenTTD
+std::string _config_file; ///< Configuration file of OpenTTD
 std::string _config_file_text;
 
 typedef std::list<ErrorMessageData> ErrorList;
 static ErrorList _settings_error_list; ///< Errors while loading minimal settings.
 
 
-typedef void SettingDescProc(IniFile *ini, const SettingDesc *desc, const char *grpname, void *object);
+typedef void SettingDescProc(IniFile *ini, const SettingDesc *desc, const char *grpname, void *object, bool only_startup);
 typedef void SettingDescProcList(IniFile *ini, const char *grpname, StringList &list);
 
 static bool IsSignedVarMemType(VarType vt);
@@ -526,8 +530,9 @@ static void Write_ValidateSetting(void *ptr, const SettingDesc *sd, int32 val)
  *        be given values
  * @param grpname the group of the IniFile to search in for the new values
  * @param object pointer to the object been loaded
+ * @param only_startup load only the startup settings set
  */
-static void IniLoadSettings(IniFile *ini, const SettingDesc *sd, const char *grpname, void *object)
+static void IniLoadSettings(IniFile *ini, const SettingDesc *sd, const char *grpname, void *object, bool only_startup)
 {
 	IniGroup *group;
 	IniGroup *group_def = ini->GetGroup(grpname);
@@ -537,6 +542,7 @@ static void IniLoadSettings(IniFile *ini, const SettingDesc *sd, const char *grp
 		const SaveLoad        *sld = &sd->save;
 
 		if (!SlIsObjectCurrentlyValid(sld->version_from, sld->version_to, sld->ext_feature_test)) continue;
+		if (sd->desc.startup != only_startup) continue;
 		IniItem *item;
 		if (sdb->flags & SGF_NO_NEWGAME) {
 			item = nullptr;
@@ -641,7 +647,7 @@ static void IniLoadSettings(IniFile *ini, const SettingDesc *sd, const char *grp
  * values are reloaded when saving). If settings indeed have changed, we get
  * these and save them.
  */
-static void IniSaveSettings(IniFile *ini, const SettingDesc *sd, const char *grpname, void *object)
+static void IniSaveSettings(IniFile *ini, const SettingDesc *sd, const char *grpname, void *object, bool)
 {
 	IniGroup *group_def = nullptr, *group;
 	IniItem *item;
@@ -827,7 +833,7 @@ static void IniSaveSettingList(IniFile *ini, const char *grpname, StringList &li
  */
 void IniLoadWindowSettings(IniFile *ini, const char *grpname, void *desc)
 {
-	IniLoadSettings(ini, _window_settings, grpname, desc);
+	IniLoadSettings(ini, _window_settings, grpname, desc, false);
 }
 
 /**
@@ -838,7 +844,7 @@ void IniLoadWindowSettings(IniFile *ini, const char *grpname, void *desc)
  */
 void IniSaveWindowSettings(IniFile *ini, const char *grpname, void *desc)
 {
-	IniSaveSettings(ini, _window_settings, grpname, desc);
+	IniSaveSettings(ini, _window_settings, grpname, desc, false);
 }
 
 /**
@@ -909,6 +915,9 @@ static bool RedrawSmallmap(int32 p1)
 	BuildLandLegend();
 	BuildOwnerLegend();
 	SetWindowClassesDirty(WC_SMALLMAP);
+
+	extern void MarkAllViewportMapLandscapesDirty();
+	MarkAllViewportMapLandscapesDirty();
 	return true;
 }
 
@@ -955,7 +964,10 @@ static bool UpdateConsists(int32 p1)
 {
 	for (Train *t : Train::Iterate()) {
 		/* Update the consist of all trains so the maximum speed is set correctly. */
-		if (t->IsFrontEngine() || t->IsFreeWagon()) t->ConsistChanged(CCF_TRACK);
+		if (t->IsFrontEngine() || t->IsFreeWagon()) {
+			t->ConsistChanged(CCF_TRACK);
+			if (t->lookahead != nullptr) SetBit(t->lookahead->flags, TRLF_APPLY_ADVISORY);
+		}
 	}
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE, 0);
 	return true;
@@ -1056,6 +1068,7 @@ static bool TrainAccelerationModelChanged(int32 p1)
 		if (t->IsFrontEngine()) {
 			t->tcache.cached_max_curve_speed = t->GetCurveSpeedLimit();
 			t->UpdateAcceleration();
+			if (t->lookahead != nullptr) SetBit(t->lookahead->flags, TRLF_APPLY_ADVISORY);
 		}
 	}
 
@@ -1063,6 +1076,90 @@ static bool TrainAccelerationModelChanged(int32 p1)
 	SetWindowClassesDirty(WC_ENGINE_PREVIEW);
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE, 0);
 	SetWindowClassesDirty(WC_VEHICLE_DETAILS);
+
+	return true;
+}
+
+static bool TrainBrakingModelChanged(int32 p1)
+{
+	for (Train *t : Train::Iterate()) {
+		if (t->IsFrontEngine()) {
+			t->UpdateAcceleration();
+		}
+	}
+	if (p1 == TBM_REALISTIC && (_game_mode == GM_NORMAL || _game_mode == GM_EDITOR)) {
+		for (TileIndex t = 0; t < MapSize(); t++) {
+			if (IsTileType(t, MP_RAILWAY) && GetRailTileType(t) == RAIL_TILE_SIGNALS) {
+				uint signals = GetPresentSignals(t);
+				if ((signals & 0x3) & ((signals & 0x3) - 1) || (signals & 0xC) & ((signals & 0xC) - 1)) {
+					/* Signals in both directions */
+					ShowErrorMessage(STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED, INVALID_STRING_ID, WL_ERROR);
+					ShowExtraViewportWindow(t);
+					SetRedErrorSquare(t);
+					return false;
+				}
+				if (((signals & 0x3) && IsSignalTypeUnsuitableForRealisticBraking(GetSignalType(t, TRACK_LOWER))) ||
+						((signals & 0xC) && IsSignalTypeUnsuitableForRealisticBraking(GetSignalType(t, TRACK_UPPER)))) {
+					/* Banned signal types present */
+					ShowErrorMessage(STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED, INVALID_STRING_ID, WL_ERROR);
+					ShowExtraViewportWindow(t);
+					SetRedErrorSquare(t);
+					return false;
+				}
+			}
+		}
+		for (TileIndex t = 0; t < MapSize(); t++) {
+			if (IsTileType(t, MP_RAILWAY) && GetRailTileType(t) == RAIL_TILE_SIGNALS) {
+				TrackBits bits = GetTrackBits(t);
+				do {
+					Track track = RemoveFirstTrack(&bits);
+					if (HasSignalOnTrack(t, track) && GetSignalType(t, track) == SIGTYPE_NORMAL && HasBit(GetRailReservationTrackBits(t), track)) {
+						if (EnsureNoTrainOnTrackBits(t, TrackToTrackBits(track)).Succeeded()) {
+							UnreserveTrack(t, track);
+						}
+					}
+				} while (bits != TRACK_BIT_NONE);
+			}
+		}
+		Train *v_cur = nullptr;
+		SCOPE_INFO_FMT([&v_cur], "TrainBrakingModelChanged: %s", scope_dumper().VehicleInfo(v_cur));
+		extern bool _long_reserve_disabled;
+		_long_reserve_disabled = true;
+		for (Train *v : Train::Iterate()) {
+			v_cur = v;
+			if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL) || v->track == TRACK_BIT_DEPOT) continue;
+			TryPathReserve(v, true, HasStationTileRail(v->tile));
+		}
+		_long_reserve_disabled = false;
+		for (Train *v : Train::Iterate()) {
+			v_cur = v;
+			if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL) || v->track == TRACK_BIT_DEPOT) continue;
+			TryPathReserve(v, true, HasStationTileRail(v->tile));
+			if (v->lookahead != nullptr) SetBit(v->lookahead->flags, TRLF_APPLY_ADVISORY);
+		}
+	} else if (p1 == TBM_ORIGINAL && (_game_mode == GM_NORMAL || _game_mode == GM_EDITOR)) {
+		Train *v_cur = nullptr;
+		SCOPE_INFO_FMT([&v_cur], "TrainBrakingModelChanged: %s", scope_dumper().VehicleInfo(v_cur));
+		for (Train *v : Train::Iterate()) {
+			v_cur = v;
+			if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL) || v->track == TRACK_BIT_DEPOT) {
+				v->lookahead.reset();
+				continue;
+			}
+			if (!HasBit(v->flags, VRF_TRAIN_STUCK)) {
+				_settings_game.vehicle.train_braking_model = TBM_REALISTIC;
+				FreeTrainTrackReservation(v);
+				_settings_game.vehicle.train_braking_model = p1;
+				TryPathReserve(v, true, HasStationTileRail(v->tile));
+			} else {
+				v->lookahead.reset();
+			}
+		}
+	}
+
+	UpdateAllBlockSignals();
+
+	InvalidateWindowData(WC_BUILD_SIGNAL, 0);
 
 	return true;
 }
@@ -1075,7 +1172,10 @@ static bool TrainAccelerationModelChanged(int32 p1)
 static bool TrainSlopeSteepnessChanged(int32 p1)
 {
 	for (Train *t : Train::Iterate()) {
-		if (t->IsFrontEngine()) t->CargoChanged();
+		if (t->IsFrontEngine()) {
+			t->CargoChanged();
+			if (t->lookahead != nullptr) SetBit(t->lookahead->flags, TRLF_APPLY_ADVISORY);
+		}
 	}
 
 	return true;
@@ -1167,6 +1267,12 @@ static bool InvalidateVehTimetableWindow(int32 p1)
 	return true;
 }
 
+static bool ChangeTimetableInTicksMode(int32 p1)
+{
+	SetWindowClassesDirty(WC_VEHICLE_ORDERS);
+	return InvalidateVehTimetableWindow(p1);
+}
+
 static bool UpdateTimeSettings(int32 p1)
 {
 	SetupTimeSettings();
@@ -1195,6 +1301,19 @@ static bool ZoomMinMaxChanged(int32 p1)
 		UpdateFontHeightCache();
 		LoadStringWidthTable();
 	}
+	return true;
+}
+
+static bool SpriteZoomMinChanged(int32 p1) {
+	GfxClearSpriteCache();
+	/* Force all sprites to redraw at the new chosen zoom level */
+	MarkWholeScreenDirty();
+	return true;
+}
+
+static bool InvalidateSettingsWindow(int32 p1)
+{
+	InvalidateWindowClassesData(WC_GAME_OPTIONS);
 	return true;
 }
 
@@ -1343,13 +1462,33 @@ static bool ViewportMapShowTunnelModeChanged(int32 p1)
 {
 	extern void ViewportMapBuildTunnelCache();
 	ViewportMapBuildTunnelCache();
-	return RedrawScreen(p1);
+
+	extern void MarkAllViewportMapLandscapesDirty();
+	MarkAllViewportMapLandscapesDirty();
+
+	return true;
+}
+
+static bool ViewportMapLandscapeModeChanged(int32 p1)
+{
+	extern void MarkAllViewportMapLandscapesDirty();
+	MarkAllViewportMapLandscapesDirty();
+
+	return true;
 }
 
 static bool UpdateLinkgraphColours(int32 p1)
 {
 	BuildLinkStatsLegend();
 	return RedrawScreen(p1);
+}
+
+static bool InvalidateAllVehicleImageCaches(int32 p1)
+{
+	for (Vehicle *v : Vehicle::Iterate()) {
+		v->InvalidateImageCache();
+	}
+	return true;
 }
 
 /** Checks if any settings are set to incorrect values, and sets them to correct values in that case. */
@@ -1380,6 +1519,12 @@ static bool DifficultyMoneyCheatMultiplayerChange(int32 i)
 	return true;
 }
 
+static bool DifficultyRenameTownsMultiplayerChange(int32 i)
+{
+	SetWindowClassesDirty(WC_TOWN_VIEW);
+	return true;
+}
+
 static bool MaxNoAIsChange(int32 i)
 {
 	if (GetGameSettings().difficulty.max_no_competitors != 0 &&
@@ -1400,7 +1545,11 @@ static bool MaxNoAIsChange(int32 i)
 static bool CheckRoadSide(int p1)
 {
 	extern bool RoadVehiclesAreBuilt();
-	return _game_mode == GM_MENU || !RoadVehiclesAreBuilt();
+	if (_game_mode != GM_MENU && RoadVehiclesAreBuilt()) return false;
+
+	extern void RecalculateRoadCachedOneWayStates();
+	RecalculateRoadCachedOneWayStates();
+	return true;
 }
 
 /**
@@ -1969,20 +2118,18 @@ static void GRFSaveConfig(IniFile *ini, const char *grpname, const GRFConfig *li
 }
 
 /* Common handler for saving/loading variables to the configuration file */
-static void HandleSettingDescs(IniFile *ini, SettingDescProc *proc, SettingDescProcList *proc_list, bool basic_settings = true, bool other_settings = true)
+static void HandleSettingDescs(IniFile *ini, SettingDescProc *proc, SettingDescProcList *proc_list, bool only_startup = false)
 {
-	if (basic_settings) {
-		proc(ini, (const SettingDesc*)_misc_settings,    "misc",  nullptr);
+	proc(ini, (const SettingDesc*)_misc_settings,    "misc",  nullptr, only_startup);
 #if defined(_WIN32) && !defined(DEDICATED)
-		proc(ini, (const SettingDesc*)_win32_settings,   "win32", nullptr);
+	proc(ini, (const SettingDesc*)_win32_settings,   "win32", nullptr, only_startup);
 #endif /* _WIN32 */
-	}
 
-	if (other_settings) {
-		proc(ini, _settings,         "patches",  &_settings_newgame);
-		proc(ini, _currency_settings,"currency", &_custom_currency);
-		proc(ini, _company_settings, "company",  &_settings_client.company);
+	proc(ini, _settings,         "patches",  &_settings_newgame, only_startup);
+	proc(ini, _currency_settings,"currency", &_custom_currency, only_startup);
+	proc(ini, _company_settings, "company",  &_settings_client.company, only_startup);
 
+	if (!only_startup) {
 		proc_list(ini, "server_bind_addresses", _network_bind_list);
 		proc_list(ini, "servers", _network_host_list);
 		proc_list(ini, "bans",    _network_ban_list);
@@ -1998,27 +2145,29 @@ static IniFile *IniLoadConfig()
 
 /**
  * Load the values from the configuration files
- * @param minimal Load the minimal amount of the configuration to "bootstrap" the blitter and such.
+ * @param startup Load the minimal amount of the configuration to "bootstrap" the blitter and such.
  */
-void LoadFromConfig(bool minimal)
+void LoadFromConfig(bool startup)
 {
 	IniFile *ini = IniLoadConfig();
-	if (!minimal) ResetCurrencies(false); // Initialize the array of currencies, without preserving the custom one
+	if (!startup) ResetCurrencies(false); // Initialize the array of currencies, without preserving the custom one
 
 	/* Load basic settings only during bootstrap, load other settings not during bootstrap */
-	HandleSettingDescs(ini, IniLoadSettings, IniLoadSettingList, minimal, !minimal);
+	HandleSettingDescs(ini, IniLoadSettings, IniLoadSettingList, startup);
 
-	if (!minimal) {
+	if (!startup) {
 		_grfconfig_newgame = GRFLoadConfig(ini, "newgrf", false);
 		_grfconfig_static  = GRFLoadConfig(ini, "newgrf-static", true);
 		AILoadConfig(ini, "ai_players");
 		GameLoadConfig(ini, "game_scripts");
 
 		PrepareOldDiffCustom();
-		IniLoadSettings(ini, _gameopt_settings, "gameopt", &_settings_newgame);
+		IniLoadSettings(ini, _gameopt_settings, "gameopt", &_settings_newgame, false);
 		HandleOldDiffCustom(false);
 
 		ValidateSettings();
+
+		PostZoningModeChange();
 
 		/* Display scheduled errors */
 		extern void ScheduleErrorMessage(ErrorList &datas);
@@ -2169,6 +2318,8 @@ CommandCost CmdChangeSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 		}
 
 		SetWindowClassesDirty(WC_GAME_OPTIONS);
+
+		if (_save_config) SaveToConfig();
 	}
 
 	return CommandCost();
@@ -2239,12 +2390,15 @@ bool SetSettingValue(uint index, int32 value, bool force_newgame)
 
 		SetWindowClassesDirty(WC_GAME_OPTIONS);
 
+		if (_save_config) SaveToConfig();
 		return true;
 	}
 
 	if (force_newgame && !no_newgame) {
 		void *var2 = GetVariableAddress(&_settings_newgame, &sd->save);
 		Write_ValidateSetting(var2, sd, value);
+
+		if (_save_config) SaveToConfig();
 		return true;
 	}
 
@@ -2298,7 +2452,7 @@ void SyncCompanySettings()
 		const void *new_var = GetVariableAddress(&_settings_client.company, &sd->save);
 		uint32 old_value = (uint32)ReadValue(old_var, sd->save.conv);
 		uint32 new_value = (uint32)ReadValue(new_var, sd->save.conv);
-		if (old_value != new_value) NetworkSendCommand(0, i, new_value, CMD_CHANGE_COMPANY_SETTING, nullptr, nullptr, _local_company, 0);
+		if (old_value != new_value) NetworkSendCommand(0, i, new_value, 0, CMD_CHANGE_COMPANY_SETTING, nullptr, nullptr, _local_company, 0);
 	}
 }
 
@@ -2311,6 +2465,7 @@ uint GetCompanySettingIndex(const char *name)
 {
 	uint i;
 	const SettingDesc *sd = GetSettingFromName(name, &i);
+	(void)sd; // Unused without asserts
 	assert(sd != nullptr && (sd->desc.flags & SGF_PER_COMPANY) != 0);
 	return i;
 }
@@ -2337,6 +2492,7 @@ bool SetSettingValue(uint index, const char *value, bool force_newgame)
 	}
 	if (sd->desc.proc != nullptr) sd->desc.proc(0);
 
+	if (_save_config) SaveToConfig();
 	return true;
 }
 
@@ -2421,6 +2577,7 @@ void IConsoleSetSetting(const char *name, int value)
 {
 	uint index;
 	const SettingDesc *sd = GetSettingFromName(name, &index);
+	(void)sd; // Unused without asserts
 	assert(sd != nullptr);
 	SetSettingValue(index, value);
 }

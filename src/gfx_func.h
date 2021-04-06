@@ -44,7 +44,6 @@
 #include "string_type.h"
 
 void GameLoop();
-void GameLoopPaletteAnimations();
 
 void CreateConsole();
 
@@ -56,7 +55,7 @@ extern bool _ctrl_pressed;   ///< Is Ctrl pressed?
 extern bool _shift_pressed;  ///< Is Shift pressed?
 extern bool _invert_ctrl;
 extern bool _invert_shift;
-extern byte _fast_forward;
+extern uint16 _game_speed;
 
 extern bool _left_button_down;
 extern bool _left_button_clicked;
@@ -76,10 +75,12 @@ void HandleCtrlChanged();
 void HandleShiftChanged();
 void HandleMouseEvents();
 void UpdateWindows();
+void ChangeGameSpeed(bool enable_fast_forward);
 
 void DrawMouseCursor();
 void ScreenSizeChanged();
 void GameSizeChanged();
+void UpdateGUIZoom();
 void UndrawMouseCursor();
 
 /** Size of the buffer used for drawing strings. */
@@ -156,6 +157,12 @@ static inline int CenterBounds(int min, int max, int size)
 }
 
 /* window.cpp */
+enum DrawOverlappedWindowFlags {
+	DOWF_NONE         =      0,
+	DOWF_MARK_DIRTY   = 1 << 0,
+	DOWF_SHOW_DEBUG   = 1 << 1,
+};
+DECLARE_ENUM_AS_BIT_SET(DrawOverlappedWindowFlags)
 void DrawOverlappedWindowForAll(int left, int top, int right, int bottom);
 
 void SetMouseCursorBusy(bool busy);
@@ -205,6 +212,7 @@ TextColour GetContrastColour(uint8 background, uint8 threshold = 128);
  * 8 colours per gradient from darkest (0) to lightest (7)
  */
 extern byte _colour_gradient[COLOUR_END][8];
+extern byte _colour_value[COLOUR_END];
 
 extern bool _palette_remap_grf[];
 

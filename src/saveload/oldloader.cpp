@@ -243,7 +243,7 @@ static inline bool CheckOldSavegameType(FILE *f, char *temp, const char *last, u
 
 static SavegameType DetermineOldSavegameType(FILE *f, char *title, const char *last)
 {
-	assert_compile(TTD_HEADER_SIZE >= TTO_HEADER_SIZE);
+	static_assert(TTD_HEADER_SIZE >= TTO_HEADER_SIZE);
 	char temp[TTD_HEADER_SIZE] = "Unknown";
 
 	SavegameType type = SGT_TTO;
@@ -271,7 +271,7 @@ static SavegameType DetermineOldSavegameType(FILE *f, char *title, const char *l
 
 typedef bool LoadOldMainProc(LoadgameState *ls);
 
-bool LoadOldSaveGame(const char *file)
+bool LoadOldSaveGame(const std::string &file)
 {
 	LoadgameState ls;
 
@@ -283,7 +283,7 @@ bool LoadOldSaveGame(const char *file)
 	ls.file = FioFOpenFile(file, "rb", NO_DIRECTORY);
 
 	if (ls.file == nullptr) {
-		DEBUG(oldloader, 0, "Cannot open file '%s'", file);
+		DEBUG(oldloader, 0, "Cannot open file '%s'", file.c_str());
 		return false;
 	}
 
@@ -318,7 +318,7 @@ bool LoadOldSaveGame(const char *file)
 	return true;
 }
 
-void GetOldSaveGameName(const char *file, char *title, const char *last)
+void GetOldSaveGameName(const std::string &file, char *title, const char *last)
 {
 	FILE *f = FioFOpenFile(file, "rb", NO_DIRECTORY);
 

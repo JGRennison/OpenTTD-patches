@@ -50,7 +50,8 @@ void ResetTempEngineData();
 Engine *GetTempDataEngine(EngineID index);
 void CopyTempEngineData();
 
-void AfterLoadTemplateVehiclesUpdateImage();
+void AfterLoadTemplateVehiclesUpdate();
+void AfterLoadTemplateVehiclesUpdateImages();
 void AfterLoadTemplateVehiclesUpdateProperties();
 
 extern int32 _saved_scrollpos_x;

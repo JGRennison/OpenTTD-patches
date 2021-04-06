@@ -11,6 +11,7 @@
 
 #include "../../stdafx.h"
 #include "../../string_func.h"
+#include "../../string_func_extra.h"
 #include "../../command_type.h"
 
 #include "packet.h"
@@ -337,7 +338,7 @@ void Packet::Recv_string(std::string &buffer, StringValidationSettings settings)
 	size_t length = ttd_strnlen((const char *)(this->buffer + this->pos), this->size - this->pos - 1);
 	buffer.assign((const char *)(this->buffer + this->pos), length);
 	this->pos += length + 1;
-	str_validate(const_cast<char *>(buffer.c_str()), buffer.c_str() + buffer.size(), settings);
+	str_validate_inplace(buffer, settings);
 }
 
 /**

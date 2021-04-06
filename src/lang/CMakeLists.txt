@@ -1,4 +1,9 @@
+set(MASTER_LANG_FILE
+        ${CMAKE_CURRENT_SOURCE_DIR}/english.txt
+)
+
 set(LANG_SOURCE_FILES
+        ${MASTER_LANG_FILE}
         ${CMAKE_CURRENT_SOURCE_DIR}/afrikaans.txt
         ${CMAKE_CURRENT_SOURCE_DIR}/arabic_egypt.txt
         ${CMAKE_CURRENT_SOURCE_DIR}/basque.txt
@@ -10,7 +15,6 @@ set(LANG_SOURCE_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/czech.txt
         ${CMAKE_CURRENT_SOURCE_DIR}/danish.txt
         ${CMAKE_CURRENT_SOURCE_DIR}/dutch.txt
-        ${CMAKE_CURRENT_SOURCE_DIR}/english.txt
         ${CMAKE_CURRENT_SOURCE_DIR}/english_AU.txt
         ${CMAKE_CURRENT_SOURCE_DIR}/english_US.txt
         ${CMAKE_CURRENT_SOURCE_DIR}/esperanto.txt
@@ -59,6 +63,10 @@ set(LANG_SOURCE_FILES
 
 set(LANG_BINARY_DIR ${CMAKE_BINARY_DIR}/lang)
 
+if (HOST_BINARY_DIR)
+    include(${HOST_BINARY_DIR}/strgen.cmake)
+endif()
+
 # Walk over all the (finished) language files, and generate a command to compile them
 foreach(LANG_SOURCE_FILE IN LISTS LANG_SOURCE_FILES)
     get_filename_component(LANG_SOURCE_FILE_NAME_WE ${LANG_SOURCE_FILE} NAME_WE)
@@ -71,7 +79,7 @@ foreach(LANG_SOURCE_FILE IN LISTS LANG_SOURCE_FILES)
                     -s ${CMAKE_CURRENT_SOURCE_DIR}
                     -d ${LANG_BINARY_DIR}
                     ${LANG_SOURCE_FILE}
-            DEPENDS hoststrgen
+            DEPENDS hoststrgen ${MASTER_LANG_FILE}
             MAIN_DEPENDENCY ${LANG_SOURCE_FILE}
             DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/english.txt
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -79,7 +87,7 @@ foreach(LANG_SOURCE_FILE IN LISTS LANG_SOURCE_FILES)
     )
 
     list(APPEND LANG_BINARY_FILES ${LANG_BINARY_FILE})
-endforeach(LANG_SOURCE_FILE)
+endforeach()
 
 # Create a new target which compiles all language files
 add_custom_target(language_files
@@ -100,7 +108,7 @@ add_custom_command_timestamp(OUTPUT ${TABLE_BINARY_DIR}/strings.h
         COMMAND hoststrgen
                 -s ${CMAKE_CURRENT_SOURCE_DIR}
                 -d ${TABLE_BINARY_DIR}
-        DEPENDS hoststrgen ${LANG_SOURCE_FILES}
+        DEPENDS hoststrgen ${MASTER_LANG_FILE}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Generating table/strings.h"
 )

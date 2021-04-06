@@ -42,6 +42,8 @@ static const uint16 CONSIST_TAIL = 0xffff;
 typedef Pool<TemplateVehicle, TemplateID, 512, 64000> TemplatePool;
 extern TemplatePool _template_pool;
 
+extern bool _template_vehicle_images_valid;
+
 /// listing/sorting templates
 typedef GUIList<const TemplateVehicle*> GUITemplateList;
 
@@ -66,6 +68,11 @@ struct TemplateVehicleImageDimensions {
 	{
 		return ScaleGUITrad(this->vehicle_pitch);
 	}
+};
+
+/** Template vehicle control flags. */
+enum TemplateVehicleControlFlags {
+	TVCF_REVERSED                     = 0,      ///< Vehicle is reversed (VRF_REVERSE_DIRECTION)
 };
 
 struct TemplateVehicle : TemplatePool::PoolItem<&_template_pool>, BaseVehicle {
@@ -105,11 +112,13 @@ public:
 	uint32 full_weight;
 	uint32 max_te;
 
+	uint32 ctrl_flags;                  ///< See: TemplateVehicleControlFlags
+
 	VehicleSpriteSeq sprite_seq;                     ///< NOSAVE: Vehicle appearance.
 	TemplateVehicleImageDimensions image_dimensions; ///< NOSAVE: image dimensions
+	SpriteID colourmap;                              ///< NOSAVE: cached colour mapping
 
 	TemplateVehicle(VehicleType type = VEH_INVALID, EngineID e = INVALID_ENGINE, byte B = 0, Owner = _local_company);
-	TemplateVehicle(EngineID, RailVehicleInfo*);
 
 	TemplateVehicle(EngineID eid)
 	{
@@ -117,8 +126,8 @@ public:
 		previous = nullptr;
 		first = this;
 		engine_type = eid;
-		this->reuse_depot_vehicles = true;
-		this->keep_remaining_vehicles = true;
+		this->reuse_depot_vehicles = false;
+		this->keep_remaining_vehicles = false;
 		this->refit_as_template = true;
 		this->replace_old_only = false;
 		this->sprite_seq.count = 1;

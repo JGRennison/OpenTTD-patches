@@ -35,6 +35,7 @@
 #include "tbtr_template_vehicle_func.h"
 #include <sstream>
 #include <iomanip>
+#include <cctype>
 
 #include "table/strings.h"
 
@@ -88,7 +89,7 @@ static CommandCost GetRefitCost(const Vehicle *v, EngineID engine_type, CargoID 
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text, uint32 binary_length)
+CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	/* Elementary check for valid location. */
 	if (!IsDepotTile(tile)) return CMD_ERROR;
@@ -445,14 +446,14 @@ static CommandCost RefitVehicle(Vehicle *v, bool only_this, uint8 num_vehicles, 
 		/* Store the result */
 		for (RefitResult &result : refit_result) {
 			Vehicle *u = result.v;
-			u->refit_cap = (u->cargo_type == new_cid) ? min(result.capacity, u->refit_cap) : 0;
+			u->refit_cap = (u->cargo_type == new_cid) ? std::min<uint16>(result.capacity, u->refit_cap) : 0;
 			if (u->cargo.TotalCount() > u->refit_cap) u->cargo.Truncate(u->cargo.TotalCount() - u->refit_cap);
 			u->cargo_type = new_cid;
 			u->cargo_cap = result.capacity;
 			u->cargo_subtype = result.subtype;
 			if (u->type == VEH_AIRCRAFT) {
 				Vehicle *w = u->Next();
-				w->refit_cap = min(w->refit_cap, result.mail_capacity);
+				w->refit_cap = std::min<uint16>(w->refit_cap, result.mail_capacity);
 				w->cargo_cap = result.mail_capacity;
 				if (w->cargo.TotalCount() > w->refit_cap) w->cargo.Truncate(w->cargo.TotalCount() - w->refit_cap);
 			}
@@ -656,10 +657,15 @@ CommandCost CmdStartStopVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 		} else if (v->type != VEH_TRAIN) {
 			v->cur_speed = 0; // trains can stop 'slowly'
 		}
+		if (v->type == VEH_TRAIN && !(v->vehstatus & VS_STOPPED) && v->cur_speed == 0 && Train::From(v)->lookahead != nullptr) {
+			/* Starting train from stationary with a lookahead, refresh it */
+			Train::From(v)->lookahead.reset();
+			FillTrainReservationLookAhead(Train::From(v));
+		}
 		v->MarkDirty();
 		SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
 		SetWindowDirty(WC_VEHICLE_DEPOT, v->tile);
-		SetWindowClassesDirty(GetWindowClassForVehicleType(v->type));
+		DirtyVehicleListWindowForVehicle(v);
 		InvalidateWindowData(WC_VEHICLE_VIEW, v->index);
 	}
 	return CommandCost();
@@ -782,7 +788,7 @@ CommandCost CmdDepotMassAutoReplace(TileIndex tile, DoCommandFlag flags, uint32 
 /**
  * Test if a name is unique among vehicle names.
  * @param name Name to test.
- * @return True ifffffff the name is unique.
+ * @return True if the name is unique.
  */
 static bool IsUniqueVehicleName(const char *name)
 {
@@ -800,51 +806,32 @@ static bool IsUniqueVehicleName(const char *name)
  */
 static void CloneVehicleName(const Vehicle *src, Vehicle *dst)
 {
-	std::string buf;
-	std::string src_name = src->name.c_str();
+	std::string new_name = src->name.c_str();
 
-	/* Find the position of the first digit in the last group of digits. */
-	size_t number_position;
-	for (number_position = src_name.length(); number_position > 0; number_position--) {
-		/* The design of UTF-8 lets this work simply without having to check
-		 * for UTF-8 sequences. */
-		if (src_name[number_position - 1] < '0' || src_name[number_position - 1] > '9') break;
+	if (!std::isdigit(*new_name.rbegin())) {
+		// No digit at the end, so start at number 1 (this will get incremented to 2)
+		new_name += " 1";
 	}
 
-	/* Format buffer and determine starting number. */
-	long num;
-	byte padding = 0;
-	if (number_position == src_name.length()) {
-		/* No digit at the end, so start at number 2. */
-		buf = src_name;
-		buf += " ";
-		number_position = buf.length();
-		num = 2;
-	} else {
-		/* Found digits, parse them and start at the next number. */
-		buf = src_name.substr(0, number_position);
-
-		auto num_str = src_name.substr(number_position);
-		padding = (byte)num_str.length();
-
-		std::istringstream iss(num_str);
-		iss >> num;
-		num++;
-	}
-
-	/* Check if this name is already taken. */
-	for (int max_iterations = 1000; max_iterations > 0; max_iterations--, num++) {
-		std::ostringstream oss;
-
-		/* Attach the number to the temporary name. */
-		oss << buf << std::setw(padding) << std::setfill('0') << std::internal << num;
-
-		/* Check the name is unique. */
-		auto new_name = oss.str();
-		if (IsUniqueVehicleName(new_name.c_str())) {
-			dst->name = new_name;
-			break;
+	int max_iterations = 1000;
+	do {
+		size_t pos = new_name.length() - 1;
+		// Handle any carrying
+		for (; pos != std::string::npos && new_name[pos] == '9'; --pos) {
+			new_name[pos] = '0';
 		}
+
+		if (pos != std::string::npos && std::isdigit(new_name[pos])) {
+			++new_name[pos];
+		} else {
+			new_name[++pos] = '1';
+			new_name.push_back('0');
+		}
+		--max_iterations;
+	} while(max_iterations > 0 && !IsUniqueVehicleName(new_name.c_str()));
+
+	if (max_iterations > 0) {
+		dst->name = new_name;
 	}
 
 	/* All done. If we didn't find a name, it'll just use its default. */
@@ -993,7 +980,7 @@ CommandCost CmdVirtualTrainFromTemplateVehicle(TileIndex tile, DoCommandFlag fla
 
 	if (should_execute) {
 		StringID err = INVALID_STRING_ID;
-		Train* train = VirtualTrainFromTemplateVehicle(tv, err);
+		Train* train = VirtualTrainFromTemplateVehicle(tv, err, p2);
 
 		if (train == nullptr) {
 			return_cmd_error(err);
@@ -1005,31 +992,36 @@ CommandCost CmdVirtualTrainFromTemplateVehicle(TileIndex tile, DoCommandFlag fla
 
 CommandCost CmdDeleteVirtualTrain(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text);
 
-Train* VirtualTrainFromTemplateVehicle(TemplateVehicle* tv, StringID &err)
+Train* VirtualTrainFromTemplateVehicle(const TemplateVehicle* tv, StringID &err, uint32 user)
 {
 	CommandCost c;
 	Train *tmp, *head, *tail;
+	const TemplateVehicle* tv_head = tv;
 
 	assert(tv->owner == _current_company);
 
-	head = CmdBuildVirtualRailVehicle(tv->engine_type, err);
+	head = CmdBuildVirtualRailVehicle(tv->engine_type, err, user);
 	if (!head) return nullptr;
 
 	tail = head;
 	tv = tv->GetNextUnit();
 	while (tv) {
-		tmp = CmdBuildVirtualRailVehicle(tv->engine_type, err);
+		tmp = CmdBuildVirtualRailVehicle(tv->engine_type, err, user);
 		if (!tmp) {
 			CmdDeleteVirtualTrain(INVALID_TILE, DC_EXEC, head->index, 0, nullptr);
 			return nullptr;
 		}
 
-		tmp->cargo_type = tv->cargo_type;
-		tmp->cargo_subtype = tv->cargo_subtype;
 		CmdMoveRailVehicle(INVALID_TILE, DC_EXEC, (1 << 21) | tmp->index, tail->index, 0);
 		tail = tmp;
 
 		tv = tv->GetNextUnit();
+	}
+
+	for (tv = tv_head, tmp = head; tv != nullptr && tmp != nullptr; tv = tv->Next(), tmp = tmp->Next()) {
+		tmp->cargo_type = tv->cargo_type;
+		tmp->cargo_subtype = tv->cargo_subtype;
+		SB(tmp->flags, VRF_REVERSE_DIRECTION, 1, HasBit(tv->ctrl_flags, TVCF_REVERSED) ? 1 : 0);
 	}
 
 	_new_vehicle_id = head->index;
@@ -1042,7 +1034,7 @@ Train* VirtualTrainFromTemplateVehicle(TemplateVehicle* tv, StringID &err)
  * @param tile unused
  * @param flags type of operation
  * @param p1 the train index
- * @param p2 unused
+ * @param p2 user
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -1064,13 +1056,13 @@ CommandCost CmdVirtualTrainFromTrain(TileIndex tile, DoCommandFlag flags, uint32
 		Train *tmp, *head, *tail;
 		StringID err = INVALID_STRING_ID;
 
-		head = CmdBuildVirtualRailVehicle(train->engine_type, err);
+		head = CmdBuildVirtualRailVehicle(train->engine_type, err, p2);
 		if (!head) return_cmd_error(err);
 
 		tail = head;
 		train = train->GetNextUnit();
 		while (train) {
-			tmp = CmdBuildVirtualRailVehicle(train->engine_type, err);
+			tmp = CmdBuildVirtualRailVehicle(train->engine_type, err, p2);
 			if (!tmp) {
 				CmdDeleteVirtualTrain(tile, flags, head->index, 0, nullptr);
 				return_cmd_error(err);
@@ -1078,6 +1070,7 @@ CommandCost CmdVirtualTrainFromTrain(TileIndex tile, DoCommandFlag flags, uint32
 
 			tmp->cargo_type = train->cargo_type;
 			tmp->cargo_subtype = train->cargo_subtype;
+			SB(tmp->flags, VRF_REVERSE_DIRECTION, 1, HasBit(train->flags, VRF_REVERSE_DIRECTION) ? 1 : 0);
 			CmdMoveRailVehicle(0, DC_EXEC, (1 << 21) | tmp->index, tail->index, 0);
 			tail = tmp;
 
@@ -1091,7 +1084,7 @@ CommandCost CmdVirtualTrainFromTrain(TileIndex tile, DoCommandFlag flags, uint32
 }
 
 /**
- * Create a virtual train from a template vehicle.
+ * Delete a virtual train
  * @param tile unused
  * @param flags type of operation
  * @param p1 the vehicle's index
@@ -1108,8 +1101,15 @@ CommandCost CmdDeleteVirtualTrain(TileIndex tile, DoCommandFlag flags, uint32 p1
 	if (vehicle == nullptr || vehicle->type != VEH_TRAIN) {
 		return CMD_ERROR;
 	}
+	CommandCost ret = CheckOwnership(vehicle->owner);
+	if (ret.Failed()) return ret;
+
+	vehicle = vehicle->First();
 
 	Train* train = Train::From(vehicle);
+	if (!train->IsVirtual()) {
+		return CMD_ERROR;
+	}
 
 	bool should_execute = (flags & DC_EXEC) != 0;
 
@@ -1140,24 +1140,48 @@ CommandCost CmdReplaceTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	if (vehicle == nullptr || vehicle->type != VEH_TRAIN) {
 		return CMD_ERROR;
 	}
+	CommandCost ret = CheckOwnership(vehicle->owner);
+	if (ret.Failed()) return ret;
+
+	vehicle = vehicle->First();
 
 	Train* train = Train::From(vehicle);
+	if (!train->IsVirtual()) {
+		return CMD_ERROR;
+	}
+	if (!TemplateVehicle::CanAllocateItem(CountVehiclesInChain(train))) {
+		return CMD_ERROR;
+	}
 
 	bool should_execute = (flags & DC_EXEC) != 0;
 
 	if (should_execute) {
 		VehicleID old_ID = INVALID_VEHICLE;
 
+		bool restore_flags = false;
+		bool reuse_depot_vehicles = false;
+		bool keep_remaining_vehicles = false;
+		bool refit_as_template = true;
+		bool replace_old_only = false;
+
 		if (template_vehicle != nullptr) {
 			old_ID = template_vehicle->index;
+			restore_flags = true;
+			reuse_depot_vehicles = template_vehicle->reuse_depot_vehicles;
+			keep_remaining_vehicles = template_vehicle->keep_remaining_vehicles;
+			refit_as_template = template_vehicle->refit_as_template;
+			replace_old_only = template_vehicle->replace_old_only;
 			delete template_vehicle;
 			template_vehicle = nullptr;
 		}
 
 		template_vehicle = TemplateVehicleFromVirtualTrain(train);
 
-		if (template_vehicle == nullptr) {
-			return CMD_ERROR;
+		if (restore_flags) {
+			template_vehicle->reuse_depot_vehicles = reuse_depot_vehicles;
+			template_vehicle->keep_remaining_vehicles = keep_remaining_vehicles;
+			template_vehicle->refit_as_template = refit_as_template;
+			template_vehicle->replace_old_only = replace_old_only;
 		}
 
 		// Make sure our replacements still point to the correct thing.
@@ -1431,7 +1455,8 @@ CommandCost CmdCloneVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 		_new_vehicle_id = w_front->index;
 	}
 
-	if (flags & DC_EXEC) {
+	const Company *owner = Company::GetIfValid(_current_company);
+	if ((flags & DC_EXEC) && ((p2 & 1) || owner == nullptr || owner->settings.copy_clone_add_to_group)) {
 		/* Cloned vehicles belong to the same group */
 		DoCommand(0, v_front->group_id, w_front->index, flags, CMD_ADD_VEHICLE_GROUP);
 	}
@@ -1490,20 +1515,23 @@ CommandCost CmdCloneVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 		 * the vehicle refitted before doing this, otherwise the moved
 		 * cargo types might not match (passenger vs non-passenger)
 		 */
-		DoCommand(0, w_front->index | (p2 & 1 ? CO_SHARE : CO_COPY) << 30, v_front->index, flags, CMD_CLONE_ORDER);
+		CommandCost result = DoCommand(0, w_front->index | (p2 & 1 ? CO_SHARE : CO_COPY) << 30, v_front->index, flags, CMD_CLONE_ORDER);
+		if (result.Failed()) {
+			/* The vehicle has already been bought, so now it must be sold again. */
+			DoCommand(w_front->tile, w_front->index | 1 << 20, 0, flags, GetCmdSellVeh(w_front));
+			return result;
+		}
 
 		/* Now clone the vehicle's name, if it has one. */
 		if (!v_front->name.empty()) CloneVehicleName(v_front, w_front);
-	}
 
-	/* Since we can't estimate the cost of cloning a vehicle accurately we must
-	 * check whether the company has enough money manually. */
-	if (!CheckCompanyHasMoney(total_cost)) {
-		if (flags & DC_EXEC) {
+		/* Since we can't estimate the cost of cloning a vehicle accurately we must
+		 * check whether the company has enough money manually. */
+		if (!CheckCompanyHasMoney(total_cost)) {
 			/* The vehicle has already been bought, so now it must be sold again. */
 			DoCommand(w_front->tile, w_front->index | 1 << 20, 0, flags, GetCmdSellVeh(w_front));
+			return total_cost;
 		}
-		return total_cost;
 	}
 
 	return total_cost;

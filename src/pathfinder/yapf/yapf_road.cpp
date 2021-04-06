@@ -68,7 +68,7 @@ protected:
 	}
 
 	/** return one tile cost */
-	inline int OneTileCost(TileIndex tile, Trackdir trackdir)
+	inline int OneTileCost(TileIndex tile, Trackdir trackdir, const TrackFollower *tf)
 	{
 		int cost = 0;
 
@@ -101,7 +101,11 @@ protected:
 							/* When we're the first road stop in a 'queue' of them we increase
 							 * cost based on the fill percentage of the whole queue. */
 							const RoadStop::Entry *entry = rs->GetEntry(dir);
-							cost += entry->GetOccupied() * Yapf().PfGetSettings().road_stop_occupied_penalty / entry->GetLength();
+							if (GetDriveThroughStopDisallowedRoadDirections(tile) != DRD_NONE && !tf->IsTram()) {
+								cost += (entry->GetOccupied() + rs->GetEntry(ReverseDiagDir(dir))->GetOccupied()) * Yapf().PfGetSettings().road_stop_occupied_penalty / (2 * entry->GetLength());
+							} else {
+								cost += entry->GetOccupied() * Yapf().PfGetSettings().road_stop_occupied_penalty / entry->GetLength();
+							}
 						}
 
 						if (predicted_occupied) {
@@ -153,7 +157,7 @@ public:
 
 		for (;;) {
 			/* base tile cost depending on distance between edges */
-			segment_cost += Yapf().OneTileCost(tile, trackdir);
+			segment_cost += Yapf().OneTileCost(tile, trackdir, tf);
 
 			const RoadVehicle *v = Yapf().GetVehicle();
 			/* we have reached the vehicle's destination - segment should end here to avoid target skipping */
@@ -193,10 +197,10 @@ public:
 
 			/* add min/max speed penalties */
 			int min_speed = 0;
-			int max_veh_speed = v->GetDisplayMaxSpeed();
+			int max_veh_speed = std::min<int>(v->GetDisplayMaxSpeed(), v->current_order.GetMaxSpeed() * 2);
 			int max_speed = F.GetSpeedLimit(&min_speed);
-			if (max_speed < max_veh_speed) segment_cost += 1 * (max_veh_speed - max_speed);
-			if (min_speed > max_veh_speed) segment_cost += 10 * (min_speed - max_veh_speed);
+			if (max_speed < max_veh_speed) segment_cost += YAPF_TILE_LENGTH * (max_veh_speed - max_speed) * (4 + F.m_tiles_skipped) / max_veh_speed;
+			if (min_speed > max_veh_speed) segment_cost += YAPF_TILE_LENGTH * (min_speed - max_veh_speed);
 
 			/* move to the next tile */
 			tile = F.m_new_tile;
@@ -337,7 +341,7 @@ public:
 		int y2 = 2 * TileY(m_destTile);
 		int dx = abs(x1 - x2);
 		int dy = abs(y1 - y2);
-		int dmin = min(dx, dy);
+		int dmin = std::min(dx, dy);
 		int dxy = abs(dx - dy);
 		int d = dmin * YAPF_TILE_CORNER_LENGTH + (dxy - 1) * (YAPF_TILE_LENGTH / 2);
 		n.m_estimate = n.m_cost + d;
@@ -437,7 +441,7 @@ public:
 		/* our source tile will be the next vehicle tile (should be the given one) */
 		TileIndex src_tile = tile;
 		/* get available trackdirs on the start tile */
-		TrackdirBits src_trackdirs = TrackStatusToTrackdirBits(GetTileTrackStatus(tile, TRANSPORT_ROAD, GetRoadTramType(v->roadtype)));
+		TrackdirBits src_trackdirs = GetTrackdirBitsForRoad(tile, GetRoadTramType(v->roadtype));
 		/* select reachable trackdirs only */
 		src_trackdirs &= DiagdirReachesTrackdirs(enterdir);
 
@@ -555,7 +559,7 @@ public:
 		/* set origin (tile, trackdir) */
 		TileIndex src_tile = v->tile;
 		Trackdir src_td = v->GetVehicleTrackdir();
-		if (!HasTrackdir(TrackStatusToTrackdirBits(GetTileTrackStatus(src_tile, TRANSPORT_ROAD, this->IsTram() ? RTT_TRAM : RTT_ROAD)), src_td)) {
+		if (!HasTrackdir(GetTrackdirBitsForRoad(src_tile, this->IsTram() ? RTT_TRAM : RTT_ROAD), src_td)) {
 			/* sometimes the roadveh is not on the road (it resides on non-existing track)
 			 * how should we handle that situation? */
 			return false;
@@ -640,7 +644,8 @@ FindDepotData YapfRoadVehicleFindNearestDepot(const RoadVehicle *v, int max_dist
 {
 	TileIndex tile = v->tile;
 	Trackdir trackdir = v->GetVehicleTrackdir();
-	if (!HasTrackdir(TrackStatusToTrackdirBits(GetTileTrackStatus(tile, TRANSPORT_ROAD, GetRoadTramType(v->roadtype))), trackdir)) {
+
+	if (!HasTrackdir(GetTrackdirBitsForRoad(tile, GetRoadTramType(v->roadtype)), trackdir)) {
 		return FindDepotData();
 	}
 

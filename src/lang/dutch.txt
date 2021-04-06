@@ -48,9 +48,9 @@ STR_CARGO_PLURAL_WHEAT                                          :Tarwe
 STR_CARGO_PLURAL_RUBBER                                         :Rubber
 STR_CARGO_PLURAL_SUGAR                                          :Suiker
 STR_CARGO_PLURAL_TOYS                                           :Speelgoed
-STR_CARGO_PLURAL_CANDY                                          :Snoep
+STR_CARGO_PLURAL_SWEETS                                         :Snoep
 STR_CARGO_PLURAL_COLA                                           :Cola
-STR_CARGO_PLURAL_COTTON_CANDY                                   :Suikerspin
+STR_CARGO_PLURAL_CANDYFLOSS                                     :Suikerspin
 STR_CARGO_PLURAL_BUBBLES                                        :Bellen
 STR_CARGO_PLURAL_TOFFEE                                         :Toffee
 STR_CARGO_PLURAL_BATTERIES                                      :Batterijen
@@ -82,9 +82,9 @@ STR_CARGO_SINGULAR_WHEAT                                        :Tarwe
 STR_CARGO_SINGULAR_RUBBER                                       :Rubber
 STR_CARGO_SINGULAR_SUGAR                                        :Suiker
 STR_CARGO_SINGULAR_TOY                                          :Speelgoed
-STR_CARGO_SINGULAR_CANDY                                        :Snoep
+STR_CARGO_SINGULAR_SWEETS                                       :Snoep
 STR_CARGO_SINGULAR_COLA                                         :Cola
-STR_CARGO_SINGULAR_COTTON_CANDY                                 :Suikerspin
+STR_CARGO_SINGULAR_CANDYFLOSS                                   :Suikerspin
 STR_CARGO_SINGULAR_BUBBLE                                       :Bubbel
 STR_CARGO_SINGULAR_TOFFEE                                       :Toffee
 STR_CARGO_SINGULAR_BATTERY                                      :Batterij
@@ -194,6 +194,7 @@ STR_COLOUR_DEFAULT                                              :Standaard
 STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA}{NBSP}mph
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}km/u
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}m/s
+STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}tegels/dag
 
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}pk
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}pk
@@ -233,7 +234,6 @@ STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Selectee
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Selecteer de sorteercriteria
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Selecteer de filtercriteria
 STR_BUTTON_SORT_BY                                              :{BLACK}Sorteren op
-STR_BUTTON_LOCATION                                             :{BLACK}Locatie
 STR_BUTTON_RENAME                                               :{BLACK}Hernoemen
 STR_BUTTON_CATCHMENT                                            :{BLACK}Dekking
 STR_TOOLTIP_CATCHMENT                                           :{BLACK}Schakelt weergave van dekkingsgebied om
@@ -314,6 +314,15 @@ STR_SORT_BY_CARGO_CAPACITY                                      :Vrachtcapacitei
 STR_SORT_BY_RANGE                                               :Bereik
 STR_SORT_BY_POPULATION                                          :Aantal inwoners
 STR_SORT_BY_RATING                                              :Waardering
+STR_SORT_BY_NUM_VEHICLES                                        :Aantal voertuigen
+STR_SORT_BY_TOTAL_PROFIT_LAST_YEAR                              :Totale winst vorig jaar
+STR_SORT_BY_TOTAL_PROFIT_THIS_YEAR                              :Totale winst dit jaar
+STR_SORT_BY_AVERAGE_PROFIT_LAST_YEAR                            :Gemiddelde winst vorig jaar
+STR_SORT_BY_AVERAGE_PROFIT_THIS_YEAR                            :Gemiddelde winst dit jaar
+
+# Group by options for vehicle list
+STR_GROUP_BY_NONE                                               :Geen
+STR_GROUP_BY_SHARED_ORDERS                                      :Gedeelde orders
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Hiermee pauzeer je het spel
@@ -568,8 +577,8 @@ STR_MONTH_DEC                                                   :December
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Legenda
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Legenda bij deze grafiek weergeven
-STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}{} {STRING}
-STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{} {STRING}{}{NUM}
+STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}
+STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{}{NUM}
 STR_GRAPH_Y_LABEL                                               :{TINY_FONT}{STRING}
 STR_GRAPH_Y_LABEL_NUMBER                                        :{TINY_FONT}{COMMA}
 
@@ -739,6 +748,7 @@ STR_SMALLMAP_LEGENDA_DOCK                                       :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_ROUGH_LAND                                 :{TINY_FONT}{BLACK}Ruw land
 STR_SMALLMAP_LEGENDA_GRASS_LAND                                 :{TINY_FONT}{BLACK}Grasland
 STR_SMALLMAP_LEGENDA_BARE_LAND                                  :{TINY_FONT}{BLACK}Braakliggend land
+STR_SMALLMAP_LEGENDA_RAINFOREST                                 :{TINY_FONT}{BLACK}Regenwoud
 STR_SMALLMAP_LEGENDA_FIELDS                                     :{TINY_FONT}{BLACK}Akkers
 STR_SMALLMAP_LEGENDA_TREES                                      :{TINY_FONT}{BLACK}Bomen
 STR_SMALLMAP_LEGENDA_ROCKS                                      :{TINY_FONT}{BLACK}Rotsen
@@ -770,6 +780,7 @@ STR_SMALLMAP_TOOLTIP_ENABLE_ALL_CARGOS                          :{BLACK}Alle vra
 STR_STATUSBAR_TOOLTIP_SHOW_LAST_NEWS                            :{BLACK}Laatste (nieuws-)bericht weergeven
 STR_STATUSBAR_COMPANY_NAME                                      :{SILVER}- -  {COMPANY}  - -
 STR_STATUSBAR_PAUSED                                            :{YELLOW}* *  GEPAUZEERD  *  *
+STR_STATUSBAR_PAUSED_LINK_GRAPH                                 :{ORANGE}* * GEPAUZEERD (wacht op bijwerken koppelinggrafiek) * *
 STR_STATUSBAR_AUTOSAVE                                          :{RED}AUTOMATISCH OPSLAAN
 STR_STATUSBAR_SAVING_GAME                                       :{RED}*  *  SPEL WORDT OPGESLAGEN  *  *
 
@@ -936,10 +947,10 @@ STR_GAME_OPTIONS_CURRENCY_NTD                                   :Nieuwe Taiwanse
 STR_GAME_OPTIONS_CURRENCY_CNY                                   :Chinese Renminbi (CNY)
 STR_GAME_OPTIONS_CURRENCY_HKD                                   :Hong Kong Dollar (HKD)
 STR_GAME_OPTIONS_CURRENCY_INR                                   :Indiase rupee (INR)
+STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonesische roepia (IDR)
+STR_GAME_OPTIONS_CURRENCY_MYR                                   :Maleisische Ringgit (MYR)
 ############ end of currency region
 
-STR_GAME_OPTIONS_ROAD_VEHICLES_FRAME                            :{BLACK}Wegvoertuigen
-STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_TOOLTIP                 :{BLACK}Kiest aan welke kant van de weg voertuigen moeten rijden
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_LEFT                    :Links rijden
 STR_GAME_OPTIONS_ROAD_VEHICLES_DROPDOWN_RIGHT                   :Rechts rijden
 
@@ -990,10 +1001,16 @@ STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :{BLACK}Vink dit
 STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}Schermresolutie
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}Selecteer de schermresolutie
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :Anders
+STR_GAME_OPTIONS_RESOLUTION_ITEM                                :{NUM}x{NUM}
+
+STR_GAME_OPTIONS_VIDEO_ACCELERATION                             :{BLACK}Hardwareversnelling
+STR_GAME_OPTIONS_VIDEO_ACCELERATION_TOOLTIP                     :{BLACK}Selecteer dit vakje om OpenTTD hardwareversnelling te laten gebruiken. De gewijzigde instelling wordt pas van kracht nadat het spel opnieuw is gestart.
+STR_GAME_OPTIONS_VIDEO_ACCELERATION_RESTART                     :{WHITE}De instelling wordt pas van kracht als het spel opnieuw is gestart
 
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}Menupuntgrootte
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}Kiest de grootte van bedieningselementen
 
+STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_AUTO                         :(automatische detectie)
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :Normaal
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :Dubbele grootte
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :4x Grootte
@@ -1001,9 +1018,18 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :4x Grootte
 STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}Lettergrootte
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}Hiermee kies je hoe groot de letters op het scherm moeten zijn
 
+STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(auto-detect)Status: Vermist
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :Normaal
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :Dubbele grootte
 STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :Viervoudige grootte
+
+STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafische elementen
+
+STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}Verversingssnelheid weergeven
+STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :{BLACK}Selecteer de gewenste schermverversingssnelheid
+STR_GAME_OPTIONS_REFRESH_RATE_OTHER                             :overige
+STR_GAME_OPTIONS_REFRESH_RATE_ITEM                              :{NUM}Hz
+STR_GAME_OPTIONS_REFRESH_RATE_WARNING                           :{WHITE}Verversingssnelheden boven 60 Hz kunnen de prestaties beïnvloeden.
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK}Basisset voor graphics
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK}Kiest de te gebruiken basisset voor grafische elementen
@@ -1304,7 +1330,7 @@ STR_CONFIG_SETTING_ERRMSG_DURATION_HELPTEXT                     :Duur voor het w
 STR_CONFIG_SETTING_ERRMSG_DURATION_VALUE                        :{COMMA} seconde{P 0 "" n}
 STR_CONFIG_SETTING_HOVER_DELAY                                  :Knopinfo weergeven: {STRING}
 STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :Vertraging voordat knopinfo worden weergegeven wanneer je de muis boven een besturingselement houdt. Wanneer de waarde 0 is, wordt knopinfo aan de rechtermuisknop gebonden.
-STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :Muis stilhouden gedurende {COMMA} seconde{P 0 "" n}
+STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :Muis stilhouden gedurende {COMMA} milliseconde{P 0 "" n}
 STR_CONFIG_SETTING_HOVER_DELAY_DISABLED                         :Rechtsklik
 STR_CONFIG_SETTING_POPULATION_IN_LABEL                          :Inwoneraantal bij stad weergeven: {STRING}
 STR_CONFIG_SETTING_POPULATION_IN_LABEL_HELPTEXT                 :Aantal inwoners van een stad weergeven bij naam op de kaart
@@ -1440,6 +1466,12 @@ STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS                     :Bouwgereedschap
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS_HELPTEXT            :Houd de bouwhulpmiddelen voor bruggen, tunnels, enz. open na gebruik
 STR_CONFIG_SETTING_EXPENSES_LAYOUT                              :Uitgaven in bedrijfsfinanciënvenster groeperen: {STRING}
 STR_CONFIG_SETTING_EXPENSES_LAYOUT_HELPTEXT                     :Definieer de lay-out voor het bedrijfsuitgavenvenster
+STR_CONFIG_SETTING_AUTO_REMOVE_SIGNALS                          :Automatisch seinen verwijderen tijdens spooraanleg: {STRING}
+STR_CONFIG_SETTING_AUTO_REMOVE_SIGNALS_HELPTEXT                 :Seinen automatisch verwijderen tijdens spooraanleg als deze in de weg staan. Dit kan botsingen veroorzaken.
+STR_CONFIG_SETTING_FAST_FORWARD_SPEED_LIMIT                     :Limiet verhoogde spelsnelheid: {STRING}
+STR_CONFIG_SETTING_FAST_FORWARD_SPEED_LIMIT_HELPTEXT            :Beperkt de snelheid van het spel wanneer de spelsnelheid is verhoogt. 0 = geen limiet (alleen beperkt door de computer zelf). Waarden onder 100% vertragen het spel. De hoogste waarde hangt af van de specifcaties van de computer en kan afhankelijk van het spel variëren.
+STR_CONFIG_SETTING_FAST_FORWARD_SPEED_LIMIT_VAL                 :{NUM}% normale spelsnelheid
+STR_CONFIG_SETTING_FAST_FORWARD_SPEED_LIMIT_ZERO                :Geen limiet (alleen beperkt door de computer zelf)
 
 STR_CONFIG_SETTING_SOUND_TICKER                                 :Nieuwsticker: {STRING}
 STR_CONFIG_SETTING_SOUND_TICKER_HELPTEXT                        :Speel geluidseffecten af bij korte nieuwsberichten
@@ -1553,8 +1585,11 @@ STR_CONFIG_SETTING_ENDING_YEAR                                  :Eindjaar voor s
 STR_CONFIG_SETTING_ENDING_YEAR_HELPTEXT                         :Jaar dat het spel eindigt ten behoeve van de score. Aan het einde van dit jaar wordt de score van het bedrijf vastgelegd en verschijnt het venster met topscores. De spelers kunnen echter doorgaan met spelen.{}Als dit voor het startjaar ligt, verschijnt het venster met topscores niet.
 STR_CONFIG_SETTING_ENDING_YEAR_VALUE                            :{NUM}
 STR_CONFIG_SETTING_ENDING_YEAR_ZERO                             :Nooit
-STR_CONFIG_SETTING_SMOOTH_ECONOMY                               :Vloeiende economie inschakelen (meer, kleinere veranderingen): {STRING}
-STR_CONFIG_SETTING_SMOOTH_ECONOMY_HELPTEXT                      :Wanneer dit is ingeschakeld, verandert de productie van industrieën vaker en in kleinere stappen. Deze instelling heeft meestal geen effect als de industriesoorten worden geleverd door een NewGRF.
+STR_CONFIG_SETTING_ECONOMY_TYPE                                 :Type economie: {STRING}
+STR_CONFIG_SETTING_ECONOMY_TYPE_HELPTEXT                        :Bij gelijkmatige economie zijn er vaker wijzigingen in productie, die in kleinere stappen verlopen. Bij vaste economie zijn er geen wijzigingen in productie en sluiten bedrijven niet. Deze instelling werkt misschien niet als de soorten industrie worden geleverd in een NewGRF.
+STR_CONFIG_SETTING_ECONOMY_TYPE_ORIGINAL                        :Origineel
+STR_CONFIG_SETTING_ECONOMY_TYPE_SMOOTH                          :Gelijkmatig
+STR_CONFIG_SETTING_ECONOMY_TYPE_FROZEN                          :Vast
 STR_CONFIG_SETTING_ALLOW_SHARES                                 :Kopen van aandelen in andere bedrijven toestaan: {STRING}
 STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Wanneer ingeschakeld is het toegestaan om bedrijfsaandelen te kopen en te verkopen. Aandelen zullen alleen beschikbaar zijn voor bedrijven die een bepaalde leeftijd hebben bereikt
 STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Minimale leeftijd van bedrijf om aandelen te kunnen verhandelen: {STRING}
@@ -1606,9 +1641,10 @@ STR_CONFIG_SETTING_TOWN_CARGOGENMODE_BITCOUNT                   :Lineair
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :Plaatsing van bomen in het spel: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :Beheert het willekeurig verschijnen van bomen tijdens het spel. Dit kan gevolgen hebben voor industrietakken die afhankelijk zijn van groei van bomen, bijvoorbeeld houtzagerijen.
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NONE                    :Geen {RED}(houtzagerijen werken niet)
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_RAINFOREST              :Alleen in regenwouden
-STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_ALL                     :Overal
+STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NO_SPREAD               :Groeien maar niet verspreiden {RED}(houtzagerijen werken niet meer)
+STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_SPREAD_RAINFOREST       :Groeien, maar alleen verspreiden in regenwoud
+STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_SPREAD_ALL              :Overal groeien en verspreiden
+STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NO_GROWTH_NO_SPREAD     :Niet groeien, niet verspreiden {RED}(houtzagerijen werken niet meer)
 
 STR_CONFIG_SETTING_TOOLBAR_POS                                  :Positie van algemene knoppenbalk: {STRING}
 STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Horizontale positie van de algemene taakbalk aan de bovenkant van het scherm.
@@ -1626,12 +1662,17 @@ STR_CONFIG_SETTING_ZOOM_MIN                                     :Maximaal inzoom
 STR_CONFIG_SETTING_ZOOM_MIN_HELPTEXT                            :Het maximale inzoomniveau voor kijkvensters. Merk op dat hogere inzoomniveaus hogere eisen stellen aan het geheugen.
 STR_CONFIG_SETTING_ZOOM_MAX                                     :Maximaal uitzoomniveau: {STRING}
 STR_CONFIG_SETTING_ZOOM_MAX_HELPTEXT                            :De maximale zoom-uit niveau voor kijkvensters. Hogere zoom-uit niveaus kunnen leiden tot vertraging bij gebruik
+STR_CONFIG_SETTING_SPRITE_ZOOM_MIN                              :Hoogste resolutie die sprites mogen gebruiken: {STRING}
+STR_CONFIG_SETTING_SPRITE_ZOOM_MIN_HELPTEXT                     :Beperk de maximale resolutie die voor sprites wordt gebruikt. Door deze beperking worden geen grafische elementen in hoge resolutie gebruikt, ook niet als ze beschikbaar zijn. Zo kan de weergave van het spel consistent blijven wanneer je verschillende GRF-bestanden gebruikt met en zonder grafische elementen in hoge resolutie.
 STR_CONFIG_SETTING_ZOOM_LVL_MIN                                 :4x
 STR_CONFIG_SETTING_ZOOM_LVL_IN_2X                               :2x
 STR_CONFIG_SETTING_ZOOM_LVL_NORMAL                              :Normaal
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_2X                              :2x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_4X                              :4x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_8X                              :8x
+STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_MIN                          :4x
+STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_IN_2X                        :2x
+STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_NORMAL                       :1x
 STR_CONFIG_SETTING_TOWN_GROWTH                                  :Groeisnelheid steden: {STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT                         :Groeisnelheid van steden.
 STR_CONFIG_SETTING_TOWN_GROWTH_NONE                             :Niet
@@ -1675,6 +1716,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_HELPTEXT         :Wanneer een sne
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_IMPERIAL         :Imperiaal (mph)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_METRIC           :Metrisch (km/h)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_SI               :SI (m/s)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_GAMEUNITS        :Speleenheden (tegels/dag)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER                     :Voertuigkrachteenheden: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER_HELPTEXT            :Als het verbruik van een voertuig wordt weergegeven in het gebruikersscherm, gebruik dan de geselecteerde eenheden
@@ -1764,6 +1806,10 @@ STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... nege
 STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Geen geheugen meer
 STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Toewijzen van {BYTES} van spritecache mislukt. De spritecache werd teruggebracht tot {BYTES}. Dit verlaagt de prestaties van OpenTTD. Om het benodigde geheugen te verminderen, kun je proberen om 32bpp-beeldelementen en/of inzoomniveaus uit te schakelen
 
+# Video initalization errors
+STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Fout met video-instellingen...
+STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... geen compatibele GPU gevonden. Hardwareversnelling is uitgeschakeld
+
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
 
@@ -1807,17 +1853,9 @@ STR_INTRO_TRANSLATION                                           :{BLACK}Deze ver
 
 # Quit window
 STR_QUIT_CAPTION                                                :{WHITE}Afsluiten
-STR_QUIT_ARE_YOU_SURE_YOU_WANT_TO_EXIT_OPENTTD                  :{YELLOW}Weet je zeker dat je OpenTTD wilt verlaten en terug wilt keren naar {STRING}?
+STR_QUIT_ARE_YOU_SURE_YOU_WANT_TO_EXIT_OPENTTD                  :{YELLOW}Weet je zeker dat je OpenTTD wilt verlaten?
 STR_QUIT_YES                                                    :{BLACK}Ja
 STR_QUIT_NO                                                     :{BLACK}Nee
-
-# Supported OSes
-STR_OSNAME_WINDOWS                                              :Windows
-STR_OSNAME_UNIX                                                 :Unix
-STR_OSNAME_OSX                                                  :OS{NBSP}X
-STR_OSNAME_HAIKU                                                :Haiku
-STR_OSNAME_OS2                                                  :OS/2
-STR_OSNAME_SUNOS                                                :SunOS
 
 # Abandon game
 STR_ABANDON_GAME_CAPTION                                        :{WHITE}Spel sluiten
@@ -1827,7 +1865,7 @@ STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Weet je
 # Cheat window
 STR_CHEATS                                                      :{WHITE}Valsspelen
 STR_CHEATS_TOOLTIP                                              :{BLACK}Keuzevakjes geven aan of je deze manier van valsspelen eerder hebt gebruikt
-STR_CHEATS_WARNING                                              :{BLACK}Waarschuwing! Je staat op het punt je medespelers te verraden. Onthoud dat zo'n schande eeuwig wordt onthouden
+STR_CHEATS_NOTE                                                 :{BLACK}Opmerking: al deze instellingen worden opgeslagen in het opgeslagen spel
 STR_CHEAT_MONEY                                                 :{LTBLUE}Kapitaal vergroten met {CURRENCY_LONG}
 STR_CHEAT_CHANGE_COMPANY                                        :{LTBLUE}Spelen als bedrijf: {ORANGE}{COMMA}
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}Magische bulldozer (industrieën en andere onverplaatsbare objecten verwijderen): {ORANGE}{STRING}
@@ -1939,10 +1977,6 @@ STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Verander
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Netwerkspel
-STR_NETWORK_SERVER_LIST_ADVERTISED                              :{BLACK}Openbaar
-STR_NETWORK_SERVER_LIST_ADVERTISED_TOOLTIP                      :{BLACK}Kies tussen een openbaar (internet) en een niet-openbaar (Local Area Network, LAN) spel
-STR_NETWORK_SERVER_LIST_ADVERTISED_NO                           :Nee
-STR_NETWORK_SERVER_LIST_ADVERTISED_YES                          :Ja
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Spelersnaam:
 STR_NETWORK_SERVER_LIST_ENTER_NAME_TOOLTIP                      :{BLACK}Dit is de naam waarmee andere spelers je herkennen
 
@@ -1983,8 +2017,10 @@ STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}Meespele
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}Ververs server
 STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}Ververs de informatie over deze server
 
-STR_NETWORK_SERVER_LIST_FIND_SERVER                             :{BLACK}Server zoeken
-STR_NETWORK_SERVER_LIST_FIND_SERVER_TOOLTIP                     :{BLACK}Zoek op het netwerk naar een server
+STR_NETWORK_SERVER_LIST_SEARCH_SERVER_INTERNET                  :{BLACK}Op internet zoeken
+STR_NETWORK_SERVER_LIST_SEARCH_SERVER_INTERNET_TOOLTIP          :{BLACK}Op het internet zoeken naar openbare servers
+STR_NETWORK_SERVER_LIST_SEARCH_SERVER_LAN                       :{BLACK}Op LAN zoeken
+STR_NETWORK_SERVER_LIST_SEARCH_SERVER_LAN_TOOLTIP               :{BLACK}Op lokaal netwerk zoeken naar servers
 STR_NETWORK_SERVER_LIST_ADD_SERVER                              :{BLACK}Voeg server toe
 STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP                      :{BLACK}Voegt een server toe aan de lijst die altijd gecontroleerd zal worden op draaiende spellen
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Start server
@@ -2001,6 +2037,8 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}De speln
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Wachtwoord instellen
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Beveilig je spel met een wachtwoord als je niet wilt dat dit algemeen toegankelijk is
 
+STR_NETWORK_START_SERVER_ADVERTISED_LABEL                       :{BLACK}Openbaar
+STR_NETWORK_START_SERVER_ADVERTISED_TOOLTIP                     :{BLACK}Kies tussen een openbaar (internet) en een niet-openbaar (Local Area Network, LAN) spel
 STR_NETWORK_START_SERVER_UNADVERTISED                           :Nee
 STR_NETWORK_START_SERVER_ADVERTISED                             :Ja
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} speler{P "" s}
@@ -2208,11 +2246,13 @@ STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_1                  :Spel nog steeds
 STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_2                  :Spel nog steeds gepauzeerd ({STRING}, {STRING})
 STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_3                  :Spel nog steeds gepauzeerd ({STRING}, {STRING}, {STRING})
 STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_4                  :Spel nog steeds gepauzeerd ({STRING}, {STRING}, {STRING}, {STRING})
+STR_NETWORK_SERVER_MESSAGE_GAME_STILL_PAUSED_5                  :Spel nog steeds gepauzeerd ({STRING}, {STRING}, {STRING}, {STRING}, {STRING})
 STR_NETWORK_SERVER_MESSAGE_GAME_UNPAUSED                        :Spel vervolgd ({STRING})
 STR_NETWORK_SERVER_MESSAGE_GAME_REASON_NOT_ENOUGH_PLAYERS       :aantal spelers
 STR_NETWORK_SERVER_MESSAGE_GAME_REASON_CONNECTING_CLIENTS       :spelers maken verbinding
 STR_NETWORK_SERVER_MESSAGE_GAME_REASON_MANUAL                   :Handmatig
 STR_NETWORK_SERVER_MESSAGE_GAME_REASON_GAME_SCRIPT              :spelscript
+STR_NETWORK_SERVER_MESSAGE_GAME_REASON_LINK_GRAPH               :wacht op bijwerken koppelinggrafiek
 ############ End of leave-in-this-order
 STR_NETWORK_MESSAGE_CLIENT_LEAVING                              :vertrekt
 STR_NETWORK_MESSAGE_CLIENT_JOINED                               :*** {STRING} heeft zich bij het spel gevoegd
@@ -2222,8 +2262,7 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} ki
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} heeft een nieuw bedrijf opgericht (nr. {2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} heeft het spel verlaten ({2:STRING})
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} heeft zijn/haar naam gewijzigd naar {STRING}
-STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} gaf je bedrijf {2:CURRENCY_LONG}
-STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** Je gaf {2:CURRENCY_LONG} aan {1:STRING}
+STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} gaf {2:CURRENCY_LONG} aan {1:STRING}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}De server heeft de sessie gesloten
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}De server wordt opnieuw gestart...{}Wacht alstublieft...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} is eruit geschopt. Reden: ({STRING})
@@ -2301,6 +2340,10 @@ STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD 
 STR_MISSING_GRAPHICS_YES_DOWNLOAD                               :{BLACK}Ja, grafische elementen downloaden
 STR_MISSING_GRAPHICS_NO_QUIT                                    :{BLACK}Nee, OpenTTD afsluiten
 
+STR_MISSING_GRAPHICS_ERROR_TITLE                                :{WHITE}Downloaden mislukt
+STR_MISSING_GRAPHICS_ERROR                                      :{BLACK}Grafische elementen downloaden mislukt.{}Download de grafische elementen handmatig.
+STR_MISSING_GRAPHICS_ERROR_QUIT                                 :{BLACK}OpenTTD afsluiten
+
 # Transparency settings window
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}Doorzichtigheidsopties
 STR_TRANSPARENT_SIGNS_TOOLTIP                                   :{BLACK}Transparantie voor stationsnamen aan-uit. Ctrl+klik om vast te zetten.
@@ -2341,6 +2384,9 @@ STR_JOIN_STATION_CREATE_SPLITTED_STATION                        :{YELLOW}Een los
 
 STR_JOIN_WAYPOINT_CAPTION                                       :{WHITE}Routepunt samenvoegen
 STR_JOIN_WAYPOINT_CREATE_SPLITTED_WAYPOINT                      :{YELLOW}Los routepunt bouwen
+
+# Generic toolbar
+STR_TOOLBAR_DISABLED_NO_VEHICLE_AVAILABLE                       :{BLACK}Momenteel uitgeschakeld omdat er geen voertuigen zijn voor deze infrastructuur
 
 # Rail construction toolbar
 STR_RAIL_TOOLBAR_RAILROAD_CONSTRUCTION_CAPTION                  :Spoorwegen bouwen
@@ -2529,13 +2575,19 @@ STR_OBJECT_BUILD_SIZE                                           :{BLACK}Grootte:
 STR_OBJECT_CLASS_LTHS                                           :Vuurtorens
 STR_OBJECT_CLASS_TRNS                                           :Zendmasten
 
-# Tree planting window (last two for SE only)
+# Tree planting window (last eight for SE only)
 STR_PLANT_TREE_CAPTION                                          :{WHITE}Bomen
 STR_PLANT_TREE_TOOLTIP                                          :{BLACK}Kies een soort boom om te planten. Als de tegel al bomen bevat, komen er meer bomen van verschillende typen bij, onafhankelijk van het geselecteerde type.
 STR_TREES_RANDOM_TYPE                                           :{BLACK}Willekeurige soorten bomen
 STR_TREES_RANDOM_TYPE_TOOLTIP                                   :{BLACK}Willekeurig bomen planten. Shift+klik wisselt tussen bouwen/verwachte kosten.
 STR_TREES_RANDOM_TREES_BUTTON                                   :{BLACK}Willekeurige bomen
 STR_TREES_RANDOM_TREES_TOOLTIP                                  :{BLACK}Hiermee plant je bomen willekeurig over het landschap
+STR_TREES_MODE_NORMAL_BUTTON                                    :{BLACK}Normaal
+STR_TREES_MODE_NORMAL_TOOLTIP                                   :{BLACK}Losse bomen planten door over het landschap te slepen
+STR_TREES_MODE_FOREST_SM_BUTTON                                 :{BLACK}Groepje bomen
+STR_TREES_MODE_FOREST_SM_TOOLTIP                                :{BLACK}Kleine bossen planten door over het landschap te slepen
+STR_TREES_MODE_FOREST_LG_BUTTON                                 :{BLACK}Bos
+STR_TREES_MODE_FOREST_LG_TOOLTIP                                :{BLACK}Grote bossen planten door over het landschap te slepen
 
 # Land generation window (SE)
 STR_TERRAFORM_TOOLBAR_LAND_GENERATION_CAPTION                   :{WHITE}Landontwikkeling
@@ -2586,12 +2638,18 @@ STR_FOUND_TOWN_SELECT_LAYOUT_RANDOM                             :{BLACK}Willekeu
 # Fund new industry window
 STR_FUND_INDUSTRY_CAPTION                                       :{WHITE}Nieuwe industrie financieren
 STR_FUND_INDUSTRY_SELECTION_TOOLTIP                             :{BLACK}Kiest de gewenste industrie in de lijst
-STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES                        :Veel willekeurige industrieën
+STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES                        :{BLACK}Willekeurige industrieën maken
 STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES_TOOLTIP                :{BLACK}Bedek de kaart met willekeurig geplaatste industrieën
+STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES_CAPTION                :{WHITE}Willekeurige industrieën maken
+STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES_QUERY                  :{YELLOW}Weet je zeker dat je veel willekeurige industrieën wilt hebben?
 STR_FUND_INDUSTRY_INDUSTRY_BUILD_COST                           :{BLACK}Kosten: {YELLOW}{CURRENCY_LONG}
 STR_FUND_INDUSTRY_PROSPECT_NEW_INDUSTRY                         :{BLACK}Onderzoeken
 STR_FUND_INDUSTRY_BUILD_NEW_INDUSTRY                            :{BLACK}Bouw
 STR_FUND_INDUSTRY_FUND_NEW_INDUSTRY                             :{BLACK}Betaal
+STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES                         :{BLACK}Alle industrieën verwijderen
+STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES_TOOLTIP                 :{BLACK}Alle industrieën op de kaart verwijderen
+STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES_CAPTION                 :{WHITE}Alle industrieën verwijderen
+STR_FUND_INDUSTRY_REMOVE_ALL_INDUSTRIES_QUERY                   :{YELLOW}Weet je zeker dat je alle industrieën wilt verwijderen?
 
 # Industry cargoes window
 STR_INDUSTRY_CARGOES_INDUSTRY_CAPTION                           :{WHITE}Industrieketen voor {STRING} industrie
@@ -2612,6 +2670,7 @@ STR_INDUSTRY_CARGOES_SELECT_INDUSTRY_TOOLTIP                    :{BLACK}Bedrijf 
 
 # Land area window
 STR_LAND_AREA_INFORMATION_CAPTION                               :{WHITE}Landinformatie
+STR_LAND_AREA_INFORMATION_LOCATION_TOOLTIP                      :{BLACK}Centreer het hoofdscherm op de locatie van de tegel. Ctrl+klik opent een nieuw venster op de locatie van de tegel.
 STR_LAND_AREA_INFORMATION_COST_TO_CLEAR_N_A                     :{BLACK}Sloopkosten: {LTBLUE}niet mogelijk
 STR_LAND_AREA_INFORMATION_COST_TO_CLEAR                         :{BLACK}Sloopkosten: {RED}{CURRENCY_LONG}
 STR_LAND_AREA_INFORMATION_REVENUE_WHEN_CLEARED                  :{BLACK}Opbrengst bij verwijdering: {LTBLUE}{CURRENCY_LONG}
@@ -2821,6 +2880,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF:
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Filtertekenreeks:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Bestand overschrijven
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Weet je zeker dat je het bestaande bestand wilt overschrijven?
+STR_SAVELOAD_DIRECTORY                                          :{STRING} (Map)
+STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (Bovenliggende map)
 
 STR_SAVELOAD_OSKTITLE                                           :{BLACK}Voer een naam in voor het spel dat moet worden opgeslagen
 
@@ -2839,7 +2900,6 @@ STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Hoogte v
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Verhoog de sneeuwgrens met één
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Verlaag de sneeuwgrens met één
 STR_MAPGEN_LAND_GENERATOR                                       :{BLACK}Landgenerator:
-STR_MAPGEN_TREE_PLACER                                          :{BLACK}Bosalgoritme:
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terreintype:
 STR_MAPGEN_QUANTITY_OF_SEA_LAKES                                :{BLACK}Zeeniveau:
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Rivieren:
@@ -3082,6 +3142,7 @@ STR_SIGN_LIST_MATCH_CASE_TOOLTIP                                :{BLACK}Schakel 
 
 # Sign window
 STR_EDIT_SIGN_CAPTION                                           :{WHITE}Wijzig tekst van bord
+STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Centreer het hoofdscherm op de locatie van het sein. Ctrl+klik opent een nieuw venster op de locatie van het sein.
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Ga naar volgende bord
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Ga naar vorige bord
 
@@ -3110,7 +3171,7 @@ STR_TOWN_VIEW_TOWN_GROWS_EVERY                                  :{BLACK}Stad gro
 STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED                           :{BLACK}Stad groeit iedere {ORANGE}{COMMA}{BLACK}{NBSP}dag{P "" en} (gefinancierd)
 STR_TOWN_VIEW_TOWN_GROW_STOPPED                                 :{BLACK}Stad groeit {RED}niet{BLACK}
 STR_TOWN_VIEW_NOISE_IN_TOWN                                     :{BLACK}Geluidslimiet in stad: {ORANGE}{COMMA}{BLACK} max: {ORANGE}{COMMA}
-STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centreer het scherm op de locatie van de stad. Ctrl+klik opent een nieuw kijkvenster op de locatie van de stad
+STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centreer het hoofdscherm op de locatie van de stad. Ctrl+klik opent een nieuw kijkvenster op de locatie van de stad
 STR_TOWN_VIEW_LOCAL_AUTHORITY_BUTTON                            :{BLACK}Gemeente
 STR_TOWN_VIEW_LOCAL_AUTHORITY_TOOLTIP                           :{BLACK}Geef informatie over de gemeente weer
 STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Hiermee hernoem je deze plaats
@@ -3142,33 +3203,34 @@ STR_LOCAL_AUTHORITY_ACTION_NEW_BUILDINGS                        :Nieuwe gebouwen
 STR_LOCAL_AUTHORITY_ACTION_EXCLUSIVE_TRANSPORT                  :Exclusieve transportrechten kopen
 STR_LOCAL_AUTHORITY_ACTION_BRIBE                                :Gemeentebestuur omkopen
 
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{YELLOW}Begin een kleine reclamecampagne om meer passagiers en vracht naar jouw transportdiensten te trekken.{}Kosten: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{YELLOW}Begin een middelgrote reclamecampagne om meer passagiers en vracht naar jouw transportdiensten te trekken.{}Kosten: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{YELLOW}Begin een grote reclamecampagne om meer passagiers en vracht naar jouw transportdiensten te trekken.{}Kosten: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{YELLOW}Financier een reconstructie van het wegennetwerk. Veroorzaakt tot 6 maanden lang een aanzienlijke verstoring van het wegverkeer.{}Kosten: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{YELLOW}Een standbeeld bouwen ter ere van jouw bedrijf.{}Kosten: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{YELLOW}De bouw van nieuwe commerciële gebouwen in de stad financieren.{}Kosten: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}1 jaar exclusieve transportrechten kopen in deze plaats. Het gemeentebestuur staat alleen passagiers en vracht toe bij jouw stations.{}Kosten: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{YELLOW}Begin een kleine reclamecampagne om meer passagiers en vracht naar jouw transportdiensten te trekken.{}Zorgt voor een tijdelijk hogere stationswaardering in een klein gebied rondom het centrum.{}Kosten: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{YELLOW}Begin een middelgrote reclamecampagne om meer passagiers en vracht naar jouw transportdiensten te trekken.{}Zorgt voor een tijdelijk hogere stationswaardering in een middelgroot gebied rondom het centrum.{}Kosten: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{YELLOW}Begin een grote reclamecampagne om meer passagiers en vracht naar jouw transportdiensten te trekken.{}Zorgt voor een tijdelijk hogere stationswaardering in een groot gebied rondom het centrum.{}Kosten: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{YELLOW}Financier een reconstructie van het wegennetwerk.{}Veroorzaakt tot 6 maanden lang een aanzienlijke verstoring van het wegverkeer.{}Kosten: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{YELLOW}Een standbeeld bouwen ter ere van jouw bedrijf.{}Zorgt voor een blijvend hogere stationswaardering in deze stad.{}Kosten: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{YELLOW}De bouw van nieuwe gebouwen in de stad financieren.{}Zorgt voor een tijdelijk hogere groei van deze stad.{}Kosten: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}1 jaar exclusieve transportrechten kopen in deze plaats.{}Het gemeentebestuur staat alleen passagiers en vracht toe bij jouw stations.{}Kosten: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}Koop het plaatselijk gezag om om je reputatie te verhogen met het risico op een strenge sanctie wanneer je gepakt wordt.{}Kosten: {CURRENCY_LONG}
 
 # Goal window
 STR_GOALS_CAPTION                                               :{WHITE}{COMPANY} Doelen
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Algemene doelen
 STR_GOALS_SPECTATOR                                             :Algemene doelen
-STR_GOALS_GLOBAL_TITLE                                          :{BLACK}Algemene doelen:
+STR_GOALS_GLOBAL_BUTTON                                         :{BLACK}Algemeen
+STR_GOALS_GLOBAL_BUTTON_HELPTEXT                                :{BLACK}Algemene doelen weergeven
+STR_GOALS_COMPANY_BUTTON                                        :{BLACK}Bedrijf
+STR_GOALS_COMPANY_BUTTON_HELPTEXT                               :{BLACK}Bedrijfsdoelen weergeven
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Geen -
-STR_GOALS_SPECTATOR_NONE                                        :{ORANGE}- Niet van toepassing -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_COMPANY_TITLE                                         :{BLACK}Bedrijfsdoelen:
 STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Klik op doel centreert venster op industrie/stad/tegel. Ctrl+Klik opent een nieuw venster op de locatie van de industrie/stad/tegel.
 
 # Goal question window
-STR_GOAL_QUESTION_CAPTION_QUESTION                              :Vraag
-STR_GOAL_QUESTION_CAPTION_INFORMATION                           :Informatie
-STR_GOAL_QUESTION_CAPTION_WARNING                               :Waarschuwing
-STR_GOAL_QUESTION_CAPTION_ERROR                                 :Fout
+STR_GOAL_QUESTION_CAPTION_QUESTION                              :{BLACK}Vraag
+STR_GOAL_QUESTION_CAPTION_INFORMATION                           :{BLACK}Informatie
+STR_GOAL_QUESTION_CAPTION_WARNING                               :{BLACK}Waarschuwing
+STR_GOAL_QUESTION_CAPTION_ERROR                                 :{YELLOW}Fout
 
 ############ Start of Goal Question button list
 STR_GOAL_QUESTION_BUTTON_CANCEL                                 :Annuleren
@@ -3276,7 +3338,7 @@ STR_CARGO_RATING_EXCELLENT                                      :Uitstekend
 STR_CARGO_RATING_OUTSTANDING                                    :Voortreffelijk
 ############ range for rating ends
 
-STR_STATION_VIEW_CENTER_TOOLTIP                                 :{BLACK}Centreer het scherm op de locatie van het station. Ctrl+klik opent een nieuw venster op de locatie van het station
+STR_STATION_VIEW_CENTER_TOOLTIP                                 :{BLACK}Centreer het hoofdscherm op de locatie van het station. Ctrl+klik opent een nieuw venster op de locatie van het station
 STR_STATION_VIEW_RENAME_TOOLTIP                                 :{BLACK}Station hernoemen
 
 STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}Geef alle treinen weer die dit station in hun opdrachtenlijst hebben
@@ -3291,9 +3353,9 @@ STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Voorkom 
 
 # Waypoint/buoy view window
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
-STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Scherm centreren op routepunt. Ctrl+klik opent nieuw venster op locatie van routepunt.
+STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Centreer het hoofdscherm op het routepunt. Ctrl+klik opent nieuw venster op locatie van routepunt.
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Naam routepunt aanpassen
-STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Hoofdscherm centreren op locatie van boei. Ctrl+klik opent een nieuw venster op de locatie van de boei.
+STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centreer het hoofdscherm op de locatie van de boei. Ctrl+klik opent een nieuw venster op de locatie van de boei.
 STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Naam van boei aanpassen
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Naam routepunt aanpassen
@@ -3359,6 +3421,7 @@ STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Hoofdkan
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Details
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Gedetailleerde aantallen infrastructuur bekijken
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Geld geven
+STR_COMPANY_VIEW_GIVE_MONEY_TOOLTIP                             :{BLACK}Geld geven aan dit bedrijf
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Nieuw gezicht
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Nieuw gezicht voor directeur kiezen
@@ -3376,7 +3439,7 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Verkoop 
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Bedrijfsnaam
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Naam van directeur
-STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Voer de hoeveelheid geld die je wilt geven in
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Voer het bedrag in om weg te geven
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}We zoeken een transportbedrijf dat ons bedrijf over kan nemen.{}{}Wil je {COMPANY} kopen voor {CURRENCY_LONG}?
 
@@ -3412,7 +3475,7 @@ STR_INDUSTRY_DIRECTORY_FILTER_NONE                              :Geen
 STR_INDUSTRY_VIEW_CAPTION                                       :{WHITE}{INDUSTRY}
 STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}Productie vorige maand:
 STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{STRING}{BLACK} ({COMMA}% vervoerd)
-STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Centreer het scherm op de locatie van de industrie. Ctrl+klik opent een nieuws venster op de locatie van de industrie
+STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Centreer het hoofdscherm op de locatie van de industrie. Ctrl+klik opent een nieuws venster op de locatie van de industrie
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Productieniveau: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}De industrie heeft een dreigende sluiting aangekondigd!
 
@@ -3531,6 +3594,7 @@ STR_PURCHASE_INFO_PWAGPOWER_PWAGWEIGHT                          :{BLACK}Aangedre
 STR_PURCHASE_INFO_REFITTABLE_TO                                 :{BLACK}Om te bouwen naar: {GOLD}{STRING}
 STR_PURCHASE_INFO_ALL_TYPES                                     :Alle vrachttypen
 STR_PURCHASE_INFO_NONE                                          :Geen
+STR_PURCHASE_INFO_ENGINES_ONLY                                  :Alleen voertuigen
 STR_PURCHASE_INFO_ALL_BUT                                       :Alles behalve {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Max. trekkracht: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Bereik: {GOLD}{COMMA} tegels
@@ -3644,10 +3708,10 @@ STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Hiermee 
 STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Hiermee koop je een kopie van een schip. Klik op deze knop en dan op een schip binnen of buiten het dok. Ctrl+klik deelt de orders. Shift+klik geeft de verwachte kosten zonder te kopen.
 STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Hiermee koop je een kopie van een vliegtuig. Klik op deze knop en dan op een vliegtuig binnen of buiten de hangar. Ctrl+klik deelt de orders. Shift+klik geeft de verwachte kosten zonder te kopen.
 
-STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Scherm centreren op remise. Ctrl+klik opent een nieuw scherm op locatie van remise.
-STR_DEPOT_ROAD_VEHICLE_LOCATION_TOOLTIP                         :{BLACK}Centreer het scherm op de locatie van de garage. Ctrl+klik opent een nieuw scherm op de locatie van de garage
+STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Centreer het hoofdscherm op de remise. Ctrl+klik opent een nieuw scherm op locatie van remise.
+STR_DEPOT_ROAD_VEHICLE_LOCATION_TOOLTIP                         :{BLACK}Centreer het hoofdscherm op de locatie van de garage. Ctrl+klik opent een nieuw scherm op de locatie van de garage
 STR_DEPOT_SHIP_LOCATION_TOOLTIP                                 :{BLACK}Centreer hoofdscherm op de locatie van het dok. Ctrl+klik opent een nieuw scherm op de locatie van het dok
-STR_DEPOT_AIRCRAFT_LOCATION_TOOLTIP                             :{BLACK}Scherm centreren op hangar. Ctrl+klik opent een nieuw venster op de hangarlocatie.
+STR_DEPOT_AIRCRAFT_LOCATION_TOOLTIP                             :{BLACK}Centreer het hoofdscherm op de hangar. Ctrl+klik opent een nieuw venster op de hangarlocatie.
 
 STR_DEPOT_VEHICLE_ORDER_LIST_TRAIN_TOOLTIP                      :{BLACK}Geef een lijst van alle treinen met dit depot in hun orders
 STR_DEPOT_VEHICLE_ORDER_LIST_ROAD_VEHICLE_TOOLTIP               :{BLACK}Geef een lijst van alle wegvoertuigen met deze garage in hun orders
@@ -3737,10 +3801,10 @@ STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}De te ve
 # Vehicle view
 STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE}
 
-STR_VEHICLE_VIEW_TRAIN_LOCATION_TOOLTIP                         :{BLACK}Centreer het scherm op de locatie van de trein. Ctrl+klik volgt de trein in het hoofdscherm
-STR_VEHICLE_VIEW_ROAD_VEHICLE_LOCATION_TOOLTIP                  :{BLACK}Centreer het scherm op de locatie van het wegvoertuig. Ctrl+klik volgt het voertuig in het hoofdscherm
-STR_VEHICLE_VIEW_SHIP_LOCATION_TOOLTIP                          :{BLACK}Centreer het scherm op de locatie van het schip. Ctrl+klik volgt het schip op het hoofdscherm
-STR_VEHICLE_VIEW_AIRCRAFT_LOCATION_TOOLTIP                      :{BLACK}Centreer het scherm op de locatie van het vliegtuig. Ctrl+klik volgt het vliegtuig op het hoofdscherm
+STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP                           :{BLACK}Centreer het hoofdscherm op de locatie van de trein. Met dubbelklik volg je de trein op het hoofdscherm. Ctrl+klik opent een nieuw scherm op de locatie van de trein.
+STR_VEHICLE_VIEW_ROAD_VEHICLE_CENTER_TOOLTIP                    :{BLACK}Centreer het hoofdscherm op de locatie van het voertuig. Met dubbelklik volg je het voertuig op het hoofdscherm. Ctrl+klik opent een nieuw venster op de locatie van het voertuig
+STR_VEHICLE_VIEW_SHIP_CENTER_TOOLTIP                            :{BLACK}Centreer het hoofdscherm op de locatie van het schip. Met dubbelklik volg je het schip op het hoofdscherm. Ctrl+klik opent een nieuw venster op de locatie van het schip
+STR_VEHICLE_VIEW_AIRCRAFT_CENTER_TOOLTIP                        :{BLACK}Centreer het hoofdscherm op de locatie van het vliegtuig. Met dubbelklik volg je het vliegtuig op het hoofdscherm. Ctrl+klik opent een nieuw scherm op de locatie van het vliegtuig.
 
 STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP                    :{BLACK}Stuur trein naar depot. Ctrl+klik voor alleen onderhoud
 STR_VEHICLE_VIEW_ROAD_VEHICLE_SEND_TO_DEPOT_TOOLTIP             :{BLACK}Stuur wegvoertuig naar garage. Ctrl+klik voor alleen onderhoud
@@ -3749,10 +3813,10 @@ STR_VEHICLE_VIEW_AIRCRAFT_SEND_TO_DEPOT_TOOLTIP                 :{BLACK}Stuur vl
 
 STR_VEHICLE_VIEW_CLONE_TRAIN_INFO                               :{BLACK}Hiermee koop je een kopie van deze trein, inclusief wagons. Ctrl+klik deelt de orders. Shift+klik geeft de verwachte kosten zonder te kopen.
 STR_VEHICLE_VIEW_CLONE_ROAD_VEHICLE_INFO                        :{BLACK}Hiermee koop je een kopie van dit wegvoertuig. Ctrl+klik deelt de orders. Shift+klik geeft de verwachte kosten zonder te kopen.
-STR_VEHICLE_VIEW_CLONE_SHIP_INFO                                :{BLACK}Hiermee koop je een kopie gekocht van dit schip. Ctrl+klik deelt de orders. Shift+klik geeft de verwachte kosten zonder te kopen.
+STR_VEHICLE_VIEW_CLONE_SHIP_INFO                                :{BLACK}Hiermee koop je een kopie van dit schip. Ctrl+klik deelt de orders. Shift+klik geeft de verwachte kosten zonder te kopen.
 STR_VEHICLE_VIEW_CLONE_AIRCRAFT_INFO                            :{BLACK}Hiermee koop je een kopie van dit vliegtuig. Ctrl+klik deelt de orders. Shift+klik geeft de verwachte kosten zonder te kopen.
 
-STR_VEHICLE_VIEW_TRAIN_IGNORE_SIGNAL_TOOLTIP                    :{BLACK}Forceer trein verder te rijden zonder te wachten op een groen sein
+STR_VEHICLE_VIEW_TRAIN_IGNORE_SIGNAL_TOOLTIP                    :{BLACK}Forceer trein om verder te rijden zonder te wachten op een groen sein
 
 STR_VEHICLE_VIEW_TRAIN_REFIT_TOOLTIP                            :{BLACK}Trein ombouwen voor een ander vrachttype
 STR_VEHICLE_VIEW_ROAD_VEHICLE_REFIT_TOOLTIP                     :{BLACK}Wegvoertuig ombouwen voor een ander vrachttype
@@ -3772,10 +3836,12 @@ STR_VEHICLE_VIEW_ROAD_VEHICLE_SHOW_DETAILS_TOOLTIP              :{BLACK}Details 
 STR_VEHICLE_VIEW_SHIP_SHOW_DETAILS_TOOLTIP                      :{BLACK}Details van schip weergeven
 STR_VEHICLE_VIEW_AIRCRAFT_SHOW_DETAILS_TOOLTIP                  :{BLACK}Details van vliegtuig weergeven
 
-STR_VEHICLE_VIEW_TRAIN_STATE_START_STOP_TOOLTIP                 :{BLACK}Huidige actie van trein - klik hier om de trein te starten-stoppen. Ctrl+klik om naar bestemming te verplaatsen.
-STR_VEHICLE_VIEW_ROAD_VEHICLE_STATE_START_STOP_TOOLTIP          :{BLACK}Huidige actie van wegvoertuig - klik hier om voertuig te starten-stoppen. Ctrl+klik om naar bestemming te verplaatsen.
-STR_VEHICLE_VIEW_SHIP_STATE_START_STOP_TOOLTIP                  :{BLACK}Huidige actie van schip - klik hier om te starten-stoppen. Ctrl+klik om naar bestemming te verplaatsen.
-STR_VEHICLE_VIEW_AIRCRAFT_STATE_START_STOP_TOOLTIP              :{BLACK}Huidige actie van vliegtuig - klik hier om het vliegtuig te stoppen-starten. Ctrl+klik om naar bestemming te verplaatsen.
+STR_VEHICLE_VIEW_TRAIN_STATUS_START_STOP_TOOLTIP                :{BLACK}Huidige treinactie - klik om de trein te starten of stoppen
+STR_VEHICLE_VIEW_ROAD_VEHICLE_STATUS_START_STOP_TOOLTIP         :{BLACK}Huidige voertuigactie - klik om het voertuig te starten of stoppen
+STR_VEHICLE_VIEW_SHIP_STATE_STATUS_STOP_TOOLTIP                 :{BLACK}Huidige scheepsactie - klik om het schip te starten of stoppen
+STR_VEHICLE_VIEW_AIRCRAFT_STATUS_START_STOP_TOOLTIP             :{BLACK}Huidige vliegtuigactie - klik om het vliegtuig te starten of stoppen
+
+STR_VEHICLE_VIEW_ORDER_LOCATION_TOOLTIP                         :{BLACK}Centreer het hoofdscherm op het doel van de order. Ctrl+klik opent een nieuw venster op het doel van de order.
 
 # Messages in the start stop button in the vehicle view
 STR_VEHICLE_STATUS_LOADING_UNLOADING                            :{LTBLUE}In- en uitladen
@@ -4003,6 +4069,7 @@ STR_ORDER_REFIT_STOP_ORDER                                      :(Ombouwen naar 
 STR_ORDER_STOP_ORDER                                            :(Stop)
 
 STR_ORDER_GO_TO_STATION                                         :{STRING} {STATION} {STRING}
+STR_ORDER_GO_TO_STATION_CAN_T_USE_STATION                       :{PUSH_COLOUR}{RED}(Kan station niet gebruiken){POP_COLOUR} {STRING} {STATION} {STRING}
 
 STR_ORDER_IMPLICIT                                              :(Impliciet)
 
@@ -4247,6 +4314,7 @@ STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Opgeslagen spel
 STR_GAME_SAVELOAD_ERROR_FILE_NOT_READABLE                       :Bestand is niet leesbaar
 STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE                      :Bestand is niet schrijfbaar
 STR_GAME_SAVELOAD_ERROR_DATA_INTEGRITY_CHECK_FAILED             :Data-integriteitscontrole mislukt
+STR_GAME_SAVELOAD_ERROR_PATCHPACK                               :Opgeslagen spel is gemaakt met een aangepaste versie
 STR_GAME_SAVELOAD_NOT_AVAILABLE                                 :<niet beschikbaar>
 STR_WARNING_LOADGAME_REMOVED_TRAMS                              :{WHITE}Spel was opgeslagen in een versie zonder tramondersteuning. Alle trams zijn verwijderd
 
@@ -4327,6 +4395,7 @@ STR_ERROR_LOAN_ALREADY_REPAYED                                  :{WHITE}... geen
 STR_ERROR_CURRENCY_REQUIRED                                     :{WHITE}... {CURRENCY_LONG} benodigd
 STR_ERROR_CAN_T_REPAY_LOAN                                      :{WHITE}Kan de lening niet afbetalen..
 STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Kan geen geld weggeven dat van de bank geleend is...
+STR_ERROR_CAN_T_GIVE_MONEY                                      :{WHITE}Kan geen geld weggeven aan dit bedrijf...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Kan het bedrijf niet kopen...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Kan bedrijfshoofdkantoor niet bouwen...
 STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Kan geen 25% aandeel in dit bedrijf kopen...
@@ -4453,6 +4522,8 @@ STR_ERROR_DEPOT_WRONG_DEPOT_TYPE                                :Verkeerd depot-
 STR_ERROR_TRAIN_TOO_LONG_AFTER_REPLACEMENT                      :{WHITE}{VEHICLE} is te lang na het vervangen
 STR_ERROR_AUTOREPLACE_NOTHING_TO_DO                             :{WHITE}Geen automatische regels voor vervangen/vernieuwen toegepast
 STR_ERROR_AUTOREPLACE_MONEY_LIMIT                               :(onvoldoende geld)
+STR_ERROR_AUTOREPLACE_INCOMPATIBLE_CARGO                        :{WHITE}Nieuw voertuig is niet geschikt voor {STRING}
+STR_ERROR_AUTOREPLACE_INCOMPATIBLE_REFIT                        :{WHITE}Nieuw voertuig kan niet ombouwen in order {NUM}
 
 # Rail construction errors
 STR_ERROR_IMPOSSIBLE_TRACK_COMBINATION                          :{WHITE}Onmogelijke spoorcombinatie
@@ -4653,6 +4724,11 @@ STR_BASEMUSIC_DOS_DESCRIPTION                                   :Originele muzie
 STR_BASEMUSIC_TTO_DESCRIPTION                                   :Originele muziek van Transport Tycoon (Original/World Editor) voor DOS.
 STR_BASEMUSIC_NONE_DESCRIPTION                                  :Een muziekset zonder muziek.
 
+STR_TRADITIONAL_TRAIN_NAME                                      :Trein {COMMA}
+STR_TRADITIONAL_ROAD_VEHICLE_NAME                               :Wegvoertuig {COMMA}
+STR_TRADITIONAL_SHIP_NAME                                       :Schip {COMMA}
+STR_TRADITIONAL_AIRCRAFT_NAME                                   :Vliegtuig {COMMA}
+
 ##id 0x2000
 # Town building names
 STR_TOWN_BUILDING_NAME_TALL_OFFICE_BLOCK_1                      :Hoog kantoorgebouw
@@ -4734,10 +4810,10 @@ STR_INDUSTRY_NAME_SUGAR_MINE                                    :Suikermijn
 ##id 0x6000
 STR_SV_EMPTY                                                    :
 STR_SV_UNNAMED                                                  :Geen naam
-STR_SV_TRAIN_NAME                                               :Trein {COMMA}
-STR_SV_ROAD_VEHICLE_NAME                                        :Wegvoertuig {COMMA}
-STR_SV_SHIP_NAME                                                :Schip {COMMA}
-STR_SV_AIRCRAFT_NAME                                            :Vliegtuig {COMMA}
+STR_SV_TRAIN_NAME                                               :Trein #{COMMA}
+STR_SV_ROAD_VEHICLE_NAME                                        :Wegvoertuig #{COMMA}
+STR_SV_SHIP_NAME                                                :Schip #{COMMA}
+STR_SV_AIRCRAFT_NAME                                            :Vliegtuig #{COMMA}
 
 STR_SV_STNAME                                                   :{STRING}
 STR_SV_STNAME_NORTH                                             :{STRING} Noord
@@ -5039,6 +5115,7 @@ STR_FORMAT_BUOY_NAME                                            :Boei {TOWN}
 STR_FORMAT_BUOY_NAME_SERIAL                                     :Boei {TOWN} {COMMA}
 STR_FORMAT_COMPANY_NUM                                          :(Bedrijf {COMMA})
 STR_FORMAT_GROUP_NAME                                           :Groep {COMMA}
+STR_FORMAT_GROUP_VEHICLE_NAME                                   :{GROUP} #{COMMA}
 STR_FORMAT_INDUSTRY_NAME                                        :{1:STRING} {0:TOWN}
 STR_FORMAT_WAYPOINT_NAME                                        :Routepunt {TOWN}
 STR_FORMAT_WAYPOINT_NAME_SERIAL                                 :Routepunt {TOWN} {COMMA}

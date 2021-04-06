@@ -662,6 +662,14 @@ void AnimateNewHouseConstruction(TileIndex tile)
 	}
 }
 
+uint8 GetNewHouseTileAnimationSpeed(TileIndex tile)
+{
+	const HouseSpec *hs = HouseSpec::Get(GetHouseType(tile));
+	if (hs == nullptr) return 0;
+
+	return HouseAnimationBase::GetAnimationSpeed(hs);
+}
+
 /**
  * Check if GRF allows a given house to be constructed (callback 17)
  * @param house_id house type
@@ -750,7 +758,7 @@ bool NewHouseTileLoop(TileIndex tile)
 	}
 
 	SetHouseProcessingTime(tile, hs->processing_time);
-	MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+	MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 	return true;
 }
 
@@ -790,7 +798,7 @@ static void DoTriggerHouse(TileIndex tile, HouseTrigger trigger, byte base_rando
 		case HOUSE_TRIGGER_TILE_LOOP_TOP:
 			if (!first) {
 				/* The top tile is marked dirty by the usual TileLoop */
-				MarkTileDirtyByTile(tile, ZOOM_LVL_DRAW_MAP);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 				break;
 			}
 			/* Random value of first tile already set. */

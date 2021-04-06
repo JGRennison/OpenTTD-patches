@@ -31,6 +31,7 @@ struct PlanLine {
 	bool visible;
 	bool focused;
 	TileVector tiles;
+	Rect viewport_extents;
 
 	PlanLine()
 	{
@@ -55,7 +56,7 @@ struct PlanLine {
 		if (cnt > 0) {
 			const TileIndex last_tile = this->tiles[cnt - 1];
 			if (last_tile == tile) return false;
-			MarkTileLineDirty(last_tile, tile);
+			MarkTileLineDirty(last_tile, tile, VMDF_NOT_LANDSCAPE);
 
 			if (cnt > 1) {
 				const TileIndex t0 = this->tiles[cnt - 2];
@@ -71,7 +72,7 @@ struct PlanLine {
 					if (abs(x2 - x1) <= abs(x2 - x0) && abs(y2 - y1) <= abs(y2 - y0)) { // Tile i+1 is between i and i+2.
 						/* The new tile is in the continuity, just update the last tile. */
 						this->tiles[cnt - 1] = tile;
-						MarkTileLineDirty(t1, tile);
+						MarkTileLineDirty(t1, tile, VMDF_NOT_LANDSCAPE);
 						return true;
 					}
 				}
@@ -102,11 +103,11 @@ struct PlanLine {
 		this->visible = visible;
 	}
 
-	void MarkDirty()
+	void MarkDirty() const
 	{
 		const uint sz = (uint) this->tiles.size();
 		for (uint i = 1; i < sz; i++) {
-			MarkTileLineDirty(this->tiles[i-1], this->tiles[i]);
+			MarkTileLineDirty(this->tiles[i-1], this->tiles[i], VMDF_NOT_LANDSCAPE);
 		}
 	}
 
@@ -153,6 +154,8 @@ struct PlanLine {
 		if (count == 0) return INVALID_TILE;
 		return TileXY(x / count, y / count);
 	}
+
+	void UpdateVisualExtents();
 };
 
 struct Plan : PlanPool::PoolItem<&_plan_pool> {
@@ -164,6 +167,7 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 	bool show_lines;
 	Date creation_date;
 	std::string name;
+	Colours colour;
 
 	Plan(Owner owner = INVALID_OWNER)
 	{
@@ -172,6 +176,7 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 		this->visible = false;
 		this->visible_by_all = false;
 		this->show_lines = false;
+		this->colour = COLOUR_WHITE;
 		this->temp_line = new PlanLine();
 	}
 
@@ -227,7 +232,7 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 			const TileIndex *buffer = this->temp_line->Export(&buffer_length);
 			if (buffer) {
 				_current_plan->SetVisibility(true, false);
-				ret = DoCommandP(0, _current_plan->index, (uint32) this->temp_line->tiles.size(), CMD_ADD_PLAN_LINE, nullptr, (const char *) buffer, true, buffer_length);
+				ret = DoCommandPEx(0, _current_plan->index, (uint32) this->temp_line->tiles.size(), 0, CMD_ADD_PLAN_LINE, nullptr, (const char *) buffer, buffer_length);
 				free(buffer);
 			}
 			_current_plan->temp_line->MarkDirty();
@@ -256,6 +261,11 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 	{
 		if (_current_plan->owner == _local_company) DoCommandP(0, _current_plan->index, !this->visible_by_all, CMD_CHANGE_PLAN_VISIBILITY);
 		return this->visible_by_all;
+	}
+
+	void SetPlanColour(Colours colour)
+	{
+		if (_current_plan->owner == _local_company) DoCommandP(0, _current_plan->index, colour, CMD_CHANGE_PLAN_COLOUR);
 	}
 
 	const std::string &GetName() const

@@ -24,9 +24,9 @@
 template<typename T, uint S, uint N, typename U> static inline T Extract(U v)
 {
 	/* Check if there are enough bits in v */
-	assert_tcompile(N == EnumPropsT<T>::num_bits);
-	assert_tcompile(S + N <= sizeof(U) * 8);
-	assert_tcompile(EnumPropsT<T>::end <= (1 << N));
+	static_assert(N == EnumPropsT<T>::num_bits);
+	static_assert(S + N <= sizeof(U) * 8);
+	static_assert(EnumPropsT<T>::end <= (1 << N));
 	U masked = GB(v, S, N);
 	return IsInsideMM(masked, EnumPropsT<T>::begin, EnumPropsT<T>::end) ? (T)masked : EnumPropsT<T>::invalid;
 }

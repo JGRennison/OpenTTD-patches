@@ -21,6 +21,6 @@
 
 typedef GUIList<const Group*> GUIGroupList;
 
-void ShowTemplateReplaceWindow(uint);
+void ShowTemplateReplaceWindow();
 
 #endif

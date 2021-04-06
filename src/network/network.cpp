@@ -44,7 +44,7 @@ bool _ddc_fastforward = true;
 #endif /* DEBUG_DUMP_COMMANDS */
 
 /** Make sure both pools have the same size. */
-assert_compile(NetworkClientInfoPool::MAX_SIZE == NetworkClientSocketPool::MAX_SIZE);
+static_assert(NetworkClientInfoPool::MAX_SIZE == NetworkClientSocketPool::MAX_SIZE);
 
 /** The pool with client information. */
 NetworkClientInfoPool _networkclientinfo_pool("NetworkClientInfo");
@@ -76,6 +76,9 @@ uint32 _sync_seed_2;                  ///< Second part of the seed.
 #endif
 uint64 _sync_state_checksum;          ///< State checksum to compare during sync checks.
 uint32 _sync_frame;                   ///< The frame to perform the sync check.
+Date   _last_sync_date;               ///< The game date of the last successfully received sync frame
+DateFract _last_sync_date_fract;      ///< "
+uint8  _last_sync_tick_skip_counter;  ///< "
 bool _network_first_time;             ///< Whether we have finished joining or not.
 bool _network_udp_server;             ///< Is the UDP server started?
 uint16 _network_udp_broadcast;        ///< Timeout for the UDP broadcasts.
@@ -83,8 +86,8 @@ uint8 _network_advertise_retries;     ///< The number of advertisement retries w
 CompanyMask _network_company_passworded; ///< Bitmask of the password status of all companies.
 
 /* Check whether NETWORK_NUM_LANDSCAPES is still in sync with NUM_LANDSCAPE */
-assert_compile((int)NETWORK_NUM_LANDSCAPES == (int)NUM_LANDSCAPE);
-assert_compile((int)NETWORK_COMPANY_NAME_LENGTH == MAX_LENGTH_COMPANY_NAME_CHARS * MAX_CHAR_LENGTH);
+static_assert((int)NETWORK_NUM_LANDSCAPES == (int)NUM_LANDSCAPE);
+static_assert((int)NETWORK_COMPANY_NAME_LENGTH == MAX_LENGTH_COMPANY_NAME_CHARS * MAX_CHAR_LENGTH);
 
 extern NetworkUDPSocketHandler *_udp_client_socket; ///< udp client socket
 extern NetworkUDPSocketHandler *_udp_server_socket; ///< udp server socket
@@ -250,20 +253,24 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 		case NETWORK_ACTION_LEAVE:          strid = STR_NETWORK_MESSAGE_CLIENT_LEFT; break;
 		case NETWORK_ACTION_NAME_CHANGE:    strid = STR_NETWORK_MESSAGE_NAME_CHANGE; break;
 
-		case NETWORK_ACTION_GIVE_MONEY:
+		case NETWORK_ACTION_GIVE_MONEY: {
 			SetDParamStr(0, name);
 			SetDParam(1, data.auxdata >> 16);
 			GetString(message_src, STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION, lastof(message_src));
 			name = message_src;
-			if (self_send) {
+
+			extern byte GetCurrentGrfLangID();
+			byte lang_id = GetCurrentGrfLangID();
+			bool use_specific_string = lang_id <= 2 || lang_id == 0x15 || lang_id == 0x3A || lang_id == 0x3D; // English, German, Korean, Czech
+			if (use_specific_string && self_send) {
 				strid = STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY;
-			} else if ((CompanyID) (data.auxdata & 0xFFFF) == _local_company) {
-				strid = STR_NETWORK_MESSAGE_GIVE_MONEY;
+			} else if (use_specific_string && (CompanyID) (data.auxdata & 0xFFFF) == _local_company) {
+				strid = STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE;
 			} else {
-				strid = STR_NETWORK_MESSAGE_MONEY_GIVEN;
-				SetDParam(3, data.auxdata & 0xFFFF);
+				strid = STR_NETWORK_MESSAGE_GIVE_MONEY;
 			}
 			break;
+		}
 
 		case NETWORK_ACTION_CHAT_COMPANY:   strid = self_send ? STR_NETWORK_CHAT_TO_COMPANY : STR_NETWORK_CHAT_COMPANY; break;
 		case NETWORK_ACTION_CHAT_CLIENT:    strid = self_send ? STR_NETWORK_CHAT_TO_CLIENT  : STR_NETWORK_CHAT_CLIENT;  break;
@@ -341,7 +348,7 @@ StringID GetNetworkErrorMsg(NetworkErrorCode err)
 		STR_NETWORK_ERROR_CLIENT_TIMEOUT_MAP,
 		STR_NETWORK_ERROR_CLIENT_TIMEOUT_JOIN,
 	};
-	assert_compile(lengthof(network_error_strings) == NETWORK_ERROR_END);
+	static_assert(lengthof(network_error_strings) == NETWORK_ERROR_END);
 
 	if (err >= (ptrdiff_t)lengthof(network_error_strings)) err = NETWORK_ERROR_GENERAL;
 
@@ -578,6 +585,10 @@ static void NetworkInitialize(bool close_admins = true)
 	_network_first_time = true;
 
 	_network_reconnect = 0;
+
+	_last_sync_date = 0;
+	_last_sync_date_fract = 0;
+	_last_sync_tick_skip_counter = 0;
 }
 
 /** Non blocking connection create to query servers */
@@ -717,7 +728,7 @@ static void NetworkInitGameInfo()
 	/* There should be always space for the server. */
 	assert(NetworkClientInfo::CanAllocateItem());
 	NetworkClientInfo *ci = new NetworkClientInfo(CLIENT_ID_SERVER);
-	ci->client_playas = _network_dedicated ? COMPANY_SPECTATOR : COMPANY_FIRST;
+	ci->client_playas = _network_dedicated ? COMPANY_SPECTATOR : GetDefaultLocalCompany();
 
 	strecpy(ci->client_name, _settings_client.network.client_name, lastof(ci->client_name));
 }
@@ -901,8 +912,8 @@ void NetworkGameLoop()
 		while (f != nullptr && !feof(f)) {
 			if (_date == next_date && _date_fract == next_date_fract) {
 				if (cp != nullptr) {
-					NetworkSendCommand(cp->tile, cp->p1, cp->p2, cp->cmd & ~CMD_FLAGS_MASK, nullptr, cp->text.c_str(), cp->company, cp->binary_length);
-					DEBUG(net, 0, "injecting: date{%08x; %02x; %02x}; %02x; %06x; %08x; %08x; %08x; \"%s\" (%x) (%s)", _date, _date_fract, _tick_skip_counter, (int)_current_company, cp->tile, cp->p1, cp->p2, cp->cmd, cp->text.c_str(), cp->binary_length, GetCommandName(cp->cmd));
+					NetworkSendCommand(cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd & ~CMD_FLAGS_MASK, nullptr, cp->text.c_str(), cp->company, cp->binary_length);
+					DEBUG(net, 0, "injecting: date{%08x; %02x; %02x}; %02x; %06x; %08x; %08x; " OTTD_PRINTFHEX64PAD " %08x; \"%s\" (%x) (%s)", _date, _date_fract, _tick_skip_counter, (int)_current_company, cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd, cp->text.c_str(), cp->binary_length, GetCommandName(cp->cmd));
 					cp.reset();
 				}
 				if (check_sync_state) {
@@ -940,12 +951,13 @@ void NetworkGameLoop()
 				cp.reset(new CommandPacket());
 				int company;
 				cp->text.resize(MAX_CMD_TEXT_LENGTH);
-				assert_compile(MAX_CMD_TEXT_LENGTH > 8192);
-				int ret = sscanf(p, "date{%x; %x; %x}; company: %x; tile: %x (%*u x %*u); p1: %x; p2: %x; cmd: %x; \"%8192[^\"]\"", &next_date, &next_date_fract, &next_tick_skip_counter, &company, &cp->tile, &cp->p1, &cp->p2, &cp->cmd, const_cast<char *>(cp->text.c_str()));
-				/* There are 9 pieces of data to read, however the last is a
+				static_assert(MAX_CMD_TEXT_LENGTH > 8192);
+				int ret = sscanf(p, "date{%x; %x; %x}; company: %x; tile: %x (%*u x %*u); p1: %x; p2: %x; p3: " OTTD_PRINTFHEX64 "; cmd: %x; \"%8192[^\"]\"",
+						&next_date, &next_date_fract, &next_tick_skip_counter, &company, &cp->tile, &cp->p1, &cp->p2, &cp->p3, &cp->cmd, cp->text.data());
+				/* There are 10 pieces of data to read, however the last is a
 				 * string that might or might not exist. Ignore it if that
 				 * string misses because in 99% of the time it's not used. */
-				assert(ret == 9 || ret == 8);
+				assert(ret == 10 || ret == 9);
 				cp->company = (CompanyID)company;
 				cp->binary_length = 0;
 			} else if (strncmp(p, "join: ", 6) == 0) {
@@ -959,6 +971,7 @@ void NetworkGameLoop()
 				cp->cmd = CMD_PAUSE;
 				cp->p1 = PM_PAUSED_NORMAL;
 				cp->p2 = 1;
+				cp->p3 = 0;
 				cp->callback = nullptr;
 				cp->binary_length = 0;
 				_ddc_fastforward = false;
@@ -1120,3 +1133,14 @@ bool IsNetworkCompatibleVersion(const char *other, bool extended)
 {
 	return strncmp(_openttd_revision, other, (extended ? NETWORK_LONG_REVISION_LENGTH : NETWORK_REVISION_LENGTH) - 1) == 0;
 }
+
+#ifdef __EMSCRIPTEN__
+extern "C" {
+
+void CDECL em_openttd_add_server(const char *host, int port)
+{
+	NetworkUDPQueryServer(NetworkAddress(host, port), true);
+}
+
+}
+#endif

@@ -82,7 +82,17 @@ void Order::ConvertFromOldSavegame()
  */
 static Order UnpackVersion4Order(uint16 packed)
 {
-	return Order(GB(packed, 8, 8) << 16 | GB(packed, 4, 4) << 8 | GB(packed, 0, 4));
+	return Order(((uint64) GB(packed, 8, 8)) << 24 | ((uint64) GB(packed, 4, 4)) << 8 | ((uint64) GB(packed, 0, 4)));
+}
+
+/**
+ * Unpacks a order from savegames with version 5.1 and lower
+ * @param packed packed order
+ * @return unpacked order
+ */
+static Order UnpackVersion5Order(uint32 packed)
+{
+	return Order(((uint64) GB(packed, 16, 16)) << 24 | ((uint64) GB(packed, 8, 8)) << 8 | ((uint64) GB(packed, 0, 8)));
 }
 
 /**
@@ -107,7 +117,8 @@ const SaveLoad *GetOrderDescription()
 {
 	static const SaveLoad _order_desc[] = {
 		     SLE_VAR(Order, type,           SLE_UINT8),
-		     SLE_VAR(Order, flags,          SLE_UINT8),
+		SLE_CONDVAR_X(Order, flags,              SLE_FILE_U8 | SLE_VAR_U16,    SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_FLAGS_EXTRA, 0, 0)),
+		SLE_CONDVAR_X(Order, flags,              SLE_UINT16,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_FLAGS_EXTRA, 1)),
 		SLE_CONDNULL_X(1, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP)),
 		     SLE_VAR(Order, dest,           SLE_UINT16),
 		     SLE_REF(Order, next,           REF_ORDER),
@@ -119,7 +130,7 @@ const SaveLoad *GetOrderDescription()
 		SLE_CONDVAR_X(Order, travel_time,   SLE_FILE_U16 | SLE_VAR_U32,  SLV_67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 0, 5)),
 		SLE_CONDVAR_X(Order, travel_time,   SLE_UINT32,                  SLV_67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 6)),
 		 SLE_CONDVAR(Order, max_speed,      SLE_UINT16, SLV_172, SL_MAX_VERSION),
-		SLE_CONDVAR_X(Order, jump_counter,  SLE_INT8,            SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MORE_COND_ORDERS)),
+		SLE_CONDNULL_X(1, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MORE_COND_ORDERS, 1, 6)), // jump_counter
 
 		/* Leftover from the minor savegame version stuff
 		 * We will never use those free bytes, but we have to keep this line to allow loading of old savegames */
@@ -130,11 +141,14 @@ const SaveLoad *GetOrderDescription()
 	return _order_desc;
 }
 
+static std::vector<SaveLoad> _filtered_desc;
+
 static void Save_ORDR()
 {
+	_filtered_desc = SlFilterObject(GetOrderDescription());
 	for (Order *order : Order::Iterate()) {
 		SlSetArrayIndex(order->index);
-		SlObject(order, GetOrderDescription());
+		SlObjectSaveFiltered(order, _filtered_desc.data());
 	}
 }
 
@@ -166,7 +180,8 @@ static void Load_ORDR()
 			SlArray(orders, len, SLE_UINT32);
 
 			for (size_t i = 0; i < len; ++i) {
-				new (i) Order(orders[i]);
+				Order *o = new (i) Order();
+				o->AssignOrder(UnpackVersion5Order(orders[i]));
 			}
 
 			free(orders);
@@ -186,11 +201,12 @@ static void Load_ORDR()
 			if (prev != nullptr) prev->next = o;
 		}
 	} else {
+		_filtered_desc = SlFilterObject(GetOrderDescription());
 		int index;
 
 		while ((index = SlIterateArray()) != -1) {
 			Order *order = new (index) Order();
-			SlObject(order, GetOrderDescription());
+			SlObjectLoadFiltered(order, _filtered_desc.data());
 		}
 	}
 }
@@ -210,22 +226,24 @@ const SaveLoad *GetOrderExtraInfoDescription()
 
 void Save_ORDX()
 {
+	_filtered_desc = SlFilterObject(GetOrderExtraInfoDescription());
 	for (Order *order : Order::Iterate()) {
 		if (order->extra) {
 			SlSetArrayIndex(order->index);
-			SlObject(order->extra.get(), GetOrderExtraInfoDescription());
+			SlObjectSaveFiltered(order->extra.get(), _filtered_desc.data());
 		}
 	}
 }
 
 void Load_ORDX()
 {
+	_filtered_desc = SlFilterObject(GetOrderExtraInfoDescription());
 	int index;
 	while ((index = SlIterateArray()) != -1) {
 		Order *order = Order::GetIfValid(index);
 		assert(order != nullptr);
 		order->AllocExtraInfo();
-		SlObject(order->extra.get(), GetOrderExtraInfoDescription());
+		SlObjectLoadFiltered(order->extra.get(), _filtered_desc.data());
 	}
 }
 
@@ -305,9 +323,9 @@ const SaveLoad *GetOrderBackupDescription()
 		     SLE_STR(OrderBackup, name,                     SLE_STR, 0),
 		SLE_CONDNULL(2,                                                                  SL_MIN_VERSION, SLV_192), // clone (2 bytes of pointer, i.e. garbage)
 		 SLE_CONDREF(OrderBackup, clone,                    REF_VEHICLE,               SLV_192, SL_MAX_VERSION),
-		     SLE_VAR(OrderBackup, cur_real_order_index,     SLE_UINT8),
-		 SLE_CONDVAR(OrderBackup, cur_implicit_order_index, SLE_UINT8,                 SLV_176, SL_MAX_VERSION),
-		SLE_CONDVAR_X(OrderBackup, cur_timetable_order_index, SLE_UINT8,        SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA)),
+		     SLE_VAR(OrderBackup, cur_real_order_index,     SLE_VEHORDERID),
+		 SLE_CONDVAR(OrderBackup, cur_implicit_order_index, SLE_VEHORDERID,            SLV_176, SL_MAX_VERSION),
+		SLE_CONDVAR_X(OrderBackup, cur_timetable_order_index, SLE_VEHORDERID,   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA)),
 		 SLE_CONDVAR(OrderBackup, current_order_time,       SLE_UINT32,                SLV_176, SL_MAX_VERSION),
 		 SLE_CONDVAR(OrderBackup, lateness_counter,         SLE_INT32,                 SLV_176, SL_MAX_VERSION),
 		 SLE_CONDVAR(OrderBackup, timetable_start,          SLE_INT32,                 SLV_176, SL_MAX_VERSION),

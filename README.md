@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.36.0
+## JGR's Patchpack version 0.40.5
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -19,6 +19,8 @@ See [below](#openttd) for the original OpenTTD readme.
 The thread for this patchpack can be found [here](http://www.tt-forums.net/viewtopic.php?f=33&t=73469).
 
 See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
+
+See the [wiki](https://github.com/JGRennison/OpenTTD-patches/wiki) for guides on how to use some of the included features.
 
 
 #### This patchpack contains the following
@@ -48,6 +50,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 * Town cargo generation factor: [imported](http://www.tt-forums.net/viewtopic.php?t=46399)  
   * Allow factor to be more finely adjusted in 0.1 increments. (added in v0.16.0)
+
+* Industry cargo generation factor (added in v0.39.2)  
 
 * Vehicles visible in tunnels (transparency setting): [imported](http://dev.openttdcoop.org/projects/clientpatches/repository/changes/VehicelsInTunnels.diff)
 
@@ -206,6 +210,21 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add support for server admin use of money, magic bulldozer, tunnels and jet crashes cheats in multiplayer.  
   * Add setting to allow non server admins to use the money cheat in multiplayer.  
   * Add cheats to set inflation income and cost factors.
+  
+* Drive-through train depot emulation (added in v0.38.0)
+
+* One-way road and road vehicle overtaking enhancements (added in v0.39.0)  
+  * Road between one-way road tiles is also one-way.  
+  * One way roads may have T-junctions on the drive side.  
+  * Drive-through road stops may be made one way.  
+  * Road vehicles have fewer constraints on overtaking on one-way road, and may be remain in the overtaking lane indefinitely.  
+  * Road vehicles may now start and finish overtaking on bridges and in tunnels.  
+  See the [wiki](https://github.com/JGRennison/OpenTTD-patches/wiki/One-way-roads) for full details.
+
+* Realistic train braking (added in v0.40.0)  
+  In this mode, trains have a stopping distance and will reserve ahead accordingly, trains cannot stop instantly.  
+  This mode has many implications for signalling and track layout design, and is therefore an advanced feature which may not be suitable for beginners.  
+  In particular pre-signals and two-way signals are not permitted, and PBS is used for all signalling.
 
 * Save/load and savegame format changes  
   * Various changes to improve handling of savegames which use features not in trunk.  
@@ -257,17 +276,34 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
   * Add support for allowing/disallowing supply to a station, per cargo, by ctrl-clicking the station cargo rating. (added in v0.34.0).  
   * Open train vehicle details window on total cargo tab if shift pressed. (added in v0.34.0).  
   * Ctrl-click up/down in NewGRF window to move to top or bottom. (added in v0.34.2).  
-  * Additional conditional order types/modes. (added in v0.24.0, v0.33.1, v0.34.3).  
+  * Additional conditional order types/modes. (added in v0.24.0, v0.33.1, v0.34.3, v0.37.0, v0.40.2, v0.40.5).  
   * Improve road vehicle pathfinding when multiple vehicles are simultaneously heading to a station with multiple bay/stop entrances. (added in v0.35.0).  
   * Add setting to scale station cargo capacity and rating tolerance by size. (added in v0.35.0).  
-  * Add setting to disable vehicle expiry after a given year. (added in v0.35.0).  
+  * Add settings to disable vehicle expiry and introduction after the given years. (added in v0.35.0, v0.40.5).  
   * Add setting to control road vehicle re-routing on road layout changes. (added in v0.35.0).  
   * Add news setting for trains waiting due to routing restrictions. (added in v0.36.0).  
   * Add setting for alternative linkgraph overlay colour schemes. (added in v0.36.0).  
   * Add basic tab-completion to the console window. (added in v0.36.0).  
   * Add settings to enable multiple churches/stadiums and to ignore date/zone/GRF when placing houses in the scenario editor. (added in v0.36.0).  
+  * Add setting for default road/tram types. (added in v0.37.0).  
+  * Allow building objects by area (1x1 objects only). (added in v0.37.0).  
+  * Increase per-vehicle order limit from 254 to 64k. (added in v0.38.0).  
+  * Add features to reverse the order of an order list, and to append the reverse of an order list. (added in v0.39.0).  
+  * Add console commands for conditional execution from game date. (added in v0.39.2).  
+  * Add client setting for vehicle naming scheme. (added in v0.40.0).  
+  * Add setting to control dates over which inflation is applied. (added in v0.40.0).  
+  * Add "indifferent" mode to the town council attitude to area restructuring setting. (added in v0.40.2).  
+  * Add support for zstd savegame compression for autosaves and network joins. (added in v0.40.3).  
+  * Add setting for shading trees on slopes in viewports (default on). (added in v0.40.3).  
+  * Allow clicking the money text in the cheats window to enter a quantity. (added in v0.40.5).  
+  * Allow shift-clicking on borrow/repay money buttons to enter a quantity. (added in v0.40.5).  
+  * Add map generation settings to control river/lake and rocky patch generation. (added in v0.40.5).  
+  * Add settings to customise the size of town zones. (added in v0.40.5).  
+  * Add setting to enable non-admin multiplayer clients to rename towns. (added in v0.40.5).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
+  * [NML specification additions](docs/newgrf-additions-nml.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions-nml.html)).
+  * [AI/GS script additions](docs/script-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/script-additions.html)).
   * [Low-level code/performance changes](docs/jgrpp-low-level-changes.md).
 
 * Translations  
@@ -394,13 +430,13 @@ Please report a bug if you find a save that doesn't load.
 
 ## 1.4) Installing and running OpenTTD
 
-OpenTTD is usually straightforward to install, but for more help the wiki [includes an installation guide](https://wiki.openttd.org/Installation).
+OpenTTD is usually straightforward to install, but for more help the wiki [includes an installation guide](https://wiki.openttd.org/en/Manual/Installation).
 
 OpenTTD needs some additional graphics and sound files to run.
 
 For some platforms these will be downloaded during the installation process if required.
 
-For some platforms, you will need to refer to [the installation guide](https://wiki.openttd.org/Installation).
+For some platforms, you will need to refer to [the installation guide](https://wiki.openttd.org/en/Manual/Installation).
 
 
 ### 1.4.1) Free graphics and sound files
@@ -445,7 +481,7 @@ OpenTTD features multiple types of add-on content, which modify gameplay in diff
 
 Most types of add-on content can be downloaded within OpenTTD via the 'Check Online Content' button in the main menu.
 
-Add-on content can also be installed manually, but that's more complicated; the [OpenTTD wiki](https://wiki.openttd.org/OpenTTD) may offer help with that, or the [OpenTTD directory structure guide](./docs/directory_structure.md).
+Add-on content can also be installed manually, but that's more complicated; the [OpenTTD wiki](https://wiki.openttd.org/) may offer help with that, or the [OpenTTD directory structure guide](./docs/directory_structure.md).
 
 ### 1.5.1) AI opponents
 
@@ -467,7 +503,7 @@ A wide range of add-content is available as NewGRFs, including vehicles, industr
 
 NewGRFs can be added via the 'Check Online Content' button in the main menu.
 
-See also the wiki [guide to NewGRFs](https://wiki.openttd.org/NewGRF) and [the forum graphics development section](https://www.tt-forums.net/viewforum.php?f=66).
+See also the wiki [guide to NewGRFs](https://wiki.openttd.org/en/Manual/NewGRF) and [the forum graphics development section](https://www.tt-forums.net/viewforum.php?f=66).
 
 ### 1.5.4) Game scripts
 
@@ -475,7 +511,7 @@ Game scripts can provide additional challenges or changes to the standard OpenTT
 
 Game scripts can be added via the 'Check Online Content' button in the main menu.
 
-See also the wiki [guide to game scripts](https://wiki.openttd.org/Game_script) and [the forum graphics game script section](https://www.tt-forums.net/viewforum.php?f=65).
+See also the wiki [guide to game scripts](https://wiki.openttd.org/en/Manual/Game%20script) and [the forum graphics game script section](https://www.tt-forums.net/viewforum.php?f=65).
 
 ### 1.6) OpenTTD directories
 
@@ -493,14 +529,14 @@ If you want to compile OpenTTD from source, instructions can be found in [COMPIL
 'Official' channels
 
 - [OpenTTD website](https://www.openttd.org)
-- IRC chat using #openttd on irc.oftc.net [more info about our irc channel](https://wiki.openttd.org/Irc)
+- IRC chat using #openttd on irc.oftc.net [more info about our irc channel](https://wiki.openttd.org/en/Development/IRC%20channel)
 - [OpenTTD on Github](https://github.com/openTTD/) for code repositories and for reporting issues
 - [forum.openttd.org](https://forum.openttd.org/) - the primary community forum site for discussing OpenTTD and related games
 - [OpenTTD wiki](https://wiki.openttd.org/) community-maintained wiki, including topics like gameplay guide, detailed explanation of some game mechanics, how to use add-on content (mods) and much more
 
 'Unofficial' channels
 
-- the OpenTTD wiki has a [page listing OpenTTD communities](https://wiki.openttd.org/Community) including some in languages other than English
+- the OpenTTD wiki has a [page listing OpenTTD communities](https://wiki.openttd.org/en/Community/Community) including some in languages other than English
 
 
 ### 2.1) Contributing to OpenTTD

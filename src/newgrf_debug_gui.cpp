@@ -48,7 +48,7 @@
 #include "safeguards.h"
 
 /** The sprite picker. */
-NewGrfDebugSpritePicker _newgrf_debug_sprite_picker = { SPM_NONE, nullptr, 0, std::vector<SpriteID>() };
+NewGrfDebugSpritePicker _newgrf_debug_sprite_picker = { SPM_NONE, nullptr, std::vector<SpriteID>() };
 
 /**
  * Get the feature index related to the window number.
@@ -200,6 +200,11 @@ public:
 		return nullptr;
 	}
 
+	virtual std::vector<uint32> GetPSAGRFIDs(uint index) const
+	{
+		return {};
+	}
+
 	virtual void ExtraInfo(uint index, std::function<void(const char *)> print) const {}
 	virtual bool ShowExtraInfoOnly(uint index) const { return false; };
 
@@ -298,6 +303,8 @@ struct NewGRFInspectWindow : Window {
 
 	int first_variable_line_index = 0;
 
+	bool auto_refresh = false;
+
 	/**
 	 * Check whether the given variable has a parameter.
 	 * @param variable the variable to check.
@@ -382,12 +389,12 @@ struct NewGRFInspectWindow : Window {
 			case WID_NGRFI_VEH_CHAIN: {
 				assert(this->HasChainIndex());
 				GrfSpecFeature f = GetFeatureNum(this->window_number);
-				size->height = max(size->height, GetVehicleImageCellSize((VehicleType)(VEH_TRAIN + (f - GSF_TRAINS)), EIT_IN_DEPOT).height + 2 + WD_BEVEL_TOP + WD_BEVEL_BOTTOM);
+				size->height = std::max(size->height, GetVehicleImageCellSize((VehicleType)(VEH_TRAIN + (f - GSF_TRAINS)), EIT_IN_DEPOT).height + 2 + WD_BEVEL_TOP + WD_BEVEL_BOTTOM);
 				break;
 			}
 
 			case WID_NGRFI_MAINPANEL:
-				resize->height = max(11, FONT_HEIGHT_NORMAL + 1);
+				resize->height = std::max(11, FONT_HEIGHT_NORMAL + 1);
 				resize->width  = 1;
 
 				size->height = 5 * resize->height + TOP_OFFSET + BOTTOM_OFFSET;
@@ -438,7 +445,7 @@ struct NewGRFInspectWindow : Window {
 				int skip = 0;
 				if (total_width > width) {
 					int sel_center = (sel_start + sel_end) / 2;
-					if (sel_center > width / 2) skip = min(total_width - width, sel_center - width / 2);
+					if (sel_center > width / 2) skip = std::min(total_width - width, sel_center - width / 2);
 				}
 
 				GrfSpecFeature f = GetFeatureNum(this->window_number);
@@ -506,17 +513,28 @@ struct NewGRFInspectWindow : Window {
 			}
 		}
 
-		uint psa_size = nih->GetPSASize(index, this->caller_grfid);
-		const int32 *psa = nih->GetPSAFirstPosition(index, this->caller_grfid);
-		if (psa_size != 0 && psa != nullptr) {
-			if (nih->PSAWithParameter()) {
-				this->DrawString(r, i++, "Persistent storage [%08X]:", BSWAP32(this->caller_grfid));
-			} else {
-				this->DrawString(r, i++, "Persistent storage:");
-			}
-			assert(psa_size % 4 == 0);
-			for (uint j = 0; j < psa_size; j += 4, psa += 4) {
-				this->DrawString(r, i++, "  %i: %i %i %i %i", j, psa[0], psa[1], psa[2], psa[3]);
+		std::vector<uint32> psa_grfids = nih->GetPSAGRFIDs(index);
+		for (const uint32 grfid : psa_grfids) {
+			uint psa_size = nih->GetPSASize(index, grfid);
+			const int32 *psa = nih->GetPSAFirstPosition(index, grfid);
+			if (psa_size != 0 && psa != nullptr) {
+				if (nih->PSAWithParameter()) {
+					this->DrawString(r, i++, "Persistent storage [%08X]:", BSWAP32(grfid));
+				} else {
+					this->DrawString(r, i++, "Persistent storage:");
+				}
+				assert(psa_size % 4 == 0);
+				uint last_non_blank = 0;
+				for (uint j = 0; j < psa_size; j++) {
+					if (psa[j] != 0) last_non_blank = j;
+				}
+				const uint psa_limit = (last_non_blank + 3) & ~3;
+				for (uint j = 0; j < psa_limit; j += 4, psa += 4) {
+					this->DrawString(r, i++, "  %i: %i %i %i %i", j, psa[0], psa[1], psa[2], psa[3]);
+				}
+				if (last_non_blank != psa_size) {
+					this->DrawString(r, i++, "  %i to %i are all 0", psa_limit, psa_size - 1);
+				}
 			}
 		}
 
@@ -628,6 +646,14 @@ struct NewGRFInspectWindow : Window {
 					this->current_edit_param = niv->var;
 					ShowQueryString(STR_EMPTY, STR_NEWGRF_INSPECT_QUERY_CAPTION, 9, this, CS_HEXADECIMAL, QSF_NONE);
 				}
+				break;
+			}
+
+			case WID_NGRFI_REFRESH: {
+				this->auto_refresh = !this->auto_refresh;
+				this->SetWidgetLoweredState(WID_NGRFI_REFRESH, this->auto_refresh);
+				this->SetWidgetDirty(WID_NGRFI_REFRESH);
+				break;
 			}
 		}
 	}
@@ -660,6 +686,11 @@ struct NewGRFInspectWindow : Window {
 			this->SetWidgetDisabledState(WID_NGRFI_VEH_NEXT, v == nullptr || v->Next() == nullptr);
 		}
 	}
+
+	void OnRealtimeTick(uint delta_ms) override
+	{
+		if (this->auto_refresh) this->SetDirty();
+	}
 };
 
 /* static */ uint32 NewGRFInspectWindow::var60params[GSF_FAKE_END][0x20] = { {0} }; // Use spec to have 0s in whole array
@@ -668,6 +699,7 @@ static const NWidgetPart _nested_newgrf_inspect_chain_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_NGRFI_CAPTION), SetDataTip(STR_NEWGRF_INSPECT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_NGRFI_REFRESH), SetDataTip(STR_NEWGRF_INSPECT_REFRESH, STR_NEWGRF_INSPECT_REFRESH_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -693,6 +725,7 @@ static const NWidgetPart _nested_newgrf_inspect_widgets[] = {
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_NGRFI_CAPTION), SetDataTip(STR_NEWGRF_INSPECT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NGRFI_PARENT), SetDataTip(STR_NEWGRF_INSPECT_PARENT_BUTTON, STR_NEWGRF_INSPECT_PARENT_TOOLTIP),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_NGRFI_REFRESH), SetDataTip(STR_NEWGRF_INSPECT_REFRESH, STR_NEWGRF_INSPECT_REFRESH_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -806,7 +839,7 @@ GrfSpecFeature GetGrfSpecFeature(TileIndex tile)
 	switch (GetTileType(tile)) {
 		default:              return GSF_INVALID;
 		case MP_RAILWAY:      return GSF_RAILTYPES;
-		case MP_ROAD:         return IsLevelCrossing(tile) ? GSF_RAILTYPES : GSF_INVALID;
+		case MP_ROAD:         return IsLevelCrossing(tile) ? GSF_RAILTYPES : GSF_ROADTYPES;
 		case MP_HOUSE:        return GSF_HOUSES;
 		case MP_INDUSTRY:     return GSF_INDUSTRYTILES;
 		case MP_OBJECT:       return GSF_OBJECTS;
@@ -899,7 +932,7 @@ struct SpriteAlignerWindow : Window {
 				size->height = ScaleGUITrad(200);
 				break;
 			case WID_SA_LIST:
-				resize->height = max(11, FONT_HEIGHT_NORMAL + 1);
+				resize->height = std::max(11, FONT_HEIGHT_NORMAL + 1);
 				resize->width  = 1;
 				break;
 			default:
@@ -935,7 +968,7 @@ struct SpriteAlignerWindow : Window {
 				int step_size = nwid->resize_y;
 
 				std::vector<SpriteID> &list = _newgrf_debug_sprite_picker.sprites;
-				int max = min<int>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), (uint)list.size());
+				int max = std::min<int>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), (uint)list.size());
 
 				int y = r.top + WD_FRAMERECT_TOP;
 				for (int i = this->vscroll->GetPosition(); i < max; i++) {

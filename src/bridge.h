@@ -54,6 +54,8 @@ DECLARE_ENUM_AS_BIT_SET(BridgePiecePillarFlags)
 enum BridgeSpecCtrlFlags {
 	BSCF_CUSTOM_PILLAR_FLAGS,
 	BSCF_INVALID_PILLAR_FLAGS,
+	BSCF_NOT_AVAILABLE_TOWN,
+	BSCF_NOT_AVAILABLE_AI_GS,
 };
 
 /**
@@ -94,8 +96,16 @@ static inline const BridgeSpec *GetBridgeSpec(BridgeType i)
 void DrawBridgeMiddle(const TileInfo *ti);
 
 CommandCost CheckBridgeAvailability(BridgeType bridge_type, uint bridge_len, DoCommandFlag flags = DC_NONE);
+bool MayTownBuildBridgeType(BridgeType bridge_type);
 int CalcBridgeLenCostFactor(int x);
 BridgePiecePillarFlags GetBridgeTilePillarFlags(TileIndex tile, TileIndex northern_bridge_end, TileIndex southern_bridge_end, BridgeType bridge_type, TransportType bridge_transport_type);
+
+struct BridgePieceDebugInfo {
+	BridgePieces piece;
+	BridgePiecePillarFlags pillar_flags;
+	uint pillar_index;
+};
+BridgePieceDebugInfo GetBridgePieceDebugInfo(TileIndex tile);
 
 void ResetBridges();
 

@@ -15,10 +15,10 @@
 #include <string>
 
 /** A non-breaking space. */
-#define NBSP "\xC2\xA0"
+#define NBSP u8"\u00a0"
 
 /** A left-to-right marker, marks the next character as left-to-right. */
-#define LRM "\xE2\x80\x8E"
+#define LRM u8"\u200e"
 
 /**
  * Valid filter types for IsValidChar.
@@ -26,7 +26,8 @@
 enum CharSetFilter {
 	CS_ALPHANUMERAL,      ///< Both numeric and alphabetic and spaces and stuff
 	CS_NUMERAL,           ///< Only numeric ones
-	CS_NUMERAL_DECIMAL,   ///< Only numeric and decimal separaters
+	CS_NUMERAL_SIGNED,    ///< Only numeric ones, and minus/negative
+	CS_NUMERAL_DECIMAL,   ///< Only numeric, decimal separaters, and minus/negative
 	CS_NUMERAL_SPACE,     ///< Only numbers and spaces
 	CS_ALPHA,             ///< Only alphabetic values
 	CS_HEXADECIMAL,       ///< Only hexadecimal characters

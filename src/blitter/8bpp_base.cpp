@@ -41,9 +41,14 @@ void Blitter_8bppBase::DrawLine(void *video, int x, int y, int x2, int y2, int s
 	});
 }
 
-void Blitter_8bppBase::SetLine(void *video, int x, int y, uint8 *colours, uint width)
+void Blitter_8bppBase::SetRect(void *video, int x, int y, const uint8 *colours, uint lines, uint width, uint pitch)
 {
-	memcpy((uint8 *)video + x + y * _screen.pitch, colours, width * sizeof(uint8));
+	uint8 *dst = (uint8 *)video + x + y * _screen.pitch;
+	do {
+		memcpy(dst, colours, width * sizeof(uint8));
+		dst += _screen.pitch;
+		colours += pitch;
+	} while (--lines);
 }
 
 void Blitter_8bppBase::DrawRect(void *video, int width, int height, uint8 colour)

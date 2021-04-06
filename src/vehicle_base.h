@@ -140,12 +140,16 @@ enum VehicleCacheFlags {
 	VCF_IS_DRAWN                = 2, ///< Vehicle is currently drawn
 	VCF_REDRAW_ON_TRIGGER       = 3, ///< Clear cur_image_valid_dir on changes to waiting_triggers (valid only for the first engine)
 	VCF_REDRAW_ON_SPEED_CHANGE  = 4, ///< Clear cur_image_valid_dir on changes to cur_speed (ground vehicles) or aircraft movement state (aircraft) (valid only for the first engine)
+	VCF_IMAGE_REFRESH           = 5, ///< Image should be refreshed before drawing
+	VCF_IMAGE_REFRESH_NEXT      = 6, ///< Set VCF_IMAGE_REFRESH in next UpdateViewport call, if the image is not updated there
+	VCF_IMAGE_CURVATURE         = 7, ///< Image should be refreshed if cached curvature in cached_image_curvature no longer matches curvature of neighbours
 };
 
 /** Cached often queried values common to all vehicles. */
 struct VehicleCache {
 	uint16 cached_max_speed;        ///< Maximum speed of the consist (minimum of the max speed of all vehicles in the consist).
 	uint16 cached_cargo_age_period; ///< Number of ticks before carried cargo is aged.
+	uint16 cached_image_curvature;  ///< Cached neighbour curvature, see: VCF_IMAGE_CURVATURE
 
 	byte cached_vis_effect;  ///< Visual effect to show (see #VisualEffect)
 	byte cached_veh_flags;   ///< Vehicle cache flags (see #VehicleCacheFlags)
@@ -328,7 +332,7 @@ public:
 	uint16 cur_speed;                   ///< current speed
 	byte subspeed;                      ///< fractional speed
 	byte acceleration;                  ///< used by train & aircraft
-	uint32 motion_counter;              ///< counter to occasionally play a vehicle sound.
+	uint32 motion_counter;              ///< counter to occasionally play a vehicle sound. (Also used as virtual train client ID).
 	byte progress;                      ///< The percentage (if divided by 256) this vehicle already crossed the tile unit.
 
 	byte random_bits;                   ///< Bits used for determining which randomized variational spritegroups to use when drawing.
@@ -522,6 +526,7 @@ public:
 	{
 		ClrBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE);
 		ClrBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_TRIGGER);
+		ClrBit(this->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE);
 		for (Vehicle *u = this; u != nullptr; u = u->Next()) {
 			u->InvalidateImageCache();
 		}
@@ -582,6 +587,11 @@ public:
 		/* Free wagons have no VS_STOPPED state */
 		if (this->IsPrimaryVehicle() && !(this->vehstatus & VS_STOPPED)) return false;
 		return this->IsChainInDepot();
+	}
+
+	bool IsWaitingInDepot() const {
+		assert(this == this->First());
+		return this->current_order.IsType(OT_WAITING) && this->IsChainInDepot();
 	}
 
 	/**
@@ -1042,6 +1052,17 @@ public:
 		return this->Next();
 	}
 
+	inline uint GetEnginePartsCount() const
+	{
+		uint count = 1;
+		const Vehicle *v = this->Next();
+		while (v != nullptr && v->IsArticulatedPart()) {
+			count++;
+			v = v->Next();
+		}
+		return count;
+	}
+
 	/**
 	 * Get the first part of an articulated engine.
 	 * @return First part of the engine.
@@ -1113,6 +1134,55 @@ public:
 	}
 
 	char *DumpVehicleFlags(char *b, const char *last, bool include_tile) const;
+
+	/**
+	 * Iterator to iterate orders
+	 * Supports deletion of current order
+	 */
+	struct OrderIterator {
+		typedef Order value_type;
+		typedef Order* pointer;
+		typedef Order& reference;
+		typedef size_t difference_type;
+		typedef std::forward_iterator_tag iterator_category;
+
+		explicit OrderIterator(OrderList *list) : list(list), prev(nullptr)
+		{
+			this->order = (this->list == nullptr) ? nullptr : this->list->GetFirstOrder();
+		}
+
+		bool operator==(const OrderIterator &other) const { return this->order == other.order; }
+		bool operator!=(const OrderIterator &other) const { return !(*this == other); }
+		Order * operator*() const { return this->order; }
+		OrderIterator & operator++()
+		{
+			this->prev = (this->prev == nullptr) ? this->list->GetFirstOrder() : this->prev->next;
+			this->order = (this->prev == nullptr) ? nullptr : this->prev->next;
+			return *this;
+		}
+
+	private:
+		OrderList *list;
+		Order *order;
+		Order *prev;
+	};
+
+	/**
+	 * Iterable ensemble of orders
+	 */
+	struct IterateWrapper {
+		OrderList *list;
+		IterateWrapper(OrderList *list = nullptr) : list(list) {}
+		OrderIterator begin() { return OrderIterator(this->list); }
+		OrderIterator end() { return OrderIterator(nullptr); }
+		bool empty() { return this->begin() == this->end(); }
+	};
+
+	/**
+	 * Returns an iterable ensemble of orders of a vehicle
+	 * @return an iterable ensemble of orders of a vehicle
+	 */
+	IterateWrapper Orders() const { return IterateWrapper(this->orders.list); }
 };
 
 /**
@@ -1267,23 +1337,59 @@ struct SpecializedVehicle : public Vehicle {
 		/* Skip updating sprites on dedicated servers without screen */
 		if (_network_dedicated) return;
 
+		auto get_vehicle_curvature = [&]() -> uint16 {
+			uint16 curvature = 0;
+			if (this->Previous() != nullptr) {
+				SB(curvature, 0, 4, this->Previous()->direction);
+				if (this->Previous()->Previous() != nullptr) SB(curvature, 4, 4, this->Previous()->Previous()->direction);
+			}
+			if (this->Next() != nullptr) {
+				SB(curvature, 8, 4, this->Next()->direction);
+				if (this->Next()->Next() != nullptr) SB(curvature, 12, 4, this->Next()->Next()->direction);
+			}
+			return curvature;
+		};
+
+		auto check_vehicle_curvature = [&]() -> bool {
+			if (!(EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD)) return false;
+			if (likely(!HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE))) return false;
+			return this->vcache.cached_image_curvature != get_vehicle_curvature();
+		};
+
 		/* Explicitly choose method to call to prevent vtable dereference -
 		 * it gives ~3% runtime improvements in games with many vehicles */
 		if (update_delta) ((T *)this)->T::UpdateDeltaXY();
 		const Direction current_direction = ((T *)this)->GetMapImageDirection();
-		if (this->cur_image_valid_dir != current_direction) {
+		if (this->cur_image_valid_dir != current_direction || check_vehicle_curvature()) {
 			_sprite_group_resolve_check_veh_check = true;
+			if (EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD) _sprite_group_resolve_check_veh_curvature_check = true;
 			VehicleSpriteSeq seq;
 			((T *)this)->T::GetImage(current_direction, EIT_ON_MAP, &seq);
-			this->cur_image_valid_dir = _sprite_group_resolve_check_veh_check ? current_direction : INVALID_DIR;
+			if (EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD) {
+				ClrBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH);
+				SB(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT, 1, (_sprite_group_resolve_check_veh_check || _settings_client.gui.disable_vehicle_image_update) ? 0 : 1);
+				if (unlikely(!_sprite_group_resolve_check_veh_curvature_check)) {
+					SetBit(this->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE);
+					this->vcache.cached_image_curvature = get_vehicle_curvature();
+				}
+				_sprite_group_resolve_check_veh_curvature_check = false;
+				this->cur_image_valid_dir = current_direction;
+			} else {
+				this->cur_image_valid_dir = (_sprite_group_resolve_check_veh_check || _settings_client.gui.disable_vehicle_image_update) ? current_direction : INVALID_DIR;
+			}
 			_sprite_group_resolve_check_veh_check = false;
 			if (force_update || this->sprite_seq != seq) {
 				this->sprite_seq = seq;
 				this->UpdateSpriteSeqBound();
 				this->Vehicle::UpdateViewport(true);
 			}
-		} else if (force_update) {
-			this->Vehicle::UpdateViewport(true);
+		} else {
+			if ((EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD) && HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT)) {
+				SetBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH);
+			}
+			if (force_update) {
+				this->Vehicle::UpdateViewport(true);
+			}
 		}
 	}
 

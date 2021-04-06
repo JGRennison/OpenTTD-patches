@@ -29,7 +29,7 @@ uint16 GetTrainVehicleMaxSpeed(const Train *u, const RailVehicleInfo *rvi_u, con
  * @param p2 Additional data for the command (for the #CommandProc)
  * @param cmd Unused.
  */
-void CcBuildWagon(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint32 cmd)
+void CcBuildWagon(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Failed()) return;
 
@@ -71,9 +71,9 @@ static int HighlightDragPosition(int px, int max_width, VehicleID selection, boo
 		dragged_width += t->GetDisplayImageWidth(nullptr);
 	}
 
-	int drag_hlight_left = rtl ? max(px - dragged_width + 1, 0) : px;
-	int drag_hlight_right = rtl ? px : min(px + dragged_width, max_width) - 1;
-	int drag_hlight_width = max(drag_hlight_right - drag_hlight_left + 1, 0);
+	int drag_hlight_left = rtl ? std::max(px - dragged_width + 1, 0) : px;
+	int drag_hlight_right = rtl ? px : std::min(px + dragged_width, max_width) - 1;
+	int drag_hlight_width = std::max(drag_hlight_right - drag_hlight_left + 1, 0);
 
 	if (drag_hlight_width > 0) {
 		GfxFillRect(drag_hlight_left + WD_FRAMERECT_LEFT, WD_FRAMERECT_TOP + 1,
@@ -268,7 +268,7 @@ static void TrainDetailsInfoTab(const Train *v, int left, int right, int y, byte
 						SetDParam(0, STR_VEHICLE_STATUS_BROKEN_DOWN_VEL_SHORT);
 						SetDParam(1, STR_BREAKDOWN_TYPE_CRITICAL + v->breakdown_type);
 						if (v->breakdown_type == BREAKDOWN_LOW_SPEED) {
-							SetDParam(2, min(v->First()->GetCurrentMaxSpeed(), v->breakdown_severity));
+							SetDParam(2, std::min<int>(v->First()->GetCurrentMaxSpeed(), v->breakdown_severity));
 						} else if (v->breakdown_type == BREAKDOWN_LOW_POWER) {
 							SetDParam(2, v->breakdown_severity * 100 / 256);
 						}
@@ -394,7 +394,7 @@ int GetTrainDetailsWndVScroll(VehicleID veh_id, TrainDetailsWindowTabs det_tab)
 	} else {
 		for (const Train *v = Train::Get(veh_id); v != nullptr; v = v->GetNextVehicle()) {
 			GetCargoSummaryOfArticulatedVehicle(v, &_cargo_summary);
-			num += max(1u, (unsigned)_cargo_summary.size());
+			num += std::max(1u, (unsigned)_cargo_summary.size());
 
 			uint length = GetLengthOfArticulatedVehicle(v);
 			if (length > TRAIN_DETAILS_MAX_INDENT) num++;
@@ -422,7 +422,7 @@ void DrawTrainDetails(const Train *v, int left, int right, int y, int vscroll_po
 	y -= WD_MATRIX_TOP;
 
 	int sprite_height = ScaleGUITrad(GetVehicleHeight(VEH_TRAIN));
-	int line_height = max(sprite_height, WD_MATRIX_TOP + FONT_HEIGHT_NORMAL + WD_MATRIX_BOTTOM);
+	int line_height = std::max(sprite_height, WD_MATRIX_TOP + FONT_HEIGHT_NORMAL + WD_MATRIX_BOTTOM);
 	int sprite_y_offset = line_height / 2;
 	int text_y_offset = (line_height - FONT_HEIGHT_NORMAL) / 2;
 
@@ -464,9 +464,9 @@ void DrawTrainDetails(const Train *v, int left, int right, int y, int vscroll_po
 				dx = 0;
 			}
 
-			uint num_lines = max(1u, (unsigned)_cargo_summary.size());
+			uint num_lines = std::max(1u, (unsigned)_cargo_summary.size());
 			for (uint i = 0; i < num_lines;) {
-				int sprite_width = max<int>(dx, ScaleGUITrad(TRAIN_DETAILS_MIN_INDENT)) + 3;
+				int sprite_width = std::max<int>(dx, ScaleGUITrad(TRAIN_DETAILS_MIN_INDENT)) + 3;
 				int data_left  = left + (rtl ? 0 : sprite_width);
 				int data_right = right - (rtl ? sprite_width : 0);
 				if (vscroll_pos <= 0 && vscroll_pos > -vscroll_cap) {
