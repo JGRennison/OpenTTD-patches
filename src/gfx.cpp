@@ -2192,6 +2192,8 @@ void UpdateGUIZoom()
 	} else {
 		_font_zoom = static_cast<ZoomLevel>(_font_zoom_cfg);
 	}
+
+	UpdateFontHeightCache();
 }
 
 void ChangeGameSpeed(bool enable_fast_forward)
