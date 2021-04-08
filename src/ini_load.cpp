@@ -209,7 +209,7 @@ void IniLoadFile::LoadFromDisk(const std::string &filename, Subdirectory subdir,
 
 	if (save != nullptr) {
 		save->clear();
-		save->reserve(end);
+		if (end < (1 << 20)) save->reserve(end);
 	}
 
 	end += ftell(in);
