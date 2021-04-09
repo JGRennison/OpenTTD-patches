@@ -1525,7 +1525,7 @@ public:
 				case WID_HP_HOUSE_ZONES:
 					for (int i = 0; i < HZB_END; i++) {
 						SetDParam(2 * i, STR_HOUSE_BUILD_HOUSE_ZONE_DISABLED);
-						SetDParam(2 * i + 1, i + 1);
+						SetDParam(2 * i + 1, 4 - i);
 					}
 					break;
 
@@ -1567,8 +1567,8 @@ public:
 					for (int i = 0; i < HZB_END; i++) {
 						/* colour: gold(enabled)/grey(disabled)  */
 						SetDParam(2 * i, HasBit(zones, HZB_END - i - 1) ? STR_HOUSE_BUILD_HOUSE_ZONE_ENABLED : STR_HOUSE_BUILD_HOUSE_ZONE_DISABLED);
-						/* digit: 1(center)/2/3/4/5(edge) */
-						SetDParam(2 * i + 1, i + 1);
+						/* digit: 4(center)/3/1/1/0(edge) */
+						SetDParam(2 * i + 1, 4 - i);
 					}
 					break;
 				}
