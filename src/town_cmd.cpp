@@ -1980,7 +1980,7 @@ void UpdateTownRadius(Town *t)
 		{121, 81,  0, 49, 36}, // 88
 	};
 
-	if (_settings_game.economy.town_zone_calc_mode, t->larger_town) {
+	if (_settings_game.economy.town_zone_calc_mode && t->larger_town) {
 		int mass = t->cache.num_houses / 8;
 		t->cache.squared_town_zone_radius[0] = mass * _settings_game.economy.city_zone_0_mult;
 		t->cache.squared_town_zone_radius[1] = mass * _settings_game.economy.city_zone_1_mult;
