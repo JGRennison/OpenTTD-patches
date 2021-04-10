@@ -801,7 +801,7 @@ private:
 	bool IsVisibleByRestrictionMode(RestrictionMode mode) const;
 };
 
-/** Standard setting */
+/** Cargodist per-cargo setting */
 struct CargoDestPerCargoSettingEntry : SettingEntry {
 	CargoID cargo;
 
@@ -811,6 +811,16 @@ struct CargoDestPerCargoSettingEntry : SettingEntry {
 
 protected:
 	virtual void DrawSettingString(uint left, uint right, int y, bool highlight, int32 value) const;
+};
+
+/** Conditionally hidden standard setting */
+struct ConditionallyHiddenSettingEntry : SettingEntry {
+	std::function<bool()> hide_callback;
+
+	ConditionallyHiddenSettingEntry(const char *name, std::function<bool()> hide_callback)
+		: SettingEntry(name), hide_callback(hide_callback) {}
+
+	virtual bool UpdateFilterState(SettingFilter &filter, bool force_visible);
 };
 
 /** Containers for BaseSettingEntry */
@@ -1231,6 +1241,16 @@ void CargoDestPerCargoSettingEntry::DrawSettingString(uint left, uint right, int
 bool CargoDestPerCargoSettingEntry::UpdateFilterState(SettingFilter &filter, bool force_visible)
 {
 	if (!HasBit(_cargo_mask, this->cargo)) {
+		SETBITS(this->flags, SEF_FILTERED);
+		return false;
+	} else {
+		return SettingEntry::UpdateFilterState(filter, force_visible);
+	}
+}
+
+bool ConditionallyHiddenSettingEntry::UpdateFilterState(SettingFilter &filter, bool force_visible)
+{
+	if (this->hide_callback && this->hide_callback()) {
 		SETBITS(this->flags, SEF_FILTERED);
 		return false;
 	} else {
