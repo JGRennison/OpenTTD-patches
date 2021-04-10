@@ -1229,8 +1229,6 @@ STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER_HELPTEXT             :이 설정을 �
 STR_CONFIG_SETTING_RENAME_TOWNS_MULTIPLAYER                     :멀티플레이 유저들이 도시 이름을 바꿀 수 있게 허용: {STRING}
 STR_CONFIG_SETTING_RENAME_TOWNS_MULTIPLAYER_HELPTEXT            :이 설정을 켜면, 관리자나 관전자가 아닌 멀티플레이 유저가 도시 이름을 바꿀 수 있습니다. 싱글플레이에서나 멀티플레이의 관리자는 도시 이름을 항상 변경할 수 있습니다.
 
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :최대 지형 높이: {STRING}
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :지도에 생성되는 산이 가질 수 있는 최대 높이를 설정합니다.
 STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN                            :{WHITE}이 값을 최대 지형 높이로 설정할 수 없습니다. 이 값보다 고도가 높은 산이 최소 한 개 이상 존재합니다.
 STR_CONFIG_SETTING_AUTOSLOPE                                    :건물, 트랙 등의 하부 지형 편집 허용: {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :건물이나 도로/선로 등을 제거하지 않고도 하부의 지형을 편집할 수 있게 허용합니다.
@@ -3642,9 +3640,6 @@ STR_MAPGEN_BY                                                   :{BLACK}x
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}도시의 수:
 STR_MAPGEN_DATE                                                 :{BLACK}날짜:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}산업시설 수:
-STR_MAPGEN_MAX_HEIGHTLEVEL                                      :{BLACK}최대 지형 높이:
-STR_MAPGEN_MAX_HEIGHTLEVEL_UP                                   :{BLACK}최대 지형 높이를 1칸 높입니다
-STR_MAPGEN_MAX_HEIGHTLEVEL_DOWN                                 :{BLACK}최대 지형 높이를 1칸 낮춥니다
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}설선 고도:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}설선 고도를 1칸 높입니다
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}설선 고도를 1칸 낮춥니다
@@ -3677,7 +3672,6 @@ STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}크기:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 STR_MAPGEN_TOO_MANY_TILES_MESSAGE                               :{YELLOW}지도에 너무 많은 타일이 존재합니다. 최댓값은 {NUM} 칸 이지만, {NUM} 칸을 선택했습니다.
 
-STR_MAPGEN_MAX_HEIGHTLEVEL_QUERY_CAPT                           :{WHITE}최대 지형 고도 변경
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}설선 고도 변경
 STR_MAPGEN_RAINFOREST_LINE_QUERY_CAPT                           :{WHITE}열대 우림 고도 변경
 STR_MAPGEN_START_DATE_QUERY_CAPT                                :{WHITE}시작 연도 변경

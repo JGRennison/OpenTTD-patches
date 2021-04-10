@@ -361,8 +361,12 @@ struct GameCreationSettings {
 	uint8  map_y;                            ///< Y size of map
 	byte   land_generator;                   ///< the landscape generator
 	byte   oil_refinery_limit;               ///< distance oil refineries allowed from map edge
-	byte   snow_line_height;                 ///< the configured snow line height
+	byte   snow_line_height;                 ///< the configured snow line height (deduced from "snow_coverage")
+	byte   snow_coverage;                    ///< the amount of snow coverage on the map
 	byte   rainforest_line_height;           ///< the configured rainforest line height
+	byte   desert_coverage;                  ///< the amount of desert coverage on the map
+	byte   climate_threshold_mode;           ///< climate threshold mode
+	byte   heightmap_height;                 ///< highest mountain for heightmap (towards what it scales)
 	byte   tgen_smoothness;                  ///< how rough is the terrain from 0-3
 	byte   tree_placer;                      ///< the tree placer algorithm
 	byte   heightmap_rotation;               ///< rotation director for the heightmap
@@ -372,6 +376,7 @@ struct GameCreationSettings {
 	byte   water_borders;                    ///< bitset of the borders that are water
 	uint16 custom_town_number;               ///< manually entered number of towns
 	byte   variety;                          ///< variety level applied to TGP
+	byte   custom_terrain_type;              ///< manually entered height for TGP to aim for
 	byte   custom_sea_level;                 ///< manually entered percentage of water in the map
 	byte   min_river_length;                 ///< the minimum river length
 	byte   river_route_random;               ///< the amount of randomicity for the route finding
@@ -386,7 +391,7 @@ struct GameCreationSettings {
 
 /** Settings related to construction in-game */
 struct ConstructionSettings {
-	uint8  max_heightlevel;                  ///< maximum allowed heightlevel
+	uint8  map_height_limit;                 ///< the maximum allowed heightlevel
 	bool   build_on_slopes;                  ///< allow building on slopes
 	bool   autoslope;                        ///< allow terraforming under things
 	uint16 max_bridge_length;                ///< maximum length of bridges

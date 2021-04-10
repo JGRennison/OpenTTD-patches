@@ -860,6 +860,7 @@ bool SettingDesc::IsEditable(bool do_command) const
 	if ((this->desc.flags & SGF_NEWGAME_ONLY) &&
 			(_game_mode == GM_NORMAL ||
 			(_game_mode == GM_EDITOR && !(this->desc.flags & SGF_SCENEDIT_TOO)))) return false;
+	if ((this->desc.flags & SGF_SCENEDIT_ONLY) && _game_mode != GM_EDITOR) return false;
 	return true;
 }
 
@@ -1488,6 +1489,12 @@ static bool InvalidateAllVehicleImageCaches(int32 p1)
 	for (Vehicle *v : Vehicle::Iterate()) {
 		v->InvalidateImageCache();
 	}
+	return true;
+}
+
+static bool ClimateThresholdModeChanged(int32 p1)
+{
+	InvalidateWindowClassesData(WC_GENERATE_LANDSCAPE);
 	return true;
 }
 

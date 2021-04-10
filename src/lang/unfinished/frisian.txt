@@ -1155,8 +1155,6 @@ STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Skeakel rampen 
 STR_CONFIG_SETTING_CITY_APPROVAL                                :Hâlding gemeenten tsjinoer werstrukturearring: {STRING}
 STR_CONFIG_SETTING_CITY_APPROVAL_HELPTEXT                       :Kies hoe grut ympact fan lûdsoerlêst en omwrâldskea toch bedriuwen is op har reputaasje by de lokale bestjoeren en takomstige konstruksje yn harren mêd
 
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL                              :Maksimale kaarthichte: {STRING}
-STR_CONFIG_SETTING_MAX_HEIGHTLEVEL_HELPTEXT                     :Maksimale tastiene hichte fan bergen op 'e kaart ynstelle
 STR_CONFIG_SETTING_AUTOSLOPE                                    :Omkriten oanpasse under gebouen, spoaren, ensafuorthinne tastean: {STRING}
 STR_CONFIG_SETTING_AUTOSLOPE_HELPTEXT                           :Stean lânskipsbewurkings ûnder gebouwen en spoarbanen ta sûnder dat dizze ferwidere wurde
 STR_CONFIG_SETTING_CATCHMENT                                    :Gebrûk meer realistyske hannelsgebieten: {STRING}

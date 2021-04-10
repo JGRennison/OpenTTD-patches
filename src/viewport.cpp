@@ -2446,7 +2446,7 @@ void ViewportDrawPlans(const Viewport *vp)
 		ScaleByZoom(_dpi_for_text.left - 2, vp->zoom),
 		ScaleByZoom(_dpi_for_text.top - 2, vp->zoom),
 		ScaleByZoom(_dpi_for_text.left + _dpi_for_text.width + 2, vp->zoom),
-		ScaleByZoom(_dpi_for_text.top + _dpi_for_text.height + 2, vp->zoom) + (int)(ZOOM_LVL_BASE * TILE_HEIGHT * _settings_game.construction.max_heightlevel)
+		ScaleByZoom(_dpi_for_text.top + _dpi_for_text.height + 2, vp->zoom) + (int)(ZOOM_LVL_BASE * TILE_HEIGHT * _settings_game.construction.map_height_limit)
 	};
 
 	const int min_coord_delta = bounds.left / (int)(2 * ZOOM_LVL_BASE * TILE_SIZE);

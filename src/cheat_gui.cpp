@@ -129,7 +129,7 @@ static int32 ClickChangeDateCheat(int32 p1, int32 p2)
  */
 static int32 ClickChangeMaxHlCheat(int32 p1, int32 p2)
 {
-	p1 = Clamp(p1, MIN_MAX_HEIGHTLEVEL, MAX_MAX_HEIGHTLEVEL);
+	p1 = Clamp(p1, MIN_MAP_HEIGHT_LIMIT, MAX_MAP_HEIGHT_LIMIT);
 
 	/* Check if at least one mountain on the map is higher than the new value.
 	 * If yes, disallow the change. */
@@ -137,18 +137,18 @@ static int32 ClickChangeMaxHlCheat(int32 p1, int32 p2)
 		if ((int32)TileHeight(t) > p1) {
 			ShowErrorMessage(STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN, INVALID_STRING_ID, WL_ERROR);
 			/* Return old, unchanged value */
-			return _settings_game.construction.max_heightlevel;
+			return _settings_game.construction.map_height_limit;
 		}
 	}
 
 	/* Execute the change and reload GRF Data */
-	_settings_game.construction.max_heightlevel = p1;
+	_settings_game.construction.map_height_limit = p1;
 	ReloadNewGRFData();
 
 	/* The smallmap uses an index from heightlevels to colours. Trigger rebuilding it. */
 	InvalidateWindowClassesData(WC_SMALLMAP, 2);
 
-	return _settings_game.construction.max_heightlevel;
+	return _settings_game.construction.map_height_limit;
 }
 
 /**
@@ -179,16 +179,16 @@ struct CheatEntry {
  * Order matches with the values of #CheatNumbers
  */
 static const CheatEntry _cheats_ui[] = {
-	{CNM_MONEY,      SLE_INT32,       STR_CHEAT_MONEY,            &_money_cheat_amount,                    &_cheats.money.been_used,                  &ClickMoneyCheat           },
-	{CNM_LOCAL_ONLY, SLE_UINT8,       STR_CHEAT_CHANGE_COMPANY,   &_local_company,                         &_cheats.switch_company.been_used,         &ClickChangeCompanyCheat   },
-	{CNM_ALL,        SLE_BOOL,        STR_CHEAT_EXTRA_DYNAMITE,   &_cheats.magic_bulldozer.value,          &_cheats.magic_bulldozer.been_used,        nullptr                    },
-	{CNM_ALL,        SLE_BOOL,        STR_CHEAT_CROSSINGTUNNELS,  &_cheats.crossing_tunnels.value,         &_cheats.crossing_tunnels.been_used,       nullptr                    },
-	{CNM_ALL,        SLE_BOOL,        STR_CHEAT_NO_JETCRASH,      &_cheats.no_jetcrash.value,              &_cheats.no_jetcrash.been_used,            nullptr                    },
-	{CNM_LOCAL_ONLY, SLE_BOOL,        STR_CHEAT_SETUP_PROD,       &_cheats.setup_prod.value,               &_cheats.setup_prod.been_used,             &ClickSetProdCheat         },
-	{CNM_LOCAL_ONLY, SLE_UINT8,       STR_CHEAT_EDIT_MAX_HL,      &_settings_game.construction.max_heightlevel, &_cheats.edit_max_hl.been_used,       &ClickChangeMaxHlCheat     },
-	{CNM_LOCAL_ONLY, SLE_INT32,       STR_CHEAT_CHANGE_DATE,      &_cur_date_ymd.year,                     &_cheats.change_date.been_used,            &ClickChangeDateCheat      },
-	{CNM_ALL,        SLF_NOT_IN_SAVE, STR_CHEAT_INFLATION_COST,   &_economy.inflation_prices,              &_extra_cheats.inflation_cost.been_used,   nullptr                    },
-	{CNM_ALL,        SLF_NOT_IN_SAVE, STR_CHEAT_INFLATION_INCOME, &_economy.inflation_payment,             &_extra_cheats.inflation_income.been_used, nullptr                    },
+	{CNM_MONEY,      SLE_INT32,       STR_CHEAT_MONEY,            &_money_cheat_amount,                          &_cheats.money.been_used,                  &ClickMoneyCheat           },
+	{CNM_LOCAL_ONLY, SLE_UINT8,       STR_CHEAT_CHANGE_COMPANY,   &_local_company,                               &_cheats.switch_company.been_used,         &ClickChangeCompanyCheat   },
+	{CNM_ALL,        SLE_BOOL,        STR_CHEAT_EXTRA_DYNAMITE,   &_cheats.magic_bulldozer.value,                &_cheats.magic_bulldozer.been_used,        nullptr                    },
+	{CNM_ALL,        SLE_BOOL,        STR_CHEAT_CROSSINGTUNNELS,  &_cheats.crossing_tunnels.value,               &_cheats.crossing_tunnels.been_used,       nullptr                    },
+	{CNM_ALL,        SLE_BOOL,        STR_CHEAT_NO_JETCRASH,      &_cheats.no_jetcrash.value,                    &_cheats.no_jetcrash.been_used,            nullptr                    },
+	{CNM_LOCAL_ONLY, SLE_BOOL,        STR_CHEAT_SETUP_PROD,       &_cheats.setup_prod.value,                     &_cheats.setup_prod.been_used,             &ClickSetProdCheat         },
+	{CNM_LOCAL_ONLY, SLE_UINT8,       STR_CHEAT_EDIT_MAX_HL,      &_settings_game.construction.map_height_limit, &_cheats.edit_max_hl.been_used,       &ClickChangeMaxHlCheat     },
+	{CNM_LOCAL_ONLY, SLE_INT32,       STR_CHEAT_CHANGE_DATE,      &_cur_date_ymd.year,                           &_cheats.change_date.been_used,            &ClickChangeDateCheat      },
+	{CNM_ALL,        SLF_NOT_IN_SAVE, STR_CHEAT_INFLATION_COST,   &_economy.inflation_prices,                    &_extra_cheats.inflation_cost.been_used,   nullptr                    },
+	{CNM_ALL,        SLF_NOT_IN_SAVE, STR_CHEAT_INFLATION_INCOME, &_economy.inflation_payment,                   &_extra_cheats.inflation_income.been_used, nullptr                    },
 };
 
 static bool IsCheatAllowed(CheatNetworkMode mode)
