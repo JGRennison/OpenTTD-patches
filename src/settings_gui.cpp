@@ -1922,10 +1922,13 @@ static SettingsContainer &GetSettingsTree()
 			genworld->Add(new SettingEntry("game_creation.tgen_smoothness"));
 			genworld->Add(new SettingEntry("game_creation.variety"));
 			genworld->Add(new SettingEntry("game_creation.climate_threshold_mode"));
-			genworld->Add(new SettingEntry("game_creation.snow_coverage"));
-			genworld->Add(new SettingEntry("game_creation.snow_line_height"));
-			genworld->Add(new SettingEntry("game_creation.desert_coverage"));
-			genworld->Add(new SettingEntry("game_creation.rainforest_line_height"));
+			auto coverage_hide = []() -> bool { return GetGameSettings().game_creation.climate_threshold_mode != 0; };
+			auto snow_line_height_hide = []() -> bool { return GetGameSettings().game_creation.climate_threshold_mode != 1 && _game_mode == GM_MENU; };
+			auto rainforest_line_height_hide = []() -> bool { return GetGameSettings().game_creation.climate_threshold_mode != 1; };
+			genworld->Add(new ConditionallyHiddenSettingEntry("game_creation.snow_coverage", coverage_hide));
+			genworld->Add(new ConditionallyHiddenSettingEntry("game_creation.snow_line_height", snow_line_height_hide));
+			genworld->Add(new ConditionallyHiddenSettingEntry("game_creation.desert_coverage", coverage_hide));
+			genworld->Add(new ConditionallyHiddenSettingEntry("game_creation.rainforest_line_height", rainforest_line_height_hide));
 			genworld->Add(new SettingEntry("game_creation.amount_of_rivers"));
 			SettingsPage *rivers = genworld->Add(new SettingsPage(STR_CONFIG_SETTING_GENWORLD_RIVERS_LAKES));
 			{

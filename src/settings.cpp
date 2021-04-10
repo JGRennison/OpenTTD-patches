@@ -1495,6 +1495,7 @@ static bool InvalidateAllVehicleImageCaches(int32 p1)
 static bool ClimateThresholdModeChanged(int32 p1)
 {
 	InvalidateWindowClassesData(WC_GENERATE_LANDSCAPE);
+	InvalidateWindowClassesData(WC_GAME_OPTIONS);
 	return true;
 }
 
