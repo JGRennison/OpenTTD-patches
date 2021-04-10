@@ -3335,10 +3335,11 @@ void SetWindowClassesDirty(WindowClass cls)
  */
 void Window::InvalidateData(int data, bool gui_scope)
 {
-	this->SetDirty();
 	if (!gui_scope) {
 		/* Schedule GUI-scope invalidation for next redraw. */
 		this->scheduled_invalidation_data.push_back(data);
+	} else {
+		this->SetDirty();
 	}
 	this->OnInvalidateData(data, gui_scope);
 }
@@ -3352,6 +3353,7 @@ void Window::ProcessScheduledInvalidations()
 		if (this->window_class == WC_INVALID) break;
 		this->OnInvalidateData(data, true);
 	}
+	if (!this->scheduled_invalidation_data.empty()) this->SetDirty();
 	this->scheduled_invalidation_data.clear();
 }
 
