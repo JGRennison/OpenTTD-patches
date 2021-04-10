@@ -2070,6 +2070,11 @@ static SettingsContainer &GetSettingsTree()
 					town_zone->Add(new SettingEntry("economy.town_zone_2_mult"));
 					town_zone->Add(new SettingEntry("economy.town_zone_3_mult"));
 					town_zone->Add(new SettingEntry("economy.town_zone_4_mult"));
+					town_zone->Add(new SettingEntry("economy.city_zone_0_mult"));
+					town_zone->Add(new SettingEntry("economy.city_zone_1_mult"));
+					town_zone->Add(new SettingEntry("economy.city_zone_2_mult"));
+					town_zone->Add(new SettingEntry("economy.city_zone_3_mult"));
+					town_zone->Add(new SettingEntry("economy.city_zone_4_mult"));
 				}
 				towns->Add(new SettingEntry("economy.allow_town_roads"));
 				towns->Add(new SettingEntry("economy.allow_town_level_crossings"));
