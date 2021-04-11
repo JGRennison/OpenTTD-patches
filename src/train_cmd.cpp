@@ -797,24 +797,24 @@ static int GetRealisticBrakingSpeedForDistance(const TrainDecelerationStats &sta
 			/* calculate speed at which braking would be sufficient */
 
 			uint weight = stats.t->gcache.cached_weight;
-			int64 power_w = stats.t->gcache.cached_power * 746ll;
-			int64 min_braking_force = (stats.t->gcache.cached_total_length * 300) + stats.t->gcache.cached_axle_resistance + (weight * 16);
+			int64 power_w = (stats.t->gcache.cached_power * 746ll) + (stats.t->gcache.cached_total_length * (int64)RBC_BRAKE_POWER_PER_LENGTH);
+			int64 min_braking_force = (stats.t->gcache.cached_total_length * (int64)RBC_BRAKE_FORCE_PER_LENGTH) + stats.t->gcache.cached_axle_resistance + (weight * 16);
 
 			/* F = (7/8) * (F_min + ((power_w * 18) / (5 * v)))
-			 * v^2 = sloped_ke + F * s / m
-			 * let k = sloped_ke + ((7 * F_min * s) / (8 * m))
-			 * v^3 - k * v - (7 * 18 * power_w * s) / (5 * 8 * m) = 0
+			 * v^2 = sloped_ke + F * s / (4 * m)
+			 * let k = sloped_ke + ((7 * F_min * s) / (8 * 4 * m))
+			 * v^3 - k * v - (7 * 18 * power_w * s) / (5 * 8 * 4 * m) = 0
 			 * v^3 + p * v + q = 0
 			 *   where: p = -k
-			 *          q = -(7 * 18 * power_w * s) / (5 * 8 * m)
+			 *          q = -(7 * 18 * power_w * s) / (5 * 8 * 4 * m)
 			 *
 			 * v = cbrt(-q / 2 + sqrt((q^2 / 4) - (k^3 / 27))) + cbrt(-q / 2 - sqrt((q^2 / 4) - (k^3 / 27)))
-			 * let r = - q / 2 = (7 * 9 * power_w * s) / (5 * 8 * m)
+			 * let r = - q / 2 = (7 * 9 * power_w * s) / (5 * 8 * 4 * m)
 			 * let l = k / 3
 			 * v = cbrt(r + sqrt(r^2 - l^3)) + cbrt(r - sqrt(r^2 - l^3))
 			 */
 			int64 l = (sloped_ke + ((7 * min_braking_force * (int64)distance) / (8 * weight))) / 3;
-			int64 r = (7 * 9 * power_w * (int64)distance) / (40 * weight);
+			int64 r = (7 * 9 * power_w * (int64)distance) / (160 * weight);
 			int64 sqrt_factor = (r * r) - (l * l * l);
 			if (sqrt_factor >= 0) {
 				int64 part = IntSqrt64(sqrt_factor);
@@ -1083,7 +1083,7 @@ void Train::UpdateAcceleration()
 				int acceleration_type = this->GetAccelerationType();
 				bool maglev = (acceleration_type == 2);
 				int64 power_w = power * 746ll;
-				int64 min_braking_force = this->gcache.cached_total_length * 300;
+				int64 min_braking_force = this->gcache.cached_total_length * (int64)RBC_BRAKE_FORCE_PER_LENGTH;
 				if (!maglev) {
 					/* From GroundVehicle::GetAcceleration()
 					 * force = power * 18 / (speed * 5);
@@ -1102,12 +1102,13 @@ void Train::UpdateAcceleration()
 					 */
 					int evaluation_speed = this->vcache.cached_max_speed;
 					int area = 14;
+					int64 power_b = power_w + ((int64)this->gcache.cached_total_length * RBC_BRAKE_POWER_PER_LENGTH);
 					if (this->gcache.cached_air_drag > 0) {
-						uint64 v_3 = 1800 * (uint64)power_w / (area * this->gcache.cached_air_drag);
+						uint64 v_3 = 1800 * (uint64)power_b / (area * this->gcache.cached_air_drag);
 						evaluation_speed = std::min<int>(evaluation_speed, IntCbrt(v_3));
 					}
 					if (evaluation_speed > 0) {
-						min_braking_force += power_w * 18 / (evaluation_speed * 5);
+						min_braking_force += power_b * 18 / (evaluation_speed * 5);
 						min_braking_force += (area * this->gcache.cached_air_drag * evaluation_speed * evaluation_speed) / 1000;
 					}
 
@@ -1122,7 +1123,7 @@ void Train::UpdateAcceleration()
 					min_braking_force += power_w / 25;
 				}
 				min_braking_force -= (min_braking_force >> 3); // Slightly underestimate braking for defensive driving purposes
-				this->tcache.cached_uncapped_decel = Clamp(min_braking_force / weight, 1, UINT16_MAX);
+				this->tcache.cached_uncapped_decel = Clamp(min_braking_force / (weight * 4), 1, UINT16_MAX);
 				this->tcache.cached_deceleration = Clamp(this->tcache.cached_uncapped_decel, 1, GetTrainRealisticBrakingTargetDecelerationLimit(acceleration_type));
 				break;
 			}
