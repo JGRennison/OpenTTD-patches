@@ -73,8 +73,11 @@ const char *VideoDriver_SDL_OpenGL::Start(const StringList &param)
 	int w, h;
 	SDL_GetWindowSize(this->sdl_window, &w, &h);
 	this->ClientSizeChanged(w, h, true);
-
-	SDL_GL_SetSwapInterval(GetDriverParamBool(param, "vsync") ? 1 : 0);
+	/* We should have a valid screen buffer now. If not, something went wrong and we should abort. */
+	if (_screen.dst_ptr == nullptr) {
+		this->Stop();
+		return "Can't get pointer to screen buffer";
+	}
 
 	return nullptr;
 }
@@ -95,6 +98,11 @@ void VideoDriver_SDL_OpenGL::DestroyContext()
 	}
 }
 
+void VideoDriver_SDL_OpenGL::ToggleVsync(bool vsync)
+{
+	SDL_GL_SetSwapInterval(vsync);
+}
+
 const char *VideoDriver_SDL_OpenGL::AllocateContext()
 {
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -110,6 +118,8 @@ const char *VideoDriver_SDL_OpenGL::AllocateContext()
 
 	this->gl_context = SDL_GL_CreateContext(this->sdl_window);
 	if (this->gl_context == nullptr) return "SDL2: Can't active GL context";
+
+	ToggleVsync(_video_vsync);
 
 	return OpenGLBackend::Create(&GetOGLProcAddressCallback);
 }

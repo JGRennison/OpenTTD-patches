@@ -1339,6 +1339,7 @@ static bool InvalidateNewGRFChangeWindows(int32 p1)
 static bool InvalidateCompanyLiveryWindow(int32 p1)
 {
 	InvalidateWindowClassesData(WC_COMPANY_COLOUR, -1);
+	ResetVehicleColourMap();
 	return RedrawScreen(p1);
 }
 
