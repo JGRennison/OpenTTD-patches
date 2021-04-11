@@ -476,12 +476,7 @@ protected:
 			tempmax = std::max(this->cur_speed - (this->cur_speed / 10) - 1, max_speed);
 		}
 
-		/* Enforce a maximum and minimum speed. Normally we would use something like
-		 * Clamp for this, but in this case min_speed might be below the maximum speed
-		 * threshold for some reason. That makes acceleration fail and assertions
-		 * happen in Clamp. So make it explicit that min_speed overrules the maximum
-		 * speed by explicit ordering of min and max. */
-		int tempspeed = std::min(this->cur_speed + ((int)spd >> 8), tempmax);
+		int tempspeed = this->cur_speed + ((int)spd >> 8);
 
 		if (Type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC && tempspeed > advisory_max_speed && accel.braking != accel.acceleration) {
 			spd = initial_subspeed + accel.braking;
@@ -503,6 +498,13 @@ protected:
 				this->subspeed = 0;
 			}
 		}
+
+		/* Enforce a maximum and minimum speed. Normally we would use something like
+		 * Clamp for this, but in this case min_speed might be below the maximum speed
+		 * threshold for some reason. That makes acceleration fail and assertions
+		 * happen in Clamp. So make it explicit that min_speed overrules the maximum
+		 * speed by explicit ordering of min and max. */
+		tempspeed = std::min(tempspeed, tempmax);
 
 		this->cur_speed = std::max(tempspeed, min_speed);
 
