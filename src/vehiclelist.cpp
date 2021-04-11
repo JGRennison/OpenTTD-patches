@@ -55,6 +55,7 @@ bool VehicleListIdentifier::UnpackIfValid(uint32 data)
 {
 	VehicleListIdentifier result;
 	bool ret = result.UnpackIfValid(data);
+	(void)ret; // assert only
 	assert(ret);
 	return result;
 }

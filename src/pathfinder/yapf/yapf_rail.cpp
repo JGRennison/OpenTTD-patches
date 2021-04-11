@@ -60,8 +60,8 @@ template <typename Tpf> void DumpState(Tpf &pf1, Tpf &pf2)
 #endif
 	assert(f1 != nullptr);
 	assert(f2 != nullptr);
-	fwrite(dmp1.m_out.Data(), 1, dmp1.m_out.Size(), f1);
-	fwrite(dmp2.m_out.Data(), 1, dmp2.m_out.Size(), f2);
+	fwrite(dmp1.m_out.c_str(), 1, dmp1.m_out.size(), f1);
+	fwrite(dmp2.m_out.c_str(), 1, dmp2.m_out.size(), f2);
 	fclose(f1);
 	fclose(f2);
 }

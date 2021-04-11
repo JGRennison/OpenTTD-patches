@@ -109,7 +109,7 @@ struct CYapfRailSegment
 		dmp.WriteStructT("m_key", &m_key);
 		dmp.WriteTile("m_last_tile", m_last_tile);
 		dmp.WriteEnumT("m_last_td", m_last_td);
-		dmp.WriteLine("m_cost = %d", m_cost);
+		dmp.WriteValue("m_cost", m_cost);
 		dmp.WriteTile("m_last_signal_tile", m_last_signal_tile);
 		dmp.WriteEnumT("m_last_signal_td", m_last_signal_td);
 		dmp.WriteEnumT("m_end_segment_reason", m_end_segment_reason);
@@ -219,13 +219,13 @@ struct CYapfRailNodeT
 	{
 		base::Dump(dmp);
 		dmp.WriteStructT("m_segment", m_segment);
-		dmp.WriteLine("m_num_signals_passed = %d", m_num_signals_passed);
-		dmp.WriteLine("m_num_signals_res_through_passed = %d", m_num_signals_res_through_passed);
-		dmp.WriteLine("m_targed_seen = %s", flags_u.flags_s.m_targed_seen ? "Yes" : "No");
-		dmp.WriteLine("m_choice_seen = %s", flags_u.flags_s.m_choice_seen ? "Yes" : "No");
-		dmp.WriteLine("m_last_signal_was_red = %s", flags_u.flags_s.m_last_signal_was_red ? "Yes" : "No");
-		dmp.WriteLine("m_reverse_pending = %s", flags_u.flags_s.m_reverse_pending ? "Yes" : "No");
-		dmp.WriteLine("m_teleport = %s", flags_u.flags_s.m_teleport ? "Yes" : "No");
+		dmp.WriteValue("m_num_signals_passed", m_num_signals_passed);
+		dmp.WriteValue("m_num_signals_res_through_passed", m_num_signals_res_through_passed);
+		dmp.WriteValue("m_targed_seen", flags_u.flags_s.m_targed_seen ? "Yes" : "No");
+		dmp.WriteValue("m_choice_seen", flags_u.flags_s.m_choice_seen ? "Yes" : "No");
+		dmp.WriteValue("m_last_signal_was_red", flags_u.flags_s.m_last_signal_was_red ? "Yes" : "No");
+		dmp.WriteValue("m_reverse_pending", flags_u.flags_s.m_reverse_pending ? "Yes" : "No");
+		dmp.WriteValue("m_teleport", flags_u.flags_s.m_teleport ? "Yes" : "No");
 		dmp.WriteEnumT("m_last_red_signal_type", m_last_red_signal_type);
 	}
 };

@@ -9,9 +9,11 @@
 
 #include "stdafx.h"
 #include "command_func.h"
+#include "hotkeys.h"
 #include "newgrf.h"
 #include "newgrf_object.h"
 #include "newgrf_text.h"
+#include "object.h"
 #include "querystring_gui.h"
 #include "sortlist_type.h"
 #include "stringfilter_type.h"
@@ -32,6 +34,11 @@
 static ObjectClassID _selected_object_class; ///< Currently selected available object class.
 static int _selected_object_index;           ///< Index of the currently selected object if existing, else \c -1.
 static uint8 _selected_object_view;          ///< the view of the selected object
+
+/** Enum referring to the Hotkeys in the build object window */
+enum BuildObjectHotkeys {
+	BOHK_FOCUS_FILTER_BOX, ///< Focus the edit box for editing the filter string
+};
 
 /** The window used for building objects. */
 class BuildObjectWindow : public Window {
@@ -88,7 +95,7 @@ class BuildObjectWindow : public Window {
 	}
 
 public:
-	BuildObjectWindow(WindowDesc *desc, WindowNumber number) : Window(desc), info_height(1), filter_editbox(EDITBOX_MAX_SIZE)
+	BuildObjectWindow(WindowDesc *desc, WindowNumber number) : Window(desc), info_height(1), filter_editbox(EDITBOX_MAX_SIZE * MAX_CHAR_LENGTH, EDITBOX_MAX_SIZE)
 	{
 		this->CreateNestedTree();
 
@@ -194,8 +201,7 @@ public:
 		} else {
 			this->SelectFirstAvailableObject(true);
 		}
-		ObjectClass *objclass = ObjectClass::Get(_selected_object_class);
-		assert(objclass->GetUISpecCount() > 0); // object GUI should be disabled elsewise
+		assert(ObjectClass::Get(_selected_object_class)->GetUISpecCount() > 0); // object GUI should be disabled elsewise
 	}
 
 	void SetStringParameters(int widget) const override
@@ -580,6 +586,21 @@ public:
 		}
 	}
 
+	EventState OnHotkey(int hotkey) override
+	{
+		switch (hotkey) {
+			case BOHK_FOCUS_FILTER_BOX:
+				this->SetFocusedWidget(WID_BO_FILTER);
+				SetFocusedWindow(this); // The user has asked to give focus to the text box, so make sure this window is focused.
+				break;
+
+			default:
+				return ES_NOT_HANDLED;
+		}
+
+		return ES_HANDLED;
+	}
+
 	void OnEditboxChanged(int wid) override
 	{
 		string_filter.SetFilterTerm(this->filter_editbox.text.buf);
@@ -633,7 +654,28 @@ public:
 		}
 		this->SelectOtherObject(-1);
 	}
+
+	static HotkeyList hotkeys;
 };
+
+/**
+ * Handler for global hotkeys of the BuildObjectWindow.
+ * @param hotkey Hotkey
+ * @return ES_HANDLED if hotkey was accepted.
+ */
+static EventState BuildObjectGlobalHotkeys(int hotkey)
+{
+	if (_game_mode == GM_MENU) return ES_NOT_HANDLED;
+	Window *w = ShowBuildObjectPicker();
+	if (w == nullptr) return ES_NOT_HANDLED;
+	return w->OnHotkey(hotkey);
+}
+
+static Hotkey buildobject_hotkeys[] = {
+	Hotkey('F', "focus_filter_box", BOHK_FOCUS_FILTER_BOX),
+	HOTKEY_LIST_END
+};
+HotkeyList BuildObjectWindow::hotkeys("buildobject", buildobject_hotkeys, BuildObjectGlobalHotkeys);
 
 Listing BuildObjectWindow::last_sorting = { false, 0 };
 Filtering BuildObjectWindow::last_filtering = { false, 0 };
@@ -653,24 +695,24 @@ static const NWidgetPart _nested_build_object_widgets[] = {
 		NWidget(WWT_DEFSIZEBOX, COLOUR_DARK_GREEN),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_DARK_GREEN),
-		NWidget(NWID_HORIZONTAL), SetPadding(2, 0, 0, 0),
-			NWidget(NWID_VERTICAL),
-				NWidget(NWID_HORIZONTAL), SetPadding(0, 5, 2, 5),
+		NWidget(NWID_HORIZONTAL), SetPadding(2, 0, 0, 2),
+			NWidget(NWID_VERTICAL), SetPadding(0, 5, 2, 0), SetPIP(0, 2, 0),
+				NWidget(NWID_HORIZONTAL),
 					NWidget(WWT_TEXT, COLOUR_DARK_GREEN), SetFill(0, 1), SetDataTip(STR_LIST_FILTER_TITLE, STR_NULL),
 					NWidget(WWT_EDITBOX, COLOUR_GREY, WID_BO_FILTER), SetFill(1, 0), SetResize(1, 0),
 							SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 				EndContainer(),
-				NWidget(NWID_HORIZONTAL), SetPadding(0, 5, 2, 5),
+				NWidget(NWID_HORIZONTAL),
 					NWidget(WWT_MATRIX, COLOUR_GREY, WID_BO_CLASS_LIST), SetFill(1, 0), SetMatrixDataTip(1, 0, STR_OBJECT_BUILD_CLASS_TOOLTIP), SetScrollbar(WID_BO_SCROLLBAR),
 					NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_BO_SCROLLBAR),
 				EndContainer(),
-				NWidget(NWID_HORIZONTAL), SetPadding(0, 5, 0, 5),
+				NWidget(NWID_HORIZONTAL),
 					NWidget(NWID_MATRIX, COLOUR_DARK_GREEN, WID_BO_OBJECT_MATRIX), SetPIP(0, 2, 0),
 						NWidget(WWT_PANEL, COLOUR_GREY, WID_BO_OBJECT_SPRITE), SetDataTip(0x0, STR_OBJECT_BUILD_PREVIEW_TOOLTIP), EndContainer(),
 					EndContainer(),
 				EndContainer(),
-				NWidget(WWT_TEXT, COLOUR_DARK_GREEN, WID_BO_OBJECT_NAME), SetDataTip(STR_ORANGE_STRING, STR_NULL), SetPadding(2, 5, 2, 5),
-				NWidget(WWT_TEXT, COLOUR_DARK_GREEN, WID_BO_OBJECT_SIZE), SetDataTip(STR_OBJECT_BUILD_SIZE, STR_NULL), SetPadding(2, 5, 2, 5),
+				NWidget(WWT_TEXT, COLOUR_DARK_GREEN, WID_BO_OBJECT_NAME), SetDataTip(STR_ORANGE_STRING, STR_NULL),
+				NWidget(WWT_TEXT, COLOUR_DARK_GREEN, WID_BO_OBJECT_SIZE), SetDataTip(STR_OBJECT_BUILD_SIZE, STR_NULL),
 			EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_DARK_GREEN), SetScrollbar(WID_BO_SELECT_SCROLL),
 				NWidget(NWID_HORIZONTAL),
@@ -684,7 +726,7 @@ static const NWidgetPart _nested_build_object_widgets[] = {
 			EndContainer(),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_EMPTY, INVALID_COLOUR, WID_BO_INFO), SetPadding(2, 5, 0, 5), SetFill(1, 0), SetResize(1, 0),
+			NWidget(WWT_EMPTY, INVALID_COLOUR, WID_BO_INFO), SetPadding(0, 5, 0, 1), SetFill(1, 0), SetResize(1, 0),
 			NWidget(NWID_VERTICAL),
 				NWidget(WWT_PANEL, COLOUR_DARK_GREEN), SetFill(0, 1), EndContainer(),
 				NWidget(WWT_RESIZEBOX, COLOUR_DARK_GREEN),
@@ -697,16 +739,18 @@ static WindowDesc _build_object_desc(
 	WDP_AUTO, "build_object", 0, 0,
 	WC_BUILD_OBJECT, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	_nested_build_object_widgets, lengthof(_nested_build_object_widgets)
+	_nested_build_object_widgets, lengthof(_nested_build_object_widgets),
+	&BuildObjectWindow::hotkeys
 );
 
 /** Show our object picker.  */
-void ShowBuildObjectPicker()
+Window *ShowBuildObjectPicker()
 {
 	/* Don't show the place object button when there are no objects to place. */
 	if (ObjectClass::GetUIClassCount() > 0) {
-		AllocateWindowDescFront<BuildObjectWindow>(&_build_object_desc, 0);
+		return AllocateWindowDescFront<BuildObjectWindow>(&_build_object_desc, 0);
 	}
+	return nullptr;
 }
 
 /** Reset all data of the object GUI. */

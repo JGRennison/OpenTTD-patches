@@ -189,8 +189,16 @@ struct LanguagePack : public LanguagePackHeader {
 	inline void operator delete(void *ptr) { ::operator delete (ptr); }
 };
 
+struct LanguagePackDeleter {
+	void operator()(LanguagePack *langpack)
+	{
+		/* LanguagePack is in fact reinterpreted char[], we need to reinterpret it back to free it properly. */
+		delete[] reinterpret_cast<char*>(langpack);
+	}
+};
+
 struct LoadedLanguagePack {
-	std::unique_ptr<LanguagePack> langpack;
+	std::unique_ptr<LanguagePack, LanguagePackDeleter> langpack;
 
 	std::vector<char *> offsets;
 
@@ -2055,7 +2063,7 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 {
 	/* Current language pack */
 	size_t len = 0;
-	std::unique_ptr<LanguagePack> lang_pack(reinterpret_cast<LanguagePack *>(ReadFileToMem(lang->file, len, 1U << 20).release()));
+	std::unique_ptr<LanguagePack, LanguagePackDeleter> lang_pack(reinterpret_cast<LanguagePack *>(ReadFileToMem(lang->file, len, 1U << 20).release()));
 	if (!lang_pack) return false;
 
 	/* End of read data (+ terminating zero added in ReadFileToMem()) */

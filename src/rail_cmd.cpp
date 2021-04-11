@@ -605,6 +605,10 @@ CommandCost CmdBuildSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 				return ret;
 			}
 
+			ret = CheckRailSlope(tileh, trackbit, GetTrackBits(tile), tile);
+			if (ret.Failed()) return ret;
+			cost.AddCost(ret);
+
 			if (HasSignals(tile) && TracksOverlap(GetTrackBits(tile) | TrackToTrackBits(track))) {
 				/* If adding the new track causes any overlap, all signals must be removed first */
 				if (!auto_remove_signals) return_cmd_error(STR_ERROR_MUST_REMOVE_SIGNALS_FIRST);
@@ -617,10 +621,6 @@ CommandCost CmdBuildSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 					}
 				}
 			}
-
-			ret = CheckRailSlope(tileh, trackbit, GetTrackBits(tile), tile);
-			if (ret.Failed()) return ret;
-			cost.AddCost(ret);
 
 			rt_guard.cancel();
 

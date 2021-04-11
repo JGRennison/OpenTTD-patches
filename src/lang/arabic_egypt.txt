@@ -187,6 +187,7 @@ STR_COLOUR_ORANGE                                               :برتقالي
 STR_COLOUR_BROWN                                                :بني
 STR_COLOUR_GREY                                                 :رمادي
 STR_COLOUR_WHITE                                                :ابيض
+STR_COLOUR_DEFAULT                                              :الإفتراضي
 
 # Units used in OpenTTD
 STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA}{NBSP}ميل/س
@@ -218,20 +219,24 @@ STR_UNITS_HEIGHT_IMPERIAL                                       :{COMMA}{NBSP} �
 STR_UNITS_HEIGHT_SI                                             :{COMMA}{NBSP} متر
 
 # Common window strings
+STR_LIST_FILTER_TITLE                                           :{BLACK}تصفية القائمة
 STR_LIST_FILTER_OSKTITLE                                        :{BLACK} ادخل فلتر
 STR_LIST_FILTER_TOOLTIP                                         :{BLACK} اختر كلمة اساسية لفلترة القائمة
 
+STR_TOOLTIP_GROUP_ORDER                                         :{BLACK}حدد ترتيب التجميع
 STR_TOOLTIP_SORT_ORDER                                          :{BLACK} اختر طريقة الترتيب - تنازلي / تصاعدي
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK} اختر نوع الترتيب
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}حدد معايير المُرَشِح
 STR_BUTTON_SORT_BY                                              :{BLACK} رتب بـ
 STR_BUTTON_RENAME                                               :{BLACK}اعادة تسمية
 STR_BUTTON_CATCHMENT                                            :{BLACK}مدى التغطية
+STR_TOOLTIP_CATCHMENT                                           :{BLACK}عرض منطقة التغطية
 
 STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}اغلاق الاطار
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}عنوان الاطار- اسحب لتحريك الاطار
 STR_TOOLTIP_SHADE                                               :{BLACK}نافذة الظل - تعرض العنوان فقط
 STR_TOOLTIP_DEBUG                                               :{BLACK}اظهر معلومات صائد اخطاء الاضافات الجديدة.
+STR_TOOLTIP_DEFSIZE                                             :{BLACK}تغيير حجم النافذة إلى الحجم الافتراضي. Ctrl + Click لتخزين الحجم الحالي كإعداد افتراضي
 STR_TOOLTIP_STICKY                                              :{BLACK}علم هذه النافذة كغير قابلة للإقفال باستخدام زر إغلاق كل النوافذ, اضغط مع Ctrl لجعل الأمر إفتراضيا
 STR_TOOLTIP_RESIZE                                              :{BLACK}اضغط واسحب لتعديل حجم الاطار
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}تبديل حجم الاطار كبير / صغير
@@ -240,7 +245,15 @@ STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST                            :{BLACK}عمود
 STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC                              :{BLACK}هدم المباني و غيرها في مربع من الأرض.
 
 # Show engines button
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN                           :{BLACK}عرض المخفي
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_ROAD_VEHICLE                    :{BLACK}عرض المخفي
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_SHIP                            :{BLACK}عرض المخفي
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT                        :{BLACK}عرض المخفي
 
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN_TOOLTIP                   :{BLACK}من خلال تمكين هذا الزر ، يتم أيضًا عرض عربات القطار المخفية
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_ROAD_VEHICLE_TOOLTIP            :{BLACK}من خلال تمكين هذا الزر ، يتم أيضًا عرض مركبات الطرق المخفية
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_SHIP_TOOLTIP                    :{BLACK}من خلال تمكين هذا الزر ، يتم أيضًا عرض السفن المخفية
+STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT_TOOLTIP                :{BLACK}من خلال تمكين هذا الزر ، يتم أيضًا عرض الطائرات المخفية
 
 # Query window
 STR_BUTTON_DEFAULT                                              :{BLACK}افتراضي
@@ -293,6 +306,8 @@ STR_SORT_BY_RANGE                                               :مدى
 STR_SORT_BY_POPULATION                                          :عدد السكان
 
 # Group by options for vehicle list
+STR_GROUP_BY_NONE                                               :لا شيء
+STR_GROUP_BY_SHARED_ORDERS                                      :لأوامر المشتركة
 
 # Tooltips for the main toolbar
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}ايقاف اللعبة
@@ -305,6 +320,8 @@ STR_TOOLBAR_TOOLTIP_DISPLAY_SUBSIDIES                           :{BLACK}اظها
 STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_STATIONS            :{BLACK}عرض قائمة محطات الشركة.
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_FINANCES                    :{BLACK}عرض السجل المالي للشركة
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_GENERAL                     :{BLACK}عرض معلومات الشركة
+STR_TOOLBAR_TOOLTIP_DISPLAY_STORY_BOOK                          :{BLACK}عرض كتاب القصص
+STR_TOOLBAR_TOOLTIP_DISPLAY_GOALS_LIST                          :{BLACK}عرض قائمة الأهداف
 STR_TOOLBAR_TOOLTIP_DISPLAY_GRAPHS                              :{BLACK}عرض المخططات
 STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_LEAGUE                      :{BLACK}عرض جدول ترتيب الشركات
 STR_TOOLBAR_TOOLTIP_FUND_CONSTRUCTION_OF_NEW                    :{BLACK}موّل انشاء مصنع / عرض كل المصانع
@@ -316,6 +333,7 @@ STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_IN                            :{BLACK}تكبي
 STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_OUT                           :{BLACK}تصغير الصورة
 STR_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TRACK                        :{BLACK}ادوات بناء سكة حديد
 STR_TOOLBAR_TOOLTIP_BUILD_ROADS                                 :{BLACK}ادوات بناء الطرق
+STR_TOOLBAR_TOOLTIP_BUILD_TRAMWAYS                              :{BLACK}بناء خطوط الترام
 STR_TOOLBAR_TOOLTIP_BUILD_SHIP_DOCKS                            :{BLACK}ادوات السفن
 STR_TOOLBAR_TOOLTIP_BUILD_AIRPORTS                              :{BLACK}بناء مطارات
 STR_TOOLBAR_TOOLTIP_LANDSCAPING                                 :{BLACK}افتح مدير تحرير التضاريس لرفع / خفض الارض, زراعة الاشجار, الخ.
@@ -378,6 +396,7 @@ STR_FILE_MENU_EXIT                                              :خروج
 # map menu
 STR_MAP_MENU_MAP_OF_WORLD                                       :خريطة العالم
 STR_MAP_MENU_EXTRA_VIEWPORT                                     :شاشة عرض اضافية
+STR_MAP_MENU_LINGRAPH_LEGEND                                    :مفتاح تدفق البضائع
 STR_MAP_MENU_SIGN_LIST                                          :قائمة العلامات
 
 ############ range for town menu starts
@@ -401,10 +420,12 @@ STR_GRAPH_MENU_CARGO_PAYMENT_RATES                              :معدل تكل
 ############ range for company league menu starts
 STR_GRAPH_MENU_COMPANY_LEAGUE_TABLE                             :ترتيب الشركات
 STR_GRAPH_MENU_DETAILED_PERFORMANCE_RATING                      :تقييم أداء مفصل
+STR_GRAPH_MENU_HIGHSCORE                                        :قائمه المتفوقين
 ############ range ends here
 
 ############ range for industry menu starts
 STR_INDUSTRY_MENU_INDUSTRY_DIRECTORY                            :دليل المصانع
+STR_INDUSTRY_MENU_INDUSTRY_CHAIN                                :سلاسل الصناعة
 STR_INDUSTRY_MENU_FUND_NEW_INDUSTRY                             :مول بناء مصنع
 ############ range ends here
 
@@ -441,6 +462,7 @@ STR_TOOLBAR_SOUND_MUSIC                                         :الموسيق�
 ############ range for message menu starts
 STR_NEWS_MENU_LAST_MESSAGE_NEWS_REPORT                          :الرسالة الأخيرة/التقرير الجديد
 STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :الرسائل السابقة
+STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :احذف كل الرسائل
 ############ range ends here
 
 ############ range for about menu starts
@@ -940,6 +962,9 @@ STR_GAME_OPTIONS_RESOLUTION                                     :{BLACK}دقة �
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :{BLACK}اختر دقة الشاشة
 STR_GAME_OPTIONS_RESOLUTION_OTHER                               :اخرى
 
+STR_GAME_OPTIONS_VIDEO_ACCELERATION                             :{BLACK}تسريع الأجهزة
+STR_GAME_OPTIONS_VIDEO_ACCELERATION_TOOLTIP                     :{BLACK}حدد هذا المربع للسماح لـ OpenTTD بمحاولة استخدام تسريع الأجهزة. سيتم تطبيق الإعداد الذي تم تغييره فقط عند إعادة تشغيل اللعبة
+STR_GAME_OPTIONS_VIDEO_ACCELERATION_RESTART                     :{WHITE}لن يعمل الإعداد إلا بعد إعادة تشغيل اللعبة
 
 STR_GAME_OPTIONS_GUI_ZOOM_FRAME                                 :{BLACK}حجم اللوحة
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_TOOLTIP                      :{BLACK}حدد العنصر المطلوب
@@ -948,9 +973,21 @@ STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_NORMAL                       :تقريب عا
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_2X_ZOOM                      :تقريب ×2
 STR_GAME_OPTIONS_GUI_ZOOM_DROPDOWN_4X_ZOOM                      :تقريب ×4
 
+STR_GAME_OPTIONS_FONT_ZOOM                                      :{BLACK}حجم الخط
+STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_TOOLTIP                     :{BLACK}حدد حجم خط الواجهة المراد استخدامه
 
+STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_AUTO                        :(كشف أوتوماتيكي)
+STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_NORMAL                      :عادي
+STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_2X_ZOOM                     :حجم مزدوج
+STR_GAME_OPTIONS_FONT_ZOOM_DROPDOWN_4X_ZOOM                     :حجم رباعي
 
+STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}الرسومات
 
+STR_GAME_OPTIONS_REFRESH_RATE                                   :{BLACK}معدل تحديث الشاشة
+STR_GAME_OPTIONS_REFRESH_RATE_TOOLTIP                           :{BLACK}حدد معدل تحديث الشاشة
+STR_GAME_OPTIONS_REFRESH_RATE_OTHER                             :أخرى
+STR_GAME_OPTIONS_REFRESH_RATE_ITEM                              :{NUM}هرتز
+STR_GAME_OPTIONS_REFRESH_RATE_WARNING                           :{WHITE}قد تؤثر معدلات التحديث الأعلى من 60 هرتز على الأداء.
 
 STR_GAME_OPTIONS_BASE_GRF                                       :{BLACK} الواجهة الرسومية الاساسية
 STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :{BLACK} اختر مجموعة الواجهة الرسومية
@@ -1092,6 +1129,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :يمين
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           ::سرعة البناء {STRING}
 STR_CONFIG_SETTING_VEHICLE_BREAKDOWNS                           ::تعطلات العربة {STRING}
 
+STR_CONFIG_SETTING_MAP_HEIGHT_LIMIT                             :حد ارتفاع الخريطة:{STRING}
 STR_CONFIG_SETTING_AUTOSLOPE                                    :السماح بتحريك الأرض تحت المباني, الطرق, الخ : {STRING}
 STR_CONFIG_SETTING_CATCHMENT                                    :السماح بحدود اكثر واقعية للمحطات بحسب الحجم: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :السماح بحذف اكثر من الطرق المملوكة للمدينة و الجسور و غيرها: {STRING}
@@ -1351,6 +1389,7 @@ STR_CONFIG_SETTING_TOWN_GROWTH_FAST                             :سريع
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_FAST                        :سريع جدا
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :مضاعف المدن المبدئي: {STRING}
 
+STR_CONFIG_SETTING_LINKGRAPH_INTERVAL_HELPTEXT                  :الوقت بين عمليات إعادة الحساب المتتابعة للرسم البياني الرابط. تحسب كل عملية إعادة حساب الخطط لمكون واحد من الرسم البياني. هذا يعني أن القيمة X لهذا الإعداد لا تعني أنه سيتم تحديث الرسم البياني كل X أيام. إلا بعض المكونات. كلما قمت بتعيينه أقل، كلما زاد وقت الCPU لحسابها. كلما قمت بضبطها لفترة أطول ، كلما اسغرق الوقت حتى يتم بدأ توزيع البضائع على طرق جديدة.
 STR_CONFIG_SETTING_DEMAND_SIZE_HELPTEXT                         :ضبط هذا إلى أقل من 100٪ يؤدي إلى جعل التوزيع المتماثل يتصرف مثل التوزيع غير المتماثل. سيتم إعادة شحنات أقل غصبا إذا تم إرسال مبلغ معين إلى المحطة. إذا قمت بتعيينه على 0٪ ، فإن التوزيع المتماثل يتصرف تمامًا مثل التوزيع غير المتماثل
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_METRIC           :(متري (كم / ساعة
@@ -1361,6 +1400,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_WEIGHT_METRIC             :(متري (طن
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE                     ::وحدات جهد الجر {STRING}
 
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :إمبراطوري (قدم)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :م) متري)
 
 STR_CONFIG_SETTING_GRAPHICS                                     :رسوميات {ORANGE}
@@ -1443,6 +1483,7 @@ STR_INTRO_TOOLTIP_SUB_TROPICAL_LANDSCAPE                        :{BLACK}اختي
 STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK} اختيار مناطق عالم الألعب
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}عرض خيارات اللعبة
+STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}عرض قائمه المتفوقين
 STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}إعدادات العرض
 STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}عرض إعدادات اﻹضافات
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK} ابحث عن محتوى جديد او تحديث
@@ -1452,6 +1493,7 @@ STR_INTRO_TRANSLATION                                           :{BLACK}هذة �
 
 # Quit window
 STR_QUIT_CAPTION                                                :{WHITE}انهاء
+STR_QUIT_ARE_YOU_SURE_YOU_WANT_TO_EXIT_OPENTTD                  :{YELLOW}هل أنت متأكد أنك تريد إغلاق OpenTTD؟
 STR_QUIT_YES                                                    :{BLACK}نعم
 STR_QUIT_NO                                                     :{BLACK}لا
 
@@ -1853,6 +1895,7 @@ STR_CONTENT_UNSELECT_ALL_CAPTION_TOOLTIP                        :{BLACK} ضع ع
 STR_CONTENT_SEARCH_EXTERNAL                                     :{BLACK}بحث المواقع الخارجية
 STR_CONTENT_FILTER_TITLE                                        :{BLACK}مُرَشِح:
 STR_CONTENT_OPEN_URL                                            :{BLACK} زيارة الموقع
+STR_CONTENT_OPEN_URL_TOOLTIP                                    :{BLACK}قم بزيارة الموقع لهذا المحتوى
 STR_CONTENT_DOWNLOAD_CAPTION                                    :{BLACK} تحميل
 STR_CONTENT_DOWNLOAD_CAPTION_TOOLTIP                            :{BLACK} ابدأ تحميل المحتويات المختارة
 STR_CONTENT_TOTAL_DOWNLOAD_SIZE                                 :{SILVER} حجم البيانات التي سيتم تحميلها: {WHITE}{BYTES}
@@ -1919,8 +1962,16 @@ STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}غير �
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}اخفاء الاجرام تماما بدلا من الشفافية
 
 # Linkgraph legend window
+STR_LINKGRAPH_LEGEND_CAPTION                                    :{BLACK}مفتاح تدفق البضائع
+STR_LINKGRAPH_LEGEND_ALL                                        :{BLACK}الكل
+STR_LINKGRAPH_LEGEND_NONE                                       :{BLACK}لا شيء
+STR_LINKGRAPH_LEGEND_SELECT_COMPANIES                           :{BLACK}حدد الشركات المراد عرضها
+STR_LINKGRAPH_LEGEND_COMPANY_TOOLTIP                            :{BLACK}{STRING}{}{COMPANY}
 
 # Linkgraph legend window and linkgraph legend in smallmap
+STR_LINKGRAPH_LEGEND_UNUSED                                     :{TINY_FONT}{BLACK}غير مستخدم
+STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLACK}عادي الاستخدام
+STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}زائد الاستخدام
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}وضح منطقة التغطية
@@ -2042,6 +2093,8 @@ STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_TUNNEL                      :{BLACK}بناء
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAMWAY_TUNNEL                   :{BLACK}بناء نفق ترام
 STR_ROAD_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR_ROAD           :{BLACK}بدل بناء/إزالة الطرق
 STR_ROAD_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR_TRAMWAYS       :{BLACK}بدل بناء / ازالة طرق الترام
+STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_ROAD                           :{BLACK}تحويل / ترقية نوع الطريق. Shift يبدل بين البناء / إظهار تقدير التكلفة
+STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_TRAM                           :{BLACK}تحويل / ترقية نوع الطريق. Shift يبدل بين البناء / إظهار تقدير التكلفة
 
 STR_ROAD_NAME_TRAM                                              :خط الترام
 
@@ -2201,10 +2254,13 @@ STR_INDUSTRY_DISPLAY_CHAIN_TOOLTIP                              :{BLACK}اعرض
 STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP                            :{BLACK}اربط بالخريطة المصغرة
 STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP_TOOLTIP                    :{BLACK}اعرض المصانع المختارة في الخرائط المصغرة ايضا.
 STR_INDUSTRY_CARGOES_SELECT_CARGO                               :{BLACK}اختر البضائع
+STR_INDUSTRY_CARGOES_SELECT_CARGO_TOOLTIP                       :{BLACK}حدد البضائع التي تريد عرضها
 STR_INDUSTRY_CARGOES_SELECT_INDUSTRY                            :{BLACK}اختر الصناعة
+STR_INDUSTRY_CARGOES_SELECT_INDUSTRY_TOOLTIP                    :{BLACK}حدد الصناعة التي تريد عرضها
 
 # Land area window
 STR_LAND_AREA_INFORMATION_CAPTION                               :{WHITE}معلومات ارض
+STR_LAND_AREA_INFORMATION_LOCATION_TOOLTIP                      :{BLACK}قم بتوسيط الشاشة على موقع المربع. يؤدي الضغط على Ctrl + النقر بالماوس إلى فتح منفذ عرض جديد على موقع المربع
 STR_LAND_AREA_INFORMATION_COST_TO_CLEAR_N_A                     :{BLACK} تكلفة الازالة : {LTBLUE} غير متاح
 STR_LAND_AREA_INFORMATION_COST_TO_CLEAR                         :{BLACK}تكلفة الازالة : {RED}{CURRENCY_LONG}
 STR_LAND_AREA_INFORMATION_REVENUE_WHEN_CLEARED                  :{BLACK} الدخل عند للتجديد: {LTBLUE}{CURRENCY_LONG}
@@ -2610,6 +2666,7 @@ STR_TOWN_POPULATION                                             :{BLACK}سكان
 STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} - مدينة -
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}السكان:  {ORANGE}{COMMA}{BLACK}   المنازل:     {ORANGE}{COMMA}
+STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX                              :{BLACK}{CARGO_LIST} الشهر الماضي: {ORANGE}{COMMA}{BLACK}  الأقصى: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK} نمو المدينة يتطلب بضائع
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} مطلوب
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK}مطلوب في الشتاء
@@ -2634,6 +2691,8 @@ STR_TOWN_VIEW_RENAME_TOWN_BUTTON                                :اعادة تس
 
 # Town local authority window
 STR_LOCAL_AUTHORITY_CAPTION                                     :{WHITE}بلدية {TOWN}
+STR_LOCAL_AUTHORITY_ZONE                                        :{BLACK}المنطقة
+STR_LOCAL_AUTHORITY_ZONE_TOOLTIP                                :{BLACK}عرض منطقة حدود السلطة المحلية
 STR_LOCAL_AUTHORITY_COMPANY_RATINGS                             :{BLACK}تقييم اداء الشركات
 STR_LOCAL_AUTHORITY_COMPANY_RATING                              :{YELLOW}{COMPANY} {COMPANY_NUM}: {ORANGE}{STRING}
 STR_LOCAL_AUTHORITY_ACTIONS_TITLE                               :{BLACK}الخيارات المتاحة
@@ -2660,6 +2719,7 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW} اشت
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW} ارشي السلطات المحلية لزيادة كفائة الشركة. هناك عقاب شديد اذا ما اكتشفت الرشوة.{} التكلفة: {CURRENCY_LONG}
 
 # Goal window
+STR_GOALS_SPECTATOR                                             :الأهداف العالمية
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 
 # Goal question window
@@ -2669,7 +2729,9 @@ STR_GOAL_QUESTION_CAPTION_WARNING                               :تحذير
 STR_GOAL_QUESTION_CAPTION_ERROR                                 :خطا
 
 ############ Start of Goal Question button list
+STR_GOAL_QUESTION_BUTTON_YES                                    :نعم
 STR_GOAL_QUESTION_BUTTON_RETRY                                  :إعادة المحاولة
+STR_GOAL_QUESTION_BUTTON_RESTART                                :إعادة تشغيل
 ############ End of Goal Question button list
 
 # Subsidies window
@@ -2682,7 +2744,7 @@ STR_SUBSIDIES_SUBSIDISED_FROM_TO                                :{ORANGE}{STRING
 STR_SUBSIDIES_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                :{BLACK}اضغط على الخدمة لتوسيط الخريطة على المصنع/المدينة. اضغط + كنترول لفتح شاشة عرض جديدة للمدينة.
 
 # Story book window
-STR_STORY_BOOK_CAPTION                                          :{WHITE}{COMPANY}كتاب القصة
+STR_STORY_BOOK_CAPTION                                          :{WHITE}{COMPANY}كتاب القصص
 
 # Station list window
 STR_STATION_LIST_TOOLTIP                                        :{BLACK}اسم المحطة - اضغط على اسم المحطة لتوسيطها في الشاشة. اضغط + كنترول لفتح شاشة عرض جديدة بمنطقة المحطة.
@@ -2709,8 +2771,10 @@ STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPAN
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}معدل النقل
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}اظهار معدل النقل للمحطة
 
+STR_STATION_VIEW_GROUP                                          :{BLACK}جمع بواسطة
 STR_STATION_VIEW_WAITING_AMOUNT                                 :الكمية: في الانتظار
 STR_STATION_VIEW_FROM                                           :{YELLOW}{CARGO_SHORT} من {STATION}
+STR_STATION_VIEW_TO                                             :{YELLOW}{CARGO_SHORT} إلى {STATION}
 
 
 ############ range for rating starts
@@ -2739,7 +2803,7 @@ STR_STATION_VIEW_RENAME_STATION_CAPTION                         :اعادة تس
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK} ركز شاشة العرض على نقطة العبور
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}غير اسم نقطة العبور
-STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK} ضع العوامة في مركز شاشة العرض
+STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK} ضع العوامة في مركز الشاشة
 STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK} غير اسم العومة
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}عدل اسم نقطة العبور
@@ -2772,6 +2836,7 @@ STR_FINANCES_BORROW_BUTTON                                      :{BLACK}اقتر
 STR_FINANCES_BORROW_TOOLTIP                                     :{BLACK}زيادة حجم القرض المسموح به
 STR_FINANCES_REPAY_BUTTON                                       :{BLACK}تسديد{CURRENCY_LONG}
 STR_FINANCES_REPAY_TOOLTIP                                      :{BLACK}اعادة جزء من القرض
+STR_FINANCES_INFRASTRUCTURE_BUTTON                              :{BLACK}البنية التحتية
 
 # Company view
 STR_COMPANY_VIEW_CAPTION                                        :{WHITE}{COMPANY} {BLACK}{COMPANY_NUM}
@@ -2791,7 +2856,7 @@ STR_COMPANY_VIEW_INFRASTRUCTURE                                 :{GOLD}البن�
 STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL                            :{WHITE}{COMMA} قطعة السكك الحديدية
 STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD                            :{WHITE}{COMMA} قطعة الطريق
 STR_COMPANY_VIEW_INFRASTRUCTURE_WATER                           :{WHITE}{COMMA} مربعات الماء
-STR_COMPANY_VIEW_INFRASTRUCTURE_STATION                         :{WHITE}{COMMA} مربعات من المحطات
+STR_COMPANY_VIEW_INFRASTRUCTURE_STATION                         :{WHITE}{COMMA} مربع من المحطة
 STR_COMPANY_VIEW_INFRASTRUCTURE_AIRPORT                         :{WHITE}{COMMA} مطار
 STR_COMPANY_VIEW_INFRASTRUCTURE_NONE                            :{WHITE}لا شيء
 
@@ -2827,7 +2892,15 @@ STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :أدخل مبل
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}نحن نبحث عن شركة لتشتري شركتنا.{}{} عل ترغب في شراء {COMPANY} بـ {CURRENCY_LONG}؟
 
 # Company infrastructure window
+STR_COMPANY_INFRASTRUCTURE_VIEW_CAPTION                         :{WHITE}البنية التحتية لـ {COMPANY}
+STR_COMPANY_INFRASTRUCTURE_VIEW_RAIL_SECT                       :{GOLD}قطع السكك الحديدية:
+STR_COMPANY_INFRASTRUCTURE_VIEW_SIGNALS                         :{WHITE}إشارات
+STR_COMPANY_INFRASTRUCTURE_VIEW_ROAD_SECT                       :{GOLD}قطع الطريق:
+STR_COMPANY_INFRASTRUCTURE_VIEW_TRAM_SECT                       :{GOLD}قطع الترام:
+STR_COMPANY_INFRASTRUCTURE_VIEW_WATER_SECT                      :{GOLD}مربعات من الماء:
 STR_COMPANY_INFRASTRUCTURE_VIEW_CANALS                          :{WHITE}القنوات
+STR_COMPANY_INFRASTRUCTURE_VIEW_STATION_SECT                    :{GOLD}المحطات:
+STR_COMPANY_INFRASTRUCTURE_VIEW_STATIONS                        :{WHITE}مربعات من المحطة
 STR_COMPANY_INFRASTRUCTURE_VIEW_AIRPORTS                        :{WHITE}المطارات
 
 # Industry directory
@@ -2911,6 +2984,9 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :أزل جميع
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}إعادة تسمية مجموعة
 
+STR_GROUP_PROFIT_THIS_YEAR                                      :دخل هذه السنة:
+STR_GROUP_PROFIT_LAST_YEAR                                      :دخل السنة الماضية:
+STR_GROUP_OCCUPANCY                                             :الاستخدام الحالي:
 
 # Build vehicle window
 STR_BUY_VEHICLE_TRAIN_RAIL_CAPTION                              :عربات قطار جديدة
@@ -2946,6 +3022,7 @@ STR_PURCHASE_INFO_ALL_TYPES                                     :كل انواع
 STR_PURCHASE_INFO_NONE                                          :بدون
 STR_PURCHASE_INFO_ALL_BUT                                       :الكل الا {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}تأثير الجذب القصى: {GOLD}{FORCE}
+STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}نوع الطائرة:{GOLD}{STRING}
 
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}قائمة اختيار القطارات - اضغط على العربة لعرض معلوماتها
 STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}قائمة اختيار العربات - اضغط على العربة لاظهار معلوماتها
@@ -2975,8 +3052,14 @@ STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_TOOLTIP                     :{BLACK} اعا�
 STR_BUY_VEHICLE_SHIP_RENAME_TOOLTIP                             :{BLACK}اعادة تسمية نوع السفينة
 STR_BUY_VEHICLE_AIRCRAFT_RENAME_TOOLTIP                         :{BLACK}اعادة تسمية نوع الطائرة
 
+STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON                        :{BLACK}إخفاء
+STR_BUY_VEHICLE_ROAD_VEHICLE_HIDE_TOGGLE_BUTTON                 :{BLACK}إخفاء
+STR_BUY_VEHICLE_SHIP_HIDE_TOGGLE_BUTTON                         :{BLACK}إخفاء
 STR_BUY_VEHICLE_AIRCRAFT_HIDE_TOGGLE_BUTTON                     :{BLACK}إخفاء
 
+STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON                        :{BLACK}عرض
+STR_BUY_VEHICLE_ROAD_VEHICLE_SHOW_TOGGLE_BUTTON                 :{BLACK}عرض
+STR_BUY_VEHICLE_SHIP_SHOW_TOGGLE_BUTTON                         :{BLACK}عرض
 STR_BUY_VEHICLE_AIRCRAFT_SHOW_TOGGLE_BUTTON                     :{BLACK}عرض
 
 STR_BUY_VEHICLE_AIRCRAFT_HIDE_SHOW_TOGGLE_TOOLTIP               :{BLACK}   تبيدل بين إخفاء / عرض نوع الطائرة
@@ -3115,6 +3198,7 @@ STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK} الم�
 # Vehicle view
 STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE}
 
+STR_VEHICLE_VIEW_ROAD_VEHICLE_CENTER_TOOLTIP                    :{BLACK}وسط الشاشة على موقع السيارة.النقر بالماوس مرتين لمتابعة السيارة. يفتح Ctrl + النقر بالماوس منفذ عرض جديد على موقع السيارة
 
 STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP                    :{BLACK} ارسل القطار للورشة - مفتاح التحكم (كنترول) + الضغط سيرسله لصيانة فقط
 STR_VEHICLE_VIEW_ROAD_VEHICLE_SEND_TO_DEPOT_TOOLTIP             :{BLACK}ارسل العربة الى الورشة. مفتاح التحكم (كنترول) + الضغط ترسل للصيانة فقط
@@ -3441,6 +3525,7 @@ STR_TIMETABLE_STATUS_NOT_STARTED                                :{BLACK}جدول
 STR_TIMETABLE_STATUS_START_AT                                   :{BLACK}جدولة الاعمال ستبدأ فى {STRING}
 
 STR_TIMETABLE_STARTING_DATE                                     :{BLACK}تاريخ البدأ
+STR_TIMETABLE_STARTING_DATE_TOOLTIP                             :{BLACK}حدد تاريخًا كنقطة بداية لهذا الجدول الزمني. يحدد Ctrl + Click نقطة البداية لهذا الجدول الزمني ويوزع جميع المركبات التي تشارك هذا الطلب بالتساوي بناءً على ترتيبها النسبي ، إذا كان الطلب محددًا بجدول زمني كامل
 
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}غير الوقت
 STR_TIMETABLE_WAIT_TIME_TOOLTIP                                 :{BLACK}غير مقدار الزمن الذي يستغرقه هذا الامر
@@ -3528,6 +3613,7 @@ STR_AI_LIST_CANCEL                                              :{BLACK} الغ�
 STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK} لا تغير الذكاء الصناعي
 
 STR_SCREENSHOT_ZOOMIN_SCREENSHOT                                :{BLACK}التقط لقطة شاشة كاملة
+STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}صور الخاريطة الكاملة
 
 # AI Parameters
 STR_AI_SETTINGS_CLOSE                                           :{BLACK} اغلاق

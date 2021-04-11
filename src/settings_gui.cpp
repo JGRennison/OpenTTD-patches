@@ -739,6 +739,7 @@ struct BaseSettingEntry {
 	virtual void Init(byte level = 0);
 	virtual void FoldAll() {}
 	virtual void UnFoldAll() {}
+	virtual void ResetAll() = 0;
 
 	/**
 	 * Set whether this is the last visible entry of the parent node.
@@ -775,6 +776,7 @@ struct SettingEntry : BaseSettingEntry {
 	SettingEntry(const char *name);
 
 	virtual void Init(byte level = 0);
+	virtual void ResetAll();
 	virtual uint Length() const;
 	virtual uint GetMaxHelpHeight(int maxw);
 	virtual bool UpdateFilterState(SettingFilter &filter, bool force_visible);
@@ -836,6 +838,7 @@ struct SettingsContainer {
 	}
 
 	void Init(byte level = 0);
+	void ResetAll();
 	void FoldAll();
 	void UnFoldAll();
 
@@ -859,6 +862,7 @@ struct SettingsPage : BaseSettingEntry, SettingsContainer {
 	SettingsPage(StringID title);
 
 	virtual void Init(byte level = 0);
+	virtual void ResetAll();
 	virtual void FoldAll();
 	virtual void UnFoldAll();
 
@@ -1008,6 +1012,13 @@ void SettingEntry::Init(byte level)
 	assert_msg(this->setting != nullptr, "name: %s", this->name);
 }
 
+/* Sets the given setting entry to its default value */
+void SettingEntry::ResetAll()
+{
+	int32 default_value = ReadValue(&this->setting->desc.def, this->setting->save.conv);
+	SetSettingValue(this->index, default_value);
+}
+
 /**
  * Set the button-depressed flags (#SEF_LEFT_DEPRESSED and #SEF_RIGHT_DEPRESSED) to a specified value
  * @param new_val New value for the button flags
@@ -1122,7 +1133,6 @@ bool SettingEntry::UpdateFilterState(SettingFilter &filter, bool force_visible)
 	if (!visible) SETBITS(this->flags, SEF_FILTERED);
 	return visible;
 }
-
 
 static const void *ResolveVariableAddress(const GameSettings *settings_ptr, const SettingDesc *sd)
 {
@@ -1268,6 +1278,14 @@ void SettingsContainer::Init(byte level)
 {
 	for (EntryVector::iterator it = this->entries.begin(); it != this->entries.end(); ++it) {
 		(*it)->Init(level);
+	}
+}
+
+/** Resets all settings to their default values */
+void SettingsContainer::ResetAll()
+{
+	for (auto settings_entry : this->entries) {
+		settings_entry->ResetAll();
 	}
 }
 
@@ -1419,6 +1437,14 @@ void SettingsPage::Init(byte level)
 {
 	BaseSettingEntry::Init(level);
 	SettingsContainer::Init(level + 1);
+}
+
+/** Resets all settings to their default values */
+void SettingsPage::ResetAll()
+{
+	for (auto settings_entry : this->entries) {
+		settings_entry->ResetAll();
+	}
 }
 
 /** Recursively close all (filtered) folds of sub-pages */
@@ -2104,6 +2130,20 @@ enum WarnHiddenResult {
 	WHR_CATEGORY_TYPE, ///< Both category and type settings filtered matches away.
 };
 
+/**
+ * Callback function for the reset all settings button
+ * @param w Window which is calling this callback
+ * @param confirmed boolean value, true when yes was clicked, false otherwise
+ */
+static void ResetAllSettingsConfirmationCallback(Window *w, bool confirmed)
+{
+	if (confirmed) {
+		GetSettingsTree().ResetAll();
+		GetSettingsTree().FoldAll();
+		w->InvalidateData();
+	}
+}
+
 /** Window to edit settings of the game. */
 struct GameSettingsWindow : Window {
 	static const int SETTINGTREE_LEFT_OFFSET   = 5; ///< Position of left edge of setting values
@@ -2339,6 +2379,15 @@ struct GameSettingsWindow : Window {
 				this->manually_changed_folding = true;
 				GetSettingsTree().FoldAll();
 				this->InvalidateData();
+				break;
+
+			case WID_GS_RESET_ALL:
+				ShowQuery(
+					STR_CONFIG_SETTING_RESET_ALL_CONFIRMATION_DIALOG_CAPTION,
+					STR_CONFIG_SETTING_RESET_ALL_CONFIRMATION_DIALOG_TEXT,
+					this,
+					ResetAllSettingsConfirmationCallback
+				);
 				break;
 
 			case WID_GS_RESTRICT_DROPDOWN: {
@@ -2715,6 +2764,7 @@ static const NWidgetPart _nested_settings_selection_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_MAUVE, WID_GS_EXPAND_ALL), SetDataTip(STR_CONFIG_SETTING_EXPAND_ALL, STR_NULL),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_MAUVE, WID_GS_COLLAPSE_ALL), SetDataTip(STR_CONFIG_SETTING_COLLAPSE_ALL, STR_NULL),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_MAUVE, WID_GS_RESET_ALL), SetDataTip(STR_CONFIG_SETTING_RESET_ALL, STR_NULL),
 		NWidget(WWT_PANEL, COLOUR_MAUVE), SetFill(1, 0), SetResize(1, 0),
 		EndContainer(),
 		NWidget(WWT_RESIZEBOX, COLOUR_MAUVE),
