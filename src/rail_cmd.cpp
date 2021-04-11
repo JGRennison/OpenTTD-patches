@@ -1674,7 +1674,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		AddTrackToSignalBuffer(tile, track, _current_company);
 		YapfNotifyTrackLayoutChange(tile, track);
-		if (v != nullptr) {
+		if (v != nullptr && v->track != TRACK_BIT_DEPOT) {
 			ReReserveTrainPath(v);
 		}
 	}

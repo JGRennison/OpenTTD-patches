@@ -29,7 +29,15 @@ static FMusicDriver_FluidSynth iFMusicDriver_FluidSynth;
 
 /** List of sound fonts to try by default. */
 static const char *default_sf[] = {
-	/* Debian/Ubuntu/OpenSUSE preferred */
+	/* FluidSynth preferred */
+	/* See: https://www.fluidsynth.org/api/settings_synth.html#settings_synth_default-soundfont */
+	"/usr/share/soundfonts/default.sf2",
+
+	/* Debian/Ubuntu preferred */
+	/* See: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=929185 */
+	"/usr/share/sounds/sf3/default-GM.sf3",
+
+	/* OpenSUSE preferred */
 	"/usr/share/sounds/sf2/FluidR3_GM.sf2",
 
 	/* RedHat/Fedora/Arch preferred */
@@ -77,12 +85,22 @@ const char *MusicDriver_FluidSynth::Start(const StringList &param)
 	/* Load a SoundFont and reset presets (so that new instruments
 	 * get used from the SoundFont) */
 	if (!sfont_name) {
-		int i;
 		sfont_id = FLUID_FAILED;
-		for (i = 0; default_sf[i]; i++) {
-			if (!fluid_is_soundfont(default_sf[i])) continue;
-			sfont_id = fluid_synth_sfload(_midi.synth, default_sf[i], 1);
-			if (sfont_id != FLUID_FAILED) break;
+
+		/* Try loading the default soundfont registered with FluidSynth. */
+		char *default_soundfont;
+		fluid_settings_dupstr(_midi.settings, "synth.default-soundfont", &default_soundfont);
+		if (fluid_is_soundfont(default_soundfont)) {
+			sfont_id = fluid_synth_sfload(_midi.synth, default_soundfont, 1);
+		}
+
+		/* If no default soundfont found, try our own list. */
+		if (sfont_id == FLUID_FAILED) {
+			for (int i = 0; default_sf[i]; i++) {
+				if (!fluid_is_soundfont(default_sf[i])) continue;
+				sfont_id = fluid_synth_sfload(_midi.synth, default_sf[i], 1);
+				if (sfont_id != FLUID_FAILED) break;
+			}
 		}
 		if (sfont_id == FLUID_FAILED) return "Could not open any sound font";
 	} else {

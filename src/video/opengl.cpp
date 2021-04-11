@@ -1074,6 +1074,9 @@ void OpenGLBackend::DrawMouseCursor()
 
 void OpenGLBackend::PopulateCursorCache()
 {
+	static_assert(lengthof(_cursor.sprite_seq) == lengthof(this->cursor_sprite_seq));
+	static_assert(lengthof(_cursor.sprite_pos) == lengthof(this->cursor_sprite_pos));
+
 	if (this->clear_cursor_cache) {
 		/* We have a pending cursor cache clear to do first. */
 		this->clear_cursor_cache = false;

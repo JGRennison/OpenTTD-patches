@@ -170,6 +170,16 @@ public:
 	virtual void FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets) = 0;
 	virtual void SetDirty(Window *w);
 
+	Rect GetCurrentRect() const
+	{
+		Rect r;
+		r.left = this->pos_x;
+		r.top = this->pos_y;
+		r.right = this->pos_x + this->current_x;
+		r.bottom = this->pos_y + this->current_y;
+		return r;
+	}
+
 	WidgetType type;      ///< Type of the widget / nested widget.
 	WidgetBaseFlags base_flags; ///< Widget base flags
 	uint fill_x;          ///< Horizontal fill stepsize (from initial size, \c 0 means not resizable).
