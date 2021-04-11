@@ -59,17 +59,29 @@ void RebuildTownCaches(bool cargo_update_required)
  * town, the town radius and the max passengers
  * of the town.
  */
-void UpdateHousesAndTowns(bool cargo_update_required)
+void UpdateHousesAndTowns(bool cargo_update_required, bool old_map_position)
 {
+	auto get_house_type = [&](TileIndex t) -> HouseID {
+		if (old_map_position && SlXvIsFeatureMissing(XSLFI_MORE_HOUSES)) {
+			return _m[t].m4 | (GB(_m[t].m3, 6, 1) << 8);
+		} else {
+			return GetCleanHouseType(t);
+		}
+	};
 	for (TileIndex t = 0; t < MapSize(); t++) {
 		if (!IsTileType(t, MP_HOUSE)) continue;
 
-		HouseID house_id = GetCleanHouseType(t);
+		HouseID house_id = get_house_type(t);
 		if (!HouseSpec::Get(house_id)->enabled && house_id >= NEW_HOUSE_OFFSET) {
 			/* The specs for this type of house are not available any more, so
 			 * replace it with the substitute original house type. */
 			house_id = _house_mngr.GetSubstituteID(house_id);
-			SetHouseType(t, house_id);
+			if (old_map_position && SlXvIsFeatureMissing(XSLFI_MORE_HOUSES)) {
+				_m[t].m4 = GB(house_id, 0, 8);
+				SB(_m[t].m3, 6, 1, GB(house_id, 8, 1));
+			} else {
+				SetHouseType(t, house_id);
+			}
 			cargo_update_required = true;
 		}
 	}
@@ -78,24 +90,24 @@ void UpdateHousesAndTowns(bool cargo_update_required)
 	for (TileIndex t = 0; t < MapSize(); t++) {
 		if (!IsTileType(t, MP_HOUSE)) continue;
 
-		HouseID house_type = GetCleanHouseType(t);
+		HouseID house_type = get_house_type(t);
 		TileIndex north_tile = t + GetHouseNorthPart(house_type); // modifies 'house_type'!
 		if (t == north_tile) {
 			const HouseSpec *hs = HouseSpec::Get(house_type);
 			bool valid_house = true;
 			if (hs->building_flags & TILE_SIZE_2x1) {
 				TileIndex tile = t + TileDiffXY(1, 0);
-				if (!IsTileType(tile, MP_HOUSE) || GetCleanHouseType(tile) != house_type + 1) valid_house = false;
+				if (!IsTileType(tile, MP_HOUSE) || get_house_type(tile) != house_type + 1) valid_house = false;
 			} else if (hs->building_flags & TILE_SIZE_1x2) {
 				TileIndex tile = t + TileDiffXY(0, 1);
-				if (!IsTileType(tile, MP_HOUSE) || GetCleanHouseType(tile) != house_type + 1) valid_house = false;
+				if (!IsTileType(tile, MP_HOUSE) || get_house_type(tile) != house_type + 1) valid_house = false;
 			} else if (hs->building_flags & TILE_SIZE_2x2) {
 				TileIndex tile = t + TileDiffXY(0, 1);
-				if (!IsTileType(tile, MP_HOUSE) || GetCleanHouseType(tile) != house_type + 1) valid_house = false;
+				if (!IsTileType(tile, MP_HOUSE) || get_house_type(tile) != house_type + 1) valid_house = false;
 				tile = t + TileDiffXY(1, 0);
-				if (!IsTileType(tile, MP_HOUSE) || GetCleanHouseType(tile) != house_type + 2) valid_house = false;
+				if (!IsTileType(tile, MP_HOUSE) || get_house_type(tile) != house_type + 2) valid_house = false;
 				tile = t + TileDiffXY(1, 1);
-				if (!IsTileType(tile, MP_HOUSE) || GetCleanHouseType(tile) != house_type + 3) valid_house = false;
+				if (!IsTileType(tile, MP_HOUSE) || get_house_type(tile) != house_type + 3) valid_house = false;
 			}
 			/* If not all tiles of this house are present remove the house.
 			 * The other tiles will get removed later in this loop because
@@ -104,7 +116,7 @@ void UpdateHousesAndTowns(bool cargo_update_required)
 				DoClearSquare(t);
 				cargo_update_required = true;
 			}
-		} else if (!IsTileType(north_tile, MP_HOUSE) || GetCleanHouseType(north_tile) != house_type) {
+		} else if (!IsTileType(north_tile, MP_HOUSE) || get_house_type(north_tile) != house_type) {
 			/* This tile should be part of a multi-tile building but the
 			 * north tile of this house isn't on the map. */
 			DoClearSquare(t);
