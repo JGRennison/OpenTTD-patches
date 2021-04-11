@@ -1477,6 +1477,10 @@ STR_CONFIG_SETTING_DESERT_COVERAGE_HELPTEXT                     :아열대 기�
 STR_CONFIG_SETTING_DESERT_COVERAGE_VALUE                        :{NUM}%
 STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT                        :열대우림 선 높이: {STRING}
 STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT_HELPTEXT               :아열대 기후에서 어느 높이에서 열대우림이 시작할지를 조절합니다. 열대우림은 산업 시설과 도시 성장에도 영향을 미칩니다.
+STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MODE                       :기후 임계값 모드: {STRING}
+STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MODE_HELPTEXT              :눈 지역의 고도나 열대우림/사막 고도를 비율로 결정할지 아니면 수동으로 조절할지를 결정합니다.
+STR_CONFIG_SETTING_CLIMATE_THRESHOLD_COVERAGE                   :비율
+STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MANUAL                     :수동
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :지형의 거친 정도: {STRING}
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(천지창조 전용) 언덕의 빈도수를 선택합니다. 평탄한 지형은 개수가 적고 넓게 퍼진 언덕을 만듭니다. 거친 지형은 똑같아 보일 수 있는 많은 언덕이 생기게 됩니다.
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :매우 부드럽게
@@ -2256,6 +2260,7 @@ STR_CHEAT_INFLATION_COST                                        :{LTBLUE}인플�
 STR_CHEAT_INFLATION_COST_QUERY_CAPT                             :{WHITE}인플레이션 지출 배수를 변경합니다.
 STR_CHEAT_INFLATION_INCOME                                      :{LTBLUE}인플레이션 수익 배수 변경: {ORANGE}{DECIMAL}
 STR_CHEAT_INFLATION_INCOME_QUERY_CAPT                           :{WHITE}인플레이션 수익 배수를 변경합니다.
+STR_CHEAT_STATION_RATING                                        :{LTBLUE}역 등급을 항상 100%로 고정: {ORANGE}{STRING}
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} - 색상
