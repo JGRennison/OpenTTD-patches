@@ -5959,6 +5959,9 @@ static bool TrainLocoHandler(Train *v, bool mode)
 	/* train has crashed? */
 	if (v->vehstatus & VS_CRASHED) {
 		return mode ? true : HandleCrashedTrain(v); // 'this' can be deleted here
+	} else if (v->crash_anim_pos > 0) {
+		/* Reduce realistic braking brake overheating */
+		v->crash_anim_pos--;
 	}
 
 	if (v->force_proceed != TFP_NONE) {
@@ -6794,7 +6797,11 @@ void TrainRoadVehicleCrashBreakdown(Vehicle *v)
 void TrainBrakesOverheatedBreakdown(Vehicle *v)
 {
 	Train *t = Train::From(v)->First();
-	if (t->breakdown_ctr != 0) return;
+	if (t->breakdown_ctr != 0 || (t->vehstatus & VS_CRASHED)) return;
+
+	t->crash_anim_pos = std::min<uint>(1500, t->crash_anim_pos + 200);
+	if (t->crash_anim_pos < 1500) return;
+
 	t->breakdown_ctr = 2;
 	SetBit(t->flags, VRF_CONSIST_BREAKDOWN);
 	t->breakdown_delay = 255;

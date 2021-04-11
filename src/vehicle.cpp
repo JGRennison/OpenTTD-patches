@@ -2334,6 +2334,9 @@ void VehicleEnterDepot(Vehicle *v)
 			t->ConsistChanged(CCF_ARRANGE);
 			t->reverse_distance = 0;
 			t->lookahead.reset();
+			if (!(t->vehstatus & VS_CRASHED)) {
+				t->crash_anim_pos = 0;
+			}
 			break;
 		}
 

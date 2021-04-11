@@ -120,7 +120,7 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 
 	uint32 flags;
 
-	uint16 crash_anim_pos; ///< Crash animation counter.
+	uint16 crash_anim_pos; ///< Crash animation counter, also used for realistic braking train brake overheating
 
 	TrackBits track;
 	TrainForceProceeding force_proceed;

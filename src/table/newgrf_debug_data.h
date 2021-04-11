@@ -163,6 +163,13 @@ class NIHVehicle : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  Railtype: %u, compatible_railtypes: 0x" OTTD_PRINTFHEX64,
 					t->railtype, t->compatible_railtypes);
 			print(buffer);
+			if (t->vehstatus & VS_CRASHED) {
+				seprintf(buffer, lastof(buffer), "  CRASHED: anim pos: %u", t->crash_anim_pos);
+				print(buffer);
+			} else if (t->crash_anim_pos > 0) {
+				seprintf(buffer, lastof(buffer), "  Brake heating: %u", t->crash_anim_pos);
+				print(buffer);
+			}
 			if (t->lookahead != nullptr) {
 				print ("  Look ahead:");
 				const TrainReservationLookAhead &l = *t->lookahead;

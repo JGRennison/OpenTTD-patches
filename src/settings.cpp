@@ -1084,6 +1084,9 @@ static bool TrainAccelerationModelChanged(int32 p1)
 static bool TrainBrakingModelChanged(int32 p1)
 {
 	for (Train *t : Train::Iterate()) {
+		if (!(t->vehstatus & VS_CRASHED)) {
+			t->crash_anim_pos = 0;
+		}
 		if (t->IsFrontEngine()) {
 			t->UpdateAcceleration();
 		}
