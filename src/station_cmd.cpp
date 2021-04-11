@@ -57,6 +57,7 @@
 #include "widgets/station_widget.h"
 #include "zoning.h"
 #include "tunnelbridge_map.h"
+#include "cheat_type.h"
 
 #include "table/strings.h"
 
@@ -3809,7 +3810,10 @@ static void UpdateStationRating(Station *st)
 			 */
 			uint waiting_avg = waiting / (num_dests + 1);
 
-			if (HasBit(cs->callback_mask, CBM_CARGO_STATION_RATING_CALC)) {
+			if (_extra_cheats.station_rating.value) {
+				ge->rating = rating = 255;
+				skip = true;
+			} else if (HasBit(cs->callback_mask, CBM_CARGO_STATION_RATING_CALC)) {
 				/* Perform custom station rating. If it succeeds the speed, days in transit and
 				 * waiting cargo ratings must not be executed. */
 
@@ -4133,6 +4137,14 @@ static void StationHandleSmallTick(BaseStation *st)
 	st->delete_ctr = b;
 
 	if (b == 0) UpdateStationRating(Station::From(st));
+}
+
+void UpdateAllStationRatings()
+{
+	for (Station *st : Station::Iterate()) {
+		if (!st->IsInUse()) continue;
+		UpdateStationRating(st);
+	}
 }
 
 void OnTick_Station()
