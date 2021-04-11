@@ -23,4 +23,9 @@ inline bool HasChickenBit(ChickenBitFlags flag)
 	return HasBit(_settings_game.debug.chicken_bits, flag);
 }
 
+enum MiscDebugFlags {
+	MDF_OVERHEAT_BREAKDOWN_OPEN_WIN,
+};
+extern uint32 _misc_debug_flags;
+
 #endif /* DEBUG_SETTINGS_H */

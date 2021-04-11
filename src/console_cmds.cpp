@@ -52,6 +52,7 @@
 #include "string_func_extra.h"
 #include "linkgraph/linkgraphjob.h"
 #include "base_media_base.h"
+#include "debug_settings.h"
 #include <time.h>
 
 #include "safeguards.h"
@@ -2847,6 +2848,23 @@ DEF_CONSOLE_CMD(ConRecalculateRoadCachedOneWayStates)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConMiscDebug)
+{
+	if (argc < 1 || argc > 2) {
+		IConsoleHelp("Debug: misc flags.  Usage: 'misc_debug [<flags>]'");
+		IConsoleHelp("  1: MDF_OVERHEAT_BREAKDOWN_OPEN_WIN");
+		return true;
+	}
+
+	if (argc == 1) {
+		IConsolePrintF(CC_DEFAULT, "Misc debug flags: %X", _misc_debug_flags);
+	} else {
+		_misc_debug_flags = strtoul(argv[1], nullptr, 16);
+	}
+
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConDoDisaster)
 {
 	if (argc == 0) {
@@ -3437,6 +3455,7 @@ void IConsoleStdLibRegister()
 	IConsoleCmdRegister("gfx_debug", ConGfxDebug, nullptr, true);
 	IConsoleCmdRegister("csleep", ConCSleep, nullptr, true);
 	IConsoleCmdRegister("recalculate_road_cached_one_way_states", ConRecalculateRoadCachedOneWayStates, ConHookNoNetwork, true);
+	IConsoleCmdRegister("misc_debug", ConMiscDebug, nullptr, true);
 
 	/* NewGRF development stuff */
 	IConsoleCmdRegister("reload_newgrfs",  ConNewGRFReload, ConHookNewGRFDeveloperTool);

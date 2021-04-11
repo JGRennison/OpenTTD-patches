@@ -43,6 +43,7 @@
 #include "scope_info.h"
 #include "scope.h"
 #include "core/checksum_func.hpp"
+#include "debug_settings.h"
 
 #include "table/strings.h"
 #include "table/train_cmd.h"
@@ -6799,6 +6800,10 @@ void TrainBrakesOverheatedBreakdown(Vehicle *v)
 {
 	Train *t = Train::From(v)->First();
 	if (t->breakdown_ctr != 0 || (t->vehstatus & VS_CRASHED)) return;
+
+	if (unlikely(HasBit(_misc_debug_flags, MDF_OVERHEAT_BREAKDOWN_OPEN_WIN)) && !_network_dedicated) {
+		ShowVehicleViewWindow(t);
+	}
 
 	t->crash_anim_pos = std::min<uint>(1500, t->crash_anim_pos + 200);
 	if (t->crash_anim_pos < 1500) return;
