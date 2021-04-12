@@ -3895,6 +3895,14 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_CUSTOM_TOWN_ZONE)) {
+		_settings_game.economy.city_zone_0_mult = _settings_game.economy.town_zone_0_mult;
+		_settings_game.economy.city_zone_1_mult = _settings_game.economy.town_zone_1_mult;
+		_settings_game.economy.city_zone_2_mult = _settings_game.economy.town_zone_2_mult;
+		_settings_game.economy.city_zone_3_mult = _settings_game.economy.town_zone_3_mult;
+		_settings_game.economy.city_zone_4_mult = _settings_game.economy.town_zone_4_mult;
+	}
+
 	InitializeRoadGUI();
 
 	/* This needs to be done after conversion. */

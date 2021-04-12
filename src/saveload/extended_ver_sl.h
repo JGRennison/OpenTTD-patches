@@ -102,6 +102,7 @@ enum SlXvFeatureIndex {
 	XSLFI_INFLATION_FIXED_DATES,                  ///< Inflation is applied between fixed dates
 	XSLFI_WATER_FLOODING,                         ///< Water flooding map bit
 	XSLFI_MORE_HOUSES,                            ///< More house types
+	XSLFI_CUSTOM_TOWN_ZONE,                       ///< Custom town zones
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk
