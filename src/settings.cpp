@@ -2616,14 +2616,36 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 	if (sd->desc.cmd == SDT_STRING) {
 		IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s'", name, (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ) ? *(const char * const *)ptr : (const char *)ptr);
 	} else {
+		bool show_min_max = true;
+		int64 min_value = sd->desc.min;
+		int64 max_value = sd->desc.max;
+		if (sd->desc.flags & SGF_ENUM) {
+			min_value = INT64_MAX;
+			max_value = INT64_MIN;
+			int count = 0;
+			for (const SettingDescEnumEntry *enumlist = sd->desc.enumlist; enumlist != nullptr && enumlist->str != STR_NULL; enumlist++) {
+				if (enumlist->val < min_value) min_value = enumlist->val;
+				if (enumlist->val > max_value) max_value = enumlist->val;
+				count++;
+			}
+			if (max_value - min_value != (int64)(count - 1)) {
+				/* Discontinuous range */
+				show_min_max = false;
+			}
+		}
 		if (sd->desc.cmd == SDT_BOOLX) {
 			seprintf(value, lastof(value), (*(const bool*)ptr != 0) ? "on" : "off");
 		} else {
 			seprintf(value, lastof(value), sd->desc.min < 0 ? "%d" : "%u", (int32)ReadValue(ptr, sd->save.conv));
 		}
 
-		IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s' (min: %s%d, max: %u)",
-			name, value, (sd->desc.flags & SGF_0ISDISABLED) ? "(0) " : "", sd->desc.min, sd->desc.max);
+		if (show_min_max) {
+			IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s' (min: %s" OTTD_PRINTF64 ", max: " OTTD_PRINTF64 ")",
+				name, value, (sd->desc.flags & SGF_0ISDISABLED) ? "(0) " : "", min_value, max_value);
+		} else {
+			IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s'",
+				name, value);
+		}
 	}
 }
 
