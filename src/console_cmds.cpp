@@ -2855,6 +2855,7 @@ DEF_CONSOLE_CMD(ConMiscDebug)
 	if (argc < 1 || argc > 2) {
 		IConsoleHelp("Debug: misc flags.  Usage: 'misc_debug [<flags>]'");
 		IConsoleHelp("  1: MDF_OVERHEAT_BREAKDOWN_OPEN_WIN");
+		IConsoleHelp("  2: MDF_ZONING_RS_WATER_FLOOD_STATE");
 		return true;
 	}
 
