@@ -99,6 +99,7 @@ static void PlantTreesOnTile(TileIndex tile, TreeType treetype, uint count, uint
 	switch (GetTileType(tile)) {
 		case MP_WATER:
 			ground = TREE_GROUND_SHORE;
+			ClearNeighbourNonFloodingStates(tile);
 			break;
 
 		case MP_CLEAR:

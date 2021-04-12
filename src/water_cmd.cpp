@@ -88,7 +88,7 @@ static void MarkCanalsAndRiversAroundDirty(TileIndex tile)
 	}
 }
 
-static void ClearNeighbourNonFloodingStates(TileIndex tile)
+void ClearNeighbourNonFloodingStates(TileIndex tile)
 {
 	for (Direction dir = DIR_BEGIN; dir < DIR_END; dir++) {
 		TileIndex dest = tile + TileOffsByDir(dir);
