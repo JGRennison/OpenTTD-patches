@@ -3903,6 +3903,14 @@ bool AfterLoadGame()
 		_settings_game.economy.city_zone_4_mult = _settings_game.economy.town_zone_4_mult;
 	}
 
+	if (!SlXvIsFeaturePresent(XSLFI_WATER_FLOODING, 2)) {
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTileType(t, MP_WATER)) {
+				SetNonFloodingWaterTile(t, false);
+			}
+		}
+	}
+
 	InitializeRoadGUI();
 
 	/* This needs to be done after conversion. */
