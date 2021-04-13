@@ -2792,6 +2792,7 @@ STR_RAIL_TOOLBAR_MAGLEV_CONSTRUCTION_CAPTION                    :자기부상열
 
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TRACK                   :{BLACK}선로를 건설합니다. CTRL 키를 누르면 건설모드/철거모드로 전환합니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_AUTORAIL                         :{BLACK}자동건설 모드로 선로를 건설합니다. CTRL 키를 누르면 건설/철거모드를 바꿀 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}다각건설 모드로 선로를 건설합니다. CTRL 키를 누르면 건설/철거모드를 바꿀 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_TRAIN_DEPOT_FOR_BUILDING         :{BLACK}차량기지를 건설합니다. 차량을 구입하거나 점검을 할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
 STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_TO_WAYPOINT               :{BLACK}선로에 경유지를 설치합니다. CTRL 키를 사용하면 같은 이름의 경유지를 서로 떨어진 곳에 지을 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_STATION                 :{BLACK}철도역을 짓습니다. CTRL 키를 사용하면 같은 이름의 역을 서로 떨어진 곳에 지을 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
