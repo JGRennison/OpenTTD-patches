@@ -1072,6 +1072,15 @@ static bool FindSpring(TileIndex tile, void *user_data)
 	return true;
 }
 
+struct MakeLakeData {
+	TileIndex centre;            ///< Lake centre tile
+	uint height;                 ///< Lake height
+	int max_distance;            ///< Max radius
+	int secondary_axis_scale;    ///< Multiplier for ellipse narrow axis, 16 bit fixed point
+	int sin_fp;                  ///< sin of ellipse rotation angle, 16 bit fixed point
+	int cos_fp;                  ///< cos of ellipse rotation angle, 16 bit fixed point
+};
+
 /**
  * Make a connected lake; fill all tiles in the circular tile search that are connected.
  * @param tile The tile to consider for lake making.
@@ -1080,9 +1089,28 @@ static bool FindSpring(TileIndex tile, void *user_data)
  */
 static bool MakeLake(TileIndex tile, void *user_data)
 {
-	uint height = *(uint*)user_data;
-	if (!IsValidTile(tile) || TileHeight(tile) != height || !IsTileFlat(tile)) return false;
+	const MakeLakeData *data = (const MakeLakeData *)user_data;
+	if (!IsValidTile(tile) || TileHeight(tile) != data->height || !IsTileFlat(tile)) return false;
 	if (_settings_game.game_creation.landscape == LT_TROPIC && GetTropicZone(tile) == TROPICZONE_DESERT) return false;
+
+	/* Offset from centre tile */
+	const int64 x_delta = (int)TileX(tile) - (int)TileX(data->centre);
+	const int64 y_delta = (int)TileY(tile) - (int)TileY(data->centre);
+
+	/* Rotate to new coordinate system */
+	const int64 a_delta = (x_delta * data->cos_fp + y_delta * data->sin_fp) >> 8;
+	const int64 b_delta = (-x_delta * data->sin_fp + y_delta * data->cos_fp) >> 8;
+
+	int max_distance = data->max_distance;
+	if (max_distance >= 6) {
+		/* Vary radius a bit for larger lakes */
+		uint coord = (std::abs(x_delta) > std::abs(y_delta)) ? TileY(tile) : TileX(tile);
+		static const int8 offset_fuzz[4] = { 0, 1, 0, -1 };
+		max_distance += offset_fuzz[(coord / 3) & 3];
+	}
+
+	/* Check if inside ellipse */
+	if ((a_delta * a_delta) + ((data->secondary_axis_scale * b_delta * b_delta) >> 16) > ((int64)(max_distance * max_distance) << 16)) return false;
 
 	for (DiagDirection d = DIAGDIR_BEGIN; d < DIAGDIR_END; d++) {
 		TileIndex t2 = tile + TileOffsByDiagDir(d);
@@ -1280,10 +1308,25 @@ static bool FlowRiver(TileIndex spring, TileIndex begin)
 			CircularTileSearch(&lakeCenter, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
 			lakeCenter = end;
 			uint range = RandomRange(_settings_game.game_creation.lake_size) + 3;
-			CircularTileSearch(&lakeCenter, range, MakeLake, &height);
+
+			MakeLakeData data;
+			data.centre = lakeCenter;
+			data.height = height;
+			data.max_distance = range / 2;
+
+			/* Square of ratio of ellipse dimensions: 1 to 5 (16 bit fixed point) */
+			data.secondary_axis_scale = (1 << 16) + RandomRange(1 << 18);
+
+			/* Range from -1 to 1 (16 bit fixed point) */
+			data.sin_fp = RandomRange(1 << 17) - (1 << 16);
+
+			/* sin^2 + cos^2 = 1 */
+			data.cos_fp = IntSqrt64(((int64)1 << 32) - ((int64)data.sin_fp * (int64)data.sin_fp));
+
+			CircularTileSearch(&lakeCenter, range, MakeLake, &data);
 			/* Call the search a second time so artefacts from going circular in one direction get (mostly) hidden. */
 			lakeCenter = end;
-			CircularTileSearch(&lakeCenter, range, MakeLake, &height);
+			CircularTileSearch(&lakeCenter, range, MakeLake, &data);
 			found = true;
 		}
 	}
