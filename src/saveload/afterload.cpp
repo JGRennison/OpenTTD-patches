@@ -2029,6 +2029,7 @@ bool AfterLoadGame()
 				for (Order *order : v->Orders()) order->SetNonStopType(ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS);
 			}
 		}
+		IntialiseOrderDestinationRefcountMap();
 	} else if (IsSavegameVersionBefore(SLV_94)) {
 		/* Unload and transfer are now mutual exclusive. */
 		for (Order *order : Order::Iterate()) {
