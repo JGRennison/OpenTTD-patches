@@ -3211,6 +3211,8 @@ static bool CheckTrainStayInDepot(Train *v)
 				u->direction = direction;
 				u->x_pos = x;
 				u->y_pos = y;
+				u->UpdatePosition();
+				u->Vehicle::UpdateViewport(false);
 			}
 
 			InvalidateWindowData(WC_VEHICLE_DEPOT, depot_tile);
