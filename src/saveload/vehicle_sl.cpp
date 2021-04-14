@@ -1216,7 +1216,7 @@ void Save_VENC()
 			write_gv_cache(t->gcache);
 			SlWriteByte(t->tcache.cached_tilt);
 			SlWriteByte(t->tcache.cached_num_engines);
-			SlWriteByte(t->tcache.cached_centre_mass);
+			SlWriteUint16(t->tcache.cached_centre_mass);
 			SlWriteUint16(t->tcache.cached_veh_weight);
 			SlWriteUint16(t->tcache.cached_uncapped_decel);
 			SlWriteByte(t->tcache.cached_deceleration);
