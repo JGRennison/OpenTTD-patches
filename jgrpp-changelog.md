@@ -2,6 +2,36 @@
 
 * * *
 
+### v0.41.0 (2021-04-14)
+* Realistic braking:
+  * Fix crash which could occur when the ignore signals button is used to send a train the wrong way onto a signalled tunnel/bridge.
+  * Fix crash or misrouting which could occur when a train which ignores signals is used to partially remove the reservation of another train,
+    and the track layout is modified to remove the endpoint of the train's original reservation, or an unreserved diverging junction is unexpectedly encountered.
+  * Adjust realistic braking physics to fix discrepancies between realistic braking and realistic acceleration.
+  * Refresh train lookahead when starting train from stationary.
+  * Reduce sensitivity of train brakes overheated breakdown.
+  * Fix train brakes overheated breakdown not triggering under some conditions where it should.
+* Tooltips:
+  * Fix tooltip flickering when dragging outside window.
+  * Fix viewport drag tooltips not being removed when dragging over other windows.
+  * Fix old polyrail tooltips being left on screen.
+* Fix crash when a path to directory is passed as a config file name.
+* Fix articulated train units having all of their total weight allocated to the first articulated part, causing issues with slopes for realistic acceleration and braking.
+* Fix building objects or trees on coast/shore tiles and then removing them preventing the tile being flooded afterwards in some circumstances.
+* Fix network clients which fail to connect being left in the clients list of other connected clients in some circumstances.
+* Fix desync which could occur when using drive-through train depots in some circumstances.
+* Fix false positive desync warning messages for train cached deceleration values.
+* Fix false positive desync warning messages when loading very old savegames.
+* Fix setting console command displaying wrong min/max values with some settings.
+* Fix map generator creating excessively square lakes, create more natural-looking shapes instead.
+* Add settings to customise the size of city zones separately from town zones.
+* Increase the limit of NewGRF house IDs in a single game from 512 to 1024.
+* Change numbering of zones in the house picker window to match the town zone settings and the NewGRF specification.
+* Change setting default for "Enable showing vehicle routes in the viewport" to on.
+* Enable hardware acceleration/OpenGL renderer.
+* Add Korean translations by TELK.
+* Bump trunk base from commit f70aa8fabe5eabb39a62cc50a3a27ec1c2434ded to commit 3e0a16c027a42c84678b723540532d1f89fc4fbc.
+
 ### v0.40.5 (2021-03-29)
 * Fix through load crash when the rearmost unit of a train is longer than the whole platform and has no cargo capacity.
 * Realistic braking:

@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.40.5
+## JGR's Patchpack version 0.41.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -298,8 +298,9 @@ See the [wiki](https://github.com/JGRennison/OpenTTD-patches/wiki) for guides on
   * Allow clicking the money text in the cheats window to enter a quantity. (added in v0.40.5).  
   * Allow shift-clicking on borrow/repay money buttons to enter a quantity. (added in v0.40.5).  
   * Add map generation settings to control river/lake and rocky patch generation. (added in v0.40.5).  
-  * Add settings to customise the size of town zones. (added in v0.40.5).  
+  * Add settings to customise the size of town zones, and city zones. (added in v0.40.5, v0.41.0).  
   * Add setting to enable non-admin multiplayer clients to rename towns. (added in v0.40.5).  
+  * Increase the limit of NewGRF house IDs in a single game from 512 to 1024. (added in v0.41.0).  
   * Various minor fixes, see changelog.  
   * [NewGRF specification additions](docs/newgrf-additions.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions.html)).
   * [NML specification additions](docs/newgrf-additions-nml.html) ([online copy](https://htmlpreview.github.io/?https://github.com/JGRennison/OpenTTD-patches/blob/jgrpp/docs/newgrf-additions-nml.html)).
