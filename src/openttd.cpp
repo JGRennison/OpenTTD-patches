@@ -1416,8 +1416,8 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		old_industry_stations_nears.push_back(ind->stations_near);
 	}
 
-	extern void RebuildTownCaches(bool cargo_update_required);
-	RebuildTownCaches(false);
+	extern void RebuildTownCaches(bool cargo_update_required, bool old_map_position);
+	RebuildTownCaches(false, false);
 	RebuildSubsidisedSourceAndDestinationCache();
 
 	Station::RecomputeCatchmentForAll();
