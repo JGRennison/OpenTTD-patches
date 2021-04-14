@@ -933,6 +933,10 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_REALISTIC_TRAIN_BRAKING)) {
+		_settings_game.vehicle.train_braking_model = TBM_ORIGINAL;
+	}
+
 	/* Update all vehicles */
 	AfterLoadVehicles(true);
 
@@ -3870,9 +3874,6 @@ bool AfterLoadGame()
 		UpdateAllAnimatedTileSpeeds();
 	}
 
-	if (SlXvIsFeatureMissing(XSLFI_REALISTIC_TRAIN_BRAKING)) {
-		_settings_game.vehicle.train_braking_model = TBM_ORIGINAL;
-	}
 	if (!SlXvIsFeaturePresent(XSLFI_REALISTIC_TRAIN_BRAKING, 2)) {
 		for (Train *t : Train::Iterate()) {
 			if (!(t->vehstatus & VS_CRASHED)) {
