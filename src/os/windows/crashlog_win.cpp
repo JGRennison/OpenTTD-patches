@@ -740,13 +740,13 @@ static void CDECL CustomAbort(int signal)
 	_safe_esp = (void *)(ctx.Rsp - 8);
 #	endif
 #else
-	void *safe_esp;
+	void *safe_esp = nullptr;
 #	if defined(_MSC_VER)
 	_asm {
 		mov safe_esp, esp
 	}
 #	else
-	asm("movl %esp, _safe_esp");
+	asm("movl %%esp, %0" : "=rm" ( safe_esp ));
 #	endif
 	_safe_esp = safe_esp;
 #endif
