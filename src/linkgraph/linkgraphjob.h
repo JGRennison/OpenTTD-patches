@@ -399,6 +399,7 @@ public:
 	static Path *invalid_path;
 
 	Path(NodeID n, bool source = false);
+	virtual ~Path() = default;
 
 	/** Get the node this leg passes. */
 	inline NodeID GetNode() const { return this->node; }
