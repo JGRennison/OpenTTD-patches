@@ -2631,13 +2631,13 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 		}
 
 		extern int _progsig_grf_file_index;
-		is_custom_sprite = (int) GetOriginFileSlot(sprite) != _progsig_grf_file_index;
+		//is_custom_sprite = (int) GetOriginFileSlot(sprite) != _progsig_grf_file_index;
 	} else {
 		/* Normal electric signals are stored in a different sprite block than all other signals. */
 		sprite = (type == SIGTYPE_NORMAL && variant == SIG_ELECTRIC) ? SPR_ORIGINAL_SIGNALS_BASE : SPR_SIGNALS_BASE - 16;
 		sprite += type * 16 + variant * 64 + image * 2 + condition + (IsSignalSpritePBS(type) ? 64 : 0);
 
-		int origin_slot = GetOriginFileSlot(sprite);
+		int origin_slot = 0; //GetOriginFileSlot(sprite);
 		extern int _first_user_grf_file_index;
 		extern int _opengfx_grf_file_index;
 		is_custom_sprite = origin_slot != _opengfx_grf_file_index && (origin_slot >= _first_user_grf_file_index);

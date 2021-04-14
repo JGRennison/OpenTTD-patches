@@ -12,7 +12,7 @@
 #include <functional>
 #include "window_gui.h"
 #include "window_func.h"
-#include "fileio_func.h"
+#include "random_access_file_type.h"
 #include "spritecache.h"
 #include "string_func.h"
 #include "strings_func.h"
@@ -954,7 +954,7 @@ struct SpriteAlignerWindow : Window {
 		switch (widget) {
 			case WID_SA_CAPTION:
 				SetDParam(0, this->current_sprite);
-				SetDParamStr(1, FioGetFilename(GetOriginFileSlot(this->current_sprite)));
+				SetDParamStr(1, GetOriginFile(this->current_sprite)->GetSimplifiedFilename().c_str());
 				break;
 
 			case WID_SA_OFFSETS_ABS:
