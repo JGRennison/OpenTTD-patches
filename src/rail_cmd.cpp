@@ -201,6 +201,8 @@ RailType AllocateRailType(RailTypeLabel label)
 			 * other railtypes, the 7 is to be able to place something
 			 * before the first (default) rail type. */
 			rti->sorting_order = rt << 4 | 7;
+
+			if (label == 'TELE' || label == 'PIPE' || label == 'WIRE') SetBit(rti->ctrl_flags, RTCF_NOREALISTICBRAKING);
 			return rt;
 		}
 	}
