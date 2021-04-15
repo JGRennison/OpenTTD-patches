@@ -330,7 +330,7 @@ static void CheckCurveLookAhead(const Train *v, TrainReservationLookAhead *looka
 		const RailtypeInfo *rti = GetRailTypeInfo(rt);
 		max_speed += (max_speed / 2) * rti->curve_speed;
 
-		if (v->tcache.cached_tilt) {
+		if (v->tcache.cached_tflags & TCF_TILT) {
 			/* Apply max_speed bonus of 20% for a tilting train */
 			max_speed += max_speed / 5;
 		}

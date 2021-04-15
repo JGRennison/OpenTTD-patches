@@ -93,6 +93,13 @@ inline int GetTrainRealisticBrakingTargetDecelerationLimit(int acceleration_type
 	return 120 + (acceleration_type * 48);
 }
 
+/** Flags for TrainCache::cached_tflags */
+enum TrainCacheFlags : byte {
+	TCF_NONE       = 0,        ///< No flags
+	TCF_TILT       = 0x01,     ///< Train can tilt; feature provides a bonus in curves.
+};
+DECLARE_ENUM_AS_BIT_SET(TrainCacheFlags)
+
 /** Variables that are cached to improve performance and such */
 struct TrainCache {
 	/* Cached wagon override spritegroup */
@@ -102,7 +109,7 @@ struct TrainCache {
 	int cached_max_curve_speed;   ///< max consist speed limited by curves
 
 	/* cached values, recalculated on load and each time a vehicle is added to/removed from the consist. */
-	bool cached_tilt;             ///< train can tilt; feature provides a bonus in curves
+	TrainCacheFlags cached_tflags;///< train cached flags
 	uint8 cached_num_engines;     ///< total number of engines, including rear ends of multiheaded engines
 	uint16 cached_centre_mass;    ///< Cached position of the centre of mass, from the front
 	uint16 cached_veh_weight;     ///< Cached individual vehicle weight

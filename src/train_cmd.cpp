@@ -338,7 +338,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 
 	/* store consist weight/max speed in cache */
 	this->vcache.cached_max_speed = max_speed;
-	this->tcache.cached_tilt = train_can_tilt;
+	this->tcache.cached_tflags = (train_can_tilt ? TCF_TILT : TCF_NONE);
 	this->tcache.cached_max_curve_speed = this->GetCurveSpeedLimit();
 
 	/* recalculate cached weights and power too (we do this *after* the rest, so it is known which wagons are powered and need extra weight added) */
@@ -368,7 +368,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 			u->tcache.cached_centre_mass = 0;
 			u->tcache.cached_deceleration = 0;
 			u->tcache.cached_uncapped_decel = 0;
-			u->tcache.cached_tilt = false;
+			u->tcache.cached_tflags = TCF_NONE;
 			u->tcache.cached_max_curve_speed = 0;
 		}
 	}
@@ -615,7 +615,7 @@ int Train::GetCurveSpeedLimit() const
 		const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(this->tile));
 		max_speed += (max_speed / 2) * rti->curve_speed;
 
-		if (this->tcache.cached_tilt) {
+		if (this->tcache.cached_tflags & TCF_TILT) {
 			/* Apply max_speed bonus of 20% for a tilting train */
 			max_speed += max_speed / 5;
 		}

@@ -1635,7 +1635,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 					if (memcmp(&tra_cache[length], &Train::From(u)->tcache, sizeof(TrainCache)) != 0) {
 						CCLOGV("train cache mismatch: %c%c%c%c%c%c%c%c%c",
 								tra_cache[length].cached_override != Train::From(u)->tcache.cached_override ? 'o' : '-',
-								tra_cache[length].cached_tilt != Train::From(u)->tcache.cached_tilt ? 't' : '-',
+								tra_cache[length].cached_tflags != Train::From(u)->tcache.cached_tflags ? 'f' : '-',
 								tra_cache[length].cached_num_engines != Train::From(u)->tcache.cached_num_engines ? 'e' : '-',
 								tra_cache[length].cached_centre_mass != Train::From(u)->tcache.cached_centre_mass ? 'm' : '-',
 								tra_cache[length].cached_veh_weight != Train::From(u)->tcache.cached_veh_weight ? 'w' : '-',
