@@ -225,7 +225,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 		braking_force = force;
 	}
 
-	if (Type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+	if (Type == VEH_TRAIN && Train::From(this)->UsingRealisticBraking()) {
 		braking_power += (Train::From(this)->gcache.cached_total_length * (int64)RBC_BRAKE_POWER_PER_LENGTH);
 	}
 
@@ -265,7 +265,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 	}
 
 	int braking_accel;
-	if (Type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+	if (Type == VEH_TRAIN && Train::From(this)->UsingRealisticBraking()) {
 		/* Assume that every part of a train is braked, not just the engine.
 		 * Exceptionally heavy freight trains should still have a sensible braking distance.
 		 * The total braking force is generally larger than the total tractive force. */

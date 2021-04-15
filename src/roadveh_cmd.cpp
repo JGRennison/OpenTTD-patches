@@ -795,13 +795,13 @@ int RoadVehicle::UpdateSpeed()
 		default: NOT_REACHED();
 		case AM_ORIGINAL: {
 			int acceleration = this->overtaking != 0 ? 512 : 256;
-			return this->DoUpdateSpeed({ acceleration, acceleration }, 0, max_speed, max_speed);
+			return this->DoUpdateSpeed({ acceleration, acceleration }, 0, max_speed, max_speed, false);
 		}
 
 		case AM_REALISTIC: {
 			GroundVehicleAcceleration acceleration = this->GetAcceleration();
 			if (this->overtaking != 0) acceleration.acceleration += 256;
-			return this->DoUpdateSpeed(acceleration, this->GetAccelerationStatus() == AS_BRAKE ? 0 : 4, max_speed, max_speed);
+			return this->DoUpdateSpeed(acceleration, this->GetAccelerationStatus() == AS_BRAKE ? 0 : 4, max_speed, max_speed, false);
 		}
 	}
 }

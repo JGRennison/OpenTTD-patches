@@ -97,6 +97,7 @@ inline int GetTrainRealisticBrakingTargetDecelerationLimit(int acceleration_type
 enum TrainCacheFlags : byte {
 	TCF_NONE       = 0,        ///< No flags
 	TCF_TILT       = 0x01,     ///< Train can tilt; feature provides a bonus in curves.
+	TCF_RL_BRAKING = 0x02,     ///< Train realistic braking (movement physics) in effect for this vehicle
 };
 DECLARE_ENUM_AS_BIT_SET(TrainCacheFlags)
 
@@ -203,6 +204,8 @@ public:
 	}
 
 	int GetCurrentMaxSpeed() const;
+
+	bool UsingRealisticBraking() const { return this->tcache.cached_tflags & TCF_RL_BRAKING; }
 
 	/**
 	 * Get the next real (non-articulated part and non rear part of dualheaded engine) vehicle in the consist.

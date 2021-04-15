@@ -980,7 +980,7 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 				int distance_to_go = station_ahead / TILE_SIZE - (station_length - stop_at) / TILE_SIZE;
 
 				if (distance_to_go > 0) {
-					if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+					if (this->UsingRealisticBraking()) {
 						advisory_max_speed = std::min(advisory_max_speed, 15 * distance_to_go);
 					} else {
 						int st_max_speed = 120;
@@ -1028,7 +1028,7 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 		advisory_max_speed = std::min<int>(advisory_max_speed, ReversingDistanceTargetSpeed(this));
 	}
 
-	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+	if (this->UsingRealisticBraking()) {
 		if (this->lookahead != nullptr) {
 			TrainDecelerationStats stats(this);
 			if (HasBit(this->lookahead->flags, TRLF_DEPOT_END)) {
@@ -1074,6 +1074,7 @@ void Train::UpdateAcceleration()
 	this->acceleration = Clamp(power / weight * 4, 1, 255);
 
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+		this->tcache.cached_tflags |= TCF_RL_BRAKING;
 		switch (_settings_game.vehicle.train_acceleration_model) {
 			default: NOT_REACHED();
 			case AM_ORIGINAL:
@@ -1130,6 +1131,7 @@ void Train::UpdateAcceleration()
 			}
 		}
 	} else {
+		this->tcache.cached_tflags &= ~TCF_RL_BRAKING;
 		this->tcache.cached_deceleration = 0;
 		this->tcache.cached_uncapped_decel = 0;
 	}
@@ -3796,7 +3798,7 @@ public:
 
 static bool IsReservationLookAheadLongEnough(const Train *v, const ChooseTrainTrackLookAheadState &lookahead_state)
 {
-	if (_settings_game.vehicle.train_braking_model != TBM_REALISTIC || v->lookahead == nullptr) return true;
+	if (!v->UsingRealisticBraking() || v->lookahead == nullptr) return true;
 
 	if (v->current_order.IsAnyLoadingType()) return true;
 
@@ -4391,10 +4393,12 @@ int Train::UpdateSpeed()
 	switch (_settings_game.vehicle.train_acceleration_model) {
 		default: NOT_REACHED();
 		case AM_ORIGINAL:
-			return this->DoUpdateSpeed({ this->acceleration * (this->GetAccelerationStatus() == AS_BRAKE ? -4 : 2), this->acceleration * -4 }, 0, max_speed_info.strict_max_speed, max_speed_info.advisory_max_speed);
+			return this->DoUpdateSpeed({ this->acceleration * (this->GetAccelerationStatus() == AS_BRAKE ? -4 : 2), this->acceleration * -4 }, 0,
+					max_speed_info.strict_max_speed, max_speed_info.advisory_max_speed, this->UsingRealisticBraking());
 
 		case AM_REALISTIC:
-			return this->DoUpdateSpeed(this->GetAcceleration(), accel_status == AS_BRAKE ? 0 : 2, max_speed_info.strict_max_speed, max_speed_info.advisory_max_speed);
+			return this->DoUpdateSpeed(this->GetAcceleration(), accel_status == AS_BRAKE ? 0 : 2,
+					max_speed_info.strict_max_speed, max_speed_info.advisory_max_speed, this->UsingRealisticBraking());
 	}
 }
 /**
@@ -4983,7 +4987,7 @@ inline void DecreaseReverseDistance(Train *v)
 
 int ReversingDistanceTargetSpeed(const Train *v)
 {
-	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+	if (v->UsingRealisticBraking()) {
 		TrainDecelerationStats stats(v);
 		return GetRealisticBrakingSpeedForDistance(stats, v->reverse_distance - 1, 0, 0);
 	}

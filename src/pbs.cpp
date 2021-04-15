@@ -1033,7 +1033,7 @@ CommandCost CheckTrainReservationPreventsTrackModification(TileIndex tile, Track
 
 CommandCost CheckTrainReservationPreventsTrackModification(const Train *v)
 {
-	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && v != nullptr && (v->cur_speed > 0 || !(v->vehstatus & (VS_STOPPED | VS_CRASHED)))) {
+	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && v != nullptr && v->UsingRealisticBraking() && (v->cur_speed > 0 || !(v->vehstatus & (VS_STOPPED | VS_CRASHED)))) {
 		return_cmd_error(STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING);
 	}
 	return CommandCost();
