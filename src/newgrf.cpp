@@ -4377,6 +4377,11 @@ static ChangeInfoResult RailTypeChangeInfo(uint id, int numinfo, int prop, const
 				SB(rti->ctrl_flags, RTCF_RESTRICTEDSIG, 1, (buf->ReadByte() != 0 ? 1 : 0));
 				break;
 
+			case A0RPI_RAILTYPE_DISABLE_REALISTIC_BRAKING:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				SB(rti->ctrl_flags, RTCF_NOREALISTICBRAKING, 1, (buf->ReadByte() != 0 ? 1 : 0));
+				break;
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
@@ -4459,6 +4464,7 @@ static ChangeInfoResult RailTypeReserveInfo(uint id, int numinfo, int prop, cons
 
 			case A0RPI_RAILTYPE_ENABLE_PROGRAMMABLE_SIGNALS:
 			case A0RPI_RAILTYPE_ENABLE_RESTRICTED_SIGNALS:
+			case A0RPI_RAILTYPE_DISABLE_REALISTIC_BRAKING:
 				buf->Skip(buf->ReadExtendedByte());
 				break;
 
@@ -8403,6 +8409,7 @@ static const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action5_programmable_signals", 1),
 	GRFFeatureInfo("action0_railtype_programmable_signals", 1),
 	GRFFeatureInfo("action0_railtype_restricted_signals", 1),
+	GRFFeatureInfo("action0_railtype_disable_realistic_braking", 1),
 	GRFFeatureInfo("action0_roadtype_extra_flags", 1),
 	GRFFeatureInfo(),
 };
@@ -8522,6 +8529,7 @@ static const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 	GRFPropertyMapDefinition(GSF_BRIDGES, A0RPI_BRIDGE_AVAILABILITY_FLAGS, "bridge_availability_flags"),
 	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_ENABLE_PROGRAMMABLE_SIGNALS, "railtype_enable_programmable_signals"),
 	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_ENABLE_RESTRICTED_SIGNALS, "railtype_enable_restricted_signals"),
+	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_DISABLE_REALISTIC_BRAKING, "railtype_disable_realistic_braking"),
 	GRFPropertyMapDefinition(GSF_ROADTYPES, A0RPI_ROADTYPE_EXTRA_FLAGS, "roadtype_extra_flags"),
 	GRFPropertyMapDefinition(GSF_TRAMTYPES, A0RPI_ROADTYPE_EXTRA_FLAGS, "roadtype_extra_flags"),
 	GRFPropertyMapDefinition(),

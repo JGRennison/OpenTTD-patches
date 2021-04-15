@@ -1073,7 +1073,7 @@ void Train::UpdateAcceleration()
 	assert(weight != 0);
 	this->acceleration = Clamp(power / weight * 4, 1, 255);
 
-	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && !HasBit(GetRailTypeInfo(this->railtype)->ctrl_flags, RTCF_NOREALISTICBRAKING)) {
 		this->tcache.cached_tflags |= TCF_RL_BRAKING;
 		switch (_settings_game.vehicle.train_acceleration_model) {
 			default: NOT_REACHED();
