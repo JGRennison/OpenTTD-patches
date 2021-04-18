@@ -310,9 +310,25 @@ void OrderList::RemoveScheduledDispatch(uint32 offset)
 void OrderList::UpdateScheduledDispatch()
 {
 	bool update_windows = false;
+	if (this->GetScheduledDispatchStartTick() == 0) {
+		int64 start = _scaled_date_ticks - (_scaled_date_ticks % this->GetScheduledDispatchDuration());
+		SchdispatchConvertToFullDateFract(
+				start,
+				&this->scheduled_dispatch_start_date, &this->scheduled_dispatch_start_full_date_fract);
+		int64 last_dispatch = -start;
+		if (last_dispatch < INT_MIN && _settings_game.game_time.time_in_minutes) {
+			/* Advance by multiples of 24 hours */
+			const int64 day = 24 * 60 * _settings_game.game_time.ticks_per_minute;
+			this->scheduled_dispatch_last_dispatch = last_dispatch + (CeilDivT<int64>(INT_MIN - last_dispatch, day) * day);
+		} else {
+			this->scheduled_dispatch_last_dispatch = ClampToI32(last_dispatch);
+		}
+	}
 	/* Most of the time this loop does not runs. It makes sure start date in in past */
 	while (this->GetScheduledDispatchStartTick() > _scaled_date_ticks) {
-		this->scheduled_dispatch_last_dispatch += this->GetScheduledDispatchDuration();
+		OverflowSafeInt32 last_dispatch = this->scheduled_dispatch_last_dispatch;
+		last_dispatch += this->GetScheduledDispatchDuration();
+		this->scheduled_dispatch_last_dispatch = last_dispatch;
 		SchdispatchConvertToFullDateFract(
 				this->GetScheduledDispatchStartTick() - this->GetScheduledDispatchDuration(),
 				&this->scheduled_dispatch_start_date, &this->scheduled_dispatch_start_full_date_fract);
@@ -320,7 +336,9 @@ void OrderList::UpdateScheduledDispatch()
 	}
 	/* Most of the time this loop runs once. It makes sure the start date is as close to current time as possible. */
 	while (this->GetScheduledDispatchStartTick() + this->GetScheduledDispatchDuration() <= _scaled_date_ticks) {
-		this->scheduled_dispatch_last_dispatch -= this->GetScheduledDispatchDuration();
+		OverflowSafeInt32 last_dispatch = this->scheduled_dispatch_last_dispatch;
+		last_dispatch -= this->GetScheduledDispatchDuration();
+		this->scheduled_dispatch_last_dispatch = last_dispatch;
 		SchdispatchConvertToFullDateFract(
 				this->GetScheduledDispatchStartTick() + this->GetScheduledDispatchDuration(),
 				&this->scheduled_dispatch_start_date, &this->scheduled_dispatch_start_full_date_fract);
