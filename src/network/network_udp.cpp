@@ -730,7 +730,13 @@ void NetworkUDPInitialize()
 	DEBUG(net, 1, "[udp] initializing listeners");
 	assert(_udp_client.socket == nullptr && _udp_server.socket == nullptr && _udp_master.socket == nullptr);
 
-	std::scoped_lock lock(_udp_client.mutex, _udp_server.mutex, _udp_master.mutex);
+	// std::scoped_lock lock(_udp_client.mutex, _udp_server.mutex, _udp_master.mutex);
+
+	/* Avoid std::scoped_lock for MacOS 10.12 compatibility */
+	std::unique_lock<std::mutex> lock1(_udp_client.mutex, std::defer_lock);
+	std::unique_lock<std::mutex> lock2(_udp_server.mutex, std::defer_lock);
+	std::unique_lock<std::mutex> lock3(_udp_master.mutex, std::defer_lock);
+	std::lock(lock1, lock2, lock3);
 
 	_udp_client.socket = new ClientNetworkUDPSocketHandler();
 
