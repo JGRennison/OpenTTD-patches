@@ -441,6 +441,14 @@ class NIHHouse : public NIHelper {
 		print(buffer);
 		seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", hs->animation.frames, hs->animation.status, hs->animation.speed, hs->animation.triggers);
 		print(buffer);
+
+		if (GetCleanHouseType(index) != GetHouseType(index)) {
+			seprintf(buffer, lastof(buffer), "  Untranslated House Type: %u", GetCleanHouseType(index));
+			print(buffer);
+			hs = HouseSpec::Get(GetCleanHouseType(index));
+			seprintf(buffer, lastof(buffer), "    building_flags: 0x%X", hs->building_flags);
+			print(buffer);
+		}
 	}
 };
 
