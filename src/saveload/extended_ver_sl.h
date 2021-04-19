@@ -156,11 +156,11 @@ struct SlXvFeatureTest {
 bool SlXvIsFeaturePresent(SlXvFeatureIndex feature, uint16 min_version = 1, uint16 max_version = 0xFFFF);
 
 /**
- * Returns true if @p feature is missing (i.e. has a version of 0)
+ * Returns true if @p feature is missing (i.e. has a version of 0, or less than the specified minimum version)
  */
-inline bool SlXvIsFeatureMissing(SlXvFeatureIndex feature)
+inline bool SlXvIsFeatureMissing(SlXvFeatureIndex feature, uint16 min_version = 1)
 {
-	return !SlXvIsFeaturePresent(feature);
+	return !SlXvIsFeaturePresent(feature, min_version);
 }
 
 const char *SlXvGetFeatureName(SlXvFeatureIndex feature);
