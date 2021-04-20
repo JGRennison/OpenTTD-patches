@@ -6570,7 +6570,7 @@ STR_TMPL_CANT_CREATE                                            :{WHITE}Can't cr
 # Scheduled Dispatch
 STR_SCHDISPATCH_CAPTION                                         :{WHITE}{VEHICLE} (Scheduled Dispatch)
 STR_SCHDISPATCH_ENABLED                                         :{BLACK}Enable
-STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}Enable scheduled dispatching for this order. Required automatic separation to be off.
+STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}Enable scheduled dispatching for this order. Requires automatic separation to be off.
 STR_SCHDISPATCH_ADD                                             :{BLACK}Add Departure Slot
 STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}Add new departure slot for this schedule.
 STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}Departure slot
@@ -6586,7 +6586,7 @@ STR_SCHDISPATCH_DELAY_TOOLTIP                                   :{BLACK}Set maxi
 STR_SCHDISPATCH_DELAY_CAPTION_MINUTE                            :{BLACK}Delay (minute)
 STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}Delay (day)
 STR_SCHDISPATCH_RESET_LAST_DISPATCH                             :{BLACK}Reset Last Dispatched
-STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}Reset the last dispatch variable. Useful if it stuck with long-future vehicle.
+STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}Reset when a vehicle was last dispatched from the schedule.
 
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Last departure at {DATE_WALLCLOCK_TINY}.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}Last departure has not left yet, it will depart at {DATE_WALLCLOCK_TINY}.
