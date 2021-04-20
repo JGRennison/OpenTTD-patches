@@ -243,17 +243,14 @@ struct SchdispatchWindow : Window {
 		const Vehicle *v = this->vehicle;
 		CountItem();
 
-		if (v->owner == _local_company) {
-			this->SetWidgetDisabledState(WID_SCHDISPATCH_ENABLED, HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION));
-			this->SetWidgetDisabledState(WID_SCHDISPATCH_ADD, !HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && v->orders.list != nullptr);
-			this->SetWidgetDisabledState(WID_SCHDISPATCH_SET_DURATION, !HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && v->orders.list != nullptr);
-			this->SetWidgetDisabledState(WID_SCHDISPATCH_SET_START_DATE, !HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && v->orders.list != nullptr);
-		} else {
-			this->DisableWidget(WID_SCHDISPATCH_ENABLED);
-			this->DisableWidget(WID_SCHDISPATCH_ADD);
-			this->DisableWidget(WID_SCHDISPATCH_SET_DURATION);
-			this->DisableWidget(WID_SCHDISPATCH_SET_START_DATE);
-		}
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_ENABLED, (v->owner != _local_company) || HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION));
+
+		bool disabled = (v->owner != _local_company) || !HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) || (v->orders.list == nullptr);
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_ADD, disabled);
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_SET_DURATION, disabled);
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_SET_START_DATE, disabled);
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_SET_DELAY, disabled);
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_RESET_DISPATCH, disabled);
 
 		this->vscroll->SetCount(CeilDiv(this->item_count, this->num_columns));
 
