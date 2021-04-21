@@ -18,6 +18,8 @@
 #include "textfile_type.h"
 #include "newgrf_text.h"
 
+static const uint MAX_NON_STATIC_GRF_COUNT = 256;
+
 /** GRF config bit flags */
 enum GCF_Flags {
 	GCF_SYSTEM,     ///< GRF file is an openttd-internal system grf

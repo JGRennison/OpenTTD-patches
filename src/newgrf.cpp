@@ -81,7 +81,7 @@ static uint32 _ttdpatch_flags[8];
 GRFLoadedFeatures _loaded_newgrf_features;
 
 static const uint MAX_SPRITEGROUP = UINT8_MAX; ///< Maximum GRF-local ID for a spritegroup.
-static const uint MAX_GRF_COUNT = 256; ///< Maximum number of NewGRF files that could be loaded.
+static const uint MAX_GRF_COUNT = 300; ///< Maximum number of NewGRF files that could be loaded.
 
 /** Base GRF ID for OpenTTD's base graphics GRFs. */
 static const uint32 OPENTTD_GRAPHICS_BASE_GRF_ID = BSWAP32(0xFF4F5400);
@@ -10378,6 +10378,7 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 		}
 
 		uint num_grfs = 0;
+		uint num_non_static = 0;
 
 		_cur.stage = stage;
 		for (GRFConfig *c = _grfconfig; c != nullptr; c = c->next) {
@@ -10392,6 +10393,16 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 			}
 
 			if (stage == GLS_LABELSCAN) InitNewGRFFile(c);
+
+			if (!HasBit(c->flags, GCF_STATIC) && !HasBit(c->flags, GCF_SYSTEM)) {
+				if (num_non_static == MAX_NON_STATIC_GRF_COUNT) {
+					DEBUG(grf, 0, "'%s' is not loaded as the maximum number of non-static GRFs has been reached", c->filename);
+					c->status = GCS_DISABLED;
+					c->error  = new GRFError(STR_NEWGRF_ERROR_MSG_FATAL, STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED);
+					continue;
+				}
+				num_non_static++;
+			}
 
 			if (num_grfs >= MAX_GRF_COUNT) {
 				DEBUG(grf, 0, "'%s' is not loaded as the maximum number of file slots has been reached", c->filename);

@@ -841,7 +841,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_CHECK_NEWGRFS(P
 	if (this->status != STATUS_JOIN) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 
 	uint grf_count = p->Recv_uint32();
-	if (grf_count > MAX_NEWGRFS) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
+	if (grf_count > MAX_NON_STATIC_GRF_COUNT) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 	NetworkRecvStatus ret = NETWORK_RECV_STATUS_OKAY;
 
 	/* Check all GRFs */

@@ -422,7 +422,7 @@ void NetworkUDPSocketHandler::ReceiveNetworkGameInfoExtended(Packet *p, NetworkG
 		uint num_grfs = p->Recv_uint32();
 
 		/* Broken/bad data. It cannot have that many NewGRFs. */
-		if (num_grfs > MAX_NEWGRFS) return;
+		if (num_grfs > MAX_NON_STATIC_GRF_COUNT) return;
 
 		for (i = 0; i < num_grfs; i++) {
 			GRFConfig *c = new GRFConfig();
