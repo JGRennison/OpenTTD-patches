@@ -30,6 +30,7 @@ typedef uint8  Day;   ///< Type for the day of the month, note: 1 based, first d
 static const int DAY_TICKS         =  74; ///< ticks per day
 static const int DAYS_IN_YEAR      = 365; ///< days per year
 static const int DAYS_IN_LEAP_YEAR = 366; ///< sometimes, you need one day more...
+static const int MONTHS_IN_YEAR    =  12; ///< months per year
 
 #define DATE_UNIT_SIZE (_settings_time.time_in_minutes ? _settings_time.ticks_per_minute : (DAY_TICKS * _settings_game.economy.day_length_factor))
 
