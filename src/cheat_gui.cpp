@@ -113,10 +113,10 @@ static int32 ClickChangeDateCheat(int32 p1, int32 p2)
 	ShiftOrderDates(new_date - _date);
 	SetDate(new_date, _date_fract);
 	EnginesMonthlyLoop();
-	SetWindowDirty(WC_STATUS_BAR, 0);
 	InvalidateWindowClassesData(WC_BUILD_STATION, 0);
 	InvalidateWindowClassesData(WC_BUILD_OBJECT, 0);
 	ResetSignalVariant();
+	MarkWholeScreenDirty();
 	return _cur_year;
 }
 
