@@ -619,7 +619,7 @@ class NIHIndustry : public NIHelper {
 	const void *GetInstance(uint index)const override    { return Industry::Get(index); }
 	const void *GetSpec(uint index) const override       { return GetIndustrySpec(Industry::Get(index)->type); }
 	void SetStringParameters(uint index) const override  { this->SetSimpleStringParameters(STR_INDUSTRY_NAME, index); }
-	uint32 GetGRFID(uint index) const override           { return (this->IsInspectable(index)) ? GetIndustrySpec(Industry::Get(index)->type)->grf_prop.grffile->grfid : 0; }
+	uint32 GetGRFID(uint index) const override           { return (!this->ShowExtraInfoOnly(index)) ? GetIndustrySpec(Industry::Get(index)->type)->grf_prop.grffile->grfid : 0; }
 
 	uint Resolve(uint index, uint var, uint param, GetVariableExtra *extra) const override
 	{
