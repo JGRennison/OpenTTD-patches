@@ -995,6 +995,10 @@ class NIHTown : public NIHelper {
 			print(buffer);
 		}
 
+		seprintf(buffer, lastof(buffer), "  Growth rate: %u, Growth Counter: %u, T to Rebuild: %u, Growing: %u, Custom growth: %u",
+				t->growth_rate, t->grow_counter, t->time_until_rebuild, HasBit(t->flags, TOWN_IS_GROWING) ? 1 : 0,HasBit(t->flags, TOWN_CUSTOM_GROWTH) ? 1 : 0);
+		print(buffer);
+
 		if (t->have_ratings != 0) {
 			print("  Company ratings:");
 			uint8 bit;
