@@ -1131,6 +1131,7 @@ void SetStartingYear(Year year)
 	/* If you open a savegame as scenario there may already be link graphs.*/
 	LinkGraphSchedule::instance.ShiftDates(new_date - _date);
 	ShiftOrderDates(new_date - _date);
+	ShiftVehicleDates(new_date - _date);
 	SetDate(new_date, 0);
 }
 

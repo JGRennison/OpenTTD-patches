@@ -29,6 +29,7 @@
 #include "error.h"
 #include "network/network.h"
 #include "order_base.h"
+#include "vehicle_base.h"
 #include "currency.h"
 
 #include "widgets/cheat_widget.h"
@@ -111,6 +112,7 @@ static int32 ClickChangeDateCheat(int32 p1, int32 p2)
 	Date new_date = ConvertYMDToDate(p1, ymd.month, ymd.day);
 	LinkGraphSchedule::instance.ShiftDates(new_date - _date);
 	ShiftOrderDates(new_date - _date);
+	ShiftVehicleDates(new_date - _date);
 	SetDate(new_date, _date_fract);
 	EnginesMonthlyLoop();
 	InvalidateWindowClassesData(WC_BUILD_STATION, 0);

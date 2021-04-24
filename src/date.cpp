@@ -228,9 +228,9 @@ static void OnNewYear()
 		_cur_date_ymd.year--;
 		days_this_year = IsLeapYear(_cur_date_ymd.year) ? DAYS_IN_LEAP_YEAR : DAYS_IN_YEAR;
 		_date -= days_this_year;
-		for (Vehicle *v : Vehicle::Iterate()) v->date_of_last_service -= days_this_year;
 		for (LinkGraph *lg : LinkGraph::Iterate()) lg->ShiftDates(-days_this_year);
 		ShiftOrderDates(-days_this_year);
+		ShiftVehicleDates(-days_this_year);
 
 		/* Because the _date wraps here, and text-messages expire by game-days, we have to clean out
 		 *  all of them if the date is set back, else those messages will hang for ever */

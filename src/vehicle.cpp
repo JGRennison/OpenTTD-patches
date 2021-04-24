@@ -4204,3 +4204,10 @@ void DumpVehicleStats(char *buffer, const char *last)
 		buffer += seprintf(buffer, last, "\n");
 	}
 }
+
+void ShiftVehicleDates(int interval)
+{
+	for (Vehicle *v : Vehicle::Iterate()) {
+		v->date_of_last_service += interval;
+	}
+}
