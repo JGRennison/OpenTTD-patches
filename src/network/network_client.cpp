@@ -569,6 +569,18 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncLog(const std::strin
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
+/** Send an error-packet over the network */
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncMessage(const char *msg)
+{
+	Packet *p = new Packet(PACKET_CLIENT_DESYNC_MSG);
+	p->Send_uint32(_date);
+	p->Send_uint16(_date_fract);
+	p->Send_uint8(_tick_skip_counter);
+	p->Send_string(msg);
+	my_client->SendPacket(p);
+	return NETWORK_RECV_STATUS_OKAY;
+}
+
 /**
  * Tell the server that we like to change the password of the company.
  * @param password The new password.
@@ -1436,6 +1448,12 @@ void NetworkUpdateClientName()
 void NetworkClientSendChat(NetworkAction action, DestType type, int dest, const char *msg, NetworkTextMessageData data)
 {
 	MyClient::SendChat(action, type, dest, msg, data);
+}
+
+
+void NetworkClientSendDesyncMsg(const char *msg)
+{
+	MyClient::SendDesyncMessage(msg);
 }
 
 /**

@@ -38,6 +38,7 @@ protected:
 	NetworkRecvStatus Receive_CLIENT_QUIT(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_ERROR(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_DESYNC_LOG(Packet *p) override;
+	NetworkRecvStatus Receive_CLIENT_DESYNC_MSG(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_RCON(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_NEWGRFS_CHECKED(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_MOVE(Packet *p) override;

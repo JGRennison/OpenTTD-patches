@@ -92,6 +92,7 @@ public:
 	static NetworkRecvStatus SendCommand(const CommandPacket *cp);
 	static NetworkRecvStatus SendError(NetworkErrorCode errorno);
 	static NetworkRecvStatus SendDesyncLog(const std::string &log);
+	static NetworkRecvStatus SendDesyncMessage(const char *msg);
 	static NetworkRecvStatus SendQuit();
 	static NetworkRecvStatus SendAck();
 

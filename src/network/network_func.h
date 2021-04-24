@@ -54,6 +54,7 @@ void NetworkClientRequestMove(CompanyID company, const char *pass = "");
 void NetworkClientSendRcon(const char *password, const char *command);
 void NetworkClientSendSettingsPassword(const char *password);
 void NetworkClientSendChat(NetworkAction action, DestType type, int dest, const char *msg, NetworkTextMessageData data = NetworkTextMessageData());
+void NetworkClientSendDesyncMsg(const char *msg);
 bool NetworkClientPreferTeamChat(const NetworkClientInfo *cio);
 bool NetworkCompanyIsPassworded(CompanyID company_id);
 bool NetworkMaxCompaniesReached();

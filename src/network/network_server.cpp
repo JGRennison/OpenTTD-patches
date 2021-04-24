@@ -1286,6 +1286,19 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_LOG(Pack
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
+NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_MSG(Packet *p)
+{
+	Date date = p->Recv_uint32();
+	DateFract date_fract = p->Recv_uint16();
+	uint8 tick_skip_counter = p->Recv_uint8();
+	std::string msg;
+	p->Recv_string(msg);
+	DEBUG(desync, 0, "Client-id %d desync msg: %s", this->client_id, msg.c_str());
+	extern void LogRemoteDesyncMsg(Date date, DateFract date_fract, uint8 tick_skip_counter, uint32 src_id, std::string msg);
+	LogRemoteDesyncMsg(date, date_fract, tick_skip_counter, this->client_id, std::move(msg));
+	return NETWORK_RECV_STATUS_OKAY;
+}
+
 NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_QUIT(Packet *p)
 {
 	/* The client wants to leave. Display this and report it to the other
