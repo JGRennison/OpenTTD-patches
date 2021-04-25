@@ -211,9 +211,7 @@ static void PopupMainToolbMenu(Window *w, int widget, StringID string, int count
 
 /** Enum for the Company Toolbar's network related buttons */
 static const int CTMN_CLIENT_LIST = -1; ///< Show the client list
-static const int CTMN_NEW_COMPANY = -2; ///< Create a new company
-static const int CTMN_SPECTATE    = -3; ///< Become spectator
-static const int CTMN_SPECTATOR   = -4; ///< Show a company window as spectator
+static const int CTMN_SPECTATOR   = -2; ///< Show a company window as spectator
 
 /**
  * Pop up a generic company list menu.
@@ -231,12 +229,6 @@ static void PopupMainCompanyToolbMenu(Window *w, int widget, int grey = 0)
 
 			/* Add the client list button for the companies menu */
 			list.emplace_back(new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_CLIENT_LIST, CTMN_CLIENT_LIST, false));
-
-			if (_local_company == COMPANY_SPECTATOR) {
-				list.emplace_back(new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_NEW_COMPANY, CTMN_NEW_COMPANY, NetworkMaxCompaniesReached()));
-			} else {
-				list.emplace_back(new DropDownListStringItem(STR_NETWORK_COMPANY_LIST_SPECTATE, CTMN_SPECTATE, NetworkMaxSpectatorsReached()));
-			}
 			break;
 
 		case WID_TN_STORY:
@@ -626,23 +618,6 @@ static CallBackFunction MenuClickCompany(int index)
 		switch (index) {
 			case CTMN_CLIENT_LIST:
 				ShowClientList();
-				return CBF_NONE;
-
-			case CTMN_NEW_COMPANY:
-				if (_network_server) {
-					DoCommandP(0, CCA_NEW, _network_own_client_id, CMD_COMPANY_CTRL);
-				} else {
-					NetworkSendCommand(0, CCA_NEW, 0, 0, CMD_COMPANY_CTRL, nullptr, nullptr, _local_company, 0);
-				}
-				return CBF_NONE;
-
-			case CTMN_SPECTATE:
-				if (_network_server) {
-					NetworkServerDoMove(CLIENT_ID_SERVER, COMPANY_SPECTATOR);
-					MarkWholeScreenDirty();
-				} else {
-					NetworkClientRequestMove(COMPANY_SPECTATOR);
-				}
 				return CBF_NONE;
 		}
 	}

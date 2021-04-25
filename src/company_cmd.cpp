@@ -588,8 +588,7 @@ Company *DoStartupNewCompany(DoStartupNewCompanyFlag flags, CompanyID company)
 	GeneratePresidentName(c);
 
 	SetWindowDirty(WC_GRAPH_LEGEND, 0);
-	SetWindowClassesDirty(WC_CLIENT_LIST_POPUP);
-	SetWindowDirty(WC_CLIENT_LIST, 0);
+	InvalidateWindowData(WC_CLIENT_LIST, 0);
 	InvalidateWindowData(WC_LINKGRAPH_LEGEND, 0);
 	BuildOwnerLegend();
 	InvalidateWindowData(WC_SMALLMAP, 0, 1);
@@ -935,6 +934,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 			if (StoryPage::GetNumItems() == 0 || Goal::GetNumItems() == 0) InvalidateWindowData(WC_MAIN_TOOLBAR, 0);
 
+			InvalidateWindowData(WC_CLIENT_LIST, 0);
 			InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 
 			extern void CheckCaches(bool force_check, std::function<void(const char *)> log);

@@ -1319,6 +1319,8 @@ const char *VideoDriver_Win32OpenGL::Start(const StringList &param)
 		_cur_resolution = old_res;
 		return "Can't get pointer to screen buffer";
 	}
+	/* Main loop expects to start with the buffer unmapped. */
+	this->ReleaseVideoPointer();
 
 	MarkWholeScreenDirty();
 

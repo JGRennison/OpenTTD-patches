@@ -86,7 +86,7 @@ void NetworkUDPSocketHandler::SendPacket(Packet *p, NetworkAddress *recv, bool a
 {
 	if (this->sockets.size() == 0) this->Listen();
 
-	const uint MTU = short_mtu ? SEND_MTU_SHORT : SEND_MTU;
+	const uint MTU = short_mtu ? UDP_MTU_SHORT : UDP_MTU;
 
 	if (p->Size() > MTU) {
 		p->PrepareToSend();
@@ -155,7 +155,8 @@ void NetworkUDPSocketHandler::ReceivePackets()
 			struct sockaddr_storage client_addr;
 			memset(&client_addr, 0, sizeof(client_addr));
 
-			Packet p(this, SEND_MTU);
+			/* The limit is UDP_MTU, but also allocate that much as we need to read the whole packet in one go. */
+			Packet p(this, UDP_MTU, UDP_MTU);
 			socklen_t client_len = sizeof(client_addr);
 
 			/* Try to receive anything */
@@ -506,7 +507,7 @@ void NetworkUDPSocketHandler::Receive_EX_MULTI(Packet *p, NetworkAddress *client
 		DEBUG(net, 6, "[udp] merged multi-part packet from %s: " OTTD_PRINTFHEX64 ", %u bytes",
 				NetworkAddressDumper().GetAddressAsString(client_addr), token, total_payload);
 
-		Packet merged(this, 0);
+		Packet merged(this, SHRT_MAX, 0);
 		merged.ReserveBuffer(total_payload);
 		for (auto &frag : fs.fragments) {
 			merged.Send_binary(frag.data(), frag.size());

@@ -21,6 +21,7 @@
 /**
  * Create a packet that is used to read from a network socket.
  * @param cs                The socket handler associated with the socket we are reading from.
+ * @param limit             The maximum size of packets to accept.
  * @param initial_read_size The initial amount of data to transfer from the socket into the
  *                          packet. This defaults to just the required bytes to determine the
  *                          packet's size. That default is the wanted for streams such as TCP
@@ -29,7 +30,7 @@
  *                          loose some the data of the packet, so there you pass the maximum
  *                          size for the packet you expect from the network.
  */
-Packet::Packet(NetworkSocketHandler *cs, size_t initial_read_size) : pos(0)
+Packet::Packet(NetworkSocketHandler *cs, size_t limit, size_t initial_read_size) : pos(0), limit(limit)
 {
 	assert(cs != nullptr);
 
@@ -39,9 +40,13 @@ Packet::Packet(NetworkSocketHandler *cs, size_t initial_read_size) : pos(0)
 
 /**
  * Creates a packet to send
- * @param type of the packet to send
+ * @param type  The type of the packet to send
+ * @param limit The maximum number of bytes the packet may have. Default is COMPAT_MTU.
+ *              Be careful of compatibility with older clients/servers when changing
+ *              the limit as it might break things if the other side is not expecting
+ *              much larger packets than what they support.
  */
-Packet::Packet(PacketType type) : pos(0), cs(nullptr)
+Packet::Packet(PacketType type, size_t limit) : pos(0), limit(limit), cs(nullptr)
 {
 	this->ResetState(type);
 }
@@ -77,7 +82,7 @@ void Packet::PrepareToSend()
  */
 bool Packet::CanWriteToPacket(size_t bytes_to_write)
 {
-	return this->Size() + bytes_to_write < SHRT_MAX;
+	return this->Size() + bytes_to_write < this->limit;
 }
 
 /*
@@ -181,7 +186,7 @@ void Packet::Send_string(const char *data)
  */
 size_t Packet::Send_bytes(const byte *begin, const byte *end)
 {
-	size_t amount = std::min<size_t>(end - begin, SHRT_MAX - this->Size());
+	size_t amount = std::min<size_t>(end - begin, this->limit - this->Size());
 	this->buffer.insert(this->buffer.end(), begin, begin + amount);
 	return amount;
 }
@@ -267,7 +272,7 @@ bool Packet::ParsePacketSize()
 	/* If the size of the packet is less than the bytes required for the size and type of
 	 * the packet, or more than the allowed limit, then something is wrong with the packet.
 	 * In those cases the packet can generally be regarded as containing garbage data. */
-	if (size < sizeof(PacketSize) + sizeof(PacketType)) return false;
+	if (size < sizeof(PacketSize) + sizeof(PacketType) || size > this->limit) return false;
 
 	this->buffer.resize(size);
 	this->pos = sizeof(PacketSize);

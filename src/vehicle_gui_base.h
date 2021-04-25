@@ -86,6 +86,7 @@ public:
 	byte unitnumber_digits;                   ///< The number of digits of the highest unit number.
 	Scrollbar *vscroll;
 	VehicleListIdentifier vli;                ///< Identifier of the vehicle list we want to currently show.
+	uint order_arrow_width;                   ///< Width of the arrow in the small order list.
 	VehicleID vehicle_sel;                    ///< Selected vehicle
 
 	typedef GUIVehicleGroupList::SortFunction VehicleGroupSortFunction;
@@ -130,6 +131,8 @@ public:
 
 	BaseVehicleListWindow(WindowDesc *desc, WindowNumber wno);
 
+	void OnInit() override;
+
 	void UpdateSortingFromGrouping();
 
 	void DrawVehicleListItems(VehicleID selected_vehicle, int line_height, const Rect &r) const;
@@ -140,7 +143,6 @@ public:
 	void SetCargoFilterIndex(int index);
 	void SetCargoFilterArray();
 	void FilterVehicleList();
-	void OnInit() override;
 	void CheckCargoFilterEnableState(int plane_widget, bool re_init, bool possible = true);
 	Dimension GetActionDropdownSize(bool show_autoreplace, bool show_group, bool show_template_replace, StringID change_order_str = 0);
 	DropDownList BuildActionDropdownList(bool show_autoreplace, bool show_group, bool show_template_replace,

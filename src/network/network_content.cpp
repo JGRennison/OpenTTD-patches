@@ -221,9 +221,9 @@ void ClientNetworkContentSocketHandler::RequestContentList(uint count, const Con
 		 * A packet begins with the packet size and a byte for the type.
 		 * Then this packet adds a uint16 for the count in this packet.
 		 * The rest of the packet can be used for the IDs. */
-		uint p_count = std::min<uint>(count, (SEND_MTU_SHORT - sizeof(PacketSize) - sizeof(byte) - sizeof(uint16)) / sizeof(uint32));
+		uint p_count = std::min<uint>(count, (TCP_MTU - sizeof(PacketSize) - sizeof(byte) - sizeof(uint16)) / sizeof(uint32));
 
-		Packet *p = new Packet(PACKET_CONTENT_CLIENT_INFO_ID);
+		Packet *p = new Packet(PACKET_CONTENT_CLIENT_INFO_ID, TCP_MTU);
 		p->Send_uint16(p_count);
 
 		for (uint i = 0; i < p_count; i++) {
@@ -247,13 +247,13 @@ void ClientNetworkContentSocketHandler::RequestContentList(ContentVector *cv, bo
 
 	this->Connect();
 
-	const uint max_per_packet = std::min<uint>(255, (SEND_MTU_SHORT - sizeof(PacketSize) - sizeof(byte) - sizeof(uint8)) /
+	const uint max_per_packet = std::min<uint>(255, (TCP_MTU - sizeof(PacketSize) - sizeof(byte) - sizeof(uint8)) /
 			(sizeof(uint8) + sizeof(uint32) + (send_md5sum ? /*sizeof(ContentInfo::md5sum)*/16 : 0))) - 1;
 
 	uint offset = 0;
 
 	while (cv->size() > offset) {
-		Packet *p = new Packet(send_md5sum ? PACKET_CONTENT_CLIENT_INFO_EXTID_MD5 : PACKET_CONTENT_CLIENT_INFO_EXTID);
+		Packet *p = new Packet(send_md5sum ? PACKET_CONTENT_CLIENT_INFO_EXTID_MD5 : PACKET_CONTENT_CLIENT_INFO_EXTID, TCP_MTU);
 		const uint to_send = std::min<uint>(cv->size() - offset, max_per_packet);
 		p->Send_uint8(to_send);
 
@@ -370,9 +370,9 @@ void ClientNetworkContentSocketHandler::DownloadSelectedContentFallback(const Co
 		 * A packet begins with the packet size and a byte for the type.
 		 * Then this packet adds a uint16 for the count in this packet.
 		 * The rest of the packet can be used for the IDs. */
-		uint p_count = std::min<uint>(count, (SEND_MTU_SHORT - sizeof(PacketSize) - sizeof(byte) - sizeof(uint16)) / sizeof(uint32));
+		uint p_count = std::min<uint>(count, (TCP_MTU - sizeof(PacketSize) - sizeof(byte) - sizeof(uint16)) / sizeof(uint32));
 
-		Packet *p = new Packet(PACKET_CONTENT_CLIENT_CONTENT);
+		Packet *p = new Packet(PACKET_CONTENT_CLIENT_CONTENT, TCP_MTU);
 		p->Send_uint16(p_count);
 
 		for (uint i = 0; i < p_count; i++) {

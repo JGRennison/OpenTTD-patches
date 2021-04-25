@@ -603,6 +603,7 @@ STR_QUIT_NO                                                     :{BLACK}Ne
 # Face selection window
 
 
+
 # Network server list
 
 STR_NETWORK_SERVER_LIST_GENERAL_ONLINE                          :{BLACK}{COMMA}/{COMMA} - {COMMA}/{COMMA}
@@ -635,6 +636,8 @@ STR_NETWORK_SERVER_LIST_MAP_SIZE_SHORT                          :{BLACK}{COMMA}x
 # Network company list added strings
 
 # Network client list
+
+
 
 
 # Network set password

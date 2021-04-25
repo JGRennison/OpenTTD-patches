@@ -62,6 +62,21 @@ void NetworkTCPSocketHandler::SendPacket(std::unique_ptr<Packet> packet)
 }
 
 /**
+ * This function puts the packet in the send-queue and it is send as
+ * soon as possible. This is the next tick, or maybe one tick later
+ * if the OS-network-buffer is full)
+ * @param packet the packet to send
+ */
+void NetworkTCPSocketHandler::SendPrependPacket(std::unique_ptr<Packet> packet)
+{
+	assert(packet != nullptr);
+
+	packet->PrepareToSend();
+
+	this->packet_queue.push_front(std::move(packet));
+}
+
+/**
  * Sends all the buffered packets out for this client. It stops when:
  *   1) all packets are send (queue is empty)
  *   2) the OS reports back that it can not send any more
@@ -123,7 +138,7 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 	if (!this->IsConnected()) return nullptr;
 
 	if (this->packet_recv == nullptr) {
-		this->packet_recv.reset(new Packet(this));
+		this->packet_recv.reset(new Packet(this, SHRT_MAX));
 	}
 
 	Packet *p = this->packet_recv.get();

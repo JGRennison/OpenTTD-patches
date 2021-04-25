@@ -43,7 +43,8 @@ public:
 	bool IsConnected() const { return this->sock != INVALID_SOCKET; }
 
 	NetworkRecvStatus CloseConnection(bool error = true) override;
-	virtual void SendPacket(std::unique_ptr<Packet> packet);
+	void SendPacket(std::unique_ptr<Packet> packet);
+	void SendPrependPacket(std::unique_ptr<Packet> packet);
 
 	void SendPacket(Packet *packet)
 	{
