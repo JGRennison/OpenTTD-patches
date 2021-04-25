@@ -526,7 +526,7 @@ struct NewGRFInspectWindow : Window {
 				assert(psa_size % 4 == 0);
 				uint last_non_blank = 0;
 				for (uint j = 0; j < psa_size; j++) {
-					if (psa[j] != 0) last_non_blank = j;
+					if (psa[j] != 0) last_non_blank = j + 1;
 				}
 				const uint psa_limit = (last_non_blank + 3) & ~3;
 				for (uint j = 0; j < psa_limit; j += 4, psa += 4) {
