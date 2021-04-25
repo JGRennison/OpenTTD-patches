@@ -68,8 +68,8 @@ void UpdateNetworkGameWindow()
 }
 
 typedef GUIList<NetworkGameList*, StringFilter&> GUIGameServerList;
-typedef uint16 ServerListPosition;
-static const ServerListPosition SLP_INVALID = 0xFFFF;
+typedef int ServerListPosition;
+static const ServerListPosition SLP_INVALID = -1;
 
 /** Full blown container to make it behave exactly as we want :) */
 class NWidgetServerListHeader : public NWidgetContainer {
@@ -786,39 +786,8 @@ public:
 		EventState state = ES_NOT_HANDLED;
 
 		/* handle up, down, pageup, pagedown, home and end */
-		if (keycode == WKC_UP || keycode == WKC_DOWN || keycode == WKC_PAGEUP || keycode == WKC_PAGEDOWN || keycode == WKC_HOME || keycode == WKC_END) {
-			if (this->servers.size() == 0) return ES_HANDLED;
-			switch (keycode) {
-				case WKC_UP:
-					/* scroll up by one */
-					if (this->list_pos == SLP_INVALID) return ES_HANDLED;
-					if (this->list_pos > 0) this->list_pos--;
-					break;
-				case WKC_DOWN:
-					/* scroll down by one */
-					if (this->list_pos == SLP_INVALID) return ES_HANDLED;
-					if (this->list_pos < this->servers.size() - 1) this->list_pos++;
-					break;
-				case WKC_PAGEUP:
-					/* scroll up a page */
-					if (this->list_pos == SLP_INVALID) return ES_HANDLED;
-					this->list_pos = (this->list_pos < this->vscroll->GetCapacity()) ? 0 : this->list_pos - this->vscroll->GetCapacity();
-					break;
-				case WKC_PAGEDOWN:
-					/* scroll down a page */
-					if (this->list_pos == SLP_INVALID) return ES_HANDLED;
-					this->list_pos = std::min(this->list_pos + this->vscroll->GetCapacity(), (int)this->servers.size() - 1);
-					break;
-				case WKC_HOME:
-					/* jump to beginning */
-					this->list_pos = 0;
-					break;
-				case WKC_END:
-					/* jump to end */
-					this->list_pos = (ServerListPosition)this->servers.size() - 1;
-					break;
-				default: NOT_REACHED();
-			}
+		if (this->vscroll->UpdateListPositionOnKeyPress(this->list_pos, keycode) == ES_HANDLED) {
+			if (this->list_pos == SLP_INVALID) return ES_HANDLED;
 
 			this->server = this->servers[this->list_pos];
 
@@ -854,12 +823,9 @@ public:
 			}
 
 			case WID_NG_CLIENT:
-				/* Make sure the name does not start with a space, so TAB completion works */
-				if (!StrEmpty(this->name_editbox.text.buf) && this->name_editbox.text.buf[0] != ' ') {
-					strecpy(_settings_client.network.client_name, this->name_editbox.text.buf, lastof(_settings_client.network.client_name));
-				} else {
-					strecpy(_settings_client.network.client_name, "Player", lastof(_settings_client.network.client_name));
-				}
+				/* Validation of the name will happen once the user tries to join or start a game, as getting
+				 * error messages while typing (e.g. when you clear the name) defeats the purpose of the check. */
+				strecpy(_settings_client.network.client_name, this->name_editbox.text.buf, lastof(_settings_client.network.client_name));
 				break;
 		}
 	}
@@ -1292,6 +1258,8 @@ static WindowDesc _network_start_server_window_desc(
 
 static void ShowNetworkStartServerWindow()
 {
+	if (!NetworkValidateClientName()) return;
+
 	DeleteWindowById(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_GAME);
 	DeleteWindowById(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_LOBBY);
 
@@ -1584,6 +1552,8 @@ static WindowDesc _network_lobby_window_desc(
  */
 static void ShowNetworkLobbyWindow(NetworkGameList *ngl)
 {
+	if (!NetworkValidateClientName()) return;
+
 	DeleteWindowById(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_START);
 	DeleteWindowById(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_GAME);
 

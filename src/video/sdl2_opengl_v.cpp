@@ -121,7 +121,7 @@ const char *VideoDriver_SDL_OpenGL::AllocateContext()
 
 	ToggleVsync(_video_vsync);
 
-	return OpenGLBackend::Create(&GetOGLProcAddressCallback);
+	return OpenGLBackend::Create(&GetOGLProcAddressCallback, this->GetScreenSize());
 }
 
 void VideoDriver_SDL_OpenGL::PopulateSystemSprites()

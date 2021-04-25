@@ -201,7 +201,7 @@ struct AIListWindow : public Window {
 	{
 		switch (widget) {
 			case WID_AIL_LIST: { // Select one of the AIs
-				int sel = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_AIL_LIST, 0, this->line_height) - 1;
+				int sel = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_AIL_LIST) - 1;
 				if (sel < (int)this->info_list->size()) {
 					this->selected = sel;
 					this->SetDirty();
@@ -795,6 +795,7 @@ struct AIConfigWindow : public Window {
 
 			case WID_AIC_LIST:
 				this->line_height = FONT_HEIGHT_NORMAL + WD_MATRIX_TOP + WD_MATRIX_BOTTOM;
+				resize->height = this->line_height;
 				size->height = 8 * this->line_height;
 				break;
 
@@ -906,7 +907,7 @@ struct AIConfigWindow : public Window {
 			}
 
 			case WID_AIC_LIST: { // Select a slot
-				this->selected_slot = (CompanyID)this->vscroll->GetScrolledRowFromWidget(pt.y, this, widget, 0, this->line_height);
+				this->selected_slot = (CompanyID)this->vscroll->GetScrolledRowFromWidget(pt.y, this, widget);
 				this->InvalidateData();
 				if (click_count > 1 && this->selected_slot != INVALID_COMPANY) ShowAIListWindow((CompanyID)this->selected_slot);
 				break;

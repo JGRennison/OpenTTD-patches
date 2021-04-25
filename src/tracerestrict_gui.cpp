@@ -3458,7 +3458,7 @@ public:
 				break;
 
 			case WID_TRSL_LIST_SLOTS: { // Matrix Slot
-				uint id_s = this->slot_sb->GetScrolledRowFromWidget(pt.y, this, WID_TRSL_LIST_SLOTS, 0, this->tiny_step_height);
+				uint id_s = this->slot_sb->GetScrolledRowFromWidget(pt.y, this, WID_TRSL_LIST_SLOTS, 0);
 				if (id_s >= this->slots.size()) return;
 
 				this->slot_sel = this->vli.index = this->slots[id_s]->index;
@@ -3526,7 +3526,7 @@ public:
 				this->slot_over = INVALID_GROUP;
 				this->SetDirty();
 
-				uint id_s = this->slot_sb->GetScrolledRowFromWidget(pt.y, this, WID_TRSL_LIST_SLOTS, 0, this->tiny_step_height);
+				uint id_s = this->slot_sb->GetScrolledRowFromWidget(pt.y, this, WID_TRSL_LIST_SLOTS, 0);
 				if (id_s >= this->slots.size()) return; // click out of list bound
 
 				if (_ctrl_pressed) {
@@ -3627,7 +3627,7 @@ public:
 				break;
 
 			case WID_TRSL_LIST_SLOTS: { // ... the list of slots.
-				uint id_s = this->slot_sb->GetScrolledRowFromWidget(pt.y, this, WID_TRSL_LIST_SLOTS, 0, this->tiny_step_height);
+				uint id_s = this->slot_sb->GetScrolledRowFromWidget(pt.y, this, WID_TRSL_LIST_SLOTS, 0);
 				if (id_s < this->slots.size()) new_slot_over = this->slots[id_s]->index;
 				break;
 			}
@@ -3959,7 +3959,7 @@ public:
 	{
 		switch (widget) {
 			case WID_TRCL_LIST_COUNTERS: { // Matrix
-				uint id_s = this->sb->GetScrolledRowFromWidget(pt.y, this, WID_TRCL_LIST_COUNTERS, 0, this->tiny_step_height);
+				uint id_s = this->sb->GetScrolledRowFromWidget(pt.y, this, WID_TRCL_LIST_COUNTERS, 0);
 				if (id_s >= this->ctrs.size()) return;
 
 				this->selected = this->ctrs[id_s]->index;
