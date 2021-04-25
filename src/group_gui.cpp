@@ -647,7 +647,7 @@ public:
 				const int left  = r.left + WD_FRAMERECT_LEFT + 8;
 				const int right = r.right - WD_FRAMERECT_RIGHT - 8;
 
-				int y = r.top + WD_FRAMERECT_TOP;
+				int y = r.top + (1 + r.bottom - r.top - (3 * FONT_HEIGHT_NORMAL)) / 2;
 				DrawString(left, right, y, STR_GROUP_PROFIT_THIS_YEAR, TC_BLACK);
 				SetDParam(0, this->money_this_year);
 				DrawString(left, right, y, STR_JUST_CURRENCY_LONG, TC_BLACK, SA_RIGHT);
