@@ -1427,7 +1427,7 @@ STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :신호기 프�
 STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER                   :차량 목록에 화물 종류 필터 표시: {STRING}
 STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER_HELPTEXT          :차량 목록에 화물 종류 필터를 표시합니다. 이 설정을 켜면, 차량 목록 창에 추가 필터 드롭다운이 표시됩니다.
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES               :고급 적재 모드 표시: {STRING}
-STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES_HELPTEXT      :고급 적재 모드(통과하며 싣기)를 표시합니다. 이 설정을 끄면, 일부 고급 적재 모드가 인터페이스에 표시되지 않습니다. 하지만 다른 플레이어까지 고급 적재 모드를 사용할 수 없도록 하지는 않습니다.
+STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES_HELPTEXT      :고급 적재 모드(차례로 나눠 싣기)를 표시합니다. 이 설정을 끄면, 일부 고급 적재 모드가 인터페이스에 표시되지 않습니다. 하지만 다른 플레이어까지 고급 적재 모드를 사용할 수 없도록 하지는 않습니다.
 STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS            :전체 차량에 적용되는 작업 비활성화: {STRING}
 STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS_HELPTEXT   :이 설정을 켜면, 모든 차량 또는 그룹에 속하지 않은 차량에 적용되는 차량기지로 보내기/운행 취소 버튼과 출발/정지 버튼을 비활성화합니다. 모든 차량에게 적용되는 작업을 실수로 실행하여 발생할 수 있는 부작용을 방지할 수 있습니다.
 STR_CONFIG_SETTING_SHOW_DEPOT_SELL_GUI                          :기지로 보내고 판매 기능 표시: {STRING}
@@ -4814,8 +4814,8 @@ STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}항공�
 
 STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}연령: {LTBLUE}{STRING}{BLACK}   유지비: {LTBLUE}{CURRENCY_LONG}/년
 
-STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK             :{WHITE}{VEHICLE}: {STATION}의 선로 길이가 충분하지 않아 통과하며 싣기가 중단되었습니다.
-STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT                          :{WHITE}{VEHICLE}: {STATION}의 차량기지 때문에 통과하며 싣기가 중단되었습니다.
+STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK             :{WHITE}{VEHICLE}: {STATION}의 선로 길이가 충분하지 않아 차례로 나눠 싣기가 중단되었습니다.
+STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT                          :{WHITE}{VEHICLE}: {STATION}의 차량기지 때문에 차례로 나눠 싣기가 중단되었습니다.
 
 STR_RUNNING                                                     :{LTBLUE}운행 중
 STR_NEED_REPAIR                                                 :{ORANGE}차량을 수리해야 합니다. 최고 속도가 {VELOCITY}로 감소하였습니다.
@@ -5146,7 +5146,7 @@ STR_ORDER_AUTO_REFIT_ANY                                        :이용 가능�
 STR_ORDER_STOP_LOCATION_NEAR_END                                :[가까운쪽]
 STR_ORDER_STOP_LOCATION_MIDDLE                                  :[중간]
 STR_ORDER_STOP_LOCATION_FAR_END                                 :[먼쪽]
-STR_ORDER_STOP_LOCATION_THROUGH                                 :[통과하며 싣기]
+STR_ORDER_STOP_LOCATION_THROUGH                                 :[차례로 나눠 싣기]
 
 STR_ORDER_OUT_OF_RANGE                                          :{RED} (다음 목적지가 제한 항속거리보다 멀리 있습니다)
 
