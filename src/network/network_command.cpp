@@ -328,7 +328,7 @@ const char *NetworkGameSocketHandler::ReceiveCommand(Packet *p, CommandPacket *c
 	if (cp->binary_length == 0) {
 		p->Recv_string(cp->text, (!_network_server && GetCommandFlags(cp->cmd) & CMD_STR_CTRL) != 0 ? SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK : SVS_REPLACE_WITH_QUESTION_MARK);
 	} else {
-		if ((p->pos + (PacketSize) cp->binary_length + /* callback index */ 1) > p->size) return "invalid binary data length";
+		if (!p->CanReadFromPacket(cp->binary_length + /* callback index */ 1)) return "invalid binary data length";
 		if (cp->binary_length > MAX_CMD_TEXT_LENGTH) return "over-size binary data length";
 		p->Recv_binary(cp->text, cp->binary_length);
 	}

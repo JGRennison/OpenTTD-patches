@@ -71,7 +71,7 @@ public:
 	uint32 last_token_frame;     ///< The last frame we received the right token
 	ClientStatus status;         ///< Status of this client
 	CommandQueue outgoing_queue; ///< The command-queue awaiting delivery
-	int receive_limit;           ///< Amount of bytes that we can receive at this moment
+	size_t receive_limit;        ///< Amount of bytes that we can receive at this moment
 	uint32 server_hash_bits;     ///< Server password hash entropy bits
 	uint32 rcon_hash_bits;       ///< Rcon password hash entropy bits
 	uint32 settings_hash_bits;   ///< Settings password hash entropy bits

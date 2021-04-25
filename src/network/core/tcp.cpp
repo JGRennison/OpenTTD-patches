@@ -58,11 +58,6 @@ void NetworkTCPSocketHandler::SendPacket(std::unique_ptr<Packet> packet)
 
 	packet->PrepareToSend();
 
-	/* Reallocate the packet as in 99+% of the times we send at most 25 bytes and
-	 * keeping the other 1400+ bytes wastes memory, especially when someone tries
-	 * to do a denial of service attack! */
-	if (packet->size < ((SHRT_MAX * 2) / 3)) packet->buffer = ReallocT(packet->buffer, packet->size);
-
 	this->packet_queue.push_back(std::move(packet));
 }
 
@@ -86,7 +81,7 @@ SendPacketsState NetworkTCPSocketHandler::SendPackets(bool closing_down)
 
 	while (!this->packet_queue.empty()) {
 		Packet *p = this->packet_queue.front().get();
-		res = send(this->sock, (const char*)p->buffer + p->pos, p->size - p->pos, 0);
+		res = p->TransferOut<int>(send, this->sock, 0);
 		if (res == -1) {
 			int err = GET_LAST_ERROR();
 			if (err != EWOULDBLOCK) {
@@ -105,10 +100,8 @@ SendPacketsState NetworkTCPSocketHandler::SendPackets(bool closing_down)
 			return SPS_CLOSED;
 		}
 
-		p->pos += res;
-
 		/* Is this packet sent? */
-		if (p->pos == p->size) {
+		if (p->RemainingBytesToTransfer() == 0) {
 			/* Go to the next packet */
 			this->packet_queue.pop_front();
 		} else {
@@ -136,10 +129,9 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 	Packet *p = this->packet_recv.get();
 
 	/* Read packet size */
-	if (p->pos < sizeof(PacketSize)) {
-		while (p->pos < sizeof(PacketSize)) {
-		/* Read the size of the packet */
-			res = recv(this->sock, (char*)p->buffer + p->pos, sizeof(PacketSize) - p->pos, 0);
+	if (!p->HasPacketSizeData()) {
+		while (p->RemainingBytesToTransfer() != 0) {
+			res = p->TransferIn<int>(recv, this->sock, 0);
 			if (res == -1) {
 				int err = GET_LAST_ERROR();
 				if (err != EWOULDBLOCK) {
@@ -156,16 +148,18 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 				this->CloseConnection();
 				return nullptr;
 			}
-			p->pos += res;
 		}
 
-		/* Read the packet size from the received packet */
-		p->ReadRawPacketSize();
+		/* Parse the size in the received packet and if not valid, close the connection. */
+		if (!p->ParsePacketSize()) {
+			this->CloseConnection();
+			return nullptr;
+		}
 	}
 
 	/* Read rest of packet */
-	while (p->pos < p->size) {
-		res = recv(this->sock, (char*)p->buffer + p->pos, p->size - p->pos, 0);
+	while (p->RemainingBytesToTransfer() != 0) {
+		res = p->TransferIn<int>(recv, this->sock, 0);
 		if (res == -1) {
 			int err = GET_LAST_ERROR();
 			if (err != EWOULDBLOCK) {
@@ -182,8 +176,6 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 			this->CloseConnection();
 			return nullptr;
 		}
-
-		p->pos += res;
 	}
 
 

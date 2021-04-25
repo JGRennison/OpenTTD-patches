@@ -88,24 +88,25 @@ void NetworkUDPSocketHandler::SendPacket(Packet *p, NetworkAddress *recv, bool a
 
 	const uint MTU = short_mtu ? SEND_MTU_SHORT : SEND_MTU;
 
-	if (p->size > MTU) {
+	if (p->Size() > MTU) {
 		p->PrepareToSend();
 
 		uint64 token = this->fragment_token++;
 		const uint PAYLOAD_MTU = MTU - (1 + 2 + 8 + 1 + 1 + 2);
 
-		const uint8 frag_count = (p->size + PAYLOAD_MTU - 1) / PAYLOAD_MTU;
+		const size_t packet_size = p->Size();
+		const uint8 frag_count = (packet_size + PAYLOAD_MTU - 1) / PAYLOAD_MTU;
 
 		Packet frag(PACKET_UDP_EX_MULTI);
 		uint8 current_frag = 0;
 		uint16 offset = 0;
-		while (offset < p->size) {
-			uint16 payload_size = std::min<uint>(PAYLOAD_MTU, p->size - offset);
+		while (offset < packet_size) {
+			uint16 payload_size = std::min<uint>(PAYLOAD_MTU, packet_size - offset);
 			frag.Send_uint64(token);
 			frag.Send_uint8 (current_frag);
 			frag.Send_uint8 (frag_count);
 			frag.Send_uint16 (payload_size);
-			frag.Send_binary((const char *) p->buffer + offset, payload_size);
+			frag.Send_binary((const char *) p->GetBufferData() + offset, payload_size);
 			current_frag++;
 			offset += payload_size;
 			this->SendPacket(&frag, recv, all, broadcast, short_mtu);
@@ -134,8 +135,8 @@ void NetworkUDPSocketHandler::SendPacket(Packet *p, NetworkAddress *recv, bool a
 		}
 
 		/* Send the buffer */
-		int res = sendto(s.second, (const char*)p->buffer, p->size, 0, (const struct sockaddr *)send.GetAddress(), send.GetAddressLength());
-		DEBUG(net, 7, "[udp] sendto(%s)", NetworkAddressDumper().GetAddressAsString(&send));
+		ssize_t res = p->TransferOut<int>(sendto, s.second, 0, (const struct sockaddr *)send.GetAddress(), send.GetAddressLength());
+		DEBUG(net, 7, "[udp] sendto(%s)",  NetworkAddressDumper().GetAddressAsString(&send));
 
 		/* Check for any errors, but ignore it otherwise */
 		if (res == -1) DEBUG(net, 1, "[udp] sendto(%s) failed with: %i", NetworkAddressDumper().GetAddressAsString(&send), GET_LAST_ERROR());
@@ -154,12 +155,12 @@ void NetworkUDPSocketHandler::ReceivePackets()
 			struct sockaddr_storage client_addr;
 			memset(&client_addr, 0, sizeof(client_addr));
 
-			Packet p(this);
+			Packet p(this, SEND_MTU);
 			socklen_t client_len = sizeof(client_addr);
 
 			/* Try to receive anything */
 			SetNonBlocking(s.second); // Some OSes seem to lose the non-blocking status of the socket
-			int nbytes = recvfrom(s.second, (char*)p.buffer, SEND_MTU, 0, (struct sockaddr *)&client_addr, &client_len);
+			ssize_t nbytes = p.TransferIn<int>(recvfrom, s.second, 0, (struct sockaddr *)&client_addr, &client_len);
 
 			/* Did we get the bytes for the base header of the packet? */
 			if (nbytes <= 0) break;    // No data, i.e. no packet
@@ -169,14 +170,14 @@ void NetworkUDPSocketHandler::ReceivePackets()
 #endif
 
 			NetworkAddress address(client_addr, client_len);
-			p.PrepareToRead();
 
 			/* If the size does not match the packet must be corrupted.
 			 * Otherwise it will be marked as corrupted later on. */
-			if (nbytes != p.size) {
-				DEBUG(net, 1, "received a packet with mismatching size from %s, (%u, %u)", NetworkAddressDumper().GetAddressAsString(&address), nbytes, p.size);
+			if (!p.ParsePacketSize() || (size_t)nbytes != p.Size()) {
+				DEBUG(net, 1, "received a packet with mismatching size from %s, (%u, %u)", NetworkAddressDumper().GetAddressAsString(&address), (uint)nbytes, (uint)p.Size());
 				continue;
 			}
+			p.PrepareToRead();
 
 			/* Handle the packet */
 			this->HandleUDPPacket(&p, &address);
@@ -493,7 +494,7 @@ void NetworkUDPSocketHandler::Receive_EX_MULTI(Packet *p, NetworkAddress *client
 	time_t cur_time = time(nullptr);
 
 	auto add_to_fragment = [&](FragmentSet &fs) {
-		fs.fragments[index].assign((const char *) p->buffer + p->pos, payload_size);
+		fs.fragments[index].assign((const char *) p->GetBufferData() + p->GetRawPos(), payload_size);
 
 		uint total_payload = 0;
 		for (auto &frag : fs.fragments) {
@@ -505,17 +506,19 @@ void NetworkUDPSocketHandler::Receive_EX_MULTI(Packet *p, NetworkAddress *client
 		DEBUG(net, 6, "[udp] merged multi-part packet from %s: " OTTD_PRINTFHEX64 ", %u bytes",
 				NetworkAddressDumper().GetAddressAsString(client_addr), token, total_payload);
 
-		Packet merged(this);
+		Packet merged(this, 0);
+		merged.ReserveBuffer(total_payload);
 		for (auto &frag : fs.fragments) {
 			merged.Send_binary(frag.data(), frag.size());
 		}
+		merged.ParsePacketSize();
 		merged.PrepareToRead();
 
 		/* If the size does not match the packet must be corrupted.
 		 * Otherwise it will be marked as corrupted later on. */
-		if (total_payload != merged.size) {
+		if (total_payload != merged.ReadRawPacketSize()) {
 			DEBUG(net, 1, "received an extended packet with mismatching size from %s, (%u, %u)",
-					NetworkAddressDumper().GetAddressAsString(client_addr), total_payload, merged.size);
+					NetworkAddressDumper().GetAddressAsString(client_addr), (uint)total_payload, (uint)merged.ReadRawPacketSize());
 		} else {
 			this->HandleUDPPacket(&merged, client_addr);
 		}

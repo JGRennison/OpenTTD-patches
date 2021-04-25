@@ -167,12 +167,10 @@ struct PacketWriter : SaveFilter {
 
 		byte *bufe = buf + size;
 		while (buf != bufe) {
-			size_t to_write = std::min<size_t>(SHRT_MAX - this->current->size, bufe - buf);
-			memcpy(this->current->buffer + this->current->size, buf, to_write);
-			this->current->size += (PacketSize)to_write;
-			buf += to_write;
+			size_t written = this->current->Send_bytes(buf, bufe);
+			buf += written;
 
-			if (this->current->size == SHRT_MAX) {
+			if (!this->current->CanWriteToPacket(1)) {
 				this->AppendQueue();
 				if (buf != bufe) this->current.reset(new Packet(PACKET_SERVER_MAP_DATA));
 			}
@@ -248,7 +246,7 @@ std::unique_ptr<Packet> ServerNetworkGameSocketHandler::ReceivePacket()
 	/* We can receive a packet, so try that and if needed account for
 	 * the amount of received data. */
 	std::unique_ptr<Packet> p = this->NetworkTCPSocketHandler::ReceivePacket();
-	if (p != nullptr) this->receive_limit -= p->size;
+	if (p != nullptr) this->receive_limit -= p->Size();
 	return p;
 }
 
@@ -485,7 +483,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendDesyncLog(const std::strin
 {
 	for (size_t offset = 0; offset < log.size();) {
 		Packet *p = new Packet(PACKET_SERVER_DESYNC_LOG);
-		size_t size = std::min<size_t>(log.size() - offset, SHRT_MAX - 2 - p->size);
+		size_t size = std::min<size_t>(log.size() - offset, SHRT_MAX - 2 - p->Size());
 		p->Send_uint16(size);
 		p->Send_binary(log.data() + offset, size);
 		this->SendPacket(p);
@@ -669,7 +667,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendMap()
 				has_packets = false;
 				break;
 			}
-			last_packet = p->buffer[2] == PACKET_SERVER_MAP_DONE;
+			last_packet = p->GetPacketType() == PACKET_SERVER_MAP_DONE;
 
 			this->SendPacket(std::move(p));
 
@@ -1283,7 +1281,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_LOG(Pack
 	this->desync_log.resize(this->desync_log.size() + size);
 	p->Recv_binary(this->desync_log.data() + this->desync_log.size() - size, size);
 	DEBUG(net, 2, "Received %u bytes of client desync log", size);
-	this->receive_limit += p->size;
+	this->receive_limit += p->Size();
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
@@ -1950,7 +1948,7 @@ void NetworkServer_Tick(bool send_frame)
 	for (NetworkClientSocket *cs : NetworkClientSocket::Iterate()) {
 		/* We allow a number of bytes per frame, but only to the burst amount
 		 * to be available for packet receiving at any particular time. */
-		cs->receive_limit = std::min<int>(cs->receive_limit + _settings_client.network.bytes_per_frame,
+		cs->receive_limit = std::min<size_t>(cs->receive_limit + _settings_client.network.bytes_per_frame,
 				_settings_client.network.bytes_per_frame_burst);
 
 		/* Check if the speed of the client is what we can expect from a client */
