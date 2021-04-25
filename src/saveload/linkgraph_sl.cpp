@@ -183,6 +183,7 @@ void Load_LinkGraph(LinkGraph &lg)
 		} else {
 			/* ... but as that wasted a lot of space we save a sparse matrix now. */
 			for (NodeID to = from; to != INVALID_NODE; to = lg.edges[from][to].next_edge) {
+				if (to >= size) SlErrorCorrupt("Link graph structure overflow");
 				SlObjectLoadFiltered(&lg.edges[from][to], _filtered_edge_desc.data());
 			}
 		}

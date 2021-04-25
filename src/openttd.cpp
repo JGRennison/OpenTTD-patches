@@ -621,7 +621,7 @@ struct AfterNewGRFScan : NewGRFScanCallback {
 			uint16 rport = NETWORK_DEFAULT_PORT;
 			CompanyID join_as = COMPANY_NEW_COMPANY;
 
-			ParseConnectionString(&company, &port, network_conn);
+			ParseGameConnectionString(&company, &port, network_conn);
 
 			if (company != nullptr) {
 				join_as = (CompanyID)atoi(company);
@@ -732,11 +732,8 @@ int openttd_main(int argc, char *argv[])
 			dedicated = true;
 			SetDebugString("net=6");
 			if (mgo.opt != nullptr) {
-				/* Use the existing method for parsing (openttd -n).
-				 * However, we do ignore the #company part. */
-				const char *temp = nullptr;
 				const char *port = nullptr;
-				ParseConnectionString(&temp, &port, mgo.opt);
+				ParseConnectionString(&port, mgo.opt);
 				if (!StrEmpty(mgo.opt)) scanner->dedicated_host = mgo.opt;
 				if (port != nullptr) scanner->dedicated_port = atoi(port);
 			}
@@ -935,13 +932,12 @@ int openttd_main(int argc, char *argv[])
 	NetworkStartUp(); // initialize network-core
 
 	if (debuglog_conn != nullptr && _network_available) {
-		const char *not_used = nullptr;
 		const char *port = nullptr;
 		uint16 rport;
 
 		rport = NETWORK_DEFAULT_DEBUGLOG_PORT;
 
-		ParseConnectionString(&not_used, &port, debuglog_conn);
+		ParseConnectionString(&port, debuglog_conn);
 		if (port != nullptr) rport = atoi(port);
 
 		NetworkStartDebugLog(NetworkAddress(debuglog_conn, rport));
@@ -1235,9 +1231,6 @@ void SwitchToMode(SwitchMode new_mode)
 
 		case SM_RESTARTGAME: // Restart --> 'Random game' with current settings
 		case SM_NEWGAME: // New Game --> 'Random game'
-			if (_network_server) {
-				seprintf(_network_game_info.map_name, lastof(_network_game_info.map_name), "Random Map");
-			}
 			MakeNewGame(false, new_mode == SM_NEWGAME);
 			break;
 
@@ -1263,18 +1256,12 @@ void SwitchToMode(SwitchMode new_mode)
 				IConsoleCmdExec("exec scripts/game_start.scr 0");
 				/* Decrease pause counter (was increased from opening load dialog) */
 				DoCommandP(0, PM_PAUSED_SAVELOAD, 0, CMD_PAUSE);
-				if (_network_server) {
-					seprintf(_network_game_info.map_name, lastof(_network_game_info.map_name), "%s (Loaded game)", _file_to_saveload.title);
-				}
 			}
 			break;
 		}
 
 		case SM_RESTART_HEIGHTMAP: // Load a heightmap and start a new game from it with current settings
 		case SM_START_HEIGHTMAP: // Load a heightmap and start a new game from it
-			if (_network_server) {
-				seprintf(_network_game_info.map_name, lastof(_network_game_info.map_name), "%s (Heightmap)", _file_to_saveload.title);
-			}
 			MakeNewGame(true, new_mode == SM_START_HEIGHTMAP);
 			break;
 

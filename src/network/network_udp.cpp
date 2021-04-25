@@ -197,7 +197,6 @@ void ServerNetworkUDPSocketHandler::Receive_CLIENT_FIND_SERVER(Packet *p, Networ
 	ngi.clients_on     = _network_game_info.clients_on;
 	ngi.start_date     = ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1);
 
-	ngi.server_lang    = _settings_client.network.server_lang;
 	ngi.use_password   = !StrEmpty(_settings_client.network.server_password);
 	ngi.clients_max    = _settings_client.network.max_clients;
 	ngi.companies_on   = (byte)Company::GetNumItems();
@@ -211,7 +210,6 @@ void ServerNetworkUDPSocketHandler::Receive_CLIENT_FIND_SERVER(Packet *p, Networ
 	ngi.dedicated      = _network_dedicated;
 	ngi.grfconfig      = _grfconfig;
 
-	strecpy(ngi.map_name, _network_game_info.map_name, lastof(ngi.map_name));
 	strecpy(ngi.server_name, _settings_client.network.server_name, lastof(ngi.server_name));
 	strecpy(ngi.server_revision, _openttd_revision, lastof(ngi.server_revision));
 	strecpy(ngi.short_server_revision, _openttd_revision, lastof(ngi.short_server_revision));

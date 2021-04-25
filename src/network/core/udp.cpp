@@ -248,12 +248,12 @@ void NetworkUDPSocketHandler::SendNetworkGameInfo(Packet *p, const NetworkGameIn
 	/* NETWORK_GAME_INFO_VERSION = 1 */
 	p->Send_string(info->server_name);
 	p->Send_string(info->short_server_revision);
-	p->Send_uint8 (info->server_lang);
+	p->Send_uint8 (0); // Used to be server-lang.
 	p->Send_bool  (info->use_password);
 	p->Send_uint8 (info->clients_max);
 	p->Send_uint8 (info->clients_on);
 	p->Send_uint8 (info->spectators_on);
-	p->Send_string(info->map_name);
+	p->Send_string(""); // Used to be map-name.
 	p->Send_uint16(info->map_width);
 	p->Send_uint16(info->map_height);
 	p->Send_uint8 (info->map_set);
@@ -276,12 +276,12 @@ void NetworkUDPSocketHandler::SendNetworkGameInfoExtended(Packet *p, const Netwo
 	p->Send_uint8 (info->spectators_max);
 	p->Send_string(info->server_name);
 	p->Send_string(info->server_revision);
-	p->Send_uint8 (info->server_lang);
+	p->Send_uint8 (0); // Used to be server-lang.
 	p->Send_bool  (info->use_password);
 	p->Send_uint8 (info->clients_max);
 	p->Send_uint8 (info->clients_on);
 	p->Send_uint8 (info->spectators_on);
-	p->Send_string(info->map_name);
+	p->Send_string(""); // Used to be map-name.
 	p->Send_uint32(info->map_width);
 	p->Send_uint32(info->map_height);
 	p->Send_uint8 (info->map_set);
@@ -364,7 +364,7 @@ void NetworkUDPSocketHandler::ReceiveNetworkGameInfo(Packet *p, NetworkGameInfo 
 		case 1:
 			p->Recv_string(info->server_name,     sizeof(info->server_name));
 			p->Recv_string(info->server_revision, sizeof(info->server_revision));
-			info->server_lang    = p->Recv_uint8 ();
+			p->Recv_uint8 (); // Used to contain server-lang.
 			info->use_password   = p->Recv_bool  ();
 			info->clients_max    = p->Recv_uint8 ();
 			info->clients_on     = p->Recv_uint8 ();
@@ -373,14 +373,13 @@ void NetworkUDPSocketHandler::ReceiveNetworkGameInfo(Packet *p, NetworkGameInfo 
 				info->game_date    = p->Recv_uint16() + DAYS_TILL_ORIGINAL_BASE_YEAR;
 				info->start_date   = p->Recv_uint16() + DAYS_TILL_ORIGINAL_BASE_YEAR;
 			}
-			p->Recv_string(info->map_name, sizeof(info->map_name));
+			while (p->Recv_uint8() != 0) {} // Used to contain the map-name.
 			info->map_width      = p->Recv_uint16();
 			info->map_height     = p->Recv_uint16();
 			info->map_set        = p->Recv_uint8 ();
 			info->dedicated      = p->Recv_bool  ();
 
-			if (info->server_lang >= NETWORK_NUM_LANGUAGES)  info->server_lang = 0;
-			if (info->map_set     >= NETWORK_NUM_LANDSCAPES) info->map_set     = 0;
+			if (info->map_set     >= NETWORK_NUM_LANDSCAPES) info->map_set = 0;
 	}
 }
 /**
@@ -404,12 +403,12 @@ void NetworkUDPSocketHandler::ReceiveNetworkGameInfoExtended(Packet *p, NetworkG
 	info->spectators_max = p->Recv_uint8 ();
 	p->Recv_string(info->server_name,     sizeof(info->server_name));
 	p->Recv_string(info->server_revision, sizeof(info->server_revision));
-	info->server_lang    = p->Recv_uint8 ();
+	p->Recv_uint8 (); // Used to contain server-lang.
 	info->use_password   = p->Recv_bool  ();
 	info->clients_max    = p->Recv_uint8 ();
 	info->clients_on     = p->Recv_uint8 ();
 	info->spectators_on  = p->Recv_uint8 ();
-	p->Recv_string(info->map_name, sizeof(info->map_name));
+	while (p->Recv_uint8() != 0) {} // Used to contain the map-name.
 	info->map_width      = p->Recv_uint32();
 	info->map_height     = p->Recv_uint32();
 	info->map_set        = p->Recv_uint8 ();
@@ -434,8 +433,7 @@ void NetworkUDPSocketHandler::ReceiveNetworkGameInfoExtended(Packet *p, NetworkG
 		}
 	}
 
-	if (info->server_lang >= NETWORK_NUM_LANGUAGES)  info->server_lang = 0;
-	if (info->map_set     >= NETWORK_NUM_LANDSCAPES) info->map_set     = 0;
+	if (info->map_set     >= NETWORK_NUM_LANDSCAPES) info->map_set = 0;
 }
 
 /**

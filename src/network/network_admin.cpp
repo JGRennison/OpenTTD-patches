@@ -170,7 +170,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendWelcome()
 	p->Send_string(_openttd_revision);
 	p->Send_bool  (_network_dedicated);
 
-	p->Send_string(_network_game_info.map_name);
+	p->Send_string(""); // Used to be map-name.
 	p->Send_uint32(_settings_game.game_creation.generation_seed);
 	p->Send_uint8 (_settings_game.game_creation.landscape);
 	p->Send_uint32(ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1));
@@ -238,7 +238,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendClientInfo(const NetworkC
 	p->Send_uint32(ci->client_id);
 	p->Send_string(cs == nullptr ? "" : const_cast<NetworkAddress &>(cs->client_address).GetHostname());
 	p->Send_string(ci->client_name);
-	p->Send_uint8 (ci->client_lang);
+	p->Send_uint8 (0); // Used to be language
 	p->Send_uint32(ci->join_date);
 	p->Send_uint8 (ci->client_playas);
 

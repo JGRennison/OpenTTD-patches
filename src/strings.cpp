@@ -2037,8 +2037,6 @@ static char *GetSpecialNameString(char *buff, int ind, StringParameters *args, c
 	NOT_REACHED();
 }
 
-extern void SortNetworkLanguages();
-
 /**
  * Check whether the header is a valid header for OpenTTD.
  * @return true iff the header is deemed valid.
@@ -2155,7 +2153,6 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	InitializeSortedCargoSpecs();
 	SortIndustryTypes();
 	BuildIndustriesLegend();
-	SortNetworkLanguages();
 	BuildContentTypeStringList();
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE);      // Build vehicle window.
 	InvalidateWindowClassesData(WC_TRAINS_LIST);        // Train group window.
