@@ -534,29 +534,39 @@ static void IConsoleTabCompletion()
 	char *b = buffer;
 	uint matches = 0;
 	std::string common_prefix;
+	auto check_candidate = [&](const std::string &cmd_name_str) {
+		const char *cmd_name = cmd_name_str.c_str();
+		if (matches == 0) {
+			common_prefix = cmd_name_str;
+		} else {
+			const char *cp = common_prefix.c_str();
+			const char *cmdp = cmd_name;
+			while (true) {
+				const char *end = cmdp;
+				WChar a = Utf8Consume(cp);
+				WChar b = Utf8Consume(cmdp);
+				if (a == 0 || b == 0 || a != b) {
+					common_prefix.resize(end - cmd_name);
+					break;
+				}
+			}
+		}
+		matches++;
+		b += seprintf(b, lastof(buffer), "%s ", cmd_name);
+	};
 	for (auto &it : IConsole::Commands()) {
 		const char *cmd_name = it.first.c_str();
 		const IConsoleCmd *cmd = &it.second;
 		if (strncmp(cmd_name, prefix.c_str(), prefix_length) == 0) {
 			if ((_settings_client.gui.console_show_unlisted || !cmd->unlisted) && (cmd->hook == nullptr || cmd->hook(false) != CHR_HIDE)) {
-				if (matches == 0) {
-					common_prefix = it.first;
-				} else {
-					const char *cp = common_prefix.c_str();
-					const char *cmdp = cmd_name;
-					while (true) {
-						const char *end = cmdp;
-						WChar a = Utf8Consume(cp);
-						WChar b = Utf8Consume(cmdp);
-						if (a == 0 || b == 0 || a != b) {
-							common_prefix.resize(end - cmd_name);
-							break;
-						}
-					}
-				}
-				matches++;
-				b += seprintf(b, lastof(buffer), "%s ", cmd_name);
+				check_candidate(it.first);
 			}
+		}
+	}
+	for (auto &it : IConsole::Aliases()) {
+		const char *cmd_name = it.first.c_str();
+		if (strncmp(cmd_name, prefix.c_str(), prefix_length) == 0) {
+			check_candidate(it.first);
 		}
 	}
 	if (matches > 0) {
