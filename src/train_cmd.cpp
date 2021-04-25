@@ -3149,6 +3149,7 @@ static bool CheckTrainStayInDepot(Train *v)
 	}
 
 	SigSegState seg_state;
+	bool exit_blocked = false;
 
 	if (v->force_proceed == TFP_NONE) {
 		/* force proceed was not pressed */
@@ -3161,7 +3162,7 @@ static bool CheckTrainStayInDepot(Train *v)
 		seg_state = _settings_game.pf.reserve_paths ? SIGSEG_PBS : UpdateSignalsOnSegment(v->tile, INVALID_DIAGDIR, v->owner);
 		if (seg_state == SIGSEG_FULL || HasDepotReservation(v->tile)) {
 			/* Full and no PBS signal in block or depot reserved, can't exit. */
-			return true;
+			exit_blocked = true;
 		}
 	} else {
 		seg_state = _settings_game.pf.reserve_paths ? SIGSEG_PBS : UpdateSignalsOnSegment(v->tile, INVALID_DIAGDIR, v->owner);
@@ -3169,6 +3170,7 @@ static bool CheckTrainStayInDepot(Train *v)
 
 	/* We are leaving a depot, but have to go to the exact same one; re-enter. */
 	if (v->current_order.IsType(OT_GOTO_DEPOT) && v->tile == v->dest_tile) {
+		if (exit_blocked) return true;
 		/* Service when depot has no reservation. */
 		if (!HasDepotReservation(v->tile)) VehicleEnterDepot(v);
 		return true;
@@ -3222,6 +3224,8 @@ static bool CheckTrainStayInDepot(Train *v)
 			return true;
 		}
 	}
+
+	if (exit_blocked) return true;
 
 	/* Only leave when we can reserve a path to our destination. */
 	if (seg_state == SIGSEG_PBS && !TryPathReserve(v) && v->force_proceed == TFP_NONE) {
