@@ -18,6 +18,7 @@
 #include "../../string_type.h"
 #include <string>
 #include <functional>
+#include <limits>
 
 typedef uint16 PacketSize; ///< Size of the whole packet.
 typedef uint8  PacketType; ///< Identifier for the packet
