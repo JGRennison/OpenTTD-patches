@@ -891,8 +891,7 @@ static void DispatchMouseWheelEvent(Window *w, NWidgetCore *nwid, int wheel)
  */
 void DrawOverlappedWindow(Window *w, int left, int top, int right, int bottom, DrawOverlappedWindowFlags flags)
 {
-	const Window *v;
-	FOR_ALL_WINDOWS_FROM_BACK_FROM(v, w->z_front) {
+	for (const Window *v : Window::IterateFromBack(w->z_front)) {
 		if (MayBeShown(v) &&
 				right > v->left &&
 				bottom > v->top &&
@@ -959,13 +958,11 @@ void DrawOverlappedWindow(Window *w, int left, int top, int right, int bottom, D
  */
 void DrawOverlappedWindowForAll(int left, int top, int right, int bottom)
 {
-	Window *w;
-
 	DrawPixelInfo *old_dpi = _cur_dpi;
 	DrawPixelInfo bk;
 	_cur_dpi = &bk;
 
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		if (MayBeShown(w) &&
 				right > w->left &&
 				bottom > w->top &&
@@ -1077,8 +1074,7 @@ void Window::SetShaded(bool make_shaded)
  */
 static Window *FindChildWindow(const Window *w, WindowClass wc)
 {
-	Window *v;
-	FOR_ALL_WINDOWS_FROM_BACK(v) {
+	for (Window *v : Window::IterateFromBack()) {
 		if ((wc == WC_INVALID || wc == v->window_class) && v->parent == w) return v;
 	}
 
@@ -1152,8 +1148,7 @@ Window::~Window()
  */
 Window *FindWindowById(WindowClass cls, WindowNumber number)
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class == cls && w->window_number == number) return w;
 	}
 
@@ -1168,8 +1163,7 @@ Window *FindWindowById(WindowClass cls, WindowNumber number)
  */
 Window *FindWindowByClass(WindowClass cls)
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class == cls) return w;
 	}
 
@@ -1196,13 +1190,11 @@ void DeleteWindowById(WindowClass cls, WindowNumber number, bool force)
  */
 void DeleteWindowByClass(WindowClass cls)
 {
-	Window *w;
-
 restart_search:
 	/* When we find the window to delete, we need to restart the search
 	 * as deleting this window could cascade in deleting (many) others
 	 * anywhere in the z-array */
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class == cls) {
 			delete w;
 			goto restart_search;
@@ -1218,13 +1210,11 @@ restart_search:
  */
 void DeleteCompanyWindows(CompanyID id)
 {
-	Window *w;
-
 restart_search:
 	/* When we find the window to delete, we need to restart the search
 	 * as deleting this window could cascade in deleting (many) others
 	 * anywhere in the z-array */
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		if (w->owner == id) {
 			delete w;
 			goto restart_search;
@@ -1244,8 +1234,7 @@ restart_search:
  */
 void ChangeWindowOwner(Owner old_owner, Owner new_owner)
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		if (w->owner != old_owner) continue;
 
 		switch (w->window_class) {
@@ -1617,8 +1606,7 @@ static bool IsGoodAutoPlace1(int left, int top, int width, int height, int toolb
 	if (left < 0 || top < toolbar_y || right > _screen.width || bottom > _screen.height) return false;
 
 	/* Make sure it is not obscured by any window. */
-	const Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (const Window *w : Window::IterateFromBack()) {
 		if (w->window_class == WC_MAIN_WINDOW) continue;
 
 		if (right > w->left &&
@@ -1663,8 +1651,7 @@ static bool IsGoodAutoPlace2(int left, int top, int width, int height, int toolb
 	if (top < toolbar_y || top > _screen.height - (height >> 2)) return false;
 
 	/* Make sure it is not obscured by any window. */
-	const Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (const Window *w : Window::IterateFromBack()) {
 		if (w->window_class == WC_MAIN_WINDOW) continue;
 
 		if (left + width > w->left &&
@@ -1701,8 +1688,7 @@ static Point GetAutoPlacePosition(int width, int height)
 	 * The new window must be entirely on-screen, and not overlap with an existing window.
 	 * Eight starting points are tried, two at each corner.
 	 */
-	const Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (const Window *w : Window::IterateFromBack()) {
 		if (w->window_class == WC_MAIN_WINDOW) continue;
 
 		if (IsGoodAutoPlace1(w->left + w->width,         w->top,                      width, height, toolbar_y, pt)) return pt;
@@ -1719,7 +1705,7 @@ static Point GetAutoPlacePosition(int width, int height)
 	 * The new window may be partly off-screen, and must not overlap with an existing window.
 	 * Only four starting points are tried.
 	 */
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (const Window *w : Window::IterateFromBack()) {
 		if (w->window_class == WC_MAIN_WINDOW) continue;
 
 		if (IsGoodAutoPlace2(w->left + w->width, w->top,             width, height, toolbar_y, pt)) return pt;
@@ -1736,7 +1722,7 @@ static Point GetAutoPlacePosition(int width, int height)
 	int offset_y = std::max<int>(NWidgetLeaf::closebox_dimension.height, FONT_HEIGHT_NORMAL + WD_CAPTIONTEXT_TOP + WD_CAPTIONTEXT_BOTTOM);
 
 restart:
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (const Window *w : Window::IterateFromBack()) {
 		if (w->left == left && w->top == top) {
 			left += offset_x;
 			top += offset_y;
@@ -1903,8 +1889,7 @@ Window::Window(WindowDesc *desc) : window_desc(desc), mouse_capture_widget(-1)
  */
 Window *FindWindowFromPt(int x, int y)
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_FRONT(w) {
+	for (Window *w : Window::IterateFromFront()) {
 		if (MayBeShown(w) && IsInsideBS(x, w->left, w->width) && IsInsideBS(y, w->top, w->height)) {
 			return w;
 		}
@@ -1942,8 +1927,7 @@ void UnInitWindowSystem()
 {
 	UnshowCriticalError();
 
-	Window *v;
-	FOR_ALL_WINDOWS_FROM_FRONT(v) delete v;
+	for (Window *w : Window::IterateFromFront()) delete w;
 
 	for (WindowBase *w = _z_front_window; w != nullptr; /* nothing */) {
 		WindowBase *to_del = w;
@@ -1972,8 +1956,7 @@ static void DecreaseWindowCounters()
 	if (_scroller_click_timeout != 0) _scroller_click_timeout--;
 	if (hundredth_tick_timeout != 0) hundredth_tick_timeout--;
 
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_FRONT(w) {
+	for (Window *w : Window::IterateFromFront()) {
 		if (!_network_dedicated && hundredth_tick_timeout == 0) w->OnHundredthTick();
 
 		if (_scroller_click_timeout == 0) {
@@ -1999,7 +1982,7 @@ static void DecreaseWindowCounters()
 		w->OnMouseLoop();
 	}
 
-	FOR_ALL_WINDOWS_FROM_FRONT(w) {
+	for (Window *w : Window::IterateFromFront()) {
 		if ((w->flags & WF_TIMEOUT) && --w->timeout_timer == 0) {
 			CLRBITS(w->flags, WF_TIMEOUT);
 
@@ -2246,8 +2229,7 @@ static EventState HandleWindowDragging()
 	if (_left_button_down && _cursor.delta.x == 0 && _cursor.delta.y == 0) return ES_HANDLED;
 
 	/* Otherwise find the window... */
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		if (w->flags & WF_DRAGGING) {
 			/* Stop the dragging if the left mouse button was released */
 			if (!_left_button_down) {
@@ -2266,13 +2248,11 @@ static EventState HandleWindowDragging()
 			int ny = y;
 
 			if (_settings_client.gui.window_snap_radius != 0) {
-				const Window *v;
-
 				int hsnap = _settings_client.gui.window_snap_radius;
 				int vsnap = _settings_client.gui.window_snap_radius;
 				int delta;
 
-				FOR_ALL_WINDOWS_FROM_BACK(v) {
+				for (const Window *v : Window::IterateFromBack()) {
 					if (v == w) continue; // Don't snap at yourself
 
 					if (y + w->height > v->top && y < v->top + v->height) {
@@ -2486,8 +2466,7 @@ static void HandleScrollbarScrolling(Window *w)
  */
 static EventState HandleActiveWidget()
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		if (w->mouse_capture_widget >= 0) {
 			/* Abort if no button is clicked any more. */
 			if (!_left_button_down) {
@@ -2598,8 +2577,7 @@ static bool MaybeBringWindowToFront(Window *w)
 		w_height = w->unshaded_size.height;
 	}
 
-	Window *u;
-	FOR_ALL_WINDOWS_FROM_BACK_FROM(u, w->z_front) {
+	for (Window *u : Window::IterateFromBack(w->z_front)) {
 		/* A modal child will prevent the activation of the parent window */
 		if (u->parent == w && (u->window_desc->flags & WDF_MODAL)) {
 			u->SetWhiteBorder();
@@ -2757,8 +2735,7 @@ void HandleKeypress(uint keycode, WChar key)
 	}
 
 	/* Call the event, start with the uppermost window, but ignore the toolbar. */
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_FRONT(w) {
+	for (Window *w : Window::IterateFromFront()) {
 		if (w->window_class == WC_MAIN_TOOLBAR) continue;
 		if (w->window_desc->hotkeys != nullptr) {
 			int hotkey = w->window_desc->hotkeys->CheckMatch(keycode);
@@ -2767,7 +2744,7 @@ void HandleKeypress(uint keycode, WChar key)
 		if (w->OnKeyPress(key, keycode) == ES_HANDLED) return;
 	}
 
-	w = FindWindowById(WC_MAIN_TOOLBAR, 0);
+	Window *w = FindWindowById(WC_MAIN_TOOLBAR, 0);
 	/* When there is no toolbar w is null, check for that */
 	if (w != nullptr) {
 		if (w->window_desc->hotkeys != nullptr) {
@@ -2786,12 +2763,11 @@ void HandleKeypress(uint keycode, WChar key)
 void HandleCtrlChanged()
 {
 	/* Call the event, start with the uppermost window. */
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_FRONT(w) {
-		if (w->OnCTRLStateChange() == ES_HANDLED) break;
-		w->OnCTRLStateChangeAlways();
-	}
-	FOR_ALL_WINDOWS_FROM_FRONT_FROM(w, w) {
+	bool handled = false;
+	for (Window *w : Window::IterateFromFront()) {
+		if (!handled && w->OnCTRLStateChange() == ES_HANDLED) {
+			handled = true;
+		}
 		w->OnCTRLStateChangeAlways();
 	}
 }
@@ -2801,8 +2777,7 @@ void HandleCtrlChanged()
  */
 void HandleShiftChanged()
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_FRONT(w) {
+	for (Window *w : Window::IterateFromFront()) {
 		w->OnShiftStateChange();
 	}
 }
@@ -3144,8 +3119,8 @@ static void CheckSoftLimit()
 
 	for (;;) {
 		uint deletable_count = 0;
-		Window *w, *last_deletable = nullptr;
-		FOR_ALL_WINDOWS_FROM_FRONT(w) {
+		Window *last_deletable = nullptr;
+		for (Window *w : Window::IterateFromFront()) {
 			if (w->window_class == WC_MAIN_WINDOW || IsVitalWindow(w) || (w->flags & WF_STICKY)) continue;
 
 			last_deletable = w;
@@ -3198,8 +3173,7 @@ void InputLoop()
  */
 void CallWindowRealtimeTickEvent(uint delta_ms)
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_FRONT(w) {
+	for (Window *w : Window::IterateFromFront()) {
 		w->OnRealtimeTick(delta_ms);
 	}
 }
@@ -3229,10 +3203,8 @@ void UpdateWindows()
 
 	_window_update_number++;
 
-	Window *w;
-
 	/* Process invalidations before anything else. */
-	FOR_ALL_WINDOWS_FROM_FRONT(w) {
+	for (Window *w : Window::IterateFromFront()) {
 		w->ProcessScheduledInvalidations();
 		w->ProcessHighlightedInvalidations();
 	}
@@ -3265,7 +3237,7 @@ void UpdateWindows()
 	if (window_timer.HasElapsed()) {
 		window_timer.SetInterval(MILLISECONDS_PER_TICK);
 
-		FOR_ALL_WINDOWS_FROM_FRONT(w) {
+		for (Window *w : Window::IterateFromFront()) {
 			if ((w->flags & WF_WHITE_BORDER) && --w->white_border_timer == 0) {
 				CLRBITS(w->flags, WF_WHITE_BORDER);
 				w->SetDirty();
@@ -3275,7 +3247,7 @@ void UpdateWindows()
 
 	DrawDirtyBlocks();
 
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		/* Update viewport only if window is not shaded. */
 		if (w->viewport != nullptr && !w->IsShaded()) UpdateViewportPosition(w);
 	}
@@ -3293,8 +3265,7 @@ void UpdateWindows()
  */
 void SetWindowDirty(WindowClass cls, WindowNumber number)
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class == cls && w->window_number == number) w->SetDirty();
 	}
 }
@@ -3307,8 +3278,7 @@ void SetWindowDirty(WindowClass cls, WindowNumber number)
  */
 void SetWindowWidgetDirty(WindowClass cls, WindowNumber number, byte widget_index)
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class == cls && w->window_number == number) {
 			w->SetWidgetDirty(widget_index);
 		}
@@ -3321,8 +3291,7 @@ void SetWindowWidgetDirty(WindowClass cls, WindowNumber number, byte widget_inde
  */
 void SetWindowClassesDirty(WindowClass cls)
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class == cls) w->SetDirty();
 	}
 }
@@ -3396,8 +3365,7 @@ void Window::ProcessHighlightedInvalidations()
  */
 void InvalidateWindowData(WindowClass cls, WindowNumber number, int data, bool gui_scope)
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class == cls && w->window_number == number) {
 			w->InvalidateData(data, gui_scope);
 		}
@@ -3414,9 +3382,7 @@ void InvalidateWindowData(WindowClass cls, WindowNumber number, int data, bool g
  */
 void InvalidateWindowClassesData(WindowClass cls, int data, bool gui_scope)
 {
-	Window *w;
-
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class == cls) {
 			w->InvalidateData(data, gui_scope);
 		}
@@ -3428,8 +3394,7 @@ void InvalidateWindowClassesData(WindowClass cls, int data, bool gui_scope)
  */
 void CallWindowGameTickEvent()
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_FRONT(w) {
+	for (Window *w : Window::IterateFromFront()) {
 		w->OnGameTick();
 	}
 }
@@ -3442,13 +3407,11 @@ void CallWindowGameTickEvent()
  */
 void DeleteNonVitalWindows()
 {
-	Window *w;
-
 restart_search:
 	/* When we find the window to delete, we need to restart the search
 	 * as deleting this window could cascade in deleting (many) others
 	 * anywhere in the z-array */
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (const Window *w : Window::IterateFromBack()) {
 		if (w->window_class != WC_MAIN_WINDOW &&
 				w->window_class != WC_SELECT_GAME &&
 				w->window_class != WC_MAIN_TOOLBAR &&
@@ -3471,8 +3434,6 @@ restart_search:
  */
 void DeleteAllNonVitalWindows()
 {
-	Window *w;
-
 	/* Delete every window except for stickied ones, then sticky ones as well */
 	DeleteNonVitalWindows();
 
@@ -3480,7 +3441,7 @@ restart_search:
 	/* When we find the window to delete, we need to restart the search
 	 * as deleting this window could cascade in deleting (many) others
 	 * anywhere in the z-array */
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (const Window *w : Window::IterateFromBack()) {
 		if (w->flags & WF_STICKY) {
 			delete w;
 			goto restart_search;
@@ -3505,13 +3466,11 @@ void DeleteAllMessages()
  */
 void DeleteConstructionWindows()
 {
-	Window *w;
-
 restart_search:
 	/* When we find the window to delete, we need to restart the search
 	 * as deleting this window could cascade in deleting (many) others
 	 * anywhere in the z-array */
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (const Window *w : Window::IterateFromBack()) {
 		if (w->window_desc->flags & WDF_CONSTRUCTION) {
 			delete w;
 			goto restart_search;
@@ -3535,8 +3494,7 @@ void ReInitAllWindows()
 	extern void InitDepotWindowBlockSizes();
 	InitDepotWindowBlockSizes();
 
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		w->ReInit();
 	}
 
@@ -3625,8 +3583,7 @@ int PositionNetworkChatWindow(Window *w)
  */
 void ChangeVehicleViewports(VehicleID from_index, VehicleID to_index)
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		if (w->viewport != nullptr && w->viewport->follow_vehicle == from_index) {
 			w->viewport->follow_vehicle = to_index;
 			w->SetDirty();
@@ -3644,8 +3601,7 @@ void RelocateAllWindows(int neww, int newh)
 {
 	DeleteWindowById(WC_DROPDOWN_MENU, 0);
 
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		int left, top;
 		/* XXX - this probably needs something more sane. For example specifying
 		 * in a 'backup'-desc that the window should always be centered. */

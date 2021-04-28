@@ -2666,8 +2666,7 @@ struct IndustryCargoesWindow : public Window {
 		InvalidateWindowClassesData(WC_SMALLMAP, 0);
 
 		/* Notify viewports too. */
-		Window *w;
-		FOR_ALL_WINDOWS_FROM_BACK(w) {
+		for (Window *w : Window::IterateFromBack()) {
 			if (w->viewport != nullptr)
 				if (w->viewport->zoom >= ZOOM_LVL_DRAW_MAP && w->viewport->map_type == VPMT_INDUSTRY)
 					w->InvalidateData();

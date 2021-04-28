@@ -453,7 +453,7 @@ static void DoViewportRedrawRegions(const Window *w, int left, int top, int widt
 {
 	if (width <= 0 || height <= 0) return;
 
-	FOR_ALL_WINDOWS_FROM_BACK_FROM(w, w) {
+	for (const Window *w : Window::IterateFromBack<const Window>(w)) {
 		if (left + width > w->left &&
 				w->left + w->width > left &&
 				top + height > w->top &&
@@ -3641,8 +3641,7 @@ void MarkAllRouteStepsDirty(const Vehicle *veh)
  */
 void MarkAllViewportMapsDirty(int left, int top, int right, int bottom)
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		Viewport *vp = w->viewport;
 		if (vp != nullptr && vp->zoom >= ZOOM_LVL_DRAW_MAP) {
 			MarkViewportDirty(vp, left, top, right, bottom, VMDF_NOT_LANDSCAPE);
@@ -3652,8 +3651,7 @@ void MarkAllViewportMapsDirty(int left, int top, int right, int bottom)
 
 void MarkAllViewportMapLandscapesDirty()
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		Viewport *vp = w->viewport;
 		if (vp != nullptr && vp->zoom >= ZOOM_LVL_DRAW_MAP) {
 			ClearViewportLandPixelCache(vp);
@@ -3664,8 +3662,7 @@ void MarkAllViewportMapLandscapesDirty()
 
 void MarkWholeNonMapViewportsDirty()
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		Viewport *vp = w->viewport;
 		if (vp != nullptr && vp->zoom < ZOOM_LVL_DRAW_MAP) {
 			w->SetDirty();
@@ -3680,8 +3677,7 @@ void MarkWholeNonMapViewportsDirty()
  */
 void MarkAllViewportOverlayStationLinksDirty(const Station *st)
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_BACK(w) {
+	for (Window *w : Window::IterateFromBack()) {
 		Viewport *vp = w->viewport;
 		if (vp != nullptr && vp->overlay != nullptr) {
 			vp->overlay->MarkStationViewportLinksDirty(st);
@@ -3691,8 +3687,7 @@ void MarkAllViewportOverlayStationLinksDirty(const Station *st)
 
 void ConstrainAllViewportsZoom()
 {
-	Window *w;
-	FOR_ALL_WINDOWS_FROM_FRONT(w) {
+	for (Window *w : Window::IterateFromFront()) {
 		if (w->viewport == nullptr) continue;
 
 		ZoomLevel zoom = static_cast<ZoomLevel>(Clamp(w->viewport->zoom, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max));

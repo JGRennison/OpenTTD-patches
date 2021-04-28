@@ -873,6 +873,71 @@ public:
 	 * @pre this->IsNewGRFInspectable()
 	 */
 	virtual void ShowNewGRFInspectWindow() const { NOT_REACHED(); }
+
+	template<class T>
+	using window_base_t = std::conditional_t<std::is_const<T>{}, WindowBase const, WindowBase>;
+
+	/**
+	 * Iterator to iterate all valid Windows
+	 * @tparam T Type of the class/struct that is going to be iterated
+	 * @tparam Tfront Wether we iterate from front
+	 */
+	template <class T, bool Tfront>
+	struct WindowIterator {
+		typedef T value_type;
+		typedef T *pointer;
+		typedef T &reference;
+		typedef size_t difference_type;
+		typedef std::forward_iterator_tag iterator_category;
+
+		explicit WindowIterator(window_base_t<T> *start) : w(start)
+		{
+			this->Validate();
+		}
+
+		bool operator==(const WindowIterator &other) const { return this->w == other.w; }
+		bool operator!=(const WindowIterator &other) const { return !(*this == other); }
+		T * operator*() const { return static_cast<T *>(this->w); }
+		WindowIterator & operator++() { this->Next(); this->Validate(); return *this; }
+
+	private:
+		window_base_t<T> *w;
+		void Validate() { while (this->w != nullptr && this->w->window_class == WC_INVALID) this->Next(); }
+		void Next() { if (this->w != nullptr) this->w = Tfront ? this->w->z_back : this->w->z_front; }
+	};
+
+	/**
+	 * Iterable ensemble of all valid Windows
+	 * @tparam T Type of the class/struct that is going to be iterated
+	 * @tparam Tfront Wether we iterate from front
+	 */
+	template <class T, bool Tfront>
+	struct Iterate {
+		Iterate(window_base_t<T> *from) : from(from) {}
+		WindowIterator<T, Tfront> begin() { return WindowIterator<T, Tfront>(this->from); }
+		WindowIterator<T, Tfront> end() { return WindowIterator<T, Tfront>(nullptr); }
+		bool empty() { return this->begin() == this->end(); }
+	private:
+		window_base_t<T> *from;
+	};
+
+	/**
+	 * Returns an iterable ensemble of all valid Window from back to front
+	 * @tparam T Type of the class/struct that is going to be iterated
+	 * @param from index of the first Window to consider
+	 * @return an iterable ensemble of all valid Window
+	 */
+	template <class T = Window>
+	static Iterate<T, false> IterateFromBack(window_base_t<T> *from = _z_back_window) { return Iterate<T, false>(from); }
+
+	/**
+	 * Returns an iterable ensemble of all valid Window from front to back
+	 * @tparam T Type of the class/struct that is going to be iterated
+	 * @param from index of the first Window to consider
+	 * @return an iterable ensemble of all valid Window
+	 */
+	template <class T = Window>
+	static Iterate<T, true> IterateFromFront(window_base_t<T> *from = _z_front_window) { return Iterate<T, true>(from); }
 };
 
 /**
@@ -950,40 +1015,6 @@ void GuiShowTooltips(Window *parent, StringID str, uint paramcount = 0, const ui
 
 /* widget.cpp */
 int GetWidgetFromPos(const Window *w, int x, int y);
-
-inline const Window *FromBaseWindowFront(const WindowBase *w)
-{
-	while (w) {
-		if (w->window_class != WC_INVALID) return (const Window *) w;
-		w = w->z_front;
-	}
-	return nullptr;
-}
-
-inline Window *FromBaseWindowFront(WindowBase *w)
-{
-	return const_cast<Window *>(FromBaseWindowFront(const_cast<const WindowBase *>(w)));
-}
-
-inline const Window *FromBaseWindowBack(const WindowBase *w)
-{
-	while (w) {
-		if (w->window_class != WC_INVALID) return (const Window *) w;
-		w = w->z_back;
-	}
-	return nullptr;
-}
-
-inline Window *FromBaseWindowBack(WindowBase *w)
-{
-	return const_cast<Window *>(FromBaseWindowBack(const_cast<const WindowBase *>(w)));
-}
-
-/** Iterate over all windows */
-#define FOR_ALL_WINDOWS_FROM_BACK_FROM(w, start)  for (w = FromBaseWindowFront(start); w != nullptr; w = FromBaseWindowFront(w->z_front))
-#define FOR_ALL_WINDOWS_FROM_FRONT_FROM(w, start) for (w = FromBaseWindowBack(start); w != nullptr; w = FromBaseWindowBack(w->z_back))
-#define FOR_ALL_WINDOWS_FROM_BACK(w)  FOR_ALL_WINDOWS_FROM_BACK_FROM(w, _z_back_window)
-#define FOR_ALL_WINDOWS_FROM_FRONT(w) FOR_ALL_WINDOWS_FROM_FRONT_FROM(w, _z_front_window)
 
 extern Point _cursorpos_drag_start;
 

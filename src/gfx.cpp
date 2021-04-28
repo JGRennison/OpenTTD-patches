@@ -1561,8 +1561,7 @@ void DrawDirtyBlocks()
 
 	if (_whole_screen_dirty) {
 		RedrawScreenRect(0, 0, _screen.width, _screen.height);
-		Window *w;
-		FOR_ALL_WINDOWS_FROM_BACK(w) {
+		for (Window *w : Window::IterateFromBack()) {
 			w->flags &= ~(WF_DIRTY | WF_WIDGETS_DIRTY | WF_DRAG_DIRTIED);
 		}
 		_whole_screen_dirty = false;
@@ -1579,8 +1578,7 @@ void DrawDirtyBlocks()
 		DrawPixelInfo bk;
 		_cur_dpi = &bk;
 
-		Window *w;
-		FOR_ALL_WINDOWS_FROM_BACK(w) {
+		for (Window *w : Window::IterateFromBack()) {
 			w->flags &= ~WF_DRAG_DIRTIED;
 			if (!MayBeShown(w)) continue;
 
@@ -1640,8 +1638,7 @@ void DrawDirtyBlocks()
 						int right = vp->left + vp->width;
 						int bottom = vp->top + vp->height;
 						_dirty_viewport_occlusions.clear();
-						const Window *v;
-						FOR_ALL_WINDOWS_FROM_BACK_FROM(v, w->z_front) {
+						for (const Window *v : Window::IterateFromBack(w->z_front)) {
 							if (MayBeShown(v) &&
 									right > v->left &&
 									bottom > v->top &&
