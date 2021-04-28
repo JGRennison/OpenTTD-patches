@@ -497,12 +497,6 @@ RailType AllocateRailType(RailTypeLabel label);
 extern std::vector<RailType> _sorted_railtypes;
 extern RailTypes _railtypes_hidden_mask;
 
-/**
- * Loop header for iterating over railtypes, sorted by sortorder.
- * @param var Railtype.
- */
-#define FOR_ALL_SORTED_RAILTYPES(var) for (uint8 index = 0; index < _sorted_railtypes.size() && (var = _sorted_railtypes[index], true) ; index++)
-
 /** Enum holding the signal offset in the sprite sheet according to the side it is representing. */
 enum SignalOffsets {
 	SIGNAL_TO_SOUTHWEST,
