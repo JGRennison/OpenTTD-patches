@@ -45,6 +45,7 @@
 #include "../error.h"
 #include "../scope.h"
 #include <atomic>
+#include <deque>
 #include <string>
 #ifdef __EMSCRIPTEN__
 #	include <emscripten.h>
