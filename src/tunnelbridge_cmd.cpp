@@ -2616,7 +2616,7 @@ static void UpdateRoadTunnelBridgeInfrastructure(TileIndex begin, TileIndex end,
 	const uint middle_len = 2 * GetTunnelBridgeLength(begin, end) * TUNNELBRIDGE_TRACKBIT_FACTOR;
 	const uint len = middle_len + (4 * TUNNELBRIDGE_TRACKBIT_FACTOR);
 
-	FOR_ALL_ROADTRAMTYPES(rtt) {
+	for (RoadTramType rtt : _roadtramtypes) {
 		RoadType rt = GetRoadType(begin, rtt);
 		if (rt == INVALID_ROADTYPE) continue;
 		Company * const c = Company::GetIfValid(GetRoadOwner(begin, rtt));
@@ -2638,7 +2638,7 @@ static void UpdateRoadTunnelBridgeInfrastructure(TileIndex begin, TileIndex end,
 			}
 		}
 	}
-	FOR_ALL_ROADTRAMTYPES(rtt) {
+	for (RoadTramType rtt : _roadtramtypes) {
 		RoadType rt = GetRoadType(end, rtt);
 		if (rt == INVALID_ROADTYPE) continue;
 		Company * const c = Company::GetIfValid(GetRoadOwner(end, rtt));
@@ -2724,7 +2724,7 @@ static void ChangeTileOwner_TunnelBridge(TileIndex tile, Owner old_owner, Owner 
 		/* Only execute this for one of the two ends */
 		SubtractRoadTunnelBridgeInfrastructure(tile, other_end);
 
-		FOR_ALL_ROADTRAMTYPES(rtt) {
+		for (RoadTramType rtt : _roadtramtypes) {
 			/* Update all roadtypes, no matter if they are present */
 			if (GetRoadOwner(tile, rtt) == old_owner) {
 				SetRoadOwner(tile, rtt, new_owner == INVALID_OWNER ? OWNER_NONE : new_owner);
