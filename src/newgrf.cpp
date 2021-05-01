@@ -1939,13 +1939,13 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 				break;
 			}
 
-			case 0x09: // Define sprite layout
-				statspec->tiles = buf->ReadExtendedByte();
-				delete[] statspec->renderdata; // delete earlier loaded stuff
-				statspec->renderdata = new NewGRFSpriteLayout[statspec->tiles];
+			case 0x09: { // Define sprite layout
+				uint16 tiles = buf->ReadExtendedByte();
+				statspec->renderdata.clear(); // delete earlier loaded stuff
+				statspec->renderdata.reserve(tiles);
 
-				for (uint t = 0; t < statspec->tiles; t++) {
-					NewGRFSpriteLayout *dts = &statspec->renderdata[t];
+				for (uint t = 0; t < tiles; t++) {
+					NewGRFSpriteLayout *dts = &statspec->renderdata.emplace_back();
 					dts->consistent_max_offset = UINT16_MAX; // Spritesets are unknown, so no limit.
 
 					if (buf->HasData(4) && *(unaligned_uint32*)buf->Data() == 0) {
@@ -1981,6 +1981,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 					dts->Clone(tmp_layout.data());
 				}
 				break;
+			}
 
 			case 0x0A: { // Copy sprite layout
 				byte srcid = buf->ReadByte();
@@ -1991,12 +1992,12 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 					continue;
 				}
 
-				delete[] statspec->renderdata; // delete earlier loaded stuff
+				statspec->renderdata.clear(); // delete earlier loaded stuff
+				statspec->renderdata.reserve(srcstatspec->renderdata.size());
 
-				statspec->tiles = srcstatspec->tiles;
-				statspec->renderdata = new NewGRFSpriteLayout[statspec->tiles];
-				for (uint t = 0; t < statspec->tiles; t++) {
-					statspec->renderdata[t].Clone(&srcstatspec->renderdata[t]);
+				for (const auto &it : srcstatspec->renderdata) {
+					NewGRFSpriteLayout *dts = &statspec->renderdata.emplace_back();
+					dts->Clone(&it);
 				}
 				break;
 			}
@@ -2082,18 +2083,19 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 				statspec->animation.triggers = buf->ReadWord();
 				break;
 
-			case 0x1A: // Advanced sprite layout
-				statspec->tiles = buf->ReadExtendedByte();
-				delete[] statspec->renderdata; // delete earlier loaded stuff
-				statspec->renderdata = new NewGRFSpriteLayout[statspec->tiles];
+			case 0x1A: { // Advanced sprite layout
+				uint16 tiles = buf->ReadExtendedByte();
+				statspec->renderdata.clear(); // delete earlier loaded stuff
+				statspec->renderdata.reserve(tiles);
 
-				for (uint t = 0; t < statspec->tiles; t++) {
-					NewGRFSpriteLayout *dts = &statspec->renderdata[t];
+				for (uint t = 0; t < tiles; t++) {
+					NewGRFSpriteLayout *dts = &statspec->renderdata.emplace_back();
 					uint num_building_sprites = buf->ReadByte();
 					/* On error, bail out immediately. Temporary GRF data was already freed */
 					if (ReadSpriteLayout(buf, num_building_sprites, false, GSF_STATIONS, true, false, dts)) return CIR_DISABLED;
 				}
 				break;
+			}
 
 			case A0RPI_STATION_MIN_BRIDGE_HEIGHT:
 				if (MappedPropertyLengthMismatch(buf, 8, mapping_entry)) break;
@@ -8992,8 +8994,6 @@ static void ResetCustomStations()
 		for (uint i = 0; i < NUM_STATIONS_PER_GRF; i++) {
 			if (stations[i] == nullptr) continue;
 			StationSpec *statspec = stations[i];
-
-			delete[] statspec->renderdata;
 
 			/* Release this station */
 			delete statspec;
