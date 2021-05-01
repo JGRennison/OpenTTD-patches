@@ -892,7 +892,7 @@ static ScreenshotType _confirmed_screenshot_type; ///< Screenshot type the curre
  */
 static void ScreenshotConfirmationCallback(Window *w, bool confirmed)
 {
-	if (confirmed) MakeScreenshot(_confirmed_screenshot_type, nullptr);
+	if (confirmed) MakeScreenshot(_confirmed_screenshot_type, {});
 }
 
 /**
@@ -918,7 +918,7 @@ void MakeScreenshotWithConfirm(ScreenshotType t)
 		ShowQuery(STR_WARNING_SCREENSHOT_SIZE_CAPTION, STR_WARNING_SCREENSHOT_SIZE_MESSAGE, nullptr, ScreenshotConfirmationCallback);
 	} else {
 		/* Less than 64M pixels, just do it */
-		MakeScreenshot(t, nullptr);
+		MakeScreenshot(t, {});
 	}
 }
 
@@ -944,18 +944,14 @@ static void ShowScreenshotResultMessage(ScreenshotType t, bool ret)
 
 /**
  * Make a screenshot.
- * Unconditionally take a screenshot of the requested type.
  * @param t    the type of screenshot to make.
  * @param name the name to give to the screenshot.
  * @param width the width of the screenshot of, or 0 for current viewport width (only works for SC_ZOOMEDIN and SC_DEFAULTZOOM).
  * @param height the height of the screenshot of, or 0 for current viewport height (only works for SC_ZOOMEDIN and SC_DEFAULTZOOM).
  * @return true iff the screenshot was made successfully
- * @see MakeScreenshotWithConfirm
  */
-bool MakeScreenshot(ScreenshotType t, const char *name, uint32 width, uint32 height)
+static bool RealMakeScreenshot(ScreenshotType t, std::string name, uint32 width, uint32 height)
 {
-	VideoDriver::VideoBufferLocker lock;
-
 	if (t == SC_VIEWPORT) {
 		/* First draw the dirty parts of the screen and only then change the name
 		 * of the screenshot. This way the screenshot will always show the name
@@ -968,7 +964,7 @@ bool MakeScreenshot(ScreenshotType t, const char *name, uint32 width, uint32 hei
 	}
 
 	_screenshot_name[0] = '\0';
-	if (name != nullptr) strecpy(_screenshot_name, name, lastof(_screenshot_name));
+	if (!name.empty()) strecpy(_screenshot_name, name.c_str(), lastof(_screenshot_name));
 
 	bool ret;
 	switch (t) {
@@ -997,7 +993,7 @@ bool MakeScreenshot(ScreenshotType t, const char *name, uint32 width, uint32 hei
 		}
 
 		case SC_MINIMAP:
-			ret = MakeMinimapWorldScreenshot(name);
+			ret = MakeMinimapWorldScreenshot(name.empty() ? nullptr : name.c_str());
 			break;
 
 		default:
@@ -1007,6 +1003,32 @@ bool MakeScreenshot(ScreenshotType t, const char *name, uint32 width, uint32 hei
 	ShowScreenshotResultMessage(t, ret);
 
 	return ret;
+}
+
+/**
+ * Schedule making a screenshot.
+ * Unconditionally take a screenshot of the requested type.
+ * @param t    the type of screenshot to make.
+ * @param name the name to give to the screenshot.
+ * @param width the width of the screenshot of, or 0 for current viewport width (only works for SC_ZOOMEDIN and SC_DEFAULTZOOM).
+ * @param height the height of the screenshot of, or 0 for current viewport height (only works for SC_ZOOMEDIN and SC_DEFAULTZOOM).
+ * @return true iff the screenshot was successfully made.
+ * @see MakeScreenshotWithConfirm
+ */
+bool MakeScreenshot(ScreenshotType t, std::string name, uint32 width, uint32 height)
+{
+	if (t == SC_CRASHLOG) {
+		/* Video buffer might or might not be locked. */
+		VideoDriver::VideoBufferLocker lock;
+
+		return RealMakeScreenshot(t, name, width, height);
+	}
+
+	VideoDriver::GetInstance()->QueueOnMainThread([=] { // Capture by value to not break scope.
+		RealMakeScreenshot(t, name, width, height);
+	});
+
+	return true;
 }
 
 /**
