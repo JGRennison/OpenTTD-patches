@@ -2090,7 +2090,7 @@ void NWidgetViewport::SetupSmallestSize(Window *w, bool init_array)
 
 void NWidgetViewport::Draw(const Window *w)
 {
-	if (this->IsOutsideDrawArea()) return;
+	if (this->current_x == 0 || this->current_y == 0 || this->IsOutsideDrawArea()) return;
 	this->base_flags &= ~WBF_DIRTY;
 
 	if (this->disp_flags & ND_NO_TRANSPARENCY) {
