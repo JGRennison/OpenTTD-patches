@@ -127,6 +127,9 @@ void VideoDriver::Tick()
 
 	auto now = std::chrono::steady_clock::now();
 	if (this->HasGUI() && now >= this->next_draw_tick) {
+		/* Locking video buffer can block (especially with vsync enabled), do it before taking game state lock. */
+		this->LockVideoBuffer();
+
 		{
 			/* Tell the game-thread to stop so we can have a go. */
 			std::lock_guard<std::mutex> lock_wait(this->game_thread_wait_mutex);
@@ -150,8 +153,6 @@ void VideoDriver::Tick()
 			/* Keep the interactive randomizer a bit more random by requesting
 			 * new values when-ever we can. */
 			InteractiveRandom();
-
-			this->LockVideoBuffer();
 
 			this->DrainCommandQueue();
 
