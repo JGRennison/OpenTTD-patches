@@ -1419,6 +1419,19 @@ struct StationViewWindow : public Window {
 					fill->width = 0;
 				}
 				break;
+
+			case WID_SV_GROUP_BY:
+			case WID_SV_SORT_BY: {
+				uint width = 0;
+				for (const StringID *str = _group_names; *str != INVALID_STRING_ID; str++) {
+					width = std::max(width, GetStringBoundingBox(*str).width);
+				}
+				for (const StringID *str = _sort_names; *str != INVALID_STRING_ID; str++) {
+					width = std::max(width, GetStringBoundingBox(*str).width);
+				}
+				size->width = width + padding.width;
+				break;
+			}
 		}
 	}
 
