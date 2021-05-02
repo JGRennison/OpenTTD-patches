@@ -79,7 +79,16 @@ void UpdateTextEffect(TextEffectID te_id, StringID msg)
 	te->params_1 = GetDParam(0);
 	te->params_2 = GetDParam(1);
 
-	te->UpdatePosition(ZOOM_LVL_OUT_8X, te->center, te->top, msg);
+	te->UpdatePosition(ZOOM_LVL_OUT_8X, te->center, te->top, te->string_id, te->string_id - 1);
+}
+
+void UpdateAllTextEffectVirtCoords()
+{
+	for (auto &te : _text_effects) {
+		SetDParam(0, te.params_1);
+		SetDParam(1, te.params_2);
+		te.UpdatePosition(ZOOM_LVL_OUT_8X, te.center, te.top, te.string_id, te.string_id - 1);
+	}
 }
 
 void RemoveTextEffect(TextEffectID te_id)
