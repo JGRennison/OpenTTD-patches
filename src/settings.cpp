@@ -524,6 +524,59 @@ static void Write_ValidateSetting(void *ptr, const SettingDesc *sd, int32 val)
 }
 
 /**
+ * Set the string value of a setting.
+ * @param ptr Pointer to the storage location (might be a pointer to a pointer).
+ * @param sld Pointer to the information for the conversions and limitations to apply.
+ * @param p   The string to save.
+ */
+static void Write_ValidateString(void *ptr, const SaveLoad *sld, const char *p)
+{
+	switch (GetVarMemType(sld->conv)) {
+		case SLE_VAR_STRB:
+		case SLE_VAR_STRBQ:
+			if (p != nullptr) {
+				char *begin = (char*)ptr;
+				char *end = begin + sld->length - 1;
+				strecpy(begin, p, end);
+				str_validate(begin, end, SVS_NONE);
+			}
+			break;
+
+		case SLE_VAR_STR:
+		case SLE_VAR_STRQ:
+			free(*(char**)ptr);
+			*(char**)ptr = p == nullptr ? nullptr : stredup(p);
+			break;
+
+		default: NOT_REACHED();
+	}
+}
+
+/**
+ * Set the string value of a setting.
+ * @param ptr Pointer to the std::string.
+ * @param sld Pointer to the information for the conversions and limitations to apply.
+ * @param p   The string to save.
+ */
+static void Write_ValidateStdString(void *ptr, const SaveLoad *sld, const char *p)
+{
+	std::string *dst = reinterpret_cast<std::string *>(ptr);
+
+	switch (GetVarMemType(sld->conv)) {
+		case SLE_VAR_STR:
+		case SLE_VAR_STRQ:
+			if (p != nullptr) {
+				dst->assign(p);
+			} else {
+				dst->clear();
+			}
+			break;
+
+		default: NOT_REACHED();
+	}
+}
+
+/**
  * Load values from a group of an IniFile structure into the internal representation
  * @param ini pointer to IniFile structure that holds administrative information
  * @param sd pointer to SettingDesc structure whose internally pointed variables will
@@ -583,38 +636,11 @@ static void IniLoadSettings(IniFile *ini, const SettingDesc *sd, const char *grp
 				break;
 
 			case SDT_STRING:
-				switch (GetVarMemType(sld->conv)) {
-					case SLE_VAR_STRB:
-					case SLE_VAR_STRBQ:
-						if (p != nullptr) strecpy((char*)ptr, (const char*)p, (char*)ptr + sld->length - 1);
-						break;
-
-					case SLE_VAR_STR:
-					case SLE_VAR_STRQ:
-						free(*(char**)ptr);
-						*(char**)ptr = p == nullptr ? nullptr : stredup((const char*)p);
-						break;
-
-					case SLE_VAR_CHAR: if (p != nullptr) *(char *)ptr = *(const char *)p; break;
-
-					default: NOT_REACHED();
-				}
+				Write_ValidateString(ptr, sld, (const char *)p);
 				break;
 
 			case SDT_STDSTRING:
-				switch (GetVarMemType(sld->conv)) {
-					case SLE_VAR_STR:
-					case SLE_VAR_STRQ:
-						if (p != nullptr) {
-							reinterpret_cast<std::string *>(ptr)->assign((const char *)p);
-						} else {
-							reinterpret_cast<std::string *>(ptr)->clear();
-						}
-						break;
-
-					default: NOT_REACHED();
-				}
-
+				Write_ValidateStdString(ptr, sld, (const char *)p);
 				break;
 
 			case SDT_INTLIST: {
@@ -749,7 +775,6 @@ static void IniSaveSettings(IniFile *ini, const SettingDesc *sd, const char *grp
 						}
 						break;
 
-					case SLE_VAR_CHAR: buf[0] = *(char*)ptr; buf[1] = '\0'; break;
 					default: NOT_REACHED();
 				}
 				break;
@@ -2494,13 +2519,13 @@ bool SetSettingValue(uint index, const char *value, bool force_newgame)
 	const SettingDesc *sd = &_settings[index];
 	assert(sd->save.conv & SLF_NO_NETWORK_SYNC);
 
-	if (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ) {
-		char **var = (char**)GetVariableAddress((_game_mode == GM_MENU || force_newgame) ? &_settings_newgame : &_settings_game, &sd->save);
-		free(*var);
-		*var = strcmp(value, "(null)") == 0 ? nullptr : stredup(value);
-	} else {
-		char *var = (char*)GetVariableAddress(nullptr, &sd->save);
-		strecpy(var, value, &var[sd->save.length - 1]);
+	if (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ && strcmp(value, "(null)") == 0) {
+		value = nullptr;
+	}
+
+	void *ptr = GetVariableAddress((_game_mode == GM_MENU || force_newgame) ? &_settings_newgame : &_settings_game, &sd->save);
+	if (sd->desc.cmd == SDT_STRING) {
+		Write_ValidateString(ptr, &sd->save, value);
 	}
 	if (sd->desc.proc != nullptr) sd->desc.proc(0);
 

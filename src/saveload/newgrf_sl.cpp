@@ -9,6 +9,7 @@
 
 #include "../stdafx.h"
 #include "../fios.h"
+#include "../string_func.h"
 
 #include "saveload.h"
 #include "newgrf_sl.h"

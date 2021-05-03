@@ -14,6 +14,8 @@
 
 #include "../../safeguards.h"
 
+static const int DEFAULT_CONNECT_TIMEOUT_SECONDS = 3; ///< Allow connect() three seconds to connect.
+
 /**
  * Get the hostname; in case it wasn't given the
  * IPv4 dotted representation is given.
@@ -314,29 +316,53 @@ static SOCKET ConnectLoopProc(addrinfo *runp)
 
 	SOCKET sock = socket(runp->ai_family, runp->ai_socktype, runp->ai_protocol);
 	if (sock == INVALID_SOCKET) {
-		DEBUG(net, 1, "[%s] could not create %s socket: %s", type, family, strerror(errno));
+		DEBUG(net, 1, "[%s] could not create %s socket: %s", type, family, NetworkGetLastErrorString());
 		return INVALID_SOCKET;
 	}
 
 	if (!SetNoDelay(sock)) DEBUG(net, 1, "[%s] setting TCP_NODELAY failed", type);
 
+	if (!SetNonBlocking(sock)) DEBUG(net, 0, "[%s] setting non-blocking mode failed", type);
+
 	int err = connect(sock, runp->ai_addr, (int)runp->ai_addrlen);
-#ifdef __EMSCRIPTEN__
-	/* Emscripten is asynchronous, and as such a connect() is still in
-	 * progress by the time the call returns. */
-	if (err != 0 && errno != EINPROGRESS)
-#else
-	if (err != 0)
-#endif
-	{
-		DEBUG(net, 1, "[%s] could not connect %s socket: %s", type, family, strerror(errno));
+	if (err != 0 && NetworkGetLastError() != EINPROGRESS) {
+		DEBUG(net, 1, "[%s] could not connect to %s over %s: %s", type, address, family, NetworkGetLastErrorString());
 		closesocket(sock);
 		return INVALID_SOCKET;
 	}
 
-	/* Connection succeeded */
-	if (!SetNonBlocking(sock)) DEBUG(net, 0, "[%s] setting non-blocking mode failed", type);
+	fd_set write_fd;
+	struct timeval tv;
 
+	FD_ZERO(&write_fd);
+	FD_SET(sock, &write_fd);
+
+	/* Wait for connect() to either connect, timeout or fail. */
+	tv.tv_usec = 0;
+	tv.tv_sec = DEFAULT_CONNECT_TIMEOUT_SECONDS;
+	int n = select(FD_SETSIZE, NULL, &write_fd, NULL, &tv);
+	if (n < 0) {
+		DEBUG(net, 1, "[%s] could not connect to %s: %s", type, address, NetworkGetLastErrorString());
+		closesocket(sock);
+		return INVALID_SOCKET;
+	}
+
+	/* If no fd is selected, the timeout has been reached. */
+	if (n == 0) {
+		DEBUG(net, 1, "[%s] timed out while connecting to %s", type, address);
+		closesocket(sock);
+		return INVALID_SOCKET;
+	}
+
+	/* Retrieve last error, if any, on the socket. */
+	err = GetSocketError(sock);
+	if (err != 0) {
+		DEBUG(net, 1, "[%s] could not connect to %s: %s", type, address, NetworkGetErrorString(err));
+		closesocket(sock);
+		return INVALID_SOCKET;
+	}
+
+	/* Connection succeeded. */
 	DEBUG(net, 1, "[%s] connected to %s", type, address);
 
 	return sock;
@@ -367,7 +393,7 @@ static SOCKET ListenLoopProc(addrinfo *runp)
 
 	SOCKET sock = socket(runp->ai_family, runp->ai_socktype, runp->ai_protocol);
 	if (sock == INVALID_SOCKET) {
-		DEBUG(net, 0, "[%s] could not create %s socket on port %s: %s", type, family, address, strerror(errno));
+		DEBUG(net, 0, "[%s] could not create %s socket on port %s: %s", type, family, address, NetworkGetLastErrorString());
 		return INVALID_SOCKET;
 	}
 
@@ -378,24 +404,24 @@ static SOCKET ListenLoopProc(addrinfo *runp)
 	int on = 1;
 	/* The (const char*) cast is needed for windows!! */
 	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char*)&on, sizeof(on)) == -1) {
-		DEBUG(net, 3, "[%s] could not set reusable %s sockets for port %s: %s", type, family, address, strerror(errno));
+		DEBUG(net, 3, "[%s] could not set reusable %s sockets for port %s: %s", type, family, address, NetworkGetLastErrorString());
 	}
 
 #ifndef __OS2__
 	if (runp->ai_family == AF_INET6 &&
 			setsockopt(sock, IPPROTO_IPV6, IPV6_V6ONLY, (const char*)&on, sizeof(on)) == -1) {
-		DEBUG(net, 3, "[%s] could not disable IPv4 over IPv6 on port %s: %s", type, address, strerror(errno));
+		DEBUG(net, 3, "[%s] could not disable IPv4 over IPv6 on port %s: %s", type, address, NetworkGetLastErrorString());
 	}
 #endif
 
 	if (bind(sock, runp->ai_addr, (int)runp->ai_addrlen) != 0) {
-		DEBUG(net, 1, "[%s] could not bind on %s port %s: %s", type, family, address, strerror(errno));
+		DEBUG(net, 1, "[%s] could not bind on %s port %s: %s", type, family, address, NetworkGetLastErrorString());
 		closesocket(sock);
 		return INVALID_SOCKET;
 	}
 
 	if (runp->ai_socktype != SOCK_DGRAM && listen(sock, 1) != 0) {
-		DEBUG(net, 1, "[%s] could not listen at %s port %s: %s", type, family, address, strerror(errno));
+		DEBUG(net, 1, "[%s] could not listen at %s port %s: %s", type, family, address, NetworkGetLastErrorString());
 		closesocket(sock);
 		return INVALID_SOCKET;
 	}

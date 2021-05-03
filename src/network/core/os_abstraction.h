@@ -23,9 +23,21 @@
 #include <ws2tcpip.h>
 #include <windows.h>
 
-#define GET_LAST_ERROR() WSAGetLastError()
+/**
+ * Get the last error code from any of the OS's network functions.
+ * What it returns and when it is reset, is implementation defined.
+ * @return The last error code.
+ */
+#define NetworkGetLastError() WSAGetLastError()
 #undef EWOULDBLOCK
 #define EWOULDBLOCK WSAEWOULDBLOCK
+#undef ECONNRESET
+#define ECONNRESET WSAECONNRESET
+#undef EINPROGRESS
+#define EINPROGRESS WSAEWOULDBLOCK
+
+const char *NetworkGetErrorString(int error);
+
 /* Windows has some different names for some types */
 typedef unsigned long in_addr_t;
 
@@ -64,7 +76,8 @@ typedef unsigned long in_addr_t;
 #	define INVALID_SOCKET -1
 #	define ioctlsocket ioctl
 #	define closesocket close
-#	define GET_LAST_ERROR() (errno)
+#	define NetworkGetLastError() (errno)
+#	define NetworkGetErrorString(error) (strerror(error))
 #	define SD_RECEIVE SHUT_RD
 #	define SD_SEND SHUT_WR
 #	define SD_BOTH SHUT_RDWR
@@ -117,7 +130,8 @@ typedef unsigned long in_addr_t;
 #	define INVALID_SOCKET -1
 #	define ioctlsocket ioctl
 #	define closesocket close
-#	define GET_LAST_ERROR() (sock_errno())
+#	define NetworkGetLastError() (sock_errno())
+#	define NetworkGetErrorString(error) (strerror(error))
 #	define SD_RECEIVE SHUT_RD
 #	define SD_SEND SHUT_WR
 #	define SD_BOTH SHUT_RDWR
@@ -191,6 +205,15 @@ static inline socklen_t FixAddrLenForEmscripten(struct sockaddr_storage &address
 	}
 }
 #endif
+
+/**
+ * Return the string representation of the last error from the OS's network functions.
+ * @return The error message, potentially an empty string but never \c nullptr.
+ */
+static inline const char *NetworkGetLastErrorString()
+{
+	return NetworkGetErrorString(NetworkGetLastError());
+}
 
 /**
  * Try to set the socket into non-blocking mode.
@@ -267,6 +290,20 @@ static inline bool ShutdownSocket(SOCKET d, bool read, bool write, uint linger_t
 	if (!read) how = SD_SEND;
 	if (!write) how = SD_RECEIVE;
 	return shutdown(d, how) == 0;
+}
+
+/**
+ * Get the error from a socket, if any.
+ * @param d The socket to get the error from.
+ * @return The errno on the socket.
+ */
+static inline int GetSocketError(SOCKET d)
+{
+	int err;
+	socklen_t len = sizeof(err);
+	getsockopt(d, SOL_SOCKET, SO_ERROR, (char *)&err, &len);
+
+	return err;
 }
 
 /* Make sure these structures have the size we expect them to be */

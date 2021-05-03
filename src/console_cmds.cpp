@@ -976,7 +976,7 @@ DEF_CONSOLE_CMD(ConNetworkReconnect)
 	/* Don't resolve the address first, just print it directly as it comes from the config file. */
 	IConsolePrintF(CC_DEFAULT, "Reconnecting to %s:%d...", _settings_client.network.last_host, _settings_client.network.last_port);
 
-	NetworkClientConnectGame(NetworkAddress(_settings_client.network.last_host, _settings_client.network.last_port), playas);
+	NetworkClientConnectGame(_settings_client.network.last_host, _settings_client.network.last_port, playas);
 	return true;
 }
 
@@ -1018,7 +1018,7 @@ DEF_CONSOLE_CMD(ConNetworkConnect)
 		IConsolePrintF(CC_DEFAULT, "    port: %s", port);
 	}
 
-	NetworkClientConnectGame(NetworkAddress(ip, rport), join_as);
+	NetworkClientConnectGame(ip, rport, join_as);
 
 	return true;
 }

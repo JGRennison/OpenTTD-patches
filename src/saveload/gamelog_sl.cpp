@@ -10,6 +10,7 @@
 #include "../stdafx.h"
 #include "../gamelog_internal.h"
 #include "../fios.h"
+#include "../string_func.h"
 
 #include "saveload.h"
 
