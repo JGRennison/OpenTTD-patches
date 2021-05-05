@@ -192,6 +192,7 @@ static const CheatEntry _cheats_ui[] = {
 	{CNM_ALL,        SLF_NOT_IN_SAVE, STR_CHEAT_INFLATION_COST,   &_economy.inflation_prices,                    &_extra_cheats.inflation_cost.been_used,   nullptr                    },
 	{CNM_ALL,        SLF_NOT_IN_SAVE, STR_CHEAT_INFLATION_INCOME, &_economy.inflation_payment,                   &_extra_cheats.inflation_income.been_used, nullptr                    },
 	{CNM_ALL,        SLE_BOOL,        STR_CHEAT_STATION_RATING,   &_extra_cheats.station_rating.value,           &_extra_cheats.station_rating.been_used,   nullptr                    },
+	{CNM_ALL,        SLE_BOOL,        STR_CHEAT_TOWN_RATING,      &_extra_cheats.town_rating.value,              &_extra_cheats.town_rating.been_used,      nullptr                    },
 };
 
 static bool IsCheatAllowed(CheatNetworkMode mode)
@@ -442,7 +443,7 @@ struct CheatWindow : Window {
 		}
 
 		if (value != oldvalue) {
-			if (_networking || btn == CHT_STATION_RATING) {
+			if (_networking || btn == CHT_STATION_RATING || btn == CHT_TOWN_RATING) {
 				if (btn != CHT_MONEY) DoCommandP(0, (uint32)btn, (uint32)value, CMD_CHEAT_SETTING);
 			} else {
 				WriteValue(ce->variable, ce->type, (int64)value);

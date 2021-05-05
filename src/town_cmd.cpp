@@ -814,6 +814,7 @@ static CommandCost ClearTile_Town(TileIndex tile, DoCommandFlag flags)
 		if (rating > t->ratings[_current_company]
 			&& !(flags & DC_NO_TEST_TOWN_RATING)
 			&& !_cheats.magic_bulldozer.value
+			&& !_extra_cheats.town_rating.value
 			&& _settings_game.difficulty.town_council_tolerance != TOWN_COUNCIL_INDIFFERENT) {
 			SetDParam(0, t->index);
 			return_cmd_error(STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS);
@@ -3228,6 +3229,9 @@ CommandCost CmdTownRating(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 	if (!Company::IsValidID(company_id)) return CMD_ERROR;
 
 	int16 new_rating = Clamp((int16)GB(p2, 0, 16), RATING_MINIMUM, RATING_MAXIMUM);
+	if (_extra_cheats.town_rating.value) {
+		new_rating = RATING_MAXIMUM;
+	}
 	if (flags & DC_EXEC) {
 		t->ratings[company_id] = new_rating;
 		InvalidateWindowData(WC_TOWN_AUTHORITY, town_id);
@@ -3711,6 +3715,8 @@ static void ForAllStationsNearTown(Town *t, Func func)
 
 static void UpdateTownRating(Town *t)
 {
+	if (_extra_cheats.town_rating.value) return;
+
 	/* Increase company ratings if they're low */
 	for (const Company *c : Company::Iterate()) {
 		if (t->ratings[c->index] < RATING_GROWTH_MAXIMUM) {
@@ -4034,13 +4040,15 @@ void ChangeTownRating(Town *t, int add, int max, DoCommandFlag flags)
 	/* if magic_bulldozer cheat is active, town doesn't penalize for removing stuff */
 	if (t == nullptr || (flags & DC_NO_MODIFY_TOWN_RATING) ||
 			!Company::IsValidID(_current_company) ||
-			(_cheats.magic_bulldozer.value && add < 0)) {
+			((_cheats.magic_bulldozer.value || _extra_cheats.town_rating.value) && add < 0)) {
 		return;
 	}
 
 	const int prev_rating = GetRating(t);
 	int rating = prev_rating;
-	if (add < 0) {
+	if (_extra_cheats.town_rating.value) {
+		rating = RATING_MAXIMUM;
+	} else if (add < 0) {
 		if (rating > max) {
 			rating += add;
 			if (rating < max) rating = max;
@@ -4064,6 +4072,26 @@ void ChangeTownRating(Town *t, int add, int max, DoCommandFlag flags)
 	}
 }
 
+
+void UpdateAllTownRatings()
+{
+	if (_extra_cheats.town_rating.value) {
+		for (Town *t : Town::Iterate()) {
+			if (Company::IsValidID(_local_company) && HasBit(t->have_ratings, _local_company) && t->ratings[_local_company] <= 0) {
+				ZoningTownAuthorityRatingChange();
+			}
+			uint8 c;
+			FOR_EACH_SET_BIT(c, t->have_ratings) {
+				t->ratings[c] = RATING_MAXIMUM;
+			}
+			if (t->have_ratings != 0) {
+				t->UpdateVirtCoord();
+				SetWindowDirty(WC_TOWN_AUTHORITY, t->index);
+			}
+		}
+	}
+}
+
 /**
  * Does the town authority allow the (destructive) action of the current company?
  * @param flags Checking flags of the command.
@@ -4075,7 +4103,7 @@ CommandCost CheckforTownRating(DoCommandFlag flags, Town *t, TownRatingCheckType
 {
 	/* if magic_bulldozer cheat is active, town doesn't restrict your destructive actions */
 	if (t == nullptr || !Company::IsValidID(_current_company) ||
-			_cheats.magic_bulldozer.value || (flags & DC_NO_TEST_TOWN_RATING)) {
+			_cheats.magic_bulldozer.value || _extra_cheats.town_rating.value || (flags & DC_NO_TEST_TOWN_RATING)) {
 		return CommandCost();
 	}
 

@@ -29,6 +29,7 @@ static ExtraCheatNameDesc _extra_cheat_descs[] = {
 	{ "inflation_cost",   &_extra_cheats.inflation_cost },
 	{ "inflation_income", &_extra_cheats.inflation_income },
 	{ "station_rating",   &_extra_cheats.station_rating },
+	{ "town_rating",      &_extra_cheats.town_rating },
 };
 
 /**

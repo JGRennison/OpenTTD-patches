@@ -717,6 +717,9 @@ static CommandCost BuildStationPart(Station **st, DoCommandFlag flags, bool reus
 					ZoningTownAuthorityRatingChange();
 				}
 				SetBit((*st)->town->have_ratings, _current_company);
+				if (_extra_cheats.town_rating.value) {
+					(*st)->town->ratings[_current_company] = RATING_MAXIMUM;
+				}
 			}
 		}
 	}

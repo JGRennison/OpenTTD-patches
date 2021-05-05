@@ -286,6 +286,10 @@ CommandCost CmdCheatSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 			cht = &_extra_cheats.station_rating;
 			break;
 
+		case CHT_TOWN_RATING:
+			cht = &_extra_cheats.town_rating;
+			break;
+
 		default:
 			return CMD_ERROR;
 	}
@@ -297,6 +301,10 @@ CommandCost CmdCheatSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 		if (p1 == CHT_STATION_RATING) {
 			extern void UpdateAllStationRatings();
 			UpdateAllStationRatings();
+		}
+		if (p1 == CHT_TOWN_RATING) {
+			extern void UpdateAllTownRatings();
+			UpdateAllTownRatings();
 		}
 	}
 	return CommandCost();

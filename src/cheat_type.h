@@ -41,6 +41,7 @@ struct ExtraCheats {
 	Cheat inflation_cost;   ///< inflation cost factor
 	Cheat inflation_income; ///< inflation income factor
 	Cheat station_rating;   ///< 100% station rating
+	Cheat town_rating;      ///< 100% town local authority rating
 };
 
 /** Available cheats. */
@@ -56,6 +57,7 @@ enum CheatNumbers {
 	CHT_INFLATION_COST,  ///< Change inflation cost factor
 	CHT_INFLATION_INCOME,///< Change inflation income factor
 	CHT_STATION_RATING,  ///< 100% station ratings
+	CHT_TOWN_RATING,     ///< 100% town local authority ratings
 
 	CHT_NUM_CHEATS,      ///< Number of cheats.
 };
