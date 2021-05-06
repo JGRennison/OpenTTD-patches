@@ -69,6 +69,10 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	 * related to the new game we're about to start/load. */
 	UnInitWindowSystem();
 
+	/* Clear link graph schedule and stop any link graph threads before
+	 * changing the map size. This avoids data races on the map size variables. */
+	LinkGraphSchedule::Clear();
+
 	AllocateMap(size_x, size_y);
 
 	ViewportMapClearTunnelCache();
@@ -102,7 +106,6 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	}
 	UpdateCachedSnowLine();
 
-	LinkGraphSchedule::Clear();
 	ClearTraceRestrictMapping();
 	ClearBridgeSimulatedSignalMapping();
 	ClearCargoPacketDeferredPayments();
