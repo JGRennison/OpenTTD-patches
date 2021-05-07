@@ -416,9 +416,7 @@ bmcr_alpha_blend_single:
 					__m128i srcABCD = _mm_loadl_epi64((const __m128i*) src);
 					srcABCD = AdjustBrightnessOfTwoPixels(srcABCD, bm_normal_brightness);
 #else
-					uint64 srcpx = AdjustBrightneSSE(src->data, DEFAULT_BRIGHTNESS + bp->brightness_adjust).data;
-					srcpx |= ((uint64)(AdjustBrightneSSE((src + 1)->data, DEFAULT_BRIGHTNESS + bp->brightness_adjust).data)) << 32;
-					__m128i srcABCD = _mm_cvtsi64_si128(srcpx);
+					__m128i srcABCD = _mm_setr_epi32(AdjustBrightneSSE(src->data, DEFAULT_BRIGHTNESS + bp->brightness_adjust).data, AdjustBrightneSSE((src + 1)->data, DEFAULT_BRIGHTNESS + bp->brightness_adjust).data, 0, 0);
 #endif
 					__m128i dstABCD = _mm_loadl_epi64((__m128i*) dst);
 					_mm_storel_epi64((__m128i*) dst, AlphaBlendTwoPixels(srcABCD, dstABCD, ALPHA_BLEND_PARAM_1, ALPHA_BLEND_PARAM_2));
