@@ -402,17 +402,19 @@ static void UpdateRouteStepSpriteSize()
 	extern uint _vp_route_step_height_bottom;
 	extern SubSprite _vp_route_step_subsprite;
 
-	Dimension d = GetSpriteSize(SPR_ROUTE_STEP_TOP);
-	_vp_route_step_width = d.width;
-	_vp_route_step_height_top = d.height;
+	Dimension d0 = GetSpriteSize(SPR_ROUTE_STEP_TOP);
+	_vp_route_step_width = d0.width;
+	_vp_route_step_height_top = d0.height;
 
-	d = GetSpriteSize(SPR_ROUTE_STEP_MIDDLE);
-	_vp_route_step_height_middle = d.height;
-	assert(_vp_route_step_width == d.width);
+	Dimension d1 = GetSpriteSize(SPR_ROUTE_STEP_MIDDLE);
+	_vp_route_step_height_middle = d1.height;
 
-	d = GetSpriteSize(SPR_ROUTE_STEP_BOTTOM);
-	_vp_route_step_height_bottom = d.height;
-	assert(_vp_route_step_width == d.width);
+	Dimension d2 = GetSpriteSize(SPR_ROUTE_STEP_BOTTOM);
+	_vp_route_step_height_bottom = d2.height;
+
+	if (d0.width != d1.width || d0.width != d2.width) {
+		DEBUG(sprite, 0, "Route step sprite widths do not match. Probable cause: NewGRF interference.");
+	}
 
 	const int char_height = GetCharacterHeight(FS_SMALL) + 1;
 	_vp_route_step_subsprite.right = ScaleByZoom(_vp_route_step_width, ZOOM_LVL_GUI);
