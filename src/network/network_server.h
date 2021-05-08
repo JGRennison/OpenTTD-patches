@@ -79,7 +79,7 @@ public:
 	bool supports_zstd = false;  ///< Client supports zstd compression
 
 	struct PacketWriter *savegame; ///< Writer used to write the savegame.
-	NetworkAddress client_address; ///< IP-address of the client (so he can be banned)
+	NetworkAddress client_address; ///< IP-address of the client (so they can be banned)
 
 	std::string desync_log;
 
