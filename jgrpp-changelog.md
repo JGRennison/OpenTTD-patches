@@ -2,6 +2,27 @@
 
 * * *
 
+### v0.41.1 (2021-05-08)
+* Fix crash which could occur due to houses having the wrong tile layout when loading old savegames where the NewGRFs had more overriding house types than the previous lower house ID limit.
+* Fix crash when removing airport with order backup, when the hangar window is open.
+* Fix crash when using the 32bpp-sse2 blitter with tree-shading.
+* Fix scheduled dispatch initialising with incorrect values when the date times the daylength was too large.
+* Fix timetable hours/minutes window dialog window setting incorrect values when the date times the daylength was too large.
+* Fix button states for other company vehicles and some tooltip texts in the scheduled dispatch window.
+* Fix date cheat/scenario load not adjusting vehicle date of last service.
+* Fix crash in debug window parent button for non-GRF industries.
+* Fix debug window persistent storage display showing the last non-zero stored item as zero if it is the last in a group of 4.
+* Add cheat: town local authority ratings fixed as Outstanding.
+* Disallow converting town-owned roads to types with the no houses flag.
+* Allow moving between drive through train depot ends when exit of the current depot is blocked.
+* Realistic braking:
+  * Add NewGRF railtype property to disable realistic braking physics for trains of that railtype.
+  * Disable realistic braking for TELE, PIPE, and WIRE railtypes by default.
+* Console tab completion now also includes command aliases.
+* Re-write the readme document.
+* Add Korean translations by TELK.
+* Bump trunk base from commit 3e0a16c027a42c84678b723540532d1f89fc4fbc to commit 8fa53f543a5929bdbb12c8776ae9577594f9eba7, with some further commits picked up to 8c3fa2a3bf079424529a49b58f0466e4285d5874.
+
 ### v0.41.0 (2021-04-14)
 * Realistic braking:
   * Fix crash which could occur when the ignore signals button is used to send a train the wrong way onto a signalled tunnel/bridge.
@@ -24,6 +45,7 @@
 * Fix false positive desync warning messages when loading very old savegames.
 * Fix setting console command displaying wrong min/max values with some settings.
 * Fix map generator creating excessively square lakes, create more natural-looking shapes instead.
+* Add cheat to fix station ratings at 100%.
 * Add settings to customise the size of city zones separately from town zones.
 * Increase the limit of NewGRF house IDs in a single game from 512 to 1024.
 * Change numbering of zones in the house picker window to match the town zone settings and the NewGRF specification.

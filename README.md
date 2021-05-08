@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.41.0
+## JGR's Patchpack version 0.41.1
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -150,6 +150,7 @@ See the [wiki](https://github.com/JGRennison/OpenTTD-patches/wiki) for guides on
 * Add very and extremely slow options to town growth rate setting.
 * Add a setting to scale town growth rate by proportion of town cargo transported.
 * Add "indifferent" mode to the town council attitude to area restructuring setting.
+* Disallow converting town-owned roads to types with the no houses flag.
 
 #### Industries
 
@@ -233,6 +234,7 @@ See the [wiki](https://github.com/JGRennison/OpenTTD-patches/wiki) for guides on
 * Allow clicking the money text in the cheats window to enter a quantity.
 * Add cheats to set inflation income and cost factors.
 * Add cheat to set all station ratings to 100%.
+* Add cheat to set all town local authority ratings to Outstanding.
 
 #### Cargo Distribution and Link Graph
 
