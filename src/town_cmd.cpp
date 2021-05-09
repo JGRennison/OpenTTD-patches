@@ -2228,7 +2228,7 @@ CommandCost CmdFoundTown(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 		old_generating_world.Restore();
 
 		if (t != nullptr && !StrEmpty(text)) {
-			t->name = stredup(text);
+			t->name = text;
 			t->UpdateVirtCoord();
 		}
 
