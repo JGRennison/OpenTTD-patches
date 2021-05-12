@@ -31,7 +31,8 @@ static const SaveLoad _newgrf_mapping_desc[] = {
 void Save_NewGRFMapping(const OverrideManagerBase &mapping)
 {
 	for (uint i = 0; i < mapping.GetMaxMapping(); i++) {
-		if (!mapping.IsValidID(i)) continue;
+		if (mapping.mapping_ID[i].grfid == 0 &&
+		    mapping.mapping_ID[i].entity_id == 0) continue;
 		SlSetArrayIndex(i);
 		SlSetLength(4 + 1 + 1);
 		SlObjectSaveFiltered(&mapping.mapping_ID[i], _newgrf_mapping_desc); // _newgrf_mapping_desc has no conditionals
