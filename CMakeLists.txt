@@ -468,9 +468,9 @@ add_custom_target(find_version
         ${CMAKE_COMMAND}
                 -DFIND_VERSION_BINARY_DIR=${CMAKE_BINARY_DIR}/generated
                 -DCPACK_BINARY_DIR=${CMAKE_BINARY_DIR}
-                -DREV_MAJOR=${CMAKE_PROJECT_VERSION_MAJOR}
-                -DREV_MINOR=${CMAKE_PROJECT_VERSION_MINOR}
-                -DREV_BUILD=${CMAKE_PROJECT_VERSION_PATCH}
+                -DREV_MAJOR=${PROJECT_VERSION_MAJOR}
+                -DREV_MINOR=${PROJECT_VERSION_MINOR}
+                -DREV_BUILD=${PROJECT_VERSION_PATCH}
                 -DCONFIGURE_DEFINES="${CFG_DEFS}"
                 $<$<PLATFORM_ID:Windows>:-DWIN32=TRUE>
                 -P "${CMAKE_SOURCE_DIR}/cmake/scripts/FindVersion.cmake"
