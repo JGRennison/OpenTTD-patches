@@ -52,6 +52,7 @@
 #		include <inttypes.h>
 #	else
 #		define __STDC_LIMIT_MACROS
+#		define __STDC_FORMAT_MACROS
 #		include <stdint.h>
 #	endif
 #endif
