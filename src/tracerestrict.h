@@ -152,6 +152,7 @@ enum TraceRestrictItemType {
 	TRIT_COND_COUNTER_VALUE       = 27,   ///< Test counter value
 	TRIT_COND_TIME_DATE_VALUE     = 28,   ///< Test time/date value
 	TRIT_COND_RESERVED_TILES      = 29,   ///< Test reserved tiles ahead of train
+	TRIT_COND_CATEGORY            = 30,   ///< Test train category
 
 	TRIT_COND_END                 = 48,   ///< End (exclusive) of conditional item types, note that this has the same value as TRIT_REVERSE
 	TRIT_REVERSE                  = 48,   ///< Reverse behind signal
@@ -233,6 +234,14 @@ enum TraceRestrictPhysPropCondAuxField {
 enum TraceRestrictPhysPropRatioCondAuxField {
 	TRPPRCAF_POWER_WEIGHT         = 0,       ///< value field is a 100 * power / weight ratio
 	TRPPRCAF_MAX_TE_WEIGHT        = 1,       ///< value field is a 100 * tractive effort / weight ratio
+	/* space up to 3 */
+};
+
+/**
+ * TraceRestrictItem auxiliary type field, for category type conditionals
+ */
+enum TraceRestrictCatgeoryCondAuxField {
+	TRCCAF_ENGINE_CLASS           = 0,       ///< value field is an EngineClass type
 	/* space up to 3 */
 };
 
@@ -621,6 +630,7 @@ enum TraceRestrictValueType {
 	TRVT_NEWS_CONTROL             = 43,///< takes a TraceRestrictNewsControlField
 	TRVT_COUNTER_INDEX_INT        = 44,///< takes a TraceRestrictCounterID, and an integer in the next item slot
 	TRVT_TIME_DATE_INT            = 45,///< takes a TraceRestrictTimeDateValueField, and an integer in the next item slot
+	TRVT_ENGINE_CLASS             = 46,///< takes a EngineClass
 };
 
 /**
@@ -758,6 +768,18 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 				out.value_type = TRVT_INT;
 				break;
 
+			case TRIT_COND_CATEGORY:
+				switch (static_cast<TraceRestrictCatgeoryCondAuxField>(GetTraceRestrictAuxField(item))) {
+					case TRCCAF_ENGINE_CLASS:
+						out.value_type = TRVT_ENGINE_CLASS;
+						break;
+
+					default:
+						NOT_REACHED();
+						break;
+				}
+				break;
+
 			default:
 				NOT_REACHED();
 				break;
@@ -800,6 +822,7 @@ static inline bool IsTraceRestrictTypeAuxSubtype(TraceRestrictItemType type)
 		case TRIT_COND_PHYS_RATIO:
 		case TRIT_COND_SLOT_OCCUPANCY:
 		case TRIT_COND_PBS_ENTRY_SIGNAL:
+		case TRIT_COND_CATEGORY:
 			return true;
 
 		default:

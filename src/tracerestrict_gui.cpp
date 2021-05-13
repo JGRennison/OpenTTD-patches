@@ -356,6 +356,27 @@ static const TraceRestrictDropDownListSet _time_date_value = {
 	_time_date_value_str, _time_date_value_val,
 };
 
+static const StringID _engine_class_value_str[] = {
+	STR_LIVERY_STEAM,
+	STR_LIVERY_DIESEL,
+	STR_LIVERY_ELECTRIC,
+	STR_LIVERY_MONORAIL,
+	STR_LIVERY_MAGLEV,
+	INVALID_STRING_ID
+};
+static const uint _engine_class_value_val[] = {
+	EC_STEAM,    ///< Steam rail engine.
+	EC_DIESEL,   ///< Diesel rail engine.
+	EC_ELECTRIC, ///< Electric rail engine.
+	EC_MONORAIL, ///< Mono rail engine.
+	EC_MAGLEV,   ///< Maglev engine.
+};
+
+/** value drop down list for engine class type strings and values */
+static const TraceRestrictDropDownListSet _engine_class_value = {
+	_engine_class_value_str, _engine_class_value_val,
+};
+
 /**
  * Get index of @p value in @p list_set
  * if @p value is not present, assert if @p missing_ok is false, otherwise return -1
@@ -451,6 +472,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_POWER_WEIGHT_RATIO,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE_WEIGHT_RATIO,
+		STR_TRACE_RESTRICT_VARIABLE_TRAIN_ENGINE_CLASS,
 		STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL,
 		STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL,
 		STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT,
@@ -479,6 +501,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		TRIT_COND_PHYS_PROP | (TRPPCAF_MAX_TE << 16),
 		TRIT_COND_PHYS_RATIO | (TRPPRCAF_POWER_WEIGHT << 16),
 		TRIT_COND_PHYS_RATIO | (TRPPRCAF_MAX_TE_WEIGHT << 16),
+		TRIT_COND_CATEGORY | (TRCCAF_ENGINE_CLASS << 16),
 		TRIT_COND_PBS_ENTRY_SIGNAL | (TRPESAF_VEH_POS << 16),
 		TRIT_COND_PBS_ENTRY_SIGNAL | (TRPESAF_RES_END << 16),
 		TRIT_COND_TRAIN_IN_SLOT,
@@ -498,10 +521,10 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		if (_settings_client.gui.show_adv_tracerestrict_features) {
 			*hide_mask = 0;
 		} else {
-			*hide_mask = is_conditional ? 0xFF0000 : 0x2F0;
+			*hide_mask = is_conditional ? 0x1FE0000 : 0x2F0;
 		}
-		if (is_conditional && !_settings_game.game_time.time_in_minutes) *hide_mask |= 0x400000;
-		if (is_conditional && _settings_game.vehicle.train_braking_model != TBM_REALISTIC) *hide_mask |= 0x820000;
+		if (is_conditional && !_settings_game.game_time.time_in_minutes) *hide_mask |= 0x800000;
+		if (is_conditional && _settings_game.vehicle.train_braking_model != TBM_REALISTIC) *hide_mask |= 0x1040000;
 	}
 	return is_conditional ? &set_cond : &set_action;
 }
@@ -770,6 +793,7 @@ static const TraceRestrictDropDownListSet *GetCondOpDropDownListSet(TraceRestric
 
 	if (properties.value_type == TRVT_CARGO_ID) return &_cargo_cond_ops;
 	if (properties.value_type == TRVT_TRAIN_STATUS) return &_train_status_cond_ops;
+	if (properties.value_type == TRVT_ENGINE_CLASS) return &_train_status_cond_ops;
 
 	switch (properties.cond_type) {
 		case TRCOT_NONE:
@@ -1247,6 +1271,14 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					SetDParam(3, value);
 					break;
 				}
+
+				case TRVT_ENGINE_CLASS:
+					instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_ENGINE_CLASSES;
+					assert(GetTraceRestrictCondFlags(item) <= TRCF_OR);
+					SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
+					SetDParam(1, GetDropDownStringByValue(&_train_status_cond_ops, GetTraceRestrictCondOp(item)));
+					SetDParam(2, GetDropDownStringByValue(&_engine_class_value, GetTraceRestrictValue(item)));
+					break;
 
 				default:
 					NOT_REACHED();
@@ -1747,6 +1779,10 @@ public:
 
 					case TRVT_NEWS_CONTROL:
 						this->ShowDropDownListWithValue(&_news_control_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
+						break;
+
+					case TRVT_ENGINE_CLASS:
+						this->ShowDropDownListWithValue(&_engine_class_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
 						break;
 
 					default:
@@ -2807,6 +2843,13 @@ private:
 							this->GetWidget<NWidgetCore>(TR_WIDGET_LEFT_AUX_DROPDOWN)->widget_data = STR_TRACE_RESTRICT_TIME_MINUTE_SHORT + GetTraceRestrictValue(item);
 							break;
 						}
+
+						case TRVT_ENGINE_CLASS:
+							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
+							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
+									GetDropDownStringByValue(&_engine_class_value, GetTraceRestrictValue(item));
+							break;
 
 						default:
 							break;

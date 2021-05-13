@@ -536,6 +536,28 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 					}
 
+					case TRIT_COND_CATEGORY: {
+						switch (static_cast<TraceRestrictCatgeoryCondAuxField>(GetTraceRestrictAuxField(item))) {
+							case TRCCAF_ENGINE_CLASS: {
+								EngineClass ec = (EngineClass)condvalue;
+								result = (GetTraceRestrictCondOp(item) != TRCO_IS);
+								for (const Train *u = v; u != nullptr; u = u->Next()) {
+									/* Check if engine class present */
+									if (u->IsEngine() && RailVehInfo(u->engine_type)->engclass == ec) {
+										result = !result;
+										break;
+									}
+								}
+								break;
+							}
+
+							default:
+								NOT_REACHED();
+								break;
+						}
+						break;
+					}
+
 					default:
 						NOT_REACHED();
 				}
@@ -820,6 +842,7 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				case TRIT_COND_COUNTER_VALUE:
 				case TRIT_COND_TIME_DATE_VALUE:
 				case TRIT_COND_RESERVED_TILES:
+				case TRIT_COND_CATEGORY:
 					break;
 
 				default:
@@ -971,6 +994,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_PERCENT:
 		case TRVT_NEWS_CONTROL:
 		case TRVT_TIME_DATE_INT:
+		case TRVT_ENGINE_CLASS:
 			SetTraceRestrictValue(item, 0);
 			if (!IsTraceRestrictTypeAuxSubtype(GetTraceRestrictType(item))) {
 				SetTraceRestrictAuxField(item, 0);
