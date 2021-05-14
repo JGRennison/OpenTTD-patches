@@ -265,6 +265,35 @@ const Livery *GetParentLivery(const Group *g)
 	return &pg->livery;
 }
 
+static inline bool IsGroupDescendantOfGroup(const Group *g, const Group *top)
+{
+	if (g->owner != top->owner) return false;
+
+	while (true) {
+		if (g->parent == INVALID_GROUP) return false;
+		if (g->parent == top->index) return true;
+		g = Group::Get(g->parent);
+	}
+
+	NOT_REACHED();
+}
+
+template <typename F>
+void IterateDescendantsOfGroup(const Group *top, F func)
+{
+	for (Group *cg : Group::Iterate()) {
+		if (IsGroupDescendantOfGroup(cg, top)) {
+			func(cg);
+		}
+	}
+}
+
+template <typename F>
+void IterateDescendantsOfGroup(GroupID id_top, F func)
+{
+	const Group *top = Group::GetIfValid(id_top);
+	if (top != nullptr) IterateDescendantsOfGroup<F>(top, func);
+}
 
 /**
  * Propagate a livery change to a group's children.
@@ -283,13 +312,10 @@ void PropagateChildLivery(const Group *g)
 		}
 	}
 
-	for (Group *cg : Group::Iterate()) {
-		if (cg->parent == g->index) {
-			if (!HasBit(cg->livery.in_use, 0)) cg->livery.colour1 = g->livery.colour1;
-			if (!HasBit(cg->livery.in_use, 1)) cg->livery.colour2 = g->livery.colour2;
-			PropagateChildLivery(cg);
-		}
-	}
+	IterateDescendantsOfGroup(g, [&](Group *cg) {
+		if (!HasBit(cg->livery.in_use, 0)) cg->livery.colour1 = g->livery.colour1;
+		if (!HasBit(cg->livery.in_use, 1)) cg->livery.colour2 = g->livery.colour2;
+	});
 }
 
 
@@ -743,9 +769,9 @@ static void SetGroupFlag(Group *g, GroupFlags flag, bool set, bool children)
 
 	if (!children) return;
 
-	for (Group *pg : Group::Iterate()) {
-		if (pg->parent == g->index) SetGroupFlag(pg, flag, set, true);
-	}
+	IterateDescendantsOfGroup(g, [&](Group *pg) {
+		SetGroupFlag(pg, flag, set, false);
+	});
 }
 
 /**
@@ -860,9 +886,9 @@ uint GetGroupNumEngines(CompanyID company, GroupID id_g, EngineID id_e)
 {
 	uint count = 0;
 	const Engine *e = Engine::Get(id_e);
-	for (const Group *g : Group::Iterate()) {
-		if (g->parent == id_g) count += GetGroupNumEngines(company, g->index, id_e);
-	}
+	IterateDescendantsOfGroup(id_g, [&](Group *g) {
+		count += GroupStatistics::Get(company, g->index, e->type).num_engines[id_e];
+	});
 	return count + GroupStatistics::Get(company, id_g, e->type).num_engines[id_e];
 }
 
@@ -877,9 +903,9 @@ uint GetGroupNumEngines(CompanyID company, GroupID id_g, EngineID id_e)
 uint GetGroupNumVehicle(CompanyID company, GroupID id_g, VehicleType type)
 {
 	uint count = 0;
-	for (const Group *g : Group::Iterate()) {
-		if (g->parent == id_g) count += GetGroupNumVehicle(company, g->index, type);
-	}
+	IterateDescendantsOfGroup(id_g, [&](Group *g) {
+		count += GroupStatistics::Get(company, g->index, type).num_vehicle;
+	});
 	return count + GroupStatistics::Get(company, id_g, type).num_vehicle;
 }
 
@@ -894,9 +920,9 @@ uint GetGroupNumVehicle(CompanyID company, GroupID id_g, VehicleType type)
 uint GetGroupNumProfitVehicle(CompanyID company, GroupID id_g, VehicleType type)
 {
 	uint count = 0;
-	for (const Group *g : Group::Iterate()) {
-		if (g->parent == id_g) count += GetGroupNumProfitVehicle(company, g->index, type);
-	}
+	IterateDescendantsOfGroup(id_g, [&](Group *g) {
+		count += GroupStatistics::Get(company, g->index, type).num_profit_vehicle;
+	});
 	return count + GroupStatistics::Get(company, id_g, type).num_profit_vehicle;
 }
 
@@ -911,9 +937,9 @@ uint GetGroupNumProfitVehicle(CompanyID company, GroupID id_g, VehicleType type)
 Money GetGroupProfitLastYear(CompanyID company, GroupID id_g, VehicleType type)
 {
 	Money sum = 0;
-	for (const Group *g : Group::Iterate()) {
-		if (g->parent == id_g) sum += GetGroupProfitLastYear(company, g->index, type);
-	}
+	IterateDescendantsOfGroup(id_g, [&](Group *g) {
+		sum += GroupStatistics::Get(company, g->index, type).profit_last_year;
+	});
 	return sum + GroupStatistics::Get(company, id_g, type).profit_last_year;
 }
 
