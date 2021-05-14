@@ -1191,9 +1191,14 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet *p
 	char str[100];
 	char client_name[NETWORK_CLIENT_NAME_LENGTH];
 	NetworkErrorCode errorno = (NetworkErrorCode)p->Recv_uint8();
+	NetworkRecvStatus rx_status = p->CanReadFromPacket(1) ? (NetworkRecvStatus)p->Recv_uint8() : NETWORK_RECV_STATUS_OKAY;
+	int8 status = p->CanReadFromPacket(1) ? (int8)p->Recv_uint8() : -1;
+	PacketGameType last_pkt_type = p->CanReadFromPacket(1) ? (PacketGameType)p->Recv_uint8() : PACKET_END;
 
 	/* The client was never joined.. thank the client for the packet, but ignore it */
 	if (this->status < STATUS_DONE_MAP || this->HasClientQuit()) {
+		if (_debug_net_level >= 2) GetString(str, GetNetworkErrorMsg(errorno), lastof(str));
+		DEBUG(net, 2, "non-joined client %d reported an error and is closing its connection (%s) (%d, %d, %d)", this->client_id, str, rx_status, status, last_pkt_type);
 		return this->CloseConnection(NETWORK_RECV_STATUS_CONN_LOST);
 	}
 
@@ -1202,7 +1207,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet *p
 	StringID strid = GetNetworkErrorMsg(errorno);
 	GetString(str, strid, lastof(str));
 
-	DEBUG(net, 2, "'%s' reported an error and is closing its connection (%s)", client_name, str);
+	DEBUG(net, 2, "'%s' reported an error and is closing its connection (%s) (%d, %d, %d)", client_name, str, rx_status, status, last_pkt_type);
 
 	NetworkTextMessage(NETWORK_ACTION_LEAVE, CC_DEFAULT, false, client_name, nullptr, strid);
 

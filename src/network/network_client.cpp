@@ -253,7 +253,7 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 		this->CloseConnection(res);
 	} else {
 		/* This means we as client made a boo-boo. */
-		SendError(errorno);
+		SendError(errorno, res);
 
 		/* Close connection before we make an emergency save, as the save can
 		 * take a bit of time; better that the server doesn't stall while we
@@ -547,11 +547,14 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendChat(NetworkAction action,
 }
 
 /** Send an error-packet over the network */
-NetworkRecvStatus ClientNetworkGameSocketHandler::SendError(NetworkErrorCode errorno)
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendError(NetworkErrorCode errorno, NetworkRecvStatus recvstatus)
 {
 	Packet *p = new Packet(PACKET_CLIENT_ERROR, SHRT_MAX);
 
 	p->Send_uint8(errorno);
+	p->Send_uint8(recvstatus);
+	p->Send_uint8(my_client->status);
+	p->Send_uint8(my_client->last_pkt_type);
 	my_client->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;
 }
