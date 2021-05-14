@@ -581,6 +581,8 @@ public:
 
 	const char *ReceiveCommand(Packet *p, CommandPacket *cp);
 	void SendCommand(Packet *p, const CommandPacket *cp);
+
+	virtual std::string GetDebugInfo() const;
 };
 
 #endif /* NETWORK_CORE_TCP_GAME_H */

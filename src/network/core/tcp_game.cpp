@@ -68,6 +68,8 @@ NetworkRecvStatus NetworkGameSocketHandler::HandlePacket(Packet *p)
 
 	this->last_packet = std::chrono::steady_clock::now();
 
+	DEBUG(net, 3, "[tcp/game] received packet type %d from client %d, %s", type, this->client_id, this->GetDebugInfo().c_str());
+
 	switch (this->HasClientQuit() ? PACKET_END : type) {
 		case PACKET_SERVER_FULL:                  return this->Receive_SERVER_FULL(p);
 		case PACKET_SERVER_BANNED:                return this->Receive_SERVER_BANNED(p);
@@ -207,3 +209,5 @@ NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_MOVE(Packet *p) { ret
 NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_MOVE(Packet *p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_MOVE); }
 NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_COMPANY_UPDATE(Packet *p) { return this->ReceiveInvalidPacket(PACKET_SERVER_COMPANY_UPDATE); }
 NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_CONFIG_UPDATE(Packet *p) { return this->ReceiveInvalidPacket(PACKET_SERVER_CONFIG_UPDATE); }
+
+std::string NetworkGameSocketHandler::GetDebugInfo() const { return ""; }

@@ -132,7 +132,7 @@ struct PacketWriter : SaveFilter {
 		for (auto &p : this->packets) {
 			if (p->GetPacketType() == PACKET_SERVER_MAP_DONE) last_packet = true;
 			socket->SendPacket(std::move(p));
-			
+
 		}
 		this->prepend_packets.clear();
 		this->packets.clear();
@@ -1586,6 +1586,11 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_MOVE(Packet *p)
 	/* if we get here we can move the client */
 	NetworkServerDoMove(this->client_id, company_id);
 	return NETWORK_RECV_STATUS_OKAY;
+}
+
+std::string ServerNetworkGameSocketHandler::GetDebugInfo() const
+{
+	return stdstr_fmt("status: %d", this->status);
 }
 
 /**

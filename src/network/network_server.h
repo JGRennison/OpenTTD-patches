@@ -113,6 +113,8 @@ public:
 	NetworkRecvStatus SendConfigUpdate();
 	NetworkRecvStatus SendSettingsAccessUpdate(bool ok);
 
+	std::string GetDebugInfo() const override;
+
 	static void Send();
 	static void AcceptConnection(SOCKET s, const NetworkAddress &address);
 	static bool AllowConnection();

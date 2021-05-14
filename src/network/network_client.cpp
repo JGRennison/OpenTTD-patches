@@ -1359,6 +1359,11 @@ void ClientNetworkGameSocketHandler::CheckConnection()
 	ShowErrorMessage(STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION, STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION, WL_INFO);
 }
 
+std::string ClientNetworkGameSocketHandler::GetDebugInfo() const
+{
+	return stdstr_fmt("status: %d", this->status);
+}
+
 
 /** Is called after a client is connected to the server */
 void NetworkClient_Connected()
