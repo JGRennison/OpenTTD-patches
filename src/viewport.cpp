@@ -271,6 +271,7 @@ static DrawPixelInfo _dpi_for_text;
 static ViewportDrawer _vd;
 
 static std::vector<Viewport *> _viewport_window_cache;
+static std::vector<Rect> _viewport_coverage_rects;
 
 RouteStepsMap _vp_route_steps;
 RouteStepsMap _vp_route_steps_last_mark_dirty;
@@ -343,6 +344,20 @@ static Point MapXYZToViewport(const Viewport *vp, int x, int y, int z)
 	return p;
 }
 
+static void FillViewportCoverageRect()
+{
+	_viewport_coverage_rects.resize(_viewport_window_cache.size());
+
+	for (uint i = 0; i < _viewport_window_cache.size(); i++) {
+		const Viewport *vp = _viewport_window_cache[i];
+		Rect &r = _viewport_coverage_rects[i];
+		r.left = vp->virtual_left;
+		r.top = vp->virtual_top;
+		r.right = vp->virtual_left + vp->virtual_width + (1 << vp->zoom) - 1;
+		r.bottom = vp->virtual_top + vp->virtual_height + (1 << vp->zoom) - 1;
+	}
+}
+
 void ClearViewportLandPixelCache(Viewport *vp)
 {
 	vp->land_pixel_cache.assign(vp->land_pixel_cache.size(), 0xD7);
@@ -376,6 +391,7 @@ void DeleteWindowViewport(Window *w)
 	delete w->viewport->overlay;
 	delete w->viewport;
 	w->viewport = nullptr;
+	FillViewportCoverageRect();
 }
 
 /**
@@ -439,6 +455,7 @@ void InitializeWindowViewport(Window *w, int x, int y,
 
 	w->viewport = vp;
 	_viewport_window_cache.push_back(vp);
+	FillViewportCoverageRect();
 }
 
 static Point _vp_move_offs;
@@ -3456,6 +3473,7 @@ void UpdateViewportPosition(Window *w)
 
 		SetViewportPosition(w, w->viewport->scrollpos_x, w->viewport->scrollpos_y, update_overlay);
 	}
+	FillViewportCoverageRect();
 }
 
 void UpdateViewportSizeZoom(Viewport *vp)
@@ -3479,6 +3497,7 @@ void UpdateViewportSizeZoom(Viewport *vp)
 		vp->land_pixel_cache.clear();
 		vp->land_pixel_cache.shrink_to_fit();
 	}
+	FillViewportCoverageRect();
 }
 
 void UpdateActiveScrollingViewport(Window *w)
@@ -3597,9 +3616,16 @@ void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bo
  */
 void MarkAllViewportsDirty(int left, int top, int right, int bottom, ViewportMarkDirtyFlags flags)
 {
-	for (Viewport * const vp : _viewport_window_cache) {
-		if (flags & VMDF_NOT_MAP_MODE && vp->zoom >= ZOOM_LVL_DRAW_MAP) continue;
-		MarkViewportDirty(vp, left, top, right, bottom, flags);
+	for (uint i = 0; i < _viewport_window_cache.size(); i++) {
+		if (flags & VMDF_NOT_MAP_MODE && _viewport_window_cache[i]->zoom >= ZOOM_LVL_DRAW_MAP) continue;
+		const Rect &r = _viewport_coverage_rects[i];
+		if (left >= r.right ||
+				right <= r.left ||
+				top >= r.bottom ||
+				bottom <= r.top) {
+			continue;
+		}
+		MarkViewportDirty(_viewport_window_cache[i], left, top, right, bottom, flags);
 	}
 }
 
