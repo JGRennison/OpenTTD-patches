@@ -24,6 +24,7 @@
 #include "newgrf_roadtype.h"
 #include "newgrf_cache_check.h"
 #include "ship.h"
+#include "scope_info.h"
 
 #include "safeguards.h"
 
@@ -1355,7 +1356,17 @@ uint GetVehicleProperty(const Vehicle *v, PropertyID property, uint orig_value)
 
 uint GetEngineProperty(EngineID engine, PropertyID property, uint orig_value, const Vehicle *v)
 {
-	uint16 callback = GetVehicleCallback(CBID_VEHICLE_MODIFY_PROPERTY, property, 0, engine, v);
+	const Engine *e = Engine::Get(engine);
+	if (property < 64 && !HasBit(e->cb36_properties_used, property)) return orig_value;
+
+	VehicleResolverObject object(engine, v, VehicleResolverObject::WO_UNCACHED, false, CBID_VEHICLE_MODIFY_PROPERTY, property, 0);
+	if (property < 64 && !e->sprite_group_cb36_properties_used.empty()) {
+		auto iter = e->sprite_group_cb36_properties_used.find(object.root_spritegroup);
+		if (iter != e->sprite_group_cb36_properties_used.end()) {
+			if (!HasBit(iter->second, property)) return orig_value;
+		}
+	}
+	uint16 callback = object.ResolveCallback();
 	if (callback != CALLBACK_FAILED) return callback;
 
 	return orig_value;
@@ -1561,4 +1572,40 @@ void FillNewGRFVehicleCache(const Vehicle *v)
 
 	/* Make sure really all bits are set. */
 	assert(v->grf_cache.cache_valid == (1 << NCVV_END) - 1);
+}
+
+void AnalyseEngineCallbacks()
+{
+	btree::btree_map<const SpriteGroup *, uint64> sg_cb36;
+	for (Engine *e : Engine::Iterate()) {
+		sg_cb36.clear();
+		e->sprite_group_cb36_properties_used.clear();
+
+		SpriteGroupCallbacksUsed callbacks_used = SGCU_NONE;
+		uint64 cb36_properties_used = 0;
+		auto process_sg = [&](const SpriteGroup *sg) {
+			if (sg == nullptr) return;
+
+			AnalyseCallbackOperation op;
+			sg->AnalyseCallbacks(op);
+			callbacks_used |= op.callbacks_used;
+			cb36_properties_used |= op.properties_used;
+			sg_cb36[sg] = op.properties_used;
+		};
+
+		AnalyseCallbackOperation op;
+		for (uint i = 0; i < NUM_CARGO + 2; i++) {
+			process_sg(e->grf_prop.spritegroup[i]);
+		}
+		for (uint i = 0; i < e->overrides_count; i++) {
+			process_sg(e->overrides[i].group);
+		}
+		e->callbacks_used = callbacks_used;
+		e->cb36_properties_used = cb36_properties_used;
+		for (auto iter : sg_cb36) {
+			if (iter.second != cb36_properties_used) {
+				e->sprite_group_cb36_properties_used[iter.first] = iter.second;
+			}
+		}
+	}
 }

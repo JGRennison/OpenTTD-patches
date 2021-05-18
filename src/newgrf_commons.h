@@ -333,4 +333,12 @@ struct GRFFileProps : GRFFilePropsBase<1> {
 	uint16 override;                      ///< id of the entity been replaced by
 };
 
+enum SpriteGroupCallbacksUsed : uint8 {
+	SGCU_NONE                           = 0,
+	SGCU_ALL                            = 0xFF,
+	SGCU_VEHICLE_32DAY_CALLBACK         = 1 << 0,
+	SGCU_VEHICLE_REFIT_COST             = 1 << 1,
+};
+DECLARE_ENUM_AS_BIT_SET(SpriteGroupCallbacksUsed)
+
 #endif /* NEWGRF_COMMONS_H */

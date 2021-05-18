@@ -10,6 +10,7 @@
 #include "../stdafx.h"
 #include "saveload_internal.h"
 #include "../engine_base.h"
+#include "../engine_func.h"
 #include "../string_func.h"
 #include <vector>
 
@@ -194,6 +195,11 @@ static void Load_EIDS()
 		EngineIDMapping *eid = &_engine_mngr.emplace_back();
 		SlObject(eid, _engine_id_mapping_desc);
 	}
+}
+
+void AfterLoadEngines()
+{
+	AnalyseEngineCallbacks();
 }
 
 extern const ChunkHandler _engine_chunk_handlers[] = {

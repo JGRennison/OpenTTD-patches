@@ -1203,7 +1203,7 @@ static void RunVehicleDayProc()
 		if (v == nullptr) continue;
 
 		/* Call the 32-day callback if needed */
-		if ((v->day_counter & 0x1F) == 0 && v->HasEngineType()) {
+		if ((v->day_counter & 0x1F) == 0 && v->HasEngineType() && (Engine::Get(v->engine_type)->callbacks_used & SGCU_VEHICLE_32DAY_CALLBACK) != 0) {
 			uint16 callback = GetVehicleCallback(CBID_VEHICLE_32DAY_CALLBACK, 0, 0, v->engine_type, v);
 			if (callback != CALLBACK_FAILED) {
 				if (HasBit(callback, 0)) {

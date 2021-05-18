@@ -272,7 +272,7 @@ static int GetRefitCostFactor(const Vehicle *v, EngineID engine_type, CargoID ne
 	const Engine *e = Engine::Get(engine_type);
 
 	/* Is this vehicle a NewGRF vehicle? */
-	if (e->GetGRF() != nullptr) {
+	if (e->GetGRF() != nullptr && (e->callbacks_used & SGCU_VEHICLE_REFIT_COST) != 0) {
 		const CargoSpec *cs = CargoSpec::Get(new_cid);
 		uint32 param1 = (cs->classes << 16) | (new_subtype << 8) | e->GetGRF()->cargo_map[new_cid];
 

@@ -256,6 +256,162 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 	return SpriteGroup::Resolve(this->default_group, object, false);
 }
 
+void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) const
+{
+	auto res = op.seen.insert(this);
+	if (!res.second) {
+		/* Already seen this group */
+		return;
+	}
+
+	auto check_1A_range = [&]() -> bool {
+		if (this->adjusts.size() == 1 && this->adjusts[0].variable == 0x1A) {
+			/* Not clear why some GRFs do this, perhaps a way of commenting out a branch */
+			uint32 value = 0;
+			switch (this->size) {
+				case DSG_SIZE_BYTE:  value = EvalAdjustT<uint8,  int8> (this->adjusts[0], nullptr, 0, UINT_MAX); break;
+				case DSG_SIZE_WORD:  value = EvalAdjustT<uint16, int16>(this->adjusts[0], nullptr, 0, UINT_MAX); break;
+				case DSG_SIZE_DWORD: value = EvalAdjustT<uint32, int32>(this->adjusts[0], nullptr, 0, UINT_MAX); break;
+				default: NOT_REACHED();
+			}
+			for (const auto &range : this->ranges) {
+				if (range.low <= value && value <= range.high) {
+					if (range.group != nullptr) range.group->AnalyseCallbacks(op);
+					return true;
+				}
+			}
+			if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
+			return true;
+		}
+		return false;
+	};
+
+	if (op.mode == ACOM_FIND_CB_RESULT) {
+		if (this->calculated_result) {
+			op.cb_result_found = true;
+			return;
+		} else if (!op.cb_result_found) {
+			if (check_1A_range()) return;
+			if (this->adjusts.size() == 1 && this->adjusts[0].variable == 0xC) {
+				const auto &adjust = this->adjusts[0];
+				if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
+					for (const auto &range : this->ranges) {
+						if (range.low == range.high && range.low == 0xC) {
+							if (range.group != nullptr) range.group->AnalyseCallbacks(op);
+							return;
+						}
+					}
+					if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
+					return;
+				}
+			}
+			for (const auto &range : this->ranges) {
+				if (range.group != nullptr) range.group->AnalyseCallbacks(op);
+			}
+			if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
+		}
+		return;
+	}
+
+	if (check_1A_range()) return;
+
+	auto find_cb_result = [&]() -> bool {
+		if (this->calculated_result) return true;
+		AnalyseCallbackOperation cbr_op;
+		cbr_op.mode = ACOM_FIND_CB_RESULT;
+		for (const auto &range : this->ranges) {
+			if (range.group != nullptr) range.group->AnalyseCallbacks(cbr_op);
+		}
+		if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(cbr_op);
+		return cbr_op.cb_result_found;
+	};
+
+	if (this->adjusts.size() == 1 && !this->calculated_result) {
+		const auto &adjust = this->adjusts[0];
+		if (op.mode == ACOM_CB_VAR && adjust.variable == 0xC) {
+			if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
+				for (const auto &range : this->ranges) {
+					if (range.low == range.high) {
+						switch (range.low) {
+							case CBID_VEHICLE_32DAY_CALLBACK:
+								op.callbacks_used |= SGCU_VEHICLE_32DAY_CALLBACK;
+								break;
+
+							case CBID_VEHICLE_REFIT_COST:
+								op.callbacks_used |= SGCU_VEHICLE_REFIT_COST;
+								break;
+
+							case CBID_VEHICLE_MODIFY_PROPERTY:
+								if (range.group != nullptr) {
+									AnalyseCallbackOperation cb36_op;
+									cb36_op.mode = ACOM_CB36_PROP;
+									range.group->AnalyseCallbacks(cb36_op);
+									if (cb36_op.properties_used == UINT64_MAX) DumpSpriteGroup(range.group, 0);
+									op.properties_used |= cb36_op.properties_used;
+								}
+								break;
+						}
+					} else {
+						if (range.group != nullptr) range.group->AnalyseCallbacks(op);
+					}
+				}
+				if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
+				return;
+			}
+		}
+		if (op.mode == ACOM_CB36_PROP && adjust.variable == 0x10) {
+			if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
+				for (const auto &range : this->ranges) {
+					if (range.low == range.high) {
+						if (range.low < 64) {
+							if (find_cb_result()) SetBit(op.properties_used, range.low);
+						}
+					} else {
+						if (range.group != nullptr) range.group->AnalyseCallbacks(op);
+					}
+				}
+				if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
+				return;
+			}
+		}
+		if (op.mode == ACOM_CB36_PROP && adjust.variable == 0xC) {
+			if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
+				for (const auto &range : this->ranges) {
+					if (range.low <= CBID_VEHICLE_MODIFY_PROPERTY && CBID_VEHICLE_MODIFY_PROPERTY <= range.high) {
+						if (range.group != nullptr) range.group->AnalyseCallbacks(op);
+						return;
+					}
+				}
+				if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
+				return;
+			}
+		}
+	}
+	for (const auto &adjust : this->adjusts) {
+		if (op.mode == ACOM_CB_VAR && adjust.variable == 0xC) {
+			op.callbacks_used |= SGCU_ALL;
+		}
+		if (op.mode == ACOM_CB36_PROP && adjust.variable == 0x10) {
+			if (find_cb_result()) {
+				op.properties_used |= UINT64_MAX;
+			}
+		}
+		if (adjust.variable == 0x7E && adjust.subroutine != nullptr) {
+			adjust.subroutine->AnalyseCallbacks(op);
+		}
+	}
+	if (!this->calculated_result) {
+		for (const auto &range : this->ranges) {
+			if (range.group != nullptr) range.group->AnalyseCallbacks(op);
+		}
+		if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
+	}
+}
+
+void CallbackResultSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) const
+{
+	if (op.mode == ACOM_FIND_CB_RESULT) op.cb_result_found = true;
+}
 
 const SpriteGroup *RandomizedSpriteGroup::Resolve(ResolverObject &object) const
 {

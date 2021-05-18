@@ -938,6 +938,8 @@ bool AfterLoadGame()
 		_settings_game.vehicle.train_braking_model = TBM_ORIGINAL;
 	}
 
+	AfterLoadEngines();
+
 	/* Update all vehicles */
 	AfterLoadVehicles(true);
 
@@ -4012,6 +4014,7 @@ void ReloadNewGRFData()
 	RecomputePrices();
 	/* reload vehicles */
 	ResetVehicleHash();
+	AfterLoadEngines();
 	AfterLoadVehicles(false);
 	StartupEngines();
 	GroupStatistics::UpdateAfterLoad();

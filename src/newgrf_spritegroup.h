@@ -20,6 +20,8 @@
 #include "newgrf_storage.h"
 #include "newgrf_commons.h"
 
+#include "3rdparty/cpp-btree/btree_set.h"
+
 /**
  * Gets the value of a so-called newgrf "register".
  * @param i index of the register
@@ -47,6 +49,20 @@ struct SpriteGroup;
 typedef uint32 SpriteGroupID;
 struct ResolverObject;
 
+enum AnalyseCallbackOperationMode {
+	ACOM_CB_VAR,
+	ACOM_CB36_PROP,
+	ACOM_FIND_CB_RESULT,
+};
+
+struct AnalyseCallbackOperation {
+	btree::btree_set<const SpriteGroup *> seen;
+	AnalyseCallbackOperationMode mode = ACOM_CB_VAR;
+	SpriteGroupCallbacksUsed callbacks_used = SGCU_NONE;
+	uint64 properties_used = 0;
+	bool cb_result_found = false;
+};
+
 /* SPRITE_WIDTH is 24. ECS has roughly 30 sprite groups per real sprite.
  * Adding an 'extra' margin would be assuming 64 sprite groups per real
  * sprite. 64 = 2^6, so 2^30 should be enough (for now) */
@@ -69,6 +85,7 @@ public:
 	virtual SpriteID GetResult() const { return 0; }
 	virtual byte GetNumResults() const { return 0; }
 	virtual uint16 GetCallbackResult() const { return CALLBACK_FAILED; }
+	virtual void AnalyseCallbacks(AnalyseCallbackOperation &op) const {};
 
 	static const SpriteGroup *Resolve(const SpriteGroup *group, ResolverObject &object, bool top_level = true);
 };
@@ -178,6 +195,8 @@ struct DeterministicSpriteGroup : SpriteGroup {
 
 	const SpriteGroup *error_group; // was first range, before sorting ranges
 
+	void AnalyseCallbacks(AnalyseCallbackOperation &op) const override;
+
 protected:
 	const SpriteGroup *Resolve(ResolverObject &object) const;
 };
@@ -228,6 +247,7 @@ struct CallbackResultSpriteGroup : SpriteGroup {
 
 	uint16 result;
 	uint16 GetCallbackResult() const { return this->result; }
+	void AnalyseCallbacks(AnalyseCallbackOperation &op) const override;
 };
 
 

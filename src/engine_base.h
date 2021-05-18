@@ -16,6 +16,8 @@
 #include "core/tinystring_type.hpp"
 #include "newgrf_commons.h"
 
+#include "3rdparty/cpp-btree/btree_map.h"
+
 typedef Pool<Engine, EngineID, 64, 64000> EnginePool;
 extern EnginePool _engine_pool;
 
@@ -60,6 +62,10 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	uint16 overrides_count;
 	struct WagonOverride *overrides;
 	uint16 list_position;
+
+	SpriteGroupCallbacksUsed callbacks_used = SGCU_ALL;
+	uint64 cb36_properties_used = UINT64_MAX;
+	btree::btree_map<const SpriteGroup *, uint64> sprite_group_cb36_properties_used;
 
 	Engine();
 	Engine(VehicleType type, EngineID base);
