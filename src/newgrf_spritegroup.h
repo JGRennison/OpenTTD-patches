@@ -219,6 +219,8 @@ struct RandomizedSpriteGroup : SpriteGroup {
 
 	std::vector<const SpriteGroup *> groups; ///< Take the group with appropriate index:
 
+	void AnalyseCallbacks(AnalyseCallbackOperation &op) const override;
+
 protected:
 	const SpriteGroup *Resolve(ResolverObject &object) const;
 };

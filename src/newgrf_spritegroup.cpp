@@ -341,6 +341,10 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 								op.callbacks_used |= SGCU_VEHICLE_REFIT_COST;
 								break;
 
+							case CBID_RANDOM_TRIGGER:
+								op.callbacks_used |= SGCU_RANDOM_TRIGGER;
+								break;
+
 							case CBID_VEHICLE_MODIFY_PROPERTY:
 								if (range.group != nullptr) {
 									AnalyseCallbackOperation cb36_op;
@@ -433,6 +437,10 @@ const SpriteGroup *RandomizedSpriteGroup::Resolve(ResolverObject &object) const
 	return SpriteGroup::Resolve(this->groups[index], object, false);
 }
 
+void RandomizedSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) const
+{
+	if (op.mode == ACOM_CB_VAR) op.callbacks_used |= SGCU_RANDOM_TRIGGER;
+}
 
 const SpriteGroup *RealSpriteGroup::Resolve(ResolverObject &object) const
 {

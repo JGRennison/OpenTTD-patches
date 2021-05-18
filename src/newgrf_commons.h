@@ -338,6 +338,7 @@ enum SpriteGroupCallbacksUsed : uint8 {
 	SGCU_ALL                            = 0xFF,
 	SGCU_VEHICLE_32DAY_CALLBACK         = 1 << 0,
 	SGCU_VEHICLE_REFIT_COST             = 1 << 1,
+	SGCU_RANDOM_TRIGGER                 = 1 << 2,
 };
 DECLARE_ENUM_AS_BIT_SET(SpriteGroupCallbacksUsed)
 

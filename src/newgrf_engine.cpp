@@ -1378,19 +1378,28 @@ static void DoTriggerVehicle(Vehicle *v, VehicleTrigger trigger, byte base_rando
 	/* We can't trigger a non-existent vehicle... */
 	assert(v != nullptr);
 
-	VehicleResolverObject object(v->engine_type, v, VehicleResolverObject::WO_CACHED, false, CBID_RANDOM_TRIGGER);
-	object.waiting_triggers = v->waiting_triggers | trigger;
-	v->waiting_triggers = object.waiting_triggers; // store now for var 5F
+	uint32 reseed = 0;
+	if (Engine::Get(v->engine_type)->callbacks_used & SGCU_RANDOM_TRIGGER) {
+		VehicleResolverObject object(v->engine_type, v, VehicleResolverObject::WO_CACHED, false, CBID_RANDOM_TRIGGER);
+		object.waiting_triggers = v->waiting_triggers | trigger;
+		v->waiting_triggers = object.waiting_triggers; // store now for var 5F
 
-	const SpriteGroup *group = object.Resolve();
-	if (group == nullptr) return;
+		const SpriteGroup *group = object.Resolve();
+		if (group == nullptr) return;
 
-	/* Store remaining triggers. */
-	v->waiting_triggers = object.GetRemainingTriggers();
+		/* Store remaining triggers. */
+		v->waiting_triggers = object.GetRemainingTriggers();
+
+		reseed = object.GetReseedSum();
+	} else {
+		v->waiting_triggers |= trigger;
+
+		const Engine *e = Engine::Get(v->engine_type);
+		if (!(e->grf_prop.spritegroup[v->cargo_type] || e->grf_prop.spritegroup[CT_DEFAULT])) return;
+	}
 
 	/* Rerandomise bits. Scopes other than SELF are invalid for rerandomisation. For bug-to-bug-compatibility with TTDP we ignore the scope. */
 	byte new_random_bits = Random();
-	uint32 reseed = object.GetReseedSum();
 	v->random_bits &= ~reseed;
 	v->random_bits |= (first ? new_random_bits : base_random_bits) & reseed;
 
