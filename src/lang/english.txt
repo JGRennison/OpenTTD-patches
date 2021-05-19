@@ -1442,9 +1442,6 @@ STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREEN_TO_BLUE              :Green to blue
 STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREY_TO_RED                :Grey to red
 STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREYSCALE                  :Greyscale
 
-STR_CONFIG_SETTING_DISABLE_VEHICLE_IMAGE_UPDATE                 :Disable vehicle image update: {STRING2}
-STR_CONFIG_SETTING_DISABLE_VEHICLE_IMAGE_UPDATE_HELPTEXT        :When enabled, prevent NewGRF vehicles from continuously updating the sprite used to draw vehicles as the vehicle moves. This can be used to prevent performance problems when there are many vehicles from computationally expensive NewGRFs.
-
 STR_CONFIG_SETTING_VEHICLE_NAMES                                :Vehicle names: {STRING2}
 STR_CONFIG_SETTING_VEHICLE_NAMES_HELPTEXT                       :Set the naming scheme used for vehicle names. This does not apply to vehicles which have a custom name.
 STR_CONFIG_SETTING_VEHICLE_NAMES_TRADITIONAL                    :Traditional

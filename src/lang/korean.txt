@@ -1442,9 +1442,6 @@ STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREEN_TO_BLUE              :초록색 / 파
 STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREY_TO_RED                :회색 / 빨간색
 STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREYSCALE                  :흑백
 
-STR_CONFIG_SETTING_DISABLE_VEHICLE_IMAGE_UPDATE                 :차량 이미지 업데이트 비활성화: {STRING}
-STR_CONFIG_SETTING_DISABLE_VEHICLE_IMAGE_UPDATE_HELPTEXT        :이 설정을 켜면, NewGRF 차량이 움직임에 따라 그래픽을 지속적으로 업데이트하는 것을 방지합니다. 이 설정을 통해 계산에 부하가 많이 걸리는 NewGRF를 많이 사용했을 때 성능 문제가 발생하는 것을 방지할 수 있습니다.
-
 STR_CONFIG_SETTING_VEHICLE_NAMES                                :차량 이름: {STRING}
 STR_CONFIG_SETTING_VEHICLE_NAMES_HELPTEXT                       :기본적으로 사용할 차량 이름입니다. 직접 이름을 지정한 차량에는 적용되지 않습니다.
 STR_CONFIG_SETTING_VEHICLE_NAMES_TRADITIONAL                    :이전 방식

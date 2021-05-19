@@ -1513,14 +1513,6 @@ static bool UpdateLinkgraphColours(int32 p1)
 	return RedrawScreen(p1);
 }
 
-static bool InvalidateAllVehicleImageCaches(int32 p1)
-{
-	for (Vehicle *v : Vehicle::Iterate()) {
-		v->InvalidateImageCache();
-	}
-	return true;
-}
-
 static bool ClimateThresholdModeChanged(int32 p1)
 {
 	InvalidateWindowClassesData(WC_GENERATE_LANDSCAPE);

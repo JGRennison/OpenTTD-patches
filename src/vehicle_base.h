@@ -1367,7 +1367,7 @@ struct SpecializedVehicle : public Vehicle {
 			((T *)this)->T::GetImage(current_direction, EIT_ON_MAP, &seq);
 			if (EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD) {
 				ClrBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH);
-				SB(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT, 1, (_sprite_group_resolve_check_veh_check || _settings_client.gui.disable_vehicle_image_update) ? 0 : 1);
+				SB(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT, 1, _sprite_group_resolve_check_veh_check ? 0 : 1);
 				if (unlikely(!_sprite_group_resolve_check_veh_curvature_check)) {
 					SetBit(this->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE);
 					this->vcache.cached_image_curvature = get_vehicle_curvature();
@@ -1375,7 +1375,7 @@ struct SpecializedVehicle : public Vehicle {
 				_sprite_group_resolve_check_veh_curvature_check = false;
 				this->cur_image_valid_dir = current_direction;
 			} else {
-				this->cur_image_valid_dir = (_sprite_group_resolve_check_veh_check || _settings_client.gui.disable_vehicle_image_update) ? current_direction : INVALID_DIR;
+				this->cur_image_valid_dir = _sprite_group_resolve_check_veh_check ? current_direction : INVALID_DIR;
 			}
 			_sprite_group_resolve_check_veh_check = false;
 			if (force_update || this->sprite_seq != seq) {

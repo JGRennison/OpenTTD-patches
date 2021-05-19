@@ -218,7 +218,6 @@ struct GUISettings : public TimeSettings {
 	bool   show_depot_sell_gui;              ///< Show go to depot and sell in UI
 	bool   open_vehicle_gui_clone_share;     ///< Open vehicle GUI when share-cloning vehicle from depot GUI
 	uint8  linkgraph_colours;                ///< linkgraph overlay colours
-	bool   disable_vehicle_image_update;     ///< Disable NewGRFs from continuously updating vehicle images
 	uint8  vehicle_names;                    ///< Vehicle naming scheme
 	bool   shade_trees_on_slopes;            ///< Shade trees on slopes
 

@@ -1425,9 +1425,6 @@ STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREEN_TO_BLUE              :Grün nach Blau
 STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREY_TO_RED                :Grau nach Rot
 STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREYSCALE                  :Graustufen
 
-STR_CONFIG_SETTING_DISABLE_VEHICLE_IMAGE_UPDATE                 :Deaktiviere Update des Fahrzeugbilds: {STRING}
-STR_CONFIG_SETTING_DISABLE_VEHICLE_IMAGE_UPDATE_HELPTEXT        :Falls aktiviert, werden NewGRF-Fahrzeuge daran gehindert kontinuierlich das Fahrzeug-Sprite zum Zeichnen des Fahrzeugs zu updaten, während sich das Fahrzeug bewegt. Dies kann benutzt werden, um die Performance bei der Verwendung vieler Fahrzeuge aus berechnungsintensiven NewGRFs zu verbessern.
-
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Aktiviere erweiterten Modus der Signale auf Brücken und in Tunneln: {STRING}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Aktiviert die Benutzung des erweiterten Modus zur Emulation von Signalen auf Brücken und in Tunneln. Falls deaktiviert, können Brücken/Tunnel, die sich nicht bereits im erweiterten Modus befinden, nicht in den erweiterten Modus versetzt werden. Andere Spieler können dennoch diese Option setzen und den erweiterten Modus verwenden.
 
