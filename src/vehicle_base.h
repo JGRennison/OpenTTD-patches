@@ -23,6 +23,7 @@
 #include "timetable.h"
 #include "base_consist.h"
 #include "newgrf_cache_check.h"
+#include "landscape.h"
 #include "network/network.h"
 #include <list>
 #include <map>
@@ -882,6 +883,7 @@ public:
 	}
 
 	void UpdateViewport(bool dirty);
+	void UpdateViewportDeferred();
 	void UpdatePositionAndViewport();
 	void MarkAllViewportsDirty() const;
 
@@ -1185,6 +1187,19 @@ public:
 	IterateWrapper Orders() const { return IterateWrapper(this->orders.list); }
 };
 
+inline bool IsPointInViewportVehicleRedrawArea(const std::vector<Rect> &viewport_redraw_rects, const Point &pt)
+{
+	for (const Rect &r : viewport_redraw_rects) {
+		if (pt.x >= r.left &&
+				pt.x <= r.right &&
+				pt.y >= r.top &&
+				pt.y <= r.bottom) {
+			return true;
+		}
+	}
+	return false;
+}
+
 /**
  * Class defining several overloaded accessors so we don't
  * have to cast vehicle types that often
@@ -1327,57 +1342,55 @@ struct SpecializedVehicle : public Vehicle {
 		return (const T *)v;
 	}
 
-	/**
-	 * Update vehicle sprite- and position caches
-	 * @param force_update Force updating the vehicle on the viewport.
-	 * @param update_delta Also update the delta?
-	 */
-	inline void UpdateViewport(bool force_update, bool update_delta)
+private:
+	inline uint16 GetVehicleCurvature() const
 	{
-		/* Skip updating sprites on dedicated servers without screen */
-		if (_network_dedicated) return;
+		uint16 curvature = 0;
+		if (this->Previous() != nullptr) {
+			SB(curvature, 0, 4, this->Previous()->direction);
+			if (this->Previous()->Previous() != nullptr) SB(curvature, 4, 4, this->Previous()->Previous()->direction);
+		}
+		if (this->Next() != nullptr) {
+			SB(curvature, 8, 4, this->Next()->direction);
+			if (this->Next()->Next() != nullptr) SB(curvature, 12, 4, this->Next()->Next()->direction);
+		}
+		return curvature;
+	}
 
-		auto get_vehicle_curvature = [&]() -> uint16 {
-			uint16 curvature = 0;
-			if (this->Previous() != nullptr) {
-				SB(curvature, 0, 4, this->Previous()->direction);
-				if (this->Previous()->Previous() != nullptr) SB(curvature, 4, 4, this->Previous()->Previous()->direction);
+	inline bool CheckVehicleCurvature() const {
+		if (!(EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD)) return false;
+		if (likely(!HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE))) return false;
+		return this->vcache.cached_image_curvature != this->GetVehicleCurvature();
+	};
+
+public:
+	inline void UpdateImageState(Direction current_direction, VehicleSpriteSeq &seq)
+	{
+		ClrBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH);
+		_sprite_group_resolve_check_veh_check = true;
+		if (EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD) _sprite_group_resolve_check_veh_curvature_check = true;
+		((T *)this)->T::GetImage(current_direction, EIT_ON_MAP, &seq);
+		if (EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD) {
+			SB(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT, 1, _sprite_group_resolve_check_veh_check ? 0 : 1);
+			if (unlikely(!_sprite_group_resolve_check_veh_curvature_check)) {
+				SetBit(this->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE);
+				this->vcache.cached_image_curvature = this->GetVehicleCurvature();
 			}
-			if (this->Next() != nullptr) {
-				SB(curvature, 8, 4, this->Next()->direction);
-				if (this->Next()->Next() != nullptr) SB(curvature, 12, 4, this->Next()->Next()->direction);
-			}
-			return curvature;
-		};
+			_sprite_group_resolve_check_veh_curvature_check = false;
+			this->cur_image_valid_dir = current_direction;
+		} else {
+			this->cur_image_valid_dir = _sprite_group_resolve_check_veh_check ? current_direction : INVALID_DIR;
+		}
+		_sprite_group_resolve_check_veh_check = false;
+	}
 
-		auto check_vehicle_curvature = [&]() -> bool {
-			if (!(EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD)) return false;
-			if (likely(!HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE))) return false;
-			return this->vcache.cached_image_curvature != get_vehicle_curvature();
-		};
-
-		/* Explicitly choose method to call to prevent vtable dereference -
-		 * it gives ~3% runtime improvements in games with many vehicles */
-		if (update_delta) ((T *)this)->T::UpdateDeltaXY();
+private:
+	inline void UpdateViewportNormalViewportMode(bool force_update, Point pt)
+	{
 		const Direction current_direction = ((T *)this)->GetMapImageDirection();
-		if (this->cur_image_valid_dir != current_direction || check_vehicle_curvature()) {
-			_sprite_group_resolve_check_veh_check = true;
-			if (EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD) _sprite_group_resolve_check_veh_curvature_check = true;
+		if (this->cur_image_valid_dir != current_direction || this->CheckVehicleCurvature()) {
 			VehicleSpriteSeq seq;
-			((T *)this)->T::GetImage(current_direction, EIT_ON_MAP, &seq);
-			if (EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD) {
-				ClrBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH);
-				SB(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT, 1, _sprite_group_resolve_check_veh_check ? 0 : 1);
-				if (unlikely(!_sprite_group_resolve_check_veh_curvature_check)) {
-					SetBit(this->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE);
-					this->vcache.cached_image_curvature = get_vehicle_curvature();
-				}
-				_sprite_group_resolve_check_veh_curvature_check = false;
-				this->cur_image_valid_dir = current_direction;
-			} else {
-				this->cur_image_valid_dir = _sprite_group_resolve_check_veh_check ? current_direction : INVALID_DIR;
-			}
-			_sprite_group_resolve_check_veh_check = false;
+			this->UpdateImageState(current_direction, seq);
 			if (force_update || this->sprite_seq != seq) {
 				this->sprite_seq = seq;
 				this->UpdateSpriteSeqBound();
@@ -1390,6 +1403,37 @@ struct SpecializedVehicle : public Vehicle {
 			if (force_update) {
 				this->Vehicle::UpdateViewport(true);
 			}
+		}
+	}
+
+public:
+	/**
+	 * Update vehicle sprite- and position caches
+	 * @param force_update Force updating the vehicle on the viewport.
+	 * @param update_delta Also update the delta?
+	 */
+	inline void UpdateViewport(bool force_update, bool update_delta)
+	{
+		/* Skip updating sprites on dedicated servers without screen */
+		if (_network_dedicated) return;
+
+		/* Explicitly choose method to call to prevent vtable dereference -
+		 * it gives ~3% runtime improvements in games with many vehicles */
+		if (update_delta) ((T *)this)->T::UpdateDeltaXY();
+
+		extern std::vector<Rect> _viewport_vehicle_normal_redraw_rects;
+		extern std::vector<Rect> _viewport_vehicle_map_redraw_rects;
+
+		Point pt = RemapCoords(this->x_pos + this->x_offs, this->y_pos + this->y_offs, this->z_pos);
+		if (EXPECTED_TYPE >= VEH_COMPANY_END || IsPointInViewportVehicleRedrawArea(_viewport_vehicle_normal_redraw_rects, pt)) {
+			UpdateViewportNormalViewportMode(force_update, pt);
+			return;
+		}
+
+		SetBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH);
+
+		if (force_update) {
+			this->Vehicle::UpdateViewport(IsPointInViewportVehicleRedrawArea(_viewport_vehicle_map_redraw_rects, pt));
 		}
 	}
 

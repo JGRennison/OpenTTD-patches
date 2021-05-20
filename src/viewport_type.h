@@ -60,6 +60,7 @@ struct Viewport {
 	uint8 dirty_block_left_margin;
 	bool is_dirty = false;
 	bool is_drawn = false;
+	bool update_vehicles = false;
 	ViewPortMapDrawVehiclesCache map_draw_vehicles_cache;
 	std::vector<byte> land_pixel_cache;
 
@@ -75,6 +76,7 @@ struct Viewport {
 			this->is_dirty = false;
 		}
 		this->is_drawn = false;
+		this->update_vehicles = false;
 	}
 
 private:

@@ -272,6 +272,8 @@ static ViewportDrawer _vd;
 
 static std::vector<Viewport *> _viewport_window_cache;
 static std::vector<Rect> _viewport_coverage_rects;
+std::vector<Rect> _viewport_vehicle_normal_redraw_rects;
+std::vector<Rect> _viewport_vehicle_map_redraw_rects;
 
 RouteStepsMap _vp_route_steps;
 RouteStepsMap _vp_route_steps_last_mark_dirty;
@@ -347,6 +349,8 @@ static Point MapXYZToViewport(const Viewport *vp, int x, int y, int z)
 static void FillViewportCoverageRect()
 {
 	_viewport_coverage_rects.resize(_viewport_window_cache.size());
+	_viewport_vehicle_normal_redraw_rects.clear();
+	_viewport_vehicle_map_redraw_rects.clear();
 
 	for (uint i = 0; i < _viewport_window_cache.size(); i++) {
 		const Viewport *vp = _viewport_window_cache[i];
@@ -355,6 +359,17 @@ static void FillViewportCoverageRect()
 		r.top = vp->virtual_top;
 		r.right = vp->virtual_left + vp->virtual_width + (1 << vp->zoom) - 1;
 		r.bottom = vp->virtual_top + vp->virtual_height + (1 << vp->zoom) - 1;
+
+		if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
+			_viewport_vehicle_map_redraw_rects.push_back(r);
+		} else {
+			_viewport_vehicle_normal_redraw_rects.push_back({
+				r.left - (MAX_VEHICLE_PIXEL_X * ZOOM_LVL_BASE),
+				r.top - (MAX_VEHICLE_PIXEL_Y * ZOOM_LVL_BASE),
+				r.right + (MAX_VEHICLE_PIXEL_X * ZOOM_LVL_BASE),
+				r.bottom + (MAX_VEHICLE_PIXEL_Y * ZOOM_LVL_BASE),
+			});
+		}
 	}
 }
 
@@ -716,6 +731,8 @@ static void SetViewportPosition(Window *w, int x, int y, bool force_update_overl
 			SCOPE_INFO_FMT([&], "DoSetViewportPosition: %d, %d, %d, %d, %d, %d, %s", left, top, width, height, _vp_move_offs.x, _vp_move_offs.y, scope_dumper().WindowInfo(w));
 			DoSetViewportPosition((Window *) w->z_front, left, top, width, height);
 			ClearViewportCache(w->viewport);
+			FillViewportCoverageRect();
+			w->viewport->update_vehicles = true;
 		}
 	}
 }
@@ -3281,7 +3298,7 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom)
 	} else {
 		/* Classic rendering. */
 		ViewportAddLandscape();
-		ViewportAddVehicles(&_vd.dpi);
+		ViewportAddVehicles(&_vd.dpi, vp->update_vehicles);
 
 		ViewportAddKdtreeSigns(&_vd.dpi, false);
 
@@ -3473,7 +3490,6 @@ void UpdateViewportPosition(Window *w)
 
 		SetViewportPosition(w, w->viewport->scrollpos_x, w->viewport->scrollpos_y, update_overlay);
 	}
-	FillViewportCoverageRect();
 }
 
 void UpdateViewportSizeZoom(Viewport *vp)
@@ -3497,6 +3513,7 @@ void UpdateViewportSizeZoom(Viewport *vp)
 		vp->land_pixel_cache.clear();
 		vp->land_pixel_cache.shrink_to_fit();
 	}
+	vp->update_vehicles = true;
 	FillViewportCoverageRect();
 }
 
