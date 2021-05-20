@@ -63,7 +63,7 @@ struct PacketWriter : SaveFilter {
 	std::unique_ptr<Packet> current;    ///< The packet we're currently writing to.
 	size_t total_size;                  ///< Total size of the compressed savegame.
 	std::vector<std::unique_ptr<Packet>> packets; ///< Packet queue of the savegame; send these "slowly" to the client.
-	std::vector<std::unique_ptr<Packet>> prepend_packets; ///< Packet queue of the savegame; send these "slowly" to the client.
+	std::unique_ptr<Packet> map_size_packet; ///< Map size packet, fast tracked to the client
 	std::mutex mutex;                   ///< Mutex for making threaded saving safe.
 	std::condition_variable exit_sig;   ///< Signal for threaded destruction of this packet writer.
 
@@ -85,7 +85,7 @@ struct PacketWriter : SaveFilter {
 		/* This must all wait until the Destroy function is called. */
 
 		this->packets.clear();
-		this->prepend_packets.clear();
+		this->map_size_packet.reset();
 		this->current.reset();
 	}
 
@@ -125,8 +125,9 @@ struct PacketWriter : SaveFilter {
 	{
 		std::lock_guard<std::mutex> lock(this->mutex);
 
-		for (auto &p : this->prepend_packets) {
-			socket->SendPrependPacket(std::move(p));
+		if (this->map_size_packet) {
+			/* Don't queue the PACKET_SERVER_MAP_SIZE before the corresponding PACKET_SERVER_MAP_BEGIN */
+			socket->SendPrependPacket(std::move(this->map_size_packet), PACKET_SERVER_MAP_BEGIN);
 		}
 		bool last_packet = false;
 		for (auto &p : this->packets) {
@@ -134,7 +135,6 @@ struct PacketWriter : SaveFilter {
 			socket->SendPacket(std::move(p));
 
 		}
-		this->prepend_packets.clear();
 		this->packets.clear();
 
 		return last_packet;
@@ -146,14 +146,6 @@ struct PacketWriter : SaveFilter {
 		if (this->current == nullptr) return;
 
 		this->packets.push_back(std::move(this->current));
-	}
-
-	/** Prepend the current packet to the queue. */
-	void PrependQueue()
-	{
-		if (this->current == nullptr) return;
-
-		this->prepend_packets.push_back(std::move(this->current));
 	}
 
 	void Write(byte *buf, size_t size) override
@@ -194,9 +186,8 @@ struct PacketWriter : SaveFilter {
 		this->AppendQueue();
 
 		/* Fast-track the size to the client. */
-		this->current.reset(new Packet(PACKET_SERVER_MAP_SIZE, SHRT_MAX));
-		this->current->Send_uint32((uint32)this->total_size);
-		this->PrependQueue();
+		this->map_size_packet.reset(new Packet(PACKET_SERVER_MAP_SIZE, SHRT_MAX));
+		this->map_size_packet->Send_uint32((uint32)this->total_size);
 	}
 };
 

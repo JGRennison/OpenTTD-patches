@@ -44,7 +44,7 @@ public:
 
 	NetworkRecvStatus CloseConnection(bool error = true) override;
 	void SendPacket(std::unique_ptr<Packet> packet);
-	void SendPrependPacket(std::unique_ptr<Packet> packet);
+	void SendPrependPacket(std::unique_ptr<Packet> packet, int queue_after_packet_type);
 
 	void SendPacket(Packet *packet)
 	{

@@ -67,12 +67,28 @@ void NetworkTCPSocketHandler::SendPacket(std::unique_ptr<Packet> packet)
  * if the OS-network-buffer is full)
  * @param packet the packet to send
  */
-void NetworkTCPSocketHandler::SendPrependPacket(std::unique_ptr<Packet> packet)
+void NetworkTCPSocketHandler::SendPrependPacket(std::unique_ptr<Packet> packet, int queue_after_packet_type)
 {
 	assert(packet != nullptr);
 
 	packet->PrepareToSend();
 
+	if (queue_after_packet_type >= 0) {
+		for (auto iter = this->packet_queue.begin(); iter != this->packet_queue.end(); ++iter) {
+			if ((*iter)->GetPacketType() == queue_after_packet_type) {
+				++iter;
+				this->packet_queue.insert(iter, std::move(packet));
+				return;
+			}
+		}
+	}
+
+	/* The very first packet in the queue may be partially written out, so cannot be replaced.
+	 * If the queue is non-empty, swap packet with the first packet in the queue.
+	 * The insert the packet (either the incoming packet or the previous first packet) at the front. */
+	if (!this->packet_queue.empty()) {
+		packet.swap(this->packet_queue.front());
+	}
 	this->packet_queue.push_front(std::move(packet));
 }
 
