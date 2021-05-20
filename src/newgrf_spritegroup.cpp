@@ -350,7 +350,6 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 									AnalyseCallbackOperation cb36_op;
 									cb36_op.mode = ACOM_CB36_PROP;
 									range.group->AnalyseCallbacks(cb36_op);
-									if (cb36_op.properties_used == UINT64_MAX) DumpSpriteGroup(range.group, 0);
 									op.properties_used |= cb36_op.properties_used;
 								}
 								break;
