@@ -589,6 +589,19 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 			return v->grf_cache.position_same_id_length;
 
 		case 0x42: { // Consist cargo information
+			if ((extra->mask & 0x00FFFFFF) == 0) {
+				if (!HasBit(v->grf_cache.cache_valid, NCVV_CONSIST_CARGO_INFORMATION_UD)) {
+					byte user_def_data = 0;
+					if (v->type == VEH_TRAIN) {
+						for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
+							user_def_data |= Train::From(u)->tcache.user_def_data;
+						}
+					}
+					SB(v->grf_cache.consist_cargo_information, 24, 8, user_def_data);
+					SetBit(v->grf_cache.cache_valid, NCVV_CONSIST_CARGO_INFORMATION_UD);
+				}
+				return (v->grf_cache.consist_cargo_information & 0xFF000000);
+			}
 			if (!HasBit(v->grf_cache.cache_valid, NCVV_CONSIST_CARGO_INFORMATION)) {
 				const Vehicle *u;
 				byte cargo_classes = 0;
@@ -642,6 +655,7 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 				 *       which will need different translations */
 				v->grf_cache.consist_cargo_information = cargo_classes | (common_cargo_type << 8) | (common_subtype << 16) | (user_def_data << 24);
 				SetBit(v->grf_cache.cache_valid, NCVV_CONSIST_CARGO_INFORMATION);
+				SetBit(v->grf_cache.cache_valid, NCVV_CONSIST_CARGO_INFORMATION_UD);
 			}
 
 			/* The cargo translation is specific to the accessing GRF, and thus cannot be cached. */
@@ -1569,7 +1583,10 @@ void FillNewGRFVehicleCache(const Vehicle *v)
 		{ 0x43, NCVV_COMPANY_INFORMATION },
 		{ 0x4D, NCVV_POSITION_IN_VEHICLE },
 	};
-	static_assert(NCVV_END == lengthof(cache_entries));
+	static const int partial_cache_entries[] = {
+		NCVV_CONSIST_CARGO_INFORMATION_UD,
+	};
+	static_assert(NCVV_END == lengthof(cache_entries) + lengthof(partial_cache_entries));
 
 	/* Resolve all the variables, so their caches are set. */
 	for (size_t i = 0; i < lengthof(cache_entries); i++) {
