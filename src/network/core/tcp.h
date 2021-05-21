@@ -54,6 +54,7 @@ public:
 	SendPacketsState SendPackets(bool closing_down = false);
 
 	virtual std::unique_ptr<Packet> ReceivePacket();
+	virtual void LogSentPacket(const Packet &pkt);
 
 	bool CanSendReceive();
 

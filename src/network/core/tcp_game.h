@@ -129,6 +129,8 @@ enum PacketGameType {
 	PACKET_END,                          ///< Must ALWAYS be on the end of this list!! (period)
 };
 
+const char *GetPacketTypeName(PacketGameType type);
+
 /** Packet that wraps a command */
 struct CommandPacket;
 
@@ -584,6 +586,7 @@ public:
 	void SendCommand(Packet *p, const CommandPacket *cp);
 
 	virtual std::string GetDebugInfo() const;
+	virtual void LogSentPacket(const Packet &pkt);
 };
 
 #endif /* NETWORK_CORE_TCP_GAME_H */

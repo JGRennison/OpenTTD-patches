@@ -134,6 +134,7 @@ SendPacketsState NetworkTCPSocketHandler::SendPackets(bool closing_down)
 		/* Is this packet sent? */
 		if (p->RemainingBytesToTransfer() == 0) {
 			/* Go to the next packet */
+			if (_debug_net_level >= 3) this->LogSentPacket(*p);
 			this->packet_queue.pop_front();
 		} else {
 			return SPS_PARTLY_SENT;
@@ -215,6 +216,8 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 	/* Prepare for receiving a new packet */
 	return std::move(this->packet_recv);
 }
+
+void NetworkTCPSocketHandler::LogSentPacket(const Packet &pkt) {}
 
 /**
  * Check whether this socket can send or receive something.

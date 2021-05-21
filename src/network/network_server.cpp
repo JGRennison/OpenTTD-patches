@@ -1584,9 +1584,28 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_MOVE(Packet *p)
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
+const char *ServerNetworkGameSocketHandler::GetClientStatusName(ClientStatus status)
+{
+	static const char* _client_status_names[] {
+		"INACTIVE",
+		"NEWGRFS_CHECK",
+		"AUTH_GAME",
+		"AUTH_COMPANY",
+		"AUTHORIZED",
+		"MAP_WAIT",
+		"MAP",
+		"DONE_MAP",
+		"PRE_ACTIVE",
+		"ACTIVE",
+		"CLOSE_PENDING",
+	};
+	static_assert(lengthof(_client_status_names) == STATUS_END);
+	return status < STATUS_END ? _client_status_names[status] : "[invalid status]";
+}
+
 std::string ServerNetworkGameSocketHandler::GetDebugInfo() const
 {
-	return stdstr_fmt("status: %d", this->status);
+	return stdstr_fmt("status: %d (%s)", this->status, GetClientStatusName(this->status));
 }
 
 /**

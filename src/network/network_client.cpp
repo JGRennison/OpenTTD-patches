@@ -1362,9 +1362,28 @@ void ClientNetworkGameSocketHandler::CheckConnection()
 	ShowErrorMessage(STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION, STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION, WL_INFO);
 }
 
+const char *ClientNetworkGameSocketHandler::GetServerStatusName(ServerStatus status)
+{
+	static const char* _server_status_names[] {
+		"INACTIVE",
+		"COMPANY_INFO",
+		"JOIN",
+		"NEWGRFS_CHECK",
+		"AUTH_GAME",
+		"AUTH_COMPANY",
+		"AUTHORIZED",
+		"MAP_WAIT",
+		"MAP",
+		"ACTIVE",
+		"CLOSING",
+	};
+	static_assert(lengthof(_server_status_names) == STATUS_END);
+	return status < STATUS_END ? _server_status_names[status] : "[invalid status]";
+}
+
 std::string ClientNetworkGameSocketHandler::GetDebugInfo() const
 {
-	return stdstr_fmt("status: %d", this->status);
+	return stdstr_fmt("status: %d (%s)", this->status, GetServerStatusName(this->status));
 }
 
 

@@ -20,6 +20,65 @@
 
 #include "../../safeguards.h"
 
+static const char* _packet_game_type_names[] {
+	"SERVER_FULL",
+	"SERVER_BANNED",
+	"CLIENT_JOIN",
+	"SERVER_ERROR",
+	"CLIENT_COMPANY_INFO",
+	"SERVER_COMPANY_INFO",
+	"SERVER_CHECK_NEWGRFS",
+	"CLIENT_NEWGRFS_CHECKED",
+	"SERVER_NEED_GAME_PASSWORD",
+	"CLIENT_GAME_PASSWORD",
+	"SERVER_NEED_COMPANY_PASSWORD",
+	"CLIENT_COMPANY_PASSWORD",
+	"CLIENT_SETTINGS_PASSWORD",
+	"SERVER_SETTINGS_ACCESS",
+	"SERVER_WELCOME",
+	"SERVER_CLIENT_INFO",
+	"CLIENT_GETMAP",
+	"SERVER_WAIT",
+	"SERVER_MAP_BEGIN",
+	"SERVER_MAP_SIZE",
+	"SERVER_MAP_DATA",
+	"SERVER_MAP_DONE",
+	"CLIENT_MAP_OK",
+	"SERVER_JOIN",
+	"SERVER_FRAME",
+	"CLIENT_ACK",
+	"SERVER_SYNC",
+	"CLIENT_COMMAND",
+	"SERVER_COMMAND",
+	"CLIENT_CHAT",
+	"SERVER_CHAT",
+	"CLIENT_RCON",
+	"SERVER_RCON",
+	"CLIENT_MOVE",
+	"SERVER_MOVE",
+	"CLIENT_SET_PASSWORD",
+	"CLIENT_SET_NAME",
+	"SERVER_COMPANY_UPDATE",
+	"SERVER_CONFIG_UPDATE",
+	"SERVER_NEWGAME",
+	"SERVER_SHUTDOWN",
+	"CLIENT_QUIT",
+	"SERVER_QUIT",
+	"CLIENT_ERROR",
+	"SERVER_ERROR_QUIT",
+	"CLIENT_DESYNC_LOG",
+	"SERVER_DESYNC_LOG",
+	"CLIENT_DESYNC_MSG",
+};
+static_assert(lengthof(_packet_game_type_names) == PACKET_END);
+
+const char *GetPacketGameTypeName(PacketGameType type)
+{
+	if (type >= PACKET_END) return "[invalid packet type]";
+
+	return _packet_game_type_names[type];
+}
+
 /**
  * Create a new socket for the game connection.
  * @param s The socket to connect with.
@@ -69,7 +128,7 @@ NetworkRecvStatus NetworkGameSocketHandler::HandlePacket(Packet *p)
 	this->last_packet = std::chrono::steady_clock::now();
 	this->last_pkt_type = type;
 
-	DEBUG(net, 3, "[tcp/game] received packet type %d from client %d, %s", type, this->client_id, this->GetDebugInfo().c_str());
+	DEBUG(net, 3, "[tcp/game] received packet type %d (%s) from client %d, %s", type, GetPacketGameTypeName(type), this->client_id, this->GetDebugInfo().c_str());
 
 	switch (this->HasClientQuit() ? PACKET_END : type) {
 		case PACKET_SERVER_FULL:                  return this->Receive_SERVER_FULL(p);
@@ -212,3 +271,9 @@ NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_COMPANY_UPDATE(Packet
 NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_CONFIG_UPDATE(Packet *p) { return this->ReceiveInvalidPacket(PACKET_SERVER_CONFIG_UPDATE); }
 
 std::string NetworkGameSocketHandler::GetDebugInfo() const { return ""; }
+
+void NetworkGameSocketHandler::LogSentPacket(const Packet &pkt)
+{
+	PacketGameType type = (PacketGameType)pkt.GetPacketType();
+	DEBUG(net, 3, "[tcp/game] sent packet type %d (%s) to client %d, %s", type, GetPacketGameTypeName(type), this->client_id, this->GetDebugInfo().c_str());
+}

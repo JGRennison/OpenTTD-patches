@@ -40,6 +40,8 @@ private:
 	std::string server_desync_log;
 	bool emergency_save_done = false;
 
+	static const char *GetServerStatusName(ServerStatus status);
+
 protected:
 	friend void NetworkExecuteLocalCommandQueue();
 	friend void NetworkClose(bool close_admins);
