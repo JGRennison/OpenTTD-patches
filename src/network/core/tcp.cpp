@@ -184,6 +184,7 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 
 		/* Parse the size in the received packet and if not valid, close the connection. */
 		if (!p->ParsePacketSize()) {
+			DEBUG(net, 0, "ParsePacketSize failed, possible packet stream corruption");
 			this->CloseConnection();
 			return nullptr;
 		}
