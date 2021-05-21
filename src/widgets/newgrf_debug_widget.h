@@ -20,6 +20,7 @@ enum NewGRFInspectWidgets {
 	WID_NGRFI_MAINPANEL, ///< Panel widget containing the actual data.
 	WID_NGRFI_SCROLLBAR, ///< Scrollbar.
 	WID_NGRFI_REFRESH,   ///< Refresh toggle.
+	WID_NGRFI_LOG_CONSOLE, ///< Log to console
 };
 
 /** Widgets of the #SpriteAlignerWindow class. */

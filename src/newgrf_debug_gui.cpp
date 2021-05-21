@@ -304,6 +304,7 @@ struct NewGRFInspectWindow : Window {
 	int first_variable_line_index = 0;
 
 	bool auto_refresh = false;
+	bool log_console = false;
 
 	/**
 	 * Check whether the given variable has a parameter.
@@ -417,6 +418,8 @@ struct NewGRFInspectWindow : Window {
 		vseprintf(buf, lastof(buf), format, va);
 		va_end(va);
 
+		if (this->log_console) DEBUG(misc, 0, "  %s", buf);
+
 		offset -= this->vscroll->GetPosition();
 		if (offset < 0 || offset >= this->vscroll->GetCapacity()) return;
 
@@ -465,6 +468,13 @@ struct NewGRFInspectWindow : Window {
 
 		if (widget != WID_NGRFI_MAINPANEL) return;
 
+		if (this->log_console) {
+			GetFeatureHelper(this->window_number)->SetStringParameters(this->GetFeatureIndex());
+			char buf[1024];
+			GetString(buf, STR_NEWGRF_INSPECT_CAPTION, lastof(buf));
+			DEBUG(misc, 0, "*** %s ***", buf + Utf8EncodedCharLen(buf[0]));
+		}
+
 		uint index = this->GetFeatureIndex();
 		const NIFeature *nif  = GetFeature(this->window_number);
 		const NIHelper *nih   = nif->helper;
@@ -474,6 +484,8 @@ struct NewGRFInspectWindow : Window {
 		uint i = 0;
 
 		nih->ExtraInfo(index, [&](const char *buf) {
+			if (this->log_console) DEBUG(misc, 0, "  %s", buf);
+
 			int offset = i++;
 			offset -= this->vscroll->GetPosition();
 			if (offset < 0 || offset >= this->vscroll->GetCapacity()) return;
@@ -592,6 +604,11 @@ struct NewGRFInspectWindow : Window {
 			}
 		}
 
+		if (this->log_console) {
+			const_cast<NewGRFInspectWindow*>(this)->log_console = false;
+			DEBUG(misc, 0, "*** END ***");
+		}
+
 		/* Not nice and certainly a hack, but it beats duplicating
 		 * this whole function just to count the actual number of
 		 * elements. Especially because they need to be redrawn. */
@@ -655,6 +672,12 @@ struct NewGRFInspectWindow : Window {
 				this->SetWidgetDirty(WID_NGRFI_REFRESH);
 				break;
 			}
+
+			case WID_NGRFI_LOG_CONSOLE: {
+				this->log_console = true;
+				this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
+				break;
+			}
 		}
 	}
 
@@ -699,6 +722,7 @@ static const NWidgetPart _nested_newgrf_inspect_chain_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_NGRFI_CAPTION), SetDataTip(STR_NEWGRF_INSPECT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NGRFI_LOG_CONSOLE), SetDataTip(STR_NEWGRF_INSPECT_LOG_CONSOLE, STR_NEWGRF_INSPECT_LOG_CONSOLE_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_NGRFI_REFRESH), SetDataTip(STR_NEWGRF_INSPECT_REFRESH, STR_NEWGRF_INSPECT_REFRESH_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
@@ -725,6 +749,7 @@ static const NWidgetPart _nested_newgrf_inspect_widgets[] = {
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_NGRFI_CAPTION), SetDataTip(STR_NEWGRF_INSPECT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NGRFI_PARENT), SetDataTip(STR_NEWGRF_INSPECT_PARENT_BUTTON, STR_NEWGRF_INSPECT_PARENT_TOOLTIP),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NGRFI_LOG_CONSOLE), SetDataTip(STR_NEWGRF_INSPECT_LOG_CONSOLE, STR_NEWGRF_INSPECT_LOG_CONSOLE_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_NGRFI_REFRESH), SetDataTip(STR_NEWGRF_INSPECT_REFRESH, STR_NEWGRF_INSPECT_REFRESH_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
