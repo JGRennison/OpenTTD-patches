@@ -158,6 +158,8 @@ enum DeterministicSpriteGroupAdjustOperation {
 	DSGA_OP_SHL,  ///< a << b
 	DSGA_OP_SHR,  ///< (unsigned) a >> b
 	DSGA_OP_SAR,  ///< (signed) a >> b
+
+	DSGA_OP_END,
 };
 
 
@@ -434,5 +436,7 @@ struct ResolverObject {
 	 */
 	virtual uint32 GetDebugID() const { return 0; }
 };
+
+void DumpSpriteGroup(const SpriteGroup *sg, std::function<void(const char *)> print);
 
 #endif /* NEWGRF_SPRITEGROUP_H */
