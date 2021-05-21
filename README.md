@@ -22,6 +22,8 @@ See [jgrpp-changelog.md](jgrpp-changelog.md) for changelog.
 
 See the [wiki](https://github.com/JGRennison/OpenTTD-patches/wiki) for guides on how to use some of the included features.
 
+See [installation.md](/installation.md) for instructions on how to install.
+
 (Nearly all of the patches which are listed below have been modified, fixed or extended in some way, and so are not the same as the originals which are linked).
 
 #### Railways and Trains
