@@ -930,17 +930,17 @@ static void TileLoop_Trees(TileIndex tile)
  * Decrement the tree tick counter.
  * The interval is scaled by map size to allow for the same density regardless of size.
  * Adjustment for map sizes below the standard 256 * 256 are handled earlier.
- * @return true if the counter was decremented past zero
+ * @return number of trees to try to plant
  */
-bool DecrementTreeCounter()
+uint DecrementTreeCounter()
 {
-	/* Ensure _trees_tick_ctr can be decremented past zero only once for the largest map size. */
-	static_assert(2 * (MAX_MAP_SIZE_BITS - MIN_MAP_SIZE_BITS) - 4 <= std::numeric_limits<byte>::digits);
+	uint scaled_map_size = ScaleByMapSize(1);
+	if (scaled_map_size >= 256) return scaled_map_size >> 8;
 
 	/* byte underflow */
 	byte old_trees_tick_ctr = _trees_tick_ctr;
-	_trees_tick_ctr -= ScaleByMapSize(1);
-	return old_trees_tick_ctr <= _trees_tick_ctr;
+	_trees_tick_ctr -= scaled_map_size;
+	return old_trees_tick_ctr <= _trees_tick_ctr ? 1 : 0;
 }
 
 void OnTick_Trees()
@@ -969,13 +969,15 @@ void OnTick_Trees()
 		}
 	}
 
-	if (!DecrementTreeCounter() || _settings_game.construction.extra_tree_placement == ETP_SPREAD_RAINFOREST) return;
+	if (_settings_game.construction.extra_tree_placement == ETP_SPREAD_RAINFOREST) return;
 
-	/* place a tree at a random spot */
-	r = Random();
-	tile = RandomTileSeed(r);
-	if (CanPlantTreesOnTile(tile, false) && (tree = GetRandomTreeType(tile, GB(r, 24, 8))) != TREE_INVALID) {
-		PlantTreesOnTile(tile, tree, 0, 0);
+	for (uint ctr = DecrementTreeCounter(); ctr > 0; ctr--) {
+		/* place a tree at a random spot */
+		r = Random();
+		tile = RandomTileSeed(r);
+		if (CanPlantTreesOnTile(tile, false) && (tree = GetRandomTreeType(tile, GB(r, 24, 8))) != TREE_INVALID) {
+			PlantTreesOnTile(tile, tree, 0, 0);
+		}
 	}
 }
 
