@@ -386,7 +386,7 @@ void NORETURN SlError(StringID string, const char *extra_msg, bool already_mallo
 		str = already_malloced ? const_cast<char *>(extra_msg) : stredup(extra_msg);
 	}
 
-	if (IsNonMainThread() && !IsGameThread()) {
+	if (IsNonMainThread() && !IsGameThread() && _sl.action != SLA_SAVE) {
 		throw ThreadSlErrorException{ string, extra_msg };
 	}
 
