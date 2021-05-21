@@ -3825,6 +3825,8 @@ STR_NEWGRF_INSPECT_REFRESH                                      :{BLACK}R
 STR_NEWGRF_INSPECT_REFRESH_TOOLTIP                              :{BLACK}Toggle whether to refresh the contents every frame
 STR_NEWGRF_INSPECT_LOG_CONSOLE                                  :{BLACK}L
 STR_NEWGRF_INSPECT_LOG_CONSOLE_TOOLTIP                          :{BLACK}Log text content of this window to the console
+STR_NEWGRF_INSPECT_SPRITE_DUMP                                  :{BLACK}S
+STR_NEWGRF_INSPECT_SPRITE_DUMP_TOOLTIP                          :{BLACK}Display current sprite chain
 
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT                            :{STRING1} at {HEX}
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_OBJECT                     :Object

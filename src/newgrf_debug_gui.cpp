@@ -207,7 +207,9 @@ public:
 	}
 
 	virtual void ExtraInfo(uint index, std::function<void(const char *)> print) const {}
+	virtual void SpriteDump(uint index, std::function<void(const char *)> print) const {}
 	virtual bool ShowExtraInfoOnly(uint index) const { return false; };
+	virtual bool ShowSpriteDumpButton(uint index) const { return false; };
 
 protected:
 	/**
@@ -306,6 +308,7 @@ struct NewGRFInspectWindow : Window {
 
 	bool auto_refresh = false;
 	bool log_console = false;
+	bool sprite_dump = false;
 
 	/**
 	 * Check whether the given variable has a parameter.
@@ -370,6 +373,7 @@ struct NewGRFInspectWindow : Window {
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_NGRFI_SCROLLBAR);
+		this->GetWidget<NWidgetStacked>(WID_NGRFI_SPRITE_DUMP_SEL)->SetDisplayedPlane(GetFeatureHelper(wno)->ShowSpriteDumpButton(::GetFeatureIndex(wno)) ? 0 : SZSP_NONE);
 		this->FinishInitNested(wno);
 
 		this->vscroll->SetCount(0);
@@ -490,13 +494,16 @@ struct NewGRFInspectWindow : Window {
 				DEBUG(misc, 0, "*** END ***");
 			}
 
-			/* Not nice and certainly a hack, but it beats duplicating
-			 * this whole function just to count the actual number of
-			 * elements. Especially because they need to be redrawn. */
-			const_cast<NewGRFInspectWindow*>(this)->vscroll->SetCount(i);
+			uint count = std::min<uint>(UINT16_MAX, i);
+			if (vscroll->GetCount() != count) {
+				/* Not nice and certainly a hack, but it beats duplicating
+				 * this whole function just to count the actual number of
+				 * elements. Especially because they need to be redrawn. */
+				const_cast<NewGRFInspectWindow*>(this)->vscroll->SetCount(count);
+			}
 		});
 
-		nih->ExtraInfo(index, [&](const char *buf) {
+		auto line_handler = [&](const char *buf) {
 			if (this->log_console) DEBUG(misc, 0, "  %s", buf);
 
 			int offset = i++;
@@ -504,7 +511,13 @@ struct NewGRFInspectWindow : Window {
 			if (offset < 0 || offset >= this->vscroll->GetCapacity()) return;
 
 			::DrawString(r.left + LEFT_OFFSET, r.right - RIGHT_OFFSET, r.top + TOP_OFFSET + (offset * this->resize.step_height), buf, TC_BLACK);
-		});
+		};
+		if (this->sprite_dump) {
+			nih->SpriteDump(index, line_handler);
+			return;
+		} else {
+			nih->ExtraInfo(index, line_handler);
+		}
 
 		if (nih->ShowExtraInfoOnly(index)) return;
 
@@ -647,6 +660,7 @@ struct NewGRFInspectWindow : Window {
 				break;
 
 			case WID_NGRFI_MAINPANEL: {
+				if (this->sprite_dump) return;
 				/* Does this feature have variables? */
 				const NIFeature *nif  = GetFeature(this->window_number);
 				if (nif->variables == nullptr) return;
@@ -679,6 +693,15 @@ struct NewGRFInspectWindow : Window {
 			case WID_NGRFI_LOG_CONSOLE: {
 				this->log_console = true;
 				this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
+				break;
+			}
+
+			case WID_NGRFI_SPRITE_DUMP: {
+				this->sprite_dump = !this->sprite_dump;
+				this->SetWidgetLoweredState(WID_NGRFI_SPRITE_DUMP, this->sprite_dump);
+				this->SetWidgetDirty(WID_NGRFI_SPRITE_DUMP);
+				this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
+				this->SetWidgetDirty(WID_NGRFI_SCROLLBAR);
 				break;
 			}
 		}
@@ -725,6 +748,9 @@ static const NWidgetPart _nested_newgrf_inspect_chain_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_NGRFI_CAPTION), SetDataTip(STR_NEWGRF_INSPECT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_SPRITE_DUMP_SEL),
+			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_NGRFI_SPRITE_DUMP), SetDataTip(STR_NEWGRF_INSPECT_SPRITE_DUMP, STR_NEWGRF_INSPECT_SPRITE_DUMP_TOOLTIP),
+		EndContainer(),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NGRFI_LOG_CONSOLE), SetDataTip(STR_NEWGRF_INSPECT_LOG_CONSOLE, STR_NEWGRF_INSPECT_LOG_CONSOLE_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_NGRFI_REFRESH), SetDataTip(STR_NEWGRF_INSPECT_REFRESH, STR_NEWGRF_INSPECT_REFRESH_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
@@ -752,6 +778,9 @@ static const NWidgetPart _nested_newgrf_inspect_widgets[] = {
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_NGRFI_CAPTION), SetDataTip(STR_NEWGRF_INSPECT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NGRFI_PARENT), SetDataTip(STR_NEWGRF_INSPECT_PARENT_BUTTON, STR_NEWGRF_INSPECT_PARENT_TOOLTIP),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_SPRITE_DUMP_SEL),
+			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_NGRFI_SPRITE_DUMP), SetDataTip(STR_NEWGRF_INSPECT_SPRITE_DUMP, STR_NEWGRF_INSPECT_SPRITE_DUMP_TOOLTIP),
+		EndContainer(),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NGRFI_LOG_CONSOLE), SetDataTip(STR_NEWGRF_INSPECT_LOG_CONSOLE, STR_NEWGRF_INSPECT_LOG_CONSOLE_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_NGRFI_REFRESH), SetDataTip(STR_NEWGRF_INSPECT_REFRESH, STR_NEWGRF_INSPECT_REFRESH_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),

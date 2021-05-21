@@ -76,6 +76,7 @@ static const NIVariable _niv_vehicles[] = {
 class NIHVehicle : public NIHelper {
 	bool IsInspectable(uint index) const override        { return true; }
 	bool ShowExtraInfoOnly(uint index) const override    { return Vehicle::Get(index)->GetGRF() == nullptr; }
+	bool ShowSpriteDumpButton(uint index) const override { return true; }
 	uint GetParent(uint index) const override            { const Vehicle *first = Vehicle::Get(index)->First(); return GetInspectWindowNumber(GetGrfSpecFeature(first->type), first->index); }
 	const void *GetInstance(uint index)const override    { return Vehicle::Get(index); }
 	const void *GetSpec(uint index) const override       { return Vehicle::Get(index)->GetEngine(); }
@@ -328,6 +329,12 @@ class NIHVehicle : public NIHelper {
 
 		seprintf(buffer, lastof(buffer), "  Current image cacheable: %s", v->cur_image_valid_dir != INVALID_DIR ? "yes" : "no");
 		print(buffer);
+	}
+
+	/* virtual */ void SpriteDump(uint index, std::function<void(const char *)> print) const override
+	{
+		extern void DumpVehicleSpriteGroup(const Vehicle *v, std::function<void(const char *)> print);
+		DumpVehicleSpriteGroup(Vehicle::Get(index), std::move(print));
 	}
 };
 
