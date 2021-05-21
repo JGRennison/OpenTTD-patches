@@ -19,6 +19,7 @@
 #include "textbuf_gui.h"
 #include "vehicle_gui.h"
 #include "zoom_func.h"
+#include "scope.h"
 
 #include "engine_base.h"
 #include "industry.h"
@@ -483,6 +484,18 @@ struct NewGRFInspectWindow : Window {
 
 		uint i = 0;
 
+		auto guard = scope_guard([&]() {
+			if (this->log_console) {
+				const_cast<NewGRFInspectWindow*>(this)->log_console = false;
+				DEBUG(misc, 0, "*** END ***");
+			}
+
+			/* Not nice and certainly a hack, but it beats duplicating
+			 * this whole function just to count the actual number of
+			 * elements. Especially because they need to be redrawn. */
+			const_cast<NewGRFInspectWindow*>(this)->vscroll->SetCount(i);
+		});
+
 		nih->ExtraInfo(index, [&](const char *buf) {
 			if (this->log_console) DEBUG(misc, 0, "  %s", buf);
 
@@ -603,16 +616,6 @@ struct NewGRFInspectWindow : Window {
 				}
 			}
 		}
-
-		if (this->log_console) {
-			const_cast<NewGRFInspectWindow*>(this)->log_console = false;
-			DEBUG(misc, 0, "*** END ***");
-		}
-
-		/* Not nice and certainly a hack, but it beats duplicating
-		 * this whole function just to count the actual number of
-		 * elements. Especially because they need to be redrawn. */
-		const_cast<NewGRFInspectWindow*>(this)->vscroll->SetCount(i);
 	}
 
 	void OnClick(Point pt, int widget, int click_count) override
