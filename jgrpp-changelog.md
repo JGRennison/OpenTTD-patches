@@ -2,6 +2,23 @@
 
 * * *
 
+### v0.41.2 (2021-05-21)
+* Fix multiplayer servers outputting a corrupt data stream when saving was faster than the connection speed.
+* Fix crash when route step UI sprites unintentionally overwritten by a NewGRF.
+* Allow moving between drive through train depot ends when the current exit is blocked.
+* Add engine class routing restriction conditional.
+* Performance:
+  * Fix performance issues with deep vehicle group hierarchies.
+  * Improve performance when using NewGRFs with large/complex graphics chains.
+  * Reduce performance cost of updating vehicles which are not visible on screen.
+  * Remove "Disable vehicle image update" setting.
+* Add features to the NewGRF debug window (in particular for vehicles).
+* Fix incorrect logging of game save failures.
+* Improve logging of network activity.
+* Fix multiplayer version mismatch issues when compiling with CMake 3.11 or earlier.
+* Fix compilation issue on some platforms.
+* Trunk base remains at commit 8fa53f543a5929bdbb12c8776ae9577594f9eba7, with some further commits picked up to 5c01f9ea525616b432968df845a90da1d888631f.
+
 ### v0.41.1 (2021-05-08)
 * Fix crash which could occur due to houses having the wrong tile layout when loading old savegames where the NewGRFs had more overriding house types than the previous lower house ID limit.
 * Fix crash when removing airport with order backup, when the hangar window is open.
