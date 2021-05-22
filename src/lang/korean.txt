@@ -2272,6 +2272,7 @@ STR_CHEAT_INFLATION_COST_QUERY_CAPT                             :{WHITE}인플�
 STR_CHEAT_INFLATION_INCOME                                      :{LTBLUE}인플레이션 수익 배수 변경: {ORANGE}{DECIMAL}
 STR_CHEAT_INFLATION_INCOME_QUERY_CAPT                           :{WHITE}인플레이션 수익 배수를 변경합니다.
 STR_CHEAT_STATION_RATING                                        :{LTBLUE}역 등급을 항상 100%로 고정: {ORANGE}{STRING}
+STR_CHEAT_TOWN_RATING                                           :{LTBLUE}회사에 대한 도시 평판을 항상 훌륭함으로: {ORANGE}{STRING}
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} - 색상
@@ -2888,6 +2889,7 @@ STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE                        :최고 견인�
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_POWER_WEIGHT_RATIO            :힘 / 무게
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE_WEIGHT_RATIO           :최고 견인력 / 무게
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER                         :열차 소유주
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_ENGINE_CLASS                  :기관차 종류
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_STATUS                        :열차 상태
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :정의되지 않음
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{PUSH_COLOUR}{RED}정의되지 않음{POP_COLOUR}
@@ -2916,6 +2918,7 @@ STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {2:STR
 STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING} 열차가 {2:STRING}{1:STRING}
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING} 열차의 카운터 값: {TRCOUNTER} {STRING} {COMMA} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} 열차의 카운터 값: {STRING} {BLACK}{STRING} {STRING} {COMMA} (이)라면
+STR_TRACE_RESTRICT_CONDITIONAL_ENGINE_CLASSES                   :{STRING} {STRING} 열차가 {STRING} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}정의되지 않음 {BLACK}{STRING} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}정의되지 않음 {BLACK}{STRING} (이)라면
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :경로 탐색에서 우선순위를 {COMMA} 만큼 뒤로
@@ -3817,9 +3820,13 @@ STR_NEWGRF_PARAMETERS_NUM_PARAM                                 :{LTBLUE}매개 
 # NewGRF inspect window
 STR_NEWGRF_INSPECT_CAPTION                                      :{WHITE}NEWGRF 검사 - {STRING}
 STR_NEWGRF_INSPECT_PARENT_BUTTON                                :{BLACK}상위 단계
-STR_NEWGRF_INSPECT_PARENT_TOOLTIP                               :{BLACK}상위 단계 범위의 오브젝트를 검사합니다.
+STR_NEWGRF_INSPECT_PARENT_TOOLTIP                               :{BLACK}상위 단계 범위의 오브젝트를 검사합니다
 STR_NEWGRF_INSPECT_REFRESH                                      :{BLACK}R
 STR_NEWGRF_INSPECT_REFRESH_TOOLTIP                              :{BLACK}콘텐츠를 매 프레임마다 갱신할지를 설정합니다
+STR_NEWGRF_INSPECT_LOG_CONSOLE                                  :{BLACK}L
+STR_NEWGRF_INSPECT_LOG_CONSOLE_TOOLTIP                          :{BLACK}이 창의 내용을 콘솔에 기록합니다
+STR_NEWGRF_INSPECT_SPRITE_DUMP                                  :{BLACK}S
+STR_NEWGRF_INSPECT_SPRITE_DUMP_TOOLTIP                          :{BLACK}현재 스프라이트 체인을 표시합니다
 
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT                            :{STRING}, {HEX}에서
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_OBJECT                     :오브젝트
@@ -3853,6 +3860,7 @@ STR_NEWGRF_ERROR_MSG_WARNING                                    :{RED}경고: {S
 STR_NEWGRF_ERROR_MSG_ERROR                                      :{RED}오류: {SILVER}{STRING}
 STR_NEWGRF_ERROR_MSG_FATAL                                      :{RED}치명적 오류: {SILVER}{STRING}
 STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}치명적인 NewGRF 오류가 발생했습니다:{}{STRING}
+STR_NEWGRF_ERROR_POPUP                                          :{WHITE}NewGRF 오류가 발생했습니다: {}{STRING}
 STR_NEWGRF_ERROR_VERSION_NUMBER                                 :{1:STRING}{G 1 "은" "는"} OpenTTD에서 보고된 TTDPatch 버전에서 작동하지 않을 것입니다
 STR_NEWGRF_ERROR_DOS_OR_WINDOWS                                 :{1:STRING}{G 1 "은" "는"} {STRING} 버전의 TTD를 위한 것입니다
 STR_NEWGRF_ERROR_UNSET_SWITCH                                   :{1:STRING}{G 1 "은" "는"} {STRING}{G 1 "와" "과"} 같이 사용해야 합니다
