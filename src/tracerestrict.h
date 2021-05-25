@@ -276,8 +276,8 @@ enum TraceRestrictReverseValueField {
  * TraceRestrictItem value field, for TRIT_NEWS_CONTROL
  */
 enum TraceRestrictNewsControlField {
-	TRRVF_TRAIN_NOT_STUCK              = 0,       ///< Train is not stuck
-	TRRVF_CANCEL_TRAIN_NOT_STUCK       = 1,       ///< Cancel train is not stuck
+	TRNCF_TRAIN_NOT_STUCK              = 0,       ///< Train is not stuck
+	TRNCF_CANCEL_TRAIN_NOT_STUCK       = 1,       ///< Cancel train is not stuck
 };
 
 /**

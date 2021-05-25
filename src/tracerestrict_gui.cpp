@@ -1429,11 +1429,11 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 
 			case TRIT_NEWS_CONTROL:
 				switch (static_cast<TraceRestrictNewsControlField>(GetTraceRestrictValue(item))) {
-					case TRRVF_TRAIN_NOT_STUCK:
+					case TRNCF_TRAIN_NOT_STUCK:
 						instruction_string = STR_TRACE_RESTRICT_TRAIN_NOT_STUCK;
 						break;
 
-					case TRRVF_CANCEL_TRAIN_NOT_STUCK:
+					case TRNCF_CANCEL_TRAIN_NOT_STUCK:
 						instruction_string = STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL;
 						break;
 

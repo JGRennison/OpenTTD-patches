@@ -702,11 +702,11 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 
 					case TRIT_NEWS_CONTROL:
 						switch (static_cast<TraceRestrictNewsControlField>(GetTraceRestrictValue(item))) {
-							case TRRVF_TRAIN_NOT_STUCK:
+							case TRNCF_TRAIN_NOT_STUCK:
 								out.flags |= TRPRF_TRAIN_NOT_STUCK;
 								break;
 
-							case TRRVF_CANCEL_TRAIN_NOT_STUCK:
+							case TRNCF_CANCEL_TRAIN_NOT_STUCK:
 								out.flags &= ~TRPRF_TRAIN_NOT_STUCK;
 								break;
 
