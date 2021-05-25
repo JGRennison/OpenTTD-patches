@@ -159,6 +159,7 @@ enum TraceRestrictItemType {
 	TRIT_SPEED_RESTRICTION        = 49,   ///< Speed restriction
 	TRIT_NEWS_CONTROL             = 50,   ///< News control
 	TRIT_COUNTER                  = 51,   ///< Change counter value
+	TRIT_PF_PENALTY_CONTROL       = 52,   ///< Control base signal penalties
 
 	/* space up to 63 */
 };
@@ -281,6 +282,14 @@ enum TraceRestrictNewsControlField {
 };
 
 /**
+ * TraceRestrictItem value field, for TRIT_PF_PENALTY_CONTROL
+ */
+enum TraceRestrictPfPenaltyControlField {
+	TRPPCF_NO_PBS_BACK_PENALTY         = 0,       ///< Do not apply PBS signal back penalty
+	TRPPCF_CANCEL_NO_PBS_BACK_PENALTY  = 1,       ///< Cancel do not apply PBS signal back penalty
+};
+
+/**
  * TraceRestrictItem value field, for TRIT_COND_TRAIN_STATUS
  */
 enum TraceRestrictTrainStatusValueField {
@@ -372,6 +381,7 @@ enum TraceRestrictProgramResultFlags {
 	TRPRF_REVERSE                 = 1 << 5,  ///< Reverse behind signal
 	TRPRF_SPEED_RETRICTION_SET    = 1 << 6,  ///< Speed restriction field set
 	TRPRF_TRAIN_NOT_STUCK         = 1 << 7,  ///< Train is not stuck
+	TRPRF_NO_PBS_BACK_PENALTY     = 1 << 8,  ///< Do not apply PBS back penalty
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramResultFlags)
 
@@ -392,6 +402,7 @@ enum TraceRestrictProgramActionsUsedFlags {
 	TRPAUF_SPEED_RESTRICTION      = 1 << 10, ///< Speed restriction
 	TRPAUF_TRAIN_NOT_STUCK        = 1 << 11, ///< Train is not stuck
 	TRPAUF_CHANGE_COUNTER         = 1 << 12, ///< Change counter value is present
+	TRPAUF_NO_PBS_BACK_PENALTY    = 1 << 13, ///< No PBS back penalty is present
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
 
@@ -631,6 +642,7 @@ enum TraceRestrictValueType {
 	TRVT_COUNTER_INDEX_INT        = 44,///< takes a TraceRestrictCounterID, and an integer in the next item slot
 	TRVT_TIME_DATE_INT            = 45,///< takes a TraceRestrictTimeDateValueField, and an integer in the next item slot
 	TRVT_ENGINE_CLASS             = 46,///< takes a EngineClass
+	TRVT_PF_PENALTY_CONTROL       = 47,///< takes a TraceRestrictPfPenaltyControlField
 };
 
 /**
@@ -806,6 +818,8 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 			out.value_type = TRVT_NEWS_CONTROL;
 		} else if (GetTraceRestrictType(item) == TRIT_COUNTER) {
 			out.value_type = TRVT_COUNTER_INDEX_INT;
+		} else if (GetTraceRestrictType(item) == TRIT_PF_PENALTY_CONTROL) {
+			out.value_type = TRVT_PF_PENALTY_CONTROL;
 		} else {
 			out.value_type = TRVT_NONE;
 		}

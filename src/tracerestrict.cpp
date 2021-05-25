@@ -743,6 +743,22 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 					}
 
+					case TRIT_PF_PENALTY_CONTROL:
+						switch (static_cast<TraceRestrictPfPenaltyControlField>(GetTraceRestrictValue(item))) {
+							case TRPPCF_NO_PBS_BACK_PENALTY:
+								out.flags |= TRPRF_NO_PBS_BACK_PENALTY;
+								break;
+
+							case TRPPCF_CANCEL_NO_PBS_BACK_PENALTY:
+								out.flags &= ~TRPRF_NO_PBS_BACK_PENALTY;
+								break;
+
+							default:
+								NOT_REACHED();
+								break;
+						}
+						break;
+
 					default:
 						NOT_REACHED();
 				}
@@ -930,6 +946,10 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 					actions_used_flags |= TRPAUF_CHANGE_COUNTER;
 					break;
 
+				case TRIT_PF_PENALTY_CONTROL:
+					actions_used_flags |= TRPAUF_NO_PBS_BACK_PENALTY;
+					break;
+
 				default:
 					return_cmd_error(STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION);
 			}
@@ -995,6 +1015,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_NEWS_CONTROL:
 		case TRVT_TIME_DATE_INT:
 		case TRVT_ENGINE_CLASS:
+		case TRVT_PF_PENALTY_CONTROL:
 			SetTraceRestrictValue(item, 0);
 			if (!IsTraceRestrictTypeAuxSubtype(GetTraceRestrictType(item))) {
 				SetTraceRestrictAuxField(item, 0);

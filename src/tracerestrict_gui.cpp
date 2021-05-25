@@ -157,6 +157,7 @@ static const StringID _program_insert_str[] = {
 	STR_TRACE_RESTRICT_SPEED_RESTRICTION,
 	STR_TRACE_RESTRICT_NEWS_CONTROL,
 	STR_TRACE_RESTRICT_COUNTER_OP,
+	STR_TRACE_RESTRICT_PF_PENALTY_CONTROL,
 	INVALID_STRING_ID
 };
 static const uint32 _program_insert_else_hide_mask    = 8;     ///< disable bitmask for else
@@ -167,6 +168,7 @@ static const uint32 _program_slot_hide_mask = 0x200;           ///< disable bitm
 static const uint32 _program_reverse_hide_mask = 0x400;        ///< disable bitmask for reverse
 static const uint32 _program_speed_res_hide_mask = 0x800;      ///< disable bitmask for speed restriction
 static const uint32 _program_counter_hide_mask = 0x2000;       ///< disable bitmask for counter
+static const uint32 _program_penalty_adj_hide_mask = 0x4000;   ///< disable bitmask for penalty adjust
 static const uint _program_insert_val[] = {
 	TRIT_COND_UNDEFINED,                               // if block
 	TRIT_COND_UNDEFINED | (TRCF_ELSE << 16),           // elif block
@@ -182,6 +184,7 @@ static const uint _program_insert_val[] = {
 	TRIT_SPEED_RESTRICTION,                            // speed restriction
 	TRIT_NEWS_CONTROL,                                 // news control
 	TRIT_COUNTER,                                      // counter operation
+	TRIT_PF_PENALTY_CONTROL,                           // penalty control
 };
 
 /** insert drop down list strings and values */
@@ -377,6 +380,21 @@ static const TraceRestrictDropDownListSet _engine_class_value = {
 	_engine_class_value_str, _engine_class_value_val,
 };
 
+static const StringID _pf_penalty_control_value_str[] = {
+	STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_SHORT,
+	STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL_SHORT,
+	INVALID_STRING_ID
+};
+static const uint _pf_penalty_control_value_val[] = {
+	TRPPCF_NO_PBS_BACK_PENALTY,
+	TRPPCF_CANCEL_NO_PBS_BACK_PENALTY,
+};
+
+/** value drop down list for PF penalty control types strings and values */
+static const TraceRestrictDropDownListSet _pf_penalty_control_value = {
+	_pf_penalty_control_value_str, _pf_penalty_control_value_val,
+};
+
 /**
  * Get index of @p value in @p list_set
  * if @p value is not present, assert if @p missing_ok is false, otherwise return -1
@@ -437,6 +455,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		STR_TRACE_RESTRICT_SPEED_RESTRICTION,
 		STR_TRACE_RESTRICT_NEWS_CONTROL,
 		STR_TRACE_RESTRICT_COUNTER_OP,
+		STR_TRACE_RESTRICT_PF_PENALTY_CONTROL,
 		INVALID_STRING_ID,
 	};
 	static const uint val_action[] = {
@@ -450,6 +469,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		TRIT_SPEED_RESTRICTION,
 		TRIT_NEWS_CONTROL,
 		TRIT_COUNTER,
+		TRIT_PF_PENALTY_CONTROL,
 	};
 	static const TraceRestrictDropDownListSet set_action = {
 		str_action, val_action,
@@ -521,7 +541,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		if (_settings_client.gui.show_adv_tracerestrict_features) {
 			*hide_mask = 0;
 		} else {
-			*hide_mask = is_conditional ? 0x1FE0000 : 0x2F0;
+			*hide_mask = is_conditional ? 0x1FE0000 : 0x6F0;
 		}
 		if (is_conditional && !_settings_game.game_time.time_in_minutes) *hide_mask |= 0x800000;
 		if (is_conditional && _settings_game.vehicle.train_braking_model != TBM_REALISTIC) *hide_mask |= 0x1040000;
@@ -1473,6 +1493,22 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				break;
 			}
 
+			case TRIT_PF_PENALTY_CONTROL:
+				switch (static_cast<TraceRestrictPfPenaltyControlField>(GetTraceRestrictValue(item))) {
+					case TRPPCF_NO_PBS_BACK_PENALTY:
+						instruction_string = STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY;
+						break;
+
+					case TRPPCF_CANCEL_NO_PBS_BACK_PENALTY:
+						instruction_string = STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL;
+						break;
+
+					default:
+						NOT_REACHED();
+						break;
+				}
+				break;
+
 			default:
 				NOT_REACHED();
 				break;
@@ -1596,7 +1632,10 @@ public:
 						if (ElseIfInsertionDryRun(false)) disabled &= ~_program_insert_or_if_hide_mask;
 					}
 				}
-				if (!_settings_client.gui.show_adv_tracerestrict_features) hidden |= _program_slot_hide_mask | _program_wait_pbs_hide_mask | _program_reverse_hide_mask | _program_speed_res_hide_mask | _program_counter_hide_mask;
+				if (!_settings_client.gui.show_adv_tracerestrict_features) {
+					hidden |= _program_slot_hide_mask | _program_wait_pbs_hide_mask | _program_reverse_hide_mask |
+							_program_speed_res_hide_mask | _program_counter_hide_mask | _program_penalty_adj_hide_mask;
+				}
 
 				this->ShowDropDownListWithValue(&_program_insert, 0, true, TR_WIDGET_INSERT, disabled, hidden, 0);
 				break;
@@ -1783,6 +1822,10 @@ public:
 
 					case TRVT_ENGINE_CLASS:
 						this->ShowDropDownListWithValue(&_engine_class_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
+						break;
+
+					case TRVT_PF_PENALTY_CONTROL:
+						this->ShowDropDownListWithValue(&_pf_penalty_control_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
 						break;
 
 					default:
@@ -2849,6 +2892,13 @@ private:
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
 							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
 									GetDropDownStringByValue(&_engine_class_value, GetTraceRestrictValue(item));
+							break;
+
+						case TRVT_PF_PENALTY_CONTROL:
+							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
+							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
+									GetDropDownStringByValue(&_pf_penalty_control_value, GetTraceRestrictValue(item));
 							break;
 
 						default:

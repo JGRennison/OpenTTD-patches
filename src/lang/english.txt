@@ -2957,6 +2957,7 @@ STR_TRACE_RESTRICT_REVERSE                                      :Reverse
 STR_TRACE_RESTRICT_SPEED_RESTRICTION                            :Speed restriction
 STR_TRACE_RESTRICT_NEWS_CONTROL                                 :News control
 STR_TRACE_RESTRICT_COUNTER_OP                                   :Counter operation
+STR_TRACE_RESTRICT_PF_PENALTY_CONTROL                           :Penalty config
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :Acquire or wait
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :Try to acquire
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :Release (front)
@@ -3000,6 +3001,10 @@ STR_TRACE_RESTRICT_TRAIN_NOT_STUCK                              :Train is not st
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL                       :Cancel train is not stuck, do not show news reports about waiting at this PBS signal
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_SHORT                        :Train is not stuck...
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL_SHORT                 :Cancel train is not stuck...
+STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY                          :Do not apply the penalty for passing this PBS signal from the back
+STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL                   :Cancel do not apply the penalty for passing this PBS signal from the back
+STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_SHORT                    :No PBS back penalty
+STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL_SHORT             :Cancel no PBS back penalty
 STR_TRACE_RESTRICT_TIME_MINUTE                                  :current minute (0 - 59)
 STR_TRACE_RESTRICT_TIME_HOUR                                    :current hour (0 - 23)
 STR_TRACE_RESTRICT_TIME_HOUR_MINUTE                             :current hour and minute (0 - 2359)

@@ -266,13 +266,17 @@ private:
 	}
 
 	// returns true if dead end bit has been set
-	inline bool ExecuteTraceRestrict(Node& n, TileIndex tile, Trackdir trackdir, int& cost, TraceRestrictProgramResult &out, bool *is_res_through)
+	inline bool ExecuteTraceRestrict(Node& n, TileIndex tile, Trackdir trackdir, int& cost, TraceRestrictProgramResult &out, bool *is_res_through, bool *no_pbs_back_penalty)
 	{
 		const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(trackdir));
 		TraceRestrictProgramActionsUsedFlags flags_to_check = TRPAUF_PF;
 		if (is_res_through != nullptr) {
 			*is_res_through = false;
 			flags_to_check |= TRPAUF_RESERVE_THROUGH;
+		}
+		if (no_pbs_back_penalty != nullptr) {
+			*no_pbs_back_penalty = false;
+			flags_to_check |= TRPAUF_NO_PBS_BACK_PENALTY;
 		}
 		if (GetSignalType(tile, TrackdirToTrack(trackdir)) == SIGTYPE_PBS && !HasSignalOnTrackdir(tile, trackdir)) {
 			flags_to_check |= TRPAUF_REVERSE;
@@ -281,6 +285,9 @@ private:
 			prog->Execute(Yapf().GetVehicle(), TraceRestrictProgramInput(tile, trackdir, &TraceRestrictPreviousSignalCallback, &n), out);
 			if (out.flags & TRPRF_RESERVE_THROUGH && is_res_through != nullptr) {
 				*is_res_through = true;
+			}
+			if (out.flags & TRPRF_NO_PBS_BACK_PENALTY && no_pbs_back_penalty != nullptr) {
+				*no_pbs_back_penalty = true;
 			}
 			if (out.flags & TRPRF_DENY) {
 				n.m_segment->m_end_segment_reason |= ESRB_DEAD_END;
@@ -358,7 +365,7 @@ public:
 					bool is_reserve_through = false;
 					if (ShouldCheckTraceRestrict(n, tile)) {
 						TraceRestrictProgramResult out;
-						if (ExecuteTraceRestrict(n, tile, trackdir, cost, out, &is_reserve_through)) {
+						if (ExecuteTraceRestrict(n, tile, trackdir, cost, out, &is_reserve_through, nullptr)) {
 							return -1;
 						}
 						if (is_reserve_through) n.m_num_signals_res_through_passed++;
@@ -374,13 +381,17 @@ public:
 				}
 
 				if (has_signal_against && IsPbsSignal(GetSignalType(tile, TrackdirToTrack(trackdir)))) {
-					cost += n.m_num_signals_passed < Yapf().PfGetSettings().rail_look_ahead_max_signals ? Yapf().PfGetSettings().rail_pbs_signal_back_penalty : 0;
+					bool no_add_cost = false;
 
 					if (ShouldCheckTraceRestrict(n, tile)) {
 						TraceRestrictProgramResult out;
-						if (ExecuteTraceRestrict(n, tile, trackdir, cost, out, nullptr)) {
+						if (ExecuteTraceRestrict(n, tile, trackdir, cost, out, nullptr, &no_add_cost)) {
 							return -1;
 						}
+					}
+
+					if (!no_add_cost) {
+						cost += n.m_num_signals_passed < Yapf().PfGetSettings().rail_look_ahead_max_signals ? Yapf().PfGetSettings().rail_pbs_signal_back_penalty : 0;
 					}
 				}
 			}
