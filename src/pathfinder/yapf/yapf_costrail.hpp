@@ -241,6 +241,16 @@ private:
 						}
 					}
 
+					if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(tile) && TrackdirExitsTunnelBridge(tile, trackdir)) {
+						if (IsTunnelBridgeEffectivelyPBS(tile)) {
+							// found PBS signal
+							candidate_tile = tile;
+						} else {
+							// wrong type of signal
+							candidate_tile = INVALID_TILE;
+						}
+					}
+
 					if (tile == origin_tile && trackdir == origin_trackdir) {
 						// reached pathfinder origin
 						return candidate_tile;
