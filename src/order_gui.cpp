@@ -1457,8 +1457,8 @@ private:
 			this->ModifyOrder(sel_ord, MOF_UNLOAD | (unload_type << 4));
 		}
 
-		if (unload_type == OUFB_TRANSFER) {
-			/* Transfer orders with leave empty as default */
+		if (unload_type == OUFB_TRANSFER || unload_type == OUFB_UNLOAD) {
+			/* Transfer and unload orders with leave empty as default */
 			this->ModifyOrder(sel_ord, MOF_LOAD | (OLFB_NO_LOAD << 4), false);
 			this->SetWidgetDirty(WID_O_FULL_LOAD);
 		} else if (unload_type == OUFB_CARGO_TYPE_UNLOAD) {
