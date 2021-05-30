@@ -42,21 +42,14 @@ static const SpriteID * const _landscape_spriteindexes[] = {
 	_landscape_spriteindexes_toyland,
 };
 
-/** file index of first user-added GRF file */
-int _first_user_grf_file_index;
-int _opengfx_grf_file_index;
-int _progsig_grf_file_index;
-
 /**
  * Load an old fashioned GRF file.
  * @param filename   The name of the file to open.
  * @param load_index The offset of the first sprite.
  * @param needs_palette_remap Whether the colours in the GRF file need a palette remap.
- * @return The number of loaded sprites.
  */
-static uint LoadGrfFile(const char *filename, uint load_index, bool needs_palette_remap)
+static SpriteFile &LoadGrfFile(const char *filename, uint load_index, bool needs_palette_remap)
 {
-	uint load_index_org = load_index;
 	uint sprite_id = 0;
 
 	SpriteFile &file = OpenCachedSpriteFile(filename, BASESET_DIR, needs_palette_remap);
@@ -81,7 +74,7 @@ static uint LoadGrfFile(const char *filename, uint load_index, bool needs_palett
 	}
 	DEBUG(sprite, 2, "Currently %i sprites are loaded", load_index);
 
-	return load_index - load_index_org;
+	return file;
 }
 
 /**
@@ -176,8 +169,8 @@ static void LoadSpriteTables()
 	LoadGrfFile(used_set->files[GFT_BASE].filename, 0, PAL_DOS != used_set->palette);
 
 	/* Progsignal sprites. */
-	//_progsig_grf_file_index = i;
-	LoadGrfFile("progsignals.grf", SPR_PROGSIGNAL_BASE, false);
+	SpriteFile &progsig_file = LoadGrfFile("progsignals.grf", SPR_PROGSIGNAL_BASE, false);
+	progsig_file.flags |= SFF_PROGSIG;
 
 	/* Fill duplicate programmable pre-signal graphics sprite block */
 	for (uint i = 0; i < PROGSIGNAL_SPRITE_COUNT; i++) {
@@ -263,17 +256,6 @@ static void LoadSpriteTables()
 	/* The original baseset extra graphics intentionally make use of the fallback graphics.
 	 * Let's say everything which provides less than 500 sprites misses the rest intentionally. */
 	if (500 + _missing_extra_graphics > total_extra_graphics) _missing_extra_graphics = 0;
-
-	//_first_user_grf_file_index = i + 1;
-	//_opengfx_grf_file_index = -1;
-	for (GRFConfig *c = master; c != nullptr; c = c->next) {
-		if (c->status == GCS_DISABLED || c->status == GCS_NOT_FOUND || HasBit(c->flags, GCF_INIT_ONLY)) continue;
-		if (c->ident.grfid == BSWAP32(0xFF4F4701)) {
-			/* Detect OpenGFX GRF ID */
-			//_opengfx_grf_file_index = index;
-			break;
-		}
-	}
 
 	/* Free and remove the top element. */
 	delete extra;

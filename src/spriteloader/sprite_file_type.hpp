@@ -12,15 +12,26 @@
 
 #include "../random_access_file_type.h"
 
+enum SpriteFileFlags : uint8 {
+	SFF_NONE                  = 0,
+	SFF_USERGRF               = 1 << 0,
+	SFF_OGFX                  = 1 << 1,
+	SFF_PROGSIG               = 1 << 2,
+};
+DECLARE_ENUM_AS_BIT_SET(SpriteFileFlags)
+
 /**
  * RandomAccessFile with some extra information specific for sprite files.
  * It automatically detects and stores the container version upload opening the file.
  */
 class SpriteFile : public RandomAccessFile {
+	size_t content_begin;   ///< The begin of the content of the sprite file, i.e. after the container metadata.
 	bool palette_remap;     ///< Whether or not a remap of the palette is required for this file.
 	byte container_version; ///< Container format of the sprite file.
-	size_t content_begin;   ///< The begin of the content of the sprite file, i.e. after the container metadata.
+
 public:
+	SpriteFileFlags flags = SFF_NONE;
+
 	SpriteFile(const std::string &filename, Subdirectory subdir, bool palette_remap);
 	SpriteFile(const SpriteFile&) = delete;
 	void operator=(const SpriteFile&) = delete;

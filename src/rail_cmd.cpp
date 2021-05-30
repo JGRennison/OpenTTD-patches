@@ -2630,17 +2630,15 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 			sprite = SPR_PROGSIGNAL_BASE + 16 + image * 2 + condition;
 		}
 
-		extern int _progsig_grf_file_index;
-		//is_custom_sprite = (int) GetOriginFileSlot(sprite) != _progsig_grf_file_index;
+		SpriteFile *file = GetOriginFile(sprite);
+		is_custom_sprite = !(file != nullptr && file->flags & SFF_PROGSIG);
 	} else {
 		/* Normal electric signals are stored in a different sprite block than all other signals. */
 		sprite = (type == SIGTYPE_NORMAL && variant == SIG_ELECTRIC) ? SPR_ORIGINAL_SIGNALS_BASE : SPR_SIGNALS_BASE - 16;
 		sprite += type * 16 + variant * 64 + image * 2 + condition + (IsSignalSpritePBS(type) ? 64 : 0);
 
-		int origin_slot = 0; //GetOriginFileSlot(sprite);
-		extern int _first_user_grf_file_index;
-		extern int _opengfx_grf_file_index;
-		is_custom_sprite = origin_slot != _opengfx_grf_file_index && (origin_slot >= _first_user_grf_file_index);
+		SpriteFile *file = GetOriginFile(sprite);
+		is_custom_sprite = file != nullptr && (file->flags & SFF_USERGRF) && !(file->flags & SFF_OGFX);
 	}
 
 	if (is_custom_sprite && show_restricted && _settings_client.gui.show_restricted_signal_default && !HasBit(rti->ctrl_flags, RTCF_RESTRICTEDSIG)) {
