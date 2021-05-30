@@ -11,6 +11,7 @@
 #define RANDOM_ACCESS_FILE_TYPE_H
 
 #include "fileio_type.h"
+#include "core/endian_func.hpp"
 #include <string>
 
 /**
@@ -34,6 +35,10 @@ class RandomAccessFile {
 	byte *buffer_end;                ///< Last valid byte of buffer.
 	byte buffer_start[BUFFER_SIZE];  ///< Local buffer when read from file.
 
+	byte ReadByteIntl();
+	uint16 ReadWordIntl();
+	uint32 ReadDwordIntl();
+
 public:
 	RandomAccessFile(const std::string &filename, Subdirectory subdir);
 	RandomAccessFile(const RandomAccessFile&) = delete;
@@ -47,9 +52,39 @@ public:
 	size_t GetPos() const;
 	void SeekTo(size_t pos, int mode);
 
-	byte ReadByte();
-	uint16 ReadWord();
-	uint32 ReadDword();
+	inline byte ReadByte()
+	{
+		if (likely(this->buffer != this->buffer_end)) return *this->buffer++;
+		return this->ReadByteIntl();
+	}
+
+	inline uint16 ReadWord()
+	{
+		if (likely(this->buffer + 1 < this->buffer_end)) {
+#if OTTD_ALIGNMENT == 0
+			uint16 x = FROM_LE16(*((const unaligned_uint16*) this->buffer));
+#else
+			uint16 x = ((uint16)this->buffer[1] << 8) | this->buffer[0];
+#endif
+			this->buffer += 2;
+			return x;
+		}
+		return this->ReadWordIntl();
+	}
+
+	inline uint32 ReadDword()
+	{
+		if (likely(this->buffer + 3 < this->buffer_end)) {
+#if OTTD_ALIGNMENT == 0
+			uint32 x = FROM_LE32(*((const unaligned_uint32*) this->buffer));
+#else
+			uint32 x = ((uint32)this->buffer[3] << 24) | ((uint32)this->buffer[2] << 16) | ((uint32)this->buffer[1] << 8) | this->buffer[0];
+#endif
+			this->buffer += 4;
+			return x;
+		}
+		return this->ReadDwordIntl();
+	}
 
 	void ReadBlock(void *ptr, size_t size);
 	void SkipBytes(int n);
