@@ -245,7 +245,7 @@ uint8 LoadSpriteV1(SpriteLoader::Sprite *sprite, SpriteFile &file, size_t file_p
 	return 0;
 }
 
-uint8 LoadSpriteV2(SpriteLoader::Sprite *sprite, SpriteFile &file, size_t file_pos, SpriteType sprite_type, bool load_32bpp)
+uint8 LoadSpriteV2(SpriteLoader::Sprite *sprite, SpriteFile &file, size_t file_pos, SpriteType sprite_type, bool load_32bpp, uint count)
 {
 	static const ZoomLevel zoom_lvl_map[6] = {ZOOM_LVL_OUT_4X, ZOOM_LVL_NORMAL, ZOOM_LVL_OUT_2X, ZOOM_LVL_OUT_8X, ZOOM_LVL_OUT_16X, ZOOM_LVL_OUT_32X};
 
@@ -320,7 +320,9 @@ uint8 LoadSpriteV2(SpriteLoader::Sprite *sprite, SpriteFile &file, size_t file_p
 			}
 
 			if (valid) SetBit(loaded_sprites, zoom_lvl);
+			if (--count == 0) break;
 		} else {
+			if (--count == 0) break;
 			/* Not the wanted zoom level or colour depth, continue searching. */
 			file.SkipBytes(num - 2);
 		}
@@ -330,10 +332,10 @@ uint8 LoadSpriteV2(SpriteLoader::Sprite *sprite, SpriteFile &file, size_t file_p
 	return loaded_sprites;
 }
 
-uint8 SpriteLoaderGrf::LoadSprite(SpriteLoader::Sprite *sprite, SpriteFile &file, size_t file_pos, SpriteType sprite_type, bool load_32bpp)
+uint8 SpriteLoaderGrf::LoadSprite(SpriteLoader::Sprite *sprite, SpriteFile &file, size_t file_pos, SpriteType sprite_type, bool load_32bpp, uint count)
 {
 	if (this->container_ver >= 2) {
-		return LoadSpriteV2(sprite, file, file_pos, sprite_type, load_32bpp);
+		return LoadSpriteV2(sprite, file, file_pos, sprite_type, load_32bpp, count);
 	} else {
 		return LoadSpriteV1(sprite, file, file_pos, sprite_type, load_32bpp);
 	}

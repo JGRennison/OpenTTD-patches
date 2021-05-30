@@ -99,17 +99,19 @@ PACK_N(struct SpriteCache {
 	SpriteType type;     ///< In some cases a single sprite is misused by two NewGRFs. Once as real sprite and once as recolour sprite. If the recolour sprite gets into the cache it might be drawn as real sprite which causes enormous trouble.
 
 	/**
-	 * Bits 6 - 0:  SpriteType type  In some cases a single sprite is misused by two NewGRFs. Once as real sprite and once as recolour sprite. If the recolour sprite gets into the cache it might be drawn as real sprite which causes enormous trouble.
-	 * Bit      7:  bool warned      True iff the user has been warned about incorrect use of this sprite.
+	 * Bit      0:  warned           True iff the user has been warned about incorrect use of this sprite.
+	 * Bit      1:  has_non_palette  True iff there is at least one non-paletter sprite present (such that 32bpp mode can be used).
 	 */
-	byte type_field;
+	byte flags;
 
 	void *GetPtr() { return this->buffer.GetPtr(); }
 
-	SpriteType GetType() const { return (SpriteType) GB(this->type_field, 0, 7); }
-	void SetType(SpriteType type) { SB(this->type_field, 0, 7, type); }
-	bool GetWarned() const { return GB(this->type_field, 7, 1); }
-	void SetWarned(bool warned) { SB(this->type_field, 7, 1, warned ? 1 : 0); }
+	SpriteType GetType() const { return this->type; }
+	void SetType(SpriteType type) { this->type = type; }
+	bool GetWarned() const { return HasBit(this->flags, 0); }
+	void SetWarned(bool warned) { SB(this->flags, 0, 1, warned ? 1 : 0); }
+	bool GetHasNonPalette() const { return HasBit(this->flags, 1); }
+	void SetHasNonPalette(bool non_palette) { SB(this->flags, 1, 1, non_palette ? 1 : 0); }
 }, 4);
 
 static std::vector<SpriteCache> _spritecache;
@@ -525,12 +527,12 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 	sprite[ZOOM_LVL_NORMAL].type = sprite_type;
 
 	SpriteLoaderGrf sprite_loader(file.GetContainerVersion());
-	if (sprite_type != ST_MAPGEN && encoder->Is32BppSupported()) {
+	if (sprite_type != ST_MAPGEN && sc->GetHasNonPalette() && encoder->Is32BppSupported()) {
 		/* Try for 32bpp sprites first. */
-		sprite_avail = sprite_loader.LoadSprite(sprite, file, file_pos, sprite_type, true);
+		sprite_avail = sprite_loader.LoadSprite(sprite, file, file_pos, sprite_type, true, sc->count);
 	}
 	if (sprite_avail == 0) {
-		sprite_avail = sprite_loader.LoadSprite(sprite, file, file_pos, sprite_type, false);
+		sprite_avail = sprite_loader.LoadSprite(sprite, file, file_pos, sprite_type, false, sc->count);
 	}
 
 	if (sprite_avail == 0) {
@@ -585,9 +587,14 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 	return encoder->Encode(sprite, allocator);
 }
 
+struct GrfSpriteOffset {
+	size_t file_pos;
+	uint count;
+	bool has_non_palette;
+};
 
 /** Map from sprite numbers to position in the GRF file. */
-static btree::btree_map<uint32, size_t> _grf_sprite_offsets;
+static btree::btree_map<uint32, GrfSpriteOffset> _grf_sprite_offsets;
 
 /**
  * Get the file offset for a specific sprite in the sprite section of a GRF.
@@ -597,7 +604,7 @@ static btree::btree_map<uint32, size_t> _grf_sprite_offsets;
 size_t GetGRFSpriteOffset(uint32 id)
 {
 	auto iter = _grf_sprite_offsets.find(id);
-	return iter != _grf_sprite_offsets.end() ? iter->second : SIZE_MAX;
+	return iter != _grf_sprite_offsets.end() ? iter->second.file_pos : SIZE_MAX;
 }
 
 /**
@@ -614,14 +621,28 @@ void ReadGRFSpriteOffsets(SpriteFile &file)
 		size_t old_pos = file.GetPos();
 		file.SeekTo(data_offset, SEEK_CUR);
 
+		GrfSpriteOffset offset = { 0, 0, 0 };
+
 		/* Loop over all sprite section entries and store the file
 		 * offset for each newly encountered ID. */
 		uint32 id, prev_id = 0;
 		while ((id = file.ReadDword()) != 0) {
-			if (id != prev_id) _grf_sprite_offsets[id] = file.GetPos() - 4;
+			if (id != prev_id) {
+				_grf_sprite_offsets[prev_id] = offset;
+				offset.file_pos = file.GetPos() - 4;
+				offset.count = 0;
+				offset.has_non_palette = false;
+			}
+			offset.count++;
 			prev_id = id;
-			file.SkipBytes(file.ReadDword());
+			uint length = file.ReadDword();
+			if (length > 0) {
+				if ((file.ReadByte() & SCC_MASK) != SCC_PAL) offset.has_non_palette = true;
+				length--;
+			}
+			file.SkipBytes(length);
 		}
+		if (prev_id != 0) _grf_sprite_offsets[prev_id] = offset;
 
 		/* Continue processing the data section. */
 		file.SeekTo(old_pos, SEEK_SET);
@@ -650,6 +671,8 @@ bool LoadNextSprite(int load_index, SpriteFile &file, uint file_sprite_id)
 
 	SpriteType type;
 	void *data = nullptr;
+	uint count = 0;
+	bool has_non_palette = false;
 	if (grf_type == 0xFF) {
 		/* Some NewGRF files have "empty" pseudo-sprites which are 1
 		 * byte long. Catch these so the sprites won't be displayed. */
@@ -666,7 +689,14 @@ bool LoadNextSprite(int load_index, SpriteFile &file, uint file_sprite_id)
 			return false;
 		}
 		/* It is not an error if no sprite with the provided ID is found in the sprite section. */
-		file_pos = GetGRFSpriteOffset(file.ReadDword());
+		auto iter = _grf_sprite_offsets.find(file.ReadDword());
+		if (iter != _grf_sprite_offsets.end()) {
+			file_pos = iter->second.file_pos;
+			count = iter->second.count;
+			has_non_palette = iter->second.has_non_palette;
+		} else {
+			file_pos = SIZE_MAX;
+		}
 		type = ST_NORMAL;
 	} else {
 		file.SkipBytes(7);
@@ -697,8 +727,10 @@ bool LoadNextSprite(int load_index, SpriteFile &file, uint file_sprite_id)
 	}
 	sc->lru = 0;
 	sc->id = file_sprite_id;
+	sc->count = count;
 	sc->SetType(type);
-	sc->SetWarned(false);
+	sc->flags = 0;
+	if (has_non_palette) sc->SetHasNonPalette(true);
 
 	return true;
 }
@@ -713,6 +745,7 @@ void DupSprite(SpriteID old_spr, SpriteID new_spr)
 	scnew->file_pos = scold->file_pos;
 	scnew->id = scold->id;
 	scnew->SetType(scold->GetType());
+	scnew->flags = scold->flags;
 	scnew->SetWarned(false);
 }
 
@@ -943,8 +976,8 @@ uint32 GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 	const uint8 screen_depth = BlitterFactory::GetCurrentBlitter()->GetScreenDepth();
 
 	/* Try to read the 32bpp sprite first. */
-	if (screen_depth == 32) {
-		sprite_avail = sprite_loader.LoadSprite(sprites, file, file_pos, ST_NORMAL, true);
+	if (screen_depth == 32 && sc->GetHasNonPalette()) {
+		sprite_avail = sprite_loader.LoadSprite(sprites, file, file_pos, ST_NORMAL, true, sc->count);
 		if (sprite_avail != 0) {
 			SpriteLoader::Sprite *sprite = &sprites[FindFirstBit(sprite_avail)];
 			/* Return the average colour. */
@@ -974,7 +1007,7 @@ uint32 GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 	}
 
 	/* No 32bpp, try 8bpp. */
-	sprite_avail = sprite_loader.LoadSprite(sprites, file, file_pos, ST_NORMAL, false);
+	sprite_avail = sprite_loader.LoadSprite(sprites, file, file_pos, ST_NORMAL, false, sc->count);
 	if (sprite_avail != 0) {
 		SpriteLoader::Sprite *sprite = &sprites[FindFirstBit(sprite_avail)];
 		SpriteLoader::CommonPixel *pixel = sprite->data;
