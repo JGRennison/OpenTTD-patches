@@ -22,7 +22,7 @@
  */
 class RandomAccessFile {
 	/** The number of bytes to allocate for the buffer. */
-	static constexpr int BUFFER_SIZE = 512;
+	static constexpr int BUFFER_SIZE = 4096;
 
 	std::string filename;            ///< Full name of the file; relative path to subdir plus the extension of the file.
 	std::string simplified_filename; ///< Simplified lowecase name of the file; only the name, no path or extension.
