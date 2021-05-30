@@ -50,6 +50,7 @@ static std::string _editing_text;
 
 static void SetTextInputRect();
 
+bool IsWindowFocused();
 Point GetFocusedWindowCaret();
 Point GetFocusedWindowTopLeft();
 bool FocusedWindowIsConsole();
@@ -432,6 +433,8 @@ bool VideoDriver_SDL_Base::ClaimMousePointer()
 
 static void SetTextInputRect()
 {
+	if (!IsWindowFocused()) return;
+
 	SDL_Rect winrect;
 	Point caret = GetFocusedWindowCaret();
 	Point win = GetFocusedWindowTopLeft();

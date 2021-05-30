@@ -452,6 +452,11 @@ void SetFocusedWindow(Window *w)
 	if (_focused_window != nullptr) _focused_window->OnFocus(old_focused);
 }
 
+bool IsWindowFocused()
+{
+	return _focused_window != nullptr;
+}
+
 Point GetFocusedWindowCaret()
 {
 	return _focused_window->GetCaretPosition();
@@ -519,7 +524,7 @@ bool Window::SetFocusedWidget(int widget_index)
 		if (this->nested_focus->type == WWT_EDITBOX) VideoDriver::GetInstance()->EditBoxLostFocus();
 	}
 	this->nested_focus = this->GetWidget<NWidgetCore>(widget_index);
-	if (this->nested_focus->type == WWT_EDITBOX) VideoDriver::GetInstance()->EditBoxGainedFocus();
+	if (_focused_window == this && this->nested_focus->type == WWT_EDITBOX) VideoDriver::GetInstance()->EditBoxGainedFocus();
 	return true;
 }
 
