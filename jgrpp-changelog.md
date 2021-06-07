@@ -2,6 +2,18 @@
 
 * * *
 
+### v0.41.3 (2021-06-07)
+* Fix crash which could occur when a train reaches a disallowed 90° turn.
+* Fix crash which could occur on Linux/SDL2 when a text entry widget is focused without a window being focused.
+* Fix vehicle sprites not being updated when instantaneously moving a viewport to a non-overlapping position.
+* Fix multiplayer network clients failing to join when no client name was set in the network server config.
+* Routing restrictions:
+  * Fix PBS entry signal conditional with signalled tunnel/bridges.
+  * Add action to disable PBS signal back pathfinder penalty.
+* Add references to a Homebrew package to the readme.
+* Add Korean translations by TELK.
+* Trunk base remains at commit 8fa53f543a5929bdbb12c8776ae9577594f9eba7, with some further commits picked up to 4613ababd3fea832d5b11832784768323c39b5a9.
+
 ### v0.41.2 (2021-05-21)
 * Fix multiplayer servers outputting a corrupt data stream when saving was faster than the connection speed.
 * Fix crash when route step UI sprites unintentionally overwritten by a NewGRF.
