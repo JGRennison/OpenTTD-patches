@@ -729,10 +729,10 @@ static void SetViewportPosition(Window *w, int x, int y, bool force_update_overl
 		if (height > 0 && (_vp_move_offs.x != 0 || _vp_move_offs.y != 0)) {
 			ClearViewportLandPixelCache(vp);
 			SCOPE_INFO_FMT([&], "DoSetViewportPosition: %d, %d, %d, %d, %d, %d, %s", left, top, width, height, _vp_move_offs.x, _vp_move_offs.y, scope_dumper().WindowInfo(w));
+			w->viewport->update_vehicles = true;
 			DoSetViewportPosition((Window *) w->z_front, left, top, width, height);
 			ClearViewportCache(w->viewport);
 			FillViewportCoverageRect();
-			w->viewport->update_vehicles = true;
 		}
 	}
 }
