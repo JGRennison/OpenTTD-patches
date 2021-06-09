@@ -529,6 +529,7 @@ struct PathfinderSettings {
 
 	bool   roadveh_queue;                    ///< buggy road vehicle queueing
 	bool   forbid_90_deg;                    ///< forbid trains to make 90 deg turns
+	bool   back_of_one_way_pbs_waiting_point;///< whether the back of one-way PBS signals is a safe waiting point
 	uint8  reroute_rv_on_layout_change;      ///< whether to re-route road vehicles when the layout changes
 
 	bool   reverse_at_signals;               ///< whether to reverse at signals at all
