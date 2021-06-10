@@ -580,7 +580,6 @@ struct GameOptionsWindow : Window {
 					GfxClearSpriteCache();
 					_font_zoom_cfg = new_zoom;
 					UpdateGUIZoom();
-					ClearFontCache();
 					LoadStringWidthTable();
 					UpdateAllVirtCoords();
 					ReInitAllWindows(true);
