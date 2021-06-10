@@ -71,7 +71,7 @@ Company::Company(uint16 name_1, bool is_ai)
 	this->purchase_land_limit = (uint32)_settings_game.construction.purchase_land_frame_burst << 16;
 	this->build_object_limit = (uint32)_settings_game.construction.build_object_frame_burst << 16;
 
-	for (uint j = 0; j < 4; j++) this->share_owners[j] = COMPANY_SPECTATOR;
+	for (uint j = 0; j < 4; j++) this->share_owners[j] = INVALID_OWNER;
 	InvalidateWindowData(WC_PERFORMANCE_DETAIL, 0, INVALID_COMPANY);
 }
 
