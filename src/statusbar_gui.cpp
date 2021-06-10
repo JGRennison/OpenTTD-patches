@@ -210,6 +210,9 @@ struct StatusBarWindow : Window {
 				this->ticker_scroll    =   TICKER_STOP; // reset ticker ...
 				this->reminder_timeout.SetInterval(REMINDER_STOP); // ... and reminder
 				break;
+			case SBI_REINIT:
+				this->ReInit();
+				break;
 		}
 	}
 

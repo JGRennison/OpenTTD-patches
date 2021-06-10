@@ -72,6 +72,7 @@
 #include "scope_info.h"
 #include "viewport_func.h"
 #include "gui.h"
+#include "statusbar_gui.h"
 
 #include "void_map.h"
 #include "station_base.h"
@@ -1306,6 +1307,7 @@ static bool UpdateTimeSettings(int32 p1)
 {
 	SetupTimeSettings();
 	InvalidateVehTimetableWindow(p1);
+	InvalidateWindowData(WC_STATUS_BAR, 0, SBI_REINIT);
 	MarkWholeScreenDirty();
 	return true;
 }
