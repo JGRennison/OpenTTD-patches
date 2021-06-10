@@ -397,6 +397,7 @@ static void UpdateRouteStepSpriteSize()
 	_vp_route_step_subsprite.top = 0;
 }
 
+#if !defined(DEDICATED)
 /* multi can be density, field type, ... */
 static SpriteID GetSpriteIDForClearGround(const ClearGround cg, const Slope slope, const uint multi)
 {
@@ -415,6 +416,7 @@ static SpriteID GetSpriteIDForClearGround(const ClearGround cg, const Slope slop
 		default: NOT_REACHED();
 	}
 }
+#endif /* !DEDICATED */
 
 /** Once the sprites are loaded, we can determine main colours of ground/water/... */
 void GfxDetermineMainColours()

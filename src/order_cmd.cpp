@@ -1820,7 +1820,6 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				case OCV_COUNTER_VALUE:
 				case OCV_TIME_DATE:
 				case OCV_TIMETABLE:
-					if (data >= (1 << 16)) return CMD_ERROR;
 					break;
 
 				default:

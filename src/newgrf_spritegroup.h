@@ -200,7 +200,7 @@ struct DeterministicSpriteGroup : SpriteGroup {
 	void AnalyseCallbacks(AnalyseCallbackOperation &op) const override;
 
 protected:
-	const SpriteGroup *Resolve(ResolverObject &object) const;
+	const SpriteGroup *Resolve(ResolverObject &object) const override;
 };
 
 enum RandomizedSpriteGroupCompareMode {
@@ -224,7 +224,7 @@ struct RandomizedSpriteGroup : SpriteGroup {
 	void AnalyseCallbacks(AnalyseCallbackOperation &op) const override;
 
 protected:
-	const SpriteGroup *Resolve(ResolverObject &object) const;
+	const SpriteGroup *Resolve(ResolverObject &object) const override;
 };
 
 
@@ -250,7 +250,7 @@ struct CallbackResultSpriteGroup : SpriteGroup {
 	}
 
 	uint16 result;
-	uint16 GetCallbackResult() const { return this->result; }
+	uint16 GetCallbackResult() const override { return this->result; }
 	void AnalyseCallbacks(AnalyseCallbackOperation &op) const override;
 };
 

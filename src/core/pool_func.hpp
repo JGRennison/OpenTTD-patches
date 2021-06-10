@@ -60,8 +60,8 @@ DEFINE_POOL_METHOD(inline void)::ResizeFor(size_t index)
 	this->data = ReallocT(this->data, new_size);
 	MemSetT(this->data + this->size, 0, new_size - this->size);
 
-	this->free_bitmap = ReallocT(this->free_bitmap, CeilDiv(new_size, 64));
-	MemSetT(this->free_bitmap + CeilDiv(this->size, 64), 0, CeilDiv(new_size, 64) - CeilDiv(this->size, 64));
+	this->free_bitmap = ReallocT(this->free_bitmap, CeilDivT<size_t>(new_size, 64));
+	MemSetT(this->free_bitmap + CeilDivT<size_t>(this->size, 64), 0, CeilDivT<size_t>(new_size, 64) - CeilDivT<size_t>(this->size, 64));
 	if (new_size % 64 != 0) {
 		this->free_bitmap[new_size / 64] |= (~((uint64) 0)) << (new_size % 64);
 	}
@@ -75,8 +75,8 @@ DEFINE_POOL_METHOD(inline void)::ResizeFor(size_t index)
  */
 DEFINE_POOL_METHOD(inline size_t)::FindFirstFree()
 {
-	uint bitmap_index = this->first_free / 64;
-	uint bitmap_end = CeilDiv(this->first_unused, 64);
+	size_t bitmap_index = this->first_free / 64;
+	size_t bitmap_end = CeilDivT<size_t>(this->first_unused, 64);
 
 	for (; bitmap_index < bitmap_end; bitmap_index++) {
 		uint64 available = ~this->free_bitmap[bitmap_index];

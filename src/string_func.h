@@ -38,9 +38,9 @@ int CDECL seprintf(char *str, const char *last, const char *format, ...) WARN_FO
 int CDECL vseprintf(char *str, const char *last, const char *format, va_list ap) WARN_FORMAT(3, 0);
 
 char *CDECL str_fmt(const char *str, ...) WARN_FORMAT(1, 2);
-char *str_vfmt(const char *str, va_list ap);
+char *str_vfmt(const char *str, va_list ap) WARN_FORMAT(1, 0);
 std::string CDECL stdstr_fmt(const char *str, ...) WARN_FORMAT(1, 2);
-std::string stdstr_vfmt(const char *str, va_list va);
+std::string stdstr_vfmt(const char *str, va_list va) WARN_FORMAT(1, 0);
 
 char *str_validate(char *str, const char *last, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK);
 std::string str_validate(const std::string &str, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK);
