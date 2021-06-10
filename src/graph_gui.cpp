@@ -1048,10 +1048,13 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 
 		int i = 0;
 		const CargoSpec *cs;
+		const float factor = 200.0f * 28.57f * 0.4f;
+
 		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
 			this->colours[i] = cs->legend_colour;
-			for (uint j = 0; j != 20; j++) {
-				this->cost[i][j] = GetTransportedGoodsIncome(10, 20, j * 4 + 4, cs->Index());
+			for (int j = 0; j != 20; j++) {
+				const byte ctt = static_cast<byte>(factor / ((static_cast<float>(j) + 1) * 10.0f));
+				this->cost[i][j] = GetTransportedGoodsIncome(1, 200, ctt, cs->Index());
 			}
 			i++;
 		}
