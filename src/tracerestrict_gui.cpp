@@ -874,8 +874,8 @@ static uint ConvertIntegerValue(TraceRestrictValueType type, uint in, bool to_di
 
 		case TRVT_SPEED:
 			return to_display
-					? ConvertSpeedToDisplaySpeed(in) * 10 / 16
-					: ConvertDisplaySpeedToSpeed(in) * 16 / 10;
+					? ConvertKmhishSpeedToDisplaySpeed(in)
+					: ConvertDisplaySpeedToKmhishSpeed(in);
 
 		case TRVT_WEIGHT:
 			return to_display
