@@ -20,6 +20,8 @@
 #include "company_func.h"
 #include "strings_func.h"
 #include "error.h"
+#include "industry.h"
+#include "industrytype.h"
 #include "textbuf_gui.h"
 #include "window_gui.h"
 #include "window_func.h"
@@ -906,7 +908,7 @@ void MakeScreenshotWithConfirm(ScreenshotType t)
 	Viewport vp;
 	SetupScreenshotViewport(t, &vp);
 
-	bool heightmap_or_minimap = t == SC_HEIGHTMAP || t == SC_MINIMAP;
+	bool heightmap_or_minimap = t == SC_HEIGHTMAP || t == SC_MINIMAP || t == SC_TOPOGRAPHY || t == SC_INDUSTRY;
 	uint64_t width = (heightmap_or_minimap ? MapSizeX() : vp.width);
 	uint64_t height = (heightmap_or_minimap ? MapSizeY() : vp.height);
 
@@ -994,6 +996,14 @@ static bool RealMakeScreenshot(ScreenshotType t, std::string name, uint32 width,
 
 		case SC_MINIMAP:
 			ret = MakeMinimapWorldScreenshot(name.empty() ? nullptr : name.c_str());
+			break;
+
+		case SC_TOPOGRAPHY:
+			ret = MakeTopographyScreenshot(name.empty() ? nullptr : name.c_str());
+			break;
+
+		case SC_INDUSTRY:
+			ret = MakeIndustryScreenshot(name.empty() ? nullptr : name.c_str());
 			break;
 
 		default:
@@ -1088,6 +1098,183 @@ static Owner GetMinimapOwner(TileIndex tile)
 	}
 }
 
+/**
+ * Return the color value of a tile to display it with in the topography screenshot.
+ *
+ * @param tile The tile of which we would like to get the colour.
+ * @return The color palette value
+ */
+static byte GetTopographyValue(TileIndex tile)
+{
+	const auto tile_type = GetTileType(tile);
+
+	if (tile_type == MP_STATION) {
+		switch (GetStationType(tile)) {
+			case STATION_RAIL:
+				return MKCOLOUR(PC_GREY);
+			case STATION_AIRPORT:
+				return MKCOLOUR(PC_GREY);
+			case STATION_TRUCK:
+				return MKCOLOUR(PC_BLACK);
+			case STATION_BUS:
+				return MKCOLOUR(PC_BLACK);
+			case STATION_OILRIG: // FALLTHROUGH
+			case STATION_DOCK:
+				return MKCOLOUR(PC_GREY);
+			case STATION_BUOY:
+				return MKCOLOUR(PC_WATER);
+			case STATION_WAYPOINT:
+				return MKCOLOUR(PC_GREY);
+			default: NOT_REACHED();
+		}
+	}
+
+	if (IsBridgeAbove(tile)) {
+		return MKCOLOUR(PC_DARK_GREY);
+	}
+
+	switch (tile_type) {
+		case MP_TUNNELBRIDGE:
+			return MKCOLOUR(PC_DARK_GREY);
+		case MP_RAILWAY:
+			return MKCOLOUR(PC_GREY);
+		case MP_ROAD:
+			return MKCOLOUR(PC_BLACK);
+		case MP_HOUSE:
+			return MKCOLOUR(0xB5);
+		case MP_WATER:
+			return MKCOLOUR(PC_WATER);
+		case MP_INDUSTRY:
+			return MKCOLOUR(0xA2);
+		default: {
+			const auto tile_z = GetTileZ(tile);
+			const auto max_z = _settings_game.construction.map_height_limit;
+			const auto color_index = (tile_z * 16) / max_z;
+
+			switch (color_index) {
+				case 0:
+					return MKCOLOUR(0x50);
+				case 1:
+					return MKCOLOUR(0x51);
+				case 2:
+					return MKCOLOUR(0x52);
+				case 3:
+					return MKCOLOUR(0x53);
+				case 4:
+					return MKCOLOUR(0x54);
+				case 5:
+					return MKCOLOUR(0x55);
+				case 6:
+					return MKCOLOUR(0x56);
+				case 7:
+					return MKCOLOUR(0x57);
+				case 8:
+					return MKCOLOUR(0x3B);
+				case 9:
+					return MKCOLOUR(0x3A);
+				case 10:
+					return MKCOLOUR(0x39);
+				case 11:
+					return MKCOLOUR(0x38);
+				case 12:
+					return MKCOLOUR(0x37);
+				case 13:
+					return MKCOLOUR(0x36);
+				case 14:
+					return MKCOLOUR(0x35);
+				case 15:
+					return MKCOLOUR(0x69);
+				default:
+					return MKCOLOUR(0x46);
+			}
+		}
+	}
+}
+
+/**
+ * Return the color value of a tile to display it with in the industries screenshot.
+ *
+ * @param tile The tile of which we would like to get the colour.
+ * @return The color palette value
+ */
+static byte GetIndustryValue(TileIndex tile)
+{
+	const auto tile_type = GetTileType(tile);
+
+	if (tile_type == MP_STATION) {
+		switch (GetStationType(tile)) {
+			case STATION_RAIL:
+				return MKCOLOUR(PC_DARK_GREY);
+			case STATION_AIRPORT:
+				return MKCOLOUR(GREY_SCALE(12));
+			case STATION_TRUCK:
+				return MKCOLOUR(PC_GREY);
+			case STATION_BUS:
+				return MKCOLOUR(PC_GREY);
+			case STATION_OILRIG: // FALLTHROUGH
+			case STATION_DOCK:
+				return MKCOLOUR(PC_GREY);
+			case STATION_BUOY:
+				return MKCOLOUR(PC_BLACK);
+			case STATION_WAYPOINT:
+				return MKCOLOUR(PC_GREY);
+			default: NOT_REACHED();
+		}
+	}
+
+	if (IsBridgeAbove(tile)) {
+		return MKCOLOUR(GREY_SCALE(12));
+	}
+
+	switch (tile_type) {
+		case MP_TUNNELBRIDGE:
+			return MKCOLOUR(GREY_SCALE(12));
+		case MP_RAILWAY:
+			return MKCOLOUR(PC_DARK_GREY);
+		case MP_ROAD:
+			return MKCOLOUR(PC_GREY);
+		case MP_HOUSE:
+			return MKCOLOUR(GREY_SCALE(4));
+		case MP_WATER:
+			return MKCOLOUR(0x12);
+		case MP_INDUSTRY: {
+			const IndustryType industry_type = Industry::GetByTile(tile)->type;
+
+			return GetIndustrySpec(industry_type)->map_colour * static_cast<byte>(0x01010101);
+		}
+		default:
+			return MKCOLOUR(GREY_SCALE(2));
+	}
+}
+
+template <typename T>
+void MinimapScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n, T colorCallback)
+{
+	uint32 *ubuf = (uint32 *)buf;
+	uint num = (pitch * n);
+	for (uint i = 0; i < num; i++) {
+		uint row = y + (int)(i / pitch);
+		uint col = (MapSizeX() - 1) - (i % pitch);
+
+		TileIndex tile = TileXY(col, row);
+		byte val = colorCallback(tile);
+
+		uint32 colour_buf = 0;
+		colour_buf  = (_cur_palette.palette[val].b << 0);
+		colour_buf |= (_cur_palette.palette[val].g << 8);
+		colour_buf |= (_cur_palette.palette[val].r << 16);
+
+		*ubuf = colour_buf;
+		ubuf++;   // Skip alpha
+	}
+}
+
+/**
+ * Return the color value of a tile to display it with in the minimap screenshot.
+ *
+ * @param tile The tile of which we would like to get the colour.
+ * @return The color palette value
+ */
 static void MinimapScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n)
 {
 	/* Fill with the company colours */
@@ -1103,24 +1290,19 @@ static void MinimapScreenCallback(void *userdata, void *buf, uint y, uint pitch,
 	owner_colours[OWNER_DEITY]   = PC_DARK_GREY; // industry
 	owner_colours[OWNER_END]     = PC_BLACK;
 
-	uint32 *ubuf = (uint32 *)buf;
-	uint num = (pitch * n);
-	for (uint i = 0; i < num; i++) {
-		uint row = y + (int)(i / pitch);
-		uint col = (MapSizeX() - 1) - (i % pitch);
+	MinimapScreenCallback(userdata, buf, y, pitch, n, [&](TileIndex tile) -> byte {
+		return owner_colours[GetMinimapOwner(tile)];
+	});
+}
 
-		TileIndex tile = TileXY(col, row);
-		Owner o = GetMinimapOwner(tile);
-		byte val = owner_colours[o];
+static void TopographyScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n)
+{
+	MinimapScreenCallback(userdata, buf, y, pitch, n, GetTopographyValue);
+}
 
-		uint32 colour_buf = 0;
-		colour_buf  = (_cur_palette.palette[val].b << 0);
-		colour_buf |= (_cur_palette.palette[val].g << 8);
-		colour_buf |= (_cur_palette.palette[val].r << 16);
-
-		*ubuf = colour_buf;
-		ubuf++;   // Skip alpha
-	}
+static void IndustryScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n)
+{
+	MinimapScreenCallback(userdata, buf, y, pitch, n, GetIndustryValue);
 }
 
 /**
@@ -1133,4 +1315,28 @@ bool MakeMinimapWorldScreenshot(const char *name)
 
 	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
 	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), MinimapScreenCallback, nullptr, MapSizeX(), MapSizeY(), 32, _cur_palette.palette);
+}
+
+/**
+ * Make a topography screenshot.
+ */
+bool MakeTopographyScreenshot(const char *name)
+{
+	_screenshot_name[0] = '\0';
+	if (name != nullptr) strecpy(_screenshot_name, name, lastof(_screenshot_name));
+
+	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
+	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), TopographyScreenCallback, nullptr, MapSizeX(), MapSizeY(), 32, _cur_palette.palette);
+}
+
+/**
+ * Make an industry screenshot.
+ */
+bool MakeIndustryScreenshot(const char *name)
+{
+	_screenshot_name[0] = '\0';
+	if (name != nullptr) strecpy(_screenshot_name, name, lastof(_screenshot_name));
+
+	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
+	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), IndustryScreenCallback, nullptr, MapSizeX(), MapSizeY(), 32, _cur_palette.palette);
 }

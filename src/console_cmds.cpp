@@ -1505,6 +1505,8 @@ DEF_CONSOLE_CMD(ConScreenShot)
 				"'world' makes a screenshot of the whole map using the current zoom level, "
 				"'heightmap' makes a heightmap screenshot of the map that can be loaded in as heightmap, "
 				"'minimap' makes a top-viewed minimap screenshot of the whole world which represents one tile by one pixel. "
+				"'topography' makes a top-viewed topography screenshot of the whole world which represents one tile by one pixel. "
+				"'industry' makes a top-viewed industries screenshot of the whole world which represents one tile by one pixel. "
 				"'no_con' hides the console to create the screenshot (only useful in combination with 'viewport'). "
 				"'size' sets the width and height of the viewport to make a screenshot of (only useful in combination with 'normal' or 'big').");
 		return true;
@@ -1539,6 +1541,12 @@ DEF_CONSOLE_CMD(ConScreenShot)
 			arg_index += 1;
 		} else if (strcmp(argv[arg_index], "minimap") == 0) {
 			type = SC_MINIMAP;
+			arg_index += 1;
+		} else if (strcmp(argv[arg_index], "topography") == 0) {
+			type = SC_TOPOGRAPHY;
+			arg_index += 1;
+		} else if (strcmp(argv[arg_index], "industry") == 0) {
+			type = SC_INDUSTRY;
 			arg_index += 1;
 		}
 	}
