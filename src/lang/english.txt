@@ -5405,6 +5405,8 @@ STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}Whole ma
 STR_SCREENSHOT_WORLD_SCREENSHOT_CURRENT_ZOOM                    :{BLACK}Whole map current zoom screenshot
 STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}Heightmap screenshot
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Minimap screenshot
+STR_SCREENSHOT_TOPOGRAPHY_SCREENSHOT                            :{BLACK}Topography screenshot
+STR_SCREENSHOT_INDUSTRY_SCREENSHOT                              :{BLACK}Industries screenshot
 
 # AI Parameters
 STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} Parameters
