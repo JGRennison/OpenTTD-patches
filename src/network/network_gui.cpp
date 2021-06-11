@@ -2141,7 +2141,7 @@ public:
 
 			case WID_CL_MATRIX: {
 				StringID text = STR_NULL;
-				QueryCallbackProc *callback = nullptr;
+				QueryCallbackProc callback = nullptr;
 
 				switch (index) {
 					case DD_CLIENT_ADMIN_KICK:

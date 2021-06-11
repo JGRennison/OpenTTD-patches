@@ -5550,6 +5550,10 @@ STR_ERROR_NAME_MUST_BE_UNIQUE                                   :{WHITE}Name mus
 STR_ERROR_GENERIC_OBJECT_IN_THE_WAY                             :{WHITE}{1:STRING} in the way
 STR_ERROR_NOT_ALLOWED_WHILE_PAUSED                              :{WHITE}Not allowed while paused
 
+# Clear area query
+STR_QUERY_CLEAR_AREA_CAPTION                                    :{WHITE}Clear area
+STR_CLEAR_AREA_CONFIRMATION_TEXT                                :{YELLOW}You are about to destroy an important structure. Are you sure?
+
 # Local authority errors
 STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS                 :{WHITE}{TOWN} local authority refuses to allow this
 STR_ERROR_LOCAL_AUTHORITY_REFUSES_AIRPORT                       :{WHITE}{TOWN} local authority refuses to allow another airport to be built in this town

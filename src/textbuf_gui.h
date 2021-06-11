@@ -10,9 +10,12 @@
 #ifndef TEXTBUF_GUI_H
 #define TEXTBUF_GUI_H
 
-#include "window_type.h"
 #include "string_type.h"
 #include "strings_type.h"
+
+#include <functional>
+
+struct Window;
 
 /** Flags used in ShowQueryString() call */
 enum QueryStringFlags {
@@ -26,10 +29,10 @@ enum QueryStringFlags {
 DECLARE_ENUM_AS_BIT_SET(QueryStringFlags)
 
 /** Callback procedure for the ShowQuery method. */
-typedef void QueryCallbackProc(Window*, bool);
+typedef std::function<void(Window*, bool)> QueryCallbackProc;
 
 void ShowQueryString(StringID str, StringID caption, uint max_len, Window *parent, CharSetFilter afilter, QueryStringFlags flags);
-void ShowQuery(StringID caption, StringID message, Window *w, QueryCallbackProc *callback);
+void ShowQuery(StringID caption, StringID message, Window *w, QueryCallbackProc callback);
 
 /** The number of 'characters' on the on-screen keyboard. */
 static const uint OSK_KEYBOARD_ENTRIES = 50;
