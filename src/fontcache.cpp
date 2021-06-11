@@ -70,17 +70,17 @@ private:
 public:
 	SpriteFontCache(FontSize fs);
 	~SpriteFontCache();
-	virtual SpriteID GetUnicodeGlyph(WChar key);
-	virtual void SetUnicodeGlyph(WChar key, SpriteID sprite);
+	virtual SpriteID GetUnicodeGlyph(WChar key) override;
+	virtual void SetUnicodeGlyph(WChar key, SpriteID sprite) override;
 	virtual void InitializeUnicodeGlyphMap() override;
-	virtual void ClearFontCache();
-	virtual const Sprite *GetGlyph(GlyphID key);
-	virtual uint GetGlyphWidth(GlyphID key);
-	virtual bool GetDrawGlyphShadow();
-	virtual GlyphID MapCharToGlyph(WChar key) { assert(IsPrintable(key)); return SPRITE_GLYPH | key; }
-	virtual const void *GetFontTable(uint32 tag, size_t &length) { length = 0; return nullptr; }
+	virtual void ClearFontCache() override;
+	virtual const Sprite *GetGlyph(GlyphID key) override;
+	virtual uint GetGlyphWidth(GlyphID key) override;
+	virtual bool GetDrawGlyphShadow() override;
+	virtual GlyphID MapCharToGlyph(WChar key) override { assert(IsPrintable(key)); return SPRITE_GLYPH | key; }
+	virtual const void *GetFontTable(uint32 tag, size_t &length) override { length = 0; return nullptr; }
 	virtual const char *GetFontName() { return "sprite"; }
-	virtual bool IsBuiltInFont() { return true; }
+	virtual bool IsBuiltInFont() override { return true; }
 };
 
 /**

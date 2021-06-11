@@ -586,7 +586,7 @@ public:
 	void SendCommand(Packet *p, const CommandPacket *cp);
 
 	virtual std::string GetDebugInfo() const;
-	virtual void LogSentPacket(const Packet &pkt);
+	virtual void LogSentPacket(const Packet &pkt) override;
 };
 
 #endif /* NETWORK_CORE_TCP_GAME_H */

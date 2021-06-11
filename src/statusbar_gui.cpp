@@ -115,8 +115,8 @@ struct StatusBarWindow : Window {
 		Dimension d;
 		switch (widget) {
 			case WID_S_LEFT:
-				SetDParamMaxValue(0, MAX_YEAR * DAYS_IN_YEAR);
-				d = GetStringBoundingBox(STR_WHITE_DATE_LONG);
+				SetDParam(0, (uint64)MAX_YEAR * (uint64)DAYS_IN_YEAR * (uint64)DAY_TICKS * (uint64)_settings_game.economy.day_length_factor);
+				d = GetStringBoundingBox(STR_WHITE_DATE_WALLCLOCK_LONG);
 				break;
 
 			case WID_S_RIGHT: {
@@ -209,6 +209,9 @@ struct StatusBarWindow : Window {
 			case SBI_NEWS_DELETED:
 				this->ticker_scroll    =   TICKER_STOP; // reset ticker ...
 				this->reminder_timeout.SetInterval(REMINDER_STOP); // ... and reminder
+				break;
+			case SBI_REINIT:
+				this->ReInit();
 				break;
 		}
 	}

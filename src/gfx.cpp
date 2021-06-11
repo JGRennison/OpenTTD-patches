@@ -2185,11 +2185,17 @@ void UpdateGUIZoom()
 		_gui_zoom = static_cast<ZoomLevel>(_gui_zoom_cfg);
 	}
 
+	ZoomLevel old_font_zoom = _font_zoom;
+
 	/* Determine real font zoom to use. */
 	if (_font_zoom_cfg == ZOOM_LVL_CFG_AUTO) {
 		_font_zoom = static_cast<ZoomLevel>(VideoDriver::GetInstance()->GetSuggestedUIZoom());
 	} else {
 		_font_zoom = static_cast<ZoomLevel>(_font_zoom_cfg);
+	}
+
+	if (old_font_zoom != _font_zoom) {
+		ClearFontCache();
 	}
 
 	UpdateFontHeightCache();

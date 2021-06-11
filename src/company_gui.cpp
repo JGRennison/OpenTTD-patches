@@ -495,7 +495,7 @@ struct CompanyFinancesWindow : Window {
 		}
 	}
 
-	bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond)
+	bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
 	{
 		switch (widget) {
 			case WID_CF_INCREASE_LOAN: {
