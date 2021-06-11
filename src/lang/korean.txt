@@ -1280,6 +1280,8 @@ STR_CONFIG_SETTING_ROAD_VEHICLE_SLOPE_STEEPNESS                 :경사도 설�
 STR_CONFIG_SETTING_ROAD_VEHICLE_SLOPE_STEEPNESS_HELPTEXT        :자동차/전차에 적용시킬 경사도를 설정합니다. 값이 높을수록 차량이 언덕을 오를 때 더 힘이 듭니다.
 STR_CONFIG_SETTING_FORBID_90_DEG                                :열차의 90도 회전을 금지함: {STRING}
 STR_CONFIG_SETTING_FORBID_90_DEG_HELPTEXT                       :─ 모양의 수평 선로와 │ 모양의 수직 선로가 바로 이어져 만날 때 90도 회전이 발생합니다. 이 설정을 켜면, 열차가 칸 가장자리를 통과할 때 90도로 회전할 수 있도록 허용합니다. 이 설정은 선박의 회전 반경에도 적용됩니다.
+STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING                :단방향 경로 신호기 뒤까지 경로 탐색: {STRING}
+STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING_HELPTEXT       :이 설정을 켜면, YAPF 열차 경로 탐색 알고리즘이 단방향 경로 신호기 뒤까지 경로를 탐색할 수 있습니다.
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS                        :역이 같은 방향으로 붙어있지 않아도 같은 이름의 역 짓기 허용: {STRING}
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS_HELPTEXT               :이미 존재하는 역을 직접 건드리지 않고도 역의 일부분을 새로 추가/확장하는 것을 허용합니다. 인접한 칸에 기존과 다른 새로운 역을 놓을 때에는 CTRL+클릭해야 합니다.
 STR_CONFIG_SETTING_INFLATION                                    :인플레이션(화폐 가치 하락) 사용: {STRING}
