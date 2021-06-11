@@ -1529,7 +1529,7 @@ static void RoadVehCheckFinishOvertake(RoadVehicle *v)
 		check_tile = TileAddWrap(check_tile, -ti.x, -ti.y);
 	}
 
-	if (check_ahead > 0) {
+	if (check_ahead) {
 		TileIndex ahead_tile = TileAddWrap(check_tile, ti.x, ti.y);
 		if (ahead_tile != INVALID_TILE) {
 			if (HasVehicleOnPos(ahead_tile, VEH_ROAD, &od, EnumFindVehBlockingFinishOvertake)) return;

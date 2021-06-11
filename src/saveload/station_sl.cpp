@@ -517,7 +517,7 @@ static void RealSave_STNN(BaseStation *bst)
 		Station *st = Station::From(bst);
 		for (CargoID i = 0; i < NUM_CARGO; i++) {
 			_num_dests = (uint32)st->goods[i].cargo.Packets()->MapSize();
-			_num_flows = st->goods[i].flows.size();
+			_num_flows = (uint32)st->goods[i].flows.size();
 			SlObjectSaveFiltered(&st->goods[i], _filtered_goods_desc.data());
 			for (FlowStatMap::const_iterator outer_it(st->goods[i].flows.begin()); outer_it != st->goods[i].flows.end(); ++outer_it) {
 				uint32 sum_shares = 0;
@@ -525,7 +525,7 @@ static void RealSave_STNN(BaseStation *bst)
 				flow.source = outer_it->GetOrigin();
 				dumper->CheckBytes(2 + 4);
 				dumper->RawWriteUint16(flow.source);
-				dumper->RawWriteUint32(outer_it->size());
+				dumper->RawWriteUint32((uint32)outer_it->size());
 				FlowStat::const_iterator inner_it(outer_it->begin());
 				const FlowStat::const_iterator end(outer_it->end());
 				for (; inner_it != end; ++inner_it) {

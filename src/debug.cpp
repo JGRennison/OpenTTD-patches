@@ -345,8 +345,8 @@ struct DesyncMsgLog {
 	{
 		if (!this->count) return buffer;
 
-		const unsigned int count = std::min<unsigned int>(this->count, this->log.size());
-		unsigned int log_index = (this->next + this->log.size() - count) % this->log.size();
+		const unsigned int count = std::min<unsigned int>(this->count, (uint)this->log.size());
+		unsigned int log_index = (this->next + (uint)this->log.size() - count) % (uint)this->log.size();
 		unsigned int display_num = this->count - count;
 
 		buffer += seprintf(buffer, last, "%s:\n Showing most recent %u of %u messages\n", prefix, count, this->count);

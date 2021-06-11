@@ -49,7 +49,7 @@ void AfterLoadLabelMaps()
 
 			railtype_conversion_map[i] = r;
 		}
-		for (uint i = _railtype_list.size(); i < RAILTYPE_END; i++) {
+		for (uint i = (uint)_railtype_list.size(); i < RAILTYPE_END; i++) {
 			railtype_conversion_map[i] = RAILTYPE_RAIL;
 		}
 

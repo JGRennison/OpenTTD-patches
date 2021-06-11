@@ -126,8 +126,8 @@ static void Save_CHTX()
 	};
 
 	SlAutolength([](void *) {
-		SlWriteUint32(0);                                                     // flags
-		SlWriteUint32(lengthof(_extra_cheat_descs) + _unknown_cheats.size()); // cheat count
+		SlWriteUint32(0);                                                               // flags
+		SlWriteUint32((uint32)(lengthof(_extra_cheat_descs) + _unknown_cheats.size())); // cheat count
 
 		for (uint j = 0; j < lengthof(_extra_cheat_descs); j++) {
 			CheatsExtSave save = { _extra_cheat_descs[j].name, *(_extra_cheat_descs[j].cht) };

@@ -577,7 +577,7 @@ static void DumpSubCommandLog(char *&buffer, const char *last, const CommandLog 
 		if (log_index > 0) {
 			log_index--;
 		} else {
-			log_index = cmd_log.log.size() - 1;
+			log_index = (uint)cmd_log.log.size() - 1;
 		}
 		const CommandLogEntry &entry = cmd_log.log[log_index];
 

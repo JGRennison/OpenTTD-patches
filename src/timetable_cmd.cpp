@@ -688,7 +688,7 @@ void UpdateSeparationOrder(Vehicle *v_start)
 	const uint duration = v_start->orders.list->GetTotalDuration();
 	Vehicle *v = Vehicle::Get(progress_array.back().id);
 	Vehicle *v_ahead = Vehicle::Get(progress_array.front().id);
-	uint behind_index = progress_array.size() - 1;
+	uint behind_index = (uint)progress_array.size() - 1;
 	for (uint i = 0; i < progress_array.size(); i++) {
 		const TimetableProgress &info_behind = progress_array[behind_index];
 		behind_index = i;

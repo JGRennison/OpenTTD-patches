@@ -342,9 +342,9 @@ static void CheckCurveLookAhead(const Train *v, TrainReservationLookAhead *looka
 static int LookaheadTileHeightForChunnel(int length, int offset)
 {
 	if (offset == 0) return 0;
-	if (offset < 3) return -1 * TILE_HEIGHT;
-	if (offset < length - 3) return -2 * TILE_HEIGHT;
-	if (offset < length) return -1 * TILE_HEIGHT;
+	if (offset < 3) return -1 * (int)TILE_HEIGHT;
+	if (offset < length - 3) return -2 * (int)TILE_HEIGHT;
+	if (offset < length) return -1 * (int)TILE_HEIGHT;
 	return 0;
 }
 
@@ -861,7 +861,7 @@ void TryCreateLookAheadForTrainInTunnelBridge(Train *t)
 			int z = IsBridge(t->tile) ? GetBridgeHeight(t->tile) : GetTilePixelZ(t->tile);
 
 			/* Middle signals */
-			int offset = -TILE_SIZE;
+			int offset = -(int)TILE_SIZE;
 			for (int i = 0; i < signals; i++) {
 				offset += TILE_SIZE * spacing;
 				t->lookahead->AddSignal(signal_speed, offset, HasBit(t->lookahead->flags, TRLF_CHUNNEL) ? LookaheadTileHeightForChunnel(length, i * spacing) : z);

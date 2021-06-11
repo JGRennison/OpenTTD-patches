@@ -491,7 +491,7 @@ public:
 			this->EnableWidget(WID_DB_SHOW_DEPS);
 		}
 
-		this->vscroll->SetCount(std::min<uint>(_settings_client.gui.max_departures, this->departures->size() + this->arrivals->size()));
+		this->vscroll->SetCount(std::min<uint>(_settings_client.gui.max_departures, (uint)this->departures->size() + (uint)this->arrivals->size()));
 		this->DrawWidgets();
 	}
 
@@ -623,7 +623,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 	int text_right = right - (rtl ? text_offset :           0);
 
 	int y = r.top + 1;
-	uint max_departures = std::min<uint>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->departures->size() + this->arrivals->size());
+	uint max_departures = std::min<uint>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), (uint)this->departures->size() + (uint)this->arrivals->size());
 
 	if (max_departures > _settings_client.gui.max_departures) {
 		max_departures = _settings_client.gui.max_departures;

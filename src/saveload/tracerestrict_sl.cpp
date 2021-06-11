@@ -97,7 +97,7 @@ static void Load_TRRP()
 static void RealSave_TRRP(TraceRestrictProgram *prog)
 {
 	TraceRestrictProgramStub stub;
-	stub.length = prog->items.size();
+	stub.length = (uint32)prog->items.size();
 	SlObject(&stub, _trace_restrict_program_stub_desc);
 	SlArray(&(prog->items[0]), stub.length, SLE_UINT32);
 }
@@ -154,7 +154,7 @@ static void RealSave_TRRS(TraceRestrictSlot *slot)
 {
 	SlObject(slot, _trace_restrict_slot_desc);
 	TraceRestrictSlotStub stub;
-	stub.length = slot->occupants.size();
+	stub.length = (uint32)slot->occupants.size();
 	SlObject(&stub, _trace_restrict_slot_stub_desc);
 	if (stub.length) SlArray(&(slot->occupants[0]), stub.length, SLE_UINT32);
 }

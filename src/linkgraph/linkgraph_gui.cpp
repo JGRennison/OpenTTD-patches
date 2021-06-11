@@ -62,7 +62,7 @@ const uint8 LinkGraphOverlay::LINK_COLOURS[][12] = {
 void LinkGraphOverlay::GetWidgetDpi(DrawPixelInfo *dpi, uint margin) const
 {
 	const NWidgetBase *wi = this->window->GetWidget<NWidgetBase>(this->widget_id);
-	dpi->left = dpi->top = -margin;
+	dpi->left = dpi->top = -(int)margin;
 	dpi->width = wi->current_x + 2 * margin;
 	dpi->height = wi->current_y + 2 * margin;
 }

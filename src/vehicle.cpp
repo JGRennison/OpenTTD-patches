@@ -768,10 +768,10 @@ int GetAvailableFreeTilesInSignalledTunnelBridge(TileIndex entrance, TileIndex e
 	checker.lowest_seen = INT_MAX;
 	switch (checker.direction) {
 		default: NOT_REACHED();
-		case DIAGDIR_NE: checker.pos = -(TileX(tile) * TILE_SIZE); break;
-		case DIAGDIR_SE: checker.pos =  (TileY(tile) * TILE_SIZE); break;
-		case DIAGDIR_SW: checker.pos =  (TileX(tile) * TILE_SIZE); break;
-		case DIAGDIR_NW: checker.pos = -(TileY(tile) * TILE_SIZE); break;
+		case DIAGDIR_NE: checker.pos = -(int)(TileX(tile) * TILE_SIZE); break;
+		case DIAGDIR_SE: checker.pos =       (TileY(tile) * TILE_SIZE); break;
+		case DIAGDIR_SW: checker.pos =       (TileX(tile) * TILE_SIZE); break;
+		case DIAGDIR_NW: checker.pos = -(int)(TileY(tile) * TILE_SIZE); break;
 	}
 
 	FindVehicleOnPos(entrance, VEH_TRAIN, &checker, &GetAvailableFreeTilesInSignalledTunnelBridgeEnum);

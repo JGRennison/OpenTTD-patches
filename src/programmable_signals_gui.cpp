@@ -711,7 +711,7 @@ private:
 
 	void RebuildInstructionList()
 	{
-		uint old_len = this->instructions.size();
+		uint old_len = (uint)this->instructions.size();
 		this->instructions.clear();
 		SignalInstruction *insn = program->first_instruction;
 		uint indent = 0;
@@ -774,7 +774,7 @@ private:
 			}
 		} while (insn);
 
-		this->vscroll->SetCount(this->instructions.size());
+		this->vscroll->SetCount((uint)this->instructions.size());
 		if (this->instructions.size() != old_len)
 			selected_instruction = -1;
 		UpdateButtonState();

@@ -254,7 +254,7 @@ void ClientNetworkContentSocketHandler::RequestContentList(ContentVector *cv, bo
 
 	while (cv->size() > offset) {
 		Packet *p = new Packet(send_md5sum ? PACKET_CONTENT_CLIENT_INFO_EXTID_MD5 : PACKET_CONTENT_CLIENT_INFO_EXTID, TCP_MTU);
-		const uint to_send = std::min<uint>(cv->size() - offset, max_per_packet);
+		const uint to_send = (uint)std::min<uint>(cv->size() - offset, max_per_packet);
 		p->Send_uint8(to_send);
 
 		for (uint i = 0; i < to_send; i++) {

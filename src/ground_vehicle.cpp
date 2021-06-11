@@ -261,7 +261,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 			breakdown_factor /= (Train::From(this)->tcache.cached_num_engines + 2);
 		}
 		/* breakdown_chance is at least 5 (5 / 128 = ~4% of the normal chance) */
-		this->breakdown_chance_factor = std::max(breakdown_factor >> 16, (uint64)5);
+		this->breakdown_chance_factor = Clamp<uint64>(breakdown_factor >> 16, 5, 255);
 	}
 
 	int braking_accel;

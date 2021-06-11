@@ -171,8 +171,8 @@ void MemoryDumper::Flush(SaveFilter *writer)
 {
 	this->FinaliseBlock();
 
-	uint block_count = this->blocks.size();
-	for (uint i = 0; i < block_count; i++) {
+	size_t block_count = this->blocks.size();
+	for (size_t i = 0; i < block_count; i++) {
 		writer->Write(this->blocks[i].data, this->blocks[i].size);
 	}
 

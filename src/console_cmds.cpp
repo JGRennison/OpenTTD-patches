@@ -2912,7 +2912,7 @@ DEF_CONSOLE_CMD(ConBankruptCompany)
 	c->bankrupt_value = 42;
 	c->bankrupt_asked = 1 << c->index; // Don't ask the owner
 	c->bankrupt_timeout = 0;
-	c->money = -(UINT64_MAX >> 2);
+	c->money = INT64_MIN / 2;
 	IConsolePrint(CC_DEFAULT, "Company marked as bankrupt.");
 
 	return true;
