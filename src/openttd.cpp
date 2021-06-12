@@ -1045,6 +1045,7 @@ static void MakeNewGameDone()
 		c->colour = _settings_client.gui.starting_colour;
 		ResetCompanyLivery(c);
 		_company_colours[c->index] = (Colours)c->colour;
+		BuildOwnerLegend();
 	}
 
 	IConsoleCmdExec("exec scripts/game_start.scr 0");
