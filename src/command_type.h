@@ -412,7 +412,8 @@ enum Commands {
 	CMD_REMOVE_ALL_VEHICLES_GROUP,    ///< remove all vehicles from a group
 	CMD_SET_GROUP_FLAG,               ///< set/clear a flag for a group
 	CMD_SET_GROUP_LIVERY,             ///< set the livery for a group
-
+	CMD_AUTO_GROUP,					  ///< auto group all ungrouped vehicles
+	CMD_DELETE_AUTO_GROUP,			  ///< delete all auto groups
 	CMD_MOVE_ORDER,                   ///< move an order
 	CMD_REVERSE_ORDER_LIST,           ///< reverse order list
 	CMD_CHANGE_TIMETABLE,             ///< change the timetable for a vehicle

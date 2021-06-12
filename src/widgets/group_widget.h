@@ -38,6 +38,8 @@ enum GroupListWidgets {
 	WID_GL_EXPAND_ALL_GROUPS,        ///< Expand all groups button.
 	WID_GL_REPLACE_PROTECTION,       ///< Replace protection button.
 	WID_GL_INFO,                     ///< Group info.
+	WID_GL_AUTO_GROUP,				 ///< Auto group button
+	WID_GL_DELETE_AUTO_GROUP		 ///< Delete auto group button
 };
 
 #endif /* WIDGETS_GROUP_WIDGET_H */
