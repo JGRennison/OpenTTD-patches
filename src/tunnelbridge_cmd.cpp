@@ -143,13 +143,14 @@ uint GetTunnelBridgeSignalSimulationSpacing(TileIndex tile)
 
 /**
  * Get number of signals on bridge or tunnel with signal simulation.
+ * @param c     Company to use.
  * @param begin The begin of the tunnel or bridge.
  * @param end   The end of the tunnel or bridge.
  * @pre IsTunnelBridgeWithSignalSimulation(begin)
  */
-uint GetTunnelBridgeSignalSimulationSignalCount(TileIndex begin, TileIndex end)
+uint GetTunnelBridgeSignalSimulationSignalCount(Company *c, TileIndex begin, TileIndex end)
 {
-	uint result = 2 + (GetTunnelBridgeLength(begin, end) / GetTunnelBridgeSignalSimulationSpacing(begin));
+	uint result = 2 + (GetTunnelBridgeLength(begin, end) / c->settings.simulated_wormhole_signals);
 	if (IsTunnelBridgeSignalSimulationBidirectional(begin)) result *= 2;
 	return result;
 }
@@ -1246,9 +1247,10 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 			check_tile(endtile);
 
 			if (Company::IsValidID(owner)) {
-				Company::Get(owner)->infrastructure.rail[GetRailType(tile)] -= len * TUNNELBRIDGE_TRACKBIT_FACTOR;
+				Company *c = Company::Get(owner);
+				c->infrastructure.rail[GetRailType(tile)] -= len * TUNNELBRIDGE_TRACKBIT_FACTOR;
 				if (IsTunnelBridgeWithSignalSimulation(tile)) { // handle tunnel/bridge signals.
-					Company::Get(GetTileOwner(tile))->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, endtile);
+					c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(c, tile, endtile);
 				}
 				DirtyCompanyInfrastructureWindows(owner);
 			}
@@ -2691,9 +2693,9 @@ static void UpdateRailTunnelBridgeInfrastructure(Company *c, TileIndex begin, Ti
 
 		if (IsTunnelBridgeWithSignalSimulation(begin)) {
 			if (add) {
-				c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(begin, end);
+				c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(c, begin, end);
 			} else {
-				c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(begin, end);
+				c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(c, begin, end);
 			}
 		}
 	}
