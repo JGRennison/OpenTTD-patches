@@ -1931,6 +1931,12 @@ STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_HELPTEXT               :Adjust placemen
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE                  :Arctic tree range: {STRING2}
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE_HELPTEXT         :Approximate range of arctic trees around snow line
 
+STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS                           :Build public roads connecting towns: {STRING2}
+STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_HELPTEXT                  :Generates public roads which connect the times. Takes a bit of time on bigger maps. 'Build and avoid' generates roads which avoid curves and result in very grid-like connections.
+STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_NONE                      :None (Default)
+STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_WITH_CURVES               :Build with curves
+STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_AVOID_CURVES              :Build and avoid curves
+
 STR_CONFIG_SETTING_TREE_GROWTH                                  :Tree growth speed: {STRING2}
 STR_CONFIG_SETTING_TREE_GROWTH_HELPTEXT                         :Control rate at which trees grow during the game. This might affect industries which rely on tree growth, for example lumber mills
 STR_CONFIG_SETTING_TREE_GROWTH_NORMAL                           :Normal
@@ -3774,6 +3780,7 @@ STR_GENERATION_PROGRESS_NUM                                     :{BLACK}{NUM} / 
 STR_GENERATION_WORLD_GENERATION                                 :{BLACK}World generation
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}River generation
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Tree generation
+STR_GENERATION_PUBLIC_ROADS_GENERATION                          :{BLACK}Public roads generation
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Object generation
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Rough and rocky area generation
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Setting up game

@@ -388,6 +388,7 @@ struct GameCreationSettings {
 	bool   lakes_allowed_in_deserts;         ///< are lakes allowed in deserts?
 	uint8  amount_of_rocks;                  ///< the amount of rocks
 	uint8  height_affects_rocks;             ///< the affect that map height has on rocks
+	uint8  build_public_roads;               ///< build public roads connecting towns
 };
 
 /** Settings related to construction in-game */

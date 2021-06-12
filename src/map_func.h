@@ -399,6 +399,13 @@ static inline TileIndex TileAddByDiagDir(TileIndex tile, DiagDirection dir)
 	return TILE_ADD(tile, TileOffsByDiagDir(dir));
 }
 
+/** Checks if two tiles are adjacent */
+static inline bool AreTilesAdjacent(TileIndex a, TileIndex b)
+{
+	return (std::abs((int)TileX(a) - (int)TileX(b)) <= 1) &&
+		   (std::abs((int)TileY(a) - (int)TileY(b)) <= 1);
+}
+
 /**
  * Determines the DiagDirection to get from one tile to another.
  * The tiles do not necessarily have to be adjacent.

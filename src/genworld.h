@@ -78,6 +78,7 @@ enum GenWorldProgress {
 	GWP_INDUSTRY,    ///< Generate industries
 	GWP_OBJECT,      ///< Generate objects (radio tower, light houses)
 	GWP_TREE,        ///< Generate trees
+	GWP_PUBLIC_ROADS,///< Generate public roads
 	GWP_GAME_INIT,   ///< Initialize the game
 	GWP_RUNTILELOOP, ///< Runs the tile loop 1280 times to make snow etc
 	GWP_RUNSCRIPT,   ///< Runs the game script at most 2500 times, or when ever the script sleeps
