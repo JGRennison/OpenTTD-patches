@@ -384,6 +384,11 @@ STR_UNITS_VELOCITY_METRIC                                       :{COMMA} km/h
 STR_UNITS_VELOCITY_SI                                           :{COMMA} m/s
 STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}pločica/dan
 
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :milja na sat
+STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
+STR_UNIT_NAME_VELOCITY_SI                                       :m/s
+STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :pločica/dan
+
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}ks
 STR_UNITS_POWER_METRIC                                          :{COMMA}ks
 STR_UNITS_POWER_SI                                              :{COMMA}kW

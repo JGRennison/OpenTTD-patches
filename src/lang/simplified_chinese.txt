@@ -196,6 +196,11 @@ STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}�
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}米/秒
 STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}格/天
 
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :英里/小时
+STR_UNIT_NAME_VELOCITY_METRIC                                   :千米/小时
+STR_UNIT_NAME_VELOCITY_SI                                       :米/秒
+STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :格/天
+
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}匹马力
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}匹马力
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}千瓦
