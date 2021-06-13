@@ -193,6 +193,10 @@ STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA} ไม�
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA} กม./ชม.
 STR_UNITS_VELOCITY_SI                                           :{COMMA} ม./วิ.
 
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :ไมล์/ชม.
+STR_UNIT_NAME_VELOCITY_METRIC                                   :กม./ชม.
+STR_UNIT_NAME_VELOCITY_SI                                       :ม./วิ.
+
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA} แรงม้า
 STR_UNITS_POWER_METRIC                                          :{COMMA} แรงม้า
 STR_UNITS_POWER_SI                                              :{COMMA} กิโลวัตต์

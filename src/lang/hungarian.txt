@@ -259,6 +259,11 @@ STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}km
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}m/s
 STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}mező/nap
 
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mi/h
+STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
+STR_UNIT_NAME_VELOCITY_SI                                       :m/s
+STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :mező/nap
+
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}LE
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}LE
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}kW

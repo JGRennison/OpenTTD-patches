@@ -507,6 +507,10 @@ STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA}{NBSP}м
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}км/г
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}м/с
 
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :міль/г
+STR_UNIT_NAME_VELOCITY_METRIC                                   :км/г
+STR_UNIT_NAME_VELOCITY_SI                                       :м/с
+
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}к.с.
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}к.с.
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}кВт

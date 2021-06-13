@@ -73,6 +73,7 @@
 #include "viewport_func.h"
 #include "gui.h"
 #include "statusbar_gui.h"
+#include "graph_gui.h"
 
 #include "void_map.h"
 #include "station_base.h"
@@ -1519,6 +1520,12 @@ static bool ClimateThresholdModeChanged(int32 p1)
 {
 	InvalidateWindowClassesData(WC_GENERATE_LANDSCAPE);
 	InvalidateWindowClassesData(WC_GAME_OPTIONS);
+	return true;
+}
+
+static bool VelocityUnitsChanged(int32 p1) {
+	InvalidateWindowClassesData(WC_PAYMENT_RATES);
+	MarkWholeScreenDirty();
 	return true;
 }
 
