@@ -367,13 +367,19 @@ static TileIndex BuildTunnel(PathNode *current, TileIndex end_tile = INVALID_TIL
 	return end_tile;
 }
 
-static TileIndex BuildBridge(PathNode *current, TileIndex end_tile = INVALID_TILE, const bool build_bridge = false)
+static TileIndex BuildBridge(PathNode *current, const DiagDirection road_direction, TileIndex end_tile = INVALID_TILE, const bool build_bridge = false)
 {
 	const TileIndex start_tile = current->node.tile;
 
-	const DiagDirection direction = ReverseDiagDir(GetInclinedSlopeDirection(GetTileSlope(start_tile)));
-
+	// We are not building yet, so we still need to find the end_tile.
+	// We will only build a bridge if we need to cross a river, so first check for that.
 	if (!build_bridge) {
+		const TileIndex tile = start_tile + TileOffsByDiagDir(road_direction);
+
+		if (!IsWaterTile(tile) || !IsRiver(tile)) return INVALID_TILE;
+
+		const DiagDirection direction = ReverseDiagDir(GetInclinedSlopeDirection(GetTileSlope(start_tile)));
+
 		// We are not building yet, so we still need to find the end_tile.
 		for (TileIndex tile = start_tile + TileOffsByDiagDir(direction);
 			IsValidTile(tile) &&
@@ -589,7 +595,7 @@ static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 					}
 				}
 				else if (IsDownwardsSlope(tile, road_direction)) {
-					const auto bridge_end = BuildBridge(&current->path);
+					const auto bridge_end = BuildBridge(&current->path, road_direction);
 
 					if (bridge_end != INVALID_TILE &&
 						!IsSteepSlope(GetTileSlope(bridge_end)) &&
@@ -604,7 +610,7 @@ static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 				else if (GetTileSlope(tile) == SLOPE_FLAT)
 				{
 					// Check if we could bridge a river from a flat tile. Not looking pretty on the map but you gotta do what you gotta do.
-					const auto bridge_end = BuildRiverBridge(&current->path, DiagdirBetweenTiles(current->path.parent->node.tile, tile));
+					const auto bridge_end = BuildRiverBridge(&current->path, road_direction);
 					assert(bridge_end == INVALID_TILE || GetTileSlope(bridge_end) == SLOPE_FLAT);
 
 					if (bridge_end != INVALID_TILE) {
@@ -687,7 +693,7 @@ static void PublicRoad_FoundEndNode(AyStar *aystar, OpenListNode *current)
 				assert(IsValidTile(end_tile) && IsDownwardsSlope(end_tile, road_direction));
 			} else if (IsDownwardsSlope(tile, road_direction)) {
 				// Provide the function with the end tile, since we already know it, but still check the result.
-				end_tile = BuildBridge(path, path->parent->node.tile, true);
+				end_tile = BuildBridge(path, road_direction, path->parent->node.tile, true);
 				assert(IsValidTile(end_tile) && IsUpwardsSlope(end_tile, road_direction));
 			} else {
 				// River bridge is the last possibility.
@@ -731,6 +737,12 @@ bool FindPath(AyStar& finder, const TileIndex from, TileIndex to)
 	return found_path;
 }
 
+struct TownNetwork
+{
+	uint failures_to_connect {};
+	std::vector<TileIndex> towns;
+};
+
 /**
 * Build the public road network connecting towns using AyStar.
 */
@@ -759,8 +771,8 @@ void GeneratePublicRoads()
 	SetGeneratingWorldProgress(GWP_PUBLIC_ROADS, uint(towns.size()));
 
 	// Create a list of networks which also contain a value indicating how many times we failed to connect to them.
-	vector<pair<uint, shared_ptr<vector<TileIndex>>>> town_networks;
-	unordered_map<TileIndex, shared_ptr<vector<TileIndex>>> towns_reachable_networks;
+	vector<std::shared_ptr<TownNetwork>> networks;
+	unordered_map<TileIndex, std::shared_ptr<TownNetwork>> town_to_network_map;
 
 	sort(towns.begin(), towns.end(), [&](auto a, auto b) { return DistanceFromEdge(a) > DistanceFromEdge(b); });
 
@@ -769,88 +781,93 @@ void GeneratePublicRoads()
 
 	_public_road_type = GetTownRoadType(Town::GetByTile(main_town));
 
-	auto main_network = make_shared<vector<TileIndex>>();
-	main_network->push_back(main_town);
+	auto main_network = make_shared<TownNetwork>();
+	main_network->towns.push_back(main_town);
 
-	town_networks.emplace_back(0, main_network);
+	networks.push_back(main_network);
+	town_to_network_map[main_town] = main_network;
+
 	IncreaseGeneratingWorldProgress(GWP_PUBLIC_ROADS);
 
 	sort(towns.begin(), towns.end(), [&](auto a, auto b) { return DistanceManhattan(main_town, a) < DistanceManhattan(main_town, b); });
 
-	for (auto begin_town : towns) {
+	for (auto start_town : towns) {
 		// Check if we can connect to any of the networks.
 		_towns_visited_along_the_way.clear();
 
-		auto reachable_network_iter = towns_reachable_networks.find(begin_town);
-		bool found_easy_path = false;
+		auto reachable_from_town = town_to_network_map.find(start_town);
+		bool found_path = false;
 
-		if (reachable_network_iter != towns_reachable_networks.end()) {
-			auto reachable_network = reachable_network_iter->second;
+		if (reachable_from_town != town_to_network_map.end()) {
+			auto reachable_network = reachable_from_town->second;
 
-			sort(reachable_network->begin(), reachable_network->end(), [&](auto a, auto b) { return DistanceManhattan(begin_town, a) < DistanceManhattan(begin_town, b); });
+			sort(reachable_network->towns.begin(), reachable_network->towns.end(), [&](auto a, auto b) { return DistanceManhattan(start_town, a) < DistanceManhattan(start_town, b); });
 
-			const TileIndex end_town = *reachable_network->begin();
+			const TileIndex end_town = *reachable_network->towns.begin();
 
 			AyStar finder {};
-
-			found_easy_path = FindPath(finder, begin_town, end_town);
-
-			finder.Free();
-		}
-
-		if (found_easy_path) {
-			reachable_network_iter->second->push_back(begin_town);
-
-			for (const TileIndex visited_town : _towns_visited_along_the_way) {
-				if (visited_town != begin_town) towns_reachable_networks[visited_town] = reachable_network_iter->second;
+			{
+				found_path = FindPath(finder, start_town, end_town);
 			}
-		} else {
-			// Sort networks by failed connection attempts, so we try the most likely one first.
-			sort(town_networks.begin(), town_networks.end(), [&](auto a, auto b) { return a.first < b.first; });
+			auto num_visited_nodes = finder.closedlist_hash.size();
+			finder.Free();
 
-			std::function<bool(pair<uint, shared_ptr<vector<TileIndex>>>)> can_reach_network = [&](auto network_pair) {
-				AyStar finder {};
-
-				auto network = network_pair.second;
-
-				// Try to connect to the town in the network that is closest to us.
-				// If we can't connect to that one, we can't connect to any of them since they are all interconnected.
-				sort(network->begin(), network->end(), [&](auto a, auto b) { return DistanceManhattan(begin_town, a) < DistanceManhattan(begin_town, b); });
-				const TileIndex end_town = *network->begin();
-
-				const bool found_path = FindPath(finder, begin_town, end_town);
-
-				if (found_path) {
-					network->push_back(begin_town);
-
-					for (auto visited_town : _towns_visited_along_the_way) {
-						if (visited_town != begin_town) towns_reachable_networks[visited_town] = network;
-					}
-				}
-
-				// Increase number of failed attempts if necessary.
-				network_pair.first += (found_path ? (network_pair.first > 0 ? -1 : 0) : 1);
-
-				finder.Free();
-
-				return found_path;
-
-			};
-
-			if (!any_of(town_networks.begin(), town_networks.end(), can_reach_network)) {
-				// We failed to connect to any network, so we are a separate network. Let future towns try to connect to us.
-				auto new_network = make_shared<vector<TileIndex>>();
-				new_network->push_back(begin_town);
-
-				// We basically failed to connect to this many towns.
-				int towns_already_in_networks = std::accumulate(town_networks.begin(), town_networks.end(), 0, [&](int accumulator, auto network_pair) {
-					return accumulator + static_cast<int>(network_pair.second->size());
-				});
-
-				town_networks.emplace_back(towns_already_in_networks, new_network);
+			if (found_path) {
+				reachable_network->towns.push_back(start_town);
 
 				for (const TileIndex visited_town : _towns_visited_along_the_way) {
-					if (visited_town != begin_town) towns_reachable_networks.insert(make_pair(visited_town, new_network));
+					town_to_network_map[visited_town] = reachable_network;
+				}
+				
+			} else {
+				town_to_network_map.erase(reachable_from_town);
+				reachable_network->failures_to_connect++;
+			}
+		}
+
+		if (!found_path) {
+			// Sort networks by failed connection attempts, so we try the most likely one first.
+			sort(networks.begin(), networks.end(), [](const std::shared_ptr<TownNetwork> &a, const std::shared_ptr<TownNetwork> &b) { return a->failures_to_connect < b->failures_to_connect; });
+
+			std::function can_reach = [&](const std::shared_ptr<TownNetwork> &network) {
+				// Try to connect to the town in the network that is closest to us.
+				// If we can't connect to that one, we can't connect to any of them since they are all interconnected.
+				sort(network->towns.begin(), network->towns.end(), [&](auto a, auto b) { return DistanceManhattan(start_town, a) < DistanceManhattan(start_town, b); });
+				const TileIndex end_town = *network->towns.begin();
+
+				AyStar finder {};
+				{
+					found_path = FindPath(finder, start_town, end_town);
+				}
+				auto num_visited_nodes = finder.closedlist_hash.size();
+				finder.Free();
+
+				if (found_path) {
+					network->towns.push_back(start_town);
+					town_to_network_map[start_town] = network;
+				} else {
+					network->failures_to_connect++;
+				}
+
+				return found_path;
+			};
+
+			if (!any_of(networks.begin(), networks.end(), can_reach)) {
+				// We failed to connect to any network, so we are a separate network. Let future towns try to connect to us.
+				auto new_network = make_shared<TownNetwork>();
+				new_network->towns.push_back(start_town);
+
+				// We basically failed to connect to this many towns.
+				int towns_already_in_networks = std::accumulate(networks.begin(), networks.end(), 0, [&](int accumulator, const std::shared_ptr<TownNetwork> &network) {
+					return accumulator + static_cast<int>(network->towns.size());
+				});
+
+				new_network->failures_to_connect++;
+				town_to_network_map[start_town] = new_network;
+				networks.push_back(new_network);
+
+				for (const TileIndex visited_town : _towns_visited_along_the_way) {
+					town_to_network_map[visited_town] = new_network;
 				}
 			}
 		}
