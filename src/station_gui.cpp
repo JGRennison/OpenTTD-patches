@@ -2580,11 +2580,12 @@ static WindowDesc _station_rating_tooltip_desc(
 	_nested_station_rating_tooltip_widgets, lengthof(_nested_station_rating_tooltip_widgets)
 	);
 
-static const int STATION_RATING_AGE[] = { 0, 10, 20, 33 };
-static const int STATION_RATING_WAITUNITS[] = { -90, -38, 14, 66, 118, 170 };
+static const int _station_rating_age[] = { 0, 10, 20, 33 };
+static const int _station_rating_wait_units[] = { -90, -38, 14, 66, 118, 170 };
 
 struct StationRatingTooltipWindow : public Window
 {
+private:
 	const Station *st;
 	const CargoSpec *cs;
 	bool newgrf_rating_used;
@@ -2610,10 +2611,12 @@ public:
 	{
 		const int scr_top = GetMainViewTop() + 2;
 		const int scr_bot = GetMainViewBottom() - 2;
-		Point pt;
+
+		Point pt {};
 		pt.y = Clamp(_cursor.pos.y + _cursor.total_size.y + _cursor.total_offs.y + 5, scr_top, scr_bot);
 		if (pt.y + sm_height > scr_bot) pt.y = std::min(_cursor.pos.y + _cursor.total_offs.y - 5, scr_bot) - sm_height;
 		pt.x = sm_width >= _screen.width ? 0 : Clamp(_cursor.pos.x - (sm_width >> 1), 0, _screen.width - sm_width);
+
 		return pt;
 	}
 
@@ -2627,6 +2630,7 @@ public:
 
 		SetDParam(0, this->cs->name);
 		GetString(this->data[0], STR_STATION_RATING_TOOLTIP_RATING_DETAILS, lastof(this->data[0]));
+
 		if (!ge->HasRating()) {
 			this->data[1][0] = '\0';
 			return;
@@ -2636,14 +2640,14 @@ public:
 		int total_rating = 0;
 
 		if (HasBit(cs->callback_mask, CBM_CARGO_STATION_RATING_CALC)) {
-			uint last_speed = ge->HasVehicleEverTriedLoading() ? ge->last_speed : 0xFF;
+			const uint last_speed = ge->HasVehicleEverTriedLoading() ? ge->last_speed : 0xFF;
 
-			uint32 var18 = std::min(ge->time_since_pickup, (byte)0xFF) | (std::min(ge->max_waiting_cargo, (uint)0xFFFF) << 8) | (std::min(last_speed, (uint)0xFF) << 24);
-			uint32 var10 = (ge->last_vehicle_type == VEH_INVALID) ? 0x0 : (ge->last_vehicle_type + 0x10);
-			uint16 callback = GetCargoCallback(CBID_CARGO_STATION_RATING_CALC, var10, var18, this->cs);
-			int newgrf_rating = 0;
+			const uint32 var18 = std::min(ge->time_since_pickup, (byte)0xFF) | (std::min(ge->max_waiting_cargo, (uint)0xFFFF) << 8) | (std::min(last_speed, (uint)0xFF) << 24);
+			const uint32 var10 = (ge->last_vehicle_type == VEH_INVALID) ? 0x0 : (ge->last_vehicle_type + 0x10);
+			const uint16 callback = GetCargoCallback(CBID_CARGO_STATION_RATING_CALC, var10, var18, this->cs);
+
 			if (callback != CALLBACK_FAILED) {
-				newgrf_rating = GB(callback, 0, 14);
+				int newgrf_rating = GB(callback, 0, 14);
 				if (HasBit(callback, 14)) newgrf_rating -= 0x4000;
 
 				this->newgrf_rating_used = true;
@@ -2694,28 +2698,28 @@ public:
 
 		if (!this->newgrf_rating_used) {
 
-			uint waitunits = ge->max_waiting_cargo;
-			int waitunits_stage = 0;
+			int wait_units_stage = 0;
 			(ge->max_waiting_cargo > 2000) ||
-				(waitunits_stage = 1, ge->max_waiting_cargo > 1000) ||
-				(waitunits_stage = 2, ge->max_waiting_cargo > 500) ||
-				(waitunits_stage = 3, ge->max_waiting_cargo > 250) ||
-				(waitunits_stage = 4, ge->max_waiting_cargo > 125) ||
-				(waitunits_stage = 5, true);
-			total_rating += STATION_RATING_WAITUNITS[waitunits_stage];
+				(wait_units_stage = 1, ge->max_waiting_cargo > 1000) ||
+				(wait_units_stage = 2, ge->max_waiting_cargo > 500) ||
+				(wait_units_stage = 3, ge->max_waiting_cargo > 250) ||
+				(wait_units_stage = 4, ge->max_waiting_cargo > 125) ||
+				(wait_units_stage = 5, true);
+			total_rating += _station_rating_wait_units[wait_units_stage];
 
-			SetDParam(0, STR_STATION_RATING_TOOLTIP_WAITUNITS_0 + waitunits_stage);
+			SetDParam(0, STR_STATION_RATING_TOOLTIP_WAITUNITS_0 + wait_units_stage);
 			SetDParam(1, ge->max_waiting_cargo);
-			SetDParam(2, this->RoundRating(STATION_RATING_WAITUNITS[waitunits_stage]));
+			SetDParam(2, RoundRating(_station_rating_wait_units[wait_units_stage]));
 			GetString(this->data[line_nr],
 				      STR_STATION_RATING_TOOLTIP_WAITUNITS,
 					  lastof(this->data[line_nr]));
 			line_nr++;
 
-			int b = ge->last_speed - 15;
-			int r_speed = b >= 0 ? b >> 2 : 0;
-			int r_speed_round = this->RoundRating(r_speed);
+			const int b = ge->last_speed - 15;
+			const int r_speed = b >= 0 ? b >> 2 : 0;
+			const int r_speed_round = RoundRating(r_speed);
 			total_rating += r_speed;
+
 			if (ge->last_speed == 255) {
 				SetDParam(0, STR_STATION_RATING_TOOLTIP_SPEED_3);
 			}
@@ -2757,10 +2761,10 @@ public:
 			(age_stage = 2, ge->last_age >= 10) ||
 			(age_stage = 3, true);
 
-		total_rating += STATION_RATING_AGE[age_stage];
+		total_rating += _station_rating_age[age_stage];
 		SetDParam(0, STR_STATION_RATING_TOOLTIP_AGE_0 + age_stage);
 		SetDParam(1, ge->last_age);
-		SetDParam(2, this->RoundRating(STATION_RATING_AGE[age_stage]));
+		SetDParam(2, RoundRating(_station_rating_age[age_stage]));
 		GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_AGE, lastof(this->data[line_nr]));
 		line_nr++;
 
@@ -2771,6 +2775,7 @@ public:
 		else {
 			SetDParam(0, STR_STATION_RATING_TOOLTIP_STATUE_NO);
 		}
+
 		GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_STATUE, lastof(this->data[line_nr]));
 		line_nr++;
 
@@ -2783,7 +2788,7 @@ public:
 
 	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
-		if (widget != WID_LI_BACKGROUND) return;
+		if (widget != 0) return;
 
 		size->height = WD_FRAMETEXT_TOP + WD_FRAMETEXT_BOTTOM + 2;
 
@@ -2802,24 +2807,24 @@ public:
 
 	void DrawWidget(const Rect &r, int widget) const override
 	{
-		uint icon_size = ScaleGUITrad(10);
-		uint line_height = std::max((uint)FONT_HEIGHT_NORMAL, icon_size) + 2;
-		uint text_ofs = (line_height - FONT_HEIGHT_NORMAL) >> 1;
-		uint icon_ofs = (line_height - icon_size) >> 1;
-
 		GfxDrawLine(r.left, r.top, r.right, r.top, PC_BLACK);
 		GfxDrawLine(r.left, r.bottom, r.right, r.bottom, PC_BLACK);
 		GfxDrawLine(r.left, r.top, r.left, r.bottom, PC_BLACK);
 		GfxDrawLine(r.right, r.top, r.right, r.bottom, PC_BLACK);
 
 		int y = r.top + WD_FRAMETEXT_TOP + 1;
-		int left0 = r.left + WD_FRAMETEXT_LEFT + 1;
-		int right0 = r.right - WD_FRAMETEXT_RIGHT - 1;
+		const int left0 = r.left + WD_FRAMETEXT_LEFT + 1;
+		const int right0 = r.right - WD_FRAMETEXT_RIGHT - 1;
+
 		DrawString(left0, right0, y, this->data[0], TC_LIGHT_BLUE, SA_CENTER);
+		
 		y += FONT_HEIGHT_NORMAL + WD_PAR_VSEP_NORMAL;
+
 		for (uint i = 1; i <= RATING_TOOLTIP_MAX_LINES; i++) {
 			if (StrEmpty(this->data[i])) break;
+
 			int left = left0, right = right0;
+
 			if (this->newgrf_rating_used && i >= 2 && i <= 4) {
 				if (_current_text_dir == TD_RTL) {
 					right -= RATING_TOOLTIP_NEWGRF_INDENT;
@@ -2828,7 +2833,9 @@ public:
 					left += RATING_TOOLTIP_NEWGRF_INDENT;
 				}
 			}
+
 			DrawString(left, right, y, this->data[i], TC_BLACK);
+
 			y += FONT_HEIGHT_NORMAL + WD_PAR_VSEP_NORMAL;
 		}
 	}
