@@ -22,6 +22,7 @@
 #include "core/geometry_func.hpp"
 #include "currency.h"
 #include "zoom_func.h"
+#include "unit_conversion.h"
 
 #include "widgets/graph_widget.h"
 
@@ -887,8 +888,7 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 		this->num_on_x_axis = 20;
 		this->num_vert_lines = 20;
 		this->month = 0xFF;
-		this->x_values_start     = 10;
-		this->x_values_increment = 10;
+		this->SetXAxis();
 
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_CPR_MATRIX_SCROLLBAR);
@@ -898,6 +898,23 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 		this->OnHundredthTick();
 
 		this->FinishInitNested(window_number);
+	}
+
+	void SetXAxis()
+	{
+		uint16 x_scale;
+		switch (_settings_game.locale.units_velocity) {
+			case 2:
+				x_scale = 5;
+				break;
+			case 3:
+				x_scale = 1;
+				break;
+			default:
+				x_scale = 10;
+		}
+		this->x_values_start     = x_scale;
+		this->x_values_increment = x_scale;
 	}
 
 	void OnInit() override
@@ -1039,6 +1056,7 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
+		this->SetXAxis();
 		this->OnHundredthTick();
 	}
 
@@ -1048,17 +1066,26 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 
 		int i = 0;
 		const CargoSpec *cs;
-		const float factor = 200.0f * 28.57f * 0.4f;
+		const float factor = 200.0f * 28.57f * 0.4f * ConvertSpeedToUnitDisplaySpeed(1 << 16) / (1.6f * static_cast<float>(1 << 16));
 
 		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
 			this->colours[i] = cs->legend_colour;
 			for (int j = 0; j != 20; j++) {
-				const byte ctt = static_cast<byte>(factor / ((static_cast<float>(j) + 1) * 10.0f));
-				this->cost[i][j] = GetTransportedGoodsIncome(1, 200, ctt, cs->Index());
+				const byte ctt = static_cast<byte>(factor / static_cast<float>((j + 1) * this->x_values_increment));
+				this->cost[i][j] = GetTransportedGoodsIncome(10, 20, ctt, cs->Index());
 			}
 			i++;
 		}
 		this->num_dataset = i;
+	}
+
+	void SetStringParameters(int widget) const override
+	{
+		switch (widget) {
+			case WID_CPR_FOOTER:
+				SetDParam(0, STR_UNIT_NAME_VELOCITY_IMPERIAL + _settings_game.locale.units_velocity);
+				break;
+		}
 	}
 };
 
@@ -1093,7 +1120,7 @@ static const NWidgetPart _nested_cargo_payment_rates_widgets[] = {
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(NWID_SPACER), SetMinimalSize(WD_RESIZEBOX_WIDTH, 0), SetFill(1, 0), SetResize(1, 0),
-			NWidget(WWT_TEXT, COLOUR_BROWN, WID_CPR_FOOTER), SetMinimalSize(0, 6), SetPadding(2, 0, 2, 0), SetDataTip(STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL, STR_NULL),
+			NWidget(WWT_TEXT, COLOUR_BROWN, WID_CPR_FOOTER), SetMinimalSize(0, 6), SetPadding(2, 0, 2, 0), SetDataTip(STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED, STR_NULL),
 			NWidget(NWID_SPACER), SetFill(1, 0), SetResize(1, 0),
 			NWidget(WWT_RESIZEBOX, COLOUR_BROWN, WID_CPR_RESIZE),
 		EndContainer(),

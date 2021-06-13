@@ -1520,6 +1520,12 @@ static bool ClimateThresholdModeChanged(int32 p1)
 	return true;
 }
 
+static bool VelocityUnitsChanged(int32 p1) {
+	InvalidateWindowClassesData(WC_PAYMENT_RATES);
+	MarkWholeScreenDirty();
+	return true;
+}
+
 /** Checks if any settings are set to incorrect values, and sets them to correct values in that case. */
 static void ValidateSettings()
 {
