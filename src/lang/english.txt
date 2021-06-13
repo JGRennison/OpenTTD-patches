@@ -6518,7 +6518,7 @@ STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED                         :Max speed of la
 STR_STATION_RATING_TOOLTIP_NEWGRF_WAITUNITS                     :Cargo waiting (on average per next stop): {LTBLUE}{NUM}
 STR_STATION_RATING_TOOLTIP_NEWGRF_WAITTIME                      :Time since last pickup: {LTBLUE}{NUM} day{P "" s}
 
-STR_STATION_RATING_TOOLTIP_SPEED                                :Max speed of last vehicle (max +24%): {STRING2} ({STRING})
+STR_STATION_RATING_TOOLTIP_SPEED                                :Max speed of last vehicle (max +17%): {STRING2} ({STRING})
 STR_STATION_RATING_TOOLTIP_SPEED_ZERO                           :{RED}{VELOCITY}, {NUM}%
 STR_STATION_RATING_TOOLTIP_SPEED_0                              :{ORANGE}{VELOCITY}, +{NUM}%
 STR_STATION_RATING_TOOLTIP_SPEED_1                              :{GOLD}{VELOCITY}, +{NUM}%
@@ -6539,7 +6539,7 @@ STR_STATION_RATING_TOOLTIP_WAITTIME_2                           :{GOLD}{NUM} day
 STR_STATION_RATING_TOOLTIP_WAITTIME_3                           :{YELLOW}{NUM} day{P "" s}, +{NUM}%
 STR_STATION_RATING_TOOLTIP_WAITTIME_4                           :{GREEN}{NUM} day{P "" s}, +{NUM}%
 
-STR_STATION_RATING_TOOLTIP_WAITUNITS                            :Cargo waiting (on average per next stop, max +67%): {STRING2}
+STR_STATION_RATING_TOOLTIP_WAITUNITS                            :Cargo waiting (on average per next stop, max +16%): {STRING2}
 STR_STATION_RATING_TOOLTIP_WAITUNITS_0                          :{RED}{NUM}, {NUM}%
 STR_STATION_RATING_TOOLTIP_WAITUNITS_1                          :{ORANGE}{NUM}, {NUM}%
 STR_STATION_RATING_TOOLTIP_WAITUNITS_2                          :{GOLD}{NUM}, {NUM}%
