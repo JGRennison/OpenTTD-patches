@@ -12,6 +12,7 @@
 #include <memory>
 #include <numeric>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 #include "rail_map.h"
 #include "road_map.h"
@@ -252,14 +253,13 @@ static bool _has_tunnel_in_path;
 static RoadType _public_road_type;
 static const uint _public_road_hash_size = 8U; ///< The number of bits the hash for river finding should have.
 
-static const int32 BASE_COST = 1;          // Cost for utilizing an existing road, bridge, or tunnel.
-static const int32 COST_FOR_NEW_ROAD = 10; // Cost for building a new road.
-static const int32 COST_FOR_SLOPE = 5;     // Additional cost if the road heads up or down a slope.
+static const int32 COST_FOR_NEW_ROAD = 100; // Cost for building a new road.
+static const int32 COST_FOR_SLOPE = 50;     // Additional cost if the road heads up or down a slope.
 
 /** AyStar callback for getting the cost of the current node. */
 static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *parent)
 {
-	int32 cost = BASE_COST;
+	int32 cost = 0;
 
 	if (!IsTileType(current->tile, MP_ROAD)) {
 		if (!AreTilesAdjacent(parent->path.node.tile, current->tile))
@@ -289,7 +289,7 @@ static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *
 /** AyStar callback for getting the estimated cost to the destination. */
 static int32 PublicRoad_CalculateH(AyStar *aystar, AyStarNode *current, OpenListNode *parent)
 {
-	return DistanceManhattan(*static_cast<TileIndex*>(aystar->user_target), current->tile) * BASE_COST;
+	return DistanceManhattan(*static_cast<TileIndex*>(aystar->user_target), current->tile) * COST_FOR_NEW_ROAD;
 }
 
 /** Helper function to check if a tile along a certain direction is going up an inclined slope. */
@@ -715,7 +715,8 @@ bool FindPath(AyStar& finder, const TileIndex from, TileIndex to)
 	finder.EndNodeCheck = PublicRoad_EndNodeCheck;
 	finder.FoundEndNode = PublicRoad_FoundEndNode;
 	finder.user_target = &(to);
-	finder.max_search_nodes = 1 << 20; // 1,048,576
+	finder.max_search_nodes = 1 << 18; // 1,048,576
+	finder.max_path_cost = 1000 * COST_FOR_NEW_ROAD;
 
 	finder.Init(1 << _public_road_hash_size);
 
@@ -780,6 +781,7 @@ void GeneratePublicRoads()
 	towns.erase(towns.begin());
 
 	_public_road_type = GetTownRoadType(Town::GetByTile(main_town));
+	std::unordered_set<TileIndex> checked_towns;
 
 	auto main_network = make_shared<TownNetwork>();
 	main_network->towns.push_back(main_town);
@@ -796,6 +798,8 @@ void GeneratePublicRoads()
 		// Check if we can connect to any of the networks.
 		_towns_visited_along_the_way.clear();
 
+		checked_towns.clear();
+
 		auto reachable_from_town = town_to_network_map.find(start_town);
 		bool found_path = false;
 
@@ -805,6 +809,7 @@ void GeneratePublicRoads()
 			sort(reachable_network->towns.begin(), reachable_network->towns.end(), [&](auto a, auto b) { return DistanceManhattan(start_town, a) < DistanceManhattan(start_town, b); });
 
 			const TileIndex end_town = *reachable_network->towns.begin();
+			checked_towns.emplace(end_town);
 
 			AyStar finder {};
 			{
@@ -833,10 +838,20 @@ void GeneratePublicRoads()
 			sort(networks.begin(), networks.end(), [](const std::shared_ptr<TownNetwork> &a, const std::shared_ptr<TownNetwork> &b) { return a->failures_to_connect < b->failures_to_connect; });
 
 			std::function can_reach = [&](const std::shared_ptr<TownNetwork> &network) {
+				if (reachable_from_town != town_to_network_map.end() && network.get() == reachable_from_town->second.get()) {
+					return false;
+				}
+				
 				// Try to connect to the town in the network that is closest to us.
 				// If we can't connect to that one, we can't connect to any of them since they are all interconnected.
 				sort(network->towns.begin(), network->towns.end(), [&](auto a, auto b) { return DistanceManhattan(start_town, a) < DistanceManhattan(start_town, b); });
 				const TileIndex end_town = *network->towns.begin();
+
+				if (checked_towns.find(end_town) != checked_towns.end()/* || DistanceManhattan(start_town, end_town) > 2000*/) {
+					return false;
+				}
+
+				checked_towns.emplace(end_town);
 
 				AyStar finder {};
 				{
