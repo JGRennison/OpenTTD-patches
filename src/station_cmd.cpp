@@ -3878,9 +3878,9 @@ int GetTargetRating(const Station *st, const CargoSpec *cs, const GoodsEntry *ge
 	} else if (HasBit(cs->callback_mask, CBM_CARGO_STATION_RATING_CALC)) {
 
 		int new_grf_rating;
-		skip = GetNewGrfRating(st, cs, ge, &new_grf_rating);
 		
-		if (!skip) {
+		if (GetNewGrfRating(st, cs, ge, &new_grf_rating)) {
+			skip = true;
 			rating += new_grf_rating;
 		}
 	}
