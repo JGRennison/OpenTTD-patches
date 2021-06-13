@@ -783,6 +783,7 @@ void GeneratePublicRoads()
 
 	auto main_network = make_shared<TownNetwork>();
 	main_network->towns.push_back(main_town);
+	main_network->failures_to_connect = 0;
 
 	networks.push_back(main_network);
 	town_to_network_map[main_town] = main_network;
@@ -809,11 +810,13 @@ void GeneratePublicRoads()
 			{
 				found_path = FindPath(finder, start_town, end_town);
 			}
-			auto num_visited_nodes = finder.closedlist_hash.size();
 			finder.Free();
 
 			if (found_path) {
 				reachable_network->towns.push_back(start_town);
+				if (reachable_network->failures_to_connect > 0) {
+					reachable_network->failures_to_connect--;
+				}
 
 				for (const TileIndex visited_town : _towns_visited_along_the_way) {
 					town_to_network_map[visited_town] = reachable_network;
@@ -839,11 +842,13 @@ void GeneratePublicRoads()
 				{
 					found_path = FindPath(finder, start_town, end_town);
 				}
-				auto num_visited_nodes = finder.closedlist_hash.size();
 				finder.Free();
 
 				if (found_path) {
 					network->towns.push_back(start_town);
+					if (network->failures_to_connect > 0) {
+						network->failures_to_connect--;
+					}
 					town_to_network_map[start_town] = network;
 				} else {
 					network->failures_to_connect++;
@@ -856,13 +861,14 @@ void GeneratePublicRoads()
 				// We failed to connect to any network, so we are a separate network. Let future towns try to connect to us.
 				auto new_network = make_shared<TownNetwork>();
 				new_network->towns.push_back(start_town);
+				new_network->failures_to_connect = 0;
 
 				// We basically failed to connect to this many towns.
 				int towns_already_in_networks = std::accumulate(networks.begin(), networks.end(), 0, [&](int accumulator, const std::shared_ptr<TownNetwork> &network) {
 					return accumulator + static_cast<int>(network->towns.size());
 				});
 
-				new_network->failures_to_connect++;
+				new_network->failures_to_connect += towns_already_in_networks;
 				town_to_network_map[start_town] = new_network;
 				networks.push_back(new_network);
 
