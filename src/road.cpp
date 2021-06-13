@@ -246,6 +246,8 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, u
 CommandCost CmdBuildTunnel(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text = nullptr);
 CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text = nullptr);
 
+static std::vector<TileIndex> _town_centers;
+static std::vector<TileIndex> _towns_visited_along_the_way;
 static bool _has_tunnel_in_path;
 static RoadType _public_road_type;
 static const uint _public_road_hash_size = 8U; ///< The number of bits the hash for river finding should have.
@@ -261,15 +263,14 @@ static uint PublicRoad_Hash(uint tile, uint dir)
 	return GB(TileHash(TileX(tile), TileY(tile)), 0, _public_road_hash_size);
 }
 
-static const int32 _base_cost = 1;          // Cost for utilizing an existing road, bridge, or tunnel.
+static const int32 BASE_COST = 1;          // Cost for utilizing an existing road, bridge, or tunnel.
+static const int32 COST_FOR_NEW_ROAD = 10; // Cost for building a new road.
+static const int32 COST_FOR_SLOPE = 5;     // Additional cost if the road heads up or down a slope.
 
 /** AyStar callback for getting the cost of the current node. */
 static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *parent)
 {
-	static const int32 COST_FOR_NEW_ROAD = 10; // Cost for building a new road.
-	static const int32 COST_FOR_SLOPE = 5;     // Additional cost if the road heads up or down a slope.
-
-	int32 cost = _base_cost;
+	int32 cost = BASE_COST;
 
 	if (!IsTileType(current->tile, MP_ROAD)) {
 		if (!AreTilesAdjacent(parent->path.node.tile, current->tile))
@@ -299,7 +300,7 @@ static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *
 /** AyStar callback for getting the estimated cost to the destination. */
 static int32 PublicRoad_CalculateH(AyStar *aystar, AyStarNode *current, OpenListNode *parent)
 {
-	return DistanceManhattan(*static_cast<TileIndex*>(aystar->user_target), current->tile) * _base_cost;
+	return DistanceManhattan(*static_cast<TileIndex*>(aystar->user_target), current->tile) * BASE_COST;
 }
 
 /** Helper function to check if a tile along a certain direction is going up an inclined slope. */
@@ -632,6 +633,14 @@ static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 /** AyStar callback for checking whether we reached our destination. */
 static int32 PublicRoad_EndNodeCheck(const AyStar *aystar, const OpenListNode *current)
 {
+	// Mark towns visited along the way.
+	const auto search_result =
+		std::find(_town_centers.begin(), _town_centers.end(), current->path.node.tile);
+
+	if (search_result != _town_centers.end()) {
+		_towns_visited_along_the_way.push_back(current->path.node.tile);
+	}
+
 	return current->path.node.tile == *static_cast<TileIndex*>(aystar->user_target) ? AYSTAR_FOUND_END_NODE : AYSTAR_DONE;
 }
 
@@ -741,87 +750,117 @@ void GeneratePublicRoads()
 	using namespace std;
 
 	if (_settings_game.game_creation.build_public_roads == PRC_NONE) return;
+
+	_town_centers.clear();
+	_towns_visited_along_the_way.clear();
+
+	vector<TileIndex> towns;
+	towns.clear();
+	{
+		for (const Town *town : Town::Iterate()) {
+			towns.push_back(town->xy);
+			_town_centers.push_back(town->xy);
+		}
+	}
+
+	if (towns.empty()) {
+		return;
+	}
 	
-	vector<TileIndex> cities;
-	vector<TileIndex> villages;
-	vector<TileIndex> unconnected_villages;
+	SetGeneratingWorldProgress(GWP_PUBLIC_ROADS, uint(towns.size()));
 
-	_public_road_type = GetTownRoadType(*Town::Iterate().begin());
+	// Create a list of networks which also contain a value indicating how many times we failed to connect to them.
+	vector<pair<uint, shared_ptr<vector<TileIndex>>>> town_networks;
+	unordered_map<TileIndex, shared_ptr<vector<TileIndex>>> towns_reachable_networks;
 
-	for (const Town *town : Town::Iterate()) {
-		if (town->larger_town) {
-			cities.push_back(town->xy);
-		} else {
-			villages.push_back(town->xy);
-		}
-	}
+	TileIndex main_town = *towns.begin();
+	towns.erase(towns.begin());
 
-	SetGeneratingWorldProgress(GWP_PUBLIC_ROADS, uint(cities.size() + villages.size()));
+	_public_road_type = GetTownRoadType(Town::GetByTile(main_town));
 
-	// Try to connect every village to the nearest city.
-	for (auto village : villages) {
-		sort(cities.begin(), cities.end(), [&](auto a, auto b) { return DistanceManhattan(village, a) < DistanceManhattan(village, b); });
+	auto main_network = make_shared<vector<TileIndex>>();
+	main_network->push_back(main_town);
 
-		bool is_connected = false;
-		
-		for (auto city : cities) {
+	town_networks.emplace_back(0, main_network);
+	IncreaseGeneratingWorldProgress(GWP_PUBLIC_ROADS);
+
+	sort(towns.begin(), towns.end(), [&](auto a, auto b) { return DistanceManhattan(main_town, a) < DistanceManhattan(main_town, b); });
+
+	for (auto begin_town : towns) {
+		// Check if we can connect to any of the networks.
+		_towns_visited_along_the_way.clear();
+
+		auto reachable_network_iter = towns_reachable_networks.find(begin_town);
+		bool found_easy_path = false;
+
+		if (reachable_network_iter != towns_reachable_networks.end()) {
+			auto reachable_network = reachable_network_iter->second;
+
+			sort(reachable_network->begin(), reachable_network->end(), [&](auto a, auto b) { return DistanceManhattan(begin_town, a) < DistanceManhattan(begin_town, b); });
+
+			const TileIndex end_town = *reachable_network->begin();
+
 			AyStar finder {};
 
-			auto found_path = FindPath(finder, village, city);
+			found_easy_path = FindPath(finder, begin_town, end_town);
 
 			finder.Free();
+		}
 
-			if (found_path){
-				is_connected = true;
-				break;
+		if (found_easy_path) {
+			reachable_network_iter->second->push_back(begin_town);
+
+			for (const TileIndex visited_town : _towns_visited_along_the_way) {
+				if (visited_town != begin_town) towns_reachable_networks[visited_town] = reachable_network_iter->second;
 			}
-		}
-
-		if (!is_connected) {
-			unconnected_villages.push_back(village);
 		} else {
-			IncreaseGeneratingWorldProgress(GWP_PUBLIC_ROADS);
-		}
-	}
+			// Sort networks by failed connection attempts, so we try the most likely one first.
+			sort(town_networks.begin(), town_networks.end(), [&](auto a, auto b) { return a.first < b.first; });
 
-	vector villages_copy(unconnected_villages);
+			std::function<bool(pair<uint, shared_ptr<vector<TileIndex>>>)> can_reach_network = [&](auto network_pair) {
+				AyStar finder {};
 
-	// If a village could not be connected to a city, try to connect it to another unconnected village.
-	for (auto village : unconnected_villages) {
-		sort(villages_copy.begin(), villages_copy.end(), [&](auto a, auto b) { return DistanceManhattan(village, a) < DistanceManhattan(village, b); });
+				auto network = network_pair.second;
 
-		for (auto other_village : villages_copy) {
-			AyStar finder {};
+				// Try to connect to the town in the network that is closest to us.
+				// If we can't connect to that one, we can't connect to any of them since they are all interconnected.
+				sort(network->begin(), network->end(), [&](auto a, auto b) { return DistanceManhattan(begin_town, a) < DistanceManhattan(begin_town, b); });
+				const TileIndex end_town = *network->begin();
 
-			auto found_path = FindPath(finder, village, other_village);
+				const bool found_path = FindPath(finder, begin_town, end_town);
 
-			finder.Free();
+				if (found_path) {
+					network->push_back(begin_town);
 
-			if (found_path) {
-				break;
-			}
-		}
+					for (auto visited_town : _towns_visited_along_the_way) {
+						if (visited_town != begin_town) towns_reachable_networks[visited_town] = network;
+					}
+				}
 
-		IncreaseGeneratingWorldProgress(GWP_PUBLIC_ROADS);
-	}
+				// Increase number of failed attempts if necessary.
+				network_pair.first += (found_path ? (network_pair.first > 0 ? -1 : 0) : 1);
 
-	vector cities_copy(cities);
+				finder.Free();
 
-	// Connect the cities with each-other.
-	for (auto city : cities) {
-		sort(cities_copy.begin(), cities_copy.end(), [&](auto a, auto b) { return DistanceManhattan(city, a) < DistanceManhattan(city, b); });
+				return found_path;
 
-		for (auto other_city : cities_copy) {
-			if (other_city == city) continue;
+			};
 
-			AyStar finder {};
+			if (!any_of(town_networks.begin(), town_networks.end(), can_reach_network)) {
+				// We failed to connect to any network, so we are a separate network. Let future towns try to connect to us.
+				auto new_network = make_shared<vector<TileIndex>>();
+				new_network->push_back(begin_town);
 
-			auto found_path = FindPath(finder, city, other_city);
+				// We basically failed to connect to this many towns.
+				int towns_already_in_networks = std::accumulate(town_networks.begin(), town_networks.end(), 0, [&](int accumulator, auto network_pair) {
+					return accumulator + static_cast<int>(network_pair.second->size());
+				});
 
-			finder.Free();
+				town_networks.emplace_back(towns_already_in_networks, new_network);
 
-			if (found_path) {
-				break;
+				for (const TileIndex visited_town : _towns_visited_along_the_way) {
+					if (visited_town != begin_town) towns_reachable_networks.insert(make_pair(visited_town, new_network));
+				}
 			}
 		}
 
