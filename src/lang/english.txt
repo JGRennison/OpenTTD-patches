@@ -1502,6 +1502,8 @@ STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH                          :Tropics width a
 STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH_HELPTEXT                 :Controls the width of the tropic zone that surrounds rivers in sub-tropic landscape.
 STR_CONFIG_SETTING_LAKE_SIZE                                    :Size of lakes: {STRING}
 STR_CONFIG_SETTING_LAKE_SIZE_HELPTEXT                           :Controls the size of lakes that are generated along rivers.
+STR_CONFIG_SETTING_LAKE_SIZE_VALUE                              :{NUM}
+STR_CONFIG_SETTING_LAKE_SIZE_ZERO                               :No lakes
 STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS                     :Lakes can be generated in sub-tropic climate deserts: {STRING}
 STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS_HELPTEXT            :Choose whether the lakes that spawn along rivers are allowed in deserts.
 STR_CONFIG_SETTING_RIVER_AMOUNT                                 :River amount: {STRING2}

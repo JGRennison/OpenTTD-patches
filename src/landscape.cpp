@@ -93,6 +93,15 @@ extern const byte _slope_to_sprite_offset[32] = {
  */
 static SnowLine *_snow_line = nullptr;
 
+/** The current spring during river generation */
+static TileIndex _current_spring = INVALID_TILE;
+
+/** The current estuary during river generation when one river flows into another */
+static TileIndex _current_estuary = INVALID_TILE;
+
+/** Whether the current river is a big river that others flow into */
+static bool _is_main_river = false;
+
 byte _cached_snowline = 0;
 
 /**
@@ -1183,16 +1192,49 @@ static void River_GetNeighbours(AyStar *aystar, OpenListNode *current)
 	}
 }
 
+/** Callback to widen a river tile. */
+static bool RiverMakeWider(TileIndex tile, void *data)
+{
+	if (IsValidTile(tile) && !IsWaterTile(tile) && GetTileSlope(tile) == GetTileSlope(*(TileIndex *)data)) {
+		MakeRiver(tile, Random());
+		/* Remove desert directly around the river tile. */
+		TileIndex cur_tile = tile;
+
+		MarkTileDirtyByTile(cur_tile);
+		CircularTileSearch(&cur_tile, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
+	}
+	return false;
+}
+
 /* AyStar callback when an route has been found. */
 static void River_FoundEndNode(AyStar *aystar, OpenListNode *current)
 {
+	/* Count river length. */
+	uint length = 0;
+
 	for (PathNode *path = &current->path; path != nullptr; path = path->parent) {
+		length++;
+	}
+
+	uint cur_pos = 0;
+	for (PathNode *path = &current->path; path != nullptr; path = path->parent, cur_pos++) {
 		TileIndex tile = path->node.tile;
 		if (!IsWaterTile(tile)) {
 			MakeRiver(tile, Random());
+
+			// Widen river depending on how far we are away from the source.
+			const uint current_river_length = DistanceManhattan(_current_spring, path->node.tile);
+			const uint long_river_length = _settings_game.game_creation.min_river_length * 4;
+			const uint radius = std::min(3u, (current_river_length / (long_river_length / 3u)) + 1u);
+			
 			MarkTileDirtyByTile(tile);
-			/* Remove desert directly around the river tile. */
-			CircularTileSearch(&tile, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
+
+			if (_is_main_river && (radius > 1)) {
+				CircularTileSearch(&tile, radius + RandomRange(1), RiverMakeWider, (void *)&path->node.tile);
+			} else {
+				/* Remove desert directly around the river tile. */
+				CircularTileSearch(&tile, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
+			}
 		}
 	}
 }
@@ -1239,15 +1281,24 @@ static void BuildRiver(TileIndex begin, TileIndex end)
  * Try to flow the river down from a given begin.
  * @param spring The springing point of the river.
  * @param begin  The begin point we are looking from; somewhere down hill from the spring.
+ * @param min_river_length The minimum length for the river.
  * @return True iff a river could/has been built, otherwise false.
  */
-static bool FlowRiver(TileIndex spring, TileIndex begin)
+static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 {
 #	define SET_MARK(x) marks.insert(x)
 #	define IS_MARKED(x) (marks.find(x) != marks.end())
 
 	uint height = TileHeight(begin);
-	if (IsWaterTile(begin)) return DistanceManhattan(spring, begin) > _settings_game.game_creation.min_river_length;
+	if (IsWaterTile(begin))
+	{
+		if (GetTileZ(begin) == 0) {
+			_current_estuary = begin;
+			_is_main_river = true;
+		}
+
+		return DistanceManhattan(spring, begin) > min_river_length;
+	}
 
 	btree::btree_set<TileIndex> marks;
 	SET_MARK(begin);
@@ -1281,8 +1332,8 @@ static bool FlowRiver(TileIndex spring, TileIndex begin)
 
 	if (found) {
 		/* Flow further down hill. */
-		found = FlowRiver(spring, end);
-	} else if (count > 32) {
+		found = FlowRiver(spring, end, min_river_length);
+	} else if (count > 32 && _settings_game.game_creation.lake_size != 0) {
 		/* Maybe we can make a lake. Find the Nth of the considered tiles. */
 		TileIndex lakeCenter = 0;
 		int i = RandomRange(count - 1) + 1;
@@ -1300,14 +1351,17 @@ static bool FlowRiver(TileIndex spring, TileIndex begin)
 				/* We don't want lakes in the desert. */
 				(_settings_game.game_creation.landscape != LT_TROPIC || _settings_game.game_creation.lakes_allowed_in_deserts || GetTropicZone(lakeCenter) != TROPICZONE_DESERT) &&
 				/* We only want a lake if the river is long enough. */
-				DistanceManhattan(spring, lakeCenter) > _settings_game.game_creation.min_river_length) {
+				DistanceManhattan(spring, lakeCenter) > min_river_length) {
 			end = lakeCenter;
 			MakeRiver(lakeCenter, Random());
 			MarkTileDirtyByTile(lakeCenter);
 			/* Remove desert directly around the river tile. */
 			CircularTileSearch(&lakeCenter, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
 			lakeCenter = end;
-			uint range = RandomRange(_settings_game.game_creation.lake_size) + 3;
+
+			// Setting lake size +- 25%
+			const auto random_percentage = 75 + RandomRange(50);
+			const uint range = ((_settings_game.game_creation.lake_size * random_percentage) / 100) + 3;
 
 			MakeLakeData data;
 			data.centre = lakeCenter;
@@ -1345,14 +1399,28 @@ static void CreateRivers()
 	if (amount == 0) return;
 
 	uint wells = ScaleByMapSize(4 << _settings_game.game_creation.amount_of_rivers);
+	const uint num_short_rivers = wells - std::max(1u, wells / 10);
 	SetGeneratingWorldProgress(GWP_RIVER, wells + 256 / 64); // Include the tile loop calls below.
+
+	for (; wells > num_short_rivers; wells--) {
+		IncreaseGeneratingWorldProgress(GWP_RIVER);
+		for (int tries = 0; tries < 128; tries++) {
+			TileIndex t = RandomTile();
+			if (!CircularTileSearch(&t, 8, FindSpring, nullptr)) continue;
+			_current_spring = t;
+			_is_main_river = false;
+			if (FlowRiver(t, t, _settings_game.game_creation.min_river_length * 4)) break;
+		}
+	}
 
 	for (; wells != 0; wells--) {
 		IncreaseGeneratingWorldProgress(GWP_RIVER);
 		for (int tries = 0; tries < 128; tries++) {
 			TileIndex t = RandomTile();
 			if (!CircularTileSearch(&t, 8, FindSpring, nullptr)) continue;
-			if (FlowRiver(t, t)) break;
+			_current_spring = t;
+			_is_main_river = false;
+			if (FlowRiver(t, t, _settings_game.game_creation.min_river_length)) break;
 		}
 	}
 
