@@ -2585,9 +2585,6 @@ static const int STATION_RATING_WAITUNITS[] = { -90, -38, 14, 66, 118, 170 };
 
 struct StationRatingTooltipWindow : public Window
 {
-	TileType tiletype;
-	uint16 objIndex;
-	TooltipCloseCondition close_cond;
 	const Station *st;
 	const CargoSpec *cs;
 	bool newgrf_rating_used;
@@ -2597,21 +2594,22 @@ struct StationRatingTooltipWindow : public Window
 	static const uint RATING_TOOLTIP_NEWGRF_INDENT = 20;
 
 public:
-	char data[RATING_TOOLTIP_MAX_LINES + 1][RATING_TOOLTIP_LINE_BUFF_SIZE];
+	char data[RATING_TOOLTIP_MAX_LINES + 1][RATING_TOOLTIP_LINE_BUFF_SIZE] {};
 
 	StationRatingTooltipWindow(Window *parent, const Station *st, const CargoSpec *cs) : Window(&_station_rating_tooltip_desc)
 	{
 		this->parent = parent;
 		this->st = st;
 		this->cs = cs;
+		this->newgrf_rating_used = false;
 		this->InitNested();
 		CLRBITS(this->flags, WF_WHITE_BORDER);
 	}
 
 	Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number) override
 	{
-		int scr_top = GetMainViewTop() + 2;
-		int scr_bot = GetMainViewBottom() - 2;
+		const int scr_top = GetMainViewTop() + 2;
+		const int scr_bot = GetMainViewBottom() - 2;
 		Point pt;
 		pt.y = Clamp(_cursor.pos.y + _cursor.total_size.y + _cursor.total_offs.y + 5, scr_top, scr_bot);
 		if (pt.y + sm_height > scr_bot) pt.y = std::min(_cursor.pos.y + _cursor.total_offs.y - 5, scr_bot) - sm_height;
@@ -2619,11 +2617,12 @@ public:
 		return pt;
 	}
 
-	int RoundRating(int rating) {
+	static int RoundRating(const int rating) {
 		return RoundDivSU(rating * 101, 256);
 	}
 
-	virtual void OnInit() {
+	void OnInit() override
+	{
 		const GoodsEntry *ge = &this->st->goods[this->cs->Index()];
 
 		SetDParam(0, this->cs->name);
@@ -2782,11 +2781,12 @@ public:
 		this->data[line_nr][0] = '\0';
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize)
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		if (widget != WID_LI_BACKGROUND) return;
 
 		size->height = WD_FRAMETEXT_TOP + WD_FRAMETEXT_BOTTOM + 2;
+
 		for (uint i = 0; i <= RATING_TOOLTIP_MAX_LINES; i++) {
 			if (StrEmpty(this->data[i])) break;
 
@@ -2796,10 +2796,11 @@ public:
 			size->width = std::max(size->width, width);
 			size->height += FONT_HEIGHT_NORMAL + WD_PAR_VSEP_NORMAL;
 		}
+
 		size->height -= WD_PAR_VSEP_NORMAL;
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const
+	void DrawWidget(const Rect &r, int widget) const override
 	{
 		uint icon_size = ScaleGUITrad(10);
 		uint line_height = std::max((uint)FONT_HEIGHT_NORMAL, icon_size) + 2;
@@ -2832,7 +2833,7 @@ public:
 		}
 	}
 
-	virtual void OnMouseLoop()
+	void OnMouseLoop() override
 	{
 		if (!_cursor.in_window || !_mouse_hovering) {
 			delete this;
