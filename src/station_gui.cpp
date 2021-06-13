@@ -42,6 +42,7 @@
 #include <set>
 #include <vector>
 
+#include "cheat_func.h"
 #include "newgrf_callbacks.h"
 #include "newgrf_cargo.h"
 #include "safeguards.h"
@@ -2580,8 +2581,12 @@ static WindowDesc _station_rating_tooltip_desc(
 	_nested_station_rating_tooltip_widgets, lengthof(_nested_station_rating_tooltip_widgets)
 	);
 
-static const int _station_rating_age[] = { 0, 10, 20, 33 };
-static const int _station_rating_wait_units[] = { -90, -38, 14, 66, 118, 170 };
+bool GetNewGrfRating(const Station *st, const CargoSpec *cs, const GoodsEntry *ge, int *new_grf_rating);
+int GetSpeedRating(const GoodsEntry *ge);
+int GetWaitTimeRating(const CargoSpec *cs, const GoodsEntry *ge);
+int GetWaitingCargoRating(const Station *st, const GoodsEntry *ge);
+int GetStatueRating(const Station *st);
+int GetVehicleAgeRating(const GoodsEntry *ge);
 
 struct StationRatingTooltipWindow : public Window
 {
@@ -2591,7 +2596,7 @@ private:
 	bool newgrf_rating_used;
 
 	static const uint RATING_TOOLTIP_LINE_BUFF_SIZE = 512;
-	static const uint RATING_TOOLTIP_MAX_LINES = 8;
+	static const uint RATING_TOOLTIP_MAX_LINES = 9;
 	static const uint RATING_TOOLTIP_NEWGRF_INDENT = 20;
 
 public:
@@ -2635,32 +2640,35 @@ public:
 			this->data[1][0] = '\0';
 			return;
 		}
-
+		
 		uint line_nr = 1;
+
+		// Calculate target rating.
+		bool skip = false;
 		int total_rating = 0;
 
-		if (HasBit(cs->callback_mask, CBM_CARGO_STATION_RATING_CALC)) {
-			const uint last_speed = ge->HasVehicleEverTriedLoading() ? ge->last_speed : 0xFF;
+		if (_extra_cheats.station_rating.value) {
+			total_rating = 255;
+			skip = true;
+			GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_USING_CHEAT, lastof(this->data[line_nr]));
+			line_nr++;
+		} else if (HasBit(cs->callback_mask, CBM_CARGO_STATION_RATING_CALC)) {
 
-			const uint32 var18 = std::min(ge->time_since_pickup, (byte)0xFF) | (std::min(ge->max_waiting_cargo, (uint)0xFFFF) << 8) | (std::min(last_speed, (uint)0xFF) << 24);
-			const uint32 var10 = (ge->last_vehicle_type == VEH_INVALID) ? 0x0 : (ge->last_vehicle_type + 0x10);
-			const uint16 callback = GetCargoCallback(CBID_CARGO_STATION_RATING_CALC, var10, var18, this->cs);
+			int new_grf_rating;
+			this->newgrf_rating_used = GetNewGrfRating(st, cs, ge, &new_grf_rating);
+			
+			if (this->newgrf_rating_used) {
+				skip = true;
+				total_rating += new_grf_rating;
+				new_grf_rating = RoundRating(new_grf_rating);
 
-			if (callback != CALLBACK_FAILED) {
-				int newgrf_rating = GB(callback, 0, 14);
-				if (HasBit(callback, 14)) newgrf_rating -= 0x4000;
-
-				this->newgrf_rating_used = true;
-
-				total_rating += newgrf_rating;
-				newgrf_rating = this->RoundRating(newgrf_rating);
-
-				SetDParam(0, STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_0 + (newgrf_rating <= 0 ? 0 : 1));
-				SetDParam(1, newgrf_rating);
+				SetDParam(0, STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_0 + (new_grf_rating <= 0 ? 0 : 1));
+				SetDParam(1, new_grf_rating);
 				GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_NEWGRF_RATING, lastof(this->data[line_nr]));
 				line_nr++;
 
-				SetDParam(0, std::min(50/*ge->last_unprocessed_speed*/, 0xFF));
+				const uint last_speed = ge->HasVehicleEverTriedLoading() && ge->IsSupplyAllowed() ? ge->last_speed : 0xFF;
+				SetDParam(0, std::min<uint>(last_speed, 0xFFu));
 
 				switch (ge->last_vehicle_type)
 				{
@@ -2684,102 +2692,160 @@ public:
 				GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED, lastof(this->data[line_nr]));
 				line_nr++;
 
-				SetDParam(0, std::min(ge->max_waiting_cargo, (uint)0xFFFF));
+				SetDParam(0, std::min(ge->max_waiting_cargo, 0xFFFFu));
 				GetString(this->data[line_nr],
 					STR_STATION_RATING_TOOLTIP_NEWGRF_WAITUNITS,
 						  lastof(this->data[line_nr]));
 				line_nr++;
 
-				SetDParam(0, ge->time_since_pickup * STATION_RATING_TICKS / DAY_TICKS);
+				SetDParam(0, ge->time_since_pickup * STATION_RATING_TICKS / (DAY_TICKS * _settings_game.economy.day_length_factor));
 				GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_NEWGRF_WAITTIME, lastof(this->data[line_nr]));
 				line_nr++;
 			}
 		}
 
-		if (!this->newgrf_rating_used) {
-
-			int wait_units_stage = 0;
-			(ge->max_waiting_cargo > 2000) ||
-				(wait_units_stage = 1, ge->max_waiting_cargo > 1000) ||
-				(wait_units_stage = 2, ge->max_waiting_cargo > 500) ||
-				(wait_units_stage = 3, ge->max_waiting_cargo > 250) ||
-				(wait_units_stage = 4, ge->max_waiting_cargo > 125) ||
-				(wait_units_stage = 5, true);
-			total_rating += _station_rating_wait_units[wait_units_stage];
-
-			SetDParam(0, STR_STATION_RATING_TOOLTIP_WAITUNITS_0 + wait_units_stage);
-			SetDParam(1, ge->max_waiting_cargo);
-			SetDParam(2, RoundRating(_station_rating_wait_units[wait_units_stage]));
-			GetString(this->data[line_nr],
-				      STR_STATION_RATING_TOOLTIP_WAITUNITS,
-					  lastof(this->data[line_nr]));
-			line_nr++;
-
-			const int b = ge->last_speed - 15;
-			const int r_speed = b >= 0 ? b >> 2 : 0;
-			const int r_speed_round = RoundRating(r_speed);
-			total_rating += r_speed;
-
-			if (ge->last_speed == 255) {
-				SetDParam(0, STR_STATION_RATING_TOOLTIP_SPEED_3);
-			}
-			else if (r_speed_round == 0) {
-				SetDParam(0, STR_STATION_RATING_TOOLTIP_SPEED_ZERO);
-			}
-			else {
-				SetDParam(0, STR_STATION_RATING_TOOLTIP_SPEED_0 + std::min(3, r_speed / 15));
-			}
-			SetDParam(1, 50/*ge->last_unprocessed_speed*/);
-			SetDParam(2, r_speed_round);
-
-			switch (ge->last_vehicle_type)
+		if (!skip) {
+			// Speed
 			{
-			case VEH_TRAIN:
-				SetDParam(3, STR_STATION_RATING_TOOLTIP_TRAIN);
-				break;
-			case VEH_ROAD:
-				SetDParam(3, STR_STATION_RATING_TOOLTIP_ROAD_VEHICLE);
-				break;
-			case VEH_SHIP:
-				SetDParam(3, STR_STATION_RATING_TOOLTIP_SHIP);
-				break;
-			case VEH_AIRCRAFT:
-				SetDParam(3, STR_STATION_RATING_TOOLTIP_AIRCRAFT);
-				break;
-			default:
-				SetDParam(3, STR_STATION_RATING_TOOLTIP_INVALID);
-				break;
+				const auto speed_rating = GetSpeedRating(ge);
+				const auto rounded_speed_rating = RoundRating(speed_rating);
+
+				if (ge->last_speed == 255) {
+					SetDParam(0, STR_STATION_RATING_TOOLTIP_SPEED_3);
+				}
+				else if (rounded_speed_rating == 0) {
+					SetDParam(0, STR_STATION_RATING_TOOLTIP_SPEED_ZERO);
+				}
+				else {
+					SetDParam(0, STR_STATION_RATING_TOOLTIP_SPEED_0 + std::min(3, speed_rating / 42));
+				}
+
+				SetDParam(1, ge->last_speed);
+				SetDParam(2, rounded_speed_rating);
+
+				switch (ge->last_vehicle_type)
+				{
+					case VEH_TRAIN:
+						SetDParam(3, STR_STATION_RATING_TOOLTIP_TRAIN);
+						break;
+					case VEH_ROAD:
+						SetDParam(3, STR_STATION_RATING_TOOLTIP_ROAD_VEHICLE);
+						break;
+					case VEH_SHIP:
+						SetDParam(3, STR_STATION_RATING_TOOLTIP_SHIP);
+						break;
+					case VEH_AIRCRAFT:
+						SetDParam(3, STR_STATION_RATING_TOOLTIP_AIRCRAFT);
+						break;
+					default:
+						SetDParam(3, STR_STATION_RATING_TOOLTIP_INVALID);
+						break;
+				}
+
+				GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_SPEED, lastof(this->data[line_nr]));
+				line_nr++;
+
+				total_rating += speed_rating;
 			}
 
-			GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_SPEED, lastof(this->data[line_nr]));
-			line_nr++;
+			// Wait time
+			{
+				const auto wait_time_rating = GetWaitTimeRating(cs, ge);
+
+				int wait_time_stage = 0;
+
+				if (wait_time_rating >= 130) {
+					wait_time_stage = 4;
+				} else if (wait_time_rating >= 95) {
+					wait_time_stage = 3;
+				} else if (wait_time_rating >= 50) {
+					wait_time_stage = 2;
+				} else if (wait_time_rating >= 25) {
+					wait_time_stage = 1;
+				}
+
+				SetDParam(0, STR_STATION_RATING_TOOLTIP_WAITTIME_0 + wait_time_stage);
+				SetDParam(1, ge->max_waiting_cargo);
+				SetDParam(2, RoundRating(wait_time_rating));
+				GetString(this->data[line_nr],
+					(ge->last_vehicle_type == VEH_SHIP) ?
+						STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP :
+						STR_STATION_RATING_TOOLTIP_WAITTIME,
+					lastof(this->data[line_nr]));
+				line_nr++;
+				
+				total_rating += wait_time_rating;
+			}
+
+			// Waiting cargo
+			{
+				const auto cargo_rating = GetWaitingCargoRating(st, ge);
+
+				int wait_units_stage = 0;
+
+				if (cargo_rating >= 40) {
+					wait_units_stage = 5;
+				} else if (cargo_rating >= 30) {
+					wait_units_stage = 4;
+				} else if (cargo_rating >= 10) {
+					wait_units_stage = 3;
+				} else if (cargo_rating >= 0) {
+					wait_units_stage = 2;
+				} else if (cargo_rating >= -35) {
+					wait_units_stage = 1;
+				}
+
+				SetDParam(0, STR_STATION_RATING_TOOLTIP_WAITUNITS_0 + wait_units_stage);
+				SetDParam(1, ge->max_waiting_cargo);
+				SetDParam(2, RoundRating(cargo_rating));
+				GetString(this->data[line_nr],
+				          STR_STATION_RATING_TOOLTIP_WAITUNITS,
+				          lastof(this->data[line_nr]));
+				line_nr++;
+			
+				total_rating += cargo_rating;
+			}
 		}
 
-		int age_stage = 0;
-		(ge->last_age >= 30) ||
-			(age_stage = 1, ge->last_age >= 20) ||
-			(age_stage = 2, ge->last_age >= 10) ||
-			(age_stage = 3, true);
+		if (!_extra_cheats.station_rating.value) {
+			// Statue
+			{
+				const auto statue_rating = GetStatueRating(st);
 
-		total_rating += _station_rating_age[age_stage];
-		SetDParam(0, STR_STATION_RATING_TOOLTIP_AGE_0 + age_stage);
-		SetDParam(1, ge->last_age);
-		SetDParam(2, RoundRating(_station_rating_age[age_stage]));
-		GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_AGE, lastof(this->data[line_nr]));
-		line_nr++;
+				SetDParam(0, (statue_rating > 0) ? STR_STATION_RATING_TOOLTIP_STATUE_YES : STR_STATION_RATING_TOOLTIP_STATUE_NO);
+				GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_STATUE, lastof(this->data[line_nr]));
+				line_nr++;
+				
+				total_rating += statue_rating;
+			}
 
-		if (Company::IsValidID(st->owner) && HasBit(st->town->statues, st->owner)) {
-			SetDParam(0, STR_STATION_RATING_TOOLTIP_STATUE_YES);
-			total_rating += 26;
+			// Vehicle age
+			{
+				const auto age_rating = GetVehicleAgeRating(ge);
+
+				int age_stage = 0;
+
+				if (age_rating >= 33) {
+					age_stage = 3;
+				} else if (age_rating >= 20) {
+					age_stage = 2;
+				} else if (age_rating >= 10) {
+					age_stage = 1;
+				}
+				
+				SetDParam(0, STR_STATION_RATING_TOOLTIP_AGE_0 + age_stage);
+				SetDParam(1, ge->last_age);
+				SetDParam(2, RoundRating(age_rating));
+				GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_AGE, lastof(this->data[line_nr]));
+				line_nr++;
+
+				total_rating += age_rating;
+			}
 		}
-		else {
-			SetDParam(0, STR_STATION_RATING_TOOLTIP_STATUE_NO);
-		}
 
-		GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_STATUE, lastof(this->data[line_nr]));
-		line_nr++;
+		total_rating = Clamp(total_rating, 0, 255);
 
-		SetDParam(0, ToPercent8(Clamp(total_rating, 0, 255)));
+		SetDParam(0, ToPercent8(total_rating));
 		GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_TOTAL_RATING, lastof(this->data[line_nr]));
 		line_nr++;
 

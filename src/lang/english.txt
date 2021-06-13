@@ -6508,6 +6508,9 @@ STR_ZONING_ONE_WAY_ROAD                                         :One way roads
 
 STR_STATION_RATING_TOOLTIP_RATING_DETAILS                       :{STRING} Rating Details
 STR_STATION_RATING_TOOLTIP_TOTAL_RATING                         :Total target rating: {LTBLUE}{NUM}%
+
+STR_STATION_RATING_TOOLTIP_USING_CHEAT                          :Cheat active
+
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING                        :NewGRF station rating: {STRING1} {BLACK}based on
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_0                      :{GOLD}{NUM}%
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_1                      :{LTBLUE}+{NUM}%
