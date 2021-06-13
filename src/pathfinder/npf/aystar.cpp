@@ -310,7 +310,7 @@ void AyStar::AddStartNode(AyStarNode *start_node, uint g)
  * Initialize an #AyStar. You should fill all appropriate fields before
  * calling #Init (see the declaration of #AyStar for which fields are internal).
  */
-void AyStar::Init(Hash_HashProc hash, uint num_buckets)
+void AyStar::Init(uint num_buckets)
 {
 	MemSetT(&neighbours, 0);
 	MemSetT(&openlist_queue, 0);

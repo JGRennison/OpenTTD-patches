@@ -252,17 +252,6 @@ static bool _has_tunnel_in_path;
 static RoadType _public_road_type;
 static const uint _public_road_hash_size = 8U; ///< The number of bits the hash for river finding should have.
 
-/**
-* Simple hash function for public road tiles to be used by AyStar.
-* @param tile The tile to hash.
-* @param dir The unused direction.
-* @return The hash for the tile.
-*/
-static uint PublicRoad_Hash(uint tile, uint dir)
-{
-	return GB(TileHash(TileX(tile), TileY(tile)), 0, _public_road_hash_size);
-}
-
 static const int32 BASE_COST = 1;          // Cost for utilizing an existing road, bridge, or tunnel.
 static const int32 COST_FOR_NEW_ROAD = 10; // Cost for building a new road.
 static const int32 COST_FOR_SLOPE = 5;     // Additional cost if the road heads up or down a slope.
@@ -722,7 +711,7 @@ bool FindPath(AyStar& finder, const TileIndex from, TileIndex to)
 	finder.user_target = &(to);
 	finder.max_search_nodes = 1 << 20; // 1,048,576
 
-	finder.Init(PublicRoad_Hash, 1 << _public_road_hash_size);
+	finder.Init(1 << _public_road_hash_size);
 
 	_has_tunnel_in_path = false;
 	
@@ -772,6 +761,8 @@ void GeneratePublicRoads()
 	// Create a list of networks which also contain a value indicating how many times we failed to connect to them.
 	vector<pair<uint, shared_ptr<vector<TileIndex>>>> town_networks;
 	unordered_map<TileIndex, shared_ptr<vector<TileIndex>>> towns_reachable_networks;
+
+	sort(towns.begin(), towns.end(), [&](auto a, auto b) { return DistanceFromEdge(a) > DistanceFromEdge(b); });
 
 	TileIndex main_town = *towns.begin();
 	towns.erase(towns.begin());

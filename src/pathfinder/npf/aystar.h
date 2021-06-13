@@ -156,7 +156,7 @@ struct AyStar {
 	AyStarNode neighbours[12];
 	byte num_neighbours;
 
-	void Init(Hash_HashProc hash, uint num_buckets);
+	void Init(uint num_buckets);
 
 	/* These will contain the methods for manipulating the AyStar. Only
 	 * Main() should be called externally */
