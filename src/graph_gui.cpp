@@ -40,6 +40,8 @@ static CargoTypes _legend_excluded_cargo;
 static const OverflowSafeInt64 INVALID_DATAPOINT(INT64_MAX); // Value used for a datapoint that shouldn't be drawn.
 static const uint INVALID_DATAPOINT_POS = UINT_MAX;  // Used to determine if the previous point was drawn.
 
+uint8 _cargo_payment_x_mode;
+
 /****************/
 /* GRAPH LEGEND */
 /****************/
@@ -894,6 +896,9 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 		this->vscroll = this->GetScrollbar(WID_CPR_MATRIX_SCROLLBAR);
 		this->vscroll->SetCount(_sorted_standard_cargo_specs_size);
 
+		this->SetWidgetLoweredState(WID_CPR_DAYS, _cargo_payment_x_mode == 0);
+		this->SetWidgetLoweredState(WID_CPR_SPEED, _cargo_payment_x_mode == 1);
+
 		/* Initialise the dataset */
 		this->OnHundredthTick();
 
@@ -902,16 +907,18 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 
 	void SetXAxis()
 	{
-		uint16 x_scale;
-		switch (_settings_game.locale.units_velocity) {
-			case 2:
-				x_scale = 5;
-				break;
-			case 3:
-				x_scale = 1;
-				break;
-			default:
-				x_scale = 10;
+		uint16 x_scale = 10;
+		if (_cargo_payment_x_mode) {
+			switch (_settings_game.locale.units_velocity) {
+				case 2:
+					x_scale = 5;
+					break;
+				case 3:
+					x_scale = 1;
+					break;
+				default:
+					x_scale = 10;
+			}
 		}
 		this->x_values_start     = x_scale;
 		this->x_values_increment = x_scale;
@@ -1035,6 +1042,16 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 				}
 				break;
 			}
+
+			case WID_CPR_DAYS:
+			case WID_CPR_SPEED:
+				_cargo_payment_x_mode = widget - WID_CPR_DAYS;
+				this->SetWidgetLoweredState(WID_CPR_DAYS, _cargo_payment_x_mode == 0);
+				this->SetWidgetLoweredState(WID_CPR_SPEED, _cargo_payment_x_mode == 1);
+				this->SetXAxis();
+				this->OnHundredthTick();
+				this->SetDirty();
+				break;
 		}
 	}
 
@@ -1071,7 +1088,7 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
 			this->colours[i] = cs->legend_colour;
 			for (int j = 0; j != 20; j++) {
-				const byte ctt = static_cast<byte>(factor / static_cast<float>((j + 1) * this->x_values_increment));
+				const byte ctt = _cargo_payment_x_mode ? static_cast<byte>(factor / static_cast<float>((j + 1) * this->x_values_increment)) : (j + 1) * 4;
 				this->cost[i][j] = GetTransportedGoodsIncome(10, 20, ctt, cs->Index());
 			}
 			i++;
@@ -1083,7 +1100,12 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 	{
 		switch (widget) {
 			case WID_CPR_FOOTER:
-				SetDParam(0, STR_UNIT_NAME_VELOCITY_IMPERIAL + _settings_game.locale.units_velocity);
+				if (_cargo_payment_x_mode) {
+					SetDParam(0, STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED);
+					SetDParam(1, STR_UNIT_NAME_VELOCITY_IMPERIAL + _settings_game.locale.units_velocity);
+				} else {
+					SetDParam(0, STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL);
+				}
 				break;
 		}
 	}
@@ -1106,6 +1128,8 @@ static const NWidgetPart _nested_cargo_payment_rates_widgets[] = {
 		NWidget(NWID_HORIZONTAL),
 			NWidget(WWT_EMPTY, COLOUR_BROWN, WID_CPR_GRAPH), SetMinimalSize(495, 0), SetFill(1, 1), SetResize(1, 1),
 			NWidget(NWID_VERTICAL),
+				NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_CPR_DAYS), SetDataTip(STR_GRAPH_CARGO_DAYS_MODE, STR_GRAPH_CARGO_TOOLTIP_DAYS_MODE), SetFill(1, 0),
+				NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_CPR_SPEED), SetDataTip(STR_GRAPH_CARGO_SPEED_MODE, STR_GRAPH_CARGO_TOOLTIP_SPEED_MODE), SetFill(1, 0),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 24), SetFill(0, 1),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CPR_ENABLE_CARGOES), SetDataTip(STR_GRAPH_CARGO_ENABLE_ALL, STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL), SetFill(1, 0),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_CPR_DISABLE_CARGOES), SetDataTip(STR_GRAPH_CARGO_DISABLE_ALL, STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL), SetFill(1, 0),
@@ -1119,9 +1143,8 @@ static const NWidgetPart _nested_cargo_payment_rates_widgets[] = {
 			NWidget(NWID_SPACER), SetMinimalSize(5, 0), SetFill(0, 1), SetResize(0, 1),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(NWID_SPACER), SetMinimalSize(WD_RESIZEBOX_WIDTH, 0), SetFill(1, 0), SetResize(1, 0),
-			NWidget(WWT_TEXT, COLOUR_BROWN, WID_CPR_FOOTER), SetMinimalSize(0, 6), SetPadding(2, 0, 2, 0), SetDataTip(STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED, STR_NULL),
-			NWidget(NWID_SPACER), SetFill(1, 0), SetResize(1, 0),
+			NWidget(NWID_SPACER), SetMinimalSize(WD_RESIZEBOX_WIDTH, 0), SetFill(0, 0), SetResize(0, 0),
+			NWidget(WWT_TEXT, COLOUR_BROWN, WID_CPR_FOOTER), SetMinimalSize(0, 6), SetAlignment(SA_CENTER), SetPadding(2, 0, 2, 0), SetDataTip(STR_JUST_STRING1, STR_NULL), SetFill(1, 0), SetResize(1, 0),
 			NWidget(WWT_RESIZEBOX, COLOUR_BROWN, WID_CPR_RESIZE),
 		EndContainer(),
 	EndContainer(),

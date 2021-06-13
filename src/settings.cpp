@@ -72,6 +72,7 @@
 #include "scope_info.h"
 #include "viewport_func.h"
 #include "gui.h"
+#include "graph_gui.h"
 
 #include "void_map.h"
 #include "station_base.h"
