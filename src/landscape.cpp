@@ -1333,7 +1333,7 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 	if (found) {
 		/* Flow further down hill. */
 		found = FlowRiver(spring, end, min_river_length);
-	} else if (count > 32) {
+	} else if (count > 32 && _settings_game.game_creation.lake_size != 0) {
 		/* Maybe we can make a lake. Find the Nth of the considered tiles. */
 		TileIndex lakeCenter = 0;
 		int i = RandomRange(count - 1) + 1;
@@ -1358,7 +1358,10 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 			/* Remove desert directly around the river tile. */
 			CircularTileSearch(&lakeCenter, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
 			lakeCenter = end;
-			uint range = RandomRange(_settings_game.game_creation.lake_size) + 3;
+
+			// Setting lake size +- 25%
+			const auto random_percentage = 75 + RandomRange(50);
+			const uint range = ((_settings_game.game_creation.lake_size * random_percentage) / 100) + 3;
 
 			MakeLakeData data;
 			data.centre = lakeCenter;
@@ -1401,7 +1404,7 @@ static void CreateRivers()
 
 	for (; wells > num_short_rivers; wells--) {
 		IncreaseGeneratingWorldProgress(GWP_RIVER);
-		for (int tries = 0; tries < 512; tries++) {
+		for (int tries = 0; tries < 128; tries++) {
 			TileIndex t = RandomTile();
 			if (!CircularTileSearch(&t, 8, FindSpring, nullptr)) continue;
 			_current_spring = t;
