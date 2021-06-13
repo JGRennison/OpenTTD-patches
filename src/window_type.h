@@ -107,6 +107,12 @@ enum WindowClass {
 	 *   - 0 = #ToolTipsWidgets
 	 */
 	WC_TOOLTIPS,
+	
+	/**
+	* Station rating tooltip window; %Window numbers:
+	*   - 0 = #ToolTipsWidgets
+	*/
+	WC_STATION_RATING_TOOLTIP,
 
 	/**
 	 * Query string window; %Window numbers:
