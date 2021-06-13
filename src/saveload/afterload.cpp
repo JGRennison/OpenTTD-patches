@@ -1722,7 +1722,7 @@ bool AfterLoadGame()
 		c->avail_roadtypes = GetCompanyRoadTypes(c->index);
 	}
 
-	if (!IsSavegameVersionBefore(SLV_27)) AfterLoadStations();
+	AfterLoadStations();
 
 	/* Time starts at 0 instead of 1920.
 	 * Account for this in older games by adding an offset */
