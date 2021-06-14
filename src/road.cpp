@@ -253,13 +253,14 @@ static bool _has_tunnel_in_path;
 static RoadType _public_road_type;
 static const uint _public_road_hash_size = 8U; ///< The number of bits the hash for river finding should have.
 
+static const int32 BASE_COST_PER_TILE = 1; // Cost for building a new road.
 static const int32 COST_FOR_NEW_ROAD = 100; // Cost for building a new road.
 static const int32 COST_FOR_SLOPE = 50;     // Additional cost if the road heads up or down a slope.
 
 /** AyStar callback for getting the cost of the current node. */
 static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *parent)
 {
-	int32 cost = 0;
+	int32 cost = BASE_COST_PER_TILE;
 
 	if (!IsTileType(current->tile, MP_ROAD)) {
 		if (!AreTilesAdjacent(parent->path.node.tile, current->tile))
@@ -289,7 +290,7 @@ static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *
 /** AyStar callback for getting the estimated cost to the destination. */
 static int32 PublicRoad_CalculateH(AyStar *aystar, AyStarNode *current, OpenListNode *parent)
 {
-	return DistanceManhattan(*static_cast<TileIndex*>(aystar->user_target), current->tile) * COST_FOR_NEW_ROAD;
+	return DistanceManhattan(*static_cast<TileIndex*>(aystar->user_target), current->tile) * BASE_COST_PER_TILE;
 }
 
 /** Helper function to check if a tile along a certain direction is going up an inclined slope. */
