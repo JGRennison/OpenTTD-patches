@@ -2710,35 +2710,38 @@ public:
 				const auto speed_rating = GetSpeedRating(ge);
 				const auto rounded_speed_rating = RoundRating(speed_rating);
 
+				SetDParam(0, STR_STATION_RATING_MAX_PERCENTAGE);
+				SetDParam(1, 17);
+
 				if (ge->last_speed == 255) {
-					SetDParam(0, STR_STATION_RATING_TOOLTIP_SPEED_3);
+					SetDParam(2, STR_STATION_RATING_TOOLTIP_SPEED_3);
 				}
 				else if (rounded_speed_rating == 0) {
-					SetDParam(0, STR_STATION_RATING_TOOLTIP_SPEED_ZERO);
+					SetDParam(2, STR_STATION_RATING_TOOLTIP_SPEED_ZERO);
 				}
 				else {
-					SetDParam(0, STR_STATION_RATING_TOOLTIP_SPEED_0 + std::min(3, speed_rating / 42));
+					SetDParam(2, STR_STATION_RATING_TOOLTIP_SPEED_0 + std::min(3, speed_rating / 42));
 				}
 
-				SetDParam(1, ge->last_speed);
-				SetDParam(2, rounded_speed_rating);
+				SetDParam(3, ge->last_speed);
+				SetDParam(4, rounded_speed_rating);
 
 				switch (ge->last_vehicle_type)
 				{
 					case VEH_TRAIN:
-						SetDParam(3, STR_STATION_RATING_TOOLTIP_TRAIN);
+						SetDParam(5, STR_STATION_RATING_TOOLTIP_TRAIN);
 						break;
 					case VEH_ROAD:
-						SetDParam(3, STR_STATION_RATING_TOOLTIP_ROAD_VEHICLE);
+						SetDParam(5, STR_STATION_RATING_TOOLTIP_ROAD_VEHICLE);
 						break;
 					case VEH_SHIP:
-						SetDParam(3, STR_STATION_RATING_TOOLTIP_SHIP);
+						SetDParam(5, STR_STATION_RATING_TOOLTIP_SHIP);
 						break;
 					case VEH_AIRCRAFT:
-						SetDParam(3, STR_STATION_RATING_TOOLTIP_AIRCRAFT);
+						SetDParam(5, STR_STATION_RATING_TOOLTIP_AIRCRAFT);
 						break;
 					default:
-						SetDParam(3, STR_STATION_RATING_TOOLTIP_INVALID);
+						SetDParam(5, STR_STATION_RATING_TOOLTIP_INVALID);
 						break;
 				}
 
@@ -2764,9 +2767,11 @@ public:
 					wait_time_stage = 1;
 				}
 
-				SetDParam(0, STR_STATION_RATING_TOOLTIP_WAITTIME_0 + wait_time_stage);
-				SetDParam(1, ge->max_waiting_cargo);
-				SetDParam(2, RoundRating(wait_time_rating));
+				SetDParam(0, STR_STATION_RATING_MAX_PERCENTAGE);
+				SetDParam(1, 51);
+				SetDParam(2, STR_STATION_RATING_TOOLTIP_WAITTIME_0 + wait_time_stage);
+				SetDParam(3, ge->max_waiting_cargo);
+				SetDParam(4, RoundRating(wait_time_rating));
 				GetString(this->data[line_nr],
 					(ge->last_vehicle_type == VEH_SHIP) ?
 						STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP :
@@ -2795,9 +2800,11 @@ public:
 					wait_units_stage = 1;
 				}
 
-				SetDParam(0, STR_STATION_RATING_TOOLTIP_WAITUNITS_0 + wait_units_stage);
-				SetDParam(1, ge->max_waiting_cargo);
-				SetDParam(2, RoundRating(cargo_rating));
+				SetDParam(0, STR_STATION_RATING_MAX_PERCENTAGE_COMMA);
+				SetDParam(1, 16);
+				SetDParam(2, STR_STATION_RATING_TOOLTIP_WAITUNITS_0 + wait_units_stage);
+				SetDParam(3, ge->max_waiting_cargo);
+				SetDParam(4, RoundRating(cargo_rating));
 				GetString(this->data[line_nr],
 				          STR_STATION_RATING_TOOLTIP_WAITUNITS,
 				          lastof(this->data[line_nr]));
@@ -2812,7 +2819,10 @@ public:
 			{
 				const auto statue_rating = GetStatueRating(st);
 
-				SetDParam(0, (statue_rating > 0) ? STR_STATION_RATING_TOOLTIP_STATUE_YES : STR_STATION_RATING_TOOLTIP_STATUE_NO);
+				SetDParam(0, STR_STATION_RATING_MAX_PERCENTAGE);
+				SetDParam(1, 10);
+				SetDParam(2, (statue_rating > 0) ? STR_STATION_RATING_TOOLTIP_STATUE_YES : STR_STATION_RATING_TOOLTIP_STATUE_NO);
+				SetDParam(3, (statue_rating > 0) ? 10 : 0);
 				GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_STATUE, lastof(this->data[line_nr]));
 				line_nr++;
 				
@@ -2833,9 +2843,11 @@ public:
 					age_stage = 1;
 				}
 				
-				SetDParam(0, STR_STATION_RATING_TOOLTIP_AGE_0 + age_stage);
-				SetDParam(1, ge->last_age);
-				SetDParam(2, RoundRating(age_rating));
+				SetDParam(0, STR_STATION_RATING_MAX_PERCENTAGE);
+				SetDParam(1, 13);
+				SetDParam(2, STR_STATION_RATING_TOOLTIP_AGE_0 + age_stage);
+				SetDParam(3, ge->last_age);
+				SetDParam(4, RoundRating(age_rating));
 				GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_AGE, lastof(this->data[line_nr]));
 				line_nr++;
 

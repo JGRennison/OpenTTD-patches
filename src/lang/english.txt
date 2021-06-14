@@ -6518,28 +6518,31 @@ STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED                         :Max speed of la
 STR_STATION_RATING_TOOLTIP_NEWGRF_WAITUNITS                     :Cargo waiting (on average per next stop): {LTBLUE}{NUM}
 STR_STATION_RATING_TOOLTIP_NEWGRF_WAITTIME                      :Time since last pickup: {LTBLUE}{NUM} day{P "" s}
 
-STR_STATION_RATING_TOOLTIP_SPEED                                :Max speed of last vehicle (max +17%): {STRING2} ({STRING})
+STR_STATION_RATING_MAX_PERCENTAGE                               : (max +{NUM}%)
+STR_STATION_RATING_MAX_PERCENTAGE_COMMA                         :, max +{NUM}%
+
+STR_STATION_RATING_TOOLTIP_SPEED                                :Max speed of last vehicle{STRING1}: {STRING2} ({STRING})
 STR_STATION_RATING_TOOLTIP_SPEED_ZERO                           :{RED}{VELOCITY}, {NUM}%
 STR_STATION_RATING_TOOLTIP_SPEED_0                              :{ORANGE}{VELOCITY}, +{NUM}%
 STR_STATION_RATING_TOOLTIP_SPEED_1                              :{GOLD}{VELOCITY}, +{NUM}%
 STR_STATION_RATING_TOOLTIP_SPEED_2                              :{YELLOW}{VELOCITY}, +{NUM}%
 STR_STATION_RATING_TOOLTIP_SPEED_3                              :{GREEN}{VELOCITY}, +{NUM}% 
 
-STR_STATION_RATING_TOOLTIP_AGE                                  :Age of last vehicle (max +13%): {STRING2}
+STR_STATION_RATING_TOOLTIP_AGE                                  :Age of last vehicle{STRING1}: {STRING2}
 STR_STATION_RATING_TOOLTIP_AGE_0                                :{ORANGE}{NUM} year{P "" s}, {NUM}%
 STR_STATION_RATING_TOOLTIP_AGE_1                                :{GOLD}{NUM} year{P "" s}, +{NUM}%
 STR_STATION_RATING_TOOLTIP_AGE_2                                :{YELLOW}{NUM} year{P "" s}, +{NUM}%
 STR_STATION_RATING_TOOLTIP_AGE_3                                :{GREEN}{NUM} year{P "" s}, +{NUM}%
 
-STR_STATION_RATING_TOOLTIP_WAITTIME                             :Time since last pickup (max +51%): {STRING2}
-STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP                        :Time since last pickup (max +51%): {STRING2} (by ship)
+STR_STATION_RATING_TOOLTIP_WAITTIME                             :Time since last pickup{STRING1}: {STRING2}
+STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP                        :Time since last pickup{STRING1}: {STRING2} (by ship)
 STR_STATION_RATING_TOOLTIP_WAITTIME_0                           :{RED}{NUM} day{P "" s}, {NUM}%
 STR_STATION_RATING_TOOLTIP_WAITTIME_1                           :{ORANGE}{NUM} day{P "" s}, +{NUM}%
 STR_STATION_RATING_TOOLTIP_WAITTIME_2                           :{GOLD}{NUM} day{P "" s}, +{NUM}%
 STR_STATION_RATING_TOOLTIP_WAITTIME_3                           :{YELLOW}{NUM} day{P "" s}, +{NUM}%
 STR_STATION_RATING_TOOLTIP_WAITTIME_4                           :{GREEN}{NUM} day{P "" s}, +{NUM}%
 
-STR_STATION_RATING_TOOLTIP_WAITUNITS                            :Cargo waiting (on average per next stop, max +16%): {STRING2}
+STR_STATION_RATING_TOOLTIP_WAITUNITS                            :Cargo waiting (on average per next stop{STRING1}): {STRING2}
 STR_STATION_RATING_TOOLTIP_WAITUNITS_0                          :{RED}{NUM}, {NUM}%
 STR_STATION_RATING_TOOLTIP_WAITUNITS_1                          :{ORANGE}{NUM}, {NUM}%
 STR_STATION_RATING_TOOLTIP_WAITUNITS_2                          :{GOLD}{NUM}, {NUM}%
@@ -6547,9 +6550,9 @@ STR_STATION_RATING_TOOLTIP_WAITUNITS_3                          :{YELLOW}{NUM}, 
 STR_STATION_RATING_TOOLTIP_WAITUNITS_4                          :{YELLOW}{NUM}, +{NUM}%
 STR_STATION_RATING_TOOLTIP_WAITUNITS_5                          :{GREEN}{NUM}, +{NUM}%
 
-STR_STATION_RATING_TOOLTIP_STATUE                               :Statue in town (max +10%): {STRING}
-STR_STATION_RATING_TOOLTIP_STATUE_NO                            :{GOLD}no, 0%
-STR_STATION_RATING_TOOLTIP_STATUE_YES                           :{GREEN}yes, +10%
+STR_STATION_RATING_TOOLTIP_STATUE                               :Statue in town{STRING1}: {STRING1}
+STR_STATION_RATING_TOOLTIP_STATUE_NO                            :{GOLD}no, {NUM}%
+STR_STATION_RATING_TOOLTIP_STATUE_YES                           :{GREEN}yes, +{NUM}%
 
 STR_STATION_RATING_TOOLTIP_TRAIN                                :Train
 STR_STATION_RATING_TOOLTIP_ROAD_VEHICLE                         :Road Vehicle
