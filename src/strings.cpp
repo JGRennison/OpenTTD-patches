@@ -1317,6 +1317,15 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 				buff = FormatNoCommaNumber(buff, args->GetInt64(SCC_NUM), last);
 				break;
 
+			case SCC_PLUS_NUM: { // {PLUS_NUM}
+				int64 num = args->GetInt64(SCC_PLUS_NUM);
+				if (num > 0) {
+					buff += seprintf(buff, last, "+");
+				}
+				buff = FormatNoCommaNumber(buff, num, last);
+				break;
+			}
+
 			case SCC_ZEROFILL_NUM: { // {ZEROFILL_NUM}
 				int64 num = args->GetInt64();
 				buff = FormatZerofillNumber(buff, num, args->GetInt64(), last);
