@@ -2339,6 +2339,8 @@ CommandCost CmdChangeSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 		int32 oldval = (int32)ReadValue(var, sd->save.conv);
 		int32 newval = (int32)p2;
 
+		SCOPE_INFO_FMT([=], "CmdChangeSetting: %s, %d -> %d", sd->desc.name, oldval, newval);
+
 		Write_ValidateSetting(var, sd, newval);
 		newval = (int32)ReadValue(var, sd->save.conv);
 
@@ -2391,6 +2393,8 @@ CommandCost CmdChangeCompanySetting(TileIndex tile, DoCommandFlag flags, uint32 
 
 		int32 oldval = (int32)ReadValue(var, sd->save.conv);
 		int32 newval = (int32)p2;
+
+		SCOPE_INFO_FMT([=], "CmdChangeCompanySetting: %s, %d -> %d", sd->desc.name, oldval, newval);
 
 		Write_ValidateSetting(var, sd, newval);
 		newval = (int32)ReadValue(var, sd->save.conv);
