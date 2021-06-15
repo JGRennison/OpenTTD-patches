@@ -28,6 +28,7 @@
 #include "string_func.h"
 #include "scope_info.h"
 #include "core/random_func.hpp"
+#include "settings_func.h"
 #include <array>
 
 #include "table/strings.h"
@@ -596,8 +597,20 @@ static void DumpSubCommandLog(char *&buffer, const char *last, const CommandLog 
 		if (entry.p3 != 0) {
 			buffer += seprintf(buffer, last, "p3: 0x" OTTD_PRINTFHEX64PAD ", ", entry.p3);
 		}
-		buffer += seprintf(buffer, last, "cc: %3u, lc: %3u, cmd: 0x%08X (%s)\n",
+		buffer += seprintf(buffer, last, "cc: %3u, lc: %3u, cmd: 0x%08X (%s)",
 				(uint) entry.current_company, (uint) entry.local_company, entry.cmd, GetCommandName(entry.cmd));
+
+		switch (entry.cmd & CMD_ID_MASK) {
+			case CMD_CHANGE_SETTING:
+				buffer += seprintf(buffer, last, " [%s]", GetSettingNameByIndex(entry.p1));
+				break;
+
+			case CMD_CHANGE_COMPANY_SETTING:
+				buffer += seprintf(buffer, last, " [%s]", GetCompanySettingNameByIndex(entry.p1));
+				break;
+		}
+
+		buffer += seprintf(buffer, last, "\n");
 	}
 }
 

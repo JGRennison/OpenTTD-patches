@@ -39,4 +39,7 @@ void SyncCompanySettings();
 
 void SetupTimeSettings();
 
+const char *GetSettingNameByIndex(uint32 idx);
+const char *GetCompanySettingNameByIndex(uint32 idx);
+
 #endif /* SETTINGS_FUNC_H */

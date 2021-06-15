@@ -2363,6 +2363,14 @@ CommandCost CmdChangeSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 	return CommandCost();
 }
 
+const char *GetSettingNameByIndex(uint32 idx)
+{
+	const SettingDesc *sd = GetSettingDescription(idx);
+	if (sd == nullptr) return nullptr;
+
+	return sd->desc.name;
+}
+
 /**
  * Change one of the per-company settings.
  * @param tile unused
@@ -2398,6 +2406,13 @@ CommandCost CmdChangeCompanySetting(TileIndex tile, DoCommandFlag flags, uint32 
 	}
 
 	return CommandCost();
+}
+
+const char *GetCompanySettingNameByIndex(uint32 idx)
+{
+	if (idx >= lengthof(_company_settings)) return nullptr;
+
+	return _company_settings[idx].desc.name;
 }
 
 /**
