@@ -254,8 +254,8 @@ static RoadType _public_road_type;
 static const uint _public_road_hash_size = 8U; ///< The number of bits the hash for river finding should have.
 
 static const int32 BASE_COST_PER_TILE = 1; // Cost for building a new road.
-static const int32 COST_FOR_NEW_ROAD = 1000; // Cost for building a new road.
-static const int32 COST_FOR_SLOPE = 500;     // Additional cost if the road heads up or down a slope.
+static const int32 COST_FOR_NEW_ROAD = 100; // Cost for building a new road.
+static const int32 COST_FOR_SLOPE = 50;     // Additional cost if the road heads up or down a slope.
 
 /** AyStar callback for getting the cost of the current node. */
 static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *parent)
@@ -792,9 +792,17 @@ void GeneratePublicRoads()
 
 	IncreaseGeneratingWorldProgress(GWP_PUBLIC_ROADS);
 
-	sort(towns.begin(), towns.end(), [&](auto a, auto b) { return DistanceManhattan(main_town, a) < DistanceManhattan(main_town, b); });
+	auto town_network_distance = [](const TileIndex town, const std::shared_ptr<TownNetwork> &network) {
+		const auto min_element = std::min_element(network->towns.begin(), network->towns.end(), [&](const TileIndex town_a, const TileIndex town_b) {
+			return DistanceManhattan(town, town_a) < DistanceManhattan(town, town_b);
+		});
 
-	for (auto start_town : towns) {
+		return DistanceManhattan(*min_element, town);
+	};
+
+	sort(towns.begin(), towns.end(), [&](auto a, auto b) { return DistanceManhattan(a, main_town) < DistanceManhattan(b, main_town); });
+
+	for (auto start_town : towns) {		
 		// Check if we can connect to any of the networks.
 		_towns_visited_along_the_way.clear();
 
@@ -835,7 +843,9 @@ void GeneratePublicRoads()
 
 		if (!found_path) {
 			// Sort networks by failed connection attempts, so we try the most likely one first.
-			sort(networks.begin(), networks.end(), [](const std::shared_ptr<TownNetwork> &a, const std::shared_ptr<TownNetwork> &b) { return a->failures_to_connect < b->failures_to_connect; });
+			sort(networks.begin(), networks.end(), [&](const std::shared_ptr<TownNetwork> &a, const std::shared_ptr<TownNetwork> &b) {
+				return town_network_distance(start_town, a) < town_network_distance(start_town, b);
+			});
 
 			std::function can_reach = [&](const std::shared_ptr<TownNetwork> &network) {
 				if (reachable_from_town != town_to_network_map.end() && network.get() == reachable_from_town->second.get()) {
@@ -872,8 +882,22 @@ void GeneratePublicRoads()
 				return found_path;
 			};
 
-			if (!any_of(networks.begin(), networks.end(), can_reach)) {
-				// We failed to connect to any network, so we are a separate network. Let future towns try to connect to us.
+			vector<std::shared_ptr<TownNetwork>>::iterator networks_end;
+
+			if (networks.size() > 5) {
+				networks_end = networks.begin() + 5;
+			} else {
+				networks_end = networks.end();
+			}
+
+			vector<std::shared_ptr<TownNetwork>> sampled_networks;
+			std::copy(networks.begin(), networks_end, std::back_inserter(sampled_networks));
+			sort(sampled_networks.begin(), sampled_networks.end(), [&](const std::shared_ptr<TownNetwork> &a, const std::shared_ptr<TownNetwork> &b) {
+				return a->failures_to_connect < b->failures_to_connect;
+			});
+
+			if (!any_of(sampled_networks.begin(), sampled_networks.end(), can_reach)) {
+				// We failed so many networks, we are a separate network. Let future towns try to connect to us.
 				auto new_network = make_shared<TownNetwork>();
 				new_network->towns.push_back(start_town);
 				new_network->failures_to_connect = 0;

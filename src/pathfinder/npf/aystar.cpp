@@ -138,7 +138,7 @@ void AyStar::CheckTile(AyStarNode *current, OpenListNode *parent)
 	if (check != nullptr) {
 		uint i;
 		/* Yes, check if this g value is lower.. */
-		if (new_g > check->g) return;
+		if (new_g >= check->g) return;
 		this->openlist_queue.Delete(check, 0);
 
 		/* It is lower, so change it to this item */
