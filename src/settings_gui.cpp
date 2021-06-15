@@ -1839,6 +1839,7 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.show_depot_sell_gui"));
 			interface->Add(new SettingEntry("gui.open_vehicle_gui_clone_share"));
 			interface->Add(new SettingEntry("gui.vehicle_names"));
+			interface->Add(new SettingEntry("gui.station_rating_tooltip_mode"));
 		}
 
 		SettingsPage *advisors = main->Add(new SettingsPage(STR_CONFIG_SETTING_ADVISORS));
