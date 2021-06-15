@@ -1470,6 +1470,12 @@ STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :Off
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :Simple
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :Detailed
 
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE                        :Ask before demolishing structures: {STRING2}
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_HELPTEXT               :Ask for confirmation before irreversibly demolishing structures.
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_OFF                    :Off
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_INDUSTRY               :Industries
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_ALL                    :Industries and rail stations
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Enable signals on bridges/tunnels advanced modes: {STRING2}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Enables use of advanced modes of signal simulation on bridges and tunnels. When disabled, bridges/tunnels which are not already in an advanced mode cannot be changed to an advanced mode, however other players may choose to enable this setting and use an advanced mode.
 
@@ -5570,6 +5576,10 @@ STR_ERROR_TREE_PLANT_LIMIT_REACHED                              :{WHITE}... tree
 STR_ERROR_NAME_MUST_BE_UNIQUE                                   :{WHITE}Name must be unique
 STR_ERROR_GENERIC_OBJECT_IN_THE_WAY                             :{WHITE}{1:STRING} in the way
 STR_ERROR_NOT_ALLOWED_WHILE_PAUSED                              :{WHITE}Not allowed while paused
+
+# Clear area query
+STR_QUERY_CLEAR_AREA_CAPTION                                    :{WHITE}Clear area
+STR_CLEAR_AREA_CONFIRMATION_TEXT                                :{YELLOW}You are about to destroy an important structure. Are you sure?
 
 # Local authority errors
 STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS                 :{WHITE}{TOWN} local authority refuses to allow this

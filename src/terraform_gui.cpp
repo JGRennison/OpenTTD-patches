@@ -30,6 +30,7 @@
 #include "hotkeys.h"
 #include "engine_base.h"
 #include "terraform_gui.h"
+#include "cheat_func.h"
 #include "town_gui.h"
 #include "zoom_func.h"
 
@@ -38,6 +39,12 @@
 #include "table/strings.h"
 
 #include "safeguards.h"
+
+enum DemolishConfirmMode {
+	DCM_OFF,
+	DCM_INDUSTRY,
+	DCM_INDUSTRY_RAIL_STATION,
+};
 
 void CcTerraform(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
@@ -95,6 +102,40 @@ static void GenerateRockyArea(TileIndex end, TileIndex start)
 	if (success && _settings_client.sound.confirm) SndPlayTileFx(SND_1F_CONSTRUCTION_OTHER, end);
 }
 
+/** Checks if the area contains any structures that are important enough to query about first */
+static bool IsQueryConfirmIndustryOrRailStationInArea(TileIndex start_tile, TileIndex end_tile, bool diagonal)
+{
+	if (_settings_client.gui.demolish_confirm_mode == DCM_OFF) return false;
+
+	std::unique_ptr<TileIterator> tile_iterator;
+
+	if (diagonal) {
+		tile_iterator = std::make_unique<DiagonalTileIterator>(end_tile, start_tile);
+	} else {
+		tile_iterator = std::make_unique<OrthogonalTileIterator>(end_tile, start_tile);
+	}
+
+	bool destroying_industry_or_station = false;
+
+	for (; *tile_iterator != INVALID_TILE; ++(*tile_iterator)) {
+		if ((_cheats.magic_bulldozer.value && IsTileType(*tile_iterator, MP_INDUSTRY)) ||
+				(_settings_client.gui.demolish_confirm_mode == DCM_INDUSTRY_RAIL_STATION && IsRailStationTile(*tile_iterator))) {
+			destroying_industry_or_station = true;
+			break;
+		}
+	}
+
+	return destroying_industry_or_station;
+}
+
+static CommandContainer _demolish_area_command;
+
+static void DemolishAreaConfirmationCallback(Window*, bool confirmed) {
+	if (confirmed) {
+		DoCommandP(&_demolish_area_command);
+	}
+}
+
 /**
  * A central place to handle all X_AND_Y dragged GUI functions.
  * @param proc       Procedure related to the dragging
@@ -114,9 +155,16 @@ bool GUIPlaceProcDragXY(ViewportDragDropSelectionProcess proc, TileIndex start_t
 	}
 
 	switch (proc) {
-		case DDSP_DEMOLISH_AREA:
-			DoCommandP(end_tile, start_tile, _ctrl_pressed ? 1 : 0, CMD_CLEAR_AREA | CMD_MSG(STR_ERROR_CAN_T_CLEAR_THIS_AREA), CcPlaySound_EXPLOSION);
+		case DDSP_DEMOLISH_AREA: {
+			_demolish_area_command = NewCommandContainerBasic(end_tile, start_tile, _ctrl_pressed ? 1 : 0, CMD_CLEAR_AREA | CMD_MSG(STR_ERROR_CAN_T_CLEAR_THIS_AREA), CcPlaySound_EXPLOSION);
+
+			if (IsQueryConfirmIndustryOrRailStationInArea(start_tile, end_tile, _ctrl_pressed)) {
+				ShowQuery(STR_QUERY_CLEAR_AREA_CAPTION, STR_CLEAR_AREA_CONFIRMATION_TEXT, nullptr, DemolishAreaConfirmationCallback);
+			} else {
+				DemolishAreaConfirmationCallback(nullptr, true);
+			}
 			break;
+		}
 		case DDSP_RAISE_AND_LEVEL_AREA:
 			DoCommandP(end_tile, start_tile, LM_RAISE << 1 | (_ctrl_pressed ? 1 : 0), CMD_LEVEL_LAND | CMD_MSG(STR_ERROR_CAN_T_RAISE_LAND_HERE), CcTerraform);
 			break;
