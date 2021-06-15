@@ -598,98 +598,123 @@ static bool IsBlockedByPreviousBridgeOrTunnel(OpenListNode *current, TileIndex s
 /** AyStar callback for getting the neighbouring nodes of the given node. */
 static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 {
-	const TileIndex tile = current->path.node.tile;
+	const auto current_tile = current->path.node.tile;	
+	const auto previous_tile = current->path.parent != nullptr ? current->path.parent->node.tile : INVALID_TILE;
+	const auto forward_direction = DiagdirBetweenTiles(previous_tile, current_tile);
 
 	aystar->num_neighbours = 0;
 
 	// Check if we just went through a tunnel or a bridge.
-	if (current->path.parent != nullptr && !AreTilesAdjacent(tile, current->path.parent->node.tile)) {
-		const auto previous_tile = current->path.parent->node.tile;
-
+	if (previous_tile != INVALID_TILE && !AreTilesAdjacent(current_tile, previous_tile)) {
+		
 		// We went through a tunnel or bridge, this limits our options to proceed to only forward.
-		const auto tunnel_bridge_direction = DiagdirBetweenTiles(previous_tile, tile);
+		const TileIndex tunnel_bridge_end = current_tile + TileOffsByDiagDir(forward_direction);
 
-		const TileIndex tunnel_bridge_end = tile + TileOffsByDiagDir(tunnel_bridge_direction);
-
-		if (IsValidNeighbourOfPreviousTile(tunnel_bridge_end, tile)) {
+		if (IsValidNeighbourOfPreviousTile(tunnel_bridge_end, current_tile)) {
 			aystar->neighbours[aystar->num_neighbours].tile = tunnel_bridge_end;
 			aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
 			aystar->num_neighbours++;
 		}
-	} else {
-		// Handle all the regular neighbours and existing tunnels/bridges.
-		std::vector<TileIndex> potential_neighbours;
+	} else if (IsTileType(current_tile, MP_TUNNELBRIDGE)) {
+		// Handle existing tunnels and bridges
+		const auto tunnel_bridge_end = GetOtherTunnelBridgeEnd(current_tile);
+		const auto tunnel_bridge_direction = DiagdirBetweenTiles(current_tile, tunnel_bridge_end);
 
-		if (IsTileType(tile, MP_TUNNELBRIDGE)) {
-			auto neighbour = GetOtherTunnelBridgeEnd(tile);
+		// Thanks to custom bridge heads we can come towards a bridge from anywhere but the reverse direction.
+		if (forward_direction == ReverseDiagDir(tunnel_bridge_direction)) {
+			return;
+		}
 
-			aystar->neighbours[aystar->num_neighbours].tile = neighbour;
-			aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
-			aystar->num_neighbours++;
-
-			neighbour = tile + TileOffsByDiagDir(ReverseDiagDir(DiagdirBetweenTiles(tile, neighbour)));
-
-			if (IsValidNeighbourOfPreviousTile(neighbour, tile)) {
-				aystar->neighbours[aystar->num_neighbours].tile = neighbour;
-				aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
-				aystar->num_neighbours++;
-			}
-		} else {
+		// For tunnels we need to come directly towards the tunnel though.
+		if (IsTunnel(current_tile) && forward_direction != tunnel_bridge_direction) {
+			return;
+		}
+		
+		aystar->neighbours[aystar->num_neighbours].tile = tunnel_bridge_end;
+		aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
+		aystar->num_neighbours++;
+		
+		// Handle regular neighbors for bridges thanks to custom bridge heads.
+		if (IsBridge(current_tile)) {
 			for (DiagDirection d = DIAGDIR_BEGIN; d < DIAGDIR_END; d++) {
-				const auto neighbour = tile + TileOffsByDiagDir(d);
+				if (d == tunnel_bridge_direction) {
+					// We already added this direction.
+					// The direct neighbor in that direction makes no sense for a bridge.
+					continue;
+				}
 
-				if (IsValidNeighbourOfPreviousTile(neighbour, tile)) {
+				const auto neighbour = current_tile + TileOffsByDiagDir(d);
+
+				if (neighbour == previous_tile) {
+					// That's where we came from.
+					continue;
+				}
+
+				if (IsValidNeighbourOfPreviousTile(neighbour, current_tile)) {
 					aystar->neighbours[aystar->num_neighbours].tile = neighbour;
 					aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
 					aystar->num_neighbours++;
 				}
 			}
-			
-			// Check if we can turn this into a tunnel or a bridge.
-			if (current->path.parent != nullptr) {
-				const auto road_direction = DiagdirBetweenTiles(current->path.parent->node.tile, tile);
+		}
+	} else {
+		// Handle regular neighbors.
+		for (DiagDirection d = DIAGDIR_BEGIN; d < DIAGDIR_END; d++) {
+			const auto neighbour = current_tile + TileOffsByDiagDir(d);
 
-				if (IsUpwardsSlope(tile, road_direction)) {
-					const auto tunnel_end = BuildTunnel(&current->path);
+			if (neighbour == previous_tile) {
+				continue;
+			}
 
-					if (tunnel_end != INVALID_TILE &&
-						!IsBlockedByPreviousBridgeOrTunnel(current, current->path.node.tile, tunnel_end) &&
-						!IsSteepSlope(GetTileSlope(tunnel_end)) &&
-						!IsHalftileSlope(GetTileSlope(tunnel_end)) && 
-						(GetTileSlope(tunnel_end) == ComplementSlope(GetTileSlope(current->path.node.tile)))) {
-						assert(IsValidDiagDirection(DiagdirBetweenTiles(tile, tunnel_end)));
-						aystar->neighbours[aystar->num_neighbours].tile = tunnel_end;
-						aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
-						aystar->num_neighbours++;
-					}
+			if (IsValidNeighbourOfPreviousTile(neighbour, current_tile)) {
+				aystar->neighbours[aystar->num_neighbours].tile = neighbour;
+				aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
+				aystar->num_neighbours++;
+			}
+		}
+		
+		// Check if we can turn this into a tunnel or a bridge.
+		if (current->path.parent != nullptr) {
+			if (IsUpwardsSlope(current_tile, forward_direction)) {
+				const auto tunnel_end = BuildTunnel(&current->path);
+
+				if (tunnel_end != INVALID_TILE &&
+					!IsBlockedByPreviousBridgeOrTunnel(current, current_tile, tunnel_end) &&
+					!IsSteepSlope(GetTileSlope(tunnel_end)) &&
+					!IsHalftileSlope(GetTileSlope(tunnel_end)) && 
+					(GetTileSlope(tunnel_end) == ComplementSlope(GetTileSlope(current_tile)))) {
+					assert(IsValidDiagDirection(DiagdirBetweenTiles(current_tile, tunnel_end)));
+					aystar->neighbours[aystar->num_neighbours].tile = tunnel_end;
+					aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
+					aystar->num_neighbours++;
 				}
-				else if (IsDownwardsSlope(tile, road_direction)) {
-					const auto bridge_end = BuildBridge(&current->path, road_direction);
+			}
+			else if (IsDownwardsSlope(current_tile, forward_direction)) {
+				const auto bridge_end = BuildBridge(&current->path, forward_direction);
 
-					if (bridge_end != INVALID_TILE &&
-						!IsBlockedByPreviousBridgeOrTunnel(current, current->path.node.tile, bridge_end) &&
-						!IsSteepSlope(GetTileSlope(bridge_end)) &&
-						!IsHalftileSlope(GetTileSlope(bridge_end)) && 
-						(GetTileSlope(bridge_end) == ComplementSlope(GetTileSlope(current->path.node.tile)))) {
-						assert(IsValidDiagDirection(DiagdirBetweenTiles(tile, bridge_end)));
-						aystar->neighbours[aystar->num_neighbours].tile = bridge_end;
-						aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
-						aystar->num_neighbours++;
-					}
+				if (bridge_end != INVALID_TILE &&
+					!IsBlockedByPreviousBridgeOrTunnel(current, current_tile, bridge_end) &&
+					!IsSteepSlope(GetTileSlope(bridge_end)) &&
+					!IsHalftileSlope(GetTileSlope(bridge_end)) && 
+					(GetTileSlope(bridge_end) == ComplementSlope(GetTileSlope(current_tile)))) {
+					assert(IsValidDiagDirection(DiagdirBetweenTiles(current_tile, bridge_end)));
+					aystar->neighbours[aystar->num_neighbours].tile = bridge_end;
+					aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
+					aystar->num_neighbours++;
 				}
-				else if (GetTileSlope(tile) == SLOPE_FLAT)
-				{
-					// Check if we could bridge a river from a flat tile. Not looking pretty on the map but you gotta do what you gotta do.
-					const auto bridge_end = BuildRiverBridge(&current->path, road_direction);
-					assert(bridge_end == INVALID_TILE || GetTileSlope(bridge_end) == SLOPE_FLAT);
+			}
+			else if (GetTileSlope(current_tile) == SLOPE_FLAT)
+			{
+				// Check if we could bridge a river from a flat tile. Not looking pretty on the map but you gotta do what you gotta do.
+				const auto bridge_end = BuildRiverBridge(&current->path, forward_direction);
+				assert(bridge_end == INVALID_TILE || GetTileSlope(bridge_end) == SLOPE_FLAT);
 
-					if (bridge_end != INVALID_TILE &&						
-						!IsBlockedByPreviousBridgeOrTunnel(current, current->path.node.tile, bridge_end)) {
-						assert(IsValidDiagDirection(DiagdirBetweenTiles(tile, bridge_end)));
-						aystar->neighbours[aystar->num_neighbours].tile = bridge_end;
-						aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
-						aystar->num_neighbours++;
-					}
+				if (bridge_end != INVALID_TILE &&						
+					!IsBlockedByPreviousBridgeOrTunnel(current, current_tile, bridge_end)) {
+					assert(IsValidDiagDirection(DiagdirBetweenTiles(current_tile, bridge_end)));
+					aystar->neighbours[aystar->num_neighbours].tile = bridge_end;
+					aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
+					aystar->num_neighbours++;
 				}
 			}
 		}
