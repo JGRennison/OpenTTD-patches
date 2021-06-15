@@ -14,7 +14,7 @@
 #include "tile_map.h"
 
 uint GetTunnelBridgeSignalSimulationSpacing(TileIndex tile);
-uint GetTunnelBridgeSignalSimulationSignalCount(TileIndex begin, TileIndex end);
+uint GetTunnelBridgeSignalSimulationSignalCount(Company *c, TileIndex begin, TileIndex end);
 
 /**
  * Calculates the length of a tunnel or a bridge (without end tiles)

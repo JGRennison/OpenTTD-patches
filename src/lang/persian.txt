@@ -193,6 +193,10 @@ STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA}{NBSP}م
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}کیلومتر بر ساعت
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}متر بر ثانیه
 
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :مایل بر ساعت
+STR_UNIT_NAME_VELOCITY_METRIC                                   :کیلومتر بر ساعت
+STR_UNIT_NAME_VELOCITY_SI                                       :متر بر ثانیه
+
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}اسب بخار
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}اسب بخار
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}کیلووات

@@ -143,13 +143,14 @@ uint GetTunnelBridgeSignalSimulationSpacing(TileIndex tile)
 
 /**
  * Get number of signals on bridge or tunnel with signal simulation.
+ * @param c     Company to use.
  * @param begin The begin of the tunnel or bridge.
  * @param end   The end of the tunnel or bridge.
  * @pre IsTunnelBridgeWithSignalSimulation(begin)
  */
-uint GetTunnelBridgeSignalSimulationSignalCount(TileIndex begin, TileIndex end)
+uint GetTunnelBridgeSignalSimulationSignalCount(Company *c, TileIndex begin, TileIndex end)
 {
-	uint result = 2 + (GetTunnelBridgeLength(begin, end) / GetTunnelBridgeSignalSimulationSpacing(begin));
+	uint result = 2 + (GetTunnelBridgeLength(begin, end) / c->settings.simulated_wormhole_signals);
 	if (IsTunnelBridgeSignalSimulationBidirectional(begin)) result *= 2;
 	return result;
 }
@@ -1246,9 +1247,10 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 			check_tile(endtile);
 
 			if (Company::IsValidID(owner)) {
-				Company::Get(owner)->infrastructure.rail[GetRailType(tile)] -= len * TUNNELBRIDGE_TRACKBIT_FACTOR;
+				Company *c = Company::Get(owner);
+				c->infrastructure.rail[GetRailType(tile)] -= len * TUNNELBRIDGE_TRACKBIT_FACTOR;
 				if (IsTunnelBridgeWithSignalSimulation(tile)) { // handle tunnel/bridge signals.
-					Company::Get(GetTileOwner(tile))->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, endtile);
+					c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(c, tile, endtile);
 				}
 				DirtyCompanyInfrastructureWindows(owner);
 			}
@@ -1803,7 +1805,7 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 				sprite += SPR_ORIGINAL_SIGNALS_BASE + (position << 1);
 			} else {
 				/* All other signals are picked from add on sprites. */
-				sprite += SPR_SIGNALS_BASE + (SIGTYPE_NORMAL - 1) * 16 + variant * 64 + (position << 1);
+				sprite += SPR_SIGNALS_BASE + ((int)SIGTYPE_NORMAL - 1) * 16 + variant * 64 + (position << 1);
 			}
 
 			AddSortableSpriteToDraw(sprite, PAL_NONE, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
@@ -2691,9 +2693,9 @@ static void UpdateRailTunnelBridgeInfrastructure(Company *c, TileIndex begin, Ti
 
 		if (IsTunnelBridgeWithSignalSimulation(begin)) {
 			if (add) {
-				c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(begin, end);
+				c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(c, begin, end);
 			} else {
-				c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(begin, end);
+				c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(c, begin, end);
 			}
 		}
 	}

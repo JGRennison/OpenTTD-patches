@@ -799,6 +799,20 @@ uint ConvertSpeedToDisplaySpeed(uint speed)
 }
 
 /**
+ * Convert the given (internal) speed to the display speed, in units (not decimal values).
+ * @param speed the speed to convert
+ * @return the converted speed.
+ */
+uint ConvertSpeedToUnitDisplaySpeed(uint speed)
+{
+	uint result = ConvertSpeedToDisplaySpeed(speed);
+	for (uint i = 0; i < _units_velocity[_settings_game.locale.units_velocity].decimal_places; i++) {
+		result /= 10;
+	}
+	return result;
+}
+
+/**
  * Convert the given display speed to the (internal) speed.
  * @param speed the speed to convert
  * @return the converted speed.
@@ -1316,6 +1330,15 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 			case SCC_NUM: // {NUM}
 				buff = FormatNoCommaNumber(buff, args->GetInt64(SCC_NUM), last);
 				break;
+
+			case SCC_PLUS_NUM: { // {PLUS_NUM}
+				int64 num = args->GetInt64(SCC_PLUS_NUM);
+				if (num > 0) {
+					buff += seprintf(buff, last, "+");
+				}
+				buff = FormatNoCommaNumber(buff, num, last);
+				break;
+			}
 
 			case SCC_ZEROFILL_NUM: { // {ZEROFILL_NUM}
 				int64 num = args->GetInt64();

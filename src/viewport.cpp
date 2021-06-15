@@ -1104,7 +1104,7 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 
 	if (_vd.combine_sprites == SPRITE_COMBINE_PENDING) {
 		_vd.combine_sprites = SPRITE_COMBINE_ACTIVE;
-		_vd.combine_psd_index = _vd.parent_sprites_to_draw.size() - 1;
+		_vd.combine_psd_index = (uint)_vd.parent_sprites_to_draw.size() - 1;
 		_vd.combine_left = tmp_left;
 		_vd.combine_right = right;
 		_vd.combine_top = tmp_top;
@@ -2337,7 +2337,7 @@ static void ViewportMapDrawVehicleRoute(const Viewport *vp)
 static inline void DrawRouteStep(const Viewport * const vp, const TileIndex tile, const RankOrderTypeList list)
 {
 	if (tile == INVALID_TILE) return;
-	const uint step_count = list.size() > max_rank_order_type_count ? 1 : list.size();
+	const uint step_count = list.size() > max_rank_order_type_count ? 1 : (uint)list.size();
 	const int x_pos = TileX(tile) * TILE_SIZE + TILE_SIZE / 2;
 	const int y_pos = TileY(tile) * TILE_SIZE + TILE_SIZE / 2;
 	Point pt = RemapCoords(x_pos, y_pos, 0);
@@ -3648,7 +3648,7 @@ void MarkAllViewportsDirty(int left, int top, int right, int bottom, ViewportMar
 
 static void MarkRouteStepDirty(RouteStepsMap::const_iterator cit)
 {
-	const uint size = cit->second.size() > max_rank_order_type_count ? 1 : cit->second.size();
+	const uint size = cit->second.size() > max_rank_order_type_count ? 1 : (uint)cit->second.size();
 	MarkRouteStepDirty(cit->first, size);
 }
 
@@ -5342,10 +5342,10 @@ static HighLightStyle CalcPolyrailDrawstyle(Point pt, bool dragging)
 	if (_current_snap_lock.x != -1) {
 		snap_point = FindBestPolyline(pt, &_current_snap_lock, 1, &line);
 	} else if (snap_mode == RSM_SNAP_TO_TILE) {
-		snap_point = FindBestPolyline(pt, _tile_snap_points.data(), _tile_snap_points.size(), &line);
+		snap_point = FindBestPolyline(pt, _tile_snap_points.data(), (uint)_tile_snap_points.size(), &line);
 	} else {
 		assert(snap_mode == RSM_SNAP_TO_RAIL);
-		snap_point = FindBestPolyline(pt, _rail_snap_points.data(), _rail_snap_points.size(), &line);
+		snap_point = FindBestPolyline(pt, _rail_snap_points.data(), (uint)_rail_snap_points.size(), &line);
 	}
 
 	if (snap_point == nullptr) {

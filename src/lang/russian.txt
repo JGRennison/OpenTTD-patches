@@ -322,6 +322,11 @@ STR_UNITS_VELOCITY_METRIC                                       :{COMMA}{NBSP}к
 STR_UNITS_VELOCITY_SI                                           :{COMMA}{NBSP}м/с
 STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}кл./день
 
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :миль/ч
+STR_UNIT_NAME_VELOCITY_METRIC                                   :км/ч
+STR_UNIT_NAME_VELOCITY_SI                                       :м/с
+STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :клетки в день
+
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}{NBSP}лс
 STR_UNITS_POWER_METRIC                                          :{COMMA}{NBSP}лс
 STR_UNITS_POWER_SI                                              :{COMMA}{NBSP}кВт

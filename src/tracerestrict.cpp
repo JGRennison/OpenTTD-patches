@@ -381,11 +381,11 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GetTraceRestrictValue(item));
 						switch (static_cast<TraceRestrictSlotOccupancyCondAuxField>(GetTraceRestrictAuxField(item))) {
 							case TRSOCAF_OCCUPANTS:
-								result = TestCondition(slot != nullptr ? slot->occupants.size() : 0, condop, value);
+								result = TestCondition(slot != nullptr ? (uint)slot->occupants.size() : 0, condop, value);
 								break;
 
 							case TRSOCAF_REMAINING:
-								result = TestCondition(slot != nullptr ? slot->max_occupancy - slot->occupants.size() : 0, condop, value);
+								result = TestCondition(slot != nullptr ? slot->max_occupancy - (uint)slot->occupants.size() : 0, condop, value);
 								break;
 
 							default:
@@ -1455,7 +1455,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 	}
 
 	uint32 offset_limit_exclusive = ((type == TRDCT_INSERT_ITEM) ? 1 : 0);
-	if (prog) offset_limit_exclusive += prog->items.size();
+	if (prog) offset_limit_exclusive += (uint)prog->items.size();
 
 	if (offset >= offset_limit_exclusive) {
 		return_cmd_error(STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE);

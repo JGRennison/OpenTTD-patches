@@ -193,6 +193,10 @@ STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA} mph
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA} किमी / तास
 STR_UNITS_VELOCITY_SI                                           :{COMMA} m/s
 
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
+STR_UNIT_NAME_VELOCITY_METRIC                                   :किमी / तास
+STR_UNIT_NAME_VELOCITY_SI                                       :m/s
+
 STR_UNITS_POWER_IMPERIAL                                        :{COMMA}hp
 STR_UNITS_POWER_METRIC                                          :{COMMA}hp
 

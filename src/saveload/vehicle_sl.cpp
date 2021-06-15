@@ -1434,11 +1434,11 @@ const SaveLoad *GetVehicleLookAheadCurveDescription()
 static void RealSave_VLKA(TrainReservationLookAhead *lookahead)
 {
 	SlObject(lookahead, GetVehicleLookAheadDescription());
-	SlWriteUint32(lookahead->items.size());
+	SlWriteUint32((uint32)lookahead->items.size());
 	for (TrainReservationLookAheadItem &item : lookahead->items) {
 		SlObject(&item, GetVehicleLookAheadItemDescription());
 	}
-	SlWriteUint32(lookahead->curves.size());
+	SlWriteUint32((uint32)lookahead->curves.size());
 	for (TrainReservationLookAheadCurve &curve : lookahead->curves) {
 		SlObject(&curve, GetVehicleLookAheadCurveDescription());
 	}

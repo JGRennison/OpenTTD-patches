@@ -2472,12 +2472,12 @@ static bool TrainApproachingCrossing(TileIndex tile)
 	DiagDirection dir = AxisToDiagDir(GetCrossingRailAxis(tile));
 	TileIndex tile_from = tile + TileOffsByDiagDir(dir);
 
-	if (HasVehicleOnPos(tile_from, VEH_TRAIN, reinterpret_cast<void *>(tile), &TrainApproachingCrossingEnum)) return true;
+	if (HasVehicleOnPos(tile_from, VEH_TRAIN, reinterpret_cast<void *>((uintptr_t)tile), &TrainApproachingCrossingEnum)) return true;
 
 	dir = ReverseDiagDir(dir);
 	tile_from = tile + TileOffsByDiagDir(dir);
 
-	return HasVehicleOnPos(tile_from, VEH_TRAIN, reinterpret_cast<void *>(tile), &TrainApproachingCrossingEnum);
+	return HasVehicleOnPos(tile_from, VEH_TRAIN, reinterpret_cast<void *>((uintptr_t)tile), &TrainApproachingCrossingEnum);
 }
 
 /** Check if the crossing should be closed
@@ -2829,7 +2829,7 @@ void ReverseTrainDirection(Train *v)
 			 * Prevent setting the wrong signals by making wait_counter a non-integer multiple of TILE_SIZE.
 			 * Use a huge value so that the train will reverse again if there is another vehicle coming the other way.
 			 */
-			t->wait_counter = static_cast<uint16>(-(TILE_SIZE / 2));
+			t->wait_counter = static_cast<uint16>(-((int)TILE_SIZE / 2));
 			t->tunnel_bridge_signal_num = 0;
 		}
 	};
@@ -3264,7 +3264,7 @@ static int GetAndClearLastBridgeEntranceSetSignalIndex(TileIndex bridge_entrance
 		auto it = _long_bridge_signal_sim_map.find(bridge_entrance);
 		if (it != _long_bridge_signal_sim_map.end()) {
 			LongBridgeSignalStorage &lbss = it->second;
-			size_t slot = lbss.signal_red_bits.size();
+			uint slot = (uint)lbss.signal_red_bits.size();
 			while (slot > 0) {
 				slot--;
 				uint64 &slot_bits = lbss.signal_red_bits[slot];

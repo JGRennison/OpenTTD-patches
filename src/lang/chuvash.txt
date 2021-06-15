@@ -155,6 +155,10 @@ STR_UNITS_VELOCITY_IMPERIAL                                     :{COMMA} мил/
 STR_UNITS_VELOCITY_METRIC                                       :{COMMA} км/с
 STR_UNITS_VELOCITY_SI                                           :{COMMA} м/ҫ
 
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :мил/с
+STR_UNIT_NAME_VELOCITY_METRIC                                   :км/с
+STR_UNIT_NAME_VELOCITY_SI                                       :м/ҫ
+
 STR_UNITS_POWER_SI                                              :{COMMA}кВт
 
 

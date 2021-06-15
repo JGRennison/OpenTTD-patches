@@ -42,7 +42,17 @@
 #include <set>
 #include <vector>
 
+#include "cheat_func.h"
+#include "newgrf_callbacks.h"
+#include "newgrf_cargo.h"
 #include "safeguards.h"
+#include "widgets/misc_widget.h"
+
+enum StationRatingTooltipMode {
+	SRTM_OFF,
+	SRTM_SIMPLE,
+	SRTM_DETAILED,
+};
 
 /**
  * Calculates and draws the accepted or supplied cargo around the selected tile(s)
@@ -1313,6 +1323,7 @@ struct StationViewWindow : public Window {
 
 	int scroll_to_row;                  ///< If set, scroll the main viewport to the station pointed to by this row.
 	int grouping_index;                 ///< Currently selected entry in the grouping drop down.
+	int ratings_list_y = 0;             ///< Y coordinate of first line in station ratings panel.
 	Mode current_mode;                  ///< Currently selected display mode of cargo view.
 	Grouping groupings[NUM_COLUMNS];    ///< Grouping modes for the different columns.
 
@@ -1433,6 +1444,31 @@ struct StationViewWindow : public Window {
 				break;
 			}
 		}
+	}
+
+	bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
+	{
+		if (widget != WID_SV_ACCEPT_RATING_LIST || this->GetWidget<NWidgetCore>(WID_SV_ACCEPTS_RATINGS)->widget_data == STR_STATION_VIEW_RATINGS_BUTTON ||
+				_settings_client.gui.station_rating_tooltip_mode == SRTM_OFF) {
+			return false;
+		}
+
+		int ofs_y = pt.y - this->ratings_list_y;
+		if (ofs_y < 0) return false;
+
+		const Station *st = Station::Get(this->window_number);
+		const CargoSpec *cs;
+		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+			const GoodsEntry *ge = &st->goods[cs->Index()];
+			if (!ge->HasRating()) continue;
+			ofs_y -= FONT_HEIGHT_NORMAL;
+			if (ofs_y < 0) {
+				GuiShowStationRatingTooltip(this, st, cs);
+				break;
+			}
+		}
+
+		return true;
 	}
 
 	void OnPaint() override
@@ -1869,7 +1905,7 @@ struct StationViewWindow : public Window {
 	 * @param r Rectangle of the widget.
 	 * @return Number of lines needed for drawing the cargo ratings.
 	 */
-	int DrawCargoRatings(const Rect &r) const
+	int DrawCargoRatings(const Rect &r)
 	{
 		const Station *st = Station::Get(this->window_number);
 		int y = r.top + WD_FRAMERECT_TOP;
@@ -1882,6 +1918,8 @@ struct StationViewWindow : public Window {
 
 		DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_STATION_VIEW_SUPPLY_RATINGS_TITLE);
 		y += FONT_HEIGHT_NORMAL;
+
+		this->ratings_list_y = y;
 
 		const CargoSpec *cs;
 		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
@@ -2537,4 +2575,374 @@ void ShowSelectStationIfNeeded(const CommandContainer &cmd, TileArea ta)
 void ShowSelectWaypointIfNeeded(const CommandContainer &cmd, TileArea ta)
 {
 	ShowSelectBaseStationIfNeeded<Waypoint>(cmd, ta);
+}
+
+static const NWidgetPart _nested_station_rating_tooltip_widgets[] = {
+	NWidget(WWT_PANEL, COLOUR_GREY, WID_TT_BACKGROUND), SetMinimalSize(64, 32), EndContainer(),
+};
+
+static WindowDesc _station_rating_tooltip_desc(
+	WDP_MANUAL, nullptr, 0, 0,
+	WC_STATION_RATING_TOOLTIP, WC_NONE,
+	0,
+	_nested_station_rating_tooltip_widgets, lengthof(_nested_station_rating_tooltip_widgets)
+	);
+
+bool GetNewGrfRating(const Station *st, const CargoSpec *cs, const GoodsEntry *ge, int *new_grf_rating);
+int GetSpeedRating(const GoodsEntry *ge);
+int GetWaitTimeRating(const CargoSpec *cs, const GoodsEntry *ge);
+int GetWaitingCargoRating(const Station *st, const GoodsEntry *ge);
+int GetStatueRating(const Station *st);
+int GetVehicleAgeRating(const GoodsEntry *ge);
+
+struct StationRatingTooltipWindow : public Window
+{
+private:
+	const Station *st;
+	const CargoSpec *cs;
+	bool newgrf_rating_used;
+
+	static const uint RATING_TOOLTIP_LINE_BUFF_SIZE = 512;
+	static const uint RATING_TOOLTIP_MAX_LINES = 9;
+	static const uint RATING_TOOLTIP_NEWGRF_INDENT = 20;
+
+public:
+	char data[RATING_TOOLTIP_MAX_LINES + 1][RATING_TOOLTIP_LINE_BUFF_SIZE] {};
+
+	StationRatingTooltipWindow(Window *parent, const Station *st, const CargoSpec *cs) : Window(&_station_rating_tooltip_desc)
+	{
+		this->parent = parent;
+		this->st = st;
+		this->cs = cs;
+		this->newgrf_rating_used = false;
+		this->InitNested();
+		CLRBITS(this->flags, WF_WHITE_BORDER);
+	}
+
+	Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number) override
+	{
+		const int scr_top = GetMainViewTop() + 2;
+		const int scr_bot = GetMainViewBottom() - 2;
+
+		Point pt {};
+		pt.y = Clamp(_cursor.pos.y + _cursor.total_size.y + _cursor.total_offs.y + 5, scr_top, scr_bot);
+		if (pt.y + sm_height > scr_bot) pt.y = std::min(_cursor.pos.y + _cursor.total_offs.y - 5, scr_bot) - sm_height;
+		pt.x = sm_width >= _screen.width ? 0 : Clamp(_cursor.pos.x - (sm_width >> 1), 0, _screen.width - sm_width);
+
+		return pt;
+	}
+
+	static int RoundRating(const int rating) {
+		return RoundDivSU(rating * 101, 256);
+	}
+
+	void OnInit() override
+	{
+		const GoodsEntry *ge = &this->st->goods[this->cs->Index()];
+
+		SetDParam(0, this->cs->name);
+		GetString(this->data[0], STR_STATION_RATING_TOOLTIP_RATING_DETAILS, lastof(this->data[0]));
+
+		if (!ge->HasRating()) {
+			this->data[1][0] = '\0';
+			return;
+		}
+
+		uint line_nr = 1;
+
+		// Calculate target rating.
+		bool skip = false;
+		int total_rating = 0;
+
+		const bool detailed = _settings_client.gui.station_rating_tooltip_mode == SRTM_DETAILED;
+
+		if (_extra_cheats.station_rating.value) {
+			total_rating = 255;
+			skip = true;
+			GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_USING_CHEAT, lastof(this->data[line_nr]));
+			line_nr++;
+		} else if (HasBit(cs->callback_mask, CBM_CARGO_STATION_RATING_CALC)) {
+
+			int new_grf_rating;
+			this->newgrf_rating_used = GetNewGrfRating(st, cs, ge, &new_grf_rating);
+
+			if (this->newgrf_rating_used) {
+				skip = true;
+				total_rating += new_grf_rating;
+				new_grf_rating = RoundRating(new_grf_rating);
+
+				SetDParam(0, STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_0 + (new_grf_rating <= 0 ? 0 : 1));
+				SetDParam(1, new_grf_rating);
+				GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_NEWGRF_RATING, lastof(this->data[line_nr]));
+				line_nr++;
+
+				const uint last_speed = ge->HasVehicleEverTriedLoading() && ge->IsSupplyAllowed() ? ge->last_speed : 0xFF;
+				SetDParam(0, std::min<uint>(last_speed, 0xFFu));
+
+				switch (ge->last_vehicle_type)
+				{
+					case VEH_TRAIN:
+						SetDParam(1, STR_STATION_RATING_TOOLTIP_TRAIN);
+						break;
+					case VEH_ROAD:
+						SetDParam(1, STR_STATION_RATING_TOOLTIP_ROAD_VEHICLE);
+						break;
+					case VEH_SHIP:
+						SetDParam(1, STR_STATION_RATING_TOOLTIP_SHIP);
+						break;
+					case VEH_AIRCRAFT:
+						SetDParam(1, STR_STATION_RATING_TOOLTIP_AIRCRAFT);
+						break;
+					default:
+						SetDParam(1, STR_STATION_RATING_TOOLTIP_INVALID);
+						break;
+				}
+
+				GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED, lastof(this->data[line_nr]));
+				line_nr++;
+
+				SetDParam(0, std::min(ge->max_waiting_cargo, 0xFFFFu));
+				GetString(this->data[line_nr],
+					STR_STATION_RATING_TOOLTIP_NEWGRF_WAITUNITS,
+						  lastof(this->data[line_nr]));
+				line_nr++;
+
+				SetDParam(0, ge->time_since_pickup * STATION_RATING_TICKS / (DAY_TICKS * _settings_game.economy.day_length_factor));
+				GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_NEWGRF_WAITTIME, lastof(this->data[line_nr]));
+				line_nr++;
+			}
+		}
+
+		if (!skip) {
+			// Speed
+			{
+				const auto speed_rating = GetSpeedRating(ge);
+				const auto rounded_speed_rating = RoundRating(speed_rating);
+
+				SetDParam(0, detailed ? STR_STATION_RATING_MAX_PERCENTAGE : STR_EMPTY);
+				SetDParam(1, 17);
+
+				if (ge->last_speed == 255) {
+					SetDParam(2, STR_STATION_RATING_TOOLTIP_SPEED_3);
+				}
+				else if (rounded_speed_rating == 0) {
+					SetDParam(2, STR_STATION_RATING_TOOLTIP_SPEED_ZERO);
+				}
+				else {
+					SetDParam(2, STR_STATION_RATING_TOOLTIP_SPEED_0 + std::min(3, speed_rating / 42));
+				}
+
+				SetDParam(3, ge->last_speed);
+				SetDParam(4, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
+				SetDParam(5, rounded_speed_rating);
+
+				switch (ge->last_vehicle_type)
+				{
+					case VEH_TRAIN:
+						SetDParam(6, STR_STATION_RATING_TOOLTIP_TRAIN);
+						break;
+					case VEH_ROAD:
+						SetDParam(6, STR_STATION_RATING_TOOLTIP_ROAD_VEHICLE);
+						break;
+					case VEH_SHIP:
+						SetDParam(6, STR_STATION_RATING_TOOLTIP_SHIP);
+						break;
+					case VEH_AIRCRAFT:
+						SetDParam(6, STR_STATION_RATING_TOOLTIP_AIRCRAFT);
+						break;
+					default:
+						SetDParam(6, STR_STATION_RATING_TOOLTIP_INVALID);
+						break;
+				}
+
+				GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_SPEED, lastof(this->data[line_nr]));
+				line_nr++;
+
+				total_rating += speed_rating;
+			}
+
+			// Wait time
+			{
+				const auto wait_time_rating = GetWaitTimeRating(cs, ge);
+
+				int wait_time_stage = 0;
+
+				if (wait_time_rating >= 130) {
+					wait_time_stage = 4;
+				} else if (wait_time_rating >= 95) {
+					wait_time_stage = 3;
+				} else if (wait_time_rating >= 50) {
+					wait_time_stage = 2;
+				} else if (wait_time_rating >= 25) {
+					wait_time_stage = 1;
+				}
+
+				SetDParam(0, detailed ? STR_STATION_RATING_MAX_PERCENTAGE : STR_EMPTY);
+				SetDParam(1, 51);
+				SetDParam(2, STR_STATION_RATING_TOOLTIP_WAITTIME_0 + wait_time_stage);
+				SetDParam(3, ge->max_waiting_cargo);
+				SetDParam(4, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
+				SetDParam(5, RoundRating(wait_time_rating));
+				GetString(this->data[line_nr],
+					(ge->last_vehicle_type == VEH_SHIP) ?
+						STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP :
+						STR_STATION_RATING_TOOLTIP_WAITTIME,
+					lastof(this->data[line_nr]));
+				line_nr++;
+
+				total_rating += wait_time_rating;
+			}
+
+			// Waiting cargo
+			{
+				const auto cargo_rating = GetWaitingCargoRating(st, ge);
+
+				int wait_units_stage = 0;
+
+				if (cargo_rating >= 40) {
+					wait_units_stage = 5;
+				} else if (cargo_rating >= 30) {
+					wait_units_stage = 4;
+				} else if (cargo_rating >= 10) {
+					wait_units_stage = 3;
+				} else if (cargo_rating >= 0) {
+					wait_units_stage = 2;
+				} else if (cargo_rating >= -35) {
+					wait_units_stage = 1;
+				}
+
+				SetDParam(0, detailed ? STR_STATION_RATING_MAX_PERCENTAGE_COMMA : STR_EMPTY);
+				SetDParam(1, 16);
+				SetDParam(2, STR_STATION_RATING_TOOLTIP_WAITUNITS_0 + wait_units_stage);
+				SetDParam(3, ge->max_waiting_cargo);
+				SetDParam(4, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
+				SetDParam(5, RoundRating(cargo_rating));
+				GetString(this->data[line_nr],
+				          STR_STATION_RATING_TOOLTIP_WAITUNITS,
+				          lastof(this->data[line_nr]));
+				line_nr++;
+
+				total_rating += cargo_rating;
+			}
+		}
+
+		if (!_extra_cheats.station_rating.value) {
+			// Statue
+			const auto statue_rating = GetStatueRating(st);
+			if (statue_rating > 0 || detailed) {
+				SetDParam(0, detailed ? STR_STATION_RATING_MAX_PERCENTAGE : STR_EMPTY);
+				SetDParam(1, 10);
+				SetDParam(2, (statue_rating > 0) ? STR_STATION_RATING_TOOLTIP_STATUE_YES : STR_STATION_RATING_TOOLTIP_STATUE_NO);
+				SetDParam(3, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
+				SetDParam(4, (statue_rating > 0) ? 10 : 0);
+				GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_STATUE, lastof(this->data[line_nr]));
+				line_nr++;
+
+				total_rating += statue_rating;
+			}
+
+			// Vehicle age
+			{
+				const auto age_rating = GetVehicleAgeRating(ge);
+
+				int age_stage = 0;
+
+				if (age_rating >= 33) {
+					age_stage = 3;
+				} else if (age_rating >= 20) {
+					age_stage = 2;
+				} else if (age_rating >= 10) {
+					age_stage = 1;
+				}
+
+				SetDParam(0, detailed ? STR_STATION_RATING_MAX_PERCENTAGE : STR_EMPTY);
+				SetDParam(1, 13);
+				SetDParam(2, STR_STATION_RATING_TOOLTIP_AGE_0 + age_stage);
+				SetDParam(3, ge->last_age);
+				SetDParam(4, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
+				SetDParam(5, RoundRating(age_rating));
+				GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_AGE, lastof(this->data[line_nr]));
+				line_nr++;
+
+				total_rating += age_rating;
+			}
+		}
+
+		total_rating = Clamp(total_rating, 0, 255);
+
+		if (detailed) {
+			SetDParam(0, ToPercent8(total_rating));
+			GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_TOTAL_RATING, lastof(this->data[line_nr]));
+			line_nr++;
+		}
+
+		this->data[line_nr][0] = '\0';
+	}
+
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	{
+		if (widget != 0) return;
+
+		size->height = WD_FRAMETEXT_TOP + WD_FRAMETEXT_BOTTOM + 2;
+
+		for (uint i = 0; i <= RATING_TOOLTIP_MAX_LINES; i++) {
+			if (StrEmpty(this->data[i])) break;
+
+			uint width = GetStringBoundingBox(this->data[i]).width + WD_FRAMETEXT_LEFT + WD_FRAMETEXT_RIGHT + 2;
+			if (this->newgrf_rating_used && i >= 2 && i <= 4) {
+				width += RATING_TOOLTIP_NEWGRF_INDENT;
+			}
+			size->width = std::max(size->width, width);
+			size->height += FONT_HEIGHT_NORMAL + WD_PAR_VSEP_NORMAL;
+		}
+
+		size->height -= WD_PAR_VSEP_NORMAL;
+	}
+
+	void DrawWidget(const Rect &r, int widget) const override
+	{
+		GfxDrawLine(r.left, r.top, r.right, r.top, PC_BLACK);
+		GfxDrawLine(r.left, r.bottom, r.right, r.bottom, PC_BLACK);
+		GfxDrawLine(r.left, r.top, r.left, r.bottom, PC_BLACK);
+		GfxDrawLine(r.right, r.top, r.right, r.bottom, PC_BLACK);
+
+		int y = r.top + WD_FRAMETEXT_TOP + 1;
+		const int left0 = r.left + WD_FRAMETEXT_LEFT + 1;
+		const int right0 = r.right - WD_FRAMETEXT_RIGHT - 1;
+
+		DrawString(left0, right0, y, this->data[0], TC_LIGHT_BLUE, SA_CENTER);
+
+		y += FONT_HEIGHT_NORMAL + WD_PAR_VSEP_NORMAL;
+
+		for (uint i = 1; i <= RATING_TOOLTIP_MAX_LINES; i++) {
+			if (StrEmpty(this->data[i])) break;
+
+			int left = left0, right = right0;
+
+			if (this->newgrf_rating_used && i >= 2 && i <= 4) {
+				if (_current_text_dir == TD_RTL) {
+					right -= RATING_TOOLTIP_NEWGRF_INDENT;
+				}
+				else {
+					left += RATING_TOOLTIP_NEWGRF_INDENT;
+				}
+			}
+
+			DrawString(left, right, y, this->data[i], TC_BLACK);
+
+			y += FONT_HEIGHT_NORMAL + WD_PAR_VSEP_NORMAL;
+		}
+	}
+
+	void OnMouseLoop() override
+	{
+		if (!_cursor.in_window || !_mouse_hovering) {
+			delete this;
+		}
+	}
+};
+
+void GuiShowStationRatingTooltip(Window *parent, const Station *st, const CargoSpec *cs) {
+	DeleteWindowById(WC_STATION_RATING_TOOLTIP, 0);
+	new StationRatingTooltipWindow(parent, st, cs);
 }

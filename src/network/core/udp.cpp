@@ -95,13 +95,13 @@ void NetworkUDPSocketHandler::SendPacket(Packet *p, NetworkAddress *recv, bool a
 		const uint PAYLOAD_MTU = MTU - (1 + 2 + 8 + 1 + 1 + 2);
 
 		const size_t packet_size = p->Size();
-		const uint8 frag_count = (packet_size + PAYLOAD_MTU - 1) / PAYLOAD_MTU;
+		const uint8 frag_count = (uint8)((packet_size + PAYLOAD_MTU - 1) / PAYLOAD_MTU);
 
 		Packet frag(PACKET_UDP_EX_MULTI);
 		uint8 current_frag = 0;
 		uint16 offset = 0;
 		while (offset < packet_size) {
-			uint16 payload_size = std::min<uint>(PAYLOAD_MTU, packet_size - offset);
+			uint16 payload_size = (uint16)std::min<size_t>(PAYLOAD_MTU, packet_size - offset);
 			frag.Send_uint64(token);
 			frag.Send_uint8 (current_frag);
 			frag.Send_uint8 (frag_count);
@@ -501,7 +501,7 @@ void NetworkUDPSocketHandler::Receive_EX_MULTI(Packet *p, NetworkAddress *client
 		for (auto &frag : fs.fragments) {
 			if (!frag.size()) return;
 
-			total_payload += frag.size();
+			total_payload += (uint)frag.size();
 		}
 
 		DEBUG(net, 6, "[udp] merged multi-part packet from %s: " OTTD_PRINTFHEX64 ", %u bytes",

@@ -24,6 +24,8 @@ enum ScreenshotType {
 	SC_WORLD_ZOOM,  ///< World screenshot using current zoom level.
 	SC_HEIGHTMAP,   ///< Heightmap of the world.
 	SC_MINIMAP,     ///< Minimap screenshot.
+	SC_TOPOGRAPHY,  ///< Topography screenshot.
+	SC_INDUSTRY,    ///< Industry screenshot.
 	SC_SMALLMAP,    ///< Smallmap window screenshot.
 };
 
@@ -35,6 +37,8 @@ bool MakeSmallMapScreenshot(unsigned int width, unsigned int height, SmallMapWin
 void MakeScreenshotWithConfirm(ScreenshotType t);
 bool MakeScreenshot(ScreenshotType t, std::string name, uint32 width = 0, uint32 height = 0);
 bool MakeMinimapWorldScreenshot(const char *name);
+bool MakeTopographyScreenshot(const char *name);
+bool MakeIndustryScreenshot(const char *name);
 void SetScreenshotAuxiliaryText(const char *key, const char *value);
 inline void ClearScreenshotAuxiliaryText() { SetScreenshotAuxiliaryText(nullptr, nullptr); }
 

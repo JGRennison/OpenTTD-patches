@@ -8,6 +8,7 @@
 /** @file unit_conversion.h Functions related to unit conversion. */
 
 uint ConvertSpeedToDisplaySpeed(uint speed);
+uint ConvertSpeedToUnitDisplaySpeed(uint speed);
 uint ConvertDisplaySpeedToSpeed(uint speed);
 uint ConvertWeightToDisplayWeight(uint weight);
 uint ConvertDisplayWeightToWeight(uint weight);

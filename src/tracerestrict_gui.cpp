@@ -2370,7 +2370,7 @@ private:
 	int GetItemCount(const TraceRestrictProgram *prog) const
 	{
 		if (prog) {
-			return 2 + prog->GetInstructionCount();
+			return 2 + (int)prog->GetInstructionCount();
 		} else {
 			return 2;
 		}
@@ -2987,7 +2987,7 @@ private:
 
 		if (offset >= (TraceRestrictProgram::GetInstructionCount(items) + (replace ? 0 : 1))) return false; // off the end of the program
 
-		uint array_offset = TraceRestrictProgram::InstructionOffsetToArrayOffset(items, offset);
+		uint array_offset = (uint)TraceRestrictProgram::InstructionOffsetToArrayOffset(items, offset);
 		if (replace) {
 			items[array_offset] = item;
 		} else {
@@ -3010,7 +3010,7 @@ private:
 	}
 
 	/**
-	 * Run GenericElseInsertionDryRun with an elif instruction
+	 * Run GenericElseInsertionDr;yRun with an elif instruction
 	 */
 	bool ElseIfInsertionDryRun(bool replace)
 	{
@@ -3456,8 +3456,8 @@ public:
 
 		this->BuildSlotList(this->owner);
 
-		this->slot_sb->SetCount(this->slots.size());
-		this->vscroll->SetCount(this->vehgroups.size());
+		this->slot_sb->SetCount((uint)this->slots.size());
+		this->vscroll->SetCount((uint)this->vehgroups.size());
 
 		/* Disable the slot specific function when we select all vehicles */
 		this->SetWidgetsDisabledState(this->vli.index == ALL_TRAINS_TRACE_RESTRICT_SLOT_ID || _local_company != this->vli.company,
@@ -3493,7 +3493,7 @@ public:
 
 			case WID_TRSL_LIST_SLOTS: {
 				int y1 = r.top + WD_FRAMERECT_TOP;
-				int max = std::min<int>(this->slot_sb->GetPosition() + this->slot_sb->GetCapacity(), this->slots.size());
+				int max = std::min<int>(this->slot_sb->GetPosition() + this->slot_sb->GetCapacity(), (int)this->slots.size());
 				for (int i = this->slot_sb->GetPosition(); i < max; ++i) {
 					const TraceRestrictSlot *slot = this->slots[i];
 
@@ -3997,7 +3997,7 @@ public:
 	{
 		this->BuildCounterList();
 
-		this->sb->SetCount(this->ctrs.size());
+		this->sb->SetCount((uint)this->ctrs.size());
 
 		/* Disable the counter specific functions when no counter is selected */
 		this->SetWidgetsDisabledState(this->selected == INVALID_TRACE_RESTRICT_COUNTER_ID || _local_company != this->ctr_company,
@@ -4024,7 +4024,7 @@ public:
 		switch (widget) {
 			case WID_TRCL_LIST_COUNTERS: {
 				int y1 = r.top + WD_FRAMERECT_TOP;
-				int max = std::min<int>(this->sb->GetPosition() + this->sb->GetCapacity(), this->ctrs.size());
+				int max = std::min<int>(this->sb->GetPosition() + this->sb->GetCapacity(), (int)this->ctrs.size());
 				for (int i = this->sb->GetPosition(); i < max; ++i) {
 					const TraceRestrictCounter *ctr = this->ctrs[i];
 

@@ -49,6 +49,8 @@ enum CargoPaymentRatesWidgets {
 	WID_CPR_DISABLE_CARGOES, ///< Disable cargoes button.
 	WID_CPR_MATRIX,          ///< Cargo list.
 	WID_CPR_MATRIX_SCROLLBAR,///< Cargo list scrollbar.
+	WID_CPR_DAYS,            ///< Days in transit mode.
+	WID_CPR_SPEED,           ///< Speed mode.
 };
 
 /** Widget of the #CompanyLeagueWindow class. */

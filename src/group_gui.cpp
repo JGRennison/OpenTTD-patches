@@ -390,7 +390,7 @@ private:
 		Money this_year = 0;
 		Money last_year = 0;
 		uint32 occupancy = 0;
-		size_t vehicle_count = this->vehicles.size();
+		uint vehicle_count = (uint)this->vehicles.size();
 
 		for (uint i = 0; i < vehicle_count; i++) {
 			const Vehicle *v = this->vehicles[i];

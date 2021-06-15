@@ -1303,7 +1303,7 @@ public:
 
 	uint NumHouseSets() const
 	{
-		return this->house_sets.size() - 1; // last item is a terminator
+		return (uint)this->house_sets.size() - 1; // last item is a terminator
 	}
 
 	uint NumHousesInHouseSet(uint house_set) const
@@ -1388,7 +1388,7 @@ public:
 			}
 		}
 		/* put a terminator on the list to make counting easier */
-		this->house_sets.push_back(this->size());
+		this->house_sets.push_back((uint)this->size());
 	}
 };
 
@@ -1854,7 +1854,7 @@ struct SelectTownWindow : Window {
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_ST_SCROLLBAR);
-		this->vscroll->SetCount(this->towns.size());
+		this->vscroll->SetCount((uint)this->towns.size());
 		this->FinishInitNested();
 	}
 

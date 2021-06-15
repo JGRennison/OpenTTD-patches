@@ -578,7 +578,7 @@ public:
 
 		this->groups.shrink_to_fit();
 		this->groups.RebuildDone();
-		this->vscroll[0]->SetCount(groups.size());
+		this->vscroll[0]->SetCount((uint)groups.size());
 	}
 
 	void BuildTemplateGuiList()
@@ -593,7 +593,7 @@ public:
 		int left = r.left + WD_MATRIX_LEFT;
 		int right = r.right - WD_MATRIX_RIGHT;
 		int y = r.top;
-		int max = std::min<int>(this->vscroll[0]->GetPosition() + this->vscroll[0]->GetCapacity(), this->groups.size());
+		int max = std::min<int>(this->vscroll[0]->GetPosition() + this->vscroll[0]->GetCapacity(), (int)this->groups.size());
 
 		/* Then treat all groups defined by/for the current company */
 		for (int i = this->vscroll[0]->GetPosition(); i < max; ++i) {
@@ -651,7 +651,7 @@ public:
 		int y = r.top;
 
 		Scrollbar *draw_vscroll = vscroll[1];
-		uint max = std::min<uint>(draw_vscroll->GetPosition() + draw_vscroll->GetCapacity(), this->templates.size());
+		uint max = std::min<uint>(draw_vscroll->GetPosition() + draw_vscroll->GetCapacity(), (uint)this->templates.size());
 
 		const TemplateVehicle *v;
 		for (uint i = draw_vscroll->GetPosition(); i < max; ++i) {

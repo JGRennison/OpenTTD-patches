@@ -205,8 +205,8 @@ void SignalSlotCondition::SetSlot(TraceRestrictSlotID slot_id)
 
 	const TraceRestrictSlot *slot = TraceRestrictSlot::Get(this->slot_id);
 	switch (this->cond_code) {
-		case PSC_SLOT_OCC:     return this->EvaluateComparable(slot->occupants.size());
-		case PSC_SLOT_OCC_REM: return this->EvaluateComparable(slot->max_occupancy > slot->occupants.size() ? slot->max_occupancy - slot->occupants.size() : 0);
+		case PSC_SLOT_OCC:     return this->EvaluateComparable((uint)slot->occupants.size());
+		case PSC_SLOT_OCC_REM: return this->EvaluateComparable(slot->max_occupancy > (uint)slot->occupants.size() ? slot->max_occupancy - (uint)slot->occupants.size() : 0);
 		default: NOT_REACHED();
 	}
 }

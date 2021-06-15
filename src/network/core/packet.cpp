@@ -82,7 +82,7 @@ void Packet::PrepareToSend()
  */
 bool Packet::CanWriteToPacket(size_t bytes_to_write)
 {
-	return this->Size() + bytes_to_write < this->limit;
+	return this->Size() + bytes_to_write <= this->limit;
 }
 
 /*
@@ -425,7 +425,7 @@ void Packet::Recv_string(std::string &buffer, StringValidationSettings settings)
 
 	size_t length = ttd_strnlen((const char *)(this->buffer.data() + this->pos), this->Size() - this->pos - 1);
 	buffer.assign((const char *)(this->buffer.data() + this->pos), length);
-	this->pos += length + 1;
+	this->pos += (uint)length + 1;
 	str_validate_inplace(buffer, settings);
 }
 

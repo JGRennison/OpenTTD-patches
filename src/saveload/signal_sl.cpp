@@ -146,14 +146,14 @@ static void Save_SPRG()
 
 	// OK, we can now write out our programs
 	Buffer b;
-	WriteVLI(b, _signal_programs.size());
+	WriteVLI(b, (uint)_signal_programs.size());
 	for(ProgramList::iterator i = _signal_programs.begin(), e = _signal_programs.end();
 			i != e; ++i) {
 		SignalProgram *prog = i->second;
 
 		WriteVLI(b, prog->tile);
 		WriteVLI(b, prog->track);
-		WriteVLI(b, prog->instructions.size());
+		WriteVLI(b, (uint)prog->instructions.size());
 		for (SignalInstruction *insn : prog->instructions) {
 			WriteVLI(b, insn->Opcode());
 			if(insn->Opcode() != PSO_FIRST)
@@ -195,7 +195,7 @@ static void Save_SPRG()
 		}
 	}
 
-	uint size = b.size();
+	uint size = (uint)b.size();
 	SlSetLength(size);
 	for(uint i = 0; i < size; i++) {
 		SlWriteByte(b[i]); // TODO Gotta be a better way
@@ -223,14 +223,14 @@ typedef std::vector<Fixup> FixupList;
 template<typename T>
 static void MakeFixup(FixupList &l, T *&ir, uint id, SignalOpcode op = PSO_INVALID)
 {
-	ir = reinterpret_cast<T*>(id);
+	ir = reinterpret_cast<T*>((size_t)id);
 	l.emplace_back(reinterpret_cast<SignalInstruction**>(&ir), op);
 }
 
 static void DoFixups(FixupList &l, InstructionList &il)
 {
 	for (Fixup &i : l) {
-		uint id = reinterpret_cast<size_t>(*(i.ptr));
+		uint id = (uint)reinterpret_cast<size_t>(*(i.ptr));
 		if (id >= il.size())
 			NOT_REACHED();
 

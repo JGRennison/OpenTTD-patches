@@ -73,6 +73,7 @@
 #include "viewport_func.h"
 #include "gui.h"
 #include "statusbar_gui.h"
+#include "graph_gui.h"
 
 #include "void_map.h"
 #include "station_base.h"
@@ -1522,6 +1523,12 @@ static bool ClimateThresholdModeChanged(int32 p1)
 	return true;
 }
 
+static bool VelocityUnitsChanged(int32 p1) {
+	InvalidateWindowClassesData(WC_PAYMENT_RATES);
+	MarkWholeScreenDirty();
+	return true;
+}
+
 /** Checks if any settings are set to incorrect values, and sets them to correct values in that case. */
 static void ValidateSettings()
 {
@@ -2915,7 +2922,7 @@ static void SaveSettingsPatx(const SettingDesc *sd, void *object)
 	size_t length = 8;
 	for (const SettingDesc *desc = sd; desc->save.cmd != SL_END; desc++) {
 		if (desc->patx_name == nullptr) continue;
-		uint32 setting_length = SlCalcObjMemberLength(object, &desc->save);
+		uint32 setting_length = (uint32)SlCalcObjMemberLength(object, &desc->save);
 		if (!setting_length) continue;
 
 		current_setting.name = desc->patx_name;
@@ -2932,8 +2939,8 @@ static void SaveSettingsPatx(const SettingDesc *sd, void *object)
 	}
 	SlSetLength(length);
 
-	SlWriteUint32(0);                          // flags
-	SlWriteUint32(settings_to_add.size());     // settings count
+	SlWriteUint32(0);                              // flags
+	SlWriteUint32((uint32)settings_to_add.size()); // settings count
 
 	for (size_t i = 0; i < settings_to_add.size(); i++) {
 		const SettingDesc *desc = settings_to_add[i].setting;
@@ -3060,7 +3067,7 @@ void SaveSettingsPlyx()
 		uint32 setting_count = 0;
 		for (const SettingDesc *desc = _company_settings; desc->save.cmd != SL_END; desc++) {
 			if (desc->patx_name == nullptr) continue;
-			uint32 setting_length = SlCalcObjMemberLength(&(c->settings), &desc->save);
+			uint32 setting_length = (uint32)SlCalcObjMemberLength(&(c->settings), &desc->save);
 			if (!setting_length) continue;
 
 			current_setting.name = desc->patx_name;
@@ -3091,7 +3098,7 @@ void SaveSettingsPlyx()
 
 		for (const SettingDesc *desc = _company_settings; desc->save.cmd != SL_END; desc++) {
 			if (desc->patx_name == nullptr) continue;
-			uint32 setting_length = SlCalcObjMemberLength(&(c->settings), &desc->save);
+			uint32 setting_length = (uint32)SlCalcObjMemberLength(&(c->settings), &desc->save);
 			if (!setting_length) continue;
 
 			current_setting.flags = 0;

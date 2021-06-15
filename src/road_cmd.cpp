@@ -3005,7 +3005,7 @@ CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				if (!IsRoadStopTile(tile) && owner == _current_company) {
 					ConvertRoadTypeOwner(tile, num_pieces, owner, from_type, to_type);
 				} else {
-					UpdateCompanyRoadInfrastructure(from_type, owner, -num_pieces);
+					UpdateCompanyRoadInfrastructure(from_type, owner, -(int)num_pieces);
 					UpdateCompanyRoadInfrastructure(to_type, owner, num_pieces);
 				}
 
@@ -3080,7 +3080,7 @@ CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 						SetTunnelBridgeOwner(tile, endtile, _current_company);
 					}
 				} else {
-					UpdateCompanyRoadInfrastructure(from_type, owner, -(tile_pieces + end_pieces));
+					UpdateCompanyRoadInfrastructure(from_type, owner, -(int)(tile_pieces + end_pieces));
 					UpdateCompanyRoadInfrastructure(to_type, owner, tile_pieces + end_pieces);
 				}
 
