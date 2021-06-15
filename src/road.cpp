@@ -254,8 +254,8 @@ static RoadType _public_road_type;
 static const uint _public_road_hash_size = 8U; ///< The number of bits the hash for river finding should have.
 
 static const int32 BASE_COST_PER_TILE = 1; // Cost for building a new road.
-static const int32 COST_FOR_NEW_ROAD = 100; // Cost for building a new road.
-static const int32 COST_FOR_SLOPE = 50;     // Additional cost if the road heads up or down a slope.
+static const int32 COST_FOR_NEW_ROAD = 1000; // Cost for building a new road.
+static const int32 COST_FOR_SLOPE = 500;     // Additional cost if the road heads up or down a slope.
 
 /** AyStar callback for getting the cost of the current node. */
 static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *parent)
@@ -716,8 +716,7 @@ bool FindPath(AyStar& finder, const TileIndex from, TileIndex to)
 	finder.EndNodeCheck = PublicRoad_EndNodeCheck;
 	finder.FoundEndNode = PublicRoad_FoundEndNode;
 	finder.user_target = &(to);
-	finder.max_search_nodes = 1 << 18; // 1,048,576
-	finder.max_path_cost = 1000 * COST_FOR_NEW_ROAD;
+	finder.max_search_nodes = 1 << 20;
 
 	finder.Init(1 << _public_road_hash_size);
 
@@ -848,7 +847,7 @@ void GeneratePublicRoads()
 				sort(network->towns.begin(), network->towns.end(), [&](auto a, auto b) { return DistanceManhattan(start_town, a) < DistanceManhattan(start_town, b); });
 				const TileIndex end_town = *network->towns.begin();
 
-				if (checked_towns.find(end_town) != checked_towns.end()/* || DistanceManhattan(start_town, end_town) > 2000*/) {
+				if (checked_towns.find(end_town) != checked_towns.end()) {
 					return false;
 				}
 
