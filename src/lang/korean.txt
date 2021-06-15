@@ -604,6 +604,7 @@ STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}회사 �
 
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}화물 운송단가 비율
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL                           :{TINY_FONT}{BLACK}통과시간
+STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED                     :{TINY_FONT}{BLACK}평균 통과 속력 ({STRING})
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}10 단위(1만 리터)의 화물을 20칸 거리만큼 운송할 때의 운송비 지급량
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}모두 사용
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}모두 사용 안 함
@@ -611,6 +612,11 @@ STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}화물 �
 STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}화물 운송단가 비율 그래프에서 모든 화물을 표시 안 함
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}이 화물에 대한 그래프 켜기/끄기
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
+
+STR_GRAPH_CARGO_DAYS_MODE                                       :{TINY_FONT}{BLACK}통과 시간
+STR_GRAPH_CARGO_SPEED_MODE                                      :{TINY_FONT}{BLACK}평균 속력
+STR_GRAPH_CARGO_TOOLTIP_DAYS_MODE                               :{BLACK}그래프의 X축에 통과 시간을 표시합니다
+STR_GRAPH_CARGO_TOOLTIP_SPEED_MODE                              :{BLACK}그래프의 X축에 평균 수송 시간을 표시합니다
 
 STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}상세 성취도를 봅니다.
 
@@ -1458,6 +1464,12 @@ STR_CONFIG_SETTING_VEHICLE_NAMES_LONG                           :긴 이름
 STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES                       :경사 위의 나무를 어둡게: {STRING}
 STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES_HELPTEXT              :경사 위에 있는 나무의 밝기를 다르게 표시합니다. 산악 지역에 덮인 나무 지역의 외관을 보기 좋게 개선해줍니다.
 
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE                  :역 등급 도움말: {STRING}
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_HELPTEXT         :역 등급 도움말을 표시할지 여부와 표시할 정보의 수준을 설정합니다
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :끄기
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :간단히
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :자세히
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :고급 다리/터널 신호기 활성화: {STRING}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :다리와 터널 위 신호기 시뮬레이션 고급 모드를 활성화합니다. 이 설정을 끄면, 고급 모드에 있지 않은 다리와 터널을 고급 모드로 변경할 수 없지만 다른 플레이어는 이 설정을 켜서 고급 모드를 사용할 수 있습니다.
 
@@ -1484,7 +1496,7 @@ STR_CONFIG_SETTING_DESERT_COVERAGE                              :사막 비율: 
 STR_CONFIG_SETTING_DESERT_COVERAGE_HELPTEXT                     :아열대 기후에서 사막 지역의 양을 대략적으로 조절할 수 있습니다. 사막은 산업시설 생성에도 영향을 미칩니다. 지도를 생성할 때에만 사용하는 설정입니다.
 STR_CONFIG_SETTING_DESERT_COVERAGE_VALUE                        :{NUM}%
 STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT                        :열대우림 선 높이: {STRING}
-STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT_HELPTEXT               :아열대 기후에서 어느 높이에서 열대우림이 시작할지를 조절합니다. 열대우림은 산업 시설과 도시 성장에도 영향을 미칩니다.
+STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT_HELPTEXT               :아열대 기후에서 어느 높이에서 열대우림이 시작할지를 조절합니다. 열대우림은 산업시설과 도시 성장에도 영향을 미칩니다.
 STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MODE                       :기후 임계값 모드: {STRING}
 STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MODE_HELPTEXT              :눈 지역의 고도나 열대우림/사막 고도를 비율로 결정할지 아니면 수동으로 조절할지를 결정합니다.
 STR_CONFIG_SETTING_CLIMATE_THRESHOLD_COVERAGE                   :비율
@@ -1507,6 +1519,8 @@ STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH                          :강 주변의 �
 STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH_HELPTEXT                 :아열대 기후에서 강 주변의 열대 지역의 폭을 설정합니다.
 STR_CONFIG_SETTING_LAKE_SIZE                                    :호수 크기: {STRING}
 STR_CONFIG_SETTING_LAKE_SIZE_HELPTEXT                           :강을 따라 생성될 호수의 크기를 설정합니다.
+STR_CONFIG_SETTING_LAKE_SIZE_VALUE                              :{NUM}
+STR_CONFIG_SETTING_LAKE_SIZE_ZERO                               :없음
 STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS                     :아열대 기후에서 호수가 만들어질 수 있음: {STRING}
 STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS_HELPTEXT            :사막에서 강을 따라 호수가 생길 수 있는지 설정합니다.
 STR_CONFIG_SETTING_RIVER_AMOUNT                                 :강의 양: {STRING}
@@ -1591,7 +1605,7 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_USE_OWNER_COLOUR_BRIDGE_TUNNEL  :다리와 터�
 STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE                    :기본 모드: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_VEGETATION         :초목
 STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_OWNER              :소유주
-STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_INDUSTRY           :산업 시설
+STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_INDUSTRY           :산업시설
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK                 :더블 클릭을 하면 실행할 동작: {STRING}
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_DO_NOTHING      :아무것도 하지 않기
 STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_ZOOM_MAIN       :확대/축소 배율 원래대로
@@ -1891,8 +1905,8 @@ STR_CONFIG_SETTING_TOWN_CARGOGENMODE_ORIGINAL                   :제곱 (기본)
 STR_CONFIG_SETTING_TOWN_CARGOGENMODE_BITCOUNT                   :선형
 STR_CONFIG_SETTING_TOWN_CARGO_FACTOR                            :도시 화물 생성 계수 (적음 < 0 < 많음): {STRING}
 STR_CONFIG_SETTING_TOWN_CARGO_FACTOR_HELPTEXT                   :도시가 생산하는 화물의 양을 2^(생성 계수)에 근접하게 조절합니다.
-STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR                        :산업 시설 화물 생성 계수 (적음 < 0 < 많음): {STRING}
-STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR_HELPTEXT               :1차 산업 시설이 생산하는 화물의 양을 2^(생성 계수)에 근접하게 조절합니다. 나무를 베는 산업 시설에는 적용되지 않습니다.{}모든 산업 시설 관련 NewGRF와 모두 호환되지는 않을 수 있습니다.
+STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR                        :산업시설 화물 생성 계수 (적음 < 0 < 많음): {STRING}
+STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR_HELPTEXT               :1차 산업시설이 생산하는 화물의 양을 2^(생성 계수)에 근접하게 조절합니다. 나무를 베는 산업시설에는 적용되지 않습니다.{}모든 산업시설 관련 NewGRF와 모두 호환되지는 않을 수 있습니다.
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :나무의 성장과 확장: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :게임 플레이 중 나무의 성장과 확장 여부를 조절합니다. 이 설정을 조정하면, 아열대 기후의 벌목소처럼 나무의 성장에 의존하는 산업시설에 영향을 끼칠 수 있습니다.
@@ -1907,7 +1921,7 @@ STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE                  :눈 쌓인 나�
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE_HELPTEXT         :설선 주변에 위치할 눈 쌓인 나무의 근삿값
 
 STR_CONFIG_SETTING_TREE_GROWTH                                  :나무 성장 속도: {STRING}
-STR_CONFIG_SETTING_TREE_GROWTH_HELPTEXT                         :게임 중에서의 나무의 성장 속도를 조절합니다. 이 설정은 열대 우림의 벌목소처럼 나무의 성장에 의존하는 산업 시설에 영향을 끼칠 수 있습니다.
+STR_CONFIG_SETTING_TREE_GROWTH_HELPTEXT                         :게임 중에서의 나무의 성장 속도를 조절합니다. 이 설정은 열대 우림의 벌목소처럼 나무의 성장에 의존하는 산업시설에 영향을 끼칠 수 있습니다.
 STR_CONFIG_SETTING_TREE_GROWTH_NORMAL                           :보통
 STR_CONFIG_SETTING_TREE_GROWTH_SLOW                             :느림
 STR_CONFIG_SETTING_TREE_GROWTH_VERY_SLOW                        :다소 느림
@@ -5411,6 +5425,8 @@ STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}기본 �
 STR_SCREENSHOT_WORLD_SCREENSHOT_CURRENT_ZOOM                    :{BLACK}현재 확대 지도 전체 스크린 샷
 STR_SCREENSHOT_HEIGHTMAP_SCREENSHOT                             :{BLACK}높이맵 스크린 샷
 STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}미니맵 스크린 샷
+STR_SCREENSHOT_TOPOGRAPHY_SCREENSHOT                            :{BLACK}지형 스크린 샷
+STR_SCREENSHOT_INDUSTRY_SCREENSHOT                              :{BLACK}산업시설 스크린 샷
 
 # AI Parameters
 STR_AI_SETTINGS_CAPTION                                         :{WHITE}{STRING} 매개 변수
@@ -6506,11 +6522,66 @@ STR_ZONING_CAN_BUILD                                            :건설 불가 �
 STR_ZONING_STA_CATCH                                            :역세권
 STR_ZONING_STA_CATCH_OPEN                                       :역세권 (창이 열린 역만)
 STR_ZONING_BUL_UNSER                                            :역세권 밖의 건물
-STR_ZONING_IND_UNSER                                            :역세권 밖의 산업 시설
+STR_ZONING_IND_UNSER                                            :역세권 밖의 산업시설
 STR_ZONING_TRACERESTRICT                                        :경로 탐색 제한 신호기
 STR_ZONING_2x2_GRID                                             :2x2 도시 도로 격자
 STR_ZONING_3x3_GRID                                             :3x3 도시 도로 격자
 STR_ZONING_ONE_WAY_ROAD                                         :일방통행 도로
+
+STR_STATION_RATING_TOOLTIP_RATING_DETAILS                       :{STRING} 등급 상세 정보
+STR_STATION_RATING_TOOLTIP_TOTAL_RATING                         :최종 목표 등급: {LTBLUE}{NUM}%
+
+STR_STATION_RATING_TOOLTIP_USING_CHEAT                          :치트 켜짐
+
+STR_STATION_RATING_TOOLTIP_NEWGRF_RATING                        :NewGRF 역 등급: {BLACK}기존 대비 {LTBLUE}{STRING}
+STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_0                      :{GOLD}{PLUS_NUM}%
+STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_1                      :{LTBLUE}{PLUS_NUM}%
+STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED                         :마지막으로 도착한 열차의 최대 속력: {LTBLUE}{VELOCITY} ({STRING})
+STR_STATION_RATING_TOOLTIP_NEWGRF_WAITUNITS                     :대기 화물량 (각 목적지별 평균치): {LTBLUE}{NUM}
+STR_STATION_RATING_TOOLTIP_NEWGRF_WAITTIME                      :지난 화물 적재 이후 지난 시간: {LTBLUE}{NUM}일
+
+STR_STATION_RATING_MAX_PERCENTAGE                               : (최대 {PLUS_NUM}%)
+STR_STATION_RATING_MAX_PERCENTAGE_COMMA                         :, 최대 {PLUS_NUM}%
+STR_STATION_RATING_PERCENTAGE_COMMA                             :, {PLUS_NUM}%
+
+STR_STATION_RATING_TOOLTIP_SPEED                                :마지막으로 도착한 열차의 최대 속력{STRING}: {STRING} ({STRING})
+STR_STATION_RATING_TOOLTIP_SPEED_ZERO                           :{RED}{VELOCITY}{STRING}
+STR_STATION_RATING_TOOLTIP_SPEED_0                              :{ORANGE}{VELOCITY}{STRING}
+STR_STATION_RATING_TOOLTIP_SPEED_1                              :{GOLD}{VELOCITY}{STRING}
+STR_STATION_RATING_TOOLTIP_SPEED_2                              :{YELLOW}{VELOCITY}{STRING}
+STR_STATION_RATING_TOOLTIP_SPEED_3                              :{GREEN}{VELOCITY}{STRING}
+
+STR_STATION_RATING_TOOLTIP_AGE                                  :지난 열차의 연식{STRING}: {STRING}
+STR_STATION_RATING_TOOLTIP_AGE_0                                :{ORANGE}{NUM}년{STRING}
+STR_STATION_RATING_TOOLTIP_AGE_1                                :{GOLD}{NUM}년{STRING}
+STR_STATION_RATING_TOOLTIP_AGE_2                                :{YELLOW}{NUM}년{STRING}
+STR_STATION_RATING_TOOLTIP_AGE_3                                :{GREEN}{NUM}년{STRING}
+
+STR_STATION_RATING_TOOLTIP_WAITTIME                             :지난 화물 적재 이후 지난 시간{STRING}: {STRING}
+STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP                        :지난 화물 적재 이후 지난 시간{STRING}: {STRING} (선박)
+STR_STATION_RATING_TOOLTIP_WAITTIME_0                           :{RED}{NUM}일{STRING}
+STR_STATION_RATING_TOOLTIP_WAITTIME_1                           :{ORANGE}{NUM}일{STRING}
+STR_STATION_RATING_TOOLTIP_WAITTIME_2                           :{GOLD}{NUM}일{STRING}
+STR_STATION_RATING_TOOLTIP_WAITTIME_3                           :{YELLOW}{NUM}일{STRING}
+STR_STATION_RATING_TOOLTIP_WAITTIME_4                           :{GREEN}{NUM}일{STRING}
+
+STR_STATION_RATING_TOOLTIP_WAITUNITS                            :대기 화물량 (각 목적지별 평균치{STRING}): {STRING}
+STR_STATION_RATING_TOOLTIP_WAITUNITS_0                          :{RED}{NUM}{STRING}
+STR_STATION_RATING_TOOLTIP_WAITUNITS_1                          :{ORANGE}{NUM}{STRING}
+STR_STATION_RATING_TOOLTIP_WAITUNITS_2                          :{GOLD}{NUM}{STRING}
+STR_STATION_RATING_TOOLTIP_WAITUNITS_3                          :{YELLOW}{NUM}{STRING}
+STR_STATION_RATING_TOOLTIP_WAITUNITS_4                          :{YELLOW}{NUM}{STRING}
+STR_STATION_RATING_TOOLTIP_WAITUNITS_5                          :{GREEN}{NUM}{STRING}
+
+STR_STATION_RATING_TOOLTIP_STATUE                               :도시에 회사 소유주 동상{STRING}: {STRING}
+STR_STATION_RATING_TOOLTIP_STATUE_NO                            :{GOLD}없음{STRING}
+STR_STATION_RATING_TOOLTIP_STATUE_YES                           :{GREEN}있음{STRING}
+
+STR_STATION_RATING_TOOLTIP_TRAIN                                :열차
+STR_STATION_RATING_TOOLTIP_ROAD_VEHICLE                         :자동차/전차
+STR_STATION_RATING_TOOLTIP_SHIP                                 :선박
+STR_STATION_RATING_TOOLTIP_AIRCRAFT                             :항공기
+STR_STATION_RATING_TOOLTIP_INVALID                              :없음
 
 STR_TMPL_RPL_TITLE                                              :{WHITE}템플릿 교체
 STR_TMPL_TEMPLATE_REPLACEMENT                                   :템플릿 교체
