@@ -120,6 +120,14 @@ static bool IsIndustryOrRailStationInArea(TileIndex start_tile, TileIndex end_ti
 	return destroying_industry_or_station;
 }
 
+static CommandContainer _demolish_area_command;
+
+static void DemolishAreaConfirmationCallback(Window*, bool confirmed) {
+	if (confirmed) {
+		DoCommandP(&_demolish_area_command);
+	}
+}
+
 /**
  * A central place to handle all X_AND_Y dragged GUI functions.
  * @param proc       Procedure related to the dragging
@@ -140,20 +148,13 @@ bool GUIPlaceProcDragXY(ViewportDragDropSelectionProcess proc, TileIndex start_t
 
 	switch (proc) {
 		case DDSP_DEMOLISH_AREA: {
-			const bool should_query_first = IsIndustryOrRailStationInArea(start_tile, end_tile, _ctrl_pressed);
+			_demolish_area_command = NewCommandContainerBasic(end_tile, start_tile, _ctrl_pressed ? 1 : 0, CMD_CLEAR_AREA | CMD_MSG(STR_ERROR_CAN_T_CLEAR_THIS_AREA), CcPlaySound_EXPLOSION);
 
-			const auto cmd_clear_area = [=](Window*, bool confirmed) {
-				if (confirmed) {
-					DoCommandP(end_tile, start_tile, _ctrl_pressed ? 1 : 0, CMD_CLEAR_AREA | CMD_MSG(STR_ERROR_CAN_T_CLEAR_THIS_AREA), CcPlaySound_EXPLOSION);
-				}
-			};
-
-			if (should_query_first) {
-				ShowQuery(STR_QUERY_CLEAR_AREA_CAPTION, STR_CLEAR_AREA_CONFIRMATION_TEXT, nullptr, cmd_clear_area);
+			if (IsIndustryOrRailStationInArea(start_tile, end_tile, _ctrl_pressed)) {
+				ShowQuery(STR_QUERY_CLEAR_AREA_CAPTION, STR_CLEAR_AREA_CONFIRMATION_TEXT, nullptr, DemolishAreaConfirmationCallback);
 			} else {
-				cmd_clear_area(nullptr, true);
+				DemolishAreaConfirmationCallback(nullptr, true);
 			}
-
 			break;
 		}
 		case DDSP_RAISE_AND_LEVEL_AREA:
