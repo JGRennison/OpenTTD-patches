@@ -1464,6 +1464,12 @@ STR_CONFIG_SETTING_VEHICLE_NAMES_LONG                           :Long
 STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES                       :Shade trees on slopes: {STRING2}
 STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES_HELPTEXT              :Change brightness of trees drawn on slopes. Improves the look of tree cover in mountainous areas.
 
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE                  :Station rating tooltips: {STRING2}
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_HELPTEXT         :Set whether station rating tooltips are shown and the level of information detail.
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :Off
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :Simple
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :Detailed
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Enable signals on bridges/tunnels advanced modes: {STRING2}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Enables use of advanced modes of signal simulation on bridges and tunnels. When disabled, bridges/tunnels which are not already in an advanced mode cannot be changed to an advanced mode, however other players may choose to enable this setting and use an advanced mode.
 
@@ -6520,6 +6526,61 @@ STR_ZONING_TRACERESTRICT                                        :Restricted sign
 STR_ZONING_2x2_GRID                                             :2x2 town road grid
 STR_ZONING_3x3_GRID                                             :3x3 town road grid
 STR_ZONING_ONE_WAY_ROAD                                         :One way roads
+
+STR_STATION_RATING_TOOLTIP_RATING_DETAILS                       :{STRING} Rating Details
+STR_STATION_RATING_TOOLTIP_TOTAL_RATING                         :Total target rating: {LTBLUE}{NUM}%
+
+STR_STATION_RATING_TOOLTIP_USING_CHEAT                          :Cheat active
+
+STR_STATION_RATING_TOOLTIP_NEWGRF_RATING                        :NewGRF station rating: {STRING1} {BLACK}based on
+STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_0                      :{GOLD}{PLUS_NUM}%
+STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_1                      :{LTBLUE}{PLUS_NUM}%
+STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED                         :Max speed of last vehicle: {LTBLUE}{VELOCITY} ({STRING2})
+STR_STATION_RATING_TOOLTIP_NEWGRF_WAITUNITS                     :Cargo waiting (on average per next stop): {LTBLUE}{NUM}
+STR_STATION_RATING_TOOLTIP_NEWGRF_WAITTIME                      :Time since last pickup: {LTBLUE}{NUM} day{P "" s}
+
+STR_STATION_RATING_MAX_PERCENTAGE                               : (max {PLUS_NUM}%)
+STR_STATION_RATING_MAX_PERCENTAGE_COMMA                         :, max {PLUS_NUM}%
+STR_STATION_RATING_PERCENTAGE_COMMA                             :, {PLUS_NUM}%
+
+STR_STATION_RATING_TOOLTIP_SPEED                                :Max speed of last vehicle{STRING1}: {STRING3} ({STRING})
+STR_STATION_RATING_TOOLTIP_SPEED_ZERO                           :{RED}{VELOCITY}{STRING1}
+STR_STATION_RATING_TOOLTIP_SPEED_0                              :{ORANGE}{VELOCITY}{STRING1}
+STR_STATION_RATING_TOOLTIP_SPEED_1                              :{GOLD}{VELOCITY}{STRING1}
+STR_STATION_RATING_TOOLTIP_SPEED_2                              :{YELLOW}{VELOCITY}{STRING1}
+STR_STATION_RATING_TOOLTIP_SPEED_3                              :{GREEN}{VELOCITY}{STRING1}
+
+STR_STATION_RATING_TOOLTIP_AGE                                  :Age of last vehicle{STRING1}: {STRING3}
+STR_STATION_RATING_TOOLTIP_AGE_0                                :{ORANGE}{NUM} year{P "" s}{STRING1}
+STR_STATION_RATING_TOOLTIP_AGE_1                                :{GOLD}{NUM} year{P "" s}{STRING1}
+STR_STATION_RATING_TOOLTIP_AGE_2                                :{YELLOW}{NUM} year{P "" s}{STRING1}
+STR_STATION_RATING_TOOLTIP_AGE_3                                :{GREEN}{NUM} year{P "" s}{STRING1}
+
+STR_STATION_RATING_TOOLTIP_WAITTIME                             :Time since last pickup{STRING1}: {STRING3}
+STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP                        :Time since last pickup{STRING1}: {STRING3} (by ship)
+STR_STATION_RATING_TOOLTIP_WAITTIME_0                           :{RED}{NUM} day{P "" s}{STRING1}
+STR_STATION_RATING_TOOLTIP_WAITTIME_1                           :{ORANGE}{NUM} day{P "" s}{STRING1}
+STR_STATION_RATING_TOOLTIP_WAITTIME_2                           :{GOLD}{NUM} day{P "" s}{STRING1}
+STR_STATION_RATING_TOOLTIP_WAITTIME_3                           :{YELLOW}{NUM} day{P "" s}{STRING1}
+STR_STATION_RATING_TOOLTIP_WAITTIME_4                           :{GREEN}{NUM} day{P "" s}{STRING1}
+
+STR_STATION_RATING_TOOLTIP_WAITUNITS                            :Cargo waiting (on average per next stop{STRING1}): {STRING3}
+STR_STATION_RATING_TOOLTIP_WAITUNITS_0                          :{RED}{NUM}{STRING1}
+STR_STATION_RATING_TOOLTIP_WAITUNITS_1                          :{ORANGE}{NUM}{STRING1}
+STR_STATION_RATING_TOOLTIP_WAITUNITS_2                          :{GOLD}{NUM}{STRING1}
+STR_STATION_RATING_TOOLTIP_WAITUNITS_3                          :{YELLOW}{NUM}{STRING1}
+STR_STATION_RATING_TOOLTIP_WAITUNITS_4                          :{YELLOW}{NUM}{STRING1}
+STR_STATION_RATING_TOOLTIP_WAITUNITS_5                          :{GREEN}{NUM}{STRING1}
+
+STR_STATION_RATING_TOOLTIP_STATUE                               :Statue in town{STRING1}: {STRING2}
+STR_STATION_RATING_TOOLTIP_STATUE_NO                            :{GOLD}no{STRING1}
+STR_STATION_RATING_TOOLTIP_STATUE_YES                           :{GREEN}yes{STRING1}
+
+STR_STATION_RATING_TOOLTIP_TRAIN                                :Train
+STR_STATION_RATING_TOOLTIP_ROAD_VEHICLE                         :Road Vehicle
+STR_STATION_RATING_TOOLTIP_SHIP                                 :Ship
+STR_STATION_RATING_TOOLTIP_AIRCRAFT                             :Aircraft
+STR_STATION_RATING_TOOLTIP_INVALID                              :N/A
 
 STR_TMPL_RPL_TITLE                                              :{WHITE}Template Replacement
 STR_TMPL_TEMPLATE_REPLACEMENT                                   :Template Replacement

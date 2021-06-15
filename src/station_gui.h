@@ -14,6 +14,9 @@
 #include "tilearea_type.h"
 #include "window_type.h"
 
+struct Station;
+struct CargoSpec;
+
 
 /** Types of cargo to display for station coverage. */
 enum StationCoverageType {
@@ -27,5 +30,7 @@ void CheckRedrawStationCoverage(Window *w);
 
 void ShowSelectStationIfNeeded(const CommandContainer &cmd, TileArea ta);
 void ShowSelectWaypointIfNeeded(const CommandContainer &cmd, TileArea ta);
+
+void GuiShowStationRatingTooltip(Window *parent, const Station *st, const CargoSpec *cs);
 
 #endif /* STATION_GUI_H */
