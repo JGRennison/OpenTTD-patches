@@ -40,6 +40,12 @@
 
 #include "safeguards.h"
 
+enum DemolishConfirmMode {
+	DCM_OFF,
+	DCM_INDUSTRY,
+	DCM_INDUSTRY_RAIL_STATION,
+};
+
 void CcTerraform(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Succeeded()) {
@@ -97,8 +103,10 @@ static void GenerateRockyArea(TileIndex end, TileIndex start)
 }
 
 /** Checks if the area contains any structures that are important enough to query about first */
-static bool IsIndustryOrRailStationInArea(TileIndex start_tile, TileIndex end_tile, bool diagonal)
+static bool IsQueryConfirmIndustryOrRailStationInArea(TileIndex start_tile, TileIndex end_tile, bool diagonal)
 {
+	if (_settings_client.gui.demolish_confirm_mode == DCM_OFF) return false;
+
 	std::unique_ptr<TileIterator> tile_iterator;
 
 	if (diagonal) {
@@ -111,7 +119,7 @@ static bool IsIndustryOrRailStationInArea(TileIndex start_tile, TileIndex end_ti
 
 	for (; *tile_iterator != INVALID_TILE; ++(*tile_iterator)) {
 		if ((_cheats.magic_bulldozer.value && IsTileType(*tile_iterator, MP_INDUSTRY)) ||
-		    IsRailStationTile(*tile_iterator)) {
+				(_settings_client.gui.demolish_confirm_mode == DCM_INDUSTRY_RAIL_STATION && IsRailStationTile(*tile_iterator))) {
 			destroying_industry_or_station = true;
 			break;
 		}
@@ -150,7 +158,7 @@ bool GUIPlaceProcDragXY(ViewportDragDropSelectionProcess proc, TileIndex start_t
 		case DDSP_DEMOLISH_AREA: {
 			_demolish_area_command = NewCommandContainerBasic(end_tile, start_tile, _ctrl_pressed ? 1 : 0, CMD_CLEAR_AREA | CMD_MSG(STR_ERROR_CAN_T_CLEAR_THIS_AREA), CcPlaySound_EXPLOSION);
 
-			if (IsIndustryOrRailStationInArea(start_tile, end_tile, _ctrl_pressed)) {
+			if (IsQueryConfirmIndustryOrRailStationInArea(start_tile, end_tile, _ctrl_pressed)) {
 				ShowQuery(STR_QUERY_CLEAR_AREA_CAPTION, STR_CLEAR_AREA_CONFIRMATION_TEXT, nullptr, DemolishAreaConfirmationCallback);
 			} else {
 				DemolishAreaConfirmationCallback(nullptr, true);

@@ -1758,6 +1758,7 @@ static SettingsContainer &GetSettingsTree()
 				construction->Add(new SettingEntry("gui.quick_goto"));
 				construction->Add(new SettingEntry("gui.default_rail_type"));
 				construction->Add(new SettingEntry("gui.default_road_type"));
+				construction->Add(new SettingEntry("gui.demolish_confirm_mode"));
 			}
 
 			SettingsPage *departureboards = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS));

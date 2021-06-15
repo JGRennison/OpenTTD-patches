@@ -1453,6 +1453,12 @@ STR_CONFIG_SETTING_VEHICLE_NAMES_LONG                           :Long
 STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES                       :Shade trees on slopes: {STRING2}
 STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES_HELPTEXT              :Change brightness of trees drawn on slopes. Improves the look of tree cover in mountainous areas.
 
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE                        :Ask before demolishing structures: {STRING2}
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_HELPTEXT               :Ask for confirmation before irreversibly demolishing structures.
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_OFF                    :Off
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_INDUSTRY               :Industries
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_ALL                    :Industries and rail stations
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Enable signals on bridges/tunnels advanced modes: {STRING2}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Enables use of advanced modes of signal simulation on bridges and tunnels. When disabled, bridges/tunnels which are not already in an advanced mode cannot be changed to an advanced mode, however other players may choose to enable this setting and use an advanced mode.
 
