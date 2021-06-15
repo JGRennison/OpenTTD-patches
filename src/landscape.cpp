@@ -1209,8 +1209,7 @@ static bool RiverMakeWider(TileIndex tile, void *data)
 /* AyStar callback when an route has been found. */
 static void River_FoundEndNode(AyStar *aystar, OpenListNode *current)
 {
-	uint cur_pos = 0;
-	for (PathNode *path = &current->path; path != nullptr; path = path->parent, cur_pos++) {
+	for (PathNode *path = &current->path; path != nullptr; path = path->parent) {
 		TileIndex tile = path->node.tile;
 		if (!IsWaterTile(tile)) {
 			MakeRiver(tile, Random());
