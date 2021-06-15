@@ -367,23 +367,19 @@ static TileIndex BuildTunnel(PathNode *current, TileIndex end_tile = INVALID_TIL
 	return end_tile;
 }
 
-static TileIndex BuildBridge(PathNode *current, const DiagDirection road_direction, TileIndex end_tile = INVALID_TILE, const bool build_bridge = false)
+static TileIndex BuildBridge(PathNode *current, TileIndex end_tile = INVALID_TILE, const bool build_bridge = false)
 {
 	const TileIndex start_tile = current->node.tile;
 
 	// We are not building yet, so we still need to find the end_tile.
 	// We will only build a bridge if we need to cross a river, so first check for that.
 	if (!build_bridge) {
-		const TileIndex tile = start_tile + TileOffsByDiagDir(road_direction);
-
-		if (!IsWaterTile(tile) || !IsRiver(tile)) return INVALID_TILE;
-
 		const DiagDirection direction = ReverseDiagDir(GetInclinedSlopeDirection(GetTileSlope(start_tile)));
 
 		// We are not building yet, so we still need to find the end_tile.
 		for (TileIndex tile = start_tile + TileOffsByDiagDir(direction);
 			IsValidTile(tile) &&
-			(GetTunnelBridgeLength(start_tile, tile) <= _settings_game.construction.max_bridge_length) &&
+			(GetTunnelBridgeLength(start_tile, tile) <= std::min(_settings_game.construction.max_bridge_length, (uint16)10)) &&
 			(GetTileZ(start_tile) < (GetTileZ(tile) + _settings_game.construction.max_bridge_height)) &&
 			(GetTileZ(tile) <= GetTileZ(start_tile));
 			tile += TileOffsByDiagDir(direction)) {
@@ -421,7 +417,7 @@ static TileIndex BuildBridge(PathNode *current, const DiagDirection road_directi
 	const auto bridge_type = available_bridge_types[build_bridge ? RandomRange(uint32(available_bridge_types.size())) : 0];
 
 	Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
-	const auto build_bridge_cmd = CmdBuildBridge(end_tile, build_bridge ? DC_EXEC : DC_NONE, start_tile, bridge_type | (ROADTYPE_ROAD << 8) | (TRANSPORT_ROAD << 15));
+	const auto build_bridge_cmd = CmdBuildBridge(end_tile, build_bridge ? DC_EXEC : DC_NONE, start_tile, bridge_type | (_public_road_type << 8) | (TRANSPORT_ROAD << 15));
 	cur_company.Restore();
 
 	assert(!build_bridge || build_bridge_cmd.Succeeded());
@@ -448,7 +444,7 @@ static TileIndex BuildRiverBridge(PathNode *current, const DiagDirection road_di
 		// should not force that on them. This is just to bridge rivers, not to make long bridges.
 		for (;
 			IsValidTile(tile) &&
-			(GetTunnelBridgeLength(start_tile, tile) <= 5) &&
+			(GetTunnelBridgeLength(start_tile, tile) <= std::min(_settings_game.construction.max_bridge_length, (uint16)3)) &&
 			(GetTileZ(start_tile) < (GetTileZ(tile) + _settings_game.construction.max_bridge_height)) &&
 			(GetTileZ(tile) <= GetTileZ(start_tile));
 			tile += TileOffsByDiagDir(road_direction)) {
@@ -478,7 +474,7 @@ static TileIndex BuildRiverBridge(PathNode *current, const DiagDirection road_di
 	const auto bridge_type = available_bridge_types[build_bridge ? RandomRange(uint32(available_bridge_types.size())) : 0];
 
 	Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
-	const auto build_bridge_cmd = CmdBuildBridge(end_tile, build_bridge ? DC_EXEC : DC_NONE, start_tile, bridge_type | (ROADTYPE_ROAD << 8) | (TRANSPORT_ROAD << 15));
+	const auto build_bridge_cmd = CmdBuildBridge(end_tile, build_bridge ? DC_EXEC : DC_NONE, start_tile, bridge_type | (_public_road_type << 8) | (TRANSPORT_ROAD << 15));
 	cur_company.Restore();
 
 	assert(!build_bridge || build_bridge_cmd.Succeeded());
@@ -768,7 +764,7 @@ static void PublicRoad_FoundEndNode(AyStar *aystar, OpenListNode *current)
 				assert(IsValidTile(end_tile) && IsDownwardsSlope(end_tile, road_direction));
 			} else if (IsDownwardsSlope(tile, road_direction)) {
 				// Provide the function with the end tile, since we already know it, but still check the result.
-				end_tile = BuildBridge(path, road_direction, path->parent->node.tile, true);
+				end_tile = BuildBridge(path, path->parent->node.tile, true);
 				assert(IsValidTile(end_tile) && IsUpwardsSlope(end_tile, road_direction));
 			} else {
 				// River bridge is the last possibility.
