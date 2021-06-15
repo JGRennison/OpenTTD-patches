@@ -720,7 +720,7 @@ static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 			{
 				// Check if we could bridge a river from a flat tile. Not looking pretty on the map but you gotta do what you gotta do.
 				const auto bridge_end = BuildRiverBridge(&current->path, forward_direction);
-				assert(IsValidTile(bridge_end) || GetTileSlope(bridge_end) == SLOPE_FLAT);
+				assert(!IsValidTile(bridge_end) || GetTileSlope(bridge_end) == SLOPE_FLAT);
 
 				if (IsValidTile(bridge_end) &&
 					!IsBlockedByPreviousBridgeOrTunnel(current, current_tile, bridge_end)) {
