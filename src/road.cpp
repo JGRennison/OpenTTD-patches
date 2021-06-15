@@ -249,7 +249,6 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 
 static std::vector<TileIndex> _town_centers;
 static std::vector<TileIndex> _towns_visited_along_the_way;
-static bool _has_tunnel_in_path;
 static RoadType _public_road_type;
 static const uint _public_road_hash_size = 8U; ///< The number of bits the hash for river finding should have.
 
@@ -527,6 +526,79 @@ static bool IsValidNeighbourOfPreviousTile(const TileIndex tile, const TileIndex
 	return true;
 }
 
+static bool AreParallelOverlapping(const Point &start_a, const Point &end_a, const Point &start_b, const Point &end_b)
+{
+	// Check parallel overlaps.
+	if (start_a.x == end_a.x && start_b.x == end_b.x && start_a.x == start_b.x) {
+		if ((start_a.y <= start_b.y && end_a.y >= start_b.y) || (start_a.y >= start_b.y && end_a.y <= start_b.y) ||
+			(start_a.y <= end_b.y && end_a.y >= end_b.y) || (start_a.y >= end_b.y && end_a.y <= end_b.y)) {
+			return true;
+		}
+	}
+
+	if (start_a.y == end_a.y && start_b.y == end_b.y && start_a.y == start_b.y) {
+		if ((start_a.x <= start_b.x && end_a.x >= start_b.x) || (start_a.x >= start_b.x && end_a.x <= start_b.x) ||
+			(start_a.x <= end_b.x && end_a.x >= end_b.x) || (start_a.x >= end_b.x && end_a.x <= end_b.x)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+static bool AreIntersecting(const Point &start_a, const Point &end_a, const Point &start_b, const Point &end_b)
+{
+	if (start_a.x == end_a.x && start_b.y == end_b.y) {
+		if ((start_b.x <= start_a.x && end_b.x >= start_a.x) || (start_b.x >= start_a.x && end_b.x <= start_a.x)) {
+			if ((start_a.y <= start_b.y && end_a.y >= start_b.y) || (start_a.y >= start_b.y && end_a.y <= start_b.y)) {
+				return true;
+			}
+		}
+	}
+
+	if (start_a.y == end_a.y && start_b.x == end_b.x) {
+		if ((start_b.y <= start_a.y && end_b.y >= start_a.y) || (start_b.y >= start_a.y && end_b.y <= start_a.y)) {
+			if ((start_a.x <= start_b.x && end_a.x >= start_b.x) || (start_a.x >= start_b.x && end_a.x <= start_b.x)) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+static bool IsBlockedByPreviousBridgeOrTunnel(OpenListNode *current, TileIndex start_tile, TileIndex end_tile)
+{
+	PathNode* start = &current->path;
+	PathNode* end = current->path.parent;
+	
+	while (end != nullptr) {
+		Point start_a {};
+		start_a.x = TileX(start->node.tile);
+		start_a.y = TileY(start->node.tile);
+		Point end_a {};
+		end_a.x = TileX(end->node.tile);
+		end_a.y = TileY(end->node.tile);
+
+		Point start_b {};
+		start_b.x = TileX(start_tile);
+		start_b.y = TileY(start_tile);
+		Point end_b {};
+		end_b.x = TileX(end_tile);
+		end_b.y = TileY(end_tile);
+		
+		if (!AreTilesAdjacent(start->node.tile, end->node.tile) &&
+			(AreIntersecting(start_a, end_a, start_b, end_b) || AreParallelOverlapping(start_a, end_a, start_b, end_b))) {
+			return true;
+		}
+		
+		start = end;
+		end = start->parent;
+	}
+
+	return false;
+}
+
 /** AyStar callback for getting the neighbouring nodes of the given node. */
 static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 {
@@ -581,10 +653,11 @@ static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 			if (current->path.parent != nullptr) {
 				const auto road_direction = DiagdirBetweenTiles(current->path.parent->node.tile, tile);
 
-				if (IsUpwardsSlope(tile, road_direction) && !_has_tunnel_in_path) {
+				if (IsUpwardsSlope(tile, road_direction)) {
 					const auto tunnel_end = BuildTunnel(&current->path);
 
 					if (tunnel_end != INVALID_TILE &&
+						!IsBlockedByPreviousBridgeOrTunnel(current, current->path.node.tile, tunnel_end) &&
 						!IsSteepSlope(GetTileSlope(tunnel_end)) &&
 						!IsHalftileSlope(GetTileSlope(tunnel_end)) && 
 						(GetTileSlope(tunnel_end) == ComplementSlope(GetTileSlope(current->path.node.tile)))) {
@@ -592,13 +665,13 @@ static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 						aystar->neighbours[aystar->num_neighbours].tile = tunnel_end;
 						aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
 						aystar->num_neighbours++;
-						_has_tunnel_in_path = true;
 					}
 				}
 				else if (IsDownwardsSlope(tile, road_direction)) {
 					const auto bridge_end = BuildBridge(&current->path, road_direction);
 
 					if (bridge_end != INVALID_TILE &&
+						!IsBlockedByPreviousBridgeOrTunnel(current, current->path.node.tile, bridge_end) &&
 						!IsSteepSlope(GetTileSlope(bridge_end)) &&
 						!IsHalftileSlope(GetTileSlope(bridge_end)) && 
 						(GetTileSlope(bridge_end) == ComplementSlope(GetTileSlope(current->path.node.tile)))) {
@@ -614,7 +687,8 @@ static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 					const auto bridge_end = BuildRiverBridge(&current->path, road_direction);
 					assert(bridge_end == INVALID_TILE || GetTileSlope(bridge_end) == SLOPE_FLAT);
 
-					if (bridge_end != INVALID_TILE) {
+					if (bridge_end != INVALID_TILE &&						
+						!IsBlockedByPreviousBridgeOrTunnel(current, current->path.node.tile, bridge_end)) {
 						assert(IsValidDiagDirection(DiagdirBetweenTiles(tile, bridge_end)));
 						aystar->neighbours[aystar->num_neighbours].tile = bridge_end;
 						aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
@@ -719,8 +793,6 @@ bool FindPath(AyStar& finder, const TileIndex from, TileIndex to)
 	finder.max_search_nodes = 1 << 20;
 
 	finder.Init(1 << _public_road_hash_size);
-
-	_has_tunnel_in_path = false;
 	
 	AyStarNode start {};
 	start.tile = from;
