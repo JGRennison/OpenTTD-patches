@@ -341,46 +341,6 @@ static std::vector<TileIndex> _towns_visited_along_the_way;
 static RoadType _public_road_type;
 static const uint _public_road_hash_size = 8U; ///< The number of bits the hash for river finding should have.
 
-static const int32 BASE_COST_PER_TILE = 1; // Cost for building a new road.
-static const int32 COST_FOR_NEW_ROAD = 100; // Cost for building a new road.
-static const int32 COST_FOR_SLOPE = 50;     // Additional cost if the road heads up or down a slope.
-
-/** AyStar callback for getting the cost of the current node. */
-static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *parent)
-{
-	int32 cost = BASE_COST_PER_TILE;
-
-	if (!IsTileType(current->tile, MP_ROAD)) {
-		if (!AreTilesAdjacent(parent->path.node.tile, current->tile))
-		{
-			// We're not adjacent, so we built a tunnel or bridge.
-			cost += (DistanceManhattan(parent->path.node.tile, current->tile)) * COST_FOR_NEW_ROAD + 6 * COST_FOR_SLOPE;
-		}
-		else if (!IsTileFlat(current->tile)) {
-			cost += COST_FOR_NEW_ROAD;
-			cost += COST_FOR_SLOPE;
-		}
-		else
-		{
-			cost += COST_FOR_NEW_ROAD;
-		}
-	}
-
-	if (_settings_game.game_creation.build_public_roads == PRC_AVOID_CURVES &&
-		parent->path.parent != nullptr &&
-		DiagdirBetweenTiles(parent->path.parent->node.tile, parent->path.node.tile) != DiagdirBetweenTiles(parent->path.node.tile, current->tile)) {
-		cost += 1;
-	}
-
-	return cost;
-}
-
-/** AyStar callback for getting the estimated cost to the destination. */
-static int32 PublicRoad_CalculateH(AyStar *aystar, AyStarNode *current, OpenListNode *parent)
-{
-	return DistanceManhattan(*static_cast<TileIndex*>(aystar->user_target), current->tile) * BASE_COST_PER_TILE;
-}
-
 /** Helper function to check if a tile along a certain direction is going up an inclined slope. */
 static bool IsUpwardsSlope(TileIndex tile, DiagDirection road_direction)
 {
@@ -890,6 +850,45 @@ static void PublicRoad_FoundEndNode(AyStar *aystar, OpenListNode *current)
 
 		child = path;
 	}
+}
+
+static const int32 BASE_COST_PER_TILE = 1; // Cost for building a new road.
+static const int32 COST_FOR_NEW_ROAD = 100; // Cost for building a new road.
+static const int32 COST_FOR_SLOPE = 50;     // Additional cost if the road heads up or down a slope.
+
+/** AyStar callback for getting the cost of the current node. */
+static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *parent)
+{
+	int32 cost = 0;
+
+	if (IsTileType(current->tile, MP_ROAD) || IsTileType(current->tile, MP_TUNNELBRIDGE)) {
+		cost += (DistanceManhattan(parent->path.node.tile, current->tile)) * BASE_COST_PER_TILE;
+	} else {
+		cost += (DistanceManhattan(parent->path.node.tile, current->tile)) * COST_FOR_NEW_ROAD;
+
+		if (GetTileZ(parent->path.node.tile) != GetTileZ(current->tile)) {
+			cost += COST_FOR_SLOPE;
+		}
+
+		if (DistanceManhattan(parent->path.node.tile, current->tile) > 1) {
+			// We are planning to build a bridge or tunnel. Make that a bit more expensive.
+			cost += 6 * COST_FOR_SLOPE;
+		}
+	}
+
+	if (_settings_game.game_creation.build_public_roads == PRC_AVOID_CURVES &&
+		parent->path.parent != nullptr &&
+		DiagdirBetweenTiles(parent->path.parent->node.tile, parent->path.node.tile) != DiagdirBetweenTiles(parent->path.node.tile, current->tile)) {
+		cost += 1;
+	}
+
+	return cost;
+}
+
+/** AyStar callback for getting the estimated cost to the destination. */
+static int32 PublicRoad_CalculateH(AyStar *aystar, AyStarNode *current, OpenListNode *parent)
+{
+	return DistanceManhattan(*static_cast<TileIndex*>(aystar->user_target), current->tile) * BASE_COST_PER_TILE;
 }
 
 bool FindPath(AyStar& finder, const TileIndex from, TileIndex to)
