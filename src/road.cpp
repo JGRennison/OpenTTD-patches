@@ -816,7 +816,7 @@ static void PublicRoad_FoundEndNode(AyStar *aystar, OpenListNode *current)
 	}
 }
 
-static const int32 BASE_COST_PER_TILE = 1; // Cost for building a new road.
+static const int32 BASE_COST_PER_TILE = 1;  // Cost for existing road or tunnel/bridge.
 static const int32 COST_FOR_NEW_ROAD = 100; // Cost for building a new road.
 static const int32 COST_FOR_SLOPE = 50;     // Additional cost if the road heads up or down a slope.
 
