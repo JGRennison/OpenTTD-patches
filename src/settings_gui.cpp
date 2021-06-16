@@ -2003,6 +2003,16 @@ static SettingsContainer &GetSettingsTree()
 
 		SettingsPage *genworld = main->Add(new SettingsPage(STR_CONFIG_SETTING_GENWORLD));
 		{
+			SettingsPage *rivers = genworld->Add(new SettingsPage(STR_CONFIG_SETTING_GENWORLD_RIVERS_LAKES));
+			{
+				rivers->Add(new SettingEntry("game_creation.amount_of_rivers"));
+				rivers->Add(new SettingEntry("game_creation.min_river_length"));
+				rivers->Add(new SettingEntry("game_creation.river_route_random"));
+				rivers->Add(new SettingEntry("game_creation.rivers_top_of_hill"));
+				rivers->Add(new SettingEntry("game_creation.river_tropics_width"));
+				rivers->Add(new SettingEntry("game_creation.lake_size"));
+				rivers->Add(new SettingEntry("game_creation.lakes_allowed_in_deserts"));
+			}
 			genworld->Add(new SettingEntry("game_creation.landscape"));
 			genworld->Add(new SettingEntry("game_creation.land_generator"));
 			genworld->Add(new SettingEntry("difficulty.terrain_type"));
@@ -2016,17 +2026,6 @@ static SettingsContainer &GetSettingsTree()
 			genworld->Add(new ConditionallyHiddenSettingEntry("game_creation.snow_line_height", snow_line_height_hide));
 			genworld->Add(new ConditionallyHiddenSettingEntry("game_creation.desert_coverage", coverage_hide));
 			genworld->Add(new ConditionallyHiddenSettingEntry("game_creation.rainforest_line_height", rainforest_line_height_hide));
-			genworld->Add(new SettingEntry("game_creation.amount_of_rivers"));
-			SettingsPage *rivers = genworld->Add(new SettingsPage(STR_CONFIG_SETTING_GENWORLD_RIVERS_LAKES));
-			{
-				rivers->Add(new SettingEntry("game_creation.amount_of_rivers"));
-				rivers->Add(new SettingEntry("game_creation.min_river_length"));
-				rivers->Add(new SettingEntry("game_creation.river_route_random"));
-				rivers->Add(new SettingEntry("game_creation.rivers_top_of_hill"));
-				rivers->Add(new SettingEntry("game_creation.river_tropics_width"));
-				rivers->Add(new SettingEntry("game_creation.lake_size"));
-				rivers->Add(new SettingEntry("game_creation.lakes_allowed_in_deserts"));
-			}
 			genworld->Add(new SettingEntry("game_creation.amount_of_rocks"));
 			genworld->Add(new SettingEntry("game_creation.height_affects_rocks"));
 			genworld->Add(new SettingEntry("game_creation.tree_placer"));
@@ -2054,9 +2053,6 @@ static SettingsContainer &GetSettingsTree()
 
 			SettingsPage *towns = environment->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT_TOWNS));
 			{
-				towns->Add(new SettingEntry("economy.town_growth_rate"));
-				towns->Add(new SettingEntry("economy.town_growth_cargo_transported"));
-				towns->Add(new SettingEntry("economy.town_zone_calc_mode"));
 				SettingsPage *town_zone = towns->Add(new SettingsPage(STR_CONFIG_SETTING_TOWN_ZONES));
 				{
 					town_zone->hide_callback = []() -> bool {
@@ -2073,6 +2069,9 @@ static SettingsContainer &GetSettingsTree()
 					town_zone->Add(new SettingEntry("economy.city_zone_3_mult"));
 					town_zone->Add(new SettingEntry("economy.city_zone_4_mult"));
 				}
+				towns->Add(new SettingEntry("economy.town_growth_rate"));
+				towns->Add(new SettingEntry("economy.town_growth_cargo_transported"));
+				towns->Add(new SettingEntry("economy.town_zone_calc_mode"));
 				towns->Add(new SettingEntry("economy.allow_town_roads"));
 				towns->Add(new SettingEntry("economy.allow_town_level_crossings"));
 				towns->Add(new SettingEntry("economy.found_town"));
