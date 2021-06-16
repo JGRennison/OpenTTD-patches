@@ -894,14 +894,12 @@ struct TownNetwork
 */
 void GeneratePublicRoads()
 {
-	using namespace std;
-
 	if (_settings_game.game_creation.build_public_roads == PRC_NONE) return;
 
 	_town_centers.clear();
 	_towns_visited_along_the_way.clear();
 
-	vector<TileIndex> towns;
+	std::vector<TileIndex> towns;
 	towns.clear();
 	{
 		for (const Town *town : Town::Iterate()) {
@@ -917,10 +915,10 @@ void GeneratePublicRoads()
 	SetGeneratingWorldProgress(GWP_PUBLIC_ROADS, uint(towns.size()));
 
 	// Create a list of networks which also contain a value indicating how many times we failed to connect to them.
-	vector<std::shared_ptr<TownNetwork>> networks;
-	unordered_map<TileIndex, std::shared_ptr<TownNetwork>> town_to_network_map;
+	std::vector<std::shared_ptr<TownNetwork>> networks;
+	std::unordered_map<TileIndex, std::shared_ptr<TownNetwork>> town_to_network_map;
 
-	sort(towns.begin(), towns.end(), [&](auto a, auto b) { return DistanceFromEdge(a) > DistanceFromEdge(b); });
+	std::sort(towns.begin(), towns.end(), [&](auto a, auto b) { return DistanceFromEdge(a) > DistanceFromEdge(b); });
 
 	TileIndex main_town = *towns.begin();
 	towns.erase(towns.begin());
@@ -928,7 +926,7 @@ void GeneratePublicRoads()
 	_public_road_type = GetTownRoadType(Town::GetByTile(main_town));
 	std::unordered_set<TileIndex> checked_towns;
 
-	auto main_network = make_shared<TownNetwork>();
+	auto main_network = std::make_shared<TownNetwork>();
 	main_network->towns.push_back(main_town);
 	main_network->failures_to_connect = 0;
 
@@ -945,7 +943,7 @@ void GeneratePublicRoads()
 		return best;
 	};
 
-	sort(towns.begin(), towns.end(), [&](auto a, auto b) { return DistanceManhattan(a, main_town) < DistanceManhattan(b, main_town); });
+	std::sort(towns.begin(), towns.end(), [&](auto a, auto b) { return DistanceManhattan(a, main_town) < DistanceManhattan(b, main_town); });
 
 	for (auto start_town : towns) {
 		// Check if we can connect to any of the networks.
@@ -959,7 +957,7 @@ void GeneratePublicRoads()
 		if (reachable_from_town != town_to_network_map.end()) {
 			auto reachable_network = reachable_from_town->second;
 
-			sort(reachable_network->towns.begin(), reachable_network->towns.end(), [&](auto a, auto b) { return DistanceManhattan(start_town, a) < DistanceManhattan(start_town, b); });
+			std::sort(reachable_network->towns.begin(), reachable_network->towns.end(), [&](auto a, auto b) { return DistanceManhattan(start_town, a) < DistanceManhattan(start_town, b); });
 
 			const TileIndex end_town = *reachable_network->towns.begin();
 			checked_towns.emplace(end_town);
@@ -988,7 +986,7 @@ void GeneratePublicRoads()
 
 		if (!found_path) {
 			// Sort networks by failed connection attempts, so we try the most likely one first.
-			sort(networks.begin(), networks.end(), [&](const std::shared_ptr<TownNetwork> &a, const std::shared_ptr<TownNetwork> &b) {
+			std::sort(networks.begin(), networks.end(), [&](const std::shared_ptr<TownNetwork> &a, const std::shared_ptr<TownNetwork> &b) {
 				return town_network_distance(start_town, a) < town_network_distance(start_town, b);
 			});
 
@@ -1027,7 +1025,7 @@ void GeneratePublicRoads()
 				return found_path;
 			};
 
-			vector<std::shared_ptr<TownNetwork>>::iterator networks_end;
+			std::vector<std::shared_ptr<TownNetwork>>::iterator networks_end;
 
 			if (networks.size() > 5) {
 				networks_end = networks.begin() + 5;
@@ -1035,15 +1033,15 @@ void GeneratePublicRoads()
 				networks_end = networks.end();
 			}
 
-			vector<std::shared_ptr<TownNetwork>> sampled_networks;
+			std::vector<std::shared_ptr<TownNetwork>> sampled_networks;
 			std::copy(networks.begin(), networks_end, std::back_inserter(sampled_networks));
-			sort(sampled_networks.begin(), sampled_networks.end(), [&](const std::shared_ptr<TownNetwork> &a, const std::shared_ptr<TownNetwork> &b) {
+			std::sort(sampled_networks.begin(), sampled_networks.end(), [&](const std::shared_ptr<TownNetwork> &a, const std::shared_ptr<TownNetwork> &b) {
 				return a->failures_to_connect < b->failures_to_connect;
 			});
 
-			if (!any_of(sampled_networks.begin(), sampled_networks.end(), can_reach)) {
+			if (!std::any_of(sampled_networks.begin(), sampled_networks.end(), can_reach)) {
 				// We failed so many networks, we are a separate network. Let future towns try to connect to us.
-				auto new_network = make_shared<TownNetwork>();
+				auto new_network = std::make_shared<TownNetwork>();
 				new_network->towns.push_back(start_town);
 				new_network->failures_to_connect = 0;
 
