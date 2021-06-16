@@ -393,7 +393,7 @@ static TileIndex BuildTunnel(PathNode *current, TileIndex end_tile = INVALID_TIL
 
 			if (!_cheats.crossing_tunnels.value && IsTunnelInWay(end_tile, start_z)) return INVALID_TILE;
 		}
-		
+
 		// No too long or super-short tunnels and always ending up on a matching upwards slope.
 		if (IsSteepSlope(GetTileSlope(end_tile)) || IsHalftileSlope(GetTileSlope(end_tile))) return INVALID_TILE;
 		if (GetTileSlope(start_tile) != ComplementSlope(GetTileSlope(end_tile))) return INVALID_TILE;
@@ -616,7 +616,7 @@ static bool IsBlockedByPreviousBridgeOrTunnel(OpenListNode *current, TileIndex s
 {
 	PathNode* start = &current->path;
 	PathNode* end = current->path.parent;
-	
+
 	while (end != nullptr) {
 		Point start_a {};
 		start_a.x = TileX(start->node.tile);
@@ -631,12 +631,12 @@ static bool IsBlockedByPreviousBridgeOrTunnel(OpenListNode *current, TileIndex s
 		Point end_b {};
 		end_b.x = TileX(end_tile);
 		end_b.y = TileY(end_tile);
-		
+
 		if (!AreTilesAdjacent(start->node.tile, end->node.tile) &&
 			(AreIntersecting(start_a, end_a, start_b, end_b) || AreParallelOverlapping(start_a, end_a, start_b, end_b))) {
 			return true;
 		}
-		
+
 		start = end;
 		end = start->parent;
 	}
@@ -647,7 +647,7 @@ static bool IsBlockedByPreviousBridgeOrTunnel(OpenListNode *current, TileIndex s
 /** AyStar callback for getting the neighbouring nodes of the given node. */
 static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 {
-	const auto current_tile = current->path.node.tile;	
+	const auto current_tile = current->path.node.tile;
 	const auto previous_tile = current->path.parent != nullptr ? current->path.parent->node.tile : INVALID_TILE;
 	const auto forward_direction = DiagdirBetweenTiles(previous_tile, current_tile);
 
@@ -655,7 +655,7 @@ static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 
 	// Check if we just went through a tunnel or a bridge.
 	if (IsValidTile(previous_tile) && !AreTilesAdjacent(current_tile, previous_tile)) {
-		
+
 		// We went through a tunnel or bridge, this limits our options to proceed to only forward.
 		const TileIndex next_tile = current_tile + TileOffsByDiagDir(forward_direction);
 
@@ -685,7 +685,7 @@ static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 				aystar->num_neighbours++;
 			}
 		}
-		
+
 		// Check if we can turn this into a tunnel or a bridge.
 		if (IsValidTile(previous_tile)) {
 			if (IsUpwardsSlope(current_tile, forward_direction)) {
@@ -694,7 +694,7 @@ static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 				if (IsValidTile(tunnel_end) &&
 					!IsBlockedByPreviousBridgeOrTunnel(current, current_tile, tunnel_end) &&
 					!IsSteepSlope(GetTileSlope(tunnel_end)) &&
-					!IsHalftileSlope(GetTileSlope(tunnel_end)) && 
+					!IsHalftileSlope(GetTileSlope(tunnel_end)) &&
 					(GetTileSlope(tunnel_end) == ComplementSlope(GetTileSlope(current_tile)))) {
 					assert(IsValidDiagDirection(DiagdirBetweenTiles(current_tile, tunnel_end)));
 					aystar->neighbours[aystar->num_neighbours].tile = tunnel_end;
@@ -708,7 +708,7 @@ static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 				if (IsValidTile(bridge_end) &&
 					!IsBlockedByPreviousBridgeOrTunnel(current, current_tile, bridge_end) &&
 					!IsSteepSlope(GetTileSlope(bridge_end)) &&
-					!IsHalftileSlope(GetTileSlope(bridge_end)) && 
+					!IsHalftileSlope(GetTileSlope(bridge_end)) &&
 					(GetTileSlope(bridge_end) == ComplementSlope(GetTileSlope(current_tile)))) {
 					assert(IsValidDiagDirection(DiagdirBetweenTiles(current_tile, bridge_end)));
 					aystar->neighbours[aystar->num_neighbours].tile = bridge_end;
@@ -796,7 +796,7 @@ static void PublicRoad_FoundEndNode(AyStar *aystar, OpenListNode *current)
 			const DiagDirection road_direction = DiagdirBetweenTiles(tile, path->parent->node.tile);
 
 			auto end_tile = INVALID_TILE;
-			
+
 			if (IsUpwardsSlope(tile, road_direction)) {
 				end_tile = BuildTunnel(path, path->parent->node.tile, true);
 				assert(IsValidTile(end_tile) && IsDownwardsSlope(end_tile, road_direction));
@@ -866,14 +866,14 @@ bool FindPath(AyStar& finder, const TileIndex from, TileIndex to)
 	finder.max_search_nodes = 1 << 20;
 
 	finder.Init(1 << _public_road_hash_size);
-	
+
 	AyStarNode start {};
 	start.tile = from;
 	start.direction = INVALID_TRACKDIR;
 	finder.AddStartNode(&start, 0);
 
 	int result = AYSTAR_STILL_BUSY;
-	
+
 	while (result == AYSTAR_STILL_BUSY) {
 		result = finder.Main();
 	}
@@ -913,7 +913,7 @@ void GeneratePublicRoads()
 	if (towns.empty()) {
 		return;
 	}
-	
+
 	SetGeneratingWorldProgress(GWP_PUBLIC_ROADS, uint(towns.size()));
 
 	// Create a list of networks which also contain a value indicating how many times we failed to connect to them.
@@ -947,7 +947,7 @@ void GeneratePublicRoads()
 
 	sort(towns.begin(), towns.end(), [&](auto a, auto b) { return DistanceManhattan(a, main_town) < DistanceManhattan(b, main_town); });
 
-	for (auto start_town : towns) {		
+	for (auto start_town : towns) {
 		// Check if we can connect to any of the networks.
 		_towns_visited_along_the_way.clear();
 
@@ -979,7 +979,7 @@ void GeneratePublicRoads()
 				for (const TileIndex visited_town : _towns_visited_along_the_way) {
 					town_to_network_map[visited_town] = reachable_network;
 				}
-				
+
 			} else {
 				town_to_network_map.erase(reachable_from_town);
 				reachable_network->failures_to_connect++;
@@ -996,7 +996,7 @@ void GeneratePublicRoads()
 				if (reachable_from_town != town_to_network_map.end() && network.get() == reachable_from_town->second.get()) {
 					return false;
 				}
-				
+
 				// Try to connect to the town in the network that is closest to us.
 				// If we can't connect to that one, we can't connect to any of them since they are all interconnected.
 				sort(network->towns.begin(), network->towns.end(), [&](auto a, auto b) { return DistanceManhattan(start_town, a) < DistanceManhattan(start_town, b); });
