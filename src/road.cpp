@@ -425,13 +425,18 @@ static TileIndex BuildBridge(PathNode *current, TileIndex end_tile = INVALID_TIL
 	if (!build_bridge) {
 		const DiagDirection direction = ReverseDiagDir(GetInclinedSlopeDirection(GetTileSlope(start_tile)));
 
+		TileIndex tile = start_tile + TileOffsByDiagDir(direction);
+		const bool is_over_water = IsValidTile(tile) && IsTileType(tile, MP_WATER) && IsSea(tile);
+		uint bridge_length = 0;
+		const uint bridge_length_limit = std::min<uint>(_settings_game.construction.max_bridge_length, is_over_water ? 20 : 10);
+
 		// We are not building yet, so we still need to find the end_tile.
-		for (TileIndex tile = start_tile + TileOffsByDiagDir(direction);
+		for (;
 			IsValidTile(tile) &&
-			(GetTunnelBridgeLength(start_tile, tile) <= std::min(_settings_game.construction.max_bridge_length, (uint16)10)) &&
+			(bridge_length <= bridge_length_limit) &&
 			(GetTileZ(start_tile) < (GetTileZ(tile) + _settings_game.construction.max_bridge_height)) &&
 			(GetTileZ(tile) <= GetTileZ(start_tile));
-			tile += TileOffsByDiagDir(direction)) {
+			tile += TileOffsByDiagDir(direction), bridge_length++) {
 
 			auto is_complementary_slope =
 				!IsSteepSlope(GetTileSlope(tile)) &&
