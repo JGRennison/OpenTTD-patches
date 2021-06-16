@@ -447,7 +447,7 @@ static TileIndex BuildBridge(PathNode *current, TileIndex end_tile = INVALID_TIL
 
 		if (!IsValidTile(end_tile)) return INVALID_TILE;
 		if (GetTileSlope(start_tile) != ComplementSlope(GetTileSlope(end_tile))) return INVALID_TILE;
-		if (!IsTileType(end_tile, MP_CLEAR) && !IsTileType(end_tile, MP_TREES)) return INVALID_TILE;
+		if (!IsTileType(end_tile, MP_CLEAR) && !IsTileType(end_tile, MP_TREES) && !IsCoastTile(end_tile)) return INVALID_TILE;
 	}
 
 	assert(!build_bridge || (IsValidTile(end_tile) && GetTileSlope(start_tile) == ComplementSlope(GetTileSlope(end_tile))));
@@ -498,7 +498,7 @@ static TileIndex BuildRiverBridge(PathNode *current, const DiagDirection road_di
 			(GetTileZ(tile) <= GetTileZ(start_tile));
 			tile += TileOffsByDiagDir(road_direction)) {
 
-			if ((IsTileType(tile, MP_CLEAR) || IsTileType(tile, MP_TREES)) &&
+			if ((IsTileType(tile, MP_CLEAR) || IsTileType(tile, MP_TREES) || IsCoastTile(tile)) &&
 				GetTileZ(tile) <= GetTileZ(start_tile) &&
 				GetTileSlope(tile) == SLOPE_FLAT) {
 				end_tile = tile;
@@ -507,7 +507,7 @@ static TileIndex BuildRiverBridge(PathNode *current, const DiagDirection road_di
 		}
 
 		if (!IsValidTile(end_tile)) return INVALID_TILE;
-		if (!IsTileType(end_tile, MP_CLEAR) && !IsTileType(end_tile, MP_TREES)) return INVALID_TILE;
+		if (!IsTileType(end_tile, MP_CLEAR) && !IsTileType(end_tile, MP_TREES) && !IsCoastTile(end_tile)) return INVALID_TILE;
 	}
 
 	assert(!build_bridge || IsValidTile(end_tile));
@@ -549,7 +549,7 @@ static bool IsValidNeighbourOfPreviousTile(const TileIndex tile, const TileIndex
 		return (tunnel_direction == forward_direction);
 	}
 
-	if (!IsTileType(tile, MP_CLEAR) && !IsTileType(tile, MP_TREES) && !IsTileType(tile, MP_ROAD)) return false;
+	if (!IsTileType(tile, MP_CLEAR) && !IsTileType(tile, MP_TREES) && !IsTileType(tile, MP_ROAD) && !IsCoastTile(tile)) return false;
 
 	const auto slope = GetTileSlope(tile);
 
