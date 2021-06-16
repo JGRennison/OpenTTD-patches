@@ -341,11 +341,9 @@ static std::vector<TileIndex> _towns_visited_along_the_way;
 static RoadType _public_road_type;
 static const uint _public_road_hash_size = 8U; ///< The number of bits the hash for river finding should have.
 
-/** Helper function to check if a tile along a certain direction is going up an inclined slope. */
-static bool IsUpwardsSlope(TileIndex tile, DiagDirection road_direction)
+/** Helper function to check if a slope along a certain direction is going up an inclined slope. */
+static bool IsUpwardsSlope(const Slope slope, DiagDirection road_direction)
 {
-	const auto slope = GetTileSlope(tile);
-
 	if (!IsInclinedSlope(slope)) return false;
 
 	const auto slope_direction = GetInclinedSlopeDirection(slope);
@@ -353,16 +351,20 @@ static bool IsUpwardsSlope(TileIndex tile, DiagDirection road_direction)
 	return road_direction == slope_direction;
 }
 
-/** Helper function to check if a tile along a certain direction is going down an inclined slope. */
-static bool IsDownwardsSlope(const TileIndex tile, const DiagDirection road_direction)
+/** Helper function to check if a slope along a certain direction is going down an inclined slope. */
+static bool IsDownwardsSlope(const Slope slope, const DiagDirection road_direction)
 {
-	const auto slope = GetTileSlope(tile);
-
 	if (!IsInclinedSlope(slope)) return false;
 
 	const auto slope_direction = GetInclinedSlopeDirection(slope);
 
 	return road_direction == ReverseDiagDir(slope_direction);
+}
+
+/** Helper function to check if a slope is effectively flat. */
+static bool IsSufficientlyFlatSlope(const Slope slope)
+{
+	return !IsSteepSlope(slope) && HasBit(VALID_LEVEL_CROSSING_SLOPES, slope);
 }
 
 static TileIndex BuildTunnel(PathNode *current, TileIndex end_tile = INVALID_TILE, const bool build_tunnel = false)
@@ -485,6 +487,7 @@ static TileIndex BuildBridge(PathNode *current, TileIndex end_tile = INVALID_TIL
 static TileIndex BuildRiverBridge(PathNode *current, const DiagDirection road_direction, TileIndex end_tile = INVALID_TILE, const bool build_bridge = false)
 {
 	const TileIndex start_tile = current->node.tile;
+	const int start_tile_z = GetTileMaxZ(start_tile);
 
 	if (!build_bridge) {
 		// We are not building yet, so we still need to find the end_tile.
@@ -499,13 +502,13 @@ static TileIndex BuildRiverBridge(PathNode *current, const DiagDirection road_di
 		for (;
 			IsValidTile(tile) &&
 			(GetTunnelBridgeLength(start_tile, tile) <= std::min(_settings_game.construction.max_bridge_length, (uint16)3)) &&
-			(GetTileZ(start_tile) < (GetTileZ(tile) + _settings_game.construction.max_bridge_height)) &&
-			(GetTileZ(tile) <= GetTileZ(start_tile));
+			(start_tile_z < (GetTileZ(tile) + _settings_game.construction.max_bridge_height)) &&
+			(GetTileZ(tile) <= start_tile_z);
 			tile += TileOffsByDiagDir(road_direction)) {
 
 			if ((IsTileType(tile, MP_CLEAR) || IsTileType(tile, MP_TREES) || IsCoastTile(tile)) &&
-				GetTileZ(tile) <= GetTileZ(start_tile) &&
-				GetTileSlope(tile) == SLOPE_FLAT) {
+					GetTileZ(tile) <= start_tile_z &&
+					IsSufficientlyFlatSlope(GetTileSlope(tile))) {
 				end_tile = tile;
 				break;
 			}
@@ -556,12 +559,13 @@ static bool IsValidNeighbourOfPreviousTile(const TileIndex tile, const TileIndex
 
 	if (!IsTileType(tile, MP_CLEAR) && !IsTileType(tile, MP_TREES) && !IsTileType(tile, MP_ROAD) && !IsCoastTile(tile)) return false;
 
-	const auto slope = GetTileSlope(tile);
+	const Slope slope = GetTileSlope(tile);
+	if (IsSteepSlope(slope)) return false;
 
-	// Do not allow foundations. We'll mess things up later.
-	const bool has_foundation = GetFoundationSlope(tile) != slope;
+	const Slope foundationSlope = GetFoundationSlope(tile);
 
-	if (has_foundation) return false;
+	/* Allow only trivial foundations (3 corners raised or 2 opposite corners raised -> flat) */
+	if (slope != foundationSlope && !HasBit(VALID_LEVEL_CROSSING_SLOPES, slope)) return false;
 
 	if (IsInclinedSlope(slope)) {
 		const auto slope_direction = GetInclinedSlopeDirection(slope);
@@ -569,8 +573,17 @@ static bool IsValidNeighbourOfPreviousTile(const TileIndex tile, const TileIndex
 		if (slope_direction != forward_direction && ReverseDiagDir(slope_direction) != forward_direction) {
 			return false;
 		}
-	} else if (slope != SLOPE_FLAT) {
+	} else if (!HasBit(VALID_LEVEL_CROSSING_SLOPES, slope)) {
 		return false;
+	} else {
+		/* Check whether the previous tile was an inclined slope, and whether we are leaving the previous tile from a valid direction */
+		if (slope != SLOPE_FLAT) {
+			const Slope previous_slope = GetTileSlope(previous_tile);
+			if (IsInclinedSlope(previous_slope)) {
+				const DiagDirection slope_direction = GetInclinedSlopeDirection(previous_slope);
+				if (slope_direction != forward_direction && ReverseDiagDir(slope_direction) != forward_direction) return false;
+			}
+		}
 	}
 
 	return true;
@@ -693,42 +706,44 @@ static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 
 		// Check if we can turn this into a tunnel or a bridge.
 		if (IsValidTile(previous_tile)) {
-			if (IsUpwardsSlope(current_tile, forward_direction)) {
-				const auto tunnel_end = BuildTunnel(&current->path);
+			const Slope current_tile_slope = GetTileSlope(current_tile);
+			if (IsUpwardsSlope(current_tile_slope, forward_direction)) {
+				const TileIndex tunnel_end = BuildTunnel(&current->path);
 
-				if (IsValidTile(tunnel_end) &&
-					!IsBlockedByPreviousBridgeOrTunnel(current, current_tile, tunnel_end) &&
-					!IsSteepSlope(GetTileSlope(tunnel_end)) &&
-					!IsHalftileSlope(GetTileSlope(tunnel_end)) &&
-					(GetTileSlope(tunnel_end) == ComplementSlope(GetTileSlope(current_tile)))) {
-					assert(IsValidDiagDirection(DiagdirBetweenTiles(current_tile, tunnel_end)));
-					aystar->neighbours[aystar->num_neighbours].tile = tunnel_end;
-					aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
-					aystar->num_neighbours++;
+				if (IsValidTile(tunnel_end)) {
+					const Slope tunnel_end_slope = GetTileSlope(tunnel_end);
+					if (!IsBlockedByPreviousBridgeOrTunnel(current, current_tile, tunnel_end) &&
+							!IsSteepSlope(tunnel_end_slope) &&
+							!IsHalftileSlope(tunnel_end_slope) &&
+							(tunnel_end_slope == ComplementSlope(current_tile_slope))) {
+						assert(IsValidDiagDirection(DiagdirBetweenTiles(current_tile, tunnel_end)));
+						aystar->neighbours[aystar->num_neighbours].tile = tunnel_end;
+						aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
+						aystar->num_neighbours++;
+					}
 				}
-			}
-			else if (IsDownwardsSlope(current_tile, forward_direction)) {
-				const auto bridge_end = BuildBridge(&current->path, forward_direction);
+			} else if (IsDownwardsSlope(current_tile_slope, forward_direction)) {
+				const TileIndex bridge_end = BuildBridge(&current->path, forward_direction);
 
-				if (IsValidTile(bridge_end) &&
-					!IsBlockedByPreviousBridgeOrTunnel(current, current_tile, bridge_end) &&
-					!IsSteepSlope(GetTileSlope(bridge_end)) &&
-					!IsHalftileSlope(GetTileSlope(bridge_end)) &&
-					(GetTileSlope(bridge_end) == ComplementSlope(GetTileSlope(current_tile)))) {
-					assert(IsValidDiagDirection(DiagdirBetweenTiles(current_tile, bridge_end)));
-					aystar->neighbours[aystar->num_neighbours].tile = bridge_end;
-					aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
-					aystar->num_neighbours++;
+				if (IsValidTile(bridge_end)) {
+					const Slope bridge_end_slope = GetTileSlope(bridge_end);
+					if (!IsBlockedByPreviousBridgeOrTunnel(current, current_tile, bridge_end) &&
+							!IsSteepSlope(bridge_end_slope) &&
+							!IsHalftileSlope(bridge_end_slope) &&
+							(bridge_end_slope == ComplementSlope(current_tile_slope))) {
+						assert(IsValidDiagDirection(DiagdirBetweenTiles(current_tile, bridge_end)));
+						aystar->neighbours[aystar->num_neighbours].tile = bridge_end;
+						aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
+						aystar->num_neighbours++;
+					}
 				}
-			}
-			else if (GetTileSlope(current_tile) == SLOPE_FLAT)
-			{
+			} else if (IsSufficientlyFlatSlope(current_tile_slope)) {
 				// Check if we could bridge a river from a flat tile. Not looking pretty on the map but you gotta do what you gotta do.
 				const auto bridge_end = BuildRiverBridge(&current->path, forward_direction);
-				assert(!IsValidTile(bridge_end) || GetTileSlope(bridge_end) == SLOPE_FLAT);
+				assert(!IsValidTile(bridge_end) || IsSufficientlyFlatSlope(GetTileSlope(bridge_end)));
 
 				if (IsValidTile(bridge_end) &&
-					!IsBlockedByPreviousBridgeOrTunnel(current, current_tile, bridge_end)) {
+						!IsBlockedByPreviousBridgeOrTunnel(current, current_tile, bridge_end)) {
 					assert(IsValidDiagDirection(DiagdirBetweenTiles(current_tile, bridge_end)));
 					aystar->neighbours[aystar->num_neighbours].tile = bridge_end;
 					aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
@@ -802,18 +817,19 @@ static void PublicRoad_FoundEndNode(AyStar *aystar, OpenListNode *current)
 
 			auto end_tile = INVALID_TILE;
 
-			if (IsUpwardsSlope(tile, road_direction)) {
+			const Slope tile_slope = GetTileSlope(tile);
+			if (IsUpwardsSlope(tile_slope, road_direction)) {
 				end_tile = BuildTunnel(path, path->parent->node.tile, true);
-				assert(IsValidTile(end_tile) && IsDownwardsSlope(end_tile, road_direction));
-			} else if (IsDownwardsSlope(tile, road_direction)) {
+				assert(IsValidTile(end_tile) && IsDownwardsSlope(GetTileSlope(end_tile), road_direction));
+			} else if (IsDownwardsSlope(tile_slope, road_direction)) {
 				// Provide the function with the end tile, since we already know it, but still check the result.
 				end_tile = BuildBridge(path, path->parent->node.tile, true);
-				assert(IsValidTile(end_tile) && IsUpwardsSlope(end_tile, road_direction));
+				assert(IsValidTile(end_tile) && IsUpwardsSlope(GetTileSlope(end_tile), road_direction));
 			} else {
 				// River bridge is the last possibility.
-				assert(GetTileSlope(tile) == SLOPE_FLAT);
+				assert(IsSufficientlyFlatSlope(tile_slope));
 				end_tile = BuildRiverBridge(path, road_direction, path->parent->node.tile, true);
-				assert(IsValidTile(end_tile) && GetTileSlope(end_tile) == SLOPE_FLAT);
+				assert(IsValidTile(end_tile) && IsSufficientlyFlatSlope(GetTileSlope(end_tile)));
 			}
 		}
 
@@ -840,8 +856,9 @@ static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *
 		if (distance > 1) {
 			/* We are planning to build a bridge or tunnel. Make that much more expensive. */
 			const DiagDirection road_direction = DiagdirBetweenTiles(parent->path.node.tile, current->tile);
-			if (IsUpwardsSlope(parent->path.node.tile, road_direction)) {
+			if (IsUpwardsSlope(GetTileSlope(parent->path.node.tile), road_direction)) {
 				/* Tunnel */
+
 				/* Prevent excessively long tunnels */
 				if (distance > 30) return AYSTAR_INVALID_NODE;
 
