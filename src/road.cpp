@@ -992,7 +992,7 @@ void GeneratePublicRoads()
 				return town_network_distance(start_town, a) < town_network_distance(start_town, b);
 			});
 
-			std::function can_reach = [&](const std::shared_ptr<TownNetwork> &network) {
+			auto can_reach = [&](const std::shared_ptr<TownNetwork> &network) {
 				if (reachable_from_town != town_to_network_map.end() && network.get() == reachable_from_town->second.get()) {
 					return false;
 				}
