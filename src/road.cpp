@@ -938,11 +938,11 @@ void GeneratePublicRoads()
 	IncreaseGeneratingWorldProgress(GWP_PUBLIC_ROADS);
 
 	auto town_network_distance = [](const TileIndex town, const std::shared_ptr<TownNetwork> &network) {
-		const auto min_element = std::min_element(network->towns.begin(), network->towns.end(), [&](const TileIndex town_a, const TileIndex town_b) {
-			return DistanceManhattan(town, town_a) < DistanceManhattan(town, town_b);
-		});
-
-		return DistanceManhattan(*min_element, town);
+		int32 best = INT32_MAX;
+		for (TileIndex t : network->towns) {
+			best = std::min<int32>(best, DistanceManhattan(t, town));
+		}
+		return best;
 	};
 
 	sort(towns.begin(), towns.end(), [&](auto a, auto b) { return DistanceManhattan(a, main_town) < DistanceManhattan(b, main_town); });
