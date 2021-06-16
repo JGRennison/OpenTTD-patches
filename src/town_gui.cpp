@@ -435,9 +435,10 @@ public:
 
 		/* only show the town noise, if the noise option is activated. */
 		if (_settings_game.economy.station_noise_level) {
+			uint16 max_noise = this->town->MaxTownNoise();
 			SetDParam(0, this->town->noise_reached);
-			SetDParam(1, this->town->MaxTownNoise());
-			DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_LEFT, y += FONT_HEIGHT_NORMAL, STR_TOWN_VIEW_NOISE_IN_TOWN);
+			SetDParam(1, max_noise);
+			DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_LEFT, y += FONT_HEIGHT_NORMAL, max_noise == UINT16_MAX ? STR_TOWN_VIEW_NOISE_IN_TOWN_NO_LIMIT : STR_TOWN_VIEW_NOISE_IN_TOWN);
 		}
 
 		if (!this->town->text.empty()) {
