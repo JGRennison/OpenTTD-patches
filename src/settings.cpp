@@ -1529,6 +1529,13 @@ static bool VelocityUnitsChanged(int32 p1) {
 	return true;
 }
 
+static bool ChangeTrackTypeSortMode(int32 p1) {
+	extern void SortRailTypes();
+	SortRailTypes();
+	MarkWholeScreenDirty();
+	return true;
+}
+
 /** Checks if any settings are set to incorrect values, and sets them to correct values in that case. */
 static void ValidateSettings()
 {

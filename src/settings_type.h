@@ -215,6 +215,7 @@ struct GUISettings : public TimeSettings {
 	bool   show_adv_load_mode_features;      ///< enable advanced loading mode features in UI
 	bool   disable_top_veh_list_mass_actions;     ///< disable mass actions buttons for non-group vehicle lists
 	bool   adv_sig_bridge_tun_modes;         ///< Enable advanced modes for signals on bridges/tunnels.
+	bool   sort_track_types_by_speed;        ///< Sorts track types by compatibility first, and speed next, instead of newGRF slot
 	bool   show_depot_sell_gui;              ///< Show go to depot and sell in UI
 	bool   open_vehicle_gui_clone_share;     ///< Open vehicle GUI when share-cloning vehicle from depot GUI
 	uint8  linkgraph_colours;                ///< linkgraph overlay colours
