@@ -885,6 +885,23 @@ static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *
 
 		if (GetTileZ(parent->path.node.tile) != GetTileZ(current->tile)) {
 			cost += COST_FOR_SLOPE;
+			
+			auto current_node = &parent->path;
+			auto parent_node = parent->path.parent;
+
+			// Force the pathfinder to build serpentine roads by punishing every slope in the last couple of tiles.
+			for (int i = 0; i < 3; ++i) {
+				if (current_node == nullptr || parent_node == nullptr) {
+					break;
+				}
+				
+				if (GetTileZ(current_node->node.tile) != GetTileZ(parent_node->node.tile)) {
+					cost += COST_FOR_SLOPE;
+				}
+				
+				current_node = parent_node;
+				parent_node = current_node->parent;
+			}
 		}
 	}
 
