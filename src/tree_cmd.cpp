@@ -316,7 +316,7 @@ static TileIndex FindTreePositionAtSameHeight(TileIndex tile, uint steps)
  */
 static void PlantTreeAtSameHeight(TileIndex tile)
 {
-	const auto new_tile = FindTreePositionAtSameHeight(tile, 4);
+	const auto new_tile = FindTreePositionAtSameHeight(tile, 1);
 
 	if (new_tile != INVALID_TILE) {
 		PlantTreesOnTile(new_tile, GetTreeType(tile), 0, 0);
@@ -556,7 +556,7 @@ CommandCost CmdPlantTree(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 				
 				/* no more space for trees? */
 				if (_settings_game.game_creation.tree_placer == TP_PERFECT) {
-					if (GetTreeCount(tile) >= 4 || ((int)GetTreeCount(tile) >= MaxTreeCount(tile))) {
+					if (GetTreeCount(tile) >= 4 || ((GetTreeType(tile) != TREE_CACTUS) && ((int)GetTreeCount(tile) >= MaxTreeCount(tile)))) {
 						if (GetTreeGrowth(tile) < 3) {
 							grow_existing_tree_instead = true;
 						} else {
@@ -945,7 +945,7 @@ static void TileLoop_Trees(TileIndex tile)
 
 					case 1: { // add a tree
 						if (_settings_game.game_creation.tree_placer == TP_PERFECT) {
-							if ((GetTreeCount(tile) < 4) && (GetTreeType(tile) != TREE_CACTUS) && ((int)GetTreeCount(tile) < MaxTreeCount(tile))) {
+							if ((GetTreeCount(tile) < 4) && ((GetTreeType(tile) == TREE_CACTUS) || ((int)GetTreeCount(tile) < MaxTreeCount(tile)))) {
 								AddTreeCount(tile, 1);
 								SetTreeGrowth(tile, 0);
 								break;
@@ -966,7 +966,9 @@ static void TileLoop_Trees(TileIndex tile)
 								(GetTreeType(tile) == TREE_CACTUS) ||
 								(_settings_game.game_creation.landscape == LT_ARCTIC && GetTileZ(tile) >= _settings_game.game_creation.snow_line_height + _settings_game.construction.trees_around_snow_line_range / 3))) {
 							// On lower levels we spread more randomly to not bunch up.
-							PlantTreeAtSameHeight(tile);
+							if (GetTreeType(tile) != TREE_CACTUS || (RandomRange(100) < 50)) {
+								PlantTreeAtSameHeight(tile);
+							}
 						} else {
 							const TreeType tree_type = GetTreeType(tile);
 
