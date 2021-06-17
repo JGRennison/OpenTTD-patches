@@ -316,8 +316,7 @@ static TileIndex FindTreePositionAtSameHeight(TileIndex tile, uint steps)
  */
 static void PlantTreeAtSameHeight(TileIndex tile)
 {
-	const int max_tries = (GetTreeType(tile) == TREE_CACTUS) ? 8 : 4;
-	const auto new_tile = FindTreePositionAtSameHeight(tile, max_tries);
+	const auto new_tile = FindTreePositionAtSameHeight(tile, 4);
 
 	if (new_tile != INVALID_TILE) {
 		PlantTreesOnTile(new_tile, GetTreeType(tile), 0, 0);
