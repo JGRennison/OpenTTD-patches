@@ -880,6 +880,7 @@ static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *
 		if (distance > 1) {
 			// We are planning to build a bridge or tunnel. Make that a bit more expensive.
 			cost += 6 * COST_FOR_SLOPE;
+			cost += distance * (COST_FOR_NEW_ROAD / 2);
 		}
 	}
 
