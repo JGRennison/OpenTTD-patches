@@ -843,8 +843,6 @@ static void PublicRoad_FoundEndNode(AyStar *aystar, OpenListNode *current)
 
 static const int32 BASE_COST_PER_TILE  = 1;      // Cost for existing road or tunnel/bridge.
 static const int32 COST_FOR_NEW_ROAD   = 100;    // Cost for building a new road.
-static const int32 COST_FOR_NEW_BRIDGE = 500;    // Cost for building a new bridge (per tile).
-static const int32 COST_FOR_NEW_TUNNEL = 500;    // Cost for building a new tunnel (per tile, with non-linear increase with length as in CmdBuildTunnel costs).
 static const int32 COST_FOR_SLOPE      = 50;     // Additional cost if the road heads up or down a slope.
 
 /** AyStar callback for getting the cost of the current node. */
@@ -852,40 +850,12 @@ static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *
 {
 	int32 cost = 0;
 
-	int32 distance = DistanceManhattan(parent->path.node.tile, current->tile);
+	const int32 distance = DistanceManhattan(parent->path.node.tile, current->tile);
 
 	if (IsTileType(current->tile, MP_ROAD) || IsTileType(current->tile, MP_TUNNELBRIDGE)) {
 		cost += distance * BASE_COST_PER_TILE;
 	} else {
-		if (distance > 1) {
-			/* We are planning to build a bridge or tunnel. Make that much more expensive. */
-			const DiagDirection road_direction = DiagdirBetweenTiles(parent->path.node.tile, current->tile);
-			if (IsUpwardsSlope(GetTileSlope(parent->path.node.tile), road_direction)) {
-				/* Tunnel */
-
-				/* Prevent excessively long tunnels */
-				if (distance > 30) return AYSTAR_INVALID_NODE;
-
-				cost += 2 * COST_FOR_NEW_TUNNEL;
-				int32 middle_cost = 0;
-				int tiles_coef = 3;
-				int tiles_bump = 25;
-				for (int i = 1; i <= distance; i++) {
-					if (i == tiles_bump) {
-						tiles_coef++;
-						tiles_bump *= 2;
-					}
-					middle_cost += COST_FOR_NEW_TUNNEL;
-					middle_cost += middle_cost >> tiles_coef;
-				}
-				cost += middle_cost;
-			} else {
-				/* Bridge */
-				cost += distance * COST_FOR_NEW_BRIDGE;
-			}
-		} else {
-			cost += distance * COST_FOR_NEW_ROAD;
-		}
+		cost += distance * COST_FOR_NEW_ROAD;
 
 		if (GetTileZ(parent->path.node.tile) != GetTileZ(current->tile)) {
 			cost += COST_FOR_SLOPE;
@@ -906,6 +876,11 @@ static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *
 				current_node = parent_node;
 				parent_node = current_node->parent;
 			}
+		}
+
+		if (distance > 1) {
+			// We are planning to build a bridge or tunnel. Make that a bit more expensive.
+			cost += 6 * COST_FOR_SLOPE;
 		}
 	}
 
