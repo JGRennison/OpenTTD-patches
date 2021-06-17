@@ -2912,16 +2912,21 @@ uint32 ViewportMapGetColour(const Viewport * const vp, uint x, uint y, const uin
 	/* Very approximative but fast way to get the tile when taking Z into account. */
 	const TileIndex tile_tmp = TileVirtXY(x, y);
 	const uint z = TileHeight(tile_tmp) * 4;
+	if (x + z >= MapSizeX() << 4) {
+		/* Wrapping of tile X coordinate causes a graphic glitch below south west border. */
+		return 0;
+	}
 	TileIndex tile = TileVirtXY(x + z, y + z);
 	if (tile >= MapSize()) return 0;
-	if (_settings_game.construction.freeform_edges) {
-		/* tile_tmp and tile must be from the same side,
-		 * otherwise it's an approximation erroneous case
-		 * that leads to a graphic glitch below south west border.
-		 */
-		if (TileX(tile_tmp) > (MapSizeX() - (MapSizeX() / 8)))
-			if ((TileX(tile_tmp) < (MapSizeX() / 2)) != (TileX(tile) < (MapSizeX() / 2)))
-				return 0;
+	const uint z2 = TileHeight(tile) * 4;
+	if (unlikely(z2 != z)) {
+		const uint approx_z = (z + z2) / 2;
+		if (x + approx_z >= MapSizeX() << 4) {
+			/* Wrapping of tile X coordinate causes a graphic glitch below south west border. */
+			return 0;
+		}
+		tile = TileVirtXY(x + approx_z, y + approx_z);
+		if (tile >= MapSize()) return 0;
 	}
 	TileType tile_type = MP_VOID;
 	tile = ViewportMapGetMostSignificantTileType(vp, tile, &tile_type);
