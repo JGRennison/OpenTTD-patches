@@ -461,6 +461,8 @@ static TileIndex BuildBridge(PathNode *current, TileIndex end_tile = INVALID_TIL
 
 	std::vector<BridgeType> available_bridge_types;
 
+	// Only use the original first 13 bridge types since
+	// there might be stuff like modular bridges etc in the other ones.
 	for (uint i = 0; i < 13; ++i) {
 		if (CheckBridgeAvailability(i, GetTunnelBridgeLength(start_tile, end_tile)).Succeeded()) {
 			available_bridge_types.push_back(i);
@@ -522,6 +524,8 @@ static TileIndex BuildRiverBridge(PathNode *current, const DiagDirection road_di
 
 	std::vector<BridgeType> available_bridge_types;
 
+	// Only use the original first 13 bridge types since
+	// there might be stuff like modular bridges etc in the other ones.
 	for (uint i = 0; i < 13; ++i) {
 		if (CheckBridgeAvailability(i, GetTunnelBridgeLength(start_tile, end_tile)).Succeeded()) {
 			available_bridge_types.push_back(i);
