@@ -460,12 +460,11 @@ static TileIndex BuildBridge(PathNode *current, TileIndex end_tile = INVALID_TIL
 
 	assert(!build_bridge || (IsValidTile(end_tile) && GetTileSlope(start_tile) == ComplementSlope(GetTileSlope(end_tile))));
 
-	std::vector<BridgeType> available_bridge_types;
+	const uint length = GetTunnelBridgeLength(start_tile, end_tile);
 
-	// Only use the original first 13 bridge types since
-	// there might be stuff like modular bridges etc in the other ones.
-	for (uint i = 0; i < 13; ++i) {
-		if (CheckBridgeAvailability(i, GetTunnelBridgeLength(start_tile, end_tile)).Succeeded()) {
+	std::vector<BridgeType> available_bridge_types;
+	for (BridgeType i = 0; i < MAX_BRIDGES; ++i) {
+		if (MayTownBuildBridgeType(i) && CheckBridgeAvailability(i, length).Succeeded()) {
 			available_bridge_types.push_back(i);
 		}
 	}
@@ -523,12 +522,11 @@ static TileIndex BuildRiverBridge(PathNode *current, const DiagDirection road_di
 
 	assert(!build_bridge || IsValidTile(end_tile));
 
-	std::vector<BridgeType> available_bridge_types;
+	const uint length = GetTunnelBridgeLength(start_tile, end_tile);
 
-	// Only use the original first 13 bridge types since
-	// there might be stuff like modular bridges etc in the other ones.
-	for (uint i = 0; i < 13; ++i) {
-		if (CheckBridgeAvailability(i, GetTunnelBridgeLength(start_tile, end_tile)).Succeeded()) {
+	std::vector<BridgeType> available_bridge_types;
+	for (BridgeType i = 0; i < MAX_BRIDGES; ++i) {
+		if (MayTownBuildBridgeType(i) && CheckBridgeAvailability(i, length).Succeeded()) {
 			available_bridge_types.push_back(i);
 		}
 	}
@@ -860,7 +858,7 @@ static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *
 
 		if (GetTileZ(parent->path.node.tile) != GetTileZ(current->tile)) {
 			cost += COST_FOR_SLOPE;
-			
+
 			auto current_node = &parent->path;
 			auto parent_node = parent->path.parent;
 
@@ -869,11 +867,11 @@ static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *
 				if (current_node == nullptr || parent_node == nullptr) {
 					break;
 				}
-				
+
 				if (GetTileZ(current_node->node.tile) != GetTileZ(parent_node->node.tile)) {
 					cost += COST_FOR_SLOPE;
 				}
-				
+
 				current_node = parent_node;
 				parent_node = current_node->parent;
 			}
