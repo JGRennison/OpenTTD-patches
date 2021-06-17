@@ -638,6 +638,13 @@ static bool IsBlockedByPreviousBridgeOrTunnel(OpenListNode *current, TileIndex s
 	PathNode* start = &current->path;
 	PathNode* end = current->path.parent;
 
+	Point start_b {};
+	start_b.x = TileX(start_tile);
+	start_b.y = TileY(start_tile);
+	Point end_b {};
+	end_b.x = TileX(end_tile);
+	end_b.y = TileY(end_tile);
+
 	while (end != nullptr) {
 		Point start_a {};
 		start_a.x = TileX(start->node.tile);
@@ -645,13 +652,6 @@ static bool IsBlockedByPreviousBridgeOrTunnel(OpenListNode *current, TileIndex s
 		Point end_a {};
 		end_a.x = TileX(end->node.tile);
 		end_a.y = TileY(end->node.tile);
-
-		Point start_b {};
-		start_b.x = TileX(start_tile);
-		start_b.y = TileY(start_tile);
-		Point end_b {};
-		end_b.x = TileX(end_tile);
-		end_b.y = TileY(end_tile);
 
 		if (!AreTilesAdjacent(start->node.tile, end->node.tile) &&
 			(AreIntersecting(start_a, end_a, start_b, end_b) || AreParallelOverlapping(start_a, end_a, start_b, end_b))) {
