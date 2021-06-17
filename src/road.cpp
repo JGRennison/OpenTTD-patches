@@ -408,7 +408,7 @@ static TileIndex BuildTunnel(PathNode *current, TileIndex end_tile = INVALID_TIL
 	assert(!build_tunnel || (IsValidTile(end_tile) && GetTileSlope(start_tile) == ComplementSlope(GetTileSlope(end_tile))));
 
 	Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
-	const auto build_tunnel_cmd = CmdBuildTunnel(start_tile, build_tunnel ? DC_EXEC : DC_NONE, _public_road_type | (TRANSPORT_ROAD << 8), 0);
+	const auto build_tunnel_cmd = CmdBuildTunnel(start_tile, DC_AUTO | (build_tunnel ? DC_EXEC : DC_NONE), _public_road_type | (TRANSPORT_ROAD << 8), 0);
 	cur_company.Restore();
 
 	assert(!build_tunnel || build_tunnel_cmd.Succeeded());
@@ -475,7 +475,7 @@ static TileIndex BuildBridge(PathNode *current, TileIndex end_tile = INVALID_TIL
 	const auto bridge_type = available_bridge_types[build_bridge ? RandomRange(uint32(available_bridge_types.size())) : 0];
 
 	Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
-	const auto build_bridge_cmd = CmdBuildBridge(end_tile, build_bridge ? DC_EXEC : DC_NONE, start_tile, bridge_type | (_public_road_type << 8) | (TRANSPORT_ROAD << 15));
+	const auto build_bridge_cmd = CmdBuildBridge(end_tile, DC_AUTO | (build_bridge ? DC_EXEC : DC_NONE), start_tile, bridge_type | (_public_road_type << 8) | (TRANSPORT_ROAD << 15));
 	cur_company.Restore();
 
 	assert(!build_bridge || build_bridge_cmd.Succeeded());
@@ -534,7 +534,7 @@ static TileIndex BuildRiverBridge(PathNode *current, const DiagDirection road_di
 	const auto bridge_type = available_bridge_types[build_bridge ? RandomRange(uint32(available_bridge_types.size())) : 0];
 
 	Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
-	const auto build_bridge_cmd = CmdBuildBridge(end_tile, build_bridge ? DC_EXEC : DC_NONE, start_tile, bridge_type | (_public_road_type << 8) | (TRANSPORT_ROAD << 15));
+	const auto build_bridge_cmd = CmdBuildBridge(end_tile, DC_AUTO | (build_bridge ? DC_EXEC : DC_NONE), start_tile, bridge_type | (_public_road_type << 8) | (TRANSPORT_ROAD << 15));
 	cur_company.Restore();
 
 	assert(!build_bridge || build_bridge_cmd.Succeeded());
