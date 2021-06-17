@@ -50,6 +50,8 @@ static const uint EXP_BLOCKSPACE = 10;     ///< Amount of vertical space between
 static void DoSelectCompanyManagerFace(Window *parent);
 static void ShowCompanyInfrastructure(CompanyID company);
 
+const std::vector<RailType>& GetSortedRailTypes();
+
 /** Standard unsorted list of expenses. */
 static ExpensesType _expenses_list_1[] = {
 	EXPENSES_CONSTRUCTION,
@@ -1902,7 +1904,7 @@ struct CompanyInfrastructureWindow : Window
 
 				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_INFRASTRUCTURE_VIEW_RAIL_SECT).width);
 
-				for (const auto &rt : _sorted_railtypes) {
+				for (const auto &rt : GetSortedRailTypes()) {
 					if (HasBit(this->railtypes, rt)) {
 						lines++;
 						SetDParam(0, GetRailTypeInfo(rt)->strings.name);
@@ -2033,7 +2035,7 @@ struct CompanyInfrastructureWindow : Window
 
 				if (this->railtypes != RAILTYPES_NONE) {
 					/* Draw name of each valid railtype. */
-					for (const auto &rt : _sorted_railtypes) {
+					for (const auto &rt : GetSortedRailTypes()) {
 						if (HasBit(this->railtypes, rt)) {
 							SetDParam(0, GetRailTypeInfo(rt)->strings.name);
 							DrawString(r.left + offs_left, r.right - offs_right, y += FONT_HEIGHT_NORMAL, STR_WHITE_STRING);
@@ -2050,7 +2052,8 @@ struct CompanyInfrastructureWindow : Window
 			case WID_CI_RAIL_COUNT: {
 				/* Draw infrastructure count for each valid railtype. */
 				uint32 rail_total = c->infrastructure.GetRailTotal();
-				for (const auto &rt : _sorted_railtypes) {
+				
+				for (const auto &rt : GetSortedRailTypes()) {
 					if (HasBit(this->railtypes, rt)) {
 						this->DrawCountLine(r, y, c->infrastructure.rail[rt], RailMaintenanceCost(rt, c->infrastructure.rail[rt], rail_total));
 					}

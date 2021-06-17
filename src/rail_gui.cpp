@@ -84,6 +84,8 @@ static void ShowBuildWaypointPicker(Window *parent);
 static Window *ShowStationBuilder(Window *parent);
 static void ShowSignalBuilder(Window *parent);
 
+const std::vector<RailType>& GetSortedRailTypes();
+
 /**
  * Check whether a station type can be build.
  * @return true if building is allowed.
@@ -2289,6 +2291,7 @@ static void SetDefaultRailGui()
 
 	extern RailType _last_built_railtype;
 	RailType rt;
+
 	switch (_settings_client.gui.default_rail_type) {
 		case 2: {
 			/* Find the most used rail type */
@@ -2309,16 +2312,18 @@ static void SetDefaultRailGui()
 		}
 		case 0: {
 			/* Use first available type */
-			std::vector<RailType>::const_iterator it = std::find_if(_sorted_railtypes.begin(), _sorted_railtypes.end(),
+			auto sorted_rail_types = GetSortedRailTypes();			
+			std::vector<RailType>::const_iterator it = std::find_if(sorted_rail_types.begin(), sorted_rail_types.end(),
 					[](RailType r){ return HasRailtypeAvail(_local_company, r); });
-			rt = it != _sorted_railtypes.end() ? *it : RAILTYPE_BEGIN;
+			rt = it != sorted_rail_types.end() ? *it : RAILTYPE_BEGIN;
 			break;
 		}
 		case 1: {
 			/* Use last available type */
-			std::vector<RailType>::const_reverse_iterator it = std::find_if(_sorted_railtypes.rbegin(), _sorted_railtypes.rend(),
+			auto sorted_rail_types = GetSortedRailTypes();
+			std::vector<RailType>::const_reverse_iterator it = std::find_if(sorted_rail_types.rbegin(), sorted_rail_types.rend(),
 					[](RailType r){ return HasRailtypeAvail(_local_company, r); });
-			rt = it != _sorted_railtypes.rend() ? *it : RAILTYPE_BEGIN;
+			rt = it != sorted_rail_types.rend() ? *it : RAILTYPE_BEGIN;
 			break;
 		}
 		default:
@@ -2401,15 +2406,17 @@ DropDownList GetRailTypeDropDownList(bool for_replacement, bool all_option)
 
 	Dimension d = { 0, 0 };
 	/* Get largest icon size, to ensure text is aligned on each menu item. */
+	auto sorted_rail_types = GetSortedRailTypes();
+	
 	if (!for_replacement) {
-		for (const auto &rt : _sorted_railtypes) {
+		for (const auto &rt : sorted_rail_types) {
 			if (!HasBit(used_railtypes, rt)) continue;
 			const RailtypeInfo *rti = GetRailTypeInfo(rt);
 			d = maxdim(d, GetSpriteSize(rti->gui_sprites.build_x_rail));
 		}
 	}
 
-	for (const auto &rt : _sorted_railtypes) {
+	for (const auto &rt : sorted_rail_types) {
 		/* If it's not used ever, don't show it to the user. */
 		if (!HasBit(used_railtypes, rt)) continue;
 

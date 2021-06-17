@@ -51,6 +51,7 @@
 typedef std::vector<Train *> TrainList;
 
 RailtypeInfo _railtypes[RAILTYPE_END];
+bool _last_sort_by_speed = false;
 std::vector<RailType> _sorted_railtypes;
 TileIndex _rail_track_endtile; ///< The end of a rail track; as hidden return from the rail build/remove command for GUI purposes.
 RailTypes _railtypes_hidden_mask;
@@ -129,7 +130,68 @@ void ResolveRailTypeGUISprites(RailtypeInfo *rti)
  */
 static bool CompareRailTypes(const RailType &first, const RailType &second)
 {
-	return GetRailTypeInfo(first)->sorting_order < GetRailTypeInfo(second)->sorting_order;
+	if (_settings_client.gui.sort_track_types_by_speed) {
+		RailType rt[2] = { first, second };
+		uint sort_value[2];
+
+		for (int i = 0; i < 2; ++i) {
+			// Last sort by speed
+			sort_value[i] = (GetRailTypeInfo(rt[i])->max_speed != 0) ? GetRailTypeInfo(rt[i])->max_speed : UINT16_MAX;
+
+			// Inside those categories filter by compatibility with eachother.
+			if (!HasPowerOnRail(rt[i], rt[(i + 1) % 2])) {
+				sort_value[i] += (1 << 16);
+			}
+
+			// We sort by Rail, Electric and others
+			if (!HasPowerOnRail(rt[i], RAILTYPE_RAIL)) {
+				sort_value[i] += (1 << 17);
+
+				if (!HasPowerOnRail(rt[i], RAILTYPE_ELECTRIC)) {
+					sort_value[i] += (1 << 18);
+
+					if (!HasPowerOnRail(rt[i], RAILTYPE_MONO) && HasPowerOnRail(rt[i], RAILTYPE_MAGLEV)) {
+						sort_value[i] += (1 << 19);
+					}
+				}
+			}
+
+			// Then Mono
+			if (HasPowerOnRail(rt[i], RAILTYPE_MONO)) {
+				sort_value[i] += (1 << 20);
+			}
+
+			// Maglev is second last
+			if (HasPowerOnRail(rt[i], RAILTYPE_MAGLEV)) {
+				sort_value[i] += (1 << 21);
+			}
+
+			// All no-speed tracks (like planning and lifted) go to the end
+			if (GetRailTypeInfo(rt[i])->max_speed == 0) {
+				sort_value[i] += (1 << 22);
+			}
+		}
+
+		return sort_value[0] < sort_value[1];
+	} else {
+		return GetRailTypeInfo(first)->sorting_order < GetRailTypeInfo(second)->sorting_order;
+	}
+}
+
+static void SortRailTypes(bool force_resort = false)
+{
+	static bool last_sort_by_speed = _settings_client.gui.sort_track_types_by_speed;
+
+	if (force_resort || last_sort_by_speed != _settings_client.gui.sort_track_types_by_speed) {	
+		std::sort(_sorted_railtypes.begin(), _sorted_railtypes.end(), CompareRailTypes);
+		last_sort_by_speed = _settings_client.gui.sort_track_types_by_speed;
+	}
+}
+
+const std::vector<RailType>& GetSortedRailTypes()
+{
+	SortRailTypes();
+	return _sorted_railtypes;
 }
 
 /**
@@ -149,7 +211,8 @@ void InitRailTypes()
 			_sorted_railtypes.push_back(rt);
 		}
 	}
-	std::sort(_sorted_railtypes.begin(), _sorted_railtypes.end(), CompareRailTypes);
+
+	SortRailTypes(true);
 
 	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
 		_railtypes[rt].all_compatible_railtypes = _railtypes[rt].compatible_railtypes;
