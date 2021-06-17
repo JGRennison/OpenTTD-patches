@@ -384,7 +384,7 @@ static TileIndex BuildTunnel(PathNode *current, TileIndex end_tile = INVALID_TIL
 		int end_z;
 		const uint tunnel_length_limit = std::min<uint>(_settings_game.construction.max_tunnel_length, 30);
 
-		for (int tunnel_length = 1;;tunnel_length++) {
+		for (uint tunnel_length = 1;; tunnel_length++) {
 			end_tile += delta;
 
 			if (!IsValidTile(end_tile)) return INVALID_TILE;
