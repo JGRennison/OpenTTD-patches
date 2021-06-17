@@ -10,6 +10,7 @@
 #ifndef OPENTTD_H
 #define OPENTTD_H
 
+#include <atomic>
 #include "core/enum_type.hpp"
 
 /** Mode which defines the state of the game. */
@@ -57,7 +58,7 @@ enum ExtraDisplayOptions {
 extern GameMode _game_mode;
 extern SwitchMode _switch_mode;
 extern bool _check_special_modes;
-extern bool _exit_game;
+extern std::atomic<bool> _exit_game;
 extern bool _save_config;
 
 /** Modes of pausing we've got */

@@ -48,7 +48,7 @@ bool _right_button_clicked; ///< Is right mouse button clicked?
 DrawPixelInfo _screen;
 bool _screen_disable_anim = false;   ///< Disable palette animation (important for 32bpp-anim blitter during giant screenshot)
 bool _check_special_modes;
-bool _exit_game;
+std::atomic<bool> _exit_game;
 GameMode _game_mode;
 SwitchMode _switch_mode;  ///< The next mainloop command.
 PauseMode _pause_mode;

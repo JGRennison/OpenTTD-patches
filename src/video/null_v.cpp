@@ -15,12 +15,14 @@
 #include "../thread.h"
 #include "null_v.h"
 
+#include <atomic>
+
 #include "../safeguards.h"
 
 /** Factory for the null video driver. */
 static FVideoDriver_Null iFVideoDriver_Null;
 
-extern bool _exit_game;
+extern std::atomic<bool> _exit_game;
 
 const char *VideoDriver_Null::Start(const StringList &parm)
 {
