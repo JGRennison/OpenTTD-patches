@@ -3027,7 +3027,7 @@ static void ViewportMapDrawBridgeTunnel(Viewport * const vp, const TunnelBridgeT
 	}
 
 	TileIndexDiff delta = TileOffsByDiagDir(GetTunnelBridgeDirection(tile));
-	for (; tile != tbtm->to_tile; tile += delta) { // For each tile
+	for (tile += delta; tile != tbtm->to_tile; tile += delta) { // For each tile
 		const Point pt = RemapCoords(TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE, z);
 		const int x = UnScaleByZoomLower(pt.x - _vd.dpi.left, _vd.dpi.zoom);
 		if (IsInsideMM(x, 0, w)) {
