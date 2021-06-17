@@ -190,6 +190,7 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 	};
 
 private:
+	int GetAtcMaxSpeed(int current_max_speed) const;
 	MaxSpeedInfo GetCurrentMaxSpeedInfoInternal(bool update_state) const;
 
 public:

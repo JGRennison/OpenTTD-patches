@@ -952,6 +952,80 @@ static void AdvanceLookAheadPosition(Train *v)
 }
 
 /**
+ * Calculates the maximum speed based on any train in front of this train.
+ */
+int Train::GetAtcMaxSpeed(int current_max_speed) const
+{
+	if (!(this->vehstatus & VS_CRASHED) && _settings_game.vehicle.train_speed_adaption) {
+		int atc_speed = current_max_speed;
+
+		CFollowTrackRail ft(this);
+		Trackdir old_td = this->GetVehicleTrackdir();
+
+		if (ft.Follow(this->tile, this->GetVehicleTrackdir())) {
+			/* Basic idea: Follow the track for 20 tiles or 3 signals (i.e. at most two signal blocks) looking for other trains. */
+			/* If we find one (that meets certain restrictions), we limit the max speed to the speed of that train. */
+			int num_tiles = 0;
+			int num_signals = 0;
+
+			do {
+				old_td = ft.m_old_td;
+
+				/* If we are on a depot or rail station tile stop searching */
+				if (IsDepotTile(ft.m_new_tile) || IsRailStationTile(ft.m_new_tile))
+					break;
+
+				/* Increment signal counter if we're on a signal */
+				if (IsTileType(ft.m_new_tile, MP_RAILWAY) && ///< Tile has rails
+					KillFirstBit(ft.m_new_td_bits) == TRACKDIR_BIT_NONE && ///< Tile has exactly *one* track
+					HasSignalOnTrack(ft.m_new_tile, TrackBitsToTrack(TrackdirBitsToTrackBits(ft.m_new_td_bits)))) { ///< Tile has signal
+					num_signals++;
+				}
+
+				/* Check if tile has train/is reserved */
+				if (KillFirstBit(ft.m_new_td_bits) == TRACKDIR_BIT_NONE && ///< Tile has exactly *one* track
+					HasReservedTracks(ft.m_new_tile, TrackdirBitsToTrackBits(ft.m_new_td_bits))) { ///< Tile is reserved
+					Train* other_train = GetTrainForReservation(ft.m_new_tile, TrackBitsToTrack(TrackdirBitsToTrackBits(ft.m_new_td_bits)));
+
+
+					if (other_train != nullptr &&
+						other_train != this && ///< Other train is not this train
+						other_train->GetAccelerationStatus() != AS_BRAKE) { ///< Other train is not braking
+						atc_speed = other_train->GetCurrentSpeed();
+						break;
+					}
+				}
+
+				/* Decide what in direction to continue: reservation, straight or "first/only" direction. */
+				/* Abort if there's no reservation even though the tile contains multiple tracks. */
+				const TrackdirBits reserved = ft.m_new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.m_new_tile));
+
+				if (reserved != TRACKDIR_BIT_NONE) {
+					// There is a reservation to follow.
+					old_td = FindFirstTrackdir(reserved);
+				}
+				else if (KillFirstBit(ft.m_new_td_bits) != TRACKDIR_BIT_NONE) {
+					// Tile has more than one track and we have no reservation. Bail out.
+					break;
+				}
+				else {
+					// There was no reservation but there is only one direction to follow, so follow it.
+					old_td = FindFirstTrackdir(ft.m_new_td_bits);
+				}
+
+				num_tiles++;
+			} while (num_tiles < 20 && num_signals < 3 && ft.Follow(ft.m_new_tile, old_td));
+		}
+
+		/* Check that the ATC speed is sufficiently large.
+		   Avoids assertion error in UpdateSpeed(). */
+		current_max_speed = std::max(25, std::min(current_max_speed, atc_speed));
+	}
+
+	return current_max_speed;
+}
+
+/**
  * Calculates the maximum speed information of the vehicle under its current conditions.
  * @return Maximum speed information of the vehicle.
  */
@@ -960,6 +1034,8 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 	int max_speed = _settings_game.vehicle.train_acceleration_model == AM_ORIGINAL ?
 			this->gcache.cached_max_track_speed :
 			std::min<int>(this->tcache.cached_max_curve_speed, this->gcache.cached_max_track_speed);
+
+	max_speed = GetAtcMaxSpeed(max_speed);
 
 	if (this->current_order.IsType(OT_LOADING_ADVANCE)) max_speed = std::min(max_speed, 15);
 
