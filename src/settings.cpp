@@ -1536,6 +1536,11 @@ static bool ChangeTrackTypeSortMode(int32 p1) {
 	return true;
 }
 
+static bool PublicRoadsSettingChange(int32 p1) {
+	InvalidateWindowClassesData(WC_SCEN_LAND_GEN);
+	return true;
+}
+
 /** Checks if any settings are set to incorrect values, and sets them to correct values in that case. */
 static void ValidateSettings()
 {

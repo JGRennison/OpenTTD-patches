@@ -572,7 +572,12 @@ static const NWidgetPart _nested_scen_edit_land_gen_widgets[] = {
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_ETT_NEW_SCENARIO), SetMinimalSize(160, 12),
 								SetFill(1, 0), SetDataTip(STR_TERRAFORM_SE_NEW_WORLD, STR_TERRAFORM_TOOLTIP_GENERATE_RANDOM_LAND), SetPadding(0, 2, 0, 2),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_ETT_RESET_LANDSCAPE), SetMinimalSize(160, 12),
-								SetFill(1, 0), SetDataTip(STR_TERRAFORM_RESET_LANDSCAPE, STR_TERRAFORM_RESET_LANDSCAPE_TOOLTIP), SetPadding(1, 2, 2, 2),
+								SetFill(1, 0), SetDataTip(STR_TERRAFORM_RESET_LANDSCAPE, STR_TERRAFORM_RESET_LANDSCAPE_TOOLTIP), SetPadding(1, 2, 0, 2),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_ETT_SHOW_PUBLIC_ROADS),
+			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_ETT_PUBLIC_ROADS), SetMinimalSize(160, 12),
+									SetFill(1, 0), SetDataTip(STR_TERRAFORM_PUBLIC_ROADS, STR_TERRAFORM_PUBLIC_ROADS_TOOLTIP), SetPadding(1, 2, 0, 2),
+		EndContainer(),
+		NWidget(NWID_SPACER), SetMinimalSize(0, 2),
 	EndContainer(),
 };
 
@@ -617,8 +622,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 	ScenarioEditorLandscapeGenerationWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
 	{
 		this->CreateNestedTree();
-		NWidgetStacked *show_desert = this->GetWidget<NWidgetStacked>(WID_ETT_SHOW_PLACE_DESERT);
-		show_desert->SetDisplayedPlane(_settings_game.game_creation.landscape == LT_TROPIC ? 0 : SZSP_NONE);
+		this->SetButtonStates();
 		this->FinishInitNested(window_number);
 		this->last_user_action = WIDGET_LIST_END;
 	}
@@ -723,6 +727,12 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 				ShowQuery(STR_QUERY_RESET_LANDSCAPE_CAPTION, STR_RESET_LANDSCAPE_CONFIRMATION_TEXT, nullptr, ResetLandscapeConfirmationCallback);
 				break;
 
+			case WID_ETT_PUBLIC_ROADS: { // Build public roads
+				extern void GeneratePublicRoads();
+				GeneratePublicRoads();
+				break;
+			}
+
 			default: NOT_REACHED();
 		}
 	}
@@ -796,6 +806,27 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 	{
 		this->RaiseButtons();
 		this->SetDirty();
+	}
+
+	/**
+	 * Some data on this window has become invalid.
+	 * @param data Information about the changed data.
+	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
+	 */
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	{
+		if (!gui_scope) return;
+
+		this->SetButtonStates();
+		this->ReInit();
+	}
+
+	void SetButtonStates()
+	{
+		NWidgetStacked *show_desert = this->GetWidget<NWidgetStacked>(WID_ETT_SHOW_PLACE_DESERT);
+		show_desert->SetDisplayedPlane(_settings_game.game_creation.landscape == LT_TROPIC ? 0 : SZSP_NONE);
+		NWidgetStacked *show_public_roads = this->GetWidget<NWidgetStacked>(WID_ETT_SHOW_PUBLIC_ROADS);
+		show_public_roads->SetDisplayedPlane(_settings_game.game_creation.build_public_roads != 0 ? 0 : SZSP_NONE);
 	}
 
 	static HotkeyList hotkeys;

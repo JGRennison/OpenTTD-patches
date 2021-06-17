@@ -3396,6 +3396,8 @@ STR_TERRAFORM_TOOLTIP_GENERATE_RANDOM_LAND                      :{BLACK}Generate
 STR_TERRAFORM_SE_NEW_WORLD                                      :{BLACK}Create new scenario
 STR_TERRAFORM_RESET_LANDSCAPE                                   :{BLACK}Reset landscape
 STR_TERRAFORM_RESET_LANDSCAPE_TOOLTIP                           :{BLACK}Remove all company-owned property from the map
+STR_TERRAFORM_PUBLIC_ROADS                                      :{BLACK}Build public roads
+STR_TERRAFORM_PUBLIC_ROADS_TOOLTIP                              :{BLACK}Build public roads between the towns on the map
 
 STR_QUERY_RESET_LANDSCAPE_CAPTION                               :{WHITE}Reset Landscape
 STR_RESET_LANDSCAPE_CONFIRMATION_TEXT                           :{WHITE}Are you sure you want to remove all company-owned property?
