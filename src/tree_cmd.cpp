@@ -194,8 +194,7 @@ static TreeType GetRandomTreeType(TileIndex tile, uint seed)
 			uint normalised_distance = (height_above_snow_line < 0) ? -height_above_snow_line : height_above_snow_line + 1;
 			bool arctic_tree = false;
 			if (normalised_distance < lengthof(_arctic_tree_occurance)) {
-				uint adjusted_seed = (seed ^ tile) & 0xFF;
-				arctic_tree = adjusted_seed < _arctic_tree_occurance[normalised_distance];
+				arctic_tree = RandomRange(256) < _arctic_tree_occurance[normalised_distance];
 			}
 			if (height_above_snow_line < 0) {
 				/* Below snow level mixed forest. */
