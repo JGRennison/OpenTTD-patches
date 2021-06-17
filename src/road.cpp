@@ -856,7 +856,7 @@ static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *
 	} else {
 		cost += distance * COST_FOR_NEW_ROAD;
 
-		if (GetTileZ(parent->path.node.tile) != GetTileZ(current->tile)) {
+		if (GetTileMaxZ(parent->path.node.tile) != GetTileMaxZ(current->tile)) {
 			cost += COST_FOR_SLOPE;
 
 			auto current_node = &parent->path;
@@ -868,7 +868,7 @@ static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *
 					break;
 				}
 
-				if (GetTileZ(current_node->node.tile) != GetTileZ(parent_node->node.tile)) {
+				if (GetTileMaxZ(current_node->node.tile) != GetTileMaxZ(parent_node->node.tile)) {
 					cost += COST_FOR_SLOPE;
 				}
 
