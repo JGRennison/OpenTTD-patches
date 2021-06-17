@@ -496,7 +496,10 @@ inline int RoadVehicle::GetCurrentMaxSpeed() const
 			if (this->state <= RVSB_TRACKDIR_MASK && IsReversingRoadTrackdir((Trackdir)this->state)) {
 				max_speed = this->gcache.cached_max_track_speed / 2;
 				break;
-			} else if ((u->direction & 1) == 0) {
+			}
+
+			// Are we in a curve and should slow down?
+			if (((u->direction & 1) == 0) && _settings_game.vehicle.slow_road_vehicles_in_curves) {
 				max_speed = this->gcache.cached_max_track_speed * 3 / 4;
 			}
 		}

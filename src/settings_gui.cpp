@@ -1929,6 +1929,7 @@ static SettingsContainer &GetSettingsTree()
 				physics->Add(new SettingEntry("vehicle.plane_speed"));
 				physics->Add(new SettingEntry("vehicle.ship_collision_avoidance"));
 				physics->Add(new SettingEntry("vehicle.roadveh_articulated_overtaking"));
+				physics->Add(new SettingEntry("vehicle.slow_road_vehicles_in_curves"));
 			}
 
 			SettingsPage *routing = vehicles->Add(new SettingsPage(STR_CONFIG_SETTING_VEHICLES_ROUTING));
