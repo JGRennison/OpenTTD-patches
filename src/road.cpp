@@ -936,6 +936,10 @@ struct TownNetwork
 void PostProcessNetworks(const std::vector<std::shared_ptr<TownNetwork>>& town_networks)
 {
 	for (auto network : town_networks) {
+		if (network->towns.size() <= 3) {
+			continue;
+		}
+
 		std::vector towns(network->towns);
 		
 		for (auto town_a : network->towns) {
