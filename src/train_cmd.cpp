@@ -1014,7 +1014,7 @@ int Train::GetAtcMaxSpeed(int current_max_speed) const
 				}
 
 				num_tiles++;
-			} while (num_tiles < 20 && num_signals < 3 && ft.Follow(ft.m_new_tile, old_td));
+			} while (num_tiles < 20 && num_signals < 4 && ft.Follow(ft.m_new_tile, old_td));
 		}
 
 		/* Check that the ATC speed is sufficiently large.
