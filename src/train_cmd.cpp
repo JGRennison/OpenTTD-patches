@@ -987,7 +987,6 @@ int Train::GetAtcMaxSpeed(int current_max_speed) const
 					HasReservedTracks(ft.m_new_tile, TrackdirBitsToTrackBits(ft.m_new_td_bits))) { ///< Tile is reserved
 					Train* other_train = GetTrainForReservation(ft.m_new_tile, TrackBitsToTrack(TrackdirBitsToTrackBits(ft.m_new_td_bits)));
 
-
 					if (other_train != nullptr &&
 						other_train != this && ///< Other train is not this train
 						other_train->GetAccelerationStatus() != AS_BRAKE) { ///< Other train is not braking
@@ -1005,8 +1004,12 @@ int Train::GetAtcMaxSpeed(int current_max_speed) const
 					old_td = FindFirstTrackdir(reserved);
 				}
 				else if (KillFirstBit(ft.m_new_td_bits) != TRACKDIR_BIT_NONE) {
-					// Tile has more than one track and we have no reservation. Bail out.
-					break;
+					bool path_found = false;
+					old_td = TrackToTrackdir(YapfTrainChooseTrack(this, ft.m_new_tile, ft.m_exitdir, TrackdirBitsToTrackBits(ft.m_new_td_bits), path_found, false, nullptr));
+					if(!path_found || old_td == INVALID_TRACKDIR) {
+						// Tile has more than one track and we have no path. Bail out.
+						break;
+					}
 				}
 				else {
 					// There was no reservation but there is only one direction to follow, so follow it.
