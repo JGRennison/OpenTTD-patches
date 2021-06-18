@@ -842,7 +842,7 @@ static void PublicRoad_FoundEndNode(AyStar *aystar, OpenListNode *current)
 
 static const int32 BASE_COST_PER_TILE  = 1;      // Cost for existing road or tunnel/bridge.
 static const int32 COST_FOR_NEW_ROAD   = 10;    // Cost for building a new road.
-static const int32 COST_FOR_SLOPE      = 5;     // Additional cost if the road heads up or down a slope.
+static const int32 COST_FOR_SLOPE      = 50;     // Additional cost if the road heads up or down a slope.
 
 /** AyStar callback for getting the cost of the current node. */
 static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *parent)
@@ -880,7 +880,7 @@ static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *
 		if (distance > 1) {
 			// We are planning to build a bridge or tunnel. Make that a bit more expensive.
 			cost += 6 * COST_FOR_SLOPE;
-			cost += distance * COST_FOR_NEW_ROAD;
+			cost += distance * 2 * COST_FOR_NEW_ROAD;
 		}
 	}
 
