@@ -841,8 +841,8 @@ static void PublicRoad_FoundEndNode(AyStar *aystar, OpenListNode *current)
 }
 
 static const int32 BASE_COST_PER_TILE  = 1;      // Cost for existing road or tunnel/bridge.
-static const int32 COST_FOR_NEW_ROAD   = 100;    // Cost for building a new road.
-static const int32 COST_FOR_SLOPE      = 50;     // Additional cost if the road heads up or down a slope.
+static const int32 COST_FOR_NEW_ROAD   = 10;    // Cost for building a new road.
+static const int32 COST_FOR_SLOPE      = 5;     // Additional cost if the road heads up or down a slope.
 
 /** AyStar callback for getting the cost of the current node. */
 static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *parent)
@@ -880,7 +880,7 @@ static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *
 		if (distance > 1) {
 			// We are planning to build a bridge or tunnel. Make that a bit more expensive.
 			cost += 6 * COST_FOR_SLOPE;
-			cost += distance * (COST_FOR_NEW_ROAD / 2);
+			cost += distance * COST_FOR_NEW_ROAD;
 		}
 	}
 
@@ -933,6 +933,30 @@ struct TownNetwork
 	std::vector<TileIndex> towns;
 };
 
+void PostProcessNetworks(const std::vector<std::shared_ptr<TownNetwork>>& town_networks)
+{
+	for (auto network : town_networks) {
+		std::vector towns(network->towns);
+		
+		for (auto town_a : network->towns) {
+			std::sort(towns.begin(), towns.end(), [&](const TileIndex& a, const TileIndex& b) { return DistanceManhattan(a, town_a) < DistanceManhattan(b, town_a); });
+
+			const auto second_clostest_town = *(towns.begin() + 2);
+			const auto third_clostest_town = *(towns.begin() + 3);
+
+			AyStar finder {};
+			{
+				FindPath(finder, town_a, second_clostest_town);
+				finder.Clear();
+				FindPath(finder, town_a, third_clostest_town);
+			}
+			finder.Free();
+
+			IncreaseGeneratingWorldProgress(GWP_PUBLIC_ROADS);
+		}
+	}
+}
+
 /**
 * Build the public road network connecting towns using AyStar.
 */
@@ -956,7 +980,7 @@ void GeneratePublicRoads()
 		return;
 	}
 
-	SetGeneratingWorldProgress(GWP_PUBLIC_ROADS, uint(towns.size()));
+	SetGeneratingWorldProgress(GWP_PUBLIC_ROADS, uint(towns.size() * 2));
 
 	// Create a list of networks which also contain a value indicating how many times we failed to connect to them.
 	std::vector<std::shared_ptr<TownNetwork>> networks;
@@ -1106,6 +1130,8 @@ void GeneratePublicRoads()
 
 		IncreaseGeneratingWorldProgress(GWP_PUBLIC_ROADS);
 	}
+
+	PostProcessNetworks(networks);
 }
 
 /* ========================================================================= */
