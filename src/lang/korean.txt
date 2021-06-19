@@ -1470,8 +1470,17 @@ STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :끄기
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :간단히
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :자세히
 
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE                        :시설물을 파괴하기 전에 물어보기: {STRING}
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_HELPTEXT               :시설물을 완전히 파괴하기 전에 확인 창을 한 번 띄웁니다.
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_OFF                    :끄기
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_INDUSTRY               :산업 시설
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_ALL                    :산업 시설과 열차 역
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :고급 다리/터널 신호기 활성화: {STRING}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :다리와 터널 위 신호기 시뮬레이션 고급 모드를 활성화합니다. 이 설정을 끄면, 고급 모드에 있지 않은 다리와 터널을 고급 모드로 변경할 수 없지만 다른 플레이어는 이 설정을 켜서 고급 모드를 사용할 수 있습니다.
+
+STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED                    :속력에 따라 선로 정렬: {STRING}
+STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED_HELPTEXT           :기본 정렬 방식 대신 호환성과 속력을 기준으로 선로를 정렬하여 표시합니다.
 
 STR_CONFIG_SETTING_LANDSCAPE                                    :지형: {STRING}
 STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :지형에 따라 화물과 도시 성장 요구 조건이 다른 게임 플레이 시나리오가 만들어집니다. NewGRF과 게임 스크립트를 통해 세밀한 조절이 가능합니다.
@@ -1534,6 +1543,7 @@ STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT                         :지도의 나�
 STR_CONFIG_SETTING_TREE_PLACER_NONE                             :없음
 STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :오리지널
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :향상됨
+STR_CONFIG_SETTING_TREE_PLACER_PERFECT                          :완벽
 STR_CONFIG_SETTING_ROAD_SIDE                                    :자동차 통행 방향: {STRING}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :통행 방향을 선택합니다
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :높이맵 회전: {STRING}
@@ -1801,6 +1811,8 @@ STR_CONFIG_SETTING_NOSERVICE                                    :차량 고장 �
 STR_CONFIG_SETTING_NOSERVICE_HELPTEXT                           :이 설정을 켜면, 차량이 고장나지 않도록 설정되어 있는 경우 차량이 자동으로 점검을 하러 가지 않습니다
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :화물차 속력 제한 적용: {STRING}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :이 설정을 켜면, 화물차의 속력 제한값에 따라 열차의 최대 속력을 제한합니다.
+STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES                 :커브에서 자동차의 속력을 감속: {STRING}
+STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES_HELPTEXT        :이 설정을 켜면, 커브에서 자동차의 속력을 감속시킵니다. (현실적인 감속을 켰을 때에만 적용됩니다)
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :전기 철도를 사용하지 않음: {STRING}
 STR_CONFIG_SETTING_DISABLE_ELRAILS_HELPTEXT                     :이 설정을 켜면, 전기 기관차가 일반 철도에서도 달릴 수 있도록 만듭니다.
 
@@ -1907,6 +1919,8 @@ STR_CONFIG_SETTING_TOWN_CARGO_FACTOR                            :도시 화물 �
 STR_CONFIG_SETTING_TOWN_CARGO_FACTOR_HELPTEXT                   :도시가 생산하는 화물의 양을 2^(생성 계수)에 근접하게 조절합니다.
 STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR                        :산업시설 화물 생성 계수 (적음 < 0 < 많음): {STRING}
 STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR_HELPTEXT               :1차 산업시설이 생산하는 화물의 양을 2^(생성 계수)에 근접하게 조절합니다. 나무를 베는 산업시설에는 적용되지 않습니다.{}모든 산업시설 관련 NewGRF와 모두 호환되지는 않을 수 있습니다.
+STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :이 고도 위에는 도시를 생성하지 않음: {STRING}
+STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :지도를 생성할 때 특정 고도 위에는 도시를 만들지 않도록 만듭니다.
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :나무의 성장과 확장: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :게임 플레이 중 나무의 성장과 확장 여부를 조절합니다. 이 설정을 조정하면, 아열대 기후의 벌목소처럼 나무의 성장에 의존하는 산업시설에 영향을 끼칠 수 있습니다.
@@ -1919,6 +1933,12 @@ STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE                        :조정된 눈 �
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_HELPTEXT               :아한대 기후에서의 설선 근처의 눈 쌓인 나무의 개수를 조정합니다. 설선 위에는 나무가 적어집니다. 설선에서는 온대 기후의 나무와 눈 쌓인 나무가 공존할 것입니다. 설선 아래에선 온대 기후의 나무가 자랄 것입니다.
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE                  :눈 쌓인 나무 범위: {STRING}
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE_HELPTEXT         :설선 주변에 위치할 눈 쌓인 나무의 근삿값
+
+STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS                           :도시 사이를 공용 도로로 연결: {STRING}
+STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_HELPTEXT                  :도시 사이를 공용 도로로 연결합니다. 지도가 더 크면 클 수록 시간이 더 많이 걸립니다.'커브를 최소화해서 건설'을 사용하면 도로가 되도록 격자 모양에 가깝게 만들어집니다.
+STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_NONE                      :끄기 (기본값)
+STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_WITH_CURVES               :커브를 사용하여 건설
+STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_AVOID_CURVES              :커브를 최소화해서 건설
 
 STR_CONFIG_SETTING_TREE_GROWTH                                  :나무 성장 속도: {STRING}
 STR_CONFIG_SETTING_TREE_GROWTH_HELPTEXT                         :게임 중에서의 나무의 성장 속도를 조절합니다. 이 설정은 열대 우림의 벌목소처럼 나무의 성장에 의존하는 산업시설에 영향을 끼칠 수 있습니다.
@@ -3379,6 +3399,8 @@ STR_TERRAFORM_TOOLTIP_GENERATE_RANDOM_LAND                      :{BLACK}무작�
 STR_TERRAFORM_SE_NEW_WORLD                                      :{BLACK}새 시나리오 만들기
 STR_TERRAFORM_RESET_LANDSCAPE                                   :{BLACK}지형만 남기기
 STR_TERRAFORM_RESET_LANDSCAPE_TOOLTIP                           :{BLACK}지도에서 모든 플레이어 소유의 자산을 제거
+STR_TERRAFORM_PUBLIC_ROADS                                      :{BLACK}공용 도로 만들기
+STR_TERRAFORM_PUBLIC_ROADS_TOOLTIP                              :{BLACK}지도에서 도시 사이에 공용 도로 만들기
 
 STR_QUERY_RESET_LANDSCAPE_CAPTION                               :{WHITE}플레이어 소유물 제거
 STR_RESET_LANDSCAPE_CONFIRMATION_TEXT                           :{WHITE}이 작업은 기본 지형(도시 포함) 이외의 모든 플레이어의 소유물(철도,도로 등)을 제거할 것입니다. 계속하시겠습니까?
@@ -3763,6 +3785,7 @@ STR_GENERATION_PROGRESS_NUM                                     :{BLACK}{NUM} / 
 STR_GENERATION_WORLD_GENERATION                                 :{BLACK}지형 만드는 중
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}강 제작
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}나무 심는 중
+STR_GENERATION_PUBLIC_ROADS_GENERATION                          :{BLACK}공용 도로 만드는 중
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}움직일 수 없는 객체 만드는 중
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}거친 암석지대 만드는 중
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}게임 설정 중
@@ -3998,6 +4021,7 @@ STR_TOWN_VIEW_TOWN_GROWS_EVERY                                  :{BLACK}도시�
 STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED                           :{BLACK}도시가 {ORANGE}{COMMA}{BLACK}일마다 성장합니다. (투자됨)
 STR_TOWN_VIEW_TOWN_GROW_STOPPED                                 :{BLACK}도시는 {RED}성장하지 않고{BLACK} 있습니다.
 STR_TOWN_VIEW_NOISE_IN_TOWN                                     :{BLACK}현재 소음 수준: {ORANGE}{COMMA}{BLACK}  최대 허용 수준: {ORANGE}{COMMA}
+STR_TOWN_VIEW_NOISE_IN_TOWN_NO_LIMIT                            :{BLACK}현재 소음 수준: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}이 도시의 위치로 시점을 변경합니다. CTRL+클릭하면 이 도시 위치를 기준으로 새로운 외부 화면을 엽니다
 STR_TOWN_VIEW_LOCAL_AUTHORITY_BUTTON                            :{BLACK}지역 당국
 STR_TOWN_VIEW_LOCAL_AUTHORITY_TOOLTIP                           :{BLACK}지역 당국의 정보를 보여줍니다
@@ -5571,6 +5595,10 @@ STR_ERROR_TREE_PLANT_LIMIT_REACHED                              :{WHITE}... 나�
 STR_ERROR_NAME_MUST_BE_UNIQUE                                   :{WHITE}이름은 유일해야 합니다
 STR_ERROR_GENERIC_OBJECT_IN_THE_WAY                             :{WHITE}중간에 {1:STRING}{G 1 "이" "가"} 있습니다.
 STR_ERROR_NOT_ALLOWED_WHILE_PAUSED                              :{WHITE}일시 정지 중에는 할 수 없습니다
+
+# Clear area query
+STR_QUERY_CLEAR_AREA_CAPTION                                    :{WHITE}영역 파괴
+STR_CLEAR_AREA_CONFIRMATION_TEXT                                :{YELLOW}중요한 시설을 파괴하려고 합니다. 정말 파괴하시겠습니다?
 
 # Local authority errors
 STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS                 :{WHITE}{TOWN} 지역 당국이 이 행동을 거부했습니다.
