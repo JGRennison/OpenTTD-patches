@@ -1543,6 +1543,7 @@ STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT                         :Choose the dist
 STR_CONFIG_SETTING_TREE_PLACER_NONE                             :None
 STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :Original
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :Improved
+STR_CONFIG_SETTING_TREE_PLACER_PERFECT                          :Perfect
 STR_CONFIG_SETTING_ROAD_SIDE                                    :Road vehicles: {STRING2}
 STR_CONFIG_SETTING_ROAD_SIDE_HELPTEXT                           :Choose the driving side
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Heightmap rotation: {STRING2}
