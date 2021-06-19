@@ -2036,6 +2036,7 @@ static SettingsContainer &GetSettingsTree()
 			genworld->Add(new SettingEntry("economy.initial_city_size"));
 			genworld->Add(new SettingEntry("economy.town_layout"));
 			genworld->Add(new SettingEntry("economy.town_min_distance"));
+			genworld->Add(new SettingEntry("economy.max_town_heightlevel"));
 			genworld->Add(new SettingEntry("difficulty.industry_density"));
 			genworld->Add(new SettingEntry("gui.pause_on_newgame"));
 			genworld->Add(new SettingEntry("game_creation.ending_year"));

@@ -2118,6 +2118,11 @@ static CommandCost TownCanBePlacedHere(TileIndex tile)
 		return_cmd_error(STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN);
 	}
 
+	/* Check max height level. */
+	if (GetTileZ(tile) > _settings_game.economy.max_town_heightlevel) {
+		return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
+	}
+
 	/* Can only build on clear flat areas, possibly with trees. */
 	if ((!IsTileType(tile, MP_CLEAR) && !IsTileType(tile, MP_TREES)) || !IsTileFlat(tile)) {
 		return_cmd_error(STR_ERROR_SITE_UNSUITABLE);

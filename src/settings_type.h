@@ -633,6 +633,7 @@ struct EconomySettings {
 	TownCargoGenMode town_cargogen_mode;     ///< algorithm for generating cargo from houses, @see TownCargoGenMode
 	bool   allow_town_roads;                 ///< towns are allowed to build roads (always allowed when generating world / in SE)
 	uint16  town_min_distance;               ///< minimum distance between towns
+	uint8  max_town_heightlevel;             ///< maximum height level for towns
 	TownFounding found_town;                 ///< town founding.
 	bool   station_noise_level;              ///< build new airports when the town noise level is still within accepted limits
 	uint16 town_noise_population[3];         ///< population to base decision on noise evaluation (@see town_council_tolerance)
