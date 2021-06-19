@@ -1462,6 +1462,7 @@ static const StringID _generation_class_table[]  = {
 	STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION,
 	STR_GENERATION_OBJECT_GENERATION,
 	STR_GENERATION_TREE_GENERATION,
+	STR_GENERATION_PUBLIC_ROADS_GENERATION,
 	STR_GENERATION_SETTINGUP_GAME,
 	STR_GENERATION_PREPARING_TILELOOP,
 	STR_GENERATION_PREPARING_SCRIPT,
@@ -1568,7 +1569,7 @@ void ShowGenerateWorldProgress()
 
 static void _SetGeneratingWorldProgress(GenWorldProgress cls, uint progress, uint total)
 {
-	static const int percent_table[] = {0, 5, 14, 17, 20, 40, 60, 65, 80, 85, 95, 99, 100 };
+	static const int percent_table[] = {0, 7, 14, 22, 29, 36, 44, 51, 58, 65, 73, 80, 90, 100 };
 	static_assert(lengthof(percent_table) == GWP_CLASS_COUNT + 1);
 	assert(cls < GWP_CLASS_COUNT);
 

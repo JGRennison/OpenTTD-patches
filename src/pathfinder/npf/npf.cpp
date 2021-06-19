@@ -131,24 +131,6 @@ static uint NPFDistanceTrack(TileIndex t0, TileIndex t1)
 	return diagTracks * NPF_TILE_LENGTH + straightTracks * NPF_TILE_LENGTH * STRAIGHT_TRACK_LENGTH;
 }
 
-/**
- * Calculates a hash value for use in the NPF.
- * @param key1 The TileIndex of the tile to hash
- * @param key2 The Trackdir of the track on the tile.
- *
- * @todo Think of a better hash.
- */
-static uint NPFHash(uint key1, uint key2)
-{
-	/* TODO: think of a better hash? */
-	uint part1 = TileX(key1) & NPF_HASH_HALFMASK;
-	uint part2 = TileY(key1) & NPF_HASH_HALFMASK;
-
-	assert(IsValidTrackdir((Trackdir)key2));
-	assert(IsValidTile(key1));
-	return ((part1 << NPF_HASH_HALFBITS | part2) + (NPF_HASH_SIZE * key2 / TRACKDIR_END)) % NPF_HASH_SIZE;
-}
-
 static int32 NPFCalcZero(AyStar *as, AyStarNode *current, OpenListNode *parent)
 {
 	return 0;
@@ -1127,7 +1109,7 @@ void InitializeNPF()
 	static bool first_init = true;
 	if (first_init) {
 		first_init = false;
-		_npf_aystar.Init(NPFHash, NPF_HASH_SIZE);
+		_npf_aystar.Init(NPF_HASH_SIZE);
 	} else {
 		_npf_aystar.Clear();
 	}

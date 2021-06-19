@@ -1209,15 +1209,7 @@ static bool RiverMakeWider(TileIndex tile, void *data)
 /* AyStar callback when an route has been found. */
 static void River_FoundEndNode(AyStar *aystar, OpenListNode *current)
 {
-	/* Count river length. */
-	uint length = 0;
-
 	for (PathNode *path = &current->path; path != nullptr; path = path->parent) {
-		length++;
-	}
-
-	uint cur_pos = 0;
-	for (PathNode *path = &current->path; path != nullptr; path = path->parent, cur_pos++) {
 		TileIndex tile = path->node.tile;
 		if (!IsWaterTile(tile)) {
 			MakeRiver(tile, Random());
@@ -1242,17 +1234,6 @@ static void River_FoundEndNode(AyStar *aystar, OpenListNode *current)
 static const uint RIVER_HASH_SIZE = 8; ///< The number of bits the hash for river finding should have.
 
 /**
- * Simple hash function for river tiles to be used by AyStar.
- * @param tile The tile to hash.
- * @param dir The unused direction.
- * @return The hash for the tile.
- */
-static uint River_Hash(uint tile, uint dir)
-{
-	return GB(TileHash(TileX(tile), TileY(tile)), 0, RIVER_HASH_SIZE);
-}
-
-/**
  * Actually build the river between the begin and end tiles using AyStar.
  * @param begin The begin of the river.
  * @param end The end of the river.
@@ -1267,7 +1248,7 @@ static void BuildRiver(TileIndex begin, TileIndex end)
 	finder.FoundEndNode = River_FoundEndNode;
 	finder.user_target = &end;
 
-	finder.Init(River_Hash, 1 << RIVER_HASH_SIZE);
+	finder.Init(1 << RIVER_HASH_SIZE);
 
 	AyStarNode start;
 	start.tile = begin;

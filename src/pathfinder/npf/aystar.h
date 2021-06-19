@@ -17,6 +17,9 @@
 #define AYSTAR_H
 
 #include "queue.h"
+#include <unordered_map>
+#include <memory>
+
 #include "../../tile_type.h"
 #include "../../track_type.h"
 
@@ -55,6 +58,15 @@ struct PathNode {
 struct OpenListNode {
 	int g;
 	PathNode path;
+};
+
+struct PairHash {
+public:
+	template <typename T, typename U>
+	std::size_t operator()(const std::pair<T, U> &x) const
+	{
+		return std::hash<T>()(x.first) ^ std::hash<U>()(x.second);
+	}
 };
 
 bool CheckIgnoreFirstTile(const PathNode *node);
@@ -144,7 +156,7 @@ struct AyStar {
 	AyStarNode neighbours[12];
 	byte num_neighbours;
 
-	void Init(Hash_HashProc hash, uint num_buckets);
+	void Init(uint num_buckets);
 
 	/* These will contain the methods for manipulating the AyStar. Only
 	 * Main() should be called externally */
@@ -156,9 +168,9 @@ struct AyStar {
 	void CheckTile(AyStarNode *current, OpenListNode *parent);
 
 protected:
-	Hash       closedlist_hash; ///< The actual closed list.
+	std::unordered_map<std::pair<TileIndex, Trackdir>, PathNode*, PairHash> closedlist_hash;
 	BinaryHeap openlist_queue;  ///< The open queue.
-	Hash       openlist_hash;   ///< An extra hash to speed up the process of looking up an element in the open list.
+	std::unordered_map<std::pair<TileIndex, Trackdir>, OpenListNode*, PairHash> openlist_hash;
 
 	void OpenListAdd(PathNode *parent, const AyStarNode *node, int f, int g);
 	OpenListNode *OpenListIsInList(const AyStarNode *node);

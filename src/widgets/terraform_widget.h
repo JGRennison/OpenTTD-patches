@@ -28,6 +28,7 @@ enum TerraformToolbarWidgets {
 /** Widgets of the #ScenarioEditorLandscapeGenerationWindow class. */
 enum EditorTerraformToolbarWidgets {
 	WID_ETT_SHOW_PLACE_DESERT,                   ///< Should the place desert button be shown?
+	WID_ETT_SHOW_PUBLIC_ROADS,                   ///< Should the public roads button be shown?
 	WID_ETT_START,                               ///< Used for iterations.
 	WID_ETT_DOTS = WID_ETT_START,                ///< Invisible widget for rendering the terraform size on.
 	WID_ETT_BUTTONS_START,                       ///< Start of pushable buttons.
@@ -44,6 +45,7 @@ enum EditorTerraformToolbarWidgets {
 	WID_ETT_DECREASE_SIZE,                       ///< Downwards arrow button to decrease terraforming size.
 	WID_ETT_NEW_SCENARIO,                        ///< Button for generating a new scenario.
 	WID_ETT_RESET_LANDSCAPE,                     ///< Button for removing all company-owned property.
+	WID_ETT_PUBLIC_ROADS,                        ///< Button for creating public roads.
 };
 
 #endif /* WIDGETS_TERRAFORM_WIDGET_H */

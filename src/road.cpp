@@ -8,6 +8,12 @@
 /** @file road.cpp Generic road related functions. */
 
 #include "stdafx.h"
+#include <algorithm>
+#include <memory>
+#include <numeric>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 #include "rail_map.h"
 #include "road_map.h"
 #include "water_map.h"
@@ -18,12 +24,29 @@
 #include "date_func.h"
 #include "landscape.h"
 #include "road.h"
+#include "town.h"
+#include "pathfinder/npf/aystar.h"
+#include "tunnelbridge.h"
 #include "road_func.h"
 #include "roadveh.h"
+#include "map_func.h"
+#include "core/backup_type.hpp"
+#include "core/random_func.hpp"
 
+#include <numeric>
+
+#include "cheat_func.h"
+#include "command_func.h"
 #include "safeguards.h"
 
 uint32 _road_layout_change_counter = 0;
+
+/** Whether to build public roads */
+enum PublicRoadsConstruction {
+	PRC_NONE,         ///< Generate no public roads
+	PRC_WITH_CURVES,  ///< Generate roads with lots of curves
+	PRC_AVOID_CURVES, ///< Generate roads avoiding curves if possible
+};
 
 /**
  * Return if the tile is a valid tile for a crossing.
@@ -303,3 +326,818 @@ RoadTypes ExistingRoadTypes(CompanyID c)
 
 	return known_roadtypes;
 }
+
+
+/* ========================================================================= */
+/*                                PUBLIC ROADS                               */
+/* ========================================================================= */
+
+CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text = nullptr);
+CommandCost CmdBuildTunnel(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text = nullptr);
+CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text = nullptr);
+
+static std::vector<TileIndex> _town_centers;
+static std::vector<TileIndex> _towns_visited_along_the_way;
+static RoadType _public_road_type;
+static const uint _public_road_hash_size = 8U; ///< The number of bits the hash for river finding should have.
+
+/** Helper function to check if a slope along a certain direction is going up an inclined slope. */
+static bool IsUpwardsSlope(const Slope slope, DiagDirection road_direction)
+{
+	if (!IsInclinedSlope(slope)) return false;
+
+	const auto slope_direction = GetInclinedSlopeDirection(slope);
+
+	return road_direction == slope_direction;
+}
+
+/** Helper function to check if a slope along a certain direction is going down an inclined slope. */
+static bool IsDownwardsSlope(const Slope slope, const DiagDirection road_direction)
+{
+	if (!IsInclinedSlope(slope)) return false;
+
+	const auto slope_direction = GetInclinedSlopeDirection(slope);
+
+	return road_direction == ReverseDiagDir(slope_direction);
+}
+
+/** Helper function to check if a slope is effectively flat. */
+static bool IsSufficientlyFlatSlope(const Slope slope)
+{
+	return !IsSteepSlope(slope) && HasBit(VALID_LEVEL_CROSSING_SLOPES, slope);
+}
+
+static TileIndex BuildTunnel(PathNode *current, TileIndex end_tile = INVALID_TILE, const bool build_tunnel = false)
+{
+	const TileIndex start_tile = current->node.tile;
+	int start_z;
+	GetTileSlope(start_tile, &start_z);
+
+	if (start_z == 0) return INVALID_TILE;
+
+	const DiagDirection direction = GetInclinedSlopeDirection(GetTileSlope(start_tile));
+
+	if (!build_tunnel) {
+		// We are not building yet, so we still need to find the end_tile.
+		const TileIndexDiff delta = TileOffsByDiagDir(direction);
+		end_tile = start_tile;
+		int end_z;
+		const uint tunnel_length_limit = std::min<uint>(_settings_game.construction.max_tunnel_length, 30);
+
+		for (uint tunnel_length = 1;; tunnel_length++) {
+			end_tile += delta;
+
+			if (!IsValidTile(end_tile)) return INVALID_TILE;
+			if (tunnel_length > tunnel_length_limit) return INVALID_TILE;
+
+			GetTileSlope(end_tile, &end_z);
+
+			if (start_z == end_z) break;
+
+			if (!_cheats.crossing_tunnels.value && IsTunnelInWay(end_tile, start_z)) return INVALID_TILE;
+		}
+
+		// No too long or super-short tunnels and always ending up on a matching upwards slope.
+		if (IsSteepSlope(GetTileSlope(end_tile)) || IsHalftileSlope(GetTileSlope(end_tile))) return INVALID_TILE;
+		if (GetTileSlope(start_tile) != ComplementSlope(GetTileSlope(end_tile))) return INVALID_TILE;
+		if (AreTilesAdjacent(start_tile, end_tile)) return INVALID_TILE;
+		if (!IsValidTile(end_tile)) return INVALID_TILE;
+		if (!IsTileType(end_tile, MP_CLEAR) && !IsTileType(end_tile, MP_TREES)) return INVALID_TILE;
+	}
+
+	assert(!build_tunnel || (IsValidTile(end_tile) && GetTileSlope(start_tile) == ComplementSlope(GetTileSlope(end_tile))));
+
+	Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
+	const auto build_tunnel_cmd = CmdBuildTunnel(start_tile, DC_AUTO | (build_tunnel ? DC_EXEC : DC_NONE), _public_road_type | (TRANSPORT_ROAD << 8), 0);
+	cur_company.Restore();
+
+	assert(!build_tunnel || build_tunnel_cmd.Succeeded());
+	assert(!build_tunnel || (IsTileType(start_tile, MP_TUNNELBRIDGE) && IsTileType(end_tile, MP_TUNNELBRIDGE)));
+
+	if (!build_tunnel_cmd.Succeeded()) return INVALID_TILE;
+
+	return end_tile;
+}
+
+static TileIndex BuildBridge(PathNode *current, TileIndex end_tile = INVALID_TILE, const bool build_bridge = false)
+{
+	const TileIndex start_tile = current->node.tile;
+
+	// We are not building yet, so we still need to find the end_tile.
+	// We will only build a bridge if we need to cross a river, so first check for that.
+	if (!build_bridge) {
+		const DiagDirection direction = ReverseDiagDir(GetInclinedSlopeDirection(GetTileSlope(start_tile)));
+
+		TileIndex tile = start_tile + TileOffsByDiagDir(direction);
+		const bool is_over_water = IsValidTile(tile) && IsTileType(tile, MP_WATER) && IsSea(tile);
+		uint bridge_length = 0;
+		const uint bridge_length_limit = std::min<uint>(_settings_game.construction.max_bridge_length, is_over_water ? 20 : 10);
+
+		// We are not building yet, so we still need to find the end_tile.
+		for (;
+			IsValidTile(tile) &&
+			(bridge_length <= bridge_length_limit) &&
+			(GetTileZ(start_tile) < (GetTileZ(tile) + _settings_game.construction.max_bridge_height)) &&
+			(GetTileZ(tile) <= GetTileZ(start_tile));
+			tile += TileOffsByDiagDir(direction), bridge_length++) {
+
+			auto is_complementary_slope =
+				!IsSteepSlope(GetTileSlope(tile)) &&
+				!IsHalftileSlope(GetTileSlope(tile)) &&
+				GetTileSlope(start_tile) == ComplementSlope(GetTileSlope(tile));
+
+			// No super-short bridges and always ending up on a matching upwards slope.
+			if (!AreTilesAdjacent(start_tile, tile) && is_complementary_slope) {
+				end_tile = tile;
+				break;
+			}
+		}
+
+		if (!IsValidTile(end_tile)) return INVALID_TILE;
+		if (GetTileSlope(start_tile) != ComplementSlope(GetTileSlope(end_tile))) return INVALID_TILE;
+		if (!IsTileType(end_tile, MP_CLEAR) && !IsTileType(end_tile, MP_TREES) && !IsCoastTile(end_tile)) return INVALID_TILE;
+	}
+
+	assert(!build_bridge || (IsValidTile(end_tile) && GetTileSlope(start_tile) == ComplementSlope(GetTileSlope(end_tile))));
+
+	const uint length = GetTunnelBridgeLength(start_tile, end_tile);
+
+	std::vector<BridgeType> available_bridge_types;
+	for (BridgeType i = 0; i < MAX_BRIDGES; ++i) {
+		if (MayTownBuildBridgeType(i) && CheckBridgeAvailability(i, length).Succeeded()) {
+			available_bridge_types.push_back(i);
+		}
+	}
+
+	assert(!build_bridge || !available_bridge_types.empty());
+	if (available_bridge_types.empty()) return INVALID_TILE;
+
+	const auto bridge_type = available_bridge_types[build_bridge ? RandomRange(uint32(available_bridge_types.size())) : 0];
+
+	Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
+	const auto build_bridge_cmd = CmdBuildBridge(end_tile, DC_AUTO | (build_bridge ? DC_EXEC : DC_NONE), start_tile, bridge_type | (_public_road_type << 8) | (TRANSPORT_ROAD << 15));
+	cur_company.Restore();
+
+	assert(!build_bridge || build_bridge_cmd.Succeeded());
+	assert(!build_bridge || (IsTileType(start_tile, MP_TUNNELBRIDGE) && IsTileType(end_tile, MP_TUNNELBRIDGE)));
+
+	if (!build_bridge_cmd.Succeeded()) return INVALID_TILE;
+
+	return end_tile;
+}
+
+static TileIndex BuildRiverBridge(PathNode *current, const DiagDirection road_direction, TileIndex end_tile = INVALID_TILE, const bool build_bridge = false)
+{
+	const TileIndex start_tile = current->node.tile;
+	const int start_tile_z = GetTileMaxZ(start_tile);
+
+	if (!build_bridge) {
+		// We are not building yet, so we still need to find the end_tile.
+		// We will only build a bridge if we need to cross a river, so first check for that.
+		TileIndex tile = start_tile + TileOffsByDiagDir(road_direction);
+
+		if (!IsWaterTile(tile) || !IsRiver(tile)) return INVALID_TILE;
+
+		// Now let's see if we can bridge it. But don't bridge anything more than 4 river tiles. Cities aren't allowed to, so public roads we are not either.
+		// Only bridges starting at slopes should be longer ones. The others look like crap when built this way. Players can build them but the map generator
+		// should not force that on them. This is just to bridge rivers, not to make long bridges.
+		for (;
+			IsValidTile(tile) &&
+			(GetTunnelBridgeLength(start_tile, tile) <= std::min(_settings_game.construction.max_bridge_length, (uint16)3)) &&
+			(start_tile_z < (GetTileZ(tile) + _settings_game.construction.max_bridge_height)) &&
+			(GetTileZ(tile) <= start_tile_z);
+			tile += TileOffsByDiagDir(road_direction)) {
+
+			if ((IsTileType(tile, MP_CLEAR) || IsTileType(tile, MP_TREES) || IsCoastTile(tile)) &&
+					GetTileZ(tile) <= start_tile_z &&
+					IsSufficientlyFlatSlope(GetTileSlope(tile))) {
+				end_tile = tile;
+				break;
+			}
+		}
+
+		if (!IsValidTile(end_tile)) return INVALID_TILE;
+		if (!IsTileType(end_tile, MP_CLEAR) && !IsTileType(end_tile, MP_TREES) && !IsCoastTile(end_tile)) return INVALID_TILE;
+	}
+
+	assert(!build_bridge || IsValidTile(end_tile));
+
+	const uint length = GetTunnelBridgeLength(start_tile, end_tile);
+
+	std::vector<BridgeType> available_bridge_types;
+	for (BridgeType i = 0; i < MAX_BRIDGES; ++i) {
+		if (MayTownBuildBridgeType(i) && CheckBridgeAvailability(i, length).Succeeded()) {
+			available_bridge_types.push_back(i);
+		}
+	}
+
+	const auto bridge_type = available_bridge_types[build_bridge ? RandomRange(uint32(available_bridge_types.size())) : 0];
+
+	Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
+	const auto build_bridge_cmd = CmdBuildBridge(end_tile, DC_AUTO | (build_bridge ? DC_EXEC : DC_NONE), start_tile, bridge_type | (_public_road_type << 8) | (TRANSPORT_ROAD << 15));
+	cur_company.Restore();
+
+	assert(!build_bridge || build_bridge_cmd.Succeeded());
+	assert(!build_bridge || (IsTileType(start_tile, MP_TUNNELBRIDGE) && IsTileType(end_tile, MP_TUNNELBRIDGE)));
+
+	if (!build_bridge_cmd.Succeeded()) return INVALID_TILE;
+
+	return end_tile;
+}
+
+static bool IsValidNeighbourOfPreviousTile(const TileIndex tile, const TileIndex previous_tile)
+{
+	if (!IsValidTile(tile) || (tile == previous_tile)) return false;
+
+	const auto forward_direction = DiagdirBetweenTiles(previous_tile, tile);
+
+	if (IsTileType(tile, MP_TUNNELBRIDGE))
+	{
+		if (GetOtherTunnelBridgeEnd(tile) == previous_tile) return true;
+
+		const auto tunnel_direction = GetTunnelBridgeDirection(tile);
+
+		return (tunnel_direction == forward_direction);
+	}
+
+	if (!IsTileType(tile, MP_CLEAR) && !IsTileType(tile, MP_TREES) && !IsTileType(tile, MP_ROAD) && !IsCoastTile(tile)) return false;
+
+	const Slope slope = GetTileSlope(tile);
+	if (IsSteepSlope(slope)) return false;
+
+	const Slope foundationSlope = GetFoundationSlope(tile);
+
+	/* Allow only trivial foundations (3 corners raised or 2 opposite corners raised -> flat) */
+	if (slope != foundationSlope && !HasBit(VALID_LEVEL_CROSSING_SLOPES, slope)) return false;
+
+	if (IsInclinedSlope(slope)) {
+		const auto slope_direction = GetInclinedSlopeDirection(slope);
+
+		if (slope_direction != forward_direction && ReverseDiagDir(slope_direction) != forward_direction) {
+			return false;
+		}
+	} else if (!HasBit(VALID_LEVEL_CROSSING_SLOPES, slope)) {
+		return false;
+	} else {
+		/* Check whether the previous tile was an inclined slope, and whether we are leaving the previous tile from a valid direction */
+		if (slope != SLOPE_FLAT) {
+			const Slope previous_slope = GetTileSlope(previous_tile);
+			if (IsInclinedSlope(previous_slope)) {
+				const DiagDirection slope_direction = GetInclinedSlopeDirection(previous_slope);
+				if (slope_direction != forward_direction && ReverseDiagDir(slope_direction) != forward_direction) return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+static bool AreParallelOverlapping(const Point &start_a, const Point &end_a, const Point &start_b, const Point &end_b)
+{
+	// Check parallel overlaps.
+	if (start_a.x == end_a.x && start_b.x == end_b.x && start_a.x == start_b.x) {
+		if ((start_a.y <= start_b.y && end_a.y >= start_b.y) || (start_a.y >= start_b.y && end_a.y <= start_b.y) ||
+			(start_a.y <= end_b.y && end_a.y >= end_b.y) || (start_a.y >= end_b.y && end_a.y <= end_b.y)) {
+			return true;
+		}
+	}
+
+	if (start_a.y == end_a.y && start_b.y == end_b.y && start_a.y == start_b.y) {
+		if ((start_a.x <= start_b.x && end_a.x >= start_b.x) || (start_a.x >= start_b.x && end_a.x <= start_b.x) ||
+			(start_a.x <= end_b.x && end_a.x >= end_b.x) || (start_a.x >= end_b.x && end_a.x <= end_b.x)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+static bool AreIntersecting(const Point &start_a, const Point &end_a, const Point &start_b, const Point &end_b)
+{
+	if (start_a.x == end_a.x && start_b.y == end_b.y) {
+		if ((start_b.x <= start_a.x && end_b.x >= start_a.x) || (start_b.x >= start_a.x && end_b.x <= start_a.x)) {
+			if ((start_a.y <= start_b.y && end_a.y >= start_b.y) || (start_a.y >= start_b.y && end_a.y <= start_b.y)) {
+				return true;
+			}
+		}
+	}
+
+	if (start_a.y == end_a.y && start_b.x == end_b.x) {
+		if ((start_b.y <= start_a.y && end_b.y >= start_a.y) || (start_b.y >= start_a.y && end_b.y <= start_a.y)) {
+			if ((start_a.x <= start_b.x && end_a.x >= start_b.x) || (start_a.x >= start_b.x && end_a.x <= start_b.x)) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+static bool IsBlockedByPreviousBridgeOrTunnel(OpenListNode *current, TileIndex start_tile, TileIndex end_tile)
+{
+	PathNode* start = &current->path;
+	PathNode* end = current->path.parent;
+
+	Point start_b {};
+	start_b.x = TileX(start_tile);
+	start_b.y = TileY(start_tile);
+	Point end_b {};
+	end_b.x = TileX(end_tile);
+	end_b.y = TileY(end_tile);
+
+	while (end != nullptr) {
+		Point start_a {};
+		start_a.x = TileX(start->node.tile);
+		start_a.y = TileY(start->node.tile);
+		Point end_a {};
+		end_a.x = TileX(end->node.tile);
+		end_a.y = TileY(end->node.tile);
+
+		if (!AreTilesAdjacent(start->node.tile, end->node.tile) &&
+			(AreIntersecting(start_a, end_a, start_b, end_b) || AreParallelOverlapping(start_a, end_a, start_b, end_b))) {
+			return true;
+		}
+
+		start = end;
+		end = start->parent;
+	}
+
+	return false;
+}
+
+/** AyStar callback for getting the neighbouring nodes of the given node. */
+static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
+{
+	const auto current_tile = current->path.node.tile;
+	const auto previous_tile = current->path.parent != nullptr ? current->path.parent->node.tile : INVALID_TILE;
+	const auto forward_direction = DiagdirBetweenTiles(previous_tile, current_tile);
+
+	aystar->num_neighbours = 0;
+
+	// Check if we just went through a tunnel or a bridge.
+	if (IsValidTile(previous_tile) && !AreTilesAdjacent(current_tile, previous_tile)) {
+
+		// We went through a tunnel or bridge, this limits our options to proceed to only forward.
+		const TileIndex next_tile = current_tile + TileOffsByDiagDir(forward_direction);
+
+		if (IsValidNeighbourOfPreviousTile(next_tile, current_tile)) {
+			aystar->neighbours[aystar->num_neighbours].tile = next_tile;
+			aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
+			aystar->num_neighbours++;
+		}
+	} else if (IsTileType(current_tile, MP_TUNNELBRIDGE)) {
+		// Handle existing tunnels and bridges
+		const auto tunnel_bridge_end = GetOtherTunnelBridgeEnd(current_tile);
+		aystar->neighbours[aystar->num_neighbours].tile = tunnel_bridge_end;
+		aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
+		aystar->num_neighbours++;
+	} else {
+		// Handle regular neighbors.
+		for (DiagDirection d = DIAGDIR_BEGIN; d < DIAGDIR_END; d++) {
+			const auto neighbour = current_tile + TileOffsByDiagDir(d);
+
+			if (neighbour == previous_tile) {
+				continue;
+			}
+
+			if (IsValidNeighbourOfPreviousTile(neighbour, current_tile)) {
+				aystar->neighbours[aystar->num_neighbours].tile = neighbour;
+				aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
+				aystar->num_neighbours++;
+			}
+		}
+
+		// Check if we can turn this into a tunnel or a bridge.
+		if (IsValidTile(previous_tile)) {
+			const Slope current_tile_slope = GetTileSlope(current_tile);
+			if (IsUpwardsSlope(current_tile_slope, forward_direction)) {
+				const TileIndex tunnel_end = BuildTunnel(&current->path);
+
+				if (IsValidTile(tunnel_end)) {
+					const Slope tunnel_end_slope = GetTileSlope(tunnel_end);
+					if (!IsBlockedByPreviousBridgeOrTunnel(current, current_tile, tunnel_end) &&
+							!IsSteepSlope(tunnel_end_slope) &&
+							!IsHalftileSlope(tunnel_end_slope) &&
+							(tunnel_end_slope == ComplementSlope(current_tile_slope))) {
+						assert(IsValidDiagDirection(DiagdirBetweenTiles(current_tile, tunnel_end)));
+						aystar->neighbours[aystar->num_neighbours].tile = tunnel_end;
+						aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
+						aystar->num_neighbours++;
+					}
+				}
+			} else if (IsDownwardsSlope(current_tile_slope, forward_direction)) {
+				const TileIndex bridge_end = BuildBridge(&current->path, forward_direction);
+
+				if (IsValidTile(bridge_end)) {
+					const Slope bridge_end_slope = GetTileSlope(bridge_end);
+					if (!IsBlockedByPreviousBridgeOrTunnel(current, current_tile, bridge_end) &&
+							!IsSteepSlope(bridge_end_slope) &&
+							!IsHalftileSlope(bridge_end_slope) &&
+							(bridge_end_slope == ComplementSlope(current_tile_slope))) {
+						assert(IsValidDiagDirection(DiagdirBetweenTiles(current_tile, bridge_end)));
+						aystar->neighbours[aystar->num_neighbours].tile = bridge_end;
+						aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
+						aystar->num_neighbours++;
+					}
+				}
+			} else if (IsSufficientlyFlatSlope(current_tile_slope)) {
+				// Check if we could bridge a river from a flat tile. Not looking pretty on the map but you gotta do what you gotta do.
+				const auto bridge_end = BuildRiverBridge(&current->path, forward_direction);
+				assert(!IsValidTile(bridge_end) || IsSufficientlyFlatSlope(GetTileSlope(bridge_end)));
+
+				if (IsValidTile(bridge_end) &&
+						!IsBlockedByPreviousBridgeOrTunnel(current, current_tile, bridge_end)) {
+					assert(IsValidDiagDirection(DiagdirBetweenTiles(current_tile, bridge_end)));
+					aystar->neighbours[aystar->num_neighbours].tile = bridge_end;
+					aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
+					aystar->num_neighbours++;
+				}
+			}
+		}
+	}
+}
+
+/** AyStar callback for checking whether we reached our destination. */
+static int32 PublicRoad_EndNodeCheck(const AyStar *aystar, const OpenListNode *current)
+{
+	// Mark towns visited along the way.
+	const auto search_result =
+		std::find(_town_centers.begin(), _town_centers.end(), current->path.node.tile);
+
+	if (search_result != _town_centers.end()) {
+		_towns_visited_along_the_way.push_back(current->path.node.tile);
+	}
+
+	return current->path.node.tile == *static_cast<TileIndex*>(aystar->user_target) ? AYSTAR_FOUND_END_NODE : AYSTAR_DONE;
+}
+
+/** AyStar callback when an route has been found. */
+static void PublicRoad_FoundEndNode(AyStar *aystar, OpenListNode *current)
+{
+	PathNode* child = nullptr;
+
+	for (PathNode *path = &current->path; path != nullptr; path = path->parent) {
+		const TileIndex tile = path->node.tile;
+
+		if (IsTileType(tile, MP_TUNNELBRIDGE)) {
+			// Just follow the path; infrastructure is already in place.
+			continue;
+		}
+
+		if (path->parent == nullptr || AreTilesAdjacent(tile, path->parent->node.tile)) {
+			RoadBits road_bits = ROAD_NONE;
+
+			if (child != nullptr) {
+				const TileIndex tile2 = child->node.tile;
+				road_bits |= DiagDirToRoadBits(DiagdirBetweenTiles(tile, tile2));
+			}
+			if (path->parent != nullptr) {
+				const TileIndex tile2 = path->parent->node.tile;
+				road_bits |= DiagDirToRoadBits(DiagdirBetweenTiles(tile, tile2));
+			}
+
+			if (child != nullptr || path->parent != nullptr) {
+				// Check if we need to build anything.
+				bool need_to_build_road = true;
+
+				if (IsTileType(tile, MP_ROAD)) {
+					const RoadBits existing_bits = GetRoadBits(tile, RTT_ROAD);
+					CLRBITS(road_bits, existing_bits);
+					if (road_bits == ROAD_NONE) need_to_build_road = false;
+				}
+
+				// If it is already a road and has the right bits, we are good. Otherwise build the needed ones.
+				if (need_to_build_road)
+				{
+					Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
+					CmdBuildRoad(tile, DC_EXEC, _public_road_type << 4 | road_bits, 0);
+					cur_company.Restore();
+				}
+			}
+		} else {
+			// We only get here if we have a parent and we're not adjacent to it. River/Tunnel time!
+			const DiagDirection road_direction = DiagdirBetweenTiles(tile, path->parent->node.tile);
+
+			auto end_tile = INVALID_TILE;
+
+			const Slope tile_slope = GetTileSlope(tile);
+			if (IsUpwardsSlope(tile_slope, road_direction)) {
+				end_tile = BuildTunnel(path, path->parent->node.tile, true);
+				assert(IsValidTile(end_tile) && IsDownwardsSlope(GetTileSlope(end_tile), road_direction));
+			} else if (IsDownwardsSlope(tile_slope, road_direction)) {
+				// Provide the function with the end tile, since we already know it, but still check the result.
+				end_tile = BuildBridge(path, path->parent->node.tile, true);
+				assert(IsValidTile(end_tile) && IsUpwardsSlope(GetTileSlope(end_tile), road_direction));
+			} else {
+				// River bridge is the last possibility.
+				assert(IsSufficientlyFlatSlope(tile_slope));
+				end_tile = BuildRiverBridge(path, road_direction, path->parent->node.tile, true);
+				assert(IsValidTile(end_tile) && IsSufficientlyFlatSlope(GetTileSlope(end_tile)));
+			}
+		}
+
+		child = path;
+	}
+}
+
+static const int32 BASE_COST_PER_TILE  = 1;      // Cost for existing road or tunnel/bridge.
+static const int32 COST_FOR_NEW_ROAD   = 10;    // Cost for building a new road.
+static const int32 COST_FOR_SLOPE      = 50;     // Additional cost if the road heads up or down a slope.
+
+/** AyStar callback for getting the cost of the current node. */
+static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *parent)
+{
+	int32 cost = 0;
+
+	const int32 distance = DistanceManhattan(parent->path.node.tile, current->tile);
+
+	if (IsTileType(current->tile, MP_ROAD) || IsTileType(current->tile, MP_TUNNELBRIDGE)) {
+		cost += distance * BASE_COST_PER_TILE;
+	} else {
+		cost += distance * COST_FOR_NEW_ROAD;
+
+		if (GetTileMaxZ(parent->path.node.tile) != GetTileMaxZ(current->tile)) {
+			cost += COST_FOR_SLOPE;
+
+			auto current_node = &parent->path;
+			auto parent_node = parent->path.parent;
+
+			// Force the pathfinder to build serpentine roads by punishing every slope in the last couple of tiles.
+			for (int i = 0; i < 3; ++i) {
+				if (current_node == nullptr || parent_node == nullptr) {
+					break;
+				}
+
+				if (GetTileMaxZ(current_node->node.tile) != GetTileMaxZ(parent_node->node.tile)) {
+					cost += COST_FOR_SLOPE;
+				}
+
+				current_node = parent_node;
+				parent_node = current_node->parent;
+			}
+		}
+
+		if (distance > 1) {
+			// We are planning to build a bridge or tunnel. Make that a bit more expensive.
+			cost += 6 * COST_FOR_SLOPE;
+			cost += distance * 2 * COST_FOR_NEW_ROAD;
+		}
+	}
+
+	if (_settings_game.game_creation.build_public_roads == PRC_AVOID_CURVES &&
+		parent->path.parent != nullptr &&
+		DiagdirBetweenTiles(parent->path.parent->node.tile, parent->path.node.tile) != DiagdirBetweenTiles(parent->path.node.tile, current->tile)) {
+		cost += 1;
+	}
+
+	return cost;
+}
+
+/** AyStar callback for getting the estimated cost to the destination. */
+static int32 PublicRoad_CalculateH(AyStar *aystar, AyStarNode *current, OpenListNode *parent)
+{
+	return DistanceManhattan(*static_cast<TileIndex*>(aystar->user_target), current->tile) * BASE_COST_PER_TILE;
+}
+
+bool FindPath(AyStar& finder, const TileIndex from, TileIndex to)
+{
+	finder.CalculateG = PublicRoad_CalculateG;
+	finder.CalculateH = PublicRoad_CalculateH;
+	finder.GetNeighbours = PublicRoad_GetNeighbours;
+	finder.EndNodeCheck = PublicRoad_EndNodeCheck;
+	finder.FoundEndNode = PublicRoad_FoundEndNode;
+	finder.user_target = &(to);
+	finder.max_search_nodes = 1 << 20;
+
+	finder.Init(1 << _public_road_hash_size);
+
+	AyStarNode start {};
+	start.tile = from;
+	start.direction = INVALID_TRACKDIR;
+	finder.AddStartNode(&start, 0);
+
+	int result = AYSTAR_STILL_BUSY;
+
+	while (result == AYSTAR_STILL_BUSY) {
+		result = finder.Main();
+	}
+
+	const bool found_path = (result == AYSTAR_FOUND_END_NODE);
+
+	return found_path;
+}
+
+struct TownNetwork
+{
+	uint failures_to_connect {};
+	std::vector<TileIndex> towns;
+};
+
+void PostProcessNetworks(const std::vector<std::shared_ptr<TownNetwork>>& town_networks)
+{
+	for (auto network : town_networks) {
+		if (network->towns.size() <= 3) {
+			continue;
+		}
+
+		std::vector towns(network->towns);
+		
+		for (auto town_a : network->towns) {
+			std::sort(towns.begin(), towns.end(), [&](const TileIndex& a, const TileIndex& b) { return DistanceManhattan(a, town_a) < DistanceManhattan(b, town_a); });
+
+			const auto second_clostest_town = *(towns.begin() + 2);
+			const auto third_clostest_town = *(towns.begin() + 3);
+
+			AyStar finder {};
+			{
+				FindPath(finder, town_a, second_clostest_town);
+				finder.Clear();
+				FindPath(finder, town_a, third_clostest_town);
+			}
+			finder.Free();
+
+			IncreaseGeneratingWorldProgress(GWP_PUBLIC_ROADS);
+		}
+	}
+}
+
+/**
+* Build the public road network connecting towns using AyStar.
+*/
+void GeneratePublicRoads()
+{
+	if (_settings_game.game_creation.build_public_roads == PRC_NONE) return;
+
+	_town_centers.clear();
+	_towns_visited_along_the_way.clear();
+
+	std::vector<TileIndex> towns;
+	towns.clear();
+	{
+		for (const Town *town : Town::Iterate()) {
+			towns.push_back(town->xy);
+			_town_centers.push_back(town->xy);
+		}
+	}
+
+	if (towns.empty()) {
+		return;
+	}
+
+	SetGeneratingWorldProgress(GWP_PUBLIC_ROADS, uint(towns.size() * 2));
+
+	// Create a list of networks which also contain a value indicating how many times we failed to connect to them.
+	std::vector<std::shared_ptr<TownNetwork>> networks;
+	std::unordered_map<TileIndex, std::shared_ptr<TownNetwork>> town_to_network_map;
+
+	std::sort(towns.begin(), towns.end(), [&](auto a, auto b) { return DistanceFromEdge(a) > DistanceFromEdge(b); });
+
+	TileIndex main_town = *towns.begin();
+	towns.erase(towns.begin());
+
+	_public_road_type = GetTownRoadType(Town::GetByTile(main_town));
+	std::unordered_set<TileIndex> checked_towns;
+
+	auto main_network = std::make_shared<TownNetwork>();
+	main_network->towns.push_back(main_town);
+	main_network->failures_to_connect = 0;
+
+	networks.push_back(main_network);
+	town_to_network_map[main_town] = main_network;
+
+	IncreaseGeneratingWorldProgress(GWP_PUBLIC_ROADS);
+
+	auto town_network_distance = [](const TileIndex town, const std::shared_ptr<TownNetwork> &network) {
+		int32 best = INT32_MAX;
+		for (TileIndex t : network->towns) {
+			best = std::min<int32>(best, DistanceManhattan(t, town));
+		}
+		return best;
+	};
+
+	std::sort(towns.begin(), towns.end(), [&](auto a, auto b) { return DistanceManhattan(a, main_town) < DistanceManhattan(b, main_town); });
+
+	for (auto start_town : towns) {
+		// Check if we can connect to any of the networks.
+		_towns_visited_along_the_way.clear();
+
+		checked_towns.clear();
+
+		auto reachable_from_town = town_to_network_map.find(start_town);
+		bool found_path = false;
+
+		if (reachable_from_town != town_to_network_map.end()) {
+			auto reachable_network = reachable_from_town->second;
+
+			std::sort(reachable_network->towns.begin(), reachable_network->towns.end(), [&](auto a, auto b) { return DistanceManhattan(start_town, a) < DistanceManhattan(start_town, b); });
+
+			const TileIndex end_town = *reachable_network->towns.begin();
+			checked_towns.emplace(end_town);
+
+			AyStar finder {};
+			{
+				found_path = FindPath(finder, start_town, end_town);
+			}
+			finder.Free();
+
+			if (found_path) {
+				reachable_network->towns.push_back(start_town);
+				if (reachable_network->failures_to_connect > 0) {
+					reachable_network->failures_to_connect--;
+				}
+
+				for (const TileIndex visited_town : _towns_visited_along_the_way) {
+					town_to_network_map[visited_town] = reachable_network;
+				}
+
+			} else {
+				town_to_network_map.erase(reachable_from_town);
+				reachable_network->failures_to_connect++;
+			}
+		}
+
+		if (!found_path) {
+			// Sort networks by failed connection attempts, so we try the most likely one first.
+			std::sort(networks.begin(), networks.end(), [&](const std::shared_ptr<TownNetwork> &a, const std::shared_ptr<TownNetwork> &b) {
+				return town_network_distance(start_town, a) < town_network_distance(start_town, b);
+			});
+
+			auto can_reach = [&](const std::shared_ptr<TownNetwork> &network) {
+				if (reachable_from_town != town_to_network_map.end() && network.get() == reachable_from_town->second.get()) {
+					return false;
+				}
+
+				// Try to connect to the town in the network that is closest to us.
+				// If we can't connect to that one, we can't connect to any of them since they are all interconnected.
+				sort(network->towns.begin(), network->towns.end(), [&](auto a, auto b) { return DistanceManhattan(start_town, a) < DistanceManhattan(start_town, b); });
+				const TileIndex end_town = *network->towns.begin();
+
+				if (checked_towns.find(end_town) != checked_towns.end()) {
+					return false;
+				}
+
+				checked_towns.emplace(end_town);
+
+				AyStar finder {};
+				{
+					found_path = FindPath(finder, start_town, end_town);
+				}
+				finder.Free();
+
+				if (found_path) {
+					network->towns.push_back(start_town);
+					if (network->failures_to_connect > 0) {
+						network->failures_to_connect--;
+					}
+					town_to_network_map[start_town] = network;
+				} else {
+					network->failures_to_connect++;
+				}
+
+				return found_path;
+			};
+
+			std::vector<std::shared_ptr<TownNetwork>>::iterator networks_end;
+
+			if (networks.size() > 5) {
+				networks_end = networks.begin() + 5;
+			} else {
+				networks_end = networks.end();
+			}
+
+			std::vector<std::shared_ptr<TownNetwork>> sampled_networks;
+			std::copy(networks.begin(), networks_end, std::back_inserter(sampled_networks));
+			std::sort(sampled_networks.begin(), sampled_networks.end(), [&](const std::shared_ptr<TownNetwork> &a, const std::shared_ptr<TownNetwork> &b) {
+				return a->failures_to_connect < b->failures_to_connect;
+			});
+
+			if (!std::any_of(sampled_networks.begin(), sampled_networks.end(), can_reach)) {
+				// We failed so many networks, we are a separate network. Let future towns try to connect to us.
+				auto new_network = std::make_shared<TownNetwork>();
+				new_network->towns.push_back(start_town);
+				new_network->failures_to_connect = 0;
+
+				// We basically failed to connect to this many towns.
+				int towns_already_in_networks = std::accumulate(networks.begin(), networks.end(), 0, [&](int accumulator, const std::shared_ptr<TownNetwork> &network) {
+					return accumulator + static_cast<int>(network->towns.size());
+				});
+
+				new_network->failures_to_connect += towns_already_in_networks;
+				town_to_network_map[start_town] = new_network;
+				networks.push_back(new_network);
+
+				for (const TileIndex visited_town : _towns_visited_along_the_way) {
+					town_to_network_map[visited_town] = new_network;
+				}
+			}
+		}
+
+		IncreaseGeneratingWorldProgress(GWP_PUBLIC_ROADS);
+	}
+
+	PostProcessNetworks(networks);
+}
+
+/* ========================================================================= */
+/*                              END PUBLIC ROADS                             */
+/* ========================================================================= */
