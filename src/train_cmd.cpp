@@ -994,7 +994,7 @@ int Train::GetAtcMaxSpeed() const
 		return std::max<int>(25, this->signal_speed_restriction);
 	}
 
-	return UINT32_MAX;
+	return INT32_MAX;
 }
 
 /**
