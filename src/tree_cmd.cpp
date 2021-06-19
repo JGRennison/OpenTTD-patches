@@ -278,10 +278,8 @@ static void PlaceTreeGroups(uint num_groups)
 	} while (--num_groups);
 }
 
-static TileIndex FindTreePositionAtSameHeight(TileIndex tile, uint steps)
+static TileIndex FindTreePositionAtSameHeight(TileIndex tile, int height, uint steps)
 {
-	const auto height = GetTileZ(tile);
-
 	for (uint i = 0; i < steps; i++) {
 		const uint32 r = Random();
 		const int x = GB(r, 0, 5) - 16;
@@ -316,7 +314,7 @@ static TileIndex FindTreePositionAtSameHeight(TileIndex tile, uint steps)
  */
 static void PlantTreeAtSameHeight(TileIndex tile)
 {
-	const auto new_tile = FindTreePositionAtSameHeight(tile, 1);
+	const auto new_tile = FindTreePositionAtSameHeight(tile, GetTileZ(tile), 1);
 
 	if (new_tile != INVALID_TILE) {
 		PlantTreesOnTile(new_tile, GetTreeType(tile), 0, 0);
@@ -330,10 +328,11 @@ static void PlantTreeAtSameHeight(TileIndex tile)
  * height or at some offset (2 units) of it.
  *
  * @param tile The base tile to add a new tree somewhere around
+ * @param height The height (from GetTileZ)
  */
-static void PlaceTreeAtSameHeight(TileIndex tile)
+static void PlaceTreeAtSameHeight(TileIndex tile, int height)
 {
-	const auto new_tile = FindTreePositionAtSameHeight(tile, DEFAULT_TREE_STEPS);
+	const auto new_tile = FindTreePositionAtSameHeight(tile, height, DEFAULT_TREE_STEPS);
 
 	if (new_tile != INVALID_TILE) {
 		PlaceTree(new_tile, Random());
@@ -396,11 +395,11 @@ void PlaceTreesRandomly()
 			 *  It is almost real life ;) */
 			ht = GetTileZ(tile);
 			/* The higher we get, the more trees we plant */
-			j = GetTileZ(tile) * 2;
+			j = ht * 2;
 			/* Above snowline more trees! */
 			if (_settings_game.game_creation.landscape == LT_ARCTIC && ht > GetSnowLine()) j *= 3;
 			while (j--) {
-				PlaceTreeAtSameHeight(tile);
+				PlaceTreeAtSameHeight(tile, ht);
 			}
 		}
 	} while (--i);
