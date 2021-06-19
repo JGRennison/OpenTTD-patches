@@ -39,7 +39,7 @@ enum TreePlacer {
 	TP_NONE,     ///< No tree placer algorithm
 	TP_ORIGINAL, ///< The original algorithm
 	TP_IMPROVED, ///< A 'improved' algorithm
-	TP_PERFECT, ///< A 'best' algorithm
+	TP_PERFECT,  ///< A 'best' algorithm
 };
 
 /** Where to place trees while in-game? */
@@ -72,7 +72,7 @@ static bool CanPlantTreesOnTile(TileIndex tile, bool allow_desert)
 		(GetTileZ(tile) > (_settings_game.game_creation.snow_line_height + _settings_game.construction.trees_around_snow_line_range))) {
 		return false;
 	}
-	
+
 	switch (GetTileType(tile)) {
 		case MP_WATER:
 			return !IsBridgeAbove(tile) && IsCoast(tile) && !IsSlopeWithOneCornerRaised(GetTileSlope(tile));
@@ -281,7 +281,7 @@ static void PlaceTreeGroups(uint num_groups)
 static TileIndex FindTreePositionAtSameHeight(TileIndex tile, uint steps)
 {
 	const auto height = GetTileZ(tile);
-	
+
 	for (uint i = 0; i < steps; i++) {
 		const uint32 r = Random();
 		const int x = GB(r, 0, 5) - 16;
@@ -359,7 +359,7 @@ int MaxTreeCount(const TileIndex tile)
 
 	int max_trees_snow_line_based = 4;
 
-	if (_settings_game.game_creation.landscape == LT_ARCTIC) {	
+	if (_settings_game.game_creation.landscape == LT_ARCTIC) {
 		const uint height_above_snow_line = std::max<int>(0, tile_z - _settings_game.game_creation.snow_line_height);
 		max_trees_snow_line_based = (height_above_snow_line < lengthof(_arctic_tree_occurance)) ?
 			(1 + (_arctic_tree_occurance[height_above_snow_line] * 4) / 255) :
@@ -553,7 +553,7 @@ CommandCost CmdPlantTree(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 		switch (GetTileType(tile)) {
 			case MP_TREES: {
 				bool grow_existing_tree_instead = false;
-				
+
 				/* no more space for trees? */
 				if (_settings_game.game_creation.tree_placer == TP_PERFECT) {
 					if (GetTreeCount(tile) >= 4 || ((GetTreeType(tile) != TREE_CACTUS) && ((int)GetTreeCount(tile) >= MaxTreeCount(tile)))) {
