@@ -76,6 +76,40 @@ enum ChooseTrainTrackFlags {
 };
 DECLARE_ENUM_AS_BIT_SET(ChooseTrainTrackFlags)
 
+struct SignalSpeedKey
+{
+	TileIndex signal_tile;
+	Track signal_track;
+	Trackdir last_passing_train_dir;
+
+	bool operator==(const SignalSpeedKey& other) const
+	{
+		return signal_tile == other.signal_tile &&
+			signal_track == other.signal_track &&
+			last_passing_train_dir == other.last_passing_train_dir;
+	}
+};
+
+struct SignalSpeedKeyHashFunc
+{
+	std::size_t operator() (const SignalSpeedKey &key) const
+	{
+		const std::size_t h1 = std::hash<TileIndex>()(key.signal_tile);
+		const std::size_t h2 = std::hash<Trackdir>()(key.last_passing_train_dir);
+		const std::size_t h3 = std::hash<Track>()(key.signal_track);
+
+		return (h1 ^ h2) ^ h3;
+	}
+};
+
+struct SignalSpeedValue
+{
+	uint16 train_speed;
+	Date time_stamp;
+};
+
+static std::unordered_map<SignalSpeedKey, SignalSpeedValue, SignalSpeedKeyHashFunc> _signal_speeds(1 << 16);
+
 static void TryLongReserveChooseTrainTrackFromReservationEnd(Train *v, bool no_reserve_vehicle_tile = false);
 static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks, ChooseTrainTrackFlags flags, bool *p_got_reservation, ChooseTrainTrackLookAheadState lookahead_state = {});
 static bool TrainApproachingLineEnd(Train *v, bool signal, bool reverse);
@@ -954,75 +988,13 @@ static void AdvanceLookAheadPosition(Train *v)
 /**
  * Calculates the maximum speed based on any train in front of this train.
  */
-int Train::GetAtcMaxSpeed(int current_max_speed) const
+int Train::GetAtcMaxSpeed() const
 {
-	if (!(this->vehstatus & VS_CRASHED) && _settings_game.vehicle.train_speed_adaption) {
-		int atc_speed = current_max_speed;
-
-		CFollowTrackRail ft(this);
-		Trackdir old_td = this->GetVehicleTrackdir();
-
-		if (ft.Follow(this->tile, this->GetVehicleTrackdir())) {
-			/* Basic idea: Follow the track for 20 tiles or 3 signals (i.e. at most two signal blocks) looking for other trains. */
-			/* If we find one (that meets certain restrictions), we limit the max speed to the speed of that train. */
-			int num_tiles = 0;
-			int num_signals = 0;
-
-			do {
-				old_td = ft.m_old_td;
-
-				/* If we are on a depot or rail station tile stop searching */
-				if (IsDepotTile(ft.m_new_tile) || IsRailStationTile(ft.m_new_tile))
-					break;
-
-				/* Increment signal counter if we're on a signal */
-				if (IsTileType(ft.m_new_tile, MP_RAILWAY) && ///< Tile has rails
-					KillFirstBit(ft.m_new_td_bits) == TRACKDIR_BIT_NONE && ///< Tile has exactly *one* track
-					HasSignalOnTrack(ft.m_new_tile, TrackBitsToTrack(TrackdirBitsToTrackBits(ft.m_new_td_bits)))) { ///< Tile has signal
-					num_signals++;
-				}
-
-				/* Check if tile has train/is reserved */
-				if (KillFirstBit(ft.m_new_td_bits) == TRACKDIR_BIT_NONE && ///< Tile has exactly *one* track
-					HasReservedTracks(ft.m_new_tile, TrackdirBitsToTrackBits(ft.m_new_td_bits))) { ///< Tile is reserved
-					Train* other_train = GetTrainForReservation(ft.m_new_tile, TrackBitsToTrack(TrackdirBitsToTrackBits(ft.m_new_td_bits)));
-
-
-					if (other_train != nullptr &&
-						other_train != this && ///< Other train is not this train
-						other_train->GetAccelerationStatus() != AS_BRAKE) { ///< Other train is not braking
-						atc_speed = other_train->GetCurrentSpeed();
-						break;
-					}
-				}
-
-				/* Decide what in direction to continue: reservation, straight or "first/only" direction. */
-				/* Abort if there's no reservation even though the tile contains multiple tracks. */
-				const TrackdirBits reserved = ft.m_new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.m_new_tile));
-
-				if (reserved != TRACKDIR_BIT_NONE) {
-					// There is a reservation to follow.
-					old_td = FindFirstTrackdir(reserved);
-				}
-				else if (KillFirstBit(ft.m_new_td_bits) != TRACKDIR_BIT_NONE) {
-					// Tile has more than one track and we have no reservation. Bail out.
-					break;
-				}
-				else {
-					// There was no reservation but there is only one direction to follow, so follow it.
-					old_td = FindFirstTrackdir(ft.m_new_td_bits);
-				}
-
-				num_tiles++;
-			} while (num_tiles < 20 && num_signals < 4 && ft.Follow(ft.m_new_tile, old_td));
-		}
-
-		/* Check that the ATC speed is sufficiently large.
-		   Avoids assertion error in UpdateSpeed(). */
-		current_max_speed = std::max(25, std::min(current_max_speed, atc_speed));
+	if (!(this->vehstatus & VS_CRASHED) && _settings_game.vehicle.train_speed_adaption && this->signal_speed_restriction != 0) {
+		return std::max<int>(25, this->signal_speed_restriction);
 	}
 
-	return current_max_speed;
+	return UINT32_MAX;
 }
 
 /**
@@ -1035,7 +1007,7 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 			this->gcache.cached_max_track_speed :
 			std::min<int>(this->tcache.cached_max_curve_speed, this->gcache.cached_max_track_speed);
 
-	max_speed = GetAtcMaxSpeed(max_speed);
+	max_speed = std::min<int>(max_speed, GetAtcMaxSpeed());
 
 	if (this->current_order.IsType(OT_LOADING_ADVANCE)) max_speed = std::min(max_speed, 15);
 
@@ -1404,6 +1376,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 		v->vehstatus = VS_HIDDEN | VS_DEFPAL;
 		v->reverse_distance = 0;
 		v->speed_restriction = 0;
+		v->signal_speed_restriction = 0;
 
 		v->SetWagon();
 
@@ -4520,6 +4493,7 @@ static void TrainEnterStation(Train *v, StationID station)
 		v->current_order.MakeWaiting();
 		v->current_order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
 		v->cur_speed = 0;
+		v->signal_speed_restriction = 0;
 		return;
 	}
 
@@ -5576,7 +5550,29 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 		}
 
 		if (update_signals_crossing) {
+
 			if (v->IsFrontEngine()) {
+				if (IsTileType(gp.old_tile, MP_RAILWAY) && HasSignals(gp.old_tile)) {				
+					const TrackdirBits rev_tracks = TrackBitsToTrackdirBits(GetTrackBits(gp.old_tile)) & DiagdirReachesTrackdirs(ReverseDiagDir(enterdir));
+					const Trackdir rev_trackdir = FindFirstTrackdir(rev_tracks);
+					const Track track = TrackdirToTrack(rev_trackdir);
+					SignalSpeedKey speed_key = {
+						speed_key.signal_tile = gp.old_tile,
+						speed_key.signal_track = track,
+						speed_key.last_passing_train_dir = v->GetVehicleTrackdir()
+					};
+					const auto found_speed_restriction = _signal_speeds.find(speed_key);
+
+					if (found_speed_restriction != _signal_speeds.end()) {
+						if (_date - found_speed_restriction->second.time_stamp < 6) {
+							v->signal_speed_restriction = std::max<uint16>(25, found_speed_restriction->second.train_speed);
+						} else {
+							_signal_speeds.erase(speed_key);
+							v->signal_speed_restriction = 0;
+						}
+					}
+				}
+				
 				switch (TrainMovedChangeSignal(v, gp.new_tile, enterdir, true)) {
 					case CHANGED_NORMAL_TO_PBS_BLOCK:
 						/* We are entering a block with PBS signals right now, but
@@ -5614,17 +5610,31 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 				TrainMovedChangeSignal(v, gp.old_tile, ReverseDiagDir(enterdir), false);
 				if (IsLevelCrossingTile(gp.old_tile)) UpdateLevelCrossing(gp.old_tile);
 
-				if (IsTileType(gp.old_tile, MP_RAILWAY) && HasSignals(gp.old_tile) && IsRestrictedSignal(gp.old_tile)) {
+				if (IsTileType(gp.old_tile, MP_RAILWAY) && HasSignals(gp.old_tile)) {
 					const TrackdirBits rev_tracks = TrackBitsToTrackdirBits(GetTrackBits(gp.old_tile)) & DiagdirReachesTrackdirs(ReverseDiagDir(enterdir));
 					const Trackdir rev_trackdir = FindFirstTrackdir(rev_tracks);
 					const Track track = TrackdirToTrack(rev_trackdir);
+
 					if (HasSignalOnTrack(gp.old_tile, track)) {
-						const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(gp.old_tile, track);
-						if (prog && prog->actions_used_flags & TRPAUF_SLOT_RELEASE_BACK) {
-							TraceRestrictProgramResult out;
-							TraceRestrictProgramInput input(gp.old_tile, ReverseTrackdir(rev_trackdir), nullptr, nullptr);
-							input.permitted_slot_operations = TRPISP_RELEASE_BACK;
-							prog->Execute(first, input, out);
+						SignalSpeedKey speed_key = {
+							speed_key.signal_tile = gp.old_tile,
+							speed_key.signal_track = track,
+							speed_key.last_passing_train_dir = v->GetVehicleTrackdir()
+						};
+						SignalSpeedValue speed_value = {
+							speed_value.train_speed = v->First()->GetDisplaySpeed(),
+							speed_value.time_stamp = _date
+						};
+						_signal_speeds[speed_key] = speed_value;
+
+						if (IsRestrictedSignal(gp.old_tile)) {
+							const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(gp.old_tile, track);
+							if (prog && prog->actions_used_flags & TRPAUF_SLOT_RELEASE_BACK) {
+								TraceRestrictProgramResult out;
+								TraceRestrictProgramInput input(gp.old_tile, ReverseTrackdir(rev_trackdir), nullptr, nullptr);
+								input.permitted_slot_operations = TRPISP_RELEASE_BACK;
+								prog->Execute(first, input, out);
+							}
 						}
 					}
 				}
