@@ -2552,8 +2552,8 @@ public:
 				break;
 
 			case WID_O_ADD_VEH_GROUP: {
-				this->SetDirty();
-				DoCommandP(0, this->vehicle->index | 0,0 , CMD_CREATE_GROUP_AUTO_NAME, nullptr, nullptr);
+				this->query_text_widget = WID_O_ADD_VEH_GROUP;
+				ShowQueryString(STR_EMPTY, STR_GROUP_RENAME_CAPTION, MAX_LENGTH_GROUP_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
 				break;
 			}
 

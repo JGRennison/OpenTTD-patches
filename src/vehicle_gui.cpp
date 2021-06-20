@@ -2346,11 +2346,7 @@ public:
 						break;
 
 					case ADI_CREATE_GROUP:
-						if (!this->vehicles.empty()) {
-							const VehicleID vindex = (*this->vehicles.begin())->index;
-							this->SetDirty();
-							DoCommandP(0, vindex | (1 << 31),0 , CMD_CREATE_GROUP_AUTO_NAME, nullptr, nullptr);
-						}
+						ShowQueryString(STR_EMPTY, STR_GROUP_RENAME_CAPTION, MAX_LENGTH_GROUP_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
 						break;
 
 					case ADI_TRACERESTRICT_SLOT_MGMT: {
