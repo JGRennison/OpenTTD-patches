@@ -276,6 +276,48 @@ public:
 		}
 	}
 
+	/**
+	* Gets the weight of this vehicle when empty.
+	* @return Empty weight in tonnes.
+	*/
+	uint16 GetEmptyWeight() const
+	{
+		uint16 weight = 0;
+
+		/* Vehicle weight is not added for articulated parts. */
+		if (!this->IsArticulatedPart()) {
+			weight += GetVehicleProperty(this, PROP_TRAIN_WEIGHT, RailVehInfo(this->engine_type)->weight);
+		}
+
+		/* Powered wagons have extra weight added. */
+		if (HasBit(this->flags, VRF_POWEREDWAGON)) {
+			weight += RailVehInfo(this->gcache.first_engine)->pow_wag_weight;
+		}
+
+		return weight * (this->IsWagon() ? FreightWagonMult(this->cargo_type) : 1);
+	}
+
+	/**
+	* Gets the weight of this vehicle when fully loaded.
+	* @return Loaded weight in tonnes.
+	*/
+	uint16 GetLoadedWeight() const
+	{
+		uint16 weight = (CargoSpec::Get(this->cargo_type)->weight * this->cargo_cap) / 16;
+
+		/* Vehicle weight is not added for articulated parts. */
+		if (!this->IsArticulatedPart()) {
+			weight += GetVehicleProperty(this, PROP_TRAIN_WEIGHT, RailVehInfo(this->engine_type)->weight);
+		}
+
+		/* Powered wagons have extra weight added. */
+		if (HasBit(this->flags, VRF_POWEREDWAGON)) {
+			weight += RailVehInfo(this->gcache.first_engine)->pow_wag_weight;
+		}
+
+		return weight * (this->IsWagon() ? FreightWagonMult(this->cargo_type) : 1);
+	}
+
 protected: // These functions should not be called outside acceleration code.
 	/**
 	 * Gets the speed a broken down train (low speed breakdown) is limited to.
