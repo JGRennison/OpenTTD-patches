@@ -390,7 +390,12 @@ int GetTrainDetailsWndVScroll(VehicleID veh_id, TrainDetailsWindowTabs det_tab)
 		for (CargoID i = 0; i < NUM_CARGO; i++) {
 			if (max_cargo[i] > 0) num++; // only count carriages that the train has
 		}
-		num += 5; // needs five more because first line is description string and we have the weight and speed info
+
+		if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
+			num += 5; // needs five more because first line is description string and we have the weight and speed info and the feeder share
+		} else {
+			num += 2; // needs one more because first line is description string and we have the feeder share
+		}
 	} else {
 		for (const Train *v = Train::Get(veh_id); v != nullptr; v = v->GetNextVehicle()) {
 			GetCargoSummaryOfArticulatedVehicle(v, &_cargo_summary);
@@ -584,25 +589,27 @@ void DrawTrainDetails(const Train *v, int left, int right, int y, int vscroll_po
 			loaded_weight            += weight_without_cargo + train->GetCargoWeight(train->cargo_cap);
 		}
 
-		const int empty_max_speed = GetMaxSpeed(v, empty_weight, v->GetDisplayMaxSpeed());
-		const int loaded_max_speed = GetMaxSpeed(v, loaded_weight, v->GetDisplayMaxSpeed());
+		if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
+			const int empty_max_speed = GetMaxSpeed(v, empty_weight, v->GetDisplayMaxSpeed());
+			const int loaded_max_speed = GetMaxSpeed(v, loaded_weight, v->GetDisplayMaxSpeed());
 
-		if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
-			SetDParam(0, empty_weight);
-			SetDParam(1, loaded_weight);
-			DrawString(left, right, y + text_y_offset, STR_VEHICLE_DETAILS_TRAIN_TOTAL_WEIGHT);
-			y += line_height;
-		}
+			if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
+				SetDParam(0, empty_weight);
+				SetDParam(1, loaded_weight);
+				DrawString(left, right, y + text_y_offset, STR_VEHICLE_DETAILS_TRAIN_TOTAL_WEIGHT);
+				y += line_height;
+			}
 
-		if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
-			SetDParam(0, empty_max_speed);
-			SetDParam(1, loaded_max_speed);
-			DrawString(left, right, y + text_y_offset, STR_VEHICLE_DETAILS_TRAIN_MAX_SPEED);
-			y += line_height;
-		}
+			if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
+				SetDParam(0, empty_max_speed);
+				SetDParam(1, loaded_max_speed);
+				DrawString(left, right, y + text_y_offset, STR_VEHICLE_DETAILS_TRAIN_MAX_SPEED);
+				y += line_height;
+			}
 
-		if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
-			y += line_height;
+			if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
+				y += line_height;
+			}
 		}
 
 		if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
