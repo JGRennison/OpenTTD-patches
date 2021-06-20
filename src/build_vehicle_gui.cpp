@@ -3165,10 +3165,11 @@ void CcAddVirtualEngine(const CommandCost &result, TileIndex tile, uint32 p1, ui
 {
 	if (result.Failed()) return;
 
-	Window* window = FindWindowById(WC_BUILD_VIRTUAL_TRAIN, 0);
-	if (window) {
-		Train* train = Train::From(Vehicle::Get(_new_vehicle_id));
-		((BuildVehicleWindow*) window)->AddVirtualEngine(train);
+	Window *window = FindWindowById(WC_BUILD_VIRTUAL_TRAIN, 0);
+
+	if (window != nullptr) {
+		Train *train = Train::From(Vehicle::Get(_new_vehicle_id));
+		dynamic_cast<BuildVehicleWindow*>(window)->AddVirtualEngine(train);
 	} else {
 		DoCommandP(0, _new_vehicle_id | (1 << 21), 0, CMD_SELL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_SELL_TRAIN));
 	}
@@ -3178,13 +3179,15 @@ void CcMoveNewVirtualEngine(const CommandCost &result, TileIndex tile, uint32 p1
 {
 	if (result.Failed()) return;
 
-	Window* window = FindWindowById(WC_BUILD_VIRTUAL_TRAIN, 0);
-	if (window) {
+	Window *window = FindWindowById(WC_BUILD_VIRTUAL_TRAIN, 0);
+
+	if (window != nullptr) {
 		if (result.IsSuccessWithMessage()) {
-			CommandCost res = result.UnwrapSuccessWithMessage();
+			const CommandCost res = result.UnwrapSuccessWithMessage();
 			ShowErrorMessage(STR_ERROR_CAN_T_MOVE_VEHICLE, res.GetErrorMessage(), WL_INFO, 0, 0, res.GetTextRefStackGRF(), res.GetTextRefStackSize(), res.GetTextRefStack(), res.GetExtraErrorMessage());
 		}
 	}
+
 	InvalidateWindowClassesData(WC_CREATE_TEMPLATE);
 }
 
@@ -3209,13 +3212,13 @@ static WindowDesc _build_template_vehicle_desc(
 	_nested_build_vehicle_widgets_train_advanced, lengthof(_nested_build_vehicle_widgets_train_advanced)
 );
 
-void ShowBuildVehicleWindow(TileIndex tile, VehicleType type)
+void ShowBuildVehicleWindow(const TileIndex tile, const VehicleType type)
 {
 	/* We want to be able to open both Available Train as Available Ships,
 	 *  so if tile == INVALID_TILE (Available XXX Window), use 'type' as unique number.
 	 *  As it always is a low value, it won't collide with any real tile
 	 *  number. */
-	uint num = (tile == INVALID_TILE) ? (int)type : tile;
+	const uint num = (tile == INVALID_TILE) ? static_cast<int>(type) : tile;
 
 	assert(IsCompanyBuildableVehicleType(type));
 
