@@ -518,18 +518,20 @@ void DrawTrainDetails(const Train *v, int left, int right, int y, int vscroll_po
 		int loaded_max_speed = 0;
 
 		for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
+			const Train *train = Train::From(u);
+			const auto weight_without_cargo = train->GetWeightWithoutCargo();
 			act_cargo[u->cargo_type] += u->cargo.StoredCount();
 			max_cargo[u->cargo_type] += u->cargo_cap;
 			feeder_share             += u->cargo.FeederShare();
-			empty_weight             += Train::From(u)->GetEmptyWeight();
-			loaded_weight            += Train::From(u)->GetLoadedWeight();
+			empty_weight             += weight_without_cargo;
+			loaded_weight            += weight_without_cargo + train->GetCargoWeight(train->cargo_cap);
 		}
 
 		const auto rolling_friction = 15 * (512 + v->GetDisplayMaxSpeed()) / 512;
 		const auto tractive_effort_empty = empty_weight * rolling_friction;
 		const auto tractive_effort_loaded = loaded_weight * rolling_friction;
-		const int power = v->gcache.cached_power * 746;
-		const int max_te = v->gcache.cached_max_te;
+		const int power = static_cast<int>(v->gcache.cached_power * 746);
+		const int max_te = static_cast<int>(v->gcache.cached_max_te);
 		empty_max_speed = std::min(v->GetDisplayMaxSpeed(), (tractive_effort_empty == 0 || tractive_effort_empty > max_te) ? 0 : static_cast<int>((3.6 * power) / tractive_effort_empty));
 		loaded_max_speed = std::min(v->GetDisplayMaxSpeed(), (tractive_effort_loaded == 0 || tractive_effort_loaded > max_te) ? 0 : static_cast<int>((3.6 * power) / tractive_effort_loaded));
 
