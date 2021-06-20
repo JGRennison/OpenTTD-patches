@@ -15,6 +15,7 @@
 #include "vehicle_func.h"
 #include "autoreplace_base.h"
 #include "autoreplace_func.h"
+#include "base_station_base.h"
 #include "string_func.h"
 #include "company_func.h"
 #include "core/pool_func.hpp"
@@ -25,6 +26,8 @@
 #include "table/strings.h"
 
 #include "safeguards.h"
+#include "strings_func.h"
+#include "townname_func.h"
 
 GroupID _new_group_id;
 
@@ -640,6 +643,206 @@ CommandCost CmdAddVehicleGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 		InvalidateWindowData(GetWindowClassForVehicleType(v->type), VehicleListIdentifier(VL_GROUP_LIST, v->type, _current_company).Pack());
 		InvalidateWindowData(WC_VEHICLE_VIEW, v->index);
 		InvalidateWindowData(WC_VEHICLE_DETAILS, v->index);
+	}
+
+	return CommandCost();
+}
+
+Group* CreateAutoGroup(const VehicleType vt, const std::string& name, Group* parent)
+{
+	Group *group = nullptr;
+
+	if (Group::CanAllocateItem())
+	{
+		const Company *company = Company::Get(_current_company);
+		group = new Group(_current_company);
+		group->vehicle_type = vt;
+		group->parent = parent != nullptr ? parent->index : INVALID_GROUP;
+		group->livery.colour1 = company->livery[LS_DEFAULT].colour1;
+		group->livery.colour2 = company->livery[LS_DEFAULT].colour2;
+
+		if (company->settings.renew_keep_length) {
+			SetBit(group->flags, GF_REPLACE_WAGON_REMOVAL);
+		}
+
+		group->name = name;
+	}
+
+	return group;
+}
+
+std::string GetCargoList(const Vehicle *vehicle)
+{
+	auto checked_vehicle = vehicle;
+	std::vector<StringID> cargoes;
+
+	do {
+		if (checked_vehicle->cargo_cap == 0) continue;
+
+		const StringID cargo_name = CargoSpec::Get(checked_vehicle->cargo_type)->name;
+
+		if(cargo_name == INVALID_STRING_ID) continue;
+
+		if (std::find(cargoes.begin(), cargoes.end(), cargo_name) == cargoes.end()) {
+			cargoes.push_back(cargo_name);
+		}
+	} while ((checked_vehicle = checked_vehicle->Next()) != nullptr);
+	
+	std::string cargo_list;
+
+	if (!cargoes.empty()) {
+		for (auto cargo : cargoes) {
+			if (cargo_list.empty()) {
+				cargo_list += " (";
+			} else {
+				cargo_list += ", ";
+			}
+			
+			char cargo_name_buffer[255];
+			SetDParam(0, cargo);
+			GetString(cargo_name_buffer, STR_JUST_STRING, lastof(cargo_name_buffer));
+			cargo_list += cargo_name_buffer;
+		}
+	}
+
+	if (!cargo_list.empty()) {
+		cargo_list += ")";
+	}
+
+	return cargo_list;
+}
+
+/**
+ * Adds a vehicle to an auto group.
+ * @param vehicle the vehicle
+ * @param from the first town in the orders list
+ * @param to the last town in the orders list
+ * @return the group to add the vehicle to.
+ */
+Group* AddVehicleToAutoGroup(const Vehicle *vehicle, const Town *from, const Town *to)
+{
+	assert(from != nullptr);
+	char from_town_name[255];
+	GetTownName(from_town_name, from, from_town_name + 255);
+	Group *group;
+
+	if (from == to || to == nullptr)
+	{
+		char local_name[255];
+		GetString(local_name, STR_VEHICLE_GROUP_LOCAL_ROUTE, lastof(local_name));
+		std::string name;
+		name += from_town_name;
+		name += " ";
+		name += local_name;
+		name += GetCargoList(vehicle);
+		group = CreateAutoGroup(vehicle->type, name, nullptr);
+	}
+	else
+	{
+		char to_town_name[255];
+		std::string name;
+		name += from_town_name;
+		name += " to ";
+		GetTownName(to_town_name, to, to_town_name + 255);
+		name += to_town_name;
+		name += GetCargoList(vehicle);
+		group = CreateAutoGroup(vehicle->type, name, nullptr);
+	}
+
+	return group;
+}
+
+Town* GetTownFromDestination(const DestinationID destination)
+{
+	Town* town = nullptr;
+
+	if (BaseStation *st = BaseStation::GetIfValid(destination); st != nullptr)
+	{
+		town = st->town;
+	}
+
+	return town;
+}
+
+void GetAutoGroupMostRelevantTowns(const Vehicle *vehicle, Town* &from, Town* &to)
+{
+	std::vector<Town*> unique_destinations;
+
+	const int num = vehicle->GetNumOrders();
+
+	for (int x = 0; x < num; x++)
+	{
+		Order *order = vehicle->GetOrder(x);
+		const DestinationID dest = order->GetDestination();
+		Town *town = GetTownFromDestination(dest);
+
+		if (order->GetType() == OT_GOTO_DEPOT) continue;
+
+		if (town != nullptr && unique_destinations.end() == std::find(unique_destinations.begin(), unique_destinations.end(), town))
+		{
+			unique_destinations.push_back(town);
+		}
+	}
+
+	if (unique_destinations.empty()) return;
+
+	from = unique_destinations[0];
+
+	if (unique_destinations.size() > 1) {
+		to = unique_destinations[unique_destinations.size() - 1];
+	}
+}
+
+/**
+ * Create a new group, rename it with automatically generated name and add vehicle to this group
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1   vehicle to add to a group
+ *   - p1 bit 0-19 : VehicleID
+ *   - p1 bit   31 : Add shared vehicles as well.
+ * @param p2   unused
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdCreateGroupAutoName(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	Vehicle *vehicle = Vehicle::GetIfValid(GB(p1, 0, 20));
+
+	if (vehicle == nullptr) return CMD_ERROR;
+	if (vehicle->owner != _current_company || !vehicle->IsPrimaryVehicle()) return CMD_ERROR;
+
+	if (flags & DC_EXEC) {
+		Town *town_from = nullptr;
+		Town *town_to = nullptr;
+		
+		GetAutoGroupMostRelevantTowns(vehicle, town_from, town_to);
+
+		if (town_from == nullptr) return CMD_ERROR;
+
+		const auto new_group = AddVehicleToAutoGroup(vehicle, town_from, town_to);
+
+		if (new_group == nullptr) return CMD_ERROR;
+
+		if (HasBit(p1, 31)) {
+			/* Add vehicles in the shared order list as well. */
+			for (Vehicle *v2 = vehicle->FirstShared(); v2 != nullptr; v2 = v2->NextShared()) {
+				if (v2->group_id != new_group->index) {
+					AddVehicleToGroup(v2, new_group->index);
+				}
+			}
+		}
+
+		GroupStatistics::UpdateAutoreplace(vehicle->owner);
+
+		/* Update the Replace Vehicle Windows */
+		SetWindowDirty(WC_REPLACE_VEHICLE, vehicle->type);
+		SetWindowDirty(WC_VEHICLE_DEPOT, vehicle->tile);
+		SetWindowDirty(WC_VEHICLE_VIEW, vehicle->index);
+		SetWindowDirty(WC_VEHICLE_DETAILS, vehicle->index);
+		InvalidateWindowData(WC_VEHICLE_VIEW, vehicle->index);
+		InvalidateWindowData(WC_VEHICLE_DETAILS, vehicle->index);
+		InvalidateWindowData(GetWindowClassForVehicleType(vehicle->type), VehicleListIdentifier(VL_GROUP_LIST, vehicle->type, _current_company).Pack());
+		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
 	}
 
 	return CommandCost();
