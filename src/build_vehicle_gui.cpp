@@ -2247,6 +2247,48 @@ struct BuildVehicleWindowTrainAdvanced : Window {
 
 	TestedEngineDetails te;                           ///< Tested cost and capacity after refit.
 
+	void SetBuyLocomotiveText()
+	{
+		const auto widget = this->GetWidget<NWidgetCore>(WID_BV_BUILD_LOCO);
+
+		bool refit = this->sel_engine_loco != INVALID_ENGINE && this->cargo_filter_loco[this->cargo_filter_criteria_loco] != CF_ANY && this->cargo_filter_loco[this->cargo_filter_criteria_loco] != CF_NONE;
+		if (refit) refit = Engine::Get(this->sel_engine_loco)->GetDefaultCargoType() != this->cargo_filter_loco[this->cargo_filter_criteria_loco];
+
+		if (this->virtual_train_mode) {
+			widget->widget_data = STR_TMPL_CONFIRM;
+			widget->tool_tip    = STR_TMPL_CONFIRM;
+		} else {
+			if (refit) {
+				widget->widget_data = STR_BUY_VEHICLE_TRAIN_BUY_REFIT_LOCOMOTIVE_BUTTON;
+				widget->tool_tip    = STR_BUY_VEHICLE_TRAIN_BUY_REFIT_LOCOMOTIVE_TOOLTIP;
+			} else {
+				widget->widget_data = STR_BUY_VEHICLE_TRAIN_BUY_LOCOMOTIVE_BUTTON;
+				widget->tool_tip    = STR_BUY_VEHICLE_TRAIN_BUY_LOCOMOTIVE_TOOLTIP;
+			}
+		}
+	}
+
+	void SetBuyWagonText()
+	{
+		const auto widget = this->GetWidget<NWidgetCore>(WID_BV_BUILD_WAGON);
+
+		bool refit = this->sel_engine_wagon != INVALID_ENGINE && this->cargo_filter_wagon[this->cargo_filter_criteria_wagon] != CF_ANY && this->cargo_filter_wagon[this->cargo_filter_criteria_wagon] != CF_NONE;
+		if (refit) refit = Engine::Get(this->sel_engine_wagon)->GetDefaultCargoType() != this->cargo_filter_wagon[this->cargo_filter_criteria_wagon];
+
+		if (this->virtual_train_mode) {
+			widget->widget_data = STR_TMPL_CONFIRM;
+			widget->tool_tip    = STR_TMPL_CONFIRM;
+		} else {
+			if (refit) {
+				widget->widget_data = STR_BUY_VEHICLE_TRAIN_BUY_REFIT_WAGON_BUTTON;
+				widget->tool_tip    = STR_BUY_VEHICLE_TRAIN_BUY_REFIT_WAGON_TOOLTIP;
+			} else {
+				widget->widget_data = STR_BUY_VEHICLE_TRAIN_BUY_WAGON_BUTTON;
+				widget->tool_tip    = STR_BUY_VEHICLE_TRAIN_BUY_WAGON_TOOLTIP;
+			}
+		}
+	}
+
 	BuildVehicleWindowTrainAdvanced(WindowDesc *desc, TileIndex tile, Train **virtual_train_out) : Window(desc)
 	{
 		this->vehicle_type = VEH_TRAIN;
@@ -2269,6 +2311,8 @@ struct BuildVehicleWindowTrainAdvanced : Window {
 		this->railtype = (tile == INVALID_TILE) ? RAILTYPE_END : GetRailType(tile);
 		this->listview_mode = (tile == INVALID_TILE) && !virtual_train_mode;
 
+		this->UpdateFilterByTile();
+
 		this->CreateNestedTree();
 
 		this->vscroll_loco = this->GetScrollbar(WID_BV_SCROLLBAR_LOCO);
@@ -2287,16 +2331,6 @@ struct BuildVehicleWindowTrainAdvanced : Window {
 		widget_loco = this->GetWidget<NWidgetCore>(WID_BV_SHOW_HIDE_LOCO);
 		widget_loco->tool_tip = STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP + VEH_TRAIN;
 
-		widget_loco = this->GetWidget<NWidgetCore>(WID_BV_BUILD_LOCO);
-		if (this->virtual_train_mode) {
-			widget_loco->widget_data = STR_TMPL_CONFIRM;
-			widget_loco->tool_tip = STR_TMPL_CONFIRM;
-		}
-		else {
-			widget_loco->widget_data = STR_BUY_VEHICLE_TRAIN_BUY_LOCOMOTIVE_BUTTON;
-			widget_loco->tool_tip = STR_BUY_VEHICLE_TRAIN_BUY_LOCOMOTIVE_TOOLTIP;
-		}
-
 		widget_loco = this->GetWidget<NWidgetCore>(WID_BV_RENAME_LOCO);
 		widget_loco->widget_data = STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_BUTTON;
 		widget_loco->tool_tip    = STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_TOOLTIP;
@@ -2313,15 +2347,6 @@ struct BuildVehicleWindowTrainAdvanced : Window {
 
 		widget_wagon = this->GetWidget<NWidgetCore>(WID_BV_SHOW_HIDE_WAGON);
 		widget_wagon->tool_tip = STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP + VEH_TRAIN;
-
-		widget_wagon = this->GetWidget<NWidgetCore>(WID_BV_BUILD_WAGON);
-		if (this->virtual_train_mode) {
-			widget_wagon->widget_data = STR_TMPL_CONFIRM;
-			widget_wagon->tool_tip = STR_TMPL_CONFIRM;
-		} else {
-			widget_wagon->widget_data = STR_BUY_VEHICLE_TRAIN_BUY_WAGON_BUTTON;
-			widget_wagon->tool_tip = STR_BUY_VEHICLE_TRAIN_BUY_WAGON_TOOLTIP;
-		}
 
 		widget_wagon = this->GetWidget<NWidgetCore>(WID_BV_RENAME_WAGON);
 		widget_wagon->widget_data = STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_BUTTON;
@@ -2344,10 +2369,19 @@ struct BuildVehicleWindowTrainAdvanced : Window {
 		this->eng_list_wagon.ForceRebuild();
 
 		this->GenerateBuildList(); // generate the list, since we need it in the next line
-		/* Select the first engine in the list as default when opening the window */
 
-		if (!this->eng_list_loco.empty()) this->sel_engine_loco = this->eng_list_loco[0];
-		if (!this->eng_list_wagon.empty()) this->sel_engine_wagon = this->eng_list_wagon[0];
+		/* Select the first engine in the list as default when opening the window */
+		if (this->eng_list_loco.empty()) {
+			this->SelectLocomotive(INVALID_ENGINE);
+		} else {
+			this->SelectLocomotive(this->eng_list_loco[0]);
+		}
+
+		if (this->eng_list_wagon.empty()) {
+			this->SelectWagon(INVALID_ENGINE);
+		} else {
+			this->SelectWagon(this->eng_list_wagon[0]);
+		}
 	}
 
 	/** Set the filter type according to the depot type */
@@ -2447,7 +2481,77 @@ struct BuildVehicleWindowTrainAdvanced : Window {
 		this->eng_list_wagon.SetFilterState(this->cargo_filter_wagon[this->cargo_filter_criteria_wagon] != CF_ANY);
 	}
 
-	void OnInit()
+	void SelectLocomotive(const EngineID engine)
+	{
+		CargoID cargo = this->cargo_filter_loco[this->cargo_filter_criteria_loco];
+		if (cargo == CF_ANY) cargo = CF_NONE;
+
+		this->sel_engine_loco = engine;
+		this->SetBuyLocomotiveText();
+
+		if (this->sel_engine_loco == INVALID_ENGINE) return;
+
+		const Engine *e = Engine::Get(this->sel_engine_loco);
+		if (!e->CanCarryCargo()) {
+			this->te.cost = 0;
+			this->te.cargo = CT_INVALID;
+			return;
+		}
+
+		if (!this->listview_mode) {
+			/* Query for cost and refitted capacity */
+			const CommandCost ret = DoCommand(this->window_number, this->sel_engine_loco | (cargo << 24), 0, DC_QUERY_COST, GetCmdBuildVeh(this->vehicle_type), nullptr);
+			if (ret.Succeeded()) {
+				this->te.cost          = ret.GetCost() - e->GetCost();
+				this->te.capacity      = _returned_refit_capacity;
+				this->te.mail_capacity = _returned_mail_refit_capacity;
+				this->te.cargo         = (cargo == CT_INVALID) ? e->GetDefaultCargoType() : cargo;
+				return;
+			}
+		}
+
+		/* Purchase test was not possible or failed, fill in the defaults instead. */
+		this->te.cost     = 0;
+		this->te.capacity = e->GetDisplayDefaultCapacity(&this->te.mail_capacity);
+		this->te.cargo    = e->GetDefaultCargoType();
+	}
+
+	void SelectWagon(const EngineID engine)
+	{
+		CargoID cargo = this->cargo_filter_wagon[this->cargo_filter_criteria_wagon];
+		if (cargo == CF_ANY) cargo = CF_NONE;
+
+		this->sel_engine_wagon = engine;
+		this->SetBuyWagonText();
+
+		if (this->sel_engine_wagon == INVALID_ENGINE) return;
+
+		const Engine *e = Engine::Get(this->sel_engine_wagon);
+		if (!e->CanCarryCargo()) {
+			this->te.cost = 0;
+			this->te.cargo = CT_INVALID;
+			return;
+		}
+
+		if (!this->listview_mode) {
+			/* Query for cost and refitted capacity */
+			const CommandCost ret = DoCommand(this->window_number, this->sel_engine_wagon | (cargo << 24), 0, DC_QUERY_COST, GetCmdBuildVeh(this->vehicle_type), nullptr);
+			if (ret.Succeeded()) {
+				this->te.cost          = ret.GetCost() - e->GetCost();
+				this->te.capacity      = _returned_refit_capacity;
+				this->te.mail_capacity = _returned_mail_refit_capacity;
+				this->te.cargo         = (cargo == CT_INVALID) ? e->GetDefaultCargoType() : cargo;
+				return;
+			}
+		}
+
+		/* Purchase test was not possible or failed, fill in the defaults instead. */
+		this->te.cost     = 0;
+		this->te.capacity = e->GetDisplayDefaultCapacity(&this->te.mail_capacity);
+		this->te.cargo    = e->GetDefaultCargoType();
+	}
+
+	void OnInit() override
 	{
 		this->SetCargoFilterArray();
 	}
@@ -2523,14 +2627,13 @@ struct BuildVehicleWindowTrainAdvanced : Window {
 			if (eid == this->sel_engine_loco) sel_id_loco = eid;
 		}
 
-		this->sel_engine_loco = sel_id_loco;
+		this->SelectLocomotive(sel_id_loco);
 
 
 		/* Wagons */
 
 		EngineID sel_id_wagon = INVALID_ENGINE;
 
-		int num_engines_wagon = 0;
 		int num_wagons_wagon  = 0;
 
 		this->eng_list_wagon.clear();
@@ -2559,7 +2662,10 @@ struct BuildVehicleWindowTrainAdvanced : Window {
 			if (eid == this->sel_engine_wagon) sel_id_wagon = eid;
 		}
 
-		this->sel_engine_wagon = sel_id_wagon;
+		this->SelectWagon(sel_id_wagon);
+
+		/* invalidate cached values for name sorter - engine names could change */
+		_last_engine[0] = _last_engine[1] = INVALID_ENGINE;
 
 		/* Sort locomotives */
 		_internal_sort_order_loco = this->descending_sort_order_loco;
@@ -2567,7 +2673,7 @@ struct BuildVehicleWindowTrainAdvanced : Window {
 
 		/* Sort wagons */
 		_internal_sort_order_wagon = this->descending_sort_order_wagon;
-		EngList_SortPartial(&this->eng_list_wagon, _sorter_wagon[this->sort_criteria_wagon], num_engines_wagon, num_wagons_wagon);
+		EngList_SortPartial(&this->eng_list_wagon, _sorter_wagon[this->sort_criteria_wagon], 0, num_wagons_wagon);
 
 	}
 
@@ -2576,8 +2682,14 @@ struct BuildVehicleWindowTrainAdvanced : Window {
 	{
 		if (!this->eng_list_loco.NeedRebuild() && !this->eng_list_wagon.NeedRebuild()) return;
 
+		/* Update filter type in case the rail type of the depot got converted */
+		this->UpdateFilterByTile();
 		this->GenerateBuildTrainList();
+
+		this->eng_list_loco.shrink_to_fit();
 		this->eng_list_loco.RebuildDone();
+
+		this->eng_list_wagon.shrink_to_fit();
 		this->eng_list_wagon.RebuildDone();
 	}
 
@@ -2586,7 +2698,6 @@ struct BuildVehicleWindowTrainAdvanced : Window {
 		switch (widget) {
 
 			/* Locomotives */
-
 
 			case WID_BV_SORT_ASSENDING_DESCENDING_LOCO: {
 				this->descending_sort_order_loco ^= true;
@@ -2667,7 +2778,6 @@ struct BuildVehicleWindowTrainAdvanced : Window {
 				}
 				break;
 			}
-
 
 			/* Wagons */
 
