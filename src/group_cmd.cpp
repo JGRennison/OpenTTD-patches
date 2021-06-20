@@ -27,6 +27,7 @@
 
 #include "safeguards.h"
 #include "strings_func.h"
+#include "town.h"
 #include "townname_func.h"
 
 GroupID _new_group_id;
@@ -719,11 +720,9 @@ std::string GetCargoList(const Vehicle *vehicle)
  * @param to the last town in the orders list
  * @return the group to add the vehicle to.
  */
-Group* AddVehicleToAutoGroup(const Vehicle *vehicle, const Town *from, const Town *to)
+Group* CreateVehicleAutoGroup(const Vehicle *vehicle, const Town *from, const Town *to)
 {
 	assert(from != nullptr);
-	char from_town_name[255];
-	GetTownName(from_town_name, from, from_town_name + 255);
 	Group *group;
 
 	if (from == to || to == nullptr)
@@ -731,7 +730,7 @@ Group* AddVehicleToAutoGroup(const Vehicle *vehicle, const Town *from, const Tow
 		char local_name[255];
 		GetString(local_name, STR_VEHICLE_GROUP_LOCAL_ROUTE, lastof(local_name));
 		std::string name;
-		name += from_town_name;
+		name += from->GetCachedName();
 		name += " ";
 		name += local_name;
 		name += GetCargoList(vehicle);
@@ -739,12 +738,10 @@ Group* AddVehicleToAutoGroup(const Vehicle *vehicle, const Town *from, const Tow
 	}
 	else
 	{
-		char to_town_name[255];
 		std::string name;
-		name += from_town_name;
+		name += from->GetCachedName();
 		name += " to ";
-		GetTownName(to_town_name, to, to_town_name + 255);
-		name += to_town_name;
+		name += to->GetCachedName();
 		name += GetCargoList(vehicle);
 		group = CreateAutoGroup(vehicle->type, name, nullptr);
 	}
@@ -819,9 +816,11 @@ CommandCost CmdCreateGroupAutoName(TileIndex tile, DoCommandFlag flags, uint32 p
 
 		if (town_from == nullptr) return CMD_ERROR;
 
-		const auto new_group = AddVehicleToAutoGroup(vehicle, town_from, town_to);
+		const auto new_group = CreateVehicleAutoGroup(vehicle, town_from, town_to);
 
 		if (new_group == nullptr) return CMD_ERROR;
+
+		AddVehicleToGroup(vehicle, new_group->index);
 
 		if (HasBit(p1, 31)) {
 			/* Add vehicles in the shared order list as well. */
