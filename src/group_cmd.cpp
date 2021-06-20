@@ -770,10 +770,11 @@ void GetAutoGroupMostRelevantTowns(const Vehicle *vehicle, Town* &from, Town* &t
 	for (int x = 0; x < num; x++)
 	{
 		Order *order = vehicle->GetOrder(x);
+
+		if (order->GetType() != OT_GOTO_STATION) continue;
+
 		const DestinationID dest = order->GetDestination();
 		Town *town = GetTownFromDestination(dest);
-
-		if (order->GetType() == OT_GOTO_DEPOT) continue;
 
 		if (town != nullptr && unique_destinations.end() == std::find(unique_destinations.begin(), unique_destinations.end(), town))
 		{
@@ -807,18 +808,19 @@ CommandCost CmdCreateGroupAutoName(TileIndex tile, DoCommandFlag flags, uint32 p
 
 	if (vehicle == nullptr) return CMD_ERROR;
 	if (vehicle->owner != _current_company || !vehicle->IsPrimaryVehicle()) return CMD_ERROR;
+	if (!Group::CanAllocateItem()) return CMD_ERROR;
+
+	Town *town_from = nullptr;
+	Town *town_to = nullptr;
+	
+	GetAutoGroupMostRelevantTowns(vehicle, town_from, town_to);
+
+	if (town_from == nullptr) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		Town *town_from = nullptr;
-		Town *town_to = nullptr;
-		
-		GetAutoGroupMostRelevantTowns(vehicle, town_from, town_to);
-
-		if (town_from == nullptr) return CMD_ERROR;
-
 		const auto new_group = CreateVehicleAutoGroup(vehicle, town_from, town_to);
 
-		if (new_group == nullptr) return CMD_ERROR;
+		assert(new_group != nullptr);
 
 		AddVehicleToGroup(vehicle, new_group->index);
 

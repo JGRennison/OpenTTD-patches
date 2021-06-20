@@ -999,13 +999,13 @@ public:
 				}
 				break;
 			}
-			case WID_GL_CREATE_GROUP: { // make new group with vehicle specific name and add vehicle
+			case WID_GL_CREATE_GROUP: { // make new group with auto generated vehicle specific name and add vehicle
 				const VehicleID vindex = this->vehicle_sel;
 				this->vehicle_sel = INVALID_VEHICLE;
 				this->group_over = INVALID_GROUP;
 				this->SetDirty();
 
-				DoCommandP(0, vindex | (_ctrl_pressed ? 1 << 31 : 0),0 , CMD_CREATE_GROUP_AUTO_NAME, nullptr, nullptr);
+				DoCommandP(0, vindex | (_ctrl_pressed ? 1U << 31 : 0),0 , CMD_CREATE_GROUP_AUTO_NAME | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, nullptr);
 				
 				break;
 			}
