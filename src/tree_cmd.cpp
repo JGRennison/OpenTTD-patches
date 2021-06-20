@@ -136,7 +136,7 @@ static uint8 _previous_trees_around_snow_line_range = 255;
  * Array of probabilities for artic trees to appear,
  * by normalised distance from snow line
  */
-static uint8 _arctic_tree_occurance[24];
+static std::vector<uint8> _arctic_tree_occurance;
 
 /** Recalculate _arctic_tree_occurance */
 static void RecalculateArcticTreeOccuranceArray()
@@ -149,10 +149,11 @@ static void RecalculateArcticTreeOccuranceArray()
 	 */
 	uint8 range = _settings_game.construction.trees_around_snow_line_range;
 	_previous_trees_around_snow_line_range = range;
-	_arctic_tree_occurance[0] = 255;
-	uint i = 1;
-	for (; i < lengthof(_arctic_tree_occurance); i++) {
-		if (range == 0) break;
+	_arctic_tree_occurance.clear();
+	_arctic_tree_occurance.reserve((range * 5) / 4);
+	_arctic_tree_occurance.push_back(255);
+	if (range == 0) return;
+	for (uint i = 1; i < 256; i++) {
 		uint x = 256 - ((128 * i) / range);
 		uint32 output = x;
 		output *= x;
@@ -163,10 +164,7 @@ static void RecalculateArcticTreeOccuranceArray()
 		output *= x;
 		output >>= 24;
 		if (output == 0) break;
-		_arctic_tree_occurance[i] = static_cast<uint8>(output);
-	}
-	for (; i < lengthof(_arctic_tree_occurance); i++) {
-		_arctic_tree_occurance[i] = 0;
+		_arctic_tree_occurance.push_back(static_cast<uint8>(output));
 	}
 }
 
@@ -199,7 +197,7 @@ static TreeType GetRandomTreeType(TileIndex tile, uint seed)
 			int height_above_snow_line = z - _settings_game.game_creation.snow_line_height;
 			uint normalised_distance = (height_above_snow_line < 0) ? -height_above_snow_line : height_above_snow_line + 1;
 			bool arctic_tree = false;
-			if (normalised_distance < lengthof(_arctic_tree_occurance)) {
+			if (normalised_distance < _arctic_tree_occurance.size()) {
 				arctic_tree = RandomRange(256) < _arctic_tree_occurance[normalised_distance];
 			}
 			if (height_above_snow_line < 0) {
@@ -360,7 +358,7 @@ int MaxTreeCount(const TileIndex tile)
 
 	if (_settings_game.game_creation.landscape == LT_ARCTIC) {
 		const uint height_above_snow_line = std::max<int>(0, tile_z - _settings_game.game_creation.snow_line_height);
-		max_trees_snow_line_based = (height_above_snow_line < lengthof(_arctic_tree_occurance)) ?
+		max_trees_snow_line_based = (height_above_snow_line < _arctic_tree_occurance.size()) ?
 			(1 + (_arctic_tree_occurance[height_above_snow_line] * 4) / 255) :
 			0;
 	}
