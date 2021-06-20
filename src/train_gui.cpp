@@ -512,10 +512,10 @@ void DrawTrainDetails(const Train *v, int left, int right, int y, int vscroll_po
 		CargoArray act_cargo;
 		CargoArray max_cargo;
 		Money feeder_share = 0;
-		uint16 empty_weight = 0;
-		uint16 loaded_weight = 0;
-		uint16 empty_max_speed = 0;
-		uint16 loaded_max_speed = 0;
+		int empty_weight = 0;
+		int loaded_weight = 0;
+		int empty_max_speed = 0;
+		int loaded_max_speed = 0;
 
 		for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
 			act_cargo[u->cargo_type] += u->cargo.StoredCount();
@@ -528,10 +528,10 @@ void DrawTrainDetails(const Train *v, int left, int right, int y, int vscroll_po
 		const auto rolling_friction = 15 * (512 + v->GetDisplayMaxSpeed()) / 512;
 		const auto tractive_effort_empty = empty_weight * rolling_friction;
 		const auto tractive_effort_loaded = loaded_weight * rolling_friction;
-		const auto power = v->gcache.cached_power * 746ll;
-		const auto max_te = v->gcache.cached_max_te;
-		empty_max_speed = std::min<uint16>(v->GetDisplayMaxSpeed(), (tractive_effort_empty == 0 || tractive_effort_empty > max_te) ? 0 : (3.6 * (power / tractive_effort_empty)));
-		loaded_max_speed = std::min<uint16>(v->GetDisplayMaxSpeed(), (tractive_effort_loaded == 0 || tractive_effort_loaded > max_te) ? 0 : (3.6 * (power / tractive_effort_loaded)));
+		const int power = v->gcache.cached_power * 746;
+		const int max_te = v->gcache.cached_max_te;
+		empty_max_speed = std::min(v->GetDisplayMaxSpeed(), (tractive_effort_empty == 0 || tractive_effort_empty > max_te) ? 0 : static_cast<int>((3.6 * power) / tractive_effort_empty));
+		loaded_max_speed = std::min(v->GetDisplayMaxSpeed(), (tractive_effort_loaded == 0 || tractive_effort_loaded > max_te) ? 0 : static_cast<int>((3.6 * power) / tractive_effort_loaded));
 
 		if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
 			SetDParam(0, empty_weight);
