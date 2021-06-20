@@ -20,6 +20,12 @@
 #include "../map_func.h"
 #include "../rev.h"
 #include "../game/game.hpp"
+#include "../thread.h"
+
+#include <mutex>
+#if defined(__MINGW32__)
+#include "../3rdparty/mingw-std-threads/mingw.mutex.h"
+#endif
 
 #include "../safeguards.h"
 
@@ -38,6 +44,17 @@ INSTANTIATE_POOL_METHODS(NetworkAdminSocket)
 
 /** The timeout for authorisation of the client. */
 static const std::chrono::seconds ADMIN_AUTHORISATION_TIMEOUT(10);
+
+static void NetworkAdminConsoleIntl(const char *origin, const char *string);
+
+struct NetworkAdminConsoleQueueItem {
+	std::string origin;
+	std::string string;
+};
+std::atomic<bool> _network_admin_console_logging;
+std::mutex _network_admin_console_mutex;
+std::vector<NetworkAdminConsoleQueueItem> _network_admin_console_queue;
+std::vector<NetworkAdminConsoleQueueItem> _network_admin_console_queue_spare;
 
 
 /** Frequencies, which may be registered for a certain update type. */
@@ -94,6 +111,17 @@ ServerNetworkAdminSocketHandler::~ServerNetworkAdminSocketHandler()
 /** Send the packets for the server sockets. */
 /* static */ void ServerNetworkAdminSocketHandler::Send()
 {
+	if (_network_admin_console_logging.load()) {
+		{
+			std::lock_guard<std::mutex> lock(_network_admin_console_mutex);
+			std::swap(_network_admin_console_queue, _network_admin_console_queue_spare);
+		}
+		for (auto &item : _network_admin_console_queue_spare) {
+			NetworkAdminConsoleIntl(item.origin.c_str(), item.string.c_str());
+		}
+		_network_admin_console_queue_spare.clear();
+	}
+
 	for (ServerNetworkAdminSocketHandler *as : ServerNetworkAdminSocketHandler::Iterate()) {
 		if (as->status == ADMIN_STATUS_INACTIVE && std::chrono::steady_clock::now() > as->connect_time + ADMIN_AUTHORISATION_TIMEOUT) {
 			DEBUG(net, 1, "[admin] Admin did not send its authorisation within %d seconds", (uint32)std::chrono::duration_cast<std::chrono::seconds>(ADMIN_AUTHORISATION_TIMEOUT).count());
@@ -708,6 +736,10 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_UPDATE_FREQUENC
 
 	this->update_frequency[type] = freq;
 
+	if (type == ADMIN_UPDATE_CONSOLE && (freq & ADMIN_FREQUENCY_AUTOMATIC)) {
+		_network_admin_console_logging.store(true);
+	}
+
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
@@ -940,6 +972,15 @@ void NetworkServerSendAdminRcon(AdminIndex admin_index, TextColour colour_code, 
 	ServerNetworkAdminSocketHandler::Get(admin_index)->SendRcon(colour_code, string);
 }
 
+static void NetworkAdminConsoleIntl(const char *origin, const char *string)
+{
+	for (ServerNetworkAdminSocketHandler *as : ServerNetworkAdminSocketHandler::IterateActive()) {
+		if (as->update_frequency[ADMIN_UPDATE_CONSOLE] & ADMIN_FREQUENCY_AUTOMATIC) {
+			as->SendConsole(origin, string);
+		}
+	}
+}
+
 /**
  * Send console to the admin network (if they did opt in for the respective update).
  * @param origin the origin of the message.
@@ -947,11 +988,15 @@ void NetworkServerSendAdminRcon(AdminIndex admin_index, TextColour colour_code, 
  */
 void NetworkAdminConsole(const char *origin, const char *string)
 {
-	for (ServerNetworkAdminSocketHandler *as : ServerNetworkAdminSocketHandler::IterateActive()) {
-		if (as->update_frequency[ADMIN_UPDATE_CONSOLE] & ADMIN_FREQUENCY_AUTOMATIC) {
-			as->SendConsole(origin, string);
-		}
+	if (!_network_admin_console_logging.load()) return;
+
+	if (IsNonGameThread()) {
+		std::lock_guard<std::mutex> lock(_network_admin_console_mutex);
+		_network_admin_console_queue.push_back({ origin, string });
+		return;
 	}
+
+	NetworkAdminConsoleIntl(origin, string);
 }
 
 /**
