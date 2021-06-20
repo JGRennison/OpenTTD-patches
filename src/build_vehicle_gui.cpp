@@ -1517,10 +1517,10 @@ void DrawEngineList(VehicleType type, int l, int r, int y, const GUIEngineList *
  * Display the dropdown for the vehicle sort criteria.
  * @param w Parent window (holds the dropdown button).
  * @param vehicle_type %Vehicle type being sorted.
- * @param selected Currently selected sort criterium.
+ * @param selected Currently selected sort criterion.
  * @param button Widget button.
  */
-void DisplayVehicleSortDropDown(Window *w, VehicleType vehicle_type, int selected, int button)
+void DisplayVehicleSortDropDown(Window *w, const VehicleType vehicle_type, const int selected, const int button)
 {
 	uint32 hidden_mask = 0;
 	/* Disable sorting by power or tractive effort when the original acceleration model for road vehicles is being used. */
@@ -1534,6 +1534,34 @@ void DisplayVehicleSortDropDown(Window *w, VehicleType vehicle_type, int selecte
 		SetBit(hidden_mask, 4); // tractive effort
 	}
 	ShowDropDownMenu(w, _engine_sort_listing[vehicle_type], selected, button, 0, hidden_mask);
+}
+
+/**
+ * Display the dropdown for the locomotive sort criteria.
+ * @param w Parent window (holds the dropdown button).
+ * @param selected Currently selected sort criterion.
+ */
+void DisplayLocomotiveSortDropDown(Window *w, int selected)
+{
+	uint32 hidden_mask = 0;
+	/* Disable sorting by tractive effort when the original acceleration model for trains is being used. */
+	SetBit(hidden_mask, 4); // tractive effort
+	ShowDropDownMenu(w, _sort_listing_loco, selected, WID_BV_SORT_DROPDOWN_LOCO, 0, hidden_mask);
+}
+
+/**
+ * Display the dropdown for the wagon sort criteria.
+ * @param w Parent window (holds the dropdown button).
+ * @param selected Currently selected sort criterion.
+ */
+void DisplayWagonSortDropDown(Window *w, int selected)
+{
+	uint32 hidden_mask = 0;
+	/* Disable sorting by maximum speed when wagon speed is disabled. */
+	if (!_settings_game.vehicle.wagon_speed_limits) {
+		SetBit(hidden_mask, 2); // maximum speed
+	}
+	ShowDropDownMenu(w, _sort_listing_wagon, selected, WID_BV_SORT_DROPDOWN_WAGON, 0, hidden_mask);
 }
 
 /** GUI for building vehicles. */
@@ -2717,8 +2745,8 @@ struct BuildVehicleWindowTrainAdvanced : Window {
 			}
 
 			case WID_BV_LIST_LOCO: {
-				uint i = this->vscroll_loco->GetScrolledRowFromWidget(pt.y, this, WID_BV_LIST_LOCO);
-				size_t num_items = this->eng_list_loco.size();
+				const uint i = this->vscroll_loco->GetScrolledRowFromWidget(pt.y, this, WID_BV_LIST_LOCO);
+				const size_t num_items = this->eng_list_loco.size();
 				this->sel_engine_loco = (i < num_items) ? this->eng_list_loco[i] : INVALID_ENGINE;
 				this->SetDirty();
 
@@ -2731,13 +2759,8 @@ struct BuildVehicleWindowTrainAdvanced : Window {
 				break;
 			}
 
-			case WID_BV_SORT_DROPDOWN_LOCO: { // Select sorting criteria dropdown menu
-				uint32 hidden_mask = 0;
-				/* Disable sorting by tractive effort when the original acceleration model for trains is being used. */
-				if (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL) {
-					SetBit(hidden_mask, 4); // tractive effort
-				}
-				ShowDropDownMenu(this, _sort_listing_loco, this->sort_criteria_loco, WID_BV_SORT_DROPDOWN_LOCO, 0, hidden_mask);
+			case WID_BV_SORT_DROPDOWN_LOCO: {
+				DisplayLocomotiveSortDropDown(this, this->sort_criteria_loco);
 				break;
 			}
 
@@ -2747,33 +2770,39 @@ struct BuildVehicleWindowTrainAdvanced : Window {
 			}
 
 			case WID_BV_SHOW_HIDE_LOCO: {
-				const Engine *e = (this->sel_engine_loco == INVALID_ENGINE) ? nullptr : Engine::GetIfValid(this->sel_engine_loco);
-				if (e != nullptr) {
-					DoCommandP(0, 0, this->sel_engine_loco | (e->IsHidden(_current_company) ? 0 : (1u << 31)), CMD_SET_VEHICLE_VISIBILITY);
+				const Engine *engine = (this->sel_engine_loco == INVALID_ENGINE) ? nullptr : Engine::GetIfValid(this->sel_engine_loco);
+				if (engine != nullptr) {
+					DoCommandP(0, 0, this->sel_engine_loco | (engine->IsHidden(_current_company) ? 0 : (1u << 31)), CMD_SET_VEHICLE_VISIBILITY);
 				}
 				break;
 			}
 
 			case WID_BV_BUILD_LOCO: {
-				EngineID sel_eng = this->sel_engine_loco;
-				if (sel_eng != INVALID_ENGINE) {
+				const EngineID selected_loco = this->sel_engine_loco;
+				if (selected_loco != INVALID_ENGINE) {
+					CommandCallback *callback;
+					uint32 cmd;
 					if (this->virtual_train_mode) {
-						DoCommandP(0, sel_eng, 0, CMD_BUILD_VIRTUAL_RAIL_VEHICLE, CcAddVirtualEngine);
+						callback = CcAddVirtualEngine;
+						cmd = CMD_BUILD_VIRTUAL_RAIL_VEHICLE;
+					} else {
+						callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(selected_loco)->railveh_type == RAILVEH_WAGON)
+								? CcBuildWagon : CcBuildPrimaryVehicle;
+						cmd = GetCmdBuildVeh(this->vehicle_type);
 					}
-					else {
-						CommandCallback *callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(sel_eng)->railveh_type == RAILVEH_WAGON) ? CcBuildWagon : CcBuildPrimaryVehicle;
-						DoCommandP(this->window_number, sel_eng, 0, GetCmdBuildVeh(this->vehicle_type), callback);
-					}
+					CargoID cargo = this->cargo_filter_loco[this->cargo_filter_criteria_loco];
+					if (cargo == CF_ANY || cargo == CF_ENGINES) cargo = CF_NONE;
+					DoCommandP(this->window_number, selected_loco | (cargo << 24), 0, cmd, callback);
 				}
 				break;
 			}
 
 			case WID_BV_RENAME_LOCO: {
-				EngineID sel_eng = this->sel_engine_loco;
-				if (sel_eng != INVALID_ENGINE) {
-					this->rename_engine_loco = sel_eng;
+				const EngineID selected_loco = this->sel_engine_loco;
+				if (selected_loco != INVALID_ENGINE) {
+					this->rename_engine_loco = selected_loco;
 					this->rename_engine_wagon = INVALID_ENGINE;
-					SetDParam(0, sel_eng);
+					SetDParam(0, selected_loco);
 					ShowQueryString(STR_ENGINE_NAME, STR_QUERY_RENAME_TRAIN_TYPE_LOCOMOTIVE_CAPTION + this->vehicle_type, MAX_LENGTH_ENGINE_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
 				}
 				break;
@@ -2799,8 +2828,8 @@ struct BuildVehicleWindowTrainAdvanced : Window {
 			}
 
 			case WID_BV_LIST_WAGON: {
-				uint i = this->vscroll_wagon->GetScrolledRowFromWidget(pt.y, this, WID_BV_LIST_WAGON);
-				size_t num_items = this->eng_list_wagon.size();
+				const uint i = this->vscroll_wagon->GetScrolledRowFromWidget(pt.y, this, WID_BV_LIST_WAGON);
+				const size_t num_items = this->eng_list_wagon.size();
 				this->sel_engine_wagon = (i < num_items) ? this->eng_list_wagon[i] : INVALID_ENGINE;
 				this->SetDirty();
 
@@ -2813,13 +2842,8 @@ struct BuildVehicleWindowTrainAdvanced : Window {
 				break;
 			}
 
-			case WID_BV_SORT_DROPDOWN_WAGON: { // Select sorting criteria dropdown menu
-				uint32 hidden_mask = 0;
-				/* Disable sorting by maximum speed when wagon speed is disabled. */
-				if (!_settings_game.vehicle.wagon_speed_limits) {
-					SetBit(hidden_mask, 2); // maximum speed
-				}
-				ShowDropDownMenu(this, _sort_listing_wagon, this->sort_criteria_wagon, WID_BV_SORT_DROPDOWN_WAGON, 0, hidden_mask);
+			case WID_BV_SORT_DROPDOWN_WAGON: {
+				DisplayWagonSortDropDown(this, this->sort_criteria_wagon);
 				break;
 			}
 
@@ -2829,33 +2853,39 @@ struct BuildVehicleWindowTrainAdvanced : Window {
 			}
 
 			case WID_BV_SHOW_HIDE_WAGON: {
-				const Engine *e = (this->sel_engine_wagon == INVALID_ENGINE) ? nullptr : Engine::GetIfValid(this->sel_engine_wagon);
-				if (e != nullptr) {
-					DoCommandP(0, 0, this->sel_engine_wagon | (e->IsHidden(_current_company) ? 0 : (1u << 31)), CMD_SET_VEHICLE_VISIBILITY);
+				const Engine *engine = (this->sel_engine_wagon == INVALID_ENGINE) ? nullptr : Engine::GetIfValid(this->sel_engine_wagon);
+				if (engine != nullptr) {
+					DoCommandP(0, 0, this->sel_engine_wagon | (engine->IsHidden(_current_company) ? 0 : (1u << 31)), CMD_SET_VEHICLE_VISIBILITY);
 				}
 				break;
 			}
 
 			case WID_BV_BUILD_WAGON: {
-				EngineID sel_eng = this->sel_engine_wagon;
-				if (sel_eng != INVALID_ENGINE) {
+				const EngineID selected_wagon = this->sel_engine_loco;
+				if (selected_wagon != INVALID_ENGINE) {
+					CommandCallback *callback;
+					uint32 cmd;
 					if (this->virtual_train_mode) {
-						DoCommandP(0, sel_eng, 0, CMD_BUILD_VIRTUAL_RAIL_VEHICLE, CcAddVirtualEngine);
+						callback = CcAddVirtualEngine;
+						cmd = CMD_BUILD_VIRTUAL_RAIL_VEHICLE;
+					} else {
+						callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(selected_wagon)->railveh_type == RAILVEH_WAGON)
+								? CcBuildWagon : CcBuildPrimaryVehicle;
+						cmd = GetCmdBuildVeh(this->vehicle_type);
 					}
-					else {
-						CommandCallback *callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(sel_eng)->railveh_type == RAILVEH_WAGON) ? CcBuildWagon : CcBuildPrimaryVehicle;
-						DoCommandP(this->window_number, sel_eng, 0, GetCmdBuildVeh(this->vehicle_type), callback);
-					}
+					CargoID cargo = this->cargo_filter_wagon[this->cargo_filter_criteria_wagon];
+					if (cargo == CF_ANY || cargo == CF_ENGINES) cargo = CF_NONE;
+					DoCommandP(this->window_number, selected_wagon | (cargo << 24), 0, cmd, callback);
 				}
 				break;
 			}
 
 			case WID_BV_RENAME_WAGON: {
-				EngineID sel_eng = this->sel_engine_wagon;
-				if (sel_eng != INVALID_ENGINE) {
+				const EngineID selected_wagon = this->sel_engine_wagon;
+				if (selected_wagon != INVALID_ENGINE) {
 					this->rename_engine_loco = INVALID_ENGINE;
-					this->rename_engine_wagon = sel_eng;
-					SetDParam(0, sel_eng);
+					this->rename_engine_wagon = selected_wagon;
+					SetDParam(0, selected_wagon);
 					ShowQueryString(STR_ENGINE_NAME, STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION + this->vehicle_type, MAX_LENGTH_ENGINE_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
 				}
 				break;
