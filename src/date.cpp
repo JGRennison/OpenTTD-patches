@@ -39,6 +39,8 @@ YearMonthDay _game_load_cur_date_ymd;
 DateFract _game_load_date_fract;
 uint8 _game_load_tick_skip_counter;
 
+extern void ClearOutOfDateSignalSpeedRestrictions();
+
 /**
  * Set the date.
  * @param date  New date
@@ -280,7 +282,8 @@ static void OnNewDay()
 	if (!_settings_time.time_in_minutes || _settings_client.gui.date_with_time > 0) {
 		SetWindowWidgetDirty(WC_STATUS_BAR, 0, WID_S_LEFT);
 	}
-	EnginesDailyLoop();
+	EnginesDailyLoop();	
+	ClearOutOfDateSignalSpeedRestrictions();
 
 	/* Refresh after possible snowline change */
 	SetWindowClassesDirty(WC_TOWN_VIEW);

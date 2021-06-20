@@ -90,6 +90,12 @@ struct SignalSpeedKey
 	}
 };
 
+struct SignalSpeedValue
+{
+	uint16 train_speed;
+	DateTicksScaled time_stamp;
+};
+
 struct SignalSpeedKeyHashFunc
 {
 	std::size_t operator() (const SignalSpeedKey &key) const
@@ -100,12 +106,6 @@ struct SignalSpeedKeyHashFunc
 
 		return (h1 ^ h2) ^ h3;
 	}
-};
-
-struct SignalSpeedValue
-{
-	uint16 train_speed;
-	Date time_stamp;
 };
 
 static std::unordered_map<SignalSpeedKey, SignalSpeedValue, SignalSpeedKeyHashFunc> _signal_speeds(1 << 16);
@@ -125,6 +125,46 @@ extern TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, c
 static void TrainEnterStation(Train *v, StationID station);
 static void UnreserveBridgeTunnelTile(TileIndex tile);
 static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile);
+
+/** Return the scaled date ticks by which the speed restriction
+ *  at the current position of the train is going to be invalid */
+static DateTicksScaled GetSpeedRestrictionTimeout(const Train *t)
+{
+	const int64 look_ahead_distance = 16; // In tiles
+	const int64 velocity = std::max<int64>(25, t->cur_speed);
+
+	// This is a guess. I cannot figure out how the game actually calculates ticks_per_tile.
+	// If anybody has the correct value here, let me know.
+	const int64 ticks_per_tile = 2232 / velocity;
+
+	const int64 ticks = ticks_per_tile * look_ahead_distance;
+	
+	return _scaled_date_ticks + ticks;
+}
+
+/** Checks if the timeout of the specified signal speed restriction value has passed */
+static bool IsOutOfDate(const SignalSpeedValue& value)
+{
+	return _scaled_date_ticks > value.time_stamp;
+}
+
+/** Removes all speed restrictions from all signals */
+void ClearAllSignalSpeedRestrictions()
+{
+	_signal_speeds.clear();
+}
+
+/** Removes all speed restrictions which have passed their timeout from all signals */
+void ClearOutOfDateSignalSpeedRestrictions()
+{
+	for(auto key_value_pair = _signal_speeds.begin(); key_value_pair != _signal_speeds.end(); ) {
+		if (IsOutOfDate(key_value_pair->second)) {
+			key_value_pair = _signal_speeds.erase(key_value_pair);
+		} else {
+			++key_value_pair;
+		}
+	}
+}
 
 inline void ClearLookAheadIfInvalid(Train *v)
 {
@@ -988,10 +1028,10 @@ static void AdvanceLookAheadPosition(Train *v)
 /**
  * Calculates the maximum speed based on any train in front of this train.
  */
-int Train::GetAtcMaxSpeed() const
+int32 Train::GetAtcMaxSpeed() const
 {
 	if (!(this->vehstatus & VS_CRASHED) && _settings_game.vehicle.train_speed_adaption && this->signal_speed_restriction != 0) {
-		return std::max<int>(25, this->signal_speed_restriction);
+		return std::max<int32>(25, this->signal_speed_restriction);
 	}
 
 	return INT32_MAX;
@@ -5564,12 +5604,14 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					const auto found_speed_restriction = _signal_speeds.find(speed_key);
 
 					if (found_speed_restriction != _signal_speeds.end()) {
-						if (_date - found_speed_restriction->second.time_stamp < 6) {
-							v->signal_speed_restriction = std::max<uint16>(25, found_speed_restriction->second.train_speed);
-						} else {
+						if (IsOutOfDate(found_speed_restriction->second)) {
 							_signal_speeds.erase(speed_key);
 							v->signal_speed_restriction = 0;
+						} else {
+							v->signal_speed_restriction = std::max<uint16>(25, found_speed_restriction->second.train_speed);
 						}
+					} else {
+						v->signal_speed_restriction = 0;
 					}
 				}
 				
@@ -5622,8 +5664,8 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 							speed_key.last_passing_train_dir = v->GetVehicleTrackdir()
 						};
 						SignalSpeedValue speed_value = {
-							speed_value.train_speed = v->First()->GetDisplaySpeed(),
-							speed_value.time_stamp = _date
+							speed_value.train_speed = v->First()->cur_speed,
+							speed_value.time_stamp = GetSpeedRestrictionTimeout(v->First())
 						};
 						_signal_speeds[speed_key] = speed_value;
 
