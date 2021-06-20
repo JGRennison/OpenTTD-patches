@@ -2903,25 +2903,23 @@ static inline TileIndex ViewportMapGetMostSignificantTileType(const Viewport * c
 
 /** Get the colour of a tile, can be 32bpp RGB or 8bpp palette index. */
 template <bool is_32bpp, bool show_slope>
-uint32 ViewportMapGetColour(const Viewport * const vp, uint x, uint y, const uint colour_index)
+uint32 ViewportMapGetColour(const Viewport * const vp, int x, int y, const uint colour_index)
 {
-	if (!(IsInsideMM(x, TILE_SIZE, MapMaxX() * TILE_SIZE - 1) &&
-		  IsInsideMM(y, TILE_SIZE, MapMaxY() * TILE_SIZE - 1)))
-		return 0;
+	if (x >= static_cast<int>(MapMaxX() * TILE_SIZE) || y >= static_cast<int>(MapMaxY() * TILE_SIZE)) return 0;
 
 	/* Very approximative but fast way to get the tile when taking Z into account. */
-	const TileIndex tile_tmp = TileVirtXY(x, y);
-	const uint z = TileHeight(tile_tmp) * 4;
-	if (x + z >= MapSizeX() << 4) {
+	const TileIndex tile_tmp = TileVirtXY(std::max(0, x), std::max(0, y));
+	const int z = TileHeight(tile_tmp) * 4;
+	if (x + z < 0 || y + z < 0 || static_cast<uint>(x + z) >= MapSizeX() << 4) {
 		/* Wrapping of tile X coordinate causes a graphic glitch below south west border. */
 		return 0;
 	}
 	TileIndex tile = TileVirtXY(x + z, y + z);
 	if (tile >= MapSize()) return 0;
-	const uint z2 = TileHeight(tile) * 4;
+	const int z2 = TileHeight(tile) * 4;
 	if (unlikely(z2 != z)) {
-		const uint approx_z = (z + z2) / 2;
-		if (x + approx_z >= MapSizeX() << 4) {
+		const int approx_z = (z + z2) / 2;
+		if (x + approx_z < 0 || y + approx_z < 0 || static_cast<uint>(x + approx_z) >= MapSizeX() << 4) {
 			/* Wrapping of tile X coordinate causes a graphic glitch below south west border. */
 			return 0;
 		}
