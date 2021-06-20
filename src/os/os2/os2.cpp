@@ -223,3 +223,4 @@ void PerThreadSetupInit() { }
 bool IsMainThread() { return false; }
 bool IsNonMainThread() { return false; }
 bool IsGameThread() { return false; }
+bool IsNonGameThread() { return false; }

@@ -381,6 +381,15 @@ bool IsGameThread()
 #if !defined(NO_THREADS)
 	return game_thread == pthread_self();
 #else
+	return true;
+#endif
+}
+
+bool IsNonGameThread()
+{
+#if !defined(NO_THREADS)
+	return game_thread != pthread_self();
+#else
 	return false;
 #endif
 }

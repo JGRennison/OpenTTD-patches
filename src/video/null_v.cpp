@@ -11,6 +11,7 @@
 #include "../gfx_func.h"
 #include "../blitter/factory.hpp"
 #include "../window_func.h"
+#include "../thread.h"
 #include "null_v.h"
 
 #include "../safeguards.h"
@@ -48,6 +49,7 @@ void VideoDriver_Null::MakeDirty(int left, int top, int width, int height) {}
 
 void VideoDriver_Null::MainLoop()
 {
+	SetSelfAsGameThread();
 	if (this->until_exit) {
 		while (!_exit_game) {
 			::GameLoop();

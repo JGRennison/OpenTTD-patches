@@ -76,6 +76,11 @@ bool IsNonMainThread();
  */
 bool IsGameThread();
 
+/**
+ * @return true if the current thread is definitely a "non-game" thread. If in doubt returns false.
+ */
+bool IsNonGameThread();
+
 
 /**
  * Start a new thread.

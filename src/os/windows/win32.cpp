@@ -757,6 +757,11 @@ bool IsGameThread()
 	return game_thread_id == GetCurrentThreadId();
 }
 
+bool IsNonGameThread()
+{
+	return game_thread_id != GetCurrentThreadId();
+}
+
 static std::map<DWORD, std::string> _thread_name_map;
 static std::mutex _thread_name_map_mutex;
 
