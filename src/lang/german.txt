@@ -1599,8 +1599,8 @@ STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT              :Benutze standar
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT_HELPTEXT     :Wähle ob für neue Fahrzeuge standardmäßig Fahrpläne mit Fahrzeugseparierung aktiviert werden sollen.
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Fahrpläne in Ticks anstatt in Tagen anzeigen: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Zeige Fahrtzeiten in Fahrplänen in Ticks statt Tagen
-STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS                     :Zeige restliche Ticks im Farplan: {STRING}
-STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS_HELPTEXT            :Zeige beim Konvertieren des Farplans von Ticks zu Tage/Minuten die restlichen Ticks an.
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS                     :Zeige restliche Ticks im Fahrplan: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS_HELPTEXT            :Zeige beim Konvertieren des Fahrplans von Ticks zu Tagen/Minuten die restlichen Ticks an.
 STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS                       :Benutze Zeiteinstellungen des Clients anstelle der des Spielstands: {STRING}
 STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS_HELPTEXT              :Wähle ob für die Zeitanzeige die Einstellungen der lokalen Spieler anstelle der des Spielstandes verwendet werden sollen.
 STR_CONFIG_SETTING_TIME_IN_MINUTES                              :Zeige Zeit in Minuten anstelle von Tagen: {STRING}
