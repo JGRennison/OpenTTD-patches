@@ -329,7 +329,7 @@ void ServerNetworkUDPSocketHandler::Receive_CLIENT_GET_NEWGRFS(Packet *p, Networ
 		if (in_reply.empty()) return;
 
 		Packet packet(PACKET_UDP_SERVER_NEWGRFS);
-		packet.Send_uint8(in_reply.size());
+		packet.Send_uint8(static_cast<uint8>(in_reply.size()));
 		for (const GRFInfo &info : in_reply) {
 			char name[NETWORK_GRF_NAME_LENGTH];
 

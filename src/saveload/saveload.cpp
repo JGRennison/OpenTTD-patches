@@ -800,9 +800,9 @@ void SlSetLength(size_t length)
 						SlWriteByte(CH_EXT_HDR);
 						SlWriteUint32(static_cast<uint32>(SLCEHF_BIG_RIFF));
 					}
-					SlWriteUint32((uint32)((length & 0xFFFFFF) | ((length >> 24) << 28)));
+					SlWriteUint32(static_cast<uint32>((length & 0xFFFFFF) | ((length >> 24) << 28)));
 					if (length >= (1 << 28)) {
-						SlWriteUint32(length >> 28);
+						SlWriteUint32(static_cast<uint32>(length >> 28));
 					}
 					break;
 				case CH_ARRAY:
