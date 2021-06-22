@@ -559,8 +559,11 @@ private:
 
 		int mintop = std::min(newtop, this->top);
 		int maxtop = std::max(newtop, this->top);
-		if (this->viewport != nullptr) this->viewport->top += newtop - this->top;
 		this->top = newtop;
+		if (this->viewport != nullptr) {
+			NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_N_VIEWPORT);
+			nvp->UpdateViewportCoordinates(this);
+		}
 
 		SetDirtyBlocks(this->left, mintop, this->left + this->width, maxtop + this->height);
 	}
