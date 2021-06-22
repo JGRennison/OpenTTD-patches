@@ -267,13 +267,43 @@ public:
 		return const_cast<Train *>(const_cast<const Train *>(this)->GetStationLoadingVehicle());
 	}
 
-	inline uint16 GetCargoWeight(uint cargo_amount) const
+	uint16 GetCargoWeight(uint cargo_amount) const
 	{
 		if (cargo_amount > 0) {
 			return (CargoSpec::Get(this->cargo_type)->weight * cargo_amount * FreightWagonMult(this->cargo_type)) / 16;
 		} else {
 			return 0;
 		}
+	}
+
+	/**
+	 * Allows to know the weight value that this vehicle will use (excluding cargo).
+	 * @return Weight value from the engine in tonnes.
+	 */
+	uint16 GetWeightWithoutCargo() const
+	{
+		uint16 weight = 0;
+
+		/* Vehicle weight is not added for articulated parts. */
+		if (!this->IsArticulatedPart()) {
+			weight += GetVehicleProperty(this, PROP_TRAIN_WEIGHT, RailVehInfo(this->engine_type)->weight);
+		}
+
+		/* Powered wagons have extra weight added. */
+		if (HasBit(this->flags, VRF_POWEREDWAGON)) {
+			weight += RailVehInfo(this->gcache.first_engine)->pow_wag_weight;
+		}
+
+		return weight;
+	}
+
+	/**
+	 * Allows to know the weight value that this vehicle will use (cargo only).
+	 * @return Weight value from the engine in tonnes.
+	 */
+	uint16 GetCargoWeight() const
+	{
+		return this->GetCargoWeight(this->cargo.StoredCount());
 	}
 
 protected: // These functions should not be called outside acceleration code.
@@ -325,36 +355,6 @@ protected: // These functions should not be called outside acceleration code.
 		}
 
 		return 0;
-	}
-
-	/**
-	 * Allows to know the weight value that this vehicle will use (excluding cargo).
-	 * @return Weight value from the engine in tonnes.
-	 */
-	inline uint16 GetWeightWithoutCargo() const
-	{
-		uint16 weight = 0;
-
-		/* Vehicle weight is not added for articulated parts. */
-		if (!this->IsArticulatedPart()) {
-			weight += GetVehicleProperty(this, PROP_TRAIN_WEIGHT, RailVehInfo(this->engine_type)->weight);
-		}
-
-		/* Powered wagons have extra weight added. */
-		if (HasBit(this->flags, VRF_POWEREDWAGON)) {
-			weight += RailVehInfo(this->gcache.first_engine)->pow_wag_weight;
-		}
-
-		return weight;
-	}
-
-	/**
-	 * Allows to know the weight value that this vehicle will use (cargo only).
-	 * @return Weight value from the engine in tonnes.
-	 */
-	inline uint16 GetCargoWeight() const
-	{
-		return this->GetCargoWeight(this->cargo.StoredCount());
 	}
 
 	/**

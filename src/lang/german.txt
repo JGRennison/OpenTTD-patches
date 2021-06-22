@@ -4821,6 +4821,9 @@ STR_VEHICLE_DETAILS_CARGO_EMPTY                                 :{LTBLUE}Leer
 STR_VEHICLE_DETAILS_CARGO_FROM                                  :{LTBLUE}{CARGO_LONG} von {STATION}
 STR_VEHICLE_DETAILS_CARGO_FROM_MULT                             :{LTBLUE}{CARGO_LONG} von {STATION} (x{NUM})
 
+STR_VEHICLE_DETAILS_TRAIN_TOTAL_WEIGHT                          :{BLACK}Gesamtgewicht: {LTBLUE}{WEIGHT_SHORT} {BLACK}(leer) – {LTBLUE}{WEIGHT_SHORT} {BLACK}(beladen)
+STR_VEHICLE_DETAILS_TRAIN_MAX_SPEED                             :{BLACK}Max. Geschwindigkeit: {LTBLUE}{VELOCITY} {BLACK}(leer) - {LTBLUE}{VELOCITY} {BLACK}(beladen)
+
 STR_VEHICLE_DETAIL_TAB_CARGO                                    :{BLACK}Fracht
 STR_VEHICLE_DETAILS_TRAIN_CARGO_TOOLTIP                         :{BLACK}Zeige Einzelheiten zur geladenen Fracht
 STR_VEHICLE_DETAIL_TAB_INFORMATION                              :{BLACK}Information
