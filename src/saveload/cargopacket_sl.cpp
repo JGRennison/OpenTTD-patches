@@ -171,8 +171,8 @@ void Save_CPDP()
  */
 void Load_CPDP()
 {
-	uint count = SlGetFieldLength() / 16;
-	uint last_cargo_packet_id = (uint) -1;
+	uint count = static_cast<uint>(SlGetFieldLength() / 16);
+	uint last_cargo_packet_id = std::numeric_limits<uint32_t>::max();
 
 	for (uint i = 0; i < count; i++) {
 		uint64 k = SlReadUint64();
