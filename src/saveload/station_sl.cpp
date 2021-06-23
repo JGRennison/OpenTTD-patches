@@ -459,6 +459,7 @@ static const SaveLoad _station_desc[] = {
 	  SLE_CONDVAR(Station, always_accepted,            SLE_FILE_U32 | SLE_VAR_U64, SLV_127, SLV_EXTEND_CARGOTYPES),
 	  SLE_CONDVAR(Station, always_accepted,            SLE_UINT64,                 SLV_EXTEND_CARGOTYPES, SL_MAX_VERSION),
 	  SLE_CONDNULL_X(32 * 24, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP, SL_JOKER_1_22)),
+	  SLE_CONDARR(Station, station_cargo_history,      SLE_UINT8, NUM_CARGO * MAX_STATION_CARGO_HISTORY_DAYS, SL_JOKER_1_22, SL_MAX_VERSION),
 
 	      SLE_END()
 };

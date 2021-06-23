@@ -808,6 +808,8 @@ public:
 	IndustryList industries_near; ///< Cached list of industries near the station that can accept cargo, @see DeliverGoodsToIndustry()
 	Industry *industry;           ///< NOSAVE: Associated industry for neutral stations. (Rebuilt on load from Industry->st)
 
+	uint8 station_cargo_history[NUM_CARGO * MAX_STATION_CARGO_HISTORY_DAYS]; ///< Station history of waiting cargo.
+
 	Station(TileIndex tile = INVALID_TILE);
 	~Station();
 
@@ -816,6 +818,8 @@ public:
 	void MarkTilesDirty(bool cargo_change) const;
 
 	void UpdateVirtCoord() override;
+
+	void UpdateCargoHistory();
 
 	void MoveSign(TileIndex new_xy) override;
 

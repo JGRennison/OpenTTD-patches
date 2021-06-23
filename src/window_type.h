@@ -582,6 +582,12 @@ enum WindowClass {
 	WC_PAYMENT_RATES,
 
 	/**
+	* Station cargo graph; %Window numbers:
+	*   - #StationID = #StationCargoWidgets
+	*/
+	WC_STATION_CARGO,
+
+	/**
 	 * Performance detail window; %Window numbers:
 	 *   - 0 = #PerformanceRatingDetailsWidgets
 	 */

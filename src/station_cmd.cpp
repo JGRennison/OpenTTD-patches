@@ -405,6 +405,23 @@ void Station::GetTileArea(TileArea *ta, StationType type) const
 }
 
 /**
+ * Update the cargo history.
+ */
+void Station::UpdateCargoHistory()
+{
+	const CargoSpec* cs;
+	FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+		auto amount = this->goods[cs->Index()].cargo.AvailableCount();
+
+		std::rotate(std::begin(this->station_cargo_history) + cs->Index() * MAX_STATION_CARGO_HISTORY_DAYS,
+					std::begin(this->station_cargo_history) + cs->Index() * MAX_STATION_CARGO_HISTORY_DAYS + 1,
+					std::begin(this->station_cargo_history) + (cs->Index() + 1) * MAX_STATION_CARGO_HISTORY_DAYS);
+
+		this->station_cargo_history[(cs->Index() + 1) * MAX_STATION_CARGO_HISTORY_DAYS - 1] = std::clamp(amount / STATION_CARGO_HISTORY_FACTOR, (uint)0, (uint)UINT8_MAX);
+	}
+}
+
+/**
  * Update the virtual coords needed to draw the station sign.
  */
 void Station::UpdateVirtCoord()
@@ -4236,6 +4253,17 @@ void OnTick_Station()
 			if (!StationHandleBigTick(st)) continue;
 			TriggerStationAnimation(st, st->xy, SAT_250_TICKS);
 			if (Station::IsExpected(st)) AirportAnimationTrigger(Station::From(st), AAT_STATION_250_TICKS);
+		}
+	}
+}
+
+/** Daily loop for stations. */
+void StationDailyLoop()
+{
+	// Only record cargo history every second day.
+	if (_date % 2 != 0) {
+		for (Station *st : Station::Iterate()) {
+			st->UpdateCargoHistory();
 		}
 	}
 }
