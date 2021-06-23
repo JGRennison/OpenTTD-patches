@@ -722,6 +722,7 @@ public:
 		switch (widget) {
 			case WID_GL_SORT_BY_ORDER: // Flip sorting method ascending/descending
 				this->vehgroups.ToggleSortOrder();
+				this->vehgroups.ForceResort();
 				this->SetDirty();
 				break;
 

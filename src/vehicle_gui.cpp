@@ -2232,6 +2232,7 @@ public:
 		switch (widget) {
 			case WID_VL_SORT_ORDER: // Flip sorting method ascending/descending
 				this->vehgroups.ToggleSortOrder();
+				this->vehgroups.ForceResort();
 				this->SetDirty();
 				break;
 
