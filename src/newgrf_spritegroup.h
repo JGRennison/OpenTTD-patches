@@ -107,7 +107,7 @@ struct RealSpriteGroup : SpriteGroup {
 	std::vector<const SpriteGroup *> loading; ///< List of loading groups (can be SpriteIDs or Callback results)
 
 protected:
-	const SpriteGroup *Resolve(ResolverObject &object) const;
+	const SpriteGroup *Resolve(ResolverObject &object) const override;
 };
 
 /* Shared by deterministic and random groups. */

@@ -70,17 +70,17 @@ private:
 public:
 	SpriteFontCache(FontSize fs);
 	~SpriteFontCache();
-	virtual SpriteID GetUnicodeGlyph(WChar key) override;
-	virtual void SetUnicodeGlyph(WChar key, SpriteID sprite) override;
-	virtual void InitializeUnicodeGlyphMap() override;
-	virtual void ClearFontCache() override;
-	virtual const Sprite *GetGlyph(GlyphID key) override;
-	virtual uint GetGlyphWidth(GlyphID key) override;
-	virtual bool GetDrawGlyphShadow() override;
-	virtual GlyphID MapCharToGlyph(WChar key) override { assert(IsPrintable(key)); return SPRITE_GLYPH | key; }
-	virtual const void *GetFontTable(uint32 tag, size_t &length) override { length = 0; return nullptr; }
-	virtual const char *GetFontName() { return "sprite"; }
-	virtual bool IsBuiltInFont() override { return true; }
+	SpriteID GetUnicodeGlyph(WChar key) override;
+	void SetUnicodeGlyph(WChar key, SpriteID sprite) override;
+	void InitializeUnicodeGlyphMap() override;
+	void ClearFontCache() override;
+	const Sprite *GetGlyph(GlyphID key) override;
+	uint GetGlyphWidth(GlyphID key) override;
+	bool GetDrawGlyphShadow() override;
+	GlyphID MapCharToGlyph(WChar key) override { assert(IsPrintable(key)); return SPRITE_GLYPH | key; }
+	const void *GetFontTable(uint32 tag, size_t &length) override { length = 0; return nullptr; }
+	const char *GetFontName() override { return "sprite"; }
+	bool IsBuiltInFont() override { return true; }
 };
 
 /**
