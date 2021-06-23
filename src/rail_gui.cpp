@@ -1340,6 +1340,7 @@ public:
 					}
 				}
 				size->width = std::max(size->width, d.width + padding.width);
+				size->width = std::min<uint>(size->width, ScaleGUITrad(400));
 				break;
 			}
 
