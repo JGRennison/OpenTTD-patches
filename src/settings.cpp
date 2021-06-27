@@ -1541,6 +1541,15 @@ static bool PublicRoadsSettingChange(int32 p1) {
 	return true;
 }
 
+static bool TrainSpeedAdaptionChanged(int32 p1) {
+	extern void ClearAllSignalSpeedRestrictions();
+	ClearAllSignalSpeedRestrictions();
+	for (Train *t : Train::Iterate()) {
+		t->signal_speed_restriction = 0;
+	}
+	return true;
+}
+
 /** Checks if any settings are set to incorrect values, and sets them to correct values in that case. */
 static void ValidateSettings()
 {
