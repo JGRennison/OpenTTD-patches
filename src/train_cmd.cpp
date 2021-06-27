@@ -994,18 +994,6 @@ static void AdvanceLookAheadPosition(Train *v)
 }
 
 /**
- * Calculates the maximum speed based on any train in front of this train.
- */
-int32 Train::GetAtcMaxSpeed() const
-{
-	if (!(this->vehstatus & VS_CRASHED) && this->signal_speed_restriction != 0) {
-		return std::max<int32>(25, this->signal_speed_restriction);
-	}
-
-	return INT32_MAX;
-}
-
-/**
  * Calculates the maximum speed information of the vehicle under its current conditions.
  * @return Maximum speed information of the vehicle.
  */
@@ -1014,8 +1002,6 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 	int max_speed = _settings_game.vehicle.train_acceleration_model == AM_ORIGINAL ?
 			this->gcache.cached_max_track_speed :
 			std::min<int>(this->tcache.cached_max_curve_speed, this->gcache.cached_max_track_speed);
-
-	if (_settings_game.vehicle.train_speed_adaptation) max_speed = std::min<int>(max_speed, GetAtcMaxSpeed());
 
 	if (this->current_order.IsType(OT_LOADING_ADVANCE)) max_speed = std::min(max_speed, 15);
 
@@ -1079,6 +1065,9 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 	}
 	if (this->speed_restriction != 0) {
 		advisory_max_speed = std::min<int>(advisory_max_speed, this->speed_restriction);
+	}
+	if (this->signal_speed_restriction != 0 && _settings_game.vehicle.train_speed_adaptation) {
+		advisory_max_speed = std::min<int>(advisory_max_speed, this->signal_speed_restriction);
 	}
 	if (this->reverse_distance > 1) {
 		advisory_max_speed = std::min<int>(advisory_max_speed, ReversingDistanceTargetSpeed(this));
