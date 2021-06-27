@@ -1811,8 +1811,8 @@ STR_CONFIG_SETTING_NOSERVICE                                    :Disable servici
 STR_CONFIG_SETTING_NOSERVICE_HELPTEXT                           :When enabled, vehicles do not get serviced if they cannot break down
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :Enable wagon speed limits: {STRING2}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :When enabled, also use speed limits of wagons for deciding the maximum speed of a train
-STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTION                         :Enable train speed adaption: {STRING2}
-STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTION_HELPTEXT                :If enabled, faster trains behind slower trains adjust their speed.
+STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION                       :Enable train speed adaptation: {STRING2}
+STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :When enabled, faster trains adjust their speed to match slower trains in front.
 STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES                 :Road vehicles slow down in curves: {STRING2}
 STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES_HELPTEXT        :When enabled, road vehicles slow down in curves. (Only with realistic acceleration)
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :Disable electric rails: {STRING2}

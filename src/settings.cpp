@@ -1541,7 +1541,7 @@ static bool PublicRoadsSettingChange(int32 p1) {
 	return true;
 }
 
-static bool TrainSpeedAdaptionChanged(int32 p1) {
+static bool TrainSpeedAdaptationChanged(int32 p1) {
 	extern void ClearAllSignalSpeedRestrictions();
 	ClearAllSignalSpeedRestrictions();
 	for (Train *t : Train::Iterate()) {

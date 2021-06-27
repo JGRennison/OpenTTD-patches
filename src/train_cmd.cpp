@@ -1047,7 +1047,7 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 			this->gcache.cached_max_track_speed :
 			std::min<int>(this->tcache.cached_max_curve_speed, this->gcache.cached_max_track_speed);
 
-	if (_settings_game.vehicle.train_speed_adaption) max_speed = std::min<int>(max_speed, GetAtcMaxSpeed());
+	if (_settings_game.vehicle.train_speed_adaptation) max_speed = std::min<int>(max_speed, GetAtcMaxSpeed());
 
 	if (this->current_order.IsType(OT_LOADING_ADVANCE)) max_speed = std::min(max_speed, 15);
 
@@ -5592,7 +5592,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 		if (update_signals_crossing) {
 
 			if (v->IsFrontEngine()) {
-				if (_settings_game.vehicle.train_speed_adaption && IsTileType(gp.old_tile, MP_RAILWAY) && HasSignals(gp.old_tile)) {
+				if (_settings_game.vehicle.train_speed_adaptation && IsTileType(gp.old_tile, MP_RAILWAY) && HasSignals(gp.old_tile)) {
 					const TrackdirBits rev_tracks = TrackBitsToTrackdirBits(GetTrackBits(gp.old_tile)) & DiagdirReachesTrackdirs(ReverseDiagDir(enterdir));
 					const Trackdir rev_trackdir = FindFirstTrackdir(rev_tracks);
 					const Track track = TrackdirToTrack(rev_trackdir);
@@ -5658,7 +5658,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					const Track track = TrackdirToTrack(rev_trackdir);
 
 					if (HasSignalOnTrack(gp.old_tile, track)) {
-						if (_settings_game.vehicle.train_speed_adaption) {
+						if (_settings_game.vehicle.train_speed_adaptation) {
 							SignalSpeedKey speed_key = {
 								speed_key.signal_tile = gp.old_tile,
 								speed_key.signal_track = track,
