@@ -13,6 +13,7 @@
 #include "../core/bitmath_func.hpp"
 #include <vector>
 #include "saveload.h"
+#include "saveload_buffer.h"
 
 typedef std::vector<byte> Buffer;
 
@@ -197,9 +198,7 @@ static void Save_SPRG()
 
 	uint size = (uint)b.size();
 	SlSetLength(size);
-	for(uint i = 0; i < size; i++) {
-		SlWriteByte(b[i]); // TODO Gotta be a better way
-	}
+	MemoryDumper::GetCurrent()->CopyBytes(b.data(), size);
 }
 
 // We don't know the pointer values that need to be stored in various
