@@ -5562,7 +5562,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 
 					if (found_speed_restriction != _signal_speeds.end()) {
 						if (IsOutOfDate(found_speed_restriction->second)) {
-							_signal_speeds.erase(speed_key);
+							_signal_speeds.erase(found_speed_restriction);
 							v->signal_speed_restriction = 0;
 						} else {
 							v->signal_speed_restriction = std::max<uint16>(25, found_speed_restriction->second.train_speed);
