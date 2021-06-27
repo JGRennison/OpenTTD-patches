@@ -138,7 +138,7 @@ static DateTicksScaled GetSpeedRestrictionTimeout(const Train *t)
 	const int64 ticks_per_tile = 2232 / velocity;
 
 	const int64 ticks = ticks_per_tile * look_ahead_distance;
-	
+
 	return _scaled_date_ticks + ticks;
 }
 
@@ -5592,7 +5592,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 		if (update_signals_crossing) {
 
 			if (v->IsFrontEngine()) {
-				if (IsTileType(gp.old_tile, MP_RAILWAY) && HasSignals(gp.old_tile)) {				
+				if (IsTileType(gp.old_tile, MP_RAILWAY) && HasSignals(gp.old_tile)) {
 					const TrackdirBits rev_tracks = TrackBitsToTrackdirBits(GetTrackBits(gp.old_tile)) & DiagdirReachesTrackdirs(ReverseDiagDir(enterdir));
 					const Trackdir rev_trackdir = FindFirstTrackdir(rev_tracks);
 					const Track track = TrackdirToTrack(rev_trackdir);
@@ -5614,7 +5614,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						v->signal_speed_restriction = 0;
 					}
 				}
-				
+
 				switch (TrainMovedChangeSignal(v, gp.new_tile, enterdir, true)) {
 					case CHANGED_NORMAL_TO_PBS_BLOCK:
 						/* We are entering a block with PBS signals right now, but

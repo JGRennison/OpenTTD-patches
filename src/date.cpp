@@ -282,7 +282,7 @@ static void OnNewDay()
 	if (!_settings_time.time_in_minutes || _settings_client.gui.date_with_time > 0) {
 		SetWindowWidgetDirty(WC_STATUS_BAR, 0, WID_S_LEFT);
 	}
-	EnginesDailyLoop();	
+	EnginesDailyLoop();
 	ClearOutOfDateSignalSpeedRestrictions();
 
 	/* Refresh after possible snowline change */

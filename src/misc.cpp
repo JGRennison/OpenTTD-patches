@@ -117,7 +117,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	RebuildViewportKdtree();
 
 	FreeSignalPrograms();
-	FreeSignalDependencies();	
+	FreeSignalDependencies();
 	ClearAllSignalSpeedRestrictions();
 
 	ClearZoningCaches();
