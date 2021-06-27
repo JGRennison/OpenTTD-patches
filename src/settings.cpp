@@ -1793,7 +1793,12 @@ static bool ImprovedBreakdownsSettingChanged(int32 p1)
 
 static bool DayLengthChanged(int32 p1)
 {
+	const DateTicksScaled old_scaled_date_ticks = _scaled_date_ticks;
 	SetScaledTickVariables();
+
+	extern void AdjustAllSignalSpeedRestrictionTickValues(DateTicksScaled delta);
+	AdjustAllSignalSpeedRestrictionTickValues(_scaled_date_ticks - old_scaled_date_ticks);
+
 	MarkWholeScreenDirty();
 	return true;
 }

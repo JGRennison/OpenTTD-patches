@@ -122,6 +122,13 @@ void ClearAllSignalSpeedRestrictions()
 	_signal_speeds.clear();
 }
 
+void AdjustAllSignalSpeedRestrictionTickValues(DateTicksScaled delta)
+{
+	for (auto &it : _signal_speeds) {
+		it.second.time_stamp += delta;
+	}
+}
+
 /** Removes all speed restrictions which have passed their timeout from all signals */
 void ClearOutOfDateSignalSpeedRestrictions()
 {
