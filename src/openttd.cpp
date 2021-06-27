@@ -439,6 +439,9 @@ static void ShutdownGame()
 	FreeSignalPrograms();
 	FreeSignalDependencies();
 
+	extern void ClearAllSignalSpeedRestrictions();
+	ClearAllSignalSpeedRestrictions();
+
 	ClearZoningCaches();
 	ClearOrderDestinationRefcountMap();
 
