@@ -999,14 +999,17 @@ public:
 				}
 				break;
 			}
+
 			case WID_GL_CREATE_GROUP: { // make new group with auto generated vehicle specific name and add vehicle
-				const VehicleID vindex = this->vehicle_sel;
+				const Vehicle *v = Vehicle::Get(vehicle_sel);
 				this->vehicle_sel = INVALID_VEHICLE;
 				this->group_over = INVALID_GROUP;
 				this->SetDirty();
 
-				DoCommandP(0, vindex | (_ctrl_pressed ? 1U << 31 : 0),0 , CMD_CREATE_GROUP_AUTO_NAME | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, nullptr);
-				
+				std::string name = GenerateAutoNameForVehicleGroup(v);
+
+				DoCommandP(0, VehicleListIdentifier(_ctrl_pressed ? VL_SHARED_ORDERS : VL_SINGLE_VEH, v->type, v->owner, v->index).Pack(), 0, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, name.c_str());
+
 				break;
 			}
 		}
