@@ -4782,6 +4782,8 @@ STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Zuverlä
 
 STR_VEHICLE_INFO_GROUP                                          :{BLACK}Gruppe: {LTBLUE}{GROUP}
 
+STR_VEHICLE_AUTO_GROUP_LOCAL_ROUTE                              :{TOWN} Ortsbereich {CARGO_LIST}
+
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Gebaut: {LTBLUE}{NUM}{BLACK} Wert: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Kapazität: {LTBLUE}Keine{STRING}
 STR_VEHICLE_INFO_CAPACITY                                       :{BLACK}Kapazität: {LTBLUE}{CARGO_LONG}{3:STRING}

@@ -4926,6 +4926,10 @@ STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Reliabil
 
 STR_VEHICLE_INFO_GROUP                                          :{BLACK}Group: {LTBLUE}{GROUP}
 
+STR_VEHICLE_AUTO_GROUP_ROUTE                                    :{TOWN} to {TOWN}{STRING1}
+STR_VEHICLE_AUTO_GROUP_LOCAL_ROUTE                              :{TOWN} Local{STRING1}
+STR_VEHICLE_AUTO_GROUP_CARGO_LIST                               : ({CARGO_LIST})
+
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Built: {LTBLUE}{NUM}{BLACK} Value: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Capacity: {LTBLUE}None{STRING}
 STR_VEHICLE_INFO_CAPACITY                                       :{BLACK}Capacity: {LTBLUE}{CARGO_LONG}{3:STRING}

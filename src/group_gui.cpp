@@ -999,6 +999,19 @@ public:
 				}
 				break;
 			}
+
+			case WID_GL_CREATE_GROUP: { // make new group with auto generated vehicle specific name and add vehicle
+				const Vehicle *v = Vehicle::Get(vehicle_sel);
+				this->vehicle_sel = INVALID_VEHICLE;
+				this->group_over = INVALID_GROUP;
+				this->SetDirty();
+
+				std::string name = GenerateAutoNameForVehicleGroup(v);
+
+				DoCommandP(0, VehicleListIdentifier(_ctrl_pressed ? VL_SHARED_ORDERS : VL_SINGLE_VEH, v->type, v->owner, v->index).Pack(), 0, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, name.c_str());
+
+				break;
+			}
 		}
 	}
 
@@ -1110,6 +1123,21 @@ public:
 		this->group_sel = INVALID_GROUP;
 		this->group_over = INVALID_GROUP;
 		this->SetWidgetDirty(WID_GL_LIST_VEHICLE);
+		this->SetVehicleDraggedOverCreateGroupButton(false);
+	}
+
+	void SetVehicleDraggedOverCreateGroupButton(bool dragged)
+	{
+		NWidgetCore *create_group = this->GetWidget<NWidgetCore>(WID_GL_CREATE_GROUP);
+		if (dragged && (create_group->type & WWB_PUSHBUTTON)) {
+			create_group->type = static_cast<WidgetType>(create_group->type & ~WWB_PUSHBUTTON);
+			create_group->SetLowered(true);
+			create_group->SetDirty(this);
+		} else if (!dragged && !(create_group->type & WWB_PUSHBUTTON)) {
+			create_group->type = static_cast<WidgetType>(create_group->type | WWB_PUSHBUTTON);
+			create_group->SetLowered(false);
+			create_group->SetDirty(this);
+		}
 	}
 
 	void OnMouseDrag(Point pt, int widget) override
@@ -1118,6 +1146,8 @@ public:
 
 		/* A vehicle is dragged over... */
 		GroupID new_group_over = INVALID_GROUP;
+
+		bool create_group_drag_over = false;
 		switch (widget) {
 			case WID_GL_DEFAULT_VEHICLES: // ... the 'default' group.
 				new_group_over = DEFAULT_GROUP;
@@ -1128,7 +1158,14 @@ public:
 				new_group_over = id_g >= this->groups.size() ? NEW_GROUP : this->groups[id_g]->index;
 				break;
 			}
+
+			case WID_GL_CREATE_GROUP: {
+				if (this->vehicle_sel != INVALID_VEHICLE) create_group_drag_over = true;
+				break;
+			}
 		}
+
+		this->SetVehicleDraggedOverCreateGroupButton(create_group_drag_over);
 
 		/* Do not highlight when dragging over the current group */
 		if (this->vehicle_sel != INVALID_VEHICLE) {

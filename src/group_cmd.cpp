@@ -15,6 +15,7 @@
 #include "vehicle_func.h"
 #include "autoreplace_base.h"
 #include "autoreplace_func.h"
+#include "base_station_base.h"
 #include "string_func.h"
 #include "company_func.h"
 #include "core/pool_func.hpp"
@@ -25,6 +26,9 @@
 #include "table/strings.h"
 
 #include "safeguards.h"
+#include "strings_func.h"
+#include "town.h"
+#include "townname_func.h"
 
 GroupID _new_group_id;
 
@@ -643,6 +647,86 @@ CommandCost CmdAddVehicleGroup(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	}
 
 	return CommandCost();
+}
+
+static Town* GetTownFromDestination(const DestinationID destination)
+{
+	Town* town = nullptr;
+
+	BaseStation *st = BaseStation::GetIfValid(destination);
+	if (st != nullptr) {
+		town = st->town;
+	}
+
+	return town;
+}
+
+static void GetAutoGroupMostRelevantTowns(const Vehicle *vehicle, Town* &from, Town* &to)
+{
+	std::vector<Town*> unique_destinations;
+
+	const int num = vehicle->GetNumOrders();
+
+	for (int x = 0; x < num; x++)
+	{
+		Order *order = vehicle->GetOrder(x);
+
+		if (order->GetType() != OT_GOTO_STATION) continue;
+
+		const DestinationID dest = order->GetDestination();
+		Town *town = GetTownFromDestination(dest);
+
+		if (town != nullptr && unique_destinations.end() == std::find(unique_destinations.begin(), unique_destinations.end(), town))
+		{
+			unique_destinations.push_back(town);
+		}
+	}
+
+	if (unique_destinations.empty()) return;
+
+	from = unique_destinations[0];
+
+	if (unique_destinations.size() > 1) {
+		to = unique_destinations[unique_destinations.size() - 1];
+	}
+}
+
+static CargoTypes GetVehicleCargoList(const Vehicle *vehicle)
+{
+	CargoTypes cargoes = 0;
+
+	for (const Vehicle *u = vehicle; u != nullptr; u = u->Next()) {
+		if (u->cargo_cap == 0) continue;
+
+		SetBit(cargoes, u->cargo_type);
+	}
+	return cargoes;
+}
+
+std::string GenerateAutoNameForVehicleGroup(const Vehicle *v)
+{
+	Town *town_from = nullptr;
+	Town *town_to = nullptr;
+
+	GetAutoGroupMostRelevantTowns(v, town_from, town_to);
+	if (town_from == nullptr) return "";
+
+	CargoTypes cargoes = GetVehicleCargoList(v);
+
+	char group_name[512];
+	if (town_from == town_to || town_to == nullptr) {
+		SetDParam(0, town_from->index);
+		SetDParam(1, (cargoes != 0) ? STR_VEHICLE_AUTO_GROUP_CARGO_LIST : STR_EMPTY);
+		SetDParam(2, cargoes);
+		GetString(group_name, STR_VEHICLE_AUTO_GROUP_LOCAL_ROUTE, lastof(group_name));
+	} else {
+		SetDParam(0, town_from->index);
+		SetDParam(1, town_to->index);
+		SetDParam(2, (cargoes != 0) ? STR_VEHICLE_AUTO_GROUP_CARGO_LIST : STR_EMPTY);
+		SetDParam(3, cargoes);
+		GetString(group_name, STR_VEHICLE_AUTO_GROUP_ROUTE, lastof(group_name));
+	}
+	return std::string(group_name);
 }
 
 /**
