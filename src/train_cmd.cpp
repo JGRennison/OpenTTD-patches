@@ -5559,23 +5559,25 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 				if (_settings_game.vehicle.train_speed_adaptation && IsTileType(gp.old_tile, MP_RAILWAY) && HasSignals(gp.old_tile)) {
 					const TrackdirBits rev_tracks = TrackBitsToTrackdirBits(GetTrackBits(gp.old_tile)) & DiagdirReachesTrackdirs(ReverseDiagDir(enterdir));
 					const Trackdir rev_trackdir = FindFirstTrackdir(rev_tracks);
-					const Track track = TrackdirToTrack(rev_trackdir);
-					SignalSpeedKey speed_key = {
-						speed_key.signal_tile = gp.old_tile,
-						speed_key.signal_track = track,
-						speed_key.last_passing_train_dir = v->GetVehicleTrackdir()
-					};
-					const auto found_speed_restriction = _signal_speeds.find(speed_key);
+					if (HasSignalOnTrackdir(gp.old_tile, ReverseTrackdir(rev_trackdir))) {
+						const Track track = TrackdirToTrack(rev_trackdir);
+						SignalSpeedKey speed_key = {
+							speed_key.signal_tile = gp.old_tile,
+							speed_key.signal_track = track,
+							speed_key.last_passing_train_dir = v->GetVehicleTrackdir()
+						};
+						const auto found_speed_restriction = _signal_speeds.find(speed_key);
 
-					if (found_speed_restriction != _signal_speeds.end()) {
-						if (IsOutOfDate(found_speed_restriction->second)) {
-							_signal_speeds.erase(found_speed_restriction);
-							v->signal_speed_restriction = 0;
+						if (found_speed_restriction != _signal_speeds.end()) {
+							if (IsOutOfDate(found_speed_restriction->second)) {
+								_signal_speeds.erase(found_speed_restriction);
+								v->signal_speed_restriction = 0;
+							} else {
+								v->signal_speed_restriction = std::max<uint16>(25, found_speed_restriction->second.train_speed);
+							}
 						} else {
-							v->signal_speed_restriction = std::max<uint16>(25, found_speed_restriction->second.train_speed);
+							v->signal_speed_restriction = 0;
 						}
-					} else {
-						v->signal_speed_restriction = 0;
 					}
 				}
 
@@ -5621,20 +5623,20 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					const Trackdir rev_trackdir = FindFirstTrackdir(rev_tracks);
 					const Track track = TrackdirToTrack(rev_trackdir);
 
-					if (HasSignalOnTrack(gp.old_tile, track)) {
-						if (_settings_game.vehicle.train_speed_adaptation) {
-							SignalSpeedKey speed_key = {
-								speed_key.signal_tile = gp.old_tile,
-								speed_key.signal_track = track,
-								speed_key.last_passing_train_dir = v->GetVehicleTrackdir()
-							};
-							SignalSpeedValue speed_value = {
-								speed_value.train_speed = v->First()->cur_speed,
-								speed_value.time_stamp = GetSpeedRestrictionTimeout(v->First())
-							};
-							_signal_speeds[speed_key] = speed_value;
-						}
+					if (_settings_game.vehicle.train_speed_adaptation && HasSignalOnTrackdir(gp.old_tile, ReverseTrackdir(rev_trackdir))) {
+						SignalSpeedKey speed_key = {
+							speed_key.signal_tile = gp.old_tile,
+							speed_key.signal_track = track,
+							speed_key.last_passing_train_dir = v->GetVehicleTrackdir()
+						};
+						SignalSpeedValue speed_value = {
+							speed_value.train_speed = v->First()->cur_speed,
+							speed_value.time_stamp = GetSpeedRestrictionTimeout(v->First())
+						};
+						_signal_speeds[speed_key] = speed_value;
+					}
 
+					if (HasSignalOnTrack(gp.old_tile, track)) {
 						if (IsRestrictedSignal(gp.old_tile)) {
 							const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(gp.old_tile, track);
 							if (prog && prog->actions_used_flags & TRPAUF_SLOT_RELEASE_BACK) {
