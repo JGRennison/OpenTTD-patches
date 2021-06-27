@@ -44,6 +44,7 @@
 #include "scope.h"
 #include "core/checksum_func.hpp"
 #include "debug_settings.h"
+#include "train_speed_adaptation.h"
 
 #include "table/strings.h"
 #include "table/train_cmd.h"
@@ -76,39 +77,7 @@ enum ChooseTrainTrackFlags {
 };
 DECLARE_ENUM_AS_BIT_SET(ChooseTrainTrackFlags)
 
-struct SignalSpeedKey
-{
-	TileIndex signal_tile;
-	Track signal_track;
-	Trackdir last_passing_train_dir;
-
-	bool operator==(const SignalSpeedKey& other) const
-	{
-		return signal_tile == other.signal_tile &&
-			signal_track == other.signal_track &&
-			last_passing_train_dir == other.last_passing_train_dir;
-	}
-};
-
-struct SignalSpeedValue
-{
-	uint16 train_speed;
-	DateTicksScaled time_stamp;
-};
-
-struct SignalSpeedKeyHashFunc
-{
-	std::size_t operator() (const SignalSpeedKey &key) const
-	{
-		const std::size_t h1 = std::hash<TileIndex>()(key.signal_tile);
-		const std::size_t h2 = std::hash<Trackdir>()(key.last_passing_train_dir);
-		const std::size_t h3 = std::hash<Track>()(key.signal_track);
-
-		return (h1 ^ h2) ^ h3;
-	}
-};
-
-static std::unordered_map<SignalSpeedKey, SignalSpeedValue, SignalSpeedKeyHashFunc> _signal_speeds(1 << 16);
+std::unordered_map<SignalSpeedKey, SignalSpeedValue, SignalSpeedKeyHashFunc> _signal_speeds(1 << 16);
 
 static void TryLongReserveChooseTrainTrackFromReservationEnd(Train *v, bool no_reserve_vehicle_tile = false);
 static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks, ChooseTrainTrackFlags flags, bool *p_got_reservation, ChooseTrainTrackLookAheadState lookahead_state = {});
