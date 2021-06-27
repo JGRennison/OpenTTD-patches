@@ -102,9 +102,8 @@ static DateTicksScaled GetSpeedRestrictionTimeout(const Train *t)
 	const int64 look_ahead_distance = 16; // In tiles
 	const int64 velocity = std::max<int64>(25, t->cur_speed);
 
-	// This is a guess. I cannot figure out how the game actually calculates ticks_per_tile.
-	// If anybody has the correct value here, let me know.
-	const int64 ticks_per_tile = 2232 / velocity;
+	// This assumes travel along the X or Y map axis, not diagonally. See GetAdvanceDistance, GetAdvanceSpeed.
+	const int64 ticks_per_tile = (192 * 16 * 4 / 3) / velocity;
 
 	const int64 ticks = ticks_per_tile * look_ahead_distance;
 
