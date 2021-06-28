@@ -2431,8 +2431,7 @@ struct BuildVehicleWindowTrainAdvanced final : Window {
 
 				if (_ctrl_pressed) {
 					this->OnClick(pt, WID_BV_SHOW_HIDE_LOCO, 1);
-				}
-				else if (click_count > 1 && !this->listview_mode) {
+				} else if (click_count > 1 && !this->listview_mode) {
 					this->OnClick(pt, WID_BV_BUILD_LOCO, 1);
 				}
 				break;
@@ -2514,8 +2513,7 @@ struct BuildVehicleWindowTrainAdvanced final : Window {
 
 				if (_ctrl_pressed) {
 					this->OnClick(pt, WID_BV_SHOW_HIDE_WAGON, 1);
-				}
-				else if (click_count > 1 && !this->listview_mode) {
+				} else if (click_count > 1 && !this->listview_mode) {
 					this->OnClick(pt, WID_BV_BUILD_WAGON, 1);
 				}
 				break;
@@ -2608,8 +2606,7 @@ struct BuildVehicleWindowTrainAdvanced final : Window {
 				const Engine *engine = (this->sel_engine_loco == INVALID_ENGINE) ? nullptr : Engine::GetIfValid(this->sel_engine_loco);
 				if (engine != nullptr && engine->IsHidden(_local_company)) {
 					SetDParam(0, STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + this->vehicle_type);
-				}
-				else {
+				} else {
 					SetDParam(0, STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + this->vehicle_type);
 				}
 				break;
@@ -2644,8 +2641,7 @@ struct BuildVehicleWindowTrainAdvanced final : Window {
 				const Engine *engine = (this->sel_engine_wagon == INVALID_ENGINE) ? nullptr : Engine::GetIfValid(this->sel_engine_wagon);
 				if (engine != nullptr && engine->IsHidden(_local_company)) {
 					SetDParam(0, STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + this->vehicle_type);
-				}
-				else {
+				} else {
 					SetDParam(0, STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + this->vehicle_type);
 				}
 				break;
@@ -2799,12 +2795,9 @@ struct BuildVehicleWindowTrainAdvanced final : Window {
 	{
 		if (str == nullptr) return;
 
-		if(this->rename_engine_loco != INVALID_ENGINE)
-		{
+		if (this->rename_engine_loco != INVALID_ENGINE) {
 			DoCommandP(0, this->rename_engine_loco, 0, CMD_RENAME_ENGINE | CMD_MSG(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + this->vehicle_type), nullptr, str);
-		}
-		else
-		{
+		} else {
 			DoCommandP(0, this->rename_engine_wagon, 0, CMD_RENAME_ENGINE | CMD_MSG(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + this->vehicle_type), nullptr, str);
 		}
 	}
