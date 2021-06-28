@@ -25,8 +25,6 @@
 static const uint NPF_HASH_BITS = 12; ///< The size of the hash used in pathfinding. Just changing this value should be sufficient to change the hash size. Should be an even value.
 /* Do no change below values */
 static const uint NPF_HASH_SIZE = 1 << NPF_HASH_BITS;
-static const uint NPF_HASH_HALFBITS = NPF_HASH_BITS / 2;
-static const uint NPF_HASH_HALFMASK = (1 << NPF_HASH_HALFBITS) - 1;
 
 /** Meant to be stored in AyStar.targetdata */
 struct NPFFindStationOrTileData {
