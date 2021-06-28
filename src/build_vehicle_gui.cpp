@@ -187,12 +187,10 @@ bool _engine_sort_show_hidden_locos     = false;                        ///< Las
 bool _engine_sort_show_hidden_wagons    = false;                        ///< Last set 'show hidden wagons' setting.
 static CargoID _engine_sort_last_cargo_criteria[] = {CF_ANY, CF_ANY, CF_ANY, CF_ANY}; ///< Last set filter criteria, for each vehicle type.
 
-static bool _internal_sort_order_loco;           ///< false = descending, true = ascending
 static byte _last_sort_criteria_loco      = 0;
 static bool _last_sort_order_loco         = false;
 static CargoID _last_filter_criteria_loco = CF_ANY;
 
-static bool _internal_sort_order_wagon;           ///< false = descending, true = ascending
 static byte _last_sort_criteria_wagon      = 0;
 static bool _last_sort_order_wagon         = false;
 static CargoID _last_filter_criteria_wagon = CF_ANY;
@@ -1829,347 +1827,30 @@ struct BuildVehicleWindow : Window {
 	}
 };
 
-/* Locomotive sorting functions. */
-/**
- * Determines order of locomotives by engineID
- * @param a first engine to compare
- * @param b second engine to compare
- * @return for descending order: returns < 0 if a < b and > 0 for a > b. Vice versa for ascending order and 0 for equal
- */
-static bool EngineNumberSorterLoco(const EngineID &a, const EngineID &b)
-{
-	int r = Engine::Get(a)->list_position - Engine::Get(b)->list_position;
-
-	return _internal_sort_order_loco ? r > 0 : r < 0;
-}
-
-/**
- * Determines order of locomotives by introduction date
- * @param a first engine to compare
- * @param b second engine to compare
- * @return for descending order: returns < 0 if a < b and > 0 for a > b. Vice versa for ascending order and 0 for equal
- */
-static bool EngineIntroDateSorterLoco(const EngineID &a, const EngineID &b)
-{
-	const int va = Engine::Get(a)->intro_date;
-	const int vb = Engine::Get(b)->intro_date;
-	const int r = va - vb;
-
-	/* Use EngineID to sort instead since we want consistent sorting */
-	if (r == 0) return EngineNumberSorterLoco(a, b);
-	return _internal_sort_order_loco ? r > 0 : r < 0;
-}
-
-/**
- * Determines order of locomotives by name
- * @param a first engine to compare
- * @param b second engine to compare
- * @return for descending order: returns < 0 if a < b and > 0 for a > b. Vice versa for ascending order and 0 for equal
- */
-static bool EngineNameSorterLoco(const EngineID &a, const EngineID &b)
-{
-	static char     last_name[2][64] = { "", "" };
-
-	if (a != _last_engine[0]) {
-		_last_engine[0] = a;
-		SetDParam(0, a);
-		GetString(last_name[0], STR_ENGINE_NAME, lastof(last_name[0]));
-	}
-
-	if (b != _last_engine[1]) {
-		_last_engine[1] = b;
-		SetDParam(0, b);
-		GetString(last_name[1], STR_ENGINE_NAME, lastof(last_name[1]));
-	}
-
-	int r = strnatcmp(last_name[0], last_name[1]); // Sort by name (natural sorting).
-
-	/* Use EngineID to sort instead since we want consistent sorting */
-	if (r == 0) return EngineNumberSorterLoco(a, b);
-	return _internal_sort_order_loco ? r > 0 : r < 0;
-}
-
-/**
- * Determines order of locomotives by purchase cost
- * @param a first engine to compare
- * @param b second engine to compare
- * @return for descending order: returns < 0 if a < b and > 0 for a > b. Vice versa for ascending order and 0 for equal
- */
-static bool EngineCostSorterLoco(const EngineID &a, const EngineID &b)
-{
-	Money va = Engine::Get(a)->GetCost();
-	Money vb = Engine::Get(b)->GetCost();
-	int r = ClampToI32(va - vb);
-
-	/* Use EngineID to sort instead since we want consistent sorting */
-	if (r == 0) return EngineNumberSorterLoco(a, b);
-	return _internal_sort_order_loco ? r > 0 : r < 0;
-}
-
-/**
- * Determines order of locomotives by speed
- * @param a first engine to compare
- * @param b second engine to compare
- * @return for descending order: returns < 0 if a < b and > 0 for a > b. Vice versa for ascending order and 0 for equal
- */
-static bool EngineSpeedSorterLoco(const EngineID &a, const EngineID &b)
-{
-	int va = Engine::Get(a)->GetDisplayMaxSpeed();
-	int vb = Engine::Get(b)->GetDisplayMaxSpeed();
-	int r = va - vb;
-
-	/* Use EngineID to sort instead since we want consistent sorting */
-	if (r == 0) return EngineNumberSorterLoco(a, b);
-	return _internal_sort_order_loco ? r > 0 : r < 0;
-}
-
-/**
- * Determines order of locomotives by power
- * @param a first engine to compare
- * @param b second engine to compare
- * @return for descending order: returns < 0 if a < b and > 0 for a > b. Vice versa for ascending order and 0 for equal
- */
-static bool EnginePowerSorterLoco(const EngineID &a, const EngineID &b)
-{
-	int va = Engine::Get(a)->GetPower();
-	int vb = Engine::Get(b)->GetPower();
-	int r = va - vb;
-
-	/* Use EngineID to sort instead since we want consistent sorting */
-	if (r == 0) return EngineNumberSorterLoco(a, b);
-	return _internal_sort_order_loco ? r > 0 : r < 0;
-}
-
-/**
- * Determines order of locomotives by tractive effort
- * @param a first engine to compare
- * @param b second engine to compare
- * @return for descending order: returns < 0 if a < b and > 0 for a > b. Vice versa for ascending order and 0 for equal
- */
-static bool EngineTractiveEffortSorterLoco(const EngineID &a, const EngineID &b)
-{
-	int va = Engine::Get(a)->GetDisplayMaxTractiveEffort();
-	int vb = Engine::Get(b)->GetDisplayMaxTractiveEffort();
-	int r = va - vb;
-
-	/* Use EngineID to sort instead since we want consistent sorting */
-	if (r == 0) return EngineNumberSorterLoco(a, b);
-	return _internal_sort_order_loco ? r > 0 : r < 0;
-}
-
-/**
- * Determines order of locomotives by running costs
- * @param a first engine to compare
- * @param b second engine to compare
- * @return for descending order: returns < 0 if a < b and > 0 for a > b. Vice versa for ascending order and 0 for equal
- */
-static bool EngineRunningCostSorterLoco(const EngineID &a, const EngineID &b)
-{
-	Money va = Engine::Get(a)->GetRunningCost();
-	Money vb = Engine::Get(b)->GetRunningCost();
-	int r = ClampToI32(va - vb);
-
-	/* Use EngineID to sort instead since we want consistent sorting */
-	if (r == 0) return EngineNumberSorterLoco(a, b);
-	return _internal_sort_order_loco ? r > 0 : r < 0;
-}
-
-/**
- * Determines order of locomotives by running costs
- * @param a first engine to compare
- * @param b second engine to compare
- * @return for descending order: returns < 0 if a < b and > 0 for a > b. Vice versa for ascending order and 0 for equal
- */
-static bool EnginePowerVsRunningCostSorterLoco(const EngineID &a, const EngineID &b)
-{
-	const Engine *e_a = Engine::Get(a);
-	const Engine *e_b = Engine::Get(b);
-	uint p_a = e_a->GetPower();
-	uint p_b = e_b->GetPower();
-	Money r_a = e_a->GetRunningCost();
-	Money r_b = e_b->GetRunningCost();
-	/* Check if running cost is zero in one or both engines.
-	 * If only one of them is zero then that one has higher value,
-	 * else if both have zero cost then compare powers. */
-	if (r_a == 0) {
-		if (r_b == 0) {
-			/* If it is ambiguous which to return go with their ID */
-			if (p_a == p_b) return EngineNumberSorterLoco(a, b);
-			return _internal_sort_order_loco != (p_a < p_b);
-		}
-		return !_internal_sort_order_loco;
-	}
-	if (r_b == 0) return _internal_sort_order_loco;
-	/* Using double for more precision when comparing close values.
-	 * This shouldn't have any major effects in performance nor in keeping
-	 * the game in sync between players since it's used in GUI only in client side */
-	double v_a = (double)p_a / (double)r_a;
-	double v_b = (double)p_b / (double)r_b;
-	/* Use EngineID to sort if both have same power/running cost,
-	 * since we want consistent sorting.
-	 * Also if both have no power then sort with reverse of running cost to simulate
-	 * previous sorting behaviour for wagons. */
-	if (v_a == 0 && v_b == 0) return !EngineRunningCostSorterLoco(a, b);
-	if (v_a == v_b)  return EngineNumberSorterLoco(a, b);
-	return _internal_sort_order_loco != (v_a < v_b);
-}
-
-/* Wagon sorting functions. */
-
-/**
- * Determines order of wagons by engineID
- * @param a first engine to compare
- * @param b second engine to compare
- * @return for descending order: returns < 0 if a < b and > 0 for a > b. Vice versa for ascending order and 0 for equal
- */
-static bool EngineNumberSorterWagon(const EngineID &a, const EngineID &b)
-{
-	int r = Engine::Get(a)->list_position - Engine::Get(b)->list_position;
-
-	return _internal_sort_order_wagon ? r > 0 : r < 0;
-}
-
-/**
- * Determines order of wagons by introduction date
- * @param a first engine to compare
- * @param b second engine to compare
- * @return for descending order: returns < 0 if a < b and > 0 for a > b. Vice versa for ascending order and 0 for equal
- */
-static bool EngineIntroDateSorterWagon(const EngineID &a, const EngineID &b)
-{
-	const int va = Engine::Get(a)->intro_date;
-	const int vb = Engine::Get(b)->intro_date;
-	const int r = va - vb;
-
-	/* Use EngineID to sort instead since we want consistent sorting */
-	if (r == 0) return EngineNumberSorterWagon(a, b);
-	return _internal_sort_order_wagon ? r > 0 : r < 0;
-}
-
-/**
- * Determines order of wagons by name
- * @param a first engine to compare
- * @param b second engine to compare
- * @return for descending order: returns < 0 if a < b and > 0 for a > b. Vice versa for ascending order and 0 for equal
- */
-static bool EngineNameSorterWagon(const EngineID &a, const EngineID &b)
-{
-	static char     last_name[2][64] = { "", "" };
-
-	if (a != _last_engine[0]) {
-		_last_engine[0] = a;
-		SetDParam(0, a);
-		GetString(last_name[0], STR_ENGINE_NAME, lastof(last_name[0]));
-	}
-
-	if (b != _last_engine[1]) {
-		_last_engine[1] = b;
-		SetDParam(0, b);
-		GetString(last_name[1], STR_ENGINE_NAME, lastof(last_name[1]));
-	}
-
-	int r = strnatcmp(last_name[0], last_name[1]); // Sort by name (natural sorting).
-
-	/* Use EngineID to sort instead since we want consistent sorting */
-	if (r == 0) return EngineNumberSorterWagon(a, b);
-	return _internal_sort_order_wagon ? r > 0 : r < 0;
-}
-
-/**
- * Determines order of wagons by purchase cost
- * @param a first engine to compare
- * @param b second engine to compare
- * @return for descending order: returns < 0 if a < b and > 0 for a > b. Vice versa for ascending order and 0 for equal
- */
-static bool EngineCostSorterWagon(const EngineID &a, const EngineID &b)
-{
-	Money va = Engine::Get(a)->GetCost();
-	Money vb = Engine::Get(b)->GetCost();
-	int r = ClampToI32(va - vb);
-
-	/* Use EngineID to sort instead since we want consistent sorting */
-	if (r == 0) return EngineNumberSorterWagon(a, b);
-	return _internal_sort_order_wagon ? r > 0 : r < 0;
-}
-
-/**
- * Determines order of wagons by speed
- * @param a first engine to compare
- * @param b second engine to compare
- * @return for descending order: returns < 0 if a < b and > 0 for a > b. Vice versa for ascending order and 0 for equal
- */
-static bool EngineSpeedSorterWagon(const EngineID &a, const EngineID &b)
-{
-	int va = Engine::Get(a)->GetDisplayMaxSpeed();
-	int vb = Engine::Get(b)->GetDisplayMaxSpeed();
-	int r = va - vb;
-
-	/* Use EngineID to sort instead since we want consistent sorting */
-	if (r == 0) return EngineNumberSorterWagon(a, b);
-	return _internal_sort_order_wagon ? r > 0 : r < 0;
-}
-
-/**
- * Determines order of wagons by running costs
- * @param a first engine to compare
- * @param b second engine to compare
- * @return for descending order: returns < 0 if a < b and > 0 for a > b. Vice versa for ascending order and 0 for equal
- */
-static bool EngineRunningCostSorterWagon(const EngineID &a, const EngineID &b)
-{
-	Money va = Engine::Get(a)->GetRunningCost();
-	Money vb = Engine::Get(b)->GetRunningCost();
-	int r = ClampToI32(va - vb);
-
-	/* Use EngineID to sort instead since we want consistent sorting */
-	if (r == 0) return EngineNumberSorterWagon(a, b);
-	return _internal_sort_order_wagon ? r > 0 : r < 0;
-}
-
-/**
- * Determines order of train wagons by capacity
- * @param a first engine to compare
- * @param b second engine to compare
- * @return for descending order: returns < 0 if a < b and > 0 for a > b. Vice versa for ascending order and 0 for equal
- */
-static bool TrainEngineCapacitySorterWagon(const EngineID &a, const EngineID &b)
-{
-	const RailVehicleInfo *rvi_a = RailVehInfo(a);
-	const RailVehicleInfo *rvi_b = RailVehInfo(b);
-
-	int va = GetTotalCapacityOfArticulatedParts(a) * (rvi_a->railveh_type == RAILVEH_MULTIHEAD ? 2 : 1);
-	int vb = GetTotalCapacityOfArticulatedParts(b) * (rvi_b->railveh_type == RAILVEH_MULTIHEAD ? 2 : 1);
-	int r = va - vb;
-
-	/* Use EngineID to sort instead since we want consistent sorting */
-	if (r == 0) return EngineNumberSorterWagon(a, b);
-	return _internal_sort_order_wagon ? r > 0 : r < 0;
-}
-
-static EngList_SortTypeFunction * const  _sorter_loco[12] = {
+static EngList_SortTypeFunction * const  _sorter_loco[11] = {
 	/* Locomotives */
-	&EngineNumberSorterLoco,
-	&EngineCostSorterLoco,
-	&EngineSpeedSorterLoco,
-	&EnginePowerSorterLoco,
-	&EngineTractiveEffortSorterLoco,
-	&EngineIntroDateSorterLoco,
-	&EngineNameSorterLoco,
-	&EngineRunningCostSorterLoco,
-	&EnginePowerVsRunningCostSorterLoco,
+	&EngineNumberSorter,
+	&EngineCostSorter,
+	&EngineSpeedSorter,
+	&EnginePowerSorter,
+	&EngineTractiveEffortSorter,
+	&EngineIntroDateSorter,
+	&EngineNameSorter,
+	&EngineRunningCostSorter,
+	&EnginePowerVsRunningCostSorter,
 	&EngineReliabilitySorter,
 	&TrainEngineCapacitySorter
 };
 
 static EngList_SortTypeFunction * const _sorter_wagon[7] = {
 	/* Wagons */
-	&EngineNumberSorterWagon,
-	&EngineCostSorterWagon,
-	&EngineSpeedSorterWagon,
-	&EngineIntroDateSorterWagon,
-	&EngineNameSorterWagon,
-	&EngineRunningCostSorterWagon,
-	&TrainEngineCapacitySorterWagon
+	&EngineNumberSorter,
+	&EngineCostSorter,
+	&EngineSpeedSorter,
+	&EngineIntroDateSorter,
+	&EngineNameSorter,
+	&EngineRunningCostSorter,
+	&TrainEngineCapacitySorter
 };
 
 static const StringID _sort_listing_loco[12] = {
@@ -2694,12 +2375,12 @@ struct BuildVehicleWindowTrainAdvanced final : Window {
 		_last_engine[0] = _last_engine[1] = INVALID_ENGINE;
 
 		/* Sort locomotives */
-		_internal_sort_order_loco = this->descending_sort_order_loco;
-		EngList_SortPartial(&this->eng_list_loco, _sorter_loco[this->sort_criteria_loco], 0, num_engines_loco);
+		_engine_sort_direction = this->descending_sort_order_loco;
+		EngList_Sort(&this->eng_list_loco, _sorter_loco[this->sort_criteria_loco]);
 
 		/* Sort wagons */
-		_internal_sort_order_wagon = this->descending_sort_order_wagon;
-		EngList_SortPartial(&this->eng_list_wagon, _sorter_wagon[this->sort_criteria_wagon], 0, num_wagons_wagon);
+		_engine_sort_direction = this->descending_sort_order_wagon;
+		EngList_Sort(&this->eng_list_wagon, _sorter_wagon[this->sort_criteria_wagon]);
 
 	}
 
