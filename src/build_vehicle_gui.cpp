@@ -1161,13 +1161,13 @@ void DisplayVehicleSortDropDown(Window *w, const VehicleType vehicle_type, const
 	ShowDropDownMenu(w, _engine_sort_listing[vehicle_type], selected, button, 0, hidden_mask);
 }
 
-struct BuildVehicleWindowCommon : Window {
+struct BuildVehicleWindowBase : Window {
 	VehicleType vehicle_type;                   ///< Type of vehicles shown in the window.
 	bool virtual_train_mode;                    ///< Are we building a virtual train?
 	Train **virtual_train_out;                  ///< Virtual train ptr
 	bool listview_mode;                         ///< If set, only display the available vehicles and do not show a 'build' button.
 
-	BuildVehicleWindowCommon(WindowDesc *desc, TileIndex tile, VehicleType type, Train **virtual_train_out) : Window(desc)
+	BuildVehicleWindowBase(WindowDesc *desc, TileIndex tile, VehicleType type, Train **virtual_train_out) : Window(desc)
 	{
 		this->vehicle_type = type;
 		this->window_number = tile == INVALID_TILE ? (int)type : tile;
@@ -1193,7 +1193,7 @@ struct BuildVehicleWindowCommon : Window {
 };
 
 /** GUI for building vehicles. */
-struct BuildVehicleWindow : BuildVehicleWindowCommon {
+struct BuildVehicleWindow : BuildVehicleWindowBase {
 	union {
 		RailType railtype;   ///< Rail type to show, or #INVALID_RAILTYPE.
 		RoadType roadtype;   ///< Road type to show, or #INVALID_ROADTYPE.
@@ -1232,7 +1232,7 @@ struct BuildVehicleWindow : BuildVehicleWindowCommon {
 		}
 	}
 
-	BuildVehicleWindow(WindowDesc *desc, TileIndex tile, VehicleType type, Train **virtual_train_out) : BuildVehicleWindowCommon(desc, tile, type, virtual_train_out)
+	BuildVehicleWindow(WindowDesc *desc, TileIndex tile, VehicleType type, Train **virtual_train_out) : BuildVehicleWindowBase(desc, tile, type, virtual_train_out)
 	{
 		this->sel_engine = INVALID_ENGINE;
 
@@ -1916,7 +1916,7 @@ void DisplayWagonSortDropDown(Window *w, int selected)
 }
 
 /** Advanced window for trains. It is divided into two parts, one for locomotives and one for wagons. */
-struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowCommon {
+struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 	/* Locomotives and wagons */
 
@@ -1995,7 +1995,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowCommon {
 		}
 	}
 
-	BuildVehicleWindowTrainAdvanced(WindowDesc *desc, TileIndex tile, Train **virtual_train_out) : BuildVehicleWindowCommon(desc, tile, VEH_TRAIN, virtual_train_out)
+	BuildVehicleWindowTrainAdvanced(WindowDesc *desc, TileIndex tile, Train **virtual_train_out) : BuildVehicleWindowBase(desc, tile, VEH_TRAIN, virtual_train_out)
 	{
 		this->sel_engine_loco            = INVALID_ENGINE;
 		this->sort_criteria_loco         = _last_sort_criteria_loco;
@@ -2848,7 +2848,7 @@ void CcAddVirtualEngine(const CommandCost &result, TileIndex tile, uint32 p1, ui
 
 	if (window != nullptr) {
 		Train *train = Train::From(Vehicle::Get(_new_vehicle_id));
-		dynamic_cast<BuildVehicleWindowCommon *>(window)->AddVirtualEngine(train);
+		dynamic_cast<BuildVehicleWindowBase *>(window)->AddVirtualEngine(train);
 	} else {
 		DoCommandP(0, _new_vehicle_id | (1 << 21), 0, CMD_SELL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_SELL_TRAIN));
 	}
