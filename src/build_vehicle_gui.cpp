@@ -2677,6 +2677,11 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowCommon {
 				size->height += padding.height;
 				break;
 			}
+
+			case WID_BV_RENAME_LOCO: {
+				*size = maxdim(*size, NWidgetLeaf::resizebox_dimension);
+				break;
+			}
 		}
 	}
 
