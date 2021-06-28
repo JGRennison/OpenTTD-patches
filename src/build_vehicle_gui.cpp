@@ -1161,9 +1161,39 @@ void DisplayVehicleSortDropDown(Window *w, const VehicleType vehicle_type, const
 	ShowDropDownMenu(w, _engine_sort_listing[vehicle_type], selected, button, 0, hidden_mask);
 }
 
-/** GUI for building vehicles. */
-struct BuildVehicleWindow : Window {
+struct BuildVehicleWindowCommon : Window {
 	VehicleType vehicle_type;                   ///< Type of vehicles shown in the window.
+	bool virtual_train_mode;                    ///< Are we building a virtual train?
+	Train **virtual_train_out;                  ///< Virtual train ptr
+	bool listview_mode;                         ///< If set, only display the available vehicles and do not show a 'build' button.
+
+	BuildVehicleWindowCommon(WindowDesc *desc, TileIndex tile, VehicleType type, Train **virtual_train_out) : Window(desc)
+	{
+		this->vehicle_type = type;
+		this->window_number = tile == INVALID_TILE ? (int)type : tile;
+		this->virtual_train_out = virtual_train_out;
+		this->virtual_train_mode = (virtual_train_out != nullptr);
+		if (this->virtual_train_mode) this->window_number = 0;
+		this->listview_mode = (tile == INVALID_TILE) && !virtual_train_mode;
+	}
+
+	void AddVirtualEngine(Train *toadd)
+	{
+		if (this->virtual_train_out == nullptr) return;
+
+		if (*(this->virtual_train_out) == nullptr) {
+			*(this->virtual_train_out) = toadd;
+			InvalidateWindowClassesData(WC_CREATE_TEMPLATE);
+		} else {
+			VehicleID target = (*(this->virtual_train_out))->GetLastUnit()->index;
+
+			DoCommandP(0, (1 << 23) | (1 << 21) | toadd->index, target, CMD_MOVE_RAIL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_MOVE_VEHICLE), CcMoveNewVirtualEngine);
+		}
+	}
+};
+
+/** GUI for building vehicles. */
+struct BuildVehicleWindow : BuildVehicleWindowCommon {
 	union {
 		RailType railtype;   ///< Rail type to show, or #INVALID_RAILTYPE.
 		RoadType roadtype;   ///< Road type to show, or #INVALID_ROADTYPE.
@@ -1171,7 +1201,6 @@ struct BuildVehicleWindow : Window {
 	bool descending_sort_order;                 ///< Sort direction, @see _engine_sort_direction
 	byte sort_criteria;                         ///< Current sort criterium.
 	bool show_hidden_engines;                   ///< State of the 'show hidden engines' button.
-	bool listview_mode;                         ///< If set, only display the available vehicles and do not show a 'build' button.
 	EngineID sel_engine;                        ///< Currently selected engine, or #INVALID_ENGINE
 	EngineID rename_engine;                     ///< Engine being renamed.
 	GUIEngineList eng_list;
@@ -1180,8 +1209,6 @@ struct BuildVehicleWindow : Window {
 	byte cargo_filter_criteria;                 ///< Selected cargo filter
 	int details_height;                         ///< Minimal needed height of the details panels, in text lines (found so far).
 	Scrollbar *vscroll;
-	bool virtual_train_mode;                    ///< Are we building a virtual train?
-	Train **virtual_train_out;                  ///< Virtual train ptr
 	TestedEngineDetails te;                     ///< Tested cost and capacity after refit.
 
 	void SetBuyVehicleText()
@@ -1205,15 +1232,8 @@ struct BuildVehicleWindow : Window {
 		}
 	}
 
-	BuildVehicleWindow(WindowDesc *desc, TileIndex tile, VehicleType type, Train **virtual_train_out) : Window(desc)
+	BuildVehicleWindow(WindowDesc *desc, TileIndex tile, VehicleType type, Train **virtual_train_out) : BuildVehicleWindowCommon(desc, tile, type, virtual_train_out)
 	{
-		this->vehicle_type = type;
-		this->window_number = tile == INVALID_TILE ? (int)type : tile;
-		this->virtual_train_out = virtual_train_out;
-		this->virtual_train_mode = (virtual_train_out != nullptr);
-		if (this->virtual_train_mode) this->window_number = 0;
-		this->listview_mode = (tile == INVALID_TILE) && !virtual_train_mode;
-
 		this->sel_engine = INVALID_ENGINE;
 
 		this->sort_criteria         = _engine_sort_last_criteria[type];
@@ -1811,20 +1831,6 @@ struct BuildVehicleWindow : Window {
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_BV_LIST);
 	}
-
-	void AddVirtualEngine(Train *toadd)
-	{
-		if (this->virtual_train_out == nullptr) return;
-
-		if (*(this->virtual_train_out) == nullptr) {
-			*(this->virtual_train_out) = toadd;
-			InvalidateWindowClassesData(WC_CREATE_TEMPLATE);
-		} else {
-			VehicleID target = (*(this->virtual_train_out))->GetLastUnit()->index;
-
-			DoCommandP(0, (1 << 23) | (1 << 21) | toadd->index, target, CMD_MOVE_RAIL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_MOVE_VEHICLE), CcMoveNewVirtualEngine);
-		}
-	}
 };
 
 static EngList_SortTypeFunction * const  _sorter_loco[11] = {
@@ -1910,14 +1916,11 @@ void DisplayWagonSortDropDown(Window *w, int selected)
 }
 
 /** Advanced window for trains. It is divided into two parts, one for locomotives and one for wagons. */
-struct BuildVehicleWindowTrainAdvanced final : Window {
+struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowCommon {
 
 	/* Locomotives and wagons */
 
-	VehicleType vehicle_type;                        ///< Type of vehicles shown in the window.
 	RailType railtype;                               ///< Filter to apply.
-	bool listview_mode;                              ///< If set, only display the available vehicles and do not show a 'build' button.
-
 
 	/* Locomotives */
 
@@ -1947,10 +1950,6 @@ struct BuildVehicleWindowTrainAdvanced final : Window {
 	int details_height_wagon;                            ///< Minimal needed height of the details panels (found so far).
 	CargoID cargo_filter_wagon[NUM_CARGO + 2] {};        ///< Available cargo filters; CargoID or CF_ANY or CF_NONE
 	StringID cargo_filter_texts_wagon[NUM_CARGO + 3] {}; ///< Texts for filter_cargo, terminated by INVALID_STRING_ID
-
-
-	bool virtual_train_mode;                             ///< Are we building a virtual train?
-	Train **virtual_train_out;                           ///< Virtual train ptr
 
 	TestedEngineDetails te;                              ///< Tested cost and capacity after refit.
 
@@ -1996,15 +1995,8 @@ struct BuildVehicleWindowTrainAdvanced final : Window {
 		}
 	}
 
-	BuildVehicleWindowTrainAdvanced(WindowDesc *desc, TileIndex tile, Train **virtual_train_out) : Window(desc)
+	BuildVehicleWindowTrainAdvanced(WindowDesc *desc, TileIndex tile, Train **virtual_train_out) : BuildVehicleWindowCommon(desc, tile, VEH_TRAIN, virtual_train_out)
 	{
-		this->vehicle_type = VEH_TRAIN;
-		this->window_number = tile == INVALID_TILE ? static_cast<int>(VEH_TRAIN) : tile;
-
-		this->virtual_train_out = virtual_train_out;
-		this->virtual_train_mode = (virtual_train_out != nullptr);
-		if (this->virtual_train_mode) this->window_number = 0;
-
 		this->sel_engine_loco            = INVALID_ENGINE;
 		this->sort_criteria_loco         = _last_sort_criteria_loco;
 		this->descending_sort_order_loco = _last_sort_order_loco;
@@ -2016,7 +2008,6 @@ struct BuildVehicleWindowTrainAdvanced final : Window {
 		this->show_hidden_locos           = _engine_sort_show_hidden_locos;
 
 		this->railtype = (tile == INVALID_TILE) ? RAILTYPE_END : GetRailType(tile);
-		this->listview_mode = (tile == INVALID_TILE) && !virtual_train_mode;
 
 		this->UpdateFilterByTile();
 
@@ -2842,21 +2833,6 @@ struct BuildVehicleWindowTrainAdvanced final : Window {
 		this->vscroll_loco->SetCapacityFromWidget(this, WID_BV_LIST_LOCO);
 		this->vscroll_wagon->SetCapacityFromWidget(this, WID_BV_LIST_WAGON);
 	}
-
-	void AddVirtualEngine(Train *to_add) const
-	{
-		if (this->virtual_train_out == nullptr) return;
-
-		if (*(this->virtual_train_out) == nullptr) {
-			*(this->virtual_train_out) = to_add;
-		} else {
-			const VehicleID target = (*(this->virtual_train_out))->GetLastUnit()->index;
-
-			DoCommandP(0, (1 << 21) | to_add->index, target, CMD_MOVE_RAIL_VEHICLE);
-		}
-		InvalidateWindowClassesData(WC_CREATE_TEMPLATE);
-		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
-	}
 };
 
 void CcAddVirtualEngine(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
@@ -2867,7 +2843,7 @@ void CcAddVirtualEngine(const CommandCost &result, TileIndex tile, uint32 p1, ui
 
 	if (window != nullptr) {
 		Train *train = Train::From(Vehicle::Get(_new_vehicle_id));
-		dynamic_cast<BuildVehicleWindowTrainAdvanced*>(window)->AddVirtualEngine(train);
+		dynamic_cast<BuildVehicleWindowCommon *>(window)->AddVirtualEngine(train);
 	} else {
 		DoCommandP(0, _new_vehicle_id | (1 << 21), 0, CMD_SELL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_SELL_TRAIN));
 	}
