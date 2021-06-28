@@ -2318,7 +2318,7 @@ struct BuildVehicleWindowTrainAdvanced final : Window {
 	BuildVehicleWindowTrainAdvanced(WindowDesc *desc, TileIndex tile, Train **virtual_train_out) : Window(desc)
 	{
 		this->vehicle_type = VEH_TRAIN;
-		this->window_number = tile == INVALID_TILE ? static_cast<int>(VEH_TRAIN) : tile;	
+		this->window_number = tile == INVALID_TILE ? static_cast<int>(VEH_TRAIN) : tile;
 
 		this->virtual_train_out = virtual_train_out;
 		this->virtual_train_mode = (virtual_train_out != nullptr);
@@ -2432,10 +2432,10 @@ struct BuildVehicleWindowTrainAdvanced final : Window {
 		this->cargo_filter_texts_loco[filter_items_loco] = STR_PURCHASE_INFO_ALL_TYPES;
 		filter_items_loco++;
 
-		/* Add item for vehicles not carrying anything, e.g. train engines. */		
+		/* Add item for vehicles not carrying anything, e.g. train engines. */
 		this->cargo_filter_loco[filter_items_loco] = CF_NONE;
 		this->cargo_filter_texts_loco[filter_items_loco] = STR_PURCHASE_INFO_NONE;
-		filter_items_loco++;		
+		filter_items_loco++;
 
 		/* Collect available cargo types for filtering. */
 		const CargoSpec *cs_loco;
@@ -2474,14 +2474,14 @@ struct BuildVehicleWindowTrainAdvanced final : Window {
 
 		/* Add item for vehicles not carrying anything, e.g. train engines.
 		 * This could also be useful for eye candy vehicles of other types, but is likely too confusing for joe, */
-		
+
 		this->cargo_filter_wagon[filter_items_wagon] = CF_NONE;
 		this->cargo_filter_texts_wagon[filter_items_wagon] = STR_PURCHASE_INFO_NONE;
 		filter_items_wagon++;
-		
+
 
 		/* Collect available cargo types for filtering. */
-		
+
 		const CargoSpec *cs_wagon;
 
 		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs_wagon) {
@@ -2643,7 +2643,7 @@ struct BuildVehicleWindowTrainAdvanced final : Window {
 			if (!IsEngineBuildable(eid, VEH_TRAIN, _local_company)) continue;
 
 			/* Filter now! So num_engines and num_wagons is valid */
-			if (!FilterSingleEngineLoco(eid)) continue;			
+			if (!FilterSingleEngineLoco(eid)) continue;
 
 			if (rvi->railveh_type != RAILVEH_WAGON) {
 				num_engines_loco++;
@@ -2900,7 +2900,7 @@ struct BuildVehicleWindowTrainAdvanced final : Window {
 	{
 		if (!gui_scope) return;
 
-		/* When switching to original acceleration model for road vehicles, clear the selected sort criteria if it is not available now. */		
+		/* When switching to original acceleration model for road vehicles, clear the selected sort criteria if it is not available now. */
 		this->eng_list_loco.ForceRebuild();
 		this->eng_list_wagon.ForceRebuild();
 	}
