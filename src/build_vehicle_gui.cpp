@@ -2876,12 +2876,19 @@ static WindowDesc _build_template_vehicle_desc(
 	WDP_AUTO, "build_vehicle", 240, 268,
 	WC_BUILD_VIRTUAL_TRAIN, WC_CREATE_TEMPLATE,
 	WDF_CONSTRUCTION,
-	_nested_build_vehicle_widgets_train_advanced, lengthof(_nested_build_vehicle_widgets_train_advanced)
+	_nested_build_vehicle_widgets, lengthof(_nested_build_vehicle_widgets)
 );
 
 static WindowDesc _build_vehicle_desc_train_advanced(
 	WDP_AUTO, "build_vehicle", 480, 268,
 	WC_BUILD_VEHICLE, WC_NONE,
+	WDF_CONSTRUCTION,
+	_nested_build_vehicle_widgets_train_advanced, lengthof(_nested_build_vehicle_widgets_train_advanced)
+);
+
+static WindowDesc _build_template_vehicle_desc_advanced(
+	WDP_AUTO, "build_vehicle", 480, 268,
+	WC_BUILD_VIRTUAL_TRAIN, WC_CREATE_TEMPLATE,
 	WDF_CONSTRUCTION,
 	_nested_build_vehicle_widgets_train_advanced, lengthof(_nested_build_vehicle_widgets_train_advanced)
 );
@@ -2899,7 +2906,7 @@ void ShowBuildVehicleWindow(const TileIndex tile, const VehicleType type)
 
 	DeleteWindowById(WC_BUILD_VEHICLE, num);
 
-	if(type == VEH_TRAIN) {
+	if (type == VEH_TRAIN && _settings_client.gui.dual_pane_train_purchase_window) {
 		new BuildVehicleWindowTrainAdvanced(&_build_vehicle_desc_train_advanced, tile, nullptr);
 	} else {
 		new BuildVehicleWindow(&_build_vehicle_desc, tile, type, nullptr);
@@ -2912,5 +2919,9 @@ void ShowTemplateTrainBuildVehicleWindow(Train **virtual_train)
 
 	DeleteWindowById(WC_BUILD_VIRTUAL_TRAIN, 0);
 
-	new BuildVehicleWindowTrainAdvanced(&_build_template_vehicle_desc, INVALID_TILE, virtual_train);
+	if (_settings_client.gui.dual_pane_train_purchase_window) {
+		new BuildVehicleWindowTrainAdvanced(&_build_template_vehicle_desc_advanced, INVALID_TILE, virtual_train);
+	} else {
+		new BuildVehicleWindow(&_build_template_vehicle_desc, INVALID_TILE, VEH_TRAIN, virtual_train);
+	}
 }
