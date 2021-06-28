@@ -133,6 +133,7 @@ public:
 
 	void OnInit() override;
 
+	void UpdateSortingInterval();
 	void UpdateSortingFromGrouping();
 
 	void DrawVehicleListItems(VehicleID selected_vehicle, int line_height, const Rect &r) const;

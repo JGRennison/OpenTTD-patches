@@ -3680,6 +3680,7 @@ public:
 		switch (widget) {
 			case WID_TRSL_SORT_BY_DROPDOWN:
 				this->vehgroups.SetSortType(index);
+				this->UpdateSortingInterval();
 				break;
 
 			case WID_TRSL_FILTER_BY_CARGO: // Select a cargo filter criteria

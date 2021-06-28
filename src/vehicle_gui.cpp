@@ -1995,6 +1995,13 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 	}
 }
 
+void BaseVehicleListWindow::UpdateSortingInterval()
+{
+	uint16 resort_interval = DAY_TICKS * 10;
+	if (this->grouping == GB_NONE && this->vehgroups.SortType() == VST_TIMETABLE_DELAY) resort_interval = DAY_TICKS;
+	this->vehgroups.SetResortInterval(resort_interval);
+}
+
 void BaseVehicleListWindow::UpdateSortingFromGrouping()
 {
 	/* Set up sorting. Make the window-specific _sorting variable
@@ -2011,6 +2018,7 @@ void BaseVehicleListWindow::UpdateSortingFromGrouping()
 	this->vehgroups.SetListing(*this->sorting);
 	this->vehgroups.ForceRebuild();
 	this->vehgroups.NeedResort();
+	this->UpdateSortingInterval();
 }
 
 void BaseVehicleListWindow::UpdateVehicleGroupBy(GroupBy group_by)
@@ -2232,6 +2240,7 @@ public:
 		switch (widget) {
 			case WID_VL_SORT_ORDER: // Flip sorting method ascending/descending
 				this->vehgroups.ToggleSortOrder();
+				this->vehgroups.ForceResort();
 				this->SetDirty();
 				break;
 
@@ -2313,6 +2322,7 @@ public:
 
 			case WID_VL_SORT_BY_PULLDOWN:
 				this->vehgroups.SetSortType(index);
+				this->UpdateSortingInterval();
 				break;
 
 			case WID_VL_FILTER_BY_CARGO:

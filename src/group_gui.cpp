@@ -722,6 +722,7 @@ public:
 		switch (widget) {
 			case WID_GL_SORT_BY_ORDER: // Flip sorting method ascending/descending
 				this->vehgroups.ToggleSortOrder();
+				this->vehgroups.ForceResort();
 				this->SetDirty();
 				break;
 
@@ -1044,6 +1045,7 @@ public:
 
 			case WID_GL_SORT_BY_DROPDOWN:
 				this->vehgroups.SetSortType(index);
+				this->UpdateSortingInterval();
 				break;
 			case WID_GL_FILTER_BY_CARGO: // Select a cargo filter criteria
 				this->SetCargoFilterIndex(index);
