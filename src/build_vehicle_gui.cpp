@@ -2400,6 +2400,24 @@ struct BuildVehicleWindowTrainAdvanced final : Window {
 		this->eng_list_wagon.RebuildDone();
 	}
 
+	void BuildEngine(const EngineID selected, CargoID cargo)
+	{
+		if (selected != INVALID_ENGINE) {
+			CommandCallback *callback;
+			uint32 cmd;
+			if (this->virtual_train_mode) {
+				callback = CcAddVirtualEngine;
+				cmd = CMD_BUILD_VIRTUAL_RAIL_VEHICLE;
+			} else {
+				callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(selected)->railveh_type == RAILVEH_WAGON)
+						? CcBuildWagon : CcBuildPrimaryVehicle;
+				cmd = GetCmdBuildVeh(this->vehicle_type);
+			}
+			if (cargo == CF_ANY || cargo == CF_ENGINES) cargo = CF_NONE;
+			DoCommandP(this->window_number, selected | (cargo << 24), 0, cmd, callback);
+		}
+	}
+
 	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
@@ -2456,22 +2474,7 @@ struct BuildVehicleWindowTrainAdvanced final : Window {
 			}
 
 			case WID_BV_BUILD_LOCO: {
-				const EngineID selected_loco = this->sel_engine_loco;
-				if (selected_loco != INVALID_ENGINE) {
-					CommandCallback *callback;
-					uint32 cmd;
-					if (this->virtual_train_mode) {
-						callback = CcAddVirtualEngine;
-						cmd = CMD_BUILD_VIRTUAL_RAIL_VEHICLE;
-					} else {
-						callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(selected_loco)->railveh_type == RAILVEH_WAGON)
-								? CcBuildWagon : CcBuildPrimaryVehicle;
-						cmd = GetCmdBuildVeh(this->vehicle_type);
-					}
-					CargoID cargo = this->cargo_filter_loco[this->cargo_filter_criteria_loco];
-					if (cargo == CF_ANY || cargo == CF_ENGINES) cargo = CF_NONE;
-					DoCommandP(this->window_number, selected_loco | (cargo << 24), 0, cmd, callback);
-				}
+				this->BuildEngine(this->sel_engine_loco, this->cargo_filter_loco[this->cargo_filter_criteria_loco]);
 				break;
 			}
 
@@ -2538,22 +2541,7 @@ struct BuildVehicleWindowTrainAdvanced final : Window {
 			}
 
 			case WID_BV_BUILD_WAGON: {
-				const EngineID selected_wagon = this->sel_engine_loco;
-				if (selected_wagon != INVALID_ENGINE) {
-					CommandCallback *callback;
-					uint32 cmd;
-					if (this->virtual_train_mode) {
-						callback = CcAddVirtualEngine;
-						cmd = CMD_BUILD_VIRTUAL_RAIL_VEHICLE;
-					} else {
-						callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(selected_wagon)->railveh_type == RAILVEH_WAGON)
-								? CcBuildWagon : CcBuildPrimaryVehicle;
-						cmd = GetCmdBuildVeh(this->vehicle_type);
-					}
-					CargoID cargo = this->cargo_filter_wagon[this->cargo_filter_criteria_wagon];
-					if (cargo == CF_ANY || cargo == CF_ENGINES) cargo = CF_NONE;
-					DoCommandP(this->window_number, selected_wagon | (cargo << 24), 0, cmd, callback);
-				}
+				this->BuildEngine(this->sel_engine_wagon, this->cargo_filter_wagon[this->cargo_filter_criteria_wagon]);
 				break;
 			}
 
