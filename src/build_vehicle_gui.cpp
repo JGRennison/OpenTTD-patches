@@ -2886,7 +2886,7 @@ void CcAddVirtualEngine(const CommandCost &result, TileIndex tile, uint32 p1, ui
 
 	if (window != nullptr) {
 		Train *train = Train::From(Vehicle::Get(_new_vehicle_id));
-		dynamic_cast<BuildVehicleWindow*>(window)->AddVirtualEngine(train);
+		dynamic_cast<BuildVehicleWindowTrainAdvanced*>(window)->AddVirtualEngine(train);
 	} else {
 		DoCommandP(0, _new_vehicle_id | (1 << 21), 0, CMD_SELL_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_SELL_TRAIN));
 	}
