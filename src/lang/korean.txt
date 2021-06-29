@@ -1476,6 +1476,9 @@ STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_OFF                    :끄기
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_INDUSTRY               :산업 시설
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_ALL                    :산업 시설과 열차 역
 
+STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW              :기관차와 객화차 구매 목록을 분리: {STRING}
+STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_HELPTEXT     :이 설정을 켜면, 구매 목록 창에서 기관차와 객화차를 좌우로 분리하여 표시합니다.
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :고급 다리/터널 신호기 활성화: {STRING}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :다리와 터널 위 신호기 시뮬레이션 고급 모드를 활성화합니다. 이 설정을 끄면, 고급 모드에 있지 않은 다리와 터널을 고급 모드로 변경할 수 없지만 다른 플레이어는 이 설정을 켜서 고급 모드를 사용할 수 있습니다.
 
@@ -4344,7 +4347,6 @@ STR_FINANCES_BORROW_TOOLTIP_EXTRA                               :{BLACK}{STRING}
 STR_FINANCES_REPAY_TOOLTIP_EXTRA                                :{BLACK}{STRING}. SHIFT+클릭하면 갚을 양을 직접 입력할 수 있습니다
 STR_FINANCES_BORROW_QUERY_CAPT                                  :{WHITE}빌릴 돈의 양을 입력하세요
 STR_FINANCES_REPAY_QUERY_CAPT                                   :{WHITE}갚을 돈의 양을 입력하세요
-
 STR_FINANCES_INFRASTRUCTURE_BUTTON                              :{BLACK}기반시설
 
 # Company view
@@ -4570,6 +4572,9 @@ STR_BUY_VEHICLE_SHIP_CAPTION                                    :새 선박
 STR_BUY_VEHICLE_AIRCRAFT_CAPTION                                :새 항공기
 ############ range for vehicle availability ends
 
+STR_BUY_VEHICLE_TRAIN_LOCOMOTIVES                               :기관차 및 동력차
+STR_BUY_VEHICLE_TRAIN_WAGONS                                    :객화차
+
 STR_PURCHASE_INFO_COST_WEIGHT                                   :{BLACK}가격: {GOLD}{CURRENCY_LONG}{BLACK} 중량: {GOLD}{WEIGHT_SHORT}
 STR_PURCHASE_INFO_COST_REFIT_WEIGHT                             :{BLACK}가격: {GOLD}{CURRENCY_LONG}{BLACK} (개조 가격: {GOLD}{CURRENCY_LONG}{BLACK}) 무게: {GOLD}{WEIGHT_SHORT}
 STR_PURCHASE_INFO_SPEED_POWER                                   :{BLACK}속력: {GOLD}{VELOCITY}{BLACK} 힘: {GOLD}{POWER}
@@ -4611,31 +4616,43 @@ STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON                        :{BLACK}차량 �
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}차량 구입
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}선박 구입
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}항공기 구입
+STR_BUY_VEHICLE_TRAIN_BUY_LOCOMOTIVE_BUTTON                     :{BLACK}기관차 구입
+STR_BUY_VEHICLE_TRAIN_BUY_WAGON_BUTTON                          :{BLACK}객화차 구입
 
 STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_BUTTON                  :{BLACK}차량 구입 및 개조
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_REFIT_VEHICLE_BUTTON           :{BLACK}차량 구입 및 개조
 STR_BUY_VEHICLE_SHIP_BUY_REFIT_VEHICLE_BUTTON                   :{BLACK}선박 구입 및 개조
 STR_BUY_VEHICLE_AIRCRAFT_BUY_REFIT_VEHICLE_BUTTON               :{BLACK}항공기 구입 및 개조
+STR_BUY_VEHICLE_TRAIN_BUY_REFIT_LOCOMOTIVE_BUTTON               :{BLACK}기관차 구입 및 개조
+STR_BUY_VEHICLE_TRAIN_BUY_REFIT_WAGON_BUTTON                    :{BLACK}객화차 구입 및 개조
 
-STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}선택된 차량을 구입합니다. SHIFT+클릭으로 예상 구입 비용을 볼 수 있습니다.
+STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}선택된 차량을 구입합니다. SHIFT+클릭으로 예상 구입 비용을 볼 수 있습니다
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}선택한 차량을 구입합니다. SHIFT+클릭하면 예상 구입 비용을 볼 수 있습니다
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}선택한 선박을 구입합니다. SHIFT+클릭으로 예상 구입 비용을 볼 수 있습니다
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}선택한 항공기를 구입합니다. SHIFT+클릭으로 예상 구입 비용을 볼 수 있습니다
+STR_BUY_VEHICLE_TRAIN_BUY_LOCOMOTIVE_TOOLTIP                    :{BLACK}선택한 기관차나 동력차를 구입합니다. SHIFT+클릭으로 예상 구입 비용을 볼 수 있습니다
+STR_BUY_VEHICLE_TRAIN_BUY_WAGON_TOOLTIP                         :{BLACK}선택한 객화차를 구입합니다. SHIFT+클릭으로 예상 구입 비용을 볼 수 있습니다
 
 STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_TOOLTIP                 :{BLACK}선택한 차량을 구입하고 개조합니다. SHIFT+클릭하면 예상 비용을 볼 수 있습니다
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_REFIT_VEHICLE_TOOLTIP          :{BLACK}선택한 자동차를 구입하고 개조합니다. SHIFT+클릭하면 예상 비용을 볼 수 있습니다
 STR_BUY_VEHICLE_SHIP_BUY_REFIT_VEHICLE_TOOLTIP                  :{BLACK}선택한 선박을 구입하고 개조합니다. SHIFT+클릭하면 예상 비용을 볼 수 있습니다
 STR_BUY_VEHICLE_AIRCRAFT_BUY_REFIT_VEHICLE_TOOLTIP              :{BLACK}선택한 항공기를 구입하고 개조합니다. SHIFT+클릭하면 예상 비용을 볼 수 있습니다
+STR_BUY_VEHICLE_TRAIN_BUY_REFIT_LOCOMOTIVE_TOOLTIP              :{BLACK}선택한 기관차나 동력차를 구입하고 개조합니다. SHIFT+클릭하면 예상 비용을 볼 수 있습니다
+STR_BUY_VEHICLE_TRAIN_BUY_REFIT_WAGON_TOOLTIP                   :{BLACK}선택한 객화차를 구입하고 개조합니다. SHIFT+클릭하면 예상 비용을 볼 수 있습니다
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}이름 지정
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}이름 지정
 STR_BUY_VEHICLE_SHIP_RENAME_BUTTON                              :{BLACK}이름 지정
 STR_BUY_VEHICLE_AIRCRAFT_RENAME_BUTTON                          :{BLACK}이름 지정
+STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_BUTTON                  :{BLACK}기관차 이름 지정
+STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_BUTTON                       :{BLACK}객화차 이름 지정
 
 STR_BUY_VEHICLE_TRAIN_RENAME_TOOLTIP                            :{BLACK}열차의 모델명을 변경합니다
-STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_TOOLTIP                     :{BLACK}차종의 이름을 변경합니다.
+STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_TOOLTIP                     :{BLACK}자동차의 모델명을 변경합니다
 STR_BUY_VEHICLE_SHIP_RENAME_TOOLTIP                             :{BLACK}선박의 모델명을 변경합니다
 STR_BUY_VEHICLE_AIRCRAFT_RENAME_TOOLTIP                         :{BLACK}항공기의 모델명을 변경합니다
+STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_TOOLTIP                 :{BLACK}기관차나 동력차의 모델명을 변경합니다
+STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_TOOLTIP                      :{BLACK}객화차의 모델명을 변경합니다
 
 STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON                        :{BLACK}숨김
 STR_BUY_VEHICLE_ROAD_VEHICLE_HIDE_TOGGLE_BUTTON                 :{BLACK}숨김
@@ -4653,9 +4670,11 @@ STR_BUY_VEHICLE_SHIP_HIDE_SHOW_TOGGLE_TOOLTIP                   :{BLACK}숨김 �
 STR_BUY_VEHICLE_AIRCRAFT_HIDE_SHOW_TOGGLE_TOOLTIP               :{BLACK}숨김 처리한 항공기 모델을 목록에 보여주거나 숨깁니다
 
 STR_QUERY_RENAME_TRAIN_TYPE_CAPTION                             :{WHITE}열차의 모델명을 변경합니다
-STR_QUERY_RENAME_ROAD_VEHICLE_TYPE_CAPTION                      :{WHITE}차종 이름을 변경합니다.
+STR_QUERY_RENAME_ROAD_VEHICLE_TYPE_CAPTION                      :{WHITE}자동차의 모델명을 변경합니다
 STR_QUERY_RENAME_SHIP_TYPE_CAPTION                              :{WHITE}선박의 모델명을 변경합니다
 STR_QUERY_RENAME_AIRCRAFT_TYPE_CAPTION                          :{WHITE}항공기의 모델명을 변경합니다
+STR_QUERY_RENAME_TRAIN_TYPE_LOCOMOTIVE_CAPTION                  :{WHITE}기관차의 모델명을 변경합니다
+STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION                       :{WHITE}객화차의 모델명을 변경합니다
 
 # Depot window
 STR_DEPOT_CAPTION                                               :{WHITE}{DEPOT}
