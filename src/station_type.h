@@ -27,6 +27,8 @@ struct Waypoint;
 static const StationID NEW_STATION = 0xFFFE;
 static const StationID INVALID_STATION = 0xFFFF;
 
+static const uint MAX_STATION_CARGO_HISTORY_DAYS = 24;
+
 typedef SmallStack<StationID, StationID, INVALID_STATION, 8, 0xFFFD> StationIDStack;
 
 /** Station types */

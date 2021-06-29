@@ -405,6 +405,33 @@ void Station::GetTileArea(TileArea *ta, StationType type) const
 }
 
 /**
+ * Update the cargo history.
+ */
+void Station::UpdateCargoHistory()
+{
+	uint storage_offset = 0;
+	bool update_window = false;
+	for (const CargoSpec *cs : CargoSpec::Iterate()) {
+		uint amount = this->goods[cs->Index()].cargo.TotalCount();
+		if (!HasBit(this->station_cargo_history_cargoes, cs->Index())) {
+			if (amount == 0) {
+				/* No cargo present, and no history stored for this cargo, no work to do */
+				continue;
+			} else {
+				if (this->station_cargo_history_cargoes == 0) update_window = true;
+				SetBit(this->station_cargo_history_cargoes, cs->Index());
+				this->station_cargo_history.emplace(this->station_cargo_history.begin() + storage_offset);
+			}
+		}
+		this->station_cargo_history[storage_offset][this->station_cargo_history_offset] = static_cast<uint16>(std::clamp<uint>(amount, (uint)0, (uint)UINT16_MAX));
+		storage_offset++;
+	}
+	this->station_cargo_history_offset++;
+	if (this->station_cargo_history_offset == MAX_STATION_CARGO_HISTORY_DAYS) this->station_cargo_history_offset = 0;
+	if (update_window) InvalidateWindowData(WC_STATION_VIEW, this->index, -1);
+}
+
+/**
  * Update the virtual coords needed to draw the station sign.
  */
 void Station::UpdateVirtCoord()
@@ -3771,7 +3798,7 @@ bool GetNewGrfRating(const Station *st, const CargoSpec *cs, const GoodsEntry *g
 {
 	*new_grf_rating = 0;
 	bool is_using_newgrf_rating = false;
-	
+
 	/* Perform custom station rating. If it succeeds the speed, days in transit and
 	 * waiting cargo ratings must not be executed. */
 
@@ -3805,7 +3832,7 @@ int GetSpeedRating(const GoodsEntry *ge)
 int GetWaitTimeRating(const CargoSpec *cs, const GoodsEntry *ge)
 {
 	int rating = 0;
-	
+
 	uint wait_time = ge->time_since_pickup;
 
 	if (_settings_game.station.cargo_class_rating_wait_time) {
@@ -3878,7 +3905,7 @@ int GetTargetRating(const Station *st, const CargoSpec *cs, const GoodsEntry *ge
 	} else if (HasBit(cs->callback_mask, CBM_CARGO_STATION_RATING_CALC)) {
 
 		int new_grf_rating;
-		
+
 		if (GetNewGrfRating(st, cs, ge, &new_grf_rating)) {
 			skip = true;
 			rating += new_grf_rating;
@@ -4237,6 +4264,18 @@ void OnTick_Station()
 			TriggerStationAnimation(st, st->xy, SAT_250_TICKS);
 			if (Station::IsExpected(st)) AirportAnimationTrigger(Station::From(st), AAT_STATION_250_TICKS);
 		}
+	}
+}
+
+/** Daily loop for stations. */
+void StationDailyLoop()
+{
+	// Only record cargo history every second day.
+	if (_date % 2 != 0) {
+		for (Station *st : Station::Iterate()) {
+			st->UpdateCargoHistory();
+		}
+		InvalidateWindowClassesData(WC_STATION_CARGO);
 	}
 }
 

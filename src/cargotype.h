@@ -91,6 +91,15 @@ struct CargoSpec {
 	}
 
 	/**
+	 * Determine CargoTypes bit of this cargospec
+	 * @return CargoTypes bit
+	 */
+	inline CargoTypes CargoTypesBit() const
+	{
+		return static_cast<CargoTypes>(1) << this->Index();
+	}
+
+	/**
 	 * Tests for validity of this cargospec
 	 * @return is this cargospec valid?
 	 * @note assert(cs->IsValid()) can be triggered when GRF config is modified

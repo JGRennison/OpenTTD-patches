@@ -184,6 +184,7 @@ extern void CompaniesMonthlyLoop();
 extern void EnginesMonthlyLoop();
 extern void TownsMonthlyLoop();
 extern void IndustryMonthlyLoop();
+extern void StationDailyLoop();
 extern void StationMonthlyLoop();
 extern void SubsidyMonthlyLoop();
 
@@ -276,6 +277,7 @@ static void OnNewDay()
 
 	DisasterDailyLoop();
 	IndustryDailyLoop();
+	StationDailyLoop();
 
 	if (!_settings_time.time_in_minutes || _settings_client.gui.date_with_time > 0) {
 		SetWindowWidgetDirty(WC_STATUS_BAR, 0, WID_S_LEFT);

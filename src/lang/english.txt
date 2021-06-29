@@ -613,6 +613,10 @@ STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Display 
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Toggle graph for cargo type on/off
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
+STR_GRAPH_STATION_CARGO_CAPTION                                 :{WHITE}{STATION} - Waiting Cargo History
+STR_GRAPH_STATION_CARGO_X_LABEL                                 :{TINY_FONT}{BLACK}Development over the last {NUM} days
+STR_GRAPH_STATION_CARGO_TITLE                                   :{TINY_FONT}{BLACK}Units of cargo waiting at the station
+
 STR_GRAPH_CARGO_DAYS_MODE                                       :{TINY_FONT}{BLACK}Days in transit
 STR_GRAPH_CARGO_SPEED_MODE                                      :{TINY_FONT}{BLACK}Average speed
 STR_GRAPH_CARGO_TOOLTIP_DAYS_MODE                               :{BLACK}Display days in transit on the x-axis of the graph
@@ -4183,6 +4187,9 @@ STR_STATION_VIEW_GROUP_D_V_S                                    :Destination-Via
 
 STR_STATION_VIEW_DEPARTURES_BUTTON                              :{BLACK}Departures
 STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}Show list of scheduled departures
+
+STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}History
+STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}Show waiting cargo history
 
 ############ range for rating starts
 STR_CARGO_RATING_APPALLING                                      :Appalling

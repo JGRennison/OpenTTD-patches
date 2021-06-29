@@ -53,6 +53,20 @@ enum CargoPaymentRatesWidgets {
 	WID_CPR_SPEED,           ///< Speed mode.
 };
 
+/** Widget of the #StationCargoGraphWindow class. */
+enum StationCargoWidgets {
+	WID_SCG_CAPTION,          ///< Window title
+	WID_SCG_BACKGROUND,       ///< Background of the window.
+	WID_SCG_HEADER,           ///< Header.
+	WID_SCG_GRAPH,            ///< Graph itself.
+	WID_SCG_RESIZE,           ///< Resize button.
+	WID_SCG_FOOTER,           ///< Footer.
+	WID_SCG_ENABLE_CARGOES,   ///< Enable cargoes button.
+	WID_SCG_DISABLE_CARGOES,  ///< Disable cargoes button.
+	WID_SCG_MATRIX,           ///< Cargo list.
+	WID_SCG_MATRIX_SCROLLBAR, ///< Cargo list scrollbar.
+};
+
 /** Widget of the #CompanyLeagueWindow class. */
 enum CompanyLeagueWidgets {
 	WID_CL_BACKGROUND, ///< Background of the window.

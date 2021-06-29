@@ -31,6 +31,7 @@
 #include <math.h>
 
 #include "safeguards.h"
+#include "station_base.h"
 
 /* Bitmasks of company and cargo indices that shouldn't be drawn. */
 static CompanyMask _legend_excluded_companies;
@@ -1649,3 +1650,277 @@ void InitializeGraphGui()
 	_legend_excluded_companies = 0;
 	_legend_excluded_cargo = 0;
 }
+
+/*************************/
+/* STATION CARGO HISTORY */
+/*************************/
+struct StationCargoGraphWindow final : BaseGraphWindow {
+	StationID station_id;
+	uint line_height {};  ///< Pixel height of each cargo type row.
+	Scrollbar *vscroll;   ///< Cargo list scrollbar.
+	uint legend_width {}; ///< Width of legend 'blob'.
+	CargoTypes legend_excluded_cargo;
+	CargoTypes present_cargoes;
+
+	StationCargoGraphWindow(WindowDesc *desc, WindowNumber window) :
+		BaseGraphWindow(desc, WID_SCG_GRAPH, STR_JUST_COMMA)
+	{
+		station_id = static_cast<uint16>(window);
+
+		this->num_on_x_axis = MAX_STATION_CARGO_HISTORY_DAYS; // Four weeks
+		this->num_vert_lines = MAX_STATION_CARGO_HISTORY_DAYS;
+		this->month = 0xFF;
+		this->x_values_start = 2;
+		this->x_values_increment = 2;
+
+		this->CreateNestedTree();
+		this->vscroll = this->GetScrollbar(WID_SCG_MATRIX_SCROLLBAR);
+
+		/* Initialise the data set */
+		this->FillGraphData();
+
+		this->FinishInitNested(window);
+	}
+
+	void OnInit() override
+	{
+		/* Width of the legend blob. */
+		this->legend_width = (FONT_HEIGHT_SMALL - ScaleFontTrad(1)) * 8 / 5;
+		this->legend_excluded_cargo = 0;
+	}
+
+	void SetStringParameters(int widget) const override
+	{
+		if (widget == WID_SCG_CAPTION) {
+			SetDParam(0, this->station_id);
+		}
+		if (widget == WID_SCG_FOOTER) {
+			SetDParam(0, 48);
+		}
+	}
+
+	void UpdateExcludedData()
+	{
+		this->excluded_data = 0;
+
+		uint8 i = 0;
+		const CargoSpec *cs;
+		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+			if (!HasBit(this->present_cargoes, cs->Index())) continue;
+			if (HasBit(legend_excluded_cargo, cs->Index())) SetBit(this->excluded_data, i);
+			i++;
+		}
+	}
+
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	{
+		if (widget < WID_SCG_MATRIX) {
+			BaseGraphWindow::UpdateWidgetSize(widget, size, padding, fill, resize);
+			return;
+		}
+
+		const CargoSpec *cs;
+		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+			SetDParam(0, cs->name);
+			Dimension d = GetStringBoundingBox(STR_GRAPH_CARGO_PAYMENT_CARGO);
+			d.width += this->legend_width + 4; // color field
+			d.width += WD_FRAMERECT_LEFT + WD_FRAMERECT_RIGHT;
+			d.height += WD_FRAMERECT_TOP + WD_FRAMERECT_BOTTOM;
+			*size = maxdim(d, *size);
+		}
+
+		this->line_height = size->height;
+		size->height = this->line_height * 11; /* Default number of cargo types in most climates. */
+		resize->width = 0;
+		resize->height = this->line_height;
+	}
+
+	void DrawWidget(const Rect &r, int widget) const override
+	{
+		if (widget < WID_SCG_MATRIX) {
+			BaseGraphWindow::DrawWidget(r, widget);
+			return;
+		}
+
+		const bool rtl = _current_text_dir == TD_RTL;
+
+		int x = r.left + WD_FRAMERECT_LEFT;
+		int y = r.top;
+		const uint row_height = FONT_HEIGHT_SMALL;
+		const int padding = ScaleFontTrad(1);
+
+		int pos = this->vscroll->GetPosition();
+		int max = pos + this->vscroll->GetCapacity();
+
+		const CargoSpec *cs;
+		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+			if (!HasBit(this->present_cargoes, cs->Index())) continue;
+			if (pos-- > 0) continue;
+			if (--max < 0) break;
+
+			const bool lowered = !HasBit(legend_excluded_cargo, cs->Index());
+
+			/* Redraw box if lowered */
+			if (lowered) DrawFrameRect(r.left, y, r.right, y + this->line_height - 1, COLOUR_BROWN, lowered ? FR_LOWERED : FR_NONE);
+
+			const byte clk_dif = lowered ? 1 : 0;
+			const int rect_x = clk_dif + (rtl ? r.right - this->legend_width - WD_FRAMERECT_RIGHT : r.left + WD_FRAMERECT_LEFT);
+
+			GfxFillRect(rect_x, y + padding + clk_dif, rect_x + this->legend_width, y + row_height - 1 + clk_dif, PC_BLACK);
+			GfxFillRect(rect_x + 1, y + padding + 1 + clk_dif, rect_x + this->legend_width - 1, y + row_height - 2 + clk_dif, cs->legend_colour);
+			SetDParam(0, cs->name);
+			DrawString(rtl ? r.left : x + this->legend_width + 4 + clk_dif, (rtl ? r.right - this->legend_width - 4 + clk_dif : r.right), y + clk_dif, STR_GRAPH_CARGO_PAYMENT_CARGO);
+
+			y += this->line_height;
+		}
+	}
+
+	void OnClick(Point pt, int widget, int click_count) override
+	{
+		switch (widget) {
+			case WID_SCG_ENABLE_CARGOES:
+				/* Remove all cargoes from the excluded lists. */
+				this->legend_excluded_cargo = 0;
+				this->excluded_data = 0;
+				this->SetDirty();
+				break;
+
+			case WID_SCG_DISABLE_CARGOES: {
+				/* Add all cargoes to the excluded lists. */
+				this->legend_excluded_cargo = ~static_cast<CargoTypes>(0);
+				int i = 0;
+				const CargoSpec *cs;
+				FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+					if (!HasBit(this->present_cargoes, cs->Index())) continue;
+					SetBit(this->excluded_data, i);
+					i++;
+				}
+				this->SetDirty();
+				break;
+			}
+
+			case WID_SCG_MATRIX: {
+				uint row = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_SCG_MATRIX);
+				if (row >= this->vscroll->GetCount()) return;
+
+				const CargoSpec *cs;
+				FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+					if (!HasBit(this->present_cargoes, cs->Index())) continue;
+					if (row-- > 0) continue;
+
+					ToggleBit(legend_excluded_cargo, cs->Index());
+					this->UpdateExcludedData();
+					this->SetDirty();
+					break;
+				}
+				break;
+			}
+		}
+	}
+
+	void OnResize() override
+	{
+		this->vscroll->SetCapacityFromWidget(this, WID_SCG_MATRIX);
+	}
+
+	void OnGameTick() override
+	{
+		/* Override default OnGameTick */
+	}
+
+	/**
+	* Some data on this window has become invalid.
+	* @param data Information about the changed data.
+	* @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
+	*/
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	{
+		if (!gui_scope) return;
+		this->FillGraphData();
+	}
+
+	void FillGraphData()
+	{
+		const Station* station = Station::GetIfValid(this->station_id);
+		if (station == nullptr) return;
+
+		this->present_cargoes = station->station_cargo_history_cargoes;
+		this->vscroll->SetCount(CountBits(this->present_cargoes));
+
+		this->UpdateExcludedData();
+
+		uint8 i = 0;
+		const CargoSpec *cs;
+		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+			if (!HasBit(this->present_cargoes, cs->Index())) continue;
+			this->colours[i] = cs->legend_colour;
+
+			const auto &history = station->station_cargo_history[CountBits(this->present_cargoes & (cs->CargoTypesBit() - 1))];
+
+			uint offset = station->station_cargo_history_offset;
+			for (uint j = 0; j < MAX_STATION_CARGO_HISTORY_DAYS; j++) {
+				this->cost[i][j] = history[offset];
+				offset++;
+				if (offset == MAX_STATION_CARGO_HISTORY_DAYS) offset = 0;
+			}
+			i++;
+		}
+
+		this->num_dataset = i;
+
+		this->SetDirty();
+	}
+};
+
+
+static const NWidgetPart _nested_station_cargo_widgets[] = {
+	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_SCG_CAPTION), SetDataTip(STR_GRAPH_STATION_CARGO_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_SHADEBOX, COLOUR_GREY),
+		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
+		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+	EndContainer(),
+	NWidget(WWT_PANEL, COLOUR_GREY, WID_SCG_BACKGROUND), SetMinimalSize(568, 128),
+		NWidget(NWID_HORIZONTAL),
+			NWidget(NWID_SPACER), SetFill(1, 0), SetResize(1, 0),
+			NWidget(WWT_TEXT, COLOUR_GREY, WID_SCG_HEADER), SetMinimalSize(0, 6), SetPadding(2, 0, 2, 0), SetDataTip(STR_GRAPH_STATION_CARGO_TITLE, STR_NULL),
+			NWidget(NWID_SPACER), SetFill(1, 0), SetResize(1, 0),
+		EndContainer(),
+		NWidget(NWID_HORIZONTAL),
+			NWidget(WWT_EMPTY, COLOUR_GREY, WID_SCG_GRAPH), SetMinimalSize(495, 0), SetFill(1, 1), SetResize(1, 1),
+			NWidget(NWID_VERTICAL),
+				NWidget(NWID_SPACER), SetMinimalSize(0, 24), SetFill(0, 0), SetResize(0, 1),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SCG_ENABLE_CARGOES), SetDataTip(STR_GRAPH_CARGO_ENABLE_ALL, STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SCG_DISABLE_CARGOES), SetDataTip(STR_GRAPH_CARGO_DISABLE_ALL, STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL), SetFill(1, 0),
+				NWidget(NWID_SPACER), SetMinimalSize(0, 4),
+				NWidget(NWID_HORIZONTAL),
+					NWidget(WWT_MATRIX, COLOUR_BROWN, WID_SCG_MATRIX), SetResize(0, 2), SetMatrixDataTip(1, 0, STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO), SetScrollbar(WID_SCG_MATRIX_SCROLLBAR),
+					NWidget(NWID_VSCROLLBAR, COLOUR_BROWN, WID_SCG_MATRIX_SCROLLBAR),
+				EndContainer(),
+				NWidget(NWID_SPACER), SetMinimalSize(0, 24), SetFill(0, 1), SetResize(0, 1),
+			EndContainer(),
+			NWidget(NWID_SPACER), SetMinimalSize(5, 0), SetFill(0, 1), SetResize(0, 1),
+		EndContainer(),
+		NWidget(NWID_HORIZONTAL),
+			NWidget(NWID_SPACER), SetMinimalSize(WD_RESIZEBOX_WIDTH, 0), SetFill(1, 0), SetResize(1, 0),
+			NWidget(WWT_TEXT, COLOUR_GREY, WID_SCG_FOOTER), SetMinimalSize(0, 6), SetPadding(2, 0, 2, 0), SetDataTip(STR_GRAPH_STATION_CARGO_X_LABEL, STR_NULL),
+			NWidget(NWID_SPACER), SetFill(1, 0), SetResize(1, 0),
+			NWidget(WWT_RESIZEBOX, COLOUR_GREY, WID_SCG_RESIZE),
+		EndContainer(),
+	EndContainer(),
+};
+
+static WindowDesc _station_cargo_desc(
+	WDP_AUTO, "graph_station_cargo", 0, 0,
+	WC_STATION_CARGO, WC_NONE,
+	0,
+	_nested_station_cargo_widgets, lengthof(_nested_station_cargo_widgets)
+);
+
+
+void ShowStationCargo(StationID station_id)
+{
+	AllocateWindowDescFront<StationCargoGraphWindow>(&_station_cargo_desc, station_id);
+}
+

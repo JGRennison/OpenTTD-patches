@@ -23,6 +23,7 @@
 #include "core/endian_type.hpp"
 #include <map>
 #include <vector>
+#include <array>
 #include <iterator>
 #include <functional>
 #include <algorithm>
@@ -808,6 +809,10 @@ public:
 	IndustryList industries_near; ///< Cached list of industries near the station that can accept cargo, @see DeliverGoodsToIndustry()
 	Industry *industry;           ///< NOSAVE: Associated industry for neutral stations. (Rebuilt on load from Industry->st)
 
+	CargoTypes station_cargo_history_cargoes;                                              ///< Bitmask of cargoes in station_cargo_history
+	uint8 station_cargo_history_offset;                                                    ///< Start offset in station_cargo_history cargo ring buffer
+	std::vector<std::array<uint16, MAX_STATION_CARGO_HISTORY_DAYS>> station_cargo_history; ///< Station history of waiting cargo.
+
 	Station(TileIndex tile = INVALID_TILE);
 	~Station();
 
@@ -816,6 +821,8 @@ public:
 	void MarkTilesDirty(bool cargo_change) const;
 
 	void UpdateVirtCoord() override;
+
+	void UpdateCargoHistory();
 
 	void MoveSign(TileIndex new_xy) override;
 
