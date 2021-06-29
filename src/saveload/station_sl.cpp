@@ -459,6 +459,7 @@ static const SaveLoad _station_desc[] = {
 	  SLE_CONDVAR(Station, always_accepted,            SLE_FILE_U32 | SLE_VAR_U64, SLV_127, SLV_EXTEND_CARGOTYPES),
 	  SLE_CONDVAR(Station, always_accepted,            SLE_UINT64,                 SLV_EXTEND_CARGOTYPES, SL_MAX_VERSION),
 	  SLE_CONDNULL_X(32 * 24, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP, SL_JOKER_1_22)),
+	SLE_CONDVAR_X(Station, station_cargo_history_cargoes, SLE_UINT64,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_STATION_CARGO_HISTORY)),
 
 	      SLE_END()
 };
@@ -546,6 +547,17 @@ static void RealSave_STNN(BaseStation *bst)
 			for (StationCargoPacketMap::ConstMapIterator it(st->goods[i].cargo.Packets()->begin()); it != st->goods[i].cargo.Packets()->end(); ++it) {
 				SlObjectSaveFiltered(const_cast<StationCargoPacketMap::value_type *>(&(*it)), _cargo_list_desc); // _cargo_list_desc has no conditionals
 			}
+		}
+
+		assert(st->station_cargo_history.size() == CountBits(st->station_cargo_history_cargoes));
+		dumper->CheckBytes(st->station_cargo_history.size() * MAX_STATION_CARGO_HISTORY_DAYS * 2);
+		for (const auto &history : st->station_cargo_history) {
+			uint i = st->station_cargo_history_offset;
+			do {
+				dumper->RawWriteUint16(history[i]);
+				i++;
+				if (i == MAX_STATION_CARGO_HISTORY_DAYS) i = 0;
+			} while (i != st->station_cargo_history_offset);
 		}
 	}
 
@@ -656,6 +668,15 @@ static void Load_STNN()
 				}
 				if (SlXvIsFeatureMissing(XSLFI_ST_LAST_VEH_TYPE)) st->goods[i].last_vehicle_type = _old_last_vehicle_type;
 			}
+
+			st->station_cargo_history.resize(CountBits(st->station_cargo_history_cargoes));
+			buffer->CheckBytes(st->station_cargo_history.size() * MAX_STATION_CARGO_HISTORY_DAYS * 2);
+			for (auto &history : st->station_cargo_history) {
+				for (uint16 &amount : history) {
+					amount = buffer->RawReadUint16();
+				}
+			}
+			st->station_cargo_history_offset = 0;
 		}
 
 		if (bst->num_specs != 0) {
