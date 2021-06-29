@@ -1366,6 +1366,12 @@ struct StationViewWindow : public Window {
 		SetViewportCatchmentStation(Station::Get(this->window_number), false);
 	}
 
+	void OnInit() override
+	{
+		const Station *st = Station::Get(this->window_number);
+		SetWidgetDisabledState(WID_SV_HISTORY, st->station_cargo_history_cargoes == 0);
+	}
+
 	/**
 	 * Show a certain cargo entry characterized by source/next/dest station, cargo ID and amount of cargo at the
 	 * right place in the cargo view. I.e. update as many rows as are expanded following that characterization.

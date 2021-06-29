@@ -78,7 +78,8 @@ Station::Station(TileIndex tile) :
 	indtype(IT_INVALID),
 	time_since_load(255),
 	time_since_unload(255),
-	station_cargo_history{}
+	station_cargo_history_cargoes(0),
+	station_cargo_history_offset(0)
 {
 	/* this->random_bits is set in Station::AddFacility() */
 }

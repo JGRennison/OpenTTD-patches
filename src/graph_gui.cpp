@@ -1660,6 +1660,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 	Scrollbar *vscroll;   ///< Cargo list scrollbar.
 	uint legend_width {}; ///< Width of legend 'blob'.
 	CargoTypes legend_excluded_cargo;
+	CargoTypes present_cargoes;
 
 	StationCargoGraphWindow(WindowDesc *desc, WindowNumber window) :
 		BaseGraphWindow(desc, WID_SCG_GRAPH, STR_JUST_COMMA)
@@ -1674,10 +1675,9 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_SCG_MATRIX_SCROLLBAR);
-		this->vscroll->SetCount(_sorted_standard_cargo_specs_size);
 
 		/* Initialise the data set */
-		this->OnHundredthTick();
+		this->FillGraphData();
 
 		this->FinishInitNested(window);
 	}
@@ -1687,17 +1687,6 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 		/* Width of the legend blob. */
 		this->legend_width = (FONT_HEIGHT_SMALL - ScaleFontTrad(1)) * 8 / 5;
 		this->legend_excluded_cargo = 0;
-
-		const Station* station = Station::GetIfValid(this->station_id);
-
-		if (station == nullptr) return;
-		
-		const CargoSpec *cs;
-		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
-			if (station->goods[cs->Index()].cargo.AvailableCount() == 0) {
-				SetBit(legend_excluded_cargo, cs->Index());
-			}
-		}
 	}
 
 	void SetStringParameters(int widget) const override
@@ -1714,6 +1703,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 		uint8 i = 0;
 		const CargoSpec *cs;
 		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+			if (!HasBit(this->present_cargoes, cs->Index())) continue;
 			if (HasBit(legend_excluded_cargo, cs->Index())) SetBit(this->excluded_data, i);
 			i++;
 		}
@@ -1761,6 +1751,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 
 		const CargoSpec *cs;
 		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+			if (!HasBit(this->present_cargoes, cs->Index())) continue;
 			if (pos-- > 0) continue;
 			if (--max < 0) break;
 
@@ -1786,17 +1777,18 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 		switch (widget) {
 			case WID_SCG_ENABLE_CARGOES:
 				/* Remove all cargoes from the excluded lists. */
-				legend_excluded_cargo = 0;
+				this->legend_excluded_cargo = 0;
 				this->excluded_data = 0;
 				this->SetDirty();
 				break;
 
 			case WID_SCG_DISABLE_CARGOES: {
 				/* Add all cargoes to the excluded lists. */
+				this->legend_excluded_cargo = ~static_cast<CargoTypes>(0);
 				int i = 0;
 				const CargoSpec *cs;
 				FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
-					SetBit(legend_excluded_cargo, cs->Index());
+					if (!HasBit(this->present_cargoes, cs->Index())) continue;
 					SetBit(this->excluded_data, i);
 					i++;
 				}
@@ -1810,6 +1802,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 
 				const CargoSpec *cs;
 				FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+					if (!HasBit(this->present_cargoes, cs->Index())) continue;
 					if (row-- > 0) continue;
 
 					ToggleBit(legend_excluded_cargo, cs->Index());
@@ -1840,25 +1833,32 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
-		this->OnHundredthTick();
+		this->FillGraphData();
 	}
 
-	void OnHundredthTick() override
+	void FillGraphData()
 	{
-		this->UpdateExcludedData();
-
 		const Station* station = Station::GetIfValid(this->station_id);
-
 		if (station == nullptr) return;
+
+		this->present_cargoes = station->station_cargo_history_cargoes;
+		this->vscroll->SetCount(CountBits(this->present_cargoes));
+
+		this->UpdateExcludedData();
 
 		uint8 i = 0;
 		const CargoSpec *cs;
 		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+			if (!HasBit(this->present_cargoes, cs->Index())) continue;
 			this->colours[i] = cs->legend_colour;
 
+			const auto &history = station->station_cargo_history[CountBits(this->present_cargoes & (cs->CargoTypesBit() - 1))];
+
+			uint offset = station->station_cargo_history_offset;
 			for (uint j = 0; j < MAX_STATION_CARGO_HISTORY_DAYS; j++) {
-				
-				this->cost[i][j] = station->station_cargo_history[cs->Index() * MAX_STATION_CARGO_HISTORY_DAYS + j] * STATION_CARGO_HISTORY_FACTOR;
+				this->cost[i][j] = history[offset];
+				offset++;
+				if (offset == MAX_STATION_CARGO_HISTORY_DAYS) offset = 0;
 			}
 			i++;
 		}
