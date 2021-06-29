@@ -1694,6 +1694,9 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 		if (widget == WID_SCG_CAPTION) {
 			SetDParam(0, this->station_id);
 		}
+		if (widget == WID_SCG_FOOTER) {
+			SetDParam(0, 48);
+		}
 	}
 
 	void UpdateExcludedData()

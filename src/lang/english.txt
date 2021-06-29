@@ -614,7 +614,7 @@ STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Toggle g
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
 STR_GRAPH_STATION_CARGO_CAPTION                                 :{WHITE}{STATION} - Waiting Cargo History
-STR_GRAPH_STATION_CARGO_X_LABEL                                 :{TINY_FONT}{BLACK}Development over the last 48 days
+STR_GRAPH_STATION_CARGO_X_LABEL                                 :{TINY_FONT}{BLACK}Development over the last {NUM} days
 STR_GRAPH_STATION_CARGO_TITLE                                   :{TINY_FONT}{BLACK}Units of cargo waiting at the station
 
 STR_GRAPH_CARGO_DAYS_MODE                                       :{TINY_FONT}{BLACK}Days in transit
