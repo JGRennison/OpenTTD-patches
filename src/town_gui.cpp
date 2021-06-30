@@ -1966,7 +1966,7 @@ static void PlaceProc_House(TileIndex tile)
 				uint dist = DistanceSquare(tile, t->xy);
 				if (dist >= best_dist) continue;
 				best_dist = dist;
-				best_zone = town_zone;
+				if (town_zone != HZB_END) best_zone = town_zone;
 				towns.clear();
 			}
 			towns.push_back(t->index);
