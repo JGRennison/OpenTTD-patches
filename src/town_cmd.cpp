@@ -60,6 +60,8 @@
 #include "safeguards.h"
 
 TownID _new_town_id;
+static bool _record_house_coords = false;
+static Rect _record_house_rect;
 
 /* Initialize the town-pool */
 TownPool _town_pool("Town");
@@ -2215,6 +2217,10 @@ CommandCost CmdFoundTown(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 			return CommandCost(EXPENSES_OTHER);
 		}
 
+		_record_house_coords = !_generating_world;
+		if (_record_house_coords) {
+			_record_house_rect = { (int)MapSizeX(), (int)MapSizeY(), 0, 0 };
+		}
 		Backup<bool> old_generating_world(_generating_world, true, FILE_LINE);
 		UpdateNearestTownForRoadTiles(true);
 		Town *t;
@@ -2236,6 +2242,14 @@ CommandCost CmdFoundTown(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 			t->name = text;
 			t->UpdateVirtCoord();
 		}
+
+		if (t != nullptr && _record_house_coords && _record_house_rect.left < _record_house_rect.right) {
+			ForAllStationsAroundTiles(TileArea(TileXY(_record_house_rect.left, _record_house_rect.top), _record_house_rect.right - _record_house_rect.left, _record_house_rect.bottom - _record_house_rect.top), [](Station *st, TileIndex tile) {
+				st->RecomputeCatchment(true);
+				return true;
+			});
+		}
+		_record_house_coords = false;
 
 		if (_game_mode != GM_EDITOR) {
 			/* 't' can't be nullptr since 'random' is false outside scenedit */
@@ -2564,6 +2578,12 @@ static void MakeTownHouse(TileIndex t, Town *town, byte counter, byte stage, Hou
 			town->stations_near.insert(st);
 			return true;
 		});
+	}
+	if (_record_house_coords) {
+		_record_house_rect.left = std::min(_record_house_rect.left, (int)TileX(t));
+		_record_house_rect.top = std::min(_record_house_rect.top, (int)TileY(t));
+		_record_house_rect.right = std::max(_record_house_rect.right, (int)TileX(t) + ((size & BUILDING_2_TILES_X) ? 2 : 1));
+		_record_house_rect.bottom = std::max(_record_house_rect.bottom, (int)TileY(t) + ((size & BUILDING_2_TILES_Y) ? 2 : 1));
 	}
 }
 
