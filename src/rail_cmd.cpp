@@ -3722,16 +3722,14 @@ static bool ClickTile_Track(TileIndex tile)
 
 		Track track = FindFirstTrack(trackbits);
 		if (HasTrack(tile, track) && HasSignalOnTrack(tile, track)) {
-			bool result = false;
-			if (GetExistingTraceRestrictProgram(tile, track) != nullptr) {
+			const bool programmable = IsPresignalProgrammable(tile, track);
+			if (GetExistingTraceRestrictProgram(tile, track) != nullptr || !programmable) {
 				ShowTraceRestrictProgramWindow(tile, track);
-				result = true;
 			}
-			if (IsPresignalProgrammable(tile, track)) {
+			if (programmable) {
 				ShowSignalProgramWindow(SignalReference(tile, track));
-				result = true;
 			}
-			return result;
+			return true;
 		}
 	}
 
