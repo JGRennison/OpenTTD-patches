@@ -613,6 +613,10 @@ STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}화물 �
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}이 화물에 대한 그래프 켜기/끄기
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
+STR_GRAPH_STATION_CARGO_CAPTION                                 :{WHITE}{STATION} - 대기 화물량 내력
+STR_GRAPH_STATION_CARGO_X_LABEL                                 :{TINY_FONT}{BLACK}{NUM}일 동안의 변동 사항
+STR_GRAPH_STATION_CARGO_TITLE                                   :{TINY_FONT}{BLACK}역에서 있던 화물량
+
 STR_GRAPH_CARGO_DAYS_MODE                                       :{TINY_FONT}{BLACK}통과 시간
 STR_GRAPH_CARGO_SPEED_MODE                                      :{TINY_FONT}{BLACK}평균 속력
 STR_GRAPH_CARGO_TOOLTIP_DAYS_MODE                               :{BLACK}그래프의 X축에 통과 시간을 표시합니다
@@ -4182,7 +4186,10 @@ STR_STATION_VIEW_GROUP_D_S_V                                    :도착-출발-�
 STR_STATION_VIEW_GROUP_D_V_S                                    :도착-경유-출발
 
 STR_STATION_VIEW_DEPARTURES_BUTTON                              :{BLACK}출발/도착 정보
-STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}출발/도착 정보를 보여줍니다.
+STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}출발/도착 정보를 보여줍니다
+
+STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}화물량 내력
+STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}대기 화물량 내력을 보여줍니다
 
 ############ range for rating starts
 STR_CARGO_RATING_APPALLING                                      :형편없음
