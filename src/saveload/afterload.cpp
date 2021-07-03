@@ -938,6 +938,10 @@ bool AfterLoadGame()
 		_settings_game.vehicle.train_braking_model = TBM_ORIGINAL;
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_TRAIN_SPEED_ADAPTATION)) {
+		_settings_game.vehicle.train_speed_adaptation = false;
+	}
+
 	AfterLoadEngines();
 
 	/* Update all vehicles */
