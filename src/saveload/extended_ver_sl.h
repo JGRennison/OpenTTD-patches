@@ -106,6 +106,7 @@ enum SlXvFeatureIndex {
 	XSLFI_MORE_HOUSES,                            ///< More house types
 	XSLFI_CUSTOM_TOWN_ZONE,                       ///< Custom town zones
 	XSLFI_STATION_CARGO_HISTORY,                  ///< Station waiting cargo history
+	XSLFI_TRAIN_SPEED_ADAPTATION,                 ///< Train speed adaptation
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk

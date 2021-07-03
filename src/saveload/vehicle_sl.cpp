@@ -807,6 +807,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		SLE_CONDNULL(11, SLV_2, SLV_144), // old reserved space
 		SLE_CONDVAR_X(Train, reverse_distance,    SLE_UINT16,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REVERSE_AT_WAYPOINT)),
 		SLE_CONDVAR_X(Train, speed_restriction,   SLE_UINT16,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPEED_RESTRICTION)),
+		SLE_CONDVAR_X(Train, signal_speed_restriction, SLE_UINT16,    SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TRAIN_SPEED_ADAPTATION)),
 		SLE_CONDVAR_X(Train, critical_breakdown_count, SLE_UINT8,     SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_IMPROVED_BREAKDOWNS, 2)),
 
 		     SLE_END()

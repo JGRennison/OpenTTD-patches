@@ -1541,6 +1541,15 @@ static bool PublicRoadsSettingChange(int32 p1) {
 	return true;
 }
 
+static bool TrainSpeedAdaptationChanged(int32 p1) {
+	extern void ClearAllSignalSpeedRestrictions();
+	ClearAllSignalSpeedRestrictions();
+	for (Train *t : Train::Iterate()) {
+		t->signal_speed_restriction = 0;
+	}
+	return true;
+}
+
 /** Checks if any settings are set to incorrect values, and sets them to correct values in that case. */
 static void ValidateSettings()
 {
@@ -1784,7 +1793,12 @@ static bool ImprovedBreakdownsSettingChanged(int32 p1)
 
 static bool DayLengthChanged(int32 p1)
 {
+	const DateTicksScaled old_scaled_date_ticks = _scaled_date_ticks;
 	SetScaledTickVariables();
+
+	extern void AdjustAllSignalSpeedRestrictionTickValues(DateTicksScaled delta);
+	AdjustAllSignalSpeedRestrictionTickValues(_scaled_date_ticks - old_scaled_date_ticks);
+
 	MarkWholeScreenDirty();
 	return true;
 }

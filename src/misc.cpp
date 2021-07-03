@@ -43,6 +43,7 @@
 
 
 extern TileIndex _cur_tileloop_tile;
+extern void ClearAllSignalSpeedRestrictions();
 extern void MakeNewgameSettingsLive();
 
 void InitializeSound();
@@ -117,6 +118,8 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 
 	FreeSignalPrograms();
 	FreeSignalDependencies();
+
+	ClearAllSignalSpeedRestrictions();
 
 	ClearZoningCaches();
 	IntialiseOrderDestinationRefcountMap();

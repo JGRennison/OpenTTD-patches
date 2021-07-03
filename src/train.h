@@ -147,6 +147,7 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 	uint16 reverse_distance;
 	uint16 tunnel_bridge_signal_num;
 	uint16 speed_restriction;
+	uint16 signal_speed_restriction;
 
 	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */
 	Train() : GroundVehicleBase() {}

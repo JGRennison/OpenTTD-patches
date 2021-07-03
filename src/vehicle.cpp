@@ -2417,6 +2417,7 @@ void VehicleEnterDepot(Vehicle *v)
 			ClrBit(t->flags, VRF_TOGGLE_REVERSE);
 			t->ConsistChanged(CCF_ARRANGE);
 			t->reverse_distance = 0;
+			t->signal_speed_restriction = 0;
 			t->lookahead.reset();
 			if (!(t->vehstatus & VS_CRASHED)) {
 				t->crash_anim_pos = 0;
@@ -4309,4 +4310,7 @@ void ShiftVehicleDates(int interval)
 	for (Vehicle *v : Vehicle::Iterate()) {
 		v->date_of_last_service += interval;
 	}
+
+	extern void AdjustAllSignalSpeedRestrictionTickValues(DateTicksScaled delta);
+	AdjustAllSignalSpeedRestrictionTickValues(interval * DAY_TICKS * _settings_game.economy.day_length_factor);
 }

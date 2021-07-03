@@ -162,8 +162,11 @@ class NIHVehicle : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  T cache: veh weight: %u, user data: %u, curve speed: %u",
 					t->tcache.cached_veh_weight, t->tcache.user_def_data, t->tcache.cached_max_curve_speed);
 			print(buffer);
-			seprintf(buffer, lastof(buffer), "  Wait counter: %u, rev distance: %u, TBSN: %u, speed restriction: %u",
-					t->wait_counter, t->reverse_distance, t->tunnel_bridge_signal_num, t->speed_restriction);
+			seprintf(buffer, lastof(buffer), "  Wait counter: %u, rev distance: %u, TBSN: %u",
+					t->wait_counter, t->reverse_distance, t->tunnel_bridge_signal_num);
+			print(buffer);
+			seprintf(buffer, lastof(buffer), "  Speed restriction: %u, signal speed restriction (ATC): %u",
+					t->speed_restriction, t->signal_speed_restriction);
 			print(buffer);
 			seprintf(buffer, lastof(buffer), "  Railtype: %u, compatible_railtypes: 0x" OTTD_PRINTFHEX64,
 					t->railtype, t->compatible_railtypes);

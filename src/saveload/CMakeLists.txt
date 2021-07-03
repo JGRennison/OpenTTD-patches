@@ -48,6 +48,7 @@ add_files(
     tbtr_template_veh_sl.cpp
     town_sl.cpp
     tracerestrict_sl.cpp
+    train_speed_adaptation.cpp
     tunnel_sl.cpp
     vehicle_sl.cpp
     waypoint_sl.cpp

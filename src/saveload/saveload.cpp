@@ -288,6 +288,7 @@ extern const ChunkHandler _template_replacement_chunk_handlers[];
 extern const ChunkHandler _template_vehicle_chunk_handlers[];
 extern const ChunkHandler _bridge_signal_chunk_handlers[];
 extern const ChunkHandler _tunnel_chunk_handlers[];
+extern const ChunkHandler _train_speed_adaptation_chunk_handlers[];
 extern const ChunkHandler _debug_chunk_handlers[];
 
 /** Array of all chunks in a savegame, \c nullptr terminated. */
@@ -333,6 +334,7 @@ static const ChunkHandler * const _chunk_handlers[] = {
 	_template_vehicle_chunk_handlers,
 	_bridge_signal_chunk_handlers,
 	_tunnel_chunk_handlers,
+	_train_speed_adaptation_chunk_handlers,
 	_debug_chunk_handlers,
 	nullptr,
 };

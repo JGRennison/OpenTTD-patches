@@ -479,6 +479,7 @@ add_files(
     train.h
     train_cmd.cpp
     train_gui.cpp
+    train_speed_adaptation.h
     transparency.h
     transparency_gui.cpp
     transparency_gui.h
