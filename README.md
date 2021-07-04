@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.41.3
+## JGR's Patchpack version 0.42.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -46,6 +46,11 @@ See [installation.md](/installation.md) for instructions on how to install.
   In this mode, trains have a stopping distance and will reserve ahead accordingly, trains cannot stop instantly.  
   See the [guide on the wiki](https://github.com/JGRennison/OpenTTD-patches/wiki/Realistic-braking) for more information.
 * Allow converting track type under trains when compatible with the new rail type.
+* Add feature where trains adjust their speed to match the train in front to avoid stop-start behaviour.
+* Add a new train purchase window, where locomotive and wagons are in separate lists.
+* Add information about train full and empty loads and achievable speeds to the train info window.
+* Add setting to sort track types by category and speed.
+* Add a setting for whether to pathfind up to back of a one-way path signal.
 
 #### Roads and Road Vehicles
 
@@ -56,6 +61,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Disallow ordering ordinary road vehicles to tram depots and vice versa.
 * Improve road vehicle pathfinding when multiple vehicles are simultaneously heading to a station with multiple bay/stop entrances.
 * Add setting for default road/tram types.
+* Add a setting to turn off road vehicles slowing in curves.
 
 #### Level Crossings
 
@@ -101,6 +107,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add a setting to include the train length and group name in the vehicle details window.
 * Add a setting for whether to open the new vehicle GUI when share-cloning.
 * Add setting to disable mass action buttons for top-level vehicle lists.
+* Add feature to create a new auto-named group when dragging and dropping a vehicle onto the new group button (ctrl includes shared order vehicles).
 
 #### Orders and Timetabling
 
@@ -143,6 +150,8 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Enable vehicle group management actions on other companies' stations.
 * Add support for allowing/disallowing supply to a station, per cargo, by ctrl-clicking the station cargo rating.
 * Add setting to show a company-coloured mark next to vehicles in vehicle list windows, if their owner does not match the list owner.
+* Add a waiting cargo history graph for stations.
+* Add a tooltip to show station rating details (controlled by a setting).
 
 #### Towns
 
@@ -153,6 +162,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add a setting to scale town growth rate by proportion of town cargo transported.
 * Add "indifferent" mode to the town council attitude to area restructuring setting.
 * Disallow converting town-owned roads to types with the no houses flag.
+* Add public roads (road network automatically built between towns) at map generation and in the scenario editor.
 
 #### Industries
 
@@ -160,18 +170,24 @@ See [installation.md](/installation.md) for instructions on how to install.
 
 #### Map and Landscaping
 
-* Enable building rivers in game. Off by default.
 * Add a setting to [reduce](http://www.tt-forums.net/viewtopic.php?p=890778#p890778) or stop the tree growth rate.
 * [Adjusted arctic tree placement](http://www.tt-forums.net/viewtopic.php?f=33&t=72502).
+* Add a new tree placement mode (perfect).
+* [Minimum town distance](https://www.tt-forums.net/viewtopic.php?f=33&t=33625).
+* Add map generation settings to control river/lake and rocky patch generation.
+* Add generation of wide rivers.
+* Add settings to customise the size of town zones, and city zones.
+
+#### Construction
+
+* Enable building rivers in game. Off by default.
 * Add a setting to disable removing sea/rivers.
 * Allow building objects by area (1x1 objects only).
 * Allow purchasing a region of tiles at once, by dragging.
 * Add setting to control if and how land purchasing is permitted.
 * Add a company rate limit for land purchasing.
 * Add a company rate limit for object construction.
-* [Minimum town distance](https://www.tt-forums.net/viewtopic.php?f=33&t=33625).
-* Add map generation settings to control river/lake and rocky patch generation.  
-* Add settings to customise the size of town zones, and city zones.
+* Add setting for whether to confirm before demolishing industries and/or rail stations.
 
 #### Scenario Editor
 
@@ -193,6 +209,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * [When building tunnels, open new viewports at the far end of the tunnel](https://www.tt-forums.net/viewtopic.php?f=33&t=72639).
 * [Smallmap screenshots](http://www.tt-forums.net/viewtopic.php?f=33&t=44596).
 * Whole map screenshots at current zoom level.
+* Topography and industry screenshots.
 * Make smallmap refresh period variable with map mode/zoom and pause state.
 * Add display setting for income/cost text effects.
 
@@ -228,6 +245,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 
 * Add setting to control dates over which inflation is applied.
 * Allow shift-clicking on borrow/repay money buttons to enter a quantity.
+* Add mode to the cargo payment graph to show payment based on average transit speed.
 
 #### Cheats
 

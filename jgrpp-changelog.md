@@ -2,6 +2,53 @@
 
 * * *
 
+### v0.42.0 (2021-07-04)
+* Fix crash when removing a company (e.g. due to bankrupcty or the stop_ai command).
+* Fix crash when a network server sends a large multiplayer desync log to a desyncing network client.
+* Fix crash when clearing a tunnel where only the near end is reserved with realistic braking.
+* Fix crash when autoreplacing vehicle with no orders, when refits are not compatible.
+* Fix crash which could occur when logging debug messages to the network admin socket.
+* Fix incorrect infrastructure accounting when moving a signalled tunnel/bridge to another company with a different signal spacing setting, causing multiplayer desyncs.
+* Fix founding towns inside the catchment on an existing station not associating the town with the station catchment, causing multiplayer desyncs.
+* Fix house placing in the scenario editor picking the wrong town when placing houses outside towns is enabled.
+* Fix news window viewports not updating vehicle images.
+* Fix changing the font zoom level not updating the height of window widgets containing text.
+* Fix the status bar time/date section being truncated with large font sizes, and when changing time/date settings.
+* Fix owner legend colours when the company starting colour setting is used.
+* Fix speed unit conversions in the routing restrictions window.
+* Viewport map mode:
+  * Fix rendering of sloped tile, which could cause misalignment of tunnels with the entrance tiles.
+  * Fix display of high freeform edges at the north edges.
+* Map generation:
+  * Add public roads (road network automatically built between towns) at map generation and in the scenario editor.
+  * Add generation of wide rivers.
+  * Allow lakes to be disabled.
+  * Adjust lake generation to be closer to the specified lake size.
+  * Add setting for a max height level for towns.
+* Trees:
+  * Add a new tree placement mode with improved distribution.
+  * Increase maximum width of artic tree range around snow line setting.
+* Add feature where trains adjust their speed to match the train in front to avoid stop-start behaviour.
+* Add a new train purchase window, where locomotive and wagons are in separate lists.
+* Add a waiting cargo history graph to stations.
+* Add feature to create a new auto-named group when dragging and dropping a vehicle onto the new group button.
+* Add information about train full and empty loads and achievable speeds to the train info window.
+* Add setting for whether to confirm before demolishing industries and/or rail stations.
+* Add setting to sort tracks by category and speed.
+* Add mode to the cargo payment graph to show payment based on average transit speed.
+* Add a tooltip to show station rating details (controlled by a setting).
+* Add topography and industries screenshot types.
+* Add a setting to turn off road vehicle slowdown in curves.
+* Add a setting for whether to pathfind up to back of a one-way path signal.
+* Disable town noise limits in indifferent town tolerance mode.
+* Set a maximum size for the left part of the build rail station window.
+* Use a lower resort interval in vehicle list windows when sorting vehicles by timetable delay.
+* Open the routing restriction window when ctrl-clicking any signal (except programmable pre-signals).
+* Settings window: Move the day length factor setting to the environment section.
+* Allow threaded saves in network server mode.
+* Add Korean translations by TELK.
+* Trunk base remains at commit 8fa53f543a5929bdbb12c8776ae9577594f9eba7, with some further commits picked up to ef25afd55ab868a4322d0c241b5c4898966ac919.
+
 ### v0.41.3 (2021-06-07)
 * Fix crash which could occur when a train reaches a disallowed 90° turn.
 * Fix crash which could occur on Linux/SDL2 when a text entry widget is focused without a window being focused.
