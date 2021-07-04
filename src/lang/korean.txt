@@ -613,6 +613,10 @@ STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}화물 �
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}이 화물에 대한 그래프 켜기/끄기
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
+STR_GRAPH_STATION_CARGO_CAPTION                                 :{WHITE}{STATION} - 대기 화물량 내력
+STR_GRAPH_STATION_CARGO_X_LABEL                                 :{TINY_FONT}{BLACK}{NUM}일 동안의 변동 사항
+STR_GRAPH_STATION_CARGO_TITLE                                   :{TINY_FONT}{BLACK}역에서 있던 화물량
+
 STR_GRAPH_CARGO_DAYS_MODE                                       :{TINY_FONT}{BLACK}통과 시간
 STR_GRAPH_CARGO_SPEED_MODE                                      :{TINY_FONT}{BLACK}평균 속력
 STR_GRAPH_CARGO_TOOLTIP_DAYS_MODE                               :{BLACK}그래프의 X축에 통과 시간을 표시합니다
@@ -1476,6 +1480,9 @@ STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_OFF                    :끄기
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_INDUSTRY               :산업 시설
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_ALL                    :산업 시설과 열차 역
 
+STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW              :기관차와 객화차 구매 목록을 분리: {STRING}
+STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_HELPTEXT     :이 설정을 켜면, 구매 목록 창에서 기관차와 객화차를 좌우로 분리하여 표시합니다.
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :고급 다리/터널 신호기 활성화: {STRING}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :다리와 터널 위 신호기 시뮬레이션 고급 모드를 활성화합니다. 이 설정을 끄면, 고급 모드에 있지 않은 다리와 터널을 고급 모드로 변경할 수 없지만 다른 플레이어는 이 설정을 켜서 고급 모드를 사용할 수 있습니다.
 
@@ -1808,9 +1815,11 @@ STR_CONFIG_SETTING_SERVINT_AIRCRAFT_HELPTEXT                    :항공기에 �
 STR_CONFIG_SETTING_SERVINT_SHIPS                                :선박에 대한 기본 점검 기준: {STRING}
 STR_CONFIG_SETTING_SERVINT_SHIPS_HELPTEXT                       :선박에 따로 점검 기간이 설정되어있지 않은 경우에 사용할 기본 점검 기간을 설정합니다.
 STR_CONFIG_SETTING_NOSERVICE                                    :차량 고장 설정을 껐으면 점검을 하지 않음: {STRING}
-STR_CONFIG_SETTING_NOSERVICE_HELPTEXT                           :이 설정을 켜면, 차량이 고장나지 않도록 설정되어 있는 경우 차량이 자동으로 점검을 하러 가지 않습니다
+STR_CONFIG_SETTING_NOSERVICE_HELPTEXT                           :이 설정을 켜면, 차량이 고장나지 않도록 설정되어 있는 경우 차량이 자동으로 점검을 하러 가지 않습니다.
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :화물차 속력 제한 적용: {STRING}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :이 설정을 켜면, 화물차의 속력 제한값에 따라 열차의 최대 속력을 제한합니다.
+STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION                       :열차 속력 조정 활성화: {STRING}
+STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :이 설정을 켜면, 빠른 속력의 열차가 앞서가는 느린 속력의 열차의 속력에 맞춰 운행합니다.
 STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES                 :커브에서 자동차의 속력을 감속: {STRING}
 STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES_HELPTEXT        :이 설정을 켜면, 커브에서 자동차의 속력을 감속시킵니다. (현실적인 감속을 켰을 때에만 적용됩니다)
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :전기 철도를 사용하지 않음: {STRING}
@@ -4179,7 +4188,10 @@ STR_STATION_VIEW_GROUP_D_S_V                                    :도착-출발-�
 STR_STATION_VIEW_GROUP_D_V_S                                    :도착-경유-출발
 
 STR_STATION_VIEW_DEPARTURES_BUTTON                              :{BLACK}출발/도착 정보
-STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}출발/도착 정보를 보여줍니다.
+STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}출발/도착 정보를 보여줍니다
+
+STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}화물량 내력
+STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}대기 화물량 내력을 보여줍니다
 
 ############ range for rating starts
 STR_CARGO_RATING_APPALLING                                      :형편없음
@@ -4344,7 +4356,6 @@ STR_FINANCES_BORROW_TOOLTIP_EXTRA                               :{BLACK}{STRING}
 STR_FINANCES_REPAY_TOOLTIP_EXTRA                                :{BLACK}{STRING}. SHIFT+클릭하면 갚을 양을 직접 입력할 수 있습니다
 STR_FINANCES_BORROW_QUERY_CAPT                                  :{WHITE}빌릴 돈의 양을 입력하세요
 STR_FINANCES_REPAY_QUERY_CAPT                                   :{WHITE}갚을 돈의 양을 입력하세요
-
 STR_FINANCES_INFRASTRUCTURE_BUTTON                              :{BLACK}기반시설
 
 # Company view
@@ -4570,6 +4581,9 @@ STR_BUY_VEHICLE_SHIP_CAPTION                                    :새 선박
 STR_BUY_VEHICLE_AIRCRAFT_CAPTION                                :새 항공기
 ############ range for vehicle availability ends
 
+STR_BUY_VEHICLE_TRAIN_LOCOMOTIVES                               :기관차 및 동력차
+STR_BUY_VEHICLE_TRAIN_WAGONS                                    :객화차
+
 STR_PURCHASE_INFO_COST_WEIGHT                                   :{BLACK}가격: {GOLD}{CURRENCY_LONG}{BLACK} 중량: {GOLD}{WEIGHT_SHORT}
 STR_PURCHASE_INFO_COST_REFIT_WEIGHT                             :{BLACK}가격: {GOLD}{CURRENCY_LONG}{BLACK} (개조 가격: {GOLD}{CURRENCY_LONG}{BLACK}) 무게: {GOLD}{WEIGHT_SHORT}
 STR_PURCHASE_INFO_SPEED_POWER                                   :{BLACK}속력: {GOLD}{VELOCITY}{BLACK} 힘: {GOLD}{POWER}
@@ -4611,31 +4625,43 @@ STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON                        :{BLACK}차량 �
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_BUTTON                 :{BLACK}차량 구입
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_BUTTON                         :{BLACK}선박 구입
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_BUTTON                     :{BLACK}항공기 구입
+STR_BUY_VEHICLE_TRAIN_BUY_LOCOMOTIVE_BUTTON                     :{BLACK}기관차 구입
+STR_BUY_VEHICLE_TRAIN_BUY_WAGON_BUTTON                          :{BLACK}객화차 구입
 
 STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_BUTTON                  :{BLACK}차량 구입 및 개조
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_REFIT_VEHICLE_BUTTON           :{BLACK}차량 구입 및 개조
 STR_BUY_VEHICLE_SHIP_BUY_REFIT_VEHICLE_BUTTON                   :{BLACK}선박 구입 및 개조
 STR_BUY_VEHICLE_AIRCRAFT_BUY_REFIT_VEHICLE_BUTTON               :{BLACK}항공기 구입 및 개조
+STR_BUY_VEHICLE_TRAIN_BUY_REFIT_LOCOMOTIVE_BUTTON               :{BLACK}기관차 구입 및 개조
+STR_BUY_VEHICLE_TRAIN_BUY_REFIT_WAGON_BUTTON                    :{BLACK}객화차 구입 및 개조
 
-STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}선택된 차량을 구입합니다. SHIFT+클릭으로 예상 구입 비용을 볼 수 있습니다.
+STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}선택된 차량을 구입합니다. SHIFT+클릭으로 예상 구입 비용을 볼 수 있습니다
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}선택한 차량을 구입합니다. SHIFT+클릭하면 예상 구입 비용을 볼 수 있습니다
 STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}선택한 선박을 구입합니다. SHIFT+클릭으로 예상 구입 비용을 볼 수 있습니다
 STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}선택한 항공기를 구입합니다. SHIFT+클릭으로 예상 구입 비용을 볼 수 있습니다
+STR_BUY_VEHICLE_TRAIN_BUY_LOCOMOTIVE_TOOLTIP                    :{BLACK}선택한 기관차나 동력차를 구입합니다. SHIFT+클릭으로 예상 구입 비용을 볼 수 있습니다
+STR_BUY_VEHICLE_TRAIN_BUY_WAGON_TOOLTIP                         :{BLACK}선택한 객화차를 구입합니다. SHIFT+클릭으로 예상 구입 비용을 볼 수 있습니다
 
 STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_TOOLTIP                 :{BLACK}선택한 차량을 구입하고 개조합니다. SHIFT+클릭하면 예상 비용을 볼 수 있습니다
 STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_REFIT_VEHICLE_TOOLTIP          :{BLACK}선택한 자동차를 구입하고 개조합니다. SHIFT+클릭하면 예상 비용을 볼 수 있습니다
 STR_BUY_VEHICLE_SHIP_BUY_REFIT_VEHICLE_TOOLTIP                  :{BLACK}선택한 선박을 구입하고 개조합니다. SHIFT+클릭하면 예상 비용을 볼 수 있습니다
 STR_BUY_VEHICLE_AIRCRAFT_BUY_REFIT_VEHICLE_TOOLTIP              :{BLACK}선택한 항공기를 구입하고 개조합니다. SHIFT+클릭하면 예상 비용을 볼 수 있습니다
+STR_BUY_VEHICLE_TRAIN_BUY_REFIT_LOCOMOTIVE_TOOLTIP              :{BLACK}선택한 기관차나 동력차를 구입하고 개조합니다. SHIFT+클릭하면 예상 비용을 볼 수 있습니다
+STR_BUY_VEHICLE_TRAIN_BUY_REFIT_WAGON_TOOLTIP                   :{BLACK}선택한 객화차를 구입하고 개조합니다. SHIFT+클릭하면 예상 비용을 볼 수 있습니다
 
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}이름 지정
 STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}이름 지정
 STR_BUY_VEHICLE_SHIP_RENAME_BUTTON                              :{BLACK}이름 지정
 STR_BUY_VEHICLE_AIRCRAFT_RENAME_BUTTON                          :{BLACK}이름 지정
+STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_BUTTON                  :{BLACK}기관차 이름 지정
+STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_BUTTON                       :{BLACK}객화차 이름 지정
 
 STR_BUY_VEHICLE_TRAIN_RENAME_TOOLTIP                            :{BLACK}열차의 모델명을 변경합니다
-STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_TOOLTIP                     :{BLACK}차종의 이름을 변경합니다.
+STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_TOOLTIP                     :{BLACK}자동차의 모델명을 변경합니다
 STR_BUY_VEHICLE_SHIP_RENAME_TOOLTIP                             :{BLACK}선박의 모델명을 변경합니다
 STR_BUY_VEHICLE_AIRCRAFT_RENAME_TOOLTIP                         :{BLACK}항공기의 모델명을 변경합니다
+STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_TOOLTIP                 :{BLACK}기관차나 동력차의 모델명을 변경합니다
+STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_TOOLTIP                      :{BLACK}객화차의 모델명을 변경합니다
 
 STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON                        :{BLACK}숨김
 STR_BUY_VEHICLE_ROAD_VEHICLE_HIDE_TOGGLE_BUTTON                 :{BLACK}숨김
@@ -4653,9 +4679,11 @@ STR_BUY_VEHICLE_SHIP_HIDE_SHOW_TOGGLE_TOOLTIP                   :{BLACK}숨김 �
 STR_BUY_VEHICLE_AIRCRAFT_HIDE_SHOW_TOGGLE_TOOLTIP               :{BLACK}숨김 처리한 항공기 모델을 목록에 보여주거나 숨깁니다
 
 STR_QUERY_RENAME_TRAIN_TYPE_CAPTION                             :{WHITE}열차의 모델명을 변경합니다
-STR_QUERY_RENAME_ROAD_VEHICLE_TYPE_CAPTION                      :{WHITE}차종 이름을 변경합니다.
+STR_QUERY_RENAME_ROAD_VEHICLE_TYPE_CAPTION                      :{WHITE}자동차의 모델명을 변경합니다
 STR_QUERY_RENAME_SHIP_TYPE_CAPTION                              :{WHITE}선박의 모델명을 변경합니다
 STR_QUERY_RENAME_AIRCRAFT_TYPE_CAPTION                          :{WHITE}항공기의 모델명을 변경합니다
+STR_QUERY_RENAME_TRAIN_TYPE_LOCOMOTIVE_CAPTION                  :{WHITE}기관차의 모델명을 변경합니다
+STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION                       :{WHITE}객화차의 모델명을 변경합니다
 
 # Depot window
 STR_DEPOT_CAPTION                                               :{WHITE}{DEPOT}
@@ -4927,6 +4955,10 @@ STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}신뢰�
 
 STR_VEHICLE_INFO_GROUP                                          :{BLACK}그룹: {LTBLUE}{GROUP}
 
+STR_VEHICLE_AUTO_GROUP_ROUTE                                    :{TOWN} ~ {TOWN}{STRING}
+STR_VEHICLE_AUTO_GROUP_LOCAL_ROUTE                              :{TOWN} 시내{STRING}
+STR_VEHICLE_AUTO_GROUP_CARGO_LIST                               : ({CARGO_LIST})
+
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}생산: {LTBLUE}{NUM}{BLACK} 가격: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}수송량: {LTBLUE}없음{STRING}
 STR_VEHICLE_INFO_CAPACITY                                       :{BLACK}수송량: {LTBLUE}{CARGO_LONG}{3:STRING}
@@ -4965,6 +4997,9 @@ STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_MULT                   :{LTBLUE}- {CARG
 STR_VEHICLE_DETAILS_CARGO_EMPTY                                 :{LTBLUE}비어있음
 STR_VEHICLE_DETAILS_CARGO_FROM                                  :{LTBLUE}{CARGO_LONG} (출발지: {STATION})
 STR_VEHICLE_DETAILS_CARGO_FROM_MULT                             :{LTBLUE}{CARGO_LONG} (출발지: {STATION}) (x{NUM})
+
+STR_VEHICLE_DETAILS_TRAIN_TOTAL_WEIGHT                          :{BLACK}총 무게: {LTBLUE}{WEIGHT_SHORT} {BLACK}(빈차) - {LTBLUE}{WEIGHT_SHORT} {BLACK}(가득)
+STR_VEHICLE_DETAILS_TRAIN_MAX_SPEED                             :{BLACK}최대 속력: {LTBLUE}{VELOCITY} {BLACK}(빈차) - {LTBLUE}{VELOCITY} {BLACK}(가득)
 
 STR_VEHICLE_DETAIL_TAB_CARGO                                    :{BLACK}화물
 STR_VEHICLE_DETAILS_TRAIN_CARGO_TOOLTIP                         :{BLACK}현재 싣고 있는 화물 정보를 보여줍니다
