@@ -2736,7 +2736,9 @@ static inline uint32 ViewportMapGetColourOwner(const TileIndex tile, TileType t,
 	}
 
 	const Owner o = GetTileOwner(tile);
-	if ((o < MAX_COMPANIES && !_legend_land_owners[_company_to_list_pos[o]].show_on_map) || o == OWNER_NONE || o == OWNER_WATER) {
+	if (o == OWNER_NONE && t == MP_ROAD) {
+		return IS32(colour_index & 1 ? PC_BLACK : GREY_SCALE(3));
+	} else if ((o < MAX_COMPANIES && !_legend_land_owners[_company_to_list_pos[o]].show_on_map) || o == OWNER_NONE || o == OWNER_WATER) {
 		if (t == MP_WATER) {
 			if (is_32bpp) {
 				uint slope_index = 0;
