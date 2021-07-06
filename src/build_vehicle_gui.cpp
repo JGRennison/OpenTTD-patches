@@ -1896,7 +1896,9 @@ void DisplayLocomotiveSortDropDown(Window *w, int selected)
 {
 	uint32 hidden_mask = 0;
 	/* Disable sorting by tractive effort when the original acceleration model for trains is being used. */
-	SetBit(hidden_mask, 4); // tractive effort
+	if (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL) {
+		SetBit(hidden_mask, 4); // tractive effort
+	}
 	ShowDropDownMenu(w, _sort_listing_loco, selected, WID_BV_SORT_DROPDOWN_LOCO, 0, hidden_mask);
 }
 
