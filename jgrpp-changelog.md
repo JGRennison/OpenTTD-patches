@@ -2,6 +2,10 @@
 
 * * *
 
+### v0.42.2 (2021-07-09)
+* Further fix for incorrect display of vehicle capacity and cargo, and/or crashes in the new train purchase window.
+* Mark the new train purchase window as experimental.
+
 ### v0.42.1 (2021-07-09)
 * Fix crashes which could occur when using the new train purchase window.
 * Fix incorrect display of vehicle capacity and cargo in the new train purchase window.
