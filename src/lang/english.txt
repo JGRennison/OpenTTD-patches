@@ -1480,7 +1480,7 @@ STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_OFF                    :Off
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_INDUSTRY               :Industries
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_ALL                    :Industries and rail stations
 
-STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW              :Separate locomotives and wagons in train purchase window: {STRING2}
+STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW              :Experimental - Separate locomotives and wagons in train purchase window: {STRING2}
 STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_HELPTEXT     :When enabled, the train purchase window shows locomotives and wagons in separate side-by-side lists.
 
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Enable signals on bridges/tunnels advanced modes: {STRING2}
@@ -4677,6 +4677,8 @@ STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP                  :{BLACK}Toggle h
 STR_BUY_VEHICLE_ROAD_VEHICLE_HIDE_SHOW_TOGGLE_TOOLTIP           :{BLACK}Toggle hiding/displaying of the road vehicle type
 STR_BUY_VEHICLE_SHIP_HIDE_SHOW_TOGGLE_TOOLTIP                   :{BLACK}Toggle hiding/displaying of the ship type
 STR_BUY_VEHICLE_AIRCRAFT_HIDE_SHOW_TOGGLE_TOOLTIP               :{BLACK}Toggle hiding/displaying of the aircraft type
+
+STR_BUY_VEHICLE_ADV_WINDOW_CAPTION                              :{WHITE}{STRING} (Experimental)
 
 STR_QUERY_RENAME_TRAIN_TYPE_CAPTION                             :{WHITE}Rename train vehicle type
 STR_QUERY_RENAME_ROAD_VEHICLE_TYPE_CAPTION                      :{WHITE}Rename road vehicle type

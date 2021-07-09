@@ -92,7 +92,7 @@ static const NWidgetPart _nested_build_vehicle_widgets[] = {
 static const NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_BV_CAPTION), SetDataTip(STR_WHITE_STRING, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_BV_CAPTION), SetDataTip(STR_BUY_VEHICLE_ADV_WINDOW_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -2743,7 +2743,7 @@ void ShowBuildVehicleWindow(const TileIndex tile, const VehicleType type)
 
 	DeleteWindowById(WC_BUILD_VEHICLE, num);
 
-	if (type == VEH_TRAIN && _settings_client.gui.dual_pane_train_purchase_window) {
+	if (type == VEH_TRAIN && _settings_client.gui.experimental_dual_pane_train_purchase_window) {
 		new BuildVehicleWindowTrainAdvanced(&_build_vehicle_desc_train_advanced, tile, nullptr);
 	} else {
 		new BuildVehicleWindow(&_build_vehicle_desc, tile, type, nullptr);
@@ -2756,7 +2756,7 @@ void ShowTemplateTrainBuildVehicleWindow(Train **virtual_train)
 
 	DeleteWindowById(WC_BUILD_VIRTUAL_TRAIN, 0);
 
-	if (_settings_client.gui.dual_pane_train_purchase_window) {
+	if (_settings_client.gui.experimental_dual_pane_train_purchase_window) {
 		new BuildVehicleWindowTrainAdvanced(&_build_template_vehicle_desc_advanced, INVALID_TILE, virtual_train);
 	} else {
 		new BuildVehicleWindow(&_build_template_vehicle_desc, INVALID_TILE, VEH_TRAIN, virtual_train);
