@@ -2274,7 +2274,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			case WID_BV_LIST_LOCO: {
 				const uint i = this->loco.vscroll->GetScrolledRowFromWidget(pt.y, this, WID_BV_LIST_LOCO);
 				const size_t num_items = this->loco.eng_list.size();
-				this->loco.sel_engine = (i < num_items) ? this->loco.eng_list[i] : INVALID_ENGINE;
+				this->SelectEngine(this->loco, (i < num_items) ? this->loco.eng_list[i] : INVALID_ENGINE);
 				this->SetDirty();
 
 				if (_ctrl_pressed) {
@@ -2341,7 +2341,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			case WID_BV_LIST_WAGON: {
 				const uint i = this->wagon.vscroll->GetScrolledRowFromWidget(pt.y, this, WID_BV_LIST_WAGON);
 				const size_t num_items = this->wagon.eng_list.size();
-				this->wagon.sel_engine = (i < num_items) ? this->wagon.eng_list[i] : INVALID_ENGINE;
+				this->SelectEngine(this->wagon, (i < num_items) ? this->wagon.eng_list[i] : INVALID_ENGINE);
 				this->SetDirty();
 
 				if (_ctrl_pressed) {
