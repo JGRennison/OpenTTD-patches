@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.42.1 (2021-07-09)
+* Fix crashes which could occur when using the new train purchase window.
+* Fix incorrect display of vehicle capacity and cargo in the new train purchase window.
+* Fix not being able to sort locomotives by tractive effort in the new train purchase window.
+* Show unowned roads in viewport map owner mode as black (same as town roads), instead of not showing them.
+
 ### v0.42.0 (2021-07-04)
 * Fix crash when removing a company (e.g. due to bankrupcty or the stop_ai command).
 * Fix crash when a network server sends a large multiplayer desync log to a desyncing network client.
