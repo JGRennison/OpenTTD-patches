@@ -2950,7 +2950,7 @@ public:
 
 	void OnMouseLoop() override
 	{
-		if (!_cursor.in_window || !_mouse_hovering) {
+		if (!_cursor.in_window || !(_settings_client.gui.hover_delay_ms == 0 ? _right_button_down : _mouse_hovering)) {
 			delete this;
 		}
 	}
