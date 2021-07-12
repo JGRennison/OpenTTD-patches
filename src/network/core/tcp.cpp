@@ -134,7 +134,7 @@ SendPacketsState NetworkTCPSocketHandler::SendPackets(bool closing_down)
 		/* Is this packet sent? */
 		if (p->RemainingBytesToTransfer() == 0) {
 			/* Go to the next packet */
-			if (_debug_net_level >= 3) this->LogSentPacket(*p);
+			if (_debug_net_level >= 5) this->LogSentPacket(*p);
 			this->packet_queue.pop_front();
 		} else {
 			return SPS_PARTLY_SENT;
