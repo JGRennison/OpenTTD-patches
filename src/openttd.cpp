@@ -731,7 +731,7 @@ int openttd_main(int argc, char *argv[])
 			videodriver = "dedicated";
 			blitter = "null";
 			dedicated = true;
-			SetDebugString("net=6");
+			SetDebugString("net=3");
 			if (mgo.opt != nullptr) {
 				const char *port = nullptr;
 				ParseConnectionString(&port, mgo.opt);
