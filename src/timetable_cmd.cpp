@@ -605,6 +605,7 @@ CommandCost CmdTimetableSeparation(TileIndex tile, DoCommandFlag flags, uint32 p
 			}
 			v2->ClearSeparation();
 			SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
+			SetWindowDirty(WC_SCHDISPATCH_SLOTS, v2->index);
 		}
 	}
 
