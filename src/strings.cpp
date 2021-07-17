@@ -1777,6 +1777,9 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 							str = indsp->station_name;
 						}
 					}
+					if (st->extra_name_index != UINT16_MAX && st->extra_name_index < _extra_station_names_used) {
+						str = _extra_station_names[st->extra_name_index].str;
+					}
 
 					uint64 args_array[] = {STR_TOWN_NAME, st->town->index, st->index};
 					WChar types_array[] = {0, SCC_TOWN_NAME, SCC_NUM};

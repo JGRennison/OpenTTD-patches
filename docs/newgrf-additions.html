@@ -250,6 +250,36 @@
 	</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_roadtype_extra_flags</font>, version 1</p>
 	<br />
+	<h3 id="a0bridges"><a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Global_Settings">Action 0 - Global Settings</a></h3>
+	<h4 id="global_extra_station_names">Extra station names (mappable property: global_extra_station_names)</h4>
+	<p>This adds extra station names for use when all the avilable station names for a given town have been used.<br />
+	The string should have the same format and use the same ID range as
+	<a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Industries#Default_name_for_nearby_station_.2824.29">industry - default name for nearby station</a>.<br />
+	The Action 0 ID field is ignored. This property always adds a new station name string instead of overwriting an existing one.<br />
+	The property length is 4 bytes. The format is:
+	<table>
+		<tr><th>Size</th><th>Field</th><th>Description</th></tr>
+		<tr><td>W</td><td>String ID</td><td>String to use for the station name</td></tr>
+		<tr><td>W</td><td>Flags</td><td>See table below</td></tr>
+	</table>
+	<br />
+	Flags field:
+	<table>
+	<tr><th>Bit</th><th>Value</th><th>Meaning</th></tr>
+	<tr><td>0</td><td>1</td><td>May be used for rail stations</td></tr>
+	<tr><td>1</td><td>2</td><td>May be used for road stations</td></tr>
+	<tr><td>2</td><td>4</td><td>May be used for airport stations</td></tr>
+	<tr><td>3</td><td>8</td><td>May be used for oil rig stations</td></tr>
+	<tr><td>4</td><td>10</td><td>May be used for dock stations</td></tr>
+	<tr><td>5</td><td>20</td><td>May be used for heliport stations</td></tr>
+	<tr><td>8</td><td>100</td><td>May only be used for stations near the town centre</td></tr>
+	<tr><td>9</td><td>200</td><td>May not be used for stations near the town centre</td></tr>
+	<tr><td>10</td><td>400</td><td>May only be used for stations near water</td></tr>
+	<tr><td>11</td><td>800</td><td>May not be used for stations near water</td></tr>
+	</table>
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_global_extra_station_names</font>, version 1</p>
+	<br />
 	<h3 id="varaction2_station"><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Stations">Variational Action 2 - Stations</a></h3>
 	<h4 id="varaction2_station_var42">Track type in purchase list (42)</h4>
 	<p>This is indicated by the feature name: <font face="monospace">varaction2_station_var42</font>, version 1</p>

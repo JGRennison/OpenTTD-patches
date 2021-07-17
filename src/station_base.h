@@ -21,6 +21,7 @@
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "bitmap_type.h"
 #include "core/endian_type.hpp"
+#include "strings_type.h"
 #include <map>
 #include <vector>
 #include <array>
@@ -32,6 +33,26 @@ typedef Pool<BaseStation, StationID, 32, 64000> StationPool;
 extern StationPool _station_pool;
 
 static const byte INITIAL_STATION_RATING = 175;
+
+static const uint MAX_EXTRA_STATION_NAMES = 1024;
+
+/** Extra station name string flags. */
+enum ExtraStationNameInfoFlags {
+	/* Bits 0 - 5 used for StationNaming enum */
+	ESNIF_CENTRAL               =  8,
+	ESNIF_NOT_CENTRAL           =  9,
+	ESNIF_NEAR_WATER            = 10,
+	ESNIF_NOT_NEAR_WATER        = 11,
+};
+
+/** Extra station name string */
+struct ExtraStationNameInfo {
+	StringID str;
+	uint16 flags;
+};
+
+extern std::array<ExtraStationNameInfo, MAX_EXTRA_STATION_NAMES> _extra_station_names;
+extern uint _extra_station_names_used;
 
 class FlowStatMap;
 
@@ -792,7 +813,8 @@ public:
 	TileArea docking_station; ///< Tile area the docking tiles cover
 	std::vector<TileIndex> docking_tiles; ///< Tile vector the docking tiles cover
 
-	IndustryType indtype;   ///< Industry type to get the name from
+	IndustryType indtype;    ///< Industry type to get the name from
+	uint16 extra_name_index; ///< Extra name index in use (or UINT16_MAX)
 
 	BitmapTileArea catchment_tiles; ///< NOSAVE: Set of individual tiles covered by catchment area
 	uint station_tiles;             ///< NOSAVE: Count of station tiles owned by this station

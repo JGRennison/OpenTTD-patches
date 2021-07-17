@@ -63,6 +63,8 @@
 
 #include "3rdparty/cpp-btree/btree_set.h"
 
+#include <bitset>
+
 #include "safeguards.h"
 
 /**
@@ -249,6 +251,8 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 	bool indtypes[NUM_INDUSTRYTYPES];
 	memset(indtypes, 0, sizeof(indtypes));
 
+	std::bitset<MAX_EXTRA_STATION_NAMES> extra_names;
+
 	for (const Station *s : Station::Iterate()) {
 		if (s != st && s->town == t) {
 			if (s->indtype != IT_INVALID) {
@@ -262,6 +266,9 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 					}
 				}
 				continue;
+			}
+			if (s->extra_name_index < MAX_EXTRA_STATION_NAMES) {
+				extra_names.set(s->extra_name_index);
 			}
 			uint str = M(s->string_id);
 			if (str <= 0x20) {
@@ -301,7 +308,8 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 	}
 
 	/* check close enough to town to get central as name? */
-	if (DistanceMax(tile, t->xy) < 8) {
+	const bool is_central = DistanceMax(tile, t->xy) < 8;
+	if (is_central) {
 		if (HasBit(free_names, M(STR_SV_STNAME))) return STR_SV_STNAME;
 
 		if (HasBit(free_names, M(STR_SV_STNAME_CENTRAL))) return STR_SV_STNAME_CENTRAL;
@@ -344,7 +352,32 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 		(TileY(tile) < TileY(t->xy)) * 2];
 
 	tmp = free_names & ((1 << 1) | (1 << 2) | (1 << 3) | (1 << 4) | (1 << 6) | (1 << 7) | (1 << 12) | (1 << 26) | (1 << 27) | (1 << 28) | (1 << 29) | (1 << 30));
-	return (tmp == 0) ? STR_SV_STNAME_FALLBACK : (STR_SV_STNAME + FindFirstBit(tmp));
+	if (tmp != 0) return STR_SV_STNAME + FindFirstBit(tmp);
+
+	if (_extra_station_names_used > 0) {
+		const bool near_water = CountMapSquareAround(tile, CMSAWater) >= 5;
+		std::vector<uint16> candidates;
+		for (uint i = 0; i < _extra_station_names_used; i++) {
+			const ExtraStationNameInfo &info = _extra_station_names[i];
+			if (extra_names[i]) continue;
+			if (!HasBit(info.flags, name_class)) continue;
+			if (HasBit(info.flags, ESNIF_CENTRAL) && !is_central) continue;
+			if (HasBit(info.flags, ESNIF_NOT_CENTRAL) && is_central) continue;
+			if (HasBit(info.flags, ESNIF_NEAR_WATER) && !near_water) continue;
+			if (HasBit(info.flags, ESNIF_NOT_NEAR_WATER) && near_water) continue;
+			candidates.push_back(i);
+		}
+
+		if (!candidates.empty()) {
+			SavedRandomSeeds saved_seeds;
+			SaveRandomSeeds(&saved_seeds);
+			st->extra_name_index = candidates[RandomRange((uint)candidates.size())];
+			RestoreRandomSeeds(saved_seeds);
+			return STR_SV_STNAME_FALLBACK;
+		}
+	}
+
+	return STR_SV_STNAME_FALLBACK;
 }
 #undef M
 

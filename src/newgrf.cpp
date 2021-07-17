@@ -2886,6 +2886,19 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 				break;
 			}
 
+			case A0RPI_GLOBALVAR_EXTRA_STATION_NAMES: {
+				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
+				uint16 str = buf->ReadWord();
+				uint16 flags = buf->ReadWord();
+				if (_extra_station_names_used < MAX_EXTRA_STATION_NAMES) {
+					ExtraStationNameInfo &info = _extra_station_names[_extra_station_names_used];
+					AddStringForMapping(str, &info.str);
+					info.flags = flags;
+					_extra_station_names_used++;
+				}
+				break;
+			}
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
@@ -2952,6 +2965,10 @@ static ChangeInfoResult GlobalVarReserveInfo(uint gvid, int numinfo, int prop, c
 				while (buf->ReadByte() != 0) {
 					buf->ReadString();
 				}
+				break;
+
+			case A0RPI_GLOBALVAR_EXTRA_STATION_NAMES:
+				buf->Skip(buf->ReadExtendedByte());
 				break;
 
 			default:
@@ -8380,6 +8397,7 @@ static const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_railtype_restricted_signals", 1),
 	GRFFeatureInfo("action0_railtype_disable_realistic_braking", 1),
 	GRFFeatureInfo("action0_roadtype_extra_flags", 1),
+	GRFFeatureInfo("action0_global_extra_station_names", 1),
 	GRFFeatureInfo(),
 };
 
@@ -8501,6 +8519,7 @@ static const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_DISABLE_REALISTIC_BRAKING, "railtype_disable_realistic_braking"),
 	GRFPropertyMapDefinition(GSF_ROADTYPES, A0RPI_ROADTYPE_EXTRA_FLAGS, "roadtype_extra_flags"),
 	GRFPropertyMapDefinition(GSF_TRAMTYPES, A0RPI_ROADTYPE_EXTRA_FLAGS, "roadtype_extra_flags"),
+	GRFPropertyMapDefinition(GSF_GLOBALVAR, A0RPI_GLOBALVAR_EXTRA_STATION_NAMES, "global_extra_station_names"),
 	GRFPropertyMapDefinition(),
 };
 
