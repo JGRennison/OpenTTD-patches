@@ -6919,3 +6919,62 @@ void TrainBrakesOverheatedBreakdown(Vehicle *v)
 	t->breakdown_type = BREAKDOWN_BRAKE_OVERHEAT;
 	t->breakdown_severity = 0;
 }
+
+static int GetTrainRealisticAccelerationAtSpeed(const Train *train, const int speed, const int mass)
+{
+	const int64 power = train->gcache.cached_power * 746ll;
+	int64 resistance = 0;
+
+	const bool maglev = (GetRailTypeInfo(train->railtype)->acceleration_type == 2);
+
+	if (!maglev) {
+		/* Static resistance plus rolling friction. */
+		resistance = 10 * mass;
+		resistance += mass * (15 * (512 + speed) / 512);
+	}
+
+	const int area = 14;
+
+	resistance += (area * train->gcache.cached_air_drag * speed * speed) / 1000;
+
+	uint32 max_te = train->gcache.cached_max_te; // [N]
+	int64 force;
+
+	if (speed > 0) {
+		if (!maglev) {
+			/* Conversion factor from km/h to m/s is 5/18 to get [N] in the end. */
+			force = power * 18 / (speed * 5);
+
+			if (force > static_cast<int>(max_te)) {
+				force = max_te;
+			}
+		} else {
+			force = power / 25;
+		}
+	} else {
+		force = (!maglev) ? std::min<uint64>(max_te, power) : power;
+		force = std::max(force, (mass * 8) + resistance);
+	}
+
+	/* Easy way out when there is no acceleration. */
+	if (force == resistance) return 0;
+
+	int acceleration = ClampToI32((force - resistance) / (mass * 4));
+	acceleration = force < resistance ? std::min(-1, acceleration) : std::max(1, acceleration);
+
+	return acceleration;
+}
+
+int GetTrainEstimatedMaxAchievableSpeed(const Train *train, const int mass, const int speed_cap)
+{
+	int max_speed = 0;
+	int acceleration;
+
+	do
+	{
+		max_speed++;
+		acceleration = GetTrainRealisticAccelerationAtSpeed(train, max_speed, mass);
+	} while (acceleration > 0 && max_speed < speed_cap);
+
+	return max_speed;
+}

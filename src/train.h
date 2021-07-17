@@ -493,4 +493,6 @@ inline int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, 
 	return GetTrainStopLocation(station_id, tile, v, update_train_state, station_ahead, station_length, v->x_pos, v->y_pos);
 }
 
+int GetTrainEstimatedMaxAchievableSpeed(const Train *train, const int mass, const int speed_cap);
+
 #endif /* TRAIN_H */
