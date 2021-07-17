@@ -1251,7 +1251,11 @@ void SwitchToMode(SwitchMode new_mode)
 				}
 				/* Update the local company for a loaded game. It is either always
 				 * a company or in the case of a dedicated server a spectator */
-				SetLocalCompany(_network_dedicated ? COMPANY_SPECTATOR : GetDefaultLocalCompany());
+				if (_network_server && !_network_dedicated) {
+					NetworkServerDoMove(CLIENT_ID_SERVER, GetDefaultLocalCompany());
+				} else {
+					SetLocalCompany(_network_dedicated ? COMPANY_SPECTATOR : GetDefaultLocalCompany());
+				}
 				if (_ctrl_pressed && !_network_dedicated) {
 					DoCommandP(0, PM_PAUSED_NORMAL, 1, CMD_PAUSE);
 				}
