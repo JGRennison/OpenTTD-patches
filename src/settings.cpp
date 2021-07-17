@@ -997,7 +997,13 @@ static bool UpdateConsists(int32 p1)
 			if (t->lookahead != nullptr) SetBit(t->lookahead->flags, TRLF_APPLY_ADVISORY);
 		}
 	}
+
+	extern void AfterLoadTemplateVehiclesUpdateProperties();
+	AfterLoadTemplateVehiclesUpdateProperties();
+
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE, 0);
+	SetWindowClassesDirty(WC_TEMPLATEGUI_MAIN);
+	SetWindowClassesDirty(WC_CREATE_TEMPLATE);
 	return true;
 }
 
@@ -1100,10 +1106,15 @@ static bool TrainAccelerationModelChanged(int32 p1)
 		}
 	}
 
+	extern void AfterLoadTemplateVehiclesUpdateProperties();
+	AfterLoadTemplateVehiclesUpdateProperties();
+
 	/* These windows show acceleration values only when realistic acceleration is on. They must be redrawn after a setting change. */
 	SetWindowClassesDirty(WC_ENGINE_PREVIEW);
 	InvalidateWindowClassesData(WC_BUILD_VEHICLE, 0);
 	SetWindowClassesDirty(WC_VEHICLE_DETAILS);
+	SetWindowClassesDirty(WC_TEMPLATEGUI_MAIN);
+	SetWindowClassesDirty(WC_CREATE_TEMPLATE);
 
 	return true;
 }
