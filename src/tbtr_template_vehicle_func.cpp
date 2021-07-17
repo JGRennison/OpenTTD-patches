@@ -169,6 +169,7 @@ void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev
 		tmp->empty_weight = std::max<uint32>(gcache->cached_weight - cargo_weight, 1);
 		tmp->full_weight = std::max<uint32>(gcache->cached_weight + full_cargo_weight - cargo_weight, 1);
 		tmp->max_te = gcache->cached_max_te;
+		tmp->air_drag = gcache->cached_air_drag;
 	}
 
 	virt->GetImage(DIR_W, EIT_IN_DEPOT, &tmp->sprite_seq);
@@ -489,4 +490,18 @@ void UpdateAllTemplateVehicleImages()
 	RestoreRandomSeeds(saved_seeds);
 
 	_template_vehicle_images_valid = true;
+}
+
+int GetTemplateVehicleEstimatedMaxAchievableSpeed(const TemplateVehicle *tv, const int mass, const int speed_cap)
+{
+	int max_speed = 0;
+	int acceleration;
+
+	do
+	{
+		max_speed++;
+		acceleration = GetTrainRealisticAccelerationAtSpeed(max_speed, mass, tv->power, tv->max_te, tv->air_drag, tv->railtype);
+	} while (acceleration > 0 && max_speed < speed_cap);
+
+	return max_speed;
 }

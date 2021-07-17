@@ -6920,12 +6920,12 @@ void TrainBrakesOverheatedBreakdown(Vehicle *v)
 	t->breakdown_severity = 0;
 }
 
-static int GetTrainRealisticAccelerationAtSpeed(const Train *train, const int speed, const int mass)
+int GetTrainRealisticAccelerationAtSpeed(const int speed, const int mass, const uint32 cached_power, const uint32 max_te, const uint32 air_drag, const RailType railtype)
 {
-	const int64 power = train->gcache.cached_power * 746ll;
+	const int64 power = cached_power * 746ll;
 	int64 resistance = 0;
 
-	const bool maglev = (GetRailTypeInfo(train->railtype)->acceleration_type == 2);
+	const bool maglev = (GetRailTypeInfo(railtype)->acceleration_type == 2);
 
 	if (!maglev) {
 		/* Static resistance plus rolling friction. */
@@ -6935,9 +6935,8 @@ static int GetTrainRealisticAccelerationAtSpeed(const Train *train, const int sp
 
 	const int area = 14;
 
-	resistance += (area * train->gcache.cached_air_drag * speed * speed) / 1000;
+	resistance += (area * air_drag * speed * speed) / 1000;
 
-	uint32 max_te = train->gcache.cached_max_te; // [N]
 	int64 force;
 
 	if (speed > 0) {
@@ -6973,7 +6972,7 @@ int GetTrainEstimatedMaxAchievableSpeed(const Train *train, const int mass, cons
 	do
 	{
 		max_speed++;
-		acceleration = GetTrainRealisticAccelerationAtSpeed(train, max_speed, mass);
+		acceleration = GetTrainRealisticAccelerationAtSpeed(max_speed, mass, train->gcache.cached_power, train->gcache.cached_max_te, train->gcache.cached_air_drag, train->railtype);
 	} while (acceleration > 0 && max_speed < speed_cap);
 
 	return max_speed;

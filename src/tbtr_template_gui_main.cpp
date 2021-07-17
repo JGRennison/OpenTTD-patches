@@ -763,6 +763,11 @@ public:
 			}
 			DrawString(8, r.right, top, STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS);
 		}
+		if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
+			top += FONT_HEIGHT_NORMAL;
+			SetDParam(0, GetTemplateVehicleEstimatedMaxAchievableSpeed(tmp, tmp->full_weight, tmp->max_speed));
+			DrawString(8, r.right, top, STR_VEHICLE_INFO_MAX_SPEED_LOADED);
+		}
 
 		/* Draw cargo summary */
 		top += ScaleGUITrad(26);

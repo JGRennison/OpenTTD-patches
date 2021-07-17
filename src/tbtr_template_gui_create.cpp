@@ -340,6 +340,11 @@ public:
 						}
 						DrawString(8, r.right, y, STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS);
 					}
+					if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
+						y += FONT_HEIGHT_NORMAL;
+						SetDParam(0, GetTrainEstimatedMaxAchievableSpeed(this->virtual_train, gcache->cached_weight + full_cargo_weight, this->virtual_train->GetDisplayMaxSpeed()));
+						DrawString(8, r.right, y, STR_VEHICLE_INFO_MAX_SPEED_LOADED);
+					}
 					/* Draw cargo summary */
 					CargoArray cargo_caps;
 					for (const Train *tmp = this->virtual_train; tmp != nullptr; tmp = tmp->Next()) {

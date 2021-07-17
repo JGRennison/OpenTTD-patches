@@ -40,6 +40,7 @@ const SaveLoad* GTD() {
 		SLE_VAR(TemplateVehicle, empty_weight, SLE_UINT32),
 		SLE_CONDVAR_X(TemplateVehicle, full_weight, SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 6)),
 		SLE_VAR(TemplateVehicle, max_te, SLE_UINT32),
+		SLE_CONDVAR_X(TemplateVehicle, air_drag, SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 8)),
 
 		SLE_CONDVAR_X(TemplateVehicle, ctrl_flags, SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 7)),
 
@@ -146,6 +147,7 @@ void AfterLoadTemplateVehiclesUpdateProperties()
 				tv->empty_weight = gcache->cached_weight;
 				tv->full_weight = gcache->cached_weight + full_cargo_weight;
 				tv->max_te = gcache->cached_max_te;
+				tv->air_drag = gcache->cached_air_drag;
 				delete t;
 			}
 			cur_company.Restore();
