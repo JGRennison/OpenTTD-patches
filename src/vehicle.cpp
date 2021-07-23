@@ -3574,7 +3574,8 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 				IsInfraTileUsageAllowed(this->type, this->owner, specific_depot))) {
 			return_cmd_error(no_depot[this->type]);
 		}
-		if (this->type == VEH_ROAD && (GetPresentRoadTypes(tile) & RoadVehicle::From(this)->compatible_roadtypes) == 0) {
+		if ((this->type == VEH_ROAD && (GetPresentRoadTypes(tile) & RoadVehicle::From(this)->compatible_roadtypes) == 0) ||
+				(this->type == VEH_TRAIN && !HasBit(Train::From(this)->compatible_railtypes, GetRailType(tile)))) {
 			return_cmd_error(no_depot[this->type]);
 		}
 		location = specific_depot;
