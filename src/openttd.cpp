@@ -1960,6 +1960,8 @@ void GameLoop()
 	/* Check for UDP stuff */
 	if (_network_available) NetworkBackgroundLoop();
 
+	DebugSendRemoteMessages();
+
 	if (_networking && !HasModalProgress()) {
 		/* Multiplayer */
 		NetworkGameLoop();

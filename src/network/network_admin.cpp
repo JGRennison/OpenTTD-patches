@@ -75,6 +75,11 @@ ServerNetworkAdminSocketHandler::~ServerNetworkAdminSocketHandler()
 	_network_admins_connected--;
 	DEBUG(net, 1, "[admin] '%s' (%s) has disconnected", this->admin_name, this->admin_version);
 	if (_redirect_console_to_admin == this->index) _redirect_console_to_admin = INVALID_ADMIN_ID;
+
+	if (this->update_frequency[ADMIN_UPDATE_CONSOLE] & ADMIN_FREQUENCY_AUTOMATIC) {
+		this->update_frequency[ADMIN_UPDATE_CONSOLE] = (AdminUpdateFrequency)0;
+		DebugReconsiderSendRemoteMessages();
+	}
 }
 
 /**
@@ -707,6 +712,8 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_UPDATE_FREQUENC
 	}
 
 	this->update_frequency[type] = freq;
+
+	if (type == ADMIN_UPDATE_CONSOLE) DebugReconsiderSendRemoteMessages();
 
 	return NETWORK_RECV_STATUS_OKAY;
 }

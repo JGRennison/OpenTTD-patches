@@ -1360,6 +1360,12 @@ static bool InvalidateSettingsWindow(int32 p1)
 	return true;
 }
 
+static bool DeveloperModeChanged(int32 p1)
+{
+	DebugReconsiderSendRemoteMessages();
+	return true;
+}
+
 /**
  * Update any possible saveload window and delete any newgrf dialogue as
  * its widget parts might change. Reinit all windows as it allows access to the
@@ -2241,6 +2247,7 @@ void LoadFromConfig(bool startup)
 		HandleOldDiffCustom(false);
 
 		ValidateSettings();
+		DebugReconsiderSendRemoteMessages();
 
 		PostZoningModeChange();
 
