@@ -2478,6 +2478,13 @@ void VehicleEnterDepot(Vehicle *v)
 			return;
 		}
 
+		/* Test whether we are heading for this depot. If not, do nothing. */
+		if ((v->current_order.GetDepotExtraFlags() & ODEFB_SPECIFIC) &&
+				(v->type == VEH_AIRCRAFT ? v->current_order.GetDestination() != GetStationIndex(v->tile) : v->dest_tile != v->tile)) {
+			/* We are heading for another depot, keep driving. */
+			return;
+		}
+
 		if (v->current_order.GetDepotActionType() & ODATFB_SELL) {
 			_vehicles_to_sell.insert(v->index);
 			return;
@@ -3599,6 +3606,9 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 			this->current_order.SetDepotActionType(ODATFB_HALT | ODATFB_SELL);
 		} else if (!(command & DEPOT_SERVICE)) {
 			this->current_order.SetDepotActionType(ODATFB_HALT);
+		}
+		if (command & DEPOT_SPECIFIC) {
+			this->current_order.SetDepotExtraFlags(ODEFB_SPECIFIC);
 		}
 		SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
 

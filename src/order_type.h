@@ -118,6 +118,15 @@ enum OrderDepotActionFlags {
 DECLARE_ENUM_AS_BIT_SET(OrderDepotActionFlags)
 
 /**
+ * Extra depot flags.
+ */
+enum OrderDepotExtraFlags {
+	ODEF_NONE           = 0,      ///< No flags.
+	ODEFB_SPECIFIC      = 1 << 0, ///< This order is for a specific depot.
+};
+DECLARE_ENUM_AS_BIT_SET(OrderDepotExtraFlags)
+
+/**
  * Flags for go to waypoint orders
  */
 enum OrderWaypointFlags {
