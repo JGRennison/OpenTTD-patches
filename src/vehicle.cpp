@@ -3140,6 +3140,7 @@ void Vehicle::DeleteUnreachedImplicitOrders()
  */
 static void VehicleIncreaseStats(const Vehicle *front)
 {
+	uint32 travel_time = front->current_order_time;
 	for (const Vehicle *v = front; v != nullptr; v = v->Next()) {
 		StationID last_loading_station = HasBit(front->vehicle_flags, VF_LAST_LOAD_ST_SEP) ? v->last_loading_station : front->last_loading_station;
 		if (v->refit_cap > 0 &&
@@ -3156,7 +3157,7 @@ static void VehicleIncreaseStats(const Vehicle *front)
 			EdgeUpdateMode restricted_mode = EUM_INCREASE;
 			if (v->type == VEH_AIRCRAFT) restricted_mode |= EUM_AIRCRAFT;
 			IncreaseStats(Station::Get(last_loading_station), v->cargo_type, front->last_station_visited, v->refit_cap,
-				std::min<uint>(v->refit_cap, v->cargo.StoredCount()), restricted_mode);
+				std::min<uint>(v->refit_cap, v->cargo.StoredCount()), travel_time, restricted_mode);
 		}
 	}
 }

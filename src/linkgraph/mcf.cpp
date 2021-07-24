@@ -310,16 +310,33 @@ void MultiCommodityFlow::Dijkstra(NodeID source_node, PathVector &paths)
 				capacity /= 100;
 				if (capacity == 0) capacity = 1;
 			}
-			/* punish in-between stops a little */
-			uint distance = DistanceMaxPlusManhattan(this->job[from].XY(), this->job[to].XY()) + 1;
+			/* Prioritize the fastest route for passengers, mail and express cargo,
+			 * and the shortest route for other classes of cargo.
+			 * In-between stops are punished with a 1 tile or 1 day penalty. */
+			bool express = IsCargoInClass(this->job.Cargo(), CC_PASSENGERS) ||
+				IsCargoInClass(this->job.Cargo(), CC_MAIL) ||
+				IsCargoInClass(this->job.Cargo(), CC_EXPRESS);
+
+			auto calculate_distance = [&]() {
+				return DistanceMaxPlusManhattan(this->job[from].XY(), this->job[to].XY()) + 1;
+			};
+
+			uint distance_anno;
+			if (express) {
+				/* Compute a default travel time from the distance and an average speed of 1 tile/day. */
+				distance_anno = (edge.TravelTime() != 0) ? edge.TravelTime() + DAY_TICKS : calculate_distance() * DAY_TICKS;
+			} else {
+				distance_anno = calculate_distance();
+			}
+
 			if (edge.LastAircraftUpdate() != INVALID_DATE && aircraft_link_scale > 100) {
-				distance *= aircraft_link_scale;
-				distance /= 100;
+				distance_anno *= aircraft_link_scale;
+				distance_anno /= 100;
 			}
 			Tannotation *dest = static_cast<Tannotation *>(paths[to]);
-			if (dest->IsBetter(source, capacity, capacity - edge.Flow(), distance)) {
+			if (dest->IsBetter(source, capacity, capacity - edge.Flow(), distance_anno)) {
 				if (dest->GetAnnosSetFlag()) annos.erase(AnnoSetItem<Tannotation>(dest));
-				dest->Fork(source, capacity, capacity - edge.Flow(), distance);
+				dest->Fork(source, capacity, capacity - edge.Flow(), distance_anno);
 				dest->UpdateAnnotation();
 				annos.insert(AnnoSetItem<Tannotation>(dest));
 				dest->SetAnnosSetFlag(true);
