@@ -393,15 +393,12 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 	/* recalculate cached weights and power too (we do this *after* the rest, so it is known which wagons are powered and need extra weight added) */
 	this->CargoChanged();
 
+	this->UpdateAcceleration();
 	if (this->IsFrontEngine()) {
-		this->UpdateAcceleration();
 		if (!HasBit(this->subtype, GVSF_VIRTUAL)) SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
 		InvalidateWindowData(WC_VEHICLE_REFIT, this->index, VIWD_CONSIST_CHANGED);
 		InvalidateWindowData(WC_VEHICLE_ORDERS, this->index, VIWD_CONSIST_CHANGED);
 		InvalidateNewGRFInspectWindow(GSF_TRAINS, this->index);
-	} else {
-		this->tcache.cached_deceleration = 0;
-		this->tcache.cached_uncapped_decel = 0;
 	}
 	if (allowed_changes & CCF_LENGTH) {
 		for (Train *u = this->Next(); u != nullptr; u = u->Next()) {
@@ -1125,7 +1122,7 @@ void Train::UpdateAcceleration()
 	assert(weight != 0);
 	this->acceleration = Clamp(power / weight * 4, 1, 255);
 
-	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && !HasBit(GetRailTypeInfo(this->railtype)->ctrl_flags, RTCF_NOREALISTICBRAKING)) {
+	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && !HasBit(GetRailTypeInfo(this->railtype)->ctrl_flags, RTCF_NOREALISTICBRAKING) && this->IsFrontEngine()) {
 		this->tcache.cached_tflags |= TCF_RL_BRAKING;
 		switch (_settings_game.vehicle.train_acceleration_model) {
 			default: NOT_REACHED();
