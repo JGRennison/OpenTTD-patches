@@ -2740,6 +2740,16 @@ void ReverseTrainDirection(Train *v)
 		if (order != nullptr && order->IsType(OT_GOTO_STATION) && order->GetDestination() == v->last_station_visited) {
 			v->IncrementImplicitOrderIndex();
 		}
+	} else if (v->current_order.IsAnyLoadingType()) {
+		const Vehicle *last = v;
+		while (last->Next() != nullptr) last = last->Next();
+
+		/* not a station || different station --> leave the station */
+		if (!IsTileType(last->tile, MP_STATION) || !IsTileType(v->tile, MP_STATION) ||
+				GetStationIndex(last->tile) != GetStationIndex(v->tile) ||
+				HasBit(v->flags, VRF_BEYOND_PLATFORM_END)) {
+			v->LeaveStation();
+		}
 	}
 
 	for (Train *u = v; u != nullptr; u = u->Next()) {
