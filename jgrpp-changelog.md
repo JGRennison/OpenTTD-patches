@@ -2,6 +2,19 @@
 
 * * *
 
+### v0.42.3 (2021-08-04)
+* Fix multiplayer server crash when client joined during a threaded save or autosave.
+* Fix station ratings tooltip in right click mode.
+* Fix send vehicle to specific depot allowing incompatible road/tram types and rail types.
+* Fix reversing a train not aborting through loading in some circumstances.
+* Fix excessive logging of debugging information by default when running as a dedicated server.
+* Fix network servers showing an incorrect client/company window when loading a save where the local company is not the first company.
+* Fix false positive desync log messages for powered free wagon chains.
+* Fix issues which could result in a multiplayer desync in some circumstances.
+* Add the estimated max speed when full to the train template windows.
+* Add NewGRF feature: extra station name strings.
+* No longer mark the new train purchase window as experimental.
+
 ### v0.42.2 (2021-07-09)
 * Further fix for incorrect display of vehicle capacity and cargo, and/or crashes in the new train purchase window.
 * Mark the new train purchase window as experimental.

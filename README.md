@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.42.2
+## JGR's Patchpack version 0.42.3
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -152,6 +152,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add setting to show a company-coloured mark next to vehicles in vehicle list windows, if their owner does not match the list owner.
 * Add a waiting cargo history graph for stations.
 * Add a tooltip to show station rating details (controlled by a setting).
+* [Allow NewGRFs to supply additional station name strings](https://github.com/JGRennison/OpenTTD-patches/wiki/GRF-features#extra-station-names).
 
 #### Towns
 
