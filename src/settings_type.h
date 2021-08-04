@@ -223,7 +223,7 @@ struct GUISettings : public TimeSettings {
 	bool   shade_trees_on_slopes;            ///< Shade trees on slopes
 	uint8  station_rating_tooltip_mode;      ///< Station rating tooltip mode
 	uint8  demolish_confirm_mode;            ///< Demolition confirmation mode
-	bool   experimental_dual_pane_train_purchase_window;  ///< Dual pane train purchase window
+	bool   dual_pane_train_purchase_window;  ///< Dual pane train purchase window
 
 	uint16 console_backlog_timeout;          ///< the minimum amount of time items should be in the console backlog before they will be removed in ~3 seconds granularity.
 	uint16 console_backlog_length;           ///< the minimum amount of items in the console backlog before items will be removed.

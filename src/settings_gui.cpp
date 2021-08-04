@@ -1842,7 +1842,7 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.open_vehicle_gui_clone_share"));
 			interface->Add(new SettingEntry("gui.vehicle_names"));
 			interface->Add(new SettingEntry("gui.station_rating_tooltip_mode"));
-			interface->Add(new SettingEntry("gui.experimental_dual_pane_train_purchase_window"));
+			interface->Add(new SettingEntry("gui.dual_pane_train_purchase_window"));
 		}
 
 		SettingsPage *advisors = main->Add(new SettingsPage(STR_CONFIG_SETTING_ADVISORS));
