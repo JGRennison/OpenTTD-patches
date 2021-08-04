@@ -26,7 +26,7 @@ struct TimetableProgress {
 	int cumulative_ticks;
 
 	bool IsValidForSeparation() const { return this->cumulative_ticks >= 0; }
-	bool operator<(const TimetableProgress& other) const { return std::tie(this->order_count, this->order_ticks) < std::tie(other.order_count, other.order_ticks); }
+	bool operator<(const TimetableProgress& other) const { return std::tie(this->order_count, this->order_ticks, this->id) < std::tie(other.order_count, other.order_ticks, other.id); }
 };
 
 std::vector<TimetableProgress> PopulateSeparationState(const Vehicle *v_start);
