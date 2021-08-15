@@ -671,6 +671,10 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 								if (input.permitted_slot_operations & TRPISP_PBS_RES_END_RELEASE) slot->Vacate(v->index);
 								break;
 
+							case TRSCOF_ACQUIRE_TRY_ON_RESERVE:
+								if (input.permitted_slot_operations & TRPISP_ACQUIRE_ON_RES) slot->Occupy(v->index);
+								break;
+
 							default:
 								NOT_REACHED();
 								break;
@@ -922,6 +926,10 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 						case TRSCOF_PBS_RES_END_ACQ_TRY:
 						case TRSCOF_PBS_RES_END_RELEASE:
 							actions_used_flags |= TRPAUF_PBS_RES_END_SLOT;
+							break;
+
+						case TRSCOF_ACQUIRE_TRY_ON_RESERVE:
+							actions_used_flags |= TRPAUF_SLOT_ACQUIRE_ON_RES;
 							break;
 
 						default:

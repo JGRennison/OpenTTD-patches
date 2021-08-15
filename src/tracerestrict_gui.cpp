@@ -722,6 +722,7 @@ static const StringID _slot_op_cond_ops_str[] = {
 	STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT,
 	STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE,
 	STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE,
+	STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ON_RES,
 	INVALID_STRING_ID,
 };
 static const uint _slot_op_cond_ops_val[] = {
@@ -732,6 +733,7 @@ static const uint _slot_op_cond_ops_val[] = {
 	TRSCOF_PBS_RES_END_ACQ_WAIT,
 	TRSCOF_PBS_RES_END_ACQ_TRY,
 	TRSCOF_PBS_RES_END_RELEASE,
+	TRSCOF_ACQUIRE_TRY_ON_RESERVE,
 };
 /** cargo conditional operators dropdown list set */
 static const TraceRestrictDropDownListSet _slot_op_cond_ops = {
@@ -1407,6 +1409,10 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 
 					case TRSCOF_PBS_RES_END_RELEASE:
 						instruction_string = STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM;
+						break;
+
+					case TRSCOF_ACQUIRE_TRY_ON_RESERVE:
+						instruction_string = STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM_RES_ONLY;
 						break;
 
 					default:

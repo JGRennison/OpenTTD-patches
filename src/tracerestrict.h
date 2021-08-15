@@ -327,6 +327,7 @@ enum TraceRestrictSlotCondOpField {
 	TRSCOF_PBS_RES_END_ACQ_WAIT   = 4,       ///< PBS reservations ending at this signal: acquire a slot, or wait
 	TRSCOF_PBS_RES_END_ACQ_TRY    = 5,       ///< PBS reservations ending at this signal: acquire a slot, or carry on otherwise
 	TRSCOF_PBS_RES_END_RELEASE    = 6,       ///< PBS reservations ending at this signal: release a slot
+	TRSCOF_ACQUIRE_TRY_ON_RESERVE = 7,       ///< try to acquire a slot (on reserve), or carry on otherwise
 	/* space up to 8 */
 };
 
@@ -403,6 +404,7 @@ enum TraceRestrictProgramActionsUsedFlags {
 	TRPAUF_TRAIN_NOT_STUCK        = 1 << 11, ///< Train is not stuck
 	TRPAUF_CHANGE_COUNTER         = 1 << 12, ///< Change counter value is present
 	TRPAUF_NO_PBS_BACK_PENALTY    = 1 << 13, ///< No PBS back penalty is present
+	TRPAUF_SLOT_ACQUIRE_ON_RES    = 1 << 14, ///< Slot acquire (on reserve) action is present
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
 
@@ -417,6 +419,7 @@ enum TraceRestrictProgramInputSlotPermissions {
 	TRPISP_PBS_RES_END_ACQ_DRY    = 1 << 4,  ///< Dry-run slot acquire (PBS reservations ending at this signal) is permitted
 	TRPISP_PBS_RES_END_RELEASE    = 1 << 5,  ///< Slot release (PBS reservations ending at this signal) is permitted
 	TRPISP_CHANGE_COUNTER         = 1 << 6,  ///< Change counter value is permitted
+	TRPISP_ACQUIRE_ON_RES         = 1 << 7,  ///< Slot acquire (reserving route) is permitted
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramInputSlotPermissions)
 
