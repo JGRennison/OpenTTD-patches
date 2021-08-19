@@ -100,7 +100,7 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile);
 static DateTicksScaled GetSpeedRestrictionTimeout(const Train *t)
 {
 	const int64 velocity = std::max<int64>(25, t->cur_speed);
-	const int64 look_ahead_distance = Clamp(t->cur_speed / 8, 6, 16); // In tiles, varying between 6 and 16 depending on current speed
+	const int64 look_ahead_distance = Clamp(t->cur_speed / 8, 4, 16); // In tiles, varying between 4 and 16 depending on current speed
 
 	// This assumes travel along the X or Y map axis, not diagonally. See GetAdvanceDistance, GetAdvanceSpeed.
 	const int64 ticks_per_tile = (192 * 16 * 4 / 3) / velocity;
