@@ -1719,7 +1719,7 @@ static void DrawTunnelBridgeRampSingleSignal(const TileInfo *ti, bool is_green, 
 	SignalVariant variant = IsTunnelBridgeSemaphore(ti->tile) ? SIG_SEMAPHORE : SIG_ELECTRIC;
 	const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(ti->tile));
 
-	SpriteID sprite = GetCustomSignalSprite(rti, ti->tile, type, variant, is_green ? SIGNAL_STATE_GREEN : SIGNAL_STATE_RED);
+	SpriteID sprite = GetCustomSignalSprite(rti, ti->tile, type, variant, is_green ? SIGNAL_STATE_GREEN : SIGNAL_STATE_RED).sprite_id;
 	bool is_custom_sprite = (sprite != 0);
 
 	if (is_custom_sprite) {

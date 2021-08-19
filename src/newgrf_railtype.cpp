@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "debug.h"
 #include "newgrf_railtype.h"
+#include "newgrf_newsignals.h"
 #include "date_func.h"
 #include "depot_base.h"
 #include "town.h"
@@ -114,17 +115,7 @@ SpriteID GetCustomRailSprite(const RailtypeInfo *rti, TileIndex tile, RailTypeSp
 	return group->GetResult();
 }
 
-/**
- * Get the sprite to draw for a given signal.
- * @param rti The rail type data (spec).
- * @param tile The tile to get the sprite for.
- * @param type Signal type.
- * @param var Signal variant.
- * @param state Signal state.
- * @param gui Is the sprite being used on the map or in the GUI?
- * @return The sprite to draw.
- */
-SpriteID GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, SignalState state, bool gui, bool restricted)
+static SpriteID GetRailTypeCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, SignalState state, bool gui, bool restricted)
 {
 	if (rti->group[RTSG_SIGNALS] == nullptr) return 0;
 	if (type == SIGTYPE_PROG && !HasBit(rti->ctrl_flags, RTCF_PROGSIG)) return 0;
@@ -138,6 +129,36 @@ SpriteID GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalTy
 	if (group == nullptr || group->GetNumResults() == 0) return 0;
 
 	return group->GetResult();
+}
+
+/**
+ * Get the sprite to draw for a given signal.
+ * @param rti The rail type data (spec).
+ * @param tile The tile to get the sprite for.
+ * @param type Signal type.
+ * @param var Signal variant.
+ * @param state Signal state.
+ * @param gui Is the sprite being used on the map or in the GUI?
+ * @return The sprite to draw.
+ */
+CustomSignalSpriteResult GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, SignalState state, bool gui, bool restricted)
+{
+	SpriteID spr = GetRailTypeCustomSignalSprite(rti, tile, type, var, state, gui, restricted);
+	if (spr != 0) return { spr, HasBit(rti->ctrl_flags, RTCF_PROGSIG) };
+
+	for (const GRFFile *grf : _new_signals_grfs) {
+		if (type == SIGTYPE_PROG && !HasBit(grf->new_signal_ctrl_flags, NSCF_PROGSIG)) continue;
+
+		uint32 param1 = gui ? 0x10 : 0x00;
+		uint32 param2 = (type << 16) | (var << 8) | state;
+		if (restricted && HasBit(grf->new_signal_ctrl_flags, NSCF_RESTRICTEDSIG)) SetBit(param2, 24);
+		NewSignalsResolverObject object(grf, tile, TCX_NORMAL, param1, param2);
+
+		const SpriteGroup *group = object.Resolve();
+		if (group != nullptr && group->GetNumResults() != 0) return { group->GetResult(), HasBit(grf->new_signal_ctrl_flags, NSCF_RESTRICTEDSIG) };
+	}
+
+	return { 0, false };
 }
 
 /**

@@ -113,8 +113,8 @@ void ResolveRailTypeGUISprites(RailtypeInfo *rti)
 
 	for (SignalType type = SIGTYPE_NORMAL; type < SIGTYPE_END; type = (SignalType)(type + 1)) {
 		for (SignalVariant var = SIG_ELECTRIC; var <= SIG_SEMAPHORE; var = (SignalVariant)(var + 1)) {
-			SpriteID red   = GetCustomSignalSprite(rti, INVALID_TILE, type, var, SIGNAL_STATE_RED, true);
-			SpriteID green = GetCustomSignalSprite(rti, INVALID_TILE, type, var, SIGNAL_STATE_GREEN, true);
+			SpriteID red   = GetCustomSignalSprite(rti, INVALID_TILE, type, var, SIGNAL_STATE_RED, true).sprite_id;
+			SpriteID green = GetCustomSignalSprite(rti, INVALID_TILE, type, var, SIGNAL_STATE_GREEN, true).sprite_id;
 			rti->gui_sprites.signals[type][var][0] = (red != 0)   ? red + SIGNAL_TO_SOUTH   : _signal_lookup[var][type];
 			rti->gui_sprites.signals[type][var][1] = (green != 0) ? green + SIGNAL_TO_SOUTH : _signal_lookup[var][type] + 1;
 		}
@@ -2670,7 +2670,8 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 	uint x, y;
 	GetSignalXY(tile, pos, x, y);
 
-	SpriteID sprite = GetCustomSignalSprite(rti, tile, type, variant, condition, false, show_restricted);
+	const CustomSignalSpriteResult result = GetCustomSignalSprite(rti, tile, type, variant, condition, false, show_restricted);
+	SpriteID sprite = result.sprite_id;
 	bool is_custom_sprite = (sprite != 0);
 	if (sprite != 0) {
 		sprite += image;
@@ -2692,7 +2693,7 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 		is_custom_sprite = file != nullptr && (file->flags & SFF_USERGRF) && !(file->flags & SFF_OGFX);
 	}
 
-	if (is_custom_sprite && show_restricted && _settings_client.gui.show_restricted_signal_default && !HasBit(rti->ctrl_flags, RTCF_RESTRICTEDSIG)) {
+	if (is_custom_sprite && show_restricted && _settings_client.gui.show_restricted_signal_default && !result.restricted_valid) {
 		/* Use duplicate sprite block, instead of GRF-specified signals */
 		if (type == SIGTYPE_PROG) {
 			if (variant == SIG_SEMAPHORE) {

@@ -5,20 +5,20 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file newgrf_railtype.h NewGRF handling of rail types. */
+/** @file newgrf_newsignals.h NewGRF handling of new signals. */
 
-#ifndef NEWGRF_RAILTYPE_H
-#define NEWGRF_RAILTYPE_H
+#ifndef NEWGRF_NEWSIGNALS_H
+#define NEWGRF_NEWSIGNALS_H
 
-#include "rail.h"
 #include "newgrf_commons.h"
 #include "newgrf_spritegroup.h"
 
-/** Resolver for the railtype scope. */
-struct RailTypeScopeResolver : public ScopeResolver {
+extern std::vector<const GRFFile *> _new_signals_grfs;
+
+/** Resolver for the new signals scope. */
+struct NewSignalsScopeResolver : public ScopeResolver {
 	TileIndex tile;      ///< Tracktile. For track on a bridge this is the southern bridgehead.
 	TileContext context; ///< Are we resolving sprites for the upper halftile, or on a bridge?
-	const RailtypeInfo *rti;
 
 	/**
 	 * Constructor of the railtype scope resolvers.
@@ -26,8 +26,8 @@ struct RailTypeScopeResolver : public ScopeResolver {
 	 * @param tile %Tile containing the track. For track on a bridge this is the southern bridgehead.
 	 * @param context Are we resolving sprites for the upper halftile, or on a bridge?
 	 */
-	RailTypeScopeResolver(ResolverObject &ro, const RailtypeInfo *rti, TileIndex tile, TileContext context)
-		: ScopeResolver(ro), tile(tile), context(context), rti(rti)
+	NewSignalsScopeResolver(ResolverObject &ro, TileIndex tile, TileContext context)
+		: ScopeResolver(ro), tile(tile), context(context)
 	{
 	}
 
@@ -36,15 +36,15 @@ struct RailTypeScopeResolver : public ScopeResolver {
 };
 
 /** Resolver object for rail types. */
-struct RailTypeResolverObject : public ResolverObject {
-	RailTypeScopeResolver railtype_scope; ///< Resolver for the railtype scope.
+struct NewSignalsResolverObject : public ResolverObject {
+	NewSignalsScopeResolver newsignals_scope; ///< Resolver for the new signals scope.
 
-	RailTypeResolverObject(const RailtypeInfo *rti, TileIndex tile, TileContext context, RailTypeSpriteGroup rtsg, uint32 param1 = 0, uint32 param2 = 0);
+	NewSignalsResolverObject(const GRFFile *grffile, TileIndex tile, TileContext context, uint32 param1 = 0, uint32 param2 = 0);
 
 	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0) override
 	{
 		switch (scope) {
-			case VSG_SCOPE_SELF: return &this->railtype_scope;
+			case VSG_SCOPE_SELF: return &this->newsignals_scope;
 			default:             return ResolverObject::GetScope(scope, relative);
 		}
 	}
@@ -52,18 +52,6 @@ struct RailTypeResolverObject : public ResolverObject {
 	const SpriteGroup *ResolveReal(const RealSpriteGroup *group) const override;
 
 	GrfSpecFeature GetFeature() const override;
-	uint32 GetDebugID() const override;
 };
-
-struct CustomSignalSpriteResult {
-	SpriteID sprite_id;
-	bool restricted_valid;
-};
-
-SpriteID GetCustomRailSprite(const RailtypeInfo *rti, TileIndex tile, RailTypeSpriteGroup rtsg, TileContext context = TCX_NORMAL, uint *num_results = nullptr);
-CustomSignalSpriteResult GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, SignalState state, bool gui = false, bool restricted = false);
-
-RailType GetRailTypeTranslation(uint8 railtype, const GRFFile *grffile);
-uint8 GetReverseRailTypeTranslation(RailType railtype, const GRFFile *grffile);
 
 #endif /* NEWGRF_RAILTYPE_H */

@@ -120,6 +120,8 @@ enum Action0RemapPropertyIds {
 	A0RPI_RAILTYPE_DISABLE_REALISTIC_BRAKING,
 	A0RPI_ROADTYPE_EXTRA_FLAGS,
 	A0RPI_GLOBALVAR_EXTRA_STATION_NAMES,
+	A0RPI_SIGNALS_ENABLE_PROGRAMMABLE_SIGNALS,
+	A0RPI_SIGNALS_ENABLE_RESTRICTED_SIGNALS,
 };
 
 enum GRFPropertyMapFallbackMode {
@@ -215,6 +217,18 @@ struct Action5TypeRemapSet {
 	}
 };
 
+/** New signal control flags. */
+enum NewSignalCtrlFlags {
+	NSCF_GROUPSET               = 0,                          ///< Custom signal sprites group set.
+	NSCF_PROGSIG                = 1,                          ///< Custom signal sprites enabled for programmable pre-signals.
+	NSCF_RESTRICTEDSIG          = 2,                          ///< Custom signal sprite flag enabled for restricted signals.
+};
+
+/** New signal control flags. */
+enum NewSignalAction3ID {
+	NSA3ID_CUSTOM_SIGNALS       = 0,                          ///< Action 3 ID for custom signal sprites
+};
+
 /** Dynamic data of a loaded NewGRF */
 struct GRFFile : ZeroedMemoryAllocator {
 	char *filename;
@@ -265,6 +279,9 @@ struct GRFFile : ZeroedMemoryAllocator {
 
 	uint32 var8D_overlay;                    ///< Overlay for global variable 8D (action 0x14)
 	uint32 var9D_overlay;                    ///< Overlay for global variable 9D (action 0x14)
+
+	const SpriteGroup *new_signals_group;    ///< New signals sprite group
+	byte new_signal_ctrl_flags;              ///< Ctrl flags for new signals
 
 	GRFFile(const struct GRFConfig *config);
 	~GRFFile();

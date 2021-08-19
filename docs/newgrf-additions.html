@@ -278,10 +278,41 @@
 	</table>
 	</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_global_extra_station_names</font>, version 1</p>
+	<h3 id="a0signals"><a href="https://newgrf-specs.tt-wiki.net/wiki/Action0">Action 0 - Signals (Feature 0E)</a></h3>
+	<p>Note that Action 0 feature 0E is not supported (does nothing) in standard OpenTTD.</p>
+	<p>This implementation of feature 0E is not the same as that in TTDPatch.</p>
+	<h4 id="signals_enable_programmable_signals">Enable custom signal sprites for programmable pre-signals (mappable property: signals_enable_programmable_signals)</h4>
+	<p>This enables <a href="#a3signals_custom_signal_sprites">Action 2/3 Signals (Feature 0E) custom signal sprites</a> for programmable pre-signals for this GRF.<br />
+	Programmable pre-signals have the signal type value: 06.<br />
+	The property length is 1 byte. 0 is disabled (default). 1 is enabled.<br />
+	The Action 0 Id field is not used, the value is ignored.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_programmable_signals</font>, version 1</p>
+	<h4 id="signals_enable_restricted_signals">Enable restricted signal flag for custom signal sprites (mappable property: signals_enable_restricted_signals)</h4>
+	<p>This applies to <a href="#a3signals_custom_signal_sprites">Action 2/3 Signals (Feature 0E) custom signal sprites</a> for this GRF.<br />
+	When enabled, bit 24 of variable 18 (extra callback info) is set if the signal is restricted (has a routing restriction program attached).<br />
+	When enabled, the "Show restricted electric signals using default graphics" client setting and signal post recolouring is not applied.<br />
+	This flag should only be set if the Action 2/3 actually returns a different sprite when bit 24 of variable 18 is set.<br />
+	The property length is 1 byte. 0 is disabled (default). 1 is enabled.<br />
+	The Action 0 Id field is not used, the value is ignored.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_restricted_signals</font>, version 1</p>
+	<br />
 	<br />
 	<h3 id="varaction2_station"><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Stations">Variational Action 2 - Stations</a></h3>
 	<h4 id="varaction2_station_var42">Track type in purchase list (42)</h4>
 	<p>This is indicated by the feature name: <font face="monospace">varaction2_station_var42</font>, version 1</p>
+	<br />
+	<h3 id="a3signals"><a href="https://newgrf-specs.tt-wiki.net/wiki/Action3">Action 3 - Signals (Feature 0E)</a></h3>
+	<p>Note that Action 3 feature 0E is not supported (does nothing) in standard OpenTTD.</p>
+	<p>This implementation of feature 0E is not the same as that in TTDPatch.</p>
+	<h4 id="a3signals_custom_signal_sprites">Custom signal sprites using Action 2/3 (action 3 ID: 0)</h4>
+	<p>This feature allows using Action 3 to assign an Action 2 chain which dynamically resolves signal sprites, in a very similar way to that of <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Railtypes#Signal_sprites_.280B.29">Action 2/3 - Railtype custom signal sprites</a>,<br />
+	however, this applies to all signals, not only those of a particular rail type.</p>
+	<p>Variational Action 2 variables 10, 18 and 40 are available and have the same format as in <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Railtypes">VariationalAction2/Railtypes</a>.</p>
+	<p>Rail type custom signal sprites have a higher priority than custom signal sprites for all signals as set here.</p>
+	<p>Note that this is not a generic callback, the sprite group must be assigned to ID 0 (further IDs may be allocated for other purposes in future).</p>
+	<p>This is indicated by the feature name: <font face="monospace">action3_signals_custom_signal_sprites</font>, version 1</p>
 	<br />
 	<h3 id="action5">Action 14 - Type ID Mapping for Action 5</h3>
 	<p>See <a href="https://newgrf-specs.tt-wiki.net/wiki/Action14">Action 14 Specification</a> and <a href="https://newgrf-specs.tt-wiki.net/wiki/Action5">Action 5 Specification</a> for background information.</p>
