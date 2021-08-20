@@ -1801,15 +1801,21 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 			z += 5;
 
 			SignalVariant variant = IsTunnelBridgeSemaphore(bridge_start_tile) ? SIG_SEMAPHORE : SIG_ELECTRIC;
+			SignalState state = GetBridgeEntranceSimulatedSignalState(bridge_start_tile, m2_position);
 
-			SpriteID sprite = (GetBridgeEntranceSimulatedSignalState(bridge_start_tile, m2_position) == SIGNAL_STATE_GREEN);
+			const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(bridge_start_tile));
+			SpriteID sprite = GetCustomSignalSprite(rti, bridge_start_tile, SIGTYPE_NORMAL, variant, state);
 
-			if (variant == SIG_ELECTRIC) {
-				/* Normal electric signals are picked from original sprites. */
-				sprite += SPR_ORIGINAL_SIGNALS_BASE + (position << 1);
+			if (sprite != 0) {
+				sprite += position;
 			} else {
-				/* All other signals are picked from add on sprites. */
-				sprite += SPR_SIGNALS_BASE + (variant * 64) + (position << 1) - 16;
+				if (variant == SIG_ELECTRIC) {
+					/* Normal electric signals are picked from original sprites. */
+					sprite = SPR_ORIGINAL_SIGNALS_BASE + (position << 1) + (state == SIGNAL_STATE_GREEN ? 1 : 0);
+				} else {
+					/* All other signals are picked from add on sprites. */
+					sprite = SPR_SIGNALS_BASE + (variant * 64) + (position << 1) - 16 + (state == SIGNAL_STATE_GREEN ? 1 : 0);
+				}
 			}
 
 			AddSortableSpriteToDraw(sprite, PAL_NONE, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
