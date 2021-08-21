@@ -331,6 +331,10 @@ static void ToggleRailButton_Remove(Window *w)
 	w->SetWidgetDirty(WID_RAT_REMOVE);
 	_remove_button_clicked = w->IsWidgetLowered(WID_RAT_REMOVE);
 	SetSelectionRed(_remove_button_clicked);
+	if (_remove_button_clicked && _trace_restrict_button) {
+		_trace_restrict_button = false;
+		InvalidateWindowData(WC_BUILD_SIGNAL, 0);
+	}
 }
 
 /**
@@ -1820,6 +1824,14 @@ private:
 		this->GetWidget<NWidgetStacked>(WID_BS_PROGRAM_SEL)->SetDisplayedPlane(show_progsig ? 0 : 1);
 	}
 
+	void ClearRemoveState()
+	{
+		if (_remove_button_clicked) {
+			Window *w = FindWindowById(WC_BUILD_TOOLBAR, TRANSPORT_RAIL);
+			if (w != nullptr) ToggleRailButton_Remove(w);
+		}
+	}
+
 public:
 	BuildSignalWindow(WindowDesc *desc, Window *parent) : PickerWindowBase(desc, parent)
 	{
@@ -1928,10 +1940,7 @@ public:
 				_cur_signal_variant = widget >= WID_BS_ELECTRIC_NORM ? SIG_ELECTRIC : SIG_SEMAPHORE;
 
 				/* If 'remove' button of rail build toolbar is active, disable it. */
-				if (_remove_button_clicked) {
-					Window *w = FindWindowById(WC_BUILD_TOOLBAR, TRANSPORT_RAIL);
-					if (w != nullptr) ToggleRailButton_Remove(w);
-				}
+				ClearRemoveState();
 				break;
 
 			case WID_BS_CONVERT:
@@ -1947,6 +1956,7 @@ public:
 				if (_trace_restrict_button) {
 					_convert_signal_button = false;
 					_program_signal_button = false;
+					ClearRemoveState();
 				}
 				break;
 
