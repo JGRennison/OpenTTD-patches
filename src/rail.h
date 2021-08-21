@@ -46,6 +46,7 @@ enum RailTypeCtrlFlags {
 	RTCF_PROGSIG                = 0,                          ///< Custom signal sprites enabled for programmable pre-signals.
 	RTCF_RESTRICTEDSIG          = 1,                          ///< Custom signal sprite flag enabled for restricted signals.
 	RTCF_NOREALISTICBRAKING     = 2,                          ///< Realistic braking disabled for this track type
+	RTCF_RECOLOUR_ENABLED       = 3,                          ///< Recolour sprites enabled
 };
 
 struct SpriteGroup;
@@ -163,7 +164,7 @@ public:
 		SpriteID build_depot;        ///< button for building depots
 		SpriteID build_tunnel;       ///< button for building a tunnel
 		SpriteID convert_rail;       ///< button for converting rail
-		SpriteID signals[SIGTYPE_END][2][2]; ///< signal GUI sprites (type, variant, state)
+		PalSpriteID signals[SIGTYPE_END][2][2]; ///< signal GUI sprites (type, variant, state)
 	} gui_sprites;
 
 	struct {

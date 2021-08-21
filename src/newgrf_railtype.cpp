@@ -115,10 +115,10 @@ SpriteID GetCustomRailSprite(const RailtypeInfo *rti, TileIndex tile, RailTypeSp
 	return group->GetResult();
 }
 
-static SpriteID GetRailTypeCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, SignalState state, bool gui, bool restricted)
+static PalSpriteID GetRailTypeCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, SignalState state, bool gui, bool restricted)
 {
-	if (rti->group[RTSG_SIGNALS] == nullptr) return 0;
-	if (type == SIGTYPE_PROG && !HasBit(rti->ctrl_flags, RTCF_PROGSIG)) return 0;
+	if (rti->group[RTSG_SIGNALS] == nullptr) return { 0, PAL_NONE };
+	if (type == SIGTYPE_PROG && !HasBit(rti->ctrl_flags, RTCF_PROGSIG)) return { 0, PAL_NONE };
 
 	uint32 param1 = gui ? 0x10 : 0x00;
 	uint32 param2 = (type << 16) | (var << 8) | state;
@@ -126,9 +126,10 @@ static SpriteID GetRailTypeCustomSignalSprite(const RailtypeInfo *rti, TileIndex
 	RailTypeResolverObject object(rti, tile, TCX_NORMAL, RTSG_SIGNALS, param1, param2);
 
 	const SpriteGroup *group = object.Resolve();
-	if (group == nullptr || group->GetNumResults() == 0) return 0;
+	if (group == nullptr || group->GetNumResults() == 0) return { 0, PAL_NONE };
 
-	return group->GetResult();
+	PaletteID pal = HasBit(rti->ctrl_flags, RTCF_RECOLOUR_ENABLED) ? GB(GetRegister(0x100), 0, 24) : PAL_NONE;
+	return { group->GetResult(), pal };
 }
 
 /**
@@ -143,8 +144,8 @@ static SpriteID GetRailTypeCustomSignalSprite(const RailtypeInfo *rti, TileIndex
  */
 CustomSignalSpriteResult GetCustomSignalSprite(const RailtypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, SignalState state, bool gui, bool restricted)
 {
-	SpriteID spr = GetRailTypeCustomSignalSprite(rti, tile, type, var, state, gui, restricted);
-	if (spr != 0) return { spr, HasBit(rti->ctrl_flags, RTCF_PROGSIG) };
+	PalSpriteID spr = GetRailTypeCustomSignalSprite(rti, tile, type, var, state, gui, restricted);
+	if (spr.sprite != 0) return { spr, HasBit(rti->ctrl_flags, RTCF_PROGSIG) };
 
 	for (const GRFFile *grf : _new_signals_grfs) {
 		if (type == SIGTYPE_PROG && !HasBit(grf->new_signal_ctrl_flags, NSCF_PROGSIG)) continue;
@@ -155,10 +156,13 @@ CustomSignalSpriteResult GetCustomSignalSprite(const RailtypeInfo *rti, TileInde
 		NewSignalsResolverObject object(grf, tile, TCX_NORMAL, param1, param2);
 
 		const SpriteGroup *group = object.Resolve();
-		if (group != nullptr && group->GetNumResults() != 0) return { group->GetResult(), HasBit(grf->new_signal_ctrl_flags, NSCF_RESTRICTEDSIG) };
+		if (group != nullptr && group->GetNumResults() != 0) {
+			PaletteID pal = HasBit(grf->new_signal_ctrl_flags, NSCF_RECOLOUR_ENABLED) ? GB(GetRegister(0x100), 0, 24) : PAL_NONE;
+			return { { group->GetResult(), pal }, HasBit(grf->new_signal_ctrl_flags, NSCF_RESTRICTEDSIG) };
+		}
 	}
 
-	return { 0, false };
+	return { { 0, PAL_NONE }, false };
 }
 
 /**

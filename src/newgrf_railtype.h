@@ -56,7 +56,7 @@ struct RailTypeResolverObject : public ResolverObject {
 };
 
 struct CustomSignalSpriteResult {
-	SpriteID sprite_id;
+	PalSpriteID sprite;
 	bool restricted_valid;
 };
 

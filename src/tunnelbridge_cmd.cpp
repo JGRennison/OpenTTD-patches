@@ -1719,22 +1719,22 @@ static void DrawTunnelBridgeRampSingleSignal(const TileInfo *ti, bool is_green, 
 	SignalVariant variant = IsTunnelBridgeSemaphore(ti->tile) ? SIG_SEMAPHORE : SIG_ELECTRIC;
 	const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(ti->tile));
 
-	SpriteID sprite = GetCustomSignalSprite(rti, ti->tile, type, variant, is_green ? SIGNAL_STATE_GREEN : SIGNAL_STATE_RED).sprite_id;
-	bool is_custom_sprite = (sprite != 0);
+	PalSpriteID sprite = GetCustomSignalSprite(rti, ti->tile, type, variant, is_green ? SIGNAL_STATE_GREEN : SIGNAL_STATE_RED).sprite;
+	bool is_custom_sprite = (sprite.sprite != 0);
 
 	if (is_custom_sprite) {
-		sprite += position;
+		sprite.sprite += position;
 	} else {
 		if (variant == SIG_ELECTRIC && type == SIGTYPE_NORMAL) {
 			/* Normal electric signals are picked from original sprites. */
-			sprite = SPR_ORIGINAL_SIGNALS_BASE + ((position << 1) + is_green);
+			sprite = { SPR_ORIGINAL_SIGNALS_BASE + ((position << 1) + is_green), PAL_NONE };
 		} else {
 			/* All other signals are picked from add on sprites. */
-			sprite = SPR_SIGNALS_BASE + ((type - 1) * 16 + variant * 64 + (position << 1) + is_green) + (IsSignalSpritePBS(type) ? 64 : 0);
+			sprite = { SPR_SIGNALS_BASE + ((type - 1) * 16 + variant * 64 + (position << 1) + is_green) + (IsSignalSpritePBS(type) ? 64 : 0), PAL_NONE };
 		}
 	}
 
-	AddSortableSpriteToDraw(sprite, PAL_NONE, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
+	AddSortableSpriteToDraw(sprite.sprite, sprite.pal, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
 }
 
 /* Draws a signal on tunnel / bridge entrance tile. */
@@ -1804,21 +1804,22 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 			SignalState state = GetBridgeEntranceSimulatedSignalState(bridge_start_tile, m2_position);
 
 			const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(bridge_start_tile));
-			SpriteID sprite = GetCustomSignalSprite(rti, bridge_start_tile, SIGTYPE_NORMAL, variant, state);
+			PalSpriteID sprite = GetCustomSignalSprite(rti, bridge_start_tile, SIGTYPE_NORMAL, variant, state).sprite;
 
-			if (sprite != 0) {
-				sprite += position;
+			if (sprite.sprite != 0) {
+				sprite.sprite += position;
 			} else {
 				if (variant == SIG_ELECTRIC) {
 					/* Normal electric signals are picked from original sprites. */
-					sprite = SPR_ORIGINAL_SIGNALS_BASE + (position << 1) + (state == SIGNAL_STATE_GREEN ? 1 : 0);
+					sprite.sprite = SPR_ORIGINAL_SIGNALS_BASE + (position << 1) + (state == SIGNAL_STATE_GREEN ? 1 : 0);
 				} else {
 					/* All other signals are picked from add on sprites. */
-					sprite = SPR_SIGNALS_BASE + (variant * 64) + (position << 1) - 16 + (state == SIGNAL_STATE_GREEN ? 1 : 0);
+					sprite.sprite = SPR_SIGNALS_BASE + (variant * 64) + (position << 1) - 16 + (state == SIGNAL_STATE_GREEN ? 1 : 0);
 				}
+				sprite.pal = PAL_NONE;
 			}
 
-			AddSortableSpriteToDraw(sprite, PAL_NONE, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
+			AddSortableSpriteToDraw(sprite.sprite, sprite.pal, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
 		}
 		m2_position++;
 	}

@@ -1790,17 +1790,17 @@ private:
 	 * @param widget_index index of this widget in the window
 	 * @param image        the sprite to draw
 	 */
-	void DrawSignalSprite(byte widget_index, SpriteID image) const
+	void DrawSignalSprite(byte widget_index, PalSpriteID image) const
 	{
 		Point offset;
-		Dimension sprite_size = GetSpriteSize(image, &offset);
+		Dimension sprite_size = GetSpriteSize(image.sprite, &offset);
 		const NWidgetBase *widget = this->GetWidget<NWidgetBase>(widget_index);
 		int x = widget->pos_x - offset.x +
 				(widget->current_x - sprite_size.width + offset.x) / 2;  // centered
 		int y = widget->pos_y - sig_sprite_bottom_offset + WD_IMGBTN_TOP +
 				(widget->current_y - WD_IMGBTN_TOP - WD_IMGBTN_BOTTOM + sig_sprite_size.height) / 2; // aligned to bottom
 
-		DrawSprite(image, PAL_NONE,
+		DrawSprite(image.sprite, image.pal,
 				x + this->IsWidgetLowered(widget_index),
 				y + this->IsWidgetLowered(widget_index));
 	}
@@ -1847,7 +1847,7 @@ public:
 			for (uint variant = SIG_ELECTRIC; variant <= SIG_SEMAPHORE; variant++) {
 				for (uint lowered = 0; lowered < 2; lowered++) {
 					Point offset;
-					Dimension sprite_size = GetSpriteSize(rti->gui_sprites.signals[type][variant][lowered], &offset);
+					Dimension sprite_size = GetSpriteSize(rti->gui_sprites.signals[type][variant][lowered].sprite, &offset);
 					this->sig_sprite_bottom_offset = std::max<int>(this->sig_sprite_bottom_offset, sprite_size.height);
 					this->sig_sprite_size.width = std::max<int>(this->sig_sprite_size.width, sprite_size.width - offset.x);
 					this->sig_sprite_size.height = std::max<int>(this->sig_sprite_size.height, sprite_size.height - offset.y);
@@ -1882,7 +1882,7 @@ public:
 			/* Extract signal from widget number. */
 			SignalType type = TypeForClick((widget - WID_BS_SEMAPHORE_NORM) % SIGTYPE_END);
 			int var = SIG_SEMAPHORE - (widget - WID_BS_SEMAPHORE_NORM) / SIGTYPE_END; // SignalVariant order is reversed compared to the widgets.
-			SpriteID sprite = GetRailTypeInfo(_cur_railtype)->gui_sprites.signals[type][var][this->IsWidgetLowered(widget)];
+			PalSpriteID sprite = GetRailTypeInfo(_cur_railtype)->gui_sprites.signals[type][var][this->IsWidgetLowered(widget)];
 
 			this->DrawSignalSprite(widget, sprite);
 		}

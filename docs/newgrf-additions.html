@@ -227,10 +227,20 @@
 	<p>This applies to <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Railtypes#Signal_sprites_.280B.29">Action 2/3 - Railtype custom signal sprites</a>.<br />
 	When enabled, bit 24 of variable 18 (extra callback info) is set if the signal is restricted (has a routing restriction program attached).<br />
 	When enabled, the "Show restricted electric signals using default graphics" client setting and signal post recolouring is not applied.<br />
-	This flag should only be set if the Action 2/3 actually returns a different sprite when bit 24 of variable 18 is set.
+	This flag should only be set if the Action 2/3 actually returns a different sprite when bit 24 of variable 18 is set.<br />
 	The property length is 1 byte. 0 is disabled (default). 1 is enabled.
 	</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_railtype_restricted_signals</font>, version 1</p>
+	<h4 id="railtype_enable_signal_recolour">Enable recolouring for custom signal sprites (mappable property: railtype_enable_signal_recolour)</h4>
+	<p>This applies to <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Railtypes#Signal_sprites_.280B.29">Action 2/3 - Railtype custom signal sprites</a>.<br />
+	When enabled, in addition to returning a sprite, register 0x100 may be set to the following:
+	<table>
+	<tr><th>Bits</th><th>Meaning</th></tr>
+	<tr><td>0 - 23</td><td>Recolour sprite to use. Set to 0 for no recolouring.</td></tr>
+	<tr><td>24 - 31</td><td>Reserved, set to zero. </td></tr>
+	</table></p>
+	<p>The property length is 1 byte. 0 is disabled (default). 1 is enabled.</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_railtype_recolour</font>, version 1</p>
 	<h4 id="railtype_disable_realistic_braking">Disable use of realistic braking with this rail type (mappable property: railtype_disable_realistic_braking)</h4>
 	<p>When this property is set realistic braking is disabled for trains of this railtype even when realistic braking is otherwise in effect.<br />
 	The property length is 1 byte. 0 is realistic braking is not disabled for this railtype. 1 is disable realistic braking for this railtype.
@@ -297,6 +307,18 @@
 	The Action 0 Id field is not used, the value is ignored.
 	</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_signals_restricted_signals</font>, version 1</p>
+	<h4 id="signals_enable_signal_recolour">Enable recolouring for custom signal sprites (mappable property: signals_enable_signal_recolour)</h4>
+	<p>This applies to <a href="#a3signals_custom_signal_sprites">Action 2/3 Signals (Feature 0E) custom signal sprites</a> for this GRF.<br />
+	When enabled, in addition to returning a sprite, register 0x100 may be set to the following:
+	<table>
+	<tr><th>Bits</th><th>Meaning</th></tr>
+	<tr><td>0 - 23</td><td>Recolour sprite to use. Set to 0 for no recolouring.</td></tr>
+	<tr><td>24 - 31</td><td>Reserved, set to zero. </td></tr>
+	</table></p>
+	<p>The property length is 1 byte. 0 is disabled (default). 1 is enabled.<br />
+	The Action 0 Id field is not used, the value is ignored.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_recolour</font>, version 1</p>
 	<br />
 	<br />
 	<h3 id="varaction2_station"><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Stations">Variational Action 2 - Stations</a></h3>

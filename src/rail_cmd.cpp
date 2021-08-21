@@ -113,10 +113,18 @@ void ResolveRailTypeGUISprites(RailtypeInfo *rti)
 
 	for (SignalType type = SIGTYPE_NORMAL; type < SIGTYPE_END; type = (SignalType)(type + 1)) {
 		for (SignalVariant var = SIG_ELECTRIC; var <= SIG_SEMAPHORE; var = (SignalVariant)(var + 1)) {
-			SpriteID red   = GetCustomSignalSprite(rti, INVALID_TILE, type, var, SIGNAL_STATE_RED, true).sprite_id;
-			SpriteID green = GetCustomSignalSprite(rti, INVALID_TILE, type, var, SIGNAL_STATE_GREEN, true).sprite_id;
-			rti->gui_sprites.signals[type][var][0] = (red != 0)   ? red + SIGNAL_TO_SOUTH   : _signal_lookup[var][type];
-			rti->gui_sprites.signals[type][var][1] = (green != 0) ? green + SIGNAL_TO_SOUTH : _signal_lookup[var][type] + 1;
+			PalSpriteID red   = GetCustomSignalSprite(rti, INVALID_TILE, type, var, SIGNAL_STATE_RED, true).sprite;
+			PalSpriteID green = GetCustomSignalSprite(rti, INVALID_TILE, type, var, SIGNAL_STATE_GREEN, true).sprite;
+			if (red.sprite != 0) {
+				rti->gui_sprites.signals[type][var][0] = { red.sprite + SIGNAL_TO_SOUTH, red.pal };
+			} else {
+				rti->gui_sprites.signals[type][var][0] = { _signal_lookup[var][type], PAL_NONE };
+			}
+			if (green.sprite != 0) {
+				rti->gui_sprites.signals[type][var][1] = { green.sprite + SIGNAL_TO_SOUTH, green.pal };
+			} else {
+				rti->gui_sprites.signals[type][var][1] = { _signal_lookup[var][type] + 1, PAL_NONE };
+			}
 		}
 	}
 }
@@ -2671,10 +2679,12 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 	GetSignalXY(tile, pos, x, y);
 
 	const CustomSignalSpriteResult result = GetCustomSignalSprite(rti, tile, type, variant, condition, false, show_restricted);
-	SpriteID sprite = result.sprite_id;
+	SpriteID sprite = result.sprite.sprite;
+	PaletteID pal = PAL_NONE;
 	bool is_custom_sprite = (sprite != 0);
 	if (sprite != 0) {
 		sprite += image;
+		pal = result.sprite.pal;
 	} else if (type == SIGTYPE_PROG) {
 		if (variant == SIG_SEMAPHORE) {
 			sprite = SPR_PROGSIGNAL_BASE + image * 2 + condition;
@@ -2705,6 +2715,7 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 			sprite = (type == SIGTYPE_NORMAL && variant == SIG_ELECTRIC) ? SPR_DUP_ORIGINAL_SIGNALS_BASE : SPR_DUP_SIGNALS_BASE - 16;
 			sprite += type * 16 + variant * 64 + image * 2 + condition + (IsSignalSpritePBS(type) ? 64 : 0);
 		}
+		pal = PAL_NONE;
 		is_custom_sprite = false;
 	}
 
@@ -2719,7 +2730,7 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 			AddSortableSpriteToDraw(sprite, SPR_TRACERESTRICT_BASE + 1, x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, GetSaveSlopeZ(x, y, track));
 		}
 	} else {
-		AddSortableSpriteToDraw(sprite, PAL_NONE, x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, GetSaveSlopeZ(x, y, track));
+		AddSortableSpriteToDraw(sprite, pal, x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, GetSaveSlopeZ(x, y, track));
 	}
 	const Sprite *sp = GetSprite(sprite, ST_NORMAL);
 	if (sp->x_offs < -SIGNAL_DIRTY_LEFT || sp->x_offs + sp->width > SIGNAL_DIRTY_RIGHT || sp->y_offs < -SIGNAL_DIRTY_TOP || sp->y_offs + sp->height > SIGNAL_DIRTY_BOTTOM) {
