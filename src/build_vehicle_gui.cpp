@@ -1380,7 +1380,26 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 			return;
 		}
 
-		if (!this->listview_mode) {
+		if (this->virtual_train_mode) {
+			if (cargo != CT_INVALID && cargo != e->GetDefaultCargoType()) {
+				SavedRandomSeeds saved_seeds;
+				SaveRandomSeeds(&saved_seeds);
+				StringID err;
+				Train *t = CmdBuildVirtualRailVehicle(this->sel_engine, err, 0);
+				if (t != nullptr) {
+					const CommandCost ret = CmdRefitVehicle(0, DC_QUERY_COST, t->index, cargo | (1 << 16), nullptr);
+					this->te.cost          = ret.GetCost();
+					this->te.capacity      = _returned_refit_capacity;
+					this->te.mail_capacity = _returned_mail_refit_capacity;
+					this->te.cargo         = (cargo == CT_INVALID) ? e->GetDefaultCargoType() : cargo;
+					delete t;
+					RestoreRandomSeeds(saved_seeds);
+					return;
+				} else {
+					RestoreRandomSeeds(saved_seeds);
+				}
+			}
+		} else if (!this->listview_mode) {
 			/* Query for cost and refitted capacity */
 			CommandCost ret = DoCommand(this->window_number, this->sel_engine | (cargo << 24), 0, DC_QUERY_COST, GetCmdBuildVeh(this->vehicle_type), nullptr);
 			if (ret.Succeeded()) {
@@ -2141,7 +2160,26 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			return;
 		}
 
-		if (!this->listview_mode) {
+		if (this->virtual_train_mode) {
+			if (cargo != CT_INVALID && cargo != e->GetDefaultCargoType()) {
+				SavedRandomSeeds saved_seeds;
+				SaveRandomSeeds(&saved_seeds);
+				StringID err;
+				Train *t = CmdBuildVirtualRailVehicle(state.sel_engine, err, 0);
+				if (t != nullptr) {
+					const CommandCost ret = CmdRefitVehicle(0, DC_QUERY_COST, t->index, cargo | (1 << 16), nullptr);
+					state.te.cost          = ret.GetCost();
+					state.te.capacity      = _returned_refit_capacity;
+					state.te.mail_capacity = _returned_mail_refit_capacity;
+					state.te.cargo         = (cargo == CT_INVALID) ? e->GetDefaultCargoType() : cargo;
+					delete t;
+					RestoreRandomSeeds(saved_seeds);
+					return;
+				} else {
+					RestoreRandomSeeds(saved_seeds);
+				}
+			}
+		} else if (!this->listview_mode) {
 			/* Query for cost and refitted capacity */
 			const CommandCost ret = DoCommand(this->window_number, state.sel_engine | (cargo << 24), 0, DC_QUERY_COST, GetCmdBuildVeh(this->vehicle_type), nullptr);
 			if (ret.Succeeded()) {
