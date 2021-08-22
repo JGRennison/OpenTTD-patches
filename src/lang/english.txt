@@ -6667,12 +6667,7 @@ STR_TMPL_GROUP_INFO                                             :{BLACK}Group In
 STR_TMPL_TEMPLATE_INFO                                          :{BLACK}Template Info: {ORANGE}
 STR_TMPL_RPL_START                                              :{BLACK}Start replacing
 STR_TMPL_RPL_STOP                                               :{BLACK}Stop replacing
-STR_TMPL_TRAIN_OVR_VALUE                                        :{TINY_FONT}{BLACK}Train Value: {CURRENCY_SHORT}
-STR_TMPL_TEMPLATE_OVR_VALUE                                     :{TINY_FONT}{BLACK}Buying Cost: {GOLD}{CURRENCY_LONG}
-STR_TMPL_TEMPLATE_OVR_VALUE_nogold                              :{TINY_FONT}{BLACK}Buying Cost: {CURRENCY_LONG}
-STR_TMPL_TEMPLATE_OVR_VALUE_nogoldandcurrency                   :{TINY_FONT}{BLACK}Buying Cost:
-STR_TMPL_TEMPLATE_OVR_VALUE_notinyfont                          :{BLACK}Buying Cost: {GOLD}{CURRENCY_LONG}
-STR_TMPL_TEMPLATE_OVR_VALUE_notinyfontandblack                  :Buying Cost: {GOLD}{CURRENCY_LONG}
+STR_TMPL_TEMPLATE_OVR_VALUE                                     :{BLACK}Buying Cost: {GOLD}{CURRENCY_LONG}
 STR_TMPL_WARNING_FREE_WAGON                                     :{RED}Free Chain: not runnable!
 STR_TMPL_WARNING_VEH_UNAVAILABLE                                :{RED}Train not buildable: vehicle unavailable!
 STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}Template in use: {NUM}

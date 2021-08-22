@@ -6664,12 +6664,7 @@ STR_TMPL_GROUP_INFO                                             :{BLACK}그룹 �
 STR_TMPL_TEMPLATE_INFO                                          :{BLACK}템플릿 정보: {ORANGE}
 STR_TMPL_RPL_START                                              :{BLACK}교체 시작
 STR_TMPL_RPL_STOP                                               :{BLACK}교체 중지
-STR_TMPL_TRAIN_OVR_VALUE                                        :{TINY_FONT}{BLACK}열차 가격: {CURRENCY_SHORT}
-STR_TMPL_TEMPLATE_OVR_VALUE                                     :{TINY_FONT}{BLACK}구입 가격: {GOLD}{CURRENCY_LONG}
-STR_TMPL_TEMPLATE_OVR_VALUE_nogold                              :{TINY_FONT}{BLACK}구입 가격: {CURRENCY_LONG}
-STR_TMPL_TEMPLATE_OVR_VALUE_nogoldandcurrency                   :{TINY_FONT}{BLACK}구입 가격:
-STR_TMPL_TEMPLATE_OVR_VALUE_notinyfont                          :{BLACK}구입 가격: {GOLD}{CURRENCY_LONG}
-STR_TMPL_TEMPLATE_OVR_VALUE_notinyfontandblack                  :구입 가격: {GOLD}{CURRENCY_LONG}
+STR_TMPL_TEMPLATE_OVR_VALUE                                     :{BLACK}구입 가격: {GOLD}{CURRENCY_LONG}
 STR_TMPL_WARNING_FREE_WAGON                                     :{RED}객차/화차만 있음: 운행할 수 없습니다!
 STR_TMPL_WARNING_VEH_UNAVAILABLE                                :{RED}열차 구성 불가: 차량을 사용할 수 없습니다!
 STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}{NUM}번 템플릿 사용 중
