@@ -321,11 +321,13 @@ public:
 			this->vscroll[2]->SetCount(24);
 		} else {
 			const TemplateVehicle *tmp = this->templates[this->selected_template_index];
-			uint min_height = 30;
-			uint height = 30;
+			uint height = ScaleGUITrad(8) + (3 * FONT_HEIGHT_NORMAL);
 			CargoArray cargo_caps;
 			short count_columns = 0;
 			short max_columns = 2;
+
+			if (tmp->full_weight > tmp->empty_weight || _settings_client.gui.show_train_weight_ratios_in_details) height += FONT_HEIGHT_NORMAL;
+			if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) height += FONT_HEIGHT_NORMAL;
 
 			for (; tmp != nullptr; tmp = tmp->Next()) {
 				cargo_caps[tmp->cargo_type] += tmp->cargo_cap;
@@ -341,8 +343,7 @@ public:
 				}
 			}
 
-			min_height = std::max(min_height, height);
-			this->vscroll[2]->SetCount(min_height);
+			this->vscroll[2]->SetCount(height);
 		}
 
 		this->DrawWidgets();
@@ -774,7 +775,7 @@ public:
 		}
 
 		/* Draw cargo summary */
-		top += ScaleGUITrad(26);
+		top += FONT_HEIGHT_NORMAL * 2;
 		short count_columns = 0;
 		short max_columns = 2;
 
