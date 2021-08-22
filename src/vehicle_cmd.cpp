@@ -33,6 +33,7 @@
 #include "core/random_func.hpp"
 #include "tbtr_template_vehicle.h"
 #include "tbtr_template_vehicle_func.h"
+#include "scope.h"
 #include <sstream>
 #include <iomanip>
 #include <cctype>
@@ -1535,6 +1536,47 @@ CommandCost CmdCloneVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 	}
 
 	return total_cost;
+}
+
+/**
+ * Clone a vehicle from a template.
+ * @param tile tile of the depot where the cloned vehicle is build
+ * @param flags type of operation
+ * @param p1 the original template vehicle's index
+ * @param p2 unused
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdCloneVehicleFromTemplate(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	TemplateVehicle* tv = TemplateVehicle::GetIfValid(p1);
+
+	if (tv == nullptr) {
+		return CMD_ERROR;
+	}
+
+	CommandCost ret = CheckOwnership(tv->owner);
+	if (ret.Failed()) return ret;
+
+	/* Vehicle construction needs random bits, so we have to save the random
+	 * seeds to prevent desyncs. */
+	SavedRandomSeeds saved_seeds;
+	SaveRandomSeeds(&saved_seeds);
+
+	auto guard = scope_guard([&]() {
+		if (!(flags & DC_EXEC)) RestoreRandomSeeds(saved_seeds);
+	});
+
+	ret = DoCommand(0, tv->index, 0, DC_EXEC, CMD_VIRTUAL_TRAIN_FROM_TEMPLATE_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_BUY_TRAIN));
+	if (ret.Failed()) return ret;
+
+	Train* virt = Train::From(Vehicle::Get(_new_vehicle_id));
+
+	ret = DoCommand(tile, _new_vehicle_id, 0, flags, CMD_CLONE_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_BUY_TRAIN));
+
+	delete virt;
+
+	return ret;
 }
 
 /**

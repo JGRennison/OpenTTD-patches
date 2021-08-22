@@ -447,6 +447,8 @@ public:
 				if (newindex == this->selected_template_index || newindex >= templates.size()) {
 					this->selected_template_index = -1;
 				} else if (newindex < templates.size()) {
+					const TemplateVehicle *tmp = this->templates[newindex];
+					if (tmp != nullptr && TemplateVehicleClicked(tmp)) return;
 					this->selected_template_index = newindex;
 				}
 				this->UpdateButtonState();
@@ -839,4 +841,20 @@ void ShowTemplateReplaceWindow()
 	if (BringWindowToFrontById(WC_TEMPLATEGUI_MAIN, 0) == nullptr) {
 		new TemplateReplaceWindow(&_replace_rail_vehicle_desc);
 	}
+}
+
+/**
+ * Dispatch a "template vehicle selected" event if any window waits for it.
+ * @param v selected vehicle;
+ * @return did any window accept vehicle selection?
+ */
+bool TemplateVehicleClicked(const TemplateVehicle *v)
+{
+	assert(v != nullptr);
+	if (!(_thd.place_mode & HT_VEHICLE)) return false;
+
+	v = v->First();
+	if (!v->IsPrimaryVehicle()) return false;
+
+	return _thd.GetCallbackWnd()->OnTemplateVehicleSelect(v);
 }

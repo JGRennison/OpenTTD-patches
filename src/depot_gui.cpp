@@ -28,6 +28,7 @@
 #include "infrastructure_func.h"
 #include "order_backup.h"
 #include "zoom_func.h"
+#include "tbtr_template_vehicle.h"
 
 #include "widgets/depot_widget.h"
 
@@ -912,6 +913,21 @@ struct DepotWindow : Window {
 			if (DoCommandP(this->window_number, v->index, 0, CMD_CLONE_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_BUY_TRAIN + v->type), CcCloneVehicle)) {
 				ResetObjectToPlace();
 			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Clones a vehicle
+	 * @param v the original vehicle to clone
+	 * @return Always true.
+	 */
+	bool OnTemplateVehicleSelect(const TemplateVehicle *v) override
+	{
+		/* Copy-clone, open viewport for new vehicle, and deselect the tool (assume player wants to changs things on new vehicle) */
+		if (DoCommandP(this->window_number, v->index, 0, CMD_CLONE_VEHICLE_FROM_TEMPLATE | CMD_MSG(STR_ERROR_CAN_T_BUY_TRAIN), CcCloneVehicle)) {
+			ResetObjectToPlace();
 		}
 
 		return true;

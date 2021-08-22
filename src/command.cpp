@@ -215,6 +215,7 @@ CommandProc CmdIssueTemplateReplacement;
 CommandProc CmdDeleteTemplateReplacement;
 
 CommandProc CmdCloneVehicle;
+CommandProc CmdCloneVehicleFromTemplate;
 CommandProc CmdStartStopVehicle;
 CommandProc CmdMassStartStopVehicle;
 CommandProc CmdAutoreplaceVehicle;
@@ -450,6 +451,7 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdDeleteTemplateReplacement,          CMD_ALL_TILES, CMDT_VEHICLE_MANAGEMENT    ), // CMD_DELETE_TEMPLATE_REPLACEMENT
 
 	DEF_CMD(CmdCloneVehicle,                         CMD_NO_TEST, CMDT_VEHICLE_CONSTRUCTION  ), // CMD_CLONE_VEHICLE; NewGRF callbacks influence building and refitting making it impossible to correctly estimate the cost
+	DEF_CMD(CmdCloneVehicleFromTemplate,             CMD_NO_TEST, CMDT_VEHICLE_CONSTRUCTION  ), // CMD_CLONE_VEHICLE_FROM_TEMPLATE; NewGRF callbacks influence building and refitting making it impossible to correctly estimate the cost
 	DEF_CMD(CmdStartStopVehicle,                               0, CMDT_VEHICLE_MANAGEMENT    ), // CMD_START_STOP_VEHICLE
 	DEF_CMD(CmdMassStartStopVehicle,                           0, CMDT_VEHICLE_MANAGEMENT    ), // CMD_MASS_START_STOP
 	DEF_CMD(CmdAutoreplaceVehicle,                             0, CMDT_VEHICLE_MANAGEMENT    ), // CMD_AUTOREPLACE_VEHICLE

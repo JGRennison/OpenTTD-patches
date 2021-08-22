@@ -824,6 +824,13 @@ public:
 	virtual bool OnVehicleSelect(const struct Vehicle *v) { return false; }
 
 	/**
+	 * The user clicked on a template vehicle while HT_VEHICLE has been set.
+	 * @param v clicked vehicle. It is guaranteed to be v->IsPrimaryVehicle() == true
+	 * @return True if the click is handled, false if it is ignored.
+	 */
+	virtual bool OnTemplateVehicleSelect(const struct TemplateVehicle *v) { return false; }
+
+	/**
 	 * The user cancelled a tile highlight mode that has been set.
 	 */
 	virtual void OnPlaceObjectAbort() {}

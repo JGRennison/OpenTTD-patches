@@ -396,6 +396,7 @@ enum Commands {
 	CMD_DELETE_TEMPLATE_REPLACEMENT,  ///< delete a template replacement from a vehicle group
 
 	CMD_CLONE_VEHICLE,                ///< clone a vehicle
+	CMD_CLONE_VEHICLE_FROM_TEMPLATE,  ///< clone a vehicle from a template
 	CMD_START_STOP_VEHICLE,           ///< start or stop a vehicle
 	CMD_MASS_START_STOP,              ///< start/stop all vehicles (in a depot)
 	CMD_AUTOREPLACE_VEHICLE,          ///< replace/renew a vehicle while it is in a depot
