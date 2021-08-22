@@ -1822,6 +1822,10 @@ private:
 		this->GetWidget<NWidgetStacked>(WID_BS_SEMAPHORE_PROG_SEL)->SetDisplayedPlane(show_progsig ? 0 : SZSP_NONE);
 		this->GetWidget<NWidgetStacked>(WID_BS_ELECTRIC_PROG_SEL)->SetDisplayedPlane(show_progsig ? 0 : SZSP_NONE);
 		this->GetWidget<NWidgetStacked>(WID_BS_PROGRAM_SEL)->SetDisplayedPlane(show_progsig ? 0 : 1);
+		this->SetWidgetDisabledState(WID_BS_PROGRAM, !show_progsig);
+		this->SetWidgetsDisabledState(!show_progsig, WID_BS_SEMAPHORE_PROG, WID_BS_ELECTRIC_PROG, WIDGET_LIST_END);
+		this->SetWidgetsDisabledState(!this->presig_ui_shown, WID_BS_SEMAPHORE_ENTRY, WID_BS_ELECTRIC_ENTRY, WID_BS_SEMAPHORE_EXIT,
+				WID_BS_ELECTRIC_EXIT, WID_BS_SEMAPHORE_COMBO, WID_BS_ELECTRIC_COMBO, WIDGET_LIST_END);
 	}
 
 	void ClearRemoveState()
@@ -2010,7 +2014,31 @@ public:
 			this->ReInit();
 		}
 	}
+
+	static HotkeyList hotkeys;
 };
+
+static Hotkey signaltoolbar_hotkeys[] = {
+	Hotkey('N', "routing_restriction", WID_BS_TRACE_RESTRICT),
+	Hotkey('K', "convert", WID_BS_CONVERT),
+	Hotkey((uint16)0, "program_signal", WID_BS_PROGRAM),
+	Hotkey((uint16)0, "semaphore_normal", WID_BS_SEMAPHORE_NORM),
+	Hotkey((uint16)0, "semaphore_entry", WID_BS_SEMAPHORE_ENTRY),
+	Hotkey((uint16)0, "semaphore_exit", WID_BS_SEMAPHORE_EXIT),
+	Hotkey((uint16)0, "semaphore_combo", WID_BS_SEMAPHORE_COMBO),
+	Hotkey((uint16)0, "semaphore_prog", WID_BS_SEMAPHORE_PROG),
+	Hotkey((uint16)0, "semaphore_pbs", WID_BS_SEMAPHORE_PBS),
+	Hotkey((uint16)0, "semaphore_pbs_oneway", WID_BS_SEMAPHORE_PBS_OWAY),
+	Hotkey('G', "signal_normal", WID_BS_ELECTRIC_NORM),
+	Hotkey((uint16)0, "signal_entry", WID_BS_ELECTRIC_ENTRY),
+	Hotkey((uint16)0, "signal_exit", WID_BS_ELECTRIC_EXIT),
+	Hotkey((uint16)0, "signal_combo", WID_BS_ELECTRIC_COMBO),
+	Hotkey((uint16)0, "signal_prog", WID_BS_ELECTRIC_PROG),
+	Hotkey('H', "signal_pbs", WID_BS_ELECTRIC_PBS),
+	Hotkey('J', "signal_pbs_oneway", WID_BS_ELECTRIC_PBS_OWAY),
+	HOTKEY_LIST_END
+};
+HotkeyList BuildSignalWindow::hotkeys("signaltoolbar", signaltoolbar_hotkeys);
 
 /** Nested widget definition of the build signal window */
 static const NWidgetPart _nested_signal_builder_widgets[] = {
@@ -2077,7 +2105,8 @@ static WindowDesc _signal_builder_desc(
 	WDP_AUTO, "build_signal", 0, 0,
 	WC_BUILD_SIGNAL, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	_nested_signal_builder_widgets, lengthof(_nested_signal_builder_widgets)
+	_nested_signal_builder_widgets, lengthof(_nested_signal_builder_widgets),
+	&BuildSignalWindow::hotkeys
 );
 
 /**
