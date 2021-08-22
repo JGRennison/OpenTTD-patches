@@ -6668,6 +6668,9 @@ STR_TMPL_TEMPLATE_INFO                                          :{BLACK}Template
 STR_TMPL_RPL_START                                              :{BLACK}Start replacing
 STR_TMPL_RPL_STOP                                               :{BLACK}Stop replacing
 STR_TMPL_TEMPLATE_OVR_VALUE                                     :{BLACK}Buying Cost: {GOLD}{CURRENCY_LONG}
+STR_TMPL_TEMPLATE_OVR_VALUE_LTBLUE                              :{BLACK}Buying Cost: {LTBLUE}{CURRENCY_LONG}
+STR_TMPL_TEMPLATE_OVR_RUNNING_COST                              :{BLACK}Estimated Running Cost: {LTBLUE}{CURRENCY_LONG}
+STR_TMPL_TEMPLATE_OVR_MULTIPLE                                  :{BLACK}{STRING1}{BLACK} {STRING1}
 STR_TMPL_WARNING_FREE_WAGON                                     :{RED}Free Chain: not runnable!
 STR_TMPL_WARNING_VEH_UNAVAILABLE                                :{RED}Train not buildable: vehicle unavailable!
 STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}Template in use: {NUM}

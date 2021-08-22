@@ -110,6 +110,16 @@ Money CalculateOverallTemplateCost(const TemplateVehicle *tv)
 	return val;
 }
 
+Money CalculateOverallTemplateDisplayRunningCost(const TemplateVehicle *tv)
+{
+	Money val = 0;
+
+	for (; tv; tv = tv->GetNextUnit()) {
+		val += (Engine::Get(tv->engine_type))->GetDisplayRunningCost();
+	}
+	return val;
+}
+
 void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y)
 {
 	if (!tv) return;

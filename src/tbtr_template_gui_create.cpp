@@ -307,13 +307,23 @@ public:
 
 					int y = 4 - this->vscroll->GetPosition();
 					bool buildable = true;
+					Money buy_cost = 0;
 					for (Train *train = this->virtual_train; train != nullptr; train = train->GetNextUnit()) {
 						if (!IsEngineBuildable(train->engine_type, VEH_TRAIN, train->owner)) buildable = false;
+						buy_cost += Engine::Get(train->engine_type)->GetCost();
 					}
 					if (!buildable) {
 						DrawString(8, r.right, y, STR_TMPL_WARNING_VEH_UNAVAILABLE);
 						y += FONT_HEIGHT_NORMAL;
 					}
+
+					SetDParam(0, STR_TMPL_TEMPLATE_OVR_VALUE_LTBLUE);
+					SetDParam(1, buy_cost);
+					SetDParam(2, STR_TMPL_TEMPLATE_OVR_RUNNING_COST);
+					SetDParam(3, this->virtual_train->GetDisplayRunningCost());
+					DrawString(8, r.right, y, STR_TMPL_TEMPLATE_OVR_MULTIPLE);
+					y += FONT_HEIGHT_NORMAL;
+
 					/* Draw vehicle performance info */
 					const bool original_acceleration = (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL ||
 							GetRailTypeInfo(this->virtual_train->railtype)->acceleration_type == 2);

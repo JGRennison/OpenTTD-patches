@@ -6665,6 +6665,7 @@ STR_TMPL_TEMPLATE_INFO                                          :{BLACK}템플�
 STR_TMPL_RPL_START                                              :{BLACK}교체 시작
 STR_TMPL_RPL_STOP                                               :{BLACK}교체 중지
 STR_TMPL_TEMPLATE_OVR_VALUE                                     :{BLACK}구입 가격: {GOLD}{CURRENCY_LONG}
+STR_TMPL_TEMPLATE_OVR_VALUE_LTBLUE                              :{BLACK}구입 가격: {LTBLUE}{CURRENCY_LONG}
 STR_TMPL_WARNING_FREE_WAGON                                     :{RED}객차/화차만 있음: 운행할 수 없습니다!
 STR_TMPL_WARNING_VEH_UNAVAILABLE                                :{RED}열차 구성 불가: 차량을 사용할 수 없습니다!
 STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}{NUM}번 템플릿 사용 중

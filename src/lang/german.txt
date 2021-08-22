@@ -6438,6 +6438,7 @@ STR_TMPL_TEMPLATE_INFO                                          :{BLACK}Vorlagen
 STR_TMPL_RPL_START                                              :{BLACK}Fahrzeugersetzung an
 STR_TMPL_RPL_STOP                                               :{BLACK}Fahrzeugersetzung aus
 STR_TMPL_TEMPLATE_OVR_VALUE                                     :{BLACK}Anschaffungskosten: {GOLD}{CURRENCY_LONG}
+STR_TMPL_TEMPLATE_OVR_VALUE_LTBLUE                              :{BLACK}Anschaffungskosten: {LTBLUE}{CURRENCY_LONG}
 STR_TMPL_WARNING_FREE_WAGON                                     :{RED}Unvollständiger Antriebsstrang: Zug kann nicht bewegt werden!
 STR_TMPL_WARNING_VEH_UNAVAILABLE                                :{RED}Zug nicht erstellbar: Fahrzeug nicht verfügbar!
 STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}Vorlage in Benutzung: {NUM}

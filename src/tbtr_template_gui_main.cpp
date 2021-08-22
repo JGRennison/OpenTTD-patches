@@ -742,6 +742,10 @@ public:
 		short top = ScaleGUITrad(4) - this->vscroll[2]->GetPosition();
 		short left = ScaleGUITrad(8);
 
+		SetDParam(0, CalculateOverallTemplateDisplayRunningCost(tmp));
+		DrawString(left, r.right, top, STR_TMPL_TEMPLATE_OVR_RUNNING_COST);
+		top += FONT_HEIGHT_NORMAL;
+
 		/* Draw vehicle performance info */
 		const bool original_acceleration = (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL ||
 				GetRailTypeInfo(tmp->railtype)->acceleration_type == 2);
