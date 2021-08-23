@@ -9,6 +9,7 @@
 		td, th     { border: 1px solid #CCCCCC; padding: 0px 5px; }
 		table      { border-collapse: collapse; empty-cells: show; }
 		span.code  { font-family: "Courier New", Courier, mono; color: darkgreen; }
+		pre.code   { font-family: "Courier New", Courier, mono; color: blue; background-color: #f8f9fa; border: 1px solid #eaecf0; padding: 1em; }
 		dt         { font-weight: bold; }
 	</style>
 </head>
@@ -22,6 +23,15 @@
 
 	<p>All of the non-standard features listed below will automatically emit suitable feature tests, conditionals, etc. such that NewGRFs which use these features will work correctly
 	on OpenTTD versions which do not support these features, including standard trunk OpenTTD and older/other patchpack versions.</p>
+
+	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Builtin_functions">Builtin functions</a></h3>
+
+	<p>
+		<h4>extended_feature_test(feature_name[, min_version[, max_version]])</h4>
+		This returns true if the given extended feature is present and has a version within the specified minimum and maximum (inclusive).<br />
+		This function should only be used after the grf{} block.<br />
+		In most cases it is not necessary to use this function, as extended properties (listed below) which are not supported are simply skipped/ignored.
+	</p>
 
 	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#Railtype_properties">Railtypes properties</a></h3>
 	<table>
@@ -38,6 +48,22 @@
 			When enabled, bit 24 of variable <span class="code">extra_callback_info2</span> is set if the signal is restricted (has a routing restriction program attached).<br />
 			When enabled, the "Show restricted electric signals using default graphics" client setting and signal post recolouring is not applied.<br />
 			This flag must only be set if a different sprite is returned when bit 24 of <span class="code">extra_callback_info2</span> is set.
+		</td>
+	</tr>
+	<tr><td>enable_signal_recolour</td><td>0 or 1</td>
+		<td>
+			Enable recolouring of graphics in <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#signals">railtype signals</a>.<br />
+			When enabled, in addition to returning a sprite, register 0x100 may be set to the following using STORE_TEMP:
+			<table>
+			<tr><th>Bits</th><th>Meaning</th></tr>
+			<tr><td>0 - 23</td><td>Recolour sprite to use. Set to 0 for no recolouring.</td></tr>
+			<tr><td>24 - 31</td><td>Reserved, set to zero.</td></tr>
+			</table>
+			<br />
+			If recolouring is not optional, the feature name: <span class="code">action0_railtype_recolour</span> should be checked using the
+			<span class="code">extended_feature_test</span> function
+			and if necessary a suitable fallback used or error message shown.<br />
+			If the OpenTTD version does not support this property/feature, then the property would ordinarily be ignored/skipped and no recolouring would be done.
 		</td>
 	</tr>
 	<tr><td>disable_realistic_braking</td><td>0 or 1</td>
@@ -90,5 +116,78 @@
 		</td>
 	</tr>
 	</table>
+	<h3>Signal graphics using switches</h3>
+	<p>
+		This feature allows signal sprites to be specified using switches in a very similar manner to <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#signals">railtype signals</a> in
+		<span class="code">item (FEAT_RAILTYPES) { graphics { signals: ... } }</span> blocks.<br />
+		However this applies to all signals, not only those of a particular rail type.<br />
+		Railtype signal graphics have a higher priority than general signal graphics as set here.<br />
+		<br />
+		Variables: <span class="code">extra_callback_info1</span>, <span class="code">extra_callback_info2</span>, and <span class="code">terrain_type</span>
+		are the same as for <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#signals">railtype signals</a>.<br />
+		<br />
+		This feature is not supported by standard OpenTTD or by standard NML.<br/>
+		If the use of this feature is not optional, the feature name: <span class="code">action3_signals_custom_signal_sprites</span> should be checked using the
+		<span class="code">extended_feature_test</span> function
+		and if necessary a suitable fallback used or error message shown.<br />
+		<br />
+		An <span class="code">item (FEAT_SIGNALS, custom_signals, 0) { }</span> block should be used to define properties and graphics.<br />
+		The graphics block should contain a single default switch.
+	</p>
+	<table>
+	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
+	<tr><td>enable_programmable_pre_signals</td><td>0 or 1</td>
+		<td>
+			Enable programmable pre-signal graphics.<br />
+			Programmable pre-signals have a signal type (<span class="code">getbits(extra_callback_info2, 16, 8)</span>) of 6.
+		</td>
+	</tr>
+	<tr><td>enable_restricted_signals</td><td>0 or 1</td>
+		<td>
+			Enable restricted signal flag.<br />
+			When enabled, bit 24 of variable <span class="code">extra_callback_info2</span> is set if the signal is restricted (has a routing restriction program attached).<br />
+			When enabled, the "Show restricted electric signals using default graphics" client setting and signal post recolouring is not applied.<br />
+			This flag must only be set if a different sprite is returned when bit 24 of <span class="code">extra_callback_info2</span> is set.
+		</td>
+	</tr>
+	<tr><td>enable_signal_recolour</td><td>0 or 1</td>
+		<td>
+			Enable recolouring of graphics<br />
+			When enabled, in addition to returning a sprite, register 0x100 may be set to the following using STORE_TEMP:
+			<table>
+			<tr><th>Bits</th><th>Meaning</th></tr>
+			<tr><td>0 - 23</td><td>Recolour sprite to use. Set to 0 for no recolouring.</td></tr>
+			<tr><td>24 - 31</td><td>Reserved, set to zero.</td></tr>
+			</table>
+		</td>
+	</tr>
+	</table>
+	<p>
+	Custom signal sprites example:
+		<pre class="code">
+grf {
+	...
+}
+
+if (!extended_feature_test("action3_signals_custom_signal_sprites")) {
+	error(FATAL, string(STR_UNSUPPORTED_VERSION));
+}
+
+switch (FEAT_SIGNALS, SELF, switch_signals, ...) {
+	...
+}
+
+
+item (FEAT_SIGNALS, custom_signals, 0) {
+	property {
+		enable_signal_recolour: 1;
+	}
+
+	graphics {
+		switch_signals;
+	}
+}
+		</pre>
+	</p>
 </body>
 </html>
