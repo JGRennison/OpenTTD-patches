@@ -274,6 +274,7 @@ enum SigFlags {
 	SF_TRAIN   = 1 << 0, ///< train found in segment
 	SF_FULL    = 1 << 1, ///< some of buffers was full, do not continue
 	SF_PBS     = 1 << 2, ///< pbs signal found
+	SF_JUNCTION= 1 << 3, ///< junction found
 };
 
 DECLARE_ENUM_AS_BIT_SET(SigFlags)
@@ -370,6 +371,8 @@ static SigInfo ExploreSegment(Owner owner)
 
 						continue;
 					}
+				} else if (!HasAtMostOneBit(tracks)) {
+					info.flags |= SF_JUNCTION;
 				}
 
 				for (DiagDirection dir = DIAGDIR_BEGIN; dir < DIAGDIR_END; dir++) { // test all possible exit directions
@@ -465,6 +468,8 @@ static SigInfo ExploreSegment(Owner owner)
 						}
 						continue;
 					}
+				} else if (!HasAtMostOneBit(tracks)) {
+					info.flags |= SF_JUNCTION;
 				}
 				if (enterdir == INVALID_DIAGDIR) { // incoming from the wormhole
 					if (!(info.flags & SF_TRAIN) && check_train_present(tunnel_bridge_dir)) info.flags |= SF_TRAIN;
@@ -519,7 +524,7 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
 		if (_tbuset.Items() > 1) info.flags |= SF_PBS;
-		if (info.flags & SF_PBS) info.flags |= SF_TRAIN;
+		if (info.flags & (SF_PBS | SF_JUNCTION)) info.flags |= SF_TRAIN;
 	}
 
 	while (_tbuset.Get(&tile, &trackdir)) {

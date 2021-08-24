@@ -65,6 +65,7 @@
 #include "../settings_func.h"
 #include "../animated_tile.h"
 #include "../company_func.h"
+#include "../infrastructure_func.h"
 
 
 #include "saveload_internal.h"
@@ -3906,6 +3907,10 @@ bool AfterLoadGame()
 			}
 			if (t->lookahead != nullptr) SetBit(t->lookahead->flags, TRLF_APPLY_ADVISORY);
 		}
+	}
+
+	if (!SlXvIsFeaturePresent(XSLFI_REALISTIC_TRAIN_BRAKING, 3) && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+		UpdateAllBlockSignals();
 	}
 
 	if (SlXvIsFeatureMissing(XSLFI_INFLATION_FIXED_DATES)) {
