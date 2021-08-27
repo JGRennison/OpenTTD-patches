@@ -3346,6 +3346,14 @@ static int GetAndClearLastBridgeEntranceSetSignalIndex(TileIndex bridge_entrance
 	return 0;
 }
 
+static void SetTunnelBridgeEntranceSignalGreen(TileIndex tile)
+{
+	if (GetTunnelBridgeEntranceSignalState(tile) == SIGNAL_STATE_RED) {
+		SetTunnelBridgeEntranceSignalState(tile, SIGNAL_STATE_GREEN);
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+	}
+}
+
 static void HandleLastTunnelBridgeSignals(TileIndex tile, TileIndex end, DiagDirection dir, bool free)
 {
 	if (IsBridge(end) && _m[end].m2 != 0) {
@@ -3370,14 +3378,8 @@ static void HandleLastTunnelBridgeSignals(TileIndex tile, TileIndex end, DiagDir
 			if (redraw) MarkBridgeDirty(tile, end, GetTunnelBridgeDirection(tile), GetBridgeHeight(tile), VMDF_NOT_MAP_MODE);
 		}
 
-		if (IsTunnelBridgeSignalSimulationEntrance(end) && GetTunnelBridgeEntranceSignalState(end) == SIGNAL_STATE_RED) {
-			SetTunnelBridgeEntranceSignalState(end, SIGNAL_STATE_GREEN);
-			MarkTileDirtyByTile(end, VMDF_NOT_MAP_MODE);
-		}
-		if (IsTunnelBridgeSignalSimulationEntrance(tile) && GetTunnelBridgeEntranceSignalState(tile) == SIGNAL_STATE_RED) {
-			SetTunnelBridgeEntranceSignalState(tile, SIGNAL_STATE_GREEN);
-			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
-		}
+		if (IsTunnelBridgeSignalSimulationEntrance(end)) SetTunnelBridgeEntranceSignalGreen(end);
+		if (IsTunnelBridgeSignalSimulationEntrance(tile)) SetTunnelBridgeEntranceSignalGreen(tile);
 	}
 }
 
@@ -5027,10 +5029,7 @@ static void HandleSignalBehindTrain(Train *v, int signal_number)
 
 	if (tile == v->tile) {
 		/* Flip signal on ramp. */
-		if (IsTunnelBridgeSignalSimulationEntrance(tile) && GetTunnelBridgeEntranceSignalState(tile) == SIGNAL_STATE_RED) {
-			SetTunnelBridgeEntranceSignalState(tile, SIGNAL_STATE_GREEN);
-			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
-		}
+		if (IsTunnelBridgeSignalSimulationEntrance(tile)) SetTunnelBridgeEntranceSignalGreen(tile);
 	} else if (IsBridge(v->tile) && signal_number >= 0) {
 		SetBridgeEntranceSimulatedSignalState(v->tile, signal_number, SIGNAL_STATE_GREEN);
 		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
@@ -5733,10 +5732,7 @@ static void SetSignalledBridgeTunnelGreenIfClear(TileIndex tile, TileIndex end)
 					SetAllBridgeEntranceSimulatedSignalsGreen(t);
 					MarkBridgeDirty(t, VMDF_NOT_MAP_MODE);
 				}
-				if (IsTunnelBridgeSignalSimulationEntrance(t) && GetTunnelBridgeEntranceSignalState(t) == SIGNAL_STATE_RED) {
-					SetTunnelBridgeEntranceSignalState(t, SIGNAL_STATE_GREEN);
-					MarkTileDirtyByTile(t, VMDF_NOT_MAP_MODE);
-				}
+				SetTunnelBridgeEntranceSignalGreen(t);
 			}
 		};
 		process_tile(tile);
