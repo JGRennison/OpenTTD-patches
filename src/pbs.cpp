@@ -423,7 +423,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 					if (lookahead != nullptr) {
 						lookahead->reservation_end_position += (DistanceManhattan(tile, end) - 1) * TILE_SIZE;
 					}
-					Trackdir end_trackdir = TrackEnterdirToTrackdir(FindFirstTrack(GetAcrossTunnelBridgeTrackBits(end)), ReverseDiagDir(GetTunnelBridgeDirection(end)));
+					Trackdir end_trackdir = GetTunnelBridgeExitTrackdir(end);
 					if (lookahead != nullptr) {
 						if ((flags & FRF_TB_EXIT_FREE) && GetTunnelBridgeLength(tile, end) > 1) {
 							/* middle part of bridge is in wormhole direction */
@@ -444,7 +444,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 				if (HasAcrossTunnelBridgeReservation(end) && TunnelBridgeIsFree(tile, end, nullptr, true).Succeeded()) {
 					/* skip far end */
 					tile = end;
-					trackdir = TrackEnterdirToTrackdir(FindFirstTrack(GetAcrossTunnelBridgeTrackBits(tile)), ReverseDiagDir(GetTunnelBridgeDirection(tile)));
+					trackdir = GetTunnelBridgeExitTrackdir(tile);
 					return true;
 				}
 			}
@@ -697,8 +697,7 @@ PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res, Follo
 			TileIndex exit_tile = GetOtherTunnelBridgeEnd(tile);
 			if (IsTunnelBridgeSignalSimulationExit(exit_tile) && GetTunnelBridgeExitSignalState(exit_tile) == SIGNAL_STATE_GREEN && HasAcrossTunnelBridgeReservation(exit_tile)) {
 				tile = exit_tile;
-				DiagDirection exit_dir = ReverseDiagDir(GetTunnelBridgeDirection(exit_tile));
-				trackdir = TrackEnterdirToTrackdir(FindFirstTrack(GetAcrossTunnelBridgeTrackBits(exit_tile)), exit_dir);
+				trackdir = GetTunnelBridgeExitTrackdir(exit_tile);
 			}
 		}
 	} else {
@@ -839,7 +838,7 @@ void TryCreateLookAheadForTrainInTunnelBridge(Train *t)
 		/* going in the right direction, allocate a new lookahead */
 		t->lookahead.reset(new TrainReservationLookAhead());
 		t->lookahead->reservation_end_tile = t->tile;
-		t->lookahead->reservation_end_trackdir = TrackExitdirToTrackdir(FindFirstTrack(GetAcrossTunnelBridgeTrackBits(t->tile)), GetTunnelBridgeDirection(t->tile));
+		t->lookahead->reservation_end_trackdir = GetTunnelBridgeEntranceTrackdir(t->tile);
 		t->lookahead->reservation_end_z = t->z_pos;
 		t->lookahead->current_position = 0;
 		t->lookahead->tunnel_bridge_reserved_tiles = DistanceManhattan(t->tile, TileVirtXY(t->x_pos, t->y_pos));

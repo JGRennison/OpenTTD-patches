@@ -506,6 +506,26 @@ static inline void SetTunnelBridgePBS(TileIndex t, bool is_pbs)
 	SB(_me[t].m6, 6, 1, is_pbs ? 1 : 0);
 }
 
+static inline Trackdir GetTunnelBridgeExitTrackdir(TileIndex t, DiagDirection tunnel_bridge_dir)
+{
+	return TrackEnterdirToTrackdir((Track)FIND_FIRST_BIT(GetAcrossTunnelBridgeTrackBits(t)), ReverseDiagDir(tunnel_bridge_dir));
+}
+
+static inline Trackdir GetTunnelBridgeExitTrackdir(TileIndex t)
+{
+	return GetTunnelBridgeExitTrackdir(t, GetTunnelBridgeDirection(t));
+}
+
+static inline Trackdir GetTunnelBridgeEntranceTrackdir(TileIndex t, DiagDirection tunnel_bridge_dir)
+{
+	return TrackExitdirToTrackdir((Track)FIND_FIRST_BIT(GetAcrossTunnelBridgeTrackBits(t)), tunnel_bridge_dir);
+}
+
+static inline Trackdir GetTunnelBridgeEntranceTrackdir(TileIndex t)
+{
+	return GetTunnelBridgeEntranceTrackdir(t, GetTunnelBridgeDirection(t));
+}
+
 void AddRailTunnelBridgeInfrastructure(Company *c, TileIndex begin, TileIndex end);
 void SubtractRailTunnelBridgeInfrastructure(Company *c, TileIndex begin, TileIndex end);
 void AddRailTunnelBridgeInfrastructure(TileIndex begin, TileIndex end);

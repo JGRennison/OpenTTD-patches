@@ -445,7 +445,7 @@ static SigInfo ExploreSegment(Owner owner)
 							info.flags |= SF_FULL;
 							return info;
 						}
-						Trackdir exit_track = TrackEnterdirToTrackdir(FindFirstTrack(GetAcrossTunnelBridgeTrackBits(tile)), ReverseDiagDir(tunnel_bridge_dir));
+						Trackdir exit_track = GetTunnelBridgeExitTrackdir(tile, tunnel_bridge_dir);
 						exitdir = TrackdirToExitdir(exit_track);
 						enterdir = ReverseDiagDir(exitdir);
 						tile += TileOffsByDiagDir(exitdir); // just skip to next tile
