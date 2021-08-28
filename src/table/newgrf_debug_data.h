@@ -923,6 +923,10 @@ class NIHRailType : public NIHelper {
 				}
 			}
 		}
+		if (IsTileType(index, MP_RAILWAY) && IsRailDepot(index)) {
+			seprintf(buffer, lastof(buffer), "Depot: reserved: %u", HasDepotReservation(index));
+			print(buffer);
+		}
 	}
 };
 
