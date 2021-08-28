@@ -3241,7 +3241,7 @@ DEF_CONSOLE_CMD(ConFramerateWindow)
 DEF_CONSOLE_CMD(ConFindNonRealisticBrakingSignal)
 {
 	if (argc == 0) {
-		IConsoleHelp("Find next signal tile which prevents enabling of realitic braking");
+		IConsoleHelp("Find the next signal tile which prevents enabling of realistic braking");
 		return true;
 	}
 
