@@ -1719,7 +1719,15 @@ static void DrawTunnelBridgeRampSingleSignal(const TileInfo *ti, bool is_green, 
 	SignalVariant variant = IsTunnelBridgeSemaphore(ti->tile) ? SIG_SEMAPHORE : SIG_ELECTRIC;
 	const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(ti->tile));
 
-	PalSpriteID sprite = GetCustomSignalSprite(rti, ti->tile, type, variant, is_green ? SIGNAL_STATE_GREEN : SIGNAL_STATE_RED).sprite;
+	uint8 aspect = 0;
+	if (is_green) {
+		if (_extra_aspects > 0) {
+			aspect = show_exit ? GetTunnelBridgeExitSignalAspect(ti->tile) : GetTunnelBridgeEntranceSignalAspect(ti->tile);
+		} else {
+			aspect = 1;
+		}
+	}
+	PalSpriteID sprite = GetCustomSignalSprite(rti, ti->tile, type, variant, aspect).sprite;
 	bool is_custom_sprite = (sprite.sprite != 0);
 
 	if (is_custom_sprite) {
@@ -1764,9 +1772,8 @@ static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
 }
 
 /* Draws a signal on tunnel / bridge entrance tile. */
-static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_start_tile, uint z)
+static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_start_tile, TileIndex bridge_end_tile, uint z)
 {
-
 	uint bridge_signal_position = 0;
 	int m2_position = 0;
 
@@ -1802,9 +1809,27 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 
 			SignalVariant variant = IsTunnelBridgeSemaphore(bridge_start_tile) ? SIG_SEMAPHORE : SIG_ELECTRIC;
 			SignalState state = GetBridgeEntranceSimulatedSignalState(bridge_start_tile, m2_position);
+			uint8 aspect = 0;
+			if (state == SIGNAL_STATE_GREEN) {
+				aspect = 1;
+				if (_extra_aspects > 0) {
+					const uint bridge_length = GetTunnelBridgeLength(bridge_start_tile, bridge_end_tile) + 1;
+					while (true) {
+						bridge_signal_position += simulated_wormhole_signals;
+						if (bridge_signal_position >= bridge_length) {
+							if (GetTunnelBridgeExitSignalState(bridge_end_tile) == SIGNAL_STATE_GREEN) aspect += GetTunnelBridgeExitSignalAspect(bridge_end_tile);
+							break;
+						}
+						m2_position++;
+						if (GetBridgeEntranceSimulatedSignalState(bridge_start_tile, m2_position) != SIGNAL_STATE_GREEN) break;
+						aspect++;
+						if (aspect >= _extra_aspects + 1) break;
+					}
+				}
+			}
 
 			const RailtypeInfo *rti = GetRailTypeInfo(GetRailType(bridge_start_tile));
-			PalSpriteID sprite = GetCustomSignalSprite(rti, bridge_start_tile, SIGTYPE_NORMAL, variant, state).sprite;
+			PalSpriteID sprite = GetCustomSignalSprite(rti, bridge_start_tile, SIGTYPE_NORMAL, variant, aspect).sprite;
 
 			if (sprite.sprite != 0) {
 				sprite.sprite += position;
@@ -1820,6 +1845,7 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 			}
 
 			AddSortableSpriteToDraw(sprite.sprite, sprite.pal, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
+			break;
 		}
 		m2_position++;
 	}
@@ -1979,7 +2005,7 @@ static void DrawTile_TunnelBridge(TileInfo *ti, DrawTileProcParams params)
 
 			if (IsTunnelBridgeWithSignalSimulation(ti->tile)) {
 				extern void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, SignalState condition,
-						SignalOffsets image, uint pos, SignalType type, SignalVariant variant, bool show_restricted);
+						SignalOffsets image, uint pos, SignalType type, SignalVariant variant, bool show_restricted, bool exit_signal = false);
 
 				DiagDirection dir = GetTunnelBridgeDirection(ti->tile);
 				SignalVariant variant = IsTunnelBridgeSemaphore(ti->tile) ? SIG_SEMAPHORE : SIG_ELECTRIC;
@@ -1992,14 +2018,14 @@ static void DrawTile_TunnelBridge(TileInfo *ti, DrawTileProcParams params)
 						image = (SignalOffsets)(image ^ 1);
 					}
 					if (IsTunnelBridgeSignalSimulationEntrance(ti->tile)) {
-						DrawSingleSignal(ti->tile, rti, t, GetTunnelBridgeEntranceSignalState(ti->tile), image, position, SIGTYPE_NORMAL, variant, false);
+						DrawSingleSignal(ti->tile, rti, t, GetTunnelBridgeEntranceSignalState(ti->tile), image, position, SIGTYPE_NORMAL, variant, false, false);
 					}
 					if (IsTunnelBridgeSignalSimulationExit(ti->tile)) {
 						SignalType type = SIGTYPE_NORMAL;
 						if (IsTunnelBridgePBS(ti->tile)) {
 							type = IsTunnelBridgeSignalSimulationEntrance(ti->tile) ? SIGTYPE_PBS : SIGTYPE_PBS_ONEWAY;
 						}
-						DrawSingleSignal(ti->tile, rti, t, GetTunnelBridgeExitSignalState(ti->tile), (SignalOffsets)(image ^ 1), position ^ 1, type, variant, false);
+						DrawSingleSignal(ti->tile, rti, t, GetTunnelBridgeExitSignalState(ti->tile), (SignalOffsets)(image ^ 1), position ^ 1, type, variant, false, true);
 					}
 				};
 				switch (t) {
@@ -2308,8 +2334,8 @@ void DrawBridgeMiddle(const TileInfo *ti)
 		if (HasRailCatenaryDrawn(GetRailType(rampsouth))) {
 			DrawRailCatenaryOnBridge(ti);
 		}
-		if (IsTunnelBridgeSignalSimulationEntrance(rampsouth)) DrawBridgeSignalOnMiddlePart(ti, rampsouth, z);
-		if (IsTunnelBridgeSignalSimulationEntrance(rampnorth)) DrawBridgeSignalOnMiddlePart(ti, rampnorth, z);
+		if (IsTunnelBridgeSignalSimulationEntrance(rampsouth)) DrawBridgeSignalOnMiddlePart(ti, rampsouth, rampnorth, z);
+		if (IsTunnelBridgeSignalSimulationEntrance(rampnorth)) DrawBridgeSignalOnMiddlePart(ti, rampnorth, rampsouth, z);
 	}
 
 	/* draw roof, the component of the bridge which is logically between the vehicle and the camera */

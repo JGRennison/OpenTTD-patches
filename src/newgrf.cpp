@@ -4088,6 +4088,11 @@ static ChangeInfoResult SignalsChangeInfo(uint id, int numinfo, int prop, const 
 				SB(_cur.grffile->new_signal_ctrl_flags, NSCF_RECOLOUR_ENABLED, 1, (buf->ReadByte() != 0 ? 1 : 0));
 				break;
 
+			case A0RPI_SIGNALS_EXTRA_ASPECTS:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				_cur.grffile->new_signal_extra_aspects = std::min<byte>(buf->ReadByte(), NEW_SIGNALS_MAX_EXTRA_ASPECT);
+				break;
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
@@ -4426,6 +4431,11 @@ static ChangeInfoResult RailTypeChangeInfo(uint id, int numinfo, int prop, const
 				SB(rti->ctrl_flags, RTCF_RECOLOUR_ENABLED, 1, (buf->ReadByte() != 0 ? 1 : 0));
 				break;
 
+			case A0RPI_RAILTYPE_EXTRA_ASPECTS:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				rti->signal_extra_aspects = std::min<byte>(buf->ReadByte(), NEW_SIGNALS_MAX_EXTRA_ASPECT);
+				break;
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
@@ -4510,6 +4520,7 @@ static ChangeInfoResult RailTypeReserveInfo(uint id, int numinfo, int prop, cons
 			case A0RPI_RAILTYPE_ENABLE_RESTRICTED_SIGNALS:
 			case A0RPI_RAILTYPE_DISABLE_REALISTIC_BRAKING:
 			case A0RPI_RAILTYPE_ENABLE_SIGNAL_RECOLOUR:
+			case A0RPI_RAILTYPE_EXTRA_ASPECTS:
 				buf->Skip(buf->ReadExtendedByte());
 				break;
 
@@ -8480,11 +8491,13 @@ static const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_railtype_restricted_signals", 1),
 	GRFFeatureInfo("action0_railtype_disable_realistic_braking", 1),
 	GRFFeatureInfo("action0_railtype_recolour", 1),
+	GRFFeatureInfo("action0_railtype_extra_aspects", 1),
 	GRFFeatureInfo("action0_roadtype_extra_flags", 1),
 	GRFFeatureInfo("action0_global_extra_station_names", 1),
 	GRFFeatureInfo("action0_signals_programmable_signals", 1),
 	GRFFeatureInfo("action0_signals_restricted_signals", 1),
 	GRFFeatureInfo("action0_signals_recolour", 1),
+	GRFFeatureInfo("action0_signals_extra_aspects", 1),
 	GRFFeatureInfo("action3_signals_custom_signal_sprites", 1),
 	GRFFeatureInfo(),
 };
@@ -8606,12 +8619,14 @@ static const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_ENABLE_RESTRICTED_SIGNALS, "railtype_enable_restricted_signals"),
 	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_DISABLE_REALISTIC_BRAKING, "railtype_disable_realistic_braking"),
 	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_ENABLE_SIGNAL_RECOLOUR, "railtype_enable_signal_recolour"),
+	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_EXTRA_ASPECTS, "railtype_extra_aspects"),
 	GRFPropertyMapDefinition(GSF_ROADTYPES, A0RPI_ROADTYPE_EXTRA_FLAGS, "roadtype_extra_flags"),
 	GRFPropertyMapDefinition(GSF_TRAMTYPES, A0RPI_ROADTYPE_EXTRA_FLAGS, "roadtype_extra_flags"),
 	GRFPropertyMapDefinition(GSF_GLOBALVAR, A0RPI_GLOBALVAR_EXTRA_STATION_NAMES, "global_extra_station_names"),
 	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_ENABLE_PROGRAMMABLE_SIGNALS, "signals_enable_programmable_signals"),
 	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_ENABLE_RESTRICTED_SIGNALS, "signals_enable_restricted_signals"),
 	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_ENABLE_SIGNAL_RECOLOUR, "signals_enable_signal_recolour"),
+	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_EXTRA_ASPECTS, "signals_extra_aspects"),
 	GRFPropertyMapDefinition(),
 };
 
@@ -9409,6 +9424,7 @@ GRFFile::GRFFile(const GRFConfig *config)
 
 	this->new_signals_group = nullptr;
 	this->new_signal_ctrl_flags = 0;
+	this->new_signal_extra_aspects = 0;
 
 	/* Mark price_base_multipliers as 'not set' */
 	for (Price i = PR_BEGIN; i < PR_END; i++) {

@@ -66,6 +66,23 @@
 			If the OpenTTD version does not support this property/feature, then the property would ordinarily be ignored/skipped and no recolouring would be done.
 		</td>
 	</tr>
+	<tr><td>extra_aspects</td><td>0 - 6</td>
+		<td>
+			The value is the number of additional signal aspects to use (e.g. 4-aspect signalling should use a value of 2).<br />
+			When set, the lowest byte of <span class="code">extra_callback_info2</span> (signal state) may have the given number of additional values starting from 02:
+			<table>
+			<tr><th>Value</th><th>Meaning</th></tr>
+			<tr><td>00</td><td>Red signal</td></tr>
+			<tr><td>01</td><td>Green signal</td></tr>
+			<tr><td>02</td><td>1st extra aspect (e.g. yellow)</td></tr>
+			<tr><td>03</td><td>2nd extra aspect (e.g. double yellow)</td></tr>
+			<tr><td>...</td><td>Further extra aspects...</td></tr>
+			</table>
+			<br />
+			The provided value is currently clamped to be within the range 0 - 6 (inclusive).<br />
+			N.B. Realistic braking must be enabled for additional signal aspects to be used
+		</td>
+	</tr>
 	<tr><td>disable_realistic_braking</td><td>0 or 1</td>
 		<td>
 			When this property is set realistic braking is disabled for trains of this railtype even when realistic braking is otherwise in effect.
@@ -159,6 +176,23 @@
 			<tr><td>0 - 23</td><td>Recolour sprite to use. Set to 0 for no recolouring.</td></tr>
 			<tr><td>24 - 31</td><td>Reserved, set to zero.</td></tr>
 			</table>
+		</td>
+	</tr>
+	<tr><td>extra_aspects</td><td>0 - 6</td>
+		<td>
+			The value is the number of additional signal aspects to use (e.g. 4-aspect signalling should use a value of 2).<br />
+			When set, the lowest byte of <span class="code">extra_callback_info2</span> (signal state) may have the given number of additional values starting from 02:
+			<table>
+			<tr><th>Value</th><th>Meaning</th></tr>
+			<tr><td>00</td><td>Red signal</td></tr>
+			<tr><td>01</td><td>Green signal</td></tr>
+			<tr><td>02</td><td>1st extra aspect (e.g. yellow)</td></tr>
+			<tr><td>03</td><td>2nd extra aspect (e.g. double yellow)</td></tr>
+			<tr><td>...</td><td>Further extra aspects...</td></tr>
+			</table>
+			<br />
+			The provided value is currently clamped to be within the range 0 - 6 (inclusive).<br />
+			N.B. Realistic braking must be enabled for additional signal aspects to be used
 		</td>
 	</tr>
 	</table>

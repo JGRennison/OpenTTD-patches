@@ -909,6 +909,20 @@ class NIHRailType : public NIHelper {
 		if (secondary != INVALID_RAILTYPE) {
 			writeRailType(secondary);
 		}
+
+		if (IsTileType(index, MP_RAILWAY) && HasSignals(index)) {
+			print("Signals:");
+			for (Trackdir td = TRACKDIR_BEGIN; td < TRACKDIR_END; td = (Trackdir)(td + 1)) {
+				if (!IsValidTrackdir(td)) continue;
+				if (HasTrack(index, TrackdirToTrack(td)) && HasSignalOnTrackdir(index, td)) {
+					char *b = buffer;
+					const SignalState state = GetSignalStateByTrackdir(index, td);
+					b += seprintf(b, lastof(buffer), "  trackdir: %d, state: %d", td, state);
+					if (_extra_aspects > 0 && state == SIGNAL_STATE_GREEN) seprintf(b, lastof(buffer), ", aspect: %d", GetSignalAspect(index, TrackdirToTrack(td)));
+					print(buffer);
+				}
+			}
+		}
 	}
 };
 

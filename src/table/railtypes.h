@@ -83,6 +83,9 @@ static const RailtypeInfo _original_railtypes[] = {
 		/* control flags */
 		0,
 
+		/* signal extra aspects */
+		0,
+
 		/* cost multiplier */
 		8,
 
@@ -190,6 +193,9 @@ static const RailtypeInfo _original_railtypes[] = {
 		/* control flags */
 		0,
 
+		/* signal extra aspects */
+		0,
+
 		/* cost multiplier */
 		12,
 
@@ -293,6 +299,9 @@ static const RailtypeInfo _original_railtypes[] = {
 		/* control flags */
 		0,
 
+		/* signal extra aspects */
+		0,
+
 		/* cost multiplier */
 		16,
 
@@ -394,6 +403,9 @@ static const RailtypeInfo _original_railtypes[] = {
 		RTFB_NONE,
 
 		/* control flags */
+		0,
+
+		/* signal extra aspects */
 		0,
 
 		/* cost multiplier */

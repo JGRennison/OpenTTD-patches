@@ -70,7 +70,7 @@ void ResetRailTypes()
 		{0,0,0,0,0,0,0,0,{}},
 		{0,0,0,0,0,0,0,0},
 		{0,0,0,0,0,0},
-		0, RAILTYPES_NONE, RAILTYPES_NONE, RAILTYPES_NONE, 0, 0, 0, RTFB_NONE, 0, 0, 0, 0, 0, 0,
+		0, RAILTYPES_NONE, RAILTYPES_NONE, RAILTYPES_NONE, 0, 0, 0, RTFB_NONE, 0, 0, 0, 0, 0, 0, 0,
 		RailTypeLabelList(), 0, 0, RAILTYPES_NONE, RAILTYPES_NONE, 0,
 		{}, {} };
 	for (; i < lengthof(_railtypes);          i++) _railtypes[i] = empty_railtype;
@@ -113,8 +113,8 @@ void ResolveRailTypeGUISprites(RailtypeInfo *rti)
 
 	for (SignalType type = SIGTYPE_NORMAL; type < SIGTYPE_END; type = (SignalType)(type + 1)) {
 		for (SignalVariant var = SIG_ELECTRIC; var <= SIG_SEMAPHORE; var = (SignalVariant)(var + 1)) {
-			PalSpriteID red   = GetCustomSignalSprite(rti, INVALID_TILE, type, var, SIGNAL_STATE_RED, true).sprite;
-			PalSpriteID green = GetCustomSignalSprite(rti, INVALID_TILE, type, var, SIGNAL_STATE_GREEN, true).sprite;
+			PalSpriteID red   = GetCustomSignalSprite(rti, INVALID_TILE, type, var, 0, true).sprite;
+			PalSpriteID green = GetCustomSignalSprite(rti, INVALID_TILE, type, var, 255, true).sprite;
 			if (red.sprite != 0) {
 				rti->gui_sprites.signals[type][var][0] = { red.sprite + SIGNAL_TO_SOUTH, red.pal };
 			} else {
@@ -1392,6 +1392,10 @@ static void SetupBridgeTunnelSignalSimulation(TileIndex entrance, TileIndex exit
 	SetTunnelBridgeSignalSimulationEntrance(entrance);
 	SetTunnelBridgeEntranceSignalState(entrance, SIGNAL_STATE_GREEN);
 	SetTunnelBridgeSignalSimulationExit(exit);
+	if (_extra_aspects > 0) {
+		SetTunnelBridgeEntranceSignalAspect(entrance, 0);
+		UpdateAspectDeferred(entrance, GetTunnelBridgeEntranceTrackdir(entrance));
+	}
 }
 
 static void ReReserveTrainPath(Train *v)
@@ -1504,6 +1508,10 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			SetTunnelBridgeSignalSimulationEntrance(t);
 			SetTunnelBridgeEntranceSignalState(t, SIGNAL_STATE_GREEN);
 			SetTunnelBridgeSignalSimulationExit(t);
+			if (_extra_aspects > 0) {
+				SetTunnelBridgeEntranceSignalAspect(t, 0);
+				UpdateAspectDeferred(t, GetTunnelBridgeEntranceTrackdir(t));
+			}
 		};
 
 		if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
@@ -2673,12 +2681,27 @@ static const int SIGNAL_DIRTY_RIGHT  = 14 * ZOOM_LVL_BASE;
 static const int SIGNAL_DIRTY_TOP    = 30 * ZOOM_LVL_BASE;
 static const int SIGNAL_DIRTY_BOTTOM =  5 * ZOOM_LVL_BASE;
 
-void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, SignalState condition, SignalOffsets image, uint pos, SignalType type, SignalVariant variant, bool show_restricted)
+void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, SignalState condition, SignalOffsets image, uint pos, SignalType type,
+		SignalVariant variant, bool show_restricted, bool exit_signal = false)
 {
 	uint x, y;
 	GetSignalXY(tile, pos, x, y);
 
-	const CustomSignalSpriteResult result = GetCustomSignalSprite(rti, tile, type, variant, condition, false, show_restricted);
+	uint8 aspect;
+	if (condition == SIGNAL_STATE_GREEN) {
+		aspect = 1;
+		if (_extra_aspects > 0) {
+			if (IsPlainRailTile(tile)) {
+				aspect = GetSignalAspect(tile, track);
+			} else if (IsTunnelBridgeWithSignalSimulation(tile)) {
+				aspect = exit_signal? GetTunnelBridgeExitSignalAspect(tile) : GetTunnelBridgeEntranceSignalAspect(tile);
+			}
+		}
+	} else {
+		aspect = 0;
+	}
+
+	const CustomSignalSpriteResult result = GetCustomSignalSprite(rti, tile, type, variant, aspect, false, show_restricted);
 	SpriteID sprite = result.sprite.sprite;
 	PaletteID pal = PAL_NONE;
 	bool is_custom_sprite = (sprite != 0);

@@ -225,6 +225,11 @@ public:
 	byte ctrl_flags;
 
 	/**
+	 * Signal extra aspects
+	 */
+	uint8 signal_extra_aspects;
+
+	/**
 	 * Cost multiplier for building this rail type
 	 */
 	uint16 cost_multiplier;

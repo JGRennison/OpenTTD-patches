@@ -85,6 +85,10 @@ bool TryReserveRailTrackdir(TileIndex tile, Trackdir td, bool trigger_stations)
 	if (success && HasPbsSignalOnTrackdir(tile, td)) {
 		SetSignalStateByTrackdir(tile, td, SIGNAL_STATE_GREEN);
 		MarkSingleSignalDirty(tile, td);
+		if (_extra_aspects > 0) {
+			SetSignalAspect(tile, TrackdirToTrack(td), 0);
+			UpdateAspectDeferred(tile, td);
+		}
 	}
 	return success;
 }
@@ -240,6 +244,7 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 				if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgeEffectivelyPBS(tile) && IsTrackAcrossTunnelBridge(tile, t)) {
 					if (IsTunnelBridgePBS(tile)) {
 						SetTunnelBridgeExitSignalState(tile, SIGNAL_STATE_RED);
+						if (_extra_aspects > 0) PropagateAspectChange(tile, GetTunnelBridgeExitTrackdir(tile), 0);
 					} else {
 						UpdateSignalsOnSegment(tile, INVALID_DIAGDIR, GetTileOwner(tile));
 					}

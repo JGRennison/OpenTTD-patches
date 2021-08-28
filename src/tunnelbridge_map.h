@@ -506,6 +506,30 @@ static inline void SetTunnelBridgePBS(TileIndex t, bool is_pbs)
 	SB(_me[t].m6, 6, 1, is_pbs ? 1 : 0);
 }
 
+static inline uint8 GetTunnelBridgeEntranceSignalAspect(TileIndex t)
+{
+	assert_tile(IsTunnelBridgeWithSignalSimulation(t), t);
+	return GB(_m[t].m3, 0, 3);
+}
+
+static inline void SetTunnelBridgeEntranceSignalAspect(TileIndex t, uint8 aspect)
+{
+	assert_tile(IsTunnelBridgeWithSignalSimulation(t), t);
+	SB(_m[t].m3, 0, 3, aspect);
+}
+
+static inline uint8 GetTunnelBridgeExitSignalAspect(TileIndex t)
+{
+	assert_tile(IsTunnelBridgeWithSignalSimulation(t), t);
+	return GB(_m[t].m3, 3, 3);
+}
+
+static inline void SetTunnelBridgeExitSignalAspect(TileIndex t, uint8 aspect)
+{
+	assert_tile(IsTunnelBridgeWithSignalSimulation(t), t);
+	SB(_m[t].m3, 3, 3, aspect);
+}
+
 static inline Trackdir GetTunnelBridgeExitTrackdir(TileIndex t, DiagDirection tunnel_bridge_dir)
 {
 	return TrackEnterdirToTrackdir((Track)FIND_FIRST_BIT(GetAcrossTunnelBridgeTrackBits(t)), ReverseDiagDir(tunnel_bridge_dir));

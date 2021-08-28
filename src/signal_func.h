@@ -19,6 +19,8 @@
 #include "settings_type.h"
 #include "vehicle_type.h"
 
+extern uint8 _extra_aspects;
+
 /**
  * Maps a trackdir to the bit that stores its status in the map arrays, in the
  * direction along with the trackdir.
@@ -83,6 +85,12 @@ static inline bool IsPbsSignalNonExtended(SignalType type)
 static inline bool IsProgrammableSignal(SignalType type)
 {
 	return type == SIGTYPE_PROG;
+}
+
+/** One-way signals can't be passed the 'wrong' way. */
+static inline bool IsOnewaySignal(SignalType type)
+{
+	return type != SIGTYPE_PBS;
 }
 
 /// Is this signal type unsuitable for realistic braking?
@@ -153,5 +161,17 @@ void AddTrackToSignalBuffer(TileIndex tile, Track track, Owner owner);
 void AddSideToSignalBuffer(TileIndex tile, DiagDirection side, Owner owner);
 void UpdateSignalsInBuffer();
 void UpdateSignalsInBufferIfOwnerNotAddable(Owner owner);
+uint8 GetForwardAspectFollowingTrack(TileIndex tile, Trackdir trackdir);
+uint8 GetSignalAspectGeneric(TileIndex tile, Trackdir trackdir);
+void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8 aspect);
+void UpdateAspectDeferred(TileIndex tile, Trackdir trackdir);
+void FlushDeferredAspectUpdates();
+void UpdateAllSignalAspects();
+void UpdateExtraAspectsVariable();
+
+inline uint8 GetForwardAspectFollowingTrackAndIncrement(TileIndex tile, Trackdir trackdir)
+{
+	return std::min<uint8>(GetForwardAspectFollowingTrack(tile, trackdir) + 1, _extra_aspects + 1);
+}
 
 #endif /* SIGNAL_FUNC_H */

@@ -29,6 +29,7 @@
 #include "scope_info.h"
 #include "core/random_func.hpp"
 #include "settings_func.h"
+#include "signal_func.h"
 #include <array>
 
 #include "table/strings.h"
@@ -1087,6 +1088,7 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, 
 		/* It could happen we removed rail, thus gained money, and deleted something else.
 		 * So make sure the signal buffer is empty even in this case */
 		UpdateSignalsInBuffer();
+		if (_extra_aspects > 0) FlushDeferredAspectUpdates();
 		SetDParam(0, _additional_cash_required);
 		return_dcpi(CommandCost(STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY));
 	}
@@ -1101,6 +1103,7 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, 
 
 	/* update signals if needed */
 	UpdateSignalsInBuffer();
+	if (_extra_aspects > 0) FlushDeferredAspectUpdates();
 
 	return_dcpi(res2);
 }

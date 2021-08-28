@@ -2903,6 +2903,9 @@ void ReverseTrainDirection(Train *v)
 	if (IsTunnelBridgeWithSignalSimulation(v->tile) && IsTunnelBridgeSignalSimulationEntrance(v->tile)) {
 		/* Flip signal on tunnel entrance tile red. */
 		SetTunnelBridgeEntranceSignalState(v->tile, SIGNAL_STATE_RED);
+		if (_extra_aspects > 0) {
+			PropagateAspectChange(v->tile, GetTunnelBridgeEntranceTrackdir(v->tile), 0);
+		}
 		MarkTileDirtyByTile(v->tile, VMDF_NOT_MAP_MODE);
 		update_check_tunnel_bridge_signal_counters(v);
 		ClrBit(v->flags, VRF_TRAIN_STUCK);
@@ -3346,11 +3349,46 @@ static int GetAndClearLastBridgeEntranceSetSignalIndex(TileIndex bridge_entrance
 	return 0;
 }
 
+static void UpdateTunnelBridgeEntranceSignalAspect(TileIndex tile)
+{
+	Trackdir trackdir = GetTunnelBridgeEntranceTrackdir(tile);
+	uint8 aspect = GetForwardAspectFollowingTrackAndIncrement(tile, trackdir);
+	uint8 old_aspect = GetTunnelBridgeEntranceSignalAspect(tile);
+	if (aspect != old_aspect) {
+		SetTunnelBridgeEntranceSignalAspect(tile, aspect);
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+		PropagateAspectChange(tile, trackdir, aspect);
+	}
+}
+
 static void SetTunnelBridgeEntranceSignalGreen(TileIndex tile)
 {
 	if (GetTunnelBridgeEntranceSignalState(tile) == SIGNAL_STATE_RED) {
 		SetTunnelBridgeEntranceSignalState(tile, SIGNAL_STATE_GREEN);
 		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+		if (_extra_aspects > 0) {
+			SetTunnelBridgeEntranceSignalAspect(tile, 0);
+			UpdateAspectDeferred(tile, GetTunnelBridgeEntranceTrackdir(tile));
+		}
+	} else if (_extra_aspects > 0) {
+		UpdateTunnelBridgeEntranceSignalAspect(tile);
+	}
+}
+
+static void UpdateEntranceAspectFromMiddleSignalChange(TileIndex entrance, int signal_number)
+{
+	if (signal_number < _extra_aspects && GetTunnelBridgeEntranceSignalState(entrance) == SIGNAL_STATE_GREEN) {
+		UpdateTunnelBridgeEntranceSignalAspect(entrance);
+	}
+}
+
+static void UpdateAspectFromBridgeMiddleSignalChange(TileIndex entrance, TileIndexDiff diff, int signal_number)
+{
+	UpdateEntranceAspectFromMiddleSignalChange(entrance, signal_number);
+	if (signal_number > 0) {
+		for (int i = std::max<int>(0, signal_number - _extra_aspects); i < signal_number; i++) {
+			MarkTileDirtyByTile(entrance + (diff * (i + 1)), VMDF_NOT_MAP_MODE);
+		}
 	}
 }
 
@@ -3360,8 +3398,10 @@ static void HandleLastTunnelBridgeSignals(TileIndex tile, TileIndex end, DiagDir
 		/* Clearing last bridge signal. */
 		int signal_offset = GetAndClearLastBridgeEntranceSetSignalIndex(end);
 		if (signal_offset) {
-			TileIndex last_signal_tile = end + (TileOffsByDiagDir(dir) * GetTunnelBridgeSignalSimulationSpacing(tile) * signal_offset);
+			TileIndexDiff diff = TileOffsByDiagDir(dir) * GetTunnelBridgeSignalSimulationSpacing(tile);
+			TileIndex last_signal_tile = end + (diff * signal_offset);
 			MarkTileDirtyByTile(last_signal_tile, VMDF_NOT_MAP_MODE);
+			if (_extra_aspects > 0) UpdateAspectFromBridgeMiddleSignalChange(end, diff, signal_offset - 1);
 		}
 		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 	}
@@ -3380,6 +3420,9 @@ static void HandleLastTunnelBridgeSignals(TileIndex tile, TileIndex end, DiagDir
 
 		if (IsTunnelBridgeSignalSimulationEntrance(end)) SetTunnelBridgeEntranceSignalGreen(end);
 		if (IsTunnelBridgeSignalSimulationEntrance(tile)) SetTunnelBridgeEntranceSignalGreen(tile);
+	} else if (IsTunnel(end) && _extra_aspects > 0) {
+		uint signal_count = GetTunnelBridgeLength(tile, end) / GetTunnelBridgeSignalSimulationSpacing(end);
+		if (signal_count > 0) UpdateEntranceAspectFromMiddleSignalChange(end, signal_count - 1);
 	}
 }
 
@@ -3389,6 +3432,7 @@ static void UnreserveBridgeTunnelTile(TileIndex tile)
 	if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgeEffectivelyPBS(tile)) {
 		if (IsTunnelBridgePBS(tile)) {
 			SetTunnelBridgeExitSignalState(tile, SIGNAL_STATE_RED);
+			if (_extra_aspects > 0) PropagateAspectChange(tile, GetTunnelBridgeExitTrackdir(tile), 0);
 		} else {
 			UpdateSignalsOnSegment(tile, INVALID_DIAGDIR, GetTileOwner(tile));
 		}
@@ -3985,6 +4029,10 @@ static void TryLongReserveChooseTrainTrack(Train *v, TileIndex tile, Trackdir td
 					SetTunnelReservation(exit_tile, true);
 				}
 				SetTunnelBridgeExitSignalState(exit_tile, SIGNAL_STATE_GREEN);
+				if (_extra_aspects > 0) {
+					SetTunnelBridgeExitSignalAspect(exit_tile, 0);
+					UpdateAspectDeferred(exit_tile, GetTunnelBridgeExitTrackdir(exit_tile));
+				}
 
 				ChooseTrainTrack(v, ft.m_new_tile, ft.m_exitdir, TrackdirBitsToTrackBits(ft.m_new_td_bits), CTTF_NO_LOOKAHEAD_VALIDATE | (force_res ? CTTF_FORCE_RES : CTTF_NONE), nullptr, lookahead_state);
 
@@ -4087,6 +4135,10 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 			do_track_reservation = true;
 			changed_signal = TrackEnterdirToTrackdir(track, enterdir);
 			SetSignalStateByTrackdir(tile, changed_signal, SIGNAL_STATE_GREEN);
+			if (_extra_aspects > 0) {
+				SetSignalAspect(tile, track, 0);
+				UpdateAspectDeferred(tile, changed_signal);
+			}
 		} else if (!do_track_reservation) {
 			return track;
 		}
@@ -4927,6 +4979,10 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 			if (t->lookahead->reservation_end_tile == t->tile && t->lookahead->reservation_end_position - t->lookahead->current_position <= (int)TILE_SIZE && !HasBit(t->lookahead->flags, TRLF_TB_EXIT_FREE)) return false;
 			SignalState exit_state = GetTunnelBridgeExitSignalState(tile);
 			SetTunnelBridgeExitSignalState(tile, SIGNAL_STATE_GREEN);
+			if (_extra_aspects > 0) {
+				SetTunnelBridgeExitSignalAspect(tile, 0);
+				UpdateAspectDeferred(tile, GetTunnelBridgeExitTrackdir(tile));
+			}
 			TileIndex veh_orig_tile = t->tile;
 			TrackBits veh_orig_track = t->track;
 			Direction veh_orig_direction = t->direction;
@@ -4978,6 +5034,10 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 	t->direction = veh_orig_direction;
 	if (ok && IsTunnelBridgeEffectivelyPBS(tile)) {
 		SetTunnelBridgeExitSignalState(tile, SIGNAL_STATE_GREEN);
+		if (_extra_aspects > 0) {
+			SetTunnelBridgeExitSignalAspect(tile, 0);
+			UpdateAspectDeferred(tile, GetTunnelBridgeExitTrackdir(tile));
+		}
 		mark_dirty = true;
 	}
 	return ok;
@@ -5033,6 +5093,9 @@ static void HandleSignalBehindTrain(Train *v, int signal_number)
 	} else if (IsBridge(v->tile) && signal_number >= 0) {
 		SetBridgeEntranceSimulatedSignalState(v->tile, signal_number, SIGNAL_STATE_GREEN);
 		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+		if (_extra_aspects > 0) UpdateAspectFromBridgeMiddleSignalChange(v->tile, TileOffsByDiagDir(GetTunnelBridgeDirection(v->tile)) * simulated_wormhole_signals, signal_number);
+	} else if (IsTunnel(v->tile) && signal_number >= 0 && _extra_aspects > 0) {
+		UpdateEntranceAspectFromMiddleSignalChange(v->tile, signal_number);
 	}
 }
 
@@ -5335,11 +5398,17 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						}
 						/* Flip signal on tunnel entrance tile red. */
 						SetTunnelBridgeEntranceSignalState(gp.new_tile, SIGNAL_STATE_RED);
+						if (_extra_aspects > 0) {
+							PropagateAspectChange(gp.new_tile, GetTunnelBridgeEntranceTrackdir(gp.new_tile), 0);
+						}
 						MarkTileDirtyByTile(gp.new_tile, VMDF_NOT_MAP_MODE);
 						if (IsTunnelBridgeSignalSimulationBidirectional(gp.new_tile)) {
 							/* Set incoming signal in other direction to red as well */
 							TileIndex other_end = GetOtherTunnelBridgeEnd(gp.new_tile);
 							SetTunnelBridgeEntranceSignalState(other_end, SIGNAL_STATE_RED);
+							if (_extra_aspects > 0) {
+								PropagateAspectChange(other_end, GetTunnelBridgeEntranceTrackdir(other_end), 0);
+							}
 							MarkTileDirtyByTile(other_end, VMDF_NOT_MAP_MODE);
 						}
 					}

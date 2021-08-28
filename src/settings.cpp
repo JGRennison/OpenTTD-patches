@@ -1199,6 +1199,7 @@ static bool TrainBrakingModelChanged(int32 p1)
 		}
 	}
 
+	UpdateExtraAspectsVariable();
 	UpdateAllBlockSignals();
 
 	InvalidateWindowData(WC_BUILD_SIGNAL, 0);

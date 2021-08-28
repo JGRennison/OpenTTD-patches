@@ -3976,6 +3976,8 @@ bool AfterLoadGame()
 	extern void YapfCheckRailSignalPenalties();
 	YapfCheckRailSignalPenalties();
 
+	UpdateExtraAspectsVariable();
+
 	if (_networking && !_network_server) {
 		SlProcessVENC();
 	}
@@ -4049,6 +4051,8 @@ void ReloadNewGRFData()
 			if (secondary != INVALID_RAILTYPE) SetSecondaryRailType(t, rail_type_translate_map[secondary]);
 		}
 	}
+
+	UpdateExtraAspectsVariable();
 
 	/* Update company statistics. */
 	AfterLoadCompanyStats();
