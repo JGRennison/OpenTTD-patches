@@ -1507,6 +1507,18 @@
     <ul>
      <li>m1 bit 7: Ship docking tile status (for aqueducts)</li>
      <li>m1 bits 4..0: <a href="#OwnershipInfo">owner</a></li>
+     <li style="color: blue">m2 bits 15..0: tunnel ID (tunnel entrance/exits only)<br>
+      <table style="color: blue">
+       <tr>
+        <td align=left>0000 - FFFE</td>
+        <td>Tunnel ID value</td>
+       </tr>
+       <tr>
+        <td align=left>FFFF</td>
+        <td>Sentinel value: tunnel ID is >= FFFF, it must be looked up in a separate off-map index for tunnels with high IDs</td>
+       </tr>
+      </table>
+     </li>
      <li style="color: blue">m2 bits 7..0: custom road bridge heads (flat bridge heads only)<br>
       Road/tram bits below are XORed with the axial bridge direction road bits.<br>
       A non-custom bridge head configuration will have a value of 0.
@@ -1534,18 +1546,6 @@
        <tr>
         <td align=left>bit 3: </td>
         <td>NE piece</td>
-       </tr>
-      </table>
-     </li>
-     <li style="color: blue">m2 bits 15..0: tunnel ID (tunnel entrance/exits only)<br>
-      <table style="color: blue">
-       <tr>
-        <td align=left>0000 - FFFE</td>
-        <td>Tunnel ID value</td>
-       </tr>
-       <tr>
-        <td align=left>FFFF</td>
-        <td>Sentinel value: tunnel ID is >= FFFF, it must be looked up in a separate off-map index for tunnels with high IDs</td>
        </tr>
       </table>
      </li>
@@ -1583,6 +1583,7 @@
      </li>
      <li style="color: blue">m2 bit 3: rail bridge heads opposite track is reserved, too</li>
      <li>m3 bits 7..4: <a href="#OwnershipInfo">owner</a> of tram</li>
+     <li>m4: <a href="#RoadType">Roadtype</a></li>
      <li style="color: blue">m4 bits 5..0: rail bridge heads track layout: bit set = track present:
       <table style="color: blue">
        <tr>
@@ -1616,11 +1617,7 @@
        </tr>
       </table>
      </li>
-     <li>m5 bit 4: pbs reservation state for railway (tunnel only)</li>
      <li>m5 bit 7 clear: tunnel entrance/exit</li>
-     <li>m4: <a href="#RoadType">Roadtype</a></li>
-     <li>m5 bit 4: pbs reservation state for railway</li>
-     <li>m5 bits 7 clear: tunnel entrance/exit</li>
      <li>m5 bit 7 set: bridge ramp
       <ul>
        <li>m6 bits 5..2: <a name="BridgeType">bridge type</a>:
@@ -1736,16 +1733,17 @@
       </table>
       If signal simulation entrance or exit:
       <ul>
-       <li>m6 bit 7: set = exit signal shows green, clear = exit signal shows red</li>
-       <li>m6 bit 6: set = PBS signals, clear = block signals</li>
-       <li>m6 bit 1: set = semaphore signals, clear = light signals</li>
-       <li>m6 bit 0: set = entrance signal shows green, clear = entrance signal shows red</li>
        <li>m2 bit 15: for bridge entrances only: storage for visual red/green state of signals starting from 15 is allocated outside the map array</li>
        <li>m2 bits 14..4: for bridge entrances only: for signals 0..10 on bridge, signal is visually red if corresponding bit in 4..14 is set</li>
        <li>m3 bits 5..3: entrance signal aspect (only valid if signal is present and not red, and multi-aspect signalling is in effect)</li>
        <li>m3 bits 2..0: exit signal aspect (only valid if signal is present and not red, and multi-aspect signalling is in effect)</li>
+       <li>m6 bit 7: set = exit signal shows green, clear = exit signal shows red</li>
+       <li>m6 bit 6: set = PBS signals, clear = block signals</li>
+       <li>m6 bit 1: set = semaphore signals, clear = light signals</li>
+       <li>m6 bit 0: set = entrance signal shows green, clear = entrance signal shows red</li>
       </ul>
      </li>
+     <li>m5 bit 4: pbs reservation state for railway (tunnel only)</li>
      <li>m5 bits 3..2: transport type
       <table>
        <tr>
@@ -1787,7 +1785,6 @@
        </tr>
       </table>
      </li>
-     <li>m7 bits 4..0: <a href="#OwnershipInfo">owner</a> of road</li>
      <li style="color: blue">m7 bits 7..5: ground type, values greater than 1 are only valid for rail custom bridge heads
       <table>
        <tr>
@@ -1831,10 +1828,11 @@
        </tr>
       </table>
      </li>
+     <li>m7 bits 4..0: <a href="#OwnershipInfo">owner</a> of road</li>
      <li style="color: blue">m8 bits 14..12: <a href="#RoadCachedOneWayState">Road cached one way state</a></li>
      <li>m8 bits 11..6: <a href="#TramType">Tramtype</a></li>
+     <li style="color: blue">m8 bits 11..6: <a name="TrackType">secondary track type</a> for railway (used for bridge-bypassing track when two parallel tracks on custom bridge head)</li>
      <li>m8 bits 5..0: <a href="#TrackType">track type</a> for railway</li>
-     <li style="color: blue">m8 bits 11..6 = <a name="TrackType">secondary track type</a> for railway (used for bridge-bypassing track when two parallel tracks on custom bridge head)</li>
     </ul>
    </td>
   </tr>
