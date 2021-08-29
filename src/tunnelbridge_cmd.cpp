@@ -131,9 +131,8 @@ void MarkBridgeOrTunnelDirtyOnReservationChange(TileIndex tile, ViewportMarkDirt
 	}
 }
 
-uint GetTunnelBridgeSignalSimulationSpacing(TileIndex tile)
+uint GetTunnelBridgeSignalSimulationSpacingTarget(Owner owner)
 {
-	Owner owner = GetTileOwner(tile);
 	if (Company::IsValidID(owner)) {
 		return Company::Get(owner)->settings.simulated_wormhole_signals;
 	} else {
@@ -141,16 +140,37 @@ uint GetTunnelBridgeSignalSimulationSpacing(TileIndex tile)
 	}
 }
 
+uint GetBestTunnelBridgeSignalSimulationSpacing(Owner owner, TileIndex begin, TileIndex end)
+{
+	int target = GetTunnelBridgeSignalSimulationSpacingTarget(owner);
+	if (target <= 2) return target;
+	int length = GetTunnelBridgeLength(begin, end);
+	if (target > length || ((length + 1) % target) == 0) return target;
+
+	int lower = target - (target / 4);
+	int upper = std::min<int>(16, target + (target / 3));
+
+	int best_gap = -1;
+	int best_spacing = 0;
+	for (int i = lower; i <= upper; i++) {
+		int gap = length % i;
+		if (gap > best_gap) {
+			best_gap = gap;
+			best_spacing = i;
+		}
+	}
+	return best_spacing;
+}
+
 /**
  * Get number of signals on bridge or tunnel with signal simulation.
- * @param c     Company to use.
  * @param begin The begin of the tunnel or bridge.
  * @param end   The end of the tunnel or bridge.
  * @pre IsTunnelBridgeWithSignalSimulation(begin)
  */
-uint GetTunnelBridgeSignalSimulationSignalCount(Company *c, TileIndex begin, TileIndex end)
+uint GetTunnelBridgeSignalSimulationSignalCount(TileIndex begin, TileIndex end)
 {
-	uint result = 2 + (GetTunnelBridgeLength(begin, end) / c->settings.simulated_wormhole_signals);
+	uint result = 2 + (GetTunnelBridgeLength(begin, end) / GetTunnelBridgeSignalSimulationSpacing(begin));
 	if (IsTunnelBridgeSignalSimulationBidirectional(begin)) result *= 2;
 	return result;
 }
@@ -1254,7 +1274,7 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 				Company *c = Company::Get(owner);
 				c->infrastructure.rail[GetRailType(tile)] -= len * TUNNELBRIDGE_TRACKBIT_FACTOR;
 				if (IsTunnelBridgeWithSignalSimulation(tile)) { // handle tunnel/bridge signals.
-					c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(c, tile, endtile);
+					c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, endtile);
 				}
 				DirtyCompanyInfrastructureWindows(owner);
 			}
@@ -2730,9 +2750,9 @@ static void UpdateRailTunnelBridgeInfrastructure(Company *c, TileIndex begin, Ti
 
 		if (IsTunnelBridgeWithSignalSimulation(begin)) {
 			if (add) {
-				c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(c, begin, end);
+				c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(begin, end);
 			} else {
-				c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(c, begin, end);
+				c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(begin, end);
 			}
 		}
 	}

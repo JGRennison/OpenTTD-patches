@@ -292,7 +292,7 @@ the array so you can quickly see what is used and what is not.
       <td class="bits"><span class="used" title="Bridge or tunnel bit">O</span><span class="patch" title="Signal simulation mode (rail only)">PP</span><span class="rearrange" title="PBS reservation (rail; a rearrangement can free some of these bits)">X</span> <span class="used" title="Transport type">XX</span> <span class="used" title="Direction of the tunnel/bridge">XX</span></td>
       <td class="bits"><span class="patch" title="PBS mode, exit signal state">PP</span><span class="free">OO OO</span><span class="patch" title="Semaphore/light mode, entrance signal state">PP</span></td>
       <td class="bits" rowspan=4><span class="patch" title="Snow/desert present or rail custom bridge head ground type">PPP</span><span class="rearrange" title="Owner of road (road only; a rearrangement can free some of these bits)">X XXXX</span></td>
-      <td class="bits"><span class="free">O</span><span class="patch" title="Road cached one way state">PPP</span> <span class="used" title="Tram type">XXXX XX</span><span class="rearrange" title="Railway type (rail only; a rearrangement can free some of these bits)">XX XXXX</span></td>
+      <td class="bits"><span class="patch" title="Road cached one way state (road only) or signal simulation spacing (rail only)">PPPP</span> <span class="used" title="Tram type">XXXX XX</span><span class="rearrange" title="Railway type (rail only; a rearrangement can free some of these bits)">XX XXXX</span></td>
     </tr>
     <tr>
       <td>bridge ramp - rail</td>
@@ -300,7 +300,7 @@ the array so you can quickly see what is used and what is not.
       <td class="bits"><span class="free">OO</span><span class="patch" title="Track pieces">PP PPPP</span></td>
       <td class="bits"><span class="used" title="Bridge or tunnel bit">1</span><span class="patch" title="Signal simulation mode">PP</span><span class="free">O</span> <span class="used" title="Transport type">00</span> <span class="used" title="Direction of the tunnel/bridge">XX</span></td>
       <td class="bits"><span class="patch" title="PBS mode, exit signal state">PP</span><span class="used" title="Bridge type: wooden, steel,...">XX XX</span><span class="patch" title="Semaphore/light mode, entrance signal state">PP</span></td>
-      <td class="bits"><span class="free">OOOO</span> <span class="patch" title="Secondary railway type (used for bridge-bypassing track when two parallel tracks on custom bridge head)">PPPP PP</span><span class="rearrange" title="Railway type (a rearrangement can free some of these bits)">XX XXXX</span></td>
+      <td class="bits"><span class="patch" title="Signal simulation spacing">PPPP</span> <span class="patch" title="Secondary railway type (used for bridge-bypassing track when two parallel tracks on custom bridge head)">PPPP PP</span><span class="rearrange" title="Railway type (a rearrangement can free some of these bits)">XX XXXX</span></td>
     </tr>
     <tr>
       <td>bridge ramp - road</td>

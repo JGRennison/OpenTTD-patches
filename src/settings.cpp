@@ -1482,14 +1482,6 @@ static bool InvalidateCompanyWindow(int32 p1)
 	return true;
 }
 
-static bool SimulatedWormholeSignalsChanged(int32 p1)
-{
-	extern void AfterLoadCompanyStats();
-	AfterLoadCompanyStats();
-	MarkWholeScreenDirty();
-	return true;
-}
-
 static bool EnableSingleVehSharedOrderGuiChanged(int32)
 {
 	for (VehicleType type = VEH_BEGIN; type < VEH_COMPANY_END; type++) {

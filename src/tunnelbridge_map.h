@@ -530,6 +530,18 @@ static inline void SetTunnelBridgeExitSignalAspect(TileIndex t, uint8 aspect)
 	SB(_m[t].m3, 3, 3, aspect);
 }
 
+static inline uint GetTunnelBridgeSignalSimulationSpacing(TileIndex t)
+{
+	assert_tile(IsRailTunnelBridgeTile(t), t);
+	return 1 + GB(_me[t].m8, 12, 4);
+}
+
+static inline void SetTunnelBridgeSignalSimulationSpacing(TileIndex t, uint spacing)
+{
+	assert_tile(IsRailTunnelBridgeTile(t), t);
+	SB(_me[t].m8, 12, 4, spacing - 1);
+}
+
 static inline Trackdir GetTunnelBridgeExitTrackdir(TileIndex t, DiagDirection tunnel_bridge_dir)
 {
 	return TrackEnterdirToTrackdir((Track)FIND_FIRST_BIT(GetAcrossTunnelBridgeTrackBits(t)), ReverseDiagDir(tunnel_bridge_dir));

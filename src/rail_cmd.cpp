@@ -1527,8 +1527,11 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			Company * const c = Company::Get(GetTileOwner(tile));
 			std::vector<Train *> re_reserve_trains;
 			if (IsTunnelBridgeWithSignalSimulation(tile)) {
-				c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(c, tile, tile_exit);
+				c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, tile_exit);
 			} else {
+				uint spacing = GetBestTunnelBridgeSignalSimulationSpacing(GetTileOwner(tile), tile, tile_exit);
+				SetTunnelBridgeSignalSimulationSpacing(tile, spacing);
+				SetTunnelBridgeSignalSimulationSpacing(tile_exit, spacing);
 				for (TileIndex t : { tile, tile_exit }) {
 					if (HasAcrossTunnelBridgeReservation(t)) {
 						Train *re_reserve_train = GetTrainForReservation(t, FindFirstTrack(GetAcrossTunnelBridgeReservationTrackBits(t)));
@@ -1602,7 +1605,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			AddSideToSignalBuffer(tile_exit, INVALID_DIAGDIR, GetTileOwner(tile));
 			YapfNotifyTrackLayoutChange(tile, track);
 			YapfNotifyTrackLayoutChange(tile_exit, track);
-			if (IsTunnelBridgeWithSignalSimulation(tile)) c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(c, tile, tile_exit);
+			if (IsTunnelBridgeWithSignalSimulation(tile)) c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(tile, tile_exit);
 			DirtyCompanyInfrastructureWindows(GetTileOwner(tile));
 			for (Train *re_reserve_train : re_reserve_trains) {
 				ReReserveTrainPath(re_reserve_train);
@@ -2095,7 +2098,7 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 		}
 		if (flags & DC_EXEC) {
 			Company *c = Company::Get(GetTileOwner(tile));
-			c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(c, tile, end);
+			c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, end);
 			ClearBridgeTunnelSignalSimulation(end, tile);
 			ClearBridgeTunnelSignalSimulation(tile, end);
 			MarkBridgeOrTunnelDirty(tile);

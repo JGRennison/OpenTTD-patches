@@ -29,6 +29,7 @@
 #include "../station_base.h"
 #include "../waypoint_base.h"
 #include "../roadstop_base.h"
+#include "../tunnelbridge.h"
 #include "../tunnelbridge_map.h"
 #include "../pathfinder/yapf/yapf_cache.h"
 #include "../elrail_func.h"
@@ -3636,6 +3637,22 @@ bool AfterLoadGame()
 		for (Company *c : Company::Iterate()) {
 			c->settings.simulated_wormhole_signals = _settings_game.construction.old_simulated_wormhole_signals;
 		}
+	}
+	if (SlXvIsFeaturePresent(XSLFI_SIG_TUNNEL_BRIDGE, 1, 8)) {
+		/* spacing made per tunnel/bridge */
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTileType(t, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL && IsTunnelBridgeWithSignalSimulation(t)) {
+				DiagDirection dir = GetTunnelBridgeDirection(t);
+				if (dir == DIAGDIR_NE || dir == DIAGDIR_SE) {
+					TileIndex other = GetOtherTunnelBridgeEnd(t);
+					uint spacing = GetBestTunnelBridgeSignalSimulationSpacing(GetTileOwner(t), t, other);
+					SetTunnelBridgeSignalSimulationSpacing(t, spacing);
+					SetTunnelBridgeSignalSimulationSpacing(other, spacing);
+				}
+			}
+		}
+		/* force aspect re-calculation */
+		_extra_aspects = 0;
 	}
 
 	if (SlXvIsFeatureMissing(XSLFI_CUSTOM_BRIDGE_HEADS)) {
