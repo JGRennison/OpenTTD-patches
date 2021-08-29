@@ -1789,12 +1789,11 @@ void ViewportAddVehiclesIntl(DrawPixelInfo *dpi)
 							ur >= v->coord.left &&
 							ub >= v->coord.top) {
 						Vehicle *v_mutable = const_cast<Vehicle *>(v);
-						Direction current_direction = v_mutable->GetMapImageDirection();
 						switch (v->type) {
-							case VEH_TRAIN:       Train::From(v_mutable)->UpdateImageState(current_direction, v_mutable->sprite_seq); break;
-							case VEH_ROAD:  RoadVehicle::From(v_mutable)->UpdateImageState(current_direction, v_mutable->sprite_seq); break;
-							case VEH_SHIP:         Ship::From(v_mutable)->UpdateImageState(current_direction, v_mutable->sprite_seq); break;
-							case VEH_AIRCRAFT: Aircraft::From(v_mutable)->UpdateImageState(current_direction, v_mutable->sprite_seq); break;
+							case VEH_TRAIN:       Train::From(v_mutable)->UpdateImageStateUsingMapDirection(v_mutable->sprite_seq); break;
+							case VEH_ROAD:  RoadVehicle::From(v_mutable)->UpdateImageStateUsingMapDirection(v_mutable->sprite_seq); break;
+							case VEH_SHIP:         Ship::From(v_mutable)->UpdateImageStateUsingMapDirection(v_mutable->sprite_seq); break;
+							case VEH_AIRCRAFT: Aircraft::From(v_mutable)->UpdateImageStateUsingMapDirection(v_mutable->sprite_seq); break;
 							default: break;
 						}
 						v_mutable->UpdateSpriteSeqBound();

@@ -1385,6 +1385,11 @@ public:
 		_sprite_group_resolve_check_veh_check = false;
 	}
 
+	inline void UpdateImageStateUsingMapDirection(VehicleSpriteSeq &seq)
+	{
+		this->UpdateImageState(this->GetMapImageDirection(), seq);
+	}
+
 private:
 	inline void UpdateViewportNormalViewportMode(bool force_update, Point pt)
 	{
