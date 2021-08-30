@@ -383,6 +383,9 @@ public:
 					if (!is_reserve_through) {
 						n.m_last_non_reserve_through_signal_tile = tile;
 						n.m_last_non_reserve_through_signal_td = trackdir;
+						if (n.flags_u.flags_s.m_reverse_pending) {
+							n.m_segment->m_end_segment_reason |= ESRB_SAFE_TILE;
+						}
 					}
 
 					n.m_num_signals_passed++;
@@ -414,6 +417,9 @@ public:
 			/* Exiting a PBS signalled tunnel/bridge, record the last non-reserve through signal */
 			n.m_last_non_reserve_through_signal_tile = tile;
 			n.m_last_non_reserve_through_signal_td = trackdir;
+		}
+		if (n.flags_u.flags_s.m_reverse_pending && IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationEntrance(tile)) {
+			n.m_segment->m_end_segment_reason |= ESRB_SAFE_TILE;
 		}
 		return cost;
 	}
@@ -807,7 +813,8 @@ no_entry_cost: // jump here at the beginning if the node has no parent (it is th
 	{
 		return !m_disable_cache
 			&& (n.m_parent != nullptr)
-			&& (n.m_parent->m_num_signals_passed >= m_sig_look_ahead_costs.size());
+			&& (n.m_parent->m_num_signals_passed >= m_sig_look_ahead_costs.size())
+			&& !n.flags_u.flags_s.m_reverse_pending;
 	}
 
 	inline void ConnectNodeToCachedData(Node &n, CachedData &ci)
