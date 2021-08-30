@@ -27,6 +27,7 @@
 #include "safeguards.h"
 
 uint8 _extra_aspects = 0;
+bool _signal_sprite_oversized = false;
 
 /// List of signals dependent upon this one
 typedef std::vector<SignalReference>     SignalDependencyList;
@@ -1244,10 +1245,11 @@ static void RefreshBridgeOnExitAspectChange(TileIndex entrance, TileIndex exit)
 	const TileIndexDiffC offset = TileIndexDiffCByDiagDir(GetTunnelBridgeDirection(entrance));
 	const TileIndexDiff diff = TileDiffXY(offset.x * simulated_wormhole_signals, offset.y * simulated_wormhole_signals);
 	const uint signal_count = bridge_length / simulated_wormhole_signals;
+	if (signal_count == 0) return;
 	TileIndex tile = entrance + ((int)signal_count * diff);
 	const uint redraw_count = std::min<uint>(_extra_aspects, signal_count);
 	for (uint i = 0; i < redraw_count; i++) {
-		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+		MarkSingleBridgeSignalDirty(tile, entrance);
 		tile -= diff;
 	}
 }

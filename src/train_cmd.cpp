@@ -3396,7 +3396,7 @@ static void UpdateAspectFromBridgeMiddleSignalChange(TileIndex entrance, TileInd
 	UpdateEntranceAspectFromMiddleSignalChange(entrance, signal_number);
 	if (signal_number > 0) {
 		for (int i = std::max<int>(0, signal_number - _extra_aspects); i < signal_number; i++) {
-			MarkTileDirtyByTile(entrance + (diff * (i + 1)), VMDF_NOT_MAP_MODE);
+			MarkSingleBridgeSignalDirty(entrance + (diff * (i + 1)), entrance);
 		}
 	}
 }
@@ -3409,7 +3409,7 @@ static void HandleLastTunnelBridgeSignals(TileIndex tile, TileIndex end, DiagDir
 		if (signal_offset) {
 			TileIndexDiff diff = TileOffsByDiagDir(dir) * GetTunnelBridgeSignalSimulationSpacing(tile);
 			TileIndex last_signal_tile = end + (diff * signal_offset);
-			MarkTileDirtyByTile(last_signal_tile, VMDF_NOT_MAP_MODE);
+			MarkSingleBridgeSignalDirty(last_signal_tile, end);
 			if (_extra_aspects > 0) UpdateAspectFromBridgeMiddleSignalChange(end, diff, signal_offset - 1);
 		}
 		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
@@ -5101,7 +5101,7 @@ static void HandleSignalBehindTrain(Train *v, int signal_number)
 		if (IsTunnelBridgeSignalSimulationEntrance(tile)) SetTunnelBridgeEntranceSignalGreen(tile);
 	} else if (IsBridge(v->tile) && signal_number >= 0) {
 		SetBridgeEntranceSimulatedSignalState(v->tile, signal_number, SIGNAL_STATE_GREEN);
-		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+		MarkSingleBridgeSignalDirty(tile, v->tile);
 		if (_extra_aspects > 0) UpdateAspectFromBridgeMiddleSignalChange(v->tile, TileOffsByDiagDir(GetTunnelBridgeDirection(v->tile)) * simulated_wormhole_signals, signal_number);
 	} else if (IsTunnel(v->tile) && signal_number >= 0 && _extra_aspects > 0) {
 		UpdateEntranceAspectFromMiddleSignalChange(v->tile, signal_number);
@@ -5504,7 +5504,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						/* flip signal in front to red on bridges*/
 						if (distance == 0 && IsBridge(v->tile)) {
 							SetBridgeEntranceSimulatedSignalState(v->tile, v->tunnel_bridge_signal_num, SIGNAL_STATE_RED);
-							MarkTileDirtyByTile(gp.new_tile, VMDF_NOT_MAP_MODE);
+							MarkSingleBridgeSignalDirty(gp.new_tile, v->tile);
 						}
 					}
 				}

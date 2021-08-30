@@ -20,6 +20,7 @@
 #include "vehicle_type.h"
 
 extern uint8 _extra_aspects;
+extern bool _signal_sprite_oversized;
 
 /**
  * Maps a trackdir to the bit that stores its status in the map arrays, in the

@@ -13,6 +13,7 @@
 #include "core/enum_type.hpp"
 #include "track_type.h"
 #include "tile_type.h"
+#include "zoom_type.h"
 
 /** Variant of the signal, i.e. how does the signal look? */
 enum SignalVariant {
@@ -62,5 +63,10 @@ enum SignalState {
 	SIGNAL_STATE_GREEN = 1, ///< The signal is green
 	SIGNAL_STATE_MAX = SIGNAL_STATE_GREEN,
 };
+
+static const int SIGNAL_DIRTY_LEFT   = 14 * ZOOM_LVL_BASE;
+static const int SIGNAL_DIRTY_RIGHT  = 14 * ZOOM_LVL_BASE;
+static const int SIGNAL_DIRTY_TOP    = 30 * ZOOM_LVL_BASE;
+static const int SIGNAL_DIRTY_BOTTOM =  5 * ZOOM_LVL_BASE;
 
 #endif /* SIGNAL_TYPE_H */

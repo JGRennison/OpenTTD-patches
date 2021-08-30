@@ -1791,6 +1791,30 @@ static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
 	}
 }
 
+static void GetBridgeSignalXY(TileIndex tile, DiagDirection bridge_direction, uint &position, uint &x, uint &y)
+{
+	bool side = (_settings_game.vehicle.road_side != 0) && _settings_game.construction.train_signal_side;
+
+	static const Point SignalPositions[2][4] = {
+		{   /*  X         X         Y         Y     Signals on the left side */
+			{11,  3}, { 4, 13}, { 3,  4}, {11, 13}
+		}, {/*  X         X         Y         Y     Signals on the right side */
+			{11, 13}, { 4,  3}, {13,  4}, { 3, 11}
+		}
+	};
+
+	switch (bridge_direction) {
+		default: NOT_REACHED();
+		case DIAGDIR_NE: position = 0; break;
+		case DIAGDIR_SE: position = 2; break;
+		case DIAGDIR_SW: position = 1; break;
+		case DIAGDIR_NW: position = 3; break;
+	}
+
+	x = TileX(tile) * TILE_SIZE + SignalPositions[side][position].x;
+	y = TileY(tile) * TILE_SIZE + SignalPositions[side][position].y;
+}
+
 /* Draws a signal on tunnel / bridge entrance tile. */
 static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_start_tile, TileIndex bridge_end_tile, uint z)
 {
@@ -1803,29 +1827,9 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 	while (bridge_signal_position <= bridge_section) {
 		bridge_signal_position += simulated_wormhole_signals;
 		if (bridge_signal_position == bridge_section) {
-			bool side = (_settings_game.vehicle.road_side != 0) && _settings_game.construction.train_signal_side;
 
-			static const Point SignalPositions[2][4] = {
-				{   /*  X         X         Y         Y     Signals on the left side */
-					{11,  3}, { 4, 13}, { 3,  4}, {11, 13}
-				}, {/*  X         X         Y         Y     Signals on the right side */
-					{11, 13}, { 4,  3}, {13,  4}, { 3, 11}
-				}
-			};
-
-			uint position;
-
-			switch (GetTunnelBridgeDirection(bridge_start_tile)) {
-				default: NOT_REACHED();
-				case DIAGDIR_NE: position = 0; break;
-				case DIAGDIR_SE: position = 2; break;
-				case DIAGDIR_SW: position = 1; break;
-				case DIAGDIR_NW: position = 3; break;
-			}
-
-			uint x = TileX(ti->tile) * TILE_SIZE + SignalPositions[side][position].x;
-			uint y = TileY(ti->tile) * TILE_SIZE + SignalPositions[side][position].y;
-			z += 5;
+			uint position, x, y;
+			GetBridgeSignalXY(ti->tile, GetTunnelBridgeDirection(bridge_start_tile), position, x, y);
 
 			SignalVariant variant = IsTunnelBridgeSemaphore(bridge_start_tile) ? SIG_SEMAPHORE : SIG_ELECTRIC;
 			SignalState state = GetBridgeEntranceSimulatedSignalState(bridge_start_tile, m2_position);
@@ -1864,11 +1868,30 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 				sprite.pal = PAL_NONE;
 			}
 
-			AddSortableSpriteToDraw(sprite.sprite, sprite.pal, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
+			AddSortableSpriteToDraw(sprite.sprite, sprite.pal, x, y, 1, 1, TILE_HEIGHT, z + 5, false, 0, 0, BB_Z_SEPARATOR);
 			break;
 		}
 		m2_position++;
 	}
+}
+
+void MarkSingleBridgeSignalDirty(TileIndex tile, TileIndex bridge_start_tile)
+{
+	if (_signal_sprite_oversized) {
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+		return;
+	}
+
+	uint position, x, y;
+	GetBridgeSignalXY(tile, GetTunnelBridgeDirection(bridge_start_tile), position, x, y);
+	Point pt = RemapCoords(x, y, GetBridgePixelHeight(bridge_start_tile) + 5 - BRIDGE_Z_START);
+	MarkAllViewportsDirty(
+			pt.x - SIGNAL_DIRTY_LEFT,
+			pt.y - SIGNAL_DIRTY_TOP,
+			pt.x + SIGNAL_DIRTY_RIGHT,
+			pt.y + SIGNAL_DIRTY_BOTTOM,
+			VMDF_NOT_MAP_MODE
+	);
 }
 
 /**

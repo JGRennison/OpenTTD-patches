@@ -2677,13 +2677,6 @@ static void GetSignalXY(TileIndex tile, uint pos, uint &x, uint &y)
 	y = TileY(tile) * TILE_SIZE + SignalPositions[side][pos].y;
 }
 
-static bool _signal_sprite_oversized = false;
-
-static const int SIGNAL_DIRTY_LEFT   = 14 * ZOOM_LVL_BASE;
-static const int SIGNAL_DIRTY_RIGHT  = 14 * ZOOM_LVL_BASE;
-static const int SIGNAL_DIRTY_TOP    = 30 * ZOOM_LVL_BASE;
-static const int SIGNAL_DIRTY_BOTTOM =  5 * ZOOM_LVL_BASE;
-
 void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, SignalState condition, SignalOffsets image, uint pos, SignalType type,
 		SignalVariant variant, bool show_restricted, bool exit_signal = false)
 {
