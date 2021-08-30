@@ -297,6 +297,7 @@ static void ShowHelp()
 static void WriteSavegameInfo(const char *name)
 {
 	extern SaveLoadVersion _sl_version;
+	extern std::string _sl_xv_version_label;
 	uint32 last_ottd_rev = 0;
 	byte ever_modified = 0;
 	bool removed_newgrfs = false;
@@ -315,6 +316,9 @@ static void WriteSavegameInfo(const char *name)
 		type = " (extended)";
 	}
 	p += seprintf(p, lastof(buf), "Savegame ver: %d%s\n", _sl_version, type);
+	if (!_sl_xv_version_label.empty()) {
+		p += seprintf(p, lastof(buf), "    Version label: %s\n", _sl_xv_version_label.c_str());
+	}
 	for (size_t i = 0; i < XSLFI_SIZE; i++) {
 		if (_sl_xv_feature_versions[i] > 0) {
 			p += seprintf(p, lastof(buf), "    Feature: %s = %d\n", SlXvGetFeatureName((SlXvFeatureIndex) i), _sl_xv_feature_versions[i]);
