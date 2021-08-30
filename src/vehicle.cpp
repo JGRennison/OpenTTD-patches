@@ -3474,8 +3474,9 @@ void Vehicle::HandleLoading(bool mode)
  * Handle the waiting time everywhere else as in stations (basically in depot but, eventually, also elsewhere ?)
  * Function is called when order's wait_time is defined.
  * @param stop_waiting should we stop waiting (or definitely avoid) even if there is still time left to wait ?
+ * @param process_orders whether to call ProcessOrders when exiting a waiting order
  */
-void Vehicle::HandleWaiting(bool stop_waiting)
+void Vehicle::HandleWaiting(bool stop_waiting, bool process_orders)
 {
 	switch (this->current_order.GetType()) {
 		case OT_WAITING: {
@@ -3490,7 +3491,7 @@ void Vehicle::HandleWaiting(bool stop_waiting)
 			this->IncrementImplicitOrderIndex();
 			this->current_order.MakeDummy();
 			if (this->type == VEH_TRAIN) Train::From(this)->force_proceed = TFP_NONE;
-
+			if (process_orders) ProcessOrders(this);
 			break;
 		}
 

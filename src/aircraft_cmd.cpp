@@ -1583,7 +1583,7 @@ static void AircraftEventHandler_InHangar(Aircraft *v, const AirportFTAClass *ap
 	}
 
 	if (v->current_order.IsWaitTimetabled()) {
-		v->HandleWaiting(false);
+		v->HandleWaiting(false, true);
 	}
 	if (v->current_order.IsType(OT_WAITING)) {
 		return;

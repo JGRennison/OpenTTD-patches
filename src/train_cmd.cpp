@@ -3208,7 +3208,7 @@ static bool CheckTrainStayInDepot(Train *v)
 	}
 
 	if (v->current_order.IsWaitTimetabled()) {
-		v->HandleWaiting(false);
+		v->HandleWaiting(false, true);
 	}
 	if (v->current_order.IsType(OT_WAITING)) {
 		return true;
@@ -6198,9 +6198,8 @@ static bool TrainLocoHandler(Train *v, bool mode)
 	if (CheckTrainStayInDepot(v)) return true;
 
 	if (v->current_order.IsType(OT_WAITING) && v->reverse_distance == 0) {
-		v->HandleWaiting(false);
+		v->HandleWaiting(false, true);
 		if (v->current_order.IsType(OT_WAITING)) return true;
-		ProcessOrders(v);
 		if (IsRailWaypointTile(v->tile)) {
 			StationID station_id = GetStationIndex(v->tile);
 			if (v->current_order.ShouldStopAtStation(v, station_id, true)) {

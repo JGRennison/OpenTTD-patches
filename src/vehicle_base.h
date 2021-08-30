@@ -396,7 +396,7 @@ public:
 
 	void HandleLoading(bool mode = false);
 
-	void HandleWaiting(bool stop_waiting = false);
+	void HandleWaiting(bool stop_waiting, bool process_orders = false);
 
 	/**
 	 * Marks the vehicles to be redrawn and updates cached variables
