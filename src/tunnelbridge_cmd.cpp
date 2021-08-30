@@ -1894,6 +1894,65 @@ void MarkSingleBridgeSignalDirty(TileIndex tile, TileIndex bridge_start_tile)
 	);
 }
 
+void MarkTunnelBridgeSignalDirty(TileIndex tile, bool exit)
+{
+	if (_signal_sprite_oversized) {
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+		return;
+	}
+
+	if (IsRailCustomBridgeHeadTile(tile)) {
+		Trackdir td = exit ? GetTunnelBridgeExitTrackdir(tile) : GetTunnelBridgeEntranceTrackdir(tile);
+		MarkSingleSignalDirtyAtZ(tile, td, GetTileMaxPixelZ(tile));
+		return;
+	}
+
+	bool side = (_settings_game.vehicle.road_side != 0) && _settings_game.construction.train_signal_side;
+	DiagDirection dir = GetTunnelBridgeDirection(tile);
+
+	uint position;
+	switch (dir) {
+		default: NOT_REACHED();
+		case DIAGDIR_NE: position = 0; break;
+		case DIAGDIR_SE: position = 2; break;
+		case DIAGDIR_SW: position = 1; break;
+		case DIAGDIR_NW: position = 3; break;
+	}
+
+	static const Point SignalPositions[2][4] = {
+		{   /*  X         X         Y         Y     Signals on the left side */
+			{13,  3}, { 2, 13}, { 3,  4}, {13, 14}
+		}, {/*  X         X         Y         Y     Signals on the right side */
+			{14, 13}, { 3,  3}, {13,  2}, { 3, 13}
+		}
+	};
+
+	uint x = TileX(tile) * TILE_SIZE + SignalPositions[side != exit][position].x;
+	uint y = TileY(tile) * TILE_SIZE + SignalPositions[side != exit][position].y;
+
+	int z;
+	if (IsTunnel(tile)) {
+		z = GetTileZ(tile) * TILE_HEIGHT;
+	} else {
+		Slope slope = GetTilePixelSlope(tile, &z);
+		if (slope == SLOPE_FLAT) {
+			if (side == exit && dir == DIAGDIR_SE) z += 2;
+			if (side != exit && dir == DIAGDIR_SW) z += 2;
+		} else {
+			z += 8;
+		}
+	}
+
+	Point pt = RemapCoords(x, y, z);
+	MarkAllViewportsDirty(
+			pt.x - SIGNAL_DIRTY_LEFT,
+			pt.y - SIGNAL_DIRTY_TOP,
+			pt.x + SIGNAL_DIRTY_RIGHT,
+			pt.y + SIGNAL_DIRTY_BOTTOM,
+			VMDF_NOT_MAP_MODE
+	);
+}
+
 /**
  * Draws a tunnel of bridge tile.
  * For tunnels, this is rather simple, as you only need to draw the entrance.

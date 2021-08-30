@@ -720,7 +720,7 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 					uint8 aspect = GetForwardAspectAndIncrement(info, tile, exit_td);
 					if (aspect != GetTunnelBridgeExitSignalAspect(tile)) {
 						SetTunnelBridgeExitSignalAspect(tile, aspect);
-						MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+						MarkTunnelBridgeSignalDirty(tile, true);
 						PropagateAspectChange(tile, exit_td, aspect);
 					}
 				}
@@ -748,7 +748,7 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 					PropagateAspectChange(tile, exit_td, aspect);
 				}
 			}
-			if (refresh) MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+			if (refresh) MarkTunnelBridgeSignalDirty(tile, true);
 
 			continue;
 		}
@@ -857,7 +857,7 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 			uint8 old_aspect = GetTunnelBridgeExitSignalAspect(tile);
 			if (aspect != old_aspect) {
 				SetTunnelBridgeExitSignalAspect(tile, aspect);
-				if (old_aspect != 0) MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+				if (old_aspect != 0) MarkTunnelBridgeSignalDirty(tile, true);
 				PropagateAspectChange(tile, trackdir, aspect);
 			}
 		} else {
@@ -1358,7 +1358,7 @@ void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8 aspect)
 						if (!IsTunnelBridgeSignalSimulationExit(tile) || GetTunnelBridgeExitSignalState(tile) != SIGNAL_STATE_GREEN) return;
 						if (GetTunnelBridgeExitSignalAspect(tile) == aspect) return;
 						SetTunnelBridgeExitSignalAspect(tile, aspect);
-						MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+						MarkTunnelBridgeSignalDirty(tile, true);
 						if (IsBridge(tile)) RefreshBridgeOnExitAspectChange(other, tile);
 						aspect = std::min<uint>(GetSignalledTunnelBridgeEntranceForwardAspect(other, tile) + 1, _extra_aspects + 1);
 					}
@@ -1372,7 +1372,7 @@ void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8 aspect)
 							if (!IsTunnelBridgeSignalSimulationEntrance(tile) || GetTunnelBridgeEntranceSignalState(tile) != SIGNAL_STATE_GREEN) return;
 							if (GetTunnelBridgeEntranceSignalAspect(tile) == aspect) return;
 							SetTunnelBridgeEntranceSignalAspect(tile, aspect);
-							MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+							MarkTunnelBridgeSignalDirty(tile, false);
 							aspect = std::min<uint>(aspect + 1, _extra_aspects + 1);
 						}
 					}

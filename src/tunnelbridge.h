@@ -17,6 +17,8 @@ uint GetTunnelBridgeSignalSimulationSpacingTarget(Owner owner);
 uint GetBestTunnelBridgeSignalSimulationSpacing(Owner owner, TileIndex begin, TileIndex end);
 uint GetTunnelBridgeSignalSimulationSignalCount(TileIndex begin, TileIndex end);
 
+void MarkTunnelBridgeSignalDirty(TileIndex tile, bool exit);
+
 /**
  * Calculates the length of a tunnel or a bridge (without end tiles)
  * @param begin The begin of the tunnel or bridge.

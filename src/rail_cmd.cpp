@@ -2766,13 +2766,9 @@ static void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track trac
 	DrawSingleSignal(tile, rti, track, condition, image, pos, type, variant, show_restricted);
 }
 
-void MarkSingleSignalDirty(TileIndex tile, Trackdir td)
+template <typename F>
+void MarkSingleSignalDirtyIntl(TileIndex tile, Trackdir td, F get_z)
 {
-	if (_signal_sprite_oversized || td >= TRACKDIR_END) {
-		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
-		return;
-	}
-
 	static const uint8 trackdir_to_pos[TRACKDIR_END] = {
 		8,  // TRACKDIR_X_NE
 		10, // TRACKDIR_Y_SE
@@ -2794,7 +2790,7 @@ void MarkSingleSignalDirty(TileIndex tile, Trackdir td)
 
 	uint x, y;
 	GetSignalXY(tile, trackdir_to_pos[td], x, y);
-	Point pt = RemapCoords(x, y, GetSaveSlopeZ(x, y, TrackdirToTrack(td)));
+	Point pt = RemapCoords(x, y, get_z(x, y));
 	MarkAllViewportsDirty(
 			pt.x - SIGNAL_DIRTY_LEFT,
 			pt.y - SIGNAL_DIRTY_TOP,
@@ -2802,6 +2798,25 @@ void MarkSingleSignalDirty(TileIndex tile, Trackdir td)
 			pt.y + SIGNAL_DIRTY_BOTTOM,
 			VMDF_NOT_MAP_MODE
 	);
+}
+
+void MarkSingleSignalDirty(TileIndex tile, Trackdir td)
+{
+	if (_signal_sprite_oversized || td >= TRACKDIR_END) {
+		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+		return;
+	}
+
+	MarkSingleSignalDirtyIntl(tile, td, [td](uint x, uint y) -> uint {
+		return GetSaveSlopeZ(x, y, TrackdirToTrack(td));
+	});
+}
+
+void MarkSingleSignalDirtyAtZ(TileIndex tile, Trackdir td, uint z)
+{
+	MarkSingleSignalDirtyIntl(tile, td, [z](uint x, uint y) -> uint {
+		return z;
+	});
 }
 
 static uint32 _drawtile_track_palette;

@@ -3365,7 +3365,7 @@ static void UpdateTunnelBridgeEntranceSignalAspect(TileIndex tile)
 	uint8 old_aspect = GetTunnelBridgeEntranceSignalAspect(tile);
 	if (aspect != old_aspect) {
 		SetTunnelBridgeEntranceSignalAspect(tile, aspect);
-		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+		MarkTunnelBridgeSignalDirty(tile, false);
 		PropagateAspectChange(tile, trackdir, aspect);
 	}
 }
@@ -3374,7 +3374,7 @@ static void SetTunnelBridgeEntranceSignalGreen(TileIndex tile)
 {
 	if (GetTunnelBridgeEntranceSignalState(tile) == SIGNAL_STATE_RED) {
 		SetTunnelBridgeEntranceSignalState(tile, SIGNAL_STATE_GREEN);
-		MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+		MarkTunnelBridgeSignalDirty(tile, false);
 		if (_extra_aspects > 0) {
 			SetTunnelBridgeEntranceSignalAspect(tile, 0);
 			UpdateAspectDeferred(tile, GetTunnelBridgeEntranceTrackdir(tile));

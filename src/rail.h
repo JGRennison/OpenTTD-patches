@@ -478,6 +478,7 @@ static inline Money SignalMaintenanceCost(uint32 num)
 }
 
 void MarkSingleSignalDirty(TileIndex tile, Trackdir td);
+void MarkSingleSignalDirtyAtZ(TileIndex tile, Trackdir td, uint z);
 
 void DrawTrainDepotSprite(int x, int y, int image, RailType railtype);
 int TicksToLeaveDepot(const Train *v);
