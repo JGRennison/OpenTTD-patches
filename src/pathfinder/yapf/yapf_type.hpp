@@ -79,7 +79,8 @@ inline std::string ValueStr(EndSegmentReasonBits bits)
 	static const char * const end_segment_reason_names[] = {
 		"DEAD_END", "RAIL_TYPE", "INFINITE_LOOP", "SEGMENT_TOO_LONG", "CHOICE_FOLLOWS",
 		"DEPOT", "WAYPOINT", "STATION", "SAFE_TILE",
-		"PATH_TOO_LONG", "FIRST_TWO_WAY_RED", "LOOK_AHEAD_END", "TARGET_REACHED"
+		"PATH_TOO_LONG", "FIRST_TWO_WAY_RED", "LOOK_AHEAD_END", "TARGET_REACHED",
+		"REVERSE"
 	};
 
 	std::stringstream ss;
