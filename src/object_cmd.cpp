@@ -223,6 +223,9 @@ CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	int size_x = GB(spec->size, HasBit(view, 0) ? 4 : 0, 4);
 	int size_y = GB(spec->size, HasBit(view, 0) ? 0 : 4, 4);
 	TileArea ta(tile, size_x, size_y);
+	TILE_AREA_LOOP(t, ta) {
+		if (!IsValidTile(t)) return_cmd_error(STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB); // Might be off the map
+	}
 
 	if (type == OBJECT_OWNED_LAND) {
 		if (_settings_game.construction.purchase_land_permitted == 0) return_cmd_error(STR_PURCHASE_LAND_NOT_PERMITTED);
