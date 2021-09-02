@@ -35,6 +35,7 @@
 #include "graph_gui.h"
 #include "zoning.h"
 #include "newgrf_debug.h"
+#include "roadveh.h"
 
 #include "widgets/station_widget.h"
 
@@ -224,6 +225,8 @@ protected:
 	static const StringID sorter_names[];
 	static GUIStationList::SortFunction * const sorter_funcs[];
 
+	static btree::btree_map<StationID, uint> station_vehicle_calling_counts;
+
 	GUIStationList stations;
 	Scrollbar *vscroll;
 	uint rating_width;
@@ -338,9 +341,67 @@ protected:
 		return minr1 > minr2;
 	}
 
+	static void PrepareStationVehiclesCallingSorter(byte facilities)
+	{
+		station_vehicle_calling_counts.clear();
+
+		auto can_vehicle_use_facility = [&](const Vehicle *v) -> bool {
+			switch (v->type) {
+				case VEH_TRAIN:
+					return (facilities & FACIL_TRAIN);
+
+				case VEH_ROAD:
+					return (facilities & (RoadVehicle::From(v)->IsBus() ? FACIL_BUS_STOP : FACIL_TRUCK_STOP));
+
+				case VEH_AIRCRAFT:
+					return (facilities & FACIL_AIRPORT);
+
+				case VEH_SHIP:
+					return (facilities & FACIL_DOCK);
+
+				default:
+					return false;
+			}
+		};
+
+		btree::btree_set<StationID> seen_stations;
+		for (const OrderList *l : OrderList::Iterate()) {
+			if (facilities != (FACIL_TRAIN | FACIL_TRUCK_STOP | FACIL_BUS_STOP | FACIL_AIRPORT | FACIL_DOCK)) {
+				if (!can_vehicle_use_facility(l->GetFirstSharedVehicle())) continue;
+			}
+
+			seen_stations.clear();
+			for (Order *order = l->GetFirstOrder(); order != nullptr; order = order->next) {
+				if (order->IsType(OT_GOTO_STATION) || order->IsType(OT_IMPLICIT)) {
+					seen_stations.insert(order->GetDestination());
+				}
+			}
+			if (!seen_stations.empty()) {
+				uint vehicles = l->GetNumVehicles();
+				for (StationID id : seen_stations) {
+					station_vehicle_calling_counts[id] += vehicles;
+				}
+			}
+		}
+	}
+
+	/** Sort stations by the number of vehicles calling */
+	static bool StationVehiclesCallingSorter(const Station * const &a, const Station * const &b)
+	{
+		auto get_count = [](const Station * const &st) {
+			auto iter = station_vehicle_calling_counts.find(st->index);
+			return iter != station_vehicle_calling_counts.end() ? iter->second : 0;
+		};
+
+		return get_count(a) < get_count(b);
+	}
+
 	/** Sort the stations list */
 	void SortStationsList()
 	{
+		if (this->sorter_funcs[this->stations.SortType()] == &StationVehiclesCallingSorter && this->stations.WouldSort()) {
+			PrepareStationVehiclesCallingSorter(this->facilities);
+		}
 		if (!this->stations.Sort()) return;
 
 		/* Set the modified widget dirty */
@@ -707,6 +768,7 @@ byte CompanyStationsWindow::facilities = FACIL_TRAIN | FACIL_TRUCK_STOP | FACIL_
 bool CompanyStationsWindow::include_empty = true;
 const CargoTypes CompanyStationsWindow::cargo_filter_max = ALL_CARGOTYPES;
 CargoTypes CompanyStationsWindow::cargo_filter = ALL_CARGOTYPES;
+btree::btree_map<StationID, uint> CompanyStationsWindow::station_vehicle_calling_counts;
 
 /* Available station sorting functions */
 GUIStationList::SortFunction * const CompanyStationsWindow::sorter_funcs[] = {
@@ -715,7 +777,8 @@ GUIStationList::SortFunction * const CompanyStationsWindow::sorter_funcs[] = {
 	&StationWaitingTotalSorter,
 	&StationWaitingAvailableSorter,
 	&StationRatingMaxSorter,
-	&StationRatingMinSorter
+	&StationRatingMinSorter,
+	&StationVehiclesCallingSorter
 };
 
 /* Names of the sorting functions */
@@ -726,6 +789,7 @@ const StringID CompanyStationsWindow::sorter_names[] = {
 	STR_SORT_BY_WAITING_AVAILABLE,
 	STR_SORT_BY_RATING_MAX,
 	STR_SORT_BY_RATING_MIN,
+	STR_SORT_BY_VEHICLES_CALLING,
 	INVALID_STRING_ID
 };
 

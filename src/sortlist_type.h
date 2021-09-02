@@ -245,6 +245,16 @@ public:
 	}
 
 	/**
+	 * Returns whether Sort() would perform a resort
+	 * @return true if a resort would be performed
+	 *
+	 */
+	bool WouldSort() const
+	{
+		return (this->flags & VL_RESORT) && this->IsSortable();
+	}
+
+	/**
 	 * Sort the list.
 	 * @param compare The function to compare two list items
 	 * @return true if the list sequence has been altered

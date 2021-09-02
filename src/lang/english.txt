@@ -311,6 +311,7 @@ STR_SORT_BY_WAITING_TOTAL                                       :Total waiting c
 STR_SORT_BY_WAITING_AVAILABLE                                   :Available waiting cargo
 STR_SORT_BY_RATING_MAX                                          :Highest cargo rating
 STR_SORT_BY_RATING_MIN                                          :Lowest cargo rating
+STR_SORT_BY_VEHICLES_CALLING                                    :Number of vehicles calling
 STR_SORT_BY_ENGINE_ID                                           :EngineID (classic sort)
 STR_SORT_BY_COST                                                :Cost
 STR_SORT_BY_POWER                                               :Power
