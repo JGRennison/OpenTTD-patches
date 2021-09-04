@@ -104,22 +104,26 @@ void ResolveRailTypeGUISprites(RailtypeInfo *rti)
 	const SpriteID _signal_lookup[2][SIGTYPE_END] = {
 		{SPR_IMG_SIGNAL_ELECTRIC_NORM,  SPR_IMG_SIGNAL_ELECTRIC_ENTRY, SPR_IMG_SIGNAL_ELECTRIC_EXIT,
 		 SPR_IMG_SIGNAL_ELECTRIC_COMBO, SPR_IMG_SIGNAL_ELECTRIC_PBS,   SPR_IMG_SIGNAL_ELECTRIC_PBS_OWAY,
-		 SPR_IMG_SIGNAL_ELECTRIC_PROG},
+		 SPR_IMG_SIGNAL_ELECTRIC_PROG,  SPR_IMG_SIGNAL_ELECTRIC_NO_ENTRY},
 
 		{SPR_IMG_SIGNAL_SEMAPHORE_NORM,  SPR_IMG_SIGNAL_SEMAPHORE_ENTRY, SPR_IMG_SIGNAL_SEMAPHORE_EXIT,
 		 SPR_IMG_SIGNAL_SEMAPHORE_COMBO, SPR_IMG_SIGNAL_SEMAPHORE_PBS,   SPR_IMG_SIGNAL_SEMAPHORE_PBS_OWAY,
-		 SPR_IMG_SIGNAL_SEMAPHORE_PROG},
+		 SPR_IMG_SIGNAL_SEMAPHORE_PROG,  SPR_IMG_SIGNAL_SEMAPHORE_NO_ENTRY},
 	};
 
 	for (SignalType type = SIGTYPE_NORMAL; type < SIGTYPE_END; type = (SignalType)(type + 1)) {
 		for (SignalVariant var = SIG_ELECTRIC; var <= SIG_SEMAPHORE; var = (SignalVariant)(var + 1)) {
 			PalSpriteID red   = GetCustomSignalSprite(rti, INVALID_TILE, type, var, 0, true).sprite;
-			PalSpriteID green = GetCustomSignalSprite(rti, INVALID_TILE, type, var, 255, true).sprite;
 			if (red.sprite != 0) {
 				rti->gui_sprites.signals[type][var][0] = { red.sprite + SIGNAL_TO_SOUTH, red.pal };
 			} else {
 				rti->gui_sprites.signals[type][var][0] = { _signal_lookup[var][type], PAL_NONE };
 			}
+			if (type == SIGTYPE_NO_ENTRY) {
+				rti->gui_sprites.signals[type][var][1] = rti->gui_sprites.signals[type][var][0];
+				continue;
+			}
+			PalSpriteID green = GetCustomSignalSprite(rti, INVALID_TILE, type, var, 255, true).sprite;
 			if (green.sprite != 0) {
 				rti->gui_sprites.signals[type][var][1] = { green.sprite + SIGNAL_TO_SOUTH, green.pal };
 			} else {
@@ -1689,6 +1693,8 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 						/* Query current signal type so the check for PBS signals below works. */
 						sigtype = GetSignalType(tile, track);
 					} else {
+						if (GetSignalType(tile, track) == SIGTYPE_NO_ENTRY) CycleSignalSide(tile, track);
+
 						/* convert the present signal to the chosen type and variant */
 						if (IsPresignalProgrammable(tile, track)) {
 							FreeSignalProgram(SignalReference(tile, track));
@@ -1698,13 +1704,18 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 						if (IsPbsSignal(sigtype) && (GetPresentSignals(tile) & SignalOnTrack(track)) == SignalOnTrack(track)) {
 							SetPresentSignals(tile, (GetPresentSignals(tile) & ~SignalOnTrack(track)) | KillFirstBit(SignalOnTrack(track)));
 						}
+
+						if (sigtype == SIGTYPE_NO_ENTRY) CycleSignalSide(tile, track);
 					}
 
 				} else if (ctrl_pressed) {
 					/* cycle through signal types */
 					sigtype = (SignalType)(GetSignalType(tile, track));
-					if(IsProgrammableSignal(sigtype))
+					if (IsProgrammableSignal(sigtype)) {
 						FreeSignalProgram(SignalReference(tile, track));
+					}
+
+					if (sigtype == SIGTYPE_NO_ENTRY) CycleSignalSide(tile, track);
 
 					do {
 						sigtype = NextSignalType(sigtype, which_signals);
@@ -1714,6 +1725,8 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 					if (IsPbsSignal(sigtype) && (GetPresentSignals(tile) & SignalOnTrack(track)) == SignalOnTrack(track)) {
 						SetPresentSignals(tile, (GetPresentSignals(tile) & ~SignalOnTrack(track)) | KillFirstBit(SignalOnTrack(track)));
 					}
+
+					if (sigtype == SIGTYPE_NO_ENTRY) CycleSignalSide(tile, track);
 				} else {
 					/* programmable pre-signal dependencies are invalidated when the signal direction is changed */
 					CheckRemoveSignal(tile, track);
@@ -2680,6 +2693,8 @@ static void GetSignalXY(TileIndex tile, uint pos, uint &x, uint &y)
 void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, SignalState condition, SignalOffsets image, uint pos, SignalType type,
 		SignalVariant variant, bool show_restricted, bool exit_signal = false)
 {
+	if (type == SIGTYPE_NO_ENTRY) pos ^= 1;
+
 	uint x, y;
 	GetSignalXY(tile, pos, x, y);
 
@@ -2713,6 +2728,15 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 
 		SpriteFile *file = GetOriginFile(sprite);
 		is_custom_sprite = !(file != nullptr && file->flags & SFF_PROGSIG);
+	} else if (type == SIGTYPE_NO_ENTRY) {
+		if (variant == SIG_SEMAPHORE) {
+			sprite = SPR_EXTRASIGNAL_BASE + image;
+		} else {
+			sprite = SPR_EXTRASIGNAL_BASE + 8 + image;
+		}
+
+		SpriteFile *file = GetOriginFile(sprite);
+		is_custom_sprite = !(file != nullptr && file->flags & SFF_PROGSIG);
 	} else {
 		/* Normal electric signals are stored in a different sprite block than all other signals. */
 		sprite = (type == SIGTYPE_NORMAL && variant == SIG_ELECTRIC) ? SPR_ORIGINAL_SIGNALS_BASE : SPR_SIGNALS_BASE - 16;
@@ -2730,6 +2754,12 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 			} else {
 				sprite = SPR_DUP_PROGSIGNAL_BASE + 16 + image * 2 + condition;
 			}
+		} else if (type == SIGTYPE_NO_ENTRY) {
+			if (variant == SIG_SEMAPHORE) {
+				sprite = SPR_DUP_EXTRASIGNAL_BASE + image;
+			} else {
+				sprite = SPR_DUP_EXTRASIGNAL_BASE + 8 + image;
+			}
 		} else {
 			sprite = (type == SIGTYPE_NORMAL && variant == SIG_ELECTRIC) ? SPR_DUP_ORIGINAL_SIGNALS_BASE : SPR_DUP_SIGNALS_BASE - 16;
 			sprite += type * 16 + variant * 64 + image * 2 + condition + (IsSignalSpritePBS(type) ? 64 : 0);
@@ -2746,7 +2776,7 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 			AddSortableSpriteToDraw(sprite, SPR_TRACERESTRICT_BASE, x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, GetSaveSlopeZ(x, y, track), false, 0, 0, 0, &lower_part);
 			AddSortableSpriteToDraw(sprite,               PAL_NONE, x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, GetSaveSlopeZ(x, y, track), false, 0, 0, 0, &upper_part);
 		} else {
-			AddSortableSpriteToDraw(sprite, SPR_TRACERESTRICT_BASE + 1, x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, GetSaveSlopeZ(x, y, track));
+			AddSortableSpriteToDraw(sprite, SPR_TRACERESTRICT_BASE + (type == SIGTYPE_NO_ENTRY ? 0 : 1), x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, GetSaveSlopeZ(x, y, track));
 		}
 	} else {
 		AddSortableSpriteToDraw(sprite, pal, x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, GetSaveSlopeZ(x, y, track));

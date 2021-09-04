@@ -349,6 +349,11 @@ static inline bool IsPresignalProgrammable(TileIndex t, Track track)
 	return IsProgrammableSignal(GetSignalType(t, track));
 }
 
+static inline bool IsNoEntrySignal(TileIndex t, Track track)
+{
+	return IsNoEntrySignal(GetSignalType(t, track));
+}
+
 /** One-way signals can't be passed the 'wrong' way. */
 static inline bool IsOnewaySignal(TileIndex t, Track track)
 {
@@ -524,6 +529,10 @@ static inline bool HasOnewaySignalBlockingTrackdir(TileIndex tile, Trackdir td)
 {
 	if (IsTileType(tile, MP_RAILWAY) && HasSignalOnTrackdir(tile, ReverseTrackdir(td)) &&
 			!HasSignalOnTrackdir(tile, td) && IsOnewaySignal(tile, TrackdirToTrack(td))) {
+		return true;
+	}
+	if (IsTileType(tile, MP_RAILWAY) && HasSignalOnTrackdir(tile, td) &&
+			IsNoEntrySignal(tile, TrackdirToTrack(td))) {
 		return true;
 	}
 	if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExitOnly(tile) &&

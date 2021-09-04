@@ -29,11 +29,12 @@ enum SignalType {
 	SIGTYPE_EXIT       = 2, ///< presignal block exit
 	SIGTYPE_COMBO      = 3, ///< presignal inter-block
 	SIGTYPE_PBS        = 4, ///< normal pbs signal
-	SIGTYPE_PBS_ONEWAY = 5, ///< no-entry signal
+	SIGTYPE_PBS_ONEWAY = 5, ///< one-way PBS signal
 	SIGTYPE_PROG       = 6, ///< programmable presignal
+	SIGTYPE_NO_ENTRY   = 7, ///< no-entry signal
 
 	SIGTYPE_END,
-	SIGTYPE_LAST       = SIGTYPE_PROG,
+	SIGTYPE_LAST       = SIGTYPE_NO_ENTRY,
 	SIGTYPE_FIRST_PBS_SPRITE = SIGTYPE_PBS,
 };
 /** Helper information for extract tool. */

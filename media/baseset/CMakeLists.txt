@@ -19,6 +19,7 @@ set(BASESET_OTHER_SOURCE_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/orig_extra.grf
         ${CMAKE_CURRENT_SOURCE_DIR}/innerhighlight.grf
         ${CMAKE_CURRENT_SOURCE_DIR}/progsignals.grf
+        ${CMAKE_CURRENT_SOURCE_DIR}/extra_signals.grf
         ${CMAKE_CURRENT_SOURCE_DIR}/route_step.grf
         ${CMAKE_CURRENT_SOURCE_DIR}/tracerestrict.grf
 )

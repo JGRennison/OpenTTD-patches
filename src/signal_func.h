@@ -73,7 +73,7 @@ static inline bool IsComboSignal(SignalType type)
 /// Is a given signal type a PBS signal?
 static inline bool IsPbsSignal(SignalType type)
 {
-	return _settings_game.vehicle.train_braking_model == TBM_REALISTIC || type == SIGTYPE_PBS || type == SIGTYPE_PBS_ONEWAY;
+	return _settings_game.vehicle.train_braking_model == TBM_REALISTIC || type == SIGTYPE_PBS || type == SIGTYPE_PBS_ONEWAY || type == SIGTYPE_NO_ENTRY;
 }
 
 /// Is a given signal type a PBS signal?
@@ -88,10 +88,16 @@ static inline bool IsProgrammableSignal(SignalType type)
 	return type == SIGTYPE_PROG;
 }
 
+/// Is this a programmable pre-signal?
+static inline bool IsNoEntrySignal(SignalType type)
+{
+	return type == SIGTYPE_NO_ENTRY;
+}
+
 /** One-way signals can't be passed the 'wrong' way. */
 static inline bool IsOnewaySignal(SignalType type)
 {
-	return type != SIGTYPE_PBS;
+	return type != SIGTYPE_PBS && type != SIGTYPE_NO_ENTRY;
 }
 
 /// Is this signal type unsuitable for realistic braking?
@@ -119,6 +125,7 @@ static inline SignalType NextSignalType(SignalType cur, uint which_signals)
 		case SIGTYPE_PROG:       return pbs   ? SIGTYPE_PBS        : SIGTYPE_NORMAL;
 		case SIGTYPE_PBS:        return pbs   ? SIGTYPE_PBS_ONEWAY : SIGTYPE_NORMAL;
 		case SIGTYPE_PBS_ONEWAY: return block ? SIGTYPE_NORMAL     : SIGTYPE_PBS;
+		case SIGTYPE_NO_ENTRY:   return pbs   ? SIGTYPE_PBS        : SIGTYPE_NORMAL;
 		default:
 			DEBUG(map, 0, "Attempt to cycle from signal type %d", cur);
 			return SIGTYPE_NORMAL; // Fortunately mostly harmless

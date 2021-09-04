@@ -495,7 +495,7 @@ static int32 NPFRailPathCost(AyStar *as, AyStarNode *current, OpenListNode *pare
 			NPFSetFlag(current, NPF_FLAG_LAST_SIGNAL_BLOCK, !IsPbsSignal(sigtype));
 		}
 
-		if (HasPbsSignalOnTrackdir(tile, ReverseTrackdir(trackdir)) && !NPFGetFlag(current, NPF_FLAG_3RD_SIGNAL)) {
+		if (HasPbsSignalOnTrackdir(tile, ReverseTrackdir(trackdir)) && !NPFGetFlag(current, NPF_FLAG_3RD_SIGNAL) && !IsNoEntrySignal(tile, TrackdirToTrack(trackdir))) {
 			cost += _settings_game.pf.npf.npf_rail_pbs_signal_back_penalty;
 		}
 	}
@@ -963,6 +963,9 @@ static void NPFFollowTrack(AyStar *aystar, OpenListNode *current)
 		if (IsTileType(dst_tile, MP_RAILWAY) && GetRailTileType(dst_tile) == RAIL_TILE_SIGNALS) {
 			if (HasSignalOnTrackdir(dst_tile, ReverseTrackdir(dst_trackdir)) && !HasSignalOnTrackdir(dst_tile, dst_trackdir) && IsOnewaySignal(dst_tile, TrackdirToTrack(dst_trackdir))) {
 				/* If there's a one-way signal not pointing towards us, stop going in this direction. */
+				break;
+			}
+			if (HasSignalOnTrackdir(dst_tile, dst_trackdir) && IsNoEntrySignal(dst_tile, TrackdirToTrack(dst_trackdir))) {
 				break;
 			}
 		}

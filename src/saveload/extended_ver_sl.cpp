@@ -155,6 +155,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_TRAIN_SPEED_ADAPTATION, XSCF_NULL,                1,   1, "train_speed_adaptation",    nullptr, nullptr, "TSAS"         },
 	{ XSLFI_EXTRA_STATION_NAMES,    XSCF_NULL,                1,   1, "extra_station_names",       nullptr, nullptr, nullptr        },
 	{ XSLFI_DEPOT_ORDER_EXTRA_FLAGS,XSCF_IGNORABLE_UNKNOWN,   1,   1, "depot_order_extra_flags",   nullptr, nullptr, nullptr        },
+	{ XSLFI_EXTRA_SIGNAL_TYPES,     XSCF_NULL,                1,   1, "extra_signal_types",        nullptr, nullptr, nullptr        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr },// This is the end marker
 };
 

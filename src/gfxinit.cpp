@@ -177,6 +177,15 @@ static void LoadSpriteTables()
 		DupSprite(SPR_PROGSIGNAL_BASE + i, SPR_DUP_PROGSIGNAL_BASE + i);
 	}
 
+	/* Extra signal sprites. */
+	SpriteFile &extrasig_file = LoadGrfFile("extra_signals.grf", SPR_EXTRASIGNAL_BASE, false);
+	extrasig_file.flags |= SFF_PROGSIG;
+
+	/* Fill duplicate extra signal graphics sprite block */
+	for (uint i = 0; i < EXTRASIGNAL_SPRITE_COUNT; i++) {
+		DupSprite(SPR_EXTRASIGNAL_BASE + i, SPR_DUP_EXTRASIGNAL_BASE + i);
+	}
+
 	/* Tracerestrict sprites. */
 	LoadGrfFile("tracerestrict.grf", SPR_TRACERESTRICT_BASE, false);
 

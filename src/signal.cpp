@@ -774,7 +774,7 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 		}
 
 		/* determine whether the new state is red */
-		if (info.flags & SF_TRAIN) {
+		if (info.flags & SF_TRAIN || sig == SIGTYPE_NO_ENTRY) {
 			/* train in the segment */
 			newstate = SIGNAL_STATE_RED;
 		} else if (sig == SIGTYPE_PROG &&

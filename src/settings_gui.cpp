@@ -1816,6 +1816,7 @@ static SettingsContainer &GetSettingsTree()
 			SettingsPage *advsig = interface->Add(new SettingsPage(STR_CONFIG_SETTING_INTERFACE_ADV_SIGNALS));
 			{
 				advsig->Add(new SettingEntry("gui.show_progsig_ui"));
+				advsig->Add(new SettingEntry("gui.show_noentrysig_ui"));
 				advsig->Add(new SettingEntry("gui.show_adv_tracerestrict_features"));
 			}
 

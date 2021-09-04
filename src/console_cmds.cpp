@@ -2484,7 +2484,7 @@ DEF_CONSOLE_CMD(ConDumpRailTypes)
 			grfid = grf->grfid;
 			grfs.insert(std::pair<uint32, const GRFFile *>(grfid, grf));
 		}
-		IConsolePrintF(CC_DEFAULT, "  %02u %c%c%c%c, Flags: %c%c%c%c%c%c, Ctrl Flags: %c%c%c, GRF: %08X, %s",
+		IConsolePrintF(CC_DEFAULT, "  %02u %c%c%c%c, Flags: %c%c%c%c%c%c, Ctrl Flags: %c%c%c%c, GRF: %08X, %s",
 				(uint) rt,
 				rti->label >> 24, rti->label >> 16, rti->label >> 8, rti->label,
 				HasBit(rti->flags, RTF_CATENARY)            ? 'c' : '-',
@@ -2496,6 +2496,7 @@ DEF_CONSOLE_CMD(ConDumpRailTypes)
 				HasBit(rti->ctrl_flags, RTCF_PROGSIG)       ? 'p' : '-',
 				HasBit(rti->ctrl_flags, RTCF_RESTRICTEDSIG) ? 'r' : '-',
 				HasBit(rti->ctrl_flags, RTCF_NOREALISTICBRAKING) ? 'b' : '-',
+				HasBit(rti->ctrl_flags, RTCF_NOENTRYSIG)    ? 'n' : '-',
 				BSWAP32(grfid),
 				GetStringPtr(rti->strings.name)
 		);

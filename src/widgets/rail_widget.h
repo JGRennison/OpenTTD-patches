@@ -86,6 +86,7 @@ enum BuildSignalWidgets {
 	WID_BS_SEMAPHORE_PROG,     ///< Build a semahore programmable pre-signal
 	WID_BS_SEMAPHORE_PBS,      ///< Build a semaphore path signal.
 	WID_BS_SEMAPHORE_PBS_OWAY, ///< Build a semaphore one way path signal.
+	WID_BS_SEMAPHORE_NO_ENTRY, ///< Build a semaphore no-entry signal.
 	WID_BS_ELECTRIC_NORM,      ///< Build an electric normal block signal
 	WID_BS_ELECTRIC_ENTRY,     ///< Build an electric entry block signal
 	WID_BS_ELECTRIC_EXIT,      ///< Build an electric exit block signal
@@ -93,6 +94,7 @@ enum BuildSignalWidgets {
 	WID_BS_ELECTRIC_PROG,      ///< Build an electric programmable pre-signal
 	WID_BS_ELECTRIC_PBS,       ///< Build an electric path signal.
 	WID_BS_ELECTRIC_PBS_OWAY,  ///< Build an electric one way path signal.
+	WID_BS_ELECTRIC_NO_ENTRY,  ///< Build an electric no-entry signal.
 	WID_BS_CONVERT,            ///< Convert the signal.
 	WID_BS_TRACE_RESTRICT,     ///< Open trace restrict window.
 	WID_BS_PROGRAM,            ///< Enter program to prog signal
@@ -107,6 +109,8 @@ enum BuildSignalWidgets {
 	WID_BS_ELECTRIC_COMBO_SEL,  ///< NWID_SELECTION for WID_BS_ELECTRIC_COMBO
 	WID_BS_SEMAPHORE_PROG_SEL, ///< NWID_SELECTION for WID_BS_SEMAPHORE_PROG
 	WID_BS_ELECTRIC_PROG_SEL,  ///< NWID_SELECTION for WID_BS_ELECTRIC_PROG
+	WID_BS_SEMAPHORE_NOEN_SEL, ///< NWID_SELECTION for WID_BS_SEMAPHORE_NO_ENTRY
+	WID_BS_ELECTRIC_NOEN_SEL,  ///< NWID_SELECTION for WID_BS_ELECTRIC_NO_ENTRY
 	WID_BS_PROGRAM_SEL,        ///< NWID_SELECTION for WID_BS_PROGRAM
 };
 

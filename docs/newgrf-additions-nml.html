@@ -42,6 +42,13 @@
 			Programmable pre-signals have a signal type (<span class="code">getbits(extra_callback_info2, 16, 8)</span>) of 6.
 		</td>
 	</tr>
+	<tr><td>enable_no_entry_signals</td><td>0 or 1</td>
+		<td>
+			Enable no-entry signal graphics in <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#signals">railtype signals</a>.<br />
+			No-entry signals have a signal type (<span class="code">getbits(extra_callback_info2, 16, 8)</span>) of 7.<br />
+			No-entry signals always have a signal state of red.
+		</td>
+	</tr>
 	<tr><td>enable_restricted_signals</td><td>0 or 1</td>
 		<td>
 			Enable restricted signal flag in <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#signals">railtype signals</a>.<br />
@@ -132,6 +139,18 @@
 			</table>
 		</td>
 	</tr>
+	<tr><td>NO_ENTRY_SIGNAL</td><td>16</td>
+		<td>
+			<b>No-entry signals</b>
+			<p>No-entry signal graphics come in groups of 8. These groups contain sprites in the same order as the red sprites of 1275-1290 in trg1[r].grf and <a href="https://newgrf-specs.tt-wiki.net/wiki/Action5#04_Signal_graphics.">Action 5 type 4 (signals)</a>;
+				red only, for each of: SW-facing, NE-facing, NW-facing, SE-facing, E-facing, W-facing, S-facing, N-facing.
+			<table>
+				<tr><th>Group</th><th>Contents</th></tr>
+				<tr><td>0</td><td>Semaphore no-entry signals</td></tr>
+				<tr><td>1</td><td>Lighted no-entry signals</td></tr>
+			</table>
+		</td>
+	</tr>
 	</table>
 	<h3>Signal graphics using switches</h3>
 	<p>
@@ -157,6 +176,13 @@
 		<td>
 			Enable programmable pre-signal graphics.<br />
 			Programmable pre-signals have a signal type (<span class="code">getbits(extra_callback_info2, 16, 8)</span>) of 6.
+		</td>
+	</tr>
+	<tr><td>enable_no_entry_signals</td><td>0 or 1</td>
+		<td>
+			Enable no-entry signal graphics.<br />
+			No-entry signals have a signal type (<span class="code">getbits(extra_callback_info2, 16, 8)</span>) of 7.<br />
+			No-entry signals always have a signal state of red.
 		</td>
 	</tr>
 	<tr><td>enable_restricted_signals</td><td>0 or 1</td>

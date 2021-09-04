@@ -890,10 +890,11 @@ class NIHRailType : public NIHelper {
 					HasBit(info->flags, RTF_ALLOW_90DEG) ? 'a' : '-',
 					HasBit(info->flags, RTF_DISALLOW_90DEG) ? 'd' : '-');
 			print(buffer);
-			seprintf(buffer, lastof(buffer), "  Ctrl flags: %c%c%c",
+			seprintf(buffer, lastof(buffer), "  Ctrl flags: %c%c%c%c",
 					HasBit(info->ctrl_flags, RTCF_PROGSIG) ? 'p' : '-',
 					HasBit(info->ctrl_flags, RTCF_RESTRICTEDSIG) ? 'r' : '-',
-					HasBit(info->ctrl_flags, RTCF_NOREALISTICBRAKING) ? 'b' : '-');
+					HasBit(info->ctrl_flags, RTCF_NOREALISTICBRAKING) ? 'b' : '-',
+					HasBit(info->ctrl_flags, RTCF_NOENTRYSIG) ? 'n' : '-');
 			print(buffer);
 			seprintf(buffer, lastof(buffer), "  Powered: 0x" OTTD_PRINTFHEX64, info->powered_railtypes);
 			print(buffer);
