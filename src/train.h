@@ -72,7 +72,7 @@ enum ConsistChangeFlags {
 DECLARE_ENUM_AS_BIT_SET(ConsistChangeFlags)
 
 enum RealisticBrakingConstants {
-	RBC_BRAKE_FORCE_PER_LENGTH      = 1600,      ///< Additional force-based brake force per unit of train length
+	RBC_BRAKE_FORCE_PER_LENGTH      = 2400,      ///< Additional force-based brake force per unit of train length
 	RBC_BRAKE_POWER_PER_LENGTH      = 15000,     ///< Additional power-based brake force per unit of train length (excludes maglevs)
 };
 
