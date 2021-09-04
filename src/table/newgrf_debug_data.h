@@ -181,11 +181,29 @@ class NIHVehicle : public NIHelper {
 			if (t->lookahead != nullptr) {
 				print ("  Look ahead:");
 				const TrainReservationLookAhead &l = *t->lookahead;
-				seprintf(buffer, lastof(buffer), "    Position: current: %d, end: %d, remaining: %d", l.current_position, l.reservation_end_position, l.reservation_end_position - l.current_position);
+				TrainDecelerationStats stats(t);
+
+				auto print_braking_speed = [&](int position, int end_speed, int end_z) {
+					extern void LimitSpeedFromLookAhead(int &max_speed, const TrainDecelerationStats &stats, int current_position, int position, int end_speed, int z_delta);
+					int speed = INT_MAX;
+					LimitSpeedFromLookAhead(speed, stats, l.current_position, position, end_speed, end_z - stats.z_pos);
+					if (speed != INT_MAX) {
+						b += seprintf(b, lastof(buffer), ", appr speed: %d", speed);
+					}
+				};
+
+				seprintf(buffer, lastof(buffer), "    Position: current: %d, z: %d, end: %d, remaining: %d", l.current_position, stats.z_pos, l.reservation_end_position, l.reservation_end_position - l.current_position);
 				print(buffer);
-				seprintf(buffer, lastof(buffer), "    Reservation ends at %X (%u x %u), trackdir: %02X, z: %d",
+
+				b = buffer + seprintf(buffer, lastof(buffer), "    Reservation ends at %X (%u x %u), trackdir: %02X, z: %d",
 						l.reservation_end_tile, TileX(l.reservation_end_tile), TileY(l.reservation_end_tile), l.reservation_end_trackdir, l.reservation_end_z);
+				if (HasBit(l.flags, TRLF_DEPOT_END)) {
+					print_braking_speed(l.reservation_end_position - TILE_SIZE, 61, l.reservation_end_z);
+				} else {
+					print_braking_speed(l.reservation_end_position, 0, l.reservation_end_z);
+				}
 				print(buffer);
+
 				b = buffer + seprintf(buffer, lastof(buffer), "    TB reserved tiles: %d, flags:", l.tunnel_bridge_reserved_tiles);
 				if (HasBit(l.flags, TRLF_TB_EXIT_FREE)) b += seprintf(b, lastof(buffer), "x");
 				if (HasBit(l.flags, TRLF_DEPOT_END)) b += seprintf(b, lastof(buffer), "d");
@@ -204,18 +222,23 @@ class NIHVehicle : public NIHelper {
 							break;
 						case TRLIT_REVERSE:
 							b += seprintf(b, lastof(buffer), "reverse");
+							print_braking_speed(item.start + t->gcache.cached_total_length, 0, item.z_pos);
 							break;
 						case TRLIT_TRACK_SPEED:
 							b += seprintf(b, lastof(buffer), "track speed: %u", item.data_id);
+							print_braking_speed(item.start, item.data_id, item.z_pos);
 							break;
 						case TRLIT_SPEED_RESTRICTION:
 							b += seprintf(b, lastof(buffer), "speed restriction: %u", item.data_id);
+							if (item.data_id > 0) print_braking_speed(item.start, item.data_id, item.z_pos);
 							break;
 						case TRLIT_SIGNAL:
 							b += seprintf(b, lastof(buffer), "signal: target speed: %u", item.data_id);
 							break;
 						case TRLIT_CURVE_SPEED:
 							b += seprintf(b, lastof(buffer), "curve speed: %u", item.data_id);
+							if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) print_braking_speed(item.start, item.data_id, item.z_pos);
+
 							break;
 					}
 					print(buffer);

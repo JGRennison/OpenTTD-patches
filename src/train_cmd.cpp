@@ -783,28 +783,21 @@ int PredictStationStoppingLocation(const Train *v, const Order *order, int stati
 	return stop + adjust;
 }
 
-struct TrainDecelerationStats {
-	int deceleration_x2;
-	int uncapped_deceleration_x2;
-	int z_pos;
-	const Train *t;
-
-	TrainDecelerationStats(const Train *t)
-	{
-		this->deceleration_x2 = 2 * t->tcache.cached_deceleration;
-		this->uncapped_deceleration_x2 = 2 * t->tcache.cached_uncapped_decel;
-		if (likely(HasBit(t->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST))) {
-			this->z_pos = t->z_pos;
-		} else {
-			int64 sum = 0;
-			for (const Train *u = t; u != nullptr; u = u->Next()) {
-				sum += ((int)u->z_pos * (int)u->tcache.cached_veh_weight);
-			}
-			this->z_pos = sum / t->gcache.cached_weight;
+TrainDecelerationStats::TrainDecelerationStats(const Train *t)
+{
+	this->deceleration_x2 = 2 * t->tcache.cached_deceleration;
+	this->uncapped_deceleration_x2 = 2 * t->tcache.cached_uncapped_decel;
+	if (likely(HasBit(t->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST))) {
+		this->z_pos = t->z_pos;
+	} else {
+		int64 sum = 0;
+		for (const Train *u = t; u != nullptr; u = u->Next()) {
+			sum += ((int)u->z_pos * (int)u->tcache.cached_veh_weight);
 		}
-		this->t = t;
+		this->z_pos = sum / t->gcache.cached_weight;
 	}
-};
+	this->t = t;
+}
 
 static int64 GetRealisticBrakingDistanceForSpeed(const TrainDecelerationStats &stats, int start_speed, int end_speed, int z_delta)
 {
@@ -886,7 +879,7 @@ static int GetRealisticBrakingSpeedForDistance(const TrainDecelerationStats &sta
 	return IntSqrt((uint) speed_sqr);
 }
 
-static void LimitSpeedFromLookAhead(int &max_speed, const TrainDecelerationStats &stats, int current_position, int position, int end_speed, int z_delta)
+void LimitSpeedFromLookAhead(int &max_speed, const TrainDecelerationStats &stats, int current_position, int position, int end_speed, int z_delta)
 {
 	if (position <= current_position) {
 		max_speed = std::min(max_speed, std::max(15, end_speed));
