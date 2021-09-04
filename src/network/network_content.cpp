@@ -68,7 +68,10 @@ bool ClientNetworkContentSocketHandler::Receive_SERVER_INFO(Packet *p)
 
 	ci->dependency_count = p->Recv_uint8();
 	ci->dependencies = MallocT<ContentID>(ci->dependency_count);
-	for (uint i = 0; i < ci->dependency_count; i++) ci->dependencies[i] = (ContentID)p->Recv_uint32();
+	for (uint i = 0; i < ci->dependency_count; i++) {
+		ci->dependencies[i] = (ContentID)p->Recv_uint32();
+		this->reverse_dependency_map.insert({ ci->dependencies[i], ci->id });
+	}
 
 	ci->tag_count = p->Recv_uint8();
 	ci->tags = MallocT<char[32]>(ci->tag_count);
@@ -169,8 +172,10 @@ bool ClientNetworkContentSocketHandler::Receive_SERVER_INFO(Packet *p)
 	this->infos.push_back(ci);
 
 	/* Incoming data means that we might need to reconsider dependencies */
-	for (ContentInfo *ici : this->infos) {
-		this->CheckDependencyState(ici);
+	ConstContentVector parents;
+	this->ReverseLookupTreeDependency(parents, ci);
+	for (const ContentInfo *ici : parents) {
+		this->CheckDependencyState(const_cast<ContentInfo *>(ici));
 	}
 
 	this->OnReceiveContentInfo(ci);
@@ -928,15 +933,10 @@ void ClientNetworkContentSocketHandler::ToggleSelectedState(const ContentInfo *c
  */
 void ClientNetworkContentSocketHandler::ReverseLookupDependency(ConstContentVector &parents, const ContentInfo *child) const
 {
-	for (const ContentInfo *ci : this->infos) {
-		if (ci == child) continue;
+	auto range = this->reverse_dependency_map.equal_range(child->id);
 
-		for (uint i = 0; i < ci->dependency_count; i++) {
-			if (ci->dependencies[i] == child->id) {
-				parents.push_back(ci);
-				break;
-			}
-		}
+	for (auto iter = range.first; iter != range.second; ++iter) {
+		parents.push_back(GetContent(iter->second));
 	}
 }
 
@@ -1061,6 +1061,7 @@ void ClientNetworkContentSocketHandler::Clear()
 
 	this->infos.clear();
 	this->requested.clear();
+	this->reverse_dependency_map.clear();
 }
 
 /*** CALLBACK ***/

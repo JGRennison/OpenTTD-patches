@@ -12,6 +12,7 @@
 
 #include "core/tcp_content.h"
 #include "core/tcp_http.h"
+#include "../3rdparty/cpp-btree/btree_map.h"
 
 /** Vector with content info */
 typedef std::vector<ContentInfo *> ContentVector;
@@ -68,6 +69,7 @@ protected:
 	std::vector<ContentCallback *> callbacks;     ///< Callbacks to notify "the world"
 	ContentIDList requested;                      ///< ContentIDs we already requested (so we don't do it again)
 	ContentVector infos;                          ///< All content info we received
+	btree::btree_multimap<ContentID, ContentID> reverse_dependency_map; ///< Content reverse dependency map
 	std::vector<char> http_response;              ///< The HTTP response to the requests we've been doing
 	int http_response_index;                      ///< Where we are, in the response, with handling it
 
@@ -82,6 +84,7 @@ protected:
 	bool Receive_SERVER_CONTENT(Packet *p) override;
 
 	ContentInfo *GetContent(ContentID cid);
+	const ContentInfo *GetContent(ContentID cid) const { return const_cast<ClientNetworkContentSocketHandler *>(this)->GetContent(cid); }
 	void DownloadContentInfo(ContentID cid);
 
 	void OnConnect(bool success) override;
