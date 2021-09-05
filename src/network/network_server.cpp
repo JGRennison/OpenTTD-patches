@@ -1031,6 +1031,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_SETTINGS_PASSWO
 	} else if (StrEmpty(_settings_client.network.settings_password) ||
 			strcmp(password, GenerateCompanyPasswordHash(_settings_client.network.settings_password, _settings_client.network.network_id, _settings_game.game_creation.generation_seed ^ this->settings_hash_bits)) != 0) {
 		DEBUG(net, 0, "[settings-ctrl] wrong password from client-id %d", this->client_id);
+		NetworkServerSendRcon(this->client_id, CC_ERROR, "Access Denied");
 		this->settings_authed = false;
 	} else {
 		DEBUG(net, 0, "[settings-ctrl] client-id %d", this->client_id);
@@ -1539,13 +1540,17 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_RCON(Packet *p)
 	char pass[NETWORK_PASSWORD_LENGTH];
 	char command[NETWORK_RCONCOMMAND_LENGTH];
 
-	if (StrEmpty(_settings_client.network.rcon_password)) return NETWORK_RECV_STATUS_OKAY;
+	if (StrEmpty(_settings_client.network.rcon_password)) {
+		NetworkServerSendRcon(this->client_id, CC_ERROR, "Access Denied");
+		return NETWORK_RECV_STATUS_OKAY;
+	}
 
 	p->Recv_string(pass, sizeof(pass));
 	p->Recv_string(command, sizeof(command));
 
 	if (strcmp(pass, GenerateCompanyPasswordHash(_settings_client.network.rcon_password, _settings_client.network.network_id, _settings_game.game_creation.generation_seed ^ this->rcon_hash_bits)) != 0) {
 		DEBUG(net, 0, "[rcon] wrong password from client-id %d", this->client_id);
+		NetworkServerSendRcon(this->client_id, CC_ERROR, "Access Denied");
 		return NETWORK_RECV_STATUS_OKAY;
 	}
 
