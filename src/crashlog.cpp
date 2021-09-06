@@ -140,15 +140,17 @@ char *CrashLog::LogOpenTTDVersion(char *buffer, const char *last) const
 {
 	return buffer + seprintf(buffer, last,
 			"OpenTTD version:\n"
-			" Version:    %s (%d)\n"
-			" NewGRF ver: %08x\n"
-			" Bits:       %d\n"
-			" Endian:     %s\n"
-			" Dedicated:  %s\n"
-			" Build date: %s\n"
-			" Defines:    %s\n\n",
+			" Version:     %s (%d)\n"
+			" Release ver: %s\n"
+			" NewGRF ver:  %08x\n"
+			" Bits:        %d\n"
+			" Endian:      %s\n"
+			" Dedicated:   %s\n"
+			" Build date:  %s\n"
+			" Defines:     %s\n\n",
 			_openttd_revision,
 			_openttd_revision_modified,
+			_openttd_release_version,
 			_openttd_newgrf_version,
 #ifdef _SQ64
 			64,

@@ -11,6 +11,7 @@
 #define REV_H
 
 extern const char _openttd_revision[];
+extern const char _openttd_release_version[];
 extern const char _openttd_build_date[];
 extern const char _openttd_revision_hash[];
 extern const char _openttd_revision_year[];
