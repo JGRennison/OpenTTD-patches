@@ -44,6 +44,7 @@
 #include <functional>
 #include <iterator>
 #include <set>
+#include <cmath>
 
 #include "safeguards.h"
 #include "video/video_driver.hpp"
@@ -852,7 +853,11 @@ struct SettingEntry : BaseSettingEntry {
 		return this->setting->desc.str_help;
 	}
 
-	void SetValueDParams(uint first_param, int32 value) const;
+	struct SetValueDParamsTempData {
+		char buffer[512];
+	};
+
+	void SetValueDParams(uint first_param, int32 value, std::unique_ptr<SetValueDParamsTempData> &tempdata) const;
 
 protected:
 	SettingEntry(const SettingDesc *setting, uint index);
@@ -1212,11 +1217,21 @@ static const void *ResolveVariableAddress(const GameSettings *settings_ptr, cons
  * @param first_param First DParam to use
  * @param value Setting value to set params for.
  */
-void SettingEntry::SetValueDParams(uint first_param, int32 value) const
+void SettingEntry::SetValueDParams(uint first_param, int32 value, std::unique_ptr<SettingEntry::SetValueDParamsTempData> &tempdata) const
 {
 	const SettingDescBase *sdb = &this->setting->desc;
 	if (sdb->cmd == SDT_BOOLX) {
 		SetDParam(first_param++, value != 0 ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
+	} else if (sdb->flags & SGF_DEC1SCALE) {
+		tempdata.reset(new SettingEntry::SetValueDParamsTempData());
+		double scale = std::exp2(((double)value) / 10);
+		int log = -std::min(0, (int)std::floor(std::log10(scale)) - 2);
+
+		int64 args_array[] = { value, (int64)(scale * std::pow(10.f, (float)log)), log };
+		StringParameters tmp_params(args_array);
+		GetStringWithArgs(tempdata->buffer, sdb->str_val, &tmp_params, lastof(tempdata->buffer));
+		SetDParam(first_param++, STR_JUST_RAW_STRING);
+		SetDParamStr(first_param++, tempdata->buffer);
 	} else {
 		if ((sdb->flags & SGF_ENUM) != 0) {
 			StringID str = STR_UNDEFINED;
@@ -1283,7 +1298,8 @@ void SettingEntry::DrawSettingString(uint left, uint right, int y, bool highligh
 {
 	const SettingDesc *sd = this->setting;
 	const SettingDescBase *sdb = &sd->desc;
-	this->SetValueDParams(1, value);
+	std::unique_ptr<SettingEntry::SetValueDParamsTempData> tempdata;
+	this->SetValueDParams(1, value, tempdata);
 	DrawString(left, right, y, sdb->str, highlight ? TC_WHITE : TC_LIGHT_BLUE);
 }
 
@@ -1304,7 +1320,8 @@ void CargoDestPerCargoSettingEntry::DrawSettingString(uint left, uint right, int
 	assert(sdb->str == STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO);
 	SetDParam(0, CargoSpec::Get(this->cargo)->name);
 	SetDParam(1, highlight ? STR_ORANGE_STRING1_WHITE : STR_ORANGE_STRING1_LTBLUE);
-	this->SetValueDParams(2, value);
+	std::unique_ptr<SettingEntry::SetValueDParamsTempData> tempdata;
+	this->SetValueDParams(2, value, tempdata);
 	DrawString(left, right, y, STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM, highlight ? TC_WHITE : TC_LIGHT_BLUE);
 }
 
@@ -2416,7 +2433,8 @@ struct GameSettingsWindow : Window {
 					y += FONT_HEIGHT_NORMAL;
 
 					int32 default_value = ReadValue(&sd->desc.def, sd->save.conv);
-					this->last_clicked->SetValueDParams(0, default_value);
+					std::unique_ptr<SettingEntry::SetValueDParamsTempData> tempdata;
+					this->last_clicked->SetValueDParams(0, default_value, tempdata);
 					DrawString(r.left, r.right, y, STR_CONFIG_SETTING_DEFAULT_VALUE);
 					y += FONT_HEIGHT_NORMAL + WD_PAR_VSEP_NORMAL;
 

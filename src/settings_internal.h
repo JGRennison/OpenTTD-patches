@@ -50,6 +50,7 @@ enum SettingGuiFlag : uint16 {
 	SGF_DECIMAL1      = 1 << 10,///< display a decimal representation of the setting value divided by 10
 	SGF_ENUM          = 1 << 11,///< the setting can take one of the values given by an array of struct SettingDescEnumEntry
 	SGF_NO_NEWGAME    = 1 << 12,///< the setting does not apply and is not shown in a new game context
+	SGF_DEC1SCALE     = 1 << 13,///< also display a float representation of the scale of a decimal1 scale parameter
 };
 DECLARE_ENUM_AS_BIT_SET(SettingGuiFlag)
 
