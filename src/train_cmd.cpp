@@ -4304,6 +4304,9 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 
 	if (got_reservation) {
 		if (v->current_order.IsBaseStationOrder() && HasStationTileRail(res_dest.tile) && v->current_order.GetDestination() == GetStationIndex(res_dest.tile)) {
+			if (v->current_order.ShouldStopAtStation(v, v->current_order.GetDestination(), v->current_order.IsType(OT_GOTO_WAYPOINT))) {
+				v->last_station_visited = v->current_order.GetDestination();
+			}
 			orders.SwitchToNextOrder(true);
 		}
 		if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
