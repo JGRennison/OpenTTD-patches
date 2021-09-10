@@ -1918,6 +1918,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Konpaini
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Bezero zerrenda
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Ikusle
 
 # Network client list
 

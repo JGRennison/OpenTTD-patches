@@ -2118,6 +2118,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Firma as
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Spillerlëscht
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Nokucken
 
 # Network client list
 

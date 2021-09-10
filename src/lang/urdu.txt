@@ -1610,6 +1610,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}کمپن
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}کلائینٹس کی فہرست
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}نظارہ کریں
 
 # Network client list
 

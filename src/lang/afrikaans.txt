@@ -2043,6 +2043,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Maatskap
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Klient Lys
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Toeskou
 
 # Network client list
 

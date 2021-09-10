@@ -2549,6 +2549,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}회사 �
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :접속자 목록
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :관전
 
 # Network client list
 STR_NETWORK_CLIENT_LIST_CAPTION                                 :{WHITE}멀티 플레이

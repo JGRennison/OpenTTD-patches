@@ -1719,6 +1719,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}شرکت
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}لیست سرویس گیرنده ها
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}تماشا
 
 # Network client list
 

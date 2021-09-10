@@ -1658,6 +1658,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Kompanio
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Klientlisto
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Spekti
 
 # Network client list
 

@@ -2187,6 +2187,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}A válla
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Kliens lista
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Megfigyelés
 
 # Network client list
 

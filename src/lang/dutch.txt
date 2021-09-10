@@ -2123,6 +2123,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Bedrijf 
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Spelerslijst
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Toekijken
 
 # Network client list
 

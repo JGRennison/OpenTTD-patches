@@ -2166,6 +2166,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Η ετ�
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Λίστα συμμετεχόντων
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Παρακολούθηση
 
 # Network client list
 

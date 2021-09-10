@@ -2439,6 +2439,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Firma is
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Online-Spieler
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Zuschauen
 
 # Network client list
 STR_NETWORK_CLIENT_LIST_CAPTION                                 :{WHITE}Mehrspieler

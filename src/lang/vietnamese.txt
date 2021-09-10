@@ -2121,6 +2121,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Công ty
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Danh sách máy trạm
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Xem
 
 # Network client list
 

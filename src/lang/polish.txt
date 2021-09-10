@@ -2504,6 +2504,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Firma je
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Lista klientów
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Obserwuj
 
 # Network client list
 

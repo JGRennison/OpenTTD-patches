@@ -2124,6 +2124,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}La compa
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Liste des clients
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Spectateur
 
 # Network client list
 

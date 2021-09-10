@@ -2123,6 +2123,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}公司�
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :客户端列表
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :旁观
 
 # Network client list
 

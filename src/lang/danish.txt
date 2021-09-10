@@ -2058,6 +2058,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Selskabe
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Klient liste
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Tilslut som tilskuer
 
 # Network client list
 

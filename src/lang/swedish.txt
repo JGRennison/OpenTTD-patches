@@ -2123,6 +2123,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Företag
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Klientlista
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Åskåda
 
 # Network client list
 

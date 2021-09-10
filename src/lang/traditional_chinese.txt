@@ -2009,6 +2009,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}公司�
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :用戶端清單
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :旁觀者
 
 # Network client list
 

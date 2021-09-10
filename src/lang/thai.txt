@@ -1948,6 +1948,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}บร�
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :รายการลูกข่าย
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :ผู้ชม
 
 # Network client list
 

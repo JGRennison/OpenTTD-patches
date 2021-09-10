@@ -1900,6 +1900,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Bedriuw 
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Client lyst
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Taskôgje
 
 # Network client list
 

@@ -2129,6 +2129,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Companyi
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Jugadors en línia
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Espectador
 
 # Network client list
 STR_NETWORK_CLIENT_LIST_CAPTION                                 :{WHITE}Multijugador

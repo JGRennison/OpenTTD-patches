@@ -1997,6 +1997,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Tá an c
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Liosta na gcliant
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Féach air
 
 # Network client list
 

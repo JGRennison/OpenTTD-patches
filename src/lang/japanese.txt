@@ -2083,6 +2083,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}この�
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :クライアントリスト
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :観覧モード
 
 # Network client list
 STR_NETWORK_CLIENT_LIST_SERVER_VISIBILITY_TOOLTIP               :{BLACK}他の人があなたのサーバーを公開リストで見ることができるかどうか

@@ -1855,6 +1855,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}நி�
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :விளையாடுவோர் பட்டியல்
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :கவனி
 
 # Network client list
 
