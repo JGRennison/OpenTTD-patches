@@ -17,6 +17,7 @@
 enum EndSegmentReason {
 	/* The following reasons can be saved into cached segment */
 	ESR_DEAD_END = 0,      ///< track ends here
+	ESR_DEAD_END_EOL,      ///< track ends here bit refers to the next tile, the last tile of the segment itself is usable
 	ESR_RAIL_TYPE,         ///< the next tile has a different rail type than our tiles
 	ESR_INFINITE_LOOP,     ///< infinite loop detected
 	ESR_SEGMENT_TOO_LONG,  ///< the segment is too long (possible infinite loop)
@@ -42,6 +43,7 @@ enum EndSegmentReasonBits {
 	ESRB_NONE = 0,
 
 	ESRB_DEAD_END          = 1 << ESR_DEAD_END,
+	ESRB_DEAD_END_EOL      = 1 << ESR_DEAD_END_EOL,
 	ESRB_RAIL_TYPE         = 1 << ESR_RAIL_TYPE,
 	ESRB_INFINITE_LOOP     = 1 << ESR_INFINITE_LOOP,
 	ESRB_SEGMENT_TOO_LONG  = 1 << ESR_SEGMENT_TOO_LONG,
@@ -63,7 +65,7 @@ enum EndSegmentReasonBits {
 	ESRB_POSSIBLE_TARGET = ESRB_DEPOT | ESRB_WAYPOINT | ESRB_STATION | ESRB_SAFE_TILE,
 
 	/* What reasons can be stored back into cached segment. */
-	ESRB_CACHED_MASK = ESRB_DEAD_END | ESRB_RAIL_TYPE | ESRB_INFINITE_LOOP | ESRB_SEGMENT_TOO_LONG | ESRB_CHOICE_FOLLOWS | ESRB_DEPOT | ESRB_WAYPOINT | ESRB_STATION | ESRB_SAFE_TILE | ESRB_REVERSE,
+	ESRB_CACHED_MASK = ESRB_DEAD_END | ESRB_DEAD_END_EOL | ESRB_RAIL_TYPE | ESRB_INFINITE_LOOP | ESRB_SEGMENT_TOO_LONG | ESRB_CHOICE_FOLLOWS | ESRB_DEPOT | ESRB_WAYPOINT | ESRB_STATION | ESRB_SAFE_TILE | ESRB_REVERSE,
 
 	/* Reasons to abort pathfinding in this direction. */
 	ESRB_ABORT_PF_MASK = ESRB_DEAD_END | ESRB_PATH_TOO_LONG | ESRB_INFINITE_LOOP | ESRB_FIRST_TWO_WAY_RED,
@@ -77,7 +79,7 @@ DECLARE_ENUM_AS_BIT_SET(EndSegmentReasonBits)
 inline std::string ValueStr(EndSegmentReasonBits bits)
 {
 	static const char * const end_segment_reason_names[] = {
-		"DEAD_END", "RAIL_TYPE", "INFINITE_LOOP", "SEGMENT_TOO_LONG", "CHOICE_FOLLOWS",
+		"DEAD_END", "DEAD_END_EOL", "RAIL_TYPE", "INFINITE_LOOP", "SEGMENT_TOO_LONG", "CHOICE_FOLLOWS",
 		"DEPOT", "WAYPOINT", "STATION", "SAFE_TILE",
 		"PATH_TOO_LONG", "FIRST_TWO_WAY_RED", "LOOK_AHEAD_END", "TARGET_REACHED",
 		"REVERSE"

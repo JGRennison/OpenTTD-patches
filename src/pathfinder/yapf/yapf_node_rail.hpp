@@ -215,6 +215,35 @@ struct CYapfRailNodeT
 		return (obj.*func)(cur, cur_td);
 	}
 
+	template <class Tbase, class Tpf>
+	uint GetNodeLength(const Train *v, Tpf &yapf, Tbase &obj) const
+	{
+		typename Tbase::TrackFollower ft(v, yapf.GetCompatibleRailTypes());
+		TileIndex cur = base::GetTile();
+		Trackdir  cur_td = base::GetTrackdir();
+
+		uint length = 0;
+
+		while (cur != GetLastTile() || cur_td != GetLastTrackdir()) {
+			length += IsDiagonalTrackdir(cur_td) ? TILE_SIZE : (TILE_SIZE / 2);
+			if (!ft.Follow(cur, cur_td)) break;
+			length += TILE_SIZE * ft.m_tiles_skipped;
+			cur = ft.m_new_tile;
+			assert(KillFirstBit(ft.m_new_td_bits) == TRACKDIR_BIT_NONE);
+			cur_td = FindFirstTrackdir(ft.m_new_td_bits);
+		}
+
+		EndSegmentReasonBits esrb = this->m_segment->m_end_segment_reason;
+		if (!(esrb & ESRB_DEAD_END) || (esrb & ESRB_DEAD_END_EOL)) {
+			length += IsDiagonalTrackdir(cur_td) ? TILE_SIZE : (TILE_SIZE / 2);
+			if (IsTileType(cur, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationEntrance(cur) && TrackdirEntersTunnelBridge(cur, cur_td)) {
+				length += TILE_SIZE * GetTunnelBridgeLength(cur, GetOtherTunnelBridgeEnd(cur));
+			}
+		}
+
+		return length;
+	}
+
 	void Dump(DumpTarget &dmp) const
 	{
 		base::Dump(dmp);
