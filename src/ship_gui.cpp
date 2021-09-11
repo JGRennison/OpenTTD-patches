@@ -16,6 +16,7 @@
 #include "vehicle_func.h"
 #include "spritecache.h"
 #include "zoom_func.h"
+#include "ship.h"
 
 #include "table/strings.h"
 
@@ -84,4 +85,9 @@ void DrawShipDetails(const Vehicle *v, int left, int right, int y)
 	/* Draw Transfer credits text */
 	SetDParam(0, v->cargo.FeederShare());
 	DrawString(left, right, y + 3 * FONT_HEIGHT_NORMAL + 3, STR_VEHICLE_INFO_FEEDER_CARGO_VALUE);
+
+	if (Ship::From(v)->critical_breakdown_count > 0) {
+		SetDParam(0, Ship::From(v)->GetDisplayEffectiveMaxSpeed());
+		DrawString(left, right, y + 4 * FONT_HEIGHT_NORMAL + 4, STR_NEED_REPAIR);
+	}
 }

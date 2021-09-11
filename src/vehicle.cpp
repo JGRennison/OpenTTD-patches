@@ -194,6 +194,8 @@ void VehicleServiceInDepot(Vehicle *v)
 		}
 	} else if (v->type == VEH_ROAD) {
 		RoadVehicle::From(v)->critical_breakdown_count = 0;
+	} else if (v->type == VEH_SHIP) {
+		Ship::From(v)->critical_breakdown_count = 0;
 	}
 	v->vehstatus &= ~VS_AIRCRAFT_BROKEN;
 	SetWindowDirty(WC_VEHICLE_DETAILS, v->index); // ensure that last service date and reliability are updated
@@ -231,7 +233,8 @@ bool Vehicle::NeedsServicing() const
 			(this->reliability >= this->GetEngine()->reliability * (100 - this->service_interval) / 100) :
 			(this->date_of_last_service + this->service_interval >= _date))
 			&& !(this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_NEED_REPAIR))
-			&& !(this->type == VEH_ROAD && RoadVehicle::From(this)->critical_breakdown_count > 0)) {
+			&& !(this->type == VEH_ROAD && RoadVehicle::From(this)->critical_breakdown_count > 0)
+			&& !(this->type == VEH_SHIP && Ship::From(this)->critical_breakdown_count > 0)) {
 		return false;
 	}
 
@@ -2204,6 +2207,10 @@ bool Vehicle::HandleBreakdown()
 							if (this->type == VEH_ROAD) {
 								if (RoadVehicle::From(this)->critical_breakdown_count != 255) {
 									RoadVehicle::From(this)->critical_breakdown_count++;
+								}
+							} else if (this->type == VEH_SHIP) {
+								if (Ship::From(this)->critical_breakdown_count != 255) {
+									Ship::From(this)->critical_breakdown_count++;
 								}
 							}
 						}
