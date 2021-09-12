@@ -2932,7 +2932,7 @@ void ReverseTrainDirection(Train *v)
 		if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(v->GetVehicleTrackdir()), true);
 		if (TryPathReserve(v, false, first_tile_okay)) {
 			/* Do a look-ahead now in case our current tile was already a safe tile. */
-			CheckNextTrainTile(v);
+			if (!v->current_order.IsType(OT_WAITING)) CheckNextTrainTile(v);
 		} else if (v->current_order.GetType() != OT_LOADING) {
 			/* Do not wait for a way out when we're still loading */
 			MarkTrainAsStuck(v);
@@ -3869,7 +3869,7 @@ public:
 					v->last_station_visited = v->current_order.GetDestination();
 				}
 			}
-			if (v->current_order.IsAnyLoadingType()) SetBit(state.flags, CTTLASF_STOP_FOUND);
+			if (v->current_order.IsAnyLoadingType() || v->current_order.IsType(OT_WAITING)) SetBit(state.flags, CTTLASF_STOP_FOUND);
 			this->SwitchToNextOrder(true);
 		}
 	}
@@ -3892,7 +3892,10 @@ public:
 							if (!HasBit(state.flags, CTTLASF_REVERSE_FOUND)) {
 								SetBit(state.flags, CTTLASF_REVERSE_FOUND);
 								state.reverse_dest = item.data_id;
-								if (this->v->current_order.IsWaitTimetabled()) this->v->last_station_visited = item.data_id;
+								if (this->v->current_order.IsWaitTimetabled()) {
+									this->v->last_station_visited = item.data_id;
+									SetBit(state.flags, CTTLASF_STOP_FOUND);
+								}
 							}
 						}
 						if (this->v->current_order.GetDestination() == item.data_id) {
@@ -3913,7 +3916,7 @@ static bool IsReservationLookAheadLongEnough(const Train *v, const ChooseTrainTr
 {
 	if (!v->UsingRealisticBraking() || v->lookahead == nullptr) return true;
 
-	if (v->current_order.IsAnyLoadingType()) return true;
+	if (v->current_order.IsAnyLoadingType() || v->current_order.IsType(OT_WAITING)) return true;
 
 	if (HasBit(lookahead_state.flags, CTTLASF_STOP_FOUND) || HasBit(lookahead_state.flags, TRLF_DEPOT_END)) return true;
 
