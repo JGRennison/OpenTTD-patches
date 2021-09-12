@@ -6581,6 +6581,8 @@ STR_SHIP                                                        :{G=f}{BLACK}{SH
 
 STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
 
+STR_DECIMAL1_WITH_SCALE                                         :{DECIMAL1} (x{DECIMAL})
+
 ######## Zoning toolbar
 
 STR_ZONING_TOOLBAR                                              :{WHITE}구역 보기
