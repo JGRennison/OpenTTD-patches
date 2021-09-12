@@ -1467,7 +1467,7 @@ void UpdateAllSignalAspects()
 	}
 }
 
-void UpdateExtraAspectsVariable()
+static uint8 DetermineExtraAspectsVariable()
 {
 	uint8 new_extra_aspects = 0;
 
@@ -1481,10 +1481,21 @@ void UpdateExtraAspectsVariable()
 		}
 	}
 
+	return new_extra_aspects;
+}
+
+void UpdateExtraAspectsVariable()
+{
+	uint8 new_extra_aspects = DetermineExtraAspectsVariable();
 
 	if (new_extra_aspects != _extra_aspects) {
 		_extra_aspects = new_extra_aspects;
 		if (_extra_aspects > 0) UpdateAllSignalAspects();
 		MarkWholeScreenDirty();
 	}
+}
+
+void InitialiseExtraAspectsVariable()
+{
+	_extra_aspects = DetermineExtraAspectsVariable();
 }

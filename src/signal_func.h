@@ -176,6 +176,7 @@ void UpdateAspectDeferred(TileIndex tile, Trackdir trackdir);
 void FlushDeferredAspectUpdates();
 void UpdateAllSignalAspects();
 void UpdateExtraAspectsVariable();
+void InitialiseExtraAspectsVariable();
 
 inline uint8 GetForwardAspectFollowingTrackAndIncrement(TileIndex tile, Trackdir trackdir)
 {

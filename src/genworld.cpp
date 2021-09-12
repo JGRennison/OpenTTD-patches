@@ -34,6 +34,7 @@
 #include "string_func.h"
 #include "thread.h"
 #include "tgp.h"
+#include "signal_func.h"
 
 #include "safeguards.h"
 
@@ -312,6 +313,7 @@ void GenerateWorld(GenWorldMode mode, uint size_x, uint size_y, bool reset_setti
 
 	/* Load the right landscape stuff, and the NewGRFs! */
 	GfxLoadSprites();
+	InitialiseExtraAspectsVariable();
 	LoadStringWidthTable();
 
 	/* Re-init the windowing system */
