@@ -2,6 +2,45 @@
 
 * * *
 
+### v0.43.0 (2021-09-12)
+* Fix reversing a train inside a depot disrupting the PBS reservation of another train heading into the depot.
+* Fix ships being drawn with the wrong image direction after rotating in place in some circumstances.
+* Fix ships with images which depend on speed not being redrawn when the speed has changed.
+* Fix signals on dual railtype tiles using wrong per-railtype custom signals.
+* Fix conditional order loops on leaving a depot when a timetabled wait time is set.
+* Signals on bridges/tunnels:
+ * Fix tunnel exit signal not being set to red when train exited.
+ * Fix signals on bridge middle parts not using per-railtype custom signals.
+ * The signal spacing distance is now fixed at signalling time, changing the company spacing setting now only affects newly signalled bridges/tunnels, not existing ones.
+ * The signal spacing distance is now automatically adjusted to fit the tunnel/bridge length. This is to avoid the last middle signal being too close to the exit signal.
+* Routing restrictions:
+  * Add slot action: try to acquire (only on reserve).
+  * Fix last station visited not being set when the reservation ends at the target station, this could cause long-reserve conditionals to use the wrong last station visited value.
+  * Fix reverse behind signal pathfinding when there is no dead-end beyond the signal.
+  * The reverse behind signal pathfinder now takes into account the train length to avoid reversing sidings which are too short.
+* NewGRF:
+  * Allow using NewGRF switches (Action 2/3) for general rail signal sprites, in the same way as per-railtype signal sprites.
+  * Enable recolouring of signal graphics.
+  * Add support for multi-aspect signal graphics (requires realistic braking).
+* Realistic braking:
+  * Adjust braking constants to slightly increase train braking forces.
+  * Block signals into blocks with junctions now default to red with realistic braking.
+* Template-based train replacement:
+  * Show refitted capacity when adding template vehicles with cargo filter.
+  * Show buy cost and running cost in template windows.
+  * Allow cloning trains directly from the template train list.
+* Add new signal type: no-entry signal. (This is not shown by default).
+* Add sort by number of vehicles calling to station list window.
+* Add improved breakdowns speed reductions for ships.
+* Train speed adaption: adjust look-ahead distances at lower speeds.
+* Make remove and routing restriction buttons in the signal build window mutually exclusive.
+* Add hotkey support to the signal build window.
+* Add spectate menu item to company toolbar menu.
+* Send back a message for rcon and settings_access failures.
+* Show linear scaling value in settings window for cargo scaling settings.
+* Add support for retrieving JGRPP-only content from the Bananas content service.
+* Add Korean translations by TELK.
+
 ### v0.42.3 (2021-08-04)
 * Fix multiplayer server crash when client joined during a threaded save or autosave.
 * Fix station ratings tooltip in right click mode.

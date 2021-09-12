@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.42.3
+## JGR's Patchpack version 0.43.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -51,6 +51,10 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add information about train full and empty loads and achievable speeds to the train info window.
 * Add setting to sort track types by category and speed.
 * Add a setting for whether to pathfind up to back of a one-way path signal.
+* Multi-aspect signal graphics.  
+  This requires a NewGRF which supports this and realistic train braking.
+* No-entry signals.  
+  These are not shown in the build signal window by default.
 
 #### Roads and Road Vehicles
 
@@ -153,6 +157,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add a waiting cargo history graph for stations.
 * Add a tooltip to show station rating details (controlled by a setting).
 * [Allow NewGRFs to supply additional station name strings](https://github.com/JGRennison/OpenTTD-patches/wiki/GRF-features#extra-station-names).
+* Add sort by number of vehicles calling to the station list window.
 
 #### Towns
 
