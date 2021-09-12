@@ -309,8 +309,9 @@ STR_SORT_BY_AVG_ORDER_OCCUPANCY                                 :평균 경로 �
 STR_SORT_BY_FACILITY                                            :역 종류
 STR_SORT_BY_WAITING_TOTAL                                       :전체 대기 화물량
 STR_SORT_BY_WAITING_AVAILABLE                                   :사용 가능한 대기 화물량
-STR_SORT_BY_RATING_MAX                                          :높은 화물 등급순
-STR_SORT_BY_RATING_MIN                                          :낮은 화물 등급순
+STR_SORT_BY_RATING_MAX                                          :높은 화물 등급
+STR_SORT_BY_RATING_MIN                                          :낮은 화물 등급
+STR_SORT_BY_VEHICLES_CALLING                                    :호출 차량 수
 STR_SORT_BY_ENGINE_ID                                           :차량ID (기본 정렬)
 STR_SORT_BY_COST                                                :가격
 STR_SORT_BY_POWER                                               :힘
@@ -1441,6 +1442,8 @@ STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :고급 경로 �
 STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :고급 경로 제한 기능을 표시합니다. 이 설정을 끄면, 일부 고급 기능이 인터페이스에 표시되지 않습니다. 하지만 다른 플레이어까지 숨겨진 고급 경로 제한 기능을 사용할 수 없도록 하지는 않습니다.
 STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES                        :신호기 프로그래밍 기능 표시: {STRING}
 STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :신호기 프로그래밍 기능을 표시합니다. 이 설정을 끄면, 프로그램 신호기를 짓거나 설정하는 버튼이 표시되지 않습니다. 하지만 다른 플레이어까지 프로그램 신호기를 사용할 수 없도록 하지는 않습니다.
+STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES                     :진입 금지 신호기 기능 표시: {STRING}
+STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES_HELPTEXT            :진입 금지 신호기 기능을 표시합니다. 이 설정을 끄면, 진입 금지 신호기를 짓거나 설정하는 버튼이 표시되지 않습니다. 하지만 다른 플레이어까지 진입 금지 신호기를 사용할 수 없도록 하지는 않습니다.
 STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER                   :차량 목록에 화물 종류 필터 표시: {STRING}
 STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER_HELPTEXT          :차량 목록에 화물 종류 필터를 표시합니다. 이 설정을 켜면, 차량 목록 창에 추가 필터 드롭다운이 표시됩니다.
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES               :고급 적재 모드 표시: {STRING}
@@ -1879,6 +1882,7 @@ STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :지분을 사�
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :환승시 벌어들이는 중간 수익의 비율: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :더 많은 수익을 내기 위해, 수송 관계상 중간 구간에게 주어진 수익의 비율을 설정합니다.
 STR_CONFIG_SETTING_SIMULATE_SIGNALS                             :다리와 터널에서 {STRING}마다 신호기를 설치한 것으로 계산
+STR_CONFIG_SETTING_SIMULATE_SIGNALS_HELPTEXT                    :이 설정은 신호기를 새로 설치한 다리와 터널에 적용할 신호기 간격 설정입니다. 실제 신호기 간격은 동일하지 않은 간격을 만들지 않기 위해 이 설정과 다소 다를 수 있습니다. 이 설정을 변경해도 기존에 신호기가 이미 설치된 다리와 터널의 신호기 간격을 다시 조정하지는 않습니다.
 STR_CONFIG_SETTING_SIMULATE_SIGNALS_VALUE                       :{COMMA} 칸
 STR_CONFIG_SETTING_DAY_LENGTH_FACTOR                            :1일의 길이 조절: {STRING}
 STR_CONFIG_SETTING_DAY_LENGTH_FACTOR_HELPTEXT                   :이 변수의 값을 늘리면 게임 속도가 느려집니다.
@@ -2882,15 +2886,17 @@ STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}입구 �
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}출구 신호기 (구식){}일반 신호기와 기능이 똑같지만, 입구 & 복합 신호기와 올바르게 연계되어야 합니다
 STR_BUILD_SIGNAL_SEMAPHORE_COMBO_TOOLTIP                        :{BLACK}복합 신호기 (구식){}복합 신호기는 입구 신호기와 출구 신호기의 역할을 동시에 합니다. 이 신호기는 사전 신호기의 거대한 "나뭇가지 구조"를 건설할 수 있도록 도와줍니다
 STR_BUILD_SIGNAL_SEMAPHORE_PROG_TOOLTIP                         :{BLACK}프로그램 신호기 (구식){}프로그램 신호기는 복잡한 기능을 할 수 있도록 프로그래밍 가능한 복합 신호기입니다.
-STR_BUILD_SIGNAL_SEMAPHORE_PBS_TOOLTIP                          :{BLACK}경로 신호기 (구식){}경로 신호기는 경로가 겹치지 않는 경우에 한 대 이상의 열차가 한 폐색 구간에 동시에 들어갈 수 있게 해줍니다. 경로 신호기는 반대편에서 통과가 가능합니다
-STR_BUILD_SIGNAL_SEMAPHORE_PBS_OWAY_TOOLTIP                     :{BLACK}단방향 경로 신호기 (구식){}경로 신호기는 경로가 겹치지 않는 경우에 한 대 이상의 열차가 한 폐색 구간에 동시에 들어갈 수 있게 해줍니다. 단방향 경로 신호기는 반대편에서 통과가 불가능합니다
+STR_BUILD_SIGNAL_SEMAPHORE_PBS_TOOLTIP                          :{BLACK}경로 신호기 (구식){}경로가 겹치지 않는 경우에 한 대 이상의 열차가 한 폐색 구간에 동시에 들어갈 수 있게 해주는 경로 신호기입니다. 경로 신호기는 반대편에서 통과가 가능합니다
+STR_BUILD_SIGNAL_SEMAPHORE_PBS_OWAY_TOOLTIP                     :{BLACK}단방향 경로 신호기 (구식){}경로가 겹치지 않는 경우에 한 대 이상의 열차가 한 폐색 구간에 동시에 들어갈 수 있게 해주는 경로 신호기입니다. 단방향 경로 신호기는 반대편에서 통과가 불가능합니다
+STR_BUILD_SIGNAL_SEMAPHORE_NO_ENTRY_TOOLTIP                     :{BLACK}진입 금지 신호기 (구식){}경로가 겹치지 않는 경우에 한 대 이상의 열차가 한 폐색 구간에 동시에 들어갈 수 있게 해주는 경로 신호기입니다. 진입 금지 신호기는 앞쪽에서 통과가 불가능합니다
 STR_BUILD_SIGNAL_ELECTRIC_NORM_TOOLTIP                          :{BLACK}폐색 신호기 (전자식){}가장 기본적인 신호기 형식입니다. 단 한 대의 열차만이 이 폐색 구간을 통과할 수 있습니다
 STR_BUILD_SIGNAL_ELECTRIC_ENTRY_TOOLTIP                         :{BLACK}입구 신호기 (전자식){}다음 폐색 구간에 있는 출구 신호기가 하나라도 파란불이면 파란불이 되며, 그렇지 않은 경우에는 빨간불이 됩니다
 STR_BUILD_SIGNAL_ELECTRIC_EXIT_TOOLTIP                          :{BLACK}출구 신호기 (전자식){}일반 신호기와 기능이 똑같지만, 입구 & 복합 신호기와 올바르게 연계되어야 합니다
 STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP                         :{BLACK}복합 신호기 (전자식){}복합 신호기는 입구 신호기와 출구 신호기의 역할을 동시에 합니다. 이 신호기는 사전 신호기의 거대한 "나뭇가지식 구조"를 건설할 수 있도록 도와줍니다
 STR_BUILD_SIGNAL_ELECTRIC_PROG_TOOLTIP                          :{BLACK}프로그램 신호기 (전자식){}프로그램 신호기는 복잡한 기능을 할 수 있도록 프로그래밍 가능한 복합 신호기입니다.
-STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP                           :{BLACK}경로 신호기 (전자식){}경로 신호기는 경로가 겹치지 않는 경우에 한 대 이상의 열차가 한 폐색 구간에 동시에 들어갈 수 있게 해줍니다. 경로 신호기는 반대편에서 통과가 가능합니다
-STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP                      :{BLACK}단방향 경로 신호기 (전자식){}경로 신호기는 경로가 겹치지 않는 경우에 한 대 이상의 열차가 한 폐색 구간에 동시에 들어갈 수 있게 해줍니다. 단방향 경로 신호기는 반대편에서 통과가 불가능합니다
+STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP                           :{BLACK}경로 신호기 (전자식){}경로가 겹치지 않는 경우에 한 대 이상의 열차가 한 폐색 구간에 동시에 들어갈 수 있게 해주는 경로 신호기입니다. 경로 신호기는 반대편에서 통과가 가능합니다
+STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP                      :{BLACK}단방향 경로 신호기 (전자식){}경로가 겹치지 않는 경우에 한 대 이상의 열차가 한 폐색 구간에 동시에 들어갈 수 있게 해주는 경로 신호기입니다. 단방향 경로 신호기는 반대편에서 통과가 불가능합니다
+STR_BUILD_SIGNAL_ELECTRIC_NO_ENTRY_TOOLTIP                      :{BLACK}진입 금지 신호기 (전자식){}경로가 겹치지 않는 경우에 한 대 이상의 열차가 한 폐색 구간에 동시에 들어갈 수 있게 해주는 경로 신호기입니다. 진입 금지 신호기는 앞쪽에서 통과가 불가능합니다
 STR_BUILD_SIGNAL_CONVERT_TOOLTIP                                :{BLACK}신호기 변환{}이 버튼을 선택한 뒤 이미 설치된 신호기를 클릭하면, 신호기의 종류(일반/입구/출구/복합/경로)와 형식(구식↔전자식)을 변경하고, CTRL+클릭하면 신호기의 형식을 변경합니다. SHIFT+클릭을 사용하면 예상 비용을 볼 수 있습니다
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}드래그로 설치할 때 신호기 사이의 간격입니다
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}드래그로 설치할 신호기 간격을 줄입니다
@@ -3011,6 +3017,7 @@ STR_TRACE_RESTRICT_COUNTER_OP                                   :카운터 연�
 STR_TRACE_RESTRICT_PF_PENALTY_CONTROL                           :페널티 설정
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :획득 또는 대기
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :획득 시도
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ON_RES                      :(경로 예약 중에) 획득 시도
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :해제 (앞)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :해제 (뒤)
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :경로 예약 종료: 획득 또는 대기
@@ -3018,6 +3025,7 @@ STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :경로 예약 �
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :경로 예약 종료: 해제
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :슬롯 획득: {STRING}{BLACK}{STRING}, 또는 경로 신호기에서 대기
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :슬롯 획득 시도: {STRING}{BLACK}{STRING}, 또는 계속하기
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM_RES_ONLY               :(경로 예약 중에) 슬롯 획득 시도: {STRING}{BLACK}{STRING}, 또는 계속하기
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :슬롯 해제: {STRING}{BLACK}{STRING} (열차의 앞)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :슬롯 해제: {STRING}{BLACK}{STRING} (열차의 뒤)
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :경로 예약 종료: 슬롯 획득: {STRING}{BLACK}{STRING}, 또는 입구에서 대기
@@ -4949,6 +4957,7 @@ STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}무게: 
 STR_VEHICLE_INFO_TRAIN_LENGTH                                   :{BLACK}열차 길이: {LTBLUE}{DECIMAL} 칸 {STRING}
 STR_VEHICLE_INFO_WEIGHT_RATIOS                                  :{BLACK}힘 / 무게: {LTBLUE}{POWER_WEIGHT_RATIO} {BLACK} 최고 견인력 / 무게: {LTBLUE}{FORCE_WEIGHT_RATIO}
 STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS                        :{BLACK}전체 중량: {LTBLUE}{WEIGHT_SHORT} {STRING}
+STR_VEHICLE_INFO_MAX_SPEED_LOADED                               :{BLACK}가득 실었을 때 최대 속력: {LTBLUE}{VELOCITY}
 
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}올해 이익: {LTBLUE}{CURRENCY_LONG} (작년: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING} (평생: {CURRENCY_LONG})
@@ -6572,6 +6581,8 @@ STR_SHIP                                                        :{G=f}{BLACK}{SH
 
 STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
 
+STR_DECIMAL1_WITH_SCALE                                         :{DECIMAL1} (x{DECIMAL})
+
 ######## Zoning toolbar
 
 STR_ZONING_TOOLBAR                                              :{WHITE}구역 보기
@@ -6667,6 +6678,8 @@ STR_TMPL_RPL_START                                              :{BLACK}교체 �
 STR_TMPL_RPL_STOP                                               :{BLACK}교체 중지
 STR_TMPL_TEMPLATE_OVR_VALUE                                     :{BLACK}구입 가격: {GOLD}{CURRENCY_LONG}
 STR_TMPL_TEMPLATE_OVR_VALUE_LTBLUE                              :{BLACK}구입 가격: {LTBLUE}{CURRENCY_LONG}
+STR_TMPL_TEMPLATE_OVR_RUNNING_COST                              :{BLACK}예상 운영 비용: {LTBLUE}{CURRENCY_LONG}
+STR_TMPL_TEMPLATE_OVR_MULTIPLE                                  :{BLACK}{STRING}{BLACK} {STRING}
 STR_TMPL_WARNING_FREE_WAGON                                     :{RED}객차/화차만 있음: 운행할 수 없습니다!
 STR_TMPL_WARNING_VEH_UNAVAILABLE                                :{RED}열차 구성 불가: 차량을 사용할 수 없습니다!
 STR_TMPL_GROUP_USES_TEMPLATE                                    :{BLACK}{NUM}번 템플릿 사용 중
