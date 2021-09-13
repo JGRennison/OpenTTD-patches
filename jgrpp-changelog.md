@@ -17,7 +17,6 @@
   * Add slot action: try to acquire (only on reserve).
   * Fix last station visited not being set when the reservation ends at the target station, this could cause long-reserve conditionals to use the wrong last station visited value.
   * Fix reverse behind signal pathfinding when there is no dead-end beyond the signal.
-  * The reverse behind signal pathfinder now takes into account the train length to avoid reversing sidings which are too short.
 * NewGRF:
   * Allow using NewGRF switches (Action 2/3) for general rail signal sprites, in the same way as per-railtype signal sprites.
   * Enable recolouring of signal graphics.
