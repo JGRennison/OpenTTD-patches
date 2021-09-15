@@ -2696,7 +2696,7 @@ struct LZMALoadFilter : LoadFilter {
 			/* inflate the data */
 			lzma_ret r = lzma_code(&this->lzma, LZMA_RUN);
 			if (r == LZMA_STREAM_END) break;
-			if (r != LZMA_OK) SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, "liblzma returned error code");
+			if (r != LZMA_OK) SlErrorFmt(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, "liblzma returned error code: %u", r);
 		} while (this->lzma.avail_out != 0);
 
 		return size - this->lzma.avail_out;
@@ -2746,7 +2746,7 @@ struct LZMASaveFilter : SaveFilter {
 				this->chain->Write(buf, n);
 			}
 			if (r == LZMA_STREAM_END) break;
-			if (r != LZMA_OK) SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, "liblzma returned error code");
+			if (r != LZMA_OK) SlErrorFmt(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, "liblzma returned error code: %u", r);
 		} while (this->lzma.avail_in || !this->lzma.avail_out);
 	}
 
