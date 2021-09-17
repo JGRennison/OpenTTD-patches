@@ -45,6 +45,7 @@ protected:
 	NetworkRecvStatus Receive_CLIENT_MOVE(Packet *p) override;
 
 	NetworkRecvStatus SendGameInfo();
+	NetworkRecvStatus SendGameInfoExtended(PacketGameType reply_type, uint16 flags, uint16 version);
 	NetworkRecvStatus SendCompanyInfo();
 	NetworkRecvStatus SendNewGRFCheck();
 	NetworkRecvStatus SendWelcome();

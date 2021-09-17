@@ -40,7 +40,6 @@
 #include "../safeguards.h"
 
 extern const uint8 _out_of_band_grf_md5[16] { 0x00, 0xB0, 0xC0, 0xDE, 0x00, 0x00, 0x00, 0x00, 0x00, 0xB0, 0xC0, 0xDE, 0x00, 0x00, 0x00, 0x00 };
-static const uint32 FIND_SERVER_EXTENDED_TOKEN = 0x2A49582A;
 
 /** Mutex for all out threaded udp resolution and such. */
 static std::mutex _network_udp_mutex;
@@ -410,7 +409,7 @@ void ClientNetworkUDPSocketHandler::Receive_SERVER_RESPONSE_Common(Packet *p, Ne
 		DeserializeNetworkGameInfo(p, &item->info);
 	}
 	/* Check for compatability with the client. */
-	CheckGameCompatibility(item->info);
+	CheckGameCompatibility(item->info, extended);
 	/* Ensure we consider the server online. */
 	item->online = true;
 

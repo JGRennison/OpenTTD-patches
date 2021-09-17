@@ -110,10 +110,10 @@ bool IsNetworkCompatibleVersion(const char *other, bool extended)
 /**
  * Check if an game entry is compatible with our client.
  */
-void CheckGameCompatibility(NetworkGameInfo &ngi)
+void CheckGameCompatibility(NetworkGameInfo &ngi, bool extended)
 {
 	/* Check if we are allowed on this server based on the revision-check. */
-	ngi.version_compatible = IsNetworkCompatibleVersion(ngi.server_revision);
+	ngi.version_compatible = IsNetworkCompatibleVersion(ngi.server_revision, extended);
 	ngi.compatible = ngi.version_compatible;
 
 	/* Check if we have all the GRFs on the client-system too. */

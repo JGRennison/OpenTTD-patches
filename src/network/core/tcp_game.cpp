@@ -29,6 +29,7 @@ static const char* _packet_game_type_names[] {
 	"SERVER_COMPANY_INFO",
 	"CLIENT_GAME_INFO",
 	"SERVER_GAME_INFO",
+	"SERVER_GAME_INFO_EXTENDED",
 	"SERVER_CHECK_NEWGRFS",
 	"CLIENT_NEWGRFS_CHECKED",
 	"SERVER_NEED_GAME_PASSWORD",
@@ -139,6 +140,7 @@ NetworkRecvStatus NetworkGameSocketHandler::HandlePacket(Packet *p)
 		case PACKET_SERVER_ERROR:                 return this->Receive_SERVER_ERROR(p);
 		case PACKET_CLIENT_GAME_INFO:             return this->Receive_CLIENT_GAME_INFO(p);
 		case PACKET_SERVER_GAME_INFO:             return this->Receive_SERVER_GAME_INFO(p);
+		case PACKET_SERVER_GAME_INFO_EXTENDED:    return this->Receive_SERVER_GAME_INFO_EXTENDED(p);
 		case PACKET_CLIENT_COMPANY_INFO:          return this->Receive_CLIENT_COMPANY_INFO(p);
 		case PACKET_SERVER_COMPANY_INFO:          return this->Receive_SERVER_COMPANY_INFO(p);
 		case PACKET_SERVER_CLIENT_INFO:           return this->Receive_SERVER_CLIENT_INFO(p);
@@ -231,6 +233,7 @@ NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_JOIN(Packet *p) { ret
 NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_ERROR(Packet *p) { return this->ReceiveInvalidPacket(PACKET_SERVER_ERROR); }
 NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_GAME_INFO(Packet *p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_GAME_INFO); }
 NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_GAME_INFO(Packet *p) { return this->ReceiveInvalidPacket(PACKET_SERVER_GAME_INFO); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_GAME_INFO_EXTENDED(Packet *p) { return this->ReceiveInvalidPacket(PACKET_SERVER_GAME_INFO_EXTENDED); }
 NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_COMPANY_INFO(Packet *p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_COMPANY_INFO); }
 NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_COMPANY_INFO(Packet *p) { return this->ReceiveInvalidPacket(PACKET_SERVER_COMPANY_INFO); }
 NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_CLIENT_INFO(Packet *p) { return this->ReceiveInvalidPacket(PACKET_SERVER_CLIENT_INFO); }

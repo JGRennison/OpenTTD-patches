@@ -94,7 +94,7 @@ extern NetworkServerGameInfo _network_game_info;
 
 const char *GetNetworkRevisionString();
 bool IsNetworkCompatibleVersion(const char *other, bool extended = false);
-void CheckGameCompatibility(NetworkGameInfo &ngi);
+void CheckGameCompatibility(NetworkGameInfo &ngi, bool extended = false);
 
 void FillNetworkGameInfo(NetworkGameInfo &ngi);
 

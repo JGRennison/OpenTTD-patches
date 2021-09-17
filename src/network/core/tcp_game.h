@@ -57,6 +57,8 @@ enum PacketGameType {
 	 * the map and other important data.
 	 */
 
+	PACKET_SERVER_GAME_INFO_EXTENDED,    ///< Information about the server (extended). Note that the server should not use this ID directly.
+
 	/* After the join step, the first is checking NewGRFs. */
 	PACKET_SERVER_CHECK_NEWGRFS,         ///< Server sends NewGRF IDs and MD5 checksums for the client to check.
 	PACKET_CLIENT_NEWGRFS_CHECKED,       ///< Client acknowledges that it has all required NewGRFs.
@@ -211,6 +213,13 @@ protected:
 	 * @param p The packet that was just received.
 	 */
 	virtual NetworkRecvStatus Receive_SERVER_GAME_INFO(Packet *p);
+
+	/**
+	 * Sends information about the game (extended).
+	 * Serialized NetworkGameInfo. See game_info.h for details.
+	 * @param p The packet that was just received.
+	 */
+	virtual NetworkRecvStatus Receive_SERVER_GAME_INFO_EXTENDED(Packet *p);
 
 	/**
 	 * Request company information (in detail).

@@ -16,6 +16,8 @@
 #include "../command_type.h"
 #include "../date_type.h"
 
+static const uint32 FIND_SERVER_EXTENDED_TOKEN = 0x2A49582A;
+
 #ifdef RANDOM_DEBUG
 /**
  * If this line is enable, every frame will have a sync test

@@ -414,7 +414,13 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendInformationQuery()
 	_network_join_status = NETWORK_JOIN_STATUS_GETTING_COMPANY_INFO;
 	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 
-	my_client->SendPacket(new Packet(PACKET_CLIENT_GAME_INFO));
+	Packet *p = new Packet(PACKET_CLIENT_GAME_INFO);
+	p->Send_uint32(FIND_SERVER_EXTENDED_TOKEN);
+	p->Send_uint8(PACKET_SERVER_GAME_INFO_EXTENDED); // reply type
+	p->Send_uint16(0); // flags
+	p->Send_uint16(0); // version
+	my_client->SendPacket(p);
+
 	my_client->SendPacket(new Packet(PACKET_CLIENT_COMPANY_INFO));
 
 	return NETWORK_RECV_STATUS_OKAY;
@@ -702,6 +708,28 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_GAME_INFO(Packe
 	DeserializeNetworkGameInfo(p, &item->info);
 	/* Check for compatability with the client. */
 	CheckGameCompatibility(item->info);
+	/* Ensure we consider the server online. */
+	item->online = true;
+
+	SetWindowDirty(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_LOBBY);
+
+	/* We will receive company info next, so keep connection open. */
+	if (this->status == STATUS_COMPANY_INFO) return NETWORK_RECV_STATUS_OKAY;
+	return NETWORK_RECV_STATUS_CLOSE_QUERY;
+}
+
+NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_GAME_INFO_EXTENDED(Packet *p)
+{
+	if (this->status != STATUS_COMPANY_INFO && this->status != STATUS_INACTIVE) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
+
+	NetworkGameList *item = GetLobbyGameInfo();
+
+	/* Clear any existing GRFConfig chain. */
+	ClearGRFConfigList(&item->info.grfconfig);
+	/* Retrieve the NetworkGameInfo from the packet. */
+	DeserializeNetworkGameInfoExtended(p, &item->info);
+	/* Check for compatability with the client. */
+	CheckGameCompatibility(item->info, true);
 	/* Ensure we consider the server online. */
 	item->online = true;
 

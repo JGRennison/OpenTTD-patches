@@ -371,6 +371,19 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendGameInfo()
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
+NetworkRecvStatus ServerNetworkGameSocketHandler::SendGameInfoExtended(PacketGameType reply_type, uint16 flags, uint16 version)
+{
+	NetworkGameInfo ngi;
+	FillNetworkGameInfo(ngi);
+
+	Packet *p = new Packet(reply_type, SHRT_MAX);
+	SerializeNetworkGameInfoExtended(p, &ngi, flags, version);
+
+	this->SendPacket(p);
+
+	return NETWORK_RECV_STATUS_OKAY;
+}
+
 /** Send the client information about the companies. */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendCompanyInfo()
 {
@@ -881,7 +894,14 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendSettingsAccessUpdate(bool 
 
 NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_GAME_INFO(Packet *p)
 {
-	return this->SendGameInfo();
+	if (p->CanReadFromPacket(9) && p->Recv_uint32() == FIND_SERVER_EXTENDED_TOKEN) {
+		PacketGameType reply_type = (PacketGameType)p->Recv_uint8();
+		uint16 flags = p->Recv_uint16();
+		uint16 version = p->Recv_uint16();
+		return this->SendGameInfoExtended(reply_type, flags, version);
+	} else {
+		return this->SendGameInfo();
+	}
 }
 
 NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMPANY_INFO(Packet *p)
