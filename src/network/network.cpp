@@ -56,7 +56,6 @@ bool _network_available;  ///< is network mode available?
 bool _network_dedicated;  ///< are we a dedicated server?
 bool _is_network_server;  ///< Does this client wants to be a network-server?
 bool _network_settings_access; ///< Can this client change server settings?
-NetworkServerGameInfo _network_game_info; ///< Information about our game.
 NetworkCompanyState *_network_company_states = nullptr; ///< Statistics about some companies.
 ClientID _network_own_client_id;      ///< Our client identifier.
 ClientID _redirect_console_to_client; ///< If not invalid, redirect the console output to a client.
@@ -632,13 +631,14 @@ public:
 	{
 		_networking = true;
 		new ClientNetworkGameSocketHandler(s);
-		MyClient::SendCompanyInformationQuery();
+		MyClient::SendInformationQuery();
 	}
 };
 
-/* Query a server to fetch his game-info
- *  If game_info is true, only the gameinfo is fetched,
- *   else only the client_info is fetched */
+/**
+ * Query a server to fetch his game-info.
+ * @param address the address to query.
+ */
 void NetworkTCPQueryServer(NetworkAddress address)
 {
 	if (!_network_available) return;
@@ -1175,15 +1175,6 @@ void NetworkShutDown()
 	_network_available = false;
 
 	NetworkCoreShutdown();
-}
-
-/**
- * Checks whether the given version string is compatible with our version.
- * @param other the version string to compare to
- */
-bool IsNetworkCompatibleVersion(const char *other, bool extended)
-{
-	return strncmp(_openttd_revision, other, (extended ? NETWORK_LONG_REVISION_LENGTH : NETWORK_REVISION_LENGTH) - 1) == 0;
 }
 
 #ifdef __EMSCRIPTEN__

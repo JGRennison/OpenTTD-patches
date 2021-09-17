@@ -23,10 +23,11 @@
 #include "../gfx_func.h"
 #include "../error.h"
 #include "../rev.h"
-#include "../fios.h"
+#include "core/game_info.h"
 #include "network.h"
 #include "network_base.h"
 #include "network_client.h"
+#include "network_gamelist.h"
 #include "../core/backup_type.hpp"
 #include "../thread.h"
 #include "../crashlog.h"
@@ -404,15 +405,18 @@ static_assert(NETWORK_SERVER_ID_LENGTH == 16 * 2 + 1);
  *   DEF_CLIENT_SEND_COMMAND has no parameters
  ************/
 
-/** Query the server for company information. */
-NetworkRecvStatus ClientNetworkGameSocketHandler::SendCompanyInformationQuery()
+/**
+ * Query the server for server information.
+ */
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendInformationQuery()
 {
 	my_client->status = STATUS_COMPANY_INFO;
 	_network_join_status = NETWORK_JOIN_STATUS_GETTING_COMPANY_INFO;
 	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 
-	Packet *p = new Packet(PACKET_CLIENT_COMPANY_INFO, SHRT_MAX);
-	my_client->SendPacket(p);
+	my_client->SendPacket(new Packet(PACKET_CLIENT_GAME_INFO));
+	my_client->SendPacket(new Packet(PACKET_CLIENT_COMPANY_INFO));
+
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
@@ -686,6 +690,28 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_BANNED(Packet *
 	return NETWORK_RECV_STATUS_SERVER_BANNED;
 }
 
+NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_GAME_INFO(Packet *p)
+{
+	if (this->status != STATUS_COMPANY_INFO && this->status != STATUS_INACTIVE) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
+
+	NetworkGameList *item = GetLobbyGameInfo();
+
+	/* Clear any existing GRFConfig chain. */
+	ClearGRFConfigList(&item->info.grfconfig);
+	/* Retrieve the NetworkGameInfo from the packet. */
+	DeserializeNetworkGameInfo(p, &item->info);
+	/* Check for compatability with the client. */
+	CheckGameCompatibility(item->info);
+	/* Ensure we consider the server online. */
+	item->online = true;
+
+	SetWindowDirty(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_LOBBY);
+
+	/* We will receive company info next, so keep connection open. */
+	if (this->status == STATUS_COMPANY_INFO) return NETWORK_RECV_STATUS_OKAY;
+	return NETWORK_RECV_STATUS_CLOSE_QUERY;
+}
+
 NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_COMPANY_INFO(Packet *p)
 {
 	if (this->status != STATUS_COMPANY_INFO) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
@@ -847,7 +873,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_CHECK_NEWGRFS(P
 	/* Check all GRFs */
 	for (; grf_count > 0; grf_count--) {
 		GRFIdentifier c;
-		this->ReceiveGRFIdentifier(p, &c);
+		DeserializeGRFIdentifier(p, &c);
 
 		/* Check whether we know this GRF */
 		const GRFConfig *f = FindGRFConfig(c.grfid, FGCM_EXACT, c.md5sum);

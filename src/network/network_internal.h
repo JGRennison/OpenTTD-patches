@@ -14,6 +14,7 @@
 #include "core/tcp_game.h"
 
 #include "../command_type.h"
+#include "../date_type.h"
 
 #ifdef RANDOM_DEBUG
 /**
@@ -97,8 +98,6 @@ void GetBindAddresses(NetworkAddressList *addresses, uint16 port);
 void NetworkAddServer(const char *b);
 void NetworkRebuildHostList();
 void UpdateNetworkGameWindow();
-
-bool IsNetworkCompatibleVersion(const char *version, bool extended = false);
 
 /* From network_command.cpp */
 /**

@@ -11,9 +11,11 @@
 #define NETWORK_GUI_H
 
 #include "../company_type.h"
+#include "../date_type.h"
 #include "../economy_type.h"
 #include "../window_type.h"
 #include "network_type.h"
+#include "network_gamelist.h"
 
 void ShowNetworkNeedPassword(NetworkPasswordType npt);
 void ShowNetworkGiveMoneyWindow(CompanyID company);
@@ -37,5 +39,6 @@ struct NetworkCompanyInfo : NetworkCompanyStats {
 };
 
 NetworkCompanyInfo *GetLobbyCompanyInfo(CompanyID company);
+NetworkGameList *GetLobbyGameInfo();
 
 #endif /* NETWORK_GUI_H */

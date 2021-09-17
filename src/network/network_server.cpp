@@ -10,6 +10,7 @@
 #include "../stdafx.h"
 #include "../strings_func.h"
 #include "../date_func.h"
+#include "core/game_info.h"
 #include "network_admin.h"
 #include "network_server.h"
 #include "network_udp.h"
@@ -356,6 +357,20 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendClientInfo(NetworkClientIn
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
+/** Send the client information about the server. */
+NetworkRecvStatus ServerNetworkGameSocketHandler::SendGameInfo()
+{
+	NetworkGameInfo ngi;
+	FillNetworkGameInfo(ngi);
+
+	Packet *p = new Packet(PACKET_SERVER_GAME_INFO, SHRT_MAX);
+	SerializeNetworkGameInfo(p, &ngi);
+
+	this->SendPacket(p);
+
+	return NETWORK_RECV_STATUS_OKAY;
+}
+
 /** Send the client information about the companies. */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendCompanyInfo()
 {
@@ -495,7 +510,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendNewGRFCheck()
 
 	p->Send_uint32 (grf_count);
 	for (c = _grfconfig; c != nullptr; c = c->next) {
-		if (!HasBit(c->flags, GCF_STATIC)) this->SendGRFIdentifier(p, &c->ident);
+		if (!HasBit(c->flags, GCF_STATIC)) SerializeGRFIdentifier(p, &c->ident);
 	}
 
 	this->SendPacket(p);
@@ -863,6 +878,11 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendSettingsAccessUpdate(bool 
  * Receiving functions
  *   DEF_SERVER_RECEIVE_COMMAND has parameter: NetworkClientSocket *cs, Packet *p
  ************/
+
+NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_GAME_INFO(Packet *p)
+{
+	return this->SendGameInfo();
+}
 
 NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMPANY_INFO(Packet *p)
 {

@@ -16,6 +16,7 @@
 #include "../date_func.h"
 #include "../map_func.h"
 #include "../debug.h"
+#include "core/game_info.h"
 #include "network_gamelist.h"
 #include "network_internal.h"
 #include "network_udp.h"
@@ -192,27 +193,7 @@ void ServerNetworkUDPSocketHandler::Receive_CLIENT_FIND_SERVER(Packet *p, Networ
 	}
 
 	NetworkGameInfo ngi;
-
-	/* Update some game_info */
-	ngi.clients_on     = _network_game_info.clients_on;
-	ngi.start_date     = ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1);
-
-	ngi.use_password   = !StrEmpty(_settings_client.network.server_password);
-	ngi.clients_max    = _settings_client.network.max_clients;
-	ngi.companies_on   = (byte)Company::GetNumItems();
-	ngi.companies_max  = _settings_client.network.max_companies;
-	ngi.spectators_on  = NetworkSpectatorCount();
-	ngi.spectators_max = _settings_client.network.max_spectators;
-	ngi.game_date      = _date;
-	ngi.map_width      = MapSizeX();
-	ngi.map_height     = MapSizeY();
-	ngi.map_set        = _settings_game.game_creation.landscape;
-	ngi.dedicated      = _network_dedicated;
-	ngi.grfconfig      = _grfconfig;
-
-	strecpy(ngi.server_name, _settings_client.network.server_name, lastof(ngi.server_name));
-	strecpy(ngi.server_revision, _openttd_revision, lastof(ngi.server_revision));
-	strecpy(ngi.short_server_revision, _openttd_revision, lastof(ngi.short_server_revision));
+	FillNetworkGameInfo(ngi);
 
 	if (p->CanReadFromPacket(8) && p->Recv_uint32() == FIND_SERVER_EXTENDED_TOKEN) {
 		this->Reply_CLIENT_FIND_SERVER_extended(p, client_addr, &ngi);
@@ -220,7 +201,7 @@ void ServerNetworkUDPSocketHandler::Receive_CLIENT_FIND_SERVER(Packet *p, Networ
 	}
 
 	Packet packet(PACKET_UDP_SERVER_RESPONSE);
-	this->SendNetworkGameInfo(&packet, &ngi);
+	SerializeNetworkGameInfo(&packet, &ngi);
 
 	/* Let the client know that we are here */
 	this->SendPacket(&packet, client_addr);
@@ -234,7 +215,7 @@ void ServerNetworkUDPSocketHandler::Reply_CLIENT_FIND_SERVER_extended(Packet *p,
 	uint16 version = p->Recv_uint16();
 
 	Packet packet(PACKET_UDP_EX_SERVER_RESPONSE, SHRT_MAX);
-	this->SendNetworkGameInfoExtended(&packet, ngi, flags, version);
+	SerializeNetworkGameInfoExtended(&packet, ngi, flags, version);
 
 	/* Let the client know that we are here */
 	this->SendPacket(&packet, client_addr, false, false, true);
@@ -335,7 +316,7 @@ void ServerNetworkUDPSocketHandler::Receive_CLIENT_GET_NEWGRFS(Packet *p, Networ
 
 			/* The name could be an empty string, if so take the filename */
 			strecpy(name, info.name, lastof(name));
-			this->SendGRFIdentifier(&packet, &info.ident);
+			SerializeGRFIdentifier(&packet, &info.ident);
 			packet.Send_string(name);
 		}
 
@@ -348,7 +329,7 @@ void ServerNetworkUDPSocketHandler::Receive_CLIENT_GET_NEWGRFS(Packet *p, Networ
 
 	for (i = 0; i < num_grfs; i++) {
 		GRFInfo info;
-		this->ReceiveGRFIdentifier(p, &info.ident);
+		DeserializeGRFIdentifier(p, &info.ident);
 
 		if (memcmp(info.ident.md5sum, _out_of_band_grf_md5, 16) == 0) {
 			if (info.ident.grfid == 0x56D2B000) {
@@ -393,7 +374,6 @@ protected:
 	void Receive_EX_SERVER_RESPONSE(Packet *p, NetworkAddress *client_addr) override;
 	void Receive_MASTER_RESPONSE_LIST(Packet *p, NetworkAddress *client_addr) override;
 	void Receive_SERVER_NEWGRFS(Packet *p, NetworkAddress *client_addr) override;
-	void HandleIncomingNetworkGameInfoGRFConfig(GRFConfig *config) override;
 public:
 	virtual ~ClientNetworkUDPSocketHandler() {}
 };
@@ -420,14 +400,20 @@ void ClientNetworkUDPSocketHandler::Receive_SERVER_RESPONSE_Common(Packet *p, Ne
 	/* Find next item */
 	item = NetworkGameListAddItem(*client_addr);
 
+	/* Clear any existing GRFConfig chain. */
 	ClearGRFConfigList(&item->info.grfconfig);
 	if (extended) {
-		this->ReceiveNetworkGameInfoExtended(p, &item->info);
+		/* Retrieve the NetworkGameInfo from the packet. */
+		DeserializeNetworkGameInfoExtended(p, &item->info);
 	} else {
-		this->ReceiveNetworkGameInfo(p, &item->info);
+		/* Retrieve the NetworkGameInfo from the packet. */
+		DeserializeNetworkGameInfo(p, &item->info);
 	}
+	/* Check for compatability with the client. */
+	CheckGameCompatibility(item->info);
+	/* Ensure we consider the server online. */
+	item->online = true;
 
-	item->info.compatible = true;
 	{
 		/* Checks whether there needs to be a request for names of GRFs and makes
 		 * the request if necessary. GRFs that need to be requested are the GRFs
@@ -447,7 +433,7 @@ void ClientNetworkUDPSocketHandler::Receive_SERVER_RESPONSE_Common(Packet *p, Ne
 
 			packet.Send_uint8(in_request_count);
 			for (i = 0; i < in_request_count; i++) {
-				this->SendGRFIdentifier(&packet, &in_request[i]->ident);
+				SerializeGRFIdentifier(&packet, &in_request[i]->ident);
 			}
 
 			this->SendPacket(&packet, &item->address);
@@ -475,12 +461,6 @@ void ClientNetworkUDPSocketHandler::Receive_SERVER_RESPONSE_Common(Packet *p, Ne
 	if (client_addr->GetAddress()->ss_family == AF_INET6) {
 		strecat(item->info.server_name, " (IPv6)", lastof(item->info.server_name));
 	}
-
-	/* Check if we are allowed on this server based on the revision-match */
-	item->info.version_compatible = IsNetworkCompatibleVersion(item->info.server_revision, extended);
-	item->info.compatible &= item->info.version_compatible; // Already contains match for GRFs
-
-	item->online = true;
 
 	UpdateNetworkGameWindow();
 }
@@ -535,7 +515,7 @@ void ClientNetworkUDPSocketHandler::Receive_SERVER_NEWGRFS(Packet *p, NetworkAdd
 		char name[NETWORK_GRF_NAME_LENGTH];
 		GRFIdentifier c;
 
-		this->ReceiveGRFIdentifier(p, &c);
+		DeserializeGRFIdentifier(p, &c);
 		p->Recv_string(name, sizeof(name));
 
 		/* An empty name is not possible under normal circumstances
@@ -550,25 +530,6 @@ void ClientNetworkUDPSocketHandler::Receive_SERVER_NEWGRFS(Packet *p, NetworkAdd
 			AddGRFTextToList(unknown_name, name);
 		}
 	}
-}
-
-void ClientNetworkUDPSocketHandler::HandleIncomingNetworkGameInfoGRFConfig(GRFConfig *config)
-{
-	/* Find the matching GRF file */
-	const GRFConfig *f = FindGRFConfig(config->ident.grfid, FGCM_EXACT, config->ident.md5sum);
-	if (f == nullptr) {
-		/* Don't know the GRF, so mark game incompatible and the (possibly)
-		 * already resolved name for this GRF (another server has sent the
-		 * name of the GRF already */
-		config->name = FindUnknownGRFName(config->ident.grfid, config->ident.md5sum, true);
-		config->status = GCS_NOT_FOUND;
-	} else {
-		config->filename = f->filename;
-		config->name = f->name;
-		config->info = f->info;
-		config->url = f->url;
-	}
-	SetBit(config->flags, GCF_COPY);
 }
 
 /** Broadcast to all ips */
