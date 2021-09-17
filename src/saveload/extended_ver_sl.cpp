@@ -536,7 +536,7 @@ static void Save_SLXI()
 static void Load_SLXI()
 {
 	if (_sl_is_faked_ext || !_sl_is_ext_version) {
-		SlErrorCorrupt("SXLI chunk is unexpectedly present");
+		SlErrorCorrupt("SLXI chunk is unexpectedly present");
 	}
 
 	SlXvResetState();
