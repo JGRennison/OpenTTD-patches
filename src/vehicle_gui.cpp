@@ -66,6 +66,7 @@ static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleLengthSorter;
 static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleTimeToLiveSorter;
 static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleTimetableDelaySorter;
 static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleAverageOrderOccupancySorter;
+static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleMaxSpeedLoadedSorter;
 static BaseVehicleListWindow::VehicleGroupSortFunction VehicleGroupLengthSorter;
 static BaseVehicleListWindow::VehicleGroupSortFunction VehicleGroupTotalProfitThisYearSorter;
 static BaseVehicleListWindow::VehicleGroupSortFunction VehicleGroupTotalProfitLastYearSorter;
@@ -96,6 +97,7 @@ enum VehicleSortType
 	VST_TIME_TO_LIVE,
 	VST_TIMETABLE_DELAY,
 	VST_AVERAGE_ORDER_OCCUPANCY,
+	VST_MAX_SPEED_LOADED,
 };
 
 BaseVehicleListWindow::VehicleGroupSortFunction * const BaseVehicleListWindow::vehicle_group_none_sorter_funcs[] = {
@@ -114,6 +116,7 @@ BaseVehicleListWindow::VehicleGroupSortFunction * const BaseVehicleListWindow::v
 	&VehicleIndividualToGroupSorterWrapper<VehicleTimeToLiveSorter>,
 	&VehicleIndividualToGroupSorterWrapper<VehicleTimetableDelaySorter>,
 	&VehicleIndividualToGroupSorterWrapper<VehicleAverageOrderOccupancySorter>,
+	&VehicleIndividualToGroupSorterWrapper<VehicleMaxSpeedLoadedSorter>,
 };
 
 const StringID BaseVehicleListWindow::vehicle_group_none_sorter_names[] = {
@@ -132,6 +135,7 @@ const StringID BaseVehicleListWindow::vehicle_group_none_sorter_names[] = {
 	STR_SORT_BY_LIFE_TIME,
 	STR_SORT_BY_TIMETABLE_DELAY,
 	STR_SORT_BY_AVG_ORDER_OCCUPANCY,
+	STR_SORT_BY_MAX_SPEED_LOADED,
 	INVALID_STRING_ID
 };
 
@@ -477,12 +481,15 @@ DropDownList BaseVehicleListWindow::BuildActionDropdownList(bool show_autoreplac
 /* cached values for VehicleNameSorter to spare many GetString() calls */
 static const Vehicle *_last_vehicle[2] = { nullptr, nullptr };
 
+static btree::btree_map<VehicleID, int> _vehicle_max_speed_loaded;
+
 void BaseVehicleListWindow::SortVehicleList()
 {
 	if (this->vehgroups.Sort()) return;
 
 	/* invalidate cached values for name sorter - vehicle names could change */
 	_last_vehicle[0] = _last_vehicle[1] = nullptr;
+	_vehicle_max_speed_loaded.clear();
 }
 
 void DepotSortList(VehicleList *list)
@@ -1606,6 +1613,29 @@ static bool VehicleAverageOrderOccupancySorter(const Vehicle * const &a, const V
 	return (r != 0) ? r < 0 : VehicleNumberSorter(a, b);
 }
 
+/** Sort vehicles by the max speed (fully loaded) */
+static bool VehicleMaxSpeedLoadedSorter(const Vehicle * const &a, const Vehicle * const &b)
+{
+	auto get_max_speed_loaded = [](const Train * const v) -> int {
+		auto res = _vehicle_max_speed_loaded.insert({ v->index, 0 });
+		if (!res.second) {
+			/* This vehicle's speed was already in _vehicle_max_speed_loaded */
+			return res.first->second;
+		}
+		int loaded_weight = 0;
+		for (const Train *u = v; u != nullptr; u = u->Next()) {
+			loaded_weight += u->GetWeightWithoutCargo() + u->GetCargoWeight(u->cargo_cap);
+		}
+
+		int loaded_max_speed = GetTrainEstimatedMaxAchievableSpeed(v, loaded_weight, v->GetDisplayMaxSpeed());
+		res.first->second = loaded_max_speed;
+		return loaded_max_speed;
+	};
+
+	int r = get_max_speed_loaded(Train::From(a)) - get_max_speed_loaded(Train::From(b));
+	return (r != 0) ? r < 0 : VehicleNumberSorter(a, b);
+}
+
 void InitializeGUI()
 {
 	MemSetT(&_grouping, 0);
@@ -2034,6 +2064,16 @@ void BaseVehicleListWindow::UpdateVehicleGroupBy(GroupBy group_by)
 	}
 }
 
+uint BaseVehicleListWindow::GetSorterDisableMask(VehicleType type) const
+{
+	uint mask = 0;
+	if (this->grouping == GB_NONE) {
+		if (type != VEH_TRAIN && type != VEH_ROAD) mask |= (1 << VST_LENGTH);
+		if (type != VEH_TRAIN || _settings_game.vehicle.train_acceleration_model == AM_ORIGINAL) mask |= (1 << VST_MAX_SPEED_LOADED);
+	}
+	return mask;
+}
+
 /**
  * Window for the (old) vehicle listing.
  *
@@ -2250,7 +2290,7 @@ public:
 
 			case WID_VL_SORT_BY_PULLDOWN: // Select sorting criteria dropdown menu
 				ShowDropDownMenu(this, this->GetVehicleSorterNames(), this->vehgroups.SortType(), WID_VL_SORT_BY_PULLDOWN, 0,
-						(this->vli.vtype == VEH_TRAIN || this->vli.vtype == VEH_ROAD) ? 0 : this->vehicle_sorter_non_ground_veh_disable_mask, 0, DDSF_LOST_FOCUS);
+						this->GetSorterDisableMask(this->vli.vtype), 0, DDSF_LOST_FOCUS);
 				return;
 
 			case WID_VL_FILTER_BY_CARGO: // Cargo filter dropdown
