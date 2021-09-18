@@ -15,12 +15,14 @@
 /** Class for handling the client side of the game connection. */
 class ClientNetworkGameSocketHandler : public NetworkGameSocketHandler {
 private:
+	NetworkAddress address;        ///< Address we are connected to.
 	struct PacketReader *savegame; ///< Packet reader for reading the savegame.
 	byte token;                    ///< The token we need to send back to the server to prove we're the right client.
 
 	/** Status of the connection with the server. */
 	enum ServerStatus {
 		STATUS_INACTIVE,      ///< The client is not connected nor active.
+		STATUS_GAME_INFO,     ///< We are trying to get the game information.
 		STATUS_COMPANY_INFO,  ///< We are trying to get company information.
 		STATUS_JOIN,          ///< We are trying to join a server.
 		STATUS_NEWGRFS_CHECK, ///< Last action was checking NewGRFs.
@@ -84,7 +86,7 @@ protected:
 	static NetworkRecvStatus SendMapOk();
 	void CheckConnection();
 public:
-	ClientNetworkGameSocketHandler(SOCKET s);
+	ClientNetworkGameSocketHandler(SOCKET s, NetworkAddress address);
 	~ClientNetworkGameSocketHandler();
 
 	NetworkRecvStatus CloseConnection(NetworkRecvStatus status) override;
@@ -92,7 +94,7 @@ public:
 
 	std::string GetDebugInfo() const override;
 
-	static NetworkRecvStatus SendInformationQuery();
+	static NetworkRecvStatus SendInformationQuery(bool request_company_info);
 
 	static NetworkRecvStatus SendJoin();
 	static NetworkRecvStatus SendCommand(const CommandPacket *cp);
@@ -127,9 +129,15 @@ typedef ClientNetworkGameSocketHandler MyClient;
 void NetworkClient_Connected();
 void NetworkClientSetCompanyPassword(const char *password);
 
-extern CompanyID _network_join_as;
+/** Information required to join a server. */
+struct NetworkJoinInfo {
+	NetworkJoinInfo() : company(COMPANY_SPECTATOR), server_password(nullptr), company_password(nullptr) {}
+	NetworkAddress address;       ///< The address of the server to join.
+	CompanyID company;            ///< The company to join.
+	const char *server_password;  ///< The password of the server to join.
+	const char *company_password; ///< The password of the company to join.
+};
 
-extern const char *_network_join_server_password;
-extern const char *_network_join_company_password;
+extern NetworkJoinInfo _network_join;
 
 #endif /* NETWORK_CLIENT_H */

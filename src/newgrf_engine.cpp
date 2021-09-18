@@ -31,61 +31,28 @@
 bool _sprite_group_resolve_check_veh_check = false;
 bool _sprite_group_resolve_check_veh_curvature_check = false;
 
-struct WagonOverride {
-	EngineID *train_id;
-	uint trains;
-	CargoID cargo;
-	const SpriteGroup *group;
-};
-
 void SetWagonOverrideSprites(EngineID engine, CargoID cargo, const SpriteGroup *group, EngineID *train_id, uint trains)
 {
 	Engine *e = Engine::Get(engine);
-	WagonOverride *wo;
 
 	assert(cargo < NUM_CARGO + 2); // Include CT_DEFAULT and CT_PURCHASE pseudo cargoes.
 
-	e->overrides_count++;
-	e->overrides = ReallocT(e->overrides, e->overrides_count);
-
-	wo = &e->overrides[e->overrides_count - 1];
+	WagonOverride *wo = &e->overrides.emplace_back();
 	wo->group = group;
 	wo->cargo = cargo;
-	wo->trains = trains;
-	wo->train_id = MallocT<EngineID>(trains);
-	memcpy(wo->train_id, train_id, trains * sizeof *train_id);
+	wo->engines.assign(train_id, train_id + trains);
 }
 
 const SpriteGroup *GetWagonOverrideSpriteSet(EngineID engine, CargoID cargo, EngineID overriding_engine)
 {
 	const Engine *e = Engine::Get(engine);
 
-	for (uint i = 0; i < e->overrides_count; i++) {
-		const WagonOverride *wo = &e->overrides[i];
-
-		if (wo->cargo != cargo && wo->cargo != CT_DEFAULT) continue;
-
-		for (uint j = 0; j < wo->trains; j++) {
-			if (wo->train_id[j] == overriding_engine) return wo->group;
-		}
+	for (const WagonOverride &wo : e->overrides) {
+		if (wo.cargo != cargo && wo.cargo != CT_DEFAULT) continue;
+		if (std::find(wo.engines.begin(), wo.engines.end(), overriding_engine) != wo.engines.end()) return wo.group;
 	}
 	return nullptr;
 }
-
-/**
- * Unload all wagon override sprite groups.
- */
-void UnloadWagonOverrides(Engine *e)
-{
-	for (uint i = 0; i < e->overrides_count; i++) {
-		WagonOverride *wo = &e->overrides[i];
-		free(wo->train_id);
-	}
-	free(e->overrides);
-	e->overrides_count = 0;
-	e->overrides = nullptr;
-}
-
 
 void SetCustomEngineSprites(EngineID engine, byte cargo, const SpriteGroup *group)
 {
@@ -1623,8 +1590,8 @@ void AnalyseEngineCallbacks()
 		for (uint i = 0; i < NUM_CARGO + 2; i++) {
 			process_sg(e->grf_prop.spritegroup[i]);
 		}
-		for (uint i = 0; i < e->overrides_count; i++) {
-			process_sg(e->overrides[i].group);
+		for (const WagonOverride &wo : e->overrides) {
+			process_sg(wo.group);
 		}
 		e->callbacks_used = callbacks_used;
 		e->cb36_properties_used = cb36_properties_used;

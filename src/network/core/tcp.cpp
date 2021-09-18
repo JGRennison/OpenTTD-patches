@@ -114,11 +114,11 @@ SendPacketsState NetworkTCPSocketHandler::SendPackets(bool closing_down)
 		Packet *p = this->packet_queue.front().get();
 		res = p->TransferOut<int>(send, this->sock, 0);
 		if (res == -1) {
-			int err = NetworkGetLastError();
-			if (err != EWOULDBLOCK) {
+			NetworkError err = NetworkError::GetLast();
+			if (!err.WouldBlock()) {
 				/* Something went wrong.. close client! */
 				if (!closing_down) {
-					DEBUG(net, 0, "send failed with error %s", NetworkGetErrorString(err));
+					DEBUG(net, 0, "send failed with error %s", err.AsString());
 					this->CloseConnection();
 				}
 				return SPS_CLOSED;
@@ -165,10 +165,10 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 		while (p->RemainingBytesToTransfer() != 0) {
 			res = p->TransferIn<int>(recv, this->sock, 0);
 			if (res == -1) {
-				int err = NetworkGetLastError();
-				if (err != EWOULDBLOCK) {
-					/* Something went wrong... (ECONNRESET is connection reset by peer) */
-					if (err != ECONNRESET) DEBUG(net, 0, "recv failed with error %s", NetworkGetErrorString(err));
+				NetworkError err = NetworkError::GetLast();
+				if (!err.WouldBlock()) {
+					/* Something went wrong... */
+					if (!err.IsConnectionReset()) DEBUG(net, 0, "recv failed with error %s", err.AsString());
 					this->CloseConnection();
 					return nullptr;
 				}
@@ -194,10 +194,10 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 	while (p->RemainingBytesToTransfer() != 0) {
 		res = p->TransferIn<int>(recv, this->sock, 0);
 		if (res == -1) {
-			int err = NetworkGetLastError();
-			if (err != EWOULDBLOCK) {
-				/* Something went wrong... (ECONNRESET is connection reset by peer) */
-				if (err != ECONNRESET) DEBUG(net, 0, "recv failed with error %s", NetworkGetErrorString(err));
+			NetworkError err = NetworkError::GetLast();
+			if (!err.WouldBlock()) {
+				/* Something went wrong... */
+				if (!err.IsConnectionReset()) DEBUG(net, 0, "recv failed with error %s", err.AsString());
 				this->CloseConnection();
 				return nullptr;
 			}

@@ -190,8 +190,8 @@ struct NetworkAddressDumper {
 	const char *GetAddressAsString(NetworkAddress *addr, bool with_family = true);
 
 private:
-	/* 6 = for the : and 5 for the decimal port number */
-	char buf[NETWORK_HOSTNAME_LENGTH + 6 + 7];
+	/* 7 extra are for with_family, which adds " (IPvX)". */
+	char buf[NETWORK_HOSTNAME_PORT_LENGTH + 7];
 };
 
 #endif /* NETWORK_CORE_ADDRESS_H */

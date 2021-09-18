@@ -94,10 +94,10 @@ extern uint8 _network_reconnect;
 
 extern CompanyMask _network_company_passworded;
 
-void NetworkTCPQueryServer(NetworkAddress address);
+void NetworkTCPQueryServer(NetworkAddress address, bool request_company_info = false);
 
 void GetBindAddresses(NetworkAddressList *addresses, uint16 port);
-void NetworkAddServer(const char *b);
+struct NetworkGameList *NetworkAddServer(const std::string &connection_string);
 void NetworkRebuildHostList();
 void UpdateNetworkGameWindow();
 
@@ -119,11 +119,15 @@ void NetworkExecuteLocalCommandQueue();
 void NetworkFreeLocalCommandQueue();
 void NetworkSyncCommandQueue(NetworkClientSocket *cs);
 
-void NetworkError(StringID error_string);
+void ShowNetworkError(StringID error_string);
 void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send, const char *name, const char *str = "", NetworkTextMessageData data = NetworkTextMessageData());
 uint NetworkCalculateLag(const NetworkClientSocket *cs);
 StringID GetNetworkErrorMsg(NetworkErrorCode err);
 bool NetworkFindName(char *new_name, const char *last);
 const char *GenerateCompanyPasswordHash(const char *password, const char *password_server_id, uint32 password_game_seed);
+
+bool NetworkClientConnectGame(NetworkAddress &address, CompanyID join_as, const char *join_server_password = nullptr, const char *join_company_password = nullptr);
+NetworkAddress ParseConnectionString(const std::string &connection_string, int default_port);
+NetworkAddress ParseGameConnectionString(CompanyID *company, const std::string &connection_string, int default_port);
 
 #endif /* NETWORK_INTERNAL_H */

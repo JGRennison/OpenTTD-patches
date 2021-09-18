@@ -51,7 +51,6 @@ static void NetworkGameListHandleDelayedInsert()
 				ClearGRFConfigList(&item->info.grfconfig);
 				memset(&item->info, 0, sizeof(item->info));
 				strecpy(item->info.server_name, ins_item->info.server_name, lastof(item->info.server_name));
-				strecpy(item->info.hostname, ins_item->info.hostname, lastof(item->info.hostname));
 				item->online = false;
 			}
 			item->manually |= ins_item->manually;
@@ -70,15 +69,6 @@ static void NetworkGameListHandleDelayedInsert()
  */
 NetworkGameList *NetworkGameListAddItem(NetworkAddress address)
 {
-	const char *hostname = address.GetHostname();
-
-	/* Do not query the 'any' address. */
-	if (StrEmpty(hostname) ||
-			strcmp(hostname, "0.0.0.0") == 0 ||
-			strcmp(hostname, "::") == 0) {
-		return nullptr;
-	}
-
 	NetworkGameList *item, *prev_item;
 
 	prev_item = nullptr;
@@ -96,7 +86,6 @@ NetworkGameList *NetworkGameListAddItem(NetworkAddress address)
 	} else {
 		prev_item->next = item;
 	}
-	DEBUG(net, 4, "[gamelist] added server to list");
 
 	UpdateNetworkGameWindow();
 
@@ -152,7 +141,7 @@ void NetworkGameListRequery()
 
 		/* item gets mostly zeroed by NetworkUDPQueryServer */
 		uint8 retries = item->retries;
-		NetworkUDPQueryServer(NetworkAddress(item->address));
+		NetworkUDPQueryServer(item->address);
 		item->retries = (retries >= REFRESH_GAMEINFO_X_REQUERIES) ? 0 : retries;
 	}
 }

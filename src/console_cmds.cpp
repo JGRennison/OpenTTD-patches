@@ -969,16 +969,15 @@ DEF_CONSOLE_CMD(ConNetworkReconnect)
 			break;
 	}
 
-	if (StrEmpty(_settings_client.network.last_host)) {
+	if (StrEmpty(_settings_client.network.last_joined)) {
 		IConsolePrint(CC_DEFAULT, "No server for reconnecting.");
 		return true;
 	}
 
 	/* Don't resolve the address first, just print it directly as it comes from the config file. */
-	IConsolePrintF(CC_DEFAULT, "Reconnecting to %s:%d...", _settings_client.network.last_host, _settings_client.network.last_port);
+	IConsolePrintF(CC_DEFAULT, "Reconnecting to %s ...", _settings_client.network.last_joined);
 
-	NetworkClientConnectGame(_settings_client.network.last_host, _settings_client.network.last_port, playas);
-	return true;
+	return NetworkClientConnectGame(_settings_client.network.last_joined, playas);
 }
 
 DEF_CONSOLE_CMD(ConNetworkConnect)
@@ -991,37 +990,8 @@ DEF_CONSOLE_CMD(ConNetworkConnect)
 	}
 
 	if (argc < 2) return false;
-	if (_networking) NetworkDisconnect(); // we are in network-mode, first close it!
 
-	const char *port = nullptr;
-	const char *company = nullptr;
-	char *ip = argv[1];
-	/* Default settings: default port and new company */
-	uint16 rport = NETWORK_DEFAULT_PORT;
-	CompanyID join_as = COMPANY_NEW_COMPANY;
-
-	ParseGameConnectionString(&company, &port, ip);
-
-	IConsolePrintF(CC_DEFAULT, "Connecting to %s...", ip);
-	if (company != nullptr) {
-		join_as = (CompanyID)atoi(company);
-		IConsolePrintF(CC_DEFAULT, "    company-no: %d", join_as);
-
-		/* From a user pov 0 is a new company, internally it's different and all
-		 * companies are offset by one to ease up on users (eg companies 1-8 not 0-7) */
-		if (join_as != COMPANY_SPECTATOR) {
-			if (join_as > MAX_COMPANIES) return false;
-			join_as--;
-		}
-	}
-	if (port != nullptr) {
-		rport = atoi(port);
-		IConsolePrintF(CC_DEFAULT, "    port: %s", port);
-	}
-
-	NetworkClientConnectGame(ip, rport, join_as);
-
-	return true;
+	return NetworkClientConnectGame(argv[1], COMPANY_NEW_COMPANY);
 }
 
 /*********************************

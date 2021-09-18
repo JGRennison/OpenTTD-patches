@@ -94,6 +94,18 @@ void NetworkAddress::GetAddressAsString(char *buffer, const char *last, bool wit
 	}
 }
 
+ /**
+  * Get the address as a string, e.g. 127.0.0.1:12345.
+  * @param with_family whether to add the family (e.g. IPvX).
+  * @return the address
+  */
+std::string NetworkAddress::GetAddressAsString(bool with_family)
+{
+	char buf[NETWORK_HOSTNAME_LENGTH + 6 + 7];
+	this->GetAddressAsString(buf, lastof(buf), with_family);
+	return buf;
+}
+
 /**
  * Get the address as a string, e.g. 127.0.0.1:12345.
  * @param with_family whether to add the family (e.g. IPvX).
@@ -311,12 +323,11 @@ static SOCKET ConnectLoopProc(addrinfo *runp)
 {
 	const char *type = NetworkAddress::SocketTypeAsString(runp->ai_socktype);
 	const char *family = NetworkAddress::AddressFamilyAsString(runp->ai_family);
-	char address[NETWORK_HOSTNAME_LENGTH + 6 + 7];
-	NetworkAddress(runp->ai_addr, (int)runp->ai_addrlen).GetAddressAsString(address, lastof(address));
+	std::string address = NetworkAddress(runp->ai_addr, (int)runp->ai_addrlen).GetAddressAsString();
 
 	SOCKET sock = socket(runp->ai_family, runp->ai_socktype, runp->ai_protocol);
 	if (sock == INVALID_SOCKET) {
-		DEBUG(net, 1, "[%s] could not create %s socket: %s", type, family, NetworkGetLastErrorString());
+		DEBUG(net, 1, "[%s] could not create %s socket: %s", type, family, NetworkError::GetLast().AsString());
 		return INVALID_SOCKET;
 	}
 
@@ -325,8 +336,8 @@ static SOCKET ConnectLoopProc(addrinfo *runp)
 	if (!SetNonBlocking(sock)) DEBUG(net, 0, "[%s] setting non-blocking mode failed", type);
 
 	int err = connect(sock, runp->ai_addr, (int)runp->ai_addrlen);
-	if (err != 0 && NetworkGetLastError() != EINPROGRESS) {
-		DEBUG(net, 1, "[%s] could not connect to %s over %s: %s", type, address, family, NetworkGetLastErrorString());
+	if (err != 0 && !NetworkError::GetLast().IsConnectInProgress()) {
+		DEBUG(net, 1, "[%s] could not connect to %s over %s: %s", type, address.c_str(), family, NetworkError::GetLast().AsString());
 		closesocket(sock);
 		return INVALID_SOCKET;
 	}
@@ -342,28 +353,28 @@ static SOCKET ConnectLoopProc(addrinfo *runp)
 	tv.tv_sec = DEFAULT_CONNECT_TIMEOUT_SECONDS;
 	int n = select(FD_SETSIZE, NULL, &write_fd, NULL, &tv);
 	if (n < 0) {
-		DEBUG(net, 1, "[%s] could not connect to %s: %s", type, address, NetworkGetLastErrorString());
+		DEBUG(net, 1, "[%s] could not connect to %s: %s", type, address.c_str(), NetworkError::GetLast().AsString());
 		closesocket(sock);
 		return INVALID_SOCKET;
 	}
 
 	/* If no fd is selected, the timeout has been reached. */
 	if (n == 0) {
-		DEBUG(net, 1, "[%s] timed out while connecting to %s", type, address);
+		DEBUG(net, 1, "[%s] timed out while connecting to %s", type, address.c_str());
 		closesocket(sock);
 		return INVALID_SOCKET;
 	}
 
 	/* Retrieve last error, if any, on the socket. */
-	err = GetSocketError(sock);
-	if (err != 0) {
-		DEBUG(net, 1, "[%s] could not connect to %s: %s", type, address, NetworkGetErrorString(err));
+	NetworkError socket_error = GetSocketError(sock);
+	if (socket_error.HasError()) {
+		DEBUG(net, 1, "[%s] could not connect to %s: %s", type, address.c_str(), socket_error.AsString());
 		closesocket(sock);
 		return INVALID_SOCKET;
 	}
 
 	/* Connection succeeded. */
-	DEBUG(net, 1, "[%s] connected to %s", type, address);
+	DEBUG(net, 1, "[%s] connected to %s", type, address.c_str());
 
 	return sock;
 }
@@ -388,48 +399,47 @@ static SOCKET ListenLoopProc(addrinfo *runp)
 {
 	const char *type = NetworkAddress::SocketTypeAsString(runp->ai_socktype);
 	const char *family = NetworkAddress::AddressFamilyAsString(runp->ai_family);
-	char address[NETWORK_HOSTNAME_LENGTH + 6 + 7];
-	NetworkAddress(runp->ai_addr, (int)runp->ai_addrlen).GetAddressAsString(address, lastof(address));
+	std::string address = NetworkAddress(runp->ai_addr, (int)runp->ai_addrlen).GetAddressAsString();
 
 	SOCKET sock = socket(runp->ai_family, runp->ai_socktype, runp->ai_protocol);
 	if (sock == INVALID_SOCKET) {
-		DEBUG(net, 0, "[%s] could not create %s socket on port %s: %s", type, family, address, NetworkGetLastErrorString());
+		DEBUG(net, 0, "[%s] could not create %s socket on port %s: %s", type, family, address.c_str(), NetworkError::GetLast().AsString());
 		return INVALID_SOCKET;
 	}
 
 	if (runp->ai_socktype == SOCK_STREAM && !SetNoDelay(sock)) {
-		DEBUG(net, 3, "[%s] setting TCP_NODELAY failed for port %s", type, address);
+		DEBUG(net, 3, "[%s] setting TCP_NODELAY failed for port %s", type, address.c_str());
 	}
 
 	int on = 1;
 	/* The (const char*) cast is needed for windows!! */
 	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char*)&on, sizeof(on)) == -1) {
-		DEBUG(net, 3, "[%s] could not set reusable %s sockets for port %s: %s", type, family, address, NetworkGetLastErrorString());
+		DEBUG(net, 3, "[%s] could not set reusable %s sockets for port %s: %s", type, family, address.c_str(), NetworkError::GetLast().AsString());
 	}
 
 #ifndef __OS2__
 	if (runp->ai_family == AF_INET6 &&
 			setsockopt(sock, IPPROTO_IPV6, IPV6_V6ONLY, (const char*)&on, sizeof(on)) == -1) {
-		DEBUG(net, 3, "[%s] could not disable IPv4 over IPv6 on port %s: %s", type, address, NetworkGetLastErrorString());
+		DEBUG(net, 3, "[%s] could not disable IPv4 over IPv6 on port %s: %s", type, address.c_str(), NetworkError::GetLast().AsString());
 	}
 #endif
 
 	if (bind(sock, runp->ai_addr, (int)runp->ai_addrlen) != 0) {
-		DEBUG(net, 1, "[%s] could not bind on %s port %s: %s", type, family, address, NetworkGetLastErrorString());
+		DEBUG(net, 1, "[%s] could not bind on %s port %s: %s", type, family, address.c_str(), NetworkError::GetLast().AsString());
 		closesocket(sock);
 		return INVALID_SOCKET;
 	}
 
 	if (runp->ai_socktype != SOCK_DGRAM && listen(sock, 1) != 0) {
-		DEBUG(net, 1, "[%s] could not listen at %s port %s: %s", type, family, address, NetworkGetLastErrorString());
+		DEBUG(net, 1, "[%s] could not listen at %s port %s: %s", type, family, address.c_str(), NetworkError::GetLast().AsString());
 		closesocket(sock);
 		return INVALID_SOCKET;
 	}
 
 	/* Connection succeeded */
-	if (!SetNonBlocking(sock)) DEBUG(net, 0, "[%s] setting non-blocking mode failed for %s port %s", type, family, address);
+	if (!SetNonBlocking(sock)) DEBUG(net, 0, "[%s] setting non-blocking mode failed for %s port %s", type, family, address.c_str());
 
-	DEBUG(net, 1, "[%s] listening on %s port %s", type, family, address);
+	DEBUG(net, 1, "[%s] listening on %s port %s", type, family, address.c_str());
 	return sock;
 }
 
