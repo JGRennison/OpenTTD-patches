@@ -360,11 +360,8 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendClientInfo(NetworkClientIn
 /** Send the client information about the server. */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendGameInfo()
 {
-	NetworkGameInfo ngi;
-	FillNetworkGameInfo(ngi);
-
 	Packet *p = new Packet(PACKET_SERVER_GAME_INFO, SHRT_MAX);
-	SerializeNetworkGameInfo(p, &ngi);
+	SerializeNetworkGameInfo(p, GetCurrentNetworkServerGameInfo());
 
 	this->SendPacket(p);
 
@@ -373,11 +370,8 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendGameInfo()
 
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendGameInfoExtended(PacketGameType reply_type, uint16 flags, uint16 version)
 {
-	NetworkGameInfo ngi;
-	FillNetworkGameInfo(ngi);
-
 	Packet *p = new Packet(reply_type, SHRT_MAX);
-	SerializeNetworkGameInfoExtended(p, &ngi, flags, version);
+	SerializeNetworkGameInfoExtended(p, GetCurrentNetworkServerGameInfo(), flags, version);
 
 	this->SendPacket(p);
 
@@ -2164,6 +2158,12 @@ void NetworkServerSendConfigUpdate()
 	for (NetworkClientSocket *cs : NetworkClientSocket::Iterate()) {
 		if (cs->status >= NetworkClientSocket::STATUS_PRE_ACTIVE) cs->SendConfigUpdate();
 	}
+}
+
+/** Update the server's NetworkServerGameInfo due to changes in settings. */
+void NetworkServerUpdateGameInfo()
+{
+	if (_network_server) FillStaticNetworkServerGameInfo();
 }
 
 /**

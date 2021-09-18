@@ -113,7 +113,7 @@ bool IsNetworkCompatibleVersion(const char *other, bool extended)
 void CheckGameCompatibility(NetworkGameInfo &ngi, bool extended)
 {
 	/* Check if we are allowed on this server based on the revision-check. */
-	ngi.version_compatible = IsNetworkCompatibleVersion(ngi.server_revision, extended);
+	ngi.version_compatible = IsNetworkCompatibleVersion(ngi.server_revision.c_str(), extended);
 	ngi.compatible = ngi.version_compatible;
 
 	/* Check if we have all the GRFs on the client-system too. */
@@ -123,31 +123,37 @@ void CheckGameCompatibility(NetworkGameInfo &ngi, bool extended)
 }
 
 /**
- * Fill a NetworkGameInfo structure with the latest information of the server.
- * @param ngi the NetworkGameInfo struct to fill with data.
+ * Fill a NetworkServerGameInfo structure with the static content, or things
+ * that are so static they can be updated on request from a settings change.
  */
-void FillNetworkGameInfo(NetworkGameInfo &ngi)
+void FillStaticNetworkServerGameInfo()
 {
-	/* Update some game_info */
-	ngi.clients_on     = _network_game_info.clients_on;
-	ngi.start_date     = ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1);
+	_network_game_info.use_password   = !StrEmpty(_settings_client.network.server_password);
+	_network_game_info.start_date     = ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1);
+	_network_game_info.clients_max    = _settings_client.network.max_clients;
+	_network_game_info.companies_max  = _settings_client.network.max_companies;
+	_network_game_info.spectators_max = _settings_client.network.max_spectators;
+	_network_game_info.map_width      = MapSizeX();
+	_network_game_info.map_height     = MapSizeY();
+	_network_game_info.landscape      = _settings_game.game_creation.landscape;
+	_network_game_info.dedicated      = _network_dedicated;
+	_network_game_info.grfconfig      = _grfconfig;
 
-	ngi.use_password   = !StrEmpty(_settings_client.network.server_password);
-	ngi.clients_max    = _settings_client.network.max_clients;
-	ngi.companies_on   = (byte)Company::GetNumItems();
-	ngi.companies_max  = _settings_client.network.max_companies;
-	ngi.spectators_on  = NetworkSpectatorCount();
-	ngi.spectators_max = _settings_client.network.max_spectators;
-	ngi.game_date      = _date;
-	ngi.map_width      = MapSizeX();
-	ngi.map_height     = MapSizeY();
-	ngi.map_set        = _settings_game.game_creation.landscape;
-	ngi.dedicated      = _network_dedicated;
-	ngi.grfconfig      = _grfconfig;
+	_network_game_info.server_name = _settings_client.network.server_name;
+	_network_game_info.server_revision = GetNetworkRevisionString();
+}
 
-	strecpy(ngi.server_name, _settings_client.network.server_name, lastof(ngi.server_name));
-	strecpy(ngi.server_revision, GetNetworkRevisionString(), lastof(ngi.server_revision));
-	strecpy(ngi.short_server_revision, _openttd_revision, lastof(ngi.short_server_revision));
+/**
+ * Get the NetworkServerGameInfo structure with the latest information of the server.
+ * @return The current NetworkServerGameInfo.
+ */
+const NetworkServerGameInfo *GetCurrentNetworkServerGameInfo()
+{
+	/* Client_on is used as global variable to keep track on the number of clients. */
+	_network_game_info.companies_on  = (byte)Company::GetNumItems();
+	_network_game_info.spectators_on = NetworkSpectatorCount();
+	_network_game_info.game_date     = _date;
+	return &_network_game_info;
 }
 
 /**
@@ -181,7 +187,7 @@ static void HandleIncomingNetworkGameInfoGRFConfig(GRFConfig *config)
  * @param p    the packet to write the data to.
  * @param info the NetworkGameInfo struct to serialize from.
  */
-void SerializeNetworkGameInfo(Packet *p, const NetworkGameInfo *info)
+void SerializeNetworkGameInfo(Packet *p, const NetworkServerGameInfo *info)
 {
 	p->Send_uint8 (NETWORK_GAME_INFO_VERSION);
 
@@ -247,7 +253,7 @@ void SerializeNetworkGameInfo(Packet *p, const NetworkGameInfo *info)
 	p->Send_string(""); // Used to be map-name.
 	p->Send_uint16(info->map_width);
 	p->Send_uint16(info->map_height);
-	p->Send_uint8 (info->map_set);
+	p->Send_uint8 (info->landscape);
 	p->Send_bool  (info->dedicated);
 }
 
@@ -256,7 +262,7 @@ void SerializeNetworkGameInfo(Packet *p, const NetworkGameInfo *info)
  * @param p    the packet to write the data to
  * @param info the NetworkGameInfo struct to serialize
  */
-void SerializeNetworkGameInfoExtended(Packet *p, const NetworkGameInfo *info, uint16 flags, uint16 version)
+void SerializeNetworkGameInfoExtended(Packet *p, const NetworkServerGameInfo *info, uint16 flags, uint16 version)
 {
 	p->Send_uint8(0); // version num
 
@@ -275,7 +281,7 @@ void SerializeNetworkGameInfoExtended(Packet *p, const NetworkGameInfo *info, ui
 	p->Send_string(""); // Used to be map-name.
 	p->Send_uint32(info->map_width);
 	p->Send_uint32(info->map_height);
-	p->Send_uint8 (info->map_set);
+	p->Send_uint8 (info->landscape);
 	p->Send_bool  (info->dedicated);
 
 	{
@@ -310,7 +316,7 @@ void DeserializeNetworkGameInfo(Packet *p, NetworkGameInfo *info)
 {
 	static const Date MAX_DATE = ConvertYMDToDate(MAX_YEAR, 11, 31); // December is month 11
 
-	info->game_info_version = p->Recv_uint8();
+	byte game_info_version = p->Recv_uint8();
 
 	/*
 	 *              Please observe the order.
@@ -320,7 +326,7 @@ void DeserializeNetworkGameInfo(Packet *p, NetworkGameInfo *info)
 	/* Update the documentation in game_info.h on changes
 	 * to the NetworkGameInfo wire-protocol! */
 
-	switch (info->game_info_version) {
+	switch (game_info_version) {
 		case 4: {
 			GRFConfig **dst = &info->grfconfig;
 			uint i;
@@ -353,24 +359,24 @@ void DeserializeNetworkGameInfo(Packet *p, NetworkGameInfo *info)
 			FALLTHROUGH;
 
 		case 1:
-			p->Recv_string(info->server_name,     sizeof(info->server_name));
-			p->Recv_string(info->server_revision, sizeof(info->server_revision));
+			info->server_name = p->Recv_string(NETWORK_NAME_LENGTH);
+			info->server_revision = p->Recv_string(NETWORK_REVISION_LENGTH);
 			p->Recv_uint8 (); // Used to contain server-lang.
 			info->use_password   = p->Recv_bool  ();
 			info->clients_max    = p->Recv_uint8 ();
 			info->clients_on     = p->Recv_uint8 ();
 			info->spectators_on  = p->Recv_uint8 ();
-			if (info->game_info_version < 3) { // 16 bits dates got scrapped and are read earlier
+			if (game_info_version < 3) { // 16 bits dates got scrapped and are read earlier
 				info->game_date    = p->Recv_uint16() + DAYS_TILL_ORIGINAL_BASE_YEAR;
 				info->start_date   = p->Recv_uint16() + DAYS_TILL_ORIGINAL_BASE_YEAR;
 			}
 			while (p->Recv_uint8() != 0) {} // Used to contain the map-name.
 			info->map_width      = p->Recv_uint16();
 			info->map_height     = p->Recv_uint16();
-			info->map_set        = p->Recv_uint8 ();
+			info->landscape      = p->Recv_uint8 ();
 			info->dedicated      = p->Recv_bool  ();
 
-			if (info->map_set     >= NETWORK_NUM_LANDSCAPES) info->map_set = 0;
+			if (info->landscape >= NETWORK_NUM_LANDSCAPES) info->landscape = 0;
 	}
 }
 
@@ -386,15 +392,13 @@ void DeserializeNetworkGameInfoExtended(Packet *p, NetworkGameInfo *info)
 	const uint8 version = p->Recv_uint8();
 	if (version > 0) return; // Unknown version
 
-	info->game_info_version = 255;
-
 	info->game_date      = Clamp(p->Recv_uint32(), 0, MAX_DATE);
 	info->start_date     = Clamp(p->Recv_uint32(), 0, MAX_DATE);
 	info->companies_max  = p->Recv_uint8 ();
 	info->companies_on   = p->Recv_uint8 ();
 	info->spectators_max = p->Recv_uint8 ();
-	p->Recv_string(info->server_name,     sizeof(info->server_name));
-	p->Recv_string(info->server_revision, sizeof(info->server_revision));
+	info->server_name = p->Recv_string(NETWORK_NAME_LENGTH);
+	info->server_revision = p->Recv_string(NETWORK_LONG_REVISION_LENGTH);
 	p->Recv_uint8 (); // Used to contain server-lang.
 	info->use_password   = p->Recv_bool  ();
 	info->clients_max    = p->Recv_uint8 ();
@@ -403,7 +407,7 @@ void DeserializeNetworkGameInfoExtended(Packet *p, NetworkGameInfo *info)
 	while (p->Recv_uint8() != 0) {} // Used to contain the map-name.
 	info->map_width      = p->Recv_uint32();
 	info->map_height     = p->Recv_uint32();
-	info->map_set        = p->Recv_uint8 ();
+	info->landscape      = p->Recv_uint8 ();
 	info->dedicated      = p->Recv_bool  ();
 
 	{
@@ -425,7 +429,7 @@ void DeserializeNetworkGameInfoExtended(Packet *p, NetworkGameInfo *info)
 		}
 	}
 
-	if (info->map_set     >= NETWORK_NUM_LANDSCAPES) info->map_set = 0;
+	if (info->landscape >= NETWORK_NUM_LANDSCAPES) info->landscape = 0;
 }
 
 /**

@@ -1825,6 +1825,7 @@ static bool UpdateServerPassword(int32 p1)
 		_settings_client.network.server_password[0] = '\0';
 	}
 
+	NetworkServerUpdateGameInfo();
 	return true;
 }
 
@@ -1848,6 +1849,7 @@ static bool UpdateSettingsPassword(int32 p1)
 
 static bool UpdateClientConfigValues(int32 p1)
 {
+	NetworkServerUpdateGameInfo();
 	if (_network_server) NetworkServerSendConfigUpdate();
 
 	return true;
@@ -2071,7 +2073,7 @@ static GRFConfig *GRFLoadConfig(IniFile *ini, const char *grpname, bool is_stati
 				SetDParam(1, STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN);
 			}
 
-			SetDParamStr(0, StrEmpty(filename) ? item->name.c_str() : filename);
+			SetDParamStr(0, StrEmpty(filename) ? item->name : filename);
 			ShowErrorMessage(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_GRF, WL_CRITICAL);
 			delete c;
 			continue;

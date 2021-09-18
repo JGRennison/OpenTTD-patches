@@ -2248,6 +2248,7 @@ STR_NETWORK_ERROR_TIMEOUT_COMPUTER                              :{WHITE}Your com
 STR_NETWORK_ERROR_TIMEOUT_MAP                                   :{WHITE}Your computer took too long to download the map
 STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :{WHITE}Your computer took too long to join the server
 STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Your player name is not valid
+STR_NETWORK_ERROR_SERVER_TOO_OLD                                :{WHITE}The queried server is too old for this client
 
 ############ Leave those lines in this order!!
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :general error
@@ -2299,7 +2300,7 @@ STR_NETWORK_MESSAGE_CLIENT_COMPANY_JOIN                         :*** {STRING} ha
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} has joined spectators
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_NEW                          :*** {STRING} has started a new company (#{2:NUM})
 STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} has left the game ({2:STRING})
-STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} has changed his/her name to {STRING}
+STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} has changed their name to {STRING}
 STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} gave {2:CURRENCY_LONG} to {1:STRING}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}The server closed the session
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}The server is restarting...{}Please wait...

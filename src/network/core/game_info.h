@@ -57,36 +57,34 @@
  */
 
 /**
- * The game information that is not generated on-the-fly and has to
- * be sent to the clients.
+ * The game information that is sent from the server to the client.
  */
 struct NetworkServerGameInfo {
-	byte clients_on;                                ///< Current count of clients on server
+	GRFConfig *grfconfig;        ///< List of NewGRF files used
+	Date start_date;             ///< When the game started
+	Date game_date;              ///< Current date
+	uint32 map_width;            ///< Map width
+	uint32 map_height;           ///< Map height
+	std::string server_name;     ///< Server name
+	std::string server_revision; ///< The version number the server is using (e.g.: 'r304' or 0.5.0)
+	bool dedicated;              ///< Is this a dedicated server?
+	bool use_password;           ///< Is this server passworded?
+	byte clients_on;             ///< Current count of clients on server
+	byte clients_max;            ///< Max clients allowed on server
+	byte companies_on;           ///< How many started companies do we have
+	byte companies_max;          ///< Max companies allowed on server
+	byte spectators_on;          ///< How many spectators do we have?
+	byte spectators_max;         ///< Max spectators allowed on server
+	byte landscape;              ///< The used landscape
 };
 
 /**
- * The game information that is sent from the server to the clients.
+ * The game information that is sent from the server to the clients
+ * with extra information only required at the client side.
  */
 struct NetworkGameInfo : NetworkServerGameInfo {
-	GRFConfig *grfconfig;                           ///< List of NewGRF files used
-	Date start_date;                                ///< When the game started
-	Date game_date;                                 ///< Current date
-	uint32 map_width;                               ///< Map width
-	uint32 map_height;                              ///< Map height
-	char server_name[NETWORK_NAME_LENGTH];          ///< Server name
-	char short_server_revision[NETWORK_REVISION_LENGTH]; ///< The version number the server is using (e.g.: 'r304' or 0.5.0) (truncated)
-	char server_revision[NETWORK_LONG_REVISION_LENGTH];  ///< The version number the server is using (e.g.: 'r304' or 0.5.0)
-	bool dedicated;                                 ///< Is this a dedicated server?
 	bool version_compatible;                        ///< Can we connect to this server or not? (based on server_revision)
 	bool compatible;                                ///< Can we connect to this server or not? (based on server_revision _and_ grf_match
-	bool use_password;                              ///< Is this server passworded?
-	byte game_info_version;                         ///< Version of the game info
-	byte clients_max;                               ///< Max clients allowed on server
-	byte companies_on;                              ///< How many started companies do we have
-	byte companies_max;                             ///< Max companies allowed on server
-	byte spectators_on;                             ///< How many spectators do we have?
-	byte spectators_max;                            ///< Max spectators allowed on server
-	byte map_set;                                   ///< Graphical set
 };
 
 extern NetworkServerGameInfo _network_game_info;
@@ -95,14 +93,15 @@ const char *GetNetworkRevisionString();
 bool IsNetworkCompatibleVersion(const char *other, bool extended = false);
 void CheckGameCompatibility(NetworkGameInfo &ngi, bool extended = false);
 
-void FillNetworkGameInfo(NetworkGameInfo &ngi);
+void FillStaticNetworkServerGameInfo();
+const NetworkServerGameInfo *GetCurrentNetworkServerGameInfo();
 
 void DeserializeGRFIdentifier(Packet *p, GRFIdentifier *grf);
 void SerializeGRFIdentifier(Packet *p, const GRFIdentifier *grf);
 
 void DeserializeNetworkGameInfo(Packet *p, NetworkGameInfo *info);
 void DeserializeNetworkGameInfoExtended(Packet *p, NetworkGameInfo *info);
-void SerializeNetworkGameInfo(Packet *p, const NetworkGameInfo *info);
-void SerializeNetworkGameInfoExtended(Packet *p, const NetworkGameInfo *info, uint16 flags, uint16 version);
+void SerializeNetworkGameInfo(Packet *p, const NetworkServerGameInfo *info);
+void SerializeNetworkGameInfoExtended(Packet *p, const NetworkServerGameInfo *info, uint16 flags, uint16 version);
 
 #endif /* NETWORK_CORE_GAME_INFO_H */

@@ -286,8 +286,10 @@ protected:
 	/** Sort servers by name. */
 	static bool NGameNameSorter(NetworkGameList * const &a, NetworkGameList * const &b)
 	{
-		int r = strnatcmp(a->info.server_name, b->info.server_name, true); // Sort by name (natural sorting).
-		return r == 0 ? a->address.CompareTo(b->address) < 0: r < 0;
+		int r = strnatcmp(a->info.server_name.c_str(), b->info.server_name.c_str(), true); // Sort by name (natural sorting).
+		if (r == 0) r = a->connection_string.compare(b->connection_string);
+
+		return r < 0;
 	}
 
 	/**
@@ -337,7 +339,7 @@ protected:
 	static bool NGameAllowedSorter(NetworkGameList * const &a, NetworkGameList * const &b)
 	{
 		/* The servers we do not know anything about (the ones that did not reply) should be at the bottom) */
-		int r = StrEmpty(a->info.server_revision) - StrEmpty(b->info.server_revision);
+		int r = a->info.server_revision.empty() - b->info.server_revision.empty();
 
 		/* Reverse default as we are interested in version-compatible clients first */
 		if (r == 0) r = b->info.version_compatible - a->info.version_compatible;
@@ -374,7 +376,7 @@ protected:
 		assert((*item) != nullptr);
 
 		sf.ResetState();
-		sf.AddLine((*item)->info.server_name);
+		sf.AddLine((*item)->info.server_name.c_str());
 		return sf.GetState();
 	}
 
@@ -648,7 +650,7 @@ public:
 			DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_NETWORK_SERVER_LIST_CLIENTS);
 			y += FONT_HEIGHT_NORMAL;
 
-			SetDParam(0, STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE + sel->info.map_set);
+			SetDParam(0, STR_CHEAT_SWITCH_CLIMATE_TEMPERATE_LANDSCAPE + sel->info.landscape);
 			DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_NETWORK_SERVER_LIST_LANDSCAPE); // landscape
 			y += FONT_HEIGHT_NORMAL;
 
@@ -661,8 +663,7 @@ public:
 			DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_NETWORK_SERVER_LIST_SERVER_VERSION); // server version
 			y += FONT_HEIGHT_NORMAL;
 
-			std::string address = sel->address.GetAddressAsString();
-			SetDParamStr(0, address.c_str());
+			SetDParamStr(0, sel->connection_string.c_str());
 			DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_NETWORK_SERVER_LIST_SERVER_ADDRESS); // server address
 			y += FONT_HEIGHT_NORMAL;
 
@@ -766,7 +767,7 @@ public:
 				break;
 
 			case WID_NG_REFRESH: // Refresh
-				if (this->server != nullptr) NetworkTCPQueryServer(this->server->address);
+				if (this->server != nullptr) NetworkTCPQueryServer(this->server->connection_string);
 				break;
 
 			case WID_NG_NEWGRF: // NewGRF Settings
@@ -1486,22 +1487,22 @@ struct NetworkLobbyWindow : public Window {
 
 			case WID_NL_JOIN:     // Join company
 				/* Button can be clicked only when it is enabled. */
-				NetworkClientConnectGame(this->server->address, this->company);
+				NetworkClientConnectGame(this->server->connection_string, this->company);
 				break;
 
 			case WID_NL_NEW:      // New company
-				NetworkClientConnectGame(this->server->address, COMPANY_NEW_COMPANY);
+				NetworkClientConnectGame(this->server->connection_string, COMPANY_NEW_COMPANY);
 				break;
 
 			case WID_NL_SPECTATE: // Spectate game
-				NetworkClientConnectGame(this->server->address, COMPANY_SPECTATOR);
+				NetworkClientConnectGame(this->server->connection_string, COMPANY_SPECTATOR);
 				break;
 
 			case WID_NL_REFRESH:  // Refresh
 				/* Clear the information so removed companies don't remain */
 				for (auto &company : this->company_info) company = {};
 
-				NetworkTCPQueryServer(this->server->address, true);
+				NetworkTCPQueryServer(this->server->connection_string, true);
 				break;
 		}
 	}
@@ -1569,9 +1570,9 @@ static void ShowNetworkLobbyWindow(NetworkGameList *ngl)
 	DeleteWindowById(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_START);
 	DeleteWindowById(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_GAME);
 
-	strecpy(_settings_client.network.last_joined, ngl->address.GetAddressAsString(false).c_str(), lastof(_settings_client.network.last_joined));
+	strecpy(_settings_client.network.last_joined, ngl->connection_string.c_str(), lastof(_settings_client.network.last_joined));
 
-	NetworkTCPQueryServer(ngl->address, true);
+	NetworkTCPQueryServer(ngl->connection_string, true);
 
 	new NetworkLobbyWindow(&_network_lobby_window_desc, ngl);
 }

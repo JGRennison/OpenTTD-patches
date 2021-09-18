@@ -102,35 +102,34 @@ static Packet PrepareUdpClientFindServerPacket()
 
 /**
  * Helper function doing the actual work for querying the server.
- * @param address The address of the server.
+ * @param connection_string The address of the server.
  * @param needs_mutex Whether we need to acquire locks when sending the packet or not.
  * @param manually Whether the address was entered manually.
  */
-static void DoNetworkUDPQueryServer(NetworkAddress &address, bool needs_mutex, bool manually)
+static void DoNetworkUDPQueryServer(const std::string &connection_string, bool needs_mutex, bool manually)
 {
 	/* Clear item in gamelist */
-	NetworkGameList *item = CallocT<NetworkGameList>(1);
-	address.GetAddressAsString(item->info.server_name, lastof(item->info.server_name));
-	item->address = address;
-	item->manually = manually;
+	NetworkGameList *item = new NetworkGameList(connection_string, manually);
+	item->info.server_name = connection_string;
 	NetworkGameListAddItemDelayed(item);
 
 	std::unique_lock<std::mutex> lock(_udp_client.mutex, std::defer_lock);
 	if (needs_mutex) lock.lock();
 	/* Init the packet */
+	NetworkAddress address = NetworkAddress(ParseConnectionString(connection_string, NETWORK_DEFAULT_PORT));
 	Packet p = PrepareUdpClientFindServerPacket();
 	if (_udp_client.socket != nullptr) _udp_client.socket->SendPacket(&p, &address);
 }
 
 /**
  * Query a specific server.
- * @param address The address of the server.
+ * @param connection_string The address of the server.
  * @param manually Whether the address was entered manually.
  */
-void NetworkUDPQueryServer(NetworkAddress address, bool manually)
+void NetworkUDPQueryServer(const std::string &connection_string, bool manually)
 {
-	if (address.IsResolved() || !StartNewThread(nullptr, "ottd:udp-query", &DoNetworkUDPQueryServer, std::move(address), true, std::move(manually))) {
-		DoNetworkUDPQueryServer(address, true, manually);
+	if (!StartNewThread(nullptr, "ottd:udp-query", &DoNetworkUDPQueryServer, std::move(connection_string), true, std::move(manually))) {
+		DoNetworkUDPQueryServer(connection_string, true, manually);
 	}
 }
 
@@ -173,7 +172,7 @@ protected:
 	void Receive_CLIENT_FIND_SERVER(Packet *p, NetworkAddress *client_addr) override;
 	void Receive_CLIENT_DETAIL_INFO(Packet *p, NetworkAddress *client_addr) override;
 	void Receive_CLIENT_GET_NEWGRFS(Packet *p, NetworkAddress *client_addr) override;
-	void Reply_CLIENT_FIND_SERVER_extended(Packet *p, NetworkAddress *client_addr, NetworkGameInfo *ngi);
+	void Reply_CLIENT_FIND_SERVER_extended(Packet *p, NetworkAddress *client_addr, const NetworkServerGameInfo *ngi);
 public:
 	/**
 	 * Create the socket.
@@ -190,16 +189,13 @@ void ServerNetworkUDPSocketHandler::Receive_CLIENT_FIND_SERVER(Packet *p, Networ
 		return;
 	}
 
-	NetworkGameInfo ngi;
-	FillNetworkGameInfo(ngi);
-
 	if (p->CanReadFromPacket(8) && p->Recv_uint32() == FIND_SERVER_EXTENDED_TOKEN) {
-		this->Reply_CLIENT_FIND_SERVER_extended(p, client_addr, &ngi);
+		this->Reply_CLIENT_FIND_SERVER_extended(p, client_addr, GetCurrentNetworkServerGameInfo());
 		return;
 	}
 
 	Packet packet(PACKET_UDP_SERVER_RESPONSE);
-	SerializeNetworkGameInfo(&packet, &ngi);
+	SerializeNetworkGameInfo(&packet, GetCurrentNetworkServerGameInfo());
 
 	/* Let the client know that we are here */
 	this->SendPacket(&packet, client_addr);
@@ -207,7 +203,7 @@ void ServerNetworkUDPSocketHandler::Receive_CLIENT_FIND_SERVER(Packet *p, Networ
 	DEBUG(net, 2, "[udp] queried from %s", client_addr->GetHostname());
 }
 
-void ServerNetworkUDPSocketHandler::Reply_CLIENT_FIND_SERVER_extended(Packet *p, NetworkAddress *client_addr, NetworkGameInfo *ngi)
+void ServerNetworkUDPSocketHandler::Reply_CLIENT_FIND_SERVER_extended(Packet *p, NetworkAddress *client_addr, const NetworkServerGameInfo *ngi)
 {
 	uint16 flags = p->Recv_uint16();
 	uint16 version = p->Recv_uint16();
@@ -396,7 +392,7 @@ void ClientNetworkUDPSocketHandler::Receive_SERVER_RESPONSE_Common(Packet *p, Ne
 	DEBUG(net, 4, "[udp]%s server response from %s", extended ? " extended" : "", NetworkAddressDumper().GetAddressAsString(client_addr));
 
 	/* Find next item */
-	item = NetworkGameListAddItem(*client_addr);
+	item = NetworkGameListAddItem(client_addr->GetAddressAsString(false));
 
 	/* Clear any existing GRFConfig chain. */
 	ClearGRFConfigList(&item->info.grfconfig);
@@ -434,7 +430,8 @@ void ClientNetworkUDPSocketHandler::Receive_SERVER_RESPONSE_Common(Packet *p, Ne
 				SerializeGRFIdentifier(&packet, &in_request[i]->ident);
 			}
 
-			this->SendPacket(&packet, &item->address);
+			NetworkAddress address = NetworkAddress(ParseConnectionString(item->connection_string, NETWORK_DEFAULT_PORT));
+			this->SendPacket(&packet, &address);
 
 			DEBUG(net, 4, "[udp] sent newgrf data request (%u) to %s", in_request_count, NetworkAddressDumper().GetAddressAsString(client_addr));
 
@@ -453,7 +450,7 @@ void ClientNetworkUDPSocketHandler::Receive_SERVER_RESPONSE_Common(Packet *p, Ne
 	}
 
 	if (client_addr->GetAddress()->ss_family == AF_INET6) {
-		strecat(item->info.server_name, " (IPv6)", lastof(item->info.server_name));
+		item->info.server_name.append(" (IPv6)");
 	}
 
 	UpdateNetworkGameWindow();
@@ -489,7 +486,7 @@ void ClientNetworkUDPSocketHandler::Receive_MASTER_RESPONSE_LIST(Packet *p, Netw
 			/* Somehow we reached the end of the packet */
 			if (this->HasClientQuit()) return;
 
-			DoNetworkUDPQueryServer(addr, false, false);
+			DoNetworkUDPQueryServer(addr.GetAddressAsString(false), false, false);
 		}
 	}
 }
