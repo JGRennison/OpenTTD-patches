@@ -5378,6 +5378,11 @@ static void NewSpriteGroup(ByteReader *buf)
 						return;
 					}
 
+					if (num_loaded + num_loading == 0) {
+						grfmsg(1, "NewSpriteGroup: no result, skipping invalid RealSpriteGroup");
+						break;
+					}
+
 					assert(RealSpriteGroup::CanAllocateItem());
 					RealSpriteGroup *group = new RealSpriteGroup();
 					group->nfo_line = _cur.nfo_line;
