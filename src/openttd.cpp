@@ -837,7 +837,7 @@ int openttd_main(int argc, char *argv[])
 	DeterminePaths(argv[0]);
 	TarScanner::DoScan(TarScanner::BASESET);
 
-	if (dedicated) DEBUG(net, 0, "Starting dedicated version %s", _openttd_revision);
+	if (dedicated) DEBUG(net, 3, "Starting dedicated server, version %s", _openttd_revision);
 	if (_dedicated_forks && !dedicated) _dedicated_forks = false;
 
 #if defined(UNIX)
@@ -1149,7 +1149,7 @@ bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileTy
 				 * special cases which make clients desync immediately. So we fall
 				 * back to just generating a new game with the current settings.
 				 */
-				DEBUG(net, 0, "Loading game failed, so a new (random) game will be started!");
+				DEBUG(net, 0, "Loading game failed, so a new (random) game will be started");
 				MakeNewGame(false, true);
 				return false;
 			}
@@ -1682,7 +1682,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 		/* Check docking tiles */
 		TileArea ta;
 		std::map<TileIndex, bool> docking_tiles;
-		TILE_AREA_LOOP(tile, st->docking_station) {
+		for (TileIndex tile : st->docking_station) {
 			ta.Add(tile);
 			docking_tiles[tile] = IsDockingTile(tile);
 		}
@@ -1691,7 +1691,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log)
 			CCLOG("station docking mismatch: station %i, company %i, prev: (%X, %u, %u), recalc: (%X, %u, %u)",
 					st->index, (int)st->owner, ta.tile, ta.w, ta.h, st->docking_station.tile, st->docking_station.w, st->docking_station.h);
 		}
-		TILE_AREA_LOOP(tile, ta) {
+		for (TileIndex tile : ta) {
 			if (docking_tiles[tile] != IsDockingTile(tile)) {
 				CCLOG("docking tile mismatch: tile %i", (int)tile);
 			}

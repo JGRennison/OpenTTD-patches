@@ -2718,7 +2718,7 @@ static uint16 GetFreeStationPlatforms(StationID st_id)
 	bool is_free;
 	TileIndex t2;
 	uint16 counter = 0;
-	TILE_AREA_LOOP(t1, st->train_station) {
+	for (TileIndex t1 : st->train_station) {
 		if (st->TileBelongsToRailStation(t1)) {
 			/* We only proceed if this tile is a track tile and the north(-east/-west) end of the platform */
 			if (IsCompatibleTrainStationTile(t1 + TileOffsByDiagDir(GetRailStationAxis(t1) == AXIS_X ? DIAGDIR_NE : DIAGDIR_NW), t1) || IsStationTileBlocked(t1)) continue;

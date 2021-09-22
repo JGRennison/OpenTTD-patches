@@ -127,16 +127,16 @@ void NetworkUDPSocketHandler::SendPacket(Packet *p, NetworkAddress *recv, bool a
 			/* Enable broadcast */
 			unsigned long val = 1;
 			if (setsockopt(s.second, SOL_SOCKET, SO_BROADCAST, (char *) &val, sizeof(val)) < 0) {
-				DEBUG(net, 1, "[udp] setting broadcast failed with: %s", NetworkError::GetLast().AsString());
+				DEBUG(net, 1, "Setting broadcast mode failed: %s", NetworkError::GetLast().AsString());
 			}
 		}
 
 		/* Send the buffer */
 		ssize_t res = p->TransferOut<int>(sendto, s.second, 0, (const struct sockaddr *)send.GetAddress(), send.GetAddressLength());
-		DEBUG(net, 7, "[udp] sendto(%s)",  NetworkAddressDumper().GetAddressAsString(&send));
+		DEBUG(net, 7, "sendto(%s)",  NetworkAddressDumper().GetAddressAsString(&send));
 
 		/* Check for any errors, but ignore it otherwise */
-		if (res == -1) DEBUG(net, 1, "[udp] sendto(%s) failed with: %s", NetworkAddressDumper().GetAddressAsString(&send), NetworkError::GetLast().AsString());
+		if (res == -1) DEBUG(net, 1, "sendto(%s) failed with: %s", NetworkAddressDumper().GetAddressAsString(&send), NetworkError::GetLast().AsString());
 
 		if (!all) break;
 	}

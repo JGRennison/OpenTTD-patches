@@ -110,7 +110,7 @@ public:
 
 	void Connect();
 	void SendReceive();
-	void Close() override;
+	void Close();
 
 	void RequestContentList(ContentType type);
 	void RequestContentList(uint count, const ContentID *content_ids);

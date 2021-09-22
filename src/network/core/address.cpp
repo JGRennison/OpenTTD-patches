@@ -14,8 +14,6 @@
 
 #include "../../safeguards.h"
 
-static const int DEFAULT_CONNECT_TIMEOUT_SECONDS = 3; ///< Allow connect() three seconds to connect.
-
 /**
  * Get the hostname; in case it wasn't given the
  * IPv4 dotted representation is given.
@@ -317,131 +315,58 @@ SOCKET NetworkAddress::Resolve(int family, int socktype, int flags, SocketList *
 }
 
 /**
- * Helper function to resolve a connected socket.
- * @param runp information about the socket to try not
- * @return the opened socket or INVALID_SOCKET
- */
-static SOCKET ConnectLoopProc(addrinfo *runp)
-{
-	const char *type = NetworkAddress::SocketTypeAsString(runp->ai_socktype);
-	const char *family = NetworkAddress::AddressFamilyAsString(runp->ai_family);
-	std::string address = NetworkAddress(runp->ai_addr, (int)runp->ai_addrlen).GetAddressAsString();
-
-	SOCKET sock = socket(runp->ai_family, runp->ai_socktype, runp->ai_protocol);
-	if (sock == INVALID_SOCKET) {
-		DEBUG(net, 1, "[%s] could not create %s socket: %s", type, family, NetworkError::GetLast().AsString());
-		return INVALID_SOCKET;
-	}
-
-	if (!SetNoDelay(sock)) DEBUG(net, 1, "[%s] setting TCP_NODELAY failed", type);
-
-	if (!SetNonBlocking(sock)) DEBUG(net, 0, "[%s] setting non-blocking mode failed", type);
-
-	int err = connect(sock, runp->ai_addr, (int)runp->ai_addrlen);
-	if (err != 0 && !NetworkError::GetLast().IsConnectInProgress()) {
-		DEBUG(net, 1, "[%s] could not connect to %s over %s: %s", type, address.c_str(), family, NetworkError::GetLast().AsString());
-		closesocket(sock);
-		return INVALID_SOCKET;
-	}
-
-	fd_set write_fd;
-	struct timeval tv;
-
-	FD_ZERO(&write_fd);
-	FD_SET(sock, &write_fd);
-
-	/* Wait for connect() to either connect, timeout or fail. */
-	tv.tv_usec = 0;
-	tv.tv_sec = DEFAULT_CONNECT_TIMEOUT_SECONDS;
-	int n = select(FD_SETSIZE, NULL, &write_fd, NULL, &tv);
-	if (n < 0) {
-		DEBUG(net, 1, "[%s] could not connect to %s: %s", type, address.c_str(), NetworkError::GetLast().AsString());
-		closesocket(sock);
-		return INVALID_SOCKET;
-	}
-
-	/* If no fd is selected, the timeout has been reached. */
-	if (n == 0) {
-		DEBUG(net, 1, "[%s] timed out while connecting to %s", type, address.c_str());
-		closesocket(sock);
-		return INVALID_SOCKET;
-	}
-
-	/* Retrieve last error, if any, on the socket. */
-	NetworkError socket_error = GetSocketError(sock);
-	if (socket_error.HasError()) {
-		DEBUG(net, 1, "[%s] could not connect to %s: %s", type, address.c_str(), socket_error.AsString());
-		closesocket(sock);
-		return INVALID_SOCKET;
-	}
-
-	/* Connection succeeded. */
-	DEBUG(net, 1, "[%s] connected to %s", type, address.c_str());
-
-	return sock;
-}
-
-/**
- * Connect to the given address.
- * @return the connected socket or INVALID_SOCKET.
- */
-SOCKET NetworkAddress::Connect()
-{
-	DEBUG(net, 1, "Connecting to %s",  NetworkAddressDumper().GetAddressAsString(this));
-
-	return this->Resolve(AF_UNSPEC, SOCK_STREAM, AI_ADDRCONFIG, nullptr, ConnectLoopProc);
-}
-
-/**
  * Helper function to resolve a listening.
  * @param runp information about the socket to try not
  * @return the opened socket or INVALID_SOCKET
  */
 static SOCKET ListenLoopProc(addrinfo *runp)
 {
-	const char *type = NetworkAddress::SocketTypeAsString(runp->ai_socktype);
-	const char *family = NetworkAddress::AddressFamilyAsString(runp->ai_family);
 	std::string address = NetworkAddress(runp->ai_addr, (int)runp->ai_addrlen).GetAddressAsString();
 
 	SOCKET sock = socket(runp->ai_family, runp->ai_socktype, runp->ai_protocol);
 	if (sock == INVALID_SOCKET) {
-		DEBUG(net, 0, "[%s] could not create %s socket on port %s: %s", type, family, address.c_str(), NetworkError::GetLast().AsString());
+		const char *type = NetworkAddress::SocketTypeAsString(runp->ai_socktype);
+		const char *family = NetworkAddress::AddressFamilyAsString(runp->ai_family);
+		DEBUG(net, 0, "Could not create %s %s socket: %s", type, family, NetworkError::GetLast().AsString());
 		return INVALID_SOCKET;
 	}
 
 	if (runp->ai_socktype == SOCK_STREAM && !SetNoDelay(sock)) {
-		DEBUG(net, 3, "[%s] setting TCP_NODELAY failed for port %s", type, address.c_str());
+		DEBUG(net, 1, "Setting no-delay mode failed: %s", NetworkError::GetLast().AsString());
 	}
 
 	int on = 1;
 	/* The (const char*) cast is needed for windows!! */
 	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char*)&on, sizeof(on)) == -1) {
-		DEBUG(net, 3, "[%s] could not set reusable %s sockets for port %s: %s", type, family, address.c_str(), NetworkError::GetLast().AsString());
+		DEBUG(net, 0, "Setting reuse-address mode failed: %s", NetworkError::GetLast().AsString());
 	}
 
 #ifndef __OS2__
 	if (runp->ai_family == AF_INET6 &&
 			setsockopt(sock, IPPROTO_IPV6, IPV6_V6ONLY, (const char*)&on, sizeof(on)) == -1) {
-		DEBUG(net, 3, "[%s] could not disable IPv4 over IPv6 on port %s: %s", type, address.c_str(), NetworkError::GetLast().AsString());
+		DEBUG(net, 3, "Could not disable IPv4 over IPv6: %s", NetworkError::GetLast().AsString());
 	}
 #endif
 
 	if (bind(sock, runp->ai_addr, (int)runp->ai_addrlen) != 0) {
-		DEBUG(net, 1, "[%s] could not bind on %s port %s: %s", type, family, address.c_str(), NetworkError::GetLast().AsString());
+		DEBUG(net, 0, "Could not bind socket on %s: %s", address.c_str(), NetworkError::GetLast().AsString());
 		closesocket(sock);
 		return INVALID_SOCKET;
 	}
 
 	if (runp->ai_socktype != SOCK_DGRAM && listen(sock, 1) != 0) {
-		DEBUG(net, 1, "[%s] could not listen at %s port %s: %s", type, family, address.c_str(), NetworkError::GetLast().AsString());
+		DEBUG(net, 0, "Could not listen on socket: %s", NetworkError::GetLast().AsString());
 		closesocket(sock);
 		return INVALID_SOCKET;
 	}
 
 	/* Connection succeeded */
-	if (!SetNonBlocking(sock)) DEBUG(net, 0, "[%s] setting non-blocking mode failed for %s port %s", type, family, address.c_str());
 
-	DEBUG(net, 1, "[%s] listening on %s port %s", type, family, address.c_str());
+	if (!SetNonBlocking(sock)) {
+		DEBUG(net, 0, "Setting non-blocking mode failed: %s", NetworkError::GetLast().AsString());
+	}
+
+	DEBUG(net, 3, "Listening on %s", address.c_str());
 	return sock;
 }
 
@@ -495,4 +420,17 @@ void NetworkAddress::Listen(int socktype, SocketList *sockets)
 		case AF_INET6:  return "IPv6";
 		default:        return "unsupported";
 	}
+}
+
+/**
+ * Get the peer name of a socket in string format.
+ * @param sock The socket to get the peer name of.
+ * @return The string representation of the peer name.
+ */
+/* static */ const std::string NetworkAddress::GetPeerName(SOCKET sock)
+{
+	sockaddr_storage addr;
+	socklen_t addr_len = sizeof(addr);
+	getpeername(sock, (sockaddr *)&addr, &addr_len);
+	return NetworkAddress(addr, addr_len).GetAddressAsString();
 }

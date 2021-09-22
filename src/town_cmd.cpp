@@ -2636,7 +2636,7 @@ static inline CommandCost CanBuildHouseHere(TileIndex tile, TownID town, bool no
  */
 static inline CommandCost CanBuildHouseHere(const TileArea &ta, TownID town, int maxz, bool noslope)
 {
-	TILE_AREA_LOOP(tile, ta) {
+	for (TileIndex tile : ta) {
 		CommandCost ret = CanBuildHouseHere(tile, town, noslope);
 		/* if building on slopes is allowed, there will be flattening foundation (to tile max z) */
 		if (ret.Succeeded() && GetTileMaxZ(tile) != maxz) ret = CommandCost(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);

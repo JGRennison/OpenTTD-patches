@@ -491,7 +491,7 @@ public:
 		EM_ASM(if (window["openttd_server_list"]) openttd_server_list());
 #endif
 
-		this->last_joined = NetworkAddServer(_settings_client.network.last_joined);
+		this->last_joined = NetworkAddServer(_settings_client.network.last_joined, false);
 		this->server = this->last_joined;
 
 		this->requery_timer.SetInterval(MILLISECONDS_PER_TICK);
@@ -767,7 +767,7 @@ public:
 				break;
 
 			case WID_NG_REFRESH: // Refresh
-				if (this->server != nullptr) NetworkTCPQueryServer(this->server->connection_string);
+				if (this->server != nullptr) NetworkQueryServer(this->server->connection_string);
 				break;
 
 			case WID_NG_NEWGRF: // NewGRF Settings
@@ -845,6 +845,7 @@ public:
 		if (!StrEmpty(str)) {
 			strecpy(_settings_client.network.connect_to_ip, str, lastof(_settings_client.network.connect_to_ip));
 			NetworkAddServer(str);
+			NetworkRebuildHostList();
 		}
 	}
 
@@ -1502,7 +1503,7 @@ struct NetworkLobbyWindow : public Window {
 				/* Clear the information so removed companies don't remain */
 				for (auto &company : this->company_info) company = {};
 
-				NetworkTCPQueryServer(this->server->connection_string, true);
+				NetworkQueryLobbyServer(this->server->connection_string);
 				break;
 		}
 	}
@@ -1572,7 +1573,7 @@ static void ShowNetworkLobbyWindow(NetworkGameList *ngl)
 
 	strecpy(_settings_client.network.last_joined, ngl->connection_string.c_str(), lastof(_settings_client.network.last_joined));
 
-	NetworkTCPQueryServer(ngl->connection_string, true);
+	NetworkQueryLobbyServer(ngl->connection_string);
 
 	new NetworkLobbyWindow(&_network_lobby_window_desc, ngl);
 }

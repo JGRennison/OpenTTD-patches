@@ -416,7 +416,7 @@ STR_SETTINGS_MENU_MONEY_TEXT_EFFECTS                            :수입/지출 �
 
 ############ range for file menu starts
 STR_FILE_MENU_SAVE_GAME                                         :게임 저장하기
-STR_FILE_MENU_LOAD_GAME                                         :불러오기
+STR_FILE_MENU_LOAD_GAME                                         :게임 불러오기
 STR_FILE_MENU_QUIT_GAME                                         :게임 그만두기
 STR_FILE_MENU_SEPARATOR                                         :
 STR_FILE_MENU_EXIT                                              :종료

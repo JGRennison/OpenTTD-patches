@@ -28,7 +28,8 @@ NetworkTCPSocketHandler::NetworkTCPSocketHandler(SOCKET s) :
 
 NetworkTCPSocketHandler::~NetworkTCPSocketHandler()
 {
-	this->CloseConnection();
+	/* Virtual functions get called statically in destructors, so make it explicit to remove any confusion. */
+	this->NetworkTCPSocketHandler::CloseConnection();
 
 	if (this->sock != INVALID_SOCKET) closesocket(this->sock);
 	this->sock = INVALID_SOCKET;
@@ -118,7 +119,7 @@ SendPacketsState NetworkTCPSocketHandler::SendPackets(bool closing_down)
 			if (!err.WouldBlock()) {
 				/* Something went wrong.. close client! */
 				if (!closing_down) {
-					DEBUG(net, 0, "send failed with error %s", err.AsString());
+					DEBUG(net, 0, "Send failed: %s", err.AsString());
 					this->CloseConnection();
 				}
 				return SPS_CLOSED;
@@ -168,7 +169,7 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 				NetworkError err = NetworkError::GetLast();
 				if (!err.WouldBlock()) {
 					/* Something went wrong... */
-					if (!err.IsConnectionReset()) DEBUG(net, 0, "recv failed with error %s", err.AsString());
+					if (!err.IsConnectionReset()) DEBUG(net, 0, "Recv failed: %s", err.AsString());
 					this->CloseConnection();
 					return nullptr;
 				}
@@ -197,7 +198,7 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 			NetworkError err = NetworkError::GetLast();
 			if (!err.WouldBlock()) {
 				/* Something went wrong... */
-				if (!err.IsConnectionReset()) DEBUG(net, 0, "recv failed with error %s", err.AsString());
+				if (!err.IsConnectionReset()) DEBUG(net, 0, "Recv failed: %s", err.AsString());
 				this->CloseConnection();
 				return nullptr;
 			}

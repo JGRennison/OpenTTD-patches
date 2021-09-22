@@ -137,9 +137,11 @@ const char *ContentInfo::GetTextfile(TextfileType type) const
 	return ::GetTextfile(type, GetContentInfoSubDir(this->type), tmp);
 }
 
-void NetworkContentSocketHandler::Close()
+/**
+ * Close the actual socket.
+ */
+void NetworkContentSocketHandler::CloseSocket()
 {
-	CloseConnection();
 	if (this->sock == INVALID_SOCKET) return;
 
 	closesocket(this->sock);
@@ -167,9 +169,9 @@ bool NetworkContentSocketHandler::HandlePacket(Packet *p)
 
 		default:
 			if (this->HasClientQuit()) {
-				DEBUG(net, 0, "[tcp/content] received invalid packet type %d", type);
+				DEBUG(net, 0, "[tcp/content] Received invalid packet type %d", type);
 			} else {
-				DEBUG(net, 0, "[tcp/content] received illegal packet");
+				DEBUG(net, 0, "[tcp/content] Received illegal packet");
 			}
 			return false;
 	}
@@ -219,7 +221,7 @@ bool NetworkContentSocketHandler::ReceivePackets()
  */
 bool NetworkContentSocketHandler::ReceiveInvalidPacket(PacketContentType type)
 {
-	DEBUG(net, 0, "[tcp/content] received illegal packet type %d", type);
+	DEBUG(net, 0, "[tcp/content] Received illegal packet type %d", type);
 	return false;
 }
 

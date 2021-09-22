@@ -1193,14 +1193,10 @@ void DeleteWindowById(WindowClass cls, WindowNumber number, bool force)
  */
 void DeleteWindowByClass(WindowClass cls)
 {
-restart_search:
-	/* When we find the window to delete, we need to restart the search
-	 * as deleting this window could cascade in deleting (many) others
-	 * anywhere in the z-array */
+	/* Note: the container remains stable, even when deleting windows. */
 	for (Window *w : Window::IterateFromBack()) {
 		if (w->window_class == cls) {
 			delete w;
-			goto restart_search;
 		}
 	}
 }
@@ -1213,14 +1209,10 @@ restart_search:
  */
 void DeleteCompanyWindows(CompanyID id)
 {
-restart_search:
-	/* When we find the window to delete, we need to restart the search
-	 * as deleting this window could cascade in deleting (many) others
-	 * anywhere in the z-array */
+	/* Note: the container remains stable, even when deleting windows. */
 	for (Window *w : Window::IterateFromBack()) {
 		if (w->owner == id) {
 			delete w;
-			goto restart_search;
 		}
 	}
 
@@ -3406,10 +3398,7 @@ void CallWindowGameTickEvent()
  */
 void DeleteNonVitalWindows()
 {
-restart_search:
-	/* When we find the window to delete, we need to restart the search
-	 * as deleting this window could cascade in deleting (many) others
-	 * anywhere in the z-array */
+	/* Note: the container remains stable, even when deleting windows. */
 	for (const Window *w : Window::IterateFromBack()) {
 		if (w->window_class != WC_MAIN_WINDOW &&
 				w->window_class != WC_SELECT_GAME &&
@@ -3419,7 +3408,6 @@ restart_search:
 				(w->flags & WF_STICKY) == 0) { // do not delete windows which are 'pinned'
 
 			delete w;
-			goto restart_search;
 		}
 	}
 }
@@ -3436,14 +3424,10 @@ void DeleteAllNonVitalWindows()
 	/* Delete every window except for stickied ones, then sticky ones as well */
 	DeleteNonVitalWindows();
 
-restart_search:
-	/* When we find the window to delete, we need to restart the search
-	 * as deleting this window could cascade in deleting (many) others
-	 * anywhere in the z-array */
+	/* Note: the container remains stable, even when deleting windows. */
 	for (const Window *w : Window::IterateFromBack()) {
 		if (w->flags & WF_STICKY) {
 			delete w;
-			goto restart_search;
 		}
 	}
 }
@@ -3465,14 +3449,10 @@ void DeleteAllMessages()
  */
 void DeleteConstructionWindows()
 {
-restart_search:
-	/* When we find the window to delete, we need to restart the search
-	 * as deleting this window could cascade in deleting (many) others
-	 * anywhere in the z-array */
+	/* Note: the container remains stable, even when deleting windows. */
 	for (const Window *w : Window::IterateFromBack()) {
 		if (w->window_desc->flags & WDF_CONSTRUCTION) {
 			delete w;
-			goto restart_search;
 		}
 	}
 }

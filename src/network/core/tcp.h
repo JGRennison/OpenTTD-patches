@@ -15,9 +15,12 @@
 #include "address.h"
 #include "packet.h"
 
-#include <deque>
-#include <memory>
 #include <atomic>
+#include <chrono>
+#include <deque>
+#include <map>
+#include <memory>
+#include <thread>
 
 /** The states of sending the packets. */
 enum SendPacketsState {
@@ -73,23 +76,44 @@ public:
  */
 class TCPConnecter {
 private:
-	std::atomic<bool> connected;///< Whether we succeeded in making the connection
-	std::atomic<bool> aborted;  ///< Whether we bailed out (i.e. connection making failed)
-	bool killed;                ///< Whether we got killed
-	SOCKET sock;                ///< The socket we're connecting with
+	/**
+	 * The current status of the connecter.
+	 *
+	 * We track the status like this to ensure everything is executed from the
+	 * game-thread, and not at another random time where we might not have the
+	 * lock on the game-state.
+	 */
+	enum class Status {
+		INIT,       ///< TCPConnecter is created but resolving hasn't started.
+		RESOLVING,  ///< The hostname is being resolved (threaded).
+		FAILURE,    ///< Resolving failed.
+		CONNECTING, ///< We are currently connecting.
+	};
 
-	void Connect();
+	std::thread resolve_thread;                         ///< Thread used during resolving.
+	std::atomic<Status> status = Status::INIT;          ///< The current status of the connecter.
 
-	static void ThreadEntry(TCPConnecter *param);
+	addrinfo *ai = nullptr;                             ///< getaddrinfo() allocated linked-list of resolved addresses.
+	std::vector<addrinfo *> addresses;                  ///< Addresses we can connect to.
+	std::map<SOCKET, NetworkAddress> sock_to_address;   ///< Mapping of a socket to the real address it is connecting to. USed for DEBUG statements.
+	size_t current_address = 0;                         ///< Current index in addresses we are trying.
 
-protected:
-	/** Address we're connecting to */
-	NetworkAddress address;
+	std::vector<SOCKET> sockets;                        ///< Pending connect() attempts.
+	std::chrono::steady_clock::time_point last_attempt; ///< Time we last tried to connect.
+
+	std::string connection_string;                      ///< Current address we are connecting to (before resolving).
+
+	void Resolve();
+	void OnResolved(addrinfo *ai);
+	bool TryNextAddress();
+	void Connect(addrinfo *address);
+	bool CheckActivity();
+
+	static void ResolveThunk(TCPConnecter *connecter);
 
 public:
 	TCPConnecter(const std::string &connection_string, uint16 default_port);
-	/** Silence the warnings */
-	virtual ~TCPConnecter() {}
+	virtual ~TCPConnecter();
 
 	/**
 	 * Callback when the connection succeeded.

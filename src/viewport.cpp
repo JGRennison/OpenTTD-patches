@@ -2875,7 +2875,7 @@ static inline TileIndex ViewportMapGetMostSignificantTileType(const Viewport * c
 	/* Find the most important tile of the area. */
 	TileIndex result = from_tile;
 	uint importance = 0;
-	TILE_AREA_LOOP_WITH_PREFETCH(tile, tile_area) {
+	for (OrthogonalPrefetchTileIterator tile(tile_area); tile != INVALID_TILE; ++tile) {
 		const TileType ttype = GetTileType(tile);
 		const uint tile_importance = _tiletype_importance[ttype];
 		if (tile_importance > importance) {

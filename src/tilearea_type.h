@@ -15,6 +15,9 @@
 #include "map_func.h"
 #include <tuple>
 
+template<uint N> class OrthogonalTileIteratorStep;
+using OrthogonalTileIterator = class OrthogonalTileIteratorStep<1>;
+
 /** Represents the covered area of e.g. a rail station */
 struct OrthogonalTileArea {
 	TileIndex tile; ///< The base tile of the area
@@ -66,6 +69,10 @@ struct OrthogonalTileArea {
 	{
 		return std::tie(tile, w, h) == std::tie(other.tile, other.w, other.h);
 	}
+
+	OrthogonalTileIterator begin() const;
+
+	OrthogonalTileIterator end() const;
 };
 
 /** Represents a diagonal tile area. */
@@ -132,6 +139,15 @@ public:
 	}
 
 	/**
+	 * Get the tile we are currently at.
+	 * @return The tile we are at, or INVALID_TILE when we're done.
+	 */
+	inline TileIndex operator *() const
+	{
+		return this->tile;
+	}
+
+	/**
 	 * Move ourselves to the next tile in the rectangle on the map.
 	 */
 	virtual TileIterator& operator ++() = 0;
@@ -192,8 +208,6 @@ public:
 		return new OrthogonalTileIteratorStep(*this);
 	}
 };
-
-using OrthogonalTileIterator = OrthogonalTileIteratorStep<1>;
 
 /** Iterator to iterate over a tile area (rectangle) of the map.
  * It prefetches tiles once per row.
@@ -292,15 +306,5 @@ public:
 		return new DiagonalTileIterator(*this);
 	}
 };
-
-/**
- * A loop which iterates over the tiles of a TileArea.
- * @param var The name of the variable which contains the current tile.
- *            This variable will be allocated in this \c for of this loop.
- * @param ta  The tile area to search over.
- */
-#define TILE_AREA_LOOP(var, ta) for (OrthogonalTileIterator var(ta); var != INVALID_TILE; ++var)
-#define TILE_AREA_LOOP_STEP(var, ta, N) for (OrthogonalTileIteratorStep<N> var(ta); var != INVALID_TILE; ++var)
-#define TILE_AREA_LOOP_WITH_PREFETCH(var, ta) for (OrthogonalPrefetchTileIterator var(ta); var != INVALID_TILE; ++var)
 
 #endif /* TILEAREA_TYPE_H */
