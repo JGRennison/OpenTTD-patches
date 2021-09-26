@@ -1418,7 +1418,7 @@ STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :Zeige erweitert
 STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :Zeige die erweiterten Features der Routing-Beschränkungen. Wenn inaktiv, werden einige erweiterte Features zwar nicht in der Oberfläche angezeigt, stehen aber dennoch allen Spielern zur Verfügung.
 STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES                        :Zeige programmierbares Einfahrtssignal-Feature: {STRING}
 STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :Zeige das programmierbares Einfahrtssignal-Feature. Falls deaktiviert, werden die Bedienelemente zum Bau und zur Konfiguration von programmierbaren Einfahrtssignalen zwar nicht in der Oberfläche angezeigt, stehen aber dennoch allen Spielern zur Verfügung.
-STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER                   :Zeige Filterung nach Frachart in Fahrzeuglisten: {STRING}
+STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER                   :Zeige Filterung nach Frachtart in Fahrzeuglisten: {STRING}
 STR_CONFIG_SETTING_SHOW_VEH_LIST_CARGO_FILTER_HELPTEXT          :Zeige die Filterung nach Frachtart in Fahrzeuglisten. Falls aktiviert, beinhalten die Fahrzeuglisten-Fenster eine weitere Filteroption.
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES               :Zeige erweiterter Lademodus-Features: {STRING}
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES_HELPTEXT      :Zeige erweiterter Lademodus-Features (durchgehendes Laden/Entladen). Falls deaktiviert, werden einige erweiterte Lademodus-Features zwar nicht in der Oberfläche angezeigt, stehen aber dennoch allen Spielern zur Verfügung.
@@ -1651,14 +1651,14 @@ STR_CONFIG_SETTING_EXPENSES_LAYOUT_HELPTEXT                     :Lege das Layout
 STR_CONFIG_SETTING_AUTO_REMOVE_SIGNALS                          :Automatische Entfernung von Signalen während der Errichtung von Bahntrassen: {STRING}
 STR_CONFIG_SETTING_AUTO_REMOVE_SIGNALS_HELPTEXT                 :Automatische Entfernung von Signalen während der Errichtung der Bahntrasse, wenn diese sich im Weg befinden. Hinweis: Dies kann zu Unfällen führen!
 STR_CONFIG_SETTING_FAST_FORWARD_SPEED_LIMIT                     :Zeitraffer Geschwindigkeitslimit: {STRING}
-STR_CONFIG_SETTING_FAST_FORWARD_SPEED_LIMIT_HELPTEXT            :Limit wie schnell das Spiel läuft, wenn Zeitraffer aktiviert ist. 0= unlimitiert (so schnell, wie ihr Computer es erlaubt). Eingaben unter 100% können das Spiel verlangsamen. Das obere Limit hängt von den technischen Spezifikationen ihres Computer ab und kann großen Einfluss auf das Spiel haben
+STR_CONFIG_SETTING_FAST_FORWARD_SPEED_LIMIT_HELPTEXT            :Limit wie schnell das Spiel läuft, wenn Zeitraffer aktiviert ist. 0= unlimitiert (so schnell, wie Ihr Computer es erlaubt). Eingaben unter 100% können das Spiel verlangsamen. Das obere Limit hängt von den technischen Spezifikationen Ihres Computers ab und kann großen Einfluss auf das Spiel haben
 STR_CONFIG_SETTING_FAST_FORWARD_SPEED_LIMIT_VAL                 :{NUM}% normale Spielgeschwindigkeit
-STR_CONFIG_SETTING_FAST_FORWARD_SPEED_LIMIT_ZERO                :Keine Beschränkung (so schnell wie ihr Computer es erlaubt)
+STR_CONFIG_SETTING_FAST_FORWARD_SPEED_LIMIT_ZERO                :Keine Beschränkung (so schnell wie Ihr Computer es erlaubt)
 
 STR_CONFIG_SETTING_ENABLE_BUILD_RIVER                           :Aktiviere das Bauen von Flüssen: {STRING}
 STR_CONFIG_SETTING_ENABLE_BUILD_RIVER_HELPTEXT                  :Aktiviere das Bauen von Flüssen außerhalb des Szenarioeditors
-STR_CONFIG_SETTING_ENABLE_REMOVE_WATER                          :Aktiviere das entfernen von Meereskacheln und Flüssen: {STRING}
-STR_CONFIG_SETTING_ENABLE_REMOVE_WATER_HELPTEXT                 :Aktiviere das entfernen von Meereskacheln und Flüssen außerhalb des Szenarioeditors
+STR_CONFIG_SETTING_ENABLE_REMOVE_WATER                          :Aktiviere das Entfernen von Meereskacheln und Flüssen: {STRING}
+STR_CONFIG_SETTING_ENABLE_REMOVE_WATER_HELPTEXT                 :Aktiviere das Entfernen von Meereskacheln und Flüssen außerhalb des Szenarioeditors
 
 STR_CONFIG_SETTING_SOUND_TICKER                                 :Nachrichtenticker: {STRING}
 STR_CONFIG_SETTING_SOUND_TICKER_HELPTEXT                        :Soundeffekte für Kurzfassungen von Nachrichten abspielen (Ticker)
