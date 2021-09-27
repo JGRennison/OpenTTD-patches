@@ -28,21 +28,42 @@ NetworkTCPSocketHandler::NetworkTCPSocketHandler(SOCKET s) :
 
 NetworkTCPSocketHandler::~NetworkTCPSocketHandler()
 {
-	/* Virtual functions get called statically in destructors, so make it explicit to remove any confusion. */
-	this->NetworkTCPSocketHandler::CloseConnection();
+	this->EmptyPacketQueue();
+	this->CloseSocket();
+}
 
+/**
+ * Free all pending and partially received packets.
+ */
+void NetworkTCPSocketHandler::EmptyPacketQueue()
+{
+	this->packet_queue.clear();
+	this->packet_recv.reset();
+}
+
+/**
+ * Close the actual socket of the connection.
+ * Please make sure CloseConnection is called before CloseSocket, as
+ * otherwise not all resources might be released.
+ */
+void NetworkTCPSocketHandler::CloseSocket()
+{
 	if (this->sock != INVALID_SOCKET) closesocket(this->sock);
 	this->sock = INVALID_SOCKET;
 }
 
+/**
+ * This will put this socket handler in a close state. It will not
+ * actually close the OS socket; use CloseSocket for this.
+ * @param error Whether we quit under an error condition or not.
+ * @return new status of the connection.
+ */
 NetworkRecvStatus NetworkTCPSocketHandler::CloseConnection(bool error)
 {
+	this->MarkClosed();
 	this->writable = false;
-	NetworkSocketHandler::CloseConnection(error);
 
-	/* Free all pending and partially received packets */
-	this->packet_queue.clear();
-	this->packet_recv.reset();
+	this->EmptyPacketQueue();
 
 	return NETWORK_RECV_STATUS_OKAY;
 }

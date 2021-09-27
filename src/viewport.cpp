@@ -456,8 +456,8 @@ void InitializeWindowViewport(Window *w, int x, int y,
 		MarkAllRoutePathsDirty(veh);
 		MarkAllRouteStepsDirty(veh);
 	} else {
-		uint x = TileX(follow_flags) * TILE_SIZE;
-		uint y = TileY(follow_flags) * TILE_SIZE;
+		x = TileX(follow_flags) * TILE_SIZE;
+		y = TileY(follow_flags) * TILE_SIZE;
 
 		vp->follow_vehicle = INVALID_VEHICLE;
 		pt = MapXYZToViewport(vp, x, y, GetSlopePixelZ(x, y));

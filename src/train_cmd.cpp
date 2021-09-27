@@ -2215,7 +2215,7 @@ CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, uint16 data, uint3
 	}
 
 	CommandCost cost(EXPENSES_NEW_VEHICLES);
-	for (Train *t = sell_head; t != nullptr; t = t->Next()) cost.AddCost(-t->value);
+	for (Train *part = sell_head; part != nullptr; part = part->Next()) cost.AddCost(-part->value);
 
 	/* do it? */
 	if (flags & DC_EXEC) {
@@ -6460,7 +6460,7 @@ Trackdir Train::GetVehicleTrackdir() const
 	}
 
 	if (this->track == TRACK_BIT_WORMHOLE) {
-		/* Train in tunnel or on bridge, so just use his direction and make an educated guess
+		/* Train in tunnel or on bridge, so just use its direction and make an educated guess
 		 * given the track bits on the tunnel/bridge head tile.
 		 * If a reachable track piece is reserved, use that, otherwise use the first reachable track piece.
 		 */

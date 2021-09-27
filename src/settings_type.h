@@ -138,7 +138,7 @@ struct GUISettings : public TimeSettings {
 	uint8  date_format_in_default_names;     ///< should the default savegame/screenshot name use long dates (31th Dec 2008), short dates (31-12-2008) or ISO dates (2008-12-31)
 	byte   max_num_autosaves;                ///< controls how many autosavegames are made before the game starts to overwrite (names them 0 to max_num_autosaves - 1)
 	uint8  savegame_overwrite_confirm;       ///< Mode for when to warn about overwriting an existing savegame
-	bool   population_in_label;              ///< show the population of a town in his label?
+	bool   population_in_label;              ///< show the population of a town in its label?
 	uint8  right_mouse_btn_emulation;        ///< should we emulate right mouse clicking?
 	uint8  scrollwheel_scrolling;            ///< scrolling using the scroll wheel?
 	uint8  scrollwheel_multiplier;           ///< how much 'wheel' per incoming event from the OS?
@@ -281,16 +281,16 @@ struct MusicSettings {
 
 /** Settings related to currency/unit systems. */
 struct LocaleSettings {
-	byte   currency;                         ///< currency we currently use
-	byte   units_velocity;                   ///< unit system for velocity
-	byte   units_power;                      ///< unit system for power
-	byte   units_weight;                     ///< unit system for weight
-	byte   units_volume;                     ///< unit system for volume
-	byte   units_force;                      ///< unit system for force
-	byte   units_height;                     ///< unit system for height
-	char  *digit_group_separator;            ///< thousand separator for non-currencies
-	char  *digit_group_separator_currency;   ///< thousand separator for currencies
-	char  *digit_decimal_separator;          ///< decimal separator
+	byte        currency;                         ///< currency we currently use
+	byte        units_velocity;                   ///< unit system for velocity
+	byte        units_power;                      ///< unit system for power
+	byte        units_weight;                     ///< unit system for weight
+	byte        units_volume;                     ///< unit system for volume
+	byte        units_force;                      ///< unit system for force
+	byte        units_height;                     ///< unit system for height
+	std::string digit_group_separator;            ///< thousand separator for non-currencies
+	std::string digit_group_separator_currency;   ///< thousand separator for currencies
+	std::string digit_decimal_separator;          ///< decimal separator
 };
 
 /** Settings related to news */
@@ -329,16 +329,16 @@ struct NetworkSettings {
 	uint16 server_port;                                   ///< port the server listens on
 	uint16 server_admin_port;                             ///< port the server listens on for the admin network
 	bool   server_admin_chat;                             ///< allow private chat for the server to be distributed to the admin network
-	char   server_name[NETWORK_NAME_LENGTH];              ///< name of the server
-	char   server_password[NETWORK_PASSWORD_LENGTH];      ///< password for joining this server
-	char   rcon_password[NETWORK_PASSWORD_LENGTH];        ///< password for rconsole (server side)
-	char   admin_password[NETWORK_PASSWORD_LENGTH];       ///< password for the admin network
-	char   settings_password[NETWORK_PASSWORD_LENGTH];    ///< password for game settings (server side)
+	std::string server_name;                              ///< name of the server
+	std::string server_password;                          ///< password for joining this server
+	std::string rcon_password;                            ///< password for rconsole (server side)
+	std::string admin_password;                           ///< password for the admin network
+	std::string settings_password;                        ///< password for game settings (server side)
 	bool   server_advertise;                              ///< advertise the server to the masterserver
-	char   client_name[NETWORK_CLIENT_NAME_LENGTH];       ///< name of the player (as client)
-	char   default_company_pass[NETWORK_PASSWORD_LENGTH]; ///< default password for new companies in encrypted form
-	char   connect_to_ip[NETWORK_HOSTNAME_PORT_LENGTH];   ///< default for the "Add server" query
-	char   network_id[NETWORK_SERVER_ID_LENGTH];          ///< network ID for servers
+	std::string client_name;                              ///< name of the player (as client)
+	std::string default_company_pass;                     ///< default password for new companies in encrypted form
+	std::string connect_to_ip;                            ///< default for the "Add server" query
+	std::string network_id;                               ///< network ID for servers
 	bool   autoclean_companies;                           ///< automatically remove companies that are not in use
 	uint8  autoclean_unprotected;                         ///< remove passwordless companies after this many months
 	uint8  autoclean_protected;                           ///< remove the password from passworded companies after this many months
@@ -349,7 +349,7 @@ struct NetworkSettings {
 	Year   restart_game_year;                             ///< year the server restarts
 	uint8  min_active_clients;                            ///< minimum amount of active clients to unpause the game
 	bool   reload_cfg;                                    ///< reload the config file before restarting
-	char   last_joined[NETWORK_HOSTNAME_PORT_LENGTH];     ///< Last joined server
+	std::string last_joined;                              ///< Last joined server
 	bool   no_http_content_downloads;                     ///< do not do content downloads over HTTP
 };
 

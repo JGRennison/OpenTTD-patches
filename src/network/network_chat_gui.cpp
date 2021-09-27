@@ -128,7 +128,7 @@ void NetworkUndrawChatMessage()
 	/* Sometimes we also need to hide the cursor
 	 *   This is because both textmessage and the cursor take a shot of the
 	 *   screen before drawing.
-	 *   Now the textmessage takes his shot and paints his data before the cursor
+	 *   Now the textmessage takes its shot and paints its data before the cursor
 	 *   does, so in the shot of the cursor is the screen-data of the textmessage
 	 *   included when the cursor hangs somewhere over the textmessage. To
 	 *   avoid wrong repaints, we undraw the cursor in that case, and everything
@@ -259,9 +259,9 @@ void NetworkDrawChatMessage()
  * @param type The type of destination.
  * @param dest The actual destination index.
  */
-static void SendChat(const char *buf, DestType type, int dest)
+static void SendChat(const std::string &buf, DestType type, int dest)
 {
-	if (StrEmpty(buf)) return;
+	if (buf.empty()) return;
 	assert(type >= DESTTYPE_BROADCAST && type <= DESTTYPE_CLIENT);
 	if (!_network_server) {
 		MyClient::SendChat((NetworkAction)(NETWORK_ACTION_CHAT + type), type, dest, buf, NetworkTextMessageData());
@@ -334,7 +334,7 @@ struct NetworkChatWindow : public Window {
 			/* Skip inactive clients */
 			for (NetworkClientInfo *ci : NetworkClientInfo::Iterate(*item)) {
 				*item = ci->index;
-				return ci->client_name;
+				return ci->client_name.c_str();
 			}
 			*item = MAX_CLIENT_SLOTS;
 		}

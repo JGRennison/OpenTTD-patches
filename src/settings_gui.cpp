@@ -832,7 +832,6 @@ protected:
 struct SettingEntry : BaseSettingEntry {
 	const char *name;           ///< Name of the setting
 	const SettingDesc *setting; ///< Setting description of the setting
-	uint index;                 ///< Index of the setting in the settings table
 
 	SettingEntry(const char *name);
 
@@ -860,7 +859,7 @@ struct SettingEntry : BaseSettingEntry {
 	void SetValueDParams(uint first_param, int32 value, std::unique_ptr<SetValueDParamsTempData> &tempdata) const;
 
 protected:
-	SettingEntry(const SettingDesc *setting, uint index);
+	SettingEntry(const SettingDesc *setting);
 	virtual void DrawSetting(GameSettings *settings_ptr, int left, int right, int y, bool highlight) const;
 	virtual void DrawSettingString(uint left, uint right, int y, bool highlight, int32 value) const;
 
@@ -872,7 +871,7 @@ private:
 struct CargoDestPerCargoSettingEntry : SettingEntry {
 	CargoID cargo;
 
-	CargoDestPerCargoSettingEntry(CargoID cargo, const SettingDesc *setting, uint index);
+	CargoDestPerCargoSettingEntry(CargoID cargo, const SettingDesc *setting);
 	virtual void Init(byte level = 0);
 	virtual bool UpdateFilterState(SettingFilter &filter, bool force_visible);
 
@@ -1056,14 +1055,12 @@ SettingEntry::SettingEntry(const char *name)
 {
 	this->name = name;
 	this->setting = nullptr;
-	this->index = 0;
 }
 
-SettingEntry::SettingEntry(const SettingDesc *setting, uint index)
+SettingEntry::SettingEntry(const SettingDesc *setting)
 {
 	this->name = nullptr;
 	this->setting = setting;
-	this->index = index;
 }
 
 /**
@@ -1073,7 +1070,7 @@ SettingEntry::SettingEntry(const SettingDesc *setting, uint index)
 void SettingEntry::Init(byte level)
 {
 	BaseSettingEntry::Init(level);
-	this->setting = GetSettingFromName(this->name, &this->index);
+	this->setting = GetSettingFromName(this->name);
 	assert_msg(this->setting != nullptr, "name: %s", this->name);
 }
 
@@ -1081,7 +1078,7 @@ void SettingEntry::Init(byte level)
 void SettingEntry::ResetAll()
 {
 	int32 default_value = ReadValue(&this->setting->desc.def, this->setting->save.conv);
-	SetSettingValue(this->index, default_value);
+	SetSettingValue(this->setting, default_value);
 }
 
 /**
@@ -1305,8 +1302,8 @@ void SettingEntry::DrawSettingString(uint left, uint right, int y, bool highligh
 
 /* == CargoDestPerCargoSettingEntry methods == */
 
-CargoDestPerCargoSettingEntry::CargoDestPerCargoSettingEntry(CargoID cargo, const SettingDesc *setting, uint index)
-	: SettingEntry(setting, index), cargo(cargo) {}
+CargoDestPerCargoSettingEntry::CargoDestPerCargoSettingEntry(CargoID cargo, const SettingDesc *setting)
+	: SettingEntry(setting), cargo(cargo) {}
 
 void CargoDestPerCargoSettingEntry::Init(byte level)
 {
@@ -2125,10 +2122,9 @@ static SettingsContainer &GetSettingsTree()
 				cdist->Add(new SettingEntry("linkgraph.distribution_default"));
 				SettingsPage *cdist_override = cdist->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST_PER_CARGO_OVERRIDE));
 				{
-					uint index = 0;
-					const SettingDesc *setting = GetSettingFromName("linkgraph.distribution_per_cargo[0]", &index);
+					const SettingDesc *setting = GetSettingFromName("linkgraph.distribution_per_cargo[0]");
 					for (CargoID c = 0; c < NUM_CARGO; c++) {
-						cdist_override->Add(new CargoDestPerCargoSettingEntry(c, setting + c, index + c));
+						cdist_override->Add(new CargoDestPerCargoSettingEntry(c, setting + c));
 					}
 				}
 				cdist->Add(new SettingEntry("linkgraph.accuracy"));
@@ -2636,11 +2632,7 @@ struct GameSettingsWindow : Window {
 			}
 
 			if (value != oldvalue) {
-				if ((sd->desc.flags & SGF_PER_COMPANY) != 0) {
-					SetCompanySetting(pe->index, value);
-				} else {
-					SetSettingValue(pe->index, value);
-				}
+				SetSettingValue(sd, value);
 				this->SetDirty();
 			}
 		} else {
@@ -2698,11 +2690,7 @@ struct GameSettingsWindow : Window {
 			value = (int32)(size_t)sd->desc.def;
 		}
 
-		if ((sd->desc.flags & SGF_PER_COMPANY) != 0) {
-			SetCompanySetting(this->valuewindow_entry->index, value);
-		} else {
-			SetSettingValue(this->valuewindow_entry->index, value);
-		}
+		SetSettingValue(this->valuewindow_entry->setting, value);
 		this->SetDirty();
 	}
 
@@ -2738,12 +2726,7 @@ struct GameSettingsWindow : Window {
 					const SettingDesc *sd = this->valuedropdown_entry->setting;
 					assert(sd->desc.flags & (SGF_MULTISTRING | SGF_ENUM));
 
-					if ((sd->desc.flags & SGF_PER_COMPANY) != 0) {
-						SetCompanySetting(this->valuedropdown_entry->index, index);
-					} else {
-						SetSettingValue(this->valuedropdown_entry->index, index);
-					}
-
+					SetSettingValue(sd, index);
 					this->SetDirty();
 				}
 				break;
@@ -3026,7 +3009,7 @@ struct CustomCurrencyWindow : Window {
 			case WID_CC_SEPARATOR:
 				SetDParamStr(0, _custom_currency.separator);
 				str = STR_JUST_RAW_STRING;
-				len = sizeof(_custom_currency.separator) - 1; // Number of characters excluding '\0' termination
+				len = 7;
 				line = WID_CC_SEPARATOR;
 				break;
 
@@ -3034,7 +3017,7 @@ struct CustomCurrencyWindow : Window {
 			case WID_CC_PREFIX:
 				SetDParamStr(0, _custom_currency.prefix);
 				str = STR_JUST_RAW_STRING;
-				len = sizeof(_custom_currency.prefix) - 1; // Number of characters excluding '\0' termination
+				len = 15;
 				line = WID_CC_PREFIX;
 				break;
 
@@ -3042,7 +3025,7 @@ struct CustomCurrencyWindow : Window {
 			case WID_CC_SUFFIX:
 				SetDParamStr(0, _custom_currency.suffix);
 				str = STR_JUST_RAW_STRING;
-				len = sizeof(_custom_currency.suffix) - 1; // Number of characters excluding '\0' termination
+				len = 15;
 				line = WID_CC_SUFFIX;
 				break;
 
@@ -3086,15 +3069,15 @@ struct CustomCurrencyWindow : Window {
 				break;
 
 			case WID_CC_SEPARATOR: // Thousands separator
-				strecpy(_custom_currency.separator, str, lastof(_custom_currency.separator));
+				_custom_currency.separator = str;
 				break;
 
 			case WID_CC_PREFIX:
-				strecpy(_custom_currency.prefix, str, lastof(_custom_currency.prefix));
+				_custom_currency.prefix = str;
 				break;
 
 			case WID_CC_SUFFIX:
-				strecpy(_custom_currency.suffix, str, lastof(_custom_currency.suffix));
+				_custom_currency.suffix = str;
 				break;
 
 			case WID_CC_YEAR: { // Year to switch to euro

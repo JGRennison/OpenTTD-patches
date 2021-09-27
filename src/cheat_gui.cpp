@@ -407,10 +407,10 @@ struct CheatWindow : Window {
 			SetDParam(0, val * 1000 >> 16);
 			SetDParam(1, 3);
 			StringID str = (btn == CHT_INFLATION_COST) ? STR_CHEAT_INFLATION_COST_QUERY_CAPT : STR_CHEAT_INFLATION_INCOME_QUERY_CAPT;
-			char *saved = _settings_game.locale.digit_group_separator;
-			_settings_game.locale.digit_group_separator = const_cast<char*>("");
+			std::string saved = std::move(_settings_game.locale.digit_group_separator);
+			_settings_game.locale.digit_group_separator = "";
 			ShowQueryString(STR_JUST_DECIMAL, str, 12, this, CS_NUMERAL_DECIMAL, QSF_ACCEPT_UNCHANGED);
-			_settings_game.locale.digit_group_separator = saved;
+			_settings_game.locale.digit_group_separator = std::move(saved);
 			return;
 		}
 

@@ -35,6 +35,8 @@
 #include "../error.h"
 #include "../core/checksum_func.hpp"
 #include <charconv>
+#include <sstream>
+#include <iomanip>
 
 #include "../safeguards.h"
 
@@ -158,9 +160,9 @@ byte NetworkSpectatorCount()
  * @param password The unhashed password we like to set ('*' or '' resets the password)
  * @return The password.
  */
-const char *NetworkChangeCompanyPassword(CompanyID company_id, const char *password)
+std::string NetworkChangeCompanyPassword(CompanyID company_id, std::string password)
 {
-	if (strcmp(password, "*") == 0) password = "";
+	if (password.compare("*") == 0) password = "";
 
 	if (_network_server) {
 		NetworkServerSetCompanyPassword(company_id, password, false);
@@ -178,33 +180,35 @@ const char *NetworkChangeCompanyPassword(CompanyID company_id, const char *passw
  * @param password_game_seed Game seed.
  * @return The hashed password.
  */
-const char *GenerateCompanyPasswordHash(const char *password, const char *password_server_id, uint32 password_game_seed)
+std::string GenerateCompanyPasswordHash(const std::string &password, const std::string &password_server_id, uint32 password_game_seed)
 {
-	if (StrEmpty(password)) return password;
+	if (password.empty()) return password;
 
-	char salted_password[NETWORK_SERVER_ID_LENGTH];
-	size_t password_length = strlen(password);
-	size_t password_server_id_length = strlen(password_server_id);
+	size_t password_length = password.size();
+	size_t password_server_id_length = password_server_id.size();
 
-	/* Add the game seed and the server's ID as the salt. */
+	std::ostringstream salted_password;
+	/* Add the password with the server's ID and game seed as the salt. */
 	for (uint i = 0; i < NETWORK_SERVER_ID_LENGTH - 1; i++) {
 		char password_char = (i < password_length ? password[i] : 0);
 		char server_id_char = (i < password_server_id_length ? password_server_id[i] : 0);
 		char seed_char = password_game_seed >> (i % 32);
-		salted_password[i] = password_char ^ server_id_char ^ seed_char;
+		salted_password << (char)(password_char ^ server_id_char ^ seed_char); // Cast needed, otherwise interpreted as integer to format
 	}
 
 	Md5 checksum;
 	uint8 digest[16];
-	static char hashed_password[NETWORK_SERVER_ID_LENGTH];
 
 	/* Generate the MD5 hash */
-	checksum.Append(salted_password, sizeof(salted_password) - 1);
+	std::string salted_password_string = salted_password.str();
+	checksum.Append(salted_password_string.data(), salted_password_string.size());
 	checksum.Finish(digest);
 
-	for (int di = 0; di < 16; di++) seprintf(hashed_password + di * 2, lastof(hashed_password), "%02x", digest[di]);
+	std::ostringstream hashed_password;
+	hashed_password << std::hex << std::setfill('0');
+	for (int di = 0; di < 16; di++) hashed_password << std::setw(2) << (int)digest[di]; // Cast needed, otherwise interpreted as character to add
 
-	return hashed_password;
+	return hashed_password.str();
 }
 
 /**
@@ -220,8 +224,10 @@ bool NetworkCompanyIsPassworded(CompanyID company_id)
 /* This puts a text-message to the console, or in the future, the chat-box,
  *  (to keep it all a bit more general)
  * If 'self_send' is true, this is the client who is sending the message */
-void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send, const char *name, const char *str, NetworkTextMessageData data)
+void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send, const std::string &name, const std::string &str, NetworkTextMessageData data)
 {
+	SetDParamStr(0, name);
+
 	char message_src[256];
 	StringID strid;
 	switch (action) {
@@ -250,10 +256,9 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 		case NETWORK_ACTION_NAME_CHANGE:    strid = STR_NETWORK_MESSAGE_NAME_CHANGE; break;
 
 		case NETWORK_ACTION_GIVE_MONEY: {
-			SetDParamStr(0, name);
 			SetDParam(1, data.auxdata >> 16);
 			GetString(message_src, STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION, lastof(message_src));
-			name = message_src;
+			SetDParamStr(0, message_src);
 
 			extern byte GetCurrentGrfLangID();
 			byte lang_id = GetCurrentGrfLangID();
@@ -275,7 +280,6 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 	}
 
 	char message[1024];
-	SetDParamStr(0, name);
 	SetDParamStr(1, str);
 	SetDParam(2, data.data);
 
@@ -295,8 +299,8 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 uint NetworkCalculateLag(const NetworkClientSocket *cs)
 {
 	int lag = cs->last_frame_server - cs->last_frame;
-	/* This client has missed his ACK packet after 1 DAY_TICKS..
-	 *  so we increase his lag for every frame that passes!
+	/* This client has missed their ACK packet after 1 DAY_TICKS..
+	 *  so we increase their lag for every frame that passes!
 	 * The packet can be out by a max of _net_frame_freq */
 	if (cs->last_frame_server + DAY_TICKS + _settings_client.network.frame_freq < _frame_counter) {
 		lag += _frame_counter - (cs->last_frame_server + DAY_TICKS + _settings_client.network.frame_freq);
@@ -393,9 +397,7 @@ void NetworkHandlePauseChange(PauseMode prev_mode, PauseMode changed_mode)
 				str = paused ? STR_NETWORK_SERVER_MESSAGE_GAME_PAUSED : STR_NETWORK_SERVER_MESSAGE_GAME_UNPAUSED;
 			}
 
-			char buffer[DRAW_STRING_BUFFER];
-			GetString(buffer, str, lastof(buffer));
-			NetworkTextMessage(NETWORK_ACTION_SERVER_MESSAGE, CC_DEFAULT, false, nullptr, buffer);
+			NetworkTextMessage(NETWORK_ACTION_SERVER_MESSAGE, CC_DEFAULT, false, "", GetString(str));
 			break;
 		}
 
@@ -627,7 +629,7 @@ void NetworkClose(bool close_admins)
 
 	NetworkFreeLocalCommandQueue();
 
-	free(_network_company_states);
+	delete[] _network_company_states;
 	_network_company_states = nullptr;
 
 	InitializeNetworkPools(close_admins);
@@ -710,7 +712,7 @@ public:
 };
 
 /**
- * Query a server to fetch his game-info for the lobby.
+ * Query a server to fetch the game-info for the lobby.
  * @param connection_string the address to query.
  */
 void NetworkQueryLobbyServer(const std::string &connection_string)
@@ -817,7 +819,7 @@ public:
  * @param join_company_password The password for the company.
  * @return Whether the join has started.
  */
-bool NetworkClientConnectGame(const std::string &connection_string, CompanyID default_company, const char *join_server_password, const char *join_company_password)
+bool NetworkClientConnectGame(const std::string &connection_string, CompanyID default_company, const std::string &join_server_password, const std::string &join_company_password)
 {
 	CompanyID join_as = default_company;
 	std::string resolved_connection_string = ParseGameConnectionString(connection_string, NETWORK_DEFAULT_PORT, &join_as).GetAddressAsString(false);
@@ -854,7 +856,7 @@ void NetworkClientJoinGame()
 	NetworkDisconnect();
 	NetworkInitialize();
 
-	strecpy(_settings_client.network.last_joined, _network_join.connection_string.c_str(), lastof(_settings_client.network.last_joined));
+	_settings_client.network.last_joined = _network_join.connection_string;
 	_network_join_status = NETWORK_JOIN_STATUS_CONNECTING;
 	ShowJoinStatusWindow();
 
@@ -863,8 +865,8 @@ void NetworkClientJoinGame()
 
 static void NetworkInitGameInfo()
 {
-	if (StrEmpty(_settings_client.network.server_name)) {
-		strecpy(_settings_client.network.server_name, "Unnamed Server", lastof(_settings_client.network.server_name));
+	if (_settings_client.network.server_name.empty()) {
+		_settings_client.network.server_name = "Unnamed Server";
 	}
 
 	FillStaticNetworkServerGameInfo();
@@ -876,7 +878,7 @@ static void NetworkInitGameInfo()
 	NetworkClientInfo *ci = new NetworkClientInfo(CLIENT_ID_SERVER);
 	ci->client_playas = _network_dedicated ? COMPANY_SPECTATOR : GetDefaultLocalCompany();
 
-	strecpy(ci->client_name, _settings_client.network.client_name, lastof(ci->client_name));
+	ci->client_name = _settings_client.network.client_name;
 }
 
 /**
@@ -887,16 +889,16 @@ static void NetworkInitGameInfo()
  */
 static void CheckClientAndServerName()
 {
-	static const char *fallback_client_name = "Unnamed Client";
-	if (StrEmpty(_settings_client.network.client_name) || strcmp(_settings_client.network.client_name, fallback_client_name) == 0) {
-		DEBUG(net, 1, "No \"client_name\" has been set, using \"%s\" instead. Please set this now using the \"name <new name>\" command", fallback_client_name);
-		strecpy(_settings_client.network.client_name, fallback_client_name, lastof(_settings_client.network.client_name));
+	static const std::string fallback_client_name = "Unnamed Client";
+	if (_settings_client.network.client_name.empty() || _settings_client.network.client_name.compare(fallback_client_name) == 0) {
+		DEBUG(net, 1, "No \"client_name\" has been set, using \"%s\" instead. Please set this now using the \"name <new name>\" command", fallback_client_name.c_str());
+		_settings_client.network.client_name = fallback_client_name;
 	}
 
-	static const char *fallback_server_name = "Unnamed Server";
-	if (StrEmpty(_settings_client.network.server_name) || strcmp(_settings_client.network.server_name, fallback_server_name) == 0) {
-		DEBUG(net, 1, "No \"server_name\" has been set, using \"%s\" instead. Please set this now using the \"server_name <new name>\" command", fallback_server_name);
-		strecpy(_settings_client.network.server_name, fallback_server_name, lastof(_settings_client.network.server_name));
+	static const std::string fallback_server_name = "Unnamed Server";
+	if (_settings_client.network.server_name.empty() || _settings_client.network.server_name.compare(fallback_server_name) == 0) {
+		DEBUG(net, 1, "No \"server_name\" has been set, using \"%s\" instead. Please set this now using the \"server_name <new name>\" command", fallback_server_name.c_str());
+		_settings_client.network.server_name = fallback_server_name;
 	}
 }
 
@@ -917,7 +919,7 @@ bool NetworkServerStart()
 	if (!ServerNetworkGameSocketHandler::Listen(_settings_client.network.server_port)) return false;
 
 	/* Only listen for admins when the password isn't empty. */
-	if (!StrEmpty(_settings_client.network.admin_password)) {
+	if (!_settings_client.network.admin_password.empty()) {
 		DEBUG(net, 5, "Starting listeners for admins");
 		if (!ServerNetworkAdminSocketHandler::Listen(_settings_client.network.server_admin_port)) return false;
 	}
@@ -926,7 +928,7 @@ bool NetworkServerStart()
 	DEBUG(net, 5, "Starting listeners for incoming server queries");
 	NetworkUDPServerListen();
 
-	_network_company_states = CallocT<NetworkCompanyState>(MAX_COMPANIES);
+	_network_company_states = new NetworkCompanyState[MAX_COMPANIES];
 	_network_server = true;
 	_networking = true;
 	_frame_counter = 0;
@@ -1241,7 +1243,7 @@ static void NetworkGenerateServerId()
 	}
 
 	/* _settings_client.network.network_id is our id */
-	seprintf(_settings_client.network.network_id, lastof(_settings_client.network.network_id), "%s", hex_output);
+	_settings_client.network.network_id = hex_output;
 }
 
 class TCPNetworkDebugConnecter : TCPConnecter {
@@ -1281,7 +1283,7 @@ void NetworkStartUp()
 	_network_need_advertise = true;
 
 	/* Generate an server id when there is none yet */
-	if (StrEmpty(_settings_client.network.network_id)) NetworkGenerateServerId();
+	if (_settings_client.network.network_id.empty()) NetworkGenerateServerId();
 
 	_network_game_info = {};
 

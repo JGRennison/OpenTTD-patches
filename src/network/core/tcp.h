@@ -35,6 +35,8 @@ class NetworkTCPSocketHandler : public NetworkSocketHandler {
 private:
 	std::deque<std::unique_ptr<Packet>> packet_queue; ///< Packets that are awaiting delivery
 	std::unique_ptr<Packet> packet_recv;              ///< Partially received packet
+
+	void EmptyPacketQueue();
 public:
 	SOCKET sock;              ///< The socket currently connected to
 	bool writable;            ///< Can we write to this socket?
@@ -45,7 +47,9 @@ public:
 	 */
 	bool IsConnected() const { return this->sock != INVALID_SOCKET; }
 
-	NetworkRecvStatus CloseConnection(bool error = true) override;
+	virtual NetworkRecvStatus CloseConnection(bool error = true);
+	void CloseSocket();
+
 	void SendPacket(std::unique_ptr<Packet> packet);
 	void SendPrependPacket(std::unique_ptr<Packet> packet, int queue_after_packet_type);
 

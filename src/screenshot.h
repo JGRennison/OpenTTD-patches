@@ -42,7 +42,7 @@ bool MakeIndustryScreenshot(const char *name);
 void SetScreenshotAuxiliaryText(const char *key, const char *value);
 inline void ClearScreenshotAuxiliaryText() { SetScreenshotAuxiliaryText(nullptr, nullptr); }
 
-extern char _screenshot_format_name[8];
+extern std::string _screenshot_format_name;
 extern uint _num_screenshot_formats;
 extern uint _cur_screenshot_format;
 extern char _full_screenshot_name[MAX_PATH];

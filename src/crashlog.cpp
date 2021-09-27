@@ -36,8 +36,7 @@
 #include "game/game_info.hpp"
 #include "company_base.h"
 #include "company_func.h"
-
-#include <time.h>
+#include "walltime_func.h"
 
 #ifdef WITH_ALLEGRO
 #	include <allegro.h>
@@ -420,7 +419,6 @@ char *CrashLog::LogCommandLog(char *buffer, const char *last) const
  */
 char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 {
-	time_t cur_time = time(nullptr);
 	buffer += seprintf(buffer, last, "*** OpenTTD Crash Report ***\n\n");
 
 	if (GamelogTestEmergency()) {
@@ -430,7 +428,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last) const
 		buffer += seprintf(buffer, last, "-=-=- As you loaded a savegame for which you do not have the required NewGRFs no crash information would ordinarily be generated. -=-=-\n\n");
 	}
 
-	buffer += seprintf(buffer, last, "Crash at: %s", asctime(gmtime(&cur_time)));
+	buffer += UTCTime::Format(buffer, last, "Crash at: %Y-%m-%d %H:%M:%S (UTC)\n");
 
 	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u)\n", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, _settings_game.economy.day_length_factor);
 	if (_game_load_time != 0) {

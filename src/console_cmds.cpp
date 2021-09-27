@@ -54,6 +54,7 @@
 #include "linkgraph/linkgraphjob.h"
 #include "base_media_base.h"
 #include "debug_settings.h"
+#include "walltime_func.h"
 #include <time.h>
 
 #include "safeguards.h"
@@ -793,14 +794,14 @@ DEF_CONSOLE_CMD(ConClientNickChange)
 		return true;
 	}
 
-	char *client_name = argv[2];
+	std::string client_name(argv[2]);
 	StrTrimInPlace(client_name);
 	if (!NetworkIsValidClientName(client_name)) {
 		IConsoleError("Cannot give a client an empty name");
 		return true;
 	}
 
-	if (!NetworkServerChangeClientName(client_id, client_name)) {
+	if (!NetworkServerChangeClientName(client_id, client_name.c_str())) {
 		IConsoleError("Cannot give a client a duplicate name");
 	}
 
@@ -969,13 +970,13 @@ DEF_CONSOLE_CMD(ConNetworkReconnect)
 			break;
 	}
 
-	if (StrEmpty(_settings_client.network.last_joined)) {
+	if (_settings_client.network.last_joined.empty()) {
 		IConsolePrint(CC_DEFAULT, "No server for reconnecting.");
 		return true;
 	}
 
 	/* Don't resolve the address first, just print it directly as it comes from the config file. */
-	IConsolePrintF(CC_DEFAULT, "Reconnecting to %s ...", _settings_client.network.last_joined);
+	IConsolePrintF(CC_DEFAULT, "Reconnecting to %s ...", _settings_client.network.last_joined.c_str());
 
 	return NetworkClientConnectGame(_settings_client.network.last_joined, playas);
 }
@@ -1437,10 +1438,9 @@ DEF_CONSOLE_CMD(ConGetSysDate)
 		return true;
 	}
 
-	time_t t;
-	time(&t);
-	auto timeinfo = localtime(&t);
-	IConsolePrintF(CC_DEFAULT, "System Date: %04d-%02d-%02d %02d:%02d:%02d", timeinfo->tm_year + 1900, timeinfo->tm_mon + 1, timeinfo->tm_mday, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+	char buffer[lengthof("2000-01-02 03:04:05")];
+	LocalTime::Format(buffer, lastof(buffer), "%Y-%m-%d %H:%M:%S");
+	IConsolePrintF(CC_DEFAULT, "System Date: %s", buffer);
 	return true;
 }
 
@@ -1738,7 +1738,7 @@ DEF_CONSOLE_CMD(ConCompanies)
 		if (c->is_ai) {
 			password_state = "AI";
 		} else if (_network_server) {
-				password_state = StrEmpty(_network_company_states[c->index].password) ? "unprotected" : "protected";
+			password_state = _network_company_states[c->index].password.empty() ? "unprotected" : "protected";
 		}
 
 		char colour[512];
@@ -1840,7 +1840,7 @@ DEF_CONSOLE_CMD(ConCompanyPassword)
 	}
 
 	CompanyID company_id;
-	const char *password;
+	std::string password;
 	const char *errormsg;
 
 	if (argc == 2) {
@@ -1862,10 +1862,10 @@ DEF_CONSOLE_CMD(ConCompanyPassword)
 
 	password = NetworkChangeCompanyPassword(company_id, password);
 
-	if (StrEmpty(password)) {
+	if (password.empty()) {
 		IConsolePrintF(CC_WARNING, "Company password cleared");
 	} else {
-		IConsolePrintF(CC_WARNING, "Company password changed to: %s", password);
+		IConsolePrintF(CC_WARNING, "Company password changed to: %s", password.c_str());
 	}
 
 	return true;
@@ -1918,7 +1918,7 @@ DEF_CONSOLE_CMD(ConCompanyPasswordHashes)
 		char colour[512];
 		GetString(colour, STR_COLOUR_DARK_BLUE + _company_colours[c->index], lastof(colour));
 		IConsolePrintF(CC_INFO, "#:%d(%s) Company Name: '%s'  Hash: '%s'",
-			c->index + 1, colour, company_name, _network_company_states[c->index].password);
+			c->index + 1, colour, company_name, _network_company_states[c->index].password.c_str());
 	}
 
 	return true;

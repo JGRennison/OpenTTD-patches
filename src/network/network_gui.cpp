@@ -477,7 +477,7 @@ public:
 		this->FinishInitNested(WN_NETWORK_WINDOW_GAME);
 
 		this->querystrings[WID_NG_CLIENT] = &this->name_editbox;
-		this->name_editbox.text.Assign(_settings_client.network.client_name);
+		this->name_editbox.text.Assign(_settings_client.network.client_name.c_str());
 
 		this->querystrings[WID_NG_FILTER] = &this->filter_editbox;
 		this->filter_editbox.cancel_button = QueryString::ACTION_CLEAR;
@@ -663,7 +663,7 @@ public:
 			DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_NETWORK_SERVER_LIST_SERVER_VERSION); // server version
 			y += FONT_HEIGHT_NORMAL;
 
-			SetDParamStr(0, sel->connection_string.c_str());
+			SetDParamStr(0, sel->connection_string);
 			DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_NETWORK_SERVER_LIST_SERVER_ADDRESS); // server address
 			y += FONT_HEIGHT_NORMAL;
 
@@ -835,7 +835,7 @@ public:
 			case WID_NG_CLIENT:
 				/* Validation of the name will happen once the user tries to join or start a game, as getting
 				 * error messages while typing (e.g. when you clear the name) defeats the purpose of the check. */
-				strecpy(_settings_client.network.client_name, this->name_editbox.text.buf, lastof(_settings_client.network.client_name));
+				_settings_client.network.client_name = this->name_editbox.text.buf;
 				break;
 		}
 	}
@@ -843,7 +843,7 @@ public:
 	void OnQueryTextFinished(char *str) override
 	{
 		if (!StrEmpty(str)) {
-			strecpy(_settings_client.network.connect_to_ip, str, lastof(_settings_client.network.connect_to_ip));
+			_settings_client.network.connect_to_ip = str;
 			NetworkAddServer(str);
 			NetworkRebuildHostList();
 		}
@@ -1005,7 +1005,7 @@ struct NetworkStartServerWindow : public Window {
 		this->InitNested(WN_NETWORK_WINDOW_START);
 
 		this->querystrings[WID_NSS_GAMENAME] = &this->name_editbox;
-		this->name_editbox.text.Assign(_settings_client.network.server_name);
+		this->name_editbox.text.Assign(_settings_client.network.server_name.c_str());
 
 		this->SetFocusedWidget(WID_NSS_GAMENAME);
 	}
@@ -1047,7 +1047,7 @@ struct NetworkStartServerWindow : public Window {
 		switch (widget) {
 			case WID_NSS_SETPWD:
 				/* If password is set, draw red '*' next to 'Set password' button. */
-				if (!StrEmpty(_settings_client.network.server_password)) DrawString(r.right + WD_FRAMERECT_LEFT, this->width - WD_FRAMERECT_RIGHT, r.top, "*", TC_RED);
+				if (!_settings_client.network.server_password.empty()) DrawString(r.right + WD_FRAMERECT_LEFT, this->width - WD_FRAMERECT_RIGHT, r.top, "*", TC_RED);
 		}
 	}
 
@@ -1151,7 +1151,7 @@ struct NetworkStartServerWindow : public Window {
 	void OnEditboxChanged(int wid) override
 	{
 		if (wid == WID_NSS_GAMENAME) {
-			strecpy(_settings_client.network.server_name, this->name_editbox.text.buf, lastof(_settings_client.network.server_name));
+			_settings_client.network.server_name = this->name_editbox.text.buf;
 		}
 	}
 
@@ -1171,7 +1171,7 @@ struct NetworkStartServerWindow : public Window {
 		if (str == nullptr) return;
 
 		if (this->widget_id == WID_NSS_SETPWD) {
-			strecpy(_settings_client.network.server_password, str, lastof(_settings_client.network.server_password));
+			_settings_client.network.server_password = str;
 		} else {
 			int32 value = atoi(str);
 			this->SetWidgetDirty(this->widget_id);
@@ -1298,7 +1298,7 @@ struct NetworkLobbyWindow : public Window {
 	{
 		/* Scroll through all this->company_info and get the 'pos' item that is not empty. */
 		for (CompanyID i = COMPANY_FIRST; i < MAX_COMPANIES; i++) {
-			if (!StrEmpty(this->company_info[i].company_name)) {
+			if (!this->company_info[i].company_name.empty()) {
 				if (pos-- == 0) return i;
 			}
 		}
@@ -1413,7 +1413,7 @@ struct NetworkLobbyWindow : public Window {
 		GfxFillRect(r.left + 1, r.top + 1, r.right - 1, r.top + detail_height - 1, PC_DARK_BLUE);
 		DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, r.top + 12, STR_NETWORK_GAME_LOBBY_COMPANY_INFO, TC_FROMSTRING, SA_HOR_CENTER);
 
-		if (this->company == INVALID_COMPANY || StrEmpty(this->company_info[this->company].company_name)) return;
+		if (this->company == INVALID_COMPANY || this->company_info[this->company].company_name.empty()) return;
 
 		int y = r.top + detail_height + 4;
 		const NetworkGameInfo *gi = &this->server->info;
@@ -1571,7 +1571,7 @@ static void ShowNetworkLobbyWindow(NetworkGameList *ngl)
 	DeleteWindowById(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_START);
 	DeleteWindowById(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_GAME);
 
-	strecpy(_settings_client.network.last_joined, ngl->connection_string.c_str(), lastof(_settings_client.network.last_joined));
+	_settings_client.network.last_joined = ngl->connection_string;
 
 	NetworkQueryLobbyServer(ngl->connection_string);
 
@@ -2214,19 +2214,16 @@ public:
 			case WID_CL_SERVER_NAME_EDIT: {
 				if (!_network_server) break;
 
-				uint index;
-				GetSettingFromName("network.server_name", &index);
-				SetSettingValue(index, StrEmpty(str) ? "Unnamed Server" : str);
+				SetSettingValue(GetSettingFromName("network.server_name"), StrEmpty(str) ? "Unnamed Server" : str);
 				this->InvalidateData();
 				break;
 			}
 
 			case WID_CL_CLIENT_NAME_EDIT: {
-				if (!NetworkValidateClientName(str)) break;
+				std::string client_name(str);
+				if (!NetworkValidateClientName(client_name)) break;
 
-				uint index;
-				GetSettingFromName("network.client_name", &index);
-				SetSettingValue(index, str);
+				SetSettingValue(GetSettingFromName("network.client_name"), client_name.c_str());
 				this->InvalidateData();
 				break;
 			}
@@ -2598,7 +2595,7 @@ struct NetworkCompanyPasswordWindow : public Window {
 	void OnOk()
 	{
 		if (this->IsWidgetLowered(WID_NCP_SAVE_AS_DEFAULT_PASSWORD)) {
-			strecpy(_settings_client.network.default_company_pass, this->password_editbox.text.buf, lastof(_settings_client.network.default_company_pass));
+			_settings_client.network.default_company_pass = this->password_editbox.text.buf;
 		}
 
 		NetworkChangeCompanyPassword(_local_company, this->password_editbox.text.buf);

@@ -66,8 +66,6 @@ protected:
 	};
 	std::vector<FragmentSet> fragments;
 
-	NetworkRecvStatus CloseConnection(bool error = true) override;
-
 	void ReceiveInvalidPacket(PacketUDPType, NetworkAddress *client_addr);
 
 	/**
@@ -208,10 +206,10 @@ public:
 	NetworkUDPSocketHandler(NetworkAddressList *bind = nullptr);
 
 	/** On destructing of this class, the socket needs to be closed */
-	virtual ~NetworkUDPSocketHandler() { this->Close(); }
+	virtual ~NetworkUDPSocketHandler() { this->CloseSocket(); }
 
 	bool Listen();
-	void Close();
+	void CloseSocket();
 
 	void SendPacket(Packet *p, NetworkAddress *recv, bool all = false, bool broadcast = false, bool short_mtu = false);
 	void ReceivePackets();

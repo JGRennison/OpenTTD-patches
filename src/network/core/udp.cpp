@@ -46,7 +46,7 @@ NetworkUDPSocketHandler::NetworkUDPSocketHandler(NetworkAddressList *bind)
 bool NetworkUDPSocketHandler::Listen()
 {
 	/* Make sure socket is closed */
-	this->Close();
+	this->CloseSocket();
 
 	for (NetworkAddress &addr : this->bind) {
 		addr.Listen(SOCK_DGRAM, &this->sockets);
@@ -56,20 +56,14 @@ bool NetworkUDPSocketHandler::Listen()
 }
 
 /**
- * Close the given UDP socket
+ * Close the actual UDP socket.
  */
-void NetworkUDPSocketHandler::Close()
+void NetworkUDPSocketHandler::CloseSocket()
 {
 	for (auto &s : this->sockets) {
 		closesocket(s.second);
 	}
 	this->sockets.clear();
-}
-
-NetworkRecvStatus NetworkUDPSocketHandler::CloseConnection(bool error)
-{
-	NetworkSocketHandler::CloseConnection(error);
-	return NETWORK_RECV_STATUS_OKAY;
 }
 
 /**

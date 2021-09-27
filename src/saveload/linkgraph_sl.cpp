@@ -154,7 +154,7 @@ static void FilterDescs()
  */
 void Save_LinkGraph(LinkGraph &lg)
 {
-	uint size = lg.Size();
+	uint16 size = lg.Size();
 	for (NodeID from = 0; from < size; ++from) {
 		Node *node = &lg.nodes[from];
 		SlObjectSaveFiltered(node, _filtered_node_desc.data());

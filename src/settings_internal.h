@@ -19,23 +19,16 @@
  * @see SettingDescBase
  */
 enum SettingDescType : byte {
-	/* 4 bytes allocated a maximum of 16 types for GenericType */
-	SDT_BEGIN       = 0,
 	SDT_NUMX        = 0, ///< any number-type
 	SDT_BOOLX       = 1, ///< a boolean number
 	SDT_ONEOFMANY   = 2, ///< bitmasked number where only ONE bit may be set
 	SDT_MANYOFMANY  = 3, ///< bitmasked number where MULTIPLE bits may be set
 	SDT_INTLIST     = 4, ///< list of integers separated by a comma ','
-	SDT_STRING      = 5, ///< string with a pre-allocated buffer
 	SDT_STDSTRING   = 6, ///< \c std::string
-	SDT_END,
-	/* 9 more possible primitives */
 };
 
-
 enum SettingGuiFlag : uint16 {
-	/* 1 byte allocated for a maximum of 8 flags
-	 * Flags directing saving/loading of a variable */
+	/* 2 bytes allocated for a maximum of 16 flags. */
 	SGF_NONE = 0,
 	SGF_0ISDISABLED   = 1 << 0, ///< a value of zero means the feature is disabled
 	SGF_DISPLAY_ABS   = 1 << 1, ///< display absolute value of the setting
@@ -139,18 +132,9 @@ struct SettingDesc {
 	SettingType GetType() const;
 };
 
-/* NOTE: The only difference between SettingDesc and SettingDescGlob is
- * that one uses global variables as a source and the other offsets
- * in a struct which are bound to a certain variable during runtime.
- * The only way to differentiate between these two is to check if an object
- * has been passed to the function or not. If not, then it is a global variable
- * and save->variable has its address, otherwise save->variable only holds the
- * offset in a certain struct */
-typedef SettingDesc SettingDescGlobVarList;
-
-const SettingDesc *GetSettingFromName(const char *name, uint *i, bool ignore_version = false);
-bool SetSettingValue(uint index, int32 value, bool force_newgame = false);
-bool SetSettingValue(uint index, const char *value, bool force_newgame = false);
-void SetCompanySetting(uint index, int32 value);
+const SettingDesc *GetSettingFromName(const char *name, bool ignore_version = false);
+bool SetSettingValue(const SettingDesc *sd, int32 value, bool force_newgame = false);
+bool SetSettingValue(const SettingDesc *sd, const char *value, bool force_newgame = false);
+uint GetSettingIndex(const SettingDesc *sd);
 
 #endif /* SETTINGS_INTERNAL_H */

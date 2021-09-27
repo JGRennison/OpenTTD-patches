@@ -357,7 +357,7 @@ class BuildIndustryWindow : public Window {
 		int numcargo = 0;
 		int firstcargo = -1;
 
-		for (byte j = 0; j < cargolistlen; j++) {
+		for (int j = 0; j < cargolistlen; j++) {
 			if (cargolist[j] == CT_INVALID) continue;
 			numcargo++;
 			if (firstcargo < 0) {
@@ -419,7 +419,7 @@ public:
 		switch (widget) {
 			case WID_DPI_MATRIX_WIDGET: {
 				Dimension d = GetStringBoundingBox(STR_FUND_INDUSTRY_MANY_RANDOM_INDUSTRIES);
-				for (byte i = 0; i < this->count; i++) {
+				for (uint16 i = 0; i < this->count; i++) {
 					if (this->index[i] == INVALID_INDUSTRYTYPE) continue;
 					d = maxdim(d, GetStringBoundingBox(GetIndustrySpec(this->index[i])->name));
 				}
@@ -438,7 +438,7 @@ public:
 				uint extra_lines_newgrf = 0;
 				uint max_minwidth = FONT_HEIGHT_NORMAL * MAX_MINWIDTH_LINEHEIGHTS;
 				Dimension d = {0, 0};
-				for (byte i = 0; i < this->count; i++) {
+				for (uint16 i = 0; i < this->count; i++) {
 					if (this->index[i] == INVALID_INDUSTRYTYPE) continue;
 
 					const IndustrySpec *indsp = GetIndustrySpec(this->index[i]);
@@ -528,7 +528,7 @@ public:
 				int icon_bottom = icon_top + this->legend.height;
 
 				int y = r.top;
-				for (byte i = 0; i < this->vscroll->GetCapacity() && i + this->vscroll->GetPosition() < this->count; i++) {
+				for (uint16 i = 0; i < this->vscroll->GetCapacity() && i + this->vscroll->GetPosition() < this->count; i++) {
 					bool selected = this->selected_index == i + this->vscroll->GetPosition();
 
 					if (this->index[i + this->vscroll->GetPosition()] == INVALID_INDUSTRYTYPE) {
@@ -2707,14 +2707,14 @@ struct IndustryCargoesWindow : public Window {
 
 	/**
 	 * Compute what and where to display for industry type \a it.
-	 * @param it Industry type to display.
+	 * @param displayed_it Industry type to display.
 	 */
-	void ComputeIndustryDisplay(IndustryType it)
+	void ComputeIndustryDisplay(IndustryType displayed_it)
 	{
 		this->GetWidget<NWidgetCore>(WID_IC_CAPTION)->widget_data = STR_INDUSTRY_CARGOES_INDUSTRY_CAPTION;
-		this->ind_cargo = it;
+		this->ind_cargo = displayed_it;
 		_displayed_industries.reset();
-		_displayed_industries.set(it);
+		_displayed_industries.set(displayed_it);
 
 		this->fields.clear();
 		CargoesRow &row = this->fields.emplace_back();
@@ -2724,7 +2724,7 @@ struct IndustryCargoesWindow : public Window {
 		row.columns[3].MakeEmpty(CFT_SMALL_EMPTY);
 		row.columns[4].MakeHeader(STR_INDUSTRY_CARGOES_CUSTOMERS);
 
-		const IndustrySpec *central_sp = GetIndustrySpec(it);
+		const IndustrySpec *central_sp = GetIndustrySpec(displayed_it);
 		bool houses_supply = HousesCanSupply(central_sp->accepts_cargo, lengthof(central_sp->accepts_cargo));
 		bool houses_accept = HousesCanAccept(central_sp->produced_cargo, lengthof(central_sp->produced_cargo));
 		/* Make a field consisting of two cargo columns. */
@@ -2741,7 +2741,7 @@ struct IndustryCargoesWindow : public Window {
 		}
 		/* Add central industry. */
 		int central_row = 1 + num_indrows / 2;
-		this->fields[central_row].columns[2].MakeIndustry(it);
+		this->fields[central_row].columns[2].MakeIndustry(displayed_it);
 		this->fields[central_row].ConnectIndustryProduced(2);
 		this->fields[central_row].ConnectIndustryAccepted(2);
 

@@ -431,8 +431,7 @@ static const void *StringToVal(const SettingDescBase *desc, const char *orig_str
 			return desc->def;
 		}
 
-		case SDT_STDSTRING:
-		case SDT_STRING: return orig_str;
+		case SDT_STDSTRING: return orig_str;
 		case SDT_INTLIST: return str;
 		default: break;
 	}
@@ -527,48 +526,27 @@ static void Write_ValidateSetting(void *ptr, const SettingDesc *sd, int32 val)
 
 /**
  * Set the string value of a setting.
- * @param ptr Pointer to the storage location (might be a pointer to a pointer).
- * @param sld Pointer to the information for the conversions and limitations to apply.
- * @param p   The string to save.
- */
-static void Write_ValidateString(void *ptr, const SaveLoad *sld, const char *p)
-{
-	switch (GetVarMemType(sld->conv)) {
-		case SLE_VAR_STRB:
-		case SLE_VAR_STRBQ:
-			if (p != nullptr) {
-				char *begin = (char*)ptr;
-				char *end = begin + sld->length - 1;
-				strecpy(begin, p, end);
-				str_validate(begin, end, SVS_NONE);
-			}
-			break;
-
-		case SLE_VAR_STR:
-		case SLE_VAR_STRQ:
-			free(*(char**)ptr);
-			*(char**)ptr = p == nullptr ? nullptr : stredup(p);
-			break;
-
-		default: NOT_REACHED();
-	}
-}
-
-/**
- * Set the string value of a setting.
  * @param ptr Pointer to the std::string.
- * @param sld Pointer to the information for the conversions and limitations to apply.
+ * @param sd  Pointer to the information for the conversions and limitations to apply.
  * @param p   The string to save.
  */
-static void Write_ValidateStdString(void *ptr, const SaveLoad *sld, const char *p)
+static void Write_ValidateStdString(void *ptr, const SettingDesc *sd, const char *p)
 {
 	std::string *dst = reinterpret_cast<std::string *>(ptr);
 
-	switch (GetVarMemType(sld->conv)) {
+	switch (GetVarMemType(sd->save.conv)) {
 		case SLE_VAR_STR:
 		case SLE_VAR_STRQ:
 			if (p != nullptr) {
-				dst->assign(p);
+				if (sd->desc.max != 0 && strlen(p) >= sd->desc.max) {
+					/* In case a maximum length is imposed by the setting, the length
+					 * includes the '\0' termination for network transfer purposes.
+					 * Also ensure the string is valid after chopping of some bytes. */
+					std::string str(p, sd->desc.max - 1);
+					dst->assign(str_validate(str, SVS_NONE));
+				} else {
+					dst->assign(p);
+				}
 			} else {
 				dst->clear();
 			}
@@ -637,12 +615,8 @@ static void IniLoadSettings(IniFile *ini, const SettingDesc *sd, const char *grp
 				Write_ValidateSetting(ptr, sd, (int32)(size_t)p);
 				break;
 
-			case SDT_STRING:
-				Write_ValidateString(ptr, sld, (const char *)p);
-				break;
-
 			case SDT_STDSTRING:
-				Write_ValidateStdString(ptr, sld, (const char *)p);
+				Write_ValidateStdString(ptr, sd, (const char *)p);
 				break;
 
 			case SDT_INTLIST: {
@@ -762,24 +736,6 @@ static void IniSaveSettings(IniFile *ini, const SettingDesc *sd, const char *grp
 				}
 				break;
 			}
-
-			case SDT_STRING:
-				switch (GetVarMemType(sld->conv)) {
-					case SLE_VAR_STRB: strecpy(buf, (char*)ptr, lastof(buf)); break;
-					case SLE_VAR_STRBQ:seprintf(buf, lastof(buf), "\"%s\"", (char*)ptr); break;
-					case SLE_VAR_STR:  strecpy(buf, *(char**)ptr, lastof(buf)); break;
-
-					case SLE_VAR_STRQ:
-						if (*(char**)ptr == nullptr) {
-							buf[0] = '\0';
-						} else {
-							seprintf(buf, lastof(buf), "\"%s\"", *(char**)ptr);
-						}
-						break;
-
-					default: NOT_REACHED();
-				}
-				break;
 
 			case SDT_STDSTRING:
 				switch (GetVarMemType(sld->conv)) {
@@ -1821,8 +1777,8 @@ static bool UpdateClientName(int32 p1)
 
 static bool UpdateServerPassword(int32 p1)
 {
-	if (strcmp(_settings_client.network.server_password, "*") == 0) {
-		_settings_client.network.server_password[0] = '\0';
+	if (_settings_client.network.server_password.compare("*") == 0) {
+		_settings_client.network.server_password.clear();
 	}
 
 	NetworkServerUpdateGameInfo();
@@ -1831,8 +1787,8 @@ static bool UpdateServerPassword(int32 p1)
 
 static bool UpdateRconPassword(int32 p1)
 {
-	if (strcmp(_settings_client.network.rcon_password, "*") == 0) {
-		_settings_client.network.rcon_password[0] = '\0';
+	if (_settings_client.network.rcon_password.compare("*") == 0) {
+		_settings_client.network.rcon_password.clear();
 	}
 
 	return true;
@@ -1840,8 +1796,8 @@ static bool UpdateRconPassword(int32 p1)
 
 static bool UpdateSettingsPassword(int32 p1)
 {
-	if (strcmp(_settings_client.network.settings_password, "*") == 0) {
-		_settings_client.network.settings_password[0] = '\0';
+	if (_settings_client.network.settings_password.compare("*") == 0) {
+		_settings_client.network.settings_password.clear();
 	}
 
 	return true;
@@ -2116,8 +2072,7 @@ static void AISaveConfig(IniFile *ini, const char *grpname)
 	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
 		AIConfig *config = AIConfig::GetConfig(c, AIConfig::SSS_FORCE_NEWGAME);
 		const char *name;
-		char value[1024];
-		config->SettingsToString(value, lastof(value));
+		std::string value = config->SettingsToString();
 
 		if (config->HasScript()) {
 			name = config->GetName();
@@ -2139,8 +2094,7 @@ static void GameSaveConfig(IniFile *ini, const char *grpname)
 
 	GameConfig *config = GameConfig::GetConfig(AIConfig::SSS_FORCE_NEWGAME);
 	const char *name;
-	char value[1024];
-	config->SettingsToString(value, lastof(value));
+	std::string value = config->SettingsToString();
 
 	if (config->HasScript()) {
 		name = config->GetName();
@@ -2459,15 +2413,38 @@ const char *GetCompanySettingNameByIndex(uint32 idx)
 }
 
 /**
+ * Get the index of the setting with this description.
+ * @param sd the setting to get the index for.
+ * @return the index of the setting to be used for CMD_CHANGE_SETTING.
+ */
+uint GetSettingIndex(const SettingDesc *sd)
+{
+	assert((sd->desc.flags & SGF_PER_COMPANY) == 0);
+	return sd - _settings;
+}
+
+/**
  * Top function to save the new value of an element of the Settings struct
  * @param index offset in the SettingDesc array of the Settings struct which
  * identifies the setting member we want to change
  * @param value new value of the setting
  * @param force_newgame force the newgame settings
  */
-bool SetSettingValue(uint index, int32 value, bool force_newgame)
+bool SetSettingValue(const SettingDesc *sd, int32 value, bool force_newgame)
 {
-	const SettingDesc *sd = &_settings[index];
+	if ((sd->desc.flags & SGF_PER_COMPANY) != 0) {
+		if (Company::IsValidID(_local_company) && _game_mode != GM_MENU) {
+			return DoCommandP(0, sd - _company_settings, value, CMD_CHANGE_COMPANY_SETTING);
+		} else if (sd->desc.flags & SGF_NO_NEWGAME) {
+			return false;
+		}
+
+		void *var = GetVariableAddress(&_settings_client.company, &sd->save);
+		Write_ValidateSetting(var, sd, value);
+		if (sd->desc.proc != nullptr) sd->desc.proc((int32)ReadValue(var, sd->save.conv));
+		return true;
+	}
+
 	/* If an item is company-based, we do not send it over the network
 	 * (if any) to change. Also *hack*hack* we update the _newgame version
 	 * of settings because changing a company-based setting in a game also
@@ -2500,27 +2477,9 @@ bool SetSettingValue(uint index, int32 value, bool force_newgame)
 
 	/* send non-company-based settings over the network */
 	if (!_networking || (_networking && (_network_server || _network_settings_access))) {
-		return DoCommandP(0, index, value, CMD_CHANGE_SETTING);
+		return DoCommandP(0, GetSettingIndex(sd), value, CMD_CHANGE_SETTING);
 	}
 	return false;
-}
-
-/**
- * Top function to save the new value of an element of the Settings struct
- * @param index offset in the SettingDesc array of the CompanySettings struct
- * which identifies the setting member we want to change
- * @param value new value of the setting
- */
-void SetCompanySetting(uint index, int32 value)
-{
-	const SettingDesc *sd = &_company_settings[index];
-	if (Company::IsValidID(_local_company) && _game_mode != GM_MENU) {
-		DoCommandP(0, index, value, CMD_CHANGE_COMPANY_SETTING);
-	} else if (!(sd->desc.flags & SGF_NO_NEWGAME)) {
-		void *var = GetVariableAddress(&_settings_client.company, &sd->save);
-		Write_ValidateSetting(var, sd, value);
-		if (sd->desc.proc != nullptr) sd->desc.proc((int32)ReadValue(var, sd->save.conv));
-	}
 }
 
 /**
@@ -2559,23 +2518,20 @@ void SyncCompanySettings()
  */
 uint GetCompanySettingIndex(const char *name)
 {
-	uint i;
-	const SettingDesc *sd = GetSettingFromName(name, &i);
-	(void)sd; // Unused without asserts
+	const SettingDesc *sd = GetSettingFromName(name);
 	assert(sd != nullptr && (sd->desc.flags & SGF_PER_COMPANY) != 0);
-	return i;
+	return sd - _company_settings;
 }
 
 /**
  * Set a setting value with a string.
- * @param index the settings index.
+ * @param sd the setting to change.
  * @param value the value to write
  * @param force_newgame force the newgame settings
  * @note Strings WILL NOT be synced over the network
  */
-bool SetSettingValue(uint index, const char *value, bool force_newgame)
+bool SetSettingValue(const SettingDesc *sd, const char *value, bool force_newgame)
 {
-	const SettingDesc *sd = &_settings[index];
 	assert(sd->save.conv & SLF_NO_NETWORK_SYNC);
 
 	if (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ && strcmp(value, "(null)") == 0) {
@@ -2583,9 +2539,7 @@ bool SetSettingValue(uint index, const char *value, bool force_newgame)
 	}
 
 	void *ptr = GetVariableAddress((_game_mode == GM_MENU || force_newgame) ? &_settings_newgame : &_settings_game, &sd->save);
-	if (sd->desc.cmd == SDT_STRING) {
-		Write_ValidateString(ptr, &sd->save, value);
-	}
+	Write_ValidateStdString(ptr, sd, value);
 	if (sd->desc.proc != nullptr) sd->desc.proc(0);
 
 	if (_save_config) SaveToConfig();
@@ -2600,19 +2554,17 @@ bool SetSettingValue(uint index, const char *value, bool force_newgame)
  * @return Pointer to the setting description of setting \a name if it can be found,
  *         \c nullptr indicates failure to obtain the description
  */
-const SettingDesc *GetSettingFromName(const char *name, uint *i, bool ignore_version)
+const SettingDesc *GetSettingFromName(const char *name, bool ignore_version)
 {
-	const SettingDesc *sd;
-
 	/* First check all full names */
-	for (*i = 0, sd = _settings; sd->save.cmd != SL_END; sd++, (*i)++) {
+	for (const SettingDesc *sd = _settings; sd->save.cmd != SL_END; sd++) {
 		if (sd->desc.name == nullptr) continue;
 		if (!ignore_version && !SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		if (strcmp(sd->desc.name, name) == 0) return sd;
 	}
 
 	/* Then check the shortcut variant of the name. */
-	for (*i = 0, sd = _settings; sd->save.cmd != SL_END; sd++, (*i)++) {
+	for (const SettingDesc *sd = _settings; sd->save.cmd != SL_END; sd++) {
 		if (sd->desc.name == nullptr) continue;
 		if (!ignore_version && !SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		const char *short_name = strchr(sd->desc.name, '.');
@@ -2624,7 +2576,7 @@ const SettingDesc *GetSettingFromName(const char *name, uint *i, bool ignore_ver
 
 	if (strncmp(name, "company.", 8) == 0) name += 8;
 	/* And finally the company-based settings */
-	for (*i = 0, sd = _company_settings; sd->save.cmd != SL_END; sd++, (*i)++) {
+	for (const SettingDesc *sd = _company_settings; sd->save.cmd != SL_END; sd++) {
 		if (sd->desc.name == nullptr) continue;
 		if (!ignore_version && !SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		if (strcmp(sd->desc.name, name) == 0) return sd;
@@ -2637,8 +2589,7 @@ const SettingDesc *GetSettingFromName(const char *name, uint *i, bool ignore_ver
  * and besides, it is also better to keep stuff like this at the same place */
 void IConsoleSetSetting(const char *name, const char *value, bool force_newgame)
 {
-	uint index;
-	const SettingDesc *sd = GetSettingFromName(name, &index);
+	const SettingDesc *sd = GetSettingFromName(name);
 
 	if (sd == nullptr || ((sd->desc.flags & SGF_NO_NEWGAME) && (_game_mode == GM_MENU || force_newgame))) {
 		IConsolePrintF(CC_WARNING, "'%s' is an unknown setting.", name);
@@ -2646,8 +2597,8 @@ void IConsoleSetSetting(const char *name, const char *value, bool force_newgame)
 	}
 
 	bool success;
-	if (sd->desc.cmd == SDT_STRING) {
-		success = SetSettingValue(index, value, force_newgame);
+	if (sd->desc.cmd == SDT_STDSTRING) {
+		success = SetSettingValue(sd, value, force_newgame);
 	} else {
 		uint32 val;
 		extern bool GetArgumentInteger(uint32 *value, const char *arg);
@@ -2657,7 +2608,7 @@ void IConsoleSetSetting(const char *name, const char *value, bool force_newgame)
 			return;
 		}
 
-		success = SetSettingValue(index, val, force_newgame);
+		success = SetSettingValue(sd, val, force_newgame);
 	}
 
 	if (!success) {
@@ -2671,11 +2622,9 @@ void IConsoleSetSetting(const char *name, const char *value, bool force_newgame)
 
 void IConsoleSetSetting(const char *name, int value)
 {
-	uint index;
-	const SettingDesc *sd = GetSettingFromName(name, &index);
-	(void)sd; // Unused without asserts
+	const SettingDesc *sd = GetSettingFromName(name);
 	assert(sd != nullptr);
-	SetSettingValue(index, value);
+	SetSettingValue(sd, value);
 }
 
 /**
@@ -2686,8 +2635,7 @@ void IConsoleSetSetting(const char *name, int value)
 void IConsoleGetSetting(const char *name, bool force_newgame)
 {
 	char value[20];
-	uint index;
-	const SettingDesc *sd = GetSettingFromName(name, &index);
+	const SettingDesc *sd = GetSettingFromName(name);
 	const void *ptr;
 
 	if (sd == nullptr || ((sd->desc.flags & SGF_NO_NEWGAME) && (_game_mode == GM_MENU || force_newgame))) {
@@ -2697,8 +2645,8 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 
 	ptr = GetVariableAddress((_game_mode == GM_MENU || force_newgame) ? &_settings_newgame : &_settings_game, &sd->save);
 
-	if (sd->desc.cmd == SDT_STRING) {
-		IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s'", name, (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ) ? *(const char * const *)ptr : (const char *)ptr);
+	if (sd->desc.cmd == SDT_STDSTRING) {
+		IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s'", name, reinterpret_cast<const std::string *>(ptr)->c_str());
 	} else {
 		bool show_min_max = true;
 		int64 min_value = sd->desc.min;
@@ -2751,8 +2699,8 @@ void IConsoleListSettings(const char *prefilter)
 
 		if (sd->desc.cmd == SDT_BOOLX) {
 			seprintf(value, lastof(value), (*(const bool *)ptr != 0) ? "on" : "off");
-		} else if (sd->desc.cmd == SDT_STRING) {
-			seprintf(value, lastof(value), "%s", (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ) ? *(const char * const *)ptr : (const char *)ptr);
+		} else if (sd->desc.cmd == SDT_STDSTRING) {
+			seprintf(value, lastof(value), "%s", reinterpret_cast<const std::string *>(ptr)->c_str());
 		} else {
 			seprintf(value, lastof(value), sd->desc.min < 0 ? "%d" : "%u", (int32)ReadValue(ptr, sd->save.conv));
 		}
@@ -2770,8 +2718,7 @@ void IConsoleListSettings(const char *prefilter)
  */
 static void LoadSettingsXref(const SettingDesc *osd, void *object) {
 	DEBUG(sl, 3, "PATS chunk: Loading xref setting: '%s'", osd->xref.target);
-	uint index = 0;
-	const SettingDesc *setting_xref = GetSettingFromName(osd->xref.target, &index, true);
+	const SettingDesc *setting_xref = GetSettingFromName(osd->xref.target, true);
 	assert(setting_xref != nullptr);
 
 	// Generate a new SaveLoad from the xref target using the version params from the source
