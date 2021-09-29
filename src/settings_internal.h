@@ -89,9 +89,19 @@ enum SettingType {
 	ST_ALL,       ///< Used in setting filter to match all types.
 };
 
+enum SettingOnGuiCtrlType {
+	SOGCT_DESCRIPTION_TEXT,   ///< Description text callback
+};
+
+struct SettingOnGuiCtrlData {
+	SettingOnGuiCtrlType type;
+	StringID text;
+};
+
 typedef bool OnChange(int32 var);           ///< callback prototype on data modification
 typedef size_t OnConvert(const char *value); ///< callback prototype for conversion error
 typedef int OnGuiOrder(uint nth);            ///< callback prototype for GUI ordering
+typedef bool OnGuiCtrl(SettingOnGuiCtrlData &data); ///< callback prototype for GUI operations
 typedef int64 OnXrefValueConvert(int64 val); ///< callback prototype for xref value conversion
 
 /** The last entry in an array of struct SettingDescEnumEntry must use STR_NULL. */
@@ -114,6 +124,7 @@ struct SettingDescBase {
 	StringID str_help;      ///< (Translated) string with help text; gui only.
 	StringID str_val;       ///< (Translated) first string describing the value.
 	OnChange *proc;         ///< callback procedure for when the value is changed
+	OnGuiCtrl *guiproc;     ///< callback procedure for GUI operations
 	OnConvert *proc_cnvt;   ///< callback procedure when loading value mechanism fails
 	SettingCategory cat;    ///< assigned categories of the setting
 	bool startup;           ///< setting has to be loaded directly at startup?

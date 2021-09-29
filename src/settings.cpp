@@ -1879,6 +1879,10 @@ static int64 LinkGraphDistModeXrefChillPP(int64 val)
 
 /* End - xref conversion callbacks */
 
+/* Begin - GUI callbacks */
+
+/* End - GUI callbacks */
+
 /**
  * Prepare for reading and old diff_custom by zero-ing the memory.
  */

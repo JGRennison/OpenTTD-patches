@@ -843,15 +843,7 @@ struct SettingEntry : BaseSettingEntry {
 	virtual bool UpdateFilterState(SettingFilter &filter, bool force_visible);
 
 	void SetButtons(byte new_val);
-
-	/**
-	 * Get the help text of a single setting.
-	 * @return The requested help text.
-	 */
-	inline StringID GetHelpText() const
-	{
-		return this->setting->desc.str_help;
-	}
+	StringID GetHelpText() const;
 
 	struct SetValueDParamsTempData {
 		char buffer[512];
@@ -867,6 +859,24 @@ protected:
 private:
 	bool IsVisibleByRestrictionMode(RestrictionMode mode) const;
 };
+
+/**
+ * Get the help text of a single setting.
+ * @return The requested help text.
+ */
+StringID SettingEntry::GetHelpText() const
+{
+	StringID str = this->setting->desc.str_help;
+	if (this->setting->desc.guiproc != nullptr) {
+		SettingOnGuiCtrlData data;
+		data.type = SOGCT_DESCRIPTION_TEXT;
+		data.text = str;
+		if (this->setting->desc.guiproc(data)) {
+			str = data.text;
+		}
+	}
+	return str;
+}
 
 /** Cargodist per-cargo setting */
 struct CargoDestPerCargoSettingEntry : SettingEntry {
