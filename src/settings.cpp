@@ -1881,6 +1881,19 @@ static int64 LinkGraphDistModeXrefChillPP(int64 val)
 
 /* Begin - GUI callbacks */
 
+static bool LinkGraphDistributionSettingGUI(SettingOnGuiCtrlData &data)
+{
+	switch (data.type) {
+		case SOGCT_DESCRIPTION_TEXT:
+			SetDParam(0, data.text);
+			data.text = STR_CONFIG_SETTING_DISTRIBUTION_HELPTEXT_EXTRA;
+			return true;
+
+		default:
+			return false;
+	}
+}
+
 /* End - GUI callbacks */
 
 /**
