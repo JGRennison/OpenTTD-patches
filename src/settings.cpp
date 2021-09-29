@@ -1855,21 +1855,6 @@ static bool UpdateClientConfigValues(int32 p1)
 
 /* End - Callback Functions */
 
-/* Begin - GUI order callbacks */
-
-static int OrderTownGrowthRate(uint nth)
-{
-	if (nth == 0) {
-		return 0;
-	} else if (nth <= 2) {
-		return nth - 3;
-	} else {
-		return nth - 2;
-	}
-}
-
-/* End - GUI order callbacks */
-
 /* Begin - xref conversion callbacks */
 
 static int64 LinkGraphDistModeXrefChillPP(int64 val)
@@ -1880,6 +1865,28 @@ static int64 LinkGraphDistModeXrefChillPP(int64 val)
 /* End - xref conversion callbacks */
 
 /* Begin - GUI callbacks */
+
+static bool OrderTownGrowthRate(SettingOnGuiCtrlData &data)
+{
+	switch (data.type) {
+		case SOGCT_MULTISTRING_ORDER: {
+			int in = data.val;
+			int out;
+			if (in == 0) {
+				out = 0;
+			} else if (in <= 2) {
+				out = in - 3;
+			} else {
+				out = in - 2;
+			}
+			data.val = out;
+			return true;
+		}
+
+		default:
+			return false;
+	}
+}
 
 static bool LinkGraphDistributionSettingGUI(SettingOnGuiCtrlData &data)
 {
