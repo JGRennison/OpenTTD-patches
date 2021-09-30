@@ -554,7 +554,7 @@ struct CommandLogEntry {
 };
 
 struct CommandLog {
-	std::array<CommandLogEntry, 128> log;
+	std::array<CommandLogEntry, 256> log;
 	unsigned int count = 0;
 	unsigned int next = 0;
 
@@ -619,7 +619,7 @@ static void DumpSubCommandLog(char *&buffer, const char *last, const CommandLog 
 
 char *DumpCommandLog(char *buffer, const char *last)
 {
-	const unsigned int count = std::min<unsigned int>(_command_log.count, 128);
+	const unsigned int count = std::min<unsigned int>(_command_log.count, 256);
 	buffer += seprintf(buffer, last, "Command Log:\n Showing most recent %u of %u commands\n", count, _command_log.count);
 	DumpSubCommandLog(buffer, last, _command_log, count);
 
