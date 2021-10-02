@@ -215,6 +215,8 @@ void CoreTextFontCache::SetFontSize(int pixels)
 	this->descender = -(int)std::ceil(CTFontGetDescent(this->font.get()));
 	this->height = this->ascender - this->descender;
 
+	font_height_cache[this->fs] = this->GetHeight();
+
 	/* Get real font name. */
 	char name[128];
 	CFAutoRelease<CFStringRef> font_name((CFStringRef)CTFontCopyAttribute(this->font.get(), kCTFontDisplayNameAttribute));
