@@ -64,7 +64,7 @@ static void Load_TRRP()
 		TraceRestrictProgram *prog = new (index) TraceRestrictProgram();
 		SlObject(&stub, _trace_restrict_program_stub_desc);
 		prog->items.resize(stub.length);
-		SlArray(&(prog->items[0]), stub.length, SLE_UINT32);
+		if (stub.length > 0) SlArray(prog->items.data(), stub.length, SLE_UINT32);
 		if (SlXvIsFeaturePresent(XSLFI_JOKERPP)) {
 			for (size_t i = 0; i < prog->items.size(); i++) {
 				TraceRestrictItem &item = prog->items[i]; // note this is a reference,
@@ -99,7 +99,7 @@ static void RealSave_TRRP(TraceRestrictProgram *prog)
 	TraceRestrictProgramStub stub;
 	stub.length = (uint32)prog->items.size();
 	SlObject(&stub, _trace_restrict_program_stub_desc);
-	SlArray(&(prog->items[0]), stub.length, SLE_UINT32);
+	SlArray(prog->items.data(), stub.length, SLE_UINT32);
 }
 
 /**
@@ -142,7 +142,7 @@ static void Load_TRRS()
 		SlObject(slot, _trace_restrict_slot_desc);
 		SlObject(&stub, _trace_restrict_slot_stub_desc);
 		slot->occupants.resize(stub.length);
-		if (stub.length) SlArray(&(slot->occupants[0]), stub.length, SLE_UINT32);
+		if (stub.length) SlArray(slot->occupants.data(), stub.length, SLE_UINT32);
 	}
 	TraceRestrictSlot::RebuildVehicleIndex();
 }
@@ -156,7 +156,7 @@ static void RealSave_TRRS(TraceRestrictSlot *slot)
 	TraceRestrictSlotStub stub;
 	stub.length = (uint32)slot->occupants.size();
 	SlObject(&stub, _trace_restrict_slot_stub_desc);
-	if (stub.length) SlArray(&(slot->occupants[0]), stub.length, SLE_UINT32);
+	if (stub.length) SlArray(slot->occupants.data(), stub.length, SLE_UINT32);
 }
 
 /**
