@@ -1149,6 +1149,8 @@ class NIHStationStruct : public NIHelper {
 			print(buffer);
 			seprintf(buffer, lastof(buffer), "  Delete counter: %u", st->delete_ctr);
 			print(buffer);
+			seprintf(buffer, lastof(buffer), "  Docking tiles: %X, %u x %u", st->docking_station.tile, st->docking_station.w, st->docking_station.h);
+			print(buffer);
 		}
 	}
 };
