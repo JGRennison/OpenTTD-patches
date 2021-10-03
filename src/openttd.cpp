@@ -78,6 +78,7 @@
 #include "cargopacket.h"
 #include "core/checksum_func.hpp"
 #include "tbtr_template_vehicle_func.h"
+#include "debug_settings.h"
 
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
@@ -1360,11 +1361,15 @@ void WriteVehicleInfo(char *&p, const char *last, const Vehicle *u, const Vehicl
 void CheckCaches(bool force_check, std::function<void(const char *)> log)
 {
 	if (!force_check) {
+		int desync_level = _debug_desync_level;
+
+		if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_PERIODIC)) && desync_level < 1) desync_level = 1;
+
 		/* Return here so it is easy to add checks that are run
 		 * always to aid testing of caches. */
-		if (_debug_desync_level < 1) return;
+		if (desync_level < 1) return;
 
-		if (_debug_desync_level == 1 && _scaled_date_ticks % 500 != 0) return;
+		if (desync_level == 1 && _scaled_date_ticks % 500 != 0) return;
 	}
 
 	char cclog_buffer[1024];
