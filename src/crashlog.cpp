@@ -30,6 +30,7 @@
 #include "scope_info.h"
 #include "command_func.h"
 #include "thread.h"
+#include "debug_desync.h"
 
 #include "ai/ai_info.hpp"
 #include "game/game.hpp"
@@ -522,7 +523,6 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 	buffer = DumpDesyncMsgLog(buffer, last);
 
 	bool have_cache_log = false;
-	extern void CheckCaches(bool force_check, std::function<void(const char *)> log);
 	CheckCaches(true, [&](const char *str) {
 		if (!have_cache_log) buffer += seprintf(buffer, last, "CheckCaches:\n");
 		buffer += seprintf(buffer, last, "  %s\n", str);

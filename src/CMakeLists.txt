@@ -118,6 +118,7 @@ add_files(
     date_type.h
     debug.cpp
     debug.h
+    debug_desync.h
     debug_settings.h
     dedicated.cpp
     departures.cpp

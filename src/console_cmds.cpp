@@ -53,6 +53,7 @@
 #include "linkgraph/linkgraphjob.h"
 #include "base_media_base.h"
 #include "debug_settings.h"
+#include "debug_desync.h"
 #include <time.h>
 
 #include "safeguards.h"
@@ -2687,7 +2688,6 @@ DEF_CONSOLE_CMD(ConCheckCaches)
 	if (broadcast) {
 		DoCommandP(0, 0, 0, CMD_DESYNC_CHECK);
 	} else {
-		extern void CheckCaches(bool force_check, std::function<void(const char *)> log);
 		CheckCaches(true, nullptr);
 	}
 

@@ -54,6 +54,7 @@
 #include "tbtr_template_vehicle_func.h"
 #include "scope_info.h"
 #include "pathfinder/yapf/yapf_cache.h"
+#include "debug_desync.h"
 
 #include "table/strings.h"
 #include "table/pricebase.h"
@@ -2287,7 +2288,6 @@ static void DoAcquireCompany(Company *c)
 
 	delete c;
 
-	extern void CheckCaches(bool force_check, std::function<void(const char *)> log);
 	CheckCaches(true, nullptr);
 }
 
