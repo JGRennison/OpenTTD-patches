@@ -628,6 +628,12 @@ static void CDECL HandleCrash(int signum)
 	log.MakeDesyncCrashLog(log_in, log_out, info);
 }
 
+/* static */ void CrashLog::InconsistencyLog(const InconsistencyExtraInfo &info)
+{
+	CrashLogUnix log(CrashLogUnix::DesyncTag{});
+	log.MakeInconsistencyLog(info);
+}
+
 /* static */ void CrashLog::VersionInfoLog()
 {
 	CrashLogUnix log(CrashLogUnix::DesyncTag{});

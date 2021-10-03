@@ -1373,6 +1373,13 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 		if (desync_level == 1 && _scaled_date_ticks % 500 != 0) return;
 	}
 
+	std::vector<std::string> saved_messages;
+	if (flags & CHECK_CACHE_EMIT_LOG) {
+		log = [&saved_messages](const char *str) {
+			saved_messages.emplace_back(str);
+		};
+	}
+
 	char cclog_buffer[1024];
 #define CCLOG(...) { \
 	seprintf(cclog_buffer, lastof(cclog_buffer), __VA_ARGS__); \
@@ -1763,6 +1770,15 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 		}
 	}
 
+	if ((flags & CHECK_CACHE_EMIT_LOG) && !saved_messages.empty()) {
+		InconsistencyExtraInfo info;
+		info.check_caches_result = std::move(saved_messages);
+		CrashLog::InconsistencyLog(info);
+		for (std::string &str : info.check_caches_result) {
+			LogDesyncMsg(std::move(str));
+		}
+	}
+
 #undef CCLOGV
 #undef CCLOG
 }
@@ -1779,7 +1795,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 CommandCost CmdDesyncCheck(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
 	if (flags & DC_EXEC) {
-		CheckCaches(true, nullptr);
+		CheckCaches(true, nullptr, CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG);
 	}
 
 	return CommandCost();
@@ -1836,7 +1852,7 @@ void StateGameLoop()
 			SaveOrLoad(name, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, false);
 		}
 
-		CheckCaches(false, nullptr);
+		CheckCaches(false, nullptr, CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG);
 
 		/* All these actions has to be done from OWNER_NONE
 		 *  for multiplayer compatibility */

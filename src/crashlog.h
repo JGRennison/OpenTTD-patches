@@ -27,6 +27,10 @@ struct DesyncExtraInfo {
 };
 DECLARE_ENUM_AS_BIT_SET(DesyncExtraInfo::Flags)
 
+struct InconsistencyExtraInfo {
+	std::vector<std::string> check_caches_result;
+};
+
 /**
  * Helper class for creating crash logs.
  */
@@ -130,6 +134,7 @@ public:
 
 	char *FillCrashLog(char *buffer, const char *last) const;
 	char *FillDesyncCrashLog(char *buffer, const char *last, const DesyncExtraInfo &info) const;
+	char *FillInconsistencyLog(char *buffer, const char *last, const InconsistencyExtraInfo &info) const;
 	char *FillVersionInfoLog(char *buffer, const char *last) const;
 	bool WriteCrashLog(const char *buffer, char *filename, const char *filename_last, const char *name = "crash", FILE **crashlog_file = nullptr) const;
 
@@ -148,6 +153,7 @@ public:
 
 	bool MakeCrashLog();
 	bool MakeDesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info) const;
+	bool MakeInconsistencyLog(const InconsistencyExtraInfo &info) const;
 	bool MakeVersionInfoLog() const;
 	bool MakeCrashSavegameAndScreenshot() const;
 
@@ -165,6 +171,7 @@ public:
 	static void InitThread();
 
 	static void DesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info);
+	static void InconsistencyLog(const InconsistencyExtraInfo &info);
 	static void VersionInfoLog();
 
 	static void SetErrorMessage(const char *message);

@@ -2288,7 +2288,7 @@ static void DoAcquireCompany(Company *c)
 
 	delete c;
 
-	CheckCaches(true, nullptr);
+	CheckCaches(true, nullptr, CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG);
 }
 
 extern int GetAmountOwnedBy(const Company *c, Owner owner);

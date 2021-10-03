@@ -938,7 +938,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			InvalidateWindowData(WC_CLIENT_LIST, 0);
 			InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 
-			CheckCaches(true, nullptr);
+			CheckCaches(true, nullptr, CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG);
 			break;
 		}
 

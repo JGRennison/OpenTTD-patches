@@ -16,7 +16,8 @@ enum CheckCachesFlags : uint32 {
 	CHECK_CACHE_NONE               =       0,
 	CHECK_CACHE_GENERAL            = 1 <<  0,
 	CHECK_CACHE_INFRA_TOTALS       = 1 <<  1,
-	CHECK_CACHE_ALL                = UINT32_MAX,
+	CHECK_CACHE_ALL                = UINT16_MAX,
+	CHECK_CACHE_EMIT_LOG           = 1 << 16,
 };
 DECLARE_ENUM_AS_BIT_SET(CheckCachesFlags)
 
