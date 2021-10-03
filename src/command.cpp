@@ -30,6 +30,8 @@
 #include "core/random_func.hpp"
 #include "settings_func.h"
 #include "signal_func.h"
+#include "debug_settings.h"
+#include "debug_desync.h"
 #include <array>
 
 #include "table/strings.h"
@@ -889,6 +891,10 @@ bool DoCommandPEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, C
 	if (!random_state.Check()) log_flags |= CLEF_RANDOM;
 	AppendCommandLogEntry(res, tile, p1, p2, p3, cmd, log_flags);
 
+	if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_POST_COMMAND)) && !(GetCommandFlags(cmd) & CMD_LOG_AUX)) {
+		CheckCaches(true, nullptr, CHECK_CACHE_INFRA_TOTALS);
+	}
+
 	if (res.Failed()) {
 		/* Only show the error when it's for us. */
 		StringID error_part1 = GB(cmd, 16, 16);
@@ -928,6 +934,10 @@ CommandCost DoCommandPScript(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, ui
 	if (binary_length > 0) log_flags |= CLEF_BINARY;
 	if (!random_state.Check()) log_flags |= CLEF_RANDOM;
 	AppendCommandLogEntry(res, tile, p1, p2, p3, cmd, log_flags);
+
+	if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_POST_COMMAND)) && !(GetCommandFlags(cmd) & CMD_LOG_AUX)) {
+		CheckCaches(true, nullptr, CHECK_CACHE_INFRA_TOTALS);
+	}
 
 	return res;
 }
