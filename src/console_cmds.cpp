@@ -2677,7 +2677,7 @@ DEF_CONSOLE_CMD(ConDumpTile)
 DEF_CONSOLE_CMD(ConCheckCaches)
 {
 	if (argc == 0) {
-		IConsoleHelp("Debug: Check caches");
+		IConsoleHelp("Debug: Check caches. Usage: 'check_caches [<broadcast>]'");
 		return true;
 	}
 
