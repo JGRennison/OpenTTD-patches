@@ -1364,7 +1364,10 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 	if (!force_check) {
 		int desync_level = _debug_desync_level;
 
-		if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_PERIODIC)) && desync_level < 1) desync_level = 1;
+		if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_PERIODIC)) && desync_level < 1) {
+			desync_level = 1;
+			if (HasChickenBit(DCBF_DESYNC_CHECK_NO_GENERAL)) flags &= ~CHECK_CACHE_GENERAL;
+		}
 
 		/* Return here so it is easy to add checks that are run
 		 * always to aid testing of caches. */

@@ -892,7 +892,9 @@ bool DoCommandPEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, C
 	AppendCommandLogEntry(res, tile, p1, p2, p3, cmd, log_flags);
 
 	if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_POST_COMMAND)) && !(GetCommandFlags(cmd) & CMD_LOG_AUX)) {
-		CheckCaches(true, nullptr, CHECK_CACHE_INFRA_TOTALS);
+		CheckCachesFlags flags = CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG;
+		if (HasChickenBit(DCBF_DESYNC_CHECK_NO_GENERAL)) flags &= ~CHECK_CACHE_GENERAL;
+		CheckCaches(true, nullptr, flags);
 	}
 
 	if (res.Failed()) {
@@ -936,7 +938,9 @@ CommandCost DoCommandPScript(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, ui
 	AppendCommandLogEntry(res, tile, p1, p2, p3, cmd, log_flags);
 
 	if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_POST_COMMAND)) && !(GetCommandFlags(cmd) & CMD_LOG_AUX)) {
-		CheckCaches(true, nullptr, CHECK_CACHE_INFRA_TOTALS);
+		CheckCachesFlags flags = CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG;
+		if (HasChickenBit(DCBF_DESYNC_CHECK_NO_GENERAL)) flags &= ~CHECK_CACHE_GENERAL;
+		CheckCaches(true, nullptr, flags);
 	}
 
 	return res;
