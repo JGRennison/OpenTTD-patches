@@ -157,6 +157,8 @@ add_files(
     engine_type.h
     error.h
     error_gui.cpp
+    event_logs.cpp
+    event_logs.h
     fileio.cpp
     fileio_func.h
     fileio_type.h

@@ -80,6 +80,7 @@
 #include "tbtr_template_vehicle_func.h"
 #include "debug_settings.h"
 #include "debug_desync.h"
+#include "event_logs.h"
 
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
@@ -113,11 +114,6 @@ extern std::string _config_file;
 bool _save_config = false;
 bool _request_newgrf_scan = false;
 NewGRFScanCallback *_request_newgrf_scan_callback = nullptr;
-
-GameEventFlags _game_events_since_load;
-GameEventFlags _game_events_overall;
-
-time_t _game_load_time;
 
 SimpleChecksum64 _state_checksum;
 
@@ -2020,22 +2016,4 @@ void GameLoop()
 
 	SoundDriver::GetInstance()->MainLoop();
 	MusicLoop();
-}
-
-char *DumpGameEventFlags(GameEventFlags events, char *b, const char *last)
-{
-	if (b <= last) *b = 0;
-	auto dump = [&](char c, GameEventFlags ev) {
-		if (events & ev) b += seprintf(b, last, "%c", c);
-	};
-	dump('d', GEF_COMPANY_DELETE);
-	dump('m', GEF_COMPANY_MERGE);
-	dump('n', GEF_RELOAD_NEWGRF);
-	dump('t', GEF_TBTR_REPLACEMENT);
-	dump('D', GEF_DISASTER_VEH);
-	dump('c', GEF_TRAIN_CRASH);
-	dump('i', GEF_INDUSTRY_CREATE);
-	dump('j', GEF_INDUSTRY_DELETE);
-	dump('v', GEF_VIRT_TRAIN);
-	return b;
 }

@@ -45,6 +45,7 @@
 #include "core/checksum_func.hpp"
 #include "debug_settings.h"
 #include "train_speed_adaptation.h"
+#include "event_logs.h"
 
 #include "table/strings.h"
 #include "table/train_cmd.h"

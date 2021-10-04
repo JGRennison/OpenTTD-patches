@@ -67,6 +67,7 @@
 #include "../animated_tile.h"
 #include "../company_func.h"
 #include "../infrastructure_func.h"
+#include "../event_logs.h"
 
 
 #include "saveload_internal.h"

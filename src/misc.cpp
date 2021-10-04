@@ -38,6 +38,7 @@
 #include "zoning.h"
 #include "cargopacket.h"
 #include "tbtr_template_vehicle_func.h"
+#include "event_logs.h"
 
 #include "safeguards.h"
 

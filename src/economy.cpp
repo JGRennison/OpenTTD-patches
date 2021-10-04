@@ -55,6 +55,7 @@
 #include "scope_info.h"
 #include "pathfinder/yapf/yapf_cache.h"
 #include "debug_desync.h"
+#include "event_logs.h"
 
 #include "table/strings.h"
 #include "table/pricebase.h"

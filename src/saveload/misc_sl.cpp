@@ -18,6 +18,7 @@
 #include "../fios.h"
 #include "../road_type.h"
 #include "../core/checksum_func.hpp"
+#include "../event_logs.h"
 
 #include "saveload.h"
 

@@ -79,32 +79,6 @@ DECLARE_ENUM_AS_BIT_SET(PauseMode)
 /** The current pause mode */
 extern PauseMode _pause_mode;
 
-enum GameEventFlags : uint32 {
-	GEF_COMPANY_DELETE       = 1 << 0, ///< (d) A company has been deleted
-	GEF_COMPANY_MERGE        = 1 << 1, ///< (m) A company has been bought by another
-	GEF_RELOAD_NEWGRF        = 1 << 2, ///< (n) ReloadNewGRFData() has been called
-	GEF_TBTR_REPLACEMENT     = 1 << 3, ///< (t) CMD_TEMPLATE_REPLACE_VEHICLE has been called
-	GEF_DISASTER_VEH         = 1 << 4, ///< (D) A disaster vehicle exists or has been created
-	GEF_TRAIN_CRASH          = 1 << 5, ///< (c) A train crash has occurred
-	GEF_INDUSTRY_CREATE      = 1 << 6, ///< (i) An industry has been created (in game)
-	GEF_INDUSTRY_DELETE      = 1 << 7, ///< (j) An industry has been deleted (in game)
-	GEF_VIRT_TRAIN           = 1 << 8, ///< (v) A virtual train has been created
-};
-DECLARE_ENUM_AS_BIT_SET(GameEventFlags)
-
-extern GameEventFlags _game_events_since_load;
-extern GameEventFlags _game_events_overall;
-
-inline void RegisterGameEvents(GameEventFlags events)
-{
-	_game_events_since_load |= events;
-	_game_events_overall |= events;
-}
-
-char *DumpGameEventFlags(GameEventFlags events, char *b, const char *last);
-
-extern time_t _game_load_time;
-
 void AskExitGame();
 void AskExitToGameMenu();
 

@@ -46,6 +46,7 @@
 #include "core/random_func.hpp"
 #include "core/backup_type.hpp"
 #include "core/checksum_func.hpp"
+#include "event_logs.h"
 
 #include "table/strings.h"
 

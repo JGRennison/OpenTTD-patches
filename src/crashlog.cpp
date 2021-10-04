@@ -31,6 +31,7 @@
 #include "command_func.h"
 #include "thread.h"
 #include "debug_desync.h"
+#include "event_logs.h"
 
 #include "ai/ai_info.hpp"
 #include "game/game.hpp"

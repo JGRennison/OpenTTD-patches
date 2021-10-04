@@ -55,6 +55,7 @@
 #include "debug_settings.h"
 #include "debug_desync.h"
 #include "scope_info.h"
+#include "event_logs.h"
 #include <time.h>
 
 #include "safeguards.h"
