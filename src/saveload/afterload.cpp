@@ -4031,6 +4031,7 @@ bool AfterLoadGame()
 void ReloadNewGRFData()
 {
 	RegisterGameEvents(GEF_RELOAD_NEWGRF);
+	AppendSpecialEventsLogEntry("NewGRF reload");
 
 	RailTypeLabel rail_type_label_map[RAILTYPE_END];
 	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {

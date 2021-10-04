@@ -39,4 +39,8 @@ char *DumpGameEventFlags(GameEventFlags events, char *b, const char *last);
 
 extern time_t _game_load_time;
 
+void AppendSpecialEventsLogEntry(std::string message);
+char *DumpSpecialEventsLog(char *buffer, const char *last);
+void ClearSpecialEventsLog();
+
 #endif /* EVENT_LOGS_H */

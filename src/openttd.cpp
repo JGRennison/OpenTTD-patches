@@ -457,6 +457,7 @@ static void ShutdownGame()
 	ClearVehicleTickCaches();
 	InvalidateTemplateReplacementImages();
 	ClearCommandLog();
+	ClearSpecialEventsLog();
 	ClearDesyncMsgLog();
 
 	_loaded_local_company = COMPANY_SPECTATOR;

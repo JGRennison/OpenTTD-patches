@@ -2250,6 +2250,19 @@ DEF_CONSOLE_CMD(ConDumpCommandLog)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConDumpSpecialEventsLog)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump log of special events.");
+		return true;
+	}
+
+	char buffer[32768];
+	DumpSpecialEventsLog(buffer, lastof(buffer));
+	PrintLineByLine(buffer);
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConDumpDesyncMsgLog)
 {
 	if (argc == 0) {
@@ -3470,6 +3483,7 @@ void IConsoleStdLibRegister()
 
 	IConsole::CmdRegister("getfulldate",             ConGetFullDate,      nullptr, true);
 	IConsole::CmdRegister("dump_command_log",        ConDumpCommandLog,   nullptr, true);
+	IConsole::CmdRegister("dump_special_events_log", ConDumpSpecialEventsLog, nullptr, true);
 	IConsole::CmdRegister("dump_desync_msgs",        ConDumpDesyncMsgLog, nullptr, true);
 	IConsole::CmdRegister("dump_inflation",          ConDumpInflation,    nullptr, true);
 	IConsole::CmdRegister("dump_cpdp_stats",         ConDumpCpdpStats,    nullptr, true);

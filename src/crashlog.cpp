@@ -411,6 +411,8 @@ char *CrashLog::LogCommandLog(char *buffer, const char *last) const
 {
 	buffer = DumpCommandLog(buffer, last);
 	buffer += seprintf(buffer, last, "\n");
+	buffer = DumpSpecialEventsLog(buffer, last);
+	buffer += seprintf(buffer, last, "\n");
 	return buffer;
 }
 
