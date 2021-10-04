@@ -12,6 +12,7 @@
 
 #include "core/enum_type.hpp"
 #include <string>
+#include <vector>
 
 struct DesyncExtraInfo {
 	enum Flags {
