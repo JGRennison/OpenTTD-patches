@@ -351,7 +351,7 @@ struct DesyncMsgLogEntry {
 };
 
 struct DesyncMsgLog {
-	std::array<DesyncMsgLogEntry, 128> log;
+	std::array<DesyncMsgLogEntry, 256> log;
 	unsigned int count = 0;
 	unsigned int next = 0;
 
