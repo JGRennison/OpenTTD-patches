@@ -2,6 +2,15 @@
 
 * * *
 
+### v0.43.1 (2021-10-04)
+* Fix multi-aspect signal graphics not being immediately enabled for newly generated maps.
+* Fix premature PBS reservations with using reverse at waypoint orders with timetabled wait times.
+* Fix incorrect font heights when using custom fonts on MacOS.
+* Fix crash when trying to place multitile objects at map edge.
+* Routing restrictions:
+  * The reverse behind signal pathfinder now takes into account the train length to avoid reversing sidings which are too short.
+* Add sort by maximum speed (fully loaded) to train list window.
+
 ### v0.43.0 (2021-09-12)
 * Fix reversing a train inside a depot disrupting the PBS reservation of another train heading into the depot.
 * Fix ships being drawn with the wrong image direction after rotating in place in some circumstances.
