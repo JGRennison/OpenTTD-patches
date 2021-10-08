@@ -38,6 +38,7 @@
 #include "zoning.h"
 #include "cargopacket.h"
 #include "tbtr_template_vehicle_func.h"
+#include "event_logs.h"
 
 #include "safeguards.h"
 
@@ -78,6 +79,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 
 	ViewportMapClearTunnelCache();
 	ClearCommandLog();
+	ClearSpecialEventsLog();
 	ClearDesyncMsgLog();
 
 	_pause_mode = PM_UNPAUSED;

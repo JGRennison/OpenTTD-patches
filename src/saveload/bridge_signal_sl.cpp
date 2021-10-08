@@ -30,7 +30,7 @@ static void Load_XBSS()
 		LongBridgeSignalStorage &lbss = _long_bridge_signal_sim_map[index];
 		SlObject(&stub, _long_bridge_signal_storage_stub_desc);
 		lbss.signal_red_bits.resize(stub.length);
-		SlArray(&(lbss.signal_red_bits[0]), stub.length, SLE_UINT64);
+		SlArray(lbss.signal_red_bits.data(), stub.length, SLE_UINT64);
 	}
 }
 
@@ -39,7 +39,7 @@ static void RealSave_XBSS(const LongBridgeSignalStorage *lbss)
 	LongBridgeSignalStorageStub stub;
 	stub.length = (uint32)lbss->signal_red_bits.size();
 	SlObject(&stub, _long_bridge_signal_storage_stub_desc);
-	SlArray(const_cast<uint64*>(&(lbss->signal_red_bits[0])), stub.length, SLE_UINT64);
+	SlArray(const_cast<uint64*>(lbss->signal_red_bits.data()), stub.length, SLE_UINT64);
 }
 
 static void Save_XBSS()

@@ -54,6 +54,8 @@
 #include "tbtr_template_vehicle_func.h"
 #include "scope_info.h"
 #include "pathfinder/yapf/yapf_cache.h"
+#include "debug_desync.h"
+#include "event_logs.h"
 
 #include "table/strings.h"
 #include "table/pricebase.h"
@@ -587,6 +589,12 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 	InvalidateTemplateReplacementImages();
 
 	cur_company.Restore();
+
+	if (new_owner != INVALID_OWNER) {
+		AppendSpecialEventsLogEntry(stdstr_fmt("Company merge: old: %u, new %u", old_owner, new_owner));
+	} else {
+		AppendSpecialEventsLogEntry(stdstr_fmt("Company deletion: old: %u", old_owner));
+	}
 
 	RegisterGameEvents(new_owner != INVALID_OWNER ? GEF_COMPANY_MERGE : GEF_COMPANY_DELETE);
 
@@ -2287,8 +2295,7 @@ static void DoAcquireCompany(Company *c)
 
 	delete c;
 
-	extern void CheckCaches(bool force_check, std::function<void(const char *)> log);
-	CheckCaches(true, nullptr);
+	CheckCaches(true, nullptr, CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG);
 }
 
 extern int GetAmountOwnedBy(const Company *c, Owner owner);

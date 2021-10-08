@@ -82,9 +82,20 @@ enum SettingType {
 	ST_ALL,       ///< Used in setting filter to match all types.
 };
 
+enum SettingOnGuiCtrlType {
+	SOGCT_DESCRIPTION_TEXT,   ///< Description text callback
+	SOGCT_MULTISTRING_ORDER,  ///< SGF_MULTISTRING reordering callback
+};
+
+struct SettingOnGuiCtrlData {
+	SettingOnGuiCtrlType type;
+	StringID text;
+	int val;
+};
+
 typedef bool OnChange(int32 var);           ///< callback prototype on data modification
 typedef size_t OnConvert(const char *value); ///< callback prototype for conversion error
-typedef int OnGuiOrder(uint nth);            ///< callback prototype for GUI ordering
+typedef bool OnGuiCtrl(SettingOnGuiCtrlData &data); ///< callback prototype for GUI operations
 typedef int64 OnXrefValueConvert(int64 val); ///< callback prototype for xref value conversion
 
 /** The last entry in an array of struct SettingDescEnumEntry must use STR_NULL. */
@@ -107,6 +118,7 @@ struct SettingDescBase {
 	StringID str_help;      ///< (Translated) string with help text; gui only.
 	StringID str_val;       ///< (Translated) first string describing the value.
 	OnChange *proc;         ///< callback procedure for when the value is changed
+	OnGuiCtrl *guiproc;     ///< callback procedure for GUI operations
 	OnConvert *proc_cnvt;   ///< callback procedure when loading value mechanism fails
 	SettingCategory cat;    ///< assigned categories of the setting
 	bool startup;           ///< setting has to be loaded directly at startup?
@@ -126,7 +138,6 @@ struct SettingDesc {
 	SaveLoad save;          ///< Internal structure (going to savegame, parts to config)
 	const char *patx_name;  ///< Name to save/load setting from in PATX chunk, if nullptr save/load from PATS chunk as normal
 	SettingsXref xref;      ///< Details of SettingDesc to use instead of the contents of this one, useful for loading legacy savegames, if target field nullptr save/load as normal
-	OnGuiOrder *orderproc;  ///< Callback procedure for GUI re-ordering
 
 	bool IsEditable(bool do_command = false) const;
 	SettingType GetType() const;

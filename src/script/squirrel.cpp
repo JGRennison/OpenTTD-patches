@@ -67,16 +67,18 @@ struct ScriptAllocator {
 	 * @param requested_size The requested size that was requested to be allocated.
 	 * @param p              The pointer to the allocated object, or null if allocation failed.
 	 */
-	void CheckAllocation(size_t requested_size, const void *p)
+	void CheckAllocation(size_t requested_size, void *p)
 	{
-		if (this->allocated_size > this->allocation_limit && !this->error_thrown) {
+		if (this->allocated_size + requested_size > this->allocation_limit && !this->error_thrown) {
 			/* Do not allow allocating more than the allocation limit, except when an error is
 			 * already as then the allocation is for throwing that error in Squirrel, the
 			 * associated stack trace information and while cleaning up the AI. */
 			this->error_thrown = true;
 			char buff[128];
 			seprintf(buff, lastof(buff), "Maximum memory allocation exceeded by " PRINTF_SIZE " bytes when allocating " PRINTF_SIZE " bytes",
-				this->allocated_size - this->allocation_limit, requested_size);
+				this->allocated_size + requested_size - this->allocation_limit, requested_size);
+			/* Don't leak the rejected allocation. */
+			free(p);
 			throw Script_FatalError(buff);
 		}
 
@@ -100,9 +102,10 @@ struct ScriptAllocator {
 	void *Malloc(SQUnsignedInteger size)
 	{
 		void *p = malloc(size);
-		this->allocated_size += size;
 
 		this->CheckAllocation(size, p);
+
+		this->allocated_size += size;
 
 #ifdef SCRIPT_DEBUG_ALLOCATIONS
 		assert(p != nullptr);
@@ -127,13 +130,20 @@ struct ScriptAllocator {
 		assert(this->allocations[p] == oldsize);
 		this->allocations.erase(p);
 #endif
+		/* Can't use realloc directly because memory limit check.
+		 * If memory exception is thrown, the old pointer is expected
+		 * to be valid for engine cleanup.
+		 */
+		void *new_p = malloc(size);
 
-		void *new_p = realloc(p, size);
+		this->CheckAllocation(size - oldsize, new_p);
+
+		/* Memory limit test passed, we can copy data and free old pointer. */
+		memcpy(new_p, p, std::min(oldsize, size));
+		free(p);
 
 		this->allocated_size -= oldsize;
 		this->allocated_size += size;
-
-		this->CheckAllocation(size, p);
 
 #ifdef SCRIPT_DEBUG_ALLOCATIONS
 		assert(new_p != nullptr);
@@ -765,6 +775,11 @@ void Squirrel::Uninitialize()
 	/* Clean up the stuff */
 	sq_pop(this->vm, 1);
 	sq_close(this->vm);
+
+	assert(this->allocator->allocated_size == 0);
+
+	/* Reset memory allocation errors. */
+	this->allocator->error_thrown = false;
 }
 
 void Squirrel::Reset()

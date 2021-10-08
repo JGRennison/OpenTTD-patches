@@ -492,6 +492,13 @@ void CDECL HandleCrash(int signum, siginfo_t *si, void *context)
 	log.MakeDesyncCrashLog(log_in, log_out, info);
 }
 
+/* static */ void CrashLog::InconsistencyLog(const InconsistencyExtraInfo &info)
+{
+	CrashLogOSX log(CrashLogOSX::DesyncTag{});
+	log.MakeInconsistencyLog(info);
+}
+
+
 /* static */ void CrashLog::VersionInfoLog()
 {
 	CrashLogOSX log(CrashLogOSX::DesyncTag{});

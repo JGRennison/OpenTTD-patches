@@ -278,9 +278,12 @@ void ScriptInstance::GameLoop()
 	}
 }
 
-void ScriptInstance::CollectGarbage() const
+void ScriptInstance::CollectGarbage()
 {
-	if (this->is_started && !this->IsDead()) this->engine->CollectGarbage();
+	if (this->is_started && !this->IsDead()) {
+		ScriptObject::ActiveInstance active(this);
+		this->engine->CollectGarbage();
+	}
 }
 
 /* static */ void ScriptInstance::DoCommandReturn(ScriptInstance *instance)

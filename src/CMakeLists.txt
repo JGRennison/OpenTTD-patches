@@ -118,6 +118,7 @@ add_files(
     date_type.h
     debug.cpp
     debug.h
+    debug_desync.h
     debug_settings.h
     dedicated.cpp
     departures.cpp
@@ -156,6 +157,8 @@ add_files(
     engine_type.h
     error.h
     error_gui.cpp
+    event_logs.cpp
+    event_logs.h
     fileio.cpp
     fileio_func.h
     fileio_type.h

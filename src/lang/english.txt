@@ -306,6 +306,7 @@ STR_SORT_BY_LENGTH                                              :Length
 STR_SORT_BY_LIFE_TIME                                           :Remaining lifetime
 STR_SORT_BY_TIMETABLE_DELAY                                     :Timetable delay
 STR_SORT_BY_AVG_ORDER_OCCUPANCY                                 :Average order occupancy
+STR_SORT_BY_MAX_SPEED_LOADED                                    :Maximum speed (fully loaded)
 STR_SORT_BY_FACILITY                                            :Station type
 STR_SORT_BY_WAITING_TOTAL                                       :Total waiting cargo
 STR_SORT_BY_WAITING_AVAILABLE                                   :Available waiting cargo
@@ -2060,6 +2061,7 @@ STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO                       :Distribution mo
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM                 :Distribution mode override for {STRING}: {STRING2}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_HELPTEXT              :"(default)" means that the distribution mode is the default for the class of this cargo. "symmetric" means that roughly the same number of cargo will go from a station A to a station B as from B to A. "asymmetric" means that arbitrary amounts of cargo can be sent in either direction. "manual" means that no automatic distribution will take place for this cargo.
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_DEFAULT               :(default)
+STR_CONFIG_SETTING_DISTRIBUTION_HELPTEXT_EXTRA                  :{STRING}{}"asymmetric (equal distribution)" means that cargo will be distributed such that each accepting station receives approximately the same amount of cargo in total. "asymmetric (nearest)" means that cargo is sent to whichever accepting station is nearest.
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Distribution accuracy: {STRING2}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :The higher you set this the more CPU time the calculation of the link graph will take. If it takes too long you may notice lag. If you set it to a low value, however, the distribution will be inaccurate, and you may notice cargo not being sent to the places you expect it to go.
 STR_CONFIG_SETTING_DEMAND_DISTANCE                              :Effect of distance on demands: {STRING2}

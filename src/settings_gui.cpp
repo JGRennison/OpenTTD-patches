@@ -842,15 +842,7 @@ struct SettingEntry : BaseSettingEntry {
 	virtual bool UpdateFilterState(SettingFilter &filter, bool force_visible);
 
 	void SetButtons(byte new_val);
-
-	/**
-	 * Get the help text of a single setting.
-	 * @return The requested help text.
-	 */
-	inline StringID GetHelpText() const
-	{
-		return this->setting->desc.str_help;
-	}
+	StringID GetHelpText() const;
 
 	struct SetValueDParamsTempData {
 		char buffer[512];
@@ -866,6 +858,24 @@ protected:
 private:
 	bool IsVisibleByRestrictionMode(RestrictionMode mode) const;
 };
+
+/**
+ * Get the help text of a single setting.
+ * @return The requested help text.
+ */
+StringID SettingEntry::GetHelpText() const
+{
+	StringID str = this->setting->desc.str_help;
+	if (this->setting->desc.guiproc != nullptr) {
+		SettingOnGuiCtrlData data;
+		data.type = SOGCT_DESCRIPTION_TEXT;
+		data.text = str;
+		if (this->setting->desc.guiproc(data)) {
+			str = data.text;
+		}
+	}
+	return str;
+}
 
 /** Cargodist per-cargo setting */
 struct CargoDestPerCargoSettingEntry : SettingEntry {
@@ -2564,7 +2574,15 @@ struct GameSettingsWindow : Window {
 					DropDownList list;
 					if (sd->desc.flags & SGF_MULTISTRING) {
 						for (int i = sdb->min; i <= (int)sdb->max; i++) {
-							int val = sd->orderproc ? sd->orderproc(i - sdb->min) : i;
+							int val = i;
+							if (sd->desc.guiproc != nullptr) {
+								SettingOnGuiCtrlData data;
+								data.type = SOGCT_MULTISTRING_ORDER;
+								data.val = i - sdb->min;
+								if (sd->desc.guiproc(data)) {
+									val = data.val;
+								}
+							}
 							assert_msg(val >= sdb->min && val <= (int)sdb->max, "min: %d, max: %d, val: %d", sdb->min, sdb->max, val);
 							list.emplace_back(new DropDownListStringItem(sdb->str_val + val - sdb->min, val, false));
 						}

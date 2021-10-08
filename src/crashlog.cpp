@@ -30,6 +30,8 @@
 #include "scope_info.h"
 #include "command_func.h"
 #include "thread.h"
+#include "debug_desync.h"
+#include "event_logs.h"
 
 #include "ai/ai_info.hpp"
 #include "game/game.hpp"
@@ -408,6 +410,8 @@ char *CrashLog::LogCommandLog(char *buffer, const char *last) const
 {
 	buffer = DumpCommandLog(buffer, last);
 	buffer += seprintf(buffer, last, "\n");
+	buffer = DumpSpecialEventsLog(buffer, last);
+	buffer += seprintf(buffer, last, "\n");
 	return buffer;
 }
 
@@ -520,7 +524,6 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 	buffer = DumpDesyncMsgLog(buffer, last);
 
 	bool have_cache_log = false;
-	extern void CheckCaches(bool force_check, std::function<void(const char *)> log);
 	CheckCaches(true, [&](const char *str) {
 		if (!have_cache_log) buffer += seprintf(buffer, last, "CheckCaches:\n");
 		buffer += seprintf(buffer, last, "  %s\n", str);
@@ -530,6 +533,62 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 	if (have_cache_log) buffer += seprintf(buffer, last, "\n");
 
 	buffer += seprintf(buffer, last, "*** End of OpenTTD Multiplayer %s Desync Report ***\n", _network_server ? "Server" : "Client");
+	return buffer;
+}
+
+/**
+ * Fill the crash log buffer with all data of an inconsistency event.
+ * @param buffer The begin where to write at.
+ * @param last   The last position in the buffer to write to.
+ * @return the position of the \c '\0' character after the buffer.
+ */
+char *CrashLog::FillInconsistencyLog(char *buffer, const char *last, const InconsistencyExtraInfo &info) const
+{
+	time_t cur_time = time(nullptr);
+	buffer += seprintf(buffer, last, "*** OpenTTD Inconsistency Report ***\n\n");
+
+	buffer += seprintf(buffer, last, "Inconsistency at: %s", asctime(gmtime(&cur_time)));
+
+#ifdef USE_SCOPE_INFO
+	buffer += WriteScopeLog(buffer, last);
+#endif
+
+	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u)\n", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, _settings_game.economy.day_length_factor);
+	if (_game_load_time != 0) {
+		buffer += seprintf(buffer, last, "Game loaded at: %i-%02i-%02i (%i, %i), %s",
+				_game_load_cur_date_ymd.year, _game_load_cur_date_ymd.month + 1, _game_load_cur_date_ymd.day, _game_load_date_fract, _game_load_tick_skip_counter, asctime(gmtime(&_game_load_time)));
+	}
+	if (_networking && !_network_server) {
+		extern Date   _last_sync_date;
+		extern DateFract _last_sync_date_fract;
+		extern uint8  _last_sync_tick_skip_counter;
+
+		YearMonthDay ymd;
+		ConvertDateToYMD(_last_sync_date, &ymd);
+		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i)",
+				ymd.year, ymd.month + 1, ymd.day, _last_sync_date_fract, _last_sync_tick_skip_counter);
+	}
+	buffer += seprintf(buffer, last, "\n");
+
+	buffer = this->LogOpenTTDVersion(buffer, last);
+	buffer = this->LogOSVersion(buffer, last);
+	buffer = this->LogCompiler(buffer, last);
+	buffer = this->LogOSVersionDetail(buffer, last);
+	buffer = this->LogConfiguration(buffer, last);
+	buffer = this->LogLibraries(buffer, last);
+	buffer = this->LogGamelog(buffer, last);
+	buffer = this->LogRecentNews(buffer, last);
+	buffer = this->LogCommandLog(buffer, last);
+	buffer = DumpDesyncMsgLog(buffer, last);
+
+	if (!info.check_caches_result.empty()) {
+		buffer += seprintf(buffer, last, "CheckCaches:\n");
+		for (const std::string &str : info.check_caches_result) {
+			buffer += seprintf(buffer, last, "  %s\n", str.c_str());
+		}
+	}
+
+	buffer += seprintf(buffer, last, "*** End of OpenTTD Inconsistency Report ***\n");
 	return buffer;
 }
 
@@ -749,6 +808,61 @@ bool CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_ou
 		} else {
 			ret = false;
 			printf("Writing desync screenshot failed.\n\n");
+		}
+		ClearScreenshotAuxiliaryText();
+	}
+
+	return ret;
+}
+
+/**
+ * Makes an inconsistency log, writes it to a file and then subsequently tries
+ * to make a crash savegame. It uses DEBUG to write
+ * information like paths to the console.
+ * @return true when everything is made successfully.
+ */
+bool CrashLog::MakeInconsistencyLog(const InconsistencyExtraInfo &info) const
+{
+	char filename[MAX_PATH];
+	char buffer[65536 * 2];
+	bool ret = true;
+
+	char name_buffer[64];
+	char *name_buffer_date = name_buffer + seprintf(name_buffer, lastof(name_buffer), "inconsistency-");
+	time_t cur_time = time(nullptr);
+	strftime(name_buffer_date, lastof(name_buffer) - name_buffer_date, "%Y%m%dT%H%M%SZ", gmtime(&cur_time));
+
+	printf("Inconsistency encountered, generating diagnostics log...\n");
+	this->FillInconsistencyLog(buffer, lastof(buffer), info);
+
+	bool bret = this->WriteCrashLog(buffer, filename, lastof(filename), name_buffer);
+	if (bret) {
+		printf("Inconsistency log written to %s. Please add this file to any bug reports.\n\n", filename);
+	} else {
+		printf("Writing inconsistency log failed.\n\n");
+		ret = false;
+	}
+
+	_savegame_DBGL_data = buffer;
+	_save_DBGC_data = true;
+	bret = this->WriteSavegame(filename, lastof(filename), name_buffer);
+	if (bret) {
+		printf("info savegame written to %s. Please add this file and the last (auto)save to any bug reports.\n\n", filename);
+	} else {
+		ret = false;
+		printf("Writing inconsistency savegame failed. Please attach the last (auto)save to any bug reports.\n\n");
+	}
+	_savegame_DBGL_data = nullptr;
+	_save_DBGC_data = false;
+
+	if (!(_screen.width < 1 || _screen.height < 1 || _screen.dst_ptr == nullptr)) {
+		SetScreenshotAuxiliaryText("Inconsistency Log", buffer);
+		bret = this->WriteScreenshot(filename, lastof(filename), name_buffer);
+		if (bret) {
+			printf("Inconsistency screenshot written to %s. Please add this file to any bug reports.\n\n", filename);
+		} else {
+			ret = false;
+			printf("Writing inconsistency screenshot failed.\n\n");
 		}
 		ClearScreenshotAuxiliaryText();
 	}

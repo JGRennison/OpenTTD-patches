@@ -758,6 +758,12 @@ static void CDECL CustomAbort(int signal)
 	log.MakeDesyncCrashLog(log_in, log_out, info);
 }
 
+/* static */ void CrashLog::InconsistencyLog(const InconsistencyExtraInfo &info)
+{
+	CrashLogWindows log(nullptr);
+	log.MakeInconsistencyLog(info);
+}
+
 /* static */ void CrashLog::VersionInfoLog()
 {
 	CrashLogWindows log(nullptr);

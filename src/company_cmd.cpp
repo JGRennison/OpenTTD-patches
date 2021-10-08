@@ -37,6 +37,7 @@
 #include "zoning.h"
 #include "tbtr_template_vehicle_func.h"
 #include "widgets/statusbar_widget.h"
+#include "debug_desync.h"
 
 #include "table/strings.h"
 
@@ -937,8 +938,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			InvalidateWindowData(WC_CLIENT_LIST, 0);
 			InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 
-			extern void CheckCaches(bool force_check, std::function<void(const char *)> log);
-			CheckCaches(true, nullptr);
+			CheckCaches(true, nullptr, CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG);
 			break;
 		}
 

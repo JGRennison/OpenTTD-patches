@@ -10,16 +10,19 @@
 #include "../stdafx.h"
 #include "../gfx_func.h"
 #include "../blitter/factory.hpp"
+#include "../saveload/saveload.h"
 #include "../window_func.h"
 #include "../thread.h"
 #include "null_v.h"
+
+#include <atomic>
 
 #include "../safeguards.h"
 
 /** Factory for the null video driver. */
 static FVideoDriver_Null iFVideoDriver_Null;
 
-extern bool _exit_game;
+extern std::atomic<bool> _exit_game;
 
 const char *VideoDriver_Null::Start(const StringList &parm)
 {
@@ -62,6 +65,12 @@ void VideoDriver_Null::MainLoop()
 			::InputLoop();
 			::UpdateWindows();
 		}
+	}
+
+	/* If requested, make a save just before exit. The normal exit-flow is
+	 * not triggered from this driver, so we have to do this manually. */
+	if (_settings_client.gui.autosave_on_exit) {
+		DoExitSave();
 	}
 }
 

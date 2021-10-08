@@ -32,7 +32,7 @@ static void RealSave_PLAN(Plan *p)
 	for (size_t i = 0; i < p->lines.size(); i++) {
 		PlanLine *pl = p->lines[i];
 		SlWriteUint32((uint32)pl->tiles.size());
-		SlArray(&pl->tiles[0], pl->tiles.size(), SLE_UINT32);
+		SlArray(pl->tiles.data(), pl->tiles.size(), SLE_UINT32);
 	}
 }
 
@@ -60,7 +60,7 @@ static void Load_PLAN()
 				p->lines[i] = pl;
 				const size_t tile_count = SlReadUint32();
 				pl->tiles.resize(tile_count);
-				SlArray(&pl->tiles[0], tile_count, SLE_UINT32);
+				SlArray(pl->tiles.data(), tile_count, SLE_UINT32);
 				pl->UpdateVisualExtents();
 			}
 			p->SetVisibility(false);
@@ -80,7 +80,7 @@ static void Load_PLANLINE()
 		p->lines[line_index] = pl;
 		size_t plsz = SlGetFieldLength() / sizeof(TileIndex);
 		pl->tiles.resize(plsz);
-		SlArray(&pl->tiles[0], plsz, SLE_UINT32);
+		SlArray(pl->tiles.data(), plsz, SLE_UINT32);
 		pl->UpdateVisualExtents();
 	}
 

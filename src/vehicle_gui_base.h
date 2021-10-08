@@ -127,8 +127,6 @@ public:
 	static VehicleGroupSortFunction * const vehicle_group_none_sorter_funcs[];
 	static VehicleGroupSortFunction * const vehicle_group_shared_orders_sorter_funcs[];
 
-	const uint vehicle_sorter_non_ground_veh_disable_mask = (1 << 11); // STR_SORT_BY_LENGTH
-
 	BaseVehicleListWindow(WindowDesc *desc, WindowNumber wno);
 
 	void OnInit() override;
@@ -173,6 +171,8 @@ public:
 				NOT_REACHED();
 		}
 	}
+
+	uint GetSorterDisableMask(VehicleType type) const;
 };
 
 uint GetVehicleListHeight(VehicleType type, uint divisor = 1);
