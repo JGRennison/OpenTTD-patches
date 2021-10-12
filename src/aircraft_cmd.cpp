@@ -172,6 +172,22 @@ static StationID FindNearestHangar(const Aircraft *v)
 
 void Aircraft::GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const
 {
+	if (this->subtype == AIR_SHADOW) {
+		Aircraft *first = this->First();
+		if (first->cur_image_valid_dir != direction || HasBit(first->vcache.cached_veh_flags, VCF_IMAGE_REFRESH)) {
+			VehicleSpriteSeq seq;
+			first->UpdateImageState(direction, seq);
+			if (first->sprite_seq != seq) {
+				first->sprite_seq = seq;
+				first->UpdateSpriteSeqBound();
+				first->Vehicle::UpdateViewport(true);
+			}
+		}
+
+		result->CopyWithoutPalette(first->sprite_seq); // the shadow is never coloured
+		return;
+	}
+
 	uint8 spritenum = this->spritenum;
 
 	if (is_custom_sprite(spritenum)) {
@@ -552,10 +568,8 @@ void SetAircraftPosition(Aircraft *v, int x, int y, int z)
 
 	safe_y = Clamp(u->y_pos, 0, MapMaxY() * TILE_SIZE);
 	u->z_pos = GetSlopePixelZ(safe_x, safe_y);
-	u->sprite_seq.CopyWithoutPalette(v->sprite_seq); // the shadow is never coloured
-	u->sprite_seq_bounds = v->sprite_seq_bounds;
-
-	u->UpdatePositionAndViewport();
+	u->UpdatePosition();
+	u->UpdateViewport(true, false);
 
 	u = u->Next();
 	if (u != nullptr) {
@@ -1364,7 +1378,7 @@ TileIndex Aircraft::GetOrderStationLocation(StationID station)
 void Aircraft::MarkDirty()
 {
 	this->colourmap = PAL_NONE;
-	this->InvalidateImageCache();
+	this->InvalidateImageCacheOfChain();
 	this->UpdateViewport(true, false);
 	if (this->subtype == AIR_HELICOPTER) {
 		Aircraft *rotor = this->Next()->Next();

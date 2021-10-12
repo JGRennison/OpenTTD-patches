@@ -96,6 +96,7 @@ struct Aircraft FINAL : public SpecializedVehicle<Aircraft, VEH_AIRCRAFT> {
 	ExpensesType GetExpenseType(bool income) const { return income ? EXPENSES_AIRCRAFT_INC : EXPENSES_AIRCRAFT_RUN; }
 	bool IsPrimaryVehicle() const                  { return this->IsNormalAircraft(); }
 	void GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const;
+	Direction GetMapImageDirection() const { return this->First()->direction; }
 	int GetDisplaySpeed() const    { return this->cur_speed; }
 	int GetDisplayMaxSpeed() const { return this->vcache.cached_max_speed; }
 	int GetSpeedOldUnits() const   { return this->vcache.cached_max_speed * 10 / 128; }
