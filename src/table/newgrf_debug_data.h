@@ -112,8 +112,9 @@ class NIHVehicle : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  VirtXYTile: %X (%u x %u)", vtile, TileX(vtile), TileY(vtile));
 			print(buffer);
 		}
-		b = buffer + seprintf(buffer, lastof(buffer), "  Position: %X, %X, %X", v->x_pos, v->y_pos, v->z_pos);
+		b = buffer + seprintf(buffer, lastof(buffer), "  Position: %X, %X, %X, Direction: %d", v->x_pos, v->y_pos, v->z_pos, v->direction);
 		if (v->type == VEH_TRAIN) seprintf(b, lastof(buffer), ", tile margin: %d", GetTileMarginInFrontOfTrain(Train::From(v)));
+		if (v->type == VEH_SHIP) seprintf(b, lastof(buffer), ", rotation: %d", Ship::From(v)->rotation);
 		print(buffer);
 
 		if (v->IsPrimaryVehicle()) {
@@ -353,7 +354,8 @@ class NIHVehicle : public NIHelper {
 			}
 		}
 
-		seprintf(buffer, lastof(buffer), "  Current image cacheable: %s", v->cur_image_valid_dir != INVALID_DIR ? "yes" : "no");
+		seprintf(buffer, lastof(buffer), "  Current image cacheable: %s (%X), spritenum: %X",
+				v->cur_image_valid_dir != INVALID_DIR ? "yes" : "no", v->cur_image_valid_dir, v->spritenum);
 		print(buffer);
 	}
 
