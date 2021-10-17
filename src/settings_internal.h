@@ -79,8 +79,6 @@ struct SettingOnGuiCtrlData {
 };
 
 struct IniItem;
-typedef bool OnChange(int32 var);           ///< callback prototype on data modification
-typedef size_t OnConvert(const char *value); ///< callback prototype for conversion error
 typedef bool OnGuiCtrl(SettingOnGuiCtrlData &data); ///< callback prototype for GUI operations
 typedef int64 OnXrefValueConvert(int64 val); ///< callback prototype for xref value conversion
 
@@ -163,11 +161,27 @@ struct SettingDesc {
 
 /** Base integer type, including boolean, settings. Only these are shown in the settings UI. */
 struct IntSettingDesc : SettingDesc {
+	/**
+	 * A check to be performed before the setting gets changed. The passed integer may be
+	 * changed by the check if that is important, for example to remove some unwanted bit.
+	 * The return value denotes whether the value, potentially after the changes,
+	 * is allowed to be used/set in the configuration.
+	 * @param value The prospective new value for the setting.
+	 * @return True when the setting is accepted.
+	 */
+	typedef bool PreChangeCheck(int32 &value);
+	/**
+	 * A callback to denote that a setting has been changed.
+	 * @param The new value for the setting.
+	 */
+	typedef void PostChangeCallback(int32 value);
+
 	IntSettingDesc(SaveLoad save, const char *name, SettingGuiFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, int32 def,
-		int32 min, uint32 max, int32 interval, StringID str, StringID str_help, StringID str_val,
-		SettingCategory cat, OnChange *proc, const SettingDescEnumEntry *enumlist) :
+			int32 min, uint32 max, int32 interval, StringID str, StringID str_help, StringID str_val,
+			SettingCategory cat, PreChangeCheck pre_check, PostChangeCallback post_callback, const SettingDescEnumEntry *enumlist) :
 		SettingDesc(save, name, flags, guiproc, startup, patx_name), def(def), min(min), max(max), interval(interval),
-		str(str), str_help(str_help), str_val(str_val), cat(cat), proc(proc), enumlist(enumlist) {}
+			str(str), str_help(str_help), str_val(str_val), cat(cat), pre_check(pre_check),
+			post_callback(post_callback), enumlist(enumlist) {}
 	virtual ~IntSettingDesc() {}
 
 	int32 def;              ///< default value given when none is present
@@ -178,7 +192,8 @@ struct IntSettingDesc : SettingDesc {
 	StringID str_help;      ///< (Translated) string with help text; gui only.
 	StringID str_val;       ///< (Translated) first string describing the value.
 	SettingCategory cat;    ///< assigned categories of the setting
-	OnChange *proc;         ///< callback procedure for when the value is changed
+	PreChangeCheck *pre_check;         ///< Callback to check for the validity of the setting.
+	PostChangeCallback *post_callback; ///< Callback when the setting has been changed.
 
 	const SettingDescEnumEntry *enumlist; ///< For SGF_ENUM. The last entry must use STR_NULL
 
@@ -190,20 +205,25 @@ struct IntSettingDesc : SettingDesc {
 	bool IsIntSetting() const override { return true; }
 
 	void ChangeValue(const void *object, int32 newvalue) const;
-	void Write_ValidateSetting(const void *object, int32 value) const;
+	void MakeValueValidAndWrite(const void *object, int32 value) const;
 
 	virtual size_t ParseValue(const char *str) const;
 	void FormatValue(char *buf, const char *last, const void *object) const override;
 	void ParseValue(const IniItem *item, void *object) const override;
 	bool IsSameValue(const IniItem *item, void *object) const override;
 	int32 Read(const void *object) const;
+
+private:
+	void MakeValueValid(int32 &value) const;
+	void Write(const void *object, int32 value) const;
 };
 
 /** Boolean setting. */
 struct BoolSettingDesc : IntSettingDesc {
 	BoolSettingDesc(SaveLoad save, const char *name, SettingGuiFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, bool def,
-		StringID str, StringID str_help, StringID str_val, SettingCategory cat, OnChange *proc) :
-		IntSettingDesc(save, name, flags, guiproc, startup, patx_name, def, 0, 1, 0, str, str_help, str_val, cat, proc, nullptr) {}
+		StringID str, StringID str_help, StringID str_val, SettingCategory cat,
+		PreChangeCheck pre_check, PostChangeCallback post_callback) :
+		IntSettingDesc(save, name, flags, guiproc, startup, patx_name, def, 0, 1, 0, str, str_help, str_val, cat, pre_check, post_callback, nullptr) {}
 	virtual ~BoolSettingDesc() {}
 
 	bool IsBoolSetting() const override { return true; }
@@ -213,10 +233,13 @@ struct BoolSettingDesc : IntSettingDesc {
 
 /** One of many setting. */
 struct OneOfManySettingDesc : IntSettingDesc {
+	typedef size_t OnConvert(const char *value); ///< callback prototype for conversion error
+
 	OneOfManySettingDesc(SaveLoad save, const char *name, SettingGuiFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name,
-		int32 def, int32 max, StringID str, StringID str_help, StringID str_val, SettingCategory cat, OnChange *proc,
+		int32 def, int32 max, StringID str, StringID str_help, StringID str_val, SettingCategory cat,
+		PreChangeCheck pre_check, PostChangeCallback post_callback,
 		std::initializer_list<const char *> many, OnConvert *many_cnvt) :
-		IntSettingDesc(save, name, flags, guiproc, startup, patx_name, def, 0, max, 0, str, str_help, str_val, cat, proc, nullptr), many_cnvt(many_cnvt)
+		IntSettingDesc(save, name, flags, guiproc, startup, patx_name, def, 0, max, 0, str, str_help, str_val, cat, pre_check, post_callback, nullptr), many_cnvt(many_cnvt)
 	{
 		for (auto one : many) this->many.push_back(one);
 	}
@@ -236,10 +259,11 @@ struct OneOfManySettingDesc : IntSettingDesc {
 /** Many of many setting. */
 struct ManyOfManySettingDesc : OneOfManySettingDesc {
 	ManyOfManySettingDesc(SaveLoad save, const char *name, SettingGuiFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name,
-		int32 def, StringID str, StringID str_help, StringID str_val, SettingCategory cat, OnChange *proc,
+		int32 def, StringID str, StringID str_help, StringID str_val, SettingCategory cat,
+		PreChangeCheck pre_check, PostChangeCallback post_callback,
 		std::initializer_list<const char *> many, OnConvert *many_cnvt) :
 		OneOfManySettingDesc(save, name, flags, guiproc, startup, patx_name, def, (1 << many.size()) - 1, str, str_help,
-			str_val, cat, proc, many, many_cnvt) {}
+			str_val, cat, pre_check, post_callback, many, many_cnvt) {}
 	virtual ~ManyOfManySettingDesc() {}
 
 	size_t ParseValue(const char *str) const override;
@@ -248,23 +272,43 @@ struct ManyOfManySettingDesc : OneOfManySettingDesc {
 
 /** String settings. */
 struct StringSettingDesc : SettingDesc {
+	/**
+	 * A check to be performed before the setting gets changed. The passed string may be
+	 * changed by the check if that is important, for example to remove unwanted white
+	 * space. The return value denotes whether the value, potentially after the changes,
+	 * is allowed to be used/set in the configuration.
+	 * @param value The prospective new value for the setting.
+	 * @return True when the setting is accepted.
+	 */
+	typedef bool PreChangeCheck(std::string &value);
+	/**
+	 * A callback to denote that a setting has been changed.
+	 * @param The new value for the setting.
+	 */
+	typedef void PostChangeCallback(const std::string &value);
+
 	StringSettingDesc(SaveLoad save, const char *name, SettingGuiFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, const char *def,
-			uint32 max_length, OnChange proc) :
-		SettingDesc(save, name, flags, guiproc, startup, patx_name), def(def), max_length(max_length), proc(proc) {}
+			uint32 max_length, PreChangeCheck pre_check, PostChangeCallback post_callback) :
+		SettingDesc(save, name, flags, guiproc, startup, patx_name), def(def == nullptr ? "" : def), max_length(max_length),
+			pre_check(pre_check), post_callback(post_callback) {}
 	virtual ~StringSettingDesc() {}
 
-	const char *def;        ///< default value given when none is present
-	uint32 max_length;      ///< maximum length of the string, 0 means no maximum length
-	OnChange *proc;         ///< callback procedure for when the value is changed
+	std::string def;                   ///< Default value given when none is present
+	uint32 max_length;                 ///< Maximum length of the string, 0 means no maximum length
+	PreChangeCheck *pre_check;         ///< Callback to check for the validity of the setting.
+	PostChangeCallback *post_callback; ///< Callback when the setting has been changed.
 
 	bool IsStringSetting() const override { return true; }
-	void ChangeValue(const void *object, const char *newval) const;
-	void Write_ValidateSetting(const void *object, const char *str) const;
+	void ChangeValue(const void *object, std::string &newval) const;
 
 	void FormatValue(char *buf, const char *last, const void *object) const override;
 	void ParseValue(const IniItem *item, void *object) const override;
 	bool IsSameValue(const IniItem *item, void *object) const override;
 	const std::string &Read(const void *object) const;
+
+private:
+	void MakeValueValid(std::string &str) const;
+	void Write(const void *object, const std::string &str) const;
 };
 
 /** List/array settings. */
@@ -306,7 +350,7 @@ typedef std::initializer_list<std::unique_ptr<const SettingDesc>> SettingTable;
 
 const SettingDesc *GetSettingFromName(const char *name, bool ignore_version = false);
 bool SetSettingValue(const IntSettingDesc *sd, int32 value, bool force_newgame = false);
-bool SetSettingValue(const StringSettingDesc *sd, const char *value, bool force_newgame = false);
+bool SetSettingValue(const StringSettingDesc *sd, const std::string value, bool force_newgame = false);
 uint GetSettingIndex(const SettingDesc *sd);
 
 #endif /* SETTINGS_INTERNAL_H */
