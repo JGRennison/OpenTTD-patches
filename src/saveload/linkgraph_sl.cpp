@@ -69,8 +69,8 @@ const SaveLoad *GetLinkGraphJobDesc()
 
 		int setting = 0;
 		const SettingDesc *desc = GetSettingDescription(setting);
-		while (desc->save.cmd != SL_END) {
-			if (desc->desc.name != nullptr && strncmp(desc->desc.name, prefix, prefixlen) == 0) {
+		while (desc != nullptr) {
+			if (desc->name != nullptr && strncmp(desc->name, prefix, prefixlen) == 0) {
 				SaveLoad sl = desc->save;
 				char *&address = reinterpret_cast<char *&>(sl.address);
 				address -= offset_gamesettings;
@@ -90,7 +90,7 @@ const SaveLoad *GetLinkGraphJobDesc()
 		int i = 0;
 		do {
 			saveloads.push_back(job_desc[i++]);
-		} while (saveloads[saveloads.size() - 1].cmd != SL_END);
+		} while (saveloads.back().cmd != SL_END);
 	}
 
 	return &saveloads[0];

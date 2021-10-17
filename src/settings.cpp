@@ -103,10 +103,32 @@ typedef std::list<ErrorMessageData> ErrorList;
 static ErrorList _settings_error_list; ///< Errors while loading minimal settings.
 
 
-typedef void SettingDescProc(IniFile *ini, const SettingDesc *desc, const char *grpname, void *object, bool only_startup);
+typedef void SettingDescProc(IniFile *ini, const SettingTable &desc, const char *grpname, void *object, bool only_startup);
 typedef void SettingDescProcList(IniFile *ini, const char *grpname, StringList &list);
 
 static bool IsSignedVarMemType(VarType vt);
+
+/**
+ * Get the setting at the given index into the settings table.
+ * @param index The index to look for.
+ * @return The setting at the given index, or nullptr when the index is invalid.
+ */
+const SettingDesc *GetSettingDescription(uint index)
+{
+	if (index >= _settings.size()) return nullptr;
+	return &_settings.begin()[index];
+}
+
+/**
+ * Get the setting at the given index into the company settings table.
+ * @param index The index to look for.
+ * @return The setting at the given index, or nullptr when the index is invalid.
+ */
+static const SettingDesc *GetCompanySettingDescription(uint index)
+{
+	if (index >= _company_settings.size()) return nullptr;
+	return &_company_settings.begin()[index];
+}
 
 /**
  * Groups in openttd.cfg that are actually lists.
@@ -373,7 +395,7 @@ static void MakeManyOfMany(char *buf, const char *last, const char *many, uint32
  * @param orig_str input string that will be parsed based on the type of desc
  * @return return the parsed value of the setting
  */
-static const void *StringToVal(const SettingDescBase *desc, const char *orig_str)
+static const void *StringToVal(const SettingDesc *desc, const char *orig_str)
 {
 	const char *str = orig_str == nullptr ? "" : orig_str;
 
@@ -460,7 +482,7 @@ static bool ValidateEnumSetting(const SettingDescBase *sdb, int32 val)
  */
 static void Write_ValidateSetting(void *ptr, const SettingDesc *sd, int32 val)
 {
-	const SettingDescBase *sdb = &sd->desc;
+	const SettingDesc *sdb = sd;
 
 	if (sdb->cmd != SDT_BOOLX &&
 			sdb->cmd != SDT_NUMX &&
@@ -538,11 +560,11 @@ static void Write_ValidateStdString(void *ptr, const SettingDesc *sd, const char
 		case SLE_VAR_STR:
 		case SLE_VAR_STRQ:
 			if (p != nullptr) {
-				if (sd->desc.max != 0 && strlen(p) >= sd->desc.max) {
+				if (sd->max != 0 && strlen(p) >= sd->max) {
 					/* In case a maximum length is imposed by the setting, the length
 					 * includes the '\0' termination for network transfer purposes.
 					 * Also ensure the string is valid after chopping of some bytes. */
-					std::string str(p, sd->desc.max - 1);
+					std::string str(p, sd->max - 1);
 					dst->assign(str_validate(str, SVS_NONE));
 				} else {
 					dst->assign(p);
@@ -559,23 +581,23 @@ static void Write_ValidateStdString(void *ptr, const SettingDesc *sd, const char
 /**
  * Load values from a group of an IniFile structure into the internal representation
  * @param ini pointer to IniFile structure that holds administrative information
- * @param sd pointer to SettingDesc structure whose internally pointed variables will
+ * @param settings_table table with SettingDesc structures whose internally pointed variables will
  *        be given values
  * @param grpname the group of the IniFile to search in for the new values
  * @param object pointer to the object been loaded
  * @param only_startup load only the startup settings set
  */
-static void IniLoadSettings(IniFile *ini, const SettingDesc *sd, const char *grpname, void *object, bool only_startup)
+static void IniLoadSettings(IniFile *ini, const SettingTable &settings_table, const char *grpname, void *object, bool only_startup)
 {
 	IniGroup *group;
 	IniGroup *group_def = ini->GetGroup(grpname);
 
-	for (; sd->save.cmd != SL_END; sd++) {
-		const SettingDescBase *sdb = &sd->desc;
-		const SaveLoad        *sld = &sd->save;
+	for (auto &sd : settings_table) {
+		const SettingDesc *sdb = &sd;
+		const SaveLoad *sld = &sd.save;
 
 		if (!SlIsObjectCurrentlyValid(sld->version_from, sld->version_to, sld->ext_feature_test)) continue;
-		if (sd->desc.startup != only_startup) continue;
+		if (sd.startup != only_startup) continue;
 		IniItem *item;
 		if (sdb->flags & SGF_NO_NEWGAME) {
 			item = nullptr;
@@ -612,11 +634,11 @@ static void IniLoadSettings(IniFile *ini, const SettingDesc *sd, const char *grp
 			case SDT_NUMX:
 			case SDT_ONEOFMANY:
 			case SDT_MANYOFMANY:
-				Write_ValidateSetting(ptr, sd, (int32)(size_t)p);
+				Write_ValidateSetting(ptr, &sd, (int32)(size_t)p);
 				break;
 
 			case SDT_STDSTRING:
-				Write_ValidateStdString(ptr, sd, (const char *)p);
+				Write_ValidateStdString(ptr, &sd, (const char *)p);
 				break;
 
 			case SDT_INTLIST: {
@@ -627,8 +649,8 @@ static void IniLoadSettings(IniFile *ini, const SettingDesc *sd, const char *grp
 
 					/* Use default */
 					LoadIntList((const char*)sdb->def, ptr, sld->length, GetVarMemType(sld->conv));
-				} else if (sd->desc.proc_cnvt != nullptr) {
-					sd->desc.proc_cnvt((const char*)p);
+				} else if (sd.proc_cnvt != nullptr) {
+					sd.proc_cnvt((const char*)p);
 				}
 				break;
 			}
@@ -649,16 +671,16 @@ static void IniLoadSettings(IniFile *ini, const SettingDesc *sd, const char *grp
  * values are reloaded when saving). If settings indeed have changed, we get
  * these and save them.
  */
-static void IniSaveSettings(IniFile *ini, const SettingDesc *sd, const char *grpname, void *object, bool)
+static void IniSaveSettings(IniFile *ini, const SettingTable &settings_table, const char *grpname, void *object, bool)
 {
 	IniGroup *group_def = nullptr, *group;
 	IniItem *item;
 	char buf[512];
 	void *ptr;
 
-	for (; sd->save.cmd != SL_END; sd++) {
-		const SettingDescBase *sdb = &sd->desc;
-		const SaveLoad        *sld = &sd->save;
+	for (auto &sd : settings_table) {
+		const SettingDesc *sdb = &sd;
+		const SaveLoad *sld = &sd.save;
 
 		/* If the setting is not saved to the configuration
 		 * file, just continue with the next setting */
@@ -837,13 +859,13 @@ void IniSaveWindowSettings(IniFile *ini, const char *grpname, void *desc)
  */
 bool SettingDesc::IsEditable(bool do_command) const
 {
-	if (!do_command && !(this->save.conv & SLF_NO_NETWORK_SYNC) && _networking && !(_network_server || _network_settings_access) && !(this->desc.flags & SGF_PER_COMPANY)) return false;
-	if ((this->desc.flags & SGF_NETWORK_ONLY) && !_networking && _game_mode != GM_MENU) return false;
-	if ((this->desc.flags & SGF_NO_NETWORK) && _networking) return false;
-	if ((this->desc.flags & SGF_NEWGAME_ONLY) &&
+	if (!do_command && !(this->save.conv & SLF_NO_NETWORK_SYNC) && _networking && !(_network_server || _network_settings_access) && !(this->flags & SGF_PER_COMPANY)) return false;
+	if ((this->flags & SGF_NETWORK_ONLY) && !_networking && _game_mode != GM_MENU) return false;
+	if ((this->flags & SGF_NO_NETWORK) && _networking) return false;
+	if ((this->flags & SGF_NEWGAME_ONLY) &&
 			(_game_mode == GM_NORMAL ||
-			(_game_mode == GM_EDITOR && !(this->desc.flags & SGF_SCENEDIT_TOO)))) return false;
-	if ((this->desc.flags & SGF_SCENEDIT_ONLY) && _game_mode != GM_EDITOR) return false;
+			(_game_mode == GM_EDITOR && !(this->flags & SGF_SCENEDIT_TOO)))) return false;
+	if ((this->flags & SGF_SCENEDIT_ONLY) && _game_mode != GM_EDITOR) return false;
 	return true;
 }
 
@@ -853,7 +875,7 @@ bool SettingDesc::IsEditable(bool do_command) const
  */
 SettingType SettingDesc::GetType() const
 {
-	if (this->desc.flags & SGF_PER_COMPANY) return ST_COMPANY;
+	if (this->flags & SGF_PER_COMPANY) return ST_COMPANY;
 	return (this->save.conv & SLF_NOT_IN_SAVE) ? ST_CLIENT : ST_GAME;
 }
 
@@ -1890,7 +1912,7 @@ static void HandleOldDiffCustom(bool savegame)
 	}
 
 	for (uint i = 0; i < options_to_load; i++) {
-		const SettingDesc *sd = &_settings[i];
+		const SettingDesc *sd = GetSettingDescription(i);
 		/* Skip deprecated options */
 		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		void *var = GetVariableAddress(savegame ? &_settings_game : &_settings_newgame, &sd->save);
@@ -2174,9 +2196,9 @@ static void GRFSaveConfig(IniFile *ini, const char *grpname, const GRFConfig *li
 /* Common handler for saving/loading variables to the configuration file */
 static void HandleSettingDescs(IniFile *ini, SettingDescProc *proc, SettingDescProcList *proc_list, bool only_startup = false)
 {
-	proc(ini, (const SettingDesc*)_misc_settings,    "misc",  nullptr, only_startup);
+	proc(ini, _misc_settings,    "misc",  nullptr, only_startup);
 #if defined(_WIN32) && !defined(DEDICATED)
-	proc(ini, (const SettingDesc*)_win32_settings,   "win32", nullptr, only_startup);
+	proc(ini, _win32_settings,   "win32", nullptr, only_startup);
 #endif /* _WIN32 */
 
 	proc(ini, _settings,         "patches",  &_settings_newgame, only_startup);
@@ -2324,12 +2346,6 @@ void DeleteGRFPresetFromConfig(const char *config_name)
 	delete ini;
 }
 
-const SettingDesc *GetSettingDescription(uint index)
-{
-	if (index >= lengthof(_settings)) return nullptr;
-	return &_settings[index];
-}
-
 /**
  * Network-safe changing of settings (server-only).
  * @param tile unused
@@ -2356,21 +2372,21 @@ CommandCost CmdChangeSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 		int32 oldval = (int32)ReadValue(var, sd->save.conv);
 		int32 newval = (int32)p2;
 
-		SCOPE_INFO_FMT([=], "CmdChangeSetting: %s, %d -> %d", sd->desc.name, oldval, newval);
+		SCOPE_INFO_FMT([=], "CmdChangeSetting: %s, %d -> %d", sd->name, oldval, newval);
 
 		Write_ValidateSetting(var, sd, newval);
 		newval = (int32)ReadValue(var, sd->save.conv);
 
 		if (oldval == newval) return CommandCost();
 
-		if (sd->desc.proc != nullptr && !sd->desc.proc(newval)) {
+		if (sd->proc != nullptr && !sd->proc(newval)) {
 			WriteValue(var, sd->save.conv, (int64)oldval);
 			return CommandCost();
 		}
 
-		if (sd->desc.flags & SGF_NO_NETWORK) {
+		if (sd->flags & SGF_NO_NETWORK) {
 			GamelogStartAction(GLAT_SETTING);
-			GamelogSetting(sd->desc.name, oldval, newval);
+			GamelogSetting(sd->name, oldval, newval);
 			GamelogStopAction();
 		}
 
@@ -2387,7 +2403,7 @@ const char *GetSettingNameByIndex(uint32 idx)
 	const SettingDesc *sd = GetSettingDescription(idx);
 	if (sd == nullptr) return nullptr;
 
-	return sd->desc.name;
+	return sd->name;
 }
 
 /**
@@ -2402,8 +2418,8 @@ const char *GetSettingNameByIndex(uint32 idx)
  */
 CommandCost CmdChangeCompanySetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
-	if (p1 >= lengthof(_company_settings)) return CMD_ERROR;
-	const SettingDesc *sd = &_company_settings[p1];
+	const SettingDesc *sd = GetCompanySettingDescription(p1);
+	if (sd == nullptr) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
 		void *var = GetVariableAddress(&Company::Get(_current_company)->settings, &sd->save);
@@ -2411,14 +2427,14 @@ CommandCost CmdChangeCompanySetting(TileIndex tile, DoCommandFlag flags, uint32 
 		int32 oldval = (int32)ReadValue(var, sd->save.conv);
 		int32 newval = (int32)p2;
 
-		SCOPE_INFO_FMT([=], "CmdChangeCompanySetting: %s, %d -> %d", sd->desc.name, oldval, newval);
+		SCOPE_INFO_FMT([=], "CmdChangeCompanySetting: %s, %d -> %d", sd->name, oldval, newval);
 
 		Write_ValidateSetting(var, sd, newval);
 		newval = (int32)ReadValue(var, sd->save.conv);
 
 		if (oldval == newval) return CommandCost();
 
-		if (sd->desc.proc != nullptr && !sd->desc.proc(newval)) {
+		if (sd->proc != nullptr && !sd->proc(newval)) {
 			WriteValue(var, sd->save.conv, (int64)oldval);
 			return CommandCost();
 		}
@@ -2431,9 +2447,9 @@ CommandCost CmdChangeCompanySetting(TileIndex tile, DoCommandFlag flags, uint32 
 
 const char *GetCompanySettingNameByIndex(uint32 idx)
 {
-	if (idx >= lengthof(_company_settings)) return nullptr;
+	if (idx >= _company_settings.size()) return nullptr;
 
-	return _company_settings[idx].desc.name;
+	return GetCompanySettingDescription(idx)->name;
 }
 
 /**
@@ -2443,8 +2459,19 @@ const char *GetCompanySettingNameByIndex(uint32 idx)
  */
 uint GetSettingIndex(const SettingDesc *sd)
 {
-	assert((sd->desc.flags & SGF_PER_COMPANY) == 0);
-	return sd - _settings;
+	assert(sd != nullptr && (sd->flags & SGF_PER_COMPANY) == 0);
+	return sd - _settings.begin();
+}
+
+/**
+ * Get the index of the company setting with this description.
+ * @param sd the setting to get the index for.
+ * @return the index of the setting to be used for CMD_CHANGE_COMPANY_SETTING.
+ */
+static uint GetCompanySettingIndex(const SettingDesc *sd)
+{
+	assert(sd != nullptr && (sd->flags & SGF_PER_COMPANY) != 0);
+	return sd - _company_settings.begin();
 }
 
 /**
@@ -2456,16 +2483,16 @@ uint GetSettingIndex(const SettingDesc *sd)
  */
 bool SetSettingValue(const SettingDesc *sd, int32 value, bool force_newgame)
 {
-	if ((sd->desc.flags & SGF_PER_COMPANY) != 0) {
+	if ((sd->flags & SGF_PER_COMPANY) != 0) {
 		if (Company::IsValidID(_local_company) && _game_mode != GM_MENU) {
-			return DoCommandP(0, sd - _company_settings, value, CMD_CHANGE_COMPANY_SETTING);
-		} else if (sd->desc.flags & SGF_NO_NEWGAME) {
+			return DoCommandP(0, GetCompanySettingIndex(sd), value, CMD_CHANGE_COMPANY_SETTING);
+		} else if (sd->flags & SGF_NO_NEWGAME) {
 			return false;
 		}
 
 		void *var = GetVariableAddress(&_settings_client.company, &sd->save);
 		Write_ValidateSetting(var, sd, value);
-		if (sd->desc.proc != nullptr) sd->desc.proc((int32)ReadValue(var, sd->save.conv));
+		if (sd->proc != nullptr) sd->proc((int32)ReadValue(var, sd->save.conv));
 		return true;
 	}
 
@@ -2473,7 +2500,7 @@ bool SetSettingValue(const SettingDesc *sd, int32 value, bool force_newgame)
 	 * (if any) to change. Also *hack*hack* we update the _newgame version
 	 * of settings because changing a company-based setting in a game also
 	 * changes its defaults. At least that is the convention we have chosen */
-	bool no_newgame = sd->desc.flags & SGF_NO_NEWGAME;
+	bool no_newgame = sd->flags & SGF_NO_NEWGAME;
 	if (no_newgame && _game_mode == GM_MENU) return false;
 	if (sd->save.conv & SLF_NO_NETWORK_SYNC) {
 		void *var = GetVariableAddress(&GetGameSettings(), &sd->save);
@@ -2483,7 +2510,7 @@ bool SetSettingValue(const SettingDesc *sd, int32 value, bool force_newgame)
 			void *var2 = GetVariableAddress(&_settings_newgame, &sd->save);
 			Write_ValidateSetting(var2, sd, value);
 		}
-		if (sd->desc.proc != nullptr) sd->desc.proc((int32)ReadValue(var, sd->save.conv));
+		if (sd->proc != nullptr) sd->proc((int32)ReadValue(var, sd->save.conv));
 
 		SetWindowClassesDirty(WC_GAME_OPTIONS);
 
@@ -2512,10 +2539,9 @@ bool SetSettingValue(const SettingDesc *sd, int32 value, bool force_newgame)
 void SetDefaultCompanySettings(CompanyID cid)
 {
 	Company *c = Company::Get(cid);
-	const SettingDesc *sd;
-	for (sd = _company_settings; sd->save.cmd != SL_END; sd++) {
-		void *var = GetVariableAddress(&c->settings, &sd->save);
-		Write_ValidateSetting(var, sd, (int32)(size_t)sd->desc.def);
+	for (auto &sd : _company_settings) {
+		void *var = GetVariableAddress(&c->settings, &sd.save);
+		Write_ValidateSetting(var, &sd, (int32)(size_t)sd.def);
 	}
 }
 
@@ -2524,13 +2550,12 @@ void SetDefaultCompanySettings(CompanyID cid)
  */
 void SyncCompanySettings()
 {
-	const SettingDesc *sd;
 	uint i = 0;
-	for (sd = _company_settings; sd->save.cmd != SL_END; sd++, i++) {
-		const void *old_var = GetVariableAddress(&Company::Get(_current_company)->settings, &sd->save);
-		const void *new_var = GetVariableAddress(&_settings_client.company, &sd->save);
-		uint32 old_value = (uint32)ReadValue(old_var, sd->save.conv);
-		uint32 new_value = (uint32)ReadValue(new_var, sd->save.conv);
+	for (auto &sd : _company_settings) {
+		const void *old_var = GetVariableAddress(&Company::Get(_current_company)->settings, &sd.save);
+		const void *new_var = GetVariableAddress(&_settings_client.company, &sd.save);
+		uint32 old_value = (uint32)ReadValue(old_var, sd.save.conv);
+		uint32 new_value = (uint32)ReadValue(new_var, sd.save.conv);
 		if (old_value != new_value) NetworkSendCommand(0, i, new_value, 0, CMD_CHANGE_COMPANY_SETTING, nullptr, nullptr, _local_company, 0);
 	}
 }
@@ -2542,9 +2567,7 @@ void SyncCompanySettings()
  */
 uint GetCompanySettingIndex(const char *name)
 {
-	const SettingDesc *sd = GetSettingFromName(name);
-	assert(sd != nullptr && (sd->desc.flags & SGF_PER_COMPANY) != 0);
-	return sd - _company_settings;
+	return GetCompanySettingIndex(GetSettingFromName(name));
 }
 
 /**
@@ -2564,7 +2587,7 @@ bool SetSettingValue(const SettingDesc *sd, const char *value, bool force_newgam
 
 	void *ptr = GetVariableAddress((_game_mode == GM_MENU || force_newgame) ? &_settings_newgame : &_settings_game, &sd->save);
 	Write_ValidateStdString(ptr, sd, value);
-	if (sd->desc.proc != nullptr) sd->desc.proc(0);
+	if (sd->proc != nullptr) sd->proc(0);
 
 	if (_save_config) SaveToConfig();
 	return true;
@@ -2581,29 +2604,29 @@ bool SetSettingValue(const SettingDesc *sd, const char *value, bool force_newgam
 const SettingDesc *GetSettingFromName(const char *name, bool ignore_version)
 {
 	/* First check all full names */
-	for (const SettingDesc *sd = _settings; sd->save.cmd != SL_END; sd++) {
-		if (sd->desc.name == nullptr) continue;
-		if (!ignore_version && !SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
-		if (strcmp(sd->desc.name, name) == 0) return sd;
+	for (auto &sd : _settings) {
+		if (sd.name == nullptr) continue;
+		if (!ignore_version && !SlIsObjectCurrentlyValid(sd.save.version_from, sd.save.version_to, sd.save.ext_feature_test)) continue;
+		if (strcmp(sd.name, name) == 0) return &sd;
 	}
 
 	/* Then check the shortcut variant of the name. */
-	for (const SettingDesc *sd = _settings; sd->save.cmd != SL_END; sd++) {
-		if (sd->desc.name == nullptr) continue;
-		if (!ignore_version && !SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
-		const char *short_name = strchr(sd->desc.name, '.');
+	for (auto &sd : _settings) {
+		if (sd.name == nullptr) continue;
+		if (!ignore_version && !SlIsObjectCurrentlyValid(sd.save.version_from, sd.save.version_to, sd.save.ext_feature_test)) continue;
+		const char *short_name = strchr(sd.name, '.');
 		if (short_name != nullptr) {
 			short_name++;
-			if (strcmp(short_name, name) == 0) return sd;
+			if (strcmp(short_name, name) == 0) return &sd;
 		}
 	}
 
 	if (strncmp(name, "company.", 8) == 0) name += 8;
 	/* And finally the company-based settings */
-	for (const SettingDesc *sd = _company_settings; sd->save.cmd != SL_END; sd++) {
-		if (sd->desc.name == nullptr) continue;
-		if (!ignore_version && !SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
-		if (strcmp(sd->desc.name, name) == 0) return sd;
+	for (auto &sd : _company_settings) {
+		if (sd.name == nullptr) continue;
+		if (!ignore_version && !SlIsObjectCurrentlyValid(sd.save.version_from, sd.save.version_to, sd.save.ext_feature_test)) continue;
+		if (strcmp(sd.name, name) == 0) return &sd;
 	}
 
 	return nullptr;
@@ -2615,13 +2638,13 @@ void IConsoleSetSetting(const char *name, const char *value, bool force_newgame)
 {
 	const SettingDesc *sd = GetSettingFromName(name);
 
-	if (sd == nullptr || ((sd->desc.flags & SGF_NO_NEWGAME) && (_game_mode == GM_MENU || force_newgame))) {
+	if (sd == nullptr || ((sd->flags & SGF_NO_NEWGAME) && (_game_mode == GM_MENU || force_newgame))) {
 		IConsolePrintF(CC_WARNING, "'%s' is an unknown setting.", name);
 		return;
 	}
 
 	bool success;
-	if (sd->desc.cmd == SDT_STDSTRING) {
+	if (sd->cmd == SDT_STDSTRING) {
 		success = SetSettingValue(sd, value, force_newgame);
 	} else {
 		uint32 val;
@@ -2662,24 +2685,24 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 	const SettingDesc *sd = GetSettingFromName(name);
 	const void *ptr;
 
-	if (sd == nullptr || ((sd->desc.flags & SGF_NO_NEWGAME) && (_game_mode == GM_MENU || force_newgame))) {
+	if (sd == nullptr || ((sd->flags & SGF_NO_NEWGAME) && (_game_mode == GM_MENU || force_newgame))) {
 		IConsolePrintF(CC_WARNING, "'%s' is an unknown setting.", name);
 		return;
 	}
 
 	ptr = GetVariableAddress((_game_mode == GM_MENU || force_newgame) ? &_settings_newgame : &_settings_game, &sd->save);
 
-	if (sd->desc.cmd == SDT_STDSTRING) {
+	if (sd->cmd == SDT_STDSTRING) {
 		IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s'", name, reinterpret_cast<const std::string *>(ptr)->c_str());
 	} else {
 		bool show_min_max = true;
-		int64 min_value = sd->desc.min;
-		int64 max_value = sd->desc.max;
-		if (sd->desc.flags & SGF_ENUM) {
+		int64 min_value = sd->min;
+		int64 max_value = sd->max;
+		if (sd->flags & SGF_ENUM) {
 			min_value = INT64_MAX;
 			max_value = INT64_MIN;
 			int count = 0;
-			for (const SettingDescEnumEntry *enumlist = sd->desc.enumlist; enumlist != nullptr && enumlist->str != STR_NULL; enumlist++) {
+			for (const SettingDescEnumEntry *enumlist = sd->enumlist; enumlist != nullptr && enumlist->str != STR_NULL; enumlist++) {
 				if (enumlist->val < min_value) min_value = enumlist->val;
 				if (enumlist->val > max_value) max_value = enumlist->val;
 				count++;
@@ -2689,15 +2712,15 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 				show_min_max = false;
 			}
 		}
-		if (sd->desc.cmd == SDT_BOOLX) {
+		if (sd->cmd == SDT_BOOLX) {
 			seprintf(value, lastof(value), (*(const bool*)ptr != 0) ? "on" : "off");
 		} else {
-			seprintf(value, lastof(value), sd->desc.min < 0 ? "%d" : "%u", (int32)ReadValue(ptr, sd->save.conv));
+			seprintf(value, lastof(value), sd->min < 0 ? "%d" : "%u", (int32)ReadValue(ptr, sd->save.conv));
 		}
 
 		if (show_min_max) {
 			IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s' (min: %s" OTTD_PRINTF64 ", max: " OTTD_PRINTF64 ")",
-				name, value, (sd->desc.flags & SGF_0ISDISABLED) ? "(0) " : "", min_value, max_value);
+				name, value, (sd->flags & SGF_0ISDISABLED) ? "(0) " : "", min_value, max_value);
 		} else {
 			IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s'",
 				name, value);
@@ -2714,21 +2737,21 @@ void IConsoleListSettings(const char *prefilter)
 {
 	IConsolePrintF(CC_WARNING, "All settings with their current value:");
 
-	for (const SettingDesc *sd = _settings; sd->save.cmd != SL_END; sd++) {
-		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
-		if (prefilter != nullptr && strstr(sd->desc.name, prefilter) == nullptr) continue;
-		if ((sd->desc.flags & SGF_NO_NEWGAME) && _game_mode == GM_MENU) continue;
+	for (auto &sd : _settings) {
+		if (!SlIsObjectCurrentlyValid(sd.save.version_from, sd.save.version_to, sd.save.ext_feature_test)) continue;
+		if (prefilter != nullptr && strstr(sd.name, prefilter) == nullptr) continue;
+		if ((sd.flags & SGF_NO_NEWGAME) && _game_mode == GM_MENU) continue;
 		char value[80];
-		const void *ptr = GetVariableAddress(&GetGameSettings(), &sd->save);
+		const void *ptr = GetVariableAddress(&GetGameSettings(), &sd.save);
 
-		if (sd->desc.cmd == SDT_BOOLX) {
+		if (sd.cmd == SDT_BOOLX) {
 			seprintf(value, lastof(value), (*(const bool *)ptr != 0) ? "on" : "off");
-		} else if (sd->desc.cmd == SDT_STDSTRING) {
+		} else if (sd.cmd == SDT_STDSTRING) {
 			seprintf(value, lastof(value), "%s", reinterpret_cast<const std::string *>(ptr)->c_str());
 		} else {
-			seprintf(value, lastof(value), sd->desc.min < 0 ? "%d" : "%u", (int32)ReadValue(ptr, sd->save.conv));
+			seprintf(value, lastof(value), sd.min < 0 ? "%d" : "%u", (int32)ReadValue(ptr, sd.save.conv));
 		}
-		IConsolePrintF(CC_DEFAULT, "%s = %s", sd->desc.name, value);
+		IConsolePrintF(CC_DEFAULT, "%s = %s", sd.name, value);
 	}
 
 	IConsolePrintF(CC_WARNING, "Use 'setting' command to change a value");
@@ -2760,51 +2783,50 @@ static void LoadSettingsXref(const SettingDesc *osd, void *object) {
 
 /**
  * Save and load handler for settings, except for those which go in the PATX chunk
- * @param osd SettingDesc struct containing all information
+ * @param settings SettingDesc struct containing all information
  * @param object can be either nullptr in which case we load global variables or
  * a pointer to a struct which is getting saved
  */
-static void LoadSettings(const SettingDesc *osd, void *object)
+static void LoadSettings(const SettingTable &settings, void *object)
 {
 	extern SaveLoadVersion _sl_version;
 
-	for (; osd->save.cmd != SL_END; osd++) {
-		if (osd->patx_name != nullptr) continue;
-		const SaveLoad *sld = &osd->save;
-		if (osd->xref.target != nullptr) {
-			if (sld->ext_feature_test.IsFeaturePresent(_sl_version, sld->version_from, sld->version_to)) LoadSettingsXref(osd, object);
+	for (auto &osd : settings) {
+		if (osd.patx_name != nullptr) continue;
+		const SaveLoad *sld = &osd.save;
+		if (osd.xref.target != nullptr) {
+			if (sld->ext_feature_test.IsFeaturePresent(_sl_version, sld->version_from, sld->version_to)) LoadSettingsXref(&osd, object);
 			continue;
 		}
 		void *ptr = GetVariableAddress(object, sld);
 
 		if (!SlObjectMember(ptr, sld)) continue;
-		if (IsNumericType(sld->conv)) Write_ValidateSetting(ptr, osd, ReadValue(ptr, sld->conv));
+		if (IsNumericType(sld->conv)) Write_ValidateSetting(ptr, &osd, ReadValue(ptr, sld->conv));
 	}
 }
 
 /**
  * Save and load handler for settings, except for those which go in the PATX chunk
- * @param sd SettingDesc struct containing all information
+ * @param settings SettingDesc struct containing all information
  * @param object can be either nullptr in which case we load global variables or
  * a pointer to a struct which is getting saved
  */
-static void SaveSettings(const SettingDesc *sd, void *object)
+static void SaveSettings(const SettingTable &settings, void *object)
 {
 	/* We need to write the CH_RIFF header, but unfortunately can't call
 	 * SlCalcLength() because we have a different format. So do this manually */
-	const SettingDesc *i;
 	size_t length = 0;
-	for (i = sd; i->save.cmd != SL_END; i++) {
-		if (i->patx_name != nullptr) continue;
-		if (i->xref.target != nullptr) continue;
-		length += SlCalcObjMemberLength(object, &i->save);
+	for (auto &sd : settings) {
+		if (sd.patx_name != nullptr) continue;
+		if (sd.xref.target != nullptr) continue;
+		length += SlCalcObjMemberLength(object, &sd.save);
 	}
 	SlSetLength(length);
 
-	for (i = sd; i->save.cmd != SL_END; i++) {
-		if (i->patx_name != nullptr) continue;
-		void *ptr = GetVariableAddress(object, &i->save);
-		SlObjectMember(ptr, &i->save);
+	for (auto &sd : settings) {
+		if (sd.patx_name != nullptr) continue;
+		void *ptr = GetVariableAddress(object, &sd.save);
+		SlObjectMember(ptr, &sd.save);
 	}
 }
 
@@ -2833,17 +2855,17 @@ static std::vector<const SettingDesc *> _sorted_patx_settings;
  * This is to enable efficient lookup of settings by name
  * This is stored in _sorted_patx_settings
  */
-static void MakeSettingsPatxList(const SettingDesc *sd)
+static void MakeSettingsPatxList(const SettingTable &settings)
 {
-	static const SettingDesc *previous = nullptr;
+	static const SettingTable *previous = nullptr;
 
-	if (sd == previous) return;
-	previous = sd;
+	if (&settings == previous) return;
+	previous = &settings;
 
 	_sorted_patx_settings.clear();
-	for (const SettingDesc *desc = sd; desc->save.cmd != SL_END; desc++) {
-		if (desc->patx_name == nullptr) continue;
-		_sorted_patx_settings.push_back(desc);
+	for (auto &sd : settings) {
+		if (sd.patx_name == nullptr) continue;
+		_sorted_patx_settings.push_back(&sd);
 	}
 
 	std::sort(_sorted_patx_settings.begin(), _sorted_patx_settings.end(), [](const SettingDesc *a, const SettingDesc *b) {
@@ -2889,9 +2911,9 @@ static const SaveLoad _settings_ext_save_desc[] = {
  * @param object can be either nullptr in which case we load global variables or
  * a pointer to a struct which is getting saved
  */
-static void LoadSettingsPatx(const SettingDesc *sd, void *object)
+static void LoadSettingsPatx(const SettingTable &settings, void *object)
 {
-	MakeSettingsPatxList(sd);
+	MakeSettingsPatxList(settings);
 
 	SettingsExtLoad current_setting;
 
@@ -2938,7 +2960,7 @@ static void LoadSettingsPatx(const SettingDesc *sd, void *object)
  * @param object can be either nullptr in which case we load global variables or
  * a pointer to a struct which is getting saved
  */
-static void SaveSettingsPatx(const SettingDesc *sd, void *object)
+static void SaveSettingsPatx(const SettingTable &settings, void *object)
 {
 	SettingsExtSave current_setting;
 
@@ -2949,12 +2971,12 @@ static void SaveSettingsPatx(const SettingDesc *sd, void *object)
 	std::vector<SettingToAdd> settings_to_add;
 
 	size_t length = 8;
-	for (const SettingDesc *desc = sd; desc->save.cmd != SL_END; desc++) {
-		if (desc->patx_name == nullptr) continue;
-		uint32 setting_length = (uint32)SlCalcObjMemberLength(object, &desc->save);
+	for (auto &sd : settings) {
+		if (sd.patx_name == nullptr) continue;
+		uint32 setting_length = (uint32)SlCalcObjMemberLength(object, &sd.save);
 		if (!setting_length) continue;
 
-		current_setting.name = desc->patx_name;
+		current_setting.name = sd.patx_name;
 
 		// add length of setting header
 		length += SlCalcObjLength(&current_setting, _settings_ext_save_desc);
@@ -2963,7 +2985,7 @@ static void SaveSettingsPatx(const SettingDesc *sd, void *object)
 		length += setting_length;
 
 		// duplicate copy made for compiler backwards compatibility
-		SettingToAdd new_setting = { desc, setting_length };
+		SettingToAdd new_setting = { &sd, setting_length };
 		settings_to_add.push_back(new_setting);
 	}
 	SlSetLength(length);
@@ -3046,9 +3068,9 @@ void LoadSettingsPlyx(bool skip)
 			const SettingDesc *setting = nullptr;
 
 			// not many company settings, so perform a linear scan
-			for (const SettingDesc *desc = _company_settings; desc->save.cmd != SL_END; desc++) {
-				if (desc->patx_name != nullptr && strcmp(desc->patx_name, current_setting.name) == 0) {
-					setting = desc;
+			for (auto &sd : _company_settings) {
+				if (sd.patx_name != nullptr && strcmp(sd.patx_name, current_setting.name) == 0) {
+					setting = &sd;
 					break;
 				}
 			}
@@ -3094,12 +3116,12 @@ void SaveSettingsPlyx()
 		length += 12;
 		companies_count++;
 		uint32 setting_count = 0;
-		for (const SettingDesc *desc = _company_settings; desc->save.cmd != SL_END; desc++) {
-			if (desc->patx_name == nullptr) continue;
-			uint32 setting_length = (uint32)SlCalcObjMemberLength(&(c->settings), &desc->save);
+		for (auto &sd : _company_settings) {
+			if (sd.patx_name == nullptr) continue;
+			uint32 setting_length = (uint32)SlCalcObjMemberLength(&(c->settings), &sd.save);
 			if (!setting_length) continue;
 
-			current_setting.name = desc->patx_name;
+			current_setting.name = sd.patx_name;
 
 			// add length of setting header
 			length += SlCalcObjLength(&current_setting, _settings_ext_save_desc);
@@ -3125,17 +3147,17 @@ void SaveSettingsPlyx()
 		SlWriteUint32(company_setting_counts[index]); // setting count
 		index++;
 
-		for (const SettingDesc *desc = _company_settings; desc->save.cmd != SL_END; desc++) {
-			if (desc->patx_name == nullptr) continue;
-			uint32 setting_length = (uint32)SlCalcObjMemberLength(&(c->settings), &desc->save);
+		for (auto &sd : _company_settings) {
+			if (sd.patx_name == nullptr) continue;
+			uint32 setting_length = (uint32)SlCalcObjMemberLength(&(c->settings), &sd.save);
 			if (!setting_length) continue;
 
 			current_setting.flags = 0;
-			current_setting.name = desc->patx_name;
+			current_setting.name = sd.patx_name;
 			current_setting.setting_length = setting_length;
 			SlObject(&current_setting, _settings_plyx_desc);
-			void *ptr = GetVariableAddress(&(c->settings), &desc->save);
-			SlObjectMember(ptr, &desc->save);
+			void *ptr = GetVariableAddress(&(c->settings), &sd.save);
+			SlObjectMember(ptr, &sd.save);
 		}
 	}
 }

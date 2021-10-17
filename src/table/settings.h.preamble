@@ -92,8 +92,6 @@ static size_t ConvertLandscape(const char *value);
 #define SDTG_NULL(length, from, to, extver)\
 	{{"", nullptr, SDT_NUMX, SGF_NONE, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, nullptr, SC_NONE, false, nullptr}, SLEG_NULL_X(length, from, to, extver), nullptr, SettingsXref()}
 
-#define SDTG_END() {{nullptr, nullptr, SDT_NUMX, SGF_NONE, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, nullptr, SC_NONE, false, nullptr}, SLEG_END(), nullptr, SettingsXref()}
-
 /* Macros for various objects to go in the configuration file.
  * This section is for structures where their various members are saved */
 #define SDT_GENERAL2(name, sdt_cmd, sle_cmd, type, flags, guiflags, base, var, length, def, min, max, interval, full, str, strhelp, strval, proc, guiproc, load, from, to, cat, startup, extver, patxname, enumlist)\
@@ -153,6 +151,4 @@ static size_t ConvertLandscape(const char *value);
 
 #define SDT_XREF(from, to, extver, xref, xrefcvt)\
 	{{"", nullptr, SDT_NUMX, SGF_NONE, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, nullptr, SC_NONE, false, nullptr}, SLE_CONDNULL_X(0, from, to, extver), nullptr, SettingsXref(xref, xrefcvt)}
-
-#define SDT_END() {{nullptr, nullptr, SDT_NUMX, SGF_NONE, 0, 0, 0, nullptr, STR_NULL, STR_NULL, STR_NULL, nullptr, nullptr, nullptr, SC_NONE, false, nullptr}, SLE_END(), nullptr, SettingsXref()}
 

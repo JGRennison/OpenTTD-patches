@@ -133,8 +133,7 @@ struct SettingsXref {
 	SettingsXref(const char *target_, OnXrefValueConvert *conv_) : target(target_), conv(conv_) {}
 };
 
-struct SettingDesc {
-	SettingDescBase desc;   ///< Settings structure (going to configuration file)
+struct SettingDesc : SettingDescBase {
 	SaveLoad save;          ///< Internal structure (going to savegame, parts to config)
 	const char *patx_name;  ///< Name to save/load setting from in PATX chunk, if nullptr save/load from PATS chunk as normal
 	SettingsXref xref;      ///< Details of SettingDesc to use instead of the contents of this one, useful for loading legacy savegames, if target field nullptr save/load as normal
@@ -142,6 +141,8 @@ struct SettingDesc {
 	bool IsEditable(bool do_command = false) const;
 	SettingType GetType() const;
 };
+
+typedef std::initializer_list<const SettingDesc> SettingTable;
 
 const SettingDesc *GetSettingFromName(const char *name, bool ignore_version = false);
 bool SetSettingValue(const SettingDesc *sd, int32 value, bool force_newgame = false);
