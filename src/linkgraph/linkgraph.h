@@ -17,10 +17,10 @@
 #include "../station_base.h"
 #include "../cargotype.h"
 #include "../date_func.h"
+#include "../saveload/saveload.h"
 #include "linkgraph_type.h"
 #include <utility>
 
-struct SaveLoad;
 class LinkGraph;
 
 /**
@@ -531,8 +531,8 @@ public:
 protected:
 	friend class LinkGraph::ConstNode;
 	friend class LinkGraph::Node;
-	friend const SaveLoad *GetLinkGraphDesc();
-	friend const SaveLoad *GetLinkGraphJobDesc();
+	friend SaveLoadTable GetLinkGraphDesc();
+	friend SaveLoadTable GetLinkGraphJobDesc();
 	friend void Save_LinkGraph(LinkGraph &lg);
 	friend void Load_LinkGraph(LinkGraph &lg);
 

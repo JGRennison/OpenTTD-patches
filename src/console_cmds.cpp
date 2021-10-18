@@ -550,7 +550,7 @@ DEF_CONSOLE_CMD(ConClearBuffer)
  * Network Core Console Commands
  **********************************/
 
-static bool ConKickOrBan(const char *argv, bool ban, const char *reason)
+static bool ConKickOrBan(const char *argv, bool ban, const std::string &reason)
 {
 	uint n;
 
@@ -604,7 +604,7 @@ DEF_CONSOLE_CMD(ConKick)
 	if (argc != 2 && argc != 3) return false;
 
 	/* No reason supplied for kicking */
-	if (argc == 2) return ConKickOrBan(argv[1], false, nullptr);
+	if (argc == 2) return ConKickOrBan(argv[1], false, {});
 
 	/* Reason for kicking supplied */
 	size_t kick_message_length = strlen(argv[2]);
@@ -628,7 +628,7 @@ DEF_CONSOLE_CMD(ConBan)
 	if (argc != 2 && argc != 3) return false;
 
 	/* No reason supplied for kicking */
-	if (argc == 2) return ConKickOrBan(argv[1], true, nullptr);
+	if (argc == 2) return ConKickOrBan(argv[1], true, {});
 
 	/* Reason for kicking supplied */
 	size_t kick_message_length = strlen(argv[2]);
@@ -827,7 +827,7 @@ DEF_CONSOLE_CMD(ConClientNickChange)
 		return true;
 	}
 
-	if (!NetworkServerChangeClientName(client_id, client_name.c_str())) {
+	if (!NetworkServerChangeClientName(client_id, client_name)) {
 		IConsoleError("Cannot give a client a duplicate name");
 	}
 

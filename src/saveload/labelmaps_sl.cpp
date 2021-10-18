@@ -104,7 +104,6 @@ struct LabelObject {
 
 static const SaveLoad _label_object_desc[] = {
 	SLE_VAR(LabelObject, label, SLE_UINT32),
-	SLE_END(),
 };
 
 static void Save_RAIL()

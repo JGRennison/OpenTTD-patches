@@ -294,8 +294,6 @@ static const SaveLoad _company_desc[] = {
 	SLE_CONDVAR(CompanyProperties, tree_limit,            SLE_UINT32,                SLV_175, SL_MAX_VERSION),
 	SLE_CONDVAR_X(CompanyProperties, purchase_land_limit, SLE_UINT32,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_BUY_LAND_RATE_LIMIT)),
 	SLE_CONDVAR_X(CompanyProperties, build_object_limit,  SLE_UINT32,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_BUILD_OBJECT_RATE_LIMIT)),
-
-	SLE_END()
 };
 
 static const SaveLoad _company_settings_desc[] = {
@@ -316,8 +314,6 @@ static const SaveLoad _company_settings_desc[] = {
 	SLE_CONDVAR_X(Company, settings.vehicle.auto_timetable_by_default, SLE_BOOL, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AUTO_TIMETABLE, 2, 2)),
 
 	SLE_CONDNULL(63, SLV_2, SLV_144), // old reserved space
-
-	SLE_END()
 };
 
 static const SaveLoad _company_settings_skip_desc[] = {
@@ -339,8 +335,6 @@ static const SaveLoad _company_settings_skip_desc[] = {
 	SLE_CONDNULL_X(1, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AUTO_TIMETABLE, 2, 2)), // settings.vehicle.auto_timetable_by_default
 
 	SLE_CONDNULL(63, SLV_2, SLV_144), // old reserved space
-
-	SLE_END()
 };
 
 static const SaveLoad _company_economy_desc[] = {
@@ -356,8 +350,6 @@ static const SaveLoad _company_economy_desc[] = {
 	SLE_CONDARR(CompanyEconomyEntry, delivered_cargo,     SLE_UINT32, 32,           SLV_170, SLV_EXTEND_CARGOTYPES),
 	SLE_CONDARR(CompanyEconomyEntry, delivered_cargo,     SLE_UINT32, NUM_CARGO,    SLV_EXTEND_CARGOTYPES, SL_MAX_VERSION),
 	    SLE_VAR(CompanyEconomyEntry, performance_history, SLE_INT32),
-
-	SLE_END()
 };
 
 /* We do need to read this single value, as the bigger it gets, the more data is stored */
@@ -393,7 +385,6 @@ static const SaveLoad _company_ai_desc[] = {
 	SLE_CONDNULL(32, SL_MIN_VERSION, SLV_107),
 
 	SLE_CONDNULL(64, SLV_2, SLV_107),
-	SLE_END()
 };
 
 static const SaveLoad _company_ai_build_rec_desc[] = {
@@ -402,14 +393,12 @@ static const SaveLoad _company_ai_build_rec_desc[] = {
 	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_6),
 	SLE_CONDNULL(4, SLV_6, SLV_107),
 	SLE_CONDNULL(8, SL_MIN_VERSION, SLV_107),
-	SLE_END()
 };
 
 static const SaveLoad _company_livery_desc[] = {
 	SLE_CONDVAR(Livery, in_use,  SLE_UINT8, SLV_34, SL_MAX_VERSION),
 	SLE_CONDVAR(Livery, colour1, SLE_UINT8, SLV_34, SL_MAX_VERSION),
 	SLE_CONDVAR(Livery, colour2, SLE_UINT8, SLV_34, SL_MAX_VERSION),
-	SLE_END()
 };
 
 static void SaveLoad_PLYR_common(Company *c, CompanyProperties *cprops)

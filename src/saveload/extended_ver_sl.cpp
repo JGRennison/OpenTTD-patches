@@ -463,7 +463,6 @@ static void Save_SLXI()
 
 	static const SaveLoad _xlsi_sub_chunk_desc[] = {
 		SLE_STR(SlxiSubChunkInfo, name,           SLE_STR, 0),
-		SLE_END()
 	};
 
 	// calculate lengths
@@ -550,9 +549,8 @@ static void Load_SLXI()
 	if (chunk_flags != 0) SlErrorCorruptFmt("SLXI chunk: unknown chunk header flags: 0x%X", chunk_flags);
 
 	char name_buffer[256];
-	const SaveLoadGlobVarList xlsi_sub_chunk_name_desc[] = {
+	const SaveLoad xlsi_sub_chunk_name_desc[] = {
 		SLEG_STR(name_buffer, SLE_STRB),
-		SLEG_END()
 	};
 
 	auto version_error = [](StringID str, const char *feature, int64 p1, int64 p2) {

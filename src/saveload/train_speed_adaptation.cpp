@@ -18,7 +18,6 @@ static const SaveLoad _train_speed_adaptation_map_desc[] = {
 	SLE_VAR(SignalSpeedType, first.last_passing_train_dir, SLE_UINT8),
 	SLE_VAR(SignalSpeedType, second.train_speed,           SLE_UINT16),
 	SLE_VAR(SignalSpeedType, second.time_stamp,            SLE_UINT64),
-	SLE_END()
 };
 
 static void Load_TSAS()

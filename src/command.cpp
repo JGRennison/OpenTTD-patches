@@ -536,6 +536,7 @@ enum CommandLogEntryFlag : uint16 {
 DECLARE_ENUM_AS_BIT_SET(CommandLogEntryFlag)
 
 struct CommandLogEntry {
+	std::string text;
 	TileIndex tile;
 	uint32 p1;
 	uint32 p2;
@@ -550,8 +551,8 @@ struct CommandLogEntry {
 
 	CommandLogEntry() { }
 
-	CommandLogEntry(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandLogEntryFlag log_flags)
-			: tile(tile), p1(p1), p2(p2), cmd(cmd), p3(p3), date(_date), date_fract(_date_fract), tick_skip_counter(_tick_skip_counter),
+	CommandLogEntry(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandLogEntryFlag log_flags, std::string text)
+			: text(text), tile(tile), p1(p1), p2(p2), cmd(cmd), p3(p3), date(_date), date_fract(_date_fract), tick_skip_counter(_tick_skip_counter),
 			current_company(_current_company), local_company(_local_company), log_flags(log_flags) { }
 };
 
@@ -607,11 +608,8 @@ static void DumpSubCommandLog(char *&buffer, const char *last, const CommandLog 
 
 		switch (entry.cmd & CMD_ID_MASK) {
 			case CMD_CHANGE_SETTING:
-				buffer += seprintf(buffer, last, " [%s]", GetSettingNameByIndex(entry.p1));
-				break;
-
 			case CMD_CHANGE_COMPANY_SETTING:
-				buffer += seprintf(buffer, last, " [%s]", GetCompanySettingNameByIndex(entry.p1));
+				buffer += seprintf(buffer, last, " [%s]", entry.text.c_str());
 				break;
 		}
 
@@ -806,7 +804,7 @@ Money GetAvailableMoneyForCommand()
 	return Company::Get(company)->money;
 }
 
-static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandLogEntryFlag log_flags)
+static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandLogEntryFlag log_flags, const char *text)
 {
 	if (res.Failed()) log_flags |= CLEF_CMD_FAILED;
 	if (_generating_world) log_flags |= CLEF_GENERATING_WORLD;
@@ -824,7 +822,16 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32
 			return;
 		}
 	}
-	cmd_log.log[cmd_log.next] = CommandLogEntry(tile, p1, p2, p3, cmd, log_flags);
+
+	std::string str;
+	switch (cmd & CMD_ID_MASK) {
+		case CMD_CHANGE_SETTING:
+		case CMD_CHANGE_COMPANY_SETTING:
+			if (text != nullptr) str.assign(text);
+			break;
+	}
+
+	cmd_log.log[cmd_log.next] = CommandLogEntry(tile, p1, p2, p3, cmd, log_flags, std::move(str));
 	cmd_log.next = (cmd_log.next + 1) % cmd_log.log.size();
 	cmd_log.count++;
 }
@@ -889,7 +896,7 @@ bool DoCommandPEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, C
 	if (my_cmd) log_flags |= CLEF_MY_CMD;
 	if (binary_length > 0) log_flags |= CLEF_BINARY;
 	if (!random_state.Check()) log_flags |= CLEF_RANDOM;
-	AppendCommandLogEntry(res, tile, p1, p2, p3, cmd, log_flags);
+	AppendCommandLogEntry(res, tile, p1, p2, p3, cmd, log_flags, text);
 
 	if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_POST_COMMAND)) && !(GetCommandFlags(cmd) & CMD_LOG_AUX)) {
 		CheckCachesFlags flags = CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG;
@@ -935,7 +942,7 @@ CommandCost DoCommandPScript(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, ui
 	if (my_cmd) log_flags |= CLEF_MY_CMD;
 	if (binary_length > 0) log_flags |= CLEF_BINARY;
 	if (!random_state.Check()) log_flags |= CLEF_RANDOM;
-	AppendCommandLogEntry(res, tile, p1, p2, p3, cmd, log_flags);
+	AppendCommandLogEntry(res, tile, p1, p2, p3, cmd, log_flags, text);
 
 	if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_POST_COMMAND)) && !(GetCommandFlags(cmd) & CMD_LOG_AUX)) {
 		CheckCachesFlags flags = CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG;

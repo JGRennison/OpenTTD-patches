@@ -11,11 +11,11 @@
 #include "string_func.h"
 #include <string>
 
-static inline void str_validate_inplace(std::string &str, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
+static inline void StrMakeValidInPlace(std::string &str, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
 {
 	if (str.empty()) return;
 	char *buf = str.data();
-	str.resize(str_validate(buf, buf + str.size(), settings) - buf);
+	str.resize(StrMakeValidInPlace(buf, buf + str.size(), settings) - buf);
 }
 
 template <typename F>

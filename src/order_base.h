@@ -19,6 +19,7 @@
 #include "vehicle_type.h"
 #include "date_type.h"
 #include "schdispatch.h"
+#include "saveload/saveload.h"
 
 #include <memory>
 #include <vector>
@@ -62,9 +63,9 @@ struct OrderExtraInfo {
  */
 struct Order : OrderPool::PoolItem<&_order_pool> {
 private:
-	friend const struct SaveLoad *GetVehicleDescription(VehicleType vt); ///< Saving and loading the current order of vehicles.
+	friend SaveLoadTable GetVehicleDescription(VehicleType vt); ///< Saving and loading the current order of vehicles.
 	friend void Load_VEHS();                                             ///< Loading of ancient vehicles.
-	friend const struct SaveLoad *GetOrderDescription();                 ///< Saving and loading of orders.
+	friend SaveLoadTable GetOrderDescription();                          ///< Saving and loading of orders.
 	friend void Load_ORDX();                                             ///< Saving and loading of orders.
 	friend void Save_ORDX();                                             ///< Saving and loading of orders.
 	friend void Load_VEOX();                                             ///< Saving and loading of orders.
@@ -586,7 +587,7 @@ template <typename T, typename F> T CargoMaskValueFilter(CargoTypes &cargo_mask,
 struct OrderList : OrderListPool::PoolItem<&_orderlist_pool> {
 private:
 	friend void AfterLoadVehicles(bool part_of_load); ///< For instantiating the shared vehicle chain
-	friend const struct SaveLoad *GetOrderListDescription(); ///< Saving and loading of order lists.
+	friend SaveLoadTable GetOrderListDescription(); ///< Saving and loading of order lists.
 	friend void Ptrs_ORDL(); ///< Saving and loading of order lists.
 
 	StationID GetBestLoadableNext(const Vehicle *v, const Order *o1, const Order *o2) const;

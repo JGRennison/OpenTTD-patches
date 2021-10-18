@@ -21,7 +21,6 @@ static const SaveLoad _newgrf_mapping_desc[] = {
 	SLE_VAR(EntityIDMapping, grfid,         SLE_UINT32),
 	SLE_VAR(EntityIDMapping, entity_id,     SLE_UINT8),
 	SLE_VAR(EntityIDMapping, substitute_id, SLE_UINT8),
-	SLE_END()
 };
 
 /**
@@ -69,7 +68,6 @@ static const SaveLoad _grfconfig_desc[] = {
 	    SLE_VAR(GRFConfig, num_params,       SLE_UINT8),
 	SLE_CONDVAR(GRFConfig, palette,          SLE_UINT8,  SLV_101, SL_MAX_VERSION),
 	SLEG_CONDSSTR_X(_grf_name, 0,                        SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_NEWGRF_INFO_EXTRA)),
-	SLE_END()
 };
 
 

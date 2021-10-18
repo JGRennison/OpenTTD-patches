@@ -26,9 +26,7 @@
 	if (!IsValid(setting)) return -1;
 
 	const SettingDesc *sd = GetSettingFromName(setting);
-
-	void *ptr = GetVariableAddress(&_settings_game, &sd->save);
-	return (int32)ReadValue(ptr, sd->save.conv);
+	return sd->AsIntSetting()->Read(&_settings_game);
 }
 
 /* static */ bool ScriptGameSettings::SetValue(const char *setting, int value)
@@ -39,7 +37,7 @@
 
 	if ((sd->save.conv & SLF_NO_NETWORK_SYNC) != 0) return false;
 
-	return ScriptObject::DoCommand(0, GetSettingIndex(sd), value, CMD_CHANGE_SETTING);
+	return ScriptObject::DoCommand(0, 0, value, CMD_CHANGE_SETTING, sd->name);
 }
 
 /* static */ bool ScriptGameSettings::IsDisabledVehicleType(ScriptVehicle::VehicleType vehicle_type)

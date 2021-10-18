@@ -41,7 +41,7 @@ private:
 	~LinkGraphSchedule();
 	typedef std::list<LinkGraph *> GraphList;
 	typedef std::list<std::unique_ptr<LinkGraphJob>> JobList;
-	friend const SaveLoad *GetLinkGraphScheduleDesc();
+	friend SaveLoadTable GetLinkGraphScheduleDesc();
 
 protected:
 	std::unique_ptr<ComponentHandler> handlers[6]; ///< Handlers to be run for each job.

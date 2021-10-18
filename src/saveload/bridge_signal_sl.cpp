@@ -19,7 +19,6 @@ struct LongBridgeSignalStorageStub {
 
 static const SaveLoad _long_bridge_signal_storage_stub_desc[] = {
 	SLE_VAR(LongBridgeSignalStorageStub, length, SLE_UINT32),
-	SLE_END()
 };
 
 static void Load_XBSS()

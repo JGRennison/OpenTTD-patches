@@ -17,8 +17,8 @@
 #include "safeguards.h"
 
 static_assert((sizeof(ParentSpriteToDraw) % 16) == 0);
-#ifdef _SQ64
-	#define LOAD_128 _mm_load_si128
+#ifdef POINTER_IS_64BIT
+#	define LOAD_128 _mm_load_si128
 #else
 #	define LOAD_128 _mm_loadu_si128
 #endif

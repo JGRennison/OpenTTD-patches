@@ -401,7 +401,7 @@ void Packet::Recv_string(char *buffer, size_t size, StringValidationSettings set
 	assert(pos <= std::numeric_limits<PacketSize>::max());
 	this->pos = static_cast<PacketSize>(pos);
 
-	str_validate(bufp, last, settings);
+	StrMakeValidInPlace(bufp, last, settings);
 }
 
 /**
@@ -430,7 +430,7 @@ std::string Packet::Recv_string(size_t length, StringValidationSettings settings
 		while (this->Recv_uint8() != '\0') {}
 	}
 
-	return str_validate(str, settings);
+	return StrMakeValid(str, settings);
 }
 
 /**
@@ -455,7 +455,7 @@ void Packet::Recv_string(std::string &buffer, StringValidationSettings settings)
 	size_t length = ttd_strnlen((const char *)(this->buffer.data() + this->pos), this->Size() - this->pos - 1);
 	buffer.assign((const char *)(this->buffer.data() + this->pos), length);
 	this->pos += (uint)length + 1;
-	str_validate_inplace(buffer, settings);
+	StrMakeValidInPlace(buffer, settings);
 }
 
 /**

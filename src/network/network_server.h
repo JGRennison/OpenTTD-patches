@@ -103,11 +103,11 @@ public:
 	NetworkRecvStatus SendQuit(ClientID client_id);
 	NetworkRecvStatus SendShutdown();
 	NetworkRecvStatus SendNewGame();
-	NetworkRecvStatus SendRConResult(uint16 colour, const char *command);
+	NetworkRecvStatus SendRConResult(uint16 colour, const std::string &command);
 	NetworkRecvStatus SendMove(ClientID client_id, CompanyID company_id);
 
 	NetworkRecvStatus SendClientInfo(NetworkClientInfo *ci);
-	NetworkRecvStatus SendError(NetworkErrorCode error, const char *reason = nullptr);
+	NetworkRecvStatus SendError(NetworkErrorCode error, const std::string &reason = {});
 	NetworkRecvStatus SendDesyncLog(const std::string &log);
 	NetworkRecvStatus SendChat(NetworkAction action, ClientID client_id, bool self_send, const std::string &msg, NetworkTextMessageData data);
 	NetworkRecvStatus SendJoin(ClientID client_id);

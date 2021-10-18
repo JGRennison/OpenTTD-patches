@@ -55,7 +55,7 @@ void NetworkClientsToSpectators(CompanyID cid);
 bool NetworkClientConnectGame(const std::string &connection_string, CompanyID default_company, const std::string &join_server_password = "", const std::string &join_company_password = "");
 void NetworkClientJoinGame();
 void NetworkClientRequestMove(CompanyID company, const std::string &pass = "");
-void NetworkClientSendRcon(const std::string &password, const char *command);
+void NetworkClientSendRcon(const std::string &password, const std::string &command);
 void NetworkClientSendSettingsPassword(const std::string &password);
 void NetworkClientSendChat(NetworkAction action, DestType type, int dest, const std::string &msg, NetworkTextMessageData data = NetworkTextMessageData());
 void NetworkClientSendDesyncMsg(const char *msg);
@@ -75,16 +75,16 @@ void NetworkServerUpdateGameInfo();
 void NetworkServerShowStatusToConsole();
 bool NetworkServerStart();
 void NetworkServerNewCompany(const Company *company, NetworkClientInfo *ci);
-bool NetworkServerChangeClientName(ClientID client_id, const char *new_name);
+bool NetworkServerChangeClientName(ClientID client_id, const std::string &new_name);
 
 
 void NetworkServerDoMove(ClientID client_id, CompanyID company_id);
-void NetworkServerSendRcon(ClientID client_id, TextColour colour_code, const char *string);
+void NetworkServerSendRcon(ClientID client_id, TextColour colour_code, const std::string &string);
 void NetworkServerSendChat(NetworkAction action, DestType type, int dest, const std::string &msg, ClientID from_id, NetworkTextMessageData data = NetworkTextMessageData(), bool from_admin = false);
 
-void NetworkServerKickClient(ClientID client_id, const char *reason);
-uint NetworkServerKickOrBanIP(ClientID client_id, bool ban, const char *reason);
-uint NetworkServerKickOrBanIP(const char *ip, bool ban, const char *reason);
+void NetworkServerKickClient(ClientID client_id, const std::string &reason);
+uint NetworkServerKickOrBanIP(ClientID client_id, bool ban, const std::string &reason);
+uint NetworkServerKickOrBanIP(const std::string &ip, bool ban, const std::string &reason);
 
 void NetworkInitChatMessage();
 void CDECL NetworkAddChatMessage(TextColour colour, uint duration, const std::string &message);

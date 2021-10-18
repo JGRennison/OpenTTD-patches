@@ -12,6 +12,7 @@
 
 #include "../fileio_type.h"
 #include "../strings_type.h"
+#include "../core/span_type.hpp"
 #include "extended_ver_sl.h"
 
 #include <stdarg.h>
@@ -564,7 +565,6 @@ enum SaveLoadTypes {
 
 	SL_PTRDEQ      = 13, ///< Save/load a pointer type deque.
 	SL_VARVEC      = 14, ///< Save/load a primitive type vector.
-	SL_END         = 15
 };
 
 typedef byte SaveLoadType; ///< Save/load type. @see SaveLoadTypes
@@ -586,8 +586,8 @@ struct SaveLoad {
 	SlXvFeatureTest ext_feature_test;  ///< extended feature test
 };
 
-/** Same as #SaveLoad but global variables are used (for better readability); */
-typedef SaveLoad SaveLoadGlobVarList;
+/** A table of SaveLoad entries. */
+using SaveLoadTable = span<const SaveLoad>;
 
 /**
  * Storage of simple variables, references (pointers), and arrays.
@@ -813,9 +813,6 @@ typedef SaveLoad SaveLoadGlobVarList;
 #define SLE_VEH_INCLUDE() {false, SL_VEH_INCLUDE, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION, nullptr, 0, SlXvFeatureTest()}
 #define SLE_ST_INCLUDE() {false, SL_ST_INCLUDE, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION, nullptr, 0, SlXvFeatureTest()}
 
-/** End marker of a struct/class save or load. */
-#define SLE_END() {false, SL_END, 0, 0, SL_MIN_VERSION, SL_MIN_VERSION, nullptr, 0, SlXvFeatureTest()}
-
 /**
  * Storage of global simple variables, references (pointers), and arrays.
  * @param cmd      Load/save type. @see SaveLoadType
@@ -983,9 +980,6 @@ typedef SaveLoad SaveLoadGlobVarList;
  */
 #define SLEG_CONDNULL(length, from, to) {true, SL_ARR, SLE_FILE_U8 | SLE_VAR_NULL | SLF_NOT_IN_CONFIG, length, from, to, (void*)nullptr, SlXvFeatureTest()}
 
-/** End marker of global variables save or load. */
-#define SLEG_END() {true, SL_END, 0, 0, SL_MIN_VERSION, SL_MIN_VERSION, nullptr, 0, SlXvFeatureTest()}
-
 /**
  * Checks whether the savegame is below \a major.\a minor.
  * @param major Major number of the version to check against.
@@ -1065,22 +1059,22 @@ static inline bool IsNumericType(VarType conv)
  * is taken. If non-null only the offset is stored in the union and we need
  * to add this to the address of the object
  */
-static inline void *GetVariableAddress(const void *object, const SaveLoad *sld)
+static inline void *GetVariableAddress(const void *object, const SaveLoad &sld)
 {
 	/* Entry is a global address. */
-	if (sld->global) return sld->address;
+	if (sld.global) return sld.address;
 
 #ifdef _DEBUG
 	/* Entry is a null-variable, mostly used to read old savegames etc. */
-	if (GetVarMemType(sld->conv) == SLE_VAR_NULL) {
-		assert(sld->address == nullptr);
+	if (GetVarMemType(sld.conv) == SLE_VAR_NULL) {
+		assert(sld.address == nullptr);
 		return nullptr;
 	}
 
 	/* Everything else should be a non-null pointer. */
 	assert(object != nullptr);
 #endif
-	return const_cast<byte *>((const byte *)object + (ptrdiff_t)sld->address);
+	return const_cast<byte *>((const byte *)object + (ptrdiff_t)sld.address);
 }
 
 int64 ReadValue(const void *ptr, VarType conv);
@@ -1092,8 +1086,8 @@ int SlIterateArray();
 void SlAutolength(AutolengthProc *proc, void *arg);
 size_t SlGetFieldLength();
 void SlSetLength(size_t length);
-size_t SlCalcObjMemberLength(const void *object, const SaveLoad *sld);
-size_t SlCalcObjLength(const void *object, const SaveLoad *sld);
+size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld);
+size_t SlCalcObjLength(const void *object, const SaveLoadTable &slt);
 
 byte SlReadByte();
 void SlWriteByte(byte b);
@@ -1111,15 +1105,15 @@ void SlSkipBytes(size_t length);
 size_t SlGetBytesRead();
 size_t SlGetBytesWritten();
 
-void SlGlobList(const SaveLoadGlobVarList *sldg);
+void SlGlobList(const SaveLoadTable &slt);
 void SlArray(void *array, size_t length, VarType conv);
-void SlObject(void *object, const SaveLoad *sld);
-bool SlObjectMember(void *object, const SaveLoad *sld);
+void SlObject(void *object, const SaveLoadTable &slt);
+bool SlObjectMember(void *object, const SaveLoad &sld);
 
-std::vector<SaveLoad> SlFilterObject(const SaveLoad *sld);
-void SlObjectSaveFiltered(void *object, const SaveLoad *sld);
-void SlObjectLoadFiltered(void *object, const SaveLoad *sld);
-void SlObjectPtrOrNullFiltered(void *object, const SaveLoad *sld);
+std::vector<SaveLoad> SlFilterObject(const SaveLoadTable &slt);
+void SlObjectSaveFiltered(void *object, const SaveLoadTable &slt);
+void SlObjectLoadFiltered(void *object, const SaveLoadTable &slt);
+void SlObjectPtrOrNullFiltered(void *object, const SaveLoadTable &slt);
 
 void NORETURN SlError(StringID string, const char *extra_msg = nullptr, bool already_malloced = false);
 void NORETURN SlErrorCorrupt(const char *msg, bool already_malloced = false);

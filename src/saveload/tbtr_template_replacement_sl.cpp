@@ -7,7 +7,6 @@
 static const SaveLoad _template_replacement_desc[] = {
 	SLE_VAR(TemplateReplacement, sel_template, SLE_UINT16),
 	SLE_VAR(TemplateReplacement, group, SLE_UINT16),
-	SLE_END()
 };
 
 static void Save_TMPL_RPLS()

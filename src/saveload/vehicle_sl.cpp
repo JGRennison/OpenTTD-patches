@@ -616,7 +616,7 @@ static uint32 _old_ahead_separation;
  * @param vt the vehicle type. Can be VEH_END for the common vehicle description data
  * @return the saveload description
  */
-const SaveLoad *GetVehicleDescription(VehicleType vt)
+SaveLoadTable GetVehicleDescription(VehicleType vt)
 {
 	/** Save and load of vehicles */
 	static const SaveLoad _common_veh_desc[] = {
@@ -780,10 +780,7 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		SLE_CONDNULL_X(2, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP)),
 
 		SLE_CONDNULL_X(160, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP)),
-
-		     SLE_END()
 	};
-
 
 	static const SaveLoad _train_desc[] = {
 		SLE_WRITEBYTE(Vehicle, type),
@@ -809,8 +806,6 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		SLE_CONDVAR_X(Train, speed_restriction,   SLE_UINT16,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPEED_RESTRICTION)),
 		SLE_CONDVAR_X(Train, signal_speed_restriction, SLE_UINT16,    SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TRAIN_SPEED_ADAPTATION)),
 		SLE_CONDVAR_X(Train, critical_breakdown_count, SLE_UINT8,     SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_IMPROVED_BREAKDOWNS, 2)),
-
-		     SLE_END()
 	};
 
 	static const SaveLoad _roadveh_desc[] = {
@@ -833,8 +828,6 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		 SLE_CONDNULL(2,                                                               SLV_6, SLV_131),
 		 SLE_CONDNULL(16,                                                              SLV_2, SLV_144), // old reserved space
 		SLE_CONDVAR_X(RoadVehicle, critical_breakdown_count, SLE_UINT8,       SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_IMPROVED_BREAKDOWNS, 6)),
-
-		      SLE_END()
 	};
 
 	static const SaveLoad _ship_desc[] = {
@@ -847,8 +840,6 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		SLE_CONDVAR_X(Ship, critical_breakdown_count,  SLE_UINT8,                     SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_IMPROVED_BREAKDOWNS, 8)),
 
 		SLE_CONDNULL(16, SLV_2, SLV_144), // old reserved space
-
-		     SLE_END()
 	};
 
 	static const SaveLoad _aircraft_desc[] = {
@@ -872,8 +863,6 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		 SLE_CONDVAR(Aircraft, flags,                 SLE_UINT8,                  SLV_167, SL_MAX_VERSION),
 
 		SLE_CONDNULL(13,                                                           SLV_2, SLV_144), // old reserved space
-
-		     SLE_END()
 	};
 
 	static const SaveLoad _special_desc[] = {
@@ -904,8 +893,6 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		 SLE_CONDVAR(Vehicle, spritenum,             SLE_UINT8,                    SLV_2, SL_MAX_VERSION),
 
 		SLE_CONDNULL(15,                                                           SLV_2, SLV_144), // old reserved space
-
-		     SLE_END()
 	};
 
 	static const SaveLoad _disaster_desc[] = {
@@ -947,12 +934,10 @@ const SaveLoad *GetVehicleDescription(VehicleType vt)
 		 SLE_CONDVAR(DisasterVehicle, flags,                     SLE_UINT8,                  SLV_194, SL_MAX_VERSION),
 
 		SLE_CONDNULL(16,                                                           SLV_2, SLV_144), // old reserved space
-
-		     SLE_END()
 	};
 
 
-	static const SaveLoad * const _veh_descs[] = {
+	static const SaveLoadTable _veh_descs[] = {
 		_train_desc,
 		_roadveh_desc,
 		_ship_desc,
@@ -981,9 +966,9 @@ static std::vector<SaveLoad> * const _filtered_veh_descs[] = {
 	&_filtered_disaster_desc,
 };
 
-const SaveLoad *GetVehicleDescriptionFiltered(VehicleType vt)
+const SaveLoadTable GetVehicleDescriptionFiltered(VehicleType vt)
 {
-	return _filtered_veh_descs[vt]->data();
+	return *(_filtered_veh_descs[vt]);
 }
 
 static void SetupDescs_VEHS()
@@ -1078,7 +1063,7 @@ static void Ptrs_VEHS()
 	}
 }
 
-const SaveLoad *GetOrderExtraInfoDescription();
+const SaveLoadTable GetOrderExtraInfoDescription();
 
 void Save_VEOX()
 {
@@ -1103,14 +1088,13 @@ void Load_VEOX()
 	}
 }
 
-const SaveLoad *GetVehicleSpeedRestrictionDescription()
+const SaveLoadTable GetVehicleSpeedRestrictionDescription()
 {
 	static const SaveLoad _vehicle_speed_restriction_desc[] = {
 		     SLE_VAR(PendingSpeedRestrictionChange, distance,                 SLE_UINT16),
 		     SLE_VAR(PendingSpeedRestrictionChange, new_speed,                SLE_UINT16),
 		     SLE_VAR(PendingSpeedRestrictionChange, prev_speed,               SLE_UINT16),
 		     SLE_VAR(PendingSpeedRestrictionChange, flags,                    SLE_UINT16),
-		SLE_END()
 	};
 
 	return _vehicle_speed_restriction_desc;
@@ -1391,7 +1375,7 @@ void SlProcessVENC()
 	}
 }
 
-const SaveLoad *GetVehicleLookAheadDescription()
+const SaveLoadTable GetVehicleLookAheadDescription()
 {
 	static const SaveLoad _vehicle_look_ahead_desc[] = {
 		     SLE_VAR(TrainReservationLookAhead, reservation_end_tile,         SLE_UINT32),
@@ -1402,13 +1386,12 @@ const SaveLoad *GetVehicleLookAheadDescription()
 		     SLE_VAR(TrainReservationLookAhead, tunnel_bridge_reserved_tiles, SLE_INT16),
 		     SLE_VAR(TrainReservationLookAhead, flags,                        SLE_UINT16),
 		     SLE_VAR(TrainReservationLookAhead, speed_restriction,            SLE_UINT16),
-		SLE_END()
 	};
 
 	return _vehicle_look_ahead_desc;
 }
 
-const SaveLoad *GetVehicleLookAheadItemDescription()
+const SaveLoadTable GetVehicleLookAheadItemDescription()
 {
 	static const SaveLoad _vehicle_look_ahead_item_desc[] = {
 		     SLE_VAR(TrainReservationLookAheadItem, start,                    SLE_INT32),
@@ -1416,18 +1399,16 @@ const SaveLoad *GetVehicleLookAheadItemDescription()
 		     SLE_VAR(TrainReservationLookAheadItem, z_pos,                    SLE_INT16),
 		     SLE_VAR(TrainReservationLookAheadItem, data_id,                  SLE_UINT16),
 		     SLE_VAR(TrainReservationLookAheadItem, type,                     SLE_UINT8),
-		SLE_END()
 	};
 
 	return _vehicle_look_ahead_item_desc;
 }
 
-const SaveLoad *GetVehicleLookAheadCurveDescription()
+const SaveLoadTable GetVehicleLookAheadCurveDescription()
 {
 	static const SaveLoad _vehicle_look_ahead_curve_desc[] = {
 		     SLE_VAR(TrainReservationLookAheadCurve, position,                SLE_INT32),
 		     SLE_VAR(TrainReservationLookAheadCurve, dir_diff,                SLE_UINT8),
-		SLE_END()
 	};
 
 	return _vehicle_look_ahead_curve_desc;

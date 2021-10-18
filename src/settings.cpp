@@ -22,6 +22,7 @@
  */
 
 #include "stdafx.h"
+#include <array>
 #include <limits>
 #include "currency.h"
 #include "screenshot.h"
@@ -117,17 +118,6 @@ const SettingDesc *GetSettingDescription(uint index)
 {
 	if (index >= _settings.size()) return nullptr;
 	return _settings.begin()[index].get();
-}
-
-/**
- * Get the setting at the given index into the company settings table.
- * @param index The index to look for.
- * @return The setting at the given index, or nullptr when the index is invalid.
- */
-static const SettingDesc *GetCompanySettingDescription(uint index)
-{
-	if (index >= _company_settings.size()) return nullptr;
-	return _company_settings.begin()[index].get();
 }
 
 /**
@@ -295,7 +285,7 @@ static bool LoadIntList(const char *str, void *array, int nelems, VarType type)
  */
 void ListSettingDesc::FormatValue(char *buf, const char *last, const void *object) const
 {
-	const byte *p = static_cast<const byte *>(GetVariableAddress(object, &this->save));
+	const byte *p = static_cast<const byte *>(GetVariableAddress(object, this->save));
 	int i, v = 0;
 
 	for (i = 0; i != this->save.length; i++) {
@@ -497,7 +487,7 @@ void IntSettingDesc::MakeValueValid(int32 &val) const
  */
 void IntSettingDesc::Write(const void *object, int32 val) const
 {
-	void *ptr = GetVariableAddress(object, &this->save);
+	void *ptr = GetVariableAddress(object, this->save);
 	WriteValue(ptr, this->save.conv, (int64)val);
 }
 
@@ -508,7 +498,7 @@ void IntSettingDesc::Write(const void *object, int32 val) const
  */
 int32 IntSettingDesc::Read(const void *object) const
 {
-	void *ptr = GetVariableAddress(object, &this->save);
+	void *ptr = GetVariableAddress(object, this->save);
 	return (int32)ReadValue(ptr, this->save.conv);
 }
 
@@ -527,7 +517,7 @@ void StringSettingDesc::MakeValueValid(std::string &str) const
 	 * includes the '\0' termination for network transfer purposes.
 	 * Also ensure the string is valid after chopping of some bytes. */
 	std::string stdstr(str, this->max_length - 1);
-	str.assign(str_validate(stdstr, SVS_NONE));
+	str.assign(StrMakeValid(stdstr, SVS_NONE));
 }
 
 /**
@@ -537,7 +527,7 @@ void StringSettingDesc::MakeValueValid(std::string &str) const
  */
 void StringSettingDesc::Write(const void *object, const std::string &str) const
 {
-	reinterpret_cast<std::string *>(GetVariableAddress(object, &this->save))->assign(str);
+	reinterpret_cast<std::string *>(GetVariableAddress(object, this->save))->assign(str);
 }
 
 /**
@@ -547,7 +537,7 @@ void StringSettingDesc::Write(const void *object, const std::string &str) const
  */
 const std::string &StringSettingDesc::Read(const void *object) const
 {
-	return *reinterpret_cast<std::string *>(GetVariableAddress(object, &this->save));
+	return *reinterpret_cast<std::string *>(GetVariableAddress(object, this->save));
 }
 
 /**
@@ -615,7 +605,7 @@ void StringSettingDesc::ParseValue(const IniItem *item, void *object) const
 void ListSettingDesc::ParseValue(const IniItem *item, void *object) const
 {
 	const char *str = (item == nullptr) ? this->def : item->value.has_value() ? item->value->c_str() : nullptr;
-	void *ptr = GetVariableAddress(object, &this->save);
+	void *ptr = GetVariableAddress(object, this->save);
 	if (!LoadIntList(str, ptr, this->save.length, GetVarMemType(this->save.conv))) {
 		ErrorMessageData msg(STR_CONFIG_ERROR, STR_CONFIG_ERROR_ARRAY);
 		msg.SetDParamStr(0, this->name);
@@ -1703,7 +1693,9 @@ static void PrepareOldDiffCustom()
  */
 static void HandleOldDiffCustom(bool savegame)
 {
-	uint options_to_load = GAME_DIFFICULTY_NUM - ((savegame && IsSavegameVersionBefore(SLV_4)) ? 1 : 0);
+	/* Savegames before v4 didn't have "town_council_tolerance" in savegame yet. */
+	bool has_no_town_council_tolerance = savegame && IsSavegameVersionBefore(SLV_4);
+	uint options_to_load = GAME_DIFFICULTY_NUM - (has_no_town_council_tolerance ? 1 : 0);
 
 	if (!savegame) {
 		/* If we did read to old_diff_custom, then at least one value must be non 0. */
@@ -1715,11 +1707,21 @@ static void HandleOldDiffCustom(bool savegame)
 		if (!old_diff_custom_used) return;
 	}
 
-	for (uint i = 0; i < options_to_load; i++) {
-		const SettingDesc *sd = GetSettingDescription(i);
-		/* Skip deprecated options */
-		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
-		int32 value = (int32)((i == 4 ? 1000 : 1) * _old_diff_custom[i]);
+	/* Iterate over all the old difficulty settings, and convert the list-value to the new setting. */
+	uint i = 0;
+	for (const auto &name : _old_diff_settings) {
+		if (has_no_town_council_tolerance && name == "town_council_tolerance") continue;
+
+		std::string fullname = "difficulty." + name;
+		const SettingDesc *sd = GetSettingFromName(fullname.c_str());
+
+		/* Some settings are no longer in use; skip reading those. */
+		if (sd == nullptr) {
+			i++;
+			continue;
+		}
+
+		int32 value = (int32)((name == "max_loan" ? 1000 : 1) * _old_diff_custom[i++]);
 		sd->AsIntSetting()->MakeValueValidAndWrite(savegame ? &_settings_game : &_settings_newgame, value);
 	}
 }
@@ -2178,19 +2180,74 @@ void IntSettingDesc::ChangeValue(const void *object, int32 newval) const
 }
 
 /**
+ * Given a name of setting, return a setting description from the table.
+ * @param name Name of the setting to return a setting description of.
+ * @param settings Table to look in for the setting.
+ * @return Pointer to the setting description of setting \a name if it can be found,
+ *         \c nullptr indicates failure to obtain the description.
+ */
+static const SettingDesc *GetSettingFromName(const char *name, const SettingTable &settings)
+{
+	/* First check all full names */
+	for (auto &sd : settings) {
+		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
+		if (strcmp(sd->name, name) == 0) return sd.get();
+	}
+
+	/* Then check the shortcut variant of the name. */
+	for (auto &sd : settings) {
+		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
+		const char *short_name = strchr(sd->name, '.');
+		if (short_name != nullptr) {
+			short_name++;
+			if (strcmp(short_name, name) == 0) return sd.get();
+		}
+	}
+
+	return nullptr;
+}
+
+/**
+ * Given a name of setting, return a company setting description of it.
+ * @param name  Name of the company setting to return a setting description of.
+ * @return Pointer to the setting description of setting \a name if it can be found,
+ *         \c nullptr indicates failure to obtain the description.
+ */
+static const SettingDesc *GetCompanySettingFromName(const char *name)
+{
+	if (strncmp(name, "company.", 8) == 0) name += 8;
+	return GetSettingFromName(name, _company_settings);
+}
+
+/**
+ * Given a name of any setting, return any setting description of it.
+ * @param name  Name of the setting to return a setting description of.
+ * @return Pointer to the setting description of setting \a name if it can be found,
+ *         \c nullptr indicates failure to obtain the description.
+ */
+const SettingDesc *GetSettingFromName(const char *name)
+{
+	auto sd = GetSettingFromName(name, _settings);
+	if (sd != nullptr) return sd;
+
+	return GetCompanySettingFromName(name);
+}
+
+/**
  * Network-safe changing of settings (server-only).
  * @param tile unused
  * @param flags operation to perform
- * @param p1 the index of the setting in the SettingDesc array which identifies it
+ * @param p1 unused
  * @param p2 the new value for the setting
  * The new value is properly clamped to its minimum/maximum when setting
- * @param text unused
+ * @param text the name of the setting to change
  * @return the cost of this operation or an error
  * @see _settings
  */
 CommandCost CmdChangeSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
-	const SettingDesc *sd = GetSettingDescription(p1);
+	if (StrEmpty(text)) return CMD_ERROR;
+	const SettingDesc *sd = GetSettingFromName(text);
 
 	if (sd == nullptr) return CMD_ERROR;
 	if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) return CMD_ERROR;
@@ -2219,15 +2276,17 @@ const char *GetSettingNameByIndex(uint32 idx)
  * Change one of the per-company settings.
  * @param tile unused
  * @param flags operation to perform
- * @param p1 the index of the setting in the _company_settings array which identifies it
+ * @param p1 unused
  * @param p2 the new value for the setting
  * The new value is properly clamped to its minimum/maximum when setting
- * @param text unused
+ * @param text the name of the company setting to change
  * @return the cost of this operation or an error
  */
 CommandCost CmdChangeCompanySetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
-	const SettingDesc *sd = GetCompanySettingDescription(p1);
+	if (StrEmpty(text)) return CMD_ERROR;
+	const SettingDesc *sd = GetCompanySettingFromName(text);
+
 	if (sd == nullptr) return CMD_ERROR;
 	if (!sd->IsIntSetting()) return CMD_ERROR;
 
@@ -2244,45 +2303,7 @@ const char *GetCompanySettingNameByIndex(uint32 idx)
 {
 	if (idx >= _company_settings.size()) return nullptr;
 
-	return GetCompanySettingDescription(idx)->name;
-}
-
-/**
- * Get the index of the given setting in the setting table.
- * @param settings The settings to look through.
- * @param setting The setting to look for.
- * @return The index, or UINT32_MAX when it has not been found.
- */
-static uint GetSettingIndex(const SettingTable &settings, const SettingDesc *setting)
-{
-	uint index = 0;
-	for (auto &sd : settings) {
-		if (sd.get() == setting) return index;
-		index++;
-	}
-	return UINT32_MAX;
-}
-
-/**
- * Get the index of the setting with this description.
- * @param sd the setting to get the index for.
- * @return the index of the setting to be used for CMD_CHANGE_SETTING.
- */
-uint GetSettingIndex(const SettingDesc *sd)
-{
-	assert(sd != nullptr && (sd->flags & SGF_PER_COMPANY) == 0);
-	return GetSettingIndex(_settings, sd);
-}
-
-/**
- * Get the index of the company setting with this description.
- * @param sd the setting to get the index for.
- * @return the index of the setting to be used for CMD_CHANGE_COMPANY_SETTING.
- */
-static uint GetCompanySettingIndex(const SettingDesc *sd)
-{
-	assert(sd != nullptr && (sd->flags & SGF_PER_COMPANY) != 0);
-	return GetSettingIndex(_company_settings, sd);
+	return _company_settings.begin()[idx]->name;
 }
 
 /**
@@ -2297,7 +2318,7 @@ bool SetSettingValue(const IntSettingDesc *sd, int32 value, bool force_newgame)
 	const IntSettingDesc *setting = sd->AsIntSetting();
 	if ((setting->flags & SGF_PER_COMPANY) != 0) {
 		if (Company::IsValidID(_local_company) && _game_mode != GM_MENU) {
-			return DoCommandP(0, GetCompanySettingIndex(setting), value, CMD_CHANGE_COMPANY_SETTING);
+			return DoCommandP(0, 0, value, CMD_CHANGE_COMPANY_SETTING, nullptr, setting->name);
 		} else if (setting->flags & SGF_NO_NEWGAME) {
 			return false;
 		}
@@ -2327,7 +2348,7 @@ bool SetSettingValue(const IntSettingDesc *sd, int32 value, bool force_newgame)
 
 	/* send non-company-based settings over the network */
 	if (!_networking || (_networking && (_network_server || _network_settings_access))) {
-		return DoCommandP(0, GetSettingIndex(setting), value, CMD_CHANGE_SETTING);
+		return DoCommandP(0, 0, value, CMD_CHANGE_SETTING, nullptr, setting->name);
 	}
 	return false;
 }
@@ -2353,23 +2374,11 @@ void SyncCompanySettings()
 {
 	const void *old_object = &Company::Get(_current_company)->settings;
 	const void *new_object = &_settings_client.company;
-	uint i = 0;
 	for (auto &sd : _company_settings) {
 		uint32 old_value = (uint32)sd->AsIntSetting()->Read(new_object);
 		uint32 new_value = (uint32)sd->AsIntSetting()->Read(old_object);
-		if (old_value != new_value) NetworkSendCommand(0, i, new_value, 0, CMD_CHANGE_COMPANY_SETTING, nullptr, nullptr, _local_company, 0);
-		i++;
+		if (old_value != new_value) NetworkSendCommand(0, 0, new_value, 0, CMD_CHANGE_COMPANY_SETTING, nullptr, sd->name, _local_company, 0);
 	}
-}
-
-/**
- * Get the index in the _company_settings array of a setting
- * @param name The name of the setting
- * @return The index in the _company_settings array
- */
-uint GetCompanySettingIndex(const char *name)
-{
-	return GetCompanySettingIndex(GetSettingFromName(name));
 }
 
 /**
@@ -2419,42 +2428,11 @@ uint GetSettingIndexByFullName(const char *name)
 	return UINT32_MAX;
 }
 
-/**
- * Given a name of setting, return a setting description of it.
- * @param name             Name of the setting to return a setting description of
- * @param i                Pointer to an integer that will contain the index of the setting after the call, if it is successful.
- * @param ignore_version   Return a setting even if it not valid for the current savegame version
- * @return Pointer to the setting description of setting \a name if it can be found,
- *         \c nullptr indicates failure to obtain the description
- */
-const SettingDesc *GetSettingFromName(const char *name, bool ignore_version)
+const SettingDesc *GetSettingFromFullName(const char *name)
 {
-	/* First check all full names */
 	for (auto &sd : _settings) {
-		if (sd->name == nullptr) continue;
-		if (!ignore_version && !SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
-		if (strcmp(sd->name, name) == 0) return sd.get();
+		if (sd->name != nullptr && strcmp(sd->name, name) == 0) return sd.get();
 	}
-
-	/* Then check the shortcut variant of the name. */
-	for (auto &sd : _settings) {
-		if (sd->name == nullptr) continue;
-		if (!ignore_version && !SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
-		const char *short_name = strchr(sd->name, '.');
-		if (short_name != nullptr) {
-			short_name++;
-			if (strcmp(short_name, name) == 0) return sd.get();
-		}
-	}
-
-	if (strncmp(name, "company.", 8) == 0) name += 8;
-	/* And finally the company-based settings */
-	for (auto &sd : _company_settings) {
-		if (sd->name == nullptr) continue;
-		if (!ignore_version && !SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
-		if (strcmp(sd->name, name) == 0) return sd.get();
-	}
-
 	return nullptr;
 }
 
@@ -2581,7 +2559,7 @@ void IConsoleListSettings(const char *prefilter)
  */
 static void LoadSettingsXref(const SettingDesc *osd, void *object) {
 	DEBUG(sl, 3, "PATS chunk: Loading xref setting: '%s'", osd->xref.target);
-	const SettingDesc *setting_xref = GetSettingFromName(osd->xref.target, true);
+	const SettingDesc *setting_xref = GetSettingFromFullName(osd->xref.target);
 	assert(setting_xref != nullptr);
 
 	// Generate a new SaveLoad from the xref target using the version params from the source
@@ -2589,9 +2567,9 @@ static void LoadSettingsXref(const SettingDesc *osd, void *object) {
 	sld.version_from     = osd->save.version_from;
 	sld.version_to       = osd->save.version_to;
 	sld.ext_feature_test = osd->save.ext_feature_test;
-	void *ptr = GetVariableAddress(object, &sld);
+	void *ptr = GetVariableAddress(object, sld);
 
-	if (!SlObjectMember(ptr, &sld)) return;
+	if (!SlObjectMember(ptr, sld)) return;
 	int64 val = ReadValue(ptr, sld.conv);
 	if (osd->xref.conv != nullptr) val = osd->xref.conv(val);
 	if (setting_xref->IsIntSetting()) {
@@ -2612,14 +2590,14 @@ static void LoadSettings(const SettingTable &settings, void *object)
 
 	for (auto &osd : settings) {
 		if (osd->patx_name != nullptr) continue;
-		const SaveLoad *sld = &osd->save;
+		const SaveLoad &sld = osd->save;
 		if (osd->xref.target != nullptr) {
-			if (sld->ext_feature_test.IsFeaturePresent(_sl_version, sld->version_from, sld->version_to)) LoadSettingsXref(osd.get(), object);
+			if (sld.ext_feature_test.IsFeaturePresent(_sl_version, sld.version_from, sld.version_to)) LoadSettingsXref(osd.get(), object);
 			continue;
 		}
 		void *ptr = GetVariableAddress(object, sld);
 
-		if (!SlObjectMember(ptr, &osd->save)) continue;
+		if (!SlObjectMember(ptr, osd->save)) continue;
 		if (osd->IsIntSetting()) {
 			const IntSettingDesc *int_setting = osd->AsIntSetting();
 			int_setting->MakeValueValidAndWrite(object, int_setting->Read(object));
@@ -2641,14 +2619,14 @@ static void SaveSettings(const SettingTable &settings, void *object)
 	for (auto &sd : settings) {
 		if (sd->patx_name != nullptr) continue;
 		if (sd->xref.target != nullptr) continue;
-		length += SlCalcObjMemberLength(object, &sd->save);
+		length += SlCalcObjMemberLength(object, sd->save);
 	}
 	SlSetLength(length);
 
 	for (auto &sd : settings) {
 		if (sd->patx_name != nullptr) continue;
-		void *ptr = GetVariableAddress(object, &sd->save);
-		SlObjectMember(ptr, &sd->save);
+		void *ptr = GetVariableAddress(object, sd->save);
+		SlObjectMember(ptr, sd->save);
 	}
 }
 
@@ -2708,7 +2686,6 @@ static const SaveLoad _settings_ext_load_desc[] = {
 	SLE_VAR(SettingsExtLoad, flags,          SLE_UINT32),
 	SLE_STR(SettingsExtLoad, name,           SLE_STRB, 256),
 	SLE_VAR(SettingsExtLoad, setting_length, SLE_UINT32),
-	SLE_END()
 };
 
 /**
@@ -2724,7 +2701,6 @@ static const SaveLoad _settings_ext_save_desc[] = {
 	SLE_VAR(SettingsExtSave, flags,          SLE_UINT32),
 	SLE_STR(SettingsExtSave, name,           SLE_STR, 0),
 	SLE_VAR(SettingsExtSave, setting_length, SLE_UINT32),
-	SLE_END()
 };
 
 /**
@@ -2762,7 +2738,7 @@ static void LoadSettingsPatx(const SettingTable &settings, void *object)
 			assert(iter != _sorted_patx_settings.end());
 			// found setting
 			const SettingDesc *setting = (*iter);
-			const SaveLoad *sld = &(setting->save);
+			const SaveLoad &sld = setting->save;
 			size_t read = SlGetBytesRead();
 			void *ptr = GetVariableAddress(object, sld);
 			SlObjectMember(ptr, sld);
@@ -2799,7 +2775,7 @@ static void SaveSettingsPatx(const SettingTable &settings, void *object)
 	size_t length = 8;
 	for (auto &sd : settings) {
 		if (sd->patx_name == nullptr) continue;
-		uint32 setting_length = (uint32)SlCalcObjMemberLength(object, &sd->save);
+		uint32 setting_length = (uint32)SlCalcObjMemberLength(object, sd->save);
 		if (!setting_length) continue;
 
 		current_setting.name = sd->patx_name;
@@ -2825,8 +2801,8 @@ static void SaveSettingsPatx(const SettingTable &settings, void *object)
 		current_setting.name = desc->patx_name;
 		current_setting.setting_length = settings_to_add[i].setting_length;
 		SlObject(&current_setting, _settings_ext_save_desc);
-		void *ptr = GetVariableAddress(object, &desc->save);
-		SlObjectMember(ptr, &desc->save);
+		void *ptr = GetVariableAddress(object, desc->save);
+		SlObjectMember(ptr, desc->save);
 	}
 }
 
@@ -2903,7 +2879,7 @@ void LoadSettingsPlyx(bool skip)
 
 			if (setting != nullptr) {
 				// found setting
-				const SaveLoad *sld = &(setting->save);
+				const SaveLoad &sld = setting->save;
 				size_t read = SlGetBytesRead();
 				void *ptr = GetVariableAddress(&(c->settings), sld);
 				SlObjectMember(ptr, sld);
@@ -2933,7 +2909,6 @@ void SaveSettingsPlyx()
 		SLE_VAR(SettingsExtSave, flags,          SLE_UINT32),
 		SLE_STR(SettingsExtSave, name,           SLE_STR, 0),
 		SLE_VAR(SettingsExtSave, setting_length, SLE_UINT32),
-		SLE_END()
 	};
 
 	std::vector<uint32> company_setting_counts;
@@ -2947,7 +2922,7 @@ void SaveSettingsPlyx()
 		uint32 setting_count = 0;
 		for (auto &sd : _company_settings) {
 			if (sd->patx_name == nullptr) continue;
-			uint32 setting_length = (uint32)SlCalcObjMemberLength(&(c->settings), &sd->save);
+			uint32 setting_length = (uint32)SlCalcObjMemberLength(&(c->settings), sd->save);
 			if (!setting_length) continue;
 
 			current_setting.name = sd->patx_name;
@@ -2978,15 +2953,15 @@ void SaveSettingsPlyx()
 
 		for (auto &sd : _company_settings) {
 			if (sd->patx_name == nullptr) continue;
-			uint32 setting_length = (uint32)SlCalcObjMemberLength(&(c->settings), &sd->save);
+			uint32 setting_length = (uint32)SlCalcObjMemberLength(&(c->settings), sd->save);
 			if (!setting_length) continue;
 
 			current_setting.flags = 0;
 			current_setting.name = sd->patx_name;
 			current_setting.setting_length = setting_length;
 			SlObject(&current_setting, _settings_plyx_desc);
-			void *ptr = GetVariableAddress(&(c->settings), &sd->save);
-			SlObjectMember(ptr, &sd->save);
+			void *ptr = GetVariableAddress(&(c->settings), sd->save);
+			SlObjectMember(ptr, sd->save);
 		}
 	}
 }

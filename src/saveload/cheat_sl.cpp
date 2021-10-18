@@ -79,7 +79,6 @@ static void Load_CHTX()
 		SLE_STR(CheatsExtLoad, name,           SLE_STRB, 256),
 		SLE_VAR(CheatsExtLoad, cht.been_used,  SLE_BOOL),
 		SLE_VAR(CheatsExtLoad, cht.value,      SLE_BOOL),
-		SLE_END()
 	};
 
 	CheatsExtLoad current_cheat;
@@ -122,7 +121,6 @@ static void Save_CHTX()
 		SLE_STR(CheatsExtSave, name,           SLE_STR, 0),
 		SLE_VAR(CheatsExtSave, cht.been_used,  SLE_BOOL),
 		SLE_VAR(CheatsExtSave, cht.value,      SLE_BOOL),
-		SLE_END()
 	};
 
 	SlAutolength([](void *) {
@@ -153,7 +151,6 @@ static const SaveLoad _settings_ext_save_desc[] = {
 	SLE_VAR(SettingsExtSave, flags,          SLE_UINT32),
 	SLE_STR(SettingsExtSave, name,           SLE_STR, 0),
 	SLE_VAR(SettingsExtSave, setting_length, SLE_UINT32),
-	SLE_END()
 };
 
 

@@ -153,7 +153,7 @@ char *CrashLog::LogOpenTTDVersion(char *buffer, const char *last) const
 			_openttd_revision_modified,
 			_openttd_release_version,
 			_openttd_newgrf_version,
-#ifdef _SQ64
+#ifdef POINTER_IS_64BIT
 			64,
 #else
 			32,
