@@ -357,6 +357,7 @@ int MaxTreeCount(const TileIndex tile)
 	int max_trees_snow_line_based = 4;
 
 	if (_settings_game.game_creation.landscape == LT_ARCTIC) {
+		if (_settings_game.construction.trees_around_snow_line_range != _previous_trees_around_snow_line_range) RecalculateArcticTreeOccuranceArray();
 		const uint height_above_snow_line = std::max<int>(0, tile_z - _settings_game.game_creation.snow_line_height);
 		max_trees_snow_line_based = (height_above_snow_line < _arctic_tree_occurance.size()) ?
 			(1 + (_arctic_tree_occurance[height_above_snow_line] * 4) / 255) :
