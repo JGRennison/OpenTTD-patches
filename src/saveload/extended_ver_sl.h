@@ -110,6 +110,7 @@ enum SlXvFeatureIndex {
 	XSLFI_EXTRA_STATION_NAMES,                    ///< Extra station names
 	XSLFI_DEPOT_ORDER_EXTRA_FLAGS,                ///< Depot order extra flags
 	XSLFI_EXTRA_SIGNAL_TYPES,                     ///< Extra signal types
+	XSLFI_BANKRUPTCY_EXTRA,                       ///< Extra company bankruptcy fields
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk

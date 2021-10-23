@@ -707,6 +707,7 @@ static void HandleBankruptcyTakeover(Company *c)
 	}
 
 	SetBit(c->bankrupt_asked, best->index);
+	c->bankrupt_last_asked = best->index;
 
 	c->bankrupt_timeout = TAKE_OVER_TIMEOUT;
 	if (best->is_ai) {

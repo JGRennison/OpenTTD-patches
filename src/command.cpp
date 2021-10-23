@@ -144,6 +144,7 @@ CommandProc CmdPause;
 CommandProc CmdBuyShareInCompany;
 CommandProc CmdSellShareInCompany;
 CommandProc CmdBuyCompany;
+CommandProc CmdDeclineBuyCompany;
 
 CommandProc CmdFoundTown;
 CommandProc CmdRenameTown;
@@ -380,7 +381,8 @@ static const Command _command_proc_table[] = {
 
 	DEF_CMD(CmdBuyShareInCompany,                              0, CMDT_MONEY_MANAGEMENT      ), // CMD_BUY_SHARE_IN_COMPANY
 	DEF_CMD(CmdSellShareInCompany,                             0, CMDT_MONEY_MANAGEMENT      ), // CMD_SELL_SHARE_IN_COMPANY
-	DEF_CMD(CmdBuyCompany,                                     0, CMDT_MONEY_MANAGEMENT      ), // CMD_BUY_COMANY
+	DEF_CMD(CmdBuyCompany,                                     0, CMDT_MONEY_MANAGEMENT      ), // CMD_BUY_COMPANY
+	DEF_CMD(CmdDeclineBuyCompany,                              0, CMDT_MONEY_MANAGEMENT      ), // CMD_DECLINE_BUY_COMPANY
 
 	DEF_CMD(CmdFoundTown,                CMD_DEITY | CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_FOUND_TOWN; founding random town can fail only in exec run
 	DEF_CMD(CmdRenameTown,                CMD_DEITY | CMD_SERVER, CMDT_OTHER_MANAGEMENT      ), // CMD_RENAME_TOWN

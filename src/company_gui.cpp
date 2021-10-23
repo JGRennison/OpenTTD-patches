@@ -2791,6 +2791,14 @@ struct BuyCompanyWindow : Window {
 		this->InitNested(window_number);
 	}
 
+	~BuyCompanyWindow()
+	{
+		const Company *c = Company::GetIfValid((CompanyID)this->window_number);
+		if (c != nullptr && HasBit(c->bankrupt_asked, _current_company)) {
+			DoCommandP(0, this->window_number, 0, CMD_DECLINE_BUY_COMPANY);
+		}
+	}
+
 	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {

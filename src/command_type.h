@@ -322,6 +322,7 @@ enum Commands {
 	CMD_BUY_SHARE_IN_COMPANY,         ///< buy a share from a company
 	CMD_SELL_SHARE_IN_COMPANY,        ///< sell a share from a company
 	CMD_BUY_COMPANY,                  ///< buy a company which is bankrupt
+	CMD_DECLINE_BUY_COMPANY,          ///< decline to buy a company which is bankrupt
 
 	CMD_FOUND_TOWN,                   ///< found a town
 	CMD_RENAME_TOWN,                  ///< rename a town
