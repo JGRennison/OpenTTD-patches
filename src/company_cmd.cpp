@@ -943,6 +943,18 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			break;
 		}
 
+		case CCA_SALE: {
+			Company *c = Company::GetIfValid(company_id);
+			if (c == nullptr) return CMD_ERROR;
+
+			if (!(flags & DC_EXEC)) return CommandCost();
+
+			c->bankrupt_value = CalculateCompanyValue(c, false);
+			c->bankrupt_asked = 1 << c->index; // Don't ask the owner
+			c->bankrupt_timeout = 0;
+			break;
+		}
+
 		default: return CMD_ERROR;
 	}
 

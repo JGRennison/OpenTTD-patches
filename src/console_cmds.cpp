@@ -962,6 +962,30 @@ DEF_CONSOLE_CMD(ConResetCompany)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConOfferCompanySale)
+{
+	if (argc == 0) {
+		IConsoleHelp("Offer a company for sale. Usage: 'offer_company_sale <company-id>'");
+		IConsoleHelp("For company-id's, see the list of companies from the dropdown menu. Company 1 is 1, etc.");
+		return true;
+	}
+
+	if (argc != 2) return false;
+
+	CompanyID index = (CompanyID)(atoi(argv[1]) - 1);
+
+	/* Check valid range */
+	if (!Company::IsValidID(index)) {
+		IConsolePrintF(CC_ERROR, "Company does not exist. Company-id must be between 1 and %d.", MAX_COMPANIES);
+		return true;
+	}
+
+	DoCommandP(0, CCA_SALE | index << 16, 0, CMD_COMPANY_CTRL);
+	IConsolePrint(CC_DEFAULT, "Company offered for sale.");
+
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConNetworkClients)
 {
 	if (argc == 0) {
@@ -3447,6 +3471,7 @@ void IConsoleStdLibRegister()
 	IConsole::CmdRegister("move",                    ConMoveClient,       ConHookServerOnly);
 	IConsole::CmdRegister("reset_company",           ConResetCompany,     ConHookServerOnly);
 	IConsole::AliasRegister("clean_company",         "reset_company %A");
+	IConsole::CmdRegister("offer_company_sale",      ConOfferCompanySale, ConHookServerOrNoNetwork);
 	IConsole::CmdRegister("client_name",             ConClientNickChange, ConHookServerOnly);
 	IConsole::CmdRegister("kick",                    ConKick,             ConHookServerOnly);
 	IConsole::CmdRegister("ban",                     ConBan,              ConHookServerOnly);
