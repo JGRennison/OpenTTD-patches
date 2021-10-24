@@ -37,6 +37,7 @@
 #include "zoning.h"
 #include "tbtr_template_vehicle_func.h"
 #include "widgets/statusbar_widget.h"
+#include "core/backup_type.hpp"
 #include "debug_desync.h"
 
 #include "table/strings.h"
@@ -714,6 +715,11 @@ static void HandleBankruptcyTakeover(Company *c)
 		AI::NewEvent(best->index, new ScriptEventCompanyAskMerger(c->index, ClampToI32(c->bankrupt_value)));
 	} else if (IsInteractiveCompany(best->index)) {
 		ShowBuyCompanyDialog(c->index);
+	} else if (!_networking || (_network_server && !NetworkCompanyHasClients(best->index))) {
+		/* This company can never accept the offer as there are no clients connected, decline the offer on the company's behalf */
+		Backup<CompanyID> cur_company(_current_company, best->index, FILE_LINE);
+		DoCommandP(0, c->index, 0, CMD_DECLINE_BUY_COMPANY);
+		cur_company.Restore();
 	}
 }
 
