@@ -941,18 +941,18 @@ void PostProcessNetworks(const std::vector<std::shared_ptr<TownNetwork>>& town_n
 		}
 
 		std::vector towns(network->towns);
-		
+
 		for (auto town_a : network->towns) {
 			std::sort(towns.begin(), towns.end(), [&](const TileIndex& a, const TileIndex& b) { return DistanceManhattan(a, town_a) < DistanceManhattan(b, town_a); });
 
-			const auto second_clostest_town = *(towns.begin() + 2);
-			const auto third_clostest_town = *(towns.begin() + 3);
+			const auto second_closest_town = *(towns.begin() + 2);
+			const auto third_closest_town = *(towns.begin() + 3);
 
 			AyStar finder {};
 			{
-				FindPath(finder, town_a, second_clostest_town);
+				FindPath(finder, town_a, second_closest_town);
 				finder.Clear();
-				FindPath(finder, town_a, third_clostest_town);
+				FindPath(finder, town_a, third_closest_town);
 			}
 			finder.Free();
 
