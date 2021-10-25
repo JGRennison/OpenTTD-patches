@@ -246,106 +246,112 @@ MemoryDumper *MemoryDumper::GetCurrent()
 	return _sl.dumper;
 }
 
-/* these define the chunks */
-extern const ChunkHandler _version_ext_chunk_handlers[];
-extern const ChunkHandler _gamelog_chunk_handlers[];
-extern const ChunkHandler _map_chunk_handlers[];
-extern const ChunkHandler _misc_chunk_handlers[];
-extern const ChunkHandler _name_chunk_handlers[];
-extern const ChunkHandler _cheat_chunk_handlers[] ;
-extern const ChunkHandler _setting_chunk_handlers[];
-extern const ChunkHandler _company_chunk_handlers[];
-extern const ChunkHandler _engine_chunk_handlers[];
-extern const ChunkHandler _veh_chunk_handlers[];
-extern const ChunkHandler _waypoint_chunk_handlers[];
-extern const ChunkHandler _depot_chunk_handlers[];
-extern const ChunkHandler _order_chunk_handlers[];
-extern const ChunkHandler _town_chunk_handlers[];
-extern const ChunkHandler _sign_chunk_handlers[];
-extern const ChunkHandler _station_chunk_handlers[];
-extern const ChunkHandler _industry_chunk_handlers[];
-extern const ChunkHandler _economy_chunk_handlers[];
-extern const ChunkHandler _subsidy_chunk_handlers[];
-extern const ChunkHandler _cargomonitor_chunk_handlers[];
-extern const ChunkHandler _goal_chunk_handlers[];
-extern const ChunkHandler _story_page_chunk_handlers[];
-extern const ChunkHandler _ai_chunk_handlers[];
-extern const ChunkHandler _game_chunk_handlers[];
-extern const ChunkHandler _animated_tile_chunk_handlers[];
-extern const ChunkHandler _newgrf_chunk_handlers[];
-extern const ChunkHandler _group_chunk_handlers[];
-extern const ChunkHandler _cargopacket_chunk_handlers[];
-extern const ChunkHandler _autoreplace_chunk_handlers[];
-extern const ChunkHandler _labelmaps_chunk_handlers[];
-extern const ChunkHandler _linkgraph_chunk_handlers[];
-extern const ChunkHandler _airport_chunk_handlers[];
-extern const ChunkHandler _object_chunk_handlers[];
-extern const ChunkHandler _persistent_storage_chunk_handlers[];
-extern const ChunkHandler _trace_restrict_chunk_handlers[];
-extern const ChunkHandler _signal_chunk_handlers[];
-extern const ChunkHandler _plan_chunk_handlers[];
-extern const ChunkHandler _template_replacement_chunk_handlers[];
-extern const ChunkHandler _template_vehicle_chunk_handlers[];
-extern const ChunkHandler _bridge_signal_chunk_handlers[];
-extern const ChunkHandler _tunnel_chunk_handlers[];
-extern const ChunkHandler _train_speed_adaptation_chunk_handlers[];
-extern const ChunkHandler _debug_chunk_handlers[];
+static const std::vector<ChunkHandler> &ChunkHandlers()
+{
+	/* These define the chunks */
+	extern const ChunkHandlerTable _version_ext_chunk_handlers;
+	extern const ChunkHandlerTable _gamelog_chunk_handlers;
+	extern const ChunkHandlerTable _map_chunk_handlers;
+	extern const ChunkHandlerTable _misc_chunk_handlers;
+	extern const ChunkHandlerTable _name_chunk_handlers;
+	extern const ChunkHandlerTable _cheat_chunk_handlers;
+	extern const ChunkHandlerTable _setting_chunk_handlers;
+	extern const ChunkHandlerTable _company_chunk_handlers;
+	extern const ChunkHandlerTable _engine_chunk_handlers;
+	extern const ChunkHandlerTable _veh_chunk_handlers;
+	extern const ChunkHandlerTable _waypoint_chunk_handlers;
+	extern const ChunkHandlerTable _depot_chunk_handlers;
+	extern const ChunkHandlerTable _order_chunk_handlers;
+	extern const ChunkHandlerTable _town_chunk_handlers;
+	extern const ChunkHandlerTable _sign_chunk_handlers;
+	extern const ChunkHandlerTable _station_chunk_handlers;
+	extern const ChunkHandlerTable _industry_chunk_handlers;
+	extern const ChunkHandlerTable _economy_chunk_handlers;
+	extern const ChunkHandlerTable _subsidy_chunk_handlers;
+	extern const ChunkHandlerTable _cargomonitor_chunk_handlers;
+	extern const ChunkHandlerTable _goal_chunk_handlers;
+	extern const ChunkHandlerTable _story_page_chunk_handlers;
+	extern const ChunkHandlerTable _ai_chunk_handlers;
+	extern const ChunkHandlerTable _game_chunk_handlers;
+	extern const ChunkHandlerTable _animated_tile_chunk_handlers;
+	extern const ChunkHandlerTable _newgrf_chunk_handlers;
+	extern const ChunkHandlerTable _group_chunk_handlers;
+	extern const ChunkHandlerTable _cargopacket_chunk_handlers;
+	extern const ChunkHandlerTable _autoreplace_chunk_handlers;
+	extern const ChunkHandlerTable _labelmaps_chunk_handlers;
+	extern const ChunkHandlerTable _linkgraph_chunk_handlers;
+	extern const ChunkHandlerTable _airport_chunk_handlers;
+	extern const ChunkHandlerTable _object_chunk_handlers;
+	extern const ChunkHandlerTable _persistent_storage_chunk_handlers;
+	extern const ChunkHandlerTable _trace_restrict_chunk_handlers;
+	extern const ChunkHandlerTable _signal_chunk_handlers;
+	extern const ChunkHandlerTable _plan_chunk_handlers;
+	extern const ChunkHandlerTable _template_replacement_chunk_handlers;
+	extern const ChunkHandlerTable _template_vehicle_chunk_handlers;
+	extern const ChunkHandlerTable _bridge_signal_chunk_handlers;
+	extern const ChunkHandlerTable _tunnel_chunk_handlers;
+	extern const ChunkHandlerTable _train_speed_adaptation_chunk_handlers;
+	extern const ChunkHandlerTable _debug_chunk_handlers;
 
-/** Array of all chunks in a savegame, \c nullptr terminated. */
-static const ChunkHandler * const _chunk_handlers[] = {
-	_version_ext_chunk_handlers,            // this should be first, such that it is saved first, as when loading it affects the loading of subsequent chunks
-	_gamelog_chunk_handlers,
-	_map_chunk_handlers,
-	_misc_chunk_handlers,
-	_name_chunk_handlers,
-	_cheat_chunk_handlers,
-	_setting_chunk_handlers,
-	_veh_chunk_handlers,
-	_waypoint_chunk_handlers,
-	_depot_chunk_handlers,
-	_order_chunk_handlers,
-	_industry_chunk_handlers,
-	_economy_chunk_handlers,
-	_subsidy_chunk_handlers,
-	_cargomonitor_chunk_handlers,
-	_goal_chunk_handlers,
-	_story_page_chunk_handlers,
-	_engine_chunk_handlers,
-	_town_chunk_handlers,
-	_sign_chunk_handlers,
-	_station_chunk_handlers,
-	_company_chunk_handlers,
-	_ai_chunk_handlers,
-	_game_chunk_handlers,
-	_animated_tile_chunk_handlers,
-	_newgrf_chunk_handlers,
-	_group_chunk_handlers,
-	_cargopacket_chunk_handlers,
-	_autoreplace_chunk_handlers,
-	_labelmaps_chunk_handlers,
-	_linkgraph_chunk_handlers,
-	_airport_chunk_handlers,
-	_object_chunk_handlers,
-	_persistent_storage_chunk_handlers,
-	_trace_restrict_chunk_handlers,
-	_signal_chunk_handlers,
-	_plan_chunk_handlers,
-	_template_replacement_chunk_handlers,
-	_template_vehicle_chunk_handlers,
-	_bridge_signal_chunk_handlers,
-	_tunnel_chunk_handlers,
-	_train_speed_adaptation_chunk_handlers,
-	_debug_chunk_handlers,
-	nullptr,
-};
+	/** List of all chunks in a savegame. */
+	static const ChunkHandlerTable _chunk_handler_tables[] = {
+		_version_ext_chunk_handlers,
+		_gamelog_chunk_handlers,
+		_map_chunk_handlers,
+		_misc_chunk_handlers,
+		_name_chunk_handlers,
+		_cheat_chunk_handlers,
+		_setting_chunk_handlers,
+		_veh_chunk_handlers,
+		_waypoint_chunk_handlers,
+		_depot_chunk_handlers,
+		_order_chunk_handlers,
+		_industry_chunk_handlers,
+		_economy_chunk_handlers,
+		_subsidy_chunk_handlers,
+		_cargomonitor_chunk_handlers,
+		_goal_chunk_handlers,
+		_story_page_chunk_handlers,
+		_engine_chunk_handlers,
+		_town_chunk_handlers,
+		_sign_chunk_handlers,
+		_station_chunk_handlers,
+		_company_chunk_handlers,
+		_ai_chunk_handlers,
+		_game_chunk_handlers,
+		_animated_tile_chunk_handlers,
+		_newgrf_chunk_handlers,
+		_group_chunk_handlers,
+		_cargopacket_chunk_handlers,
+		_autoreplace_chunk_handlers,
+		_labelmaps_chunk_handlers,
+		_linkgraph_chunk_handlers,
+		_airport_chunk_handlers,
+		_object_chunk_handlers,
+		_persistent_storage_chunk_handlers,
+		_trace_restrict_chunk_handlers,
+		_signal_chunk_handlers,
+		_plan_chunk_handlers,
+		_template_replacement_chunk_handlers,
+		_template_vehicle_chunk_handlers,
+		_bridge_signal_chunk_handlers,
+		_tunnel_chunk_handlers,
+		_train_speed_adaptation_chunk_handlers,
+		_debug_chunk_handlers,
+	};
 
-/**
- * Iterate over all chunk handlers.
- * @param ch the chunk handler iterator
- */
-#define FOR_ALL_CHUNK_HANDLERS(ch) \
-	for (const ChunkHandler * const *chsc = _chunk_handlers; *chsc != nullptr; chsc++) \
-		for (const ChunkHandler *ch = *chsc; ch != nullptr; ch = (ch->flags & CH_LAST) ? nullptr : ch + 1)
+	static std::vector<ChunkHandler> _chunk_handlers;
+
+	if (_chunk_handlers.empty()) {
+		for (auto &chunk_handler_table : _chunk_handler_tables) {
+			for (auto &chunk_handler : chunk_handler_table) {
+				_chunk_handlers.push_back(chunk_handler);
+			}
+		}
+	}
+
+	return _chunk_handlers;
+}
 
 /** Null all pointers (convert index -> nullptr) */
 static void SlNullPointers()
@@ -358,10 +364,10 @@ static void SlNullPointers()
 	_sl_version = SAVEGAME_VERSION;
 	SlXvSetCurrentState();
 
-	FOR_ALL_CHUNK_HANDLERS(ch) {
-		if (ch->ptrs_proc != nullptr) {
-			DEBUG(sl, 3, "Nulling pointers for %c%c%c%c", ch->id >> 24, ch->id >> 16, ch->id >> 8, ch->id);
-			ch->ptrs_proc();
+	for (auto &ch : ChunkHandlers()) {
+		if (ch.ptrs_proc != nullptr) {
+			DEBUG(sl, 3, "Nulling pointers for %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
+			ch.ptrs_proc();
 		}
 	}
 
@@ -1682,14 +1688,12 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld)
 	return 0;
 }
 
-#ifdef OTTD_ASSERT
-
 /**
  * Check whether the variable size of the variable in the saveload configuration
  * matches with the actual variable size.
  * @param sld The saveload configuration to test.
  */
-static bool IsVariableSizeRight(const SaveLoad &sld)
+[[maybe_unused]] static bool IsVariableSizeRight(const SaveLoad &sld)
 {
 	switch (sld.cmd) {
 		case SL_VAR:
@@ -1730,15 +1734,11 @@ static bool IsVariableSizeRight(const SaveLoad &sld)
 	}
 }
 
-#endif /* OTTD_ASSERT */
-
 void SlFilterObject(const SaveLoadTable &slt, std::vector<SaveLoad> &save);
 
 static void SlFilterObjectMember(const SaveLoad &sld, std::vector<SaveLoad> &save)
 {
-#ifdef OTTD_ASSERT
 	assert(IsVariableSizeRight(sld));
-#endif
 
 	switch (sld.cmd) {
 		case SL_VAR:
@@ -1817,9 +1817,7 @@ std::vector<SaveLoad> SlFilterObject(const SaveLoadTable &slt)
 template <SaveLoadAction action, bool check_version>
 bool SlObjectMemberGeneric(void *ptr, const SaveLoad &sld)
 {
-#ifdef OTTD_ASSERT
 	if (check_version) assert(IsVariableSizeRight(sld));
-#endif
 
 	VarType conv = GB(sld.conv, 0, 8);
 	switch (sld.cmd) {
@@ -2043,7 +2041,7 @@ inline void SlRIFFSpringPPCheck(size_t len)
  * Load a chunk of data (eg vehicles, stations, etc.)
  * @param ch The chunkhandler that will be used for the operation
  */
-static void SlLoadChunk(const ChunkHandler *ch)
+static void SlLoadChunk(const ChunkHandler &ch)
 {
 	byte m = SlReadByte();
 	size_t len;
@@ -2064,11 +2062,11 @@ static void SlLoadChunk(const ChunkHandler *ch)
 	switch (m) {
 		case CH_ARRAY:
 			_sl.array_index = 0;
-			ch->load_proc();
+			ch.load_proc();
 			if (_next_offs != 0) SlErrorCorrupt("Invalid array length");
 			break;
 		case CH_SPARSE_ARRAY:
-			ch->load_proc();
+			ch.load_proc();
 			if (_next_offs != 0) SlErrorCorrupt("Invalid array length");
 			break;
 		default:
@@ -2089,7 +2087,7 @@ static void SlLoadChunk(const ChunkHandler *ch)
 
 				_sl.obj_len = len;
 				endoffs = _sl.reader->GetSize() + len;
-				ch->load_proc();
+				ch.load_proc();
 				if (_sl.reader->GetSize() != endoffs) {
 					DEBUG(sl, 1, "Invalid chunk size: " PRINTF_SIZE " != " PRINTF_SIZE ", (" PRINTF_SIZE ")", _sl.reader->GetSize(), endoffs, len);
 					SlErrorCorrupt("Invalid chunk size");
@@ -2192,21 +2190,21 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
  * prefixed by an ID identifying it, followed by data, and terminator where appropriate
  * @param ch The chunkhandler that will be used for the operation
  */
-static void SlSaveChunk(const ChunkHandler *ch)
+static void SlSaveChunk(const ChunkHandler &ch)
 {
-	ChunkSaveLoadProc *proc = ch->save_proc;
+	ChunkSaveLoadProc *proc = ch.save_proc;
 
 	/* Don't save any chunk information if there is no save handler. */
 	if (proc == nullptr) return;
 
-	SlWriteUint32(ch->id);
-	DEBUG(sl, 2, "Saving chunk %c%c%c%c", ch->id >> 24, ch->id >> 16, ch->id >> 8, ch->id);
+	SlWriteUint32(ch.id);
+	DEBUG(sl, 2, "Saving chunk %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
 
 	size_t written = 0;
 	if (_debug_sl_level >= 3) written = SlGetBytesWritten();
 
-	_sl.block_mode = ch->flags & CH_TYPE_MASK;
-	switch (ch->flags & CH_TYPE_MASK) {
+	_sl.block_mode = ch.type;
+	switch (ch.type) {
 		case CH_RIFF:
 			_sl.need_length = NL_WANTLENGTH;
 			proc();
@@ -2225,13 +2223,13 @@ static void SlSaveChunk(const ChunkHandler *ch)
 		default: NOT_REACHED();
 	}
 
-	DEBUG(sl, 3, "Saved chunk %c%c%c%c (" PRINTF_SIZE " bytes)", ch->id >> 24, ch->id >> 16, ch->id >> 8, ch->id, SlGetBytesWritten() - written);
+	DEBUG(sl, 3, "Saved chunk %c%c%c%c (" PRINTF_SIZE " bytes)", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id, SlGetBytesWritten() - written);
 }
 
 /** Save all chunks */
 static void SlSaveChunks()
 {
-	FOR_ALL_CHUNK_HANDLERS(ch) {
+	for (auto &ch : ChunkHandlers()) {
 		SlSaveChunk(ch);
 	}
 
@@ -2247,7 +2245,7 @@ static void SlSaveChunks()
  */
 static const ChunkHandler *SlFindChunkHandler(uint32 id)
 {
-	FOR_ALL_CHUNK_HANDLERS(ch) if (ch->id == id) return ch;
+	for (auto &ch : ChunkHandlers()) if (ch.id == id) return &ch;
 	return nullptr;
 }
 
@@ -2267,7 +2265,7 @@ static void SlLoadChunks()
 			if (ch == nullptr) {
 				SlErrorCorrupt("Unknown chunk type");
 			} else {
-				SlLoadChunk(ch);
+				SlLoadChunk(*ch);
 			}
 		}
 		DEBUG(sl, 3, "Loaded chunk %c%c%c%c (" PRINTF_SIZE " bytes)", id >> 24, id >> 16, id >> 8, id, SlGetBytesRead() - read);
@@ -2301,10 +2299,10 @@ static void SlFixPointers()
 {
 	_sl.action = SLA_PTRS;
 
-	FOR_ALL_CHUNK_HANDLERS(ch) {
-		if (ch->ptrs_proc != nullptr) {
-			DEBUG(sl, 3, "Fixing pointers for %c%c%c%c", ch->id >> 24, ch->id >> 16, ch->id >> 8, ch->id);
-			ch->ptrs_proc();
+	for (auto &ch : ChunkHandlers()) {
+		if (ch.ptrs_proc != nullptr) {
+			DEBUG(sl, 3, "Fixing pointers for %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
+			ch.ptrs_proc();
 		}
 	}
 

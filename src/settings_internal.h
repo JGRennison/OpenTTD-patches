@@ -12,25 +12,24 @@
 
 #include "saveload/saveload.h"
 
-enum SettingGuiFlag : uint16 {
-	/* 2 bytes allocated for a maximum of 16 flags. */
-	SGF_NONE = 0,
-	SGF_0ISDISABLED   = 1 << 0, ///< a value of zero means the feature is disabled
-	SGF_DISPLAY_ABS   = 1 << 1, ///< display absolute value of the setting
-	SGF_MULTISTRING   = 1 << 2, ///< the value represents a limited number of string-options (internally integer)
-	SGF_NETWORK_ONLY  = 1 << 3, ///< this setting only applies to network games
-	SGF_CURRENCY      = 1 << 4, ///< the number represents money, so when reading value multiply by exchange rate
-	SGF_NO_NETWORK    = 1 << 5, ///< this setting does not apply to network games; it may not be changed during the game
-	SGF_NEWGAME_ONLY  = 1 << 6, ///< this setting cannot be changed in a game
-	SGF_SCENEDIT_TOO  = 1 << 7, ///< this setting can be changed in the scenario editor (only makes sense when SGF_NEWGAME_ONLY is set)
-	SGF_PER_COMPANY   = 1 << 8, ///< this setting can be different for each company (saved in company struct)
-	SGF_SCENEDIT_ONLY = 1 << 9, ///< this setting can only be changed in the scenario editor
-	SGF_DECIMAL1      = 1 << 10,///< display a decimal representation of the setting value divided by 10
-	SGF_ENUM          = 1 << 11,///< the setting can take one of the values given by an array of struct SettingDescEnumEntry
-	SGF_NO_NEWGAME    = 1 << 12,///< the setting does not apply and is not shown in a new game context
-	SGF_DEC1SCALE     = 1 << 13,///< also display a float representation of the scale of a decimal1 scale parameter
+enum SettingFlag : uint16 {
+	SF_NONE = 0,
+	SF_GUI_0_IS_SPECIAL        = 1 << 0, ///< A value of zero is possible and has a custom string (the one after "strval").
+	SF_GUI_NEGATIVE_IS_SPECIAL = 1 << 1, ///< A negative value has another string (the one after "strval").
+	SF_GUI_DROPDOWN            = 1 << 2, ///< The value represents a limited number of string-options (internally integer) presented as dropdown.
+	SF_GUI_CURRENCY            = 1 << 3, ///< The number represents money, so when reading value multiply by exchange rate.
+	SF_NETWORK_ONLY            = 1 << 4, ///< This setting only applies to network games.
+	SF_NO_NETWORK              = 1 << 5, ///< This setting does not apply to network games; it may not be changed during the game.
+	SF_NEWGAME_ONLY            = 1 << 6, ///< This setting cannot be changed in a game.
+	SF_SCENEDIT_TOO            = 1 << 7, ///< This setting can be changed in the scenario editor (only makes sense when SF_NEWGAME_ONLY is set).
+	SF_SCENEDIT_ONLY           = 1 << 8, ///< This setting can only be changed in the scenario editor.
+	SF_PER_COMPANY             = 1 << 9, ///< This setting can be different for each company (saved in company struct).
+	SF_DECIMAL1                = 1 << 10,///< display a decimal representation of the setting value divided by 10
+	SF_ENUM                    = 1 << 11,///< the setting can take one of the values given by an array of struct SettingDescEnumEntry
+	SF_NO_NEWGAME              = 1 << 12,///< the setting does not apply and is not shown in a new game context
+	SF_DEC1SCALE               = 1 << 13,///< also display a float representation of the scale of a decimal1 scale parameter
 };
-DECLARE_ENUM_AS_BIT_SET(SettingGuiFlag)
+DECLARE_ENUM_AS_BIT_SET(SettingFlag)
 
 /**
  * A SettingCategory defines a grouping of the settings.
@@ -69,7 +68,7 @@ enum SettingType {
 
 enum SettingOnGuiCtrlType {
 	SOGCT_DESCRIPTION_TEXT,   ///< Description text callback
-	SOGCT_MULTISTRING_ORDER,  ///< SGF_MULTISTRING reordering callback
+	SOGCT_GUI_DROPDOWN_ORDER, ///< SF_GUI_DROPDOWN reordering callback
 };
 
 struct SettingOnGuiCtrlData {
@@ -99,16 +98,16 @@ struct SettingsXref {
 /** Properties of config file settings. */
 struct SettingDesc {
 	struct XrefContructorTag {};
-	SettingDesc(SaveLoad save, const char *name, SettingGuiFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name) :
+	SettingDesc(SaveLoad save, const char *name, SettingFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name) :
 		name(name), flags(flags), guiproc(guiproc), startup(startup), save(save), patx_name(patx_name) {}
 	SettingDesc(XrefContructorTag tag, SaveLoad save, SettingsXref xref) :
-		name(nullptr), flags(SGF_NONE), guiproc(nullptr), startup(false), save(save), patx_name(nullptr), xref(xref) {}
+		name(nullptr), flags(SF_NONE), guiproc(nullptr), startup(false), save(save), patx_name(nullptr), xref(xref) {}
 	virtual ~SettingDesc() {}
 
-	const char *name;       ///< name of the setting. Used in configuration file and for console
-	SettingGuiFlag flags;   ///< handles how a setting would show up in the GUI (text/currency, etc.)
-	OnGuiCtrl *guiproc;     ///< callback procedure for GUI operations
-	bool startup;           ///< setting has to be loaded directly at startup?
+	const char *name;       ///< Name of the setting. Used in configuration file and for console
+	SettingFlag flags;      ///< Handles how a setting would show up in the GUI (text/currency, etc.)
+	OnGuiCtrl *guiproc;     ///< Callback procedure for GUI operations
+	bool startup;           ///< Setting has to be loaded directly at startup?
 	SaveLoad save;          ///< Internal structure (going to savegame, parts to config)
 
 	const char *patx_name;  ///< Name to save/load setting from in PATX chunk, if nullptr save/load from PATS chunk as normal
@@ -176,7 +175,7 @@ struct IntSettingDesc : SettingDesc {
 	 */
 	typedef void PostChangeCallback(int32 value);
 
-	IntSettingDesc(SaveLoad save, const char *name, SettingGuiFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, int32 def,
+	IntSettingDesc(SaveLoad save, const char *name, SettingFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, int32 def,
 			int32 min, uint32 max, int32 interval, StringID str, StringID str_help, StringID str_val,
 			SettingCategory cat, PreChangeCheck pre_check, PostChangeCallback post_callback, const SettingDescEnumEntry *enumlist) :
 		SettingDesc(save, name, flags, guiproc, startup, patx_name), def(def), min(min), max(max), interval(interval),
@@ -195,7 +194,7 @@ struct IntSettingDesc : SettingDesc {
 	PreChangeCheck *pre_check;         ///< Callback to check for the validity of the setting.
 	PostChangeCallback *post_callback; ///< Callback when the setting has been changed.
 
-	const SettingDescEnumEntry *enumlist; ///< For SGF_ENUM. The last entry must use STR_NULL
+	const SettingDescEnumEntry *enumlist; ///< For SF_ENUM. The last entry must use STR_NULL
 
 	/**
 	 * Check whether this setting is a boolean type setting.
@@ -220,7 +219,7 @@ private:
 
 /** Boolean setting. */
 struct BoolSettingDesc : IntSettingDesc {
-	BoolSettingDesc(SaveLoad save, const char *name, SettingGuiFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, bool def,
+	BoolSettingDesc(SaveLoad save, const char *name, SettingFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, bool def,
 		StringID str, StringID str_help, StringID str_val, SettingCategory cat,
 		PreChangeCheck pre_check, PostChangeCallback post_callback) :
 		IntSettingDesc(save, name, flags, guiproc, startup, patx_name, def, 0, 1, 0, str, str_help, str_val, cat, pre_check, post_callback, nullptr) {}
@@ -235,7 +234,7 @@ struct BoolSettingDesc : IntSettingDesc {
 struct OneOfManySettingDesc : IntSettingDesc {
 	typedef size_t OnConvert(const char *value); ///< callback prototype for conversion error
 
-	OneOfManySettingDesc(SaveLoad save, const char *name, SettingGuiFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name,
+	OneOfManySettingDesc(SaveLoad save, const char *name, SettingFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name,
 		int32 def, int32 max, StringID str, StringID str_help, StringID str_val, SettingCategory cat,
 		PreChangeCheck pre_check, PostChangeCallback post_callback,
 		std::initializer_list<const char *> many, OnConvert *many_cnvt) :
@@ -258,7 +257,7 @@ struct OneOfManySettingDesc : IntSettingDesc {
 
 /** Many of many setting. */
 struct ManyOfManySettingDesc : OneOfManySettingDesc {
-	ManyOfManySettingDesc(SaveLoad save, const char *name, SettingGuiFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name,
+	ManyOfManySettingDesc(SaveLoad save, const char *name, SettingFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name,
 		int32 def, StringID str, StringID str_help, StringID str_val, SettingCategory cat,
 		PreChangeCheck pre_check, PostChangeCallback post_callback,
 		std::initializer_list<const char *> many, OnConvert *many_cnvt) :
@@ -287,7 +286,7 @@ struct StringSettingDesc : SettingDesc {
 	 */
 	typedef void PostChangeCallback(const std::string &value);
 
-	StringSettingDesc(SaveLoad save, const char *name, SettingGuiFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, const char *def,
+	StringSettingDesc(SaveLoad save, const char *name, SettingFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, const char *def,
 			uint32 max_length, PreChangeCheck pre_check, PostChangeCallback post_callback) :
 		SettingDesc(save, name, flags, guiproc, startup, patx_name), def(def == nullptr ? "" : def), max_length(max_length),
 			pre_check(pre_check), post_callback(post_callback) {}
@@ -313,7 +312,7 @@ private:
 
 /** List/array settings. */
 struct ListSettingDesc : SettingDesc {
-	ListSettingDesc(SaveLoad save, const char *name, SettingGuiFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, const char *def) :
+	ListSettingDesc(SaveLoad save, const char *name, SettingFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, const char *def) :
 		SettingDesc(save, name, flags, guiproc, startup, patx_name), def(def) {}
 	virtual ~ListSettingDesc() {}
 
@@ -327,7 +326,7 @@ struct ListSettingDesc : SettingDesc {
 /** Placeholder for settings that have been removed, but might still linger in the savegame. */
 struct NullSettingDesc : SettingDesc {
 	NullSettingDesc(SaveLoad save) :
-		SettingDesc(save, "", SGF_NONE, nullptr, false, nullptr) {}
+		SettingDesc(save, "", SF_NONE, nullptr, false, nullptr) {}
 	virtual ~NullSettingDesc() {}
 
 	void FormatValue(char *buf, const char *last, const void *object) const override { NOT_REACHED(); }

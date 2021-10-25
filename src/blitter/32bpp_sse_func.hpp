@@ -499,7 +499,7 @@ bm_normal:
 					case BT_ODD: Draw<BM_NORMAL, RM_WITH_SKIP, BT_ODD, true>(bp, zoom); return;
 				}
 			} else {
-				if (((const Blitter_32bppSSE_Base::SpriteData *) bp->sprite)->flags & SF_TRANSLUCENT) {
+				if (((const Blitter_32bppSSE_Base::SpriteData *) bp->sprite)->flags & BSF_TRANSLUCENT) {
 					Draw<BM_NORMAL, RM_WITH_MARGIN, BT_NONE, true>(bp, zoom);
 				} else {
 					Draw<BM_NORMAL, RM_WITH_MARGIN, BT_NONE, false>(bp, zoom);
@@ -509,7 +509,7 @@ bm_normal:
 			break;
 		}
 		case BM_COLOUR_REMAP:
-			if (((const Blitter_32bppSSE_Base::SpriteData *) bp->sprite)->flags & SF_NO_REMAP) goto bm_normal;
+			if (((const Blitter_32bppSSE_Base::SpriteData *) bp->sprite)->flags & BSF_NO_REMAP) goto bm_normal;
 			if (bp->skip_left != 0 || bp->width <= MARGIN_REMAP_THRESHOLD) {
 				Draw<BM_COLOUR_REMAP, RM_WITH_SKIP, BT_NONE, true>(bp, zoom); return;
 			} else {
@@ -520,7 +520,7 @@ bm_normal:
 		case BM_BLACK_REMAP:  Draw<BM_BLACK_REMAP, RM_NONE, BT_NONE, true>(bp, zoom); return;
 
 		case BM_COLOUR_REMAP_WITH_BRIGHTNESS:
-			if (!(((const Blitter_32bppSSE_Base::SpriteData *) bp->sprite)->flags & SF_NO_REMAP)) {
+			if (!(((const Blitter_32bppSSE_Base::SpriteData *) bp->sprite)->flags & BSF_NO_REMAP)) {
 				Draw<BM_COLOUR_REMAP_WITH_BRIGHTNESS, RM_NONE, BT_NONE, true>(bp, zoom);
 				return;
 			}

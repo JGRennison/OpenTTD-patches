@@ -18,6 +18,7 @@
 #include <stdarg.h>
 #include <vector>
 #include <string>
+#include <vector>
 
 /** SaveLoad versions
  * Previous savegame versions, the trunk revision where they were
@@ -415,6 +416,14 @@ bool IsNetworkServerSave();
 typedef void ChunkSaveLoadProc();
 typedef void AutolengthProc(void *arg);
 
+/** Type of a chunk. */
+enum ChunkType {
+	CH_RIFF = 0,
+	CH_ARRAY = 1,
+	CH_SPARSE_ARRAY = 2,
+	CH_EXT_HDR      = 15, ///< Extended chunk header
+};
+
 /** Handlers and description of chunk. */
 struct ChunkHandler {
 	uint32 id;                          ///< Unique ID (4 letters).
@@ -422,12 +431,15 @@ struct ChunkHandler {
 	ChunkSaveLoadProc *load_proc;       ///< Load procedure of the chunk.
 	ChunkSaveLoadProc *ptrs_proc;       ///< Manipulate pointers in the chunk.
 	ChunkSaveLoadProc *load_check_proc; ///< Load procedure for game preview.
-	uint32 flags;                       ///< Flags of the chunk. @see ChunkType
+	ChunkType type;                     ///< Type of the chunk. @see ChunkType
 };
 
 struct NullStruct {
 	byte null;
 };
+
+/** A table of ChunkHandler entries. */
+using ChunkHandlerTable = span<const ChunkHandler>;
 
 /** Type of reference (#SLE_REF, #SLE_CONDREF). */
 enum SLRefType {
@@ -444,16 +456,6 @@ enum SLRefType {
 	REF_LINK_GRAPH       = 10,	///< Load/save a reference to a link graph.
 	REF_LINK_GRAPH_JOB   = 11,	///< Load/save a reference to a link graph job.
 	REF_TEMPLATE_VEHICLE = 12,	///< Load/save a reference to a template vehicle
-};
-
-/** Flags of a chunk. */
-enum ChunkType {
-	CH_RIFF         =  0,
-	CH_ARRAY        =  1,
-	CH_SPARSE_ARRAY =  2,
-	CH_TYPE_MASK    =  3,
-	CH_EXT_HDR      = 15, ///< Extended chunk header
-	CH_LAST         =  8, ///< Last chunk in this array.
 };
 
 /** Flags for chunk extended headers */
@@ -541,8 +543,6 @@ enum VarTypes {
 	SLF_NO_NETWORK_SYNC = 1 << 10, ///< do not synchronize over network (but it is saved if SLF_NOT_IN_SAVE is not set)
 	SLF_ALLOW_CONTROL   = 1 << 11, ///< allow control codes in the strings
 	SLF_ALLOW_NEWLINE   = 1 << 12, ///< allow new lines in the strings
-	SLF_HEX             = 1 << 13, ///< print numbers as hex in the config file (only useful for unsigned)
-	/* 2 more possible flags */
 };
 
 typedef uint32 VarType;

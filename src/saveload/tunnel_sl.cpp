@@ -42,6 +42,8 @@ static void Load_TUNN()
 }
 
 
-extern const ChunkHandler _tunnel_chunk_handlers[] = {
-	{ 'TUNN', Save_TUNN, Load_TUNN, nullptr, nullptr, CH_ARRAY | CH_LAST},
+extern const ChunkHandler tunnel_chunk_handlers[] = {
+	{ 'TUNN', Save_TUNN, Load_TUNN, nullptr, nullptr, CH_ARRAY },
 };
+
+extern const ChunkHandlerTable _tunnel_chunk_handlers(tunnel_chunk_handlers);

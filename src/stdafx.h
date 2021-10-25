@@ -468,7 +468,6 @@ const char *assert_tile_info(uint32 tile);
 
 /* Asserts are enabled if NDEBUG isn't defined or WITH_ASSERT is defined. */
 #if !defined(NDEBUG) || defined(WITH_ASSERT)
-#	define OTTD_ASSERT
 #	define assert_msg(expression, ...) if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, nullptr, __VA_ARGS__);
 #	define assert_msg_tile(expression, tile, ...) if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, assert_tile_info(tile), __VA_ARGS__);
 #	define assert_tile(expression, tile) if (unlikely(!(expression))) error("Assertion failed at line %i of %s: %s\n\t%s", __LINE__, __FILE__, #expression, assert_tile_info(tile));

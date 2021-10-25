@@ -556,7 +556,9 @@ static void Save_PLYX()
 	SaveSettingsPlyx();
 }
 
-extern const ChunkHandler _company_chunk_handlers[] = {
+static const ChunkHandler company_chunk_handlers[] = {
 	{ 'PLYR', Save_PLYR, Load_PLYR, Ptrs_PLYR, Check_PLYR, CH_ARRAY },
-	{ 'PLYX', Save_PLYX, Load_PLYX, nullptr,      Check_PLYX, CH_RIFF | CH_LAST},
+	{ 'PLYX', Save_PLYX, Load_PLYX, nullptr,   Check_PLYX, CH_RIFF  },
 };
+
+extern const ChunkHandlerTable _company_chunk_handlers(company_chunk_handlers);

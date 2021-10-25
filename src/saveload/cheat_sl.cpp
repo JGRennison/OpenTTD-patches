@@ -155,7 +155,9 @@ static const SaveLoad _settings_ext_save_desc[] = {
 
 
 /** Chunk handlers related to cheats. */
-extern const ChunkHandler _cheat_chunk_handlers[] = {
-	{ 'CHTS', Save_CHTS, Load_CHTS, nullptr, nullptr, CH_RIFF},
-	{ 'CHTX', Save_CHTX, Load_CHTX, nullptr, nullptr, CH_RIFF | CH_LAST},
+static const ChunkHandler cheat_chunk_handlers[] = {
+	{ 'CHTS', Save_CHTS, Load_CHTS, nullptr, nullptr, CH_RIFF },
+	{ 'CHTX', Save_CHTX, Load_CHTX, nullptr, nullptr, CH_RIFF },
 };
+
+extern const ChunkHandlerTable _cheat_chunk_handlers(cheat_chunk_handlers);

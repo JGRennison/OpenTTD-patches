@@ -1169,7 +1169,7 @@ bool SettingEntry::IsVisibleByRestrictionMode(RestrictionMode mode) const
  */
 bool SettingEntry::UpdateFilterState(SettingFilter &filter, bool force_visible)
 {
-	if (this->setting->flags & SGF_NO_NEWGAME && _game_mode == GM_MENU) {
+	if (this->setting->flags & SF_NO_NEWGAME && _game_mode == GM_MENU) {
 		SETBITS(this->flags, SEF_FILTERED);
 		return false;
 	}
@@ -1206,7 +1206,7 @@ bool SettingEntry::UpdateFilterState(SettingFilter &filter, bool force_visible)
 
 static const void *ResolveObject(const GameSettings *settings_ptr, const IntSettingDesc *sd)
 {
-	if ((sd->flags & SGF_PER_COMPANY) != 0) {
+	if ((sd->flags & SF_PER_COMPANY) != 0) {
 		if (Company::IsValidID(_local_company) && _game_mode != GM_MENU) {
 			return &Company::Get(_local_company)->settings;
 		}
@@ -1224,7 +1224,7 @@ void SettingEntry::SetValueDParams(uint first_param, int32 value, std::unique_pt
 {
 	if (this->setting->IsBoolSetting()) {
 		SetDParam(first_param++, value != 0 ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
-	} else if (this->setting->flags & SGF_DEC1SCALE) {
+	} else if (this->setting->flags & SF_DEC1SCALE) {
 		tempdata.reset(new SettingEntry::SetValueDParamsTempData());
 		double scale = std::exp2(((double)value) / 10);
 		int log = -std::min(0, (int)std::floor(std::log10(scale)) - 2);
@@ -1235,7 +1235,7 @@ void SettingEntry::SetValueDParams(uint first_param, int32 value, std::unique_pt
 		SetDParam(first_param++, STR_JUST_RAW_STRING);
 		SetDParamStr(first_param++, tempdata->buffer);
 	} else {
-		if ((this->setting->flags & SGF_ENUM) != 0) {
+		if ((this->setting->flags & SF_ENUM) != 0) {
 			StringID str = STR_UNDEFINED;
 			for (const SettingDescEnumEntry *enumlist = this->setting->enumlist; enumlist != nullptr && enumlist->str != STR_NULL; enumlist++) {
 				if (enumlist->val == value) {
@@ -1244,13 +1244,13 @@ void SettingEntry::SetValueDParams(uint first_param, int32 value, std::unique_pt
 				}
 			}
 			SetDParam(first_param++, str);
-		} else if ((this->setting->flags & SGF_MULTISTRING) != 0) {
+		} else if ((this->setting->flags & SF_GUI_DROPDOWN) != 0) {
 			SetDParam(first_param++, this->setting->str_val - this->setting->min + value);
-		} else if ((this->setting->flags & SGF_DISPLAY_ABS) != 0) {
+		} else if ((this->setting->flags & SF_GUI_NEGATIVE_IS_SPECIAL) != 0) {
 			SetDParam(first_param++, this->setting->str_val + ((value >= 0) ? 1 : 0));
 			value = abs(value);
 		} else {
-			SetDParam(first_param++, this->setting->str_val + ((value == 0 && (this->setting->flags & SGF_0ISDISABLED) != 0) ? 1 : 0));
+			SetDParam(first_param++, this->setting->str_val + ((value == 0 && (this->setting->flags & SF_GUI_0_IS_SPECIAL) != 0) ? 1 : 0));
 		}
 		SetDParam(first_param++, value);
 	}
@@ -1283,13 +1283,13 @@ void SettingEntry::DrawSetting(GameSettings *settings_ptr, int left, int right, 
 	if (sd->IsBoolSetting()) {
 		/* Draw checkbox for boolean-value either on/off */
 		DrawBoolButton(buttons_left, button_y, value != 0, editable);
-	} else if ((sd->flags & (SGF_MULTISTRING | SGF_ENUM)) != 0) {
+	} else if ((sd->flags & (SF_GUI_DROPDOWN | SF_ENUM)) != 0) {
 		/* Draw [v] button for settings of an enum-type */
 		DrawDropDownButton(buttons_left, button_y, COLOUR_YELLOW, state != 0, editable);
 	} else {
 		/* Draw [<][>] boxes for settings of an integer-type */
 		DrawArrowButtons(buttons_left, button_y, COLOUR_YELLOW, state,
-				editable && value != (sd->flags & SGF_0ISDISABLED ? 0 : sd->min), editable && (uint32)value != sd->max);
+				editable && value != (sd->flags & SF_GUI_0_IS_SPECIAL ? 0 : sd->min), editable && (uint32)value != sd->max);
 	}
 	this->DrawSettingString(text_left, text_right, y + (SETTING_HEIGHT - FONT_HEIGHT_NORMAL) / 2, highlight, value);
 }
@@ -2532,7 +2532,7 @@ struct GameSettingsWindow : Window {
 		int32 value = sd->Read(ResolveObject(settings_ptr, sd));
 
 		/* clicked on the icon on the left side. Either scroller, bool on/off or dropdown */
-		if (x < SETTING_BUTTON_WIDTH && (sd->flags & (SGF_MULTISTRING | SGF_ENUM))) {
+		if (x < SETTING_BUTTON_WIDTH && (sd->flags & (SF_GUI_DROPDOWN | SF_ENUM))) {
 			this->SetDisplayedHelpText(pe);
 
 			if (this->valuedropdown_entry == pe) {
@@ -2560,12 +2560,12 @@ struct GameSettingsWindow : Window {
 					this->valuedropdown_entry->SetButtons(SEF_LEFT_DEPRESSED);
 
 					DropDownList list;
-					if (sd->flags & SGF_MULTISTRING) {
+					if (sd->flags & SF_GUI_DROPDOWN) {
 						for (int i = sd->min; i <= (int)sd->max; i++) {
 							int val = i;
 							if (sd->guiproc != nullptr) {
 								SettingOnGuiCtrlData data;
-								data.type = SOGCT_MULTISTRING_ORDER;
+								data.type = SOGCT_GUI_DROPDOWN_ORDER;
 								data.val = i - sd->min;
 								if (sd->guiproc(data)) {
 									val = data.val;
@@ -2574,7 +2574,7 @@ struct GameSettingsWindow : Window {
 							assert_msg(val >= sd->min && val <= (int)sd->max, "min: %d, max: %d, val: %d", sd->min, sd->max, val);
 							list.emplace_back(new DropDownListStringItem(sd->str_val + val - sd->min, val, false));
 						}
-					} else if ((sd->flags & SGF_ENUM)) {
+					} else if ((sd->flags & SF_ENUM)) {
 						for (const SettingDescEnumEntry *enumlist = sd->enumlist; enumlist != nullptr && enumlist->str != STR_NULL; enumlist++) {
 							list.emplace_back(new DropDownListStringItem(enumlist->str, enumlist->val, false));
 						}
@@ -2616,7 +2616,7 @@ struct GameSettingsWindow : Window {
 					if (value < sd->min) value = sd->min; // skip between "disabled" and minimum
 				} else {
 					value -= step;
-					if (value < sd->min) value = (sd->flags & SGF_0ISDISABLED) ? 0 : sd->min;
+					if (value < sd->min) value = (sd->flags & SF_GUI_0_IS_SPECIAL) ? 0 : sd->min;
 				}
 
 				/* Set up scroller timeout for numeric values */
@@ -2637,13 +2637,13 @@ struct GameSettingsWindow : Window {
 			}
 		} else {
 			/* Only open editbox if clicked for the second time, and only for types where it is sensible for. */
-			if (this->last_clicked == pe && !sd->IsBoolSetting() && !(sd->flags & (SGF_MULTISTRING | SGF_ENUM))) {
+			if (this->last_clicked == pe && !sd->IsBoolSetting() && !(sd->flags & (SF_GUI_DROPDOWN | SF_ENUM))) {
 				int64 value64 = value;
 				/* Show the correct currency-translated value */
-				if (sd->flags & SGF_CURRENCY) value64 *= _currency->rate;
+				if (sd->flags & SF_GUI_CURRENCY) value64 *= _currency->rate;
 
 				this->valuewindow_entry = pe;
-				if (sd->flags & SGF_DECIMAL1) {
+				if (sd->flags & SF_DECIMAL1) {
 					SetDParam(0, value64);
 					ShowQueryString(STR_JUST_DECIMAL1, STR_CONFIG_SETTING_QUERY_CAPTION, 10, this, CS_NUMERAL_DECIMAL, QSF_ENABLE_DEFAULT);
 				} else {
@@ -2676,14 +2676,14 @@ struct GameSettingsWindow : Window {
 		int32 value;
 		if (!StrEmpty(str)) {
 			long long llvalue;
-			if (sd->flags & SGF_DECIMAL1) {
+			if (sd->flags & SF_DECIMAL1) {
 				llvalue = atof(str) * 10;
 			} else {
 				llvalue = atoll(str);
 			}
 
 			/* Save the correct currency-translated value */
-			if (sd->flags & SGF_CURRENCY) llvalue /= _currency->rate;
+			if (sd->flags & SF_GUI_CURRENCY) llvalue /= _currency->rate;
 
 			value = (int32)ClampToI32(llvalue);
 		} else {
@@ -2724,7 +2724,7 @@ struct GameSettingsWindow : Window {
 					/* Deal with drop down boxes on the panel. */
 					assert(this->valuedropdown_entry != nullptr);
 					const IntSettingDesc *sd = this->valuedropdown_entry->setting;
-					assert(sd->flags & (SGF_MULTISTRING | SGF_ENUM));
+					assert(sd->flags & (SF_GUI_DROPDOWN | SF_ENUM));
 
 					SetSettingValue(sd, index);
 					this->SetDirty();

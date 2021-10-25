@@ -85,7 +85,7 @@ static size_t ConvertLandscape(const char *value);
 	NSD(Int, SLE_GENERAL_X(SL_VAR, base, var, type | flags, 1, from, to, extver), #var, guiflags, guiproc, startup, patxname, def, min, max, interval, str, strhelp, strval, cat, pre_check, post_callback, nullptr)
 
 #define SDT_ENUM(base, var, type, flags, guiflags, def, str, strhelp, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname, enumlist)\
-	NSD(Int, SLE_GENERAL_X(SL_VAR, base, var, type | flags, 1, from, to, extver), #var, guiflags | SGF_ENUM, guiproc, startup, patxname, def, 0, 0, 0, str, strhelp, STR_NULL, cat, pre_check, post_callback, enumlist)
+	NSD(Int, SLE_GENERAL_X(SL_VAR, base, var, type | flags, 1, from, to, extver), #var, guiflags | SF_ENUM, guiproc, startup, patxname, def, 0, 0, 0, str, strhelp, STR_NULL, cat, pre_check, post_callback, enumlist)
 
 #define SDT_BOOL(base, var, flags, guiflags, def, str, strhelp, strval, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname)\
 	NSD(Bool, SLE_GENERAL_X(SL_VAR, base, var, SLE_BOOL | flags, 1, from, to, extver), #var, guiflags, guiproc, startup, patxname, def, str, strhelp, strval, cat, pre_check, post_callback)

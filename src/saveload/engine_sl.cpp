@@ -199,8 +199,10 @@ void AfterLoadEngines()
 	AnalyseEngineCallbacks();
 }
 
-extern const ChunkHandler _engine_chunk_handlers[] = {
-	{ 'EIDS', Save_EIDS, Load_EIDS, nullptr, nullptr, CH_ARRAY          },
-	{ 'ENGN', Save_ENGN, Load_ENGN, nullptr, nullptr, CH_ARRAY          },
-	{ 'ENGS', nullptr,   Load_ENGS, nullptr, nullptr, CH_RIFF | CH_LAST },
+static const ChunkHandler engine_chunk_handlers[] = {
+	{ 'EIDS', Save_EIDS, Load_EIDS, nullptr, nullptr, CH_ARRAY },
+	{ 'ENGN', Save_ENGN, Load_ENGN, nullptr, nullptr, CH_ARRAY },
+	{ 'ENGS', nullptr,   Load_ENGS, nullptr, nullptr, CH_RIFF  },
 };
+
+extern const ChunkHandlerTable _engine_chunk_handlers(engine_chunk_handlers);

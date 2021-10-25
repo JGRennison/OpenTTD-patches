@@ -301,8 +301,6 @@ void ListSettingDesc::FormatValue(char *buf, const char *last, const void *objec
 		}
 		if (IsSignedVarMemType(this->save.conv)) {
 			buf += seprintf(buf, last, (i == 0) ? "%d" : ",%d", v);
-		} else if (this->save.conv & SLF_HEX) {
-			buf += seprintf(buf, last, (i == 0) ? "0x%X" : ",0x%X", v);
 		} else {
 			buf += seprintf(buf, last, (i == 0) ? "%u" : ",%u", v);
 		}
@@ -423,9 +421,9 @@ void IntSettingDesc::MakeValueValidAndWrite(const void *object, int32 val) const
  * Make the value valid given the limitations of this setting.
  *
  * In the case of int settings this is ensuring the value is between the minimum and
- * maximum value, with a special case for 0 if SGF_0ISDISABLED is set.
+ * maximum value, with a special case for 0 if SF_GUI_0_IS_SPECIAL is set.
  * This is generally done by clamping the value so it is within the allowed value range.
- * However, for SGF_MULTISTRING the default is used when the value is not valid.
+ * However, for SF_GUI_DROPDOWN the default is used when the value is not valid.
  * @param val The value to make valid.
  */
 void IntSettingDesc::MakeValueValid(int32 &val) const
@@ -444,10 +442,10 @@ void IntSettingDesc::MakeValueValid(int32 &val) const
 		case SLE_VAR_U16:
 		case SLE_VAR_I32: {
 			/* Override the minimum value. No value below this->min, except special value 0 */
-			if (!(this->flags & SGF_0ISDISABLED) || val != 0) {
-				if (this->flags & SGF_ENUM) {
+			if (!(this->flags & SF_GUI_0_IS_SPECIAL) || val != 0) {
+				if (this->flags & SF_ENUM) {
 					if (!ValidateEnumSetting(this, val)) val = (int32)(size_t)this->def;
-				} else if (!(this->flags & SGF_MULTISTRING)) {
+				} else if (!(this->flags & SF_GUI_DROPDOWN)) {
 					/* Clamp value-type setting to its valid range */
 					val = Clamp(val, this->min, this->max);
 				} else if (val < this->min || val > (int32)this->max) {
@@ -460,10 +458,10 @@ void IntSettingDesc::MakeValueValid(int32 &val) const
 		case SLE_VAR_U32: {
 			/* Override the minimum value. No value below this->min, except special value 0 */
 			uint32 uval = (uint32)val;
-			if (!(this->flags & SGF_0ISDISABLED) || uval != 0) {
-				if (this->flags & SGF_ENUM) {
+			if (!(this->flags & SF_GUI_0_IS_SPECIAL) || uval != 0) {
+				if (this->flags & SF_ENUM) {
 					if (!ValidateEnumSetting(this, val)) uval = (uint32)(size_t)this->def;
-				} else if (!(this->flags & SGF_MULTISTRING)) {
+				} else if (!(this->flags & SF_GUI_DROPDOWN)) {
 					/* Clamp value-type setting to its valid range */
 					uval = ClampU(uval, this->min, this->max);
 				} else if (uval < (uint)this->min || uval > this->max) {
@@ -558,7 +556,7 @@ static void IniLoadSettings(IniFile *ini, const SettingTable &settings_table, co
 		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		if (sd->startup != only_startup) continue;
 		IniItem *item;
-		if (sd->flags & SGF_NO_NEWGAME) {
+		if (sd->flags & SF_NO_NEWGAME) {
 			item = nullptr;
 		} else {
 			/* For settings.xx.yy load the settings from [xx] yy = ? */
@@ -639,7 +637,7 @@ static void IniSaveSettings(IniFile *ini, const SettingTable &settings_table, co
 		 * file, just continue with the next setting */
 		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		if (sd->save.conv & SLF_NOT_IN_CONFIG) continue;
-		if (sd->flags & SGF_NO_NEWGAME) continue;
+		if (sd->flags & SF_NO_NEWGAME) continue;
 
 		/* XXX - wtf is this?? (group override?) */
 		std::string s{ sd->name };
@@ -667,7 +665,7 @@ static void IniSaveSettings(IniFile *ini, const SettingTable &settings_table, co
 void IntSettingDesc::FormatValue(char *buf, const char *last, const void *object) const
 {
 	uint32 i = (uint32)this->Read(object);
-	seprintf(buf, last, IsSignedVarMemType(this->save.conv) ? "%d" : (this->save.conv & SLF_HEX) ? "%X" : "%u", i);
+	seprintf(buf, last, IsSignedVarMemType(this->save.conv) ? "%d" : "%u", i);
 }
 
 void BoolSettingDesc::FormatValue(char *buf, const char *last, const void *object) const
@@ -789,13 +787,13 @@ void IniSaveWindowSettings(IniFile *ini, const char *grpname, void *desc)
  */
 bool SettingDesc::IsEditable(bool do_command) const
 {
-	if (!do_command && !(this->save.conv & SLF_NO_NETWORK_SYNC) && _networking && !(_network_server || _network_settings_access) && !(this->flags & SGF_PER_COMPANY)) return false;
-	if ((this->flags & SGF_NETWORK_ONLY) && !_networking && _game_mode != GM_MENU) return false;
-	if ((this->flags & SGF_NO_NETWORK) && _networking) return false;
-	if ((this->flags & SGF_NEWGAME_ONLY) &&
+	if (!do_command && !(this->save.conv & SLF_NO_NETWORK_SYNC) && _networking && !(_network_server || _network_settings_access) && !(this->flags & SF_PER_COMPANY)) return false;
+	if ((this->flags & SF_NETWORK_ONLY) && !_networking && _game_mode != GM_MENU) return false;
+	if ((this->flags & SF_NO_NETWORK) && _networking) return false;
+	if ((this->flags & SF_NEWGAME_ONLY) &&
 			(_game_mode == GM_NORMAL ||
-			(_game_mode == GM_EDITOR && !(this->flags & SGF_SCENEDIT_TOO)))) return false;
-	if ((this->flags & SGF_SCENEDIT_ONLY) && _game_mode != GM_EDITOR) return false;
+			(_game_mode == GM_EDITOR && !(this->flags & SF_SCENEDIT_TOO)))) return false;
+	if ((this->flags & SF_SCENEDIT_ONLY) && _game_mode != GM_EDITOR) return false;
 	return true;
 }
 
@@ -805,7 +803,7 @@ bool SettingDesc::IsEditable(bool do_command) const
  */
 SettingType SettingDesc::GetType() const
 {
-	if (this->flags & SGF_PER_COMPANY) return ST_COMPANY;
+	if (this->flags & SF_PER_COMPANY) return ST_COMPANY;
 	return (this->save.conv & SLF_NOT_IN_SAVE) ? ST_CLIENT : ST_GAME;
 }
 
@@ -1643,7 +1641,7 @@ static int64 LinkGraphDistModeXrefChillPP(int64 val)
 static bool OrderTownGrowthRate(SettingOnGuiCtrlData &data)
 {
 	switch (data.type) {
-		case SOGCT_MULTISTRING_ORDER: {
+		case SOGCT_GUI_DROPDOWN_ORDER: {
 			int in = data.val;
 			int out;
 			if (in == 0) {
@@ -2168,7 +2166,7 @@ void IntSettingDesc::ChangeValue(const void *object, int32 newval) const
 	this->Write(object, newval);
 	if (this->post_callback != nullptr) this->post_callback(newval);
 
-	if (this->flags & SGF_NO_NETWORK) {
+	if (this->flags & SF_NO_NETWORK) {
 		GamelogStartAction(GLAT_SETTING);
 		GamelogSetting(this->name, oldval, newval);
 		GamelogStopAction();
@@ -2316,10 +2314,10 @@ const char *GetCompanySettingNameByIndex(uint32 idx)
 bool SetSettingValue(const IntSettingDesc *sd, int32 value, bool force_newgame)
 {
 	const IntSettingDesc *setting = sd->AsIntSetting();
-	if ((setting->flags & SGF_PER_COMPANY) != 0) {
+	if ((setting->flags & SF_PER_COMPANY) != 0) {
 		if (Company::IsValidID(_local_company) && _game_mode != GM_MENU) {
 			return DoCommandP(0, 0, value, CMD_CHANGE_COMPANY_SETTING, nullptr, setting->name);
-		} else if (setting->flags & SGF_NO_NEWGAME) {
+		} else if (setting->flags & SF_NO_NEWGAME) {
 			return false;
 		}
 
@@ -2331,7 +2329,7 @@ bool SetSettingValue(const IntSettingDesc *sd, int32 value, bool force_newgame)
 	 * (if any) to change. Also *hack*hack* we update the _newgame version
 	 * of settings because changing a company-based setting in a game also
 	 * changes its defaults. At least that is the convention we have chosen */
-	bool no_newgame = setting->flags & SGF_NO_NEWGAME;
+	bool no_newgame = setting->flags & SF_NO_NEWGAME;
 	if (no_newgame && _game_mode == GM_MENU) return false;
 	if (setting->save.conv & SLF_NO_NETWORK_SYNC) {
 		if (_game_mode != GM_MENU && !no_newgame) {
@@ -2442,7 +2440,7 @@ void IConsoleSetSetting(const char *name, const char *value, bool force_newgame)
 {
 	const SettingDesc *sd = GetSettingFromName(name);
 
-	if (sd == nullptr || ((sd->flags & SGF_NO_NEWGAME) && (_game_mode == GM_MENU || force_newgame))) {
+	if (sd == nullptr || ((sd->flags & SF_NO_NEWGAME) && (_game_mode == GM_MENU || force_newgame))) {
 		IConsolePrintF(CC_WARNING, "'%s' is an unknown setting.", name);
 		return;
 	}
@@ -2487,7 +2485,7 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 {
 	const SettingDesc *sd = GetSettingFromName(name);
 
-	if (sd == nullptr || ((sd->flags & SGF_NO_NEWGAME) && (_game_mode == GM_MENU || force_newgame))) {
+	if (sd == nullptr || ((sd->flags & SF_NO_NEWGAME) && (_game_mode == GM_MENU || force_newgame))) {
 		IConsolePrintF(CC_WARNING, "'%s' is an unknown setting.", name);
 		return;
 	}
@@ -2502,7 +2500,7 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 		bool show_min_max = true;
 		int64 min_value = int_setting->min;
 		int64 max_value = int_setting->max;
-		if (sd->flags & SGF_ENUM) {
+		if (sd->flags & SF_ENUM) {
 			min_value = INT64_MAX;
 			max_value = INT64_MIN;
 			int count = 0;
@@ -2522,7 +2520,7 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 
 		if (show_min_max) {
 			IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s' (min: %s" OTTD_PRINTF64 ", max: " OTTD_PRINTF64 ")",
-				name, value, (sd->flags & SGF_0ISDISABLED) ? "(0) " : "", min_value, max_value);
+				name, value, (sd->flags & SF_GUI_0_IS_SPECIAL) ? "(0) " : "", min_value, max_value);
 		} else {
 			IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s'",
 				name, value);
@@ -2542,7 +2540,7 @@ void IConsoleListSettings(const char *prefilter)
 	for (auto &sd : _settings) {
 		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		if (prefilter != nullptr && strstr(sd->name, prefilter) == nullptr) continue;
-		if ((sd->flags & SGF_NO_NEWGAME) && _game_mode == GM_MENU) continue;
+		if ((sd->flags & SF_NO_NEWGAME) && _game_mode == GM_MENU) continue;
 		char value[80];
 		sd->FormatValue(value, lastof(value), &GetGameSettings());
 		IConsolePrintF(CC_DEFAULT, "%s = %s", sd->name, value);
@@ -3009,11 +3007,13 @@ static void Save_PATX()
 	SaveSettingsPatx(_settings, &_settings_game);
 }
 
-extern const ChunkHandler _setting_chunk_handlers[] = {
-	{ 'OPTS', nullptr,      Load_OPTS, nullptr, nullptr,       CH_RIFF},
-	{ 'PATS', Save_PATS, Load_PATS, nullptr, Check_PATS, CH_RIFF},
-	{ 'PATX', Save_PATX, Load_PATX, nullptr, Check_PATX, CH_RIFF | CH_LAST},
+static const ChunkHandler setting_chunk_handlers[] = {
+	{ 'OPTS', nullptr,   Load_OPTS, nullptr, nullptr,    CH_RIFF },
+	{ 'PATS', Save_PATS, Load_PATS, nullptr, Check_PATS, CH_RIFF },
+	{ 'PATX', Save_PATX, Load_PATX, nullptr, Check_PATX, CH_RIFF },
 };
+
+extern const ChunkHandlerTable _setting_chunk_handlers(setting_chunk_handlers);
 
 static bool IsSignedVarMemType(VarType vt)
 {

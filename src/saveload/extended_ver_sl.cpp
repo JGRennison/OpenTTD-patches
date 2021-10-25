@@ -669,6 +669,7 @@ static uint32 saveLC(const SlxiSubChunkInfo *info, bool dry_run)
 	return 1;
 }
 
-extern const ChunkHandler _version_ext_chunk_handlers[] = {
-	{ 'SLXI', Save_SLXI, Load_SLXI, nullptr, Load_SLXI, CH_RIFF | CH_LAST},
+extern const ChunkHandler version_ext_chunk_handlers[] = {
+	{ 'SLXI', Save_SLXI, Load_SLXI, nullptr, Load_SLXI, CH_RIFF },
 };
+extern const ChunkHandlerTable _version_ext_chunk_handlers(version_ext_chunk_handlers);

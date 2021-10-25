@@ -50,6 +50,8 @@ static void Save_XBSS()
 	}
 }
 
-extern const ChunkHandler _bridge_signal_chunk_handlers[] = {
-	{ 'XBSS', Save_XBSS, Load_XBSS, nullptr, nullptr, CH_SPARSE_ARRAY | CH_LAST},
+extern const ChunkHandler bridge_signal_chunk_handlers[] = {
+	{ 'XBSS', Save_XBSS, Load_XBSS, nullptr, nullptr, CH_SPARSE_ARRAY },
 };
+
+extern const ChunkHandlerTable _bridge_signal_chunk_handlers(bridge_signal_chunk_handlers);

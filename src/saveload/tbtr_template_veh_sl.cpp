@@ -151,6 +151,8 @@ void AfterLoadTemplateVehiclesUpdateProperties()
 	RestoreRandomSeeds(saved_seeds);
 }
 
-extern const ChunkHandler _template_vehicle_chunk_handlers[] = {
-	{'TMPL', Save_TMPLS, Load_TMPLS, Ptrs_TMPLS, nullptr, CH_ARRAY | CH_LAST},
+extern const ChunkHandler template_vehicle_chunk_handlers[] = {
+	{ 'TMPL', Save_TMPLS, Load_TMPLS, Ptrs_TMPLS, nullptr, CH_ARRAY },
 };
+
+extern const ChunkHandlerTable _template_vehicle_chunk_handlers(template_vehicle_chunk_handlers);
