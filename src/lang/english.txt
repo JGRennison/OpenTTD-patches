@@ -3075,12 +3075,18 @@ STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL_SHORT             :Cancel no PBS b
 STR_TRACE_RESTRICT_TIME_MINUTE                                  :current minute (0 - 59)
 STR_TRACE_RESTRICT_TIME_HOUR                                    :current hour (0 - 23)
 STR_TRACE_RESTRICT_TIME_HOUR_MINUTE                             :current hour and minute (0 - 2359)
+STR_TRACE_RESTRICT_TIME_DAY                                     :current day (1 - 31)
+STR_TRACE_RESTRICT_TIME_MONTH                                   :current month (1 - 12)
 STR_TRACE_RESTRICT_TIME_MINUTE_ITEM                             :current minute
 STR_TRACE_RESTRICT_TIME_HOUR_ITEM                               :current hour
 STR_TRACE_RESTRICT_TIME_HOUR_MINUTE_ITEM                        :current hour and minute
+STR_TRACE_RESTRICT_TIME_DAY_ITEM                                :current day
+STR_TRACE_RESTRICT_TIME_MONTH_ITEM                              :current month
 STR_TRACE_RESTRICT_TIME_MINUTE_SHORT                            :minute
 STR_TRACE_RESTRICT_TIME_HOUR_SHORT                              :hour
 STR_TRACE_RESTRICT_TIME_HOUR_MINUTE_SHORT                       :hour and minute
+STR_TRACE_RESTRICT_TIME_DAY_ITEM_SHORT                          :day
+STR_TRACE_RESTRICT_TIME_MONTH_ITEM_SHORT                        :month
 STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :lateness
 STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :earliness
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Value

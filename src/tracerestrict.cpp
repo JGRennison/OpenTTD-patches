@@ -1713,6 +1713,12 @@ int GetTraceRestrictTimeDateValue(TraceRestrictTimeDateValueField type)
 		case TRTDVF_HOUR_MINUTE:
 			return (MINUTES_HOUR(minutes) * 100) + MINUTES_MINUTE(minutes);
 
+		case TRTDVF_DAY:
+			return _cur_date_ymd.day;
+
+		case TRTDVF_MONTH:
+			return _cur_date_ymd.month + 1;
+
 		default:
 			return 0;
 	}

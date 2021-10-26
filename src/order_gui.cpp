@@ -757,6 +757,8 @@ static const StringID _order_time_date_dropdown[] = {
 	STR_TRACE_RESTRICT_TIME_MINUTE,
 	STR_TRACE_RESTRICT_TIME_HOUR,
 	STR_TRACE_RESTRICT_TIME_HOUR_MINUTE,
+	STR_TRACE_RESTRICT_TIME_DAY,
+	STR_TRACE_RESTRICT_TIME_MONTH,
 	INVALID_STRING_ID
 };
 
@@ -2421,7 +2423,7 @@ public:
 
 			case WID_O_COND_TIME_DATE: {
 				ShowDropDownMenu(this, _order_time_date_dropdown, this->vehicle->GetOrder(this->OrderGetSel())->GetConditionValue(),
-						WID_O_COND_TIME_DATE, 0, 0, UINT_MAX);
+						WID_O_COND_TIME_DATE, _settings_game.game_time.time_in_minutes ? 0 : 7, 0, UINT_MAX);
 				break;
 			}
 
@@ -2481,7 +2483,6 @@ public:
 								_order_conditional_variable[i] == OCV_COUNTER_VALUE) && !_settings_client.gui.show_adv_tracerestrict_features) {
 							continue;
 						}
-						if (_order_conditional_variable[i] == OCV_TIME_DATE && !_settings_game.game_time.time_in_minutes) continue;
 					}
 					list.emplace_back(new DropDownListStringItem(STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE + _order_conditional_variable[i], _order_conditional_variable[i], false));
 				}
