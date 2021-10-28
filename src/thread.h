@@ -17,6 +17,7 @@
 #include <mutex>
 #if defined(__MINGW32__)
 #include "3rdparty/mingw-std-threads/mingw.thread.h"
+#include "3rdparty/mingw-std-threads/mingw.mutex.h"
 #endif
 
 /**

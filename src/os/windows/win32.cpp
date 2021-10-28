@@ -40,6 +40,10 @@
 
 #include "../../safeguards.h"
 
+#ifdef __MINGW32__
+#pragma GCC diagnostic ignored "-Wcast-function-type"
+#endif /* __MINGW32__ */
+
 static bool _has_console;
 static bool _cursor_disable = true;
 static bool _cursor_visible = true;
@@ -779,38 +783,6 @@ int GetCurrentThreadName(char *str, const char *last)
 		return seprintf(str, last, "%s", iter->second.c_str());
 	}
 	return 0;
-}
-
-/**
- * Is the current Windows version Vista or later?
- * @return True if the current Windows is Vista or later.
- */
-bool IsWindowsVistaOrGreater()
-{
-	typedef BOOL (WINAPI * LPVERIFYVERSIONINFO)(LPOSVERSIONINFOEX, DWORD, DWORDLONG);
-	typedef ULONGLONG (NTAPI * LPVERSETCONDITIONMASK)(ULONGLONG, DWORD, BYTE);
-#ifdef UNICODE
-	static LPVERIFYVERSIONINFO _VerifyVersionInfo = (LPVERIFYVERSIONINFO)GetProcAddress(GetModuleHandle(_T("Kernel32")), "VerifyVersionInfoW");
-#else
-	static LPVERIFYVERSIONINFO _VerifyVersionInfo = (LPVERIFYVERSIONINFO)GetProcAddress(GetModuleHandle(_T("Kernel32")), "VerifyVersionInfoA");
-#endif
-	static LPVERSETCONDITIONMASK _VerSetConditionMask = (LPVERSETCONDITIONMASK)GetProcAddress(GetModuleHandle(_T("Kernel32")), "VerSetConditionMask");
-
-	if (_VerifyVersionInfo != nullptr && _VerSetConditionMask != nullptr) {
-		OSVERSIONINFOEX osvi = { sizeof(osvi), 0, 0, 0, 0, {0}, 0, 0 };
-		DWORDLONG dwlConditionMask = 0;
-		dwlConditionMask = _VerSetConditionMask(dwlConditionMask, VER_MAJORVERSION, VER_GREATER_EQUAL);
-		dwlConditionMask = _VerSetConditionMask(dwlConditionMask, VER_MINORVERSION, VER_GREATER_EQUAL);
-		dwlConditionMask = _VerSetConditionMask(dwlConditionMask, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
-
-		osvi.dwMajorVersion = 6;
-		osvi.dwMinorVersion = 0;
-		osvi.wServicePackMajor = 0;
-
-		return _VerifyVersionInfo(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE;
-	} else {
-		return LOBYTE(GetVersion()) >= 6;
-	}
 }
 
 #ifdef _MSC_VER
