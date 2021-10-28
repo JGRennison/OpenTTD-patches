@@ -538,11 +538,8 @@ enum VarTypes {
 
 	/* 8 bits allocated for a maximum of 8 flags
 	 * Flags directing saving/loading of a variable */
-	SLF_NOT_IN_SAVE     = 1 <<  8, ///< do not save with savegame, basically client-based
-	SLF_NOT_IN_CONFIG   = 1 <<  9, ///< do not save to config file
-	SLF_NO_NETWORK_SYNC = 1 << 10, ///< do not synchronize over network (but it is saved if SLF_NOT_IN_SAVE is not set)
-	SLF_ALLOW_CONTROL   = 1 << 11, ///< allow control codes in the strings
-	SLF_ALLOW_NEWLINE   = 1 << 12, ///< allow new lines in the strings
+	SLF_ALLOW_CONTROL   = 1 << 8, ///< Allow control codes in the strings.
+	SLF_ALLOW_NEWLINE   = 1 << 9, ///< Allow new lines in the strings.
 };
 
 typedef uint32 VarType;
@@ -551,11 +548,11 @@ typedef uint32 VarType;
 enum SaveLoadTypes {
 	SL_VAR         =  0, ///< Save/load a variable.
 	SL_REF         =  1, ///< Save/load a reference.
-	SL_ARR         =  2, ///< Save/load an array.
+	SL_ARR         =  2, ///< Save/load a fixed-size array of #SL_VAR elements.
 	SL_STR         =  3, ///< Save/load a string.
-	SL_LST         =  4, ///< Save/load a list.
-	SL_DEQUE       =  5, ///< Save/load a primitive type deque.
-	SL_VEC         =  6, ///< Save/load a vector.
+	SL_REFLIST     =  4, ///< Save/load a list of #SL_REF elements.
+	SL_DEQUE       =  5, ///< Save/load a deque of #SL_VAR elements.
+	SL_VEC         =  6, ///< Save/load a vector of #SL_REF elements.
 	SL_STDSTR      =  7, ///< Save/load a std::string.
 
 	/* non-normal save-load types */
@@ -563,7 +560,7 @@ enum SaveLoadTypes {
 	SL_VEH_INCLUDE =  9,
 	SL_ST_INCLUDE  = 10,
 
-	SL_PTRDEQ      = 13, ///< Save/load a pointer type deque.
+	SL_PTRDEQ      = 13, ///< Save/load a deque of #SL_REF elements.
 	SL_VARVEC      = 14, ///< Save/load a primitive type vector.
 };
 
@@ -628,7 +625,7 @@ using SaveLoadTable = span<const SaveLoad>;
 #define SLE_CONDREF(base, variable, type, from, to) SLE_CONDREF_X(base, variable, type, from, to, SlXvFeatureTest())
 
 /**
- * Storage of an array in some savegame versions.
+ * Storage of a fixed-size array of #SL_VAR elements in some savegame versions.
  * @param base     Name of the class or struct containing the array.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
@@ -666,7 +663,7 @@ using SaveLoadTable = span<const SaveLoad>;
 #define SLE_CONDSSTR(base, variable, type, from, to) SLE_GENERAL(SL_STDSTR, base, variable, type, 0, from, to)
 
 /**
- * Storage of a list in some savegame versions.
+ * Storage of a list of #SL_REF elements in some savegame versions.
  * @param base     Name of the class or struct containing the list.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
@@ -674,8 +671,8 @@ using SaveLoadTable = span<const SaveLoad>;
  * @param to       Last savegame version that has the list.
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  */
-#define SLE_CONDLST_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_LST, base, variable, type, 0, from, to, extver)
-#define SLE_CONDLST(base, variable, type, from, to) SLE_CONDLST_X(base, variable, type, from, to, SlXvFeatureTest())
+#define SLE_CONDREFLIST_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_REFLIST, base, variable, type, 0, from, to, extver)
+#define SLE_CONDREFLIST(base, variable, type, from, to) SLE_CONDREFLIST_X(base, variable, type, from, to, SlXvFeatureTest())
 
 /**
  * Storage of a deque in some savegame versions.
@@ -714,7 +711,7 @@ using SaveLoadTable = span<const SaveLoad>;
 #define SLE_CONDVARVEC(base, variable, type, from, to) SLE_CONDVARVEC_X(base, variable, type, from, to, SlXvFeatureTest())
 
 /**
- * Storage of a deque in some savegame versions.
+ * Storage of a deque of #SL_VAR elements in some savegame versions.
  * @param base     Name of the class or struct containing the list.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
@@ -742,7 +739,7 @@ using SaveLoadTable = span<const SaveLoad>;
 #define SLE_REF(base, variable, type) SLE_CONDREF(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
- * Storage of an array in every version of a savegame.
+ * Storage of fixed-size array of #SL_VAR elements in every version of a savegame.
  * @param base     Name of the class or struct containing the array.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
@@ -768,12 +765,12 @@ using SaveLoadTable = span<const SaveLoad>;
 #define SLE_SSTR(base, variable, type) SLE_CONDSSTR(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
- * Storage of a list in every savegame version.
+ * Storage of a list of #SL_REF elements in every savegame version.
  * @param base     Name of the class or struct containing the list.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
  */
-#define SLE_LST(base, variable, type) SLE_CONDLST(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
+#define SLE_REFLIST(base, variable, type) SLE_CONDREFLIST(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
  * Storage of a deque in every savegame version.
@@ -804,7 +801,7 @@ using SaveLoadTable = span<const SaveLoad>;
  * @param to     Last savegame version that has the empty space.
  * @param extver SlXvFeatureTest to test (along with from and to) which savegames have empty space
  */
-#define SLE_CONDNULL_X(length, from, to, extver) SLE_CONDARR_X(NullStruct, null, SLE_FILE_U8 | SLE_VAR_NULL | SLF_NOT_IN_CONFIG, length, from, to, extver)
+#define SLE_CONDNULL_X(length, from, to, extver) SLE_CONDARR_X(NullStruct, null, SLE_FILE_U8 | SLE_VAR_NULL, length, from, to, extver)
 #define SLE_CONDNULL(length, from, to) SLE_CONDNULL_X(length, from, to, SlXvFeatureTest())
 
 /** Translate values ingame to different values in the savegame and vv. */
@@ -849,7 +846,7 @@ using SaveLoadTable = span<const SaveLoad>;
 #define SLEG_CONDREF(variable, type, from, to) SLEG_CONDREF_X(variable, type, from, to, SlXvFeatureTest())
 
 /**
- * Storage of a global array in some savegame versions.
+ * Storage of a global fixed-size array of #SL_VAR elements in some savegame versions.
  * @param variable Name of the global variable.
  * @param type     Storage of the data in memory and in the savegame.
  * @param length   Number of elements in the array.
@@ -883,15 +880,15 @@ using SaveLoadTable = span<const SaveLoad>;
 #define SLEG_CONDSSTR(variable, type, from, to) SLEG_GENERAL(SL_STDSTR, variable, type, 0, from, to)
 
 /**
- * Storage of a global list in some savegame versions.
+ * Storage of a global reference list in some savegame versions.
  * @param variable Name of the global variable.
  * @param type     Storage of the data in memory and in the savegame.
  * @param from     First savegame version that has the list.
  * @param to       Last savegame version that has the list.
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  */
-#define SLEG_CONDLST_X(variable, type, from, to, extver) SLEG_GENERAL_X(SL_LST, variable, type, 0, from, to, extver)
-#define SLEG_CONDLST(variable, type, from, to) SLEG_CONDLST_X(variable, type, from, to, SlXvFeatureTest())
+#define SLEG_CONDREFLIST_X(variable, type, from, to, extver) SLEG_GENERAL_X(SL_REFLIST, variable, type, 0, from, to, extver)
+#define SLEG_CONDREFLIST(variable, type, from, to) SLEG_CONDREFLIST_X(variable, type, from, to, SlXvFeatureTest())
 
 /**
  * Storage of a global deque in some savegame versions.
@@ -930,7 +927,7 @@ using SaveLoadTable = span<const SaveLoad>;
 #define SLEG_REF(variable, type) SLEG_CONDREF(variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
- * Storage of a global array in every savegame version.
+ * Storage of a global fixed-size array of #SL_VAR elements in every savegame version.
  * @param variable Name of the global variable.
  * @param type     Storage of the data in memory and in the savegame.
  */
@@ -951,11 +948,11 @@ using SaveLoadTable = span<const SaveLoad>;
 #define SLEG_SSTR(variable, type) SLEG_CONDSSTR(variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
- * Storage of a global list in every savegame version.
+ * Storage of a global reference list in every savegame version.
  * @param variable Name of the global variable.
  * @param type     Storage of the data in memory and in the savegame.
  */
-#define SLEG_LST(variable, type) SLEG_CONDLST(variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
+#define SLEG_REFLIST(variable, type) SLEG_CONDREFLIST(variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
  * Storage of a global deque in every savegame version.
@@ -978,7 +975,7 @@ using SaveLoadTable = span<const SaveLoad>;
  * @param to     Last savegame version that has the empty space.
  * @param extver SlXvFeatureTest to test (along with from and to) which savegames have empty space
  */
-#define SLEG_CONDNULL(length, from, to) {true, SL_ARR, SLE_FILE_U8 | SLE_VAR_NULL | SLF_NOT_IN_CONFIG, length, from, to, (void*)nullptr, SlXvFeatureTest()}
+#define SLEG_CONDNULL(length, from, to) {true, SL_ARR, SLE_FILE_U8 | SLE_VAR_NULL, length, from, to, (void*)nullptr, SlXvFeatureTest()}
 
 /**
  * Checks whether the savegame is below \a major.\a minor.

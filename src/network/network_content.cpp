@@ -56,26 +56,27 @@ bool ClientNetworkContentSocketHandler::Receive_SERVER_INFO(Packet *p)
 	ci->id       = (ContentID)p->Recv_uint32();
 	ci->filesize = p->Recv_uint32();
 
-	p->Recv_string(ci->name, lengthof(ci->name));
-	p->Recv_string(ci->version, lengthof(ci->version));
-	p->Recv_string(ci->url, lengthof(ci->url));
-	p->Recv_string(ci->description, lengthof(ci->description), SVS_REPLACE_WITH_QUESTION_MARK | SVS_ALLOW_NEWLINE);
+	ci->name        = p->Recv_string(NETWORK_CONTENT_NAME_LENGTH);
+	ci->version     = p->Recv_string(NETWORK_CONTENT_VERSION_LENGTH);
+	ci->url         = p->Recv_string(NETWORK_CONTENT_URL_LENGTH);
+	ci->description = p->Recv_string(NETWORK_CONTENT_DESC_LENGTH, SVS_REPLACE_WITH_QUESTION_MARK | SVS_ALLOW_NEWLINE);
 
 	ci->unique_id = p->Recv_uint32();
 	for (uint j = 0; j < sizeof(ci->md5sum); j++) {
 		ci->md5sum[j] = p->Recv_uint8();
 	}
 
-	ci->dependency_count = p->Recv_uint8();
-	ci->dependencies = MallocT<ContentID>(ci->dependency_count);
-	for (uint i = 0; i < ci->dependency_count; i++) {
-		ci->dependencies[i] = (ContentID)p->Recv_uint32();
-		this->reverse_dependency_map.insert({ ci->dependencies[i], ci->id });
+	uint dependency_count = p->Recv_uint8();
+	ci->dependencies.reserve(dependency_count);
+	for (uint i = 0; i < dependency_count; i++) {
+		ContentID cid = (ContentID)p->Recv_uint32();
+		ci->dependencies.push_back(cid);
+		this->reverse_dependency_map.insert({ cid, ci->id });
 	}
 
-	ci->tag_count = p->Recv_uint8();
-	ci->tags = MallocT<char[32]>(ci->tag_count);
-	for (uint i = 0; i < ci->tag_count; i++) p->Recv_string(ci->tags[i], lengthof(*ci->tags));
+	uint tag_count = p->Recv_uint8();
+	ci->tags.reserve(tag_count);
+	for (uint i = 0; i < tag_count; i++) ci->tags.push_back(p->Recv_string(NETWORK_CONTENT_TAG_LENGTH));
 
 	if (!ci->IsValid()) {
 		delete ci;
@@ -146,16 +147,15 @@ bool ClientNetworkContentSocketHandler::Receive_SERVER_INFO(Packet *p)
 		if (ici->type == ci->type && ici->unique_id == ci->unique_id &&
 				memcmp(ci->md5sum, ici->md5sum, sizeof(ci->md5sum)) == 0) {
 			/* Preserve the name if possible */
-			if (StrEmpty(ci->name)) strecpy(ci->name, ici->name, lastof(ci->name));
+			if (ci->name.empty()) ci->name = ici->name;
 			if (ici->IsSelected()) ci->state = ici->state;
 
 			/*
 			 * As ici might be selected by the content window we cannot delete that.
 			 * However, we want to keep most of the values of ci, except the values
 			 * we (just) already preserved.
-			 * So transfer data and ownership of allocated memory from ci to ici.
 			 */
-			ici->TransferFrom(ci);
+			*ici = *ci;
 			delete ci;
 
 			this->OnReceiveContentInfo(ici);
@@ -509,7 +509,7 @@ bool ClientNetworkContentSocketHandler::Receive_SERVER_CONTENT(Packet *p)
 		this->curInfo->type     = (ContentType)p->Recv_uint8();
 		this->curInfo->id       = (ContentID)p->Recv_uint32();
 		this->curInfo->filesize = p->Recv_uint32();
-		p->Recv_string(this->curInfo->filename, lengthof(this->curInfo->filename));
+		this->curInfo->filename = p->Recv_string(NETWORK_CONTENT_FILENAME_LENGTH);
 
 		if (!this->BeforeDownload()) {
 			this->CloseConnection();
@@ -728,7 +728,7 @@ void ClientNetworkContentSocketHandler::OnReceiveData(const char *data, size_t l
 		}
 
 		/* Copy the string, without extension, to the filename. */
-		strecpy(this->curInfo->filename, tmp, lastof(this->curInfo->filename));
+		this->curInfo->filename = tmp;
 
 		/* Request the next file. */
 		if (!this->BeforeDownload()) {
@@ -988,10 +988,10 @@ void ClientNetworkContentSocketHandler::CheckDependencyState(ContentInfo *ci)
 		/* Selection is easy; just walk all children and set the
 		 * autoselected state. That way we can see what we automatically
 		 * selected and thus can unselect when a dependency is removed. */
-		for (uint i = 0; i < ci->dependency_count; i++) {
-			ContentInfo *c = this->GetContent(ci->dependencies[i]);
+		for (auto &dependency : ci->dependencies) {
+			ContentInfo *c = this->GetContent(dependency);
 			if (c == nullptr) {
-				this->DownloadContentInfo(ci->dependencies[i]);
+				this->DownloadContentInfo(dependency);
 			} else if (c->state == ContentInfo::UNSELECTED) {
 				c->state = ContentInfo::AUTOSELECTED;
 				this->CheckDependencyState(c);
@@ -1014,10 +1014,10 @@ void ClientNetworkContentSocketHandler::CheckDependencyState(ContentInfo *ci)
 		this->Unselect(c->id);
 	}
 
-	for (uint i = 0; i < ci->dependency_count; i++) {
-		const ContentInfo *c = this->GetContent(ci->dependencies[i]);
+	for (auto &dependency : ci->dependencies) {
+		const ContentInfo *c = this->GetContent(dependency);
 		if (c == nullptr) {
-			DownloadContentInfo(ci->dependencies[i]);
+			DownloadContentInfo(dependency);
 			continue;
 		}
 		if (c->state != ContentInfo::AUTOSELECTED) continue;

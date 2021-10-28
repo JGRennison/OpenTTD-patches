@@ -928,13 +928,11 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_JOIN(Packet *p)
 		return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
 	}
 
-	char client_revision[NETWORK_REVISION_LENGTH];
-
-	p->Recv_string(client_revision, sizeof(client_revision));
+	std::string client_revision = p->Recv_string(NETWORK_REVISION_LENGTH);
 	uint32 newgrf_version = p->Recv_uint32();
 
 	/* Check if the client has revision control enabled */
-	if (!IsNetworkCompatibleVersion(client_revision) || _openttd_newgrf_version != newgrf_version) {
+	if (!IsNetworkCompatibleVersion(client_revision.c_str()) || _openttd_newgrf_version != newgrf_version) {
 		/* Different revisions!! */
 		return this->SendError(NETWORK_ERROR_WRONG_REVISION);
 	}
@@ -1048,11 +1046,10 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_SETTINGS_PASSWO
 		return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
 	}
 
-	char password[NETWORK_PASSWORD_LENGTH];
-	p->Recv_string(password, sizeof(password));
+	std::string password = p->Recv_string(NETWORK_PASSWORD_LENGTH);
 
 	/* Check settings password. Deny if no password is set */
-	if (StrEmpty(password)) {
+	if (password.empty()) {
 		if (this->settings_authed) DEBUG(net, 0, "[settings-ctrl] client-id %d deauthed", this->client_id);
 		this->settings_authed = false;
 	} else if (_settings_client.network.settings_password.empty() ||

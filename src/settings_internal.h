@@ -12,22 +12,25 @@
 
 #include "saveload/saveload.h"
 
-enum SettingFlag : uint16 {
+enum SettingFlag : uint32 {
 	SF_NONE = 0,
-	SF_GUI_0_IS_SPECIAL        = 1 << 0, ///< A value of zero is possible and has a custom string (the one after "strval").
-	SF_GUI_NEGATIVE_IS_SPECIAL = 1 << 1, ///< A negative value has another string (the one after "strval").
-	SF_GUI_DROPDOWN            = 1 << 2, ///< The value represents a limited number of string-options (internally integer) presented as dropdown.
-	SF_GUI_CURRENCY            = 1 << 3, ///< The number represents money, so when reading value multiply by exchange rate.
-	SF_NETWORK_ONLY            = 1 << 4, ///< This setting only applies to network games.
-	SF_NO_NETWORK              = 1 << 5, ///< This setting does not apply to network games; it may not be changed during the game.
-	SF_NEWGAME_ONLY            = 1 << 6, ///< This setting cannot be changed in a game.
-	SF_SCENEDIT_TOO            = 1 << 7, ///< This setting can be changed in the scenario editor (only makes sense when SF_NEWGAME_ONLY is set).
-	SF_SCENEDIT_ONLY           = 1 << 8, ///< This setting can only be changed in the scenario editor.
-	SF_PER_COMPANY             = 1 << 9, ///< This setting can be different for each company (saved in company struct).
-	SF_DECIMAL1                = 1 << 10,///< display a decimal representation of the setting value divided by 10
-	SF_ENUM                    = 1 << 11,///< the setting can take one of the values given by an array of struct SettingDescEnumEntry
-	SF_NO_NEWGAME              = 1 << 12,///< the setting does not apply and is not shown in a new game context
-	SF_DEC1SCALE               = 1 << 13,///< also display a float representation of the scale of a decimal1 scale parameter
+	SF_GUI_0_IS_SPECIAL        = 1 <<  0, ///< A value of zero is possible and has a custom string (the one after "strval").
+	SF_GUI_NEGATIVE_IS_SPECIAL = 1 <<  1, ///< A negative value has another string (the one after "strval").
+	SF_GUI_DROPDOWN            = 1 <<  2, ///< The value represents a limited number of string-options (internally integer) presented as dropdown.
+	SF_GUI_CURRENCY            = 1 <<  3, ///< The number represents money, so when reading value multiply by exchange rate.
+	SF_NETWORK_ONLY            = 1 <<  4, ///< This setting only applies to network games.
+	SF_NO_NETWORK              = 1 <<  5, ///< This setting does not apply to network games; it may not be changed during the game.
+	SF_NEWGAME_ONLY            = 1 <<  6, ///< This setting cannot be changed in a game.
+	SF_SCENEDIT_TOO            = 1 <<  7, ///< This setting can be changed in the scenario editor (only makes sense when SF_NEWGAME_ONLY is set).
+	SF_SCENEDIT_ONLY           = 1 <<  8, ///< This setting can only be changed in the scenario editor.
+	SF_PER_COMPANY             = 1 <<  9, ///< This setting can be different for each company (saved in company struct).
+	SF_NOT_IN_SAVE             = 1 << 10, ///< Do not save with savegame, basically client-based.
+	SF_NOT_IN_CONFIG           = 1 << 11, ///< Do not save to config file.
+	SF_NO_NETWORK_SYNC         = 1 << 12, ///< Do not synchronize over network (but it is saved if SF_NOT_IN_SAVE is not set).
+	SF_DECIMAL1                = 1 << 13, ///< display a decimal representation of the setting value divided by 10
+	SF_ENUM                    = 1 << 14, ///< the setting can take one of the values given by an array of struct SettingDescEnumEntry
+	SF_NO_NEWGAME              = 1 << 15, ///< the setting does not apply and is not shown in a new game context
+	SF_DEC1SCALE               = 1 << 16, ///< also display a float representation of the scale of a decimal1 scale parameter
 };
 DECLARE_ENUM_AS_BIT_SET(SettingFlag)
 
@@ -326,7 +329,7 @@ struct ListSettingDesc : SettingDesc {
 /** Placeholder for settings that have been removed, but might still linger in the savegame. */
 struct NullSettingDesc : SettingDesc {
 	NullSettingDesc(SaveLoad save) :
-		SettingDesc(save, "", SF_NONE, nullptr, false, nullptr) {}
+		SettingDesc(save, "", SF_NOT_IN_CONFIG, nullptr, false, nullptr) {}
 	virtual ~NullSettingDesc() {}
 
 	void FormatValue(char *buf, const char *last, const void *object) const override { NOT_REACHED(); }

@@ -636,7 +636,7 @@ static void IniSaveSettings(IniFile *ini, const SettingTable &settings_table, co
 		/* If the setting is not saved to the configuration
 		 * file, just continue with the next setting */
 		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
-		if (sd->save.conv & SLF_NOT_IN_CONFIG) continue;
+		if (sd->flags & SF_NOT_IN_CONFIG) continue;
 		if (sd->flags & SF_NO_NEWGAME) continue;
 
 		/* XXX - wtf is this?? (group override?) */
@@ -787,7 +787,7 @@ void IniSaveWindowSettings(IniFile *ini, const char *grpname, void *desc)
  */
 bool SettingDesc::IsEditable(bool do_command) const
 {
-	if (!do_command && !(this->save.conv & SLF_NO_NETWORK_SYNC) && _networking && !(_network_server || _network_settings_access) && !(this->flags & SF_PER_COMPANY)) return false;
+	if (!do_command && !(this->flags & SF_NO_NETWORK_SYNC) && _networking && !(_network_server || _network_settings_access) && !(this->flags & SF_PER_COMPANY)) return false;
 	if ((this->flags & SF_NETWORK_ONLY) && !_networking && _game_mode != GM_MENU) return false;
 	if ((this->flags & SF_NO_NETWORK) && _networking) return false;
 	if ((this->flags & SF_NEWGAME_ONLY) &&
@@ -804,7 +804,7 @@ bool SettingDesc::IsEditable(bool do_command) const
 SettingType SettingDesc::GetType() const
 {
 	if (this->flags & SF_PER_COMPANY) return ST_COMPANY;
-	return (this->save.conv & SLF_NOT_IN_SAVE) ? ST_CLIENT : ST_GAME;
+	return (this->flags & SF_NOT_IN_SAVE) ? ST_CLIENT : ST_GAME;
 }
 
 /**
@@ -2331,7 +2331,7 @@ bool SetSettingValue(const IntSettingDesc *sd, int32 value, bool force_newgame)
 	 * changes its defaults. At least that is the convention we have chosen */
 	bool no_newgame = setting->flags & SF_NO_NEWGAME;
 	if (no_newgame && _game_mode == GM_MENU) return false;
-	if (setting->save.conv & SLF_NO_NETWORK_SYNC) {
+	if (setting->flags & SF_NO_NETWORK_SYNC) {
 		if (_game_mode != GM_MENU && !no_newgame) {
 			setting->ChangeValue(&_settings_newgame, value);
 		}
@@ -2388,7 +2388,7 @@ void SyncCompanySettings()
  */
 bool SetSettingValue(const StringSettingDesc *sd, std::string value, bool force_newgame)
 {
-	assert(sd->save.conv & SLF_NO_NETWORK_SYNC);
+	assert(sd->flags & SF_NO_NETWORK_SYNC);
 
 	if (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ && value.compare("(null)") == 0) {
 		value.clear();
@@ -2565,14 +2565,13 @@ static void LoadSettingsXref(const SettingDesc *osd, void *object) {
 	sld.version_from     = osd->save.version_from;
 	sld.version_to       = osd->save.version_to;
 	sld.ext_feature_test = osd->save.ext_feature_test;
-	void *ptr = GetVariableAddress(object, sld);
 
-	if (!SlObjectMember(ptr, sld)) return;
-	int64 val = ReadValue(ptr, sld.conv);
-	if (osd->xref.conv != nullptr) val = osd->xref.conv(val);
+	if (!SlObjectMember(object, sld)) return;
 	if (setting_xref->IsIntSetting()) {
 		const IntSettingDesc *int_setting = setting_xref->AsIntSetting();
-		int_setting->MakeValueValidAndWrite(object, int_setting->Read(object));
+		int64 val = int_setting->Read(object);
+		if (osd->xref.conv != nullptr) val = osd->xref.conv(val);
+		int_setting->MakeValueValidAndWrite(object, val);
 	}
 }
 
@@ -2587,15 +2586,15 @@ static void LoadSettings(const SettingTable &settings, void *object)
 	extern SaveLoadVersion _sl_version;
 
 	for (auto &osd : settings) {
+		if (osd->flags & SF_NOT_IN_SAVE) continue;
 		if (osd->patx_name != nullptr) continue;
 		const SaveLoad &sld = osd->save;
 		if (osd->xref.target != nullptr) {
 			if (sld.ext_feature_test.IsFeaturePresent(_sl_version, sld.version_from, sld.version_to)) LoadSettingsXref(osd.get(), object);
 			continue;
 		}
-		void *ptr = GetVariableAddress(object, sld);
 
-		if (!SlObjectMember(ptr, osd->save)) continue;
+		if (!SlObjectMember(object, osd->save)) continue;
 		if (osd->IsIntSetting()) {
 			const IntSettingDesc *int_setting = osd->AsIntSetting();
 			int_setting->MakeValueValidAndWrite(object, int_setting->Read(object));
@@ -2615,6 +2614,7 @@ static void SaveSettings(const SettingTable &settings, void *object)
 	 * SlCalcLength() because we have a different format. So do this manually */
 	size_t length = 0;
 	for (auto &sd : settings) {
+		if (sd->flags & SF_NOT_IN_SAVE) continue;
 		if (sd->patx_name != nullptr) continue;
 		if (sd->xref.target != nullptr) continue;
 		length += SlCalcObjMemberLength(object, sd->save);
@@ -2622,9 +2622,10 @@ static void SaveSettings(const SettingTable &settings, void *object)
 	SlSetLength(length);
 
 	for (auto &sd : settings) {
+		if (sd->flags & SF_NOT_IN_SAVE) continue;
 		if (sd->patx_name != nullptr) continue;
-		void *ptr = GetVariableAddress(object, sd->save);
-		SlObjectMember(ptr, sd->save);
+		if (sd->xref.target != nullptr) continue;
+		SlObjectMember(object, sd->save);
 	}
 }
 
@@ -2738,8 +2739,7 @@ static void LoadSettingsPatx(const SettingTable &settings, void *object)
 			const SettingDesc *setting = (*iter);
 			const SaveLoad &sld = setting->save;
 			size_t read = SlGetBytesRead();
-			void *ptr = GetVariableAddress(object, sld);
-			SlObjectMember(ptr, sld);
+			SlObjectMember(object, sld);
 			if (SlGetBytesRead() != read + current_setting.setting_length) {
 				SlErrorCorruptFmt("PATX chunk: setting read length mismatch for setting: '%s'", current_setting.name);
 			}
@@ -2799,8 +2799,7 @@ static void SaveSettingsPatx(const SettingTable &settings, void *object)
 		current_setting.name = desc->patx_name;
 		current_setting.setting_length = settings_to_add[i].setting_length;
 		SlObject(&current_setting, _settings_ext_save_desc);
-		void *ptr = GetVariableAddress(object, desc->save);
-		SlObjectMember(ptr, desc->save);
+		SlObjectMember(object, desc->save);
 	}
 }
 
@@ -2879,8 +2878,7 @@ void LoadSettingsPlyx(bool skip)
 				// found setting
 				const SaveLoad &sld = setting->save;
 				size_t read = SlGetBytesRead();
-				void *ptr = GetVariableAddress(&(c->settings), sld);
-				SlObjectMember(ptr, sld);
+				SlObjectMember(const_cast<CompanySettings *>(&(c->settings)), sld);
 				if (SlGetBytesRead() != read + current_setting.setting_length) {
 					SlErrorCorruptFmt("PLYX chunk: setting read length mismatch for setting: '%s'", current_setting.name);
 				}
@@ -2958,8 +2956,7 @@ void SaveSettingsPlyx()
 			current_setting.name = sd->patx_name;
 			current_setting.setting_length = setting_length;
 			SlObject(&current_setting, _settings_plyx_desc);
-			void *ptr = GetVariableAddress(&(c->settings), sd->save);
-			SlObjectMember(ptr, sd->save);
+			SlObjectMember(&(c->settings), sd->save);
 		}
 	}
 }
