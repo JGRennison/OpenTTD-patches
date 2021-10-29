@@ -337,8 +337,10 @@ int GetCurrentThreadName(char *str, const char *last)
 	return 0;
 }
 
+#if !defined(NO_THREADS)
 static pthread_t main_thread;
 static pthread_t game_thread;
+#endif
 
 void SetSelfAsMainThread()
 {
