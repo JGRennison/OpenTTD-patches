@@ -1935,6 +1935,12 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR                        :산업시설 �
 STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR_HELPTEXT               :1차 산업시설이 생산하는 화물의 양을 2^(생성 계수)에 근접하게 조절합니다. 나무를 베는 산업시설에는 적용되지 않습니다.{}모든 산업시설 관련 NewGRF와 모두 호환되지는 않을 수 있습니다.
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :이 고도 위에는 도시를 생성하지 않음: {STRING}
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :지도를 생성할 때 특정 고도 위에는 도시를 만들지 않도록 만듭니다.
+STR_CONFIG_SETTING_MIN_TOWN_LAND_AREA                           :도시에 필요한 최소 평지 영역: {STRING}
+STR_CONFIG_SETTING_MIN_TOWN_LAND_AREA_HELPTEXT                  :도시를 배치하려면 최소한 이만큼의 평지가 필요합니다.
+STR_CONFIG_SETTING_MIN_CITY_LAND_AREA                           :대도시에 필요한 최소 평지 영역: {STRING}
+STR_CONFIG_SETTING_MIN_CITY_LAND_AREA_HELPTEXT                  :대도시를 배치하려면 최소한 이만큼의 평지가 필요합니다.
+STR_CONFIG_SETTING_MIN_LAND_AREA_VALUE                          :{NUM}
+STR_CONFIG_SETTING_MIN_LAND_AREA_ZERO                           :끄기
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :나무의 성장과 확장: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :게임 플레이 중 나무의 성장과 확장 여부를 조절합니다. 이 설정을 조정하면, 아열대 기후의 벌목소처럼 나무의 성장에 의존하는 산업시설에 영향을 끼칠 수 있습니다.
@@ -3069,12 +3075,18 @@ STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL_SHORT             :(취소) 후방
 STR_TRACE_RESTRICT_TIME_MINUTE                                  :현재 분(0 - 59)
 STR_TRACE_RESTRICT_TIME_HOUR                                    :현재 시(0 - 23)
 STR_TRACE_RESTRICT_TIME_HOUR_MINUTE                             :현재 시&분(0 - 2359)
+STR_TRACE_RESTRICT_TIME_DAY                                     :현재 일(1 - 31)
+STR_TRACE_RESTRICT_TIME_MONTH                                   :현재 월(1 - 12)
 STR_TRACE_RESTRICT_TIME_MINUTE_ITEM                             :현재 분
 STR_TRACE_RESTRICT_TIME_HOUR_ITEM                               :현재 시
 STR_TRACE_RESTRICT_TIME_HOUR_MINUTE_ITEM                        :현재 시&분
+STR_TRACE_RESTRICT_TIME_DAY_ITEM                                :현재 일
+STR_TRACE_RESTRICT_TIME_MONTH_ITEM                              :현재 월
 STR_TRACE_RESTRICT_TIME_MINUTE_SHORT                            :분
 STR_TRACE_RESTRICT_TIME_HOUR_SHORT                              :시
 STR_TRACE_RESTRICT_TIME_HOUR_MINUTE_SHORT                       :시분
+STR_TRACE_RESTRICT_TIME_DAY_ITEM_SHORT                          :일
+STR_TRACE_RESTRICT_TIME_MONTH_ITEM_SHORT                        :월
 STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :지연
 STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :조착
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}값
