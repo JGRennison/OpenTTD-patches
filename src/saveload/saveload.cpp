@@ -796,7 +796,9 @@ void SlSetLength(size_t length)
 					 *
 					 * If we have more than 28 bits, use an extra uint32 and
 					 * signal this using the extended chunk header */
+#ifdef _SQ64
 					assert(length < (1LL << 32));
+#endif
 					if (length >= (1 << 28)) {
 						/* write out extended chunk header */
 						SlWriteByte(CH_EXT_HDR);
