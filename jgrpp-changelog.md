@@ -2,6 +2,20 @@
 
 * * *
 
+### v0.43.2 (2021-10-29)
+* Fix crash when using the ignore signals button to sent a train the wrong-way on a signalled tunnel or bridge.
+* Fix multiplayer desync when using "perfect" tree placement mode in arctic climate.
+* Fix aircraft shadows being drawn facing the wrong direction.
+* Fix timetabled 0 wait times not being shown for stations/depots in the timetable window.
+* Add settings for minimum contiguous landmass size for town and city placement.
+* Add current day and current month routing restriction conditionals.
+* Add current day and current month conditional orders.
+* Company bankruptcy:
+  * When declining to buy a company, ask the next company immediately instead of after the time period expires.
+  * Do not wait for companies which have no connected clients to buy a company.
+  * Add console command to offer a company for sale.
+* Add Korean translations by TELK.
+
 ### v0.43.1 (2021-10-04)
 * Fix multi-aspect signal graphics not being immediately enabled for newly generated maps.
 * Fix premature PBS reservations with using reverse at waypoint orders with timetabled wait times.
