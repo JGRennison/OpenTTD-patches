@@ -425,7 +425,7 @@ void Packet::Recv_string(std::string &buffer, StringValidationSettings settings)
 
 	size_t length = ttd_strnlen((const char *)(this->buffer.data() + this->pos), this->Size() - this->pos - 1);
 	buffer.assign((const char *)(this->buffer.data() + this->pos), length);
-	this->pos += (uint)length + 1;
+	this->pos += (PacketSize)length + 1;
 	str_validate_inplace(buffer, settings);
 }
 

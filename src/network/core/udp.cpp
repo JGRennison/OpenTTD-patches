@@ -217,7 +217,7 @@ void NetworkUDPSocketHandler::SendNetworkGameInfo(Packet *p, const NetworkGameIn
 		for (c = info->grfconfig; c != nullptr; c = c->next) {
 			if (!HasBit(c->flags, GCF_STATIC)) count++;
 		}
-		p->Send_uint8(std::min<uint>(count, NETWORK_MAX_GRF_COUNT)); // Send number of GRFs
+		p->Send_uint8(static_cast<uint8>(std::min<uint>(count, NETWORK_MAX_GRF_COUNT))); // Send number of GRFs
 
 		/* Send actual GRF Identifications */
 		uint index = 0;
