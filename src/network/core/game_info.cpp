@@ -48,7 +48,7 @@ const char *GetNetworkRevisionString()
 		/* Start by taking a chance on the full revision string. */
 		network_revision = stredup(_openttd_revision);
 		/* Ensure it's not longer than the packet buffer length. */
-		if (strlen(network_revision) >= NETWORK_REVISION_LENGTH) network_revision[NETWORK_REVISION_LENGTH - 1] = '\0';
+		if (strlen(network_revision) >= NETWORK_REVISION_LENGTH - 1) network_revision[NETWORK_REVISION_LENGTH - 1] = '\0';
 
 		/* Tag names are not mangled further. */
 		if (_openttd_revision_tagged) {
