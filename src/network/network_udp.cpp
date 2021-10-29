@@ -41,9 +41,6 @@
 extern const uint8 _out_of_band_grf_md5[16] { 0x00, 0xB0, 0xC0, 0xDE, 0x00, 0x00, 0x00, 0x00, 0x00, 0xB0, 0xC0, 0xDE, 0x00, 0x00, 0x00, 0x00 };
 static const uint32 FIND_SERVER_EXTENDED_TOKEN = 0x2A49582A;
 
-/** Mutex for all out threaded udp resolution and such. */
-static std::mutex _network_udp_mutex;
-
 /** Session key to register ourselves to the master server */
 static uint64 _session_key = 0;
 
