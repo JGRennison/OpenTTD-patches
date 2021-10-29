@@ -1,5 +1,1 @@
-blank_issues_enabled: false
-contact_links:
-- name: Suggestions and ideas?
-  url: https://www.tt-forums.net/viewforum.php?f=32
-  about: Have a suggestion or an idea for a cool new feature? Post them on our forum!
+blank_issues_enabled: true
