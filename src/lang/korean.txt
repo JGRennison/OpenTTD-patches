@@ -306,12 +306,13 @@ STR_SORT_BY_LENGTH                                              :길이
 STR_SORT_BY_LIFE_TIME                                           :남은 수명
 STR_SORT_BY_TIMETABLE_DELAY                                     :시간표 지연
 STR_SORT_BY_AVG_ORDER_OCCUPANCY                                 :평균 경로 사용률
+STR_SORT_BY_MAX_SPEED_LOADED                                    :최대 속력 (가득)
 STR_SORT_BY_FACILITY                                            :역 종류
 STR_SORT_BY_WAITING_TOTAL                                       :전체 대기 화물량
 STR_SORT_BY_WAITING_AVAILABLE                                   :사용 가능한 대기 화물량
 STR_SORT_BY_RATING_MAX                                          :높은 화물 등급
 STR_SORT_BY_RATING_MIN                                          :낮은 화물 등급
-STR_SORT_BY_VEHICLES_CALLING                                    :호출 차량 수
+STR_SORT_BY_VEHICLES_CALLING                                    :정차 차량 수
 STR_SORT_BY_ENGINE_ID                                           :차량ID (기본 정렬)
 STR_SORT_BY_COST                                                :가격
 STR_SORT_BY_POWER                                               :힘
@@ -614,7 +615,7 @@ STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}화물 �
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}이 화물에 대한 그래프 켜기/끄기
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
-STR_GRAPH_STATION_CARGO_CAPTION                                 :{WHITE}{STATION} - 대기 화물량 내력
+STR_GRAPH_STATION_CARGO_CAPTION                                 :{WHITE}{STATION} - 대기 화물량 이력
 STR_GRAPH_STATION_CARGO_X_LABEL                                 :{TINY_FONT}{BLACK}{NUM}일 동안의 변동 사항
 STR_GRAPH_STATION_CARGO_TITLE                                   :{TINY_FONT}{BLACK}역에서 있던 화물량
 
@@ -1934,6 +1935,12 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR                        :산업시설 �
 STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR_HELPTEXT               :1차 산업시설이 생산하는 화물의 양을 2^(생성 계수)에 근접하게 조절합니다. 나무를 베는 산업시설에는 적용되지 않습니다.{}모든 산업시설 관련 NewGRF와 모두 호환되지는 않을 수 있습니다.
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :이 고도 위에는 도시를 생성하지 않음: {STRING}
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :지도를 생성할 때 특정 고도 위에는 도시를 만들지 않도록 만듭니다.
+STR_CONFIG_SETTING_MIN_TOWN_LAND_AREA                           :도시에 필요한 최소 평지 영역: {STRING}
+STR_CONFIG_SETTING_MIN_TOWN_LAND_AREA_HELPTEXT                  :도시를 배치하려면 최소한 이만큼의 평지가 필요합니다.
+STR_CONFIG_SETTING_MIN_CITY_LAND_AREA                           :대도시에 필요한 최소 평지 영역: {STRING}
+STR_CONFIG_SETTING_MIN_CITY_LAND_AREA_HELPTEXT                  :대도시를 배치하려면 최소한 이만큼의 평지가 필요합니다.
+STR_CONFIG_SETTING_MIN_LAND_AREA_VALUE                          :{NUM}
+STR_CONFIG_SETTING_MIN_LAND_AREA_ZERO                           :끄기
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :나무의 성장과 확장: {STRING}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :게임 플레이 중 나무의 성장과 확장 여부를 조절합니다. 이 설정을 조정하면, 아열대 기후의 벌목소처럼 나무의 성장에 의존하는 산업시설에 영향을 끼칠 수 있습니다.
@@ -2060,6 +2067,7 @@ STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO                       :이 화물에 �
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM                 :{STRING}에 대한 화물 분배 형식 덮어쓰기: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_HELPTEXT              :"(기본)"은 이 화물 종류에 대한 기본 화물 분배 형식을 따른다는 뜻입니다. "대칭"은 대체로 A역에서 B역으로 가려는 화물의 수가 B에서 A로 가려는 화물의 수와 대체로 같다는 뜻입니다. "비대칭"은 아무 방향이나 임의의 양만큼 가게 됨을 뜻합니다. "수동"은 자동적인 화물 분배가 일어나지 않고 기존 방식을 사용하겠음을 뜻합니다.
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_DEFAULT               :(기본)
+STR_CONFIG_SETTING_DISTRIBUTION_HELPTEXT_EXTRA                  :{STRING}{}"비대칭 (동일 분포)"는 화물을 받는 각 역이 전체적으로 거의 비슷한 양의 화물을 받도록 분배된다는 뜻입니다. "비대칭 (최근접)"은 그 화물을 받을 수 있는 가장 가까운 역으로 화물을 분배한다는 뜻입니다.
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :분배 정확도: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :값이 높으면 높을수록 CPU가 연결 상태를 계산하는 시간이 더 오래 걸립니다. 만약 이 시간이 너무 오래 걸리면 게임이 버벅일 것입니다. 하지만, 낮은 값으로 설정하면 분배가 부정확하게 일어나서, 화물이 원하는 곳으로 분배되지 않을 수 있습니다.
 STR_CONFIG_SETTING_DEMAND_DISTANCE                              :거리에 따른 수요 효과: {STRING}
@@ -3067,12 +3075,18 @@ STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL_SHORT             :(취소) 후방
 STR_TRACE_RESTRICT_TIME_MINUTE                                  :현재 분(0 - 59)
 STR_TRACE_RESTRICT_TIME_HOUR                                    :현재 시(0 - 23)
 STR_TRACE_RESTRICT_TIME_HOUR_MINUTE                             :현재 시&분(0 - 2359)
+STR_TRACE_RESTRICT_TIME_DAY                                     :현재 일(1 - 31)
+STR_TRACE_RESTRICT_TIME_MONTH                                   :현재 월(1 - 12)
 STR_TRACE_RESTRICT_TIME_MINUTE_ITEM                             :현재 분
 STR_TRACE_RESTRICT_TIME_HOUR_ITEM                               :현재 시
 STR_TRACE_RESTRICT_TIME_HOUR_MINUTE_ITEM                        :현재 시&분
+STR_TRACE_RESTRICT_TIME_DAY_ITEM                                :현재 일
+STR_TRACE_RESTRICT_TIME_MONTH_ITEM                              :현재 월
 STR_TRACE_RESTRICT_TIME_MINUTE_SHORT                            :분
 STR_TRACE_RESTRICT_TIME_HOUR_SHORT                              :시
 STR_TRACE_RESTRICT_TIME_HOUR_MINUTE_SHORT                       :시분
+STR_TRACE_RESTRICT_TIME_DAY_ITEM_SHORT                          :일
+STR_TRACE_RESTRICT_TIME_MONTH_ITEM_SHORT                        :월
 STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :지연
 STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :조착
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}값
@@ -4199,8 +4213,8 @@ STR_STATION_VIEW_GROUP_D_V_S                                    :도착-경유-�
 STR_STATION_VIEW_DEPARTURES_BUTTON                              :{BLACK}출발/도착 정보
 STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}출발/도착 정보를 보여줍니다
 
-STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}화물량 내력
-STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}대기 화물량 내력을 보여줍니다
+STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}화물량 이력
+STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}대기 화물량 이력을 보여줍니다
 
 ############ range for rating starts
 STR_CARGO_RATING_APPALLING                                      :형편없음
@@ -6592,7 +6606,7 @@ STR_ZONING_OUTER_INFO                                           :{BLACK}바깥�
 STR_ZONING_INNER_INFO                                           :{BLACK}안쪽 타일 테두리를 표시할 기준을 선택하세요.
 
 STR_ZONING_NO_ZONING                                            :표시 안함
-STR_ZONING_AUTHORITY                                            :권한
+STR_ZONING_AUTHORITY                                            :당국
 STR_ZONING_CAN_BUILD                                            :건설 불가 지역
 STR_ZONING_STA_CATCH                                            :역세권
 STR_ZONING_STA_CATCH_OPEN                                       :역세권 (창이 열린 역만)
