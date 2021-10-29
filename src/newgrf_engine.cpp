@@ -1371,10 +1371,10 @@ uint GetVehicleProperty(const Vehicle *v, PropertyID property, uint orig_value)
 uint GetEngineProperty(EngineID engine, PropertyID property, uint orig_value, const Vehicle *v)
 {
 	const Engine *e = Engine::Get(engine);
-	if (property < 64 && !HasBit(e->cb36_properties_used, property)) return orig_value;
+	if (static_cast<uint>(property) < 64 && !HasBit(e->cb36_properties_used, property)) return orig_value;
 
 	VehicleResolverObject object(engine, v, VehicleResolverObject::WO_UNCACHED, false, CBID_VEHICLE_MODIFY_PROPERTY, property, 0);
-	if (property < 64 && !e->sprite_group_cb36_properties_used.empty()) {
+	if (static_cast<uint>(property) < 64 && !e->sprite_group_cb36_properties_used.empty()) {
 		auto iter = e->sprite_group_cb36_properties_used.find(object.root_spritegroup);
 		if (iter != e->sprite_group_cb36_properties_used.end()) {
 			if (!HasBit(iter->second, property)) return orig_value;
