@@ -1390,7 +1390,7 @@ public:
 			}
 		}
 		/* put a terminator on the list to make counting easier */
-		this->house_sets.push_back((uint)this->size());
+		this->house_sets.push_back((uint16)this->size());
 	}
 };
 
