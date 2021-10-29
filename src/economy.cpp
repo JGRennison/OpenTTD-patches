@@ -2285,6 +2285,8 @@ static void DoAcquireCompany(Company *c)
 
 	if (c->is_ai) AI::Stop(c->index);
 
+	c->bankrupt_asked = 0;
+
 	DeleteCompanyWindows(ci);
 	InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS, 0);
@@ -2427,6 +2429,31 @@ CommandCost CmdBuyCompany(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 		DoAcquireCompany(c);
 	}
 	return cost;
+}
+
+/**
+ * Decline to buy up another company.
+ * When a competing company is gone bankrupt you get the chance to purchase
+ * that company, actively decline the offer.
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1 company to buy up
+ * @param p2 unused
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdDeclineBuyCompany(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	CompanyID target_company = (CompanyID)p1;
+	Company *c = Company::GetIfValid(target_company);
+	if (c == nullptr) return CommandCost();
+
+	if (flags & DC_EXEC) {
+		if (c->bankrupt_last_asked == _current_company) {
+			c->bankrupt_timeout = 0;
+		}
+	}
+	return CommandCost();
 }
 
 uint ScaleQuantity(uint amount, int scale_factor)

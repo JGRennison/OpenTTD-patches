@@ -37,6 +37,7 @@
 #include "zoning.h"
 #include "tbtr_template_vehicle_func.h"
 #include "widgets/statusbar_widget.h"
+#include "core/backup_type.hpp"
 #include "debug_desync.h"
 
 #include "table/strings.h"
@@ -707,12 +708,18 @@ static void HandleBankruptcyTakeover(Company *c)
 	}
 
 	SetBit(c->bankrupt_asked, best->index);
+	c->bankrupt_last_asked = best->index;
 
 	c->bankrupt_timeout = TAKE_OVER_TIMEOUT;
 	if (best->is_ai) {
 		AI::NewEvent(best->index, new ScriptEventCompanyAskMerger(c->index, ClampToI32(c->bankrupt_value)));
 	} else if (IsInteractiveCompany(best->index)) {
 		ShowBuyCompanyDialog(c->index);
+	} else if (!_networking || (_network_server && !NetworkCompanyHasClients(best->index))) {
+		/* This company can never accept the offer as there are no clients connected, decline the offer on the company's behalf */
+		Backup<CompanyID> cur_company(_current_company, best->index, FILE_LINE);
+		DoCommandP(0, c->index, 0, CMD_DECLINE_BUY_COMPANY);
+		cur_company.Restore();
 	}
 }
 
@@ -939,6 +946,18 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
 
 			CheckCaches(true, nullptr, CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG);
+			break;
+		}
+
+		case CCA_SALE: {
+			Company *c = Company::GetIfValid(company_id);
+			if (c == nullptr) return CMD_ERROR;
+
+			if (!(flags & DC_EXEC)) return CommandCost();
+
+			c->bankrupt_value = CalculateCompanyValue(c, false);
+			c->bankrupt_asked = 1 << c->index; // Don't ask the owner
+			c->bankrupt_timeout = 0;
 			break;
 		}
 

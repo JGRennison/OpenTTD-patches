@@ -1240,7 +1240,7 @@ static byte GetIndustryValue(TileIndex tile)
 		case MP_INDUSTRY: {
 			const IndustryType industry_type = Industry::GetByTile(tile)->type;
 
-			return GetIndustrySpec(industry_type)->map_colour * static_cast<byte>(0x01010101);
+			return GetIndustrySpec(industry_type)->map_colour;
 		}
 		default:
 			return MKCOLOUR(GREY_SCALE(2));

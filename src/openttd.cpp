@@ -1869,12 +1869,12 @@ void StateGameLoop()
 
 		CallWindowGameTickEvent();
 		NewsLoop();
-		cur_company.Restore();
 
 		for (Company *c : Company::Iterate()) {
 			DEBUG_UPDATESTATECHECKSUM("Company: %u, Money: " OTTD_PRINTF64, c->index, (int64)c->money);
 			UpdateStateChecksum(c->money);
 		}
+		cur_company.Restore();
 	}
 	if (_extra_aspects > 0) FlushDeferredAspectUpdates();
 

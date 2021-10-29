@@ -1387,7 +1387,7 @@ public:
 
 	inline void UpdateImageStateUsingMapDirection(VehicleSpriteSeq &seq)
 	{
-		this->UpdateImageState(this->GetMapImageDirection(), seq);
+		this->UpdateImageState(((T *)this)->GetMapImageDirection(), seq);
 	}
 
 private:

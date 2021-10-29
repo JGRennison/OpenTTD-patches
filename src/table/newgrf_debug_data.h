@@ -92,10 +92,26 @@ class NIHVehicle : public NIHelper {
 
 	/* virtual */ void ExtraInfo(uint index, std::function<void(const char *)> print) const override
 	{
-		char buffer[1024];
+
 		Vehicle *v = Vehicle::Get(index);
 		print("Debug Info:");
-		seprintf(buffer, lastof(buffer), "  Index: %u", index);
+		this->VehicleInfo(v, print, true);
+		if (v->type == VEH_AIRCRAFT) {
+			print("");
+			print("Shadow:");
+			this->VehicleInfo(v->Next(), print, false);
+			if (v->Next()->Next() != nullptr) {
+				print("");
+				print("Rotor:");
+				this->VehicleInfo(v->Next()->Next(), print, false);
+			}
+		}
+	}
+
+	void VehicleInfo(Vehicle *v, std::function<void(const char *)> print, bool show_engine) const
+	{
+		char buffer[1024];
+		seprintf(buffer, lastof(buffer), "  Index: %u", v->index);
 		print(buffer);
 		char *b = buffer;
 		b += seprintf(b, lastof(buffer), "  Flags: ");
@@ -112,8 +128,9 @@ class NIHVehicle : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  VirtXYTile: %X (%u x %u)", vtile, TileX(vtile), TileY(vtile));
 			print(buffer);
 		}
-		b = buffer + seprintf(buffer, lastof(buffer), "  Position: %X, %X, %X", v->x_pos, v->y_pos, v->z_pos);
+		b = buffer + seprintf(buffer, lastof(buffer), "  Position: %X, %X, %X, Direction: %d", v->x_pos, v->y_pos, v->z_pos, v->direction);
 		if (v->type == VEH_TRAIN) seprintf(b, lastof(buffer), ", tile margin: %d", GetTileMarginInFrontOfTrain(Train::From(v)));
+		if (v->type == VEH_SHIP) seprintf(b, lastof(buffer), ", rotation: %d", Ship::From(v)->rotation);
 		print(buffer);
 
 		if (v->IsPrimaryVehicle()) {
@@ -296,64 +313,67 @@ class NIHVehicle : public NIHelper {
 			}
 		}
 
-		seprintf(buffer, lastof(buffer), "  Engine: %u", v->engine_type);
-		print(buffer);
-		const Engine *e = Engine::GetIfValid(v->engine_type);
-		if (e != nullptr) {
-			seprintf(buffer, lastof(buffer), "    Callbacks: 0x%X, CB36 Properties: 0x" OTTD_PRINTFHEX64,
-					e->callbacks_used, e->cb36_properties_used);
+		if (show_engine) {
+			seprintf(buffer, lastof(buffer), "  Engine: %u", v->engine_type);
 			print(buffer);
-			uint64 cb36_properties = e->cb36_properties_used;
-			if (!e->sprite_group_cb36_properties_used.empty()) {
-				const SpriteGroup *root_spritegroup = nullptr;
-				if (v->IsGroundVehicle()) root_spritegroup = GetWagonOverrideSpriteSet(v->engine_type, v->cargo_type, v->GetGroundVehicleCache()->first_engine);
-				if (root_spritegroup == nullptr) {
-					CargoID cargo = v->cargo_type;
-					assert(cargo < lengthof(e->grf_prop.spritegroup));
-					root_spritegroup = e->grf_prop.spritegroup[cargo] != nullptr ? e->grf_prop.spritegroup[cargo] : e->grf_prop.spritegroup[CT_DEFAULT];
-				}
-				auto iter = e->sprite_group_cb36_properties_used.find(root_spritegroup);
-				if (iter != e->sprite_group_cb36_properties_used.end()) {
-					cb36_properties = iter->second;
-					seprintf(buffer, lastof(buffer), "    Current sprite group: CB36 Properties: 0x" OTTD_PRINTFHEX64, iter->second);
-					print(buffer);
-				}
-			}
-			if (cb36_properties != UINT64_MAX) {
-				uint64 props = cb36_properties;
-				while (props) {
-					PropertyID prop = (PropertyID)FindFirstBit64(props);
-					props = KillFirstBit(props);
-					uint16 res = GetVehicleProperty(v, prop, CALLBACK_FAILED);
-					if (res == CALLBACK_FAILED) {
-						seprintf(buffer, lastof(buffer), "      CB36: 0x%X --> FAILED", prop);
-					} else {
-						seprintf(buffer, lastof(buffer), "      CB36: 0x%X --> 0x%X", prop, res);
+			const Engine *e = Engine::GetIfValid(v->engine_type);
+			if (e != nullptr) {
+				seprintf(buffer, lastof(buffer), "    Callbacks: 0x%X, CB36 Properties: 0x" OTTD_PRINTFHEX64,
+						e->callbacks_used, e->cb36_properties_used);
+				print(buffer);
+				uint64 cb36_properties = e->cb36_properties_used;
+				if (!e->sprite_group_cb36_properties_used.empty()) {
+					const SpriteGroup *root_spritegroup = nullptr;
+					if (v->IsGroundVehicle()) root_spritegroup = GetWagonOverrideSpriteSet(v->engine_type, v->cargo_type, v->GetGroundVehicleCache()->first_engine);
+					if (root_spritegroup == nullptr) {
+						CargoID cargo = v->cargo_type;
+						assert(cargo < lengthof(e->grf_prop.spritegroup));
+						root_spritegroup = e->grf_prop.spritegroup[cargo] != nullptr ? e->grf_prop.spritegroup[cargo] : e->grf_prop.spritegroup[CT_DEFAULT];
 					}
+					auto iter = e->sprite_group_cb36_properties_used.find(root_spritegroup);
+					if (iter != e->sprite_group_cb36_properties_used.end()) {
+						cb36_properties = iter->second;
+						seprintf(buffer, lastof(buffer), "    Current sprite group: CB36 Properties: 0x" OTTD_PRINTFHEX64, iter->second);
+						print(buffer);
+					}
+				}
+				if (cb36_properties != UINT64_MAX) {
+					uint64 props = cb36_properties;
+					while (props) {
+						PropertyID prop = (PropertyID)FindFirstBit64(props);
+						props = KillFirstBit(props);
+						uint16 res = GetVehicleProperty(v, prop, CALLBACK_FAILED);
+						if (res == CALLBACK_FAILED) {
+							seprintf(buffer, lastof(buffer), "      CB36: 0x%X --> FAILED", prop);
+						} else {
+							seprintf(buffer, lastof(buffer), "      CB36: 0x%X --> 0x%X", prop, res);
+						}
+						print(buffer);
+					}
+				}
+				YearMonthDay ymd;
+				ConvertDateToYMD(e->intro_date, &ymd);
+				seprintf(buffer, lastof(buffer), "    Intro: %4i-%02i-%02i, Age: %u, Base life: %u, Durations: %u %u %u (sum: %u)",
+						ymd.year, ymd.month + 1, ymd.day, e->age, e->info.base_life, e->duration_phase_1, e->duration_phase_2, e->duration_phase_3,
+						e->duration_phase_1 + e->duration_phase_2 + e->duration_phase_3);
+				print(buffer);
+				if (e->type == VEH_TRAIN) {
+					const RailtypeInfo *rti = GetRailTypeInfo(e->u.rail.railtype);
+					seprintf(buffer, lastof(buffer), "    Railtype: %u (0x" OTTD_PRINTFHEX64 "), Compatible: 0x" OTTD_PRINTFHEX64 ", Powered: 0x" OTTD_PRINTFHEX64 ", All compatible: 0x" OTTD_PRINTFHEX64,
+							e->u.rail.railtype, (static_cast<RailTypes>(1) << e->u.rail.railtype), rti->compatible_railtypes, rti->powered_railtypes, rti->all_compatible_railtypes);
 					print(buffer);
 				}
-			}
-			YearMonthDay ymd;
-			ConvertDateToYMD(e->intro_date, &ymd);
-			seprintf(buffer, lastof(buffer), "    Intro: %4i-%02i-%02i, Age: %u, Base life: %u, Durations: %u %u %u (sum: %u)",
-					ymd.year, ymd.month + 1, ymd.day, e->age, e->info.base_life, e->duration_phase_1, e->duration_phase_2, e->duration_phase_3,
-					e->duration_phase_1 + e->duration_phase_2 + e->duration_phase_3);
-			print(buffer);
-			if (e->type == VEH_TRAIN) {
-				const RailtypeInfo *rti = GetRailTypeInfo(e->u.rail.railtype);
-				seprintf(buffer, lastof(buffer), "    Railtype: %u (0x" OTTD_PRINTFHEX64 "), Compatible: 0x" OTTD_PRINTFHEX64 ", Powered: 0x" OTTD_PRINTFHEX64 ", All compatible: 0x" OTTD_PRINTFHEX64,
-						e->u.rail.railtype, (static_cast<RailTypes>(1) << e->u.rail.railtype), rti->compatible_railtypes, rti->powered_railtypes, rti->all_compatible_railtypes);
-				print(buffer);
-			}
-			if (e->type == VEH_ROAD) {
-				const RoadTypeInfo* rti = GetRoadTypeInfo(e->u.road.roadtype);
-				seprintf(buffer, lastof(buffer), "    Roadtype: %u (0x" OTTD_PRINTFHEX64 "), Powered: 0x" OTTD_PRINTFHEX64,
-						e->u.road.roadtype, (static_cast<RoadTypes>(1) << e->u.road.roadtype), rti->powered_roadtypes);
-				print(buffer);
+				if (e->type == VEH_ROAD) {
+					const RoadTypeInfo* rti = GetRoadTypeInfo(e->u.road.roadtype);
+					seprintf(buffer, lastof(buffer), "    Roadtype: %u (0x" OTTD_PRINTFHEX64 "), Powered: 0x" OTTD_PRINTFHEX64,
+							e->u.road.roadtype, (static_cast<RoadTypes>(1) << e->u.road.roadtype), rti->powered_roadtypes);
+					print(buffer);
+				}
 			}
 		}
 
-		seprintf(buffer, lastof(buffer), "  Current image cacheable: %s", v->cur_image_valid_dir != INVALID_DIR ? "yes" : "no");
+		seprintf(buffer, lastof(buffer), "  Current image cacheable: %s (%X), spritenum: %X",
+				v->cur_image_valid_dir != INVALID_DIR ? "yes" : "no", v->cur_image_valid_dir, v->spritenum);
 		print(buffer);
 	}
 

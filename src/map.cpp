@@ -16,6 +16,7 @@
 #include "tunnelbridge_map.h"
 #include "3rdparty/cpp-btree/btree_map.h"
 #include <array>
+#include <deque>
 
 #include "safeguards.h"
 
@@ -368,6 +369,58 @@ bool CircularTileSearch(TileIndex *tile, uint radius, uint w, uint h, TestTileOn
 
 	*tile = INVALID_TILE;
 	return false;
+}
+
+/**
+ * Generalized contiguous matching tile area size threshold function.
+ * Contiguous means directly adjacent by DiagDirection directions.
+ *
+ * @param tile to start the search from.
+ * @param threshold minimum number of matching tiles for success, searching is halted when this is reached.
+ * @param proc callback testing function pointer.
+ * @param user_data to be passed to the callback function. Depends on the implementation
+ * @return whether the contiguous tile area size is >= threshold
+ * @pre proc != nullptr
+ */
+bool EnoughContiguousTilesMatchingCondition(TileIndex tile, uint threshold, TestTileOnSearchProc proc, void *user_data)
+{
+	assert(proc != nullptr);
+	if (threshold == 0) return true;
+
+	static_assert(MAX_MAP_TILES_BITS <= 30);
+
+	btree::btree_set<uint32> processed_tiles;
+	std::deque<uint32> candidates;
+	uint matching_count = 0;
+
+	auto process_tile = [&](TileIndex t, DiagDirection exclude_onward_dir) {
+		auto iter = processed_tiles.lower_bound(t);
+		if (iter != processed_tiles.end() && *iter == t) {
+			/* done this tile already */
+		} else {
+			if (proc(t, user_data)) {
+				matching_count++;
+				for (DiagDirection dir = DIAGDIR_BEGIN; dir < DIAGDIR_END; dir++) {
+					if (dir == exclude_onward_dir) continue;
+					TileIndex neighbour_tile = AddTileIndexDiffCWrap(t, TileIndexDiffCByDiagDir(dir));
+					if (IsValidTile(neighbour_tile)) {
+						candidates.push_back(neighbour_tile | (ReverseDiagDir(dir) << 30));
+					}
+				}
+			}
+			processed_tiles.insert(iter, t);
+		}
+	};
+	process_tile(tile, INVALID_DIAGDIR);
+
+	while (matching_count < threshold && !candidates.empty()) {
+		uint32 next = candidates.front();
+		candidates.pop_front();
+		TileIndex t = GB(next, 0, 30);
+		DiagDirection exclude_onward_dir = (DiagDirection)GB(next, 30, 2);
+		process_tile(t, exclude_onward_dir);
+	}
+	return matching_count >= threshold;
 }
 
 /**

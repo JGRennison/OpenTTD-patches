@@ -3398,7 +3398,7 @@ static void UpdateAspectFromBridgeMiddleSignalChange(TileIndex entrance, TileInd
 
 static void HandleLastTunnelBridgeSignals(TileIndex tile, TileIndex end, DiagDirection dir, bool free)
 {
-	if (IsBridge(end) && _m[end].m2 != 0) {
+	if (IsBridge(end) && _m[end].m2 != 0 && IsTunnelBridgeSignalSimulationEntrance(end)) {
 		/* Clearing last bridge signal. */
 		int signal_offset = GetAndClearLastBridgeEntranceSetSignalIndex(end);
 		if (signal_offset) {
@@ -3424,7 +3424,7 @@ static void HandleLastTunnelBridgeSignals(TileIndex tile, TileIndex end, DiagDir
 
 		if (IsTunnelBridgeSignalSimulationEntrance(end)) SetTunnelBridgeEntranceSignalGreen(end);
 		if (IsTunnelBridgeSignalSimulationEntrance(tile)) SetTunnelBridgeEntranceSignalGreen(tile);
-	} else if (IsTunnel(end) && _extra_aspects > 0) {
+	} else if (IsTunnel(end) && _extra_aspects > 0 && IsTunnelBridgeSignalSimulationEntrance(end)) {
 		uint signal_count = GetTunnelBridgeLength(tile, end) / GetTunnelBridgeSignalSimulationSpacing(end);
 		if (signal_count > 0) UpdateEntranceAspectFromMiddleSignalChange(end, signal_count - 1);
 	}

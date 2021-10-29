@@ -1939,6 +1939,12 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR                        :Industry cargo 
 STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR_HELPTEXT               :Primary industry cargo production is scaled by approximately 2^factor (exponential). This excludes tree-cutting industries.{}This is not guaranteed to be fully compatible with all industry NewGRFs.
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :No towns above height level: {STRING2}
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :No towns above the specified height level are built during map creation.
+STR_CONFIG_SETTING_MIN_TOWN_LAND_AREA                           :Minimum contiguous land area for towns: {STRING2}
+STR_CONFIG_SETTING_MIN_TOWN_LAND_AREA_HELPTEXT                  :Towns can only be placed on contiguous landmasses of at least this many tiles.
+STR_CONFIG_SETTING_MIN_CITY_LAND_AREA                           :Minimum contiguous land area for cities: {STRING2}
+STR_CONFIG_SETTING_MIN_CITY_LAND_AREA_HELPTEXT                  :Cities can only be placed on contiguous landmasses of at least this many tiles.
+STR_CONFIG_SETTING_MIN_LAND_AREA_VALUE                          :{NUM}
+STR_CONFIG_SETTING_MIN_LAND_AREA_ZERO                           :Off
 
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT                         :In game placement of trees: {STRING2}
 STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_HELPTEXT                :Control random appearance of trees during the game. This might affect industries which rely on tree growth, for example lumber mills
@@ -3075,12 +3081,18 @@ STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL_SHORT             :Cancel no PBS b
 STR_TRACE_RESTRICT_TIME_MINUTE                                  :current minute (0 - 59)
 STR_TRACE_RESTRICT_TIME_HOUR                                    :current hour (0 - 23)
 STR_TRACE_RESTRICT_TIME_HOUR_MINUTE                             :current hour and minute (0 - 2359)
+STR_TRACE_RESTRICT_TIME_DAY                                     :current day (1 - 31)
+STR_TRACE_RESTRICT_TIME_MONTH                                   :current month (1 - 12)
 STR_TRACE_RESTRICT_TIME_MINUTE_ITEM                             :current minute
 STR_TRACE_RESTRICT_TIME_HOUR_ITEM                               :current hour
 STR_TRACE_RESTRICT_TIME_HOUR_MINUTE_ITEM                        :current hour and minute
+STR_TRACE_RESTRICT_TIME_DAY_ITEM                                :current day
+STR_TRACE_RESTRICT_TIME_MONTH_ITEM                              :current month
 STR_TRACE_RESTRICT_TIME_MINUTE_SHORT                            :minute
 STR_TRACE_RESTRICT_TIME_HOUR_SHORT                              :hour
 STR_TRACE_RESTRICT_TIME_HOUR_MINUTE_SHORT                       :hour and minute
+STR_TRACE_RESTRICT_TIME_DAY_ITEM_SHORT                          :day
+STR_TRACE_RESTRICT_TIME_MONTH_ITEM_SHORT                        :month
 STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :lateness
 STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :earliness
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Value

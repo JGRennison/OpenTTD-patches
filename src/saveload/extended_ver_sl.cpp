@@ -75,7 +75,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_TRACE_RESTRICT_REVERSE, XSCF_NULL,                1,   1, "tracerestrict_reverse",     nullptr, nullptr, nullptr        },
 	{ XSLFI_TRACE_RESTRICT_NEWSCTRL,XSCF_NULL,                1,   1, "tracerestrict_newsctrl",    nullptr, nullptr, nullptr        },
 	{ XSLFI_TRACE_RESTRICT_COUNTER, XSCF_NULL,                1,   1, "tracerestrict_counter",     nullptr, nullptr, "TRRC"         },
-	{ XSLFI_TRACE_RESTRICT_TIMEDATE,XSCF_NULL,                1,   1, "tracerestrict_timedate",    nullptr, nullptr, nullptr        },
+	{ XSLFI_TRACE_RESTRICT_TIMEDATE,XSCF_NULL,                2,   2, "tracerestrict_timedate",    nullptr, nullptr, nullptr        },
 	{ XSLFI_TRACE_RESTRICT_BRKCND,  XSCF_NULL,                2,   2, "tracerestrict_braking_cond",nullptr, nullptr, nullptr        },
 	{ XSLFI_TRACE_RESTRICT_CTGRYCND,XSCF_NULL,                1,   1, "tracerestrict_ctgry_cond",  nullptr, nullptr, nullptr        },
 	{ XSLFI_TRACE_RESTRICT_PENCTRL, XSCF_NULL,                1,   1, "tracerestrict_pfpenctrl",   nullptr, nullptr, nullptr        },
@@ -95,7 +95,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_INFRA_SHARING,          XSCF_NULL,                2,   2, "infra_sharing",             nullptr, nullptr, "CPDP"      },
 	{ XSLFI_VARIABLE_DAY_LENGTH,    XSCF_NULL,                2,   2, "variable_day_length",       nullptr, nullptr, nullptr        },
 	{ XSLFI_ORDER_OCCUPANCY,        XSCF_NULL,                2,   2, "order_occupancy",           nullptr, nullptr, nullptr        },
-	{ XSLFI_MORE_COND_ORDERS,       XSCF_NULL,               10,  10, "more_cond_orders",          nullptr, nullptr, nullptr        },
+	{ XSLFI_MORE_COND_ORDERS,       XSCF_NULL,               11,  11, "more_cond_orders",          nullptr, nullptr, nullptr        },
 	{ XSLFI_EXTRA_LARGE_MAP,        XSCF_NULL,                0,   1, "extra_large_map",           nullptr, nullptr, nullptr        },
 	{ XSLFI_REVERSE_AT_WAYPOINT,    XSCF_NULL,                1,   1, "reverse_at_waypoint",       nullptr, nullptr, nullptr        },
 	{ XSLFI_VEH_LIFETIME_PROFIT,    XSCF_NULL,                1,   1, "veh_lifetime_profit",       nullptr, nullptr, nullptr        },
@@ -156,6 +156,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_EXTRA_STATION_NAMES,    XSCF_NULL,                1,   1, "extra_station_names",       nullptr, nullptr, nullptr        },
 	{ XSLFI_DEPOT_ORDER_EXTRA_FLAGS,XSCF_IGNORABLE_UNKNOWN,   1,   1, "depot_order_extra_flags",   nullptr, nullptr, nullptr        },
 	{ XSLFI_EXTRA_SIGNAL_TYPES,     XSCF_NULL,                1,   1, "extra_signal_types",        nullptr, nullptr, nullptr        },
+	{ XSLFI_BANKRUPTCY_EXTRA,       XSCF_NULL,                1,   1, "bankruptcy_extra",          nullptr, nullptr, nullptr        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr },// This is the end marker
 };
 
