@@ -73,7 +73,8 @@
 
 #include "../safeguards.h"
 
-extern const SaveLoadVersion SAVEGAME_VERSION = (SaveLoadVersion)(SL_MAX_VERSION - 1); ///< Current savegame version of OpenTTD.
+extern const SaveLoadVersion SAVEGAME_VERSION = SLV_CUSTOM_SUBSIDY_DURATION; ///< Current savegame version of OpenTTD.
+extern const SaveLoadVersion MAX_LOAD_SAVEGAME_VERSION = SLV_CUSTOM_SUBSIDY_DURATION; ///< Max loadable savegame version of OpenTTD.
 
 const SaveLoadVersion SAVEGAME_VERSION_EXT = (SaveLoadVersion)(0x8000); ///< Savegame extension indicator mask
 
@@ -2053,7 +2054,7 @@ inline void SlRIFFSpringPPCheck(size_t len)
 		if (len == 0) {
 			extern void SlXvSpringPPSpecialSavegameVersions();
 			SlXvSpringPPSpecialSavegameVersions();
-		} else if (_sl_version > SAVEGAME_VERSION) {
+		} else if (_sl_version > MAX_LOAD_SAVEGAME_VERSION) {
 			SlError(STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME);
 		} else if (_sl_version >= SLV_START_PATCHPACKS && _sl_version <= SLV_END_PATCHPACKS) {
 			SlError(STR_GAME_SAVELOAD_ERROR_PATCHPACK);
@@ -3391,7 +3392,7 @@ static SaveOrLoadResult DoLoad(LoadFilter *reader, bool load_check)
 					_sl_maybe_springpp ? " which might be SpringPP" : "", _sl_maybe_chillpp ? " which might be ChillPP" : "");
 
 			/* Is the version higher than the current? */
-			if (_sl_version > SAVEGAME_VERSION && !special_version) SlError(STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME);
+			if (_sl_version > MAX_LOAD_SAVEGAME_VERSION && !special_version) SlError(STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME);
 			if (_sl_version >= SLV_START_PATCHPACKS && _sl_version <= SLV_END_PATCHPACKS && !special_version) SlError(STR_GAME_SAVELOAD_ERROR_PATCHPACK);
 			break;
 		}
