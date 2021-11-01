@@ -204,7 +204,7 @@ extern const uint8 _ffb_64[64];
  * @param x The 6-bit value to check the first zero-bit
  * @return The first position of a bit started from the LSB or 0 if x is 0.
  */
-#define FIND_FIRST_BIT(x) _ffb_64[(x)]
+#define FIND_FIRST_BIT(x) _ffb_64[(x) & 0x3F]
 
 #endif
 
@@ -246,10 +246,7 @@ uint8 FindLastBit(uint64 x);
  *
  * This function returns the position of the first bit set in the
  * integer. It does only check the bits of the bitmask
- * 0x3F3F (0011111100111111) and checks only the
- * bits of the bitmask 0x3F00 if and only if the
- * lower part 0x00FF is 0. This results the bits at 0x00C0 must
- * be also zero to check the bits at 0x3F00.
+ * 0x3F3F (0011111100111111).
  *
  * @param value The value to check the first bits
  * @return The position of the first bit which is set
@@ -257,11 +254,16 @@ uint8 FindLastBit(uint64 x);
  */
 static inline uint8 FindFirstBit2x64(const int value)
 {
-	if ((value & 0xFF) == 0) {
+#ifdef WITH_BITMATH_BUILTINS
+	return FindFirstBit(value & 0x3F3F);
+#else
+	if (value == 0) return 0;
+	if ((value & 0x3F) == 0) {
 		return FIND_FIRST_BIT((value >> 8) & 0x3F) + 8;
 	} else {
 		return FIND_FIRST_BIT(value & 0x3F);
 	}
+#endif
 }
 
 /**
