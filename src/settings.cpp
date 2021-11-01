@@ -84,6 +84,8 @@
 #define HAS_TRUETYPE_FONT
 #endif
 
+#include "saveload/saveload.h"
+
 #include "table/strings.h"
 #include "table/settings.h"
 
@@ -3027,4 +3029,9 @@ static bool IsSignedVarMemType(VarType vt)
 void SetupTimeSettings()
 {
 	_settings_time = (_game_mode == GM_MENU || _settings_client.gui.override_time_settings) ? _settings_client.gui : _settings_game.game_time;
+}
+
+const SettingTable &GetSettingsTableInternal()
+{
+	return _settings;
 }

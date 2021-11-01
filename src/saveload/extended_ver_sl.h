@@ -11,6 +11,7 @@
 #define EXTENDED_VER_SL_H
 
 #include "../core/bitmath_func.hpp"
+#include "../core/enum_type.hpp"
 
 #include <vector>
 

@@ -25,7 +25,7 @@
 #include "newgrf_cache_check.h"
 #include "landscape.h"
 #include "network/network.h"
-#include "saveload/saveload.h"
+#include "saveload/saveload_common.h"
 #include <list>
 #include <map>
 #include <unordered_map>
@@ -240,6 +240,11 @@ extern void FixOldVehicles();
 
 struct GRFFile;
 
+namespace upstream_sl {
+	class SlVehicleCommon;
+	class SlVehicleDisaster;
+}
+
 /** %Vehicle data structure. */
 struct Vehicle : VehiclePool::PoolItem<&_vehicle_pool>, BaseVehicle, BaseConsist {
 private:
@@ -257,6 +262,9 @@ public:
 	friend void FixOldVehicles();
 	friend void AfterLoadVehicles(bool part_of_load);             ///< So we can set the #previous and #first pointers while loading
 	friend bool LoadOldVehicle(LoadgameState *ls, int num);       ///< So we can set the proper next pointer while loading
+
+	friend upstream_sl::SlVehicleCommon;
+	friend upstream_sl::SlVehicleDisaster;
 
 	static void PreCleanPool();
 

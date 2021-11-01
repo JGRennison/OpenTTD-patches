@@ -19,7 +19,7 @@
 #include "vehicle_type.h"
 #include "date_type.h"
 #include "schdispatch.h"
-#include "saveload/saveload.h"
+#include "saveload/saveload_common.h"
 
 #include <memory>
 #include <vector>
@@ -56,6 +56,13 @@ struct OrderExtraInfo {
 	uint8 xflags = 0;                       ///< Extra flags
 };
 
+namespace upstream_sl {
+	SaveLoadTable GetOrderDescription();
+	SaveLoadTable GetOrderListDescription();
+	class SlVehicleCommon;
+	class SlVehicleDisaster;
+}
+
 /* If you change this, keep in mind that it is saved on 3 places:
  * - Load_ORDR, all the global orders
  * - Vehicle -> current_order
@@ -66,6 +73,9 @@ private:
 	friend SaveLoadTable GetVehicleDescription(VehicleType vt); ///< Saving and loading the current order of vehicles.
 	friend void Load_VEHS();                                             ///< Loading of ancient vehicles.
 	friend SaveLoadTable GetOrderDescription();                          ///< Saving and loading of orders.
+	friend upstream_sl::SaveLoadTable upstream_sl::GetOrderDescription(); ///< Saving and loading of orders.
+	friend upstream_sl::SlVehicleCommon;
+	friend upstream_sl::SlVehicleDisaster;
 	friend void Load_ORDX();                                             ///< Saving and loading of orders.
 	friend void Save_ORDX();                                             ///< Saving and loading of orders.
 	friend void Load_VEOX();                                             ///< Saving and loading of orders.
@@ -588,6 +598,7 @@ struct OrderList : OrderListPool::PoolItem<&_orderlist_pool> {
 private:
 	friend void AfterLoadVehicles(bool part_of_load); ///< For instantiating the shared vehicle chain
 	friend SaveLoadTable GetOrderListDescription(); ///< Saving and loading of order lists.
+	friend upstream_sl::SaveLoadTable upstream_sl::GetOrderListDescription(); ///< Saving and loading of order lists.
 	friend void Ptrs_ORDL(); ///< Saving and loading of order lists.
 
 	StationID GetBestLoadableNext(const Vehicle *v, const Order *o1, const Order *o2) const;

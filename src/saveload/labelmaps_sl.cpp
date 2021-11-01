@@ -16,7 +16,7 @@
 
 #include "../safeguards.h"
 
-static std::vector<RailTypeLabel> _railtype_list;
+std::vector<RailTypeLabel> _railtype_list;
 
 /**
  * Test if any saved rail type labels are different to the currently loaded

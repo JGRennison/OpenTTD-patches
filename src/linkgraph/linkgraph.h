@@ -17,7 +17,7 @@
 #include "../station_base.h"
 #include "../cargotype.h"
 #include "../date_func.h"
-#include "../saveload/saveload.h"
+#include "../saveload/saveload_common.h"
 #include "linkgraph_type.h"
 #include <utility>
 
@@ -30,6 +30,13 @@ class LinkGraph;
 typedef Pool<LinkGraph, LinkGraphID, 32, 0xFFFF> LinkGraphPool;
 /** The actual pool with link graphs. */
 extern LinkGraphPool _link_graph_pool;
+
+namespace upstream_sl {
+	SaveLoadTable GetLinkGraphDesc();
+	SaveLoadTable GetLinkGraphJobDesc();
+	class SlLinkgraphNode;
+	class SlLinkgraphEdge;
+}
 
 /**
  * A connected component of a link graph. Contains a complete set of stations
@@ -535,6 +542,11 @@ protected:
 	friend SaveLoadTable GetLinkGraphJobDesc();
 	friend void Save_LinkGraph(LinkGraph &lg);
 	friend void Load_LinkGraph(LinkGraph &lg);
+
+	friend upstream_sl::SaveLoadTable upstream_sl::GetLinkGraphDesc();
+	friend upstream_sl::SaveLoadTable upstream_sl::GetLinkGraphJobDesc();
+	friend upstream_sl::SlLinkgraphNode;
+	friend upstream_sl::SlLinkgraphEdge;
 
 	CargoID cargo;         ///< Cargo of this component's link graph.
 	Date last_compression; ///< Last time the capacities and supplies were compressed.

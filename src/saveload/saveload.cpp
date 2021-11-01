@@ -74,7 +74,7 @@
 #include "../safeguards.h"
 
 extern const SaveLoadVersion SAVEGAME_VERSION = SLV_CUSTOM_SUBSIDY_DURATION; ///< Current savegame version of OpenTTD.
-extern const SaveLoadVersion MAX_LOAD_SAVEGAME_VERSION = SLV_CUSTOM_SUBSIDY_DURATION; ///< Max loadable savegame version of OpenTTD.
+extern const SaveLoadVersion MAX_LOAD_SAVEGAME_VERSION = (SaveLoadVersion)(SL_MAX_VERSION - 1); ///< Max loadable savegame version of OpenTTD.
 
 const SaveLoadVersion SAVEGAME_VERSION_EXT = (SaveLoadVersion)(0x8000); ///< Savegame extension indicator mask
 
@@ -90,6 +90,14 @@ bool _do_autosave;            ///< are we doing an autosave at the moment?
 extern bool _sl_is_ext_version;
 extern bool _sl_maybe_springpp;
 extern bool _sl_maybe_chillpp;
+extern bool _sl_upstream_mode;
+
+namespace upstream_sl {
+	void SlNullPointers();
+	void SlLoadChunks();
+	void SlLoadCheckChunks();
+	void SlFixPointers();
+}
 
 /** What are we currently doing? */
 enum SaveLoadAction {
@@ -357,6 +365,11 @@ static const std::vector<ChunkHandler> &ChunkHandlers()
 /** Null all pointers (convert index -> nullptr) */
 static void SlNullPointers()
 {
+	if (_sl_upstream_mode) {
+		upstream_sl::SlNullPointers();
+		return;
+	}
+
 	_sl.action = SLA_NULL;
 
 	/* We don't want any savegame conversion code to run
@@ -2277,6 +2290,11 @@ static const ChunkHandler *SlFindChunkHandler(uint32 id)
 /** Load all chunks */
 static void SlLoadChunks()
 {
+	if (_sl_upstream_mode) {
+		upstream_sl::SlLoadChunks();
+		return;
+	}
+
 	for (uint32 id = SlReadUint32(); id != 0; id = SlReadUint32()) {
 		DEBUG(sl, 2, "Loading chunk %c%c%c%c", id >> 24, id >> 16, id >> 8, id);
 		size_t read = 0;
@@ -2300,6 +2318,11 @@ static void SlLoadChunks()
 /** Load all chunks for savegame checking */
 static void SlLoadCheckChunks()
 {
+	if (_sl_upstream_mode) {
+		upstream_sl::SlLoadCheckChunks();
+		return;
+	}
+
 	uint32 id;
 	const ChunkHandler *ch;
 
@@ -2322,6 +2345,11 @@ static void SlLoadCheckChunks()
 /** Fix all pointers (convert index -> pointer) */
 static void SlFixPointers()
 {
+	if (_sl_upstream_mode) {
+		upstream_sl::SlFixPointers();
+		return;
+	}
+
 	_sl.action = SLA_PTRS;
 
 	for (auto &ch : ChunkHandlers()) {
@@ -3388,8 +3416,17 @@ static SaveOrLoadResult DoLoad(LoadFilter *reader, bool load_check)
 				special_version = SlXvCheckSpecialSavegameVersions();
 			}
 
-			DEBUG(sl, 1, "Loading savegame version %d%s%s%s", _sl_version, _sl_is_ext_version ? " (extended)" : "",
-					_sl_maybe_springpp ? " which might be SpringPP" : "", _sl_maybe_chillpp ? " which might be ChillPP" : "");
+			if (_sl_version >= SLV_SAVELOAD_LIST_LENGTH) {
+				if (_sl_is_ext_version) {
+					DEBUG(sl, 0, "Got an extended savegame version with a base version in the upstream mode range, giving up");
+					SlError(STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME);
+				} else {
+					_sl_upstream_mode = true;
+				}
+			}
+
+			DEBUG(sl, 1, "Loading savegame version %d%s%s%s%s", _sl_version, _sl_is_ext_version ? " (extended)" : "",
+					_sl_maybe_springpp ? " which might be SpringPP" : "", _sl_maybe_chillpp ? " which might be ChillPP" : "", _sl_upstream_mode ? " (upstream mode)" : "");
 
 			/* Is the version higher than the current? */
 			if (_sl_version > MAX_LOAD_SAVEGAME_VERSION && !special_version) SlError(STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME);
@@ -3683,4 +3720,9 @@ void FileToSaveLoad::SetName(const char *name)
 void FileToSaveLoad::SetTitle(const char *title)
 {
 	strecpy(this->title, title, lastof(this->title));
+}
+
+bool SaveLoadFileTypeIsScenario()
+{
+	return _file_to_saveload.abstract_ftype == FT_SCENARIO;
 }

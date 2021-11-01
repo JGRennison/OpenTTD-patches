@@ -10,7 +10,7 @@
 #ifndef SETTINGS_INTERNAL_H
 #define SETTINGS_INTERNAL_H
 
-#include "saveload/saveload.h"
+#include "saveload/saveload_types.h"
 
 enum SettingFlag : uint32 {
 	SF_NONE = 0,

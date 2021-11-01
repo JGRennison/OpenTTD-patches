@@ -241,6 +241,7 @@ static void Load_LGRJ()
 		LinkGraphJob *lgj = new (index) LinkGraphJob();
 		SlObjectLoadFiltered(lgj, _filtered_job_desc);
 		if (SlXvIsFeatureMissing(XSLFI_LINKGRAPH_DAY_SCALE)) {
+			extern void GetLinkGraphJobDayLengthScaleAfterLoad(LinkGraphJob *lgj);
 			GetLinkGraphJobDayLengthScaleAfterLoad(lgj);
 		}
 		LinkGraph &lg = const_cast<LinkGraph &>(lgj->Graph());

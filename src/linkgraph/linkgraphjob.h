@@ -27,6 +27,10 @@ typedef Pool<LinkGraphJob, LinkGraphJobID, 32, 0xFFFF> LinkGraphJobPool;
 /** The actual pool with link graph jobs. */
 extern LinkGraphJobPool _link_graph_job_pool;
 
+namespace upstream_sl {
+	SaveLoadTable GetLinkGraphJobDesc();
+}
+
 /**
  * Class for calculation jobs to be run on link graphs.
  */
@@ -57,6 +61,7 @@ private:
 	typedef SmallMatrix<EdgeAnnotation> EdgeAnnotationMatrix;
 
 	friend SaveLoadTable GetLinkGraphJobDesc();
+	friend upstream_sl::SaveLoadTable upstream_sl::GetLinkGraphJobDesc();
 	friend void GetLinkGraphJobDayLengthScaleAfterLoad(LinkGraphJob *lgj);
 	friend class LinkGraphSchedule;
 	friend class LinkGraphJobGroup;

@@ -56,6 +56,7 @@ bool _sl_is_ext_version;                                    ///< is this an exte
 bool _sl_is_faked_ext;                                      ///< is this a faked extended savegame version, with no SLXI chunk? See: SlXvCheckSpecialSavegameVersions.
 bool _sl_maybe_springpp;                                    ///< is this possibly a SpringPP savegame?
 bool _sl_maybe_chillpp;                                     ///< is this possibly a ChillPP v8 savegame?
+bool _sl_upstream_mode;                                     ///< load game using upstream loader
 std::vector<uint32> _sl_xv_discardable_chunk_ids;           ///< list of chunks IDs which we can discard if no chunk loader exists
 std::string _sl_xv_version_label;                           ///< optional SLXI version label
 
@@ -224,6 +225,7 @@ void SlXvResetState()
 	_sl_is_faked_ext = false;
 	_sl_maybe_springpp = false;
 	_sl_maybe_chillpp = false;
+	_sl_upstream_mode = false;
 	_sl_xv_discardable_chunk_ids.clear();
 	memset(_sl_xv_feature_versions, 0, sizeof(_sl_xv_feature_versions));
 	_sl_xv_version_label.clear();
