@@ -15,6 +15,7 @@
 #include "../../network/network.h"
 #include "../../genworld.h"
 #include "../../string_func.h"
+#include "../../string_func_extra.h"
 #include "../../strings_func.h"
 #include "../../scope_info.h"
 #include "../../map_func.h"
@@ -313,10 +314,13 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 		return false;
 	}
 
+	std::string text_validated;
 	if (binary_length == 0 && !StrEmpty(text) && (GetCommandFlags(cmd) & CMD_STR_CTRL) == 0) {
 		/* The string must be valid, i.e. not contain special codes. Since some
 		 * can be made with GSText, make sure the control codes are removed. */
-		::StrMakeValidInPlace(const_cast<char *>(text), text + strlen(text), SVS_NONE);
+		text_validated = text;
+		::StrMakeValidInPlace(text_validated, SVS_NONE);
+		text = text_validated.c_str();
 	}
 
 	/* Set the default callback to return a true/false result of the DoCommand */
