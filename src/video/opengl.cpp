@@ -22,6 +22,7 @@
 
 #define GL_GLEXT_PROTOTYPES
 #if defined(__APPLE__)
+#	define GL_SILENCE_DEPRECATION
 #	include <OpenGL/gl3.h>
 #else
 #	include <GL/gl.h>
@@ -146,7 +147,7 @@ GetOGLProcAddressProc GetOGLProcAddress;
  */
 const char *FindStringInExtensionList(const char *string, const char *substring)
 {
-	while (1) {
+	while (true) {
 		/* Is the extension string present at all? */
 		const char *pos = strstr(string, substring);
 		if (pos == nullptr) break;
@@ -1309,7 +1310,7 @@ void OpenGLBackend::RenderOglSprite(OpenGLSprite *gl_sprite, PaletteID pal, int 
 			_glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 
 			_glBufferSubData(GL_PIXEL_UNPACK_BUFFER, 0, 256, GetNonSprite(GB(pal, 0, PALETTE_WIDTH), ST_RECOLOUR) + 1);
-			_glTexSubImage1D(GL_TEXTURE_1D, 0, 0, 256, GL_RED, GL_UNSIGNED_BYTE, 0);
+			_glTexSubImage1D(GL_TEXTURE_1D, 0, 0, 256, GL_RED, GL_UNSIGNED_BYTE, nullptr);
 
 			_glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 

@@ -2159,6 +2159,7 @@ STR_NETWORK_CLIENT_LIST_NEW_COMPANY                             :(Uusi yhtiö)
 STR_NETWORK_CLIENT_LIST_NEW_COMPANY_TOOLTIP                     :{BLACK}Perusta uusi yhtiö ja liity siihen
 STR_NETWORK_CLIENT_LIST_PLAYER_ICON_SELF_TOOLTIP                :{BLACK}Tämä olet sinä
 STR_NETWORK_CLIENT_LIST_PLAYER_ICON_HOST_TOOLTIP                :{BLACK}Tämä on pelin ylläpitäjä
+STR_NETWORK_CLIENT_LIST_CLIENT_COMPANY_COUNT                    :{BLACK}{NUM} pelaaja{P "" a} / {NUM} yhtiö{P "" tä}
 
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK                       :Potki
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN                        :Estä
@@ -2316,7 +2317,7 @@ STR_CONTENT_DETAIL_SUBTITLE_SELECTED                            :{SILVER}Olet va
 STR_CONTENT_DETAIL_SUBTITLE_AUTOSELECTED                        :{SILVER}Tämä vaatimus on valittu ladattavaksi
 STR_CONTENT_DETAIL_SUBTITLE_ALREADY_HERE                        :{SILVER}Sinulla on jo tämä
 STR_CONTENT_DETAIL_SUBTITLE_DOES_NOT_EXIST                      :{SILVER}Tämä sisältö on tuntematon, ja sitä ei voida ladata OpenTTD:ssä
-STR_CONTENT_DETAIL_UPDATE                                       :{SILVER}Tämä korvaa sisällön {STRING}
+STR_CONTENT_DETAIL_UPDATE                                       :{SILVER}Tällä korvataan olemassa oleva {STRING}
 STR_CONTENT_DETAIL_NAME                                         :{SILVER}Nimi: {WHITE}{STRING}
 STR_CONTENT_DETAIL_VERSION                                      :{SILVER}Versio: {WHITE}{STRING}
 STR_CONTENT_DETAIL_DESCRIPTION                                  :{SILVER}Kuvaus: {WHITE}{STRING}

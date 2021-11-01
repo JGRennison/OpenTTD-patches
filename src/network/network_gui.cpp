@@ -1278,7 +1278,7 @@ static WindowDesc _network_start_server_window_desc(
 
 static void ShowNetworkStartServerWindow()
 {
-	if (!NetworkValidateClientName()) return;
+	if (!NetworkValidateOurClientName()) return;
 
 	DeleteWindowById(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_GAME);
 	DeleteWindowById(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_LOBBY);
@@ -1572,7 +1572,7 @@ static WindowDesc _network_lobby_window_desc(
  */
 static void ShowNetworkLobbyWindow(NetworkGameList *ngl)
 {
-	if (!NetworkValidateClientName()) return;
+	if (!NetworkValidateOurClientName()) return;
 
 	DeleteWindowById(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_START);
 	DeleteWindowById(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_GAME);
@@ -1642,7 +1642,10 @@ static const NWidgetPart _nested_client_list_widgets[] = {
 			EndContainer(),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_MATRIX, COLOUR_GREY, WID_CL_MATRIX), SetMinimalSize(180, 0), SetResize(1, 1), SetFill(1, 1), SetMatrixDataTip(1, 0, STR_NULL), SetScrollbar(WID_CL_SCROLLBAR),
+			NWidget(NWID_VERTICAL),
+				NWidget(WWT_MATRIX, COLOUR_GREY, WID_CL_MATRIX), SetMinimalSize(180, 0), SetResize(1, 1), SetFill(1, 1), SetMatrixDataTip(1, 0, STR_NULL), SetScrollbar(WID_CL_SCROLLBAR),
+				NWidget(WWT_TEXT, COLOUR_GREY, WID_CL_CLIENT_COMPANY_COUNT), SetFill(1, 0), SetMinimalTextLines(1, 0), SetResize(1, 0), SetPadding(2, 1, 2, 1), SetAlignment(SA_CENTER), SetDataTip(STR_NETWORK_CLIENT_LIST_CLIENT_COMPANY_COUNT, STR_NULL),
+			EndContainer(),
 			NWidget(NWID_VERTICAL),
 				NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_CL_SCROLLBAR),
 				NWidget(WWT_RESIZEBOX, COLOUR_GREY),
@@ -2064,6 +2067,11 @@ public:
 
 			case WID_CL_CLIENT_NAME:
 				SetDParamStr(0, _settings_client.network.client_name);
+				break;
+
+			case WID_CL_CLIENT_COMPANY_COUNT:
+				SetDParam(0, NetworkClientInfo::GetNumItems());
+				SetDParam(1, Company::GetNumItems());
 				break;
 		}
 	}

@@ -471,7 +471,7 @@ void IntSettingDesc::MakeValueValid(int32 &val) const
 					uval = (uint32)this->def;
 				}
 			}
-			val = (int32)val;
+			val = (int32)uval;
 			return;
 		}
 		case SLE_VAR_I64:
@@ -893,7 +893,7 @@ static void UpdateConsists(int32 new_value)
 }
 
 /* Check service intervals of vehicles, newvalue is value of % or day based servicing */
-static void UpdateServiceInterval(int32 new_value)
+static void UpdateAllServiceInterval(int32 new_value)
 {
 	bool update_vehicles;
 	VehicleDefaultSettings *vds;
