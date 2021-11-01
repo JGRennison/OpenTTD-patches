@@ -340,7 +340,7 @@ class NIHVehicle : public NIHelper {
 				if (cb36_properties != UINT64_MAX) {
 					uint64 props = cb36_properties;
 					while (props) {
-						PropertyID prop = (PropertyID)FindFirstBit64(props);
+						PropertyID prop = (PropertyID)FindFirstBit(props);
 						props = KillFirstBit(props);
 						uint16 res = GetVehicleProperty(v, prop, CALLBACK_FAILED);
 						if (res == CALLBACK_FAILED) {

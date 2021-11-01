@@ -577,7 +577,7 @@ template <typename F> CargoTypes FilterCargoMask(F filter_func, CargoTypes cargo
 
 template <typename T, typename F> T CargoMaskValueFilter(CargoTypes &cargo_mask, F filter_func)
 {
-	CargoID first_cargo_id = FindFirstBit64(cargo_mask);
+	CargoID first_cargo_id = FindFirstBit(cargo_mask);
 	T value = filter_func(first_cargo_id);
 	CargoTypes other_cargo_mask = cargo_mask;
 	ClrBit(other_cargo_mask, first_cargo_id);

@@ -25,18 +25,7 @@ const uint8 _ffb_64[64] = {
 	3,  0,  1,  0,  2,  0,  1,  0,
 };
 
-/**
- * Search the first set bit in a 32 bit variable.
- *
- * This algorithm is a static implementation of a log
- * congruence search algorithm. It checks the first half
- * if there is a bit set search there further. And this
- * way further. If no bit is set return 0.
- *
- * @param x The value to search
- * @return The position of the first bit set
- */
-uint8 FindFirstBit(uint32 x)
+uint8 FindFirstBit32(uint32 x)
 {
 	if (x == 0) return 0;
 	/* The macro FIND_FIRST_BIT is better to use when your x is

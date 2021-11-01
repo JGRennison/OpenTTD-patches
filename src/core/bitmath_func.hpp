@@ -187,21 +187,7 @@ static inline T ToggleBit(T &x, const uint8 y)
 
 #ifdef WITH_BITMATH_BUILTINS
 
-#define FIND_FIRST_BIT(x) FindFirstBit(x)
-
-inline uint8 FindFirstBit(uint32 x)
-{
-	if (x == 0) return 0;
-
-	return __builtin_ctz(x);
-}
-
-inline uint8 FindFirstBit64(uint64 x)
-{
-	if (x == 0) return 0;
-
-	return __builtin_ctzll(x);
-}
+#define FIND_FIRST_BIT(x) FindFirstBit<uint>(x)
 
 #else
 
@@ -220,10 +206,38 @@ extern const uint8 _ffb_64[64];
  */
 #define FIND_FIRST_BIT(x) _ffb_64[(x)]
 
-uint8 FindFirstBit(uint32 x);
-uint8 FindFirstBit64(uint64 x);
-
 #endif
+
+/**
+ * Search the first set bit in an integer variable.
+ *
+ * @param value The value to search
+ * @return The position of the first bit set, or 0 when value is 0
+ */
+template <typename T>
+static inline uint8 FindFirstBit(T value)
+{
+	static_assert(sizeof(T) <= sizeof(unsigned long long));
+#ifdef WITH_BITMATH_BUILTINS
+	if (value == 0) return 0;
+	typename std::make_unsigned<T>::type unsigned_value = value;
+	if (sizeof(T) <= sizeof(unsigned int)) {
+		return __builtin_ctz(unsigned_value);
+	} else if (sizeof(T) == sizeof(unsigned long)) {
+		return __builtin_ctzl(unsigned_value);
+	} else {
+		return __builtin_ctzll(unsigned_value);
+	}
+#else
+	if (sizeof(T) <= sizeof(uint32)) {
+		extern uint8 FindFirstBit32(x);
+		return FindFirstBit32(value);
+	} else {
+		extern uint8 FindFirstBit64(x);
+		return FindFirstBit64(value);
+	}
+#endif
+}
 
 uint8 FindLastBit(uint64 x);
 
@@ -275,6 +289,7 @@ static inline T KillFirstBit(T value)
 template <typename T>
 static inline uint CountBits(T value)
 {
+	static_assert(sizeof(T) <= sizeof(unsigned long long));
 #ifdef WITH_BITMATH_BUILTINS
 	typename std::make_unsigned<T>::type unsigned_value = value;
 	if (sizeof(T) <= sizeof(unsigned int)) {

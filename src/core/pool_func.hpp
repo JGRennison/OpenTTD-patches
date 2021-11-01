@@ -81,7 +81,7 @@ DEFINE_POOL_METHOD(inline size_t)::FindFirstFree()
 	for (; bitmap_index < bitmap_end; bitmap_index++) {
 		uint64 available = ~this->free_bitmap[bitmap_index];
 		if (available == 0) continue;
-		return (bitmap_index * 64) + FindFirstBit64(available);
+		return (bitmap_index * 64) + FindFirstBit(available);
 	}
 
 	if (this->first_unused < this->size) {
