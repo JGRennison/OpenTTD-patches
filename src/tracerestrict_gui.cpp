@@ -563,12 +563,12 @@ static const TraceRestrictDropDownListSet *GetSortedCargoTypeDropDownListSet()
 		cargo_list_str, cargo_list_id,
 	};
 
-	for (size_t i = 0; i < _sorted_standard_cargo_specs_size; ++i) {
+	for (size_t i = 0; i < _sorted_standard_cargo_specs.size(); ++i) {
 		const CargoSpec *cs = _sorted_cargo_specs[i];
 		cargo_list_str[i] = cs->name;
 		cargo_list_id[i] = cs->Index();
 	}
-	cargo_list_str[_sorted_standard_cargo_specs_size] = INVALID_STRING_ID;
+	cargo_list_str[_sorted_standard_cargo_specs.size()] = INVALID_STRING_ID;
 
 	return &cargo_list;
 }

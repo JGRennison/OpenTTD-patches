@@ -316,9 +316,8 @@ public:
 	template <typename F> CargoTypes FilterLoadUnloadTypeCargoMask(F filter_func, CargoTypes cargo_mask = ALL_CARGOTYPES)
 	{
 		if ((this->GetLoadType() == OLFB_CARGO_TYPE_LOAD) || (this->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD)) {
-			CargoID cargo;
 			CargoTypes output_mask = cargo_mask;
-			FOR_EACH_SET_BIT(cargo, cargo_mask) {
+			for (CargoID cargo : SetCargoBitIterator(cargo_mask)) {
 				if (!filter_func(this, cargo)) ClrBit(output_mask, cargo);
 			}
 			return output_mask;
@@ -569,9 +568,8 @@ public:
 
 template <typename F> CargoTypes FilterCargoMask(F filter_func, CargoTypes cargo_mask = ALL_CARGOTYPES)
 {
-	CargoID cargo;
 	CargoTypes output_mask = cargo_mask;
-	FOR_EACH_SET_BIT(cargo, cargo_mask) {
+	for (CargoID cargo : SetCargoBitIterator(cargo_mask)) {
 		if (!filter_func(cargo)) ClrBit(output_mask, cargo);
 	}
 	return output_mask;
@@ -583,8 +581,7 @@ template <typename T, typename F> T CargoMaskValueFilter(CargoTypes &cargo_mask,
 	T value = filter_func(first_cargo_id);
 	CargoTypes other_cargo_mask = cargo_mask;
 	ClrBit(other_cargo_mask, first_cargo_id);
-	CargoID cargo;
-	FOR_EACH_SET_BIT(cargo, other_cargo_mask) {
+	for (CargoID cargo : SetCargoBitIterator(other_cargo_mask)) {
 		if (value != filter_func(cargo)) ClrBit(cargo_mask, cargo);
 	}
 	return value;

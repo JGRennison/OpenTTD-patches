@@ -194,8 +194,7 @@ protected:
 			if (width > this->group_width) this->group_width = width;
 		}
 
-		uint owner;
-		FOR_EACH_SET_BIT(owner, companies) {
+		for (uint owner : SetBitIterator(companies)) {
 			SetDParam(0, owner);
 			int width = (GetStringBoundingBox(STR_DEPARTURES_TOC)).width + 4;
 			if (width > this->toc_width) this->toc_width = width;

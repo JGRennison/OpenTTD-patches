@@ -1376,8 +1376,7 @@ protected:
 		filter_items++;
 
 		/* Collect available cargo types for filtering. */
-		const CargoSpec *cs;
-		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			this->cargo_filter[filter_items] = cs->Index();
 			this->cargo_filter_texts[filter_items] = cs->name;
 			filter_items++;
@@ -3003,8 +3002,7 @@ struct IndustryCargoesWindow : public Window {
 
 			case WID_IC_CARGO_DROPDOWN: {
 				DropDownList lst;
-				const CargoSpec *cs;
-				FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 					lst.emplace_back(new DropDownListStringItem(cs->name, cs->Index(), false));
 				}
 				if (!lst.empty()) {

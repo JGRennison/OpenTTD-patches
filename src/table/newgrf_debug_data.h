@@ -1107,8 +1107,7 @@ class NIHTown : public NIHelper {
 
 		if (t->have_ratings != 0) {
 			print("  Company ratings:");
-			uint8 bit;
-			FOR_EACH_SET_BIT(bit, t->have_ratings) {
+			for (uint8 bit : SetBitIterator(t->have_ratings)) {
 				seprintf(buffer, lastof(buffer), "    %u: %d", bit, t->ratings[bit]);
 				print(buffer);
 			}

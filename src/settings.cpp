@@ -23,6 +23,7 @@
 
 #include "stdafx.h"
 #include <array>
+#include <charconv>
 #include <limits>
 #include "currency.h"
 #include "screenshot.h"
@@ -98,18 +99,86 @@ ClientSettings _settings_client;
 GameSettings _settings_game;     ///< Game settings of a running game or the scenario editor.
 GameSettings _settings_newgame;  ///< Game settings for new games (updated from the intro screen).
 TimeSettings _settings_time; ///< The effective settings that are used for time display.
-VehicleDefaultSettings _old_vds; ///< Used for loading default vehicles settings from old savegames
-std::string _config_file; ///< Configuration file of OpenTTD
+VehicleDefaultSettings _old_vds; ///< Used for loading default vehicles settings from old savegames.
+std::string _config_file; ///< Configuration file of OpenTTD.
 std::string _config_file_text;
+std::string _private_file; ///< Private configuration file of OpenTTD.
+std::string _secrets_file; ///< Secrets configuration file of OpenTTD.
 
 typedef std::list<ErrorMessageData> ErrorList;
 static ErrorList _settings_error_list; ///< Errors while loading minimal settings.
 
 
-typedef void SettingDescProc(IniFile *ini, const SettingTable &desc, const char *grpname, void *object, bool only_startup);
-typedef void SettingDescProcList(IniFile *ini, const char *grpname, StringList &list);
+/**
+ * List of all the generic setting tables.
+ *
+ * There are a few tables that are special and not processed like the rest:
+ * - _currency_settings
+ * - _misc_settings
+ * - _company_settings
+ * - _win32_settings
+ * As such, they are not part of this list.
+ */
+static const SettingTable _generic_setting_tables[] = {
+	_settings,
+	_network_settings,
+};
+
+/**
+ * List of all the private setting tables.
+ */
+static const SettingTable _private_setting_tables[] = {
+	_network_private_settings,
+};
+
+/**
+ * List of all the secrets setting tables.
+ */
+static const SettingTable _secrets_setting_tables[] = {
+	_network_secrets_settings,
+};
+
+typedef void SettingDescProc(IniFile &ini, const SettingTable &desc, const char *grpname, void *object, bool only_startup);
+typedef void SettingDescProcList(IniFile &ini, const char *grpname, StringList &list);
 
 static bool IsSignedVarMemType(VarType vt);
+
+
+/**
+ * IniFile to store a configuration.
+ */
+class ConfigIniFile : public IniFile {
+private:
+	inline static const char * const list_group_names[] = {
+		"bans",
+		"newgrf",
+		"servers",
+		"server_bind_addresses",
+		nullptr,
+	};
+
+public:
+	ConfigIniFile(const std::string &filename, std::string *save = nullptr) : IniFile(list_group_names)
+	{
+		this->LoadFromDisk(filename, NO_DIRECTORY, save);
+	}
+};
+
+/**
+ * Ini-file versions.
+ *
+ * Sometimes we move settings between different ini-files, as we need to know
+ * when we have to load/remove it from the old versus reading it from the new
+ * location. These versions assist with situations like that.
+ */
+enum IniFileVersion : uint32 {
+	IFV_0,               ///< 0  All versions prior to introduction.
+	IFV_PRIVATE_SECRETS, ///< 1  PR#9298  Moving of settings from openttd.cfg to private.cfg / secrets.cfg.
+
+	IFV_MAX_VERSION,     ///< Highest possible ini-file version.
+};
+
+const uint16 INIFILE_VERSION = (IniFileVersion)(IFV_MAX_VERSION - 1); ///< Current ini-file version of OpenTTD.
 
 /**
  * Get the setting at the given index into the settings table.
@@ -121,17 +190,6 @@ const SettingDesc *GetSettingDescription(uint index)
 	if (index >= _settings.size()) return nullptr;
 	return _settings.begin()[index].get();
 }
-
-/**
- * Groups in openttd.cfg that are actually lists.
- */
-static const char * const _list_group_names[] = {
-	"bans",
-	"newgrf",
-	"servers",
-	"server_bind_addresses",
-	nullptr
-};
 
 /**
  * Find the index value of a ONEofMANY type in a string separated by |
@@ -326,9 +384,8 @@ void OneOfManySettingDesc::FormatValue(char *buf, const char *last, const void *
 void ManyOfManySettingDesc::FormatValue(char *buf, const char *last, const void *object) const
 {
 	uint bitmask = (uint)this->Read(object);
-	uint id = 0;
 	bool first = true;
-	FOR_EACH_SET_BIT(id, bitmask) {
+	for (uint id : SetBitIterator(bitmask)) {
 		if (!first) buf = strecpy(buf, "|", last);
 		buf = this->FormatSingleValue(buf, last, id);
 		first = false;
@@ -549,10 +606,10 @@ const std::string &StringSettingDesc::Read(const void *object) const
  * @param object pointer to the object been loaded
  * @param only_startup load only the startup settings set
  */
-static void IniLoadSettings(IniFile *ini, const SettingTable &settings_table, const char *grpname, void *object, bool only_startup)
+static void IniLoadSettings(IniFile &ini, const SettingTable &settings_table, const char *grpname, void *object, bool only_startup)
 {
 	IniGroup *group;
-	IniGroup *group_def = ini->GetGroup(grpname);
+	IniGroup *group_def = ini.GetGroup(grpname);
 
 	for (auto &sd : settings_table) {
 		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
@@ -565,7 +622,7 @@ static void IniLoadSettings(IniFile *ini, const SettingTable &settings_table, co
 			std::string s{ sd->name };
 			auto sc = s.find('.');
 			if (sc != std::string::npos) {
-				group = ini->GetGroup(s.substr(0, sc));
+				group = ini.GetGroup(s.substr(0, sc));
 				s = s.substr(sc + 1);
 			} else {
 				group = group_def;
@@ -581,7 +638,7 @@ static void IniLoadSettings(IniFile *ini, const SettingTable &settings_table, co
 				/* For settings.xx.zz.yy load the settings from [zz] yy = ? in case the previous
 				 * did not exist (e.g. loading old config files with a [yapf] section */
 				sc = s.find('.');
-				if (sc != std::string::npos) item = ini->GetGroup(s.substr(0, sc))->GetItem(s.substr(sc + 1), false);
+				if (sc != std::string::npos) item = ini.GetGroup(s.substr(0, sc))->GetItem(s.substr(sc + 1), false);
 			}
 		}
 
@@ -628,7 +685,7 @@ void ListSettingDesc::ParseValue(const IniItem *item, void *object) const
  * values are reloaded when saving). If settings indeed have changed, we get
  * these and save them.
  */
-static void IniSaveSettings(IniFile *ini, const SettingTable &settings_table, const char *grpname, void *object, bool)
+static void IniSaveSettings(IniFile &ini, const SettingTable &settings_table, const char *grpname, void *object, bool)
 {
 	IniGroup *group_def = nullptr, *group;
 	IniItem *item;
@@ -645,10 +702,10 @@ static void IniSaveSettings(IniFile *ini, const SettingTable &settings_table, co
 		std::string s{ sd->name };
 		auto sc = s.find('.');
 		if (sc != std::string::npos) {
-			group = ini->GetGroup(s.substr(0, sc));
+			group = ini.GetGroup(s.substr(0, sc));
 			s = s.substr(sc + 1);
 		} else {
-			if (group_def == nullptr) group_def = ini->GetGroup(grpname);
+			if (group_def == nullptr) group_def = ini.GetGroup(grpname);
 			group = group_def;
 		}
 
@@ -726,9 +783,9 @@ bool ListSettingDesc::IsSameValue(const IniItem *item, void *object) const
  * @param grpname character string identifying the section-header of the ini file that will be parsed
  * @param list new list with entries of the given section
  */
-static void IniLoadSettingList(IniFile *ini, const char *grpname, StringList &list)
+static void IniLoadSettingList(IniFile &ini, const char *grpname, StringList &list)
 {
-	IniGroup *group = ini->GetGroup(grpname);
+	IniGroup *group = ini.GetGroup(grpname);
 
 	if (group == nullptr) return;
 
@@ -748,9 +805,9 @@ static void IniLoadSettingList(IniFile *ini, const char *grpname, StringList &li
  * @param list pointer to an string(pointer) array that will be used as the
  *             source to be saved into the relevant ini section
  */
-static void IniSaveSettingList(IniFile *ini, const char *grpname, StringList &list)
+static void IniSaveSettingList(IniFile &ini, const char *grpname, StringList &list)
 {
-	IniGroup *group = ini->GetGroup(grpname);
+	IniGroup *group = ini.GetGroup(grpname);
 
 	if (group == nullptr) return;
 	group->Clear();
@@ -766,7 +823,7 @@ static void IniSaveSettingList(IniFile *ini, const char *grpname, StringList &li
  * @param grpname character string identifying the section-header of the ini file that will be parsed
  * @param desc Destination WindowDesc
  */
-void IniLoadWindowSettings(IniFile *ini, const char *grpname, void *desc)
+void IniLoadWindowSettings(IniFile &ini, const char *grpname, void *desc)
 {
 	IniLoadSettings(ini, _window_settings, grpname, desc, false);
 }
@@ -777,7 +834,7 @@ void IniLoadWindowSettings(IniFile *ini, const char *grpname, void *desc)
  * @param grpname character string identifying the section-header of the ini file
  * @param desc Source WindowDesc
  */
-void IniSaveWindowSettings(IniFile *ini, const char *grpname, void *desc)
+void IniSaveWindowSettings(IniFile &ini, const char *grpname, void *desc)
 {
 	IniSaveSettings(ini, _window_settings, grpname, desc, false);
 }
@@ -1726,9 +1783,9 @@ static void HandleOldDiffCustom(bool savegame)
 	}
 }
 
-static void AILoadConfig(IniFile *ini, const char *grpname)
+static void AILoadConfig(IniFile &ini, const char *grpname)
 {
-	IniGroup *group = ini->GetGroup(grpname);
+	IniGroup *group = ini.GetGroup(grpname);
 	IniItem *item;
 
 	/* Clean any configured AI */
@@ -1754,9 +1811,9 @@ static void AILoadConfig(IniFile *ini, const char *grpname)
 	}
 }
 
-static void GameLoadConfig(IniFile *ini, const char *grpname)
+static void GameLoadConfig(IniFile &ini, const char *grpname)
 {
-	IniGroup *group = ini->GetGroup(grpname);
+	IniGroup *group = ini.GetGroup(grpname);
 	IniItem *item;
 
 	/* Clean any configured GameScript */
@@ -1820,9 +1877,9 @@ static bool DecodeHexText(const char *pos, uint8 *dest, size_t dest_size)
  * @param grpname   Group name containing the configuration of the GRF.
  * @param is_static GRF is static.
  */
-static GRFConfig *GRFLoadConfig(IniFile *ini, const char *grpname, bool is_static)
+static GRFConfig *GRFLoadConfig(IniFile &ini, const char *grpname, bool is_static)
 {
-	IniGroup *group = ini->GetGroup(grpname);
+	IniGroup *group = ini.GetGroup(grpname);
 	IniItem *item;
 	GRFConfig *first = nullptr;
 	GRFConfig **curr = &first;
@@ -1914,9 +1971,23 @@ static GRFConfig *GRFLoadConfig(IniFile *ini, const char *grpname, bool is_stati
 	return first;
 }
 
-static void AISaveConfig(IniFile *ini, const char *grpname)
+static IniFileVersion LoadVersionFromConfig(IniFile &ini)
 {
-	IniGroup *group = ini->GetGroup(grpname);
+	IniGroup *group = ini.GetGroup("version");
+
+	auto version_number = group->GetItem("ini_version", false);
+	/* Older ini-file versions don't have this key yet. */
+	if (version_number == nullptr || !version_number->value.has_value()) return IFV_0;
+
+	uint32 version = 0;
+	std::from_chars(version_number->value->data(), version_number->value->data() + version_number->value->size(), version);
+
+	return static_cast<IniFileVersion>(version);
+}
+
+static void AISaveConfig(IniFile &ini, const char *grpname)
+{
+	IniGroup *group = ini.GetGroup(grpname);
 
 	if (group == nullptr) return;
 	group->Clear();
@@ -1937,9 +2008,9 @@ static void AISaveConfig(IniFile *ini, const char *grpname)
 	}
 }
 
-static void GameSaveConfig(IniFile *ini, const char *grpname)
+static void GameSaveConfig(IniFile &ini, const char *grpname)
 {
-	IniGroup *group = ini->GetGroup(grpname);
+	IniGroup *group = ini.GetGroup(grpname);
 
 	if (group == nullptr) return;
 	group->Clear();
@@ -1962,28 +2033,19 @@ static void GameSaveConfig(IniFile *ini, const char *grpname)
  * Save the version of OpenTTD to the ini file.
  * @param ini the ini to write to
  */
-static void SaveVersionInConfig(IniFile *ini)
+static void SaveVersionInConfig(IniFile &ini)
 {
-	IniGroup *group = ini->GetGroup("version");
-
-	char version[9];
-	seprintf(version, lastof(version), "%08X", _openttd_newgrf_version);
-
-	const char * const versions[][2] = {
-		{ "version_string", _openttd_revision },
-		{ "version_number", version }
-	};
-
-	for (uint i = 0; i < lengthof(versions); i++) {
-		group->GetItem(versions[i][0], true)->SetValue(versions[i][1]);
-	}
+	IniGroup *group = ini.GetGroup("version");
+	group->GetItem("version_string", true)->SetValue(_openttd_revision);
+	group->GetItem("version_number", true)->SetValue(stdstr_fmt("%08X", _openttd_newgrf_version));
+	group->GetItem("ini_version", true)->SetValue(std::to_string(INIFILE_VERSION));
 }
 
 /* Save a GRF configuration to the given group name */
-static void GRFSaveConfig(IniFile *ini, const char *grpname, const GRFConfig *list)
+static void GRFSaveConfig(IniFile &ini, const char *grpname, const GRFConfig *list)
 {
-	ini->RemoveGroup(grpname);
-	IniGroup *group = ini->GetGroup(grpname);
+	ini.RemoveGroup(grpname);
+	IniGroup *group = ini.GetGroup(grpname);
 	const GRFConfig *c;
 
 	for (c = list; c != nullptr; c = c->next) {
@@ -2000,29 +2062,57 @@ static void GRFSaveConfig(IniFile *ini, const char *grpname, const GRFConfig *li
 }
 
 /* Common handler for saving/loading variables to the configuration file */
-static void HandleSettingDescs(IniFile *ini, SettingDescProc *proc, SettingDescProcList *proc_list, bool only_startup = false)
+static void HandleSettingDescs(IniFile &generic_ini, IniFile &private_ini, IniFile &secrets_ini, SettingDescProc *proc, SettingDescProcList *proc_list, bool only_startup = false)
 {
-	proc(ini, _misc_settings,    "misc",  nullptr, only_startup);
+	proc(generic_ini, _misc_settings, "misc", nullptr, only_startup);
 #if defined(_WIN32) && !defined(DEDICATED)
-	proc(ini, _win32_settings,   "win32", nullptr, only_startup);
+	proc(generic_ini, _win32_settings, "win32", nullptr, only_startup);
 #endif /* _WIN32 */
 
-	proc(ini, _settings,         "patches",  &_settings_newgame, only_startup);
-	proc(ini, _currency_settings,"currency", &_custom_currency, only_startup);
-	proc(ini, _company_settings, "company",  &_settings_client.company, only_startup);
+	/* The name "patches" is a fallback, as every setting should sets its own group. */
+
+	for (auto &table : _generic_setting_tables) {
+		proc(generic_ini, table, "patches", &_settings_newgame, only_startup);
+	}
+	for (auto &table : _private_setting_tables) {
+		proc(private_ini, table, "patches", &_settings_newgame, only_startup);
+	}
+	for (auto &table : _secrets_setting_tables) {
+		proc(secrets_ini, table, "patches", &_settings_newgame, only_startup);
+	}
+
+	proc(generic_ini, _currency_settings, "currency", &_custom_currency, only_startup);
+	proc(generic_ini, _company_settings, "company", &_settings_client.company, only_startup);
 
 	if (!only_startup) {
-		proc_list(ini, "server_bind_addresses", _network_bind_list);
-		proc_list(ini, "servers", _network_host_list);
-		proc_list(ini, "bans",    _network_ban_list);
+		proc_list(private_ini, "server_bind_addresses", _network_bind_list);
+		proc_list(private_ini, "servers", _network_host_list);
+		proc_list(private_ini, "bans", _network_ban_list);
 	}
 }
 
-static IniFile *IniLoadConfig()
+/**
+ * Remove all entries from a settings table from an ini-file.
+ *
+ * This is only useful if those entries are moved to another file, and you
+ * want to clean up what is left behind.
+ *
+ * @param ini The ini file to remove the entries from.
+ * @param table The table to look for entries to remove.
+ */
+static void RemoveEntriesFromIni(IniFile &ini, const SettingTable &table)
 {
-	IniFile *ini = new IniFile(_list_group_names);
-	ini->LoadFromDisk(_config_file, NO_DIRECTORY, &_config_file_text);
-	return ini;
+	for (auto &sd : table) {
+		/* For settings.xx.yy load the settings from [xx] yy = ? */
+		std::string s{ sd->name };
+		auto sc = s.find('.');
+		if (sc == std::string::npos) continue;
+
+		IniGroup *group = ini.GetGroup(s.substr(0, sc));
+		s = s.substr(sc + 1);
+
+		group->RemoveItem(s);
+	}
 }
 
 /**
@@ -2031,20 +2121,30 @@ static IniFile *IniLoadConfig()
  */
 void LoadFromConfig(bool startup)
 {
-	IniFile *ini = IniLoadConfig();
+	ConfigIniFile generic_ini(_config_file, &_config_file_text);
+	ConfigIniFile private_ini(_private_file);
+	ConfigIniFile secrets_ini(_secrets_file);
+
 	if (!startup) ResetCurrencies(false); // Initialize the array of currencies, without preserving the custom one
 
-	/* Load basic settings only during bootstrap, load other settings not during bootstrap */
-	HandleSettingDescs(ini, IniLoadSettings, IniLoadSettingList, startup);
+	IniFileVersion generic_version = LoadVersionFromConfig(generic_ini);
 
+	/* Before the split of private/secrets, we have to look in the generic for these settings. */
+	if (generic_version < IFV_PRIVATE_SECRETS) {
+		HandleSettingDescs(generic_ini, generic_ini, generic_ini, IniLoadSettings, IniLoadSettingList, startup);
+	} else {
+		HandleSettingDescs(generic_ini, private_ini, secrets_ini, IniLoadSettings, IniLoadSettingList, startup);
+	}
+
+	/* Load basic settings only during bootstrap, load other settings not during bootstrap */
 	if (!startup) {
-		_grfconfig_newgame = GRFLoadConfig(ini, "newgrf", false);
-		_grfconfig_static  = GRFLoadConfig(ini, "newgrf-static", true);
-		AILoadConfig(ini, "ai_players");
-		GameLoadConfig(ini, "game_scripts");
+		_grfconfig_newgame = GRFLoadConfig(generic_ini, "newgrf", false);
+		_grfconfig_static  = GRFLoadConfig(generic_ini, "newgrf-static", true);
+		AILoadConfig(generic_ini, "ai_players");
+		GameLoadConfig(generic_ini, "game_scripts");
 
 		PrepareOldDiffCustom();
-		IniLoadSettings(ini, _gameopt_settings, "gameopt", &_settings_newgame, false);
+		IniLoadSettings(generic_ini, _gameopt_settings, "gameopt", &_settings_newgame, false);
 		HandleOldDiffCustom(false);
 
 		ValidateSettings();
@@ -2057,28 +2157,57 @@ void LoadFromConfig(bool startup)
 		ScheduleErrorMessage(_settings_error_list);
 		if (FindWindowById(WC_ERRMSG, 0) == nullptr) ShowFirstError();
 	}
-
-	delete ini;
 }
 
 /** Save the values to the configuration file */
 void SaveToConfig()
 {
-	IniFile *ini = IniLoadConfig();
+	ConfigIniFile generic_ini(_config_file);
+	ConfigIniFile private_ini(_private_file);
+	ConfigIniFile secrets_ini(_secrets_file);
 
-	/* Remove some obsolete groups. These have all been loaded into other groups. */
-	ini->RemoveGroup("patches");
-	ini->RemoveGroup("yapf");
-	ini->RemoveGroup("gameopt");
+	IniFileVersion generic_version = LoadVersionFromConfig(generic_ini);
 
-	HandleSettingDescs(ini, IniSaveSettings, IniSaveSettingList);
-	GRFSaveConfig(ini, "newgrf", _grfconfig_newgame);
-	GRFSaveConfig(ini, "newgrf-static", _grfconfig_static);
-	AISaveConfig(ini, "ai_players");
-	GameSaveConfig(ini, "game_scripts");
-	SaveVersionInConfig(ini);
-	ini->SaveToDisk(_config_file);
-	delete ini;
+	/* If we newly create the private/secrets file, add a dummy group on top
+	 * just so we can add a comment before it (that is how IniFile works).
+	 * This to explain what the file is about. After doing it once, never touch
+	 * it again, as otherwise we might be reverting user changes. */
+	if (!private_ini.GetGroup("private", false)) private_ini.GetGroup("private")->comment = "; This file possibly contains private information which can identify you as person.\n";
+	if (!secrets_ini.GetGroup("secrets", false)) secrets_ini.GetGroup("secrets")->comment = "; Do not share this file with others, not even if they claim to be technical support.\n; This file contains saved passwords and other secrets that should remain private to you!\n";
+
+	if (generic_version == IFV_0) {
+		/* Remove some obsolete groups. These have all been loaded into other groups. */
+		generic_ini.RemoveGroup("patches");
+		generic_ini.RemoveGroup("yapf");
+		generic_ini.RemoveGroup("gameopt");
+
+		/* Remove all settings from the generic ini that are now in the private ini. */
+		generic_ini.RemoveGroup("server_bind_addresses");
+		generic_ini.RemoveGroup("servers");
+		generic_ini.RemoveGroup("bans");
+		for (auto &table : _private_setting_tables) {
+			RemoveEntriesFromIni(generic_ini, table);
+		}
+
+		/* Remove all settings from the generic ini that are now in the secrets ini. */
+		for (auto &table : _secrets_setting_tables) {
+			RemoveEntriesFromIni(generic_ini, table);
+		}
+	}
+
+	HandleSettingDescs(generic_ini, private_ini, secrets_ini, IniSaveSettings, IniSaveSettingList);
+	GRFSaveConfig(generic_ini, "newgrf", _grfconfig_newgame);
+	GRFSaveConfig(generic_ini, "newgrf-static", _grfconfig_static);
+	AISaveConfig(generic_ini, "ai_players");
+	GameSaveConfig(generic_ini, "game_scripts");
+
+	SaveVersionInConfig(generic_ini);
+	SaveVersionInConfig(private_ini);
+	SaveVersionInConfig(secrets_ini);
+
+	generic_ini.SaveToDisk(_config_file);
+	private_ini.SaveToDisk(_private_file);
+	secrets_ini.SaveToDisk(_secrets_file);
 }
 
 /**
@@ -2089,8 +2218,8 @@ StringList GetGRFPresetList()
 {
 	StringList list;
 
-	std::unique_ptr<IniFile> ini(IniLoadConfig());
-	for (IniGroup *group = ini->group; group != nullptr; group = group->next) {
+	ConfigIniFile ini(_config_file);
+	for (IniGroup *group = ini.group; group != nullptr; group = group->next) {
 		if (group->name.compare(0, 7, "preset-") == 0) {
 			list.push_back(group->name.substr(7));
 		}
@@ -2111,9 +2240,8 @@ GRFConfig *LoadGRFPresetFromConfig(const char *config_name)
 	char *section = (char*)alloca(len);
 	seprintf(section, section + len - 1, "preset-%s", config_name);
 
-	IniFile *ini = IniLoadConfig();
+	ConfigIniFile ini(_config_file);
 	GRFConfig *config = GRFLoadConfig(ini, section, false);
-	delete ini;
 
 	return config;
 }
@@ -2130,10 +2258,9 @@ void SaveGRFPresetToConfig(const char *config_name, GRFConfig *config)
 	char *section = (char*)alloca(len);
 	seprintf(section, section + len - 1, "preset-%s", config_name);
 
-	IniFile *ini = IniLoadConfig();
+	ConfigIniFile ini(_config_file);
 	GRFSaveConfig(ini, section, config);
-	ini->SaveToDisk(_config_file);
-	delete ini;
+	ini.SaveToDisk(_config_file);
 }
 
 /**
@@ -2146,10 +2273,9 @@ void DeleteGRFPresetFromConfig(const char *config_name)
 	char *section = (char*)alloca(len);
 	seprintf(section, section + len - 1, "preset-%s", config_name);
 
-	IniFile *ini = IniLoadConfig();
-	ini->RemoveGroup(section);
-	ini->SaveToDisk(_config_file);
-	delete ini;
+	ConfigIniFile ini(_config_file);
+	ini.RemoveGroup(section);
+	ini.SaveToDisk(_config_file);
 }
 
 /**
@@ -2227,8 +2353,18 @@ static const SettingDesc *GetCompanySettingFromName(const char *name)
  */
 const SettingDesc *GetSettingFromName(const char *name)
 {
-	auto sd = GetSettingFromName(name, _settings);
-	if (sd != nullptr) return sd;
+	for (auto &table : _generic_setting_tables) {
+		auto sd = GetSettingFromName(name, table);
+		if (sd != nullptr) return sd;
+	}
+	for (auto &table : _private_setting_tables) {
+		auto sd = GetSettingFromName(name, table);
+		if (sd != nullptr) return sd;
+	}
+	for (auto &table : _secrets_setting_tables) {
+		auto sd = GetSettingFromName(name, table);
+		if (sd != nullptr) return sd;
+	}
 
 	return GetCompanySettingFromName(name);
 }
@@ -2530,6 +2666,18 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 	}
 }
 
+static void IConsoleListSettingsTable(const SettingTable &table, const char *prefilter)
+{
+	for (auto &sd : table) {
+		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
+		if (prefilter != nullptr && strstr(sd->name, prefilter) == nullptr) continue;
+		if ((sd->flags & SF_NO_NEWGAME) && _game_mode == GM_MENU) continue;
+		char value[80];
+		sd->FormatValue(value, lastof(value), &GetGameSettings());
+		IConsolePrintF(CC_DEFAULT, "%s = %s", sd->name, value);
+	}
+}
+
 /**
  * List all settings and their value to the console
  *
@@ -2539,13 +2687,14 @@ void IConsoleListSettings(const char *prefilter)
 {
 	IConsolePrintF(CC_WARNING, "All settings with their current value:");
 
-	for (auto &sd : _settings) {
-		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
-		if (prefilter != nullptr && strstr(sd->name, prefilter) == nullptr) continue;
-		if ((sd->flags & SF_NO_NEWGAME) && _game_mode == GM_MENU) continue;
-		char value[80];
-		sd->FormatValue(value, lastof(value), &GetGameSettings());
-		IConsolePrintF(CC_DEFAULT, "%s = %s", sd->name, value);
+	for (auto &table : _generic_setting_tables) {
+		IConsoleListSettingsTable(table, prefilter);
+	}
+	for (auto &table : _private_setting_tables) {
+		IConsoleListSettingsTable(table, prefilter);
+	}
+	for (auto &table : _secrets_setting_tables) {
+		IConsoleListSettingsTable(table, prefilter);
 	}
 
 	IConsolePrintF(CC_WARNING, "Use 'setting' command to change a value");

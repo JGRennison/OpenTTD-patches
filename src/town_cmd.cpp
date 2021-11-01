@@ -4112,8 +4112,7 @@ void UpdateAllTownRatings()
 			if (Company::IsValidID(_local_company) && HasBit(t->have_ratings, _local_company) && t->ratings[_local_company] <= 0) {
 				ZoningTownAuthorityRatingChange();
 			}
-			uint8 c;
-			FOR_EACH_SET_BIT(c, t->have_ratings) {
+			for (uint8 c : SetBitIterator(t->have_ratings)) {
 				t->ratings[c] = RATING_MAXIMUM;
 			}
 			if (t->have_ratings != 0) {

@@ -1338,8 +1338,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		}
 
 		/* Collect available cargo types for filtering. */
-		const CargoSpec *cs;
-		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			this->cargo_filter[filter_items] = cs->Index();
 			this->cargo_filter_texts[filter_items] = cs->name;
 			filter_items++;
@@ -2110,8 +2109,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		filter_items++;
 
 		/* Collect available cargo types for filtering. */
-		const CargoSpec *cs;
-		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			state.cargo_filter[filter_items] = cs->Index();
 			state.cargo_filter_texts[filter_items] = cs->name;
 			filter_items++;

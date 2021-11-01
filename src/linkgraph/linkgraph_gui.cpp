@@ -153,8 +153,7 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 
 	auto AddLinks = [&](const Station *from, const Station *to, Point from_pt, Point to_pt, btree::btree_map<std::pair<StationID, StationID>, LinkCacheItem>::iterator insert_iter) {
 		LinkCacheItem *item = nullptr;
-		CargoID c;
-		FOR_EACH_SET_CARGO_ID(c, this->cargo_mask) {
+		for (CargoID c : SetCargoBitIterator(this->cargo_mask)) {
 			if (!CargoSpec::Get(c)->IsValid()) continue;
 			const GoodsEntry &ge = from->goods[c];
 			if (!LinkGraph::IsValidID(ge.link_graph) ||
@@ -188,8 +187,7 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 		StationID from = sta->index;
 
 		uint supply = 0;
-		CargoID c;
-		FOR_EACH_SET_CARGO_ID(c, this->cargo_mask) {
+		for (CargoID c : SetCargoBitIterator(this->cargo_mask)) {
 			if (!CargoSpec::Get(c)->IsValid()) continue;
 			if (!LinkGraph::IsValidID(sta->goods[c].link_graph)) continue;
 			const LinkGraph &lg = *LinkGraph::Get(sta->goods[c].link_graph);

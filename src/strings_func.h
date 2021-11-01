@@ -122,8 +122,6 @@ public:
 		return (int32)this->GetInt64(type);
 	}
 
-	void ShiftParameters(uint amount);
-
 	/** Get a pointer to the current element in the data array. */
 	uint64 *GetDataPointer() const
 	{
@@ -179,8 +177,6 @@ uint32 GetStringGRFID(StringID string);
 
 uint ConvertKmhishSpeedToDisplaySpeed(uint speed);
 uint ConvertDisplaySpeedToKmhishSpeed(uint speed);
-
-void InjectDParam(uint amount);
 
 WChar GetDecimalSeparatorChar();
 
