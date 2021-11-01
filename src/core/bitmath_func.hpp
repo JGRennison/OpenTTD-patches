@@ -377,7 +377,11 @@ struct SetBitIterator {
 
 		bool operator==(const Iterator &other) const
 		{
+#ifdef WITH_BITMATH_BUILTINS
+			return this->bitset == other.bitset;
+#else
 			return this->bitset == other.bitset && (this->bitset == 0 || this->bitpos == other.bitpos);
+#endif
 		}
 		bool operator!=(const Iterator &other) const { return !(*this == other); }
 		Tbitpos operator*() const { return this->bitpos; }
@@ -388,12 +392,29 @@ struct SetBitIterator {
 		Tbitpos bitpos;
 		void Validate()
 		{
+#ifdef WITH_BITMATH_BUILTINS
+			if (this->bitset != 0) {
+				typename std::make_unsigned<Tbitset>::type unsigned_value = this->bitset;
+				if (sizeof(Tbitset) <= sizeof(unsigned int)) {
+					bitpos = static_cast<Tbitpos>(__builtin_ctz(unsigned_value));
+				} else if (sizeof(Tbitset) == sizeof(unsigned long)) {
+					bitpos = static_cast<Tbitpos>(__builtin_ctzl(unsigned_value));
+				} else {
+					bitpos = static_cast<Tbitpos>(__builtin_ctzll(unsigned_value));
+				}
+			}
+#else
 			while (this->bitset != 0 && (this->bitset & 1) == 0) this->Next();
+#endif
 		}
 		void Next()
 		{
+#ifdef WITH_BITMATH_BUILTINS
+			this->bitset = static_cast<Tbitset>(this->bitset ^ (this->bitset & -this->bitset));
+#else
 			this->bitset = static_cast<Tbitset>(this->bitset >> 1);
 			this->bitpos++;
+#endif
 		}
 	};
 
