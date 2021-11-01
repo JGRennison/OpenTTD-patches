@@ -345,7 +345,7 @@ void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, uint8 flag
 		}
 
 		if (cur->IsType(OT_GOTO_STATION) || cur->IsType(OT_IMPLICIT)) {
-			if (cur->CanLeaveWithCargo(HasBit(flags, HAS_CARGO), FindFirstBit(this->cargo_mask))) {
+			if (cur->CanLeaveWithCargo(HasBit(flags, HAS_CARGO), FindFirstBit64(this->cargo_mask))) {
 				SetBit(flags, HAS_CARGO);
 				this->RefreshStats(cur, next);
 			} else {
