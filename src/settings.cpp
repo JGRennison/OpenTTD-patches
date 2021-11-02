@@ -926,13 +926,6 @@ static void StationSpreadChanged(int32 new_value)
 	InvalidateWindowData(WC_BUILD_STATION, 0);
 }
 
-static void CloseSignalGUI(int32 new_value)
-{
-	if (new_value == 0) {
-		DeleteWindowByClass(WC_BUILD_SIGNAL);
-	}
-}
-
 static void UpdateConsists(int32 new_value)
 {
 	for (Train *t : Train::Iterate()) {

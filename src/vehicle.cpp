@@ -1053,9 +1053,18 @@ void Vehicle::HandlePathfindingResult(bool path_found)
 		if (this->type == VEH_SHIP) {
 			Ship::From(this)->lost_count = 0;
 		}
+
+		SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
+		DirtyVehicleListWindowForVehicle(this);
+
 		/* Delete the news item. */
 		DeleteVehicleNews(this->index, STR_NEWS_VEHICLE_IS_LOST);
 		return;
+	}
+
+	if (!HasBit(this->vehicle_flags, VF_PATHFINDER_LOST)) {
+		SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
+		DirtyVehicleListWindowForVehicle(this);
 	}
 
 	if (this->type == VEH_SHIP) {
