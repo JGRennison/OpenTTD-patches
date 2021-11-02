@@ -61,9 +61,6 @@ static uint _cur_signal_button;              ///< set the signal button (for sig
 
 extern TileIndex _rail_track_endtile; // rail_cmd.cpp
 
-/* Map the setting: default_signal_type to the corresponding signal type */
-static const SignalType _default_signal_type[] = {SIGTYPE_NORMAL, SIGTYPE_PBS, SIGTYPE_PBS_ONEWAY};
-
 static const int HOTKEY_POLYRAIL     = 0x1000;
 static const int HOTKEY_NEW_POLYRAIL = 0x1001;
 
@@ -271,20 +268,29 @@ static void GenericPlaceSignals(TileIndex tile)
 	/* various bitstuffed elements for CmdBuildSingleSignal() */
 	uint32 p1 = track;
 
+	/* Which signals should we cycle through? */
+	uint8 cycle_types;
+
+	if (_settings_client.gui.cycle_signal_types == SIGNAL_CYCLE_ALL && _settings_client.gui.signal_gui_mode == SIGNAL_GUI_ALL) {
+		cycle_types = SIGTYPE_NORMAL | (SIGTYPE_LAST << 3);
+	} else {
+		cycle_types = SIGTYPE_PBS | (SIGTYPE_LAST << 3);
+	}
+
 	if (w != nullptr) {
 		/* signal GUI is used */
 		SB(p1, 3, 1, _ctrl_pressed);
 		SB(p1, 4, 1, _cur_signal_variant);
 		SB(p1, 5, 3, _cur_signal_type);
 		SB(p1, 8, 1, _convert_signal_button);
-		SB(p1, 9, 6, _settings_client.gui.cycle_signal_types);
+		SB(p1, 9, 6, cycle_types);
 		if (_cur_signal_type == SIGTYPE_NO_ENTRY) SB(p1, 15, 2, 1); // reverse default signal direction
 	} else {
 		SB(p1, 3, 1, _ctrl_pressed);
 		SB(p1, 4, 1, (_cur_year < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC));
-		SB(p1, 5, 3, _default_signal_type[_settings_client.gui.default_signal_type]);
+		SB(p1, 5, 3, SIGTYPE_PBS_ONEWAY);
 		SB(p1, 8, 1, 0);
-		SB(p1, 9, 6, _settings_client.gui.cycle_signal_types);
+		SB(p1, 9, 6, cycle_types);
 	}
 	SB(p1, 18, 1, _settings_client.gui.adv_sig_bridge_tun_modes);
 
@@ -462,7 +468,7 @@ static void HandleAutoSignalPlacement()
 		SB(p2,  3, 1, 0);
 		SB(p2,  4, 1, (_cur_year < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC));
 		SB(p2,  6, 1, _ctrl_pressed);
-		SB(p2,  7, 3, _default_signal_type[_settings_client.gui.default_signal_type]);
+		SB(p2,  7, 3, SIGTYPE_PBS_ONEWAY);
 		SB(p2, 24, 8, _settings_client.gui.drag_signals_density);
 		SB(p2, 10, 1, !_settings_client.gui.drag_signals_fixed_distance);
 	}
@@ -678,7 +684,7 @@ struct BuildRailToolbarWindow : Window {
 			case WID_RAT_BUILD_SIGNALS: {
 				this->last_user_action = widget;
 				bool started = HandlePlacePushButton(this, WID_RAT_BUILD_SIGNALS, ANIMCURSOR_BUILDSIGNALS, HT_RECT);
-				if (started && _settings_client.gui.enable_signal_gui != _ctrl_pressed) {
+				if (started != _ctrl_pressed) {
 					ShowSignalBuilder(this);
 				}
 				break;
@@ -1785,8 +1791,9 @@ struct BuildSignalWindow : public PickerWindowBase {
 private:
 	Dimension sig_sprite_size;     ///< Maximum size of signal GUI sprites.
 	int sig_sprite_bottom_offset;  ///< Maximum extent of signal GUI sprite from reference point towards bottom.
+	bool all_signal_mode;          ///< Whether all signal mode is shown
 	bool progsig_ui_shown;         ///< Whether programmable pre-signal UI is shown
-	bool presig_ui_shown;          ///< Whether pre-signal UI is shown
+	bool realistic_braking_mode;   ///< Whether realistic braking mode UI is shown
 	bool noentry_ui_shown;         ///< Whether no-entry signal UI is shown
 
 	/**
@@ -1812,25 +1819,34 @@ private:
 	}
 
 	void SetSignalUIMode() {
+		this->all_signal_mode = (_settings_client.gui.signal_gui_mode == SIGNAL_GUI_ALL);
+		this->realistic_braking_mode = (_settings_game.vehicle.train_braking_model == TBM_REALISTIC);
 		this->progsig_ui_shown = _settings_client.gui.show_progsig_ui;
-		this->presig_ui_shown = _settings_game.vehicle.train_braking_model != TBM_REALISTIC;
 		this->noentry_ui_shown = _settings_client.gui.show_noentrysig_ui;
-		bool show_progsig = this->progsig_ui_shown && this->presig_ui_shown;
-		this->GetWidget<NWidgetStacked>(WID_BS_SEMAPHORE_ENTRY_SEL)->SetDisplayedPlane(this->presig_ui_shown ? 0 : SZSP_NONE);
-		this->GetWidget<NWidgetStacked>(WID_BS_ELECTRIC_ENTRY_SEL)->SetDisplayedPlane(this->presig_ui_shown ? 0 : SZSP_NONE);
-		this->GetWidget<NWidgetStacked>(WID_BS_SEMAPHORE_EXIT_SEL)->SetDisplayedPlane(this->presig_ui_shown ? 0 : SZSP_NONE);
-		this->GetWidget<NWidgetStacked>(WID_BS_ELECTRIC_EXIT_SEL)->SetDisplayedPlane(this->presig_ui_shown ? 0 : SZSP_NONE);
-		this->GetWidget<NWidgetStacked>(WID_BS_SEMAPHORE_COMBO_SEL)->SetDisplayedPlane(this->presig_ui_shown ? 0 : SZSP_NONE);
-		this->GetWidget<NWidgetStacked>(WID_BS_ELECTRIC_COMBO_SEL)->SetDisplayedPlane(this->presig_ui_shown ? 0 : SZSP_NONE);
+
+		bool show_norm = this->realistic_braking_mode || this->all_signal_mode;
+		bool show_presig = !this->realistic_braking_mode && this->all_signal_mode;
+		bool show_progsig = show_presig && this->progsig_ui_shown;
+
+		this->GetWidget<NWidgetStacked>(WID_BS_SEMAPHORE_NORM_SEL)->SetDisplayedPlane(show_norm ? 0 : SZSP_NONE);
+		this->GetWidget<NWidgetStacked>(WID_BS_ELECTRIC_NORM_SEL)->SetDisplayedPlane(show_norm ? 0 : SZSP_NONE);
+		this->GetWidget<NWidgetStacked>(WID_BS_SEMAPHORE_ENTRY_SEL)->SetDisplayedPlane(show_presig ? 0 : SZSP_NONE);
+		this->GetWidget<NWidgetStacked>(WID_BS_ELECTRIC_ENTRY_SEL)->SetDisplayedPlane(show_presig ? 0 : SZSP_NONE);
+		this->GetWidget<NWidgetStacked>(WID_BS_SEMAPHORE_EXIT_SEL)->SetDisplayedPlane(show_presig ? 0 : SZSP_NONE);
+		this->GetWidget<NWidgetStacked>(WID_BS_ELECTRIC_EXIT_SEL)->SetDisplayedPlane(show_presig ? 0 : SZSP_NONE);
+		this->GetWidget<NWidgetStacked>(WID_BS_SEMAPHORE_COMBO_SEL)->SetDisplayedPlane(show_presig ? 0 : SZSP_NONE);
+		this->GetWidget<NWidgetStacked>(WID_BS_ELECTRIC_COMBO_SEL)->SetDisplayedPlane(show_presig ? 0 : SZSP_NONE);
 		this->GetWidget<NWidgetStacked>(WID_BS_SEMAPHORE_PROG_SEL)->SetDisplayedPlane(show_progsig ? 0 : SZSP_NONE);
 		this->GetWidget<NWidgetStacked>(WID_BS_ELECTRIC_PROG_SEL)->SetDisplayedPlane(show_progsig ? 0 : SZSP_NONE);
 		this->GetWidget<NWidgetStacked>(WID_BS_SEMAPHORE_NOEN_SEL)->SetDisplayedPlane(this->noentry_ui_shown ? 0 : SZSP_NONE);
 		this->GetWidget<NWidgetStacked>(WID_BS_ELECTRIC_NOEN_SEL)->SetDisplayedPlane(this->noentry_ui_shown ? 0 : SZSP_NONE);
 		this->GetWidget<NWidgetStacked>(WID_BS_PROGRAM_SEL)->SetDisplayedPlane(show_progsig ? 0 : 1);
 		this->SetWidgetDisabledState(WID_BS_PROGRAM, !show_progsig);
-		this->SetWidgetsDisabledState(!show_progsig, WID_BS_SEMAPHORE_PROG, WID_BS_ELECTRIC_PROG, WIDGET_LIST_END);
-		this->SetWidgetsDisabledState(!this->presig_ui_shown, WID_BS_SEMAPHORE_ENTRY, WID_BS_ELECTRIC_ENTRY, WID_BS_SEMAPHORE_EXIT,
+		this->SetWidgetsDisabledState(!show_norm, WID_BS_SEMAPHORE_NORM, WID_BS_ELECTRIC_NORM, WIDGET_LIST_END);
+		this->SetWidgetsDisabledState(!show_presig, WID_BS_SEMAPHORE_ENTRY, WID_BS_ELECTRIC_ENTRY, WID_BS_SEMAPHORE_EXIT,
 				WID_BS_ELECTRIC_EXIT, WID_BS_SEMAPHORE_COMBO, WID_BS_ELECTRIC_COMBO, WIDGET_LIST_END);
+		this->SetWidgetsDisabledState(!show_progsig, WID_BS_SEMAPHORE_PROG, WID_BS_ELECTRIC_PROG, WIDGET_LIST_END);
+		this->SetWidgetsDisabledState(!this->noentry_ui_shown, WID_BS_SEMAPHORE_NO_ENTRY, WID_BS_ELECTRIC_NO_ENTRY, WIDGET_LIST_END);
 	}
 
 	void ClearRemoveState()
@@ -1885,6 +1901,8 @@ public:
 		} else if (IsInsideMM(widget, WID_BS_SEMAPHORE_NORM, WID_BS_ELECTRIC_PBS_OWAY + 1)) {
 			size->width = std::max(size->width, this->sig_sprite_size.width + WD_IMGBTN_LEFT + WD_IMGBTN_RIGHT);
 			size->height = std::max(size->height, this->sig_sprite_size.height + WD_IMGBTN_TOP + WD_IMGBTN_BOTTOM);
+		} else if (widget == WID_BS_CAPTION) {
+			size->width += WD_FRAMETEXT_LEFT + WD_FRAMETEXT_RIGHT;
 		}
 	}
 
@@ -2017,7 +2035,8 @@ public:
 		this->SetWidgetDisabledState(WID_BS_DRAG_SIGNALS_DENSITY_DECREASE, _settings_client.gui.drag_signals_density == 1);
 		this->SetWidgetDisabledState(WID_BS_DRAG_SIGNALS_DENSITY_INCREASE, _settings_client.gui.drag_signals_density == 20);
 
-		if (this->progsig_ui_shown != _settings_client.gui.show_progsig_ui || this->presig_ui_shown != (_settings_game.vehicle.train_braking_model != TBM_REALISTIC) ||
+		if (this->all_signal_mode != (_settings_client.gui.signal_gui_mode == SIGNAL_GUI_ALL) || this->progsig_ui_shown != _settings_client.gui.show_progsig_ui ||
+				this->realistic_braking_mode != (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) ||
 				this->noentry_ui_shown != _settings_client.gui.show_noentrysig_ui) {
 			this->SetSignalUIMode();
 			this->ReInit();
@@ -2055,11 +2074,13 @@ HotkeyList BuildSignalWindow::hotkeys("signaltoolbar", signaltoolbar_hotkeys);
 static const NWidgetPart _nested_signal_builder_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_DARK_GREEN),
-		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN), SetDataTip(STR_BUILD_SIGNAL_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN, WID_BS_CAPTION), SetDataTip(STR_BUILD_SIGNAL_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 	EndContainer(),
 	NWidget(NWID_VERTICAL, NC_EQUALSIZE),
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
-			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_SEMAPHORE_NORM), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP), EndContainer(), SetFill(1, 1),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BS_SEMAPHORE_NORM_SEL),
+				NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_SEMAPHORE_NORM), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP), EndContainer(), SetFill(1, 1),
+			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BS_SEMAPHORE_ENTRY_SEL),
 				NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_SEMAPHORE_ENTRY), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP), EndContainer(), SetFill(1, 1),
 			EndContainer(),
@@ -2081,7 +2102,9 @@ static const NWidgetPart _nested_signal_builder_widgets[] = {
 			NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_BS_TRACE_RESTRICT), SetDataTip(SPR_IMG_SETTINGS, STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP), SetFill(1, 1),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
-			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_ELECTRIC_NORM), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_ELECTRIC_NORM_TOOLTIP), EndContainer(), SetFill(1, 1),
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BS_ELECTRIC_NORM_SEL),
+				NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_ELECTRIC_NORM), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_ELECTRIC_NORM_TOOLTIP), EndContainer(), SetFill(1, 1),
+			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BS_ELECTRIC_ENTRY_SEL),
 				NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_ELECTRIC_ENTRY), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_ELECTRIC_ENTRY_TOOLTIP), EndContainer(), SetFill(1, 1),
 			EndContainer(),
@@ -2417,7 +2440,7 @@ void InitializeRailGUI()
 	_convert_signal_button = false;
 	_trace_restrict_button = false;
 	_program_signal_button = false;
-	_cur_signal_type   = _default_signal_type[_settings_client.gui.default_signal_type];
+	_cur_signal_type   = SIGTYPE_PBS_ONEWAY;
 	_cur_signal_button =
 		_cur_signal_type == SIGTYPE_PROG ? 4 :
 		_cur_signal_type == SIGTYPE_PBS ? 5 :

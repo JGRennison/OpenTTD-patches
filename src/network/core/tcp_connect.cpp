@@ -205,9 +205,13 @@ void TCPConnecter::OnResolved(addrinfo *ai)
 	}
 
 	if (_debug_net_level >= 6) {
-		DEBUG(net, 6, "%s resolved in:", this->connection_string.c_str());
-		for (const auto &address : this->addresses) {
-			DEBUG(net, 6, "- %s", NetworkAddress(address->ai_addr, (int)address->ai_addrlen).GetAddressAsString().c_str());
+		if (this->addresses.size() == 0) {
+			DEBUG(net, 6, "%s did not resolve", this->connection_string.c_str());
+		} else {
+			DEBUG(net, 6, "%s resolved in:", this->connection_string.c_str());
+			for (const auto &address : this->addresses) {
+				DEBUG(net, 6, "- %s", NetworkAddress(address->ai_addr, (int)address->ai_addrlen).GetAddressAsString().c_str());
+			}
 		}
 	}
 

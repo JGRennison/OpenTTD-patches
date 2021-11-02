@@ -10,6 +10,7 @@
 #ifndef RAIL_GUI_H
 #define RAIL_GUI_H
 
+#include "rail_gui_type.h"
 #include "rail_type.h"
 #include "widgets/dropdown_type.h"
 

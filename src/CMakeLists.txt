@@ -334,6 +334,7 @@ add_files(
     rail_cmd.cpp
     rail_gui.cpp
     rail_gui.h
+    rail_gui_type.h
     rail_map.h
     rail_type.h
     random_access_file.cpp

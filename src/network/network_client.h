@@ -22,7 +22,6 @@ private:
 	/** Status of the connection with the server. */
 	enum ServerStatus {
 		STATUS_INACTIVE,      ///< The client is not connected nor active.
-		STATUS_GAME_INFO,     ///< We are trying to get the game information.
 		STATUS_JOIN,          ///< We are trying to join a server.
 		STATUS_NEWGRFS_CHECK, ///< Last action was checking NewGRFs.
 		STATUS_AUTH_GAME,     ///< Last action was requesting game (server) password.
@@ -51,8 +50,6 @@ protected:
 	NetworkRecvStatus Receive_SERVER_FULL(Packet *p) override;
 	NetworkRecvStatus Receive_SERVER_BANNED(Packet *p) override;
 	NetworkRecvStatus Receive_SERVER_ERROR(Packet *p) override;
-	NetworkRecvStatus Receive_SERVER_GAME_INFO(Packet *p) override;
-	NetworkRecvStatus Receive_SERVER_GAME_INFO_EXTENDED(Packet *p) override;
 	NetworkRecvStatus Receive_SERVER_CLIENT_INFO(Packet *p) override;
 	NetworkRecvStatus Receive_SERVER_NEED_GAME_PASSWORD(Packet *p) override;
 	NetworkRecvStatus Receive_SERVER_NEED_COMPANY_PASSWORD(Packet *p) override;
@@ -91,8 +88,6 @@ public:
 	void ClientError(NetworkRecvStatus res);
 
 	std::string GetDebugInfo() const override;
-
-	static NetworkRecvStatus SendInformationQuery();
 
 	static NetworkRecvStatus SendJoin();
 	static NetworkRecvStatus SendCommand(const CommandPacket *cp);

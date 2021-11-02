@@ -14,6 +14,7 @@
 #include "../date_func.h"
 #include "network_admin.h"
 #include "network_client.h"
+#include "network_query.h"
 #include "network_server.h"
 #include "network_content.h"
 #include "network_udp.h"
@@ -661,16 +662,14 @@ public:
 	void OnFailure() override
 	{
 		NetworkGameList *item = NetworkGameListAddItem(connection_string);
-		item->online = false;
+		item->status = NGLS_OFFLINE;
 
 		UpdateNetworkGameWindow();
 	}
 
 	void OnConnect(SOCKET s) override
 	{
-		_networking = true;
-		new ClientNetworkGameSocketHandler(s, this->connection_string);
-		MyClient::SendInformationQuery();
+		QueryNetworkGameSocketHandler::QueryServer(s, this->connection_string);
 	}
 };
 
@@ -681,8 +680,6 @@ public:
 void NetworkQueryServer(const std::string &connection_string)
 {
 	if (!_network_available) return;
-
-	NetworkInitialize();
 
 	new TCPQueryConnecter(connection_string);
 }
@@ -1050,6 +1047,7 @@ void NetworkBackgroundLoop()
 	_network_coordinator_client.SendReceive();
 	TCPConnecter::CheckCallbacks();
 	NetworkHTTPSocketHandler::HTTPReceive();
+	QueryNetworkGameSocketHandler::SendReceive();
 
 	NetworkBackgroundUDPLoop();
 }
