@@ -8,6 +8,7 @@
 /** @file terraform_gui.cpp GUI related to terraforming the map. */
 
 #include "stdafx.h"
+#include "core/backup_type.hpp"
 #include "clear_map.h"
 #include "company_func.h"
 #include "company_base.h"
@@ -62,7 +63,7 @@ static void GenerateDesertArea(TileIndex end, TileIndex start)
 {
 	if (_game_mode != GM_EDITOR) return;
 
-	_generating_world = true;
+	Backup<bool> old_generating_world(_generating_world, true, FILE_LINE);
 
 	TileArea ta(start, end);
 	for (TileIndex tile : ta) {
@@ -70,7 +71,7 @@ static void GenerateDesertArea(TileIndex end, TileIndex start)
 		DoCommandP(tile, 0, 0, CMD_LANDSCAPE_CLEAR);
 		MarkTileDirtyByTile(tile);
 	}
-	_generating_world = false;
+	old_generating_world.Restore();
 	InvalidateWindowClassesData(WC_TOWN_VIEW, 0);
 }
 
@@ -591,7 +592,7 @@ static void ResetLandscapeConfirmationCallback(Window *w, bool confirmed)
 	if (confirmed) {
 		/* Set generating_world to true to get instant-green grass after removing
 		 * company property. */
-		_generating_world = true;
+		Backup<bool> old_generating_world(_generating_world, true, FILE_LINE);
 
 		/* Delete all companies */
 		for (Company *c : Company::Iterate()) {
@@ -599,7 +600,7 @@ static void ResetLandscapeConfirmationCallback(Window *w, bool confirmed)
 			delete c;
 		}
 
-		_generating_world = false;
+		old_generating_world.Restore();
 
 		/* Delete all station signs */
 		for (BaseStation *st : BaseStation::Iterate()) {

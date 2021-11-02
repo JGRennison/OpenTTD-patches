@@ -731,6 +731,8 @@ STR_FACE_COLLAR                                                 :Ҫуха:
 STR_FACE_TIE                                                    :Галстук:
 STR_FACE_EARRING                                                :Алка:
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_PLAYER_NAME                             :{BLACK}Вӑйӑҫӑ ят:
@@ -793,6 +795,9 @@ STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Вырн
 
 # Network client list
 
+############ Begin of ConnectionType
+############ End of ConnectionType
+
 
 
 
@@ -813,6 +818,7 @@ STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Вырн
 STR_NETWORK_SERVER_MESSAGE                                      :*** {1:STRING}
 ############ Leave those lines in this order!!
 ############ End of leave-in-this-order
+
 
 # Content downloading window
 STR_CONTENT_DETAIL_VERSION                                      :{SILVER}Верси: {WHITE}{STRING}

@@ -786,7 +786,7 @@ int openttd_main(int argc, char *argv[])
 			if (res != SL_OK || _load_check_data.HasErrors()) {
 				fprintf(stderr, "Failed to open savegame\n");
 				if (_load_check_data.HasErrors()) {
-					InitializeLanguagePacks();
+					InitializeLanguagePacks(); // A language pack is needed for GetString()
 					char buf[256];
 					SetDParamStr(0, _load_check_data.error_data);
 					GetString(buf, _load_check_data.error, lastof(buf));
@@ -1887,24 +1887,8 @@ void StateGameLoop()
  */
 static void DoAutosave()
 {
-	char buf[MAX_PATH];
-
-	if (_settings_client.gui.keep_all_autosave) {
-		GenerateDefaultSaveName(buf, lastof(buf));
-		strecat(buf, ".sav", lastof(buf));
-	} else {
-		static int _autosave_ctr = 0;
-
-		/* generate a savegame name and number according to _settings_client.gui.max_num_autosaves */
-		seprintf(buf, lastof(buf), "autosave%d.sav", _autosave_ctr);
-
-		if (++_autosave_ctr >= _settings_client.gui.max_num_autosaves) _autosave_ctr = 0;
-	}
-
-	DEBUG(sl, 2, "Autosaving to '%s'", buf);
-	if (SaveOrLoad(buf, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, true, SMF_ZSTD_OK) != SL_OK) {
-		ShowErrorMessage(STR_ERROR_AUTOSAVE_FAILED, INVALID_STRING_ID, WL_ERROR);
-	}
+	static int _autosave_ctr = 0;
+	DoAutoOrNetsave(_autosave_ctr);
 }
 
 /**

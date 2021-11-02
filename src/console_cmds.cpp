@@ -793,9 +793,10 @@ DEF_CONSOLE_CMD(ConServerInfo)
 		return true;
 	}
 
-	IConsolePrintF(CC_DEFAULT, "Current/maximum clients:    %2d/%2d", _network_game_info.clients_on, _settings_client.network.max_clients);
-	IConsolePrintF(CC_DEFAULT, "Current/maximum companies:  %2d/%2d", (int)Company::GetNumItems(), _settings_client.network.max_companies);
-	IConsolePrintF(CC_DEFAULT, "Current/maximum spectators: %2d/%2d", NetworkSpectatorCount(), _settings_client.network.max_spectators);
+	IConsolePrintF(CC_DEFAULT, "Invite code:                %s", _network_server_invite_code.c_str());
+	IConsolePrintF(CC_DEFAULT, "Current/maximum clients:    %3d/%3d", _network_game_info.clients_on, _settings_client.network.max_clients);
+	IConsolePrintF(CC_DEFAULT, "Current/maximum companies:  %3d/%3d", (int)Company::GetNumItems(), _settings_client.network.max_companies);
+	IConsolePrintF(CC_DEFAULT, "Current/maximum spectators: %3d/%3d", NetworkSpectatorCount(), _settings_client.network.max_spectators);
 
 	return true;
 }
@@ -3470,7 +3471,6 @@ void IConsoleStdLibRegister()
 	IConsole::AliasRegister("name",                  "setting client_name %+");
 	IConsole::AliasRegister("server_name",           "setting server_name %+");
 	IConsole::AliasRegister("server_port",           "setting server_port %+");
-	IConsole::AliasRegister("server_advertise",      "setting server_advertise %+");
 	IConsole::AliasRegister("max_clients",           "setting max_clients %+");
 	IConsole::AliasRegister("max_companies",         "setting max_companies %+");
 	IConsole::AliasRegister("max_spectators",        "setting max_spectators %+");

@@ -2225,6 +2225,8 @@ STR_FACE_TIE                                                    :Гальшту�
 STR_FACE_EARRING                                                :Завушніца:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Зьмяніць гальштук або завушніцу
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Сеткавая гульня
@@ -2274,7 +2276,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Запу
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Запуск сэрвэра на вашым кампутары. Да гэтае гульні змогуць далучыцца іншыя гульцы.
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Увядзіце вашае імя
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Увядзіце адрас сэрвэра
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Запуск новай сеткавай гульні
@@ -2351,6 +2352,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Сьпіс кл
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :Назіраць
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -2460,6 +2464,7 @@ STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} в
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} зьмяніў сваё імя на {STRING}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Гэты сэрвэр закрыў сэсію
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Гэты сэрвэр перазапускаецца...{}Пачакайце, калі ласка
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Кантэнт запампоўваецца

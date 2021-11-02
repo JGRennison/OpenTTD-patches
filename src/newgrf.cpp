@@ -39,7 +39,7 @@
 #include "strings_func.h"
 #include "date_func.h"
 #include "string_func.h"
-#include "network/network.h"
+#include "network/core/config.h"
 #include "smallmap_gui.h"
 #include "genworld.h"
 #include "error.h"
@@ -52,6 +52,7 @@
 #include "table/build_industry.h"
 
 #include "3rdparty/cpp-btree/btree_map.h"
+#include <map>
 
 #include "safeguards.h"
 
@@ -82,7 +83,6 @@ static uint32 _ttdpatch_flags[8];
 GRFLoadedFeatures _loaded_newgrf_features;
 
 static const uint MAX_SPRITEGROUP = UINT8_MAX; ///< Maximum GRF-local ID for a spritegroup.
-static const uint MAX_GRF_COUNT = 300; ///< Maximum number of NewGRF files that could be loaded.
 
 /** Base GRF ID for OpenTTD's base graphics GRFs. */
 static const uint32 OPENTTD_GRAPHICS_BASE_GRF_ID = BSWAP32(0xFF4F5400);
@@ -10637,12 +10637,6 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 				num_non_static++;
 			}
 
-			if (num_grfs >= MAX_GRF_COUNT) {
-				DEBUG(grf, 0, "'%s' is not loaded as the maximum number of file slots has been reached", c->filename);
-				c->status = GCS_DISABLED;
-				c->error  = new GRFError(STR_NEWGRF_ERROR_MSG_FATAL, STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED);
-				continue;
-			}
 			num_grfs++;
 
 			LoadNewGRFFile(c, stage, subdir, false);

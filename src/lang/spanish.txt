@@ -2002,8 +2002,9 @@ STR_FACE_TIE                                                    :Corbata:
 STR_FACE_EARRING                                                :Pendientes:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Cambiar corbata o pendientes
 
-STR_NETWORK_SERVER_VISIBILITY_PRIVATE                           :Privado
+############ Next lines match ServerGameType
 STR_NETWORK_SERVER_VISIBILITY_PUBLIC                            :Público
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Multijugador
@@ -2057,7 +2058,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Iniciar 
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Inicia un servidor nuevo
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Introduce tu nombre
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Introduce la dirección IP del servidor
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Empezar nueva partida en multijugador
@@ -2160,6 +2160,9 @@ STR_NETWORK_CLIENT_LIST_NEW_COMPANY                             :(Nueva compañ�
 STR_NETWORK_CLIENT_LIST_NEW_COMPANY_TOOLTIP                     :{BLACK}Crea una nueva companía y te une a ella
 STR_NETWORK_CLIENT_LIST_PLAYER_ICON_SELF_TOOLTIP                :{BLACK}Éste eres tú
 STR_NETWORK_CLIENT_LIST_PLAYER_ICON_HOST_TOOLTIP                :{BLACK}Éste es el servidor de la partida
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK                       :Expulsar
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN                        :Prohibir el acceso
@@ -2287,6 +2290,7 @@ STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} di
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}El servidor ha cerrado la sesión
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}El servidor está reiniciando...{}Espera por favor...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} ha sido expulsado. Razón: ({STRING})
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Descarga de contenido

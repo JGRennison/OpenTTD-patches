@@ -140,9 +140,8 @@ void ClientNetworkEmergencySave()
 	if (!_networking) return;
 	if (!ClientNetworkGameSocketHandler::EmergencySavePossible()) return;
 
-	const char *filename = "netsave.sav";
-	DEBUG(net, 0, "Client: Performing emergency save (%s)", filename);
-	SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, false, SMF_ZSTD_OK);
+	static int _netsave_ctr = 0;
+	DoAutoOrNetsave(_netsave_ctr, true);
 }
 
 
@@ -715,7 +714,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_GAME_INFO(Packe
 	item->online = true;
 
 	/* It could be either window, but only one is open, so redraw both. */
-	SetWindowDirty(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_GAME);
+	UpdateNetworkGameWindow();
 	SetWindowDirty(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_LOBBY);
 
 	/* We will receive company info next, so keep connection open. */

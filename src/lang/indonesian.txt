@@ -1992,8 +1992,9 @@ STR_FACE_TIE                                                    :Dasi:
 STR_FACE_EARRING                                                :Anting-anting:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Ubah dasi atau anting-anting
 
-STR_NETWORK_SERVER_VISIBILITY_PRIVATE                           :Privat
+############ Next lines match ServerGameType
 STR_NETWORK_SERVER_VISIBILITY_PUBLIC                            :Umum
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Bermain bersama
@@ -2047,7 +2048,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Mulai se
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Mulai melayani
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Masukkan nama anda
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Masukkan alamat IP server
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Mulai permainan bersama baru
@@ -2150,6 +2150,9 @@ STR_NETWORK_CLIENT_LIST_NEW_COMPANY                             :(Perusahaan bar
 STR_NETWORK_CLIENT_LIST_NEW_COMPANY_TOOLTIP                     :{BLACK}Ciptakan perusahaan baru dan bergabung
 STR_NETWORK_CLIENT_LIST_PLAYER_ICON_SELF_TOOLTIP                :{BLACK}Ini adalah Anda
 STR_NETWORK_CLIENT_LIST_PLAYER_ICON_HOST_TOOLTIP                :{BLACK}Ini adalah hos permainan
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK                       :Diusir
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN                        :Melarang
@@ -2276,6 +2279,7 @@ STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} me
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Server menutup sesi
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Server memulai ulang...{}Tunggulah...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} telah dikeluarkan. Alasan: ({STRING})
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Mengunduh konten

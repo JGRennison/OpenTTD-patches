@@ -1869,6 +1869,8 @@ STR_FACE_TIE                                                    :Carbhat:
 STR_FACE_EARRING                                                :Fáinne cluaise:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Athraigh carbhat nó fáinne cluaise
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Ilimreoirí
@@ -1918,7 +1920,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Tosaigh 
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Tosaigh d'fhreastalaí féin
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Iontráil d'ainm
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Iontráil seoladh an óstaigh
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Tosaigh cluiche ilimreora nua
@@ -1995,6 +1996,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Liosta na gclia
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :Féach air
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -2103,6 +2107,7 @@ STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** D'fhág {ST
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** D'athraigh {STRING} a (h)ainm go {STRING}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Dhún an freastalaí an seisiún
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Tá an freastalaí á atosú...{}Fan go fóill...
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Inneachar á íoslódáil

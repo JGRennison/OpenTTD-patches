@@ -1612,6 +1612,8 @@ STR_FACE_TIE                                                    :الربطة:
 STR_FACE_EARRING                                                :أقراط الأذان:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}غير الربطة أو أقراط الأذن
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}تعدد اللاعبين
@@ -1661,7 +1663,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}أبدأ
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}أبدأ خادمك الخاص
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}أدخل أسمك
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}أدخل عنوان المضيف
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}أبدا لعبة متعددة اللاعبين جديدة
@@ -1738,6 +1739,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :قائمة ال
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :شاهد
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -1836,6 +1840,7 @@ STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} ق
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} قد غير اسمه / اسمها الى {STRING}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}اقفل الخادم الجلسة
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}يتم بدأ الخادم من جديد ...{} الرجاء الأنتظار
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}تنزيل المحتوى

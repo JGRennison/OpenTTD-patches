@@ -181,6 +181,23 @@ bool SetNoDelay(SOCKET d)
 }
 
 /**
+ * Try to set the socket to reuse ports.
+ * @param d The socket to reuse ports on.
+ * @return True if disabling the delaying succeeded, otherwise false.
+ */
+bool SetReusePort(SOCKET d)
+{
+#ifdef _WIN32
+	/* Windows has no SO_REUSEPORT, but for our usecases SO_REUSEADDR does the same job. */
+	int reuse_port = 1;
+	return setsockopt(d, SOL_SOCKET, SO_REUSEADDR, (const char *)&reuse_port, sizeof(reuse_port)) == 0;
+#else
+	int reuse_port = 1;
+	return setsockopt(d, SOL_SOCKET, SO_REUSEPORT, &reuse_port, sizeof(reuse_port)) == 0;
+#endif
+}
+
+/**
  * Try to shutdown the socket in one or both directions.
  * @param d The socket to disable the delaying for.
  * @param read Whether to shutdown the read direction.

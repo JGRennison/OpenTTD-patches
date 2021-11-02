@@ -2006,6 +2006,8 @@ STR_FACE_TIE                                                    :Cravatta:
 STR_FACE_EARRING                                                :Orecchino:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Cambia la cravatta o l'orecchino
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Multigiocatore
@@ -2059,7 +2061,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Avvia se
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Avvia il proprio server
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Inserire il nome del giocatore
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Digitare l'indirizzo del server
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Avvia nuova partita multigiocatore
@@ -2137,6 +2138,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Elenco dei clie
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :Diventa spettatore
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 STR_NETWORK_CLIENT_LIST_ASK_COMPANY_RESET                       :{YELLOW}Sei sicuro di voler eliminare la compagnia '{COMPANY}'?
@@ -2251,6 +2255,7 @@ STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} ha
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Il server ha chiuso la sessione
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Il server si sta riavviando...{}Attendere prego...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} è stato espulso. Motivo: ({STRING})
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Download contenuti

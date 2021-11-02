@@ -2025,6 +2025,8 @@ STR_FACE_TIE                                                    :Kravata:
 STR_FACE_EARRING                                                :Uhani:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Spremeni kravato ali uhane
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Več igralcev
@@ -2074,7 +2076,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Poženi 
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Poženi lasten streznik
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Vpiši tvoje ime
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Vnesi naslov gostitelja
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Poženi novo igro za več igralcev
@@ -2151,6 +2152,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Seznam gostov
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :Opazuj
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -2259,6 +2263,7 @@ STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} od
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} je opravil/a spremembo imena v {STRING}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Strežnik je zaprl sejo
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Strežnik se zaganja...{}Prosim počakaj...
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Prenos vsebin

@@ -2049,8 +2049,9 @@ STR_FACE_TIE                                                    :Lips:
 STR_FACE_EARRING                                                :Kõrvarõngas:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Vaheta kraed või kõrvarõngast
 
-STR_NETWORK_SERVER_VISIBILITY_PRIVATE                           :Privaatne
+############ Next lines match ServerGameType
 STR_NETWORK_SERVER_VISIBILITY_PUBLIC                            :Avalik
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Mitmikmäng
@@ -2104,7 +2105,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Tee serv
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Tee oma server
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Sisesta enda nimi
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Sisesta serveri aadress
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Mitmikmängu alustamine
@@ -2208,6 +2208,9 @@ STR_NETWORK_CLIENT_LIST_NEW_COMPANY                             :(Uus ettevõte)
 STR_NETWORK_CLIENT_LIST_NEW_COMPANY_TOOLTIP                     :{BLACK}Loo uus ettevõte ja liitu sellega
 STR_NETWORK_CLIENT_LIST_PLAYER_ICON_SELF_TOOLTIP                :{BLACK}Tema oled sina
 STR_NETWORK_CLIENT_LIST_PLAYER_ICON_HOST_TOOLTIP                :{BLACK}Tema on mängu korraldaja
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK                       :Viska välja
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN                        :Keela
@@ -2334,6 +2337,7 @@ STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} sa
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Server sulges sessiooni
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Server restardib...{}Palun oota...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} visati välja. Põhjendus: ({STRING})
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Aineste allalaadimine

@@ -2372,6 +2372,8 @@ STR_FACE_TIE                                                    :Krawat:
 STR_FACE_EARRING                                                :Kolczyk:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Zmień krawat lub kolczyk
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Gra wieloosobowa
@@ -2425,7 +2427,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Uruchom 
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Uruchom własny serwer
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Wprowadź swoje imię
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Wpisz adres IP serwera
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Rozpocznij nową grę wieloosobową
@@ -2502,6 +2503,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Lista klientów
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :Obserwuj
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -2615,6 +2619,7 @@ STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** Firma {STRI
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Serwer zamknął sesję
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Restart serwera...{}Proszę czekać...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} został wyrzucony. Powód: ({STRING})
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Przeglądarka dodatkowej zawartości

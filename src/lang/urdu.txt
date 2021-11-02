@@ -1482,6 +1482,8 @@ STR_FACE_TIE                                                    :ٹائی:
 STR_FACE_EARRING                                                :بالیاں:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}ٹائی یا بالیاں بدلیں
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}زیادہ کھلاڑی
@@ -1531,7 +1533,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}سرور
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}اپنا سرور خود شروع کریں
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}اپنا نام لکھیں
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}ہوسٹ کا ایڈریس لکھیں
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}نیا زیادہ کھلاڑیوں والا کھیل شروع کریں
@@ -1608,6 +1609,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}کلائ
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}نظارہ کریں
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -1716,6 +1720,7 @@ STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} ن
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} نے اپنا نام بدل کر {STRING} رکھ لیا ہے
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}سرور نے سیشن بند کر دیا
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}سرور دوبارہ سے سٹارٹ ہو رہا ہے - - -{}برائے مہربانی انتظار فرمائیے ۔ ۔ ۔
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}مواد ڈاون لوڈ کیا جا رہا ہے

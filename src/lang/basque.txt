@@ -1790,6 +1790,8 @@ STR_FACE_TIE                                                    :Korbata:
 STR_FACE_EARRING                                                :Belarritakoak:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Aldatu korbata eta belarritakoak
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Multijokalaria
@@ -1839,7 +1841,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Zerbitza
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Zure zerbitzaria sortu
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Sartu zure izena
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Sartu antolatzailearen helbidea
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Multijokalari joko berri bat hasi
@@ -1916,6 +1917,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Bezero zerrenda
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :Ikusle
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -2024,6 +2028,7 @@ STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} jo
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING}-k bere izena {STRING}-ra aldatu du
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Zebitzariak saioa itxi du
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Zerbitzaria berriro hasten ari da...{}Mesedez itxaron...
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Edukiak deskargatzen

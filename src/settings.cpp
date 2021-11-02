@@ -29,6 +29,7 @@
 #include "screenshot.h"
 #include "network/network.h"
 #include "network/network_func.h"
+#include "network/core/config.h"
 #include "settings_internal.h"
 #include "command_func.h"
 #include "console_func.h"
@@ -1886,6 +1887,7 @@ static GRFConfig *GRFLoadConfig(IniFile &ini, const char *grpname, bool is_stati
 
 	if (group == nullptr) return nullptr;
 
+	uint num_grfs = 0;
 	for (item = group->item; item != nullptr; item = item->next) {
 		GRFConfig *c = nullptr;
 
@@ -1960,8 +1962,14 @@ static GRFConfig *GRFLoadConfig(IniFile &ini, const char *grpname, bool is_stati
 			continue;
 		}
 
-		/* Mark file as static to avoid saving in savegame. */
-		if (is_static) SetBit(c->flags, GCF_STATIC);
+		if (is_static) {
+			/* Mark file as static to avoid saving in savegame. */
+			SetBit(c->flags, GCF_STATIC);
+		} else if (++num_grfs > NETWORK_MAX_GRF_COUNT) {
+			/* Check we will not load more non-static NewGRFs than allowed. This could trigger issues for game servers. */
+			ShowErrorMessage(STR_CONFIG_ERROR, STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED, WL_CRITICAL);
+			break;
+		}
 
 		/* Add item to list */
 		*curr = c;
@@ -2587,15 +2595,14 @@ void IConsoleSetSetting(const char *name, const char *value, bool force_newgame)
 	if (sd->IsStringSetting()) {
 		success = SetSettingValue(sd->AsStringSetting(), value, force_newgame);
 	} else if (sd->IsIntSetting()) {
-		uint32 val;
-		extern bool GetArgumentInteger(uint32 *value, const char *arg);
-		success = GetArgumentInteger(&val, value);
-		if (!success) {
-			IConsolePrintF(CC_ERROR, "'%s' is not an integer.", value);
+		const IntSettingDesc *isd = sd->AsIntSetting();
+		size_t val = isd->ParseValue(value);
+		if (!_settings_error_list.empty()) {
+			IConsolePrintF(CC_ERROR, "'%s' is not a valid value for this setting.", value);
+			_settings_error_list.clear();
 			return;
 		}
-
-		success = SetSettingValue(sd->AsIntSetting(), val, force_newgame);
+		success = SetSettingValue(isd, (int32)val, force_newgame);
 	}
 
 	if (!success) {

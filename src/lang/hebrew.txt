@@ -1895,6 +1895,8 @@ STR_FACE_TIE                                                    ::עניבה
 STR_FACE_EARRING                                                ::עגילים
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK} שנה עניבה/עגילים
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}משחק רשת
@@ -1944,7 +1946,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}הפעל
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}הפעל שרת חדש
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK} :שמך
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}הזן את הכתובת של השרת
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}התחל משחק רב-משתתפים חדש
@@ -2021,6 +2022,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :רשימת מש
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :צפה
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -2129,6 +2133,7 @@ STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :({2:STRING}) ע
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :{STRING} שינה את שמו ל {STRING} ***
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}השרת סגר את המשחק
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}השרת מופעל מחדש...{}אנא המתן...
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}הורדת תוכן

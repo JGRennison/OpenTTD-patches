@@ -2037,6 +2037,8 @@ STR_FACE_TIE                                                    :Γραβάτα:
 STR_FACE_EARRING                                                :Σκουλαρίκι:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Αλλαγή γραβάτας ή σκουλαρικιού
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Παιχνίδι πολλών παικτών
@@ -2087,7 +2089,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Εκκί
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Ξεκινήστε το δικό σας διακομιστή
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Εισάγετε το όνομά σας
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Εισάγετε τη διεύθυνση του οικοδεσπότη
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Έναρξη νέου παιχνιδιού για πολλούς παίκτες
@@ -2164,6 +2165,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Λίστα συ
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :Παρακολούθηση
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -2277,6 +2281,7 @@ STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} έ
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Ο διακομιστής έκλεισε την συνεδρία
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Ο διακομιστής επανεκκινεί...{}Παρακαλώ περιμένετε...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} εκδιώχθηκε. Λόγος: ({STRING})
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Περιεχόμενο κατεβαίνει

@@ -897,6 +897,8 @@ STR_FACE_LIPS_MOUSTACHE_TOOLTIP                                 :{BLACK}ओठ �
 STR_FACE_CHIN                                                   :हनुवटी:
 STR_FACE_CHIN_TOOLTIP                                           :{BLACK}हनुवटी बदला
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 
@@ -939,6 +941,9 @@ STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} 
 
 # Network client list
 
+############ Begin of ConnectionType
+############ End of ConnectionType
+
 
 
 
@@ -961,6 +966,7 @@ STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE} गे�
 STR_NETWORK_SERVER_MESSAGE                                      :*** {1:STRING}
 ############ Leave those lines in this order!!
 ############ End of leave-in-this-order
+
 
 # Content downloading window
 

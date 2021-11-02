@@ -2205,6 +2205,8 @@ STR_FACE_TIE                                                    :Kaklaraištis:
 STR_FACE_EARRING                                                :Auskaras:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Pakeisti kaklaraištį arba auskarą
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Žaidimas tinkle
@@ -2258,7 +2260,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Sukurti 
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Sukurti savo serverį
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Įrašykite savo vardą
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Įvesk adresą (IP)
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Pradėti naują daugiažaidėjinį žaidimą
@@ -2335,6 +2336,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Žaidėjų sąr
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :Stebėti
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -2448,6 +2452,7 @@ STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} pe
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Serveris užsidarė
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Serveris persikrauna...{}Prašau palaukti...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} buvo išmestas. Priežastis: ({STRING})
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Turinio atsisiuntimas

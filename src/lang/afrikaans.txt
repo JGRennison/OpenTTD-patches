@@ -1915,6 +1915,8 @@ STR_FACE_TIE                                                    :Das:
 STR_FACE_EARRING                                                :Oorbel:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Verander das of oorbel
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Multispeler
@@ -1964,7 +1966,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Begin be
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Begin u eie verskaffer
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Tik in jou naam
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Invoeg die adres van die gasheer
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Begin nuwe multispeler speletjie
@@ -2041,6 +2042,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Klient Lys
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :Toeskou
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -2151,6 +2155,7 @@ STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} he
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Die verskaffer het die sessie toegemaak
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Die verskaffer is besig om te weerbegin...{}Wag asb...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} is geskop. Rede: ({STRING})
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Laai Inhoud af

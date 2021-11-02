@@ -1591,6 +1591,8 @@ STR_FACE_TIE                                                    :کراوات:
 STR_FACE_EARRING                                                :گوشواره:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}تغییر کراوات یا گوشواره
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}چندنفره
@@ -1640,7 +1642,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}اجرا
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}راه اندازی سرویس دهنده خود
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}نام خود را وارد نماببد
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}نشانی میزبان را وارد کنید
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}آغاز بازی چندنفره
@@ -1717,6 +1718,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}لیست
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}تماشا
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -1825,6 +1829,7 @@ STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} ا
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} نامش را به {STRING} تغییر داد
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}سرویس دهنده جلسه را تعطیل کرد
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}راه اندازی مجدد سرویس دهنده...{}لطفا صبر کنید...
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}در حال دانلود

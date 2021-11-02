@@ -1734,6 +1734,8 @@ STR_FACE_TIE                                                    :Bindi:
 STR_FACE_EARRING                                                :Eyrnalokkur:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Breyta bindi eða eyrnalokk
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Fjölspilun
@@ -1783,7 +1785,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Hefja þ
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Hefja eigin þjón
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Sláðu inn nafn þitt
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Sláðu inn IP tölu þjónsins
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Hefja nýjan fjölspilunarleik
@@ -1860,6 +1861,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Listi yfir leik
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :Fylgjast með
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -1968,6 +1972,7 @@ STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} yf
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} heitir nú {STRING}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Þjónninn sleit tengingunni
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Verið er að endurræsa þjóninn...{}Vinsamlega bíðið...
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Niðurhel efni

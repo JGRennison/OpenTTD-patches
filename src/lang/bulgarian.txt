@@ -1832,6 +1832,8 @@ STR_FACE_TIE                                                    :Вратовр�
 STR_FACE_EARRING                                                :Oбица:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Cмени вратовръзкатa или oбицатa
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Онлайн играчи
@@ -1881,7 +1883,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Пуск
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Пуснете ваш собствен сървър
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Въведете името си
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Въведете адреса на хоста
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Започни нова мрежова игра
@@ -1958,6 +1959,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Списък с
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :Наблюдавай
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -2066,6 +2070,7 @@ STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} н
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} си промени името на {STRING}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Сървърът прекъсна сесията
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Сървърът се рестартира...{}Моля изчакайте...
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Съдържание за сваляне

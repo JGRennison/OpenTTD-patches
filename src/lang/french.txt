@@ -2002,8 +2002,9 @@ STR_FACE_TIE                                                    :Cravate{NBSP}:
 STR_FACE_EARRING                                                :Boucle d'oreille{NBSP}:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Modifier la cravate ou la boucle d'oreille
 
-STR_NETWORK_SERVER_VISIBILITY_PRIVATE                           :Privé
+############ Next lines match ServerGameType
 STR_NETWORK_SERVER_VISIBILITY_PUBLIC                            :Public
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Multijoueurs
@@ -2057,7 +2058,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Héberge
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Démarrer son propre serveur, sur cet ordinateur-ci
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Entrer votre nom
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Saisir l'adresse IP du serveur
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Commencer une nouvelle partie
@@ -2160,6 +2160,9 @@ STR_NETWORK_CLIENT_LIST_NEW_COMPANY                             :(Nouvelle compa
 STR_NETWORK_CLIENT_LIST_NEW_COMPANY_TOOLTIP                     :{BLACK}Créer une nouvelle compagnie et la rejoindre
 STR_NETWORK_CLIENT_LIST_PLAYER_ICON_SELF_TOOLTIP                :{BLACK}C'est vous
 STR_NETWORK_CLIENT_LIST_PLAYER_ICON_HOST_TOOLTIP                :{BLACK}C'est l'hôte du jeu
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK                       :Exclure
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN                        :Bannir
@@ -2287,6 +2290,7 @@ STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** {STRING} a 
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Le serveur a fermé la session
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Le serveur redémarre...{}Veuillez patienter...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} a été exclu. Raison{NBSP}: ({STRING})
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Téléchargement de modules

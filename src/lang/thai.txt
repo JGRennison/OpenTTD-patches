@@ -1820,6 +1820,8 @@ STR_FACE_TIE                                                    :เนคไท
 STR_FACE_EARRING                                                :ต่างหู:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}เปลี่ยนเนคไทหรือต่างหู
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}เล่นหลายคน
@@ -1869,7 +1871,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}เร�
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}เริ่มเซิร์ฟเวอร์ใหม่ของคุณ
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}ป้อนชื่อของคุณ
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}ป้อนที่อยู่ของโฮสต์
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}เริ่มเกมผู้เล่นหลายคนใหม่
@@ -1946,6 +1947,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :รายกา
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :ผู้ชม
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -2054,6 +2058,7 @@ STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} �
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} ได้ทำการเปลี่ยนชื่อเป็น {STRING}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}เซิฟเวอร์ปืดเซสซั่นนี้
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}เซิฟเวอร์กำลังทำการเริ่มต้นใหม่...{}กรุณารอซักครู่...
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}กำลังโหลดเนื้อหา

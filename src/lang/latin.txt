@@ -2088,6 +2088,8 @@ STR_FACE_TIE                                                    :Focale:
 STR_FACE_EARRING                                                :Inauris:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Mutare focale vel inaurem
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Modus Plurium Lusorum
@@ -2137,7 +2139,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Servatru
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Servatrum tuum proprium incohare
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Nomen tuum inscribe
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Inscribe inscriptionem IP servatri
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Incipere novum ludum cum pluribus lusoribus
@@ -2214,6 +2215,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Index clientum
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :Spectare
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -2322,6 +2326,7 @@ STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} lu
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} nomen suum mutat ad {STRING}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Servatrum iam clausum est
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Servatrum resumit...{}Maneas...
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Arcessitus Rerum

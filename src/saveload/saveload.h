@@ -67,6 +67,8 @@ void WaitTillSaved();
 void ProcessAsyncSaveFinish();
 void DoExitSave();
 
+void DoAutoOrNetsave(int &counter, bool netsave = false);
+
 SaveOrLoadResult SaveWithFilter(struct SaveFilter *writer, bool threaded, SaveModeFlags flags);
 SaveOrLoadResult LoadWithFilter(struct LoadFilter *reader);
 bool IsNetworkServerSave();

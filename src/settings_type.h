@@ -14,7 +14,7 @@
 #include "economy_type.h"
 #include "town_type.h"
 #include "transport_type.h"
-#include "network/core/config.h"
+#include "network/network_type.h"
 #include "company_type.h"
 #include "cargotype.h"
 #include "linkgraph/linkgraph_type.h"
@@ -318,27 +318,30 @@ struct NewsSettings {
 
 /** All settings related to the network. */
 struct NetworkSettings {
-	uint16 sync_freq;                                     ///< how often do we check whether we are still in-sync
-	uint8  frame_freq;                                    ///< how often do we send commands to the clients
-	uint16 commands_per_frame;                            ///< how many commands may be sent each frame_freq frames?
-	uint16 max_commands_in_queue;                         ///< how many commands may there be in the incoming queue before dropping the connection?
-	uint16 bytes_per_frame;                               ///< how many bytes may, over a long period, be received per frame?
-	uint16 bytes_per_frame_burst;                         ///< how many bytes may, over a short period, be received?
-	uint16 max_init_time;                                 ///< maximum amount of time, in game ticks, a client may take to initiate joining
-	uint16 max_join_time;                                 ///< maximum amount of time, in game ticks, a client may take to sync up during joining
-	uint16 max_download_time;                             ///< maximum amount of time, in game ticks, a client may take to download the map
-	uint16 max_password_time;                             ///< maximum amount of time, in game ticks, a client may take to enter the password
-	uint16 max_lag_time;                                  ///< maximum amount of time, in game ticks, a client may be lagging behind the server
-	bool   pause_on_join;                                 ///< pause the game when people join
-	uint16 server_port;                                   ///< port the server listens on
-	uint16 server_admin_port;                             ///< port the server listens on for the admin network
-	bool   server_admin_chat;                             ///< allow private chat for the server to be distributed to the admin network
+	uint16      sync_freq;                                ///< how often do we check whether we are still in-sync
+	uint8       frame_freq;                               ///< how often do we send commands to the clients
+	uint16      commands_per_frame;                       ///< how many commands may be sent each frame_freq frames?
+	uint16      max_commands_in_queue;                    ///< how many commands may there be in the incoming queue before dropping the connection?
+	uint16      bytes_per_frame;                          ///< how many bytes may, over a long period, be received per frame?
+	uint16      bytes_per_frame_burst;                    ///< how many bytes may, over a short period, be received?
+	uint16      max_init_time;                            ///< maximum amount of time, in game ticks, a client may take to initiate joining
+	uint16      max_join_time;                            ///< maximum amount of time, in game ticks, a client may take to sync up during joining
+	uint16      max_download_time;                        ///< maximum amount of time, in game ticks, a client may take to download the map
+	uint16      max_password_time;                        ///< maximum amount of time, in game ticks, a client may take to enter the password
+	uint16      max_lag_time;                             ///< maximum amount of time, in game ticks, a client may be lagging behind the server
+	bool        pause_on_join;                            ///< pause the game when people join
+	uint16      server_port;                              ///< port the server listens on
+	uint16      server_admin_port;                        ///< port the server listens on for the admin network
+	bool        server_admin_chat;                        ///< allow private chat for the server to be distributed to the admin network
+	ServerGameType server_game_type;                      ///< Server type: local / public / invite-only.
+	std::string server_invite_code;                       ///< Invite code to use when registering as server.
+	std::string server_invite_code_secret;                ///< Secret to proof we got this invite code from the Game Coordinator.
 	std::string server_name;                              ///< name of the server
 	std::string server_password;                          ///< password for joining this server
 	std::string rcon_password;                            ///< password for rconsole (server side)
 	std::string admin_password;                           ///< password for the admin network
 	std::string settings_password;                        ///< password for game settings (server side)
-	bool   server_advertise;                              ///< advertise the server to the masterserver
+	bool   server_advertise;                              ///< Advertise the server to the game coordinator.
 	std::string client_name;                              ///< name of the player (as client)
 	std::string default_company_pass;                     ///< default password for new companies in encrypted form
 	std::string connect_to_ip;                            ///< default for the "Add server" query

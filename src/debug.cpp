@@ -204,9 +204,7 @@ static void debug_print(const char *dbg, const char *buf)
 	 * crashing, and NetworkTextMessage includes these */
 #if defined(_WIN32)
 	if (strcmp(dbg, "desync") != 0) {
-		wchar_t system_buf[512];
-		convert_to_fs(buffer, system_buf, lengthof(system_buf));
-		fputws(system_buf, stderr);
+		fputs(buffer, stderr);
 	}
 #else
 	fputs(buffer, stderr);

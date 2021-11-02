@@ -1795,6 +1795,8 @@ STR_FACE_TIE                                                    :Strik:
 STR_FACE_EARRING                                                :Earbel:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Feroarje strik of earbel
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Multiplayer
@@ -1834,7 +1836,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Start ts
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Start dien eigen tsjinner
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Fier dyn namme in
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Fier de namme fan de host yn
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Start in spul foar multispilers
@@ -1898,6 +1899,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :{WHITE}Client l
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :{WHITE}Taskôgje
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -1976,6 +1980,7 @@ STR_NETWORK_MESSAGE_CLIENT_JOINED_ID                            :*** {STRING} de
 STR_NETWORK_MESSAGE_CLIENT_COMPANY_SPECTATE                     :*** {STRING} is in neie taskôger
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} hat syn/har namme oanpast nei {STRING}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Tsjinner hat de ferbining sluten
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Ynhâld delheljen

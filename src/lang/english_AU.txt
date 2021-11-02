@@ -1870,6 +1870,8 @@ STR_FACE_TIE                                                    :Tie:
 STR_FACE_EARRING                                                :Earring:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Change tie or earring
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Multiplayer
@@ -1919,7 +1921,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Start se
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Start your own server
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Enter your name
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Enter the address of the host
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Start new multiplayer game
@@ -1996,6 +1997,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Client list
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :Spectate
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -2104,6 +2108,7 @@ STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} ha
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} has changed his/her name to {STRING}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}The server closed the session
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}The server is restarting...{}Please wait...
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Content downloading

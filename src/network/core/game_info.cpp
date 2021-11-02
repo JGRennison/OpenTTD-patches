@@ -16,6 +16,8 @@
 #include "../../date_func.h"
 #include "../../debug.h"
 #include "../../map_func.h"
+#include "../../game/game.hpp"
+#include "../../game/game_info.hpp"
 #include "../../settings_type.h"
 #include "../../string_func.h"
 #include "../../rev.h"
@@ -149,7 +151,11 @@ void FillStaticNetworkServerGameInfo()
  */
 const NetworkServerGameInfo *GetCurrentNetworkServerGameInfo()
 {
-	/* Client_on is used as global variable to keep track on the number of clients. */
+	/* These variables are updated inside _network_game_info as if they are global variables:
+	 *  - clients_on
+	 *  - invite_code
+	 * These don't need to be updated manually here.
+	 */
 	_network_game_info.companies_on  = (byte)Company::GetNumItems();
 	_network_game_info.spectators_on = NetworkSpectatorCount();
 	_network_game_info.game_date     = _date;
@@ -199,6 +205,11 @@ void SerializeNetworkGameInfo(Packet *p, const NetworkServerGameInfo *info)
 	/* Update the documentation in game_info.h on changes
 	 * to the NetworkGameInfo wire-protocol! */
 
+	/* NETWORK_GAME_INFO_VERSION = 5 */
+	GameInfo *game_info = Game::GetInfo();
+	p->Send_uint32(game_info == nullptr ? -1 : (uint32)game_info->GetVersion());
+	p->Send_string(game_info == nullptr ? "" : game_info->GetName());
+
 	/* NETWORK_GAME_INFO_VERSION = 4 */
 	{
 		/* Only send the GRF Identification (GRF_ID and MD5 checksum) of
@@ -218,12 +229,7 @@ void SerializeNetworkGameInfo(Packet *p, const NetworkServerGameInfo *info)
 		uint index = 0;
 		for (c = info->grfconfig; c != nullptr; c = c->next) {
 			if (!HasBit(c->flags, GCF_STATIC)) {
-				if (index == NETWORK_MAX_GRF_COUNT - 1 && count > NETWORK_MAX_GRF_COUNT) {
-					/* Send fake GRF ID */
-
-					p->Send_uint32(0x56D2B000);
-					p->Send_binary((const char*) _out_of_band_grf_md5, 16);
-				} else if (index >= NETWORK_MAX_GRF_COUNT) {
+				if (index >= NETWORK_MAX_GRF_COUNT) {
 					break;
 				} else {
 					SerializeGRFIdentifier(p, &c->ident);
@@ -327,6 +333,12 @@ void DeserializeNetworkGameInfo(Packet *p, NetworkGameInfo *info)
 	 * to the NetworkGameInfo wire-protocol! */
 
 	switch (game_info_version) {
+		case 5: {
+			info->gamescript_version = (int)p->Recv_uint32();
+			info->gamescript_name = p->Recv_string(NETWORK_NAME_LENGTH);
+			FALLTHROUGH;
+		}
+
 		case 4: {
 			GRFConfig **dst = &info->grfconfig;
 			uint i;

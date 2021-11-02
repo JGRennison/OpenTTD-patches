@@ -215,6 +215,7 @@ static inline socklen_t FixAddrLenForEmscripten(struct sockaddr_storage &address
 bool SetNonBlocking(SOCKET d);
 bool SetBlocking(SOCKET d);
 bool SetNoDelay(SOCKET d);
+bool SetReusePort(SOCKET d);
 bool ShutdownSocket(SOCKET d, bool read, bool write, uint linger_timeout);
 NetworkError GetSocketError(SOCKET d);
 

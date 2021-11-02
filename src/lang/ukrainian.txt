@@ -2114,6 +2114,8 @@ STR_FACE_TIE                                                    :Краватк�
 STR_FACE_EARRING                                                :Сережки:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Змінити комір або сережки
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Мережева гра
@@ -2167,7 +2169,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Ство
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Створити ваш власний сервер
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Введіть ваше ім'я
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Введіть адресу сервера
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Створити нову мережеву гру
@@ -2244,6 +2245,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Список к
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :Спостерігати
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -2357,6 +2361,7 @@ STR_NETWORK_MESSAGE_GIVE_MONEY                                  :*** Від {STR
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Сервер закрив сеанс
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Перезавантаження сервера...{}Зачекайте...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} відключено. Причина: ({STRING})
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Завантаження вмісту

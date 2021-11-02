@@ -1696,6 +1696,8 @@ STR_FACE_TIE                                                    :Slips:
 STR_FACE_EARRING                                                :Oyraringur:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Broyt slips ella oyraring
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Hópspæl
@@ -1745,7 +1747,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Set serv
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Set tín egna servara í gongd
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Skriva títt navn
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Skriva bústað hjá verti
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Byrja eitt nýtt hópspæl
@@ -1822,6 +1823,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Listi yvir klie
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :Eygleið
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -1930,6 +1934,7 @@ STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} er
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} hevur broytt sítt navn til {STRING}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Servarin endaði setuna
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Servarin endurbyrjar...{}Vinarliga bíða...
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Tilfar verur heinta niður

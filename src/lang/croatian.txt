@@ -2020,6 +2020,8 @@ STR_FACE_TIE                                                    :Kravata:
 STR_FACE_EARRING                                                :Naušnica:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Promijeni kravatu ili naušnicu
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Više igrača
@@ -2069,7 +2071,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Pokreni 
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Pokreni vlastiti poslužitelj
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Upiši svoje ime
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Unesi adresu domaćina
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Započni novu igru za više igrača
@@ -2146,6 +2147,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Popis klijenata
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :Promatraj
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -2256,6 +2260,7 @@ STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} je
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Poslužitelj je zatvorio sesiju
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Poslužitelj se ponovno pokreće...{}Molimo pričekajte...
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} je izbačen. Razlog: ({STRING})
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Preuzimanje sadržaja

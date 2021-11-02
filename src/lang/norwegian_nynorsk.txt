@@ -1793,6 +1793,8 @@ STR_FACE_TIE                                                    :Slips:
 STR_FACE_EARRING                                                :Øyrering:
 STR_FACE_TIE_EARRING_TOOLTIP                                    :{BLACK}Byt slips eller øyrering
 
+############ Next lines match ServerGameType
+############ End of leave-in-this-order
 
 # Network server list
 STR_NETWORK_SERVER_LIST_CAPTION                                 :{WHITE}Fleirspelar
@@ -1842,7 +1844,6 @@ STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Start te
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Start ein eigen tenar
 
 STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Set inn namnet ditt
-STR_NETWORK_SERVER_LIST_ENTER_IP                                :{BLACK}Skriv inn IP-adressa til tenaren
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Start eit nytt fleirspelarspel
@@ -1919,6 +1920,9 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Liste over klie
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :Vær tilskodar
 
 # Network client list
+
+############ Begin of ConnectionType
+############ End of ConnectionType
 
 
 
@@ -2027,6 +2031,7 @@ STR_NETWORK_MESSAGE_CLIENT_LEFT                                 :*** {STRING} ha
 STR_NETWORK_MESSAGE_NAME_CHANGE                                 :*** {STRING} har endra namnet sitt til {STRING}
 STR_NETWORK_MESSAGE_SERVER_SHUTDOWN                             :{WHITE}Tenaren avslutta spelet
 STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Tenaren startar om att...{}Vær venleg og vent...
+
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Lastar ned innhald

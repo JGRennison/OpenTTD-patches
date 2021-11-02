@@ -360,7 +360,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendClientInfo(NetworkClientIn
 /** Send the client information about the server. */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendGameInfo()
 {
-	Packet *p = new Packet(PACKET_SERVER_GAME_INFO, SHRT_MAX);
+	Packet *p = new Packet(PACKET_SERVER_GAME_INFO, TCP_MTU);
 	SerializeNetworkGameInfo(p, GetCurrentNetworkServerGameInfo());
 
 	this->SendPacket(p);
@@ -504,7 +504,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendDesyncLog(const std::strin
 /** Send the check for the NewGRFs. */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendNewGRFCheck()
 {
-	Packet *p = new Packet(PACKET_SERVER_CHECK_NEWGRFS, SHRT_MAX);
+	Packet *p = new Packet(PACKET_SERVER_CHECK_NEWGRFS, TCP_MTU);
 	const GRFConfig *c;
 	uint grf_count = 0;
 
@@ -2058,9 +2058,6 @@ void NetworkServer_Tick(bool send_frame)
 #endif
 		}
 	}
-
-	/* See if we need to advertise */
-	NetworkUDPAdvertise();
 }
 
 /** Yearly "callback". Called whenever the year changes. */
