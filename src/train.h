@@ -110,8 +110,8 @@ struct TrainCache {
 	int cached_max_curve_speed;   ///< max consist speed limited by curves
 
 	/* cached values, recalculated on load and each time a vehicle is added to/removed from the consist. */
+	int cached_curve_speed_mod;   ///< curve speed modifier of the entire train
 	TrainCacheFlags cached_tflags;///< train cached flags
-	int cached_curve_speed_mod; ///< curve speed modifier of the entire train
 	uint8 cached_num_engines;     ///< total number of engines, including rear ends of multiheaded engines
 	uint16 cached_centre_mass;    ///< Cached position of the centre of mass, from the front
 	uint16 cached_veh_weight;     ///< Cached individual vehicle weight

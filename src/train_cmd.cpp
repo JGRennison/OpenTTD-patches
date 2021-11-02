@@ -419,6 +419,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 			u->tcache.cached_deceleration = 0;
 			u->tcache.cached_uncapped_decel = 0;
 			u->tcache.cached_tflags = TCF_NONE;
+			u->tcache.cached_curve_speed_mod = 0;
 			u->tcache.cached_max_curve_speed = 0;
 		}
 	}

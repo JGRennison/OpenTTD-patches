@@ -1132,6 +1132,7 @@ struct vehicle_venc {
 struct train_venc {
 	VehicleID id;
 	GroundVehicleCache gvcache;
+	int cached_curve_speed_mod;
 	uint8 cached_tflags;
 	uint8 cached_num_engines;
 	uint16 cached_centre_mass;
@@ -1200,6 +1201,7 @@ void Save_VENC()
 		for (Train *t : Train::Iterate()) {
 			SlWriteUint32(t->index);
 			write_gv_cache(t->gcache);
+			SlWriteUint32(t->tcache.cached_curve_speed_mod);
 			SlWriteByte(t->tcache.cached_tflags);
 			SlWriteByte(t->tcache.cached_num_engines);
 			SlWriteUint16(t->tcache.cached_centre_mass);
@@ -1261,6 +1263,7 @@ void Load_VENC()
 	for (train_venc &venc : _train_vencs) {
 		venc.id = SlReadUint32();
 		read_gv_cache(venc.gvcache);
+		venc.cached_curve_speed_mod = SlReadUint32();
 		venc.cached_tflags = SlReadByte();
 		venc.cached_num_engines = SlReadByte();
 		venc.cached_centre_mass = SlReadUint16();
@@ -1348,6 +1351,7 @@ void SlProcessVENC()
 		Train *t = Train::GetIfValid(venc.id);
 		if (t == nullptr) continue;
 		check_gv_cache(t->gcache, venc.gvcache, t);
+		CheckVehicleVENCProp(t->tcache.cached_curve_speed_mod, venc.cached_curve_speed_mod, t, "cached_curve_speed_mod");
 		CheckVehicleVENCProp(t->tcache.cached_tflags, (TrainCacheFlags)venc.cached_tflags, t, "cached_tflags");
 		CheckVehicleVENCProp(t->tcache.cached_num_engines, venc.cached_num_engines, t, "cached_num_engines");
 		CheckVehicleVENCProp(t->tcache.cached_centre_mass, venc.cached_centre_mass, t, "cached_centre_mass");
