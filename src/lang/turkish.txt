@@ -789,6 +789,7 @@ STR_STATUSBAR_PAUSED_LINK_GRAPH                                 :{ORANGE}*  *  D
 STR_STATUSBAR_AUTOSAVE                                          :{RED}OTOMATİK KAYDET
 STR_STATUSBAR_SAVING_GAME                                       :{RED}*  *  KAYDEDiYOR  *  *
 
+
 # News message history
 STR_MESSAGE_HISTORY                                             :{WHITE}Mesaj Geçmişi
 STR_MESSAGE_HISTORY_TOOLTIP                                     :{BLACK}En son haberlerin özetleri
@@ -1436,6 +1437,7 @@ STR_CONFIG_SETTING_OSK_ACTIVATION_DOUBLE_CLICK                  :Çift tık
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK_FOCUS            :Tek tık (odaklanmışken)
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK                  :Tek tık (anında)
 
+
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU                          :Sağ tıklama öykünümü: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_HELPTEXT                 :Sağ fare-tıklamalarının hangi yöntemle taklit edileceğini seçin.
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Komut-tıklama
@@ -2065,38 +2067,10 @@ STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}İzin ve
 STR_NETWORK_START_SERVER_COMPANIES_SELECT                       :{BLACK}{NUM} şirket
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES                    :{BLACK}En fazla şirket sayısı:
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES_TOOLTIP            :{BLACK}Sunucudaki şirket sayısını sınırla
-STR_NETWORK_START_SERVER_SPECTATORS_SELECT                      :{BLACK}{NUM} seyirci
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS                   :{BLACK}En fazla izleyici sayısı:
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS_TOOLTIP           :{BLACK}Sunucudaki izleyici sayısını sınırla
 STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Konuşulan dil:
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Diğer oyuncular sunucuda hangi dilin konuşulacağını bilecek
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Ağ oyunu için bir isim girin
-
-# Network game lobby
-STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Çok oyunculu oyun lobisi
-
-STR_NETWORK_GAME_LOBBY_PREPARE_TO_JOIN                          :{BLACK}Katılmaya hazırlanıyor: {ORANGE}{STRING}
-STR_NETWORK_GAME_LOBBY_COMPANY_LIST_TOOLTIP                     :{BLACK}Oyundaki tüm şirketlerin listesi. Birine katılabilir ya da boş yer varsa yeni bir tane açabilirsiniz
-
-STR_NETWORK_GAME_LOBBY_COMPANY_INFO                             :{SILVER}ŞİRKET BİLGİSİ
-STR_NETWORK_GAME_LOBBY_COMPANY_NAME                             :{SILVER}Şirket adı: {WHITE}{STRING}
-STR_NETWORK_GAME_LOBBY_INAUGURATION_YEAR                        :{SILVER}Kurulus: {WHITE}{NUM}
-STR_NETWORK_GAME_LOBBY_VALUE                                    :{SILVER}Şirket değeri: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_CURRENT_BALANCE                          :{SILVER}Şimdiki dengesi: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_LAST_YEARS_INCOME                        :{SILVER}Geçen seneki geliri: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_PERFORMANCE                              :{SILVER}Performans: {WHITE}{NUM}
-
-STR_NETWORK_GAME_LOBBY_VEHICLES                                 :{SILVER}Araçlar: {WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE}
-STR_NETWORK_GAME_LOBBY_STATIONS                                 :{SILVER}İstasyon: {WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE}
-STR_NETWORK_GAME_LOBBY_PLAYERS                                  :{SILVER}Oyuncular: {WHITE}{STRING}
-
-STR_NETWORK_GAME_LOBBY_NEW_COMPANY                              :{BLACK}Yeni şirket
-STR_NETWORK_GAME_LOBBY_NEW_COMPANY_TOOLTIP                      :{BLACK}Yeni bir şirket kur
-STR_NETWORK_GAME_LOBBY_SPECTATE_GAME                            :{BLACK}Oyunu izle
-STR_NETWORK_GAME_LOBBY_SPECTATE_GAME_TOOLTIP                    :{BLACK}Oyuna izlemek için katıl
-STR_NETWORK_GAME_LOBBY_JOIN_COMPANY                             :{BLACK}Şirkete Katil
-STR_NETWORK_GAME_LOBBY_JOIN_COMPANY_TOOLTIP                     :{BLACK}Şirket yönetimine yardım et
 
 # Network connecting window
 STR_NETWORK_CONNECTING_CAPTION                                  :{WHITE}Bağlanıyor...
@@ -2164,6 +2138,7 @@ STR_NETWORK_CLIENT_LIST_ASK_CLIENT_KICK                         :{YELLOW}'{STRIN
 STR_NETWORK_CLIENT_LIST_ASK_CLIENT_BAN                          :{YELLOW}'{STRING}' adlı oyunucuyu yasaklamak istediğine emin misin?
 STR_NETWORK_CLIENT_LIST_ASK_COMPANY_RESET                       :{YELLOW}'{COMPANY}' şirketini silmek istediğine emin misin?
 STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}'{COMPANY}' adlı şirketin şifresini sıfırlamak istediğine emin misin?
+
 
 STR_NETWORK_SERVER                                              :Sunucu
 STR_NETWORK_CLIENT                                              :İstemci

@@ -737,6 +737,7 @@ STR_STATUSBAR_PAUSED                                            :{YELLOW}* *  ST
 STR_STATUSBAR_AUTOSAVE                                          :{RED}SJÁLFVIRK VISTUN
 STR_STATUSBAR_SAVING_GAME                                       :{RED}*  *  VISTA LEIK  *  *
 
+
 # News message history
 STR_MESSAGE_HISTORY                                             :{WHITE}Saga skilaboða
 STR_MESSAGE_HISTORY_TOOLTIP                                     :{BLACK}Listi yfir nýlegar fréttir
@@ -1293,6 +1294,7 @@ STR_CONFIG_SETTING_OSK_ACTIVATION_DOUBLE_CLICK                  :Tvísmella
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK_FOCUS            :Ýta einusinni (þegar valið)
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK                  :Ýta einusinni (birtist strax)
 
+
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU                          :Hægrismellshermun: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_HELPTEXT                 :Veldu hvernig herma á eftir hægri smelli á músinni
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Command+smella
@@ -1800,38 +1802,10 @@ STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Veldu h�
 STR_NETWORK_START_SERVER_COMPANIES_SELECT                       :{BLACK}{NUM} Fyrirtæki
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES                    :{BLACK}Hámarksfjöldi fyrirtækja:
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES_TOOLTIP            :{BLACK}Takmarka fjölda fyrirtækja á vefþjóni
-STR_NETWORK_START_SERVER_SPECTATORS_SELECT                      :{BLACK}{NUM} áhorf{P andi endur}
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS                   :{BLACK}Hámarksfjöldi áhorfanda:
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS_TOOLTIP           :{BLACK}Takmarka fjölda áhorfanda á vefþjóninum
 STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Tungumál:
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Aðrir notendur munu vita hvaða tungumál er talað á þjóninum
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Sláðu inn nafn netleiksins
-
-# Network game lobby
-STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Anddyri fjölspilunarleiks
-
-STR_NETWORK_GAME_LOBBY_PREPARE_TO_JOIN                          :{BLACK}Undirbý tengingu við: {ORANGE}{STRING}
-STR_NETWORK_GAME_LOBBY_COMPANY_LIST_TOOLTIP                     :{BLACK}Listi yfir öll fyrirtæki í leiknum. Þú getur annað hvort gengið í lið með einu eða komið á fót nýju ef pláss er fyrir nýtt
-
-STR_NETWORK_GAME_LOBBY_COMPANY_INFO                             :{SILVER}UPPLÝSINGAR UM FYRIRTÆKI
-STR_NETWORK_GAME_LOBBY_COMPANY_NAME                             :{SILVER}Nafn fyrirtækis: {WHITE}{STRING}
-STR_NETWORK_GAME_LOBBY_INAUGURATION_YEAR                        :{SILVER}Upphaf: {WHITE}{NUM}
-STR_NETWORK_GAME_LOBBY_VALUE                                    :{SILVER}Verðmæti fyrirtækis: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_CURRENT_BALANCE                          :{SILVER}Núverandi staða: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_LAST_YEARS_INCOME                        :{SILVER}Innkoma síðasta árs: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_PERFORMANCE                              :{SILVER}Frammistaða: {WHITE}{NUM}
-
-STR_NETWORK_GAME_LOBBY_VEHICLES                                 :{SILVER}Farartæki: {WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE}
-STR_NETWORK_GAME_LOBBY_STATIONS                                 :{SILVER}Stöðvar: {WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE}
-STR_NETWORK_GAME_LOBBY_PLAYERS                                  :{SILVER}Leikmenn: {WHITE}{STRING}
-
-STR_NETWORK_GAME_LOBBY_NEW_COMPANY                              :{BLACK}Nýtt fyrirtæki
-STR_NETWORK_GAME_LOBBY_NEW_COMPANY_TOOLTIP                      :{BLACK}Koma á fót nýju fyrirtæki
-STR_NETWORK_GAME_LOBBY_SPECTATE_GAME                            :{BLACK}Fylgjast með leik
-STR_NETWORK_GAME_LOBBY_SPECTATE_GAME_TOOLTIP                    :{BLACK}Fylgjast með leiknum sem áhorfandi
-STR_NETWORK_GAME_LOBBY_JOIN_COMPANY                             :{BLACK}Ganga í lið með fyrirtæki
-STR_NETWORK_GAME_LOBBY_JOIN_COMPANY_TOOLTIP                     :{BLACK}Hjálpa við stjórnun þessa fyrirtækis
 
 # Network connecting window
 STR_NETWORK_CONNECTING_CAPTION                                  :{WHITE}Tengist...
@@ -1864,6 +1838,7 @@ STR_NETWORK_COMPANY_LIST_SPECTATE                               :Fylgjast með
 
 ############ Begin of ConnectionType
 ############ End of ConnectionType
+
 
 
 

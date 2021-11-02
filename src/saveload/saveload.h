@@ -12,6 +12,7 @@
 
 #include "saveload_types.h"
 #include "../fileio_type.h"
+#include "../fios.h"
 #include "../strings_type.h"
 
 #include <stdarg.h>
@@ -67,7 +68,7 @@ void WaitTillSaved();
 void ProcessAsyncSaveFinish();
 void DoExitSave();
 
-void DoAutoOrNetsave(int &counter, bool netsave = false);
+void DoAutoOrNetsave(FiosNumberedSaveName &counter, bool threaded);
 
 SaveOrLoadResult SaveWithFilter(struct SaveFilter *writer, bool threaded, SaveModeFlags flags);
 SaveOrLoadResult LoadWithFilter(struct LoadFilter *reader);

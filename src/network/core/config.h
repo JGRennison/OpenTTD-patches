@@ -22,6 +22,7 @@ static const char * const NETWORK_CONTENT_MIRROR_URL            = "/bananas";
 
 static const uint16 NETWORK_COORDINATOR_SERVER_PORT = 3976;           ///< The default port of the Game Coordinator server (TCP)
 static const uint16 NETWORK_STUN_SERVER_PORT        = 3975;           ///< The default port of the STUN server (TCP)
+static const uint16 NETWORK_TURN_SERVER_PORT        = 3974;           ///< The default port of the TURN server (TCP)
 static const uint16 NETWORK_CONTENT_SERVER_PORT     = 3978;           ///< The default port of the content server (TCP)
 static const uint16 NETWORK_CONTENT_MIRROR_PORT     =   80;           ///< The default port of the content mirror (TCP)
 static const uint16 NETWORK_DEFAULT_PORT            = 3979;           ///< The default port of the game server (TCP & UDP)
@@ -48,9 +49,9 @@ static const uint16 TCP_MTU                         = 32767;          ///< Numbe
 static const uint16 COMPAT_MTU                      = 1460;           ///< Number of bytes we can pack in a single packet for backward compatibility
 
 static const byte NETWORK_GAME_ADMIN_VERSION        =    1;           ///< What version of the admin network do we use?
-static const byte NETWORK_GAME_INFO_VERSION         =    5;           ///< What version of game-info do we use?
+static const byte NETWORK_GAME_INFO_VERSION         =    6;           ///< What version of game-info do we use?
 static const byte NETWORK_COMPANY_INFO_VERSION      =    6;           ///< What version of company info is this?
-static const byte NETWORK_COORDINATOR_VERSION       =    3;           ///< What version of game-coordinator-protocol do we use?
+static const byte NETWORK_COORDINATOR_VERSION       =    5;           ///< What version of game-coordinator-protocol do we use?
 
 static const uint NETWORK_NAME_LENGTH               =   80;           ///< The maximum length of the server name and map name, in bytes including '\0'
 static const uint NETWORK_COMPANY_NAME_LENGTH       =  128;           ///< The maximum length of the company name, in bytes including '\0'
@@ -94,15 +95,5 @@ static const uint NETWORK_GRF_NAME_LENGTH           =   80;           ///< Maxim
  * "amount of NewGRFs" in NetworkGameInfo is currently an uint8.
  */
 static const uint NETWORK_MAX_GRF_COUNT             =   255;
-
-/**
- * The number of landscapes in OpenTTD.
- * This number must be equal to NUM_LANDSCAPE, but as this number is used
- * within the network code and that the network code is shared with the
- * masterserver/updater, it has to be declared in here too. In network.cpp
- * there is a compile assertion to check that this NUM_LANDSCAPE is equal
- * to NETWORK_NUM_LANDSCAPES.
- */
-static const uint NETWORK_NUM_LANDSCAPES            =    4;
 
 #endif /* NETWORK_CORE_CONFIG_H */

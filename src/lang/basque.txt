@@ -758,6 +758,7 @@ STR_STATUSBAR_PAUSED                                            :{YELLOW}*  *  G
 STR_STATUSBAR_AUTOSAVE                                          :{RED}AUTO-GORDEA
 STR_STATUSBAR_SAVING_GAME                                       :{RED}*  *  JOKOA GORDETZEN  *  *
 
+
 # News message history
 STR_MESSAGE_HISTORY                                             :{WHITE}Mezu Historia
 STR_MESSAGE_HISTORY_TOOLTIP                                     :{BLACK}Azken albiste mezuetako zerrenda
@@ -1326,6 +1327,7 @@ STR_CONFIG_SETTING_OSK_ACTIVATION_DOUBLE_CLICK                  :Klik bikoitza
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK_FOCUS            :Klik bakarra (enfokatua dagoenean)
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK                  :Klik bakarra (Berehala)
 
+
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU                          :Xaguaren eskuineko botoiaren emulazioa: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_HELPTEXT                 :Aukeratu saguaren eskuineko botoiaren klikak emulatzeko modua
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Komandoa+Klik
@@ -1856,38 +1858,10 @@ STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Gehienez
 STR_NETWORK_START_SERVER_COMPANIES_SELECT                       :{BLACK}{NUM} konpainia
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES                    :{BLACK}Gehienezko konpainia kopurua:
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES_TOOLTIP            :{BLACK}Zerbitzaria konpainia kupuru zehatz batera mugatu
-STR_NETWORK_START_SERVER_SPECTATORS_SELECT                      :{BLACK}{NUM} ikusle
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS                   :{BLACK}Gehienezko ikusle kopurua:
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS_TOOLTIP           :{BLACK}Zerbitzaria ikusle kupuru zehatz batera mugatu
 STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Hitzegiten den hizkuntza:
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Beste jokalariek erabiltzen ari den hizkuntza ezagutu ahalko dute
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Sare joko batentzako izena sartu
-
-# Network game lobby
-STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Multijokalari joko itxia
-
-STR_NETWORK_GAME_LOBBY_PREPARE_TO_JOIN                          :{BLACK}Sartzeko prestatzen: {ORANGE}{STRING}
-STR_NETWORK_GAME_LOBBY_COMPANY_LIST_TOOLTIP                     :{BLACK}Joko honetan egun dauden konpainien zerrenda. Konpainia batera batu zaitezke edo konpainia berria sortu dezakezu lekua badago
-
-STR_NETWORK_GAME_LOBBY_COMPANY_INFO                             :{SILVER}KONPAINIA INFORMAZIOA
-STR_NETWORK_GAME_LOBBY_COMPANY_NAME                             :{SILVER}Konpainia izena: {WHITE}{STRING}
-STR_NETWORK_GAME_LOBBY_INAUGURATION_YEAR                        :{SILVER}Sortutako urtea: {WHITE}{NUM}
-STR_NETWORK_GAME_LOBBY_VALUE                                    :{SILVER}Konpainiaren balioa: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_CURRENT_BALANCE                          :{SILVER}Egungo balorazioa: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_LAST_YEARS_INCOME                        :{SILVER}Iazko diru sarrerak: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_PERFORMANCE                              :{SILVER}Errendimendua: {WHITE}{NUM}
-
-STR_NETWORK_GAME_LOBBY_VEHICLES                                 :{SILVER}Ibilgailuak: {WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE}
-STR_NETWORK_GAME_LOBBY_STATIONS                                 :{SILVER}Geltokiak: {WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE}
-STR_NETWORK_GAME_LOBBY_PLAYERS                                  :{SILVER}Jokalariak: {WHITE}{STRING}
-
-STR_NETWORK_GAME_LOBBY_NEW_COMPANY                              :{BLACK}Konpainia berria
-STR_NETWORK_GAME_LOBBY_NEW_COMPANY_TOOLTIP                      :{BLACK}Konpainia berria sortu
-STR_NETWORK_GAME_LOBBY_SPECTATE_GAME                            :{BLACK}Ikusle jokoa
-STR_NETWORK_GAME_LOBBY_SPECTATE_GAME_TOOLTIP                    :{BLACK}Jokoan ikusle bezala sartu
-STR_NETWORK_GAME_LOBBY_JOIN_COMPANY                             :{BLACK}Konpainian sartu
-STR_NETWORK_GAME_LOBBY_JOIN_COMPANY_TOOLTIP                     :{BLACK}Konpainia hau kudeatzen lagundu
 
 # Network connecting window
 STR_NETWORK_CONNECTING_CAPTION                                  :{WHITE}Konektatzen...
@@ -1920,6 +1894,7 @@ STR_NETWORK_COMPANY_LIST_SPECTATE                               :Ikusle
 
 ############ Begin of ConnectionType
 ############ End of ConnectionType
+
 
 
 

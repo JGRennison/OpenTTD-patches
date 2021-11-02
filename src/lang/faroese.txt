@@ -738,6 +738,7 @@ STR_STATUSBAR_PAUSED                                            :{YELLOW}*  *  S
 STR_STATUSBAR_AUTOSAVE                                          :{RED}SJÁLVGOYMSLA
 STR_STATUSBAR_SAVING_GAME                                       :{RED}*  *  GOYMUR SPÆL  *  *
 
+
 # News message history
 STR_MESSAGE_HISTORY                                             :{WHITE}Boðs søga
 STR_MESSAGE_HISTORY_TOOLTIP                                     :{BLACK}Yvirlit yvir fesk tíðinda boð
@@ -1294,6 +1295,7 @@ STR_CONFIG_SETTING_OSK_ACTIVATION_DOUBLE_CLICK                  :Dupult trýst
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK_FOCUS            :Einkult trýst (tá savna)
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK                  :Einkult trýst (alt fyri eitt)
 
+
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU                          :Høgra-trýst eftirgerð: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_HELPTEXT                 :Vel háttin at eftirgerða trýst á høgra músa knøtt
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Command+trýst
@@ -1762,38 +1764,10 @@ STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Vel mest
 STR_NETWORK_START_SERVER_COMPANIES_SELECT                       :{BLACK}{NUM} fyritøk{P a ur}
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES                    :{BLACK}Mest loyvdar fyritøkur:
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES_TOOLTIP            :{BLACK}Avmarka nøgdina av fyritøkum á servaranum
-STR_NETWORK_START_SERVER_SPECTATORS_SELECT                      :{BLACK}{NUM} eygleiðar{P i ar}
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS                   :{BLACK}Mest loyvdir eygjleiðarar:
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS_TOOLTIP           :{BLACK}Avmarka nøgdina av eygleiðarum á servaranum
 STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Tungumál:
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Aðrir spælarir kunnu síggja hvat mál verður tosa á servaranum
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Gev netverks spælinum eitt navn
-
-# Network game lobby
-STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Hópspæls forhøll
-
-STR_NETWORK_GAME_LOBBY_PREPARE_TO_JOIN                          :{BLACK}Fyrireikar samband við: {ORANGE}{STRING}
-STR_NETWORK_GAME_LOBBY_COMPANY_LIST_TOOLTIP                     :{BLACK}Listi yvir allar fyritøkur í hesum spælinum júst nú. Tú kann antin taka lut í einari, ella stovna eina nyggja um ta er pláss
-
-STR_NETWORK_GAME_LOBBY_COMPANY_INFO                             :{SILVER}KUNNING UM FYRITØKU
-STR_NETWORK_GAME_LOBBY_COMPANY_NAME                             :{SILVER}Navn á fyritøku: {WHITE}{STRING}
-STR_NETWORK_GAME_LOBBY_INAUGURATION_YEAR                        :{SILVER}Stovnað: {WHITE}{NUM}
-STR_NETWORK_GAME_LOBBY_VALUE                                    :{SILVER}Virði á fyritøku: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_CURRENT_BALANCE                          :{SILVER}Peningur á bók júst nú: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_LAST_YEARS_INCOME                        :{SILVER}Inntøka síðsta ár: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_PERFORMANCE                              :{SILVER}Avrik: {WHITE}{NUM}
-
-STR_NETWORK_GAME_LOBBY_VEHICLES                                 :{SILVER}Flutningstól: {WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE}
-STR_NETWORK_GAME_LOBBY_STATIONS                                 :{SILVER}Støðir: {WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE}
-STR_NETWORK_GAME_LOBBY_PLAYERS                                  :{SILVER}Spælarir: {WHITE}{STRING}
-
-STR_NETWORK_GAME_LOBBY_NEW_COMPANY                              :{BLACK}Nýggja fyritøku
-STR_NETWORK_GAME_LOBBY_NEW_COMPANY_TOOLTIP                      :{BLACK}Stovnað eina nýggja fyritøku
-STR_NETWORK_GAME_LOBBY_SPECTATE_GAME                            :{BLACK}Eygleið spæl
-STR_NETWORK_GAME_LOBBY_SPECTATE_GAME_TOOLTIP                    :{BLACK}Hygg eftir spælinum sum eygleiðari
-STR_NETWORK_GAME_LOBBY_JOIN_COMPANY                             :{BLACK}Tak lut í fyritøku
-STR_NETWORK_GAME_LOBBY_JOIN_COMPANY_TOOLTIP                     :{BLACK}Hjálp við at leiða hesa fyritøkuna
 
 # Network connecting window
 STR_NETWORK_CONNECTING_CAPTION                                  :{WHITE}Fær samband...
@@ -1826,6 +1800,7 @@ STR_NETWORK_COMPANY_LIST_SPECTATE                               :Eygleið
 
 ############ Begin of ConnectionType
 ############ End of ConnectionType
+
 
 
 

@@ -761,6 +761,7 @@ STR_STATUSBAR_PAUSED                                            :{YELLOW}* *  م
 STR_STATUSBAR_AUTOSAVE                                          :{RED}حفظ تلقائي
 STR_STATUSBAR_SAVING_GAME                                       :{RED}*  *  يتم حفظ اللعبة  *  *
 
+
 # News message history
 STR_MESSAGE_HISTORY                                             :{WHITE}الرسائل السابقة
 STR_MESSAGE_HISTORY_TOOLTIP                                     :{BLACK}قائمة بآخر الاخبار
@@ -1240,6 +1241,7 @@ STR_CONFIG_SETTING_SCROLLWHEEL_SCROLL                           :تحريك ال
 STR_CONFIG_SETTING_SCROLLWHEEL_OFF                              :عدم استخدام
 STR_CONFIG_SETTING_SCROLLWHEEL_MULTIPLIER                       :سرعة تحريك الخريطة: {STRING}
 
+
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU                          :محاكاة الزر الأيمن : {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :الأوامر
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_CONTROL                  :للتحكم
@@ -1678,38 +1680,10 @@ STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}أختر
 STR_NETWORK_START_SERVER_COMPANIES_SELECT                       :{BLACK}{NUM}شركة
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES                    :{BLACK}أقصى عدد شركات:
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES_TOOLTIP            :{BLACK}حدد العدد الاقصى للشركات في هذا الخادم
-STR_NETWORK_START_SERVER_SPECTATORS_SELECT                      :{BLACK}{NUM}مشاهد
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS                   :{BLACK}أقصى عدد مشاهدين:
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS_TOOLTIP           :{BLACK}حدد عدد المشاهدين لهذا الخادم
 STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}اللغة المتحدثة:
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}اللاعبين الآخرين سيعرفون اللغة المتحدثة
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}أدخل أسم اللعبة للشبكة
-
-# Network game lobby
-STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}ردهة تعدد اللاعبين
-
-STR_NETWORK_GAME_LOBBY_PREPARE_TO_JOIN                          :{BLACK}التحضير لالانضمام الى:{ORANGE}{STRING}
-STR_NETWORK_GAME_LOBBY_COMPANY_LIST_TOOLTIP                     :{BLACK}قائمة بالشركات الموجودة باللعبة ، يمكنك الإنضمام لشركة أو تأسيس واحدة
-
-STR_NETWORK_GAME_LOBBY_COMPANY_INFO                             :{SILVER}معلومات الشركة
-STR_NETWORK_GAME_LOBBY_COMPANY_NAME                             :{SILVER}أسم الشركة:{WHITE}{STRING}
-STR_NETWORK_GAME_LOBBY_INAUGURATION_YEAR                        :{SILVER}افتتاح:{WHITE}{NUM}
-STR_NETWORK_GAME_LOBBY_VALUE                                    :{SILVER}قيمة الشركة:{WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_CURRENT_BALANCE                          :{SILVER}الرصيد الحالي:{WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_LAST_YEARS_INCOME                        :{SILVER}دخل السنة الماضية:{WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_PERFORMANCE                              :{SILVER}الأداء:{WHITE}{NUM}
-
-STR_NETWORK_GAME_LOBBY_VEHICLES                                 :{SILVER}مركبة:{WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE}
-STR_NETWORK_GAME_LOBBY_STATIONS                                 :{SILVER}محطات:{WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE}
-STR_NETWORK_GAME_LOBBY_PLAYERS                                  :{SILVER}لاعبين:{WHITE}{STRING}
-
-STR_NETWORK_GAME_LOBBY_NEW_COMPANY                              :{BLACK}شركة جديدة
-STR_NETWORK_GAME_LOBBY_NEW_COMPANY_TOOLTIP                      :{BLACK}أنشئ شركة جديدة
-STR_NETWORK_GAME_LOBBY_SPECTATE_GAME                            :{BLACK}شاهد اللعبة
-STR_NETWORK_GAME_LOBBY_SPECTATE_GAME_TOOLTIP                    :{BLACK}شاهد اللعبة كامشاهد
-STR_NETWORK_GAME_LOBBY_JOIN_COMPANY                             :{BLACK}أنضم لشركة
-STR_NETWORK_GAME_LOBBY_JOIN_COMPANY_TOOLTIP                     :{BLACK}ساعد في إدارة الشركة
 
 # Network connecting window
 STR_NETWORK_CONNECTING_CAPTION                                  :{WHITE}إتصال...
@@ -1742,6 +1716,7 @@ STR_NETWORK_COMPANY_LIST_SPECTATE                               :شاهد
 
 ############ Begin of ConnectionType
 ############ End of ConnectionType
+
 
 
 

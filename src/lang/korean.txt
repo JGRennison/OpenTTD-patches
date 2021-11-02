@@ -811,6 +811,7 @@ STR_STATUSBAR_PAUSED_LINK_GRAPH                                 :{ORANGE}*  *  �
 STR_STATUSBAR_AUTOSAVE                                          :{RED}자동 저장
 STR_STATUSBAR_SAVING_GAME                                       :{RED}*  *  게임 저장 중  *  *
 
+
 # News message history
 STR_MESSAGE_HISTORY                                             :{WHITE}메시지 기록
 STR_MESSAGE_HISTORY_TOOLTIP                                     :{BLACK}최근 뉴스 메시지의 기록입니다
@@ -1642,6 +1643,12 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :차량 경로 �
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :{COMMA} 픽셀 간격의 점선
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :실선
 
+STR_CONFIG_SETTING_USE_RELAY_SERVICE                            :중계 서비스 이용: {STRING}
+STR_CONFIG_SETTING_USE_RELAY_SERVICE_HELPTEXT                   :서버 연결에 실패할 경우, 중계 서비스를 이용하여 연결을 시도할 수 있습니다. "사용 안 함"으로 설정하면 이 중계 서비스를 사용하지 않고, "물어보기"는 처음에 물어보고 사용하며, "이용"은 물어보지 않고 중계 서비스를 사용합니다.
+STR_CONFIG_SETTING_USE_RELAY_SERVICE_NEVER                      :사용 안 함
+STR_CONFIG_SETTING_USE_RELAY_SERVICE_ASK                        :물어보기
+STR_CONFIG_SETTING_USE_RELAY_SERVICE_ALLOW                      :사용
+
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU                          :오른쪽 클릭 매크로: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_HELPTEXT                 :오른쪽 마우스 버튼 클릭을 대신할 방법을 선택합니다.
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :커맨드 + 클릭
@@ -2150,6 +2157,7 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST_PER_CARGO_OVERRIDE     :{ORANGE}화물 
 STR_CONFIG_SETTING_ENVIRONMENT_TREES                            :{ORANGE}나무
 STR_CONFIG_SETTING_AI                                           :{ORANGE}경쟁자
 STR_CONFIG_SETTING_AI_NPC                                       :{ORANGE}컴퓨터 플레이어
+STR_CONFIG_SETTING_NETWORK                                      :{ORANGE}네트워크
 STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}지도 모드
 STR_CONFIG_SETTING_SHARING                                      :{ORANGE}시설 공유
 STR_CONFIG_SETTING_SCENARIO_EDITOR                              :{ORANGE}시나리오 에디터
@@ -2472,6 +2480,7 @@ STR_NETWORK_SERVER_LIST_SERVER_VERSION                          :{SILVER}서버 
 STR_NETWORK_SERVER_LIST_SERVER_ADDRESS                          :{SILVER}서버 주소: {WHITE}{STRING}
 STR_NETWORK_SERVER_LIST_START_DATE                              :{SILVER}시작 날짜: {WHITE}{DATE_SHORT}
 STR_NETWORK_SERVER_LIST_CURRENT_DATE                            :{SILVER}현재 날짜: {WHITE}{DATE_SHORT}
+STR_NETWORK_SERVER_LIST_GAMESCRIPT                              :{SILVER}게임 스크립트: {WHITE}{STRING} (v{NUM})
 STR_NETWORK_SERVER_LIST_PASSWORD                                :{SILVER}비밀번호가 걸려있습니다!
 STR_NETWORK_SERVER_LIST_SERVER_OFFLINE                          :{SILVER}서버 오프라인
 STR_NETWORK_SERVER_LIST_SERVER_FULL                             :{SILVER}서버가 꽉 참
@@ -2510,38 +2519,10 @@ STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}최대 �
 STR_NETWORK_START_SERVER_COMPANIES_SELECT                       :{BLACK}{NUM}개
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES                    :{BLACK}최대 회사수:
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES_TOOLTIP            :{BLACK}서버의 회사의 수를 제한합니다
-STR_NETWORK_START_SERVER_SPECTATORS_SELECT                      :{BLACK}{NUM}명
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS                   :{BLACK}최대 관전자수:
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS_TOOLTIP           :{BLACK}게임을 관전하는 접속자의 수를 제한합니다
 STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}대화 언어:
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}서버에서 주로 사용하는 언어를 고르십시오
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}네트워크 게임에서 사용할 이름을 입력하세요
-
-# Network game lobby
-STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}멀티플레이 게임 대기실
-
-STR_NETWORK_GAME_LOBBY_PREPARE_TO_JOIN                          :{BLACK}참가 준비중: {ORANGE}{STRING}
-STR_NETWORK_GAME_LOBBY_COMPANY_LIST_TOOLTIP                     :{BLACK}이 게임에 있는 회사의 목록입니다. 다른 회사에 같이 참여하거나, 빈 자리가 있을 경우 새로운 회사를 세워서 시작할 수 있습니다
-
-STR_NETWORK_GAME_LOBBY_COMPANY_INFO                             :{SILVER}회사 정보
-STR_NETWORK_GAME_LOBBY_COMPANY_NAME                             :{SILVER}회사 이름: {WHITE}{STRING}
-STR_NETWORK_GAME_LOBBY_INAUGURATION_YEAR                        :{SILVER}설립: {WHITE}{NUM}
-STR_NETWORK_GAME_LOBBY_VALUE                                    :{SILVER}회사가치: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_CURRENT_BALANCE                          :{SILVER}재정 수익: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_LAST_YEARS_INCOME                        :{SILVER}작년 수익: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_PERFORMANCE                              :{SILVER}성취도: {WHITE}{NUM}
-
-STR_NETWORK_GAME_LOBBY_VEHICLES                                 :{SILVER}차량: {WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE}
-STR_NETWORK_GAME_LOBBY_STATIONS                                 :{SILVER}역: {WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE}
-STR_NETWORK_GAME_LOBBY_PLAYERS                                  :{SILVER}플레이어: {WHITE}{STRING}
-
-STR_NETWORK_GAME_LOBBY_NEW_COMPANY                              :{BLACK}새 회사
-STR_NETWORK_GAME_LOBBY_NEW_COMPANY_TOOLTIP                      :{BLACK}새 회사를 만듭니다
-STR_NETWORK_GAME_LOBBY_SPECTATE_GAME                            :{BLACK}게임 관전
-STR_NETWORK_GAME_LOBBY_SPECTATE_GAME_TOOLTIP                    :{BLACK}게임에 참여하지 않고 보기만 합니다
-STR_NETWORK_GAME_LOBBY_JOIN_COMPANY                             :{BLACK}회사 참여
-STR_NETWORK_GAME_LOBBY_JOIN_COMPANY_TOOLTIP                     :{BLACK}이 회사를 도와 플레이합니다
 
 # Network connecting window
 STR_NETWORK_CONNECTING_CAPTION                                  :{WHITE}접속중...
@@ -2605,6 +2586,8 @@ STR_NETWORK_CLIENT_LIST_CLIENT_COMPANY_COUNT                    :{BLACK}접속�
 STR_NETWORK_CLIENT_LIST_SERVER_CONNECTION_TYPE_UNKNOWN          :{BLACK}로컬
 STR_NETWORK_CLIENT_LIST_SERVER_CONNECTION_TYPE_ISOLATED         :{RED}다른 플레이어가 접속할 수 없게 됩니다
 STR_NETWORK_CLIENT_LIST_SERVER_CONNECTION_TYPE_DIRECT           :{BLACK}공개
+STR_NETWORK_CLIENT_LIST_SERVER_CONNECTION_TYPE_STUN             :{BLACK}공유기 우회
+STR_NETWORK_CLIENT_LIST_SERVER_CONNECTION_TYPE_TURN             :{BLACK}중계 이용
 ############ End of ConnectionType
 
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK                       :추방
@@ -2617,6 +2600,12 @@ STR_NETWORK_CLIENT_LIST_ASK_CLIENT_KICK                         :{YELLOW}'{STRIN
 STR_NETWORK_CLIENT_LIST_ASK_CLIENT_BAN                          :{YELLOW}'{STRING}' 플레이어를 정말로 차단하시겠습니까?
 STR_NETWORK_CLIENT_LIST_ASK_COMPANY_RESET                       :{YELLOW}'{COMPANY}' 회사를 정말로 삭제하시겠습니까?
 STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}'{COMPANY}' 회사의 비밀번호를 정말로 초기화하시겠습니까?
+
+STR_NETWORK_ASK_RELAY_CAPTION                                   :{WHITE}중계를 이용할까요?
+STR_NETWORK_ASK_RELAY_TEXT                                      :{YELLOW}서버와 연결을 수립하는 데 실패했습니다.{} '{0:STRING}'{G 0 "을" "를"} 통해 연결을 중계하시겠습니까?
+STR_NETWORK_ASK_RELAY_NO                                        :{BLACK}아니요
+STR_NETWORK_ASK_RELAY_YES_ONCE                                  :{BLACK}이번에만 사용
+STR_NETWORK_ASK_RELAY_YES_ALWAYS                                :{BLACK}항상 사용
 
 STR_NETWORK_SERVER                                              :서버
 STR_NETWORK_CLIENT                                              :접속자

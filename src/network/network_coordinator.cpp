@@ -18,6 +18,7 @@
 #include "network.h"
 #include "network_coordinator.h"
 #include "network_gamelist.h"
+#include "network_gui.h"
 #include "network_internal.h"
 #include "network_server.h"
 #include "network_stun.h"
@@ -144,7 +145,11 @@ bool ClientNetworkCoordinatorSocketHandler::Receive_GC_ERROR(Packet *p)
 			return false;
 
 		case NETWORK_COORDINATOR_ERROR_INVALID_INVITE_CODE: {
-			this->CloseToken(detail);
+			auto connecter_pre_it = this->connecter_pre.find(detail);
+			if (connecter_pre_it != this->connecter_pre.end()) {
+				connecter_pre_it->second->SetFailure();
+				this->connecter_pre.erase(connecter_pre_it);
+			}
 
 			/* Mark the server as offline. */
 			NetworkGameList *item = NetworkGameListAddItem(detail);
@@ -189,6 +194,7 @@ bool ClientNetworkCoordinatorSocketHandler::Receive_GC_REGISTER_ACK(Packet *p)
 			case CONNECTION_TYPE_ISOLATED: connection_type = "Remote players can't connect"; break;
 			case CONNECTION_TYPE_DIRECT:   connection_type = "Public"; break;
 			case CONNECTION_TYPE_STUN:     connection_type = "Behind NAT"; break;
+			case CONNECTION_TYPE_TURN:     connection_type = "Via relay"; break;
 
 			case CONNECTION_TYPE_UNKNOWN: // Never returned from Game Coordinator.
 			default: connection_type = "Unknown"; break; // Should never happen, but don't fail if it does.
@@ -231,7 +237,7 @@ bool ClientNetworkCoordinatorSocketHandler::Receive_GC_LISTING(Packet *p)
 
 		/* Read the NetworkGameInfo from the packet. */
 		NetworkGameInfo ngi = {};
-		DeserializeNetworkGameInfo(p, &ngi);
+		DeserializeNetworkGameInfo(p, &ngi, &this->newgrf_lookup_table);
 
 		/* Now we know the connection string, we can add it to our list. */
 		NetworkGameList *item = NetworkGameListAddItem(connection_string);
@@ -258,15 +264,15 @@ bool ClientNetworkCoordinatorSocketHandler::Receive_GC_CONNECTING(Packet *p)
 	std::string invite_code = p->Recv_string(NETWORK_INVITE_CODE_LENGTH);
 
 	/* Find the connecter based on the invite code. */
-	auto connecter_it = this->connecter_pre.find(invite_code);
-	if (connecter_it == this->connecter_pre.end()) {
+	auto connecter_pre_it = this->connecter_pre.find(invite_code);
+	if (connecter_pre_it == this->connecter_pre.end()) {
 		this->CloseConnection();
 		return false;
 	}
 
 	/* Now store it based on the token. */
-	this->connecter[token] = connecter_it->second;
-	this->connecter_pre.erase(connecter_it);
+	this->connecter[token] = connecter_pre_it->second;
+	this->connecter_pre.erase(connecter_pre_it);
 
 	return true;
 }
@@ -274,14 +280,6 @@ bool ClientNetworkCoordinatorSocketHandler::Receive_GC_CONNECTING(Packet *p)
 bool ClientNetworkCoordinatorSocketHandler::Receive_GC_CONNECT_FAILED(Packet *p)
 {
 	std::string token = p->Recv_string(NETWORK_TOKEN_LENGTH);
-
-	auto connecter_it = this->connecter.find(token);
-	if (connecter_it != this->connecter.end()) {
-		connecter_it->second->SetFailure();
-		this->connecter.erase(connecter_it);
-	}
-
-	/* Close all remaining connections. */
 	this->CloseToken(token);
 
 	return true;
@@ -347,6 +345,62 @@ bool ClientNetworkCoordinatorSocketHandler::Receive_GC_STUN_CONNECT(Packet *p)
 	return true;
 }
 
+bool ClientNetworkCoordinatorSocketHandler::Receive_GC_NEWGRF_LOOKUP(Packet *p)
+{
+	this->newgrf_lookup_table_cursor = p->Recv_uint32();
+
+	uint16 newgrfs = p->Recv_uint16();
+	for (; newgrfs> 0; newgrfs--) {
+		uint32 index = p->Recv_uint32();
+		DeserializeGRFIdentifierWithName(p, &this->newgrf_lookup_table[index]);
+	}
+	return true;
+}
+
+bool ClientNetworkCoordinatorSocketHandler::Receive_GC_TURN_CONNECT(Packet *p)
+{
+	std::string token = p->Recv_string(NETWORK_TOKEN_LENGTH);
+	uint8 tracking_number = p->Recv_uint8();
+	std::string ticket = p->Recv_string(NETWORK_TOKEN_LENGTH);
+	std::string connection_string = p->Recv_string(NETWORK_HOSTNAME_PORT_LENGTH);
+
+	/* Ensure all other pending connection attempts are killed. */
+	if (this->game_connecter != nullptr) {
+		this->game_connecter->Kill();
+		this->game_connecter = nullptr;
+	}
+
+	this->turn_handlers[token] = ClientNetworkTurnSocketHandler::Turn(token, tracking_number, ticket, connection_string);
+
+	if (!_network_server) {
+		switch (_settings_client.network.use_relay_service) {
+			case URS_NEVER:
+				this->ConnectFailure(token, 0);
+				break;
+
+			case URS_ASK:
+				ShowNetworkAskRelay(connection_string, token);
+				break;
+
+			case URS_ALLOW:
+				this->StartTurnConnection(token);
+				break;
+		}
+	} else {
+		this->StartTurnConnection(token);
+	}
+
+	return true;
+}
+
+void ClientNetworkCoordinatorSocketHandler::StartTurnConnection(std::string &token)
+{
+	auto turn_it = this->turn_handlers.find(token);
+	if (turn_it == this->turn_handlers.end()) return;
+
+	turn_it->second->Connect();
+}
+
 void ClientNetworkCoordinatorSocketHandler::Connect()
 {
 	/* We are either already connected or are trying to connect. */
@@ -370,7 +424,7 @@ NetworkRecvStatus ClientNetworkCoordinatorSocketHandler::CloseConnection(bool er
 	_network_server_connection_type = CONNECTION_TYPE_UNKNOWN;
 	this->next_update = {};
 
-	this->CloseAllTokens();
+	this->CloseAllConnections();
 
 	SetWindowDirty(WC_CLIENT_LIST, 0);
 
@@ -410,13 +464,14 @@ void ClientNetworkCoordinatorSocketHandler::Register()
 void ClientNetworkCoordinatorSocketHandler::SendServerUpdate()
 {
 	DEBUG(net, 6, "Sending server update to Game Coordinator");
-	this->next_update = std::chrono::steady_clock::now() + NETWORK_COORDINATOR_DELAY_BETWEEN_UPDATES;
 
 	Packet *p = new Packet(PACKET_COORDINATOR_SERVER_UPDATE, TCP_MTU);
 	p->Send_uint8(NETWORK_COORDINATOR_VERSION);
-	SerializeNetworkGameInfo(p, GetCurrentNetworkServerGameInfo());
+	SerializeNetworkGameInfo(p, GetCurrentNetworkServerGameInfo(), this->next_update.time_since_epoch() != std::chrono::nanoseconds::zero());
 
 	this->SendPacket(p);
+
+	this->next_update = std::chrono::steady_clock::now() + NETWORK_COORDINATOR_DELAY_BETWEEN_UPDATES;
 }
 
 /**
@@ -432,6 +487,7 @@ void ClientNetworkCoordinatorSocketHandler::GetListing()
 	p->Send_uint8(NETWORK_COORDINATOR_VERSION);
 	p->Send_uint8(NETWORK_GAME_INFO_VERSION);
 	p->Send_string(_openttd_revision);
+	p->Send_uint32(this->newgrf_lookup_table_cursor);
 
 	this->SendPacket(p);
 }
@@ -510,11 +566,14 @@ void ClientNetworkCoordinatorSocketHandler::ConnectSuccess(const std::string &to
 		p->Send_string(token);
 		this->SendPacket(p);
 
+		/* Find the connecter; it can happen it no longer exist, in cases where
+		 * we aborted the connect but the Game Coordinator was already in the
+		 * processes of connecting us. */
 		auto connecter_it = this->connecter.find(token);
-		assert(connecter_it != this->connecter.end());
-
-		connecter_it->second->SetConnected(sock);
-		this->connecter.erase(connecter_it);
+		if (connecter_it != this->connecter.end()) {
+			connecter_it->second->SetConnected(sock);
+			this->connecter.erase(connecter_it);
+		}
 	}
 
 	/* Close all remaining connections. */
@@ -538,6 +597,11 @@ void ClientNetworkCoordinatorSocketHandler::StunResult(const std::string &token,
 	this->SendPacket(p);
 }
 
+/**
+ * Close the STUN handler.
+ * @param token The token used for the STUN handlers.
+ * @param family The family of STUN handlers to close. AF_UNSPEC to close all STUN handlers for this token.
+ */
 void ClientNetworkCoordinatorSocketHandler::CloseStunHandler(const std::string &token, uint8 family)
 {
 	auto stun_it = this->stun_handlers.find(token);
@@ -562,19 +626,33 @@ void ClientNetworkCoordinatorSocketHandler::CloseStunHandler(const std::string &
 }
 
 /**
+ * Close the TURN handler.
+ * @param token The token used for the TURN handler.
+ */
+void ClientNetworkCoordinatorSocketHandler::CloseTurnHandler(const std::string &token)
+{
+	DeleteWindowByClass(WC_NETWORK_ASK_RELAY);
+
+	auto turn_it = this->turn_handlers.find(token);
+	if (turn_it == this->turn_handlers.end()) return;
+
+	turn_it->second->CloseConnection();
+	turn_it->second->CloseSocket();
+
+	/* We don't remove turn_handler here, as we can be called from within that
+	 * turn_handler instance, so our object cannot be free'd yet. Instead, we
+	 * check later if the connection is closed, and free the object then. */
+}
+
+/**
  * Close everything related to this connection token.
  * @param token The connection token to close.
  */
 void ClientNetworkCoordinatorSocketHandler::CloseToken(const std::string &token)
 {
-	/* Ensure all other pending connection attempts are also killed. */
-	if (this->game_connecter != nullptr) {
-		this->game_connecter->Kill();
-		this->game_connecter = nullptr;
-	}
-
-	/* Close all remaining STUN connections. */
+	/* Close all remaining STUN / TURN connections. */
 	this->CloseStunHandler(token);
+	this->CloseTurnHandler(token);
 
 	/* Close the caller of the connection attempt. */
 	auto connecter_it = this->connecter.find(token);
@@ -582,17 +660,12 @@ void ClientNetworkCoordinatorSocketHandler::CloseToken(const std::string &token)
 		connecter_it->second->SetFailure();
 		this->connecter.erase(connecter_it);
 	}
-	auto connecter_pre_it = this->connecter_pre.find(token);
-	if (connecter_pre_it != this->connecter_pre.end()) {
-		connecter_pre_it->second->SetFailure();
-		this->connecter_pre.erase(connecter_pre_it);
-	}
 }
 
 /**
  * Close all pending connection tokens.
  */
-void ClientNetworkCoordinatorSocketHandler::CloseAllTokens()
+void ClientNetworkCoordinatorSocketHandler::CloseAllConnections()
 {
 	/* Ensure all other pending connection attempts are also killed. */
 	if (this->game_connecter != nullptr) {
@@ -603,12 +676,20 @@ void ClientNetworkCoordinatorSocketHandler::CloseAllTokens()
 	/* Mark any pending connecters as failed. */
 	for (auto &[token, it] : this->connecter) {
 		this->CloseStunHandler(token);
+		this->CloseTurnHandler(token);
 		it->SetFailure();
+
+		/* Inform the Game Coordinator he can stop trying to connect us to the server. */
+		this->ConnectFailure(token, 0);
 	}
+	this->stun_handlers.clear();
+	this->turn_handlers.clear();
+	this->connecter.clear();
+
+	/* Also close any pending invite-code requests. */
 	for (auto &[invite_code, it] : this->connecter_pre) {
 		it->SetFailure();
 	}
-	this->connecter.clear();
 	this->connecter_pre.clear();
 }
 
@@ -683,5 +764,18 @@ void ClientNetworkCoordinatorSocketHandler::SendReceive()
 		for (const auto &[family, stun_handler] : families) {
 			stun_handler->SendReceive();
 		}
+	}
+
+	/* Check for handlers that are not connecting nor connected. Destroy those objects. */
+	for (auto turn_it = this->turn_handlers.begin(); turn_it != this->turn_handlers.end(); /* nothing */) {
+		if (turn_it->second->connect_started && turn_it->second->connecter == nullptr && !turn_it->second->IsConnected()) {
+			turn_it = this->turn_handlers.erase(turn_it);
+		} else {
+			turn_it++;
+		}
+	}
+
+	for (const auto &[token, turn_handler] : this->turn_handlers) {
+		turn_handler->SendReceive();
 	}
 }

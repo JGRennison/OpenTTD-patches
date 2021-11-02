@@ -15,7 +15,7 @@
 #include "../../fios.h"
 #include "../../strings_type.h"
 #include "../../core/span_type.hpp"
-#include <optional>
+#include "../../3rdparty/optional/ottd_optional.h"
 #include <string>
 #include <vector>
 

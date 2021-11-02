@@ -1329,13 +1329,13 @@ uint16 GetVehicleCallbackParent(CallbackID callback, uint32 param1, uint32 param
 
 
 /* Callback 36 handlers */
-uint GetVehicleProperty(const Vehicle *v, PropertyID property, uint orig_value)
+int GetVehicleProperty(const Vehicle *v, PropertyID property, int orig_value, bool is_signed)
 {
-	return GetEngineProperty(v->engine_type, property, orig_value, v);
+	return GetEngineProperty(v->engine_type, property, orig_value, v, is_signed);
 }
 
 
-uint GetEngineProperty(EngineID engine, PropertyID property, uint orig_value, const Vehicle *v)
+int GetEngineProperty(EngineID engine, PropertyID property, int orig_value, const Vehicle *v, bool is_signed)
 {
 	const Engine *e = Engine::Get(engine);
 	if (static_cast<uint>(property) < 64 && !HasBit(e->cb36_properties_used, property)) return orig_value;
@@ -1348,7 +1348,14 @@ uint GetEngineProperty(EngineID engine, PropertyID property, uint orig_value, co
 		}
 	}
 	uint16 callback = object.ResolveCallback();
-	if (callback != CALLBACK_FAILED) return callback;
+	if (callback != CALLBACK_FAILED) {
+		if (is_signed) {
+			/* Sign extend 15 bit integer */
+			return static_cast<int16>(callback << 1) / 2;
+		} else {
+			return callback;
+		}
+	}
 
 	return orig_value;
 }

@@ -434,6 +434,7 @@ STR_SMALLMAP_SHOW_HEIGHT                                        :{BLACK}Montras 
 # Status bar messages
 STR_STATUSBAR_COMPANY_NAME                                      :{SILVER}- -  {COMPANY}  - -
 
+
 # News message history
 
 STR_NEWS_MESSAGE_CAPTION                                        :{WHITE}Sendajo
@@ -575,6 +576,7 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Violkolora
 
 
 
+
 # Config errors
 
 # Video initalization errors
@@ -625,12 +627,6 @@ STR_NETWORK_SERVER_LIST_MAP_SIZE_SHORT                          :{BLACK}{COMMA}x
 
 
 
-# Network game lobby
-
-
-
-
-
 # Network connecting window
 
 ############ Leave those lines in this order!!
@@ -645,6 +641,7 @@ STR_NETWORK_SERVER_LIST_MAP_SIZE_SHORT                          :{BLACK}{COMMA}x
 
 ############ Begin of ConnectionType
 ############ End of ConnectionType
+
 
 
 

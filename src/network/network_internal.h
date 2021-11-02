@@ -93,12 +93,14 @@ extern uint32 _network_join_bytes_total;
 extern ConnectionType _network_server_connection_type;
 extern std::string _network_server_invite_code;
 
+/* Variable available for clients. */
+extern std::string _network_server_name;
+
 extern uint8 _network_reconnect;
 
 extern CompanyMask _network_company_passworded;
 
 void NetworkQueryServer(const std::string &connection_string);
-void NetworkQueryLobbyServer(const std::string &connection_string);
 
 void GetBindAddresses(NetworkAddressList *addresses, uint16 port);
 struct NetworkGameList *NetworkAddServer(const std::string &connection_string, bool manually = true, bool never_expire = false);

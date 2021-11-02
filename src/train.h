@@ -111,6 +111,7 @@ struct TrainCache {
 
 	/* cached values, recalculated on load and each time a vehicle is added to/removed from the consist. */
 	TrainCacheFlags cached_tflags;///< train cached flags
+	int cached_curve_speed_mod; ///< curve speed modifier of the entire train
 	uint8 cached_num_engines;     ///< total number of engines, including rear ends of multiheaded engines
 	uint16 cached_centre_mass;    ///< Cached position of the centre of mass, from the front
 	uint16 cached_veh_weight;     ///< Cached individual vehicle weight
@@ -450,6 +451,15 @@ protected: // These functions should not be called outside acceleration code.
 	inline uint16 GetMaxTrackSpeed() const
 	{
 		return GetRailTypeInfo(GetRailTypeByTrackBit(this->tile, this->track))->max_speed;
+	}
+
+	/**
+	 * Returns the curve speed modifier of this vehicle.
+	 * @return Current curve speed modifier, in fixed-point binary representation with 8 fractional bits.
+	 */
+	inline int GetCurveSpeedModifier() const
+	{
+		return GetVehicleProperty(this, PROP_TRAIN_CURVE_SPEED_MOD, RailVehInfo(this->engine_type)->curve_speed_mod, true);
 	}
 
 	/**

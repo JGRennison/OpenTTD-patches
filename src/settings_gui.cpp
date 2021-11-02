@@ -2196,6 +2196,11 @@ static SettingsContainer &GetSettingsTree()
 			scenario->Add(new SettingEntry("scenario.house_ignore_grf"));
 		}
 
+		SettingsPage *network = main->Add(new SettingsPage(STR_CONFIG_SETTING_NETWORK));
+		{
+			network->Add(new SettingEntry("network.use_relay_service"));
+		}
+
 		main->Init();
 	}
 	return *main;

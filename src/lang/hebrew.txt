@@ -783,6 +783,7 @@ STR_STATUSBAR_PAUSED                                            :{YELLOW}* *  ה
 STR_STATUSBAR_AUTOSAVE                                          :{RED}שמירה אוטומטית
 STR_STATUSBAR_SAVING_GAME                                       :{RED}*  *  שומר משחק  *  *
 
+
 # News message history
 STR_MESSAGE_HISTORY                                             :{WHITE}היסטוריית ההודעות
 STR_MESSAGE_HISTORY_TOOLTIP                                     :{BLACK}רשימת ההודעות האחרונות
@@ -1378,6 +1379,7 @@ STR_CONFIG_SETTING_OSK_ACTIVATION_DOUBLE_CLICK                  :קליק כפו
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK_FOCUS            :קליק יחיד (כאשר בפוקוס)
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK                  :קליק יחיד (מיד)
 
+
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU                          :{STRING} :הדמיית כפתור ימני בעכבר
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_HELPTEXT                 :בחר בשיטה לדימוי קליקים בכפתור העכבר הימני
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Command-click
@@ -1961,38 +1963,10 @@ STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK} :מספ
 STR_NETWORK_START_SERVER_COMPANIES_SELECT                       :{BLACK}{NUM} חבר{P "ה" "ות"}
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES                    :{BLACK}מספר מקסימלי של חברות:
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES_TOOLTIP            :{BLACK}הגבל את השרת למספר מסויים של חברות
-STR_NETWORK_START_SERVER_SPECTATORS_SELECT                      :{BLACK}{NUM} צופ{P "ה" "ים"}
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS                   :{BLACK}מספר צופים מירבי:
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS_TOOLTIP           :{BLACK}הגבלת השרת למספר צופים מסויים
 STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}שפת דיבור:
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}שחקנים אחרים ידעו איו שפה מדוברת בשרת
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}הזן שם למשחק רשת
-
-# Network game lobby
-STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}לובי של משחק רשת
-
-STR_NETWORK_GAME_LOBBY_PREPARE_TO_JOIN                          :{ORANGE}{STRING} {BLACK} :מתכונן להצטרף אל
-STR_NETWORK_GAME_LOBBY_COMPANY_LIST_TOOLTIP                     :{BLACK}רשימת החברות המשתתפות במשחק. ניתן להצטרף לחברה קיימת או ליצור חברה חדשה במידה וקיים מקום פנוי
-
-STR_NETWORK_GAME_LOBBY_COMPANY_INFO                             :{SILVER}פרטי חברה
-STR_NETWORK_GAME_LOBBY_COMPANY_NAME                             :{SILVER}שם החברה: {WHITE}{STRING}
-STR_NETWORK_GAME_LOBBY_INAUGURATION_YEAR                        :{WHITE}{NUM}{SILVER} :שנת הקמה
-STR_NETWORK_GAME_LOBBY_VALUE                                    :{SILVER}ערך החברה: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_CURRENT_BALANCE                          :{WHITE}{CURRENCY_LONG}{SILVER} :מאזן נוכחי
-STR_NETWORK_GAME_LOBBY_LAST_YEARS_INCOME                        :{WHITE}{CURRENCY_LONG}{SILVER} :הכנסות בשנה האחרונה
-STR_NETWORK_GAME_LOBBY_PERFORMANCE                              :{WHITE}{NUM}{SILVER} :מדד הביצועים
-
-STR_NETWORK_GAME_LOBBY_VEHICLES                                 :{WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE} {SILVER} :כלי תעבורה
-STR_NETWORK_GAME_LOBBY_STATIONS                                 :{WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE} {SILVER} :תחנות
-STR_NETWORK_GAME_LOBBY_PLAYERS                                  :{WHITE}{STRING} {SILVER} :שחקנים
-
-STR_NETWORK_GAME_LOBBY_NEW_COMPANY                              :{BLACK}חברה חדשה
-STR_NETWORK_GAME_LOBBY_NEW_COMPANY_TOOLTIP                      :{BLACK}יצירת חברה חדשה
-STR_NETWORK_GAME_LOBBY_SPECTATE_GAME                            :{BLACK}צפה במשחק
-STR_NETWORK_GAME_LOBBY_SPECTATE_GAME_TOOLTIP                    :{BLACK}הצטרף למשחק כצופה
-STR_NETWORK_GAME_LOBBY_JOIN_COMPANY                             :{BLACK}הצטרף לחברה
-STR_NETWORK_GAME_LOBBY_JOIN_COMPANY_TOOLTIP                     :{BLACK}הצטרף להנהלת חברה זו
 
 # Network connecting window
 STR_NETWORK_CONNECTING_CAPTION                                  :{WHITE}מתחבר...
@@ -2025,6 +1999,7 @@ STR_NETWORK_COMPANY_LIST_SPECTATE                               :צפה
 
 ############ Begin of ConnectionType
 ############ End of ConnectionType
+
 
 
 

@@ -220,6 +220,7 @@ STR_SMALLMAP_TOWN                                               :{TINY_FONT}{WHI
 # Status bar messages
 STR_STATUSBAR_PAUSED_LINK_GRAPH                                 :{ORANGE}* * ठहरा हुआ (संपर्क चित्र अद्यतन के लिये प्रतीक्षारत) * *
 
+
 # News message history
 
 STR_NEWS_CUSTOM_ITEM                                            :{BIG_FONT}{BLACK}{STRING}
@@ -343,6 +344,7 @@ STR_CONFIG_SETTING_OSK_ACTIVATION_DISABLED                      :अक्षम
 
 
 
+
 STR_CONFIG_SETTING_FAST_FORWARD_SPEED_LIMIT_ZERO                :सीमाहीन (आपके कंप्यूटर द्वारा सीमित)
 
 STR_CONFIG_SETTING_SOUND_NEWS                                   :समाचार पत्र: {STRING}
@@ -430,13 +432,6 @@ STR_NETWORK_SERVER_LIST_REFRESH_TOOLTIP                         :{BLACK}सर�
 
 
 
-# Network game lobby
-
-
-STR_NETWORK_GAME_LOBBY_INAUGURATION_YEAR                        :{SILVER}उद्घाटन: {WHITE}{NUM}
-
-
-
 # Network connecting window
 
 ############ Leave those lines in this order!!
@@ -451,6 +446,7 @@ STR_NETWORK_GAME_LOBBY_INAUGURATION_YEAR                        :{SILVER}उद�
 
 ############ Begin of ConnectionType
 ############ End of ConnectionType
+
 
 
 

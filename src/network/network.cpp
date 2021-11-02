@@ -84,8 +84,6 @@ uint8  _last_sync_tick_skip_counter;  ///< "
 bool _network_first_time;             ///< Whether we have finished joining or not.
 CompanyMask _network_company_passworded; ///< Bitmask of the password status of all companies.
 
-/* Check whether NETWORK_NUM_LANDSCAPES is still in sync with NUM_LANDSCAPE */
-static_assert((int)NETWORK_NUM_LANDSCAPES == (int)NUM_LANDSCAPE);
 static_assert((int)NETWORK_COMPANY_NAME_LENGTH == MAX_LENGTH_COMPANY_NAME_CHARS * MAX_CHAR_LENGTH);
 
 /** The amount of clients connected */
@@ -621,7 +619,7 @@ void NetworkClose(bool close_admins)
 			MyClient::my_client->CloseConnection(NETWORK_RECV_STATUS_CLIENT_QUIT);
 		}
 
-		_network_coordinator_client.CloseAllTokens();
+		_network_coordinator_client.CloseAllConnections();
 	}
 
 	TCPConnecter::KillAll();
@@ -672,7 +670,7 @@ public:
 	{
 		_networking = true;
 		new ClientNetworkGameSocketHandler(s, this->connection_string);
-		MyClient::SendInformationQuery(false);
+		MyClient::SendInformationQuery();
 	}
 };
 
@@ -687,42 +685,6 @@ void NetworkQueryServer(const std::string &connection_string)
 	NetworkInitialize();
 
 	new TCPQueryConnecter(connection_string);
-}
-
-/** Non blocking connection to query servers for their game and company info. */
-class TCPLobbyQueryConnecter : TCPServerConnecter {
-private:
-	std::string connection_string;
-
-public:
-	TCPLobbyQueryConnecter(const std::string &connection_string) : TCPServerConnecter(connection_string, NETWORK_DEFAULT_PORT), connection_string(connection_string) {}
-
-	void OnFailure() override
-	{
-		DeleteWindowById(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_LOBBY);
-
-		ShowErrorMessage(STR_NETWORK_ERROR_NOCONNECTION, INVALID_STRING_ID, WL_ERROR);
-	}
-
-	void OnConnect(SOCKET s) override
-	{
-		_networking = true;
-		new ClientNetworkGameSocketHandler(s, this->connection_string);
-		MyClient::SendInformationQuery(true);
-	}
-};
-
-/**
- * Query a server to fetch the game-info for the lobby.
- * @param connection_string the address to query.
- */
-void NetworkQueryLobbyServer(const std::string &connection_string)
-{
-	if (!_network_available) return;
-
-	NetworkInitialize();
-
-	new TCPLobbyQueryConnecter(connection_string);
 }
 
 /**

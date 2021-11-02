@@ -760,6 +760,7 @@ STR_STATUSBAR_PAUSED                                            :{YELLOW}* * И�
 STR_STATUSBAR_AUTOSAVE                                          :{RED}АВТОЗАПАЗВАНЕ
 STR_STATUSBAR_SAVING_GAME                                       :{RED}*  *  ЗАПИСВАНЕ НА ИГРА  *  *
 
+
 # News message history
 STR_MESSAGE_HISTORY                                             :{WHITE}История на съобщенията
 STR_MESSAGE_HISTORY_TOOLTIP                                     :{BLACK}Списък с последните новини
@@ -1346,6 +1347,7 @@ STR_CONFIG_SETTING_OSK_ACTIVATION_DOUBLE_CLICK                  :Двойно н
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK_FOCUS            :Еднократно натискане (когато е на фокус)
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK                  :Еднократно натискане (незабавно)
 
+
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU                          :Дясно-щракане емулациа: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_HELPTEXT                 :Избира метода за симулация на десния бутон на мишката
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Команда-щракане
@@ -1898,38 +1900,10 @@ STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Избо
 STR_NETWORK_START_SERVER_COMPANIES_SELECT                       :{BLACK}{NUM} компани{P а ий}
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES                    :{BLACK}Макс. брой компании:
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES_TOOLTIP            :{BLACK}Ограничаване на играта до определен брой компании
-STR_NETWORK_START_SERVER_SPECTATORS_SELECT                      :{BLACK}{NUM} зрител{P "" s}
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS                   :{BLACK}Макс. брой наблюдатели:
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS_TOOLTIP           :{BLACK}Ограничаване на сървъра до определен брой наблюдатели
 STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Говорим език:
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Другите играчи ще знаят езика на който се говори на сървъра
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Въведете име за мрежовата игра
-
-# Network game lobby
-STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Преддверие на мрежовите игри
-
-STR_NETWORK_GAME_LOBBY_PREPARE_TO_JOIN                          :{BLACK}Подготовка за присъединяване: {ORANGE}{STRING}
-STR_NETWORK_GAME_LOBBY_COMPANY_LIST_TOOLTIP                     :{BLACK}Списък с всички компании в играта. Можете да се присъедините към някоя или да започнете нова ако има свободно място
-
-STR_NETWORK_GAME_LOBBY_COMPANY_INFO                             :{SILVER}ИНФОРМАЦИЯ ЗА КОМПАНИЯ
-STR_NETWORK_GAME_LOBBY_COMPANY_NAME                             :{SILVER}Име на компания: {WHITE}{STRING}
-STR_NETWORK_GAME_LOBBY_INAUGURATION_YEAR                        :{SILVER}Основаване: {WHITE}{NUM}
-STR_NETWORK_GAME_LOBBY_VALUE                                    :{SILVER}Стойност на компанията: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_CURRENT_BALANCE                          :{SILVER}Текущ баланс: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_LAST_YEARS_INCOME                        :{SILVER}Приход от предходната година: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_PERFORMANCE                              :{SILVER}Представяне: {WHITE}{NUM}
-
-STR_NETWORK_GAME_LOBBY_VEHICLES                                 :{SILVER}Превозни средства: {WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE}
-STR_NETWORK_GAME_LOBBY_STATIONS                                 :{SILVER}Станции: {WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE}
-STR_NETWORK_GAME_LOBBY_PLAYERS                                  :{SILVER}Играчи: {WHITE}{STRING}
-
-STR_NETWORK_GAME_LOBBY_NEW_COMPANY                              :{BLACK}Нова компания
-STR_NETWORK_GAME_LOBBY_NEW_COMPANY_TOOLTIP                      :{BLACK}Създаване на нова компания
-STR_NETWORK_GAME_LOBBY_SPECTATE_GAME                            :{BLACK}Наблюдаване на играта
-STR_NETWORK_GAME_LOBBY_SPECTATE_GAME_TOOLTIP                    :{BLACK}Наблюдаване на играта като наблюдател
-STR_NETWORK_GAME_LOBBY_JOIN_COMPANY                             :{BLACK}Присъединяване към компания
-STR_NETWORK_GAME_LOBBY_JOIN_COMPANY_TOOLTIP                     :{BLACK}Помощ за управлението на компанията
 
 # Network connecting window
 STR_NETWORK_CONNECTING_CAPTION                                  :{WHITE}Свързване...
@@ -1962,6 +1936,7 @@ STR_NETWORK_COMPANY_LIST_SPECTATE                               :Наблюда�
 
 ############ Begin of ConnectionType
 ############ End of ConnectionType
+
 
 
 

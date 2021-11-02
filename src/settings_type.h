@@ -59,6 +59,13 @@ enum IndustryDensity {
 	ID_END,       ///< Number of industry density settings.
 };
 
+/** Possible values for "userelayservice" setting. */
+enum UseRelayService {
+	URS_NEVER = 0,
+	URS_ASK,
+	URS_ALLOW,
+};
+
 /** Settings related to the difficulty of the game */
 struct DifficultySettings {
 	byte   competitor_start_time;            ///< Unused value, used to load old savegames.
@@ -341,23 +348,23 @@ struct NetworkSettings {
 	std::string rcon_password;                            ///< password for rconsole (server side)
 	std::string admin_password;                           ///< password for the admin network
 	std::string settings_password;                        ///< password for game settings (server side)
-	bool   server_advertise;                              ///< Advertise the server to the game coordinator.
+	bool        server_advertise;                         ///< Advertise the server to the game coordinator.
 	std::string client_name;                              ///< name of the player (as client)
 	std::string default_company_pass;                     ///< default password for new companies in encrypted form
 	std::string connect_to_ip;                            ///< default for the "Add server" query
 	std::string network_id;                               ///< network ID for servers
-	bool   autoclean_companies;                           ///< automatically remove companies that are not in use
-	uint8  autoclean_unprotected;                         ///< remove passwordless companies after this many months
-	uint8  autoclean_protected;                           ///< remove the password from passworded companies after this many months
-	uint8  autoclean_novehicles;                          ///< remove companies with no vehicles after this many months
-	uint8  max_companies;                                 ///< maximum amount of companies
-	uint8  max_clients;                                   ///< maximum amount of clients
-	uint8  max_spectators;                                ///< maximum amount of spectators
-	Year   restart_game_year;                             ///< year the server restarts
-	uint8  min_active_clients;                            ///< minimum amount of active clients to unpause the game
-	bool   reload_cfg;                                    ///< reload the config file before restarting
+	bool        autoclean_companies;                      ///< automatically remove companies that are not in use
+	uint8       autoclean_unprotected;                    ///< remove passwordless companies after this many months
+	uint8       autoclean_protected;                      ///< remove the password from passworded companies after this many months
+	uint8       autoclean_novehicles;                     ///< remove companies with no vehicles after this many months
+	uint8       max_companies;                            ///< maximum amount of companies
+	uint8       max_clients;                              ///< maximum amount of clients
+	Year        restart_game_year;                        ///< year the server restarts
+	uint8       min_active_clients;                       ///< minimum amount of active clients to unpause the game
+	bool        reload_cfg;                               ///< reload the config file before restarting
 	std::string last_joined;                              ///< Last joined server
-	bool   no_http_content_downloads;                     ///< do not do content downloads over HTTP
+	bool        no_http_content_downloads;                     ///< do not do content downloads over HTTP
+	UseRelayService use_relay_service;                    ///< Use relay service?
 };
 
 /** Settings related to the creation of games. */

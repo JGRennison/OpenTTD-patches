@@ -657,6 +657,7 @@ STR_SMALLMAP_TOWN                                               :{TINY_FONT}{WHI
 # Status bar messages
 STR_STATUSBAR_COMPANY_NAME                                      :{SILVER}- -  {COMPANY}  - -
 
+
 # News message history
 STR_MESSAGE_NEWS_FORMAT                                         :{STRING}  -  {STRING}
 
@@ -809,6 +810,7 @@ STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            : वाहन �
 
 
 
+
 STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_NO_ACTIONS               :कोणतीही कृती नाही
 STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_ACTIONS              :सर्व कृत्या
 
@@ -919,14 +921,6 @@ STR_NETWORK_SERVER_LIST_LANGUAGE                                :{SILVER}भा�
 
 
 
-# Network game lobby
-
-
-STR_NETWORK_GAME_LOBBY_LAST_YEARS_INCOME                        :{SILVER}गेल्या वर्ष्याची कमाई: {WHITE}{CURRENCY_LONG}
-
-STR_NETWORK_GAME_LOBBY_STATIONS                                 :{SILVER}स्थानक: {WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE}
-
-
 # Network connecting window
 
 ############ Leave those lines in this order!!
@@ -943,6 +937,7 @@ STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} 
 
 ############ Begin of ConnectionType
 ############ End of ConnectionType
+
 
 
 

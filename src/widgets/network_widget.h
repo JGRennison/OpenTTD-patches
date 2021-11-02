@@ -66,10 +66,6 @@ enum NetworkStartServerWidgets {
 	WID_NSS_COMPANIES_BTND,    ///< 'Max companies' downarrow.
 	WID_NSS_COMPANIES_TXT,     ///< 'Max companies' text.
 	WID_NSS_COMPANIES_BTNU,    ///< 'Max companies' uparrow.
-	WID_NSS_SPECTATORS_LABEL,  ///< Label for 'max spectators'.
-	WID_NSS_SPECTATORS_BTND,   ///< 'Max spectators' downarrow.
-	WID_NSS_SPECTATORS_TXT,    ///< 'Max spectators' text.
-	WID_NSS_SPECTATORS_BTNU,   ///< 'Max spectators' uparrow.
 
 	WID_NSS_GENERATE_GAME,     ///< New game button.
 	WID_NSS_LOAD_GAME,         ///< Load game button.
@@ -77,21 +73,6 @@ enum NetworkStartServerWidgets {
 	WID_NSS_PLAY_HEIGHTMAP,    ///< Play heightmap button.
 
 	WID_NSS_CANCEL,            ///< 'Cancel' button.
-};
-
-/** Widgets of the #NetworkLobbyWindow class. */
-enum NetworkLobbyWidgets {
-	WID_NL_BACKGROUND, ///< Background of the window.
-	WID_NL_TEXT,       ///< Heading text.
-	WID_NL_HEADER,     ///< Header above list of companies.
-	WID_NL_MATRIX,     ///< List of companies.
-	WID_NL_SCROLLBAR,  ///< Scroll bar.
-	WID_NL_DETAILS,    ///< Company details.
-	WID_NL_JOIN,       ///< 'Join company' button.
-	WID_NL_NEW,        ///< 'New company' button.
-	WID_NL_SPECTATE,   ///< 'Spectate game' button.
-	WID_NL_REFRESH,    ///< 'Refresh server' button.
-	WID_NL_CANCEL,     ///< 'Cancel' button.
 };
 
 /** Widgets of the #NetworkClientListWindow class. */
@@ -126,6 +107,15 @@ enum NetworkCompanyPasswordWidgets {
 	WID_NCP_WARNING,                  ///< Warning text about password security
 	WID_NCP_CANCEL,                   ///< Close the window without changing anything.
 	WID_NCP_OK,                       ///< Safe the password etc.
+};
+
+/** Widgets of the #NetworkAskRelayWindow class. */
+enum NetworkAskRelayWidgets {
+	WID_NAR_CAPTION,    ///< Caption of the window.
+	WID_NAR_TEXT,       ///< Text in the window.
+	WID_NAR_NO,         ///< "No" button.
+	WID_NAR_YES_ONCE,   ///< "Yes, once" button.
+	WID_NAR_YES_ALWAYS, ///< "Yes, always" button.
 };
 
 #endif /* WIDGETS_NETWORK_WIDGET_H */

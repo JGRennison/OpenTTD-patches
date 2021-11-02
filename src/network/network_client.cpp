@@ -140,8 +140,8 @@ void ClientNetworkEmergencySave()
 	if (!_networking) return;
 	if (!ClientNetworkGameSocketHandler::EmergencySavePossible()) return;
 
-	static int _netsave_ctr = 0;
-	DoAutoOrNetsave(_netsave_ctr, true);
+	static FiosNumberedSaveName _netsave_ctr("netsave");
+	DoAutoOrNetsave(_netsave_ctr, false);
 }
 
 
@@ -180,29 +180,24 @@ ClientNetworkGameSocketHandler::~ClientNetworkGameSocketHandler()
 NetworkRecvStatus ClientNetworkGameSocketHandler::CloseConnection(NetworkRecvStatus status)
 {
 	assert(status != NETWORK_RECV_STATUS_OKAY);
-	/*
-	 * Sending a message just before leaving the game calls cs->SendPackets.
-	 * This might invoke this function, which means that when we close the
-	 * connection after cs->SendPackets we will close an already closed
-	 * connection. This handles that case gracefully without having to make
-	 * that code any more complex or more aware of the validity of the socket.
-	 */
-	if (this->sock == INVALID_SOCKET) return status;
+	assert(this->sock != INVALID_SOCKET);
 	if (this->status == STATUS_CLOSING) return status;
 
-	DEBUG(net, 3, "Shutting down client connection %d", this->client_id);
+	if (!this->HasClientQuit()) {
+		DEBUG(net, 3, "Closed client connection %d", this->client_id);
 
-	SetBlocking(this->sock);
+		SetBlocking(this->sock);
 
-	this->SendPackets(true);
+		this->SendPackets(true);
 
-	ShutdownSocket(this->sock, false, true, 2);
+		ShutdownSocket(this->sock, false, true, 2);
 
-	/* Wait a number of ticks so our leave message can reach the server.
-	 * This is especially needed for Windows servers as they seem to get
-	 * the "socket is closed" message before receiving our leave message,
-	 * which would trigger the server to close the connection as well. */
-	CSleep(3 * MILLISECONDS_PER_TICK);
+		/* Wait a number of ticks so our leave message can reach the server.
+		* This is especially needed for Windows servers as they seem to get
+		* the "socket is closed" message before receiving our leave message,
+		* which would trigger the server to close the connection as well. */
+		CSleep(3 * MILLISECONDS_PER_TICK);
+	}
 
 	DEBUG(net, 1, "Shutdown client connection %d", this->client_id);
 
@@ -291,7 +286,7 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 /* static */ void ClientNetworkGameSocketHandler::Send()
 {
 	my_client->SendPackets();
-	my_client->CheckConnection();
+	if (my_client != nullptr) my_client->CheckConnection();
 }
 
 /**
@@ -385,8 +380,8 @@ static std::string _password_server_id;
 
 /** Maximum number of companies of the currently joined server. */
 static uint8 _network_server_max_companies;
-/** Maximum number of spectators of the currently joined server. */
-static uint8 _network_server_max_spectators;
+/** The current name of the server you are on. */
+std::string _network_server_name;
 
 /** Information about the game to join to. */
 NetworkJoinInfo _network_join;
@@ -402,7 +397,7 @@ static_assert(NETWORK_SERVER_ID_LENGTH == 16 * 2 + 1);
 /**
  * Query the server for server information.
  */
-NetworkRecvStatus ClientNetworkGameSocketHandler::SendInformationQuery(bool request_company_info)
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendInformationQuery()
 {
 	my_client->status = STATUS_GAME_INFO;
 
@@ -412,14 +407,6 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendInformationQuery(bool requ
 	p->Send_uint16(0); // flags
 	p->Send_uint16(0); // version
 	my_client->SendPacket(p);
-
-	if (request_company_info) {
-		my_client->status = STATUS_COMPANY_INFO;
-		_network_join_status = NETWORK_JOIN_STATUS_GETTING_COMPANY_INFO;
-		SetWindowDirty(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
-
-		my_client->SendPacket(new Packet(PACKET_CLIENT_COMPANY_INFO));
-	}
 
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -696,13 +683,9 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_BANNED(Packet *
 
 NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_GAME_INFO(Packet *p)
 {
-	if (this->status != STATUS_COMPANY_INFO && this->status != STATUS_GAME_INFO) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
+	if (this->status != STATUS_GAME_INFO) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 
-	NetworkGameList *item = GetLobbyGameInfo();
-	if (item == nullptr) {
-		/* This is not the lobby, so add it to the game list. */
-		item = NetworkGameListAddItem(this->connection_string);
-	}
+	NetworkGameList *item = NetworkGameListAddItem(this->connection_string);
 
 	/* Clear any existing GRFConfig chain. */
 	ClearGRFConfigList(&item->info.grfconfig);
@@ -713,20 +696,16 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_GAME_INFO(Packe
 	/* Ensure we consider the server online. */
 	item->online = true;
 
-	/* It could be either window, but only one is open, so redraw both. */
 	UpdateNetworkGameWindow();
-	SetWindowDirty(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_LOBBY);
 
-	/* We will receive company info next, so keep connection open. */
-	if (this->status == STATUS_COMPANY_INFO) return NETWORK_RECV_STATUS_OKAY;
 	return NETWORK_RECV_STATUS_CLOSE_QUERY;
 }
 
 NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_GAME_INFO_EXTENDED(Packet *p)
 {
-	if (this->status != STATUS_COMPANY_INFO && this->status != STATUS_INACTIVE) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
+	if (this->status != STATUS_GAME_INFO) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 
-	NetworkGameList *item = GetLobbyGameInfo();
+	NetworkGameList *item = NetworkGameListAddItem(this->connection_string);
 
 	/* Clear any existing GRFConfig chain. */
 	ClearGRFConfigList(&item->info.grfconfig);
@@ -737,50 +716,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_GAME_INFO_EXTEN
 	/* Ensure we consider the server online. */
 	item->online = true;
 
-	SetWindowDirty(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_LOBBY);
-
-	/* We will receive company info next, so keep connection open. */
-	if (this->status == STATUS_COMPANY_INFO) return NETWORK_RECV_STATUS_OKAY;
-	return NETWORK_RECV_STATUS_CLOSE_QUERY;
-}
-
-NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_COMPANY_INFO(Packet *p)
-{
-	if (this->status != STATUS_COMPANY_INFO) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
-
-	byte company_info_version = p->Recv_uint8();
-
-	if (!this->HasClientQuit() && company_info_version == NETWORK_COMPANY_INFO_VERSION) {
-		/* We have received all data... (there are no more packets coming) */
-		if (!p->Recv_bool()) return NETWORK_RECV_STATUS_CLOSE_QUERY;
-
-		CompanyID current = (Owner)p->Recv_uint8();
-		if (current >= MAX_COMPANIES) return NETWORK_RECV_STATUS_CLOSE_QUERY;
-
-		NetworkCompanyInfo *company_info = GetLobbyCompanyInfo(current);
-		if (company_info == nullptr) return NETWORK_RECV_STATUS_CLOSE_QUERY;
-
-		company_info->company_name = p->Recv_string(NETWORK_COMPANY_NAME_LENGTH);
-		company_info->inaugurated_year = p->Recv_uint32();
-		company_info->company_value    = p->Recv_uint64();
-		company_info->money            = p->Recv_uint64();
-		company_info->income           = p->Recv_uint64();
-		company_info->performance      = p->Recv_uint16();
-		company_info->use_password     = p->Recv_bool();
-		for (uint i = 0; i < NETWORK_VEH_END; i++) {
-			company_info->num_vehicle[i] = p->Recv_uint16();
-		}
-		for (uint i = 0; i < NETWORK_VEH_END; i++) {
-			company_info->num_station[i] = p->Recv_uint16();
-		}
-		company_info->ai               = p->Recv_bool();
-
-		company_info->clients = p->Recv_string(NETWORK_CLIENTS_LENGTH);
-
-		SetWindowDirty(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_LOBBY);
-
-		return NETWORK_RECV_STATUS_OKAY;
-	}
+	UpdateNetworkGameWindow();
 
 	return NETWORK_RECV_STATUS_CLOSE_QUERY;
 }
@@ -877,7 +813,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_ERROR(Packet *p
 	 * NETWORK_ERROR_NOT_EXPECTED on requesting the game info. Show a special
 	 * error popup in that case.
 	 */
-	if (error == NETWORK_ERROR_NOT_EXPECTED && (this->status == STATUS_GAME_INFO || this->status == STATUS_COMPANY_INFO)) {
+	if (error == NETWORK_ERROR_NOT_EXPECTED && this->status == STATUS_GAME_INFO) {
 		ShowErrorMessage(STR_NETWORK_ERROR_SERVER_TOO_OLD, INVALID_STRING_ID, WL_CRITICAL);
 		return NETWORK_RECV_STATUS_CLOSE_QUERY;
 	}
@@ -1083,6 +1019,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MAP_DONE(Packet
 
 	/* Say we received the map and loaded it correctly! */
 	SendMapOk();
+
+	ShowClientList();
 
 	/* New company/spectator (invalid company) or company we want to join is not active
 	 * Switch local company to spectator and await the server's judgement */
@@ -1373,7 +1311,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_CONFIG_UPDATE(P
 	if (this->status < STATUS_ACTIVE) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 
 	_network_server_max_companies = p->Recv_uint8();
-	_network_server_max_spectators = p->Recv_uint8();
+	_network_server_name = p->Recv_string(NETWORK_NAME_LENGTH);
 
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -1433,7 +1371,6 @@ const char *ClientNetworkGameSocketHandler::GetServerStatusName(ServerStatus sta
 	static const char* _server_status_names[] {
 		"INACTIVE",
 		"GAME_INFO",
-		"COMPANY_INFO",
 		"JOIN",
 		"NEWGRFS_CHECK",
 		"AUTH_GAME",
@@ -1642,13 +1579,4 @@ bool NetworkClientPreferTeamChat(const NetworkClientInfo *cio)
 bool NetworkMaxCompaniesReached()
 {
 	return Company::GetNumItems() >= (_network_server ? _settings_client.network.max_companies : _network_server_max_companies);
-}
-
-/**
- * Check if max_spectatos has been reached on the server (local check only).
- * @return true if the max value has been reached or exceeded, false otherwise.
- */
-bool NetworkMaxSpectatorsReached()
-{
-	return NetworkSpectatorCount() >= (_network_server ? _settings_client.network.max_spectators : _network_server_max_spectators);
 }

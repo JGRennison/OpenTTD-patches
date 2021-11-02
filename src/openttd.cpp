@@ -75,6 +75,7 @@
 #include "tbtr_template_vehicle.h"
 #include "string_func_extra.h"
 #include "industry.h"
+#include "network/network_gui.h"
 #include "cargopacket.h"
 #include "core/checksum_func.hpp"
 #include "tbtr_template_vehicle_func.h"
@@ -1063,6 +1064,8 @@ static void MakeNewGameDone()
 	CheckEngines();
 	CheckIndustries();
 	MarkWholeScreenDirty();
+
+	if (_network_server && !_network_dedicated) ShowClientList();
 }
 
 /*
@@ -1887,8 +1890,8 @@ void StateGameLoop()
  */
 static void DoAutosave()
 {
-	static int _autosave_ctr = 0;
-	DoAutoOrNetsave(_autosave_ctr);
+	static FiosNumberedSaveName _autosave_ctr("autosave");
+	DoAutoOrNetsave(_autosave_ctr, true);
 }
 
 /**

@@ -918,6 +918,7 @@ STR_STATUSBAR_PAUSED                                            :{YELLOW}* *  PA
 STR_STATUSBAR_AUTOSAVE                                          :{RED}Samodejno shranjevanje
 STR_STATUSBAR_SAVING_GAME                                       :{RED}*  *  SHRANJEVANJE  *  *
 
+
 # News message history
 STR_MESSAGE_HISTORY                                             :{WHITE}Arhiv sporočil
 STR_MESSAGE_HISTORY_TOOLTIP                                     :{BLACK}Seznam zadnjih novic
@@ -1509,6 +1510,7 @@ STR_CONFIG_SETTING_OSK_ACTIVATION_DOUBLE_CLICK                  :Dvojni klik
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK_FOCUS            :Enojni klik (ko je izostreno)
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK                  :Enojni klik (takojšnje)
 
+
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU                          :Emulacija desnega gumba miške: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_HELPTEXT                 :Izberi način emulacije klika desnega bumba miške
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Ukaz-klik
@@ -2091,38 +2093,10 @@ STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Izberite
 STR_NETWORK_START_SERVER_COMPANIES_SELECT                       :{BLACK}{NUM} podjet{P je ji ja ij}
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES                    :{BLACK}Dovoljeno število podjetij:
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES_TOOLTIP            :{BLACK}Omeji strežnik na določeno število podjetij
-STR_NETWORK_START_SERVER_SPECTATORS_SELECT                      :{BLACK}{NUM} opazoval{P ec ca ci cev}
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS                   :{BLACK}Največje število opazovalcev:
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS_TOOLTIP           :{BLACK}Omeji strežnik na določeno število opazovalcev
 STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Govorni jezik:
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Drugi igralci bodo lahko vedeli, kateri jezik se govori na strežniku
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Vpiši ime za mrežno igro
-
-# Network game lobby
-STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Seje večigralskih iger
-
-STR_NETWORK_GAME_LOBBY_PREPARE_TO_JOIN                          :{BLACK}Priprava na vstop: {ORANGE}{STRING}
-STR_NETWORK_GAME_LOBBY_COMPANY_LIST_TOOLTIP                     :{BLACK}Seznam podjetij trenutno v tej igri. Lahko se pridružiš eni ali poženeš novo, če je kako mesto za podjetje prosto
-
-STR_NETWORK_GAME_LOBBY_COMPANY_INFO                             :{SILVER}PODATKI O PODJETJU
-STR_NETWORK_GAME_LOBBY_COMPANY_NAME                             :{SILVER}Ime podjetja: {WHITE}{STRING}
-STR_NETWORK_GAME_LOBBY_INAUGURATION_YEAR                        :{SILVER}Ustanovljeno: {WHITE}{NUM}
-STR_NETWORK_GAME_LOBBY_VALUE                                    :{SILVER}Vrednost podjetja: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_CURRENT_BALANCE                          :{SILVER}Trenutno stanje: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_LAST_YEARS_INCOME                        :{SILVER}Lanski dohodek: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_PERFORMANCE                              :{SILVER}Ocene: {WHITE}{NUM}
-
-STR_NETWORK_GAME_LOBBY_VEHICLES                                 :{SILVER}Vozila: {WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE}
-STR_NETWORK_GAME_LOBBY_STATIONS                                 :{SILVER}Postaje: {WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE}
-STR_NETWORK_GAME_LOBBY_PLAYERS                                  :{SILVER}Igralci: {WHITE}{STRING}
-
-STR_NETWORK_GAME_LOBBY_NEW_COMPANY                              :{BLACK}Novo podjetje
-STR_NETWORK_GAME_LOBBY_NEW_COMPANY_TOOLTIP                      :{BLACK}Ustvari novo podjetje
-STR_NETWORK_GAME_LOBBY_SPECTATE_GAME                            :{BLACK}Ogled igre
-STR_NETWORK_GAME_LOBBY_SPECTATE_GAME_TOOLTIP                    :{BLACK}Sodeluj kot gledalec
-STR_NETWORK_GAME_LOBBY_JOIN_COMPANY                             :{BLACK}Pridruži se podjetju
-STR_NETWORK_GAME_LOBBY_JOIN_COMPANY_TOOLTIP                     :{BLACK}Pomagaj upravljati podjetje
 
 # Network connecting window
 STR_NETWORK_CONNECTING_CAPTION                                  :{WHITE}Povezujem...
@@ -2155,6 +2129,7 @@ STR_NETWORK_COMPANY_LIST_SPECTATE                               :Opazuj
 
 ############ Begin of ConnectionType
 ############ End of ConnectionType
+
 
 
 

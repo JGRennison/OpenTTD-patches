@@ -917,6 +917,7 @@ STR_STATUSBAR_PAUSED_LINK_GRAPH                                 :{ORANGE}*  * П
 STR_STATUSBAR_AUTOSAVE                                          :{RED}АВТОЗБЕРЕЖЕННЯ
 STR_STATUSBAR_SAVING_GAME                                       :{RED}*  *  ЗБЕРЕЖЕННЯ ГРИ  *  *
 
+
 # News message history
 STR_MESSAGE_HISTORY                                             :{WHITE}Історія повідомлень
 STR_MESSAGE_HISTORY_TOOLTIP                                     :{BLACK}Список останніх повідомлень
@@ -1558,6 +1559,7 @@ STR_CONFIG_SETTING_OSK_ACTIVATION_DOUBLE_CLICK                  :Подвійн�
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK_FOCUS            :Одиночний клац мишою (коли виділено)
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK                  :Одиночний клац мишою (негайно)
 
+
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU                          :Емуляція правого клацу миші: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_HELPTEXT                 :Задає спосіб емуляції правого клацу миші
 STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_COMMAND                  :Команда+клац мишою
@@ -2184,38 +2186,10 @@ STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Вибе
 STR_NETWORK_START_SERVER_COMPANIES_SELECT                       :{BLACK}{NUM} компані{P я ї й}
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES                    :{BLACK}Максимум компаній:
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES_TOOLTIP            :{BLACK}Обмежує кількість компаній на сервері
-STR_NETWORK_START_SERVER_SPECTATORS_SELECT                      :{BLACK}{NUM} спостерігач{P "" і ів}
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS                   :{BLACK}Максимум глядачів:
-STR_NETWORK_START_SERVER_NUMBER_OF_SPECTATORS_TOOLTIP           :{BLACK}Обмежує кількість глядачів на сервері
 STR_NETWORK_START_SERVER_LANGUAGE_SPOKEN                        :{BLACK}Мова:
 STR_NETWORK_START_SERVER_LANGUAGE_TOOLTIP                       :{BLACK}Інші гравці будуть знати якою мовою спілкуються на сервері
 
 STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Введіть назву мережевої гри
-
-# Network game lobby
-STR_NETWORK_GAME_LOBBY_CAPTION                                  :{WHITE}Мережева гра - кімната
-
-STR_NETWORK_GAME_LOBBY_PREPARE_TO_JOIN                          :{BLACK}Підготовка до з'єднання: {ORANGE}{STRING}
-STR_NETWORK_GAME_LOBBY_COMPANY_LIST_TOOLTIP                     :{BLACK}Список всіх компаній присутніх у цій грі. Ви можете як приєднатись до компанії так і створити нову, якщо є вільне місце
-
-STR_NETWORK_GAME_LOBBY_COMPANY_INFO                             :{SILVER}Інформація про компанію
-STR_NETWORK_GAME_LOBBY_COMPANY_NAME                             :{SILVER}Назва компанії: {WHITE}{STRING}
-STR_NETWORK_GAME_LOBBY_INAUGURATION_YEAR                        :{SILVER}Засновано: {WHITE}{NUM}
-STR_NETWORK_GAME_LOBBY_VALUE                                    :{SILVER}Вартість компанії: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_CURRENT_BALANCE                          :{SILVER}Поточний баланс: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_LAST_YEARS_INCOME                        :{SILVER}Прибуток торік: {WHITE}{CURRENCY_LONG}
-STR_NETWORK_GAME_LOBBY_PERFORMANCE                              :{SILVER}Продуктивність: {WHITE}{NUM}
-
-STR_NETWORK_GAME_LOBBY_VEHICLES                                 :{SILVER}Транспорт: {WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE}
-STR_NETWORK_GAME_LOBBY_STATIONS                                 :{SILVER}Станцій: {WHITE}{NUM} {TRAIN}, {NUM} {LORRY}, {NUM} {BUS}, {NUM} {SHIP}, {NUM} {PLANE}
-STR_NETWORK_GAME_LOBBY_PLAYERS                                  :{SILVER}Гравців: {WHITE}{STRING}
-
-STR_NETWORK_GAME_LOBBY_NEW_COMPANY                              :{BLACK}Нова компанія
-STR_NETWORK_GAME_LOBBY_NEW_COMPANY_TOOLTIP                      :{BLACK}Створити нову компанію
-STR_NETWORK_GAME_LOBBY_SPECTATE_GAME                            :{BLACK}Спостерігати гру
-STR_NETWORK_GAME_LOBBY_SPECTATE_GAME_TOOLTIP                    :{BLACK}Спостерігати за грою як глядач
-STR_NETWORK_GAME_LOBBY_JOIN_COMPANY                             :{BLACK}Приєднатись до компанії
-STR_NETWORK_GAME_LOBBY_JOIN_COMPANY_TOOLTIP                     :{BLACK}Допомогти керувати цією компанією
 
 # Network connecting window
 STR_NETWORK_CONNECTING_CAPTION                                  :{WHITE}З'єднання...
@@ -2248,6 +2222,7 @@ STR_NETWORK_COMPANY_LIST_SPECTATE                               :Спостер�
 
 ############ Begin of ConnectionType
 ############ End of ConnectionType
+
 
 
 
