@@ -73,9 +73,9 @@ NetworkRecvStatus QueryNetworkGameSocketHandler::SendGameInfo()
 {
 	Packet *p = new Packet(PACKET_CLIENT_GAME_INFO);
 	p->Send_uint32(FIND_SERVER_EXTENDED_TOKEN);
-	p->Send_uint8(PACKET_SERVER_GAME_INFO_EXTENDED); // reply type
-	p->Send_uint16(0); // flags
-	p->Send_uint16(0); // version
+	p->Send_uint8(PACKET_SERVER_GAME_INFO_EXTENDED);       // reply type
+	p->Send_uint16(0);                                     // flags
+	p->Send_uint16(SERVER_GAME_INFO_EXTENDED_MAX_VERSION); // version
 	this->SendPacket(p);
 
 	return NETWORK_RECV_STATUS_OKAY;

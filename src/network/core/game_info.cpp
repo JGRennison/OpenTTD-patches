@@ -434,7 +434,7 @@ void DeserializeNetworkGameInfoExtended(Packet *p, NetworkGameInfo *info)
 	static const Date MAX_DATE = ConvertYMDToDate(MAX_YEAR, 11, 31); // December is month 11
 
 	const uint8 version = p->Recv_uint8();
-	if (version > 1) return; // Unknown version
+	if (version > SERVER_GAME_INFO_EXTENDED_MAX_VERSION) return; // Unknown version
 
 	NewGRFSerializationType newgrf_serialisation = NST_GRFID_MD5;
 

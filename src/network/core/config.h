@@ -96,4 +96,9 @@ static const uint NETWORK_GRF_NAME_LENGTH           =   80;           ///< Maxim
  */
 static const uint NETWORK_MAX_GRF_COUNT             =   255;
 
+/**
+ * Maximum version supported in PACKET_SERVER_GAME_INFO_EXTENDED
+ */
+static const uint8 SERVER_GAME_INFO_EXTENDED_MAX_VERSION = 1;
+
 #endif /* NETWORK_CORE_CONFIG_H */
