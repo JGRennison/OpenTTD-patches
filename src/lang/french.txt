@@ -790,6 +790,7 @@ STR_STATUSBAR_PAUSED_LINK_GRAPH                                 :{ORANGE}*  *  S
 STR_STATUSBAR_AUTOSAVE                                          :{RED}ENREGISTREMENT AUTOMATIQUE
 STR_STATUSBAR_SAVING_GAME                                       :{RED}*  *  SAUVEGARDE EN COURS  *  *
 
+STR_STATUSBAR_SPECTATOR                                         :{WHITE}(spectateur)
 
 # News message history
 STR_MESSAGE_HISTORY                                             :{WHITE}Historique des messages
@@ -2120,7 +2121,7 @@ STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Joueurs en lign
 STR_NETWORK_COMPANY_LIST_SPECTATE                               :Spectateur
 
 # Network client list
-STR_NETWORK_CLIENT_LIST_CAPTION                                 :{WHITE}Multijoueur
+STR_NETWORK_CLIENT_LIST_CAPTION                                 :{WHITE}Joueurs en ligne
 STR_NETWORK_CLIENT_LIST_SERVER                                  :{BLACK}Serveur
 STR_NETWORK_CLIENT_LIST_SERVER_NAME                             :{BLACK}Nom
 STR_NETWORK_CLIENT_LIST_SERVER_NAME_TOOLTIP                     :{BLACK}Nom du serveur sur lequel vous jouez
@@ -2170,7 +2171,7 @@ STR_NETWORK_CLIENT_LIST_ASK_COMPANY_RESET                       :{YELLOW}Êtes-v
 STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}Êtes-vous sûr de vouloir réinitialiser le mot de passe de la compagnie '{COMPANY}'?
 
 STR_NETWORK_ASK_RELAY_CAPTION                                   :{WHITE}Utiliser un relai{NBSP}?
-STR_NETWORK_ASK_RELAY_TEXT                                      :{YELLOW}Aucune connexion n'a pu être établie entre vous et le serveur.{}Voudriez vous relayer cette session via '{STRING}'{NBSP}?
+STR_NETWORK_ASK_RELAY_TEXT                                      :{YELLOW}Aucune connexion n'a pu être établie entre vous et le serveur '{STRING}'.{}Voudriez vous que cette session soit relayée par '{STRING}'{NBSP}?
 STR_NETWORK_ASK_RELAY_NO                                        :{BLACK}Non
 STR_NETWORK_ASK_RELAY_YES_ONCE                                  :{BLACK}Oui, cette fois uniquement
 STR_NETWORK_ASK_RELAY_YES_ALWAYS                                :{BLACK}Oui, ne plus me demander
@@ -2209,7 +2210,7 @@ STR_NETWORK_CHAT_OSKTITLE                                       :{BLACK}Entrer l
 # Network messages
 STR_NETWORK_ERROR_NOTAVAILABLE                                  :{WHITE}Aucun périphérique réseau trouvé
 STR_NETWORK_ERROR_NOSERVER                                      :{WHITE}Aucune partie réseau n'a été trouvée
-STR_NETWORK_ERROR_NOCONNECTION                                  :{WHITE}Le serveur n'a pas répondu à la requête
+STR_NETWORK_ERROR_NOCONNECTION                                  :{WHITE}La connexion au serveur a dépassé le temps d'attente ou a été refusée
 STR_NETWORK_ERROR_NEWGRF_MISMATCH                               :{WHITE}Échec de la connexion{NBSP}: NewGRF requis
 STR_NETWORK_ERROR_DESYNC                                        :{WHITE}La synchronisation de la partie réseau a échoué
 STR_NETWORK_ERROR_LOSTCONNECTION                                :{WHITE}La connexion de la partie réseau a été perdue
@@ -2292,6 +2293,7 @@ STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Le serve
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} a été exclu. Raison{NBSP}: ({STRING})
 
 STR_NETWORK_ERROR_COORDINATOR_REGISTRATION_FAILED               :{WHITE}Échec de l'enregistrement du serveur
+STR_NETWORK_ERROR_COORDINATOR_REUSE_OF_INVITE_CODE              :{WHITE}Un autre serveur s'est enregistré avec le même code d'invitation. Le type de connexion est changé en "local".
 STR_NETWORK_ERROR_COORDINATOR_ISOLATED                          :{WHITE}Votre serveur n'autorise pas les connexions distantes
 STR_NETWORK_ERROR_COORDINATOR_ISOLATED_DETAIL                   :{WHITE}Les autres joueurs ne pourront pas se connecter à votre serveur
 

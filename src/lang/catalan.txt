@@ -790,6 +790,7 @@ STR_STATUSBAR_PAUSED_LINK_GRAPH                                 :{ORANGE}*  *  E
 STR_STATUSBAR_AUTOSAVE                                          :{RED}DESADA AUTOMÀTICA
 STR_STATUSBAR_SAVING_GAME                                       :{RED}*  *  DESANT PARTIDA  *  *
 
+STR_STATUSBAR_SPECTATOR                                         :{WHITE}(espectador)
 
 # News message history
 STR_MESSAGE_HISTORY                                             :{WHITE}Historial de missatges
@@ -2170,7 +2171,6 @@ STR_NETWORK_CLIENT_LIST_ASK_COMPANY_RESET                       :{YELLOW}Esteu s
 STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}Esteu segur que voleu restablir la contrasenya de la companyia «{COMPANY}»?
 
 STR_NETWORK_ASK_RELAY_CAPTION                                   :{WHITE}Voleu usar un servei de transmissió?
-STR_NETWORK_ASK_RELAY_TEXT                                      :{YELLOW}No s'ha pogut establir una connexió entre el servidor i el vostre dispositiu.{}Voleu transmetre aquesta sessió via «{STRING}»?
 STR_NETWORK_ASK_RELAY_NO                                        :{BLACK}No
 STR_NETWORK_ASK_RELAY_YES_ONCE                                  :{BLACK}Sí, aquest una vegada.
 STR_NETWORK_ASK_RELAY_YES_ALWAYS                                :{BLACK}Sí, no ho preguntis més.
@@ -2292,6 +2292,7 @@ STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}El servi
 STR_NETWORK_MESSAGE_KICKED                                      :*** S'ha expulsat {STRING}. Motiu: {STRING}
 
 STR_NETWORK_ERROR_COORDINATOR_REGISTRATION_FAILED               :{WHITE}El registre al servidor ha fallat.
+STR_NETWORK_ERROR_COORDINATOR_REUSE_OF_INVITE_CODE              :{WHITE}S'ha registrat un altre servidor amb el mateix codi d'invitació. Es canvia a partida de tipus local.
 STR_NETWORK_ERROR_COORDINATOR_ISOLATED                          :{WHITE}El vostre servidor no permet connexions remotes.
 STR_NETWORK_ERROR_COORDINATOR_ISOLATED_DETAIL                   :{WHITE}Els altres jugadors no podran connectar-se al vostre servidor.
 

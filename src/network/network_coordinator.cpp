@@ -135,8 +135,7 @@ bool ClientNetworkCoordinatorSocketHandler::Receive_GC_ERROR(Packet *p)
 			return false;
 
 		case NETWORK_COORDINATOR_ERROR_REGISTRATION_FAILED:
-			SetDParamStr(0, detail);
-			ShowErrorMessage(STR_NETWORK_ERROR_COORDINATOR_REGISTRATION_FAILED, STR_JUST_RAW_STRING, WL_ERROR);
+			ShowErrorMessage(STR_NETWORK_ERROR_COORDINATOR_REGISTRATION_FAILED, INVALID_STRING_ID, WL_ERROR);
 
 			/* To prevent that we constantly try to reconnect, switch to local game. */
 			_settings_client.network.server_game_type = SERVER_GAME_TYPE_LOCAL;
@@ -158,6 +157,15 @@ bool ClientNetworkCoordinatorSocketHandler::Receive_GC_ERROR(Packet *p)
 			UpdateNetworkGameWindow();
 			return true;
 		}
+
+		case NETWORK_COORDINATOR_ERROR_REUSE_OF_INVITE_CODE:
+			ShowErrorMessage(STR_NETWORK_ERROR_COORDINATOR_REUSE_OF_INVITE_CODE, INVALID_STRING_ID, WL_ERROR);
+
+			/* To prevent that we constantly battle for the same invite-code, switch to local game. */
+			_settings_client.network.server_game_type = SERVER_GAME_TYPE_LOCAL;
+
+			this->CloseConnection();
+			return false;
 
 		default:
 			DEBUG(net, 0, "Invalid error type %u received from Game Coordinator", error);
@@ -271,7 +279,7 @@ bool ClientNetworkCoordinatorSocketHandler::Receive_GC_CONNECTING(Packet *p)
 	}
 
 	/* Now store it based on the token. */
-	this->connecter[token] = connecter_pre_it->second;
+	this->connecter[token] = {invite_code, connecter_pre_it->second};
 	this->connecter_pre.erase(connecter_pre_it);
 
 	return true;
@@ -373,13 +381,20 @@ bool ClientNetworkCoordinatorSocketHandler::Receive_GC_TURN_CONNECT(Packet *p)
 	this->turn_handlers[token] = ClientNetworkTurnSocketHandler::Turn(token, tracking_number, ticket, connection_string);
 
 	if (!_network_server) {
+		auto connecter_it = this->connecter.find(token);
+		if (connecter_it == this->connecter.end()) {
+			/* Make sure we are still interested in connecting to this server. */
+			this->ConnectFailure(token, 0);
+			return true;
+		}
+
 		switch (_settings_client.network.use_relay_service) {
 			case URS_NEVER:
 				this->ConnectFailure(token, 0);
 				break;
 
 			case URS_ASK:
-				ShowNetworkAskRelay(connection_string, token);
+				ShowNetworkAskRelay(connecter_it->second.first, connection_string, token);
 				break;
 
 			case URS_ALLOW:
@@ -571,7 +586,7 @@ void ClientNetworkCoordinatorSocketHandler::ConnectSuccess(const std::string &to
 		 * processes of connecting us. */
 		auto connecter_it = this->connecter.find(token);
 		if (connecter_it != this->connecter.end()) {
-			connecter_it->second->SetConnected(sock);
+			connecter_it->second.second->SetConnected(sock);
 			this->connecter.erase(connecter_it);
 		}
 	}
@@ -657,7 +672,7 @@ void ClientNetworkCoordinatorSocketHandler::CloseToken(const std::string &token)
 	/* Close the caller of the connection attempt. */
 	auto connecter_it = this->connecter.find(token);
 	if (connecter_it != this->connecter.end()) {
-		connecter_it->second->SetFailure();
+		connecter_it->second.second->SetFailure();
 		this->connecter.erase(connecter_it);
 	}
 }
@@ -677,7 +692,7 @@ void ClientNetworkCoordinatorSocketHandler::CloseAllConnections()
 	for (auto &[token, it] : this->connecter) {
 		this->CloseStunHandler(token);
 		this->CloseTurnHandler(token);
-		it->SetFailure();
+		it.second->SetFailure();
 
 		/* Inform the Game Coordinator he can stop trying to connect us to the server. */
 		this->ConnectFailure(token, 0);
