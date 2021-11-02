@@ -250,8 +250,16 @@ void SerializeNetworkGameInfo(Packet *p, const NetworkServerGameInfo *info, bool
 	p->Send_uint8 (info->clients_max);
 	p->Send_uint8 (info->clients_on);
 	p->Send_uint8 (info->spectators_on);
-	p->Send_uint16(info->map_width);
-	p->Send_uint16(info->map_height);
+
+	auto encode_map_size = [&](uint32 in) -> uint16 {
+		if (in < UINT16_MAX) {
+			return in;
+		} else {
+			return 65000 + FindFirstBit(in);
+		}
+	};
+	p->Send_uint16(encode_map_size(info->map_width));
+	p->Send_uint16(encode_map_size(info->map_height));
 	p->Send_uint8 (info->landscape);
 	p->Send_bool  (info->dedicated);
 }
@@ -415,8 +423,17 @@ void DeserializeNetworkGameInfo(Packet *p, NetworkGameInfo *info, const GameInfo
 				info->start_date   = p->Recv_uint16() + DAYS_TILL_ORIGINAL_BASE_YEAR;
 			}
 			if (game_info_version < 6) while (p->Recv_uint8() != 0) {} // Used to contain the map-name.
-			info->map_width      = p->Recv_uint16();
-			info->map_height     = p->Recv_uint16();
+
+			auto decode_map_size = [&](uint16 in) -> uint32 {
+				if (in >= 65000) {
+					return 1 << (in - 65000);
+				} else {
+					return in;
+				}
+			};
+			info->map_width      = decode_map_size(p->Recv_uint16());
+			info->map_height     = decode_map_size(p->Recv_uint16());
+
 			info->landscape      = p->Recv_uint8 ();
 			info->dedicated      = p->Recv_bool  ();
 
