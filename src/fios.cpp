@@ -753,7 +753,7 @@ void ScanScenarios()
 */
 FiosNumberedSaveName::FiosNumberedSaveName(const std::string &prefix) : prefix(prefix), number(-1)
 {
-	static std::optional<std::string> _autosave_path;
+	static opt::optional<std::string> _autosave_path;
 	if (!_autosave_path) _autosave_path = FioFindDirectory(AUTOSAVE_DIR);
 
 	static std::string _prefix; ///< Static as the lambda needs access to it.

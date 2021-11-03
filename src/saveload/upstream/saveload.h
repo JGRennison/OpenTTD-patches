@@ -88,7 +88,7 @@ using SaveLoadCompatTable = span<const struct SaveLoadCompat>;
 /** Handler for saving/loading an object to/from disk. */
 class SaveLoadHandler {
 public:
-	std::optional<std::vector<SaveLoad>> load_description;
+	opt::optional<std::vector<SaveLoad>> load_description;
 
 	virtual ~SaveLoadHandler() {}
 
