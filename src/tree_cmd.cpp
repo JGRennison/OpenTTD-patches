@@ -449,9 +449,10 @@ void RemoveAllTrees()
  * @param treetype  Type of trees to place. Must be a valid tree type for the climate.
  * @param radius    Maximum distance (on each axis) from tile to place trees.
  * @param count     Maximum number of trees to place.
+ * @param set_zone  Whether to create a rainforest zone when placing rainforest trees.
  * @return Number of trees actually placed.
  */
-uint PlaceTreeGroupAroundTile(TileIndex tile, TreeType treetype, uint radius, uint count)
+uint PlaceTreeGroupAroundTile(TileIndex tile, TreeType treetype, uint radius, uint count, bool set_zone)
 {
 	assert(treetype < TREE_TOYLAND + TREE_COUNT_TOYLAND);
 	const bool allow_desert = treetype == TREE_CACTUS;
@@ -479,6 +480,12 @@ uint PlaceTreeGroupAroundTile(TileIndex tile, TreeType treetype, uint radius, ui
 				MarkTileDirtyByTile(tile_to_plant, VMDF_NOT_MAP_MODE);
 				planted++;
 			}
+		}
+	}
+
+	if (set_zone && IsInsideMM(treetype, TREE_RAINFOREST, TREE_CACTUS)) {
+		for (TileIndex t : TileArea(tile).Expand(radius)) {
+			if (GetTileType(t) != MP_VOID && DistanceSquare(tile, t) < radius * radius) SetTropicZone(t, TROPICZONE_RAINFOREST);
 		}
 	}
 
@@ -547,7 +554,7 @@ CommandCost CmdPlantTree(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 	int limit = (c == nullptr ? INT32_MAX : GB(c->tree_limit, 16, 16));
 
 	TileArea ta(tile, p2);
-	TILE_AREA_LOOP(tile, ta) {
+	for (TileIndex tile : ta) {
 		switch (GetTileType(tile)) {
 			case MP_TREES: {
 				bool grow_existing_tree_instead = false;

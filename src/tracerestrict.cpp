@@ -1037,7 +1037,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 
 		case TRVT_CARGO_ID:
 			assert(_standard_cargo_mask != 0);
-			SetTraceRestrictValue(item, FindFirstBit64(_standard_cargo_mask));
+			SetTraceRestrictValue(item, FindFirstBit(_standard_cargo_mask));
 			SetTraceRestrictAuxField(item, 0);
 			break;
 

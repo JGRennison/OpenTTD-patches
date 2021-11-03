@@ -563,12 +563,12 @@ static const TraceRestrictDropDownListSet *GetSortedCargoTypeDropDownListSet()
 		cargo_list_str, cargo_list_id,
 	};
 
-	for (size_t i = 0; i < _sorted_standard_cargo_specs_size; ++i) {
+	for (size_t i = 0; i < _sorted_standard_cargo_specs.size(); ++i) {
 		const CargoSpec *cs = _sorted_cargo_specs[i];
 		cargo_list_str[i] = cs->name;
 		cargo_list_id[i] = cs->Index();
 	}
-	cargo_list_str[_sorted_standard_cargo_specs_size] = INVALID_STRING_ID;
+	cargo_list_str[_sorted_standard_cargo_specs.size()] = INVALID_STRING_ID;
 
 	return &cargo_list;
 }
@@ -1760,10 +1760,10 @@ public:
 					ConvertValueToDecimal(type, GetTraceRestrictValue(item), value, decimal);
 					SetDParam(0, value);
 					SetDParam(1, decimal);
-					char *saved = _settings_game.locale.digit_group_separator;
-					_settings_game.locale.digit_group_separator = const_cast<char*>("");
+					std::string saved = std::move(_settings_game.locale.digit_group_separator);
+					_settings_game.locale.digit_group_separator.clear();
 					ShowQueryString(STR_JUST_DECIMAL, STR_TRACE_RESTRICT_VALUE_CAPTION, 16, this, CS_NUMERAL_DECIMAL, QSF_NONE);
-					_settings_game.locale.digit_group_separator = saved;
+					_settings_game.locale.digit_group_separator = std::move(saved);
 				}
 				break;
 			}

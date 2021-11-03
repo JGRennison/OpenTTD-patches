@@ -86,16 +86,6 @@ int64 StringParameters::GetInt64(WChar type)
 }
 
 /**
- * Shift all data in the data array by the given amount to make
- * room for some extra parameters.
- */
-void StringParameters::ShiftParameters(uint amount)
-{
-	assert(amount <= this->num_param);
-	MemMoveT(this->data + amount, this->data, this->num_param - amount);
-}
-
-/**
  * Set DParam n to some number that is suitable for string size computations.
  * @param n Index of the string parameter.
  * @param max_value The biggest value which shall be displayed.
@@ -289,6 +279,18 @@ char *GetString(char *buffr, StringID string, const char *last)
 	return GetStringWithArgs(buffr, string, &_global_string_params, last);
 }
 
+/**
+ * Resolve the given StringID into a std::string with all the associated
+ * DParam lookups and formatting.
+ * @param string The unique identifier of the translatable string.
+ * @return The std::string of the translated string.
+ */
+std::string GetString(StringID string)
+{
+	char buffer[DRAW_STRING_BUFFER];
+	GetString(buffer, string, lastof(buffer));
+	return buffer;
+}
 
 /**
  * This function is used to "bind" a C string to a OpenTTD dparam slot.
@@ -301,12 +303,14 @@ void SetDParamStr(uint n, const char *str)
 }
 
 /**
- * Shift the string parameters in the global string parameter array by \a amount positions, making room at the beginning.
- * @param amount Number of positions to shift.
+ * This function is used to "bind" the C string of a std::string to a OpenTTD dparam slot.
+ * The caller has to ensure that the std::string reference remains valid while the string is shown.
+ * @param n slot of the string
+ * @param str string to bind
  */
-void InjectDParam(uint amount)
+void SetDParamStr(uint n, const std::string &str)
 {
-	_global_string_params.ShiftParameters(amount);
+	SetDParamStr(n, str.c_str());
 }
 
 /**
@@ -336,8 +340,8 @@ static char *FormatNumber(char *buff, int64 number, const char *last, const char
 	uint64 tot = 0;
 	for (int i = 0; i < max_digits; i++) {
 		if (i == max_digits - fractional_digits) {
-			const char *decimal_separator = _settings_game.locale.digit_decimal_separator;
-			if (decimal_separator == nullptr) decimal_separator = _langpack.langpack->digit_decimal_separator;
+			const char *decimal_separator = _settings_game.locale.digit_decimal_separator.c_str();
+			if (StrEmpty(decimal_separator)) decimal_separator = _langpack.langpack->digit_decimal_separator;
 			buff += seprintf(buff, last, "%s", decimal_separator);
 		}
 
@@ -361,8 +365,8 @@ static char *FormatNumber(char *buff, int64 number, const char *last, const char
 
 static char *FormatCommaNumber(char *buff, int64 number, const char *last, int fractional_digits = 0)
 {
-	const char *separator = _settings_game.locale.digit_group_separator;
-	if (separator == nullptr) separator = _langpack.langpack->digit_group_separator;
+	const char *separator = _settings_game.locale.digit_group_separator.c_str();
+	if (StrEmpty(separator)) separator = _langpack.langpack->digit_group_separator;
 	return FormatNumber(buff, number, last, separator, 1, fractional_digits);
 }
 
@@ -384,9 +388,9 @@ static char *FormatHexNumber(char *buff, uint64 number, const char *last)
 WChar GetDecimalSeparatorChar()
 {
 	WChar decimal_char = '.';
-	const char *decimal_separator = _settings_game.locale.digit_decimal_separator;
-	if (decimal_separator == nullptr) decimal_separator = _langpack.langpack->digit_decimal_separator;
-	if (decimal_separator != nullptr) Utf8Decode(&decimal_char, decimal_separator);
+	const char *decimal_separator = _settings_game.locale.digit_decimal_separator.c_str();
+	if (StrEmpty(decimal_separator)) decimal_separator = _langpack.langpack->digit_decimal_separator;
+	if (!StrEmpty(decimal_separator)) Utf8Decode(&decimal_char, decimal_separator);
 	return decimal_char;
 }
 
@@ -409,8 +413,8 @@ static char *FormatBytes(char *buff, int64 number, const char *last)
 		id++;
 	}
 
-	const char *decimal_separator = _settings_game.locale.digit_decimal_separator;
-	if (decimal_separator == nullptr) decimal_separator = _langpack.langpack->digit_decimal_separator;
+	const char *decimal_separator = _settings_game.locale.digit_decimal_separator.c_str();
+	if (StrEmpty(decimal_separator)) decimal_separator = _langpack.langpack->digit_decimal_separator;
 
 	if (number < 1024) {
 		id = 0;
@@ -521,7 +525,7 @@ static char *FormatGenericCurrency(char *buff, const CurrencySpec *spec, Money n
 	/* Add prefix part, following symbol_pos specification.
 	 * Here, it can can be either 0 (prefix) or 2 (both prefix and suffix).
 	 * The only remaining value is 1 (suffix), so everything that is not 1 */
-	if (spec->symbol_pos != 1) buff = strecpy(buff, spec->prefix, last);
+	if (spec->symbol_pos != 1) buff = strecpy(buff, spec->prefix.c_str(), last);
 
 	/* for huge numbers, compact the number into k or M */
 	if (compact) {
@@ -536,16 +540,16 @@ static char *FormatGenericCurrency(char *buff, const CurrencySpec *spec, Money n
 		}
 	}
 
-	const char *separator = _settings_game.locale.digit_group_separator_currency;
-	if (separator == nullptr && !StrEmpty(_currency->separator)) separator = _currency->separator;
-	if (separator == nullptr) separator = _langpack.langpack->digit_group_separator_currency;
+	const char *separator = _settings_game.locale.digit_group_separator_currency.c_str();
+	if (StrEmpty(separator)) separator = _currency->separator.c_str();
+	if (StrEmpty(separator)) separator = _langpack.langpack->digit_group_separator_currency;
 	buff = FormatNumber(buff, number, last, separator);
 	buff = strecpy(buff, multiplier, last);
 
 	/* Add suffix part, following symbol_pos specification.
 	 * Here, it can can be either 1 (suffix) or 2 (both prefix and suffix).
 	 * The only remaining value is 1 (prefix), so everything that is not 0 */
-	if (spec->symbol_pos != 0) buff = strecpy(buff, spec->suffix, last);
+	if (spec->symbol_pos != 0) buff = strecpy(buff, spec->suffix.c_str(), last);
 
 	if (negative) {
 		if (buff + Utf8CharLen(SCC_POP_COLOUR) > last) return buff;
@@ -1070,7 +1074,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 		const char *&str = str_stack.top();
 
 		if (SCC_NEWGRF_FIRST <= b && b <= SCC_NEWGRF_LAST) {
-			/* We need to pass some stuff as it might be modified; oh boy. */
+			/* We need to pass some stuff as it might be modified. */
 			//todo: should argve be passed here too?
 			b = RemapNewGRFStringControlCode(b, buf_start, &buff, &str, (int64 *)args->GetDataPointer(), args->GetDataLeft(), dry_run);
 			if (b == 0) continue;
@@ -2215,18 +2219,18 @@ const char *GetCurrentLocale(const char *param)
 {
 	const char *env;
 
-	env = getenv("LANGUAGE");
+	env = std::getenv("LANGUAGE");
 	if (env != nullptr) return env;
 
-	env = getenv("LC_ALL");
+	env = std::getenv("LC_ALL");
 	if (env != nullptr) return env;
 
 	if (param != nullptr) {
-		env = getenv(param);
+		env = std::getenv(param);
 		if (env != nullptr) return env;
 	}
 
-	return getenv("LANG");
+	return std::getenv("LANG");
 }
 #else
 const char *GetCurrentLocale(const char *param);
@@ -2448,9 +2452,9 @@ class LanguagePackGlyphSearcher : public MissingGlyphSearcher {
 	void SetFontNames(FreeTypeSettings *settings, const char *font_name, const void *os_data) override
 	{
 #if defined(WITH_FREETYPE) || defined(_WIN32) || defined(WITH_COCOA)
-		strecpy(settings->small.font,  font_name, lastof(settings->small.font));
-		strecpy(settings->medium.font, font_name, lastof(settings->medium.font));
-		strecpy(settings->large.font,  font_name, lastof(settings->large.font));
+		settings->small.font = font_name;
+		settings->medium.font = font_name;
+		settings->large.font = font_name;
 
 		settings->small.os_handle = os_data;
 		settings->medium.os_handle = os_data;
@@ -2481,15 +2485,14 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 	if (bad_font) {
 		/* We found an unprintable character... lets try whether we can find
 		 * a fallback font that can print the characters in the current language. */
-		FreeTypeSettings backup;
-		memcpy(&backup, &_freetype, sizeof(backup));
+		FreeTypeSettings backup = _freetype;
 
 		_freetype.mono.os_handle = nullptr;
 		_freetype.medium.os_handle = nullptr;
 
 		bad_font = !SetFallbackFont(&_freetype, _langpack.langpack->isocode, _langpack.langpack->winlangid, searcher);
 
-		memcpy(&_freetype, &backup, sizeof(backup));
+		_freetype = backup;
 
 		if (!bad_font) {
 			/* Show that we loaded fallback font. To do this properly we have

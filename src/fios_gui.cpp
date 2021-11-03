@@ -53,7 +53,7 @@ void LoadCheckData::Clear()
 
 	this->map_size_x = this->map_size_y = 256; // Default for old savegames which do not store mapsize.
 	this->current_date = 0;
-	memset(&this->settings, 0, sizeof(this->settings));
+	this->settings = {};
 
 	for (auto &pair : this->companies) {
 		delete pair.second;
@@ -553,7 +553,7 @@ public:
 							const CompanyProperties &c = *pair.second;
 							if (!c.name.empty()) {
 								SetDParam(1, STR_JUST_RAW_STRING);
-								SetDParamStr(2, c.name.c_str());
+								SetDParamStr(2, c.name);
 							} else {
 								SetDParam(1, c.name_1);
 								SetDParam(2, c.name_2);
@@ -889,7 +889,7 @@ public:
 						this->fios_items_shown[i] = this->string_filter.GetState();
 						if (this->fios_items_shown[i]) items_shown_count++;
 
-						if (&(this->fios_items[i]) == this->selected && this->fios_items_shown[i] == false) {
+						if (&(this->fios_items[i]) == this->selected && !this->fios_items_shown[i]) {
 							/* The selected element has been filtered out */
 							this->selected = nullptr;
 							this->OnInvalidateData(SLIWD_SELECTION_CHANGES);

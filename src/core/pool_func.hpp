@@ -35,9 +35,9 @@ DEFINE_POOL_METHOD(inline)::Pool(const char *name) :
 		first_free(0),
 		first_unused(0),
 		items(0),
-#ifdef OTTD_ASSERT
+#ifdef WITH_ASSERT
 		checked(0),
-#endif /* OTTD_ASSERT */
+#endif /* WITH_ASSERT */
 		cleaning(false),
 		data(nullptr),
 		free_bitmap(nullptr),
@@ -81,7 +81,7 @@ DEFINE_POOL_METHOD(inline size_t)::FindFirstFree()
 	for (; bitmap_index < bitmap_end; bitmap_index++) {
 		uint64 available = ~this->free_bitmap[bitmap_index];
 		if (available == 0) continue;
-		return (bitmap_index * 64) + FindFirstBit64(available);
+		return (bitmap_index * 64) + FindFirstBit(available);
 	}
 
 	if (this->first_unused < this->size) {
@@ -145,10 +145,10 @@ DEFINE_POOL_METHOD(void *)::GetNew(size_t size)
 {
 	size_t index = this->FindFirstFree();
 
-#ifdef OTTD_ASSERT
+#ifdef WITH_ASSERT
 	assert(this->checked != 0);
 	this->checked--;
-#endif /* OTTD_ASSERT */
+#endif /* WITH_ASSERT */
 	if (index == NO_FREE_ITEM) {
 		error("%s: no more free items", this->name);
 	}

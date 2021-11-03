@@ -370,7 +370,6 @@ static byte _script_sl_byte; ///< Used as source/target by the script saveload c
 /** SaveLoad array that saves/loads exactly one byte. */
 static const SaveLoad _script_byte[] = {
 	SLEG_VAR(_script_sl_byte, SLE_UINT8),
-	SLE_END()
 };
 
 /* static */ bool ScriptInstance::SaveObject(HSQUIRRELVM vm, SQInteger index, int max_depth, bool test)
@@ -389,8 +388,8 @@ static const SaveLoad _script_byte[] = {
 			SQInteger res;
 			sq_getinteger(vm, index, &res);
 			if (!test) {
-				int value = (int)res;
-				SlArray(&value, 1, SLE_INT32);
+				int64 value = (int64)res;
+				SlArray(&value, 1, SLE_INT64);
 			}
 			return true;
 		}
@@ -589,16 +588,17 @@ bool ScriptInstance::IsPaused()
 	SlObject(nullptr, _script_byte);
 	switch (_script_sl_byte) {
 		case SQSL_INT: {
-			int value;
-			SlArray(&value, 1, SLE_INT32);
+			int64 value;
+			SlArray(&value, 1, (IsSavegameVersionBefore(SLV_SCRIPT_INT64) && SlXvIsFeatureMissing(XSLFI_SCRIPT_INT64)) ? SLE_FILE_I32 | SLE_VAR_I64 : SLE_INT64);
 			if (vm != nullptr) sq_pushinteger(vm, (SQInteger)value);
 			return true;
 		}
 
 		case SQSL_STRING: {
 			SlObject(nullptr, _script_byte);
-			static char buf[256];
+			static char buf[std::numeric_limits<decltype(_script_sl_byte)>::max()];
 			SlArray(buf, _script_sl_byte, SLE_CHAR);
+			StrMakeValidInPlace(buf, buf + _script_sl_byte);
 			if (vm != nullptr) sq_pushstring(vm, buf, -1);
 			return true;
 		}

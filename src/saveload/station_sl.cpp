@@ -89,7 +89,7 @@ void MoveBuoysToWaypoints()
 
 		if (train) {
 			/* When we make a rail waypoint of the station, convert the map as well. */
-			TILE_AREA_LOOP(t, train_st) {
+			for (TileIndex t : train_st) {
 				if (!IsTileType(t, MP_STATION) || GetStationIndex(t) != index) continue;
 
 				SB(_me[t].m6, 3, 3, STATION_WAYPOINT);
@@ -157,8 +157,6 @@ static const SaveLoad _roadstop_desc[] = {
 
 	SLE_CONDNULL(4, SL_MIN_VERSION, SLV_25),
 	SLE_CONDNULL(1, SLV_25, SLV_26),
-
-	SLE_END()
 };
 
 static const SaveLoad _old_station_desc[] = {
@@ -218,8 +216,6 @@ static const SaveLoad _old_station_desc[] = {
 
 	/* reserve extra space in savegame here. (currently 32 bytes) */
 	SLE_CONDNULL(32, SLV_2, SL_MAX_VERSION),
-
-	SLE_END()
 };
 
 static uint16 _waiting_acceptance;
@@ -232,8 +228,6 @@ static Money  _cargo_feeder_share;
 static const SaveLoad _station_speclist_desc[] = {
 	SLE_CONDVAR(StationSpecList, grfid,    SLE_UINT32, SLV_27, SL_MAX_VERSION),
 	SLE_CONDVAR(StationSpecList, localidx, SLE_UINT8,  SLV_27, SL_MAX_VERSION),
-
-	SLE_END()
 };
 
 CargoPacketList _packets;
@@ -253,7 +247,6 @@ static const SaveLoad _flow_desc[] = {
 	    SLE_VAR(FlowSaveLoad, via,        SLE_UINT16),
 	    SLE_VAR(FlowSaveLoad, share,      SLE_UINT32),
 	SLE_CONDVAR(FlowSaveLoad, restricted, SLE_BOOL, SLV_187, SL_MAX_VERSION),
-	    SLE_END()
 };
 #endif
 
@@ -262,7 +255,7 @@ static const SaveLoad _flow_desc[] = {
  * some of the variables itself are private.
  * @return the saveload description for GoodsEntry.
  */
-const SaveLoad *GetGoodsDesc()
+SaveLoadTable GetGoodsDesc()
 {
 	static const SaveLoad goods_desc[] = {
 		SLEG_CONDVAR(            _waiting_acceptance,  SLE_UINT16,                  SL_MIN_VERSION, SLV_68),
@@ -289,7 +282,6 @@ const SaveLoad *GetGoodsDesc()
 		 SLE_CONDVAR(GoodsEntry, max_waiting_cargo,    SLE_UINT32,                SLV_183, SL_MAX_VERSION),
 		 SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP)),
 		SLE_CONDVAR_X(GoodsEntry, last_vehicle_type,   SLE_UINT8,          SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ST_LAST_VEH_TYPE, 1)),
-		SLE_END()
 	};
 
 	return goods_desc;
@@ -300,7 +292,6 @@ typedef std::pair<const StationID, CargoPacketList> StationCargoPair;
 static const SaveLoad _cargo_list_desc[] = {
 	SLE_VAR(StationCargoPair, first,  SLE_UINT16),
 	SLE_PTRDEQ(StationCargoPair, second, REF_CARGO_PACKET),
-	SLE_END()
 };
 
 /**
@@ -411,8 +402,6 @@ static const SaveLoad _base_station_desc[] = {
 	      SLE_VAR(BaseStation, random_bits,            SLE_UINT16),
 	      SLE_VAR(BaseStation, waiting_triggers,       SLE_UINT8),
 	      SLE_VAR(BaseStation, num_specs,              SLE_UINT8),
-
-	      SLE_END()
 };
 
 static OldPersistentStorage _old_st_persistent_storage;
@@ -461,8 +450,6 @@ static const SaveLoad _station_desc[] = {
 	  SLE_CONDVAR(Station, always_accepted,            SLE_UINT64,                 SLV_EXTEND_CARGOTYPES, SL_MAX_VERSION),
 	  SLE_CONDNULL_X(32 * 24, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP, SL_JOKER_1_22)),
 	SLE_CONDVAR_X(Station, station_cargo_history_cargoes, SLE_UINT64,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_STATION_CARGO_HISTORY)),
-
-	      SLE_END()
 };
 
 static const SaveLoad _waypoint_desc[] = {
@@ -474,15 +461,13 @@ static const SaveLoad _waypoint_desc[] = {
 	  SLE_CONDVAR(Waypoint, train_station.tile,        SLE_UINT32,                  SLV_124, SL_MAX_VERSION),
 	  SLE_CONDVAR(Waypoint, train_station.w,           SLE_FILE_U8 | SLE_VAR_U16,   SLV_124, SL_MAX_VERSION),
 	  SLE_CONDVAR(Waypoint, train_station.h,           SLE_FILE_U8 | SLE_VAR_U16,   SLV_124, SL_MAX_VERSION),
-
-	      SLE_END()
 };
 
 /**
  * Get the base station description to be used for SL_ST_INCLUDE
  * @return the base station description.
  */
-const SaveLoad *GetBaseStationDescription()
+SaveLoadTable GetBaseStationDescription()
 {
 	return _base_station_desc;
 }
@@ -511,7 +496,7 @@ static void SetupDescs_ROADSTOP()
 static void RealSave_STNN(BaseStation *bst)
 {
 	bool waypoint = (bst->facilities & FACIL_WAYPOINT) != 0;
-	SlObjectSaveFiltered(bst, waypoint ? _filtered_waypoint_desc.data() : _filtered_station_desc.data());
+	SlObjectSaveFiltered(bst, waypoint ? SaveLoadTable(_filtered_waypoint_desc) : SaveLoadTable(_filtered_station_desc));
 
 	MemoryDumper *dumper = MemoryDumper::GetCurrent();
 
@@ -520,7 +505,7 @@ static void RealSave_STNN(BaseStation *bst)
 		for (CargoID i = 0; i < NUM_CARGO; i++) {
 			_num_dests = (uint32)st->goods[i].cargo.Packets()->MapSize();
 			_num_flows = (uint32)st->goods[i].flows.size();
-			SlObjectSaveFiltered(&st->goods[i], _filtered_goods_desc.data());
+			SlObjectSaveFiltered(&st->goods[i], _filtered_goods_desc);
 			for (FlowStatMap::const_iterator outer_it(st->goods[i].flows.begin()); outer_it != st->goods[i].flows.end(); ++outer_it) {
 				uint32 sum_shares = 0;
 				FlowSaveLoad flow;
@@ -563,7 +548,7 @@ static void RealSave_STNN(BaseStation *bst)
 	}
 
 	for (uint i = 0; i < bst->num_specs; i++) {
-		SlObjectSaveFiltered(&bst->speclist[i], _filtered_station_speclist_desc.data());
+		SlObjectSaveFiltered(&bst->speclist[i], _filtered_station_speclist_desc);
 	}
 }
 
@@ -592,7 +577,7 @@ static void Load_STNN()
 		bool waypoint = (SlReadByte() & FACIL_WAYPOINT) != 0;
 
 		BaseStation *bst = waypoint ? (BaseStation *)new (index) Waypoint() : new (index) Station();
-		SlObjectLoadFiltered(bst, waypoint ? _filtered_waypoint_desc.data() : _filtered_station_desc.data());
+		SlObjectLoadFiltered(bst, waypoint ? SaveLoadTable(_filtered_waypoint_desc) : SaveLoadTable(_filtered_station_desc));
 
 		if (!waypoint) {
 			Station *st = Station::From(bst);
@@ -606,7 +591,7 @@ static void Load_STNN()
 			}
 
 			for (CargoID i = 0; i < num_cargo; i++) {
-				SlObjectLoadFiltered(&st->goods[i], _filtered_goods_desc.data());
+				SlObjectLoadFiltered(&st->goods[i], _filtered_goods_desc);
 				StationID prev_source = INVALID_STATION;
 				if (SlXvIsFeaturePresent(XSLFI_FLOW_STAT_FLAGS)) {
 					for (uint32 j = 0; j < _num_flows; ++j) {
@@ -684,7 +669,7 @@ static void Load_STNN()
 			/* Allocate speclist memory when loading a game */
 			bst->speclist = CallocT<StationSpecList>(bst->num_specs);
 			for (uint i = 0; i < bst->num_specs; i++) {
-				SlObjectLoadFiltered(&bst->speclist[i], _filtered_station_speclist_desc.data());
+				SlObjectLoadFiltered(&bst->speclist[i], _filtered_station_speclist_desc);
 			}
 		}
 	}
@@ -698,7 +683,7 @@ static void Ptrs_STNN()
 	SetupDescs_STNN();
 
 	if (!IsSavegameVersionBefore(SLV_183)) {
-		assert(_filtered_goods_desc[0].cmd == SL_END);
+		assert(_filtered_goods_desc.size() == 0);
 	}
 
 	uint num_cargo = IsSavegameVersionBefore(SLV_EXTEND_CARGOTYPES) ? 32 : NUM_CARGO;
@@ -707,7 +692,7 @@ static void Ptrs_STNN()
 			GoodsEntry *ge = &st->goods[i];
 			if (IsSavegameVersionBefore(SLV_183) && SlXvIsFeatureMissing(XSLFI_CHILLPP)) {
 				SwapPackets(ge);
-				SlObjectPtrOrNullFiltered(ge, _filtered_goods_desc.data());
+				SlObjectPtrOrNullFiltered(ge, _filtered_goods_desc);
 				SwapPackets(ge);
 			} else {
 				//SlObject(ge, GetGoodsDesc());
@@ -716,11 +701,11 @@ static void Ptrs_STNN()
 				}
 			}
 		}
-		SlObjectPtrOrNullFiltered(st, _filtered_station_desc.data());
+		SlObjectPtrOrNullFiltered(st, _filtered_station_desc);
 	}
 
 	for (Waypoint *wp : Waypoint::Iterate()) {
-		SlObjectPtrOrNullFiltered(wp, _filtered_waypoint_desc.data());
+		SlObjectPtrOrNullFiltered(wp, _filtered_waypoint_desc);
 	}
 }
 
@@ -729,7 +714,7 @@ static void Save_ROADSTOP()
 	SetupDescs_ROADSTOP();
 	for (RoadStop *rs : RoadStop::Iterate()) {
 		SlSetArrayIndex(rs->index);
-		SlObjectSaveFiltered(rs, _filtered_roadstop_desc.data());
+		SlObjectSaveFiltered(rs, _filtered_roadstop_desc);
 	}
 }
 
@@ -740,7 +725,7 @@ static void Load_ROADSTOP()
 	while ((index = SlIterateArray()) != -1) {
 		RoadStop *rs = new (index) RoadStop(INVALID_TILE);
 
-		SlObjectLoadFiltered(rs, _filtered_roadstop_desc.data());
+		SlObjectLoadFiltered(rs, _filtered_roadstop_desc);
 	}
 }
 
@@ -748,7 +733,7 @@ static void Ptrs_ROADSTOP()
 {
 	SetupDescs_ROADSTOP();
 	for (RoadStop *rs : RoadStop::Iterate()) {
-		SlObjectPtrOrNullFiltered(rs, _filtered_roadstop_desc.data());
+		SlObjectPtrOrNullFiltered(rs, _filtered_roadstop_desc);
 	}
 }
 
@@ -758,9 +743,11 @@ static void Load_DOCK()
 	SlSkipArray();
 }
 
-extern const ChunkHandler _station_chunk_handlers[] = {
+static const ChunkHandler station_chunk_handlers[] = {
 	{ 'STNS', nullptr,       Load_STNS,     Ptrs_STNS,     nullptr, CH_ARRAY },
 	{ 'STNN', Save_STNN,     Load_STNN,     Ptrs_STNN,     nullptr, CH_ARRAY },
-	{ 'ROAD', Save_ROADSTOP, Load_ROADSTOP, Ptrs_ROADSTOP, nullptr, CH_ARRAY},
-	{ 'DOCK', nullptr,       Load_DOCK,     nullptr,       nullptr, CH_ARRAY | CH_LAST},
+	{ 'ROAD', Save_ROADSTOP, Load_ROADSTOP, Ptrs_ROADSTOP, nullptr, CH_ARRAY },
+	{ 'DOCK', nullptr,       Load_DOCK,     nullptr,       nullptr, CH_ARRAY },
 };
+
+extern const ChunkHandlerTable _station_chunk_handlers(station_chunk_handlers);

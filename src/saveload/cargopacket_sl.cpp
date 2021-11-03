@@ -108,7 +108,7 @@ extern btree::btree_map<uint64, Money> _cargo_packet_deferred_payments;
  * some of the variables itself are private.
  * @return the saveload description for CargoPackets.
  */
-const SaveLoad *GetCargoPacketDesc()
+SaveLoadTable GetCargoPacketDesc()
 {
 	static const SaveLoad _cargopacket_desc[] = {
 		     SLE_VAR(CargoPacket, source,          SLE_UINT16),
@@ -122,8 +122,6 @@ const SaveLoad *GetCargoPacketDesc()
 
 		/* Used to be paid_for, but that got changed. */
 		SLE_CONDNULL(1, SL_MIN_VERSION, SLV_121),
-
-		SLE_END()
 	};
 	return _cargopacket_desc;
 }
@@ -136,7 +134,7 @@ static void Save_CAPA()
 	std::vector<SaveLoad> filtered_packet_desc = SlFilterObject(GetCargoPacketDesc());
 	for (CargoPacket *cp : CargoPacket::Iterate()) {
 		SlSetArrayIndex(cp->index);
-		SlObjectSaveFiltered(cp, filtered_packet_desc.data());
+		SlObjectSaveFiltered(cp, filtered_packet_desc);
 	}
 }
 
@@ -149,7 +147,7 @@ static void Load_CAPA()
 	int index;
 	while ((index = SlIterateArray()) != -1) {
 		CargoPacket *cp = new (index) CargoPacket();
-		SlObjectLoadFiltered(cp, filtered_packet_desc.data());
+		SlObjectLoadFiltered(cp, filtered_packet_desc);
 	}
 }
 
@@ -188,7 +186,9 @@ void Load_CPDP()
 
 
 /** Chunk handlers related to cargo packets. */
-extern const ChunkHandler _cargopacket_chunk_handlers[] = {
+static const ChunkHandler cargopacket_chunk_handlers[] = {
 	{ 'CAPA', Save_CAPA, Load_CAPA, nullptr, nullptr, CH_ARRAY },
-	{ 'CPDP', Save_CPDP, Load_CPDP, nullptr, nullptr, CH_RIFF | CH_LAST },
+	{ 'CPDP', Save_CPDP, Load_CPDP, nullptr, nullptr, CH_RIFF  },
 };
+
+extern const ChunkHandlerTable _cargopacket_chunk_handlers(cargopacket_chunk_handlers);

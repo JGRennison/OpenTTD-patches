@@ -356,8 +356,7 @@ void BaseVehicleListWindow::SetCargoFilterArray()
 	filter_items++;
 
 	/* Collect available cargo types for filtering. */
-	const CargoSpec *cs;
-	FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+	for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 		this->cargo_filter[filter_items] = cs->Index();
 		this->cargo_filter_texts[filter_items] = cs->name;
 		filter_items++;
@@ -1683,7 +1682,13 @@ void ChangeVehicleViewWindow(VehicleID from_index, VehicleID to_index)
 static const NWidgetPart _nested_vehicle_list[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_VL_CAPTION),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_VL_CAPTION_SELECTION),
+			NWidget(WWT_CAPTION, COLOUR_GREY, WID_VL_CAPTION),
+			NWidget(NWID_HORIZONTAL),
+				NWidget(WWT_CAPTION, COLOUR_GREY, WID_VL_CAPTION_SHARED_ORDERS),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VL_ORDER_VIEW), SetMinimalSize(61, 14), SetDataTip(STR_GOTO_ORDER_VIEW, STR_GOTO_ORDER_VIEW_TOOLTIP),
+			EndContainer(),
+		EndContainer(),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -1977,6 +1982,10 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 			case GB_NONE: {
 				const Vehicle *v = vehgroup.GetSingleVehicle();
 
+				if (HasBit(v->vehicle_flags, VF_PATHFINDER_LOST)) {
+					DrawSprite(SPR_WARNING_SIGN, PAL_NONE, vehicle_button_x, y + FONT_HEIGHT_NORMAL + 3 + GetSpriteSize(SPR_PROFIT_LOT).height);
+				}
+
 				DrawVehicleImage(v, image_left, image_right, y + FONT_HEIGHT_SMALL - 1, selected_vehicle, EIT_IN_LIST, 0);
 
 				if (!v->name.empty()) {
@@ -2102,6 +2111,12 @@ private:
 		}
 	}
 
+	/** Enumeration of planes of the title row at the top. */
+	enum CaptionPlanes {
+		BP_NORMAL,        ///< Show shared orders caption and buttons.
+		BP_SHARED_ORDERS, ///< Show the normal caption.
+	};
+
 public:
 	VehicleListWindow(WindowDesc *desc, WindowNumber window_number) : BaseVehicleListWindow(desc, window_number)
 	{
@@ -2117,14 +2132,17 @@ public:
 		/* Set up the window widgets */
 		this->GetWidget<NWidgetCore>(WID_VL_LIST)->tool_tip = STR_VEHICLE_LIST_TRAIN_LIST_TOOLTIP + this->vli.vtype;
 
+		NWidgetStacked *nwi = this->GetWidget<NWidgetStacked>(WID_VL_CAPTION_SELECTION);
 		if (this->vli.type == VL_SHARED_ORDERS) {
-			this->GetWidget<NWidgetCore>(WID_VL_CAPTION)->widget_data = STR_VEHICLE_LIST_SHARED_ORDERS_LIST_CAPTION;
+			this->GetWidget<NWidgetCore>(WID_VL_CAPTION_SHARED_ORDERS)->widget_data = STR_VEHICLE_LIST_SHARED_ORDERS_LIST_CAPTION;
 			/* If we are in the shared orders window, then disable the group-by dropdown menu.
 			 * Remove this when the group-by dropdown menu has another option apart from grouping by shared orders. */
 			this->SetWidgetDisabledState(WID_VL_GROUP_ORDER, true);
 			this->SetWidgetDisabledState(WID_VL_GROUP_BY_PULLDOWN, true);
+			nwi->SetDisplayedPlane(BP_SHARED_ORDERS);
 		} else {
 			this->GetWidget<NWidgetCore>(WID_VL_CAPTION)->widget_data = STR_VEHICLE_LIST_TRAIN_CAPTION + this->vli.vtype;
+			nwi->SetDisplayedPlane(BP_NORMAL);
 		}
 
 		this->FinishInitNested(window_number);
@@ -2185,7 +2203,8 @@ public:
 				SetDParam(0, this->cargo_filter_texts[this->cargo_filter_criteria]);
 				break;
 
-			case WID_VL_CAPTION: {
+			case WID_VL_CAPTION:
+			case WID_VL_CAPTION_SHARED_ORDERS: {
 				switch (this->vli.type) {
 					case VL_SHARED_ORDERS: // Shared Orders
 						if (this->vehicles.size() == 0) {
@@ -2278,6 +2297,12 @@ public:
 	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
+		    case WID_VL_ORDER_VIEW: // Open the shared orders window
+				assert(this->vli.type == VL_SHARED_ORDERS);
+				assert(!this->vehicles.empty());
+				ShowOrdersWindow(this->vehicles[0]);
+				break;
+
 			case WID_VL_SORT_ORDER: // Flip sorting method ascending/descending
 				this->vehgroups.ToggleSortOrder();
 				this->vehgroups.ForceResort();
@@ -2320,10 +2345,14 @@ public:
 						const Vehicle *v = vehgroup.vehicles_begin[0];
 						/* We do not support VehicleClicked() here since the contextual action may only make sense for individual vehicles */
 
-						if (vehgroup.NumVehicles() == 1) {
-							ShowVehicleViewWindow(v);
+						if (_ctrl_pressed) {
+							ShowOrdersWindow(v);
 						} else {
-							ShowVehicleListWindow(v);
+							if (vehgroup.NumVehicles() == 1) {
+								ShowVehicleViewWindow(v);
+							} else {
+								ShowVehicleListWindow(v);
+							}
 						}
 						break;
 					}
@@ -3554,7 +3583,7 @@ public:
 		const Vehicle *v = Vehicle::Get(this->window_number);
 		switch (widget) {
 			case WID_VV_START_STOP:
-				size->height = std::max(size->height, std::max(GetSpriteSize(SPR_FLAG_VEH_STOPPED).height, GetSpriteSize(SPR_FLAG_VEH_RUNNING).height) + WD_IMGBTN_TOP + WD_IMGBTN_BOTTOM);
+				size->height = std::max({size->height, GetSpriteSize(SPR_WARNING_SIGN).height, GetSpriteSize(SPR_FLAG_VEH_STOPPED).height, GetSpriteSize(SPR_FLAG_VEH_RUNNING).height}) + WD_IMGBTN_TOP + WD_IMGBTN_BOTTOM;
 				break;
 
 			case WID_VV_FORCE_PROCEED:
@@ -3689,7 +3718,7 @@ public:
 				case OT_GOTO_STATION: {
 					SetDParam(0, v->current_order.GetDestination());
 					SetDParam(1, v->GetDisplaySpeed());
-					str = STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL;
+					str = HasBit(v->vehicle_flags, VF_PATHFINDER_LOST) ? STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL : STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL;
 					break;
 				}
 
@@ -3708,9 +3737,9 @@ public:
 					} else if (v->current_order.GetDepotActionType() & ODATFB_SELL) {
 						str = STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SELL_VEL;
 					} else if (v->current_order.GetDepotActionType() & ODATFB_HALT) {
-						str = STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL;
+						str = HasBit(v->vehicle_flags, VF_PATHFINDER_LOST) ? STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL : STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL;
 					} else {
-						str = STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL;
+						str = HasBit(v->vehicle_flags, VF_PATHFINDER_LOST) ? STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL : STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL;
 					}
 					break;
 				}
@@ -3728,7 +3757,7 @@ public:
 				case OT_GOTO_WAYPOINT: {
 					assert(v->type == VEH_TRAIN || v->type == VEH_SHIP);
 					SetDParam(0, v->current_order.GetDestination());
-					str = STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL;
+					str = HasBit(v->vehicle_flags, VF_PATHFINDER_LOST) ? STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL : STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL;
 					SetDParam(1, v->GetDisplaySpeed());
 					break;
 				}
@@ -3757,12 +3786,12 @@ public:
 
 		/* Draw the flag plus orders. */
 		bool rtl = (_current_text_dir == TD_RTL);
-		uint text_offset = std::max(GetSpriteSize(SPR_FLAG_VEH_STOPPED).width, GetSpriteSize(SPR_FLAG_VEH_RUNNING).width) + WD_IMGBTN_LEFT + WD_IMGBTN_RIGHT;
+		uint text_offset = std::max({GetSpriteSize(SPR_WARNING_SIGN).width, GetSpriteSize(SPR_FLAG_VEH_STOPPED).width, GetSpriteSize(SPR_FLAG_VEH_RUNNING).width}) + WD_IMGBTN_LEFT + WD_IMGBTN_RIGHT;
 		int height = r.bottom - r.top;
 		int text_left = r.left + (rtl ? (uint)WD_FRAMERECT_LEFT : text_offset);
 		int text_right = r.right - (rtl ? text_offset : (uint)WD_FRAMERECT_RIGHT);
 		int text_top = r.top + WD_FRAMERECT_TOP + (height - WD_FRAMERECT_TOP - WD_FRAMERECT_BOTTOM - FONT_HEIGHT_NORMAL) / 2;
-		int image = ((v->vehstatus & VS_STOPPED) != 0) ? SPR_FLAG_VEH_STOPPED : SPR_FLAG_VEH_RUNNING;
+		int image = ((v->vehstatus & VS_STOPPED) != 0) ? SPR_FLAG_VEH_STOPPED : (HasBit(v->vehicle_flags, VF_PATHFINDER_LOST)) ? SPR_WARNING_SIGN : SPR_FLAG_VEH_RUNNING;
 		int image_left = (rtl ? text_right + 1 : r.left) + WD_IMGBTN_LEFT;
 		int image_top = r.top + WD_IMGBTN_TOP + (height - WD_IMGBTN_TOP + WD_IMGBTN_BOTTOM - GetSpriteSize(image).height) / 2;
 		int lowered = this->IsWidgetLowered(WID_VV_START_STOP) ? 1 : 0;
@@ -4120,12 +4149,22 @@ void SetMouseCursorVehicle(const Vehicle *v, EngineImageType image_type)
 
 	_cursor.sprite_count = 0;
 	int total_width = 0;
-	for (; v != nullptr; v = v->HasArticulatedPart() ? v->GetNextArticulatedPart() : nullptr) {
+	int y_offset = 0;
+	bool rotor_seq = false; // Whether to draw the rotor of the vehicle in this step.
+
+	while (v != nullptr) {
 		if (total_width >= ScaleGUITrad(2 * (int)VEHICLEINFO_FULL_VEHICLE_WIDTH)) break;
 
 		PaletteID pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
 		VehicleSpriteSeq seq;
-		v->GetImage(rtl ? DIR_E : DIR_W, image_type, &seq);
+
+		if (rotor_seq) {
+			GetCustomRotorSprite(Aircraft::From(v), image_type, &seq);
+			if (!seq.IsValid()) seq.Set(SPR_ROTOR_STOPPED);
+			y_offset = - ScaleGUITrad(5);
+		} else {
+			v->GetImage(rtl ? DIR_E : DIR_W, image_type, &seq);
+		}
 
 		if (_cursor.sprite_count + seq.count > lengthof(_cursor.sprite_seq)) break;
 
@@ -4134,11 +4173,17 @@ void SetMouseCursorVehicle(const Vehicle *v, EngineImageType image_type)
 			_cursor.sprite_seq[_cursor.sprite_count].sprite = seq.seq[i].sprite;
 			_cursor.sprite_seq[_cursor.sprite_count].pal = pal2;
 			_cursor.sprite_pos[_cursor.sprite_count].x = rtl ? -total_width : total_width;
-			_cursor.sprite_pos[_cursor.sprite_count].y = 0;
+			_cursor.sprite_pos[_cursor.sprite_count].y = y_offset;
 			_cursor.sprite_count++;
 		}
 
-		total_width += GetSingleVehicleWidth(v, image_type);
+		if (v->type == VEH_AIRCRAFT && v->subtype == AIR_HELICOPTER && !rotor_seq) {
+			/* Draw rotor part in the next step. */
+			rotor_seq = true;
+		} else {
+			total_width += GetSingleVehicleWidth(v, image_type);
+			v = v->HasArticulatedPart() ? v->GetNextArticulatedPart() : nullptr;
+		}
 	}
 
 	int offs = (ScaleGUITrad(VEHICLEINFO_FULL_VEHICLE_WIDTH) - total_width) / 2;

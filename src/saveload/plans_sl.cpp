@@ -22,7 +22,6 @@ static const SaveLoad _plan_desc[] = {
 	SLE_CONDSSTR_X(Plan, name, 0, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ENH_VIEWPORT_PLANS, 3)),
 	SLE_CONDSSTR_X(Plan, name, 0, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP, SL_JOKER_1_20)),
 	SLE_CONDVAR_X(Plan, colour, SLE_UINT8,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ENH_VIEWPORT_PLANS, 4)),
-	SLE_END()
 };
 
 static void RealSave_PLAN(Plan *p)
@@ -90,7 +89,9 @@ static void Load_PLANLINE()
 }
 
 /** Chunk handlers related to plans. */
-extern const ChunkHandler _plan_chunk_handlers[] = {
-	{ 'PLAN', Save_PLAN, Load_PLAN, nullptr, nullptr, CH_ARRAY},
-	{ 'PLLN', nullptr, Load_PLANLINE, nullptr, nullptr, CH_ARRAY | CH_LAST},
+static const ChunkHandler plan_chunk_handlers[] = {
+	{ 'PLAN', Save_PLAN, Load_PLAN,     nullptr, nullptr, CH_ARRAY },
+	{ 'PLLN', nullptr,   Load_PLANLINE, nullptr, nullptr, CH_ARRAY },
 };
+
+extern const ChunkHandlerTable _plan_chunk_handlers(plan_chunk_handlers);

@@ -817,9 +817,7 @@ static bool CanEnterTile(TileIndex tile, DiagDirection dir, AyStarUserData *user
 
 	/* Depots, standard roadstops and single tram bits can only be entered from one direction */
 	DiagDirection single_entry = GetTileSingleEntry(tile, user->type, user->subtype);
-	if (single_entry != INVALID_DIAGDIR && single_entry != ReverseDiagDir(dir)) return false;
-
-	return true;
+	return single_entry == INVALID_DIAGDIR || single_entry == ReverseDiagDir(dir);
 }
 
 /**
@@ -947,8 +945,7 @@ static void NPFFollowTrack(AyStar *aystar, OpenListNode *current)
 		TrackBits reserved = GetReservedTrackbits(dst_tile);
 		trackdirbits &= ~TrackBitsToTrackdirBits(reserved);
 
-		Track t;
-		FOR_EACH_SET_TRACK(t, TrackdirBitsToTrackBits(trackdirbits)) {
+		for (Track t : SetTrackBitIterator(TrackdirBitsToTrackBits(trackdirbits))) {
 			if (TracksOverlap(reserved | TrackToTrackBits(t))) trackdirbits &= ~TrackToTrackdirBits(t);
 		}
 	}
@@ -1043,8 +1040,7 @@ static NPFFoundTargetData NPFRouteInternal(AyStarNode *start1, bool ignore_start
 	_npf_aystar.user_data = user;
 
 	/* GO! */
-	int r = _npf_aystar.Main();
-	(void)r; // assert only
+	[[maybe_unused]] int r = _npf_aystar.Main();
 	assert(r != AYSTAR_STILL_BUSY);
 
 	if (result.best_bird_dist != 0) {
@@ -1212,10 +1208,10 @@ Track NPFShipChooseTrack(const Ship *v, bool &path_found)
 	return TrackdirToTrack(ftd.best_trackdir);
 }
 
-bool NPFShipCheckReverse(const Ship *v)
+bool NPFShipCheckReverse(const Ship *v, Trackdir *best_td)
 {
 	NPFFindStationOrTileData fstd;
-	NPFFoundTargetData ftd;
+	NPFFoundTargetData ftd = {};
 
 	NPFFillWithOrderData(&fstd, v);
 
@@ -1225,7 +1221,21 @@ bool NPFShipCheckReverse(const Ship *v)
 	assert(trackdir_rev != INVALID_TRACKDIR);
 
 	AyStarUserData user = { v->owner, TRANSPORT_WATER, RAILTYPES_NONE, ROADTYPES_NONE, 0 };
-	ftd = NPFRouteToStationOrTileTwoWay(v->tile, trackdir, false, v->tile, trackdir_rev, false, &fstd, &user);
+	if (best_td != nullptr) {
+		TrackdirBits rtds = DiagdirReachesTrackdirs(ReverseDiagDir(VehicleExitDir(v->direction, v->state)));
+		Trackdir best = (Trackdir)FindFirstBit2x64(rtds);
+		for (rtds = KillFirstBit(rtds); rtds != TRACKDIR_BIT_NONE; rtds = KillFirstBit(rtds)) {
+			Trackdir td = (Trackdir)FindFirstBit2x64(rtds);
+			ftd = NPFRouteToStationOrTileTwoWay(v->tile, best, false, v->tile, td, false, &fstd, &user);
+			if (ftd.best_bird_dist == 0 && NPFGetFlag(&ftd.node, NPF_FLAG_REVERSE)) best = td;
+		}
+		if (ftd.best_bird_dist == 0) {
+			*best_td = best;
+			return true;
+		}
+	} else {
+		ftd = NPFRouteToStationOrTileTwoWay(v->tile, trackdir, false, v->tile, trackdir_rev, false, &fstd, &user);
+	}
 	/* If we didn't find anything, just keep on going straight ahead, otherwise take the reverse flag */
 	return ftd.best_bird_dist == 0 && NPFGetFlag(&ftd.node, NPF_FLAG_REVERSE);
 }

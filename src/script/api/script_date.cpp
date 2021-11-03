@@ -14,6 +14,8 @@
 
 #include <time.h>
 
+#include <time.h>
+
 #include "../../safeguards.h"
 
 /* static */ bool ScriptDate::IsValidDate(Date date)

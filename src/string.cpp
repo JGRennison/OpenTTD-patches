@@ -216,7 +216,7 @@ const char *str_fix_scc_encoded(char *str, const char *last)
 
 
 template <class T>
-static void str_validate(T &dst, const char *str, const char *last, StringValidationSettings settings)
+static void StrMakeValidInPlace(T &dst, const char *str, const char *last, StringValidationSettings settings)
 {
 	/* Assume the ABSOLUTE WORST to be in str as it comes from the outside. */
 
@@ -276,50 +276,51 @@ static void str_validate(T &dst, const char *str, const char *last, StringValida
 }
 
 /**
- * Scans the string for valid characters and if it finds invalid ones,
- * replaces them with a question mark '?' (if not ignored)
- * @param str the string to validate
- * @param last the last valid character of str
- * @param settings the settings for the string validation.
+ * Scans the string for invalid characters and replaces then with a
+ * question mark '?' (if not ignored).
+ * @param str The string to validate.
+ * @param last The last valid character of str.
+ * @param settings The settings for the string validation.
  * @return pointer to terminating 0.
  */
-char *str_validate(char *str, const char *last, StringValidationSettings settings)
+char *StrMakeValidInPlace(char *str, const char *last, StringValidationSettings settings)
 {
 	char *dst = str;
-	str_validate(dst, str, last, settings);
+	StrMakeValidInPlace(dst, str, last, settings);
 	*dst = '\0';
 	return dst;
 }
 
 /**
- * Scans the string for valid characters and if it finds invalid ones,
- * replaces them with a question mark '?' (if not ignored)
- * @param str the string to validate
- * @param settings the settings for the string validation.
+ * Scans the string for invalid characters and replaces then with a
+ * question mark '?' (if not ignored).
+ * Only use this function when you are sure the string ends with a '\0';
+ * otherwise use StrMakeValidInPlace(str, last, settings) variant.
+ * @param str The string (of which you are sure ends with '\0') to validate.
  */
-std::string str_validate(const std::string &str, StringValidationSettings settings)
+void StrMakeValidInPlace(char *str, StringValidationSettings settings)
+{
+	/* We know it is '\0' terminated. */
+	StrMakeValidInPlace(str, str + strlen(str), settings);
+}
+
+/**
+ * Scans the string for invalid characters and replaces then with a
+ * question mark '?' (if not ignored).
+ * @param str The string to validate.
+ * @param settings The settings for the string validation.
+ */
+std::string StrMakeValid(const std::string &str, StringValidationSettings settings)
 {
 	auto buf = str.data();
 	auto last = buf + str.size();
 
 	std::ostringstream dst;
 	std::ostreambuf_iterator<char> dst_iter(dst);
-	str_validate(dst_iter, buf, last, settings);
+	StrMakeValidInPlace(dst_iter, buf, last, settings);
 
 	return dst.str();
 }
-
-/**
- * Scans the string for valid characters and if it finds invalid ones,
- * replaces them with a question mark '?'.
- * @param str the string to validate
- */
-void ValidateString(const char *str)
-{
-	/* We know it is '\0' terminated. */
-	str_validate(const_cast<char *>(str), str + strlen(str) + 1);
-}
-
 
 /**
  * Checks whether the given string is valid, i.e. contains only
@@ -358,19 +359,10 @@ bool StrValid(const char *str, const char *last)
  * When there are spaces at the begin, the whole string is moved forward.
  * @param str The string to perform the in place left trimming on.
  */
-static void StrLeftTrimInPlace(char *str)
+static void StrLeftTrimInPlace(std::string &str)
 {
-	if (StrEmpty(str)) return;
-
-	char *first_non_space = str;
-	while (*first_non_space == ' ') first_non_space++;
-
-	if (first_non_space == str) return;
-
-	/* The source will reach '\0' first, but set the '\0' on the destination afterwards. */
-	char *dst = str;
-	for (char *src = first_non_space; *src != '\0'; dst++, src++) *dst = *src;
-	*dst = '\0';
+	size_t pos = str.find_first_not_of(' ');
+	str.erase(0, pos);
 }
 
 /**
@@ -379,24 +371,10 @@ static void StrLeftTrimInPlace(char *str)
  * When there are spaces at the end, the '\0' will be moved forward.
  * @param str The string to perform the in place left trimming on.
  */
-static void StrRightTrimInPlace(char *str)
+static void StrRightTrimInPlace(std::string &str)
 {
-	if (StrEmpty(str)) return;
-
-	char *end = str;
-	while (*end != '\0') end++;
-
-	char *last_non_space = end - 1;
-	while (last_non_space >= str && *last_non_space == ' ') last_non_space--;
-
-	/* The last non space points to the last character of the string that is not
-	 * a space. For a string with only spaces or an empty string this would be
-	 * the position before the begin of the string. The previous search ensures
-	 * that this location before the string is not read.
-	 * In any case, the character after the last non space character will be
-	 * either a space or the existing termination, so it can be set to '\0'.
-	 */
-	last_non_space[1] = '\0';
+	size_t pos = str.find_last_not_of(' ');
+	if (pos != std::string::npos) str.erase(pos + 1);
 }
 
 /**
@@ -406,11 +384,38 @@ static void StrRightTrimInPlace(char *str)
  * and when there are spaces at the back the '\0' termination is moved.
  * @param str The string to perform the in place trimming on.
  */
-void StrTrimInPlace(char *str)
+void StrTrimInPlace(std::string &str)
 {
 	StrLeftTrimInPlace(str);
 	StrRightTrimInPlace(str);
 }
+
+/**
+ * Check whether the given string starts with the given prefix.
+ * @param str    The string to look at.
+ * @param prefix The prefix to look for.
+ * @return True iff the begin of the string is the same as the prefix.
+ */
+bool StrStartsWith(const std::string_view str, const std::string_view prefix)
+{
+	size_t prefix_len = prefix.size();
+	if (str.size() < prefix_len) return false;
+	return str.compare(0, prefix_len, prefix, 0, prefix_len) == 0;
+}
+
+/**
+ * Check whether the given string ends with the given suffix.
+ * @param str    The string to look at.
+ * @param suffix The suffix to look for.
+ * @return True iff the end of the string is the same as the suffix.
+ */
+bool StrEndsWith(const std::string_view str, const std::string_view suffix)
+{
+	size_t suffix_len = suffix.size();
+	if (str.size() < suffix_len) return false;
+	return str.compare(str.size() - suffix_len, suffix_len, suffix, 0, suffix_len) == 0;
+}
+
 
 /** Scans the string for colour codes and strips them */
 void str_strip_colours(char *str)
@@ -519,6 +524,16 @@ size_t Utf8StringLength(const char *s)
 	return len;
 }
 
+/**
+ * Get the length of an UTF-8 encoded string in number of characters
+ * and thus not the number of bytes that the encoded string contains.
+ * @param s The string to get the length for.
+ * @return The length of the string in characters.
+ */
+size_t Utf8StringLength(const std::string &str)
+{
+	return Utf8StringLength(str.c_str());
+}
 
 /**
  * Convert a given ASCII string to lowercase.

@@ -238,13 +238,11 @@ static const SaveLoad _town_desc[] = {
 	SLE_CONDVAR(Town, larger_town,           SLE_BOOL,                  SLV_56, SL_MAX_VERSION),
 	SLE_CONDVAR(Town, layout,                SLE_UINT8,                SLV_113, SL_MAX_VERSION),
 
-	SLE_CONDLST(Town, psa_list,            REF_STORAGE,                SLV_161, SL_MAX_VERSION),
+	SLE_CONDREFLIST(Town, psa_list,          REF_STORAGE,              SLV_161, SL_MAX_VERSION),
 
 	SLE_CONDNULL(4, SLV_166, SLV_EXTEND_CARGOTYPES),  ///< cargo_produced, no longer in use
 	SLE_CONDNULL(8, SLV_EXTEND_CARGOTYPES, SLV_REMOVE_TOWN_CARGO_CACHE),  ///< cargo_produced, no longer in use
 	SLE_CONDNULL(30, SLV_2, SLV_REMOVE_TOWN_CARGO_CACHE), ///< old reserved space
-
-	SLE_END()
 };
 
 static const SaveLoad _town_supplied_desc[] = {
@@ -252,8 +250,6 @@ static const SaveLoad _town_supplied_desc[] = {
 	SLE_CONDVAR(TransportedCargoStat<uint32>, new_max, SLE_UINT32, SLV_165, SL_MAX_VERSION),
 	SLE_CONDVAR(TransportedCargoStat<uint32>, old_act, SLE_UINT32, SLV_165, SL_MAX_VERSION),
 	SLE_CONDVAR(TransportedCargoStat<uint32>, new_act, SLE_UINT32, SLV_165, SL_MAX_VERSION),
-
-	SLE_END()
 };
 
 static const SaveLoad _town_received_desc[] = {
@@ -261,8 +257,6 @@ static const SaveLoad _town_received_desc[] = {
 	SLE_CONDVAR(TransportedCargoStat<uint16>, new_max, SLE_UINT16, SLV_165, SL_MAX_VERSION),
 	SLE_CONDVAR(TransportedCargoStat<uint16>, old_act, SLE_UINT16, SLV_165, SL_MAX_VERSION),
 	SLE_CONDVAR(TransportedCargoStat<uint16>, new_act, SLE_UINT16, SLV_165, SL_MAX_VERSION),
-
-	SLE_END()
 };
 
 static const SaveLoad _town_received_desc_spp[] = {
@@ -270,8 +264,6 @@ static const SaveLoad _town_received_desc_spp[] = {
 	SLE_CONDVAR(TransportedCargoStat<uint16>, new_max, SLE_FILE_U32 | SLE_VAR_U16, SLV_165, SL_MAX_VERSION),
 	SLE_CONDVAR(TransportedCargoStat<uint16>, old_act, SLE_FILE_U32 | SLE_VAR_U16, SLV_165, SL_MAX_VERSION),
 	SLE_CONDVAR(TransportedCargoStat<uint16>, new_act, SLE_FILE_U32 | SLE_VAR_U16, SLV_165, SL_MAX_VERSION),
-
-	SLE_END()
 };
 
 std::vector<SaveLoad> _filtered_town_desc;
@@ -297,13 +289,13 @@ static void Load_HIDS()
 
 static void RealSave_Town(Town *t)
 {
-	SlObjectSaveFiltered(t, _filtered_town_desc.data());
+	SlObjectSaveFiltered(t, _filtered_town_desc);
 
 	for (CargoID i = 0; i < NUM_CARGO; i++) {
-		SlObjectSaveFiltered(&t->supplied[i], _filtered_town_supplied_desc.data());
+		SlObjectSaveFiltered(&t->supplied[i], _filtered_town_supplied_desc);
 	}
 	for (int i = TE_BEGIN; i < NUM_TE; i++) {
-		SlObjectSaveFiltered(&t->received[i], _filtered_town_received_desc.data());
+		SlObjectSaveFiltered(&t->received[i], _filtered_town_received_desc);
 	}
 }
 
@@ -324,10 +316,10 @@ static void Load_TOWN()
 
 	while ((index = SlIterateArray()) != -1) {
 		Town *t = new (index) Town();
-		SlObjectLoadFiltered(t, _filtered_town_desc.data());
+		SlObjectLoadFiltered(t, _filtered_town_desc);
 
 		for (CargoID i = 0; i < num_cargo; i++) {
-			SlObjectLoadFiltered(&t->supplied[i], _filtered_town_supplied_desc.data());
+			SlObjectLoadFiltered(&t->supplied[i], _filtered_town_supplied_desc);
 		}
 		if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
 			for (int i = TE_BEGIN; i < NUM_TE; i++) {
@@ -335,7 +327,7 @@ static void Load_TOWN()
 			}
 		} else {
 			for (int i = TE_BEGIN; i < NUM_TE; i++) {
-				SlObjectLoadFiltered(&t->received[i], _filtered_town_received_desc.data());
+				SlObjectLoadFiltered(&t->received[i], _filtered_town_received_desc);
 			}
 		}
 
@@ -362,12 +354,14 @@ static void Ptrs_TOWN()
 
 	SetupDescs_TOWN();
 	for (Town *t : Town::Iterate()) {
-		SlObjectPtrOrNullFiltered(t, _filtered_town_desc.data());
+		SlObjectPtrOrNullFiltered(t, _filtered_town_desc);
 	}
 }
 
 /** Chunk handler for towns. */
-extern const ChunkHandler _town_chunk_handlers[] = {
+static const ChunkHandler town_chunk_handlers[] = {
 	{ 'HIDS', Save_HIDS, Load_HIDS, nullptr,   nullptr, CH_ARRAY },
-	{ 'CITY', Save_TOWN, Load_TOWN, Ptrs_TOWN, nullptr, CH_ARRAY | CH_LAST},
+	{ 'CITY', Save_TOWN, Load_TOWN, Ptrs_TOWN, nullptr, CH_ARRAY },
 };
+
+extern const ChunkHandlerTable _town_chunk_handlers(town_chunk_handlers);

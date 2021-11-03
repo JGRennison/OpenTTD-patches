@@ -14,6 +14,26 @@
 #ifndef NETWORK_CORE_OS_ABSTRACTION_H
 #define NETWORK_CORE_OS_ABSTRACTION_H
 
+/**
+ * Abstraction of a network error where all implementation details of the
+ * error codes are encapsulated in this class and the abstraction layer.
+ */
+class NetworkError {
+private:
+	int error;                   ///< The underlying error number from errno or WSAGetLastError.
+	mutable std::string message; ///< The string representation of the error (set on first call to #AsString).
+public:
+	NetworkError(int error);
+
+	bool HasError() const;
+	bool WouldBlock() const;
+	bool IsConnectionReset() const;
+	bool IsConnectInProgress() const;
+	const char *AsString() const;
+
+	static NetworkError GetLast();
+};
+
 /* Include standard stuff per OS */
 
 /* Windows stuff */
@@ -22,21 +42,6 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <windows.h>
-
-/**
- * Get the last error code from any of the OS's network functions.
- * What it returns and when it is reset, is implementation defined.
- * @return The last error code.
- */
-#define NetworkGetLastError() WSAGetLastError()
-#undef EWOULDBLOCK
-#define EWOULDBLOCK WSAEWOULDBLOCK
-#undef ECONNRESET
-#define ECONNRESET WSAECONNRESET
-#undef EINPROGRESS
-#define EINPROGRESS WSAEWOULDBLOCK
-
-const char *NetworkGetErrorString(int error);
 
 /* Windows has some different names for some types */
 typedef unsigned long in_addr_t;
@@ -74,10 +79,7 @@ typedef unsigned long in_addr_t;
 #	endif
 #	define SOCKET int
 #	define INVALID_SOCKET -1
-#	define ioctlsocket ioctl
 #	define closesocket close
-#	define NetworkGetLastError() (errno)
-#	define NetworkGetErrorString(error) (strerror(error))
 #	define SD_RECEIVE SHUT_RD
 #	define SD_SEND SHUT_WR
 #	define SD_BOTH SHUT_RDWR
@@ -122,16 +124,20 @@ typedef unsigned long in_addr_t;
 #		undef FD_SETSIZE
 #		define FD_SETSIZE 64
 #   endif
+
+/* Haiku says it supports FD_SETSIZE fds, but it really only supports 512. */
+#   if defined(__HAIKU__)
+#		undef FD_SETSIZE
+#		define FD_SETSIZE 512
+#   endif
+
 #endif /* UNIX */
 
 /* OS/2 stuff */
 #if defined(__OS2__)
 #	define SOCKET int
 #	define INVALID_SOCKET -1
-#	define ioctlsocket ioctl
 #	define closesocket close
-#	define NetworkGetLastError() (sock_errno())
-#	define NetworkGetErrorString(error) (strerror(error))
 #	define SD_RECEIVE SHUT_RD
 #	define SD_SEND SHUT_WR
 #	define SD_BOTH SHUT_RDWR
@@ -206,105 +212,12 @@ static inline socklen_t FixAddrLenForEmscripten(struct sockaddr_storage &address
 }
 #endif
 
-/**
- * Return the string representation of the last error from the OS's network functions.
- * @return The error message, potentially an empty string but never \c nullptr.
- */
-static inline const char *NetworkGetLastErrorString()
-{
-	return NetworkGetErrorString(NetworkGetLastError());
-}
-
-/**
- * Try to set the socket into non-blocking mode.
- * @param d The socket to set the non-blocking more for.
- * @return True if setting the non-blocking mode succeeded, otherwise false.
- */
-static inline bool SetNonBlocking(SOCKET d)
-{
-#ifdef __EMSCRIPTEN__
-	return true;
-#else
-#	ifdef _WIN32
-	u_long nonblocking = 1;
-#	else
-	int nonblocking = 1;
-#	endif
-	return ioctlsocket(d, FIONBIO, &nonblocking) == 0;
-#endif
-}
-
-/**
- * Try to set the socket into blocking mode.
- * @param d The socket to set the blocking more for.
- * @return True if setting the blocking mode succeeded, otherwise false.
- */
-static inline bool SetBlocking(SOCKET d)
-{
-#ifdef _WIN32
-	u_long nonblocking = 0;
-#else
-	int nonblocking = 0;
-#endif
-	return ioctlsocket(d, FIONBIO, &nonblocking) == 0;
-}
-
-/**
- * Try to set the socket to not delay sending.
- * @param d The socket to disable the delaying for.
- * @return True if disabling the delaying succeeded, otherwise false.
- */
-static inline bool SetNoDelay(SOCKET d)
-{
-#ifdef __EMSCRIPTEN__
-	return true;
-#else
-	/* XXX should this be done at all? */
-	int b = 1;
-	/* The (const char*) cast is needed for windows */
-	return setsockopt(d, IPPROTO_TCP, TCP_NODELAY, (const char*)&b, sizeof(b)) == 0;
-#endif
-}
-
-
-/**
- * Try to shutdown the socket in one or both directions.
- * @param d The socket to disable the delaying for.
- * @param read Whether to shutdown the read direction.
- * @param write Whether to shutdown the write direction.
- * @param linger_timeout The socket linger timeout.
- * @return True if successful
- */
-static inline bool ShutdownSocket(SOCKET d, bool read, bool write, uint linger_timeout)
-{
-	if (!read && !write) return true;
-#ifdef _WIN32
-	LINGER ln = { 1U, (uint16) linger_timeout };
-#else
-	struct linger ln = { 1, (int) linger_timeout };
-#endif
-
-	setsockopt(d, SOL_SOCKET, SO_LINGER, (const char*)&ln, sizeof(ln));
-
-	int how = SD_BOTH;
-	if (!read) how = SD_SEND;
-	if (!write) how = SD_RECEIVE;
-	return shutdown(d, how) == 0;
-}
-
-/**
- * Get the error from a socket, if any.
- * @param d The socket to get the error from.
- * @return The errno on the socket.
- */
-static inline int GetSocketError(SOCKET d)
-{
-	int err;
-	socklen_t len = sizeof(err);
-	getsockopt(d, SOL_SOCKET, SO_ERROR, (char *)&err, &len);
-
-	return err;
-}
+bool SetNonBlocking(SOCKET d);
+bool SetBlocking(SOCKET d);
+bool SetNoDelay(SOCKET d);
+bool SetReusePort(SOCKET d);
+bool ShutdownSocket(SOCKET d, bool read, bool write, uint linger_timeout);
+NetworkError GetSocketError(SOCKET d);
 
 /* Make sure these structures have the size we expect them to be */
 static_assert(sizeof(in_addr)  ==  4); ///< IPv4 addresses should be 4 bytes.

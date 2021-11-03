@@ -220,7 +220,7 @@ void InitRailTypes()
 		RailTypes compatible = _railtypes[rt].all_compatible_railtypes;
 		RailTypes to_check = compatible;
 		while (to_check) {
-			RailType i = (RailType)FindFirstBit64(to_check);
+			RailType i = (RailType)FindFirstBit(to_check);
 			to_check = KillFirstBit(to_check);
 			RailTypes new_types = _railtypes[i].compatible_railtypes & (~compatible);
 			to_check |= new_types;
@@ -228,7 +228,7 @@ void InitRailTypes()
 		}
 		RailTypes to_update = compatible;
 		while (to_update) {
-			RailType i = (RailType)FindFirstBit64(to_update);
+			RailType i = (RailType)FindFirstBit(to_update);
 			to_update = KillFirstBit(to_update);
 			_railtypes[i].all_compatible_railtypes = compatible;
 		}
@@ -1944,11 +1944,11 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
 
 		/* only build/remove signals with the specified density */
 		if (tile_ok && (remove || minimise_gaps || signal_ctr % signal_density == 0 || IsTileType(tile, MP_TUNNELBRIDGE))) {
-			uint32 p1 = GB(TrackdirToTrack(trackdir), 0, 3);
-			SB(p1, 3, 1, mode);
-			SB(p1, 4, 1, semaphores);
-			SB(p1, 5, 3, sigtype);
-			if (!remove && signal_ctr == 0) SetBit(p1, 17);
+			uint32 param1 = GB(TrackdirToTrack(trackdir), 0, 3);
+			SB(param1, 3, 1, mode);
+			SB(param1, 4, 1, semaphores);
+			SB(param1, 5, 3, sigtype);
+			if (!remove && signal_ctr == 0) SetBit(param1, 17);
 
 			/* Pick the correct orientation for the track direction */
 			signals = 0;
@@ -1957,7 +1957,7 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
 
 			/* Test tiles in between for suitability as well if minimising gaps. */
 			bool test_only = !remove && minimise_gaps && signal_ctr < (last_used_ctr + signal_density);
-			CommandCost ret = DoCommand(tile, p1, signals, test_only ? flags & ~DC_EXEC : flags, remove ? CMD_REMOVE_SIGNALS : CMD_BUILD_SIGNALS);
+			CommandCost ret = DoCommand(tile, param1, signals, test_only ? flags & ~DC_EXEC : flags, remove ? CMD_REMOVE_SIGNALS : CMD_BUILD_SIGNALS);
 			if (!test_only && ret.Succeeded() && IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeDirection(tile) == TrackdirToExitdir(trackdir)) {
 				/* Blacklist far end of tunnel if we just actioned the near end */
 				tunnel_bridge_blacklist.push_back(GetOtherTunnelBridgeEnd(tile));
@@ -1970,15 +1970,15 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
 				last_suitable_trackdir = trackdir;
 			} else if (!test_only && last_suitable_tile != INVALID_TILE && ret.GetErrorMessage() != STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING) {
 				/* If a signal can't be placed, place it at the last possible position. */
-				SB(p1, 0, 3, TrackdirToTrack(last_suitable_trackdir));
-				ClrBit(p1, 17);
+				SB(param1, 0, 3, TrackdirToTrack(last_suitable_trackdir));
+				ClrBit(param1, 17);
 
 				/* Pick the correct orientation for the track direction. */
 				signals = 0;
 				if (HasBit(signal_dir, 0)) signals |= SignalAlongTrackdir(last_suitable_trackdir);
 				if (HasBit(signal_dir, 1)) signals |= SignalAgainstTrackdir(last_suitable_trackdir);
 
-				ret = DoCommand(last_suitable_tile, p1, signals, flags, remove ? CMD_REMOVE_SIGNALS : CMD_BUILD_SIGNALS);
+				ret = DoCommand(last_suitable_tile, param1, signals, flags, remove ? CMD_REMOVE_SIGNALS : CMD_BUILD_SIGNALS);
 				if (ret.Succeeded() && IsTileType(last_suitable_tile, MP_TUNNELBRIDGE) && GetTunnelBridgeDirection(last_suitable_tile) == TrackdirToExitdir(last_suitable_trackdir)) {
 					/* Blacklist far end of tunnel if we just actioned the near end */
 					tunnel_bridge_blacklist.push_back(GetOtherTunnelBridgeEnd(last_suitable_tile));

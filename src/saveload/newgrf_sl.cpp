@@ -21,7 +21,6 @@ static const SaveLoad _newgrf_mapping_desc[] = {
 	SLE_VAR(EntityIDMapping, grfid,         SLE_UINT32),
 	SLE_VAR(EntityIDMapping, entity_id,     SLE_UINT8),
 	SLE_VAR(EntityIDMapping, substitute_id, SLE_UINT8),
-	SLE_END()
 };
 
 /**
@@ -69,7 +68,6 @@ static const SaveLoad _grfconfig_desc[] = {
 	    SLE_VAR(GRFConfig, num_params,       SLE_UINT8),
 	SLE_CONDVAR(GRFConfig, palette,          SLE_UINT8,  SLV_101, SL_MAX_VERSION),
 	SLEG_CONDSSTR_X(_grf_name, 0,                        SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_NEWGRF_INFO_EXTRA)),
-	SLE_END()
 };
 
 
@@ -78,7 +76,7 @@ static void Save_NGRF()
 	int index = 0;
 
 	for (GRFConfig *c = _grfconfig; c != nullptr; c = c->next) {
-		if (HasBit(c->flags, GCF_STATIC)) continue;
+		if (HasBit(c->flags, GCF_STATIC) || HasBit(c->flags, GCF_INIT_ONLY)) continue;
 		SlSetArrayIndex(index++);
 		_grf_name = str_strip_all_scc(GetDefaultLangGRFStringFromGRFText(c->name));
 		SlObject(c, _grfconfig_desc);
@@ -121,6 +119,8 @@ static void Check_NGRF()
 	Load_NGRF_common(_load_check_data.grfconfig);
 }
 
-extern const ChunkHandler _newgrf_chunk_handlers[] = {
-	{ 'NGRF', Save_NGRF, Load_NGRF, nullptr, Check_NGRF, CH_ARRAY | CH_LAST }
+static const ChunkHandler newgrf_chunk_handlers[] = {
+	{ 'NGRF', Save_NGRF, Load_NGRF, nullptr, Check_NGRF, CH_ARRAY }
 };
+
+extern const ChunkHandlerTable _newgrf_chunk_handlers(newgrf_chunk_handlers);

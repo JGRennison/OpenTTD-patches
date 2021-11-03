@@ -33,10 +33,10 @@ enum BlitterMode {
  *  - heavy branching (remap lookups and animation buffer handling).
  */
 enum BlitterSpriteFlags {
-	SF_NONE        = 0,
-	SF_TRANSLUCENT = 1 << 1, ///< The sprite has at least 1 translucent pixel.
-	SF_NO_REMAP    = 1 << 2, ///< The sprite has no remappable colour pixel.
-	SF_NO_ANIM     = 1 << 3, ///< The sprite has no palette animated pixel.
+	BSF_NONE        = 0,
+	BSF_TRANSLUCENT = 1 << 1, ///< The sprite has at least 1 translucent pixel.
+	BSF_NO_REMAP    = 1 << 2, ///< The sprite has no remappable colour pixel.
+	BSF_NO_ANIM     = 1 << 3, ///< The sprite has no palette animated pixel.
 };
 DECLARE_ENUM_AS_BIT_SET(BlitterSpriteFlags);
 

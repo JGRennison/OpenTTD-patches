@@ -16,7 +16,6 @@
 
 static const SaveLoad _trace_restrict_mapping_desc[] = {
   SLE_VAR(TraceRestrictMappingItem, program_id, SLE_UINT32),
-  SLE_END()
 };
 
 /**
@@ -50,7 +49,6 @@ struct TraceRestrictProgramStub {
 
 static const SaveLoad _trace_restrict_program_stub_desc[] = {
 	SLE_VAR(TraceRestrictProgramStub, length, SLE_UINT32),
-	SLE_END()
 };
 
 /**
@@ -120,14 +118,12 @@ struct TraceRestrictSlotStub {
 
 static const SaveLoad _trace_restrict_slot_stub_desc[] = {
 	SLE_VAR(TraceRestrictSlotStub, length, SLE_UINT32),
-	SLE_END()
 };
 
 static const SaveLoad _trace_restrict_slot_desc[] = {
 	SLE_VAR(TraceRestrictSlot, max_occupancy, SLE_UINT32),
 	SLE_SSTR(TraceRestrictSlot, name, SLF_ALLOW_CONTROL),
 	SLE_VAR(TraceRestrictSlot, owner, SLE_UINT8),
-	SLE_END()
 };
 
 /**
@@ -174,7 +170,6 @@ static const SaveLoad _trace_restrict_counter_desc[] = {
 	SLE_VAR(TraceRestrictCounter, value, SLE_INT32),
 	SLE_SSTR(TraceRestrictCounter, name, SLF_ALLOW_CONTROL),
 	SLE_VAR(TraceRestrictCounter, owner, SLE_UINT8),
-	SLE_END()
 };
 
 /**
@@ -219,9 +214,11 @@ void AfterLoadTraceRestrict()
 	}
 }
 
-extern const ChunkHandler _trace_restrict_chunk_handlers[] = {
-	{ 'TRRM', Save_TRRM, Load_TRRM, nullptr, nullptr, CH_SPARSE_ARRAY},    // Trace Restrict Mapping chunk
-	{ 'TRRP', Save_TRRP, Load_TRRP, nullptr, nullptr, CH_ARRAY},           // Trace Restrict Mapping Program Pool chunk
-	{ 'TRRS', Save_TRRS, Load_TRRS, nullptr, nullptr, CH_ARRAY},           // Trace Restrict Slot Pool chunk
-	{ 'TRRC', Save_TRRC, Load_TRRC, nullptr, nullptr, CH_ARRAY | CH_LAST}, // Trace Restrict Counter Pool chunk
+extern const ChunkHandler trace_restrict_chunk_handlers[] = {
+	{ 'TRRM', Save_TRRM, Load_TRRM, nullptr, nullptr, CH_SPARSE_ARRAY },    // Trace Restrict Mapping chunk
+	{ 'TRRP', Save_TRRP, Load_TRRP, nullptr, nullptr, CH_ARRAY },           // Trace Restrict Mapping Program Pool chunk
+	{ 'TRRS', Save_TRRS, Load_TRRS, nullptr, nullptr, CH_ARRAY },           // Trace Restrict Slot Pool chunk
+	{ 'TRRC', Save_TRRC, Load_TRRC, nullptr, nullptr, CH_ARRAY },           // Trace Restrict Counter Pool chunk
 };
+
+extern const ChunkHandlerTable _trace_restrict_chunk_handlers(trace_restrict_chunk_handlers);

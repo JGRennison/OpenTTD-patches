@@ -13,6 +13,7 @@
 #include "engine_func.h"
 #include "landscape.h"
 #include "saveload/saveload.h"
+#include "network/core/game_info.h"
 #include "network/network.h"
 #include "network/network_func.h"
 #include "network/network_base.h"
@@ -53,10 +54,13 @@
 #include "linkgraph/linkgraphjob.h"
 #include "base_media_base.h"
 #include "debug_settings.h"
+#include "walltime_func.h"
 #include "debug_desync.h"
 #include "scope_info.h"
 #include "event_logs.h"
 #include <time.h>
+
+#include <set>
 
 #include "safeguards.h"
 
@@ -548,7 +552,7 @@ DEF_CONSOLE_CMD(ConClearBuffer)
  * Network Core Console Commands
  **********************************/
 
-static bool ConKickOrBan(const char *argv, bool ban, const char *reason)
+static bool ConKickOrBan(const char *argv, bool ban, const std::string &reason)
 {
 	uint n;
 
@@ -602,7 +606,7 @@ DEF_CONSOLE_CMD(ConKick)
 	if (argc != 2 && argc != 3) return false;
 
 	/* No reason supplied for kicking */
-	if (argc == 2) return ConKickOrBan(argv[1], false, nullptr);
+	if (argc == 2) return ConKickOrBan(argv[1], false, {});
 
 	/* Reason for kicking supplied */
 	size_t kick_message_length = strlen(argv[2]);
@@ -626,7 +630,7 @@ DEF_CONSOLE_CMD(ConBan)
 	if (argc != 2 && argc != 3) return false;
 
 	/* No reason supplied for kicking */
-	if (argc == 2) return ConKickOrBan(argv[1], true, nullptr);
+	if (argc == 2) return ConKickOrBan(argv[1], true, {});
 
 	/* Reason for kicking supplied */
 	size_t kick_message_length = strlen(argv[2]);
@@ -787,13 +791,14 @@ DEF_CONSOLE_CMD(ConServerInfo)
 {
 	if (argc == 0) {
 		IConsoleHelp("List current and maximum client/company limits. Usage 'server_info'");
-		IConsoleHelp("You can change these values by modifying settings 'network.max_clients', 'network.max_companies' and 'network.max_spectators'");
+		IConsoleHelp("You can change these values by modifying settings 'network.max_clients' and 'network.max_companies'");
 		return true;
 	}
 
-	IConsolePrintF(CC_DEFAULT, "Current/maximum clients:    %2d/%2d", _network_game_info.clients_on, _settings_client.network.max_clients);
-	IConsolePrintF(CC_DEFAULT, "Current/maximum companies:  %2d/%2d", (int)Company::GetNumItems(), _settings_client.network.max_companies);
-	IConsolePrintF(CC_DEFAULT, "Current/maximum spectators: %2d/%2d", NetworkSpectatorCount(), _settings_client.network.max_spectators);
+	IConsolePrintF(CC_DEFAULT, "Invite code:                %s", _network_server_invite_code.c_str());
+	IConsolePrintF(CC_DEFAULT, "Current/maximum clients:    %3d/%3d", _network_game_info.clients_on, _settings_client.network.max_clients);
+	IConsolePrintF(CC_DEFAULT, "Current/maximum companies:  %3d/%3d", (int)Company::GetNumItems(), _settings_client.network.max_companies);
+	IConsolePrintF(CC_DEFAULT, "Current spectators:         %3d", NetworkSpectatorCount());
 
 	return true;
 }
@@ -818,7 +823,7 @@ DEF_CONSOLE_CMD(ConClientNickChange)
 		return true;
 	}
 
-	char *client_name = argv[2];
+	std::string client_name(argv[2]);
 	StrTrimInPlace(client_name);
 	if (!NetworkIsValidClientName(client_name)) {
 		IConsoleError("Cannot give a client an empty name");
@@ -850,11 +855,6 @@ DEF_CONSOLE_CMD(ConJoinCompany)
 
 	if (NetworkClientInfo::GetByClientID(_network_own_client_id)->client_playas == company_id) {
 		IConsoleError("You are already there!");
-		return true;
-	}
-
-	if (company_id == COMPANY_SPECTATOR && NetworkMaxSpectatorsReached()) {
-		IConsoleError("Cannot join spectators, maximum number of spectators reached.");
 		return true;
 	}
 
@@ -1018,16 +1018,15 @@ DEF_CONSOLE_CMD(ConNetworkReconnect)
 			break;
 	}
 
-	if (StrEmpty(_settings_client.network.last_host)) {
+	if (_settings_client.network.last_joined.empty()) {
 		IConsolePrint(CC_DEFAULT, "No server for reconnecting.");
 		return true;
 	}
 
 	/* Don't resolve the address first, just print it directly as it comes from the config file. */
-	IConsolePrintF(CC_DEFAULT, "Reconnecting to %s:%d...", _settings_client.network.last_host, _settings_client.network.last_port);
+	IConsolePrintF(CC_DEFAULT, "Reconnecting to %s ...", _settings_client.network.last_joined.c_str());
 
-	NetworkClientConnectGame(_settings_client.network.last_host, _settings_client.network.last_port, playas);
-	return true;
+	return NetworkClientConnectGame(_settings_client.network.last_joined, playas);
 }
 
 DEF_CONSOLE_CMD(ConNetworkConnect)
@@ -1040,37 +1039,8 @@ DEF_CONSOLE_CMD(ConNetworkConnect)
 	}
 
 	if (argc < 2) return false;
-	if (_networking) NetworkDisconnect(); // we are in network-mode, first close it!
 
-	const char *port = nullptr;
-	const char *company = nullptr;
-	char *ip = argv[1];
-	/* Default settings: default port and new company */
-	uint16 rport = NETWORK_DEFAULT_PORT;
-	CompanyID join_as = COMPANY_NEW_COMPANY;
-
-	ParseGameConnectionString(&company, &port, ip);
-
-	IConsolePrintF(CC_DEFAULT, "Connecting to %s...", ip);
-	if (company != nullptr) {
-		join_as = (CompanyID)atoi(company);
-		IConsolePrintF(CC_DEFAULT, "    company-no: %d", join_as);
-
-		/* From a user pov 0 is a new company, internally it's different and all
-		 * companies are offset by one to ease up on users (eg companies 1-8 not 0-7) */
-		if (join_as != COMPANY_SPECTATOR) {
-			if (join_as > MAX_COMPANIES) return false;
-			join_as--;
-		}
-	}
-	if (port != nullptr) {
-		rport = atoi(port);
-		IConsolePrintF(CC_DEFAULT, "    port: %s", port);
-	}
-
-	NetworkClientConnectGame(ip, rport, join_as);
-
-	return true;
+	return NetworkClientConnectGame(argv[1], COMPANY_NEW_COMPANY);
 }
 
 /*********************************
@@ -1516,10 +1486,9 @@ DEF_CONSOLE_CMD(ConGetSysDate)
 		return true;
 	}
 
-	time_t t;
-	time(&t);
-	auto timeinfo = localtime(&t);
-	IConsolePrintF(CC_DEFAULT, "System Date: %04d-%02d-%02d %02d:%02d:%02d", timeinfo->tm_year + 1900, timeinfo->tm_mon + 1, timeinfo->tm_mday, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+	char buffer[lengthof("2000-01-02 03:04:05")];
+	LocalTime::Format(buffer, lastof(buffer), "%Y-%m-%d %H:%M:%S");
+	IConsolePrintF(CC_DEFAULT, "System Date: %s", buffer);
 	return true;
 }
 
@@ -1817,7 +1786,7 @@ DEF_CONSOLE_CMD(ConCompanies)
 		if (c->is_ai) {
 			password_state = "AI";
 		} else if (_network_server) {
-				password_state = StrEmpty(_network_company_states[c->index].password) ? "unprotected" : "protected";
+			password_state = _network_company_states[c->index].password.empty() ? "unprotected" : "protected";
 		}
 
 		char colour[512];
@@ -1919,7 +1888,7 @@ DEF_CONSOLE_CMD(ConCompanyPassword)
 	}
 
 	CompanyID company_id;
-	const char *password;
+	std::string password;
 	const char *errormsg;
 
 	if (argc == 2) {
@@ -1941,10 +1910,10 @@ DEF_CONSOLE_CMD(ConCompanyPassword)
 
 	password = NetworkChangeCompanyPassword(company_id, password);
 
-	if (StrEmpty(password)) {
+	if (password.empty()) {
 		IConsolePrintF(CC_WARNING, "Company password cleared");
 	} else {
-		IConsolePrintF(CC_WARNING, "Company password changed to: %s", password);
+		IConsolePrintF(CC_WARNING, "Company password changed to: %s", password.c_str());
 	}
 
 	return true;
@@ -1997,7 +1966,7 @@ DEF_CONSOLE_CMD(ConCompanyPasswordHashes)
 		char colour[512];
 		GetString(colour, STR_COLOUR_DARK_BLUE + _company_colours[c->index], lastof(colour));
 		IConsolePrintF(CC_INFO, "#:%d(%s) Company Name: '%s'  Hash: '%s'",
-			c->index + 1, colour, company_name, _network_company_states[c->index].password);
+			c->index + 1, colour, company_name, _network_company_states[c->index].password.c_str());
 	}
 
 	return true;
@@ -2048,7 +2017,7 @@ static void OutputContentState(const ContentInfo *const ci)
 
 	char buf[sizeof(ci->md5sum) * 2 + 1];
 	md5sumToString(buf, lastof(buf), ci->md5sum);
-	IConsolePrintF(state_to_colour[ci->state], "%d, %s, %s, %s, %08X, %s", ci->id, types[ci->type - 1], states[ci->state], ci->name, ci->unique_id, buf);
+	IConsolePrintF(state_to_colour[ci->state], "%d, %s, %s, %s, %08X, %s", ci->id, types[ci->type - 1], states[ci->state], ci->name.c_str(), ci->unique_id, buf);
 }
 
 DEF_CONSOLE_CMD(ConContent)
@@ -2118,7 +2087,7 @@ DEF_CONSOLE_CMD(ConContent)
 	if (strcasecmp(argv[1], "state") == 0) {
 		IConsolePrintF(CC_WHITE, "id, type, state, name");
 		for (ConstContentIterator iter = _network_content_client.Begin(); iter != _network_content_client.End(); iter++) {
-			if (argc > 2 && strcasestr((*iter)->name, argv[2]) == nullptr) continue;
+			if (argc > 2 && strcasestr((*iter)->name.c_str(), argv[2]) == nullptr) continue;
 			OutputContentState(*iter);
 		}
 		return true;
@@ -2205,6 +2174,71 @@ DEF_CONSOLE_CMD(ConNewGRFReload)
 	extern void PostCheckNewGRFLoadWarnings();
 	PostCheckNewGRFLoadWarnings();
 	return true;
+}
+
+DEF_CONSOLE_CMD(ConListDirs)
+{
+	struct SubdirNameMap {
+		Subdirectory subdir; ///< Index of subdirectory type
+		const char *name;    ///< UI name for the directory
+		bool default_only;   ///< Whether only the default (first existing) directory for this is interesting
+	};
+	static const SubdirNameMap subdir_name_map[] = {
+		/* Game data directories */
+		{ BASESET_DIR,      "baseset",    false },
+		{ NEWGRF_DIR,       "newgrf",     false },
+		{ AI_DIR,           "ai",         false },
+		{ AI_LIBRARY_DIR,   "ailib",      false },
+		{ GAME_DIR,         "gs",         false },
+		{ GAME_LIBRARY_DIR, "gslib",      false },
+		{ SCENARIO_DIR,     "scenario",   false },
+		{ HEIGHTMAP_DIR,    "heightmap",  false },
+		/* Default save locations for user data */
+		{ SAVE_DIR,         "save",       true  },
+		{ AUTOSAVE_DIR,     "autosave",   true  },
+		{ SCREENSHOT_DIR,   "screenshot", true  },
+	};
+
+	if (argc != 2) {
+		IConsoleHelp("List all search paths or default directories for various categories.");
+		IConsoleHelp("Usage: list_dirs <category>");
+		std::string cats = subdir_name_map[0].name;
+		bool first = true;
+		for (const SubdirNameMap &sdn : subdir_name_map) {
+			if (!first) cats = cats + ", " + sdn.name;
+			first = false;
+		}
+		IConsolePrintF(CC_WARNING, "Valid categories: %s", cats.c_str());
+		return true;
+	}
+
+	std::set<std::string> seen_dirs;
+	for (const SubdirNameMap &sdn : subdir_name_map) {
+		if (strcasecmp(argv[1], sdn.name) != 0)  continue;
+		bool found = false;
+		for (Searchpath sp : _valid_searchpaths) {
+			/* Get the directory */
+			std::string path = FioGetDirectory(sp, sdn.subdir);
+			/* Check it hasn't already been listed */
+			if (seen_dirs.find(path) != seen_dirs.end()) continue;
+			seen_dirs.insert(path);
+			/* Check if exists and mark found */
+			bool exists = FileExists(path);
+			found |= exists;
+			/* Print */
+			if (!sdn.default_only || exists) {
+				IConsolePrintF(exists ? CC_DEFAULT : CC_INFO, "%s %s", path.c_str(), exists ? "[ok]" : "[not found]");
+				if (sdn.default_only) break;
+			}
+		}
+		if (!found) {
+			IConsolePrintF(CC_ERROR, "No directories exist for category %s", argv[1]);
+		}
+		return true;
+	}
+
+	IConsolePrintF(CC_ERROR, "Invalid category name: %s", argv[1]);
+	return false;
 }
 
 DEF_CONSOLE_CMD(ConResetBlockedHeliports)
@@ -3420,6 +3454,7 @@ void IConsoleStdLibRegister()
 	IConsole::CmdRegister("list_settings",           ConListSettings);
 	IConsole::CmdRegister("gamelog",                 ConGamelogPrint);
 	IConsole::CmdRegister("rescan_newgrf",           ConRescanNewGRF);
+	IConsole::CmdRegister("list_dirs",               ConListDirs);
 
 	IConsole::AliasRegister("dir",                   "ls");
 	IConsole::AliasRegister("del",                   "rm %+");
@@ -3499,10 +3534,8 @@ void IConsoleStdLibRegister()
 	IConsole::AliasRegister("name",                  "setting client_name %+");
 	IConsole::AliasRegister("server_name",           "setting server_name %+");
 	IConsole::AliasRegister("server_port",           "setting server_port %+");
-	IConsole::AliasRegister("server_advertise",      "setting server_advertise %+");
 	IConsole::AliasRegister("max_clients",           "setting max_clients %+");
 	IConsole::AliasRegister("max_companies",         "setting max_companies %+");
-	IConsole::AliasRegister("max_spectators",        "setting max_spectators %+");
 	IConsole::AliasRegister("max_join_time",         "setting max_join_time %+");
 	IConsole::AliasRegister("pause_on_join",         "setting pause_on_join %+");
 	IConsole::AliasRegister("autoclean_companies",   "setting autoclean_companies %+");

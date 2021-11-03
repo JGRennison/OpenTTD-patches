@@ -28,13 +28,12 @@ static uint16 _num_nodes;
  * Get a SaveLoad array for a link graph.
  * @return SaveLoad array for link graph.
  */
-const SaveLoad *GetLinkGraphDesc()
+SaveLoadTable GetLinkGraphDesc()
 {
 	static const SaveLoad link_graph_desc[] = {
 		 SLE_VAR(LinkGraph, last_compression, SLE_INT32),
 		SLEG_VAR(_num_nodes,                  SLE_UINT16),
 		 SLE_VAR(LinkGraph, cargo,            SLE_UINT8),
-		 SLE_END()
 	};
 	return link_graph_desc;
 }
@@ -55,7 +54,7 @@ void GetLinkGraphJobDayLengthScaleAfterLoad(LinkGraphJob *lgj)
  * Of course the settings have to be saved and loaded, too, to avoid desyncs.
  * @return Array of SaveLoad structs.
  */
-const SaveLoad *GetLinkGraphJobDesc()
+SaveLoadTable GetLinkGraphJobDesc()
 {
 	static std::vector<SaveLoad> saveloads;
 	static const char *prefix = "linkgraph.";
@@ -69,8 +68,8 @@ const SaveLoad *GetLinkGraphJobDesc()
 
 		int setting = 0;
 		const SettingDesc *desc = GetSettingDescription(setting);
-		while (desc->save.cmd != SL_END) {
-			if (desc->desc.name != nullptr && strncmp(desc->desc.name, prefix, prefixlen) == 0) {
+		while (desc != nullptr) {
+			if (desc->name != nullptr && strncmp(desc->name, prefix, prefixlen) == 0) {
 				SaveLoad sl = desc->save;
 				char *&address = reinterpret_cast<char *&>(sl.address);
 				address -= offset_gamesettings;
@@ -84,28 +83,25 @@ const SaveLoad *GetLinkGraphJobDesc()
 			SLE_VAR(LinkGraphJob, join_date_ticks,  SLE_INT32),
 			SLE_CONDVAR_X(LinkGraphJob, start_date_ticks,  SLE_INT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE)),
 			SLE_VAR(LinkGraphJob, link_graph.index, SLE_UINT16),
-			SLE_END()
 		};
 
-		int i = 0;
-		do {
-			saveloads.push_back(job_desc[i++]);
-		} while (saveloads[saveloads.size() - 1].cmd != SL_END);
+		for (auto &sld : job_desc) {
+			saveloads.push_back(sld);
+		}
 	}
 
-	return &saveloads[0];
+	return saveloads;
 }
 
 /**
  * Get a SaveLoad array for the link graph schedule.
  * @return SaveLoad array for the link graph schedule.
  */
-const SaveLoad *GetLinkGraphScheduleDesc()
+SaveLoadTable GetLinkGraphScheduleDesc()
 {
 	static const SaveLoad schedule_desc[] = {
-		SLE_LST(LinkGraphSchedule, schedule, REF_LINK_GRAPH),
-		SLE_LST(LinkGraphSchedule, running,  REF_LINK_GRAPH_JOB),
-		SLE_END()
+		SLE_REFLIST(LinkGraphSchedule, schedule, REF_LINK_GRAPH),
+		SLE_REFLIST(LinkGraphSchedule, running,  REF_LINK_GRAPH_JOB),
 	};
 	return schedule_desc;
 }
@@ -121,7 +117,6 @@ static const SaveLoad _node_desc[] = {
 	    SLE_VAR(Node, demand,      SLE_UINT32),
 	    SLE_VAR(Node, station,     SLE_UINT16),
 	    SLE_VAR(Node, last_update, SLE_INT32),
-	    SLE_END()
 };
 
 /**
@@ -134,7 +129,6 @@ static const SaveLoad _edge_desc[] = {
 	     SLE_VAR(Edge, last_unrestricted_update, SLE_INT32),
 	 SLE_CONDVAR(Edge, last_restricted_update,   SLE_INT32, SLV_187, SL_MAX_VERSION),
 	     SLE_VAR(Edge, next_edge,                SLE_UINT16),
-	     SLE_END()
 };
 
 std::vector<SaveLoad> _filtered_node_desc;
@@ -154,13 +148,13 @@ static void FilterDescs()
  */
 void Save_LinkGraph(LinkGraph &lg)
 {
-	uint size = lg.Size();
+	uint16 size = lg.Size();
 	for (NodeID from = 0; from < size; ++from) {
 		Node *node = &lg.nodes[from];
-		SlObjectSaveFiltered(node, _filtered_node_desc.data());
+		SlObjectSaveFiltered(node, _filtered_node_desc);
 		/* ... but as that wasted a lot of space we save a sparse matrix now. */
 		for (NodeID to = from; to != INVALID_NODE; to = lg.edges[from][to].next_edge) {
-			SlObjectSaveFiltered(&lg.edges[from][to], _filtered_edge_desc.data());
+			SlObjectSaveFiltered(&lg.edges[from][to], _filtered_edge_desc);
 		}
 	}
 }
@@ -174,17 +168,17 @@ void Load_LinkGraph(LinkGraph &lg)
 	uint size = lg.Size();
 	for (NodeID from = 0; from < size; ++from) {
 		Node *node = &lg.nodes[from];
-		SlObjectLoadFiltered(node, _filtered_node_desc.data());
+		SlObjectLoadFiltered(node, _filtered_node_desc);
 		if (IsSavegameVersionBefore(SLV_191)) {
 			/* We used to save the full matrix ... */
 			for (NodeID to = 0; to < size; ++to) {
-				SlObjectLoadFiltered(&lg.edges[from][to], _filtered_edge_desc.data());
+				SlObjectLoadFiltered(&lg.edges[from][to], _filtered_edge_desc);
 			}
 		} else {
 			/* ... but as that wasted a lot of space we save a sparse matrix now. */
 			for (NodeID to = from; to != INVALID_NODE; to = lg.edges[from][to].next_edge) {
 				if (to >= size) SlErrorCorrupt("Link graph structure overflow");
-				SlObjectLoadFiltered(&lg.edges[from][to], _filtered_edge_desc.data());
+				SlObjectLoadFiltered(&lg.edges[from][to], _filtered_edge_desc);
 			}
 		}
 	}
@@ -196,7 +190,7 @@ void Load_LinkGraph(LinkGraph &lg)
  */
 static void DoSave_LGRJ(LinkGraphJob *lgj)
 {
-	SlObjectSaveFiltered(lgj, _filtered_job_desc.data());
+	SlObjectSaveFiltered(lgj, _filtered_job_desc);
 	_num_nodes = lgj->Size();
 	SlObjectSaveFiltered(const_cast<LinkGraph *>(&lgj->Graph()), GetLinkGraphDesc()); // GetLinkGraphDesc has no conditionals
 	Save_LinkGraph(const_cast<LinkGraph &>(lgj->Graph()));
@@ -245,8 +239,9 @@ static void Load_LGRJ()
 			NOT_REACHED();
 		}
 		LinkGraphJob *lgj = new (index) LinkGraphJob();
-		SlObjectLoadFiltered(lgj, _filtered_job_desc.data());
+		SlObjectLoadFiltered(lgj, _filtered_job_desc);
 		if (SlXvIsFeatureMissing(XSLFI_LINKGRAPH_DAY_SCALE)) {
+			extern void GetLinkGraphJobDayLengthScaleAfterLoad(LinkGraphJob *lgj);
 			GetLinkGraphJobDayLengthScaleAfterLoad(lgj);
 		}
 		LinkGraph &lg = const_cast<LinkGraph &>(lgj->Graph());
@@ -334,8 +329,10 @@ static void Ptrs_LGRS()
 	SlObject(&LinkGraphSchedule::instance, GetLinkGraphScheduleDesc());
 }
 
-extern const ChunkHandler _linkgraph_chunk_handlers[] = {
+static const ChunkHandler linkgraph_chunk_handlers[] = {
 	{ 'LGRP', Save_LGRP, Load_LGRP, nullptr,   nullptr, CH_ARRAY },
 	{ 'LGRJ', Save_LGRJ, Load_LGRJ, nullptr,   nullptr, CH_ARRAY },
-	{ 'LGRS', Save_LGRS, Load_LGRS, Ptrs_LGRS, nullptr, CH_LAST  }
+	{ 'LGRS', Save_LGRS, Load_LGRS, Ptrs_LGRS, nullptr, CH_RIFF  }
 };
+
+extern const ChunkHandlerTable _linkgraph_chunk_handlers(linkgraph_chunk_handlers);

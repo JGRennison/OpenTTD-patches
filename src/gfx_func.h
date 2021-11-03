@@ -69,6 +69,7 @@ extern std::vector<Dimension> _resolutions;
 extern Dimension _cur_resolution;
 extern Palette _cur_palette; ///< Current palette
 
+void HandleToolbarHotkey(int hotkey);
 void HandleKeypress(uint keycode, WChar key);
 void HandleTextInput(const char *str, bool marked = false, const char *caret = nullptr, const char *insert_location = nullptr, const char *replacement_end = nullptr);
 void HandleCtrlChanged();
@@ -91,10 +92,13 @@ void RedrawScreenRect(int left, int top, int right, int bottom);
 Dimension GetSpriteSize(SpriteID sprid, Point *offset = nullptr, ZoomLevel zoom = ZOOM_LVL_GUI);
 void DrawSpriteViewport(SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub = nullptr);
 void DrawSprite(SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub = nullptr, ZoomLevel zoom = ZOOM_LVL_GUI);
+std::unique_ptr<uint32[]> DrawSpriteToRgbaBuffer(SpriteID spriteId);
 
 int DrawString(int left, int right, int top, const char *str, TextColour colour = TC_FROMSTRING, StringAlignment align = SA_LEFT, bool underline = false, FontSize fontsize = FS_NORMAL);
+int DrawString(int left, int right, int top, const std::string &str, TextColour colour = TC_FROMSTRING, StringAlignment align = SA_LEFT, bool underline = false, FontSize fontsize = FS_NORMAL);
 int DrawString(int left, int right, int top, StringID str, TextColour colour = TC_FROMSTRING, StringAlignment align = SA_LEFT, bool underline = false, FontSize fontsize = FS_NORMAL);
 int DrawStringMultiLine(int left, int right, int top, int bottom, const char *str, TextColour colour = TC_FROMSTRING, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FS_NORMAL);
+int DrawStringMultiLine(int left, int right, int top, int bottom, const std::string &str, TextColour colour = TC_FROMSTRING, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FS_NORMAL);
 int DrawStringMultiLine(int left, int right, int top, int bottom, StringID str, TextColour colour = TC_FROMSTRING, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FS_NORMAL);
 
 void DrawCharCentered(WChar c, const Rect &r, TextColour colour);
@@ -105,6 +109,7 @@ void GfxDrawLine(int left, int top, int right, int bottom, int colour, int width
 void DrawBox(int x, int y, int dx1, int dy1, int dx2, int dy2, int dx3, int dy3);
 
 Dimension GetStringBoundingBox(const char *str, FontSize start_fontsize = FS_NORMAL);
+Dimension GetStringBoundingBox(const std::string &str, FontSize start_fontsize = FS_NORMAL);
 Dimension GetStringBoundingBox(StringID strid);
 int GetStringHeight(const char *str, int maxw, FontSize fontsize = FS_NORMAL);
 int GetStringHeight(StringID str, int maxw);

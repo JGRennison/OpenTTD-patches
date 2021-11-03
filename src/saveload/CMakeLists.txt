@@ -1,3 +1,5 @@
+add_subdirectory(upstream)
+
 add_files(
     afterload.cpp
     ai_sl.cpp
@@ -35,8 +37,10 @@ add_files(
     saveload.cpp
     saveload.h
     saveload_buffer.h
+    saveload_common.h
     saveload_filter.h
     saveload_internal.h
+    saveload_types.h
     signal_sl.cpp
     signs_sl.cpp
     station_sl.cpp

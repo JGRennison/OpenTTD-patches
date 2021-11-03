@@ -130,7 +130,7 @@ void BaseNetworkContentDownloadStatusWindow::DrawWidget(const Rect &r, int widge
 	StringID str;
 	if (this->downloaded_bytes == this->total_bytes) {
 		str = STR_CONTENT_DOWNLOAD_COMPLETE;
-	} else if (!StrEmpty(this->name)) {
+	} else if (!this->name.empty()) {
 		SetDParamStr(0, this->name);
 		SetDParam(1, this->downloaded_files);
 		SetDParam(2, this->total_files);
@@ -146,7 +146,7 @@ void BaseNetworkContentDownloadStatusWindow::DrawWidget(const Rect &r, int widge
 void BaseNetworkContentDownloadStatusWindow::OnDownloadProgress(const ContentInfo *ci, int bytes)
 {
 	if (ci->id != this->cur_id) {
-		strecpy(this->name, ci->filename, lastof(this->name));
+		this->name = ci->filename;
 		this->cur_id = ci->id;
 		this->downloaded_files++;
 	}
@@ -260,7 +260,7 @@ public:
 	{
 		if (widget == WID_NCDS_CANCELOK) {
 			if (this->downloaded_bytes != this->total_bytes) {
-				_network_content_client.Close();
+				_network_content_client.CloseConnection();
 				delete this;
 			} else {
 				/* If downloading succeeded, close the online content window. This will close
@@ -406,7 +406,7 @@ class NetworkContentListWindow : public Window, ContentCallback {
 	/** Sort content by name. */
 	static bool NameSorter(const ContentInfo * const &a, const ContentInfo * const &b)
 	{
-		return strnatcmp(a->name, b->name, true) < 0; // Sort by name (natural sorting).
+		return strnatcmp(a->name.c_str(), b->name.c_str(), true) < 0; // Sort by name (natural sorting).
 	}
 
 	/** Sort content by type. */
@@ -441,10 +441,9 @@ class NetworkContentListWindow : public Window, ContentCallback {
 	static bool CDECL TagNameFilter(const ContentInfo * const *a, ContentListFilterData &filter)
 	{
 		filter.string_filter.ResetState();
-		for (int i = 0; i < (*a)->tag_count; i++) {
-			filter.string_filter.AddLine((*a)->tags[i]);
-		}
-		filter.string_filter.AddLine((*a)->name);
+		for (auto &tag : (*a)->tags) filter.string_filter.AddLine(tag.c_str());
+
+		filter.string_filter.AddLine((*a)->name.c_str());
 		return filter.string_filter.GetState();
 	}
 
@@ -702,17 +701,17 @@ public:
 		SetDParamStr(0, this->selected->name);
 		y = DrawStringMultiLine(r.left + DETAIL_LEFT, r.right - DETAIL_RIGHT, y, max_y, STR_CONTENT_DETAIL_NAME);
 
-		if (!StrEmpty(this->selected->version)) {
+		if (!this->selected->version.empty()) {
 			SetDParamStr(0, this->selected->version);
 			y = DrawStringMultiLine(r.left + DETAIL_LEFT, r.right - DETAIL_RIGHT, y, max_y, STR_CONTENT_DETAIL_VERSION);
 		}
 
-		if (!StrEmpty(this->selected->description)) {
+		if (!this->selected->description.empty()) {
 			SetDParamStr(0, this->selected->description);
 			y = DrawStringMultiLine(r.left + DETAIL_LEFT, r.right - DETAIL_RIGHT, y, max_y, STR_CONTENT_DETAIL_DESCRIPTION);
 		}
 
-		if (!StrEmpty(this->selected->url)) {
+		if (!this->selected->url.empty()) {
 			SetDParamStr(0, this->selected->url);
 			y = DrawStringMultiLine(r.left + DETAIL_LEFT, r.right - DETAIL_RIGHT, y, max_y, STR_CONTENT_DETAIL_URL);
 		}
@@ -724,20 +723,18 @@ public:
 		SetDParam(0, this->selected->filesize);
 		y = DrawStringMultiLine(r.left + DETAIL_LEFT, r.right - DETAIL_RIGHT, y, max_y, STR_CONTENT_DETAIL_FILESIZE);
 
-		if (this->selected->dependency_count != 0) {
+		if (!this->selected->dependencies.empty()) {
 			/* List dependencies */
 			char buf[DRAW_STRING_BUFFER] = "";
 			char *p = buf;
-			for (uint i = 0; i < this->selected->dependency_count; i++) {
-				ContentID cid = this->selected->dependencies[i];
-
+			for (auto &cid : this->selected->dependencies) {
 				/* Try to find the dependency */
 				ConstContentIterator iter = _network_content_client.Begin();
 				for (; iter != _network_content_client.End(); iter++) {
 					const ContentInfo *ci = *iter;
 					if (ci->id != cid) continue;
 
-					p += seprintf(p, lastof(buf), p == buf ? "%s" : ", %s", (*iter)->name);
+					p += seprintf(p, lastof(buf), p == buf ? "%s" : ", %s", (*iter)->name.c_str());
 					break;
 				}
 			}
@@ -745,12 +742,12 @@ public:
 			y = DrawStringMultiLine(r.left + DETAIL_LEFT, r.right - DETAIL_RIGHT, y, max_y, STR_CONTENT_DETAIL_DEPENDENCIES);
 		}
 
-		if (this->selected->tag_count != 0) {
+		if (!this->selected->tags.empty()) {
 			/* List all tags */
 			char buf[DRAW_STRING_BUFFER] = "";
 			char *p = buf;
-			for (uint i = 0; i < this->selected->tag_count; i++) {
-				p += seprintf(p, lastof(buf), i == 0 ? "%s" : ", %s", this->selected->tags[i]);
+			for (auto &tag : this->selected->tags) {
+				p += seprintf(p, lastof(buf), p == buf ? "%s" : ", %s", tag.c_str());
 			}
 			SetDParamStr(0, buf);
 			y = DrawStringMultiLine(r.left + DETAIL_LEFT, r.right - DETAIL_RIGHT, y, max_y, STR_CONTENT_DETAIL_TAGS);
@@ -766,7 +763,7 @@ public:
 			for (const ContentInfo *ci : tree) {
 				if (ci == this->selected || ci->state != ContentInfo::SELECTED) continue;
 
-				p += seprintf(p, lastof(buf), buf == p ? "%s" : ", %s", ci->name);
+				p += seprintf(p, lastof(buf), buf == p ? "%s" : ", %s", ci->name.c_str());
 			}
 			if (p != buf) {
 				SetDParamStr(0, buf);
@@ -843,7 +840,7 @@ public:
 			case WID_NCL_OPEN_URL:
 				if (this->selected != nullptr) {
 					extern void OpenBrowser(const char *url);
-					OpenBrowser(this->selected->url);
+					OpenBrowser(this->selected->url.c_str());
 				}
 				break;
 
@@ -984,7 +981,7 @@ public:
 		this->SetWidgetDisabledState(WID_NCL_UNSELECT, this->filesize_sum == 0);
 		this->SetWidgetDisabledState(WID_NCL_SELECT_ALL, !show_select_all);
 		this->SetWidgetDisabledState(WID_NCL_SELECT_UPDATE, !show_select_upgrade);
-		this->SetWidgetDisabledState(WID_NCL_OPEN_URL, this->selected == nullptr || StrEmpty(this->selected->url));
+		this->SetWidgetDisabledState(WID_NCL_OPEN_URL, this->selected == nullptr || this->selected->url.empty());
 		for (TextfileType tft = TFT_BEGIN; tft < TFT_END; tft++) {
 			this->SetWidgetDisabledState(WID_NCL_TEXTFILE + tft, this->selected == nullptr || this->selected->state != ContentInfo::ALREADY_HERE || this->selected->GetTextfile(tft) == nullptr);
 		}

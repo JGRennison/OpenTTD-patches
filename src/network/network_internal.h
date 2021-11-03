@@ -11,9 +11,13 @@
 #define NETWORK_INTERNAL_H
 
 #include "network_func.h"
+#include "core/tcp_coordinator.h"
 #include "core/tcp_game.h"
 
 #include "../command_type.h"
+#include "../date_type.h"
+
+static const uint32 FIND_SERVER_EXTENDED_TOKEN = 0x2A49582A;
 
 #ifdef RANDOM_DEBUG
 /**
@@ -86,19 +90,22 @@ extern NetworkJoinStatus _network_join_status;
 extern uint8 _network_join_waiting;
 extern uint32 _network_join_bytes;
 extern uint32 _network_join_bytes_total;
+extern ConnectionType _network_server_connection_type;
+extern std::string _network_server_invite_code;
+
+/* Variable available for clients. */
+extern std::string _network_server_name;
 
 extern uint8 _network_reconnect;
 
 extern CompanyMask _network_company_passworded;
 
-void NetworkTCPQueryServer(NetworkAddress address);
+void NetworkQueryServer(const std::string &connection_string);
 
 void GetBindAddresses(NetworkAddressList *addresses, uint16 port);
-void NetworkAddServer(const char *b);
+struct NetworkGameList *NetworkAddServer(const std::string &connection_string, bool manually = true, bool never_expire = false);
 void NetworkRebuildHostList();
 void UpdateNetworkGameWindow();
-
-bool IsNetworkCompatibleVersion(const char *version, bool extended = false);
 
 /* From network_command.cpp */
 /**
@@ -118,11 +125,15 @@ void NetworkExecuteLocalCommandQueue();
 void NetworkFreeLocalCommandQueue();
 void NetworkSyncCommandQueue(NetworkClientSocket *cs);
 
-void NetworkError(StringID error_string);
-void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send, const char *name, const char *str = "", NetworkTextMessageData data = NetworkTextMessageData());
+void ShowNetworkError(StringID error_string);
+void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send, const std::string &name, const std::string &str = "", NetworkTextMessageData data = NetworkTextMessageData(), const char *data_str = "");
 uint NetworkCalculateLag(const NetworkClientSocket *cs);
 StringID GetNetworkErrorMsg(NetworkErrorCode err);
-bool NetworkFindName(char *new_name, const char *last);
-const char *GenerateCompanyPasswordHash(const char *password, const char *password_server_id, uint32 password_game_seed);
+bool NetworkMakeClientNameUnique(std::string &new_name);
+std::string GenerateCompanyPasswordHash(const std::string &password, const std::string &password_server_id, uint32 password_game_seed);
+
+std::string_view ParseCompanyFromConnectionString(const std::string &connection_string, CompanyID *company_id);
+NetworkAddress ParseConnectionString(const std::string &connection_string, uint16 default_port);
+std::string NormalizeConnectionString(const std::string &connection_string, uint16 default_port);
 
 #endif /* NETWORK_INTERNAL_H */

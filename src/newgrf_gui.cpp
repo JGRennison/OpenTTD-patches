@@ -51,9 +51,9 @@ void ShowNewGRFError()
 		if (c->error == nullptr || (c->error->severity != STR_NEWGRF_ERROR_MSG_FATAL && c->error->severity != STR_NEWGRF_ERROR_MSG_ERROR)) continue;
 
 		SetDParam   (0, c->error->message != STR_NULL ? c->error->message : STR_JUST_RAW_STRING);
-		SetDParamStr(1, c->error->custom_message.c_str());
+		SetDParamStr(1, c->error->custom_message);
 		SetDParamStr(2, c->filename);
-		SetDParamStr(3, c->error->data.c_str());
+		SetDParamStr(3, c->error->data);
 		for (uint i = 0; i < lengthof(c->error->param_value); i++) {
 			SetDParam(4 + i, c->error->param_value[i]);
 		}
@@ -70,9 +70,9 @@ static void ShowNewGRFInfo(const GRFConfig *c, uint x, uint y, uint right, uint 
 {
 	if (c->error != nullptr) {
 		char message[512];
-		SetDParamStr(0, c->error->custom_message.c_str()); // is skipped by built-in messages
+		SetDParamStr(0, c->error->custom_message); // is skipped by built-in messages
 		SetDParamStr(1, c->filename);
-		SetDParamStr(2, c->error->data.c_str());
+		SetDParamStr(2, c->error->data);
 		for (uint i = 0; i < lengthof(c->error->param_value); i++) {
 			SetDParam(3 + i, c->error->param_value[i]);
 		}
@@ -752,7 +752,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 			case WID_NS_PRESET_LIST: {
 				Dimension d = GetStringBoundingBox(STR_NUM_CUSTOM);
 				for (const auto &i : this->grf_presets) {
-					SetDParamStr(0, i.c_str());
+					SetDParamStr(0, i);
 					d = maxdim(d, GetStringBoundingBox(STR_JUST_RAW_STRING));
 				}
 				d.width += padding.width;
@@ -785,7 +785,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 					SetDParam(0, STR_NUM_CUSTOM);
 				} else {
 					SetDParam(0, STR_JUST_RAW_STRING);
-					SetDParamStr(1, this->grf_presets[this->preset].c_str());
+					SetDParamStr(1, this->grf_presets[this->preset]);
 				}
 				break;
 		}
@@ -1554,7 +1554,7 @@ void ShowMissingContentWindow(const GRFConfig *list)
 		ContentInfo *ci = new ContentInfo();
 		ci->type = CONTENT_TYPE_NEWGRF;
 		ci->state = ContentInfo::DOES_NOT_EXIST;
-		strecpy(ci->name, c->GetName(), lastof(ci->name));
+		ci->name = c->GetName();
 		ci->unique_id = BSWAP32(c->ident.grfid);
 		memcpy(ci->md5sum, HasBit(c->flags, GCF_COMPATIBLE) ? c->original_md5sum : c->ident.md5sum, sizeof(ci->md5sum));
 		cv.push_back(ci);

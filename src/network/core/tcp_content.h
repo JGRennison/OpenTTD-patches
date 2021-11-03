@@ -21,8 +21,6 @@
 /** Base socket handler for all Content TCP sockets */
 class NetworkContentSocketHandler : public NetworkTCPSocketHandler {
 protected:
-	void Close() override;
-
 	bool ReceiveInvalidPacket(PacketContentType type);
 
 	/**
@@ -128,7 +126,11 @@ public:
 	}
 
 	/** On destructing of this class, the socket needs to be closed */
-	virtual ~NetworkContentSocketHandler() { this->Close(); }
+	virtual ~NetworkContentSocketHandler()
+	{
+		/* Virtual functions get called statically in destructors, so make it explicit to remove any confusion. */
+		this->CloseSocket();
+	}
 
 	bool ReceivePackets();
 };

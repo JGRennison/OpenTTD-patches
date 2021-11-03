@@ -20,50 +20,6 @@
 
 #include "../../safeguards.h"
 
-/** Clear everything in the struct */
-ContentInfo::ContentInfo()
-{
-	memset(this, 0, sizeof(*this));
-}
-
-/** Free everything allocated */
-ContentInfo::~ContentInfo()
-{
-	free(this->dependencies);
-	free(this->tags);
-}
-
-/**
- * Copy data from other #ContentInfo and take ownership of allocated stuff.
- * @param other Source to copy from. #dependencies and #tags will be NULLed.
- */
-void ContentInfo::TransferFrom(ContentInfo *other)
-{
-	if (other != this) {
-		free(this->dependencies);
-		free(this->tags);
-		memcpy(this, other, sizeof(ContentInfo));
-		other->dependencies = nullptr;
-		other->tags = nullptr;
-	}
-}
-
-/**
- * Get the size of the data as send over the network.
- * @return the size.
- */
-size_t ContentInfo::Size() const
-{
-	size_t len = 0;
-	for (uint i = 0; i < this->tag_count; i++) len += strlen(this->tags[i]) + 1;
-
-	/* The size is never larger than the content info size plus the size of the
-	 * tags and dependencies */
-	return sizeof(*this) +
-			sizeof(this->dependency_count) +
-			sizeof(*this->dependencies) * this->dependency_count;
-}
-
 /**
  * Is the state either selected or autoselected?
  * @return true iff that's the case
@@ -137,15 +93,6 @@ const char *ContentInfo::GetTextfile(TextfileType type) const
 	return ::GetTextfile(type, GetContentInfoSubDir(this->type), tmp);
 }
 
-void NetworkContentSocketHandler::Close()
-{
-	CloseConnection();
-	if (this->sock == INVALID_SOCKET) return;
-
-	closesocket(this->sock);
-	this->sock = INVALID_SOCKET;
-}
-
 /**
  * Handle the given packet, i.e. pass it to the right
  * parser receive command.
@@ -167,9 +114,9 @@ bool NetworkContentSocketHandler::HandlePacket(Packet *p)
 
 		default:
 			if (this->HasClientQuit()) {
-				DEBUG(net, 0, "[tcp/content] received invalid packet type %d", type);
+				DEBUG(net, 0, "[tcp/content] Received invalid packet type %d", type);
 			} else {
-				DEBUG(net, 0, "[tcp/content] received illegal packet");
+				DEBUG(net, 0, "[tcp/content] Received illegal packet");
 			}
 			return false;
 	}
@@ -219,7 +166,7 @@ bool NetworkContentSocketHandler::ReceivePackets()
  */
 bool NetworkContentSocketHandler::ReceiveInvalidPacket(PacketContentType type)
 {
-	DEBUG(net, 0, "[tcp/content] received illegal packet type %d", type);
+	DEBUG(net, 0, "[tcp/content] Received illegal packet type %d", type);
 	return false;
 }
 

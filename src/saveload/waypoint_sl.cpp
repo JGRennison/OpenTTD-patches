@@ -180,8 +180,6 @@ static const SaveLoad _old_waypoint_desc[] = {
 	SLE_CONDVAR(OldWaypoint, localidx,   SLE_UINT8,                   SLV_3, SL_MAX_VERSION),
 	SLE_CONDVAR(OldWaypoint, grfid,      SLE_UINT32,                 SLV_17, SL_MAX_VERSION),
 	SLE_CONDVAR(OldWaypoint, owner,      SLE_UINT8,                 SLV_101, SL_MAX_VERSION),
-
-	SLE_END()
 };
 
 static void Load_WAYP()
@@ -226,6 +224,8 @@ static void Ptrs_WAYP()
 	}
 }
 
-extern const ChunkHandler _waypoint_chunk_handlers[] = {
-	{ 'CHKP', nullptr, Load_WAYP, Ptrs_WAYP, nullptr, CH_ARRAY | CH_LAST},
+static const ChunkHandler waypoint_chunk_handlers[] = {
+	{ 'CHKP', nullptr, Load_WAYP, Ptrs_WAYP, nullptr, CH_ARRAY },
 };
+
+extern const ChunkHandlerTable _waypoint_chunk_handlers(waypoint_chunk_handlers);

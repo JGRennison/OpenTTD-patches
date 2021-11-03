@@ -14,10 +14,6 @@
 
 void NetworkUDPInitialize();
 void NetworkUDPSearchGame();
-void NetworkUDPQueryMasterServer();
-void NetworkUDPQueryServer(NetworkAddress address, bool manually = false);
-void NetworkUDPAdvertise();
-void NetworkUDPRemoveAdvertise(bool blocking);
 void NetworkUDPClose();
 void NetworkUDPServerListen();
 void NetworkBackgroundUDPLoop();

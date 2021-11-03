@@ -273,7 +273,7 @@ void Squirrel::RunError(HSQUIRRELVM vm, const SQChar *error)
 
 SQInteger Squirrel::_RunError(HSQUIRRELVM vm)
 {
-	const SQChar *sErr = 0;
+	const SQChar *sErr = nullptr;
 
 	if (sq_gettop(vm) >= 1) {
 		if (SQ_SUCCEEDED(sq_getstring(vm, -1, &sErr))) {
@@ -465,7 +465,7 @@ bool Squirrel::CallStringMethodStrdup(HSQOBJECT instance, const char *method_nam
 	if (!this->CallMethod(instance, method_name, &ret, suspend)) return false;
 	if (ret._type != OT_STRING) return false;
 	*res = stredup(ObjectToString(&ret));
-	ValidateString(*res);
+	StrMakeValidInPlace(const_cast<char *>(*res));
 	return true;
 }
 
@@ -668,8 +668,7 @@ SQRESULT Squirrel::LoadFile(HSQUIRRELVM vm, const char *filename, SQBool printer
 	}
 	unsigned short bom = 0;
 	if (size >= 2) {
-		size_t sr = fread(&bom, 1, sizeof(bom), file);
-		(void)sr; // Inside tar, no point checking return value of fread
+		[[maybe_unused]] size_t sr = fread(&bom, 1, sizeof(bom), file);
 	}
 
 	SQLEXREADFUNC func;

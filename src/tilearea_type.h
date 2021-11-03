@@ -15,6 +15,8 @@
 #include "map_func.h"
 #include <tuple>
 
+class OrthogonalTileIterator;
+
 /** Represents the covered area of e.g. a rail station */
 struct OrthogonalTileArea {
 	TileIndex tile; ///< The base tile of the area
@@ -66,6 +68,10 @@ struct OrthogonalTileArea {
 	{
 		return std::tie(tile, w, h) == std::tie(other.tile, other.w, other.h);
 	}
+
+	OrthogonalTileIterator begin() const;
+
+	OrthogonalTileIterator end() const;
 };
 
 /** Represents a diagonal tile area. */
@@ -132,6 +138,15 @@ public:
 	}
 
 	/**
+	 * Get the tile we are currently at.
+	 * @return The tile we are at, or INVALID_TILE when we're done.
+	 */
+	inline TileIndex operator *() const
+	{
+		return this->tile;
+	}
+
+	/**
 	 * Move ourselves to the next tile in the rectangle on the map.
 	 */
 	virtual TileIterator& operator ++() = 0;
@@ -143,8 +158,7 @@ public:
 };
 
 /** Iterator to iterate over a tile area (rectangle) of the map. */
-template<uint N>
-class OrthogonalTileIteratorStep : public TileIterator {
+class OrthogonalTileIterator : public TileIterator {
 private:
 	int w;          ///< The width of the iterated area.
 	int x;          ///< The current 'x' position in the rectangle.
@@ -155,7 +169,7 @@ public:
 	 * Construct the iterator.
 	 * @param ta Area, i.e. begin point and width/height of to-be-iterated area.
 	 */
-	OrthogonalTileIteratorStep(const OrthogonalTileArea &ta) : TileIterator(ta.w == 0 || ta.h == 0 ? INVALID_TILE : ta.tile), w(ta.w / N), x(ta.w / N), y(ta.h / N)
+	OrthogonalTileIterator(const OrthogonalTileArea &ta) : TileIterator(ta.w == 0 || ta.h == 0 ? INVALID_TILE : ta.tile), w(ta.w), x(ta.w), y(ta.h)
 	{
 	}
 
@@ -164,9 +178,9 @@ public:
 	 * @param corner1 Tile from where to begin iterating.
 	 * @param corner2 Tile where to end the iterating.
 	 */
-	OrthogonalTileIteratorStep(TileIndex corner1, TileIndex corner2)
+	OrthogonalTileIterator(TileIndex corner1, TileIndex corner2)
 	{
-		*this = OrthogonalTileIteratorStep(OrthogonalTileArea(corner1, corner2));
+		*this = OrthogonalTileIterator(OrthogonalTileArea(corner1, corner2));
 	}
 
 	/**
@@ -177,10 +191,10 @@ public:
 		assert(this->tile != INVALID_TILE);
 
 		if (--this->x > 0) {
-			this->tile += N;
+			this->tile++;
 		} else if (--this->y > 0) {
 			this->x = this->w;
-			this->tile += TileDiffXY(N, N) - (N * this->w);
+			this->tile += TileDiffXY(1, 1) - this->w;
 		} else {
 			this->tile = INVALID_TILE;
 		}
@@ -189,11 +203,9 @@ public:
 
 	virtual TileIterator *Clone() const
 	{
-		return new OrthogonalTileIteratorStep(*this);
+		return new OrthogonalTileIterator(*this);
 	}
 };
-
-using OrthogonalTileIterator = OrthogonalTileIteratorStep<1>;
 
 /** Iterator to iterate over a tile area (rectangle) of the map.
  * It prefetches tiles once per row.
@@ -292,15 +304,5 @@ public:
 		return new DiagonalTileIterator(*this);
 	}
 };
-
-/**
- * A loop which iterates over the tiles of a TileArea.
- * @param var The name of the variable which contains the current tile.
- *            This variable will be allocated in this \c for of this loop.
- * @param ta  The tile area to search over.
- */
-#define TILE_AREA_LOOP(var, ta) for (OrthogonalTileIterator var(ta); var != INVALID_TILE; ++var)
-#define TILE_AREA_LOOP_STEP(var, ta, N) for (OrthogonalTileIteratorStep<N> var(ta); var != INVALID_TILE; ++var)
-#define TILE_AREA_LOOP_WITH_PREFETCH(var, ta) for (OrthogonalPrefetchTileIterator var(ta); var != INVALID_TILE; ++var)
 
 #endif /* TILEAREA_TYPE_H */

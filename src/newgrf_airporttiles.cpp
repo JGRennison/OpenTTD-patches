@@ -155,7 +155,7 @@ static uint32 GetAirportTileIDAtOffset(TileIndex tile, const Station *st, uint32
 		}
 	}
 	/* The tile has no spritegroup */
-	return 0xFF << 8 | ats->grf_prop.subst_id; // so just give him the substitute
+	return 0xFF << 8 | ats->grf_prop.subst_id; // so just give it the substitute
 }
 
 /* virtual */ uint32 AirportTileScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
@@ -307,7 +307,7 @@ void AirportAnimationTrigger(Station *st, AirpAnimationTrigger trigger, CargoID 
 {
 	if (st->airport.tile == INVALID_TILE) return;
 
-	TILE_AREA_LOOP(tile, st->airport) {
+	for (TileIndex tile : st->airport) {
 		if (st->TileBelongsToAirport(tile)) AirportTileAnimationTrigger(st, tile, trigger, cargo_type);
 	}
 }

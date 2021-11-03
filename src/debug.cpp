@@ -26,7 +26,7 @@
 #include "os/windows/win32.h"
 #endif
 
-#include <time.h>
+#include "walltime_func.h"
 
 #include "network/network_admin.h"
 SOCKET _debug_socket = INVALID_SOCKET;
@@ -204,9 +204,7 @@ static void debug_print(const char *dbg, const char *buf)
 	 * crashing, and NetworkTextMessage includes these */
 #if defined(_WIN32)
 	if (strcmp(dbg, "desync") != 0) {
-		wchar_t system_buf[512];
-		convert_to_fs(buffer, system_buf, lengthof(system_buf));
-		fputws(system_buf, stderr);
+		fputs(buffer, stderr);
 	}
 #else
 	fputs(buffer, stderr);
@@ -329,8 +327,7 @@ const char *GetLogPrefix()
 {
 	static char _log_prefix[24];
 	if (_settings_client.gui.show_date_in_logs) {
-		time_t cur_time = time(nullptr);
-		strftime(_log_prefix, sizeof(_log_prefix), "[%Y-%m-%d %H:%M:%S] ", localtime(&cur_time));
+		LocalTime::Format(_log_prefix, lastof(_log_prefix), "[%Y-%m-%d %H:%M:%S] ");
 	} else {
 		*_log_prefix = '\0';
 	}

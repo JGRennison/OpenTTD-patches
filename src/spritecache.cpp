@@ -316,9 +316,7 @@ static void ResizeSpriteOut(SpriteLoader::Sprite *sprite, ZoomLevel zoom)
 
 	SpriteLoader::CommonPixel *dst = sprite[zoom].data;
 	const SpriteLoader::CommonPixel *src = sprite[zoom - 1].data;
-#ifdef WITH_ASSERT
-	const SpriteLoader::CommonPixel *src_end = src + sprite[zoom - 1].height * sprite[zoom - 1].width;
-#endif
+	[[maybe_unused]] const SpriteLoader::CommonPixel *src_end = src + sprite[zoom - 1].height * sprite[zoom - 1].width;
 
 	for (uint y = 0; y < sprite[zoom].height; y++) {
 		const SpriteLoader::CommonPixel *src_ln = src + sprite[zoom - 1].width;
@@ -438,7 +436,7 @@ static bool PadSprites(SpriteLoader::Sprite *sprite, unsigned int sprite_avail, 
 static bool ResizeSprites(SpriteLoader::Sprite *sprite, unsigned int sprite_avail, SpriteEncoder *encoder)
 {
 	/* Create a fully zoomed image if it does not exist */
-	ZoomLevel first_avail = static_cast<ZoomLevel>(FIND_FIRST_BIT(sprite_avail));
+	ZoomLevel first_avail = static_cast<ZoomLevel>(FindFirstBit(sprite_avail));
 	if (first_avail != ZOOM_LVL_NORMAL) {
 		if (!ResizeSpriteIn(sprite, first_avail, ZOOM_LVL_NORMAL)) return false;
 		SetBit(sprite_avail, ZOOM_LVL_NORMAL);

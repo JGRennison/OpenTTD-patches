@@ -26,8 +26,10 @@ macro(compile_flags)
         add_compile_options(/Zc:rvalueCast)
 
         if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-            # Enable multi-threaded compilation.
-            add_compile_options(/MP)
+            add_compile_options(
+                /MP # Enable multi-threaded compilation.
+                /FC # Display the full path of source code files passed to the compiler in diagnostics.
+            )
         endif()
     endif()
 
@@ -165,7 +167,7 @@ macro(compile_flags)
         message(FATAL_ERROR "No warning flags are set for this compiler yet; please consider creating a Pull Request to add support for this compiler.")
     endif()
 
-    if(NOT WIN32)
+    if(NOT WIN32 AND NOT HAIKU)
         # rdynamic is used to get useful stack traces from crash reports.
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -rdynamic")
     endif()

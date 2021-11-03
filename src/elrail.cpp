@@ -572,8 +572,7 @@ static void DrawRailCatenaryRailway(const TileInfo *ti)
 	};
 
 	/* Drawing of pylons is finished, now draw the wires */
-	Track t;
-	FOR_EACH_SET_TRACK(t, wireconfig[TS_HOME]) {
+	for (Track t : SetTrackBitIterator(wireconfig[TS_HOME])) {
 		SpriteID wire_base = get_wire_sprite(t, (t == halftile_track));
 		byte PCPconfig = HasBit(PCPstatus, PCPpositions[t][0]) +
 			(HasBit(PCPstatus, PCPpositions[t][1]) << 1);
@@ -695,9 +694,9 @@ void DrawRailCatenary(const TileInfo *ti)
 	DrawRailCatenaryRailway(ti);
 }
 
-bool SettingsDisableElrail(int32 p1)
+void SettingsDisableElrail(int32 new_value)
 {
-	bool disable = (p1 != 0);
+	bool disable = (new_value != 0);
 
 	/* we will now walk through all electric train engines and change their railtypes if it is the wrong one*/
 	const RailType old_railtype = disable ? RAILTYPE_ELECTRIC : RAILTYPE_RAIL;
@@ -741,5 +740,4 @@ bool SettingsDisableElrail(int32 p1)
 	 * rails. It may have unintended consequences if that function is ever
 	 * extended, though. */
 	ReinitGuiAfterToggleElrail(disable);
-	return true;
 }

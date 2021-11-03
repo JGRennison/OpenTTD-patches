@@ -33,6 +33,7 @@
 #if defined(__HAIKU__)
 #	include <SupportDefs.h>
 #	include <unistd.h>
+#	define _DEFAULT_SOURCE
 #	define _GNU_SOURCE
 #	define TROUBLED_INTS
 #endif
@@ -130,6 +131,7 @@
 	/* Warn about functions using 'printf' format syntax. First argument determines which parameter
 	 * is the format string, second argument is start of values passed to printf. */
 	#define WARN_FORMAT(string, args) __attribute__ ((format (printf, string, args)))
+	#define WARN_TIME_FORMAT(string) __attribute__ ((format (strftime, string, 0)))
 	#define FINAL final
 
 	/* Use fallthrough attribute where supported */
@@ -144,10 +146,17 @@
 #	endif
 #endif /* __GNUC__ || __clang__ */
 
+#if __GNUC__ > 11 || (__GNUC__ == 11 && __GNUC_MINOR__ >= 1)
+#      define NOACCESS(args) __attribute__ ((access (none, args)))
+#else
+#      define NOACCESS(args)
+#endif
+
 #if defined(__WATCOMC__)
 #	define NORETURN
 #	define CDECL
 #	define WARN_FORMAT(string, args)
+#	define WARN_TIME_FORMAT(string)
 #	define FINAL
 #	define FALLTHROUGH
 #	include <malloc.h>
@@ -196,6 +205,7 @@
 
 #	define CDECL _cdecl
 #	define WARN_FORMAT(string, args)
+#	define WARN_TIME_FORMAT(string)
 #	define FINAL final
 
 	/* fallthrough attribute, VS 2017 */
@@ -458,7 +468,6 @@ const char *assert_tile_info(uint32 tile);
 
 /* Asserts are enabled if NDEBUG isn't defined or WITH_ASSERT is defined. */
 #if !defined(NDEBUG) || defined(WITH_ASSERT)
-#	define OTTD_ASSERT
 #	define assert_msg(expression, ...) if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, nullptr, __VA_ARGS__);
 #	define assert_msg_tile(expression, tile, ...) if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, assert_tile_info(tile), __VA_ARGS__);
 #	define assert_tile(expression, tile) if (unlikely(!(expression))) error("Assertion failed at line %i of %s: %s\n\t%s", __LINE__, __FILE__, #expression, assert_tile_info(tile));

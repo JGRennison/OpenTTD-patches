@@ -103,7 +103,7 @@ void LinkGraphJob::FinaliseJob()
 	/* Link graph has been merged into another one. */
 	if (!LinkGraph::IsValidID(this->link_graph.index)) return;
 
-	uint size = this->Size();
+	uint16 size = this->Size();
 	for (NodeID node_id = 0; node_id < size; ++node_id) {
 		Node from = (*this)[node_id];
 

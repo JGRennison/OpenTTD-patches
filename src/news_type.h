@@ -115,6 +115,12 @@ struct NewsTypeData {
 	NewsDisplay GetDisplay() const;
 };
 
+/** Container for any custom data that must be deleted after the news item has reached end-of-life. */
+struct NewsAllocatedData {
+	virtual ~NewsAllocatedData() {}
+};
+
+
 /** Information about a single item of news. */
 struct NewsItem {
 	NewsItem *prev;              ///< Previous news item
@@ -129,14 +135,17 @@ struct NewsItem {
 	uint32 ref1;                 ///< Reference 1 to some object: Used for a possible viewport, scrolling after clicking on the news, and for deleting the news when the object is deleted.
 	uint32 ref2;                 ///< Reference 2 to some object: Used for scrolling after clicking on the news, and for deleting the news when the object is deleted.
 
-	void *free_data;             ///< Data to be freed when the news item has reached its end.
-
-	~NewsItem()
-	{
-		free(this->free_data);
-	}
+	std::unique_ptr<const NewsAllocatedData> data; ///< Custom data for the news item that will be deallocated (deleted) when the news item has reached its end.
 
 	uint64 params[10]; ///< Parameters for string resolving.
+
+	NewsItem(StringID string_id, NewsType type, NewsFlag flags, NewsReferenceType reftype1, uint32 ref1, NewsReferenceType reftype2, uint32 ref2, const NewsAllocatedData *data);
+};
+
+/** Container for a single string to be passed as NewsAllocatedData. */
+struct NewsStringData : NewsAllocatedData {
+	std::string string; ///< The string to retain.
+	NewsStringData(const std::string &str) : string(str) {}
 };
 
 /**
@@ -145,15 +154,15 @@ struct NewsItem {
  * of the companies and the fact that the company data is reset,
  * resulting in wrong names and such.
  */
-struct CompanyNewsInformation {
-	char company_name[64];       ///< The name of the company
-	char president_name[64];     ///< The name of the president
-	char other_company_name[64]; ///< The name of the company taking over this one
+struct CompanyNewsInformation : NewsAllocatedData {
+	std::string company_name;       ///< The name of the company
+	std::string president_name;     ///< The name of the president
+	std::string other_company_name; ///< The name of the company taking over this one
 
 	uint32 face; ///< The face of the president
 	byte colour; ///< The colour related to the company
 
-	void FillData(const struct Company *c, const struct Company *other = nullptr);
+	CompanyNewsInformation(const struct Company *c, const struct Company *other = nullptr);
 };
 
 #endif /* NEWS_TYPE_H */

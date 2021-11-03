@@ -39,7 +39,7 @@ static const uint NETWORK_CHAT_LINE_SPACING = 3;
 
 /** Container for a message. */
 struct ChatMessage {
-	char message[DRAW_STRING_BUFFER]; ///< The action message.
+	std::string message; ///< The action message.
 	TextColour colour;  ///< The colour of the message.
 	std::chrono::steady_clock::time_point remove_time; ///< The time to remove the message.
 };
@@ -87,24 +87,15 @@ static inline bool HaveChatMessages(bool show_all)
  * @param duration The duration of the chat message in seconds
  * @param message message itself in printf() style
  */
-void CDECL NetworkAddChatMessage(TextColour colour, uint duration, const char *message, ...)
+void CDECL NetworkAddChatMessage(TextColour colour, uint duration, const std::string &message)
 {
-	char buf[DRAW_STRING_BUFFER];
-	va_list va;
-
-	va_start(va, message);
-	vseprintf(buf, lastof(buf), message, va);
-	va_end(va);
-
-	Utf8TrimString(buf, DRAW_STRING_BUFFER);
-
 	if (_chatmsg_list.size() == MAX_CHAT_MESSAGES) {
 		_chatmsg_list.pop_back();
 	}
 
 	ChatMessage *cmsg = &_chatmsg_list.emplace_front();
-	strecpy(cmsg->message, buf, lastof(cmsg->message));
-	cmsg->colour = (colour & TC_IS_PALETTE_COLOUR) ? colour : TC_WHITE;
+	cmsg->message = message;
+	cmsg->colour = colour;
 	cmsg->remove_time = std::chrono::steady_clock::now() + std::chrono::seconds(duration);
 
 	_chatmessage_dirty_time = std::chrono::steady_clock::now();
@@ -137,7 +128,7 @@ void NetworkUndrawChatMessage()
 	/* Sometimes we also need to hide the cursor
 	 *   This is because both textmessage and the cursor take a shot of the
 	 *   screen before drawing.
-	 *   Now the textmessage takes his shot and paints his data before the cursor
+	 *   Now the textmessage takes its shot and paints its data before the cursor
 	 *   does, so in the shot of the cursor is the screen-data of the textmessage
 	 *   included when the cursor hangs somewhere over the textmessage. To
 	 *   avoid wrong repaints, we undraw the cursor in that case, and everything
@@ -268,9 +259,9 @@ void NetworkDrawChatMessage()
  * @param type The type of destination.
  * @param dest The actual destination index.
  */
-static void SendChat(const char *buf, DestType type, int dest)
+static void SendChat(const std::string &buf, DestType type, int dest)
 {
-	if (StrEmpty(buf)) return;
+	if (buf.empty()) return;
 	assert(type >= DESTTYPE_BROADCAST && type <= DESTTYPE_CLIENT);
 	if (!_network_server) {
 		MyClient::SendChat((NetworkAction)(NETWORK_ACTION_CHAT + type), type, dest, buf, NetworkTextMessageData());
@@ -343,7 +334,7 @@ struct NetworkChatWindow : public Window {
 			/* Skip inactive clients */
 			for (NetworkClientInfo *ci : NetworkClientInfo::Iterate(*item)) {
 				*item = ci->index;
-				return ci->client_name;
+				return ci->client_name.c_str();
 			}
 			*item = MAX_CLIENT_SLOTS;
 		}

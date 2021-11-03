@@ -27,6 +27,8 @@
 
 #include "sortlist_type.h"
 
+#include "saveload/saveload_common.h"
+
 #include "zoom_func.h"
 
 struct TemplateVehicle;
@@ -82,7 +84,7 @@ private:
 	TemplateVehicle *first;                     ///< NOSAVE: pointer to the first vehicle in the chain
 
 public:
-	friend const SaveLoad* GTD();
+	friend const SaveLoadTable GTD();
 	friend void AfterLoadTemplateVehicles();
 
 	// Template usage configuration

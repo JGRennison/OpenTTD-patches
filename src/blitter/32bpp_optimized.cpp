@@ -313,7 +313,7 @@ template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const
 		if (zoom_max == zoom_min) zoom_max = ZOOM_LVL_DRAW_SPR;
 	}
 
-	BlitterSpriteFlags flags = SF_NO_REMAP | SF_NO_ANIM;
+	BlitterSpriteFlags flags = BSF_NO_REMAP | BSF_NO_ANIM;
 
 	for (ZoomLevel z = zoom_min; z <= zoom_max; z++) {
 		const SpriteLoader::Sprite *src_orig = &sprite[z];
@@ -354,11 +354,11 @@ template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const
 
 				if (a != 0) {
 					dst_px->a = a;
-					if (a != 0 && a != 255) flags |= SF_TRANSLUCENT;
+					if (a != 0 && a != 255) flags |= BSF_TRANSLUCENT;
 					*dst_n = src->m;
 					if (src->m != 0) {
-						flags &= ~SF_NO_REMAP;
-						if (src->m >= PALETTE_ANIM_START) flags &= ~SF_NO_ANIM;
+						flags &= ~BSF_NO_REMAP;
+						if (src->m >= PALETTE_ANIM_START) flags &= ~BSF_NO_ANIM;
 
 						/* Get brightest value */
 						uint8 rgb_max = std::max({ src->r, src->g, src->b });

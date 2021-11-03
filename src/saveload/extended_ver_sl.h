@@ -11,6 +11,7 @@
 #define EXTENDED_VER_SL_H
 
 #include "../core/bitmath_func.hpp"
+#include "../core/enum_type.hpp"
 
 #include <vector>
 
@@ -111,6 +112,7 @@ enum SlXvFeatureIndex {
 	XSLFI_DEPOT_ORDER_EXTRA_FLAGS,                ///< Depot order extra flags
 	XSLFI_EXTRA_SIGNAL_TYPES,                     ///< Extra signal types
 	XSLFI_BANKRUPTCY_EXTRA,                       ///< Extra company bankruptcy fields
+	XSLFI_SCRIPT_INT64,                           ///< See: SLV_SCRIPT_INT64
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk

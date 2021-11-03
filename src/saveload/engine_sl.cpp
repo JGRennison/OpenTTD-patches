@@ -43,8 +43,6 @@ static const SaveLoad _engine_desc[] = {
 	 SLE_CONDSTR(Engine, name,                SLE_STR, 0,                 SLV_84, SL_MAX_VERSION),
 
 	SLE_CONDNULL(16,                                                       SLV_2, SLV_144), // old reserved space
-
-	SLE_END()
 };
 
 static std::vector<Engine*> _temp_engine;
@@ -174,7 +172,6 @@ static const SaveLoad _engine_id_mapping_desc[] = {
 	SLE_VAR(EngineIDMapping, internal_id,   SLE_UINT16),
 	SLE_VAR(EngineIDMapping, type,          SLE_UINT8),
 	SLE_VAR(EngineIDMapping, substitute_id, SLE_UINT8),
-	SLE_END()
 };
 
 static void Save_EIDS()
@@ -202,8 +199,10 @@ void AfterLoadEngines()
 	AnalyseEngineCallbacks();
 }
 
-extern const ChunkHandler _engine_chunk_handlers[] = {
-	{ 'EIDS', Save_EIDS, Load_EIDS, nullptr, nullptr, CH_ARRAY          },
-	{ 'ENGN', Save_ENGN, Load_ENGN, nullptr, nullptr, CH_ARRAY          },
-	{ 'ENGS', nullptr,   Load_ENGS, nullptr, nullptr, CH_RIFF | CH_LAST },
+static const ChunkHandler engine_chunk_handlers[] = {
+	{ 'EIDS', Save_EIDS, Load_EIDS, nullptr, nullptr, CH_ARRAY },
+	{ 'ENGN', Save_ENGN, Load_ENGN, nullptr, nullptr, CH_ARRAY },
+	{ 'ENGS', nullptr,   Load_ENGS, nullptr, nullptr, CH_RIFF  },
 };
+
+extern const ChunkHandlerTable _engine_chunk_handlers(engine_chunk_handlers);

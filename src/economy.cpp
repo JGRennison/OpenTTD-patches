@@ -322,7 +322,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 		for (const Company *c : Company::Iterate()) {
 			for (i = 0; i < 4; i++) {
 				if (c->share_owners[i] == old_owner) {
-					/* Sell his shares */
+					/* Sell its shares */
 					CommandCost res = DoCommand(0, c->index, 0, DC_EXEC | DC_BANKRUPT, CMD_SELL_SHARE_IN_COMPANY);
 					/* Because we are in a DoCommand, we can't just execute another one and
 					 *  expect the money to be removed. We need to do it ourself! */
@@ -353,7 +353,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 	}
 
 	/* Temporarily increase the company's money, to be sure that
-	 * removing his/her property doesn't fail because of lack of money.
+	 * removing their property doesn't fail because of lack of money.
 	 * Not too drastically though, because it could overflow */
 	if (new_owner == INVALID_OWNER) {
 		Company::Get(old_owner)->money = UINT64_MAX >> 2; // jackpot ;p
@@ -634,8 +634,7 @@ static void CompanyCheckBankrupt(Company *c)
 
 		/* Warn about bankruptcy after 3 months */
 		case 4: {
-			CompanyNewsInformation *cni = MallocT<CompanyNewsInformation>(1);
-			cni->FillData(c);
+			CompanyNewsInformation *cni = new CompanyNewsInformation(c);
 			SetDParam(0, STR_NEWS_COMPANY_IN_TROUBLE_TITLE);
 			SetDParam(1, STR_NEWS_COMPANY_IN_TROUBLE_DESCRIPTION);
 			SetDParamStr(2, cni->company_name);
@@ -1596,9 +1595,8 @@ static void HandleStationRefit(Vehicle *v, CargoArray &consist_capleft, Station 
 	bool check_order = (v->First()->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD);
 	if (is_auto_refit) {
 		/* Get a refittable cargo type with waiting cargo for next_station or INVALID_STATION. */
-		CargoID cid;
 		new_cid = v_start->cargo_type;
-		FOR_EACH_SET_CARGO_ID(cid, refit_mask) {
+		for (CargoID cid : SetCargoBitIterator(refit_mask)) {
 			if (check_order && v->First()->current_order.GetCargoLoadType(cid) == OLFB_NO_LOAD) continue;
 			if (st->goods[cid].cargo.HasCargoFor(next_station.Get(cid))) {
 				/* Try to find out if auto-refitting would succeed. In case the refit is allowed,
@@ -2261,8 +2259,7 @@ static void DoAcquireCompany(Company *c)
 
 	DEBUG(desync, 1, "buy_company: date{%08x; %02x; %02x}, buyer: %u, bought: %u", _date, _date_fract, _tick_skip_counter, (uint) _current_company, (uint) ci);
 
-	CompanyNewsInformation *cni = MallocT<CompanyNewsInformation>(1);
-	cni->FillData(c, Company::Get(_current_company));
+	CompanyNewsInformation *cni = new CompanyNewsInformation(c, Company::Get(_current_company));
 
 	SetDParam(0, STR_NEWS_COMPANY_MERGER_TITLE);
 	SetDParam(1, c->bankrupt_value == 0 ? STR_NEWS_MERGER_TAKEOVER_TITLE : STR_NEWS_COMPANY_MERGER_DESCRIPTION);

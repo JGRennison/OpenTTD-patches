@@ -113,7 +113,7 @@ Order UnpackOldOrder(uint16 packed)
 	return order;
 }
 
-const SaveLoad *GetOrderDescription()
+SaveLoadTable GetOrderDescription()
 {
 	static const SaveLoad _order_desc[] = {
 		     SLE_VAR(Order, type,           SLE_UINT8),
@@ -135,7 +135,6 @@ const SaveLoad *GetOrderDescription()
 		/* Leftover from the minor savegame version stuff
 		 * We will never use those free bytes, but we have to keep this line to allow loading of old savegames */
 		SLE_CONDNULL(10,                                  SLV_5,  SLV_36),
-		     SLE_END()
 	};
 
 	return _order_desc;
@@ -148,7 +147,7 @@ static void Save_ORDR()
 	_filtered_desc = SlFilterObject(GetOrderDescription());
 	for (Order *order : Order::Iterate()) {
 		SlSetArrayIndex(order->index);
-		SlObjectSaveFiltered(order, _filtered_desc.data());
+		SlObjectSaveFiltered(order, _filtered_desc);
 	}
 }
 
@@ -206,19 +205,18 @@ static void Load_ORDR()
 
 		while ((index = SlIterateArray()) != -1) {
 			Order *order = new (index) Order();
-			SlObjectLoadFiltered(order, _filtered_desc.data());
+			SlObjectLoadFiltered(order, _filtered_desc);
 		}
 	}
 }
 
-const SaveLoad *GetOrderExtraInfoDescription()
+const SaveLoadTable GetOrderExtraInfoDescription()
 {
 	static const SaveLoad _order_extra_info_desc[] = {
 		SLE_CONDARR_X(OrderExtraInfo, cargo_type_flags, SLE_UINT8, 32,        SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CARGO_TYPE_ORDERS, 1, 2)),
 		SLE_CONDARR_X(OrderExtraInfo, cargo_type_flags, SLE_UINT8, NUM_CARGO, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CARGO_TYPE_ORDERS, 3)),
 		SLE_CONDVAR_X(OrderExtraInfo, xflags,           SLE_UINT8,            SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA)),
 		SLE_CONDVAR_X(OrderExtraInfo, xdata,           SLE_UINT32,            SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_EXTRA_DATA)),
-		SLE_END()
 	};
 
 	return _order_extra_info_desc;
@@ -230,7 +228,7 @@ void Save_ORDX()
 	for (Order *order : Order::Iterate()) {
 		if (order->extra) {
 			SlSetArrayIndex(order->index);
-			SlObjectSaveFiltered(order->extra.get(), _filtered_desc.data());
+			SlObjectSaveFiltered(order->extra.get(), _filtered_desc);
 		}
 	}
 }
@@ -243,7 +241,7 @@ void Load_ORDX()
 		Order *order = Order::GetIfValid(index);
 		assert(order != nullptr);
 		order->AllocExtraInfo();
-		SlObjectLoadFiltered(order->extra.get(), _filtered_desc.data());
+		SlObjectLoadFiltered(order->extra.get(), _filtered_desc);
 	}
 }
 
@@ -257,7 +255,7 @@ static void Ptrs_ORDR()
 	}
 }
 
-const SaveLoad *GetOrderListDescription()
+SaveLoadTable GetOrderListDescription()
 {
 	static const SaveLoad _orderlist_desc[] = {
 		      SLE_REF(OrderList, first,                                    REF_ORDER),
@@ -269,7 +267,6 @@ const SaveLoad *GetOrderListDescription()
 		SLE_CONDVAR_X(OrderList, scheduled_dispatch_max_delay,             SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
 		SLEG_CONDVAR_X(_jokerpp_separation_mode,                           SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP)),
 		SLE_CONDNULL_X(21,                                                             SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP)),
-		SLE_END()
 	};
 
 	return _orderlist_desc;
@@ -312,7 +309,7 @@ void Ptrs_ORDL()
 	}
 }
 
-const SaveLoad *GetOrderBackupDescription()
+SaveLoadTable GetOrderBackupDescription()
 {
 	static const SaveLoad _order_backup_desc[] = {
 		     SLE_VAR(OrderBackup, user,                     SLE_UINT32),
@@ -338,7 +335,6 @@ const SaveLoad *GetOrderBackupDescription()
 		SLE_CONDVAR_X(OrderBackup, scheduled_dispatch_start_date,            SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 2)),
 		SLE_CONDVAR_X(OrderBackup, scheduled_dispatch_start_full_date_fract, SLE_UINT16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 2)),
 		SLE_CONDVAR_X(OrderBackup, scheduled_dispatch_max_delay,             SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 2)),
-		     SLE_END()
 	};
 
 	return _order_backup_desc;
@@ -375,9 +371,11 @@ static void Ptrs_BKOR()
 	}
 }
 
-extern const ChunkHandler _order_chunk_handlers[] = {
-	{ 'BKOR', Save_BKOR, Load_BKOR, Ptrs_BKOR, nullptr, CH_ARRAY},
-	{ 'ORDR', Save_ORDR, Load_ORDR, Ptrs_ORDR, nullptr, CH_ARRAY},
-	{ 'ORDL', Save_ORDL, Load_ORDL, Ptrs_ORDL, nullptr, CH_ARRAY},
-	{ 'ORDX', Save_ORDX, Load_ORDX, nullptr,      nullptr, CH_SPARSE_ARRAY | CH_LAST},
+static const ChunkHandler order_chunk_handlers[] = {
+	{ 'BKOR', Save_BKOR, Load_BKOR, Ptrs_BKOR, nullptr, CH_ARRAY },
+	{ 'ORDR', Save_ORDR, Load_ORDR, Ptrs_ORDR, nullptr, CH_ARRAY },
+	{ 'ORDL', Save_ORDL, Load_ORDL, Ptrs_ORDL, nullptr, CH_ARRAY },
+	{ 'ORDX', Save_ORDX, Load_ORDX, nullptr,   nullptr, CH_SPARSE_ARRAY },
 };
+
+extern const ChunkHandlerTable _order_chunk_handlers(order_chunk_handlers);

@@ -1338,8 +1338,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		}
 
 		/* Collect available cargo types for filtering. */
-		const CargoSpec *cs;
-		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			this->cargo_filter[filter_items] = cs->Index();
 			this->cargo_filter_texts[filter_items] = cs->name;
 			filter_items++;
@@ -1789,7 +1788,10 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		this->GenerateBuildList();
 		this->vscroll->SetCount((uint)this->eng_list.size());
 
-		this->SetWidgetsDisabledState(this->sel_engine == INVALID_ENGINE, WID_BV_SHOW_HIDE, WID_BV_BUILD, WID_BV_RENAME, WIDGET_LIST_END);
+		this->SetWidgetsDisabledState(this->sel_engine == INVALID_ENGINE, WID_BV_SHOW_HIDE, WID_BV_BUILD, WIDGET_LIST_END);
+
+		/* Disable renaming engines in network games if you are not the server. */
+		this->SetWidgetDisabledState(WID_BV_RENAME, this->sel_engine == INVALID_ENGINE || (_networking && !_network_server));
 
 		/* disable renaming engines in network games if you are not the server */
 		this->SetWidgetDisabledState(WID_BV_RENAME, _networking && !(_network_server || _network_settings_access));
@@ -2110,8 +2112,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		filter_items++;
 
 		/* Collect available cargo types for filtering. */
-		const CargoSpec *cs;
-		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			state.cargo_filter[filter_items] = cs->Index();
 			state.cargo_filter_texts[filter_items] = cs->name;
 			filter_items++;

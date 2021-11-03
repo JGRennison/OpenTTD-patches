@@ -8,6 +8,7 @@
 /** @file terraform_gui.cpp GUI related to terraforming the map. */
 
 #include "stdafx.h"
+#include "core/backup_type.hpp"
 #include "clear_map.h"
 #include "company_func.h"
 #include "company_base.h"
@@ -62,15 +63,15 @@ static void GenerateDesertArea(TileIndex end, TileIndex start)
 {
 	if (_game_mode != GM_EDITOR) return;
 
-	_generating_world = true;
+	Backup<bool> old_generating_world(_generating_world, true, FILE_LINE);
 
 	TileArea ta(start, end);
-	TILE_AREA_LOOP(tile, ta) {
+	for (TileIndex tile : ta) {
 		SetTropicZone(tile, (_ctrl_pressed) ? TROPICZONE_NORMAL : TROPICZONE_DESERT);
 		DoCommandP(tile, 0, 0, CMD_LANDSCAPE_CLEAR);
 		MarkTileDirtyByTile(tile);
 	}
-	_generating_world = false;
+	old_generating_world.Restore();
 	InvalidateWindowClassesData(WC_TOWN_VIEW, 0);
 }
 
@@ -82,7 +83,7 @@ static void GenerateRockyArea(TileIndex end, TileIndex start)
 	bool success = false;
 	TileArea ta(start, end);
 
-	TILE_AREA_LOOP(tile, ta) {
+	for (TileIndex tile : ta) {
 		switch (GetTileType(tile)) {
 			case MP_TREES:
 				if (GetTreeGround(tile) == TREE_GROUND_SHORE) continue;
@@ -494,18 +495,18 @@ static void CommonRaiseLowerBigLand(TileIndex tile, int mode)
 		if (mode != 0) {
 			/* Raise land */
 			h = MAX_TILE_HEIGHT;
-			TILE_AREA_LOOP(tile2, ta) {
+			for (TileIndex tile2 : ta) {
 				h = std::min(h, TileHeight(tile2));
 			}
 		} else {
 			/* Lower land */
 			h = 0;
-			TILE_AREA_LOOP(tile2, ta) {
+			for (TileIndex tile2 : ta) {
 				h = std::max(h, TileHeight(tile2));
 			}
 		}
 
-		TILE_AREA_LOOP(tile2, ta) {
+		for (TileIndex tile2 : ta) {
 			if (TileHeight(tile2) == h) {
 				DoCommandP(tile2, SLOPE_N, (uint32)mode, CMD_TERRAFORM_LAND);
 			}
@@ -591,7 +592,7 @@ static void ResetLandscapeConfirmationCallback(Window *w, bool confirmed)
 	if (confirmed) {
 		/* Set generating_world to true to get instant-green grass after removing
 		 * company property. */
-		_generating_world = true;
+		Backup<bool> old_generating_world(_generating_world, true, FILE_LINE);
 
 		/* Delete all companies */
 		for (Company *c : Company::Iterate()) {
@@ -599,7 +600,7 @@ static void ResetLandscapeConfirmationCallback(Window *w, bool confirmed)
 			delete c;
 		}
 
-		_generating_world = false;
+		old_generating_world.Restore();
 
 		/* Delete all station signs */
 		for (BaseStation *st : BaseStation::Iterate()) {

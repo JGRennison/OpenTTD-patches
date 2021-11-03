@@ -12,7 +12,8 @@
 #include "../../stdafx.h"
 #include "../../debug.h"
 #include "../../rev.h"
-#include "../network_func.h"
+#include "../network_internal.h"
+#include "game_info.h"
 
 #include "tcp_http.h"
 
@@ -44,7 +45,7 @@ NetworkHTTPSocketHandler::NetworkHTTPSocketHandler(SOCKET s,
 	size_t bufferSize = strlen(url) + strlen(host) + strlen(_openttd_revision) + (data == nullptr ? 0 : strlen(data)) + 128;
 	char *buffer = AllocaM(char, bufferSize);
 
-	DEBUG(net, 7, "[tcp/http] requesting %s%s", host, url);
+	DEBUG(net, 5, "[tcp/http] Requesting %s%s", host, url);
 	if (data != nullptr) {
 		seprintf(buffer, buffer + bufferSize - 1, "POST %s HTTP/1.0\r\nHost: %s\r\nUser-Agent: OpenTTD/%s\r\nContent-Type: text/plain\r\nContent-Length: %d\r\n\r\n%s\r\n", url, host, _openttd_revision, (int)strlen(data), data);
 	} else {
@@ -67,24 +68,25 @@ NetworkHTTPSocketHandler::NetworkHTTPSocketHandler(SOCKET s,
 /** Free whatever needs to be freed. */
 NetworkHTTPSocketHandler::~NetworkHTTPSocketHandler()
 {
-	this->CloseConnection();
+	this->CloseSocket();
 
-	if (this->sock != INVALID_SOCKET) closesocket(this->sock);
-	this->sock = INVALID_SOCKET;
 	free(this->data);
 }
 
-NetworkRecvStatus NetworkHTTPSocketHandler::CloseConnection(bool error)
+/**
+ * Close the actual socket of the connection.
+ */
+void NetworkHTTPSocketHandler::CloseSocket()
 {
-	NetworkSocketHandler::CloseConnection(error);
-	return NETWORK_RECV_STATUS_OKAY;
+	if (this->sock != INVALID_SOCKET) closesocket(this->sock);
+	this->sock = INVALID_SOCKET;
 }
 
 /**
  * Helper to simplify the error handling.
  * @param msg the error message to show.
  */
-#define return_error(msg) { DEBUG(net, 0, msg); return -1; }
+#define return_error(msg) { DEBUG(net, 1, msg); return -1; }
 
 static const char * const NEWLINE        = "\r\n";             ///< End of line marker
 static const char * const END_OF_HEADER  = "\r\n\r\n";         ///< End of header marker
@@ -111,7 +113,7 @@ int NetworkHTTPSocketHandler::HandleHeader()
 	/* We expect a HTTP/1.[01] reply */
 	if (strncmp(this->recv_buffer, HTTP_1_0, strlen(HTTP_1_0)) != 0 &&
 			strncmp(this->recv_buffer, HTTP_1_1, strlen(HTTP_1_1)) != 0) {
-		return_error("[tcp/http] received invalid HTTP reply");
+		return_error("[tcp/http] Received invalid HTTP reply");
 	}
 
 	char *status = this->recv_buffer + strlen(HTTP_1_0);
@@ -120,7 +122,7 @@ int NetworkHTTPSocketHandler::HandleHeader()
 
 		/* Get the length of the document to receive */
 		char *length = strcasestr(this->recv_buffer, CONTENT_LENGTH);
-		if (length == nullptr) return_error("[tcp/http] missing 'content-length' header");
+		if (length == nullptr) return_error("[tcp/http] Missing 'content-length' header");
 
 		/* Skip the header */
 		length += strlen(CONTENT_LENGTH);
@@ -138,9 +140,9 @@ int NetworkHTTPSocketHandler::HandleHeader()
 		/* Make sure we're going to download at least something;
 		 * zero sized files are, for OpenTTD's purposes, always
 		 * wrong. You can't have gzips of 0 bytes! */
-		if (len == 0) return_error("[tcp/http] refusing to download 0 bytes");
+		if (len == 0) return_error("[tcp/http] Refusing to download 0 bytes");
 
-		DEBUG(net, 7, "[tcp/http] downloading %i bytes", len);
+		DEBUG(net, 7, "[tcp/http] Downloading %i bytes", len);
 		return len;
 	}
 
@@ -153,15 +155,15 @@ int NetworkHTTPSocketHandler::HandleHeader()
 		/* Search the end of the line. This is safe because the header will
 		 * always end with two newlines. */
 		*strstr(status, NEWLINE) = '\0';
-		DEBUG(net, 0, "[tcp/http] unhandled status reply %s", status);
+		DEBUG(net, 1, "[tcp/http] Unhandled status reply %s", status);
 		return -1;
 	}
 
-	if (this->redirect_depth == 5) return_error("[tcp/http] too many redirects, looping redirects?");
+	if (this->redirect_depth == 5) return_error("[tcp/http] Too many redirects, looping redirects?");
 
 	/* Redirect to other URL */
 	char *uri = strcasestr(this->recv_buffer, LOCATION);
-	if (uri == nullptr) return_error("[tcp/http] missing 'location' header for redirect");
+	if (uri == nullptr) return_error("[tcp/http] Missing 'location' header for redirect");
 
 	uri += strlen(LOCATION);
 
@@ -170,7 +172,7 @@ int NetworkHTTPSocketHandler::HandleHeader()
 	char *end_of_line = strstr(uri, NEWLINE);
 	*end_of_line = '\0';
 
-	DEBUG(net, 6, "[tcp/http] redirecting to %s", uri);
+	DEBUG(net, 7, "[tcp/http] Redirecting to %s", uri);
 
 	int ret = NetworkHTTPSocketHandler::Connect(uri, this->callback, this->data, this->redirect_depth + 1);
 	if (ret != 0) return ret;
@@ -193,24 +195,20 @@ int NetworkHTTPSocketHandler::HandleHeader()
 /* static */ int NetworkHTTPSocketHandler::Connect(char *uri, HTTPCallback *callback, const char *data, int depth)
 {
 	char *hname = strstr(uri, "://");
-	if (hname == nullptr) return_error("[tcp/http] invalid location");
+	if (hname == nullptr) return_error("[tcp/http] Invalid location");
 
 	hname += 3;
 
 	char *url = strchr(hname, '/');
-	if (url == nullptr) return_error("[tcp/http] invalid location");
+	if (url == nullptr) return_error("[tcp/http] Invalid location");
 
 	*url = '\0';
 
-	/* Fetch the hostname, and possible port number. */
-	const char *port = nullptr;
-	ParseConnectionString(&port, hname);
-
-	NetworkAddress address(hname, port == nullptr ? 80 : atoi(port));
+	std::string hostname = std::string(hname);
 
 	/* Restore the URL. */
 	*url = '/';
-	new NetworkHTTPContentConnecter(address, callback, url, data, depth);
+	new NetworkHTTPContentConnecter(hostname, callback, url, data, depth);
 	return 0;
 }
 
@@ -228,10 +226,10 @@ int NetworkHTTPSocketHandler::Receive()
 	for (;;) {
 		ssize_t res = recv(this->sock, (char *)this->recv_buffer + this->recv_pos, lengthof(this->recv_buffer) - this->recv_pos, 0);
 		if (res == -1) {
-			int err = NetworkGetLastError();
-			if (err != EWOULDBLOCK) {
-				/* Something went wrong... (ECONNRESET is connection reset by peer) */
-				if (err != ECONNRESET) DEBUG(net, 0, "recv failed with error %s", NetworkGetErrorString(err));
+			NetworkError err = NetworkError::GetLast();
+			if (!err.WouldBlock()) {
+				/* Something went wrong... */
+				if (!err.IsConnectionReset()) DEBUG(net, 0, "Recv failed: %s", err.AsString());
 				return -1;
 			}
 			/* Connection would block, so stop for now */
@@ -259,7 +257,7 @@ int NetworkHTTPSocketHandler::Receive()
 
 			if (end_of_header == nullptr) {
 				if (read == lengthof(this->recv_buffer)) {
-					DEBUG(net, 0, "[tcp/http] header too big");
+					DEBUG(net, 1, "[tcp/http] Header too big");
 					return -1;
 				}
 				this->recv_pos = read;
@@ -316,7 +314,7 @@ int NetworkHTTPSocketHandler::Receive()
 			if (ret < 0) cur->callback->OnFailure();
 			if (ret <= 0) {
 				/* Then... the connection can be closed */
-				cur->CloseConnection();
+				cur->CloseSocket();
 				iter = _http_connections.erase(iter);
 				delete cur;
 				continue;

@@ -72,7 +72,7 @@ void ResetViewportAfterLoadGame()
 
 byte _age_cargo_skip_counter; ///< Skip aging of cargo? Used before savegame version 162.
 
-static const SaveLoadGlobVarList _date_desc[] = {
+static const SaveLoad _date_desc[] = {
 	SLEG_CONDVAR(_date,                   SLE_FILE_U16 | SLE_VAR_I32,  SL_MIN_VERSION,  SLV_31),
 	SLEG_CONDVAR(_date,                   SLE_INT32,                  SLV_31, SL_MAX_VERSION),
 	    SLEG_VAR(_date_fract,             SLE_UINT16),
@@ -99,10 +99,9 @@ static const SaveLoadGlobVarList _date_desc[] = {
 	SLEG_CONDVAR_X(_road_layout_change_counter, SLE_UINT32,   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ROAD_LAYOUT_CHANGE_CTR)),
 	SLEG_CONDVAR_X(_extra_aspects,        SLE_UINT8,          SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 4)),
 	SLE_CONDNULL(4, SLV_11, SLV_120),
-	    SLEG_END()
 };
 
-static const SaveLoadGlobVarList _date_check_desc[] = {
+static const SaveLoad _date_check_desc[] = {
 	SLEG_CONDVAR(_load_check_data.current_date,  SLE_FILE_U16 | SLE_VAR_I32,  SL_MIN_VERSION,  SLV_31),
 	SLEG_CONDVAR(_load_check_data.current_date,  SLE_INT32,                  SLV_31, SL_MAX_VERSION),
 	    SLE_NULL(2),                       // _date_fract
@@ -129,7 +128,6 @@ static const SaveLoadGlobVarList _date_check_desc[] = {
 	SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ROAD_LAYOUT_CHANGE_CTR)), // _road_layout_change_counter
 	SLE_CONDNULL_X(1, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 4)), // _extra_aspects
 	SLE_CONDNULL(4, SLV_11, SLV_120),
-	    SLEG_END()
 };
 
 /* Save load date related variables as well as persistent tick counters
@@ -149,13 +147,12 @@ static void Check_DATE()
 }
 
 
-static const SaveLoadGlobVarList _view_desc[] = {
+static const SaveLoad _view_desc[] = {
 	SLEG_CONDVAR(_saved_scrollpos_x,    SLE_FILE_I16 | SLE_VAR_I32, SL_MIN_VERSION, SLV_6),
 	SLEG_CONDVAR(_saved_scrollpos_x,    SLE_INT32,                  SLV_6, SL_MAX_VERSION),
 	SLEG_CONDVAR(_saved_scrollpos_y,    SLE_FILE_I16 | SLE_VAR_I32, SL_MIN_VERSION, SLV_6),
 	SLEG_CONDVAR(_saved_scrollpos_y,    SLE_INT32,                  SLV_6, SL_MAX_VERSION),
 	    SLEG_VAR(_saved_scrollpos_zoom, SLE_UINT8),
-	    SLEG_END()
 };
 
 static void SaveLoad_VIEW()
@@ -163,7 +160,9 @@ static void SaveLoad_VIEW()
 	SlGlobList(_view_desc);
 }
 
-extern const ChunkHandler _misc_chunk_handlers[] = {
-	{ 'DATE', SaveLoad_DATE, SaveLoad_DATE, nullptr, Check_DATE, CH_RIFF},
-	{ 'VIEW', SaveLoad_VIEW, SaveLoad_VIEW, nullptr, nullptr,    CH_RIFF | CH_LAST},
+static const ChunkHandler misc_chunk_handlers[] = {
+	{ 'DATE', SaveLoad_DATE, SaveLoad_DATE, nullptr, Check_DATE, CH_RIFF },
+	{ 'VIEW', SaveLoad_VIEW, SaveLoad_VIEW, nullptr, nullptr,    CH_RIFF },
 };
+
+extern const ChunkHandlerTable _misc_chunk_handlers(misc_chunk_handlers);

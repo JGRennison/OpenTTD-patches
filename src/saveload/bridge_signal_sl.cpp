@@ -19,7 +19,6 @@ struct LongBridgeSignalStorageStub {
 
 static const SaveLoad _long_bridge_signal_storage_stub_desc[] = {
 	SLE_VAR(LongBridgeSignalStorageStub, length, SLE_UINT32),
-	SLE_END()
 };
 
 static void Load_XBSS()
@@ -51,6 +50,8 @@ static void Save_XBSS()
 	}
 }
 
-extern const ChunkHandler _bridge_signal_chunk_handlers[] = {
-	{ 'XBSS', Save_XBSS, Load_XBSS, nullptr, nullptr, CH_SPARSE_ARRAY | CH_LAST},
+extern const ChunkHandler bridge_signal_chunk_handlers[] = {
+	{ 'XBSS', Save_XBSS, Load_XBSS, nullptr, nullptr, CH_SPARSE_ARRAY },
 };
+
+extern const ChunkHandlerTable _bridge_signal_chunk_handlers(bridge_signal_chunk_handlers);

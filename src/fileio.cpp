@@ -828,7 +828,7 @@ static std::string GetHomeDir()
 	find_directory(B_USER_SETTINGS_DIRECTORY, &path);
 	return std::string(path.Path());
 #else
-	const char *home_env = getenv("HOME"); // Stack var, shouldn't be freed
+	const char *home_env = std::getenv("HOME"); // Stack var, shouldn't be freed
 	if (home_env != nullptr) return std::string(home_env);
 
 	const struct passwd *pw = getpwuid(getuid());
@@ -846,7 +846,7 @@ void DetermineBasePaths(const char *exe)
 	std::string tmp;
 	const std::string homedir = GetHomeDir();
 #ifdef USE_XDG
-	const char *xdg_data_home = getenv("XDG_DATA_HOME");
+	const char *xdg_data_home = std::getenv("XDG_DATA_HOME");
 	if (xdg_data_home != nullptr) {
 		tmp = xdg_data_home;
 		tmp += PATHSEP;
@@ -977,7 +977,7 @@ void DeterminePaths(const char *exe, bool only_local_path)
 #ifdef USE_XDG
 	std::string config_home;
 	const std::string homedir = GetHomeDir();
-	const char *xdg_config_home = getenv("XDG_CONFIG_HOME");
+	const char *xdg_config_home = std::getenv("XDG_CONFIG_HOME");
 	if (xdg_config_home != nullptr) {
 		config_home = xdg_config_home;
 		config_home += PATHSEP;
@@ -1033,6 +1033,10 @@ void DeterminePaths(const char *exe, bool only_local_path)
 	_hotkeys_file = config_dir + "hotkeys.cfg";
 	extern std::string _windows_file;
 	_windows_file = config_dir + "windows.cfg";
+	extern std::string _private_file;
+	_private_file = config_dir + "private.cfg";
+	extern std::string _secrets_file;
+	_secrets_file = config_dir + "secrets.cfg";
 
 #ifdef USE_XDG
 	if (config_dir == config_home) {

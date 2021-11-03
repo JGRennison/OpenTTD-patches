@@ -25,6 +25,7 @@
 #include "win32_v.h"
 #include <windows.h>
 #include <imm.h>
+#include <versionhelpers.h>
 #include <algorithm>
 
 #include "../safeguards.h"
@@ -918,7 +919,7 @@ void VideoDriver_Win32Base::EditBoxLostFocus()
 	SetCandidatePos(this->main_wnd);
 }
 
-BOOL CALLBACK EnumDisplayMonitorsCallback(HMONITOR hMonitor, HDC hDC, LPRECT rc, LPARAM data)
+static BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hDC, LPRECT rc, LPARAM data)
 {
 	auto &list = *reinterpret_cast<std::vector<int>*>(data);
 
@@ -938,7 +939,7 @@ BOOL CALLBACK EnumDisplayMonitorsCallback(HMONITOR hMonitor, HDC hDC, LPRECT rc,
 std::vector<int> VideoDriver_Win32Base::GetListOfMonitorRefreshRates()
 {
 	std::vector<int> rates = {};
-	EnumDisplayMonitors(nullptr, nullptr, (MONITORENUMPROC)&EnumDisplayMonitorsCallback, reinterpret_cast<LPARAM>(&rates));
+	EnumDisplayMonitors(nullptr, nullptr, MonitorEnumProc, reinterpret_cast<LPARAM>(&rates));
 	return rates;
 }
 
@@ -1268,6 +1269,12 @@ static void LoadWGLExtensions()
 		if (rc != nullptr) {
 			wglMakeCurrent(dc, rc);
 
+#ifdef __MINGW32__
+			/* GCC doesn't understand the expected usage of wglGetProcAddress(). */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-function-type"
+#endif /* __MINGW32__ */
+
 			/* Get list of WGL extensions. */
 			PFNWGLGETEXTENSIONSSTRINGARBPROC wglGetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
 			if (wglGetExtensionsStringARB != nullptr) {
@@ -1282,6 +1289,9 @@ static void LoadWGLExtensions()
 				}
 			}
 
+#ifdef __MINGW32__
+#pragma GCC diagnostic pop
+#endif
 			wglMakeCurrent(nullptr, nullptr);
 			wglDeleteContext(rc);
 		}

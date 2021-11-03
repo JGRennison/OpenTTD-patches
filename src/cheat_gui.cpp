@@ -189,8 +189,8 @@ static const CheatEntry _cheats_ui[] = {
 	{CNM_LOCAL_ONLY, SLE_BOOL,        STR_CHEAT_SETUP_PROD,       &_cheats.setup_prod.value,                     &_cheats.setup_prod.been_used,             &ClickSetProdCheat         },
 	{CNM_LOCAL_ONLY, SLE_UINT8,       STR_CHEAT_EDIT_MAX_HL,      &_settings_game.construction.map_height_limit, &_cheats.edit_max_hl.been_used,            &ClickChangeMaxHlCheat     },
 	{CNM_LOCAL_ONLY, SLE_INT32,       STR_CHEAT_CHANGE_DATE,      &_cur_date_ymd.year,                           &_cheats.change_date.been_used,            &ClickChangeDateCheat      },
-	{CNM_ALL,        SLF_NOT_IN_SAVE, STR_CHEAT_INFLATION_COST,   &_economy.inflation_prices,                    &_extra_cheats.inflation_cost.been_used,   nullptr                    },
-	{CNM_ALL,        SLF_NOT_IN_SAVE, STR_CHEAT_INFLATION_INCOME, &_economy.inflation_payment,                   &_extra_cheats.inflation_income.been_used, nullptr                    },
+	{CNM_ALL,        SLF_ALLOW_CONTROL, STR_CHEAT_INFLATION_COST,   &_economy.inflation_prices,                  &_extra_cheats.inflation_cost.been_used,   nullptr                    },
+	{CNM_ALL,        SLF_ALLOW_CONTROL, STR_CHEAT_INFLATION_INCOME, &_economy.inflation_payment,                 &_extra_cheats.inflation_income.been_used, nullptr                    },
 	{CNM_ALL,        SLE_BOOL,        STR_CHEAT_STATION_RATING,   &_extra_cheats.station_rating.value,           &_extra_cheats.station_rating.been_used,   nullptr                    },
 	{CNM_ALL,        SLE_BOOL,        STR_CHEAT_TOWN_RATING,      &_extra_cheats.town_rating.value,              &_extra_cheats.town_rating.been_used,      nullptr                    },
 };
@@ -261,7 +261,7 @@ struct CheatWindow : Window {
 			DrawSprite((*ce->been_used) ? SPR_BOX_CHECKED : SPR_BOX_EMPTY, PAL_NONE, box_left, y + icon_y_offset + 2);
 
 			switch (ce->type) {
-				case SLF_NOT_IN_SAVE: {
+				case SLF_ALLOW_CONTROL: {
 					/* Change inflation factors */
 
 					/* Draw [<][>] boxes for settings of an integer-type */
@@ -324,7 +324,7 @@ struct CheatWindow : Window {
 			if (!IsCheatAllowed(ce->mode)) continue;
 			lines++;
 			switch (ce->type) {
-				case SLF_NOT_IN_SAVE:
+				case SLF_ALLOW_CONTROL:
 					/* Change inflation factors */
 					break;
 
@@ -401,16 +401,16 @@ struct CheatWindow : Window {
 			SetDParam(0, value);
 			ShowQueryString(STR_JUST_INT, STR_CHEAT_EDIT_MONEY_QUERY_CAPT, 20, this, CS_NUMERAL_SIGNED, QSF_ACCEPT_UNCHANGED);
 			return;
-		} else if (ce->type == SLF_NOT_IN_SAVE && x >= 20 + this->box_width + SETTING_BUTTON_WIDTH) {
+		} else if (ce->type == SLF_ALLOW_CONTROL && x >= 20 + this->box_width + SETTING_BUTTON_WIDTH) {
 			clicked_widget = btn;
 			uint64 val = (uint64)ReadValue(ce->variable, SLE_UINT64);
 			SetDParam(0, val * 1000 >> 16);
 			SetDParam(1, 3);
 			StringID str = (btn == CHT_INFLATION_COST) ? STR_CHEAT_INFLATION_COST_QUERY_CAPT : STR_CHEAT_INFLATION_INCOME_QUERY_CAPT;
-			char *saved = _settings_game.locale.digit_group_separator;
-			_settings_game.locale.digit_group_separator = const_cast<char*>("");
+			std::string saved = std::move(_settings_game.locale.digit_group_separator);
+			_settings_game.locale.digit_group_separator = "";
 			ShowQueryString(STR_JUST_DECIMAL, str, 12, this, CS_NUMERAL_DECIMAL, QSF_ACCEPT_UNCHANGED);
-			_settings_game.locale.digit_group_separator = saved;
+			_settings_game.locale.digit_group_separator = std::move(saved);
 			return;
 		}
 
@@ -420,7 +420,7 @@ struct CheatWindow : Window {
 		if (!_networking) *ce->been_used = true;
 
 		switch (ce->type) {
-			case SLF_NOT_IN_SAVE: {
+			case SLF_ALLOW_CONTROL: {
 				/* Change inflation factors */
 				uint64 value = (uint64)ReadValue(ce->variable, SLE_UINT64) + (((x >= 10 + this->box_width + SETTING_BUTTON_WIDTH / 2) ? 1 : -1) << 16);
 				value = Clamp<uint64>(value, 1 << 16, MAX_INFLATION);
@@ -468,7 +468,7 @@ struct CheatWindow : Window {
 
 		const CheatEntry *ce = &_cheats_ui[clicked_widget];
 
-		if (ce->type == SLF_NOT_IN_SAVE) {
+		if (ce->type == SLF_ALLOW_CONTROL) {
 			char tmp_buffer[32];
 			strecpy(tmp_buffer, str, lastof(tmp_buffer));
 			str_replace_wchar(tmp_buffer, lastof(tmp_buffer), GetDecimalSeparatorChar(), '.');

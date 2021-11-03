@@ -170,8 +170,8 @@ class NIHVehicle : public NIHelper {
 		}
 		if (v->type == VEH_TRAIN) {
 			const Train *t = Train::From(v);
-			seprintf(buffer, lastof(buffer), "  T cache: tilt: %d, engines: %u",
-					(t->tcache.cached_tflags & TCF_TILT) ? 1 : 0, t->tcache.cached_num_engines);
+			seprintf(buffer, lastof(buffer), "  T cache: tilt: %d, curve speed mod: %d, engines: %u",
+					(t->tcache.cached_tflags & TCF_TILT) ? 1 : 0, t->tcache.cached_curve_speed_mod, t->tcache.cached_num_engines);
 			print(buffer);
 			seprintf(buffer, lastof(buffer), "  T cache: RL braking: %d, decel: %u, uncapped decel: %u, centre mass: %u",
 					(t->UsingRealisticBraking()) ? 1 : 0, t->tcache.cached_deceleration, t->tcache.cached_uncapped_decel, t->tcache.cached_centre_mass);
@@ -340,7 +340,7 @@ class NIHVehicle : public NIHelper {
 				if (cb36_properties != UINT64_MAX) {
 					uint64 props = cb36_properties;
 					while (props) {
-						PropertyID prop = (PropertyID)FindFirstBit64(props);
+						PropertyID prop = (PropertyID)FindFirstBit(props);
 						props = KillFirstBit(props);
 						uint16 res = GetVehicleProperty(v, prop, CALLBACK_FAILED);
 						if (res == CALLBACK_FAILED) {
@@ -1107,8 +1107,7 @@ class NIHTown : public NIHelper {
 
 		if (t->have_ratings != 0) {
 			print("  Company ratings:");
-			uint8 bit;
-			FOR_EACH_SET_BIT(bit, t->have_ratings) {
+			for (uint8 bit : SetBitIterator(t->have_ratings)) {
 				seprintf(buffer, lastof(buffer), "    %u: %d", bit, t->ratings[bit]);
 				print(buffer);
 			}

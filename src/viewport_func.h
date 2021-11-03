@@ -49,7 +49,7 @@ void CheckMarkDirtyFocusedRoutePaths(const Vehicle *veh);
 bool DoZoomInOutWindow(ZoomStateChange how, Window *w);
 void ZoomInOrOutToCursorWindow(bool in, Window * w);
 Point GetTileZoomCenterWindow(bool in, Window * w);
-void FixTitleGameZoom();
+void FixTitleGameZoom(int zoom_adjust = 0);
 void HandleZoomMessage(Window *w, const Viewport *vp, byte widget_zoom_in, byte widget_zoom_out);
 
 /**

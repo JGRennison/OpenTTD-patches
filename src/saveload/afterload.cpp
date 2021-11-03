@@ -190,7 +190,7 @@ static void UpdateExclusiveRights()
 	 *     Build an array town_blocked[ town_id ][ company_id ]
 	 *     that stores if at least one station in that town is blocked for a company
 	 * 2.) Go through that array, if you find a town that is not blocked for
-	 *     one company, but for all others, then give him exclusivity.
+	 *     one company, but for all others, then give it exclusivity.
 	 */
 }
 
@@ -642,8 +642,8 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_119)) {
 		_pause_mode = (_pause_mode == 2) ? PM_PAUSED_NORMAL : PM_UNPAUSED;
 	} else if (_network_dedicated && (_pause_mode & PM_PAUSED_ERROR) != 0) {
-		DEBUG(net, 0, "The loading savegame was paused due to an error state.");
-		DEBUG(net, 0, "  The savegame cannot be used for multiplayer!");
+		DEBUG(net, 0, "The loading savegame was paused due to an error state");
+		DEBUG(net, 0, "  This savegame cannot be used for multiplayer");
 		/* Restore the signals */
 		ResetSignalHandlers();
 		return false;
@@ -825,7 +825,7 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_6, 1)) _settings_game.pf.forbid_90_deg = false;
 	if (IsSavegameVersionBefore(SLV_21))   _settings_game.vehicle.train_acceleration_model = 0;
 	if (IsSavegameVersionBefore(SLV_90))   _settings_game.vehicle.plane_speed = 4;
-	if (IsSavegameVersionBefore(SLV_95))   _settings_game.vehicle.dynamic_engines = 0;
+	if (IsSavegameVersionBefore(SLV_95))   _settings_game.vehicle.dynamic_engines = false;
 	if (IsSavegameVersionBefore(SLV_96))   _settings_game.economy.station_noise_level = false;
 	if (IsSavegameVersionBefore(SLV_133)) {
 		_settings_game.vehicle.train_slope_steepness = 3;
@@ -3746,10 +3746,11 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (IsSavegameVersionUntil(SLV_ENDING_YEAR) || !SlXvIsFeaturePresent(XSLFI_MULTIPLE_DOCKS, 2) || !SlXvIsFeaturePresent(XSLFI_DOCKING_CACHE_VER, 2)) {
+	if (IsSavegameVersionUntil(SLV_ENDING_YEAR) || !SlXvIsFeaturePresent(XSLFI_MULTIPLE_DOCKS, 2) || !SlXvIsFeaturePresent(XSLFI_DOCKING_CACHE_VER, 3)) {
 		/* Update station docking tiles. Was only needed for pre-SLV_MULTITLE_DOCKS
 		 * savegames, but a bug in docking tiles touched all savegames between
 		 * SLV_MULTITILE_DOCKS and SLV_ENDING_YEAR. */
+		/* Placing objects on docking tiles was not updating adjacent station's docking tiles. */
 		for (Station *st : Station::Iterate()) {
 			if (st->ship_station.tile != INVALID_TILE) UpdateStationDockingTiles(st);
 		}

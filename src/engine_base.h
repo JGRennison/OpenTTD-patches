@@ -18,6 +18,12 @@
 
 #include "3rdparty/cpp-btree/btree_map.h"
 
+struct WagonOverride {
+	std::vector<EngineID> engines;
+	CargoID cargo;
+	const SpriteGroup *group;
+};
+
 typedef Pool<Engine, EngineID, 64, 64000> EnginePool;
 extern EnginePool _engine_pool;
 
@@ -59,17 +65,15 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	 * evaluating callbacks.
 	 */
 	GRFFilePropsBase<NUM_CARGO + 2> grf_prop;
-	uint16 overrides_count;
-	struct WagonOverride *overrides;
+	std::vector<WagonOverride> overrides;
 	uint16 list_position;
 
 	SpriteGroupCallbacksUsed callbacks_used = SGCU_ALL;
 	uint64 cb36_properties_used = UINT64_MAX;
 	btree::btree_map<const SpriteGroup *, uint64> sprite_group_cb36_properties_used;
 
-	Engine();
+	Engine() {}
 	Engine(VehicleType type, EngineID base);
-	~Engine();
 	bool IsEnabled() const;
 
 	/**

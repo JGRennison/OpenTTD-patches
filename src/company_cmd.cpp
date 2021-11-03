@@ -393,8 +393,7 @@ set_name:;
 		MarkWholeScreenDirty();
 
 		if (c->is_ai) {
-			CompanyNewsInformation *cni = MallocT<CompanyNewsInformation>(1);
-			cni->FillData(c);
+			CompanyNewsInformation *cni = new CompanyNewsInformation(c);
 			SetDParam(0, STR_NEWS_COMPANY_LAUNCH_TITLE);
 			SetDParam(1, STR_NEWS_COMPANY_LAUNCH_DESCRIPTION);
 			SetDParamStr(2, cni->company_name);
@@ -782,21 +781,19 @@ void CompaniesYearlyLoop()
  * @param c the current company.
  * @param other the other company (use \c nullptr if not relevant).
  */
-void CompanyNewsInformation::FillData(const Company *c, const Company *other)
+CompanyNewsInformation::CompanyNewsInformation(const Company *c, const Company *other)
 {
 	SetDParam(0, c->index);
-	GetString(this->company_name, STR_COMPANY_NAME, lastof(this->company_name));
+	this->company_name = GetString(STR_COMPANY_NAME);
 
-	if (other == nullptr) {
-		*this->other_company_name = '\0';
-	} else {
+	if (other != nullptr) {
 		SetDParam(0, other->index);
-		GetString(this->other_company_name, STR_COMPANY_NAME, lastof(this->other_company_name));
+		this->other_company_name = GetString(STR_COMPANY_NAME);
 		c = other;
 	}
 
 	SetDParam(0, c->index);
-	GetString(this->president_name, STR_PRESIDENT_NAME_MANAGER, lastof(this->president_name));
+	this->president_name = GetString(STR_PRESIDENT_NAME_MANAGER);
 
 	this->colour = c->colour;
 	this->face = c->face;
@@ -870,7 +867,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			if (client_id == _network_own_client_id) {
 				assert(_local_company == COMPANY_SPECTATOR);
 				SetLocalCompany(c->index);
-				if (!StrEmpty(_settings_client.network.default_company_pass)) {
+				if (!_settings_client.network.default_company_pass.empty()) {
 					NetworkChangeCompanyPassword(_local_company, _settings_client.network.default_company_pass);
 				}
 
@@ -921,8 +918,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 			/* Delete any open window of the company */
 			DeleteCompanyWindows(c->index);
-			CompanyNewsInformation *cni = MallocT<CompanyNewsInformation>(1);
-			cni->FillData(c);
+			CompanyNewsInformation *cni = new CompanyNewsInformation(c);
 
 			/* Show the bankrupt news */
 			SetDParam(0, STR_NEWS_COMPANY_BANKRUPT_TITLE);

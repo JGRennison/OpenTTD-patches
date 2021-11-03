@@ -18,6 +18,7 @@
 #include "vehicle_type.h"
 #include "company_type.h"
 #include "core/multimap.hpp"
+#include "saveload/saveload_common.h"
 #include <deque>
 
 /** Unique identifier for a single cargo packet. */
@@ -33,7 +34,13 @@ struct GoodsEntry; // forward-declare for Stage() and RerouteStalePackets()
 
 template <class Tinst, class Tcont> class CargoList;
 class StationCargoList; // forward-declare, so we can use it in VehicleCargoList.
-extern const struct SaveLoad *GetCargoPacketDesc();
+extern SaveLoadTable GetCargoPacketDesc();
+
+namespace upstream_sl {
+	extern upstream_sl::SaveLoadTable GetCargoPacketDesc();
+	class SlVehicleCommon;
+	class SlStationGoods;
+}
 
 typedef uint32 TileOrStationID;
 
@@ -68,7 +75,8 @@ private:
 	friend class VehicleCargoList;
 	friend class StationCargoList;
 	/** We want this to be saved, right? */
-	friend const struct SaveLoad *GetCargoPacketDesc();
+	friend SaveLoadTable GetCargoPacketDesc();
+	friend upstream_sl::SaveLoadTable upstream_sl::GetCargoPacketDesc();
 	friend void Load_CPDP();
 public:
 	/** Maximum number of items in a single cargo packet. */
@@ -339,10 +347,11 @@ protected:
 public:
 	/** The station cargo list needs to control the unloading. */
 	friend class StationCargoList;
+	friend upstream_sl::SlVehicleCommon;
 	/** The super class ought to know what it's doing. */
 	friend class CargoList<VehicleCargoList, CargoPacketList>;
 	/** The vehicles have a cargo list (and we want that saved). */
-	friend const struct SaveLoad *GetVehicleDescription(VehicleType vt);
+	friend SaveLoadTable GetVehicleDescription(VehicleType vt);
 
 	friend class CargoShift;
 	friend class CargoTransfer;
@@ -493,7 +502,8 @@ public:
 	/** The super class ought to know what it's doing. */
 	friend class CargoList<StationCargoList, StationCargoPacketMap>;
 	/** The stations, via GoodsEntry, have a CargoList. */
-	friend const struct SaveLoad *GetGoodsDesc();
+	friend SaveLoadTable GetGoodsDesc();
+	friend upstream_sl::SlStationGoods;
 
 	friend class CargoLoad;
 	friend class CargoTransfer;

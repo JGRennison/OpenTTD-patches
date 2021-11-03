@@ -456,8 +456,8 @@ void InitializeWindowViewport(Window *w, int x, int y,
 		MarkAllRoutePathsDirty(veh);
 		MarkAllRouteStepsDirty(veh);
 	} else {
-		uint x = TileX(follow_flags) * TILE_SIZE;
-		uint y = TileY(follow_flags) * TILE_SIZE;
+		x = TileX(follow_flags) * TILE_SIZE;
+		y = TileY(follow_flags) * TILE_SIZE;
 
 		vp->follow_vehicle = INVALID_VEHICLE;
 		pt = MapXYZToViewport(vp, x, y, GetSlopePixelZ(x, y));
@@ -1820,12 +1820,12 @@ static void ViewportAddKdtreeSigns(DrawPixelInfo *dpi, bool towns_only)
 		if (Station::IsExpected(st)) {
 			/* Station */
 			ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &st->sign,
-				STR_VIEWPORT_STATION, STR_VIEWPORT_STATION + 1, STR_NULL,
+				STR_VIEWPORT_STATION, STR_VIEWPORT_STATION_TINY, STR_NULL,
 				st->index, st->facilities, (st->owner == OWNER_NONE || !st->IsInUse()) ? COLOUR_GREY : _company_colours[st->owner]);
 		} else {
 			/* Waypoint */
 			ViewportAddString(dpi, ZOOM_LVL_OUT_16X, &st->sign,
-				STR_VIEWPORT_WAYPOINT, STR_VIEWPORT_WAYPOINT + 1, STR_NULL,
+				STR_VIEWPORT_WAYPOINT, STR_VIEWPORT_WAYPOINT_TINY, STR_NULL,
 				st->index, st->facilities, (st->owner == OWNER_NONE || !st->IsInUse()) ? COLOUR_GREY : _company_colours[st->owner]);
 		}
 	}
@@ -2875,7 +2875,7 @@ static inline TileIndex ViewportMapGetMostSignificantTileType(const Viewport * c
 	/* Find the most important tile of the area. */
 	TileIndex result = from_tile;
 	uint importance = 0;
-	TILE_AREA_LOOP_WITH_PREFETCH(tile, tile_area) {
+	for (OrthogonalPrefetchTileIterator tile(tile_area); tile != INVALID_TILE; ++tile) {
 		const TileType ttype = GetTileType(tile);
 		const uint tile_importance = _tiletype_importance[ttype];
 		if (tile_importance > importance) {

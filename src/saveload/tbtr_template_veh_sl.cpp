@@ -9,7 +9,7 @@
 
 #include "saveload.h"
 
-const SaveLoad* GTD() {
+const SaveLoadTable GTD() {
 
 	static const SaveLoad _template_veh_desc[] = {
 		SLE_REF(TemplateVehicle, next, REF_TEMPLATE_VEHICLE),
@@ -49,15 +49,9 @@ const SaveLoad* GTD() {
 		SLE_CONDNULL_X(36, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 2, 3)),
 		SLE_CONDNULL_X(36, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP)),
 		SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TEMPLATE_REPLACEMENT, 0, 3)),
-
-		SLE_END()
 	};
 
-	static const SaveLoad * const _ret[] = {
-		_template_veh_desc,
-	};
-
-	return _ret[0];
+	return _template_veh_desc;
 }
 
 static void Save_TMPLS()
@@ -157,6 +151,8 @@ void AfterLoadTemplateVehiclesUpdateProperties()
 	RestoreRandomSeeds(saved_seeds);
 }
 
-extern const ChunkHandler _template_vehicle_chunk_handlers[] = {
-	{'TMPL', Save_TMPLS, Load_TMPLS, Ptrs_TMPLS, nullptr, CH_ARRAY | CH_LAST},
+extern const ChunkHandler template_vehicle_chunk_handlers[] = {
+	{ 'TMPL', Save_TMPLS, Load_TMPLS, Ptrs_TMPLS, nullptr, CH_ARRAY },
 };
+
+extern const ChunkHandlerTable _template_vehicle_chunk_handlers(template_vehicle_chunk_handlers);

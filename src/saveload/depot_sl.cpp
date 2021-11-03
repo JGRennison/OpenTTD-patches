@@ -26,7 +26,6 @@ static const SaveLoad _depot_desc[] = {
 	 SLE_CONDSTR(Depot, name,       SLE_STR, 0,               SLV_141, SL_MAX_VERSION),
 	 SLE_CONDVAR(Depot, build_date, SLE_INT32,                SLV_142, SL_MAX_VERSION),
 	 SLE_CONDNULL_X(4,                                 SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP, 5)),
-	 SLE_END()
 };
 
 static void Save_DEPT()
@@ -58,6 +57,8 @@ static void Ptrs_DEPT()
 	}
 }
 
-extern const ChunkHandler _depot_chunk_handlers[] = {
-	{ 'DEPT', Save_DEPT, Load_DEPT, Ptrs_DEPT, nullptr, CH_ARRAY | CH_LAST},
+static const ChunkHandler depot_chunk_handlers[] = {
+	{ 'DEPT', Save_DEPT, Load_DEPT, Ptrs_DEPT, nullptr, CH_ARRAY },
 };
+
+extern const ChunkHandlerTable _depot_chunk_handlers(depot_chunk_handlers);

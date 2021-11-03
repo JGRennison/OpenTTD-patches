@@ -27,6 +27,7 @@
 #include "querystring_gui.h"
 #include "window_func.h"
 #include "townname_func.h"
+#include "core/backup_type.hpp"
 #include "core/geometry_func.hpp"
 #include "genworld.h"
 #include "stringfilter_type.h"
@@ -91,8 +92,7 @@ private:
 	static int GetNthSetBit(uint32 bits, int n)
 	{
 		if (n >= 0) {
-			uint i;
-			FOR_EACH_SET_BIT(i, bits) {
+			for (uint i : SetBitIterator(bits)) {
 				n--;
 				if (n < 0) return i;
 			}
@@ -442,7 +442,7 @@ public:
 		}
 
 		if (!this->town->text.empty()) {
-			SetDParamStr(0, this->town->text.c_str());
+			SetDParamStr(0, this->town->text);
 			DrawStringMultiLine(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y += FONT_HEIGHT_NORMAL, UINT16_MAX, STR_JUST_RAW_STRING, TC_BLACK);
 		}
 	}
@@ -524,7 +524,7 @@ public:
 		if (_settings_game.economy.station_noise_level) aimed_height += FONT_HEIGHT_NORMAL;
 
 		if (!this->town->text.empty()) {
-			SetDParamStr(0, this->town->text.c_str());
+			SetDParamStr(0, this->town->text);
 			aimed_height += GetStringHeight(STR_JUST_RAW_STRING, width - WD_FRAMERECT_LEFT - WD_FRAMERECT_RIGHT);
 		}
 
@@ -1203,15 +1203,16 @@ public:
 				this->SetFocusedWidget(WID_TF_TOWN_NAME_EDITBOX);
 				break;
 
-			case WID_TF_MANY_RANDOM_TOWNS:
-				_generating_world = true;
+			case WID_TF_MANY_RANDOM_TOWNS: {
+				Backup<bool> old_generating_world(_generating_world, true, FILE_LINE);
 				UpdateNearestTownForRoadTiles(true);
 				if (!GenerateTowns(this->town_layout)) {
 					ShowErrorMessage(STR_ERROR_CAN_T_GENERATE_TOWN, STR_ERROR_NO_SPACE_FOR_TOWN, WL_INFO);
 				}
 				UpdateNearestTownForRoadTiles(false);
-				_generating_world = false;
+				old_generating_world.Restore();
 				break;
+			}
 
 			case WID_TF_SIZE_SMALL: case WID_TF_SIZE_MEDIUM: case WID_TF_SIZE_LARGE: case WID_TF_SIZE_RANDOM:
 				this->town_size = (TownSize)(widget - WID_TF_SIZE_SMALL);

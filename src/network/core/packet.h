@@ -69,7 +69,7 @@ public:
 	void   Send_uint16(uint16 data);
 	void   Send_uint32(uint32 data);
 	void   Send_uint64(uint64 data);
-	void   Send_string(const char *data);
+	void   Send_string(const std::string_view data);
 	size_t Send_bytes (const byte *begin, const byte *end);
 	void   Send_binary(const char *data, const size_t size);
 
@@ -87,7 +87,7 @@ public:
 	uint16 Recv_uint16();
 	uint32 Recv_uint32();
 	uint64 Recv_uint64();
-	void   Recv_string(char *buffer, size_t size, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK);
+	std::string Recv_string(size_t length, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK);
 	void   Recv_string(std::string &buffer, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK);
 	void   Recv_binary(char *buffer, size_t size);
 	void   Recv_binary(std::string &buffer, size_t size);

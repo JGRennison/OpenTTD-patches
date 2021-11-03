@@ -28,20 +28,42 @@ NetworkTCPSocketHandler::NetworkTCPSocketHandler(SOCKET s) :
 
 NetworkTCPSocketHandler::~NetworkTCPSocketHandler()
 {
-	this->CloseConnection();
+	this->EmptyPacketQueue();
+	this->CloseSocket();
+}
 
+/**
+ * Free all pending and partially received packets.
+ */
+void NetworkTCPSocketHandler::EmptyPacketQueue()
+{
+	this->packet_queue.clear();
+	this->packet_recv.reset();
+}
+
+/**
+ * Close the actual socket of the connection.
+ * Please make sure CloseConnection is called before CloseSocket, as
+ * otherwise not all resources might be released.
+ */
+void NetworkTCPSocketHandler::CloseSocket()
+{
 	if (this->sock != INVALID_SOCKET) closesocket(this->sock);
 	this->sock = INVALID_SOCKET;
 }
 
+/**
+ * This will put this socket handler in a close state. It will not
+ * actually close the OS socket; use CloseSocket for this.
+ * @param error Whether we quit under an error condition or not.
+ * @return new status of the connection.
+ */
 NetworkRecvStatus NetworkTCPSocketHandler::CloseConnection(bool error)
 {
+	this->MarkClosed();
 	this->writable = false;
-	NetworkSocketHandler::CloseConnection(error);
 
-	/* Free all pending and partially received packets */
-	this->packet_queue.clear();
-	this->packet_recv.reset();
+	this->EmptyPacketQueue();
 
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -114,11 +136,11 @@ SendPacketsState NetworkTCPSocketHandler::SendPackets(bool closing_down)
 		Packet *p = this->packet_queue.front().get();
 		res = p->TransferOut<int>(send, this->sock, 0);
 		if (res == -1) {
-			int err = NetworkGetLastError();
-			if (err != EWOULDBLOCK) {
+			NetworkError err = NetworkError::GetLast();
+			if (!err.WouldBlock()) {
 				/* Something went wrong.. close client! */
 				if (!closing_down) {
-					DEBUG(net, 0, "send failed with error %s", NetworkGetErrorString(err));
+					DEBUG(net, 0, "Send failed: %s", err.AsString());
 					this->CloseConnection();
 				}
 				return SPS_CLOSED;
@@ -165,10 +187,10 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 		while (p->RemainingBytesToTransfer() != 0) {
 			res = p->TransferIn<int>(recv, this->sock, 0);
 			if (res == -1) {
-				int err = NetworkGetLastError();
-				if (err != EWOULDBLOCK) {
-					/* Something went wrong... (ECONNRESET is connection reset by peer) */
-					if (err != ECONNRESET) DEBUG(net, 0, "recv failed with error %s", NetworkGetErrorString(err));
+				NetworkError err = NetworkError::GetLast();
+				if (!err.WouldBlock()) {
+					/* Something went wrong... */
+					if (!err.IsConnectionReset()) DEBUG(net, 0, "Recv failed: %s", err.AsString());
 					this->CloseConnection();
 					return nullptr;
 				}
@@ -194,10 +216,10 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 	while (p->RemainingBytesToTransfer() != 0) {
 		res = p->TransferIn<int>(recv, this->sock, 0);
 		if (res == -1) {
-			int err = NetworkGetLastError();
-			if (err != EWOULDBLOCK) {
-				/* Something went wrong... (ECONNRESET is connection reset by peer) */
-				if (err != ECONNRESET) DEBUG(net, 0, "recv failed with error %s", NetworkGetErrorString(err));
+			NetworkError err = NetworkError::GetLast();
+			if (!err.WouldBlock()) {
+				/* Something went wrong... */
+				if (!err.IsConnectionReset()) DEBUG(net, 0, "Recv failed: %s", err.AsString());
 				this->CloseConnection();
 				return nullptr;
 			}

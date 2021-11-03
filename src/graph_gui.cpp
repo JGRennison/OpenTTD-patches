@@ -895,7 +895,7 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_CPR_MATRIX_SCROLLBAR);
-		this->vscroll->SetCount(_sorted_standard_cargo_specs_size);
+		this->vscroll->SetCount(static_cast<int>(_sorted_standard_cargo_specs.size()));
 
 		this->SetWidgetLoweredState(WID_CPR_DAYS, _cargo_payment_x_mode == 0);
 		this->SetWidgetLoweredState(WID_CPR_SPEED, _cargo_payment_x_mode == 1);
@@ -936,8 +936,7 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 		this->excluded_data = 0;
 
 		int i = 0;
-		const CargoSpec *cs;
-		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			if (HasBit(_legend_excluded_cargo, cs->Index())) SetBit(this->excluded_data, i);
 			i++;
 		}
@@ -950,8 +949,7 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 			return;
 		}
 
-		const CargoSpec *cs;
-		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			SetDParam(0, cs->name);
 			Dimension d = GetStringBoundingBox(STR_GRAPH_CARGO_PAYMENT_CARGO);
 			d.width += this->legend_width + 4; // colour field
@@ -983,15 +981,14 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 		int pos = this->vscroll->GetPosition();
 		int max = pos + this->vscroll->GetCapacity();
 
-		const CargoSpec *cs;
-		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			if (pos-- > 0) continue;
 			if (--max < 0) break;
 
 			bool lowered = !HasBit(_legend_excluded_cargo, cs->Index());
 
 			/* Redraw box if lowered */
-			if (lowered) DrawFrameRect(r.left, y, r.right, y + this->line_height - 1, COLOUR_BROWN, lowered ? FR_LOWERED : FR_NONE);
+			if (lowered) DrawFrameRect(r.left, y, r.right, y + this->line_height - 1, COLOUR_BROWN, FR_LOWERED);
 
 			byte clk_dif = lowered ? 1 : 0;
 			int rect_x = clk_dif + (rtl ? r.right - this->legend_width - WD_FRAMERECT_RIGHT : r.left + WD_FRAMERECT_LEFT);
@@ -1018,8 +1015,7 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 			case WID_CPR_DISABLE_CARGOES: {
 				/* Add all cargoes to the excluded lists. */
 				int i = 0;
-				const CargoSpec *cs;
-				FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 					SetBit(_legend_excluded_cargo, cs->Index());
 					SetBit(this->excluded_data, i);
 					i++;
@@ -1032,8 +1028,7 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 				uint row = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_CPR_MATRIX);
 				if (row >= this->vscroll->GetCount()) return;
 
-				const CargoSpec *cs;
-				FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 					if (row-- > 0) continue;
 
 					ToggleBit(_legend_excluded_cargo, cs->Index());
@@ -1083,10 +1078,9 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 		this->UpdateExcludedData();
 
 		int i = 0;
-		const CargoSpec *cs;
 		const float factor = 200.0f * 28.57f * 0.4f * ConvertSpeedToUnitDisplaySpeed(1 << 16) / (1.6f * static_cast<float>(1 << 16));
 
-		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			this->colours[i] = cs->legend_colour;
 			for (int j = 0; j != 20; j++) {
 				const byte ctt = _cargo_payment_x_mode ? static_cast<byte>(factor / static_cast<float>((j + 1) * this->x_values_increment)) : (j + 1) * 4;
@@ -1471,7 +1465,7 @@ struct PerformanceRatingDetailWindow : Window {
 		int64 needed = _score_info[score_type].needed;
 		int   score  = _score_info[score_type].score;
 
-		/* SCORE_TOTAL has his own rules ;) */
+		/* SCORE_TOTAL has its own rules ;) */
 		if (score_type == SCORE_TOTAL) {
 			for (ScoreID i = SCORE_BEGIN; i < SCORE_END; i++) score += _score_info[i].score;
 			needed = SCORE_MAX;
@@ -1704,8 +1698,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 		this->excluded_data = 0;
 
 		uint8 i = 0;
-		const CargoSpec *cs;
-		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			if (!HasBit(this->present_cargoes, cs->Index())) continue;
 			if (HasBit(legend_excluded_cargo, cs->Index())) SetBit(this->excluded_data, i);
 			i++;
@@ -1719,8 +1712,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 			return;
 		}
 
-		const CargoSpec *cs;
-		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			SetDParam(0, cs->name);
 			Dimension d = GetStringBoundingBox(STR_GRAPH_CARGO_PAYMENT_CARGO);
 			d.width += this->legend_width + 4; // color field
@@ -1752,8 +1744,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 		int pos = this->vscroll->GetPosition();
 		int max = pos + this->vscroll->GetCapacity();
 
-		const CargoSpec *cs;
-		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			if (!HasBit(this->present_cargoes, cs->Index())) continue;
 			if (pos-- > 0) continue;
 			if (--max < 0) break;
@@ -1789,8 +1780,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 				/* Add all cargoes to the excluded lists. */
 				this->legend_excluded_cargo = ~static_cast<CargoTypes>(0);
 				int i = 0;
-				const CargoSpec *cs;
-				FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 					if (!HasBit(this->present_cargoes, cs->Index())) continue;
 					SetBit(this->excluded_data, i);
 					i++;
@@ -1803,8 +1793,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 				uint row = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_SCG_MATRIX);
 				if (row >= this->vscroll->GetCount()) return;
 
-				const CargoSpec *cs;
-				FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 					if (!HasBit(this->present_cargoes, cs->Index())) continue;
 					if (row-- > 0) continue;
 
@@ -1850,8 +1839,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 		this->UpdateExcludedData();
 
 		uint8 i = 0;
-		const CargoSpec *cs;
-		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			if (!HasBit(this->present_cargoes, cs->Index())) continue;
 			this->colours[i] = cs->legend_colour;
 

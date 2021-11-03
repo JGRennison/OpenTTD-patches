@@ -21,7 +21,6 @@ static const SaveLoad _engine_renew_desc[] = {
 	    SLE_REF(EngineRenew, next,     REF_ENGINE_RENEWS),
 	SLE_CONDVAR(EngineRenew, group_id, SLE_UINT16, SLV_60, SL_MAX_VERSION),
 	SLE_CONDVAR(EngineRenew, replace_when_old, SLE_BOOL, SLV_175, SL_MAX_VERSION),
-	SLE_END()
 };
 
 static void Save_ERNW()
@@ -56,6 +55,8 @@ static void Ptrs_ERNW()
 	}
 }
 
-extern const ChunkHandler _autoreplace_chunk_handlers[] = {
-	{ 'ERNW', Save_ERNW, Load_ERNW, Ptrs_ERNW, nullptr, CH_ARRAY | CH_LAST},
+static const ChunkHandler autoreplace_chunk_handlers[] = {
+	{ 'ERNW', Save_ERNW, Load_ERNW, Ptrs_ERNW, nullptr, CH_ARRAY },
 };
+
+extern const ChunkHandlerTable _autoreplace_chunk_handlers(autoreplace_chunk_handlers);

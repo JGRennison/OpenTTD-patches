@@ -34,7 +34,7 @@ static inline void InsertSecondUint32(const uint32 value, __m128i &into)
 
 static inline void LoadUint64(const uint64 value, __m128i &into)
 {
-#ifdef _SQ64
+#ifdef POINTER_IS_64BIT
 	into = _mm_cvtsi64_si128(value);
 #else
 	#if (SSE_VERSION >= 4)
@@ -303,7 +303,7 @@ inline void Blitter_32bppSSE4::Draw(const Blitter::BlitterParams *bp, ZoomLevel 
 							m_colour = r == 0 ? m_colour : cmap; \
 							m_colour = m != 0 ? m_colour : srcm; \
 							}
-#ifdef _SQ64
+#ifdef POINTER_IS_64BIT
 						uint64 srcs = _mm_cvtsi128_si64(srcABCD);
 						uint64 remapped_src = 0;
 						CMOV_REMAP(c0, 0, srcs, mvX2);
@@ -499,7 +499,7 @@ bm_normal:
 					case BT_ODD: Draw<BM_NORMAL, RM_WITH_SKIP, BT_ODD, true>(bp, zoom); return;
 				}
 			} else {
-				if (((const Blitter_32bppSSE_Base::SpriteData *) bp->sprite)->flags & SF_TRANSLUCENT) {
+				if (((const Blitter_32bppSSE_Base::SpriteData *) bp->sprite)->flags & BSF_TRANSLUCENT) {
 					Draw<BM_NORMAL, RM_WITH_MARGIN, BT_NONE, true>(bp, zoom);
 				} else {
 					Draw<BM_NORMAL, RM_WITH_MARGIN, BT_NONE, false>(bp, zoom);
@@ -509,7 +509,7 @@ bm_normal:
 			break;
 		}
 		case BM_COLOUR_REMAP:
-			if (((const Blitter_32bppSSE_Base::SpriteData *) bp->sprite)->flags & SF_NO_REMAP) goto bm_normal;
+			if (((const Blitter_32bppSSE_Base::SpriteData *) bp->sprite)->flags & BSF_NO_REMAP) goto bm_normal;
 			if (bp->skip_left != 0 || bp->width <= MARGIN_REMAP_THRESHOLD) {
 				Draw<BM_COLOUR_REMAP, RM_WITH_SKIP, BT_NONE, true>(bp, zoom); return;
 			} else {
@@ -520,7 +520,7 @@ bm_normal:
 		case BM_BLACK_REMAP:  Draw<BM_BLACK_REMAP, RM_NONE, BT_NONE, true>(bp, zoom); return;
 
 		case BM_COLOUR_REMAP_WITH_BRIGHTNESS:
-			if (!(((const Blitter_32bppSSE_Base::SpriteData *) bp->sprite)->flags & SF_NO_REMAP)) {
+			if (!(((const Blitter_32bppSSE_Base::SpriteData *) bp->sprite)->flags & BSF_NO_REMAP)) {
 				Draw<BM_COLOUR_REMAP_WITH_BRIGHTNESS, RM_NONE, BT_NONE, true>(bp, zoom);
 				return;
 			}

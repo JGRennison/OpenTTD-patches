@@ -47,7 +47,6 @@ static const SaveLoad _economy_desc[] = {
 	    SLE_VAR(Economy, infl_amount_pr,                SLE_UINT8),
 	SLE_CONDVAR(Economy, industry_daily_change_counter, SLE_UINT32,                SLV_102, SL_MAX_VERSION),
 	SLE_CONDNULL_X(8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP)),
-	    SLE_END()
 };
 
 /** Economy variables */
@@ -68,7 +67,6 @@ static const SaveLoad _cargopayment_desc[] = {
 	    SLE_VAR(CargoPayment, route_profit,    SLE_INT64),
 	    SLE_VAR(CargoPayment, visual_profit,   SLE_INT64),
 	SLE_CONDVAR_X(CargoPayment, visual_transfer, SLE_INT64, SLV_181, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_OR, XSLFI_CHILLPP)),
-	    SLE_END()
 };
 
 static void Save_CAPY()
@@ -97,9 +95,11 @@ static void Ptrs_CAPY()
 }
 
 
-extern const ChunkHandler _economy_chunk_handlers[] = {
-	{ 'CAPY', Save_CAPY,     Load_CAPY,     Ptrs_CAPY, nullptr, CH_ARRAY},
-	{ 'PRIC', nullptr,       Load_PRIC,     nullptr,   nullptr, CH_RIFF },
-	{ 'CAPR', nullptr,       Load_CAPR,     nullptr,   nullptr, CH_RIFF },
-	{ 'ECMY', Save_ECMY,     Load_ECMY,     nullptr,   nullptr, CH_RIFF | CH_LAST},
+static const ChunkHandler economy_chunk_handlers[] = {
+	{ 'CAPY', Save_CAPY, Load_CAPY, Ptrs_CAPY, nullptr, CH_ARRAY },
+	{ 'PRIC', nullptr,   Load_PRIC, nullptr,   nullptr, CH_RIFF  },
+	{ 'CAPR', nullptr,   Load_CAPR, nullptr,   nullptr, CH_RIFF  },
+	{ 'ECMY', Save_ECMY, Load_ECMY, nullptr,   nullptr, CH_RIFF  },
 };
+
+extern const ChunkHandlerTable _economy_chunk_handlers(economy_chunk_handlers);

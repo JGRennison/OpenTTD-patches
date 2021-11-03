@@ -118,7 +118,7 @@ static void FindStationsAroundSelection()
 	Station *adjacent = nullptr;
 
 	/* Direct loop instead of ForAllStationsAroundTiles as we are not interested in catchment area */
-	TILE_AREA_LOOP(tile, ta) {
+	for (TileIndex tile : ta) {
 		if (IsTileType(tile, MP_STATION) && GetTileOwner(tile) == _local_company) {
 			Station *st = Station::GetByTile(tile);
 			if (st == nullptr) continue;
@@ -290,8 +290,7 @@ protected:
 	{
 		int diff = 0;
 
-		CargoID j;
-		FOR_EACH_SET_CARGO_ID(j, cargo_filter) {
+		for (CargoID j : SetCargoBitIterator(cargo_filter)) {
 			diff += a->goods[j].cargo.TotalCount() - b->goods[j].cargo.TotalCount();
 		}
 
@@ -303,8 +302,7 @@ protected:
 	{
 		int diff = 0;
 
-		CargoID j;
-		FOR_EACH_SET_CARGO_ID(j, cargo_filter) {
+		for (CargoID j : SetCargoBitIterator(cargo_filter)) {
 			diff += a->goods[j].cargo.AvailableCount() - b->goods[j].cargo.AvailableCount();
 		}
 
@@ -317,8 +315,7 @@ protected:
 		byte maxr1 = 0;
 		byte maxr2 = 0;
 
-		CargoID j;
-		FOR_EACH_SET_CARGO_ID(j, cargo_filter) {
+		for (CargoID j : SetCargoBitIterator(cargo_filter)) {
 			if (a->goods[j].HasRating()) maxr1 = std::max(maxr1, a->goods[j].rating);
 			if (b->goods[j].HasRating()) maxr2 = std::max(maxr2, b->goods[j].rating);
 		}
@@ -422,10 +419,12 @@ public:
 		this->FinishInitNested(window_number);
 		this->owner = (Owner)this->window_number;
 
-		const CargoSpec *cs;
-		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
-			if (!HasBit(this->cargo_filter, cs->Index())) continue;
-			this->LowerWidget(WID_STL_CARGOSTART + index);
+		uint8 index = 0;
+		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
+			if (HasBit(this->cargo_filter, cs->Index())) {
+				this->LowerWidget(WID_STL_CARGOSTART + index);
+			}
+			index++;
 		}
 
 		if (this->cargo_filter == this->cargo_filter_max) this->cargo_filter = _cargo_mask;
@@ -471,8 +470,7 @@ public:
 
 				/* Determine appropriate width for mini station rating graph */
 				this->rating_width = 0;
-				const CargoSpec *cs;
-				FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 					this->rating_width = std::max(this->rating_width, GetStringBoundingBox(cs->abbrev).width);
 				}
 				/* Approximately match original 16 pixel wide rating bars by multiplying string width by 1.6 */
@@ -540,8 +538,8 @@ public:
 					x += rtl ? -text_spacing : text_spacing;
 
 					/* show cargo waiting and station ratings */
-					for (uint j = 0; j < _sorted_standard_cargo_specs_size; j++) {
-						CargoID cid = _sorted_cargo_specs[j]->Index();
+					for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
+						CargoID cid = cs->Index();
 						if (st->goods[cid].cargo.TotalCount() > 0) {
 							/* For RTL we work in exactly the opposite direction. So
 							 * decrement the space needed first, then draw to the left
@@ -634,8 +632,7 @@ public:
 					ToggleBit(this->facilities, widget - WID_STL_TRAIN);
 					this->ToggleWidgetLoweredState(widget);
 				} else {
-					uint i;
-					FOR_EACH_SET_BIT(i, this->facilities) {
+					for (uint i : SetBitIterator(this->facilities)) {
 						this->RaiseWidget(i + WID_STL_TRAIN);
 					}
 					this->facilities = 1 << (widget - WID_STL_TRAIN);
@@ -656,7 +653,7 @@ public:
 				break;
 
 			case WID_STL_CARGOALL: {
-				for (uint i = 0; i < _sorted_standard_cargo_specs_size; i++) {
+				for (uint i = 0; i < _sorted_standard_cargo_specs.size(); i++) {
 					this->LowerWidget(WID_STL_CARGOSTART + i);
 				}
 				this->LowerWidget(WID_STL_NOCARGOWAITING);
@@ -682,7 +679,7 @@ public:
 					this->include_empty = !this->include_empty;
 					this->ToggleWidgetLoweredState(WID_STL_NOCARGOWAITING);
 				} else {
-					for (uint i = 0; i < _sorted_standard_cargo_specs_size; i++) {
+					for (uint i = 0; i < _sorted_standard_cargo_specs.size(); i++) {
 						this->RaiseWidget(WID_STL_CARGOSTART + i);
 					}
 
@@ -704,7 +701,7 @@ public:
 						ToggleBit(this->cargo_filter, cs->Index());
 						this->ToggleWidgetLoweredState(widget);
 					} else {
-						for (uint i = 0; i < _sorted_standard_cargo_specs_size; i++) {
+						for (uint i = 0; i < _sorted_standard_cargo_specs.size(); i++) {
 							this->RaiseWidget(WID_STL_CARGOSTART + i);
 						}
 						this->RaiseWidget(WID_STL_NOCARGOWAITING);
@@ -802,7 +799,7 @@ static NWidgetBase *CargoWidgets(int *biggest_index)
 {
 	NWidgetHorizontal *container = new NWidgetHorizontal();
 
-	for (uint i = 0; i < _sorted_standard_cargo_specs_size; i++) {
+	for (uint i = 0; i < _sorted_standard_cargo_specs.size(); i++) {
 		NWidgetBackground *panel = new NWidgetBackground(WWT_PANEL, COLOUR_GREY, WID_STL_CARGOSTART + i);
 		panel->SetMinimalSize(14, 0);
 		panel->SetMinimalTextLines(1, 0, FS_NORMAL);
@@ -811,7 +808,7 @@ static NWidgetBase *CargoWidgets(int *biggest_index)
 		panel->SetDataTip(0, STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE);
 		container->Add(panel);
 	}
-	*biggest_index = WID_STL_CARGOSTART + _sorted_standard_cargo_specs_size;
+	*biggest_index = WID_STL_CARGOSTART + static_cast<int>(_sorted_standard_cargo_specs.size());
 	return container;
 }
 
@@ -1530,8 +1527,7 @@ struct StationViewWindow : public Window {
 		if (ofs_y < 0) return false;
 
 		const Station *st = Station::Get(this->window_number);
-		const CargoSpec *cs;
-		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			const GoodsEntry *ge = &st->goods[cs->Index()];
 			if (!ge->HasRating()) continue;
 			ofs_y -= FONT_HEIGHT_NORMAL;
@@ -1994,8 +1990,7 @@ struct StationViewWindow : public Window {
 
 		this->ratings_list_y = y;
 
-		const CargoSpec *cs;
-		FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			const GoodsEntry *ge = &st->goods[cs->Index()];
 			if (!ge->HasRating()) continue;
 
@@ -2140,8 +2135,7 @@ struct StationViewWindow : public Window {
 				int row = this->GetRowFromWidget(pt.y, WID_SV_ACCEPT_RATING_LIST, WD_FRAMERECT_TOP, FONT_HEIGHT_NORMAL);
 				if (row < 1) break;
 				const Station *st = Station::Get(this->window_number);
-				const CargoSpec *cs;
-				FOR_ALL_SORTED_STANDARD_CARGOSPECS(cs) {
+				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 					const GoodsEntry *ge = &st->goods[cs->Index()];
 					if (!ge->HasRating()) continue;
 					if (row == 1) {
@@ -2391,7 +2385,7 @@ static const T *FindStationsNearby(TileArea ta, bool distant_join)
 	_deleted_stations_nearby.clear();
 
 	/* Check the inside, to return, if we sit on another station */
-	TILE_AREA_LOOP(t, ta) {
+	for (TileIndex t : ta) {
 		if (t < MapSize() && IsTileType(t, MP_STATION) && T::IsValidID(GetStationIndex(t))) return T::GetByTile(t);
 	}
 

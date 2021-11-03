@@ -24,7 +24,7 @@ extern NetworkClientSocketPool _networkclientsocket_pool;
 class ServerNetworkGameSocketHandler : public NetworkClientSocketPool::PoolItem<&_networkclientsocket_pool>, public NetworkGameSocketHandler, public TCPListenHandler<ServerNetworkGameSocketHandler, PACKET_SERVER_FULL, PACKET_SERVER_BANNED> {
 protected:
 	NetworkRecvStatus Receive_CLIENT_JOIN(Packet *p) override;
-	NetworkRecvStatus Receive_CLIENT_COMPANY_INFO(Packet *p) override;
+	NetworkRecvStatus Receive_CLIENT_GAME_INFO(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_GAME_PASSWORD(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_COMPANY_PASSWORD(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_SETTINGS_PASSWORD(Packet *p) override;
@@ -43,7 +43,8 @@ protected:
 	NetworkRecvStatus Receive_CLIENT_NEWGRFS_CHECKED(Packet *p) override;
 	NetworkRecvStatus Receive_CLIENT_MOVE(Packet *p) override;
 
-	NetworkRecvStatus SendCompanyInfo();
+	NetworkRecvStatus SendGameInfo();
+	NetworkRecvStatus SendGameInfoExtended(PacketGameType reply_type, uint16 flags, uint16 version);
 	NetworkRecvStatus SendNewGRFCheck();
 	NetworkRecvStatus SendWelcome();
 	NetworkRecvStatus SendNeedGamePassword();
@@ -100,13 +101,14 @@ public:
 	NetworkRecvStatus SendQuit(ClientID client_id);
 	NetworkRecvStatus SendShutdown();
 	NetworkRecvStatus SendNewGame();
-	NetworkRecvStatus SendRConResult(uint16 colour, const char *command);
+	NetworkRecvStatus SendRConResult(uint16 colour, const std::string &command);
 	NetworkRecvStatus SendMove(ClientID client_id, CompanyID company_id);
 
 	NetworkRecvStatus SendClientInfo(NetworkClientInfo *ci);
-	NetworkRecvStatus SendError(NetworkErrorCode error, const char *reason = nullptr);
+	NetworkRecvStatus SendError(NetworkErrorCode error, const std::string &reason = {});
 	NetworkRecvStatus SendDesyncLog(const std::string &log);
-	NetworkRecvStatus SendChat(NetworkAction action, ClientID client_id, bool self_send, const char *msg, NetworkTextMessageData data);
+	NetworkRecvStatus SendChat(NetworkAction action, ClientID client_id, bool self_send, const std::string &msg, NetworkTextMessageData data);
+	NetworkRecvStatus SendExternalChat(const std::string &source, TextColour colour, const std::string &user, const std::string &msg);
 	NetworkRecvStatus SendJoin(ClientID client_id);
 	NetworkRecvStatus SendFrame();
 	NetworkRecvStatus SendSync();
@@ -136,7 +138,7 @@ public:
 };
 
 void NetworkServer_Tick(bool send_frame);
-void NetworkServerSetCompanyPassword(CompanyID company_id, const char *password, bool already_hashed = true);
+void NetworkServerSetCompanyPassword(CompanyID company_id, const std::string &password, bool already_hashed = true);
 void NetworkServerUpdateCompanyPassworded(CompanyID company_id, bool passworded);
 
 #endif /* NETWORK_SERVER_H */
