@@ -230,10 +230,10 @@ static inline uint8 FindFirstBit(T value)
 	}
 #else
 	if (sizeof(T) <= sizeof(uint32)) {
-		extern uint8 FindFirstBit32(x);
+		extern uint8 FindFirstBit32(uint32 x);
 		return FindFirstBit32(value);
 	} else {
-		extern uint8 FindFirstBit64(x);
+		extern uint8 FindFirstBit64(uint64 x);
 		return FindFirstBit64(value);
 	}
 #endif
