@@ -16,7 +16,6 @@
 #include <tuple>
 
 template<uint N> class OrthogonalTileIteratorStep;
-using OrthogonalTileIterator = class OrthogonalTileIteratorStep<1>;
 
 /** Represents the covered area of e.g. a rail station */
 struct OrthogonalTileArea {
@@ -70,9 +69,9 @@ struct OrthogonalTileArea {
 		return std::tie(tile, w, h) == std::tie(other.tile, other.w, other.h);
 	}
 
-	OrthogonalTileIterator begin() const;
+	OrthogonalTileIteratorStep<1> begin() const;
 
-	OrthogonalTileIterator end() const;
+	OrthogonalTileIteratorStep<1> end() const;
 };
 
 /** Represents a diagonal tile area. */
@@ -208,6 +207,8 @@ public:
 		return new OrthogonalTileIteratorStep(*this);
 	}
 };
+
+using OrthogonalTileIterator = class OrthogonalTileIteratorStep<1>;
 
 /** Iterator to iterate over a tile area (rectangle) of the map.
  * It prefetches tiles once per row.
