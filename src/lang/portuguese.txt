@@ -332,6 +332,10 @@ STR_SORT_BY_AVERAGE_PROFIT_THIS_YEAR                            :Lucro médio es
 STR_GROUP_BY_NONE                                               :Nenhuma
 STR_GROUP_BY_SHARED_ORDERS                                      :Ordens partilhadas
 
+# Order button in shared orders vehicle list
+STR_GOTO_ORDER_VIEW                                             :{BLACK}Ordens
+STR_GOTO_ORDER_VIEW_TOOLTIP                                     :{BLACK}Abrir a visualização de ordens
+
 # Tooltips for the main toolbar
 ###length 31
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Pausa
@@ -2260,6 +2264,7 @@ STR_NETWORK_SERVER_LIST_LANDSCAPE                               :{SILVER}Paisage
 STR_NETWORK_SERVER_LIST_MAP_SIZE                                :{SILVER}Tamanho do Mapa: {WHITE}{COMMA}x{COMMA}
 STR_NETWORK_SERVER_LIST_SERVER_VERSION                          :{SILVER}Versão do servidor: {WHITE}{STRING}
 STR_NETWORK_SERVER_LIST_SERVER_ADDRESS                          :{SILVER}Endereço do servidor: {WHITE}{STRING}
+STR_NETWORK_SERVER_LIST_INVITE_CODE                             :{SILVER}Código de convite: {WHITE}{STRING}
 STR_NETWORK_SERVER_LIST_START_DATE                              :{SILVER}Data de início: {WHITE}{DATE_SHORT}
 STR_NETWORK_SERVER_LIST_CURRENT_DATE                            :{SILVER}Data actual: {WHITE}{DATE_SHORT}
 STR_NETWORK_SERVER_LIST_GAMESCRIPT                              :{SILVER}Script de Jogo: {WHITE}{STRING} (v{NUM})
@@ -2415,6 +2420,7 @@ STR_NETWORK_CHAT_TO_COMPANY                                     :[Equipa] Para {
 STR_NETWORK_CHAT_CLIENT                                         :[Privado] {STRING}: {WHITE}{STRING}
 STR_NETWORK_CHAT_TO_CLIENT                                      :[Privado] Para {STRING}: {WHITE}{STRING}
 STR_NETWORK_CHAT_ALL                                            :[Todos] {STRING}: {WHITE}{STRING}
+STR_NETWORK_CHAT_EXTERNAL                                       :[{3:STRING}] {0:STRING}: {WHITE}{1:STRING}
 STR_NETWORK_CHAT_OSKTITLE                                       :{BLACK}Introduza a mensagem para os outros jogadores
 
 # Network messages
@@ -2675,6 +2681,7 @@ STR_STATION_CLASS_WAYP                                          :Pontos de passa
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Selecção de Sinal
+STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Alterna a exibição para tipos de sinais avançados
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Sinal de bloco (semáforo){}Este é o tipo mais básico de sinal. Permite apenas a passagem de um comboio dentro de um bloco de linha ao mesmo tempo.
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Sinal de entrada (semáforo){}Apresenta-se verde enquanto existir um ou mais sinais de saída verdes no seguimento da linha. Caso contrário, ficará vermelho.
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Sinal de saída (semáforo){}Funciona da mesma forma que o sinal de bloco, mas é necessário para ativar a cor correta nos pré-sinais de entrada e combinado.
@@ -4425,7 +4432,7 @@ STR_INVALID_ORDER                                               :{RED} (Ordem in
 # Time table window
 STR_TIMETABLE_TITLE                                             :{WHITE}{VEHICLE} (Horário)
 STR_TIMETABLE_ORDER_VIEW                                        :{BLACK}Ordens
-STR_TIMETABLE_ORDER_VIEW_TOOLTIP                                :{BLACK}Mudar para a vista ordenada
+STR_TIMETABLE_ORDER_VIEW_TOOLTIP                                :{BLACK}Mudar para visualização de ordens
 
 STR_TIMETABLE_TOOLTIP                                           :{BLACK}Horário - clique numa ordem para a seleccionar.
 

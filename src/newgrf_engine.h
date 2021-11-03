@@ -22,17 +22,17 @@
 struct VehicleScopeResolver : public ScopeResolver {
 	const struct Vehicle *v; ///< The vehicle being resolved.
 	EngineID self_type;      ///< Type of the vehicle.
-	bool info_view;          ///< Indicates if the item is being drawn in an info window.
+	bool rotor_in_gui;       ///< Helicopter rotor is drawn in GUI.
 
 	/**
 	 * Scope resolver of a single vehicle.
 	 * @param ro Surrounding resolver.
 	 * @param engine_type Engine type
 	 * @param v %Vehicle being resolved.
-	 * @param info_view Indicates if the item is being drawn in an info window.
+	 * @param rotor_in_gui Helicopter rotor is drawn in GUI.
 	 */
-	VehicleScopeResolver(ResolverObject &ro, EngineID engine_type, const Vehicle *v, bool info_view)
-		: ScopeResolver(ro), v(v), self_type(engine_type), info_view(info_view)
+	VehicleScopeResolver(ResolverObject &ro, EngineID engine_type, const Vehicle *v, bool rotor_in_gui)
+		: ScopeResolver(ro), v(v), self_type(engine_type), rotor_in_gui(rotor_in_gui)
 	{
 	}
 
@@ -59,7 +59,7 @@ struct VehicleResolverObject : public ResolverObject {
 	VehicleScopeResolver relative_scope; ///< Scope resolver for an other vehicle in the chain.
 	byte cached_relative_count;          ///< Relative position of the other vehicle.
 
-	VehicleResolverObject(EngineID engine_type, const Vehicle *v, WagonOverride wagon_override, bool info_view = false,
+	VehicleResolverObject(EngineID engine_type, const Vehicle *v, WagonOverride wagon_override, bool rotor_in_gui = false,
 			CallbackID callback = CBID_NO_CALLBACK, uint32 callback_param1 = 0, uint32 callback_param2 = 0);
 
 	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0) override;
@@ -84,9 +84,9 @@ void GetCustomEngineSprite(EngineID engine, const Vehicle *v, Direction directio
 #define GetCustomVehicleSprite(v, direction, image_type, result) GetCustomEngineSprite(v->engine_type, v, direction, image_type, result)
 #define GetCustomVehicleIcon(et, direction, image_type, result) GetCustomEngineSprite(et, nullptr, direction, image_type, result)
 
-void GetRotorOverrideSprite(EngineID engine, const struct Aircraft *v, bool info_view, EngineImageType image_type, VehicleSpriteSeq *result);
-#define GetCustomRotorSprite(v, i, image_type, result) GetRotorOverrideSprite(v->engine_type, v, i, image_type, result)
-#define GetCustomRotorIcon(et, image_type, result) GetRotorOverrideSprite(et, nullptr, true, image_type, result)
+void GetRotorOverrideSprite(EngineID engine, const struct Aircraft *v, EngineImageType image_type, VehicleSpriteSeq *result);
+#define GetCustomRotorSprite(v, image_type, result) GetRotorOverrideSprite(v->engine_type, v, image_type, result)
+#define GetCustomRotorIcon(et, image_type, result) GetRotorOverrideSprite(et, nullptr, image_type, result)
 
 /* Forward declaration of GRFFile, to avoid unnecessary inclusion of newgrf.h
  * elsewhere... */

@@ -331,6 +331,10 @@ STR_SORT_BY_AVERAGE_PROFIT_THIS_YEAR                            :Gemiddelde wins
 STR_GROUP_BY_NONE                                               :Geen
 STR_GROUP_BY_SHARED_ORDERS                                      :Gedeelde orders
 
+# Order button in shared orders vehicle list
+STR_GOTO_ORDER_VIEW                                             :{BLACK}Orders
+STR_GOTO_ORDER_VIEW_TOOLTIP                                     :{BLACK}Open het orderscherm
+
 # Tooltips for the main toolbar
 ###length 31
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Hiermee pauzeer je het spel
@@ -2259,6 +2263,7 @@ STR_NETWORK_SERVER_LIST_LANDSCAPE                               :{SILVER}Landsch
 STR_NETWORK_SERVER_LIST_MAP_SIZE                                :{SILVER}Kaartgrootte: {WHITE}{COMMA}x{COMMA}
 STR_NETWORK_SERVER_LIST_SERVER_VERSION                          :{SILVER}Serverversie: {WHITE}{STRING}
 STR_NETWORK_SERVER_LIST_SERVER_ADDRESS                          :{SILVER}Serveradres: {WHITE}{STRING}
+STR_NETWORK_SERVER_LIST_INVITE_CODE                             :{SILVER}Uitnodigingscode: {WHITE}{STRING}
 STR_NETWORK_SERVER_LIST_START_DATE                              :{SILVER}Startdatum: {WHITE}{DATE_SHORT}
 STR_NETWORK_SERVER_LIST_CURRENT_DATE                            :{SILVER}Huidige datum: {WHITE}{DATE_SHORT}
 STR_NETWORK_SERVER_LIST_GAMESCRIPT                              :{SILVER}Spelscript: {WHITE}{STRING} (v{NUM})
@@ -2414,6 +2419,7 @@ STR_NETWORK_CHAT_TO_COMPANY                                     :[Team] Aan {STR
 STR_NETWORK_CHAT_CLIENT                                         :[Privé] {STRING}: {WHITE}{STRING}
 STR_NETWORK_CHAT_TO_CLIENT                                      :[Privé] Aan {STRING}: {WHITE}{STRING}
 STR_NETWORK_CHAT_ALL                                            :[Iedereen] {STRING}: {WHITE}{STRING}
+STR_NETWORK_CHAT_EXTERNAL                                       :[{3:STRING}] {0:STRING}: {WHITE}{1:STRING}
 STR_NETWORK_CHAT_OSKTITLE                                       :{BLACK}Geef tekst voor netwerkchat
 
 # Network messages
@@ -2674,6 +2680,7 @@ STR_STATION_CLASS_WAYP                                          :Routepunten
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Seinselectie
+STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Wisselen tussen geavanceerde seintypen weergeven-verbergen
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Bloksein (armsein){}Dit is het simpelste soort sein dat slechts één trein tegelijk in hetzelfde blok toelaat
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Ingangssein (armsein){}Groen als er een groen uitgangssein is uit het volgende blok. Anders rood.
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Uitgangssein (armsein){}Gedraagt zich hetzelfde als een standaardsein, maar is nodig om ingangs- en combinatie-voorseinen aan te sturen

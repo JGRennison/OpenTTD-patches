@@ -5,4 +5,19 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-AILog.Info("12 API compatibility in effect.");
+/** @file script_objecttypelist.cpp Implementation of ScriptObjectTypeList. */
+
+#include "../../stdafx.h"
+#include "script_objecttypelist.hpp"
+#include "../../newgrf_object.h"
+
+#include "../../safeguards.h"
+
+ScriptObjectTypeList::ScriptObjectTypeList()
+{
+	for (int i = 0; i < NUM_OBJECTS; i++) {
+		const ObjectSpec *spec = ObjectSpec::Get(i);
+		if (!spec->IsEverAvailable()) continue;
+		this->AddItem(i);
+	}
+}

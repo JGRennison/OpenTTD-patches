@@ -5,4 +5,22 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-AILog.Info("12 API compatibility in effect.");
+/** @file script_objecttypelist.hpp List all available object types. */
+
+#ifndef SCRIPT_OBJECTTYPELIST_HPP
+#define SCRIPT_OBJECTTYPELIST_HPP
+
+#include "script_objecttype.hpp"
+
+/**
+ * Creates a list of valid object types.
+ * @api ai game
+ * @ingroup ScriptList
+ */
+class ScriptObjectTypeList : public ScriptList {
+public:
+	ScriptObjectTypeList();
+};
+
+
+#endif /* SCRIPT_OBJECTTYPELIST_HPP */

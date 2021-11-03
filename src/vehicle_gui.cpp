@@ -1682,7 +1682,13 @@ void ChangeVehicleViewWindow(VehicleID from_index, VehicleID to_index)
 static const NWidgetPart _nested_vehicle_list[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_VL_CAPTION),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_VL_CAPTION_SELECTION),
+			NWidget(WWT_CAPTION, COLOUR_GREY, WID_VL_CAPTION),
+			NWidget(NWID_HORIZONTAL),
+				NWidget(WWT_CAPTION, COLOUR_GREY, WID_VL_CAPTION_SHARED_ORDERS),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_VL_ORDER_VIEW), SetMinimalSize(61, 14), SetDataTip(STR_GOTO_ORDER_VIEW, STR_GOTO_ORDER_VIEW_TOOLTIP),
+			EndContainer(),
+		EndContainer(),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -2105,6 +2111,12 @@ private:
 		}
 	}
 
+	/** Enumeration of planes of the title row at the top. */
+	enum CaptionPlanes {
+		BP_NORMAL,        ///< Show shared orders caption and buttons.
+		BP_SHARED_ORDERS, ///< Show the normal caption.
+	};
+
 public:
 	VehicleListWindow(WindowDesc *desc, WindowNumber window_number) : BaseVehicleListWindow(desc, window_number)
 	{
@@ -2120,14 +2132,17 @@ public:
 		/* Set up the window widgets */
 		this->GetWidget<NWidgetCore>(WID_VL_LIST)->tool_tip = STR_VEHICLE_LIST_TRAIN_LIST_TOOLTIP + this->vli.vtype;
 
+		NWidgetStacked *nwi = this->GetWidget<NWidgetStacked>(WID_VL_CAPTION_SELECTION);
 		if (this->vli.type == VL_SHARED_ORDERS) {
-			this->GetWidget<NWidgetCore>(WID_VL_CAPTION)->widget_data = STR_VEHICLE_LIST_SHARED_ORDERS_LIST_CAPTION;
+			this->GetWidget<NWidgetCore>(WID_VL_CAPTION_SHARED_ORDERS)->widget_data = STR_VEHICLE_LIST_SHARED_ORDERS_LIST_CAPTION;
 			/* If we are in the shared orders window, then disable the group-by dropdown menu.
 			 * Remove this when the group-by dropdown menu has another option apart from grouping by shared orders. */
 			this->SetWidgetDisabledState(WID_VL_GROUP_ORDER, true);
 			this->SetWidgetDisabledState(WID_VL_GROUP_BY_PULLDOWN, true);
+			nwi->SetDisplayedPlane(BP_SHARED_ORDERS);
 		} else {
 			this->GetWidget<NWidgetCore>(WID_VL_CAPTION)->widget_data = STR_VEHICLE_LIST_TRAIN_CAPTION + this->vli.vtype;
+			nwi->SetDisplayedPlane(BP_NORMAL);
 		}
 
 		this->FinishInitNested(window_number);
@@ -2188,7 +2203,8 @@ public:
 				SetDParam(0, this->cargo_filter_texts[this->cargo_filter_criteria]);
 				break;
 
-			case WID_VL_CAPTION: {
+			case WID_VL_CAPTION:
+			case WID_VL_CAPTION_SHARED_ORDERS: {
 				switch (this->vli.type) {
 					case VL_SHARED_ORDERS: // Shared Orders
 						if (this->vehicles.size() == 0) {
@@ -2281,6 +2297,12 @@ public:
 	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
+		    case WID_VL_ORDER_VIEW: // Open the shared orders window
+				assert(this->vli.type == VL_SHARED_ORDERS);
+				assert(!this->vehicles.empty());
+				ShowOrdersWindow(this->vehicles[0]);
+				break;
+
 			case WID_VL_SORT_ORDER: // Flip sorting method ascending/descending
 				this->vehgroups.ToggleSortOrder();
 				this->vehgroups.ForceResort();
@@ -2323,10 +2345,14 @@ public:
 						const Vehicle *v = vehgroup.vehicles_begin[0];
 						/* We do not support VehicleClicked() here since the contextual action may only make sense for individual vehicles */
 
-						if (vehgroup.NumVehicles() == 1) {
-							ShowVehicleViewWindow(v);
+						if (_ctrl_pressed) {
+							ShowOrdersWindow(v);
 						} else {
-							ShowVehicleListWindow(v);
+							if (vehgroup.NumVehicles() == 1) {
+								ShowVehicleViewWindow(v);
+							} else {
+								ShowVehicleListWindow(v);
+							}
 						}
 						break;
 					}
@@ -4123,12 +4149,22 @@ void SetMouseCursorVehicle(const Vehicle *v, EngineImageType image_type)
 
 	_cursor.sprite_count = 0;
 	int total_width = 0;
-	for (; v != nullptr; v = v->HasArticulatedPart() ? v->GetNextArticulatedPart() : nullptr) {
+	int y_offset = 0;
+	bool rotor_seq = false; // Whether to draw the rotor of the vehicle in this step.
+
+	while (v != nullptr) {
 		if (total_width >= ScaleGUITrad(2 * (int)VEHICLEINFO_FULL_VEHICLE_WIDTH)) break;
 
 		PaletteID pal = (v->vehstatus & VS_CRASHED) ? PALETTE_CRASH : GetVehiclePalette(v);
 		VehicleSpriteSeq seq;
-		v->GetImage(rtl ? DIR_E : DIR_W, image_type, &seq);
+
+		if (rotor_seq) {
+			GetCustomRotorSprite(Aircraft::From(v), image_type, &seq);
+			if (!seq.IsValid()) seq.Set(SPR_ROTOR_STOPPED);
+			y_offset = - ScaleGUITrad(5);
+		} else {
+			v->GetImage(rtl ? DIR_E : DIR_W, image_type, &seq);
+		}
 
 		if (_cursor.sprite_count + seq.count > lengthof(_cursor.sprite_seq)) break;
 
@@ -4137,11 +4173,17 @@ void SetMouseCursorVehicle(const Vehicle *v, EngineImageType image_type)
 			_cursor.sprite_seq[_cursor.sprite_count].sprite = seq.seq[i].sprite;
 			_cursor.sprite_seq[_cursor.sprite_count].pal = pal2;
 			_cursor.sprite_pos[_cursor.sprite_count].x = rtl ? -total_width : total_width;
-			_cursor.sprite_pos[_cursor.sprite_count].y = 0;
+			_cursor.sprite_pos[_cursor.sprite_count].y = y_offset;
 			_cursor.sprite_count++;
 		}
 
-		total_width += GetSingleVehicleWidth(v, image_type);
+		if (v->type == VEH_AIRCRAFT && v->subtype == AIR_HELICOPTER && !rotor_seq) {
+			/* Draw rotor part in the next step. */
+			rotor_seq = true;
+		} else {
+			total_width += GetSingleVehicleWidth(v, image_type);
+			v = v->HasArticulatedPart() ? v->GetNextArticulatedPart() : nullptr;
+		}
 	}
 
 	int offs = (ScaleGUITrad(VEHICLEINFO_FULL_VEHICLE_WIDTH) - total_width) / 2;

@@ -627,7 +627,7 @@ STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Tytuł o
 STR_TOOLTIP_SHADE                                               :{BLACK}Zwiń okno - pokaż tylko nagłówek
 STR_TOOLTIP_DEBUG                                               :{BLACK}Pokaż informacje debugerra NewGRF
 STR_TOOLTIP_DEFSIZE                                             :{BLACK}Zmień rozmiar okna na domyślny. Ctrl+klik zapisze obecne wymiary jako domyślne
-STR_TOOLTIP_STICKY                                              :{BLACK}Zaznacz to okno jako niezamykalne przyciskiem 'Zamknij Wszystkie Okna'. Ctrl+klik dodatkowo zapisze to ustawienie jako domyślne
+STR_TOOLTIP_STICKY                                              :{BLACK}Zaznacz to okno jako niezamykalne przyciskiem „Zamknij wszystkie okna”. Ctrl+klik dodatkowo zapisze to ustawienie jako domyślne
 STR_TOOLTIP_RESIZE                                              :{BLACK}Kliknij i przeciągnij, by zmienić rozmiar okna
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Przełącz na duży/mały rozmiar okna
 STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Suwak - przesuwa listę w górę/w dół
@@ -709,6 +709,10 @@ STR_SORT_BY_AVERAGE_PROFIT_THIS_YEAR                            :Średni zysk w 
 # Group by options for vehicle list
 STR_GROUP_BY_NONE                                               :Brak
 STR_GROUP_BY_SHARED_ORDERS                                      :Polecenia współdzielone
+
+# Order button in shared orders vehicle list
+STR_GOTO_ORDER_VIEW                                             :{BLACK}Polecenia
+STR_GOTO_ORDER_VIEW_TOOLTIP                                     :{BLACK}Otwórz widok poleceń
 
 # Tooltips for the main toolbar
 ###length 31
@@ -877,7 +881,7 @@ STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Przełącz kons
 STR_ABOUT_MENU_AI_DEBUG                                         :Debugowanie SI / Game Script
 STR_ABOUT_MENU_SCREENSHOT                                       :Zrzut ekranu
 STR_ABOUT_MENU_SHOW_FRAMERATE                                   :Pokaż liczbę klatek na sekundę
-STR_ABOUT_MENU_ABOUT_OPENTTD                                    :Info o 'OpenTTD'
+STR_ABOUT_MENU_ABOUT_OPENTTD                                    :Informacje o „OpenTTD”
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Wyrównywanie sprite'ów
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Włącz/wyłącz ramki
 STR_ABOUT_MENU_TOGGLE_DIRTY_BLOCKS                              :Włącz/wyłącz kolorowanie brudnych bloków
@@ -2639,6 +2643,7 @@ STR_NETWORK_SERVER_LIST_LANDSCAPE                               :{SILVER}Krajobr
 STR_NETWORK_SERVER_LIST_MAP_SIZE                                :{SILVER}Rozmiar mapy: {WHITE}{COMMA}x{COMMA}
 STR_NETWORK_SERVER_LIST_SERVER_VERSION                          :{SILVER}Wersja serwera: {WHITE}{STRING}
 STR_NETWORK_SERVER_LIST_SERVER_ADDRESS                          :{SILVER}Adres serwera: {WHITE}{STRING}
+STR_NETWORK_SERVER_LIST_INVITE_CODE                             :{SILVER}Kod zaproszenia: {WHITE}{STRING}
 STR_NETWORK_SERVER_LIST_START_DATE                              :{SILVER}Data uruchomienia: {WHITE}{DATE_SHORT}
 STR_NETWORK_SERVER_LIST_CURRENT_DATE                            :{SILVER}Aktualna data: {WHITE}{DATE_SHORT}
 STR_NETWORK_SERVER_LIST_GAMESCRIPT                              :{SILVER}Game Script: {WHITE}{STRING} (v{NUM})
@@ -2678,7 +2683,7 @@ STR_NETWORK_START_SERVER_VISIBILITY_LABEL                       :{BLACK}Widoczno
 STR_NETWORK_START_SERVER_VISIBILITY_TOOLTIP                     :{BLACK}Czy inni ludzie mogą zobaczyć twój serwer na publicznej liście
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} klient{P "" ów ów}
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Dopuszczalna liczba klientów:
-STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Ustaw maksymalną liczbę klientów. Nie wszystkie pola muszą być wypełnione.
+STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS_TOOLTIP              :{BLACK}Ustaw maksymalną liczbę klientów. Nie wszystkie miejsca muszą być zapełnione.
 STR_NETWORK_START_SERVER_COMPANIES_SELECT                       :{BLACK}{NUM} firm{P a y ""}
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES                    :{BLACK}Maksymalna liczba firm:
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES_TOOLTIP            :{BLACK}Ogranicz serwer do określonej ilości firm
@@ -2794,6 +2799,7 @@ STR_NETWORK_CHAT_TO_COMPANY                                     :[Zespół] Do {
 STR_NETWORK_CHAT_CLIENT                                         :[Prywatna] {STRING}: {WHITE}{STRING}
 STR_NETWORK_CHAT_TO_CLIENT                                      :[Prywatna] Do {STRING}: {WHITE}{STRING}
 STR_NETWORK_CHAT_ALL                                            :[Wszyscy] {STRING}: {WHITE}{STRING}
+STR_NETWORK_CHAT_EXTERNAL                                       :[{3:STRING}] {0:STRING}: {WHITE}{1:STRING}
 STR_NETWORK_CHAT_OSKTITLE                                       :{BLACK}Wpisz tekst do chat'u
 
 # Network messages
@@ -3054,6 +3060,7 @@ STR_STATION_CLASS_WAYP                                          :Posterunki
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Wybór sygnałów
+STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Przełącznik pokazujący zaawansowane typy sygnałów
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Sygnalizator bloku (semafor){}Najprostszy typ sygnału pozwalający na przebywanie w jednym bloku wyłącznie jednemu pociągowi naraz
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Sygnalizator wejściowy (semafor){}Zielony, póki choć jeden sygnalizator wyjściowy dla kolejnego odcinka trasy jest zielony. W przeciwnym wypadku czerwony.
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Sygnalizator wyjściowy (semafor){}Zachowuje się jak sygnalizator blokowy, lecz jest niezbędny do zmiany na poprawny kolor w presygnalizatorach wejściowych i złożonych
@@ -3138,7 +3145,7 @@ STR_WATERWAYS_TOOLBAR_BUILD_DEPOT_TOOLTIP                       :{BLACK}Wybuduj 
 STR_WATERWAYS_TOOLBAR_BUILD_DOCK_TOOLTIP                        :{BLACK}Zbuduj port. Ctrl umożliwia łączenie stacji. Shift przełącza pomiędzy trybem budowania a szacowaniem jego kosztów
 STR_WATERWAYS_TOOLBAR_BUOY_TOOLTIP                              :{BLACK}Ustaw boję, która może być użyta jako pkt. orientacyjny. Shift przełącza pomiędzy trybem budowania a szacowaniem jego kosztów
 STR_WATERWAYS_TOOLBAR_BUILD_AQUEDUCT_TOOLTIP                    :{BLACK}Zbuduj akwedukt. Shift przełącza pomiędzy trybem budowania a szacowaniem jego kosztów
-STR_WATERWAYS_TOOLBAR_CREATE_LAKE_TOOLTIP                       :{BLACK}Stwórz akwen wodny.{}Tworzy kanał, chyba że przyrzymany jest CTRL na poziomie morza, wtedy pobliski teren zostanie zatopiony
+STR_WATERWAYS_TOOLBAR_CREATE_LAKE_TOOLTIP                       :{BLACK}Stwórz akwen wodny.{}Tworzy kanał, chyba że przytrzymany jest CTRL na poziomie morza, wtedy pobliski teren zostanie zatopiony
 STR_WATERWAYS_TOOLBAR_CREATE_RIVER_TOOLTIP                      :{BLACK}Umieszczanie rzek. Ctrl zaznacza obszar po przekątnej.
 
 # Ship depot construction window
@@ -4925,9 +4932,9 @@ STR_AI_CONFIG_CONFIGURE                                         :{BLACK}Konfigur
 STR_AI_CONFIG_CONFIGURE_TOOLTIP                                 :{BLACK}Konfiguruj parametry skryptu
 
 # Available AIs window
-STR_AI_LIST_CAPTION                                             :{WHITE}Dostępny {STRING}
+STR_AI_LIST_CAPTION                                             :{WHITE}Dostępne {STRING}
 STR_AI_LIST_CAPTION_AI                                          :Gracze SI
-STR_AI_LIST_CAPTION_GAMESCRIPT                                  :Game Script'y
+STR_AI_LIST_CAPTION_GAMESCRIPT                                  :Game Scripty
 STR_AI_LIST_TOOLTIP                                             :{BLACK}Kliknij, aby wybrać skrypt
 
 STR_AI_LIST_AUTHOR                                              :{LTBLUE}Autor: {ORANGE}{STRING}

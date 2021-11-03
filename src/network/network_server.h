@@ -108,6 +108,7 @@ public:
 	NetworkRecvStatus SendError(NetworkErrorCode error, const std::string &reason = {});
 	NetworkRecvStatus SendDesyncLog(const std::string &log);
 	NetworkRecvStatus SendChat(NetworkAction action, ClientID client_id, bool self_send, const std::string &msg, NetworkTextMessageData data);
+	NetworkRecvStatus SendExternalChat(const std::string &source, TextColour colour, const std::string &user, const std::string &msg);
 	NetworkRecvStatus SendJoin(ClientID client_id);
 	NetworkRecvStatus SendFrame();
 	NetworkRecvStatus SendSync();

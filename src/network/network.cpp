@@ -223,7 +223,7 @@ bool NetworkCompanyIsPassworded(CompanyID company_id)
 /* This puts a text-message to the console, or in the future, the chat-box,
  *  (to keep it all a bit more general)
  * If 'self_send' is true, this is the client who is sending the message */
-void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send, const std::string &name, const std::string &str, NetworkTextMessageData data)
+void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send, const std::string &name, const std::string &str, NetworkTextMessageData data, const char *data_str)
 {
 	SetDParamStr(0, name);
 
@@ -275,12 +275,14 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 		case NETWORK_ACTION_CHAT_COMPANY:   strid = self_send ? STR_NETWORK_CHAT_TO_COMPANY : STR_NETWORK_CHAT_COMPANY; break;
 		case NETWORK_ACTION_CHAT_CLIENT:    strid = self_send ? STR_NETWORK_CHAT_TO_CLIENT  : STR_NETWORK_CHAT_CLIENT;  break;
 		case NETWORK_ACTION_KICKED:         strid = STR_NETWORK_MESSAGE_KICKED; break;
+		case NETWORK_ACTION_EXTERNAL_CHAT:  strid = STR_NETWORK_CHAT_EXTERNAL; break;
 		default:                            strid = STR_NETWORK_CHAT_ALL; break;
 	}
 
 	char message[1024];
 	SetDParamStr(1, str);
 	SetDParam(2, data.data);
+	SetDParamStr(3, data_str);
 
 	/* All of these strings start with "***". These characters are interpreted as both left-to-right and
 	 * right-to-left characters depending on the context. As the next text might be an user's name, the
@@ -291,7 +293,7 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 
 	DEBUG(desync, 1, "msg: date{%08x; %02x; %02x}; %s", _date, _date_fract, _tick_skip_counter, message);
 	IConsolePrintF(colour, "%s", message);
-	NetworkAddChatMessage((TextColour)colour, _settings_client.gui.network_chat_timeout, message);
+	NetworkAddChatMessage(colour, _settings_client.gui.network_chat_timeout, message);
 }
 
 /* Calculate the frame-lag of a client */
@@ -663,6 +665,7 @@ public:
 	{
 		NetworkGameList *item = NetworkGameListAddItem(connection_string);
 		item->status = NGLS_OFFLINE;
+		item->refreshing = false;
 
 		UpdateNetworkGameWindow();
 	}
@@ -680,6 +683,10 @@ public:
 void NetworkQueryServer(const std::string &connection_string)
 {
 	if (!_network_available) return;
+
+	/* Mark the entry as refreshing, so the GUI can show the refresh is pending. */
+	NetworkGameList *item = NetworkGameListAddItem(connection_string);
+	item->refreshing = true;
 
 	new TCPQueryConnecter(connection_string);
 }

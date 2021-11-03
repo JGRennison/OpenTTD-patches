@@ -391,6 +391,10 @@ STR_SORT_BY_AVERAGE_PROFIT_THIS_YEAR                            :Μέσος όρ
 STR_GROUP_BY_NONE                                               :Καμία
 STR_GROUP_BY_SHARED_ORDERS                                      :Κοινές εντολές
 
+# Order button in shared orders vehicle list
+STR_GOTO_ORDER_VIEW                                             :{BLACK}Παραγγελίες
+STR_GOTO_ORDER_VIEW_TOOLTIP                                     :{BLACK}Ανοίξτε την προβολή παραγγελίας
+
 # Tooltips for the main toolbar
 ###length 31
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Παύση παιχνιδιού
@@ -2365,6 +2369,7 @@ STR_NETWORK_SERVER_LIST_LANDSCAPE                               :{SILVER}Τοπ�
 STR_NETWORK_SERVER_LIST_MAP_SIZE                                :{SILVER}Μέγεθος χάρτη: {WHITE}{COMMA}x{COMMA}
 STR_NETWORK_SERVER_LIST_SERVER_VERSION                          :{SILVER}Έκδοση διακομιστή: {WHITE}{STRING}
 STR_NETWORK_SERVER_LIST_SERVER_ADDRESS                          :{SILVER}Διεύθυνση διακομιστή: {WHITE}{STRING}
+STR_NETWORK_SERVER_LIST_INVITE_CODE                             :{SILVER}Κωδικός πρόσκλησης: {WHITE}{STRING}
 STR_NETWORK_SERVER_LIST_START_DATE                              :{SILVER}Ημερομηνία έναρξης: {WHITE}{DATE_SHORT}
 STR_NETWORK_SERVER_LIST_CURRENT_DATE                            :{SILVER}Τρέχουσα ημερομηνία: {WHITE}{DATE_SHORT}
 STR_NETWORK_SERVER_LIST_GAMESCRIPT                              :{SILVER}Script Παιχνιδιού: {WHITE}{STRING} (v{NUM})
@@ -2435,7 +2440,7 @@ STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Η ετ�
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Συνδεδεμένοι παίκτες
-STR_NETWORK_COMPANY_LIST_SPECTATE                               :Παρακολούθηση
+STR_NETWORK_COMPANY_LIST_SPECTATE                               :Θέαση
 
 # Network client list
 STR_NETWORK_CLIENT_LIST_CAPTION                                 :{WHITE}Συνδεδεμένοι Παίκτες
@@ -2520,6 +2525,7 @@ STR_NETWORK_CHAT_TO_COMPANY                                     :[Ομάδα] Σ
 STR_NETWORK_CHAT_CLIENT                                         :[Προσωπικό] {STRING}: {WHITE}{STRING}
 STR_NETWORK_CHAT_TO_CLIENT                                      :[Προσωπικό] Σε {STRING}: {WHITE}{STRING}
 STR_NETWORK_CHAT_ALL                                            :[Όλοι] {STRING}: {WHITE}{STRING}
+STR_NETWORK_CHAT_EXTERNAL                                       :[{3:STRING}] {0:STRING}: {WHITE}{1:STRING}
 STR_NETWORK_CHAT_OSKTITLE                                       :{BLACK}Εισάγετε το κείμενο για δικτυακή συζήτηση
 
 # Network messages
@@ -2780,6 +2786,7 @@ STR_STATION_CLASS_WAYP                                          :Σημείο κ
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Επιλογή Σηματοδότη
+STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Εναλλαγή εμφάνισης προχωρημένων τύπων σηματοδοτών
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Σηματοδότες Τμήματος (σηματοφόρος){}Αυτός είναι ο πιο βασικός τύπος σηματοδότη, επιτρέποντας μόνο ένα τρένο να βρίσκεται σε κάθε τμήμα κάθε φορά
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Σηματοδότης-Εισόδου (σηματοφόρος){}Πράσινο όσο υπάρχει ένας ή περισσότεροι πράσινοι σηματοδότες-εξόδου στο επόμενο τμήμα γράμμης. Διαφορετικά δείχνει κόκκινο
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Σηματοδότης-Εξόδου (σηματοφόρος){}Συμπεριφέρεται με τον ίδιο τρόπο οπως οι σηματοδότες τμήματος αλλά είναι απαραίτητο να τεθεί το σωστό χρώμα στους προ-σηματοδότες είσοδου και συνδυαστικούς

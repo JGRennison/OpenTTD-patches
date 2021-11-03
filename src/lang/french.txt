@@ -332,6 +332,10 @@ STR_SORT_BY_AVERAGE_PROFIT_THIS_YEAR                            :Profit moyen ce
 STR_GROUP_BY_NONE                                               :Aucun
 STR_GROUP_BY_SHARED_ORDERS                                      :Ordres partagés
 
+# Order button in shared orders vehicle list
+STR_GOTO_ORDER_VIEW                                             :{BLACK}Ordres
+STR_GOTO_ORDER_VIEW_TOOLTIP                                     :{BLACK}Ouvrir la fenêtre des ordres
+
 # Tooltips for the main toolbar
 ###length 31
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Mettre le jeu en pause
@@ -1825,9 +1829,13 @@ STR_CONFIG_SETTING_CYCLE_SIGNAL_TYPES                           :Sélectionner l
 STR_CONFIG_SETTING_CYCLE_SIGNAL_TYPES_HELPTEXT                  :Choisir quels types de signaux sont proposés lors de leur construction avec Ctrl
 ###length 2
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :les signaux de chemin uniquement
-STR_CONFIG_SETTING_CYCLE_SIGNAL_ALL                             :tous les signaux
+STR_CONFIG_SETTING_CYCLE_SIGNAL_ALL                             :tous les signaux visibles
 
+STR_CONFIG_SETTING_SIGNAL_GUI_MODE                              :Afficher les signaux parmi{NBSP}: {STRING}
+STR_CONFIG_SETTING_SIGNAL_GUI_MODE_HELPTEXT                     :Choisir quels types de signaux sont affichés dans la fenêtre de sélection des signaux
 ###length 2
+STR_CONFIG_SETTING_SIGNAL_GUI_MODE_PATH                         :les signaux de chemin uniquement
+STR_CONFIG_SETTING_SIGNAL_GUI_MODE_ALL_CYCLE_PATH               :tous les signaux
 
 STR_CONFIG_SETTING_TOWN_LAYOUT                                  :Agencement des routes pour les nouvelles villes{NBSP}: {STRING}
 STR_CONFIG_SETTING_TOWN_LAYOUT_HELPTEXT                         :Agencement du réseau routier des villes
@@ -2256,12 +2264,15 @@ STR_NETWORK_SERVER_LIST_LANDSCAPE                               :{SILVER}Terrain
 STR_NETWORK_SERVER_LIST_MAP_SIZE                                :{SILVER}Taille de la carte{NBSP}: {WHITE}{COMMA}{NBSP}×{NBSP}{COMMA}
 STR_NETWORK_SERVER_LIST_SERVER_VERSION                          :{SILVER}Version du serveur{NBSP}: {WHITE}{STRING}
 STR_NETWORK_SERVER_LIST_SERVER_ADDRESS                          :{SILVER}Adresse du serveur{NBSP}: {WHITE}{STRING}
+STR_NETWORK_SERVER_LIST_INVITE_CODE                             :{SILVER}Code d'invitation{NBSP}: {WHITE}{STRING}
 STR_NETWORK_SERVER_LIST_START_DATE                              :{SILVER}Date de début{NBSP}: {WHITE}{DATE_SHORT}
 STR_NETWORK_SERVER_LIST_CURRENT_DATE                            :{SILVER}Date courante{NBSP}: {WHITE}{DATE_SHORT}
 STR_NETWORK_SERVER_LIST_GAMESCRIPT                              :{SILVER}Script de jeu{NBSP}: {WHITE}{STRING} (v{NUM})
 STR_NETWORK_SERVER_LIST_PASSWORD                                :{SILVER}Protégée par mot de passe{NBSP}!
 STR_NETWORK_SERVER_LIST_SERVER_OFFLINE                          :{SILVER}SERVEUR HORS-LIGNE
 STR_NETWORK_SERVER_LIST_SERVER_FULL                             :{SILVER}SERVEUR PLEIN
+STR_NETWORK_SERVER_LIST_SERVER_BANNED                           :{SILVER}LE SERVEUR VOUS A BANNI
+STR_NETWORK_SERVER_LIST_SERVER_TOO_OLD                          :{SILVER}LE SERVEUR EST TROP VIEUX
 STR_NETWORK_SERVER_LIST_VERSION_MISMATCH                        :{SILVER}VERSIONS NON IDENTIQUES
 STR_NETWORK_SERVER_LIST_GRF_MISMATCH                            :{SILVER}NEWGRF REQUIS
 
@@ -2409,6 +2420,7 @@ STR_NETWORK_CHAT_TO_COMPANY                                     :[Équipe] À {S
 STR_NETWORK_CHAT_CLIENT                                         :[Privé] {STRING}{NBSP}: {WHITE}{STRING}
 STR_NETWORK_CHAT_TO_CLIENT                                      :[Privé] À {STRING}{NBSP}: {WHITE}{STRING}
 STR_NETWORK_CHAT_ALL                                            :[Tous] {STRING}{NBSP}: {WHITE}{STRING}
+STR_NETWORK_CHAT_EXTERNAL                                       :[{3:STRING}] {0:STRING}{NBSP}: {WHITE}{1:STRING}
 STR_NETWORK_CHAT_OSKTITLE                                       :{BLACK}Entrer le texte du clavardage
 
 # Network messages
@@ -2669,6 +2681,7 @@ STR_STATION_CLASS_WAYP                                          :Points de contr
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Sélection des signaux
+STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Basculer l'affichage des types de signaux avancés
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Signal de bloc (sémaphore){}Ce sont les signaux les plus basiques, n'autorisant qu'un seul train à la fois dans un même bloc
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Signal d'entrée (sémaphore){}Vert tant qu'au moins un signal de sortie du bloc est vert, rouge dans le cas contraire.
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Signal de sortie (sémaphore){}Fonctionne comme un signal de bloc, mais est nécessaire pour commander les signaux d'entrée et combinés
@@ -4143,6 +4156,10 @@ STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL                     :{LTBLUE}En rout
 STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL                        :{ORANGE}En route pour le {DEPOT}, {VELOCITY}
 STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL                :{LTBLUE}Entretien au {DEPOT}, {VELOCITY}
 
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL                     :{LTBLUE}Ne peut pas atteindre {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL                    :{LTBLUE}Ne peut pas atteindre {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL                       :{ORANGE}Ne peut pas atteindre {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL               :{LTBLUE}Ne peut pas atteindre {DEPOT}, {VELOCITY}
 
 # Vehicle stopped/started animations
 ###length 2

@@ -207,7 +207,7 @@ void GetRotorImage(const Aircraft *v, EngineImageType image_type, VehicleSpriteS
 
 	const Aircraft *w = v->Next()->Next();
 	if (is_custom_sprite(v->spritenum)) {
-		GetCustomRotorSprite(v, false, image_type, result);
+		GetCustomRotorSprite(v, image_type, result);
 		if (result->IsValid()) return;
 	}
 
