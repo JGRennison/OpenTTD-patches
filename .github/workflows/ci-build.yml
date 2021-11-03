@@ -385,12 +385,6 @@ jobs:
         cmake --build . -j $(nproc)
         echo "::endgroup::"
 
-    - name: Test
-      shell: msys2 {0}
-      run: |
-        cd build
-        ctest -j $(nproc) --timeout 120
-
   check_annotations:
     name: Check Annotations
     needs:
