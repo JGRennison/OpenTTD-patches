@@ -2,6 +2,10 @@
 
 * * *
 
+### v0.44-rc1 (2021-11-03)
+* Merge OpenTTD 12.0, including new networking, savegames and configs.
+* Bump trunk base from commit 8fa53f543a5929bdbb12c8776ae9577594f9eba7 to commit 9edb75ec0b4ecfb2803728d129b353d1d224beaf.
+
 ### v0.43.2 (2021-10-29)
 * Fix crash when using the ignore signals button to sent a train the wrong-way on a signalled tunnel or bridge.
 * Fix multiplayer desync when using "perfect" tree placement mode in arctic climate.
