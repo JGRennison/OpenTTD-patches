@@ -12,6 +12,7 @@
 
 #include "math_func.hpp"
 #include <type_traits>
+#include <limits>
 
 /**
  * Overflow safe template for integers, i.e. integers that will never overflow
