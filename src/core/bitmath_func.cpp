@@ -45,8 +45,8 @@ uint8 FindFirstBit32(uint32 x)
 uint8 FindFirstBit64(uint64 x)
 {
 	if (x == 0) return 0;
-	if ((x & 0x00000000ffffffffULL) != 0) return FindFirstBit(x);
-	return FindFirstBit(x >> 32) + 32;
+	if ((x & 0x00000000ffffffffULL) != 0) return FindFirstBit32(static_cast<uint32>(x));
+	return FindFirstBit32(static_cast<uint32>(x >> 32)) + 32;
 }
 
 #endif
