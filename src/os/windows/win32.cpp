@@ -40,10 +40,6 @@
 
 #include "../../safeguards.h"
 
-#ifdef __MINGW32__
-#pragma GCC diagnostic ignored "-Wcast-function-type"
-#endif /* __MINGW32__ */
-
 static bool _has_console;
 static bool _cursor_disable = true;
 static bool _cursor_visible = true;
@@ -71,13 +67,13 @@ bool LoadLibraryList(Function proc[], const char *dll)
 
 		if (lib == nullptr) return false;
 		for (;;) {
-			FARPROC p;
+			Function p;
 
 			while (*dll++ != '\0') { /* Nothing */ }
 			if (*dll == '\0') break;
-			p = GetProcAddress(lib, dll);
+			p = GetProcAddressT<Function>(lib, dll);
 			if (p == nullptr) return false;
-			*proc++ = (Function)p;
+			*proc++ = p;
 		}
 		dll++;
 	}
@@ -693,7 +689,7 @@ int OTTDStringCompare(const char *s1, const char *s2)
 #endif
 
 	if (first_time) {
-		_CompareStringEx = (PFNCOMPARESTRINGEX)GetProcAddress(GetModuleHandle(L"Kernel32"), "CompareStringEx");
+		_CompareStringEx = GetProcAddressT<PFNCOMPARESTRINGEX>(GetModuleHandle(L"Kernel32"), "CompareStringEx");
 		first_time = false;
 	}
 

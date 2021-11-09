@@ -26,4 +26,20 @@ wchar_t *convert_to_fs(const char *name, wchar_t *utf16_buf, size_t buflen);
 void Win32SetCurrentLocaleName(const char *iso_code);
 int OTTDStringCompare(const char *s1, const char *s2);
 
+#ifdef __MINGW32__
+			/* GCC doesn't understand the expected usage of GetProcAddress(). */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-function-type"
+#endif /* __MINGW32__ */
+
+template <typename T>
+T GetProcAddressT(HMODULE hModule, LPCSTR lpProcName)
+{
+	return reinterpret_cast<T>(GetProcAddress(hModule, lpProcName));
+}
+
+#ifdef __MINGW32__
+#pragma GCC diagnostic pop
+#endif
+
 #endif /* WIN32_H */
