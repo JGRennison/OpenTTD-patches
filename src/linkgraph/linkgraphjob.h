@@ -27,10 +27,6 @@ typedef Pool<LinkGraphJob, LinkGraphJobID, 32, 0xFFFF> LinkGraphJobPool;
 /** The actual pool with link graph jobs. */
 extern LinkGraphJobPool _link_graph_job_pool;
 
-namespace upstream_sl {
-	SaveLoadTable GetLinkGraphJobDesc();
-}
-
 /**
  * Class for calculation jobs to be run on link graphs.
  */
