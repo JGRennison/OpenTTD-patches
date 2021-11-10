@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.44.0 (2021-11-10)
+* Fix crash on non-GCC/clang compilers.
+* Fix custom signal NewGRFs never showing semaphore signals as having a routing restriction program attached.
+* Fix compilation issues on some platforms.
+* Bump trunk base from commit 9edb75ec0b4ecfb2803728d129b353d1d224beaf to commit 48c1c7f221cd51fbe4fda3771eaed09edacef997.
+
 ### v0.44-rc1 (2021-11-03)
 * Merge OpenTTD 12.0, including new networking, savegames and configs.
 * Bump trunk base from commit 8fa53f543a5929bdbb12c8776ae9577594f9eba7 to commit 9edb75ec0b4ecfb2803728d129b353d1d224beaf.
