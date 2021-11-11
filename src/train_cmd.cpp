@@ -5096,6 +5096,8 @@ static bool CheckTrainStayInWormHole(Train *t, TileIndex tile)
 
 static void HandleSignalBehindTrain(Train *v, int signal_number)
 {
+	if (!IsTunnelBridgeSignalSimulationEntrance(v->tile)) return;
+
 	const uint simulated_wormhole_signals = GetTunnelBridgeSignalSimulationSpacing(v->tile);
 
 	TileIndex tile;
@@ -5109,7 +5111,7 @@ static void HandleSignalBehindTrain(Train *v, int signal_number)
 
 	if (tile == v->tile) {
 		/* Flip signal on ramp. */
-		if (IsTunnelBridgeSignalSimulationEntrance(tile)) SetTunnelBridgeEntranceSignalGreen(tile);
+		SetTunnelBridgeEntranceSignalGreen(tile);
 	} else if (IsBridge(v->tile) && signal_number >= 0) {
 		SetBridgeEntranceSimulatedSignalState(v->tile, signal_number, SIGNAL_STATE_GREEN);
 		MarkSingleBridgeSignalDirty(tile, v->tile);
@@ -5517,7 +5519,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 							return false;
 						}
 						/* flip signal in front to red on bridges*/
-						if (distance == 0 && IsBridge(v->tile)) {
+						if (distance == 0 && IsBridge(v->tile) && IsTunnelBridgeSignalSimulationEntrance(v->tile)) {
 							SetBridgeEntranceSimulatedSignalState(v->tile, v->tunnel_bridge_signal_num, SIGNAL_STATE_RED);
 							MarkSingleBridgeSignalDirty(gp.new_tile, v->tile);
 						}
