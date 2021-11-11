@@ -1062,8 +1062,10 @@ char *GenerateTownNameString(char *buf, const char *last, size_t lang, uint32 se
 	const TownNameGeneratorParams *par = &_town_name_generators[lang];
 	if (last >= buf + par->min) return par->proc(buf, last, seed);
 
+	IGNORE_UNINITIALIZED_WARNING_START
 	char *buffer = AllocaM(char, par->min + 1);
 	par->proc(buffer, buffer + par->min, seed);
+	IGNORE_UNINITIALIZED_WARNING_STOP
 
 	return strecpy(buf, buffer, last);
 }
