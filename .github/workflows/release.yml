@@ -840,7 +840,7 @@ jobs:
         echo "::endgroup::"
 
     - name: Sign installer
-      if: needs.source.outputs.is_tag == 'true'
+      if: ${{ false }} # needs.source.outputs.is_tag == 'true'
       shell: bash
       # If this is run on a fork, there may not be a certificate set up - continue in this case
       continue-on-error: true
