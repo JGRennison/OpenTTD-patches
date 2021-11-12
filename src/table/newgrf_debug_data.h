@@ -209,7 +209,10 @@ class NIHVehicle : public NIHelper {
 					}
 				};
 
-				seprintf(buffer, lastof(buffer), "    Position: current: %d, z: %d, end: %d, remaining: %d", l.current_position, stats.z_pos, l.reservation_end_position, l.reservation_end_position - l.current_position);
+				b = buffer + seprintf(buffer, lastof(buffer), "    Position: current: %d, z: %d, end: %d, remaining: %d", l.current_position, stats.z_pos, l.reservation_end_position, l.reservation_end_position - l.current_position);
+				if (l.next_extend_position > l.current_position) {
+					b += seprintf(b, lastof(buffer), ", next extend position: %d (dist: %d)", l.next_extend_position, l.next_extend_position - l.current_position);
+				}
 				print(buffer);
 
 				b = buffer + seprintf(buffer, lastof(buffer), "    Reservation ends at %X (%u x %u), trackdir: %02X, z: %d",

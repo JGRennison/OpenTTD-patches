@@ -975,6 +975,7 @@ static void AdvanceLookAheadPosition(Train *v)
 		const int32 old_position = v->lookahead->current_position;
 		v->lookahead->current_position = 0;
 		v->lookahead->reservation_end_position -= old_position;
+		v->lookahead->next_extend_position -= old_position;
 		for (TrainReservationLookAheadItem &item : v->lookahead->items) {
 			item.start -= old_position;
 			item.end -= old_position;
@@ -997,6 +998,11 @@ static void AdvanceLookAheadPosition(Train *v)
 			if (v->lookahead->items.front().end >= trim_position) break;
 		}
 		v->lookahead->items.pop_front();
+	}
+
+	if (v->lookahead->current_position == v->lookahead->next_extend_position) {
+		TryLongReserveChooseTrainTrackFromReservationEnd(v, true);
+		v->lookahead->SetNextExtendPositionIfUnset();
 	}
 }
 

@@ -83,6 +83,7 @@ struct TrainReservationLookAhead {
 	Trackdir  reservation_end_trackdir;   ///< The reserved trackdir on the end tile.
 	int32 current_position;               ///< Current position of the train on the reservation
 	int32 reservation_end_position;       ///< Position of the end of the reservation
+	int32 next_extend_position;           ///< Next position to try extending the reservation at the sighting distance of the next mid-reservation signal
 	int16 reservation_end_z;              ///< The z coordinate of the reservation end
 	int16 tunnel_bridge_reserved_tiles;   ///< How many tiles a reservation into the tunnel/bridge currently extends into the wormhole
 	uint16 flags;                         ///< Flags (TrainReservationLookAheadFlags)
@@ -131,6 +132,13 @@ struct TrainReservationLookAhead {
 		int end = this->RealEndPosition();
 		this->items.push_back({ end + offset, end + offset, z_pos, target_speed, TRLIT_CURVE_SPEED });
 	}
+
+	void SetNextExtendPosition();
+
+	void SetNextExtendPositionIfUnset()
+	{
+		if (this->next_extend_position <= this->current_position) this->SetNextExtendPosition();
+	}
 };
 
 /** Flags for FollowTrainReservation */
@@ -146,6 +154,8 @@ PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res = null
 void ApplyAvailableFreeTunnelBridgeTiles(TrainReservationLookAhead *lookahead, int free_tiles, TileIndex tile, TileIndex end);
 void TryCreateLookAheadForTrainInTunnelBridge(Train *t);
 void FillTrainReservationLookAhead(Train *v);
+void SetLookAheadNextExtendPosition(Train *v);
+void SetLookAheadNextExtendPositionIfUnset(Train *v);
 bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bool include_line_end, bool forbid_90deg = false);
 bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bool forbid_90deg = false, PBSWaitingPositionRestrictedSignalInfo *restricted_signal_info = nullptr);
 

@@ -550,6 +550,8 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 					/* Exit signal */
 					const int end_offset = start_offset + (TILE_SIZE * length) /* + ((DiagDirToDiagTrackBits(GetTunnelBridgeDirection(end)) & GetTunnelBridgeTrackBits(end)) ? 16 : 8)*/;
 					lookahead->AddSignal(signal_speed, end_offset, z);
+
+					lookahead->SetNextExtendPositionIfUnset();
 				} else {
 					update_z(tile, trackdir, false);
 					if (length > 1) {
@@ -591,6 +593,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 					uint16 signal_speed = GetRailTypeInfo(rt)->max_speed;
 					if (signal_speed == 0 || (speed_restriction != 0 && speed_restriction < signal_speed)) signal_speed = speed_restriction;
 					lookahead->AddSignal(signal_speed, 0, z);
+					lookahead->SetNextExtendPositionIfUnset();
 				}
 			}
 
@@ -660,6 +663,18 @@ static Vehicle *FindTrainOnTrackEnum(Vehicle *v, void *data)
 	}
 
 	return nullptr;
+}
+
+void TrainReservationLookAhead::SetNextExtendPosition()
+{
+	int32 threshold = this->current_position + 24;
+	for (const TrainReservationLookAheadItem &item : this->items) {
+		if (item.type == TRLIT_SIGNAL && item.start > threshold) {
+			this->next_extend_position = item.start - 24;
+			return;
+		}
+	}
+	this->next_extend_position = this->current_position;
 }
 
 bool ValidateLookAhead(const Train *v)
@@ -846,6 +861,7 @@ void TryCreateLookAheadForTrainInTunnelBridge(Train *t)
 		t->lookahead->reservation_end_trackdir = GetTunnelBridgeEntranceTrackdir(t->tile);
 		t->lookahead->reservation_end_z = t->z_pos;
 		t->lookahead->current_position = 0;
+		t->lookahead->next_extend_position = 0;
 		t->lookahead->tunnel_bridge_reserved_tiles = DistanceManhattan(t->tile, TileVirtXY(t->x_pos, t->y_pos));
 		t->lookahead->reservation_end_position = GetTileMarginInFrontOfTrain(t);
 		t->lookahead->flags = 0;
@@ -874,6 +890,8 @@ void TryCreateLookAheadForTrainInTunnelBridge(Train *t)
 			/* Exit signal */
 			const int end_offset = TILE_SIZE * length;
 			t->lookahead->AddSignal(signal_speed, end_offset, z);
+
+			t->lookahead->SetNextExtendPositionIfUnset();
 		}
 
 		FillLookAheadCurveDataFromTrainPosition(t);
@@ -897,6 +915,7 @@ void FillTrainReservationLookAhead(Train *v)
 	if (v->lookahead == nullptr) {
 		v->lookahead.reset(new TrainReservationLookAhead());
 		v->lookahead->current_position = 0;
+		v->lookahead->next_extend_position = 0;
 
 		/* Special case, if called from TrainController,
 		 * v->tile, v->track and v->direction can be updated to the new tile,
