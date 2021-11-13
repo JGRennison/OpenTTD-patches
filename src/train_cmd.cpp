@@ -4143,7 +4143,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 					TraceRestrictProgramInput input(tile, TrackEnterdirToTrackdir(track, enterdir), nullptr, nullptr);
 					input.permitted_slot_operations = TRPISP_ACQUIRE | TRPISP_ACQUIRE_ON_RES;
 					prog->Execute(v, input, out);
-					if (out.flags & TRPRF_TRAIN_NOT_STUCK) {
+					if (out.flags & TRPRF_TRAIN_NOT_STUCK && !(v->track & TRACK_BIT_WORMHOLE) && !(v->track == TRACK_BIT_DEPOT)) {
 						v->wait_counter = 0;
 					}
 					if (out.flags & TRPRF_WAIT_AT_PBS) {
