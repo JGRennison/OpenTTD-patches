@@ -5008,6 +5008,10 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 				SetTunnelBridgeExitSignalAspect(tile, 0);
 				UpdateAspectDeferred(tile, GetTunnelBridgeExitTrackdir(tile));
 			}
+
+			/* Get tile margin before changing vehicle direction */
+			const int tile_margin = GetTileMarginInFrontOfTrain(t);
+
 			TileIndex veh_orig_tile = t->tile;
 			TrackBits veh_orig_track = t->track;
 			Direction veh_orig_direction = t->direction;
@@ -5015,7 +5019,7 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 			t->track = TRACK_BIT_WORMHOLE;
 			t->direction = TrackdirToDirection(td);
 			bool ok = TryPathReserve(t);
-			if (!ok && (t->lookahead->reservation_end_position >= t->lookahead->current_position && t->lookahead->reservation_end_position > t->lookahead->current_position + GetTileMarginInFrontOfTrain(t))) {
+			if (!ok && (t->lookahead->reservation_end_position >= t->lookahead->current_position && t->lookahead->reservation_end_position > t->lookahead->current_position + tile_margin)) {
 				/* Reservation was made previously and was valid then.
 				 * To avoid unexpected braking due to stopping short of the lookahead end,
 				 * just carry on even if the end is not a safe waiting point now. */
