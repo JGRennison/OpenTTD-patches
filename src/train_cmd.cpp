@@ -5349,7 +5349,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 										v->reverse_distance = v->gcache.cached_total_length + (IsDiagonalTrack(TrackdirToTrack(dir)) ? 16 : 8);
 										SetWindowDirty(WC_VEHICLE_VIEW, v->index);
 									}
-									if (out.flags & TRPRF_SPEED_RETRICTION_SET) {
+									if (out.flags & TRPRF_SPEED_RESTRICTION_SET) {
 										SetBit(v->flags, VRF_PENDING_SPEED_RESTRICTION);
 										auto range = pending_speed_restriction_change_map.equal_range(v->index);
 										for (auto it = range.first; it != range.second; ++it) {

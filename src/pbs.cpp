@@ -579,7 +579,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 						if (out.flags & TRPRF_REVERSE && au_flags & TRPAUF_REVERSE) {
 							lookahead->AddReverse(z);
 						}
-						if (out.flags & TRPRF_SPEED_RETRICTION_SET) {
+						if (out.flags & TRPRF_SPEED_RESTRICTION_SET) {
 							lookahead->AddSpeedRestriction(out.speed_restriction, z);
 							if (out.speed_restriction != 0 && (speed_restriction == 0 || out.speed_restriction < speed_restriction)) {
 								/* lower of the speed restrictions before or after the signal */

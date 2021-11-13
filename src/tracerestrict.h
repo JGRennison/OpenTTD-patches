@@ -382,7 +382,7 @@ enum TraceRestrictProgramResultFlags {
 	TRPRF_WAIT_AT_PBS             = 1 << 3,  ///< Wait at PBS signal is set
 	TRPRF_PBS_RES_END_WAIT        = 1 << 4,  ///< PBS reservations ending at this signal wait is set
 	TRPRF_REVERSE                 = 1 << 5,  ///< Reverse behind signal
-	TRPRF_SPEED_RETRICTION_SET    = 1 << 6,  ///< Speed restriction field set
+	TRPRF_SPEED_RESTRICTION_SET   = 1 << 6,  ///< Speed restriction field set
 	TRPRF_TRAIN_NOT_STUCK         = 1 << 7,  ///< Train is not stuck
 	TRPRF_NO_PBS_BACK_PENALTY     = 1 << 8,  ///< Do not apply PBS back penalty
 };
@@ -448,7 +448,7 @@ struct TraceRestrictProgramInput {
 struct TraceRestrictProgramResult {
 	uint32 penalty;                          ///< Total additional pathfinder penalty
 	TraceRestrictProgramResultFlags flags;   ///< Flags of other actions to take
-	uint16 speed_restriction;                ///> Speed restriction to apply (if TRPRF_SPEED_RETRICTION_SET flag present)
+	uint16 speed_restriction;                ///> Speed restriction to apply (if TRPRF_SPEED_RESTRICTION_SET flag present)
 
 	TraceRestrictProgramResult()
 			: penalty(0), flags(static_cast<TraceRestrictProgramResultFlags>(0)) { }

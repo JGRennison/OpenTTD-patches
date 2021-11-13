@@ -700,7 +700,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 
 					case TRIT_SPEED_RESTRICTION: {
 						out.speed_restriction = GetTraceRestrictValue(item);
-						out.flags |= TRPRF_SPEED_RETRICTION_SET;
+						out.flags |= TRPRF_SPEED_RESTRICTION_SET;
 						break;
 					}
 
