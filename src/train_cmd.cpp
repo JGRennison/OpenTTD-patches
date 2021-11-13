@@ -4003,8 +4003,7 @@ static bool HasLongReservePbsSignalOnTrackdir(Train* v, TileIndex tile, Trackdir
 
 static TileIndex CheckLongReservePbsTunnelBridgeOnTrackdir(Train* v, TileIndex tile, Trackdir trackdir)
 {
-	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsTileType(tile, MP_TUNNELBRIDGE) &&
-			GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && IsTunnelBridgeSignalSimulationEntrance(tile) && TrackdirEntersTunnelBridge(tile, trackdir)) {
+	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsTunnelBridgeSignalSimulationEntranceTile(tile) && TrackdirEntersTunnelBridge(tile, trackdir)) {
 
 		TileIndex end = GetOtherTunnelBridgeEnd(tile);
 		int raw_free_tiles;
@@ -6148,8 +6147,7 @@ static bool TrainCheckIfLineEnds(Train *v, bool reverse)
 	/* approaching a rail/road crossing? then make it red */
 	if (IsLevelCrossingTile(tile)) MaybeBarCrossingWithSound(tile);
 
-	if (IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL &&
-			IsTunnelBridgeSignalSimulationEntrance(tile) && GetTunnelBridgeEntranceSignalState(tile) == SIGNAL_STATE_RED) {
+	if (IsTunnelBridgeSignalSimulationEntranceTile(tile) && GetTunnelBridgeEntranceSignalState(tile) == SIGNAL_STATE_RED) {
 		return TrainApproachingLineEnd(v, true, reverse);
 	}
 

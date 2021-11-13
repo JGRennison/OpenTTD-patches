@@ -74,9 +74,7 @@ static inline bool HasTunnelBridgeSnowOrDesert(TileIndex t)
 */
 static inline bool IsRailTunnelBridgeTile(TileIndex t)
 {
-	TransportType tt = Extract<TransportType, 2, 2>(_m[t].m5);
-
-	return IsTileType(t, MP_TUNNELBRIDGE) && (tt == TRANSPORT_RAIL);
+	return IsTileType(t, MP_TUNNELBRIDGE) && (Extract<TransportType, 2, 2>(_m[t].m5) == TRANSPORT_RAIL);
 }
 
 static inline void SetTunnelBridgeGroundBits(TileIndex t, uint8 bits)
@@ -382,6 +380,17 @@ static inline bool IsTunnelBridgeSignalSimulationEntrance(TileIndex t)
 }
 
 /**
+ * Is this a tunnel/bridge entrance tile with signal?
+ * Tunnel bridge signal simulation has allways bit 5 on at entrance.
+ * @param t the tile that might be a tunnel/bridge.
+ * @return true if and only if this tile is a tunnel/bridge entrance.
+ */
+static inline bool IsTunnelBridgeSignalSimulationEntranceTile(TileIndex t)
+{
+	return IsTileType(t, MP_TUNNELBRIDGE) && HasBit(_m[t].m5, 5);
+}
+
+/**
  * Is this a tunnel/bridge entrance tile with signal only?
  * @param t the tile that might be a tunnel/bridge.
  * @pre IsTileType(t, MP_TUNNELBRIDGE)
@@ -403,6 +412,16 @@ static inline bool IsTunnelBridgeSignalSimulationExit(TileIndex t)
 {
 	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	return HasBit(_m[t].m5, 6);
+}
+
+/**
+ * Is this a tunnel/bridge exit?
+ * @param t the tile that might be a tunnel/bridge.
+ * @return true if and only if this tile is a tunnel/bridge exit.
+ */
+static inline bool IsTunnelBridgeSignalSimulationExitTile(TileIndex t)
+{
+	return IsTileType(t, MP_TUNNELBRIDGE) && HasBit(_m[t].m5, 6);
 }
 
 /**
