@@ -5156,6 +5156,20 @@ int ReversingDistanceTargetSpeed(const Train *v)
 	return std::max(0, target_speed);
 }
 
+void DecrementPendingSpeedRestrictions(Train *v)
+{
+	auto range = pending_speed_restriction_change_map.equal_range(v->index);
+	if (range.first == range.second) ClrBit(v->flags, VRF_PENDING_SPEED_RESTRICTION);
+	for (auto it = range.first; it != range.second;) {
+		if (--it->second.distance == 0) {
+			v->speed_restriction = it->second.new_speed;
+			it = pending_speed_restriction_change_map.erase(it);
+		} else {
+			++it;
+		}
+	}
+}
+
 /**
  * Move a vehicle chain one movement stop forwards.
  * @param v First vehicle to move.
@@ -5606,6 +5620,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 				v->UpdateDeltaXY();
 				DecreaseReverseDistance(v);
 				if (v->lookahead != nullptr) AdvanceLookAheadPosition(v);
+				if (HasBit(v->flags, VRF_PENDING_SPEED_RESTRICTION)) DecrementPendingSpeedRestrictions(v);
 				if (HasBit(v->gv_flags, GVF_CHUNNEL_BIT)) {
 					/* update the Z position of the vehicle */
 					int old_z = v->UpdateInclination(false, false, true);
@@ -5636,18 +5651,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 		v->UpdatePosition();
 		DecreaseReverseDistance(v);
 		if (v->lookahead != nullptr) AdvanceLookAheadPosition(v);
-		if (HasBit(v->flags, VRF_PENDING_SPEED_RESTRICTION)) {
-			auto range = pending_speed_restriction_change_map.equal_range(v->index);
-			if (range.first == range.second) ClrBit(v->flags, VRF_PENDING_SPEED_RESTRICTION);
-			for (auto it = range.first; it != range.second;) {
-				if (--it->second.distance == 0) {
-					v->speed_restriction = it->second.new_speed;
-					it = pending_speed_restriction_change_map.erase(it);
-				} else {
-					++it;
-				}
-			}
-		}
+		if (HasBit(v->flags, VRF_PENDING_SPEED_RESTRICTION)) DecrementPendingSpeedRestrictions(v);
 
 		/* update the Z position of the vehicle */
 		int old_z = v->UpdateInclination(gp.new_tile != gp.old_tile, false, v->track == TRACK_BIT_WORMHOLE);
