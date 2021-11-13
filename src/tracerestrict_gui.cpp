@@ -2093,7 +2093,7 @@ public:
 	 */
 	void OnPlaceObjectSignal(Point pt, TileIndex source_tile, int widget, int error_message)
 	{
-		if (!IsPlainRailTile(source_tile)) {
+		if (!IsPlainRailTile(source_tile) && !IsRailTunnelBridgeTile(source_tile)) {
 			ShowErrorMessage(error_message, STR_ERROR_THERE_IS_NO_RAILROAD_TRACK, WL_INFO);
 			return;
 		}
@@ -2112,14 +2112,26 @@ public:
 			return;
 		}
 
-		if (!HasTrack(source_tile, source_track)) {
-			ShowErrorMessage(error_message, STR_ERROR_THERE_IS_NO_RAILROAD_TRACK, WL_INFO);
-			return;
-		}
+		if (IsTileType(source_tile, MP_RAILWAY)) {
+			if (!HasTrack(source_tile, source_track)) {
+				ShowErrorMessage(error_message, STR_ERROR_THERE_IS_NO_RAILROAD_TRACK, WL_INFO);
+				return;
+			}
 
-		if (!HasSignalOnTrack(source_tile, source_track)) {
-			ShowErrorMessage(error_message, STR_ERROR_THERE_ARE_NO_SIGNALS, WL_INFO);
-			return;
+			if (!HasSignalOnTrack(source_tile, source_track)) {
+				ShowErrorMessage(error_message, STR_ERROR_THERE_ARE_NO_SIGNALS, WL_INFO);
+				return;
+			}
+		} else {
+			if (!HasTrack(GetTunnelBridgeTrackBits(source_tile), source_track)) {
+				ShowErrorMessage(error_message, STR_ERROR_THERE_IS_NO_RAILROAD_TRACK, WL_INFO);
+				return;
+			}
+
+			if (!IsTunnelBridgeWithSignalSimulation(source_tile) || !HasTrack(GetAcrossTunnelBridgeTrackBits(source_tile), source_track)) {
+				ShowErrorMessage(error_message, STR_ERROR_THERE_ARE_NO_SIGNALS, WL_INFO);
+				return;
+			}
 		}
 
 		switch (widget) {

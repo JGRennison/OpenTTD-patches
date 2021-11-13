@@ -2110,6 +2110,7 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 			}
 		}
 		if (flags & DC_EXEC) {
+			Track end_track = FindFirstTrack(GetAcrossTunnelBridgeTrackBits(end));
 			Company *c = Company::Get(GetTileOwner(tile));
 			c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, end);
 			ClearBridgeTunnelSignalSimulation(end, tile);
@@ -2118,7 +2119,9 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 			AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
 			AddSideToSignalBuffer(end, INVALID_DIAGDIR, GetTileOwner(tile));
 			YapfNotifyTrackLayoutChange(tile, track);
-			YapfNotifyTrackLayoutChange(end, track);
+			YapfNotifyTrackLayoutChange(end, end_track);
+			TraceRestrictNotifySignalRemoval(tile, track);
+			TraceRestrictNotifySignalRemoval(end, end_track);
 			DirtyCompanyInfrastructureWindows(GetTileOwner(tile));
 			for (Train *v : re_reserve_trains) {
 				ReReserveTrainPath(v);

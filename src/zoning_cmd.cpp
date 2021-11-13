@@ -253,6 +253,9 @@ SpriteID TileZoneCheckTraceRestrictEvaluation(TileIndex tile, Owner owner)
 	if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile) && IsRestrictedSignal(tile)) {
 		return SPR_ZONING_INNER_HIGHLIGHT_RED;
 	}
+	if (IsTunnelBridgeWithSignalSimulation(tile)) {
+		return SPR_ZONING_INNER_HIGHLIGHT_RED;
+	}
 	if (unlikely(HasBit(_misc_debug_flags, MDF_ZONING_RS_WATER_FLOOD_STATE)) && IsNonFloodingWaterTile(tile)) {
 		return SPR_ZONING_INNER_HIGHLIGHT_YELLOW;
 	}

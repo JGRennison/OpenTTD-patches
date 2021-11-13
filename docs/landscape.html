@@ -1735,6 +1735,7 @@
       <ul>
        <li>m2 bit 15: for bridge entrances only: storage for visual red/green state of signals starting from 15 is allocated outside the map array</li>
        <li>m2 bits 14..4: for bridge entrances only: for signals 0..10 on bridge, signal is visually red if corresponding bit in 4..14 is set</li>
+       <li>m3 bit 6: the entrance and/or exit signals on this tile are restricted (tracerestrict patch)</li>
        <li>m3 bits 5..3: entrance signal aspect (only valid if signal is present and not red, and multi-aspect signalling is in effect)</li>
        <li>m3 bits 2..0: exit signal aspect (only valid if signal is present and not red, and multi-aspect signalling is in effect)</li>
        <li>m6 bit 7: set = exit signal shows green, clear = exit signal shows red</li>

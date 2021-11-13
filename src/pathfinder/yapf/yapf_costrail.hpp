@@ -176,6 +176,13 @@ private:
 				IsRestrictedSignal(tile);
 	}
 
+	// returns true if ExecuteTunnelBridgeTraceRestrict should be called
+	inline bool ShouldCheckTunnelBridgeTraceRestrict(Node& n, TileIndex tile)
+	{
+		return n.m_num_signals_passed < m_sig_look_ahead_costs.size() &&
+				IsTunnelBridgeRestrictedSignal(tile);
+	}
+
 	/**
 	 * This is called to retrieve the previous signal, as required
 	 * This is not run all the time as it is somewhat expensive and most restrictions will not test for the previous signal
@@ -312,6 +319,22 @@ private:
 		return false;
 	}
 
+	// returns true if dead end bit has been set
+	inline bool ExecuteTunnelBridgeTraceRestrict(Node& n, TileIndex tile, Trackdir trackdir, int& cost, TraceRestrictProgramResult &out)
+	{
+		const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(trackdir));
+		TraceRestrictProgramActionsUsedFlags flags_to_check = TRPAUF_PF;
+		if (prog && prog->actions_used_flags & flags_to_check) {
+			prog->Execute(Yapf().GetVehicle(), TraceRestrictProgramInput(tile, trackdir, &TraceRestrictPreviousSignalCallback, &n), out);
+			if (out.flags & TRPRF_DENY) {
+				n.m_segment->m_end_segment_reason |= ESRB_DEAD_END;
+				return true;
+			}
+			cost += out.penalty;
+		}
+		return false;
+	}
+
 public:
 	int SignalCost(Node &n, TileIndex tile, Trackdir trackdir)
 	{
@@ -417,17 +440,27 @@ public:
 				}
 			}
 		}
-		if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExitOnly(tile) && TrackdirEntersTunnelBridge(tile, trackdir)) {
-			/* Entering a signalled bridge/tunnel from the wrong side, equivalent to encountering a one-way signal from the wrong side */
-			n.m_segment->m_end_segment_reason |= ESRB_DEAD_END;
-		}
-		if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgeEffectivelyPBS(tile) && TrackdirExitsTunnelBridge(tile, trackdir)) {
-			/* Exiting a PBS signalled tunnel/bridge, record the last non-reserve through signal */
-			n.m_last_non_reserve_through_signal_tile = tile;
-			n.m_last_non_reserve_through_signal_td = trackdir;
-		}
-		if (n.flags_u.flags_s.m_reverse_pending && IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationEntrance(tile)) {
-			n.m_segment->m_end_segment_reason |= ESRB_SAFE_TILE;
+		if (IsTunnelBridgeWithSignalSimulation(tile)) {
+			const bool entering = TrackdirEntersTunnelBridge(tile, trackdir);
+			const bool exiting = TrackdirExitsTunnelBridge(tile, trackdir);
+			if (IsTunnelBridgeSignalSimulationExitOnly(tile) && entering) {
+				/* Entering a signalled bridge/tunnel from the wrong side, equivalent to encountering a one-way signal from the wrong side */
+				n.m_segment->m_end_segment_reason |= ESRB_DEAD_END;
+			}
+			if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgeEffectivelyPBS(tile) && exiting) {
+				/* Exiting a PBS signalled tunnel/bridge, record the last non-reserve through signal */
+				n.m_last_non_reserve_through_signal_tile = tile;
+				n.m_last_non_reserve_through_signal_td = trackdir;
+			}
+			if (ShouldCheckTunnelBridgeTraceRestrict(n, tile)) {
+				TraceRestrictProgramResult out;
+				if (ExecuteTunnelBridgeTraceRestrict(n, tile, trackdir, cost, out)) {
+					return -1;
+				}
+			}
+			if (n.flags_u.flags_s.m_reverse_pending && entering && IsTunnelBridgeSignalSimulationEntrance(tile)) {
+				n.m_segment->m_end_segment_reason |= ESRB_SAFE_TILE;
+			}
 		}
 		return cost;
 	}

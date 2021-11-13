@@ -248,6 +248,9 @@ static void GenericPlaceSignals(TileIndex tile)
 		if (IsPlainRailTile(tile) && HasTrack(tile, track) && HasSignalOnTrack(tile, track)) {
 			ShowTraceRestrictProgramWindow(tile, track);
 		}
+		if (IsTunnelBridgeWithSignalSimulation(tile) && HasTrack(GetAcrossTunnelBridgeTrackBits(tile), track)) {
+			ShowTraceRestrictProgramWindow(tile, track);
+		}
 		return;
 	}
 

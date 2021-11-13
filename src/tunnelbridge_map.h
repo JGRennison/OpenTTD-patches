@@ -561,6 +561,26 @@ static inline void SetTunnelBridgeSignalSimulationSpacing(TileIndex t, uint spac
 	SB(_me[t].m8, 12, 4, spacing - 1);
 }
 
+/**
+ * Does tunnel/bridge signal tile have "one or more trace restrict mappings present" bit set
+ * @param tile the tile to check
+ */
+static inline bool IsTunnelBridgeRestrictedSignal(TileIndex tile)
+{
+	assert_tile(IsTunnelBridgeWithSignalSimulation(tile), tile);
+	return (bool) GB(_m[tile].m3, 6, 1);
+}
+
+/**
+ * Set tunnel/bridge signal tile "one or more trace restrict mappings present" bit
+ * @param tile the tile to set
+ */
+static inline void SetTunnelBridgeRestrictedSignal(TileIndex tile, bool is_restricted)
+{
+	assert_tile(IsTunnelBridgeWithSignalSimulation(tile), tile);
+	SB(_m[tile].m3, 6, 1, is_restricted);
+}
+
 static inline Trackdir GetTunnelBridgeExitTrackdir(TileIndex t, DiagDirection tunnel_bridge_dir)
 {
 	return TrackEnterdirToTrackdir((Track)FIND_FIRST_BIT(GetAcrossTunnelBridgeTrackBits(t)), ReverseDiagDir(tunnel_bridge_dir));

@@ -114,10 +114,10 @@ struct TrainReservationLookAhead {
 		this->items.push_back({ end + offset, end + offset + duration, z_pos, speed, TRLIT_TRACK_SPEED });
 	}
 
-	void AddSpeedRestriction(uint16 speed, int16 z_pos)
+	void AddSpeedRestriction(uint16 speed, int offset, int duration, int16 z_pos)
 	{
 		int end = this->RealEndPosition();
-		this->items.push_back({ end, end, z_pos, speed, TRLIT_SPEED_RESTRICTION });
+		this->items.push_back({ end + offset, end + offset + duration, z_pos, speed, TRLIT_SPEED_RESTRICTION });
 		this->speed_restriction = speed;
 	}
 

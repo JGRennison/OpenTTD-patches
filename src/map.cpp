@@ -572,6 +572,7 @@ void DumpMapStats(char *b, const char *last)
 			if (IsTunnelBridgeWithSignalSimulation(t)) {
 				bucket |= TBB_SIGNALLED;
 				if (IsTunnelBridgeSignalSimulationBidirectional(t)) bucket |= TBB_SIGNALLED_BIDI;
+				if (IsTunnelBridgeRestrictedSignal(t)) restricted_signals++;
 			}
 			if (GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD) {
 				if (HasTileRoadType(t, RTT_ROAD)) bucket |= TBB_ROAD;

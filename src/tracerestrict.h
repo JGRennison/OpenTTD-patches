@@ -875,12 +875,24 @@ TraceRestrictProgram *GetTraceRestrictProgram(TraceRestrictRefId ref, bool creat
 
 void TraceRestrictNotifySignalRemoval(TileIndex tile, Track track);
 
+static inline bool IsRestrictedSignalTile(TileIndex t)
+{
+	switch (GetTileType(t)) {
+		case MP_RAILWAY:
+			return IsRestrictedSignal(t);
+		case MP_TUNNELBRIDGE:
+			return IsTunnelBridgeRestrictedSignal(t);
+		default:
+			return false;
+	}
+}
+
 /**
  * Gets the existing signal program for the tile identified by @p t and @p track, or nullptr
  */
 static inline const TraceRestrictProgram *GetExistingTraceRestrictProgram(TileIndex t, Track track)
 {
-	if (IsRestrictedSignal(t)) {
+	if (IsRestrictedSignalTile(t)) {
 		return GetTraceRestrictProgram(MakeTraceRestrictRefId(t, track), false);
 	} else {
 		return nullptr;

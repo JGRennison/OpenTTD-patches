@@ -34,6 +34,7 @@ enum SlXvFeatureIndex {
 	XSLFI_TRACE_RESTRICT_BRKCND,                  ///< Trace restrict: realistic braking related conditionals
 	XSLFI_TRACE_RESTRICT_CTGRYCND,                ///< Trace restrict: category conditionals
 	XSLFI_TRACE_RESTRICT_PENCTRL,                 ///< Trace restrict: PF penalty control
+	XSLFI_TRACE_RESTRICT_TUNBRIDGE,               ///< Trace restrict: restricted signalled tunnel/bridge support
 	XSLFI_PROG_SIGS,                              ///< programmable pre-signals patch
 	XSLFI_ADJACENT_CROSSINGS,                     ///< Adjacent level crossings closure patch
 	XSLFI_SAFER_CROSSINGS,                        ///< Safer level crossings

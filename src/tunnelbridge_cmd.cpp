@@ -48,6 +48,7 @@
 #include "object_map.h"
 #include "newgrf_station.h"
 #include "station_func.h"
+#include "tracerestrict.h"
 
 #include "table/strings.h"
 #include "table/bridge_land.h"
@@ -1275,6 +1276,8 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlag flags)
 				c->infrastructure.rail[GetRailType(tile)] -= len * TUNNELBRIDGE_TRACKBIT_FACTOR;
 				if (IsTunnelBridgeWithSignalSimulation(tile)) { // handle tunnel/bridge signals.
 					c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, endtile);
+					TraceRestrictNotifySignalRemoval(tile, track);
+					TraceRestrictNotifySignalRemoval(endtile, track);
 				}
 				DirtyCompanyInfrastructureWindows(owner);
 			}
@@ -1410,6 +1413,10 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 		/* Update company infrastructure counts. */
 		if (rail) {
 			SubtractRailTunnelBridgeInfrastructure(tile, endtile);
+			if (IsTunnelBridgeWithSignalSimulation(tile)) {
+				TraceRestrictNotifySignalRemoval(tile, FindFirstTrack(GetAcrossTunnelBridgeTrackBits(tile)));
+				TraceRestrictNotifySignalRemoval(endtile, FindFirstTrack(GetAcrossTunnelBridgeTrackBits(endtile)));
+			}
 		} else if (GetTunnelBridgeTransportType(tile) == TRANSPORT_ROAD) {
 			SubtractRoadTunnelBridgeInfrastructure(tile, endtile);
 			if (RoadLayoutChangeNotificationEnabled(false)) {
@@ -1747,7 +1754,9 @@ static void DrawTunnelBridgeRampSingleSignal(const TileInfo *ti, bool is_green, 
 			aspect = 1;
 		}
 	}
-	PalSpriteID sprite = GetCustomSignalSprite(rti, ti->tile, type, variant, aspect).sprite;
+	bool show_restricted = IsTunnelBridgeRestrictedSignal(ti->tile);
+	const CustomSignalSpriteResult result = GetCustomSignalSprite(rti, ti->tile, type, variant, aspect, false, show_restricted);
+	PalSpriteID sprite = result.sprite;
 	bool is_custom_sprite = (sprite.sprite != 0);
 
 	if (is_custom_sprite) {
@@ -1762,7 +1771,26 @@ static void DrawTunnelBridgeRampSingleSignal(const TileInfo *ti, bool is_green, 
 		}
 	}
 
-	AddSortableSpriteToDraw(sprite.sprite, sprite.pal, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
+	if (is_custom_sprite && show_restricted && _settings_client.gui.show_restricted_signal_default && !result.restricted_valid && variant == SIG_ELECTRIC) {
+		/* Use duplicate sprite block, instead of GRF-specified signals */
+		sprite = { (type == SIGTYPE_NORMAL && variant == SIG_ELECTRIC) ? SPR_DUP_ORIGINAL_SIGNALS_BASE : SPR_DUP_SIGNALS_BASE - 16, PAL_NONE };
+		sprite.sprite += type * 16 + variant * 64 + position * 2 + is_green + (IsSignalSpritePBS(type) ? 64 : 0);
+		is_custom_sprite = false;
+	}
+
+	if (!is_custom_sprite && show_restricted && variant == SIG_ELECTRIC) {
+		if (type == SIGTYPE_PBS || type == SIGTYPE_PBS_ONEWAY) {
+			static const SubSprite lower_part = { -50, -10, 50, 50 };
+			static const SubSprite upper_part = { -50, -50, 50, -11 };
+
+			AddSortableSpriteToDraw(sprite.sprite, SPR_TRACERESTRICT_BASE, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR, &lower_part);
+			AddSortableSpriteToDraw(sprite.sprite,               PAL_NONE, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR, &upper_part);
+		} else {
+			AddSortableSpriteToDraw(sprite.sprite, SPR_TRACERESTRICT_BASE + (type == SIGTYPE_NO_ENTRY ? 0 : 1), x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
+		}
+	} else {
+		AddSortableSpriteToDraw(sprite.sprite, sprite.pal, x, y, 1, 1, TILE_HEIGHT, z, false, 0, 0, BB_Z_SEPARATOR);
+	}
 }
 
 /* Draws a signal on tunnel / bridge entrance tile. */
@@ -2120,14 +2148,14 @@ static void DrawTile_TunnelBridge(TileInfo *ti, DrawTileProcParams params)
 						image = (SignalOffsets)(image ^ 1);
 					}
 					if (IsTunnelBridgeSignalSimulationEntrance(ti->tile)) {
-						DrawSingleSignal(ti->tile, rti, t, GetTunnelBridgeEntranceSignalState(ti->tile), image, position, SIGTYPE_NORMAL, variant, false, false);
+						DrawSingleSignal(ti->tile, rti, t, GetTunnelBridgeEntranceSignalState(ti->tile), image, position, SIGTYPE_NORMAL, variant, IsTunnelBridgeRestrictedSignal(ti->tile), false);
 					}
 					if (IsTunnelBridgeSignalSimulationExit(ti->tile)) {
 						SignalType type = SIGTYPE_NORMAL;
 						if (IsTunnelBridgePBS(ti->tile)) {
 							type = IsTunnelBridgeSignalSimulationEntrance(ti->tile) ? SIGTYPE_PBS : SIGTYPE_PBS_ONEWAY;
 						}
-						DrawSingleSignal(ti->tile, rti, t, GetTunnelBridgeExitSignalState(ti->tile), (SignalOffsets)(image ^ 1), position ^ 1, type, variant, false, true);
+						DrawSingleSignal(ti->tile, rti, t, GetTunnelBridgeExitSignalState(ti->tile), (SignalOffsets)(image ^ 1), position ^ 1, type, variant, IsTunnelBridgeRestrictedSignal(ti->tile), true);
 					}
 				};
 				switch (t) {
@@ -2524,6 +2552,10 @@ static void GetTileDesc_TunnelBridge(TileIndex tile, TileDesc *td)
 	} else { // IsBridge(tile)
 		td->str = (tt == TRANSPORT_WATER) ? STR_LAI_BRIDGE_DESCRIPTION_AQUEDUCT : IsTunnelBridgeWithSignalSimulation(tile) ? STR_LAI_BRIDGE_DESCRIPTION_RAILROAD_SIGNAL : GetBridgeSpec(GetBridgeType(tile))->transport_name[tt];
 	}
+	if (IsTunnelBridgeWithSignalSimulation(tile) && IsTunnelBridgeRestrictedSignal(tile)) {
+		SetDParamX(td->dparam, 0, td->str);
+		td->str = STR_LAI_RAIL_DESCRIPTION_RESTRICTED_SIGNAL;
+	}
 	td->owner[0] = GetTileOwner(tile);
 
 	if (tt == TRANSPORT_ROAD) {
@@ -2718,6 +2750,24 @@ static void TileLoop_TunnelBridge(TileIndex tile)
 
 static bool ClickTile_TunnelBridge(TileIndex tile)
 {
+	if (_ctrl_pressed && IsTunnelBridgeWithSignalSimulation(tile)) {
+		TrackBits trackbits = TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_RAIL, 0));
+
+		if (trackbits & TRACK_BIT_VERT) { // N-S direction
+			trackbits = (_tile_fract_coords.x <= _tile_fract_coords.y) ? TRACK_BIT_RIGHT : TRACK_BIT_LEFT;
+		}
+
+		if (trackbits & TRACK_BIT_HORZ) { // E-W direction
+			trackbits = (_tile_fract_coords.x + _tile_fract_coords.y <= 15) ? TRACK_BIT_UPPER : TRACK_BIT_LOWER;
+		}
+
+		Track track = FindFirstTrack(trackbits);
+		if (HasTrack(GetAcrossTunnelBridgeTrackBits(tile), track)) {
+			ShowTraceRestrictProgramWindow(tile, track);
+			return true;
+		}
+	}
+
 	/* Show vehicles found in tunnel. */
 	if (IsTunnelTile(tile)) {
 		int count = 0;

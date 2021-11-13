@@ -1124,7 +1124,18 @@ void TraceRestrictSetIsSignalRestrictedBit(TileIndex t)
 	TraceRestrictMapping::iterator upper_bound = _tracerestrictprogram_mapping.lower_bound(MakeTraceRestrictRefId(t + 1, static_cast<Track>(0)));
 
 	// If iterators are the same, there are no mappings for this tile
-	SetRestrictedSignal(t, lower_bound != upper_bound);
+	switch (GetTileType(t)) {
+		case MP_RAILWAY:
+			SetRestrictedSignal(t, lower_bound != upper_bound);
+			break;
+
+		case MP_TUNNELBRIDGE:
+			SetTunnelBridgeRestrictedSignal(t, lower_bound != upper_bound);
+			break;
+
+		default:
+			NOT_REACHED();
+	}
 }
 
 /**
@@ -1251,11 +1262,27 @@ void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommand
 static CommandCost TraceRestrictCheckTileIsUsable(TileIndex tile, Track track)
 {
 	// Check that there actually is a signal here
-	if (!IsPlainRailTile(tile) || !HasTrack(tile, track)) {
-		return_cmd_error(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
-	}
-	if (!HasSignalOnTrack(tile, track)) {
-		return_cmd_error(STR_ERROR_THERE_ARE_NO_SIGNALS);
+	switch (GetTileType(tile)) {
+		case MP_RAILWAY:
+			if (!IsPlainRailTile(tile) || !HasTrack(tile, track)) {
+				return_cmd_error(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
+			}
+			if (!HasSignalOnTrack(tile, track)) {
+				return_cmd_error(STR_ERROR_THERE_ARE_NO_SIGNALS);
+			}
+			break;
+
+		case MP_TUNNELBRIDGE:
+			if (!IsRailTunnelBridgeTile(tile) || !HasBit(GetTunnelBridgeTrackBits(tile), track)) {
+				return_cmd_error(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
+			}
+			if (!IsTunnelBridgeWithSignalSimulation(tile) || !IsTrackAcrossTunnelBridge(tile, track)) {
+				return_cmd_error(STR_ERROR_THERE_ARE_NO_SIGNALS);
+			}
+			break;
+
+		default:
+			return_cmd_error(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
 	}
 
 	// Check tile ownership, do this afterwards to avoid tripping up on house/industry tiles

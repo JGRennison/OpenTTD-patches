@@ -3971,6 +3971,14 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_TRACE_RESTRICT_TUNBRIDGE)) {
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTileType(t, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL && IsTunnelBridgeWithSignalSimulation(t)) {
+				SetTunnelBridgeRestrictedSignal(t, false);
+			}
+		}
+	}
+
 	InitializeRoadGUI();
 
 	/* This needs to be done after conversion. */
