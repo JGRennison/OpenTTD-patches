@@ -263,6 +263,8 @@ static const StringID _direction_value_str[] = {
 	STR_TRACE_RESTRICT_DIRECTION_SE,
 	STR_TRACE_RESTRICT_DIRECTION_SW,
 	STR_TRACE_RESTRICT_DIRECTION_NW,
+	STR_TRACE_RESTRICT_DIRECTION_TUNBRIDGE_ENTRANCE,
+	STR_TRACE_RESTRICT_DIRECTION_TUNBRIDGE_EXIT,
 	INVALID_STRING_ID
 };
 static const uint _direction_value_val[] = {
@@ -272,6 +274,8 @@ static const uint _direction_value_val[] = {
 	TRNTSV_SE,
 	TRNTSV_SW,
 	TRNTSV_NW,
+	TRDTSV_TUNBRIDGE_ENTER,
+	TRDTSV_TUNBRIDGE_EXIT,
 };
 
 /** value drop down list for direction type strings and values */
@@ -1125,7 +1129,9 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					break;
 
 				case TRVT_DIRECTION:
-					if (GetTraceRestrictValue(item) >= TRDTSV_FRONT) {
+					if (GetTraceRestrictValue(item) >= TRDTSV_TUNBRIDGE_ENTER) {
+						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_TYPE;
+					} else if (GetTraceRestrictValue(item) >= TRDTSV_FRONT) {
 						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE;
 					} else {
 						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_DIRECTION;

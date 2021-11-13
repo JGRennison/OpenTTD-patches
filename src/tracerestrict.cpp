@@ -328,11 +328,19 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 								break;
 
 							case TRDTSV_FRONT:
-								direction_match = IsTileType(input.tile, MP_RAILWAY) && HasSignalOnTrackdir(input.tile, input.trackdir);
+								direction_match = (IsTileType(input.tile, MP_RAILWAY) && HasSignalOnTrackdir(input.tile, input.trackdir)) || IsTileType(input.tile, MP_TUNNELBRIDGE);
 								break;
 
 							case TRDTSV_BACK:
 								direction_match = IsTileType(input.tile, MP_RAILWAY) && !HasSignalOnTrackdir(input.tile, input.trackdir);
+								break;
+
+							case TRDTSV_TUNBRIDGE_ENTER:
+								direction_match = IsTunnelBridgeSignalSimulationEntranceTile(input.tile) && TrackdirEntersTunnelBridge(input.tile, input.trackdir);
+								break;
+
+							case TRDTSV_TUNBRIDGE_EXIT:
+								direction_match = IsTunnelBridgeSignalSimulationExitTile(input.tile) && TrackdirExitsTunnelBridge(input.tile, input.trackdir);
 								break;
 
 							default:

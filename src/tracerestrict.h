@@ -194,6 +194,8 @@ enum TraceRestrictDirectionTypeSpecialValue {
 	TRNTSV_NW                     = 3,       ///< DIAGDIR_NW: entering at NW tile edge
 	TRDTSV_FRONT                  = 4,       ///< entering at front face of signal
 	TRDTSV_BACK                   = 5,       ///< entering at rear face of signal
+	TRDTSV_TUNBRIDGE_ENTER        = 32,      ///< signal is a tunnel/bridge entrance
+	TRDTSV_TUNBRIDGE_EXIT         = 33,      ///< signal is a tunnel/bridge exit
 };
 
 /**
