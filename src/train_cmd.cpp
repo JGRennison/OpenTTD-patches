@@ -4008,7 +4008,7 @@ static TileIndex CheckLongReservePbsTunnelBridgeOnTrackdir(Train* v, TileIndex t
 		TileIndex end = GetOtherTunnelBridgeEnd(tile);
 		if (restricted_only && !IsTunnelBridgeRestrictedSignal(end)) return INVALID_TILE;
 		int raw_free_tiles;
-		if (v->lookahead != nullptr && v->lookahead->reservation_end_tile == tile && v->lookahead->reservation_end_trackdir == trackdir) { // TODO fix loop case
+		if (v->lookahead != nullptr && v->lookahead->reservation_end_tile == tile && v->lookahead->reservation_end_trackdir == trackdir) {
 			if (HasBit(v->lookahead->flags, TRLF_TB_EXIT_FREE)) {
 				raw_free_tiles = INT_MAX;
 			} else {
@@ -5049,6 +5049,15 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 			t->tile = tile;
 			t->track = TRACK_BIT_WORMHOLE;
 			t->direction = TrackdirToDirection(td);
+
+			if (t->Next() == nullptr) {
+				/* If this is a single-vehicle train, temporarily update the tile hash so that it can be found when scanning tiles.
+				 * This is so that the whole train does not become invisible.
+				 * Otherwise if the outgoing reservation reaches the entrance tile at the opposite end of this tunnel/bridge,
+				 * the reservation would form a loop, resulting in various ill-effects and invariant violations. */
+				t->UpdatePosition();
+			}
+
 			bool ok = try_exit_reservation();
 			if (!ok && (t->lookahead->reservation_end_position >= t->lookahead->current_position && t->lookahead->reservation_end_position > t->lookahead->current_position + tile_margin)) {
 				/* Reservation was made previously and was valid then.
@@ -5081,6 +5090,10 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 			t->tile = veh_orig_tile;
 			t->track = veh_orig_track;
 			t->direction = veh_orig_direction;
+			if (t->Next() == nullptr) {
+				/* See equivalent UpdatePosition call above */
+				t->UpdatePosition();
+			}
 			return ok;
 		}
 	}
