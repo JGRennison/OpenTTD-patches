@@ -221,7 +221,6 @@ See [installation.md](/installation.md) for instructions on how to install.
 
 #### Limits
 
-* Increase maximum number of NewGRFs to 255 in single player and multiplayer.
 * [Extra large maps](http://www.tt-forums.net/viewtopic.php?f=33&t=33137).
   Maximum map size is now 256M tiles, ranging from 16k x 16k to 256 x 1M.
 * Increase the limit of NewGRF house IDs in a single game from 512 to 1024.
