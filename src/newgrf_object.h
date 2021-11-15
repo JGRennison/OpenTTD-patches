@@ -44,9 +44,9 @@ void ResetObjects();
 
 /** Class IDs for objects. */
 enum ObjectClassID {
-	OBJECT_CLASS_BEGIN   =    0, ///< The lowest valid value
-	OBJECT_CLASS_MAX     = 0xFF, ///< Maximum number of classes.
-	INVALID_OBJECT_CLASS = 0xFF, ///< Class for the less fortunate.
+	OBJECT_CLASS_BEGIN   =      0, ///< The lowest valid value
+	OBJECT_CLASS_MAX     = 0xFFFF, ///< Maximum number of classes.
+	INVALID_OBJECT_CLASS = 0xFFFF, ///< Class for the less fortunate.
 };
 /** Allow incrementing of ObjectClassID variables */
 DECLARE_POSTFIX_INCREMENT(ObjectClassID)
