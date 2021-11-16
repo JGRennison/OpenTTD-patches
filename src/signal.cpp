@@ -464,6 +464,10 @@ static SigInfo ExploreSegment(Owner owner)
 							info.flags |= SF_FULL;
 							return info;
 						}
+						if (_extra_aspects > 0 && IsTunnelBridgeSignalSimulationEntrance(tile)) {
+							info.out_signal_tile = tile;
+							info.out_signal_trackdir = GetTunnelBridgeEntranceTrackdir(tile, tunnel_bridge_dir);
+						}
 						Trackdir exit_track = GetTunnelBridgeExitTrackdir(tile, tunnel_bridge_dir);
 						exitdir = TrackdirToExitdir(exit_track);
 						enterdir = ReverseDiagDir(exitdir);
