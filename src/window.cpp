@@ -57,6 +57,8 @@ static Window *_last_scroll_window = nullptr; ///< Window of the last scroll eve
 WindowBase *_z_front_window = nullptr;
 /** List of windows opened at the screen sorted from the back. */
 WindowBase *_z_back_window  = nullptr;
+/** List of windows in an arbitrary order, that is not instantaneously changed by bringing windows to the front. */
+WindowBase *_first_window  = nullptr;
 
 /** If false, highlight is white, otherwise the by the widget defined colour. */
 bool _window_highlight_colour = false;
@@ -1192,7 +1194,7 @@ void DeleteWindowById(WindowClass cls, WindowNumber number, bool force)
 void DeleteWindowByClass(WindowClass cls)
 {
 	/* Note: the container remains stable, even when deleting windows. */
-	for (Window *w : Window::IterateFromBack()) {
+	for (Window *w : Window::IterateUnordered()) {
 		if (w->window_class == cls) {
 			delete w;
 		}
@@ -1208,7 +1210,7 @@ void DeleteWindowByClass(WindowClass cls)
 void DeleteCompanyWindows(CompanyID id)
 {
 	/* Note: the container remains stable, even when deleting windows. */
-	for (Window *w : Window::IterateFromBack()) {
+	for (Window *w : Window::IterateUnordered()) {
 		if (w->owner == id) {
 			delete w;
 		}
@@ -1501,6 +1503,8 @@ void Window::InitializeData(WindowNumber window_number)
 
 	/* Insert the window into the correct location in the z-ordering. */
 	AddWindowToZOrdering(this);
+	this->next_window = _first_window;
+	_first_window = this;
 }
 
 /**
@@ -1901,6 +1905,7 @@ void InitWindowSystem()
 
 	_z_back_window = nullptr;
 	_z_front_window = nullptr;
+	_first_window = nullptr;
 	_focused_window = nullptr;
 	_mouseover_last_w = nullptr;
 	_last_scroll_window = nullptr;
@@ -1921,7 +1926,7 @@ void UnInitWindowSystem()
 {
 	UnshowCriticalError();
 
-	for (Window *w : Window::IterateFromFront()) delete w;
+	for (Window *w : Window::IterateUnordered()) delete w;
 
 	for (WindowBase *w = _z_front_window; w != nullptr; /* nothing */) {
 		WindowBase *to_del = w;
@@ -1931,6 +1936,7 @@ void UnInitWindowSystem()
 
 	_z_front_window = nullptr;
 	_z_back_window = nullptr;
+	_first_window = nullptr;
 }
 
 /**
@@ -3152,6 +3158,8 @@ void InputLoop()
 
 	CheckSoftLimit();
 
+	bool reset_window_nexts = false;
+
 	/* Do the actual free of the deleted windows. */
 	for (WindowBase *v = _z_front_window; v != nullptr; /* nothing */) {
 		WindowBase *w = v;
@@ -3161,6 +3169,14 @@ void InputLoop()
 
 		RemoveWindowFromZOrdering(w);
 		free(w);
+		reset_window_nexts = true;
+	}
+
+	if (reset_window_nexts) {
+		_first_window = _z_front_window;
+		for (WindowBase *w = _z_front_window; w != nullptr; w = w->z_back) {
+			w->next_window = w->z_back;
+		}
 	}
 
 	if (_input_events_this_tick != 0) {
@@ -3414,7 +3430,7 @@ void CallWindowGameTickEvent()
 void DeleteNonVitalWindows()
 {
 	/* Note: the container remains stable, even when deleting windows. */
-	for (const Window *w : Window::IterateFromBack()) {
+	for (const Window *w : Window::IterateUnordered()) {
 		if (w->window_class != WC_MAIN_WINDOW &&
 				w->window_class != WC_SELECT_GAME &&
 				w->window_class != WC_MAIN_TOOLBAR &&
@@ -3440,7 +3456,7 @@ void DeleteAllNonVitalWindows()
 	DeleteNonVitalWindows();
 
 	/* Note: the container remains stable, even when deleting windows. */
-	for (const Window *w : Window::IterateFromBack()) {
+	for (const Window *w : Window::IterateUnordered()) {
 		if (w->flags & WF_STICKY) {
 			delete w;
 		}
@@ -3465,7 +3481,7 @@ void DeleteAllMessages()
 void DeleteConstructionWindows()
 {
 	/* Note: the container remains stable, even when deleting windows. */
-	for (const Window *w : Window::IterateFromBack()) {
+	for (const Window *w : Window::IterateUnordered()) {
 		if (w->window_desc->flags & WDF_CONSTRUCTION) {
 			delete w;
 		}
