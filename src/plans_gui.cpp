@@ -381,6 +381,10 @@ struct PlansWindow : Window {
 		const Point p = GetTileBelowCursor();
 		const TileIndex tile = TileVirtXY(p.x, p.y);
 		if (_current_plan && tile < MapSize()) {
+			if (_ctrl_pressed && _current_plan->temp_line->tiles.empty() && _current_plan->last_tile != INVALID_TILE) {
+				_current_plan->StoreTempTile(_current_plan->last_tile);
+				_current_plan->last_tile = INVALID_TILE;
+			}
 			_current_plan->StoreTempTile(tile);
 			_thd.selstart = _thd.selend;
 		}

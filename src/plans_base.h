@@ -162,6 +162,7 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 	Owner owner;
 	PlanLineVector lines;
 	PlanLine *temp_line;
+	TileIndex last_tile;
 	bool visible;
 	bool visible_by_all;
 	bool show_lines;
@@ -178,6 +179,7 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 		this->show_lines = false;
 		this->colour = COLOUR_WHITE;
 		this->temp_line = new PlanLine();
+		this->last_tile = INVALID_TILE;
 	}
 
 	~Plan()
@@ -236,6 +238,7 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 				free(buffer);
 			}
 			this->temp_line->MarkDirty();
+			this->last_tile = this->temp_line->tiles.back();
 			this->temp_line->Clear();
 		}
 		return ret;
