@@ -231,11 +231,11 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 			uint buffer_length = 0;
 			const TileIndex *buffer = this->temp_line->Export(&buffer_length);
 			if (buffer) {
-				_current_plan->SetVisibility(true, false);
-				ret = DoCommandPEx(0, _current_plan->index, (uint32) this->temp_line->tiles.size(), 0, CMD_ADD_PLAN_LINE, nullptr, (const char *) buffer, buffer_length);
+				this->SetVisibility(true, false);
+				ret = DoCommandPEx(0, this->index, (uint32) this->temp_line->tiles.size(), 0, CMD_ADD_PLAN_LINE, nullptr, (const char *) buffer, buffer_length);
 				free(buffer);
 			}
-			_current_plan->temp_line->MarkDirty();
+			this->temp_line->MarkDirty();
 			this->temp_line->Clear();
 		}
 		return ret;
@@ -259,13 +259,13 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 
 	bool ToggleVisibilityByAll()
 	{
-		if (_current_plan->owner == _local_company) DoCommandP(0, _current_plan->index, !this->visible_by_all, CMD_CHANGE_PLAN_VISIBILITY);
+		if (this->owner == _local_company) DoCommandP(0, this->index, !this->visible_by_all, CMD_CHANGE_PLAN_VISIBILITY);
 		return this->visible_by_all;
 	}
 
 	void SetPlanColour(Colours colour)
 	{
-		if (_current_plan->owner == _local_company) DoCommandP(0, _current_plan->index, colour, CMD_CHANGE_PLAN_COLOUR);
+		if (this->owner == _local_company) DoCommandP(0, this->index, colour, CMD_CHANGE_PLAN_COLOUR);
 	}
 
 	const std::string &GetName() const
