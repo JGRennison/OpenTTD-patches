@@ -2131,17 +2131,18 @@ Money RoadVehicle::GetRunningCost() const
 	uint cost_factor = GetVehicleProperty(this, PROP_ROADVEH_RUNNING_COST_FACTOR, e->u.road.running_cost);
 	if (cost_factor == 0) return 0;
 
+	Money cost = GetPrice(e->u.road.running_cost_class, cost_factor, e->GetGRF());
+
 	if (this->cur_speed == 0) {
 		if (this->IsInDepot()) {
 			/* running costs if in depot */
-			cost_factor /= _settings_game.difficulty.vehicle_costs_in_depot;
+			cost = CeilDivT<Money>(cost, _settings_game.difficulty.vehicle_costs_in_depot);
 		} else {
 			/* running costs if stopped */
-			cost_factor /= _settings_game.difficulty.vehicle_costs_when_stopped;
+			cost = CeilDivT<Money>(cost, _settings_game.difficulty.vehicle_costs_when_stopped);
 		}
 	}
-
-	return GetPrice(e->u.road.running_cost_class, cost_factor, e->GetGRF());
+	return cost;
 }
 
 bool RoadVehicle::Tick()

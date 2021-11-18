@@ -463,18 +463,18 @@ Money Aircraft::GetRunningCost() const
 {
 	const Engine *e = this->GetEngine();
 	uint cost_factor = GetVehicleProperty(this, PROP_AIRCRAFT_RUNNING_COST_FACTOR, e->u.air.running_cost);
+	Money cost = GetPrice(PR_RUNNING_AIRCRAFT, cost_factor, e->GetGRF());
 
 	if (this->cur_speed == 0) {
 		if (this->IsInDepot()) {
 			/* running costs if in depot */
-			cost_factor /= _settings_game.difficulty.vehicle_costs_in_depot;
+			cost = CeilDivT<Money>(cost, _settings_game.difficulty.vehicle_costs_in_depot);
 		} else {
 			/* running costs if stopped */
-			cost_factor /= _settings_game.difficulty.vehicle_costs_when_stopped;
+			cost = CeilDivT<Money>(cost, _settings_game.difficulty.vehicle_costs_when_stopped);
 		}
 	}
-
-	return GetPrice(PR_RUNNING_AIRCRAFT, cost_factor, e->GetGRF());
+	return cost;
 }
 
 void Aircraft::OnNewDay()
