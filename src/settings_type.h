@@ -78,6 +78,8 @@ struct DifficultySettings {
 	uint32 max_loan;                         ///< the maximum initial loan
 	byte   initial_interest;                 ///< amount of interest (to pay over the loan)
 	byte   vehicle_costs;                    ///< amount of money spent on vehicle running cost
+	uint8  vehicle_costs_in_depot;           ///< amount of money spent on vehicle running cost when in depot
+	uint8  vehicle_costs_when_stopped;       ///< amount of money spent on vehicle running cost when vehicle is stopped
 	byte   competitor_speed;                 ///< the speed at which the AI builds
 	byte   vehicle_breakdowns;               ///< likelihood of vehicles breaking down
 	byte   subsidy_multiplier;               ///< payment multiplier for subsidized deliveries

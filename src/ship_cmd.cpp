@@ -229,6 +229,13 @@ Money Ship::GetRunningCost() const
 {
 	const Engine *e = this->GetEngine();
 	uint cost_factor = GetVehicleProperty(this, PROP_SHIP_RUNNING_COST_FACTOR, e->u.ship.running_cost);
+
+	/* running costs if in depot */
+	if (IsShipDepotTile(this->tile)) cost_factor /= _settings_game.difficulty.vehicle_costs_in_depot;
+
+	/* running costs if stopped */
+	if ((this->cur_speed == 0) && !(IsShipDepotTile(this->tile))) cost_factor /= _settings_game.difficulty.vehicle_costs_when_stopped;
+
 	return GetPrice(PR_RUNNING_SHIP, cost_factor, e->GetGRF());
 }
 
