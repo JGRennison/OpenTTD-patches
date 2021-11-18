@@ -464,12 +464,15 @@ Money Aircraft::GetRunningCost() const
 	const Engine *e = this->GetEngine();
 	uint cost_factor = GetVehicleProperty(this, PROP_AIRCRAFT_RUNNING_COST_FACTOR, e->u.air.running_cost);
 
-	/* running costs if in depot -- I haven't gotten this one working yet, can't figure out how to tell if plane is in the depot */
-	if (this->current_order.IsType(OT_GOTO_DEPOT)) cost_factor /= _settings_game.difficulty.vehicle_costs_in_depot;
-
-	/* running costs if stopped */
-	if ((this->cur_speed == 0) && !(this->current_order.IsType(OT_GOTO_DEPOT))) cost_factor /= _settings_game.difficulty.vehicle_costs_when_stopped;
-
+	if (this->cur_speed == 0) {
+		if (this->IsInDepot()) {
+			/* running costs if in depot */
+			cost_factor /= _settings_game.difficulty.vehicle_costs_in_depot;
+		} else {
+			/* running costs if stopped */
+			cost_factor /= _settings_game.difficulty.vehicle_costs_when_stopped;
+		}
+	}
 
 	return GetPrice(PR_RUNNING_AIRCRAFT, cost_factor, e->GetGRF());
 }

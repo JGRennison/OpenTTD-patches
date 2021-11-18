@@ -6456,11 +6456,15 @@ Money Train::GetRunningCost() const
 		/* Halve running cost for multiheaded parts */
 		if (v->IsMultiheaded()) cost_factor /= 2;
 
-		/* running costs if in depot */
-		if (v->track == TRACK_BIT_DEPOT) cost_factor /= _settings_game.difficulty.vehicle_costs_in_depot;
-
-		/* running costs if stopped */
-		if ((v->cur_speed == 0) && !(v->track == TRACK_BIT_DEPOT)) cost_factor /= _settings_game.difficulty.vehicle_costs_when_stopped;
+		if (this->cur_speed == 0) {
+			if (this->IsInDepot()) {
+				/* running costs if in depot */
+				cost_factor /= _settings_game.difficulty.vehicle_costs_in_depot;
+			} else {
+				/* running costs if stopped */
+				cost_factor /= _settings_game.difficulty.vehicle_costs_when_stopped;
+			}
+		}
 
 		cost += GetPrice(e->u.rail.running_cost_class, cost_factor, e->GetGRF());
 	} while ((v = v->GetNextVehicle()) != nullptr);
