@@ -1055,7 +1055,7 @@ static bool FindSpring(TileIndex tile, void *user_data)
 	if (!IsTileFlat(tile, &referenceHeight) || IsWaterTile(tile)) return false;
 
 	/* In the tropics rivers start in the rainforest. */
-	if (_settings_game.game_creation.landscape == LT_TROPIC && GetTropicZone(tile) != TROPICZONE_RAINFOREST) return false;
+	if (_settings_game.game_creation.landscape == LT_TROPIC && GetTropicZone(tile) != TROPICZONE_RAINFOREST && !_settings_game.game_creation.lakes_allowed_in_deserts) return false;
 
 	/* Are there enough higher tiles to warrant a 'spring'? */
 	uint num = 0;
@@ -1100,7 +1100,7 @@ static bool MakeLake(TileIndex tile, void *user_data)
 {
 	const MakeLakeData *data = (const MakeLakeData *)user_data;
 	if (!IsValidTile(tile) || TileHeight(tile) != data->height || !IsTileFlat(tile)) return false;
-	if (_settings_game.game_creation.landscape == LT_TROPIC && GetTropicZone(tile) == TROPICZONE_DESERT) return false;
+	if (_settings_game.game_creation.landscape == LT_TROPIC && GetTropicZone(tile) == TROPICZONE_DESERT && !_settings_game.game_creation.lakes_allowed_in_deserts) return false;
 
 	/* Offset from centre tile */
 	const int64 x_delta = (int)TileX(tile) - (int)TileX(data->centre);
