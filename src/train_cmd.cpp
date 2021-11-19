@@ -6382,7 +6382,29 @@ static bool TrainLocoHandler(Train *v, bool mode)
 	}
 
 	if (v->current_order.IsType(OT_LEAVESTATION)) {
+		StationID station_id = v->current_order.GetDestination();
 		v->current_order.Free();
+
+		bool may_reverse = ProcessOrders(v);
+
+		if (IsRailStationTile(v->tile) && GetStationIndex(v->tile) == station_id) {
+			if (v->current_order.ShouldStopAtStation(INVALID_STATION, station_id, false)) {
+				v->last_station_visited = station_id;
+				v->BeginLoading();
+				return true;
+			}
+		}
+
+		v->PlayLeaveStationSound();
+
+		if (may_reverse && CheckReverseTrain(v)) {
+			v->wait_counter = 0;
+			v->cur_speed = 0;
+			v->subspeed = 0;
+			ClrBit(v->flags, VRF_LEAVING_STATION);
+			ReverseTrainDirection(v);
+		}
+
 		SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
 		return true;
 	}
