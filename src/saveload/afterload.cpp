@@ -1115,10 +1115,6 @@ bool AfterLoadGame()
 		}
 	}
 
-	/* In version 2.2 of the savegame, we have new airports, so status of all aircraft is reset.
-	 * This has to be called after the oilrig airport_type update above ^^^ ! */
-	if (IsSavegameVersionBefore(SLV_2, 2)) UpdateOldAircraft();
-
 	/* In version 6.1 we put the town index in the map-array. To do this, we need
 	 *  to use m2 (16bit big), so we need to clean m2, and that is where this is
 	 *  all about ;) */
@@ -3303,6 +3299,10 @@ bool AfterLoadGame()
 			}
 		}
 	}
+
+	/* In version 2.2 of the savegame, we have new airports, so status of all aircraft is reset.
+	 * This has to be called after all map array updates */
+	if (IsSavegameVersionBefore(SLV_2, 2)) UpdateOldAircraft();
 
 	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
 		// re-arrange vehicle_flags

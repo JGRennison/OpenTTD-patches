@@ -3117,7 +3117,7 @@ static ChangeInfoResult CargoChangeInfo(uint cid, int numinfo, int prop, const G
 			}
 
 			case 0x19: // Town growth coefficient
-				cs->multipliertowngrowth = buf->ReadWord();
+				buf->ReadWord();
 				break;
 
 			case 0x1A: // Bitmask of callbacks to use
