@@ -6402,7 +6402,8 @@ static bool TrainLocoHandler(Train *v, bool mode)
 		bool may_reverse = ProcessOrders(v);
 
 		if (IsRailStationTile(v->tile) && GetStationIndex(v->tile) == station_id) {
-			if (v->current_order.ShouldStopAtStation(INVALID_STATION, station_id, false)) {
+			if (v->current_order.IsType(OT_GOTO_STATION) && v->current_order.GetDestination() == station_id &&
+					!(v->current_order.GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) {
 				v->last_station_visited = station_id;
 				v->BeginLoading();
 				return true;
