@@ -808,6 +808,8 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 			}
 
 			if (flags & DC_EXEC) {
+				MarkDirtyAdjacentLevelCrossingTilesOnAddRemove(tile, GetCrossingRoadAxis(tile));
+
 				/* A full diagonal road tile has two road bits. */
 				UpdateCompanyRoadInfrastructure(existing_rt, GetRoadOwner(tile, rtt), -2);
 
@@ -1111,6 +1113,7 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 				MakeRoadCrossing(tile, company, company, GetTileOwner(tile), roaddir, GetRailType(tile), rtt == RTT_ROAD ? rt : INVALID_ROADTYPE, (rtt == RTT_TRAM) ? rt : INVALID_ROADTYPE, p2);
 				SetCrossingReservation(tile, reserved);
 				UpdateLevelCrossing(tile, false);
+				MarkDirtyAdjacentLevelCrossingTilesOnAddRemove(tile, GetCrossingRoadAxis(tile));
 				if (RoadLayoutChangeNotificationEnabled(true)) NotifyRoadLayoutChangedIfTileNonLeaf(tile, rtt, GetCrossingRoadBits(tile));
 				if (rtt == RTT_ROAD) {
 					UpdateRoadCachedOneWayStatesAroundTile(tile);
@@ -2235,7 +2238,47 @@ static void DrawTile_Road(TileInfo *ti, DrawTileProcParams params)
 				SpriteID rail = GetCustomRailSprite(rti, ti->tile, RTSG_CROSSING) + axis;
 				DrawGroundSprite(rail, pal);
 
-				DrawRailTileSeq(ti, &_crossing_layout, TO_CATENARY, rail, 0, PAL_NONE);
+
+				if (_settings_game.vehicle.safer_crossings && _settings_game.vehicle.adjacent_crossings) {
+					const Axis axis = GetCrossingRoadAxis(ti->tile);
+					const DiagDirection dir1 = AxisToDiagDir(axis);
+					const DiagDirection dir2 = ReverseDiagDir(dir1);
+					uint adjacent_diagdirs = 0;
+					for (DiagDirection dir : { dir1, dir2 }) {
+						const TileIndex t = TileAddByDiagDir(ti->tile, dir);
+						if (t < MapSize() && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis) {
+							SetBit(adjacent_diagdirs, dir);
+						}
+					}
+
+					switch (adjacent_diagdirs) {
+						case 0:
+							DrawRailTileSeq(ti, &_crossing_layout, TO_CATENARY, rail, 0, PAL_NONE);
+							break;
+
+						case (1 << DIAGDIR_NE):
+							DrawRailTileSeq(ti, &_crossing_layout_SW, TO_CATENARY, rail, 0, PAL_NONE);
+							break;
+
+						case (1 << DIAGDIR_SE):
+							DrawRailTileSeq(ti, &_crossing_layout_NW, TO_CATENARY, rail, 0, PAL_NONE);
+							break;
+
+						case (1 << DIAGDIR_SW):
+							DrawRailTileSeq(ti, &_crossing_layout_NE, TO_CATENARY, rail, 0, PAL_NONE);
+							break;
+
+						case (1 << DIAGDIR_NW):
+							DrawRailTileSeq(ti, &_crossing_layout_SE, TO_CATENARY, rail, 0, PAL_NONE);
+							break;
+
+						default:
+							/* Show no sprites */
+							break;
+					}
+				} else {
+					DrawRailTileSeq(ti, &_crossing_layout, TO_CATENARY, rail, 0, PAL_NONE);
+				}
 			} else if (draw_pbs || tram_rti != nullptr || road_rti->UsesOverlay()) {
 				/* Add another rail overlay, unless there is only the base road sprite. */
 				PaletteID pal = draw_pbs ? PALETTE_CRASH : PAL_NONE;

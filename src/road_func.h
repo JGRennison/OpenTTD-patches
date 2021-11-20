@@ -155,6 +155,7 @@ RoadTypes GetRoadTypes(bool introduces);
 RoadTypes AddDateIntroducedRoadTypes(RoadTypes current, Date date);
 
 void UpdateLevelCrossing(TileIndex tile, bool sound = true, bool force_close = false);
+void MarkDirtyAdjacentLevelCrossingTilesOnAddRemove(TileIndex tile, Axis road_axis);
 bool IsCrossingOccupiedByRoadVehicle(TileIndex t);
 
 void UpdateRoadCachedOneWayStatesAroundTile(TileIndex tile);

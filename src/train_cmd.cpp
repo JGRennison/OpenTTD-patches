@@ -2610,6 +2610,20 @@ void UpdateLevelCrossing(TileIndex tile, bool sound, bool force_close)
 	}
 }
 
+void MarkDirtyAdjacentLevelCrossingTilesOnAddRemove(TileIndex tile, Axis road_axis)
+{
+	if (!(_settings_game.vehicle.safer_crossings && _settings_game.vehicle.adjacent_crossings)) return;
+
+	const DiagDirection dir1 = AxisToDiagDir(road_axis);
+	const DiagDirection dir2 = ReverseDiagDir(dir1);
+	for (DiagDirection dir : { dir1, dir2 }) {
+		const TileIndex t = TileAddByDiagDir(tile, dir);
+		if (t < MapSize() && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == road_axis) {
+			MarkTileDirtyByTile(t, VMDF_NOT_MAP_MODE);
+		}
+	}
+}
+
 /**
  * Check if the level crossing is occupied by road vehicle(s).
  * @param t The tile to query.
