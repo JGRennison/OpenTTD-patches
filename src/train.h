@@ -191,6 +191,8 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 		int advisory_max_speed;
 	};
 
+	bool ConsistNeedsRepair() const;
+
 private:
 	MaxSpeedInfo GetCurrentMaxSpeedInfoInternal(bool update_state) const;
 

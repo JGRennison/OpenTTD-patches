@@ -1201,6 +1201,16 @@ void Train::UpdateAcceleration()
 	}
 }
 
+bool Train::ConsistNeedsRepair() const
+{
+	if (!HasBit(this->flags, VRF_CONSIST_BREAKDOWN)) return false;
+
+	for (const Train *u = this; u != nullptr; u = u->Next()) {
+		if (HasBit(u->flags, VRF_NEED_REPAIR)) return true;
+	}
+	return false;
+}
+
 /**
  * Get the width of a train vehicle image in the GUI.
  * @param offset Additional offset for positioning the sprite; set to nullptr if not needed
