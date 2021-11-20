@@ -2593,19 +2593,19 @@ void UpdateLevelCrossing(TileIndex tile, bool sound, bool force_close)
 
 	const bool adjacent_crossings = _settings_game.vehicle.adjacent_crossings;
 	if (adjacent_crossings) {
-		for (TileIndex t = tile; !forced_state && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, dir)) {
+		for (TileIndex t = tile; !forced_state && t < MapSize() && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, dir)) {
 			forced_state |= CheckLevelCrossing(t);
 		}
-		for (TileIndex t = TileAddByDiagDir(tile, reverse_dir); !forced_state && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, reverse_dir)) {
+		for (TileIndex t = TileAddByDiagDir(tile, reverse_dir); !forced_state && t < MapSize() && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, reverse_dir)) {
 			forced_state |= CheckLevelCrossing(t);
 		}
 	}
 
 	UpdateLevelCrossingTile(tile, sound, adjacent_crossings || force_close, forced_state);
-	for (TileIndex t = TileAddByDiagDir(tile, dir); IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, dir)) {
+	for (TileIndex t = TileAddByDiagDir(tile, dir); t < MapSize() && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, dir)) {
 		UpdateLevelCrossingTile(t, sound, adjacent_crossings, forced_state);
 	}
-	for (TileIndex t = TileAddByDiagDir(tile, reverse_dir); IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, reverse_dir)) {
+	for (TileIndex t = TileAddByDiagDir(tile, reverse_dir); t < MapSize() && IsLevelCrossingTile(t) && GetCrossingRoadAxis(t) == axis; t = TileAddByDiagDir(t, reverse_dir)) {
 		UpdateLevelCrossingTile(t, sound, adjacent_crossings, forced_state);
 	}
 }
