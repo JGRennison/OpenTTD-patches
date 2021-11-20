@@ -185,7 +185,7 @@ DEF_CONSOLE_HOOK(ConHookNoNetwork)
 DEF_CONSOLE_HOOK(ConHookServerOrNoNetwork)
 {
 	if (_networking && !_network_server) {
-		if (echo) IConsoleError("This command is only available to a network server.");
+		if (echo) IConsoleError("This command is only available to a network server, or in single-player.");
 		return CHR_DISALLOW;
 	}
 	return CHR_ALLOW;
