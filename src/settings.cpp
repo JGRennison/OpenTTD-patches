@@ -2123,6 +2123,8 @@ static void RemoveEntriesFromIni(IniFile &ini, const SettingTable &table)
  */
 void LoadFromConfig(bool startup)
 {
+	PreTransparencyOptionSave();
+
 	ConfigIniFile generic_ini(_config_file, &_config_file_text);
 	ConfigIniFile private_ini(_private_file);
 	ConfigIniFile secrets_ini(_secrets_file);
@@ -2171,12 +2173,16 @@ void LoadFromConfig(bool startup)
 		extern void ScheduleErrorMessage(ErrorList &datas);
 		ScheduleErrorMessage(_settings_error_list);
 		if (FindWindowById(WC_ERRMSG, 0) == nullptr) ShowFirstError();
+	} else {
+		PostTransparencyOptionLoad();
 	}
 }
 
 /** Save the values to the configuration file */
 void SaveToConfig()
 {
+	PreTransparencyOptionSave();
+
 	ConfigIniFile generic_ini(_config_file);
 	ConfigIniFile private_ini(_private_file);
 	ConfigIniFile secrets_ini(_secrets_file);
