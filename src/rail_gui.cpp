@@ -274,10 +274,10 @@ static void GenericPlaceSignals(TileIndex tile)
 	/* Which signals should we cycle through? */
 	uint8 cycle_types;
 
-	if (_settings_client.gui.cycle_signal_types == SIGNAL_CYCLE_ALL && _settings_client.gui.signal_gui_mode == SIGNAL_GUI_ALL) {
-		cycle_types = SIGTYPE_NORMAL | (SIGTYPE_LAST << 3);
+	if (_settings_client.gui.cycle_signal_types == SIGNAL_CYCLE_ALL && (_settings_client.gui.signal_gui_mode == SIGNAL_GUI_ALL || _settings_game.vehicle.train_braking_model == TBM_REALISTIC)) {
+		cycle_types = SIGNAL_CYCLE_ALL;
 	} else {
-		cycle_types = SIGTYPE_PBS | (SIGTYPE_LAST << 3);
+		cycle_types = SIGNAL_CYCLE_PATH;
 	}
 
 	if (w != nullptr) {

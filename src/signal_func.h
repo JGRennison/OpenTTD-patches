@@ -114,8 +114,8 @@ static inline bool IsSignalSpritePBS(SignalType type)
 
 static inline SignalType NextSignalType(SignalType cur, uint which_signals)
 {
-	bool pbs   = (which_signals != 0);
-	bool block = (which_signals != 1);
+	bool pbs   = true;
+	bool block = (which_signals == SIGNAL_CYCLE_ALL);
 
 	switch(cur) {
 		case SIGTYPE_NORMAL:     return block ? SIGTYPE_ENTRY      : SIGTYPE_PBS;
