@@ -113,6 +113,10 @@ struct NIVariable {
 	byte var;
 };
 
+struct NIExtraInfoOutput {
+	std::function<void(const char *)> print;
+};
+
 /** Helper class to wrap some functionality/queries in. */
 class NIHelper {
 public:
@@ -206,7 +210,7 @@ public:
 		return {};
 	}
 
-	virtual void ExtraInfo(uint index, std::function<void(const char *)> print) const {}
+	virtual void ExtraInfo(uint index, NIExtraInfoOutput &output) const {}
 	virtual void SpriteDump(uint index, std::function<void(const char *)> print) const {}
 	virtual bool ShowExtraInfoOnly(uint index) const { return false; };
 	virtual bool ShowSpriteDumpButton(uint index) const { return false; };
@@ -516,7 +520,8 @@ struct NewGRFInspectWindow : Window {
 			nih->SpriteDump(index, line_handler);
 			return;
 		} else {
-			nih->ExtraInfo(index, line_handler);
+			NIExtraInfoOutput output { line_handler };
+			nih->ExtraInfo(index, output);
 		}
 
 		if (nih->ShowExtraInfoOnly(index)) return;
