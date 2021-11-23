@@ -473,7 +473,7 @@ struct SchdispatchWindow : Window {
 				if (_settings_time.time_in_minutes && _settings_client.gui.timetable_start_text_entry) {
 					ShowQueryString(STR_EMPTY, STR_SCHDISPATCH_ADD_CAPTION, 31, this, CS_NUMERAL, QSF_NONE);
 				} else {
-					ShowSetDateWindow(this, v->index, _scaled_date_ticks, _cur_year, _cur_year + 15, ScheduleAddCallback);
+					ShowSetDateWindow(this, v->index, _scaled_date_ticks, _cur_year, _cur_year + 15, ScheduleAddCallback, STR_SCHDISPATCH_ADD, STR_SCHDISPATCH_ADD_TOOLTIP);
 				}
 				break;
 			}
@@ -494,7 +494,7 @@ struct SchdispatchWindow : Window {
 					SetDParam(0, time);
 					ShowQueryString(STR_JUST_INT, STR_SCHDISPATCH_START_CAPTION_MINUTE, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
-					ShowSetDateWindow(this, v->index, _scaled_date_ticks, _cur_year, _cur_year + 15, SetScheduleStartDateCallback);
+					ShowSetDateWindow(this, v->index, _scaled_date_ticks, _cur_year, _cur_year + 15, SetScheduleStartDateCallback, STR_SCHDISPATCH_SET_START, STR_SCHDISPATCH_START_TOOLTIP);
 				}
 				break;
 			}

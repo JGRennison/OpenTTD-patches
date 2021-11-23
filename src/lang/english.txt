@@ -5695,6 +5695,7 @@ STR_DATE_MONTH_TOOLTIP                                          :{BLACK}Select m
 STR_DATE_YEAR_TOOLTIP                                           :{BLACK}Select year
 STR_DATE_MINUTES_DAY_TOOLTIP                                    :{BLACK}Select minute
 STR_DATE_MINUTES_MONTH_TOOLTIP                                  :{BLACK}Select hour
+STR_TIME_CAPTION                                                :{WHITE}Set time
 
 # Cargo type orders Window
 STR_CARGO_TYPE_ORDERS_LOAD_CAPTION                              :{WHITE}{VEHICLE} ({NUM}: Load at {STATION})
@@ -7050,6 +7051,7 @@ STR_SCHDISPATCH_DURATION_TOOLTIP                                :{BLACK}Set dura
 STR_SCHDISPATCH_DURATION_CAPTION_MINUTE                         :{BLACK}Duration (minute)
 STR_SCHDISPATCH_DURATION_CAPTION_DAY                            :{BLACK}Duration (day)
 STR_SCHDISPATCH_START                                           :{BLACK}Start Date
+STR_SCHDISPATCH_SET_START                                       :{BLACK}Set Start Date
 STR_SCHDISPATCH_START_TOOLTIP                                   :{BLACK}Select a date to start this schedule.
 STR_SCHDISPATCH_START_CAPTION_MINUTE                            :{BLACK}Start time (hhmm)
 STR_SCHDISPATCH_DELAY                                           :{BLACK}Delay

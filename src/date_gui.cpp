@@ -39,7 +39,8 @@ struct SetDateWindow : Window {
 	 * @param max_year the maximum year (inclusive) to show in the year dropdown
 	 * @param callback the callback to call once a date has been selected
 	 */
-	SetDateWindow(WindowDesc *desc, WindowNumber window_number, Window *parent, Date initial_date, Year min_year, Year max_year, SetDateCallback *callback) :
+	SetDateWindow(WindowDesc *desc, WindowNumber window_number, Window *parent, Date initial_date, Year min_year, Year max_year,
+				SetDateCallback *callback, StringID button_text, StringID button_tooltip) :
 			Window(desc),
 			callback(callback),
 			min_year(std::max(MIN_YEAR, min_year)),
@@ -47,7 +48,13 @@ struct SetDateWindow : Window {
 	{
 		assert(this->min_year <= this->max_year);
 		this->parent = parent;
-		this->InitNested(window_number);
+		this->CreateNestedTree();
+		if (button_text != STR_NULL || button_tooltip != STR_NULL) {
+			NWidgetCore *btn = this->GetWidget<NWidgetCore>(WID_SD_SET_DATE);
+			if (button_text != STR_NULL) btn->widget_data = button_text;
+			if (button_tooltip != STR_NULL) btn->tool_tip = button_tooltip;
+		}
+		this->FinishInitNested(window_number);
 
 		if (initial_date == 0) initial_date = _date;
 		ConvertDateToYMD(initial_date, &this->date);
@@ -179,9 +186,10 @@ struct SetMinutesWindow : SetDateWindow
 	Minutes minutes;
 
 	/** Constructor. */
-	SetMinutesWindow(WindowDesc *desc, WindowNumber window_number, Window *parent, DateTicksScaled initial_date, Year min_year, Year max_year, SetDateCallback *callback) :
-		SetDateWindow(desc, window_number, parent, initial_date, min_year, max_year, callback),
-		minutes(initial_date / _settings_time.ticks_per_minute)
+	SetMinutesWindow(WindowDesc *desc, WindowNumber window_number, Window *parent, DateTicksScaled initial_date, Year min_year, Year max_year,
+				SetDateCallback *callback, StringID button_text, StringID button_tooltip) :
+			SetDateWindow(desc, window_number, parent, initial_date, min_year, max_year, callback, button_text, button_tooltip),
+			minutes(initial_date / _settings_time.ticks_per_minute)
 	{
 	}
 
@@ -317,7 +325,7 @@ static const NWidgetPart _nested_set_date_widgets[] = {
 static const NWidgetPart _nested_set_minutes_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
-		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_DATE_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_TIME_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_BROWN),
 		NWidget(NWID_VERTICAL), SetPIP(6, 6, 6),
@@ -358,15 +366,17 @@ static WindowDesc _set_minutes_desc(
  * @param max_year the maximum year (inclusive) to show in the year dropdown
  * @param callback the callback to call once a date has been selected
  */
-void ShowSetDateWindow(Window *parent, int window_number, DateTicksScaled initial_date, Year min_year, Year max_year, SetDateCallback *callback)
+void ShowSetDateWindow(Window *parent, int window_number, DateTicksScaled initial_date, Year min_year, Year max_year,
+		SetDateCallback *callback, StringID button_text, StringID button_tooltip)
 {
 	DeleteWindowByClass(WC_SET_DATE);
 
 	if (!_settings_time.time_in_minutes) {
-		new SetDateWindow(&_set_date_desc, window_number, parent, initial_date / (DAY_TICKS * _settings_game.economy.day_length_factor), min_year, max_year, callback);
+		new SetDateWindow(&_set_date_desc, window_number, parent, initial_date / (DAY_TICKS * _settings_game.economy.day_length_factor),
+				min_year, max_year, callback, button_text, button_tooltip);
 	} else {
 		new SetMinutesWindow(&_set_minutes_desc, window_number, parent,
 				initial_date + (_settings_game.economy.day_length_factor * (_settings_time.clock_offset * _settings_time.ticks_per_minute)),
-				min_year, max_year, callback);
+				min_year, max_year, callback, button_text, button_tooltip);
 	}
 }
