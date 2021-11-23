@@ -115,6 +115,8 @@ struct NIVariable {
 
 struct NIExtraInfoOutput {
 	std::function<void(const char *)> print;
+	std::function<void(uint)> register_next_line_click_flag_toggle;
+	uint32 flags;
 };
 
 /** Helper class to wrap some functionality/queries in. */
@@ -313,6 +315,9 @@ struct NewGRFInspectWindow : Window {
 	bool auto_refresh = false;
 	bool log_console = false;
 	bool sprite_dump = false;
+
+	uint32 extra_info_flags = 0;
+	btree::btree_map<int, uint> extra_info_click_flag_toggles;
 
 	/**
 	 * Check whether the given variable has a parameter.
@@ -520,7 +525,12 @@ struct NewGRFInspectWindow : Window {
 			nih->SpriteDump(index, line_handler);
 			return;
 		} else {
-			NIExtraInfoOutput output { line_handler };
+			NewGRFInspectWindow *this_mutable = const_cast<NewGRFInspectWindow *>(this);
+			this_mutable->extra_info_click_flag_toggles.clear();
+			auto register_next_line_click_flag_toggle = [this_mutable, &i](uint flag) {
+				this_mutable->extra_info_click_flag_toggles[i] = flag;
+			};
+			NIExtraInfoOutput output { line_handler, register_next_line_click_flag_toggle, this->extra_info_flags };
 			nih->ExtraInfo(index, output);
 		}
 
@@ -666,13 +676,22 @@ struct NewGRFInspectWindow : Window {
 
 			case WID_NGRFI_MAINPANEL: {
 				if (this->sprite_dump) return;
-				/* Does this feature have variables? */
-				const NIFeature *nif  = GetFeature(this->window_number);
-				if (nif->variables == nullptr) return;
 
 				/* Get the line, make sure it's within the boundaries. */
 				int line = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_NGRFI_MAINPANEL, TOP_OFFSET);
 				if (line == INT_MAX) return;
+
+				auto iter = this->extra_info_click_flag_toggles.find(line);
+				if (iter != this->extra_info_click_flag_toggles.end()) {
+					this->extra_info_flags ^= iter->second;
+					this->SetDirty();
+					return;
+				}
+
+				/* Does this feature have variables? */
+				const NIFeature *nif  = GetFeature(this->window_number);
+				if (nif->variables == nullptr) return;
+
 				if (line < this->first_variable_line_index) return;
 				line -= this->first_variable_line_index;
 
