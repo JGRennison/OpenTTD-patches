@@ -15,6 +15,7 @@
 #include "../timetable.h"
 #include "../ship.h"
 #include "../aircraft.h"
+#include "../string_func_extra.h"
 
 /* Helper for filling property tables */
 #define NIP(prop, base, variable, type, name) { name, (ptrdiff_t)cpp_offsetof(base, variable), cpp_sizeof(base, variable), prop, type }
@@ -113,10 +114,17 @@ class NIHVehicle : public NIHelper {
 		char buffer[1024];
 		seprintf(buffer, lastof(buffer), "  Index: %u", v->index);
 		output.print(buffer);
+		output.register_next_line_click_flag_toggle(1);
 		char *b = buffer;
-		b += seprintf(b, lastof(buffer), "  Flags: ");
-		b = v->DumpVehicleFlags(b, lastof(buffer), false);
-		output.print(buffer);
+		if (output.flags & 1) {
+			b += seprintf(b, lastof(buffer), "  [-] Flags:\n");
+			b = v->DumpVehicleFlagsMultiline(b, lastof(buffer), "    ", "  ");
+			ProcessLineByLine(buffer, output.print);
+		} else {
+			b += seprintf(b, lastof(buffer), "  [+] Flags: ");
+			b = v->DumpVehicleFlags(b, lastof(buffer), false);
+			output.print(buffer);
+		}
 
 		b = buffer + seprintf(buffer, lastof(buffer), "  ");
 		b = DumpTileInfo(b, lastof(buffer), v->tile);
