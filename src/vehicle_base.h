@@ -1145,6 +1145,7 @@ public:
 	}
 
 	char *DumpVehicleFlags(char *b, const char *last, bool include_tile) const;
+	char *DumpVehicleFlagsMultiline(char *b, const char *last, const char *base_indent, const char *extra_indent) const;
 
 	/**
 	 * Iterator to iterate orders

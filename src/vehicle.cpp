@@ -4020,90 +4020,110 @@ void Vehicle::RemoveFromShared()
 	if (HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION)) ClrBit(this->vehicle_flags, VF_TIMETABLE_STARTED);
 }
 
+template <typename T, typename U>
+void DumpVehicleFlagsGeneric(const Vehicle *v, T dump, U dump_header)
+{
+	if (v->IsGroundVehicle()) {
+		dump_header("st:", "subtype:");
+		dump('F', "GVSF_FRONT",            HasBit(v->subtype, GVSF_FRONT));
+		dump('A', "GVSF_ARTICULATED_PART", HasBit(v->subtype, GVSF_ARTICULATED_PART));
+		dump('W', "GVSF_WAGON",            HasBit(v->subtype, GVSF_WAGON));
+		dump('E', "GVSF_ENGINE",           HasBit(v->subtype, GVSF_ENGINE));
+		dump('f', "GVSF_FREE_WAGON",       HasBit(v->subtype, GVSF_FREE_WAGON));
+		dump('M', "GVSF_MULTIHEADED",      HasBit(v->subtype, GVSF_MULTIHEADED));
+		dump('V', "GVSF_VIRTUAL",          HasBit(v->subtype, GVSF_VIRTUAL));
+	}
+	dump_header("vs:", "vehstatus:");
+	dump('H', "VS_HIDDEN",          v->vehstatus & VS_HIDDEN);
+	dump('S', "VS_STOPPED",         v->vehstatus & VS_STOPPED);
+	dump('U', "VS_UNCLICKABLE",     v->vehstatus & VS_UNCLICKABLE);
+	dump('D', "VS_DEFPAL",          v->vehstatus & VS_DEFPAL);
+	dump('s', "VS_TRAIN_SLOWING",   v->vehstatus & VS_TRAIN_SLOWING);
+	dump('X', "VS_SHADOW",          v->vehstatus & VS_SHADOW);
+	dump('B', "VS_AIRCRAFT_BROKEN", v->vehstatus & VS_AIRCRAFT_BROKEN);
+	dump('C', "VS_CRASHED",         v->vehstatus & VS_CRASHED);
+	dump_header("vf:", "vehicle_flags:");
+	dump('F', "VF_LOADING_FINISHED",        HasBit(v->vehicle_flags, VF_LOADING_FINISHED));
+	dump('U', "VF_CARGO_UNLOADING",         HasBit(v->vehicle_flags, VF_CARGO_UNLOADING));
+	dump('P', "VF_BUILT_AS_PROTOTYPE",      HasBit(v->vehicle_flags, VF_BUILT_AS_PROTOTYPE));
+	dump('T', "VF_TIMETABLE_STARTED",       HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED));
+	dump('A', "VF_AUTOFILL_TIMETABLE",      HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE));
+	dump('w', "VF_AUTOFILL_PRES_WAIT_TIME", HasBit(v->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME));
+	dump('S', "VF_STOP_LOADING",            HasBit(v->vehicle_flags, VF_STOP_LOADING));
+	dump('L', "VF_PATHFINDER_LOST",         HasBit(v->vehicle_flags, VF_PATHFINDER_LOST));
+	dump('c', "VF_SERVINT_IS_CUSTOM",       HasBit(v->vehicle_flags, VF_SERVINT_IS_CUSTOM));
+	dump('p', "VF_SERVINT_IS_PERCENT",      HasBit(v->vehicle_flags, VF_SERVINT_IS_PERCENT));
+	dump('z', "VF_SEPARATION_ACTIVE",       HasBit(v->vehicle_flags, VF_SEPARATION_ACTIVE));
+	dump('D', "VF_SCHEDULED_DISPATCH",      HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH));
+	dump('x', "VF_LAST_LOAD_ST_SEP",        HasBit(v->vehicle_flags, VF_LAST_LOAD_ST_SEP));
+	dump('s', "VF_TIMETABLE_SEPARATION",    HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION));
+	dump('a', "VF_AUTOMATE_TIMETABLE",      HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
+	dump_header("vcf:", "cached_veh_flags:");
+	dump('l', "VCF_LAST_VISUAL_EFFECT",     HasBit(v->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT));
+	dump('z', "VCF_GV_ZERO_SLOPE_RESIST",   HasBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST));
+	dump('d', "VCF_IS_DRAWN",               HasBit(v->vcache.cached_veh_flags, VCF_IS_DRAWN));
+	dump('t', "VCF_REDRAW_ON_TRIGGER",      HasBit(v->vcache.cached_veh_flags, VCF_REDRAW_ON_TRIGGER));
+	dump('s', "VCF_REDRAW_ON_SPEED_CHANGE", HasBit(v->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE));
+	dump('R', "VCF_IMAGE_REFRESH",          HasBit(v->vcache.cached_veh_flags, VCF_IMAGE_REFRESH));
+	dump('N', "VCF_IMAGE_REFRESH_NEXT",     HasBit(v->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT));
+	dump('c', "VCF_IMAGE_CURVATURE",        HasBit(v->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE));
+	if (v->IsGroundVehicle()) {
+		uint16 gv_flags = v->GetGroundVehicleFlags();
+		dump_header("gvf:", "GroundVehicleFlags:");
+		dump('u', "GVF_GOINGUP_BIT",              HasBit(gv_flags, GVF_GOINGUP_BIT));
+		dump('d', "GVF_GOINGDOWN_BIT",            HasBit(gv_flags, GVF_GOINGDOWN_BIT));
+		dump('s', "GVF_SUPPRESS_IMPLICIT_ORDERS", HasBit(gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS));
+		dump('c', "GVF_CHUNNEL_BIT",              HasBit(gv_flags, GVF_CHUNNEL_BIT));
+	}
+	if (v->type == VEH_TRAIN) {
+		const Train *t = Train::From(v);
+		dump_header("tf:", "train flags:");
+		dump('R', "VRF_REVERSING",                     HasBit(t->flags, VRF_REVERSING));
+		dump('W', "VRF_WAITING_RESTRICTION",           HasBit(t->flags, VRF_WAITING_RESTRICTION));
+		dump('S', "VRF_HAVE_SLOT",                     HasBit(t->flags, VRF_HAVE_SLOT));
+		dump('P', "VRF_POWEREDWAGON",                  HasBit(t->flags, VRF_POWEREDWAGON));
+		dump('r', "VRF_REVERSE_DIRECTION",             HasBit(t->flags, VRF_REVERSE_DIRECTION));
+		dump('h', "VRF_HAS_HIT_RV",                    HasBit(t->flags, VRF_HAS_HIT_RV));
+		dump('e', "VRF_EL_ENGINE_ALLOWED_NORMAL_RAIL", HasBit(t->flags, VRF_EL_ENGINE_ALLOWED_NORMAL_RAIL));
+		dump('q', "VRF_TOGGLE_REVERSE",                HasBit(t->flags, VRF_TOGGLE_REVERSE));
+		dump('s', "VRF_TRAIN_STUCK",                   HasBit(t->flags, VRF_TRAIN_STUCK));
+		dump('L', "VRF_LEAVING_STATION",               HasBit(t->flags, VRF_LEAVING_STATION));
+		dump('b', "VRF_BREAKDOWN_BRAKING",             HasBit(t->flags, VRF_BREAKDOWN_BRAKING));
+		dump('p', "VRF_BREAKDOWN_POWER",               HasBit(t->flags, VRF_BREAKDOWN_POWER));
+		dump('v', "VRF_BREAKDOWN_SPEED",               HasBit(t->flags, VRF_BREAKDOWN_SPEED));
+		dump('z', "VRF_BREAKDOWN_STOPPED",             HasBit(t->flags, VRF_BREAKDOWN_STOPPED));
+		dump('F', "VRF_NEED_REPAIR",                   HasBit(t->flags, VRF_NEED_REPAIR));
+		dump('H', "VRF_TOO_HEAVY",                     HasBit(t->flags, VRF_TOO_HEAVY));
+		dump('B', "VRF_BEYOND_PLATFORM_END",           HasBit(t->flags, VRF_BEYOND_PLATFORM_END));
+		dump('Y', "VRF_NOT_YET_IN_PLATFORM",           HasBit(t->flags, VRF_NOT_YET_IN_PLATFORM));
+		dump('A', "VRF_ADVANCE_IN_PLATFORM",           HasBit(t->flags, VRF_ADVANCE_IN_PLATFORM));
+		dump('K', "VRF_CONSIST_BREAKDOWN",             HasBit(t->flags, VRF_CONSIST_BREAKDOWN));
+		dump('J', "VRF_CONSIST_SPEED_REDUCTION",       HasBit(t->flags, VRF_CONSIST_SPEED_REDUCTION));
+		dump('X', "VRF_PENDING_SPEED_RESTRICTION",     HasBit(t->flags, VRF_PENDING_SPEED_RESTRICTION));
+	}
+}
+
 char *Vehicle::DumpVehicleFlags(char *b, const char *last, bool include_tile) const
 {
-	auto dump = [&](char c, bool flag) {
+	bool first_header = true;
+	auto dump = [&](char c, const char *name, bool flag) {
 		if (flag) b += seprintf(b, last, "%c", c);
 	};
-	if (this->IsGroundVehicle()) {
-		b += seprintf(b, last, "st:");
-		dump('F', HasBit(this->subtype, GVSF_FRONT));
-		dump('A', HasBit(this->subtype, GVSF_ARTICULATED_PART));
-		dump('W', HasBit(this->subtype, GVSF_WAGON));
-		dump('E', HasBit(this->subtype, GVSF_ENGINE));
-		dump('f', HasBit(this->subtype, GVSF_FREE_WAGON));
-		dump('M', HasBit(this->subtype, GVSF_MULTIHEADED));
-		dump('V', HasBit(this->subtype, GVSF_VIRTUAL));
-	} else {
+	auto dump_header = [&](const char* header, const char *header_long) {
+		if (first_header) {
+			first_header = false;
+		} else {
+			b = strecpy(b, ", ", last, true);
+		}
+		b = strecpy(b, header, last, true);
+	};
+	if (!this->IsGroundVehicle()) {
 		b += seprintf(b, last, "st:%X", this->subtype);
+		first_header = false;
 	}
-	b += seprintf(b, last, ", vs:");
-	dump('H', this->vehstatus & VS_HIDDEN);
-	dump('S', this->vehstatus & VS_STOPPED);
-	dump('U', this->vehstatus & VS_UNCLICKABLE);
-	dump('D', this->vehstatus & VS_DEFPAL);
-	dump('s', this->vehstatus & VS_TRAIN_SLOWING);
-	dump('X', this->vehstatus & VS_SHADOW);
-	dump('B', this->vehstatus & VS_AIRCRAFT_BROKEN);
-	dump('C', this->vehstatus & VS_CRASHED);
-	b += seprintf(b, last, ", vf:");
-	dump('F', HasBit(this->vehicle_flags, VF_LOADING_FINISHED));
-	dump('U', HasBit(this->vehicle_flags, VF_CARGO_UNLOADING));
-	dump('P', HasBit(this->vehicle_flags, VF_BUILT_AS_PROTOTYPE));
-	dump('T', HasBit(this->vehicle_flags, VF_TIMETABLE_STARTED));
-	dump('A', HasBit(this->vehicle_flags, VF_AUTOFILL_TIMETABLE));
-	dump('w', HasBit(this->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME));
-	dump('S', HasBit(this->vehicle_flags, VF_STOP_LOADING));
-	dump('L', HasBit(this->vehicle_flags, VF_PATHFINDER_LOST));
-	dump('c', HasBit(this->vehicle_flags, VF_SERVINT_IS_CUSTOM));
-	dump('p', HasBit(this->vehicle_flags, VF_SERVINT_IS_PERCENT));
-	dump('z', HasBit(this->vehicle_flags, VF_SEPARATION_ACTIVE));
-	dump('D', HasBit(this->vehicle_flags, VF_SCHEDULED_DISPATCH));
-	dump('x', HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP));
-	dump('s', HasBit(this->vehicle_flags, VF_TIMETABLE_SEPARATION));
-	dump('a', HasBit(this->vehicle_flags, VF_AUTOMATE_TIMETABLE));
-	b += seprintf(b, last, ", vcf:");
-	dump('l', HasBit(this->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT));
-	dump('z', HasBit(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST));
-	dump('d', HasBit(this->vcache.cached_veh_flags, VCF_IS_DRAWN));
-	dump('t', HasBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_TRIGGER));
-	dump('s', HasBit(this->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE));
-	dump('R', HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH));
-	dump('N', HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT));
-	dump('c', HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE));
-	if (this->IsGroundVehicle()) {
-		uint16 gv_flags = this->GetGroundVehicleFlags();
-		b += seprintf(b, last, ", gvf:");
-		dump('u', HasBit(gv_flags, GVF_GOINGUP_BIT));
-		dump('d', HasBit(gv_flags, GVF_GOINGDOWN_BIT));
-		dump('s', HasBit(gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS));
-		dump('c', HasBit(gv_flags, GVF_CHUNNEL_BIT));
-	}
+	DumpVehicleFlagsGeneric(this, dump, dump_header);
 	if (this->type == VEH_TRAIN) {
 		const Train *t = Train::From(this);
-		b += seprintf(b, last, ", tf:");
-		dump('R', HasBit(t->flags, VRF_REVERSING));
-		dump('W', HasBit(t->flags, VRF_WAITING_RESTRICTION));
-		dump('S', HasBit(t->flags, VRF_HAVE_SLOT));
-		dump('P', HasBit(t->flags, VRF_POWEREDWAGON));
-		dump('r', HasBit(t->flags, VRF_REVERSE_DIRECTION));
-		dump('h', HasBit(t->flags, VRF_HAS_HIT_RV));
-		dump('e', HasBit(t->flags, VRF_EL_ENGINE_ALLOWED_NORMAL_RAIL));
-		dump('q', HasBit(t->flags, VRF_TOGGLE_REVERSE));
-		dump('s', HasBit(t->flags, VRF_TRAIN_STUCK));
-		dump('L', HasBit(t->flags, VRF_LEAVING_STATION));
-		dump('b', HasBit(t->flags, VRF_BREAKDOWN_BRAKING));
-		dump('p', HasBit(t->flags, VRF_BREAKDOWN_POWER));
-		dump('v', HasBit(t->flags, VRF_BREAKDOWN_SPEED));
-		dump('z', HasBit(t->flags, VRF_BREAKDOWN_STOPPED));
-		dump('F', HasBit(t->flags, VRF_NEED_REPAIR));
-		dump('H', HasBit(t->flags, VRF_TOO_HEAVY));
-		dump('B', HasBit(t->flags, VRF_BEYOND_PLATFORM_END));
-		dump('Y', HasBit(t->flags, VRF_NOT_YET_IN_PLATFORM));
-		dump('A', HasBit(t->flags, VRF_ADVANCE_IN_PLATFORM));
-		dump('K', HasBit(t->flags, VRF_CONSIST_BREAKDOWN));
-		dump('J', HasBit(t->flags, VRF_CONSIST_SPEED_REDUCTION));
-		dump('X', HasBit(t->flags, VRF_PENDING_SPEED_RESTRICTION));
 		b += seprintf(b, last, ", trk: 0x%02X", (uint) t->track);
 		if (t->reverse_distance > 0) b += seprintf(b, last, ", rev: %u", t->reverse_distance);
 	} else if (this->type == VEH_ROAD) {
@@ -4121,6 +4141,30 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last, bool include_tile) co
 	return b;
 }
 
+
+char *Vehicle::DumpVehicleFlagsMultiline(char *b, const char *last, const char *base_indent, const char *extra_indent) const
+{
+	auto dump = [&](char c, const char *name, bool flag) {
+		if (flag) b += seprintf(b, last, "%s%s%s\n", base_indent, extra_indent, name);
+	};
+	auto dump_header = [&](const char* header, const char *header_long) {
+		b += seprintf(b, last, "%s%s\n", base_indent, header_long);
+	};
+	if (!this->IsGroundVehicle()) {
+		b += seprintf(b, last, "%ssubtype: %X\n", base_indent, this->subtype);
+	}
+	DumpVehicleFlagsGeneric(this, dump, dump_header);
+	if (this->type == VEH_TRAIN) {
+		const Train *t = Train::From(this);
+		b += seprintf(b, last, "%strack: 0x%02X", base_indent, (uint) t->track);
+		if (t->reverse_distance > 0) b += seprintf(b, last, "%sreverse_distance: %u", base_indent, t->reverse_distance);
+	} else if (this->type == VEH_ROAD) {
+		const RoadVehicle *r = RoadVehicle::From(this);
+		b += seprintf(b, last, "%sRV state:%X\n%sRV frame:%X\n", base_indent, r->state, base_indent, r->frame);
+	}
+	if (this->cargo_payment) b += seprintf(b, last, "%scargo_payment present\n", base_indent);
+	return b;
+}
 
 void VehiclesYearlyLoop()
 {
