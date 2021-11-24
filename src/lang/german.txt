@@ -6819,8 +6819,9 @@ STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}Setzt di
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Letzte Abfahrt am {DATE_WALLCLOCK_TINY}.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}Letzte Abfahrt hat den Bahnhof noch nicht verlassen; Abfahrt am {DATE_WALLCLOCK_TINY}.
 STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}Dieser Fahrplan erfordert {COMMA} Fahrzeug{P "" e}.
-STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}Dieser Fahrplan wiederholt sich alle {STRING} und begann am {DATE_WALLCLOCK_TINY} und endet am {DATE_WALLCLOCK_TINY}.
-STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}Es ist eine maximale Verspätung von {STRING} erlaubt, ehe der Slot übersprungen wird.
+STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}Dieser Fahrplan wiederholt sich alle {STRING}.
+STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}Dieser Fahrplan begann am {DATE_WALLCLOCK_TINY} und endet am {DATE_WALLCLOCK_TINY}.
+STR_SCHDISPATCH_SUMMARY_L4                                      :{BLACK}Es ist eine maximale Verspätung von {STRING} erlaubt, ehe der Slot übersprungen wird.
 STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}Dieser Fahrplan ist nicht aktiv.
 
 STR_SCHDISPATCH_SLOT_OUTSIDE_SCHEDULE                           :{BLACK}Ein oder mehrere Abfahrtslots befinden sich außerhalb der geplanten Dauer.

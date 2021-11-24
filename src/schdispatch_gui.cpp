@@ -203,7 +203,7 @@ struct SchdispatchWindow : Window {
 			}
 
 			case WID_SCHDISPATCH_SUMMARY_PANEL:
-				size->height = WD_FRAMERECT_TOP + 4 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
+				size->height = WD_FRAMERECT_TOP + 5 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
 				if (warning_count > 0) {
 					const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
 					size->height += warning_count * std::max<int>(warning_dimensions.height, FONT_HEIGHT_NORMAL);
@@ -370,14 +370,17 @@ struct SchdispatchWindow : Window {
 					}
 					y += FONT_HEIGHT_NORMAL;
 
-					SetTimetableParams(0, v->orders.list->GetScheduledDispatchDuration());
-					SetDParam(4, v->orders.list->GetScheduledDispatchStartTick());
-					SetDParam(5, v->orders.list->GetScheduledDispatchStartTick() + v->orders.list->GetScheduledDispatchDuration());
+					SetTimetableParams(0, v->orders.list->GetScheduledDispatchDuration(), true);
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_SUMMARY_L2);
 					y += FONT_HEIGHT_NORMAL;
 
-					SetTimetableParams(0, v->orders.list->GetScheduledDispatchDelay());
+					SetDParam(0, v->orders.list->GetScheduledDispatchStartTick());
+					SetDParam(1, v->orders.list->GetScheduledDispatchStartTick() + v->orders.list->GetScheduledDispatchDuration());
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_SUMMARY_L3);
+					y += FONT_HEIGHT_NORMAL;
+
+					SetTimetableParams(0, v->orders.list->GetScheduledDispatchDelay());
+					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_SUMMARY_L4);
 					y += FONT_HEIGHT_NORMAL;
 
 					uint warnings = 0;

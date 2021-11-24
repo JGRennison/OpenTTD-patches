@@ -17,7 +17,7 @@
 
 void ShowTimetableWindow(const Vehicle *v);
 void UpdateVehicleTimetable(Vehicle *v, bool travelling);
-void SetTimetableParams(int first_param, Ticks ticks);
+void SetTimetableParams(int first_param, Ticks ticks, bool long_mode = false);
 
 struct TimetableProgress {
 	VehicleID id;
