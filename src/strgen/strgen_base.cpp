@@ -639,6 +639,7 @@ static const CmdStruct *TranslateCmdForCompare(const CmdStruct *a)
 			strcmp(a->cmd, "STRING5") == 0 ||
 			strcmp(a->cmd, "STRING6") == 0 ||
 			strcmp(a->cmd, "STRING7") == 0 ||
+			strcmp(a->cmd, "STRING8") == 0 ||
 			strcmp(a->cmd, "RAW_STRING") == 0) {
 		return FindCmd("STRING", 6);
 	}

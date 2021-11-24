@@ -1299,7 +1299,8 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters *arg
 			case SCC_STRING4:
 			case SCC_STRING5:
 			case SCC_STRING6:
-			case SCC_STRING7: { // {STRING1..7}
+			case SCC_STRING7:
+			case SCC_STRING8: { // {STRING1..8}
 				/* Strings that consume arguments */
 				StringID str = args->GetInt32(b);
 				if (game_script && GetStringTab(str) != TEXT_TAB_GAMESCRIPT_START) break;

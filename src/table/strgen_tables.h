@@ -70,6 +70,7 @@ static const CmdStruct _cmd_structs[] = {
 	{"STRING5",           EmitSingleChar, SCC_STRING5,            6, -1, C_CASE | C_GENDER}, // included string that consumes the string id and FIVE arguments
 	{"STRING6",           EmitSingleChar, SCC_STRING6,            7, -1, C_CASE | C_GENDER}, // included string that consumes the string id and SIX arguments
 	{"STRING7",           EmitSingleChar, SCC_STRING7,            8, -1, C_CASE | C_GENDER}, // included string that consumes the string id and SEVEN arguments
+	{"STRING8",           EmitSingleChar, SCC_STRING8,            9, -1, C_CASE | C_GENDER}, // included string that consumes the string id and EIGHT arguments
 
 	{"STATION_FEATURES",  EmitSingleChar, SCC_STATION_FEATURES,   1, -1, C_NONE}, // station features string, icons of the features
 	{"INDUSTRY",          EmitSingleChar, SCC_INDUSTRY_NAME,      1, -1, C_CASE | C_GENDER}, // industry, takes an industry #, can have cases
