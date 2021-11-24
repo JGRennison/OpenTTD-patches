@@ -446,6 +446,19 @@ struct SchdispatchWindow : Window {
 		}
 	}
 
+	int32 ProcessDurationForQueryString(int32 duration) const
+	{
+		if (!_settings_client.gui.timetable_in_ticks) duration = RoundDivSU(duration, DATE_UNIT_SIZE);
+		return duration;
+	}
+
+	int GetQueryStringCaptionOffset() const
+	{
+		if (_settings_client.gui.timetable_in_ticks) return 2;
+		if (_settings_time.time_in_minutes) return 0;
+		return 1;
+	}
+
 	virtual void OnClick(Point pt, int widget, int click_count) override
 	{
 		const Vehicle *v = this->vehicle;
@@ -479,8 +492,8 @@ struct SchdispatchWindow : Window {
 			}
 
 			case WID_SCHDISPATCH_SET_DURATION: {
-				SetDParam(0, RoundDivSU(v->orders.list->GetScheduledDispatchDuration(), _settings_time.ticks_per_minute ? _settings_time.ticks_per_minute : DAY_TICKS));
-				ShowQueryString(STR_JUST_INT, _settings_time.time_in_minutes ? STR_SCHDISPATCH_DURATION_CAPTION_MINUTE : STR_SCHDISPATCH_DURATION_CAPTION_DAY, 31, this, CS_NUMERAL, QSF_NONE);
+				SetDParam(0, ProcessDurationForQueryString(v->orders.list->GetScheduledDispatchDuration()));
+				ShowQueryString(STR_JUST_INT, STR_SCHDISPATCH_DURATION_CAPTION_MINUTE + this->GetQueryStringCaptionOffset(), 31, this, CS_NUMERAL, QSF_NONE);
 				break;
 			}
 
@@ -500,8 +513,8 @@ struct SchdispatchWindow : Window {
 			}
 
 			case WID_SCHDISPATCH_SET_DELAY: {
-				SetDParam(0, RoundDivSU(v->orders.list->GetScheduledDispatchDelay(), _settings_time.ticks_per_minute ? _settings_time.ticks_per_minute : DAY_TICKS));
-				ShowQueryString(STR_JUST_INT, _settings_time.time_in_minutes ? STR_SCHDISPATCH_DELAY_CAPTION_MINUTE : STR_SCHDISPATCH_DELAY_CAPTION_DAY, 31, this, CS_NUMERAL, QSF_NONE);
+				SetDParam(0, ProcessDurationForQueryString(v->orders.list->GetScheduledDispatchDelay()));
+				ShowQueryString(STR_JUST_INT, STR_SCHDISPATCH_DELAY_CAPTION_MINUTE + this->GetQueryStringCaptionOffset(), 31, this, CS_NUMERAL, QSF_NONE);
 				break;
 			}
 
@@ -556,11 +569,7 @@ struct SchdispatchWindow : Window {
 				int32 val = StrEmpty(str) ? 0 : strtoul(str, nullptr, 10);
 
 				if (val > 0) {
-					if (_settings_time.time_in_minutes) {
-						val *= _settings_time.ticks_per_minute;
-					} else {
-						val *= DAY_TICKS;
-					}
+					if (!_settings_client.gui.timetable_in_ticks) val *= DATE_UNIT_SIZE;
 
 					DoCommandP(0, v->index, val, CMD_SCHEDULED_DISPATCH_SET_DURATION | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 				}
@@ -572,11 +581,7 @@ struct SchdispatchWindow : Window {
 				int32 val = StrEmpty(str) ? -1 : strtoul(str, &end, 10);
 
 				if (val >= 0 && end && *end == 0) {
-					if (_settings_time.time_in_minutes) {
-						val *= _settings_time.ticks_per_minute;
-					} else {
-						val *= DAY_TICKS;
-					}
+					if (!_settings_client.gui.timetable_in_ticks) val *= DATE_UNIT_SIZE;
 
 					DoCommandP(0, v->index, val, CMD_SCHEDULED_DISPATCH_SET_DELAY | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 				}

@@ -7048,16 +7048,18 @@ STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}Add new 
 STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}Departure slot
 STR_SCHDISPATCH_DURATION                                        :{BLACK}Duration
 STR_SCHDISPATCH_DURATION_TOOLTIP                                :{BLACK}Set duration of this schedule.
-STR_SCHDISPATCH_DURATION_CAPTION_MINUTE                         :{BLACK}Duration (minute)
-STR_SCHDISPATCH_DURATION_CAPTION_DAY                            :{BLACK}Duration (day)
+STR_SCHDISPATCH_DURATION_CAPTION_MINUTE                         :{BLACK}Duration (minutes)
+STR_SCHDISPATCH_DURATION_CAPTION_DAY                            :{BLACK}Duration (days)
+STR_SCHDISPATCH_DURATION_CAPTION_TICKS                          :{BLACK}Duration (ticks)
 STR_SCHDISPATCH_START                                           :{BLACK}Start Date
 STR_SCHDISPATCH_SET_START                                       :{BLACK}Set Start Date
 STR_SCHDISPATCH_START_TOOLTIP                                   :{BLACK}Select a date to start this schedule.
 STR_SCHDISPATCH_START_CAPTION_MINUTE                            :{BLACK}Start time (hhmm)
 STR_SCHDISPATCH_DELAY                                           :{BLACK}Delay
 STR_SCHDISPATCH_DELAY_TOOLTIP                                   :{BLACK}Set maximum delay until a slot is skipped.
-STR_SCHDISPATCH_DELAY_CAPTION_MINUTE                            :{BLACK}Delay (minute)
-STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}Delay (day)
+STR_SCHDISPATCH_DELAY_CAPTION_MINUTE                            :{BLACK}Delay (minutes)
+STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}Delay (days)
+STR_SCHDISPATCH_DELAY_CAPTION_TICKS                             :{BLACK}Delay (ticks)
 STR_SCHDISPATCH_RESET_LAST_DISPATCH                             :{BLACK}Reset Last Dispatched
 STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}Reset when a vehicle was last dispatched from the schedule.
 
