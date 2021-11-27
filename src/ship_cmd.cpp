@@ -248,9 +248,12 @@ void Ship::OnNewDay()
 	if ((++this->day_counter & 7) == 0) {
 		DecreaseVehicleValue(this);
 	}
-
-	CheckVehicleBreakdown(this);
 	AgeVehicle(this);
+}
+
+void Ship::OnPeriodic()
+{
+	CheckVehicleBreakdown(this);
 	CheckIfShipNeedsService(this);
 
 	CheckOrders(this);

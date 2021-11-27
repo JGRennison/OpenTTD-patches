@@ -2228,6 +2228,12 @@ void RoadVehicle::OnNewDay()
 	if (!this->IsFrontEngine()) return;
 
 	if ((++this->day_counter & 7) == 0) DecreaseVehicleValue(this);
+}
+
+void RoadVehicle::OnPeriodic()
+{
+	if (!this->IsFrontEngine()) return;
+
 	if (this->blocked_ctr == 0) CheckVehicleBreakdown(this);
 
 	CheckIfRoadVehNeedsService(this);

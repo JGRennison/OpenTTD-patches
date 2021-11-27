@@ -55,6 +55,7 @@ struct Ship FINAL : public SpecializedVehicle<Ship, VEH_SHIP> {
 	bool IsInDepot() const { return this->state == TRACK_BIT_DEPOT; }
 	bool Tick();
 	void OnNewDay();
+	void OnPeriodic();
 	Trackdir GetVehicleTrackdir() const;
 	TileIndex GetOrderStationLocation(StationID station);
 	bool FindClosestDepot(TileIndex *location, DestinationID *destination, bool *reverse);

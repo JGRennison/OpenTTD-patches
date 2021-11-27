@@ -111,6 +111,7 @@ struct Aircraft FINAL : public SpecializedVehicle<Aircraft, VEH_AIRCRAFT> {
 
 	bool Tick();
 	void OnNewDay();
+	void OnPeriodic();
 	uint Crash(bool flooded = false);
 	TileIndex GetOrderStationLocation(StationID station);
 	bool FindClosestDepot(TileIndex *location, DestinationID *destination, bool *reverse);

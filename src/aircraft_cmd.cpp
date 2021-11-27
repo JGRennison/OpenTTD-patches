@@ -483,10 +483,16 @@ void Aircraft::OnNewDay()
 
 	if ((++this->day_counter & 7) == 0) DecreaseVehicleValue(this);
 
+	AgeVehicle(this);
+}
+
+void Aircraft::OnPeriodic()
+{
+	if (!this->IsNormalAircraft()) return;
+
 	CheckOrders(this);
 
 	CheckVehicleBreakdown(this);
-	AgeVehicle(this);
 	CheckIfAircraftNeedsService(this);
 
 	if (this->running_ticks == 0) return;

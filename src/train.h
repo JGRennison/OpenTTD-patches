@@ -170,6 +170,7 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 	bool IsInDepot() const { return this->track == TRACK_BIT_DEPOT; }
 	bool Tick();
 	void OnNewDay();
+	void OnPeriodic();
 	uint Crash(bool flooded = false);
 	Money CalculateCurrentOverallValue() const;
 	Trackdir GetVehicleTrackdir() const;

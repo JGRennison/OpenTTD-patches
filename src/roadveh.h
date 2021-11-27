@@ -139,6 +139,7 @@ struct RoadVehicle FINAL : public GroundVehicle<RoadVehicle, VEH_ROAD> {
 	bool IsInDepot() const { return this->state == RVSB_IN_DEPOT; }
 	bool Tick();
 	void OnNewDay();
+	void OnPeriodic();
 	uint Crash(bool flooded = false);
 	Trackdir GetVehicleTrackdir() const;
 	TileIndex GetOrderStationLocation(StationID station);

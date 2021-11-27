@@ -6598,7 +6598,10 @@ void Train::OnNewDay()
 	AgeVehicle(this);
 
 	if ((++this->day_counter & 7) == 0) DecreaseVehicleValue(this);
+}
 
+void Train::OnPeriodic()
+{
 	if (this->IsFrontEngine()) {
 		CheckIfTrainNeedsService(this);
 

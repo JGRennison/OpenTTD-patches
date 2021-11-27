@@ -1245,6 +1245,9 @@ template <typename T>
 void CallVehicleOnNewDay(Vehicle *v)
 {
 	T::From(v)->T::OnNewDay();
+
+	/* Vehicle::OnPeriodic is decoupled from Vehicle::OnNewDay at day lengths >= 8 */
+	if (_settings_game.economy.day_length_factor < 8) T::From(v)->T::OnPeriodic();
 }
 
 /**
@@ -1459,6 +1462,38 @@ void CallVehicleTicks()
 	_vehicles_to_sell.clear();
 
 	if (_tick_skip_counter == 0) RunVehicleDayProc();
+
+	if (_settings_game.economy.day_length_factor >= 8 && _game_mode == GM_NORMAL) {
+		/*
+		 * Vehicle::OnPeriodic is decoupled from Vehicle::OnNewDay at day lengths >= 8
+		 * Use a fixed interval of 512 ticks (unscaled) instead
+		 */
+
+		Vehicle *v = nullptr;
+		SCOPE_INFO_FMT([&v], "CallVehicleTicks -> OnPeriodic: %s", scope_dumper().VehicleInfo(v));
+		for (size_t i = _scaled_tick_counter & 0x1FF; i < Vehicle::GetPoolSize(); i += 0x200) {
+			v = Vehicle::Get(i);
+			if (v == nullptr) continue;
+
+			/* This is called once per day for each vehicle, but not in the first tick of the day */
+			switch (v->type) {
+				case VEH_TRAIN:
+					Train::From(v)->Train::OnPeriodic();
+					break;
+				case VEH_ROAD:
+					RoadVehicle::From(v)->RoadVehicle::OnPeriodic();
+					break;
+				case VEH_SHIP:
+					Ship::From(v)->Ship::OnPeriodic();
+					break;
+				case VEH_AIRCRAFT:
+					Aircraft::From(v)->Aircraft::OnPeriodic();
+					break;
+				default:
+					break;
+			}
+		}
+	}
 
 	{
 		PerformanceMeasurer framerate(PFE_GL_ECONOMY);

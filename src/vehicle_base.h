@@ -616,6 +616,12 @@ public:
 	virtual void OnNewDay() {};
 
 	/**
+	 * Calls the periodic handler of the vehicle
+	 * OnPeriodic is decoupled from OnNewDay at day lengths >= 8
+	 */
+	virtual void OnPeriodic() {};
+
+	/**
 	 * Crash the (whole) vehicle chain.
 	 * @param flooded whether the cause of the crash is flooding or not.
 	 * @return the number of lost souls.
