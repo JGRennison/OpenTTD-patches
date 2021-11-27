@@ -1241,6 +1241,12 @@ void VehicleEnteredDepotThisTick(Vehicle *v)
 	v->vehstatus |= VS_STOPPED;
 }
 
+template <typename T>
+void CallVehicleOnNewDay(Vehicle *v)
+{
+	T::From(v)->T::OnNewDay();
+}
+
 /**
  * Increases the day counter for all vehicles and calls 1-day and 32-day handlers.
  * Each tick, it processes vehicles with "index % DAY_TICKS == _date_fract",
@@ -1274,7 +1280,22 @@ static void RunVehicleDayProc()
 		}
 
 		/* This is called once per day for each vehicle, but not in the first tick of the day */
-		v->OnNewDay();
+		switch (v->type) {
+			case VEH_TRAIN:
+				CallVehicleOnNewDay<Train>(v);
+				break;
+			case VEH_ROAD:
+				CallVehicleOnNewDay<RoadVehicle>(v);
+				break;
+			case VEH_SHIP:
+				CallVehicleOnNewDay<Ship>(v);
+				break;
+			case VEH_AIRCRAFT:
+				CallVehicleOnNewDay<Aircraft>(v);
+				break;
+			default:
+				break;
+		}
 	}
 }
 
