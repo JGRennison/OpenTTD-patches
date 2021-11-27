@@ -5711,8 +5711,8 @@ STR_DATE_SET_DATE_TOOLTIP                                       :{BLACK}Use the 
 STR_DATE_DAY_TOOLTIP                                            :{BLACK}Select day
 STR_DATE_MONTH_TOOLTIP                                          :{BLACK}Select month
 STR_DATE_YEAR_TOOLTIP                                           :{BLACK}Select year
-STR_DATE_MINUTES_DAY_TOOLTIP                                    :{BLACK}Select minute
-STR_DATE_MINUTES_MONTH_TOOLTIP                                  :{BLACK}Select hour
+STR_DATE_MINUTES_MINUTE_TOOLTIP                                 :{BLACK}Select minute
+STR_DATE_MINUTES_HOUR_TOOLTIP                                   :{BLACK}Select hour
 STR_TIME_CAPTION                                                :{WHITE}Set time
 
 # Cargo type orders Window

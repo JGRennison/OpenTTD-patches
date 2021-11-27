@@ -5718,8 +5718,8 @@ STR_DATE_SET_DATE_TOOLTIP                                       :{BLACK}선택�
 STR_DATE_DAY_TOOLTIP                                            :{BLACK}일(日) 선택
 STR_DATE_MONTH_TOOLTIP                                          :{BLACK}월(月) 선택
 STR_DATE_YEAR_TOOLTIP                                           :{BLACK}년(年) 선택
-STR_DATE_MINUTES_DAY_TOOLTIP                                    :{BLACK}분(分) 선택
-STR_DATE_MINUTES_MONTH_TOOLTIP                                  :{BLACK}시(時) 선택
+STR_DATE_MINUTES_MINUTE_TOOLTIP                                 :{BLACK}분(分) 선택
+STR_DATE_MINUTES_HOUR_TOOLTIP                                   :{BLACK}시(時) 선택
 
 # Cargo type orders Window
 STR_CARGO_TYPE_ORDERS_LOAD_CAPTION                              :{WHITE}{VEHICLE} ({NUM}: {STATION}에서 싣기)

@@ -5520,8 +5520,8 @@ STR_DATE_SET_DATE_TOOLTIP                                       :{BLACK}Setze de
 STR_DATE_DAY_TOOLTIP                                            :{BLACK}Tag auswählen
 STR_DATE_MONTH_TOOLTIP                                          :{BLACK}Monat auswählen
 STR_DATE_YEAR_TOOLTIP                                           :{BLACK}Jahr auswählen
-STR_DATE_MINUTES_DAY_TOOLTIP                                    :{BLACK}Minute auswählen
-STR_DATE_MINUTES_MONTH_TOOLTIP                                  :{BLACK}Stunde auswählen
+STR_DATE_MINUTES_MINUTE_TOOLTIP                                 :{BLACK}Minute auswählen
+STR_DATE_MINUTES_HOUR_TOOLTIP                                   :{BLACK}Stunde auswählen
 
 # Cargo type orders Window
 STR_CARGO_TYPE_ORDERS_LOAD_CAPTION                              :{WHITE}{VEHICLE} ({NUM}: Lade in {STATION})
