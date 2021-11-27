@@ -56,10 +56,10 @@ static const NWidgetPart _nested_departures_list[] = {
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_ARRS), SetMinimalSize(6, 12), SetFill(0, 1), SetDataTip(STR_DEPARTURES_ARRIVALS, STR_DEPARTURES_ARRIVALS_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_DEPS), SetMinimalSize(6, 12), SetFill(0, 1), SetDataTip(STR_DEPARTURES_DEPARTURES, STR_DEPARTURES_DEPARTURES_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_VIA), SetMinimalSize(11, 12), SetFill(0, 1), SetDataTip(STR_DEPARTURES_VIA_BUTTON, STR_DEPARTURES_VIA_TOOLTIP),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_TRAINS), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_TRAIN, STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_ROADVEHS), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_LORRY, STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_SHIPS), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_SHIP, STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_PLANES),  SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_PLANE, STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_TRAINS), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_TRAIN, STR_NULL),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_ROADVEHS), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_LORRY, STR_NULL),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_SHIPS), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_SHIP, STR_NULL),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_PLANES),  SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_PLANE, STR_NULL),
 		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 	EndContainer(),
 };
@@ -289,6 +289,23 @@ public:
 		if (widget == WID_DB_CAPTION) {
 			const Station *st = Station::Get(this->station);
 			SetDParam(0, st->index);
+		}
+	}
+
+	virtual bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
+	{
+		switch (widget) {
+			case WID_DB_SHOW_TRAINS:
+			case WID_DB_SHOW_ROADVEHS:
+			case WID_DB_SHOW_SHIPS:
+			case WID_DB_SHOW_PLANES: {
+				uint64 params[1];
+				params[0] = STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP + (widget - WID_DB_SHOW_TRAINS);
+				GuiShowTooltips(this, STR_STATION_VIEW_SCHEDULED_TOOLTIP_CTRL_SUFFIX, 1, params, close_cond);
+				return true;
+			}
+			default:
+				return false;
 		}
 	}
 
