@@ -1951,6 +1951,7 @@ static SettingsContainer &GetSettingsTree()
 				physics->Add(new SettingEntry("vehicle.plane_speed"));
 				physics->Add(new SettingEntry("vehicle.ship_collision_avoidance"));
 				physics->Add(new SettingEntry("vehicle.roadveh_articulated_overtaking"));
+				physics->Add(new SettingEntry("vehicle.roadveh_cant_quantum_tunnel"));
 				physics->Add(new SettingEntry("vehicle.slow_road_vehicles_in_curves"));
 			}
 

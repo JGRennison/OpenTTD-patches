@@ -743,7 +743,7 @@ static RoadVehicle *RoadVehFindCloseTo(RoadVehicle *v, int x, int y, Direction d
 		return nullptr;
 	}
 
-	if (update_blocked_ctr && ++front->blocked_ctr > 1480) return nullptr;
+	if (update_blocked_ctr && ++front->blocked_ctr > 1480  && (!_settings_game.vehicle.roadveh_cant_quantum_tunnel)) return nullptr;
 
 	RoadVehicle *rv = RoadVehicle::From(rvf.best);
 	if (rv != nullptr && front->IsRoadVehicleOnLevelCrossing() && (rv->First()->cur_speed == 0 || rv->First()->IsRoadVehicleStopped())) return nullptr;
