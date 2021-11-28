@@ -23,7 +23,6 @@
 
 #include "stdafx.h"
 #include <array>
-#include <charconv>
 #include <limits>
 #include "currency.h"
 #include "screenshot.h"
@@ -77,6 +76,7 @@
 #include "gui.h"
 #include "statusbar_gui.h"
 #include "graph_gui.h"
+#include "string_func_extra.h"
 
 #include "void_map.h"
 #include "station_base.h"
@@ -1982,7 +1982,7 @@ static IniFileVersion LoadVersionFromConfig(IniFile &ini)
 	if (version_number == nullptr || !version_number->value.has_value()) return IFV_0;
 
 	uint32 version = 0;
-	std::from_chars(version_number->value->data(), version_number->value->data() + version_number->value->size(), version);
+	IntFromChars(version_number->value->data(), version_number->value->data() + version_number->value->size(), version);
 
 	return static_cast<IniFileVersion>(version);
 }

@@ -10,6 +10,7 @@
 
 #include "string_func.h"
 #include <string>
+#include <limits>
 
 static inline void StrMakeValidInPlace(std::string &str, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
 {
@@ -34,5 +35,45 @@ inline void ProcessLineByLine(char *buf, F line_functor)
 	if (p < p2) line_functor(p);
 }
 
+/*
+ * Cut down version of std::from_chars, base is fixed at 10.
+ * Returns true on success
+ */
+template <typename T>
+inline bool IntFromChars(const char* first, const char* last, T& value)
+{
+	static_assert(std::is_integral<T>::value && !std::is_same<T, bool>::value, "T must be an integer");
+
+	bool negative = false;
+	if (std::is_signed<T>::value) {
+		if (first != last && *first == '-') {
+			first++;
+			negative = true;
+		}
+	}
+
+	T out = 0;
+	const char * const start = first;
+	while (first != last) {
+		const char c = *first;
+		if (c >= '0' && c <= '9') {
+#ifdef WITH_OVERFLOW_BUILTINS
+			if (unlikely(__builtin_mul_overflow(out, 10, &out))) return false;
+			if (unlikely(__builtin_add_overflow(out, c - '0', &out))) return false;
+#else
+			if (unlikely(out > std::numeric_limits<T>::max() / 10)) return false;
+			out *= 10;
+			if (unlikely(out > (std::numeric_limits<T>::max() - (c - '0')))) return false;
+			out += (c - '0');
+#endif
+			first++;
+		} else {
+			break;
+		}
+	}
+	if (start == first) return false;
+	value = negative ? -out : out;
+	return true;
+}
 
 #endif /* STRING_FUNC_EXTRA_H */

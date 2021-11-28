@@ -36,7 +36,7 @@
 #include "../gfx_func.h"
 #include "../error.h"
 #include "../core/checksum_func.hpp"
-#include <charconv>
+#include "../string_func_extra.h"
 #include <sstream>
 #include <iomanip>
 
@@ -496,8 +496,8 @@ std::string_view ParseCompanyFromConnectionString(const std::string &connection_
 		ip = ip.substr(0, offset);
 
 		uint8 company_value;
-		auto [_, err] = std::from_chars(company_string.data(), company_string.data() + company_string.size(), company_value);
-		if (err == std::errc()) {
+		bool success = IntFromChars(company_string.data(), company_string.data() + company_string.size(), company_value);
+		if (success) {
 			if (company_value != COMPANY_NEW_COMPANY && company_value != COMPANY_SPECTATOR) {
 				if (company_value > MAX_COMPANIES || company_value == 0) {
 					*company_id = COMPANY_SPECTATOR;
@@ -538,7 +538,7 @@ std::string_view ParseFullConnectionString(const std::string &connection_string,
 	if (port_offset != std::string::npos && (ipv6_close == std::string::npos || ipv6_close < port_offset)) {
 		std::string_view port_string = ip.substr(port_offset + 1);
 		ip = ip.substr(0, port_offset);
-		std::from_chars(port_string.data(), port_string.data() + port_string.size(), port);
+		IntFromChars(port_string.data(), port_string.data() + port_string.size(), port);
 	}
 	return ip;
 }
