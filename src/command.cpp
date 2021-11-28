@@ -265,7 +265,7 @@ CommandProc CmdRemoveSignalInstruction;
 CommandProc CmdSignalProgramMgmt;
 
 CommandProc CmdScheduledDispatch;
-CommandProc CmdScheduledDispatchAdd;
+CommandProcEx CmdScheduledDispatchAdd;
 CommandProc CmdScheduledDispatchRemove;
 CommandProc CmdScheduledDispatchSetDuration;
 CommandProc CmdScheduledDispatchSetStartDate;

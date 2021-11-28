@@ -7063,6 +7063,7 @@ STR_SCHDISPATCH_ENABLED                                         :{BLACK}Enable
 STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}Enable scheduled dispatching for this order. Requires automatic separation to be off.
 STR_SCHDISPATCH_ADD                                             :{BLACK}Add Departure Slot
 STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}Add new departure slot for this schedule.
+STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING} Ctrl+Click to add multiple departure slots at once.
 STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}Departure slot
 STR_SCHDISPATCH_DURATION                                        :{BLACK}Duration
 STR_SCHDISPATCH_DURATION_TOOLTIP                                :{BLACK}Set duration of this schedule.
@@ -7090,6 +7091,12 @@ STR_SCHDISPATCH_SUMMARY_L4                                      :{BLACK}Maximum 
 STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}This schedule is not active.
 
 STR_SCHDISPATCH_SLOT_OUTSIDE_SCHEDULE                           :{BLACK}One or more departure slots are outside the schedule duration.
+
+STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_START                       :{BLACK}Start:
+STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_STEP                        :{BLACK}Period:
+STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_END                         :{BLACK}End:
+
+STR_ERROR_SCHDISPATCH_TRIED_TO_ADD_TOO_MANY_SLOTS               :{WHITE}Tried to add too many departure slots at once
 
 # Modifier key toggle window
 STR_MODIFIER_KEY_TOGGLE_CAPTION                                 :{WHITE}Modifier keys

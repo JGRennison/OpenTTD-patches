@@ -73,12 +73,17 @@ CommandCost CmdScheduledDispatch(TileIndex tile, DoCommandFlag flags, uint32 p1,
  * @param flags Operation to perform.
  * @param p1 Vehicle index.
  * @param p2 Offset time to add.
+ * @param p3 various bitstuffed elements
+ *  - p3 = (bit 0 - 31)  - the offset for additional slots
+ *  - p3 = (bit 32 - 47) - the number of additional slots to add
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchAdd(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdScheduledDispatchAdd(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
 {
 	VehicleID veh = GB(p1, 0, 20);
+	uint32 offset = GB(p3, 0, 32);
+	uint32 extra_slots = GB(p3, 32, 16);
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
@@ -88,8 +93,15 @@ CommandCost CmdScheduledDispatchAdd(TileIndex tile, DoCommandFlag flags, uint32 
 
 	if (v->orders.list == nullptr) return CMD_ERROR;
 
+	if (extra_slots > 512) return_cmd_error(STR_ERROR_SCHDISPATCH_TRIED_TO_ADD_TOO_MANY_SLOTS);
+	if (extra_slots > 0 && offset == 0) return CMD_ERROR;
+
 	if (flags & DC_EXEC) {
 		v->orders.list->AddScheduledDispatch(p2);
+		for (uint i = 0; i < extra_slots; i++) {
+			p2 += offset;
+			v->orders.list->AddScheduledDispatch(p2);
+		}
 		SetWindowDirty(WC_SCHDISPATCH_SLOTS, v->index);
 	}
 
