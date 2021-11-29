@@ -72,7 +72,11 @@ inline bool IntFromChars(const char* first, const char* last, T& value)
 		}
 	}
 	if (start == first) return false;
-	value = negative ? -out : out;
+	if (std::is_signed<T>::value) {
+		value = negative ? -out : out;
+	} else {
+		value = out;
+	}
 	return true;
 }
 
