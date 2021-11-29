@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.44.0
+## JGR's Patchpack version 0.44.1
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -66,6 +66,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Improve road vehicle pathfinding when multiple vehicles are simultaneously heading to a station with multiple bay/stop entrances.
 * Add setting for default road/tram types.
 * Add a setting to turn off road vehicles slowing in curves.
+* Add a setting to disable road vehicles from passing through each other when blocked for an extended period of time.
 
 #### Level Crossings
 
@@ -73,6 +74,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Prevent road vehicles from being stopped on level crossings.
 * Add setting to enable improved level crossing safety.
 * Trains break down after colliding with a road vehicle.
+* Only show level crossing overlay sprites on the outsides of multi-track crossings when using both adjacent and safer crossings settings.
 
 #### Bridges and Tunnels
 
@@ -112,6 +114,8 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add a setting for whether to open the new vehicle GUI when share-cloning.
 * Add setting to disable mass action buttons for top-level vehicle lists.
 * Add feature to create a new auto-named group when dragging and dropping a vehicle onto the new group button (ctrl includes shared order vehicles).
+* Add settings to reduce vehicle running costs when a vehicle is stationary or in a depot.
+* If a vehicle's next order is for the current station when leaving, start loading again without moving, instead of leaving.
 
 #### Orders and Timetabling
 

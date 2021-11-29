@@ -2,6 +2,36 @@
 
 * * *
 
+### v0.44.1 (2021-11-29)
+* Signals on bridges/tunnels:
+  * Fix crash when the ignore signals button is used for wrong-way running on a signalled tunnel/bridge when using a multi-aspect signal GRF.
+  * Fix incorrect exit signal state when unable to leave a signalled custom bridge head when the exit direction is different to the bridge direction.
+  * Fix pending speed restriction changes not being applied on signalled tunnel/bridges.
+  * Fix incorrect PBS reservations in the case where a single-vehicle train's reservation from a tunnel/bridge exit enters the corresponding tunnel/bridge entrance at the opposite end, and the tunnel/bridge is otherwise empty.
+  * Fix signals on approach to a tunnel/bridge entrance temporarily showing an incorrect aspect with multi-aspect signalling in the case where the signalling on the tunnel/bridge was modified.
+  * Allow placing routing restrictions on tunnel/bridge entrance/exit signals (this does not include reserve through support).
+* Realistic braking:
+  * Try to extend PBS reservations when approaching the sighting distance of non-end signals.
+  * Fix PBS reservations not being extended sufficiently after a target at which the train reverses is found.
+* Scheduled dispatch:
+  * Fix entering the dispatch duration and max slot delay when using days instead of minutes.
+  * Also show hours and minutes for dispatch duration when using minutes.
+  * Allow adding multiple departure slots at once.
+* Fix trains with non-front parts needing repair not being serviced.
+* Fix not all windows being deleted as expected when using the delete key in some cases.
+* Fix the ctrl-click signal cycling setting.
+* Fix station/waypoint vehicle tooltip showing incorrect ctrl-click text.
+* Add settings to reduce vehicle running costs when a vehicle is stationary or in a depot.
+* Add setting to disable road vehicles from passing through each other when blocked for an extended period of time (default off).
+* Change the map generation allow lakes to spawn in deserts setting to also allow spawning rivers in deserts.
+* If a vehicle's next order is for the current station when leaving, start loading again without moving, instead of leaving.
+* Run most "daily" vehicle tasks at a fixed frequency instead of daily at day lengths of 8 or more (running cost accounting, track sharing costs, breakdown checks, servicing checks, order checks).
+* Only show level crossing overlay sprites on the outsides of multi-track crossings when using both the adjacent crossings and safer crossings settings.
+* Increase the object class limit.
+* Connect new plan lines to end of the previous line when ctrl-clicking.
+* Fix compilation issues on some platforms.
+* Bump trunk base from commit 48c1c7f221cd51fbe4fda3771eaed09edacef997 to commit 6953df7b5e52d749e50275640197e5fc17e2310c.
+
 ### v0.44.0 (2021-11-10)
 * Fix crash on non-GCC/clang compilers.
 * Fix custom signal NewGRFs never showing semaphore signals as having a routing restriction program attached.
