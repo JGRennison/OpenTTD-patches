@@ -652,7 +652,9 @@ static void TownGenerateCargo (Town *t, CargoID ct, uint amount, StationFinder &
 		amount = (amount + 1) >> 1;
 	}
 
-	amount = ScaleQuantity(amount, _settings_game.economy.town_cargo_scale_factor);
+	amount = ScaleQuantity(amount, _settings_game.economy.town_cargo_scale_factor, true);
+
+	if (amount == 0) return;
 
 	// calculate for town stats
 

@@ -2453,16 +2453,16 @@ CommandCost CmdDeclineBuyCompany(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	return CommandCost();
 }
 
-uint ScaleQuantity(uint amount, int scale_factor)
+uint ScaleQuantity(uint amount, int scale_factor, bool allow_trunc)
 {
 	scale_factor += 200; // ensure factor is positive
 	assert(scale_factor >= 0);
 	int cf = (scale_factor / 10) - 20;
 	int fine = scale_factor % 10;
-	return ScaleQuantity(amount, cf, fine);
+	return ScaleQuantity(amount, cf, fine, allow_trunc);
 }
 
-uint ScaleQuantity(uint amount, int cf, int fine)
+uint ScaleQuantity(uint amount, int cf, int fine, bool allow_trunc)
 {
 	if (fine != 0) {
 		// 2^0.1 << 16 to 2^0.9 << 16
@@ -2474,9 +2474,12 @@ uint ScaleQuantity(uint amount, int cf, int fine)
 	// apply scale factor
 	if (cf < 0) {
 		// approx (amount / 2^cf)
-		// adjust with a constant offset of {(2 ^ cf) - 1} (i.e. add cf * 1-bits) before dividing to ensure that it doesn't become zero
+		// when allow_trunc is false: adjust with a constant offset of {(2 ^ cf) - 1} (i.e. add cf * 1-bits) before dividing to ensure that it doesn't become zero
 		// this skews the curve a little so that isn't entirely exponential, but will still decrease
-		amount = (amount + ((1 << -cf) - 1)) >> -cf;
+		// when allow_trunc is true: adjust with a randomised offset
+		uint offset = ((1 << -cf) - 1);
+		if (allow_trunc) offset &= Random();
+		amount = (amount + offset) >> -cf;
 	} else if (cf > 0) {
 		// approx (amount * 2^cf)
 		amount = amount << cf;
