@@ -1266,6 +1266,14 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :대출 금리�
 STR_CONFIG_SETTING_RUNNING_COSTS                                :유지비: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :차량과 기반시설의 유지비 수준을 설정하십시오
 
+STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT                       :차고에 있는 차량의 유지비: {STRING}
+STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT_HELPTEXT              :(멈추지 않은 채로) 차고에서 대기하고 있는 차량의 유지비 수준을 설정하십시오
+STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT_VALUE                 :1 / {COMMA}
+
+STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED                   :역에 정차한 차량의 유지비: {STRING}
+STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED_HELPTEXT          :차고에 있지 않고 역에 정차하고 있는 차량의 유지비 수준을 설정하십시오
+STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED_VALUE             :1 / {COMMA}
+
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :건설 속도: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :인공지능의 건설 행동량을 제한하여 건설 속도를 조절할 수 있습니다.
 
@@ -1456,6 +1464,9 @@ STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :기반시설 �
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :이 설정을 켜면, 기반시설 유지비가 발생합니다. 유지비는 교통망의 규모에 비례하며 대형 회사는 소형 회사보다 많은 유지비가 들어갑니다.
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :선박 충돌 방지: {STRING}
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :활성화되면 선박들이 서로를 피하려고 시도합니다. 90° 회전이 비활성화된 상태에서 최상의 결과를 보여줍니다.
+
+STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL                  :도로가 막히면 자동차가 서로 통과하는 것을 금지: {STRING}
+STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL_HELPTEXT         :자동차가 가려는 경로가 오랫 동안 막혀있는 경우 서로 통과하는 것을 막습니다
 
 STR_CONFIG_SETTING_CHUNNEL                                      :해저 터널 건설 허용: {STRING}
 STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :이 설정을 켜면, 해수면 아래를 통과하는 터널을 건설할 수 있습니다. 터널의 끝이 해안가로부터 최소한 3칸 이상 떨어져있어야 합니다.
@@ -3143,8 +3154,8 @@ STR_BUILD_SIGNAL_ELECTRIC_EXIT_TOOLTIP                          :{BLACK}출구 �
 STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP                         :{BLACK}복합 신호기 (전자식){}복합 신호기는 입구 신호기와 출구 신호기의 역할을 동시에 합니다. 이 신호기는 사전 신호기의 거대한 "나뭇가지식 구조"를 건설할 수 있도록 도와줍니다
 STR_BUILD_SIGNAL_ELECTRIC_PROG_TOOLTIP                          :{BLACK}프로그램 신호기 (전자식){}프로그램 신호기는 복잡한 기능을 할 수 있도록 프로그래밍 가능한 복합 신호기입니다.
 STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP                           :{BLACK}경로 신호기 (전자식){}경로가 겹치지 않는 경우에 한 대 이상의 열차가 한 폐색 구간에 동시에 들어갈 수 있게 해주는 경로 신호기입니다. 경로 신호기는 반대편에서 통과가 가능합니다
-STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP                      :{BLACK}단방향 경로 신호기 (전자식){}경로가 겹치지 않는 경우에 한 대 이상의 열차가 한 폐색 구간에 동시에 들어갈 수 있게 해주는 경로 신호기입니다. 단방향 경로 신호기는 반대편에서 통과가 불가능합니다STR_BUILD_SIGNAL_ELECTRIC_NO_ENTRY_TOOLTIP                      :{BLACK}진입 금지 신호기 (전자식){}경로가 겹치지 않는 경우에 한 대 이상의 열차가 한 폐색 구간에 동시에 들어갈 수 있게 해주는 경로 신호기입니다. 진입 금지 신호기는 앞쪽에서 통과가 불가능합니다
-
+STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP                      :{BLACK}단방향 경로 신호기 (전자식){}경로가 겹치지 않는 경우에 한 대 이상의 열차가 한 폐색 구간에 동시에 들어갈 수 있게 해주는 경로 신호기입니다. 단방향 경로 신호기는 반대편에서 통과가 불가능합니다
+STR_BUILD_SIGNAL_ELECTRIC_NO_ENTRY_TOOLTIP                      :{BLACK}진입 금지 신호기 (전자식){}경로가 겹치지 않는 경우에 한 대 이상의 열차가 한 폐색 구간에 동시에 들어갈 수 있게 해주는 경로 신호기입니다. 진입 금지 신호기는 앞쪽에서 통과가 불가능합니다
 STR_BUILD_SIGNAL_CONVERT_TOOLTIP                                :{BLACK}신호기 변환{}이 버튼을 선택한 뒤 이미 설치된 신호기를 클릭하면, 신호기의 종류(일반/입구/출구/복합/경로)와 형식(구식↔전자식)을 변경하고, CTRL+클릭하면 신호기의 형식을 변경합니다. SHIFT+클릭을 사용하면 예상 비용을 볼 수 있습니다
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}드래그로 설치할 때 신호기 사이의 간격입니다
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}드래그로 설치할 신호기 간격을 줄입니다
@@ -3212,6 +3223,7 @@ STR_TRACE_RESTRICT_CONDITIONAL_ORDER_DEPOT                      :{STRING} {STRIN
 STR_TRACE_RESTRICT_CONDITIONAL_CARGO                            :{STRING} 열차가 {2:STRING}{G 2 "을" "를"} {1:STRING}
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_DIRECTION                  :{STRING} 열차가 타일에 진입한 방향 {STRING} {STRING}{G 2 "이" ""}라면
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE                :{STRING} 열차의 진입 방향 {STRING} 신호기의 {STRING}{G 2 "이" ""}라면
+STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_TYPE                :{STRING} 열차가 {STRING} {STRING}{G 2 "이" ""}라면
 STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX                       :{STRING} {STRING} {STRING} {NUM} x {NUM} 에 위치한다면
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP                            :{STRING} 열차의 소속 그룹 {STRING} {GROUP} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING} 열차의 소속 그룹 {STRING} {BLACK}{STRING} (이)라면 {STRING}
@@ -3255,6 +3267,8 @@ STR_TRACE_RESTRICT_DIRECTION_NE                                 :{G=m}북동
 STR_TRACE_RESTRICT_DIRECTION_SE                                 :{G=m}남동
 STR_TRACE_RESTRICT_DIRECTION_SW                                 :{G=f}남서
 STR_TRACE_RESTRICT_DIRECTION_NW                                 :{G=f}북서
+STR_TRACE_RESTRICT_DIRECTION_TUNBRIDGE_ENTRANCE                 :터널/다리에 진입
+STR_TRACE_RESTRICT_DIRECTION_TUNBRIDGE_EXIT                     :터널/다리에서 나옴
 STR_TRACE_RESTRICT_COMPANY                                      :회사
 STR_TRACE_RESTRICT_UNDEFINED_COMPANY                            :정의되지 않은 회사
 STR_TRACE_RESTRICT_SLOT_OP                                      :슬롯 연산
@@ -4473,6 +4487,7 @@ STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}이 역�
 STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}이 역을 거쳐가는 모든 차량을 보여줍니다
 STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}이 역을 거쳐가는 모든 항공기를 보여줍니다
 STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}이 역을 거쳐가는 모든 선박을 보여줍니다
+STR_STATION_VIEW_SCHEDULED_TOOLTIP_CTRL_SUFFIX                  :{BLACK}{STRING}. CTRL+클릭하면 이 차량 종류만 보여줍니다
 
 STR_STATION_VIEW_RENAME_STATION_CAPTION                         :이 역의 이름을 변경합니다
 STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}공항 폐쇄
@@ -5636,8 +5651,12 @@ STR_TIMETABLE_AND_TRAVEL_FOR                                    :& 다음 목적
 STR_TIMETABLE_DAYS                                              :{COMMA}일
 STR_TIMETABLE_TICKS                                             :{COMMA}틱
 STR_TIMETABLE_MINUTES                                           :{COMMA}분
+STR_TIMETABLE_HOURS                                             :{COMMA}시간
+STR_TIMETABLE_HOURS_MINUTES                                     :{COMMA}시간 {COMMA}분
 
 STR_TIMETABLE_LEFTOVER_TICKS                                    :{STRING} + {COMMA} 틱
+
+STR_TIMETABLE_MINUTES_LONG                                      :{COMMA}분 ({STRING}){STRING}
 
 STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}이 시간표는 완주하는데 {STRING}이 걸릴 것입니다.
 STR_TIMETABLE_TOTAL_TIME_INCOMPLETE                             :{BLACK}이 시간표를 완주하는데 최소 {STRING}이 필요합니다 (시간표가 일부만 지정됨)
@@ -5653,15 +5672,19 @@ STR_TIMETABLE_STARTING_DATE_TOOLTIP                             :{BLACK}이 시�
 
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}시간값 변경
 STR_TIMETABLE_WAIT_TIME_TOOLTIP                                 :{BLACK}선택한 경로에서 소요되는 시간 값을 변경합니다
+STR_TIMETABLE_WAIT_TIME_TOOLTIP_EXTRA                           :{BLACK}{STRING} (CTRL+클릭하면 모든 경로의 시간을 설정합니다)
 
 STR_TIMETABLE_CLEAR_TIME                                        :{BLACK}시간값 초기화
 STR_TIMETABLE_CLEAR_TIME_TOOLTIP                                :{BLACK}선택한 경로에서 소요되는 시간 값을 초기화합니다
+STR_TIMETABLE_CLEAR_TIME_TOOLTIP_EXTRA                          :{BLACK}{STRING} (CTRL+클릭하면 모든 경로의 시간을 초기화합니다)
 
 STR_TIMETABLE_CHANGE_SPEED                                      :{BLACK}속력 제한
 STR_TIMETABLE_CHANGE_SPEED_TOOLTIP                              :{BLACK}선택한 경로의 최대 여행 속력을 제한합니다
+STR_TIMETABLE_CHANGE_SPEED_TOOLTIP_EXTRA                        :{BLACK}{STRING} (CTRL+클릭하면 모든 경로의 속력을 설정합니다)
 
 STR_TIMETABLE_CLEAR_SPEED                                       :{BLACK}속력 제한값 초기화
 STR_TIMETABLE_CLEAR_SPEED_TOOLTIP                               :{BLACK}선택한 경로의 최대 여행 속력 제한값을 초기화합니다
+STR_TIMETABLE_CLEAR_SPEED_TOOLTIP_EXTRA                         :{BLACK}{STRING} (CTRL+클릭하면 모든 경로의 속력을 초기화합니다)
 
 STR_TIMETABLE_RESET_LATENESS                                    :{BLACK}지연 시간 초기화
 STR_TIMETABLE_RESET_LATENESS_TOOLTIP                            :{BLACK}이 차량의 지연 시간값을 초기화하여, 정시운행 상태로 바꿉니다
@@ -5720,6 +5743,7 @@ STR_DATE_MONTH_TOOLTIP                                          :{BLACK}월(月)
 STR_DATE_YEAR_TOOLTIP                                           :{BLACK}년(年) 선택
 STR_DATE_MINUTES_MINUTE_TOOLTIP                                 :{BLACK}분(分) 선택
 STR_DATE_MINUTES_HOUR_TOOLTIP                                   :{BLACK}시(時) 선택
+STR_TIME_CAPTION                                                :{WHITE}시간 설정
 
 # Cargo type orders Window
 STR_CARGO_TYPE_ORDERS_LOAD_CAPTION                              :{WHITE}{VEHICLE} ({NUM}: {STATION}에서 싣기)
@@ -7069,18 +7093,22 @@ STR_SCHDISPATCH_ENABLED                                         :{BLACK}활성�
 STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}배차 일정을 활성화합니다. 자동 배차 조절과 같이 사용할 수 없습니다.
 STR_SCHDISPATCH_ADD                                             :{BLACK}출발 슬롯 추가
 STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}이 스케줄에 새 출발 슬롯을 추가합니다.
+STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING} CTRL+클릭하면 여러 출발 슬록을 한 번에 추가할 수 있습니다.
 STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}출발 슬롯
 STR_SCHDISPATCH_DURATION                                        :{BLACK}반복 주기
 STR_SCHDISPATCH_DURATION_TOOLTIP                                :{BLACK}이 스케줄의 반복 주기를 설정합니다.
 STR_SCHDISPATCH_DURATION_CAPTION_MINUTE                         :{BLACK}반복 주기 (분)
 STR_SCHDISPATCH_DURATION_CAPTION_DAY                            :{BLACK}반복 주기 (일)
+STR_SCHDISPATCH_DURATION_CAPTION_TICKS                          :{BLACK}반복 주기 (틱)
 STR_SCHDISPATCH_START                                           :{BLACK}시작 일시
+STR_SCHDISPATCH_SET_START                                       :{BLACK}시작 일시 설정
 STR_SCHDISPATCH_START_TOOLTIP                                   :{BLACK}이 스케줄의 시작 일시를 설정합니다.
 STR_SCHDISPATCH_START_CAPTION_MINUTE                            :{BLACK}시작 시각 (hhmm)
 STR_SCHDISPATCH_DELAY                                           :{BLACK}지연
 STR_SCHDISPATCH_DELAY_TOOLTIP                                   :{BLACK}허용할 수 있는 최대 지연 시간을 설정합니다.
 STR_SCHDISPATCH_DELAY_CAPTION_MINUTE                            :{BLACK}지연 (분)
 STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}지연 (일)
+STR_SCHDISPATCH_DELAY_CAPTION_TICKS                             :{BLACK}지연 (틱)
 STR_SCHDISPATCH_RESET_LAST_DISPATCH                             :{BLACK}최근 일정 재설정
 STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}최근 배차 일정을 재설정합니다. 먼 미래의 차량에 대해 오작동할 때 사용하십시오.
 
@@ -7093,6 +7121,12 @@ STR_SCHDISPATCH_SUMMARY_L4                                      :{BLACK}{STRING}
 STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}이 스케줄은 비활성화되어 있습니다.
 
 STR_SCHDISPATCH_SLOT_OUTSIDE_SCHEDULE                           :{BLACK}하나 이상의 출발 슬롯이 배차 간격 범위 바깥에 있습니다.
+
+STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_START                       :{BLACK}시작:
+STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_STEP                        :{BLACK}간격:
+STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_END                         :{BLACK}종료:
+
+STR_ERROR_SCHDISPATCH_TRIED_TO_ADD_TOO_MANY_SLOTS               :{WHITE}너무 많은 출발 슬롯을 한 번에 추가하려고 했습니다
 
 # Modifier key toggle window
 STR_MODIFIER_KEY_TOGGLE_CAPTION                                 :{WHITE}보조 키
