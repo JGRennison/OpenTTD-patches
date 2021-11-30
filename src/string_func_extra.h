@@ -73,7 +73,14 @@ inline bool IntFromChars(const char* first, const char* last, T& value)
 	}
 	if (start == first) return false;
 	if (std::is_signed<T>::value) {
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4146)
+#endif
 		value = negative ? -out : out;
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 	} else {
 		value = out;
 	}
