@@ -886,7 +886,8 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		 * Thus always make sure at least one tick is used between the
 		 * processing of different orders when filling the timetable. */
 		Company *owner = Company::GetIfValid(v->owner);
-		uint rounding_factor = owner ? owner->settings.timetable_autofill_rounding : DAY_TICKS;
+		uint rounding_factor = owner ? owner->settings.timetable_autofill_rounding : 0;
+		if (rounding_factor == 0) rounding_factor = _settings_game.game_time.time_in_minutes ? _settings_game.game_time.ticks_per_minute : DAY_TICKS;
 		uint time_to_set = CeilDiv(std::max(time_taken, 1U), rounding_factor) * rounding_factor;
 
 		if (travel_field && (autofilling || !real_timetable_order->IsTravelTimetabled())) {
