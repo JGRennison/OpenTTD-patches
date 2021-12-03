@@ -618,10 +618,10 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 			seprintf(this->buffer, lastof(this->buffer), "%*sRandom (%s, %s, triggers: %X, count: %X, lowest_randbit: %X, groups: %u) [%u]",
 					padding, "", _sg_scope_names[rsg->var_scope], rsg->cmp_mode == RSG_CMP_ANY ? "ANY" : "ALL",
 					rsg->triggers, rsg->count, rsg->lowest_randbit, (uint)rsg->groups.size(), rsg->nfo_line);
+			this->print();
 			for (const auto &group : rsg->groups) {
 				this->DumpSpriteGroup(group, padding + 2, 0);
 			}
-			this->print();
 			break;
 		}
 		case SGT_CALLBACK:
