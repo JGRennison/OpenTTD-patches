@@ -837,6 +837,7 @@ static const NIVariable _niv_objects[] = {
 
 class NIHObject : public NIHelper {
 	bool IsInspectable(uint index) const override        { return ObjectSpec::GetByTile(index)->grf_prop.grffile != nullptr; }
+	bool ShowSpriteDumpButton(uint index) const override { return true; }
 	uint GetParent(uint index) const override            { return GetInspectWindowNumber(GSF_FAKE_TOWNS, Object::GetByTile(index)->town->index); }
 	const void *GetInstance(uint index)const override    { return Object::GetByTile(index); }
 	const void *GetSpec(uint index) const override       { return ObjectSpec::GetByTile(index); }
@@ -889,6 +890,12 @@ class NIHObject : public NIHelper {
 				check_flag(OBJECT_FLAG_SCALE_BY_WATER,     "OBJECT_FLAG_SCALE_BY_WATER");
 			}
 		}
+	}
+
+	/* virtual */ void SpriteDump(uint index, std::function<void(const char *)> print) const override
+	{
+		extern void DumpObjectSpriteGroup(const ObjectSpec *spec, std::function<void(const char *)> print);
+		DumpObjectSpriteGroup(ObjectSpec::GetByTile(index), std::move(print));
 	}
 };
 
