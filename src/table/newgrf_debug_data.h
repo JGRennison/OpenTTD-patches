@@ -15,6 +15,7 @@
 #include "../timetable.h"
 #include "../ship.h"
 #include "../aircraft.h"
+#include "../object_map.h"
 #include "../string_func_extra.h"
 
 /* Helper for filling property tables */
@@ -854,6 +855,9 @@ class NIHObject : public NIHelper {
 		output.print("Debug Info:");
 		const ObjectSpec *spec = ObjectSpec::GetByTile(index);
 		if (spec) {
+			uint class_id = ObjectClass::Get(spec->cls_id)->global_id;
+			seprintf(buffer, lastof(buffer), "  index: %u, type ID: %u, class ID: %c%c%c%c", GetObjectIndex(index), GetObjectType(index), class_id >> 24, class_id >> 16, class_id >> 8, class_id);
+			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", spec->animation.frames, spec->animation.status, spec->animation.speed, spec->animation.triggers);
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "  size: %ux%u, height: %u, views: %u", GB(spec->size, 4, 4), GB(spec->size, 0, 4), spec->height, spec->views);
