@@ -260,6 +260,8 @@ add_files(
     newgrf_debug_gui.cpp
     newgrf_engine.cpp
     newgrf_engine.h
+    newgrf_extension.cpp
+    newgrf_extension.h
     newgrf_generic.cpp
     newgrf_generic.h
     newgrf_gui.cpp

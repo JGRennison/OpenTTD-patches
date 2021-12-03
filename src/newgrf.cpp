@@ -34,6 +34,7 @@
 #include "newgrf_airport.h"
 #include "newgrf_object.h"
 #include "newgrf_newsignals.h"
+#include "newgrf_extension.h"
 #include "rev.h"
 #include "fios.h"
 #include "strings_func.h"
@@ -8523,53 +8524,6 @@ AllowedSubtags _tags_info[] = {
 	AllowedSubtags()
 };
 
-/** Action14 feature definition */
-struct GRFFeatureInfo {
-	const char *name; // nullptr indicates the end of the list
-	uint16 version;
-
-	/** Create empty object used to identify the end of a list. */
-	GRFFeatureInfo() :
-		name(nullptr),
-		version(0)
-	{}
-
-	GRFFeatureInfo(const char *name, uint16 version) :
-		name(name),
-		version(version)
-	{}
-};
-
-/** Action14 feature list */
-static const GRFFeatureInfo _grf_feature_list[] = {
-	GRFFeatureInfo("feature_test", 1),
-	GRFFeatureInfo("property_mapping", 1),
-	GRFFeatureInfo("action5_type_id_mapping", 1),
-	GRFFeatureInfo("action0_station_prop1B", 1),
-	GRFFeatureInfo("action0_station_disallowed_bridge_pillars", 1),
-	GRFFeatureInfo("varaction2_station_var42", 1),
-	GRFFeatureInfo("more_bridge_types", 1),
-	GRFFeatureInfo("action0_bridge_prop14", 1),
-	GRFFeatureInfo("action0_bridge_pillar_flags", 1),
-	GRFFeatureInfo("action0_bridge_availability_flags", 1),
-	GRFFeatureInfo("action5_programmable_signals", 1),
-	GRFFeatureInfo("action5_no_entry_signals", 1),
-	GRFFeatureInfo("action0_railtype_programmable_signals", 1),
-	GRFFeatureInfo("action0_railtype_no_entry_signals", 1),
-	GRFFeatureInfo("action0_railtype_restricted_signals", 1),
-	GRFFeatureInfo("action0_railtype_disable_realistic_braking", 1),
-	GRFFeatureInfo("action0_railtype_recolour", 1),
-	GRFFeatureInfo("action0_railtype_extra_aspects", 1),
-	GRFFeatureInfo("action0_roadtype_extra_flags", 1),
-	GRFFeatureInfo("action0_global_extra_station_names", 1),
-	GRFFeatureInfo("action0_signals_programmable_signals", 1),
-	GRFFeatureInfo("action0_signals_no_entry_signals", 1),
-	GRFFeatureInfo("action0_signals_restricted_signals", 1),
-	GRFFeatureInfo("action0_signals_recolour", 1),
-	GRFFeatureInfo("action0_signals_extra_aspects", 1),
-	GRFFeatureInfo("action3_signals_custom_signal_sprites", 1),
-	GRFFeatureInfo(),
-};
 
 /** Action14 feature test instance */
 struct GRFFeatureTest {
@@ -8604,6 +8558,7 @@ static GRFFeatureTest _current_grf_feature_test;
 /** Callback function for 'FTST'->'NAME' to set the name of the feature being tested. */
 static bool ChangeGRFFeatureTestName(byte langid, const char *str)
 {
+	extern const GRFFeatureInfo _grf_feature_list[];
 	for (const GRFFeatureInfo *info = _grf_feature_list; info->name != nullptr; info++) {
 		if (strcmp(info->name, str) == 0) {
 			_current_grf_feature_test.feature = info;
@@ -8677,37 +8632,6 @@ static bool HandleFeatureTestInfo(ByteReader *buf)
 	return true;
 }
 
-/** Action14 Action0 remappable property list */
-static const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
-	GRFPropertyMapDefinition(GSF_STATIONS, A0RPI_STATION_MIN_BRIDGE_HEIGHT, "station_min_bridge_height"),
-	GRFPropertyMapDefinition(GSF_STATIONS, A0RPI_STATION_DISALLOWED_BRIDGE_PILLARS, "station_disallowed_bridge_pillars"),
-	GRFPropertyMapDefinition(GSF_BRIDGES, A0RPI_BRIDGE_MENU_ICON, "bridge_menu_icon"),
-	GRFPropertyMapDefinition(GSF_BRIDGES, A0RPI_BRIDGE_PILLAR_FLAGS, "bridge_pillar_flags"),
-	GRFPropertyMapDefinition(GSF_BRIDGES, A0RPI_BRIDGE_AVAILABILITY_FLAGS, "bridge_availability_flags"),
-	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_ENABLE_PROGRAMMABLE_SIGNALS, "railtype_enable_programmable_signals"),
-	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_ENABLE_NO_ENTRY_SIGNALS, "railtype_enable_no_entry_signals"),
-	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_ENABLE_RESTRICTED_SIGNALS, "railtype_enable_restricted_signals"),
-	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_DISABLE_REALISTIC_BRAKING, "railtype_disable_realistic_braking"),
-	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_ENABLE_SIGNAL_RECOLOUR, "railtype_enable_signal_recolour"),
-	GRFPropertyMapDefinition(GSF_RAILTYPES, A0RPI_RAILTYPE_EXTRA_ASPECTS, "railtype_extra_aspects"),
-	GRFPropertyMapDefinition(GSF_ROADTYPES, A0RPI_ROADTYPE_EXTRA_FLAGS, "roadtype_extra_flags"),
-	GRFPropertyMapDefinition(GSF_TRAMTYPES, A0RPI_ROADTYPE_EXTRA_FLAGS, "roadtype_extra_flags"),
-	GRFPropertyMapDefinition(GSF_GLOBALVAR, A0RPI_GLOBALVAR_EXTRA_STATION_NAMES, "global_extra_station_names"),
-	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_ENABLE_PROGRAMMABLE_SIGNALS, "signals_enable_programmable_signals"),
-	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_ENABLE_NO_ENTRY_SIGNALS, "signals_enable_no_entry_signals"),
-	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_ENABLE_RESTRICTED_SIGNALS, "signals_enable_restricted_signals"),
-	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_ENABLE_SIGNAL_RECOLOUR, "signals_enable_signal_recolour"),
-	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_EXTRA_ASPECTS, "signals_extra_aspects"),
-	GRFPropertyMapDefinition(),
-};
-
-/** Action14 Action5 remappable type list */
-static const Action5TypeRemapDefinition _grf_action5_remappable_types[] = {
-	Action5TypeRemapDefinition("programmable_signals", A5BLOCK_ALLOW_OFFSET, SPR_PROGSIGNAL_BASE, 1, 32, "Programmable pre-signal graphics"),
-	Action5TypeRemapDefinition("no_entry_signals", A5BLOCK_ALLOW_OFFSET, SPR_EXTRASIGNAL_BASE, 1, 16, "No-entry signal graphics"),
-	Action5TypeRemapDefinition(),
-};
-
 /** Action14 Action0 property map action instance */
 struct GRFPropertyMapAction {
 	const char *tag_name = nullptr;
@@ -8747,6 +8671,7 @@ struct GRFPropertyMapAction {
 		}
 		bool success = false;
 		const char *str = this->name.c_str();
+		extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[];
 		for (const GRFPropertyMapDefinition *info = _grf_action0_remappable_properties; info->name != nullptr; info++) {
 			if (info->feature == this->feature && strcmp(info->name, str) == 0) {
 				GRFFilePropertyRemapEntry &entry = _cur.grffile->action0_property_remaps[this->feature].Entry(this->prop_id);
@@ -8794,6 +8719,7 @@ struct GRFPropertyMapAction {
 		}
 		bool success = false;
 		const char *str = this->name.c_str();
+		extern const Action5TypeRemapDefinition _grf_action5_remappable_types[];
 		for (const Action5TypeRemapDefinition *info = _grf_action5_remappable_types; info->name != nullptr; info++) {
 			if (strcmp(info->name, str) == 0) {
 				Action5TypeRemapEntry &entry = _cur.grffile->action5_type_remaps.Entry(this->prop_id);
