@@ -42,6 +42,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_signals_recolour", 1),
 	GRFFeatureInfo("action0_signals_extra_aspects", 1),
 	GRFFeatureInfo("action3_signals_custom_signal_sprites", 1),
+	GRFFeatureInfo("action0_object_use_land_ground", 1),
 	GRFFeatureInfo(),
 };
 
@@ -66,6 +67,7 @@ extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_ENABLE_RESTRICTED_SIGNALS, "signals_enable_restricted_signals"),
 	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_ENABLE_SIGNAL_RECOLOUR, "signals_enable_signal_recolour"),
 	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_EXTRA_ASPECTS, "signals_extra_aspects"),
+	GRFPropertyMapDefinition(GSF_OBJECTS, A0RPI_OBJECT_USE_LAND_GROUND, "object_use_land_ground"),
 	GRFPropertyMapDefinition(),
 };
 

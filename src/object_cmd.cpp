@@ -126,6 +126,9 @@ void BuildObject(ObjectType type, TileIndex tile, CompanyID owner, Town *town, u
 		bool remove = IsDockingTile(t);
 		MakeObject(t, owner, o->index, wc, Random());
 		if (remove) RemoveDockingTile(t);
+		if ((spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) && wc == WATER_CLASS_INVALID) {
+			SetObjectGroundTypeDensity(t, OBJECT_GROUND_GRASS, 0);
+		}
 		MarkTileDirtyByTile(t, VMDF_NOT_MAP_MODE);
 	}
 
@@ -740,6 +743,84 @@ static void GetTileDesc_Object(TileIndex tile, TileDesc *td)
 	}
 }
 
+/** Convert to or from snowy tiles. */
+static void TileLoopObjectGroundAlps(TileIndex tile)
+{
+	int k;
+	if ((int)TileHeight(tile) < GetSnowLine() - 1) {
+		/* Fast path to avoid needing to check all 4 corners */
+		k = -1;
+	} else {
+		k = GetTileZ(tile) - GetSnowLine() + 1;
+	}
+
+	if (k < 0) {
+		/* Below the snow line, do nothing if no snow. */
+		if (GetObjectGroundType(tile) != OBJECT_GROUND_SNOW_DESERT) return;
+	} else {
+		/* At or above the snow line, make snow tile if needed. */
+		if (GetObjectGroundType(tile) != OBJECT_GROUND_SNOW_DESERT) {
+			SetObjectGroundTypeDensity(tile, OBJECT_GROUND_SNOW_DESERT, 0);
+			MarkTileDirtyByTile(tile);
+			return;
+		}
+	}
+	/* Update snow density. */
+	uint current_density = GetObjectGroundDensity(tile);
+	uint req_density = (k < 0) ? 0u : std::min<uint>(k, 3u);
+
+	if (current_density < req_density) {
+		SetObjectGroundDensity(tile, current_density + 1);
+	} else if (current_density > req_density) {
+		SetObjectGroundDensity(tile, current_density - 1);
+	} else {
+		/* Density at the required level. */
+		if (k >= 0) return;
+		SetObjectGroundTypeDensity(tile, OBJECT_GROUND_GRASS, 3);
+	}
+	MarkTileDirtyByTile(tile);
+}
+
+/**
+ * Tests if at least one surrounding tile is non-desert
+ * @param tile tile to check
+ * @return does this tile have at least one non-desert tile around?
+ */
+static inline bool NeighbourIsNormal(TileIndex tile)
+{
+	for (DiagDirection dir = DIAGDIR_BEGIN; dir < DIAGDIR_END; dir++) {
+		TileIndex t = tile + TileOffsByDiagDir(dir);
+		if (!IsValidTile(t)) continue;
+		if (GetTropicZone(t) != TROPICZONE_DESERT) return true;
+		if (HasTileWaterClass(t) && GetWaterClass(t) == WATER_CLASS_SEA) return true;
+	}
+	return false;
+}
+
+static void TileLoopObjectGroundDesert(TileIndex tile)
+{
+	/* Current desert level - 0 if it is not desert */
+	uint current = 0;
+	if (GetObjectGroundType(tile) == OBJECT_GROUND_SNOW_DESERT) current = GetObjectGroundDensity(tile);
+
+	/* Expected desert level - 0 if it shouldn't be desert */
+	uint expected = 0;
+	if (GetTropicZone(tile) == TROPICZONE_DESERT) {
+		expected = NeighbourIsNormal(tile) ? 1 : 3;
+	}
+
+	if (current == expected) return;
+
+	if (expected == 0) {
+		SetObjectGroundTypeDensity(tile, OBJECT_GROUND_GRASS, 3);
+	} else {
+		/* Transition from clear to desert is not smooth (after clearing desert tile) */
+		SetObjectGroundTypeDensity(tile, OBJECT_GROUND_SNOW_DESERT, expected);
+	}
+
+	MarkTileDirtyByTile(tile);
+}
+
 static void TileLoop_Object(TileIndex tile)
 {
 	const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
@@ -749,7 +830,29 @@ static void TileLoop_Object(TileIndex tile)
 		if (o->location.tile == tile) TriggerObjectAnimation(o, OAT_256_TICKS, spec);
 	}
 
-	if (IsTileOnWater(tile)) TileLoop_Water(tile);
+	if (IsTileOnWater(tile)) {
+		TileLoop_Water(tile);
+	} else if (spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
+		switch (_settings_game.game_creation.landscape) {
+			case LT_TROPIC: TileLoopObjectGroundDesert(tile); break;
+			case LT_ARCTIC: TileLoopObjectGroundAlps(tile);   break;
+		}
+
+		if (GetObjectGroundType(tile) == OBJECT_GROUND_GRASS && GetObjectGroundDensity(tile) != 3) {
+			if (_game_mode != GM_EDITOR) {
+				if (GetObjectGroundCounter(tile) < 7) {
+					AddObjectGroundCounter(tile, 1);
+				} else {
+					SetObjectGroundCounter(tile, 0);
+					SetObjectGroundDensity(tile, GetObjectGroundDensity(tile) + 1);
+					MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+				}
+			} else {
+				SetObjectGroundTypeDensity(tile, OBJECT_GROUND_GRASS, 3);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+			}
+		}
+	}
 
 	if (!IsObjectType(tile, OBJECT_HQ)) return;
 

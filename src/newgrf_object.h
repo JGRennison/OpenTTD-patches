@@ -40,6 +40,12 @@ enum ObjectFlags {
 };
 DECLARE_ENUM_AS_BIT_SET(ObjectFlags)
 
+enum ObjectCtrlFlags {
+	OBJECT_CTRL_FLAG_NONE               =       0, ///< Just nothing.
+	OBJECT_CTRL_FLAG_USE_LAND_GROUND    = 1 <<  0, ///< Use land for ground sprite.
+};
+DECLARE_ENUM_AS_BIT_SET(ObjectCtrlFlags)
+
 void ResetObjects();
 
 /** Class IDs for objects. */
@@ -68,6 +74,7 @@ struct ObjectSpec {
 	Date introduction_date;       ///< From when can this object be built.
 	Date end_of_life_date;        ///< When can't this object be built anymore.
 	ObjectFlags flags;            ///< Flags/settings related to the object.
+	ObjectCtrlFlags ctrl_flags;   ///< Extra control flags.
 	AnimationInfo animation;      ///< Information about the animation.
 	uint16 callback_mask;         ///< Bitmask of requested/allowed callbacks.
 	uint8 height;                 ///< The height of this structure, in heightlevels; max MAX_TILE_HEIGHT.

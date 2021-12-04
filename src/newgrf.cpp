@@ -4296,6 +4296,11 @@ static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, const G
 				spec->generate_amount = buf->ReadByte();
 				break;
 
+			case A0RPI_OBJECT_USE_LAND_GROUND:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				SB(spec->ctrl_flags, OBJECT_CTRL_FLAG_USE_LAND_GROUND, 1, (buf->ReadByte() != 0 ? 1 : 0));
+				break;
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;

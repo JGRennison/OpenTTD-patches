@@ -868,11 +868,15 @@ class NIHObject : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  [%c] flags: 0x%X", output.flags & 1 ? '-' : '+', spec->flags);
 			output.print(buffer);
 			if (output.flags & 1) {
+				auto print = [&](const char *name) {
+					seprintf(buffer, lastof(buffer), "    %s", name);
+					output.print(buffer);
+				};
 				auto check_flag = [&](ObjectFlags flag, const char *name) {
-					if (spec->flags & flag) {
-						seprintf(buffer, lastof(buffer), "    %s", name);
-						output.print(buffer);
-					}
+					if (spec->flags & flag) print(name);
+				};
+				auto check_ctrl_flag = [&](ObjectCtrlFlags flag, const char *name) {
+					if (spec->ctrl_flags & flag) print(name);
 				};
 				check_flag(OBJECT_FLAG_ONLY_IN_SCENEDIT,   "OBJECT_FLAG_ONLY_IN_SCENEDIT");
 				check_flag(OBJECT_FLAG_CANNOT_REMOVE,      "OBJECT_FLAG_CANNOT_REMOVE");
@@ -888,6 +892,7 @@ class NIHObject : public NIHelper {
 				check_flag(OBJECT_FLAG_ALLOW_UNDER_BRIDGE, "OBJECT_FLAG_ALLOW_UNDER_BRIDGE");
 				check_flag(OBJECT_FLAG_ANIM_RANDOM_BITS,   "OBJECT_FLAG_ANIM_RANDOM_BITS");
 				check_flag(OBJECT_FLAG_SCALE_BY_WATER,     "OBJECT_FLAG_SCALE_BY_WATER");
+				check_ctrl_flag(OBJECT_CTRL_FLAG_USE_LAND_GROUND, "OBJECT_CTRL_FLAG_USE_LAND_GROUND");
 			}
 		}
 	}

@@ -20,6 +20,7 @@
 #include "tile_cmd.h"
 #include "town.h"
 #include "water.h"
+#include "clear_func.h"
 #include "newgrf_animation_base.h"
 
 #include "safeguards.h"
@@ -425,7 +426,26 @@ static void DrawTileLayout(const TileInfo *ti, const TileLayoutSpriteGroup *grou
 	SpriteID image = dts->ground.sprite;
 	PaletteID pal  = dts->ground.pal;
 
-	if (GB(image, 0, SPRITE_WIDTH) != 0) {
+	if (spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
+		if (IsTileOnWater(ti->tile)) {
+			DrawWaterClassGround(ti);
+		} else {
+			switch (GetObjectGroundType(ti->tile)) {
+				case OBJECT_GROUND_GRASS:
+					DrawClearLandTile(ti, GetObjectGroundDensity(ti->tile));
+					break;
+
+				case OBJECT_GROUND_SNOW_DESERT:
+					DrawGroundSprite(GetSpriteIDForSnowDesert(ti->tileh, GetObjectGroundDensity(ti->tile)), PAL_NONE);
+					break;
+
+				default:
+					/* This should never be reached, just draw a black sprite to make the problem clear without being unnecessarily punitive */
+					DrawGroundSprite(SPR_FLAT_BARE_LAND + SlopeToSpriteOffset(ti->tileh), PALETTE_ALL_BLACK);
+					break;
+			}
+		}
+	} else if (GB(image, 0, SPRITE_WIDTH) != 0) {
 		/* If the ground sprite is the default flat water sprite, draw also canal/river borders
 		 * Do not do this if the tile's WaterClass is 'land'. */
 		if ((image == SPR_FLAT_WATER_TILE || spec->flags & OBJECT_FLAG_DRAW_WATER) && IsTileOnWater(ti->tile)) {
