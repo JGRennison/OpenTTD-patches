@@ -967,18 +967,17 @@ CommandCost CmdRemoveSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 
 			cost.AddCost(RailClearCost(GetTileRailTypeByTrackBit(tile, trackbit)));
 
-			/* Charge extra to remove signals on the track, if they are there */
-			if (HasSignalOnTrack(tile, track)) {
-				if (flags & DC_EXEC) CheckRemoveSignal(tile, track);
-				cost.AddCost(DoCommand(tile, track, 0, flags, CMD_REMOVE_SIGNALS));
-			}
-
 			if (HasReservedTracks(tile, trackbit)) {
 				v = GetTrainForReservation(tile, track);
 				if (v != nullptr) {
 					CommandCost ret = CheckTrainReservationPreventsTrackModification(v);
 					if (ret.Failed()) return ret;
 				}
+			}
+
+			/* Charge extra to remove signals on the track, if they are there */
+			if (HasSignalOnTrack(tile, track)) {
+				cost.AddCost(DoCommand(tile, track, 0, flags, CMD_REMOVE_SIGNALS));
 			}
 
 			if (flags & DC_EXEC) {
