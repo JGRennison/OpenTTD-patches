@@ -113,6 +113,8 @@ enum SlXvFeatureIndex {
 	XSLFI_DEPOT_ORDER_EXTRA_FLAGS,                ///< Depot order extra flags
 	XSLFI_EXTRA_SIGNAL_TYPES,                     ///< Extra signal types
 	XSLFI_BANKRUPTCY_EXTRA,                       ///< Extra company bankruptcy fields
+	XSLFI_OBJECT_GROUND_TYPES,                    ///< Object ground types
+
 	XSLFI_SCRIPT_INT64,                           ///< See: SLV_SCRIPT_INT64
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
