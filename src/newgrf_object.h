@@ -43,8 +43,16 @@ DECLARE_ENUM_AS_BIT_SET(ObjectFlags)
 enum ObjectCtrlFlags {
 	OBJECT_CTRL_FLAG_NONE               =       0, ///< Just nothing.
 	OBJECT_CTRL_FLAG_USE_LAND_GROUND    = 1 <<  0, ///< Use land for ground sprite.
+	OBJECT_CTRL_FLAG_EDGE_FOUNDATION    = 1 <<  2, ///< Use edge foundation mode.
 };
 DECLARE_ENUM_AS_BIT_SET(ObjectCtrlFlags)
+
+enum ObjectEdgeFoundationFlags {
+	/* Bits 0 and 1 use for edge DiagDirection */
+	OBJECT_EF_FLAG_ADJUST_Z             = 1 <<  2, ///< Adjust sprite z position to z at edge.
+	OBJECT_EF_FLAG_FOUNDATION_LOWER     = 1 <<  3, ///< If edge is lower than tile max z, add foundation.
+};
+DECLARE_ENUM_AS_BIT_SET(ObjectEdgeFoundationFlags)
 
 void ResetObjects();
 
@@ -75,6 +83,7 @@ struct ObjectSpec {
 	Date end_of_life_date;        ///< When can't this object be built anymore.
 	ObjectFlags flags;            ///< Flags/settings related to the object.
 	ObjectCtrlFlags ctrl_flags;   ///< Extra control flags.
+	uint8 edge_foundation[4];     ///< Edge foundation flags
 	AnimationInfo animation;      ///< Information about the animation.
 	uint16 callback_mask;         ///< Bitmask of requested/allowed callbacks.
 	uint8 height;                 ///< The height of this structure, in heightlevels; max MAX_TILE_HEIGHT.
@@ -167,7 +176,7 @@ static const CargoID CT_PURCHASE_OBJECT = 1;
 
 uint16 GetObjectCallback(CallbackID callback, uint32 param1, uint32 param2, const ObjectSpec *spec, Object *o, TileIndex tile, uint8 view = 0);
 
-void DrawNewObjectTile(TileInfo *ti, const ObjectSpec *spec);
+void DrawNewObjectTile(TileInfo *ti, const ObjectSpec *spec, int building_z_offset);
 void DrawNewObjectTileInGUI(int x, int y, const ObjectSpec *spec, uint8 view);
 void AnimateNewObjectTile(TileIndex tile);
 uint8 GetNewObjectTileAnimationSpeed(TileIndex tile);

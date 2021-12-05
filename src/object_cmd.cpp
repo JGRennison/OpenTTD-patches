@@ -517,13 +517,34 @@ static Foundation GetFoundation_Object(TileIndex tile, Slope tileh);
 
 static void DrawTile_Object(TileInfo *ti, DrawTileProcParams params)
 {
-	ObjectType type = GetObjectType(ti->tile);
+	const Object *obj = Object::GetByTile(ti->tile);
+	ObjectType type = obj->type;
 	const ObjectSpec *spec = ObjectSpec::Get(type);
 
-	/* Fall back for when the object doesn't exist anymore. */
-	if (!spec->enabled) type = OBJECT_TRANSMITTER;
+	int building_z_offset = 0;
 
-	if ((spec->flags & OBJECT_FLAG_HAS_NO_FOUNDATION) == 0) DrawFoundation(ti, GetFoundation_Object(ti->tile, ti->tileh));
+	/* Fall back for when the object doesn't exist anymore. */
+	if (!spec->enabled) {
+		type = OBJECT_TRANSMITTER;
+	} else if ((spec->flags & OBJECT_FLAG_HAS_NO_FOUNDATION) == 0) {
+		if (spec->ctrl_flags & OBJECT_CTRL_FLAG_EDGE_FOUNDATION) {
+			uint8 flags = spec->edge_foundation[obj->view];
+			DiagDirection edge = (DiagDirection)GB(flags, 0, 2);
+			Slope incline = InclinedSlope(edge);
+			if (IsSteepSlope(ti->tileh) || IsOddParity(incline & ti->tileh)) {
+				/* Steep slope, or odd number of matching bits indicating that edge is not level */
+				DrawFoundation(ti, GetFoundation_Object(ti->tile, ti->tileh));
+			} else if (flags & OBJECT_EF_FLAG_FOUNDATION_LOWER && !(ti->tileh & incline)) {
+				/* The edge is the lower edge of an inclined slope */
+				DrawFoundation(ti, GetFoundation_Object(ti->tile, ti->tileh));
+			} else if (flags & OBJECT_EF_FLAG_ADJUST_Z && ti->tileh & incline) {
+				/* The edge is elevated relative to the lowest tile height, adjust z */
+				building_z_offset = TILE_HEIGHT;
+			}
+		} else {
+			DrawFoundation(ti, GetFoundation_Object(ti->tile, ti->tileh));
+		}
+	}
 
 	if (type < NEW_OBJECT_OFFSET) {
 		const DrawTileSprites *dts = nullptr;
@@ -564,7 +585,7 @@ static void DrawTile_Object(TileInfo *ti, DrawTileProcParams params)
 			}
 		}
 	} else {
-		DrawNewObjectTile(ti, spec);
+		DrawNewObjectTile(ti, spec, building_z_offset);
 	}
 
 	DrawBridgeMiddle(ti);
@@ -1065,6 +1086,16 @@ static void ChangeTileOwner_Object(TileIndex tile, Owner old_owner, Owner new_ow
 	}
 }
 
+static int GetObjectEffectiveZ(TileIndex tile, const ObjectSpec *spec, int z, Slope tileh)
+{
+	if ((spec->ctrl_flags & OBJECT_CTRL_FLAG_EDGE_FOUNDATION) && !(spec->flags & OBJECT_FLAG_HAS_NO_FOUNDATION)) {
+		uint8 flags = spec->edge_foundation[Object::GetByTile(tile)->view];
+		DiagDirection edge = (DiagDirection)GB(flags, 0, 2);
+		if (!(flags & OBJECT_EF_FLAG_FOUNDATION_LOWER) && !(tileh & InclinedSlope(edge))) return z;
+	}
+	return z + GetSlopeMaxZ(tileh);
+}
+
 static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlag flags, int z_new, Slope tileh_new)
 {
 	ObjectType type = GetObjectType(tile);
@@ -1080,10 +1111,11 @@ static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlag flags, int
 		 *  - Allow autoslope by default.
 		 *  - Disallow autoslope if callback succeeds and returns non-zero.
 		 */
-		Slope tileh_old = GetTileSlope(tile);
-		/* TileMaxZ must not be changed. Slopes must not be steep. */
-		if (!IsSteepSlope(tileh_old) && !IsSteepSlope(tileh_new) && (GetTileMaxZ(tile) == z_new + GetSlopeMaxZ(tileh_new))) {
-			const ObjectSpec *spec = ObjectSpec::Get(type);
+		int z_old;
+		Slope tileh_old = GetTileSlope(tile, &z_old);
+		const ObjectSpec *spec = ObjectSpec::Get(type);
+		/* Object height must not be changed. Slopes must not be steep. */
+		if (!IsSteepSlope(tileh_old) && !IsSteepSlope(tileh_new) && (GetObjectEffectiveZ(tile, spec, z_old, tileh_old) == GetObjectEffectiveZ(tile, spec, z_new, tileh_new))) {
 
 			/* Call callback 'disable autosloping for objects'. */
 			if (HasBit(spec->callback_mask, CBM_OBJ_AUTOSLOPE)) {

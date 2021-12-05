@@ -418,7 +418,7 @@ uint16 GetObjectCallback(CallbackID callback, uint32 param1, uint32 param2, cons
  * @param group The group of sprites to draw.
  * @param spec  Object spec to draw.
  */
-static void DrawTileLayout(const TileInfo *ti, const TileLayoutSpriteGroup *group, const ObjectSpec *spec)
+static void DrawTileLayout(TileInfo *ti, const TileLayoutSpriteGroup *group, const ObjectSpec *spec, int building_z_offset)
 {
 	const DrawTileSprites *dts = group->ProcessRegisters(nullptr);
 	PaletteID palette = ((spec->flags & OBJECT_FLAG_2CC_COLOUR) ? SPR_2CCMAP_BASE : PALETTE_RECOLOUR_START) + Object::GetByTile(ti->tile)->colour;
@@ -455,7 +455,9 @@ static void DrawTileLayout(const TileInfo *ti, const TileLayoutSpriteGroup *grou
 		}
 	}
 
+	if (building_z_offset) ti->z += building_z_offset;
 	DrawNewGRFTileSeq(ti, dts, TO_STRUCTURES, 0, palette);
+	if (building_z_offset) ti->z -= building_z_offset;
 }
 
 /**
@@ -463,7 +465,7 @@ static void DrawTileLayout(const TileInfo *ti, const TileLayoutSpriteGroup *grou
  * @param ti   Information about the tile to draw on.
  * @param spec Object spec to draw.
  */
-void DrawNewObjectTile(TileInfo *ti, const ObjectSpec *spec)
+void DrawNewObjectTile(TileInfo *ti, const ObjectSpec *spec, int building_z_offset)
 {
 	Object *o = Object::GetByTile(ti->tile);
 	ObjectResolverObject object(spec, o, ti->tile);
@@ -471,7 +473,7 @@ void DrawNewObjectTile(TileInfo *ti, const ObjectSpec *spec)
 	const SpriteGroup *group = object.Resolve();
 	if (group == nullptr || group->type != SGT_TILELAYOUT) return;
 
-	DrawTileLayout(ti, (const TileLayoutSpriteGroup *)group, spec);
+	DrawTileLayout(ti, (const TileLayoutSpriteGroup *)group, spec, building_z_offset);
 }
 
 /**

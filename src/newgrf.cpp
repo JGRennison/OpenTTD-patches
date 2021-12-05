@@ -4301,6 +4301,14 @@ static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, const G
 				SB(spec->ctrl_flags, OBJECT_CTRL_FLAG_USE_LAND_GROUND, 1, (buf->ReadByte() != 0 ? 1 : 0));
 				break;
 
+			case A0RPI_OBJECT_EDGE_FOUNDATION_MODE:
+				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
+				SetBit(spec->ctrl_flags, OBJECT_CTRL_FLAG_EDGE_FOUNDATION);
+				for (int i = 0; i < 4; i++) {
+					spec->edge_foundation[i] = buf->ReadByte();
+				}
+				break;
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;
