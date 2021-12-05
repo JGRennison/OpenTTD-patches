@@ -258,6 +258,7 @@ struct GUISettings : public TimeSettings {
 	bool   newgrf_show_old_versions;         ///< whether to show old versions in the NewGRF list
 	uint8  newgrf_default_palette;           ///< default palette to use for NewGRFs without action 14 palette information
 	bool   console_show_unlisted;            ///< whether to show unlisted console commands
+	bool   newgrf_disable_big_gui;           ///< whether to disable "big GUI" NewGRFs
 
 	/**
 	 * Returns true when the user has sufficient privileges to edit newgrfs on a running game
