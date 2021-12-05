@@ -856,8 +856,12 @@ class NIHObject : public NIHelper {
 		output.print("Debug Info:");
 		const ObjectSpec *spec = ObjectSpec::GetByTile(index);
 		if (spec) {
+			ObjectID id = GetObjectIndex(index);
+			const Object *obj = Object::Get(id);
 			uint class_id = ObjectClass::Get(spec->cls_id)->global_id;
-			seprintf(buffer, lastof(buffer), "  index: %u, type ID: %u, class ID: %c%c%c%c", GetObjectIndex(index), GetObjectType(index), class_id >> 24, class_id >> 16, class_id >> 8, class_id);
+			seprintf(buffer, lastof(buffer), "  index: %u, type ID: %u, class ID: %c%c%c%c", id, GetObjectType(index), class_id >> 24, class_id >> 16, class_id >> 8, class_id);
+			output.print(buffer);
+			seprintf(buffer, lastof(buffer), "  view: %u, colour: %u", obj->view, obj->colour);
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", spec->animation.frames, spec->animation.status, spec->animation.speed, spec->animation.triggers);
 			output.print(buffer);
