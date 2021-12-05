@@ -427,7 +427,7 @@ static void DrawTileLayout(TileInfo *ti, const TileLayoutSpriteGroup *group, con
 	PaletteID pal  = dts->ground.pal;
 
 	if (spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
-		if (IsTileOnWater(ti->tile)) {
+		if (IsTileOnWater(ti->tile) && GetObjectGroundType(ti->tile) != OBJECT_GROUND_SHORE) {
 			DrawWaterClassGround(ti);
 		} else {
 			switch (GetObjectGroundType(ti->tile)) {
@@ -437,6 +437,10 @@ static void DrawTileLayout(TileInfo *ti, const TileLayoutSpriteGroup *group, con
 
 				case OBJECT_GROUND_SNOW_DESERT:
 					DrawGroundSprite(GetSpriteIDForSnowDesert(ti->tileh, GetObjectGroundDensity(ti->tile)), PAL_NONE);
+					break;
+
+				case OBJECT_GROUND_SHORE:
+					DrawShoreTile(ti->tileh);
 					break;
 
 				default:

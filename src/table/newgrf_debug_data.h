@@ -861,8 +861,12 @@ class NIHObject : public NIHelper {
 			uint class_id = ObjectClass::Get(spec->cls_id)->global_id;
 			seprintf(buffer, lastof(buffer), "  index: %u, type ID: %u, class ID: %c%c%c%c", id, GetObjectType(index), class_id >> 24, class_id >> 16, class_id >> 8, class_id);
 			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  view: %u, colour: %u", obj->view, obj->colour);
+			seprintf(buffer, lastof(buffer), "  view: %u, colour: %u, effective foundation: %u", obj->view, obj->colour, !GetObjectHasNoEffectiveFoundation(index));
 			output.print(buffer);
+			if (spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
+				seprintf(buffer, lastof(buffer), "  ground type: %u, density: %u, counter: %u, water class: %u", GetObjectGroundType(index), GetObjectGroundDensity(index), GetObjectGroundCounter(index), GetWaterClass(index));
+				output.print(buffer);
+			}
 			seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", spec->animation.frames, spec->animation.status, spec->animation.speed, spec->animation.triggers);
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "  size: %ux%u, height: %u, views: %u", GB(spec->size, 4, 4), GB(spec->size, 0, 4), spec->height, spec->views);

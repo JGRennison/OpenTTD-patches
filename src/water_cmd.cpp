@@ -38,6 +38,9 @@
 #include "company_gui.h"
 #include "newgrf_generic.h"
 #include "industry.h"
+#include "object_base.h"
+#include "object_map.h"
+#include "newgrf_object.h"
 
 #include "table/strings.h"
 
@@ -1121,7 +1124,6 @@ FloodingBehaviour GetFloodingBehaviour(TileIndex tile)
 			FALLTHROUGH;
 		case MP_STATION:
 		case MP_INDUSTRY:
-		case MP_OBJECT:
 			return (GetWaterClass(tile) == WATER_CLASS_SEA) ? FLOOD_ACTIVE : FLOOD_NONE;
 
 		case MP_RAILWAY:
@@ -1132,6 +1134,9 @@ FloodingBehaviour GetFloodingBehaviour(TileIndex tile)
 
 		case MP_TREES:
 			return (GetTreeGround(tile) == TREE_GROUND_SHORE ? FLOOD_DRYUP : FLOOD_NONE);
+
+		case MP_OBJECT:
+			return (GetObjectGroundType(tile) == OBJECT_GROUND_SHORE ? FLOOD_DRYUP : ((GetWaterClass(tile) == WATER_CLASS_SEA) ? FLOOD_ACTIVE : FLOOD_NONE));
 
 		default:
 			return FLOOD_NONE;
@@ -1176,6 +1181,30 @@ void DoFloodTile(TileIndex target)
 					flooded = true;
 				}
 				break;
+
+			case MP_OBJECT: {
+				const ObjectSpec *spec = ObjectSpec::GetByTile(target);
+				if ((spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) && (spec->ctrl_flags & OBJECT_CTRL_FLAG_EDGE_FOUNDATION)) {
+					Object *obj = Object::GetByTile(target);
+					uint8 flags = spec->edge_foundation[obj->view];
+					DiagDirection edge = (DiagDirection)GB(flags, 0, 2);
+					Slope incline = InclinedSlope(edge);
+					if (!(tileh & incline) && !(flags & OBJECT_EF_FLAG_FOUNDATION_LOWER)) {
+						/* object is on the lower edge with no foundation, and now underwater, clear the tile and then flood it */
+						if (DoCommand(target, 0, 0, DC_EXEC, CMD_LANDSCAPE_CLEAR).Succeeded()) {
+							MakeShore(target);
+							MarkTileDirtyByTile(target);
+							flooded = true;
+						}
+						break;
+					}
+					SetWaterClass(target, WATER_CLASS_SEA);
+					SetObjectGroundTypeDensity(target, OBJECT_GROUND_SHORE, 3);
+					MarkTileDirtyByTile(target, VMDF_NOT_MAP_MODE);
+					flooded = true;
+				}
+				break;
+			}
 
 			default:
 				break;
@@ -1243,6 +1272,12 @@ static void DoDryUp(TileIndex tile)
 			}
 			break;
 
+		case MP_OBJECT:
+			SetWaterClass(tile, WATER_CLASS_INVALID);
+			SetObjectGroundTypeDensity(tile, OBJECT_GROUND_GRASS, 3);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+			break;
+
 		default: NOT_REACHED();
 	}
 
@@ -1274,6 +1309,7 @@ void TileLoop_Water(TileIndex tile)
 
 				/* TREE_GROUND_SHORE is the sign of a previous flood. */
 				if (IsTileType(dest, MP_TREES) && GetTreeGround(dest) == TREE_GROUND_SHORE) continue;
+				if (IsTileType(dest, MP_OBJECT) && (!GetObjectHasNoEffectiveFoundation(dest) || GetObjectGroundType(dest) == OBJECT_GROUND_SHORE)) continue;
 
 				int z_dest;
 				Slope slope_dest = GetFoundationSlope(dest, &z_dest) & ~SLOPE_HALFTILE_MASK & ~SLOPE_STEEP;

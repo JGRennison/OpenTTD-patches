@@ -16,6 +16,7 @@
 enum ObjectGround {
 	OBJECT_GROUND_GRASS       = 0, ///< Grass or bare
 	OBJECT_GROUND_SNOW_DESERT = 1, ///< Snow or desert
+	OBJECT_GROUND_SHORE       = 2, ///< Shore
 };
 
 ObjectType GetObjectType(TileIndex t);
@@ -153,6 +154,18 @@ static inline void SetObjectGroundTypeDensity(TileIndex t, ObjectGround type, ui
 {
 	assert_tile(IsTileType(t, MP_OBJECT), t);
 	_m[t].m4 = 0 << 5 | type << 2 | density;
+}
+
+static inline bool GetObjectHasNoEffectiveFoundation(TileIndex t)
+{
+	assert_tile(IsTileType(t, MP_OBJECT), t);
+	return GB(_m[t].m4, 4, 1);
+}
+
+static inline void SetObjectHasNoEffectiveFoundation(TileIndex t, bool no_foundation)
+{
+	assert_tile(IsTileType(t, MP_OBJECT), t);
+	SB(_m[t].m4, 4, 1, no_foundation ? 1 : 0);
 }
 
 /**
