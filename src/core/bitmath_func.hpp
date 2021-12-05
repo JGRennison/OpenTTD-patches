@@ -318,6 +318,30 @@ static inline uint CountBits(T value)
 }
 
 /**
+ * Return whether the input has odd parity (odd number of bits set).
+ *
+ * @param value the value to return the parity of.
+ * @return true if the parity is odd.
+ */
+template <typename T>
+static inline bool IsOddParity(T value)
+{
+	static_assert(sizeof(T) <= sizeof(unsigned long long));
+#ifdef WITH_BITMATH_BUILTINS
+	typename std::make_unsigned<T>::type unsigned_value = value;
+	if (sizeof(T) <= sizeof(unsigned int)) {
+		return __builtin_parity(unsigned_value);
+	} else if (sizeof(T) == sizeof(unsigned long)) {
+		return __builtin_parityl(unsigned_value);
+	} else {
+		return __builtin_parityll(unsigned_value);
+	}
+#else
+	return CountBits<T>(value) & 1;
+#endif
+}
+
+/**
  * Test whether \a value has exactly 1 bit set
  *
  * @param value the value to test.
