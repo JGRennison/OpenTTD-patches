@@ -44,6 +44,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action3_signals_custom_signal_sprites", 1),
 	GRFFeatureInfo("action0_object_use_land_ground", 1),
 	GRFFeatureInfo("action0_object_edge_foundation_mode", 1),
+	GRFFeatureInfo("action0_object_flood_resistant", 1),
 	GRFFeatureInfo(),
 };
 
@@ -70,6 +71,7 @@ extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 	GRFPropertyMapDefinition(GSF_SIGNALS, A0RPI_SIGNALS_EXTRA_ASPECTS, "signals_extra_aspects"),
 	GRFPropertyMapDefinition(GSF_OBJECTS, A0RPI_OBJECT_USE_LAND_GROUND, "object_use_land_ground"),
 	GRFPropertyMapDefinition(GSF_OBJECTS, A0RPI_OBJECT_EDGE_FOUNDATION_MODE, "object_edge_foundation_mode"),
+	GRFPropertyMapDefinition(GSF_OBJECTS, A0RPI_OBJECT_FLOOD_RESISTANT, "object_flood_resistant"),
 	GRFPropertyMapDefinition(),
 };
 

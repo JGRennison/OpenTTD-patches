@@ -44,6 +44,7 @@ enum ObjectCtrlFlags {
 	OBJECT_CTRL_FLAG_NONE               =       0, ///< Just nothing.
 	OBJECT_CTRL_FLAG_USE_LAND_GROUND    = 1 <<  0, ///< Use land for ground sprite.
 	OBJECT_CTRL_FLAG_EDGE_FOUNDATION    = 1 <<  2, ///< Use edge foundation mode.
+	OBJECT_CTRL_FLAG_FLOOD_RESISTANT    = 1 <<  3, ///< Object is flood-resistant.
 };
 DECLARE_ENUM_AS_BIT_SET(ObjectCtrlFlags)
 
