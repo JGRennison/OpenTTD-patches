@@ -82,6 +82,7 @@
 #include "debug_settings.h"
 #include "debug_desync.h"
 #include "event_logs.h"
+#include "tunnelbridge.h"
 
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
@@ -1336,6 +1337,43 @@ void WriteVehicleInfo(char *&p, const char *last, const Vehicle *u, const Vehicl
 	}
 }
 
+static bool SignalInfraTotalMatches()
+{
+	std::array<int, MAX_COMPANIES> old_signal_totals = {};
+	for (const Company *c : Company::Iterate()) {
+		old_signal_totals[c->index] = c->infrastructure.signal;
+	}
+
+	std::array<int, MAX_COMPANIES> new_signal_totals = {};
+	for (TileIndex tile = 0; tile < MapSize(); tile++) {
+		switch (GetTileType(tile)) {
+			case MP_RAILWAY:
+				if (HasSignals(tile)) {
+					const Company *c = Company::GetIfValid(GetTileOwner(tile));
+					if (c != nullptr) new_signal_totals[c->index] += CountBits(GetPresentSignals(tile));
+				}
+				break;
+
+			case MP_TUNNELBRIDGE: {
+				/* Only count the tunnel/bridge if we're on the northern end tile. */
+				DiagDirection dir = GetTunnelBridgeDirection(tile);
+				if (dir == DIAGDIR_NE || dir == DIAGDIR_NW) break;
+
+				if (IsTunnelBridgeWithSignalSimulation(tile)) {
+					const Company *c = Company::GetIfValid(GetTileOwner(tile));
+					if (c != nullptr) new_signal_totals[c->index] += GetTunnelBridgeSignalSimulationSignalCount(tile, GetOtherTunnelBridgeEnd(tile));
+				}
+				break;
+			}
+
+			default:
+				break;
+		}
+	}
+
+	return old_signal_totals == new_signal_totals;
+}
+
 /**
  * Check the validity of some of the caches.
  * Especially in the sense of desyncs between
@@ -1350,6 +1388,9 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 		if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_PERIODIC)) && desync_level < 1) {
 			desync_level = 1;
 			if (HasChickenBit(DCBF_DESYNC_CHECK_NO_GENERAL)) flags &= ~CHECK_CACHE_GENERAL;
+		}
+		if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_PERIODIC_SIGNALS)) && desync_level < 2 && _scaled_date_ticks % 256 == 0) {
+			if (!SignalInfraTotalMatches()) desync_level = 2;
 		}
 
 		/* Return here so it is easy to add checks that are run
@@ -1492,6 +1533,9 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 				ProcessLineByLine(buffer, [&](const char *line) {
 					CCLOG("  %s", line);
 				});
+				if (old_infrastructure[i].signal != c->infrastructure.signal && _network_server && !HasChickenBit(DCBF_DESYNC_CHECK_PERIODIC_SIGNALS)) {
+					DoCommandP(0, 0, _settings_game.debug.chicken_bits | (1 << DCBF_DESYNC_CHECK_PERIODIC_SIGNALS), CMD_CHANGE_SETTING, nullptr, "debug.chicken_bits");
+				}
 			}
 			i++;
 		}
