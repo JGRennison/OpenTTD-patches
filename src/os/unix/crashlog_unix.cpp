@@ -22,6 +22,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/mman.h>
 
 #if defined(WITH_DBG_GDB)
 #include <sys/syscall.h>
@@ -585,7 +586,13 @@ static void CDECL HandleCrash(int signum)
 #else
 	CrashLogUnix log(signum);
 #endif
-	log.MakeCrashLog();
+	const size_t length = 65536 * 16;
+	char *buffer = (char *)mmap(nullptr, length, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+	if (buffer != MAP_FAILED) {
+		log.MakeCrashLog(buffer, buffer + length - 1);
+	} else {
+		log.MakeCrashLogWithStackBuffer();
+	}
 
 	CrashLog::AfterCrashLogCleanup();
 	abort();

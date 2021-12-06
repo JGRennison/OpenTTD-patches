@@ -152,7 +152,8 @@ public:
 	bool WriteSavegame(char *filename, const char *filename_last, const char *name = "crash") const;
 	bool WriteScreenshot(char *filename, const char *filename_last, const char *name = "crash") const;
 
-	bool MakeCrashLog();
+	bool MakeCrashLog(char *buffer, const char *last);
+	bool MakeCrashLogWithStackBuffer();
 	bool MakeDesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info) const;
 	bool MakeInconsistencyLog(const InconsistencyExtraInfo &info) const;
 	bool MakeVersionInfoLog() const;

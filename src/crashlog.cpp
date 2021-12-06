@@ -696,7 +696,7 @@ bool CrashLog::WriteScreenshot(char *filename, const char *filename_last, const 
  * information like paths to the console.
  * @return true when everything is made successfully.
  */
-bool CrashLog::MakeCrashLog()
+bool CrashLog::MakeCrashLog(char *buffer, const char *last)
 {
 	/* Don't keep looping logging crashes. */
 	static bool crashlogged = false;
@@ -708,7 +708,6 @@ bool CrashLog::MakeCrashLog()
 	}
 
 	char filename[MAX_PATH];
-	char buffer[65536 * 4];
 	bool ret = true;
 
 	char *name_buffer_date = this->name_buffer + seprintf(this->name_buffer, lastof(this->name_buffer), "crash-");
@@ -716,7 +715,7 @@ bool CrashLog::MakeCrashLog()
 	strftime(name_buffer_date, lastof(this->name_buffer) - name_buffer_date, "%Y%m%dT%H%M%SZ", gmtime(&cur_time));
 
 	printf("Crash encountered, generating crash log...\n");
-	this->FillCrashLog(buffer, lastof(buffer));
+	this->FillCrashLog(buffer, last);
 	printf("%s\n", buffer);
 	printf("Crash log generated.\n\n");
 
@@ -750,6 +749,12 @@ bool CrashLog::MakeCrashLog()
 	if (!bret) ret = false;
 
 	return ret;
+}
+
+bool CrashLog::MakeCrashLogWithStackBuffer()
+{
+	char buffer[65536 * 4];
+	return this->MakeCrashLog(buffer, lastof(buffer));
 }
 
 /**
