@@ -32,6 +32,7 @@
 #include "thread.h"
 #include "debug_desync.h"
 #include "event_logs.h"
+#include "scope.h"
 
 #include "ai/ai_info.hpp"
 #include "game/game.hpp"
@@ -760,7 +761,14 @@ bool CrashLog::MakeCrashLog()
 bool CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info) const
 {
 	char filename[MAX_PATH];
-	char buffer[65536 * 2];
+
+	const size_t length = 65536 * 16;
+	char * const buffer = MallocT<char>(length);
+	auto guard = scope_guard([=]() {
+		free(buffer);
+	});
+	const char * const last = buffer + length - 1;
+
 	bool ret = true;
 
 	const char *mode = _network_server ? "server" : "client";
@@ -771,13 +779,13 @@ bool CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_ou
 	strftime(name_buffer_date, lastof(name_buffer) - name_buffer_date, "%Y%m%dT%H%M%SZ", gmtime(&cur_time));
 
 	printf("Desync encountered (%s), generating desync log...\n", mode);
-	char *b = this->FillDesyncCrashLog(buffer, lastof(buffer), info);
+	char *b = this->FillDesyncCrashLog(buffer, last, info);
 
 	if (log_out) log_out->assign(buffer);
 
 	if (log_in && !log_in->empty()) {
-		b = strecpy(b, "\n", lastof(buffer), true);
-		b = strecpy(b, log_in->c_str(), lastof(buffer), true);
+		b = strecpy(b, "\n", last, true);
+		b = strecpy(b, log_in->c_str(), last, true);
 	}
 
 	bool bret = this->WriteCrashLog(buffer, filename, lastof(filename), name_buffer, info.log_file);
@@ -824,7 +832,14 @@ bool CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_ou
 bool CrashLog::MakeInconsistencyLog(const InconsistencyExtraInfo &info) const
 {
 	char filename[MAX_PATH];
-	char buffer[65536 * 2];
+
+	const size_t length = 65536 * 16;
+	char * const buffer = MallocT<char>(length);
+	auto guard = scope_guard([=]() {
+		free(buffer);
+	});
+	const char * const last = buffer + length - 1;
+
 	bool ret = true;
 
 	char name_buffer[64];
@@ -833,7 +848,7 @@ bool CrashLog::MakeInconsistencyLog(const InconsistencyExtraInfo &info) const
 	strftime(name_buffer_date, lastof(name_buffer) - name_buffer_date, "%Y%m%dT%H%M%SZ", gmtime(&cur_time));
 
 	printf("Inconsistency encountered, generating diagnostics log...\n");
-	this->FillInconsistencyLog(buffer, lastof(buffer), info);
+	this->FillInconsistencyLog(buffer, last, info);
 
 	bool bret = this->WriteCrashLog(buffer, filename, lastof(filename), name_buffer);
 	if (bret) {
