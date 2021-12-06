@@ -22,6 +22,8 @@
 OrderBackupPool _order_backup_pool("BackupOrder");
 INSTANTIATE_POOL_METHODS(OrderBackup)
 
+uint OrderBackup::update_counter;
+
 /** Free everything that is allocated. */
 OrderBackup::~OrderBackup()
 {
@@ -33,6 +35,8 @@ OrderBackup::~OrderBackup()
 		delete o;
 		o = next;
 	}
+
+	OrderBackup::update_counter++;
 }
 
 /**
@@ -72,6 +76,8 @@ OrderBackup::OrderBackup(const Vehicle *v, uint32 user)
 			this->scheduled_dispatch_max_delay = v->orders.list->GetScheduledDispatchDelay();
 		}
 	}
+
+	OrderBackup::update_counter++;
 }
 
 /**

@@ -32,6 +32,7 @@
 #include "signal_func.h"
 #include "debug_settings.h"
 #include "debug_desync.h"
+#include "order_backup.h"
 #include <array>
 
 #include "table/strings.h"
@@ -534,6 +535,7 @@ enum CommandLogEntryFlag : uint16 {
 	CLEF_SCRIPT              =  0x80, ///< command run by AI/game script
 	CLEF_TWICE               = 0x100, ///< command logged twice (only sending and execution)
 	CLEF_RANDOM              = 0x200, ///< command changed random seed
+	CLEF_ORDER_BACKUP        = 0x400, ///< command changed order backups
 };
 DECLARE_ENUM_AS_BIT_SET(CommandLogEntryFlag)
 
@@ -597,8 +599,9 @@ static void DumpSubCommandLog(char *&buffer, const char *last, const CommandLog 
 		YearMonthDay ymd;
 		ConvertDateToYMD(entry.date, &ymd);
 		buffer += seprintf(buffer, last, " %3u | %4i-%02i-%02i, %2i, %3i | ", i, ymd.year, ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter);
-		buffer += seprintf(buffer, last, "%c%c%c%c%c%c%c%c%c%c | ",
-				fc(CLEF_RANDOM, 'r'), fc(CLEF_TWICE, '2'), fc(CLEF_SCRIPT, 'a'), fc(CLEF_BINARY, 'b'), fc(CLEF_MY_CMD, 'm'), fc(CLEF_ONLY_SENDING, 's'),
+		buffer += seprintf(buffer, last, "%c%c%c%c%c%c%c%c%c%c%c | ",
+				fc(CLEF_ORDER_BACKUP, 'o'), fc(CLEF_RANDOM, 'r'), fc(CLEF_TWICE, '2'),
+				fc(CLEF_SCRIPT, 'a'),fc(CLEF_BINARY, 'b'), fc(CLEF_MY_CMD, 'm'), fc(CLEF_ONLY_SENDING, 's'),
 				fc(CLEF_ESTIMATE_ONLY, 'e'), fc(CLEF_TEXT, 't'), fc(CLEF_GENERATING_WORLD, 'g'), fc(CLEF_CMD_FAILED, 'f'));
 		buffer += seprintf(buffer, last, " %7d x %7d, p1: 0x%08X, p2: 0x%08X, ",
 				TileX(entry.tile), TileY(entry.tile), entry.p1, entry.p2);
@@ -887,6 +890,7 @@ bool DoCommandPEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, C
 	if (!(cmd & CMD_NETWORK_COMMAND) && GetCommandFlags(cmd) & CMD_CLIENT_ID && p2 == 0) p2 = CLIENT_ID_SERVER;
 
 	GameRandomSeedChecker random_state;
+	uint order_backup_update_counter = OrderBackup::GetUpdateCounter();
 
 	CommandCost res = DoCommandPInternal(tile, p1, p2, p3, cmd, callback, text, my_cmd, estimate_only, binary_length);
 
@@ -898,6 +902,7 @@ bool DoCommandPEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, C
 	if (my_cmd) log_flags |= CLEF_MY_CMD;
 	if (binary_length > 0) log_flags |= CLEF_BINARY;
 	if (!random_state.Check()) log_flags |= CLEF_RANDOM;
+	if (order_backup_update_counter != OrderBackup::GetUpdateCounter()) log_flags |= CLEF_ORDER_BACKUP;
 	AppendCommandLogEntry(res, tile, p1, p2, p3, cmd, log_flags, text);
 
 	if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_POST_COMMAND)) && !(GetCommandFlags(cmd) & CMD_LOG_AUX)) {
@@ -933,6 +938,7 @@ bool DoCommandPEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, C
 CommandCost DoCommandPScript(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, uint32 binary_length)
 {
 	GameRandomSeedChecker random_state;
+	uint order_backup_update_counter = OrderBackup::GetUpdateCounter();
 
 	CommandCost res = DoCommandPInternal(tile, p1, p2, p3, cmd, callback, text, my_cmd, estimate_only, binary_length);
 
@@ -944,6 +950,7 @@ CommandCost DoCommandPScript(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, ui
 	if (my_cmd) log_flags |= CLEF_MY_CMD;
 	if (binary_length > 0) log_flags |= CLEF_BINARY;
 	if (!random_state.Check()) log_flags |= CLEF_RANDOM;
+	if (order_backup_update_counter != OrderBackup::GetUpdateCounter()) log_flags |= CLEF_ORDER_BACKUP;
 	AppendCommandLogEntry(res, tile, p1, p2, p3, cmd, log_flags, text);
 
 	if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_POST_COMMAND)) && !(GetCommandFlags(cmd) & CMD_LOG_AUX)) {

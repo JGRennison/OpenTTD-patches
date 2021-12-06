@@ -58,6 +58,8 @@ private:
 	                                           /// this count to (DAY_TICK * _settings_game.economy.day_length_factor)
 	int32 scheduled_dispatch_max_delay;        ///< Maximum allowed delay
 
+	static uint update_counter;
+
 	/** Creation for savegame restoration. */
 	OrderBackup() {}
 	OrderBackup(const Vehicle *v, uint32 user);
@@ -77,6 +79,8 @@ public:
 	static void ClearGroup(GroupID group);
 	static void ClearVehicle(const Vehicle *v);
 	static void RemoveOrder(OrderType type, DestinationID destination, bool hangar);
+
+	static uint GetUpdateCounter() { return update_counter; }
 };
 
 #endif /* ORDER_BACKUP_H */
