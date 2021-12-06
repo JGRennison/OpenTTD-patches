@@ -249,6 +249,8 @@ void NetworkTCPSocketHandler::LogSentPacket(const Packet &pkt) {}
  */
 bool NetworkTCPSocketHandler::CanSendReceive()
 {
+	assert(this->sock != INVALID_SOCKET);
+
 	fd_set read_fd, write_fd;
 	struct timeval tv;
 
