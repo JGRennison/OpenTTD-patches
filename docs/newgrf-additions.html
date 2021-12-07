@@ -310,6 +310,7 @@
 	</table>
 	</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_global_extra_station_names</font>, version 1</p>
+	<br />
 	<h3 id="a0signals"><a href="https://newgrf-specs.tt-wiki.net/wiki/Action0">Action 0 - Signals (Feature 0E)</a></h3>
 	<p>Note that Action 0 feature 0E is not supported (does nothing) in standard OpenTTD.</p>
 	<p>This implementation of feature 0E is not the same as that in TTDPatch.</p>
@@ -363,6 +364,43 @@
 	The provided value is currently clamped to be within the range 0 - 6 (inclusive).</p>
 	<p>N.B. Realistic braking must be enabled for additional signal aspects to be used.</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_signals_extra_aspects</font>, version 1</p>
+	<br />
+	<h3 id="a0objects"><a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Objects">Action 0 - Objects</a></h3>
+	<h4 id="object_use_land_ground">Object uses land ground sprite (mappable property: object_use_land_ground)</h4>
+	<p>This property sets whether to use the underlying ground as the object ground sprite, ignoring the ground sprite provided in the sprite layout.<br />
+	When enabled, the ground sprite will be bare ground, grass, snow, desert, etc. as if it were a clear ground tile.<br />
+	In edge foundation mode, the ground may be coast/shore when flooded.<br />
+	The property length is 1 byte. 0 is disabled (default). 1 is enabled.</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_object_use_land_ground</font>, version 1</p>
+	<h4 id="object_edge_foundation_mode">Enable object edge foundation mode (mappable property: object_edge_foundation_mode)</h4>
+	<p>This property enables edge foundation mode for the object.<br />
+	This property is intended for objects which are positioned at the edge of a tile, and only require a level edge, not a completely level tile.<br />
+	Foundations will only be added as required to get a suitable level edge.<br />
+	The property length is 4 bytes, 1 byte per view. If the object has fewer than 4 views then some of the values provided in the property will not be used, and may be 0.<br />
+	The format of each byte is:
+	<table>
+	<tr><th>Bit</th><th>Value</th><th>Meaning (for this view)</th></tr>
+	<tr><td>0 - 1</td><td></td><td>
+		Which tile edge to use:<br />
+		<table>
+		<tr><th>Value</th><th>Meaning</th></tr>
+		<tr><td>0</td><td>North-east edge</td></tr>
+		<tr><td>1</td><td>South-east edge</td></tr>
+		<tr><td>2</td><td>South-west edge</td></tr>
+		<tr><td>3</td><td>North-west edge</td></tr>
+		</table>
+	</td></tr>
+	<tr><td>2</td><td>4</td><td>Change z-position for the building sprite to the height of the edge</td></tr>
+	<tr><td>3</td><td>8</td><td>If the height of the edge is lower than the maximum height of the tile, build a foundation</td></tr>
+	</table>
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_object_edge_foundation_mode</font>, version 1</p>
+	<h4 id="object_flood_resistant">Object is flood resistant (mappable property: object_flood_resistant)</h4>
+	<p>This property sets whether the object is flood resistant.<br />
+	Flood resistance is always enabled for objects which can be built on water.<br />
+	This property can be used to enable flood resistance without enabling the object to be built on water.<br />
+	The property length is 1 byte. 0 is disabled (default). 1 is enabled.</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_object_flood_resistant</font>, version 1</p>
 	<br />
 	<br />
 	<h3 id="varaction2_station"><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Stations">Variational Action 2 - Stations</a></h3>

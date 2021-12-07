@@ -124,6 +124,41 @@
 		</td>
 	</tr>
 	</table>
+	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Objects#Object_properties">Object properties</a></h3>
+	<table>
+	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
+	<tr><td>use_land_ground</td><td>0 or 1</td><td>
+		Sets whether to use the underlying ground as the object ground sprite, ignoring the ground sprite provided in the sprite layout.<br />
+		When enabled, the ground sprite will be bare ground, grass, snow, desert, etc. as if it were a clear ground tile.<br />
+		In edge foundation mode, the ground may be coast/shore when flooded.
+	</td></tr>
+	<tr><td>edge_foundation_mode</td><td>[mode0, mode1, mode2, mode3]</td><td>
+		Enables edge foundation mode for the object.<br />
+		This property is intended for objects which are positioned at the edge of a tile, and only require a level edge, not a completely level tile.<br />
+		Foundations will only be added as required to get a suitable level edge.<br />
+		The format is one mode value per view. If the object has fewer than 4 views then some of the values provided in the property will not be used, and may be 0.
+		All four values must be constants.<br />
+		Each mode value should be one of:
+		<table>
+			<tr><th>Value</th><th>Meaning</th></tr>
+			<tr><td>DIAGDIR_NE</td><td>North-east edge</td></tr>
+			<tr><td>DIAGDIR_SE</td><td>South-east edge</td></tr>
+			<tr><td>DIAGDIR_SW</td><td>South-west edge</td></tr>
+			<tr><td>DIAGDIR_NW</td><td>North-west edge</td></tr>
+		</table>
+		combined with 0 or more flags using the | operator:
+		<table>
+			<tr><th>Value</th><th>Meaning</th></tr>
+			<tr><td>OBJECT_EF_FLAG_ADJUST_Z</td><td>Change z-position for the building sprite to the height of the edge</td></tr>
+			<tr><td>OBJECT_EF_FLAG_FOUNDATION_LOWER</td><td>If the height of the edge is lower than the maximum height of the tile, build a foundation</td></tr>
+		</table>
+	</td></tr>
+	<tr><td>flood_resistant</td><td>0 or 1</td><td>
+		Sets whether the object is flood resistant.<br />
+		Flood resistance is always enabled for objects which can be built on water.<br />
+		This property can be used to enable flood resistance without enabling the object to be built on water.
+	</td></tr>
+	</table>
 	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Replace_new_sprites">Replace new sprites</a></h3>
 	<table>
 	<tr><th>Type</th><th>Number of sprites </th><th>Comment</th></tr>
