@@ -2915,6 +2915,8 @@ static void ConvertRoadTypeOwner(TileIndex tile, uint num_pieces, Owner owner, R
 	// We can't get a company from invalid owners but we can get ownership of roads without an owner
 	if (owner >= MAX_COMPANIES && owner != OWNER_NONE) return;
 
+	assert(from_type != INVALID_ROADTYPE && to_type != INVALID_ROADTYPE);
+
 	Company *c;
 
 	switch (owner) {

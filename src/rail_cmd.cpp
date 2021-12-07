@@ -821,10 +821,12 @@ CommandCost CmdBuildSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 						Company::Get(_current_company)->infrastructure.rail[railtype] += LEVELCROSSING_TRACKBIT_FACTOR;
 						DirtyCompanyInfrastructureWindows(_current_company);
 						if (num_new_road_pieces > 0 && Company::IsValidID(road_owner)) {
+							assert(roadtype_road != INVALID_ROADTYPE);
 							Company::Get(road_owner)->infrastructure.road[roadtype_road] += num_new_road_pieces;
 							DirtyCompanyInfrastructureWindows(road_owner);
 						}
 						if (num_new_tram_pieces > 0 && Company::IsValidID(tram_owner)) {
+							assert(roadtype_tram != INVALID_ROADTYPE);
 							Company::Get(tram_owner)->infrastructure.road[roadtype_tram] += num_new_tram_pieces;
 							DirtyCompanyInfrastructureWindows(tram_owner);
 						}
