@@ -4298,12 +4298,13 @@ static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, const G
 
 			case A0RPI_OBJECT_USE_LAND_GROUND:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				SB(spec->ctrl_flags, OBJECT_CTRL_FLAG_USE_LAND_GROUND, 1, (buf->ReadByte() != 0 ? 1 : 0));
+				spec->ctrl_flags &= ~OBJECT_CTRL_FLAG_USE_LAND_GROUND;
+				if (buf->ReadByte() != 0) spec->ctrl_flags |= OBJECT_CTRL_FLAG_USE_LAND_GROUND;
 				break;
 
 			case A0RPI_OBJECT_EDGE_FOUNDATION_MODE:
 				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
-				SetBit(spec->ctrl_flags, OBJECT_CTRL_FLAG_EDGE_FOUNDATION);
+				spec->ctrl_flags |= OBJECT_CTRL_FLAG_EDGE_FOUNDATION;
 				for (int i = 0; i < 4; i++) {
 					spec->edge_foundation[i] = buf->ReadByte();
 				}
@@ -4311,7 +4312,8 @@ static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, const G
 
 			case A0RPI_OBJECT_FLOOD_RESISTANT:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				SB(spec->ctrl_flags, OBJECT_CTRL_FLAG_FLOOD_RESISTANT, 1, (buf->ReadByte() != 0 ? 1 : 0));
+				spec->ctrl_flags &= ~OBJECT_CTRL_FLAG_FLOOD_RESISTANT;
+				if (buf->ReadByte() != 0) spec->ctrl_flags |= OBJECT_CTRL_FLAG_FLOOD_RESISTANT;
 				break;
 
 			default:
