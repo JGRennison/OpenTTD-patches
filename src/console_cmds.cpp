@@ -2412,6 +2412,10 @@ DEF_CONSOLE_CMD(ConMapStats)
 	char buffer[32768];
 	DumpMapStats(buffer, lastof(buffer));
 	PrintLineByLine(buffer);
+
+	IConsolePrint(CC_DEFAULT, "");
+	IConsolePrintF(CC_DEFAULT, "towns: %u", (uint) Town::GetNumItems());
+	IConsolePrintF(CC_DEFAULT, "industries: %u", (uint) Industry::GetNumItems());
 	return true;
 }
 
