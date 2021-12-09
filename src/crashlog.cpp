@@ -690,6 +690,32 @@ bool CrashLog::WriteScreenshot(char *filename, const char *filename_last, const 
 	return res;
 }
 
+#ifdef DEDICATED
+static bool CopyAutosave(const std::string &old_name, const std::string &new_name)
+{
+	FILE *old_fh = FioFOpenFile(old_name, "rb", AUTOSAVE_DIR);
+	if (old_fh == nullptr) return false;
+	auto guard1 = scope_guard([=]() {
+		FioFCloseFile(old_fh);
+	});
+	FILE *new_fh = FioFOpenFile(new_name, "wb", AUTOSAVE_DIR);
+	if (new_fh == nullptr) return false;
+	auto guard2 = scope_guard([=]() {
+		FioFCloseFile(new_fh);
+	});
+
+	char buffer[4096 * 4];
+	size_t length;
+	do {
+		length = fread(buffer, 1, lengthof(buffer), old_fh);
+		if (fwrite(buffer, 1, length, new_fh) != length) {
+			return false;
+		}
+	} while (length == lengthof(buffer));
+	return true;
+}
+#endif
+
 /**
  * Makes the crash log, writes it to a file and then subsequently tries
  * to make a crash dump and crash savegame. It uses DEBUG to write
@@ -703,16 +729,33 @@ bool CrashLog::MakeCrashLog(char *buffer, const char *last)
 	if (crashlogged) return false;
 	crashlogged = true;
 
+	char *name_buffer_date = this->name_buffer + seprintf(this->name_buffer, lastof(this->name_buffer), "crash-");
+	time_t cur_time = time(nullptr);
+	strftime(name_buffer_date, lastof(this->name_buffer) - name_buffer_date, "%Y%m%dT%H%M%SZ", gmtime(&cur_time));
+
+#ifdef DEDICATED
+	if (!_settings_client.gui.keep_all_autosave) {
+		extern FiosNumberedSaveName &GetAutoSaveFiosNumberedSaveName();
+		FiosNumberedSaveName &autosave = GetAutoSaveFiosNumberedSaveName();
+		int num = autosave.GetLastNumber();
+		if (num >= 0) {
+			std::string old_file = autosave.FilenameUsingNumber(num, "");
+			char save_suffix[MAX_PATH];
+			seprintf(save_suffix, lastof(save_suffix), "-(%s)", this->name_buffer);
+			std::string new_file = autosave.FilenameUsingNumber(num, save_suffix);
+			if (CopyAutosave(old_file, new_file)) {
+				printf("Saving copy of last autosave: %s -> %s\n\n", old_file.c_str(), new_file.c_str());
+			}
+		}
+	}
+#endif
+
 	if (!VideoDriver::EmergencyAcquireGameLock(20, 2)) {
 		printf("Failed to acquire gamelock before filling crash log\n\n");
 	}
 
 	char filename[MAX_PATH];
 	bool ret = true;
-
-	char *name_buffer_date = this->name_buffer + seprintf(this->name_buffer, lastof(this->name_buffer), "crash-");
-	time_t cur_time = time(nullptr);
-	strftime(name_buffer_date, lastof(this->name_buffer) - name_buffer_date, "%Y%m%dT%H%M%SZ", gmtime(&cur_time));
 
 	printf("Crash encountered, generating crash log...\n");
 	this->FillCrashLog(buffer, last);

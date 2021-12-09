@@ -1929,14 +1929,19 @@ void StateGameLoop()
 	assert(IsLocalCompany());
 }
 
+FiosNumberedSaveName &GetAutoSaveFiosNumberedSaveName()
+{
+	static FiosNumberedSaveName _autosave_ctr("autosave");
+	return _autosave_ctr;
+}
+
 /**
  * Create an autosave. The default name is "autosave#.sav". However with
  * the setting 'keep_all_autosave' the name defaults to company-name + date
  */
 static void DoAutosave()
 {
-	static FiosNumberedSaveName _autosave_ctr("autosave");
-	DoAutoOrNetsave(_autosave_ctr, true);
+	DoAutoOrNetsave(GetAutoSaveFiosNumberedSaveName(), true);
 }
 
 /**

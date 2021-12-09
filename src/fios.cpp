@@ -791,7 +791,12 @@ FiosNumberedSaveName::FiosNumberedSaveName(const std::string &prefix) : prefix(p
 std::string FiosNumberedSaveName::Filename()
 {
 	if (++this->number >= _settings_client.gui.max_num_autosaves) this->number = 0;
-	return stdstr_fmt("%s%u.sav", this->prefix.c_str(), this->number);
+	return this->FilenameUsingNumber(this->number, "");
+}
+
+std::string FiosNumberedSaveName::FilenameUsingNumber(int num, const char *suffix) const
+{
+	return stdstr_fmt("%s%u%s.sav", this->prefix.c_str(), num, suffix);
 }
 
 /**
