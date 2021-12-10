@@ -2,6 +2,15 @@
 
 * * *
 
+### v0.44.2 (2021-12-10)
+* Fix multiplayer desync which could occur when using order backups in some circumstances.
+* Fix loading of the game log from upstream 12.x savegames.
+* Apply negative values of the town cargo generation factor setting more strictly/accurately.
+* Add a "default" mode to the timetable autofill rounding setting, use as the new default.
+* Add NewGRF properties for NewGRF object ground sprite mode, slope/foundation mode and flood resistance.
+* On dedicated servers, save a copy of the last autosave when a crash occurs (when not using the keep_all_autosave setting).
+* Add Korean translations by TELK and Galician translations by pvillaverde.
+
 ### v0.44.1 (2021-11-29)
 * Signals on bridges/tunnels:
   * Fix crash when the ignore signals button is used for wrong-way running on a signalled tunnel/bridge when using a multi-aspect signal GRF.
