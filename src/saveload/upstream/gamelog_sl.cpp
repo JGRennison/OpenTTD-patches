@@ -14,6 +14,7 @@
 
 #include "../../gamelog_internal.h"
 #include "../../fios.h"
+#include "../../string_func.h"
 
 #include "../../safeguards.h"
 
@@ -42,10 +43,12 @@ public:
 	void LoadCheck(LoggedChange *lc) const override { this->Load(lc); }
 };
 
+static char old_revision_text[GAMELOG_REVISION_LENGTH];
+
 class SlGamelogRevision : public DefaultSaveLoadHandler<SlGamelogRevision, LoggedChange> {
 public:
 	inline static const SaveLoad description[] = {
-		SLE_ARR(LoggedChange, revision.text,     SLE_UINT8,  GAMELOG_REVISION_LENGTH),
+		SLEG_ARR("revision.text", old_revision_text, SLE_UINT8),
 		SLE_VAR(LoggedChange, revision.newgrf,   SLE_UINT32),
 		SLE_VAR(LoggedChange, revision.slver,    SLE_UINT16),
 		SLE_VAR(LoggedChange, revision.modified, SLE_UINT8),
@@ -62,6 +65,7 @@ public:
 	{
 		if (lc->ct != GLCT_REVISION) return;
 		SlObject(lc, this->GetLoadDescription());
+		lc->revision.text = stredup(old_revision_text, lastof(old_revision_text));
 	}
 
 	void LoadCheck(LoggedChange *lc) const override { this->Load(lc); }
