@@ -872,6 +872,19 @@ class NIHObject : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  size: %ux%u, height: %u, views: %u", GB(spec->size, 4, 4), GB(spec->size, 0, 4), spec->height, spec->views);
 			output.print(buffer);
 
+			{
+				YearMonthDay ymd;
+				ConvertDateToYMD(spec->introduction_date, &ymd);
+				char *b = buffer + seprintf(buffer, lastof(buffer), " intro: %4i-%02i-%02i",
+						ymd.year, ymd.month + 1, ymd.day);
+				if (spec->end_of_life_date < MAX_DAY) {
+					ConvertDateToYMD(spec->end_of_life_date, &ymd);
+					seprintf(b, lastof(buffer), ", end of life: %4i-%02i-%02i",
+							ymd.year, ymd.month + 1, ymd.day);
+				}
+				output.print(buffer);
+			}
+
 			output.register_next_line_click_flag_toggle(1);
 			seprintf(buffer, lastof(buffer), "  [%c] flags: 0x%X", output.flags & 1 ? '-' : '+', spec->flags);
 			output.print(buffer);
