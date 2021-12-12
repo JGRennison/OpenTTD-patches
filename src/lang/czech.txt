@@ -3189,7 +3189,7 @@ STR_TRACE_RESTRICT_SET_SPEED_RESTRICTION                        :Omezit rychlost
 STR_TRACE_RESTRICT_REMOVE_SPEED_RESTRICTION                     :Zrušit omezení rychlosti vlaku
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Hodnota
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Omezení směrování
-STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Omezení směrování - sdíleno s {COMMA} návěstidly
+STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Omezení směrování - sdíleno {COMMA} návěstidly
 STR_TRACE_RESTRICT_UP_BTN_TOOLTIP                               :{BLACK}Přesunout vybranou instrukci nahoru{}Ctrl+kliknutí posune podmíněnou instrukci namísto celého bloku
 STR_TRACE_RESTRICT_DOWN_BTN_TOOLTIP                             :{BLACK}Přesunout vybranou instrukci dolů{}Ctrl+kliknutí posune podmíněnou instrukci namísto celého bloku
 STR_TRACE_RESTRICT_TYPE_TOOLTIP                                 :{BLACK}Typ
