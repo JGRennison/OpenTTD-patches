@@ -1406,6 +1406,10 @@ static void TrainSpeedAdaptationChanged(int32 new_value) {
 	}
 }
 
+static void AutosaveModeChanged(int32 new_value) {
+	InvalidateWindowClassesData(WC_GAME_OPTIONS);
+}
+
 /** Checks if any settings are set to incorrect values, and sets them to correct values in that case. */
 static void ValidateSettings()
 {
