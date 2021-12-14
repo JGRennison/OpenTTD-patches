@@ -148,6 +148,7 @@ struct GUISettings : public TimeSettings {
 	ZoomLevel sprite_zoom_min;               ///< maximum zoom level at which higher-resolution alternative sprites will be used (if available) instead of scaling a lower resolution sprite
 	byte   autosave;                         ///< how often should we do autosaves?
 	uint16 autosave_custom_days;             ///< custom autosave interval in days
+	uint16 autosave_custom_minutes;          ///< custom autosave interval in real-time minutes
 	bool   threaded_saves;                   ///< should we do threaded saves?
 	bool   keep_all_autosave;                ///< name the autosave in a different way
 	bool   autosave_on_exit;                 ///< save an autosave when you quit the game, but do not ask "Do you really want to quit?"

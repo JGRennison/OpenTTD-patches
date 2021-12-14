@@ -1893,6 +1893,14 @@ void StateGameLoop()
 		_tick_skip_counter++;
 		_scaled_tick_counter++; // This must update in lock-step with _tick_skip_counter, such that it always matches what SetScaledTickVariables would return.
 		_scaled_date_ticks++;   // "
+
+		if (_settings_client.gui.autosave == 6 && !(_game_mode == GM_MENU || _game_mode == GM_BOOTSTRAP) &&
+				(_scaled_date_ticks % (_settings_client.gui.autosave_custom_minutes * (60000 / MILLISECONDS_PER_TICK))) == 0) {
+			_do_autosave = true;
+			_check_special_modes = true;
+			SetWindowDirty(WC_STATUS_BAR, 0);
+		}
+
 		if (_tick_skip_counter < _settings_game.economy.day_length_factor) {
 			AnimateAnimatedTiles();
 			CallVehicleTicks();
