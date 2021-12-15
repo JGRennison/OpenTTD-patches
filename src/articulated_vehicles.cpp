@@ -358,8 +358,10 @@ void CheckConsistencyOfArticulatedVehicle(const Vehicle *v)
 		real_refit_union |= refit_mask;
 		if (refit_mask != 0) real_refit_intersection &= refit_mask;
 
-		assert(v->cargo_type < NUM_CARGO);
-		real_default_capacity[v->cargo_type] += v->cargo_cap;
+		assert(v->cargo_type < NUM_CARGO || (v->type == VEH_TRAIN && Train::From(v)->IsVirtual()));
+		if (v->cargo_type < NUM_CARGO) {
+			real_default_capacity[v->cargo_type] += v->cargo_cap;
+		}
 
 		v = v->HasArticulatedPart() ? v->GetNextArticulatedPart() : nullptr;
 	} while (v != nullptr);
