@@ -761,6 +761,7 @@ public:
 	void SetScheduledDispatch(std::vector<uint32> dispatch_list);
 	void AddScheduledDispatch(uint32 offset);
 	void RemoveScheduledDispatch(uint32 offset);
+	void ClearScheduledDispatch() { this->scheduled_dispatch.clear(); }
 	void UpdateScheduledDispatch();
 	void ResetScheduledDispatch();
 

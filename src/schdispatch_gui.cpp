@@ -47,7 +47,7 @@ enum SchdispatchWidgets {
 	WID_SCHDISPATCH_SET_DURATION,    ///< Duration button
 	WID_SCHDISPATCH_SET_START_DATE,  ///< Start Date button
 	WID_SCHDISPATCH_SET_DELAY,       ///< Delat button
-	WID_SCHDISPATCH_RESET_DISPATCH,  ///< Reset dispatch button
+	WID_SCHDISPATCH_MANAGEMENT,      ///< Management button
 };
 
 /**
@@ -185,6 +185,11 @@ struct SchdispatchWindow : Window {
 	uint flag_width;
 	uint flag_height;
 
+	enum ManagementDropdown {
+		SCH_MD_RESET_LAST_DISPATCHED,
+		SCH_MD_CLEAR_SCHEDULE,
+	};
+
 	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
@@ -259,7 +264,7 @@ struct SchdispatchWindow : Window {
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_SET_DURATION, disabled);
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_SET_START_DATE, disabled);
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_SET_DELAY, disabled);
-		this->SetWidgetDisabledState(WID_SCHDISPATCH_RESET_DISPATCH, disabled);
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_MANAGEMENT, disabled);
 
 		this->vscroll->SetCount(CeilDiv(this->item_count, this->num_columns));
 
@@ -285,6 +290,14 @@ struct SchdispatchWindow : Window {
 					return true;
 				}
 				break;
+			}
+
+			case WID_SCHDISPATCH_MANAGEMENT: {
+				uint64 params[2];
+				params[0] = STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP;
+				params[1] = STR_SCHDISPATCH_CLEAR_TOOLTIP;
+				GuiShowTooltips(this, STR_SCHDISPATCH_MANAGE_TOOLTIP, 2, params, close_cond);
+				return true;
 			}
 
 			default:
@@ -553,13 +566,36 @@ struct SchdispatchWindow : Window {
 				break;
 			}
 
-			case WID_SCHDISPATCH_RESET_DISPATCH: {
-				DoCommandP(0, v->index, 0, CMD_SCHEDULED_DISPATCH_RESET_LAST_DISPATCH | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+			case WID_SCHDISPATCH_MANAGEMENT: {
+				DropDownList list;
+				list.emplace_back(new DropDownListStringItem(STR_SCHDISPATCH_RESET_LAST_DISPATCH, SCH_MD_RESET_LAST_DISPATCHED, false));
+				list.emplace_back(new DropDownListStringItem(STR_SCHDISPATCH_CLEAR, SCH_MD_CLEAR_SCHEDULE, false));
+				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGEMENT);
 				break;
 			}
 		}
 
 		this->SetDirty();
+	}
+
+	void OnDropdownSelect(int widget, int index) override
+	{
+		switch (widget) {
+			case WID_SCHDISPATCH_MANAGEMENT: {
+				switch((ManagementDropdown)index) {
+					case SCH_MD_RESET_LAST_DISPATCHED:
+						DoCommandP(0, this->vehicle->index, 0, CMD_SCHEDULED_DISPATCH_RESET_LAST_DISPATCH | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+						break;
+
+					case SCH_MD_CLEAR_SCHEDULE:
+						DoCommandP(0, this->vehicle->index, 0, CMD_SCHEDULED_DISPATCH_CLEAR | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+						break;
+				}
+			}
+
+			default:
+				break;
+		}
 	}
 
 	virtual void OnQueryTextFinished(char *str) override
@@ -682,7 +718,7 @@ static const NWidgetPart _nested_schdispatch_widgets[] = {
 		EndContainer(),
 		NWidget(NWID_VERTICAL, NC_EQUALSIZE),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_SET_DELAY), SetDataTip(STR_SCHDISPATCH_DELAY, STR_SCHDISPATCH_DELAY_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_RESET_DISPATCH), SetDataTip(STR_SCHDISPATCH_RESET_LAST_DISPATCH, STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
+			NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_SCHDISPATCH_MANAGEMENT), SetDataTip(STR_SCHDISPATCH_MANAGE, STR_SCHDISPATCH_MANAGE_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
 		EndContainer(),
 		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 	EndContainer(),

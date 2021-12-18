@@ -272,6 +272,7 @@ CommandProc CmdScheduledDispatchSetDuration;
 CommandProc CmdScheduledDispatchSetStartDate;
 CommandProc CmdScheduledDispatchSetDelay;
 CommandProc CmdScheduledDispatchResetLastDispatch;
+CommandProc CmdScheduledDispatchClear;
 
 CommandProc CmdAddPlan;
 CommandProcEx CmdAddPlanLine;
@@ -507,6 +508,7 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdScheduledDispatchSetStartDate,                  0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SCHEDULED_DISPATCH_SET_START_DATE
 	DEF_CMD(CmdScheduledDispatchSetDelay,                      0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SCHEDULED_DISPATCH_SET_DELAY
 	DEF_CMD(CmdScheduledDispatchResetLastDispatch,             0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SCHEDULED_DISPATCH_RESET_LAST_DISPATCH
+	DEF_CMD(CmdScheduledDispatchClear,                         0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SCHEDULED_DISPATCH_CLEAR
 
 	DEF_CMD(CmdAddPlan,                              CMD_NO_TEST, CMDT_OTHER_MANAGEMENT      ), // CMD_ADD_PLAN
 	DEF_CMD(CmdAddPlanLine,                          CMD_NO_TEST, CMDT_OTHER_MANAGEMENT      ), // CMD_ADD_PLAN_LINE

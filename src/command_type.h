@@ -449,6 +449,7 @@ enum Commands {
 	CMD_SCHEDULED_DISPATCH_SET_START_DATE,      ///< scheduled dispatch set start date
 	CMD_SCHEDULED_DISPATCH_SET_DELAY,           ///< scheduled dispatch set maximum allow delay
 	CMD_SCHEDULED_DISPATCH_RESET_LAST_DISPATCH, ///< scheduled dispatch reset last dispatch date
+	CMD_SCHEDULED_DISPATCH_CLEAR,               ///< scheduled dispatch clear schedule
 
 	CMD_ADD_PLAN,
 	CMD_ADD_PLAN_LINE,
