@@ -132,7 +132,7 @@ NetworkRecvStatus NetworkGameSocketHandler::HandlePacket(Packet *p)
 	this->last_packet = std::chrono::steady_clock::now();
 	this->last_pkt_type = type;
 
-	DEBUG(net, 3, "[tcp/game] received packet type %d (%s) from client %d, %s", type, GetPacketGameTypeName(type), this->client_id, this->GetDebugInfo().c_str());
+	DEBUG(net, 5, "[tcp/game] received packet type %d (%s) from client %d, %s", type, GetPacketGameTypeName(type), this->client_id, this->GetDebugInfo().c_str());
 
 	switch (this->HasClientQuit() ? PACKET_END : type) {
 		case PACKET_SERVER_FULL:                  return this->Receive_SERVER_FULL(p);
