@@ -499,6 +499,7 @@ RailTypes GetRailTypes(bool introduces);
 RailType GetRailTypeByLabel(RailTypeLabel label, bool allow_alternate_labels = true);
 
 void ResetRailTypes();
+void UpdateRailGuiSprites();
 void InitRailTypes();
 RailType AllocateRailType(RailTypeLabel label);
 

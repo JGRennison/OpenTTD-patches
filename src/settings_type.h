@@ -217,6 +217,7 @@ struct GUISettings : public TimeSettings {
 	bool   show_train_weight_ratios_in_details;   ///< show train weight ratios in vehicle details window top widget
 	bool   show_vehicle_group_in_details;    ///< show vehicle group in vehicle details window top widget
 	bool   show_restricted_signal_default;   ///< Show restricted electric signals using the default sprite
+	bool   show_all_signal_default;          ///< Show all signals using the default sprite
 	bool   show_adv_tracerestrict_features;  ///< Show advanced trace restrict features in UI
 	bool   show_progsig_ui;                  ///< Show programmable pre-signals feature in UI
 	bool   show_noentrysig_ui;               ///< Show no-entry signals feature in UI
