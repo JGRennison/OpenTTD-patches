@@ -64,9 +64,9 @@ void CcGiveMoney(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2
 	uint64 auxdata = (p2 & 0xFFFF) | (((uint64) _local_company) << 16);
 
 	if (!_network_server) {
-		NetworkClientSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_BROADCAST_SS, p2, msg, NetworkTextMessageData(p1, auxdata));
+		NetworkClientSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_BROADCAST_SS, p2, msg, NetworkTextMessageData(result.GetCost(), auxdata));
 	} else {
-		NetworkServerSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_BROADCAST_SS, p2, msg, CLIENT_ID_SERVER, NetworkTextMessageData(p1, auxdata));
+		NetworkServerSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_BROADCAST_SS, p2, msg, CLIENT_ID_SERVER, NetworkTextMessageData(result.GetCost(), auxdata));
 	}
 }
 
