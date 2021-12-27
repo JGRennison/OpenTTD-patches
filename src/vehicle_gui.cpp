@@ -3640,7 +3640,7 @@ public:
 		TextColour text_colour = TC_FROMSTRING;
 		if (v->vehstatus & VS_CRASHED) {
 			str = STR_VEHICLE_STATUS_CRASHED;
-		} else if (v->breakdown_ctr == 1 || (v->type == VEH_TRAIN && Train::From(v)->flags & VRF_IS_BROKEN)) {
+		} else if ((v->breakdown_ctr == 1 || (v->type == VEH_TRAIN && Train::From(v)->flags & VRF_IS_BROKEN)) && !mouse_over_start_stop) {
 			const Vehicle *w = (v->type == VEH_TRAIN) ? GetMostSeverelyBrokenEngine(Train::From(v)) : v;
 			if (_settings_game.vehicle.improved_breakdowns || w->breakdown_type == BREAKDOWN_RV_CRASH || w->breakdown_type == BREAKDOWN_BRAKE_OVERHEAT) {
 				str = STR_VEHICLE_STATUS_BROKEN_DOWN_VEL;
@@ -3708,7 +3708,7 @@ public:
 			str = STR_VEHICLE_STATUS_AIRCRAFT_TOO_FAR;
 		} else { // vehicle is in a "normal" state, show current order
 			if (mouse_over_start_stop) {
-				if (v->vehstatus & VS_STOPPED) {
+				if (v->vehstatus & VS_STOPPED || (v->breakdown_ctr == 1 || (v->type == VEH_TRAIN && Train::From(v)->flags & VRF_IS_BROKEN))) {
 					text_colour = TC_RED | TC_FORCED;
 				} else if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_TRAIN_STUCK) && !v->current_order.IsType(OT_LOADING)) {
 					text_colour = TC_ORANGE | TC_FORCED;
