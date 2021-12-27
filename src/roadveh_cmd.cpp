@@ -2194,9 +2194,9 @@ static void CheckIfRoadVehNeedsService(RoadVehicle *v)
 		default: NOT_REACHED();
 	}
 
-	FindDepotData rfdd = FindClosestRoadDepot(v, max_penalty);
+	FindDepotData rfdd = FindClosestRoadDepot(v, max_penalty * (v->current_order.IsType(OT_GOTO_DEPOT) ? 2 : 1));
 	/* Only go to the depot if it is not too far out of our way. */
-	if (rfdd.best_length == UINT_MAX || rfdd.best_length > max_penalty) {
+	if (rfdd.best_length == UINT_MAX || rfdd.best_length > max_penalty * (v->current_order.IsType(OT_GOTO_DEPOT) && v->current_order.GetDestination() == GetDepotIndex(rfdd.tile) ? 2 : 1)) {
 		if (v->current_order.IsType(OT_GOTO_DEPOT)) {
 			/* If we were already heading for a depot but it has
 			 * suddenly moved farther away, we continue our normal
