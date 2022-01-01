@@ -171,10 +171,13 @@ extern CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec 
  * @param p2 various bitstuffed elements
  * - p2 = (bit  0- 7) - custom station class
  * - p2 = (bit  8-15) - custom station id
+ * - p2 = (bit 31-16) - station ID to join
+ * @param p3 various bitstuffed elements
+ * - p3 = (bit  0-31) - custom station id
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
 {
 	/* Unpack parameters */
 	Axis axis      = Extract<Axis, 6, 1>(p1);
@@ -183,8 +186,9 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 	bool adjacent  = HasBit(p1, 24);
 
 	StationClassID spec_class = Extract<StationClassID, 0, 8>(p2);
-	byte spec_index           = GB(p2, 8, 8);
 	StationID station_to_join = GB(p2, 16, 16);
+
+	uint spec_index           = GB(p3, 0, 32);
 
 	/* Check if the given station class is valid */
 	if (spec_class != STAT_CLASS_WAYP) return CMD_ERROR;

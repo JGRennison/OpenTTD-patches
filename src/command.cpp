@@ -66,7 +66,7 @@ CommandProc CmdSellLandArea;
 CommandProc CmdBuildTunnel;
 
 CommandProc CmdBuildTrainDepot;
-CommandProc CmdBuildRailWaypoint;
+CommandProcEx CmdBuildRailWaypoint;
 CommandProc CmdRenameWaypoint;
 CommandProc CmdRemoveFromRailWaypoint;
 

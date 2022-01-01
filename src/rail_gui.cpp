@@ -50,8 +50,8 @@
 static RailType _cur_railtype;               ///< Rail type of the current build-rail toolbar.
 static bool _remove_button_clicked;          ///< Flag whether 'remove' toggle-button is currently enabled
 static DiagDirection _build_depot_direction; ///< Currently selected depot direction
-static byte _waypoint_count = 1;             ///< Number of waypoint types
-static byte _cur_waypoint_type;              ///< Currently selected waypoint type
+static uint _waypoint_count = 1;             ///< Number of waypoint types
+static uint _cur_waypoint_type;              ///< Currently selected waypoint type
 static bool _convert_signal_button;          ///< convert signal button in the signal GUI pressed
 static bool _trace_restrict_button;          ///< trace restrict button in the signal GUI pressed
 static bool _program_signal_button;          ///< program signal button in the signal GUI pressed
@@ -844,9 +844,11 @@ struct BuildRailToolbarWindow : Window {
 						} else {
 							TileArea ta(start_tile, end_tile);
 							uint32 p1 = _cur_railtype | (select_method == VPM_X_LIMITED ? AXIS_X : AXIS_Y) << 6 | ta.w << 8 | ta.h << 16 | _ctrl_pressed << 24;
-							uint32 p2 = STAT_CLASS_WAYP | _cur_waypoint_type << 8 | INVALID_STATION << 16;
+							uint32 p2 = STAT_CLASS_WAYP | INVALID_STATION << 16;
+							uint64 p3 = _cur_waypoint_type;
 
 							CommandContainer cmdcont = NewCommandContainerBasic(ta.tile, p1, p2, CMD_BUILD_RAIL_WAYPOINT | CMD_MSG(STR_ERROR_CAN_T_BUILD_TRAIN_WAYPOINT), CcPlaySound_CONSTRUCTION_RAIL);
+							cmdcont.p3 = p3;
 							ShowSelectWaypointIfNeeded(cmdcont, ta);
 						}
 					}
@@ -2291,7 +2293,7 @@ struct BuildRailWaypointWindow : PickerWindowBase {
 	{
 		switch (GB(widget, 0, 16)) {
 			case WID_BRW_WAYPOINT: {
-				byte type = GB(widget, 16, 16);
+				uint type = GB(widget, 16, 16);
 				const StationSpec *statspec = StationClass::Get(STAT_CLASS_WAYP)->GetSpec(type);
 				DrawWaypointSprite(r.left + 1 + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), type, _cur_railtype);
 
@@ -2306,7 +2308,7 @@ struct BuildRailWaypointWindow : PickerWindowBase {
 	{
 		switch (GB(widget, 0, 16)) {
 			case WID_BRW_WAYPOINT: {
-				byte type = GB(widget, 16, 16);
+				uint type = GB(widget, 16, 16);
 				this->GetWidget<NWidgetMatrix>(WID_BRW_WAYPOINT_MATRIX)->SetClicked(_cur_waypoint_type);
 
 				/* Check station availability callback */
