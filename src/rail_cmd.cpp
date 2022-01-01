@@ -1002,7 +1002,9 @@ CommandCost CmdRemoveSingleRail(TileIndex tile, DoCommandFlag flags, uint32 p1, 
 
 			/* Charge extra to remove signals on the track, if they are there */
 			if (HasSignalOnTrack(tile, track)) {
-				cost.AddCost(DoCommand(tile, track, 0, flags, CMD_REMOVE_SIGNALS));
+				CommandCost ret_remove_signals = DoCommand(tile, track, 0, flags, CMD_REMOVE_SIGNALS);
+				if (ret_remove_signals.Failed()) return ret_remove_signals;
+				cost.AddCost(ret_remove_signals);
 			}
 
 			if (flags & DC_EXEC) {
