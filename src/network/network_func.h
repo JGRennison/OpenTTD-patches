@@ -25,6 +25,7 @@
 #include "../string_type.h"
 
 extern NetworkCompanyState *_network_company_states;
+extern std::string _network_company_server_id;
 
 extern ClientID _network_own_client_id;
 extern ClientID _redirect_console_to_client;

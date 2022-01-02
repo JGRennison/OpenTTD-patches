@@ -37,6 +37,7 @@
 #include "../error.h"
 #include "../core/checksum_func.hpp"
 #include "../string_func_extra.h"
+#include "../3rdparty/randombytes/randombytes.h"
 #include <sstream>
 #include <iomanip>
 
@@ -62,6 +63,7 @@ bool _network_dedicated;  ///< are we a dedicated server?
 bool _is_network_server;  ///< Does this client wants to be a network-server?
 bool _network_settings_access; ///< Can this client change server settings?
 NetworkCompanyState *_network_company_states = nullptr; ///< Statistics about some companies.
+std::string _network_company_server_id; ///< Server ID string used for company passwords
 ClientID _network_own_client_id;      ///< Our client identifier.
 ClientID _redirect_console_to_client; ///< If not invalid, redirect the console output to a client.
 uint8 _network_reconnect;             ///< Reconnect timeout
@@ -634,6 +636,7 @@ void NetworkClose(bool close_admins)
 
 	delete[] _network_company_states;
 	_network_company_states = nullptr;
+	_network_company_server_id.clear();
 
 	InitializeNetworkPools(close_admins);
 }
@@ -917,6 +920,7 @@ bool NetworkServerStart()
 	NetworkUDPServerListen();
 
 	_network_company_states = new NetworkCompanyState[MAX_COMPANIES];
+	_network_company_server_id = NetworkGenerateRandomKeyString();
 	_network_server = true;
 	_networking = true;
 	_frame_counter = 0;
@@ -1255,6 +1259,26 @@ static void NetworkGenerateServerId()
 
 	/* _settings_client.network.network_id is our id */
 	_settings_client.network.network_id = hex_output;
+}
+
+std::string NetworkGenerateRandomKeyString()
+{
+	uint8 key[16];
+	char hex_output[16 * 2 + 1];
+
+	if (randombytes(key, 16) < 0) {
+		/* Fallback poor-quality random */
+		DEBUG(misc, 0, "High quality random source unavailable");
+		for (int i = 0; i < 16; i++) {
+			key[i] = (uint8)InteractiveRandom();
+		}
+	}
+
+	for (int i = 0; i < 16; ++i) {
+		seprintf(hex_output + i * 2, lastof(hex_output), "%02x", key[i]);
+	}
+
+	return std::string(hex_output);
 }
 
 class TCPNetworkDebugConnecter : TCPConnecter {

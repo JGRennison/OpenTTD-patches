@@ -374,8 +374,10 @@ static uint32 _server_password_game_seed;
 static uint32 _rcon_password_game_seed;
 /** One bit of 'entropy' used to generate a salt for the settings passwords. */
 static uint32 _settings_password_game_seed;
-/** The other bit of 'entropy' used to generate a salt for the company, server, rcon, and settings passwords. */
+/** The other bit of 'entropy' used to generate a salt for the server, rcon, and settings passwords. */
 static std::string _password_server_id;
+/** The other bit of 'entropy' used to generate a salt for the company passwords. */
+static std::string _company_password_server_id;
 
 /** Maximum number of companies of the currently joined server. */
 static uint8 _network_server_max_companies;
@@ -437,7 +439,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendGamePassword(const std::st
 NetworkRecvStatus ClientNetworkGameSocketHandler::SendCompanyPassword(const std::string &password)
 {
 	Packet *p = new Packet(PACKET_CLIENT_COMPANY_PASSWORD, SHRT_MAX);
-	p->Send_string(GenerateCompanyPasswordHash(password, _password_server_id, _company_password_game_seed));
+	p->Send_string(GenerateCompanyPasswordHash(password, _company_password_server_id, _company_password_game_seed));
 	my_client->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -571,7 +573,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendSetPassword(const std::str
 {
 	Packet *p = new Packet(PACKET_CLIENT_SET_PASSWORD, SHRT_MAX);
 
-	p->Send_string(GenerateCompanyPasswordHash(password, _password_server_id, _company_password_game_seed));
+	p->Send_string(GenerateCompanyPasswordHash(password, _company_password_server_id, _company_password_game_seed));
 	my_client->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -623,7 +625,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendMove(CompanyID company, co
 {
 	Packet *p = new Packet(PACKET_CLIENT_MOVE, SHRT_MAX);
 	p->Send_uint8(company);
-	p->Send_string(GenerateCompanyPasswordHash(password, _password_server_id, _company_password_game_seed));
+	p->Send_string(GenerateCompanyPasswordHash(password, _company_password_server_id, _company_password_game_seed));
 	my_client->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -828,7 +830,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_NEED_COMPANY_PA
 	this->status = STATUS_AUTH_COMPANY;
 
 	_company_password_game_seed = p->Recv_uint32();
-	_password_server_id = p->Recv_string(NETWORK_SERVER_ID_LENGTH);
+	_company_password_server_id = p->Recv_string(NETWORK_SERVER_ID_LENGTH);
 	if (this->HasClientQuit()) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 
 	if (!_network_join.company_password.empty()) {
@@ -853,6 +855,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_WELCOME(Packet 
 	_rcon_password_game_seed = p->Recv_uint32();
 	_settings_password_game_seed = p->Recv_uint32();
 	_password_server_id = p->Recv_string(NETWORK_SERVER_ID_LENGTH);
+	_company_password_server_id = p->Recv_string(NETWORK_SERVER_ID_LENGTH);
 
 	/* Start receiving the map */
 	return SendGetMap();

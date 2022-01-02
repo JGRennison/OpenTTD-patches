@@ -490,7 +490,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendNeedCompanyPassword()
 
 	Packet *p = new Packet(PACKET_SERVER_NEED_COMPANY_PASSWORD, SHRT_MAX);
 	p->Send_uint32(_settings_game.game_creation.generation_seed);
-	p->Send_string(_settings_client.network.network_id);
+	p->Send_string(_network_company_server_id);
 	this->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -516,6 +516,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendWelcome()
 	p->Send_uint32(_settings_game.game_creation.generation_seed ^ this->rcon_hash_bits);
 	p->Send_uint32(_settings_game.game_creation.generation_seed ^ this->settings_hash_bits);
 	p->Send_string(_settings_client.network.network_id);
+	p->Send_string(_network_company_server_id);
 	this->SendPacket(p);
 
 	/* Transmit info about all the active clients */
@@ -1825,7 +1826,7 @@ void NetworkServerSetCompanyPassword(CompanyID company_id, const std::string &pa
 	if (already_hashed) {
 		_network_company_states[company_id].password = password;
 	} else {
-		_network_company_states[company_id].password = GenerateCompanyPasswordHash(password, _settings_client.network.network_id, _settings_game.game_creation.generation_seed);
+		_network_company_states[company_id].password = GenerateCompanyPasswordHash(password, _network_company_server_id, _settings_game.game_creation.generation_seed);
 	}
 
 	NetworkServerUpdateCompanyPassworded(company_id, !_network_company_states[company_id].password.empty());
