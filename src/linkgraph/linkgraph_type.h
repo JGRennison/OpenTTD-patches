@@ -48,6 +48,7 @@ enum EdgeUpdateMode {
 	EUM_REFRESH      = 1 << 1, ///< Refresh capacity.
 	EUM_RESTRICTED   = 1 << 2, ///< Use restricted link.
 	EUM_UNRESTRICTED = 1 << 3, ///< Use unrestricted link.
+	EUM_AIRCRAFT     = 1 << 4, ///< Capacity is an aircraft link.
 };
 
 DECLARE_ENUM_AS_BIT_SET(EdgeUpdateMode)

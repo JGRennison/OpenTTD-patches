@@ -4124,6 +4124,9 @@ void DeleteStaleLinks(Station *from)
 			++it; // Do that before removing the edge. Anything else may crash.
 			assert(_date >= edge.LastUpdate());
 			uint timeout = std::max<uint>((LinkGraph::MIN_TIMEOUT_DISTANCE + (DistanceManhattan(from->xy, to->xy) >> 3)) / _settings_game.economy.day_length_factor, 1);
+			if (edge.LastAircraftUpdate() != INVALID_DATE && (uint)(_date - edge.LastAircraftUpdate()) > timeout) {
+				edge.ClearAircraft();
+			}
 			if ((uint)(_date - edge.LastUpdate()) > timeout) {
 				bool updated = false;
 

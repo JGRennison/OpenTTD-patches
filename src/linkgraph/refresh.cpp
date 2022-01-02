@@ -55,7 +55,10 @@
 			HopSet seen_hops;
 			LinkRefresher refresher(v, &seen_hops, allow_merge, is_full_loading, iter_cargo_mask);
 
-			refresher.RefreshLinks(first, first, (iter_cargo_mask & have_cargo_mask) ? 1 << HAS_CARGO : 0);
+			uint8 flags = 0;
+			if (iter_cargo_mask & have_cargo_mask) flags |= 1 << HAS_CARGO;
+			if (v->type == VEH_AIRCRAFT) flags |= 1 << AIRCRAFT;
+			refresher.RefreshLinks(first, first, flags);
 		}
 
 		cargo_mask &= ~iter_cargo_mask;
@@ -234,7 +237,7 @@ const Order *LinkRefresher::PredictNextOrder(const Order *cur, const Order *next
  * @param cur Last stop where the consist could interact with cargo.
  * @param next Next order to be processed.
  */
-void LinkRefresher::RefreshStats(const Order *cur, const Order *next)
+void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint8 flags)
 {
 	StationID next_station = next->GetDestination();
 	Station *st = Station::GetIfValid(cur->GetDestination());
@@ -256,6 +259,8 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next)
 			/* A link is at least partly restricted if a vehicle can't load at its source. */
 			EdgeUpdateMode restricted_mode = (cur->GetCargoLoadType(c) & OLFB_NO_LOAD) == 0 ?
 						EUM_UNRESTRICTED : EUM_RESTRICTED;
+
+			if (HasBit(flags, AIRCRAFT)) restricted_mode |= EUM_AIRCRAFT;
 
 			/* If the vehicle is currently full loading, increase the capacities at the station
 			 * where it is loading by an estimate of what it would have transported if it wasn't
@@ -347,7 +352,7 @@ void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, uint8 flag
 		if (cur->IsType(OT_GOTO_STATION) || cur->IsType(OT_IMPLICIT)) {
 			if (cur->CanLeaveWithCargo(HasBit(flags, HAS_CARGO), FindFirstBit(this->cargo_mask))) {
 				SetBit(flags, HAS_CARGO);
-				this->RefreshStats(cur, next);
+				this->RefreshStats(cur, next, flags);
 			} else {
 				ClrBit(flags, HAS_CARGO);
 			}

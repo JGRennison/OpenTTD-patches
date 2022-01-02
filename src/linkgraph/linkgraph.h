@@ -72,6 +72,7 @@ public:
 		uint usage;                    ///< Usage of the link.
 		Date last_unrestricted_update; ///< When the unrestricted part of the link was last updated.
 		Date last_restricted_update;   ///< When the restricted part of the link was last updated.
+		Date last_aircraft_update;     ///< When aircraft capacity of the link was last updated.
 		NodeID next_edge;              ///< Destination of next valid edge starting at the same source node.
 		void Init();
 	};
@@ -116,6 +117,12 @@ public:
 		 * @return Last update.
 		 */
 		Date LastRestrictedUpdate() const { return this->edge.last_restricted_update; }
+
+		/**
+		 * Get the date of the last update to the edge's aircraft capacity.
+		 * @return Last update.
+		 */
+		Date LastAircraftUpdate() const { return this->edge.last_aircraft_update; }
 
 		/**
 		 * Get the date of the last update to any part of the edge's capacity.
@@ -307,6 +314,7 @@ public:
 		void Update(uint capacity, uint usage, EdgeUpdateMode mode);
 		void Restrict() { this->edge.last_unrestricted_update = INVALID_DATE; }
 		void Release() { this->edge.last_restricted_update = INVALID_DATE; }
+		void ClearAircraft() { this->edge.last_aircraft_update = INVALID_DATE; }
 	};
 
 	/**

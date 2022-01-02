@@ -34,6 +34,7 @@ protected:
 		WAS_REFIT,    ///< Consist was refit since the last stop where it could interact with cargo.
 		RESET_REFIT,  ///< Consist had a chance to load since the last refit and the refit capacities can be reset.
 		IN_AUTOREFIT, ///< Currently doing an autorefit loop. Ignore the first autorefit order.
+		AIRCRAFT,     ///< Vehicle is an aircraft.
 	};
 
 	/**
@@ -93,7 +94,7 @@ protected:
 
 	bool HandleRefit(CargoID refit_cargo);
 	void ResetRefit();
-	void RefreshStats(const Order *cur, const Order *next);
+	void RefreshStats(const Order *cur, const Order *next, uint8 flags);
 	const Order *PredictNextOrder(const Order *cur, const Order *next, uint8 flags, uint num_hops = 0);
 
 	void RefreshLinks(const Order *cur, const Order *next, uint8 flags, uint num_hops = 0);

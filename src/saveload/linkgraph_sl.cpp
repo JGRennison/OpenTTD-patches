@@ -128,6 +128,7 @@ static const SaveLoad _edge_desc[] = {
 	     SLE_VAR(Edge, usage,                    SLE_UINT32),
 	     SLE_VAR(Edge, last_unrestricted_update, SLE_INT32),
 	 SLE_CONDVAR(Edge, last_restricted_update,   SLE_INT32, SLV_187, SL_MAX_VERSION),
+	SLE_CONDVAR_X(Edge, last_aircraft_update,    SLE_INT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_AIRCRAFT)),
 	     SLE_VAR(Edge, next_edge,                SLE_UINT16),
 };
 
