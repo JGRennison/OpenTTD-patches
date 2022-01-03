@@ -1075,30 +1075,9 @@ Money GetTransportedGoodsIncome(uint num_pieces, uint dist, byte transit_days, C
 /** The industries we've currently brought cargo to. */
 static SmallIndustryList _cargo_delivery_destinations;
 
-/**
- * Transfer goods from station to industry.
- * All cargo is delivered to the nearest (Manhattan) industry to the station sign, which is inside the acceptance rectangle and actually accepts the cargo.
- * @param st The station that accepted the cargo
- * @param cargo_type Type of cargo delivered
- * @param num_pieces Amount of cargo delivered
- * @param source The source of the cargo
- * @param company The company delivering the cargo
- * @return actually accepted pieces of cargo
- */
-static uint DeliverGoodsToIndustry(const Station *st, CargoID cargo_type, uint num_pieces, IndustryID source, CompanyID company)
-{
-	/* Find the nearest industrytile to the station sign inside the catchment area, whose industry accepts the cargo.
-	 * This fails in three cases:
-	 *  1) The station accepts the cargo because there are enough houses around it accepting the cargo.
-	 *  2) The industries in the catchment area temporarily reject the cargo, and the daily station loop has not yet updated station acceptance.
-	 *  3) The results of callbacks CBID_INDUSTRY_REFUSE_CARGO and CBID_INDTILE_CARGO_ACCEPTANCE are inconsistent. (documented behaviour)
-	 */
-
-	uint accepted = 0;
-
+template <class F>
+void ForAcceptingIndustries(const Station *st, CargoID cargo_type, IndustryID source, CompanyID company, F&& f) {
 	for (Industry *ind : st->industries_near) {
-		if (num_pieces == 0) break;
-
 		if (ind->index == source) continue;
 
 		uint cargo_index;
@@ -1113,6 +1092,22 @@ static uint DeliverGoodsToIndustry(const Station *st, CargoID cargo_type, uint n
 
 		if (ind->exclusive_supplier != INVALID_OWNER && ind->exclusive_supplier != st->owner) continue;
 
+		if (!f(ind, cargo_index)) break;
+	}
+}
+
+uint DeliverGoodsToIndustryNearestFirst(const Station *st, CargoID cargo_type, uint num_pieces, IndustryID source, CompanyID company)
+{
+	/* Find the nearest industrytile to the station sign inside the catchment area, whose industry accepts the cargo.
+	 * This fails in three cases:
+	 *  1) The station accepts the cargo because there are enough houses around it accepting the cargo.
+	 *  2) The industries in the catchment area temporarily reject the cargo, and the daily station loop has not yet updated station acceptance.
+	 *  3) The results of callbacks CBID_INDUSTRY_REFUSE_CARGO and CBID_INDTILE_CARGO_ACCEPTANCE are inconsistent. (documented behaviour)
+	 */
+
+	uint accepted = 0;
+
+	ForAcceptingIndustries(st, cargo_type, source, company, [&](Industry *ind, uint cargo_index) {
 		/* Insert the industry into _cargo_delivery_destinations, if not yet contained */
 		include(_cargo_delivery_destinations, ind);
 
@@ -1124,9 +1119,114 @@ static uint DeliverGoodsToIndustry(const Station *st, CargoID cargo_type, uint n
 
 		/* Update the cargo monitor. */
 		AddCargoDelivery(cargo_type, company, amount, ST_INDUSTRY, source, st, ind->index);
+
+		return num_pieces != 0;
+	});
+
+	return accepted;
+}
+
+uint DeliverGoodsToIndustryEqually(const Station *st, CargoID cargo_type, uint num_pieces, IndustryID source, CompanyID company)
+{
+	struct AcceptingIndustry {
+		Industry *ind;
+		uint cargo_index;
+		uint capacity;
+		uint delivered;
+	};
+
+	std::vector<AcceptingIndustry> acceptingIndustries;
+	uint min_capacity = 0xFFFFu;
+
+	ForAcceptingIndustries(st, cargo_type, source, company, [&](Industry *ind, uint cargo_index) {
+		uint capacity = 0xFFFFu - ind->incoming_cargo_waiting[cargo_index];
+		min_capacity = std::min(min_capacity, capacity);
+		acceptingIndustries.push_back({ind, cargo_index, capacity, 0});
+		return true;
+	});
+
+	uint accepted = 0;
+
+	auto distributeCargo = [&](AcceptingIndustry &e, uint amount) {
+		e.ind->incoming_cargo_waiting[e.cargo_index] += amount;
+		e.ind->last_cargo_accepted_at[e.cargo_index] = _date;
+		e.capacity -= amount;
+		e.delivered += amount;
+		num_pieces -= amount;
+		accepted += amount;
+	};
+
+	auto finalizeCargo = [&](AcceptingIndustry &e) {
+		include(_cargo_delivery_destinations, e.ind);
+		AddCargoDelivery(cargo_type, company, e.delivered, ST_INDUSTRY, source, st, e.ind->index);
+	};
+
+	// Handle low-capacity industries first
+	while (!acceptingIndustries.empty() && min_capacity * acceptingIndustries.size() <= num_pieces) {
+		uint amount = min_capacity;
+		min_capacity = 0xFFFFu;
+		for (auto &e : acceptingIndustries) {
+			distributeCargo(e, amount);
+			if (e.capacity > 0) {
+				min_capacity = std::min(min_capacity, e.capacity);
+			} else {
+				finalizeCargo(e);
+			}
+		}
+
+		auto removeIt = std::remove_if(acceptingIndustries.begin(), acceptingIndustries.end(), [](const auto &e) { return e.capacity == 0; });
+		acceptingIndustries.erase(removeIt, acceptingIndustries.end());
+	}
+
+	// Remaining industries can accept all remaining cargo when distributed evenly
+	if (!acceptingIndustries.empty()) {
+		uint amount = num_pieces / static_cast<uint>(acceptingIndustries.size());
+
+		if (amount > 0) {
+			for (auto &e : acceptingIndustries) {
+				distributeCargo(e, amount);
+			}
+		}
+
+		// If cargo didn't divide evenly into remaining industries, distribute the remainder randomly
+		if (num_pieces > 0) {
+			assert(num_pieces < acceptingIndustries.size());
+
+			for (uint32 i = 0; i < num_pieces; ++i) {
+				uint32 j = i + _random.Next(static_cast<uint32>(acceptingIndustries.size()) - i);
+				std::swap(acceptingIndustries[i], acceptingIndustries[j]);
+				distributeCargo(acceptingIndustries[i], 1);
+			}
+
+			assert(num_pieces == 0);
+		}
+
+		for (auto &e : acceptingIndustries) {
+			finalizeCargo(e);
+		}
 	}
 
 	return accepted;
+}
+
+/**
+ * Transfer goods from station to industry.
+ * All cargo is delivered to the nearest (Manhattan) industry to the station sign, which is inside the acceptance rectangle and actually accepts the cargo.
+ * @param st The station that accepted the cargo
+ * @param cargo_type Type of cargo delivered
+ * @param num_pieces Amount of cargo delivered
+ * @param source The source of the cargo
+ * @param company The company delivering the cargo
+ * @return actually accepted pieces of cargo
+ */
+static uint DeliverGoodsToIndustry(const Station *st, CargoID cargo_type, uint num_pieces, IndustryID source, CompanyID company)
+{
+	switch(_settings_game.station.station_delivery_mode) {
+	case SD_BALANCED:
+		return DeliverGoodsToIndustryEqually(st, cargo_type, num_pieces, source, company);
+	default:
+		return DeliverGoodsToIndustryNearestFirst(st, cargo_type, num_pieces, source, company);
+	}
 }
 
 /**
