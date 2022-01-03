@@ -1685,7 +1685,7 @@ static int is_above_l(const u32 x[8])
         carry += (u64)x[i] + ~L[i];
         carry >>= 32;
     }
-    return carry;
+    return (int)carry;
 }
 
 // Final reduction modulo L, by conditionally removing L.
