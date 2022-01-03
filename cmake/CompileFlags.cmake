@@ -18,6 +18,8 @@ macro(compile_flags)
             foreach(MSVC_CONFIG ${MSVC_CONFIGS})
                 string(TOUPPER "CMAKE_CXX_FLAGS_${MSVC_CONFIG}" MSVC_FLAGS)
                 string(REPLACE "/MD" "/MT" ${MSVC_FLAGS} "${${MSVC_FLAGS}}")
+                string(TOUPPER "CMAKE_C_FLAGS_${MSVC_CONFIG}" MSVC_FLAGS)
+                string(REPLACE "/MD" "/MT" ${MSVC_FLAGS} "${${MSVC_FLAGS}}")
             endforeach()
         endif()
 
