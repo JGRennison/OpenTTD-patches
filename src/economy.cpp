@@ -1200,7 +1200,7 @@ uint DeliverGoodsToIndustryEqually(const Station *st, CargoID cargo_type, uint n
 		if (num_pieces > 0) {
 			assert(num_pieces < acceptingIndustries.size());
 
-			uint idx = RandomRange(acceptingIndustries.size());
+			uint idx = RandomRange((uint)acceptingIndustries.size());
 			for (uint i = 0; i < acceptingIndustries.size(); ++i) {
 				if (acceptingIndustries[idx].capacity > 0) {
 					distributeCargo(acceptingIndustries[idx], 1);

@@ -624,14 +624,14 @@ static void Save_PLYP()
 	}
 
 	std::vector<byte> buffer = SlSaveToVector([](void *) {
-		SlWriteUint32(_network_company_server_id.size());
+		SlWriteUint32((uint32)_network_company_server_id.size());
 		MemoryDumper::GetCurrent()->CopyBytes((const uint8 *)_network_company_server_id.data(), _network_company_server_id.size());
 
 		for (const Company *c : Company::Iterate()) {
 			SlWriteUint16(c->index);
 
 			const std::string &password = _network_company_states[c->index].password;
-			SlWriteUint32(password.size());
+			SlWriteUint32((uint32)password.size());
 			MemoryDumper::GetCurrent()->CopyBytes((const uint8 *)password.data(), password.size());
 		}
 
