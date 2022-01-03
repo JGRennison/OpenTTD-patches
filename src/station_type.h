@@ -89,7 +89,7 @@ enum CatchmentArea {
 
 enum StationDelivery : byte {
 	SD_NEAREST_FIRST = 0, ///< Station delivers cargo only to the nearest accepting industry
-	SD_BALANCED         = 1  ///< Station delivers cargo equally among accepting industries
+	SD_BALANCED      = 1  ///< Station delivers cargo equally among accepting industries
 };
 
 static const uint MAX_LENGTH_STATION_NAME_CHARS = 128; ///< The maximum length of a station name in characters including '\0'
