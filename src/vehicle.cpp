@@ -3522,7 +3522,7 @@ void Vehicle::HandleLoading(bool mode)
 				return;
 			}
 
-			if (this->type != VEH_TRAIN) this->PlayLeaveStationSound();
+			if (this->type != VEH_TRAIN && this->type != VEH_SHIP) this->PlayLeaveStationSound();
 
 			this->LeaveStation();
 

@@ -870,7 +870,7 @@ static void ShipController(Ship *v)
 
 	if (ShipMoveUpDownOnLock(v)) return;
 
-	if (!ShipAccelerate(v)) return;
+	if (!ShipAccelerate(v) && !v->current_order.IsType(OT_LEAVESTATION)) return;
 
 	gp = GetNewVehiclePos(v);
 	if (v->state != TRACK_BIT_WORMHOLE) {
@@ -888,8 +888,25 @@ static void ShipController(Ship *v)
 				/* A leave station order only needs one tick to get processed, so we can
 				 * always skip ahead. */
 				if (v->current_order.IsType(OT_LEAVESTATION)) {
+					StationID station_id = v->current_order.GetDestination();
 					v->current_order.Free();
+
+					bool may_reverse = ProcessOrders(v);
+
+					if (v->current_order.IsType(OT_GOTO_STATION) && v->current_order.GetDestination() == station_id && IsDockingTile(gp.new_tile)) {
+						Station *st = Station::Get(station_id);
+						if (st->facilities & FACIL_DOCK && st->docking_station.Contains(gp.new_tile) && IsShipDestinationTile(gp.new_tile, station_id)) {
+							v->last_station_visited = station_id;
+							ShipArrivesAt(v, st);
+							v->BeginLoading();
+							return;
+						}
+					}
+
+					v->PlayLeaveStationSound();
+
 					SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
+					if (may_reverse && CheckReverseShip(v)) goto reverse_direction;
 					/* Test if continuing forward would lead to a dead-end, moving into the dock. */
 					DiagDirection exitdir = VehicleExitDir(v->direction, v->state);
 					TileIndex tile = TileAddByDiagDir(v->tile, exitdir);
