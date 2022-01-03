@@ -16,8 +16,14 @@
 #include "../station_base.h"
 #include "../settings_func.h"
 #include "../strings_func.h"
+#include "../network/network.h"
+#include "../network/network_func.h"
+#include "../network/network_server.h"
+#include "../3rdparty/randombytes/randombytes.h"
+#include "../3rdparty/monocypher/monocypher.h"
 
 #include "saveload.h"
+#include "saveload_buffer.h"
 
 #include "table/strings.h"
 
@@ -557,9 +563,107 @@ static void Save_PLYX()
 	SaveSettingsPlyx();
 }
 
+static void Load_PLYP()
+{
+	size_t size = SlGetFieldLength();
+	if (size <= 16 + 24 + 16 || !_network_server) {
+		SlSkipBytes(size);
+		return;
+	}
+
+	uint8 token[16];
+	ReadBuffer::GetCurrent()->CopyBytes(token, 16);
+	if (memcmp(token, _network_company_password_storage_token, 16) != 0) {
+		DEBUG(sl, 2, "Skipping encrypted company passwords");
+		SlSkipBytes(size - 16);
+		return;
+	}
+
+	uint8 nonce[24];
+	uint8 mac[16];
+	ReadBuffer::GetCurrent()->CopyBytes(nonce, 24);
+	ReadBuffer::GetCurrent()->CopyBytes(mac, 16);
+
+	std::vector<uint8> buffer(size - 16 - 24 - 16);
+	ReadBuffer::GetCurrent()->CopyBytes(buffer.data(), buffer.size());
+
+	if (crypto_unlock(buffer.data(), _network_company_password_storage_key, nonce, mac, buffer.data(), buffer.size()) == 0) {
+		SlLoadFromBuffer(buffer.data(), buffer.size(), [](void *) {
+			_network_company_server_id.resize(SlReadUint32());
+			ReadBuffer::GetCurrent()->CopyBytes((uint8 *)_network_company_server_id.data(), _network_company_server_id.size());
+
+			while (true) {
+				uint16 cid = SlReadUint16();
+				if (cid >= MAX_COMPANIES) break;
+				std::string password;
+				password.resize(SlReadUint32());
+				ReadBuffer::GetCurrent()->CopyBytes((uint8 *)password.data(), password.size());
+				NetworkServerSetCompanyPassword((CompanyID)cid, password, true);
+			}
+
+			ReadBuffer::GetCurrent()->SkipBytes(SlReadByte()); // Skip padding
+		}, nullptr);
+		DEBUG(sl, 2, "Decrypted company passwords");
+	} else {
+		DEBUG(sl, 2, "Failed to decrypt company passwords");
+	}
+}
+
+static void Save_PLYP()
+{
+	if (!_network_server || IsNetworkServerSave()) {
+		SlSetLength(0);
+		return;
+	}
+
+	uint8 nonce[24];    /* Use only once per key: random */
+	if (randombytes(nonce, 24) < 0) {
+		/* Can't get a random nonce, just give up */
+		SlSetLength(0);
+		return;
+	}
+
+	std::vector<byte> buffer = SlSaveToVector([](void *) {
+		SlWriteUint32(_network_company_server_id.size());
+		MemoryDumper::GetCurrent()->CopyBytes((const uint8 *)_network_company_server_id.data(), _network_company_server_id.size());
+
+		for (const Company *c : Company::Iterate()) {
+			SlWriteUint16(c->index);
+
+			const std::string &password = _network_company_states[c->index].password;
+			SlWriteUint32(password.size());
+			MemoryDumper::GetCurrent()->CopyBytes((const uint8 *)password.data(), password.size());
+		}
+
+		SlWriteUint16(0xFFFF);
+
+		/* Add some random length padding to not make it too obvious from the length whether passwords are set or not */
+		uint8 padding[256];
+		if (randombytes(padding, 256) >= 0) {
+			SlWriteByte(padding[0]);
+			MemoryDumper::GetCurrent()->CopyBytes(padding + 1, padding[0]);
+		} else {
+			SlWriteByte(0);
+		}
+	}, nullptr);
+
+
+	uint8 mac[16];    /* Message authentication code */
+
+	/* Encrypt in place */
+	crypto_lock(mac, buffer.data(), _network_company_password_storage_key, nonce, buffer.data(), buffer.size());
+
+	SlSetLength(16 + 24 + 16 + buffer.size());
+	MemoryDumper::GetCurrent()->CopyBytes(_network_company_password_storage_token, 16);
+	MemoryDumper::GetCurrent()->CopyBytes(nonce, 24);
+	MemoryDumper::GetCurrent()->CopyBytes(mac, 16);
+	MemoryDumper::GetCurrent()->CopyBytes(buffer.data(), buffer.size());
+}
+
 static const ChunkHandler company_chunk_handlers[] = {
 	{ 'PLYR', Save_PLYR, Load_PLYR, Ptrs_PLYR, Check_PLYR, CH_ARRAY },
 	{ 'PLYX', Save_PLYX, Load_PLYX, nullptr,   Check_PLYX, CH_RIFF  },
+	{ 'PLYP', Save_PLYP, Load_PLYP, nullptr,      nullptr, CH_RIFF  },
 };
 
 extern const ChunkHandlerTable _company_chunk_handlers(company_chunk_handlers);

@@ -38,6 +38,7 @@
 #include "../core/checksum_func.hpp"
 #include "../string_func_extra.h"
 #include "../3rdparty/randombytes/randombytes.h"
+#include "../settings_internal.h"
 #include <sstream>
 #include <iomanip>
 
@@ -64,6 +65,8 @@ bool _is_network_server;  ///< Does this client wants to be a network-server?
 bool _network_settings_access; ///< Can this client change server settings?
 NetworkCompanyState *_network_company_states = nullptr; ///< Statistics about some companies.
 std::string _network_company_server_id; ///< Server ID string used for company passwords
+uint8 _network_company_password_storage_token[16]; ///< Non-secret token for storage of company passwords in savegames
+uint8 _network_company_password_storage_key[32]; ///< Key for storage of company passwords in savegames
 ClientID _network_own_client_id;      ///< Our client identifier.
 ClientID _redirect_console_to_client; ///< If not invalid, redirect the console output to a client.
 uint8 _network_reconnect;             ///< Reconnect timeout
@@ -920,7 +923,7 @@ bool NetworkServerStart()
 	NetworkUDPServerListen();
 
 	_network_company_states = new NetworkCompanyState[MAX_COMPANIES];
-	_network_company_server_id = NetworkGenerateRandomKeyString();
+	_network_company_server_id = NetworkGenerateRandomKeyString(16);
 	_network_server = true;
 	_networking = true;
 	_frame_counter = 0;
@@ -1261,24 +1264,27 @@ static void NetworkGenerateServerId()
 	_settings_client.network.network_id = hex_output;
 }
 
-std::string NetworkGenerateRandomKeyString()
+std::string NetworkGenerateRandomKeyString(uint bytes)
 {
-	uint8 key[16];
-	char hex_output[16 * 2 + 1];
+	uint8 *key = AllocaM(uint8, bytes);
+	char *hex_output = AllocaM(char, bytes * 2);
 
-	if (randombytes(key, 16) < 0) {
+	if (randombytes(key, bytes) < 0) {
 		/* Fallback poor-quality random */
 		DEBUG(misc, 0, "High quality random source unavailable");
-		for (int i = 0; i < 16; i++) {
+		for (uint i = 0; i < bytes; i++) {
 			key[i] = (uint8)InteractiveRandom();
 		}
 	}
 
-	for (int i = 0; i < 16; ++i) {
-		seprintf(hex_output + i * 2, lastof(hex_output), "%02x", key[i]);
+	char txt[3];
+	for (uint i = 0; i < bytes; ++i) {
+		seprintf(txt, lastof(txt), "%02x", key[i]);
+		hex_output[i * 2] = txt[0];
+		hex_output[i * 2 + 1] = txt[1];
 	}
 
-	return std::string(hex_output);
+	return std::string(hex_output, hex_output + bytes * 2);
 }
 
 class TCPNetworkDebugConnecter : TCPConnecter {
@@ -1318,6 +1324,11 @@ void NetworkStartUp()
 
 	/* Generate an server id when there is none yet */
 	if (_settings_client.network.network_id.empty()) NetworkGenerateServerId();
+
+	if (_settings_client.network.company_password_storage_token.empty() || _settings_client.network.company_password_storage_secret.empty()) {
+		SetSettingValue(GetSettingFromName("network.company_password_storage_token")->AsStringSetting(), NetworkGenerateRandomKeyString(16));
+		SetSettingValue(GetSettingFromName("network.company_password_storage_secret")->AsStringSetting(), NetworkGenerateRandomKeyString(32));
+	}
 
 	_network_game_info = {};
 

@@ -26,6 +26,8 @@
 
 extern NetworkCompanyState *_network_company_states;
 extern std::string _network_company_server_id;
+extern uint8 _network_company_password_storage_token[16];
+extern uint8 _network_company_password_storage_key[32];
 
 extern ClientID _network_own_client_id;
 extern ClientID _redirect_console_to_client;

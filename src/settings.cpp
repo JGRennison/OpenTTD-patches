@@ -143,6 +143,7 @@ typedef void SettingDescProc(IniFile &ini, const SettingTable &desc, const char 
 typedef void SettingDescProcList(IniFile &ini, const char *grpname, StringList &list);
 
 static bool IsSignedVarMemType(VarType vt);
+static bool DecodeHexText(const char *pos, uint8 *dest, size_t dest_size);
 
 
 /**
@@ -1682,6 +1683,38 @@ static bool ReplaceAsteriskWithEmptyPassword(std::string &newval)
 {
 	if (newval.compare("*") == 0) newval.clear();
 	return true;
+}
+
+static bool IsValidHexKeyString(const std::string &newval)
+{
+	for (const char c : newval) {
+		if (!IsValidChar(c, CS_HEXADECIMAL)) return false;
+	}
+	return true;
+}
+
+static bool IsValidHex128BitKeyString(std::string &newval)
+{
+	return newval.size() == 32 && IsValidHexKeyString(newval);
+}
+
+static bool IsValidHex256BitKeyString(std::string &newval)
+{
+	return newval.size() == 64 && IsValidHexKeyString(newval);
+}
+
+static void ParseCompanyPasswordStorageToken(const std::string &value)
+{
+	extern uint8 _network_company_password_storage_token[16];
+	if (value.size() != 32) return;
+	DecodeHexText(value.c_str(), _network_company_password_storage_token, 16);
+}
+
+static void ParseCompanyPasswordStorageSecret(const std::string &value)
+{
+	extern uint8 _network_company_password_storage_key[32];
+	if (value.size() != 64) return;
+	DecodeHexText(value.c_str(), _network_company_password_storage_key, 32);
 }
 
 /** Update the game info, and send it to the clients when we are running as a server. */

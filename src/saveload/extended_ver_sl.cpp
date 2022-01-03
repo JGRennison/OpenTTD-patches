@@ -161,6 +161,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_BANKRUPTCY_EXTRA,       XSCF_NULL,                1,   1, "bankruptcy_extra",          nullptr, nullptr, nullptr        },
 	{ XSLFI_OBJECT_GROUND_TYPES,    XSCF_NULL,                1,   1, "object_ground_types",       nullptr, nullptr, nullptr        },
 	{ XSLFI_LINKGRAPH_AIRCRAFT,     XSCF_NULL,                1,   1, "linkgraph_aircraft",        nullptr, nullptr, nullptr        },
+	{ XSLFI_COMPANY_PW,             XSCF_IGNORABLE_ALL,       1,   1, "company_password",          nullptr, nullptr, "PLYP"         },
 	{ XSLFI_SCRIPT_INT64,           XSCF_NULL,                1,   1, "script_int64",              nullptr, nullptr, nullptr        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr },// This is the end marker
 };
