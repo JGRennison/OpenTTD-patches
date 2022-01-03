@@ -116,6 +116,7 @@ enum SlXvFeatureIndex {
 	XSLFI_OBJECT_GROUND_TYPES,                    ///< Object ground types
 	XSLFI_LINKGRAPH_AIRCRAFT,                     ///< Link graph last aircraft update field and aircraft link scaling setting
 	XSLFI_COMPANY_PW,                             ///< Company passwords
+	XSLFI_ST_INDUSTRY_CARGO_MODE,                 ///< Station industry cargo mode setting
 
 	XSLFI_SCRIPT_INT64,                           ///< See: SLV_SCRIPT_INT64
 
