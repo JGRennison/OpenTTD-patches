@@ -1259,6 +1259,8 @@ STR_CONFIG_SETTING_TRAIN_BRAKING_REALISTIC                      :Realistic {PUSH
 
 STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED        :{WHITE}Realistic braking can't be enabled. At least one pre-signal or two-way signal is present.
 
+STR_CONFIG_SETTING_DELIVERY_BALANCED                            :Balanced
+
 ###length 3
 STR_CONFIG_SETTING_HORIZONTAL_POS_LEFT                          :Left
 STR_CONFIG_SETTING_HORIZONTAL_POS_CENTER                        :Centre
@@ -1339,6 +1341,9 @@ STR_CONFIG_SETTING_STATION_RATING_SIZE_CARGO_AMOUNT             :Station cargo c
 STR_CONFIG_SETTING_STATION_RATING_SIZE_CARGO_AMOUNT_HELPTEXT    :When enabled, the cargo capacity of stations before waiting cargo is truncated and the effect of the waiting cargo amount on the station rating for that cargo depend on the size of the station. Larger stations can store more cargo and are more tolerant of large amounts of waiting cargo.
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Allow removal of more town-owned roads, bridges and tunnels: {STRING2}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Make it easier to remove town-owned infrastructure and buildings
+
+STR_CONFIG_SETTING_CARGO_DELIVERY_MODE                          :Cargo delivery distribution mode: {STRING2}
+STR_CONFIG_SETTING_CARGO_DELIVERY_MODE_HELPTEXT                 :The method used to deliver cargo to industries surrounding a station.
 
 STR_CONFIG_SETTING_TRAIN_LENGTH                                 :Maximum length of trains: {STRING2}
 STR_CONFIG_SETTING_TRAIN_LENGTH_HELPTEXT                        :Set the maximum length of trains

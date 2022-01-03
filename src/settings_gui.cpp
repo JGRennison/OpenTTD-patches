@@ -2181,6 +2181,7 @@ static SettingsContainer &GetSettingsTree()
 				industries->Add(new SettingEntry("economy.type"));
 				industries->Add(new SettingEntry("station.serve_neutral_industries"));
 				industries->Add(new SettingEntry("economy.industry_cargo_scale_factor"));
+				industries->Add(new SettingEntry("station.station_delivery_mode"));
 			}
 
 			SettingsPage *cdist = environment->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST));
