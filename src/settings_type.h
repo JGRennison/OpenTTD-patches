@@ -21,6 +21,7 @@
 #include "zoom_type.h"
 #include "openttd.h"
 #include "rail_gui_type.h"
+#include "station_type.h"
 
 /* Used to validate sizes of "max" value in settings. */
 const size_t MAX_SLE_UINT8 = UINT8_MAX;
@@ -712,6 +713,7 @@ struct StationSettings {
 	byte   catchment_increase;               ///< amount by which station catchment is increased
 	bool   cargo_class_rating_wait_time;     ///< station rating tolerance to time since last cargo pickup depends on cargo class
 	bool   station_size_rating_cargo_amount; ///< station rating tolerance to waiting cargo amount depends on station size
+	StationDelivery station_delivery_mode;   ///< method to use for distributing cargo from stations to accepting industries
 };
 
 /** Default settings for vehicles. */
