@@ -662,6 +662,10 @@ void StringSettingDesc::ParseValue(const IniItem *item, void *object) const
 {
 	std::string str = (item == nullptr) ? this->def : item->value.value_or("");
 	this->MakeValueValid(str);
+	if (this->flags & SF_RUN_CALLBACKS_ON_PARSE) {
+		if (this->pre_check != nullptr && !this->pre_check(str)) str = this->def;
+		if (this->post_callback != nullptr) this->post_callback(str);
+	}
 	this->Write(object, str);
 }
 
