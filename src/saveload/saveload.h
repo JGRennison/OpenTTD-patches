@@ -620,6 +620,8 @@ void SlSetArrayIndex(uint index);
 int SlIterateArray();
 
 void SlAutolength(AutolengthProc *proc, void *arg);
+std::vector<uint8> SlSaveToVector(AutolengthProc *proc, void *arg);
+void SlLoadFromBuffer(const byte *buffer, size_t length, AutolengthProc *proc, void *arg);
 size_t SlGetFieldLength();
 void SlSetLength(size_t length);
 size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld);

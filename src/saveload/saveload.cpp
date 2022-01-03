@@ -2050,6 +2050,54 @@ void SlAutolength(AutolengthProc *proc, void *arg)
 	_sl.dumper->CopyBytes(result.first, result.second);
 }
 
+/**
+ * Run proc, saving result to a std::vector
+ * @param proc The callback procedure that is called
+ * @param arg The variable that will be used for the callback procedure
+ */
+std::vector<byte> SlSaveToVector(AutolengthProc *proc, void *arg)
+{
+	assert(_sl.action == SLA_SAVE);
+	NeedLength orig_need_length = _sl.need_length;
+
+	_sl.need_length = NL_NONE;
+	_sl.dumper->StartAutoLength();
+	proc(arg);
+	auto result = _sl.dumper->StopAutoLength();
+	/* Setup length */
+	_sl.need_length = orig_need_length;
+	return std::vector<uint8>(result.first, result.first + result.second);
+}
+
+/**
+ * Run proc, loading exactly length bytes from the contents of buffer
+ * @param proc The callback procedure that is called
+ * @param arg The variable that will be used for the callback procedure
+ */
+void SlLoadFromBuffer(const byte *buffer, size_t length, AutolengthProc *proc, void *arg)
+{
+	assert(_sl.action == SLA_LOAD || _sl.action == SLA_LOAD_CHECK);
+
+	size_t old_obj_len = _sl.obj_len;
+	_sl.obj_len = length;
+
+	ReadBuffer *reader = ReadBuffer::GetCurrent();
+	byte *old_bufp = reader->bufp;
+	byte *old_bufe = reader->bufe;
+	reader->bufp = const_cast<byte *>(buffer);
+	reader->bufe = const_cast<byte *>(buffer) + length;
+
+	proc(arg);
+
+	if (reader->bufp != reader->bufe || reader->bufe != buffer + length) {
+		SlErrorCorrupt("SlLoadFromBuffer: Wrong number of bytes read");
+	}
+
+	_sl.obj_len = old_obj_len;
+	reader->bufp = old_bufp;
+	reader->bufe = old_bufe;
+}
+
 /*
  * Notes on extended chunk header:
  *
