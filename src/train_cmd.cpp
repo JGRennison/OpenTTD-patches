@@ -6590,6 +6590,10 @@ static void CheckIfTrainNeedsService(Train *v)
 	v->current_order.MakeGoToDepot(depot, ODTFB_SERVICE);
 	v->dest_tile = tfdd.tile;
 	SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
+
+	for (Train *u = v; u != nullptr; u = u->Next()) {
+		ClrBit(u->flags, VRF_BEYOND_PLATFORM_END);
+	}
 }
 
 /** Update day counters of the train vehicle. */

@@ -4072,6 +4072,10 @@ static VehicleEnterTileStatus VehicleEnter_Track(Vehicle *u, TileIndex tile, int
 			if (order != nullptr && order->IsType(OT_GOTO_STATION) && order->GetDestination() == v->last_station_visited) {
 				v->IncrementImplicitOrderIndex();
 			}
+		} else {
+			for (Train *u = v; u != nullptr; u = u->Next()) {
+				ClrBit(u->flags, VRF_BEYOND_PLATFORM_END);
+			}
 		}
 	};
 

@@ -37,6 +37,7 @@
 #include "order_cmd.h"
 #include "vehiclelist.h"
 #include "tracerestrict.h"
+#include "train.h"
 
 #include "table/strings.h"
 
@@ -1461,6 +1462,12 @@ CommandCost CmdSkipToOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	if (flags & DC_EXEC) {
 		if (v->current_order.IsAnyLoadingType()) v->LeaveStation();
 		if (v->current_order.IsType(OT_WAITING)) v->HandleWaiting(true);
+
+		if (v->type == VEH_TRAIN) {
+			for (Train *u = Train::From(v); u != nullptr; u = u->Next()) {
+				ClrBit(u->flags, VRF_BEYOND_PLATFORM_END);
+			}
+		}
 
 		v->cur_implicit_order_index = v->cur_real_order_index = sel_ord;
 		v->UpdateRealOrderIndex();

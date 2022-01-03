@@ -3669,6 +3669,12 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 	if (flags & DC_EXEC) {
 		if (this->current_order.IsAnyLoadingType()) this->LeaveStation();
 
+		if (this->type == VEH_TRAIN) {
+			for (Train *v = Train::From(this); v != nullptr; v = v->Next()) {
+				ClrBit(v->flags, VRF_BEYOND_PLATFORM_END);
+			}
+		}
+
 		if (this->IsGroundVehicle() && this->GetNumManualOrders() > 0) {
 			uint16 &gv_flags = this->GetGroundVehicleFlags();
 			SetBit(gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS);
