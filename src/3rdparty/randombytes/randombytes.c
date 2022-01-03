@@ -76,7 +76,7 @@ static int randombytes_win32_randombytes(void* buf, const size_t n)
 	                          CRYPT_VERIFYCONTEXT);
 	if (tmp == FALSE) return -1;
 
-	tmp = CryptGenRandom(ctx, n, (BYTE*) buf);
+	tmp = CryptGenRandom(ctx, (DWORD)n, (BYTE*) buf);
 	if (tmp == FALSE) return -1;
 
 	tmp = CryptReleaseContext(ctx, 0);
@@ -294,10 +294,10 @@ static int randombytes_js_randombytes_nodejs(void *buf, size_t n) {
 		errno = EINVAL;
 		return -1;
 	case -2:
+	default:
 		errno = ENOSYS;
 		return -1;
 	}
-	assert(false); // Unreachable
 }
 #endif /* defined(__EMSCRIPTEN__) */
 
