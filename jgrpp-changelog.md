@@ -33,7 +33,7 @@
 * Add settings to reduce vehicle running costs when a vehicle is stationary or in a depot.
 * Add setting to disable road vehicles from passing through each other when blocked for an extended period of time (default off).
 * Change the map generation allow lakes to spawn in deserts setting to also allow spawning rivers in deserts.
-* If a vehicle's next order is for the current station when leaving, start loading again without moving, instead of leaving.
+* If a train's next order is for the current station when leaving, start loading again without moving, instead of leaving.
 * Run most "daily" vehicle tasks at a fixed frequency instead of daily at day lengths of 8 or more (running cost accounting, track sharing costs, breakdown checks, servicing checks, order checks).
 * Only show level crossing overlay sprites on the outsides of multi-track crossings when using both the adjacent crossings and safer crossings settings.
 * Increase the object class limit.
