@@ -2852,7 +2852,7 @@ public:
 				SetDParam(0, detailed ? STR_STATION_RATING_MAX_PERCENTAGE : STR_EMPTY);
 				SetDParam(1, 51);
 				SetDParam(2, STR_STATION_RATING_TOOLTIP_WAITTIME_0 + wait_time_stage);
-				SetDParam(3, ge->max_waiting_cargo);
+				SetDParam(3, ge->time_since_pickup * STATION_RATING_TICKS / (DAY_TICKS * _settings_game.economy.day_length_factor));
 				SetDParam(4, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
 				SetDParam(5, RoundRating(wait_time_rating));
 				GetString(this->data[line_nr],
