@@ -460,15 +460,20 @@ void VehicleCargoList::ShiftCargo(Taction action)
  *                 will be kept and the loop will be aborted.
  *                 The second method parameter can be appended to, to prepend items to the packet list
  * @param action Action instance to be applied.
+ * @param filter Cargo packet filter.
  */
-template<class Taction>
-void VehicleCargoList::ShiftCargoWithFrontInsert(Taction action)
+template<class Taction, class Tfilter>
+void VehicleCargoList::ShiftCargoWithFrontInsert(Taction action, Tfilter filter)
 {
 	std::vector<CargoPacket *> packets_to_front_insert;
 
 	Iterator it(this->packets.begin());
 	while (it != this->packets.end() && action.MaxMove() > 0) {
 		CargoPacket *cp = *it;
+		if (!filter(cp)) {
+			++it;
+			continue;
+		}
 		if (action(cp, packets_to_front_insert)) {
 			it = this->packets.erase(it);
 		} else {
@@ -858,7 +863,23 @@ uint VehicleCargoList::Truncate(uint max_move)
 uint VehicleCargoList::Reroute(uint max_move, VehicleCargoList *dest, StationID avoid, StationID avoid2, const GoodsEntry *ge)
 {
 	max_move = std::min(this->action_counts[MTA_TRANSFER], max_move);
-	this->ShiftCargoWithFrontInsert(VehicleCargoReroute(this, dest, max_move, avoid, avoid2, ge));
+	this->ShiftCargoWithFrontInsert(VehicleCargoReroute(this, dest, max_move, avoid, avoid2, ge), [](CargoPacket *cp) { return true; });
+	return max_move;
+}
+
+/**
+ * Routes packets with station "avoid" as next hop to a different place, for a specific source station.
+ * @param max_move Maximum amount of cargo to move.
+ * @param dest List to prepend the cargo to.
+ * @param source Source station.
+ * @param avoid Station to exclude from routing and current next hop of packets to reroute.
+ * @param avoid2 Additional station to exclude from routing.
+ * @param ge GoodsEntry to get the routing info from.
+ */
+uint VehicleCargoList::RerouteFromSource(uint max_move, VehicleCargoList *dest, StationID source, StationID avoid, StationID avoid2, const GoodsEntry *ge)
+{
+	max_move = std::min(this->action_counts[MTA_TRANSFER], max_move);
+	this->ShiftCargoWithFrontInsert(VehicleCargoReroute(this, dest, max_move, avoid, avoid2, ge), [source](CargoPacket *cp) { return cp->SourceStation() == source; });
 	return max_move;
 }
 
@@ -942,6 +963,67 @@ uint StationCargoList::ShiftCargo(Taction action, StationIDStack next, bool incl
 	}
 	if (include_invalid && action.MaxMove() > 0) {
 		this->ShiftCargo(action, INVALID_STATION);
+	}
+	return max_move - action.MaxMove();
+}
+
+/**
+ * Shifts cargo from the front of the packet list for a specific station
+ * from a specific source station and applies some action to it.
+ * @tparam Taction Action class or function to be used. It should define
+ *                 "bool operator()(CargoPacket *)". If true is returned the
+ *                 cargo packet will be removed from the list. Otherwise it
+ *                 will be kept and the loop will be aborted.
+ * @param action Action instance to be applied.
+ * @param source Source station.
+ * @param next Next hop the cargo wants to visit.
+ * @return True if all packets with the given next hop have been removed,
+ *         False otherwise.
+ */
+template <class Taction>
+bool StationCargoList::ShiftCargoFromSource(Taction &action, StationID source, StationID next)
+{
+	for (Iterator it = this->packets.lower_bound(next); it != this->packets.end() && it.GetKey() == next;) {
+		if (action.MaxMove() == 0) return false;
+		CargoPacket *cp = *it;
+		if (cp->SourceStation() != source) {
+			++it;
+			continue;
+		}
+		if (action(cp)) {
+			it = this->packets.erase(it);
+		} else {
+			return false;
+		}
+	}
+	return true;
+}
+
+/**
+ * Shifts cargo from the front of the packet list for a specific station
+ * and optional also from the list for "any station", then applies some action
+ * to it, for a specific source station.
+ * @tparam Taction Action class or function to be used. It should define
+ *                 "bool operator()(CargoPacket *)". If true is returned the
+ *                 cargo packet will be removed from the list. Otherwise it
+ *                 will be kept and the loop will be aborted.
+ * @param action Action instance to be applied.
+ * @param source Source station.
+ * @param next Next hop the cargo wants to visit.
+ * @param include_invalid If cargo from the INVALID_STATION list should be
+ *                        used if necessary.
+ * @return Amount of cargo actually moved.
+ */
+template <class Taction>
+uint StationCargoList::ShiftCargoFromSource(Taction action, StationID source, StationIDStack next, bool include_invalid)
+{
+	uint max_move = action.MaxMove();
+	while (!next.IsEmpty()) {
+		this->ShiftCargoFromSource(action, source, next.Pop());
+		if (action.MaxMove() == 0) break;
+	}
+	if (include_invalid && action.MaxMove() > 0) {
+		this->ShiftCargoFromSource(action, source, INVALID_STATION);
 	}
 	return max_move - action.MaxMove();
 }
@@ -1057,6 +1139,19 @@ uint StationCargoList::Load(uint max_move, VehicleCargoList *dest, TileIndex loa
 uint StationCargoList::Reroute(uint max_move, StationCargoList *dest, StationID avoid, StationID avoid2, const GoodsEntry *ge)
 {
 	return this->ShiftCargo(StationCargoReroute(this, dest, max_move, avoid, avoid2, ge), avoid, false);
+}
+
+/**
+ * Routes packets with station "avoid" as next hop to a different place.
+ * @param max_move Maximum amount of cargo to move.
+ * @param dest List to append the cargo to.
+ * @param avoid Station to exclude from routing and current next hop of packets to reroute.
+ * @param avoid2 Additional station to exclude from routing.
+ * @param ge GoodsEntry to get the routing info from.
+ */
+uint StationCargoList::RerouteFromSource(uint max_move, StationCargoList *dest, StationID source, StationID avoid, StationID avoid2, const GoodsEntry *ge)
+{
+	return this->ShiftCargoFromSource(StationCargoReroute(this, dest, max_move, avoid, avoid2, ge), source, avoid, false);
 }
 
 /*

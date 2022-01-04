@@ -298,8 +298,8 @@ protected:
 	template<class Taction>
 	void ShiftCargo(Taction action);
 
-	template<class Taction>
-	void ShiftCargoWithFrontInsert(Taction action);
+	template<class Taction, class Tfilter>
+	void ShiftCargoWithFrontInsert(Taction action, Tfilter filter);
 
 	template<class Taction>
 	void PopCargo(Taction action);
@@ -467,6 +467,7 @@ public:
 	uint Shift(uint max_move, VehicleCargoList *dest);
 	uint Truncate(uint max_move = UINT_MAX);
 	uint Reroute(uint max_move, VehicleCargoList *dest, StationID avoid, StationID avoid2, const GoodsEntry *ge);
+	uint RerouteFromSource(uint max_move, VehicleCargoList *dest, StationID source, StationID avoid, StationID avoid2, const GoodsEntry *ge);
 
 	/**
 	 * Are the two CargoPackets mergeable in the context of
@@ -520,6 +521,12 @@ public:
 
 	template<class Taction>
 	uint ShiftCargo(Taction action, StationIDStack next, bool include_invalid);
+
+	template <class Taction>
+	bool ShiftCargoFromSource(Taction &action, StationID source, StationID next);
+
+	template<class Taction>
+	uint ShiftCargoFromSource(Taction action, StationID source, StationIDStack next, bool include_invalid);
 
 	void Append(CargoPacket *cp, StationID next);
 
@@ -585,6 +592,7 @@ public:
 	uint Load(uint max_move, VehicleCargoList *dest, TileIndex load_place, StationIDStack next);
 	uint Truncate(uint max_move = UINT_MAX, StationCargoAmountMap *cargo_per_source = nullptr);
 	uint Reroute(uint max_move, StationCargoList *dest, StationID avoid, StationID avoid2, const GoodsEntry *ge);
+	uint RerouteFromSource(uint max_move, StationCargoList *dest, StationID source, StationID avoid, StationID avoid2, const GoodsEntry *ge);
 
 	void AfterLoadIncreaseReservationCount(uint count)
 	{

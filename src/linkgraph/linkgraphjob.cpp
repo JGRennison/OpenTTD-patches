@@ -151,11 +151,19 @@ void LinkGraphJob::FinaliseJob()
 		for (FlowStatMap::iterator it(ge.flows.begin()); it != ge.flows.end();) {
 			FlowStatMap::iterator new_it = flows.find(it->GetOrigin());
 			if (new_it == flows.end()) {
-				bool should_erase = true;
 				if (_settings_game.linkgraph.GetDistributionType(this->Cargo()) != DT_MANUAL) {
-					should_erase = it->Invalidate();
-				}
-				if (should_erase) {
+					if (it->Invalidate()) {
+						FlowStat shares(INVALID_STATION, INVALID_STATION, 1);
+						it->SwapShares(shares);
+						it = ge.flows.erase(it);
+						for (FlowStat::const_iterator shares_it(shares.begin());
+								shares_it != shares.end(); ++shares_it) {
+							RerouteCargoFromSource(st, this->Cargo(), it->GetOrigin(), shares_it->second, st->index);
+						}
+					} else {
+						++it;
+					}
+				} else {
 					FlowStat shares(INVALID_STATION, INVALID_STATION, 1);
 					it->SwapShares(shares);
 					it = ge.flows.erase(it);
@@ -163,8 +171,6 @@ void LinkGraphJob::FinaliseJob()
 							shares_it != shares.end(); ++shares_it) {
 						RerouteCargo(st, this->Cargo(), shares_it->second, st->index);
 					}
-				} else {
-					++it;
 				}
 			} else {
 				it->SwapShares(*new_it);
