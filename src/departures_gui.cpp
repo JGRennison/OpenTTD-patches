@@ -153,11 +153,11 @@ protected:
 							&& order->GetDestination() == this->station) {
 						this->vehicles.push_back(v);
 
-						if (v->name.empty()) {
+						if (v->name.empty() && !(v->group_id != DEFAULT_GROUP && _settings_client.gui.vehicle_names != 0)) {
 							if (v->unitnumber > unitnumber_max[v->type]) unitnumber_max[v->type] = v->unitnumber;
 						} else {
 							SetDParam(0, (uint64)(v->index));
-							int width = (GetStringBoundingBox(STR_DEPARTURES_VEH)).width;
+							int width = (GetStringBoundingBox(STR_DEPARTURES_VEH)).width + 4;
 							if (width > this->veh_width) this->veh_width = width;
 						}
 
