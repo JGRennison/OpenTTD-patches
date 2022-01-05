@@ -81,10 +81,10 @@
 * Fix signals on dual railtype tiles using wrong per-railtype custom signals.
 * Fix conditional order loops on leaving a depot when a timetabled wait time is set.
 * Signals on bridges/tunnels:
- * Fix tunnel exit signal not being set to red when train exited.
- * Fix signals on bridge middle parts not using per-railtype custom signals.
- * The signal spacing distance is now fixed at signalling time, changing the company spacing setting now only affects newly signalled bridges/tunnels, not existing ones.
- * The signal spacing distance is now automatically adjusted to fit the tunnel/bridge length. This is to avoid the last middle signal being too close to the exit signal.
+  * Fix tunnel exit signal not being set to red when train exited.
+  * Fix signals on bridge middle parts not using per-railtype custom signals.
+  * The signal spacing distance is now fixed at signalling time, changing the company spacing setting now only affects newly signalled bridges/tunnels, not existing ones.
+  * The signal spacing distance is now automatically adjusted to fit the tunnel/bridge length. This is to avoid the last middle signal being too close to the exit signal.
 * Routing restrictions:
   * Add slot action: try to acquire (only on reserve).
   * Fix last station visited not being set when the reservation ends at the target station, this could cause long-reserve conditionals to use the wrong last station visited value.
