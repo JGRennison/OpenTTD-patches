@@ -2,6 +2,31 @@
 
 * * *
 
+### v0.45.0 (2022-01-05)
+* Fix crash when removing signals from a bridge or tunnel when one or more routing restriction programs were attached.
+* Fix crash when a template replacement train had an engine with an invalid cargo type.
+* Fix multiplayer desync which could occur after removing track with a signal on it at the end of a PBS reservation with a moving train approaching and realistic braking enabled.
+* Fix multiplayer desync which could occur after estimating building a road stop.
+* Fix invalid data being wrtten to the config file when display of income texts was disabled.
+* Fix give money chat message showing the wrong value in some cases.
+* Fix through load failed due to a depot news messages being shown when no problem actually occured in some circumstances.
+* Fix re-routing of unrelated cargo to "any station" when removing invalidated link graph flow.
+* Fix incorrect window and column widths in the departure boards window.
+* Fix newly generated network server ID not being saved in the config file in some circumstances.
+* Add support for having more than 256 rail waypoint types.
+* Add setting to distribute cargo received at a station to all accepting industries equally, instead of just one of them.
+* Add setting to increase the cargodist link graph distance/cost metric of aircraft links.
+* Add clear schedule function to the scheduled dispatch window.
+* Add client setting to show all signals using the default baseset sprites.
+* Store company passwords in network server saves in an encrypted form such that they are automaticaly restored when loaded into the same network server.
+* Show vehicle destination when mousing over a vehicle breakdown in the vehicle status bar.
+* Allow setting the autosave interval to a custom number of in-game days or real-time minutes.
+* Adjust automatic servicing behaviour to avoid unnecessarily cancelling automatic servicing orders.
+* If a ship's next order is for the current station when leaving, start loading again without moving, instead of leaving.
+* Enable news warning for missing depot order in order list by default.
+* Fix dedicated network servers logging too much by default.
+* Bump trunk base from commit 6953df7b5e52d749e50275640197e5fc17e2310c to commit d62c5667cff2eed82deb18e28d98345500b30d3f.
+
 ### v0.44.2 (2021-12-10)
 * Fix multiplayer desync which could occur when using order backups in some circumstances.
 * Fix loading of the game log from upstream 12.x savegames.
