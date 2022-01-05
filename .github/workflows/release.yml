@@ -375,18 +375,23 @@ jobs:
         - container_image: "ubuntu:18.04"
           bundle_name: "bionic"
           compiler: "g++-8"
+          c_compiler: "gcc-8"
         - container_image: "ubuntu:20.04"
           bundle_name: "focal"
           compiler: "g++"
-        - container_image: "ubuntu:20.10"
-          bundle_name: "groovy"
+          c_compiler: "gcc"
+        - container_image: "ubuntu:21.10"
+          bundle_name: "impish"
           compiler: "g++"
+          c_compiler: "gcc"
         - container_image: "debian:buster"
           bundle_name: "buster"
           compiler: "g++"
+          c_compiler: "gcc"
         - container_image: "debian:bullseye"
           bundle_name: "bullseye"
           compiler: "g++"
+          c_compiler: "gcc"
 
     runs-on: ubuntu-20.04
     container:
@@ -413,6 +418,7 @@ jobs:
           cmake \
           debhelper \
           ${{ matrix.compiler }} \
+          ${{ matrix.c_compiler }} \
           git \
           make \
           openssl \
@@ -439,7 +445,7 @@ jobs:
         cd build
 
         echo "::group::CMake"
-        CXX=${{ matrix.compiler }} cmake ${GITHUB_WORKSPACE} \
+        CXX=${{ matrix.compiler }} CC=${{ matrix.c_compiler }} cmake ${GITHUB_WORKSPACE} \
           -DCMAKE_BUILD_TYPE=RelWithDebInfo \
           -DCMAKE_INSTALL_PREFIX=/usr \
           # EOF
