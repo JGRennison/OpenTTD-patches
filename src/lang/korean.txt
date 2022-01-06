@@ -1036,6 +1036,14 @@ STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_1_MONTH                :매달
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_3_MONTHS               :3개월마다
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_6_MONTHS               :6개월마다
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_12_MONTHS              :12개월마다
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_LABEL      :사용자 설정 (게임 일)
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :사용자 설정 (현실 분)
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM            :매 {COMMA}일마다
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_SINGULAR   :매일
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :현실에서 매 {COMMA}분마다
+
+STR_GAME_OPTIONS_AUTOSAVE_DAYS_QUERY_CAPT                       :{WHITE}자동 저장 간격 (단위: 게임 시간 기준 일)
+STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}자동 저장 간격 (단위: 현실 분)
 
 STR_GAME_OPTIONS_LANGUAGE                                       :{BLACK}언어
 STR_GAME_OPTIONS_LANGUAGE_TOOLTIP                               :{BLACK}사용할 언어를 선택하세요
@@ -1185,7 +1193,6 @@ STR_TERRAIN_TYPE_CUSTOM                                         :사용자 지�
 STR_TERRAIN_TYPE_CUSTOM_VALUE                                   :사용자 지정 높이 ({NUM})
 
 STR_CITY_APPROVAL_INDIFFERENT                                   :무관심
-
 ###length 3
 STR_CITY_APPROVAL_PERMISSIVE                                    :신경 안씀
 STR_CITY_APPROVAL_TOLERANT                                      :신경 씀
@@ -1251,6 +1258,8 @@ STR_CONFIG_SETTING_REALISTIC                                    :현실적
 STR_CONFIG_SETTING_TRAIN_BRAKING_REALISTIC                      :현실적 {PUSH_COLOUR}{RED}(고급){POP_COLOUR}
 
 STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED        :{WHITE}현실적인 감속을 사용할 수 없습니다. 사전 신호기나 양방향 신호기가 모두 존재하지 않아야 합니다.
+
+STR_CONFIG_SETTING_DELIVERY_BALANCED                            :균등
 
 ###length 3
 STR_CONFIG_SETTING_HORIZONTAL_POS_LEFT                          :왼쪽
@@ -1324,16 +1333,17 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :역과 공항�
 
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :역이 붙어 있는 산업시설의 화물을 회사의 역이 취급 가능: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :이 설정을 켜면, (유전과 같이) 역이 붙어 있는 산업시설이 근처에 지은 회사 소유의 역에서도 화물을 취급할 수 있습니다. 이 설정을 끄면, 반드시 산업시설에 붙어 있는 역에서만 화물을 취급할 수 있습니다. 인근에 있는 모든 회사 소유의 역은 화물을 취급할 수 없게 되며, 산업시설에 붙어 있는 역도 그 산업시설 이외의 화물을 취급할 수 없게 됩니다.
-
 STR_CONFIG_SETTING_CATCHMENT_INCREASE                           :역세권 크기 늘리기: {STRING}
 STR_CONFIG_SETTING_CATCHMENT_INCREASE_HELPTEXT                  :정한 칸 만큼 역세권을 증가시킵니다.
 STR_CONFIG_SETTING_STATION_RATING_CARGO_CLASS_WAIT_TIME         :화물 종류에 따라 대기 시간이 역 등급에 미치는 영향 조정: {STRING}
 STR_CONFIG_SETTING_STATION_RATING_CARGO_CLASS_WAIT_TIME_HELPTEXT:화물이 역에서 대기하는 시간이 역 등급에 미치는 영향이 화물 종류에 따라 달라집니다. 승객, 우편, 장갑 화물, 냉장 화물, 고속 화물은 대기 시간이 역 등급에 영향을 크게 미칠 것입니다. 그에 반해, 대량 화물 및 액체 화물은 역 등급에 영향을 적게 미칩니다.
 STR_CONFIG_SETTING_STATION_RATING_SIZE_CARGO_AMOUNT             :역 화물 수용량과 등급 변화가 역 크기에 따라 달라지게: {STRING}
 STR_CONFIG_SETTING_STATION_RATING_SIZE_CARGO_AMOUNT_HELPTEXT    :이 설정을 켜면, 화물이 역에 쌓이기 전에 역의 화물 수용량이 제한되고 해당 화물의 역 등급에 의한 대기 화물량이 역의 크기에 따라 영향을 받게 됩니다. 역이 클 수록 더 많은 화물을 쌓아둘 수 있고 대기하는 화물이 많이 있어도 역의 화물 등급이 잘 떨어지지 않습니다.
-
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :도시 소유의 도로, 다리 등의 제거 허용: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :도시 소유의 기반시설이나 건물을 제거할 수 있게 합니다.
+
+STR_CONFIG_SETTING_CARGO_DELIVERY_MODE                          :산업시설 화물 분배 방식: {STRING}
+STR_CONFIG_SETTING_CARGO_DELIVERY_MODE_HELPTEXT                 :역 주위에 있는 산업시설에 어떻게 화물을 분배할 것인지를 결정합니다.
 
 STR_CONFIG_SETTING_TRAIN_LENGTH                                 :열차의 최대 길이: {STRING}
 STR_CONFIG_SETTING_TRAIN_LENGTH_HELPTEXT                        :열차의 최대 길이를 제한할 수 있습니다.
@@ -1344,10 +1354,8 @@ STR_CONFIG_SETTING_SMOKE_AMOUNT_HELPTEXT                        :차량에서 �
 
 STR_CONFIG_SETTING_TRAIN_ACCELERATION_MODEL                     :열차 가속 모델: {STRING}
 STR_CONFIG_SETTING_TRAIN_ACCELERATION_MODEL_HELPTEXT            :열차 가속에 사용할 물리 모델을 선택합니다. "오리지널" 모델은 언덕을 오를 때 무조건 속력이 감소합니다. "현실적" 모델은 열차의 길이나 기관차의 견인력 등의 구성 속성에 따라 언덕과 커브에서 속력이 감소합니다.
-
 STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL                          :열차 감속 모델: {STRING}
 STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL_HELPTEXT                 :열차 감속에 사용할 물리 모델을 선택합니다. "오리지널" 모델을 사용하면 열차가 즉시 멈춥니다. "현실적" 모델을 사용하면, 열차가 정지하려면 일정 거리가 필요해지고 그에 따라 앞쪽 선로를 미리 예약하게 되며, 열차가 즉시 멈출 수 없게 됩니다.{}{}"현실적" 모델은 신호 및 선로 구조 디자인에 많은 영향을 미치므로, 이 기능은 초심자에게 적합하지 않은 고급 기능입니다. 특히 사전 신호기와 양방향 신호기는 사용할 수 없으며, 모든 신호기는 경로 신호기를 사용해야 합니다.
-
 STR_CONFIG_SETTING_ROAD_VEHICLE_ACCELERATION_MODEL              :자동차/전차 가속 모델: {STRING}
 STR_CONFIG_SETTING_ROAD_VEHICLE_ACCELERATION_MODEL_HELPTEXT     :자동차/전차의 가속 물리 모델을 선택하세요. "오리지널" 모델은 언덕을 오를 때 무조건 속력이 감소합니다. "현실적" 모델은 차량의 견인력 등 차량의 다양한 속성에 따라 언덕을 오를 때 속력이 감소합니다.
 
@@ -1360,19 +1368,15 @@ STR_CONFIG_SETTING_ROAD_VEHICLE_SLOPE_STEEPNESS_HELPTEXT        :자동차/전�
 
 STR_CONFIG_SETTING_FORBID_90_DEG                                :열차의 90도 회전을 금지함: {STRING}
 STR_CONFIG_SETTING_FORBID_90_DEG_HELPTEXT                       :─ 모양의 수평 선로와 │ 모양의 수직 선로가 바로 이어져 만날 때 90도 회전이 발생합니다. 이 설정을 켜면, 열차가 칸 가장자리를 통과할 때 90도로 회전할 수 있도록 허용합니다. 이 설정은 선박의 회전 반경에도 적용됩니다.
-
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING                :단방향 경로 신호기 뒤까지 경로 탐색: {STRING}
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING_HELPTEXT       :이 설정을 켜면, YAPF 열차 경로 탐색 알고리즘이 단방향 경로 신호기 뒤까지 경로를 탐색할 수 있습니다.
-
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS                        :역이 같은 방향으로 붙어있지 않아도 같은 이름의 역 짓기 허용: {STRING}
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS_HELPTEXT               :이미 존재하는 역을 직접 건드리지 않고도 역의 일부분을 새로 추가/확장하는 것을 허용합니다. 인접한 칸에 기존과 다른 새로운 역을 놓을 때에는 CTRL+클릭해야 합니다.
 
 STR_CONFIG_SETTING_INFLATION                                    :인플레이션(화폐 가치 하락) 사용: {STRING}
 STR_CONFIG_SETTING_INFLATION_HELPTEXT                           :경제에 인플레이션 효과를 적용합니다. 벌어들이는 수익보다 지출하는 경비가 조금 더 빨리 상승하게 됩니다.
-
 STR_CONFIG_SETTING_INFLATION_FIXED_DATES                        :인플레이션을 1920년부터 2090년까지 적용: {STRING}
 STR_CONFIG_SETTING_INFLATION_FIXED_DATES_HELPTEXT               :이 설정을 켜면, OpenTTD 1.11 부터 사용되는 인플레이션 모델을 적용해서, 게임 시작 연도에 관계없이 인플레이션이 항상 1920년부터 2090년까지 적용됩니다. 이 설정을 끄면, OpenTTD 1.10 이전까지 사용하던 인플레이션 모델을 적용해서, 인플레이션이 게임 시작 날짜부터 시작해서 170년 동안 적용됩니다.
-
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH                            :다리의 최대 건설 길이: {STRING}
 STR_CONFIG_SETTING_MAX_BRIDGE_LENGTH_HELPTEXT                   :다리의 최대 길이를 제한할 수 있습니다.
 
@@ -1410,13 +1414,10 @@ STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT_HELPTEXT                  :일반적으로
 
 STR_CONFIG_SETTING_STOP_LOCATION                                :새로 지정하는 역 정차 경로는 기본적으로 역의 {STRING}에 정지하도록 설정
 STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :열차가 기본적으로 정거장의 어느 위치에 정차할 것인지를 설정합니다. '가까운 쪽'은 역에 진입하는 곳과 가까운 곳에, '중간'은 역 중앙에, '먼쪽'은 진입하는 곳과 먼 곳에 정차합니다. 이 설정은 새로 경로를 지정하는 차량에만 적용되는 점을 알아두십시오. 하지만 각 차량의 경로는 두 가지 방법 중에 원하는 대로 다시 설정할 수 있습니다.
-###length 3
 STR_CONFIG_SETTING_STOP_LOCATION_NEAR_END                       :가까운쪽
 STR_CONFIG_SETTING_STOP_LOCATION_MIDDLE                         :중간
 STR_CONFIG_SETTING_STOP_LOCATION_FAR_END                        :먼쪽
-
 STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :개선된 고장 활성화: {STRING}
-
 STR_CONFIG_SETTING_AUTOSCROLL                                   :가장자리에 마우스를 가져가면 화면 움직이기: {STRING}
 STR_CONFIG_SETTING_AUTOSCROLL_HELPTEXT                          :이 설정을 켜면, 마우스를 게임 및 외부 화면 창의 가장자리에 가까이 가져가면 화면을 이동시킵니다.
 ###length 4
@@ -1465,9 +1466,6 @@ STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :이 설정을 �
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :선박 충돌 방지: {STRING}
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :활성화되면 선박들이 서로를 피하려고 시도합니다. 90° 회전이 비활성화된 상태에서 최상의 결과를 보여줍니다.
 
-STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL                  :도로가 막히면 자동차가 서로 통과하는 것을 금지: {STRING}
-STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL_HELPTEXT         :자동차가 가려는 경로가 오랫 동안 막혀있는 경우 서로 통과하는 것을 막습니다
-
 STR_CONFIG_SETTING_CHUNNEL                                      :해저 터널 건설 허용: {STRING}
 STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :이 설정을 켜면, 해수면 아래를 통과하는 터널을 건설할 수 있습니다. 터널의 끝이 해안가로부터 최소한 3칸 이상 떨어져있어야 합니다.
 
@@ -1480,6 +1478,9 @@ STR_CONFIG_SETTING_FLIP_DIRECTION_ALL_TRAINS_HELPTEXT           :NewGRF에서 �
 STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING               :굴절 차량의 추월을 허용: {STRING}
 STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING_HELPTEXT      :굴절 차량이 다른 차량을 추월할 수 있도록 허용합니다.
 
+STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL                  :도로가 막히면 자동차가 서로 통과하는 것을 금지: {STRING}
+STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL_HELPTEXT         :자동차가 가려는 경로가 오랫 동안 막혀있는 경우 서로 통과하는 것을 막습니다
+
 STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT                    :드라이브스루 차량기지: {STRING}
 STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT_HELPTEXT           :드라이브스루 차량기지를 사용합니다. 열차는 연속적으로 배치된 차량기지 사이를 이동할 수 있으며, 중간에 차량기지가 있어도 됩니다. YAPF 경로 탐색을 사용해야 합니다.
 
@@ -1491,26 +1492,20 @@ STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :이 설정을 �
 
 STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            :차량이 길을 잃으면 경고하기: {STRING}
 STR_CONFIG_SETTING_WARN_LOST_VEHICLE_HELPTEXT                   :다음 목적지로 가기 위한 경로를 찾을 수 없는 차량이 있으면 뉴스 메시지로 알려줍니다.
-
 STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE                :열차가 경로 제한 때문에 멈춘 경우 경고: {STRING}
 STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE_HELPTEXT       :경로 제한 기능때문에 열차가 경로 신호기에서 오랫동안 멈춰있는 경우 뉴스 메시지로 알려줍니다.
-
 STR_CONFIG_SETTING_ORDER_REVIEW                                 :차량의 경로를 검사: {STRING}
 STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :이 설정을 켜면, 차량의 경로를 주기적으로 검사하여 문제가 발견되면 뉴스 메시지로 알려줍니다.
-###length 3
 STR_CONFIG_SETTING_ORDER_REVIEW_OFF                             :검사하지 않음
 STR_CONFIG_SETTING_ORDER_REVIEW_EXDEPOT                         :정지한 차량을 제외하고 검사
 STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :모든 차량을 검사
-
 STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER                          :경로에 기지가 없는 경우 경고: {STRING}
 STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_HELPTEXT                 :이 설정을 켜고 차량의 경로 검사 설정을 켜면, 기차나 차량, 선박의 경로에 기지가 없는 경우 뉴스 메시지로 알려줍니다.
-
 STR_CONFIG_SETTING_WARN_INCOME_LESS                             :차량의 수입이 적자일 때 경고하기: {STRING}
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :이 설정을 켜면, 지난 해에 수익이 없는 차량이 있으면 뉴스 메시지로 알려줍니다.
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :옛날 차량을 사라지지 않고 계속 만들 수 있게 함: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :이 설정을 켜면, 오래된 차량 모델을 포함하여 모든 차량 모델을 도입 이후에 계속 사용할 수 있게 됩니다.
-
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER                     :이 연도 이후 옛날 차량이 사라지지 않음: {STRING}
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_HELPTEXT            :이 연도 이후에 퇴역하는 차량은 계속 사용할 수 있게 됩니다.
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_VALUE               :{NUM}
@@ -1519,7 +1514,6 @@ STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER                  :이 연도 이�
 STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_HELPTEXT         :이 연도 또는 그 이후에 도입되는 차량을 도입하지 않습니다.
 STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_VALUE            :{NUM}
 STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_ZERO             :끄기
-
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE                            :차량이 낡으면 차량을 자동으로 교체: {STRING}
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE_HELPTEXT                   :이 설정을 켜면, 제한 수명에 다다른 차량이 교체 조건을 만족할 경우 자동으로 차량을 교체할 수 있게 됩니다.
 
@@ -1541,7 +1535,6 @@ STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :마우스를 �
 STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :마우스를 {COMMA}밀리초 동안 올려놓기
 ###setting-zero-is-special
 STR_CONFIG_SETTING_HOVER_DELAY_DISABLED                         :마우스 오른쪽 클릭
-
 STR_CONFIG_SETTING_POPULATION_IN_LABEL                          :도시 이름 옆에 도시의 인구 수를 표시함: {STRING}
 STR_CONFIG_SETTING_POPULATION_IN_LABEL_HELPTEXT                 :도시 이름 옆에 도시의 인구 수를 표시합니다.
 
@@ -1558,6 +1551,8 @@ STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :상세정보 �
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :열차의 무게 비를 상세정보 화면에 표시할지 설정합니다.
 STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF                      :경로 제한 신호기를 기본 그래픽으로 보이기: {STRING}
 STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_DEF_HELPTEXT             :경로 제한이 설정된 전자 신호기를 NewGRF의 신호기 그래픽 대신 기본 신호기 그래픽에 파란 표시를 한 그래픽으로 표시합니다. 이 옵션은 경로 제한 신호기의 구별을 쉽게 하기 위해 사용합니다.
+STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF                             :모든 신호기를 기본 그래픽으로 표시: {STRING}
+STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT                    :모든 신호기를 NewGRF의 신호기 그래픽을 사용하는 대신, 기본 신호기 그래픽으로 표시합니다. NewGRF에서 제공하는 신호기 그래픽을 사용할 수 없거나 명확하지 않은 경우에 이 설정을 사용하면 신호기의 현시 상태와 종류를 보기가 쉬워집니다.
 STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :고급 경로 제한 기능 표시: {STRING}
 STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :고급 경로 제한 기능을 표시합니다. 이 설정을 끄면, 일부 고급 기능이 인터페이스에 표시되지 않습니다. 하지만 다른 플레이어까지 숨겨진 고급 경로 제한 기능을 사용할 수 없도록 하지는 않습니다.
 STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES                        :신호기 프로그래밍 기능 표시: {STRING}
@@ -1617,10 +1612,8 @@ STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :지형에 따�
 
 STR_CONFIG_SETTING_LAND_GENERATOR                               :지형 만들기: {STRING}
 STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :오리지널 모드는 기본 그래픽 세트에 따라 다른 지형을 생성하며, 단조로운 지형을 구성합니다. 천지창조는 개선된 제어 설정을 가진 생성기로 만들어진 임의 지형(펄린 노이즈)을 구성합니다.
-
 STR_CONFIG_SETTING_MAX_SIGNAL_EVALUATIONS                       :프로그램 신호기가 한 번에 신호를 바꿀 수 있게 허용된 최대 횟수: {STRING}
 STR_CONFIG_SETTING_MAX_SIGNAL_EVALUATIONS_HELPTEXT              :프로그램 신호기의 한 번에 신호를 바꿀 수 있게 허용된 최대 횟수를 조정합니다.
-
 ###length 2
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :오리지널
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :천지창조
@@ -1644,14 +1637,12 @@ STR_CONFIG_SETTING_SNOW_COVERAGE_VALUE                          :{NUM}%
 STR_CONFIG_SETTING_DESERT_COVERAGE                              :사막 비율: {STRING}
 STR_CONFIG_SETTING_DESERT_COVERAGE_HELPTEXT                     :아열대 기후에서 사막 지역의 양을 대략적으로 조절할 수 있습니다. 사막은 산업시설 생성에도 영향을 미칩니다. 지도를 생성할 때에만 사용하는 설정입니다.
 STR_CONFIG_SETTING_DESERT_COVERAGE_VALUE                        :{NUM}%
-
 STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT                        :열대우림 선 높이: {STRING}
 STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT_HELPTEXT               :아열대 기후에서 어느 높이에서 열대우림이 시작할지를 조절합니다. 열대우림은 산업시설과 도시 성장에도 영향을 미칩니다.
 STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MODE                       :기후 임계값 모드: {STRING}
 STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MODE_HELPTEXT              :눈 지역의 고도나 열대우림/사막 고도를 비율로 결정할지 아니면 수동으로 조절할지를 결정합니다.
 STR_CONFIG_SETTING_CLIMATE_THRESHOLD_COVERAGE                   :비율
 STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MANUAL                     :수동
-
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :지형의 거친 정도: {STRING}
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(천지창조 전용) 언덕의 빈도수를 선택합니다. 평탄한 지형은 개수가 적고 넓게 퍼진 언덕을 만듭니다. 거친 지형은 똑같아 보일 수 있는 많은 언덕이 생기게 됩니다.
 ###length 4
@@ -1682,10 +1673,9 @@ STR_CONFIG_SETTING_ROCKS_AMOUNT                                 :바위 더미 �
 STR_CONFIG_SETTING_ROCKS_AMOUNT_HELPTEXT                        :바위 더미의 크기를 결정합니다. 값을 높게 설정하면 지도의 많은 부분을 바위가 덮을 것입니다.
 STR_CONFIG_SETTING_HEIGHT_ROCKS                                 :바위 더미의 크기가 커질 높이: {STRING}
 STR_CONFIG_SETTING_HEIGHT_ROCKS_HELPTEXT                        :바위 더미의 크기가 높이에 따라 얼마나 커질지 설정합니다. 이 설정은 바위 더미 크기 설정과 함께 누적되어 적용되고 바위 크기 설정이 낮을 값으로 설정되어 있을 때 가장 잘 작동합니다.
-
 STR_CONFIG_SETTING_TREE_PLACER                                  :나무 배치 알고리즘: {STRING}
 STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT                         :지도의 나무 분포 형식을 선택하세요. '오리지널'을 선택하면 나무가 고르게 분포되고, '향상됨'을 선택하면 나무가 군락을 이루게 됩니다.
-###length 3
+###length 4
 STR_CONFIG_SETTING_TREE_PLACER_NONE                             :없음
 STR_CONFIG_SETTING_TREE_PLACER_ORIGINAL                         :오리지널
 STR_CONFIG_SETTING_TREE_PLACER_IMPROVED                         :향상됨
@@ -1709,10 +1699,8 @@ STR_CONFIG_SETTING_STATION_SPREAD_HELPTEXT                      :역의 최대 �
 
 STR_CONFIG_SETTING_SERVICEATHELIPAD                             :헬리콥터를 발착장에서 자동으로 점검: {STRING}
 STR_CONFIG_SETTING_SERVICEATHELIPAD_HELPTEXT                    :공항에 격납고가 없어도 헬리콥터가 공항에 착륙할 때마다 점검을 하도록 합니다.
-
 STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY                           :직통 경로만 허용: {STRING}
 STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY_HELPTEXT                  :열차와 자동차에 직통 경로만 추가할 수 있게 합니다
-
 STR_CONFIG_SETTING_LINK_TERRAFORM_TOOLBAR                       :철도/도로/항만/공항 건설창을 띄울 때 지형 편집창도 같이 띄우기: {STRING}
 STR_CONFIG_SETTING_LINK_TERRAFORM_TOOLBAR_HELPTEXT              :수송 시설과 관련된 건설 창을 열 때 지형 편집 창을 같이 엽니다.
 
@@ -1815,6 +1803,12 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :창 내부를 �
 STR_CONFIG_SETTING_AUTOSAVE                                     :자동 저장: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :게임을 자동으로 저장할 간격을 선택하세요
 
+STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_DAYS                         :자동 저장 간격 사용자 지정 (단위: 일): {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_DAYS_HELPTEXT                :게임을 자동으로 저장할 간격을 일 단위로 설정하세요
+
+STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES                      :자동 저장 간격 사용자 지정 (단위: 현실 분): {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES_HELPTEXT             :게임을 자동으로 저장할 간격을 현실 분 단위로 설정하세요
+
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :네트워크 연결이 끊어지면 자동 저장: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT_HELPTEXT      :이 설정을 켜면 서버와의 연결이 끊어졌을 때 게임을 자동으로 저장합니다.
 
@@ -1880,13 +1874,15 @@ STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE             :시간표에서
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :열차 시간표에서 예상 출발 & 도착 시간을 표시합니다.
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS            :자동 시간표 설정으로 설정한 시간표의 시간을 다음 값의 배수로 어림: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_HELPTEXT   :자동 시간표로 설정한 시간표의 시간은 어림되지 않습니다. 1일은 74틱입니다.
+STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_VALUE      :{COMMA}틱
+###setting-zero-is-special
+STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_DEFAULT    :기본
 
 STR_CONFIG_SETTING_QUICKGOTO                                    :빠른 행선지 설정: {STRING}
 STR_CONFIG_SETTING_QUICKGOTO_HELPTEXT                           :경로 창을 열면 자동으로 '행선지' 버튼을 선택하여 곧바로 행선지를 지정할 수 있도록 합니다.
 
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE                            :철도 형식 기본값 설정 (게임 시작/불러온 후): {STRING}
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :게임을 새로 시작하거나 불러온 뒤에 사용할 철도의 종류를 선택합니다. '처음 사용 가능한 것'은 가장 오래된 철도 종류를 선택하고, '최신 기술의 철도'는 가장 최신에 나온 철도 종류를 선택하며 '가장 많이 사용한 것'은 현재 가장 많이 사용한 철도 종류를 선택합니다.
-
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE                            :도로/전차 형식 기본값 설정 (게임 시작/불러온 후): {STRING}
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_HELPTEXT                   :게임을 새로 시작하거나 불러온 뒤에 사용할 도로/전차의 종류를 선택합니다. '처음 사용 가능한 것'은 가장 오래된 도로/전차 종류를 선택하고, '최신 기술의 철도'는 가장 최신에 나온 도로/전차 종류를 선택하며 '가장 많이 사용한 것'은 현재 가장 많이 사용한 철도 종류를 선택하며, '기본값'은 기본 종류를 선택합니다.
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_FIRST                      :처음 사용 가능한 것
@@ -2014,13 +2010,13 @@ STR_CONFIG_SETTING_SERVINT_DISABLED                             :사용 안 함
 
 STR_CONFIG_SETTING_NOSERVICE                                    :차량 고장 설정을 껐으면 점검을 하지 않음: {STRING}
 STR_CONFIG_SETTING_NOSERVICE_HELPTEXT                           :이 설정을 켜면, 차량이 고장나지 않도록 설정되어 있는 경우 차량이 자동으로 점검을 하러 가지 않습니다
+
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :화물차 속력 제한 적용: {STRING}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :이 설정을 켜면, 화물차의 속력 제한값에 따라 열차의 최대 속력을 제한합니다.
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION                       :열차 속력 조정 활성화: {STRING}
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :이 설정을 켜면, 빠른 속력의 열차가 앞서가는 느린 속력의 열차의 속력에 맞춰 운행합니다.
 STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES                 :커브에서 자동차의 속력을 감속: {STRING}
 STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES_HELPTEXT        :이 설정을 켜면, 커브에서 자동차의 속력을 감속시킵니다. (현실적인 감속을 켰을 때에만 적용됩니다)
-
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :전기 철도를 사용하지 않음: {STRING}
 STR_CONFIG_SETTING_DISABLE_ELRAILS_HELPTEXT                     :이 설정을 켜면, 전기 기관차가 일반 철도에서도 달릴 수 있도록 만듭니다.
 
@@ -2101,13 +2097,11 @@ STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :지분을 사�
 
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE                         :환승시 벌어들이는 중간 수익의 비율: {STRING}
 STR_CONFIG_SETTING_FEEDER_PAYMENT_SHARE_HELPTEXT                :더 많은 수익을 내기 위해, 수송 관계상 중간 구간에게 주어진 수익의 비율을 설정합니다.
-
 STR_CONFIG_SETTING_SIMULATE_SIGNALS                             :다리와 터널에서 {STRING}마다 신호기를 설치한 것으로 계산
 STR_CONFIG_SETTING_SIMULATE_SIGNALS_HELPTEXT                    :이 설정은 신호기를 새로 설치한 다리와 터널에 적용할 신호기 간격 설정입니다. 실제 신호기 간격은 동일하지 않은 간격을 만들지 않기 위해 이 설정과 다소 다를 수 있습니다. 이 설정을 변경해도 기존에 신호기가 이미 설치된 다리와 터널의 신호기 간격을 다시 조정하지는 않습니다.
 STR_CONFIG_SETTING_SIMULATE_SIGNALS_VALUE                       :{COMMA} 칸
 STR_CONFIG_SETTING_DAY_LENGTH_FACTOR                            :1일의 길이 조절: {STRING}
 STR_CONFIG_SETTING_DAY_LENGTH_FACTOR_HELPTEXT                   :이 변수의 값을 늘리면 게임 속도가 느려집니다.
-
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY                         :신호기를 드래그로 설치하는 경우: {STRING}
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY_HELPTEXT                :신호기를 드래그할 때, 다음 장애물(신호기, 분기점 등)을 만날 때까지 신호기가 설치될 간격을 설정합니다.
 STR_CONFIG_SETTING_DRAG_SIGNALS_DENSITY_VALUE                   :{COMMA}칸 간격으로 설치
@@ -2265,7 +2259,6 @@ STR_CONFIG_SETTING_CITY_ZONE_4_MULT                             :대도시의 4�
 STR_CONFIG_SETTING_CITY_ZONE_4_MULT_HELPTEXT                    :대도시의 4구역(가로등이 있는 최내곽 도로 구역)에 적용할 계수값입니다. 이 값은 조금만 바꾸는 게 좋습니다.
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :매우 느림
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :더 느림
-###length 5
 STR_CONFIG_SETTING_TOWN_GROWTH_NONE                             :없음
 STR_CONFIG_SETTING_TOWN_GROWTH_SLOW                             :느림
 STR_CONFIG_SETTING_TOWN_GROWTH_NORMAL                           :보통
@@ -2290,11 +2283,6 @@ STR_CONFIG_SETTING_LINKGRAPH_TIME                               :화물 분배 �
 STR_CONFIG_SETTING_LINKGRAPH_TIME_HELPTEXT                      :각 연결 상태 요소의 재계산을 위해 필요한 시간입니다. 재계산이 시작될 때, 이 날짜만큼 작동하는 스레드가 생성됩니다. 이 값이 작으면 작을수록, 스레드가 끝나야할 때에 스레드가 끝나지 않게 됩니다. 그러면 게임이 랙에 걸려 멈추게 됩니다. 값을 크게 설정할수록 경로가 바뀔 때 분배 상태가 업데이트 되는 시간이 오래 걸리게 됩니다.
 STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED               :연결 상태를 계산할 때 사용되는 1일을 조정 변수로 조정하지 않기: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_NOT_DAYLENGTH_SCALED_HELPTEXT      :활성화되면 조정된 달력 날짜 대신 기본 날짜 길이를 연결 상태 계산에 사용할 것입니다.
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :수동
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :비대칭
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC_EQ                   :비대칭 (동일 분포)
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC_NEAREST              :비대칭 (최근접)
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :대칭
 STR_CONFIG_SETTING_DISTRIBUTION_PAX                             :승객에 대한 분배 형식: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PAX_HELPTEXT                    :"대칭"은 A역에서 B역으로 가려는 승객의 수가 B에서 A로 가려는 승객의 수와 비슷하다는 뜻입니다. "비대칭"은 승객이 아무 방향이나 임의의 양만큼 가게 됨을 뜻합니다. "수동"은 자동적인 승객 분배가 일어나지 않고 기존 방식을 사용하겠음을 뜻합니다.
 STR_CONFIG_SETTING_DISTRIBUTION_MAIL                            :우편에 대한 분배 형식: {STRING}
@@ -2303,6 +2291,13 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED                        :귀금속 화�
 STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :장갑 화물은 온대 기후의 귀금속, 아열대 기후의 다이아몬드 또는 아한대 기후의 금을 말합니다. NewGRF을 사용하면 달라질 수 있습니다. "대칭"은 A역에서 B역으로 가려는 화물의 수가 B에서 A로 가려는 화물의 수와 비슷하다는 뜻입니다. "비대칭"은 화물이 아무 방향이나 임의의 양만큼 가게 됨을 뜻합니다. "수동"은 자동적인 화물 분배가 일어나지 않고 기존 방식을 사용하겠음을 뜻합니다. 아한대 기후에서는 대칭으로 설정하면 은행이 금광으로 금을 보내지 않으려 하기 때문에 비대칭이나 수동으로 설정하는 것을 추천합니다. 온대 기후나 아열대 기후에서는 은행이 일부 적재한 귀금속을 원래 은행으로 보내려고 하기 때문에 대칭을 선택해도 됩니다.
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :다른 화물에 대한 분배 형식: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"비대칭"은 화물이 아무 방향이나 임의의 양만큼 가게 됨을 뜻합니다. "수동"은 자동적인 화물 분배가 일어나지 않고 기존 방식을 사용하겠음을 뜻합니다. 특별한 이유가 없는 한, "비대칭"이나 "수동"으로 설정하십시오.
+###length 5
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :수동
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :비대칭
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC_EQ                   :비대칭 (동일 분포)
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC_NEAREST              :비대칭 (최근접)
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :대칭
+
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO                       :이 화물에 대한 화물 분배 형식 덮어쓰기: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM                 :{STRING}에 대한 화물 분배 형식 덮어쓰기: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_HELPTEXT              :"(기본)"은 이 화물 종류에 대한 기본 화물 분배 형식을 따른다는 뜻입니다. "대칭"은 대체로 A역에서 B역으로 가려는 화물의 수가 B에서 A로 가려는 화물의 수와 대체로 같다는 뜻입니다. "비대칭"은 아무 방향이나 임의의 양만큼 가게 됨을 뜻합니다. "수동"은 자동적인 화물 분배가 일어나지 않고 기존 방식을 사용하겠음을 뜻합니다.
@@ -2318,6 +2313,9 @@ STR_CONFIG_SETTING_DEMAND_SIZE_HELPTEXT                         :이 값을 100%
 
 STR_CONFIG_SETTING_SHORT_PATH_SATURATION                        :다음으로 짧은 경로를 사용하기 위한 경로의 포화도: {STRING}
 STR_CONFIG_SETTING_SHORT_PATH_SATURATION_HELPTEXT               :종종 두 역 사이에는 여러 가지 경로가 존재할 수 있습니다. 이 경우, 화물 분배 기능은 먼저 가장 짧은 경로로 화물을 보내고, 그 경로가 포화 상태에 이르면 그 다음으로 짧은 경로를 사용하는 식으로 화물을 분배합니다. 포화도는 경로의 수송 능력과 예정 사용량을 추정하여 계산됩니다. 일단 모든 경로가 포화 상태가 되었는데 아직 수요가 남아있다면, 수송 능력이 높은 경로를 사용하면서 모든 경로를 과부하 상태로 만들게 됩니다. 하지만, 이 알고리즘은 수송량을 대부분 정확히 추정하지는 않습니다. 이 설정을 이용해서, 화물 분배 기능이 짧은 경로의 포화 상태가 몇 퍼센트가 되어야 다음으로 짧은 경로에 화물을 분배할 것인지를 지정할 수 있습니다. 과대평가된 수송량의 경우 너무 붐비는 역이 생기지 않도록 하기 위해서는 이 값을 100%보다 작게 설정하십시오.
+
+STR_CONFIG_SETTING_AIRCRAFT_PATH_COST                           :항공기 이용 경로 비중치 조정: {STRING}
+STR_CONFIG_SETTING_AIRCRAFT_PATH_COST_HELPTEXT                  :이 설정을 이용하면, 항공기가 이용하는 경로의 비용 (거리값) 비중치를 조정해서 경로가 실제보다 더 길어보이거나 덜 직통인 것처럼 보이는 현상을 조정할 수 있습니다. 항공기를 이용한 직통 경로가 심하게 혼잡해지는 경향을 줄여줄 수 있습니다.
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY                  :속력 단위: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_HELPTEXT         :속력를 표시할 때 선택한 단위를 사용하여 나타냅니다.
@@ -4604,7 +4602,7 @@ STR_FINANCES_CAPTION                                            :{WHITE}{COMPANY
 STR_FINANCES_EXPENDITURE_INCOME_TITLE                           :{WHITE}수입/지출
 STR_FINANCES_YEAR                                               :{WHITE}{NUM}
 
-###length 13
+###length 15
 STR_FINANCES_SECTION_CONSTRUCTION                               :{GOLD}건설
 STR_FINANCES_SECTION_NEW_VEHICLES                               :{GOLD}신규 차량 구입
 STR_FINANCES_SECTION_TRAIN_RUNNING_COSTS                        :{GOLD}열차 유지비
@@ -4618,7 +4616,6 @@ STR_FINANCES_SECTION_AIRCRAFT_INCOME                            :{GOLD}항공기
 STR_FINANCES_SECTION_SHIP_INCOME                                :{GOLD}선박 수익
 STR_FINANCES_SECTION_LOAN_INTEREST                              :{GOLD}이자
 STR_FINANCES_SECTION_OTHER                                      :{GOLD}기타
-
 STR_FINANCES_SECTION_INFRASTRUCTURE_COSTS                       :{GOLD}타사 시설 사용비
 STR_FINANCES_SECTION_INFRASTRUCTURE_INCOME                      :{GOLD}시설 공유 수익
 
@@ -4758,7 +4755,6 @@ STR_VEHICLE_LIST_ROAD_VEHICLE_TOOLTIP                           :{BLACK}차량 -
 STR_VEHICLE_LIST_SHIP_TOOLTIP                                   :{BLACK}선박 - 선박의 정보를 보려면 클릭하세요
 STR_VEHICLE_LIST_AIRCRAFT_TOOLTIP                               :{BLACK}항공기 - 항공기 정보를 보려면 클릭하세요
 
-STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING} (평생: {CURRENCY_LONG})
 STR_VEHICLE_LIST_AGE                                            :{STRING}, 연령: {COMMA}년 ({COMMA})
 STR_VEHICLE_LIST_AGE_RED                                        :{STRING}, 연령: {RED}{COMMA} {BLACK}년 ({COMMA})
 STR_VEHICLE_LIST_CARGO                                          :{STRING}, 화물: {CARGO_LIST}
@@ -4787,6 +4783,7 @@ STR_VEHICLE_LIST_MANAGE_LIST_TOOLTIP                            :{BLACK}이 목�
 STR_VEHICLE_LIST_REPLACE_VEHICLES                               :차량 교체
 STR_VEHICLE_LIST_SEND_FOR_SERVICING                             :점검하러 보내기
 STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR                     :{TINY_FONT}{BLACK}올해 이익: {CURRENCY_LONG} (작년: {CURRENCY_LONG})
+STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING} (평생: {CURRENCY_LONG})
 STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE                           :점검/보내기 취소
 
 STR_VEHICLE_LIST_SEND_TRAIN_TO_DEPOT                            :차량기지로 보내기
@@ -7092,17 +7089,17 @@ STR_SCHDISPATCH_CAPTION                                         :{WHITE}{VEHICLE
 STR_SCHDISPATCH_ENABLED                                         :{BLACK}활성화
 STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}배차 일정을 활성화합니다. 자동 배차 조절과 같이 사용할 수 없습니다.
 STR_SCHDISPATCH_ADD                                             :{BLACK}출발 슬롯 추가
-STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}이 스케줄에 새 출발 슬롯을 추가합니다.
+STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}이 일정에 새 출발 슬롯을 추가합니다.
 STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING} CTRL+클릭하면 여러 출발 슬록을 한 번에 추가할 수 있습니다.
 STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}출발 슬롯
 STR_SCHDISPATCH_DURATION                                        :{BLACK}반복 주기
-STR_SCHDISPATCH_DURATION_TOOLTIP                                :{BLACK}이 스케줄의 반복 주기를 설정합니다.
+STR_SCHDISPATCH_DURATION_TOOLTIP                                :{BLACK}이 일정의 반복 주기를 설정합니다.
 STR_SCHDISPATCH_DURATION_CAPTION_MINUTE                         :{BLACK}반복 주기 (분)
 STR_SCHDISPATCH_DURATION_CAPTION_DAY                            :{BLACK}반복 주기 (일)
 STR_SCHDISPATCH_DURATION_CAPTION_TICKS                          :{BLACK}반복 주기 (틱)
 STR_SCHDISPATCH_START                                           :{BLACK}시작 일시
 STR_SCHDISPATCH_SET_START                                       :{BLACK}시작 일시 설정
-STR_SCHDISPATCH_START_TOOLTIP                                   :{BLACK}이 스케줄의 시작 일시를 설정합니다.
+STR_SCHDISPATCH_START_TOOLTIP                                   :{BLACK}이 일정의 시작 일시를 설정합니다.
 STR_SCHDISPATCH_START_CAPTION_MINUTE                            :{BLACK}시작 시각 (hhmm)
 STR_SCHDISPATCH_DELAY                                           :{BLACK}지연
 STR_SCHDISPATCH_DELAY_TOOLTIP                                   :{BLACK}허용할 수 있는 최대 지연 시간을 설정합니다.
@@ -7111,14 +7108,18 @@ STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}지연 (
 STR_SCHDISPATCH_DELAY_CAPTION_TICKS                             :{BLACK}지연 (틱)
 STR_SCHDISPATCH_RESET_LAST_DISPATCH                             :{BLACK}최근 일정 재설정
 STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}최근 배차 일정을 재설정합니다. 먼 미래의 차량에 대해 오작동할 때 사용하십시오.
+STR_SCHDISPATCH_CLEAR                                           :{BLACK}출발 슬롯 초기화
+STR_SCHDISPATCH_CLEAR_TOOLTIP                                   :{BLACK}일정에서 모든 출발 슬롯을 제거합니다.
+STR_SCHDISPATCH_MANAGE                                          :{BLACK}일정 관리
+STR_SCHDISPATCH_MANAGE_TOOLTIP                                  :{STRING}{}{}{STRING}
 
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}최근 출발: {DATE_WALLCLOCK_TINY}
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}최근 배차된 열차가 아직 출발하지 않았습니다. {DATE_WALLCLOCK_TINY}에 출발할 예정입니다.
-STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}이 스케줄에는 {COMMA}대의 열차가 필요합니다.
-STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}이 스케줄은 {STRING}마다 반복되고.
-STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}이 스케줄은 {DATE_WALLCLOCK_TINY}에 시작되어서 {DATE_WALLCLOCK_TINY}에 끝납니다.
+STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}이 일정에는 {COMMA}대의 열차가 필요합니다.
+STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}이 일정은 {STRING}마다 반복되고.
+STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}이 일정은 {DATE_WALLCLOCK_TINY}에 시작되어서 {DATE_WALLCLOCK_TINY}에 끝납니다.
 STR_SCHDISPATCH_SUMMARY_L4                                      :{BLACK}{STRING} 이상 지연되면 다음 슬롯으로 넘어갑니다.
-STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}이 스케줄은 비활성화되어 있습니다.
+STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}이 일정은 비활성화되어 있습니다.
 
 STR_SCHDISPATCH_SLOT_OUTSIDE_SCHEDULE                           :{BLACK}하나 이상의 출발 슬롯이 배차 간격 범위 바깥에 있습니다.
 
