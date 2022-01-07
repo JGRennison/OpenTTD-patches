@@ -6999,7 +6999,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	// if a train shall keep its old refit, store the refit setting of its first vehicle
 	if (!use_refit) {
 		for (Train *getc = incoming; getc != nullptr; getc = getc->GetNextUnit()) {
-			if (getc->cargo_type != CT_INVALID) {
+			if (getc->cargo_type != CT_INVALID && getc->cargo_cap > 0) {
 				store_refit_ct = getc->cargo_type;
 				break;
 			}
