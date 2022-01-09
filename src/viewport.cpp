@@ -3640,6 +3640,7 @@ void MarkAllViewportsDirty(int left, int top, int right, int bottom, ViewportMar
 {
 	for (uint i = 0; i < _viewport_window_cache.size(); i++) {
 		if (flags & VMDF_NOT_MAP_MODE && _viewport_window_cache[i]->zoom >= ZOOM_LVL_DRAW_MAP) continue;
+		if (flags & VMDF_NOT_MAP_MODE_NON_VEG && _viewport_window_cache[i]->zoom >= ZOOM_LVL_DRAW_MAP && _viewport_window_cache[i]->map_type != VPMT_VEGETATION) continue;
 		const Rect &r = _viewport_coverage_rects[i];
 		if (left >= r.right ||
 				right <= r.left ||

@@ -473,11 +473,11 @@ uint PlaceTreeGroupAroundTile(TileIndex tile, TreeType treetype, uint radius, ui
 			if (IsTileType(tile_to_plant, MP_TREES) && GetTreeCount(tile_to_plant) < 4) {
 				AddTreeCount(tile_to_plant, 1);
 				SetTreeGrowth(tile_to_plant, 0);
-				MarkTileDirtyByTile(tile_to_plant, VMDF_NOT_MAP_MODE);
+				MarkTileDirtyByTile(tile_to_plant, VMDF_NOT_MAP_MODE_NON_VEG);
 				planted++;
 			} else if (CanPlantTreesOnTile(tile_to_plant, allow_desert)) {
 				PlantTreesOnTile(tile_to_plant, treetype, 0, 3);
-				MarkTileDirtyByTile(tile_to_plant, VMDF_NOT_MAP_MODE);
+				MarkTileDirtyByTile(tile_to_plant, VMDF_NOT_MAP_MODE_NON_VEG);
 				planted++;
 			}
 		}
@@ -588,7 +588,7 @@ CommandCost CmdPlantTree(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 					} else {
 						AddTreeCount(tile, 1);
 					}
-					MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+					MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE_NON_VEG);
 					if (c != nullptr) c->tree_limit -= 1 << 16;
 				}
 				/* 2x as expensive to add more trees to an existing tile */
@@ -666,7 +666,7 @@ CommandCost CmdPlantTree(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 
 					/* Plant full grown trees in scenario editor */
 					PlantTreesOnTile(tile, treetype, 0, _game_mode == GM_EDITOR ? 3 : 0);
-					MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+					MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE_NON_VEG);
 					if (c != nullptr) c->tree_limit -= 1 << 16;
 
 					/* When planting rainforest-trees, set tropiczone to rainforest in editor. */
@@ -830,7 +830,7 @@ static void TileLoopTreesDesert(TileIndex tile)
 		case TROPICZONE_DESERT:
 			if (GetTreeGround(tile) != TREE_GROUND_SNOW_DESERT) {
 				SetTreeGroundDensity(tile, TREE_GROUND_SNOW_DESERT, 3);
-				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE_NON_VEG);
 			}
 			break;
 
@@ -885,7 +885,7 @@ static void TileLoopTreesAlps(TileIndex tile)
 			return;
 		}
 	}
-	MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+	MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE_NON_VEG);
 }
 
 static bool CanPlantExtraTrees(TileIndex tile)
@@ -915,7 +915,7 @@ static void TileLoop_Trees(TileIndex tile)
 		uint density = GetTreeDensity(tile);
 		if (density < 3) {
 			SetTreeGroundDensity(tile, TREE_GROUND_GRASS, density + 1);
-			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE_NON_VEG);
 		}
 	}
 
@@ -1033,7 +1033,7 @@ static void TileLoop_Trees(TileIndex tile)
 			break;
 	}
 
-	MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+	MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE_NON_VEG);
 }
 
 /**

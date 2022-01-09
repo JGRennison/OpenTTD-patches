@@ -338,7 +338,7 @@ static void TileLoop_Clear(TileIndex tile)
 			return;
 	}
 
-	MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+	MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE_NON_VEG);
 }
 
 void GenerateClearTile()
