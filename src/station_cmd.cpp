@@ -3686,7 +3686,7 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 
 		int station_ahead;
 		int station_length;
-		int stop = GetTrainStopLocation(station_id, tile, Train::From(v), true, &station_ahead, &station_length, x, y);
+		int stop = GetTrainStopLocation(station_id, tile, Train::From(v), true, &station_ahead, &station_length);
 
 		/* Stop whenever that amount of station ahead + the distance from the
 		 * begin of the platform to the stop location is longer than the length
@@ -3722,7 +3722,7 @@ static VehicleEnterTileStatus VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 				}
 				return VETSB_ENTERED_STATION | (VehicleEnterTileStatus)(station_id << VETS_STATION_ID_OFFSET); // enter station
 			} else if (x < stop) {
-				if (front->UsingRealisticBraking()&& front->cur_speed > 30) {
+				if (front->UsingRealisticBraking() && front->cur_speed > 30) {
 					/* Travelling too fast, take no action */
 					return VETSB_CONTINUE;
 				}
