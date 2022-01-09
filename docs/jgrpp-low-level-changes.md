@@ -134,6 +134,7 @@ This document does not describe the player-visible changes/additions described i
 * [AI/GS script additions](docs/script-additions.html).
 * Add AI/GS method to get current day length.
 * Add GS method to create river tiles.
+* Add AI/GS methods related to road and tram types.
 * Add workaround for performance issues when attempting to create a town when no town names are left.
 * Fixup a GS otherwise inconsistent with day length.
 
