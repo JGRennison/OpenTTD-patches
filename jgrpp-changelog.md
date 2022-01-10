@@ -2,6 +2,16 @@
 
 * * *
 
+### v0.45.1 (2022-01-10)
+* Fix crash which could occur when removing invalidated link graph flows.
+* Fix template replacement without refitting selecting the wrong cargo when using zero capacity engines with a livery cargo.
+* Fix wrong signal aspects when track was built up to the rear of a tunnel/bridge entrance.
+* Fix ground/tree tile vegetation changes not updating map mode viewports in vegetation mode.
+* Scale limit on cargo which can be moved from industries to stations in one step by the cargo production scaling factor.
+* Add support for automatic numbering of screenshots saved using the screenshot console command.
+* AI/GS script: Add methods related to road and tram types.
+* Bump trunk base from commit d62c5667cff2eed82deb18e28d98345500b30d3f to commit 93e8d4871d3c927cf08eaa322bfdcd2cb73a1730.
+
 ### v0.45.0 (2022-01-05)
 * Fix crash when removing signals from a bridge or tunnel when one or more routing restriction programs were attached.
 * Fix crash when a template replacement train had an engine with an invalid cargo type.
