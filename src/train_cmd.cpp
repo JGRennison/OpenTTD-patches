@@ -472,11 +472,9 @@ int GetTileMarginInFrontOfTrain(const Train *v, int x_pos, int y_pos)
  * @param update_train_state whether the state of the train v may be changed
  * @param station_ahead  'return' the amount of 1/16th tiles in front of the train
  * @param station_length 'return' the station length in 1/16th tiles
- * @param x_pos          vehicle x position
- * @param y_pos          vehicle y position
  * @return the location, calculated from the begin of the station to stop at.
  */
-int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, bool update_train_state, int *station_ahead, int *station_length, int x_pos, int y_pos)
+int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, bool update_train_state, int *station_ahead, int *station_length)
 {
 	Train *front = v->First();
 	if (IsRailWaypoint(tile)) {
@@ -748,26 +746,40 @@ int PredictStationStoppingLocation(const Train *v, const Order *order, int stati
 	}
 	if (osl == OSL_PLATFORM_THROUGH && overhang > 0) {
 		/* The train is longer than the station, and we can run through the station to load/unload */
-		for (const Train *u = v; u != nullptr; u = u->Next()) {
-			if (overhang > 0 && !u->IsArticulatedPart()) {
-				bool skip = true;
-				for (const Train *part = u; part != nullptr; part = part->HasArticulatedPart() ? part->GetNextArticulatedPart() : nullptr) {
-					if (part->cargo_cap != 0) {
-						skip = false;
-						break;
-					}
-				}
-				if (skip) {
-					for (const Train *part = u; part != nullptr; part = part->HasArticulatedPart() ? part->GetNextArticulatedPart() : nullptr) {
-						overhang -= part->gcache.cached_veh_length;
-						adjust += part->gcache.cached_veh_length;
-					}
-					continue;
-				}
+
+		/* Check whether the train has already reached the platform and set VRF_BEYOND_PLATFORM_END on the front part */
+		if (HasBit(v->flags, VRF_BEYOND_PLATFORM_END)) {
+			/* Compute how much of the train should stop beyond the station, using already set flags */
+			int beyond = 0;
+			for (const Train *u = v; u != nullptr && HasBit(u->flags, VRF_BEYOND_PLATFORM_END); u = u->Next()) {
+				beyond += u->gcache.cached_veh_length;
 			}
-			break;
+			/* Adjust for the remaining amount of train being less than the station length */
+			int overshoot = station_length - std::min(v->gcache.cached_total_length - beyond, station_length);
+			adjust = beyond - overshoot;
+		} else {
+			/* Train hasn't reached the platform yet, or no advancing has occured, use predictive mode */
+			for (const Train *u = v; u != nullptr; u = u->Next()) {
+				if (overhang > 0 && !u->IsArticulatedPart()) {
+					bool skip = true;
+					for (const Train *part = u; part != nullptr; part = part->HasArticulatedPart() ? part->GetNextArticulatedPart() : nullptr) {
+						if (part->cargo_cap != 0) {
+							skip = false;
+							break;
+						}
+					}
+					if (skip) {
+						for (const Train *part = u; part != nullptr; part = part->HasArticulatedPart() ? part->GetNextArticulatedPart() : nullptr) {
+							overhang -= part->gcache.cached_veh_length;
+							adjust += part->gcache.cached_veh_length;
+						}
+						continue;
+					}
+				}
+				break;
+			}
+			if (overhang < 0) adjust += overhang;
 		}
-		if (overhang < 0) adjust += overhang;
 	} else if (overhang >= 0) {
 		/* The train is longer than the station, make it stop at the far end of the platform */
 		osl = OSL_PLATFORM_FAR_END;
@@ -1016,7 +1028,7 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 			this->gcache.cached_max_track_speed :
 			std::min<int>(this->tcache.cached_max_curve_speed, this->gcache.cached_max_track_speed);
 
-	if (this->current_order.IsType(OT_LOADING_ADVANCE)) max_speed = std::min(max_speed, 15);
+	if (this->current_order.IsType(OT_LOADING_ADVANCE)) max_speed = std::min<int>(max_speed, _settings_game.vehicle.through_load_speed_limit);
 
 	int advisory_max_speed = max_speed;
 

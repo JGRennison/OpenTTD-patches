@@ -3995,6 +3995,10 @@ bool AfterLoadGame()
 		_settings_game.station.station_delivery_mode = SD_NEAREST_FIRST;
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_TL_SPEED_LIMIT)) {
+		_settings_game.vehicle.through_load_speed_limit = 15;
+	}
+
 	InitializeRoadGUI();
 
 	/* This needs to be done after conversion. */
