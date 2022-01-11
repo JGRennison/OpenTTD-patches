@@ -32,6 +32,7 @@ enum SettingFlag : uint32 {
 	SF_NO_NEWGAME              = 1 << 15, ///< the setting does not apply and is not shown in a new game context
 	SF_DEC1SCALE               = 1 << 16, ///< also display a float representation of the scale of a decimal1 scale parameter
 	SF_RUN_CALLBACKS_ON_PARSE  = 1 << 17, ///< run callbacks when parsing from config file
+	SF_GUI_VELOCITY            = 1 << 18, ///< setting value is a velocity
 };
 DECLARE_ENUM_AS_BIT_SET(SettingFlag)
 

@@ -2718,11 +2718,12 @@ struct GameSettingsWindow : Window {
 			/* Only open editbox if clicked for the second time, and only for types where it is sensible for. */
 			if (this->last_clicked == pe && !sd->IsBoolSetting() && !(sd->flags & (SF_GUI_DROPDOWN | SF_ENUM))) {
 				int64 value64 = value;
-				/* Show the correct currency-translated value */
+				/* Show the correct currency or velocity translated value */
 				if (sd->flags & SF_GUI_CURRENCY) value64 *= _currency->rate;
+				if (sd->flags & SF_GUI_VELOCITY) value64 = ConvertKmhishSpeedToDisplaySpeed((uint)value64);
 
 				this->valuewindow_entry = pe;
-				if (sd->flags & SF_DECIMAL1) {
+				if (sd->flags & SF_DECIMAL1 || (sd->flags & SF_GUI_VELOCITY && _settings_game.locale.units_velocity == 3)) {
 					SetDParam(0, value64);
 					ShowQueryString(STR_JUST_DECIMAL1, STR_CONFIG_SETTING_QUERY_CAPTION, 10, this, CS_NUMERAL_DECIMAL, QSF_ENABLE_DEFAULT);
 				} else {
@@ -2755,7 +2756,7 @@ struct GameSettingsWindow : Window {
 		int32 value;
 		if (!StrEmpty(str)) {
 			long long llvalue;
-			if (sd->flags & SF_DECIMAL1) {
+			if (sd->flags & SF_DECIMAL1 || (sd->flags & SF_GUI_VELOCITY && _settings_game.locale.units_velocity == 3)) {
 				llvalue = atof(str) * 10;
 			} else {
 				llvalue = atoll(str);
@@ -2765,6 +2766,9 @@ struct GameSettingsWindow : Window {
 			if (sd->flags & SF_GUI_CURRENCY) llvalue /= _currency->rate;
 
 			value = (int32)ClampToI32(llvalue);
+
+			/* Save the correct velocity-translated value */
+			if (sd->flags & SF_GUI_VELOCITY) value = ConvertDisplaySpeedToKmhishSpeed(value);
 		} else {
 			value = sd->def;
 		}
