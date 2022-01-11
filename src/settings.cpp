@@ -1394,6 +1394,7 @@ static void ClimateThresholdModeChanged(int32 new_value)
 
 static void VelocityUnitsChanged(int32 new_value) {
 	InvalidateWindowClassesData(WC_PAYMENT_RATES);
+	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 	MarkWholeScreenDirty();
 }
 

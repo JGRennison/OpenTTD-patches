@@ -845,12 +845,14 @@ static bool IsIntegerValueType(TraceRestrictValueType type)
 {
 	switch (type) {
 		case TRVT_INT:
-		case TRVT_SPEED:
 		case TRVT_WEIGHT:
 		case TRVT_POWER:
 		case TRVT_FORCE:
 		case TRVT_PERCENT:
 			return true;
+
+		case TRVT_SPEED:
+			return _settings_game.locale.units_velocity != 3;
 
 		default:
 			return false;
@@ -866,6 +868,9 @@ static bool IsDecimalValueType(TraceRestrictValueType type)
 		case TRVT_POWER_WEIGHT_RATIO:
 		case TRVT_FORCE_WEIGHT_RATIO:
 			return true;
+
+		case TRVT_SPEED:
+			return _settings_game.locale.units_velocity == 3;
 
 		default:
 			return false;
@@ -931,6 +936,11 @@ static void ConvertValueToDecimal(TraceRestrictValueType type, uint in, int64 &v
 			ConvertForceWeightRatioToDisplay(in, value, decimal);
 			break;
 
+		case TRVT_SPEED:
+			decimal = _settings_game.locale.units_velocity == 3 ? 1 : 0;
+			value = ConvertKmhishSpeedToDisplaySpeed(in);
+			break;
+
 		default:
 			NOT_REACHED();
 	}
@@ -944,11 +954,12 @@ static uint ConvertDecimalToValue(TraceRestrictValueType type, double in)
 	switch (type) {
 		case TRVT_POWER_WEIGHT_RATIO:
 			return ConvertDisplayToPowerWeightRatio(in);
-			break;
 
 		case TRVT_FORCE_WEIGHT_RATIO:
 			return ConvertDisplayToForceWeightRatio(in);
-			break;
+
+		case TRVT_SPEED:
+			return ConvertDisplaySpeedToKmhishSpeed(in * (_settings_game.locale.units_velocity == 3 ? 10 : 1));
 
 		default:
 			NOT_REACHED();
