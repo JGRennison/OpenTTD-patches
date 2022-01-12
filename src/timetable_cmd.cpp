@@ -173,12 +173,12 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	switch (mtf) {
 		case MTF_WAIT_TIME:
 			wait_time = p2;
-			if (clear_field) assert(wait_time == 0);
+			if (clear_field && wait_time != 0) return CMD_ERROR;
 			break;
 
 		case MTF_TRAVEL_TIME:
 			travel_time = p2;
-			if (clear_field) assert(travel_time == 0);
+			if (clear_field && travel_time != 0) return CMD_ERROR;
 			break;
 
 		case MTF_TRAVEL_SPEED:
