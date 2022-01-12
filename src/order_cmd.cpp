@@ -1891,6 +1891,9 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 					order->SetRefit(CT_NO_REFIT);
 					order->SetLoadType(OLF_LOAD_IF_POSSIBLE);
 					order->SetUnloadType(OUF_UNLOAD_IF_POSSIBLE);
+					if (order->IsWaitTimetabled() || order->GetWaitTime() > 0) {
+						DoCommandEx(tile, v->index | (MTF_WAIT_TIME << 28) | (1 << 31), 0, p3, flags, CMD_CHANGE_TIMETABLE);
+					}
 				}
 				break;
 
