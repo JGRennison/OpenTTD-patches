@@ -48,7 +48,7 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32 val,
 			}
 			order->SetWaitTime(val);
 			order->SetWaitTimetabled(timetabled);
-			if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && timetabled && order->IsWaitTimetabled() && v->GetFirstWaitingLocation(true) == order_number) {
+			if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && timetabled && order->IsScheduledDispatchOrder(true)) {
 				for (Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
 					if (u->cur_implicit_order_index == order_number && (u->last_station_visited == order->GetDestination())) {
 						u->lateness_counter += timetable_delta;
@@ -84,6 +84,18 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32 val,
 			order->SetLeaveType((OrderLeaveType)val);
 			break;
 
+		case MTF_ASSIGN_SCHEDULE:
+			if ((int)val >= 0) {
+				for (int n = 0; n < v->GetNumOrders(); n++) {
+					Order *o = v->GetOrder(n);
+					if (o->GetDispatchScheduleIndex() == (int)val) {
+						o->SetDispatchScheduleIndex(-1);
+					}
+				}
+			}
+			order->SetDispatchScheduleIndex((int)val);
+			break;
+
 		default:
 			NOT_REACHED();
 	}
@@ -117,6 +129,10 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32 val,
 
 				case MTF_SET_LEAVE_TYPE:
 					v->current_order.SetLeaveType((OrderLeaveType)val);
+					break;
+
+				case MTF_ASSIGN_SCHEDULE:
+					v->current_order.SetDispatchScheduleIndex((int)val);
 					break;
 
 				default:
@@ -170,6 +186,7 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 	bool wait_fixed = order->IsWaitFixed();
 	bool travel_fixed = order->IsTravelFixed();
 	OrderLeaveType leave_type = order->GetLeaveType();
+	int dispatch_index = order->GetDispatchScheduleIndex();
 	switch (mtf) {
 		case MTF_WAIT_TIME:
 			wait_time = p2;
@@ -199,6 +216,11 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 			if (leave_type >= OLT_END) return CMD_ERROR;
 			break;
 
+		case MTF_ASSIGN_SCHEDULE:
+			dispatch_index = (int)p2;
+			if (dispatch_index < -1 || dispatch_index >= (int)v->orders.list->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
+			break;
+
 		default:
 			NOT_REACHED();
 	}
@@ -217,6 +239,23 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 				break;
 
 			case OT_CONDITIONAL:
+				break;
+
+			default: return_cmd_error(STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS);
+		}
+	}
+
+	if (dispatch_index != order->GetDispatchScheduleIndex()) {
+		switch (order->GetType()) {
+			case OT_GOTO_STATION:
+				if (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) {
+					if (mtf == MTF_ASSIGN_SCHEDULE && dispatch_index == -1) break;
+					return_cmd_error(STR_ERROR_TIMETABLE_NOT_STOPPING_HERE);
+				}
+				break;
+
+			case OT_GOTO_DEPOT:
+			case OT_GOTO_WAYPOINT:
 				break;
 
 			default: return_cmd_error(STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS);
@@ -265,6 +304,12 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 			case MTF_SET_LEAVE_TYPE:
 				if (leave_type != order->GetLeaveType()) {
 					ChangeTimetable(v, order_number, leave_type, MTF_SET_LEAVE_TYPE, true);
+				}
+				break;
+
+			case MTF_ASSIGN_SCHEDULE:
+				if (dispatch_index != order->GetDispatchScheduleIndex()) {
+					ChangeTimetable(v, order_number, dispatch_index, MTF_ASSIGN_SCHEDULE, true);
 				}
 				break;
 
@@ -733,21 +778,16 @@ void UpdateSeparationOrder(Vehicle *v_start)
 	}
 }
 
-static bool IsVehicleAtFirstWaitingLocation(const Vehicle *v)
-{
-	return (v->cur_implicit_order_index == v->GetFirstWaitingLocation(true));
-}
-
-static DateTicksScaled GetScheduledDispatchTime(Vehicle *v, int wait_offset)
+static DateTicksScaled GetScheduledDispatchTime(const DispatchSchedule &ds, int wait_offset)
 {
 	DateTicksScaled first_slot          = -1;
-	const DateTicksScaled begin_time    = v->orders.list->GetScheduledDispatchStartTick();
-	const int32 last_dispatched_offset  = v->orders.list->GetScheduledDispatchLastDispatch();
-	const uint32 dispatch_duration      = v->orders.list->GetScheduledDispatchDuration();
-	const int32 max_delay               = v->orders.list->GetScheduledDispatchDelay();
+	const DateTicksScaled begin_time    = ds.GetScheduledDispatchStartTick();
+	const int32 last_dispatched_offset  = ds.GetScheduledDispatchLastDispatch();
+	const uint32 dispatch_duration      = ds.GetScheduledDispatchDuration();
+	const int32 max_delay               = ds.GetScheduledDispatchDelay();
 
 	/* Find next available slots */
-	for (auto current_offset : v->orders.list->GetScheduledDispatch()) {
+	for (auto current_offset : ds.GetScheduledDispatch()) {
 		if (current_offset >= dispatch_duration) continue;
 		if (int32(current_offset) <= last_dispatched_offset) {
 			current_offset += dispatch_duration * ((last_dispatched_offset + dispatch_duration - current_offset) / dispatch_duration);
@@ -801,17 +841,20 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 	bool set_scheduled_dispatch = false;
 
 	/* Start scheduled dispatch at first opportunity */
-	if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
-		if (IsVehicleAtFirstWaitingLocation(v) && travelling) {
+	if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && v->cur_implicit_order_index != INVALID_VEH_ORDER_ID) {
+		Order *real_implicit_order = v->GetOrder(v->cur_implicit_order_index);
+		if (real_implicit_order->IsScheduledDispatchOrder(true) && travelling) {
+			DispatchSchedule &ds = v->orders.list->GetDispatchScheduleByIndex(real_implicit_order->GetDispatchScheduleIndex());
+
 			/* Update scheduled information */
-			v->orders.list->UpdateScheduledDispatch();
+			ds.UpdateScheduledDispatch();
 
 			const int wait_offset = real_current_order->GetTimetabledWait();
-			DateTicksScaled slot = GetScheduledDispatchTime(v, wait_offset);
+			DateTicksScaled slot = GetScheduledDispatchTime(ds, wait_offset);
 			if (slot > -1) {
 				SetBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 				v->lateness_counter = _scaled_date_ticks - slot + wait_offset;
-				v->orders.list->SetScheduledDispatchLastDispatch(slot - v->orders.list->GetScheduledDispatchStartTick());
+				ds.SetScheduledDispatchLastDispatch(slot - ds.GetScheduledDispatchStartTick());
 				set_scheduled_dispatch = true;
 			}
 		}

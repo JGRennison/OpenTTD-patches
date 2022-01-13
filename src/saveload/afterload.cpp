@@ -3999,6 +3999,22 @@ bool AfterLoadGame()
 		_settings_game.vehicle.through_load_speed_limit = 15;
 	}
 
+	if (SlXvIsFeaturePresent(XSLFI_SCHEDULED_DISPATCH, 1, 2)) {
+		for (OrderList *order_list : OrderList::Iterate()) {
+			if (order_list->GetScheduledDispatchScheduleCount() == 1) {
+				const DispatchSchedule &ds = order_list->GetDispatchScheduleByIndex(0);
+				if (!ds.IsScheduledDispatchValid() && ds.GetScheduledDispatch().empty()) {
+					order_list->GetScheduledDispatchScheduleSet().clear();
+				} else {
+					VehicleOrderID idx = order_list->GetFirstSharedVehicle()->GetFirstWaitingLocation(false);
+					if (idx != INVALID_VEH_ORDER_ID) {
+						order_list->GetOrderAt(idx)->SetDispatchScheduleIndex(0);
+					}
+				}
+			}
+		}
+	}
+
 	InitializeRoadGUI();
 
 	/* This needs to be done after conversion. */

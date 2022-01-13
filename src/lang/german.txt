@@ -5479,8 +5479,8 @@ STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP                           :{BLACK}Passt au
 
 STR_TIMETABLE_SCHEDULED_DISPATCH                                :{BLACK}Geplante Beförderung
 STR_TIMETABLE_SCHEDULED_DISPATCH_TOOLTIP                        :{BLACK}Öffnet das Fenster für die geplante Beförderung, um den Beginn des Fahrplans automatisch zu setzen
-STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER                          :[Geplante Beförderung]
-STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME             :{PUSH_COLOUR}{RED}[Geplante Beförderung - keine Wartezeit geplant]{POP_COLOUR}
+STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER                          :[{STRING}Geplante Beförderung]
+STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME             :{PUSH_COLOUR}{RED}[{STRING}Geplante Beförderung - keine Wartezeit geplant]{POP_COLOUR}
 
 STR_TIMETABLE_EXPECTED                                          :{BLACK}Voraussichtlich
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Fahrplanmäßig
@@ -5510,7 +5510,6 @@ STR_TIMETABLE_WARNING_AUTOSEP_MISSING_TIMINGS                   :{BLACK}Kann Fah
 STR_TIMETABLE_WARNING_FULL_LOAD                                 :{BLACK}Volllade-Aufträge zu planen ist nicht empfohlen
 STR_TIMETABLE_WARNING_AUTOFILL_CONDITIONAL                      :{BLACK}Es werden nur bedingte Sprünge erfasst, die genommen wurden
 STR_TIMETABLE_NON_TIMETABLED_BRANCH                             :{BLACK}Nicht alle Reisezeiten der bedingten Sprünge sind geplant
-STR_TIMETABLE_WARNING_NO_SCHEDULED_DISPATCH_ORDER               :{BLACK}Kein Auftrag ist geeignet für die Nutzung der geplanten Beförderung
 STR_TIMETABLE_WARNING_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME     :{BLACK}Der geplant beförderte Auftrag sollte eine geplante Wartezeit haben
 
 # Date window (for timetable)

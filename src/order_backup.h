@@ -15,6 +15,7 @@
 #include "tile_type.h"
 #include "vehicle_type.h"
 #include "base_consist.h"
+#include "order_base.h"
 #include "saveload/saveload_common.h"
 
 /** Unique identifier for an order backup. */
@@ -43,6 +44,7 @@ private:
 	friend SaveLoadTable GetOrderBackupDescription(); ///< Saving and loading of order backups.
 	friend upstream_sl::SaveLoadTable upstream_sl::GetOrderBackupDescription(); ///< Saving and loading of order backups.
 	friend void Load_BKOR();   ///< Creating empty orders upon savegame loading.
+	friend void Save_BKOR();   ///< Saving orders upon savegame saving.
 	friend upstream_sl::BKORChunkHandler;
 	uint32 user;               ///< The user that requested the backup.
 	TileIndex tile;            ///< Tile of the depot where the order was changed.
@@ -51,12 +53,7 @@ private:
 	const Vehicle *clone;      ///< Vehicle this vehicle was a clone of.
 	Order *orders;             ///< The actual orders if the vehicle was not a clone.
 
-	std::vector<uint32> scheduled_dispatch;    ///< Scheduled dispatch time
-	uint32 scheduled_dispatch_duration;        ///< Scheduled dispatch duration
-	Date scheduled_dispatch_start_date;        ///< Scheduled dispatch start date
-	uint16 scheduled_dispatch_start_full_date_fract;///< Scheduled dispatch start full date fraction;
-	                                           /// this count to (DAY_TICK * _settings_game.economy.day_length_factor)
-	int32 scheduled_dispatch_max_delay;        ///< Maximum allowed delay
+	std::vector<DispatchSchedule> dispatch_schedules; ///< Scheduled dispatch schedules
 
 	static uint update_counter;
 

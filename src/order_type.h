@@ -238,6 +238,7 @@ enum ModifyTimetableFlags {
 	MTF_SET_WAIT_FIXED,///< Set wait time fixed flag state.
 	MTF_SET_TRAVEL_FIXED,///< Set travel time fixed flag state.
 	MTF_SET_LEAVE_TYPE,///< Passes an OrderLeaveType.
+	MTF_ASSIGN_SCHEDULE, ///< Assign a dispatch schedule.
 	MTF_END
 };
 template <> struct EnumPropsT<ModifyTimetableFlags> : MakeEnumPropsT<ModifyTimetableFlags, byte, MTF_WAIT_TIME, MTF_END, MTF_END, 3> {};

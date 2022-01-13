@@ -88,63 +88,62 @@ static uint8 GetDepartureConditionalOrderMode(const Order *order)
 static inline bool VehicleSetNextDepartureTime(DateTicks *previous_departure, uint *waiting_time, const DateTicksScaled date_only_scaled, const Vehicle *v, const Order *order, bool arrived_at_timing_point, schdispatch_cache_t &dept_schedule_last)
 {
 	if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
-		/* Loop over all order to find the first waiting order */
-		for (int j = 0; j < v->orders.list->GetNumOrders(); ++j) {
-			Order* iterating_order = v->orders.list->GetOrderAt(j);
+		auto is_current_implicit_order = [&v](const Order *o) -> bool {
+			if (v->cur_implicit_order_index >= v->orders.list->GetNumOrders()) return false;
+			return v->orders.list->GetOrderAt(v->cur_implicit_order_index) == o;
+		};
 
-			if (iterating_order->IsWaitTimetabled() && !iterating_order->IsType(OT_IMPLICIT)) {
-				/* This condition means that we want departure time for the first order */
-				/* but not if the vehicle has arrived at the first order because the timetable is already shifted */
-				if (iterating_order == order && !(arrived_at_timing_point && v->cur_implicit_order_index == j)) {
-					DateTicksScaled actual_departure    = -1;
-					const DateTicksScaled begin_time    = v->orders.list->GetScheduledDispatchStartTick();
-					const uint32 dispatch_duration      = v->orders.list->GetScheduledDispatchDuration();
-					const int32 max_delay               = v->orders.list->GetScheduledDispatchDelay();
+		/* This condition means that we want departure time for the dispatch order */
+		/* but not if the vehicle has arrived at the dispatch order because the timetable is already shifted */
+		if (order->IsScheduledDispatchOrder(true) && !(arrived_at_timing_point && is_current_implicit_order(order))) {
+			const DispatchSchedule &ds = v->orders.list->GetDispatchScheduleByIndex(order->GetDispatchScheduleIndex());
 
-					/* Earliest possible departure according to schedue */
-					DateTicksScaled earliest_departure = begin_time + v->orders.list->GetScheduledDispatchLastDispatch();
+			DateTicksScaled actual_departure    = -1;
+			const DateTicksScaled begin_time    = ds.GetScheduledDispatchStartTick();
+			const uint32 dispatch_duration      = ds.GetScheduledDispatchDuration();
+			const int32 max_delay               = ds.GetScheduledDispatchDelay();
 
-					/* Earliest possible departure according to vehicle current timetable */
-					if (earliest_departure + max_delay < date_only_scaled + *previous_departure + order->GetTravelTime()) {
-						earliest_departure = date_only_scaled + *previous_departure + order->GetTravelTime() - max_delay - 1;
-						/* -1 because this number is actually a moment before actual departure */
-					}
+			/* Earliest possible departure according to schedue */
+			DateTicksScaled earliest_departure = begin_time + ds.GetScheduledDispatchLastDispatch();
 
-					/* Find next available slots */
-					for (auto current_offset : v->orders.list->GetScheduledDispatch()) {
-						if (current_offset >= dispatch_duration) continue;
-						DateTicksScaled current_departure = begin_time + current_offset;
-						while (current_departure <= earliest_departure) {
-							current_departure += dispatch_duration;
-						}
+			/* Earliest possible departure according to vehicle current timetable */
+			if (earliest_departure + max_delay < date_only_scaled + *previous_departure + order->GetTravelTime()) {
+				earliest_departure = date_only_scaled + *previous_departure + order->GetTravelTime() - max_delay - 1;
+				/* -1 because this number is actually a moment before actual departure */
+			}
 
-						/* Make sure the slots has not already been used previously in this departure board calculation */
-						while (dept_schedule_last[v->orders.list->index].count(current_departure) > 0) {
-							current_departure += dispatch_duration;
-						}
-
-						if (actual_departure == -1 || actual_departure > current_departure) {
-							actual_departure = current_departure;
-						}
-					}
-
-					*waiting_time = order->GetWaitTime() + actual_departure - date_only_scaled - *previous_departure - order->GetTravelTime();
-					*previous_departure = actual_departure - date_only_scaled + order->GetWaitTime();
-					dept_schedule_last[v->orders.list->index].insert(actual_departure);
-
-					/* Return true means that vehicle lateness should be clear from this point onward */
-					return true;
+			/* Find next available slots */
+			for (auto current_offset : ds.GetScheduledDispatch()) {
+				if (current_offset >= dispatch_duration) continue;
+				DateTicksScaled current_departure = begin_time + current_offset;
+				while (current_departure <= earliest_departure) {
+					current_departure += dispatch_duration;
 				}
 
-				/* This is special case for proper calculation of arrival time. */
-				if (arrived_at_timing_point && v->cur_implicit_order_index == j) {
-					*previous_departure += order->GetTravelTime() + order->GetWaitTime();
-					*waiting_time = -v->lateness_counter + order->GetWaitTime();
-					return false;
+				/* Make sure the slots has not already been used previously in this departure board calculation */
+				while (dept_schedule_last[v->orders.list->index].count(current_departure) > 0) {
+					current_departure += dispatch_duration;
 				}
-				break;
-			} /* if it is first waiting order */
-		} /* for in order list */
+
+				if (actual_departure == -1 || actual_departure > current_departure) {
+					actual_departure = current_departure;
+				}
+			}
+
+			*waiting_time = order->GetWaitTime() + actual_departure - date_only_scaled - *previous_departure - order->GetTravelTime();
+			*previous_departure = actual_departure - date_only_scaled + order->GetWaitTime();
+			dept_schedule_last[v->orders.list->index].insert(actual_departure);
+
+			/* Return true means that vehicle lateness should be clear from this point onward */
+			return true;
+		}
+
+		/* This is special case for proper calculation of arrival time. */
+		if (arrived_at_timing_point && v->cur_implicit_order_index < v->orders.list->GetNumOrders() && v->orders.list->GetOrderAt(v->cur_implicit_order_index)->IsScheduledDispatchOrder(true)) {
+			*previous_departure += order->GetTravelTime() + order->GetWaitTime();
+			*waiting_time = -v->lateness_counter + order->GetWaitTime();
+			return false;
+		}
 	} /* if vehicle is on scheduled dispatch */
 
 	/* Not using schedule for this departure time */
