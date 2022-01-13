@@ -60,7 +60,8 @@ template <typename T, typename U>
 static inline T SB(T &x, const uint8 s, const uint8 n, const U d)
 {
 	x &= (T)(~((((T)1U << n) - 1) << s));
-	x |= (T)(d << s);
+	typename std::make_unsigned<T>::type td = d;
+	x |= (T)(td << s);
 	return x;
 }
 
