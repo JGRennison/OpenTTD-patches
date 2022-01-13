@@ -194,6 +194,7 @@ struct SchdispatchWindow : Window {
 	uint item_count = 0;     ///< Number of scheduled item
 	bool last_departure_future; ///< True if last departure is currently displayed in the future
 	uint warning_count = 0;
+	bool no_order_warning_pad = false;
 
 	SchdispatchWindow(WindowDesc *desc, WindowNumber window_number) :
 			Window(desc),
@@ -274,7 +275,12 @@ struct SchdispatchWindow : Window {
 			}
 
 			case WID_SCHDISPATCH_SUMMARY_PANEL:
-				size->height = WD_FRAMERECT_TOP + 5 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
+				size->height = WD_FRAMERECT_TOP + 6 * FONT_HEIGHT_NORMAL + WD_FRAMERECT_BOTTOM;
+				uint warning_count = this->warning_count;
+				if (this->no_order_warning_pad) {
+					warning_count++;
+					size->height -= FONT_HEIGHT_NORMAL;
+				}
 				if (warning_count > 0) {
 					const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
 					size->height += warning_count * std::max<int>(warning_dimensions.height, FONT_HEIGHT_NORMAL);
@@ -467,6 +473,67 @@ struct SchdispatchWindow : Window {
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_SUMMARY_NOT_ENABLED);
 				} else {
 					const DispatchSchedule &ds = this->GetSelectedSchedule();
+
+					auto draw_warning = [&](StringID text) {
+						const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
+						int step_height = std::max<int>(warning_dimensions.height, FONT_HEIGHT_NORMAL);
+						int left = r.left + WD_FRAMERECT_LEFT;
+						int right = r.right - WD_FRAMERECT_RIGHT;
+						const bool rtl = (_current_text_dir == TD_RTL);
+						DrawSprite(SPR_WARNING_SIGN, 0, rtl ? right - warning_dimensions.width - 5 : left + 5, y + (step_height - warning_dimensions.height) / 2);
+						if (rtl) {
+							right -= (warning_dimensions.width + 10);
+						} else {
+							left += (warning_dimensions.width + 10);
+						}
+						DrawString(left, right, y + (step_height - FONT_HEIGHT_NORMAL) / 2, text);
+						y += step_height;
+					};
+
+					bool have_conditional = false;
+					int schedule_order_index = -1;
+					for (int n = 0; n < v->GetNumOrders(); n++) {
+						const Order *order = v->GetOrder(n);
+						if (order->IsType(OT_CONDITIONAL)) {
+							have_conditional = true;
+						}
+						if (order->GetDispatchScheduleIndex() == this->schedule_index) {
+							schedule_order_index = n;
+						}
+					}
+					bool no_order_warning_pad = false;
+					if (schedule_order_index < 0) {
+						draw_warning(STR_SCHDISPATCH_NOT_ASSIGNED_TO_ORDER);
+						no_order_warning_pad = true;
+					} else {
+						const Order *order = v->GetOrder(schedule_order_index);
+						SetDParam(0, schedule_order_index + 1);
+
+						switch (order->GetType()) {
+							case OT_GOTO_STATION:
+								SetDParam(1, STR_STATION_NAME);
+								SetDParam(2, order->GetDestination());
+								break;
+
+							case OT_GOTO_WAYPOINT:
+								SetDParam(1, STR_WAYPOINT_NAME);
+								SetDParam(2, order->GetDestination());
+								break;
+
+							case OT_GOTO_DEPOT:
+								SetDParam(1, STR_DEPOT_NAME);
+								SetDParam(2, order->GetDestination());
+								break;
+
+							default:
+								SetDParam(1, STR_INVALID_ORDER);
+								break;
+						}
+
+						DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_ASSIGNED_TO_ORDER);
+						y += FONT_HEIGHT_NORMAL;
+					}
+
 					const DateTicksScaled last_departure = ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchLastDispatch();
 					SetDParam(0, last_departure);
 					const_cast<SchdispatchWindow*>(this)->last_departure_future = (last_departure > _scaled_date_ticks);
@@ -474,13 +541,6 @@ struct SchdispatchWindow : Window {
 							this->last_departure_future ? STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE : STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST);
 					y += FONT_HEIGHT_NORMAL;
 
-					bool have_conditional = false;
-					for (int n = 0; n < v->GetNumOrders(); n++) {
-						const Order *order = v->GetOrder(n);
-						if (order->IsType(OT_CONDITIONAL)) {
-							have_conditional = true;
-						}
-					}
 					if (!have_conditional) {
 						const int required_vehicle = CalculateMaxRequiredVehicle(v->orders.list->GetTimetableTotalDuration(), ds.GetScheduledDispatchDuration(), ds.GetScheduledDispatch());
 						if (required_vehicle > 0) {
@@ -503,35 +563,20 @@ struct SchdispatchWindow : Window {
 					DrawString(r.left + WD_FRAMERECT_LEFT, r.right - WD_FRAMERECT_RIGHT, y, STR_SCHDISPATCH_SUMMARY_L4);
 					y += FONT_HEIGHT_NORMAL;
 
-					uint warnings = 0;
-					auto draw_warning = [&](StringID text) {
-						const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
-						int step_height = std::max<int>(warning_dimensions.height, FONT_HEIGHT_NORMAL);
-						int left = r.left + WD_FRAMERECT_LEFT;
-						int right = r.right - WD_FRAMERECT_RIGHT;
-						const bool rtl = (_current_text_dir == TD_RTL);
-						DrawSprite(SPR_WARNING_SIGN, 0, rtl ? right - warning_dimensions.width - 5 : left + 5, y + (step_height - warning_dimensions.height) / 2);
-						if (rtl) {
-							right -= (warning_dimensions.width + 10);
-						} else {
-							left += (warning_dimensions.width + 10);
-						}
-						DrawString(left, right, y + (step_height - FONT_HEIGHT_NORMAL) / 2, text);
-						y += step_height;
-						warnings++;
-					};
-
 					uint32 duration = ds.GetScheduledDispatchDuration();
+					uint warnings = 0;
 					for (uint32 slot : ds.GetScheduledDispatch()) {
 						if (slot >= duration) {
 							draw_warning(STR_SCHDISPATCH_SLOT_OUTSIDE_SCHEDULE);
+							warnings++;
 							break;
 						}
 					}
 
-					if (warnings != this->warning_count) {
+					if (warnings != this->warning_count || no_order_warning_pad != this->no_order_warning_pad) {
 						SchdispatchWindow *mutable_this = const_cast<SchdispatchWindow *>(this);
 						mutable_this->warning_count = warnings;
+						mutable_this->no_order_warning_pad = no_order_warning_pad;
 						mutable_this->ReInit();
 					}
 				}

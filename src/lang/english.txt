@@ -7144,6 +7144,9 @@ STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}This sch
 
 STR_SCHDISPATCH_SLOT_OUTSIDE_SCHEDULE                           :{BLACK}One or more departure slots are outside the schedule duration.
 
+STR_SCHDISPATCH_NOT_ASSIGNED_TO_ORDER                           :{BLACK}This dispatch schedule is not assigned to an order.
+STR_SCHDISPATCH_ASSIGNED_TO_ORDER                               :{BLACK}This dispatch schedule is assigned to order {NUM}: {STRING1}.
+
 STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_START                       :{BLACK}Start:
 STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_STEP                        :{BLACK}Period:
 STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_END                         :{BLACK}End:
