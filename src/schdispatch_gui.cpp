@@ -729,6 +729,26 @@ struct SchdispatchWindow : Window {
 		this->SetDirty();
 	}
 
+	static void ClearScheduleCallback(Window *win, bool confirmed)
+	{
+		if (confirmed) {
+			SchdispatchWindow *w = (SchdispatchWindow*)win;
+			if (w->IsScheduleSelected()) {
+				DoCommandP(0, w->vehicle->index | (w->schedule_index << 20), 0, CMD_SCHEDULED_DISPATCH_CLEAR | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+			}
+		}
+	}
+
+	static void RemoveScheduleCallback(Window *win, bool confirmed)
+	{
+		if (confirmed) {
+			SchdispatchWindow *w = (SchdispatchWindow*)win;
+			if (w->IsScheduleSelected()) {
+				DoCommandP(0, w->vehicle->index | (w->schedule_index << 20), 0, CMD_SCHEDULED_DISPATCH_REMOVE_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+			}
+		}
+	}
+
 	void OnDropdownSelect(int widget, int index) override
 	{
 		switch (widget) {
@@ -740,11 +760,15 @@ struct SchdispatchWindow : Window {
 						break;
 
 					case SCH_MD_CLEAR_SCHEDULE:
-						DoCommandP(0, this->vehicle->index | (this->schedule_index << 20), 0, CMD_SCHEDULED_DISPATCH_CLEAR | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+						if (this->GetSelectedSchedule().GetScheduledDispatch().empty()) return;
+						SetDParam(0, (uint)this->GetSelectedSchedule().GetScheduledDispatch().size());
+						ShowQuery(STR_SCHDISPATCH_QUERY_CLEAR_SCHEDULE_CAPTION, STR_SCHDISPATCH_QUERY_CLEAR_SCHEDULE_TEXT, this, ClearScheduleCallback);
+
 						break;
 
 					case SCH_MD_REMOVE_SCHEDULE:
-						DoCommandP(0, this->vehicle->index | (this->schedule_index << 20), 0, CMD_SCHEDULED_DISPATCH_REMOVE_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+						SetDParam(0, (uint)this->GetSelectedSchedule().GetScheduledDispatch().size());
+						ShowQuery(STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_CAPTION, STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_TEXT, this, RemoveScheduleCallback);
 						break;
 				}
 			}
