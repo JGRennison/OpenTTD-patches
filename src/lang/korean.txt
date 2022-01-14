@@ -5697,7 +5697,7 @@ STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP                           :{BLACK}시간�
 
 STR_TIMETABLE_SCHEDULED_DISPATCH                                :{BLACK}배차 일정
 STR_TIMETABLE_SCHEDULED_DISPATCH_TOOLTIP                        :{BLACK}시간표 시작 시간 자동 설정을 위한 '배차 일정' 창을 엽니다.
-STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER                          :[배{STRING}차 기준]
+STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER                          :{PUSH_COLOUR}{YELLOW}[배{STRING}차 기준]{POP_COLOUR}
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME             :{PUSH_COLOUR}{RED}[{STRING}배차 기준 - 대기 시간표가 작성되지 않음]{POP_COLOUR}
 
 STR_TIMETABLE_EXPECTED                                          :{BLACK}예정일 기준

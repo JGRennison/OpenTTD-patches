@@ -5479,7 +5479,7 @@ STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP                           :{BLACK}Passt au
 
 STR_TIMETABLE_SCHEDULED_DISPATCH                                :{BLACK}Geplante Beförderung
 STR_TIMETABLE_SCHEDULED_DISPATCH_TOOLTIP                        :{BLACK}Öffnet das Fenster für die geplante Beförderung, um den Beginn des Fahrplans automatisch zu setzen
-STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER                          :[{STRING}Geplante Beförderung]
+STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER                          :{PUSH_COLOUR}{YELLOW}[{STRING}Geplante Beförderung]{POP_COLOUR}
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME             :{PUSH_COLOUR}{RED}[{STRING}Geplante Beförderung - keine Wartezeit geplant]{POP_COLOUR}
 
 STR_TIMETABLE_EXPECTED                                          :{BLACK}Voraussichtlich
