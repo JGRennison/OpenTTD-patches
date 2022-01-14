@@ -279,6 +279,10 @@ struct TimetableWindow : Window {
 	bool change_timetable_all; ///< Set wait time or speed for all timetable entries (ctrl-click) action
 	int summary_warnings = 0;  ///< NUmber of summary warnings shown
 
+	enum {
+		MAX_SUMMARY_WARNINGS = 10,
+	};
+
 	TimetableWindow(WindowDesc *desc, WindowNumber window_number) :
 			Window(desc),
 			sel_index(-1),
@@ -345,7 +349,7 @@ struct TimetableWindow : Window {
 
 			case WID_VT_SUMMARY_PANEL: {
 				Dimension d = GetSpriteSize(SPR_WARNING_SIGN);
-				size->height = WD_FRAMERECT_TOP + 2 * FONT_HEIGHT_NORMAL + this->summary_warnings * std::max<int>(d.height, FONT_HEIGHT_NORMAL) + WD_FRAMERECT_BOTTOM;
+				size->height = WD_FRAMERECT_TOP + 2 * FONT_HEIGHT_NORMAL + std::min<int>(MAX_SUMMARY_WARNINGS, this->summary_warnings) * std::max<int>(d.height, FONT_HEIGHT_NORMAL) + WD_FRAMERECT_BOTTOM;
 				break;
 			}
 		}
@@ -743,9 +747,7 @@ struct TimetableWindow : Window {
 					const int warning_offset_y = (step_height - warning_dimensions.height) / 2;
 					const bool rtl = _current_text_dir == TD_RTL;
 
-					int warning_count = 0;
-
-					ProcessTimetableWarnings(v, [&](StringID text, bool warning) {
+					auto draw_warning = [&](StringID text, bool warning) {
 						int left = r.left + WD_FRAMERECT_LEFT;
 						int right = r.right - WD_FRAMERECT_RIGHT;
 						if (warning) {
@@ -758,8 +760,19 @@ struct TimetableWindow : Window {
 						}
 						DrawString(left, right, y + text_offset_y, text);
 						y += step_height;
+					};
+
+					int warning_count = 0;
+					int warning_limit = this->summary_warnings > MAX_SUMMARY_WARNINGS ? MAX_SUMMARY_WARNINGS - 1 : std::min<int>(MAX_SUMMARY_WARNINGS, this->summary_warnings);
+
+					ProcessTimetableWarnings(v, [&](StringID text, bool warning) {
+						if (warning_count < warning_limit) draw_warning(text, warning);
 						warning_count++;
 					});
+					if (warning_count > warning_limit) {
+						SetDParam(0, warning_count - warning_limit);
+						draw_warning(STR_TIMETABLE_WARNINGS_OMITTED, true);
+					}
 
 					if (warning_count != this->summary_warnings) {
 						TimetableWindow *mutable_this = const_cast<TimetableWindow *>(this);

@@ -5742,6 +5742,8 @@ STR_TIMETABLE_WARNING_NO_SCHEDULED_DISPATCH_ORDER_ASSIGNED      :{BLACK}The disp
 STR_TIMETABLE_WARNING_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME     :{BLACK}The scheduled dispatch order should have a timetabled wait time
 STR_TIMETABLE_WARNING_SCHEDULE_ID                               :{BLACK}Schedule {NUM}: {STRING}
 
+STR_TIMETABLE_WARNINGS_OMITTED                                  :{BLACK}{NUM} further warnings omitted...
+
 # Date window (for timetable)
 STR_DATE_CAPTION                                                :{WHITE}Set date
 STR_DATE_SET_DATE                                               :{BLACK}Set date
