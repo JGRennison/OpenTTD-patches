@@ -511,6 +511,9 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i)",
 				ymd.year, ymd.month + 1, ymd.day, _last_sync_date_fract, _last_sync_tick_skip_counter);
 	}
+	if (info.client_id >= 0) {
+		buffer += seprintf(buffer, last, "Client #%d, \"%s\"\n", info.client_id, info.client_name != nullptr ? info.client_name : "");
+	}
 	buffer += seprintf(buffer, last, "\n");
 
 	buffer = this->LogOpenTTDVersion(buffer, last);

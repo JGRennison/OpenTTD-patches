@@ -1196,7 +1196,10 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet *p
 
 	if (errorno == NETWORK_ERROR_DESYNC) {
 		std::string server_desync_log;
-		CrashLog::DesyncCrashLog(&(this->desync_log), &server_desync_log, DesyncExtraInfo{});
+		DesyncExtraInfo info;
+		info.client_name = client_name;
+		info.client_id = this->client_id;
+		CrashLog::DesyncCrashLog(&(this->desync_log), &server_desync_log, info);
 		this->SendDesyncLog(server_desync_log);
 
 		// decrease the sync frequency for this point onwards

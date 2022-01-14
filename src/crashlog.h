@@ -24,6 +24,8 @@ struct DesyncExtraInfo {
 	};
 
 	Flags flags = DEIF_NONE;
+	const char *client_name = nullptr;
+	int client_id = -1;
 	FILE **log_file = nullptr; ///< save unclosed log file handle here
 };
 DECLARE_ENUM_AS_BIT_SET(DesyncExtraInfo::Flags)
