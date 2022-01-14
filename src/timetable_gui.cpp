@@ -33,10 +33,16 @@
 
 #include "safeguards.h"
 
+enum TimetableArrivalDepartureFlags {
+	TADF_ARRIVAL_PREDICTED,
+	TADF_DEPARTURE_PREDICTED,
+};
+
 /** Container for the arrival/departure dates of a vehicle */
 struct TimetableArrivalDeparture {
 	Ticks arrival;   ///< The arrival time
 	Ticks departure; ///< The departure time
+	uint flags;
 };
 
 /**
@@ -121,7 +127,10 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 	/* Pre-initialize with unknown time */
 	for (int i = 0; i < v->GetNumOrders(); ++i) {
 		table[i].arrival = table[i].departure = INVALID_TICKS;
+		table[i].flags = 0;
 	}
+
+	bool predicted = false;
 
 	/* Cyclically loop over all orders until we reach the current one again.
 	 * As we may start at the current order, do a post-checking loop */
@@ -134,12 +143,26 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 				if (!CanDetermineTimeTaken(order, true)) return;
 				sum += order->GetTimetabledTravel();
 				table[i].arrival = sum;
+				if (predicted) SetBit(table[i].flags, TADF_ARRIVAL_PREDICTED);
 			}
 
-			if (order->IsScheduledDispatchOrder(true) && !(i == start && !travelling)) return;
-			if (!CanDetermineTimeTaken(order, false)) return;
-			sum += order->GetTimetabledWait();
+			if (order->IsScheduledDispatchOrder(true) && !(i == start && !travelling)) {
+				extern DateTicksScaled GetScheduledDispatchTime(const DispatchSchedule &ds, DateTicksScaled leave_time);
+				DispatchSchedule &ds = v->orders.list->GetDispatchScheduleByIndex(order->GetDispatchScheduleIndex());
+				DispatchSchedule predicted_ds;
+				predicted_ds.BorrowSchedule(ds);
+				predicted_ds.UpdateScheduledDispatchToDate(_scaled_date_ticks + sum);
+				DateTicksScaled slot = GetScheduledDispatchTime(predicted_ds, _scaled_date_ticks + sum + order->GetTimetabledWait());
+				predicted_ds.ReturnSchedule(ds);
+				if (slot <= -1) return;
+				sum = slot - _scaled_date_ticks;
+				predicted = true;
+			} else {
+				if (!CanDetermineTimeTaken(order, false)) return;
+				sum += order->GetTimetabledWait();
+			}
 			table[i].departure = sum;
+			if (predicted) SetBit(table[i].flags, TADF_DEPARTURE_PREDICTED);
 		}
 
 		++i;
@@ -694,17 +717,17 @@ struct TimetableWindow : Window {
 								SetDParam(0, _scaled_date_ticks + arr_dep[i / 2].arrival);
 								DrawString(time_left, time_right, y, STR_JUST_DATE_WALLCLOCK_TINY, TC_GREEN);
 							} else {
-								SetDParam(0, _scaled_date_ticks + arr_dep[i / 2].arrival + offset);
+								SetDParam(0, _scaled_date_ticks + arr_dep[i / 2].arrival + (HasBit(arr_dep[i / 2].flags, TADF_ARRIVAL_PREDICTED) ? 0 : offset));
 								DrawString(time_left, time_right, y, STR_JUST_DATE_WALLCLOCK_TINY,
-										show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK);
+										HasBit(arr_dep[i / 2].flags, TADF_ARRIVAL_PREDICTED) ? (TextColour)(TC_IS_PALETTE_COLOUR | TC_NO_SHADE | 4) : (show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK));
 							}
 						}
 					} else {
 						if (arr_dep[i / 2].departure != INVALID_TICKS) {
 							DrawString(abbr_left, abbr_right, y, STR_TIMETABLE_DEPARTURE_ABBREVIATION, i == selected ? TC_WHITE : TC_BLACK);
-							SetDParam(0, _scaled_date_ticks + arr_dep[i/2].departure + offset);
+							SetDParam(0, _scaled_date_ticks + arr_dep[i/2].departure + (HasBit(arr_dep[i / 2].flags, TADF_DEPARTURE_PREDICTED) ? 0 : offset));
 							DrawString(time_left, time_right, y, STR_JUST_DATE_WALLCLOCK_TINY,
-									show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK);
+									HasBit(arr_dep[i / 2].flags, TADF_DEPARTURE_PREDICTED) ? (TextColour)(TC_IS_PALETTE_COLOUR | TC_NO_SHADE | 4) : (show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK));
 						}
 					}
 					y += line_height;

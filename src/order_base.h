@@ -618,6 +618,15 @@ private:
 	int32 scheduled_dispatch_last_dispatch = 0;                         ///< Last vehicle dispatched offset
 	int32 scheduled_dispatch_max_delay = 0;                             ///< Maximum allowed delay
 
+	inline void CopyBasicFields(const DispatchSchedule &other)
+	{
+		this->scheduled_dispatch_duration              = other.scheduled_dispatch_duration;
+		this->scheduled_dispatch_start_date            = other.scheduled_dispatch_start_date;
+		this->scheduled_dispatch_start_full_date_fract = other.scheduled_dispatch_start_full_date_fract;
+		this->scheduled_dispatch_last_dispatch         = other.scheduled_dispatch_last_dispatch;
+		this->scheduled_dispatch_max_delay             = other.scheduled_dispatch_max_delay;
+	}
+
 public:
 	/**
 	 * Get the vector of all scheduled dispatch slot
@@ -629,6 +638,7 @@ public:
 	void AddScheduledDispatch(uint32 offset);
 	void RemoveScheduledDispatch(uint32 offset);
 	void ClearScheduledDispatch() { this->scheduled_dispatch.clear(); }
+	bool UpdateScheduledDispatchToDate(DateTicksScaled now);
 	void UpdateScheduledDispatch();
 
 	/**
@@ -701,6 +711,17 @@ public:
 	 * @return  scheduled dispatch last dispatch
 	 */
 	inline int32 GetScheduledDispatchDelay() const { return this->scheduled_dispatch_max_delay; }
+
+	inline void BorrowSchedule(DispatchSchedule &other)
+	{
+		this->CopyBasicFields(other);
+		this->scheduled_dispatch = std::move(other.scheduled_dispatch);
+	}
+
+	inline void ReturnSchedule(DispatchSchedule &other)
+	{
+		other.scheduled_dispatch = std::move(this->scheduled_dispatch);
+	}
 };
 
 /**

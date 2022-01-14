@@ -778,7 +778,7 @@ void UpdateSeparationOrder(Vehicle *v_start)
 	}
 }
 
-static DateTicksScaled GetScheduledDispatchTime(const DispatchSchedule &ds, int wait_offset)
+DateTicksScaled GetScheduledDispatchTime(const DispatchSchedule &ds, DateTicksScaled leave_time)
 {
 	DateTicksScaled first_slot          = -1;
 	const DateTicksScaled begin_time    = ds.GetScheduledDispatchStartTick();
@@ -794,7 +794,7 @@ static DateTicksScaled GetScheduledDispatchTime(const DispatchSchedule &ds, int 
 		}
 
 		DateTicksScaled current_departure = begin_time + current_offset;
-		DateTicksScaled minimum = _scaled_date_ticks + wait_offset - max_delay;
+		DateTicksScaled minimum = leave_time - max_delay;
 		if (current_departure < minimum) {
 			current_departure += dispatch_duration * ((minimum + dispatch_duration - current_departure - 1) / dispatch_duration);
 		}
@@ -850,7 +850,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 			ds.UpdateScheduledDispatch();
 
 			const int wait_offset = real_current_order->GetTimetabledWait();
-			DateTicksScaled slot = GetScheduledDispatchTime(ds, wait_offset);
+			DateTicksScaled slot = GetScheduledDispatchTime(ds, _scaled_date_ticks + wait_offset);
 			if (slot > -1) {
 				SetBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 				v->lateness_counter = _scaled_date_ticks - slot + wait_offset;

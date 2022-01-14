@@ -453,14 +453,11 @@ void DispatchSchedule::RemoveScheduledDispatch(uint32 offset)
 	this->scheduled_dispatch.erase(erase_position);
 }
 
-/**
- * Update the scheduled dispatch start time to be the most recent possible.
- */
-void DispatchSchedule::UpdateScheduledDispatch()
+bool DispatchSchedule::UpdateScheduledDispatchToDate(DateTicksScaled now)
 {
 	bool update_windows = false;
 	if (this->GetScheduledDispatchStartTick() == 0) {
-		int64 start = _scaled_date_ticks - (_scaled_date_ticks % this->GetScheduledDispatchDuration());
+		int64 start = now - (now % this->GetScheduledDispatchDuration());
 		SchdispatchConvertToFullDateFract(
 				start,
 				&this->scheduled_dispatch_start_date, &this->scheduled_dispatch_start_full_date_fract);
@@ -474,7 +471,7 @@ void DispatchSchedule::UpdateScheduledDispatch()
 		}
 	}
 	/* Most of the time this loop does not runs. It makes sure start date in in past */
-	while (this->GetScheduledDispatchStartTick() > _scaled_date_ticks) {
+	while (this->GetScheduledDispatchStartTick() > now) {
 		OverflowSafeInt32 last_dispatch = this->scheduled_dispatch_last_dispatch;
 		last_dispatch += this->GetScheduledDispatchDuration();
 		this->scheduled_dispatch_last_dispatch = last_dispatch;
@@ -484,7 +481,7 @@ void DispatchSchedule::UpdateScheduledDispatch()
 		update_windows = true;
 	}
 	/* Most of the time this loop runs once. It makes sure the start date is as close to current time as possible. */
-	while (this->GetScheduledDispatchStartTick() + this->GetScheduledDispatchDuration() <= _scaled_date_ticks) {
+	while (this->GetScheduledDispatchStartTick() + this->GetScheduledDispatchDuration() <= now) {
 		OverflowSafeInt32 last_dispatch = this->scheduled_dispatch_last_dispatch;
 		last_dispatch -= this->GetScheduledDispatchDuration();
 		this->scheduled_dispatch_last_dispatch = last_dispatch;
@@ -493,5 +490,15 @@ void DispatchSchedule::UpdateScheduledDispatch()
 				&this->scheduled_dispatch_start_date, &this->scheduled_dispatch_start_full_date_fract);
 		update_windows = true;
 	}
-	if (update_windows) InvalidateWindowClassesData(WC_SCHDISPATCH_SLOTS, VIWD_MODIFY_ORDERS);
+	return update_windows;
+}
+
+/**
+ * Update the scheduled dispatch start time to be the most recent possible.
+ */
+void DispatchSchedule::UpdateScheduledDispatch()
+{
+	if (this->UpdateScheduledDispatchToDate(_scaled_date_ticks)) {
+		InvalidateWindowClassesData(WC_SCHDISPATCH_SLOTS, VIWD_MODIFY_ORDERS);
+	}
 }
