@@ -338,6 +338,7 @@ Order::Order(uint64 packed)
 void InvalidateVehicleOrder(const Vehicle *v, int data)
 {
 	SetWindowDirty(WC_VEHICLE_VIEW, v->index);
+	SetWindowDirty(WC_SCHDISPATCH_SLOTS, v->index);
 
 	if (data != 0) {
 		/* Calls SetDirty() too */
@@ -370,7 +371,7 @@ void Order::AssignOrder(const Order &other)
 	this->travel_time = other.travel_time;
 	this->max_speed   = other.max_speed;
 
-	if (other.extra != nullptr && (this->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD || this->GetLoadType() == OLFB_CARGO_TYPE_LOAD || other.extra->xdata != 0 || other.extra->xflags != 0)) {
+	if (other.extra != nullptr && (this->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD || this->GetLoadType() == OLFB_CARGO_TYPE_LOAD || other.extra->xdata != 0 || other.extra->xflags != 0 || other.extra->dispatch_index != 0)) {
 		this->AllocExtraInfo();
 		*(this->extra) = *(other.extra);
 	} else {
@@ -1894,6 +1895,9 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 					if (order->IsWaitTimetabled() || order->GetWaitTime() > 0) {
 						DoCommandEx(tile, v->index | (MTF_WAIT_TIME << 28) | (1 << 31), 0, p3, flags, CMD_CHANGE_TIMETABLE);
 					}
+					if (order->IsScheduledDispatchOrder(false)) {
+						DoCommandEx(tile, v->index | (MTF_ASSIGN_SCHEDULE << 28), -1, p3, flags, CMD_CHANGE_TIMETABLE);
+					}
 				}
 				break;
 
@@ -2390,12 +2394,7 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 				/* Copy over scheduled dispatch data */
 				assert(dst->orders.list != nullptr);
 				if (src->orders.list != nullptr) {
-					dst->orders.list->SetScheduledDispatchDuration(src->orders.list->GetScheduledDispatchDuration());
-					dst->orders.list->SetScheduledDispatchDelay(src->orders.list->GetScheduledDispatchDelay());
-					dst->orders.list->SetScheduledDispatchStartDate(src->orders.list->GetScheduledDispatchStartDatePart(),
-							src->orders.list->GetScheduledDispatchStartDateFractPart());
-					dst->orders.list->SetScheduledDispatchLastDispatch(0);
-					dst->orders.list->SetScheduledDispatch(src->orders.list->GetScheduledDispatch());
+					dst->orders.list->GetScheduledDispatchScheduleSet() = src->orders.list->GetScheduledDispatchScheduleSet();
 				}
 
 				/* Set automation bit if target has it. */
@@ -2701,7 +2700,7 @@ static bool CheckForValidOrders(const Vehicle *v)
 /**
  * Compare the variable and value based on the given comparator.
  */
-static bool OrderConditionCompare(OrderConditionComparator occ, int variable, int value)
+bool OrderConditionCompare(OrderConditionComparator occ, int variable, int value)
 {
 	switch (occ) {
 		case OCC_EQUALS:      return variable == value;
@@ -3223,8 +3222,10 @@ CommandCost CmdMassChangeOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 void ShiftOrderDates(int interval)
 {
 	for (OrderList *orderlist : OrderList::Iterate()) {
-		if (orderlist->GetScheduledDispatchStartDatePart() >= 0) {
-			orderlist->SetScheduledDispatchStartDate(orderlist->GetScheduledDispatchStartDatePart() + interval, orderlist->GetScheduledDispatchStartDateFractPart());
+		for (DispatchSchedule &ds : orderlist->GetScheduledDispatchScheduleSet()) {
+			if (ds.GetScheduledDispatchStartDatePart() >= 0) {
+				ds.SetScheduledDispatchStartDate(ds.GetScheduledDispatchStartDatePart() + interval, ds.GetScheduledDispatchStartDateFractPart());
+			}
 		}
 	}
 

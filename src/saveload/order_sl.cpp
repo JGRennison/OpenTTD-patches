@@ -217,6 +217,7 @@ const SaveLoadTable GetOrderExtraInfoDescription()
 		SLE_CONDARR_X(OrderExtraInfo, cargo_type_flags, SLE_UINT8, NUM_CARGO, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CARGO_TYPE_ORDERS, 3)),
 		SLE_CONDVAR_X(OrderExtraInfo, xflags,           SLE_UINT8,            SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA)),
 		SLE_CONDVAR_X(OrderExtraInfo, xdata,           SLE_UINT32,            SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_EXTRA_DATA)),
+		SLE_CONDVAR_X(OrderExtraInfo, dispatch_index,  SLE_UINT16,            SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 3)),
 	};
 
 	return _order_extra_info_desc;
@@ -255,16 +256,24 @@ static void Ptrs_ORDR()
 	}
 }
 
+SaveLoadTable GetDispatchScheduleDescription()
+{
+	static const SaveLoad _order_extra_info_desc[] = {
+		SLE_VARVEC(DispatchSchedule, scheduled_dispatch,                    SLE_UINT32),
+		SLE_VAR(DispatchSchedule, scheduled_dispatch_duration,              SLE_UINT32),
+		SLE_VAR(DispatchSchedule, scheduled_dispatch_start_date,            SLE_INT32),
+		SLE_VAR(DispatchSchedule, scheduled_dispatch_start_full_date_fract, SLE_UINT16),
+		SLE_VAR(DispatchSchedule, scheduled_dispatch_last_dispatch,         SLE_INT32),
+		SLE_VAR(DispatchSchedule, scheduled_dispatch_max_delay,             SLE_INT32),
+	};
+
+	return _order_extra_info_desc;
+}
+
 SaveLoadTable GetOrderListDescription()
 {
 	static const SaveLoad _orderlist_desc[] = {
 		      SLE_REF(OrderList, first,                                    REF_ORDER),
-		SLE_CONDVARVEC_X(OrderList, scheduled_dispatch,                    SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
-		SLE_CONDVAR_X(OrderList, scheduled_dispatch_duration,              SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
-		SLE_CONDVAR_X(OrderList, scheduled_dispatch_start_date,            SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
-		SLE_CONDVAR_X(OrderList, scheduled_dispatch_start_full_date_fract, SLE_UINT16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
-		SLE_CONDVAR_X(OrderList, scheduled_dispatch_last_dispatch,         SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
-		SLE_CONDVAR_X(OrderList, scheduled_dispatch_max_delay,             SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH)),
 		SLEG_CONDVAR_X(_jokerpp_separation_mode,                           SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP)),
 		SLE_CONDNULL_X(21,                                                             SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP)),
 	};
@@ -276,7 +285,14 @@ static void Save_ORDL()
 {
 	for (OrderList *list : OrderList::Iterate()) {
 		SlSetArrayIndex(list->index);
-		SlObject(list, GetOrderListDescription());
+		SlAutolength([](void *data) {
+			OrderList *list = static_cast<OrderList *>(data);
+			SlObject(list, GetOrderListDescription());
+			SlWriteUint32(list->GetScheduledDispatchScheduleCount());
+			for (DispatchSchedule &ds : list->GetScheduledDispatchScheduleSet()) {
+				SlObject(&ds, GetDispatchScheduleDescription());
+			}
+		}, list);
 	}
 }
 
@@ -297,8 +313,14 @@ static void Load_ORDL()
 				_jokerpp_non_auto_separation.push_back(list);
 			}
 		}
+		if (SlXvIsFeaturePresent(XSLFI_SCHEDULED_DISPATCH)) {
+			uint count = SlXvIsFeaturePresent(XSLFI_SCHEDULED_DISPATCH, 3) ? SlReadUint32() : 1;
+			list->GetScheduledDispatchScheduleSet().resize(count);
+			for (DispatchSchedule &ds : list->GetScheduledDispatchScheduleSet()) {
+				SlObject(&ds, GetDispatchScheduleDescription());
+			}
+		}
 	}
-
 }
 
 void Ptrs_ORDL()
@@ -330,17 +352,13 @@ SaveLoadTable GetOrderBackupDescription()
 		 SLE_CONDVAR(OrderBackup, vehicle_flags,            SLE_FILE_U8 | SLE_VAR_U16, SLV_176, SLV_180),
 		 SLE_CONDVAR(OrderBackup, vehicle_flags,            SLE_UINT16,                SLV_180, SL_MAX_VERSION),
 		     SLE_REF(OrderBackup, orders,                   REF_ORDER),
-		SLE_CONDVARVEC_X(OrderBackup, scheduled_dispatch,                    SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 2)),
-		SLE_CONDVAR_X(OrderBackup, scheduled_dispatch_duration,              SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 2)),
-		SLE_CONDVAR_X(OrderBackup, scheduled_dispatch_start_date,            SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 2)),
-		SLE_CONDVAR_X(OrderBackup, scheduled_dispatch_start_full_date_fract, SLE_UINT16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 2)),
-		SLE_CONDVAR_X(OrderBackup, scheduled_dispatch_max_delay,             SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 2)),
+		SLE_CONDNULL_X(18,                                                      SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 2, 2)),
 	};
 
 	return _order_backup_desc;
 }
 
-static void Save_BKOR()
+void Save_BKOR()
 {
 	/* We only save this when we're a network server
 	 * as we want this information on our clients. For
@@ -349,7 +367,14 @@ static void Save_BKOR()
 
 	for (OrderBackup *ob : OrderBackup::Iterate()) {
 		SlSetArrayIndex(ob->index);
-		SlObject(ob, GetOrderBackupDescription());
+		SlAutolength([](void *data) {
+			OrderBackup *ob = static_cast<OrderBackup *>(data);
+			SlObject(ob, GetOrderBackupDescription());
+			SlWriteUint32((uint)ob->dispatch_schedules.size());
+			for (DispatchSchedule &ds : ob->dispatch_schedules) {
+				SlObject(&ds, GetDispatchScheduleDescription());
+			}
+		}, ob);
 	}
 }
 
@@ -361,6 +386,13 @@ void Load_BKOR()
 		/* set num_orders to 0 so it's a valid OrderList */
 		OrderBackup *ob = new (index) OrderBackup();
 		SlObject(ob, GetOrderBackupDescription());
+		if (SlXvIsFeaturePresent(XSLFI_SCHEDULED_DISPATCH, 3)) {
+			uint count = SlReadUint32();
+			ob->dispatch_schedules.resize(count);
+			for (DispatchSchedule &ds : ob->dispatch_schedules) {
+				SlObject(&ds, GetDispatchScheduleDescription());
+			}
+		}
 	}
 }
 

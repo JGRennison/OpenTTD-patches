@@ -1102,4 +1102,10 @@ inline bool MayBeShown(const Window *w)
 	}
 }
 
+struct GeneralVehicleWindow : public Window {
+	const Vehicle *vehicle;
+
+	GeneralVehicleWindow(WindowDesc *desc, const Vehicle *v) : Window(desc), vehicle(v) {}
+};
+
 #endif /* WINDOW_GUI_H */

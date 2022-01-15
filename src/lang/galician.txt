@@ -6681,8 +6681,8 @@ STR_TIMETABLE_AUTO_SEPARATION                                   :{BLACK}Auto Sep
 STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP                           :{BLACK}Automáticamente axusta a hora de comezo dos horarios para asegurar a separación dos vehículos
 STR_TIMETABLE_SCHEDULED_DISPATCH                                :{BLACK}Saída programada
 STR_TIMETABLE_SCHEDULED_DISPATCH_TOOLTIP                        :{BLACK}Abrir fiestras de saídas programadas para configurar automáticamente a hora de inicio dos horarios
-STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER                          :[saída programada]
-STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME             :{PUSH_COLOUR}{RED}[saída programadda - sen tempo de espera no horario]{POP_COLOUR}
+STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER                          :{PUSH_COLOUR}{YELLOW}[{STRING}saída programada]{POP_COLOUR}
+STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME             :{PUSH_COLOUR}{RED}[{STRING}saída programadda - sen tempo de espera no horario]{POP_COLOUR}
 STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP                           :{BLACK}Bloquear/desbloquear a cantidade de tempo para a orde resaltada (Ctrl+Click fixa o estado de bloqueo para todas as ordes).{}Cando estea bloqueado, a hora non se modificará mediante o autocompletado ou automatización do horario.
 STR_TIMETABLE_LEAVE_EARLY_ORDER                                 :[saír cedo]
 STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ANY                        :[saír cedo se calquera cargamento está cheo]
@@ -6701,7 +6701,6 @@ STR_TIMETABLE_WARNING_AUTOSEP_MISSING_TIMINGS                   :{BLACK}Non se p
 STR_TIMETABLE_WARNING_FULL_LOAD                                 :{BLACK}Non se recomenda a programación de ordes a carga completa
 STR_TIMETABLE_WARNING_AUTOFILL_CONDITIONAL                      :{BLACK}O enchemento automático só actualizará as ordes condicionais da rama escollida
 STR_TIMETABLE_NON_TIMETABLED_BRANCH                             :{BLACK}Non todas as ordes da rama condicional escollida están programadas.
-STR_TIMETABLE_WARNING_NO_SCHEDULED_DISPATCH_ORDER               :{BLACK}Non hai unha orde axeitada para usar coa saída programada.
 STR_TIMETABLE_WARNING_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME     :{BLACK}A orde de saída programada debería ter un temepo de espera programado.
 
 STR_DATE_MINUTES_MINUTE_TOOLTIP                                 :{BLACK}Seleccionar minuto

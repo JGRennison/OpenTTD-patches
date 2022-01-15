@@ -15,6 +15,7 @@
 #include "settings_type.h"
 
 void ShowSchdispatchWindow(const Vehicle *v);
+void SchdispatchInvalidateWindows(const Vehicle *v);
 
 /**
  * Convert date and full date fraction to DateTicksScaled

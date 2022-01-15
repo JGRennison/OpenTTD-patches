@@ -53,6 +53,7 @@ void ClearOrderDestinationRefcountMap();
 struct OrderExtraInfo {
 	uint8 cargo_type_flags[NUM_CARGO] = {}; ///< Load/unload types for each cargo type.
 	uint32 xdata = 0;                       ///< Extra arbitrary data
+	uint16 dispatch_index = 0;              ///< Scheduled dispatch index + 1
 	uint8 xflags = 0;                       ///< Extra flags
 };
 
@@ -476,7 +477,7 @@ public:
 	/** Set if the wait time is fixed */
 	inline void SetWaitFixed(bool fixed)
 	{
-		if (!this->IsType(OT_CONDITIONAL) && fixed != this->IsWaitFixed()) SB(this->GetXFlagsRef(), 1, 1, fixed ? 1 : 0);
+		if (fixed != this->IsWaitFixed()) SB(this->GetXFlagsRef(), 1, 1, fixed ? 1 : 0);
 	}
 
 	/** Does this order have a fixed travel time? */
@@ -524,6 +525,24 @@ public:
 			return false;
 		}
 		return true;
+	}
+
+	inline int GetDispatchScheduleIndex() const
+	{
+		return this->extra != nullptr ? (int)this->extra->dispatch_index - 1 : -1;
+	}
+
+	inline void SetDispatchScheduleIndex(int schedule_index)
+	{
+		if (schedule_index != this->GetDispatchScheduleIndex()) {
+			this->CheckExtraInfoAlloced();
+			this->extra->dispatch_index = (uint16)(schedule_index + 1);
+		}
+	}
+
+	inline bool IsScheduledDispatchOrder(bool require_wait_timetabled) const
+	{
+		return this->extra != nullptr && this->extra->dispatch_index > 0 && (!require_wait_timetabled || this->IsWaitTimetabled());
 	}
 
 	void AssignOrder(const Order &other);
@@ -587,6 +606,124 @@ template <typename T, typename F> T CargoMaskValueFilter(CargoTypes &cargo_mask,
 	return value;
 }
 
+struct DispatchSchedule {
+private:
+	friend SaveLoadTable GetDispatchScheduleDescription();              ///< Saving and loading of dispatch schedules
+
+	std::vector<uint32> scheduled_dispatch;                             ///< Scheduled dispatch time
+	uint32 scheduled_dispatch_duration = 0;                             ///< Scheduled dispatch duration
+	Date scheduled_dispatch_start_date = -1;                            ///< Scheduled dispatch start date
+	uint16 scheduled_dispatch_start_full_date_fract = 0;                ///< Scheduled dispatch start full date fraction;
+	                                                                    ///  this counts to (DAY_TICK * _settings_game.economy.day_length_factor)
+	int32 scheduled_dispatch_last_dispatch = 0;                         ///< Last vehicle dispatched offset
+	int32 scheduled_dispatch_max_delay = 0;                             ///< Maximum allowed delay
+
+	inline void CopyBasicFields(const DispatchSchedule &other)
+	{
+		this->scheduled_dispatch_duration              = other.scheduled_dispatch_duration;
+		this->scheduled_dispatch_start_date            = other.scheduled_dispatch_start_date;
+		this->scheduled_dispatch_start_full_date_fract = other.scheduled_dispatch_start_full_date_fract;
+		this->scheduled_dispatch_last_dispatch         = other.scheduled_dispatch_last_dispatch;
+		this->scheduled_dispatch_max_delay             = other.scheduled_dispatch_max_delay;
+	}
+
+public:
+	/**
+	 * Get the vector of all scheduled dispatch slot
+	 * @return  first scheduled dispatch
+	 */
+	inline const std::vector<uint32> &GetScheduledDispatch() const { return this->scheduled_dispatch; }
+
+	void SetScheduledDispatch(std::vector<uint32> dispatch_list);
+	void AddScheduledDispatch(uint32 offset);
+	void RemoveScheduledDispatch(uint32 offset);
+	void ClearScheduledDispatch() { this->scheduled_dispatch.clear(); }
+	bool UpdateScheduledDispatchToDate(DateTicksScaled now);
+	void UpdateScheduledDispatch(const Vehicle *v);
+
+	/**
+	 * Set the scheduled dispatch duration, in scaled tick
+	 * @param  duration  New duration
+	 */
+	inline void SetScheduledDispatchDuration(uint32 duration) { this->scheduled_dispatch_duration = duration; }
+
+	/**
+	 * Get the scheduled dispatch duration, in scaled tick
+	 * @return  scheduled dispatch duration
+	 */
+	inline uint32 GetScheduledDispatchDuration() const { return this->scheduled_dispatch_duration; }
+
+	/**
+	 * Set the scheduled dispatch start
+	 * @param  start New start date
+	 * @param  fract New start full date fraction, see \c CmdScheduledDispatchSetStartDate
+	 */
+	inline void SetScheduledDispatchStartDate(Date start_date, uint16 start_full_date_fract)
+	{
+		this->scheduled_dispatch_start_date = start_date;
+		this->scheduled_dispatch_start_full_date_fract = start_full_date_fract;
+	}
+
+	/**
+	 * Get the scheduled dispatch start date part
+	 * @return  scheduled dispatch start date part
+	 */
+	inline Date GetScheduledDispatchStartDatePart() const { return this->scheduled_dispatch_start_date; }
+
+	/**
+	 * Get the scheduled dispatch start date fract part
+	 * @return  scheduled dispatch start date fract part
+	 */
+	inline uint16 GetScheduledDispatchStartDateFractPart() const { return this->scheduled_dispatch_start_full_date_fract; }
+
+	/**
+	 * Get the scheduled dispatch start date, in absolute scaled tick
+	 * @return  scheduled dispatch start date
+	 */
+	inline DateTicksScaled GetScheduledDispatchStartTick() const { return SchdispatchConvertToScaledTick(this->scheduled_dispatch_start_date, this->scheduled_dispatch_start_full_date_fract); }
+
+	/**
+	 * Whether the scheduled dispatch setting is valid
+	 * @return  scheduled dispatch start date fraction
+	 */
+	inline bool IsScheduledDispatchValid() const { return this->scheduled_dispatch_start_date >= 0 && this->scheduled_dispatch_duration > 0; }
+
+	/**
+	 * Set the scheduled dispatch last dispatch offset, in scaled tick
+	 * @param  duration  New last dispatch offset
+	 */
+	inline void SetScheduledDispatchLastDispatch(int32 offset) { this->scheduled_dispatch_last_dispatch = offset; }
+
+	/**
+	 * Get the scheduled dispatch last dispatch offset, in scaled tick
+	 * @return  scheduled dispatch last dispatch
+	 */
+	inline int32 GetScheduledDispatchLastDispatch() const { return this->scheduled_dispatch_last_dispatch; }
+
+	/**
+	 * Set the scheduled dispatch maximum allowed delay, in scaled tick
+	 * @param  delay  New maximum allow delay
+	 */
+	inline void SetScheduledDispatchDelay(int32 delay) { this->scheduled_dispatch_max_delay = delay; }
+
+	/**
+	 * Get the scheduled dispatch maximum alowed delay, in scaled tick
+	 * @return  scheduled dispatch last dispatch
+	 */
+	inline int32 GetScheduledDispatchDelay() const { return this->scheduled_dispatch_max_delay; }
+
+	inline void BorrowSchedule(DispatchSchedule &other)
+	{
+		this->CopyBasicFields(other);
+		this->scheduled_dispatch = std::move(other.scheduled_dispatch);
+	}
+
+	inline void ReturnSchedule(DispatchSchedule &other)
+	{
+		other.scheduled_dispatch = std::move(this->scheduled_dispatch);
+	}
+};
+
 /**
  * Shared order list linking together the linked list of orders and the list
  *  of vehicles sharing this order list.
@@ -611,21 +748,13 @@ private:
 	Ticks timetable_duration;         ///< NOSAVE: Total timetabled duration of the order list.
 	Ticks total_duration;             ///< NOSAVE: Total (timetabled or not) duration of the order list.
 
-	std::vector<uint32> scheduled_dispatch;    ///< Scheduled dispatch time
-	uint32 scheduled_dispatch_duration;        ///< Scheduled dispatch duration
-	Date scheduled_dispatch_start_date;        ///< Scheduled dispatch start date
-	uint16 scheduled_dispatch_start_full_date_fract;///< Scheduled dispatch start full date fraction;
-	                                           /// this count to (DAY_TICK * _settings_game.economy.day_length_factor)
-	int32 scheduled_dispatch_last_dispatch;    ///< Last vehicle dispatched offset
-	int32 scheduled_dispatch_max_delay;        ///< Maximum allowed delay
+	std::vector<DispatchSchedule> dispatch_schedules; ///< Scheduled dispatch schedules
 
 public:
 	/** Default constructor producing an invalid order list. */
 	OrderList(VehicleOrderID num_orders = INVALID_VEH_ORDER_ID)
 		: first(nullptr), num_manual_orders(0), num_vehicles(0), first_shared(nullptr),
-		  timetable_duration(0), total_duration(0), scheduled_dispatch_duration(0),
-		  scheduled_dispatch_start_date(-1), scheduled_dispatch_start_full_date_fract(0),
-		  scheduled_dispatch_last_dispatch(0), scheduled_dispatch_max_delay(0) { }
+		  timetable_duration(0), total_duration(0) { }
 
 	/**
 	 * Create an order list with the given order chain for the given vehicle.
@@ -752,90 +881,13 @@ public:
 	void DebugCheckSanity() const;
 	bool CheckOrderListIndexing() const;
 
-	/**
-	 * Get the vector of all scheduled dispatch slot
-	 * @return  first scheduled dispatch
-	 */
-	inline const std::vector<uint32> &GetScheduledDispatch() const { return this->scheduled_dispatch; }
+	inline std::vector<DispatchSchedule> &GetScheduledDispatchScheduleSet() { return this->dispatch_schedules; }
+	inline const std::vector<DispatchSchedule> &GetScheduledDispatchScheduleSet() const { return this->dispatch_schedules; }
 
-	void SetScheduledDispatch(std::vector<uint32> dispatch_list);
-	void AddScheduledDispatch(uint32 offset);
-	void RemoveScheduledDispatch(uint32 offset);
-	void ClearScheduledDispatch() { this->scheduled_dispatch.clear(); }
-	void UpdateScheduledDispatch();
-	void ResetScheduledDispatch();
+	inline uint GetScheduledDispatchScheduleCount() const { return (uint)this->dispatch_schedules.size(); }
 
-	/**
-	 * Set the scheduled dispatch duration, in scaled tick
-	 * @param  duration  New duration
-	 */
-	inline void SetScheduledDispatchDuration(uint32 duration) { this->scheduled_dispatch_duration = duration; }
-
-	/**
-	 * Get the scheduled dispatch duration, in scaled tick
-	 * @return  scheduled dispatch duration
-	 */
-	inline uint32 GetScheduledDispatchDuration() const { return this->scheduled_dispatch_duration; }
-
-	/**
-	 * Set the scheduled dispatch start
-	 * @param  start New start date
-	 * @param  fract New start full date fraction, see \c CmdScheduledDispatchSetStartDate
-	 */
-	inline void SetScheduledDispatchStartDate(Date start_date, uint16 start_full_date_fract)
-	{
-		this->scheduled_dispatch_start_date = start_date;
-		this->scheduled_dispatch_start_full_date_fract = start_full_date_fract;
-	}
-
-	/**
-	 * Get the scheduled dispatch start date part
-	 * @return  scheduled dispatch start date part
-	 */
-	inline Date GetScheduledDispatchStartDatePart() const { return this->scheduled_dispatch_start_date; }
-
-	/**
-	 * Get the scheduled dispatch start date fract part
-	 * @return  scheduled dispatch start date fract part
-	 */
-	inline uint16 GetScheduledDispatchStartDateFractPart() const { return this->scheduled_dispatch_start_full_date_fract; }
-
-	/**
-	 * Get the scheduled dispatch start date, in absolute scaled tick
-	 * @return  scheduled dispatch start date
-	 */
-	inline DateTicksScaled GetScheduledDispatchStartTick() const { return SchdispatchConvertToScaledTick(this->scheduled_dispatch_start_date, this->scheduled_dispatch_start_full_date_fract); }
-
-	/**
-	 * Whether the scheduled dispatch setting is valid
-	 * @return  scheduled dispatch start date fraction
-	 */
-	inline bool IsScheduledDispatchValid() const { return this->scheduled_dispatch_start_date >= 0 && this->scheduled_dispatch_duration > 0; }
-
-	/**
-	 * Set the scheduled dispatch last dispatch offset, in scaled tick
-	 * @param  duration  New last dispatch offset
-	 */
-	inline void SetScheduledDispatchLastDispatch(int32 offset) { this->scheduled_dispatch_last_dispatch = offset; }
-
-	/**
-	 * Get the scheduled dispatch last dispatch offset, in scaled tick
-	 * @return  scheduled dispatch last dispatch
-	 */
-	inline int32 GetScheduledDispatchLastDispatch() const { return this->scheduled_dispatch_last_dispatch; }
-
-	/**
-	 * Set the scheduled dispatch maximum allowed delay, in scaled tick
-	 * @param  delay  New maximum allow delay
-	 */
-	inline void SetScheduledDispatchDelay(int32 delay) { this->scheduled_dispatch_max_delay = delay; }
-
-	/**
-	 * Get the scheduled dispatch maximum alowed delay, in scaled tick
-	 * @return  scheduled dispatch last dispatch
-	 */
-	inline int32 GetScheduledDispatchDelay() const { return this->scheduled_dispatch_max_delay; }
-
+	inline DispatchSchedule &GetDispatchScheduleByIndex(uint index) { return this->dispatch_schedules[index]; }
+	inline const DispatchSchedule &GetDispatchScheduleByIndex(uint index) const { return this->dispatch_schedules[index]; }
 };
 
 void ShiftOrderDates(int interval);

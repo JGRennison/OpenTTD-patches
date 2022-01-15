@@ -154,4 +154,7 @@ CommandCallback CcDeleteVirtualTrain;
 CommandCallback CcAddVirtualEngine;
 CommandCallback CcMoveNewVirtualEngine;
 
+/* schdispatch_gui.cpp */
+CommandCallback CcAddNewSchDispatchSchedule;
+
 #endif /* COMMAND_FUNC_H */

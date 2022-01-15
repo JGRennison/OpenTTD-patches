@@ -328,6 +328,14 @@ DECLARE_ENUM_AS_BIT_SET(SaveLoadChunkExtHeaderFlags)
 #define SLE_VEC(base, variable, type) SLE_CONDVEC(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
+ * Storage of a variable vector in every savegame version.
+ * @param base     Name of the class or struct containing the list.
+ * @param variable Name of the variable in the class or struct referenced by \a base.
+ * @param type     Storage of the data in memory and in the savegame.
+ */
+#define SLE_VARVEC(base, variable, type) SLE_CONDVARVEC(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
+
+/**
  * Empty space in every savegame version.
  * @param length Length of the empty space.
  */
