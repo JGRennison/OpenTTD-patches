@@ -25,6 +25,7 @@
 #include "viewport_func.h"
 #include "schdispatch.h"
 #include "vehiclelist.h"
+#include "tracerestrict.h"
 
 #include "widgets/timetable_widget.h"
 
@@ -36,6 +37,9 @@
 enum TimetableArrivalDepartureFlags {
 	TADF_ARRIVAL_PREDICTED,
 	TADF_DEPARTURE_PREDICTED,
+	TADF_ARRIVAL_NO_OFFSET,
+	TADF_DEPARTURE_NO_OFFSET,
+	TADF_REACHED,
 };
 
 /** Container for the arrival/departure dates of a vehicle */
@@ -131,22 +135,65 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 	}
 
 	bool predicted = false;
+	bool no_offset = false;
+	bool skip_travel = false;
 
 	/* Cyclically loop over all orders until we reach the current one again.
 	 * As we may start at the current order, do a post-checking loop */
 	do {
+		if (HasBit(table[i].flags, TADF_REACHED)) break;
+		SetBit(table[i].flags, TADF_REACHED);
+
+		bool skip = order->IsType(OT_IMPLICIT);
+
+		if (order->IsType(OT_CONDITIONAL)) {
+			bool jump = false;
+			switch (order->GetConditionVariable()) {
+				case OCV_UNCONDITIONALLY: {
+					jump = true;
+					break;
+				}
+
+				case OCV_TIME_DATE: {
+					predicted = true;
+					DateTicksScaled time = _scaled_date_ticks + sum;
+					if (!no_offset) time -= v->lateness_counter;
+					int value = GetTraceRestrictTimeDateValueFromDate(static_cast<TraceRestrictTimeDateValueField>(order->GetConditionValue()), time);
+					jump = OrderConditionCompare(order->GetConditionComparator(), value, order->GetXData());
+					break;
+				}
+
+				default:
+					return;
+			}
+			if (jump) {
+				if (!order->IsWaitTimetabled()) return;
+				sum += order->GetTimetabledWait();
+				i = order->GetConditionSkipToOrder();
+				order = v->GetOrder(i);
+				skip_travel = true;
+				continue;
+			} else {
+				skip = true;
+			}
+		}
+
 		/* Automatic orders don't influence the overall timetable;
 		 * they just add some untimetabled entries, but the time till
 		 * the next non-implicit order can still be known. */
-		if (!order->IsType(OT_IMPLICIT)) {
+		if (!skip) {
 			if (travelling || i != start) {
-				if (!CanDetermineTimeTaken(order, true)) return;
-				sum += order->GetTimetabledTravel();
+				if (!skip_travel) {
+					if (!CanDetermineTimeTaken(order, true)) return;
+					sum += order->GetTimetabledTravel();
+				}
 				table[i].arrival = sum;
 				if (predicted) SetBit(table[i].flags, TADF_ARRIVAL_PREDICTED);
+				if (no_offset) SetBit(table[i].flags, TADF_ARRIVAL_NO_OFFSET);
 			}
 
 			if (order->IsScheduledDispatchOrder(true) && !(i == start && !travelling)) {
+				if (!no_offset) sum -= v->lateness_counter;
 				extern DateTicksScaled GetScheduledDispatchTime(const DispatchSchedule &ds, DateTicksScaled leave_time);
 				DispatchSchedule &ds = v->orders.list->GetDispatchScheduleByIndex(order->GetDispatchScheduleIndex());
 				DispatchSchedule predicted_ds;
@@ -157,13 +204,17 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 				if (slot <= -1) return;
 				sum = slot - _scaled_date_ticks;
 				predicted = true;
+				no_offset = true;
 			} else {
 				if (!CanDetermineTimeTaken(order, false)) return;
 				sum += order->GetTimetabledWait();
 			}
 			table[i].departure = sum;
 			if (predicted) SetBit(table[i].flags, TADF_DEPARTURE_PREDICTED);
+			if (predicted) SetBit(table[i].flags, TADF_DEPARTURE_NO_OFFSET);
 		}
+
+		skip_travel = false;
 
 		++i;
 		order = order->next;
@@ -176,10 +227,12 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 
 	/* When loading at a scheduled station we still have to treat the
 	 * travelling part of the first order. */
-	if (!travelling) {
+	if (!travelling && table[i].arrival == INVALID_TICKS) {
 		if (!CanDetermineTimeTaken(order, true)) return;
 		sum += order->GetTimetabledTravel();
 		table[i].arrival = sum;
+		if (predicted) SetBit(table[i].flags, TADF_ARRIVAL_PREDICTED);
+		if (no_offset) SetBit(table[i].flags, TADF_ARRIVAL_NO_OFFSET);
 	}
 }
 
@@ -722,7 +775,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 								SetDParam(0, _scaled_date_ticks + arr_dep[i / 2].arrival);
 								DrawString(time_left, time_right, y, STR_JUST_DATE_WALLCLOCK_TINY, TC_GREEN);
 							} else {
-								SetDParam(0, _scaled_date_ticks + arr_dep[i / 2].arrival + (HasBit(arr_dep[i / 2].flags, TADF_ARRIVAL_PREDICTED) ? 0 : offset));
+								SetDParam(0, _scaled_date_ticks + arr_dep[i / 2].arrival + (HasBit(arr_dep[i / 2].flags, TADF_ARRIVAL_NO_OFFSET) ? 0 : offset));
 								DrawString(time_left, time_right, y, STR_JUST_DATE_WALLCLOCK_TINY,
 										HasBit(arr_dep[i / 2].flags, TADF_ARRIVAL_PREDICTED) ? (TextColour)(TC_IS_PALETTE_COLOUR | TC_NO_SHADE | 4) : (show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK));
 							}
@@ -730,7 +783,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					} else {
 						if (arr_dep[i / 2].departure != INVALID_TICKS) {
 							DrawString(abbr_left, abbr_right, y, STR_TIMETABLE_DEPARTURE_ABBREVIATION, i == selected ? TC_WHITE : TC_BLACK);
-							SetDParam(0, _scaled_date_ticks + arr_dep[i/2].departure + (HasBit(arr_dep[i / 2].flags, TADF_DEPARTURE_PREDICTED) ? 0 : offset));
+							SetDParam(0, _scaled_date_ticks + arr_dep[i/2].departure + (HasBit(arr_dep[i / 2].flags, TADF_DEPARTURE_NO_OFFSET) ? 0 : offset));
 							DrawString(time_left, time_right, y, STR_JUST_DATE_WALLCLOCK_TINY,
 									HasBit(arr_dep[i / 2].flags, TADF_DEPARTURE_PREDICTED) ? (TextColour)(TC_IS_PALETTE_COLOUR | TC_NO_SHADE | 4) : (show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK));
 						}

@@ -32,5 +32,6 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 #define MAX_SERVINT_DAYS   800
 
 uint16 GetServiceIntervalClamped(uint interval, bool ispercent);
+bool OrderConditionCompare(OrderConditionComparator occ, int variable, int value);
 
 #endif /* ORDER_FUNC_H */

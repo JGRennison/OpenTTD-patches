@@ -2700,7 +2700,7 @@ static bool CheckForValidOrders(const Vehicle *v)
 /**
  * Compare the variable and value based on the given comparator.
  */
-static bool OrderConditionCompare(OrderConditionComparator occ, int variable, int value)
+bool OrderConditionCompare(OrderConditionComparator occ, int variable, int value)
 {
 	switch (occ) {
 		case OCC_EQUALS:      return variable == value;

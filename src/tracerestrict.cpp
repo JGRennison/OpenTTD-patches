@@ -1759,6 +1759,37 @@ int GetTraceRestrictTimeDateValue(TraceRestrictTimeDateValueField type)
 	}
 }
 
+int GetTraceRestrictTimeDateValueFromDate(TraceRestrictTimeDateValueField type, DateTicksScaled scaled_date_ticks)
+{
+	Minutes minutes = (scaled_date_ticks / _settings_game.game_time.ticks_per_minute) + _settings_game.game_time.clock_offset;
+
+	switch (type) {
+		case TRTDVF_MINUTE:
+			return MINUTES_MINUTE(minutes);
+
+		case TRTDVF_HOUR:
+			return MINUTES_HOUR(minutes);
+
+		case TRTDVF_HOUR_MINUTE:
+			return (MINUTES_HOUR(minutes) * 100) + MINUTES_MINUTE(minutes);
+
+		case TRTDVF_DAY: {
+			YearMonthDay ymd;
+			ConvertDateToYMD(scaled_date_ticks / (DAY_TICKS * _settings_game.economy.day_length_factor), &ymd);
+			return ymd.day;
+		}
+
+		case TRTDVF_MONTH: {
+			YearMonthDay ymd;
+			ConvertDateToYMD(scaled_date_ticks / (DAY_TICKS * _settings_game.economy.day_length_factor), &ymd);
+			return ymd.month + 1;
+		}
+
+		default:
+			return 0;
+	}
+}
+
 /**
  * This is called when a station, waypoint or depot is about to be deleted
  * Scan program pool and change any references to it to the invalid station ID, to avoid dangling references
