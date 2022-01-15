@@ -33,6 +33,7 @@
 #include "cargo_type.h"
 #include "departures_func.h"
 #include "departures_type.h"
+#include "3rdparty/cpp-btree/btree_set.h"
 
 #include <map>
 #include <set>
@@ -40,7 +41,7 @@
 #include <algorithm>
 
 /* A cache of used departure time for scheduled dispatch in departure time calculation */
-typedef std::map<uint32, std::set<DateTicksScaled>> schdispatch_cache_t;
+typedef std::map<const DispatchSchedule *, btree::btree_set<DateTicksScaled>> schdispatch_cache_t;
 
 /** A scheduled order. */
 typedef struct OrderDate
@@ -112,6 +113,8 @@ static inline bool VehicleSetNextDepartureTime(DateTicks *previous_departure, ui
 				/* -1 because this number is actually a moment before actual departure */
 			}
 
+			btree::btree_set<DateTicksScaled> &slot_cache = dept_schedule_last[&ds];
+
 			/* Find next available slots */
 			for (auto current_offset : ds.GetScheduledDispatch()) {
 				if (current_offset >= dispatch_duration) continue;
@@ -121,7 +124,7 @@ static inline bool VehicleSetNextDepartureTime(DateTicks *previous_departure, ui
 				}
 
 				/* Make sure the slots has not already been used previously in this departure board calculation */
-				while (dept_schedule_last[v->orders.list->index].count(current_departure) > 0) {
+				while (slot_cache.count(current_departure) > 0) {
 					current_departure += dispatch_duration;
 				}
 
@@ -132,7 +135,7 @@ static inline bool VehicleSetNextDepartureTime(DateTicks *previous_departure, ui
 
 			*waiting_time = order->GetWaitTime() + actual_departure - date_only_scaled - *previous_departure - order->GetTravelTime();
 			*previous_departure = actual_departure - date_only_scaled + order->GetWaitTime();
-			dept_schedule_last[v->orders.list->index].insert(actual_departure);
+			slot_cache.insert(actual_departure);
 
 			/* Return true means that vehicle lateness should be clear from this point onward */
 			return true;
