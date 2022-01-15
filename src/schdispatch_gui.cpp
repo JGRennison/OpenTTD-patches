@@ -184,8 +184,7 @@ static void AddNewScheduledDispatchSchedule(VehicleID vindex)
 	DoCommandPEx(0, vindex, duration, p3, CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), CcAddNewSchDispatchSchedule, nullptr, 0);
 }
 
-struct SchdispatchWindow : Window {
-	const Vehicle *vehicle; ///< Vehicle monitored by the window.
+struct SchdispatchWindow : GeneralVehicleWindow {
 	int schedule_index;
 	int clicked_widget;     ///< The widget that was clicked (used to determine what to do in OnQueryTextFinished)
 	Scrollbar *vscroll;     ///< Verticle scrollbar
@@ -197,8 +196,7 @@ struct SchdispatchWindow : Window {
 	bool no_order_warning_pad = false;
 
 	SchdispatchWindow(WindowDesc *desc, WindowNumber window_number) :
-			Window(desc),
-			vehicle(Vehicle::Get(window_number))
+			GeneralVehicleWindow(desc, Vehicle::Get(window_number))
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_SCHDISPATCH_V_SCROLL);
@@ -1150,4 +1148,17 @@ void ShowScheduledDispatchAddSlotsWindow(SchdispatchWindow *parent, int window_n
 	DeleteWindowByClass(WC_SET_DATE);
 
 	new ScheduledDispatchAddSlotsWindow(&_scheduled_dispatch_add_desc, window_number, parent);
+}
+
+void SchdispatchInvalidateWindows(const Vehicle *v)
+{
+	v = v->FirstShared();
+	for (Window *w : Window::IterateFromBack()) {
+		if (w->window_class == WC_VEHICLE_TIMETABLE) {
+			if (static_cast<GeneralVehicleWindow *>(w)->vehicle->FirstShared() == v) w->SetDirty();
+		}
+		if (w->window_class == WC_SCHDISPATCH_SLOTS) {
+			if (static_cast<GeneralVehicleWindow *>(w)->vehicle->FirstShared() == v) w->InvalidateData(VIWD_MODIFY_ORDERS, false);
+		}
+	}
 }

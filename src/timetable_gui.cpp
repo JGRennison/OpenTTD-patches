@@ -289,9 +289,8 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(StringID, boo
 }
 
 
-struct TimetableWindow : Window {
+struct TimetableWindow : GeneralVehicleWindow {
 	int sel_index;
-	const Vehicle *vehicle; ///< Vehicle monitored by the window.
 	bool show_expected;     ///< Whether we show expected arrival or scheduled
 	uint deparr_time_width; ///< The width of the departure/arrival time
 	uint deparr_abbr_width; ///< The width of the departure/arrival abbreviation
@@ -307,9 +306,8 @@ struct TimetableWindow : Window {
 	};
 
 	TimetableWindow(WindowDesc *desc, WindowNumber window_number) :
-			Window(desc),
+			GeneralVehicleWindow(desc, Vehicle::Get(window_number)),
 			sel_index(-1),
-			vehicle(Vehicle::Get(window_number)),
 			show_expected(true)
 	{
 		this->CreateNestedTree();
@@ -1196,4 +1194,14 @@ void ShowTimetableWindow(const Vehicle *v)
 	DeleteWindowById(WC_VEHICLE_DETAILS, v->index, false);
 	DeleteWindowById(WC_VEHICLE_ORDERS, v->index, false);
 	AllocateWindowDescFront<TimetableWindow>(&_timetable_desc, v->index);
+}
+
+void SetTimetableWindowsDirty(const Vehicle *v, bool include_scheduled_dispatch)
+{
+	v = v->FirstShared();
+	for (Window *w : Window::IterateFromBack()) {
+		if (w->window_class == WC_VEHICLE_TIMETABLE || (include_scheduled_dispatch && w->window_class == WC_SCHDISPATCH_SLOTS)) {
+			if (static_cast<GeneralVehicleWindow *>(w)->vehicle->FirstShared() == v) w->SetDirty();
+		}
+	}
 }

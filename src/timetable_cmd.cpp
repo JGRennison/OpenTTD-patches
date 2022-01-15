@@ -102,6 +102,8 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32 val,
 	v->orders.list->UpdateTotalDuration(total_delta);
 	v->orders.list->UpdateTimetableDuration(timetable_delta);
 
+	SetTimetableWindowsDirty(v, mtf == MTF_ASSIGN_SCHEDULE);
+
 	for (v = v->FirstShared(); v != nullptr; v = v->NextShared()) {
 		if (v->cur_real_order_index == order_number && v->current_order.Equals(*order)) {
 			switch (mtf) {
@@ -139,7 +141,6 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32 val,
 					NOT_REACHED();
 			}
 		}
-		SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
 	}
 }
 
@@ -469,8 +470,10 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			for (Vehicle *w = v->orders.list->GetFirstSharedVehicle(); w != nullptr; w = w->NextShared()) {
 				vehs.push_back(w);
 			}
+			SetTimetableWindowsDirty(v);
 		} else {
 			vehs.push_back(v);
+			SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
 		}
 
 		int total_duration = v->orders.list->GetTimetableTotalDuration();
@@ -483,7 +486,6 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 		int idx = vehs.begin() - std::find(vehs.begin(), vehs.end(), v);
 
 		for (Vehicle *w : vehs) {
-
 			w->lateness_counter = 0;
 			ClrBit(w->vehicle_flags, VF_TIMETABLE_STARTED);
 			/* Do multiplication, then division to reduce rounding errors. */
@@ -493,7 +495,6 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			}
 			w->timetable_start = tt_start / _settings_game.economy.day_length_factor;
 			w->timetable_start_subticks = tt_start % _settings_game.economy.day_length_factor;
-			SetWindowDirty(WC_VEHICLE_TIMETABLE, w->index);
 			++idx;
 		}
 
@@ -551,8 +552,8 @@ CommandCost CmdAutofillTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1,
 				ClrBit(v2->vehicle_flags, VF_AUTOFILL_TIMETABLE);
 				ClrBit(v2->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
 			}
-			SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
 		}
+		SetTimetableWindowsDirty(v);
 	}
 
 	return CommandCost();
@@ -608,8 +609,8 @@ CommandCost CmdAutomateTimetable(TileIndex index, DoCommandFlag flags, uint32 p1
 					v2->current_loading_time = 0;
 				}
 			}
-			SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
 		}
+		SetTimetableWindowsDirty(v);
 		if (!HasBit(p2, 0) && !HasBit(p2, 1)) {
 			OrderList *orders = v->orders.list;
 			if (orders != nullptr) {
@@ -652,9 +653,8 @@ CommandCost CmdTimetableSeparation(TileIndex tile, DoCommandFlag flags, uint32 p
 				ClrBit(v2->vehicle_flags, VF_TIMETABLE_SEPARATION);
 			}
 			v2->ClearSeparation();
-			SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
-			SetWindowDirty(WC_SCHDISPATCH_SLOTS, v2->index);
 		}
+		SetTimetableWindowsDirty(v, true);
 	}
 
 	return CommandCost();
@@ -847,7 +847,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 			DispatchSchedule &ds = v->orders.list->GetDispatchScheduleByIndex(real_implicit_order->GetDispatchScheduleIndex());
 
 			/* Update scheduled information */
-			ds.UpdateScheduledDispatch();
+			ds.UpdateScheduledDispatch(v);
 
 			const int wait_offset = real_current_order->GetTimetabledWait();
 			DateTicksScaled slot = GetScheduledDispatchTime(ds, _scaled_date_ticks + wait_offset);
@@ -867,9 +867,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		/* If the lateness is set by scheduled dispatch above, do not reset */
 		if (!HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) v->lateness_counter = 0;
 		if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) UpdateSeparationOrder(v);
-		for (v = v->FirstShared(); v != nullptr; v = v->NextShared()) {
-			SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
-		}
+		SetTimetableWindowsDirty(v);
 		return;
 	}
 
@@ -969,8 +967,8 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 					/* Clear VF_TIMETABLE_STARTED but do not call ClearSeparation */
 					ClrBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
 					v2->lateness_counter = 0;
-					SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
 				}
+				SetTimetableWindowsDirty(v);
 				return;
 			} else if (new_time >= (int32)timetabled / 2) {
 				/* Compute running average, with sign conversion to avoid negative overflow.
@@ -1037,9 +1035,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		}
 	}
 
-	for (v = v->FirstShared(); v != nullptr; v = v->NextShared()) {
-		SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
-	}
+	SetTimetableWindowsDirty(v);
 }
 
 void SetOrderFixedWaitTime(Vehicle *v, VehicleOrderID order_number, uint32 wait_time, bool wait_timetabled) {

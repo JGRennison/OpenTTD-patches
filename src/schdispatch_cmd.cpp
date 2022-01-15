@@ -59,9 +59,8 @@ CommandCost CmdScheduledDispatch(TileIndex tile, DoCommandFlag flags, uint32 p1,
 			} else {
 				ClrBit(v2->vehicle_flags, VF_SCHEDULED_DISPATCH);
 			}
-			SetWindowDirty(WC_VEHICLE_TIMETABLE, v2->index);
-			SetWindowDirty(WC_SCHDISPATCH_SLOTS, v2->index);
 		}
+		SetTimetableWindowsDirty(v, true);
 	}
 
 	return CommandCost();
@@ -106,7 +105,7 @@ CommandCost CmdScheduledDispatchAdd(TileIndex tile, DoCommandFlag flags, uint32 
 			p2 += offset;
 			ds.AddScheduledDispatch(p2);
 		}
-		SetWindowDirty(WC_SCHDISPATCH_SLOTS, v->index);
+		SetTimetableWindowsDirty(v, true);
 	}
 
 	return CommandCost();
@@ -138,7 +137,7 @@ CommandCost CmdScheduledDispatchRemove(TileIndex tile, DoCommandFlag flags, uint
 
 	if (flags & DC_EXEC) {
 		v->orders.list->GetDispatchScheduleByIndex(schedule_index).RemoveScheduledDispatch(p2);
-		SetWindowDirty(WC_SCHDISPATCH_SLOTS, v->index);
+		SetTimetableWindowsDirty(v, true);
 	}
 
 	return CommandCost();
@@ -172,8 +171,8 @@ CommandCost CmdScheduledDispatchSetDuration(TileIndex tile, DoCommandFlag flags,
 	if (flags & DC_EXEC) {
 		DispatchSchedule &ds = v->orders.list->GetDispatchScheduleByIndex(schedule_index);
 		ds.SetScheduledDispatchDuration(p2);
-		ds.UpdateScheduledDispatch();
-		SetWindowDirty(WC_SCHDISPATCH_SLOTS, v->index);
+		ds.UpdateScheduledDispatch(nullptr);
+		SetTimetableWindowsDirty(v, true);
 	}
 
 	return CommandCost();
@@ -217,8 +216,8 @@ CommandCost CmdScheduledDispatchSetStartDate(TileIndex tile, DoCommandFlag flags
 	if (flags & DC_EXEC) {
 		DispatchSchedule &ds = v->orders.list->GetDispatchScheduleByIndex(schedule_index);
 		ds.SetScheduledDispatchStartDate(date, full_date_fract);
-		ds.UpdateScheduledDispatch();
-		SetWindowDirty(WC_SCHDISPATCH_SLOTS, v->index);
+		ds.UpdateScheduledDispatch(nullptr);
+		SetTimetableWindowsDirty(v, true);
 	}
 
 	return CommandCost();
@@ -251,7 +250,7 @@ CommandCost CmdScheduledDispatchSetDelay(TileIndex tile, DoCommandFlag flags, ui
 
 	if (flags & DC_EXEC) {
 		v->orders.list->GetDispatchScheduleByIndex(schedule_index).SetScheduledDispatchDelay(p2);
-		SetWindowDirty(WC_SCHDISPATCH_SLOTS, v->index);
+		SetTimetableWindowsDirty(v, true);
 	}
 
 	return CommandCost();
@@ -289,7 +288,7 @@ CommandCost CmdScheduledDispatchResetLastDispatch(TileIndex tile, DoCommandFlag 
 
 	if (flags & DC_EXEC) {
 		v->orders.list->GetDispatchScheduleByIndex(schedule_index).SetScheduledDispatchLastDispatch(0);
-		SetWindowDirty(WC_SCHDISPATCH_SLOTS, v->index);
+		SetTimetableWindowsDirty(v, true);
 	}
 
 	return CommandCost();
@@ -322,7 +321,7 @@ CommandCost CmdScheduledDispatchClear(TileIndex tile, DoCommandFlag flags, uint3
 
 	if (flags & DC_EXEC) {
 		v->orders.list->GetDispatchScheduleByIndex(schedule_index).ClearScheduledDispatch();
-		SetWindowDirty(WC_SCHDISPATCH_SLOTS, v->index);
+		SetTimetableWindowsDirty(v, true);
 	}
 
 	return CommandCost();
@@ -362,9 +361,8 @@ CommandCost CmdScheduledDispatchAddNewSchedule(TileIndex tile, DoCommandFlag fla
 		DispatchSchedule &ds = v->orders.list->GetScheduledDispatchScheduleSet().back();
 		ds.SetScheduledDispatchDuration(p2);
 		ds.SetScheduledDispatchStartDate(date, full_date_fract);
-		ds.UpdateScheduledDispatch();
-		SetWindowClassesDirty(WC_VEHICLE_TIMETABLE);
-		SetWindowDirty(WC_SCHDISPATCH_SLOTS, v->index);
+		ds.UpdateScheduledDispatch(nullptr);
+		SetTimetableWindowsDirty(v, true);
 	}
 
 	return CommandCost();
@@ -406,8 +404,7 @@ CommandCost CmdScheduledDispatchRemoveSchedule(TileIndex tile, DoCommandFlag fla
 				o->SetDispatchScheduleIndex(idx - 1);
 			}
 		}
-		SetWindowClassesDirty(WC_VEHICLE_TIMETABLE);
-		InvalidateWindowClassesData(WC_SCHDISPATCH_SLOTS, VIWD_MODIFY_ORDERS);
+		SchdispatchInvalidateWindows(v);
 	}
 
 	return CommandCost();
@@ -421,7 +418,7 @@ void DispatchSchedule::SetScheduledDispatch(std::vector<uint32> dispatch_list)
 {
 	this->scheduled_dispatch = std::move(dispatch_list);
 	assert(std::is_sorted(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end()));
-	if (this->IsScheduledDispatchValid()) this->UpdateScheduledDispatch();
+	if (this->IsScheduledDispatchValid()) this->UpdateScheduledDispatch(nullptr);
 }
 
 /**
@@ -436,7 +433,7 @@ void DispatchSchedule::AddScheduledDispatch(uint32 offset)
 		return;
 	}
 	this->scheduled_dispatch.insert(insert_position, offset);
-	this->UpdateScheduledDispatch();
+	this->UpdateScheduledDispatch(nullptr);
 }
 
 /**
@@ -496,9 +493,9 @@ bool DispatchSchedule::UpdateScheduledDispatchToDate(DateTicksScaled now)
 /**
  * Update the scheduled dispatch start time to be the most recent possible.
  */
-void DispatchSchedule::UpdateScheduledDispatch()
+void DispatchSchedule::UpdateScheduledDispatch(const Vehicle *v)
 {
-	if (this->UpdateScheduledDispatchToDate(_scaled_date_ticks)) {
-		InvalidateWindowClassesData(WC_SCHDISPATCH_SLOTS, VIWD_MODIFY_ORDERS);
+	if (this->UpdateScheduledDispatchToDate(_scaled_date_ticks) && v != nullptr) {
+		SetTimetableWindowsDirty(v, true);
 	}
 }

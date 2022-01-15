@@ -639,7 +639,7 @@ public:
 	void RemoveScheduledDispatch(uint32 offset);
 	void ClearScheduledDispatch() { this->scheduled_dispatch.clear(); }
 	bool UpdateScheduledDispatchToDate(DateTicksScaled now);
-	void UpdateScheduledDispatch();
+	void UpdateScheduledDispatch(const Vehicle *v);
 
 	/**
 	 * Set the scheduled dispatch duration, in scaled tick

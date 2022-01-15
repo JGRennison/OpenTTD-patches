@@ -338,6 +338,7 @@ Order::Order(uint64 packed)
 void InvalidateVehicleOrder(const Vehicle *v, int data)
 {
 	SetWindowDirty(WC_VEHICLE_VIEW, v->index);
+	SetWindowDirty(WC_SCHDISPATCH_SLOTS, v->index);
 
 	if (data != 0) {
 		/* Calls SetDirty() too */
