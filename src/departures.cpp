@@ -33,6 +33,7 @@
 #include "cargo_type.h"
 #include "departures_func.h"
 #include "departures_type.h"
+#include "tracerestrict.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 
 #include <map>
@@ -80,9 +81,13 @@ static bool IsArrival(const Order *order, StationID station) {
 			!(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION));
 }
 
-static uint8 GetDepartureConditionalOrderMode(const Order *order)
+static uint8 GetDepartureConditionalOrderMode(const Order *order, DateTicksScaled eval_date)
 {
 	if (order->GetConditionVariable() == OCV_UNCONDITIONALLY) return 1;
+	if (order->GetConditionVariable() == OCV_TIME_DATE) {
+		int value = GetTraceRestrictTimeDateValueFromDate(static_cast<TraceRestrictTimeDateValueField>(order->GetConditionValue()), eval_date);
+		return OrderConditionCompare(order->GetConditionComparator(), value, order->GetXData()) ? 1 : 2;
+	}
 	return _settings_client.gui.departure_conditionals;
 }
 
@@ -299,14 +304,9 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 					should_reset_lateness = true;
 				}
 
-				/* If the scheduled departure date is too far in the future, stop. */
-				if (start_date - v->lateness_counter > max_date) {
-					break;
-				}
-
 				/* If the order is a conditional branch, handle it. */
 				if (order->IsType(OT_CONDITIONAL)) {
-					switch(GetDepartureConditionalOrderMode(order)) {
+					switch(GetDepartureConditionalOrderMode(order, start_date + date_only_scaled)) {
 							case 0: {
 								/* Give up */
 								break;
@@ -330,10 +330,16 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 								if (status != D_CANCELLED) {
 									status = D_TRAVELLING;
 								}
+								start_date -= order->GetWaitTime(); /* Added previously in VehicleSetNextDepartureTime */
 								order = (order->next == nullptr) ? v->GetFirstOrder() : order->next;
 								continue;
 							}
 					}
+				}
+
+				/* If the scheduled departure date is too far in the future, stop. */
+				if (start_date - v->lateness_counter > max_date) {
+					break;
 				}
 
 				/* Skip it if it's an automatic order. */
@@ -466,17 +472,23 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 
 				/* If the order is a conditional branch, handle it. */
 				if (order->IsType(OT_CONDITIONAL)) {
-					switch(GetDepartureConditionalOrderMode(order)) {
+					switch (GetDepartureConditionalOrderMode(order, c.scheduled_date != 0 ? c.scheduled_date : _scaled_date_ticks)) {
 							case 0: {
 								/* Give up */
 								break;
 							}
 							case 1: {
 								/* Take the branch */
+								if (c.scheduled_date != 0 && (order->GetWaitTime() != 0 || order->IsWaitTimetabled())) {
+									c.scheduled_date += order->GetWaitTime();
+								} else {
+									c.scheduled_date = 0;
+								}
 								order = least_order->v->GetOrder(order->GetConditionSkipToOrder());
 								if (order == nullptr) {
 									break;
 								}
+								if (c.scheduled_date != 0) c.scheduled_date -= order->GetTravelTime();
 								continue;
 							}
 							case 2: {
@@ -522,7 +534,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 						order->GetType() != OT_IMPLICIT) ||
 						order->GetNonStopType() == ONSF_NO_STOP_AT_ANY_STATION ||
 						order->GetNonStopType() == ONSF_NO_STOP_AT_DESTINATION_STATION) {
-					c.scheduled_date += order->GetWaitTime();
+					if (c.scheduled_date != 0) c.scheduled_date += order->GetWaitTime();
 					order = (order->next == nullptr) ? least_order->v->GetFirstOrder() : order->next;
 					continue;
 				}
@@ -554,7 +566,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 					break;
 				}
 
-				c.scheduled_date += order->GetWaitTime();
+				if (c.scheduled_date != 0) c.scheduled_date += order->GetWaitTime();
 
 				/* Get the next order, which may be the vehicle's first order. */
 				order = (order->next == nullptr) ? least_order->v->GetFirstOrder() : order->next;
@@ -704,7 +716,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 		for (int i = least_order->v->GetNumOrders(); i > 0; --i) {
 			/* If the order is a conditional branch, handle it. */
 			if (order->IsType(OT_CONDITIONAL)) {
-				switch(GetDepartureConditionalOrderMode(order)) {
+				switch(GetDepartureConditionalOrderMode(order, least_order->expected_date)) {
 						case 0: {
 							/* Give up */
 							break;
@@ -716,6 +728,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 								break;
 							}
 
+							least_order->expected_date -= order->GetTravelTime(); /* Added in next VehicleSetNextDepartureTime */
 							if (VehicleSetNextDepartureTime(&least_order->expected_date, &least_order->scheduled_waiting_time, date_only_scaled, least_order->v, order, false, schdispatch_last_planned_dispatch)) {
 								least_order->lateness = 0;
 							}
@@ -724,6 +737,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 						}
 						case 2: {
 							/* Do not take the branch */
+							least_order->expected_date -= order->GetWaitTime(); /* Added previously in VehicleSetNextDepartureTime */
 							order = (order->next == nullptr) ? least_order->v->GetFirstOrder() : order->next;
 							if (VehicleSetNextDepartureTime(&least_order->expected_date, &least_order->scheduled_waiting_time, date_only_scaled, least_order->v, order, false, schdispatch_last_planned_dispatch)) {
 								least_order->lateness = 0;
