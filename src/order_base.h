@@ -477,7 +477,7 @@ public:
 	/** Set if the wait time is fixed */
 	inline void SetWaitFixed(bool fixed)
 	{
-		if (!this->IsType(OT_CONDITIONAL) && fixed != this->IsWaitFixed()) SB(this->GetXFlagsRef(), 1, 1, fixed ? 1 : 0);
+		if (fixed != this->IsWaitFixed()) SB(this->GetXFlagsRef(), 1, 1, fixed ? 1 : 0);
 	}
 
 	/** Does this order have a fixed travel time? */

@@ -477,6 +477,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 		if (v->owner == _local_company) {
 			bool disable = true;
+			bool disable_time = true;
 			bool wait_lockable = false;
 			bool wait_locked = false;
 			bool clearable_when_wait_locked = false;
@@ -485,6 +486,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				if (selected % 2 == 1) {
 					/* Travel time */
 					disable = order != nullptr && (order->IsType(OT_CONDITIONAL) || order->IsType(OT_IMPLICIT));
+					disable_time = disable;
 					wait_lockable = !disable;
 					wait_locked = wait_lockable && order->IsTravelFixed();
 				} else {
@@ -492,24 +494,29 @@ struct TimetableWindow : GeneralVehicleWindow {
 					if (order != nullptr) {
 						if (order->IsType(OT_GOTO_WAYPOINT)) {
 							disable = false;
+							disable_time = false;
 							clearable_when_wait_locked = true;
 						} else if (order->IsType(OT_CONDITIONAL)) {
 							disable = true;
+							disable_time = false;
+							clearable_when_wait_locked = true;
 						} else {
 							disable = (!(order->IsType(OT_GOTO_STATION) || (order->IsType(OT_GOTO_DEPOT) && !(order->GetDepotActionType() & ODATFB_HALT))) ||
 									(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION));
+							disable_time = disable;
 						}
 					} else {
 						disable = true;
+						disable_time = true;
 					}
-					wait_lockable = !disable;
+					wait_lockable = !disable_time;
 					wait_locked = wait_lockable && order->IsWaitFixed();
 				}
 			}
 			bool disable_speed = disable || selected % 2 != 1 || v->type == VEH_AIRCRAFT;
 
-			this->SetWidgetDisabledState(WID_VT_CHANGE_TIME, disable || (HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE) && !wait_locked));
-			this->SetWidgetDisabledState(WID_VT_CLEAR_TIME, disable || (HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE) && !(wait_locked && clearable_when_wait_locked)));
+			this->SetWidgetDisabledState(WID_VT_CHANGE_TIME, disable_time || (HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE) && !wait_locked));
+			this->SetWidgetDisabledState(WID_VT_CLEAR_TIME, disable_time || (HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE) && !(wait_locked && clearable_when_wait_locked)));
 			this->SetWidgetDisabledState(WID_VT_CHANGE_SPEED, disable_speed);
 			this->SetWidgetDisabledState(WID_VT_CLEAR_SPEED, disable_speed);
 			this->SetWidgetDisabledState(WID_VT_SHARED_ORDER_LIST, !(v->IsOrderListShared() || _settings_client.gui.enable_single_veh_shared_order_gui));

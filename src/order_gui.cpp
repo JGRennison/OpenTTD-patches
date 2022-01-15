@@ -1029,7 +1029,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				}
 			}
 
-			if (timetable && order->GetWaitTime() > 0) {
+			if (timetable && (order->IsWaitTimetabled() || order->GetWaitTime() > 0)) {
 				SetDParam(7, order->IsWaitTimetabled() ? STR_TIMETABLE_AND_TRAVEL_FOR : STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED);
 				SetTimetableParams(8, order->GetWaitTime());
 			} else {
@@ -1064,7 +1064,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 		edge = DrawString(rtl ? left : edge + 3, rtl ? edge - 3 : right, y, str, colour);
 	}
 
-	if (timetable && timetable_wait_time_valid && order->IsWaitFixed() && edge != 0) {
+	if (timetable && (timetable_wait_time_valid || order->IsType(OT_CONDITIONAL)) && order->IsWaitFixed() && edge != 0) {
 		Dimension lock_d = GetSpriteSize(SPR_LOCK);
 		DrawPixelInfo tmp_dpi;
 		if (FillDrawPixelInfo(&tmp_dpi, rtl ? left : middle, y, rtl ? middle - left : right - middle, lock_d.height)) {
