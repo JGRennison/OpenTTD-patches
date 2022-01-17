@@ -23,6 +23,7 @@
 #include <mach-o/arch.h>
 #include <dlfcn.h>
 #include <cxxabi.h>
+#include <sys/mman.h>
 #ifdef WITH_UCONTEXT
 #include <sys/ucontext.h>
 #endif
@@ -385,13 +386,12 @@ public:
 	}
 
 	/** Generate the crash log. */
-	bool MakeCrashLog()
+	bool MakeOSXCrashLog(char *buffer, const char *last)
 	{
-		char buffer[65536 * 4];
 		bool ret = true;
 
 		printf("Crash encountered, generating crash log...\n");
-		this->FillCrashLog(buffer, lastof(buffer));
+		this->FillCrashLog(buffer, last);
 		printf("%s\n", buffer);
 		printf("Crash log generated.\n\n");
 
@@ -417,6 +417,12 @@ public:
 		}
 
 		return ret;
+	}
+
+	bool MakeOSXCrashLogWithStackBuffer()
+	{
+		char buffer[65536];
+		return this->MakeOSXCrashLog(buffer, lastof(buffer));
 	}
 
 	/** Show a dialog with the crash information. */
@@ -461,7 +467,15 @@ void CDECL HandleCrash(int signum, siginfo_t *si, void *context)
 	}
 
 	CrashLogOSX log(signum, si, context);
-	log.MakeCrashLog();
+
+	const size_t length = 65536 * 16;
+	char *buffer = (char *)mmap(nullptr, length, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, -1, 0);
+	if (buffer != MAP_FAILED) {
+		log.MakeOSXCrashLog(buffer, buffer + length - 1);
+	} else {
+		log.MakeOSXCrashLogWithStackBuffer();
+	}
+
 	if (VideoDriver::GetInstance() == nullptr || VideoDriver::GetInstance()->HasGUI()) {
 		log.DisplayCrashDialog();
 	}
