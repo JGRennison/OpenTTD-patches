@@ -727,6 +727,8 @@ bool LoadNextSprite(int load_index, SpriteFile &file, uint file_sprite_id)
 	if (data != nullptr) {
 		assert(data == _last_sprite_allocation.GetPtr());
 		sc->buffer = std::move(_last_sprite_allocation);
+	} else {
+		sc->buffer.Clear();
 	}
 	sc->lru = 0;
 	sc->id = file_sprite_id;
