@@ -2814,14 +2814,16 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, boo
 		}
 		case OCV_TRAIN_IN_SLOT: {
 			TraceRestrictSlot* slot = TraceRestrictSlot::GetIfValid(order->GetXData());
-			bool occupant = slot->IsOccupant(v->index);
-			if (occ == OCC_EQUALS || occ == OCC_NOT_EQUALS) {
-				if (!occupant && !dry_run) {
-					occupant = slot->Occupy(v->index);
+			if (slot != nullptr) {
+				bool occupant = slot->IsOccupant(v->index);
+				if (occ == OCC_EQUALS || occ == OCC_NOT_EQUALS) {
+					if (!occupant && !dry_run) {
+						occupant = slot->Occupy(v->index);
+					}
+					occ = (occ == OCC_EQUALS) ? OCC_IS_TRUE : OCC_IS_FALSE;
 				}
-				occ = (occ == OCC_EQUALS) ? OCC_IS_TRUE : OCC_IS_FALSE;
+				skip_order = OrderConditionCompare(occ, occupant, value);
 			}
-			if (slot != nullptr) skip_order = OrderConditionCompare(occ, occupant, value);
 			break;
 		}
 		case OCV_FREE_PLATFORMS: {
