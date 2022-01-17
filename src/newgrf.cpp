@@ -7129,7 +7129,13 @@ static void SpriteReplace(ByteReader *buf)
 		for (uint j = 0; j < num_sprites; j++) {
 			int load_index = first_sprite + j;
 			_cur.nfo_line++;
-			LoadNextSprite(load_index, *_cur.file, _cur.nfo_line); // XXX
+			if (load_index < (int)SPR_PROGSIGNAL_BASE || load_index >= (int)SPR_NEWGRFS_BASE) {
+				LoadNextSprite(load_index, *_cur.file, _cur.nfo_line); // XXX
+			} else {
+				/* Skip sprite */
+				grfmsg(0, "SpriteReplace: Ignoring attempt to replace protected sprite ID: %d", load_index);
+				LoadNextSprite(-1, *_cur.file, _cur.nfo_line);
+			}
 
 			/* Shore sprites now located at different addresses.
 			 * So detect when the old ones get replaced. */
