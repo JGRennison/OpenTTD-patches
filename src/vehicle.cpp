@@ -1137,9 +1137,9 @@ void Vehicle::PreDestructor()
 		}
 	}
 
-	if (this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_HAVE_SLOT)) {
+	if (HasBit(this->vehicle_flags, VF_HAVE_SLOT)) {
 		TraceRestrictRemoveVehicleFromAllSlots(this->index);
-		ClrBit(Train::From(this)->flags, VRF_HAVE_SLOT);
+		ClrBit(this->vehicle_flags, VF_HAVE_SLOT);
 	}
 	if (this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_PENDING_SPEED_RESTRICTION)) {
 		pending_speed_restriction_change_map.erase(this->index);
@@ -4122,6 +4122,7 @@ void DumpVehicleFlagsGeneric(const Vehicle *v, T dump, U dump_header)
 	dump('x', "VF_LAST_LOAD_ST_SEP",        HasBit(v->vehicle_flags, VF_LAST_LOAD_ST_SEP));
 	dump('s', "VF_TIMETABLE_SEPARATION",    HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION));
 	dump('a', "VF_AUTOMATE_TIMETABLE",      HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
+	dump('Q', "VF_HAVE_SLOT",               HasBit(v->vehicle_flags, VF_HAVE_SLOT));
 	dump_header("vcf:", "cached_veh_flags:");
 	dump('l', "VCF_LAST_VISUAL_EFFECT",     HasBit(v->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT));
 	dump('z', "VCF_GV_ZERO_SLOPE_RESIST",   HasBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST));
@@ -4144,7 +4145,6 @@ void DumpVehicleFlagsGeneric(const Vehicle *v, T dump, U dump_header)
 		dump_header("tf:", "train flags:");
 		dump('R', "VRF_REVERSING",                     HasBit(t->flags, VRF_REVERSING));
 		dump('W', "VRF_WAITING_RESTRICTION",           HasBit(t->flags, VRF_WAITING_RESTRICTION));
-		dump('S', "VRF_HAVE_SLOT",                     HasBit(t->flags, VRF_HAVE_SLOT));
 		dump('P', "VRF_POWEREDWAGON",                  HasBit(t->flags, VRF_POWEREDWAGON));
 		dump('r', "VRF_REVERSE_DIRECTION",             HasBit(t->flags, VRF_REVERSE_DIRECTION));
 		dump('h', "VRF_HAS_HIT_RV",                    HasBit(t->flags, VRF_HAS_HIT_RV));

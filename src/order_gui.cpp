@@ -65,7 +65,7 @@ static const StringID _cargo_type_unload_order_drowdown[] = {
 };
 static const uint32 _cargo_type_unload_order_drowdown_hidden_mask = 0x8; // 01000
 
-DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected);
+DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected, VehicleType vehtype, bool show_other_types);
 DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, int &selected);
 
 static bool ModifyOrder(const Vehicle *v, VehicleOrderID order_id, uint32 p2, bool error_msg = true)
@@ -655,7 +655,7 @@ static const OrderConditionVariable _order_conditional_variable[] = {
 	OCV_CARGO_ACCEPTANCE,
 	OCV_FREE_PLATFORMS,
 	OCV_SLOT_OCCUPANCY,
-	OCV_TRAIN_IN_SLOT,
+	OCV_VEH_IN_SLOT,
 	OCV_COUNTER_VALUE,
 	OCV_TIME_DATE,
 	OCV_TIMETABLE,
@@ -723,6 +723,18 @@ static const StringID _order_conditional_condition_is_in_slot[] = {
 	INVALID_STRING_ID,
 };
 
+static const StringID _order_conditional_condition_is_in_slot_non_train[] = {
+	STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_IN_ACQUIRE_SLOT,
+	STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_NOT_IN_ACQUIRE_SLOT,
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_NULL,
+	STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_IN_SLOT,
+	STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_NOT_IN_SLOT,
+	INVALID_STRING_ID,
+};
+
 extern uint ConvertSpeedToDisplaySpeed(uint speed);
 extern uint ConvertDisplaySpeedToSpeed(uint speed);
 
@@ -767,6 +779,12 @@ static const StringID _order_timetable_dropdown[] = {
 	STR_TRACE_RESTRICT_TIMETABLE_EARLINESS,
 	INVALID_STRING_ID
 };
+
+StringID OrderStringForVariable(const Vehicle *v, OrderConditionVariable ocv)
+{
+	if (ocv == OCV_VEH_IN_SLOT && v->type != VEH_TRAIN) return STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT;
+	return STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE + ocv;
+}
 
 /**
  * Draws an order in order or timetable GUI
@@ -935,7 +953,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 					SetDParam(2, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 				}
 				SetDParam(3, order->GetConditionComparator() == OCC_IS_TRUE ? STR_ORDER_CONDITIONAL_COMPARATOR_FULLY_OCCUPIED : STR_ORDER_CONDITIONAL_COMPARATOR_NOT_YET_FULLY_OCCUPIED);
-			} else if (ocv == OCV_TRAIN_IN_SLOT) {
+			} else if (ocv == OCV_VEH_IN_SLOT) {
 				if (TraceRestrictSlot::IsValidID(order->GetXData())) {
 					SetDParam(0, STR_ORDER_CONDITIONAL_IN_SLOT);
 					SetDParam(3, order->GetXData());
@@ -945,17 +963,13 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				}
 				switch (order->GetConditionComparator()) {
 					case OCC_IS_TRUE:
-						SetDParam(2, STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_SLOT);
-						break;
 					case OCC_IS_FALSE:
-						SetDParam(2, STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_SLOT);
-						break;
 					case OCC_EQUALS:
-						SetDParam(2, STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_ACQUIRE_SLOT);
+					case OCC_NOT_EQUALS: {
+						const StringID *strs = v->type == VEH_TRAIN ? _order_conditional_condition_is_in_slot : _order_conditional_condition_is_in_slot_non_train;
+						SetDParam(2, strs[order->GetConditionComparator()]);
 						break;
-					case OCC_NOT_EQUALS:
-						SetDParam(2, STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_ACQUIRE_SLOT);
-						break;
+					}
 					default:
 						NOT_REACHED();
 				}
@@ -1003,7 +1017,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				OrderConditionComparator occ = order->GetConditionComparator();
 				SetDParam(0, (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) ? STR_ORDER_CONDITIONAL_TRUE_FALSE : STR_ORDER_CONDITIONAL_NUM);
 				SetDParam(2, (ocv == OCV_CARGO_ACCEPTANCE || ocv == OCV_CARGO_WAITING || ocv == OCV_FREE_PLATFORMS)
-						? STR_ORDER_CONDITIONAL_NEXT_STATION : STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE + ocv);
+						? STR_ORDER_CONDITIONAL_NEXT_STATION : OrderStringForVariable(v, ocv));
 
 				uint value = order->GetConditionValue();
 				switch (ocv) {
@@ -1324,7 +1338,7 @@ private:
 	 * @param order the order to evaluate
 	 * @return the StringIDs to display
 	 */
-	static const StringID *GetComparatorStrings(const Order *order)
+	static const StringID *GetComparatorStrings(const Vehicle *v, const Order *order)
 	{
 		if (order == nullptr) return _order_conditional_condition;
 		switch (order->GetConditionVariable()) {
@@ -1338,8 +1352,8 @@ private:
 			case OCV_SLOT_OCCUPANCY:
 				return _order_conditional_condition_is_fully_occupied;
 
-			case OCV_TRAIN_IN_SLOT:
-				return _order_conditional_condition_is_in_slot;
+			case OCV_VEH_IN_SLOT:
+				return v->type == VEH_TRAIN ? _order_conditional_condition_is_in_slot : _order_conditional_condition_is_in_slot_non_train;
 
 			default:
 				return _order_conditional_condition;
@@ -1647,11 +1661,10 @@ public:
 			case WID_O_COND_VARIABLE: {
 				Dimension d = {0, 0};
 				for (uint i = 0; i < lengthof(_order_conditional_variable); i++) {
-					if (this->vehicle->type != VEH_TRAIN && (_order_conditional_variable[i] == OCV_TRAIN_IN_SLOT ||
-							_order_conditional_variable[i] == OCV_SLOT_OCCUPANCY || _order_conditional_variable[i] == OCV_FREE_PLATFORMS)) {
+					if (this->vehicle->type != VEH_TRAIN && _order_conditional_variable[i] == OCV_FREE_PLATFORMS) {
 						continue;
 					}
-					d = maxdim(d, GetStringBoundingBox(STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE + _order_conditional_variable[i]));
+					d = maxdim(d, GetStringBoundingBox(OrderStringForVariable(this->vehicle, _order_conditional_variable[i])));
 				}
 				d.width += padding.width;
 				d.height += padding.height;
@@ -1926,7 +1939,7 @@ public:
 
 					OrderConditionVariable ocv = (order == nullptr) ? OCV_LOAD_PERCENTAGE : order->GetConditionVariable();
 					bool is_cargo = (ocv == OCV_CARGO_ACCEPTANCE || ocv == OCV_CARGO_WAITING);
-					bool is_slot_occupancy = (ocv == OCV_SLOT_OCCUPANCY || ocv == OCV_TRAIN_IN_SLOT);
+					bool is_slot_occupancy = (ocv == OCV_SLOT_OCCUPANCY || ocv == OCV_VEH_IN_SLOT);
 					bool is_auxiliary_cargo = (ocv == OCV_CARGO_LOAD_PERCENTAGE || ocv == OCV_CARGO_WAITING_AMOUNT);
 					bool is_counter = (ocv == OCV_COUNTER_VALUE);
 					bool is_time_date = (ocv == OCV_TIME_DATE);
@@ -1977,8 +1990,8 @@ public:
 					}
 
 					/* Set the strings for the dropdown boxes. */
-					this->GetWidget<NWidgetCore>(WID_O_COND_VARIABLE)->widget_data   = STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE + ocv;
-					this->GetWidget<NWidgetCore>(WID_O_COND_COMPARATOR)->widget_data = GetComparatorStrings(order)[order->GetConditionComparator()];
+					this->GetWidget<NWidgetCore>(WID_O_COND_VARIABLE)->widget_data   = OrderStringForVariable(this->vehicle, ocv);
+					this->GetWidget<NWidgetCore>(WID_O_COND_COMPARATOR)->widget_data = GetComparatorStrings(this->vehicle, order)[order->GetConditionComparator()];
 					this->GetWidget<NWidgetCore>(WID_O_COND_VALUE)->widget_data = (ocv == OCV_TIME_DATE && order->GetConditionValue() == TRTDVF_HOUR_MINUTE) ? STR_BLACK_TIME_HHMM : STR_BLACK_COMMA;
 					this->SetWidgetDisabledState(WID_O_COND_COMPARATOR, ocv == OCV_UNCONDITIONALLY || ocv == OCV_PERCENT);
 					this->SetWidgetDisabledState(WID_O_COND_VALUE, ocv == OCV_REQUIRES_SERVICE || ocv == OCV_UNCONDITIONALLY);
@@ -2366,7 +2379,7 @@ public:
 						default: NOT_REACHED();
 					}
 					ShowDropDownMenu(this, this->vehicle->type == VEH_AIRCRAFT ? _order_goto_dropdown_aircraft : _order_goto_dropdown, sel, WID_O_GOTO,
-							0, (this->vehicle->type == VEH_TRAIN &&_settings_client.gui.show_adv_tracerestrict_features ? 0 : 0x10), 0, DDSF_LOST_FOCUS);
+							0, (_settings_client.gui.show_adv_tracerestrict_features ? 0 : 0x10), 0, DDSF_LOST_FOCUS);
 				}
 				break;
 
@@ -2409,8 +2422,9 @@ public:
 
 			case WID_O_COND_SLOT: {
 				int selected;
-				TraceRestrictSlotID value = this->vehicle->GetOrder(this->OrderGetSel())->GetXData();
-				DropDownList list = GetSlotDropDownList(this->vehicle->owner, value, selected);
+				const Order *order = this->vehicle->GetOrder(this->OrderGetSel());
+				TraceRestrictSlotID value = order->GetXData();
+				DropDownList list = GetSlotDropDownList(this->vehicle->owner, value, selected, this->vehicle->type, order->GetConditionVariable() == OCV_SLOT_OCCUPANCY);
 				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_COND_SLOT, 0, true);
 				break;
 			}
@@ -2476,17 +2490,16 @@ public:
 				const OrderConditionVariable ocv = this->vehicle->GetOrder(this->OrderGetSel())->GetConditionVariable();
 				DropDownList list;
 				for (uint i = 0; i < lengthof(_order_conditional_variable); i++) {
-					if (this->vehicle->type != VEH_TRAIN && (_order_conditional_variable[i] == OCV_TRAIN_IN_SLOT || _order_conditional_variable[i] == OCV_SLOT_OCCUPANCY ||
-							_order_conditional_variable[i] == OCV_FREE_PLATFORMS)) {
+					if (this->vehicle->type != VEH_TRAIN && _order_conditional_variable[i] == OCV_FREE_PLATFORMS) {
 						continue;
 					}
 					if (ocv != _order_conditional_variable[i]) {
-						if ((_order_conditional_variable[i] == OCV_TRAIN_IN_SLOT || _order_conditional_variable[i] == OCV_SLOT_OCCUPANCY ||
+						if ((_order_conditional_variable[i] == OCV_VEH_IN_SLOT || _order_conditional_variable[i] == OCV_SLOT_OCCUPANCY ||
 								_order_conditional_variable[i] == OCV_COUNTER_VALUE) && !_settings_client.gui.show_adv_tracerestrict_features) {
 							continue;
 						}
 					}
-					list.emplace_back(new DropDownListStringItem(STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE + _order_conditional_variable[i], _order_conditional_variable[i], false));
+					list.emplace_back(new DropDownListStringItem(OrderStringForVariable(this->vehicle, _order_conditional_variable[i]), _order_conditional_variable[i], false));
 				}
 				ShowDropDownList(this, std::move(list), ocv, WID_O_COND_VARIABLE);
 				break;
@@ -2503,7 +2516,7 @@ public:
 						mask = 0x3F;
 						break;
 
-					case OCV_TRAIN_IN_SLOT:
+					case OCV_VEH_IN_SLOT:
 						mask = 0x3C;
 						break;
 
@@ -2515,7 +2528,7 @@ public:
 						mask = 0xC0;
 						break;
 				}
-				ShowDropDownMenu(this, GetComparatorStrings(o), o->GetConditionComparator(), WID_O_COND_COMPARATOR, 0, mask, 0, DDSF_LOST_FOCUS);
+				ShowDropDownMenu(this, GetComparatorStrings(this->vehicle, o), o->GetConditionComparator(), WID_O_COND_COMPARATOR, 0, mask, 0, DDSF_LOST_FOCUS);
 				break;
 			}
 
@@ -2569,7 +2582,7 @@ public:
 			case WID_O_RELEASE_SLOT: {
 				int selected;
 				TraceRestrictSlotID value = this->vehicle->GetOrder(this->OrderGetSel())->GetDestination();
-				DropDownList list = GetSlotDropDownList(this->vehicle->owner, value, selected);
+				DropDownList list = GetSlotDropDownList(this->vehicle->owner, value, selected, this->vehicle->type, false);
 				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_RELEASE_SLOT, 0, true);
 				break;
 			}

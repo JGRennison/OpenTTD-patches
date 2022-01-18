@@ -3363,7 +3363,7 @@ STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}슬롯�
 STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}선택한 슬롯을 삭제합니다
 STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}선택한 슬롯의 이름을 변경합니다
 STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}선택한 슬롯의 최대 수용량을 설정합니다
-STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}경로 제한 - 슬롯 관리자
+STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}경로 제한 - 슬롯 관리자 ({STRING})
 STR_TRACE_RESTRICT_SLOT_MANAGE                                  :슬롯 관리
 STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY                           :{TINY_FONT}{COMMA} / {COMMA}
 STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION                          :{BLACK}슬롯 이름 바꾸기

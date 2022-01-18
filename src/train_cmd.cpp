@@ -2148,9 +2148,9 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 			DeleteVehicleOrders(src);
 			RemoveVehicleFromGroup(src);
 			src->unitnumber = 0;
-			if (HasBit(src->flags, VRF_HAVE_SLOT)) {
+			if (HasBit(src->vehicle_flags, VF_HAVE_SLOT)) {
 				TraceRestrictRemoveVehicleFromAllSlots(src->index);
-				ClrBit(src->flags, VRF_HAVE_SLOT);
+				ClrBit(src->vehicle_flags, VF_HAVE_SLOT);
 			}
 			OrderBackup::ClearVehicle(src);
 		}

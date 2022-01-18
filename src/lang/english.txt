@@ -3302,6 +3302,7 @@ STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :PBS reservation
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :PBS reservation ending here: Acquire slot: {STRING1}{BLACK}{STRING}, or continue anyway
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :PBS reservation ending here: Release slot: {STRING1}{BLACK}{STRING}
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
+STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED                           :[{STRING}] {TRSLOT}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}Slot{CONSUME_ARG}{P "" s}: {LTBLUE}
 STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}, {LTBLUE}
 STR_TRACE_RESTRICT_COUNTER_NAME                                 :{TRCOUNTER}
@@ -3367,7 +3368,7 @@ STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}Click to
 STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}Delete the selected slot
 STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}Rename the selected slot
 STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}Set the maximum occupancy of the selected slot
-STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}Routing Restrictions - Slot Management
+STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}Routing Restrictions - Slot Management ({STRING})
 STR_TRACE_RESTRICT_SLOT_MANAGE                                  :Manage slots
 STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY                           :{TINY_FONT}{COMMA} / {COMMA}
 STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION                          :{BLACK}Rename a slot
@@ -5452,6 +5453,8 @@ STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :Counter value
 STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :Current time/date
 STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :Timetable state
 
+STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :Vehicle in slot
+
 STR_ORDER_CONDITIONAL_REQUIRES_SERVICE_ORDER                    :Requires service {STRING}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_ORDER                       :Next station {STRING} {STRING} waiting
 STR_ORDER_CONDITIONAL_ACCEPTANCE                                :Next station {STRING} {STRING}
@@ -5495,6 +5498,10 @@ STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_SLOT                  :train is in
 STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_SLOT              :train is not in
 STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_ACQUIRE_SLOT          :train is in/acquire
 STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_ACQUIRE_SLOT      :train is not in/can't acquire
+STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_IN_SLOT                :vehicle is in
+STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_NOT_IN_SLOT            :vehicle is not in
+STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_IN_ACQUIRE_SLOT        :vehicle is in/acquire
+STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_NOT_IN_ACQUIRE_SLOT    :vehicle is not in/can't acquire
 
 STR_ORDERS_SKIP_BUTTON                                          :{BLACK}Skip
 STR_ORDERS_SKIP_TOOLTIP                                         :{BLACK}Skip the current order, and start the next. Ctrl+Click skips to the selected order

@@ -46,25 +46,23 @@ enum VehStatus {
 
 /** Bit numbers in #Vehicle::vehicle_flags. */
 enum VehicleFlags {
-	VF_LOADING_FINISHED,        ///< Vehicle has finished loading.
-	VF_CARGO_UNLOADING,         ///< Vehicle is unloading cargo.
-	VF_BUILT_AS_PROTOTYPE,      ///< Vehicle is a prototype (accepted as exclusive preview).
-	VF_TIMETABLE_STARTED,       ///< Whether the vehicle has started running on the timetable yet.
-	VF_AUTOFILL_TIMETABLE,      ///< Whether the vehicle should fill in the timetable automatically.
-	VF_AUTOFILL_PRES_WAIT_TIME, ///< Whether non-destructive auto-fill should preserve waiting times
-	VF_STOP_LOADING,            ///< Don't load anymore during the next load cycle.
-	VF_PATHFINDER_LOST,         ///< Vehicle's pathfinder is lost.
-	VF_SERVINT_IS_CUSTOM,       ///< Service interval is custom.
-	VF_SERVINT_IS_PERCENT,      ///< Service interval is percent.
-
-	// Additional flags not in trunk are added at the end to avoid clashing with any new
-	// flags which get added in future trunk, and to avoid re-ordering flags which are in trunk already,
-	// as this breaks savegame compatibility.
-	VF_SEPARATION_ACTIVE = 11, ///< Whether timetable auto-separation is currently active
-	VF_SCHEDULED_DISPATCH = 12, ///< Whether the vehicle should follow a timetabled dispatching schedule
-	VF_LAST_LOAD_ST_SEP = 13,   ///< Each vehicle of this chain has its last_loading_station field set separately
-	VF_TIMETABLE_SEPARATION = 14,///< Whether timetable auto-separation is enabled
-	VF_AUTOMATE_TIMETABLE = 15, ///< Whether the vehicle should manage the timetable automatically.
+	VF_LOADING_FINISHED         =  0, ///< Vehicle has finished loading.
+	VF_CARGO_UNLOADING          =  1, ///< Vehicle is unloading cargo.
+	VF_BUILT_AS_PROTOTYPE       =  2, ///< Vehicle is a prototype (accepted as exclusive preview).
+	VF_TIMETABLE_STARTED        =  3, ///< Whether the vehicle has started running on the timetable yet.
+	VF_AUTOFILL_TIMETABLE       =  4, ///< Whether the vehicle should fill in the timetable automatically.
+	VF_AUTOFILL_PRES_WAIT_TIME  =  5, ///< Whether non-destructive auto-fill should preserve waiting times
+	VF_STOP_LOADING             =  6, ///< Don't load anymore during the next load cycle.
+	VF_PATHFINDER_LOST          =  7, ///< Vehicle's pathfinder is lost.
+	VF_SERVINT_IS_CUSTOM        =  8, ///< Service interval is custom.
+	VF_SERVINT_IS_PERCENT       =  9, ///< Service interval is percent.
+	/* gap, above are common with upstream */
+	VF_SEPARATION_ACTIVE        = 11, ///< Whether timetable auto-separation is currently active
+	VF_SCHEDULED_DISPATCH       = 12, ///< Whether the vehicle should follow a timetabled dispatching schedule
+	VF_LAST_LOAD_ST_SEP         = 13, ///< Each vehicle of this chain has its last_loading_station field set separately
+	VF_TIMETABLE_SEPARATION     = 14, ///< Whether timetable auto-separation is enabled
+	VF_AUTOMATE_TIMETABLE       = 15, ///< Whether the vehicle should manage the timetable automatically.
+	VF_HAVE_SLOT                = 16, ///< Vehicle has 1 or more slots
 };
 
 /** Bit numbers used to indicate which of the #NewGRFCache values are valid. */

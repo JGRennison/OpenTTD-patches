@@ -643,7 +643,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 					case TRIT_SLOT: {
 						if (!input.permitted_slot_operations) break;
 						TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GetTraceRestrictValue(item));
-						if (slot == nullptr) break;
+						if (slot == nullptr || slot->vehicle_type != v->type) break;
 						switch (static_cast<TraceRestrictSlotCondOpField>(GetTraceRestrictCondOp(item))) {
 							case TRSCOF_ACQUIRE_WAIT:
 								if (input.permitted_slot_operations & TRPISP_ACQUIRE) {
@@ -1112,6 +1112,12 @@ void SetTraceRestrictTypeAndNormalise(TraceRestrictItem &item, TraceRestrictItem
 			old_properties.value_type != new_properties.value_type) {
 		SetTraceRestrictCondOp(item, TRCO_IS);
 		SetTraceRestrictValueDefault(item, new_properties.value_type);
+	}
+	if (new_properties.value_type == TRVT_SLOT_INDEX || new_properties.value_type == TRVT_SLOT_INDEX_INT) {
+		if (!IsTraceRestrictTypeNonMatchingVehicleTypeSlot(GetTraceRestrictType(item))) {
+			const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GetTraceRestrictValue(item));
+			if (slot != nullptr && slot->vehicle_type != VEH_TRAIN) SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_SLOT_ID);
+		}
 	}
 	if (GetTraceRestrictType(item) == TRIT_COND_LAST_STATION && GetTraceRestrictAuxField(item) != TROCAF_STATION) {
 		// if changing type from another order type to last visited station, reset value if not currently a station
@@ -1893,7 +1899,7 @@ bool TraceRestrictSlot::Occupy(VehicleID id, bool force)
 	if (this->occupants.size() >= this->max_occupancy && !force) return false;
 	this->occupants.push_back(id);
 	slot_vehicle_index.emplace(id, this->index);
-	SetBit(Train::Get(id)->flags, VRF_HAVE_SLOT);
+	SetBit(Vehicle::Get(id)->vehicle_flags, VF_HAVE_SLOT);
 	SetWindowDirty(WC_VEHICLE_DETAILS, id);
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
 	this->UpdateSignals();
@@ -1951,7 +1957,7 @@ void TraceRestrictSlot::DeIndex(VehicleID id)
 
 			if (is_first_in_range && next == range.second) {
 				/* Only one item, which we've just erased, clear the vehicle flag */
-				ClrBit(Train::Get(id)->flags, VRF_HAVE_SLOT);
+				ClrBit(Vehicle::Get(id)->vehicle_flags, VF_HAVE_SLOT);
 			}
 			break;
 		}
@@ -1991,10 +1997,11 @@ void TraceRestrictSlot::ValidateSlotOccupants(std::function<void(const char *)> 
 
 	for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
 		for (VehicleID id : slot->occupants) {
-			const Train  *t = Train::GetIfValid(id);
-			if (t) {
-				if (!t->IsFrontEngine()) CCLOG("Slot %u (%s) has non-front engine train: %s", slot->index, slot->name.c_str(), scope_dumper().VehicleInfo(t));
-				if (!HasBit(t->flags, VRF_HAVE_SLOT)) CCLOG("Slot %u (%s) has train without VRF_HAVE_SLOT: %s", slot->index, slot->name.c_str(), scope_dumper().VehicleInfo(t));
+			const Vehicle *v = Vehicle::GetIfValid(id);
+			if (v) {
+				if (v->type != slot->vehicle_type) CCLOG("Slot %u (%s) has wrong vehicle type (%u, %u): %s", slot->index, slot->name.c_str(), v->type, slot->vehicle_type, scope_dumper().VehicleInfo(v));
+				if (!v->IsPrimaryVehicle()) CCLOG("Slot %u (%s) has non-primary vehicle: %s", slot->index, slot->name.c_str(), scope_dumper().VehicleInfo(v));
+				if (!HasBit(v->vehicle_flags, VF_HAVE_SLOT)) CCLOG("Slot %u (%s) has vehicle without VF_HAVE_SLOT: %s", slot->index, slot->name.c_str(), scope_dumper().VehicleInfo(v));
 			} else {
 				CCLOG("Slot %u (%s) has non-existent vehicle ID: %u", slot->index, slot->name.c_str(), id);
 			}
@@ -2080,7 +2087,7 @@ void TraceRestrictRemoveSlotID(TraceRestrictSlotID index)
 	bool changed_order = false;
 	for (Order *o : Order::Iterate()) {
 		if (o->IsType(OT_CONDITIONAL) &&
-				(o->GetConditionVariable() == OCV_SLOT_OCCUPANCY || o->GetConditionVariable() == OCV_TRAIN_IN_SLOT) &&
+				(o->GetConditionVariable() == OCV_SLOT_OCCUPANCY || o->GetConditionVariable() == OCV_VEH_IN_SLOT) &&
 				o->GetXData() == index) {
 			o->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_ID;
 			changed_order = true;
@@ -2118,7 +2125,8 @@ static bool IsUniqueSlotName(const char *name)
  * Create a new slot.
  * @param tile unused
  * @param flags type of operation
- * @param p1   unused
+ * @param p1 bitstuffed elements
+ * - p2 = (bit 0 - 2) - vehicle type
  * @param p2   unused
  * @param text new slot name
  * @return the cost of this operation or an error
@@ -2128,13 +2136,16 @@ CommandCost CmdCreateTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint
 	if (!TraceRestrictSlot::CanAllocateItem()) return CMD_ERROR;
 	if (StrEmpty(text)) return CMD_ERROR;
 
+	VehicleType vehtype = Extract<VehicleType, 0, 3>(p1);
+	if (vehtype >= VEH_COMPANY_END) return CMD_ERROR;
+
 	size_t length = Utf8StringLength(text);
 	if (length <= 0) return CMD_ERROR;
 	if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
 	if (!IsUniqueSlotName(text)) return_cmd_error(STR_ERROR_NAME_MUST_BE_UNIQUE);
 
 	if (flags & DC_EXEC) {
-		TraceRestrictSlot *slot = new TraceRestrictSlot(_current_company);
+		TraceRestrictSlot *slot = new TraceRestrictSlot(_current_company, vehtype);
 		slot->name = text;
 
 		// update windows
@@ -2241,6 +2252,7 @@ CommandCost CmdAddVehicleTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, 
 	Vehicle *v = Vehicle::GetIfValid(p2);
 	if (slot == nullptr || slot->owner != _current_company) return CMD_ERROR;
 	if (v == nullptr || v->owner != _current_company) return CMD_ERROR;
+	if (v->type != slot->vehicle_type || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
 		slot->Occupy(v->index, true);

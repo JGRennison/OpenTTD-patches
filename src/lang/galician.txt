@@ -6192,7 +6192,7 @@ STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}Fai clic
 STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}Eliminar o slot seleccionado
 STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}Renomear o slot seleccionado
 STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}Fixar a máxima ocupación do slot seleccionado
-STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}Restrición de busca de rutas - Xestión dos slots
+STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}Restrición de busca de rutas - Xestión dos slots ({STRING})
 STR_TRACE_RESTRICT_SLOT_MANAGE                                  :Xestionar slots
 STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY                           :{TINY_FONT}{COMMA} / {COMMA}
 STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION                          :{BLACK}Renomear un slot

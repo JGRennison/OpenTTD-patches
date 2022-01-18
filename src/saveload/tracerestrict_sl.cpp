@@ -124,6 +124,7 @@ static const SaveLoad _trace_restrict_slot_desc[] = {
 	SLE_VAR(TraceRestrictSlot, max_occupancy, SLE_UINT32),
 	SLE_SSTR(TraceRestrictSlot, name, SLF_ALLOW_CONTROL),
 	SLE_VAR(TraceRestrictSlot, owner, SLE_UINT8),
+	SLE_CONDVAR_X(TraceRestrictSlot, vehicle_type, SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TRACE_RESTRICT, 13)),
 };
 
 /**

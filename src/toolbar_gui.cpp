@@ -2031,7 +2031,7 @@ struct MainToolbarWindow : Window {
 	EventState OnHotkey(int hotkey) override
 	{
 		extern void ShowTemplateReplaceWindow();
-		extern void ShowTraceRestrictSlotWindow(CompanyID company);
+		extern void ShowTraceRestrictSlotWindow(CompanyID company, VehicleType vehtype);
 		extern void ShowTraceRestrictCounterWindow(CompanyID company);
 
 		CallBackFunction cbf = CBF_NONE;
@@ -2081,7 +2081,7 @@ struct MainToolbarWindow : Window {
 			case MTHK_LINK_GRAPH_LEGEND: ShowLinkGraphLegend(); break;
 			case MTHK_MESSAGE_HISTORY: ShowMessageHistory(); break;
 			case MTHK_TEMPLATE_REPLACEMENT: ShowTemplateReplaceWindow(); break;
-			case MTHK_TRAIN_SLOTS: ShowTraceRestrictSlotWindow(_local_company); break;
+			case MTHK_TRAIN_SLOTS: ShowTraceRestrictSlotWindow(_local_company, VEH_TRAIN); break;
 			case MTHK_TRAIN_COUNTERS: ShowTraceRestrictCounterWindow(_local_company); break;
 			default: return ES_NOT_HANDLED;
 		}

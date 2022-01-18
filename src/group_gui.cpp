@@ -1094,8 +1094,8 @@ public:
 						break;
 
 					case ADI_TRACERESTRICT_SLOT_MGMT: {
-						extern void ShowTraceRestrictSlotWindow(CompanyID company);
-						ShowTraceRestrictSlotWindow(this->owner);
+						extern void ShowTraceRestrictSlotWindow(CompanyID company, VehicleType vehtype);
+						ShowTraceRestrictSlotWindow(this->owner, this->vli.vtype);
 						break;
 					}
 

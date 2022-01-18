@@ -28,7 +28,7 @@
 #include "table/sprites.h"
 #include "table/strings.h"
 
-DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected);
+DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected, VehicleType vehtype, bool show_other_types);
 DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, int &selected);
 
 enum ProgramWindowWidgets {
@@ -367,7 +367,7 @@ public:
 				SignalSlotCondition *sc = static_cast<SignalSlotCondition*>(sif->condition);
 
 				int selected;
-				DropDownList list = GetSlotDropDownList(this->GetOwner(), sc->slot_id, selected);
+				DropDownList list = GetSlotDropDownList(this->GetOwner(), sc->slot_id, selected, VEH_TRAIN, true);
 				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, PROGRAM_WIDGET_COND_SLOT, 0, true);
 			} break;
 

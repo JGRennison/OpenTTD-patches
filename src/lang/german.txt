@@ -3190,7 +3190,7 @@ STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}Einen ne
 STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}Den markierten Slot löschen
 STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}Den markierten Slot umbenennen
 STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}Die maximale Kapazität des markierten Slots festlegen
-STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}Routing-Beschränkungen - Slot-Verwaltung
+STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}Routing-Beschränkungen - Slot-Verwaltung ({STRING})
 STR_TRACE_RESTRICT_SLOT_MANAGE                                  :Verwalte Slots
 STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY                           :{TINY_FONT}{COMMA} / {COMMA}
 STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION                          :{BLACK}Slot umbenennen

@@ -429,12 +429,13 @@ CommandCost CopyHeadSpecificThings(Vehicle *old_head, Vehicle *new_head, DoComma
 
 		if (old_head->type == VEH_TRAIN) {
 			Train::From(new_head)->speed_restriction = Train::From(old_head)->speed_restriction;
-			/* Transfer any acquired trace restrict slots to the new vehicle */
-			if (HasBit(Train::From(old_head)->flags, VRF_HAVE_SLOT)) {
-				TraceRestrictTransferVehicleOccupantInAllSlots(old_head->index, new_head->index);
-				ClrBit(Train::From(old_head)->flags, VRF_HAVE_SLOT);
-				SetBit(Train::From(new_head)->flags, VRF_HAVE_SLOT);
-			}
+		}
+
+		/* Transfer any acquired trace restrict slots to the new vehicle */
+		if (HasBit(old_head->vehicle_flags, VF_HAVE_SLOT)) {
+			TraceRestrictTransferVehicleOccupantInAllSlots(old_head->index, new_head->index);
+			ClrBit(old_head->vehicle_flags, VF_HAVE_SLOT);
+			SetBit(new_head->vehicle_flags, VF_HAVE_SLOT);
 		}
 	}
 

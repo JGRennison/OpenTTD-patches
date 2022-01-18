@@ -4015,6 +4015,22 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeaturePresent(XSLFI_TRACE_RESTRICT, 7, 12)) {
+		/* Move vehicle in slot flag */
+		for (Vehicle *v : Vehicle::Iterate()) {
+			if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, 2)) { /* was VRF_HAVE_SLOT */
+				SetBit(v->vehicle_flags, VF_HAVE_SLOT);
+				ClrBit(Train::From(v)->flags, 2);
+			} else {
+				ClrBit(v->vehicle_flags, VF_HAVE_SLOT);
+			}
+		}
+	} else if (SlXvIsFeatureMissing(XSLFI_TRACE_RESTRICT)) {
+		for (Vehicle *v : Vehicle::Iterate()) {
+			ClrBit(v->vehicle_flags, VF_HAVE_SLOT);
+		}
+	}
+
 	InitializeRoadGUI();
 
 	/* This needs to be done after conversion. */

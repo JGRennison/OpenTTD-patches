@@ -463,10 +463,8 @@ DropDownList BaseVehicleListWindow::BuildActionDropdownList(bool show_autoreplac
 		list.emplace_back(new DropDownListStringItem(STR_GROUP_ADD_SHARED_VEHICLE, ADI_ADD_SHARED, disable));
 		list.emplace_back(new DropDownListStringItem(STR_GROUP_REMOVE_ALL_VEHICLES, ADI_REMOVE_ALL, disable));
 	}
-	if (this->vli.vtype == VEH_TRAIN && _settings_client.gui.show_adv_tracerestrict_features) {
-		list.emplace_back(new DropDownListStringItem(STR_TRACE_RESTRICT_SLOT_MANAGE, ADI_TRACERESTRICT_SLOT_MGMT, false));
-	}
 	if (_settings_client.gui.show_adv_tracerestrict_features) {
+		list.emplace_back(new DropDownListStringItem(STR_TRACE_RESTRICT_SLOT_MANAGE, ADI_TRACERESTRICT_SLOT_MGMT, false));
 		list.emplace_back(new DropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_MANAGE, ADI_TRACERESTRICT_COUNTER_MGMT, false));
 	}
 	if (change_order_str != 0) {
@@ -2431,8 +2429,8 @@ public:
 						break;
 
 					case ADI_TRACERESTRICT_SLOT_MGMT: {
-						extern void ShowTraceRestrictSlotWindow(CompanyID company);
-						ShowTraceRestrictSlotWindow(this->owner);
+						extern void ShowTraceRestrictSlotWindow(CompanyID company, VehicleType vehtype);
+						ShowTraceRestrictSlotWindow(this->owner, this->vli.vtype);
 						break;
 					}
 
@@ -2822,8 +2820,7 @@ struct VehicleDetailsWindow : Window {
 
 	bool ShouldShowSlotsLine(const Vehicle *v) const
 	{
-		if (v->type != VEH_TRAIN) return false;
-		return HasBit(Train::From(v)->flags, VRF_HAVE_SLOT);
+		return HasBit(v->vehicle_flags, VF_HAVE_SLOT);
 	}
 
 	bool ShouldShowSpeedRestrictionLine(const Vehicle *v) const

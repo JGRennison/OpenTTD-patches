@@ -3212,7 +3212,7 @@ STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}Kliknut�
 STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}Smazat vybraný slot
 STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}Přejmenovat vybraný slot
 STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}Nastavit maximální obsazenost vybraného slotu
-STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}Omezení směrování - Správa slotů
+STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}Omezení směrování - Správa slotů ({STRING})
 STR_TRACE_RESTRICT_SLOT_MANAGE                                  :Spravovat sloty
 STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY                           :{TINY_FONT}{COMMA} / {COMMA}
 STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION                          :{BLACK}Přejmenovat slot

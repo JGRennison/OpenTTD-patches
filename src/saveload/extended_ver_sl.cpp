@@ -69,9 +69,9 @@ static uint32 saveLC(const SlxiSubChunkInfo *info, bool dry_run);
 
 const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_VERSION_LABEL,          XSCF_IGNORABLE_ALL,       1,   1, "version_label",             saveVL,  loadVL,  nullptr        },
-	{ XSLFI_TRACE_RESTRICT,         XSCF_NULL,               12,  12, "tracerestrict",             nullptr, nullptr, "TRRM,TRRP,TRRS" },
+	{ XSLFI_TRACE_RESTRICT,         XSCF_NULL,               13,  13, "tracerestrict",             nullptr, nullptr, "TRRM,TRRP,TRRS" },
 	{ XSLFI_TRACE_RESTRICT_OWNER,   XSCF_NULL,                1,   1, "tracerestrict_owner",       nullptr, nullptr, nullptr        },
-	{ XSLFI_TRACE_RESTRICT_ORDRCND, XSCF_NULL,                3,   3, "tracerestrict_order_cond",  nullptr, nullptr, nullptr        },
+	{ XSLFI_TRACE_RESTRICT_ORDRCND, XSCF_NULL,                4,   4, "tracerestrict_order_cond",  nullptr, nullptr, nullptr        },
 	{ XSLFI_TRACE_RESTRICT_STATUSCND,XSCF_NULL,               1,   1, "tracerestrict_status_cond", nullptr, nullptr, nullptr        },
 	{ XSLFI_TRACE_RESTRICT_REVERSE, XSCF_NULL,                1,   1, "tracerestrict_reverse",     nullptr, nullptr, nullptr        },
 	{ XSLFI_TRACE_RESTRICT_NEWSCTRL,XSCF_NULL,                1,   1, "tracerestrict_newsctrl",    nullptr, nullptr, nullptr        },
@@ -114,6 +114,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_MULTIPLE_DOCKS,         XSCF_NULL,                2,   2, "multiple_docks",            nullptr, nullptr, nullptr        },
 	{ XSLFI_TIMETABLE_EXTRA,        XSCF_NULL,                7,   7, "timetable_extra",           nullptr, nullptr, "ORDX"      },
 	{ XSLFI_TRAIN_FLAGS_EXTRA,      XSCF_NULL,                1,   1, "train_flags_extra",         nullptr, nullptr, nullptr        },
+	{ XSLFI_VEHICLE_FLAGS_EXTRA,    XSCF_NULL,                1,   1, "veh_flags_extra",           nullptr, nullptr, nullptr        },
 	{ XSLFI_TRAIN_THROUGH_LOAD,     XSCF_NULL,                2,   2, "train_through_load",        nullptr, nullptr, nullptr        },
 	{ XSLFI_ORDER_EXTRA_DATA,       XSCF_NULL,                1,   1, "order_extra_data",          nullptr, nullptr, nullptr        },
 	{ XSLFI_WHOLE_MAP_CHUNK,        XSCF_NULL,                2,   2, "whole_map_chunk",           nullptr, nullptr, "WMAP"      },

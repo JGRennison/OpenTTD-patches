@@ -68,6 +68,7 @@ enum SlXvFeatureIndex {
 	XSLFI_MULTIPLE_DOCKS,                         ///< Multiple docks
 	XSLFI_TIMETABLE_EXTRA,                        ///< Vehicle timetable extra fields
 	XSLFI_TRAIN_FLAGS_EXTRA,                      ///< Train flags field extra size
+	XSLFI_VEHICLE_FLAGS_EXTRA,                    ///< Vehicle flags field extra size
 	XSLFI_TRAIN_THROUGH_LOAD,                     ///< Train through load/unload
 	XSLFI_ORDER_EXTRA_DATA,                       ///< Order extra data field(s)
 	XSLFI_WHOLE_MAP_CHUNK,                        ///< Whole map chunk
