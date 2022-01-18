@@ -566,6 +566,12 @@ STR_MONTH_OCT                                                   :Hydref
 STR_MONTH_NOV                                                   :Tachwedd
 STR_MONTH_DEC                                                   :Rhagfyr
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Trenau
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Cerbydau Ffordd
+STR_VEHICLE_TYPE_SHIPS                                          :Llongau
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Awyrennau
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Allwedd
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Dangos allwedd i'r graffiau

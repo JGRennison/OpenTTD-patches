@@ -586,6 +586,12 @@ STR_MONTH_OCT                                                   :10月
 STR_MONTH_NOV                                                   :11月
 STR_MONTH_DEC                                                   :12月
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :火车
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :汽车
+STR_VEHICLE_TYPE_SHIPS                                          :船只
+STR_VEHICLE_TYPE_AIRCRAFT                                       :飞机
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}索引
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}显示图表的公司索引

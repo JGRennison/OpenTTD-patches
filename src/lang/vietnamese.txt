@@ -586,6 +586,12 @@ STR_MONTH_OCT                                                   :Tháng Mười
 STR_MONTH_NOV                                                   :Tháng Mười Một
 STR_MONTH_DEC                                                   :Tháng Mười Hai
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Tàu hỏa
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Xe cộ
+STR_VEHICLE_TYPE_SHIPS                                          :Tàu thủy
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Máy bay
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Nút
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Hiện khóa trên biểu đồ

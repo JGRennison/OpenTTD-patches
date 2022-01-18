@@ -885,6 +885,12 @@ STR_MONTH_OCT                                                   :Кастрыч�
 STR_MONTH_NOV                                                   :Лістапад
 STR_MONTH_DEC                                                   :Сьнежань
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Цыгнікі
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Аўтатранспарт
+STR_VEHICLE_TYPE_SHIPS                                          :Караблі
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Авіятранспарт
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Леґенда
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Паказаць леґенду да ґрафікаў

@@ -650,6 +650,12 @@ STR_MONTH_OCT                                                   :Október
 STR_MONTH_NOV                                                   :November
 STR_MONTH_DEC                                                   :December
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Vlaky
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Cestné vozidlá
+STR_VEHICLE_TYPE_SHIPS                                          :Lode
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Lietadlá
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Vyb.
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Vybrať položky na grafe

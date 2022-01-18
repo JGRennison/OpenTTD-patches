@@ -725,6 +725,12 @@ STR_MONTH_OCT                                                   :Октябрь
 STR_MONTH_NOV                                                   :Ноябрь
 STR_MONTH_DEC                                                   :Декабрь
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Ж/д транспорт
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Автотранспорт
+STR_VEHICLE_TYPE_SHIPS                                          :Водный транспорт
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Авиатранспорт
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Легенда
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Показать легенду к графикам

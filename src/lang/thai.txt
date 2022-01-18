@@ -558,6 +558,12 @@ STR_MONTH_OCT                                                   :ตุลาค
 STR_MONTH_NOV                                                   :พฤศจิกายน
 STR_MONTH_DEC                                                   :ธันวาคม
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :รถไฟ
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :รถยนต์
+STR_VEHICLE_TYPE_SHIPS                                          :เรือ
+STR_VEHICLE_TYPE_AIRCRAFT                                       :อากาศยาน
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}ตัวเลือก
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}แสดงตัวเลือกกราฟ

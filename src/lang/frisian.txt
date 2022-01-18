@@ -566,6 +566,12 @@ STR_MONTH_OCT                                                   :Oktober
 STR_MONTH_NOV                                                   :Novimber
 STR_MONTH_DEC                                                   :Desimber
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Treinen
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Auto's
+STR_VEHICLE_TYPE_SHIPS                                          :Skippen
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Fleantugen
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Kaai
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Lit kaai foar grafyk sjen

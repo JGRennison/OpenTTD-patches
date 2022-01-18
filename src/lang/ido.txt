@@ -358,6 +358,12 @@ STR_GRAPH_MENU_DELIVERED_CARGO_GRAPH                            :Livrita kargajo
 
 ###length 12
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Treni
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Voy-Vehili
+STR_VEHICLE_TYPE_SHIPS                                          :Navi
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Aeroplani
+
 # Graph window
 STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}
 STR_GRAPH_X_LABEL_MONTH_YEAR                                    :{TINY_FONT}{STRING}{}{NUM}

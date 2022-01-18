@@ -779,6 +779,12 @@ STR_MONTH_OCT                                                   :Spalis
 STR_MONTH_NOV                                                   :Lapkritis
 STR_MONTH_DEC                                                   :Gruodis
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Traukiniai
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Automobiliai
+STR_VEHICLE_TYPE_SHIPS                                          :Laivai
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Lėktuvai
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Spalva
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Rodo žaidėjų spalvas

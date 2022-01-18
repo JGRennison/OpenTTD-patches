@@ -574,6 +574,12 @@ STR_MONTH_OCT                                                   :அக்டோ
 STR_MONTH_NOV                                                   :நவம்பர்
 STR_MONTH_DEC                                                   :டிசம்பர்
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :இரயில்வண்டிகள்
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :சாலை வாகனங்கள்
+STR_VEHICLE_TYPE_SHIPS                                          :கப்பல்கள்
+STR_VEHICLE_TYPE_AIRCRAFT                                       :விமானங்கள்
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}பட விளக்கக் குறிப்பு
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}பட விளக்கக் குறிப்பு காண்பி

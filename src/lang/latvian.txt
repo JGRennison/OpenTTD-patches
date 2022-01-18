@@ -588,6 +588,12 @@ STR_MONTH_OCT                                                   :Oktobris
 STR_MONTH_NOV                                                   :Novembris
 STR_MONTH_DEC                                                   :Decembris
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Vilcieni
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Autotransporta līdzekļi
+STR_VEHICLE_TYPE_SHIPS                                          :Kuģi
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Lidaparāti
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Apzīmējumu atslēga
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Diagrammās rādīt apzīmējumu atslēgas

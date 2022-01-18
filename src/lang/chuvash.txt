@@ -366,6 +366,12 @@ STR_MONTH_OCT                                                   :Юпа
 STR_MONTH_NOV                                                   :Чӳк
 STR_MONTH_DEC                                                   :Раштав
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Пуйăссем
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Транспорт ҫул
+STR_VEHICLE_TYPE_SHIPS                                          :Карапсем
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Сывлӑш ҫул-йӗрӗ
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Уҫӑ
 STR_GRAPH_X_LABEL_MONTH                                         :{TINY_FONT}{STRING}

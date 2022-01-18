@@ -579,6 +579,12 @@ STR_MONTH_OCT                                                   :十月
 STR_MONTH_NOV                                                   :十一月
 STR_MONTH_DEC                                                   :十二月
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :列車
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :公車／貨車
+STR_VEHICLE_TYPE_SHIPS                                          :船舶
+STR_VEHICLE_TYPE_AIRCRAFT                                       :飛機
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}圖例
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}顯示圖例

@@ -586,6 +586,12 @@ STR_MONTH_OCT                                                   :octombrie
 STR_MONTH_NOV                                                   :noiembrie
 STR_MONTH_DEC                                                   :decembrie
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Trenuri
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Autovehicule
+STR_VEHICLE_TYPE_SHIPS                                          :Nave
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Aeronave
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Legendă
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Afişează legenda graficelor

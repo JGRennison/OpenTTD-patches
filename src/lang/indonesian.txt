@@ -586,6 +586,12 @@ STR_MONTH_OCT                                                   :Oktober
 STR_MONTH_NOV                                                   :Nopember
 STR_MONTH_DEC                                                   :Desember
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Kereta
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Kendaraan Jalan Raya
+STR_VEHICLE_TYPE_SHIPS                                          :Kapal
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Pesawat
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Item
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Tampilkan grafik item

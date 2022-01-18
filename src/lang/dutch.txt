@@ -586,6 +586,12 @@ STR_MONTH_OCT                                                   :Oktober
 STR_MONTH_NOV                                                   :November
 STR_MONTH_DEC                                                   :December
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Treinen
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Wegvoertuigen
+STR_VEHICLE_TYPE_SHIPS                                          :Schepen
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Vliegtuigen
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Legenda
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Legenda bij deze grafiek weergeven

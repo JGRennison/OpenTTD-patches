@@ -562,6 +562,12 @@ STR_MONTH_OCT                                                   :Urria
 STR_MONTH_NOV                                                   :Azaroa
 STR_MONTH_DEC                                                   :Abendua
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Trenak
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Errepide ibilgailuak
+STR_VEHICLE_TYPE_SHIPS                                          :Itsasontziak
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Hegazkinak
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Giltza
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Erakutsi giltza grafikoetan

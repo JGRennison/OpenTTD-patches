@@ -548,6 +548,12 @@ STR_MONTH_OCT                                                   :اکتوبر
 STR_MONTH_NOV                                                   :نومبر
 STR_MONTH_DEC                                                   :دسمبر
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :ریل گاڑیاں
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :سڑک کی گاڑیاں
+STR_VEHICLE_TYPE_SHIPS                                          :کشتیاں
+STR_VEHICLE_TYPE_AIRCRAFT                                       :ہوایی جہاز
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK} کلید
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}مخطط کی کلیدیں دکھائیں

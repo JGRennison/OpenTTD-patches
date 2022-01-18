@@ -641,6 +641,12 @@ STR_MONTH_OCT                                                   :oktoober
 STR_MONTH_NOV                                                   :november
 STR_MONTH_DEC                                                   :detsember
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Rongid
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Mootorsõidukid
+STR_VEHICLE_TYPE_SHIPS                                          :Laevad
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Õhusõidukid
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Selgitus
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Näita selgitust graafikute juures

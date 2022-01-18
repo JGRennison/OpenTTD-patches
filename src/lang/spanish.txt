@@ -587,6 +587,12 @@ STR_MONTH_OCT                                                   :Octubre
 STR_MONTH_NOV                                                   :Noviembre
 STR_MONTH_DEC                                                   :Diciembre
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Trenes
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Vehículos de carretera
+STR_VEHICLE_TYPE_SHIPS                                          :Barcos
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Aeronaves
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Leyenda
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Muestra la leyenda en las gráficas

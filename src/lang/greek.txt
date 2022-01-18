@@ -692,6 +692,12 @@ STR_MONTH_OCT                                                   :Οκτώβρι�
 STR_MONTH_NOV                                                   :Νοέμβριος
 STR_MONTH_DEC                                                   :Δεκέμβριος
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Τρένα
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Οχήματα
+STR_VEHICLE_TYPE_SHIPS                                          :Πλοία
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Αεροσκάφη
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Υπόμνημα
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Εμφάνιση υπομνήματος στα γραφήματα

@@ -586,6 +586,12 @@ STR_MONTH_OCT                                                   :Ekim
 STR_MONTH_NOV                                                   :Kasım
 STR_MONTH_DEC                                                   :Aralık
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Trenler
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Karayolu Taşıtları
+STR_VEHICLE_TYPE_SHIPS                                          :Gemiler
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Uçaklar
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Anahtar
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Grafik anahtarını göster

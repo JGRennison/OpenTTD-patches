@@ -586,6 +586,12 @@ STR_MONTH_OCT                                                   :Outubro
 STR_MONTH_NOV                                                   :Novembro
 STR_MONTH_DEC                                                   :Decembro
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Trens
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Vehículos de estrada
+STR_VEHICLE_TYPE_SHIPS                                          :Barcos
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Aeronaves
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Lenda
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Amosa-la lenda das gráficas

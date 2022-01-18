@@ -720,6 +720,12 @@ STR_MONTH_OCT                                                   :Oktober
 STR_MONTH_NOV                                                   :November
 STR_MONTH_DEC                                                   :December
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Vlaki
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Cestna vozila
+STR_VEHICLE_TYPE_SHIPS                                          :Ladje
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Letala
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Ključ
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Prikaži ključe grafov

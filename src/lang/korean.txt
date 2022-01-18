@@ -598,6 +598,12 @@ STR_MONTH_OCT                                                   :{G=m}10월
 STR_MONTH_NOV                                                   :{G=m}11월
 STR_MONTH_DEC                                                   :{G=m}12월
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :열차
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :자동차/전차
+STR_VEHICLE_TYPE_SHIPS                                          :선박
+STR_VEHICLE_TYPE_AIRCRAFT                                       :항공기
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}범례
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}그래프의 범례를 보여줍니다.

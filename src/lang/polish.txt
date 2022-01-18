@@ -965,6 +965,12 @@ STR_MONTH_OCT                                                   :Październik
 STR_MONTH_NOV                                                   :Listopad
 STR_MONTH_DEC                                                   :Grudzień
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Pociągi
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Samochody i tramwaje
+STR_VEHICLE_TYPE_SHIPS                                          :Statki
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Samoloty
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Legenda
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Pokaż legendę na wykresie

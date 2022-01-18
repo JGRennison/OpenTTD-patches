@@ -586,6 +586,12 @@ STR_MONTH_OCT                                                   :oktober
 STR_MONTH_NOV                                                   :november
 STR_MONTH_DEC                                                   :december
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Tåg
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Vägfordon
+STR_VEHICLE_TYPE_SHIPS                                          :Skepp
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Flygplan
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Nyckel
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Visa nyckel till grafer

@@ -576,6 +576,12 @@ STR_MONTH_OCT                                                   :Oktober
 STR_MONTH_NOV                                                   :November
 STR_MONTH_DEC                                                   :Desember
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Treine
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Padvoertuie
+STR_VEHICLE_TYPE_SHIPS                                          :Skepe
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Vliegtuie
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Sleutel
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Wys sleutel van grafieke

@@ -597,6 +597,12 @@ STR_MONTH_OCT                                                   :Oktober
 STR_MONTH_NOV                                                   :November
 STR_MONTH_DEC                                                   :Dezember
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Züge
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Fahrzeuge
+STR_VEHICLE_TYPE_SHIPS                                          :Schiffe
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Flugzeuge
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Legende
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Legende des Diagramms anzeigen

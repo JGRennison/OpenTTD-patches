@@ -586,6 +586,12 @@ STR_MONTH_OCT                                                   :10
 STR_MONTH_NOV                                                   :11
 STR_MONTH_DEC                                                   :12
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :列車
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :自動車
+STR_VEHICLE_TYPE_SHIPS                                          :船舶
+STR_VEHICLE_TYPE_AIRCRAFT                                       :航空機
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}凡例
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}この凡例の表示/非表示を切り替えます

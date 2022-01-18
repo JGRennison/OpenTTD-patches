@@ -714,6 +714,12 @@ STR_MONTH_OCT                                                   :Жовтень
 STR_MONTH_NOV                                                   :Листопад
 STR_MONTH_DEC                                                   :Грудень
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Поїзди
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Авто
+STR_VEHICLE_TYPE_SHIPS                                          :Кораблі
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Авіація
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Легенда
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Показати легенду графіка

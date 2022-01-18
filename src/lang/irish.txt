@@ -585,6 +585,12 @@ STR_MONTH_OCT                                                   :Deireadh Fómha
 STR_MONTH_NOV                                                   :Samhain
 STR_MONTH_DEC                                                   :Nollaig
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Traenacha
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Feithiclí Bóithre
+STR_VEHICLE_TYPE_SHIPS                                          :Longa
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Aerárthaigh
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Eochair
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Taispeáin eochair na ngraf

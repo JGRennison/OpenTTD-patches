@@ -581,6 +581,12 @@ STR_MONTH_OCT                                                   :אוקטובר
 STR_MONTH_NOV                                                   :נובמבר
 STR_MONTH_DEC                                                   :דצמבר
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :רכבות
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :כלי רכב
+STR_VEHICLE_TYPE_SHIPS                                          :כלי שייט
+STR_VEHICLE_TYPE_AIRCRAFT                                       :כלי טייס
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}הצג מפתחות לגרפים

@@ -558,6 +558,12 @@ STR_MONTH_OCT                                                   :اکتبر
 STR_MONTH_NOV                                                   :نوامبر
 STR_MONTH_DEC                                                   :دسامبر
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :قطارها
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :ماشین ها
+STR_VEHICLE_TYPE_SHIPS                                          :کشتی ها
+STR_VEHICLE_TYPE_AIRCRAFT                                       :هواپیما
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}کلید
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}نمایش راهنمای نمودار

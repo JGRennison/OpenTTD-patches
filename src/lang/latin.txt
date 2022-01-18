@@ -757,6 +757,12 @@ STR_MONTH_OCT                                                   :Octobris
 STR_MONTH_NOV                                                   :Novembris
 STR_MONTH_DEC                                                   :Decembris
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Tramina
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Vehicula Viaria
+STR_VEHICLE_TYPE_SHIPS                                          :Naves
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Aeroplana
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Clavis
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Monstrare formularum clavem

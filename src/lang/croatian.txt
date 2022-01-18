@@ -674,6 +674,12 @@ STR_MONTH_OCT                                                   :Listopad
 STR_MONTH_NOV                                                   :Studeni
 STR_MONTH_DEC                                                   :Prosinac
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Vlakovi
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Cestovna vozila
+STR_VEHICLE_TYPE_SHIPS                                          :Brodovi
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Zrakoplov
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Ključ
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Pokaži ključeve na grafikonima

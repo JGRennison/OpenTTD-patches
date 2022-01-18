@@ -548,6 +548,12 @@ STR_MONTH_OCT                                                   :Oktober
 STR_MONTH_NOV                                                   :November
 STR_MONTH_DEC                                                   :Disember
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Keretapi
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Kenderaan Jalanraya
+STR_VEHICLE_TYPE_SHIPS                                          :Kapal
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Pesawat
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Kunci
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Tunjukkan kunci kepada graf

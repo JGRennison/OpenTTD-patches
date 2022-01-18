@@ -679,6 +679,12 @@ STR_MONTH_NOV.gen                                               :listopadu
 STR_MONTH_DEC                                                   :Prosinec
 STR_MONTH_DEC.gen                                               :prosince
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Vlaky
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Silniční vozidla
+STR_VEHICLE_TYPE_SHIPS                                          :Lodě
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Letadla
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Legenda
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Zobrazit legendu ke grafům

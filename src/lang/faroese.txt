@@ -545,6 +545,12 @@ STR_MONTH_OCT                                                   :Oktobur
 STR_MONTH_NOV                                                   :Novembur
 STR_MONTH_DEC                                                   :Desembur
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Tok
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Akfør
+STR_VEHICLE_TYPE_SHIPS                                          :Skip
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Flogfør
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Lykil
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Vís lykil til graf

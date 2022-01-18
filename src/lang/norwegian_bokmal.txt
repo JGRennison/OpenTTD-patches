@@ -588,6 +588,12 @@ STR_MONTH_OCT                                                   :oktober
 STR_MONTH_NOV                                                   :november
 STR_MONTH_DEC                                                   :desember
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Tog
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Kjøretøy
+STR_VEHICLE_TYPE_SHIPS                                          :Skip
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Luftfartøy
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Nøkkel
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Vis nøkkel for grafene

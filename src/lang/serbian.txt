@@ -774,6 +774,12 @@ STR_MONTH_OCT                                                   :Oktobar
 STR_MONTH_NOV                                                   :Novembar
 STR_MONTH_DEC                                                   :Decembar
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Vozovi
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Drumska vozila
+STR_VEHICLE_TYPE_SHIPS                                          :Brodovi
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Letelice
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Legenda
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Prikaži legendu

@@ -765,6 +765,12 @@ STR_MONTH_NOV                                                   :Samhain
 STR_MONTH_DEC                                                   :Dùbhlachd
 STR_MONTH_DEC.dat                                               :Dùbhlachd
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Trèanaichean
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Carbadan-rathaid
+STR_VEHICLE_TYPE_SHIPS                                          :Longan
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Carbadan-adhair
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Iuchair
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Seall iuchair nan graf

@@ -586,6 +586,12 @@ STR_MONTH_OCT                                                   :Lokakuu
 STR_MONTH_NOV                                                   :Marraskuu
 STR_MONTH_DEC                                                   :Joulukuu
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Junat
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Ajoneuvot
+STR_VEHICLE_TYPE_SHIPS                                          :Laivat
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Ilma-alukset
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Selite
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}Näytä kuvaajan selite

@@ -572,6 +572,12 @@ STR_MONTH_OCT                                                   :اكتوبر
 STR_MONTH_NOV                                                   :نوفمبر
 STR_MONTH_DEC                                                   :ديسمبر
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :قطارات
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :عربات
+STR_VEHICLE_TYPE_SHIPS                                          :سفن
+STR_VEHICLE_TYPE_AIRCRAFT                                       :طائرات
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}مفتاح
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}اظهار مفتاح الرسم البياني

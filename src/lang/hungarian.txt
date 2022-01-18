@@ -649,6 +649,12 @@ STR_MONTH_OCT                                                   :október
 STR_MONTH_NOV                                                   :november
 STR_MONTH_DEC                                                   :december
 
+###length VEHICLE_TYPES
+STR_VEHICLE_TYPE_TRAINS                                         :Vonat
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Közúti Jármű
+STR_VEHICLE_TYPE_SHIPS                                          :Hajó
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Repülőgép
+
 # Graph window
 STR_GRAPH_KEY_BUTTON                                            :{BLACK}Jelkulcs
 STR_GRAPH_KEY_TOOLTIP                                           :{BLACK}A grafikonok jelmagyarázata
