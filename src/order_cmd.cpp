@@ -2773,14 +2773,15 @@ static uint16 GetFreeStationPlatforms(StationID st_id)
  * @param order the current (conditional) order
  * @return the StationID of the next valid station in the order list, or INVALID_STATION if there is none.
  */
-static StationID GetNextRealStation(const Vehicle *v, const Order *order, int conditional_depth = 0)
+static StationID GetNextRealStation(const Vehicle *v, const Order *order)
 {
-	if (order->IsType(OT_GOTO_STATION)) {
-		if (Station::IsValidID(order->GetDestination())) return order->GetDestination();
+	const uint max = std::min<uint>(64, v->GetNumOrders());
+	for (uint i = 0; i < max; i++) {
+		if (order->IsType(OT_GOTO_STATION) && Station::IsValidID(order->GetDestination())) return order->GetDestination();
+
+		order = (order->next != nullptr) ? order->next : v->GetFirstOrder();
 	}
-	//nothing conditional about this
-	if (conditional_depth > std::min<int>(64, v->GetNumOrders())) return INVALID_STATION;
-	return GetNextRealStation(v, (order->next != nullptr) ? order->next : v->GetFirstOrder(), ++conditional_depth);
+	return INVALID_STATION;
 }
 
 static std::vector<TraceRestrictSlotID> _pco_deferred_slot_acquires;
