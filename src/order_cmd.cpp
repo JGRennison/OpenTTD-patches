@@ -2940,6 +2940,13 @@ VehicleOrderID AdvanceOrderIndexDeferred(const Vehicle *v, VehicleOrderID index)
 		assert(order != nullptr);
 
 		switch (order->GetType()) {
+			case OT_GOTO_DEPOT:
+				if ((order->GetDepotOrderType() & ODTFB_SERVICE) && !v->NeedsServicing()) {
+					break;
+				} else {
+					return index;
+				}
+
 			case OT_RELEASE_SLOT:
 				if (TraceRestrictSlot::IsValidID(order->GetDestination())) {
 					include(_pco_deferred_slot_releases, order->GetDestination());
