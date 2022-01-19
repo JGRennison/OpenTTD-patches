@@ -2783,14 +2783,18 @@ static StationID GetNextRealStation(const Vehicle *v, const Order *order, int co
 	return GetNextRealStation(v, (order->next != nullptr) ? order->next : v->GetFirstOrder(), ++conditional_depth);
 }
 
+static std::vector<TraceRestrictSlotID> _pco_deferred_slot_acquires;
+static std::vector<TraceRestrictSlotID> _pco_deferred_slot_releases;
+static btree::btree_map<Order *, int8> _pco_deferred_original_percent_cond;
+
 /**
  * Process a conditional order and determine the next order.
  * @param order the order the vehicle currently has
  * @param v the vehicle to update
- * @param dry_run whether this is a dry-run, so do not execute side-effects
+ * @param mode whether this is a dry-run so do not execute side-effects, or if side-effects are deferred
  * @return index of next order to jump to, or INVALID_VEH_ORDER_ID to use the next order
  */
-VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, bool dry_run)
+VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, ProcessConditionalOrderMode mode)
 {
 	if (order->GetType() != OT_CONDITIONAL) return INVALID_VEH_ORDER_ID;
 
@@ -2830,17 +2834,43 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, boo
 			break;
 		}
 		case OCV_SLOT_OCCUPANCY: {
-			const TraceRestrictSlot* slot = TraceRestrictSlot::GetIfValid(order->GetXData());
-			if (slot != nullptr) skip_order = OrderConditionCompare(occ, slot->occupants.size() >= slot->max_occupancy, value);
+			TraceRestrictSlotID slot_id = order->GetXData();
+			TraceRestrictSlot* slot = TraceRestrictSlot::GetIfValid(slot_id);
+			if (slot != nullptr) {
+				size_t count = slot->occupants.size();
+				if (mode == PCO_DEFERRED) {
+					if (find_index(_pco_deferred_slot_releases, slot_id) >= 0 && slot->IsOccupant(v->index)) {
+						count--;
+					} else if (find_index(_pco_deferred_slot_acquires, slot_id) >= 0 && !slot->IsOccupant(v->index)) {
+						count++;
+					}
+				}
+				skip_order = OrderConditionCompare(occ, count >= slot->max_occupancy, value);
+			}
 			break;
 		}
 		case OCV_VEH_IN_SLOT: {
-			TraceRestrictSlot* slot = TraceRestrictSlot::GetIfValid(order->GetXData());
+			TraceRestrictSlotID slot_id = order->GetXData();
+			TraceRestrictSlot* slot = TraceRestrictSlot::GetIfValid(slot_id);
 			if (slot != nullptr) {
 				bool occupant = slot->IsOccupant(v->index);
+				if (mode == PCO_DEFERRED) {
+					if (occupant && find_index(_pco_deferred_slot_releases, slot_id) >= 0) {
+						occupant = false;
+					} else if (!occupant && find_index(_pco_deferred_slot_acquires, slot_id) >= 0) {
+						occupant = true;
+					}
+				}
 				if (occ == OCC_EQUALS || occ == OCC_NOT_EQUALS) {
-					if (!occupant && !dry_run) {
+					if (!occupant && mode == PCO_EXEC) {
 						occupant = slot->Occupy(v->index);
+					}
+					if (!occupant && mode == PCO_DEFERRED) {
+						occupant = slot->OccupyDryRun(v->index);
+						if (occupant) {
+							include(_pco_deferred_slot_acquires, slot_id);
+							container_unordered_remove(_pco_deferred_slot_releases, slot_id);
+						}
 					}
 					occ = (occ == OCC_EQUALS) ? OCC_IS_TRUE : OCC_IS_FALSE;
 				}
@@ -2856,7 +2886,10 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, boo
 		case OCV_PERCENT: {
 			/* get a non-const reference to the current order */
 			Order *ord = const_cast<Order *>(order);
-			skip_order = ord->UpdateJumpCounter((byte)value, dry_run);
+			if (mode == PCO_DEFERRED) {
+				_pco_deferred_original_percent_cond.insert({ ord, ord->GetJumpCounter() });
+			}
+			skip_order = ord->UpdateJumpCounter((byte)value, mode == PCO_DRY_RUN);
 			break;
 		}
 		case OCV_REMAINING_LIFETIME: skip_order = OrderConditionCompare(occ, std::max(v->max_age - v->age + DAYS_IN_LEAP_YEAR - 1, 0) / DAYS_IN_LEAP_YEAR, value); break;
@@ -2890,6 +2923,73 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, boo
 	}
 
 	return skip_order ? order->GetConditionSkipToOrder() : (VehicleOrderID)INVALID_VEH_ORDER_ID;
+}
+
+/* FlushAdvanceOrderIndexDeferred must be called after calling this */
+VehicleOrderID AdvanceOrderIndexDeferred(const Vehicle *v, VehicleOrderID index)
+{
+	int depth = 0;
+	++index;
+
+	do {
+		/* Wrap around. */
+		if (index >= v->GetNumOrders()) index = 0;
+
+		Order *order = v->GetOrder(index);
+		assert(order != nullptr);
+
+		switch (order->GetType()) {
+			case OT_RELEASE_SLOT:
+				if (TraceRestrictSlot::IsValidID(order->GetDestination())) {
+					include(_pco_deferred_slot_releases, order->GetDestination());
+					container_unordered_remove(_pco_deferred_slot_acquires, order->GetDestination());
+				}
+				break;
+
+			case OT_CONDITIONAL: {
+				VehicleOrderID next = ProcessConditionalOrder(order, v, PCO_DEFERRED);
+				if (next != INVALID_VEH_ORDER_ID) {
+					depth++;
+					index = next;
+					/* Don't increment next, so no break here. */
+					continue;
+				}
+				break;
+			}
+
+			default:
+				return index;
+		}
+		/* Don't increment inside the while because otherwise conditional
+		 * orders can lead to an infinite loop. */
+		++index;
+		depth++;
+	} while (depth < v->GetNumOrders());
+
+	/* Wrap around. */
+	if (index >= v->GetNumOrders()) index = 0;
+
+	return index;
+}
+
+void FlushAdvanceOrderIndexDeferred(const Vehicle *v, bool apply)
+{
+	if (apply) {
+		for (TraceRestrictSlotID slot : _pco_deferred_slot_acquires) {
+			TraceRestrictSlot::Get(slot)->Occupy(v->index);
+		}
+		for (TraceRestrictSlotID slot : _pco_deferred_slot_releases) {
+			TraceRestrictSlot::Get(slot)->Vacate(v->index);
+		}
+	} else {
+		for (auto item : _pco_deferred_original_percent_cond) {
+			item.first->SetJumpCounter(item.second);
+		}
+	}
+
+	_pco_deferred_slot_acquires.clear();
+	_pco_deferred_slot_releases.clear();
+	_pco_deferred_original_percent_cond.clear();
 }
 
 /**
@@ -3070,6 +3170,8 @@ bool ProcessOrders(Vehicle *v)
 	 * it won't hit the point in code where may_reverse is checked)
 	 */
 	bool may_reverse = v->current_order.IsType(OT_NOTHING);
+
+	ClrBit(v->vehicle_flags, VF_COND_ORDER_WAIT);
 
 	/* Check if we've reached a 'via' destination. */
 	if (((v->current_order.IsType(OT_GOTO_STATION) && (v->current_order.GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) ||

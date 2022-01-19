@@ -698,7 +698,7 @@ void AdvanceOrderIndex(const Vehicle *v, VehicleOrderID &index)
 			case OT_GOTO_WAYPOINT:
 				return;
 			case OT_CONDITIONAL: {
-				VehicleOrderID next = ProcessConditionalOrder(order, v, true);
+				VehicleOrderID next = ProcessConditionalOrder(order, v, PCO_DRY_RUN);
 				if (next != INVALID_VEH_ORDER_ID) {
 					depth++;
 					index = next;
@@ -3880,7 +3880,7 @@ public:
 					this->v->current_order = *order;
 					return UpdateOrderDest(this->v, order, 0, true);
 				case OT_CONDITIONAL: {
-					VehicleOrderID next = ProcessConditionalOrder(order, this->v, true);
+					VehicleOrderID next = ProcessConditionalOrder(order, this->v, PCO_DRY_RUN);
 					if (next != INVALID_VEH_ORDER_ID) {
 						depth++;
 						this->v->cur_real_order_index = next;
@@ -6368,6 +6368,7 @@ static bool TrainLocoHandler(Train *v, bool mode)
 	if (CheckTrainStayInDepot(v)) return true;
 
 	if (v->current_order.IsType(OT_WAITING) && v->reverse_distance == 0) {
+		if (mode) return true;
 		v->HandleWaiting(false, true);
 		if (v->current_order.IsType(OT_WAITING)) return true;
 		if (IsRailWaypointTile(v->tile)) {
