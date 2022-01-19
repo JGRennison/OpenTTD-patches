@@ -220,6 +220,13 @@ static void PlaceRail_Station(TileIndex tile)
 	}
 }
 
+static SignalType GetDefaultSignalType()
+{
+	SignalType sigtype = _settings_client.gui.default_signal_type;
+	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsSignalTypeUnsuitableForRealisticBraking(sigtype)) return SIGTYPE_PBS_ONEWAY;
+	return sigtype;
+}
+
 /**
  * Build a new signal or edit/remove a present signal, use CmdBuildSingleSignal() or CmdRemoveSingleSignal() in rail_cmd.cpp
  *
@@ -291,7 +298,7 @@ static void GenericPlaceSignals(TileIndex tile)
 	} else {
 		SB(p1, 3, 1, _ctrl_pressed);
 		SB(p1, 4, 1, (_cur_year < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC));
-		SB(p1, 5, 3, SIGTYPE_PBS_ONEWAY);
+		SB(p1, 5, 3, GetDefaultSignalType());
 		SB(p1, 8, 1, 0);
 		SB(p1, 9, 6, cycle_types);
 	}
@@ -471,7 +478,7 @@ static void HandleAutoSignalPlacement()
 		SB(p2,  3, 1, 0);
 		SB(p2,  4, 1, (_cur_year < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC));
 		SB(p2,  6, 1, _ctrl_pressed);
-		SB(p2,  7, 3, SIGTYPE_PBS_ONEWAY);
+		SB(p2,  7, 3, GetDefaultSignalType());
 		SB(p2, 24, 8, _settings_client.gui.drag_signals_density);
 		SB(p2, 10, 1, !_settings_client.gui.drag_signals_fixed_distance);
 	}
@@ -1977,6 +1984,9 @@ public:
 				_cur_signal_type = TypeForClick(_cur_signal_button);
 				_cur_signal_variant = widget >= WID_BS_ELECTRIC_NORM ? SIG_ELECTRIC : SIG_SEMAPHORE;
 
+				/* Update default (last-used) signal type in config file. */
+				_settings_client.gui.default_signal_type = Clamp<SignalType>(_cur_signal_type, SIGTYPE_NORMAL, SIGTYPE_PBS_ONEWAY);
+
 				/* If 'remove' button of rail build toolbar is active, disable it. */
 				ClearRemoveState();
 				break;
@@ -2457,7 +2467,7 @@ void InitializeRailGUI()
 	_convert_signal_button = false;
 	_trace_restrict_button = false;
 	_program_signal_button = false;
-	_cur_signal_type   = SIGTYPE_PBS_ONEWAY;
+	_cur_signal_type   = GetDefaultSignalType();
 	_cur_signal_button =
 		_cur_signal_type == SIGTYPE_PROG ? 4 :
 		_cur_signal_type == SIGTYPE_PBS ? 5 :
