@@ -448,6 +448,11 @@ void ZoningMarkDirtyStationCoverageArea(const Station *st, ZoningModeMask mask)
 	uint inner_radius = mask & ZMM_INNER ? GetZoningModeDependantStationCoverageRadius(st, _zoning.inner) : 0;
 	uint radius = std::max<uint>(outer_radius, inner_radius);
 
+	extern const Station *_viewport_highlight_station;
+	if (_viewport_highlight_station == st) {
+		radius = std::max<uint>(radius, st->GetCatchmentRadius());
+	}
+
 	if (radius > 0) {
 		Rect rect = st->GetCatchmentRectUsingRadius(radius);
 		for (int y = rect.top; y <= rect.bottom; y++) {
