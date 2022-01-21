@@ -28,6 +28,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_bridge_availability_flags", 1),
 	GRFFeatureInfo("action5_programmable_signals", 1),
 	GRFFeatureInfo("action5_no_entry_signals", 1),
+	GRFFeatureInfo("action5_misc_gui", 1),
 	GRFFeatureInfo("action0_railtype_programmable_signals", 1),
 	GRFFeatureInfo("action0_railtype_no_entry_signals", 1),
 	GRFFeatureInfo("action0_railtype_restricted_signals", 1),
@@ -79,5 +80,6 @@ extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 extern const Action5TypeRemapDefinition _grf_action5_remappable_types[] = {
 	Action5TypeRemapDefinition("programmable_signals", A5BLOCK_ALLOW_OFFSET, SPR_PROGSIGNAL_BASE, 1, 32, "Programmable pre-signal graphics"),
 	Action5TypeRemapDefinition("no_entry_signals", A5BLOCK_ALLOW_OFFSET, SPR_EXTRASIGNAL_BASE, 1, 16, "No-entry signal graphics"),
+	Action5TypeRemapDefinition("misc_gui", A5BLOCK_ALLOW_OFFSET, SPR_MISC_GUI_BASE, 1, 1, "Miscellaneous GUI graphics"),
 	Action5TypeRemapDefinition(),
 };
