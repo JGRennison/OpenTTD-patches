@@ -1923,6 +1923,7 @@ static SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.vehicle_names"));
 			interface->Add(new SettingEntry("gui.station_rating_tooltip_mode"));
 			interface->Add(new SettingEntry("gui.dual_pane_train_purchase_window"));
+			interface->Add(new SettingEntry("gui.allow_hiding_waypoint_labels"));
 		}
 
 		SettingsPage *advisors = main->Add(new SettingsPage(STR_CONFIG_SETTING_ADVISORS));

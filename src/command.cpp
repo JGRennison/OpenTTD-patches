@@ -68,6 +68,7 @@ CommandProc CmdBuildTunnel;
 CommandProc CmdBuildTrainDepot;
 CommandProcEx CmdBuildRailWaypoint;
 CommandProc CmdRenameWaypoint;
+CommandProc CmdSetWaypointLabelHidden;
 CommandProc CmdRemoveFromRailWaypoint;
 
 CommandProc CmdBuildRoadStop;
@@ -316,6 +317,7 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdConvertRail,                                    0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_CONVERT_RAIL
 	DEF_CMD(CmdBuildRailWaypoint,                              0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_RAIL_WAYPOINT
 	DEF_CMD(CmdRenameWaypoint,                                 0, CMDT_OTHER_MANAGEMENT      ), // CMD_RENAME_WAYPOINT
+	DEF_CMD(CmdSetWaypointLabelHidden,                         0, CMDT_OTHER_MANAGEMENT      ), // CMD_SET_WAYPOINT_LABEL_HIDDEN
 	DEF_CMD(CmdRemoveFromRailWaypoint,                         0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_REMOVE_FROM_RAIL_WAYPOINT
 
 	DEF_CMD(CmdBuildRoadStop,            CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_ROAD_STOP

@@ -420,8 +420,10 @@ STR_SETTINGS_MENU_FULL_ANIMATION                                :Full animation
 STR_SETTINGS_MENU_FULL_DETAIL                                   :Full detail
 STR_SETTINGS_MENU_TRANSPARENT_BUILDINGS                         :Transparent buildings
 STR_SETTINGS_MENU_TRANSPARENT_SIGNS                             :Transparent signs
-STR_SETTINGS_MENU_MONEY_TEXT_EFFECTS                            :Income/cost texts displayed
 ############ range ends here
+
+STR_SETTINGS_MENU_MONEY_TEXT_EFFECTS                            :Income/cost texts displayed
+STR_SETTINGS_MENU_SHOW_HIDDEN_SIGNS                             :Hidden signs and names displayed
 
 # File menu
 ###length 5
@@ -1610,6 +1612,9 @@ STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_ALL                    :Industries and 
 
 STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW              :Separate locomotives and wagons in train purchase window: {STRING2}
 STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_HELPTEXT     :When enabled, the train purchase window shows locomotives and wagons in separate side-by-side lists.
+
+STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL                    :Allow hiding waypoint viewport labels: {STRING2}
+STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL_HELPTEXT           :When enabled, waypoints can have their viewport labels individually hidden.{}This is useful when waypoints are used decoratively or when minor waypoints do not require a label.
 
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Enable signals on bridges/tunnels advanced modes: {STRING2}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Enables use of advanced modes of signal simulation on bridges and tunnels. When disabled, bridges/tunnels which are not already in an advanced mode cannot be changed to an advanced mode, however other players may choose to enable this setting and use an advanced mode.
@@ -4610,6 +4615,8 @@ STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centre m
 STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Change buoy name
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Edit waypoint name
+
+STR_WAYPOINT_VIEW_HIDE_VIEWPORT_LABEL                           :{BLACK}Hide the name label for this waypoint
 
 # Finances window
 STR_FINANCES_CAPTION                                            :{WHITE}{COMPANY} Finances {BLACK}{COMPANY_NUM}

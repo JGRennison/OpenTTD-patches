@@ -1748,6 +1748,7 @@ static void ViewportAddKdtreeSigns(DrawPixelInfo *dpi, bool towns_only)
 	bool show_towns = HasBit(_display_opt, DO_SHOW_TOWN_NAMES) && _game_mode != GM_MENU;
 	bool show_signs = HasBit(_display_opt, DO_SHOW_SIGNS) && !IsInvisibilitySet(TO_SIGNS) && !towns_only;
 	bool show_competitors = HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS) && !towns_only;
+	bool hide_hidden_waypoints = _settings_client.gui.allow_hiding_waypoint_labels && !HasBit(_extra_display_opt, XDO_SHOW_HIDDEN_SIGNS);
 
 	const BaseStation *st;
 	const Sign *si;
@@ -1775,6 +1776,7 @@ static void ViewportAddKdtreeSigns(DrawPixelInfo *dpi, bool towns_only)
 
 				/* Don't draw if station is owned by another company and competitor station names are hidden. Stations owned by none are never ignored. */
 				if (!show_competitors && _local_company != st->owner && st->owner != OWNER_NONE) break;
+				if (hide_hidden_waypoints && HasBit(Waypoint::From(st)->waypoint_flags, WPF_HIDE_LABEL)) break;
 
 				stations.push_back(st);
 				break;
@@ -4056,6 +4058,7 @@ static bool CheckClickOnViewportSign(const Viewport *vp, int x, int y)
 	bool show_towns = HasBit(_display_opt, DO_SHOW_TOWN_NAMES);
 	bool show_signs = HasBit(_display_opt, DO_SHOW_SIGNS) && !IsInvisibilitySet(TO_SIGNS);
 	bool show_competitors = HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS);
+	bool hide_hidden_waypoints = _settings_client.gui.allow_hiding_waypoint_labels && !HasBit(_extra_display_opt, XDO_SHOW_HIDDEN_SIGNS);
 
 	/* Topmost of each type that was hit */
 	BaseStation *st = nullptr, *last_st = nullptr;
@@ -4076,6 +4079,7 @@ static bool CheckClickOnViewportSign(const Viewport *vp, int x, int y)
 				if (!show_waypoints) break;
 				st = BaseStation::Get(item.id.station);
 				if (!show_competitors && _local_company != st->owner && st->owner != OWNER_NONE) break;
+				if (hide_hidden_waypoints && HasBit(Waypoint::From(st)->waypoint_flags, WPF_HIDE_LABEL)) break;
 				if (CheckClickOnViewportSign(vp, x, y, &st->sign)) last_st = st;
 				break;
 

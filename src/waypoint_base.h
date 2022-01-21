@@ -12,15 +12,23 @@
 
 #include "base_station_base.h"
 
+/**
+ * Enum to handle waypoint flags.
+ */
+enum WaypointFlags {
+	WPF_HIDE_LABEL              = 0, ///< Hide waypoint label
+};
+
 /** Representation of a waypoint. */
 struct Waypoint FINAL : SpecializedStation<Waypoint, true> {
-	uint16 town_cn;    ///< The N-1th waypoint for this town (consecutive number)
+	uint16 town_cn;        ///< The N-1th waypoint for this town (consecutive number)
+	uint16 waypoint_flags; ///< Waypoint flags, see WaypointFlags
 
 	/**
 	 * Create a waypoint at the given tile.
 	 * @param tile The location of the waypoint.
 	 */
-	Waypoint(TileIndex tile = INVALID_TILE) : SpecializedStation<Waypoint, true>(tile) { }
+	Waypoint(TileIndex tile = INVALID_TILE) : SpecializedStation<Waypoint, true>(tile), waypoint_flags(0) { }
 	~Waypoint();
 
 	void UpdateVirtCoord() override;

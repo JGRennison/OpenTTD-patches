@@ -54,6 +54,7 @@ enum DisplayOptions {
 /** Extra Display Options */
 enum ExtraDisplayOptions {
 	XDO_SHOW_MONEY_TEXT_EFFECTS = 0, ///< Display money text effects.
+	XDO_SHOW_HIDDEN_SIGNS       = 1, ///< Show hidden signs
 };
 
 extern GameMode _game_mode;

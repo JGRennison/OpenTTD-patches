@@ -165,6 +165,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_COMPANY_PW,             XSCF_IGNORABLE_ALL,       1,   1, "company_password",          nullptr, nullptr, "PLYP"         },
 	{ XSLFI_ST_INDUSTRY_CARGO_MODE, XSCF_IGNORABLE_UNKNOWN,   1,   1, "st_industry_cargo_mode",    nullptr, nullptr, nullptr        },
 	{ XSLFI_TL_SPEED_LIMIT,         XSCF_IGNORABLE_UNKNOWN,   1,   1, "tl_speed_limit",            nullptr, nullptr, nullptr        },
+	{ XSLFI_WAYPOINT_FLAGS,         XSCF_NULL,                1,   1, "waypoint_flags",            nullptr, nullptr, nullptr        },
 	{ XSLFI_SCRIPT_INT64,           XSCF_NULL,                1,   1, "script_int64",              nullptr, nullptr, nullptr        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr },// This is the end marker
 };

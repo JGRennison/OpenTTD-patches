@@ -69,4 +69,6 @@ static inline Money StationMaintenanceCost(uint32 num)
 
 Money AirportMaintenanceCost(Owner owner);
 
+bool ShouldShowBaseStationViewportLabel(const BaseStation *bst);
+
 #endif /* STATION_FUNC_H */

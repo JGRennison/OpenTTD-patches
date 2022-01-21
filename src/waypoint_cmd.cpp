@@ -42,8 +42,7 @@ void Waypoint::UpdateVirtCoord()
 	if (_viewport_sign_kdtree_valid && this->sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeWaypoint(this->index));
 
 	SetDParam(0, this->index);
-	bool shown = HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES) && !(_local_company != this->owner && this->owner != OWNER_NONE && !HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS));
-	this->sign.UpdatePosition(shown ? ZOOM_LVL_DRAW_SPR : ZOOM_LVL_END, pt.x, pt.y - 32 * ZOOM_LVL_BASE, STR_VIEWPORT_WAYPOINT);
+	this->sign.UpdatePosition(ShouldShowBaseStationViewportLabel(this) ? ZOOM_LVL_DRAW_SPR : ZOOM_LVL_END, pt.x, pt.y - 32 * ZOOM_LVL_BASE, STR_VIEWPORT_WAYPOINT);
 
 	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeWaypoint(this->index));
 
@@ -447,6 +446,38 @@ CommandCost CmdRenameWaypoint(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 		}
 
 		wp->UpdateVirtCoord();
+	}
+	return CommandCost();
+}
+
+/**
+ * Set whether waypoint label is hidden
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1 id of waypoint
+ * @param p2 hidden state
+ * @param text the new name or an empty string when resetting to the default
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdSetWaypointLabelHidden(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+{
+	Waypoint *wp = Waypoint::GetIfValid(p1);
+	if (wp == nullptr) return CMD_ERROR;
+
+	if (wp->owner != OWNER_NONE) {
+		CommandCost ret = CheckOwnership(wp->owner);
+		if (ret.Failed()) return ret;
+	}
+
+	if (flags & DC_EXEC) {
+		SB(wp->waypoint_flags, WPF_HIDE_LABEL, 1, p2 != 0 ? 1 : 0);
+
+		if (HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES) &&
+				!(_local_company != wp->owner && wp->owner != OWNER_NONE && !HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS))) {
+			wp->sign.MarkDirty(ZOOM_LVL_DRAW_SPR);
+		}
+
+		InvalidateWindowData(WC_WAYPOINT_VIEW, wp->index);
 	}
 	return CommandCost();
 }

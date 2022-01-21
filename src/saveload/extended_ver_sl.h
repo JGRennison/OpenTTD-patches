@@ -119,6 +119,7 @@ enum SlXvFeatureIndex {
 	XSLFI_COMPANY_PW,                             ///< Company passwords
 	XSLFI_ST_INDUSTRY_CARGO_MODE,                 ///< Station industry cargo mode setting
 	XSLFI_TL_SPEED_LIMIT,                         ///< Through load maximum speed setting
+	XSLFI_WAYPOINT_FLAGS,                         ///< Waypoint flags
 
 	XSLFI_SCRIPT_INT64,                           ///< See: SLV_SCRIPT_INT64
 

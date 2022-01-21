@@ -3018,3 +3018,12 @@ void GuiShowStationRatingTooltip(Window *parent, const Station *st, const CargoS
 	DeleteWindowById(WC_STATION_RATING_TOOLTIP, 0);
 	new StationRatingTooltipWindow(parent, st, cs);
 }
+
+bool ShouldShowBaseStationViewportLabel(const BaseStation *bst)
+{
+	if (!HasBit(_display_opt, Station::IsExpected(bst) ? DO_SHOW_STATION_NAMES : DO_SHOW_WAYPOINT_NAMES)) return false;
+	if (HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS) && (_local_company != bst->owner && bst->owner != OWNER_NONE)) return false;
+	if (Waypoint::IsExpected(bst) && HasBit(Waypoint::From(bst)->waypoint_flags, WPF_HIDE_LABEL) && _settings_client.gui.allow_hiding_waypoint_labels &&
+			!HasBit(_extra_display_opt, XDO_SHOW_HIDDEN_SIGNS)) return false;
+	return true;
+}

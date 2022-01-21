@@ -62,4 +62,6 @@ Waypoint::~Waypoint()
 
 	/* Remove all news items */
 	DeleteStationNews(this->index);
+
+	if (ShouldShowBaseStationViewportLabel(this)) this->sign.MarkDirty(ZOOM_LVL_DRAW_SPR);
 }
