@@ -1210,7 +1210,17 @@ class NIHStationStruct : public NIHelper {
 	uint GetParent(uint index) const override            { return UINT32_MAX; }
 	const void *GetInstance(uint index)const override    { return nullptr; }
 	const void *GetSpec(uint index) const override       { return nullptr; }
-	void SetStringParameters(uint index) const override  { this->SetSimpleStringParameters(STR_STATION_NAME, index); }
+
+	void SetStringParameters(uint index) const override
+	{
+		const BaseStation *bst = BaseStation::GetIfValid(index);
+		if (bst != nullptr && !Station::IsExpected(bst)) {
+			this->SetSimpleStringParameters(STR_WAYPOINT_NAME, index);
+		} else {
+			this->SetSimpleStringParameters(STR_STATION_NAME, index);
+		}
+	}
+
 	uint32 GetGRFID(uint index) const override           { return 0; }
 
 	uint Resolve(uint index, uint var, uint param, GetVariableExtra *extra) const override
