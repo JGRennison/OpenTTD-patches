@@ -4069,6 +4069,10 @@ bool AfterLoadGame()
 
 	if (_networking && !_network_server) {
 		SlProcessVENC();
+
+		if (!_settings_client.client_locale.sync_locale_network_server) {
+			_settings_game.locale = _settings_newgame.locale;
+		}
 	}
 
 	/* Show this message last to avoid covering up an error message if we bail out part way */

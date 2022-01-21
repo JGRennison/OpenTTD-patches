@@ -1750,6 +1750,7 @@ static SettingsContainer &GetSettingsTree()
 			localisation->Add(new SettingEntry("locale.units_force"));
 			localisation->Add(new SettingEntry("locale.units_height"));
 			localisation->Add(new SettingEntry("gui.date_format_in_default_names"));
+			localisation->Add(new SettingEntry("client_locale.sync_locale_network_server"));
 		}
 
 		SettingsPage *graphics = main->Add(new SettingsPage(STR_CONFIG_SETTING_GRAPHICS));

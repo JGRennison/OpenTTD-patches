@@ -762,6 +762,11 @@ struct ScenarioSettings {
 	bool house_ignore_grf;                   ///< allow manually adding houses regardless of GRF restrictions
 };
 
+/** Settings related to currency/unit systems. */
+struct ClientLocaleSettings {
+	bool sync_locale_network_server;         ///< sync locale settings with network server
+};
+
 /** All settings together for the game. */
 struct GameSettings {
 	DifficultySettings   difficulty;         ///< settings related to the difficulty
@@ -785,6 +790,7 @@ struct GameSettings {
 /** All settings that are only important for the local client. */
 struct ClientSettings {
 	GUISettings          gui;                ///< settings related to the GUI
+	ClientLocaleSettings client_locale;      ///< settings related to used currency/unit system in the client
 	NetworkSettings      network;            ///< settings related to the network
 	CompanySettings      company;            ///< default values for per-company settings
 	SoundSettings        sound;              ///< sound effect settings

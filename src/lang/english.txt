@@ -2370,6 +2370,9 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Imperial (ft)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metric (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
 
+STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER          :Sync localisation settings with server in multiplayer: {STRING2}
+STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER_HELPTEXT :When joining a multiplayer game as a network client, change the localisation settings to match the server
+
 STR_CONFIG_SETTING_LOCALISATION                                 :{ORANGE}Localisation
 STR_CONFIG_SETTING_GRAPHICS                                     :{ORANGE}Graphics
 STR_CONFIG_SETTING_SOUND                                        :{ORANGE}Sound
