@@ -22,6 +22,7 @@ set(BASESET_OTHER_SOURCE_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/extra_signals.grf
         ${CMAKE_CURRENT_SOURCE_DIR}/route_step.grf
         ${CMAKE_CURRENT_SOURCE_DIR}/tracerestrict.grf
+        ${CMAKE_CURRENT_SOURCE_DIR}/misc_gui.grf
 )
 
 if (UNIX AND NOT APPLE)
