@@ -254,7 +254,8 @@ uint16 GetTrainVehicleMaxSpeed(const Train *u, const RailVehicleInfo *rvi_u, con
 void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 {
 	uint16 max_speed = UINT16_MAX;
-
+	bool isSetMaxSpeed = false;
+	
 	assert(this->IsFrontEngine() || this->IsFreeWagon());
 
 	const RailVehicleInfo *rvi_v = RailVehInfo(this->engine_type);
@@ -342,7 +343,15 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 			/* max speed is the minimum of the speed limits of all vehicles in the consist */
 			if ((rvi_u->railveh_type != RAILVEH_WAGON || _settings_game.vehicle.wagon_speed_limits) && !UsesWagonOverride(u)) {
 				uint16 speed = GetTrainVehicleMaxSpeed(u, rvi_u, this);
-				if (speed != 0) max_speed = std::min(speed, max_speed);
+				if (_settings_game.vehicle.max_locomotive_speed_limits)
+				{
+					if (speed != 0 && HasPowerOnRail(u->railtype, GetRailType(tile)))
+					{
+						uint16 toCompare = isSetMaxSpeed ? max_speed : 0;
+						max_speed = rvi_u->railveh_type != RAILVEH_WAGON ? std::max(speed, toCompare) : std::min(speed, max_speed);
+						isSetMaxSpeed = true;
+					}
+				} else if (speed != 0) max_speed = std::min(speed, max_speed);
 			}
 		}
 

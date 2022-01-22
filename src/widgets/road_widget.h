@@ -11,21 +11,23 @@
 #define WIDGETS_ROAD_WIDGET_H
 
 /** Widgets of the #BuildRoadToolbarWindow class. */
-enum RoadToolbarWidgets {
+enum RoadToolbarWidgets
+{
 	/* Name starts with RO instead of R, because of collision with RailToolbarWidgets */
-	WID_ROT_CAPTION,        ///< Caption of the window
-	WID_ROT_ROAD_X,         ///< Build road in x-direction.
-	WID_ROT_ROAD_Y,         ///< Build road in y-direction.
-	WID_ROT_AUTOROAD,       ///< Autorail.
-	WID_ROT_DEMOLISH,       ///< Demolish.
-	WID_ROT_DEPOT,          ///< Build depot.
-	WID_ROT_BUS_STATION,    ///< Build bus station.
-	WID_ROT_TRUCK_STATION,  ///< Build truck station.
-	WID_ROT_ONE_WAY,        ///< Build one-way road.
-	WID_ROT_BUILD_BRIDGE,   ///< Build bridge.
-	WID_ROT_BUILD_TUNNEL,   ///< Build tunnel.
-	WID_ROT_REMOVE,         ///< Remove road.
-	WID_ROT_CONVERT_ROAD,   ///< Convert road.
+	WID_ROT_CAPTION,	   ///< Caption of the window
+	WID_ROT_ROAD_X,		   ///< Build road in x-direction.
+	WID_ROT_ROAD_Y,		   ///< Build road in y-direction.
+	WID_ROT_AUTOROAD,	   ///< Autorail.
+	WID_ROT_DEMOLISH,	   ///< Demolish.
+	WID_ROT_DEPOT,		   ///< Build depot.
+	WID_ROT_BUS_STATION,   ///< Build bus station.
+	WID_ROT_TRUCK_STATION, ///< Build truck station.
+	WID_ROT_TRAFFIC_LIGHT, ///< Build trafficlights.
+	WID_ROT_ONE_WAY,	   ///< Build one-way road.
+	WID_ROT_BUILD_BRIDGE,  ///< Build bridge.
+	WID_ROT_BUILD_TUNNEL,  ///< Build tunnel.
+	WID_ROT_REMOVE,		   ///< Remove road.
+	WID_ROT_CONVERT_ROAD,  ///< Convert road.
 };
 
 /** Widgets of the #BuildRoadDepotWindow class. */

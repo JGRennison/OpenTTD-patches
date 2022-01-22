@@ -1,3 +1,5 @@
+/* $Id: trafficlight_func.h $ */
+
 /*
  * This file is part of OpenTTD.
  * OpenTTD is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, version 2.
@@ -5,16 +7,13 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file road_cmd.h Road related functions. */
+/** @file trafficlight_func.h Functions related to trafficlights. */
 
-#ifndef ROAD_CMD_H
-#define ROAD_CMD_H
+#include "road_map.h"
 
-#include "direction_type.h"
-#include "road_type.h"
+TrackdirBits GetTrafficLightDisallowedDirections(TileIndex tile);
+void DrawTrafficLights(TileInfo *ti);
 
-void DrawRoadDepotSprite(int x, int y, DiagDirection dir, RoadType rt);
-void UpdateNearestTownForRoadTiles(bool invalidate);
-void DrawRoadDetail(SpriteID img, const TileInfo *ti, int dx, int dy, int h, bool transparent);
-
-#endif /* ROAD_CMD_H */
+CommandCost CmdBuildTrafficLights(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text);
+CommandCost CmdRemoveTrafficLights(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text);
+void ClearAllTrafficLights();

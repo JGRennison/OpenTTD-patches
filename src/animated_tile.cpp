@@ -96,6 +96,7 @@ void AnimateAnimatedTiles()
 	extern void AnimateTile_Station(TileIndex tile);
 	extern void AnimateTile_Industry(TileIndex tile);
 	extern void AnimateTile_Object(TileIndex tile);
+	extern void AnimateTile_Road(TileIndex tile);
 
 	PerformanceAccumulator framerate(PFE_GL_LANDSCAPE);
 
@@ -126,6 +127,10 @@ void AnimateAnimatedTiles()
 
 				case MP_OBJECT:
 					AnimateTile_Object(curr);
+					break;
+
+				case MP_ROAD:
+					AnimateTile_Road(curr);
 					break;
 
 				default:

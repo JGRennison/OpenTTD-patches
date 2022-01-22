@@ -2008,6 +2008,7 @@ static SettingsContainer &GetSettingsTree()
 				physics->Add(new SettingEntry("vehicle.train_braking_model"));
 				physics->Add(new SettingEntry("vehicle.train_slope_steepness"));
 				physics->Add(new SettingEntry("vehicle.wagon_speed_limits"));
+				physics->Add(new SettingEntry("vehicle.max_locomotive_speed_limits"));
 				physics->Add(new SettingEntry("vehicle.train_speed_adaptation"));
 				physics->Add(new SettingEntry("vehicle.freight_trains"));
 				physics->Add(new SettingEntry("vehicle.roadveh_acceleration_model"));
@@ -2172,6 +2173,16 @@ static SettingsContainer &GetSettingsTree()
 				towns->Add(new SettingEntry("economy.town_cargogen_mode"));
 				towns->Add(new SettingEntry("economy.town_cargo_scale_factor"));
 				towns->Add(new SettingEntry("economy.random_road_reconstruction"));
+			}
+
+			SettingsPage *tl = towns->Add(new SettingsPage(STR_CONFIG_SETTING_CONSTRUCTION_TRAFFIC_LIGHTS));
+			{
+				tl->Add(new SettingEntry("construction.traffic_lights"));
+				tl->Add(new SettingEntry("construction.towns_build_traffic_lights"));
+				tl->Add(new SettingEntry("construction.allow_building_tls_in_towns"));
+				tl->Add(new SettingEntry("construction.traffic_lights_green_phase"));
+				tl->Add(new SettingEntry("construction.max_tlc_size"));
+				tl->Add(new SettingEntry("construction.max_tlc_distance"));
 			}
 
 			SettingsPage *industries = environment->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES));

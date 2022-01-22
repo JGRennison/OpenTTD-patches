@@ -78,6 +78,8 @@
 #include "graph_gui.h"
 #include "string_func_extra.h"
 
+#include "trafficlight_func.h"
+
 #include "void_map.h"
 #include "station_base.h"
 #include "infrastructure_func.h"
@@ -1490,6 +1492,22 @@ static size_t ConvertLandscape(const char *value)
 	/* try with the old values */
 	static std::vector<std::string> _old_landscape_values{"normal", "hilly", "desert", "candy"};
 	return OneOfManySettingDesc::ParseSingleValue(value, strlen(value), _old_landscape_values);
+}
+
+/**
+ * What to do when traffic light Setting was changed.
+ * @param p1 unused
+ * @return always 0
+ */
+static bool TLSettingChanged(int32 p1)
+{
+	/* Road building gui changed. */
+	MarkWholeScreenDirty();
+
+	/* If traffic lights got disabled, clear them all. */
+	if (!_settings_game.construction.traffic_lights)
+		ClearAllTrafficLights();
+	return true;
 }
 
 static bool CheckFreeformEdges(int32 &new_value)

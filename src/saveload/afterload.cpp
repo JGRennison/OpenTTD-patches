@@ -855,6 +855,19 @@ bool AfterLoadGame()
 		_settings_game.game_creation.ending_year = DEF_END_YEAR;
 	}
 
+	if (IsSavegameVersionBefore(SLV_ENDING_YEAR))
+	{
+		_settings_game.vehicle.max_locomotive_speed_limits = true;
+		_settings_game.construction.traffic_lights = false;
+		_settings_game.construction.traffic_lights_green_phase = 0;
+		_settings_game.construction.towns_build_traffic_lights = false;
+		_settings_game.construction.max_tlc_distance = 4;
+		_settings_game.construction.max_tlc_size = 4;
+		_settings_game.construction.allow_building_tls_in_towns = true;
+		_settings_game.pf.npf.npf_road_trafficlight_penalty = 0;
+		_settings_game.pf.yapf.road_trafficlight_penalty = 0;
+	}
+
 	/* Load the sprites */
 	GfxLoadSprites();
 	LoadStringWidthTable();
@@ -3560,16 +3573,6 @@ bool AfterLoadGame()
 
 				/* clear 2nd signal PAX bit */
 				ClrBit(_m[t].m2, 13);
-			}
-		}
-	}
-
-	if (SlXvIsFeaturePresent(XSLFI_TRAFFIC_LIGHTS)) {
-		/* remove traffic lights */
-		for (TileIndex t = 0; t < map_size; t++) {
-			if (IsTileType(t, MP_ROAD) && (GetRoadTileType(t) == ROAD_TILE_NORMAL)) {
-				DeleteAnimatedTile(t);
-				ClrBit(_me[t].m7, 4);
 			}
 		}
 	}

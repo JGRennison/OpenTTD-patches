@@ -492,6 +492,10 @@ add_files(
     transparency_gui.cpp
     transparency_gui.h
     transport_type.h
+	trafficlight.h
+	trafficlight_func.h
+	trafficlight_type.h
+	trafficlight.cpp
     tree_cmd.cpp
     tree_gui.cpp
     tree_map.h

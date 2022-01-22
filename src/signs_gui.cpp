@@ -34,6 +34,19 @@
 
 #include "safeguards.h"
 
+/**
+ * Actually rename the sign.
+ * @param index the sign to rename.
+ * @param text  the new name.
+ * @return true if the window will already be removed after returning.
+ */
+static bool RenameSign(SignID index, const char *text)
+{
+	bool remove = StrEmpty(text);
+	DoCommandP(0, index, 0, CMD_RENAME_SIGN | (StrEmpty(text) ? CMD_MSG(STR_ERROR_CAN_T_DELETE_SIGN) : CMD_MSG(STR_ERROR_CAN_T_CHANGE_SIGN_NAME)), nullptr, text);
+	return remove;
+}
+
 struct SignList {
 	/**
 	 * A GUIList contains signs and uses a StringFilter for filtering.
@@ -122,6 +135,14 @@ struct SignList {
 		if (_game_mode != GM_EDITOR) this->signs.Filter(&OwnerDeityFilter, this->string_filter);
 		if (!HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS)) {
 			this->signs.Filter(&OwnerVisibilityFilter, this->string_filter);
+		}
+	}
+
+	void RemoveSigns()
+	{
+		for (const Sign *si : this->signs)
+		{
+			RenameSign(si->index, "");
 		}
 	}
 };
@@ -252,6 +273,11 @@ struct SignListWindow : Window, SignList {
 				this->SetWidgetLoweredState(WID_SIL_FILTER_MATCH_CASE_BTN, SignList::match_case); // Toggle button pushed state
 				this->InvalidateData(); // Rebuild the list of signs
 				break;
+
+			case WID_SIL_REMOVE_MATCHED_BTN:
+				this->RemoveSigns();	// Remove signs
+				this->InvalidateData(); // Rebuild the list of signs
+				break;
 		}
 	}
 
@@ -375,6 +401,7 @@ static const NWidgetPart _nested_sign_list_widgets[] = {
 							SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 				EndContainer(),
 				NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_SIL_FILTER_MATCH_CASE_BTN), SetDataTip(STR_SIGN_LIST_MATCH_CASE, STR_SIGN_LIST_MATCH_CASE_TOOLTIP),
+				NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SIL_REMOVE_MATCHED_BTN), SetDataTip(STR_SIGN_LIST_REMOVE_MATCHED, STR_SIGN_LIST_REMOVE_MATCHED_TOOLTIP),
 			EndContainer(),
 		EndContainer(),
 		NWidget(NWID_VERTICAL),
@@ -402,19 +429,6 @@ static WindowDesc _sign_list_desc(
 Window *ShowSignList()
 {
 	return AllocateWindowDescFront<SignListWindow>(&_sign_list_desc, 0);
-}
-
-/**
- * Actually rename the sign.
- * @param index the sign to rename.
- * @param text  the new name.
- * @return true if the window will already be removed after returning.
- */
-static bool RenameSign(SignID index, const char *text)
-{
-	bool remove = StrEmpty(text);
-	DoCommandP(0, index, 0, CMD_RENAME_SIGN | (StrEmpty(text) ? CMD_MSG(STR_ERROR_CAN_T_DELETE_SIGN) : CMD_MSG(STR_ERROR_CAN_T_CHANGE_SIGN_NAME)), nullptr, text);
-	return remove;
 }
 
 struct SignWindow : Window, SignList {

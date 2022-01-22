@@ -128,6 +128,9 @@ protected:
 		} else {
 			/* non-diagonal trackdir */
 			cost = YAPF_TILE_CORNER_LENGTH + Yapf().PfGetSettings().road_curve_penalty;
+			/* Extra cost for traffic lights. */
+			if (HasTrafficLights(tile))
+				cost += Yapf().PfGetSettings().road_trafficlight_penalty;
 		}
 		return cost;
 	}

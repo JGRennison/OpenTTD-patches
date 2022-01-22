@@ -1,3 +1,21 @@
+# dbondarchuk Patchpack version 0.3
+
+This patchpack is based on JGR's patchpack with some additional known packs and few developed by me specifically for my enjoyment.
+
+* * *
+Added known patches:
+
+1. Traffic lights.
+
+My patches:
+
+1. Bulk removal of signs - if i.e. some AI creates bunch of signs, you can remove them from sign list window (removes all currently filtered signs).
+
+2. Max locomotive speeds - in case you have a train with 2 (or more) locomotives with different speeds, max speed will be calculated as maximum of speeds of all locomotives, who currently have power.
+
+3. Increased max station spread.
+
+
 ## JGR's Patchpack version 0.45.1
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)

@@ -11,14 +11,16 @@
 #define WIDGETS_SIGN_WIDGET_H
 
 /** Widgets of the #SignListWindow class. */
-enum SignListWidgets {
+enum SignListWidgets
+{
 	/* Name starts with SI instead of S, because of collision with SaveLoadWidgets */
-	WID_SIL_CAPTION,               ///< Caption of the window.
-	WID_SIL_LIST,                  ///< List of signs.
-	WID_SIL_SCROLLBAR,             ///< Scrollbar of list.
-	WID_SIL_FILTER_TEXT,           ///< Text box for typing a filter string.
+	WID_SIL_CAPTION,			   ///< Caption of the window.
+	WID_SIL_LIST,				   ///< List of signs.
+	WID_SIL_SCROLLBAR,			   ///< Scrollbar of list.
+	WID_SIL_FILTER_TEXT,		   ///< Text box for typing a filter string.
 	WID_SIL_FILTER_MATCH_CASE_BTN, ///< Button to toggle if case sensitive filtering should be used.
-	WID_SIL_FILTER_ENTER_BTN,      ///< Scroll to first sign.
+	WID_SIL_REMOVE_MATCHED_BTN, ///< Button to remove all filtered signs.
+	WID_SIL_FILTER_ENTER_BTN,	///< Scroll to first sign.
 };
 
 /** Widgets of the #SignWindow class. */

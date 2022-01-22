@@ -285,6 +285,29 @@ static inline bool HasTownOwnedRoad(TileIndex t)
 	return HasTileRoadType(t, RTT_ROAD) && IsRoadOwner(t, RTT_ROAD, OWNER_TOWN);
 }
 
+static inline void MakeTrafficLights(TileIndex t)
+{
+	assert(IsTileType(t, MP_ROAD));
+	assert(GetRoadTileType(t) == ROAD_TILE_NORMAL);
+	SetBit(_me[t].m7, 4);
+}
+
+static inline void ClearTrafficLights(TileIndex t)
+{
+	assert(IsTileType(t, MP_ROAD));
+	assert(GetRoadTileType(t) == ROAD_TILE_NORMAL);
+	ClrBit(_me[t].m7, 4);
+}
+
+/**
+ * Check if a tile has traffic lights returns true if tile has traffic lights.
+ * @param t The tile to check.
+ */
+static inline bool HasTrafficLights(TileIndex t)
+{
+	return (IsTileType(t, MP_ROAD) && (GetRoadTileType(t) == ROAD_TILE_NORMAL) && HasBit(_me[t].m7, 4));
+}
+
 /** Which directions are disallowed ? */
 enum DisallowedRoadDirections {
 	DRD_NONE,       ///< None of the directions are disallowed
@@ -568,6 +591,11 @@ static inline bool IncreaseRoadWorksCounter(TileIndex t)
 	AB(_me[t].m7, 0, 4, 1);
 
 	return GB(_me[t].m7, 0, 4) == 15;
+}
+
+static inline byte GetRoadWorksCounter(TileIndex t)
+{
+	return GB(_me[t].m7, 0, 4);
 }
 
 /**

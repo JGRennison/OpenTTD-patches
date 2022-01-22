@@ -464,6 +464,13 @@ struct ConstructionSettings {
 	uint16 build_object_frame_burst;         ///< how many tiles may, over a short period, have objects built on them?
 	uint8  tree_growth_rate;                 ///< tree growth rate
 
+	bool traffic_lights;                     ///< Whether traffic lights are enabled.
+	bool towns_build_traffic_lights;         ///< Whether towns build traffic lights during road construction.
+	bool allow_building_tls_in_towns;        ///< Whether the players are allowed to build traffic lights on town owned roads.
+	uint8 traffic_lights_green_phase;        ///< How long traffic lights' green phase lasts.
+	uint8 max_tlc_size;                      ///< Maximum size for traffic light consists.
+	uint8 max_tlc_distance;                  ///< Maximum distance between traffic lights for synchronising them.
+
 	byte   old_simulated_wormhole_signals;   ///< moved to company settings: simulate signals in tunnel
 };
 
@@ -508,7 +515,9 @@ struct NPFSettings {
 	uint32 npf_crossing_penalty;             ///< the penalty for level crossings
 	uint32 npf_road_drive_through_penalty;   ///< the penalty for going through a drive-through road stop
 	uint32 npf_road_dt_occupied_penalty;     ///< the penalty multiplied by the fill percentage of a drive-through road stop
-	uint32 npf_road_bay_occupied_penalty;    ///< the penalty multiplied by the fill percentage of a road bay
+	uint32 npf_road_bay_occupied_penalty;	 ///< the penalty multiplied by the fill percentage of a road bay
+
+	uint32 npf_road_trafficlight_penalty; ///< Penalty for junctions with traffic lights.
 };
 
 /** Settings related to the yet another pathfinder. */
@@ -525,6 +534,9 @@ struct YAPFSettings {
 	uint32 road_stop_penalty;                ///< penalty for going through a drive-through road stop
 	uint32 road_stop_occupied_penalty;       ///< penalty multiplied by the fill percentage of a drive-through road stop
 	uint32 road_stop_bay_occupied_penalty;   ///< penalty multiplied by the fill percentage of a road bay
+
+	uint32 road_trafficlight_penalty;        ///< Penalty for junctions with traffic lights.
+
 	bool   rail_firstred_twoway_eol;         ///< treat first red two-way signal as dead end
 	uint32 rail_firstred_penalty;            ///< penalty for first red signal
 	uint32 rail_firstred_exit_penalty;       ///< penalty for first red exit signal
@@ -601,6 +613,7 @@ struct VehicleSettings {
 	uint8  train_slope_steepness;            ///< Steepness of hills for trains when using realistic acceleration
 	uint8  roadveh_slope_steepness;          ///< Steepness of hills for road vehicles when using realistic acceleration
 	bool   wagon_speed_limits;               ///< enable wagon speed limits
+	bool   max_locomotive_speed_limits;		 ///< if enabled, train with two or more locomotives with different speeds, will use max speed of locomotives who has power at the moment
 	bool   train_speed_adaptation;           ///< Faster trains slow down when behind slower trains
 	bool   slow_road_vehicles_in_curves;     ///< Road vehicles slow down in curves.
 	bool   disable_elrails;                  ///< when true, the elrails are disabled

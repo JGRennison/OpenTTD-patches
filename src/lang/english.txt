@@ -2027,6 +2027,8 @@ STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION                       :Enable train sp
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :When enabled, faster trains adjust their speed to match slower trains in front.
 STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES                 :Road vehicles slow down in curves: {STRING2}
 STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES_HELPTEXT        :When enabled, road vehicles slow down in curves. (Only with realistic acceleration)
+STR_CONFIG_SETTING_MAXLOCOMOTIVESPEEDS                          :Enable max speed of two locomotives: {STRING2}
+STR_CONFIG_SETTING_MAXLOCOMOTIVESPEEDS_HELPTEXT                 :When enabled, max speed of the train with two or more different locomotives will be determined based on max speed of all locomotives, who has power at the moment
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :Disable electric rails: {STRING2}
 STR_CONFIG_SETTING_DISABLE_ELRAILS_HELPTEXT                     :Enabling this setting disables the requirement to electrify tracks to make electric engines run on them
 
@@ -2287,6 +2289,19 @@ STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :The probability
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Minimum distance between towns: {STRING2}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Set the minimum distance in tiles between towns for map generation and random founding
 
+STR_CONFIG_SETTING_TRAFFIC_LIGHTS                               :Enable traffic lights:{STRING2}
+STR_CONFIG_SETTING_TRAFFIC_LIGHTS_HELPTEXT                      :Enables/disables building of traffic lights completely
+STR_CONFIG_SETTING_TOWNS_BUILD_TRAFFIC_LIGHTS                   :Towns can build traffic lights: {STRING2}
+STR_CONFIG_SETTING_TOWNS_BUILD_TRAFFIC_LIGHTS_HELPTEXT          :Allows/dissallows towns to build traffic lights during road construction
+STR_CONFIG_SETTING_ALLOW_BUILDING_TLS_ON_TOWN_ROADS             :Build and remove traffic lights on town roads: {STRING2}
+STR_CONFIG_SETTING_ALLOW_BUILDING_TLS_ON_TOWN_ROADS_HELPTEXT    :Allows/disallows the players building and removing traffic lights on town roads
+STR_CONFIG_SETTING_TRAFFIC_LIGHTS_GREEN_PHASE                   :Length of traffic lights' green phase: {STRING2}
+STR_CONFIG_SETTING_TRAFFIC_LIGHTS_GREEN_PHASE_HELPTEXT          :Time in seconds that traffic lights stay green
+STR_CONFIG_SETTING_MAX_TRAFFIC_LIGHT_CONSIST_SIZE               :Maximum TL consist size: {STRING2}
+STR_CONFIG_SETTING_MAX_TRAFFIC_LIGHT_CONSIST_SIZE_HELPTEXT      :Maximum number of trafficlights that can be synchronised.{}{ORANGE}Warning!{WHITE} High setting slow down the game
+STR_CONFIG_SETTING_MAX_TRAFFIC_LIGHT_CONSIST_DISTANCE           :Maximum distance between two trafficlights for synchronising: {STRING2}
+STR_CONFIG_SETTING_MAX_TRAFFIC_LIGHT_CONSIST_DISTANCE_HELPTEXT  :Sets the maximum tile distance between two trafficlights for them to be synchronised
+
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :Update distribution graph every {STRING2}{NBSP}day{P 0:2 "" s}
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL_HELPTEXT                  :Time between subsequent recalculations of the link graph. Each recalculation calculates the plans for one component of the graph. That means that a value X for this setting does not mean the whole graph will be updated every X days. Only some component will. The shorter you set it the more CPU time will be necessary to calculate it. The longer you set it the longer it will take until the cargo distribution starts on new routes.
 STR_CONFIG_SETTING_LINKGRAPH_TIME                               :Take {STRING2}{NBSP}day{P 0:2 "" s} for recalculation of distribution graph
@@ -2409,6 +2424,7 @@ STR_CONFIG_SETTING_NETWORK                                      :{ORANGE}Network
 STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}Map mode
 STR_CONFIG_SETTING_SHARING                                      :{ORANGE}Infrastructure sharing
 STR_CONFIG_SETTING_SCENARIO_EDITOR                              :{ORANGE}Scenario Editor
+STR_CONFIG_SETTING_CONSTRUCTION_TRAFFIC_LIGHTS                  :{ORANGE}Traffic lights
 
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE                  :Re-route road vehicles when road layout changes: {STRING2}
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_HELPTEXT         :Whether to re-route all road vehicles on the map when the road layout is changed.{}This can improve road vehicle responsiveness to a changing road layout at the expense of performance.{}Note that if this is set to "Yes", town growth can trigger re-routing of road vehicles which may cause slow-downs on large maps.
@@ -3549,6 +3565,7 @@ STR_ROAD_TOOLBAR_TOOLTIP_BUILD_PASSENGER_TRAM_STATION           :{BLACK}Build pa
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRUCK_LOADING_BAY                :{BLACK}Build lorry loading bay. Ctrl enables joining stations. Shift toggles building/showing cost estimate
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_CARGO_TRAM_STATION               :{BLACK}Build freight tram station. Ctrl enables joining stations. Shift toggles building/showing cost estimate
 STR_ROAD_TOOLBAR_TOOLTIP_TOGGLE_ONE_WAY_ROAD                    :{BLACK}Activate/Deactivate one way roads
+STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAFFIC_LIGHT                    :{BLACK}Build traffic light
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_BRIDGE                      :{BLACK}Build road bridge. Shift toggles building/showing cost estimate
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAMWAY_BRIDGE                   :{BLACK}Build tramway bridge. Shift toggles building/showing cost estimate
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_TUNNEL                      :{BLACK}Build road tunnel. Shift toggles building/showing cost estimate
@@ -3845,6 +3862,7 @@ STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_STREETLIGHTS                 :Road with stree
 STR_LAI_ROAD_DESCRIPTION_TREE_LINED_ROAD                        :Tree-lined road
 STR_LAI_ROAD_DESCRIPTION_ROAD_VEHICLE_DEPOT                     :Road vehicle depot
 STR_LAI_ROAD_DESCRIPTION_ROAD_RAIL_LEVEL_CROSSING               :Road/rail level crossing
+STR_LAI_ROAD_DESCRIPTION_ROAD_WITH_TRAFFIC_LIGHTS               :Road with traffic lights
 STR_LAI_ROAD_DESCRIPTION_TRAMWAY                                :Tramway
 
 # Houses come directly from their building names
@@ -4285,6 +4303,8 @@ STR_NEWGRF_SCAN_ARCHIVES                                        :Scanning for ar
 STR_SIGN_LIST_CAPTION                                           :{WHITE}Sign List - {COMMA} Sign{P "" s}
 STR_SIGN_LIST_MATCH_CASE                                        :{BLACK}Match case
 STR_SIGN_LIST_MATCH_CASE_TOOLTIP                                :{BLACK}Toggle matching case when comparing sign names against the filter string
+STR_SIGN_LIST_REMOVE_MATCHED                                    :{BLACK}Remove all
+STR_SIGN_LIST_REMOVE_MATCHED_TOOLTIP                            :{BLACK}Remove all matching signs
 
 # Sign window
 STR_EDIT_SIGN_CAPTION                                           :{WHITE}Edit sign text
@@ -6209,6 +6229,14 @@ STR_ERROR_CAN_T_CONVERT_ROAD                                    :{WHITE}Can't co
 STR_ERROR_CAN_T_CONVERT_TRAMWAY                                 :{WHITE}Can't convert tram type here...
 STR_ERROR_NO_SUITABLE_ROAD                                      :{WHITE}No suitable road
 STR_ERROR_NO_SUITABLE_TRAMWAY                                   :{WHITE}No suitable tramway
+
+STR_ERROR_CAN_T_REMOVE_TRAFFIC_LIGHTS_FROM                      :{WHITE}Can't remove traffic lights from here...
+STR_ERROR_MUST_REMOVE_TRAFFIC_LIGHTS_FIRST                      :{WHITE}... must remove traffic lights first
+STR_ERROR_TRAFFIC_LIGHT_CONSIST_TOO_BIG                         :{WHITE}... traffic light consist too big
+STR_ERROR_CAN_T_PLACE_TRAFFIC_LIGHTS                            :{WHITE}Can't place traffic lights...
+STR_ERROR_CAN_ONLY_BE_PLACED_ON_ROAD_JUNCTIONS                  :{WHITE}... can only be placed on road junctions
+STR_ERROR_BUILDING_TRAFFIC_LIGHTS_DISABLED                      :{WHITE}... building trafficlights is disabled, enable it in Advanced settings -> Construction -> Traffic lights
+STR_ERROR_TRAFFIC_LIGHTS_NOT_ALLOWED_ON_TOWN_ROADS              :{WHITE}... building trafficlights on town roads is disabled, enable it in Advanced settings -> Construction -> Traffic lights
 
 # Waterway construction errors
 STR_ERROR_CAN_T_BUILD_CANALS                                    :{WHITE}Can't build canals here...

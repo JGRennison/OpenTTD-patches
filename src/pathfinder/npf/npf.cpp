@@ -336,7 +336,11 @@ static int32 NPFRoadPathCost(AyStar *as, AyStarNode *current, OpenListNode *pare
 		case MP_ROAD:
 			cost = NPF_TILE_LENGTH;
 			/* Increase the cost for level crossings */
-			if (IsLevelCrossing(tile)) cost += _settings_game.pf.npf.npf_crossing_penalty;
+			if (IsLevelCrossing(tile))
+				cost += _settings_game.pf.npf.npf_crossing_penalty;
+			/* Increase the cost for juctions with trafficlights. */
+			if (HasTrafficLights(tile))
+				cost += _settings_game.pf.npf.npf_road_trafficlight_penalty;
 			break;
 
 		case MP_STATION: {
