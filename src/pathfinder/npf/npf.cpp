@@ -338,6 +338,10 @@ static int32 NPFRoadPathCost(AyStar *as, AyStarNode *current, OpenListNode *pare
 			/* Increase the cost for level crossings */
 			if (IsLevelCrossing(tile))
 				cost += _settings_game.pf.npf.npf_crossing_penalty;
+			/* Increase the cost for two-way roads */
+			if (IsNormalRoadTile(tile) && GetDisallowedRoadDirections(tile) == DRD_NONE)
+				cost += _settings_game.pf.npf.npf_road_two_way_penalty;
+
 			/* Increase the cost for juctions with trafficlights. */
 			if (HasTrafficLights(tile))
 				cost += _settings_game.pf.npf.npf_road_trafficlight_penalty;

@@ -39,6 +39,8 @@
 #include "string_func.h"
 #include "core/checksum_func.hpp"
 
+#include "town.h"
+
 #include "table/strings.h"
 
 #include "safeguards.h"
@@ -206,6 +208,161 @@ static uint GetRoadVehLength(const RoadVehicle *v)
 	}
 
 	return length;
+}
+
+static bool IsInTown(TileIndex tile)
+{
+	Town *t;
+	HouseZonesBits grp = HZB_TOWN_EDGE;
+	t = ClosestTownFromTile(tile, (uint)-1);
+	grp = GetTownRadiusGroup(t, tile);
+
+	return grp >= HZB_TOWN_OUTSKIRT;
+}
+
+static bool IsOneWay(TileIndex tile)
+{
+	return IsTileType(tile, MP_ROAD) && IsNormalRoadTile(tile) && GetDisallowedRoadDirections(tile) != DRD_NONE;
+}
+
+static bool IsHighway(TileIndex tile, Direction currentDirection)
+{
+	bool isRight = _settings_game.vehicle.road_side;
+	DirDiff directionDiff = isRight ? DIRDIFF_45LEFT : DIRDIFF_45RIGHT;
+	Direction direction = ChangeDir(currentDirection, directionDiff);
+	TileIndex needed_tile = TileAddByDir(tile, direction);
+	return IsTileType(needed_tile, MP_OBJECT);
+}
+
+static uint16 GetSpeedLimitOnTile(TileIndex tile, TileIndex prev_tile, RoadVehicle *v)
+{
+	bool in_town = IsInTown(tile);
+	bool one_way = IsOneWay(tile) || (prev_tile != INVALID_TILE && IsOneWay(prev_tile));
+
+	if (one_way && IsValidDiagDirection(DirToDiagDir(v->direction)) && _settings_game.vehicle.limit_vehicle_speed_highway)
+	{
+		if (IsHighway(tile, v->direction))
+		{
+			return _settings_game.vehicle.max_veh_speed_highway > 0 ? ((_settings_game.vehicle.max_veh_speed_highway * 2) + 2) : UINT16_MAX;
+		}
+	}
+
+	if (in_town && _settings_game.vehicle.limit_vehicle_speed_in_towns)
+	{
+		/* start - in city */
+
+		if (one_way && _settings_game.vehicle.max_veh_speed_in_towns_one_way)
+		{
+			/* start - one-way road */
+			/* check, that vehicle will don't go faster than it's max */
+			return ((_settings_game.vehicle.max_veh_speed_in_towns_one_way * 2) + 2);
+		}
+		else if (_settings_game.vehicle.max_veh_speed_in_towns_two_way)
+		{
+			/* start - two-way road */
+			/* check, that vehicle will don't go faster than it's max */
+			return ((_settings_game.vehicle.max_veh_speed_in_towns_two_way * 2) + 2);
+		}
+
+		/* end - in city*/
+	}
+	else if (_settings_game.vehicle.limit_vehicle_speed_outside_towns)
+	{ /* start - outside city */
+		/* one-way or two-way road */
+		if (one_way && _settings_game.vehicle.max_veh_speed_out_towns_one_way)
+		{
+			/* start - one-way road */
+			/* check, that vehicle will don't go faster than it's max */
+			return ((_settings_game.vehicle.max_veh_speed_out_towns_one_way * 2) + 2);
+		}
+		else if (_settings_game.vehicle.max_veh_speed_out_towns_two_way)
+		{
+			/* start - two-way road */
+			/* check, that vehicle will don't go faster than it's max */
+			return ((_settings_game.vehicle.max_veh_speed_out_towns_two_way * 2) + 2);
+		}
+
+		/* end - outside city */
+	}
+
+	return 0;
+	/* end - another tile */
+}
+
+/* Calculate speed limit
+ *
+ * @pram v vehicle
+ * @pram t nearest town
+ *
+ * @note speed 100 = ~49km/h, ~31mph, ~(x/2-1)
+ *
+ * @return max speed which car can go at it's location
+ */
+uint16 CalcMaxRoadVehSpeed(RoadVehicle *v, TileIndex prev_tile)
+{
+	int max_speed = v->GetCurrentMaxSpeed();
+
+	if (v->another_tile)
+	{
+		/* start - another tile */
+
+		/* not another tile anymore */
+		//v->u.road.another_tile = false;
+		v->another_tile = false;
+
+		if (_settings_game.vehicle.limit_vehicle_speed_tunnel_bridge && _settings_game.vehicle.limit_vehicle_speed_tunnel_bridge_enhanced && (IsTunnelTile(v->tile) || IsBridgeTile(v->tile)))
+		{
+			TileIndex otherEnd = GetOtherTunnelBridgeEnd(v->tile);
+			bool path_found = false;
+			Trackdir direction = NPFRoadVehicleChooseTrack(v, otherEnd, ReverseDiagDir(GetTunnelBridgeDirection(otherEnd)), path_found);
+			DiagDirection needed = DirToDiagDir(TrackdirToDirection(direction));
+
+			TileIndex nextTile = otherEnd + TileOffsByDiagDir(needed);
+			uint16 speedLimitOnOtherEnd = GetSpeedLimitOnTile(nextTile, prev_tile, v);
+
+			v->limit_speed = v->limit_speed || speedLimitOnOtherEnd ? std::max(v->limit_speed, speedLimitOnOtherEnd) : max_speed;
+			return v->limit_speed;
+		}
+
+		v->limit_speed = GetSpeedLimitOnTile(v->tile, prev_tile, v);
+		if (v->limit_speed)
+		{
+			return std::max(v->limit_speed, (uint16)max_speed);
+		}
+	}
+	else
+	{
+		/* not another tile */
+
+		if (v->state == RVSB_WORMHOLE && _settings_game.vehicle.limit_vehicle_speed_tunnel_bridge)
+		{
+			/* start - tunnels and bridges */
+			/* check, that vehicle will don't go faster than it's max */
+
+			if (_settings_game.vehicle.limit_vehicle_speed_tunnel_bridge_enhanced)
+			{
+				return v->limit_speed ? v->limit_speed : max_speed;
+			}
+			else
+			{
+				if (max_speed >= ((_settings_game.vehicle.max_veh_speed_tunnel_bridge * 2) + 2))
+				{
+					v->limit_speed = ((_settings_game.vehicle.max_veh_speed_tunnel_bridge * 2) + 2);
+					if (v->limit_speed)
+					{
+						return v->limit_speed;
+					}
+				}
+			}
+		}
+		else if (v->limit_speed && v->state != RVSB_WORMHOLE)
+		{
+			return v->limit_speed;
+		}
+	}
+
+	v->limit_speed = max_speed;
+	return v->limit_speed;
 }
 
 /**
@@ -1599,6 +1756,18 @@ bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 	 * one of the articulated parts. It will stay in the depot until activated
 	 * by the previous vehicle in the chain when it gets to the right place. */
 	if (v->IsInDepot()) return true;
+
+	TileIndex previous_tile = -1;
+	/* check if vehicle entered another tile */
+	if (v->tile != v->last_tile)
+	{
+		v->another_tile = true;
+		previous_tile = v->last_tile;
+		v->last_tile = v->tile;
+	}
+
+	/* Apply road speed limit */
+	v->cur_speed = std::min(v->cur_speed, CalcMaxRoadVehSpeed(v, previous_tile));
 
 	bool no_advance_tile = false;
 

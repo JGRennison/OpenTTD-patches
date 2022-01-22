@@ -15,6 +15,8 @@ My patches:
 
 3. Increased max station spread.
 
+4. Speed limits - different speed limits for in/out town on one/two way roads. Special speed limit for highways (doesn't metter if is in/out town) - one way road with an object on the left (if right-side driving) or right (if left-side driving)
+
 
 ## JGR's Patchpack version 0.45.1
 

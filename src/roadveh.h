@@ -118,6 +118,11 @@ struct RoadVehicle FINAL : public GroundVehicle<RoadVehicle, VEH_ROAD> {
 	RoadType roadtype;              //!< Roadtype of this vehicle.
 	RoadTypes compatible_roadtypes; //!< Roadtypes this consist is powered on.
 
+	/* used for limiting speed out/in cities */
+	TileIndex last_tile; ///< Last tile where vehicle was
+	bool another_tile;	 ///< Vehicle entered another tile?
+	uint16 limit_speed;	 ///< Limitation of speed
+
 	byte critical_breakdown_count; ///< Counter for the number of critical breakdowns since last service
 
 	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */

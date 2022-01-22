@@ -2302,6 +2302,19 @@ STR_CONFIG_SETTING_MAX_TRAFFIC_LIGHT_CONSIST_SIZE_HELPTEXT      :Maximum number 
 STR_CONFIG_SETTING_MAX_TRAFFIC_LIGHT_CONSIST_DISTANCE           :Maximum distance between two trafficlights for synchronising: {STRING2}
 STR_CONFIG_SETTING_MAX_TRAFFIC_LIGHT_CONSIST_DISTANCE_HELPTEXT  :Sets the maximum tile distance between two trafficlights for them to be synchronised
 
+STR_CONFIG_SETTING_SPEEDLIMITS                                  :Speed limits
+STR_CONFIG_SETTING_LIMITVEHSPEED_IN                             :{LTBLUE}Limit road vehicle speed in towns: {ORANGE}{STRING}
+STR_CONFIG_SETTING_SET_LIMITVEHSPEED_IN_TNEW                    :{LTBLUE}Set max vehicle speed in towns on two-way road: {ORANGE}{STRING}km/h
+STR_CONFIG_SETTING_SET_LIMITVEHSPEED_IN_OWOW                    :{LTBLUE}Set max vehicle speed in towns on one-way road: {ORANGE}{STRING}km/h
+STR_CONFIG_SETTING_LIMITVEHSPEED_OUT                            :{LTBLUE}Limit road vehicle speed outside towns: {ORANGE}{STRING}
+STR_CONFIG_SETTING_SET_LIMITVEHSPEED_OUT_TNEW                   :{LTBLUE}Set max vehicle speed outside towns on two-way road: {ORANGE}{STRING}km/h
+STR_CONFIG_SETTING_SET_LIMITVEHSPEED_OUT_OWOW                   :{LTBLUE}Set max vehicle speed outside towns on one-way road: {ORANGE}{STRING}km/h
+STR_CONFIG_SETTING_LIMITVEHSPEED_WORMHOLE                       :{LTBLUE}Limit road vehicle speed in tunnel and on bridge: {ORANGE}{STRING}
+STR_CONFIG_SETTING_LIMITVEHSPEED_WORMHOLE_ENHANCED              :{LTBLUE}Limit road vehicle speed in tunnel and on bridge based on max of the limits of start/end: {ORANGE}{STRING}
+STR_CONFIG_SETTING_SET_LIMITVEHSPEED_WORMHOLE                   :{LTBLUE}Set max vehicle speed in tunnel and on bridge: {ORANGE}{STRING}km/h
+STR_CONFIG_SETTING_LIMITVEHSPEED_HIGHWAY                        :{LTBLUE}Limit road vehicle speed on highways (one-way roads with an object between) in and out of town: {ORANGE}{STRING}
+STR_CONFIG_SETTING_SET_LIMITVEHSPEED_HIGHWAY                    :{LTBLUE}Set max vehicle speed on highways (zero - no speed limit): {ORANGE}{STRING}km/h
+
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :Update distribution graph every {STRING2}{NBSP}day{P 0:2 "" s}
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL_HELPTEXT                  :Time between subsequent recalculations of the link graph. Each recalculation calculates the plans for one component of the graph. That means that a value X for this setting does not mean the whole graph will be updated every X days. Only some component will. The shorter you set it the more CPU time will be necessary to calculate it. The longer you set it the longer it will take until the cargo distribution starts on new routes.
 STR_CONFIG_SETTING_LINKGRAPH_TIME                               :Take {STRING2}{NBSP}day{P 0:2 "" s} for recalculation of distribution graph

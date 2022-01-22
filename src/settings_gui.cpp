@@ -2185,6 +2185,21 @@ static SettingsContainer &GetSettingsTree()
 				tl->Add(new SettingEntry("construction.max_tlc_distance"));
 			}
 
+			SettingsPage *sl = towns->Add(new SettingsPage(STR_CONFIG_SETTING_SPEEDLIMITS));
+			{
+				sl->Add(new SettingEntry("vehicle.limit_vehicle_speed_in_towns"));
+				sl->Add(new SettingEntry("vehicle.max_veh_speed_in_towns_two_way"));
+				sl->Add(new SettingEntry("vehicle.max_veh_speed_in_towns_one_way"));
+				sl->Add(new SettingEntry("vehicle.limit_vehicle_speed_outside_towns"));
+				sl->Add(new SettingEntry("vehicle.max_veh_speed_out_towns_two_way"));
+				sl->Add(new SettingEntry("vehicle.max_veh_speed_out_towns_one_way"));
+				sl->Add(new SettingEntry("vehicle.limit_vehicle_speed_tunnel_bridge"));
+				sl->Add(new SettingEntry("vehicle.limit_vehicle_speed_tunnel_bridge_enhanced"));
+				sl->Add(new SettingEntry("vehicle.max_veh_speed_tunnel_bridge"));
+				sl->Add(new SettingEntry("vehicle.limit_vehicle_speed_highway"));
+				sl->Add(new SettingEntry("vehicle.max_veh_speed_highway"));
+			}
+
 			SettingsPage *industries = environment->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES));
 			{
 				industries->Add(new SettingEntry("construction.raw_industry_construction"));
