@@ -173,6 +173,12 @@ Point GetToolbarAlignedWindowPosition(int window_width);
 
 struct HotkeyList;
 
+struct WindowDescPreferences {
+	bool pref_sticky;              ///< Preferred stickyness.
+	int16 pref_width;              ///< User-preferred width of the window. Zero if unset.
+	int16 pref_height;             ///< User-preferred height of the window. Zero if unset.
+};
+
 /**
  * High level window description
  */
@@ -180,7 +186,7 @@ struct WindowDesc {
 
 	WindowDesc(WindowPosition default_pos, const char *ini_key, int16 def_width_trad, int16 def_height_trad,
 			WindowClass window_class, WindowClass parent_class, uint32 flags,
-			const NWidgetPart *nwid_parts, int16 nwid_length, HotkeyList *hotkeys = nullptr);
+			const NWidgetPart *nwid_parts, int16 nwid_length, HotkeyList *hotkeys = nullptr, WindowDesc *ini_parent = nullptr);
 
 	~WindowDesc();
 
@@ -192,10 +198,12 @@ struct WindowDesc {
 	const NWidgetPart *nwid_parts; ///< Nested widget parts describing the window.
 	int16 nwid_length;             ///< Length of the #nwid_parts array.
 	HotkeyList *hotkeys;           ///< Hotkeys for the window.
+	WindowDesc *ini_parent;        ///< Other window desc to use for WindowDescPreferences.
 
-	bool pref_sticky;              ///< Preferred stickyness.
-	int16 pref_width;              ///< User-preferred width of the window. Zero if unset.
-	int16 pref_height;             ///< User-preferred height of the window. Zero if unset.
+	WindowDescPreferences prefs;   ///< Preferences for this window
+
+	const WindowDescPreferences &GetPreferences() const;
+	WindowDescPreferences &GetPreferences() { return const_cast<WindowDescPreferences &>(const_cast<const WindowDesc*>(this)->GetPreferences()); }
 
 	int16 GetDefaultWidth() const;
 	int16 GetDefaultHeight() const;
