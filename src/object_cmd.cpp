@@ -1146,10 +1146,12 @@ static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlag flags, int
 	} else if (AutoslopeEnabled() && type != OBJECT_TRANSMITTER && type != OBJECT_LIGHTHOUSE) {
 		const ObjectSpec *spec = ObjectSpec::Get(type);
 
-		if (flags & DC_EXEC) {
-			SetShouldObjectHaveNoFoundation(tile, tileh_new, type, spec);
-			if (GetObjectGroundType(tile) == OBJECT_GROUND_SHORE) SetObjectGroundTypeDensity(tile, OBJECT_GROUND_GRASS, 0);
-		}
+		auto pre_success_checks = [&]() {
+			if (flags & DC_EXEC) {
+				SetShouldObjectHaveNoFoundation(tile, tileh_new, type, spec);
+				if (spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) SetObjectGroundTypeDensity(tile, OBJECT_GROUND_GRASS, 0);
+			}
+		};
 
 		/* Behaviour:
 		 *  - Both new and old slope must not be steep.
@@ -1167,9 +1169,13 @@ static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlag flags, int
 			if (HasBit(spec->callback_mask, CBM_OBJ_AUTOSLOPE)) {
 				/* If the callback fails, allow autoslope. */
 				uint16 res = GetObjectCallback(CBID_OBJECT_AUTOSLOPE, 0, 0, spec, Object::GetByTile(tile), tile);
-				if (res == CALLBACK_FAILED || !ConvertBooleanCallback(spec->grf_prop.grffile, CBID_OBJECT_AUTOSLOPE, res)) return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_FOUNDATION]);
+				if (res == CALLBACK_FAILED || !ConvertBooleanCallback(spec->grf_prop.grffile, CBID_OBJECT_AUTOSLOPE, res)) {
+					pre_success_checks();
+					return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_FOUNDATION]);
+				}
 			} else if (spec->enabled) {
 				/* allow autoslope */
+				pre_success_checks();
 				return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_FOUNDATION]);
 			}
 		}
