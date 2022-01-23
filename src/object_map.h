@@ -156,16 +156,16 @@ static inline void SetObjectGroundTypeDensity(TileIndex t, ObjectGround type, ui
 	_m[t].m4 = 0 << 5 | type << 2 | density;
 }
 
-static inline bool GetObjectHasNoEffectiveFoundation(TileIndex t)
+static inline ObjectEffectiveFoundationType GetObjectEffectiveFoundationType(TileIndex t)
 {
 	assert_tile(IsTileType(t, MP_OBJECT), t);
-	return GB(_m[t].m4, 4, 1);
+	return (ObjectEffectiveFoundationType)GB(_me[t].m6, 0, 2);
 }
 
-static inline void SetObjectHasNoEffectiveFoundation(TileIndex t, bool no_foundation)
+static inline void SetObjectEffectiveFoundationType(TileIndex t, ObjectEffectiveFoundationType foundation_type)
 {
 	assert_tile(IsTileType(t, MP_OBJECT), t);
-	SB(_m[t].m4, 4, 1, no_foundation ? 1 : 0);
+	SB(_me[t].m6, 0, 2, foundation_type);
 }
 
 /**

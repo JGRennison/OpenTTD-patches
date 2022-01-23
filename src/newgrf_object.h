@@ -52,6 +52,7 @@ enum ObjectEdgeFoundationFlags {
 	/* Bits 0 and 1 use for edge DiagDirection */
 	OBJECT_EF_FLAG_ADJUST_Z             = 1 <<  2, ///< Adjust sprite z position to z at edge.
 	OBJECT_EF_FLAG_FOUNDATION_LOWER     = 1 <<  3, ///< If edge is lower than tile max z, add foundation.
+	OBJECT_EF_FLAG_INCLINE_FOUNDATION   = 1 <<  4, ///< Use inclined foundations where possible when edge at tile max z.
 };
 DECLARE_ENUM_AS_BIT_SET(ObjectEdgeFoundationFlags)
 

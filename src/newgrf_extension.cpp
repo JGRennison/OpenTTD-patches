@@ -44,7 +44,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_signals_extra_aspects", 1),
 	GRFFeatureInfo("action3_signals_custom_signal_sprites", 1),
 	GRFFeatureInfo("action0_object_use_land_ground", 1),
-	GRFFeatureInfo("action0_object_edge_foundation_mode", 1),
+	GRFFeatureInfo("action0_object_edge_foundation_mode", 2),
 	GRFFeatureInfo("action0_object_flood_resistant", 1),
 	GRFFeatureInfo(),
 };

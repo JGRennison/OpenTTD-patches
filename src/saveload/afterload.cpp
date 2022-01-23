@@ -3980,13 +3980,13 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (SlXvIsFeatureMissing(XSLFI_OBJECT_GROUND_TYPES)) {
+	if (SlXvIsFeatureMissing(XSLFI_OBJECT_GROUND_TYPES, 2)) {
 		for (TileIndex t = 0; t < map_size; t++) {
 			if (IsTileType(t, MP_OBJECT)) {
-				_m[t].m4 = 0;
+				if (SlXvIsFeatureMissing(XSLFI_OBJECT_GROUND_TYPES)) _m[t].m4 = 0;
 				ObjectType type = GetObjectType(t);
-				extern void SetShouldObjectHaveNoFoundation(TileIndex tile, Slope tileh, ObjectType type, const ObjectSpec *spec);
-				SetShouldObjectHaveNoFoundation(t, SLOPE_ELEVATED, type, ObjectSpec::Get(type));
+				extern void SetObjectFoundationType(TileIndex tile, Slope tileh, ObjectType type, const ObjectSpec *spec);
+				SetObjectFoundationType(t, SLOPE_ELEVATED, type, ObjectSpec::Get(type));
 			}
 		}
 	}
