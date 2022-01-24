@@ -402,10 +402,69 @@
 	The property length is 1 byte. 0 is disabled (default). 1 is enabled.</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_object_flood_resistant</font>, version 1</p>
 	<br />
+	<h3 id="variable-mapping">Action 14 - Variable Mapping for Variational Action 2</h3>
+	<p>See <a href="https://newgrf-specs.tt-wiki.net/wiki/Action14">Action 14 Specification</a> and <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2">Variational Action 2 Specification</a> for background information.</p>
+	<p>The variable mapping mechanism has the feature name: <font face="monospace">variable_mapping</font>, this document describes version 1.</p>
+	<p>Unlike property mappings, it is not necessary to perform a feature test or check a mapping success variable before using a mapped variable.</p>
+	<p>Remapped variables are accessed by reading from variable 0x11 using a varadjust shift-num and and-mask which exactly matches that specified in the variable mapping.<br />
+	In the absence of any successful variable mapping, variable 0x11 has all bits set to 0 and attempting to read from it with any shift-num and and-mask value
+	results in a value of 0 without producing an error.</p>
+	<p>Reading a mapped variable on a version of OpenTTD which does not support this variable mapping mechanism or which does not support the requested variable, returns a value of 0.</p>
+	<p>If more than one variable mapping is made for the same combination of feature ID, shift-num and and-mask, it is implementation-defined which mapping is used.<br />
+	Each variable mapping SHOULD use a unique combination of feature ID, shift-num and and-mask.</p>
+	<h4 id="A2VM">Variable Mapping: C "A2VM"</h4>
+	<p>Each A2VM chunk (type C) describes an individual variable mapping.<br />
+	Sub-chunks within each A2VM chunk may appear in any order, however each sub-chunk SHOULD only appear ONCE within an individual A2VM chunk.</p>
+	<p>Unknown Action 14 blocks are ignored, and do not need to be skipped.</p>
+	</p>
+	<h4 id="A2VM-NAME">Property Name: C "A2VM" -> T "NAME"</h4>
+	<p>Within an A2VM chunk, the NAME text (type T) field contains the name of the variable to map. The value of the language ID byte is ignored.</p>
+	<h4 id="A2VM-FEAT">Action 0 Feature ID: C "A2VM" -> B "FEAT"</h4>
+	<p>Within an A2VM chunk, the FEAT binary (type B) field contains the <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2#Feature">Variational Action 2 feature ID</a>. This is 1 byte.</p>
+	<h4 id="A2VM-RSFT">Property ID: C "A2VM" -> B "RSFT"</h4>
+	<p>Within an A2VM chunk, the RSFT binary (type B) field contains the Variational Action 2 varadjust shift-num value to look for. This is 1 byte.<br />
+	The shift-num value must be &lt; 32 (0x20).<br />
+	If this is not specified, a value of 0 is assumed.</p>
+	<h4 id="A2VM-RMSK">Property ID: C "A2VM" -> B "RMSK"</h4>
+	<p>Within an A2VM chunk, the RMSK binary (type B) field contains the Variational Action 2 varadjust and-mask value to look for. This is 4 bytes.<br />
+	When using byte or word sized variational action 2s, the and-mask is zero-extended to 32 bits before comparing with this value.<br />
+	If this is not specified, a value of 0 is assumed.</p>
+	<h4 id="A2VM-VSFT">Property ID: C "A2VM" -> B "VSFT"</h4>
+	<p>Within an A2VM chunk, the VSFT binary (type B) field contains the replacement Variational Action 2 varadjust shift-num value to use on the mapped variable. This is 1 byte.<br />
+	The shift-num value must be &lt; 32 (0x20).<br />
+	If this is not specified, a value of 0 is assumed.</p>
+	<h4 id="A2VM-VMSK">Property ID: C "A2VM" -> B "VMSK"</h4>
+	<p>Within an A2VM chunk, the RMSK binary (type B) field contains the replacement Variational Action 2 varadjust and-mask value to use on the mapped variable. This is 4 bytes.<br />
+	If this is not specified, a value of 0 is assumed.</p>
+	<h4 id="A2VM-SETT">Success Indicator Global Variable 0x8D Bit: C "A2VM" -> B "SETT"</h4>
+	<p>This behaves identically to the <a href="#A0PM-SETT">C "A0PM" -> B "SETT"</a> case, above</p>
+	<h4 id="A2VM-example">Example NFO:</h4>
+	<pre>
+// Map station variable "sample_station_variable" with a shift-num of 4 and an and-mask of 0xFF, to reads of variable 0x11 with a shift-num of 1 and an and-mask of 0x2, and set bit 4 of global variable 0x8D if successful
+-1 * -1 14
+	"C" "A2VM"
+		"T" "NAME" 00 "sample_station_variable" 00
+		"B" "FEAT" \w1 04
+		"B" "RSFT" \w1 1
+		"B" "RMSK" \w4 \dx00000002
+		"B" "VSFT" \w1 4
+		"B" "VMSK" \w4 \dx000000FF
+		"B" "SETT" \w1 4
+		00
+	00
+....
+ -1 * 15       02 04 03 81        // Action2, Feature 04 (stations), action2ID 03, 1-byte variable
+                   11 01 02       // variable 11 (remapping variable or 0), shift 01, mask 0x02 (these exactly match the remapping above)
+                                  // This is remapped to &dash;&dash;&gt; sample_station_variable with a shift of 04 and a mask of 0xFF
+                   01             // check one range
+                   02 00    00 04 // range 00 - 04: link to action2ID 02
+                   01 00          // default:       link to action2ID 01
+	</pre>
 	<br />
 	<h3 id="varaction2_station"><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Stations">Variational Action 2 - Stations</a></h3>
 	<h4 id="varaction2_station_var42">Track type in purchase list (42)</h4>
 	<p>This is indicated by the feature name: <font face="monospace">varaction2_station_var42</font>, version 1</p>
+	<br />
 	<br />
 	<h3 id="a3signals"><a href="https://newgrf-specs.tt-wiki.net/wiki/Action3">Action 3 - Signals (Feature 0E)</a></h3>
 	<p>Note that Action 3 feature 0E is not supported (does nothing) in standard OpenTTD.</p>
