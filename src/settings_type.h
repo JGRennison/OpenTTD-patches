@@ -656,6 +656,10 @@ struct VehicleSettings {
 	uint16 max_veh_speed_tunnel_bridge;				 ///< max speed of vehicle on bridge and in tunnel
 	bool limit_vehicle_speed_highway;				 ///< Separate speed limit for highways (one-way roads with an object between) in and out of town
 	uint16 max_veh_speed_highway;					 ///< Speed limit on highways. Zero - no limit
+	bool try_to_use_two_lanes_on_highway;			 ///< Cars will try to use two lanes on the highways or one way roads outside of towns
+	uint16 min_speed_for_second_lane;				 ///< Min speed to go to the second lane on highway
+	bool only_buses_on_second_lane_on_highway;		 ///< Only buses (any road vehicle with cargo Passengers) will use second lane. Doesn't effect overtaking
+	uint8 chance_of_going_to_second_lane;			 ///< One in {value} vehicle will go into the second lane on highway
 };
 
 /** Settings related to the economy. */

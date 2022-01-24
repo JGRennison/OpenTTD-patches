@@ -70,6 +70,7 @@
 #include "../event_logs.h"
 #include "../newgrf_object.h"
 
+#include "../pathfinder/pathfinder_type.h"
 
 #include "saveload_internal.h"
 
@@ -866,7 +867,15 @@ bool AfterLoadGame()
 		_settings_game.construction.allow_building_tls_in_towns = true;
 		_settings_game.pf.npf.npf_road_trafficlight_penalty = 0;
 		_settings_game.pf.yapf.road_trafficlight_penalty = 0;
+
+		_settings_game.pf.npf.npf_road_trafficlight_penalty = 2 * NPF_TILE_LENGTH;
+		_settings_game.pf.yapf.road_trafficlight_penalty = 2 * YAPF_TILE_LENGTH;
+		_settings_game.pf.npf.npf_road_two_way_penalty = NPF_TILE_LENGTH / 2;
+		_settings_game.pf.yapf.road_two_way_penalty = 1 * YAPF_TILE_LENGTH;
+		_settings_game.vehicle.chance_of_going_to_second_lane = 2;
 	}
+
+	if (_settings_game.vehicle.chance_of_going_to_second_lane == 0) _settings_game.vehicle.chance_of_going_to_second_lane = 2;
 
 	/* Load the sprites */
 	GfxLoadSprites();

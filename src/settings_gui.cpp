@@ -2200,6 +2200,14 @@ static SettingsContainer &GetSettingsTree()
 				sl->Add(new SettingEntry("vehicle.max_veh_speed_highway"));
 			}
 
+			SettingsPage *hw = towns->Add(new SettingsPage(STR_CONFIG_SETTING_HIGHWAYS));
+			{
+				hw->Add(new SettingEntry("vehicle.try_to_use_two_lanes_on_highway"));
+				hw->Add(new SettingEntry("vehicle.min_speed_for_second_lane"));
+				hw->Add(new SettingEntry("vehicle.only_buses_on_second_lane_on_highway"));
+				hw->Add(new SettingEntry("vehicle.chance_of_going_to_second_lane"));
+			}
+
 			SettingsPage *industries = environment->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES));
 			{
 				industries->Add(new SettingEntry("construction.raw_industry_construction"));

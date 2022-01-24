@@ -2315,6 +2315,13 @@ STR_CONFIG_SETTING_SET_LIMITVEHSPEED_WORMHOLE                   :{LTBLUE}Set max
 STR_CONFIG_SETTING_LIMITVEHSPEED_HIGHWAY                        :{LTBLUE}Limit road vehicle speed on highways (one-way roads with an object between) in and out of town: {ORANGE}{STRING}
 STR_CONFIG_SETTING_SET_LIMITVEHSPEED_HIGHWAY                    :{LTBLUE}Set max vehicle speed on highways (zero - no speed limit): {ORANGE}{STRING}km/h
 
+STR_CONFIG_SETTING_HIGHWAYS                                     :Highways
+STR_CONFIG_SETTING_BOTH_LANES_ON_HIGHWAY                        :{LTBLUE}Cars will try to use two lanes on the highways (one-way roads with an object between): {ORANGE}{STRING}
+STR_CONFIG_SETTING_MIN_SPEED_FOR_SECOND_LANE                    :{LTBLUE}Min speed to go to the second lane on highway: {ORANGE}{STRING}km/h
+STR_CONFIG_SETTING_ONLY_BUSES_ON_SECOND_LANE                    :{LTBLUE}Only buses (any road vehicle with cargo Passengers) will use second lane (doesn't effect overtaking): {ORANGE}{STRING}
+STR_CONFIG_SETTING_CHANCE_OF_GOING_TO_SECOND_LANE				:Chance of vehicle to use second lane: {STRING2}
+STR_CONFIG_SETTING_CHANCE_OF_GOING_TO_SECOND_LANE_VALUE			:1 / {COMMA}
+
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL                           :Update distribution graph every {STRING2}{NBSP}day{P 0:2 "" s}
 STR_CONFIG_SETTING_LINKGRAPH_INTERVAL_HELPTEXT                  :Time between subsequent recalculations of the link graph. Each recalculation calculates the plans for one component of the graph. That means that a value X for this setting does not mean the whole graph will be updated every X days. Only some component will. The shorter you set it the more CPU time will be necessary to calculate it. The longer you set it the longer it will take until the cargo distribution starts on new routes.
 STR_CONFIG_SETTING_LINKGRAPH_TIME                               :Take {STRING2}{NBSP}day{P 0:2 "" s} for recalculation of distribution graph

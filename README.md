@@ -17,6 +17,7 @@ My patches:
 
 4. Speed limits - different speed limits for in/out town on one/two way roads. Special speed limit for highways (doesn't metter if is in/out town) - one way road with an object on the left (if right-side driving) or right (if left-side driving)
 
+5. Usage of the second lane - cars will use second lanes on the highways, depending on their speed, probability, breakdown and etc. They will go on the second lane as far as possible. In case if another vehicle with higher speed comes from behind on the second lane too, first vehicle will give the right of way - will temporarly switch to the first lane. They also will do the same in case they are going to breakdown. 
 
 ## JGR's Patchpack version 0.45.1
 

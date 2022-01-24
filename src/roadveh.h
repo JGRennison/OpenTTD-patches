@@ -120,6 +120,7 @@ struct RoadVehicle FINAL : public GroundVehicle<RoadVehicle, VEH_ROAD> {
 
 	/* used for limiting speed out/in cities */
 	TileIndex last_tile; ///< Last tile where vehicle was
+	TileIndex prev_tile; ///< Tile where vehicle was before the current one
 	bool another_tile;	 ///< Vehicle entered another tile?
 	uint16 limit_speed;	 ///< Limitation of speed
 
