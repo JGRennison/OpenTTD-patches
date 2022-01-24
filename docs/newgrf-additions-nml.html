@@ -24,6 +24,8 @@
 	<p>All of the non-standard features listed below will automatically emit suitable feature tests, conditionals, etc. such that NewGRFs which use these features will work correctly
 	on OpenTTD versions which do not support these features, including standard trunk OpenTTD and older/other patchpack versions.</p>
 
+	<p>All of the non-standard variables listed below will return 0 on OpenTTD versions which do not support these features/variables, including standard trunk OpenTTD and older/other patchpack versions.</p>
+
 	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Builtin_functions">Builtin functions</a></h3>
 
 	<p>
@@ -151,12 +153,26 @@
 			<tr><th>Value</th><th>Meaning</th></tr>
 			<tr><td>OBJECT_EF_FLAG_ADJUST_Z</td><td>Change z-position for the building sprite to the height of the edge</td></tr>
 			<tr><td>OBJECT_EF_FLAG_FOUNDATION_LOWER</td><td>If the height of the edge is lower than the maximum height of the tile, build a foundation</td></tr>
+			<tr><td>OBJECT_EF_FLAG_INCLINE_FOUNDATION</td><td>Use inclined instead of a flat foundations where possible. (Slopes with one corner raised where the height of the edge is at the maximum height of the tile).</td></tr>
 		</table>
 	</td></tr>
 	<tr><td>flood_resistant</td><td>0 or 1</td><td>
 		Sets whether the object is flood resistant.<br />
 		Flood resistance is always enabled for objects which can be built on water.<br />
 		This property can be used to enable flood resistance without enabling the object to be built on water.
+	</td></tr>
+	</table>
+	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Objects#Object_variables">Object variables</a></h3>
+	<p>Variables in the table below which are not supported by the version of OpenTTD being used return a value of 0.</p>
+	<table>
+	<tr><th>Variable</th><th>Value range</th><th>Comment</th></tr>
+	<tr><td>foundation_tile_slope</td><td><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:List_of_tile_slopes">SLOPE_XXX</a></td><td>
+		Slope of the tile after any foundation has been applied.
+	</td></tr>
+	<tr><td>foundation_change_tile_slope</td><td><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:List_of_tile_slopes">SLOPE_XXX</a></td><td>
+		Slope of the tile after any foundation has been applied xor the slope of the underlying tile.<br />
+		If this variable is non-zero a foundation is present.<br />
+		This is useful for xoring with the tile_slope variable, because if this variable is unavailable then the result is still the underlying tile slope.
 	</td></tr>
 	</table>
 	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Replace_new_sprites">Replace new sprites</a></h3>
