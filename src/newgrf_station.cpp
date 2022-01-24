@@ -268,7 +268,7 @@ TownScopeResolver *StationResolverObject::GetTown()
 	return this->town_scope;
 }
 
-/* virtual */ uint32 StationScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
+/* virtual */ uint32 StationScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	if (this->st == nullptr) {
 		/* Station does not exist, so we're in a purchase list or the land slope check callback. */
@@ -389,7 +389,7 @@ TownScopeResolver *StationResolverObject::GetTown()
 	return this->st->GetNewGRFVariable(this->ro, variable, parameter, &(extra->available));
 }
 
-uint32 Station::GetNewGRFVariable(const ResolverObject &object, byte variable, byte parameter, bool *available) const
+uint32 Station::GetNewGRFVariable(const ResolverObject &object, uint16 variable, byte parameter, bool *available) const
 {
 	switch (variable) {
 		case 0x48: { // Accepted cargo types
@@ -460,7 +460,7 @@ uint32 Station::GetNewGRFVariable(const ResolverObject &object, byte variable, b
 	return UINT_MAX;
 }
 
-uint32 Waypoint::GetNewGRFVariable(const ResolverObject &object, byte variable, byte parameter, bool *available) const
+uint32 Waypoint::GetNewGRFVariable(const ResolverObject &object, uint16 variable, byte parameter, bool *available) const
 {
 	switch (variable) {
 		case 0x48: return 0; // Accepted cargo types

@@ -231,7 +231,7 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte local_id, uint32 grfid, 
 }
 
 /** Used by the resolver to get values for feature 0F deterministic spritegroups. */
-/* virtual */ uint32 ObjectScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
+/* virtual */ uint32 ObjectScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	/* We get the town from the object, or we calculate the closest
 	 * town if we need to when there's no object. */

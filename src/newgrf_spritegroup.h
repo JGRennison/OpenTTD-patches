@@ -166,7 +166,7 @@ enum DeterministicSpriteGroupAdjustOperation {
 struct DeterministicSpriteGroupAdjust {
 	DeterministicSpriteGroupAdjustOperation operation;
 	DeterministicSpriteGroupAdjustType type;
-	byte variable;
+	uint16 variable;
 	byte parameter; ///< Used for variables between 0x60 and 0x7F inclusive.
 	byte shift_num;
 	uint32 and_mask;
@@ -326,7 +326,7 @@ struct ScopeResolver {
 	virtual uint32 GetRandomBits() const;
 	virtual uint32 GetTriggers() const;
 
-	virtual uint32 GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const;
+	virtual uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const;
 	virtual void StorePSA(uint reg, int32 value);
 };
 

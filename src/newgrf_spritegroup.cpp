@@ -56,7 +56,7 @@ TemporaryStorageArray<int32, 0x110> _temp_store;
 	}
 }
 
-static inline uint32 GetVariable(const ResolverObject &object, ScopeResolver *scope, byte variable, uint32 parameter, GetVariableExtra *extra)
+static inline uint32 GetVariable(const ResolverObject &object, ScopeResolver *scope, uint16 variable, uint32 parameter, GetVariableExtra *extra)
 {
 	uint32 value;
 	switch (variable) {
@@ -106,7 +106,7 @@ static inline uint32 GetVariable(const ResolverObject &object, ScopeResolver *sc
  * @param[out] available Set to false, in case the variable does not exist.
  * @return Value
  */
-/* virtual */ uint32 ScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
+/* virtual */ uint32 ScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	DEBUG(grf, 1, "Unhandled scope variable 0x%X", variable);
 	extra->available = false;

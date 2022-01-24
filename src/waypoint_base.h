@@ -40,7 +40,7 @@ struct Waypoint FINAL : SpecializedStation<Waypoint, true> {
 		return IsRailWaypointTile(tile) && GetStationIndex(tile) == this->index;
 	}
 
-	uint32 GetNewGRFVariable(const struct ResolverObject &object, byte variable, byte parameter, bool *available) const override;
+	uint32 GetNewGRFVariable(const struct ResolverObject &object, uint16 variable, byte parameter, bool *available) const override;
 
 	void GetTileArea(TileArea *ta, StationType type) const override;
 

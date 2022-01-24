@@ -38,6 +38,9 @@ enum Action0RemapPropertyIds {
 };
 
 
+enum Action2VariableRemapIds {
+};
+
 /** Action14 feature definition */
 struct GRFFeatureInfo {
 	const char *name; // nullptr indicates the end of the list

@@ -32,7 +32,7 @@ struct RailTypeScopeResolver : public ScopeResolver {
 	}
 
 	uint32 GetRandomBits() const override;
-	uint32 GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const override;
+	uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
 };
 
 /** Resolver object for rail types. */

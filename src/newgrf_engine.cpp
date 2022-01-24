@@ -424,7 +424,7 @@ static uint32 PositionHelper(const Vehicle *v, bool consecutive)
 	return chain_before | chain_after << 8 | (chain_before + chain_after + consecutive) << 16;
 }
 
-static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object, byte variable, uint32 parameter, GetVariableExtra *extra)
+static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object, uint16 variable, uint32 parameter, GetVariableExtra *extra)
 {
 	if (_sprite_group_resolve_check_veh_check) {
 		switch (variable) {
@@ -1104,7 +1104,7 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 	return UINT_MAX;
 }
 
-/* virtual */ uint32 VehicleScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
+/* virtual */ uint32 VehicleScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	if (this->v == nullptr) {
 		/* Vehicle does not exist, so we're in a purchase list */

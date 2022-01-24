@@ -149,6 +149,34 @@ struct GRFFilePropertyRemapSet {
 	}
 };
 
+struct GRFVariableMapDefinition {
+	const char *name; // nullptr indicates the end of the list
+	int id;
+	uint8 feature;
+
+	/** Create empty object used to identify the end of a list. */
+	GRFVariableMapDefinition() :
+		name(nullptr),
+		id(0),
+		feature(0)
+	{}
+
+	GRFVariableMapDefinition(uint8 feature, int id, const char *name) :
+		name(name),
+		id(id),
+		feature(feature)
+	{}
+};
+
+struct GRFVariableMapEntry {
+	uint16 id = 0;
+	uint8 feature = 0;
+	uint8 input_shift = 0;
+	uint8 output_shift = 0;
+	uint32 input_mask = 0;
+	uint32 output_mask = 0;
+};
+
 /** The type of action 5 type. */
 enum Action5BlockType {
 	A5BLOCK_FIXED,                ///< Only allow replacing a whole block of sprites. (TTDP compatible)
@@ -235,6 +263,7 @@ struct GRFFile : ZeroedMemoryAllocator {
 
 	GRFFilePropertyRemapSet action0_property_remaps[GSF_END];
 	Action5TypeRemapSet action5_type_remaps;
+	std::vector<GRFVariableMapEntry> grf_variable_remaps;
 	std::vector<std::unique_ptr<const char, FreeDeleter>> remap_unknown_property_names;
 
 	uint32 param[0x80];

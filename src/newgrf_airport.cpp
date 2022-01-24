@@ -38,7 +38,7 @@ struct AirportScopeResolver : public ScopeResolver {
 	}
 
 	uint32 GetRandomBits() const override;
-	uint32 GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const override;
+	uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
 	void StorePSA(uint pos, int32 value) override;
 };
 
@@ -195,7 +195,7 @@ void AirportOverrideManager::SetEntitySpec(AirportSpec *as)
 	}
 }
 
-/* virtual */ uint32 AirportScopeResolver::GetVariable(byte variable, uint32 parameter, GetVariableExtra *extra) const
+/* virtual */ uint32 AirportScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	switch (variable) {
 		case 0x40: return this->layout;

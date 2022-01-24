@@ -5295,6 +5295,17 @@ static void NewSpriteGroup(ByteReader *buf)
 				adjust.type      = (DeterministicSpriteGroupAdjustType)GB(varadjust, 6, 2);
 				adjust.and_mask  = buf->ReadVarSize(varsize);
 
+				if (adjust.variable == 0x11) {
+					for (const GRFVariableMapEntry &remap : _cur.grffile->grf_variable_remaps) {
+						if (remap.feature == feature && remap.input_shift == adjust.shift_num && remap.input_mask == adjust.and_mask) {
+							adjust.variable = remap.id;
+							adjust.shift_num = remap.output_shift;
+							adjust.and_mask = remap.output_mask;
+							break;
+						}
+					}
+				}
+
 				if (adjust.type != DSGA_TYPE_NONE) {
 					adjust.add_val    = buf->ReadVarSize(varsize);
 					adjust.divmod_val = buf->ReadVarSize(varsize);
@@ -8668,6 +8679,10 @@ struct GRFPropertyMapAction {
 	std::string name;
 	GRFPropertyMapFallbackMode fallback_mode;
 	uint8 ttd_ver_var_bit;
+	uint8 input_shift;
+	uint8 output_shift;
+	uint input_mask;
+	uint output_mask;
 
 	void Reset(const char *tag, const char *desc)
 	{
@@ -8679,6 +8694,10 @@ struct GRFPropertyMapAction {
 		this->name.clear();
 		this->fallback_mode = GPMFM_IGNORE;
 		this->ttd_ver_var_bit = 0;
+		this->input_shift = 0;
+		this->output_shift = 0;
+		this->input_mask = 0;
+		this->output_mask = 0;
 	}
 
 	void ExecutePropertyRemapping()
@@ -8730,6 +8749,34 @@ struct GRFPropertyMapAction {
 				entry.feature = this->feature;
 				entry.property_id = this->prop_id;
 			}
+		}
+	}
+
+	void ExecuteVariableRemapping()
+	{
+		if (this->feature < 0) {
+			grfmsg(2, "Action 14 %s remapping: no feature defined, doing nothing", this->descriptor);
+			return;
+		}
+		if (this->name.empty()) {
+			grfmsg(2, "Action 14 %s remapping: no name defined, doing nothing", this->descriptor);
+			return;
+		}
+		bool success = false;
+		const char *str = this->name.c_str();
+		extern const GRFVariableMapDefinition _grf_action2_remappable_variables[];
+		for (const GRFVariableMapDefinition *info = _grf_action2_remappable_variables; info->name != nullptr; info++) {
+			if (info->feature == this->feature && strcmp(info->name, str) == 0) {
+				_cur.grffile->grf_variable_remaps.push_back({ info->id, (uint8) this->feature, this->input_shift, this->output_shift, this->input_mask, this->output_mask });
+				success = true;
+				break;
+			}
+		}
+		if (this->ttd_ver_var_bit > 0) {
+			SB(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, 1, success ? 1 : 0);
+		}
+		if (!success) {
+			grfmsg(2, "Unimplemented mapped %s: %s, feature: %X, mapped to 0", this->descriptor, str, this->feature);
 		}
 	}
 
@@ -8869,6 +8916,82 @@ static bool ChangePropertyRemapSetTTDVerVarBit(size_t len, ByteReader *buf)
 	return true;
 }
 
+/** Callback function for ->'RSFT' to set the input shift value for variable remapping. */
+static bool ChangePropertyRemapSetInputShift(size_t len, ByteReader *buf)
+{
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
+	if (len != 1) {
+		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'RSFT' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		buf->Skip(len);
+	} else {
+		uint8 input_shift = buf->ReadByte();
+		if (input_shift < 0x20) {
+			action.input_shift = input_shift;
+		} else {
+			grfmsg(2, "Action 14 %s mapping: expected a shift value < 0x20 for '%s'->'RSFT' but got %u, ignoring this field", action.descriptor, action.tag_name, input_shift);
+		}
+	}
+	return true;
+}
+
+/** Callback function for ->'VSFT' to set the output shift value for variable remapping. */
+static bool ChangePropertyRemapSetOutputShift(size_t len, ByteReader *buf)
+{
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
+	if (len != 1) {
+		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'VSFT' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		buf->Skip(len);
+	} else {
+		uint8 output_shift = buf->ReadByte();
+		if (output_shift < 0x20) {
+			action.output_shift = output_shift;
+		} else {
+			grfmsg(2, "Action 14 %s mapping: expected a shift value < 0x20 for '%s'->'VSFT' but got %u, ignoring this field", action.descriptor, action.tag_name, output_shift);
+		}
+	}
+	return true;
+}
+
+/** Callback function for ->'RMSK' to set the input mask value for variable remapping. */
+static bool ChangePropertyRemapSetInputMask(size_t len, ByteReader *buf)
+{
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
+	if (len != 4) {
+		grfmsg(2, "Action 14 %s mapping: expected 4 bytes for '%s'->'RMSK' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		buf->Skip(len);
+	} else {
+		action.input_mask = buf->ReadDWord();
+	}
+	return true;
+}
+
+/** Callback function for ->'VMSK' to set the output mask value for variable remapping. */
+static bool ChangePropertyRemapSetOutputMask(size_t len, ByteReader *buf)
+{
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
+	if (len != 4) {
+		grfmsg(2, "Action 14 %s mapping: expected 4 bytes for '%s'->'VMSK' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		buf->Skip(len);
+	} else {
+		action.output_mask = buf->ReadDWord();
+	}
+	return true;
+}
+
+/** Callback function for ->'VPRM' to set the output parameter value for variable remapping. */
+static bool ChangePropertyRemapSetOutputParam(size_t len, ByteReader *buf)
+{
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
+	if (len != 4) {
+		grfmsg(2, "Action 14 %s mapping: expected 4 bytes for '%s'->'VPRM' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		buf->Skip(len);
+	} else {
+		buf->ReadDWord();
+		/* This is not implemented yet, so just do nothing, but still validate that the format is correct */
+	}
+	return true;
+}
+
 /** Action14 tags for the A0PM node */
 AllowedSubtags _tags_a0pm[] = {
 	AllowedSubtags('NAME', ChangePropertyRemapName),
@@ -8887,6 +9010,30 @@ static bool HandleAction0PropertyMap(ByteReader *buf)
 	_current_grf_property_map_action.Reset("A0PM", "property");
 	HandleNodes(buf, _tags_a0pm);
 	_current_grf_property_map_action.ExecutePropertyRemapping();
+	return true;
+}
+
+/** Action14 tags for the A2VM node */
+AllowedSubtags _tags_a2vm[] = {
+	AllowedSubtags('NAME', ChangePropertyRemapName),
+	AllowedSubtags('FEAT', ChangePropertyRemapFeature),
+	AllowedSubtags('RSFT', ChangePropertyRemapSetInputShift),
+	AllowedSubtags('RMSK', ChangePropertyRemapSetInputMask),
+	AllowedSubtags('VSFT', ChangePropertyRemapSetOutputShift),
+	AllowedSubtags('VMSK', ChangePropertyRemapSetOutputMask),
+	AllowedSubtags('VPRM', ChangePropertyRemapSetOutputParam),
+	AllowedSubtags('SETT', ChangePropertyRemapSetTTDVerVarBit),
+	AllowedSubtags()
+};
+
+/**
+ * Callback function for 'A2VM' (action 2 variable mapping)
+ */
+static bool HandleAction2VariableMap(ByteReader *buf)
+{
+	_current_grf_property_map_action.Reset("A2VM", "variable");
+	HandleNodes(buf, _tags_a2vm);
+	_current_grf_property_map_action.ExecuteVariableRemapping();
 	return true;
 }
 
@@ -8915,6 +9062,7 @@ AllowedSubtags _tags_root_static[] = {
 	AllowedSubtags('INFO', _tags_info),
 	AllowedSubtags('FTST', SkipInfoChunk),
 	AllowedSubtags('A0PM', SkipInfoChunk),
+	AllowedSubtags('A2VM', SkipInfoChunk),
 	AllowedSubtags('A5TM', SkipInfoChunk),
 	AllowedSubtags()
 };
@@ -8924,6 +9072,7 @@ AllowedSubtags _tags_root_feature_tests[] = {
 	AllowedSubtags('INFO', SkipInfoChunk),
 	AllowedSubtags('FTST', HandleFeatureTestInfo),
 	AllowedSubtags('A0PM', HandleAction0PropertyMap),
+	AllowedSubtags('A2VM', HandleAction2VariableMap),
 	AllowedSubtags('A5TM', HandleAction5TypeMap),
 	AllowedSubtags()
 };
