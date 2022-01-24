@@ -227,9 +227,10 @@ SpriteID TileZoneCheckUnservedBuildingsEvaluation(TileIndex tile, Owner owner)
 SpriteID TileZoneCheckUnservedIndustriesEvaluation(TileIndex tile, Owner owner)
 {
 	if (IsTileType(tile, MP_INDUSTRY)) {
-		StationFinder stations(TileArea(tile, 1, 1));
+		const Industry *ind = Industry::GetByTile(tile);
+		if (ind->neutral_station != nullptr) return ZONING_INVALID_SPRITE_ID;
 
-		for (const Station *st : *stations.GetStations()) {
+		for (const Station *st : ind->stations_near) {
 			if (st->owner == owner && st->facilities & (~FACIL_BUS_STOP)) {
 				return ZONING_INVALID_SPRITE_ID;
 			}
