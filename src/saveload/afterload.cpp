@@ -1050,6 +1050,15 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_MORE_STATION_TYPES)) {
+		/* Expansion of station type field in m6 */
+		for (TileIndex t = 0; t < MapSize(); t++) {
+			if (IsTileType(t, MP_STATION)) {
+				ClrBit(_me[t].m6, 6);
+			}
+		}
+	}
+
 	for (TileIndex t = 0; t < map_size; t++) {
 		switch (GetTileType(t)) {
 			case MP_STATION: {

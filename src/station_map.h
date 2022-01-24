@@ -44,7 +44,7 @@ static const int GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET =  4; ///< The offset for the
 static inline StationType GetStationType(TileIndex t)
 {
 	assert_tile(IsTileType(t, MP_STATION), t);
-	return (StationType)GB(_me[t].m6, 3, 3);
+	return (StationType)GB(_me[t].m6, 3, 4);
 }
 
 /**
@@ -563,7 +563,7 @@ static inline void MakeStation(TileIndex t, Owner o, StationID sid, StationType 
 	_m[t].m4 = 0;
 	_m[t].m5 = section;
 	SB(_me[t].m6, 2, 1, 0);
-	SB(_me[t].m6, 3, 3, st);
+	SB(_me[t].m6, 3, 4, st);
 	_me[t].m7 = 0;
 	_me[t].m8 = 0;
 }

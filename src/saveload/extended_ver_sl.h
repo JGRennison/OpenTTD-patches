@@ -120,6 +120,7 @@ enum SlXvFeatureIndex {
 	XSLFI_ST_INDUSTRY_CARGO_MODE,                 ///< Station industry cargo mode setting
 	XSLFI_TL_SPEED_LIMIT,                         ///< Through load maximum speed setting
 	XSLFI_WAYPOINT_FLAGS,                         ///< Waypoint flags
+	XSLFI_MORE_STATION_TYPES,                     ///< More station types (field widening)
 
 	XSLFI_SCRIPT_INT64,                           ///< See: SLV_SCRIPT_INT64
 
