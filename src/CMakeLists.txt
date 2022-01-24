@@ -204,6 +204,7 @@ add_files(
     highscore.cpp
     highscore.h
     highscore_gui.cpp
+    highway.h
     hotkeys.cpp
     hotkeys.h
     house.h
@@ -496,6 +497,9 @@ add_files(
 	trafficlight_func.h
 	trafficlight_type.h
 	trafficlight.cpp
+	roadsigns.h
+	roadsigns_func.h
+	roadsigns.cpp
     tree_cmd.cpp
     tree_gui.cpp
     tree_map.h

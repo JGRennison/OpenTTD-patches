@@ -252,6 +252,10 @@ CommandProc CmdOpenCloseAirport;
 
 CommandProc CmdBuildTrafficLights;
 CommandProc CmdRemoveTrafficLights;
+CommandProc CmdBuildYieldSign;
+CommandProc CmdRemoveYieldSign;
+CommandProc CmdBuildStopSign;
+CommandProc CmdRemoveStopSign;
 
 CommandProc CmdProgramSignalTraceRestrict;
 CommandProc CmdCreateTraceRestrictSlot;
@@ -489,10 +493,14 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdTimetableSeparation, 0, CMDT_ROUTE_MANAGEMENT),					  // CMD_TIMETABLE_SEPARATION
 	DEF_CMD(CmdSetTimetableStart, 0, CMDT_ROUTE_MANAGEMENT),					  // CMD_SET_TIMETABLE_START
 
-	DEF_CMD(CmdOpenCloseAirport, 0, CMDT_ROUTE_MANAGEMENT),			 // CMD_OPEN_CLOSE_AIRPORT
-	
+	DEF_CMD(CmdOpenCloseAirport, 0, CMDT_ROUTE_MANAGEMENT), // CMD_OPEN_CLOSE_AIRPORT
+
 	DEF_CMD(CmdBuildTrafficLights, 0, CMDT_LANDSCAPE_CONSTRUCTION),	 // CMD_BUILD_TRAFFICLIGHTS
 	DEF_CMD(CmdRemoveTrafficLights, 0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_REMOVE_TRAFFICLIGHTS
+	DEF_CMD(CmdBuildYieldSign, 0, CMDT_LANDSCAPE_CONSTRUCTION),	 // CMD_BUILD_YIELDSIGN
+	DEF_CMD(CmdRemoveYieldSign, 0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_REMOVE_YIELDSIGN
+	DEF_CMD(CmdBuildStopSign, 0, CMDT_LANDSCAPE_CONSTRUCTION),	 // CMD_BUILD_STOPSIGN
+	DEF_CMD(CmdRemoveStopSign, 0, CMDT_LANDSCAPE_CONSTRUCTION),	 // CMD_REMOVE_STOPSIGN
 
 	DEF_CMD(CmdProgramSignalTraceRestrict, 0, CMDT_OTHER_MANAGEMENT),	  // CMD_PROGRAM_TRACERESTRICT_SIGNAL
 	DEF_CMD(CmdCreateTraceRestrictSlot, 0, CMDT_OTHER_MANAGEMENT),		  // CMD_CREATE_TRACERESTRICT_SLOT

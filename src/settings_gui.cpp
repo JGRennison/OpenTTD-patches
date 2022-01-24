@@ -2185,6 +2185,14 @@ static SettingsContainer &GetSettingsTree()
 				tl->Add(new SettingEntry("construction.max_tlc_distance"));
 			}
 
+			SettingsPage *rs = towns->Add(new SettingsPage(STR_CONFIG_SETTING_CONSTRUCTION_ROAD_SIGNS));
+			{
+				rs->Add(new SettingEntry("construction.road_signs"));
+				rs->Add(new SettingEntry("construction.towns_build_road_signs"));
+				rs->Add(new SettingEntry("construction.allow_building_rs_in_towns"));
+				rs->Add(new SettingEntry("construction.allow_eye_candy_road_signs"));
+			}
+
 			SettingsPage *sl = towns->Add(new SettingsPage(STR_CONFIG_SETTING_SPEEDLIMITS));
 			{
 				sl->Add(new SettingEntry("vehicle.limit_vehicle_speed_in_towns"));
@@ -2202,6 +2210,7 @@ static SettingsContainer &GetSettingsTree()
 
 			SettingsPage *hw = towns->Add(new SettingsPage(STR_CONFIG_SETTING_HIGHWAYS));
 			{
+				hw->Add(new SettingEntry("vehicle.one_way_roads_out_town_as_highway"));
 				hw->Add(new SettingEntry("vehicle.try_to_use_two_lanes_on_highway"));
 				hw->Add(new SettingEntry("vehicle.min_speed_for_second_lane"));
 				hw->Add(new SettingEntry("vehicle.only_buses_on_second_lane_on_highway"));

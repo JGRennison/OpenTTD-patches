@@ -121,6 +121,24 @@ SpriteID TileZoneCheckBuildEvaluation(TileIndex tile, Owner owner)
 }
 
 /**
+ * Check town zoning in the tile.
+ *
+ * @param TileIndex tile
+ * @param Owner owner
+ * @return black if no opinion, orange if bad,
+ *         light blue if good or invalid if no town
+ */
+SpriteID TileZoneCheckTownLimits(TileIndex tile, Owner owner)
+{
+	Town *t;
+	HouseZonesBits grp = HZB_TOWN_EDGE;
+	t = ClosestTownFromTile(tile, (uint)-1);
+	grp = GetTownRadiusGroup(t, tile);
+
+	return grp >= HZB_TOWN_OUTSKIRT ? SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE : ZONING_INVALID_SPRITE_ID;
+}
+
+/**
  * Check the opinion of the local authority in the tile.
  *
  * @param TileIndex tile
@@ -331,6 +349,7 @@ SpriteID TileZoningSpriteEvaluation(TileIndex tile, Owner owner, ZoningEvaluatio
 	switch (ev_mode) {
 		case ZEM_CAN_BUILD:     return TileZoneCheckBuildEvaluation(tile, owner);
 		case ZEM_AUTHORITY:     return TileZoneCheckOpinionEvaluation(tile, owner);
+		case ZEM_TOWNLIMITS:	return TileZoneCheckTownLimits(tile, owner);
 		case ZEM_STA_CATCH:     return TileZoneCheckStationCatchmentEvaluation(tile, owner, false);
 		case ZEM_STA_CATCH_WIN: return TileZoneCheckStationCatchmentEvaluation(tile, owner, true);
 		case ZEM_BUL_UNSER:     return TileZoneCheckUnservedBuildingsEvaluation(tile, owner);

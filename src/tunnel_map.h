@@ -64,6 +64,16 @@ static inline bool IsRailTunnelTile(TileIndex t)
 }
 
 /**
+ * Checks if this tile is a road tunnel
+ * @param t the tile that might be a road tunnel
+ * @return true if it is a road tunnel
+ */
+static inline bool IsRoadTunnelTile(TileIndex t)
+{
+	return IsTunnelTile(t) && (TransportType)GB(_m[t].m5, 2, 2) == TRANSPORT_ROAD;
+}
+
+/**
  * Get the reservation state of the rail tunnel
  * @pre IsRailTunnelTile(t)
  * @param t the tile

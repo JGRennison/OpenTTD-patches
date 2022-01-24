@@ -2300,6 +2300,15 @@ STR_CONFIG_SETTING_TRAFFIC_LIGHTS_GREEN_PHASE_HELPTEXT          :Time in seconds
 STR_CONFIG_SETTING_MAX_TRAFFIC_LIGHT_CONSIST_SIZE               :Maximum TL consist size: {STRING2}
 STR_CONFIG_SETTING_MAX_TRAFFIC_LIGHT_CONSIST_SIZE_HELPTEXT      :Maximum number of trafficlights that can be synchronised.{}{ORANGE}Warning!{WHITE} High setting slow down the game
 STR_CONFIG_SETTING_MAX_TRAFFIC_LIGHT_CONSIST_DISTANCE           :Maximum distance between two trafficlights for synchronising: {STRING2}
+
+STR_CONFIG_SETTING_ROAD_SIGNS									:Enable road signs:{STRING2}
+STR_CONFIG_SETTING_ROAD_SIGNS_HELPTEXT							:Enables/disables building of road signs completely
+STR_CONFIG_SETTING_TOWNS_BUILD_ROAD_SIGNS						:Towns can build road signs (yield or stop sign): {STRING2}
+STR_CONFIG_SETTING_TOWNS_BUILD_ROAD_SIGNS_HELPTEXT				:Allows/dissallows towns to build road (yield or stop) signs during road construction
+STR_CONFIG_SETTING_ALLOW_BUILDING_RS_ON_TOWN_ROADS				:Build and remove road (yield or stop) signs on town roads: {STRING2}
+STR_CONFIG_SETTING_ALLOW_BUILDING_RS_ON_TOWN_ROADS_HELPTEXT		:Allows/disallows the players building and removing road (yield or stop) signs on town roads
+STR_CONFIG_SETTING_AUTO_BUILD_EYE_CANDY_ROAD_SIGNS              :Auto building of eye-candy road signs: {STRING2}
+STR_CONFIG_SETTING_AUTO_BUILD_EYE_CANDY_ROAD_SIGNS_HELPTEXT     :Enables/disables eye-candy road signs (i.e. street signs, hydrants etc) on roads
 STR_CONFIG_SETTING_MAX_TRAFFIC_LIGHT_CONSIST_DISTANCE_HELPTEXT  :Sets the maximum tile distance between two trafficlights for them to be synchronised
 
 STR_CONFIG_SETTING_SPEEDLIMITS                                  :Speed limits
@@ -2316,7 +2325,8 @@ STR_CONFIG_SETTING_LIMITVEHSPEED_HIGHWAY                        :{LTBLUE}Limit r
 STR_CONFIG_SETTING_SET_LIMITVEHSPEED_HIGHWAY                    :{LTBLUE}Set max vehicle speed on highways (zero - no speed limit): {ORANGE}{STRING}km/h
 
 STR_CONFIG_SETTING_HIGHWAYS                                     :Highways
-STR_CONFIG_SETTING_BOTH_LANES_ON_HIGHWAY                        :{LTBLUE}Cars will try to use two lanes on the highways (one-way roads with an object between): {ORANGE}{STRING}
+STR_CONFIG_SETTING_ONE_WAY_ROADS_OUT_OF_TOWN_AS_HIGHWAY         :{LTBLUE}Consider one way roads outside of towns as highways (no object in the middle)): {ORANGE}{STRING}
+STR_CONFIG_SETTING_BOTH_LANES_ON_HIGHWAY                        :{LTBLUE}Cars will try to use two lanes on the highways: {ORANGE}{STRING}
 STR_CONFIG_SETTING_MIN_SPEED_FOR_SECOND_LANE                    :{LTBLUE}Min speed to go to the second lane on highway: {ORANGE}{STRING}km/h
 STR_CONFIG_SETTING_ONLY_BUSES_ON_SECOND_LANE                    :{LTBLUE}Only buses (any road vehicle with cargo Passengers) will use second lane (doesn't effect overtaking): {ORANGE}{STRING}
 STR_CONFIG_SETTING_CHANCE_OF_GOING_TO_SECOND_LANE				:Chance of vehicle to use second lane: {STRING2}
@@ -2445,6 +2455,7 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}Map mod
 STR_CONFIG_SETTING_SHARING                                      :{ORANGE}Infrastructure sharing
 STR_CONFIG_SETTING_SCENARIO_EDITOR                              :{ORANGE}Scenario Editor
 STR_CONFIG_SETTING_CONSTRUCTION_TRAFFIC_LIGHTS                  :{ORANGE}Traffic lights
+STR_CONFIG_SETTING_CONSTRUCTION_ROAD_SIGNS		                :{ORANGE}Road signs
 
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE                  :Re-route road vehicles when road layout changes: {STRING2}
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_HELPTEXT         :Whether to re-route all road vehicles on the map when the road layout is changed.{}This can improve road vehicle responsiveness to a changing road layout at the expense of performance.{}Note that if this is set to "Yes", town growth can trigger re-routing of road vehicles which may cause slow-downs on large maps.
@@ -3586,6 +3597,8 @@ STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRUCK_LOADING_BAY                :{BLACK}Build lo
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_CARGO_TRAM_STATION               :{BLACK}Build freight tram station. Ctrl enables joining stations. Shift toggles building/showing cost estimate
 STR_ROAD_TOOLBAR_TOOLTIP_TOGGLE_ONE_WAY_ROAD                    :{BLACK}Activate/Deactivate one way roads
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAFFIC_LIGHT                    :{BLACK}Build traffic light
+STR_ROAD_TOOLBAR_TOOLTIP_BUILD_YIELD_SIGN	                    :{BLACK}Build yield sign
+STR_ROAD_TOOLBAR_TOOLTIP_BUILD_STOP_SIGN	                    :{BLACK}Build stop sign
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_BRIDGE                      :{BLACK}Build road bridge. Shift toggles building/showing cost estimate
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAMWAY_BRIDGE                   :{BLACK}Build tramway bridge. Shift toggles building/showing cost estimate
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_TUNNEL                      :{BLACK}Build road tunnel. Shift toggles building/showing cost estimate
@@ -6257,6 +6270,11 @@ STR_ERROR_CAN_T_PLACE_TRAFFIC_LIGHTS                            :{WHITE}Can't pl
 STR_ERROR_CAN_ONLY_BE_PLACED_ON_ROAD_JUNCTIONS                  :{WHITE}... can only be placed on road junctions
 STR_ERROR_BUILDING_TRAFFIC_LIGHTS_DISABLED                      :{WHITE}... building trafficlights is disabled, enable it in Advanced settings -> Construction -> Traffic lights
 STR_ERROR_TRAFFIC_LIGHTS_NOT_ALLOWED_ON_TOWN_ROADS              :{WHITE}... building trafficlights on town roads is disabled, enable it in Advanced settings -> Construction -> Traffic lights
+STR_ERROR_CAN_T_REMOVE_ROAD_SIGNS_FROM							:{WHITE}Can't remove road sign from here...
+STR_ERROR_CAN_T_PLACE_ROAD_SIGN									:{WHITE}Can't place road sign...
+STR_ERROR_CAN_ONLY_BE_PLACED_ON_3WAY_ROAD_JUNCTIONS             :{WHITE}... can only be placed on 3-way road junctions
+STR_ERROR_BUILDING_ROAD_SIGNS_DISABLED							:{WHITE}... building road signs is disabled, enable it in Advanced settings -> Construction -> Road signs
+STR_ERROR_ROAD_SIGNS_NOT_ALLOWED_ON_TOWN_ROADS					:{WHITE}... building road signs on town roads is disabled, enable it in Advanced settings -> Construction -> Road signs
 
 # Waterway construction errors
 STR_ERROR_CAN_T_BUILD_CANALS                                    :{WHITE}Can't build canals here...
@@ -7033,6 +7051,7 @@ STR_ZONING_INNER_INFO                                           :{BLACK}Select w
 
 STR_ZONING_NO_ZONING                                            :Nothing
 STR_ZONING_AUTHORITY                                            :Authority
+STR_ZONING_TOWNLIMITS                                           :Town limits
 STR_ZONING_CAN_BUILD                                            :Where I can't build
 STR_ZONING_STA_CATCH                                            :Station catchment
 STR_ZONING_STA_CATCH_OPEN                                       :Station catchment (window open)

@@ -34,6 +34,7 @@ enum ZoningToolbarWidgets {
 static const StringID _zone_type_strings[] = {
 	STR_ZONING_NO_ZONING,
 	STR_ZONING_AUTHORITY,
+	STR_ZONING_TOWNLIMITS,
 	STR_ZONING_CAN_BUILD,
 	STR_ZONING_STA_CATCH,
 	STR_ZONING_STA_CATCH_OPEN,
@@ -43,12 +44,12 @@ static const StringID _zone_type_strings[] = {
 	STR_ZONING_2x2_GRID,
 	STR_ZONING_3x3_GRID,
 	STR_ZONING_ONE_WAY_ROAD,
-	INVALID_STRING_ID
-};
+	INVALID_STRING_ID};
 
 static const ZoningEvaluationMode _zone_type_modes[] = {
 	ZEM_NOTHING,
 	ZEM_AUTHORITY,
+	ZEM_TOWNLIMITS,
 	ZEM_CAN_BUILD,
 	ZEM_STA_CATCH,
 	ZEM_STA_CATCH_WIN,

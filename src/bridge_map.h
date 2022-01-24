@@ -230,6 +230,16 @@ static inline bool IsRoadCustomBridgeHeadTile(TileIndex t)
 }
 
 /**
+ * Checks if this tile is a road bridge head
+ * @param t The tile to analyze
+ * @return true if it is a road bridge head
+ */
+static inline bool IsRoadBridgeHeadTile(TileIndex t)
+{
+	return IsBridgeTile(t) && (TransportType)GB(_m[t].m5, 2, 2) == TRANSPORT_ROAD;
+}
+
+/**
  * Returns the road bits for a (possibly custom) road bridge head
  * @param t The tile to analyze
  * @param rtt Road/tram type.

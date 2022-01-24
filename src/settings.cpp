@@ -79,6 +79,7 @@
 #include "string_func_extra.h"
 
 #include "trafficlight_func.h"
+#include "roadsigns_func.h"
 
 #include "void_map.h"
 #include "station_base.h"
@@ -1507,6 +1508,26 @@ static bool TLSettingChanged(int32 p1)
 	/* If traffic lights got disabled, clear them all. */
 	if (!_settings_game.construction.traffic_lights)
 		ClearAllTrafficLights();
+	return true;
+}
+
+/**
+ * What to do when road signs Setting was changed.
+ * @param p1 unused
+ * @return always 0
+ */
+static bool RSSettingChanged(int32 p1)
+{
+	/* Road building gui changed. */
+	MarkWholeScreenDirty();
+
+	/* If traffic lights got disabled, clear them all. */
+	if (!_settings_game.construction.road_signs)
+	{
+		ClearAllYieldSigns();
+		ClearAllStopSigns();
+	}
+	
 	return true;
 }
 

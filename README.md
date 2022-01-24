@@ -19,6 +19,18 @@ My patches:
 
 5. Usage of the second lane - cars will use second lanes on the highways, depending on their speed, probability, breakdown and etc. They will go on the second lane as far as possible. In case if another vehicle with higher speed comes from behind on the second lane too, first vehicle will give the right of way - will temporarly switch to the first lane. They also will do the same in case they are going to breakdown. 
 
+6. Road signs
+
+   1. Yield sign (only on 3-way road intersection) - will make vehicle to check for the traffic coming towards the intersection.
+
+   2. Stop sign (all-way) - vehicle will stop on interaction and wait until interaction is clear.
+
+   3. Street directions - will be placed automatically on the street interactions inside city limits. Eye-candy.
+
+   4. Fire hydrant - will be placed automatically on the town straight roads with 1/3 probability. Eye-candy.
+
+7. Town limits zoning - allows to see where town limits are (different from the authority).
+
 ## JGR's Patchpack version 0.45.1
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)

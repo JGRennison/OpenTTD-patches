@@ -226,6 +226,8 @@ CommandCost CheckforTownRating(DoCommandFlag flags, Town *t, TownRatingCheckType
 TileIndexDiff GetHouseNorthPart(HouseID &house);
 
 Town *CalcClosestTownFromTile(TileIndex tile, uint threshold = UINT_MAX);
+Town* ClosestTownFromTile(TileIndex tile, uint threshold);
+HouseZonesBits GetTownRadiusGroup(const Town* t, TileIndex tile);
 
 void ResetHouses();
 
@@ -339,6 +341,20 @@ static inline uint16 TownTicksToGameTicks(uint16 ticks) {
 	return (std::min(ticks, MAX_TOWN_GROWTH_TICKS) + 1) * TOWN_GROWTH_TICKS - 1;
 }
 
+/**
+ * Checks if tile is in town zone
+ * 
+ * @param tile Tile to check
+ */
+static bool IsInTown(TileIndex tile)
+{
+	Town *t;
+	HouseZonesBits grp = HZB_TOWN_EDGE;
+	t = ClosestTownFromTile(tile, (uint)-1);
+	grp = GetTownRadiusGroup(t, tile);
+
+	return grp >= HZB_TOWN_OUTSKIRT;
+}
 
 RoadType GetTownRoadType(const Town *t);
 bool MayTownModifyRoad(TileIndex tile);

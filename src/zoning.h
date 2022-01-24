@@ -16,20 +16,22 @@
 /**
  * Zoning evaluation modes
  */
-enum ZoningEvaluationMode {
-	ZEM_NOTHING = 0,   ///< No zoning action selected
-	ZEM_AUTHORITY,     ///< Check the local authority's opinion.
-	ZEM_CAN_BUILD,     ///< Check wither or not the player can build.
-	ZEM_STA_CATCH,     ///< Check catchment area for stations
+enum ZoningEvaluationMode
+{
+	ZEM_NOTHING = 0, ///< No zoning action selected
+	ZEM_AUTHORITY,	 ///< Check the local authority's opinion.
+	ZEM_TOWNLIMITS,	   ///< Check town limits.
+	ZEM_CAN_BUILD,	   ///< Check wither or not the player can build.
+	ZEM_STA_CATCH,	   ///< Check catchment area for stations
 	ZEM_STA_CATCH_WIN, ///< Check catchment area for stations with their station windows open
-	ZEM_BUL_UNSER,     ///< Check for unserved buildings
-	ZEM_IND_UNSER,     ///< Check for unserved industries
+	ZEM_BUL_UNSER,	   ///< Check for unserved buildings
+	ZEM_IND_UNSER,	   ///< Check for unserved industries
 	ZEM_TRACERESTRICT, ///< Check for restricted signals
-	ZEM_2x2_GRID,      ///< Show 2x2 town road grid
-	ZEM_3x3_GRID,      ///< Show 3x3 town road grid
+	ZEM_2x2_GRID,	   ///< Show 2x2 town road grid
+	ZEM_3x3_GRID,	   ///< Show 3x3 town road grid
 	ZEM_ONE_WAY_ROAD,  ///< Show one way roads
 
-	ZEM_END,           ///< End marker
+	ZEM_END, ///< End marker
 };
 
 /**

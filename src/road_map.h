@@ -308,6 +308,52 @@ static inline bool HasTrafficLights(TileIndex t)
 	return (IsTileType(t, MP_ROAD) && (GetRoadTileType(t) == ROAD_TILE_NORMAL) && HasBit(_me[t].m7, 4));
 }
 
+static inline void MakeYieldSign(TileIndex t)
+{
+	assert(IsTileType(t, MP_ROAD));
+	assert(GetRoadTileType(t) == ROAD_TILE_NORMAL);
+	SetBit(_me[t].m7, 3);
+}
+
+static inline void ClearYieldSign(TileIndex t)
+{
+	assert(IsTileType(t, MP_ROAD));
+	assert(GetRoadTileType(t) == ROAD_TILE_NORMAL);
+	ClrBit(_me[t].m7, 3);
+}
+
+/**
+ * Check if a tile has yield sign
+ * @param t The tile to check.
+ */
+static inline bool HasYieldSign(TileIndex t)
+{
+	return (IsTileType(t, MP_ROAD) && (GetRoadTileType(t) == ROAD_TILE_NORMAL) && HasBit(_me[t].m7, 3));
+}
+
+static inline void MakeStopSign(TileIndex t)
+{
+	assert(IsTileType(t, MP_ROAD));
+	assert(GetRoadTileType(t) == ROAD_TILE_NORMAL);
+	SetBit(_me[t].m7, 2);
+}
+
+static inline void ClearStopSign(TileIndex t)
+{
+	assert(IsTileType(t, MP_ROAD));
+	assert(GetRoadTileType(t) == ROAD_TILE_NORMAL);
+	ClrBit(_me[t].m7, 2);
+}
+
+/**
+ * Check if a tile has stop sign
+ * @param t The tile to check.
+ */
+static inline bool HasStopSign(TileIndex t)
+{
+	return (IsTileType(t, MP_ROAD) && (GetRoadTileType(t) == ROAD_TILE_NORMAL) && HasBit(_me[t].m7, 2));
+}
+
 /** Which directions are disallowed ? */
 enum DisallowedRoadDirections {
 	DRD_NONE,       ///< None of the directions are disallowed
@@ -764,6 +810,30 @@ static inline void MakeRoadDepot(TileIndex t, Owner owner, DepotID did, DiagDire
 	_me[t].m8 = INVALID_ROADTYPE << 6;
 	SetRoadType(t, GetRoadTramType(rt), rt);
 	SetRoadOwner(t, RTT_TRAM, owner);
+}
+
+/**
+ * Checks if a tile is a one way road tile
+*/
+static inline bool IsOneWayRoadTile(TileIndex tile)
+{
+	return MayHaveRoad(tile) && GetRoadCachedOneWayState(tile) != RCOWS_NORMAL;
+}
+
+
+static inline bool IsOneWaySideJunctionRoadTile(TileIndex tile)
+{
+	return MayHaveRoad(tile) && (GetRoadCachedOneWayState(tile) == RCOWS_SIDE_JUNCTION || GetRoadCachedOneWayState(tile) == RCOWS_SIDE_JUNCTION_NO_EXIT);
+}
+
+/**
+ * Checks if the road is one-way road
+ * @param tile the tile to check
+ * @return is tile one-way road
+ */
+static inline bool IsOneWayRoad(TileIndex tile)
+{
+	return IsTileType(tile, MP_ROAD) && IsNormalRoadTile(tile) && IsOneWayRoadTile(tile);
 }
 
 #endif /* ROAD_MAP_H */

@@ -12,6 +12,9 @@
 #include "yapf_node_road.hpp"
 #include "../../roadstop_base.h"
 #include "../../vehicle_func.h"
+#include "../../town.h"
+#include "../../highway.h"
+#include "../../road_map.h"
 
 #include "../../safeguards.h"
 
@@ -132,9 +135,25 @@ protected:
 			if (HasTrafficLights(tile))
 				cost += Yapf().PfGetSettings().road_trafficlight_penalty;
 
-			/* extra cost for two way road */
-			if (IsNormalRoadTile(tile) && GetDisallowedRoadDirections(tile) == DRD_NONE)
-				cost += Yapf().PfGetSettings().road_two_way_penalty;
+			bool isHighway = false;
+
+			if (IsNormalRoadTile(tile))
+			{
+				if (!IsOneWayRoadTile(tile))
+					cost += Yapf().PfGetSettings().road_two_way_penalty; // extra cost for two way road
+				else
+				{
+					isHighway = IsHighway(tile);
+					if (!isHighway)
+						cost += Yapf().PfGetSettings().road_one_way_penalty; // extra cost for one way road (not highway)
+				}
+			}
+
+			if (!isHighway && IsInTown(tile))
+			{
+				if (HasTrafficLights(tile))
+					cost += Yapf().PfGetSettings().road_town_penalty; // extra cost for town road
+			}
 		}
 		return cost;
 	}

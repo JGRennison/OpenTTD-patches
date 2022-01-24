@@ -865,6 +865,12 @@ bool AfterLoadGame()
 		_settings_game.construction.max_tlc_distance = 4;
 		_settings_game.construction.max_tlc_size = 4;
 		_settings_game.construction.allow_building_tls_in_towns = true;
+
+		_settings_game.construction.road_signs = false;
+		_settings_game.construction.allow_building_rs_in_towns = false;
+		_settings_game.construction.allow_eye_candy_road_signs = false;
+		_settings_game.construction.towns_build_road_signs = false;
+
 		_settings_game.pf.npf.npf_road_trafficlight_penalty = 0;
 		_settings_game.pf.yapf.road_trafficlight_penalty = 0;
 

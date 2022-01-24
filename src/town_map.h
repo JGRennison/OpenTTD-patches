@@ -10,8 +10,8 @@
 #ifndef TOWN_MAP_H
 #define TOWN_MAP_H
 
-#include "road_map.h"
 #include "house.h"
+#include "road_map.h"
 
 /**
  * Get the index of which town this house/street is attached to.

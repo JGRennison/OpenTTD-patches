@@ -221,6 +221,9 @@ static void LoadSpriteTables()
 
 	/* Load traffic lights graphics. */
 	LoadGrfFile("trafficlights.grf", SPR_TRAFFICLIGHTS_BASE, false);
+	
+	/* Load traffic signs graphics. */
+	LoadGrfFile("trafficsigns.grf", SPR_TRAFFICSIGNS_BASE, false);
 
 	/* Initialize the unicode to sprite mapping table */
 	InitializeUnicodeGlyphMap();
