@@ -8767,7 +8767,7 @@ struct GRFPropertyMapAction {
 		extern const GRFVariableMapDefinition _grf_action2_remappable_variables[];
 		for (const GRFVariableMapDefinition *info = _grf_action2_remappable_variables; info->name != nullptr; info++) {
 			if (info->feature == this->feature && strcmp(info->name, str) == 0) {
-				_cur.grffile->grf_variable_remaps.push_back({ info->id, (uint8) this->feature, this->input_shift, this->output_shift, this->input_mask, this->output_mask });
+				_cur.grffile->grf_variable_remaps.push_back({ (uint16)info->id, (uint8)this->feature, this->input_shift, this->output_shift, this->input_mask, this->output_mask });
 				success = true;
 				break;
 			}
