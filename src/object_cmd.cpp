@@ -566,7 +566,7 @@ CommandCost CmdBuildObjectArea(TileIndex tile, DoCommandFlag flags, uint32 p1, u
 }
 
 
-static Foundation GetFoundation_Object(TileIndex tile, Slope tileh);
+Foundation GetFoundation_Object(TileIndex tile, Slope tileh);
 
 static void DrawTile_Object(TileInfo *ti, DrawTileProcParams params)
 {
@@ -670,7 +670,7 @@ static int GetSlopePixelZ_Object(TileIndex tile, uint x, uint y)
 	}
 }
 
-static Foundation GetFoundation_Object(TileIndex tile, Slope tileh)
+Foundation GetFoundation_Object(TileIndex tile, Slope tileh)
 {
 	if (tileh == SLOPE_FLAT) return FOUNDATION_NONE;
 	switch (GetObjectEffectiveFoundationType(tile)) {

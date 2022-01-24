@@ -79,6 +79,8 @@ extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 
 /** Action14 Action2 remappable variable list */
 extern const GRFVariableMapDefinition _grf_action2_remappable_variables[] = {
+	GRFVariableMapDefinition(GSF_OBJECTS, A2VRI_OBJECT_FOUNDATION_SLOPE, "object_foundation_tile_slope"),
+	GRFVariableMapDefinition(GSF_OBJECTS, A2VRI_OBJECT_FOUNDATION_SLOPE_CHANGE, "object_foundation_change_tile_slope"),
 	GRFVariableMapDefinition(),
 };
 

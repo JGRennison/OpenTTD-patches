@@ -39,6 +39,8 @@ enum Action0RemapPropertyIds {
 
 
 enum Action2VariableRemapIds {
+	A2VRI_OBJECT_FOUNDATION_SLOPE = 0x100,
+	A2VRI_OBJECT_FOUNDATION_SLOPE_CHANGE,
 };
 
 /** Action14 feature definition */
