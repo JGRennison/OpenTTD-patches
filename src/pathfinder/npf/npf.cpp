@@ -341,6 +341,7 @@ static int32 NPFRoadPathCost(AyStar *as, AyStarNode *current, OpenListNode *pare
 
 		case MP_STATION: {
 			cost = NPF_TILE_LENGTH;
+			if (IsRoadWaypoint(tile)) break;
 			const RoadStop *rs = RoadStop::GetByTile(tile, GetRoadStopType(tile));
 			if (IsDriveThroughStopTile(tile)) {
 				/* Increase the cost for drive-through road stops */
@@ -1131,7 +1132,7 @@ static void NPFFillWithOrderData(NPFFindStationOrTileData *fstd, const Vehicle *
 		if (v->type == VEH_TRAIN) {
 			fstd->station_type = v->current_order.IsType(OT_GOTO_STATION) ? STATION_RAIL : STATION_WAYPOINT;
 		} else if (v->type == VEH_ROAD) {
-			fstd->station_type = RoadVehicle::From(v)->IsBus() ? STATION_BUS : STATION_TRUCK;
+			fstd->station_type = v->current_order.IsType(OT_GOTO_STATION) ? (RoadVehicle::From(v)->IsBus() ? STATION_BUS : STATION_TRUCK) : STATION_ROADWAYPOINT;
 		} else if (v->type == VEH_SHIP) {
 			fstd->station_type = v->current_order.IsType(OT_GOTO_STATION) ? STATION_DOCK : STATION_BUOY;
 		}

@@ -1135,6 +1135,8 @@ static byte GetTopographyValue(TileIndex tile)
 				return MKCOLOUR(PC_WATER);
 			case STATION_WAYPOINT:
 				return MKCOLOUR(PC_GREY);
+			case STATION_ROADWAYPOINT:
+				return MKCOLOUR(PC_GREY);
 			default: NOT_REACHED();
 		}
 	}
@@ -1227,6 +1229,8 @@ static byte GetIndustryValue(TileIndex tile)
 			case STATION_BUOY:
 				return MKCOLOUR(PC_BLACK);
 			case STATION_WAYPOINT:
+				return MKCOLOUR(PC_GREY);
+			case STATION_ROADWAYPOINT:
 				return MKCOLOUR(PC_GREY);
 			default: NOT_REACHED();
 		}

@@ -17,12 +17,15 @@
  */
 enum WaypointFlags {
 	WPF_HIDE_LABEL              = 0, ///< Hide waypoint label
+	WPF_ROAD                    = 1, ///< This is a road waypoint
 };
 
 /** Representation of a waypoint. */
 struct Waypoint FINAL : SpecializedStation<Waypoint, true> {
 	uint16 town_cn;        ///< The N-1th waypoint for this town (consecutive number)
 	uint16 waypoint_flags; ///< Waypoint flags, see WaypointFlags
+
+	TileArea road_waypoint_area; ///< Tile area the road waypoint part covers
 
 	/**
 	 * Create a waypoint at the given tile.

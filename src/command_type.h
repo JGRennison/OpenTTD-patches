@@ -251,6 +251,7 @@ enum Commands {
 	CMD_CONVERT_RAIL,                 ///< convert a rail type
 
 	CMD_BUILD_RAIL_WAYPOINT,          ///< build a waypoint
+	CMD_BUILD_ROAD_WAYPOINT,          ///< build a road waypoint
 	CMD_RENAME_WAYPOINT,              ///< rename a waypoint
 	CMD_SET_WAYPOINT_LABEL_HIDDEN,    ///< set whether waypoint label is hidden
 	CMD_REMOVE_FROM_RAIL_WAYPOINT,    ///< remove a (rectangle of) tiles from a rail waypoint

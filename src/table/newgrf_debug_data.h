@@ -16,6 +16,7 @@
 #include "../ship.h"
 #include "../aircraft.h"
 #include "../object_map.h"
+#include "../waypoint_base.h"
 #include "../string_func_extra.h"
 
 /* Helper for filling property tables */
@@ -1267,6 +1268,27 @@ class NIHStationStruct : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  Delete counter: %u", st->delete_ctr);
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "  Docking tiles: %X, %u x %u", st->docking_station.tile, st->docking_station.w, st->docking_station.h);
+			output.print(buffer);
+		}
+		const Waypoint *wp = Waypoint::GetIfValid(index);
+		if (wp) {
+			output.register_next_line_click_flag_toggle(1);
+			seprintf(buffer, lastof(buffer), "  [%c] flags: 0x%X", output.flags & 1 ? '-' : '+', wp->waypoint_flags);
+			output.print(buffer);
+			if (output.flags & 1) {
+				auto print = [&](const char *name) {
+					seprintf(buffer, lastof(buffer), "    %s", name);
+					output.print(buffer);
+				};
+				auto check_flag = [&](WaypointFlags flag, const char *name) {
+					if (HasBit(wp->waypoint_flags, flag)) print(name);
+				};
+				check_flag(WPF_HIDE_LABEL,   "WPF_HIDE_LABEL");
+				check_flag(WPF_ROAD,         "WPF_ROAD");
+			}
+
+			seprintf(buffer, lastof(buffer), "  road_waypoint_area: tile: %X (%u x %u), width: %u, height: %u",
+					wp->road_waypoint_area.tile, TileX(wp->road_waypoint_area.tile), TileY(wp->road_waypoint_area.tile), wp->road_waypoint_area.w, wp->road_waypoint_area.h);
 			output.print(buffer);
 		}
 	}

@@ -194,12 +194,33 @@ static inline bool IsBusStop(TileIndex t)
 }
 
 /**
+ * Is the station at \a t a road waypoint?
+ * @param t Tile to check
+ * @pre IsTileType(t, MP_STATION)
+ * @return \c true if station is a road waypoint, \c false otherwise
+ */
+static inline bool IsRoadWaypoint(TileIndex t)
+{
+	return GetStationType(t) == STATION_ROADWAYPOINT;
+}
+
+/**
+ * Is this tile a station tile and a road waypoint?
+ * @param t the tile to get the information from
+ * @return true if and only if the tile is a road waypoint
+ */
+static inline bool IsRoadWaypointTile(TileIndex t)
+{
+	return IsTileType(t, MP_STATION) && IsRoadWaypoint(t);
+}
+
+/**
  * Is the station at \a t a road station?
  * @param t Tile to check
  * @pre IsTileType(t, MP_STATION)
- * @return \c true if station at the tile is a bus top or a truck stop, \c false otherwise
+ * @return \c true if station at the tile is a bus stop, truck stop \c false otherwise
  */
-static inline bool IsRoadStop(TileIndex t)
+static inline bool IsStationRoadStop(TileIndex t)
 {
 	assert_tile(IsTileType(t, MP_STATION), t);
 	return IsTruckStop(t) || IsBusStop(t);
@@ -210,9 +231,31 @@ static inline bool IsRoadStop(TileIndex t)
  * @param t Tile to check
  * @return \c true if the tile is a station tile and a road stop
  */
-static inline bool IsRoadStopTile(TileIndex t)
+static inline bool IsStationRoadStopTile(TileIndex t)
 {
-	return IsTileType(t, MP_STATION) && IsRoadStop(t);
+	return IsTileType(t, MP_STATION) && IsStationRoadStop(t);
+}
+
+/**
+ * Is the station at \a t a road station?
+ * @param t Tile to check
+ * @pre IsTileType(t, MP_STATION)
+ * @return \c true if station at the tile is a bus stop, truck stop or road waypoint, \c false otherwise
+ */
+static inline bool IsAnyRoadStop(TileIndex t)
+{
+	assert_tile(IsTileType(t, MP_STATION), t);
+	return IsTruckStop(t) || IsBusStop(t) || IsRoadWaypoint(t);
+}
+
+/**
+ * Is tile \a t a road stop station?
+ * @param t Tile to check
+ * @return \c true if the tile is a station tile and a road stop
+ */
+static inline bool IsAnyRoadStopTile(TileIndex t)
+{
+	return IsTileType(t, MP_STATION) && IsAnyRoadStop(t);
 }
 
 /**
@@ -222,7 +265,7 @@ static inline bool IsRoadStopTile(TileIndex t)
  */
 static inline bool IsStandardRoadStopTile(TileIndex t)
 {
-	return IsRoadStopTile(t) && GetStationGfx(t) < GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET;
+	return IsAnyRoadStopTile(t) && GetStationGfx(t) < GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET;
 }
 
 /**
@@ -232,7 +275,7 @@ static inline bool IsStandardRoadStopTile(TileIndex t)
  */
 static inline bool IsDriveThroughStopTile(TileIndex t)
 {
-	return IsRoadStopTile(t) && GetStationGfx(t) >= GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET;
+	return IsAnyRoadStopTile(t) && GetStationGfx(t) >= GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET;
 }
 
 /**
@@ -274,13 +317,13 @@ static inline StationGfx GetAirportGfx(TileIndex t)
 /**
  * Gets the direction the road stop entrance points towards.
  * @param t the tile of the road stop
- * @pre IsRoadStopTile(t)
+ * @pre IsAnyRoadStopTile(t)
  * @return the direction of the entrance
  */
 static inline DiagDirection GetRoadStopDir(TileIndex t)
 {
 	StationGfx gfx = GetStationGfx(t);
-	assert_tile(IsRoadStopTile(t), t);
+	assert_tile(IsAnyRoadStopTile(t), t);
 	if (gfx < GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET) {
 		return (DiagDirection)(gfx);
 	} else {
@@ -630,9 +673,9 @@ static inline void MakeRoadStop(TileIndex t, Owner o, StationID sid, RoadStopTyp
  * @param tram_rt the tram roadtype on this tile
  * @param a the direction of the roadstop
  */
-static inline void MakeDriveThroughRoadStop(TileIndex t, Owner station, Owner road, Owner tram, StationID sid, RoadStopType rst, RoadType road_rt, RoadType tram_rt, Axis a)
+static inline void MakeDriveThroughRoadStop(TileIndex t, Owner station, Owner road, Owner tram, StationID sid, StationType rst, RoadType road_rt, RoadType tram_rt, Axis a)
 {
-	MakeStation(t, station, sid, (rst == ROADSTOP_BUS ? STATION_BUS : STATION_TRUCK), GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET + a);
+	MakeStation(t, station, sid, rst, GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET + a);
 	SetRoadTypes(t, road_rt, tram_rt);
 	SetRoadOwner(t, RTT_ROAD, road);
 	SetRoadOwner(t, RTT_TRAM, tram);

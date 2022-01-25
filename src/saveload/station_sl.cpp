@@ -462,6 +462,9 @@ static const SaveLoad _waypoint_desc[] = {
 	  SLE_CONDVAR(Waypoint, train_station.w,           SLE_FILE_U8 | SLE_VAR_U16,   SLV_124, SL_MAX_VERSION),
 	  SLE_CONDVAR(Waypoint, train_station.h,           SLE_FILE_U8 | SLE_VAR_U16,   SLV_124, SL_MAX_VERSION),
 	SLE_CONDVAR_X(Waypoint, waypoint_flags,            SLE_UINT16,           SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_WAYPOINT_FLAGS)),
+	SLE_CONDVAR_X(Waypoint, road_waypoint_area.tile,   SLE_UINT32,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ROAD_WAYPOINTS)),
+	SLE_CONDVAR_X(Waypoint, road_waypoint_area.w,      SLE_FILE_U8 | SLE_VAR_U16,   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ROAD_WAYPOINTS)),
+	SLE_CONDVAR_X(Waypoint, road_waypoint_area.h,      SLE_FILE_U8 | SLE_VAR_U16,   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ROAD_WAYPOINTS)),
 };
 
 /**
