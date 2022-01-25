@@ -513,6 +513,8 @@ enum FlaggedCommands {
 	CMD_ID_MASK               = 0x00FF, ///< mask for the command ID
 };
 
+static_assert(CMD_END <= CMD_ID_MASK + 1);
+
 /**
  * Command flags for the command table _command_proc_table.
  *
