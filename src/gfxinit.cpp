@@ -188,8 +188,11 @@ static void LoadSpriteTables()
 	/* Tracerestrict sprites. */
 	LoadGrfFile("tracerestrict.grf", SPR_TRACERESTRICT_BASE, false);
 
-	/* Tracerestrict sprites. */
+	/* Misc GUI sprites. */
 	LoadGrfFile("misc_gui.grf", SPR_MISC_GUI_BASE, false);
+
+	/* Road waypoints sprites. */
+	LoadGrfFile("road_waypoints.grf", SPR_ROAD_WAYPOINTS_BASE, false);
 
 	/* Fill duplicate original signal graphics sprite block */
 	for (uint i = 0; i < DUP_ORIGINAL_SIGNALS_SPRITE_COUNT; i++) {
