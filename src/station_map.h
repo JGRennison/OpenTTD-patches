@@ -302,6 +302,49 @@ static inline void SetDriveThroughStopDisallowedRoadDirections(TileIndex t, Disa
 }
 
 /**
+ * Get the decorations of a road waypoint.
+ * @param tile The tile to query.
+ * @return The road decoration of the tile.
+ */
+static inline Roadside GetRoadWaypointRoadside(TileIndex tile)
+{
+	assert_tile(IsRoadWaypointTile(tile), tile);
+	return (Roadside)GB(_m[tile].m3, 2, 2);
+}
+
+/**
+ * Set the decorations of a road waypoint.
+ * @param tile The tile to change.
+ * @param s    The new road decoration of the tile.
+ */
+static inline void SetRoadWaypointRoadside(TileIndex tile, Roadside s)
+{
+	assert_tile(IsRoadWaypointTile(tile), tile);
+	SB(_m[tile].m3, 2, 2, s);
+}
+
+/**
+ * Check if a road waypoint tile has snow/desert.
+ * @param t The tile to query.
+ * @return True if the tile has snow/desert.
+ */
+static inline bool IsRoadWaypointOnSnowOrDesert(TileIndex t)
+{
+	assert_tile(IsRoadWaypointTile(t), t);
+	return HasBit(_me[t].m8, 15);
+}
+
+/**
+ * Toggle the snow/desert state of a road waypoint tile.
+ * @param t The tile to change.
+ */
+static inline void ToggleRoadWaypointOnSnowOrDesert(TileIndex t)
+{
+	assert_tile(IsRoadWaypointTile(t), t);
+	ToggleBit(_me[t].m8, 15);
+}
+
+/**
  * Get the station graphics of this airport tile
  * @param t the tile to query
  * @pre IsAirport(t)

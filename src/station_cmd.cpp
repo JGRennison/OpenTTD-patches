@@ -3360,6 +3360,12 @@ draw_default_foundation:
 				DrawClearLandTile(ti, 3);
 			}
 		}
+	} else if (IsRoadWaypointTile(ti->tile)) {
+		RoadBits bits = GetRoadStopDir(ti->tile) == DIAGDIR_NE ? ROAD_X : ROAD_Y;
+		extern void DrawRoadBits(TileInfo *ti, RoadBits road, RoadBits tram, Roadside roadside, bool snow_or_desert);
+		DrawRoadBits(ti, GetRoadTypeRoad(ti->tile) != INVALID_ROADTYPE ? bits : ROAD_NONE,
+				GetRoadTypeTram(ti->tile) != INVALID_ROADTYPE ? bits : ROAD_NONE,
+				GetRoadWaypointRoadside(ti->tile), IsRoadWaypointOnSnowOrDesert(ti->tile));
 	} else {
 		if (layout != nullptr) {
 			/* Sprite layout which needs preprocessing */
@@ -3683,6 +3689,40 @@ static void TileLoop_Station(TileIndex tile)
 		case STATION_BUOY:
 			TileLoop_Water(tile);
 			break;
+
+		case STATION_ROADWAYPOINT: {
+			switch (_settings_game.game_creation.landscape) {
+				case LT_ARCTIC:
+					if (IsRoadWaypointOnSnowOrDesert(tile) != (GetTileZ(tile) > GetSnowLine())) {
+						ToggleRoadWaypointOnSnowOrDesert(tile);
+						MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+					}
+					break;
+
+				case LT_TROPIC:
+					if (GetTropicZone(tile) == TROPICZONE_DESERT && !IsRoadWaypointOnSnowOrDesert(tile)) {
+						ToggleRoadWaypointOnSnowOrDesert(tile);
+						MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+					}
+					break;
+			}
+
+			HouseZonesBits grp = HZB_TOWN_EDGE;
+			const Town *t = ClosestTownFromTile(tile, UINT_MAX);
+			if (t != nullptr) {
+				grp = GetTownRadiusGroup(t, tile);
+			}
+
+			/* Adjust road ground type depending on 'grp' (grp is the distance to the center) */
+			Roadside new_rs = grp > HZB_TOWN_EDGE ? ROADSIDE_PAVED : ROADSIDE_GRASS;
+			Roadside cur_rs = GetRoadWaypointRoadside(tile);
+
+			if (new_rs != cur_rs) {
+				SetRoadWaypointRoadside(tile, cur_rs == ROADSIDE_BARREN ? new_rs : ROADSIDE_BARREN);
+				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+			}
+			break;
+		}
 
 		default: break;
 	}
