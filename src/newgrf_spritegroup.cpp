@@ -586,6 +586,15 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 			for (const auto &adjust : dsg->adjusts) {
 				char *p = this->buffer;
 				p += seprintf(p, lastof(this->buffer), "%*svar: %X", padding, "", adjust.variable);
+				if (adjust.variable >= 0x100) {
+					extern const GRFVariableMapDefinition _grf_action2_remappable_variables[];
+					for (const GRFVariableMapDefinition *info = _grf_action2_remappable_variables; info->name != nullptr; info++) {
+						if (adjust.variable == info->id) {
+							p += seprintf(p, lastof(this->buffer), " (%s)", info->name);
+							break;
+						}
+					}
+				}
 				if (adjust.variable >= 0x60 && adjust.variable <= 0x7F) p += seprintf(p, lastof(this->buffer), " (parameter: %X)", adjust.parameter);
 				p += seprintf(p, lastof(this->buffer), ", shift: %X, and: %X", adjust.shift_num, adjust.and_mask);
 				switch (adjust.type) {
