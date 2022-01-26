@@ -450,6 +450,9 @@ uint32 GetNearbyTileInformation(TileIndex tile, bool grf_version8)
 	/* Fake tile type for trees on shore */
 	if (IsTileType(tile, MP_TREES) && GetTreeGround(tile) == TREE_GROUND_SHORE) tile_type = MP_WATER;
 
+	/* Fake tile type for road waypoints */
+	if (IsRoadWaypointTile(tile)) tile_type = MP_ROAD;
+
 	int z;
 	Slope tileh = GetTilePixelSlope(tile, &z);
 	/* Return 0 if the tile is a land tile */
