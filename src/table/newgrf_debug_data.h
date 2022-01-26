@@ -515,6 +515,7 @@ static const NIVariable _niv_house[] = {
 class NIHHouse : public NIHelper {
 	bool IsInspectable(uint index) const override        { return true; }
 	bool ShowExtraInfoOnly(uint index) const override    { return HouseSpec::Get(GetHouseType(index))->grf_prop.grffile == nullptr; }
+	bool ShowSpriteDumpButton(uint index) const override { return true; }
 	uint GetParent(uint index) const override            { return GetInspectWindowNumber(GSF_FAKE_TOWNS, GetTownIndex(index)); }
 	const void *GetInstance(uint index)const override    { return nullptr; }
 	const void *GetSpec(uint index) const override       { return HouseSpec::Get(GetHouseType(index)); }
@@ -552,6 +553,11 @@ class NIHHouse : public NIHelper {
 			seprintf(buffer, lastof(buffer), "    building_flags: 0x%X", hs->building_flags);
 			output.print(buffer);
 		}
+	}
+
+	/* virtual */ void SpriteDump(uint index, std::function<void(const char *)> print) const override
+	{
+		DumpSpriteGroup(HouseSpec::Get(GetHouseType(index))->grf_prop.spritegroup[0], std::move(print));
 	}
 };
 
