@@ -449,7 +449,7 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 				 * bridge itself (not computed with DC_QUERY_COST) */
 				item.cost = ret.GetCost() + (((int64)tot_bridgedata_len * _price[PR_BUILD_BRIDGE] * item.spec->price) >> 8) + infra_cost;
 				any_available = true;
-			} else if (type_check.GetErrorMessage() != INVALID_STRING_ID) {
+			} else if (type_check.GetErrorMessage() != INVALID_STRING_ID && !query_per_bridge_type) {
 				type_errmsg = type_check.GetErrorMessage();
 			}
 		}
