@@ -1032,8 +1032,8 @@ static bool MappedPropertyLengthMismatch(ByteReader *buf, uint expected_size, co
 	uint length = buf->ReadExtendedByte();
 	if (length != expected_size) {
 		if (mapping_entry != nullptr) {
-			grfmsg(2, "Ignoring use of mapped property: %s, feature: %X, mapped to: %X, with incorrect data size: %u instead of %u",
-					mapping_entry->name, mapping_entry->feature, mapping_entry->property_id, length, expected_size);
+			grfmsg(2, "Ignoring use of mapped property: %s, feature: %s, mapped to: %X, with incorrect data size: %u instead of %u",
+					mapping_entry->name, GetFeatureString(mapping_entry->feature), mapping_entry->property_id, length, expected_size);
 		}
 		buf->Skip(length);
 		return true;
@@ -4901,7 +4901,7 @@ static ChangeInfoResult AirportTilesChangeInfo(uint airtid, int numinfo, int pro
 	return ret;
 }
 
-static bool HandleChangeInfoResult(const char *caller, ChangeInfoResult cir, uint8 feature, int property)
+static bool HandleChangeInfoResult(const char *caller, ChangeInfoResult cir, GrfSpecFeature feature, int property)
 {
 	switch (cir) {
 		default: NOT_REACHED();
@@ -4914,11 +4914,11 @@ static bool HandleChangeInfoResult(const char *caller, ChangeInfoResult cir, uin
 			return false;
 
 		case CIR_UNHANDLED:
-			grfmsg(1, "%s: Ignoring property 0x%02X of feature 0x%02X (not implemented)", caller, property, feature);
+			grfmsg(1, "%s: Ignoring property 0x%02X of feature %s (not implemented)", caller, property, GetFeatureString(feature));
 			return false;
 
 		case CIR_UNKNOWN:
-			grfmsg(0, "%s: Unknown property 0x%02X of feature 0x%02X, disabling", caller, property, feature);
+			grfmsg(0, "%s: Unknown property 0x%02X of feature %s, disabling", caller, property, GetFeatureString(feature));
 			FALLTHROUGH;
 
 		case CIR_INVALID_ID: {
@@ -4928,6 +4928,57 @@ static bool HandleChangeInfoResult(const char *caller, ChangeInfoResult cir, uin
 			return true;
 		}
 	}
+}
+
+static GrfSpecFeatureRef ReadFeature(uint8 raw_byte, bool allow_48 = false)
+{
+	GrfSpecFeature feature;
+	if (raw_byte >= GSF_REAL_FEATURE_END && !(allow_48 && raw_byte == 0x48)) {
+		feature = GSF_INVALID;
+	} else {
+		feature = static_cast<GrfSpecFeature>(raw_byte);
+	}
+	return { feature, raw_byte };
+}
+
+static const char *_feature_names[] = {
+	"TRAINS",
+	"ROADVEHICLES",
+	"SHIPS",
+	"AIRCRAFT",
+	"STATIONS",
+	"CANALS",
+	"BRIDGES",
+	"HOUSES",
+	"GLOBALVAR",
+	"INDUSTRYTILES",
+	"INDUSTRIES",
+	"CARGOES",
+	"SOUNDFX",
+	"AIRPORTS",
+	"SIGNALS",
+	"OBJECTS",
+	"RAILTYPES",
+	"AIRPORTTILES",
+	"ROADTYPES",
+	"TRAMTYPES",
+};
+static_assert(lengthof(_feature_names) == GSF_END);
+
+const char *GetFeatureString(GrfSpecFeatureRef feature)
+{
+	static char buffer[32];
+	if (feature.id < GSF_END) {
+		seprintf(buffer, lastof(buffer), "0x%02X (%s)", feature.raw_byte, _feature_names[feature.id]);
+	} else {
+		seprintf(buffer, lastof(buffer), "0x%02X", feature.raw_byte);
+	}
+	return buffer;
+}
+
+const char *GetFeatureString(GrfSpecFeature feature)
+{
+	return GetFeatureString(GrfSpecFeatureRef{ feature, feature });
 }
 
 struct GRFFilePropertyDescriptor {
@@ -4948,13 +4999,13 @@ static GRFFilePropertyDescriptor ReadAction0PropertyID(ByteReader *buf, uint8 fe
 		const GRFFilePropertyRemapEntry &def = iter->second;
 		int prop = def.id;
 		if (prop == A0RPI_UNKNOWN_ERROR) {
-			grfmsg(0, "Error: Unimplemented mapped property: %s, feature: %X, mapped to: %X", def.name, def.feature, raw_prop);
+			grfmsg(0, "Error: Unimplemented mapped property: %s, feature: %s, mapped to: %X", def.name, GetFeatureString(def.feature), raw_prop);
 			GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY);
 			error->data = stredup(def.name);
 			error->param_value[1] = def.feature;
 			error->param_value[2] = raw_prop;
 		} else if (prop == A0RPI_UNKNOWN_IGNORE) {
-			grfmsg(2, "Ignoring unimplemented mapped property: %s, feature: %X, mapped to: %X", def.name, def.feature, raw_prop);
+			grfmsg(2, "Ignoring unimplemented mapped property: %s, feature: %s, mapped to: %X", def.name, GetFeatureString(def.feature), raw_prop);
 		}
 		return GRFFilePropertyDescriptor(prop, &def);
 	} else {
@@ -5001,21 +5052,22 @@ static void FeatureChangeInfo(ByteReader *buf)
 	static_assert(GSF_END == lengthof(handler));
 	static_assert(lengthof(handler) == lengthof(_cur.grffile->action0_property_remaps), "Action 0 feature list length mismatch");
 
-	uint8 feature  = buf->ReadByte();
+	GrfSpecFeatureRef feature_ref = ReadFeature(buf->ReadByte());
+	GrfSpecFeature feature = feature_ref.id;
 	uint8 numprops = buf->ReadByte();
 	uint numinfo  = buf->ReadByte();
 	uint engine   = buf->ReadExtendedByte();
 
 	if (feature >= GSF_END) {
-		grfmsg(1, "FeatureChangeInfo: Unsupported feature 0x%02X, skipping", feature);
+		grfmsg(1, "FeatureChangeInfo: Unsupported feature %s skipping", GetFeatureString(feature));
 		return;
 	}
 
-	grfmsg(6, "FeatureChangeInfo: Feature 0x%02X, %d properties, to apply to %d+%d",
-	               feature, numprops, engine, numinfo);
+	grfmsg(6, "FeatureChangeInfo: Feature %s, %d properties, to apply to %d+%d",
+	               GetFeatureString(feature_ref), numprops, engine, numinfo);
 
 	if (handler[feature] == nullptr) {
-		if (feature != GSF_CARGOES) grfmsg(1, "FeatureChangeInfo: Unsupported feature 0x%02X, skipping", feature);
+		if (feature != GSF_CARGOES) grfmsg(1, "FeatureChangeInfo: Unsupported feature %s, skipping", GetFeatureString(feature_ref));
 		return;
 	}
 
@@ -5033,18 +5085,18 @@ static void FeatureChangeInfo(ByteReader *buf)
 /* Action 0x00 (GLS_SAFETYSCAN) */
 static void SafeChangeInfo(ByteReader *buf)
 {
-	uint8 feature  = buf->ReadByte();
+	GrfSpecFeatureRef feature = ReadFeature(buf->ReadByte());
 	uint8 numprops = buf->ReadByte();
 	uint numinfo = buf->ReadByte();
 	buf->ReadExtendedByte(); // id
 
-	if (feature == GSF_BRIDGES && numprops == 1) {
-		GRFFilePropertyDescriptor desc = ReadAction0PropertyID(buf, feature);
+	if (feature.id == GSF_BRIDGES && numprops == 1) {
+		GRFFilePropertyDescriptor desc = ReadAction0PropertyID(buf, feature.id);
 		/* Bridge property 0x0D is redefinition of sprite layout tables, which
 		 * is considered safe. */
 		if (desc.prop == 0x0D) return;
-	} else if (feature == GSF_GLOBALVAR && numprops == 1) {
-		GRFFilePropertyDescriptor desc = ReadAction0PropertyID(buf, feature);
+	} else if (feature.id == GSF_GLOBALVAR && numprops == 1) {
+		GRFFilePropertyDescriptor desc = ReadAction0PropertyID(buf, feature.id);
 		/* Engine ID Mappings are safe, if the source is static */
 		if (desc.prop == 0x11) {
 			bool is_safe = true;
@@ -5070,7 +5122,8 @@ static void SafeChangeInfo(ByteReader *buf)
 /* Action 0x00 (GLS_RESERVE) */
 static void ReserveChangeInfo(ByteReader *buf)
 {
-	uint8 feature  = buf->ReadByte();
+	GrfSpecFeatureRef feature_ref = ReadFeature(buf->ReadByte());
+	GrfSpecFeature feature = feature_ref.id;
 
 	if (feature != GSF_CARGOES && feature != GSF_GLOBALVAR && feature != GSF_RAILTYPES && feature != GSF_ROADTYPES && feature != GSF_TRAMTYPES) return;
 
@@ -5126,7 +5179,8 @@ static void NewSpriteSet(ByteReader *buf)
 	 *                         In that case, use num-dirs=4.
 	 */
 
-	uint8  feature   = buf->ReadByte();
+	GrfSpecFeatureRef feature_ref = ReadFeature(buf->ReadByte());
+	GrfSpecFeature feature = feature_ref.id;
 	uint16 num_sets  = buf->ReadByte();
 	uint16 first_set = 0;
 
@@ -5140,14 +5194,14 @@ static void NewSpriteSet(ByteReader *buf)
 
 	if (feature >= GSF_END) {
 		_cur.skip_sprites = num_sets * num_ents;
-		grfmsg(1, "NewSpriteSet: Unsupported feature 0x%02X, skipping %d sprites", feature, _cur.skip_sprites);
+		grfmsg(1, "NewSpriteSet: Unsupported feature %s, skipping %d sprites", GetFeatureString(feature), _cur.skip_sprites);
 		return;
 	}
 
 	_cur.AddSpriteSets(feature, _cur.spriteid, first_set, num_sets, num_ents);
 
-	grfmsg(7, "New sprite set at %d of feature 0x%02X, consisting of %d sets with %d views each (total %d)",
-		_cur.spriteid, feature, num_sets, num_ents, num_sets * num_ents
+	grfmsg(7, "New sprite set at %d of feature %s, consisting of %d sets with %d views each (total %d)",
+		_cur.spriteid, GetFeatureString(feature), num_sets, num_ents, num_sets * num_ents
 	);
 
 	for (int i = 0; i < num_sets * num_ents; i++) {
@@ -5237,9 +5291,10 @@ static void NewSpriteGroup(ByteReader *buf)
 	 * V feature-specific-data (huge mess, don't even look it up --pasky) */
 	const SpriteGroup *act_group = nullptr;
 
-	uint8 feature = buf->ReadByte();
+	GrfSpecFeatureRef feature_ref = ReadFeature(buf->ReadByte());
+	GrfSpecFeature feature = feature_ref.id;
 	if (feature >= GSF_END) {
-		grfmsg(1, "NewSpriteGroup: Unsupported feature 0x%02X, skipping", feature);
+		grfmsg(1, "NewSpriteGroup: Unsupported feature %s, skipping", GetFeatureString(feature_ref));
 		return;
 	}
 
@@ -5588,7 +5643,7 @@ static void NewSpriteGroup(ByteReader *buf)
 				}
 
 				/* Loading of Tile Layout and Production Callback groups would happen here */
-				default: grfmsg(1, "NewSpriteGroup: Unsupported feature 0x%02X, skipping", feature);
+				default: grfmsg(1, "NewSpriteGroup: Unsupported feature %s, skipping", GetFeatureString(feature));
 			}
 		}
 	}
@@ -5696,7 +5751,7 @@ static void VehicleMapSpriteGroup(ByteReader *buf, byte feature, uint8 idcount)
 			/* No engine could be allocated?!? Deal with it. Okay,
 			 * this might look bad. Also make sure this NewGRF
 			 * gets disabled, as a half loaded one is bad. */
-			HandleChangeInfoResult("VehicleMapSpriteGroup", CIR_INVALID_ID, 0, 0);
+			HandleChangeInfoResult("VehicleMapSpriteGroup", CIR_INVALID_ID, (GrfSpecFeature)0, 0);
 			return;
 		}
 
@@ -6178,11 +6233,12 @@ static void FeatureMapSpriteGroup(ByteReader *buf)
 	 * W cid           cargo ID (sprite group ID) for this type of cargo
 	 * W def-cid       default cargo ID (sprite group ID) */
 
-	uint8 feature = buf->ReadByte();
+	GrfSpecFeatureRef feature_ref = ReadFeature(buf->ReadByte());
+	GrfSpecFeature feature = feature_ref.id;
 	uint8 idcount = buf->ReadByte();
 
 	if (feature >= GSF_END) {
-		grfmsg(1, "FeatureMapSpriteGroup: Unsupported feature 0x%02X, skipping", feature);
+		grfmsg(1, "FeatureMapSpriteGroup: Unsupported feature %s, skipping", GetFeatureString(feature_ref));
 		return;
 	}
 
@@ -6193,7 +6249,7 @@ static void FeatureMapSpriteGroup(ByteReader *buf)
 		uint16 groupid = buf->ReadWord();
 		if (!IsValidGroupID(groupid, "FeatureMapSpriteGroup")) return;
 
-		grfmsg(6, "FeatureMapSpriteGroup: Adding generic feature callback for feature 0x%02X", feature);
+		grfmsg(6, "FeatureMapSpriteGroup: Adding generic feature callback for feature %s", GetFeatureString(feature_ref));
 
 		AddGenericCallback(feature, _cur.grffile, _cur.spritegroups[groupid]);
 		return;
@@ -6202,7 +6258,7 @@ static void FeatureMapSpriteGroup(ByteReader *buf)
 	/* Mark the feature as used by the grf (generic callbacks do not count) */
 	SetBit(_cur.grffile->grf_features, feature);
 
-	grfmsg(6, "FeatureMapSpriteGroup: Feature 0x%02X, %d ids", feature, idcount);
+	grfmsg(6, "FeatureMapSpriteGroup: Feature %s, %d ids", GetFeatureString(feature_ref), idcount);
 
 	switch (feature) {
 		case GSF_TRAINS:
@@ -6265,7 +6321,7 @@ static void FeatureMapSpriteGroup(ByteReader *buf)
 			return;
 
 		default:
-			grfmsg(1, "FeatureMapSpriteGroup: Unsupported feature 0x%02X, skipping", feature);
+			grfmsg(1, "FeatureMapSpriteGroup: Unsupported feature %s, skipping", GetFeatureString(feature_ref));
 			return;
 	}
 }
@@ -6291,9 +6347,10 @@ static void FeatureNewName(ByteReader *buf)
 
 	bool new_scheme = _cur.grffile->grf_version >= 7;
 
-	uint8 feature  = buf->ReadByte();
+	GrfSpecFeatureRef feature_ref = ReadFeature(buf->ReadByte(), true);
+	GrfSpecFeature feature = feature_ref.id;
 	if (feature >= GSF_END && feature != 0x48) {
-		grfmsg(1, "FeatureNewName: Unsupported feature 0x%02X, skipping", feature);
+		grfmsg(1, "FeatureNewName: Unsupported feature %s, skipping", GetFeatureString(feature_ref));
 		return;
 	}
 
@@ -6313,8 +6370,8 @@ static void FeatureNewName(ByteReader *buf)
 
 	uint16 endid = id + num;
 
-	grfmsg(6, "FeatureNewName: About to rename engines %d..%d (feature 0x%02X) in language 0x%02X",
-	               id, endid, feature, lang);
+	grfmsg(6, "FeatureNewName: About to rename engines %d..%d (feature %s) in language 0x%02X",
+	               id, endid, GetFeatureString(feature), lang);
 
 	for (; id < endid && buf->HasData(); id++) {
 		const char *name = buf->ReadString();
@@ -7492,7 +7549,8 @@ static void ParamSet(ByteReader *buf)
 			} else {
 				/* GRF Resource Management */
 				uint8  op      = src1;
-				uint8  feature = GB(data, 8, 8);
+				GrfSpecFeatureRef feature_ref = ReadFeature(GB(data, 8, 8));
+				GrfSpecFeature feature = feature_ref.id;
 				uint16 count   = GB(data, 16, 16);
 
 				if (_cur.stage == GLS_RESERVE) {
@@ -7562,7 +7620,7 @@ static void ParamSet(ByteReader *buf)
 							if (_cur.skip_sprites == -1) return;
 							break;
 
-						default: grfmsg(1, "ParamSet: GRM: Unsupported feature 0x%X", feature); return;
+						default: grfmsg(1, "ParamSet: GRM: Unsupported feature %s", GetFeatureString(feature_ref)); return;
 					}
 				} else {
 					/* Ignore GRM during initialization */
@@ -8674,7 +8732,7 @@ struct GRFPropertyMapAction {
 	const char *tag_name = nullptr;
 	const char *descriptor = nullptr;
 
-	int feature;
+	GrfSpecFeature feature;
 	int prop_id;
 	std::string name;
 	GRFPropertyMapFallbackMode fallback_mode;
@@ -8689,7 +8747,7 @@ struct GRFPropertyMapAction {
 		this->tag_name = tag;
 		this->descriptor = desc;
 
-		this->feature = -1;
+		this->feature = GSF_INVALID;
 		this->prop_id = -1;
 		this->name.clear();
 		this->fallback_mode = GPMFM_IGNORE;
@@ -8702,7 +8760,7 @@ struct GRFPropertyMapAction {
 
 	void ExecutePropertyRemapping()
 	{
-		if (this->feature < 0) {
+		if (this->feature == GSF_INVALID) {
 			grfmsg(2, "Action 14 %s remapping: no feature defined, doing nothing", this->descriptor);
 			return;
 		}
@@ -8733,15 +8791,15 @@ struct GRFPropertyMapAction {
 		}
 		if (!success) {
 			if (this->fallback_mode == GPMFM_ERROR_ON_DEFINITION) {
-				grfmsg(0, "Error: Unimplemented mapped %s: %s, feature: %X, mapped to: %X", this->descriptor, str, this->feature, this->prop_id);
+				grfmsg(0, "Error: Unimplemented mapped %s: %s, feature: %s, mapped to: %X", this->descriptor, str, GetFeatureString(this->feature), this->prop_id);
 				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY);
 				error->data = stredup(str);
 				error->param_value[1] = this->feature;
 				error->param_value[2] = this->prop_id;
 			} else {
 				const char *str_store = stredup(str);
-				grfmsg(2, "Unimplemented mapped %s: %s, feature: %X, mapped to: %X, %s on use",
-						this->descriptor, str, this->feature, this->prop_id, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
+				grfmsg(2, "Unimplemented mapped %s: %s, feature: %s, mapped to: %X, %s on use",
+						this->descriptor, str, GetFeatureString(this->feature), this->prop_id, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
 				_cur.grffile->remap_unknown_property_names.emplace_back(str_store);
 				GRFFilePropertyRemapEntry &entry = _cur.grffile->action0_property_remaps[this->feature].Entry(this->prop_id);
 				entry.name = str_store;
@@ -8754,7 +8812,7 @@ struct GRFPropertyMapAction {
 
 	void ExecuteVariableRemapping()
 	{
-		if (this->feature < 0) {
+		if (this->feature == GSF_INVALID) {
 			grfmsg(2, "Action 14 %s remapping: no feature defined, doing nothing", this->descriptor);
 			return;
 		}
@@ -8776,7 +8834,7 @@ struct GRFPropertyMapAction {
 			SB(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, 1, success ? 1 : 0);
 		}
 		if (!success) {
-			grfmsg(2, "Unimplemented mapped %s: %s, feature: %X, mapped to 0", this->descriptor, str, this->feature);
+			grfmsg(2, "Unimplemented mapped %s: %s, feature: %s, mapped to 0", this->descriptor, str, GetFeatureString(this->feature));
 		}
 	}
 
@@ -8844,11 +8902,11 @@ static bool ChangePropertyRemapFeature(size_t len, ByteReader *buf)
 		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'FEAT' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
 		buf->Skip(len);
 	} else {
-		uint8 feature = buf->ReadByte();
-		if (feature >= GSF_END) {
-			grfmsg(2, "Action 14 %s mapping: invalid feature ID: %u, in '%s'->'FEAT', ignoring this field", action.descriptor, feature, action.tag_name);
+		GrfSpecFeatureRef feature = ReadFeature(buf->ReadByte());
+		if (feature.id >= GSF_END) {
+			grfmsg(2, "Action 14 %s mapping: invalid feature ID: %s, in '%s'->'FEAT', ignoring this field", action.descriptor, GetFeatureString(feature), action.tag_name);
 		} else {
-			action.feature = feature;
+			action.feature = feature.id;
 		}
 	}
 	return true;

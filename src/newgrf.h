@@ -89,6 +89,8 @@ enum GrfSpecFeature {
 	GSF_TRAMTYPES,
 	GSF_END,
 
+	GSF_REAL_FEATURE_END = GSF_END,
+
 	GSF_FAKE_TOWNS = GSF_END, ///< Fake town GrfSpecFeature for NewGRF debugging (parent scope)
 	GSF_FAKE_STATION_STRUCT,  ///< Fake station struct GrfSpecFeature for NewGRF debugging
 	GSF_FAKE_END,             ///< End of the fake features
@@ -115,16 +117,16 @@ enum GRFPropertyMapFallbackMode {
 struct GRFPropertyMapDefinition {
 	const char *name; // nullptr indicates the end of the list
 	int id;
-	uint8 feature;
+	GrfSpecFeature feature;
 
 	/** Create empty object used to identify the end of a list. */
 	GRFPropertyMapDefinition() :
 		name(nullptr),
 		id(0),
-		feature(0)
+		feature((GrfSpecFeature)0)
 	{}
 
-	GRFPropertyMapDefinition(uint8 feature, int id, const char *name) :
+	GRFPropertyMapDefinition(GrfSpecFeature feature, int id, const char *name) :
 		name(name),
 		id(id),
 		feature(feature)
@@ -134,7 +136,7 @@ struct GRFPropertyMapDefinition {
 struct GRFFilePropertyRemapEntry {
 	const char *name = nullptr;
 	int id = 0;
-	uint8 feature = 0;
+	GrfSpecFeature feature = (GrfSpecFeature)0;
 	uint8 property_id = 0;
 };
 
@@ -152,16 +154,16 @@ struct GRFFilePropertyRemapSet {
 struct GRFVariableMapDefinition {
 	const char *name; // nullptr indicates the end of the list
 	int id;
-	uint8 feature;
+	GrfSpecFeature feature;
 
 	/** Create empty object used to identify the end of a list. */
 	GRFVariableMapDefinition() :
 		name(nullptr),
 		id(0),
-		feature(0)
+		feature((GrfSpecFeature)0)
 	{}
 
-	GRFVariableMapDefinition(uint8 feature, int id, const char *name) :
+	GRFVariableMapDefinition(GrfSpecFeature feature, int id, const char *name) :
 		name(name),
 		id(id),
 		feature(feature)
@@ -363,5 +365,13 @@ void ShowNewGRFError();
 uint CountSelectedGRFs(GRFConfig *grfconf);
 
 struct TemplateVehicle;
+
+struct GrfSpecFeatureRef {
+	GrfSpecFeature id;
+	uint8 raw_byte;
+};
+
+const char *GetFeatureString(GrfSpecFeatureRef feature);
+const char *GetFeatureString(GrfSpecFeature feature);
 
 #endif /* NEWGRF_H */
