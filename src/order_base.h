@@ -498,6 +498,15 @@ public:
 		if (leave_type != this->GetLeaveType()) SB(this->GetXFlagsRef(), 2, 2, leave_type);
 	}
 
+	/** Get the road vehicle travel direction */
+	inline DiagDirection GetRoadVehTravelDirection() const { return (DiagDirection)((GB(this->GetXFlags(), 5, 3) - 1) & 0xFF); }
+
+	/** Set the road vehicle travel direction */
+	inline void SetRoadVehTravelDirection(DiagDirection dir)
+	{
+		if (dir != this->GetRoadVehTravelDirection()) SB(this->GetXFlagsRef(), 5, 3, (dir + 1) & 0x7);
+	}
+
 	/**
 	 * Get the occupancy value
 	 * @return occupancy

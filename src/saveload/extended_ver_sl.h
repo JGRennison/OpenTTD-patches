@@ -122,6 +122,7 @@ enum SlXvFeatureIndex {
 	XSLFI_WAYPOINT_FLAGS,                         ///< Waypoint flags
 	XSLFI_ROAD_WAYPOINTS,                         ///< Road waypoints
 	XSLFI_MORE_STATION_TYPES,                     ///< More station types (field widening)
+	XSLFI_RV_ORDER_EXTRA_FLAGS,                   ///< Road vehicle order extra flags
 
 	XSLFI_SCRIPT_INT64,                           ///< See: SLV_SCRIPT_INT64
 

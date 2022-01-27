@@ -1711,7 +1711,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 	Order *order = v->GetOrder(sel_ord);
 	switch (order->GetType()) {
 		case OT_GOTO_STATION:
-			if (mof != MOF_NON_STOP && mof != MOF_STOP_LOCATION && mof != MOF_UNLOAD && mof != MOF_LOAD && mof != MOF_CARGO_TYPE_UNLOAD && mof != MOF_CARGO_TYPE_LOAD) return CMD_ERROR;
+			if (mof != MOF_NON_STOP && mof != MOF_STOP_LOCATION && mof != MOF_UNLOAD && mof != MOF_LOAD && mof != MOF_CARGO_TYPE_UNLOAD && mof != MOF_CARGO_TYPE_LOAD && mof != MOF_RV_TRAVEL_DIR) return CMD_ERROR;
 			break;
 
 		case OT_GOTO_DEPOT:
@@ -1719,7 +1719,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			break;
 
 		case OT_GOTO_WAYPOINT:
-			if (mof != MOF_NON_STOP && mof != MOF_WAYPOINT_FLAGS) return CMD_ERROR;
+			if (mof != MOF_NON_STOP && mof != MOF_WAYPOINT_FLAGS && mof != MOF_RV_TRAVEL_DIR) return CMD_ERROR;
 			break;
 
 		case OT_CONDITIONAL:
@@ -1900,6 +1900,11 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(data);
 				if (slot == nullptr || slot->vehicle_type != v->type) return CMD_ERROR;
 			}
+			break;
+
+		case MOF_RV_TRAVEL_DIR:
+			if (v->type != VEH_ROAD) return CMD_ERROR;
+			if (data >= DIAGDIR_END && data != INVALID_DIAGDIR) return CMD_ERROR;
 			break;
 	}
 
@@ -2120,6 +2125,10 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 				order->SetDestination(data);
 				break;
 
+			case MOF_RV_TRAVEL_DIR:
+				order->SetRoadVehTravelDirection((DiagDirection)data);
+				break;
+
 			default: NOT_REACHED();
 		}
 
@@ -2168,6 +2177,10 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 					default:
 						break;
 				}
+			}
+			if (mof == MOF_RV_TRAVEL_DIR && sel_ord == u->cur_real_order_index &&
+					(u->current_order.IsType(OT_GOTO_STATION) || u->current_order.IsType(OT_GOTO_WAYPOINT))) {
+				u->current_order.SetRoadVehTravelDirection((DiagDirection)data);
 			}
 			InvalidateVehicleOrder(u, VIWD_MODIFY_ORDERS);
 		}

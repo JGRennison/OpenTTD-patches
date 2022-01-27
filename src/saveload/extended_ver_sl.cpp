@@ -168,6 +168,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_WAYPOINT_FLAGS,         XSCF_NULL,                1,   1, "waypoint_flags",            nullptr, nullptr, nullptr        },
 	{ XSLFI_ROAD_WAYPOINTS,         XSCF_NULL,                1,   1, "road_waypoints",            nullptr, nullptr, nullptr        },
 	{ XSLFI_MORE_STATION_TYPES,     XSCF_NULL,                1,   1, "more_station_types",        nullptr, nullptr, nullptr        },
+	{ XSLFI_RV_ORDER_EXTRA_FLAGS,   XSCF_IGNORABLE_UNKNOWN,   1,   1, "rv_order_extra_flags",      nullptr, nullptr, nullptr        },
 	{ XSLFI_SCRIPT_INT64,           XSCF_NULL,                1,   1, "script_int64",              nullptr, nullptr, nullptr        },
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr },// This is the end marker
 };

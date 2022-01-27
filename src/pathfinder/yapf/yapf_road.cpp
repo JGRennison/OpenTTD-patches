@@ -278,18 +278,22 @@ protected:
 public:
 	void SetDestination(const RoadVehicle *v)
 	{
+		auto set_trackdirs = [&]() {
+			DiagDirection dir = v->current_order.GetRoadVehTravelDirection();
+			m_destTrackdirs = (dir == INVALID_DIAGDIR) ? INVALID_TRACKDIR_BIT : TrackdirToTrackdirBits(DiagDirToDiagTrackdir(dir));
+		};
 		if (v->current_order.IsType(OT_GOTO_STATION)) {
 			m_dest_station  = v->current_order.GetDestination();
+			set_trackdirs();
 			m_station_type  = v->IsBus() ? STATION_BUS : STATION_TRUCK;
 			m_destTile      = CalcClosestStationTile(m_dest_station, v->tile, m_station_type);
 			m_non_artic     = !v->HasArticulatedPart();
-			m_destTrackdirs = INVALID_TRACKDIR_BIT;
 		} else if (v->current_order.IsType(OT_GOTO_WAYPOINT)) {
 			m_dest_station  = v->current_order.GetDestination();
+			set_trackdirs();
 			m_station_type  = STATION_ROADWAYPOINT;
 			m_destTile      = CalcClosestStationTile(m_dest_station, v->tile, m_station_type);
 			m_non_artic     = !v->HasArticulatedPart();
-			m_destTrackdirs = INVALID_TRACKDIR_BIT;
 		} else {
 			m_dest_station  = INVALID_STATION;
 			m_destTile      = v->dest_tile;
@@ -322,7 +326,9 @@ public:
 			return IsTileType(tile, MP_STATION) &&
 				GetStationIndex(tile) == m_dest_station &&
 				(m_station_type == GetStationType(tile)) &&
-				(m_non_artic || IsDriveThroughStopTile(tile));
+				(m_non_artic || IsDriveThroughStopTile(tile)) &&
+				(m_destTrackdirs == INVALID_TRACKDIR_BIT ||
+				(IsDriveThroughStopTile(tile) ? HasTrackdir(m_destTrackdirs, trackdir) : HasTrackdir(m_destTrackdirs, DiagDirToDiagTrackdir(ReverseDiagDir(GetRoadStopDir(tile))))));
 		}
 
 		return tile == m_destTile && HasTrackdir(m_destTrackdirs, trackdir);

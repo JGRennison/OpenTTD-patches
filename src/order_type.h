@@ -196,6 +196,7 @@ enum ModifyOrderFlags {
 	MOF_CARGO_TYPE_UNLOAD, ///< Passes an OrderUnloadType and a CargoID.
 	MOF_CARGO_TYPE_LOAD,   ///< Passes an OrderLoadType and a CargoID.
 	MOF_SLOT,            ///< Change the slot value
+	MOF_RV_TRAVEL_DIR,   ///< Change the road vehicle travel direction.
 	MOF_END
 };
 template <> struct EnumPropsT<ModifyOrderFlags> : MakeEnumPropsT<ModifyOrderFlags, byte, MOF_NON_STOP, MOF_END, MOF_END, 4> {};
