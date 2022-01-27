@@ -555,5 +555,53 @@
 	<h4 id="road_waypoints">Road waypoint graphics (mappable type: road_waypoints)</h4>
 	<p>This is 4 sprites, in the same order and format as the drive-through bus or truck road stop graphics.</p>
 	<p>This is indicated by the feature name: <font face="monospace">action5_road_waypoints</font>, version 1</p>
+	<br />
+	<h3 id="feature-id-mapping">Action 14 - Feature ID Mapping</h3>
+	<p>See <a href="https://newgrf-specs.tt-wiki.net/wiki/Action14">Action 14 Specification</a> and <a href="https://newgrf-specs.tt-wiki.net/wiki/Features">Feature Specifications</a> for background information.</p>
+	<p>The feature ID mapping mechanism has the feature name: <font face="monospace">feature_id_mapping</font>, this document describes version 1.</p>
+	<p>Users of this mechanism SHOULD at minimum test for the presence of the feature above or test variable 8D, below.</p>
+	<h4 id="FIDM">Feature ID Mapping: C "FIDM"</h4>
+	<p>Each FIDM chunk (type C) describes an individual feature ID mapping.<br />
+	Sub-chunks within each FIDM chunk may appear in any order, however except where otherwise noted each sub-chunk SHOULD only appear ONCE within an individual FIDM chunk.</p>
+	<p>Feature ID mapping can be safely used on implementations which do not implement the feature ID mapping mechanism if all sprites which use mapped feature IDs are skipped if one or more of:
+		<ul>
+			<li>The global variable 0x8D is checked to determine whether the feature ID mapping operation was successful.</li>
+			<li>The feature name <font face="monospace">feature_id_mapping</font> is checked for.</li>
+		</ul>
+		Unknown Action 14 blocks are ignored, and do not need to be skipped.</p>
+	<p>After this mapping, the mapped feature ID value can used in all sprites which expect a feature ID (including Action 0, Action 1, Action 2, Action 3, Action 4, Action D, Action 14).</p>
+	<p><b>Note that implementations which are not aware of a particular feature ID and which do not implement the feature ID mapping mechanism will automatically skip sprites with unknown feature IDs.<br />
+	However: if/when the specification and/or the implementation assigns the chosen feature ID to an unrelated feature in future, sprites using that feature will not be skipped.<br />
+	This means that the GRF has the potential to inexplicably fail in the distant future if the sprites are not correctly skipped.<br />
+	Do not rely on the behaviour where unknown feature IDs are skipped.</b></p>
+	<h4 id="FIDM-NAME">Property Name: C "FIDM" -> T "NAME"</h4>
+	<p>Within an FIDM chunk, the NAME text (type T) field contains the name of the feature to map. The value of the language ID byte is ignored.</p>
+	<h4 id="FIDM-FTID">Property ID: C "FIDM" -> B "FTID"</h4>
+	<p>Within an FTID chunk, the FTID binary (type B) field contains the feature ID to allocate to the named feature. This is 1 byte.<br />
+	Note that the remapped feature ID can only be used after this FIDM chunk in the GRF. It is not applied retrospectively to sprites earlier in the GRF file, or earlier parts of the current Action 14 sprite.<br />
+	It is possible to override existing feature IDs, however this use is STRONGLY NOT RECOMMENDED due to a high potential for confusion when your code is inspected by someone else.<br />
+	At the time of writing known existing feature IDs include the values: 0x00 - 0x13 (inclusive) and 0x48.</p>
+	<h4 id="FIDM-SETT">Success Indicator Global Variable 0x8D Bit: C "FIDM" -> B "SETT"</h4>
+	<p>This behaves identically to the <a href="#A0PM-SETT">C "A0PM" -> B "SETT"</a> case, above</p>
+	<h4 id="FIDM-FLBK">Fallback Mode: C "FIDM" -> B "FLBK"</h4>
+	<p>This behaves identically to the <a href="#A0PM-FLBK">C "A0PM" -> B "FLBK"</a> case, above</p>
+	<h4 id="FIDM-example">Example NFO:</h4>
+	<pre>
+// Map feature "sample_feature" to feature id 0xB0, and set bit 6 of global variable 0x8D if successful
+-1 * -1 14
+	"C" "FIDM"
+		"T" "NAME" 00 "sample_feature" 00
+		"B" "FTID" \w1 B0
+		"B" "SETT" \w1 6
+		00
+	00
+....
+// Skip 3 sprites if bit 6 of global variable 0x8D is not set (indicating that the sample_feature feature is NOT present)
+-1 * -1  07 8D 01 \70 06 03
+// Use action 1 to define 1 sample_feature spriteset of 2 views
+-1 * -1 01 B0 01 02
+-1  sprites/sample.png 546 8 09 23 33 -26 0
+-1  sprites/sample.png 594 8 09 23 33 -5 0
+	</pre>
 </body>
 </html>

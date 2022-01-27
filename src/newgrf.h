@@ -95,6 +95,7 @@ enum GrfSpecFeature {
 	GSF_FAKE_STATION_STRUCT,  ///< Fake station struct GrfSpecFeature for NewGRF debugging
 	GSF_FAKE_END,             ///< End of the fake features
 
+	GSF_ERROR_ON_USE = 0xFE,  ///< An invalid value which generates an immediate error on mapping
 	GSF_INVALID = 0xFF,       ///< An invalid spec feature
 };
 
@@ -112,6 +113,39 @@ enum GRFPropertyMapFallbackMode {
 	GPMFM_ERROR_ON_USE,
 	GPMFM_ERROR_ON_DEFINITION,
 	GPMFM_END,
+};
+
+struct GRFFeatureMapDefinition {
+	const char *name; // nullptr indicates the end of the list
+	GrfSpecFeature feature;
+
+	/** Create empty object used to identify the end of a list. */
+	GRFFeatureMapDefinition() :
+		name(nullptr),
+		feature((GrfSpecFeature)0)
+	{}
+
+	GRFFeatureMapDefinition(GrfSpecFeature feature, const char *name) :
+		name(name),
+		feature(feature)
+	{}
+};
+
+struct GRFFeatureMapRemapEntry {
+	const char *name = nullptr;
+	GrfSpecFeature feature = (GrfSpecFeature)0;
+	uint8 raw_id = 0;
+};
+
+struct GRFFeatureMapRemapSet {
+	std::bitset<256> remapped_ids;
+	btree::btree_map<uint8, GRFFeatureMapRemapEntry> mapping;
+
+	GRFFeatureMapRemapEntry &Entry(uint8 raw_id)
+	{
+		this->remapped_ids.set(raw_id);
+		return this->mapping[raw_id];
+	}
 };
 
 struct GRFPropertyMapDefinition {
@@ -246,6 +280,11 @@ enum NewSignalAction3ID {
 	NSA3ID_CUSTOM_SIGNALS       = 0,                          ///< Action 3 ID for custom signal sprites
 };
 
+/** GRFFile control flags. */
+enum GRFFileCtrlFlags {
+	GFCF_HAVE_FEATURE_ID_REMAP  = 0,                          ///< This GRF has one or more feature ID mappings
+};
+
 /** Dynamic data of a loaded NewGRF */
 struct GRFFile : ZeroedMemoryAllocator {
 	char *filename;
@@ -263,6 +302,7 @@ struct GRFFile : ZeroedMemoryAllocator {
 	struct AirportSpec **airportspec;
 	struct AirportTileSpec **airtspec;
 
+	GRFFeatureMapRemapSet feature_id_remaps;
 	GRFFilePropertyRemapSet action0_property_remaps[GSF_END];
 	Action5TypeRemapSet action5_type_remaps;
 	std::vector<GRFVariableMapEntry> grf_variable_remaps;
@@ -301,6 +341,8 @@ struct GRFFile : ZeroedMemoryAllocator {
 	const SpriteGroup *new_signals_group;    ///< New signals sprite group
 	byte new_signal_ctrl_flags;              ///< Ctrl flags for new signals
 	byte new_signal_extra_aspects;           ///< Number of extra aspects for new signals
+
+	byte ctrl_flags;                         ///< General GRF control flags
 
 	GRFFile(const struct GRFConfig *config);
 	~GRFFile();

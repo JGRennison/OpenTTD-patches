@@ -19,6 +19,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("feature_test", 1),
 	GRFFeatureInfo("property_mapping", 1),
 	GRFFeatureInfo("variable_mapping", 1),
+	GRFFeatureInfo("feature_id_mapping", 1),
 	GRFFeatureInfo("action5_type_id_mapping", 1),
 	GRFFeatureInfo("action0_station_prop1B", 1),
 	GRFFeatureInfo("action0_station_disallowed_bridge_pillars", 1),
@@ -50,6 +51,12 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_object_flood_resistant", 1),
 	GRFFeatureInfo(),
 };
+
+/** Action14 remappable feature list */
+extern const GRFFeatureMapDefinition _grf_remappable_features[] = {
+	GRFFeatureMapDefinition(),
+};
+
 
 /** Action14 Action0 remappable property list */
 extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {

@@ -4932,6 +4932,24 @@ static bool HandleChangeInfoResult(const char *caller, ChangeInfoResult cir, Grf
 
 static GrfSpecFeatureRef ReadFeature(uint8 raw_byte, bool allow_48 = false)
 {
+	if (unlikely(HasBit(_cur.grffile->ctrl_flags, GFCF_HAVE_FEATURE_ID_REMAP))) {
+		const GRFFeatureMapRemapSet &remap = _cur.grffile->feature_id_remaps;
+		if (remap.remapped_ids[raw_byte]) {
+			auto iter = remap.mapping.find(raw_byte);
+			const GRFFeatureMapRemapEntry &def = iter->second;
+			if (def.feature == GSF_ERROR_ON_USE) {
+				grfmsg(0, "Error: Unimplemented mapped feature: %s, mapped to: %02X", def.name, raw_byte);
+				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID);
+				error->data = stredup(def.name);
+				error->param_value[1] = GSF_INVALID;
+				error->param_value[2] = raw_byte;
+			} else if (def.feature == GSF_INVALID) {
+				grfmsg(2, "Ignoring unimplemented mapped feature: %s, mapped to: %02X", def.name, raw_byte);
+			}
+			return { def.feature, raw_byte };
+		}
+	}
+
 	GrfSpecFeature feature;
 	if (raw_byte >= GSF_REAL_FEATURE_END && !(allow_48 && raw_byte == 0x48)) {
 		feature = GSF_INVALID;
@@ -4971,6 +4989,15 @@ const char *GetFeatureString(GrfSpecFeatureRef feature)
 	if (feature.id < GSF_END) {
 		seprintf(buffer, lastof(buffer), "0x%02X (%s)", feature.raw_byte, _feature_names[feature.id]);
 	} else {
+		if (unlikely(HasBit(_cur.grffile->ctrl_flags, GFCF_HAVE_FEATURE_ID_REMAP))) {
+			const GRFFeatureMapRemapSet &remap = _cur.grffile->feature_id_remaps;
+			if (remap.remapped_ids[feature.raw_byte]) {
+				auto iter = remap.mapping.find(feature.raw_byte);
+				const GRFFeatureMapRemapEntry &def = iter->second;
+				seprintf(buffer, lastof(buffer), "0x%02X (%s)", feature.raw_byte, def.name);
+				return buffer;
+			}
+		}
 		seprintf(buffer, lastof(buffer), "0x%02X", feature.raw_byte);
 	}
 	return buffer;
@@ -4978,7 +5005,16 @@ const char *GetFeatureString(GrfSpecFeatureRef feature)
 
 const char *GetFeatureString(GrfSpecFeature feature)
 {
-	return GetFeatureString(GrfSpecFeatureRef{ feature, feature });
+	uint8 raw_byte = feature;
+	if (feature >= GSF_REAL_FEATURE_END) {
+		for (const auto &entry : _cur.grffile->feature_id_remaps.mapping) {
+			if (entry.second.feature == feature) {
+				raw_byte = entry.second.raw_id;
+				break;
+			}
+		}
+	}
+	return GetFeatureString(GrfSpecFeatureRef{ feature, raw_byte });
 }
 
 struct GRFFilePropertyDescriptor {
@@ -5059,7 +5095,7 @@ static void FeatureChangeInfo(ByteReader *buf)
 	uint engine   = buf->ReadExtendedByte();
 
 	if (feature >= GSF_END) {
-		grfmsg(1, "FeatureChangeInfo: Unsupported feature %s skipping", GetFeatureString(feature));
+		grfmsg(1, "FeatureChangeInfo: Unsupported feature %s skipping", GetFeatureString(feature_ref));
 		return;
 	}
 
@@ -5194,7 +5230,7 @@ static void NewSpriteSet(ByteReader *buf)
 
 	if (feature >= GSF_END) {
 		_cur.skip_sprites = num_sets * num_ents;
-		grfmsg(1, "NewSpriteSet: Unsupported feature %s, skipping %d sprites", GetFeatureString(feature), _cur.skip_sprites);
+		grfmsg(1, "NewSpriteSet: Unsupported feature %s, skipping %d sprites", GetFeatureString(feature_ref), _cur.skip_sprites);
 		return;
 	}
 
@@ -8758,6 +8794,53 @@ struct GRFPropertyMapAction {
 		this->output_mask = 0;
 	}
 
+	void ExecuteFeatureIDRemapping()
+	{
+		if (this->prop_id < 0) {
+			grfmsg(2, "Action 14 %s remapping: no feature ID defined, doing nothing", this->descriptor);
+			return;
+		}
+		if (this->name.empty()) {
+			grfmsg(2, "Action 14 %s remapping: no name defined, doing nothing", this->descriptor);
+			return;
+		}
+		SetBit(_cur.grffile->ctrl_flags, GFCF_HAVE_FEATURE_ID_REMAP);
+		bool success = false;
+		const char *str = this->name.c_str();
+		extern const GRFFeatureMapDefinition _grf_remappable_features[];
+		for (const GRFFeatureMapDefinition *info = _grf_remappable_features; info->name != nullptr; info++) {
+			if (strcmp(info->name, str) == 0) {
+				GRFFeatureMapRemapEntry &entry = _cur.grffile->feature_id_remaps.Entry(this->prop_id);
+				entry.name = info->name;
+				entry.feature = info->feature;
+				entry.raw_id = this->prop_id;
+				success = true;
+				break;
+			}
+		}
+		if (this->ttd_ver_var_bit > 0) {
+			SB(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, 1, success ? 1 : 0);
+		}
+		if (!success) {
+			if (this->fallback_mode == GPMFM_ERROR_ON_DEFINITION) {
+				grfmsg(0, "Error: Unimplemented mapped %s: %s, mapped to: 0x%02X", this->descriptor, str, this->prop_id);
+				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID);
+				error->data = stredup(str);
+				error->param_value[1] = GSF_INVALID;
+				error->param_value[2] = this->prop_id;
+			} else {
+				const char *str_store = stredup(str);
+				grfmsg(2, "Unimplemented mapped %s: %s, mapped to: %X, %s on use",
+						this->descriptor, str, this->prop_id, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
+				_cur.grffile->remap_unknown_property_names.emplace_back(str_store);
+				GRFFeatureMapRemapEntry &entry = _cur.grffile->feature_id_remaps.Entry(this->prop_id);
+				entry.name = str_store;
+				entry.feature = (this->fallback_mode == GPMFM_IGNORE) ? GSF_INVALID : GSF_ERROR_ON_USE;
+				entry.raw_id = this->prop_id;
+			}
+		}
+	}
+
 	void ExecutePropertyRemapping()
 	{
 		if (this->feature == GSF_INVALID) {
@@ -8925,6 +9008,19 @@ static bool ChangePropertyRemapPropertyId(size_t len, ByteReader *buf)
 	return true;
 }
 
+/** Callback function for ->'FTID' to set the feature ID to which this feature is being mapped. */
+static bool ChangePropertyRemapFeatureId(size_t len, ByteReader *buf)
+{
+	GRFPropertyMapAction &action = _current_grf_property_map_action;
+	if (len != 1) {
+		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'FTID' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		buf->Skip(len);
+	} else {
+		action.prop_id = buf->ReadByte();
+	}
+	return true;
+}
+
 /** Callback function for ->'TYPE' to set the property ID to which this item is being mapped. */
 static bool ChangePropertyRemapTypeId(size_t len, ByteReader *buf)
 {
@@ -9050,6 +9146,26 @@ static bool ChangePropertyRemapSetOutputParam(size_t len, ByteReader *buf)
 	return true;
 }
 
+/** Action14 tags for the FIDM node */
+AllowedSubtags _tags_fidm[] = {
+	AllowedSubtags('NAME', ChangePropertyRemapName),
+	AllowedSubtags('FTID', ChangePropertyRemapFeatureId),
+	AllowedSubtags('FLBK', ChangePropertyRemapSetFallbackMode),
+	AllowedSubtags('SETT', ChangePropertyRemapSetTTDVerVarBit),
+	AllowedSubtags()
+};
+
+/**
+ * Callback function for 'FIDM' (feature ID mapping)
+ */
+static bool HandleFeatureIDMap(ByteReader *buf)
+{
+	_current_grf_property_map_action.Reset("FIDM", "feature");
+	HandleNodes(buf, _tags_fidm);
+	_current_grf_property_map_action.ExecuteFeatureIDRemapping();
+	return true;
+}
+
 /** Action14 tags for the A0PM node */
 AllowedSubtags _tags_a0pm[] = {
 	AllowedSubtags('NAME', ChangePropertyRemapName),
@@ -9119,6 +9235,7 @@ static bool HandleAction5TypeMap(ByteReader *buf)
 AllowedSubtags _tags_root_static[] = {
 	AllowedSubtags('INFO', _tags_info),
 	AllowedSubtags('FTST', SkipInfoChunk),
+	AllowedSubtags('FIDM', SkipInfoChunk),
 	AllowedSubtags('A0PM', SkipInfoChunk),
 	AllowedSubtags('A2VM', SkipInfoChunk),
 	AllowedSubtags('A5TM', SkipInfoChunk),
@@ -9129,6 +9246,7 @@ AllowedSubtags _tags_root_static[] = {
 AllowedSubtags _tags_root_feature_tests[] = {
 	AllowedSubtags('INFO', SkipInfoChunk),
 	AllowedSubtags('FTST', HandleFeatureTestInfo),
+	AllowedSubtags('FIDM', HandleFeatureIDMap),
 	AllowedSubtags('A0PM', HandleAction0PropertyMap),
 	AllowedSubtags('A2VM', HandleAction2VariableMap),
 	AllowedSubtags('A5TM', HandleAction5TypeMap),
