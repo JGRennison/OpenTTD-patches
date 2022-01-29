@@ -2277,7 +2277,8 @@ struct BuildRailWaypointWindow : PickerWindowBase {
 		this->FinishInitNested(TRANSPORT_RAIL);
 
 		matrix->SetCount(_waypoint_count);
-		matrix->SetClicked(_cur_waypoint_type < _waypoint_count ? _cur_waypoint_type : 0);
+		if (_cur_waypoint_type >= _waypoint_count) _cur_waypoint_type = 0;
+		matrix->SetClicked(_cur_waypoint_type);
 	}
 
 	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
