@@ -9,6 +9,7 @@
 * Fix station catchment highlight from coverage button in station window not being redrawn when station extents changed.
 * Fix various issues in unserved industries zoning overlay mode.
 * Fix wrong error message when building a bridge over an obstructing station.
+* Fix window preference save/load of build vehicle windows.
 * Conditional orders:
   * Fix crash when evaluating a train in slot conditional order when no slot was assigned.
   * Fix manual setting of conditional order jump taken travel times.
