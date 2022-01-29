@@ -1149,9 +1149,13 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 					}
 
 					if (flags & DC_EXEC) {
-						RoadStop *rs = RoadStop::GetByTile(tile, GetRoadStopType(tile));
-						rs->ChangeDriveThroughDisallowedRoadDirections(dis_new);
-						MarkTileDirtyByTile(tile);
+						if (IsRoadWaypoint(tile)) {
+							SetDriveThroughStopDisallowedRoadDirections(tile, dis_new);
+						} else {
+							RoadStop *rs = RoadStop::GetByTile(tile, GetRoadStopType(tile));
+							rs->ChangeDriveThroughDisallowedRoadDirections(dis_new);
+						}
+						MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 						NotifyRoadLayoutChanged(CountBits(dis_existing) > CountBits(dis_new));
 						UpdateRoadCachedOneWayStatesAroundTile(tile);
 					}
