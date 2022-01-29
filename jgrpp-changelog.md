@@ -2,6 +2,15 @@
 
 * * *
 
+### v0.46-rc2 (2022-01-29)
+* Road waypoints:
+  * Fix crash when changing one-way state of road waypoints.
+  * Fix crash in road vehicle overtaking checks with road waypoints.
+  * Fix removal of road waypoints during bankruptcy.
+  * Road waypoints no longer block road inferred one-way state interpolation.
+* Fix crash when opening rail waypoint window if there are now fewer types available than the type that was last selected.
+* Add Korean translations by TELK.
+
 ### v0.46-rc1 (2022-01-28)
 * Fix timetable wait times not being cleared when changing to a non-stopping order.
 * Fix text input and display of speeds in tiles/day units in routing restriction window.
