@@ -221,6 +221,11 @@ inline bool IsOneWaySideJunctionRoadDRDsPresent(TileIndex tile, DiagDirection di
 	return true;
 }
 
+inline bool IsRoadCachedOneWayStateInterpolatableTile(TileIndex tile)
+{
+	return !IsTileType(tile, MP_STATION) || IsRoadWaypointTile(tile);
+}
+
 static btree::btree_set<TileIndex> _road_cache_one_way_state_pending_tiles;
 static btree::btree_set<TileIndex> _road_cache_one_way_state_pending_interpolate_tiles;
 static bool _defer_update_road_cache_one_way_state = false;
@@ -250,7 +255,7 @@ static void UpdateTileRoadCachedOneWayState(TileIndex tile)
 			}
 		}
 	}
-	if (!IsTileType(tile, MP_STATION)) _road_cache_one_way_state_pending_interpolate_tiles.insert(tile);
+	if (IsRoadCachedOneWayStateInterpolatableTile(tile)) _road_cache_one_way_state_pending_interpolate_tiles.insert(tile);
 	SetRoadCachedOneWayState(tile, RCOWS_NORMAL);
 }
 
@@ -288,7 +293,7 @@ static InterpolateRoadResult InterpolateRoadFollowRoadBit(TileIndex tile, uint8 
 			const DisallowedRoadDirections outgoing_drd_by_exit_bit[4] = { DRD_SOUTHBOUND, DRD_SOUTHBOUND, DRD_NORTHBOUND, DRD_NORTHBOUND };
 			return outgoing_drd_by_exit_bit[bit] == drd ? IRR_OUT : IRR_IN;
 		}
-		if (IsTileType(next, MP_STATION)) return IRR_NONE;
+		if (!IsRoadCachedOneWayStateInterpolatableTile(next)) return IRR_NONE;
 		RoadBits incoming = (RoadBits)(1 << (bit ^ 2));
 		RoadBits rb = GetAnyRoadBits(next, RTT_ROAD, true);
 		if ((incoming & rb) == 0) return IRR_NONE;
@@ -338,7 +343,7 @@ static void InterpolateRoadFollowRoadBitSetState(TileIndex tile, uint8 bit, Inte
 		if (drd != DRD_NONE) {
 			return;
 		}
-		if (IsTileType(next, MP_STATION)) return;
+		if (!IsRoadCachedOneWayStateInterpolatableTile(next)) return;
 		RoadBits incoming = (RoadBits)(1 << (bit ^ 2));
 		RoadBits rb = GetAnyRoadBits(next, RTT_ROAD, true);
 		if ((incoming & rb) == 0) return;
