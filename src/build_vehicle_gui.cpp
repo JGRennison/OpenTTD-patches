@@ -375,18 +375,10 @@ static bool EngineRunningCostSorter(const EngineID &a, const EngineID &b)
 	return _engine_sort_direction ? r > 0 : r < 0;
 }
 
-/**
- * Determines order of engines by running costs
- * @param a first engine to compare
- * @param b second engine to compare
- * @return for descending order: returns true if a < b. Vice versa for ascending order
- */
-static bool EnginePowerVsRunningCostSorter(const EngineID &a, const EngineID &b)
+static bool GenericEngineValueVsRunningCostSorter(const EngineID &a, const uint value_a, const EngineID &b, const uint value_b)
 {
 	const Engine *e_a = Engine::Get(a);
 	const Engine *e_b = Engine::Get(b);
-	uint p_a = e_a->GetPower();
-	uint p_b = e_b->GetPower();
 	Money r_a = e_a->GetRunningCost();
 	Money r_b = e_b->GetRunningCost();
 	/* Check if running cost is zero in one or both engines.
@@ -395,8 +387,8 @@ static bool EnginePowerVsRunningCostSorter(const EngineID &a, const EngineID &b)
 	if (r_a == 0) {
 		if (r_b == 0) {
 			/* If it is ambiguous which to return go with their ID */
-			if (p_a == p_b) return EngineNumberSorter(a, b);
-			return _engine_sort_direction != (p_a < p_b);
+			if (value_a == value_b) return EngineNumberSorter(a, b);
+			return _engine_sort_direction != (value_a < value_b);
 		}
 		return !_engine_sort_direction;
 	}
@@ -404,8 +396,8 @@ static bool EnginePowerVsRunningCostSorter(const EngineID &a, const EngineID &b)
 	/* Using double for more precision when comparing close values.
 	 * This shouldn't have any major effects in performance nor in keeping
 	 * the game in sync between players since it's used in GUI only in client side */
-	double v_a = (double)p_a / (double)r_a;
-	double v_b = (double)p_b / (double)r_b;
+	double v_a = (double)value_a / (double)r_a;
+	double v_b = (double)value_b / (double)r_b;
 	/* Use EngineID to sort if both have same power/running cost,
 	 * since we want consistent sorting.
 	 * Also if both have no power then sort with reverse of running cost to simulate
@@ -413,6 +405,17 @@ static bool EnginePowerVsRunningCostSorter(const EngineID &a, const EngineID &b)
 	if (v_a == 0 && v_b == 0) return !EngineRunningCostSorter(a, b);
 	if (v_a == v_b)  return EngineNumberSorter(a, b);
 	return _engine_sort_direction != (v_a < v_b);
+}
+
+/**
+ * Determines order of engines by power / running costs
+ * @param a first engine to compare
+ * @param b second engine to compare
+ * @return for descending order: returns true if a < b. Vice versa for ascending order
+ */
+static bool EnginePowerVsRunningCostSorter(const EngineID &a, const EngineID &b)
+{
+	return GenericEngineValueVsRunningCostSorter(a, Engine::Get(a)->GetPower(), b, Engine::Get(b)->GetPower());
 }
 
 /* Train sorting functions */
@@ -435,6 +438,23 @@ static bool TrainEngineCapacitySorter(const EngineID &a, const EngineID &b)
 	/* Use EngineID to sort instead since we want consistent sorting */
 	if (r == 0) return EngineNumberSorter(a, b);
 	return _engine_sort_direction ? r > 0 : r < 0;
+}
+
+/**
+ * Determines order of train engines by cargo capacity / running costs
+ * @param a first engine to compare
+ * @param b second engine to compare
+ * @return for descending order: returns true if a < b. Vice versa for ascending order
+ */
+static bool TrainEngineCapacityVsRunningCostSorter(const EngineID &a, const EngineID &b)
+{
+	const RailVehicleInfo *rvi_a = RailVehInfo(a);
+	const RailVehicleInfo *rvi_b = RailVehInfo(b);
+
+	uint va = GetTotalCapacityOfArticulatedParts(a) * (rvi_a->railveh_type == RAILVEH_MULTIHEAD ? 2 : 1);
+	uint vb = GetTotalCapacityOfArticulatedParts(b) * (rvi_b->railveh_type == RAILVEH_MULTIHEAD ? 2 : 1);
+
+	return GenericEngineValueVsRunningCostSorter(a, va, b, vb);
 }
 
 /**
@@ -473,6 +493,17 @@ static bool RoadVehEngineCapacitySorter(const EngineID &a, const EngineID &b)
 	return _engine_sort_direction ? r > 0 : r < 0;
 }
 
+/**
+ * Determines order of road vehicles by cargo capacity / running costs
+ * @param a first engine to compare
+ * @param b second engine to compare
+ * @return for descending order: returns true if a < b. Vice versa for ascending order
+ */
+static bool RoadVehEngineCapacityVsRunningCostSorter(const EngineID &a, const EngineID &b)
+{
+	return GenericEngineValueVsRunningCostSorter(a, GetTotalCapacityOfArticulatedParts(a), b, GetTotalCapacityOfArticulatedParts(b));
+}
+
 /* Ship vehicle sorting functions */
 
 /**
@@ -493,6 +524,17 @@ static bool ShipEngineCapacitySorter(const EngineID &a, const EngineID &b)
 	/* Use EngineID to sort instead since we want consistent sorting */
 	if (r == 0) return EngineNumberSorter(a, b);
 	return _engine_sort_direction ? r > 0 : r < 0;
+}
+
+/**
+ * Determines order of ships by cargo capacity / running costs
+ * @param a first engine to compare
+ * @param b second engine to compare
+ * @return for descending order: returns true if a < b. Vice versa for ascending order
+ */
+static bool ShipEngineCapacityVsRunningCostSorter(const EngineID &a, const EngineID &b)
+{
+	return GenericEngineValueVsRunningCostSorter(a, Engine::Get(a)->GetDisplayDefaultCapacity(), b, Engine::Get(b)->GetDisplayDefaultCapacity());
 }
 
 /* Aircraft sorting functions */
@@ -526,6 +568,24 @@ static bool AircraftEngineCargoSorter(const EngineID &a, const EngineID &b)
 }
 
 /**
+ * Determines order of aircraft by cargo capacity / running costs
+ * @param a first engine to compare
+ * @param b second engine to compare
+ * @return for descending order: returns true if a < b. Vice versa for ascending order
+ */
+static bool AircraftEngineCapacityVsRunningCostSorter(const EngineID &a, const EngineID &b)
+{
+	const Engine *e_a = Engine::Get(a);
+	const Engine *e_b = Engine::Get(b);
+
+	uint16 mail_a, mail_b;
+	int va = e_a->GetDisplayDefaultCapacity(&mail_a);
+	int vb = e_b->GetDisplayDefaultCapacity(&mail_b);
+
+	return GenericEngineValueVsRunningCostSorter(a, va + mail_a, b, vb + mail_b);
+}
+
+/**
  * Determines order of aircraft by range.
  * @param a first engine to compare
  * @param b second engine to compare
@@ -544,7 +604,7 @@ static bool AircraftRangeSorter(const EngineID &a, const EngineID &b)
 }
 
 /** Sort functions for the vehicle sort criteria, for each vehicle type. */
-EngList_SortTypeFunction * const _engine_sort_functions[][12] = {{
+EngList_SortTypeFunction * const _engine_sort_functions[][13] = {{
 	/* Trains */
 	&EngineNumberSorter,
 	&EngineCostSorter,
@@ -557,6 +617,7 @@ EngList_SortTypeFunction * const _engine_sort_functions[][12] = {{
 	&EnginePowerVsRunningCostSorter,
 	&EngineReliabilitySorter,
 	&TrainEngineCapacitySorter,
+	&TrainEngineCapacityVsRunningCostSorter,
 	&EngineVehicleCountSorter,
 }, {
 	/* Road vehicles */
@@ -571,6 +632,7 @@ EngList_SortTypeFunction * const _engine_sort_functions[][12] = {{
 	&EnginePowerVsRunningCostSorter,
 	&EngineReliabilitySorter,
 	&RoadVehEngineCapacitySorter,
+	&RoadVehEngineCapacityVsRunningCostSorter,
 	&EngineVehicleCountSorter,
 }, {
 	/* Ships */
@@ -582,6 +644,7 @@ EngList_SortTypeFunction * const _engine_sort_functions[][12] = {{
 	&EngineRunningCostSorter,
 	&EngineReliabilitySorter,
 	&ShipEngineCapacitySorter,
+	&ShipEngineCapacityVsRunningCostSorter,
 	&EngineVehicleCountSorter,
 }, {
 	/* Aircraft */
@@ -593,12 +656,13 @@ EngList_SortTypeFunction * const _engine_sort_functions[][12] = {{
 	&EngineRunningCostSorter,
 	&EngineReliabilitySorter,
 	&AircraftEngineCargoSorter,
+	&AircraftEngineCapacityVsRunningCostSorter,
 	&EngineVehicleCountSorter,
 	&AircraftRangeSorter,
 }};
 
 /** Dropdown menu strings for the vehicle sort criteria. */
-const StringID _engine_sort_listing[][13] = {{
+const StringID _engine_sort_listing[][14] = {{
 	/* Trains */
 	STR_SORT_BY_ENGINE_ID,
 	STR_SORT_BY_COST,
@@ -611,6 +675,7 @@ const StringID _engine_sort_listing[][13] = {{
 	STR_SORT_BY_POWER_VS_RUNNING_COST,
 	STR_SORT_BY_RELIABILITY,
 	STR_SORT_BY_CARGO_CAPACITY,
+	STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST,
 	STR_SORT_BY_VEHICLE_COUNT,
 	INVALID_STRING_ID
 }, {
@@ -626,6 +691,7 @@ const StringID _engine_sort_listing[][13] = {{
 	STR_SORT_BY_POWER_VS_RUNNING_COST,
 	STR_SORT_BY_RELIABILITY,
 	STR_SORT_BY_CARGO_CAPACITY,
+	STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST,
 	STR_SORT_BY_VEHICLE_COUNT,
 	INVALID_STRING_ID
 }, {
@@ -638,6 +704,7 @@ const StringID _engine_sort_listing[][13] = {{
 	STR_SORT_BY_RUNNING_COST,
 	STR_SORT_BY_RELIABILITY,
 	STR_SORT_BY_CARGO_CAPACITY,
+	STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST,
 	STR_SORT_BY_VEHICLE_COUNT,
 	INVALID_STRING_ID
 }, {
@@ -650,6 +717,7 @@ const StringID _engine_sort_listing[][13] = {{
 	STR_SORT_BY_RUNNING_COST,
 	STR_SORT_BY_RELIABILITY,
 	STR_SORT_BY_CARGO_CAPACITY,
+	STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST,
 	STR_SORT_BY_VEHICLE_COUNT,
 	STR_SORT_BY_RANGE,
 	INVALID_STRING_ID
