@@ -4227,7 +4227,7 @@ STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED                        :NewGRF가 너�
 STR_NEWGRF_ERROR_STATIC_GRF_CAUSES_DESYNC                       :{2:STRING}{G 2 "을" "를"} 포함한 정적 NewGRF {1:STRING}{G 1 "을" "를"} 불러오는 것은 비동기화를 일으킬 수 있습니다
 STR_NEWGRF_ERROR_UNEXPECTED_SPRITE                              :예기치 않은 스프라이트 (스프라이트 {3:NUM})
 STR_NEWGRF_ERROR_UNKNOWN_PROPERTY                               :알려지지 않은 액션 0 속성 {4:HEX} (스프라이트 {3:NUM})
-STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :구현되지 않은 재배치된 기능 ID: 이름: {2:RAW_STRING}, 재배치: {5:HEX} (스프라이트 {3:NUM})
+STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :구현되지 않은 재배치된 기능 ID: 이름: {2:STRING}, 재배치: {5:HEX} (스프라이트 {3:NUM})
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :구현되지 않은 재배치된 액션 0 속성 특성: {4:HEX}, 이름: {2:STRING}, 재배치: {5:HEX} (스프라이트 {3:NUM})
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE               :구현되지 않은 재배치된 액션 5 종류: 이름: {2:STRING}, 재배치: {4:HEX} (스프라이트 {3:NUM})
 STR_NEWGRF_ERROR_INVALID_ID                                     :유효하지 않은 ID 사용 시도 (스프라이트 {3:NUM})
@@ -5735,7 +5735,7 @@ STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP                           :{BLACK}시간�
 
 STR_TIMETABLE_SCHEDULED_DISPATCH                                :{BLACK}배차 일정
 STR_TIMETABLE_SCHEDULED_DISPATCH_TOOLTIP                        :{BLACK}시간표 시작 시간 자동 설정을 위한 '배차 일정' 창을 엽니다.
-STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER                          :{PUSH_COLOUR}{YELLOW}[배{STRING}차 기준]{POP_COLOUR}
+STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER                          :{PUSH_COLOUR}{YELLOW}[배차 일정 {STRING}의 기준]{POP_COLOUR}
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME             :{PUSH_COLOUR}{RED}[{STRING}배차 기준 - 대기 시간표가 작성되지 않음]{POP_COLOUR}
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_SCHEDULE_INDEX           :{NUM}{NBSP}-{NBSP}
 
