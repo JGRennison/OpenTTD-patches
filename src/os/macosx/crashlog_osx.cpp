@@ -110,7 +110,7 @@ class CrashLogOSX : public CrashLog {
 	/** Signal that has been thrown. */
 	int signum;
 	siginfo_t *si;
-	void *context;
+	[[maybe_unused]] void *context;
 	bool signal_instruction_ptr_valid;
 	void *signal_instruction_ptr;
 
