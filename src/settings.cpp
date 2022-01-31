@@ -1773,6 +1773,19 @@ static bool LinkGraphDistributionSettingGUI(SettingOnGuiCtrlData &data)
 	}
 }
 
+static bool SpriteZoomMinSettingGUI(SettingOnGuiCtrlData &data)
+{
+	switch (data.type) {
+		case SOGCT_DESCRIPTION_TEXT:
+			SetDParam(0, data.text);
+			data.text = STR_CONFIG_SETTING_SPRITE_ZOOM_MIN_HELPTEXT_EXTRA;
+			return true;
+
+		default:
+			return false;
+	}
+}
+
 /* End - GUI callbacks */
 
 /**
