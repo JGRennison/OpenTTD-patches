@@ -1361,7 +1361,14 @@ void SettingEntry::DrawSettingString(uint left, uint right, int y, bool highligh
 {
 	std::unique_ptr<SettingEntry::SetValueDParamsTempData> tempdata;
 	this->SetValueDParams(1, value, tempdata);
-	DrawString(left, right, y, this->setting->str, highlight ? TC_WHITE : TC_LIGHT_BLUE);
+	int edge = DrawString(left, right, y, this->setting->str, highlight ? TC_WHITE : TC_LIGHT_BLUE);
+	if (this->setting->flags & SF_GUI_ADVISE_DEFAULT && value != this->setting->def && edge != 0) {
+		const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
+		if ((int)warning_dimensions.height <= SETTING_HEIGHT) {
+			DrawSprite(SPR_WARNING_SIGN, 0, (_current_text_dir == TD_RTL) ? edge - warning_dimensions.width - 5 : edge + 5,
+					y + (((int)FONT_HEIGHT_NORMAL - (int)warning_dimensions.height) / 2));
+		}
+	}
 }
 
 /* == CargoDestPerCargoSettingEntry methods == */
@@ -2514,6 +2521,26 @@ struct GameSettingsWindow : Window {
 					this->last_clicked->SetValueDParams(0, sd->def, tempdata);
 					DrawString(r.left, r.right, y, STR_CONFIG_SETTING_DEFAULT_VALUE);
 					y += FONT_HEIGHT_NORMAL + WD_PAR_VSEP_NORMAL;
+
+					if (sd->flags & SF_GUI_ADVISE_DEFAULT) {
+						const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
+						const int step_height = std::max<int>(warning_dimensions.height, FONT_HEIGHT_NORMAL);
+						const int text_offset_y = (step_height - FONT_HEIGHT_NORMAL) / 2;
+						const int warning_offset_y = (step_height - warning_dimensions.height) / 2;
+						const bool rtl = _current_text_dir == TD_RTL;
+
+						int left = r.left;
+						int right = r.right;
+						DrawSprite(SPR_WARNING_SIGN, 0, rtl ? right - warning_dimensions.width - 5 : left + 5, y + warning_offset_y);
+						if (rtl) {
+							right -= (warning_dimensions.width + 10);
+						} else {
+							left += (warning_dimensions.width + 10);
+						}
+						DrawString(left, right, y + text_offset_y, STR_CONFIG_SETTING_ADVISED_LEAVE_DEFAULT, TC_RED);
+
+						y += step_height + WD_PAR_VSEP_NORMAL;
+					}
 
 					DrawStringMultiLine(r.left, r.right, y, r.bottom, this->last_clicked->GetHelpText(), TC_WHITE);
 				}

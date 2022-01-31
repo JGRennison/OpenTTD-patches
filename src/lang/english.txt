@@ -1243,6 +1243,8 @@ STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_INGAME                    :Game settings (
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_MENU                   :Company settings (stored in saves; affect only new games)
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_INGAME                 :Company settings (stored in save; affect only current company)
 
+STR_CONFIG_SETTING_ADVISED_LEAVE_DEFAULT                        :You are advised to leave this setting at the default value
+
 STR_CONFIG_SETTINGS_NONE                                        :{WHITE}- None -
 ###length 3
 STR_CONFIG_SETTING_CATEGORY_HIDES                               :{BLACK}Show all search results by setting{}{SILVER}Category {BLACK}to {WHITE}{STRING}

@@ -33,6 +33,7 @@ enum SettingFlag : uint32 {
 	SF_DEC1SCALE               = 1 << 16, ///< also display a float representation of the scale of a decimal1 scale parameter
 	SF_RUN_CALLBACKS_ON_PARSE  = 1 << 17, ///< run callbacks when parsing from config file
 	SF_GUI_VELOCITY            = 1 << 18, ///< setting value is a velocity
+	SF_GUI_ADVISE_DEFAULT      = 1 << 19, ///< Advise the user to leave this setting at its default value
 };
 DECLARE_ENUM_AS_BIT_SET(SettingFlag)
 
