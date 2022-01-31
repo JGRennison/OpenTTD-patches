@@ -6,13 +6,13 @@ on:
       ref:
         description: 'Ref to build (for Pull Requests, use refs/pull/NNN/head)'
         required: true
-  repository_dispatch:
-    # client_payload should be the same as the inputs for workflow_dispatch.
-    types:
-    - Build*
-  release:
-    types:
-    - published
+#  repository_dispatch:
+#    # client_payload should be the same as the inputs for workflow_dispatch.
+#    types:
+#    - Build*
+#  release:
+#    types:
+#    - published
 
 jobs:
   source:
