@@ -161,12 +161,12 @@ static std::vector<WChar> NSStringToUTF32(NSString *s)
 	return unicode_str;
 }
 
+#ifdef HAVE_TOUCHBAR_SUPPORT
 static void CGDataFreeCallback(void *, const void *data, size_t)
 {
 	delete[] (const uint32 *)data;
 }
 
-#ifdef HAVE_TOUCHBAR_SUPPORT
 /**
  * Render an OTTD sprite to a Cocoa image.
  * @param sprite_id Sprite to make a NSImage from.
