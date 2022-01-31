@@ -50,6 +50,17 @@ uint64 ottd_rdtsc()
 # define RDTSC_AVAILABLE
 #endif
 
+/* rdtsc for AARCH64. Use GCC syntax */
+#if defined(__aarch64__) && !defined(RDTSC_AVAILABLE)
+uint64 ottd_rdtsc()
+{
+	uint64 val;
+	asm volatile("mrs %0, cntvct_el0" : "=r" (val));
+	return val;
+}
+# define RDTSC_AVAILABLE
+#endif
+
 /* rdtsc for PPC which has this not */
 #if (defined(__POWERPC__) || defined(__powerpc__)) && !defined(RDTSC_AVAILABLE)
 uint64 ottd_rdtsc()
