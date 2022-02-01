@@ -259,7 +259,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Various changes to reduce the probability of desyncs and improve desync reporting/diagnostics.
 * Add support for zstd savegame compression for autosaves and network joins.
 * Increase the number of settings which can be changed in multiplayer.
-* Store company passwords in network server saves in an encrypted form such that they are automaticaly restored when loaded into the same network server.
+* Store company passwords in network server saves in an encrypted form such that they are automatically restored when loaded into the same network server.
 * Add client setting for whether to sync localisation settings (such as measurement units) with the server.
 
 #### Money
