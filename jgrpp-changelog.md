@@ -2,6 +2,11 @@
 
 * * *
 
+### v0.46.0 (2022-02-01)
+* Add build vehicle window sort mode: cargo capacity / running cost.
+* Add Korean translations by TELK.
+* Bump trunk base from commit 9e47df298faf6889c8be7dd0b0eeedeb65db1cdc to commit 2c42b6adc87765750436dc5005e9e186db84daeb.
+
 ### v0.46-rc2 (2022-01-29)
 * Road waypoints:
   * Fix crash when changing one-way state of road waypoints.

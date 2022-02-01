@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.46-rc2
+## JGR's Patchpack version 0.46.0
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -120,6 +120,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * If a train or ship's next order is for the current station when leaving, start loading again without moving, instead of leaving.
 * Slots and counters.  
   See the [guide on the wiki](https://github.com/JGRennison/OpenTTD-patches/wiki/Signalling) for more information.
+* Add cargo capacity / running cost sort mode to the build vehicle window.
 
 #### Orders and Timetabling
 
