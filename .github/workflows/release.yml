@@ -763,6 +763,7 @@ jobs:
         arch: ${{ matrix.host }}
 
     - name: Import code signing certificate
+      if: ${{ false }} # Disabled
       shell: powershell
       # If this is run on a fork, there may not be a certificate set up - continue in this case
       continue-on-error: true
