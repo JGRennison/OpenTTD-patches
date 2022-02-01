@@ -323,6 +323,7 @@ STR_SORT_BY_TRACTIVE_EFFORT                                     :견인력
 STR_SORT_BY_INTRO_DATE                                          :도입 날짜
 STR_SORT_BY_RUNNING_COST                                        :유지비
 STR_SORT_BY_POWER_VS_RUNNING_COST                               :유지비 분의 힘
+STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST                      :유지비 분의 수송량
 STR_SORT_BY_CARGO_CAPACITY                                      :화물 수송량
 STR_SORT_BY_VEHICLE_COUNT                                       :차량 수
 STR_SORT_BY_RANGE                                               :항속거리
@@ -1242,6 +1243,8 @@ STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_MENU                      :게임 설정 (
 STR_CONFIG_SETTING_TYPE_DROPDOWN_GAME_INGAME                    :게임 설정 (게임 저장 파일에 저장됨; 현재 게임에만 적용됨)
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_MENU                   :회사 설정 (게임 저장 파일에 저장됨; 새 게임에만 적용됨)
 STR_CONFIG_SETTING_TYPE_DROPDOWN_COMPANY_INGAME                 :회사 설정 (게임 저장 파일에 저장됨; 현재 회사에만 적용됨)
+
+STR_CONFIG_SETTING_ADVISED_LEAVE_DEFAULT                        :이 설정은 기본값으로 두는 것이 좋습니다
 
 STR_CONFIG_SETTINGS_NONE                                        :{WHITE}- 없음 -
 ###length 3
@@ -2241,6 +2244,7 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
 
 STR_CONFIG_SETTING_SPRITE_ZOOM_MIN                              :최고 해상도 그래픽 스프라이트: {STRING}
 STR_CONFIG_SETTING_SPRITE_ZOOM_MIN_HELPTEXT                     :그래픽 스프라이트에 사용할 최고 해상도를 제한할 수 있습니다. 그래픽 스프라이트 해상도를 제한하면 고해상도 그래픽을 사용할 수 있어도 이를 사용하지 않을 수 있습니다. 이 설정을 사용하면 고해상도 그래픽을 지원하지 않는 GRF 파일을 섞어서 사용할 때 게임의 모습을 일관성있게 만들 수 있습니다.
+STR_CONFIG_SETTING_SPRITE_ZOOM_MIN_HELPTEXT_EXTRA               :{STRING}{}{}이 설정을 기본값에서 변경하면 많은 추가 확대/고화질 NewGRF의 그래픽 위치가 잘못 표시되거나 아예 (투명한 그래픽으로) 나타나지 않을 수도 있습니다. 이 설정이 기본값이 아닐 때 그래픽 문제가 발생할 경우, 이 설정을 다시 기본값으로 변경하세요.
 ###length 3
 STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_MIN                          :4x
 STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_IN_2X                        :2x
