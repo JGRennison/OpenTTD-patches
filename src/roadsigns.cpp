@@ -205,7 +205,7 @@ TrackdirBits GetStopSignDisallowedDirections(TileIndex tile)
  */
 CommandCost CmdBuildYieldSign(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
-    /* Check if traffic lights are enabled. */
+    /* Check if road signs are enabled. */
     if (!_settings_game.construction.road_signs)
         return CMD_ERROR; // Sanity check.
 
@@ -317,7 +317,7 @@ void ClearAllYieldSigns()
  */
 CommandCost CmdBuildStopSign(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
 {
-    /* Check if traffic signs are enabled. */
+    /* Check if road signs are enabled. */
     if (!_settings_game.construction.road_signs)
         return CMD_ERROR; // Sanity check.
 

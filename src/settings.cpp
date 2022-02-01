@@ -1497,10 +1497,9 @@ static size_t ConvertLandscape(const char *value)
 
 /**
  * What to do when traffic light Setting was changed.
- * @param p1 unused
- * @return always 0
+ * @param new_value unused
  */
-static bool TLSettingChanged(int32 p1)
+static void TLSettingChanged(int32 new_value)
 {
 	/* Road building gui changed. */
 	MarkWholeScreenDirty();
@@ -1508,15 +1507,13 @@ static bool TLSettingChanged(int32 p1)
 	/* If traffic lights got disabled, clear them all. */
 	if (!_settings_game.construction.traffic_lights)
 		ClearAllTrafficLights();
-	return true;
 }
 
 /**
  * What to do when road signs Setting was changed.
- * @param p1 unused
- * @return always 0
+ * @param new_value unused
  */
-static bool RSSettingChanged(int32 p1)
+static void RSSettingChanged(int32 new_value)
 {
 	/* Road building gui changed. */
 	MarkWholeScreenDirty();
@@ -1527,8 +1524,6 @@ static bool RSSettingChanged(int32 p1)
 		ClearAllYieldSigns();
 		ClearAllStopSigns();
 	}
-	
-	return true;
 }
 
 static bool CheckFreeformEdges(int32 &new_value)
