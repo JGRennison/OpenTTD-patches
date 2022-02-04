@@ -22,6 +22,7 @@
 extern SaveLoadVersion _sl_version;
 extern byte            _sl_minor_version;
 extern const SaveLoadVersion SAVEGAME_VERSION;
+extern const SaveLoadVersion MAX_LOAD_SAVEGAME_VERSION;
 
 namespace upstream_sl {
 
@@ -740,18 +741,6 @@ static inline bool IsSavegameVersionBefore(SaveLoadVersion major, byte minor = 0
 static inline bool IsSavegameVersionBeforeOrAt(SaveLoadVersion major)
 {
 	return _sl_version <= major;
-}
-
-/**
- * Checks if some version from/to combination falls within the range of the
- * active savegame version.
- * @param version_from Inclusive savegame version lower bound.
- * @param version_to   Exclusive savegame version upper bound. SL_MAX_VERSION if no upper bound.
- * @return Active savegame version falls within the given range.
- */
-static inline bool SlIsObjectCurrentlyValid(SaveLoadVersion version_from, SaveLoadVersion version_to)
-{
-	return version_from <= SAVEGAME_VERSION && SAVEGAME_VERSION < version_to;
 }
 
 /**
