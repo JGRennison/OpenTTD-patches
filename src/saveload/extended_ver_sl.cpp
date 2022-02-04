@@ -181,15 +181,15 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
  * and return the combination of the two tests using the operator defined in the constructor.
  * Otherwise just returns the result of the savegame version test
  */
-bool SlXvFeatureTest::IsFeaturePresent(SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const
+bool SlXvFeatureTest::IsFeaturePresent(uint16 feature_versions[XSLFI_SIZE], SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const
 {
 	bool savegame_version_ok = savegame_version >= savegame_version_from && savegame_version < savegame_version_to;
 
-	if (this->functor) return (*this->functor)(savegame_version, savegame_version_ok);
+	if (this->functor) return (*this->functor)(savegame_version, savegame_version_ok, feature_versions);
 
 	if (this->feature == XSLFI_NULL) return savegame_version_ok;
 
-	bool feature_ok = SlXvIsFeaturePresent(this->feature, this->min_version, this->max_version);
+	bool feature_ok = SlXvIsFeaturePresent(feature_versions, this->feature, this->min_version, this->max_version);
 
 	switch (op) {
 		case XSLFTO_OR:
@@ -207,10 +207,10 @@ bool SlXvFeatureTest::IsFeaturePresent(SaveLoadVersion savegame_version, SaveLoa
 /**
  * Returns true if @p feature is present and has a version inclusively bounded by @p min_version and @p max_version
  */
-bool SlXvIsFeaturePresent(SlXvFeatureIndex feature, uint16 min_version, uint16 max_version)
+bool SlXvIsFeaturePresent(uint16 feature_versions[XSLFI_SIZE], SlXvFeatureIndex feature, uint16 min_version, uint16 max_version)
 {
 	assert(feature < XSLFI_SIZE);
-	return _sl_xv_feature_versions[feature] >= min_version && _sl_xv_feature_versions[feature] <= max_version;
+	return feature_versions[feature] >= min_version && feature_versions[feature] <= max_version;
 }
 
 /**

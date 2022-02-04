@@ -153,7 +153,7 @@ enum SlXvFeatureTestOperator {
  * Structure to describe an extended feature version test, and how it combines with a traditional savegame version test
  */
 struct SlXvFeatureTest {
-	using TestFunctorPtr = bool (*)(uint16, bool);  ///< Return true if feature present, first parameter is standard savegame version, second is whether standard savegame version is within bounds
+	using TestFunctorPtr = bool (*)(uint16, bool, uint16[XSLFI_SIZE]);  ///< Return true if feature present, first parameter is standard savegame version, second is whether standard savegame version is within bounds
 
 	private:
 	uint16 min_version;
@@ -172,10 +172,20 @@ struct SlXvFeatureTest {
 	SlXvFeatureTest(TestFunctorPtr functor_)
 			: min_version(0), max_version(0), feature(XSLFI_NULL), op(XSLFTO_OR), functor(functor_) { }
 
-	bool IsFeaturePresent(SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const;
+	bool IsFeaturePresent(uint16 feature_versions[XSLFI_SIZE], SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const;
+
+	inline bool IsFeaturePresent(SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const
+	{
+		return this->IsFeaturePresent(_sl_xv_feature_versions, savegame_version, savegame_version_from, savegame_version_to);
+	}
 };
 
-bool SlXvIsFeaturePresent(SlXvFeatureIndex feature, uint16 min_version = 1, uint16 max_version = 0xFFFF);
+bool SlXvIsFeaturePresent(uint16 feature_versions[XSLFI_SIZE], SlXvFeatureIndex feature, uint16 min_version = 1, uint16 max_version = 0xFFFF);
+
+inline bool SlXvIsFeaturePresent(SlXvFeatureIndex feature, uint16 min_version = 1, uint16 max_version = 0xFFFF)
+{
+	return SlXvIsFeaturePresent(_sl_xv_feature_versions, feature, min_version, max_version);
+}
 
 /**
  * Returns true if @p feature is missing (i.e. has a version of 0, or less than the specified minimum version)
@@ -183,6 +193,14 @@ bool SlXvIsFeaturePresent(SlXvFeatureIndex feature, uint16 min_version = 1, uint
 inline bool SlXvIsFeatureMissing(SlXvFeatureIndex feature, uint16 min_version = 1)
 {
 	return !SlXvIsFeaturePresent(feature, min_version);
+}
+
+/**
+ * Returns true if @p feature is missing (i.e. has a version of 0, or less than the specified minimum version)
+ */
+inline bool SlXvIsFeatureMissing(uint16 feature_versions[XSLFI_SIZE], SlXvFeatureIndex feature, uint16 min_version = 1)
+{
+	return !SlXvIsFeaturePresent(feature_versions, feature, min_version);
 }
 
 const char *SlXvGetFeatureName(SlXvFeatureIndex feature);
