@@ -680,6 +680,7 @@ int openttd_main(int argc, char *argv[])
 {
 	SetSelfAsMainThread();
 	PerThreadSetup();
+	SlXvSetStaticCurrentVersions();
 	std::string musicdriver;
 	std::string sounddriver;
 	std::string videodriver;

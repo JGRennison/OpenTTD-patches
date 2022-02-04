@@ -140,6 +140,7 @@ enum SlXvFeatureIndex {
 };
 
 extern uint16 _sl_xv_feature_versions[XSLFI_SIZE];
+extern uint16 _sl_xv_feature_static_versions[XSLFI_SIZE];
 
 /**
  * Operator to use when combining traditional savegame number test with an extended feature version test
@@ -240,6 +241,7 @@ struct SlxiSubChunkInfo {
 void SlXvResetState();
 
 void SlXvSetCurrentState();
+void SlXvSetStaticCurrentVersions();
 
 bool SlXvCheckSpecialSavegameVersions();
 

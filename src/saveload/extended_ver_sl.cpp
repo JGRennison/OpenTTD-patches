@@ -52,6 +52,7 @@
 #include "../safeguards.h"
 
 uint16 _sl_xv_feature_versions[XSLFI_SIZE];                 ///< array of all known feature types and their current versions
+uint16 _sl_xv_feature_static_versions[XSLFI_SIZE];          ///< array of all known feature types and their static current version versions
 bool _sl_is_ext_version;                                    ///< is this an extended savegame version, with more info in the SLXI chunk?
 bool _sl_is_faked_ext;                                      ///< is this a faked extended savegame version, with no SLXI chunk? See: SlXvCheckSpecialSavegameVersions.
 bool _sl_maybe_springpp;                                    ///< is this possibly a SpringPP savegame?
@@ -256,6 +257,19 @@ void SlXvSetCurrentState()
 	}
 	if (MapSizeX() > 8192 || MapSizeY() > 8192) {
 		_sl_xv_feature_versions[XSLFI_EXTRA_LARGE_MAP] = 1;
+	}
+}
+
+/**
+ * Set all extended feature versions in the current static version array to their currently enabled versions, i.e. versions suitable for saving
+ */
+void SlXvSetStaticCurrentVersions()
+{
+	memset(_sl_xv_feature_static_versions, 0, sizeof(_sl_xv_feature_static_versions));
+
+	const SlxiSubChunkInfo *info = _sl_xv_sub_chunk_infos;
+	for (; info->index != XSLFI_NULL; ++info) {
+		_sl_xv_feature_static_versions[info->index] = info->save_version;
 	}
 }
 
