@@ -312,7 +312,7 @@ void MultiCommodityFlow::Dijkstra(NodeID source_node, PathVector &paths)
 			}
 			/* punish in-between stops a little */
 			uint distance = DistanceMaxPlusManhattan(this->job[from].XY(), this->job[to].XY()) + 1;
-			if (edge.LastAircraftUpdate() != INVALID_DATE && aircraft_link_scale != 100) {
+			if (edge.LastAircraftUpdate() != INVALID_DATE && aircraft_link_scale > 100) {
 				distance *= aircraft_link_scale;
 				distance /= 100;
 			}
