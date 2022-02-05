@@ -520,7 +520,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 							case OT_GOTO_DEPOT:
 								SetDParam(1, STR_DEPOT_NAME);
-								SetDParam(2, order->GetDestination());
+								SetDParam(2, v->type);
+								SetDParam(3, order->GetDestination());
 								break;
 
 							default:
