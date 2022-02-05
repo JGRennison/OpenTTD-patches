@@ -700,9 +700,14 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			case WID_SCHDISPATCH_MANAGEMENT: {
 				if (!this->IsScheduleSelected()) break;
 				DropDownList list;
-				list.emplace_back(new DropDownListStringItem(STR_SCHDISPATCH_RESET_LAST_DISPATCH, SCH_MD_RESET_LAST_DISPATCHED, false));
-				list.emplace_back(new DropDownListStringItem(STR_SCHDISPATCH_CLEAR, SCH_MD_CLEAR_SCHEDULE, false));
-				list.emplace_back(new DropDownListStringItem(STR_SCHDISPATCH_REMOVE_SCHEDULE, SCH_MD_REMOVE_SCHEDULE, false));
+				auto add_item = [&](StringID string, int result) {
+					std::unique_ptr<DropDownListStringItem> item(new DropDownListStringItem(string, result, false));
+					item->SetColourFlags(TC_FORCED);
+					list.emplace_back(std::move(item));
+				};
+				add_item(STR_SCHDISPATCH_RESET_LAST_DISPATCH, SCH_MD_RESET_LAST_DISPATCHED);
+				add_item(STR_SCHDISPATCH_CLEAR, SCH_MD_CLEAR_SCHEDULE);
+				add_item(STR_SCHDISPATCH_REMOVE_SCHEDULE, SCH_MD_REMOVE_SCHEDULE);
 				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGEMENT);
 				break;
 			}
