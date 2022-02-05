@@ -46,6 +46,7 @@ public:
 class DropDownListStringItem : public DropDownListItem {
 public:
 	StringID string; ///< String ID of item
+	TextColour colour_flags = TC_BEGIN;
 
 	DropDownListStringItem(StringID string, int result, bool masked) : DropDownListItem(result, masked), string(string) {}
 
@@ -53,6 +54,7 @@ public:
 	uint Width() const override;
 	void Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const override;
 	virtual StringID String() const { return this->string; }
+	void SetColourFlags(TextColour colour_flags) { this->colour_flags = colour_flags; }
 
 	static bool NatSortFunc(std::unique_ptr<const DropDownListItem> const &first, std::unique_ptr<const DropDownListItem> const &second);
 };

@@ -39,7 +39,7 @@ uint DropDownListStringItem::Width() const
 
 void DropDownListStringItem::Draw(int left, int right, int top, int bottom, bool sel, Colours bg_colour) const
 {
-	DrawString(left + WD_FRAMERECT_LEFT, right - WD_FRAMERECT_RIGHT, top, this->String(), sel ? TC_WHITE : TC_BLACK);
+	DrawString(left + WD_FRAMERECT_LEFT, right - WD_FRAMERECT_RIGHT, top, this->String(), (sel ? TC_WHITE : TC_BLACK) | this->colour_flags);
 }
 
 /**
@@ -89,7 +89,7 @@ void DropDownListIconItem::Draw(int left, int right, int top, int bottom, bool s
 {
 	bool rtl = _current_text_dir == TD_RTL;
 	DrawSprite(this->sprite, this->pal, rtl ? right - this->dim.width - WD_FRAMERECT_RIGHT : left + WD_FRAMERECT_LEFT, CenterBounds(top, bottom, this->sprite_y));
-	DrawString(left + WD_FRAMERECT_LEFT + (rtl ? 0 : (this->dim.width + WD_FRAMERECT_LEFT)), right - WD_FRAMERECT_RIGHT - (rtl ? (this->dim.width + WD_FRAMERECT_RIGHT) : 0), CenterBounds(top, bottom, FONT_HEIGHT_NORMAL), this->String(), sel ? TC_WHITE : TC_BLACK);
+	DrawString(left + WD_FRAMERECT_LEFT + (rtl ? 0 : (this->dim.width + WD_FRAMERECT_LEFT)), right - WD_FRAMERECT_RIGHT - (rtl ? (this->dim.width + WD_FRAMERECT_RIGHT) : 0), CenterBounds(top, bottom, FONT_HEIGHT_NORMAL), this->String(), (sel ? TC_WHITE : TC_BLACK) | this->colour_flags);
 }
 
 void DropDownListIconItem::SetDimension(Dimension d)
