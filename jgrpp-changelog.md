@@ -2,6 +2,13 @@
 
 * * *
 
+### v0.46.1 (2022-02-07)
+* Fix crash or incorrect text in the scheduled dispatch window when a dispatch schedule is assigned to a depot order.
+* Fix crash which could occur when using aircraft with cargodist after loading a 12.x vanilla savegame/scenario.
+* Fix some non-vanilla settings having invalid values after loading a 12.x vanilla savegame/scenario.
+* Add NewGRF properties for NewGRF object tile type to use in the small map window and in viewport map mode.
+* Bump trunk base from commit 2c42b6adc87765750436dc5005e9e186db84daeb to commit 83b6defbfb0fa649a854767ae7c8b5a18f917e80.
+
 ### v0.46.0 (2022-02-01)
 * Add build vehicle window sort mode: cargo capacity / running cost.
 * Add Korean translations by TELK.
