@@ -24,6 +24,8 @@
 #include "screenshot.h"
 #include "guitimer_func.h"
 #include "zoom_func.h"
+#include "object_map.h"
+#include "newgrf_object.h"
 
 #include "smallmap_colours.h"
 #include "smallmap_gui.h"
@@ -319,6 +321,41 @@ void BuildOwnerLegend()
 	_smallmap_company_count = i;
 }
 
+static TileType GetSmallMapTileType(TileIndex tile, TileType t)
+{
+	if (t == MP_OBJECT && GetObjectHasViewportMapViewOverride(tile)) {
+		ObjectViewportMapType vmtype = OVMT_DEFAULT;
+		const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
+		if (spec->ctrl_flags & OBJECT_CTRL_FLAG_VPORT_MAP_TYPE) vmtype = spec->vport_map_type;
+		if (vmtype == OVMT_CLEAR && spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
+			if (IsTileOnWater(tile) && GetObjectGroundType(tile) != OBJECT_GROUND_SHORE) {
+				vmtype = OVMT_WATER;
+			}
+		}
+		switch (vmtype) {
+			case OVMT_DEFAULT:
+				break;
+
+			case OVMT_TREES:
+				t = MP_TREES;
+				break;
+
+			case OVMT_HOUSE:
+				t = MP_HOUSE;
+				break;
+
+			case OVMT_WATER:
+				t = MP_WATER;
+				break;
+
+			default:
+				t = MP_CLEAR;
+				break;
+		}
+	}
+	return t;
+}
+
 /**
  * Return the colour a tile would be displayed with in the small map in mode "Contour".
  * @param tile The tile of which we would like to get the colour.
@@ -328,7 +365,7 @@ void BuildOwnerLegend()
 static inline uint32 GetSmallMapContoursPixels(TileIndex tile, TileType t)
 {
 	const SmallMapColourScheme *cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
-	return ApplyMask(cs->height_colours[TileHeight(tile)], &_smallmap_contours_andor[t]);
+	return ApplyMask(cs->height_colours[TileHeight(tile)], &_smallmap_contours_andor[GetSmallMapTileType(tile, t)]);
 }
 
 /**
@@ -341,7 +378,7 @@ static inline uint32 GetSmallMapContoursPixels(TileIndex tile, TileType t)
 static inline uint32 GetSmallMapVehiclesPixels(TileIndex tile, TileType t)
 {
 	const SmallMapColourScheme *cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
-	return ApplyMask(cs->default_colour, &_smallmap_vehicles_andor[t]);
+	return ApplyMask(cs->default_colour, &_smallmap_vehicles_andor[GetSmallMapTileType(tile, t)]);
 }
 
 /**
@@ -354,7 +391,7 @@ static inline uint32 GetSmallMapVehiclesPixels(TileIndex tile, TileType t)
 static inline uint32 GetSmallMapIndustriesPixels(TileIndex tile, TileType t)
 {
 	const SmallMapColourScheme *cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
-	return ApplyMask(_smallmap_show_heightmap ? cs->height_colours[TileHeight(tile)] : cs->default_colour, &_smallmap_vehicles_andor[t]);
+	return ApplyMask(_smallmap_show_heightmap ? cs->height_colours[TileHeight(tile)] : cs->default_colour, &_smallmap_vehicles_andor[GetSmallMapTileType(tile, t)]);
 }
 
 /**
@@ -409,7 +446,7 @@ static inline uint32 GetSmallMapRoutesPixels(TileIndex tile, TileType t)
 		default:
 			/* Ground colour */
 			const SmallMapColourScheme *cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
-			return ApplyMask(cs->default_colour, &_smallmap_contours_andor[t]);
+			return ApplyMask(cs->default_colour, &_smallmap_contours_andor[GetSmallMapTileType(tile, t)]);
 	}
 }
 
@@ -450,6 +487,72 @@ static inline uint32 GetSmallMapVegetationPixels(TileIndex tile, TileType t)
 				return (_settings_game.game_creation.landscape == LT_ARCTIC) ? MKCOLOUR_XYYX(PC_LIGHT_BLUE, PC_TREES) : MKCOLOUR_XYYX(PC_ORANGE, PC_TREES);
 			}
 			return (GetTropicZone(tile) == TROPICZONE_RAINFOREST) ? MKCOLOUR_XYYX(PC_RAINFOREST, PC_TREES) : MKCOLOUR_XYYX(PC_GRASS_LAND, PC_TREES);
+
+		case MP_OBJECT: {
+			if (!GetObjectHasViewportMapViewOverride(tile)) return ApplyMask(MKCOLOUR_XXXX(PC_GRASS_LAND), &_smallmap_vehicles_andor[t]);
+			ObjectViewportMapType vmtype = OVMT_DEFAULT;
+			const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
+			if (spec->ctrl_flags & OBJECT_CTRL_FLAG_VPORT_MAP_TYPE) vmtype = spec->vport_map_type;
+
+			switch (vmtype) {
+				case OVMT_CLEAR:
+					if (spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
+						if (IsTileOnWater(tile) && GetObjectGroundType(tile) != OBJECT_GROUND_SHORE) {
+							t = MP_WATER;
+						} else {
+							switch (GetObjectGroundType(tile)) {
+								case OBJECT_GROUND_GRASS:
+									if (GetObjectGroundDensity(tile) < 3) return MKCOLOUR_XXXX(PC_BARE_LAND);
+									if (GetTropicZone(tile) == TROPICZONE_RAINFOREST) return MKCOLOUR_XXXX(PC_RAINFOREST);
+									return _vegetation_clear_bits[CLEAR_GRASS];
+
+								case OBJECT_GROUND_SNOW_DESERT:
+									return _vegetation_clear_bits[_settings_game.game_creation.landscape == LT_TROPIC ? CLEAR_DESERT : CLEAR_SNOW];
+
+								case OBJECT_GROUND_SHORE:
+									t = MP_WATER;
+									break;
+
+								default:
+									/* This should never be reached, just draw as normal as a fallback */
+									break;
+							}
+						}
+					} else {
+						return MKCOLOUR_XXXX(PC_BARE_LAND);
+					}
+				case OVMT_GRASS:
+					if (GetTropicZone(tile) == TROPICZONE_RAINFOREST) return MKCOLOUR_XXXX(PC_RAINFOREST);
+					return _vegetation_clear_bits[CLEAR_GRASS];
+				case OVMT_ROUGH:
+					return _vegetation_clear_bits[CLEAR_ROUGH];
+				case OVMT_ROCKS:
+					return _vegetation_clear_bits[CLEAR_ROCKS];
+				case OVMT_FIELDS:
+					return _vegetation_clear_bits[CLEAR_FIELDS];
+				case OVMT_SNOW:
+					return _vegetation_clear_bits[CLEAR_SNOW];
+				case OVMT_DESERT:
+					return _vegetation_clear_bits[CLEAR_DESERT];
+				case OVMT_TREES: {
+					const TreeGround tg = (TreeGround)GB(spec->vport_map_subtype, 0, 4);
+					if (tg == TREE_GROUND_SNOW_DESERT || tg == TREE_GROUND_ROUGH_SNOW) {
+						return (_settings_game.game_creation.landscape == LT_ARCTIC) ? MKCOLOUR_XYYX(PC_LIGHT_BLUE, PC_TREES) : MKCOLOUR_XYYX(PC_ORANGE, PC_TREES);
+					}
+					return (GetTropicZone(tile) == TROPICZONE_RAINFOREST) ? MKCOLOUR_XYYX(PC_RAINFOREST, PC_TREES) : MKCOLOUR_XYYX(PC_GRASS_LAND, PC_TREES);
+				}
+				case OVMT_HOUSE:
+					t = MP_HOUSE;
+					break;
+				case OVMT_WATER:
+					t = MP_WATER;
+					break;
+
+				default:
+					break;
+			}
+			return ApplyMask(MKCOLOUR_XXXX(PC_GRASS_LAND), &_smallmap_vehicles_andor[t]);
+		}
 
 		default:
 			return ApplyMask(MKCOLOUR_XXXX(PC_GRASS_LAND), &_smallmap_vehicles_andor[t]);

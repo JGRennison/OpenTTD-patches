@@ -168,6 +168,18 @@ static inline void SetObjectEffectiveFoundationType(TileIndex t, ObjectEffective
 	SB(_me[t].m6, 0, 2, foundation_type);
 }
 
+static inline bool GetObjectHasViewportMapViewOverride(TileIndex t)
+{
+	assert_tile(IsTileType(t, MP_OBJECT), t);
+	return HasBit(_m[t].m4, 4);
+}
+
+static inline void SetObjectHasViewportMapViewOverride(TileIndex t, bool map_view_override)
+{
+	assert_tile(IsTileType(t, MP_OBJECT), t);
+	SB(_m[t].m4, 4, 1, map_view_override ? 1 : 0);
+}
+
 /**
  * Make an Object tile.
  * @param t      The tile to make and object tile.

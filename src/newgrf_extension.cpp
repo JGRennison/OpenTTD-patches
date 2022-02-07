@@ -50,6 +50,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_object_use_land_ground", 1),
 	GRFFeatureInfo("action0_object_edge_foundation_mode", 2),
 	GRFFeatureInfo("action0_object_flood_resistant", 1),
+	GRFFeatureInfo("action0_object_viewport_map_tile_type", 1),
 	GRFFeatureInfo(),
 };
 
@@ -85,6 +86,8 @@ extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 	GRFPropertyMapDefinition(GSF_OBJECTS, A0RPI_OBJECT_USE_LAND_GROUND, "object_use_land_ground"),
 	GRFPropertyMapDefinition(GSF_OBJECTS, A0RPI_OBJECT_EDGE_FOUNDATION_MODE, "object_edge_foundation_mode"),
 	GRFPropertyMapDefinition(GSF_OBJECTS, A0RPI_OBJECT_FLOOD_RESISTANT, "object_flood_resistant"),
+	GRFPropertyMapDefinition(GSF_OBJECTS, A0RPI_OBJECT_VIEWPORT_MAP_TYPE, "object_viewport_map_tile_type"),
+	GRFPropertyMapDefinition(GSF_OBJECTS, A0RPI_OBJECT_VIEWPORT_MAP_SUBTYPE, "object_viewport_map_tile_subtype"),
 	GRFPropertyMapDefinition(),
 };
 

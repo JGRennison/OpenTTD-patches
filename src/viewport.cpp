@@ -109,6 +109,8 @@
 #include "scope_info.h"
 #include "scope.h"
 #include "blitter/32bpp_base.hpp"
+#include "object_map.h"
+#include "newgrf_object.h"
 
 #include <map>
 #include <vector>
@@ -2618,10 +2620,143 @@ static const ClearGround _treeground_to_clearground[5] = {
 	CLEAR_SNOW,  // TREE_GROUND_ROUGH_SNOW, make it +1 if _settings_game.game_creation.landscape == LT_TROPIC
 };
 
+template <bool is_32bpp>
+static inline uint32 ViewportMapGetColourVegetationTree(const TileIndex tile, const TreeGround tg, const uint td, const uint tc, const uint colour_index, Slope slope)
+{
+	if (IsTransparencySet(TO_TREES)) {
+		ClearGround cg = _treeground_to_clearground[tg];
+		if (cg == CLEAR_SNOW && _settings_game.game_creation.landscape == LT_TROPIC) cg = CLEAR_DESERT;
+		uint32 ground_colour = _vp_map_vegetation_clear_colours[slope][cg][td];
+
+		if (IsInvisibilitySet(TO_TREES)) {
+			/* Like ground. */
+			return ground_colour;
+		}
+
+		/* Take ground and make it darker. */
+		if (is_32bpp) {
+			return Blitter_32bppBase::MakeTransparent(ground_colour, 192, 256).data;
+		} else {
+			/* 8bpp transparent snow trees give blue. Definitely don't want that. Prefer grey. */
+			if (cg == CLEAR_SNOW && td > 1) return GREY_SCALE(13 - tc);
+			return _pal2trsp_remap_ptr[ground_colour];
+		}
+	} else {
+		if (tg == TREE_GROUND_SNOW_DESERT || tg == TREE_GROUND_ROUGH_SNOW) {
+			return _vp_map_vegetation_clear_colours[colour_index ^ slope][_settings_game.game_creation.landscape == LT_TROPIC ? CLEAR_DESERT : CLEAR_SNOW][td];
+		} else {
+			const uint rnd = std::min<uint>(tc ^ (((tile & 3) ^ (TileY(tile) & 3)) * td), MAX_TREE_COUNT_BY_LANDSCAPE - 1);
+			return _vp_map_vegetation_tree_colours[slope][tg][rnd];
+		}
+	}
+}
+
+static bool ViewportMapGetColourVegetationCustomObject(uint32 &colour, const TileIndex tile, const uint colour_index, bool is_32bpp, bool show_slope)
+{
+	ObjectViewportMapType vmtype = OVMT_DEFAULT;
+	const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
+	if (spec->ctrl_flags & OBJECT_CTRL_FLAG_VPORT_MAP_TYPE) vmtype = spec->vport_map_type;
+
+	auto do_clear_ground = [&](ClearGround cg, uint multi) -> bool {
+		Slope slope = SLOPE_FLAT;
+		if (show_slope) {
+			slope = GetTileSlope(tile);
+			extern Foundation GetFoundation_Object(TileIndex tile, Slope tileh);
+			ApplyFoundationToSlope(GetFoundation_Object(tile, slope), &slope);
+			slope &= SLOPE_ELEVATED;
+		}
+		colour = _vp_map_vegetation_clear_colours[slope][cg][multi];
+		return true;
+	};
+
+	auto do_water = [&](bool coast) -> bool {
+		if (is_32bpp) {
+			uint slope_index = 0;
+			if (!coast) GET_SLOPE_INDEX(slope_index);
+			colour = _vp_map_water_colour[slope_index];
+			return true;
+		}
+		colour = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), &_smallmap_vehicles_andor[MP_WATER]);
+		colour = COLOUR_FROM_INDEX(colour);
+		return false;
+	};
+
+	switch (vmtype) {
+		case OVMT_CLEAR:
+			if (spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
+				if (IsTileOnWater(tile) && GetObjectGroundType(tile) != OBJECT_GROUND_SHORE) {
+					return do_water(false);
+				} else {
+					switch (GetObjectGroundType(tile)) {
+						case OBJECT_GROUND_GRASS:
+							return do_clear_ground(CLEAR_GRASS, GetObjectGroundDensity(tile));
+
+						case OBJECT_GROUND_SNOW_DESERT:
+							return do_clear_ground(_settings_game.game_creation.landscape == LT_TROPIC ? CLEAR_DESERT : CLEAR_SNOW, GetObjectGroundDensity(tile));
+
+						case OBJECT_GROUND_SHORE:
+							return do_water(true);
+
+						default:
+							/* This should never be reached, just draw as clear as a fallback */
+							return do_clear_ground(CLEAR_GRASS, 0);
+					}
+				}
+			}
+			return do_clear_ground(CLEAR_GRASS, 0);
+		case OVMT_GRASS:
+			return do_clear_ground(CLEAR_GRASS, 3);
+		case OVMT_ROUGH:
+			return do_clear_ground(CLEAR_ROUGH, GB(TileX(tile) ^ TileY(tile), 4, 3));
+		case OVMT_ROCKS:
+			return do_clear_ground(CLEAR_ROCKS, TileHash(TileX(tile), TileY(tile)) & 1);
+		case OVMT_FIELDS:
+			return (colour_index & 1) ? do_clear_ground(CLEAR_GRASS, 1) : do_clear_ground(CLEAR_FIELDS, spec->vport_map_subtype & 7);
+		case OVMT_SNOW:
+			return do_clear_ground(CLEAR_SNOW, 3);
+		case OVMT_DESERT:
+			return do_clear_ground(CLEAR_DESERT, 3);
+		case OVMT_TREES: {
+			Slope slope = SLOPE_FLAT;
+			if (show_slope) {
+				slope = GetTileSlope(tile);
+				extern Foundation GetFoundation_Object(TileIndex tile, Slope tileh);
+				ApplyFoundationToSlope(GetFoundation_Object(tile, slope), &slope);
+				slope &= SLOPE_ELEVATED;
+			}
+			TreeGround tg = (TreeGround)GB(spec->vport_map_subtype, 0, 4);
+			if (tg > TREE_GROUND_ROUGH_SNOW) tg = TREE_GROUND_GRASS;
+			const uint td = std::min<uint>(GB(spec->vport_map_subtype, 4, 4), 3);
+			const uint tc = Clamp<uint>(GB(spec->vport_map_subtype, 8, 4), 1, 4);
+			if (is_32bpp) {
+				colour = ViewportMapGetColourVegetationTree<true>(tile, tg, td, tc, colour_index, slope);
+			} else {
+				colour = ViewportMapGetColourVegetationTree<false>(tile, tg, td, tc, colour_index, slope);
+			}
+			return true;
+		}
+		case OVMT_HOUSE:
+			colour = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), &_smallmap_vehicles_andor[MP_HOUSE]);
+			colour = COLOUR_FROM_INDEX(colour);
+			return false;
+		case OVMT_WATER:
+			return do_water(false);
+
+		default:
+			return false;
+	}
+}
+
 template <bool is_32bpp, bool show_slope>
 static inline uint32 ViewportMapGetColourVegetation(const TileIndex tile, TileType t, const uint colour_index)
 {
 	uint32 colour;
+
+	auto set_default_colour = [&](TileType ttype) {
+		colour = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), &_smallmap_vehicles_andor[ttype]);
+		colour = COLOUR_FROM_INDEX(colour);
+	};
+
 	switch (t) {
 		case MP_CLEAR: {
 			Slope slope = show_slope ? (Slope) (GetTileSlope(tile, nullptr) & 15) : SLOPE_FLAT;
@@ -2641,33 +2776,17 @@ static inline uint32 ViewportMapGetColourVegetation(const TileIndex tile, TileTy
 		case MP_TREES: {
 			const TreeGround tg = GetTreeGround(tile);
 			const uint td = GetTreeDensity(tile);
+			const uint tc = GetTreeCount(tile);
 			Slope slope = show_slope ? (Slope) (GetTileSlope(tile, nullptr) & 15) : SLOPE_FLAT;
-			if (IsTransparencySet(TO_TREES)) {
-				ClearGround cg = _treeground_to_clearground[tg];
-				if (cg == CLEAR_SNOW && _settings_game.game_creation.landscape == LT_TROPIC) cg = CLEAR_DESERT;
-				uint32 ground_colour = _vp_map_vegetation_clear_colours[slope][cg][td];
+			return ViewportMapGetColourVegetationTree<is_32bpp>(tile, tg, td, tc, colour_index, slope);
+		}
 
-				if (IsInvisibilitySet(TO_TREES)) {
-					/* Like ground. */
-					return ground_colour;
-				}
-
-				/* Take ground and make it darker. */
-				if (is_32bpp) {
-					return Blitter_32bppBase::MakeTransparent(ground_colour, 192, 256).data;
-				} else {
-					/* 8bpp transparent snow trees give blue. Definitely don't want that. Prefer grey. */
-					if (cg == CLEAR_SNOW && td > 1) return GREY_SCALE(13 - GetTreeCount(tile));
-					return _pal2trsp_remap_ptr[ground_colour];
-				}
-			} else {
-				if (tg == TREE_GROUND_SNOW_DESERT || tg == TREE_GROUND_ROUGH_SNOW) {
-					return _vp_map_vegetation_clear_colours[colour_index ^ slope][_settings_game.game_creation.landscape == LT_TROPIC ? CLEAR_DESERT : CLEAR_SNOW][td];
-				} else {
-					const uint rnd = std::min<uint>(GetTreeCount(tile) ^ (((tile & 3) ^ (TileY(tile) & 3)) * td), MAX_TREE_COUNT_BY_LANDSCAPE - 1);
-					return _vp_map_vegetation_tree_colours[slope][tg][rnd];
-				}
+		case MP_OBJECT: {
+			set_default_colour(MP_OBJECT);
+			if (GetObjectHasViewportMapViewOverride(tile)) {
+				if (ViewportMapGetColourVegetationCustomObject(colour, tile, colour_index, is_32bpp, show_slope)) return colour;
 			}
+			break;
 		}
 
 		case MP_WATER:
@@ -2676,11 +2795,13 @@ static inline uint32 ViewportMapGetColourVegetation(const TileIndex tile, TileTy
 				if (IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WATER_TILE_COAST) GET_SLOPE_INDEX(slope_index);
 				return _vp_map_water_colour[slope_index];
 			}
-			/* FALL THROUGH */
+			set_default_colour(t);
+			break;
 
 		default:
 			colour = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), &_smallmap_vehicles_andor[t]);
 			colour = COLOUR_FROM_INDEX(colour);
+			set_default_colour(t);
 			break;
 	}
 
@@ -2707,6 +2828,37 @@ static inline uint32 ViewportMapGetColourIndustries(const TileIndex tile, const 
 			return IS32(GetIndustrySpec(it)->map_colour);
 		/* Otherwise, return the colour which will make it disappear. */
 		t2 = IsTileOnWater(tile) ? MP_WATER : MP_CLEAR;
+	}
+
+	if (t == MP_OBJECT && GetObjectHasViewportMapViewOverride(tile)) {
+		ObjectViewportMapType vmtype = OVMT_DEFAULT;
+		const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
+		if (spec->ctrl_flags & OBJECT_CTRL_FLAG_VPORT_MAP_TYPE) vmtype = spec->vport_map_type;
+		if (vmtype == OVMT_CLEAR && spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
+			if (IsTileOnWater(tile) && GetObjectGroundType(tile) != OBJECT_GROUND_SHORE) {
+				vmtype = OVMT_WATER;
+			}
+		}
+		switch (vmtype) {
+			case OVMT_DEFAULT:
+				break;
+
+			case OVMT_TREES:
+				t2 = MP_TREES;
+				break;
+
+			case OVMT_HOUSE:
+				t2 = MP_HOUSE;
+				break;
+
+			case OVMT_WATER:
+				t2 = MP_WATER;
+				break;
+
+			default:
+				t2 = MP_CLEAR;
+				break;
+		}
 	}
 
 	if (is_32bpp && t2 == MP_WATER) {
@@ -2791,8 +2943,37 @@ static inline uint32 ViewportMapGetColourRoutes(const TileIndex tile, TileType t
 			return IS32(PC_DARK_GREY);
 
 		case MP_HOUSE:
-		case MP_OBJECT:
 			return IS32(colour_index & 1 ? PC_DARK_RED : GREY_SCALE(3));
+
+		case MP_OBJECT: {
+			ObjectViewportMapType vmtype = OVMT_DEFAULT;
+			if (GetObjectHasViewportMapViewOverride(tile)) {
+				const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
+				if (spec->ctrl_flags & OBJECT_CTRL_FLAG_VPORT_MAP_TYPE) vmtype = spec->vport_map_type;
+				if (vmtype == OVMT_CLEAR && spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
+					if (IsTileOnWater(tile) && GetObjectGroundType(tile) != OBJECT_GROUND_SHORE) {
+						vmtype = OVMT_WATER;
+					}
+				}
+			}
+			switch (vmtype) {
+				case OVMT_DEFAULT:
+				case OVMT_HOUSE:
+					return IS32(colour_index & 1 ? PC_DARK_RED : GREY_SCALE(3));
+
+				case OVMT_WATER:
+					if (is_32bpp) {
+						return _vp_map_water_colour[0];
+					} else {
+						return PC_WATER;
+					}
+
+				default:
+					colour = COLOUR_FROM_INDEX(_heightmap_schemes[_settings_client.gui.smallmap_land_colour].height_colours[TileHeight(tile)]);
+					break;
+			}
+			break;
+		}
 
 		case MP_STATION:
 			switch (GetStationType(tile)) {

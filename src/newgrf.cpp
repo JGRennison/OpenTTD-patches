@@ -4327,6 +4327,17 @@ static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, const G
 				if (buf->ReadByte() != 0) spec->ctrl_flags |= OBJECT_CTRL_FLAG_FLOOD_RESISTANT;
 				break;
 
+			case A0RPI_OBJECT_VIEWPORT_MAP_TYPE:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				spec->vport_map_type = (ObjectViewportMapType)buf->ReadByte();
+				spec->ctrl_flags |= OBJECT_CTRL_FLAG_VPORT_MAP_TYPE;
+				break;
+
+			case A0RPI_OBJECT_VIEWPORT_MAP_SUBTYPE:
+				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
+				spec->vport_map_subtype = buf->ReadWord();
+				break;
+
 			default:
 				ret = HandleAction0PropertyDefault(buf, prop);
 				break;

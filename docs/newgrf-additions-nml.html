@@ -161,6 +161,55 @@
 		Flood resistance is always enabled for objects which can be built on water.<br />
 		This property can be used to enable flood resistance without enabling the object to be built on water.
 	</td></tr>
+	<tr><td>map_tile_type</td><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_XXX</td><td>
+		Set tile type used for display in viewport map mode and the small-map window.<br />
+		The value should be one of:
+		<table>
+			<tr><th>Value</th><th>Meaning</th><th>Notes</th></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_DEFAULT</td><td>Default object</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_CLEAR</td><td>Clear/bare dirt</td><td>If use_land_ground is enabled, the underlying ground type will be used instead</td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_GRASS</td><td>Grass</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_ROUGH</td><td>Rough ground</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_ROCKS</td><td>Rocky ground</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_FIELDS</td><td>Farm fields</td><td>The specific type of field can be set using map_tile_subtype</td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_SNOW</td><td>Snow</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_DESERT</td><td>Desert</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_TREES</td><td>Trees</td><td>The specific tree count and ground type/density can be set using map_tile_subtype</td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_HOUSE</td><td>House</td><td></td></tr>
+			<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_WATER</td><td>Water</td><td></td></tr>
+		</table>
+	</td></tr>
+	<tr><td>map_tile_subtype</td><td>0 .. 65535</td><td>
+		<p>This can be used to further refine the type set in map_tile_type.</p>
+		<p>Farm fields:
+		<table>
+		<tr><th>Bit</th><th>Meaning</th></tr>
+		<tr><td>0 - 2</td><td>
+			Which field type to use
+		</td></tr>
+		</table></p>
+		<p>Trees:
+		<table>
+			<tr><th>Bit</th><th>Meaning</th></tr>
+			<tr><td>0 - 3</td><td>
+				Tree ground type
+				<table>
+				<tr><th>Value</th><th>Meaning</th></tr>
+				<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_TREE_GROUND_GRASS</td><td>Grass</td></tr>
+				<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_TREE_GROUND_ROUGH</td><td>Rough ground</td></tr>
+				<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_TREE_GROUND_SNOW_DESERT</td><td>Snow/desert</td></tr>
+				<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_TREE_GROUND_SHORE</td><td>Shore</td></tr>
+				<tr><td>OBJECT_VIEWPORT_MAP_TILE_TYPE_TREE_GROUND_ROUGH_SNOW</td><td>Rough snow</td></tr>
+				</table>
+			</td></tr>
+			<tr><td>4 - 7</td><td>
+				Tree ground density (clamped to: 0 - 3)
+			</td></tr>
+			<tr><td>8 - 11</td><td>
+				Number of trees on the tile (clamped to: 1 - 4)
+			</td></tr>
+		</table></p>
+	</td></tr>
 	</table>
 	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Objects#Object_variables">Object variables</a></h3>
 	<p>Variables in the table below which are not supported by the version of OpenTTD being used return a value of 0.</p>

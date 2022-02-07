@@ -3989,13 +3989,20 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (SlXvIsFeatureMissing(XSLFI_OBJECT_GROUND_TYPES, 2)) {
+	if (SlXvIsFeatureMissing(XSLFI_OBJECT_GROUND_TYPES, 3)) {
 		for (TileIndex t = 0; t < map_size; t++) {
 			if (IsTileType(t, MP_OBJECT)) {
 				if (SlXvIsFeatureMissing(XSLFI_OBJECT_GROUND_TYPES)) _m[t].m4 = 0;
-				ObjectType type = GetObjectType(t);
-				extern void SetObjectFoundationType(TileIndex tile, Slope tileh, ObjectType type, const ObjectSpec *spec);
-				SetObjectFoundationType(t, SLOPE_ELEVATED, type, ObjectSpec::Get(type));
+				if (SlXvIsFeatureMissing(XSLFI_OBJECT_GROUND_TYPES, 2)) {
+					ObjectType type = GetObjectType(t);
+					extern void SetObjectFoundationType(TileIndex tile, Slope tileh, ObjectType type, const ObjectSpec *spec);
+					SetObjectFoundationType(t, SLOPE_ELEVATED, type, ObjectSpec::Get(type));
+				}
+				if (SlXvIsFeatureMissing(XSLFI_OBJECT_GROUND_TYPES, 3)) {
+					if (ObjectSpec::GetByTile(t)->ctrl_flags & OBJECT_CTRL_FLAG_VPORT_MAP_TYPE) {
+						SetObjectHasViewportMapViewOverride(t, true);
+					}
+				}
 			}
 		}
 	}

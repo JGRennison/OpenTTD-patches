@@ -182,6 +182,9 @@ void BuildObject(ObjectType type, TileIndex tile, CompanyID owner, Town *town, u
 			SetObjectGroundTypeDensity(t, OBJECT_GROUND_GRASS, 0);
 		}
 		SetObjectFoundationType(t, SLOPE_ELEVATED, type, spec);
+		if (spec->ctrl_flags & OBJECT_CTRL_FLAG_VPORT_MAP_TYPE) {
+			SetObjectHasViewportMapViewOverride(t, true);
+		}
 		MarkTileDirtyByTile(t, VMDF_NOT_MAP_MODE);
 	}
 
@@ -953,11 +956,11 @@ static void TileLoop_Object(TileIndex tile)
 				} else {
 					SetObjectGroundCounter(tile, 0);
 					SetObjectGroundDensity(tile, GetObjectGroundDensity(tile) + 1);
-					MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+					MarkTileDirtyByTile(tile, spec->vport_map_type != OVMT_CLEAR ? VMDF_NOT_MAP_MODE : VMDF_NONE);
 				}
 			} else {
 				SetObjectGroundTypeDensity(tile, OBJECT_GROUND_GRASS, 3);
-				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+				MarkTileDirtyByTile(tile, spec->vport_map_type != OVMT_CLEAR ? VMDF_NOT_MAP_MODE : VMDF_NONE);
 			}
 		}
 	}
