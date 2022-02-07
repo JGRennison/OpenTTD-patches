@@ -521,6 +521,7 @@ static inline uint32 GetSmallMapVegetationPixels(TileIndex tile, TileType t)
 					} else {
 						return MKCOLOUR_XXXX(PC_BARE_LAND);
 					}
+					break;
 				case OVMT_GRASS:
 					if (GetTropicZone(tile) == TROPICZONE_RAINFOREST) return MKCOLOUR_XXXX(PC_RAINFOREST);
 					return _vegetation_clear_bits[CLEAR_GRASS];
