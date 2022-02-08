@@ -110,7 +110,7 @@ static const int CBM_NO_BIT = UINT8_MAX;
 /** Representation on the NewGRF variables. */
 struct NIVariable {
 	const char *name;
-	byte var;
+	uint16 var;
 };
 
 struct NIExtraInfoOutput {
@@ -551,6 +551,20 @@ struct NewGRFInspectWindow : Window {
 
 		if (nif->variables != nullptr) {
 			this->DrawString(r, i++, "Variables:");
+			uint prefix_width = 0;
+			for (const NIVariable *niv = nif->variables; niv->name != nullptr; niv++) {
+				if (niv->var >= 0x100) {
+					extern const GRFVariableMapDefinition _grf_action2_remappable_variables[];
+					for (const GRFVariableMapDefinition *info = _grf_action2_remappable_variables; info->name != nullptr; info++) {
+						if (niv->var == info->id) {
+							char buf[512];
+							seprintf(buf, lastof(buf), "  %s: ", info->name);
+							prefix_width = std::max<uint>(prefix_width, GetStringBoundingBox(buf).width);
+							break;
+						}
+					}
+				}
+			}
 			for (const NIVariable *niv = nif->variables; niv->name != nullptr; niv++) {
 				GetVariableExtra extra;
 				uint param = HasVariableParameter(niv->var) ? NewGRFInspectWindow::var60params[GetFeatureNum(this->window_number)][niv->var - 0x60] : 0;
@@ -560,6 +574,28 @@ struct NewGRFInspectWindow : Window {
 
 				if (HasVariableParameter(niv->var)) {
 					this->DrawString(r, i++, "  %02x[%02x]: %08x (%s)", niv->var, param, value, niv->name);
+				} else if (niv->var >= 0x100) {
+					extern const GRFVariableMapDefinition _grf_action2_remappable_variables[];
+					for (const GRFVariableMapDefinition *info = _grf_action2_remappable_variables; info->name != nullptr; info++) {
+						if (niv->var == info->id) {
+							if (_current_text_dir == TD_RTL) {
+								this->DrawString(r, i++, "  %s: %08x (%s)", info->name, value, niv->name);
+							} else {
+								if (this->log_console) DEBUG(misc, 0, "    %s: %08x (%s)", info->name, value, niv->name);
+
+								int offset = i - this->vscroll->GetPosition();
+								i++;
+								if (offset >= 0 && offset < this->vscroll->GetCapacity()) {
+									char buf[512];
+									seprintf(buf, lastof(buf), "  %s: ", info->name);
+									::DrawString(r.left + LEFT_OFFSET, r.right - RIGHT_OFFSET, r.top + TOP_OFFSET + (offset * this->resize.step_height), buf, TC_BLACK);
+									seprintf(buf, lastof(buf), "%08x (%s)", value, niv->name);
+									::DrawString(r.left + LEFT_OFFSET + prefix_width, r.right - RIGHT_OFFSET, r.top + TOP_OFFSET + (offset * this->resize.step_height), buf, TC_BLACK);
+								}
+							}
+							break;
+						}
+					}
 				} else {
 					this->DrawString(r, i++, "  %02x: %08x (%s)", niv->var, value, niv->name);
 				}
