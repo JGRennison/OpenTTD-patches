@@ -27,6 +27,7 @@
 #include "company_base.h"
 #include "error.h"
 #include "strings_func.h"
+#include "newgrf_roadstop.h"
 
 #include "table/strings.h"
 

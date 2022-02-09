@@ -51,11 +51,13 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_object_edge_foundation_mode", 2),
 	GRFFeatureInfo("action0_object_flood_resistant", 1),
 	GRFFeatureInfo("action0_object_viewport_map_tile_type", 1),
+	GRFFeatureInfo("road_stops", 1),
 	GRFFeatureInfo(),
 };
 
 /** Action14 remappable feature list */
 extern const GRFFeatureMapDefinition _grf_remappable_features[] = {
+	GRFFeatureMapDefinition(GSF_ROADSTOPS, "road_stops"),
 	GRFFeatureMapDefinition(),
 };
 
@@ -88,6 +90,12 @@ extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 	GRFPropertyMapDefinition(GSF_OBJECTS, A0RPI_OBJECT_FLOOD_RESISTANT, "object_flood_resistant"),
 	GRFPropertyMapDefinition(GSF_OBJECTS, A0RPI_OBJECT_VIEWPORT_MAP_TYPE, "object_viewport_map_tile_type"),
 	GRFPropertyMapDefinition(GSF_OBJECTS, A0RPI_OBJECT_VIEWPORT_MAP_SUBTYPE, "object_viewport_map_tile_subtype"),
+	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_CLASS_ID, "roadstop_class_id"),
+	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_STOP_TYPE, "roadstop_stop_type"),
+	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_STOP_NAME, "roadstop_stop_name"),
+	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_CLASS_NAME, "roadstop_class_name"),
+	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_DRAW_MODE, "roadstop_draw_mode"),
+	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_TRIGGER_CARGOES, "roadstop_trigger_cargoes"),
 	GRFPropertyMapDefinition(),
 };
 
@@ -95,6 +103,13 @@ extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 extern const GRFVariableMapDefinition _grf_action2_remappable_variables[] = {
 	GRFVariableMapDefinition(GSF_OBJECTS, A2VRI_OBJECT_FOUNDATION_SLOPE, "object_foundation_tile_slope"),
 	GRFVariableMapDefinition(GSF_OBJECTS, A2VRI_OBJECT_FOUNDATION_SLOPE_CHANGE, "object_foundation_change_tile_slope"),
+	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x40, "roadstop_view"),
+	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x41, "roadstop_type"),
+	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x42, "roadstop_terrain_type"),
+	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x43, "roadstop_road_type"),
+	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x44, "roadstop_tram_type"),
+	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x45, "roadstop_town_zone"),
+	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x46, "roadstop_company_info"),
 	GRFVariableMapDefinition(),
 };
 

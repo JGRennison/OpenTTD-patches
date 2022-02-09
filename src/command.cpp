@@ -67,12 +67,12 @@ CommandProc CmdBuildTunnel;
 
 CommandProc CmdBuildTrainDepot;
 CommandProcEx CmdBuildRailWaypoint;
-CommandProc CmdBuildRoadWaypoint;
+CommandProcEx CmdBuildRoadWaypoint;
 CommandProc CmdRenameWaypoint;
 CommandProc CmdSetWaypointLabelHidden;
 CommandProc CmdRemoveFromRailWaypoint;
 
-CommandProc CmdBuildRoadStop;
+CommandProcEx CmdBuildRoadStop;
 CommandProc CmdRemoveRoadStop;
 
 CommandProc CmdBuildLongRoad;

@@ -25,6 +25,7 @@
 #include "string_func.h"
 #include "company_func.h"
 #include "newgrf_station.h"
+#include "newgrf_roadstop.h"
 #include "company_base.h"
 #include "water.h"
 #include "company_gui.h"
@@ -192,7 +193,6 @@ extern CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec 
  * - p1 = (bit 24)    - allow waypoints directly adjacent to other waypoints.
  * @param p2 various bitstuffed elements
  * - p2 = (bit  0- 7) - custom station class
- * - p2 = (bit  8-15) - custom station id
  * - p2 = (bit 31-16) - station ID to join
  * @param p3 various bitstuffed elements
  * - p3 = (bit  0-31) - custom station id
@@ -337,17 +337,29 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
  *           bit 8..15: Length of the road stop.
  *           bit 16: Allow stations directly adjacent to other stations.
  *           bit 17: #Axis of the road.
- * @param p2 bit 16..31: Station ID to join (NEW_STATION if build new one).
+ * @param p2 bit  0..7:  Custom road stop class
+ *           bit 16..31: Station ID to join (NEW_STATION if build new one).
+ * @param p3 various bitstuffed elements
+ * - p3 = (bit  0-31) - custom road stop id
  * @param text Unused.
  * @return The cost of this operation or an error.
  */
-CommandCost CmdBuildRoadWaypoint(TileIndex start_tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdBuildRoadWaypoint(TileIndex start_tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, uint32 binary_length)
 {
 	StationID station_to_join = GB(p2, 16, 16);
 	byte width     = GB(p1, 0, 8);
 	byte height    = GB(p1, 8, 8);
 	bool adjacent = HasBit(p1, 16);
 	Axis axis = Extract<Axis, 17, 1>(p1);
+
+	RoadStopClassID spec_class = Extract<RoadStopClassID, 0, 8>(p2);
+	uint spec_index            = GB(p3, 0, 32);
+
+	/* Check if the given road stop class is valid */
+	if (spec_class != ROADSTOP_CLASS_WAYP) return CMD_ERROR;
+	if (spec_index >= RoadStopClass::Get(spec_class)->GetSpecCount()) return CMD_ERROR;
+
+	const RoadStopSpec *spec = RoadStopClass::Get(spec_class)->GetSpec(spec_index);
 
 	/* The number of parts to build */
 	byte count = axis == AXIS_X ? height : width;
@@ -393,6 +405,9 @@ CommandCost CmdBuildRoadWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 		if (!Waypoint::CanAllocateItem()) return_cmd_error(STR_ERROR_TOO_MANY_STATIONS_LOADING);
 	}
 
+	/* Check if we can allocate a custom stationspec to this station */
+	if (AllocateRoadStopSpecToStation(spec, wp, false) == -1) return_cmd_error(STR_ERROR_TOO_MANY_STATION_SPECS);
+
 	if (flags & DC_EXEC) {
 		if (wp == nullptr) {
 			wp = new Waypoint(start_tile);
@@ -413,6 +428,8 @@ CommandCost CmdBuildRoadWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 		if (wp->town == nullptr) MakeDefaultName(wp);
 
 		wp->UpdateVirtCoord();
+
+		byte map_spec_index = AllocateRoadStopSpecToStation(spec, wp, true);
 
 		/* Check every tile in the area. */
 		for (TileIndex cur_tile : roadstop_area) {
@@ -444,6 +461,8 @@ CommandCost CmdBuildRoadWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 
 			MakeDriveThroughRoadStop(cur_tile, wp->owner, road_owner, tram_owner, wp->index, STATION_ROADWAYPOINT, road_rt, tram_rt, axis);
 			SetDriveThroughStopDisallowedRoadDirections(cur_tile, drd);
+			SetCustomRoadStopSpecIndex(cur_tile, map_spec_index);
+			if (spec != nullptr) wp->SetRoadStopRandomBits(cur_tile, 0);
 
 			Company::Get(wp->owner)->infrastructure.station++;
 

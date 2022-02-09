@@ -933,6 +933,8 @@ static void StationSpreadChanged(int32 new_value)
 {
 	InvalidateWindowData(WC_SELECT_STATION, 0);
 	InvalidateWindowData(WC_BUILD_STATION, 0);
+	InvalidateWindowData(WC_BUS_STATION, 0);
+	InvalidateWindowData(WC_TRUCK_STATION, 0);
 }
 
 static void UpdateConsists(int32 new_value)

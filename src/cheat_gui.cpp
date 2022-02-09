@@ -116,6 +116,7 @@ static int32 ClickChangeDateCheat(int32 p1, int32 p2)
 	SetDate(new_date, _date_fract);
 	EnginesMonthlyLoop();
 	InvalidateWindowClassesData(WC_BUILD_STATION, 0);
+	InvalidateWindowClassesData(WC_BUS_STATION, 0);
 	InvalidateWindowClassesData(WC_BUILD_OBJECT, 0);
 	ResetSignalVariant();
 	MarkWholeScreenDirty();

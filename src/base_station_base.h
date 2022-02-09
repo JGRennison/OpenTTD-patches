@@ -27,6 +27,12 @@ struct StationSpecList {
 	uint8  localidx;   ///< Station ID within GRF of station
 };
 
+struct RoadStopSpecList {
+	const RoadStopSpec *spec;
+	uint32 grfid;      ///< GRF ID of this custom road stop
+	uint8  localidx;   ///< Station ID within GRF of road stop
+};
+
 
 /** StationRect - used to track station spread out rectangle - cheaper than scanning whole map */
 struct StationRect : public Rect {
@@ -66,7 +72,9 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 	StationFacility facilities;     ///< The facilities that this station has
 
 	uint8 num_specs;                ///< Number of specs in the speclist
+	uint8 num_roadstop_specs;       ///< Number of road stop specs in the roadstop_speclist
 	StationSpecList *speclist;      ///< List of station specs of this station
+	RoadStopSpecList *roadstop_speclist; ///< List of road stop specs of this station
 
 	Date build_date;                ///< Date of construction
 
@@ -74,9 +82,13 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 	byte waiting_triggers;          ///< Waiting triggers (NewGRF) for this station
 	uint8 cached_anim_triggers;     ///< NOSAVE: Combined animation trigger bitmask, used to determine if trigger processing should happen.
 	CargoTypes cached_cargo_triggers; ///< NOSAVE: Combined cargo trigger bitmask
+	CargoTypes roadstop_cached_cargo_triggers; ///< NOSAVE: Combined cargo trigger bitmask for road stops
 
 	TileArea train_station;         ///< Tile area the train 'station' part covers
 	StationRect rect;               ///< NOSAVE: Station spread out rectangle maintained by StationRect::xxx() functions
+
+	std::vector<TileIndex> custom_road_stop_tiles;      ///< List of custom road stop tiles
+	std::vector<byte> custom_road_stop_random_bits;     ///< Custom road stop random bits in same order as custom_road_stop_tiles
 
 	/**
 	 * Initialize the base station.
@@ -180,6 +192,17 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 	{
 		return (this->facilities & facilities) != 0;
 	}
+
+	inline byte GetRoadStopRandomBits(TileIndex tile) const
+	{
+		for (size_t i = 0; i < this->custom_road_stop_tiles.size(); i++) {
+			if (this->custom_road_stop_tiles[i] == tile) return this->custom_road_stop_random_bits[i];
+		}
+		return 0;
+	}
+
+	void SetRoadStopRandomBits(TileIndex tile, byte random_bits);
+	void RemoveRoadStopRandomBits(TileIndex tile);
 
 	static void PostDestructor(size_t index);
 

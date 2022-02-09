@@ -13,6 +13,7 @@
 #include "../roadstop_base.h"
 #include "../vehicle_base.h"
 #include "../newgrf_station.h"
+#include "../newgrf_roadstop.h"
 
 #include "saveload.h"
 #include "saveload_buffer.h"
@@ -114,6 +115,11 @@ void AfterLoadStations()
 
 			st->speclist[i].spec = StationClass::GetByGrf(st->speclist[i].grfid, st->speclist[i].localidx, nullptr);
 		}
+		for (uint i = 0; i < st->num_roadstop_specs; i++) {
+			if (st->roadstop_speclist[i].grfid == 0) continue;
+
+			st->roadstop_speclist[i].spec = RoadStopClass::GetByGrf(st->roadstop_speclist[i].grfid, st->roadstop_speclist[i].localidx, nullptr);
+		}
 
 		if (Station::IsExpected(st)) {
 			Station *sta = Station::From(st);
@@ -122,6 +128,7 @@ void AfterLoadStations()
 		}
 
 		StationUpdateCachedTriggers(st);
+		StationUpdateRoadStopCachedTriggers(st);
 	}
 }
 
@@ -402,6 +409,9 @@ static const SaveLoad _base_station_desc[] = {
 	      SLE_VAR(BaseStation, random_bits,            SLE_UINT16),
 	      SLE_VAR(BaseStation, waiting_triggers,       SLE_UINT8),
 	      SLE_VAR(BaseStation, num_specs,              SLE_UINT8),
+	SLE_CONDVAR_X(BaseStation, num_roadstop_specs,     SLE_UINT8,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_GRF_ROADSTOPS)),
+	SLE_CONDVARVEC_X(BaseStation, custom_road_stop_tiles,  SLE_UINT32,              SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_GRF_ROADSTOPS)),
+	SLE_CONDVARVEC_X(BaseStation, custom_road_stop_random_bits, SLE_UINT8,          SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_GRF_ROADSTOPS)),
 };
 
 static OldPersistentStorage _old_st_persistent_storage;
@@ -554,6 +564,10 @@ static void RealSave_STNN(BaseStation *bst)
 	for (uint i = 0; i < bst->num_specs; i++) {
 		SlObjectSaveFiltered(&bst->speclist[i], _filtered_station_speclist_desc);
 	}
+
+	for (uint i = 0; i < bst->num_roadstop_specs; i++) {
+		SlObjectSaveFiltered(&bst->roadstop_speclist[i], _filtered_station_speclist_desc);
+	}
 }
 
 static void Save_STNN()
@@ -674,6 +688,14 @@ static void Load_STNN()
 			bst->speclist = CallocT<StationSpecList>(bst->num_specs);
 			for (uint i = 0; i < bst->num_specs; i++) {
 				SlObjectLoadFiltered(&bst->speclist[i], _filtered_station_speclist_desc);
+			}
+		}
+
+		if (bst->num_roadstop_specs != 0) {
+			/* Allocate speclist memory when loading a game */
+			bst->roadstop_speclist = CallocT<RoadStopSpecList>(bst->num_roadstop_specs);
+			for (uint i = 0; i < bst->num_roadstop_specs; i++) {
+				SlObjectLoadFiltered(&bst->roadstop_speclist[i], _filtered_station_speclist_desc);
 			}
 		}
 	}

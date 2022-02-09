@@ -1370,6 +1370,34 @@ static const NIFeature _nif_roadtype = {
 	new NIHRoadType(),
 };
 
+/*** ***/
+
+static const NIVariable _nif_roadstops[] = {
+	NIV(0x40, "test"),
+	NIV_END(),
+};
+
+class NIHRoadStop : public NIHelper {
+	bool IsInspectable(uint index) const override { return false; }
+	uint GetParent(uint index) const override { return UINT32_MAX; }
+	const void *GetInstance(uint index)const override { return nullptr; }
+	const void *GetSpec(uint index) const override { return nullptr; }
+	void SetStringParameters(uint index) const override { }
+	uint32 GetGRFID(uint index) const override { return 0; }
+
+	uint Resolve(uint index, uint var, uint param, GetVariableExtra *extra) const override
+	{
+		return UINT32_MAX;
+	}
+};
+
+static const NIFeature _nif_roadstop = {
+	nullptr,
+	nullptr,
+	_nif_roadstops,
+	new NIHRoadStop(),
+};
+
 /** Table with all NIFeatures. */
 static const NIFeature * const _nifeatures[] = {
 	&_nif_vehicle,      // GSF_TRAINS
@@ -1392,6 +1420,7 @@ static const NIFeature * const _nifeatures[] = {
 	&_nif_airporttile,  // GSF_AIRPORTTILES
 	&_nif_roadtype,     // GSF_ROADTYPES
 	&_nif_roadtype,     // GSF_TRAMTYPES
+	&_nif_roadstop,     // GSF_ROADSTATIONS
 	&_nif_town,         // GSF_FAKE_TOWNS
 	&_nif_station_struct,  // GSF_FAKE_STATION_STRUCT
 };
