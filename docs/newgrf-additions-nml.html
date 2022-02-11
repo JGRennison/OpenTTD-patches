@@ -224,6 +224,61 @@
 		This is useful for xoring with the tile_slope variable, because if this variable is unavailable then the result is still the underlying tile slope.
 	</td></tr>
 	</table>
+	<h3>Global variables properties</h3>
+	<p>The variables listed below should set inside an item and property block of the form:<pre class="code">
+item (FEAT_GLOBALVARS) {
+	property {
+		...
+	}
+}</pre>
+	</p>
+	<table>
+	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
+	<tr><td>lighthouse_generate_amount</td><td>0 .. 255</td><td>Sets the frequency at which lighthouse objects are generated during map generation</td></tr>
+	<tr><td>transmitter_generate_amount</td><td>0 .. 255</td><td>Sets the frequency at which transmitter objects are generated during map generation</td></tr>
+	<tr><td>extra_station_name</td><td>[string, bitmask(EXTRA_STATION_NAME_FLAG_XXX, ...)]</td>
+		<td>
+			<p>This adds an extra station name for use when all the available station names for a given town have been used.<br />
+			This property may be used as many times as required.<br />
+			Generally the referenced string should include a <span class="code">{STRING}</span> string code, this is used for the town name.
+			</p>
+			<dl>
+				<dt>EXTRA_STATION_NAME_FLAG_RAIL</dt>
+				<dd>May be used for rail stations</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_ROAD</dt>
+				<dd>May be used for road stations</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_AIRPORT</dt>
+				<dd>May be used for airport stations</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_OIL_RIG</dt>
+				<dd>May be used for oil rig stations</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_DOCK</dt>
+				<dd>May be used for dock stations</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_HELIPORT</dt>
+				<dd>May be used for heliport stations</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_TOWN_CENTRE_ONLY</dt>
+				<dd>May only be used for stations near the town centre</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_NOT_TOWN_CENTRE</dt>
+				<dd>May not be used for stations near the town centre</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_NEAR_WATER_ONLY</dt>
+				<dd>May only be used for stations near water</dd>
+				<dt>EXTRA_STATION_NAME_FLAG_NOT_NEAR_WATER</dt>
+				<dd>May not be used for stations near water</dd>
+			</dl>
+		</td>
+	</tr>
+	</table>
+	<p>Syntax example:
+		<pre class="code">
+item (FEAT_GLOBALVARS) {
+	property {
+		lighthouse_generate_amount: 255;
+		transmitter_generate_amount: 0;
+		extra_station_name: [string(STR_STATION_NAME1), bitmask(EXTRA_STATION_NAME_FLAG_RAIL)];
+		extra_station_name: [string(STR_STATION_NAME2), bitmask(EXTRA_STATION_NAME_FLAG_ROAD, EXTRA_STATION_NAME_FLAG_TOWN_CENTRE_ONLY)];
+	}
+}
+		</pre>
+	</p>
 	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Replace_new_sprites">Replace new sprites</a></h3>
 	<table>
 	<tr><th>Type</th><th>Number of sprites </th><th>Comment</th></tr>
