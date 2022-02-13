@@ -281,8 +281,7 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 	}
 
 	/* Check if we can allocate a custom stationspec to this station */
-	int map_spec_index = AllocateSpecToStation(spec, wp, (flags & DC_EXEC) != 0);
-	if (map_spec_index == -1) return_cmd_error(STR_ERROR_TOO_MANY_STATION_SPECS);
+	if (AllocateSpecToStation(spec, wp, false) == -1) return_cmd_error(STR_ERROR_TOO_MANY_STATION_SPECS);
 
 	if (flags & DC_EXEC) {
 		if (wp == nullptr) {
@@ -304,6 +303,8 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 		if (wp->town == nullptr) MakeDefaultName(wp);
 
 		wp->UpdateVirtCoord();
+
+		byte map_spec_index = AllocateSpecToStation(spec, wp, true);
 
 		Company *c = Company::Get(wp->owner);
 		for (int i = 0; i < count; i++) {
