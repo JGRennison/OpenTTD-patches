@@ -483,19 +483,19 @@
 	<p>Within an A2VM chunk, the NAME text (type T) field contains the name of the variable to map. The value of the language ID byte is ignored.</p>
 	<h4 id="A2VM-FEAT">Action 0 Feature ID: C "A2VM" -> B "FEAT"</h4>
 	<p>Within an A2VM chunk, the FEAT binary (type B) field contains the <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2#Feature">Variational Action 2 feature ID</a>. This is 1 byte.</p>
-	<h4 id="A2VM-RSFT">Property ID: C "A2VM" -> B "RSFT"</h4>
+	<h4 id="A2VM-RSFT">Shift to replace: C "A2VM" -> B "RSFT"</h4>
 	<p>Within an A2VM chunk, the RSFT binary (type B) field contains the Variational Action 2 varadjust shift-num value to look for. This is 1 byte.<br />
 	The shift-num value must be &lt; 32 (0x20).<br />
 	If this is not specified, a value of 0 is assumed.</p>
-	<h4 id="A2VM-RMSK">Property ID: C "A2VM" -> B "RMSK"</h4>
+	<h4 id="A2VM-RMSK">Mask to replace: C "A2VM" -> B "RMSK"</h4>
 	<p>Within an A2VM chunk, the RMSK binary (type B) field contains the Variational Action 2 varadjust and-mask value to look for. This is 4 bytes.<br />
 	When using byte or word sized variational action 2s, the and-mask is zero-extended to 32 bits before comparing with this value.<br />
 	If this is not specified, a value of 0 is assumed.</p>
-	<h4 id="A2VM-VSFT">Property ID: C "A2VM" -> B "VSFT"</h4>
+	<h4 id="A2VM-VSFT">Replacement shift: C "A2VM" -> B "VSFT"</h4>
 	<p>Within an A2VM chunk, the VSFT binary (type B) field contains the replacement Variational Action 2 varadjust shift-num value to use on the mapped variable. This is 1 byte.<br />
 	The shift-num value must be &lt; 32 (0x20).<br />
 	If this is not specified, a value of 0 is assumed.</p>
-	<h4 id="A2VM-VMSK">Property ID: C "A2VM" -> B "VMSK"</h4>
+	<h4 id="A2VM-VMSK">Replacement mask: C "A2VM" -> B "VMSK"</h4>
 	<p>Within an A2VM chunk, the RMSK binary (type B) field contains the replacement Variational Action 2 varadjust and-mask value to use on the mapped variable. This is 4 bytes.<br />
 	If this is not specified, a value of 0 is assumed.</p>
 	<h4 id="A2VM-SETT">Success Indicator Global Variable 0x8D Bit: C "A2VM" -> B "SETT"</h4>
