@@ -211,6 +211,7 @@ struct GRFVariableMapEntry {
 	uint8 output_shift = 0;
 	uint32 input_mask = 0;
 	uint32 output_mask = 0;
+	uint32 output_param = 0;
 };
 
 /** The type of action 5 type. */

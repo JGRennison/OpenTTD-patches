@@ -5414,6 +5414,16 @@ static void NewSpriteGroup(ByteReader *buf)
 							adjust.variable = remap.id;
 							adjust.shift_num = remap.output_shift;
 							adjust.and_mask = remap.output_mask;
+							adjust.parameter = remap.output_param;
+							break;
+						}
+					}
+				} else if (adjust.variable == 0x7B && adjust.parameter == 0x11) {
+					for (const GRFVariableMapEntry &remap : _cur.grffile->grf_variable_remaps) {
+						if (remap.feature == feature && remap.input_shift == adjust.shift_num && remap.input_mask == adjust.and_mask) {
+							adjust.parameter = remap.id;
+							adjust.shift_num = remap.output_shift;
+							adjust.and_mask = remap.output_mask;
 							break;
 						}
 					}
@@ -8799,6 +8809,7 @@ struct GRFPropertyMapAction {
 	uint8 output_shift;
 	uint input_mask;
 	uint output_mask;
+	uint output_param;
 
 	void Reset(const char *tag, const char *desc)
 	{
@@ -8814,6 +8825,7 @@ struct GRFPropertyMapAction {
 		this->output_shift = 0;
 		this->input_mask = 0;
 		this->output_mask = 0;
+		this->output_param = 0;
 	}
 
 	void ExecuteFeatureIDRemapping()
@@ -8930,7 +8942,7 @@ struct GRFPropertyMapAction {
 		extern const GRFVariableMapDefinition _grf_action2_remappable_variables[];
 		for (const GRFVariableMapDefinition *info = _grf_action2_remappable_variables; info->name != nullptr; info++) {
 			if (info->feature == this->feature && strcmp(info->name, str) == 0) {
-				_cur.grffile->grf_variable_remaps.push_back({ (uint16)info->id, (uint8)this->feature, this->input_shift, this->output_shift, this->input_mask, this->output_mask });
+				_cur.grffile->grf_variable_remaps.push_back({ (uint16)info->id, (uint8)this->feature, this->input_shift, this->output_shift, this->input_mask, this->output_mask, this->output_param });
 				success = true;
 				break;
 			}
@@ -9162,8 +9174,7 @@ static bool ChangePropertyRemapSetOutputParam(size_t len, ByteReader *buf)
 		grfmsg(2, "Action 14 %s mapping: expected 4 bytes for '%s'->'VPRM' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
 		buf->Skip(len);
 	} else {
-		buf->ReadDWord();
-		/* This is not implemented yet, so just do nothing, but still validate that the format is correct */
+		action.output_param = buf->ReadDWord();
 	}
 	return true;
 }

@@ -466,7 +466,7 @@
 	<br />
 	<h3 id="variable-mapping">Action 14 - Variable Mapping for Variational Action 2</h3>
 	<p>See <a href="https://newgrf-specs.tt-wiki.net/wiki/Action14">Action 14 Specification</a> and <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2">Variational Action 2 Specification</a> for background information.</p>
-	<p>The variable mapping mechanism has the feature name: <font face="monospace">variable_mapping</font>, this document describes version 1.</p>
+	<p>The variable mapping mechanism has the feature name: <font face="monospace">variable_mapping</font>, this document describes version 1 (and where indicated, version 2).</p>
 	<p>Unlike property mappings, it is not necessary to perform a feature test or check a mapping success variable before using a mapped variable.</p>
 	<p>Remapped variables are accessed by reading from variable 0x11 using a varadjust shift-num and and-mask which exactly matches that specified in the variable mapping.<br />
 	In the absence of any successful variable mapping, variable 0x11 has all bits set to 0 and attempting to read from it with any shift-num and and-mask value
@@ -474,6 +474,9 @@
 	<p>Reading a mapped variable on a version of OpenTTD which does not support this variable mapping mechanism or which does not support the requested variable, returns a value of 0.</p>
 	<p>If more than one variable mapping is made for the same combination of feature ID, shift-num and and-mask, it is implementation-defined which mapping is used.<br />
 	Each variable mapping SHOULD use a unique combination of feature ID, shift-num and and-mask.</p>
+	<p>From version 2 of the <font face="monospace">variable_mapping</font> feature name, variable remapping can also be used with variable 0x7B.<br />
+	In this case the parameter of variable 0x7B should be set to 0x11, and the shift and mask fields set the same way in the direct 0x11 variable case.<br />
+	The "VPRM" parameter field is ignored, and the parameter used is the accumulator of the previous adjust part in the usual way for variable 0x7B.</p>
 	<h4 id="A2VM">Variable Mapping: C "A2VM"</h4>
 	<p>Each A2VM chunk (type C) describes an individual variable mapping.<br />
 	Sub-chunks within each A2VM chunk may appear in any order, however each sub-chunk SHOULD only appear ONCE within an individual A2VM chunk.</p>
@@ -500,6 +503,10 @@
 	If this is not specified, a value of 0 is assumed.</p>
 	<h4 id="A2VM-SETT">Success Indicator Global Variable 0x8D Bit: C "A2VM" -> B "SETT"</h4>
 	<p>This behaves identically to the <a href="#A0PM-SETT">C "A0PM" -> B "SETT"</a> case, above</p>
+	<h4 id="A2VM-VPRM">Replacement parameter: C "A2VM" -> B "VPRM"</h4>
+	<p>Within an A2VM chunk, the VPRM binary (type B) field contains the Variational Action 2 parameter value (as in 60+X variables) to use on the mapped variable. This is 4 bytes.<br />
+	If this is not specified, a value of 0 is assumed.<br />
+	Support for this field is indicated by the feature name <font face="monospace">variable_mapping</font>, version 2.</p>
 	<h4 id="A2VM-example">Example NFO:</h4>
 	<pre>
 // Map station variable "sample_station_variable" with a shift-num of 4 and an and-mask of 0xFF, to reads of variable 0x11 with a shift-num of 1 and an and-mask of 0x2, and set bit 4 of global variable 0x8D if successful

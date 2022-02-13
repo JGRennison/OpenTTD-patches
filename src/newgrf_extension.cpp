@@ -18,7 +18,7 @@
 extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("feature_test", 1),
 	GRFFeatureInfo("property_mapping", 1),
-	GRFFeatureInfo("variable_mapping", 1),
+	GRFFeatureInfo("variable_mapping", 2),
 	GRFFeatureInfo("feature_id_mapping", 1),
 	GRFFeatureInfo("action5_type_id_mapping", 1),
 	GRFFeatureInfo("action0_station_prop1B", 1),
