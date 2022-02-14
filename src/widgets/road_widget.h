@@ -71,4 +71,11 @@ enum BuildRoadStationWidgets {
 	WID_BROS_NEWST_SCROLL,               ///< Scrollbar of the #WID_BROS_NEWST_LIST.
 };
 
+/** Widgets of the #BuildRoadWaypointWindow class. */
+enum BuildRoadWaypointWidgets {
+	WID_BROW_WAYPOINT_MATRIX, ///< Matrix with waypoints.
+	WID_BROW_WAYPOINT,        ///< A single waypoint.
+	WID_BROW_SCROLL,          ///< Scrollbar for the matrix.
+};
+
 #endif /* WIDGETS_ROAD_WIDGET_H */

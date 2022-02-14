@@ -50,6 +50,7 @@
 
 static void ShowRVStationPicker(Window *parent, RoadStopType rs);
 static void ShowRoadDepotPicker(Window *parent);
+static void ShowBuildWaypointPicker(Window *parent);
 
 static bool _remove_button_clicked;
 static bool _one_way_button_clicked;
@@ -64,6 +65,9 @@ struct RoadStopGUISettings {
 	byte roadstop_count;
 };
 static RoadStopGUISettings _roadstop_gui_settings;
+
+static uint _waypoint_count = 1;             ///< Number of waypoint types
+static uint _cur_waypoint_type;              ///< Currently selected waypoint type
 
 /**
  * Define the values of the RoadFlags
@@ -514,6 +518,8 @@ struct BuildRoadToolbarWindow : Window {
 			case WID_ROT_BUILD_WAYPOINT:
 				if (HandlePlacePushButton(this, WID_ROT_BUILD_WAYPOINT, SPR_CURSOR_WAYPOINT, HT_RECT)) {
 					this->last_started_action = widget;
+					_waypoint_count = RoadStopClass::Get(ROADSTOP_CLASS_WAYP)->GetSpecCount();
+					if (_waypoint_count > 1) ShowBuildWaypointPicker(this);
 				}
 				break;
 
@@ -742,6 +748,7 @@ struct BuildRoadToolbarWindow : Window {
 							uint32 p2 = ROADSTOP_CLASS_WAYP | INVALID_STATION << 16;
 
 							CommandContainer cmdcont = NewCommandContainerBasic(ta.tile, p1, p2, CMD_BUILD_ROAD_WAYPOINT | CMD_MSG(STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT), CcPlaySound_CONSTRUCTION_OTHER);
+							cmdcont.p3 = _cur_waypoint_type;
 							ShowSelectWaypointIfNeeded(cmdcont, ta);
 						}
 					}
@@ -1457,8 +1464,7 @@ public:
 				if (spec == nullptr) {
 					StationPickerDrawSprite(r.left + WD_MATRIX_LEFT + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), st, INVALID_RAILTYPE, _cur_roadtype, widget - WID_BROS_STATION_NE);
 				} else {
-					DrawRoadStopTile(r.left + WD_MATRIX_LEFT + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), _cur_roadtype,
-							RoadStopClass::Get(_roadstop_gui_settings.roadstop_class)->GetSpec(_roadstop_gui_settings.roadstop_type), st, (int)widget - WID_BROS_STATION_NE);
+					DrawRoadStopTile(r.left + WD_MATRIX_LEFT + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), _cur_roadtype, spec, st, (int)widget - WID_BROS_STATION_NE);
 				}
 				break;
 			}
@@ -1489,12 +1495,12 @@ public:
 					int x = ScaleGUITrad(31) + 1;
 					int y = r.bottom - r.top - ScaleGUITrad(31);
 					// Instead of "5" (5th view), pass the orientation clicked in the selection.
-					const RoadStopSpec *spec = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class)->GetSpec(_roadstop_gui_settings.roadstop_type);
+					const RoadStopSpec *spec = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class)->GetSpec(type);
 					StationType st = GetRoadStationTypeByWindowClass(this->window_class);
 					if (spec == nullptr) {
 						StationPickerDrawSprite(r.left + 1 + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), st, INVALID_RAILTYPE, _cur_roadtype, _roadstop_gui_settings.orientation);
 					} else {
-						DrawRoadStopTile(x, y, _cur_roadtype, RoadStopClass::Get(_roadstop_gui_settings.roadstop_class)->GetSpec(type), st, (uint8)_roadstop_gui_settings.orientation);
+						DrawRoadStopTile(x, y, _cur_roadtype, spec, st, (uint8)_roadstop_gui_settings.orientation);
 					}
 					_cur_dpi = old_dpi;
 				}
@@ -1777,6 +1783,102 @@ static WindowDesc _tram_station_picker_desc(
 static void ShowRVStationPicker(Window *parent, RoadStopType rs)
 {
 	new BuildRoadStationWindow(RoadTypeIsRoad(_cur_roadtype) ? &_road_station_picker_desc : &_tram_station_picker_desc, parent, rs);
+}
+
+struct BuildRoadWaypointWindow : PickerWindowBase {
+	BuildRoadWaypointWindow(WindowDesc *desc, Window *parent) : PickerWindowBase(desc, parent)
+	{
+		this->CreateNestedTree();
+
+		NWidgetMatrix *matrix = this->GetWidget<NWidgetMatrix>(WID_BROW_WAYPOINT_MATRIX);
+		matrix->SetScrollbar(this->GetScrollbar(WID_BROW_SCROLL));
+
+		this->FinishInitNested(TRANSPORT_ROAD);
+
+		matrix->SetCount(_waypoint_count);
+		if (_cur_waypoint_type >= _waypoint_count) _cur_waypoint_type = 0;
+		matrix->SetClicked(_cur_waypoint_type);
+	}
+
+	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	{
+		switch (widget) {
+			case WID_BROW_WAYPOINT_MATRIX:
+				/* Three blobs high and wide. */
+				size->width  += resize->width  * 2;
+				size->height += resize->height * 2;
+
+				/* Resizing in X direction only at blob size, but at pixel level in Y. */
+				resize->height = 1;
+				break;
+
+			case WID_BROW_WAYPOINT:
+				size->width  = ScaleGUITrad(64) + 2;
+				size->height = ScaleGUITrad(58) + 2;
+				break;
+		}
+	}
+
+	void DrawWidget(const Rect &r, int widget) const override
+	{
+		switch (GB(widget, 0, 16)) {
+			case WID_BROW_WAYPOINT: {
+				uint type = GB(widget, 16, 16);
+				const RoadStopSpec *spec = RoadStopClass::Get(ROADSTOP_CLASS_WAYP)->GetSpec(type);
+				if (spec == nullptr) {
+					StationPickerDrawSprite(r.left + 1 + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), STATION_ROADWAYPOINT, INVALID_RAILTYPE, _cur_roadtype, 4);
+				} else {
+					DrawRoadStopTile(r.left + 1 + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), _cur_roadtype, spec, STATION_ROADWAYPOINT, 4);
+				}
+			}
+		}
+	}
+
+	void OnClick(Point pt, int widget, int click_count) override
+	{
+		switch (GB(widget, 0, 16)) {
+			case WID_BROW_WAYPOINT: {
+				uint type = GB(widget, 16, 16);
+				this->GetWidget<NWidgetMatrix>(WID_BROW_WAYPOINT_MATRIX)->SetClicked(_cur_waypoint_type);
+
+				_cur_waypoint_type = type;
+				this->GetWidget<NWidgetMatrix>(WID_BROW_WAYPOINT_MATRIX)->SetClicked(_cur_waypoint_type);
+				if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
+				this->SetDirty();
+				break;
+			}
+		}
+	}
+};
+
+/** Nested widget definition for the build NewGRF road waypoint window */
+static const NWidgetPart _nested_build_waypoint_widgets[] = {
+	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_CLOSEBOX, COLOUR_DARK_GREEN),
+		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN), SetDataTip(STR_WAYPOINT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_DEFSIZEBOX, COLOUR_DARK_GREEN),
+	EndContainer(),
+	NWidget(NWID_HORIZONTAL),
+		NWidget(NWID_MATRIX, COLOUR_DARK_GREEN, WID_BROW_WAYPOINT_MATRIX), SetPIP(3, 2, 3), SetScrollbar(WID_BROW_SCROLL),
+			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BROW_WAYPOINT), SetMinimalSize(66, 60), SetDataTip(0x0, STR_WAYPOINT_GRAPHICS_TOOLTIP), SetScrollbar(WID_BROW_SCROLL), EndContainer(),
+		EndContainer(),
+		NWidget(NWID_VERTICAL),
+			NWidget(NWID_VSCROLLBAR, COLOUR_DARK_GREEN, WID_BROW_SCROLL),
+			NWidget(WWT_RESIZEBOX, COLOUR_DARK_GREEN),
+		EndContainer(),
+	EndContainer(),
+};
+
+static WindowDesc _build_waypoint_desc(
+	WDP_AUTO, "build_waypoint", 0, 0,
+	WC_BUILD_WAYPOINT, WC_BUILD_TOOLBAR,
+	WDF_CONSTRUCTION,
+	_nested_build_waypoint_widgets, lengthof(_nested_build_waypoint_widgets)
+);
+
+static void ShowBuildWaypointPicker(Window *parent)
+{
+	new BuildRoadWaypointWindow(&_build_waypoint_desc, parent);
 }
 
 void InitializeRoadGui()

@@ -3552,7 +3552,7 @@ void StationPickerDrawSprite(int x, int y, StationType st, RailType railtype, Ro
 	}
 
 	/* Default waypoint has no railtype specific sprites */
-	DrawRailTileSeqInGUI(x, y, t, st == STATION_WAYPOINT ? 0 : total_offset, 0, pal);
+	DrawRailTileSeqInGUI(x, y, t, (st == STATION_WAYPOINT || st == STATION_ROADWAYPOINT) ? 0 : total_offset, 0, pal);
 }
 
 static int GetSlopePixelZ_Station(TileIndex tile, uint x, uint y)
