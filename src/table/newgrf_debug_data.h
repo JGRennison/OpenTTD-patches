@@ -1377,8 +1377,9 @@ static const NIVariable _nif_roadstops[] = {
 	NIV(0x42, "terrain type"),
 	NIV(0x43, "road type"),
 	NIV(0x44, "tram type"),
-	NIV(0x45, "town zone"),
-	NIV(0x46, "player info"),
+	NIV(0x45, "town zone and Manhattan distance of town"),
+	NIV(0x46, "square of Euclidean distance of town"),
+	NIV(0x47, "player info"),
 	NIV(0x48, "bitmask of accepted cargoes"),
 	NIV(0x60, "amount of cargo waiting"),
 	NIV(0x61, "time since last cargo pickup"),
@@ -1386,7 +1387,10 @@ static const NIVariable _nif_roadstops[] = {
 	NIV(0x63, "time spent on route"),
 	NIV(0x64, "information about last vehicle picking cargo up"),
 	NIV(0x65, "amount of cargo acceptance"),
+	NIV(0x67, "land info of nearby tiles"),
+	NIV(0x68, "road stop info of nearby tiles"),
 	NIV(0x69, "information about cargo accepted in the past"),
+	NIV(0x6A, "GRFID of nearby road stop tiles"),
 	NIV_END(),
 };
 

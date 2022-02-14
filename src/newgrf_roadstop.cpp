@@ -67,26 +67,79 @@ uint32 RoadStopScopeResolver::GetTriggers() const
 uint32 RoadStopScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
 {
 	switch (variable) {
-		case 0x40: return this->view; // view
+		/* View/rotation */
+		case 0x40: return this->view;
 
-		case 0x41: // stop type
+		/* Stop type: 0: bus, 1: truck, 2: waypoint */
+		case 0x41:
 			if (this->type == STATION_BUS) return 0;
 			if (this->type == STATION_TRUCK) return 1;
 			return 2;
 
+		/* Terrain type */
 		case 0x42: return this->tile == INVALID_TILE ? 0 : GetTerrainType(this->tile, TCX_NORMAL); // terrain_type
 
-		case 0x43: return this->tile == INVALID_TILE ? 0 : GetReverseRoadTypeTranslation(GetRoadTypeRoad(this->tile), this->roadstopspec->grf_prop.grffile); // road_type
+		/* Road type */
+		case 0x43: return this->tile == INVALID_TILE ? 0 : GetReverseRoadTypeTranslation(GetRoadTypeRoad(this->tile), this->roadstopspec->grf_prop.grffile);
 
-		case 0x44: return this->tile == INVALID_TILE ? 0 : GetReverseRoadTypeTranslation(GetRoadTypeTram(this->tile), this->roadstopspec->grf_prop.grffile); // tram_type
+		/* Tram type */
+		case 0x44: return this->tile == INVALID_TILE ? 0 : GetReverseRoadTypeTranslation(GetRoadTypeTram(this->tile), this->roadstopspec->grf_prop.grffile);
 
-		case 0x45: { // town_zone
-			if (this->tile == INVALID_TILE) return HZB_TOWN_EDGE;
-			const Town *t = ClosestTownFromTile(this->tile, UINT_MAX);
-			return t != nullptr ? GetTownRadiusGroup(t, this->tile) : HZB_TOWN_EDGE;
+		/* Town zone and Manhattan distance of closest town */
+		case 0x45: {
+			if (this->tile == INVALID_TILE) return HZB_TOWN_EDGE << 16;
+			const Town *t = (this->st == nullptr) ? ClosestTownFromTile(this->tile, UINT_MAX) : this->st->town;
+			return t != nullptr ? (GetTownRadiusGroup(t, this->tile) << 16 | std::min(DistanceManhattan(this->tile, t->xy), 0xFFFFu)) : HZB_TOWN_EDGE << 16;
 		}
 
-		case 0x46: return GetCompanyInfo(this->st == nullptr ? _current_company : this->st->owner); // company_type
+		/* Get square of Euclidian distance of closest town */
+		case 0x46: {
+			if (this->tile == INVALID_TILE) return 0;
+			const Town *t = (this->st == nullptr) ? ClosestTownFromTile(this->tile, UINT_MAX) : this->st->town;
+			return t != nullptr ? DistanceSquare(this->tile, t->xy) : 0;
+		}
+
+		/* Company information */
+		case 0x47: return GetCompanyInfo(this->st == nullptr ? _current_company : this->st->owner);
+
+		/* Variables which use the parameter */
+		/* Variables 0x60 to 0x65 and 0x69 are handled separately below */
+
+		/* Land info of nearby tile */
+		case 0x67: {
+			TileIndex tile = this->tile;
+			if (parameter != 0) tile = GetNearbyTile(parameter, tile); // only perform if it is required
+			return GetNearbyTileInformation(tile, this->ro.grffile->grf_version >= 8);
+		}
+
+		/* Road stop info of nearby tiles */
+		case 0x68: {
+			TileIndex nearby_tile = GetNearbyTile(parameter, this->tile);
+
+			if (!IsAnyRoadStopTile(nearby_tile)) return 0xFFFFFFFF;
+
+			uint32 grfid = this->st->roadstop_speclist[GetCustomRoadStopSpecIndex(this->tile)].grfid;
+			bool same_orientation = GetStationGfx(this->tile) == GetStationGfx(nearby_tile);
+			bool same_station = GetStationIndex(nearby_tile) == this->st->index;
+			uint32 res = GetStationGfx(nearby_tile) << 12 | !same_orientation << 11 | !!same_station << 10;
+
+			if (IsCustomRoadStopSpecIndex(nearby_tile)) {
+				const RoadStopSpecList ssl = BaseStation::GetByTile(nearby_tile)->roadstop_speclist[GetCustomRoadStopSpecIndex(nearby_tile)];
+				res |= 1 << (ssl.grfid != grfid ? 9 : 8) | ssl.localidx;
+			}
+			return res;
+		}
+
+		/* GRFID of nearby road stop tiles */
+		case 0x6A: {
+			TileIndex nearby_tile = GetNearbyTile(parameter, this->tile);
+
+			if (!IsAnyRoadStopTile(nearby_tile)) return 0xFFFFFFFF;
+			if (!IsCustomRoadStopSpecIndex(nearby_tile)) return 0;
+
+			const RoadStopSpecList ssl = BaseStation::GetByTile(nearby_tile)->roadstop_speclist[GetCustomRoadStopSpecIndex(nearby_tile)];
+			return ssl.grfid;
+		}
 
 		case 0xF0: return this->st == nullptr ? 0 : this->st->facilities; // facilities
 
