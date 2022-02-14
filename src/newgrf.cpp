@@ -6408,9 +6408,26 @@ static void RoadStopMapSpriteGroup(ByteReader *buf, uint8 idcount)
 		roadstops[i] = buf->ReadByte();
 	}
 
-	/* Skip the cargo type section, we only care about the default group */
 	uint8 cidcount = buf->ReadByte();
-	buf->Skip(cidcount * 3);
+	for (uint c = 0; c < cidcount; c++) {
+		uint8 ctype = buf->ReadByte();
+		uint16 groupid = buf->ReadWord();
+		if (!IsValidGroupID(groupid, "RoadStopMapSpriteGroup")) continue;
+
+		ctype = TranslateCargo(GSF_ROADSTOPS, ctype);
+		if (ctype == CT_INVALID) continue;
+
+		for (uint i = 0; i < idcount; i++) {
+			RoadStopSpec *roadstopspec = _cur.grffile->roadstops == nullptr ? nullptr : _cur.grffile->roadstops[roadstops[i]];
+
+			if (roadstopspec == nullptr) {
+				grfmsg(1, "RoadStopMapSpriteGroup: Road stop with ID 0x%02X does not exist, skipping", roadstops[i]);
+				continue;
+			}
+
+			roadstopspec->grf_prop.spritegroup[ctype] = _cur.spritegroups[groupid];
+		}
+	}
 
 	uint16 groupid = buf->ReadWord();
 	if (!IsValidGroupID(groupid, "RoadStopMapSpriteGroup")) return;
