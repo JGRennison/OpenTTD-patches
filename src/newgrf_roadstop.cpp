@@ -459,3 +459,29 @@ void StationUpdateRoadStopCachedTriggers(BaseStation *st)
 		}
 	}
 }
+
+void DumpRoadStopSpriteGroup(const BaseStation *st, const RoadStopSpec *spec, std::function<void(const char *)> print)
+{
+	CargoID ctype = CT_DEFAULT_NA;
+
+	if (st == nullptr) {
+		/* No station, so we are in a purchase list */
+		ctype = CT_PURCHASE;
+	} else if (Station::IsExpected(st)) {
+		const Station *station = Station::From(st);
+		/* Pick the first cargo that we have waiting */
+		for (const CargoSpec *cs : CargoSpec::Iterate()) {
+			if (spec->grf_prop.spritegroup[cs->Index()] != nullptr &&
+					station->goods[cs->Index()].cargo.TotalCount() > 0) {
+				ctype = cs->Index();
+				break;
+			}
+		}
+	}
+
+	if (spec->grf_prop.spritegroup[ctype] == nullptr) {
+		ctype = CT_DEFAULT;
+	}
+
+	DumpSpriteGroup(spec->grf_prop.spritegroup[ctype], std::move(print));
+}

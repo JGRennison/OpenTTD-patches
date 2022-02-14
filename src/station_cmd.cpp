@@ -2247,6 +2247,8 @@ CommandCost RemoveRoadWaypointStop(TileIndex tile, DoCommandFlag flags)
 
 		uint specindex = GetCustomRoadStopSpecIndex(tile);
 
+		DeleteNewGRFInspectWindow(GSF_ROADSTOPS, tile);
+
 		DoClearSquare(tile);
 
 		wp->rect.AfterRemoveTile(wp, tile);
@@ -2340,6 +2342,8 @@ CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags)
 		DirtyCompanyInfrastructureWindows(st->owner);
 
 		uint specindex = GetCustomRoadStopSpecIndex(tile);
+
+		DeleteNewGRFInspectWindow(GSF_ROADSTOPS, tile);
 
 		if (IsDriveThroughStopTile(tile)) {
 			/* Clears the tile for us */
