@@ -110,8 +110,13 @@ struct RoadStopResolverObject : public ResolverObject {
 
 /** Road stop specification. */
 struct RoadStopSpec {
-	// We'll have a default and a fence "cargo". Or maybe just a default one?
-	GRFFilePropsBase<NUM_CARGO + 1> grf_prop;
+	/**
+	 * Properties related the the grf file.
+	 * NUM_CARGO real cargo plus three pseudo cargo sprite groups.
+	 * Used for obtaining the sprite offset of custom sprites, and for
+	 * evaluating callbacks.
+	 */
+	GRFFilePropsBase<NUM_CARGO + 3> grf_prop;
 	RoadStopClassID cls_id;     ///< The class to which this spec belongs.
 	int spec_id;                ///< The ID of this spec inside the class.
 	StringID name;              ///< Name of this stop
