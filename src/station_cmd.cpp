@@ -3798,7 +3798,7 @@ uint8 GetAnimatedTileSpeed_Station(TileIndex tile)
 	}
 
 	if (IsAirport(tile)) {
-		AnimateAirportTile(tile);
+		return GetAirportTileAnimationSpeed(tile);
 	}
 	return 0;
 }
