@@ -22,6 +22,8 @@
 #include "date_func.h"
 #include "town.h"
 #include "viewport_func.h"
+#include "newgrf_animation_base.h"
+#include "newgrf_sound.h"
 
 #include "safeguards.h"
 
@@ -102,11 +104,23 @@ uint32 RoadStopScopeResolver::GetVariable(uint16 variable, uint32 parameter, Get
 		/* Company information */
 		case 0x47: return GetCompanyInfo(this->st == nullptr ? _current_company : this->st->owner);
 
+		/* Animation frame */
+		case 0x49: return this->tile == INVALID_TILE ? 0 : this->st->GetRoadStopAnimationFrame(this->tile);
+
 		/* Variables which use the parameter */
 		/* Variables 0x60 to 0x65 and 0x69 are handled separately below */
 
+		/* Animation frame of nearby tile */
+		case 0x66: {
+			if (this->tile == INVALID_TILE) return UINT_MAX;
+			TileIndex tile = this->tile;
+			if (parameter != 0) tile = GetNearbyTile(parameter, tile);
+			return (IsAnyRoadStopTile(tile) && GetStationIndex(tile) == this->st->index) ? this->st->GetRoadStopAnimationFrame(tile) : UINT_MAX;
+		}
+
 		/* Land info of nearby tile */
 		case 0x67: {
+			if (this->tile == INVALID_TILE) return 0;
 			TileIndex tile = this->tile;
 			if (parameter != 0) tile = GetNearbyTile(parameter, tile); // only perform if it is required
 			return GetNearbyTileInformation(tile, this->ro.grffile->grf_version >= 8);
@@ -114,6 +128,7 @@ uint32 RoadStopScopeResolver::GetVariable(uint16 variable, uint32 parameter, Get
 
 		/* Road stop info of nearby tiles */
 		case 0x68: {
+			if (this->tile == INVALID_TILE) return 0xFFFFFFFF;
 			TileIndex nearby_tile = GetNearbyTile(parameter, this->tile);
 
 			if (!IsAnyRoadStopTile(nearby_tile)) return 0xFFFFFFFF;
@@ -132,6 +147,7 @@ uint32 RoadStopScopeResolver::GetVariable(uint16 variable, uint32 parameter, Get
 
 		/* GRFID of nearby road stop tiles */
 		case 0x6A: {
+			if (this->tile == INVALID_TILE) return 0xFFFFFFFF;
 			TileIndex nearby_tile = GetNearbyTile(parameter, this->tile);
 
 			if (!IsAnyRoadStopTile(nearby_tile)) return 0xFFFFFFFF;
@@ -212,6 +228,12 @@ TownScopeResolver* RoadStopResolverObject::GetTown()
 	return this->town_scope;
 }
 
+uint16 GetRoadStopCallback(CallbackID callback, uint32 param1, uint32 param2, const RoadStopSpec *roadstopspec, BaseStation *st, TileIndex tile, const RoadTypeInfo *rti, StationType type, uint8 view)
+{
+	RoadStopResolverObject object(roadstopspec, st, tile, rti, type, view, callback, param1, param2);
+	return object.ResolveCallback();
+}
+
 /**
  * Draw representation of a road stop tile for GUI purposes.
  * @param x position x of image.
@@ -272,6 +294,74 @@ void DrawRoadStopTile(int x, int y, RoadType roadtype, const RoadStopSpec *spec,
 	DrawCommonTileSeqInGUI(x, y, dts, 0, 0, palette, true);
 }
 
+/** Wrapper for animation control, see GetRoadStopCallback. */
+uint16 GetAnimRoadStopCallback(CallbackID callback, uint32 param1, uint32 param2, const RoadStopSpec *roadstopspec, BaseStation *st, TileIndex tile, int extra_data)
+{
+	return GetRoadStopCallback(callback, param1, param2, roadstopspec, st, tile, nullptr, GetStationType(tile), GetStationGfx(tile));
+}
+
+struct RoadStopAnimationFrameAnimationHelper {
+	static byte Get(BaseStation *st, TileIndex tile) { return st->GetRoadStopAnimationFrame(tile); }
+	static void Set(BaseStation *st, TileIndex tile, byte frame) { st->SetRoadStopAnimationFrame(tile, frame); }
+};
+
+/** Helper class for animation control. */
+struct RoadStopAnimationBase : public AnimationBase<RoadStopAnimationBase, RoadStopSpec, BaseStation, int, GetAnimRoadStopCallback, RoadStopAnimationFrameAnimationHelper> {
+	static const CallbackID cb_animation_speed      = CBID_STATION_ANIMATION_SPEED;
+	static const CallbackID cb_animation_next_frame = CBID_STATION_ANIM_NEXT_FRAME;
+
+	static const RoadStopCallbackMask cbm_animation_speed      = CBM_ROAD_STOP_ANIMATION_SPEED;
+	static const RoadStopCallbackMask cbm_animation_next_frame = CBM_ROAD_STOP_ANIMATION_NEXT_FRAME;
+};
+
+void AnimateRoadStopTile(TileIndex tile)
+{
+	const RoadStopSpec *ss = GetRoadStopSpec(tile);
+	if (ss == nullptr) return;
+
+	RoadStopAnimationBase::AnimateTile(ss, BaseStation::GetByTile(tile), tile, HasBit(ss->flags, RSF_CB141_RANDOM_BITS));
+}
+
+uint8 GetRoadStopTileAnimationSpeed(TileIndex tile)
+{
+	const RoadStopSpec *ss = GetRoadStopSpec(tile);
+	if (ss == nullptr) return 0;
+
+	return RoadStopAnimationBase::GetAnimationSpeed(ss);
+}
+
+void TriggerRoadStopAnimation(BaseStation *st, TileIndex trigger_tile, StationAnimationTrigger trigger, CargoID cargo_type)
+{
+	/* Get Station if it wasn't supplied */
+	if (st == nullptr) st = BaseStation::GetByTile(trigger_tile);
+
+	/* Check the cached animation trigger bitmask to see if we need
+	 * to bother with any further processing. */
+	if (!HasBit(st->cached_roadstop_anim_triggers, trigger)) return;
+
+	uint16 random_bits = Random();
+	auto process_tile = [&](TileIndex cur_tile) {
+		const RoadStopSpec *ss = GetRoadStopSpec(cur_tile);
+		if (ss != nullptr && HasBit(ss->animation.triggers, trigger)) {
+			CargoID cargo;
+			if (cargo_type == CT_INVALID) {
+				cargo = CT_INVALID;
+			} else {
+				cargo = ss->grf_prop.grffile->cargo_map[cargo_type];
+			}
+			RoadStopAnimationBase::ChangeAnimationFrame(CBID_STATION_ANIM_START_STOP, ss, st, cur_tile, (random_bits << 16) | Random(), (uint8)trigger | (cargo << 8));
+		}
+	};
+
+	if (trigger == SAT_NEW_CARGO || trigger == SAT_CARGO_TAKEN || trigger == SAT_250_TICKS) {
+		for (TileIndex cur_tile : st->custom_road_stop_tiles) {
+			process_tile(cur_tile);
+		}
+	} else {
+		process_tile(trigger_tile);
+	}
+}
+
 /**
  * Trigger road stop randomisation
  *
@@ -286,8 +376,8 @@ void TriggerRoadStopRandomisation(Station *st, TileIndex tile, RoadStopRandomTri
 
 	/* Check the cached cargo trigger bitmask to see if we need
 	 * to bother with any further processing. */
-	if (st->roadstop_cached_cargo_triggers == 0) return;
-	if (cargo_type != CT_INVALID && !HasBit(st->roadstop_cached_cargo_triggers, cargo_type)) return;
+	if (st->cached_roadstop_cargo_triggers == 0) return;
+	if (cargo_type != CT_INVALID && !HasBit(st->cached_roadstop_cargo_triggers, cargo_type)) return;
 
 	SetBit(st->waiting_triggers, trigger);
 
@@ -305,7 +395,7 @@ void TriggerRoadStopRandomisation(Station *st, TileIndex tile, RoadStopRandomTri
 
 	uint32 used_triggers = 0;
 	auto process_tile = [&](TileIndex cur_tile) {
-		const RoadStopSpec *ss = GetRoadStopSpec(tile);
+		const RoadStopSpec *ss = GetRoadStopSpec(cur_tile);
 		if (ss == nullptr) return;
 
 		/* Cargo taken "will only be triggered if all of those
@@ -315,10 +405,7 @@ void TriggerRoadStopRandomisation(Station *st, TileIndex tile, RoadStopRandomTri
 		}
 
 		if (cargo_type == CT_INVALID || HasBit(ss->cargo_triggers, cargo_type)) {
-			int dir = GetRoadStopDir(cur_tile);
-			if (IsDriveThroughStopTile(cur_tile)) dir += 4;
-
-			RoadStopResolverObject object(ss, st, cur_tile, nullptr, GetStationType(cur_tile), dir);
+			RoadStopResolverObject object(ss, st, cur_tile, nullptr, GetStationType(cur_tile), GetStationGfx(cur_tile));
 			object.waiting_triggers = st->waiting_triggers;
 
 			const SpriteGroup *group = object.Resolve();
@@ -487,7 +574,8 @@ void DeallocateRoadStopSpecFromStation(BaseStation *st, byte specindex)
 			free(st->roadstop_speclist);
 			st->num_roadstop_specs = 0;
 			st->roadstop_speclist  = nullptr;
-			st->roadstop_cached_cargo_triggers = 0;
+			st->cached_roadstop_anim_triggers = 0;
+			st->cached_roadstop_cargo_triggers = 0;
 			return;
 		}
 	}
@@ -501,14 +589,16 @@ void DeallocateRoadStopSpecFromStation(BaseStation *st, byte specindex)
  */
 void StationUpdateRoadStopCachedTriggers(BaseStation *st)
 {
-	st->roadstop_cached_cargo_triggers = 0;
+	st->cached_roadstop_anim_triggers = 0;
+	st->cached_roadstop_cargo_triggers = 0;
 
 	/* Combine animation trigger bitmask for all road stop specs
 	 * of this station. */
 	for (uint i = 0; i < st->num_roadstop_specs; i++) {
 		const RoadStopSpec *ss = st->roadstop_speclist[i].spec;
 		if (ss != nullptr) {
-			st->roadstop_cached_cargo_triggers |= ss->cargo_triggers;
+			st->cached_roadstop_anim_triggers |= ss->animation.triggers;
+			st->cached_roadstop_cargo_triggers |= ss->cargo_triggers;
 		}
 	}
 }

@@ -89,6 +89,20 @@ static RoadFlags _place_road_flag;
 static RoadType _cur_roadtype;
 
 
+/**
+ * Check whether a road stop type can be built.
+ * @return true if building is allowed.
+ */
+static bool IsRoadStopAvailable(const RoadStopSpec *roadstopspec, StationType type)
+{
+	if (roadstopspec == nullptr || !HasBit(roadstopspec->callback_mask, CBM_ROAD_STOP_AVAIL)) return true;
+
+	uint16 cb_res = GetRoadStopCallback(CBID_STATION_AVAILABILITY, 0, 0, roadstopspec, nullptr, INVALID_TILE, GetRoadTypeInfo(_cur_roadtype), type, 0);
+	if (cb_res == CALLBACK_FAILED) return true;
+
+	return Convert8bitBooleanCallback(roadstopspec->grf_prop.grffile, CBID_STATION_AVAILABILITY, cb_res);
+}
+
 void CcPlaySound_CONSTRUCTION_OTHER(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
 {
 	if (result.Succeeded() && _settings_client.sound.confirm) SndPlayTileFx(SND_1F_CONSTRUCTION_OTHER, tile);
@@ -1488,6 +1502,13 @@ public:
 				byte type = GB(widget, 16, 16);
 				assert(type < _roadstop_gui_settings.roadstop_count);
 
+				const RoadStopSpec *spec = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class)->GetSpec(type);
+				StationType st = GetRoadStationTypeByWindowClass(this->window_class);
+
+				if (!IsRoadStopAvailable(spec, st)) {
+					GfxFillRect(r.left + 1, r.top + 1, r.right - 1, r.bottom - 1, PC_BLACK, FILLRECT_CHECKER);
+				}
+
 				// Set up a clipping area for the sprite preview.
 				if (FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.right - r.left + 1, r.bottom - r.top + 1)) {
 					DrawPixelInfo *old_dpi = _cur_dpi;
@@ -1495,8 +1516,6 @@ public:
 					int x = ScaleGUITrad(31) + 1;
 					int y = r.bottom - r.top - ScaleGUITrad(31);
 					// Instead of "5" (5th view), pass the orientation clicked in the selection.
-					const RoadStopSpec *spec = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class)->GetSpec(type);
-					StationType st = GetRoadStationTypeByWindowClass(this->window_class);
 					if (spec == nullptr) {
 						StationPickerDrawSprite(r.left + 1 + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), st, INVALID_RAILTYPE, _cur_roadtype, _roadstop_gui_settings.orientation);
 					} else {
@@ -1572,6 +1591,11 @@ public:
 			case WID_BROS_IMAGE: {
 				int y = GB(widget, 16, 16);
 				if (y >= _roadstop_gui_settings.roadstop_count) return;
+
+				const RoadStopSpec *spec = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class)->GetSpec(y);
+				StationType st = GetRoadStationTypeByWindowClass(this->window_class);
+
+				if (!IsRoadStopAvailable(spec, st)) return;
 
 				/* Check station availability callback */
 				_roadstop_gui_settings.roadstop_type = y;
@@ -1830,6 +1854,9 @@ struct BuildRoadWaypointWindow : PickerWindowBase {
 				} else {
 					DrawRoadStopTile(r.left + 1 + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), _cur_roadtype, spec, STATION_ROADWAYPOINT, 4);
 				}
+				if (!IsRoadStopAvailable(spec, STATION_ROADWAYPOINT)) {
+					GfxFillRect(r.left + 1, r.top + 1, r.right - 1, r.bottom - 1, PC_BLACK, FILLRECT_CHECKER);
+				}
 			}
 		}
 	}
@@ -1839,6 +1866,10 @@ struct BuildRoadWaypointWindow : PickerWindowBase {
 		switch (GB(widget, 0, 16)) {
 			case WID_BROW_WAYPOINT: {
 				uint type = GB(widget, 16, 16);
+
+				const RoadStopSpec *spec = RoadStopClass::Get(ROADSTOP_CLASS_WAYP)->GetSpec(type);
+				if (!IsRoadStopAvailable(spec, STATION_ROADWAYPOINT)) return;
+
 				this->GetWidget<NWidgetMatrix>(WID_BROW_WAYPOINT_MATRIX)->SetClicked(_cur_waypoint_type);
 
 				_cur_waypoint_type = type;

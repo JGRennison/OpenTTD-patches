@@ -411,7 +411,7 @@ static const SaveLoad _base_station_desc[] = {
 	      SLE_VAR(BaseStation, num_specs,              SLE_UINT8),
 	SLE_CONDVAR_X(BaseStation, num_roadstop_specs,     SLE_UINT8,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_GRF_ROADSTOPS)),
 	SLE_CONDVARVEC_X(BaseStation, custom_road_stop_tiles,  SLE_UINT32,              SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_GRF_ROADSTOPS)),
-	SLE_CONDVARVEC_X(BaseStation, custom_road_stop_random_bits, SLE_UINT8,          SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_GRF_ROADSTOPS)),
+	SLE_CONDVARVEC_X(BaseStation, custom_road_stop_data,   SLE_UINT16,              SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_GRF_ROADSTOPS)),
 };
 
 static OldPersistentStorage _old_st_persistent_storage;

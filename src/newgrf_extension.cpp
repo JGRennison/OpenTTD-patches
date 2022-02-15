@@ -95,7 +95,12 @@ extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_STOP_NAME, "roadstop_stop_name"),
 	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_CLASS_NAME, "roadstop_class_name"),
 	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_DRAW_MODE, "roadstop_draw_mode"),
-	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_TRIGGER_CARGOES, "roadstop_trigger_cargoes"),
+	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_TRIGGER_CARGOES, "roadstop_random_trigger_cargoes"),
+	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_ANIMATION_INFO, "roadstop_animation_info"),
+	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_ANIMATION_SPEED, "roadstop_animation_speed"),
+	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_ANIMATION_TRIGGERS, "roadstop_animation_triggers"),
+	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_CALLBACK_MASK, "roadstop_callback_mask"),
+	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_GENERAL_FLAGS, "roadstop_general_flags"),
 	GRFPropertyMapDefinition(),
 };
 

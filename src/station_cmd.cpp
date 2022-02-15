@@ -2132,6 +2132,16 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 	int specindex = AllocateRoadStopSpecToStation(roadstopspec, st, (flags & DC_EXEC) != 0);
 	if (specindex == -1) return_cmd_error(STR_ERROR_TOO_MANY_STATION_SPECS);
 
+	if (roadstopspec != nullptr) {
+		/* Perform NewGRF checks */
+
+		/* Check if the road stop is buildable */
+		if (HasBit(roadstopspec->callback_mask, CBM_ROAD_STOP_AVAIL)) {
+			uint16 cb_res = GetRoadStopCallback(CBID_STATION_AVAILABILITY, 0, 0, roadstopspec, nullptr, INVALID_TILE, GetRoadTypeInfo(rt), type ? STATION_TRUCK : STATION_BUS, 0);
+			if (cb_res != CALLBACK_FAILED && !Convert8bitBooleanCallback(roadstopspec->grf_prop.grffile, CBID_STATION_AVAILABILITY, cb_res)) return CMD_ERROR;
+		}
+	}
+
 	if (flags & DC_EXEC) {
 		/* Check every tile in the area. */
 		for (TileIndex cur_tile : roadstop_area) {
@@ -2144,6 +2154,12 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 
 			if (IsTileType(cur_tile, MP_STATION) && IsAnyRoadStop(cur_tile)) {
 				RemoveRoadStop(cur_tile, flags);
+			}
+
+			if (roadstopspec != nullptr) {
+				/* Include this road stop spec's animation trigger bitmask
+				 * in the station's cached copy. */
+				st->cached_roadstop_anim_triggers |= roadstopspec->animation.triggers;
 			}
 
 			RoadStop *road_stop = new RoadStop(cur_tile);
@@ -2190,7 +2206,10 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 			Company::Get(st->owner)->infrastructure.station++;
 
 			SetCustomRoadStopSpecIndex(cur_tile, specindex);
-			if (roadstopspec != nullptr) st->SetRoadStopRandomBits(cur_tile, GB(Random(), 0, 4));
+			if (roadstopspec != nullptr) {
+				st->SetRoadStopRandomBits(cur_tile, GB(Random(), 0, 4));
+				TriggerRoadStopAnimation(st, cur_tile, SAT_BUILT);
+			}
 
 			MarkTileDirtyByTile(cur_tile);
 			UpdateRoadCachedOneWayStatesAroundTile(cur_tile);
@@ -2245,6 +2264,8 @@ CommandCost RemoveRoadWaypointStop(TileIndex tile, DoCommandFlag flags)
 		Company::Get(wp->owner)->infrastructure.station--;
 		DirtyCompanyInfrastructureWindows(wp->owner);
 
+		DeleteAnimatedTile(tile);
+
 		uint specindex = GetCustomRoadStopSpecIndex(tile);
 
 		DeleteNewGRFInspectWindow(GSF_ROADSTOPS, tile);
@@ -2253,7 +2274,7 @@ CommandCost RemoveRoadWaypointStop(TileIndex tile, DoCommandFlag flags)
 
 		wp->rect.AfterRemoveTile(wp, tile);
 
-		wp->RemoveRoadStopRandomBits(tile);
+		wp->RemoveRoadStopTileData(tile);
 		DeallocateRoadStopSpecFromStation(wp, specindex);
 
 		MakeRoadWaypointStationAreaSmaller(wp, wp->road_waypoint_area);
@@ -2341,6 +2362,8 @@ CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags)
 		Company::Get(st->owner)->infrastructure.station--;
 		DirtyCompanyInfrastructureWindows(st->owner);
 
+		DeleteAnimatedTile(tile);
+
 		uint specindex = GetCustomRoadStopSpecIndex(tile);
 
 		DeleteNewGRFInspectWindow(GSF_ROADSTOPS, tile);
@@ -2366,7 +2389,7 @@ CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags)
 
 		st->AfterStationTileSetChange(false, is_truck ? STATION_TRUCK: STATION_BUS);
 
-		st->RemoveRoadStopRandomBits(tile);
+		st->RemoveRoadStopTileData(tile);
 		DeallocateRoadStopSpecFromStation(st, specindex);
 
 		/* Update the tile area of the truck/bus stop */
@@ -3788,6 +3811,12 @@ void AnimateTile_Station(TileIndex tile)
 
 	if (IsAirport(tile)) {
 		AnimateAirportTile(tile);
+		return;
+	}
+
+	if (IsAnyRoadStopTile(tile)) {
+		AnimateRoadStopTile(tile);
+		return;
 	}
 }
 
@@ -3799,6 +3828,10 @@ uint8 GetAnimatedTileSpeed_Station(TileIndex tile)
 
 	if (IsAirport(tile)) {
 		return GetAirportTileAnimationSpeed(tile);
+	}
+
+	if (IsAnyRoadStopTile(tile)) {
+		return GetRoadStopTileAnimationSpeed(tile);
 	}
 	return 0;
 }
@@ -4485,6 +4518,7 @@ void OnTick_Station()
 			/* Stop processing this station if it was deleted */
 			if (!StationHandleBigTick(st)) continue;
 			TriggerStationAnimation(st, st->xy, SAT_250_TICKS);
+			TriggerRoadStopAnimation(st, st->xy, SAT_250_TICKS);
 			if (Station::IsExpected(st)) AirportAnimationTrigger(Station::From(st), AAT_STATION_250_TICKS);
 		}
 	}
@@ -4569,6 +4603,7 @@ static uint UpdateStationWaiting(Station *st, CargoID type, uint amount, SourceT
 	TriggerStationRandomisation(st, st->xy, SRT_NEW_CARGO, type);
 	TriggerStationAnimation(st, st->xy, SAT_NEW_CARGO, type);
 	AirportAnimationTrigger(st, AAT_STATION_NEW_CARGO, type);
+	TriggerRoadStopAnimation(st, st->xy, SAT_NEW_CARGO, type);
 	TriggerRoadStopRandomisation(st, st->xy, RSRT_NEW_CARGO, type);
 
 	SetWindowDirty(WC_STATION_VIEW, st->index);

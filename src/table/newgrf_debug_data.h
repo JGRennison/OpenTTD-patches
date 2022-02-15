@@ -1371,6 +1371,15 @@ static const NIFeature _nif_roadtype = {
 	new NIHRoadType(),
 };
 
+#define NICRS(cb_id, bit) NIC(cb_id, RoadStopSpec, callback_mask, bit)
+static const NICallback _nic_roadstops[] = {
+	NICRS(CBID_STATION_AVAILABILITY,     CBM_ROAD_STOP_AVAIL),
+	NICRS(CBID_STATION_ANIM_START_STOP,  CBM_NO_BIT),
+	NICRS(CBID_STATION_ANIM_NEXT_FRAME,  CBM_ROAD_STOP_ANIMATION_NEXT_FRAME),
+	NICRS(CBID_STATION_ANIMATION_SPEED,  CBM_ROAD_STOP_ANIMATION_SPEED),
+	NIC_END()
+};
+
 static const NIVariable _nif_roadstops[] = {
 	NIV(0x40, "view/rotation"),
 	NIV(0x41, "stop type"),
@@ -1381,12 +1390,14 @@ static const NIVariable _nif_roadstops[] = {
 	NIV(0x46, "square of Euclidean distance of town"),
 	NIV(0x47, "player info"),
 	NIV(0x48, "bitmask of accepted cargoes"),
+	NIV(0x49, "current animation frame"),
 	NIV(0x60, "amount of cargo waiting"),
 	NIV(0x61, "time since last cargo pickup"),
 	NIV(0x62, "rating of cargo"),
 	NIV(0x63, "time spent on route"),
 	NIV(0x64, "information about last vehicle picking cargo up"),
 	NIV(0x65, "amount of cargo acceptance"),
+	NIV(0x66, "animation frame of nearby tile"),
 	NIV(0x67, "land info of nearby tiles"),
 	NIV(0x68, "road stop info of nearby tiles"),
 	NIV(0x69, "information about cargo accepted in the past"),
@@ -1420,11 +1431,15 @@ class NIHRoadStop : public NIHelper {
 			uint class_id = RoadStopClass::Get(spec->cls_id)->global_id;
 			seprintf(buffer, lastof(buffer), "  class ID: %c%c%c%c, spec ID: %u", class_id >> 24, class_id >> 16, class_id >> 8, class_id, spec->spec_id);
 			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  spec: stop type: %u, draw mode: %u, cargo triggers: 0x" OTTD_PRINTFHEX64, spec->stop_type, spec->draw_mode, spec->cargo_triggers);
+			seprintf(buffer, lastof(buffer), "  spec: stop type: %X, draw mode: %X, cargo triggers: " OTTD_PRINTFHEX64, spec->stop_type, spec->draw_mode, spec->cargo_triggers);
+			output.print(buffer);
+			seprintf(buffer, lastof(buffer), "  spec: callback mask: %X, flags: %X", spec->callback_mask, spec->flags);
+			output.print(buffer);
+			seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", spec->animation.frames, spec->animation.status, spec->animation.speed, spec->animation.triggers);
 			output.print(buffer);
 
 			const BaseStation *st = BaseStation::GetByTile(index);
-			seprintf(buffer, lastof(buffer), "  stop random bits: %02X", st->GetRoadStopRandomBits(index));
+			seprintf(buffer, lastof(buffer), "  road stop: random bits: %02X, animation frame: %02X", st->GetRoadStopRandomBits(index), st->GetRoadStopAnimationFrame(index));
 			output.print(buffer);
 		}
 	}
@@ -1438,7 +1453,7 @@ class NIHRoadStop : public NIHelper {
 
 static const NIFeature _nif_roadstop = {
 	nullptr,
-	nullptr,
+	_nic_roadstops,
 	_nif_roadstops,
 	new NIHRoadStop(),
 };

@@ -22,6 +22,7 @@
 #include "newgrf_debug.h"
 #include "newgrf_sound.h"
 #include "newgrf_station.h"
+#include "newgrf_roadstop.h"
 #include "group_gui.h"
 #include "strings_func.h"
 #include "zoom_func.h"
@@ -3417,6 +3418,13 @@ void Vehicle::LeaveStation()
 		}
 
 		SetBit(Train::From(this)->flags, VRF_LEAVING_STATION);
+	}
+	if (this->type == VEH_ROAD && !(this->vehstatus & VS_CRASHED)) {
+		/* Trigger road stop animation */
+		if (IsAnyRoadStopTile(this->tile)) {
+			TriggerRoadStopRandomisation(st, this->tile, RSRT_VEH_DEPARTS);
+			TriggerRoadStopAnimation(st, this->tile, SAT_TRAIN_DEPARTS);
+		}
 	}
 
 	if (this->cur_real_order_index < this->GetNumOrders()) {

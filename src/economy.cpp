@@ -2147,6 +2147,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 						TriggerStationRandomisation(st, st->xy, SRT_CARGO_TAKEN, v->cargo_type);
 						TriggerStationAnimation(st, st->xy, SAT_CARGO_TAKEN, v->cargo_type);
 						AirportAnimationTrigger(st, AAT_STATION_CARGO_TAKEN, v->cargo_type);
+						TriggerRoadStopAnimation(st, st->xy, SAT_NEW_CARGO, v->cargo_type);
 						TriggerRoadStopRandomisation(st, st->xy, RSRT_CARGO_TAKEN, v->cargo_type);
 					}
 
@@ -2170,6 +2171,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 			TriggerStationAnimation(st, station_tile, SAT_TRAIN_LOADS);
 		} else if (front->type == VEH_ROAD) {
 			TriggerRoadStopRandomisation(st, station_tile, RSRT_VEH_LOADS);
+			TriggerRoadStopAnimation(st, station_tile, SAT_TRAIN_LOADS);
 		}
 	}
 

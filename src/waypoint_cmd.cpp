@@ -420,6 +420,12 @@ CommandCost CmdBuildRoadWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 
 		wp->rect.BeforeAddRect(start_tile, width, height, StationRect::ADD_TRY);
 
+		if (spec != nullptr) {
+			/* Include this road stop spec's animation trigger bitmask
+			 * in the station's cached copy. */
+			wp->cached_roadstop_anim_triggers |= spec->animation.triggers;
+		}
+
 		wp->delete_ctr = 0;
 		wp->facilities |= FACIL_BUS_STOP | FACIL_TRUCK_STOP;
 		wp->build_date = _date;

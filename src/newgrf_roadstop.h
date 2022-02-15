@@ -35,6 +35,8 @@ DECLARE_POSTFIX_INCREMENT(RoadStopClassID)
 enum RoadStopRandomTrigger {
 	RSRT_NEW_CARGO,       ///< Trigger roadstop on arrival of new cargo.
 	RSRT_CARGO_TAKEN,     ///< Trigger roadstop when cargo is completely taken.
+	RSRT_VEH_ARRIVES,     ///< Trigger roadstop when road vehicle arrives.
+	RSRT_VEH_DEPARTS,     ///< Trigger roadstop when road vehicle leaves.
 	RSRT_VEH_LOADS,       ///< Trigger roadstop when road vehicle loads.
 };
 
@@ -60,6 +62,10 @@ enum RoadStopDrawMode : byte {
 	ROADSTOP_DRAW_MODE_OVERLAY = 1 << 1, ///< 0b10, Draw the road overlay for roadstops, e.g. pavement
 };
 DECLARE_ENUM_AS_BIT_SET(RoadStopDrawMode)
+
+enum RoadStopSpecFlags {
+	RSF_CB141_RANDOM_BITS,    ///< Callback 141 needs random bits.
+};
 
 /** Scope resolver for road stops. */
 struct RoadStopScopeResolver : public ScopeResolver {
@@ -123,8 +129,12 @@ struct RoadStopSpec {
 
 	RoadStopAvailabilityType stop_type = ROADSTOPTYPE_ALL;
 	RoadStopDrawMode draw_mode = ROADSTOP_DRAW_MODE_ROAD | ROADSTOP_DRAW_MODE_OVERLAY;
+	uint8 callback_mask = 0;
+	uint8 flags = 0;
 
 	CargoTypes cargo_triggers = 0; ///< Bitmask of cargo types which cause trigger re-randomizing
+
+	AnimationInfo animation;
 
 	static const RoadStopSpec *Get(uint16 index);
 };
@@ -136,6 +146,11 @@ typedef NewGRFClass<RoadStopSpec, RoadStopClassID, ROADSTOP_CLASS_MAX> RoadStopC
 
 void DrawRoadStopTile(int x, int y, RoadType roadtype, const RoadStopSpec *spec, StationType type, int view);
 
+uint16 GetRoadStopCallback(CallbackID callback, uint32 param1, uint32 param2, const RoadStopSpec *roadstopspec, BaseStation *st, TileIndex tile, const RoadTypeInfo *rti, StationType type, uint8 view);
+
+void AnimateRoadStopTile(TileIndex tile);
+uint8 GetRoadStopTileAnimationSpeed(TileIndex tile);
+void TriggerRoadStopAnimation(BaseStation *st, TileIndex tile, StationAnimationTrigger trigger, CargoID cargo_type = CT_INVALID);
 void TriggerRoadStopRandomisation(Station *st, TileIndex tile, RoadStopRandomTrigger trigger, CargoID cargo_type = CT_INVALID);
 
 bool GetIfNewStopsByType(RoadStopType rs);

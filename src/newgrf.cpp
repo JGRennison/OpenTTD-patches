@@ -4995,7 +4995,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 			}
 
 			case A0RPI_ROADSTOP_STOP_TYPE:
-				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				FALLTHROUGH;
 			case 0x09: // Road stop type
 				rs->stop_type = (RoadStopAvailabilityType)buf->ReadByte();
@@ -5027,6 +5027,42 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 				FALLTHROUGH;
 			case 0x0D: // Cargo types for random triggers
 				rs->cargo_triggers = TranslateRefitMask(buf->ReadDWord());
+				break;
+
+			case A0RPI_ROADSTOP_ANIMATION_INFO:
+				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x0E: // Animation info
+				rs->animation.frames = buf->ReadByte();
+				rs->animation.status = buf->ReadByte();
+				break;
+
+			case A0RPI_ROADSTOP_ANIMATION_SPEED:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x0F: // Animation speed
+				rs->animation.speed = buf->ReadByte();
+				break;
+
+			case A0RPI_ROADSTOP_ANIMATION_TRIGGERS:
+				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x10: // Animation triggers
+				rs->animation.triggers = buf->ReadWord();
+				break;
+
+			case A0RPI_ROADSTOP_CALLBACK_MASK:
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x11: // Callback mask
+				rs->callback_mask = buf->ReadByte();
+				break;
+
+			case A0RPI_ROADSTOP_GENERAL_FLAGS:
+				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x12: // General flags
+				rs->flags = (uint8)buf->ReadDWord(); // Future-proofing, size this as 4 bytes, but we only need one byte's worth of flags at present
 				break;
 
 			default:

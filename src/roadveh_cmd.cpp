@@ -38,6 +38,7 @@
 #include "scope_info.h"
 #include "string_func.h"
 #include "core/checksum_func.hpp"
+#include "newgrf_roadstop.h"
 
 #include "table/strings.h"
 
@@ -1950,6 +1951,8 @@ again:
 				v->last_station_visited = st->index;
 				RoadVehArrivesAt(v, st);
 				v->BeginLoading();
+				TriggerRoadStopRandomisation(st, v->tile, RSRT_VEH_ARRIVES);
+				TriggerRoadStopAnimation(st, v->tile, SAT_TRAIN_ARRIVES);
 			}
 			return false;
 		}
@@ -2012,6 +2015,8 @@ again:
 			if (IsDriveThroughStopTile(v->tile) || (v->current_order.IsType(OT_GOTO_STATION) && v->current_order.GetDestination() == st->index)) {
 				RoadVehArrivesAt(v, st);
 				v->BeginLoading();
+				TriggerRoadStopRandomisation(st, v->tile, RSRT_VEH_ARRIVES);
+				TriggerRoadStopAnimation(st, v->tile, SAT_TRAIN_ARRIVES);
 				return false;
 			}
 		} else {
