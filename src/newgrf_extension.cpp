@@ -116,6 +116,8 @@ extern const GRFVariableMapDefinition _grf_action2_remappable_variables[] = {
 	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x45, "roadstop_town_zone"),
 	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x46, "roadstop_town_distance_squared"),
 	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x47, "roadstop_company_info"),
+	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x49, "roadstop_animation_frame"),
+	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x66, "roadstop_animation_frame_nearby_tiles"),
 	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x67, "roadstop_land_info_nearby_tiles"),
 	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x68, "roadstop_road_stop_info_nearby_tiles"),
 	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x6A, "roadstop_road_stop_grfid _nearby_tiles"),
