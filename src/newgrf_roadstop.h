@@ -67,6 +67,11 @@ enum RoadStopSpecFlags {
 	RSF_CB141_RANDOM_BITS,    ///< Callback 141 needs random bits.
 };
 
+enum RoadStopSpecIntlFlags {
+	RSIF_BRIDGE_HEIGHTS_SET,            ///< byte bridge_height[6] is set.
+	RSIF_BRIDGE_DISALLOWED_PILLARS_SET, ///< byte bridge_disallowed_pillars[6] is set.
+};
+
 /** Scope resolver for road stops. */
 struct RoadStopScopeResolver : public ScopeResolver {
 	TileIndex tile;                             ///< %Tile of the station.
@@ -131,10 +136,14 @@ struct RoadStopSpec {
 	RoadStopDrawMode draw_mode = ROADSTOP_DRAW_MODE_ROAD | ROADSTOP_DRAW_MODE_OVERLAY;
 	uint8 callback_mask = 0;
 	uint8 flags = 0;
+	uint8 internal_flags = 0;      ///< Bitmask of internal spec flags (RoadStopSpecIntlFlags)
 
 	CargoTypes cargo_triggers = 0; ///< Bitmask of cargo types which cause trigger re-randomizing
 
 	AnimationInfo animation;
+
+	byte bridge_height[6];             ///< Minimum height for a bridge above, 0 for none
+	byte bridge_disallowed_pillars[6]; ///< Disallowed pillar flags for a bridge above
 
 	static const RoadStopSpec *Get(uint16 index);
 };

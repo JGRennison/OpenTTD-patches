@@ -5065,6 +5065,26 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 				rs->flags = (uint8)buf->ReadDWord(); // Future-proofing, size this as 4 bytes, but we only need one byte's worth of flags at present
 				break;
 
+			case A0RPI_ROADSTOP_MIN_BRIDGE_HEIGHT:
+				if (MappedPropertyLengthMismatch(buf, 6, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x13: // Minimum height for a bridge above
+				SetBit(rs->internal_flags, RSIF_BRIDGE_HEIGHTS_SET);
+				for (uint i = 0; i < 6; i++) {
+					rs->bridge_height[i] = buf->ReadByte();
+				}
+				break;
+
+			case A0RPI_ROADSTOP_DISALLOWED_BRIDGE_PILLARS:
+				if (MappedPropertyLengthMismatch(buf, 6, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x14: // Disallowed bridge pillars
+				SetBit(rs->internal_flags, RSIF_BRIDGE_DISALLOWED_PILLARS_SET);
+				for (uint i = 0; i < 6; i++) {
+					rs->bridge_disallowed_pillars[i] = buf->ReadByte();
+				}
+				break;
+
 			default:
 				ret = CIR_UNKNOWN;
 				break;

@@ -1433,7 +1433,7 @@ class NIHRoadStop : public NIHelper {
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "  spec: stop type: %X, draw mode: %X, cargo triggers: " OTTD_PRINTFHEX64, spec->stop_type, spec->draw_mode, spec->cargo_triggers);
 			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  spec: callback mask: %X, flags: %X", spec->callback_mask, spec->flags);
+			seprintf(buffer, lastof(buffer), "  spec: callback mask: %X, flags: %X, intl flags: %X", spec->callback_mask, spec->flags, spec->internal_flags);
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", spec->animation.frames, spec->animation.status, spec->animation.speed, spec->animation.triggers);
 			output.print(buffer);

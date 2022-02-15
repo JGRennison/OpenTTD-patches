@@ -101,6 +101,8 @@ extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_ANIMATION_TRIGGERS, "roadstop_animation_triggers"),
 	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_CALLBACK_MASK, "roadstop_callback_mask"),
 	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_GENERAL_FLAGS, "roadstop_general_flags"),
+	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_MIN_BRIDGE_HEIGHT, "roadstop_min_bridge_height"),
+	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_DISALLOWED_BRIDGE_PILLARS, "roadstop_disallowed_bridge_pillars"),
 	GRFPropertyMapDefinition(),
 };
 

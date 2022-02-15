@@ -946,18 +946,28 @@ CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statsp
 			GetBridgeType(southern_bridge_end), GetTunnelBridgeTransportType(southern_bridge_end));
 }
 
-CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, bool drive_through, DiagDirection entrance,
+CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, const RoadStopSpec *spec, bool drive_through, DiagDirection entrance,
 		TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
 		BridgeType bridge_type, TransportType bridge_transport_type)
 {
-	if (!_settings_game.construction.allow_road_stops_under_bridges) return CommandCost(INVALID_STRING_ID);
+	if (spec && HasBit(spec->internal_flags, RSIF_BRIDGE_HEIGHTS_SET)) {
+		int height = spec->bridge_height[drive_through ? (GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET + DiagDirToAxis(entrance)) : entrance];
+		if (height == 0) return CommandCost(INVALID_STRING_ID);
+		if (GetTileMaxZ(tile) + height > bridge_height) {
+			return CommandCost(STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION);
+		}
+	} else {
+		if (!_settings_game.construction.allow_road_stops_under_bridges) return CommandCost(INVALID_STRING_ID);
 
-	if (GetTileMaxZ(tile) + (drive_through ? 1 : 2) > bridge_height) {
-		return CommandCost(STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION);
+		if (GetTileMaxZ(tile) + (drive_through ? 1 : 2) > bridge_height) {
+			return CommandCost(STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION);
+		}
 	}
 
 	BridgePiecePillarFlags disallowed_pillar_flags = (BridgePiecePillarFlags) 0;
-	if (drive_through) {
+	if (spec && HasBit(spec->internal_flags, RSIF_BRIDGE_DISALLOWED_PILLARS_SET)) {
+		disallowed_pillar_flags = (BridgePiecePillarFlags) spec->bridge_disallowed_pillars[drive_through ? (GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET + DiagDirToAxis(entrance)) : entrance];
+	} else if (drive_through) {
 		disallowed_pillar_flags = (BridgePiecePillarFlags) (DiagDirToAxis(entrance) == AXIS_X ? 0x50 : 0xA0);
 	} else {
 		SetBit(disallowed_pillar_flags, 4 + entrance);
@@ -1066,6 +1076,7 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlag fl
 /**
  * Checks if a road stop can be built at the given tile.
  * @param tile_area Area to check.
+ * @param spec Road stop spec.
  * @param flags Operation to perform.
  * @param invalid_dirs Prohibited directions (set of DiagDirections).
  * @param is_drive_through True if trying to build a drive-through station.
@@ -1076,20 +1087,21 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlag fl
  * @param require_road Is existing road required.
  * @return The cost in case of success, or an error code if it failed.
  */
-CommandCost CheckFlatLandRoadStop(TileArea tile_area, DoCommandFlag flags, uint invalid_dirs, bool is_drive_through, StationType station_type, Axis axis, StationID *station, RoadType rt, bool require_road)
+CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, DoCommandFlag flags, uint invalid_dirs, bool is_drive_through, StationType station_type, Axis axis, StationID *station, RoadType rt, bool require_road)
 {
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 	int allowed_z = -1;
 
 	for (TileIndex cur_tile : tile_area) {
-		CommandCost ret = CheckBuildableTile(cur_tile, invalid_dirs, allowed_z, !is_drive_through, !_settings_game.construction.allow_road_stops_under_bridges);
+		bool allow_under_bridge = _settings_game.construction.allow_road_stops_under_bridges || (spec != nullptr && HasBit(spec->internal_flags, RSIF_BRIDGE_HEIGHTS_SET));
+		CommandCost ret = CheckBuildableTile(cur_tile, invalid_dirs, allowed_z, !is_drive_through, !allow_under_bridge);
 		if (ret.Failed()) return ret;
 		cost.AddCost(ret);
 
-		if (_settings_game.construction.allow_road_stops_under_bridges && IsBridgeAbove(cur_tile)) {
+		if (allow_under_bridge && IsBridgeAbove(cur_tile)) {
 			TileIndex southern_bridge_end = GetSouthernBridgeEnd(cur_tile);
 			TileIndex northern_bridge_end = GetNorthernBridgeEnd(cur_tile);
-			CommandCost bridge_ret = IsRoadStopBridgeAboveOK(cur_tile, is_drive_through, (DiagDirection) FindFirstBit(invalid_dirs),
+			CommandCost bridge_ret = IsRoadStopBridgeAboveOK(cur_tile, spec, is_drive_through, (DiagDirection) FindFirstBit(invalid_dirs),
 					northern_bridge_end, southern_bridge_end, GetBridgeHeight(southern_bridge_end),
 					GetBridgeType(southern_bridge_end), GetTunnelBridgeTransportType(southern_bridge_end));
 			if (bridge_ret.Failed()) return bridge_ret;
@@ -2114,7 +2126,7 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 	/* Total road stop cost. */
 	CommandCost cost(EXPENSES_CONSTRUCTION, roadstop_area.w * roadstop_area.h * _price[type ? PR_BUILD_STATION_TRUCK : PR_BUILD_STATION_BUS]);
 	StationID est = INVALID_STATION;
-	ret = CheckFlatLandRoadStop(roadstop_area, flags, is_drive_through ? 5 << axis : 1 << ddir, is_drive_through, type ? STATION_TRUCK : STATION_BUS, axis, &est, rt, false);
+	ret = CheckFlatLandRoadStop(roadstop_area, roadstopspec, flags, is_drive_through ? 5 << axis : 1 << ddir, is_drive_through, type ? STATION_TRUCK : STATION_BUS, axis, &est, rt, false);
 	if (ret.Failed()) return ret;
 	cost.AddCost(ret);
 
