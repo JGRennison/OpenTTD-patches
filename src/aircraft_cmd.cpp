@@ -2190,7 +2190,23 @@ static bool AircraftEventHandler(Aircraft *v, int loop)
 	ProcessOrders(v);
 	v->HandleLoading(loop != 0);
 
-	if (v->current_order.IsType(OT_LOADING) || v->current_order.IsType(OT_LEAVESTATION)) return true;
+	if (v->current_order.IsType(OT_LOADING)) return true;
+
+	if (v->current_order.IsType(OT_LEAVESTATION)) {
+		StationID station_id = v->current_order.GetDestination();
+		v->current_order.Free();
+
+		ProcessOrders(v);
+
+		if (v->current_order.IsType(OT_GOTO_STATION) && v->current_order.GetDestination() == station_id &&
+				v->targetairport == station_id && IsAirportTile(v->tile) && GetStationIndex(v->tile) == station_id) {
+			AircraftEntersTerminal(v);
+			return true;
+		}
+
+		v->PlayLeaveStationSound();
+		return true;
+	}
 
 	if (v->state >= ENDTAKEOFF && v->state <= HELIENDLANDING) {
 		/* If we are flying, unconditionally clear the 'dest too far' state. */
