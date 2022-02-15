@@ -519,9 +519,17 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 								break;
 
 							case OT_GOTO_DEPOT:
-								SetDParam(1, STR_DEPOT_NAME);
-								SetDParam(2, v->type);
-								SetDParam(3, order->GetDestination());
+								if (order->GetDepotActionType() & ODATFB_NEAREST_DEPOT) {
+									if (v->type == VEH_AIRCRAFT) {
+										SetDParam(1, STR_ORDER_GO_TO_NEAREST_HANGAR);
+									} else {
+										SetDParam(1, STR_ORDER_GO_TO_NEAREST_DEPOT);
+									}
+								} else {
+									SetDParam(1, STR_DEPOT_NAME);
+									SetDParam(2, v->type);
+									SetDParam(3, order->GetDestination());
+								}
 								break;
 
 							default:
