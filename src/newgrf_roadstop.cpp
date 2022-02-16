@@ -68,6 +68,20 @@ uint32 RoadStopScopeResolver::GetTriggers() const
 
 uint32 RoadStopScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
 {
+	auto get_road_type_variable = [&](RoadTramType rtt) -> uint32 {
+		RoadType rt;
+		if (this->tile == INVALID_TILE) {
+			rt = (GetRoadTramType(this->roadtype) == rtt) ? this->roadtype : INVALID_ROADTYPE;
+		} else {
+			rt = GetRoadType(this->tile, rtt);
+		}
+		if (rt == INVALID_ROADTYPE) {
+			return 0xFFFFFFFF;
+		} else {
+			return GetReverseRoadTypeTranslation(rt, this->roadstopspec->grf_prop.grffile);
+		}
+	};
+
 	switch (variable) {
 		/* View/rotation */
 		case 0x40: return this->view;
@@ -82,10 +96,10 @@ uint32 RoadStopScopeResolver::GetVariable(uint16 variable, uint32 parameter, Get
 		case 0x42: return this->tile == INVALID_TILE ? 0 : GetTerrainType(this->tile, TCX_NORMAL); // terrain_type
 
 		/* Road type */
-		case 0x43: return this->tile == INVALID_TILE ? 0 : GetReverseRoadTypeTranslation(GetRoadTypeRoad(this->tile), this->roadstopspec->grf_prop.grffile);
+		case 0x43: return get_road_type_variable(RTT_ROAD);
 
 		/* Tram type */
-		case 0x44: return this->tile == INVALID_TILE ? 0 : GetReverseRoadTypeTranslation(GetRoadTypeTram(this->tile), this->roadstopspec->grf_prop.grffile);
+		case 0x44: return get_road_type_variable(RTT_TRAM);
 
 		/* Town zone and Manhattan distance of closest town */
 		case 0x45: {
@@ -175,9 +189,9 @@ const SpriteGroup *RoadStopResolverObject::ResolveReal(const RealSpriteGroup *gr
 	return group->loading[0];
 }
 
-RoadStopResolverObject::RoadStopResolverObject(const RoadStopSpec *roadstopspec, BaseStation *st, TileIndex tile, const RoadTypeInfo *rti, StationType type, uint8 view,
+RoadStopResolverObject::RoadStopResolverObject(const RoadStopSpec *roadstopspec, BaseStation *st, TileIndex tile, RoadType roadtype, StationType type, uint8 view,
 		CallbackID callback, uint32 param1, uint32 param2)
-	: ResolverObject(roadstopspec->grf_prop.grffile, callback, param1, param2), roadstop_scope(*this, st, roadstopspec, tile, rti, type, view)
+	: ResolverObject(roadstopspec->grf_prop.grffile, callback, param1, param2), roadstop_scope(*this, st, roadstopspec, tile, roadtype, type, view)
 	{
 
 	this->town_scope = nullptr;
@@ -228,9 +242,9 @@ TownScopeResolver* RoadStopResolverObject::GetTown()
 	return this->town_scope;
 }
 
-uint16 GetRoadStopCallback(CallbackID callback, uint32 param1, uint32 param2, const RoadStopSpec *roadstopspec, BaseStation *st, TileIndex tile, const RoadTypeInfo *rti, StationType type, uint8 view)
+uint16 GetRoadStopCallback(CallbackID callback, uint32 param1, uint32 param2, const RoadStopSpec *roadstopspec, BaseStation *st, TileIndex tile, RoadType roadtype, StationType type, uint8 view)
 {
-	RoadStopResolverObject object(roadstopspec, st, tile, rti, type, view, callback, param1, param2);
+	RoadStopResolverObject object(roadstopspec, st, tile, roadtype, type, view, callback, param1, param2);
 	return object.ResolveCallback();
 }
 
@@ -249,7 +263,7 @@ void DrawRoadStopTile(int x, int y, RoadType roadtype, const RoadStopSpec *spec,
 	assert(spec != nullptr);
 
 	const RoadTypeInfo *rti = GetRoadTypeInfo(roadtype);
-	RoadStopResolverObject object(spec, nullptr, INVALID_TILE, rti, type, view);
+	RoadStopResolverObject object(spec, nullptr, INVALID_TILE, roadtype, type, view);
 	const SpriteGroup *group = object.Resolve();
 	if (group == nullptr || group->type != SGT_TILELAYOUT) return;
 	const DrawTileSprites *dts = ((const TileLayoutSpriteGroup *)group)->ProcessRegisters(nullptr);
@@ -297,7 +311,7 @@ void DrawRoadStopTile(int x, int y, RoadType roadtype, const RoadStopSpec *spec,
 /** Wrapper for animation control, see GetRoadStopCallback. */
 uint16 GetAnimRoadStopCallback(CallbackID callback, uint32 param1, uint32 param2, const RoadStopSpec *roadstopspec, BaseStation *st, TileIndex tile, int extra_data)
 {
-	return GetRoadStopCallback(callback, param1, param2, roadstopspec, st, tile, nullptr, GetStationType(tile), GetStationGfx(tile));
+	return GetRoadStopCallback(callback, param1, param2, roadstopspec, st, tile, INVALID_ROADTYPE, GetStationType(tile), GetStationGfx(tile));
 }
 
 struct RoadStopAnimationFrameAnimationHelper {
@@ -405,7 +419,7 @@ void TriggerRoadStopRandomisation(Station *st, TileIndex tile, RoadStopRandomTri
 		}
 
 		if (cargo_type == CT_INVALID || HasBit(ss->cargo_triggers, cargo_type)) {
-			RoadStopResolverObject object(ss, st, cur_tile, nullptr, GetStationType(cur_tile), GetStationGfx(cur_tile));
+			RoadStopResolverObject object(ss, st, cur_tile, INVALID_ROADTYPE, GetStationType(cur_tile), GetStationGfx(cur_tile));
 			object.waiting_triggers = st->waiting_triggers;
 
 			const SpriteGroup *group = object.Resolve();

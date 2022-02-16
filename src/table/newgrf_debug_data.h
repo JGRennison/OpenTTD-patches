@@ -1418,7 +1418,7 @@ class NIHRoadStop : public NIHelper {
 	{
 		int view = GetRoadStopDir(index);
 		if (IsDriveThroughStopTile(index)) view += 4;
-		RoadStopResolverObject ro(GetRoadStopSpec(index), BaseStation::GetByTile(index), index, nullptr, GetStationType(index), view);
+		RoadStopResolverObject ro(GetRoadStopSpec(index), BaseStation::GetByTile(index), index, INVALID_ROADTYPE, GetStationType(index), view);
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
 	}
 
