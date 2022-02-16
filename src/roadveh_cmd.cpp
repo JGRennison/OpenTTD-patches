@@ -1570,20 +1570,27 @@ static bool CheckRestartLoadingAtRoadStop(RoadVehicle *v)
 	StationID station_id = v->current_order.GetDestination();
 	VehicleOrderID next_order_idx = AdvanceOrderIndexDeferred(v, v->cur_implicit_order_index);
 	const Order *next_order = v->GetOrder(next_order_idx);
+	FlushAdvanceOrderIndexDeferred(v, false);
 	if (next_order != nullptr && next_order->IsType(OT_GOTO_STATION) && next_order->GetDestination() == station_id &&
 			!(next_order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) &&
 			IsInfraTileUsageAllowed(VEH_ROAD, v->owner, v->tile) &&
 			GetRoadStopType(v->tile) == (v->IsBus() ? ROADSTOP_BUS : ROADSTOP_TRUCK)) {
-		FlushAdvanceOrderIndexDeferred(v, true);
 		v->current_order.Free();
-		v->cur_implicit_order_index = next_order_idx;
 		ProcessOrders(v);
-		v->last_station_visited = station_id;
-		v->BeginLoading();
-		return true;
+
+		/* Double check that order prediction was correct and v->current_order is now for the same station */
+		if (v->current_order.IsType(OT_GOTO_STATION) && v->current_order.GetDestination() == station_id &&
+				!(v->current_order.GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) {
+			v->last_station_visited = station_id;
+			v->BeginLoading();
+			return true;
+		} else {
+			/* Order prediction was incorrect, this should not be reached, just restore the leave station order */
+			v->current_order.MakeLeaveStation();
+			v->current_order.SetDestination(station_id);
+		}
 	}
 
-	FlushAdvanceOrderIndexDeferred(v, false);
 	return false;
 }
 
