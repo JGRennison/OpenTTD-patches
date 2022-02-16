@@ -268,10 +268,10 @@ void DrawRoadStopTile(int x, int y, RoadType roadtype, const RoadStopSpec *spec,
 		uint sprite_offset = 5 - view;
 
 		/* Road underlay takes precedence over tram */
-		if (HasBit(spec->draw_mode, ROADSTOP_DRAW_MODE_OVERLAY)) {
+		if (spec->draw_mode & ROADSTOP_DRAW_MODE_OVERLAY) {
 			TileInfo ti {};
 			ti.tile = INVALID_TILE;
-			DrawRoadOverlays(&ti, PAL_NONE, rti, rti, sprite_offset, sprite_offset);
+			DrawRoadOverlays(&ti, PAL_NONE, RoadTypeIsRoad(roadtype) ? rti : nullptr, RoadTypeIsTram(roadtype) ? rti : nullptr, sprite_offset, sprite_offset);
 		}
 
 		if (rti->UsesOverlay()) {
