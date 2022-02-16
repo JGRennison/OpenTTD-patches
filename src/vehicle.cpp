@@ -3538,8 +3538,6 @@ void Vehicle::HandleLoading(bool mode)
 				return;
 			}
 
-			if (this->type != VEH_TRAIN && this->type != VEH_SHIP && this->type != VEH_AIRCRAFT) this->PlayLeaveStationSound();
-
 			this->LeaveStation();
 
 			/* Only advance to next order if we just loaded at the current one */

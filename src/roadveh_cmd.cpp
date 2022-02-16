@@ -1565,6 +1565,28 @@ inline byte IncreaseOvertakingCounter(RoadVehicle *v)
 	return v->overtaking_ctr;
 }
 
+static bool CheckRestartLoadingAtRoadStop(RoadVehicle *v)
+{
+	StationID station_id = v->current_order.GetDestination();
+	VehicleOrderID next_order_idx = AdvanceOrderIndexDeferred(v, v->cur_implicit_order_index);
+	const Order *next_order = v->GetOrder(next_order_idx);
+	if (next_order != nullptr && next_order->IsType(OT_GOTO_STATION) && next_order->GetDestination() == station_id &&
+			!(next_order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) &&
+			IsInfraTileUsageAllowed(VEH_ROAD, v->owner, v->tile) &&
+			GetRoadStopType(v->tile) == (v->IsBus() ? ROADSTOP_BUS : ROADSTOP_TRUCK)) {
+		FlushAdvanceOrderIndexDeferred(v, true);
+		v->current_order.Free();
+		v->cur_implicit_order_index = next_order_idx;
+		ProcessOrders(v);
+		v->last_station_visited = station_id;
+		v->BeginLoading();
+		return true;
+	}
+
+	FlushAdvanceOrderIndexDeferred(v, false);
+	return false;
+}
+
 bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 {
 	SCOPE_INFO_FMT([&], "IndividualRoadVehicleController: %s, %s", scope_dumper().VehicleInfo(v), scope_dumper().VehicleInfo(prev));
@@ -2015,13 +2037,20 @@ again:
 				return false;
 			}
 		} else {
+			if (v->current_order.IsType(OT_LEAVESTATION)) {
+				if (CheckRestartLoadingAtRoadStop(v)) return false;
+			}
+
 			/* Vehicle is ready to leave a bay in a road stop */
 			if (rs->IsEntranceBusy()) {
 				/* Road stop entrance is busy, so wait as there is nowhere else to go */
 				v->cur_speed = 0;
 				return false;
 			}
-			if (v->current_order.IsType(OT_LEAVESTATION)) v->current_order.Free();
+			if (v->current_order.IsType(OT_LEAVESTATION)) {
+				v->PlayLeaveStationSound();
+				v->current_order.Free();
+			}
 		}
 
 		if (IsStandardRoadStopTile(v->tile)) rs->SetEntranceBusy(true);
@@ -2039,6 +2068,8 @@ again:
 	}
 
 	if (v->current_order.IsType(OT_LEAVESTATION) && IsDriveThroughStopTile(v->tile)) {
+		if (CheckRestartLoadingAtRoadStop(v)) return false;
+		v->PlayLeaveStationSound();
 		v->current_order.Free();
 	}
 
