@@ -20,7 +20,6 @@
 #include "road.h"
 
 /** The maximum amount of roadstops a single GRF is allowed to add */
-static const int NUM_ROADSTOPS = 64000U;
 static const int NUM_ROADSTOPS_PER_GRF = 255;
 
 enum RoadStopClassID : byte {
