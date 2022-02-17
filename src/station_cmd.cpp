@@ -2219,7 +2219,7 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 
 			SetCustomRoadStopSpecIndex(cur_tile, specindex);
 			if (roadstopspec != nullptr) {
-				st->SetRoadStopRandomBits(cur_tile, GB(Random(), 0, 4));
+				st->SetRoadStopRandomBits(cur_tile, GB(Random(), 0, 8));
 				TriggerRoadStopAnimation(st, cur_tile, SAT_BUILT);
 			}
 
