@@ -828,6 +828,7 @@ static Hotkey roadtoolbar_hotkeys[] = {
 	Hotkey('T', "tunnel", WID_ROT_BUILD_TUNNEL),
 	Hotkey('R', "remove", WID_ROT_REMOVE),
 	Hotkey('C', "convert", WID_ROT_CONVERT_ROAD),
+	Hotkey('9', "waypoint", WID_ROT_BUILD_WAYPOINT),
 	HOTKEY_LIST_END
 };
 HotkeyList BuildRoadToolbarWindow::road_hotkeys("roadtoolbar", roadtoolbar_hotkeys, RoadToolbarGlobalHotkeys);
@@ -844,6 +845,7 @@ static Hotkey tramtoolbar_hotkeys[] = {
 	Hotkey('T', "tunnel", WID_ROT_BUILD_TUNNEL),
 	Hotkey('R', "remove", WID_ROT_REMOVE),
 	Hotkey('C', "convert", WID_ROT_CONVERT_ROAD),
+	Hotkey('9', "waypoint", WID_ROT_BUILD_WAYPOINT),
 	HOTKEY_LIST_END
 };
 HotkeyList BuildRoadToolbarWindow::tram_hotkeys("tramtoolbar", tramtoolbar_hotkeys, TramToolbarGlobalHotkeys);
