@@ -57,6 +57,7 @@ void RebuildStationKdtree()
 BaseStation::~BaseStation()
 {
 	free(this->speclist);
+	free(this->roadstop_speclist);
 
 	if (CleaningPool()) return;
 
@@ -182,6 +183,31 @@ Station::~Station()
 void BaseStation::PostDestructor(size_t index)
 {
 	InvalidateWindowData(WC_SELECT_STATION, 0, 0);
+}
+
+void BaseStation::SetRoadStopTileData(TileIndex tile, byte data, byte offset)
+{
+	for (size_t i = 0; i < this->custom_road_stop_tiles.size(); i++) {
+		if (this->custom_road_stop_tiles[i] == tile) {
+			SB(this->custom_road_stop_data[i], offset, 8, data);
+			return;
+		}
+	}
+	this->custom_road_stop_tiles.push_back(tile);
+	this->custom_road_stop_data.push_back(((uint)data) << offset);
+}
+
+void BaseStation::RemoveRoadStopTileData(TileIndex tile)
+{
+	for (size_t i = 0; i < this->custom_road_stop_tiles.size(); i++) {
+		if (this->custom_road_stop_tiles[i] == tile) {
+			this->custom_road_stop_tiles[i] = this->custom_road_stop_tiles.back();
+			this->custom_road_stop_data[i] = this->custom_road_stop_data.back();
+			this->custom_road_stop_tiles.pop_back();
+			this->custom_road_stop_data.pop_back();
+			return;
+		}
+	}
 }
 
 /**

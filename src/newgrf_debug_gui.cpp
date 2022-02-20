@@ -965,7 +965,14 @@ GrfSpecFeature GetGrfSpecFeature(TileIndex tile)
 			switch (GetStationType(tile)) {
 				case STATION_RAIL:    return GSF_STATIONS;
 				case STATION_AIRPORT: return GSF_AIRPORTTILES;
-				default:              return GSF_INVALID;
+
+				case STATION_BUS:
+				case STATION_TRUCK:
+				case STATION_ROADWAYPOINT:
+					return GSF_ROADSTOPS;
+
+				default:
+					return GSF_INVALID;
 			}
 	}
 }

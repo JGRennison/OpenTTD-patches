@@ -933,6 +933,8 @@ static void StationSpreadChanged(int32 new_value)
 {
 	InvalidateWindowData(WC_SELECT_STATION, 0);
 	InvalidateWindowData(WC_BUILD_STATION, 0);
+	InvalidateWindowData(WC_BUS_STATION, 0);
+	InvalidateWindowData(WC_TRUCK_STATION, 0);
 }
 
 static void UpdateConsists(int32 new_value)
@@ -1779,6 +1781,19 @@ static bool SpriteZoomMinSettingGUI(SettingOnGuiCtrlData &data)
 		case SOGCT_DESCRIPTION_TEXT:
 			SetDParam(0, data.text);
 			data.text = STR_CONFIG_SETTING_SPRITE_ZOOM_MIN_HELPTEXT_EXTRA;
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+static bool AllowRoadStopsUnderBridgesSettingGUI(SettingOnGuiCtrlData &data)
+{
+	switch (data.type) {
+		case SOGCT_DESCRIPTION_TEXT:
+			SetDParam(0, data.text);
+			data.text = STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT_EXTRA;
 			return true;
 
 		default:
