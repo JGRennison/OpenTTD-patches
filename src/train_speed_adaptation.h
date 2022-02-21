@@ -19,7 +19,7 @@
 struct SignalSpeedKey
 {
 	TileIndex signal_tile;
-	Track signal_track;
+	uint16 signal_track;
 	Trackdir last_passing_train_dir;
 
 	bool operator==(const SignalSpeedKey& other) const
@@ -42,12 +42,16 @@ struct SignalSpeedKeyHashFunc
 	{
 		const std::size_t h1 = std::hash<TileIndex>()(key.signal_tile);
 		const std::size_t h2 = std::hash<Trackdir>()(key.last_passing_train_dir);
-		const std::size_t h3 = std::hash<Track>()(key.signal_track);
+		const std::size_t h3 = std::hash<uint16>()(key.signal_track);
 
 		return (h1 ^ h2) ^ h3;
 	}
 };
 
 extern std::unordered_map<SignalSpeedKey, SignalSpeedValue, SignalSpeedKeyHashFunc> _signal_speeds;
+
+struct Train;
+void SetSignalTrainAdaptationSpeed(const Train *v, TileIndex tile, uint16 track);
+void ApplySignalTrainAdaptationSpeed(Train *v, TileIndex tile, uint16 track);
 
 #endif /* TRAIN_SPEED_ADAPTATION_H */
