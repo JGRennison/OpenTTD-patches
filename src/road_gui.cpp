@@ -377,6 +377,7 @@ struct BuildRoadToolbarWindow : Window {
 			DeleteWindowById(WC_BUS_STATION, TRANSPORT_ROAD);
 			DeleteWindowById(WC_TRUCK_STATION, TRANSPORT_ROAD);
 			DeleteWindowById(WC_BUILD_DEPOT, TRANSPORT_ROAD);
+			DeleteWindowById(WC_BUILD_WAYPOINT, TRANSPORT_ROAD);
 		}
 
 		if (_game_mode != GM_EDITOR) {
@@ -671,6 +672,7 @@ struct BuildRoadToolbarWindow : Window {
 		DeleteWindowById(WC_BUS_STATION, TRANSPORT_ROAD);
 		DeleteWindowById(WC_TRUCK_STATION, TRANSPORT_ROAD);
 		DeleteWindowById(WC_BUILD_DEPOT, TRANSPORT_ROAD);
+		DeleteWindowById(WC_BUILD_WAYPOINT, TRANSPORT_ROAD);
 		DeleteWindowById(WC_SELECT_STATION, 0);
 		DeleteWindowByClass(WC_BUILD_BRIDGE);
 	}
