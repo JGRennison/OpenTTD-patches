@@ -273,7 +273,9 @@ void DrawRoadStopTile(int x, int y, RoadType roadtype, const RoadStopSpec *spec,
 	SpriteID image = dts->ground.sprite;
 	PaletteID pal  = dts->ground.pal;
 
-	if (GB(image, 0, SPRITE_WIDTH) != 0) {
+	if (type == STATION_ROADWAYPOINT) {
+		DrawSprite(SPR_ROAD_PAVED_STRAIGHT_X, PAL_NONE, x, y);
+	} else if (GB(image, 0, SPRITE_WIDTH) != 0) {
 		DrawSprite(image, GroundSpritePaletteTransform(image, pal, palette), x, y);
 	}
 
@@ -283,23 +285,19 @@ void DrawRoadStopTile(int x, int y, RoadType roadtype, const RoadStopSpec *spec,
 
 		/* Road underlay takes precedence over tram */
 		if (spec->draw_mode & ROADSTOP_DRAW_MODE_OVERLAY) {
-			TileInfo ti {};
-			ti.tile = INVALID_TILE;
-			DrawRoadOverlays(&ti, PAL_NONE, RoadTypeIsRoad(roadtype) ? rti : nullptr, RoadTypeIsTram(roadtype) ? rti : nullptr, sprite_offset, sprite_offset);
-		}
+			if (rti->UsesOverlay()) {
+				SpriteID ground = GetCustomRoadSprite(rti, INVALID_TILE, ROTSG_GROUND);
+				DrawSprite(ground + sprite_offset, PAL_NONE, x, y);
 
-		if (rti->UsesOverlay()) {
-			SpriteID ground = GetCustomRoadSprite(rti, INVALID_TILE, ROTSG_GROUND);
-			DrawSprite(ground + sprite_offset, PAL_NONE, x, y);
-
-			SpriteID overlay = GetCustomRoadSprite(rti, INVALID_TILE, ROTSG_OVERLAY);
-			if (overlay) DrawSprite(overlay + sprite_offset, PAL_NONE, x, y);
-		} else if (RoadTypeIsTram(roadtype)) {
-			DrawSprite(SPR_TRAMWAY_TRAM + sprite_offset, PAL_NONE, x, y);
+				SpriteID overlay = GetCustomRoadSprite(rti, INVALID_TILE, ROTSG_OVERLAY);
+				if (overlay) DrawSprite(overlay + sprite_offset, PAL_NONE, x, y);
+			} else if (RoadTypeIsTram(roadtype)) {
+				DrawSprite(SPR_TRAMWAY_TRAM + sprite_offset, PAL_NONE, x, y);
+			}
 		}
 	} else {
 		/* Drive-in stop */
-		if (rti->UsesOverlay()) {
+		if ((spec->draw_mode & ROADSTOP_DRAW_MODE_ROAD) && rti->UsesOverlay()) {
 			SpriteID ground = GetCustomRoadSprite(rti, INVALID_TILE, ROTSG_ROADSTOP);
 			DrawSprite(ground + view, PAL_NONE, x, y);
 		}
