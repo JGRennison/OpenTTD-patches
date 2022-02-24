@@ -5088,6 +5088,14 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 				}
 				break;
 
+			case A0RPI_ROADSTOP_COST_MULTIPLIERS:
+				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
+				FALLTHROUGH;
+			case 0x15: // Cost multipliers
+				rs->build_cost_multiplier = buf->ReadByte();
+				rs->clear_cost_multiplier = buf->ReadByte();
+				break;
+
 			default:
 				ret = CIR_UNKNOWN;
 				break;

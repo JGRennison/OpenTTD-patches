@@ -1435,6 +1435,8 @@ class NIHRoadStop : public NIHelper {
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "  spec: callback mask: %X, flags: %X, intl flags: %X", spec->callback_mask, spec->flags, spec->internal_flags);
 			output.print(buffer);
+			seprintf(buffer, lastof(buffer), "  spec: build: %u, clear: %u", spec->build_cost_multiplier, spec->clear_cost_multiplier);
+			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", spec->animation.frames, spec->animation.status, spec->animation.speed, spec->animation.triggers);
 			output.print(buffer);
 

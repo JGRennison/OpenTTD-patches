@@ -2124,7 +2124,13 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 	if (ret.Failed()) return ret;
 
 	/* Total road stop cost. */
-	CommandCost cost(EXPENSES_CONSTRUCTION, roadstop_area.w * roadstop_area.h * _price[type ? PR_BUILD_STATION_TRUCK : PR_BUILD_STATION_BUS]);
+	Money unit_cost;
+	if (roadstopspec != nullptr) {
+		unit_cost = roadstopspec->GetBuildCost(type ? PR_BUILD_STATION_TRUCK : PR_BUILD_STATION_BUS);
+	} else {
+		unit_cost = _price[type ? PR_BUILD_STATION_TRUCK : PR_BUILD_STATION_BUS];
+	}
+	CommandCost cost(EXPENSES_CONSTRUCTION, roadstop_area.w * roadstop_area.h * unit_cost);
 	StationID est = INVALID_STATION;
 	ret = CheckFlatLandRoadStop(roadstop_area, roadstopspec, flags, is_drive_through ? 5 << axis : 1 << ddir, is_drive_through, type ? STATION_TRUCK : STATION_BUS, axis, &est, rt, false);
 	if (ret.Failed()) return ret;
@@ -2266,6 +2272,8 @@ CommandCost RemoveRoadWaypointStop(TileIndex tile, DoCommandFlag flags, int repl
 		if (ret.Failed()) return ret;
 	}
 
+	const RoadStopSpec *spec = GetRoadStopSpec(tile);
+
 	if (flags & DC_EXEC) {
 		/* Update company infrastructure counts. */
 		for (RoadTramType rtt : _roadtramtypes) {
@@ -2306,7 +2314,7 @@ CommandCost RemoveRoadWaypointStop(TileIndex tile, DoCommandFlag flags, int repl
 		NotifyRoadLayoutChanged(false);
 	}
 
-	return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_STATION_TRUCK]);
+	return CommandCost(EXPENSES_CONSTRUCTION, spec != nullptr ? spec->GetClearCost(PR_CLEAR_STATION_TRUCK) : _price[PR_CLEAR_STATION_TRUCK]);
 }
 
 /**
@@ -2351,6 +2359,8 @@ CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags, int replacement_
 		CommandCost ret = EnsureNoVehicleOnGround(tile);
 		if (ret.Failed()) return ret;
 	}
+
+	const RoadStopSpec *spec = GetRoadStopSpec(tile);
 
 	if (flags & DC_EXEC) {
 		ZoningMarkDirtyStationCoverageArea(st);
@@ -2419,7 +2429,8 @@ CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags, int replacement_
 		NotifyRoadLayoutChanged(false);
 	}
 
-	return CommandCost(EXPENSES_CONSTRUCTION, _price[is_truck ? PR_CLEAR_STATION_TRUCK : PR_CLEAR_STATION_BUS]);
+	Price category = is_truck ? PR_CLEAR_STATION_TRUCK : PR_CLEAR_STATION_BUS;
+	return CommandCost(EXPENSES_CONSTRUCTION, spec != nullptr ? spec->GetClearCost(category) : _price[category]);
 }
 
 /**

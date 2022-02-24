@@ -145,6 +145,21 @@ struct RoadStopSpec {
 	byte bridge_height[6];             ///< Minimum height for a bridge above, 0 for none
 	byte bridge_disallowed_pillars[6]; ///< Disallowed pillar flags for a bridge above
 
+	uint8 build_cost_multiplier = 16;  ///< Build cost multiplier per tile.
+	uint8 clear_cost_multiplier = 16;  ///< Clear cost multiplier per tile.
+
+	/**
+	 * Get the cost for building a road stop of this type.
+	 * @return The cost for building.
+	 */
+	Money GetBuildCost(Price category) const { return GetPrice(category, this->build_cost_multiplier, this->grf_prop.grffile, -4); }
+
+	/**
+	 * Get the cost for clearing a road stop of this type.
+	 * @return The cost for clearing.
+	 */
+	Money GetClearCost(Price category) const { return GetPrice(category, this->clear_cost_multiplier, this->grf_prop.grffile, -4); }
+
 	static const RoadStopSpec *Get(uint16 index);
 };
 
