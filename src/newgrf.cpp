@@ -4986,7 +4986,10 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 			case 0x08: { // Road Stop Class ID
 				RoadStopSpec **spec = &_cur.grffile->roadstops[id + i];
 
-				if (*spec == nullptr) *spec = CallocT<RoadStopSpec>(1);
+				if (*spec == nullptr) {
+					*spec = CallocT<RoadStopSpec>(1);
+					new (*spec) RoadStopSpec();
+				}
 
 				uint32 classid = buf->ReadDWord();
 				(*spec)->cls_id = RoadStopClass::Allocate(BSWAP32(classid));
