@@ -56,9 +56,10 @@ enum RoadStopAvailabilityType : byte {
  * or road.
  */
 enum RoadStopDrawMode : byte {
-	ROADSTOP_DRAW_MODE_NONE    = 0,
-	ROADSTOP_DRAW_MODE_ROAD    = 1 << 0, ///< 0b01, Draw the road itself
-	ROADSTOP_DRAW_MODE_OVERLAY = 1 << 1, ///< 0b10, Draw the road overlay for roadstops, e.g. pavement
+	ROADSTOP_DRAW_MODE_NONE        = 0,
+	ROADSTOP_DRAW_MODE_ROAD        = 1 << 0, ///< Bay stops: Draw the road itself
+	ROADSTOP_DRAW_MODE_OVERLAY     = 1 << 1, ///< Drive-through stops: Draw the road overlay, e.g. pavement
+	ROADSTOP_DRAW_MODE_WAYP_GROUND = 1 << 2, ///< Waypoints: Draw the sprite layout ground tile (on top of the road)
 };
 DECLARE_ENUM_AS_BIT_SET(RoadStopDrawMode)
 

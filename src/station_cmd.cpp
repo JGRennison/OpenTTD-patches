@@ -3503,16 +3503,20 @@ draw_default_foundation:
 
 		Axis axis = GetRoadStopDir(ti->tile) == DIAGDIR_NE ? AXIS_X : AXIS_Y;
 		DiagDirection dir = GetRoadStopDir(ti->tile);
+		StationType type = GetStationType(ti->tile);
 
 		const RoadStopSpec *stopspec = GetRoadStopSpec(ti->tile);
 		if (stopspec != nullptr) {
 			int view = dir;
 			if (IsDriveThroughStopTile(ti->tile)) view += 4;
 			st = BaseStation::GetByTile(ti->tile);
-			RoadStopResolverObject object(stopspec, st, ti->tile, INVALID_ROADTYPE, GetStationType(ti->tile), view);
+			RoadStopResolverObject object(stopspec, st, ti->tile, INVALID_ROADTYPE, type, view);
 			const SpriteGroup *group = object.Resolve();
 			const DrawTileSprites *dts = ((const TileLayoutSpriteGroup *)group)->ProcessRegisters(nullptr);
 			t = dts;
+			if (type == STATION_ROADWAYPOINT && (stopspec->draw_mode & ROADSTOP_DRAW_MODE_WAYP_GROUND)) {
+				draw_ground = true;
+			}
 		}
 
 		/* Draw ground sprite */
@@ -3525,7 +3529,7 @@ draw_default_foundation:
 		}
 
 		if (IsDriveThroughStopTile(ti->tile)) {
-			if (stopspec == nullptr || (stopspec->draw_mode & ROADSTOP_DRAW_MODE_OVERLAY) != 0) {
+			if (type != STATION_ROADWAYPOINT && (stopspec == nullptr || (stopspec->draw_mode & ROADSTOP_DRAW_MODE_OVERLAY) != 0)) {
 				uint sprite_offset = axis == AXIS_X ? 1 : 0;
 				DrawRoadOverlays(ti, PAL_NONE, road_rti, tram_rti, sprite_offset, sprite_offset);
 			}
