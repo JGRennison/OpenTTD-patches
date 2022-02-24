@@ -151,6 +151,10 @@ uint32 RoadStopScopeResolver::GetVariable(uint16 variable, uint32 parameter, Get
 			bool same_orientation = GetStationGfx(this->tile) == GetStationGfx(nearby_tile);
 			bool same_station = GetStationIndex(nearby_tile) == this->st->index;
 			uint32 res = GetStationGfx(nearby_tile) << 12 | !same_orientation << 11 | !!same_station << 10;
+			StationType type = GetStationType(nearby_tile);
+			if (type == STATION_TRUCK) res |= (1 << 16);
+			if (type == STATION_ROADWAYPOINT) res |= (2 << 16);
+			if (type == this->type) SetBit(res, 20);
 
 			if (IsCustomRoadStopSpecIndex(nearby_tile)) {
 				const RoadStopSpecList ssl = BaseStation::GetByTile(nearby_tile)->roadstop_speclist[GetCustomRoadStopSpecIndex(nearby_tile)];

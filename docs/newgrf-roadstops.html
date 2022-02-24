@@ -215,16 +215,19 @@
 	</table>
 
 	<h4 id="roadstop_view">Road stop view/rotation (40, or mappable variable: roadstop_view)</h4>
-	<p>This has the range 0 - 5, see <a href="#roadstop_views">the 6 road stop views/rotations</a></p>
+	<p>Bits 0 - 7 have the range 0 - 5, see <a href="#roadstop_views">the 6 road stop views/rotations</a><br />
+	The remaining bits are reserved for future use and should be masked.</p>
 
 	<h4 id="roadstop_type">Road stop type (41, or mappable variable: roadstop_type)</h4>
-	<p>
+	<p>Bits 0 - 7 have the values in the table below.
 	<table>
 	<tr><th>Value</th><th>Meaning</th></tr>
 	<tr><td>0</td><td>Passenger/bus stop</td></tr>
 	<tr><td>1</td><td>Freight/lorry stop</td></tr>
 	<tr><td>2</td><td>Road waypoint</td></tr>
 	</table>
+	<br />
+	The remaining bits are reserved for future use and should be masked.
 	</p>
 
 	<h4 id="roadstop_terrain_type">Road stop tile/terrain type (42, or mappable variable: roadstop_terrain_type)</h4>
@@ -245,6 +248,8 @@
 	<tr><td>0 - 15</td><td>Manhattan distance from town</td></tr>
 	<tr><td>16 - 24</td><td>Town zone</td></tr>
 	</table>
+	<br />
+	The remaining bits are reserved for future use and should be masked.
 	</p>
 
 	<h4 id="roadstop_town_distance_squared">Square of Euclidean distance of town (46, or mappable variable: roadstop_town_distance_squared)</h4>
@@ -276,8 +281,16 @@
 	</td></tr>
 	<tr><td>10</td><td>Set if the selected tile belongs to the current station, clear otherwise</td></tr>
 	<tr><td>11</td><td>Clear if the selected tile has the same view/rotation, set if a different view/rotation</td></tr>
-	<tr><td>14 - 12</td><td>View/rotation of the selected tile</td></tr>
+	<tr><td>12 - 15</td><td>View/rotation of the selected tile</td></tr>
+	<tr><td>16 - 19</td><td>
+		0 - Passenger/bus stop<br />
+		1 - Freight/lorry stop<br />
+		2 - Road waypoint
+	</td></tr>
+	<tr><td>20</td><td>Set if the stop type (passenger/bus, freight/lorry or road waypoint) is the same as the current tile</td></tr>
 	</table>
+	<br />
+	The remaining bits are reserved for future use and should be masked.
 	</p>
 
 	<h4 id="roadstop_road_stop_grfid_nearby_tiles">GRFID of nearby road stop tile (6A, or mappable variable: roadstop_road_stop_grfid_nearby_tiles)</h4>
