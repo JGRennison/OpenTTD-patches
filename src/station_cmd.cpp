@@ -1601,7 +1601,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32 
 				byte old_specindex = HasStationTileRail(tile) ? GetCustomStationSpecIndex(tile) : 0;
 				MakeRailStation(tile, st->owner, st->index, axis, layout & ~1, rt);
 				/* Free the spec if we overbuild something */
-				DeallocateSpecFromStation(st, old_specindex);
+				if (old_specindex != specindex) DeallocateSpecFromStation(st, old_specindex);
 
 				SetCustomStationSpecIndex(tile, specindex);
 				SetStationTileRandomBits(tile, GB(Random(), 0, 4));
@@ -2033,7 +2033,7 @@ static RoadStop **FindRoadStopSpot(bool truck_station, Station *st)
 	}
 }
 
-CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags);
+CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags, int replacement_spec_index = -1);
 
 /**
  * Find a nearby station that joins this road stop.
@@ -2165,7 +2165,7 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 			DisallowedRoadDirections drd = IsNormalRoadTile(cur_tile) ? GetDisallowedRoadDirections(cur_tile) : DRD_NONE;
 
 			if (IsTileType(cur_tile, MP_STATION) && IsAnyRoadStop(cur_tile)) {
-				RemoveRoadStop(cur_tile, flags);
+				RemoveRoadStop(cur_tile, flags, specindex);
 			}
 
 			if (roadstopspec != nullptr) {
@@ -2251,7 +2251,7 @@ static Vehicle *ClearRoadStopStatusEnum(Vehicle *v, void *)
 	return nullptr;
 }
 
-CommandCost RemoveRoadWaypointStop(TileIndex tile, DoCommandFlag flags)
+CommandCost RemoveRoadWaypointStop(TileIndex tile, DoCommandFlag flags, int replacement_spec_index)
 {
 	Waypoint *wp = Waypoint::GetByTile(tile);
 
@@ -2287,18 +2287,20 @@ CommandCost RemoveRoadWaypointStop(TileIndex tile, DoCommandFlag flags)
 		wp->rect.AfterRemoveTile(wp, tile);
 
 		wp->RemoveRoadStopTileData(tile);
-		DeallocateRoadStopSpecFromStation(wp, specindex);
+		if ((int)specindex != replacement_spec_index) DeallocateRoadStopSpecFromStation(wp, specindex);
 
-		MakeRoadWaypointStationAreaSmaller(wp, wp->road_waypoint_area);
+		if (replacement_spec_index < 0) {
+			MakeRoadWaypointStationAreaSmaller(wp, wp->road_waypoint_area);
 
-		UpdateStationSignCoord(wp);
+			UpdateStationSignCoord(wp);
 
-		/* if we deleted the whole waypoint, delete the road facility. */
-		if (wp->road_waypoint_area.tile == INVALID_TILE) {
-			wp->facilities &= ~(FACIL_BUS_STOP | FACIL_TRUCK_STOP);
-			SetWindowWidgetDirty(WC_STATION_VIEW, wp->index, WID_SV_ROADVEHS);
-			wp->UpdateVirtCoord();
-			DeleteStationIfEmpty(wp);
+			/* if we deleted the whole waypoint, delete the road facility. */
+			if (wp->road_waypoint_area.tile == INVALID_TILE) {
+				wp->facilities &= ~(FACIL_BUS_STOP | FACIL_TRUCK_STOP);
+				SetWindowWidgetDirty(WC_STATION_VIEW, wp->index, WID_SV_ROADVEHS);
+				wp->UpdateVirtCoord();
+				DeleteStationIfEmpty(wp);
+			}
 		}
 
 		NotifyRoadLayoutChanged(false);
@@ -2311,12 +2313,13 @@ CommandCost RemoveRoadWaypointStop(TileIndex tile, DoCommandFlag flags)
  * Remove a bus station/truck stop
  * @param tile TileIndex been queried
  * @param flags operation to perform
+ * @param replacement_spec_index replacement spec index to avoid deallocating, if < 0, tile is not being replaced
  * @return cost or failure of operation
  */
-CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags)
+CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags, int replacement_spec_index)
 {
 	if (IsRoadWaypoint(tile)) {
-		return RemoveRoadWaypointStop(tile, flags);
+		return RemoveRoadWaypointStop(tile, flags, replacement_spec_index);
 	}
 
 	Station *st = Station::GetByTile(tile);
@@ -2399,10 +2402,10 @@ CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags)
 
 		st->rect.AfterRemoveTile(st, tile);
 
-		st->AfterStationTileSetChange(false, is_truck ? STATION_TRUCK: STATION_BUS);
+		if (replacement_spec_index < 0) st->AfterStationTileSetChange(false, is_truck ? STATION_TRUCK: STATION_BUS);
 
 		st->RemoveRoadStopTileData(tile);
-		DeallocateRoadStopSpecFromStation(st, specindex);
+		if ((int)specindex != replacement_spec_index) DeallocateRoadStopSpecFromStation(st, specindex);
 
 		/* Update the tile area of the truck/bus stop */
 		if (is_truck) {
