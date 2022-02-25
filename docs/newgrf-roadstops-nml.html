@@ -17,6 +17,9 @@
 	<p>This document describes the non-standard addition of the NewGRF road stops feature to the <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Main">Official OpenTTD NML Specifications</a>, as implemented in this patchpack, and the associated <a href="https://github.com/JGRennison/nml">NML fork</a></br>
 	This feature does not match OpenTTD PR #7955 in a number of key areas, this feature may not necessarily match implementations of NewGRF road stops in other patches, branches, etc.</br>
 	This feature as implemented here MAY also be present in other patchpacks.</p>
+
+	<p>The feature identifier is <span class="code">FEAT_ROADSTOPS</span>.</p>
+
 	<p>See the <a href="newgrf-additions-nml.html">NewGRF additions (NML)</a> document for background information on additions to NML.</p>
 
 	<p>See the associated <a href="newgrf-roadstops.html">non-NML document</a> for more details on the NewGRF road stops feature.</p>
@@ -34,6 +37,7 @@
 		<li><a href="#roadstop_callbacks">Callbacks</a></li>
 		<li><a href="#roadstop_anim_triggers">Animation triggers</a></li>
 		<li><a href="#roadstop_views">Views/rotations</a></li>
+		<li><a href="#roadstop_example">Syntax example</a></li>
 	</ul></p>
 
 	<h3 id="roadstop_ids">Road Stop IDs</h3>
@@ -195,5 +199,44 @@
 		<tr><td>RST_VIEW_DRIVE_THROUGH_X</td><td>4</td><td>Drive-through</td><td>X-axis: north-east to south-west</td></tr>
 		<tr><td>RST_VIEW_DRIVE_THROUGH_Y</td><td>5</td><td>Drive-through</td><td>Y-axis: north-west to south-east</td></tr>
 	</table>
+
+	<h3 id="roadstop_example">Syntax example</h3>
+	<p>
+		<pre class="code">
+grf {
+	...
+}
+
+if (!extended_feature_test("road_stops")) {
+	error(FATAL, string(STR_UNSUPPORTED_VERSION));
+}
+
+
+spritelayout spritelayout_roadstop {
+	ground {
+		...
+	}
+	building {
+		...
+	}
+}
+
+switch (FEAT_ROADSTOPS, SELF, switch_roadstop, ...) {
+	...
+}
+
+item (FEAT_ROADSTOPS, item_roadstop)  {
+	property {
+		class: "TEST";
+		availability_type: RST_AVAILABILITY_TYPE_PASSENGER;
+		name: string(STR_ROADSTOP_NAME);
+		classname: string(STR_ROADSTOP_TEST_CLASS_NAME);
+	}
+	graphics {
+		default: switch_roadstop;
+	}
+}
+		</pre>
+	</p>
 </body>
 </html>
