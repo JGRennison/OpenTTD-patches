@@ -3546,7 +3546,7 @@ draw_default_foundation:
 			}
 
 			DisallowedRoadDirections drd = GetDriveThroughStopDisallowedRoadDirections(ti->tile);
-			if (drd != DRD_NONE) {
+			if (drd != DRD_NONE && (stopspec == nullptr || !HasBit(stopspec->flags, RSF_NO_ONE_WAY_OVERLAY))) {
 				DrawGroundSpriteAt(SPR_ONEWAY_BASE + drd - 1 + ((axis == AXIS_X) ? 0 : 3), PAL_NONE, 8, 8, 0);
 			}
 		} else {

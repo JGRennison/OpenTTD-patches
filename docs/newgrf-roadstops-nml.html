@@ -70,7 +70,9 @@
 		<tr><td>animation_triggers</td><td>bitmask(ANIM_TRIGGER_ROAD_STOP_XXX, ...)</td><td>Bitmask of triggers that will trigger the <span class="code">anim_control</span> callback, see the <a href="#roadstop_anim_triggers">table</a> below.</td></tr>
 		<tr><td>general_flags</td><td>bitmask(RST_GENERAL_FLAG_XXX, ...)</td><td>
 			<p><b>RST_GENERAL_FLAG_RANDOM_ANIMATION</b><br />
-			<span class="indent">animation callback requires random bits in variable <span class="code">extra_callback_info1</span>.</span></p>
+			<span class="indent">Animation callback requires random bits in variable <span class="code">extra_callback_info1</span>.</span></p>
+			<p><b>RST_GENERAL_FLAG_NO_ONE_WAY_OVERLAY</b><br />
+			<span class="indent">Do not show one way road overlay sprites, this should only be set if different graphics are provided for the different one-way states using the <span class="code">one_way_info</span> variable.</span></p>
 		</td></tr>
 		<tr><td>minimum_bridge_height</td><td>Array of 6 items [0..255, ...]</td><td>Minimum clearances required for a bridge for each of the <a href="#roadstop_views">6 views/rotations</a> (or 0 to not allow any bridge). Values are given in height level units (1 level == 8px).</td></tr>
 		<tr><td>disallowed_bridge_pillars</td><td>Array of 6 items [bitmask(RST_BRIDGE_PILLAR_FLAG_, ...), ...]</td><td>
