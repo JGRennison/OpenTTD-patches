@@ -208,6 +208,7 @@
 		<tr><td><a href="#roadstop_company_info">47</a></td><td><a href="#roadstop_company_info">roadstop_company_info</a></td><td>Player/company info</td></tr>
 		<tr><td><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/BaseStation">48</a></td><td></td><td>Bitmask of accepted cargoes (BaseStation)</td></tr>
 		<tr><td><a href="#roadstop_animation_frame">49</a></td><td><a href="#roadstop_animation_frame">roadstop_animation_frame</a></td><td>Current animation frame</td></tr>
+		<tr><td><a href="#roadstop_misc_info">50</a></td><td><a href="#roadstop_misc_info">roadstop_misc_info</a></td><td>Miscellaneous info</td></tr>
 		<tr><td><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/BaseStation">60</a></td><td></td><td>Amount of cargo waiting (BaseStation)</td></tr>
 		<tr><td><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/BaseStation">61</a></td><td></td><td>Time since last cargo pickup (BaseStation)</td></tr>
 		<tr><td><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/BaseStation">62</a></td><td></td><td>Rating of cargo (BaseStation)</td></tr>
@@ -269,6 +270,22 @@
 	<h4 id="roadstop_animation_frame">Current animation frame (49, or mappable variable: roadstop_animation_frame)</h4>
 	<p>This has the same value as <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Stations">station (feature 4) variable 4A</a>.</p>
 
+	<h4 id="roadstop_misc_info">Miscellaneous road stop info (50, or mappable variable: roadstop_misc_info)</h4>
+	<p>The town used is the one associated with the station/waypoint (this is in the station/waypoint name by default).
+	<table>
+	<tr><th>Bits</th><th>Meaning</th></tr>
+	<tr><td>0 - 1</td><td>
+		One-way road information:<br />
+		0 - Two-way traffic<br />
+		1 - North-bound only<br />
+		2 - South-bound only<br />
+		3 - No entry
+	</td></tr>
+	</table>
+	<br />
+	The remaining bits are reserved for future use and should be masked.
+	</p>
+
 	<h4 id="roadstop_animation_frame_nearby_tiles">Animation frame of nearby tile (66, or mappable variable: roadstop_animation_frame_nearby_tiles)</h4>
 	<p>This has the same value as <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Stations#Animation_frame_of_nearby_tile_.2866.29">station (feature 4) variable 66</a>.</p>
 
@@ -295,6 +312,12 @@
 		2 - Road waypoint
 	</td></tr>
 	<tr><td>20</td><td>Set if the stop type (passenger/bus, freight/lorry or road waypoint) is the same as the current tile</td></tr>
+	<tr><td>21 - 22</td><td>
+		One-way road information of the selected tile:<br />
+		0 - Two-way traffic<br />
+		1 - North-bound only<br />
+		2 - South-bound only<br />
+		3 - No entry
 	</table>
 	<br />
 	The remaining bits are reserved for future use and should be masked.

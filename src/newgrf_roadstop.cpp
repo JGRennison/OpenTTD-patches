@@ -121,6 +121,15 @@ uint32 RoadStopScopeResolver::GetVariable(uint16 variable, uint32 parameter, Get
 		/* Animation frame */
 		case 0x49: return this->tile == INVALID_TILE ? 0 : this->st->GetRoadStopAnimationFrame(this->tile);
 
+		/* Misc info */
+		case 0x50: {
+			uint32 result = 0;
+			if (this->tile != INVALID_TILE) {
+				if (IsDriveThroughStopTile(this->tile)) result |= GetDriveThroughStopDisallowedRoadDirections(this->tile);
+			}
+			return result;
+		}
+
 		/* Variables which use the parameter */
 		/* Variables 0x60 to 0x65 and 0x69 are handled separately below */
 
@@ -159,6 +168,9 @@ uint32 RoadStopScopeResolver::GetVariable(uint16 variable, uint32 parameter, Get
 			if (IsCustomRoadStopSpecIndex(nearby_tile)) {
 				const RoadStopSpecList ssl = BaseStation::GetByTile(nearby_tile)->roadstop_speclist[GetCustomRoadStopSpecIndex(nearby_tile)];
 				res |= 1 << (ssl.grfid != grfid ? 9 : 8) | ssl.localidx;
+			}
+			if (IsDriveThroughStopTile(nearby_tile)) {
+				res |= (GetDriveThroughStopDisallowedRoadDirections(nearby_tile) << 21);
 			}
 			return res;
 		}

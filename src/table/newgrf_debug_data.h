@@ -1391,6 +1391,7 @@ static const NIVariable _nif_roadstops[] = {
 	NIV(0x47, "player info"),
 	NIV(0x48, "bitmask of accepted cargoes"),
 	NIV(0x49, "current animation frame"),
+	NIV(0x50, "miscellaneous info"),
 	NIV(0x60, "amount of cargo waiting"),
 	NIV(0x61, "time since last cargo pickup"),
 	NIV(0x62, "rating of cargo"),

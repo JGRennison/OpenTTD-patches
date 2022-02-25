@@ -119,6 +119,7 @@
 		<tr><td>animation_frame</td><td>0..255</td><td>Animation frame of the current tile</td></tr>
 		<tr><td>waiting_triggers</td><td>0..255</td><td>Waiting triggers</td></tr>
 		<tr><td>random_bits</td><td>0..16777215</td><td>Random bits</td></tr>
+		<tr><td>one_way_info</td><td>RST_OWI_XXX</td><td>One-way road information of drive-through stop tile<br />XXX = TWO_WAY | NORTH_BOUND | SOUTH_BOUND | NO_ENTRY</td></tr>
 	</table>
 	<br />
 	Variables that require one or more parameters:
@@ -142,6 +143,7 @@
 		<tr><td>nearby_tile_view</td><td>x, y offset (-8..7)</td><td>0..5</td><td>The <a href="#roadstop_views">view/rotation</a> of a nearby road stop tile</td></tr>
 		<tr><td>nearby_tile_stop_type</td><td>x, y offset (-8..7)</td><td>RST_TYPE_XXX</td><td>See stop_type</td></tr>
 		<tr><td>nearby_tile_same_stop_type</td><td>x, y offset (-8..7)</td><td>0 | 1</td><td>Is the stop type of a nearby road stop tile the same as this tile?</td></tr>
+		<tr><td>nearby_tile_one_way_info</td><td>x, y offset (-8..7)</td><td>RST_OWI_XXX</td><td>One-way state of nearby drive-through road stop tile</td></tr>
 		<tr><td>nearby_tile_road_stop_info</td><td>x, y offset (-8..7)</td><td></td><td>Above nearby road stop tile variables in one variable (all of variable 0x68)</td></tr>
 		<tr><td>nearby_tile_grfid</td><td>x, y offset (-8..7)</td><td>-1, 0 or a GRFID</td><td>Return value is -1 if the tile is not a road stop, 0 if the tile is a non-custom road stop, or else the GRFID of the NewGRF defining the road stop</td></tr>
 	</table>
