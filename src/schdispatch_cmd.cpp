@@ -27,11 +27,6 @@
 
 #include "safeguards.h"
 
-/* We squeeze this amount into 14 bit of data, so we must guarantee that
-   DAY_TICKS * (max_day_length_factor+1) can fit in 14-bit
-   See CmdScheduledDispatchSetStartDate */
-static_assert(DAY_TICKS * 126 < 16384);
-
 /**
  * Enable or disable scheduled dispatch
  * @param tile Not used.
@@ -180,9 +175,6 @@ CommandCost CmdScheduledDispatchSetDuration(TileIndex tile, DoCommandFlag flags,
 
 /**
  * Set scheduled dispatch start date
- *
- * The parameter is quite tricky. The default maximum of daylength factor is 125,
- * and with DAY_TICKS of 74 the result (maximum scaled tick per day) fits in 14 bit.
  *
  * See also the static_assert at the top of the file.
  *
