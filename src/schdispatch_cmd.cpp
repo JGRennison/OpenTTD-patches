@@ -176,8 +176,6 @@ CommandCost CmdScheduledDispatchSetDuration(TileIndex tile, DoCommandFlag flags,
 /**
  * Set scheduled dispatch start date
  *
- * See also the static_assert at the top of the file.
- *
  * @param tile Not used.
  * @param flags Operation to perform.
  * @param p1 Vehicle index
