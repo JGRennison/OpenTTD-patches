@@ -2247,7 +2247,7 @@ CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, uint16 data, uint3
 		return ret;
 	}
 
-	if (first->orders.list == nullptr && !OrderList::CanAllocateItem()) {
+	if (first->orders == nullptr && !OrderList::CanAllocateItem()) {
 		/* Restore the train we had. */
 		RestoreTrainBackup(original);
 		return_cmd_error(STR_ERROR_NO_MORE_SPACE_FOR_ORDERS);
@@ -2264,7 +2264,7 @@ CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, uint16 data, uint3
 		if (v == first && v->IsEngine() && !sell_chain && new_head != nullptr && new_head->IsFrontEngine()) {
 			/* We are selling the front engine. In this case we want to
 			 * 'give' the order, unit number and such to the new head. */
-			new_head->orders.list = first->orders.list;
+			new_head->orders = first->orders;
 			new_head->AddToShared(first);
 			DeleteVehicleOrders(first);
 

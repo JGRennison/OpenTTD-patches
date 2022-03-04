@@ -1264,8 +1264,8 @@ class NIHStationStruct : public NIHelper {
 			}
 			seprintf(buffer, lastof(buffer), "  Nearby industries: %u", (uint) st->industries_near.size());
 			output.print(buffer);
-			for (const Industry *ind : st->industries_near) {
-				seprintf(buffer, lastof(buffer), "    %u: %s", ind->index, ind->GetCachedName());
+			for (const auto &i : st->industries_near) {
+				seprintf(buffer, lastof(buffer), "    %u: %s, distance: %u", i.industry->index, i.industry->GetCachedName(), i.distance);
 				output.print(buffer);
 			}
 			seprintf(buffer, lastof(buffer), "  Station tiles: %u", st->station_tiles);

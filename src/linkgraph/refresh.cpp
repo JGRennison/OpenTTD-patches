@@ -27,14 +27,14 @@
 /* static */ void LinkRefresher::Run(Vehicle *v, bool allow_merge, bool is_full_loading, CargoTypes cargo_mask)
 {
 	/* If there are no orders we can't predict anything.*/
-	if (v->orders.list == nullptr) return;
+	if (v->orders == nullptr) return;
 
 	CargoTypes have_cargo_mask = v->GetLastLoadingStationValidCargoMask();
 
 	/* Scan orders for cargo-specific load/unload, and run LinkRefresher separately for each set of cargoes where they differ. */
 	while (cargo_mask != 0) {
 		CargoTypes iter_cargo_mask = cargo_mask;
-		for (const Order *o = v->orders.list->GetFirstOrder(); o != nullptr; o = o->next) {
+		for (const Order *o = v->orders->GetFirstOrder(); o != nullptr; o = o->next) {
 			if (o->IsType(OT_GOTO_STATION) || o->IsType(OT_IMPLICIT)) {
 				if (o->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD) {
 					CargoMaskValueFilter<uint>(iter_cargo_mask, [&](CargoID cargo) -> uint {
@@ -50,7 +50,7 @@
 		}
 
 		/* Make sure the first order is a useful order. */
-		const Order *first = v->orders.list->GetNextDecisionNode(v->GetOrder(v->cur_implicit_order_index), 0, iter_cargo_mask);
+		const Order *first = v->orders->GetNextDecisionNode(v->GetOrder(v->cur_implicit_order_index), 0, iter_cargo_mask);
 		if (first != nullptr) {
 			HopSet seen_hops;
 			LinkRefresher refresher(v, &seen_hops, allow_merge, is_full_loading, iter_cargo_mask);
@@ -202,17 +202,17 @@ const Order *LinkRefresher::PredictNextOrder(const Order *cur, const Order *next
 		if (next->IsType(OT_CONDITIONAL)) {
 			if (next->GetConditionVariable() == OCV_UNCONDITIONALLY) {
 				CargoTypes this_cargo_mask = this->cargo_mask;
-				next = this->vehicle->orders.list->GetNextDecisionNode(
-						this->vehicle->orders.list->GetOrderAt(next->GetConditionSkipToOrder()),
+				next = this->vehicle->orders->GetNextDecisionNode(
+						this->vehicle->orders->GetOrderAt(next->GetConditionSkipToOrder()),
 						num_hops++, this_cargo_mask);
 				assert(this_cargo_mask == this->cargo_mask);
 				continue;
 			}
 			CargoTypes this_cargo_mask = this->cargo_mask;
-			const Order *skip_to = this->vehicle->orders.list->GetNextDecisionNode(
-					this->vehicle->orders.list->GetOrderAt(next->GetConditionSkipToOrder()), num_hops, this_cargo_mask);
+			const Order *skip_to = this->vehicle->orders->GetNextDecisionNode(
+					this->vehicle->orders->GetOrderAt(next->GetConditionSkipToOrder()), num_hops, this_cargo_mask);
 			assert(this_cargo_mask == this->cargo_mask);
-			if (skip_to != nullptr && num_hops < std::min<uint>(64, this->vehicle->orders.list->GetNumOrders()) && skip_to != next) {
+			if (skip_to != nullptr && num_hops < std::min<uint>(64, this->vehicle->orders->GetNumOrders()) && skip_to != next) {
 				/* Make copies of capacity tracking lists. There is potential
 				 * for optimization here: If the vehicle never refits we don't
 				 * need to copy anything. Also, if we've seen the branched link
@@ -225,8 +225,8 @@ const Order *LinkRefresher::PredictNextOrder(const Order *cur, const Order *next
 		/* Reassign next with the following stop. This can be a station or a
 		 * depot.*/
 		CargoTypes this_cargo_mask = this->cargo_mask;
-		next = this->vehicle->orders.list->GetNextDecisionNode(
-				this->vehicle->orders.list->GetNext(next), num_hops++, this_cargo_mask);
+		next = this->vehicle->orders->GetNextDecisionNode(
+				this->vehicle->orders->GetNext(next), num_hops++, this_cargo_mask);
 		assert(this_cargo_mask == this->cargo_mask);
 	}
 	return next;
@@ -267,16 +267,16 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint8 flag
 			 * loading. Don't do that if the vehicle has been waiting for longer than the entire
 			 * order list is supposed to take, though. If that is the case the total duration is
 			 * probably far off and we'd greatly overestimate the capacity by increasing.*/
-			if (this->is_full_loading && this->vehicle->orders.list != nullptr &&
+			if (this->is_full_loading && this->vehicle->orders != nullptr &&
 					st->index == vehicle->last_station_visited &&
-					this->vehicle->orders.list->GetTotalDuration() >
+					this->vehicle->orders->GetTotalDuration() >
 					(Ticks)this->vehicle->current_order_time) {
 				uint effective_capacity = cargo_quantity * this->vehicle->load_unload_ticks;
-				if (effective_capacity > (uint)this->vehicle->orders.list->GetTotalDuration()) {
+				if (effective_capacity > (uint)this->vehicle->orders->GetTotalDuration()) {
 					IncreaseStats(st, c, next_station, effective_capacity /
-							this->vehicle->orders.list->GetTotalDuration(), 0,
+							this->vehicle->orders->GetTotalDuration(), 0,
 							EUM_INCREASE | restricted_mode);
-				} else if (RandomRange(this->vehicle->orders.list->GetTotalDuration()) < effective_capacity) {
+				} else if (RandomRange(this->vehicle->orders->GetTotalDuration()) < effective_capacity) {
 					IncreaseStats(st, c, next_station, 1, 0, EUM_INCREASE | restricted_mode);
 				} else {
 					IncreaseStats(st, c, next_station, cargo_quantity, 0, EUM_REFRESH | restricted_mode);

@@ -288,11 +288,11 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						break;
 
 					case TRIT_COND_NEXT_ORDER: {
-						if (v->orders.list == nullptr) break;
-						if (v->orders.list->GetNumOrders() == 0) break;
+						if (v->orders == nullptr) break;
+						if (v->orders->GetNumOrders() == 0) break;
 
 						const Order *current_order = v->GetOrder(v->cur_real_order_index);
-						for (const Order *order = v->orders.list->GetNext(current_order); order != current_order; order = v->orders.list->GetNext(order)) {
+						for (const Order *order = v->orders->GetNext(current_order); order != current_order; order = v->orders->GetNext(order)) {
 							if (order->IsGotoOrder()) {
 								result = TestOrderCondition(order, item);
 								break;

@@ -3219,7 +3219,7 @@ void Vehicle::BeginLoading()
 						break;
 					}
 					target_index++;
-					if (target_index >= this->orders.list->GetNumOrders()) {
+					if (target_index >= this->orders->GetNumOrders()) {
 						if (this->GetNumManualOrders() == 0 &&
 								this->GetNumOrders() < IMPLICIT_ORDER_ONLY_CAP) {
 							break;
@@ -3257,7 +3257,7 @@ void Vehicle::BeginLoading()
 						}
 					}
 				} else if (!suppress_implicit_orders &&
-						((this->orders.list == nullptr ? OrderList::CanAllocateItem() : this->orders.list->GetNumOrders() < MAX_VEH_ORDER_ID)) &&
+						((this->orders == nullptr ? OrderList::CanAllocateItem() : this->orders->GetNumOrders() < MAX_VEH_ORDER_ID)) &&
 						Order::CanAllocateItem()) {
 					/* Insert new implicit order */
 					Order *implicit_order = new Order();
@@ -4057,10 +4057,10 @@ void Vehicle::AddToShared(Vehicle *shared_chain)
 {
 	assert(this->previous_shared == nullptr && this->next_shared == nullptr);
 
-	if (shared_chain->orders.list == nullptr) {
+	if (shared_chain->orders == nullptr) {
 		assert(shared_chain->previous_shared == nullptr);
 		assert(shared_chain->next_shared == nullptr);
-		this->orders.list = shared_chain->orders.list = new OrderList(nullptr, shared_chain);
+		this->orders = shared_chain->orders = new OrderList(nullptr, shared_chain);
 	}
 
 	this->next_shared     = shared_chain->next_shared;
@@ -4070,7 +4070,7 @@ void Vehicle::AddToShared(Vehicle *shared_chain)
 
 	if (this->next_shared != nullptr) this->next_shared->previous_shared = this;
 
-	shared_chain->orders.list->AddVehicle(this);
+	shared_chain->orders->AddVehicle(this);
 }
 
 /**
@@ -4083,7 +4083,7 @@ void Vehicle::RemoveFromShared()
 	bool were_first = (this->FirstShared() == this);
 	VehicleListIdentifier vli(VL_SHARED_ORDERS, this->type, this->owner, this->FirstShared()->index);
 
-	this->orders.list->RemoveVehicle(this);
+	this->orders->RemoveVehicle(this);
 
 	if (!were_first) {
 		/* We are not the first shared one, so only relink our previous one. */
@@ -4093,9 +4093,9 @@ void Vehicle::RemoveFromShared()
 	if (this->next_shared != nullptr) this->next_shared->previous_shared = this->previous_shared;
 
 
-	if (this->orders.list->GetNumVehicles() == 1) InvalidateVehicleOrder(this->FirstShared(), VIWD_MODIFY_ORDERS);
+	if (this->orders->GetNumVehicles() == 1) InvalidateVehicleOrder(this->FirstShared(), VIWD_MODIFY_ORDERS);
 
-	if (this->orders.list->GetNumVehicles() == 1 && !_settings_client.gui.enable_single_veh_shared_order_gui) {
+	if (this->orders->GetNumVehicles() == 1 && !_settings_client.gui.enable_single_veh_shared_order_gui) {
 		/* When there is only one vehicle, remove the shared order list window. */
 		DeleteWindowById(GetWindowClassForVehicleType(this->type), vli.Pack());
 	} else if (were_first) {

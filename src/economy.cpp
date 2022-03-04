@@ -334,13 +334,13 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 
 		/* Sell all the shares that people have on this company */
 		Backup<CompanyID> cur_company2(_current_company, FILE_LINE);
-		const Company *c = Company::Get(old_owner);
+		Company *c = Company::Get(old_owner);
 		for (i = 0; i < 4; i++) {
 			if (c->share_owners[i] == INVALID_OWNER) continue;
 
 			if (c->bankrupt_value == 0 && c->share_owners[i] == new_owner) {
 				/* You are the one buying the company; so don't sell the shares back to you. */
-				Company::Get(new_owner)->share_owners[i] = INVALID_OWNER;
+				c->share_owners[i] = INVALID_OWNER;
 			} else {
 				cur_company2.Change(c->share_owners[i]);
 				/* Sell the shares */
@@ -1078,7 +1078,8 @@ static SmallIndustryList _cargo_delivery_destinations;
 
 template <class F>
 void ForAcceptingIndustries(const Station *st, CargoID cargo_type, IndustryID source, CompanyID company, F&& f) {
-	for (Industry *ind : st->industries_near) {
+	for (const auto &i : st->industries_near) {
+		Industry *ind = i.industry;
 		if (ind->index == source) continue;
 
 		uint cargo_index;
@@ -1470,7 +1471,7 @@ void PrepareUnload(Vehicle *front_v)
 	front_v->cargo_payment = new CargoPayment(front_v);
 
 	CargoStationIDStackSet next_station = front_v->GetNextStoppingStation();
-	if (front_v->orders.list == nullptr || (front_v->current_order.GetUnloadType() & OUFB_NO_UNLOAD) == 0) {
+	if (front_v->orders == nullptr || (front_v->current_order.GetUnloadType() & OUFB_NO_UNLOAD) == 0) {
 		Station *st = Station::Get(front_v->last_station_visited);
 		for (Vehicle *v = front_v; v != nullptr; v = v->Next()) {
 			if (GetUnloadType(v) & OUFB_NO_UNLOAD) continue;

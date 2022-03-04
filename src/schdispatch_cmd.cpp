@@ -86,15 +86,15 @@ CommandCost CmdScheduledDispatchAdd(TileIndex tile, DoCommandFlag flags, uint32 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (v->orders.list == nullptr) return CMD_ERROR;
+	if (v->orders == nullptr) return CMD_ERROR;
 
-	if (schedule_index >= v->orders.list->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
+	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
 
 	if (extra_slots > 512) return_cmd_error(STR_ERROR_SCHDISPATCH_TRIED_TO_ADD_TOO_MANY_SLOTS);
 	if (extra_slots > 0 && offset == 0) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		DispatchSchedule &ds = v->orders.list->GetDispatchScheduleByIndex(schedule_index);
+		DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
 		ds.AddScheduledDispatch(p2);
 		for (uint i = 0; i < extra_slots; i++) {
 			p2 += offset;
@@ -126,12 +126,12 @@ CommandCost CmdScheduledDispatchRemove(TileIndex tile, DoCommandFlag flags, uint
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (v->orders.list == nullptr) return CMD_ERROR;
+	if (v->orders == nullptr) return CMD_ERROR;
 
-	if (schedule_index >= v->orders.list->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
+	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		v->orders.list->GetDispatchScheduleByIndex(schedule_index).RemoveScheduledDispatch(p2);
+		v->orders->GetDispatchScheduleByIndex(schedule_index).RemoveScheduledDispatch(p2);
 		SetTimetableWindowsDirty(v, true);
 	}
 
@@ -159,12 +159,12 @@ CommandCost CmdScheduledDispatchSetDuration(TileIndex tile, DoCommandFlag flags,
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (v->orders.list == nullptr) return CMD_ERROR;
+	if (v->orders == nullptr) return CMD_ERROR;
 
-	if (schedule_index >= v->orders.list->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
+	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		DispatchSchedule &ds = v->orders.list->GetDispatchScheduleByIndex(schedule_index);
+		DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
 		ds.SetScheduledDispatchDuration(p2);
 		ds.UpdateScheduledDispatch(nullptr);
 		SetTimetableWindowsDirty(v, true);
@@ -196,15 +196,15 @@ CommandCost CmdScheduledDispatchSetStartDate(TileIndex tile, DoCommandFlag flags
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (v->orders.list == nullptr) return CMD_ERROR;
+	if (v->orders == nullptr) return CMD_ERROR;
 
-	if (schedule_index >= v->orders.list->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
+	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
 
 	int32 date = (int32)p2;
 	uint16 full_date_fract = GB(p3, 0, 16);
 
 	if (flags & DC_EXEC) {
-		DispatchSchedule &ds = v->orders.list->GetDispatchScheduleByIndex(schedule_index);
+		DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
 		ds.SetScheduledDispatchStartDate(date, full_date_fract);
 		ds.UpdateScheduledDispatch(nullptr);
 		SetTimetableWindowsDirty(v, true);
@@ -234,12 +234,12 @@ CommandCost CmdScheduledDispatchSetDelay(TileIndex tile, DoCommandFlag flags, ui
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (v->orders.list == nullptr) return CMD_ERROR;
+	if (v->orders == nullptr) return CMD_ERROR;
 
-	if (schedule_index >= v->orders.list->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
+	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		v->orders.list->GetDispatchScheduleByIndex(schedule_index).SetScheduledDispatchDelay(p2);
+		v->orders->GetDispatchScheduleByIndex(schedule_index).SetScheduledDispatchDelay(p2);
 		SetTimetableWindowsDirty(v, true);
 	}
 
@@ -272,12 +272,12 @@ CommandCost CmdScheduledDispatchResetLastDispatch(TileIndex tile, DoCommandFlag 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (v->orders.list == nullptr) return CMD_ERROR;
+	if (v->orders == nullptr) return CMD_ERROR;
 
-	if (schedule_index >= v->orders.list->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
+	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		v->orders.list->GetDispatchScheduleByIndex(schedule_index).SetScheduledDispatchLastDispatch(0);
+		v->orders->GetDispatchScheduleByIndex(schedule_index).SetScheduledDispatchLastDispatch(0);
 		SetTimetableWindowsDirty(v, true);
 	}
 
@@ -305,12 +305,12 @@ CommandCost CmdScheduledDispatchClear(TileIndex tile, DoCommandFlag flags, uint3
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (v->orders.list == nullptr) return CMD_ERROR;
+	if (v->orders == nullptr) return CMD_ERROR;
 
-	if (schedule_index >= v->orders.list->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
+	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		v->orders.list->GetDispatchScheduleByIndex(schedule_index).ClearScheduledDispatch();
+		v->orders->GetDispatchScheduleByIndex(schedule_index).ClearScheduledDispatch();
 		SetTimetableWindowsDirty(v, true);
 	}
 
@@ -340,15 +340,15 @@ CommandCost CmdScheduledDispatchAddNewSchedule(TileIndex tile, DoCommandFlag fla
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (v->orders.list == nullptr) return CMD_ERROR;
-	if (v->orders.list->GetScheduledDispatchScheduleCount() >= 4096) return CMD_ERROR;
+	if (v->orders == nullptr) return CMD_ERROR;
+	if (v->orders->GetScheduledDispatchScheduleCount() >= 4096) return CMD_ERROR;
 
 	int32 date = GB(p3, 0, 32);
 	uint16 full_date_fract = GB(p3, 32, 16);
 
 	if (flags & DC_EXEC) {
-		v->orders.list->GetScheduledDispatchScheduleSet().emplace_back();
-		DispatchSchedule &ds = v->orders.list->GetScheduledDispatchScheduleSet().back();
+		v->orders->GetScheduledDispatchScheduleSet().emplace_back();
+		DispatchSchedule &ds = v->orders->GetScheduledDispatchScheduleSet().back();
 		ds.SetScheduledDispatchDuration(p2);
 		ds.SetScheduledDispatchStartDate(date, full_date_fract);
 		ds.UpdateScheduledDispatch(nullptr);
@@ -379,12 +379,12 @@ CommandCost CmdScheduledDispatchRemoveSchedule(TileIndex tile, DoCommandFlag fla
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (v->orders.list == nullptr) return CMD_ERROR;
+	if (v->orders == nullptr) return CMD_ERROR;
 
-	if (schedule_index >= v->orders.list->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
+	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		std::vector<DispatchSchedule> &scheds = v->orders.list->GetScheduledDispatchScheduleSet();
+		std::vector<DispatchSchedule> &scheds = v->orders->GetScheduledDispatchScheduleSet();
 		scheds.erase(scheds.begin() + schedule_index);
 		for (Order *o = v->GetFirstOrder(); o != nullptr; o = o->next) {
 			int idx = o->GetDispatchScheduleIndex();

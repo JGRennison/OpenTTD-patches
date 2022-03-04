@@ -95,14 +95,14 @@ static inline bool VehicleSetNextDepartureTime(DateTicks *previous_departure, ui
 {
 	if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
 		auto is_current_implicit_order = [&v](const Order *o) -> bool {
-			if (v->cur_implicit_order_index >= v->orders.list->GetNumOrders()) return false;
-			return v->orders.list->GetOrderAt(v->cur_implicit_order_index) == o;
+			if (v->cur_implicit_order_index >= v->orders->GetNumOrders()) return false;
+			return v->orders->GetOrderAt(v->cur_implicit_order_index) == o;
 		};
 
 		/* This condition means that we want departure time for the dispatch order */
 		/* but not if the vehicle has arrived at the dispatch order because the timetable is already shifted */
 		if (order->IsScheduledDispatchOrder(true) && !(arrived_at_timing_point && is_current_implicit_order(order))) {
-			const DispatchSchedule &ds = v->orders.list->GetDispatchScheduleByIndex(order->GetDispatchScheduleIndex());
+			const DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(order->GetDispatchScheduleIndex());
 
 			DateTicksScaled actual_departure    = -1;
 			const DateTicksScaled begin_time    = ds.GetScheduledDispatchStartTick();
@@ -147,7 +147,7 @@ static inline bool VehicleSetNextDepartureTime(DateTicks *previous_departure, ui
 		}
 
 		/* This is special case for proper calculation of arrival time. */
-		if (arrived_at_timing_point && v->cur_implicit_order_index < v->orders.list->GetNumOrders() && v->orders.list->GetOrderAt(v->cur_implicit_order_index)->IsScheduledDispatchOrder(true)) {
+		if (arrived_at_timing_point && v->cur_implicit_order_index < v->orders->GetNumOrders() && v->orders->GetOrderAt(v->cur_implicit_order_index)->IsScheduledDispatchOrder(true)) {
 			*previous_departure += order->GetTravelTime() + order->GetWaitTime();
 			*waiting_time = -v->lateness_counter + order->GetWaitTime();
 			return false;
@@ -165,7 +165,7 @@ static void ScheduledDispatchDepartureLocalFix(DepartureList *departure_list)
 	/* Seperate departure by each shared order group */
 	std::map<uint32, std::vector<Departure*>> separated_departure;
 	for (Departure* departure : *departure_list) {
-		separated_departure[departure->vehicle->orders.list->index].push_back(departure);
+		separated_departure[departure->vehicle->orders->index].push_back(departure);
 	}
 
 	for (auto& pair : separated_departure) {
