@@ -1011,13 +1011,37 @@ static void CreateDesertOrRainForest(uint desert_tropic_line)
 
 		if (!IsValidTile(tile)) continue;
 
-		for (data = _make_desert_or_rainforest_data;
+		if (_settings_game.game_creation.coast_tropics_width == 0) {
+			for (data = _make_desert_or_rainforest_data;
 				data != endof(_make_desert_or_rainforest_data); ++data) {
-			TileIndex t = AddTileIndexDiffCWrap(tile, *data);
-			if (t != INVALID_TILE && (TileHeight(t) >= desert_tropic_line || IsTileType(t, MP_WATER))) break;
+				TileIndex t = AddTileIndexDiffCWrap(tile, *data);
+				if (t != INVALID_TILE && (TileHeight(t) >= desert_tropic_line || IsTileType(t, MP_WATER))) break;
+			}
+			if (data == endof(_make_desert_or_rainforest_data)) {
+				SetTropicZone(tile, TROPICZONE_DESERT);
+			}
 		}
-		if (data == endof(_make_desert_or_rainforest_data)) {
-			SetTropicZone(tile, TROPICZONE_DESERT);
+
+		if (_settings_game.game_creation.coast_tropics_width == 1) {
+			for (data = _make_desert_or_rainforest_data_medium;
+				data != endof(_make_desert_or_rainforest_data_medium); ++data) {
+				TileIndex t = AddTileIndexDiffCWrap(tile, *data);
+				if (t != INVALID_TILE && (TileHeight(t) >= desert_tropic_line || IsTileType(t, MP_WATER))) break;
+			}
+			if (data == endof(_make_desert_or_rainforest_data_medium)) {
+				SetTropicZone(tile, TROPICZONE_DESERT);
+			}
+		}
+
+		if (_settings_game.game_creation.coast_tropics_width == 2) {
+			for (data = _make_desert_or_rainforest_data_large;
+				data != endof(_make_desert_or_rainforest_data_large); ++data) {
+				TileIndex t = AddTileIndexDiffCWrap(tile, *data);
+				if (t != INVALID_TILE && (TileHeight(t) >= desert_tropic_line || IsTileType(t, MP_WATER))) break;
+			}
+			if (data == endof(_make_desert_or_rainforest_data_large)) {
+				SetTropicZone(tile, TROPICZONE_DESERT);
+			}
 		}
 	}
 
@@ -1032,13 +1056,37 @@ static void CreateDesertOrRainForest(uint desert_tropic_line)
 
 		if (!IsValidTile(tile)) continue;
 
-		for (data = _make_desert_or_rainforest_data;
+		if (_settings_game.game_creation.coast_tropics_width == 0) {
+			for (data = _make_desert_or_rainforest_data;
 				data != endof(_make_desert_or_rainforest_data); ++data) {
-			TileIndex t = AddTileIndexDiffCWrap(tile, *data);
-			if (t != INVALID_TILE && IsTileType(t, MP_CLEAR) && IsClearGround(t, CLEAR_DESERT)) break;
+				TileIndex t = AddTileIndexDiffCWrap(tile, *data);
+				if (t != INVALID_TILE && IsTileType(t, MP_CLEAR) && IsClearGround(t, CLEAR_DESERT)) break;
+			}
+			if (data == endof(_make_desert_or_rainforest_data)) {
+				SetTropicZone(tile, TROPICZONE_RAINFOREST);
+			}
 		}
-		if (data == endof(_make_desert_or_rainforest_data)) {
-			SetTropicZone(tile, TROPICZONE_RAINFOREST);
+
+		if (_settings_game.game_creation.coast_tropics_width == 1) {
+			for (data = _make_desert_or_rainforest_data_medium;
+				data != endof(_make_desert_or_rainforest_data_medium); ++data) {
+				TileIndex t = AddTileIndexDiffCWrap(tile, *data);
+				if (t != INVALID_TILE && IsTileType(t, MP_CLEAR) && IsClearGround(t, CLEAR_DESERT)) break;
+			}
+			if (data == endof(_make_desert_or_rainforest_data_medium)) {
+				SetTropicZone(tile, TROPICZONE_RAINFOREST);
+			}
+		}
+
+		if (_settings_game.game_creation.coast_tropics_width == 2) {
+			for (data = _make_desert_or_rainforest_data_large;
+				data != endof(_make_desert_or_rainforest_data_large); ++data) {
+				TileIndex t = AddTileIndexDiffCWrap(tile, *data);
+				if (t != INVALID_TILE && IsTileType(t, MP_CLEAR) && IsClearGround(t, CLEAR_DESERT)) break;
+			}
+			if (data == endof(_make_desert_or_rainforest_data_large)) {
+				SetTropicZone(tile, TROPICZONE_RAINFOREST);
+			}
 		}
 	}
 }
