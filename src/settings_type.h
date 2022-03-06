@@ -413,6 +413,7 @@ struct GameCreationSettings {
 	byte   amount_of_rivers;                 ///< the amount of rivers
 	bool   rivers_top_of_hill;               ///< do rivers require starting near the tops of hills?
 	uint8  river_tropics_width;              ///< the configured width of tropics around rivers
+	uint8  lake_tropics_width;               ///< the configured width of tropics around lakes
 	uint8  coast_tropics_width;              ///< the configured width of tropics around coasts
 	uint8  lake_size;                        ///< how large can lakes get?
 	bool   lakes_allowed_in_deserts;         ///< are lakes allowed in deserts?
