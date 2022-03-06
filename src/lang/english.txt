@@ -1678,7 +1678,16 @@ STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM_HELPTEXT                  :Choose how rand
 STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL                           :Rivers require their springs to generate at the top of hills: {STRING}
 STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL_HELPTEXT                  :Choose whether rivers require their springs to generate towards the top of hills.
 STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH                          :Tropics width around rivers: {STRING}
-STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH_HELPTEXT                 :Controls the width of the tropic zone that surrounds rivers in sub-tropic landscape.
+STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH_HELPTEXT                 :Controls the width of the tropic zone that surrounds rivers in sub-tropic landscape.{}This is the total width of the zone on both sides of the river.
+STR_CONFIG_SETTING_LAKE_TROPICS_WIDTH                           :Tropics width around lakes: {STRING}
+STR_CONFIG_SETTING_LAKE_TROPICS_WIDTH_HELPTEXT                  :Controls the width of the tropic zone that surrounds lakes in sub-tropic landscape.{}This is the total width of the zone on both sides of the lake.
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH                          :Tropics width around coasts: {STRING}
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_HELPTEXT                 :Controls the width of the tropic zone that surrounds coasts in sub-tropic landscape.
+###length 4
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_DEFAULT                  :Default
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_MEDIUM                   :Medium
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_LARGE                    :Large
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_EXTRALARGE               :Extra Large
 STR_CONFIG_SETTING_LAKE_SIZE                                    :Size of lakes: {STRING}
 STR_CONFIG_SETTING_LAKE_SIZE_HELPTEXT                           :Controls the size of lakes that are generated along rivers.
 STR_CONFIG_SETTING_LAKE_SIZE_VALUE                              :{NUM}
