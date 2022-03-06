@@ -1010,6 +1010,8 @@ static std::pair<const TileIndexDiffC *, const TileIndexDiffC *> GetDesertOrRain
 			return { _make_desert_or_rainforest_data_medium, endof(_make_desert_or_rainforest_data_medium) };
 		case 2:
 			return { _make_desert_or_rainforest_data_large, endof(_make_desert_or_rainforest_data_large) };
+		case 3:
+			return { _make_desert_or_rainforest_data_extralarge, endof(_make_desert_or_rainforest_data_extralarge) };
 		default:
 			NOT_REACHED();
 	}
@@ -1034,17 +1036,6 @@ static void CreateDesertOrRainForest(uint desert_tropic_line)
 		if (data == desert_rainforest_data.second) {
 			SetTropicZone(tile, TROPICZONE_DESERT);
 		}
-
-		if (_settings_game.game_creation.coast_tropics_width == 3) {
-			for (data = _make_desert_or_rainforest_data_extralarge;
-				data != endof(_make_desert_or_rainforest_data_extralarge); ++data) {
-				TileIndex t = AddTileIndexDiffCWrap(tile, *data);
-				if (t != INVALID_TILE && (TileHeight(t) >= desert_tropic_line || IsTileType(t, MP_WATER))) break;
-			}
-			if (data == endof(_make_desert_or_rainforest_data_extralarge)) {
-				SetTropicZone(tile, TROPICZONE_DESERT);
-			}
-		}
 	}
 
 	for (uint i = 0; i != 256; i++) {
@@ -1064,17 +1055,6 @@ static void CreateDesertOrRainForest(uint desert_tropic_line)
 		}
 		if (data == desert_rainforest_data.second) {
 			SetTropicZone(tile, TROPICZONE_RAINFOREST);
-		}
-
-		if (_settings_game.game_creation.coast_tropics_width == 3) {
-			for (data = _make_desert_or_rainforest_data_extralarge;
-				data != endof(_make_desert_or_rainforest_data_extralarge); ++data) {
-				TileIndex t = AddTileIndexDiffCWrap(tile, *data);
-				if (t != INVALID_TILE && IsTileType(t, MP_CLEAR) && IsClearGround(t, CLEAR_DESERT)) break;
-			}
-			if (data == endof(_make_desert_or_rainforest_data_extralarge)) {
-				SetTropicZone(tile, TROPICZONE_RAINFOREST);
-			}
 		}
 	}
 }
