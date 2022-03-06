@@ -771,6 +771,24 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						}
 						break;
 
+					case TRIT_SPEED_ADAPTATION_CONTROL:
+						switch (static_cast<TraceRestrictSpeedAdaptationControlField>(GetTraceRestrictValue(item))) {
+							case TRSACF_SPEED_ADAPT_EXEMPT:
+								out.flags |= TRPRF_SPEED_ADAPT_EXEMPT;
+								out.flags &= ~TRPRF_RM_SPEED_ADAPT_EXEMPT;
+								break;
+
+							case TRPPCF_REMOVE_SPEED_ADAPT_EXEMPT:
+								out.flags &= ~TRPRF_SPEED_ADAPT_EXEMPT;
+								out.flags |= TRPRF_RM_SPEED_ADAPT_EXEMPT;
+								break;
+
+							default:
+								NOT_REACHED();
+								break;
+						}
+						break;
+
 					default:
 						NOT_REACHED();
 				}
@@ -966,6 +984,10 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 					actions_used_flags |= TRPAUF_NO_PBS_BACK_PENALTY;
 					break;
 
+				case TRIT_SPEED_ADAPTATION_CONTROL:
+					actions_used_flags |= TRPAUF_SPEED_ADAPTATION;
+					break;
+
 				default:
 					return_cmd_error(STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION);
 			}
@@ -1032,6 +1054,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 		case TRVT_TIME_DATE_INT:
 		case TRVT_ENGINE_CLASS:
 		case TRVT_PF_PENALTY_CONTROL:
+		case TRVT_SPEED_ADAPTATION_CONTROL:
 			SetTraceRestrictValue(item, 0);
 			if (!IsTraceRestrictTypeAuxSubtype(GetTraceRestrictType(item))) {
 				SetTraceRestrictAuxField(item, 0);

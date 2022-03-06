@@ -158,6 +158,7 @@ static const StringID _program_insert_str[] = {
 	STR_TRACE_RESTRICT_NEWS_CONTROL,
 	STR_TRACE_RESTRICT_COUNTER_OP,
 	STR_TRACE_RESTRICT_PF_PENALTY_CONTROL,
+	STR_TRACE_RESTRICT_SPEED_ADAPTATION_CONTROL,
 	INVALID_STRING_ID
 };
 static const uint32 _program_insert_else_hide_mask    = 8;     ///< disable bitmask for else
@@ -169,6 +170,7 @@ static const uint32 _program_reverse_hide_mask = 0x400;        ///< disable bitm
 static const uint32 _program_speed_res_hide_mask = 0x800;      ///< disable bitmask for speed restriction
 static const uint32 _program_counter_hide_mask = 0x2000;       ///< disable bitmask for counter
 static const uint32 _program_penalty_adj_hide_mask = 0x4000;   ///< disable bitmask for penalty adjust
+static const uint32 _program_speed_adapt_hide_mask = 0x8000;   ///< disable bitmask for speed adaptation
 static const uint _program_insert_val[] = {
 	TRIT_COND_UNDEFINED,                               // if block
 	TRIT_COND_UNDEFINED | (TRCF_ELSE << 16),           // elif block
@@ -185,6 +187,7 @@ static const uint _program_insert_val[] = {
 	TRIT_NEWS_CONTROL,                                 // news control
 	TRIT_COUNTER,                                      // counter operation
 	TRIT_PF_PENALTY_CONTROL,                           // penalty control
+	TRIT_SPEED_ADAPTATION_CONTROL,                     // speed adaptation control
 };
 
 /** insert drop down list strings and values */
@@ -403,6 +406,21 @@ static const TraceRestrictDropDownListSet _pf_penalty_control_value = {
 	_pf_penalty_control_value_str, _pf_penalty_control_value_val,
 };
 
+static const StringID _speed_adaptation_control_value_str[] = {
+	STR_TRACE_RESTRICT_MAKE_TRAIN_SPEED_ADAPTATION_EXEMPT_SHORT,
+	STR_TRACE_RESTRICT_REMOVE_TRAIN_SPEED_ADAPTATION_EXEMPT_SHORT,
+	INVALID_STRING_ID
+};
+static const uint _speed_adaptation_control_value_val[] = {
+	TRSACF_SPEED_ADAPT_EXEMPT,
+	TRPPCF_REMOVE_SPEED_ADAPT_EXEMPT,
+};
+
+/** value drop down list for speed adaptation control types strings and values */
+static const TraceRestrictDropDownListSet _speed_adaptation_control_value = {
+	_speed_adaptation_control_value_str, _speed_adaptation_control_value_val,
+};
+
 /**
  * Get index of @p value in @p list_set
  * if @p value is not present, assert if @p missing_ok is false, otherwise return -1
@@ -464,6 +482,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		STR_TRACE_RESTRICT_NEWS_CONTROL,
 		STR_TRACE_RESTRICT_COUNTER_OP,
 		STR_TRACE_RESTRICT_PF_PENALTY_CONTROL,
+		STR_TRACE_RESTRICT_SPEED_ADAPTATION_CONTROL,
 		INVALID_STRING_ID,
 	};
 	static const uint val_action[] = {
@@ -478,6 +497,7 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		TRIT_NEWS_CONTROL,
 		TRIT_COUNTER,
 		TRIT_PF_PENALTY_CONTROL,
+		TRIT_SPEED_ADAPTATION_CONTROL,
 	};
 	static const TraceRestrictDropDownListSet set_action = {
 		str_action, val_action,
@@ -549,9 +569,10 @@ static const TraceRestrictDropDownListSet *GetTypeDropDownListSet(TraceRestrictG
 		if (_settings_client.gui.show_adv_tracerestrict_features) {
 			*hide_mask = 0;
 		} else {
-			*hide_mask = is_conditional ? 0x1FE0000 : 0x6F0;
+			*hide_mask = is_conditional ? 0x1FE0000 : 0xEF0;
 		}
 		if (is_conditional && _settings_game.vehicle.train_braking_model != TBM_REALISTIC) *hide_mask |= 0x1040000;
+		if (!is_conditional && !_settings_game.vehicle.train_speed_adaptation) *hide_mask |= 0x800;
 	}
 	return is_conditional ? &set_cond : &set_action;
 }
@@ -1555,6 +1576,22 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				}
 				break;
 
+			case TRIT_SPEED_ADAPTATION_CONTROL:
+				switch (static_cast<TraceRestrictSpeedAdaptationControlField>(GetTraceRestrictValue(item))) {
+					case TRSACF_SPEED_ADAPT_EXEMPT:
+						instruction_string = STR_TRACE_RESTRICT_MAKE_TRAIN_SPEED_ADAPTATION_EXEMPT;
+						break;
+
+					case TRPPCF_REMOVE_SPEED_ADAPT_EXEMPT:
+						instruction_string = STR_TRACE_RESTRICT_REMOVE_TRAIN_SPEED_ADAPTATION_EXEMPT;
+						break;
+
+					default:
+						NOT_REACHED();
+						break;
+				}
+				break;
+
 			default:
 				NOT_REACHED();
 				break;
@@ -1681,6 +1718,9 @@ public:
 				if (!_settings_client.gui.show_adv_tracerestrict_features) {
 					hidden |= _program_slot_hide_mask | _program_wait_pbs_hide_mask | _program_reverse_hide_mask |
 							_program_speed_res_hide_mask | _program_counter_hide_mask | _program_penalty_adj_hide_mask;
+				}
+				if (!_settings_client.gui.show_adv_tracerestrict_features || !_settings_game.vehicle.train_speed_adaptation) {
+					hidden |= _program_speed_adapt_hide_mask;
 				}
 
 				this->ShowDropDownListWithValue(&_program_insert, 0, true, TR_WIDGET_INSERT, disabled, hidden, 0);
@@ -1872,6 +1912,10 @@ public:
 
 					case TRVT_PF_PENALTY_CONTROL:
 						this->ShowDropDownListWithValue(&_pf_penalty_control_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
+						break;
+
+					case TRVT_SPEED_ADAPTATION_CONTROL:
+						this->ShowDropDownListWithValue(&_speed_adaptation_control_value, GetTraceRestrictValue(item), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0, 0);
 						break;
 
 					default:
@@ -2959,6 +3003,13 @@ private:
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
 							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
 									GetDropDownStringByValue(&_pf_penalty_control_value, GetTraceRestrictValue(item));
+							break;
+
+						case TRVT_SPEED_ADAPTATION_CONTROL:
+							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
+							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data =
+									GetDropDownStringByValue(&_speed_adaptation_control_value, GetTraceRestrictValue(item));
 							break;
 
 						default:

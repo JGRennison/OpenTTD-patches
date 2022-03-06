@@ -160,6 +160,7 @@ enum TraceRestrictItemType {
 	TRIT_NEWS_CONTROL             = 50,   ///< News control
 	TRIT_COUNTER                  = 51,   ///< Change counter value
 	TRIT_PF_PENALTY_CONTROL       = 52,   ///< Control base signal penalties
+	TRIT_SPEED_ADAPTATION_CONTROL = 53,   ///< Control speed adaptation
 
 	/* space up to 63 */
 };
@@ -292,6 +293,14 @@ enum TraceRestrictPfPenaltyControlField {
 };
 
 /**
+ * TraceRestrictItem value field, for TRIT_SPEED_ADAPTATION_CONTROL
+ */
+enum TraceRestrictSpeedAdaptationControlField {
+	TRSACF_SPEED_ADAPT_EXEMPT          = 0,       ///< Make train exempt from speed adaptation
+	TRPPCF_REMOVE_SPEED_ADAPT_EXEMPT   = 1,       ///< Remove train exempt from speed adaptation
+};
+
+/**
  * TraceRestrictItem value field, for TRIT_COND_TRAIN_STATUS
  */
 enum TraceRestrictTrainStatusValueField {
@@ -387,6 +396,8 @@ enum TraceRestrictProgramResultFlags {
 	TRPRF_SPEED_RESTRICTION_SET   = 1 << 6,  ///< Speed restriction field set
 	TRPRF_TRAIN_NOT_STUCK         = 1 << 7,  ///< Train is not stuck
 	TRPRF_NO_PBS_BACK_PENALTY     = 1 << 8,  ///< Do not apply PBS back penalty
+	TRPRF_SPEED_ADAPT_EXEMPT      = 1 << 9,  ///< Make speed adaptation exempt
+	TRPRF_RM_SPEED_ADAPT_EXEMPT   = 1 << 10, ///< Remove speed adaptation exemption
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramResultFlags)
 
@@ -409,6 +420,7 @@ enum TraceRestrictProgramActionsUsedFlags {
 	TRPAUF_CHANGE_COUNTER         = 1 << 12, ///< Change counter value is present
 	TRPAUF_NO_PBS_BACK_PENALTY    = 1 << 13, ///< No PBS back penalty is present
 	TRPAUF_SLOT_ACQUIRE_ON_RES    = 1 << 14, ///< Slot acquire (on reserve) action is present
+	TRPAUF_SPEED_ADAPTATION       = 1 << 15, ///< Speed adaptation control
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
 
@@ -650,6 +662,7 @@ enum TraceRestrictValueType {
 	TRVT_TIME_DATE_INT            = 45,///< takes a TraceRestrictTimeDateValueField, and an integer in the next item slot
 	TRVT_ENGINE_CLASS             = 46,///< takes a EngineClass
 	TRVT_PF_PENALTY_CONTROL       = 47,///< takes a TraceRestrictPfPenaltyControlField
+	TRVT_SPEED_ADAPTATION_CONTROL = 48,///< takes a TraceRestrictSpeedAdaptationControlField
 };
 
 /**
@@ -827,6 +840,8 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 			out.value_type = TRVT_COUNTER_INDEX_INT;
 		} else if (GetTraceRestrictType(item) == TRIT_PF_PENALTY_CONTROL) {
 			out.value_type = TRVT_PF_PENALTY_CONTROL;
+		} else if (GetTraceRestrictType(item) == TRIT_SPEED_ADAPTATION_CONTROL) {
+			out.value_type = TRVT_SPEED_ADAPTATION_CONTROL;
 		} else {
 			out.value_type = TRVT_NONE;
 		}

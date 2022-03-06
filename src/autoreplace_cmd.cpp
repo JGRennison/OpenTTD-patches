@@ -429,6 +429,7 @@ CommandCost CopyHeadSpecificThings(Vehicle *old_head, Vehicle *new_head, DoComma
 
 		if (old_head->type == VEH_TRAIN) {
 			Train::From(new_head)->speed_restriction = Train::From(old_head)->speed_restriction;
+			SB(Train::From(new_head)->flags, VRF_SPEED_ADAPTATION_EXEMPT, 1, GB(Train::From(old_head)->flags, VRF_SPEED_ADAPTATION_EXEMPT, 1));
 		}
 
 		/* Transfer any acquired trace restrict slots to the new vehicle */
