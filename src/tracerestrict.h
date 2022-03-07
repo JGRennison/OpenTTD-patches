@@ -297,7 +297,7 @@ enum TraceRestrictPfPenaltyControlField {
  */
 enum TraceRestrictSpeedAdaptationControlField {
 	TRSACF_SPEED_ADAPT_EXEMPT          = 0,       ///< Make train exempt from speed adaptation
-	TRPPCF_REMOVE_SPEED_ADAPT_EXEMPT   = 1,       ///< Remove train exempt from speed adaptation
+	TRSACF_REMOVE_SPEED_ADAPT_EXEMPT   = 1,       ///< Remove train exempt from speed adaptation
 };
 
 /**

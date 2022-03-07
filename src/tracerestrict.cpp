@@ -778,7 +778,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 								out.flags &= ~TRPRF_RM_SPEED_ADAPT_EXEMPT;
 								break;
 
-							case TRPPCF_REMOVE_SPEED_ADAPT_EXEMPT:
+							case TRSACF_REMOVE_SPEED_ADAPT_EXEMPT:
 								out.flags &= ~TRPRF_SPEED_ADAPT_EXEMPT;
 								out.flags |= TRPRF_RM_SPEED_ADAPT_EXEMPT;
 								break;

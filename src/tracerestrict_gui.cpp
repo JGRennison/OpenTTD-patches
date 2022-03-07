@@ -413,7 +413,7 @@ static const StringID _speed_adaptation_control_value_str[] = {
 };
 static const uint _speed_adaptation_control_value_val[] = {
 	TRSACF_SPEED_ADAPT_EXEMPT,
-	TRPPCF_REMOVE_SPEED_ADAPT_EXEMPT,
+	TRSACF_REMOVE_SPEED_ADAPT_EXEMPT,
 };
 
 /** value drop down list for speed adaptation control types strings and values */
@@ -1582,7 +1582,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 						instruction_string = STR_TRACE_RESTRICT_MAKE_TRAIN_SPEED_ADAPTATION_EXEMPT;
 						break;
 
-					case TRPPCF_REMOVE_SPEED_ADAPT_EXEMPT:
+					case TRSACF_REMOVE_SPEED_ADAPT_EXEMPT:
 						instruction_string = STR_TRACE_RESTRICT_REMOVE_TRAIN_SPEED_ADAPTATION_EXEMPT;
 						break;
 
