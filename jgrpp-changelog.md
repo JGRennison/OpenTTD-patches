@@ -2,6 +2,18 @@
 
 * * *
 
+### v0.47.0 (2022-03-12)
+* Fix crash in scheduled dispatch window with nearest depot dispatch order.
+* Fix non-rail bridge construction setting polyrail endpoints.
+* Fix the autosave interval setting being reset at startup when it was previously set to use a custom interval.
+* Add NewGRF road stops.
+* Add routing restriction action to make the train exempt from automatic train speed adaptation.
+* Add hotkeys for building road waypoints to the road/tram toolbars.
+* Implement automatic train speed adaptation on signalled tunnels/bridges.
+* Allow configuring the width of tropic zones around water during map generation.
+* If an aircraft or road vehicle's next order is for the current station when leaving, start loading again without moving, instead of leaving.
+* Bump trunk base from commit 83b6defbfb0fa649a854767ae7c8b5a18f917e80 to commit 0d8fbf647b2c819bee0a0883b5fc831aa64e4ee0.
+
 ### v0.46.1 (2022-02-07)
 * Fix crash or incorrect text in the scheduled dispatch window when a dispatch schedule is assigned to a depot order.
 * Fix crash which could occur when using aircraft with cargodist after loading a 12.x vanilla savegame/scenario.
