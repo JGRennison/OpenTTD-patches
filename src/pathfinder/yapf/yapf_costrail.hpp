@@ -423,7 +423,20 @@ public:
 
 				if (has_signal_against) {
 					SignalType sig_type = GetSignalType(tile, TrackdirToTrack(trackdir));
-					if (IsPbsSignal(sig_type) && !IsNoEntrySignal(sig_type)) {
+					if (IsNoEntrySignal(sig_type)) {
+						if (ShouldCheckTraceRestrict(n, tile)) {
+							const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(trackdir));
+							if (prog && prog->actions_used_flags & TRPAUF_PF) {
+								TraceRestrictProgramResult out;
+								prog->Execute(Yapf().GetVehicle(), TraceRestrictProgramInput(tile, trackdir, &TraceRestrictPreviousSignalCallback, &n), out);
+								if (out.flags & TRPRF_DENY) {
+									n.m_segment->m_end_segment_reason |= ESRB_DEAD_END;
+									return -1;
+								}
+								cost += out.penalty;
+							}
+						}
+					} else if (IsPbsSignal(sig_type)) {
 						bool no_add_cost = false;
 
 						if (ShouldCheckTraceRestrict(n, tile)) {
