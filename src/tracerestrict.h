@@ -421,6 +421,7 @@ enum TraceRestrictProgramActionsUsedFlags {
 	TRPAUF_NO_PBS_BACK_PENALTY    = 1 << 13, ///< No PBS back penalty is present
 	TRPAUF_SLOT_ACQUIRE_ON_RES    = 1 << 14, ///< Slot acquire (on reserve) action is present
 	TRPAUF_SPEED_ADAPTATION       = 1 << 15, ///< Speed adaptation control
+	TRPAUF_PBS_RES_END_SIMULATE   = 1 << 16, ///< PBS reservations ending at this signal slot changes must be fully simulated in dry run mode
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
 
@@ -994,10 +995,14 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 
 	std::vector<SignalReference> progsig_dependants;
 
+	static std::vector<TraceRestrictSlotID> veh_temporarily_added;
+	static std::vector<TraceRestrictSlotID> veh_temporarily_removed;
+
 	static void RebuildVehicleIndex();
 	static bool ValidateVehicleIndex();
 	static void ValidateSlotOccupants(std::function<void(const char *)> log);
 	static void PreCleanPool();
+	static void RevertTemporaryChanges(VehicleID veh);
 
 	TraceRestrictSlot(CompanyID owner = INVALID_COMPANY, VehicleType type = VEH_TRAIN)
 	{
@@ -1020,7 +1025,9 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 
 	bool Occupy(VehicleID id, bool force = false);
 	bool OccupyDryRun(VehicleID ids);
+	bool OccupyDryRunUsingTemporaryState(VehicleID id);
 	void Vacate(VehicleID id);
+	void VacateUsingTemporaryState(VehicleID id);
 	void Clear();
 	void UpdateSignals();
 

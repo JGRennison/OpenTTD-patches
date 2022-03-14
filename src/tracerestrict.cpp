@@ -73,6 +73,9 @@ INSTANTIATE_POOL_METHODS(TraceRestrictSlot)
 TraceRestrictCounterPool _tracerestrictcounter_pool("TraceRestrictCounter");
 INSTANTIATE_POOL_METHODS(TraceRestrictCounter)
 
+std::vector<TraceRestrictSlotID> TraceRestrictSlot::veh_temporarily_added;
+std::vector<TraceRestrictSlotID> TraceRestrictSlot::veh_temporarily_removed;
+
 /**
  * TraceRestrictRefId --> TraceRestrictProgramID (Pool ID) mapping
  * The indirection is mainly to enable shared programs
@@ -667,16 +670,28 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 								if (input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQUIRE) {
 									if (!slot->Occupy(v->index)) out.flags |= TRPRF_PBS_RES_END_WAIT;
 								} else if (input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQ_DRY) {
-									if (!slot->OccupyDryRun(v->index)) out.flags |= TRPRF_PBS_RES_END_WAIT;
+									if (this->actions_used_flags & TRPAUF_PBS_RES_END_SIMULATE) {
+										if (!slot->OccupyDryRunUsingTemporaryState(v->index)) out.flags |= TRPRF_PBS_RES_END_WAIT;
+									} else {
+										if (!slot->OccupyDryRun(v->index)) out.flags |= TRPRF_PBS_RES_END_WAIT;
+									}
 								}
 								break;
 
 							case TRSCOF_PBS_RES_END_ACQ_TRY:
-								if (input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQUIRE) slot->Occupy(v->index);
+								if (input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQUIRE) {
+									slot->Occupy(v->index);
+								} else if ((input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQ_DRY) && (this->actions_used_flags & TRPAUF_PBS_RES_END_SIMULATE)) {
+									slot->OccupyDryRunUsingTemporaryState(v->index);
+								}
 								break;
 
 							case TRSCOF_PBS_RES_END_RELEASE:
-								if (input.permitted_slot_operations & TRPISP_PBS_RES_END_RELEASE) slot->Vacate(v->index);
+								if (input.permitted_slot_operations & TRPISP_PBS_RES_END_RELEASE) {
+									slot->Vacate(v->index);
+								} else if ((input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQ_DRY) && (this->actions_used_flags & TRPAUF_PBS_RES_END_SIMULATE)) {
+									slot->VacateUsingTemporaryState(v->index);
+								}
 								break;
 
 							case TRSCOF_ACQUIRE_TRY_ON_RESERVE:
@@ -797,6 +812,9 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 			}
 		}
 	}
+	if ((input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQ_DRY) && (this->actions_used_flags & TRPAUF_PBS_RES_END_SIMULATE)) {
+		TraceRestrictSlot::RevertTemporaryChanges(v->index);
+	}
 	assert(condstack.empty());
 }
 
@@ -822,6 +840,11 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 	static std::vector<TraceRestrictCondStackFlags> condstack;
 	condstack.clear();
 	actions_used_flags = static_cast<TraceRestrictProgramActionsUsedFlags>(0);
+
+	static std::vector<TraceRestrictSlotID> pbs_res_end_released_slots;
+	pbs_res_end_released_slots.clear();
+	static std::vector<TraceRestrictSlotID> pbs_res_end_acquired_slots;
+	pbs_res_end_acquired_slots.clear();
 
 	size_t size = items.size();
 	for (size_t i = 0; i < size; i++) {
@@ -878,8 +901,6 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				case TRIT_COND_ENTRY_DIRECTION:
 				case TRIT_COND_PBS_ENTRY_SIGNAL:
 				case TRIT_COND_TRAIN_GROUP:
-				case TRIT_COND_TRAIN_IN_SLOT:
-				case TRIT_COND_SLOT_OCCUPANCY:
 				case TRIT_COND_PHYS_PROP:
 				case TRIT_COND_PHYS_RATIO:
 				case TRIT_COND_TRAIN_OWNER:
@@ -889,6 +910,13 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 				case TRIT_COND_TIME_DATE_VALUE:
 				case TRIT_COND_RESERVED_TILES:
 				case TRIT_COND_CATEGORY:
+					break;
+
+				case TRIT_COND_TRAIN_IN_SLOT:
+				case TRIT_COND_SLOT_OCCUPANCY:
+					if (find_index(pbs_res_end_released_slots, GetTraceRestrictValue(item)) >= 0 || find_index(pbs_res_end_acquired_slots, GetTraceRestrictValue(item)) >= 0) {
+						actions_used_flags |= TRPAUF_PBS_RES_END_SIMULATE;
+					}
 					break;
 
 				default:
@@ -947,11 +975,19 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 
 						case TRSCOF_PBS_RES_END_ACQ_WAIT:
 							actions_used_flags |= TRPAUF_PBS_RES_END_SLOT | TRPAUF_PBS_RES_END_WAIT;
+							if (find_index(pbs_res_end_released_slots, GetTraceRestrictValue(item)) >= 0) actions_used_flags |= TRPAUF_PBS_RES_END_SIMULATE;
+							include(pbs_res_end_acquired_slots, GetTraceRestrictValue(item));
 							break;
 
 						case TRSCOF_PBS_RES_END_ACQ_TRY:
+							actions_used_flags |= TRPAUF_PBS_RES_END_SLOT;
+							if (find_index(pbs_res_end_released_slots, GetTraceRestrictValue(item)) >= 0) actions_used_flags |= TRPAUF_PBS_RES_END_SIMULATE;
+							include(pbs_res_end_acquired_slots, GetTraceRestrictValue(item));
+							break;
+
 						case TRSCOF_PBS_RES_END_RELEASE:
 							actions_used_flags |= TRPAUF_PBS_RES_END_SLOT;
+							include(pbs_res_end_released_slots, GetTraceRestrictValue(item));
 							break;
 
 						case TRSCOF_ACQUIRE_TRY_ON_RESERVE:
@@ -1932,12 +1968,31 @@ bool TraceRestrictSlot::Occupy(VehicleID id, bool force)
 /**
  * Dry-run adding vehicle ID to occupants if possible and not already an occupant
  * @param id Vehicle ID
- * @return whether vehicle IDwould be an occupant
+ * @return whether vehicle ID would be an occupant
  */
 bool TraceRestrictSlot::OccupyDryRun(VehicleID id)
 {
 	if (this->IsOccupant(id)) return true;
 	if (this->occupants.size() >= this->max_occupancy) return false;
+	return true;
+}
+
+/**
+ * Dry-run adding vehicle ID to occupants if possible and not already an occupant, record any changes in the temporary state to be reverted later
+ * @param id Vehicle ID
+ * @return whether vehicle ID is now an occupant
+ */
+bool TraceRestrictSlot::OccupyDryRunUsingTemporaryState(VehicleID id)
+{
+	if (this->IsOccupant(id)) return true;
+	if (this->occupants.size() >= this->max_occupancy) return false;
+
+	this->occupants.push_back(id);
+
+	if (find_index(veh_temporarily_removed, this->index) < 0) {
+		include(veh_temporarily_added, this->index);
+	}
+
 	return true;
 }
 
@@ -1950,6 +2005,19 @@ void TraceRestrictSlot::Vacate(VehicleID id)
 	if (container_unordered_remove(this->occupants, id)) {
 		this->DeIndex(id);
 		this->UpdateSignals();
+	}
+}
+
+/**
+ * Remove vehicle ID from occupants, record any changes in the temporary state to be reverted later
+ * @param id Vehicle ID
+ */
+void TraceRestrictSlot::VacateUsingTemporaryState(VehicleID id)
+{
+	if (container_unordered_remove(this->occupants, id)) {
+		if (find_index(veh_temporarily_added, this->index) < 0) {
+			include(veh_temporarily_removed, this->index);
+		}
 	}
 }
 
@@ -2037,6 +2105,21 @@ void TraceRestrictSlot::ValidateSlotOccupants(std::function<void(const char *)> 
 void TraceRestrictSlot::PreCleanPool()
 {
 	slot_vehicle_index.clear();
+}
+
+/** Revert any temporary changes */
+void TraceRestrictSlot::RevertTemporaryChanges(VehicleID veh)
+{
+	for (TraceRestrictSlotID id : veh_temporarily_added) {
+		TraceRestrictSlot *slot = TraceRestrictSlot::Get(id);
+		container_unordered_remove(slot->occupants, veh);
+	}
+	for (TraceRestrictSlotID id : veh_temporarily_removed) {
+		TraceRestrictSlot *slot = TraceRestrictSlot::Get(id);
+		include(slot->occupants, veh);
+	}
+	veh_temporarily_added.clear();
+	veh_temporarily_removed.clear();
 }
 
 /** Remove vehicle ID from all slot occupants */
