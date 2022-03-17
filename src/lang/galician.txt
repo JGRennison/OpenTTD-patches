@@ -6988,3 +6988,93 @@ STR_SHIFT_KEY_NAME                                              :{BLACK}Shift
 STR_CTRL_KEY_NAME                                               :{BLACK}Ctrl
 STR_MODIFIER_TOGGLE_SHIFT_TOOLTIP                               :{BLACK}Click para invertir o estado da tecla Shift
 STR_MODIFIER_TOGGLE_CTRL_TOOLTIP                                :{BLACK}Click para invertir o estado da tecla Ctrl
+
+STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST                      :Capacidade de carga/Coste de mantemento
+STR_SETTINGS_MENU_SHOW_HIDDEN_SIGNS                             :Sinais ocultas e nomes mostrados
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_LABEL      :Intervalo personalizado (días)
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Intervalo personalizado (minutos reais)
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM            :Cada {COMMA}{NBSP}días
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_DAYS_CUSTOM_SINGULAR   :Todos os días
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Cada {COMMA} minutos reais
+STR_GAME_OPTIONS_AUTOSAVE_DAYS_QUERY_CAPT                       :{WHITE}Intervalo de autogardado en días
+STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}Intervalo de autogardado en minutos reais
+STR_CONFIG_SETTING_ADVISED_LEAVE_DEFAULT                        :Aconsellámoste deixar esta opción no valor por defecto
+STR_CONFIG_SETTING_DELIVERY_BALANCED                            :Equilibrado
+STR_CONFIG_SETTING_CARGO_DELIVERY_MODE                          :Modo de distribución da entrega de carga: {STRING}
+STR_CONFIG_SETTING_CARGO_DELIVERY_MODE_HELPTEXT                 :O método utilizado para entregar mercadoría as industrias que rodean a estación
+STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT                     :Velocidade máxima de carga en movemento do tren: {STRING}
+STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :A velocidade máxima permitida os trens cando están cargando en movemento
+STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_VAL                 :{VELOCITY}
+STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF                             :Amosar todos os sinais cos gráficos por defecto: {STRING}
+STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT                    :Amosar todos os sinais usando os sinais gráficos por defecto, en lugar de usar sinais de NewGRF. Isto é para que sexa máis sinxelo ver o estado e tipo de sinais cando os NewGRF non están claros ou non teñen gráficos.
+STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL                    :Permitir agochar as etiquetas de vista dos puntos de ruta: {STRING}
+STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL_HELPTEXT           :Cando se habilita, os puntos de ruta poden ter as súas etiquetas individualmente agochadas.{}Isto é util cando se utilizan decorativamente ou non requiren unha etiqueta.
+STR_CONFIG_SETTING_LAKE_TROPICS_WIDTH                           :Ancho da zona tropical arredor das lagoas: {STRING}
+STR_CONFIG_SETTING_LAKE_TROPICS_WIDTH_HELPTEXT                  :Controla o ancho da zona tropical que bordea as lagoas nas paisaxes subtropicais.{}Isto é o ancho total da zona en ambos lados da lagoa
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH                          :Ancho da zona tropical arredor da costa: {STRING}
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_HELPTEXT                 :Controla o ancho da zona tropical que bordea a costa nas paisaxes subtropicais.
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_DEFAULT                  :Por defecto
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_MEDIUM                   :Medio
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_LARGE                    :Grande
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_EXTRALARGE               :Extra Grande
+STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_DAYS                         :Intervalo de autogardado en días: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_DAYS_HELPTEXT                :Fixa o intervalo personalizado en días entre gardados de partidas
+STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES                      :Intervalo de autogardado en minutos reais: {STRING}
+STR_CONFIG_SETTING_AUTOSAVE_CUSTOM_MINUTES_HELPTEXT             :Fixa o intervalo personalizado en minutos reais entre gardados de partidas
+STR_CONFIG_SETTING_SPRITE_ZOOM_MIN_HELPTEXT_EXTRA               :{STRING}{}{}Cambiar esta opción do seu valor por defecto provocará  que os NewGRF de máis zoom ou alta definición amosen gráficos incorrectos ou non amosen gráficos (transparentes). Se ocurre algún problema grafico cando esta opción non está no valor por defecto, volve poñela no seu valor por defecto.
+STR_CONFIG_SETTING_AIRCRAFT_PATH_COST                           :Escalar a distancia das rutas que usan os avións: {STRING}
+STR_CONFIG_SETTING_AIRCRAFT_PATH_COST_HELPTEXT                  :Isto escala o coste (distancia métrica) das rutas que usan os avións de tal xeito que parezan máis longas/menos directas do que son en realidade. Isto reduce a tendencia de sobresaturación das liñas directas.
+STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER          :Sincronizar as opcións de localización coas do servidor en multixogador: {STRING}
+STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER_HELPTEXT :Cando te unes a un servidor multixogador como cliente, cambiar a localización para collere a do servidor.
+STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT_EXTRA :{STRING}{}{}As paradas de estrada/tranvía poden sobrescribir esta opción e permitir ou prohibir as paradas personalizadas baixo as pontes e establecer requisitos de altura mínimos.
+STR_TRACE_RESTRICT_SPEED_ADAPTATION_CONTROL                     :Control adaptativo de veleocidade
+STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED                           :[{STRING}] {TRSLOT}
+STR_TRACE_RESTRICT_MAKE_TRAIN_SPEED_ADAPTATION_EXEMPT           :Engadir excepción de tren na adaptación automática de velocidade
+STR_TRACE_RESTRICT_REMOVE_TRAIN_SPEED_ADAPTATION_EXEMPT         :Retirar excepción de tren na adaptación automática de velocidade
+STR_TRACE_RESTRICT_MAKE_TRAIN_SPEED_ADAPTATION_EXEMPT_SHORT     :Engadir excepción
+STR_TRACE_RESTRICT_REMOVE_TRAIN_SPEED_ADAPTATION_EXEMPT_SHORT   :Retirar excepción
+STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_ROAD_TO_WAYPOINT               :{BLACK}Convertir estrada en punto de ruta. Ctrl permite unir puntos de ruta. Shift alterna entre construír ou amosar o coste estimado
+STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_TRAM_TO_WAYPOINT               :{BLACK}Convertir tranvía en punto de ruta. Ctrl permite unir puntos de ruta. Shift alterna entre construír ou amosar o coste estimado
+STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :Característica non implementada remapeada ID: nome: {2:STRING}, mapeada a: {5:HEX} (sprite {3:NUM})
+STR_WAYPOINT_VIEW_HIDE_VIEWPORT_LABEL                           :{BLACK}Agochar a etiqueta de nome deste punto de ruta
+STR_VEHICLE_INFO_SPEED_ADAPTATION_EXEMPT                        :{BLACK}Eximir da adaptación de velocidade
+STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :Vehículo en slot
+STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_IN_SLOT                :Vehículo está en
+STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_NOT_IN_SLOT            :Vehículo non está en
+STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_IN_ACQUIRE_SLOT        :Vehículo está en/adquire
+STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_NOT_IN_ACQUIRE_SLOT    :Vehículo non está not en/non podo adquirir
+STR_ORDER_RV_DIR_NE                                             :[dirección nordeste]
+STR_ORDER_RV_DIR_SE                                             :[dirección sueste]
+STR_ORDER_RV_DIR_SW                                             :[dirección suroeste]
+STR_ORDER_RV_DIR_NW                                             :[dirección noroeste]
+STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_SCHEDULE_INDEX           :{NUM}{NBSP}-{NBSP}
+STR_TIMETABLE_ASSIGN_SCHEDULE_DROP_DOWN                         :{BLACK}Asignar programa
+STR_TIMETABLE_ASSIGN_SCHEDULE_DROP_DOWN_TOOLTIP                 :{BLACK}Asigna ou elimina unha saída programada o programa da orde seleccionada
+STR_TIMETABLE_ASSIGN_SCHEDULE_NONE                              :Sen programa
+STR_TIMETABLE_ASSIGN_SCHEDULE_ID                                :Programa {NUM}
+STR_TIMETABLE_WARNING_NO_SCHEDULED_DISPATCH_ORDER_ASSIGNED      :{BLACK}A saída programada non está asignada a unha orde
+STR_TIMETABLE_WARNING_SCHEDULE_ID                               :{BLACK}Programa {NUM}: {STRING}
+STR_TIMETABLE_WARNINGS_OMITTED                                  :{BLACK}{NUM} avisos máis omitidos...
+STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Non se pode construír un punto de ruta de estrada aqui...
+STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Non se pode eliminar o punto de ruta aqui...
+STR_ERROR_MUST_REMOVE_ROADWAYPOINT_FIRST                        :{WHITE}Debes eliminar o punto de ruta de estrada primeiro
+STR_SCHDISPATCH_CLEAR                                           :{BLACK}Limpar slots de saídas
+STR_SCHDISPATCH_CLEAR_TOOLTIP                                   :{BLACK}Limpar todos os slots de saídas do programa
+STR_SCHDISPATCH_MANAGE                                          :{BLACK}Xestionar programa
+STR_SCHDISPATCH_MANAGE_TOOLTIP                                  :{STRING}{}{}{STRING}{}{}{STRING}
+STR_SCHDISPATCH_PREV_SCHEDULE                                   :{BLACK}Anterior
+STR_SCHDISPATCH_PREV_SCHEDULE_TOOLTIP                           :{BLACK}Ir a saída programada anterior
+STR_SCHDISPATCH_NEXT_SCHEDULE                                   :{BLACK}Seguinte
+STR_SCHDISPATCH_NEXT_SCHEDULE_TOOLTIP                           :{BLACK}Ir a saída programada seguinte
+STR_SCHDISPATCH_ADD_SCHEDULE                                    :{BLACK}Engadir
+STR_SCHDISPATCH_ADD_SCHEDULE_TOOLTIP                            :{BLACK}Engadir unha nova saída programada
+STR_SCHDISPATCH_REMOVE_SCHEDULE                                 :{BLACK}Eliminar a programación actual
+STR_SCHDISPATCH_REMOVE_SCHEDULE_TOOLTIP                         :{BLACK}Eliminar por completeo esta saída programada.
+STR_SCHDISPATCH_NO_SCHEDULES                                    :{BLACK}Sen programas
+STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}Programa {NUM} de {NUM}
+STR_SCHDISPATCH_NOT_ASSIGNED_TO_ORDER                           :{BLACK}Esta saída programada non está asignada a unha orde.
+STR_SCHDISPATCH_ASSIGNED_TO_ORDER                               :{BLACK}Esta saída programada está asignada a orde {NUM}: {STRING}.
+STR_SCHDISPATCH_QUERY_CLEAR_SCHEDULE_CAPTION                    :{WHITE}Limpar slots de saídas
+STR_SCHDISPATCH_QUERY_CLEAR_SCHEDULE_TEXT                       :{WHITE}Seguro que queres limpar {NUM} slot{P "" s} de saída deste programa?
+STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_CAPTION                   :{WHITE}Eliminar programa
+STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_TEXT                      :{WHITE}Seguro que queres eliminar este programa (contendo {NUM} slot{P "" s} de saída)?
