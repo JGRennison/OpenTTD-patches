@@ -30,6 +30,7 @@ inline bool HasChickenBit(ChickenBitFlags flag)
 enum MiscDebugFlags {
 	MDF_OVERHEAT_BREAKDOWN_OPEN_WIN,
 	MDF_ZONING_RS_WATER_FLOOD_STATE,
+	MDF_ZONING_RS_TROPIC_ZONE,
 };
 extern uint32 _misc_debug_flags;
 

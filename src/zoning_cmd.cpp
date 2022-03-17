@@ -273,6 +273,16 @@ SpriteID TileZoneCheckTraceRestrictEvaluation(TileIndex tile, Owner owner)
 	if (unlikely(HasBit(_misc_debug_flags, MDF_ZONING_RS_WATER_FLOOD_STATE)) && IsNonFloodingWaterTile(tile)) {
 		return SPR_ZONING_INNER_HIGHLIGHT_YELLOW;
 	}
+	if (unlikely(HasBit(_misc_debug_flags, MDF_ZONING_RS_TROPIC_ZONE))) {
+		switch (GetTropicZone(tile)) {
+			case TROPICZONE_DESERT:
+				return SPR_ZONING_INNER_HIGHLIGHT_YELLOW;
+			case TROPICZONE_RAINFOREST:
+				return SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE;
+			default:
+				break;
+		}
+	}
 
 	return ZONING_INVALID_SPRITE_ID;
 }
