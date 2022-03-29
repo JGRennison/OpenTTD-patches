@@ -1055,7 +1055,7 @@ CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID s
 
 						case VEH_ROAD:
 							if (!IsRoadDepotTile(dp->xy)) return CMD_ERROR;
-							if ((GetRoadTypes(dp->xy) & RoadVehicle::From(v)->compatible_roadtypes) == 0) return CMD_ERROR;
+							if ((GetPresentRoadTypes(dp->xy) & RoadVehicle::From(v)->compatible_roadtypes) == 0) return CMD_ERROR;
 							break;
 
 						case VEH_SHIP:
@@ -2311,7 +2311,7 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 				}
 				if (OrderGoesToRoadDepot(dst, order)) {
 					const Depot *dp = Depot::GetIfValid(order->GetDestination());
-					if (!dp || (GetRoadTypes(dp->xy) & RoadVehicle::From(dst)->compatible_roadtypes) == 0) {
+					if (!dp || (GetPresentRoadTypes(dp->xy) & RoadVehicle::From(dst)->compatible_roadtypes) == 0) {
 						return_cmd_error(STR_ERROR_CAN_T_COPY_SHARE_ORDER);
 					}
 				}
@@ -2393,7 +2393,7 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 				}
 				if (OrderGoesToRoadDepot(dst, order)) {
 					const Depot *dp = Depot::GetIfValid(order->GetDestination());
-					if (!dp || (GetRoadTypes(dp->xy) & RoadVehicle::From(dst)->compatible_roadtypes) == 0) {
+					if (!dp || (GetPresentRoadTypes(dp->xy) & RoadVehicle::From(dst)->compatible_roadtypes) == 0) {
 						return_cmd_error(STR_ERROR_CAN_T_COPY_SHARE_ORDER);
 					}
 				}
