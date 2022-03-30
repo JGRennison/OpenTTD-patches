@@ -810,7 +810,7 @@ struct TooltipsWindow : public Window
 
 			case TCC_HOVER_VIEWPORT:
 				if (_settings_client.gui.hover_delay_ms == 0) {
-					this->delete_next_mouse_loop = true;
+					if (!_right_button_down) this->delete_next_mouse_loop = true;
 				} else if (!_mouse_hovering) {
 					delete this;
 					break;
