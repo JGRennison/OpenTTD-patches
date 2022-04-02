@@ -2,6 +2,17 @@
 
 * * *
 
+### v0.47.1 (2022-04-02)
+* Fix crash when a road vehicle leaves a bus/truck stop when it is has no orders.
+* Fix road vehicles incorrectly being allowed to be ordered to incompatible depots.
+* Fix viewport town/industry tooltips being shown on mouseover when in right-click to show tooltips mode.
+* Routing restrictions:
+  * Fix deny and penalty actions not being applied to no-entry signals.
+  * Fix the restricted signal zoning overlay mode not including tunnels/bridges with restricted signals.
+  * Fix the PBS reservation end actions incorrectly handling the case where the state of a slot is tested after an instruction which would change the vehicle's membership of the slot.
+* Include a specific reason why a vehicle cannot be ordered to a particular station in the error message.
+* Bump trunk base from commit 0d8fbf647b2c819bee0a0883b5fc831aa64e4ee0 to commit 8537fa72063a7376065fd996fa249cc7dbfdb2f3.
+
 ### v0.47.0 (2022-03-12)
 * Fix crash in scheduled dispatch window with nearest depot dispatch order.
 * Fix non-rail bridge construction setting polyrail endpoints.
