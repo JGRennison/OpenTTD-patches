@@ -1568,6 +1568,8 @@ inline byte IncreaseOvertakingCounter(RoadVehicle *v)
 
 static bool CheckRestartLoadingAtRoadStop(RoadVehicle *v)
 {
+	if (v->GetNumOrders() < 1) return false;
+
 	StationID station_id = v->current_order.GetDestination();
 	VehicleOrderID next_order_idx = AdvanceOrderIndexDeferred(v, v->cur_implicit_order_index);
 	const Order *next_order = v->GetOrder(next_order_idx);
