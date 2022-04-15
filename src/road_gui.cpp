@@ -1209,6 +1209,19 @@ private:
 		this->vscrollList->ScrollTowards(pos);
 	}
 
+	void CheckOrientationValid()
+	{
+		if (_roadstop_gui_settings.orientation >= DIAGDIR_END) return;
+		const RoadStopSpec *spec = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class)->GetSpec(_roadstop_gui_settings.roadstop_type);
+		if (spec != nullptr && HasBit(spec->flags, RSF_DRIVE_THROUGH_ONLY)) {
+			this->RaiseWidget(_roadstop_gui_settings.orientation + WID_BROS_STATION_NE);
+			_roadstop_gui_settings.orientation = DIAGDIR_END;
+			this->LowerWidget(_roadstop_gui_settings.orientation + WID_BROS_STATION_NE);
+			this->SetDirty();
+			DeleteWindowById(WC_SELECT_STATION, 0);
+		}
+	}
+
 public:
 	BuildRoadStationWindow(WindowDesc *desc, Window *parent, RoadStopType rs) : PickerWindowBase(desc, parent), filter_editbox(EDITBOX_MAX_SIZE * MAX_CHAR_LENGTH, EDITBOX_MAX_SIZE)
 	{
@@ -1291,6 +1304,7 @@ public:
 			matrix->SetClicked(_roadstop_gui_settings.roadstop_type);
 
 			this->EnsureSelectedClassIsVisible();
+			this->CheckOrientationValid();
 		}
 	}
 
@@ -1479,8 +1493,10 @@ public:
 			case WID_BROS_STATION_Y: {
 				StationType st = GetRoadStationTypeByWindowClass(this->window_class);
 				const RoadStopSpec *spec = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class)->GetSpec(_roadstop_gui_settings.roadstop_type);
-				if (spec == nullptr) {
+				bool disabled = (spec != nullptr && widget < WID_BROS_STATION_X && HasBit(spec->flags, RSF_DRIVE_THROUGH_ONLY));
+				if (spec == nullptr || disabled) {
 					StationPickerDrawSprite(r.left + WD_MATRIX_LEFT + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), st, INVALID_RAILTYPE, _cur_roadtype, widget - WID_BROS_STATION_NE);
+					if (disabled) GfxFillRect(r.left + 1, r.top + 1, r.right - 1, r.bottom - 1, PC_BLACK, FILLRECT_CHECKER);
 				} else {
 					DrawRoadStopTile(r.left + WD_MATRIX_LEFT + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), _cur_roadtype, spec, st, (int)widget - WID_BROS_STATION_NE);
 				}
@@ -1523,7 +1539,9 @@ public:
 					if (spec == nullptr) {
 						StationPickerDrawSprite(r.left + 1 + ScaleGUITrad(31), r.bottom - ScaleGUITrad(31), st, INVALID_RAILTYPE, _cur_roadtype, _roadstop_gui_settings.orientation);
 					} else {
-						DrawRoadStopTile(x, y, _cur_roadtype, spec, st, (uint8)_roadstop_gui_settings.orientation);
+						DiagDirection orientation = _roadstop_gui_settings.orientation;
+						if (orientation < DIAGDIR_END && HasBit(spec->flags, RSF_DRIVE_THROUGH_ONLY)) orientation = DIAGDIR_END;
+						DrawRoadStopTile(x, y, _cur_roadtype, spec, st, (uint8)orientation);
 					}
 					_cur_dpi = old_dpi;
 				}
@@ -1554,6 +1572,10 @@ public:
 			case WID_BROS_STATION_NW:
 			case WID_BROS_STATION_X:
 			case WID_BROS_STATION_Y:
+				if (widget < WID_BROS_STATION_X) {
+					const RoadStopSpec *spec = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class)->GetSpec(_roadstop_gui_settings.roadstop_type);
+					if (spec != nullptr && HasBit(spec->flags, RSF_DRIVE_THROUGH_ONLY)) return;
+				}
 				this->RaiseWidget(_roadstop_gui_settings.orientation + WID_BROS_STATION_NE);
 				_roadstop_gui_settings.orientation = (DiagDirection)(widget - WID_BROS_STATION_NE);
 				this->LowerWidget(_roadstop_gui_settings.orientation + WID_BROS_STATION_NE);
@@ -1585,6 +1607,7 @@ public:
 					NWidgetMatrix *matrix = this->GetWidget<NWidgetMatrix>(WID_BROS_MATRIX);
 					matrix->SetCount(_roadstop_gui_settings.roadstop_count);
 					matrix->SetClicked(_roadstop_gui_settings.roadstop_type);
+					this->CheckOrientationValid();
 				}
 				if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 				this->SetDirty();
@@ -1609,6 +1632,7 @@ public:
 				if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 				this->SetDirty();
 				DeleteWindowById(WC_SELECT_STATION, 0);
+				this->CheckOrientationValid();
 				break;
 			}
 
