@@ -3450,10 +3450,10 @@ draw_default_foundation:
 		}
 	} else if (IsRoadWaypointTile(ti->tile)) {
 		RoadBits bits = GetRoadStopDir(ti->tile) == DIAGDIR_NE ? ROAD_X : ROAD_Y;
-		extern void DrawRoadBits(TileInfo *ti, RoadBits road, RoadBits tram, Roadside roadside, bool snow_or_desert);
+		extern void DrawRoadBits(TileInfo *ti, RoadBits road, RoadBits tram, Roadside roadside, bool snow_or_desert, bool draw_catenary);
 		DrawRoadBits(ti, GetRoadTypeRoad(ti->tile) != INVALID_ROADTYPE ? bits : ROAD_NONE,
 				GetRoadTypeTram(ti->tile) != INVALID_ROADTYPE ? bits : ROAD_NONE,
-				GetRoadWaypointRoadside(ti->tile), IsRoadWaypointOnSnowOrDesert(ti->tile));
+				GetRoadWaypointRoadside(ti->tile), IsRoadWaypointOnSnowOrDesert(ti->tile), false);
 	} else {
 		if (layout != nullptr) {
 			/* Sprite layout which needs preprocessing */
@@ -3559,8 +3559,10 @@ draw_default_foundation:
 			}
 		}
 
-		/* Draw road, tram catenary */
-		DrawRoadCatenary(ti);
+		if (stopspec == nullptr || !HasBit(stopspec->flags, RSF_NO_CATENARY)) {
+			/* Draw road, tram catenary */
+			DrawRoadCatenary(ti);
+		}
 	}
 
 	if (IsRailWaypoint(ti->tile)) {

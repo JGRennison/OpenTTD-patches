@@ -19,8 +19,9 @@
 	<p>A subset of the functionality listed below is also supported in a fork of NML, see the associated <a href="newgrf-roadstops-nml.html">NML road stops</a> and <a href="newgrf-additions-nml.html">NML additions</a> documents for more details.</p>
 	<p>NewGRFs which use this feature SHOULD use the <a href="newgrf-additions.html#feature-test">feature testing</a> mechanism to check whether the road stop feature and/or feature ID mapping is supported.</p>
 	<p>NewGRFs which use this feature MUST use the <a href="newgrf-additions.html#feature-id-mapping">feature ID mapping</a> mechanism to map the non-standard NewGRF road stop feature to a local feature ID.</p>
-	<p>This feature is indicated by the feature name: <font face="monospace">road_stops</font>, version 1.</br>
-	The feature name to use for feature ID mapping is <font face="monospace">road_stops</font>.</p>
+	<p>This feature is indicated by the feature name: <font face="monospace">road_stops</font>, version 1.<br />
+	The feature name to use for feature ID mapping is <font face="monospace">road_stops</font>.<br />
+	Features/properties/variables which require a higher version will indicate the required version. Unless indicated otherwise these will fall back to doing nothing on versions which do not support them.</p>
 
 
 	<p><b>Actions:</b>
@@ -149,6 +150,7 @@
 	<tr><th>Bit</th><th>Value</th><th>Meaning</th></tr>
 	<tr><td>0</td><td>1</td><td>Callback 141 needs random bits in variable 10</td></tr>
 	<tr><td>1</td><td>2</td><td>Do not show one way road overlay sprites, this should only be set if different graphics are provided for the different one-way states using bits 0..1 of variable 50.</td></tr>
+	<tr><td>2</td><td>4</td><td>Do not catenary graphics.</br>This requires <font face="monospace">road_stops</font>, version 2.</td></tr>
 	</table>
 	The default value is 0 (no flags enabled).
 	</p>

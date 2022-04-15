@@ -51,7 +51,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_object_edge_foundation_mode", 2),
 	GRFFeatureInfo("action0_object_flood_resistant", 1),
 	GRFFeatureInfo("action0_object_viewport_map_tile_type", 1),
-	GRFFeatureInfo("road_stops", 1),
+	GRFFeatureInfo("road_stops", 2),
 	GRFFeatureInfo(),
 };
 
