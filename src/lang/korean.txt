@@ -1678,8 +1678,17 @@ STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM                           :강 흐름 무�
 STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM_HELPTEXT                  :강의 흐름을 얼마나 무작위로 만들지 결정합니다.
 STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL                           :강은 언덕 꼭대기에 샘이 필요함: {STRING}
 STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL_HELPTEXT                  :강이 언덕 꼭대기를 향해 생성되도록 샘의 생성 유무를 설정합니다.
-STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH                          :강 주변의 열대 폭: {STRING}
+STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH                          :강 주변 열대 지역의 폭: {STRING}
 STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH_HELPTEXT                 :아열대 기후에서 강 주변의 열대 지역의 폭을 설정합니다.
+STR_CONFIG_SETTING_LAKE_TROPICS_WIDTH                           :호수 주변 열대 지역의 폭: {STRING}
+STR_CONFIG_SETTING_LAKE_TROPICS_WIDTH_HELPTEXT                  :아열대 기후에서 호수를 둘러싼 열대 지역의 폭을 설정합니다.{}호수 양쪽 영역의 전체 폭을 의미합니다.
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH                          :해안 주변 열대 지역의 폭: {STRING}
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_HELPTEXT                 :아열대 기후에서 해안 주변에 있는 열대 지역의 폭을 설정합니다.
+###length 4
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_DEFAULT                  :기본
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_MEDIUM                   :중간
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_LARGE                    :크게
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_EXTRALARGE               :매우 크게
 STR_CONFIG_SETTING_LAKE_SIZE                                    :호수 크기: {STRING}
 STR_CONFIG_SETTING_LAKE_SIZE_HELPTEXT                           :강을 따라 생성될 호수의 크기를 설정합니다.
 STR_CONFIG_SETTING_LAKE_SIZE_VALUE                              :{NUM}
@@ -2451,6 +2460,7 @@ STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES_HELPTEXT    :이 설정을 �
 
 STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES            :다리 밑에 도로/전차 정류장 건설 허용: {STRING}
 STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT   :다리 밑에 도로/전차 정류장 건설을 허용합니다. 통과식 정류장은 1칸, 터미널식 정류장은 2칸의 높이가 비어있어야 합니다.
+STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT_EXTRA :{STRING}{}{}NewGRF 도로/전차 정류장은 이 설정을 무시하고 다리 밑에 사용자 지정 정류장을 허용하거나 허용하지 않을 수 있으며, 정류장의 요구 여유 높이를 설정할 수 있습니다.
 
 STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES                    :다리 밑에 항구 건설 허용: {STRING}
 STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES_HELPTEXT           :다리 밑에 항구 건설을 허용합니다. 항구는 2칸의 높이가 비어있어야 합니다.{}이 설정으로 인해 그래픽 문제가 발생할 수 있습니다.
@@ -3300,6 +3310,7 @@ STR_TRACE_RESTRICT_SPEED_RESTRICTION                            :속력 제한
 STR_TRACE_RESTRICT_NEWS_CONTROL                                 :뉴스 제어
 STR_TRACE_RESTRICT_COUNTER_OP                                   :카운터 연산
 STR_TRACE_RESTRICT_PF_PENALTY_CONTROL                           :페널티 설정
+STR_TRACE_RESTRICT_SPEED_ADAPTATION_CONTROL                     :속력 조절 설정
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :획득 또는 대기
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :획득 시도
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ON_RES                      :(경로 예약 중에) 획득 시도
@@ -3350,6 +3361,10 @@ STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY                          :열차가 이 �
 STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL                   :(취소) 열차가 이 신호기의 후방에서 진입해도 경로 탐색 페널티를 적용하지 않음
 STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_SHORT                    :후방 경로 신호기 페널티 제거
 STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL_SHORT             :(취소) 후방 경로 신호기 페널티 제거
+STR_TRACE_RESTRICT_MAKE_TRAIN_SPEED_ADAPTATION_EXEMPT           :이 열차의 속력 자동 제한 예외 처리
+STR_TRACE_RESTRICT_REMOVE_TRAIN_SPEED_ADAPTATION_EXEMPT         :이 열차의 속력 자동 제한 예외 처리 취소
+STR_TRACE_RESTRICT_MAKE_TRAIN_SPEED_ADAPTATION_EXEMPT_SHORT     :속력 제한 예외 처리
+STR_TRACE_RESTRICT_REMOVE_TRAIN_SPEED_ADAPTATION_EXEMPT_SHORT   :속력 제한 예외 처리 취소
 STR_TRACE_RESTRICT_TIME_MINUTE                                  :현재 분(0 - 59)
 STR_TRACE_RESTRICT_TIME_HOUR                                    :현재 시(0 - 23)
 STR_TRACE_RESTRICT_TIME_HOUR_MINUTE                             :현재 시&분(0 - 2359)
@@ -3602,6 +3617,7 @@ STR_WATERWAYS_TOOLBAR_BUOY_TOOLTIP                              :{BLACK}경유�
 STR_WATERWAYS_TOOLBAR_BUILD_AQUEDUCT_TOOLTIP                    :{BLACK}수도교를 만듭니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
 STR_WATERWAYS_TOOLBAR_CREATE_LAKE_TOOLTIP                       :{BLACK}벽으로 물을 막고 있는 운하를 만듭니다.{}해수면 높이에서 CTRL 키를 누른 채로 사용하면 벽 없이 물을 만들어 바다나 호수를 만들 수 있습니다
 STR_WATERWAYS_TOOLBAR_CREATE_RIVER_TOOLTIP                      :{BLACK}강을 만듭니다. CTRL 키를 누르면 대각선 방향의 영역을 선택할 수 있습니다.
+STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}강 만들기
 
 # Ship depot construction window
 STR_DEPOT_BUILD_SHIP_CAPTION                                    :{WHITE}정박소 방향 선택
@@ -4553,8 +4569,8 @@ STR_DEPARTURES_CALLING_AT_STATION                               :{STRING}, {STAT
 STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{STRING}, {STATION}
 STR_DEPARTURES_CALLING_AT_LIST                                  :{TINY_FONT}{ORANGE}{STRING}
 STR_DEPARTURES_CALLING_AT_LIST_LARGE                            :{ORANGE}{STRING}
-STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{TINY_FONT}{ORANGE}{STRING} {STATION}행으로 계속됩니다.
-STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS_LARGE             :{ORANGE}{STRING} {STATION}행으로 계속됩니다.
+STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{TINY_FONT}{ORANGE}{STRING} / {STATION} 반복
+STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS_LARGE             :{ORANGE}{STRING} / {STATION} 반복
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
@@ -5325,6 +5341,7 @@ STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}수송�
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}환승 수익: {LTBLUE}{CURRENCY_LONG}
 
 STR_VEHICLE_INFO_SPEED_RESTRICTION                              :{BLACK}속력 제한: {LTBLUE}{VELOCITY}
+STR_VEHICLE_INFO_SPEED_ADAPTATION_EXEMPT                        :{BLACK}속력 제한 취소
 
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS                     :{BLACK}점검 간격: {LTBLUE}{COMMA}일{BLACK}마다{NBSP}  마지막 점검 날짜: {LTBLUE}{DATE_LONG}
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{BLACK}점검 기준: {LTBLUE}{COMMA}%{BLACK} 떨어지면   마지막 점검 날짜: {LTBLUE}{DATE_LONG}
@@ -5543,7 +5560,7 @@ STR_ORDER_GO_TO_NEAREST_HANGAR                                  :가까운 격�
 STR_ORDER_CONDITIONAL                                           :조건부 경로 건너뛰기
 STR_ORDER_SHARE                                                 :경로 공유하기
 STR_ORDER_RELEASE_SLOT_BUTTON                                   :슬롯 해제
-STR_ORDERS_GO_TO_TOOLTIP                                        :{BLACK}선택된 경로 바로 전이나 목록 맨 끝에 새 경로를 삽입합니다. CTRL 키와 함께 누르면, 역에서는 '아무 화물이나 가득 싣기'로, 경유지에서는 '직행'으로, 차량기지에서는 '점검'으로 지정됩니다. '공유된 경로'를 클릭하거나 CTRL 키를 누르면 선택했던 차량과 이 차량의 경로를 공유하게 됩니다. 단순히 클릭하면 그 차량의 경로를 복사하기만 합니다. 차량기지를 경로에 포함시키면 이 차량은 자동 점검를 할 수 없게 됩니다
+STR_ORDERS_GO_TO_TOOLTIP                                        :{BLACK}선택된 경로 바로 전이나 목록 맨 끝에 새 경로를 삽입합니다. CTRL 키와 함께 누르면, 역에서는 '아무 화물이나 가득 싣기'로, 경유지에서는 '직행'으로, 차량기지에서는 '점검'으로 지정됩니다. '공유된 경로'를 클릭하거나 CTRL 키를 누르면 선택했던 차량과 이 차량의 경로를 공유하게 됩니다. 단순히 클릭하면 그 차량의 경로를 복사하기만 합니다. 차량기지를 경로에 포함시키면 이 차량은 자동 점검을 할 수 없게 됩니다
 
 STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}해제할 슬롯을 선택하세요
 
@@ -5739,7 +5756,7 @@ STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP                           :{BLACK}시간�
 
 STR_TIMETABLE_SCHEDULED_DISPATCH                                :{BLACK}배차 일정
 STR_TIMETABLE_SCHEDULED_DISPATCH_TOOLTIP                        :{BLACK}시간표 시작 시간 자동 설정을 위한 '배차 일정' 창을 엽니다.
-STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER                          :{PUSH_COLOUR}{YELLOW}[배차 일정 {STRING}의 기준]{POP_COLOUR}
+STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER                          :{PUSH_COLOUR}{YELLOW}[배차 일정{STRING}의 기준]{POP_COLOUR}
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME             :{PUSH_COLOUR}{RED}[{STRING}배차 기준 - 대기 시간표가 작성되지 않음]{POP_COLOUR}
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_SCHEDULE_INDEX           :{NUM}{NBSP}-{NBSP}
 
@@ -6399,6 +6416,19 @@ STR_ERROR_CAN_T_STOP_SHARING_ORDER_LIST                         :{WHITE}경로 �
 STR_ERROR_CAN_T_COPY_ORDER_LIST                                 :{WHITE}경로를 복사할 수 없습니다...
 STR_ERROR_TOO_FAR_FROM_PREVIOUS_DESTINATION                     :{WHITE}... 이전 목적지에서 너무 멀리 떨어져 있습니다
 STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE                             :{WHITE}... 항공기의 항속거리가 충분하지 않습니다.
+
+STR_ERROR_NO_RAIL_STATION                                       :{WHITE}역이 없습니다...
+STR_ERROR_NO_BUS_STATION                                        :{WHITE}버스 정류장이 없습니다...
+STR_ERROR_NO_TRUCK_STATION                                      :{WHITE}트럭 적하장이 없습니다...
+STR_ERROR_NO_DOCK                                               :{WHITE}항구가 없습니다...
+STR_ERROR_NO_AIRPORT                                            :{WHITE}공항/헬리포트가 없습니다...
+STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE                          :{WHITE}도로/전차 종류에 맞는 정거장이 없습니다...
+STR_ERROR_NO_STOP_ARTIC_VEH                                     :{WHITE}굴절 차량이 들어갈 수 있는 정거장이 없습니다.{}굴절 차량은 터미널식 정류장이 아니라 통과식 정류장을 써야 합니다...
+STR_ERROR_AIRPORT_NO_PLANES                                     :{WHITE}이 항공기는 이 헬리포트에 착륙할 수 없습니다...
+STR_ERROR_AIRPORT_NO_HELIS                                      :{WHITE}이 헬리콥터는 이 공항에 착륙할 수 없습니다...
+STR_ERROR_NO_RAIL_WAYPOINT                                      :{WHITE}철도 경유지가 없습니다...
+STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}도로 경유지가 없습니다...
+STR_ERROR_NO_BUOY                                               :{WHITE}부표가 없습니다...
 
 # Timetable related errors
 STR_ERROR_CAN_T_TIMETABLE_VEHICLE                               :{WHITE}차량의 시간표를 정할 수 없습니다...
