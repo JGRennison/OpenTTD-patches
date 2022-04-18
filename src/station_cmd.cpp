@@ -310,10 +310,11 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 
 	/* check close enough to town to get central as name? */
 	const bool is_central = DistanceMax(tile, t->xy) < 8;
-	if (is_central) {
-		if (HasBit(free_names, M(STR_SV_STNAME))) return STR_SV_STNAME;
-
-		if (HasBit(free_names, M(STR_SV_STNAME_CENTRAL))) return STR_SV_STNAME_CENTRAL;
+	if (HasBit(free_names, M(STR_SV_STNAME)) && (is_central || DistanceSquare(tile, t->xy) <= t->cache.squared_town_zone_radius[HZB_TOWN_INNER_SUBURB])) {
+		return STR_SV_STNAME;
+	}
+	if (is_central && HasBit(free_names, M(STR_SV_STNAME_CENTRAL))) {
+		return STR_SV_STNAME_CENTRAL;
 	}
 
 	/* Check lakeside */
