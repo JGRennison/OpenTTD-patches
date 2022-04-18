@@ -313,9 +313,6 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 	if (HasBit(free_names, M(STR_SV_STNAME)) && (is_central || DistanceSquare(tile, t->xy) <= t->cache.squared_town_zone_radius[HZB_TOWN_INNER_SUBURB])) {
 		return STR_SV_STNAME;
 	}
-	if (is_central && HasBit(free_names, M(STR_SV_STNAME_CENTRAL))) {
-		return STR_SV_STNAME_CENTRAL;
-	}
 
 	bool use_extra_names = _extra_station_names_used > 0;
 	auto check_extra_names = [&]() -> bool {
@@ -351,6 +348,11 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 		bool extra_name = (RandomRange(0xFF) < _extra_station_names_probability) && check_extra_names();
 		RestoreRandomSeeds(saved_seeds);
 		if (extra_name) return STR_SV_STNAME_FALLBACK;
+	}
+
+	/* check close enough to town to get central as name? */
+	if (is_central && HasBit(free_names, M(STR_SV_STNAME_CENTRAL))) {
+		return STR_SV_STNAME_CENTRAL;
 	}
 
 	/* Check lakeside */
