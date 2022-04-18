@@ -231,6 +231,9 @@ static void LoadSpriteTables()
 	extern uint _extra_station_names_used;
 	_extra_station_names_used = 0;
 
+	extern uint8 _extra_station_names_probability;
+	_extra_station_names_probability = 0;
+
 	/*
 	 * Load the base and extra NewGRF with OTTD required graphics as first NewGRF.
 	 * However, we do not want it to show up in the list of used NewGRFs,

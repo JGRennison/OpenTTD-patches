@@ -97,6 +97,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	_game_load_tick_skip_counter = 0;
 	_game_load_time = 0;
 	_extra_station_names_used = 0;
+	_extra_station_names_probability = 0;
 	_extra_aspects = 0;
 	_loadgame_DBGL_data.clear();
 	if (reset_settings) MakeNewgameSettingsLive();

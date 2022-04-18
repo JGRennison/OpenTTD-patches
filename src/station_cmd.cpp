@@ -317,6 +317,42 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 		return STR_SV_STNAME_CENTRAL;
 	}
 
+	bool use_extra_names = _extra_station_names_used > 0;
+	auto check_extra_names = [&]() -> bool {
+		if (use_extra_names) {
+			use_extra_names = false;
+			const bool near_water = CountMapSquareAround(tile, CMSAWater) >= 5;
+			std::vector<uint16> candidates;
+			for (uint i = 0; i < _extra_station_names_used; i++) {
+				const ExtraStationNameInfo &info = _extra_station_names[i];
+				if (extra_names[i]) continue;
+				if (!HasBit(info.flags, name_class)) continue;
+				if (HasBit(info.flags, ESNIF_CENTRAL) && !is_central) continue;
+				if (HasBit(info.flags, ESNIF_NOT_CENTRAL) && is_central) continue;
+				if (HasBit(info.flags, ESNIF_NEAR_WATER) && !near_water) continue;
+				if (HasBit(info.flags, ESNIF_NOT_NEAR_WATER) && near_water) continue;
+				candidates.push_back(i);
+			}
+
+			if (!candidates.empty()) {
+				SavedRandomSeeds saved_seeds;
+				SaveRandomSeeds(&saved_seeds);
+				st->extra_name_index = candidates[RandomRange((uint)candidates.size())];
+				RestoreRandomSeeds(saved_seeds);
+				return true;
+			}
+		}
+		return false;
+	};
+
+	if (_extra_station_names_probability > 0) {
+		SavedRandomSeeds saved_seeds;
+		SaveRandomSeeds(&saved_seeds);
+		bool extra_name = (RandomRange(0xFF) < _extra_station_names_probability) && check_extra_names();
+		RestoreRandomSeeds(saved_seeds);
+		if (extra_name) return STR_SV_STNAME_FALLBACK;
+	}
+
 	/* Check lakeside */
 	if (HasBit(free_names, M(STR_SV_STNAME_LAKESIDE)) &&
 			DistanceFromEdge(tile) < 20 &&
@@ -356,28 +392,7 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 	tmp = free_names & ((1 << 1) | (1 << 2) | (1 << 3) | (1 << 4) | (1 << 6) | (1 << 7) | (1 << 12) | (1 << 26) | (1 << 27) | (1 << 28) | (1 << 29) | (1 << 30));
 	if (tmp != 0) return STR_SV_STNAME + FindFirstBit(tmp);
 
-	if (_extra_station_names_used > 0) {
-		const bool near_water = CountMapSquareAround(tile, CMSAWater) >= 5;
-		std::vector<uint16> candidates;
-		for (uint i = 0; i < _extra_station_names_used; i++) {
-			const ExtraStationNameInfo &info = _extra_station_names[i];
-			if (extra_names[i]) continue;
-			if (!HasBit(info.flags, name_class)) continue;
-			if (HasBit(info.flags, ESNIF_CENTRAL) && !is_central) continue;
-			if (HasBit(info.flags, ESNIF_NOT_CENTRAL) && is_central) continue;
-			if (HasBit(info.flags, ESNIF_NEAR_WATER) && !near_water) continue;
-			if (HasBit(info.flags, ESNIF_NOT_NEAR_WATER) && near_water) continue;
-			candidates.push_back(i);
-		}
-
-		if (!candidates.empty()) {
-			SavedRandomSeeds saved_seeds;
-			SaveRandomSeeds(&saved_seeds);
-			st->extra_name_index = candidates[RandomRange((uint)candidates.size())];
-			RestoreRandomSeeds(saved_seeds);
-			return STR_SV_STNAME_FALLBACK;
-		}
-	}
+	if (check_extra_names()) return STR_SV_STNAME_FALLBACK;
 
 	return STR_SV_STNAME_FALLBACK;
 }

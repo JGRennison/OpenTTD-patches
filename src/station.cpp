@@ -40,6 +40,7 @@ INSTANTIATE_POOL_METHODS(Station)
 
 std::array<ExtraStationNameInfo, MAX_EXTRA_STATION_NAMES> _extra_station_names;
 uint _extra_station_names_used;
+uint8 _extra_station_names_probability;
 
 
 StationKdtree _station_kdtree(Kdtree_StationXYFunc);

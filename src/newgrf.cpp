@@ -2919,6 +2919,12 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 				break;
 			}
 
+			case A0RPI_GLOBALVAR_EXTRA_STATION_NAMES_PROBABILITY: {
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				_extra_station_names_probability = buf->ReadByte();
+				break;
+			}
+
 			case A0RPI_GLOBALVAR_LIGHTHOUSE_GENERATE_AMOUNT:
 			case A0RPI_GLOBALVAR_TRANSMITTER_GENERATE_AMOUNT: {
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
@@ -2997,6 +3003,7 @@ static ChangeInfoResult GlobalVarReserveInfo(uint gvid, int numinfo, int prop, c
 				break;
 
 			case A0RPI_GLOBALVAR_EXTRA_STATION_NAMES:
+			case A0RPI_GLOBALVAR_EXTRA_STATION_NAMES_PROBABILITY:
 			case A0RPI_GLOBALVAR_LIGHTHOUSE_GENERATE_AMOUNT:
 			case A0RPI_GLOBALVAR_TRANSMITTER_GENERATE_AMOUNT:
 				buf->Skip(buf->ReadExtendedByte());
