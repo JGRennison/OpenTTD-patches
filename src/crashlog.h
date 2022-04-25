@@ -131,11 +131,14 @@ protected:
 public:
 	/** Buffer for the filename name prefix */
 	char name_buffer[64];
+	FILE *crash_file = nullptr;
+	const char *crash_buffer_write = nullptr;
 
 	/** Stub destructor to silence some compilers. */
 	virtual ~CrashLog() {}
 
-	char *FillCrashLog(char *buffer, const char *last) const;
+	char *FillCrashLog(char *buffer, const char *last);
+	void FlushCrashLogBuffer();
 	char *FillDesyncCrashLog(char *buffer, const char *last, const DesyncExtraInfo &info) const;
 	char *FillInconsistencyLog(char *buffer, const char *last, const InconsistencyExtraInfo &info) const;
 	char *FillVersionInfoLog(char *buffer, const char *last) const;
