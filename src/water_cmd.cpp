@@ -634,6 +634,15 @@ static CommandCost ClearTile_Water(TileIndex tile, DoCommandFlag flags)
 	}
 }
 
+void ForceClearWaterTile(TileIndex tile)
+{
+	bool remove = IsDockingTile(tile);
+	DoClearSquare(tile);
+	MarkCanalsAndRiversAroundDirty(tile);
+	if (remove) RemoveDockingTile(tile);
+	ClearNeighbourNonFloodingStates(tile);
+}
+
 /**
  * return true if a tile is a water tile wrt. a certain direction.
  *

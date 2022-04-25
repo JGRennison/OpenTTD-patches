@@ -44,6 +44,8 @@ static const uint RIVER_OFFSET_DESERT_DISTANCE = 5; ///< Circular tile search ra
 
 bool IsWateredTile(TileIndex tile, Direction from);
 
+void ForceClearWaterTile(TileIndex tile);
+
 /**
  * Calculates the maintenance cost of a number of canal tiles.
  * @param num Number of canal tiles.
