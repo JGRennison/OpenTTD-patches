@@ -503,6 +503,14 @@ CommandCost CmdBuildCanal(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 		if (!water) cost.AddCost(ret);
 
 		if (flags & DC_EXEC) {
+			if (IsTileType(current_tile, MP_WATER) && IsCanal(current_tile)) {
+				Owner owner = GetTileOwner(tile);
+				if (Company::IsValidID(owner)) {
+					Company::Get(owner)->infrastructure.water--;
+					DirtyCompanyInfrastructureWindows(owner);
+				}
+			}
+
 			switch (wc) {
 				case WATER_CLASS_RIVER:
 					MakeRiver(current_tile, Random());
