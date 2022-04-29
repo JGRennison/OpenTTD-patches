@@ -1163,10 +1163,10 @@ STR_TERRAIN_TYPE_ALPINIST                                       :Alpinista
 STR_TERRAIN_TYPE_CUSTOM                                         :Altitude personalizada
 STR_TERRAIN_TYPE_CUSTOM_VALUE                                   :Altitude personalizada ({NUM})
 
-###length 3
-STR_CITY_APPROVAL_PERMISSIVE                                    :Permisiva
+###length 4
 STR_CITY_APPROVAL_TOLERANT                                      :Tolerante
 STR_CITY_APPROVAL_HOSTILE                                       :Hostil
+STR_CITY_APPROVAL_PERMISSIVE                                    :Permisiva
 
 STR_WARNING_NO_SUITABLE_AI                                      :{WHITE}Non hai IA adecuada dispoñíbel...{}Podes descargar varias IAs a través do sistema de contidos online
 
@@ -5605,7 +5605,6 @@ STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE
 STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE} non puido parar en {STRING} polo exceso de velocidade
 STR_RIVERS_VERY_MANY                                            :{RED}Moitísimos
 STR_RIVERS_EXTREMELY_MANY                                       :{RED}Extremadamente moitos
-STR_CITY_APPROVAL_INDIFFERENT                                   :Indiferente
 STR_CONFIG_SETTING_TRAIN_BRAKING_REALISTIC                      :Realista {PUSH_COLOUR}{RED}(Experto){POP_COLOUR}
 STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED        :{WHITE}O Freo realista non se pode habilitar. Polo menos unha pre-sinal ou sinais de ambos os sentidos están presentes.
 STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT                       :Costos de matemento dos vehículos no depósito: {STRING}

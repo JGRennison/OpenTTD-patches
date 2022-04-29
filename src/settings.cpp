@@ -1437,6 +1437,12 @@ static void ValidateSettings()
 	}
 }
 
+static bool TownCouncilToleranceAdjust(int32 &new_value)
+{
+	if (new_value == 255) new_value = TOWN_COUNCIL_PERMISSIVE;
+	return true;
+}
+
 static void DifficultyNoiseChange(int32 new_value)
 {
 	if (_game_mode == GM_NORMAL) {
