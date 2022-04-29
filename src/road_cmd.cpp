@@ -2478,9 +2478,14 @@ static void TileLoop_Road(TileIndex tile)
 {
 	switch (_settings_game.game_creation.landscape) {
 		case LT_ARCTIC:
-			if (IsOnSnow(tile) != (GetTileZ(tile) > GetSnowLine())) {
-				ToggleSnow(tile);
-				MarkTileDirtyByTile(tile);
+			{
+				/* Flat foundation tiles should look the same as the tiles they visually connect to. */
+				int tile_z = GetFoundationSlope(tile) == SLOPE_FLAT ? GetTileMaxZ(tile) : GetTileZ(tile);
+
+				if (IsOnSnow(tile) != (tile_z > GetSnowLine())) {
+					ToggleSnow(tile);
+					MarkTileDirtyByTile(tile);
+				}
 			}
 			break;
 
