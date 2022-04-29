@@ -1809,6 +1809,7 @@ struct CompanyInfrastructureWindow : Window
 	RoadTypes roadtypes; ///< Valid roadtypes.
 
 	uint total_width;    ///< String width of the total cost line.
+	uint height_extra;   ///< Default extra height above minimum.
 
 	Scrollbar *vscroll;  ///< Scrollbar
 
@@ -1939,7 +1940,9 @@ struct CompanyInfrastructureWindow : Window
 
 				this->vscroll->SetCount(total_height);
 
-				size->height = std::max(size->height, std::min<uint>(20 * FONT_HEIGHT_NORMAL, total_height));
+				size->height = std::max(size->height, std::min<uint>(8 * FONT_HEIGHT_NORMAL, total_height));
+				uint target_height = std::min<uint>(40 * FONT_HEIGHT_NORMAL, total_height);
+				this->height_extra = (target_height > size->height) ? (target_height - size->height) : 0;
 				break;
 			}
 
@@ -2139,6 +2142,14 @@ struct CompanyInfrastructureWindow : Window
 	virtual void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_CI_DESC);
+	}
+
+	void FindWindowPlacementAndResize(int def_width, int def_height) override
+	{
+		if (this->window_desc->GetPreferences().pref_height == 0) {
+			def_height = this->nested_root->smallest_y + this->height_extra;
+		}
+		Window::FindWindowPlacementAndResize(def_width, def_height);
 	}
 
 	/**
