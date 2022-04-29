@@ -30,14 +30,25 @@ bool IsSnowLineSet();
 void SetSnowLine(byte table[SNOW_LINE_MONTHS][SNOW_LINE_DAYS]);
 byte GetSnowLineUncached();
 void UpdateCachedSnowLine();
-byte HighestSnowLine();
-byte LowestSnowLine();
+void UpdateCachedSnowLineBounds();
 void ClearSnowLine();
 
 inline byte GetSnowLine()
 {
 	extern byte _cached_snowline;
 	return _cached_snowline;
+}
+
+inline byte HighestSnowLine()
+{
+	extern byte _cached_highest_snowline;
+	return _cached_highest_snowline;
+}
+
+inline byte LowestSnowLine()
+{
+	extern byte _cached_lowest_snowline;
+	return _cached_lowest_snowline;
 }
 
 int GetSlopeZInCorner(Slope tileh, Corner corner);

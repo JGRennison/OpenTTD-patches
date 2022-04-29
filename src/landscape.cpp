@@ -103,6 +103,8 @@ static TileIndex _current_estuary = INVALID_TILE;
 static bool _is_main_river = false;
 
 byte _cached_snowline = 0;
+byte _cached_highest_snowline = 0;
+byte _cached_lowest_snowline = 0;
 
 /**
  * Map 2D viewport or smallmap coordinate to 3D world or tile coordinate.
@@ -657,6 +659,7 @@ void SetSnowLine(byte table[SNOW_LINE_MONTHS][SNOW_LINE_DAYS])
 	}
 
 	UpdateCachedSnowLine();
+	UpdateCachedSnowLineBounds();
 }
 
 /**
@@ -677,23 +680,13 @@ void UpdateCachedSnowLine()
 }
 
 /**
- * Get the highest possible snow line height, either variable or static.
- * @return the highest snow line height.
+ * Cache the lowest and highest possible snow line heights, either variable or static.
  * @ingroup SnowLineGroup
  */
-byte HighestSnowLine()
+void UpdateCachedSnowLineBounds()
 {
-	return _snow_line == nullptr ? _settings_game.game_creation.snow_line_height : _snow_line->highest_value;
-}
-
-/**
- * Get the lowest possible snow line height, either variable or static.
- * @return the lowest snow line height.
- * @ingroup SnowLineGroup
- */
-byte LowestSnowLine()
-{
-	return _snow_line == nullptr ? _settings_game.game_creation.snow_line_height : _snow_line->lowest_value;
+	_cached_highest_snowline = _snow_line == nullptr ? _settings_game.game_creation.snow_line_height : _snow_line->highest_value;
+	_cached_lowest_snowline = _snow_line == nullptr ? _settings_game.game_creation.snow_line_height : _snow_line->lowest_value;
 }
 
 /**
@@ -705,6 +698,7 @@ void ClearSnowLine()
 	free(_snow_line);
 	_snow_line = nullptr;
 	UpdateCachedSnowLine();
+	UpdateCachedSnowLineBounds();
 }
 
 /**
@@ -1540,6 +1534,7 @@ static void CalculateSnowLine()
 		_settings_game.game_creation.snow_line_height = std::max(CalculateCoverageLine(_settings_game.game_creation.snow_coverage, 0), 2u);
 	}
 	UpdateCachedSnowLine();
+	UpdateCachedSnowLineBounds();
 }
 
 /**

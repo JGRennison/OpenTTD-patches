@@ -128,6 +128,7 @@ static void _GenerateWorld()
 
 			_settings_game.game_creation.snow_line_height = DEF_SNOWLINE_HEIGHT;
 			UpdateCachedSnowLine();
+			UpdateCachedSnowLineBounds();
 		} else {
 			GenerateLandscape(_gw.mode);
 			GenerateClearTile();
