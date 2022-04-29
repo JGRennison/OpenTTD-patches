@@ -46,6 +46,7 @@
 /** Company GUI constants. */
 static const uint EXP_LINESPACE  = 2;      ///< Amount of vertical space for a horizontal (sub-)total line.
 static const uint EXP_BLOCKSPACE = 10;     ///< Amount of vertical space between two blocks of numbers.
+static const uint EXP_SPACING = 4;         ///< Amount of vertical padding between sections.
 
 static void DoSelectCompanyManagerFace(Window *parent);
 static void ShowCompanyInfrastructure(CompanyID company);
@@ -1784,30 +1785,16 @@ static const NWidgetPart _nested_company_infrastructure_widgets[] = {
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_GREY),
-		NWidget(NWID_VERTICAL), SetPIP(WD_FRAMERECT_TOP, 4, WD_FRAMETEXT_BOTTOM),
-			NWidget(NWID_HORIZONTAL), SetPIP(2, 4, 2),
-				NWidget(WWT_EMPTY, COLOUR_GREY, WID_CI_RAIL_DESC), SetMinimalTextLines(2, 0), SetFill(1, 0),
-				NWidget(WWT_EMPTY, COLOUR_GREY, WID_CI_RAIL_COUNT), SetMinimalTextLines(2, 0), SetFill(0, 1),
+		NWidget(NWID_HORIZONTAL),
+			NWidget(NWID_VERTICAL), SetPIP(WD_FRAMERECT_TOP, 0, WD_FRAMETEXT_BOTTOM),
+				NWidget(NWID_HORIZONTAL), SetPIP(2, 4, 2),
+					NWidget(WWT_EMPTY, COLOUR_GREY, WID_CI_DESC), SetMinimalTextLines(2, 0), SetFill(1, 0), SetResize(0, 1), SetScrollbar(WID_CI_SCROLLBAR),
+					NWidget(WWT_EMPTY, COLOUR_GREY, WID_CI_COUNT), SetMinimalTextLines(2, 0), SetFill(0, 1), SetResize(0, 1), SetScrollbar(WID_CI_SCROLLBAR),
+				EndContainer(),
 			EndContainer(),
-			NWidget(NWID_HORIZONTAL), SetPIP(2, 4, 2),
-				NWidget(WWT_EMPTY, COLOUR_GREY, WID_CI_ROAD_DESC), SetMinimalTextLines(2, 0), SetFill(1, 0),
-				NWidget(WWT_EMPTY, COLOUR_GREY, WID_CI_ROAD_COUNT), SetMinimalTextLines(2, 0), SetFill(0, 1),
-			EndContainer(),
-			NWidget(NWID_HORIZONTAL), SetPIP(2, 4, 2),
-				NWidget(WWT_EMPTY, COLOUR_GREY, WID_CI_TRAM_DESC), SetMinimalTextLines(2, 0), SetFill(1, 0),
-				NWidget(WWT_EMPTY, COLOUR_GREY, WID_CI_TRAM_COUNT), SetMinimalTextLines(2, 0), SetFill(0, 1),
-			EndContainer(),
-			NWidget(NWID_HORIZONTAL), SetPIP(2, 4, 2),
-				NWidget(WWT_EMPTY, COLOUR_GREY, WID_CI_WATER_DESC), SetMinimalTextLines(2, 0), SetFill(1, 0),
-				NWidget(WWT_EMPTY, COLOUR_GREY, WID_CI_WATER_COUNT), SetMinimalTextLines(2, 0), SetFill(0, 1),
-			EndContainer(),
-			NWidget(NWID_HORIZONTAL), SetPIP(2, 4, 2),
-				NWidget(WWT_EMPTY, COLOUR_GREY, WID_CI_STATION_DESC), SetMinimalTextLines(3, 0), SetFill(1, 0),
-				NWidget(WWT_EMPTY, COLOUR_GREY, WID_CI_STATION_COUNT), SetMinimalTextLines(3, 0), SetFill(0, 1),
-			EndContainer(),
-			NWidget(NWID_HORIZONTAL), SetPIP(2, 4, 2),
-				NWidget(WWT_EMPTY, COLOUR_GREY, WID_CI_TOTAL_DESC), SetFill(1, 0),
-				NWidget(WWT_EMPTY, COLOUR_GREY, WID_CI_TOTAL), SetFill(0, 1),
+			NWidget(NWID_VERTICAL),
+				NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_CI_SCROLLBAR),
+				NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),
@@ -1821,14 +1808,20 @@ struct CompanyInfrastructureWindow : Window
 	RailTypes railtypes; ///< Valid railtypes.
 	RoadTypes roadtypes; ///< Valid roadtypes.
 
-	uint total_width; ///< String width of the total cost line.
+	uint total_width;    ///< String width of the total cost line.
+
+	Scrollbar *vscroll;  ///< Scrollbar
 
 	CompanyInfrastructureWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
 	{
 		this->UpdateRailRoadTypes();
 
-		this->InitNested(window_number);
 		this->owner = (Owner)this->window_number;
+
+		this->CreateNestedTree();
+		this->vscroll = this->GetScrollbar(WID_CI_SCROLLBAR);
+		this->vscroll->SetStepSize(FONT_HEIGHT_NORMAL);
+		this->FinishInitNested(window_number);
 	}
 
 	void UpdateRailRoadTypes()
@@ -1897,62 +1890,60 @@ struct CompanyInfrastructureWindow : Window
 		const Company *c = Company::Get((CompanyID)this->window_number);
 
 		switch (widget) {
-			case WID_CI_RAIL_DESC: {
-				uint lines = 1; // Starts at 1 because a line is also required for the section title
+			case WID_CI_DESC: {
+				uint rail_lines = 1; // Starts at 1 because a line is also required for the section title
 
 				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_INFRASTRUCTURE_VIEW_RAIL_SECT).width);
 
 				for (const auto &rt : _sorted_railtypes) {
 					if (HasBit(this->railtypes, rt)) {
-						lines++;
+						rail_lines++;
 						SetDParam(0, GetRailTypeInfo(rt)->strings.name);
 						size->width = std::max(size->width, GetStringBoundingBox(STR_WHITE_STRING).width + WD_FRAMERECT_LEFT);
 					}
 				}
 				if (this->railtypes != RAILTYPES_NONE) {
-					lines++;
+					rail_lines++;
 					size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_INFRASTRUCTURE_VIEW_SIGNALS).width + WD_FRAMERECT_LEFT);
 				}
 
-				size->height = std::max(size->height, lines * FONT_HEIGHT_NORMAL);
-				break;
-			}
+				uint road_lines = 1; // Starts at 1 because a line is also required for the section title
+				uint tram_lines = 1;
 
-			case WID_CI_ROAD_DESC:
-			case WID_CI_TRAM_DESC: {
-				uint lines = 1; // Starts at 1 because a line is also required for the section title
-
-				size->width = std::max(size->width, GetStringBoundingBox(widget == WID_CI_ROAD_DESC ? STR_COMPANY_INFRASTRUCTURE_VIEW_ROAD_SECT : STR_COMPANY_INFRASTRUCTURE_VIEW_TRAM_SECT).width);
+				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_INFRASTRUCTURE_VIEW_ROAD_SECT).width);
+				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_INFRASTRUCTURE_VIEW_TRAM_SECT).width);
 
 				for (const auto &rt : _sorted_roadtypes) {
-					if (HasBit(this->roadtypes, rt) && RoadTypeIsRoad(rt) == (widget == WID_CI_ROAD_DESC)) {
-						lines++;
+					if (HasBit(this->roadtypes, rt)) {
+						if (RoadTypeIsRoad(rt)) {
+							road_lines++;
+						} else {
+							tram_lines++;
+						}
 						SetDParam(0, GetRoadTypeInfo(rt)->strings.name);
 						size->width = std::max(size->width, GetStringBoundingBox(STR_WHITE_STRING).width + WD_FRAMERECT_LEFT);
 					}
 				}
 
-				size->height = std::max(size->height, lines * FONT_HEIGHT_NORMAL);
-				break;
-			}
-
-			case WID_CI_WATER_DESC:
 				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_INFRASTRUCTURE_VIEW_WATER_SECT).width);
 				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_INFRASTRUCTURE_VIEW_CANALS).width + WD_FRAMERECT_LEFT);
-				break;
 
-			case WID_CI_STATION_DESC:
 				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_INFRASTRUCTURE_VIEW_STATION_SECT).width);
 				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_INFRASTRUCTURE_VIEW_STATIONS).width + WD_FRAMERECT_LEFT);
 				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_INFRASTRUCTURE_VIEW_AIRPORTS).width + WD_FRAMERECT_LEFT);
-				break;
 
-			case WID_CI_RAIL_COUNT:
-			case WID_CI_ROAD_COUNT:
-			case WID_CI_TRAM_COUNT:
-			case WID_CI_WATER_COUNT:
-			case WID_CI_STATION_COUNT:
-			case WID_CI_TOTAL: {
+				uint total_height = ((rail_lines + road_lines + tram_lines + 2 + 3) * FONT_HEIGHT_NORMAL) + (4 * EXP_SPACING);
+
+				/* Set height of the total line. */
+				if (_settings_game.economy.infrastructure_maintenance) total_height += EXP_SPACING + EXP_LINESPACE + FONT_HEIGHT_NORMAL;
+
+				this->vscroll->SetCount(total_height);
+
+				size->height = std::max(size->height, std::min<uint>(20 * FONT_HEIGHT_NORMAL, total_height));
+				break;
+			}
+
+			case WID_CI_COUNT: {
 				/* Find the maximum count that is displayed. */
 				uint32 max_val = 1000;  // Some random number to reserve enough space.
 				Money max_cost = 10000; // Some random number to reserve enough space.
@@ -1990,11 +1981,6 @@ struct CompanyInfrastructureWindow : Window
 				}
 
 				size->width = std::max(size->width, count_width);
-
-				/* Set height of the total line. */
-				if (widget == WID_CI_TOTAL) {
-					size->height = _settings_game.economy.infrastructure_maintenance ? std::max(size->height, EXP_LINESPACE + FONT_HEIGHT_NORMAL) : 0;
-				}
 				break;
 			}
 		}
@@ -2002,121 +1988,157 @@ struct CompanyInfrastructureWindow : Window
 
 	/**
 	 * Helper for drawing the counts line.
-	 * @param r            The bounds to draw in.
+	 * @param width        The width of the bounds to draw in.
 	 * @param y            The y position to draw at.
 	 * @param count        The count to show on this line.
 	 * @param monthly_cost The monthly costs.
 	 */
-	void DrawCountLine(const Rect &r, int &y, int count, Money monthly_cost) const
+	void DrawCountLine(int width, int &y, int count, Money monthly_cost) const
 	{
 		SetDParam(0, count);
-		DrawString(r.left, r.right, y += FONT_HEIGHT_NORMAL, STR_WHITE_COMMA, TC_FROMSTRING, SA_RIGHT);
+		DrawString(0, width, y += FONT_HEIGHT_NORMAL, STR_WHITE_COMMA, TC_FROMSTRING, SA_RIGHT);
 
 		if (_settings_game.economy.infrastructure_maintenance) {
 			SetDParam(0, monthly_cost * 12); // Convert to per year
-			int left = _current_text_dir == TD_RTL ? r.right - this->total_width : r.left;
+			int left = _current_text_dir == TD_RTL ? width - this->total_width : 0;
 			DrawString(left, left + this->total_width, y, STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL, TC_FROMSTRING, SA_RIGHT);
 		}
 	}
 
 	void DrawWidget(const Rect &r, int widget) const override
 	{
+		if (widget != WID_CI_DESC && widget != WID_CI_COUNT) return;
+
 		const Company *c = Company::Get((CompanyID)this->window_number);
-		int y = r.top;
 
 		int offs_left = _current_text_dir == TD_LTR ? WD_FRAMERECT_LEFT : 0;
 		int offs_right = _current_text_dir == TD_LTR ? 0 : WD_FRAMERECT_LEFT;
 
+		int width = r.right - r.left;
+
+		/* Set up a clipping region for the panel. */
+		DrawPixelInfo tmp_dpi;
+		if (!FillDrawPixelInfo(&tmp_dpi, r.left, r.top, width + 1, r.bottom - r.top + 1)) return;
+
+		DrawPixelInfo *old_dpi = _cur_dpi;
+		_cur_dpi = &tmp_dpi;
+
+		int y = -this->vscroll->GetPosition();
+
 		switch (widget) {
-			case WID_CI_RAIL_DESC:
-				DrawString(r.left, r.right, y, STR_COMPANY_INFRASTRUCTURE_VIEW_RAIL_SECT);
+			case WID_CI_DESC: {
+				DrawString(0, width, y, STR_COMPANY_INFRASTRUCTURE_VIEW_RAIL_SECT);
 
 				if (this->railtypes != RAILTYPES_NONE) {
 					/* Draw name of each valid railtype. */
 					for (const auto &rt : _sorted_railtypes) {
 						if (HasBit(this->railtypes, rt)) {
 							SetDParam(0, GetRailTypeInfo(rt)->strings.name);
-							DrawString(r.left + offs_left, r.right - offs_right, y += FONT_HEIGHT_NORMAL, STR_WHITE_STRING);
+							DrawString(offs_left, width - offs_right, y += FONT_HEIGHT_NORMAL, STR_WHITE_STRING);
 						}
 					}
-					DrawString(r.left + offs_left, r.right - offs_right, y += FONT_HEIGHT_NORMAL, STR_COMPANY_INFRASTRUCTURE_VIEW_SIGNALS);
+					DrawString(offs_left, width - offs_right, y += FONT_HEIGHT_NORMAL, STR_COMPANY_INFRASTRUCTURE_VIEW_SIGNALS);
 				} else {
 					/* No valid railtype. */
-					DrawString(r.left + offs_left, r.right - offs_right, y += FONT_HEIGHT_NORMAL, STR_COMPANY_VIEW_INFRASTRUCTURE_NONE);
+					DrawString(offs_left, width - offs_right, y += FONT_HEIGHT_NORMAL, STR_COMPANY_VIEW_INFRASTRUCTURE_NONE);
 				}
 
-				break;
+				y += FONT_HEIGHT_NORMAL + EXP_SPACING;
 
-			case WID_CI_RAIL_COUNT: {
+				DrawString(0, width, y, STR_COMPANY_INFRASTRUCTURE_VIEW_ROAD_SECT);
+
+				/* Draw name of each valid roadtype. */
+				for (const auto &rt : _sorted_roadtypes) {
+					if (HasBit(this->roadtypes, rt) && RoadTypeIsRoad(rt)) {
+						SetDParam(0, GetRoadTypeInfo(rt)->strings.name);
+						DrawString(offs_left, width - offs_right, y += FONT_HEIGHT_NORMAL, STR_WHITE_STRING);
+					}
+				}
+
+				y += FONT_HEIGHT_NORMAL + EXP_SPACING;
+
+				DrawString(0, width, y, STR_COMPANY_INFRASTRUCTURE_VIEW_TRAM_SECT);
+
+				/* Draw name of each valid roadtype. */
+				for (const auto &rt : _sorted_roadtypes) {
+					if (HasBit(this->roadtypes, rt) && RoadTypeIsTram(rt)) {
+						SetDParam(0, GetRoadTypeInfo(rt)->strings.name);
+						DrawString(offs_left, width - offs_right, y += FONT_HEIGHT_NORMAL, STR_WHITE_STRING);
+					}
+				}
+
+				y += FONT_HEIGHT_NORMAL + EXP_SPACING;
+
+				DrawString(0, width, y, STR_COMPANY_INFRASTRUCTURE_VIEW_WATER_SECT);
+				DrawString(offs_left, width - offs_right, y += FONT_HEIGHT_NORMAL, STR_COMPANY_INFRASTRUCTURE_VIEW_CANALS);
+
+				y += FONT_HEIGHT_NORMAL + EXP_SPACING;
+
+				DrawString(0, width, y, STR_COMPANY_INFRASTRUCTURE_VIEW_STATION_SECT);
+				DrawString(offs_left, width - offs_right, y += FONT_HEIGHT_NORMAL, STR_COMPANY_INFRASTRUCTURE_VIEW_STATIONS);
+				DrawString(offs_left, width - offs_right, y += FONT_HEIGHT_NORMAL, STR_COMPANY_INFRASTRUCTURE_VIEW_AIRPORTS);
+
+				break;
+			}
+
+			case WID_CI_COUNT: {
 				/* Draw infrastructure count for each valid railtype. */
 				uint32 rail_total = c->infrastructure.GetRailTotal();
 				for (const auto &rt : _sorted_railtypes) {
 					if (HasBit(this->railtypes, rt)) {
-						this->DrawCountLine(r, y, c->infrastructure.rail[rt], RailMaintenanceCost(rt, c->infrastructure.rail[rt], rail_total));
+						this->DrawCountLine(width, y, c->infrastructure.rail[rt], RailMaintenanceCost(rt, c->infrastructure.rail[rt], rail_total));
 					}
 				}
 				if (this->railtypes != RAILTYPES_NONE) {
-					this->DrawCountLine(r, y, c->infrastructure.signal, SignalMaintenanceCost(c->infrastructure.signal));
+					this->DrawCountLine(width, y, c->infrastructure.signal, SignalMaintenanceCost(c->infrastructure.signal));
 				}
-				break;
-			}
 
-			case WID_CI_ROAD_DESC:
-			case WID_CI_TRAM_DESC: {
-				DrawString(r.left, r.right, y, widget == WID_CI_ROAD_DESC ? STR_COMPANY_INFRASTRUCTURE_VIEW_ROAD_SECT : STR_COMPANY_INFRASTRUCTURE_VIEW_TRAM_SECT);
+				y += FONT_HEIGHT_NORMAL + EXP_SPACING;
 
-				/* Draw name of each valid roadtype. */
+				uint32 road_total = c->infrastructure.GetRoadTotal();
 				for (const auto &rt : _sorted_roadtypes) {
-					if (HasBit(this->roadtypes, rt) && RoadTypeIsRoad(rt) == (widget == WID_CI_ROAD_DESC)) {
-						SetDParam(0, GetRoadTypeInfo(rt)->strings.name);
-						DrawString(r.left + offs_left, r.right - offs_right, y += FONT_HEIGHT_NORMAL, STR_WHITE_STRING);
+					if (HasBit(this->roadtypes, rt) && RoadTypeIsRoad(rt)) {
+						this->DrawCountLine(width, y, c->infrastructure.road[rt], RoadMaintenanceCost(rt, c->infrastructure.road[rt], road_total));
 					}
 				}
 
-				break;
-			}
+				y += FONT_HEIGHT_NORMAL + EXP_SPACING;
 
-			case WID_CI_ROAD_COUNT:
-			case WID_CI_TRAM_COUNT: {
-				uint32 road_tram_total = widget == WID_CI_ROAD_COUNT ? c->infrastructure.GetRoadTotal() : c->infrastructure.GetTramTotal();
+				uint32 tram_total = c->infrastructure.GetTramTotal();
 				for (const auto &rt : _sorted_roadtypes) {
-					if (HasBit(this->roadtypes, rt) && RoadTypeIsRoad(rt) == (widget == WID_CI_ROAD_COUNT)) {
-						this->DrawCountLine(r, y, c->infrastructure.road[rt], RoadMaintenanceCost(rt, c->infrastructure.road[rt], road_tram_total));
+					if (HasBit(this->roadtypes, rt) && RoadTypeIsTram(rt)) {
+						this->DrawCountLine(width, y, c->infrastructure.road[rt], RoadMaintenanceCost(rt, c->infrastructure.road[rt], tram_total));
 					}
 				}
-				break;
-			}
 
-			case WID_CI_WATER_DESC:
-				DrawString(r.left, r.right, y, STR_COMPANY_INFRASTRUCTURE_VIEW_WATER_SECT);
-				DrawString(r.left + offs_left, r.right - offs_right, y += FONT_HEIGHT_NORMAL, STR_COMPANY_INFRASTRUCTURE_VIEW_CANALS);
-				break;
+				y += FONT_HEIGHT_NORMAL + EXP_SPACING;
 
-			case WID_CI_WATER_COUNT:
-				this->DrawCountLine(r, y, c->infrastructure.water, CanalMaintenanceCost(c->infrastructure.water));
-				break;
+				this->DrawCountLine(width, y, c->infrastructure.water, CanalMaintenanceCost(c->infrastructure.water));
 
-			case WID_CI_TOTAL:
+				y += FONT_HEIGHT_NORMAL + EXP_SPACING;
+
+				this->DrawCountLine(width, y, c->infrastructure.station, StationMaintenanceCost(c->infrastructure.station));
+				this->DrawCountLine(width, y, c->infrastructure.airport, AirportMaintenanceCost(c->index));
+
 				if (_settings_game.economy.infrastructure_maintenance) {
-					int left = _current_text_dir == TD_RTL ? r.right - this->total_width : r.left;
+					y += FONT_HEIGHT_NORMAL + EXP_SPACING;
+					int left = _current_text_dir == TD_RTL ? width - this->total_width : 0;
 					GfxFillRect(left, y, left + this->total_width, y, PC_WHITE);
 					y += EXP_LINESPACE;
 					SetDParam(0, this->GetTotalMaintenanceCost() * 12); // Convert to per year
 					DrawString(left, left + this->total_width, y, STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL, TC_FROMSTRING, SA_RIGHT);
 				}
 				break;
-
-			case WID_CI_STATION_DESC:
-				DrawString(r.left, r.right, y, STR_COMPANY_INFRASTRUCTURE_VIEW_STATION_SECT);
-				DrawString(r.left + offs_left, r.right - offs_right, y += FONT_HEIGHT_NORMAL, STR_COMPANY_INFRASTRUCTURE_VIEW_STATIONS);
-				DrawString(r.left + offs_left, r.right - offs_right, y += FONT_HEIGHT_NORMAL, STR_COMPANY_INFRASTRUCTURE_VIEW_AIRPORTS);
-				break;
-
-			case WID_CI_STATION_COUNT:
-				this->DrawCountLine(r, y, c->infrastructure.station, StationMaintenanceCost(c->infrastructure.station));
-				this->DrawCountLine(r, y, c->infrastructure.airport, AirportMaintenanceCost(c->index));
-				break;
+			}
 		}
+
+		/* Restore clipping region. */
+		_cur_dpi = old_dpi;
+	}
+
+	virtual void OnResize() override
+	{
+		this->vscroll->SetCapacityFromWidget(this, WID_CI_DESC);
 	}
 
 	/**
