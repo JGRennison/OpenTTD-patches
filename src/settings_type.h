@@ -441,6 +441,7 @@ struct ConstructionSettings {
 	uint8  extra_tree_placement;             ///< (dis)allow building extra trees in-game
 	uint8  trees_around_snow_line_range;     ///< range around snowline for mixed and arctic forest.
 	bool   trees_around_snow_line_enabled;   ///< enable mixed and arctic forest around snowline, and no trees above snowline
+	uint8  trees_around_snow_line_dynamic_range; ///< how much of the snow line dynamic range to use as the snowline for arctic tree placement
 	uint8  command_pause_level;              ///< level/amount of commands that can't be executed while paused
 	uint16 maximum_signal_evaluations;       ///< maximum number of programmable pre-signals which may be evaluated in one pass
 	bool   enable_build_river;               ///< enable building rivers in-game

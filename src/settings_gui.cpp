@@ -2224,6 +2224,7 @@ static SettingsContainer &GetSettingsTree()
 				treedist->Add(new SettingEntry("construction.extra_tree_placement"));
 				treedist->Add(new SettingEntry("construction.trees_around_snow_line_enabled"));
 				treedist->Add(new SettingEntry("construction.trees_around_snow_line_range"));
+				treedist->Add(new SettingEntry("construction.trees_around_snow_line_dynamic_range"));
 				treedist->Add(new SettingEntry("construction.tree_growth_rate"));
 			}
 
