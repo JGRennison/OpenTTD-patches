@@ -106,7 +106,6 @@ byte _cached_snowline = 0;
 byte _cached_highest_snowline = 0;
 byte _cached_lowest_snowline = 0;
 byte _cached_tree_placement_highest_snowline = 0;
-byte _cached_tree_placement_lowest_snowline = 0;
 
 /**
  * Map 2D viewport or smallmap coordinate to 3D world or tile coordinate.
@@ -690,9 +689,8 @@ void UpdateCachedSnowLineBounds()
 	_cached_highest_snowline = _snow_line == nullptr ? _settings_game.game_creation.snow_line_height : _snow_line->highest_value;
 	_cached_lowest_snowline = _snow_line == nullptr ? _settings_game.game_creation.snow_line_height : _snow_line->lowest_value;
 
-	uint snowline_delta = (((100 - _settings_game.construction.trees_around_snow_line_dynamic_range) * (HighestSnowLine() - LowestSnowLine())) + 50) / 100;
-	_cached_tree_placement_highest_snowline = HighestSnowLine() - ((snowline_delta + 1) / 2);
-	_cached_tree_placement_lowest_snowline = LowestSnowLine() + (snowline_delta / 2);
+	uint snowline_range = ((_settings_game.construction.trees_around_snow_line_dynamic_range * (HighestSnowLine() - LowestSnowLine())) + 50) / 100;
+	_cached_tree_placement_highest_snowline = LowestSnowLine() + snowline_range;
 }
 
 /**

@@ -59,8 +59,7 @@ inline byte HighestTreePlacementSnowLine()
 
 inline byte LowestTreePlacementSnowLine()
 {
-	extern byte _cached_tree_placement_lowest_snowline;
-	return _cached_tree_placement_lowest_snowline;
+	return LowestSnowLine();
 }
 
 int GetSlopeZInCorner(Slope tileh, Corner corner);
