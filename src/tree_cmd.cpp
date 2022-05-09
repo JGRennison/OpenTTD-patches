@@ -925,8 +925,6 @@ static void TileLoop_Trees(TileIndex tile)
 		}
 	}
 
-	if (_settings_game.construction.extra_tree_placement == ETP_NO_GROWTH_NO_SPREAD) return;
-
 	if (GetTreeCounter(tile) < 15) {
 		if (_settings_game.construction.tree_growth_rate > 0) {
 			/* slow, very slow, extremely slow */
@@ -941,6 +939,8 @@ static void TileLoop_Trees(TileIndex tile)
 		return;
 	}
 	SetTreeCounter(tile, 0);
+
+	if (_settings_game.construction.extra_tree_placement == ETP_NO_GROWTH_NO_SPREAD) return;
 
 	switch (GetTreeGrowth(tile)) {
 		case 3: // regular sized tree
