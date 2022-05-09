@@ -926,21 +926,23 @@ static void TileLoop_Trees(TileIndex tile)
 	}
 
 	if (GetTreeCounter(tile) < 15) {
-		if (_settings_game.construction.tree_growth_rate > 0) {
-			/* slow, very slow, extremely slow */
-			uint16 grow_slowing_values[4] = { 0x10000 / 5, 0x10000 / 20, 0x10000 / 120, 0 };
-
-			if (GB(Random(), 0, 16) < grow_slowing_values[_settings_game.construction.tree_growth_rate - 1]) {
-				AddTreeCounter(tile, 1);
-			}
-		} else {
-			AddTreeCounter(tile, 1);
-		}
+		AddTreeCounter(tile, 1);
 		return;
 	}
 	SetTreeCounter(tile, 0);
 
 	if (_settings_game.construction.extra_tree_placement == ETP_NO_GROWTH_NO_SPREAD) return;
+
+	if (_settings_game.construction.tree_growth_rate > 0) {
+		if (_settings_game.construction.tree_growth_rate == 4) return;
+
+		/* slow, very slow, extremely slow */
+		uint16 grow_slowing_values[4] = { 0x10000 / 5, 0x10000 / 20, 0x10000 / 120, 0 };
+
+		if (GB(Random(), 0, 16) >= grow_slowing_values[_settings_game.construction.tree_growth_rate - 1]) {
+			return;
+		}
+	}
 
 	switch (GetTreeGrowth(tile)) {
 		case 3: // regular sized tree
