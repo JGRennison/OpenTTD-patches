@@ -2748,16 +2748,7 @@ struct IndustryCargoesWindow : public Window {
 	{
 		if (!this->IsWidgetLowered(WID_IC_NOTIFY)) return;
 
-		/* Only notify the smallmap window if it exists. In particular, do not
-		 * bring it to the front to prevent messing up any nice layout of the user. */
-		InvalidateWindowClassesData(WC_SMALLMAP, 0);
-
-		/* Notify viewports too. */
-		for (Window *w : Window::IterateFromBack()) {
-			if (w->viewport != nullptr)
-				if (w->viewport->zoom >= ZOOM_LVL_DRAW_MAP && w->viewport->map_type == VPMT_INDUSTRY)
-					w->InvalidateData();
-		}
+		UpdateSmallMapSelectedIndustries();
 	}
 
 	/**

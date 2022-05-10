@@ -46,6 +46,7 @@ struct TunnelBridgeToMap {
 };
 typedef std::vector<TunnelBridgeToMap> TunnelBridgeToMapVector;
 
+void UpdateSmallMapSelectedIndustries();
 void BuildIndustriesLegend();
 void ShowSmallMap();
 void BuildLandLegend();
