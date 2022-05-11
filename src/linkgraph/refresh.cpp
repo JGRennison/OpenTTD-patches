@@ -66,26 +66,6 @@
 }
 
 /**
- * Comparison operator to allow hops to be used in a std::set.
- * @param other Other hop to be compared with.
- * @return If this hop is "smaller" than the other (defined by from, to and cargo in this order).
- */
-bool LinkRefresher::Hop::operator<(const Hop &other) const
-{
-	if (this->from < other.from) {
-		return true;
-	} else if (this->from > other.from) {
-		return false;
-	}
-	if (this->to < other.to) {
-		return true;
-	} else if (this->to > other.to) {
-		return false;
-	}
-	return this->cargo < other.cargo;
-}
-
-/**
  * Constructor for link refreshing algorithm.
  * @param vehicle Vehicle to refresh links for.
  * @param seen_hops Set of hops already seen. This is shared between this
@@ -215,10 +195,17 @@ const Order *LinkRefresher::PredictNextOrder(const Order *cur, const Order *next
 			if (skip_to != nullptr && num_hops < std::min<uint>(64, this->vehicle->orders->GetNumOrders()) && skip_to != next) {
 				/* Make copies of capacity tracking lists. There is potential
 				 * for optimization here: If the vehicle never refits we don't
-				 * need to copy anything. Also, if we've seen the branched link
-				 * before we don't need to branch at all. */
-				LinkRefresher branch(*this);
-				branch.RefreshLinks(cur, skip_to, flags, num_hops + 1);
+				 * need to copy anything. */
+
+				/* Record the branch before executing it,
+				 * to avoid recursively executing it again. */
+				Hop hop(cur->index, skip_to->index, this->cargo, flags);
+				auto iter = this->seen_hops->lower_bound(hop);
+				if (iter == this->seen_hops->end() || *iter != hop) {
+					this->seen_hops->insert(iter, hop);
+					LinkRefresher branch(*this);
+					branch.RefreshLinks(cur, skip_to, flags, num_hops + 1);
+				}
 			}
 		}
 
@@ -331,10 +318,11 @@ void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, uint8 flag
 		next = this->PredictNextOrder(cur, next, flags, num_hops);
 		if (next == nullptr) break;
 		Hop hop(cur->index, next->index, this->cargo);
-		if (this->seen_hops->find(hop) != this->seen_hops->end()) {
+		auto iter = this->seen_hops->lower_bound(hop);
+		if (iter != this->seen_hops->end() && *iter == hop) {
 			break;
 		} else {
-			this->seen_hops->insert(hop);
+			this->seen_hops->insert(iter, hop);
 		}
 
 		/* Don't use the same order again, but choose a new one in the next round. */
