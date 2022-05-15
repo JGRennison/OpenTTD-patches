@@ -606,7 +606,7 @@ void ShowEstimatedCostOrIncome(Money cost, int x, int y)
 }
 
 /**
- * Display animated income or costs on the map.
+ * Display animated income or costs on the map. Does nothing if cost is zero.
  * @param x    World X position of the animation location.
  * @param y    World Y position of the animation location.
  * @param z    World Z position of the animation location.
@@ -614,7 +614,7 @@ void ShowEstimatedCostOrIncome(Money cost, int x, int y)
  */
 void ShowCostOrIncomeAnimation(int x, int y, int z, Money cost)
 {
-	if (!HasBit(_extra_display_opt, XDO_SHOW_MONEY_TEXT_EFFECTS)) return;
+	if (!HasBit(_extra_display_opt, XDO_SHOW_MONEY_TEXT_EFFECTS) || cost == 0) return;
 
 	Point pt = RemapCoords(x, y, z);
 	StringID msg = STR_INCOME_FLOAT_COST;

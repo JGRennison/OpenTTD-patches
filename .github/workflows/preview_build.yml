@@ -31,7 +31,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.PREVIEW_GITHUB_TOKEN }}
 
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         ref: ${{ github.event.client_payload.sha }}
 
@@ -41,7 +41,7 @@ jobs:
         git checkout -b ${name}
 
     - name: Setup cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: /emsdk/upstream/emscripten/cache
         key: 2.0.31-${{ runner.os }}
