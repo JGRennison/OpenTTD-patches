@@ -834,6 +834,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 			const int wait_offset = real_current_order->GetTimetabledWait();
 			DateTicksScaled slot = GetScheduledDispatchTime(ds, _scaled_date_ticks + wait_offset);
 			if (slot > -1) {
+				just_started = !HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 				SetBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 				v->lateness_counter = _scaled_date_ticks - slot + wait_offset;
 				ds.SetScheduledDispatchLastDispatch(slot - ds.GetScheduledDispatchStartTick());
@@ -859,7 +860,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		 * the vehicle last arrived at the first destination, update it to the
 		 * current time. Otherwise set the late counter appropriately to when
 		 * the vehicle should have arrived. */
-		just_started = !HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
+		if (!set_scheduled_dispatch) just_started = !HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 
 		if (v->timetable_start != 0) {
 			v->lateness_counter = _scaled_date_ticks - ((_settings_game.economy.day_length_factor * ((DateTicksScaled) v->timetable_start)) + v->timetable_start_subticks);
