@@ -5475,7 +5475,7 @@ STR_TIMETABLE_AUTOFILL                                          :{BLACK}Erfassen
 STR_TIMETABLE_AUTOFILL_TOOLTIP                                  :{BLACK}Zeiten automatisch bei der nächsten Fahrt eintragen (Mit Strg+Klick wird versucht, die aktuellen Wartezeiten beizubehalten)
 
 STR_TIMETABLE_AUTOMATE                                          :{BLACK}Automatisieren
-STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}Verwaltet den Fahrplan durch automatisches Erfassen der Werte jeder Fahrt (Strg+Klick, um beim Deaktivieren den aktuellen Fahrplan beizubehalten)
+STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}Verwaltet den Fahrplan durch automatisches Erfassen der Werte jeder Fahrt
 
 STR_TIMETABLE_AUTO_SEPARATION                                   :{BLACK}Auto-Separierung
 STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP                           :{BLACK}Passt automatisch den Beginn des Fahrplans an, um die Fahrzeuge gleichmäßig über den gemeinsamen Fahrplan zu verteilen

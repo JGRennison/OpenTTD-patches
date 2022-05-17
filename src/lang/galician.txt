@@ -6689,7 +6689,7 @@ STR_TIMETABLE_CLEAR_TIME_TOOLTIP_EXTRA                          :{BLACK}{STRING}
 STR_TIMETABLE_CHANGE_SPEED_TOOLTIP_EXTRA                        :{BLACK}{STRING} (Ctrl+Click fixa a velocidade para todas as ordes)
 STR_TIMETABLE_CLEAR_SPEED_TOOLTIP_EXTRA                         :{BLACK}{STRING} (Ctrl+Click despexa a velocidade para todas as ordes)
 STR_TIMETABLE_AUTOMATE                                          :{BLACK}Automatizar
-STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}Xestiona os horarios automáticamente actualizando os valores para cada viaxe (Ctrl+Click cando se deshabilita para manter o horario actual)
+STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}Xestiona os horarios automáticamente actualizando os valores para cada viaxe
 STR_TIMETABLE_AUTO_SEPARATION                                   :{BLACK}Auto Separation
 STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP                           :{BLACK}Automáticamente axusta a hora de comezo dos horarios para asegurar a separación dos vehículos
 STR_TIMETABLE_SCHEDULED_DISPATCH                                :{BLACK}Saída programada

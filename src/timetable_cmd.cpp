@@ -566,7 +566,6 @@ CommandCost CmdAutofillTimetable(TileIndex tile, DoCommandFlag flags, uint32 p1,
  * @param p1 Vehicle index.
  * @param p2 Various bitstuffed elements
  * - p2 = (bit 0) - Set to 1 to enable, 0 to disable automation.
- * - p2 = (bit 1) - Ctrl was pressed. Used when disabling to keep times.
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -600,26 +599,9 @@ CommandCost CmdAutomateTimetable(TileIndex index, DoCommandFlag flags, uint32 p1
 				ClrBit(v2->vehicle_flags, VF_AUTOFILL_TIMETABLE);
 				ClrBit(v2->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
 				v2->ClearSeparation();
-				if (!HasBit(p2, 1)) {
-					/* Ctrl wasn't pressed, so clear all timetabled times. */
-					ClrBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
-					v2->timetable_start = 0;
-					v2->timetable_start_subticks = 0;
-					v2->lateness_counter = 0;
-					v2->current_loading_time = 0;
-				}
 			}
 		}
 		SetTimetableWindowsDirty(v);
-		if (!HasBit(p2, 0) && !HasBit(p2, 1)) {
-			OrderList *orders = v->orders;
-			if (orders != nullptr) {
-				for (int i = 0; i < orders->GetNumOrders(); i++) {
-					ChangeTimetable(v, i, 0, MTF_WAIT_TIME, false);
-					ChangeTimetable(v, i, 0, MTF_TRAVEL_TIME, false);
-				}
-			}
-		}
 	}
 
 	return CommandCost();

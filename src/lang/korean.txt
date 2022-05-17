@@ -5756,7 +5756,7 @@ STR_TIMETABLE_AUTOFILL                                          :{BLACK}자동 �
 STR_TIMETABLE_AUTOFILL_TOOLTIP                                  :{BLACK}다음 운행시 자동으로 값을 얻어 시간표를 완성합니다 (역에 머무르는 시간값을 유지하려면 CTRL+클릭하십시오)
 
 STR_TIMETABLE_AUTOMATE                                          :{BLACK}자동
-STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}각 운행마다 자동으로 값을 얻어 시간표를 만듭니다. (현재 시간표를 유지하지 않으려면 CTRL+클릭하십시오)
+STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}각 운행마다 자동으로 값을 얻어 시간표를 만듭니다.
 
 STR_TIMETABLE_AUTO_SEPARATION                                   :{BLACK}자동 배차 조절
 STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP                           :{BLACK}시간표 시작 시간을 자동으로 조절하여 배차 간격을 맞춰 줍니다.
