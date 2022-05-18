@@ -3127,6 +3127,10 @@ uint32 ViewportMapGetColour(const Viewport * const vp, int x, int y, const uint 
 /* Taken from http://stereopsis.com/doubleblend.html, PixelBlend() is faster than ComposeColourRGBANoCheck() */
 static inline void PixelBlend(uint32 * const d, const uint32 s)
 {
+#if defined(__EMSCRIPTEN__)
+	*d = Blitter_32bppBase::ComposeColourRGBANoCheck(s & 0xFF, (s >> 8) & 0xFF, (s >> 16) & 0xFF, (s >> 24) & 0xFF, Colour(*d)).data;
+	return;
+#endif
 	const uint32 a     = (s >> 24) + 1;
 	const uint32 dstrb = *d & 0xFF00FF;
 	const uint32 dstg  = *d & 0xFF00;
