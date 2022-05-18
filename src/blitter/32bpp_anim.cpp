@@ -399,6 +399,15 @@ void Blitter_32bppAnim::SetPixel(void *video, int x, int y, uint8 colour)
 	this->anim_buf[this->ScreenToAnimOffset((uint32 *)video) + x + y * this->anim_buf_pitch] = colour | (DEFAULT_BRIGHTNESS << 8);
 }
 
+void Blitter_32bppAnim::SetPixel32(void *video, int x, int y, uint8 colour, uint32 colour32)
+{
+	*((Colour *)video + x + y * _screen.pitch) = colour32;
+
+	/* Set the colour in the anim-buffer too, if we are rendering to the screen */
+	if (_screen_disable_anim) return;
+	this->anim_buf[this->ScreenToAnimOffset((uint32 *)video) + x + y * this->anim_buf_pitch] = 0;
+}
+
 void Blitter_32bppAnim::DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour, int width, int dash)
 {
 	const Colour c = LookupColourInPalette(colour);

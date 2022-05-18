@@ -39,6 +39,17 @@ void Blitter_40bppAnim::SetPixel(void *video, int x, int y, uint8 colour)
 	}
 }
 
+void Blitter_40bppAnim::SetPixel32(void *video, int x, int y, uint8 colour, uint32 colour32)
+{
+	if (_screen_disable_anim) {
+		Blitter_32bppOptimized::SetPixel32(video, x, y, colour, colour32);
+	} else {
+		*((Colour *)video + x + y * _screen.pitch) = colour32;
+
+		VideoDriver::GetInstance()->GetAnimBuffer()[((uint32 *)video - (uint32 *)_screen.dst_ptr) + x + y * _screen.pitch] = 0;
+	}
+}
+
 void Blitter_40bppAnim::SetRect(void *video, int x, int y, const uint8 *colours, uint lines, uint width, uint pitch)
 {
 	if (_screen_disable_anim) {
