@@ -1951,7 +1951,7 @@ void ViewportMapDrawVehicles(DrawPixelInfo *dpi, Viewport *vp)
 	for (int y = dt; y < db; y++, y_ptr += vp->width) {
 		for (int x = dl; x < dr; x++) {
 			if (vp->map_draw_vehicles_cache.vehicle_pixels[y_ptr + x]) {
-				blitter->SetPixel(dpi->dst_ptr, x - dl, y - dt, PC_WHITE);
+				blitter->SetPixel32(dpi->dst_ptr, x - dl, y - dt, PC_WHITE, Colour(0xFC, 0xFC, 0xFC).data);
 			}
 		}
 	}
