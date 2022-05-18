@@ -3203,6 +3203,54 @@ static void ViewportMapDrawScrollingViewportBox(const Viewport * const vp)
 	}
 }
 
+static void ViewportMapDrawSelection(const Viewport * const vp)
+{
+	DrawPixelInfo *old_dpi = _cur_dpi;
+	_cur_dpi = &_dpi_for_text;
+
+	auto draw_line = [&](Point from_pt, Point to_pt) {
+		GfxDrawLine(from_pt.x, from_pt.y, to_pt.x, to_pt.y, PC_WHITE, 2, 0);
+	};
+
+	Point start_coord = RemapCoords2(_thd.selstart.x, _thd.selstart.y);
+	Point end_coord = RemapCoords2(_thd.selend.x, _thd.selend.y);
+
+	Point start_effective = InverseRemapCoords(start_coord.x, start_coord.y);
+	Point end_effective = InverseRemapCoords(end_coord.x, end_coord.y);
+
+	auto get_corner = [&](int pos_x, int pos_y) -> Point {
+		Point pt = RemapCoords(pos_x, pos_y, 0);
+		return { UnScaleByZoom(pt.x, vp->zoom), UnScaleByZoom(pt.y, vp->zoom) };
+	};
+	Point start_pt = get_corner(start_effective.x, start_effective.y);
+	Point end_pt = get_corner(end_effective.x, end_effective.y);
+	Point mid1_pt = get_corner(start_effective.x, end_effective.y);
+	Point mid2_pt = get_corner(end_effective.x, start_effective.y);
+
+	draw_line(start_pt, mid1_pt);
+	draw_line(mid1_pt, end_pt);
+	draw_line(end_pt, mid2_pt);
+	draw_line(mid2_pt, start_pt);
+
+	if (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() == 32) {
+		static std::vector<Point> points(4);
+		points[0] = start_pt;
+		points[1] = mid1_pt;
+		points[2] = end_pt;
+		points[3] = mid2_pt;
+		GfxFillPolygon(points, 0, FILLRECT_FUNCTOR, [](void *dst, int count) {
+			uint32 *buf = reinterpret_cast<uint32 *>(dst);
+			for (int i = 0; i < count; i++) {
+				PixelBlend(buf + i, 0x40FCFCFC);
+			}
+		});
+	} else {
+		draw_line(start_pt, end_pt);
+	}
+
+	_cur_dpi = old_dpi;
+}
+
 template <bool is_32bpp>
 static void ViewportMapDrawBridgeTunnel(Viewport * const vp, const TunnelBridgeToMap * const tbtm, const int z,
 		const bool is_tunnel, const int w, const int h, Blitter * const blitter)
@@ -3490,6 +3538,7 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom)
 		}
 		ViewportMapDrawVehicles(&_vd.dpi, vp);
 		if (_scrolling_viewport && _settings_client.gui.show_scrolling_viewport_on_map) ViewportMapDrawScrollingViewportBox(vp);
+		if (unlikely(_thd.place_mode == (HT_SPECIAL | HT_MAP) && (_thd.drawstyle & HT_DRAG_MASK) == HT_RECT && _thd.select_proc == DDSP_MEASURE)) ViewportMapDrawSelection(vp);
 		if (vp->zoom < ZOOM_LVL_OUT_256X) ViewportAddKdtreeSigns(&_vd.dpi, true);
 	} else {
 		/* Classic rendering. */
@@ -4143,14 +4192,16 @@ static void SetSelectionTilesDirty()
 		int bot_x = top_x; // coordinates of bottom dirty tile
 		int bot_y = top_y;
 
+		const bool conservative_mode = (_thd.place_mode & HT_MAP) && !_viewport_vehicle_map_redraw_rects.empty();
+
 		do {
 			/* topmost dirty point */
 			TileIndex top_tile = TileVirtXY(top_x, top_y);
-			Point top = RemapCoords(top_x, top_y, GetTileMaxPixelZ(top_tile));
+			Point top = RemapCoords(top_x, top_y, conservative_mode ? _settings_game.construction.map_height_limit * TILE_HEIGHT : GetTileMaxPixelZ(top_tile));
 
 			/* bottommost point */
 			TileIndex bottom_tile = TileVirtXY(bot_x, bot_y);
-			Point bot = RemapCoords(bot_x + TILE_SIZE, bot_y + TILE_SIZE, GetTilePixelZ(bottom_tile)); // bottommost point
+			Point bot = RemapCoords(bot_x + TILE_SIZE, bot_y + TILE_SIZE, conservative_mode ? 0 : GetTilePixelZ(bottom_tile)); // bottommost point
 
 			/* the 'x' coordinate of 'top' and 'bot' is the same (and always in the same distance from tile middle),
 			 * tile height/slope affects only the 'y' on-screen coordinate! */
@@ -4160,10 +4211,11 @@ static void SetSelectionTilesDirty()
 			int r = top.x + TILE_PIXELS * ZOOM_LVL_BASE; // 'x' coordinate of right  side of the dirty rectangle
 			int b = bot.y;                               // 'y' coordinate of bottom side of the dirty rectangle
 
-			static const int OVERLAY_WIDTH = 4 * ZOOM_LVL_BASE; // part of selection sprites is drawn outside the selected area (in particular: terraforming)
+			static const int OVERLAY_WIDTH = conservative_mode ? 2 << ZOOM_LVL_END : 4 * ZOOM_LVL_BASE; // part of selection sprites is drawn outside the selected area (in particular: terraforming)
 
 			/* For halftile foundations on SLOPE_STEEP_S the sprite extents some more towards the top */
-			MarkAllViewportsDirty(l - OVERLAY_WIDTH, t - OVERLAY_WIDTH - TILE_HEIGHT * ZOOM_LVL_BASE, r + OVERLAY_WIDTH, b + OVERLAY_WIDTH, VMDF_NOT_MAP_MODE);
+			ViewportMarkDirtyFlags mode = (_thd.place_mode & HT_MAP) ? VMDF_NOT_LANDSCAPE : VMDF_NOT_MAP_MODE;
+			MarkAllViewportsDirty(l - OVERLAY_WIDTH, t - OVERLAY_WIDTH - TILE_HEIGHT * ZOOM_LVL_BASE, r + OVERLAY_WIDTH, b + OVERLAY_WIDTH, mode);
 
 			/* haven't we reached the topmost tile yet? */
 			if (top_x != x_start) {
