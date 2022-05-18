@@ -3169,10 +3169,14 @@ static void ViewportMapDrawScrollingViewportBox(const Viewport * const vp)
 					const int y = UnScaleByZoom(t_inter - _vd.dpi.top, vp->zoom);
 
 					/* If asked, with 32bpp we can do some blending */
-					if (_settings_client.gui.show_scrolling_viewport_on_map >= 2 && blitter->GetScreenDepth() == 32)
-						for (int j = y; j < y + h_inter; j++)
-							for (int i = x; i < x + w_inter; i++)
-								PixelBlend((uint32*) blitter->MoveTo(_vd.dpi.dst_ptr, i, j), 0x40FCFCFC);
+					if (_settings_client.gui.show_scrolling_viewport_on_map >= 2 && blitter->GetScreenDepth() == 32) {
+						for (int j = y; j < y + h_inter; j++) {
+							uint32 *buf = (uint32*) blitter->MoveTo(_vd.dpi.dst_ptr, x, j);
+							for (int i = 0; i < w_inter; i++) {
+								PixelBlend(buf + i, 0x40FCFCFC);
+							}
+						}
+					}
 
 					/* Draw area contour */
 					if (_settings_client.gui.show_scrolling_viewport_on_map != 2) {
