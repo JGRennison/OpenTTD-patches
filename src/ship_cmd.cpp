@@ -351,6 +351,15 @@ void Ship::UpdateDeltaXY()
 		this->x_offs -= this->x_pos - this->rotation_x_pos;
 		this->y_offs -= this->y_pos - this->rotation_y_pos;
 	}
+
+	if (this->rotation != this->cur_image_valid_dir) {
+		this->cur_image_valid_dir  = INVALID_DIR;
+		Point offset = RemapCoords(this->x_offs, this->y_offs, 0);
+		this->sprite_seq_bounds.left = -offset.x - 16;
+		this->sprite_seq_bounds.right = this->sprite_seq_bounds.left + 32;
+		this->sprite_seq_bounds.top = -offset.y - 16;
+		this->sprite_seq_bounds.bottom = this->sprite_seq_bounds.top + 32;
+	}
 }
 
 int Ship::GetEffectiveMaxSpeed() const
