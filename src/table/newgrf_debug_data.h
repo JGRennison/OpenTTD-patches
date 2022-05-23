@@ -309,8 +309,8 @@ class NIHVehicle : public NIHelper {
 			output.print(buffer);
 		}
 
-		seprintf(buffer, lastof(buffer), "  Cached sprite bounds: (%d, %d) to (%d, %d)",
-				v->sprite_seq_bounds.left, v->sprite_seq_bounds.top, v->sprite_seq_bounds.right, v->sprite_seq_bounds.bottom);
+		seprintf(buffer, lastof(buffer), "  Cached sprite bounds: (%d, %d) to (%d, %d), offs: (%d, %d)",
+				v->sprite_seq_bounds.left, v->sprite_seq_bounds.top, v->sprite_seq_bounds.right, v->sprite_seq_bounds.bottom, v->x_offs, v->y_offs);
 		output.print(buffer);
 
 		if (HasBit(v->vehicle_flags, VF_SEPARATION_ACTIVE)) {
