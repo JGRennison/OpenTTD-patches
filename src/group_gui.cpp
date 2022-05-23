@@ -26,6 +26,7 @@
 #include "company_gui.h"
 #include "gui.h"
 #include "tbtr_template_gui_main.h"
+#include "newgrf_debug.h"
 
 #include "widgets/group_widget.h"
 #include "core/smallvec_type.hpp"
@@ -825,7 +826,9 @@ public:
 						NOT_REACHED();
 				}
 				if (v) {
-					if (_ctrl_pressed && this->grouping == GB_SHARED_ORDERS) {
+					if (_ctrl_pressed && _shift_pressed && _settings_client.gui.newgrf_developer_tools) {
+						::ShowNewGRFInspectWindow(GetGrfSpecFeature(v->type), v->index);
+					} else if (_ctrl_pressed && this->grouping == GB_SHARED_ORDERS) {
 						ShowOrdersWindow(v);
 					} else {
 						this->vehicle_sel = v->index;
