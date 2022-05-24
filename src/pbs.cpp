@@ -386,6 +386,26 @@ static uint16 ApplyTunnelBridgeLookaheadSignalSpeedRestriction(TileIndex tile, T
 	return speed_restriction;
 }
 
+static uint16 GetTrainSpeedLimitForRailtype(const Train *v, RailType rt, TileIndex tile, Track track)
+{
+	uint16 speed = GetRailTypeInfo(rt)->max_speed;
+	if (v->tcache.cached_tflags & TCF_SPD_RAILTYPE) {
+		for (const Train *u = v; u != nullptr; u = u->Next()) {
+			if (u->GetEngine()->callbacks_used & SGCU_CB36_SPEED_RAILTYPE) {
+				const TileIndex prev_tile = u->tile;
+				const TrackBits prev_track = u->track;
+				const_cast<Train *>(u)->tile = tile;
+				const_cast<Train *>(u)->track = TrackToTrackBits(track);
+				uint16 cb_speed = GetVehicleProperty(u, PROP_TRAIN_SPEED, speed);
+				if (cb_speed != 0 && (cb_speed < speed || speed == 0)) speed = cb_speed;
+				const_cast<Train *>(u)->tile = prev_tile;
+				const_cast<Train *>(u)->track = prev_track;
+			}
+		}
+	}
+	return speed;
+}
+
 /** Follow a reservation starting from a specific tile to the end. */
 static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Trackdir trackdir, FollowReservationFlags flags, const Train *v, TrainReservationLookAhead *lookahead)
 {
@@ -431,7 +451,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 	auto check_rail_type = [&](TileIndex t, Trackdir td, int offset) {
 		RailType new_rt = GetRailTypeByTrack(t, TrackdirToTrack(td));
 		if (new_rt != rt) {
-			uint16 rail_speed = GetRailTypeInfo(new_rt)->max_speed;
+			uint16 rail_speed = GetTrainSpeedLimitForRailtype(v, new_rt, t, TrackdirToTrack(td));
 			if (rail_speed > 0) lookahead->AddTrackSpeedLimit(rail_speed, offset, 4, z);
 			if (GetRailTypeInfo(rt)->curve_speed != GetRailTypeInfo(new_rt)->curve_speed) {
 				CheckCurveLookAhead(v, lookahead, lookahead->RealEndPosition() + 4 + offset, z, new_rt);
@@ -870,9 +890,10 @@ static int ScanTrainPositionForLookAheadStation(Train *t, TileIndex start_tile)
 				if (u == t) {
 					for (uint i = 1; i < forward_length; i++) {
 						/* Check for mid platform rail type change */
-						RailType new_rt = GetRailTypeByTrack(tile + (i * diff), TrackdirToTrack(trackdir));
+						TileIndex new_tile = tile + (i * diff);
+						RailType new_rt = GetRailTypeByTrack(new_tile, TrackdirToTrack(trackdir));
 						if (new_rt != rt) {
-							uint16 rail_speed = GetRailTypeInfo(new_rt)->max_speed;
+							uint16 rail_speed = GetTrainSpeedLimitForRailtype(t, new_rt, new_tile, TrackdirToTrack(trackdir));
 							if (rail_speed > 0) t->lookahead->AddTrackSpeedLimit(rail_speed, (i - 1) * TILE_SIZE, 4, z);
 							rt = new_rt;
 						}

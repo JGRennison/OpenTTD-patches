@@ -354,6 +354,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 									cb36_op.mode = ACOM_CB36_PROP;
 									range.group->AnalyseCallbacks(cb36_op);
 									op.properties_used |= cb36_op.properties_used;
+									op.callbacks_used |= cb36_op.callbacks_used;
 								}
 								break;
 						}
@@ -370,7 +371,18 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 				for (const auto &range : this->ranges) {
 					if (range.low == range.high) {
 						if (range.low < 64) {
-							if (find_cb_result()) SetBit(op.properties_used, range.low);
+							if (find_cb_result()) {
+								SetBit(op.properties_used, range.low);
+								if (range.low == 0x9) {
+									/* Speed */
+									if (range.group != nullptr) {
+										AnalyseCallbackOperation cb36_speed;
+										cb36_speed.mode = ACOM_CB36_SPEED;
+										range.group->AnalyseCallbacks(cb36_speed);
+										op.callbacks_used |= cb36_speed.callbacks_used;
+									}
+								}
+							}
 						}
 					} else {
 						if (range.group != nullptr) range.group->AnalyseCallbacks(op);
@@ -391,6 +403,10 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 				if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
 				return;
 			}
+		}
+		if (op.mode == ACOM_CB36_SPEED && adjust.variable == 0x4A) {
+			op.callbacks_used |= SGCU_CB36_SPEED_RAILTYPE;
+			return;
 		}
 	}
 	for (const auto &adjust : this->adjusts) {

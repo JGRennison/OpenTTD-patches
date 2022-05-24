@@ -96,9 +96,10 @@ inline int GetTrainRealisticBrakingTargetDecelerationLimit(int acceleration_type
 
 /** Flags for TrainCache::cached_tflags */
 enum TrainCacheFlags : byte {
-	TCF_NONE       = 0,        ///< No flags
-	TCF_TILT       = 0x01,     ///< Train can tilt; feature provides a bonus in curves.
-	TCF_RL_BRAKING = 0x02,     ///< Train realistic braking (movement physics) in effect for this vehicle
+	TCF_NONE         = 0,        ///< No flags
+	TCF_TILT         = 0x01,     ///< Train can tilt; feature provides a bonus in curves.
+	TCF_RL_BRAKING   = 0x02,     ///< Train realistic braking (movement physics) in effect for this vehicle
+	TCF_SPD_RAILTYPE = 0x04,     ///< Train speed varies depending on railtype
 };
 DECLARE_ENUM_AS_BIT_SET(TrainCacheFlags)
 

@@ -264,6 +264,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 	this->tcache.cached_num_engines = 0;
 
 	bool train_can_tilt = true;
+	bool speed_varies_by_railtype = false;
 	int min_curve_speed_mod = INT_MAX;
 
 	for (Train *u = this; u != nullptr; u = u->Next()) {
@@ -304,6 +305,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 		const RailVehicleInfo *rvi_u = &e_u->u.rail;
 
 		if (!HasBit(e_u->info.misc_flags, EF_RAIL_TILTS)) train_can_tilt = false;
+		if (e_u->callbacks_used & SGCU_CB36_SPEED_RAILTYPE) speed_varies_by_railtype = true;
 		min_curve_speed_mod = std::min(min_curve_speed_mod, u->GetCurveSpeedModifier());
 
 		/* Cache wagon override sprite group. nullptr is returned if there is none */
@@ -390,7 +392,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 
 	/* store consist weight/max speed in cache */
 	this->vcache.cached_max_speed = max_speed;
-	this->tcache.cached_tflags = (train_can_tilt ? TCF_TILT : TCF_NONE);
+	this->tcache.cached_tflags = (train_can_tilt ? TCF_TILT : TCF_NONE) | (speed_varies_by_railtype ? TCF_SPD_RAILTYPE : TCF_NONE);
 	this->tcache.cached_curve_speed_mod = min_curve_speed_mod;
 	this->tcache.cached_max_curve_speed = this->GetCurveSpeedLimit();
 

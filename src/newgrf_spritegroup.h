@@ -53,6 +53,7 @@ enum AnalyseCallbackOperationMode {
 	ACOM_CB_VAR,
 	ACOM_CB36_PROP,
 	ACOM_FIND_CB_RESULT,
+	ACOM_CB36_SPEED,
 };
 
 struct AnalyseCallbackOperation {
