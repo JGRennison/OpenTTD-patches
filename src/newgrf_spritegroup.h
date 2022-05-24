@@ -163,6 +163,24 @@ enum DeterministicSpriteGroupAdjustOperation {
 	DSGA_OP_END,
 };
 
+inline bool IsEvalAdjustWithZeroRemovable(DeterministicSpriteGroupAdjustOperation op)
+{
+	switch (op) {
+		case DSGA_OP_ADD:
+		case DSGA_OP_SUB:
+		case DSGA_OP_OR:
+		case DSGA_OP_XOR:
+		case DSGA_OP_ROR:
+		case DSGA_OP_SHL:
+		case DSGA_OP_SHR:
+		case DSGA_OP_SAR:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
 
 struct DeterministicSpriteGroupAdjust {
 	DeterministicSpriteGroupAdjustOperation operation;

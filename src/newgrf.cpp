@@ -5626,6 +5626,15 @@ static void NewSpriteGroup(ByteReader *buf)
 				} else {
 					adjust.add_val    = 0;
 					adjust.divmod_val = 0;
+					if (group->adjusts.size() > 1) {
+						/* Not the first adjustment */
+						if (adjust.variable != 0x7E) {
+							if (adjust.and_mask == 0 && IsEvalAdjustWithZeroRemovable(adjust.operation)) {
+								/* Delete useless zero operations */
+								group->adjusts.pop_back();
+							}
+						}
+					}
 				}
 
 				/* Continue reading var adjusts while bit 5 is set. */
