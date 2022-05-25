@@ -5800,6 +5800,14 @@ static void NewSpriteGroup(ByteReader *buf)
 											inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
 											break;
 										}
+										if (prev.operation == DSGA_OP_UMIN && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == 1) {
+											prev.operation = DSGA_OP_TERNARY;
+											prev.and_mask = 0;
+											prev.add_val = 1;
+											group->adjusts.pop_back();
+											inference = VA2AIF_PREV_TERNARY;
+											break;
+										}
 									}
 									if (adjust.and_mask <= 1) inference = prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
 									break;
