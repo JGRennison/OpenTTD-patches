@@ -5703,7 +5703,7 @@ static void NewSpriteGroup(ByteReader *buf)
 								case DSGA_OP_XOR:
 									if (adjust.and_mask <= 1) inference = prev_inference & (~VA2AIF_PREV_TERNARY);
 									break;
-								case DSGA_OP_MUL:
+								case DSGA_OP_MUL: {
 									if ((prev_inference & VA2AIF_ONE_OR_ZERO) && adjust.variable == 0x1A && adjust.shift_num == 0) {
 										/* Found a ternary operator */
 										adjust.operation = DSGA_OP_TERNARY;
@@ -5739,8 +5739,17 @@ static void NewSpriteGroup(ByteReader *buf)
 											}
 										}
 										inference = VA2AIF_PREV_TERNARY;
+										break;
+									}
+									uint32 sign_bit = (1 << ((varsize * 8) - 1));
+									if ((prev_inference & VA2AIF_PREV_MASK_ADJUST) && (prev_inference & VA2AIF_SIGNED_NON_NEGATIVE) && adjust.variable == 0x1A && adjust.shift_num == 0 && (adjust.and_mask & sign_bit) == 0) {
+										/* Determine whether the result will be always non-negative */
+										if (((uint64)group->adjusts[group->adjusts.size() - 2].and_mask) * ((uint64)adjust.and_mask) < ((uint64)sign_bit)) {
+											inference |= VA2AIF_SIGNED_NON_NEGATIVE;
+										}
 									}
 									break;
+								}
 								case DSGA_OP_SCMP:
 									inference = VA2AIF_SIGNED_NON_NEGATIVE;
 									/* Convert to UCMP if possible to make other analysis operations easier */
@@ -5767,6 +5776,14 @@ static void NewSpriteGroup(ByteReader *buf)
 											group->adjusts.pop_back();
 											break;
 										}
+									}
+									break;
+								case DSGA_OP_SDIV:
+									if ((prev_inference & VA2AIF_SIGNED_NON_NEGATIVE) && adjust.variable == 0x1A && adjust.shift_num == 0 && HasExactlyOneBit(adjust.and_mask)) {
+										/* Convert to a shift */
+										adjust.operation = DSGA_OP_SHR;
+										adjust.and_mask = FindFirstBit(adjust.and_mask);
+										inference |= VA2AIF_SIGNED_NON_NEGATIVE;
 									}
 								default:
 									break;
