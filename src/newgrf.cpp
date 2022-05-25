@@ -5781,6 +5781,12 @@ static void NewSpriteGroup(ByteReader *buf)
 											inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
 											break;
 										}
+										if (prev_inference & VA2AIF_ONE_OR_ZERO) {
+											/* Current value is already one or zero, remove this */
+											group->adjusts.pop_back();
+											inference = prev_inference;
+											break;
+										}
 									}
 									if (adjust.and_mask <= 1) {
 										inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
