@@ -5552,6 +5552,7 @@ enum VarAction2AdjustInferenceFlags {
 	VA2AIF_PREV_TERNARY          = 0x04,
 	VA2AIF_PREV_MASK_ADJUST      = 0x08,
 	VA2AIF_PREV_STORE_TMP        = 0x10,
+	VA2AIF_HAVE_CONSTANT         = 0x20,
 
 	VA2AIF_PREV_MASK             = VA2AIF_PREV_TERNARY | VA2AIF_PREV_MASK_ADJUST | VA2AIF_PREV_STORE_TMP,
 };
@@ -5620,6 +5621,7 @@ static void NewSpriteGroup(ByteReader *buf)
 			};
 
 			VarAction2AdjustInferenceFlags inference = VA2AIF_NONE;
+			uint32 current_constant = 0;
 
 			/* Loop through the var adjusts. Unfortunately we don't know how many we have
 			 * from the outset, so we shall have to keep reallocing. */
@@ -5752,7 +5754,7 @@ static void NewSpriteGroup(ByteReader *buf)
 									break;
 								case DSGA_OP_OR:
 								case DSGA_OP_XOR:
-									if (adjust.and_mask <= 1) inference = prev_inference & (~VA2AIF_PREV_MASK);
+									if (adjust.and_mask <= 1) inference = prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
 									break;
 								case DSGA_OP_MUL: {
 									if ((prev_inference & VA2AIF_ONE_OR_ZERO) && adjust.variable == 0x1A && adjust.shift_num == 0) {
@@ -5844,6 +5846,17 @@ static void NewSpriteGroup(ByteReader *buf)
 											break;
 										}
 									}
+									if (adjust.variable == 0x1A || adjust.and_mask == 0) {
+										uint32 val = EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, 0, UINT_MAX);
+										if ((prev_inference & VA2AIF_HAVE_CONSTANT) && current_constant == val) {
+											/* reloading previous constant, remove */
+											group->adjusts.pop_back();
+											inference = prev_inference;
+											break;
+										}
+										inference |= VA2AIF_HAVE_CONSTANT;
+										current_constant = val;
+									}
 									break;
 								case DSGA_OP_SHR:
 									if ((prev_inference & VA2AIF_PREV_MASK_ADJUST) && adjust.variable == 0x1A && adjust.shift_num == 0) {
@@ -5875,6 +5888,10 @@ static void NewSpriteGroup(ByteReader *buf)
 					/* First adjustment */
 					add_inferences_from_mask(adjust.and_mask);
 					inference |= VA2AIF_PREV_MASK_ADJUST;
+					if (adjust.variable == 0x1A || adjust.and_mask == 0) {
+						inference |= VA2AIF_HAVE_CONSTANT;
+						current_constant = EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, 0, UINT_MAX);
+					}
 				}
 
 				/* Continue reading var adjusts while bit 5 is set. */
