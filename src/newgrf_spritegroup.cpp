@@ -183,6 +183,7 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust &adjust, ScopeResolver
 		case DSGA_OP_SHR:  return (uint32)(U)last_value >> ((U)value & 0x1F);
 		case DSGA_OP_SAR:  return (int32)(S)last_value >> ((U)value & 0x1F);
 		case DSGA_OP_TERNARY: return (last_value != 0) ? value : adjust.add_val;
+		case DSGA_OP_EQ:   return (last_value == value) ? 1 : 0;
 		default:           return value;
 	}
 }
@@ -562,6 +563,14 @@ static const char *_sg_size_names[] {
 	"DWORD",
 };
 
+static const char *GetAdjustOperationName(DeterministicSpriteGroupAdjustOperation operation)
+{
+	if (operation < DSGA_OP_END) return _dsg_op_names[operation];
+	if (operation == DSGA_OP_TERNARY) return "TERNARY";
+	if (operation == DSGA_OP_EQ) return "EQ";
+	return "???";
+}
+
 void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint flags)
 {
 	if (sg == nullptr) {
@@ -634,7 +643,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 					case DSGA_TYPE_MOD:  p += seprintf(p, lastof(this->buffer), ", add: %X, mod: %X", adjust.add_val, adjust.divmod_val); break;
 					case DSGA_TYPE_NONE: break;
 				}
-				p += seprintf(p, lastof(this->buffer), ", op: %X (%s)", adjust.operation, adjust.operation < DSGA_OP_END ? _dsg_op_names[adjust.operation] : "???");
+				p += seprintf(p, lastof(this->buffer), ", op: %X (%s)", adjust.operation, GetAdjustOperationName(adjust.operation));
 				this->print();
 			}
 			if (dsg->calculated_result) {

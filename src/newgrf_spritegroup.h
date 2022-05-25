@@ -163,6 +163,7 @@ enum DeterministicSpriteGroupAdjustOperation {
 	DSGA_OP_END,
 
 	DSGA_OP_TERNARY = 0x80, ///< a == 0 ? b : c,
+	DSGA_OP_EQ,             ///< a == b ? 1 : 0,
 
 	DSGA_OP_SPECIAL_END,
 };

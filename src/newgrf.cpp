@@ -5666,6 +5666,15 @@ static void NewSpriteGroup(ByteReader *buf)
 									if (adjust.and_mask <= 1) inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
 									break;
 								case DSGA_OP_AND:
+									if ((prev_inference & VA2AIF_SIGNED_NON_NEGATIVE) && adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1) {
+										DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+										if (prev.operation == DSGA_OP_SCMP || prev.operation == DSGA_OP_UCMP) {
+											prev.operation = DSGA_OP_EQ;
+											group->adjusts.pop_back();
+											inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+											break;
+										}
+									}
 									if (adjust.and_mask <= 1) {
 										inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
 									} else if ((adjust.and_mask & (1 << ((varsize * 8) - 1))) == 0) {
@@ -5699,6 +5708,17 @@ static void NewSpriteGroup(ByteReader *buf)
 												}
 											}
 											break;
+										}
+										if (group->adjusts.size() > 1) {
+											/* Remove redundant comparison with 0 if applicable */
+											const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+											if (prev.type == DSGA_TYPE_NONE && prev.operation == DSGA_OP_EQ && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == 0) {
+												DeterministicSpriteGroupAdjust current = group->adjusts.back();
+												group->adjusts.pop_back();
+												group->adjusts.pop_back();
+												std::swap(current.and_mask, current.add_val);
+												group->adjusts.push_back(current);
+											}
 										}
 										inference = VA2AIF_PREV_TERNARY;
 									}
