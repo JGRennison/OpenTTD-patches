@@ -5722,7 +5722,43 @@ static void NewSpriteGroup(ByteReader *buf)
 						} else {
 							switch (adjust.operation) {
 								case DSGA_OP_SMIN:
+									if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1) {
+										DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+										if (prev.operation == DSGA_OP_SCMP) {
+											prev.operation = DSGA_OP_SGE;
+											group->adjusts.pop_back();
+											inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+											break;
+										}
+										if (group->adjusts.size() >= 3 && prev.operation == DSGA_OP_XOR && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A &&
+												prev.shift_num == 0 && prev.and_mask == 2) {
+											DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
+											if (prev2.operation == DSGA_OP_SCMP) {
+												prev2.operation = DSGA_OP_SLE;
+												group->adjusts.pop_back();
+												group->adjusts.pop_back();
+												inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+												break;
+											}
+										}
+									}
 									if (adjust.and_mask <= 1 && (prev_inference & VA2AIF_SIGNED_NON_NEGATIVE)) inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+									break;
+								case DSGA_OP_SMAX:
+									if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 0) {
+										DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+										if (group->adjusts.size() >= 3 && prev.operation == DSGA_OP_SUB && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A &&
+												prev.shift_num == 0 && prev.and_mask == 1) {
+											DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
+											if (prev2.operation == DSGA_OP_SCMP) {
+												prev2.operation = DSGA_OP_SGT;
+												group->adjusts.pop_back();
+												group->adjusts.pop_back();
+												inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+												break;
+											}
+										}
+									}
 									break;
 								case DSGA_OP_UMIN:
 									if (adjust.and_mask <= 1) inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
@@ -5737,7 +5773,7 @@ static void NewSpriteGroup(ByteReader *buf)
 										group->adjusts.pop_back();
 										break;
 									}
-									if ((prev_inference & VA2AIF_SIGNED_NON_NEGATIVE) && adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1) {
+									if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1) {
 										DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
 										if (prev.operation == DSGA_OP_SCMP || prev.operation == DSGA_OP_UCMP) {
 											prev.operation = DSGA_OP_EQ;
@@ -5753,7 +5789,18 @@ static void NewSpriteGroup(ByteReader *buf)
 									}
 									break;
 								case DSGA_OP_OR:
+									if (adjust.and_mask <= 1) inference = prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
+									break;
 								case DSGA_OP_XOR:
+									if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1) {
+										DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+										if (prev.operation == DSGA_OP_SLT || prev.operation == DSGA_OP_SGE || prev.operation == DSGA_OP_SLE || prev.operation == DSGA_OP_SGT) {
+											prev.operation = (DeterministicSpriteGroupAdjustOperation)(prev.operation ^ 1);
+											group->adjusts.pop_back();
+											inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+											break;
+										}
+									}
 									if (adjust.and_mask <= 1) inference = prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
 									break;
 								case DSGA_OP_MUL: {
@@ -5804,12 +5851,6 @@ static void NewSpriteGroup(ByteReader *buf)
 									break;
 								}
 								case DSGA_OP_SCMP:
-									inference = VA2AIF_SIGNED_NON_NEGATIVE;
-									/* Convert to UCMP if possible to make other analysis operations easier */
-									if ((prev_inference & VA2AIF_SIGNED_NON_NEGATIVE) && adjust.variable == 0x1A && adjust.shift_num == 0 && (adjust.and_mask & get_sign_bit()) == 0) {
-										adjust.operation = DSGA_OP_UCMP;
-									}
-									break;
 								case DSGA_OP_UCMP:
 									inference = VA2AIF_SIGNED_NON_NEGATIVE;
 									break;

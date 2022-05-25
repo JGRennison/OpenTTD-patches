@@ -164,9 +164,16 @@ enum DeterministicSpriteGroupAdjustOperation {
 
 	DSGA_OP_TERNARY = 0x80, ///< a == 0 ? b : c,
 	DSGA_OP_EQ,             ///< a == b ? 1 : 0,
+	DSGA_OP_SLT,            ///< (signed) a < b ? 1 : 0,
+	DSGA_OP_SGE,            ///< (signed) a >= b ? 1 : 0,
+	DSGA_OP_SLE,            ///< (signed) a <= b ? 1 : 0,
+	DSGA_OP_SGT,            ///< (signed) a > b ? 1 : 0,
 
 	DSGA_OP_SPECIAL_END,
 };
+
+static_assert((DSGA_OP_SLT ^ 1) == DSGA_OP_SGE);
+static_assert((DSGA_OP_SLE ^ 1) == DSGA_OP_SGT);
 
 inline bool IsEvalAdjustWithZeroRemovable(DeterministicSpriteGroupAdjustOperation op)
 {

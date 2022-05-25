@@ -184,6 +184,10 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust &adjust, ScopeResolver
 		case DSGA_OP_SAR:  return (int32)(S)last_value >> ((U)value & 0x1F);
 		case DSGA_OP_TERNARY: return (last_value != 0) ? value : adjust.add_val;
 		case DSGA_OP_EQ:   return (last_value == value) ? 1 : 0;
+		case DSGA_OP_SLT:  return ((S)last_value <  (S)value) ? 1 : 0;
+		case DSGA_OP_SGE:  return ((S)last_value >= (S)value) ? 1 : 0;
+		case DSGA_OP_SLE:  return ((S)last_value <= (S)value) ? 1 : 0;
+		case DSGA_OP_SGT:  return ((S)last_value >  (S)value) ? 1 : 0;
 		default:           return value;
 	}
 }
@@ -544,6 +548,16 @@ static const char *_dsg_op_names[] {
 };
 static_assert(lengthof(_dsg_op_names) == DSGA_OP_END);
 
+static const char *_dsg_op_special_names[] {
+	"TERNARY",
+	"EQ",
+	"SLT",
+	"SGE",
+	"SLE",
+	"SGT",
+};
+static_assert(lengthof(_dsg_op_special_names) == DSGA_OP_SPECIAL_END - DSGA_OP_TERNARY);
+
 static const char *_sg_scope_names[] {
 	"SELF",
 	"PARENT",
@@ -560,8 +574,7 @@ static const char *_sg_size_names[] {
 static const char *GetAdjustOperationName(DeterministicSpriteGroupAdjustOperation operation)
 {
 	if (operation < DSGA_OP_END) return _dsg_op_names[operation];
-	if (operation == DSGA_OP_TERNARY) return "TERNARY";
-	if (operation == DSGA_OP_EQ) return "EQ";
+	if (operation >= DSGA_OP_TERNARY && operation < DSGA_OP_SPECIAL_END) return _dsg_op_special_names[operation - DSGA_OP_TERNARY];
 	return "???";
 }
 
