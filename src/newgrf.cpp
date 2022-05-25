@@ -5677,6 +5677,27 @@ static void NewSpriteGroup(ByteReader *buf)
 							/* Delete useless zero operations */
 							group->adjusts.pop_back();
 							inference = prev_inference;
+						} else if (adjust.and_mask == 0 && IsEvalAdjustWithZeroAlwaysZero(adjust.operation)) {
+							/* Operation always returns 0, replace it and any useless prior operations */
+							group->adjusts.pop_back();
+							while (!group->adjusts.empty()) {
+								const DeterministicSpriteGroupAdjust &prev = group->adjusts.back();
+								if (prev.variable != 0x7E && !IsEvalAdjustWithSideEffects(prev.operation)) {
+									/* Delete useless operation */
+									group->adjusts.pop_back();
+								} else {
+									break;
+								}
+							}
+							DeterministicSpriteGroupAdjust &replacement = group->adjusts.emplace_back();
+							replacement.operation = group->adjusts.size() == 1 ? DSGA_OP_ADD : DSGA_OP_RST;
+							replacement.variable = 0x1A;
+							replacement.shift_num = 0;
+							replacement.type = DSGA_TYPE_NONE;
+							replacement.and_mask = 0;
+							replacement.add_val = 0;
+							replacement.divmod_val = 0;
+							inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO | VA2AIF_PREV_MASK_ADJUST;
 						} else {
 							switch (adjust.operation) {
 								case DSGA_OP_SMIN:

@@ -186,6 +186,32 @@ inline bool IsEvalAdjustWithZeroRemovable(DeterministicSpriteGroupAdjustOperatio
 	}
 }
 
+inline bool IsEvalAdjustWithZeroAlwaysZero(DeterministicSpriteGroupAdjustOperation op)
+{
+	switch (op) {
+		case DSGA_OP_UMIN:
+		case DSGA_OP_MUL:
+		case DSGA_OP_AND:
+		case DSGA_OP_RST:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+inline bool IsEvalAdjustWithSideEffects(DeterministicSpriteGroupAdjustOperation op)
+{
+	switch (op) {
+		case DSGA_OP_STO:
+		case DSGA_OP_STOP:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
 inline bool IsEvalAdjustUsableForConstantPropagation(DeterministicSpriteGroupAdjustOperation op)
 {
 	switch (op) {
