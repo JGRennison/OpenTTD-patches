@@ -5532,6 +5532,9 @@ enum VarAction2AdjustInferenceFlags {
 	VA2AIF_ONE_OR_ZERO           = 0x02,
 	VA2AIF_PREV_TERNARY          = 0x04,
 	VA2AIF_PREV_MASK_ADJUST      = 0x08,
+	VA2AIF_PREV_STORE_TMP        = 0x10,
+
+	VA2AIF_PREV_MASK             = VA2AIF_PREV_TERNARY | VA2AIF_PREV_MASK_ADJUST | VA2AIF_PREV_STORE_TMP,
 };
 DECLARE_ENUM_AS_BIT_SET(VarAction2AdjustInferenceFlags)
 
@@ -5588,6 +5591,14 @@ static void NewSpriteGroup(ByteReader *buf)
 				case 1: group->size = DSG_SIZE_WORD;  varsize = 2; break;
 				case 2: group->size = DSG_SIZE_DWORD; varsize = 4; break;
 			}
+
+			auto get_sign_bit = [&]() -> uint32 {
+				return (1 << ((varsize * 8) - 1));
+			};
+
+			auto get_full_mask = [&]() -> uint32 {
+				return UINT_MAX >> ((4 - varsize) * 8);
+			};
 
 			VarAction2AdjustInferenceFlags inference = VA2AIF_NONE;
 
@@ -5647,7 +5658,7 @@ static void NewSpriteGroup(ByteReader *buf)
 				auto add_inferences_from_mask = [&](uint32 mask) {
 					if (mask == 1) {
 						inference |= VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
-					} else if ((mask & (1 << ((varsize * 8) - 1))) == 0) {
+					} else if ((mask & get_sign_bit()) == 0) {
 						inference |= VA2AIF_SIGNED_NON_NEGATIVE;
 					}
 				};
@@ -5695,13 +5706,13 @@ static void NewSpriteGroup(ByteReader *buf)
 									}
 									if (adjust.and_mask <= 1) {
 										inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
-									} else if ((adjust.and_mask & (1 << ((varsize * 8) - 1))) == 0) {
+									} else if ((adjust.and_mask & get_sign_bit()) == 0) {
 										inference = VA2AIF_SIGNED_NON_NEGATIVE;
 									}
 									break;
 								case DSGA_OP_OR:
 								case DSGA_OP_XOR:
-									if (adjust.and_mask <= 1) inference = prev_inference & (~VA2AIF_PREV_TERNARY);
+									if (adjust.and_mask <= 1) inference = prev_inference & (~VA2AIF_PREV_MASK);
 									break;
 								case DSGA_OP_MUL: {
 									if ((prev_inference & VA2AIF_ONE_OR_ZERO) && adjust.variable == 0x1A && adjust.shift_num == 0) {
@@ -5753,14 +5764,30 @@ static void NewSpriteGroup(ByteReader *buf)
 								case DSGA_OP_SCMP:
 									inference = VA2AIF_SIGNED_NON_NEGATIVE;
 									/* Convert to UCMP if possible to make other analysis operations easier */
-									if ((prev_inference & VA2AIF_SIGNED_NON_NEGATIVE) && adjust.variable == 0x1A && adjust.shift_num == 0 && (adjust.and_mask & (1 << ((varsize * 8) - 1))) == 0) {
+									if ((prev_inference & VA2AIF_SIGNED_NON_NEGATIVE) && adjust.variable == 0x1A && adjust.shift_num == 0 && (adjust.and_mask & get_sign_bit()) == 0) {
 										adjust.operation = DSGA_OP_UCMP;
 									}
 									break;
 								case DSGA_OP_UCMP:
 									inference = VA2AIF_SIGNED_NON_NEGATIVE;
 									break;
+								case DSGA_OP_STOP:
+									inference = prev_inference & (~VA2AIF_PREV_MASK);
+									break;
+								case DSGA_OP_STO:
+									inference = prev_inference & (~VA2AIF_PREV_MASK);
+									if (adjust.variable == 0x1A && adjust.shift_num == 0) inference |= VA2AIF_PREV_STORE_TMP;
+									break;
 								case DSGA_OP_RST:
+									if ((prev_inference & VA2AIF_PREV_STORE_TMP) && adjust.variable == 0x7D && adjust.shift_num == 0 && adjust.and_mask == get_full_mask()) {
+										const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+										if (prev.type == DSGA_TYPE_NONE && prev.operation == DSGA_OP_STO && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == adjust.parameter) {
+											/* Redundant load from temp store after store to temp store */
+											group->adjusts.pop_back();
+											inference = prev_inference;
+											break;
+										}
+									}
 									add_inferences_from_mask(adjust.and_mask);
 									inference |= VA2AIF_PREV_MASK_ADJUST;
 									if ((prev_inference & VA2AIF_PREV_MASK_ADJUST) && adjust.variable == 0x7B) {
