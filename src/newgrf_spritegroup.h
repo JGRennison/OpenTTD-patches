@@ -161,6 +161,10 @@ enum DeterministicSpriteGroupAdjustOperation {
 	DSGA_OP_SAR,  ///< (signed) a >> b
 
 	DSGA_OP_END,
+
+	DSGA_OP_TERNARY = 0x80, ///< a == 0 ? b : c,
+
+	DSGA_OP_SPECIAL_END,
 };
 
 inline bool IsEvalAdjustWithZeroRemovable(DeterministicSpriteGroupAdjustOperation op)
@@ -171,6 +175,36 @@ inline bool IsEvalAdjustWithZeroRemovable(DeterministicSpriteGroupAdjustOperatio
 		case DSGA_OP_OR:
 		case DSGA_OP_XOR:
 		case DSGA_OP_ROR:
+		case DSGA_OP_SHL:
+		case DSGA_OP_SHR:
+		case DSGA_OP_SAR:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+inline bool IsEvalAdjustUsableForConstantPropagation(DeterministicSpriteGroupAdjustOperation op)
+{
+	switch (op) {
+		case DSGA_OP_ADD:
+		case DSGA_OP_SUB:
+		case DSGA_OP_SMIN:
+		case DSGA_OP_SMAX:
+		case DSGA_OP_UMIN:
+		case DSGA_OP_UMAX:
+		case DSGA_OP_SDIV:
+		case DSGA_OP_SMOD:
+		case DSGA_OP_UDIV:
+		case DSGA_OP_UMOD:
+		case DSGA_OP_MUL:
+		case DSGA_OP_AND:
+		case DSGA_OP_OR:
+		case DSGA_OP_XOR:
+		case DSGA_OP_ROR:
+		case DSGA_OP_SCMP:
+		case DSGA_OP_UCMP:
 		case DSGA_OP_SHL:
 		case DSGA_OP_SHR:
 		case DSGA_OP_SAR:
@@ -457,5 +491,6 @@ struct ResolverObject {
 };
 
 void DumpSpriteGroup(const SpriteGroup *sg, std::function<void(const char *)> print);
+uint32 EvaluateDeterministicSpriteGroupAdjust(DeterministicSpriteGroupSize size, const DeterministicSpriteGroupAdjust &adjust, ScopeResolver *scope, uint32 last_value, uint32 value);
 
 #endif /* NEWGRF_SPRITEGROUP_H */

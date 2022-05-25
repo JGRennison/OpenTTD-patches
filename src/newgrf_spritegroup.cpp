@@ -182,7 +182,18 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust &adjust, ScopeResolver
 		case DSGA_OP_SHL:  return (uint32)(U)last_value << ((U)value & 0x1F); // Same behaviour as in ParamSet, mask 'value' to 5 bits, which should behave the same on all architectures.
 		case DSGA_OP_SHR:  return (uint32)(U)last_value >> ((U)value & 0x1F);
 		case DSGA_OP_SAR:  return (int32)(S)last_value >> ((U)value & 0x1F);
+		case DSGA_OP_TERNARY: return (last_value != 0) ? value : adjust.add_val;
 		default:           return value;
+	}
+}
+
+uint32 EvaluateDeterministicSpriteGroupAdjust(DeterministicSpriteGroupSize size, const DeterministicSpriteGroupAdjust &adjust, ScopeResolver *scope, uint32 last_value, uint32 value)
+{
+	switch (size) {
+		case DSG_SIZE_BYTE:  return EvalAdjustT<uint8,  int8> (adjust, scope, last_value, value); break;
+		case DSG_SIZE_WORD:  return EvalAdjustT<uint16, int16>(adjust, scope, last_value, value); break;
+		case DSG_SIZE_DWORD: return EvalAdjustT<uint32, int32>(adjust, scope, last_value, value); break;
+		default: NOT_REACHED();
 	}
 }
 
@@ -601,6 +612,11 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 			padding += 2;
 			for (const auto &adjust : dsg->adjusts) {
 				char *p = this->buffer;
+				if (adjust.operation == DSGA_OP_TERNARY) {
+					p += seprintf(p, lastof(this->buffer), "%*sTERNARY: true: %X, false: %X", padding, "", adjust.and_mask, adjust.add_val);
+					this->print();
+					continue;
+				}
 				p += seprintf(p, lastof(this->buffer), "%*svar: %X", padding, "", adjust.variable);
 				if (adjust.variable >= 0x100) {
 					extern const GRFVariableMapDefinition _grf_action2_remappable_variables[];
