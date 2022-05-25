@@ -5763,6 +5763,20 @@ static void NewSpriteGroup(ByteReader *buf)
 								case DSGA_OP_RST:
 									add_inferences_from_mask(adjust.and_mask);
 									inference |= VA2AIF_PREV_MASK_ADJUST;
+									if ((prev_inference & VA2AIF_PREV_MASK_ADJUST) && adjust.variable == 0x7B) {
+										const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+										if (prev.variable == 0x1A) {
+											/* Extract constant to remove indirect access via variable 7B */
+											DeterministicSpriteGroupAdjust current = group->adjusts.back();
+											current.variable = current.parameter;
+											current.parameter = (UINT_MAX >> prev.shift_num) & prev.and_mask;
+											group->adjusts.pop_back();
+											group->adjusts.pop_back();
+											if (group->adjusts.empty()) current.operation = DSGA_OP_ADD;
+											group->adjusts.push_back(current);
+											break;
+										}
+									}
 									break;
 								case DSGA_OP_SHR:
 									if ((prev_inference & VA2AIF_PREV_MASK_ADJUST) && adjust.variable == 0x1A && adjust.shift_num == 0) {
