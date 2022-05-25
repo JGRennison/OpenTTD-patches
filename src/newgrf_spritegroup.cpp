@@ -282,13 +282,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 	auto check_1A_range = [&]() -> bool {
 		if (this->adjusts.size() == 1 && this->adjusts[0].variable == 0x1A) {
 			/* Not clear why some GRFs do this, perhaps a way of commenting out a branch */
-			uint32 value = 0;
-			switch (this->size) {
-				case DSG_SIZE_BYTE:  value = EvalAdjustT<uint8,  int8> (this->adjusts[0], nullptr, 0, UINT_MAX); break;
-				case DSG_SIZE_WORD:  value = EvalAdjustT<uint16, int16>(this->adjusts[0], nullptr, 0, UINT_MAX); break;
-				case DSG_SIZE_DWORD: value = EvalAdjustT<uint32, int32>(this->adjusts[0], nullptr, 0, UINT_MAX); break;
-				default: NOT_REACHED();
-			}
+			uint32 value = EvaluateDeterministicSpriteGroupAdjust(this->size, this->adjusts[0], nullptr, 0, UINT_MAX);
 			for (const auto &range : this->ranges) {
 				if (range.low <= value && value <= range.high) {
 					if (range.group != nullptr) range.group->AnalyseCallbacks(op);

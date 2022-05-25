@@ -5492,7 +5492,26 @@ static const SpriteGroup *GetGroupFromGroupID(byte setid, byte type, uint16 grou
 		return nullptr;
 	}
 
-	return _cur.spritegroups[groupid];
+	const SpriteGroup *result = _cur.spritegroups[groupid];
+	while (result != nullptr) {
+		if (result->type == SGT_DETERMINISTIC) {
+			const DeterministicSpriteGroup *sg = static_cast<const DeterministicSpriteGroup *>(result);
+			if (sg->adjusts.size() == 1 && sg->adjusts[0].variable == 0x1A) {
+				/* Deterministic sprite group can be trivially resolved, skip it */
+				uint32 value = EvaluateDeterministicSpriteGroupAdjust(sg->size, sg->adjusts[0], nullptr, 0, UINT_MAX);
+				result = sg->default_group;
+				for (const auto &range : sg->ranges) {
+					if (range.low <= value && value <= range.high) {
+						result = range.group;
+						break;
+					}
+				}
+				continue;
+			}
+		}
+		break;
+	}
+	return result;
 }
 
 /**
