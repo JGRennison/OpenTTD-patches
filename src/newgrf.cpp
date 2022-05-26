@@ -5929,10 +5929,25 @@ static void NewSpriteGroup(ByteReader *buf)
 									break;
 								case DSGA_OP_SDIV:
 									if ((prev_inference & VA2AIF_SIGNED_NON_NEGATIVE) && adjust.variable == 0x1A && adjust.shift_num == 0 && HasExactlyOneBit(adjust.and_mask)) {
+										uint shift_count = FindFirstBit(adjust.and_mask);
+										if (group->adjusts.size() >= 3 && shift_count == 16 && varsize == 4 && (feature == GSF_TRAINS || feature == GSF_ROADVEHICLES || feature == GSF_SHIPS)) {
+											const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+											DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
+											if (prev.operation == DSGA_OP_MUL && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask <= 0xFFFF &&
+													(prev2.operation == DSGA_OP_RST || group->adjusts.size() == 3) && prev2.type == DSGA_TYPE_NONE && prev2.variable == 0xB4 && prev2.shift_num == 0 && prev2.and_mask == 0xFFFF) {
+												/* Replace with scaled current speed */
+												prev2.variable = A2VRI_VEHICLE_CURRENT_SPEED_SCALED;
+												prev2.parameter = prev.and_mask;
+												group->adjusts.pop_back();
+												group->adjusts.pop_back();
+												inference = VA2AIF_SIGNED_NON_NEGATIVE;
+												break;
+											}
+										}
 										/* Convert to a shift */
 										adjust.operation = DSGA_OP_SHR;
-										adjust.and_mask = FindFirstBit(adjust.and_mask);
-										inference |= VA2AIF_SIGNED_NON_NEGATIVE;
+										adjust.and_mask = shift_count;
+										inference = VA2AIF_SIGNED_NON_NEGATIVE;
 									}
 								default:
 									break;

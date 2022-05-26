@@ -15,6 +15,7 @@
 #include "vehicle_type.h"
 #include "newgrf_cache_check.h"
 #include "string_func.h"
+#include "newgrf_extension.h"
 
 #include "safeguards.h"
 
@@ -634,7 +635,9 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 					continue;
 				}
 				p += seprintf(p, lastof(this->buffer), "%*svar: %X", padding, "", adjust.variable);
-				if (adjust.variable >= 0x100) {
+				if (adjust.variable == A2VRI_VEHICLE_CURRENT_SPEED_SCALED) {
+					p += seprintf(p, lastof(this->buffer), " (current_speed_scaled)");
+				} else if (adjust.variable >= 0x100) {
 					extern const GRFVariableMapDefinition _grf_action2_remappable_variables[];
 					for (const GRFVariableMapDefinition *info = _grf_action2_remappable_variables; info->name != nullptr; info++) {
 						if (adjust.variable == info->id) {

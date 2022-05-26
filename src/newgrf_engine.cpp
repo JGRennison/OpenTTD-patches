@@ -25,6 +25,7 @@
 #include "newgrf_cache_check.h"
 #include "ship.h"
 #include "scope_info.h"
+#include "newgrf_extension.h"
 
 #include "safeguards.h"
 
@@ -477,6 +478,7 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 
 			case 0x80 + 0x34:
 			case 0x80 + 0x35:
+			case A2VRI_VEHICLE_CURRENT_SPEED_SCALED:
 				if (v->type == VEH_AIRCRAFT) {
 					_sprite_group_resolve_check_veh_check = false;
 				} else {
@@ -878,6 +880,9 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 
 			return variable == 0xFE ? modflags : GB(modflags, 8, 8);
 		}
+
+		case A2VRI_VEHICLE_CURRENT_SPEED_SCALED:
+			return (v->cur_speed * parameter) >> 16;
 	}
 
 	/*
