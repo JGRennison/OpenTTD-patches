@@ -49,6 +49,7 @@
 #include "vehicle_base.h"
 #include "road.h"
 #include "newgrf_roadstop.h"
+#include "debug_settings.h"
 
 #include "table/strings.h"
 #include "table/build_industry.h"
@@ -5493,6 +5494,7 @@ static const SpriteGroup *GetGroupFromGroupID(byte setid, byte type, uint16 grou
 	}
 
 	const SpriteGroup *result = _cur.spritegroups[groupid];
+	if (HasChickenBit(DCBF_NO_OPTIMISE_VARACT2)) return result;
 	while (result != nullptr) {
 		if (result->type == SGT_DETERMINISTIC) {
 			const DeterministicSpriteGroup *sg = static_cast<const DeterministicSpriteGroup *>(result);
@@ -5713,7 +5715,9 @@ static void NewSpriteGroup(ByteReader *buf)
 					current_constant = constant;
 				};
 
-				if ((prev_inference & VA2AIF_PREV_TERNARY) && adjust.variable == 0x1A && IsEvalAdjustUsableForConstantPropagation(adjust.operation)) {
+				if (HasChickenBit(DCBF_NO_OPTIMISE_VARACT2)) {
+					/* no optimisation */
+				} else if ((prev_inference & VA2AIF_PREV_TERNARY) && adjust.variable == 0x1A && IsEvalAdjustUsableForConstantPropagation(adjust.operation)) {
 					/* Propagate constant operation back into previous ternary */
 					DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
 					prev.and_mask = EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, prev.and_mask, UINT_MAX);

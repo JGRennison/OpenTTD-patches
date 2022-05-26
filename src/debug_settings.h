@@ -20,6 +20,7 @@ enum ChickenBitFlags {
 	DCBF_DESYNC_CHECK_POST_COMMAND     = 3,
 	DCBF_DESYNC_CHECK_NO_GENERAL       = 4,
 	DCBF_DESYNC_CHECK_PERIODIC_SIGNALS = 5,
+	DCBF_NO_OPTIMISE_VARACT2           = 6,
 };
 
 inline bool HasChickenBit(ChickenBitFlags flag)
