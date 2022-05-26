@@ -1450,10 +1450,19 @@ public:
 			return;
 		}
 
+		bool always_update_viewport = false;
+
+		if (EXPECTED_TYPE == VEH_SHIP && update_delta) {
+			extern bool RecentreShipSpriteBounds(Vehicle *v);
+			always_update_viewport = RecentreShipSpriteBounds(this);
+		}
+
 		SetBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH);
 
 		if (force_update) {
 			this->Vehicle::UpdateViewport(IsPointInViewportVehicleRedrawArea(_viewport_vehicle_map_redraw_rects, pt));
+		} else if (always_update_viewport) {
+			this->Vehicle::UpdateViewport(false);
 		}
 	}
 
