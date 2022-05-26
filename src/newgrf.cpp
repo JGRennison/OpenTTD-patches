@@ -5684,6 +5684,35 @@ static void NewSpriteGroup(ByteReader *buf)
 					}
 				};
 
+				auto replace_with_constant_load = [&](uint32 constant) {
+					group->adjusts.pop_back();
+					if ((prev_inference & VA2AIF_HAVE_CONSTANT) && constant == current_constant) {
+						/* Don't create a new constant load for the same constant as was there previously */
+						inference = prev_inference;
+						return;
+					}
+					while (!group->adjusts.empty()) {
+						const DeterministicSpriteGroupAdjust &prev = group->adjusts.back();
+						if (prev.variable != 0x7E && !IsEvalAdjustWithSideEffects(prev.operation)) {
+							/* Delete useless operation */
+							group->adjusts.pop_back();
+						} else {
+							break;
+						}
+					}
+					DeterministicSpriteGroupAdjust &replacement = group->adjusts.emplace_back();
+					replacement.operation = group->adjusts.size() == 1 ? DSGA_OP_ADD : DSGA_OP_RST;
+					replacement.variable = 0x1A;
+					replacement.shift_num = 0;
+					replacement.type = DSGA_TYPE_NONE;
+					replacement.and_mask = constant;
+					replacement.add_val = 0;
+					replacement.divmod_val = 0;
+					inference = VA2AIF_PREV_MASK_ADJUST | VA2AIF_HAVE_CONSTANT;
+					add_inferences_from_mask(constant);
+					current_constant = constant;
+				};
+
 				if ((prev_inference & VA2AIF_PREV_TERNARY) && adjust.variable == 0x1A && IsEvalAdjustUsableForConstantPropagation(adjust.operation)) {
 					/* Propagate constant operation back into previous ternary */
 					DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
@@ -5691,6 +5720,9 @@ static void NewSpriteGroup(ByteReader *buf)
 					prev.add_val = EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, prev.add_val, UINT_MAX);
 					group->adjusts.pop_back();
 					inference = prev_inference;
+				} else if ((prev_inference & VA2AIF_HAVE_CONSTANT) && adjust.variable == 0x1A && IsEvalAdjustUsableForConstantPropagation(adjust.operation)) {
+					/* Reduce constant operation on previous constant */
+					replace_with_constant_load(EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, current_constant, UINT_MAX));
 				} else if (adjust.type == DSGA_TYPE_NONE && group->adjusts.size() > 1) {
 					/* Not the first adjustment */
 					if (adjust.variable != 0x7E) {
@@ -5700,25 +5732,7 @@ static void NewSpriteGroup(ByteReader *buf)
 							inference = prev_inference;
 						} else if (adjust.and_mask == 0 && IsEvalAdjustWithZeroAlwaysZero(adjust.operation)) {
 							/* Operation always returns 0, replace it and any useless prior operations */
-							group->adjusts.pop_back();
-							while (!group->adjusts.empty()) {
-								const DeterministicSpriteGroupAdjust &prev = group->adjusts.back();
-								if (prev.variable != 0x7E && !IsEvalAdjustWithSideEffects(prev.operation)) {
-									/* Delete useless operation */
-									group->adjusts.pop_back();
-								} else {
-									break;
-								}
-							}
-							DeterministicSpriteGroupAdjust &replacement = group->adjusts.emplace_back();
-							replacement.operation = group->adjusts.size() == 1 ? DSGA_OP_ADD : DSGA_OP_RST;
-							replacement.variable = 0x1A;
-							replacement.shift_num = 0;
-							replacement.type = DSGA_TYPE_NONE;
-							replacement.and_mask = 0;
-							replacement.add_val = 0;
-							replacement.divmod_val = 0;
-							inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO | VA2AIF_PREV_MASK_ADJUST;
+							replace_with_constant_load(0);
 						} else {
 							switch (adjust.operation) {
 								case DSGA_OP_SMIN:
@@ -5902,15 +5916,7 @@ static void NewSpriteGroup(ByteReader *buf)
 										}
 									}
 									if (adjust.variable == 0x1A || adjust.and_mask == 0) {
-										uint32 val = EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, 0, UINT_MAX);
-										if ((prev_inference & VA2AIF_HAVE_CONSTANT) && current_constant == val) {
-											/* reloading previous constant, remove */
-											group->adjusts.pop_back();
-											inference = prev_inference;
-											break;
-										}
-										inference |= VA2AIF_HAVE_CONSTANT;
-										current_constant = val;
+										replace_with_constant_load(EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, 0, UINT_MAX));
 									}
 									break;
 								case DSGA_OP_SHR:
