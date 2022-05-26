@@ -463,7 +463,7 @@ size_t BoolSettingDesc::ParseValue(const char *str) const
 
 static bool ValidateEnumSetting(const IntSettingDesc *sdb, int32 &val)
 {
-	if (sdb->pre_check != nullptr && !sdb->pre_check(val)) return false;
+	if (sdb->flags & SF_ENUM_PRE_CB_VALIDATE && sdb->pre_check != nullptr && !sdb->pre_check(val)) return false;
 	for (const SettingDescEnumEntry *enumlist = sdb->enumlist; enumlist != nullptr && enumlist->str != STR_NULL; enumlist++) {
 		if (enumlist->val == val) {
 			return true;
