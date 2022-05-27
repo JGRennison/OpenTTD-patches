@@ -189,6 +189,7 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust &adjust, ScopeResolver
 		case DSGA_OP_SGE:  return ((S)last_value >= (S)value) ? 1 : 0;
 		case DSGA_OP_SLE:  return ((S)last_value <= (S)value) ? 1 : 0;
 		case DSGA_OP_SGT:  return ((S)last_value >  (S)value) ? 1 : 0;
+		case DSGA_OP_RSUB: return value - last_value;
 		default:           return value;
 	}
 }
@@ -556,6 +557,7 @@ static const char *_dsg_op_special_names[] {
 	"SGE",
 	"SLE",
 	"SGT",
+	"RSUB",
 };
 static_assert(lengthof(_dsg_op_special_names) == DSGA_OP_SPECIAL_END - DSGA_OP_TERNARY);
 
