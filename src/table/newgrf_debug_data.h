@@ -727,6 +727,7 @@ static const NIVariable _niv_industries[] = {
 class NIHIndustry : public NIHelper {
 	bool IsInspectable(uint index) const override        { return true; }
 	bool ShowExtraInfoOnly(uint index) const override    { return GetIndustrySpec(Industry::Get(index)->type)->grf_prop.grffile == nullptr; }
+	bool ShowSpriteDumpButton(uint index) const override { return true; }
 	uint GetParent(uint index) const override            { return GetInspectWindowNumber(GSF_FAKE_TOWNS, Industry::Get(index)->town->index); }
 	const void *GetInstance(uint index)const override    { return Industry::Get(index); }
 	const void *GetSpec(uint index) const override       { return GetIndustrySpec(Industry::Get(index)->type); }
@@ -803,6 +804,15 @@ class NIHIndustry : public NIHelper {
 				seprintf(buffer, lastof(buffer), "  Counter production interval: %u", ScaleQuantity(INDUSTRY_PRODUCE_TICKS, -_settings_game.economy.industry_cargo_scale_factor));
 				output.print(buffer);
 			}
+		}
+	}
+
+	/* virtual */ void SpriteDump(uint index, std::function<void(const char *)> print) const override
+	{
+		const Industry *ind = Industry::GetIfValid(index);
+		if (ind) {
+			extern void DumpIndustrySpriteGroup(const IndustrySpec *spec, std::function<void(const char *)> print);
+			DumpIndustrySpriteGroup(GetIndustrySpec(ind->type), std::move(print));
 		}
 	}
 };

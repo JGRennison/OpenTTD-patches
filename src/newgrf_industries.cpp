@@ -690,3 +690,8 @@ bool IndustryTemporarilyRefusesCargo(Industry *ind, CargoID cargo_type)
 	}
 	return false;
 }
+
+void DumpIndustrySpriteGroup(const IndustrySpec *spec, std::function<void(const char *)> print)
+{
+	DumpSpriteGroup(spec->grf_prop.spritegroup[0], std::move(print));
+}
