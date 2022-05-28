@@ -800,15 +800,17 @@ static void PublicRoad_FoundEndNode(AyStar *aystar, OpenListNode *current)
 				// Check if we need to build anything.
 				bool need_to_build_road = true;
 
-				if (IsTileType(tile, MP_ROAD)) {
+				if (IsNormalRoadTile(tile)) {
 					const RoadBits existing_bits = GetRoadBits(tile, RTT_ROAD);
 					CLRBITS(road_bits, existing_bits);
 					if (road_bits == ROAD_NONE) need_to_build_road = false;
+				} else if (MayHaveRoad(tile)) {
+					/* Tile already has road which can't be modified: level crossings, depots, drive-through stops, etc */
+					need_to_build_road = false;
 				}
 
 				// If it is already a road and has the right bits, we are good. Otherwise build the needed ones.
-				if (need_to_build_road)
-				{
+				if (need_to_build_road) {
 					Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
 					CmdBuildRoad(tile, DC_EXEC, _public_road_type << 4 | road_bits, 0);
 					cur_company.Restore();
