@@ -111,6 +111,7 @@
 #include "blitter/32bpp_base.hpp"
 #include "object_map.h"
 #include "newgrf_object.h"
+#include "infrastructure_func.h"
 
 #include <map>
 #include <vector>
@@ -4557,7 +4558,7 @@ HandleViewportClickedResult HandleViewportClicked(const Viewport *vp, int x, int
 		if (IsCompanyBuildableVehicleType(v)) {
 			v = v->First();
 			WindowClass wc = _thd.GetCallbackWnd()->window_class;
-			if (_ctrl_pressed && v->owner == _local_company) {
+			if (_ctrl_pressed && IsVehicleControlAllowed(v, _local_company)) {
 				StartStopVehicle(v, true);
 			} else if (wc != WC_CREATE_TEMPLATE && wc != WC_TEMPLATEGUI_MAIN) {
 				ShowVehicleViewWindow(v);
