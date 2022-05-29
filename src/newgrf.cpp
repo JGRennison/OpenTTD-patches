@@ -6116,6 +6116,18 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 					}
 				}
 			}
+			if (sg != nullptr && sg->type == SGT_INDUSTRY_PRODUCTION) {
+				const IndustryProductionSpriteGroup *ipsg = (const IndustryProductionSpriteGroup*)sg;
+				if (ipsg->version >= 1) {
+					for (int i = 0; i < ipsg->num_input; i++) {
+						if (ipsg->subtract_input[i] < 0x100) bits.set(ipsg->subtract_input[i], true);
+					}
+					for (int i = 0; i < ipsg->num_output; i++) {
+						if (ipsg->add_output[i] < 0x100) bits.set(ipsg->add_output[i], true);
+					}
+					bits.set(ipsg->again, true);
+				}
+			}
 		};
 		handle_group(group->default_group);
 		for (const auto &range : group->ranges) {
@@ -6130,7 +6142,7 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 			state.GetVarTracking(group)->in |= in_bits;
 		}
 	}
-	bool check_dse = (feature != GSF_STATIONS) && (feature != GSF_INDUSTRIES);
+	bool check_dse = (feature != GSF_STATIONS);
 	if (check_dse || state.seen_procedure_call) CheckDeterministicSpriteGroupOutputVarBits(group, bits, check_dse, !state.seen_procedure_call);
 }
 
