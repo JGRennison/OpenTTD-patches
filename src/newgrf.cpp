@@ -5560,9 +5560,15 @@ enum VarAction2AdjustInferenceFlags {
 };
 DECLARE_ENUM_AS_BIT_SET(VarAction2AdjustInferenceFlags)
 
+struct VarAction2TempStoreInference {
+	VarAction2AdjustInferenceFlags inference = VA2AIF_NONE;
+	uint32 store_constant = 0;
+};
+
 struct VarAction2OptimiseState {
 	VarAction2AdjustInferenceFlags inference = VA2AIF_NONE;
 	uint32 current_constant = 0;
+	btree::btree_map<uint8, VarAction2TempStoreInference> temp_stores;
 };
 
 static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group, DeterministicSpriteGroupAdjust &adjust)
@@ -5617,6 +5623,30 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 		state.current_constant = constant;
 	};
 
+	auto handle_unpredictable_temp_load = [&]() {
+	};
+	auto reset_store_values = [&]() {
+		for (auto &it : state.temp_stores) {
+			it.second.inference = VA2AIF_NONE;
+		}
+	};
+	auto handle_unpredictable_temp_store = [&]() {
+		reset_store_values();
+	};
+	if (adjust.variable == 0x7B && adjust.parameter == 0x7D) handle_unpredictable_temp_load();
+	if (adjust.variable == 0x7D && adjust.parameter < 0x100) {
+		auto iter = state.temp_stores.find(adjust.parameter);
+		if (iter == state.temp_stores.end()) {
+			/* Read without any previous store */
+		} else {
+			const VarAction2TempStoreInference &store = iter->second;
+			if (store.inference & VA2AIF_HAVE_CONSTANT) {
+				adjust.variable = 0x1A;
+				adjust.and_mask &= (store.store_constant >> adjust.shift_num);
+			}
+		}
+	}
+
 	if ((prev_inference & VA2AIF_PREV_TERNARY) && adjust.variable == 0x1A && IsEvalAdjustUsableForConstantPropagation(adjust.operation)) {
 		/* Propagate constant operation back into previous ternary */
 		DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
@@ -5629,6 +5659,8 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 		replace_with_constant_load(EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, state.current_constant, UINT_MAX));
 	} else if (adjust.variable == 0x7E || adjust.type != DSGA_TYPE_NONE) {
 		/* Procedure call or complex adjustment */
+		if (adjust.operation == DSGA_OP_STO) handle_unpredictable_temp_store();
+		if (adjust.variable == 0x7E) reset_store_values();
 	} else if (group->adjusts.size() > 1) {
 		/* Not the first adjustment */
 		if (adjust.and_mask == 0 && IsEvalAdjustWithZeroRemovable(adjust.operation)) {
@@ -5809,6 +5841,9 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					state.inference = prev_inference & (~VA2AIF_PREV_MASK);
 					if (adjust.variable == 0x1A && adjust.shift_num == 0) {
 						state.inference |= VA2AIF_PREV_STORE_TMP;
+						if (adjust.and_mask < 0x100) state.temp_stores[adjust.and_mask] = { prev_inference & (~VA2AIF_PREV_MASK), state.current_constant };
+					} else {
+						handle_unpredictable_temp_store();
 					}
 					break;
 				case DSGA_OP_RST:
