@@ -286,9 +286,9 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 	}
 
 	auto check_1A_range = [&]() -> bool {
-		if (this->adjusts.size() == 1 && this->adjusts[0].variable == 0x1A) {
+		if (this->adjusts.size() == 0 || (this->adjusts.size() == 1 && this->adjusts[0].variable == 0x1A && (this->adjusts[0].operation == DSGA_OP_ADD || this->adjusts[0].operation == DSGA_OP_RST))) {
 			/* Not clear why some GRFs do this, perhaps a way of commenting out a branch */
-			uint32 value = EvaluateDeterministicSpriteGroupAdjust(this->size, this->adjusts[0], nullptr, 0, UINT_MAX);
+			uint32 value = (this->adjusts.size() == 1) ? EvaluateDeterministicSpriteGroupAdjust(this->size, this->adjusts[0], nullptr, 0, UINT_MAX) : 0;
 			for (const auto &range : this->ranges) {
 				if (range.low <= value && value <= range.high) {
 					if (range.group != nullptr) range.group->AnalyseCallbacks(op);
