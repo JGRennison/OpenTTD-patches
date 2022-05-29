@@ -752,10 +752,30 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 			}
 			break;
 		}
-		case SGT_INDUSTRY_PRODUCTION:
-			seprintf(this->buffer, lastof(this->buffer), "%*sIndustry Production [%u]", padding, "", sg->nfo_line);
+		case SGT_INDUSTRY_PRODUCTION: {
+			const IndustryProductionSpriteGroup *ipsg = (const IndustryProductionSpriteGroup*)sg;
+			seprintf(this->buffer, lastof(this->buffer), "%*sIndustry Production (version %X) [%u]", padding, "", ipsg->version, ipsg->nfo_line);
+			this->print();
+			auto log_io = [&](const char *prefix, int i, int quantity, CargoID cargo) {
+				if (ipsg->version >= 2) {
+					seprintf(this->buffer, lastof(this->buffer), "%*s%s %X: reg %X, cargo ID: %X", padding + 2, "", prefix, i, quantity, cargo);
+					this->print();
+				} else {
+					const char *type = (ipsg->version >= 1) ? "reg" : "value";
+					seprintf(this->buffer, lastof(this->buffer), "%*s%s %X: %s %X", padding + 2, "", prefix, i, type, quantity);
+					this->print();
+				}
+			};
+			for (int i = 0; i < ipsg->num_input; i++) {
+				log_io("Subtract input", i, ipsg->subtract_input[i], ipsg->cargo_input[i]);
+			}
+			for (int i = 0; i < ipsg->num_output; i++) {
+				log_io("Add input", i, ipsg->add_output[i], ipsg->cargo_output[i]);
+			}
+			seprintf(this->buffer, lastof(this->buffer), "%*sAgain: %s %X", padding + 2, "", (ipsg->version >= 1) ? "reg" : "value", ipsg->again);
 			this->print();
 			break;
+		}
 	}
 }
 
