@@ -5671,6 +5671,20 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 			/* Operation always returns 0, replace it and any useless prior operations */
 			replace_with_constant_load(0);
 		} else {
+			if (adjust.variable == 0x7D && adjust.shift_num == 0 && adjust.and_mask == get_full_mask() && IsEvalAdjustOperationCommutative(adjust.operation)) {
+				DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+				if (group->adjusts.size() >= 3 && prev.operation == DSGA_OP_RST) {
+					const DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
+					if (prev2.operation == DSGA_OP_STO && prev2.type == DSGA_TYPE_NONE && prev2.variable == 0x1A &&
+							prev2.shift_num == 0 && prev2.and_mask == adjust.parameter) {
+						/* Convert: store, load var, commutative op on stored --> (dead) store, commutative op var */
+						prev.operation = adjust.operation;
+						group->adjusts.pop_back();
+						OptimiseVarAction2Adjust(state, feature, varsize, group, group->adjusts.back());
+						return;
+					}
+				}
+			}
 			switch (adjust.operation) {
 				case DSGA_OP_SUB:
 					if (adjust.variable == 0x7D && adjust.shift_num == 0 && adjust.and_mask == 0xFFFFFFFF) {
@@ -5682,7 +5696,8 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 								/* Convert: store, load var, subtract stored --> (dead) store, reverse subtract var */
 								prev.operation = DSGA_OP_RSUB;
 								group->adjusts.pop_back();
-								break;
+								OptimiseVarAction2Adjust(state, feature, varsize, group, group->adjusts.back());
+								return;
 							}
 						}
 					}

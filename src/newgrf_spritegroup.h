@@ -250,6 +250,20 @@ inline bool IsEvalAdjustUsableForConstantPropagation(DeterministicSpriteGroupAdj
 	}
 }
 
+inline bool IsEvalAdjustOperationCommutative(DeterministicSpriteGroupAdjustOperation op)
+{
+	switch (op) {
+		case DSGA_OP_ADD:
+		case DSGA_OP_MUL:
+		case DSGA_OP_AND:
+		case DSGA_OP_OR:
+		case DSGA_OP_XOR:
+			return true;
+
+		default:
+			return false;
+	}
+}
 
 struct DeterministicSpriteGroupAdjust {
 	DeterministicSpriteGroupAdjustOperation operation;
