@@ -5522,13 +5522,13 @@ static const SpriteGroup *GetGroupFromGroupID(byte setid, byte type, uint16 grou
 	}
 
 	const SpriteGroup *result = _cur.spritegroups[groupid];
-	if (HasChickenBit(DCBF_NO_OPTIMISE_VARACT2)) return result;
+	if (HasChickenBit(DCBF_NO_OPTIMISE_VARACT2) || HasChickenBit(DCBF_NO_OPTIMISE_VARACT2_PRUNE)) return result;
 	while (result != nullptr) {
 		if (result->type == SGT_DETERMINISTIC) {
 			const DeterministicSpriteGroup *sg = static_cast<const DeterministicSpriteGroup *>(result);
-			if (sg->adjusts.size() == 1 && sg->adjusts[0].variable == 0x1A) {
+			if (sg->adjusts.size() == 0 || (sg->adjusts.size() == 1 && sg->adjusts[0].variable == 0x1A && (sg->adjusts[0].operation == DSGA_OP_ADD || sg->adjusts[0].operation == DSGA_OP_RST))) {
 				/* Deterministic sprite group can be trivially resolved, skip it */
-				uint32 value = EvaluateDeterministicSpriteGroupAdjust(sg->size, sg->adjusts[0], nullptr, 0, UINT_MAX);
+				uint32 value = (sg->adjusts.size() == 1) ? EvaluateDeterministicSpriteGroupAdjust(sg->size, sg->adjusts[0], nullptr, 0, UINT_MAX) : 0;
 				result = sg->default_group;
 				for (const auto &range : sg->ranges) {
 					if (range.low <= value && value <= range.high) {
@@ -6073,6 +6073,19 @@ static void CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSprite
 static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group)
 {
 	if (unlikely(HasChickenBit(DCBF_NO_OPTIMISE_VARACT2))) return;
+
+	if (!HasChickenBit(DCBF_NO_OPTIMISE_VARACT2_PRUNE) && (state.inference & VA2AIF_HAVE_CONSTANT) && !group->calculated_result) {
+		/* Result of this sprite group is always the same, discard the unused branches */
+		const SpriteGroup *target = group->default_group;
+		for (const auto &range : group->ranges) {
+			if (range.low <= state.current_constant && state.current_constant <= range.high) {
+				target = range.group;
+			}
+		}
+		group->default_group = target;
+		group->error_group = target;
+		group->ranges.clear();
+	}
 
 	std::bitset<256> bits;
 	if (!group->calculated_result) {
