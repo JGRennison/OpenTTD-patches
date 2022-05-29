@@ -5611,7 +5611,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 			}
 		}
 		DeterministicSpriteGroupAdjust &replacement = group->adjusts.emplace_back();
-		replacement.operation = group->adjusts.size() == 1 ? DSGA_OP_ADD : DSGA_OP_RST;
+		replacement.operation = DSGA_OP_RST;
 		replacement.variable = 0x1A;
 		replacement.shift_num = 0;
 		replacement.type = DSGA_TYPE_NONE;
@@ -5670,7 +5670,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 				break;
 			}
 		}
-		current.operation = group->adjusts.size() == 1 ? DSGA_OP_ADD : DSGA_OP_RST;
+		current.operation = DSGA_OP_RST;
 		group->adjusts.push_back(current);
 		OptimiseVarAction2Adjust(state, feature, varsize, group, group->adjusts.back());
 		return;
@@ -5678,8 +5678,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 		/* Procedure call or complex adjustment */
 		if (adjust.operation == DSGA_OP_STO) handle_unpredictable_temp_store();
 		if (adjust.variable == 0x7E) reset_store_values();
-	} else if (group->adjusts.size() > 1) {
-		/* Not the first adjustment */
+	} else {
 		if (adjust.and_mask == 0 && IsEvalAdjustWithZeroRemovable(adjust.operation)) {
 			/* Delete useless zero operations */
 			group->adjusts.pop_back();
@@ -5948,14 +5947,6 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					break;
 			}
 		}
-	} else {
-		/* First adjustment */
-		add_inferences_from_mask(adjust.and_mask);
-		state.inference |= VA2AIF_PREV_MASK_ADJUST;
-		if (adjust.variable == 0x1A || adjust.and_mask == 0) {
-			state.inference |= VA2AIF_HAVE_CONSTANT;
-			state.current_constant = EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, 0, UINT_MAX);
-		}
 	}
 }
 
@@ -6000,6 +5991,8 @@ static void NewSpriteGroup(ByteReader *buf)
 			byte varadjust;
 			byte varsize;
 
+			bool first_adjust = true;
+
 			assert(DeterministicSpriteGroup::CanAllocateItem());
 			DeterministicSpriteGroup *group = new DeterministicSpriteGroup();
 			group->nfo_line = _cur.nfo_line;
@@ -6014,6 +6007,9 @@ static void NewSpriteGroup(ByteReader *buf)
 			}
 
 			VarAction2OptimiseState va2_opt_state;
+			/* The initial value is always the constant 0 */
+			va2_opt_state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO | VA2AIF_HAVE_CONSTANT;
+			va2_opt_state.current_constant = 0;
 
 			/* Loop through the var adjusts. Unfortunately we don't know how many we have
 			 * from the outset, so we shall have to keep reallocing. */
@@ -6021,7 +6017,8 @@ static void NewSpriteGroup(ByteReader *buf)
 				DeterministicSpriteGroupAdjust &adjust = group->adjusts.emplace_back();
 
 				/* The first var adjust doesn't have an operation specified, so we set it to add. */
-				adjust.operation = group->adjusts.size() == 1 ? DSGA_OP_ADD : (DeterministicSpriteGroupAdjustOperation)buf->ReadByte();
+				adjust.operation = first_adjust ? DSGA_OP_ADD : (DeterministicSpriteGroupAdjustOperation)buf->ReadByte();
+				first_adjust = false;
 				if (adjust.operation > DSGA_OP_END) adjust.operation = DSGA_OP_END;
 				adjust.variable  = buf->ReadByte();
 				if (adjust.variable == 0x7E) {
