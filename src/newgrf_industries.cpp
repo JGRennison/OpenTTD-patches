@@ -695,3 +695,8 @@ void DumpIndustrySpriteGroup(const IndustrySpec *spec, std::function<void(const 
 {
 	DumpSpriteGroup(spec->grf_prop.spritegroup[0], std::move(print));
 }
+
+void DumpIndustryTileSpriteGroup(const IndustryTileSpec *spec, std::function<void(const char *)> print)
+{
+	DumpSpriteGroup(spec->grf_prop.spritegroup[0], std::move(print));
+}
