@@ -265,6 +265,22 @@ inline bool IsEvalAdjustOperationCommutative(DeterministicSpriteGroupAdjustOpera
 	}
 }
 
+inline bool IsEvalAdjustOperationOnConstantEffectiveLoad(DeterministicSpriteGroupAdjustOperation op, uint32 constant)
+{
+	switch (op) {
+		case DSGA_OP_ADD:
+		case DSGA_OP_OR:
+		case DSGA_OP_XOR:
+			return constant == 0;
+
+		case DSGA_OP_MUL:
+			return constant == 1;
+
+		default:
+			return false;
+	}
+}
+
 struct DeterministicSpriteGroupAdjust {
 	DeterministicSpriteGroupAdjustOperation operation;
 	DeterministicSpriteGroupAdjustType type;

@@ -5657,6 +5657,23 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 	} else if ((prev_inference & VA2AIF_HAVE_CONSTANT) && adjust.variable == 0x1A && IsEvalAdjustUsableForConstantPropagation(adjust.operation)) {
 		/* Reduce constant operation on previous constant */
 		replace_with_constant_load(EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, state.current_constant, UINT_MAX));
+	} else if ((prev_inference & VA2AIF_HAVE_CONSTANT) && IsEvalAdjustOperationOnConstantEffectiveLoad(adjust.operation, state.current_constant)) {
+		/* Convert operation to a load */
+		DeterministicSpriteGroupAdjust current = group->adjusts.back();
+		group->adjusts.pop_back();
+		while (!group->adjusts.empty()) {
+			const DeterministicSpriteGroupAdjust &prev = group->adjusts.back();
+			if (prev.variable != 0x7E && !IsEvalAdjustWithSideEffects(prev.operation)) {
+				/* Delete useless operation */
+				group->adjusts.pop_back();
+			} else {
+				break;
+			}
+		}
+		current.operation = group->adjusts.size() == 1 ? DSGA_OP_ADD : DSGA_OP_RST;
+		group->adjusts.push_back(current);
+		OptimiseVarAction2Adjust(state, feature, varsize, group, group->adjusts.back());
+		return;
 	} else if (adjust.variable == 0x7E || adjust.type != DSGA_TYPE_NONE) {
 		/* Procedure call or complex adjustment */
 		if (adjust.operation == DSGA_OP_STO) handle_unpredictable_temp_store();
