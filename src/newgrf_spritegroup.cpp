@@ -648,7 +648,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 						}
 					}
 				}
-				if ((adjust.variable >= 0x60 && adjust.variable <= 0x7F) || adjust.parameter != 0) p += seprintf(p, lastof(this->buffer), " (parameter: %X)", adjust.parameter);
+				if ((adjust.variable >= 0x60 && adjust.variable <= 0x7F && adjust.variable != 0x7E) || adjust.parameter != 0) p += seprintf(p, lastof(this->buffer), " (parameter: %X)", adjust.parameter);
 				p += seprintf(p, lastof(this->buffer), ", shift: %X, and: %X", adjust.shift_num, adjust.and_mask);
 				switch (adjust.type) {
 					case DSGA_TYPE_DIV: p += seprintf(p, lastof(this->buffer), ", add: %X, div: %X", adjust.add_val, adjust.divmod_val); break;
@@ -657,6 +657,9 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 				}
 				p += seprintf(p, lastof(this->buffer), ", op: %X (%s)", adjust.operation, GetAdjustOperationName(adjust.operation));
 				this->print();
+				if (adjust.variable == 0x7E && adjust.subroutine != nullptr) {
+					this->DumpSpriteGroup(adjust.subroutine, padding + 5, 0);
+				}
 			}
 			if (dsg->calculated_result) {
 				seprintf(this->buffer, lastof(this->buffer), "%*scalculated_result", padding, "");
