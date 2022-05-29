@@ -698,10 +698,60 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 					padding, "", ((const ResultSpriteGroup *) sg)->sprite, ((const ResultSpriteGroup *) sg)->num_sprites);
 			this->print();
 			break;
-		case SGT_TILELAYOUT:
+		case SGT_TILELAYOUT: {
+			const TileLayoutSpriteGroup *tlsg = (const TileLayoutSpriteGroup*)sg;
 			seprintf(this->buffer, lastof(this->buffer), "%*sTile Layout [%u]", padding, "", sg->nfo_line);
 			this->print();
+			padding += 2;
+			if (tlsg->dts.registers != nullptr) {
+				const TileLayoutRegisters *registers = tlsg->dts.registers;
+				size_t count = 1; // 1 for the ground sprite
+				const DrawTileSeqStruct *element;
+				foreach_draw_tile_seq(element, tlsg->dts.seq) count++;
+				for (size_t i = 0; i < count; i ++) {
+					const TileLayoutRegisters *reg = registers + i;
+					seprintf(this->buffer, lastof(this->buffer), "%*ssection: %X, register flags: %X", padding, "", (uint)i, reg->flags);
+					this->print();
+					if (reg->flags & TLF_DODRAW) {
+						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_DODRAW reg: %X", padding + 2, "", reg->dodraw);
+						this->print();
+					}
+					if (reg->flags & TLF_SPRITE) {
+						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_SPRITE reg: %X", padding + 2, "", reg->sprite);
+						this->print();
+					}
+					if (reg->flags & TLF_PALETTE) {
+						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_PALETTE reg: %X", padding + 2, "", reg->palette);
+						this->print();
+					}
+					if (reg->flags & TLF_BB_XY_OFFSET) {
+						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_BB_XY_OFFSET reg: %X, %X", padding + 2, "", reg->delta.parent[0], reg->delta.parent[1]);
+						this->print();
+					}
+					if (reg->flags & TLF_BB_Z_OFFSET) {
+						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_BB_Z_OFFSET reg: %X", padding + 2, "", reg->delta.parent[2]);
+						this->print();
+					}
+					if (reg->flags & TLF_CHILD_X_OFFSET) {
+						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_CHILD_X_OFFSET reg: %X", padding + 2, "", reg->delta.child[0]);
+						this->print();
+					}
+					if (reg->flags & TLF_CHILD_Y_OFFSET) {
+						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_CHILD_Y_OFFSET reg: %X", padding + 2, "", reg->delta.child[1]);
+						this->print();
+					}
+					if (reg->flags & TLF_SPRITE_VAR10) {
+						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_SPRITE_VAR10 value: %X", padding + 2, "", reg->sprite_var10);
+						this->print();
+					}
+					if (reg->flags & TLF_PALETTE_VAR10) {
+						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_PALETTE_VAR10 value: %X", padding + 2, "", reg->palette_var10);
+						this->print();
+					}
+				}
+			}
 			break;
+		}
 		case SGT_INDUSTRY_PRODUCTION:
 			seprintf(this->buffer, lastof(this->buffer), "%*sIndustry Production [%u]", padding, "", sg->nfo_line);
 			this->print();
