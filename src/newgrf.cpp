@@ -5560,6 +5560,338 @@ enum VarAction2AdjustInferenceFlags {
 };
 DECLARE_ENUM_AS_BIT_SET(VarAction2AdjustInferenceFlags)
 
+struct VarAction2OptimiseState {
+	VarAction2AdjustInferenceFlags inference = VA2AIF_NONE;
+	uint32 current_constant = 0;
+};
+
+static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group, DeterministicSpriteGroupAdjust &adjust)
+{
+	if (unlikely(HasChickenBit(DCBF_NO_OPTIMISE_VARACT2))) return;
+
+	VarAction2AdjustInferenceFlags prev_inference = state.inference;
+	state.inference = VA2AIF_NONE;
+
+	auto get_sign_bit = [&]() -> uint32 {
+		return (1 << ((varsize * 8) - 1));
+	};
+
+	auto get_full_mask = [&]() -> uint32 {
+		return UINT_MAX >> ((4 - varsize) * 8);
+	};
+
+	auto add_inferences_from_mask = [&](uint32 mask) {
+		if (mask == 1) {
+			state.inference |= VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+		} else if ((mask & get_sign_bit()) == 0) {
+			state.inference |= VA2AIF_SIGNED_NON_NEGATIVE;
+		}
+	};
+
+	auto replace_with_constant_load = [&](uint32 constant) {
+		group->adjusts.pop_back();
+		if ((prev_inference & VA2AIF_HAVE_CONSTANT) && constant == state.current_constant) {
+			/* Don't create a new constant load for the same constant as was there previously */
+			state.inference = prev_inference;
+			return;
+		}
+		while (!group->adjusts.empty()) {
+			const DeterministicSpriteGroupAdjust &prev = group->adjusts.back();
+			if (prev.variable != 0x7E && !IsEvalAdjustWithSideEffects(prev.operation)) {
+				/* Delete useless operation */
+				group->adjusts.pop_back();
+			} else {
+				break;
+			}
+		}
+		DeterministicSpriteGroupAdjust &replacement = group->adjusts.emplace_back();
+		replacement.operation = group->adjusts.size() == 1 ? DSGA_OP_ADD : DSGA_OP_RST;
+		replacement.variable = 0x1A;
+		replacement.shift_num = 0;
+		replacement.type = DSGA_TYPE_NONE;
+		replacement.and_mask = constant;
+		replacement.add_val = 0;
+		replacement.divmod_val = 0;
+		state.inference = VA2AIF_PREV_MASK_ADJUST | VA2AIF_HAVE_CONSTANT;
+		add_inferences_from_mask(constant);
+		state.current_constant = constant;
+	};
+
+	if ((prev_inference & VA2AIF_PREV_TERNARY) && adjust.variable == 0x1A && IsEvalAdjustUsableForConstantPropagation(adjust.operation)) {
+		/* Propagate constant operation back into previous ternary */
+		DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+		prev.and_mask = EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, prev.and_mask, UINT_MAX);
+		prev.add_val = EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, prev.add_val, UINT_MAX);
+		group->adjusts.pop_back();
+		state.inference = prev_inference;
+	} else if ((prev_inference & VA2AIF_HAVE_CONSTANT) && adjust.variable == 0x1A && IsEvalAdjustUsableForConstantPropagation(adjust.operation)) {
+		/* Reduce constant operation on previous constant */
+		replace_with_constant_load(EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, state.current_constant, UINT_MAX));
+	} else if (adjust.variable == 0x7E || adjust.type != DSGA_TYPE_NONE) {
+		/* Procedure call or complex adjustment */
+	} else if (group->adjusts.size() > 1) {
+		/* Not the first adjustment */
+		if (adjust.and_mask == 0 && IsEvalAdjustWithZeroRemovable(adjust.operation)) {
+			/* Delete useless zero operations */
+			group->adjusts.pop_back();
+			state.inference = prev_inference;
+		} else if (adjust.and_mask == 0 && IsEvalAdjustWithZeroAlwaysZero(adjust.operation)) {
+			/* Operation always returns 0, replace it and any useless prior operations */
+			replace_with_constant_load(0);
+		} else {
+			switch (adjust.operation) {
+				case DSGA_OP_SUB:
+					if (adjust.variable == 0x7D && adjust.shift_num == 0 && adjust.and_mask == 0xFFFFFFFF) {
+						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+						if (group->adjusts.size() >= 3 && prev.operation == DSGA_OP_RST) {
+							const DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
+							if (prev2.operation == DSGA_OP_STO && prev2.type == DSGA_TYPE_NONE && prev2.variable == 0x1A &&
+									prev2.shift_num == 0 && prev2.and_mask == adjust.parameter) {
+								/* Convert: store, load var, subtract stored --> (dead) store, reverse subtract var */
+								prev.operation = DSGA_OP_RSUB;
+								group->adjusts.pop_back();
+								break;
+							}
+						}
+					}
+					break;
+				case DSGA_OP_SMIN:
+					if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1) {
+						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+						if (prev.operation == DSGA_OP_SCMP) {
+							prev.operation = DSGA_OP_SGE;
+							group->adjusts.pop_back();
+							state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+							break;
+						}
+						if (group->adjusts.size() >= 3 && prev.operation == DSGA_OP_XOR && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A &&
+								prev.shift_num == 0 && prev.and_mask == 2) {
+							DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
+							if (prev2.operation == DSGA_OP_SCMP) {
+								prev2.operation = DSGA_OP_SLE;
+								group->adjusts.pop_back();
+								group->adjusts.pop_back();
+								state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+								break;
+							}
+						}
+					}
+					if (adjust.and_mask <= 1 && (prev_inference & VA2AIF_SIGNED_NON_NEGATIVE)) state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+					break;
+				case DSGA_OP_SMAX:
+					if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 0) {
+						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+						if (group->adjusts.size() >= 3 && prev.operation == DSGA_OP_SUB && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A &&
+								prev.shift_num == 0 && prev.and_mask == 1) {
+							DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
+							if (prev2.operation == DSGA_OP_SCMP) {
+								prev2.operation = DSGA_OP_SGT;
+								group->adjusts.pop_back();
+								group->adjusts.pop_back();
+								state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+								break;
+							}
+						}
+					}
+					break;
+				case DSGA_OP_UMIN:
+					if (adjust.and_mask <= 1) state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+					break;
+				case DSGA_OP_AND:
+					if ((prev_inference & VA2AIF_PREV_MASK_ADJUST) && adjust.variable == 0x1A && adjust.shift_num == 0) {
+						/* Propagate and into immediately prior variable read */
+						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+						prev.and_mask &= adjust.and_mask;
+						add_inferences_from_mask(prev.and_mask);
+						state.inference |= VA2AIF_PREV_MASK_ADJUST;
+						group->adjusts.pop_back();
+						break;
+					}
+					if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1) {
+						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+						if (prev.operation == DSGA_OP_SCMP || prev.operation == DSGA_OP_UCMP) {
+							prev.operation = DSGA_OP_EQ;
+							group->adjusts.pop_back();
+							state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+							break;
+						}
+						if (prev_inference & VA2AIF_ONE_OR_ZERO) {
+							/* Current value is already one or zero, remove this */
+							group->adjusts.pop_back();
+							state.inference = prev_inference;
+							break;
+						}
+					}
+					if (adjust.and_mask <= 1) {
+						state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+					} else if ((adjust.and_mask & get_sign_bit()) == 0) {
+						state.inference = VA2AIF_SIGNED_NON_NEGATIVE;
+					}
+					break;
+				case DSGA_OP_OR:
+					if (adjust.and_mask <= 1) state.inference = prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
+					break;
+				case DSGA_OP_XOR:
+					if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1) {
+						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+						if (prev.operation == DSGA_OP_SLT || prev.operation == DSGA_OP_SGE || prev.operation == DSGA_OP_SLE || prev.operation == DSGA_OP_SGT) {
+							prev.operation = (DeterministicSpriteGroupAdjustOperation)(prev.operation ^ 1);
+							group->adjusts.pop_back();
+							state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+							break;
+						}
+						if (prev.operation == DSGA_OP_UMIN && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == 1) {
+							prev.operation = DSGA_OP_TERNARY;
+							prev.and_mask = 0;
+							prev.add_val = 1;
+							group->adjusts.pop_back();
+							state.inference = VA2AIF_PREV_TERNARY;
+							break;
+						}
+					}
+					if (adjust.and_mask <= 1) state.inference = prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
+					break;
+				case DSGA_OP_MUL: {
+					if ((prev_inference & VA2AIF_ONE_OR_ZERO) && adjust.variable == 0x1A && adjust.shift_num == 0) {
+						/* Found a ternary operator */
+						adjust.operation = DSGA_OP_TERNARY;
+						while (group->adjusts.size() > 1) {
+							/* Merge with previous if applicable */
+							const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+							if (prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == 1) {
+								if (prev.operation == DSGA_OP_XOR) {
+									DeterministicSpriteGroupAdjust current = group->adjusts.back();
+									group->adjusts.pop_back();
+									group->adjusts.pop_back();
+									std::swap(current.and_mask, current.add_val);
+									group->adjusts.push_back(current);
+									continue;
+								} else if (prev.operation == DSGA_OP_SMIN || prev.operation == DSGA_OP_UMIN) {
+									DeterministicSpriteGroupAdjust current = group->adjusts.back();
+									group->adjusts.pop_back();
+									group->adjusts.pop_back();
+									group->adjusts.push_back(current);
+								}
+							}
+							break;
+						}
+						if (group->adjusts.size() > 1) {
+							/* Remove redundant comparison with 0 if applicable */
+							const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+							if (prev.type == DSGA_TYPE_NONE && prev.operation == DSGA_OP_EQ && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == 0) {
+								DeterministicSpriteGroupAdjust current = group->adjusts.back();
+								group->adjusts.pop_back();
+								group->adjusts.pop_back();
+								std::swap(current.and_mask, current.add_val);
+								group->adjusts.push_back(current);
+							}
+						}
+						state.inference = VA2AIF_PREV_TERNARY;
+						break;
+					}
+					uint32 sign_bit = (1 << ((varsize * 8) - 1));
+					if ((prev_inference & VA2AIF_PREV_MASK_ADJUST) && (prev_inference & VA2AIF_SIGNED_NON_NEGATIVE) && adjust.variable == 0x1A && adjust.shift_num == 0 && (adjust.and_mask & sign_bit) == 0) {
+						/* Determine whether the result will be always non-negative */
+						if (((uint64)group->adjusts[group->adjusts.size() - 2].and_mask) * ((uint64)adjust.and_mask) < ((uint64)sign_bit)) {
+							state.inference |= VA2AIF_SIGNED_NON_NEGATIVE;
+						}
+					}
+					break;
+				}
+				case DSGA_OP_SCMP:
+				case DSGA_OP_UCMP:
+					state.inference = VA2AIF_SIGNED_NON_NEGATIVE;
+					break;
+				case DSGA_OP_STOP:
+					state.inference = prev_inference & (~VA2AIF_PREV_MASK);
+					break;
+				case DSGA_OP_STO:
+					state.inference = prev_inference & (~VA2AIF_PREV_MASK);
+					if (adjust.variable == 0x1A && adjust.shift_num == 0) {
+						state.inference |= VA2AIF_PREV_STORE_TMP;
+					}
+					break;
+				case DSGA_OP_RST:
+					if ((prev_inference & VA2AIF_PREV_STORE_TMP) && adjust.variable == 0x7D && adjust.shift_num == 0 && adjust.and_mask == get_full_mask()) {
+						const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+						if (prev.type == DSGA_TYPE_NONE && prev.operation == DSGA_OP_STO && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == adjust.parameter) {
+							/* Redundant load from temp store after store to temp store */
+							group->adjusts.pop_back();
+							state.inference = prev_inference;
+							break;
+						}
+					}
+					add_inferences_from_mask(adjust.and_mask);
+					state.inference |= VA2AIF_PREV_MASK_ADJUST;
+					if ((prev_inference & VA2AIF_PREV_MASK_ADJUST) && adjust.variable == 0x7B) {
+						const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+						if (prev.variable == 0x1A) {
+							/* Extract constant to remove indirect access via variable 7B */
+							DeterministicSpriteGroupAdjust current = group->adjusts.back();
+							current.variable = current.parameter;
+							current.parameter = (UINT_MAX >> prev.shift_num) & prev.and_mask;
+							group->adjusts.pop_back();
+							group->adjusts.pop_back();
+							if (group->adjusts.empty()) current.operation = DSGA_OP_ADD;
+							group->adjusts.push_back(current);
+							break;
+						}
+					}
+					if (adjust.variable == 0x1A || adjust.and_mask == 0) {
+						replace_with_constant_load(EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, 0, UINT_MAX));
+					}
+					break;
+				case DSGA_OP_SHR:
+					if ((prev_inference & VA2AIF_PREV_MASK_ADJUST) && adjust.variable == 0x1A && adjust.shift_num == 0) {
+						/* Propagate shift right into immediately prior variable read */
+						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+						if (prev.shift_num + adjust.and_mask < 32) {
+							prev.shift_num += adjust.and_mask;
+							prev.and_mask >>= adjust.and_mask;
+							add_inferences_from_mask(prev.and_mask);
+							state.inference |= VA2AIF_PREV_MASK_ADJUST;
+							group->adjusts.pop_back();
+							break;
+						}
+					}
+					break;
+				case DSGA_OP_SDIV:
+					if ((prev_inference & VA2AIF_SIGNED_NON_NEGATIVE) && adjust.variable == 0x1A && adjust.shift_num == 0 && HasExactlyOneBit(adjust.and_mask)) {
+						uint shift_count = FindFirstBit(adjust.and_mask);
+						if (group->adjusts.size() >= 3 && shift_count == 16 && varsize == 4 && (feature == GSF_TRAINS || feature == GSF_ROADVEHICLES || feature == GSF_SHIPS)) {
+							const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+							DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
+							if (prev.operation == DSGA_OP_MUL && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask <= 0xFFFF &&
+									(prev2.operation == DSGA_OP_RST || group->adjusts.size() == 3) && prev2.type == DSGA_TYPE_NONE && prev2.variable == 0xB4 && prev2.shift_num == 0 && prev2.and_mask == 0xFFFF) {
+								/* Replace with scaled current speed */
+								prev2.variable = A2VRI_VEHICLE_CURRENT_SPEED_SCALED;
+								prev2.parameter = prev.and_mask;
+								group->adjusts.pop_back();
+								group->adjusts.pop_back();
+								state.inference = VA2AIF_SIGNED_NON_NEGATIVE;
+								break;
+							}
+						}
+						/* Convert to a shift */
+						adjust.operation = DSGA_OP_SHR;
+						adjust.and_mask = shift_count;
+						state.inference = VA2AIF_SIGNED_NON_NEGATIVE;
+					}
+				default:
+					break;
+			}
+		}
+	} else {
+		/* First adjustment */
+		add_inferences_from_mask(adjust.and_mask);
+		state.inference |= VA2AIF_PREV_MASK_ADJUST;
+		if (adjust.variable == 0x1A || adjust.and_mask == 0) {
+			state.inference |= VA2AIF_HAVE_CONSTANT;
+			state.current_constant = EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, 0, UINT_MAX);
+		}
+	}
+}
+
 /* Action 0x02 */
 static void NewSpriteGroup(ByteReader *buf)
 {
@@ -5614,16 +5946,7 @@ static void NewSpriteGroup(ByteReader *buf)
 				case 2: group->size = DSG_SIZE_DWORD; varsize = 4; break;
 			}
 
-			auto get_sign_bit = [&]() -> uint32 {
-				return (1 << ((varsize * 8) - 1));
-			};
-
-			auto get_full_mask = [&]() -> uint32 {
-				return UINT_MAX >> ((4 - varsize) * 8);
-			};
-
-			VarAction2AdjustInferenceFlags inference = VA2AIF_NONE;
-			uint32 current_constant = 0;
+			VarAction2OptimiseState va2_opt_state;
 
 			/* Loop through the var adjusts. Unfortunately we don't know how many we have
 			 * from the outset, so we shall have to keep reallocing. */
@@ -5675,319 +5998,7 @@ static void NewSpriteGroup(ByteReader *buf)
 					adjust.divmod_val = 0;
 				}
 
-				VarAction2AdjustInferenceFlags prev_inference = inference;
-				inference = VA2AIF_NONE;
-
-				auto add_inferences_from_mask = [&](uint32 mask) {
-					if (mask == 1) {
-						inference |= VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
-					} else if ((mask & get_sign_bit()) == 0) {
-						inference |= VA2AIF_SIGNED_NON_NEGATIVE;
-					}
-				};
-
-				auto replace_with_constant_load = [&](uint32 constant) {
-					group->adjusts.pop_back();
-					if ((prev_inference & VA2AIF_HAVE_CONSTANT) && constant == current_constant) {
-						/* Don't create a new constant load for the same constant as was there previously */
-						inference = prev_inference;
-						return;
-					}
-					while (!group->adjusts.empty()) {
-						const DeterministicSpriteGroupAdjust &prev = group->adjusts.back();
-						if (prev.variable != 0x7E && !IsEvalAdjustWithSideEffects(prev.operation)) {
-							/* Delete useless operation */
-							group->adjusts.pop_back();
-						} else {
-							break;
-						}
-					}
-					DeterministicSpriteGroupAdjust &replacement = group->adjusts.emplace_back();
-					replacement.operation = group->adjusts.size() == 1 ? DSGA_OP_ADD : DSGA_OP_RST;
-					replacement.variable = 0x1A;
-					replacement.shift_num = 0;
-					replacement.type = DSGA_TYPE_NONE;
-					replacement.and_mask = constant;
-					replacement.add_val = 0;
-					replacement.divmod_val = 0;
-					inference = VA2AIF_PREV_MASK_ADJUST | VA2AIF_HAVE_CONSTANT;
-					add_inferences_from_mask(constant);
-					current_constant = constant;
-				};
-
-				if (HasChickenBit(DCBF_NO_OPTIMISE_VARACT2)) {
-					/* no optimisation */
-				} else if ((prev_inference & VA2AIF_PREV_TERNARY) && adjust.variable == 0x1A && IsEvalAdjustUsableForConstantPropagation(adjust.operation)) {
-					/* Propagate constant operation back into previous ternary */
-					DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
-					prev.and_mask = EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, prev.and_mask, UINT_MAX);
-					prev.add_val = EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, prev.add_val, UINT_MAX);
-					group->adjusts.pop_back();
-					inference = prev_inference;
-				} else if ((prev_inference & VA2AIF_HAVE_CONSTANT) && adjust.variable == 0x1A && IsEvalAdjustUsableForConstantPropagation(adjust.operation)) {
-					/* Reduce constant operation on previous constant */
-					replace_with_constant_load(EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, current_constant, UINT_MAX));
-				} else if (adjust.type == DSGA_TYPE_NONE && group->adjusts.size() > 1) {
-					/* Not the first adjustment */
-					if (adjust.variable != 0x7E) {
-						if (adjust.and_mask == 0 && IsEvalAdjustWithZeroRemovable(adjust.operation)) {
-							/* Delete useless zero operations */
-							group->adjusts.pop_back();
-							inference = prev_inference;
-						} else if (adjust.and_mask == 0 && IsEvalAdjustWithZeroAlwaysZero(adjust.operation)) {
-							/* Operation always returns 0, replace it and any useless prior operations */
-							replace_with_constant_load(0);
-						} else {
-							switch (adjust.operation) {
-								case DSGA_OP_SUB:
-									if (adjust.variable == 0x7D && adjust.shift_num == 0 && adjust.and_mask == 0xFFFFFFFF) {
-										DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
-										if (group->adjusts.size() >= 3 && prev.operation == DSGA_OP_RST) {
-											const DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
-											if (prev2.operation == DSGA_OP_STO && prev2.type == DSGA_TYPE_NONE && prev2.variable == 0x1A &&
-													prev2.shift_num == 0 && prev2.and_mask == adjust.parameter) {
-												/* Convert: store, load var, subtract stored --> (dead) store, reverse subtract var */
-												prev.operation = DSGA_OP_RSUB;
-												group->adjusts.pop_back();
-												break;
-											}
-										}
-									}
-									break;
-								case DSGA_OP_SMIN:
-									if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1) {
-										DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
-										if (prev.operation == DSGA_OP_SCMP) {
-											prev.operation = DSGA_OP_SGE;
-											group->adjusts.pop_back();
-											inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
-											break;
-										}
-										if (group->adjusts.size() >= 3 && prev.operation == DSGA_OP_XOR && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A &&
-												prev.shift_num == 0 && prev.and_mask == 2) {
-											DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
-											if (prev2.operation == DSGA_OP_SCMP) {
-												prev2.operation = DSGA_OP_SLE;
-												group->adjusts.pop_back();
-												group->adjusts.pop_back();
-												inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
-												break;
-											}
-										}
-									}
-									if (adjust.and_mask <= 1 && (prev_inference & VA2AIF_SIGNED_NON_NEGATIVE)) inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
-									break;
-								case DSGA_OP_SMAX:
-									if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 0) {
-										DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
-										if (group->adjusts.size() >= 3 && prev.operation == DSGA_OP_SUB && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A &&
-												prev.shift_num == 0 && prev.and_mask == 1) {
-											DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
-											if (prev2.operation == DSGA_OP_SCMP) {
-												prev2.operation = DSGA_OP_SGT;
-												group->adjusts.pop_back();
-												group->adjusts.pop_back();
-												inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
-												break;
-											}
-										}
-									}
-									break;
-								case DSGA_OP_UMIN:
-									if (adjust.and_mask <= 1) inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
-									break;
-								case DSGA_OP_AND:
-									if ((prev_inference & VA2AIF_PREV_MASK_ADJUST) && adjust.variable == 0x1A && adjust.shift_num == 0) {
-										/* Propagate and into immediately prior variable read */
-										DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
-										prev.and_mask &= adjust.and_mask;
-										add_inferences_from_mask(prev.and_mask);
-										inference |= VA2AIF_PREV_MASK_ADJUST;
-										group->adjusts.pop_back();
-										break;
-									}
-									if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1) {
-										DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
-										if (prev.operation == DSGA_OP_SCMP || prev.operation == DSGA_OP_UCMP) {
-											prev.operation = DSGA_OP_EQ;
-											group->adjusts.pop_back();
-											inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
-											break;
-										}
-										if (prev_inference & VA2AIF_ONE_OR_ZERO) {
-											/* Current value is already one or zero, remove this */
-											group->adjusts.pop_back();
-											inference = prev_inference;
-											break;
-										}
-									}
-									if (adjust.and_mask <= 1) {
-										inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
-									} else if ((adjust.and_mask & get_sign_bit()) == 0) {
-										inference = VA2AIF_SIGNED_NON_NEGATIVE;
-									}
-									break;
-								case DSGA_OP_OR:
-									if (adjust.and_mask <= 1) inference = prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
-									break;
-								case DSGA_OP_XOR:
-									if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1) {
-										DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
-										if (prev.operation == DSGA_OP_SLT || prev.operation == DSGA_OP_SGE || prev.operation == DSGA_OP_SLE || prev.operation == DSGA_OP_SGT) {
-											prev.operation = (DeterministicSpriteGroupAdjustOperation)(prev.operation ^ 1);
-											group->adjusts.pop_back();
-											inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
-											break;
-										}
-										if (prev.operation == DSGA_OP_UMIN && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == 1) {
-											prev.operation = DSGA_OP_TERNARY;
-											prev.and_mask = 0;
-											prev.add_val = 1;
-											group->adjusts.pop_back();
-											inference = VA2AIF_PREV_TERNARY;
-											break;
-										}
-									}
-									if (adjust.and_mask <= 1) inference = prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
-									break;
-								case DSGA_OP_MUL: {
-									if ((prev_inference & VA2AIF_ONE_OR_ZERO) && adjust.variable == 0x1A && adjust.shift_num == 0) {
-										/* Found a ternary operator */
-										adjust.operation = DSGA_OP_TERNARY;
-										while (group->adjusts.size() > 1) {
-											/* Merge with previous if applicable */
-											const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
-											if (prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == 1) {
-												if (prev.operation == DSGA_OP_XOR) {
-													DeterministicSpriteGroupAdjust current = group->adjusts.back();
-													group->adjusts.pop_back();
-													group->adjusts.pop_back();
-													std::swap(current.and_mask, current.add_val);
-													group->adjusts.push_back(current);
-													continue;
-												} else if (prev.operation == DSGA_OP_SMIN || prev.operation == DSGA_OP_UMIN) {
-													DeterministicSpriteGroupAdjust current = group->adjusts.back();
-													group->adjusts.pop_back();
-													group->adjusts.pop_back();
-													group->adjusts.push_back(current);
-												}
-											}
-											break;
-										}
-										if (group->adjusts.size() > 1) {
-											/* Remove redundant comparison with 0 if applicable */
-											const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
-											if (prev.type == DSGA_TYPE_NONE && prev.operation == DSGA_OP_EQ && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == 0) {
-												DeterministicSpriteGroupAdjust current = group->adjusts.back();
-												group->adjusts.pop_back();
-												group->adjusts.pop_back();
-												std::swap(current.and_mask, current.add_val);
-												group->adjusts.push_back(current);
-											}
-										}
-										inference = VA2AIF_PREV_TERNARY;
-										break;
-									}
-									uint32 sign_bit = (1 << ((varsize * 8) - 1));
-									if ((prev_inference & VA2AIF_PREV_MASK_ADJUST) && (prev_inference & VA2AIF_SIGNED_NON_NEGATIVE) && adjust.variable == 0x1A && adjust.shift_num == 0 && (adjust.and_mask & sign_bit) == 0) {
-										/* Determine whether the result will be always non-negative */
-										if (((uint64)group->adjusts[group->adjusts.size() - 2].and_mask) * ((uint64)adjust.and_mask) < ((uint64)sign_bit)) {
-											inference |= VA2AIF_SIGNED_NON_NEGATIVE;
-										}
-									}
-									break;
-								}
-								case DSGA_OP_SCMP:
-								case DSGA_OP_UCMP:
-									inference = VA2AIF_SIGNED_NON_NEGATIVE;
-									break;
-								case DSGA_OP_STOP:
-									inference = prev_inference & (~VA2AIF_PREV_MASK);
-									break;
-								case DSGA_OP_STO:
-									inference = prev_inference & (~VA2AIF_PREV_MASK);
-									if (adjust.variable == 0x1A && adjust.shift_num == 0) inference |= VA2AIF_PREV_STORE_TMP;
-									break;
-								case DSGA_OP_RST:
-									if ((prev_inference & VA2AIF_PREV_STORE_TMP) && adjust.variable == 0x7D && adjust.shift_num == 0 && adjust.and_mask == get_full_mask()) {
-										const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
-										if (prev.type == DSGA_TYPE_NONE && prev.operation == DSGA_OP_STO && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == adjust.parameter) {
-											/* Redundant load from temp store after store to temp store */
-											group->adjusts.pop_back();
-											inference = prev_inference;
-											break;
-										}
-									}
-									add_inferences_from_mask(adjust.and_mask);
-									inference |= VA2AIF_PREV_MASK_ADJUST;
-									if ((prev_inference & VA2AIF_PREV_MASK_ADJUST) && adjust.variable == 0x7B) {
-										const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
-										if (prev.variable == 0x1A) {
-											/* Extract constant to remove indirect access via variable 7B */
-											DeterministicSpriteGroupAdjust current = group->adjusts.back();
-											current.variable = current.parameter;
-											current.parameter = (UINT_MAX >> prev.shift_num) & prev.and_mask;
-											group->adjusts.pop_back();
-											group->adjusts.pop_back();
-											if (group->adjusts.empty()) current.operation = DSGA_OP_ADD;
-											group->adjusts.push_back(current);
-											break;
-										}
-									}
-									if (adjust.variable == 0x1A || adjust.and_mask == 0) {
-										replace_with_constant_load(EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, 0, UINT_MAX));
-									}
-									break;
-								case DSGA_OP_SHR:
-									if ((prev_inference & VA2AIF_PREV_MASK_ADJUST) && adjust.variable == 0x1A && adjust.shift_num == 0) {
-										/* Propagate shift right into immediately prior variable read */
-										DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
-										if (prev.shift_num + adjust.and_mask < 32) {
-											prev.shift_num += adjust.and_mask;
-											prev.and_mask >>= adjust.and_mask;
-											add_inferences_from_mask(prev.and_mask);
-											inference |= VA2AIF_PREV_MASK_ADJUST;
-											group->adjusts.pop_back();
-											break;
-										}
-									}
-									break;
-								case DSGA_OP_SDIV:
-									if ((prev_inference & VA2AIF_SIGNED_NON_NEGATIVE) && adjust.variable == 0x1A && adjust.shift_num == 0 && HasExactlyOneBit(adjust.and_mask)) {
-										uint shift_count = FindFirstBit(adjust.and_mask);
-										if (group->adjusts.size() >= 3 && shift_count == 16 && varsize == 4 && (feature == GSF_TRAINS || feature == GSF_ROADVEHICLES || feature == GSF_SHIPS)) {
-											const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
-											DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
-											if (prev.operation == DSGA_OP_MUL && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask <= 0xFFFF &&
-													(prev2.operation == DSGA_OP_RST || group->adjusts.size() == 3) && prev2.type == DSGA_TYPE_NONE && prev2.variable == 0xB4 && prev2.shift_num == 0 && prev2.and_mask == 0xFFFF) {
-												/* Replace with scaled current speed */
-												prev2.variable = A2VRI_VEHICLE_CURRENT_SPEED_SCALED;
-												prev2.parameter = prev.and_mask;
-												group->adjusts.pop_back();
-												group->adjusts.pop_back();
-												inference = VA2AIF_SIGNED_NON_NEGATIVE;
-												break;
-											}
-										}
-										/* Convert to a shift */
-										adjust.operation = DSGA_OP_SHR;
-										adjust.and_mask = shift_count;
-										inference = VA2AIF_SIGNED_NON_NEGATIVE;
-									}
-								default:
-									break;
-							}
-						}
-					}
-				} else if (adjust.type == DSGA_TYPE_NONE && group->adjusts.size() == 1) {
-					/* First adjustment */
-					add_inferences_from_mask(adjust.and_mask);
-					inference |= VA2AIF_PREV_MASK_ADJUST;
-					if (adjust.variable == 0x1A || adjust.and_mask == 0) {
-						inference |= VA2AIF_HAVE_CONSTANT;
-						current_constant = EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, 0, UINT_MAX);
-					}
-				}
+				OptimiseVarAction2Adjust(va2_opt_state, feature, varsize, group, adjust);
 
 				/* Continue reading var adjusts while bit 5 is set. */
 			} while (HasBit(varadjust, 5));
