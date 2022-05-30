@@ -316,6 +316,7 @@ struct DeterministicSpriteGroup : SpriteGroup {
 	const SpriteGroup *error_group; // was first range, before sorting ranges
 
 	void AnalyseCallbacks(AnalyseCallbackOperation &op) const override;
+	bool GroupMayBeBypassed() const;
 
 protected:
 	const SpriteGroup *Resolve(ResolverObject &object) const override;

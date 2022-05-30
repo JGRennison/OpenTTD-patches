@@ -5526,7 +5526,7 @@ static const SpriteGroup *GetGroupFromGroupID(byte setid, byte type, uint16 grou
 	while (result != nullptr) {
 		if (result->type == SGT_DETERMINISTIC) {
 			const DeterministicSpriteGroup *sg = static_cast<const DeterministicSpriteGroup *>(result);
-			if (sg->adjusts.size() == 0 || (sg->adjusts.size() == 1 && sg->adjusts[0].variable == 0x1A && (sg->adjusts[0].operation == DSGA_OP_ADD || sg->adjusts[0].operation == DSGA_OP_RST))) {
+			if (sg->GroupMayBeBypassed()) {
 				/* Deterministic sprite group can be trivially resolved, skip it */
 				uint32 value = (sg->adjusts.size() == 1) ? EvaluateDeterministicSpriteGroupAdjust(sg->size, sg->adjusts[0], nullptr, 0, UINT_MAX) : 0;
 				result = sg->default_group;
