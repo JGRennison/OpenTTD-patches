@@ -213,6 +213,7 @@ class NIHVehicle : public NIHelper {
 				TrainDecelerationStats stats(t);
 
 				auto print_braking_speed = [&](int position, int end_speed, int end_z) {
+					if (!t->UsingRealisticBraking()) return;
 					extern void LimitSpeedFromLookAhead(int &max_speed, const TrainDecelerationStats &stats, int current_position, int position, int end_speed, int z_delta);
 					int speed = INT_MAX;
 					LimitSpeedFromLookAhead(speed, stats, l.current_position, position, end_speed, end_z - stats.z_pos);
