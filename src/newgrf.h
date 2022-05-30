@@ -348,6 +348,8 @@ struct GRFFile : ZeroedMemoryAllocator {
 
 	byte ctrl_flags;                         ///< General GRF control flags
 
+	btree::btree_map<uint16, uint> string_map; ///< Map of local GRF string ID to string ID
+
 	GRFFile(const struct GRFConfig *config);
 	~GRFFile();
 

@@ -452,6 +452,17 @@ GRFFile *GetFileByGRFID(uint32 grfid)
 }
 
 /**
+ * Obtain a NewGRF file by its grfID,  expect it to usually be the current GRF's grfID
+ * @param grfid The grfID to obtain the file for
+ * @return The file.
+ */
+GRFFile *GetFileByGRFIDExpectCurrent(uint32 grfid)
+{
+	if (_cur.grffile->grfid == grfid) return _cur.grffile;
+	return GetFileByGRFID(grfid);
+}
+
+/**
  * Obtain a NewGRF file by its filename
  * @param filename The filename to obtain the file for.
  * @return The file.
@@ -11943,6 +11954,9 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 
 	/* Pseudo sprite processing is finished; free temporary stuff */
 	_cur.ClearDataForNextFile();
+	for (GRFFile * const file : _grf_files) {
+		file->string_map.clear();
+	}
 
 	/* Call any functions that should be run after GRFs have been loaded. */
 	AfterLoadGRFs();
