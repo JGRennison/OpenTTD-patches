@@ -286,10 +286,12 @@ TownScopeResolver *StationResolverObject::GetTown()
 					TileIndex tile = this->tile;
 					if (parameter != 0) tile = GetNearbyTile(parameter, tile, true, this->axis); // only perform if it is required
 
-					Slope tileh = GetTileSlope(tile);
-					bool swap = (this->axis == AXIS_Y && HasBit(tileh, CORNER_W) != HasBit(tileh, CORNER_E));
-
-					return GetNearbyTileInformation(tile, this->ro.grffile->grf_version >= 8) ^ (swap ? SLOPE_EW : 0);
+					uint32 result = GetNearbyTileInformation(tile, this->ro.grffile->grf_version >= 8, extra->mask);
+					if (extra->mask & SLOPE_EW) {
+						Slope tileh = GetTileSlope(tile);
+						if (this->axis == AXIS_Y && HasBit(tileh, CORNER_W) != HasBit(tileh, CORNER_E)) result ^= SLOPE_EW;
+					}
+					return result;
 				}
 				break;
 
@@ -345,10 +347,12 @@ TownScopeResolver *StationResolverObject::GetTown()
 			TileIndex tile = this->tile;
 			if (parameter != 0) tile = GetNearbyTile(parameter, tile); // only perform if it is required
 
-			Slope tileh = GetTileSlope(tile);
-			bool swap = (axis == AXIS_Y && HasBit(tileh, CORNER_W) != HasBit(tileh, CORNER_E));
-
-			return GetNearbyTileInformation(tile, this->ro.grffile->grf_version >= 8) ^ (swap ? SLOPE_EW : 0);
+			uint32 result = GetNearbyTileInformation(tile, this->ro.grffile->grf_version >= 8, extra->mask);
+			if (extra->mask & SLOPE_EW) {
+				Slope tileh = GetTileSlope(tile);
+				if (axis == AXIS_Y && HasBit(tileh, CORNER_W) != HasBit(tileh, CORNER_E)) result ^= SLOPE_EW;
+			}
+			return result;
 		}
 
 		case 0x68: { // Station info of nearby tiles
