@@ -6098,6 +6098,19 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 		group->ranges.clear();
 	}
 
+	if (!HasChickenBit(DCBF_NO_OPTIMISE_VARACT2_PRUNE) && group->ranges.empty() && !group->calculated_result) {
+		/* There is only one option, remove any redundant adjustments when the result will be ignored anyway */
+		while (!group->adjusts.empty()) {
+			const DeterministicSpriteGroupAdjust &prev = group->adjusts.back();
+			if (prev.variable != 0x7E && !IsEvalAdjustWithSideEffects(prev.operation)) {
+				/* Delete useless operation */
+				group->adjusts.pop_back();
+			} else {
+				break;
+			}
+		}
+	}
+
 	std::bitset<256> bits;
 	if (!group->calculated_result) {
 		auto handle_group = [&](const SpriteGroup *sg) {
@@ -6167,6 +6180,14 @@ static void HandleVarAction2DeadStoreElimination()
 		if (var_tracking != nullptr) bits = var_tracking->out;
 
 		for (int i = (int)group->adjusts.size() - 1; i >= 0;) {
+			auto restart = [&]() {
+				i = (int)group->adjusts.size() - 1;
+				if (var_tracking != nullptr) {
+					bits = var_tracking->out;
+				} else {
+					bits.reset();
+				}
+			};
 			const DeterministicSpriteGroupAdjust &adjust = group->adjusts[i];
 			if (adjust.operation == DSGA_OP_STO) {
 				if (adjust.type == DSGA_TYPE_NONE && adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask < 0x100) {
@@ -6176,8 +6197,9 @@ static void HandleVarAction2DeadStoreElimination()
 						/* Redundant store */
 						group->adjusts.erase(group->adjusts.begin() + i);
 						i--;
-						if (i + 1 < (int)group->adjusts.size() && group->adjusts[i + 1].operation == DSGA_OP_RST) {
-							/* Now the store is elimiated, the current value has no users */
+						if ((i + 1 < (int)group->adjusts.size() && group->adjusts[i + 1].operation == DSGA_OP_RST) ||
+								(i + 1 == (int)group->adjusts.size() && group->ranges.empty() && !group->calculated_result)) {
+							/* Now the store is eliminated, the current value has no users */
 							while (i >= 0) {
 								const DeterministicSpriteGroupAdjust &prev = group->adjusts[i];
 								if (prev.variable != 0x7E && !IsEvalAdjustWithSideEffects(prev.operation)) {
@@ -6185,6 +6207,18 @@ static void HandleVarAction2DeadStoreElimination()
 									group->adjusts.erase(group->adjusts.begin() + i);
 									i--;
 								} else {
+									if (i + 1 < (int)group->adjusts.size()) {
+										const DeterministicSpriteGroupAdjust &next = group->adjusts[i + 1];
+										if (prev.operation == DSGA_OP_STO && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A &&
+												prev.shift_num == 0 && prev.and_mask < 0x100 &&
+												next.operation == DSGA_OP_RST && next.type == DSGA_TYPE_NONE && next.variable == 0x7D &&
+												next.parameter == prev.and_mask && next.shift_num == 0 && next.and_mask == 0xFFFFFFFF) {
+											/* Removing the dead store results in a store/load sequence, remove the load and re-check */
+											group->adjusts.erase(group->adjusts.begin() + i + 1);
+											restart();
+											break;
+										}
+									}
 									break;
 								}
 							}
