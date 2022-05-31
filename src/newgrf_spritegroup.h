@@ -54,7 +54,10 @@ enum AnalyseCallbackOperationMode {
 	ACOM_CB36_PROP,
 	ACOM_FIND_CB_RESULT,
 	ACOM_CB36_SPEED,
+	ACOM_INDUSTRY_TILE,
 };
+
+struct AnalyseCallbackOperationIndustryTileData;
 
 struct AnalyseCallbackOperation {
 	struct FindCBResultData {
@@ -70,6 +73,7 @@ struct AnalyseCallbackOperation {
 	bool cb_result_found = false;
 	union {
 		FindCBResultData cb_result;
+		AnalyseCallbackOperationIndustryTileData *indtile;
 	} data;
 };
 

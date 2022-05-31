@@ -17,6 +17,7 @@
 #include "command_func.h"
 #include "water.h"
 #include "newgrf_animation_base.h"
+#include "newgrf_industrytiles_analysis.h"
 
 #include "table/strings.h"
 
@@ -390,3 +391,71 @@ void TriggerIndustry(Industry *ind, IndustryTileTrigger trigger)
 	DoReseedIndustry(ind, reseed_industry);
 }
 
+void AnalyseIndustryTileSpriteGroups()
+{
+	for (IndustrySpec &spec : _industry_specs) {
+		const uint layout_count = (uint)spec.layouts.size();
+		spec.layout_anim_masks.clear();
+		spec.layout_anim_masks.resize(layout_count);
+
+		IndustryTileLayout layout;
+		for (uint idx = 0; idx < layout_count; idx++) {
+			btree::btree_set<IndustryGfx> seen_gfx;
+			layout.clear();
+			for (IndustryTileLayoutTile it : spec.layouts[idx]) {
+				if (it.gfx == 0xFF) continue;
+
+				IndustryGfx gfx = GetTranslatedIndustryTileID(it.gfx);
+				layout.push_back({ it.ti, gfx });
+				seen_gfx.insert(gfx);
+				if (layout.size() == 64) break;
+			}
+
+			/* Layout now contains the translated tile layout with gaps removed, up to a maximum of 64 tiles */
+
+			uint64 anim_mask = 0;
+
+			uint64 to_check = UINT64_MAX >> (64 - layout.size());
+
+			while (to_check != 0) {
+				uint64 current = 0;
+				uint i = FindFirstBit(to_check);
+				IndustryGfx gfx = layout[i].gfx;
+				for (; i < layout.size(); i++) {
+					if (gfx == layout[i].gfx) SetBit(current, i);
+				}
+				to_check &= ~current;
+
+				const IndustryTileSpec &tilespec = _industry_tile_specs[gfx];
+				if (tilespec.grf_prop.spritegroup[0] == nullptr) continue;
+
+				if (HasBit(tilespec.callback_mask, CBID_INDTILE_ANIM_NEXT_FRAME)) {
+					/* There may be sound effects, or custom animation start/stop behaviour, don't inhibit */
+					continue;
+				}
+
+				anim_mask |= current;
+
+				AnalyseCallbackOperationIndustryTileData data;
+				data.layout = &layout;
+				data.check_mask = current;
+				data.result_mask = &anim_mask;
+				data.layout_index = idx + 1;
+				data.anim_state_at_offset = false;
+
+				AnalyseCallbackOperation op;
+				op.mode = ACOM_INDUSTRY_TILE;
+				op.data.indtile = &data;
+				tilespec.grf_prop.spritegroup[0]->AnalyseCallbacks(op);
+
+				if (data.anim_state_at_offset) {
+					/* Give up: use of get anim state of offset tiles */
+					anim_mask = 0;
+					break;
+				}
+			}
+
+			spec.layout_anim_masks[idx] = anim_mask;
+		}
+	}
+}

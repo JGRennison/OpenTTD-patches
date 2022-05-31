@@ -106,6 +106,7 @@ using IndustryTileLayout = std::vector<IndustryTileLayoutTile>;
  */
 struct IndustrySpec {
 	std::vector<IndustryTileLayout> layouts;    ///< List of possible tile layouts for the industry
+	std::vector<uint64> layout_anim_masks;      ///< Animation inhibit masks for tile layouts for the industry
 	uint8 cost_multiplier;                      ///< Base construction cost multiplier.
 	uint32 removal_cost_multiplier;             ///< Base removal cost multiplier.
 	uint32 prospecting_chance;                  ///< Chance prospecting succeeds

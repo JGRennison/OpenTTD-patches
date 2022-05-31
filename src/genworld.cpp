@@ -35,6 +35,7 @@
 #include "thread.h"
 #include "tgp.h"
 #include "signal_func.h"
+#include "newgrf_industrytiles.h"
 
 #include "safeguards.h"
 
@@ -318,6 +319,7 @@ void GenerateWorld(GenWorldMode mode, uint size_x, uint size_y, bool reset_setti
 	InitialiseExtraAspectsVariable();
 	LoadStringWidthTable();
 	AnalyseEngineCallbacks();
+	AnalyseIndustryTileSpriteGroups();
 
 	/* Re-init the windowing system */
 	ResetWindowSystem();

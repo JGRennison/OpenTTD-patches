@@ -20,6 +20,7 @@
 #include "../waypoint_base.h"
 #include "../string_func_extra.h"
 #include "../newgrf_extension.h"
+#include "../animated_tile.h"
 
 /* Helper for filling property tables */
 #define NIP(prop, base, variable, type, name) { name, (ptrdiff_t)cpp_offsetof(base, variable), cpp_sizeof(base, variable), prop, type }
@@ -626,7 +627,7 @@ class NIHIndustryTile : public NIHelper {
 	{
 		char buffer[1024];
 		output.print("Debug Info:");
-		seprintf(buffer, lastof(buffer), "  Gfx Index: %u", GetIndustryGfx(index));
+		seprintf(buffer, lastof(buffer), "  Gfx Index: %u, animated tile: %d", GetIndustryGfx(index), _animated_tiles.find(index) != _animated_tiles.end());
 		output.print(buffer);
 		const IndustryTileSpec *indts = GetIndustryTileSpec(GetIndustryGfx(index));
 		if (indts) {
@@ -820,6 +821,12 @@ class NIHIndustry : public NIHelper {
 			output.print(buffer);
 			if ((_settings_game.economy.industry_cargo_scale_factor != 0) && HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS)) {
 				seprintf(buffer, lastof(buffer), "  Counter production interval: %u", ScaleQuantity(INDUSTRY_PRODUCE_TICKS, -_settings_game.economy.industry_cargo_scale_factor));
+				output.print(buffer);
+			}
+			seprintf(buffer, lastof(buffer), "  Number of layouts: %u", (uint)indsp->layouts.size());
+			output.print(buffer);
+			for (size_t i = 0; i < indsp->layout_anim_masks.size(); i++) {
+				seprintf(buffer, lastof(buffer), "  Layout anim inhibit mask %u: " OTTD_PRINTFHEX64, (uint)i, indsp->layout_anim_masks[i]);
 				output.print(buffer);
 			}
 		}

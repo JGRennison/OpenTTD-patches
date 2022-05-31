@@ -69,6 +69,7 @@
 #include "../infrastructure_func.h"
 #include "../event_logs.h"
 #include "../newgrf_object.h"
+#include "../newgrf_industrytiles.h"
 
 
 #include "saveload_internal.h"
@@ -950,6 +951,7 @@ bool AfterLoadGame()
 	}
 
 	AfterLoadEngines();
+	AnalyseIndustryTileSpriteGroups();
 
 	/* Update all vehicles */
 	AfterLoadVehicles(true);
@@ -4138,6 +4140,7 @@ void ReloadNewGRFData()
 	/* reload vehicles */
 	ResetVehicleHash();
 	AfterLoadEngines();
+	AnalyseIndustryTileSpriteGroups();
 	AfterLoadVehicles(false);
 	StartupEngines();
 	GroupStatistics::UpdateAfterLoad();

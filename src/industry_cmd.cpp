@@ -1948,6 +1948,9 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 
 	/* Plant the tiles */
 
+	uint64 anim_inhibit_mask = indspec->layout_anim_masks[layout_index];
+
+	uint gfx_idx = 0;
 	for (const IndustryTileLayoutTile &it : layout) {
 		TileIndex cur_tile = tile + ToTileIndexDiff(it.ti);
 
@@ -1968,7 +1971,11 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 			/* it->gfx is stored in the map. But the translated ID cur_gfx is the interesting one */
 			IndustryGfx cur_gfx = GetTranslatedIndustryTileID(it.gfx);
 			const IndustryTileSpec *its = GetIndustryTileSpec(cur_gfx);
-			if (its->animation.status != ANIM_STATUS_NO_ANIMATION) AddAnimatedTile(cur_tile);
+			if (its->animation.status != ANIM_STATUS_NO_ANIMATION) {
+				if (gfx_idx >= 64 || !HasBit(anim_inhibit_mask, gfx_idx)) AddAnimatedTile(cur_tile);
+			}
+
+			gfx_idx++;
 		}
 	}
 

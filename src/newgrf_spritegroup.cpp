@@ -16,6 +16,7 @@
 #include "newgrf_cache_check.h"
 #include "string_func.h"
 #include "newgrf_extension.h"
+#include "newgrf_industrytiles_analysis.h"
 
 #include "safeguards.h"
 
@@ -285,6 +286,8 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 		return;
 	}
 
+	if (op.mode == ACOM_INDUSTRY_TILE && op.data.indtile->anim_state_at_offset) return;
+
 	auto check_1A_range = [&]() -> bool {
 		if (this->GroupMayBeBypassed()) {
 			/* Not clear why some GRFs do this, perhaps a way of commenting out a branch */
@@ -423,6 +426,81 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 			op.callbacks_used |= SGCU_CB36_SPEED_RAILTYPE;
 			return;
 		}
+		if (op.mode == ACOM_INDUSTRY_TILE && adjust.variable == 0xC) {
+			if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
+				/* Callback switch, skip to the default/graphics chain */
+				for (const auto &range : this->ranges) {
+					if (range.low == 0) {
+						if (range.group != nullptr) range.group->AnalyseCallbacks(op);
+						return;
+					}
+				}
+				if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
+				return;
+			}
+		}
+		if (op.mode == ACOM_INDUSTRY_TILE && adjust.variable == 0x44 && this->var_scope == VSG_SCOPE_PARENT) {
+			if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
+				/* Layout index switch */
+				for (const auto &range : this->ranges) {
+					if (range.low <= op.data.indtile->layout_index && op.data.indtile->layout_index <= range.high) {
+						if (range.group != nullptr) range.group->AnalyseCallbacks(op);
+						return;
+					}
+				}
+				if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
+				return;
+			}
+		}
+		if (op.mode == ACOM_INDUSTRY_TILE && adjust.variable == 0x43 && this->var_scope == VSG_SCOPE_SELF) {
+			if (adjust.shift_num == 0 && adjust.and_mask == 0xFFFF && adjust.type == DSGA_TYPE_NONE) {
+				/* Relative position switch */
+				uint64 default_mask = op.data.indtile->check_mask;
+				for (const auto &range : this->ranges) {
+					if (range.high - range.low < 32) {
+						uint64 new_check_mask = 0;
+						for (uint i = range.low; i <= range.high; i++) {
+							int16 x = i & 0xFF;
+							int16 y = (i >> 8) & 0xFF;
+							for (uint bit : SetBitIterator<uint, uint64>(op.data.indtile->check_mask)) {
+								const TileIndexDiffC &ti = (*(op.data.indtile->layout))[bit].ti;
+								if (ti.x == x && ti.y == y) {
+									SetBit(new_check_mask, bit);
+								}
+							}
+						}
+						default_mask &= ~new_check_mask;
+						if (range.group != nullptr) {
+							AnalyseCallbackOperationIndustryTileData data = *(op.data.indtile);
+							data.check_mask = new_check_mask;
+
+							AnalyseCallbackOperation sub_op;
+							sub_op.mode = ACOM_INDUSTRY_TILE;
+							sub_op.data.indtile = &data;
+							range.group->AnalyseCallbacks(sub_op);
+
+							if (data.anim_state_at_offset) {
+								op.data.indtile->anim_state_at_offset = true;
+								return;
+							}
+						}
+					} else {
+						if (range.group != nullptr) range.group->AnalyseCallbacks(op);
+					}
+				}
+				if (this->default_group != nullptr) {
+					AnalyseCallbackOperationIndustryTileData data = *(op.data.indtile);
+					data.check_mask = default_mask;
+
+					AnalyseCallbackOperation sub_op;
+					sub_op.mode = ACOM_INDUSTRY_TILE;
+					sub_op.data.indtile = &data;
+
+					this->default_group->AnalyseCallbacks(sub_op);
+				}
+				return;
+			}
+		}
 	}
 	for (const auto &adjust : this->adjusts) {
 		if (op.mode == ACOM_CB_VAR && adjust.variable == 0xC) {
@@ -435,6 +513,14 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 		}
 		if (adjust.variable == 0x7E && adjust.subroutine != nullptr) {
 			adjust.subroutine->AnalyseCallbacks(op);
+		}
+		if (op.mode == ACOM_INDUSTRY_TILE && this->var_scope == VSG_SCOPE_SELF && (adjust.variable == 0x44 || (adjust.variable == 0x61 && adjust.parameter == 0))) {
+			*(op.data.indtile->result_mask) &= ~op.data.indtile->check_mask;
+			return;
+		}
+		if (op.mode == ACOM_INDUSTRY_TILE && ((this->var_scope == VSG_SCOPE_SELF && adjust.variable == 0x61) || (this->var_scope == VSG_SCOPE_PARENT && adjust.variable == 0x63))) {
+			op.data.indtile->anim_state_at_offset = true;
+			return;
 		}
 	}
 	if (!this->calculated_result) {

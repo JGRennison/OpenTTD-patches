@@ -271,6 +271,7 @@ add_files(
     newgrf_industries.h
     newgrf_industrytiles.cpp
     newgrf_industrytiles.h
+    newgrf_industrytiles_analysis.h
     newgrf_newsignals.cpp
     newgrf_newsignals.h
     newgrf_object.cpp

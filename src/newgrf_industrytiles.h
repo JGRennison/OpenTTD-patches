@@ -76,4 +76,6 @@ enum IndustryTileTrigger {
 void TriggerIndustryTile(TileIndex t, IndustryTileTrigger trigger);
 void TriggerIndustry(Industry *ind, IndustryTileTrigger trigger);
 
+void AnalyseIndustryTileSpriteGroups();
+
 #endif /* NEWGRF_INDUSTRYTILES_H */
