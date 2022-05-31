@@ -1603,7 +1603,6 @@ void AnalyseEngineCallbacks()
 			sg_cb36[sg] = op.properties_used;
 		};
 
-		AnalyseCallbackOperation op;
 		for (uint i = 0; i < NUM_CARGO + 2; i++) {
 			process_sg(e->grf_prop.spritegroup[i]);
 		}

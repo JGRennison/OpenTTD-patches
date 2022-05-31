@@ -307,19 +307,24 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 			return;
 		} else if (!op.cb_result_found) {
 			if (check_1A_range()) return;
-			if (this->adjusts.size() == 1 && this->adjusts[0].variable == 0xC) {
-				const auto &adjust = this->adjusts[0];
-				if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
-					for (const auto &range : this->ranges) {
-						if (range.low == range.high && range.low == 0xC) {
-							if (range.group != nullptr) range.group->AnalyseCallbacks(op);
-							return;
+			auto check_var_filter = [&](uint8 var, uint value) -> bool {
+				if (this->adjusts.size() == 1 && this->adjusts[0].variable == var && (this->adjusts[0].operation == DSGA_OP_ADD || this->adjusts[0].operation == DSGA_OP_RST)) {
+					const auto &adjust = this->adjusts[0];
+					if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
+						for (const auto &range : this->ranges) {
+							if (range.low == range.high && range.low == value) {
+								if (range.group != nullptr) range.group->AnalyseCallbacks(op);
+								return true;
+							}
 						}
+						if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
+						return true;
 					}
-					if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
-					return;
 				}
-			}
+				return false;
+			};
+			if (check_var_filter(0xC, op.data.cb_result.callback)) return;
+			if (op.data.cb_result.check_var_10 && check_var_filter(0x10, op.data.cb_result.var_10_value)) return;
 			for (const auto &range : this->ranges) {
 				if (range.group != nullptr) range.group->AnalyseCallbacks(op);
 			}
@@ -330,18 +335,16 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 
 	if (check_1A_range()) return;
 
-	auto find_cb_result = [&]() -> bool {
-		if (this->calculated_result) return true;
+	auto find_cb_result = [&](const SpriteGroup *group, AnalyseCallbackOperation::FindCBResultData data) -> bool {
+		if (group == nullptr) return false;
 		AnalyseCallbackOperation cbr_op;
 		cbr_op.mode = ACOM_FIND_CB_RESULT;
-		for (const auto &range : this->ranges) {
-			if (range.group != nullptr) range.group->AnalyseCallbacks(cbr_op);
-		}
-		if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(cbr_op);
+		cbr_op.data.cb_result = data;
+		group->AnalyseCallbacks(cbr_op);
 		return cbr_op.cb_result_found;
 	};
 
-	if (this->adjusts.size() == 1 && !this->calculated_result) {
+	if (this->adjusts.size() == 1 && !this->calculated_result && (this->adjusts[0].operation == DSGA_OP_ADD || this->adjusts[0].operation == DSGA_OP_RST)) {
 		const auto &adjust = this->adjusts[0];
 		if (op.mode == ACOM_CB_VAR && adjust.variable == 0xC) {
 			if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
@@ -383,7 +386,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 				for (const auto &range : this->ranges) {
 					if (range.low == range.high) {
 						if (range.low < 64) {
-							if (find_cb_result()) {
+							if (find_cb_result(range.group, { CBID_VEHICLE_MODIFY_PROPERTY, true, (uint8)range.low })) {
 								SetBit(op.properties_used, range.low);
 								if (range.low == 0x9) {
 									/* Speed */
@@ -426,7 +429,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 			op.callbacks_used |= SGCU_ALL;
 		}
 		if (op.mode == ACOM_CB36_PROP && adjust.variable == 0x10) {
-			if (find_cb_result()) {
+			if (find_cb_result(this, { CBID_VEHICLE_MODIFY_PROPERTY, false, 0 })) {
 				op.properties_used |= UINT64_MAX;
 			}
 		}
@@ -478,6 +481,10 @@ const SpriteGroup *RandomizedSpriteGroup::Resolve(ResolverObject &object) const
 void RandomizedSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) const
 {
 	if (op.mode == ACOM_CB_VAR) op.callbacks_used |= SGCU_RANDOM_TRIGGER;
+
+	for (const SpriteGroup *group: this->groups) {
+		if (group != nullptr) group->AnalyseCallbacks(op);
+	}
 }
 
 const SpriteGroup *RealSpriteGroup::Resolve(ResolverObject &object) const

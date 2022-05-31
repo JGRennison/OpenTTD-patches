@@ -57,11 +57,20 @@ enum AnalyseCallbackOperationMode {
 };
 
 struct AnalyseCallbackOperation {
+	struct FindCBResultData {
+		uint16 callback;
+		bool check_var_10;
+		uint8 var_10_value;
+	};
+
 	btree::btree_set<const SpriteGroup *> seen;
 	AnalyseCallbackOperationMode mode = ACOM_CB_VAR;
 	SpriteGroupCallbacksUsed callbacks_used = SGCU_NONE;
 	uint64 properties_used = 0;
 	bool cb_result_found = false;
+	union {
+		FindCBResultData cb_result;
+	} data;
 };
 
 /* SPRITE_WIDTH is 24. ECS has roughly 30 sprite groups per real sprite.
