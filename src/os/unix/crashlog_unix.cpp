@@ -128,6 +128,73 @@ static bool ExecReadStdout(const char *file, char *const *args, char *&buffer, c
 	}
 }
 
+static bool ExecReadStdoutThroughFile(const char *file, char *const *args, char *&buffer, const char *last)
+{
+	int null_fd = open("/dev/null", O_RDWR);
+	if (null_fd == -1) return false;
+
+	char name[MAX_PATH];
+	extern std::string _personal_dir;
+	seprintf(name, lastof(name), "%sopenttd-tmp-XXXXXX", _personal_dir.c_str());
+	int fd = mkstemp(name);
+	if (fd == -1) {
+		close(null_fd);
+		return false;
+	}
+
+	/* Unlink file but leave fd open until finished with */
+	unlink(name);
+
+	int pid = fork();
+	if (pid < 0) {
+		close(null_fd);
+		close(fd);
+		return false;
+	}
+
+	if (pid == 0) {
+		/* child */
+
+		dup2(fd, STDOUT_FILENO);
+		close(fd);
+		dup2(null_fd, STDERR_FILENO);
+		dup2(null_fd, STDIN_FILENO);
+		close(null_fd);
+
+		execvp(file, args);
+		exit(42);
+	}
+
+	/* parent */
+
+	close(null_fd);
+
+	int status;
+	int wait_ret = waitpid(pid, &status, 0);
+	if (wait_ret == -1 || !WIFEXITED(status) || WEXITSTATUS(status) != 0) {
+		/* command did not appear to run successfully */
+		close(fd);
+		return false;
+	} else {
+		/* command executed successfully */
+		lseek(fd, 0, SEEK_SET);
+		while (buffer < last) {
+			ssize_t res = read(fd, buffer, last - buffer);
+			if (res < 0) {
+				if (errno == EINTR) continue;
+				break;
+			} else if (res == 0) {
+				break;
+			} else {
+				buffer += res;
+			}
+		}
+		buffer += seprintf(buffer, last, "\n");
+		close(fd);
+		return true;
+	}
+}
+
 /**
  * Unix implementation for the crash logger.
  */
@@ -357,7 +424,7 @@ class CrashLogUnix : public CrashLog {
 #endif
 
 		args.push_back(nullptr);
-		if (!ExecReadStdout("gdb", const_cast<char* const*>(&(args[0])), buffer, last)) {
+		if (!ExecReadStdoutThroughFile("gdb", const_cast<char* const*>(&(args[0])), buffer, last)) {
 			buffer = buffer_orig;
 		}
 #endif /* WITH_DBG_GDB */
