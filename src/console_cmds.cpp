@@ -3055,6 +3055,7 @@ DEF_CONSOLE_CMD(ConMiscDebug)
 		IConsoleHelp("  1: MDF_OVERHEAT_BREAKDOWN_OPEN_WIN");
 		IConsoleHelp("  2: MDF_ZONING_RS_WATER_FLOOD_STATE");
 		IConsoleHelp("  4: MDF_ZONING_RS_TROPIC_ZONE");
+		IConsoleHelp("  8: MDF_ZONING_RS_ANIMATED_TILE");
 		return true;
 	}
 

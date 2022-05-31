@@ -27,6 +27,7 @@
 #include "viewport_func.h"
 #include "road_map.h"
 #include "debug_settings.h"
+#include "animated_tile.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 
 Zoning _zoning;
@@ -282,6 +283,9 @@ SpriteID TileZoneCheckTraceRestrictEvaluation(TileIndex tile, Owner owner)
 			default:
 				break;
 		}
+	}
+	if (unlikely(HasBit(_misc_debug_flags, MDF_ZONING_RS_ANIMATED_TILE)) && _animated_tiles.find(tile) != _animated_tiles.end()) {
+		return SPR_ZONING_INNER_HIGHLIGHT_YELLOW;
 	}
 
 	return ZONING_INVALID_SPRITE_ID;
