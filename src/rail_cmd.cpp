@@ -1479,9 +1479,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1,
 		if (!ValParamTrackOrientation(track) || !IsTrackAcrossTunnelBridge(tile, track)) {
 			return_cmd_error(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
 		}
-		CommandCost ret = EnsureNoTrainOnTrack(GetOtherTunnelBridgeEnd(tile), track);
-		if (ret.Failed()) return ret;
-		ret = EnsureNoTrainOnTrack(tile, track);
+		CommandCost ret = TunnelBridgeIsFree(tile, GetOtherTunnelBridgeEnd(tile), nullptr, true);
 		if (ret.Failed()) return ret;
 	} else if (!ValParamTrackOrientation(track) || !IsPlainRailTile(tile) || !HasTrack(tile, track)) {
 		return_cmd_error(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
@@ -2095,17 +2093,18 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32 p1
 	Money cost = _price[PR_CLEAR_SIGNALS];
 
 	if (IsTileType(tile, MP_TUNNELBRIDGE)) {
-		TileIndex end = GetOtherTunnelBridgeEnd(tile);
 		if (GetTunnelBridgeTransportType(tile) != TRANSPORT_RAIL) return_cmd_error(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
+		if (!ValParamTrackOrientation(track) || !IsTrackAcrossTunnelBridge(tile, track)) {
+			return_cmd_error(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
+		}
 		if (!IsTunnelBridgeWithSignalSimulation(tile)) return_cmd_error(STR_ERROR_THERE_ARE_NO_SIGNALS);
+		TileIndex end = GetOtherTunnelBridgeEnd(tile);
+		CommandCost ret = TunnelBridgeIsFree(tile, end, nullptr, true);
+		if (ret.Failed()) return ret;
 
 		cost *= ((GetTunnelBridgeLength(tile, end) + 4) >> 2);
 		if (IsTunnelBridgeSignalSimulationBidirectional(tile)) cost *= 2;
 
-		CommandCost ret = EnsureNoTrainOnTrack(GetOtherTunnelBridgeEnd(tile), track);
-		if (ret.Failed()) return ret;
-		ret = EnsureNoTrainOnTrack(tile, track);
-		if (ret.Failed()) return ret;
 	} else {
 		if (!ValParamTrackOrientation(track) || !IsPlainRailTile(tile) || !HasTrack(tile, track)) {
 			return_cmd_error(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
