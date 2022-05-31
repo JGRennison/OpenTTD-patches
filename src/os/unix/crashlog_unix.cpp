@@ -74,6 +74,9 @@ static void LogStacktraceSigSegvHandler(int  sig)
 
 static bool ExecReadStdout(const char *file, char *const *args, char *&buffer, const char *last)
 {
+	int null_fd = open("/dev/null", O_RDWR);
+	if (null_fd == -1) return false;
+
 	int pipefd[2];
 	if (pipe(pipefd) == -1) return false;
 
@@ -86,11 +89,9 @@ static bool ExecReadStdout(const char *file, char *const *args, char *&buffer, c
 		close(pipefd[0]); /* Close unused read end */
 		dup2(pipefd[1], STDOUT_FILENO);
 		close(pipefd[1]);
-		int null_fd = open("/dev/null", O_RDWR);
-		if (null_fd != -1) {
-			dup2(null_fd, STDERR_FILENO);
-			dup2(null_fd, STDIN_FILENO);
-		}
+		dup2(null_fd, STDERR_FILENO);
+		dup2(null_fd, STDIN_FILENO);
+		close(null_fd);
 
 		execvp(file, args);
 		exit(42);
@@ -98,6 +99,7 @@ static bool ExecReadStdout(const char *file, char *const *args, char *&buffer, c
 
 	/* parent */
 
+	close(null_fd);
 	close(pipefd[1]); /* Close unused write end */
 
 	while (buffer < last) {
