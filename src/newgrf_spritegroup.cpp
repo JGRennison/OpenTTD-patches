@@ -607,19 +607,17 @@ const DrawTileSprites *TileLayoutSpriteGroup::ProcessRegisters(uint8 *stage) con
 struct SpriteGroupDumper {
 private:
 	char buffer[1024];
-	std::function<void(const char *)> print_fn;
+	DumpSpriteGroupPrinter print_fn;
 
 	const SpriteGroup *top_default_group = nullptr;
 	btree::btree_set<const DeterministicSpriteGroup *> seen_dsgs;
-
-	void print() { this->print_fn(this->buffer); }
 
 	enum SpriteGroupDumperFlags {
 		SGDF_DEFAULT          = 1 << 0,
 	};
 
 public:
-	SpriteGroupDumper(std::function<void(const char *)> print) : print_fn(print) {}
+	SpriteGroupDumper(DumpSpriteGroupPrinter print) : print_fn(print) {}
 
 	void DumpSpriteGroup(const SpriteGroup *sg, int padding, uint flags);
 };
@@ -684,9 +682,13 @@ static const char *GetAdjustOperationName(DeterministicSpriteGroupAdjustOperatio
 
 void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint flags)
 {
+	auto print = [&]() {
+		this->print_fn(sg, this->buffer);
+	};
+
 	if (sg == nullptr) {
 		seprintf(this->buffer, lastof(this->buffer), "%*sNULL GROUP", padding, "");
-		this->print();
+		print();
 		return;
 	}
 
@@ -695,15 +697,15 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 			const RealSpriteGroup *rsg = (const RealSpriteGroup*)sg;
 			seprintf(this->buffer, lastof(this->buffer), "%*sReal (loaded: %u, loading: %u) [%u]",
 					padding, "", (uint)rsg->loaded.size(), (uint)rsg->loading.size(), sg->nfo_line);
-			this->print();
+			print();
 			for (size_t i = 0; i < rsg->loaded.size(); i++) {
 				seprintf(this->buffer, lastof(this->buffer), "%*sLoaded %u", padding + 2, "", (uint)i);
-				this->print();
+				print();
 				this->DumpSpriteGroup(rsg->loaded[i], padding + 4, 0);
 			}
 			for (size_t i = 0; i < rsg->loading.size(); i++) {
 				seprintf(this->buffer, lastof(this->buffer), "%*sLoading %u", padding + 2, "", (uint)i);
-				this->print();
+				print();
 				this->DumpSpriteGroup(rsg->loading[i], padding + 4, 0);
 			}
 			break;
@@ -716,25 +718,25 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 			if (dsg == this->top_default_group && !(padding == 4 && (flags & SGDF_DEFAULT))) {
 				seprintf(this->buffer, lastof(this->buffer), "%*sTOP LEVEL DEFAULT GROUP: Deterministic (%s, %s), [%u]",
 						padding, "", _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], dsg->nfo_line);
-				this->print();
+				print();
 				return;
 			}
 			auto res = this->seen_dsgs.insert(dsg);
 			if (!res.second) {
 				seprintf(this->buffer, lastof(this->buffer), "%*sGROUP SEEN ABOVE: Deterministic (%s, %s), [%u]",
 						padding, "", _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], dsg->nfo_line);
-				this->print();
+				print();
 				return;
 			}
 			seprintf(this->buffer, lastof(this->buffer), "%*sDeterministic (%s, %s), [%u]",
 					padding, "", _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], dsg->nfo_line);
-			this->print();
+			print();
 			padding += 2;
 			for (const auto &adjust : dsg->adjusts) {
 				char *p = this->buffer;
 				if (adjust.operation == DSGA_OP_TERNARY) {
 					p += seprintf(p, lastof(this->buffer), "%*sTERNARY: true: %X, false: %X", padding, "", adjust.and_mask, adjust.add_val);
-					this->print();
+					print();
 					continue;
 				}
 				p += seprintf(p, lastof(this->buffer), "%*svar: %X", padding, "", adjust.variable);
@@ -757,23 +759,23 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 					case DSGA_TYPE_NONE: break;
 				}
 				p += seprintf(p, lastof(this->buffer), ", op: %X (%s)", adjust.operation, GetAdjustOperationName(adjust.operation));
-				this->print();
+				print();
 				if (adjust.variable == 0x7E && adjust.subroutine != nullptr) {
 					this->DumpSpriteGroup(adjust.subroutine, padding + 5, 0);
 				}
 			}
 			if (dsg->calculated_result) {
 				seprintf(this->buffer, lastof(this->buffer), "%*scalculated_result", padding, "");
-				this->print();
+				print();
 			} else {
 				for (const auto &range : dsg->ranges) {
 					seprintf(this->buffer, lastof(this->buffer), "%*srange: %X -> %X", padding, "", range.low, range.high);
-					this->print();
+					print();
 					this->DumpSpriteGroup(range.group, padding + 2, 0);
 				}
 				if (dsg->default_group != nullptr) {
 					seprintf(this->buffer, lastof(this->buffer), "%*sdefault", padding, "");
-					this->print();
+					print();
 					this->DumpSpriteGroup(dsg->default_group, padding + 2, SGDF_DEFAULT);
 				}
 			}
@@ -784,7 +786,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 			seprintf(this->buffer, lastof(this->buffer), "%*sRandom (%s, %s, triggers: %X, count: %X, lowest_randbit: %X, groups: %u) [%u]",
 					padding, "", _sg_scope_names[rsg->var_scope], rsg->cmp_mode == RSG_CMP_ANY ? "ANY" : "ALL",
 					rsg->triggers, rsg->count, rsg->lowest_randbit, (uint)rsg->groups.size(), rsg->nfo_line);
-			this->print();
+			print();
 			for (const auto &group : rsg->groups) {
 				this->DumpSpriteGroup(group, padding + 2, 0);
 			}
@@ -792,17 +794,17 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 		}
 		case SGT_CALLBACK:
 			seprintf(this->buffer, lastof(this->buffer), "%*sCallback Result: %X", padding, "", ((const CallbackResultSpriteGroup *) sg)->result);
-			this->print();
+			print();
 			break;
 		case SGT_RESULT:
 			seprintf(this->buffer, lastof(this->buffer), "%*sSprite Result: SpriteID: %u, num: %u",
 					padding, "", ((const ResultSpriteGroup *) sg)->sprite, ((const ResultSpriteGroup *) sg)->num_sprites);
-			this->print();
+			print();
 			break;
 		case SGT_TILELAYOUT: {
 			const TileLayoutSpriteGroup *tlsg = (const TileLayoutSpriteGroup*)sg;
 			seprintf(this->buffer, lastof(this->buffer), "%*sTile Layout [%u]", padding, "", sg->nfo_line);
-			this->print();
+			print();
 			padding += 2;
 			if (tlsg->dts.registers != nullptr) {
 				const TileLayoutRegisters *registers = tlsg->dts.registers;
@@ -812,42 +814,42 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 				for (size_t i = 0; i < count; i ++) {
 					const TileLayoutRegisters *reg = registers + i;
 					seprintf(this->buffer, lastof(this->buffer), "%*ssection: %X, register flags: %X", padding, "", (uint)i, reg->flags);
-					this->print();
+					print();
 					if (reg->flags & TLF_DODRAW) {
 						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_DODRAW reg: %X", padding + 2, "", reg->dodraw);
-						this->print();
+						print();
 					}
 					if (reg->flags & TLF_SPRITE) {
 						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_SPRITE reg: %X", padding + 2, "", reg->sprite);
-						this->print();
+						print();
 					}
 					if (reg->flags & TLF_PALETTE) {
 						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_PALETTE reg: %X", padding + 2, "", reg->palette);
-						this->print();
+						print();
 					}
 					if (reg->flags & TLF_BB_XY_OFFSET) {
 						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_BB_XY_OFFSET reg: %X, %X", padding + 2, "", reg->delta.parent[0], reg->delta.parent[1]);
-						this->print();
+						print();
 					}
 					if (reg->flags & TLF_BB_Z_OFFSET) {
 						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_BB_Z_OFFSET reg: %X", padding + 2, "", reg->delta.parent[2]);
-						this->print();
+						print();
 					}
 					if (reg->flags & TLF_CHILD_X_OFFSET) {
 						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_CHILD_X_OFFSET reg: %X", padding + 2, "", reg->delta.child[0]);
-						this->print();
+						print();
 					}
 					if (reg->flags & TLF_CHILD_Y_OFFSET) {
 						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_CHILD_Y_OFFSET reg: %X", padding + 2, "", reg->delta.child[1]);
-						this->print();
+						print();
 					}
 					if (reg->flags & TLF_SPRITE_VAR10) {
 						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_SPRITE_VAR10 value: %X", padding + 2, "", reg->sprite_var10);
-						this->print();
+						print();
 					}
 					if (reg->flags & TLF_PALETTE_VAR10) {
 						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_PALETTE_VAR10 value: %X", padding + 2, "", reg->palette_var10);
-						this->print();
+						print();
 					}
 				}
 			}
@@ -856,15 +858,15 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 		case SGT_INDUSTRY_PRODUCTION: {
 			const IndustryProductionSpriteGroup *ipsg = (const IndustryProductionSpriteGroup*)sg;
 			seprintf(this->buffer, lastof(this->buffer), "%*sIndustry Production (version %X) [%u]", padding, "", ipsg->version, ipsg->nfo_line);
-			this->print();
+			print();
 			auto log_io = [&](const char *prefix, int i, int quantity, CargoID cargo) {
 				if (ipsg->version >= 2) {
 					seprintf(this->buffer, lastof(this->buffer), "%*s%s %X: reg %X, cargo ID: %X", padding + 2, "", prefix, i, quantity, cargo);
-					this->print();
+					print();
 				} else {
 					const char *type = (ipsg->version >= 1) ? "reg" : "value";
 					seprintf(this->buffer, lastof(this->buffer), "%*s%s %X: %s %X", padding + 2, "", prefix, i, type, quantity);
-					this->print();
+					print();
 				}
 			};
 			for (int i = 0; i < ipsg->num_input; i++) {
@@ -874,13 +876,13 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 				log_io("Add input", i, ipsg->add_output[i], ipsg->cargo_output[i]);
 			}
 			seprintf(this->buffer, lastof(this->buffer), "%*sAgain: %s %X", padding + 2, "", (ipsg->version >= 1) ? "reg" : "value", ipsg->again);
-			this->print();
+			print();
 			break;
 		}
 	}
 }
 
-void DumpSpriteGroup(const SpriteGroup *sg, std::function<void(const char *)> print)
+void DumpSpriteGroup(const SpriteGroup *sg, DumpSpriteGroupPrinter print)
 {
 	SpriteGroupDumper dumper(std::move(print));
 	dumper.DumpSpriteGroup(sg, 0, 0);

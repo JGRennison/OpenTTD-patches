@@ -1619,7 +1619,7 @@ void AnalyseEngineCallbacks()
 	}
 }
 
-void DumpVehicleSpriteGroup(const Vehicle *v, std::function<void(const char *)> print)
+void DumpVehicleSpriteGroup(const Vehicle *v, DumpSpriteGroupPrinter print)
 {
 	const SpriteGroup *root_spritegroup = nullptr;
 	if (v->IsGroundVehicle()) root_spritegroup = GetWagonOverrideSpriteSet(v->engine_type, v->cargo_type, v->GetGroundVehicleCache()->first_engine);

@@ -213,7 +213,7 @@ public:
 	}
 
 	virtual void ExtraInfo(uint index, NIExtraInfoOutput &output) const {}
-	virtual void SpriteDump(uint index, std::function<void(const char *)> print) const {}
+	virtual void SpriteDump(uint index, DumpSpriteGroupPrinter print) const {}
 	virtual bool ShowExtraInfoOnly(uint index) const { return false; };
 	virtual bool ShowSpriteDumpButton(uint index) const { return false; };
 
@@ -318,6 +318,8 @@ struct NewGRFInspectWindow : Window {
 
 	uint32 extra_info_flags = 0;
 	btree::btree_map<int, uint> extra_info_click_flag_toggles;
+	btree::btree_map<int, const SpriteGroup *> sprite_group_lines;
+	const SpriteGroup *selected_sprite_group = nullptr;
 
 	/**
 	 * Check whether the given variable has a parameter.
@@ -521,8 +523,20 @@ struct NewGRFInspectWindow : Window {
 
 			::DrawString(r.left + LEFT_OFFSET, r.right - RIGHT_OFFSET, r.top + TOP_OFFSET + (offset * this->resize.step_height), buf, TC_BLACK);
 		};
+		const_cast<NewGRFInspectWindow *>(this)->sprite_group_lines.clear();
 		if (this->sprite_dump) {
-			nih->SpriteDump(index, line_handler);
+			nih->SpriteDump(index, [&](const SpriteGroup *group, const char *buf) {
+				if (this->log_console) DEBUG(misc, 0, "  %s", buf);
+
+				int offset = i++;
+				int scroll_offset = offset - this->vscroll->GetPosition();
+				if (scroll_offset < 0 || scroll_offset >= this->vscroll->GetCapacity()) return;
+
+				const_cast<NewGRFInspectWindow *>(this)->sprite_group_lines[offset] = group;
+
+				TextColour colour = (this->selected_sprite_group == group) ? TC_LIGHT_BLUE : TC_BLACK;
+				::DrawString(r.left + LEFT_OFFSET, r.right - RIGHT_OFFSET, r.top + TOP_OFFSET + (scroll_offset * this->resize.step_height), buf, colour);
+			});
 			return;
 		} else {
 			NewGRFInspectWindow *this_mutable = const_cast<NewGRFInspectWindow *>(this);
@@ -711,11 +725,20 @@ struct NewGRFInspectWindow : Window {
 				break;
 
 			case WID_NGRFI_MAINPANEL: {
-				if (this->sprite_dump) return;
-
 				/* Get the line, make sure it's within the boundaries. */
 				int line = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_NGRFI_MAINPANEL, TOP_OFFSET);
 				if (line == INT_MAX) return;
+
+				if (this->sprite_dump) {
+					const SpriteGroup *group = nullptr;
+					auto iter = this->sprite_group_lines.find(line);
+					if (iter != this->sprite_group_lines.end()) group = iter->second;
+					if (group != nullptr || this->selected_sprite_group != nullptr) {
+						this->selected_sprite_group = (group == this->selected_sprite_group) ? nullptr : group;
+						this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
+					}
+					return;
+				}
 
 				auto iter = this->extra_info_click_flag_toggles.find(line);
 				if (iter != this->extra_info_click_flag_toggles.end()) {

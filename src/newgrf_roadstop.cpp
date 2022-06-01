@@ -634,7 +634,7 @@ void StationUpdateRoadStopCachedTriggers(BaseStation *st)
 	}
 }
 
-void DumpRoadStopSpriteGroup(const BaseStation *st, const RoadStopSpec *spec, std::function<void(const char *)> print)
+void DumpRoadStopSpriteGroup(const BaseStation *st, const RoadStopSpec *spec, DumpSpriteGroupPrinter print)
 {
 	CargoID ctype = CT_DEFAULT_NA;
 

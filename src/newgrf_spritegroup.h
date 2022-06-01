@@ -569,7 +569,9 @@ struct ResolverObject {
 	virtual uint32 GetDebugID() const { return 0; }
 };
 
-void DumpSpriteGroup(const SpriteGroup *sg, std::function<void(const char *)> print);
+using DumpSpriteGroupPrinter = std::function<void(const SpriteGroup *, const char *)>;
+
+void DumpSpriteGroup(const SpriteGroup *sg, DumpSpriteGroupPrinter print);
 uint32 EvaluateDeterministicSpriteGroupAdjust(DeterministicSpriteGroupSize size, const DeterministicSpriteGroupAdjust &adjust, ScopeResolver *scope, uint32 last_value, uint32 value);
 
 #endif /* NEWGRF_SPRITEGROUP_H */
