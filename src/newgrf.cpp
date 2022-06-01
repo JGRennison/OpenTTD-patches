@@ -51,6 +51,7 @@
 #include "newgrf_roadstop.h"
 #include "debug_settings.h"
 #include "core/arena_alloc.hpp"
+#include "core/y_combinator.hpp"
 
 #include "table/strings.h"
 #include "table/build_industry.h"
@@ -5736,16 +5737,25 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 		if (adjust.variable == 0x7E) {
 			state.seen_procedure_call = true;
 			reset_store_values();
-			if (adjust.subroutine != nullptr && adjust.subroutine->type == SGT_DETERMINISTIC) {
-				VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(adjust.subroutine, false);
-				if (var_tracking != nullptr) {
-					std::bitset<256> bits = var_tracking->in;
-					for (auto &it : state.temp_stores) {
-						bits.set(it.first, false);
+			auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
+				if (sg == nullptr) return;
+				if (sg->type == SGT_RANDOMIZED) {
+					const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
+					for (const auto &group : rsg->groups) {
+						handle_group(group);
 					}
-					state.GetVarTracking(group)->in |= bits;
+				} else if (sg->type == SGT_DETERMINISTIC) {
+					VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sg, false);
+					if (var_tracking != nullptr) {
+						std::bitset<256> bits = var_tracking->in;
+						for (auto &it : state.temp_stores) {
+							bits.set(it.first, false);
+						}
+						state.GetVarTracking(group)->in |= bits;
+					}
 				}
-			};
+			});
+			handle_group(adjust.subroutine);
 		}
 	} else {
 		if (adjust.and_mask == 0 && IsEvalAdjustWithZeroRemovable(adjust.operation)) {
@@ -6023,7 +6033,17 @@ static void CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSprite
 
 static void RecursiveDisallowDSEForProcedure(const SpriteGroup *group)
 {
-	if (group == nullptr || group->type != SGT_DETERMINISTIC) return;
+	if (group == nullptr) return;
+
+	if (group->type == SGT_RANDOMIZED) {
+		const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)group;
+		for (const auto &g : rsg->groups) {
+			RecursiveDisallowDSEForProcedure(g);
+		}
+		return;
+	}
+
+	if (group->type != SGT_DETERMINISTIC) return;
 
 	const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(group);
 	VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sub, true);
@@ -6062,20 +6082,31 @@ static void CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSprite
 		if (adjust.variable == 0x7D && adjust.parameter < 0x100) {
 			bits.set(adjust.parameter, true);
 		}
-		if (adjust.variable == 0x7E && adjust.subroutine != nullptr && adjust.subroutine->type == SGT_DETERMINISTIC) {
+		if (adjust.variable == 0x7E) {
 			/* procedure call */
-			const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(adjust.subroutine);
-			VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sub, true);
-			if (sub->calculated_result) {
-				std::bitset<256> new_out = bits | var_tracking->out;
-				if (new_out != var_tracking->out) {
-					var_tracking->out = new_out;
-					CheckDeterministicSpriteGroupOutputVarBits(sub, new_out, false, false);
+			auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
+				if (sg == nullptr) return;
+				if (sg->type == SGT_RANDOMIZED) {
+					const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
+					for (const auto &group : rsg->groups) {
+						handle_group(group);
+					}
+				} else if (sg->type == SGT_DETERMINISTIC) {
+					const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(sg);
+					VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sub, true);
+					if (sub->calculated_result) {
+						std::bitset<256> new_out = bits | var_tracking->out;
+						if (new_out != var_tracking->out) {
+							var_tracking->out = new_out;
+							CheckDeterministicSpriteGroupOutputVarBits(sub, new_out, false, false);
+						}
+					} else {
+						RecursiveDisallowDSEForProcedure(sub);
+					}
+					bits |= var_tracking->in;
 				}
-			} else {
-				RecursiveDisallowDSEForProcedure(sub);
-			}
-			bits |= var_tracking->in;
+			});
+			handle_group(adjust.subroutine);
 		}
 	}
 	if (dse && add_to_dse) _cur.dead_store_elimination_candidates.push_back(const_cast<DeterministicSpriteGroup *>(group));
@@ -6113,10 +6144,16 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 
 	std::bitset<256> bits;
 	if (!group->calculated_result) {
-		auto handle_group = [&](const SpriteGroup *sg) {
+		auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
 			if (sg != nullptr && sg->type == SGT_DETERMINISTIC) {
 				VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sg, false);
 				if (var_tracking != nullptr) bits |= var_tracking->in;
+			}
+			if (sg != nullptr && sg->type == SGT_RANDOMIZED) {
+				const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
+				for (const auto &group : rsg->groups) {
+					handle_group(group);
+				}
 			}
 			if (sg != nullptr && sg->type == SGT_TILELAYOUT) {
 				const TileLayoutSpriteGroup *tlsg = (const TileLayoutSpriteGroup*)sg;
@@ -6152,7 +6189,7 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 					bits.set(ipsg->again, true);
 				}
 			}
-		};
+		});
 		handle_group(group->default_group);
 		for (const auto &range : group->ranges) {
 			handle_group(range.group);
@@ -6237,11 +6274,22 @@ static void HandleVarAction2DeadStoreElimination()
 			if (adjust.variable == 0x7D && adjust.parameter < 0x100) {
 				bits.set(adjust.parameter, true);
 			}
-			if (adjust.variable == 0x7E && adjust.subroutine != nullptr && adjust.subroutine->type == SGT_DETERMINISTIC) {
+			if (adjust.variable == 0x7E) {
 				/* procedure call */
-				const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(adjust.subroutine);
-				VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sub, false);
-				if (var_tracking != nullptr) bits |= var_tracking->in;
+				auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
+					if (sg == nullptr) return;
+					if (sg->type == SGT_RANDOMIZED) {
+						const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
+						for (const auto &group : rsg->groups) {
+							handle_group(group);
+						}
+					} else if (sg->type == SGT_DETERMINISTIC) {
+						const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(sg);
+						VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sub, false);
+						if (var_tracking != nullptr) bits |= var_tracking->in;
+					}
+				});
+				handle_group(adjust.subroutine);
 			}
 			i--;
 		}
