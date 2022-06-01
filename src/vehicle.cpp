@@ -3865,9 +3865,10 @@ int ReversingDistanceTargetSpeed(const Train *v);
 
 /**
  * Draw visual effects (smoke and/or sparks) for a vehicle chain.
+ * @param max_speed The speed as limited by underground and orders, UINT_MAX if not already known
  * @pre this->IsPrimaryVehicle()
  */
-void Vehicle::ShowVisualEffect() const
+void Vehicle::ShowVisualEffect(uint max_speed) const
 {
 	assert(this->IsPrimaryVehicle());
 	bool sound = false;
@@ -3883,8 +3884,7 @@ void Vehicle::ShowVisualEffect() const
 		return;
 	}
 
-	/* Use the speed as limited by underground and orders. */
-	uint max_speed = this->GetCurrentMaxSpeed();
+	if (max_speed == UINT_MAX) max_speed = this->GetCurrentMaxSpeed();
 
 	if (this->type == VEH_TRAIN) {
 		const Train *t = Train::From(this);

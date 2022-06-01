@@ -150,7 +150,7 @@ struct RoadVehicle FINAL : public GroundVehicle<RoadVehicle, VEH_ROAD> {
 	int GetCurrentMaxSpeed() const;
 	int GetEffectiveMaxSpeed() const;
 	int GetDisplayEffectiveMaxSpeed() const { return this->GetEffectiveMaxSpeed() / 2; }
-	int UpdateSpeed();
+	int UpdateSpeed(int max_speed);
 	void SetDestTile(TileIndex tile);
 
 	inline bool IsRoadVehicleOnLevelCrossing() const

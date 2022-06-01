@@ -795,11 +795,11 @@ static void RoadVehArrivesAt(const RoadVehicle *v, Station *st)
  * and subspeed) variables. Furthermore, it returns the distance that
  * the vehicle can drive this tick. #Vehicle::GetAdvanceDistance() determines
  * the distance to drive before moving a step on the map.
+ * @param max_speed maximum speed as from GetCurrentMaxSpeed()
  * @return distance to drive.
  */
-int RoadVehicle::UpdateSpeed()
+int RoadVehicle::UpdateSpeed(int max_speed)
 {
-	int max_speed = this->GetCurrentMaxSpeed();
 	switch (_settings_game.vehicle.roadveh_acceleration_model) {
 		default: NOT_REACHED();
 		case AM_ORIGINAL: {
@@ -2126,10 +2126,14 @@ static bool RoadVehController(RoadVehicle *v)
 
 	if (v->IsInDepot() && RoadVehLeaveDepot(v, true)) return true;
 
-	v->ShowVisualEffect();
+	int j;
+	{
+		int max_speed = v->GetCurrentMaxSpeed();
+		v->ShowVisualEffect(max_speed);
 
-	/* Check how far the vehicle needs to proceed */
-	int j = v->UpdateSpeed();
+		/* Check how far the vehicle needs to proceed */
+		j = v->UpdateSpeed(max_speed);
+	 }
 
 	int adv_spd = v->GetAdvanceDistance();
 	bool blocked = false;

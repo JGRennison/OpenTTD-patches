@@ -185,14 +185,14 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 
 	void ConsistChanged(ConsistChangeFlags allowed_changes);
 
-	int UpdateSpeed();
-
-	void UpdateAcceleration();
-
 	struct MaxSpeedInfo {
 		int strict_max_speed;
 		int advisory_max_speed;
 	};
+
+	int UpdateSpeed(MaxSpeedInfo max_speed_info);
+
+	void UpdateAcceleration();
 
 	bool ConsistNeedsRepair() const;
 

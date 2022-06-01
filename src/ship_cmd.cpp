@@ -885,7 +885,7 @@ static void ShipController(Ship *v)
 
 	if (CheckShipLeaveDepot(v)) return;
 
-	v->ShowVisualEffect();
+	v->ShowVisualEffect(UINT_MAX);
 
 	/* Rotating on spot */
 	if (v->direction != v->rotation) {

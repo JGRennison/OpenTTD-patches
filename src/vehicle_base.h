@@ -884,7 +884,7 @@ public:
 	CommandCost SendToDepot(DoCommandFlag flags, DepotCommand command, TileIndex specific_depot = 0);
 
 	void UpdateVisualEffect(bool allow_power_change = true);
-	void ShowVisualEffect() const;
+	void ShowVisualEffect(uint max_speed) const;
 
 	/**
 	 * Update the position of the vehicle. This will update the hash that tells

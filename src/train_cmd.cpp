@@ -4582,17 +4582,16 @@ void Train::MarkDirty()
  * the distance to drive before moving a step on the map.
  * @return distance to drive.
  */
-int Train::UpdateSpeed()
+int Train::UpdateSpeed(MaxSpeedInfo max_speed_info)
 {
 	AccelStatus accel_status = this->GetAccelerationStatus();
-	MaxSpeedInfo max_speed_info = this->GetCurrentMaxSpeedInfoAndUpdate();
 	if (this->lookahead != nullptr && HasBit(this->lookahead->flags, TRLF_APPLY_ADVISORY) && this->cur_speed <= max_speed_info.strict_max_speed) {
 		ClrBit(this->lookahead->flags, TRLF_APPLY_ADVISORY);
 	}
 	switch (_settings_game.vehicle.train_acceleration_model) {
 		default: NOT_REACHED();
 		case AM_ORIGINAL:
-			return this->DoUpdateSpeed({ this->acceleration * (this->GetAccelerationStatus() == AS_BRAKE ? -4 : 2), this->acceleration * -4 }, 0,
+			return this->DoUpdateSpeed({ this->acceleration * (accel_status == AS_BRAKE ? -4 : 2), this->acceleration * -4 }, 0,
 					max_speed_info.strict_max_speed, max_speed_info.advisory_max_speed, this->UsingRealisticBraking());
 
 		case AM_REALISTIC:
@@ -6397,8 +6396,6 @@ static bool TrainLocoHandler(Train *v, bool mode)
 		}
 	}
 
-	if (!mode) v->ShowVisualEffect();
-
 	/* We had no order but have an order now, do look ahead. */
 	if (!valid_order && !v->current_order.IsType(OT_NOTHING)) {
 		CheckNextTrainTile(v);
@@ -6461,7 +6458,13 @@ static bool TrainLocoHandler(Train *v, bool mode)
 		return true;
 	}
 
-	int j = v->UpdateSpeed();
+	int j;
+	{
+		Train::MaxSpeedInfo max_speed_info = v->GetCurrentMaxSpeedInfoAndUpdate();
+
+		if (!mode) v->ShowVisualEffect(std::min(max_speed_info.strict_max_speed, max_speed_info.advisory_max_speed));
+		j = v->UpdateSpeed(max_speed_info);
+	}
 
 	/* we need to invalidate the widget if we are stopping from 'Stopping 0 km/h' to 'Stopped' */
 	if (v->cur_speed == 0 && (v->vehstatus & VS_STOPPED)) {
