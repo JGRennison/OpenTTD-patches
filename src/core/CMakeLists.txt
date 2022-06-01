@@ -31,4 +31,5 @@ add_files(
     smallvec_type.hpp
     string_compare_type.hpp
     tinystring_type.hpp
+    y_combinator.hpp
 )
