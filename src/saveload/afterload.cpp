@@ -4051,6 +4051,10 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_INDUSTRY_ANIM_MASK)) {
+		ApplyIndustryTileAnimMasking();
+	}
+
 	InitializeRoadGUI();
 
 	/* This needs to be done after conversion. */

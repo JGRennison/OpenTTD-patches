@@ -459,3 +459,30 @@ void AnalyseIndustryTileSpriteGroups()
 		}
 	}
 }
+
+void ApplyIndustryTileAnimMasking()
+{
+	for (Industry *ind : Industry::Iterate()) {
+		const IndustrySpec *spec = GetIndustrySpec(ind->type);
+
+		if (ind->selected_layout == 0 || ind->selected_layout > spec->layouts.size()) continue;
+
+		uint64 mask = spec->layout_anim_masks[ind->selected_layout - 1];
+
+		uint idx = 0;
+		for (IndustryTileLayoutTile it : spec->layouts[ind->selected_layout - 1]) {
+			if (it.gfx == 0xFF) continue;
+
+			TileIndex tile = AddTileIndexDiffCWrap(ind->location.tile, it.ti);
+			if (!IsValidTile(tile) || !ind->TileBelongsToIndustry(tile)) break;
+
+			IndustryGfx gfx = GetTranslatedIndustryTileID(it.gfx);
+			if (gfx != GetIndustryGfx(tile)) break;
+
+			if (HasBit(mask, idx)) DeleteAnimatedTile(tile);
+
+			idx++;
+			if (idx == 64) break;
+		}
+	}
+}

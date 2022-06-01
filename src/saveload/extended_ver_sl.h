@@ -125,6 +125,7 @@ enum SlXvFeatureIndex {
 	XSLFI_MORE_STATION_TYPES,                     ///< More station types (field widening)
 	XSLFI_RV_ORDER_EXTRA_FLAGS,                   ///< Road vehicle order extra flags
 	XSLFI_GRF_ROADSTOPS,                          ///< NewGRF road stops
+	XSLFI_INDUSTRY_ANIM_MASK,                     ///< Industry tile animation masking
 
 	XSLFI_SCRIPT_INT64,                           ///< See: SLV_SCRIPT_INT64
 
