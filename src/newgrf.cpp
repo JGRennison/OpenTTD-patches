@@ -5556,6 +5556,12 @@ static const SpriteGroup *GetGroupFromGroupID(byte setid, byte type, uint16 grou
 	return result;
 }
 
+static const SpriteGroup *GetGroupByID(uint16 groupid)
+{
+	const SpriteGroup *result = _cur.spritegroups[groupid];
+	return result;
+}
+
 /**
  * Helper function to either create a callback or a result sprite group.
  * @param feature GrfSpecFeature to define spritegroup for.
@@ -6828,9 +6834,9 @@ static void VehicleMapSpriteGroup(ByteReader *buf, byte feature, uint8 idcount)
 			grfmsg(7, "VehicleMapSpriteGroup: [%d] Engine %d...", i, engine);
 
 			if (wagover) {
-				SetWagonOverrideSprites(engine, ctype, _cur.spritegroups[groupid], last_engines, last_engines_count);
+				SetWagonOverrideSprites(engine, ctype, GetGroupByID(groupid), last_engines, last_engines_count);
 			} else {
-				SetCustomEngineSprites(engine, ctype, _cur.spritegroups[groupid]);
+				SetCustomEngineSprites(engine, ctype, GetGroupByID(groupid));
 			}
 		}
 	}
@@ -6844,9 +6850,9 @@ static void VehicleMapSpriteGroup(ByteReader *buf, byte feature, uint8 idcount)
 		EngineID engine = engines[i];
 
 		if (wagover) {
-			SetWagonOverrideSprites(engine, CT_DEFAULT, _cur.spritegroups[groupid], last_engines, last_engines_count);
+			SetWagonOverrideSprites(engine, CT_DEFAULT, GetGroupByID(groupid), last_engines, last_engines_count);
 		} else {
-			SetCustomEngineSprites(engine, CT_DEFAULT, _cur.spritegroups[groupid]);
+			SetCustomEngineSprites(engine, CT_DEFAULT, GetGroupByID(groupid));
 			SetEngineGRF(engine, _cur.grffile);
 		}
 	}
@@ -6875,7 +6881,7 @@ static void CanalMapSpriteGroup(ByteReader *buf, uint8 idcount)
 		}
 
 		_water_feature[cf].grffile = _cur.grffile;
-		_water_feature[cf].group = _cur.spritegroups[groupid];
+		_water_feature[cf].group = GetGroupByID(groupid);
 	}
 }
 
@@ -6904,7 +6910,7 @@ static void StationMapSpriteGroup(ByteReader *buf, uint8 idcount)
 				continue;
 			}
 
-			statspec->grf_prop.spritegroup[ctype] = _cur.spritegroups[groupid];
+			statspec->grf_prop.spritegroup[ctype] = GetGroupByID(groupid);
 		}
 	}
 
@@ -6924,7 +6930,7 @@ static void StationMapSpriteGroup(ByteReader *buf, uint8 idcount)
 			continue;
 		}
 
-		statspec->grf_prop.spritegroup[CT_DEFAULT] = _cur.spritegroups[groupid];
+		statspec->grf_prop.spritegroup[CT_DEFAULT] = GetGroupByID(groupid);
 		statspec->grf_prop.grffile = _cur.grffile;
 		statspec->grf_prop.local_id = stations[i];
 		StationClass::Assign(statspec);
@@ -6959,7 +6965,7 @@ static void TownHouseMapSpriteGroup(ByteReader *buf, uint8 idcount)
 			continue;
 		}
 
-		hs->grf_prop.spritegroup[0] = _cur.spritegroups[groupid];
+		hs->grf_prop.spritegroup[0] = GetGroupByID(groupid);
 	}
 }
 
@@ -6990,7 +6996,7 @@ static void IndustryMapSpriteGroup(ByteReader *buf, uint8 idcount)
 			continue;
 		}
 
-		indsp->grf_prop.spritegroup[0] = _cur.spritegroups[groupid];
+		indsp->grf_prop.spritegroup[0] = GetGroupByID(groupid);
 	}
 }
 
@@ -7021,7 +7027,7 @@ static void IndustrytileMapSpriteGroup(ByteReader *buf, uint8 idcount)
 			continue;
 		}
 
-		indtsp->grf_prop.spritegroup[0] = _cur.spritegroups[groupid];
+		indtsp->grf_prop.spritegroup[0] = GetGroupByID(groupid);
 	}
 }
 
@@ -7049,7 +7055,7 @@ static void CargoMapSpriteGroup(ByteReader *buf, uint8 idcount)
 
 		CargoSpec *cs = CargoSpec::Get(cid);
 		cs->grffile = _cur.grffile;
-		cs->group = _cur.spritegroups[groupid];
+		cs->group = GetGroupByID(groupid);
 	}
 }
 
@@ -7072,7 +7078,7 @@ static void SignalsMapSpriteGroup(ByteReader *buf, uint8 idcount)
 
 		switch (id) {
 			case NSA3ID_CUSTOM_SIGNALS:
-				_cur.grffile->new_signals_group = _cur.spritegroups[groupid];
+				_cur.grffile->new_signals_group = GetGroupByID(groupid);
 				if (!HasBit(_cur.grffile->new_signal_ctrl_flags, NSCF_GROUPSET)) {
 					SetBit(_cur.grffile->new_signal_ctrl_flags, NSCF_GROUPSET);
 					_new_signals_grfs.push_back(_cur.grffile);
@@ -7115,7 +7121,7 @@ static void ObjectMapSpriteGroup(ByteReader *buf, uint8 idcount)
 				continue;
 			}
 
-			spec->grf_prop.spritegroup[ctype] = _cur.spritegroups[groupid];
+			spec->grf_prop.spritegroup[ctype] = GetGroupByID(groupid);
 		}
 	}
 
@@ -7135,7 +7141,7 @@ static void ObjectMapSpriteGroup(ByteReader *buf, uint8 idcount)
 			continue;
 		}
 
-		spec->grf_prop.spritegroup[0] = _cur.spritegroups[groupid];
+		spec->grf_prop.spritegroup[0] = GetGroupByID(groupid);
 		spec->grf_prop.grffile        = _cur.grffile;
 		spec->grf_prop.local_id       = objects[i];
 	}
@@ -7163,7 +7169,7 @@ static void RailTypeMapSpriteGroup(ByteReader *buf, uint8 idcount)
 				RailtypeInfo *rti = &_railtypes[railtypes[i]];
 
 				rti->grffile[ctype] = _cur.grffile;
-				rti->group[ctype] = _cur.spritegroups[groupid];
+				rti->group[ctype] = GetGroupByID(groupid);
 			}
 		}
 	}
@@ -7196,7 +7202,7 @@ static void RoadTypeMapSpriteGroup(ByteReader *buf, uint8 idcount, RoadTramType 
 				RoadTypeInfo *rti = &_roadtypes[roadtypes[i]];
 
 				rti->grffile[ctype] = _cur.grffile;
-				rti->group[ctype] = _cur.spritegroups[groupid];
+				rti->group[ctype] = GetGroupByID(groupid);
 			}
 		}
 	}
@@ -7232,7 +7238,7 @@ static void AirportMapSpriteGroup(ByteReader *buf, uint8 idcount)
 			continue;
 		}
 
-		as->grf_prop.spritegroup[0] = _cur.spritegroups[groupid];
+		as->grf_prop.spritegroup[0] = GetGroupByID(groupid);
 	}
 }
 
@@ -7263,7 +7269,7 @@ static void AirportTileMapSpriteGroup(ByteReader *buf, uint8 idcount)
 			continue;
 		}
 
-		airtsp->grf_prop.spritegroup[0] = _cur.spritegroups[groupid];
+		airtsp->grf_prop.spritegroup[0] = GetGroupByID(groupid);
 	}
 }
 
@@ -7291,7 +7297,7 @@ static void RoadStopMapSpriteGroup(ByteReader *buf, uint8 idcount)
 				continue;
 			}
 
-			roadstopspec->grf_prop.spritegroup[ctype] = _cur.spritegroups[groupid];
+			roadstopspec->grf_prop.spritegroup[ctype] = GetGroupByID(groupid);
 		}
 	}
 
@@ -7316,7 +7322,7 @@ static void RoadStopMapSpriteGroup(ByteReader *buf, uint8 idcount)
 			continue;
 		}
 
-		roadstopspec->grf_prop.spritegroup[CT_DEFAULT] = _cur.spritegroups[groupid];
+		roadstopspec->grf_prop.spritegroup[CT_DEFAULT] = GetGroupByID(groupid);
 		roadstopspec->grf_prop.grffile = _cur.grffile;
 		roadstopspec->grf_prop.local_id = roadstops[i];
 		RoadStopClass::Assign(roadstopspec);
@@ -7358,7 +7364,7 @@ static void FeatureMapSpriteGroup(ByteReader *buf)
 
 		grfmsg(6, "FeatureMapSpriteGroup: Adding generic feature callback for feature %s", GetFeatureString(feature_ref));
 
-		AddGenericCallback(feature, _cur.grffile, _cur.spritegroups[groupid]);
+		AddGenericCallback(feature, _cur.grffile, GetGroupByID(groupid));
 		return;
 	}
 
