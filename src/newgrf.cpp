@@ -5837,7 +5837,16 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					}
 					break;
 				case DSGA_OP_UMIN:
-					if (adjust.and_mask <= 1) state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+					if (adjust.and_mask == 1) {
+						if (prev_inference & VA2AIF_ONE_OR_ZERO) {
+							/* Delete useless bool -> bool conversion */
+							group->adjusts.pop_back();
+							state.inference = prev_inference;
+							break;
+						} else {
+							state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+						}
+					}
 					break;
 				case DSGA_OP_AND:
 					if ((prev_inference & VA2AIF_PREV_MASK_ADJUST) && adjust.variable == 0x1A && adjust.shift_num == 0) {
