@@ -90,6 +90,8 @@ struct TrainReservationLookAhead {
 	uint16 speed_restriction;
 	std::deque<TrainReservationLookAheadItem> items;
 	std::deque<TrainReservationLookAheadCurve> curves;
+	int32 cached_zpos = 0;                ///< Cached z position as used in TrainDecelerationStats
+	uint8 zpos_refresh_remaining = 0;     ///< Remaining position updates before next refresh of cached_zpos
 
 	int32 RealEndPosition() const
 	{

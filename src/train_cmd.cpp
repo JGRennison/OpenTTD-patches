@@ -807,19 +807,11 @@ int PredictStationStoppingLocation(const Train *v, const Order *order, int stati
 	return stop + adjust;
 }
 
-TrainDecelerationStats::TrainDecelerationStats(const Train *t)
+TrainDecelerationStats::TrainDecelerationStats(const Train *t, int z_pos)
 {
 	this->deceleration_x2 = 2 * t->tcache.cached_deceleration;
 	this->uncapped_deceleration_x2 = 2 * t->tcache.cached_uncapped_decel;
-	if (likely(HasBit(t->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST))) {
-		this->z_pos = t->z_pos;
-	} else {
-		int64 sum = 0;
-		for (const Train *u = t; u != nullptr; u = u->Next()) {
-			sum += ((int)u->z_pos * (int)u->tcache.cached_veh_weight);
-		}
-		this->z_pos = sum / t->gcache.cached_weight;
-	}
+	this->z_pos = z_pos;
 	this->t = t;
 }
 
@@ -977,6 +969,7 @@ static void ApplyLookAheadItem(const Train *v, const TrainReservationLookAheadIt
 static void AdvanceLookAheadPosition(Train *v)
 {
 	v->lookahead->current_position++;
+	if (v->lookahead->zpos_refresh_remaining > 0) v->lookahead->zpos_refresh_remaining--;
 
 	if (v->lookahead->current_position > v->lookahead->reservation_end_position + 8) {
 		/* Beyond end of lookahead, delete it, it will be recreated later with a new reservation */
@@ -1102,7 +1095,11 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 
 	if (this->UsingRealisticBraking()) {
 		if (this->lookahead != nullptr) {
-			TrainDecelerationStats stats(this);
+			if (update_state && this->lookahead->zpos_refresh_remaining == 0) {
+				this->lookahead->cached_zpos = this->CalculateOverallZPos();
+				this->lookahead->zpos_refresh_remaining = this->GetZPosCacheUpdateInterval();
+			}
+			TrainDecelerationStats stats(this, this->lookahead->cached_zpos);
 			if (HasBit(this->lookahead->flags, TRLF_DEPOT_END)) {
 				LimitSpeedFromLookAhead(max_speed, stats, this->lookahead->current_position, this->lookahead->reservation_end_position - TILE_SIZE, 61, this->lookahead->reservation_end_z - stats.z_pos);
 			} else {
@@ -1133,6 +1130,19 @@ int Train::GetCurrentMaxSpeed() const
 {
 	MaxSpeedInfo info = this->GetCurrentMaxSpeedInfo();
 	return std::min(info.strict_max_speed, info.advisory_max_speed);
+}
+
+uint32 Train::CalculateOverallZPos() const
+{
+	if (likely(HasBit(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST))) {
+		return this->z_pos;
+	} else {
+		int64 sum = 0;
+		for (const Train *u = this; u != nullptr; u = u->Next()) {
+			sum += ((int)u->z_pos * (int)u->tcache.cached_veh_weight);
+		}
+		return sum / this->gcache.cached_weight;
+	}
 }
 
 /** Update acceleration of the train from the cached power and weight. */
@@ -3980,7 +3990,7 @@ static bool IsReservationLookAheadLongEnough(const Train *v, const ChooseTrainTr
 		if (v->lookahead->reservation_end_position >= v->lookahead->current_position + v->reverse_distance - 1) return true;
 	}
 
-	TrainDecelerationStats stats(v);
+	TrainDecelerationStats stats(v, v->lookahead->cached_zpos);
 
 	bool found_signal = false;
 	int signal_speed = 0;
@@ -5231,7 +5241,7 @@ inline void DecreaseReverseDistance(Train *v)
 int ReversingDistanceTargetSpeed(const Train *v)
 {
 	if (v->UsingRealisticBraking()) {
-		TrainDecelerationStats stats(v);
+		TrainDecelerationStats stats(v, v->lookahead != nullptr ? v->lookahead->cached_zpos : v->CalculateOverallZPos());
 		return GetRealisticBrakingSpeedForDistance(stats, v->reverse_distance - 1, 0, 0);
 	}
 	int target_speed;

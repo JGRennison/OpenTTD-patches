@@ -931,6 +931,8 @@ void TryCreateLookAheadForTrainInTunnelBridge(Train *t)
 		t->lookahead->reservation_end_position = GetTileMarginInFrontOfTrain(t);
 		t->lookahead->flags = 0;
 		t->lookahead->speed_restriction = t->speed_restriction;
+		t->lookahead->cached_zpos = t->CalculateOverallZPos();
+		t->lookahead->zpos_refresh_remaining = t->GetZPosCacheUpdateInterval();
 		if (IsTunnel(t->tile) && Tunnel::GetByTile(t->tile)->is_chunnel) SetBit(t->lookahead->flags, TRLF_CHUNNEL);
 
 		if (IsTunnelBridgeSignalSimulationEntrance(t->tile)) {
@@ -1002,6 +1004,8 @@ void FillTrainReservationLookAhead(Train *v)
 		v->lookahead->tunnel_bridge_reserved_tiles = 0;
 		v->lookahead->flags = 0;
 		v->lookahead->speed_restriction = v->speed_restriction;
+		v->lookahead->cached_zpos = v->CalculateOverallZPos();
+		v->lookahead->zpos_refresh_remaining = v->GetZPosCacheUpdateInterval();
 		FillLookAheadCurveDataFromTrainPosition(v);
 		tile = v->tile;
 		trackdir = v->GetVehicleTrackdir();

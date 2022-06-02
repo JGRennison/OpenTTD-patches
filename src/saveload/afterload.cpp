@@ -3956,6 +3956,15 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (!SlXvIsFeaturePresent(XSLFI_REALISTIC_TRAIN_BRAKING, 6) && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+		for (Train *t : Train::Iterate()) {
+			if (t->lookahead != nullptr) {
+				t->lookahead->cached_zpos = t->CalculateOverallZPos();
+				t->lookahead->zpos_refresh_remaining = t->GetZPosCacheUpdateInterval();
+			}
+		}
+	}
+
 	if (SlXvIsFeatureMissing(XSLFI_INFLATION_FIXED_DATES)) {
 		_settings_game.economy.inflation_fixed_dates = !IsSavegameVersionBefore(SLV_GS_INDUSTRY_CONTROL);
 	}

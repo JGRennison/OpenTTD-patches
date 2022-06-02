@@ -211,7 +211,7 @@ class NIHVehicle : public NIHelper {
 			if (t->lookahead != nullptr) {
 				output.print("  Look ahead:");
 				const TrainReservationLookAhead &l = *t->lookahead;
-				TrainDecelerationStats stats(t);
+				TrainDecelerationStats stats(t, l.cached_zpos);
 
 				auto print_braking_speed = [&](int position, int end_speed, int end_z) {
 					if (!t->UsingRealisticBraking()) return;
@@ -227,6 +227,11 @@ class NIHVehicle : public NIHelper {
 				if (l.next_extend_position > l.current_position) {
 					b += seprintf(b, lastof(buffer), ", next extend position: %d (dist: %d)", l.next_extend_position, l.next_extend_position - l.current_position);
 				}
+				output.print(buffer);
+
+				const int overall_zpos = t->CalculateOverallZPos();
+				seprintf(buffer, lastof(buffer), "    Cached zpos: %u (actual: %u, delta: %d), positions to refresh: %u",
+						l.cached_zpos, overall_zpos, (l.cached_zpos - overall_zpos), l.zpos_refresh_remaining);
 				output.print(buffer);
 
 				b = buffer + seprintf(buffer, lastof(buffer), "    Reservation ends at %X (%u x %u), trackdir: %02X, z: %d",
