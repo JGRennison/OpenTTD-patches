@@ -682,8 +682,10 @@ static const char *GetAdjustOperationName(DeterministicSpriteGroupAdjustOperatio
 
 void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint flags)
 {
+	uint32 highlight_tag = 0;
 	auto print = [&]() {
-		this->print_fn(sg, this->buffer);
+		this->print_fn(sg, highlight_tag, this->buffer);
+		highlight_tag = 0;
 	};
 
 	if (sg == nullptr) {
@@ -734,10 +736,18 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 			padding += 2;
 			for (const auto &adjust : dsg->adjusts) {
 				char *p = this->buffer;
+				if (adjust.variable == 0x7D) {
+					/* Temp storage load */
+					highlight_tag = (1 << 16) | (adjust.parameter & 0xFFFF);
+				}
 				if (adjust.operation == DSGA_OP_TERNARY) {
 					p += seprintf(p, lastof(this->buffer), "%*sTERNARY: true: %X, false: %X", padding, "", adjust.and_mask, adjust.add_val);
 					print();
 					continue;
+				}
+				if (adjust.operation == DSGA_OP_STO && adjust.type == DSGA_TYPE_NONE && adjust.variable == 0x1A && adjust.shift_num == 0) {
+					/* Temp storage store */
+					highlight_tag = (1 << 16) | (adjust.and_mask & 0xFFFF);
 				}
 				p += seprintf(p, lastof(this->buffer), "%*svar: %X", padding, "", adjust.variable);
 				if (adjust.variable == A2VRI_VEHICLE_CURRENT_SPEED_SCALED) {
@@ -815,34 +825,21 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 					const TileLayoutRegisters *reg = registers + i;
 					seprintf(this->buffer, lastof(this->buffer), "%*ssection: %X, register flags: %X", padding, "", (uint)i, reg->flags);
 					print();
-					if (reg->flags & TLF_DODRAW) {
-						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_DODRAW reg: %X", padding + 2, "", reg->dodraw);
-						print();
-					}
-					if (reg->flags & TLF_SPRITE) {
-						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_SPRITE reg: %X", padding + 2, "", reg->sprite);
-						print();
-					}
-					if (reg->flags & TLF_PALETTE) {
-						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_PALETTE reg: %X", padding + 2, "", reg->palette);
-						print();
-					}
-					if (reg->flags & TLF_BB_XY_OFFSET) {
-						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_BB_XY_OFFSET reg: %X, %X", padding + 2, "", reg->delta.parent[0], reg->delta.parent[1]);
-						print();
-					}
-					if (reg->flags & TLF_BB_Z_OFFSET) {
-						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_BB_Z_OFFSET reg: %X", padding + 2, "", reg->delta.parent[2]);
-						print();
-					}
-					if (reg->flags & TLF_CHILD_X_OFFSET) {
-						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_CHILD_X_OFFSET reg: %X", padding + 2, "", reg->delta.child[0]);
-						print();
-					}
-					if (reg->flags & TLF_CHILD_Y_OFFSET) {
-						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_CHILD_Y_OFFSET reg: %X", padding + 2, "", reg->delta.child[1]);
-						print();
-					}
+					auto log_reg = [&](TileLayoutFlags flag, const char *name, uint8 flag_reg) {
+						if (reg->flags & flag) {
+							highlight_tag = (1 << 16) | flag_reg;
+							seprintf(this->buffer, lastof(this->buffer), "%*s%s reg: %X", padding + 2, "", name, flag_reg);
+							print();
+						}
+					};
+					log_reg(TLF_DODRAW, "TLF_DODRAW", reg->dodraw);
+					log_reg(TLF_SPRITE, "TLF_SPRITE", reg->sprite);
+					log_reg(TLF_PALETTE, "TLF_PALETTE", reg->palette);
+					log_reg(TLF_BB_XY_OFFSET, "TLF_BB_XY_OFFSET x", reg->delta.parent[0]);
+					log_reg(TLF_BB_XY_OFFSET, "TLF_BB_XY_OFFSET y", reg->delta.parent[1]);
+					log_reg(TLF_BB_Z_OFFSET, "TLF_BB_Z_OFFSET", reg->delta.parent[2]);
+					log_reg(TLF_CHILD_X_OFFSET, "TLF_CHILD_X_OFFSET", reg->delta.child[0]);
+					log_reg(TLF_CHILD_Y_OFFSET, "TLF_CHILD_Y_OFFSET", reg->delta.child[1]);
 					if (reg->flags & TLF_SPRITE_VAR10) {
 						seprintf(this->buffer, lastof(this->buffer), "%*sTLF_SPRITE_VAR10 value: %X", padding + 2, "", reg->sprite_var10);
 						print();
@@ -860,6 +857,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 			seprintf(this->buffer, lastof(this->buffer), "%*sIndustry Production (version %X) [%u]", padding, "", ipsg->version, ipsg->nfo_line);
 			print();
 			auto log_io = [&](const char *prefix, int i, int quantity, CargoID cargo) {
+				if (ipsg->version >= 1) highlight_tag = (1 << 16) | quantity;
 				if (ipsg->version >= 2) {
 					seprintf(this->buffer, lastof(this->buffer), "%*s%s %X: reg %X, cargo ID: %X", padding + 2, "", prefix, i, quantity, cargo);
 					print();
@@ -875,6 +873,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 			for (int i = 0; i < ipsg->num_output; i++) {
 				log_io("Add input", i, ipsg->add_output[i], ipsg->cargo_output[i]);
 			}
+			if (ipsg->version >= 1) highlight_tag = (1 << 16) | ipsg->again;
 			seprintf(this->buffer, lastof(this->buffer), "%*sAgain: %s %X", padding + 2, "", (ipsg->version >= 1) ? "reg" : "value", ipsg->again);
 			print();
 			break;

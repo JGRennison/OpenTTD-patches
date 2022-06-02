@@ -320,6 +320,8 @@ struct NewGRFInspectWindow : Window {
 	btree::btree_map<int, uint> extra_info_click_flag_toggles;
 	btree::btree_map<int, const SpriteGroup *> sprite_group_lines;
 	const SpriteGroup *selected_sprite_group = nullptr;
+	btree::btree_map<int, uint32> highlight_tag_lines;
+	uint32 selected_highlight_tag = 0;
 
 	/**
 	 * Check whether the given variable has a parameter.
@@ -525,16 +527,18 @@ struct NewGRFInspectWindow : Window {
 		};
 		const_cast<NewGRFInspectWindow *>(this)->sprite_group_lines.clear();
 		if (this->sprite_dump) {
-			nih->SpriteDump(index, [&](const SpriteGroup *group, const char *buf) {
+			nih->SpriteDump(index, [&](const SpriteGroup *group, uint32 highlight_tag, const char *buf) {
 				if (this->log_console) DEBUG(misc, 0, "  %s", buf);
 
 				int offset = i++;
 				int scroll_offset = offset - this->vscroll->GetPosition();
 				if (scroll_offset < 0 || scroll_offset >= this->vscroll->GetCapacity()) return;
 
-				const_cast<NewGRFInspectWindow *>(this)->sprite_group_lines[offset] = group;
+				if (group != nullptr) const_cast<NewGRFInspectWindow *>(this)->sprite_group_lines[offset] = group;
+				if (highlight_tag != 0) const_cast<NewGRFInspectWindow *>(this)->highlight_tag_lines[offset] = highlight_tag;
 
 				TextColour colour = (this->selected_sprite_group == group) ? TC_LIGHT_BLUE : TC_BLACK;
+				if (highlight_tag != 0 && this->selected_highlight_tag == highlight_tag) colour = TC_YELLOW;
 				::DrawString(r.left + LEFT_OFFSET, r.right - RIGHT_OFFSET, r.top + TOP_OFFSET + (scroll_offset * this->resize.step_height), buf, colour);
 			});
 			return;
@@ -730,12 +734,22 @@ struct NewGRFInspectWindow : Window {
 				if (line == INT_MAX) return;
 
 				if (this->sprite_dump) {
-					const SpriteGroup *group = nullptr;
-					auto iter = this->sprite_group_lines.find(line);
-					if (iter != this->sprite_group_lines.end()) group = iter->second;
-					if (group != nullptr || this->selected_sprite_group != nullptr) {
-						this->selected_sprite_group = (group == this->selected_sprite_group) ? nullptr : group;
-						this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
+					if (_ctrl_pressed) {
+						uint32 highlight_tag = 0;
+						auto iter = this->highlight_tag_lines.find(line);
+						if (iter != this->highlight_tag_lines.end()) highlight_tag = iter->second;
+						if (highlight_tag != 0 || this->selected_highlight_tag != 0) {
+							this->selected_highlight_tag = (highlight_tag == this->selected_highlight_tag) ? 0 : highlight_tag;
+							this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
+						}
+					} else {
+						const SpriteGroup *group = nullptr;
+						auto iter = this->sprite_group_lines.find(line);
+						if (iter != this->sprite_group_lines.end()) group = iter->second;
+						if (group != nullptr || this->selected_sprite_group != nullptr) {
+							this->selected_sprite_group = (group == this->selected_sprite_group) ? nullptr : group;
+							this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
+						}
 					}
 					return;
 				}
@@ -782,6 +796,7 @@ struct NewGRFInspectWindow : Window {
 			case WID_NGRFI_SPRITE_DUMP: {
 				this->sprite_dump = !this->sprite_dump;
 				this->SetWidgetLoweredState(WID_NGRFI_SPRITE_DUMP, this->sprite_dump);
+				this->GetWidget<NWidgetCore>(WID_NGRFI_MAINPANEL)->SetToolTip(this->sprite_dump ? STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP : STR_NULL);
 				this->SetWidgetDirty(WID_NGRFI_SPRITE_DUMP);
 				this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
 				this->SetWidgetDirty(WID_NGRFI_SCROLLBAR);
