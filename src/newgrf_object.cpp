@@ -70,7 +70,7 @@ bool ObjectSpec::IsEverAvailable() const
  */
 bool ObjectSpec::WasEverAvailable() const
 {
-	return this->IsEverAvailable() && _date > this->introduction_date;
+	return this->IsEverAvailable() && (_date > this->introduction_date || (_settings_game.construction.ignore_object_intro_dates && !_generating_world));
 }
 
 /**
