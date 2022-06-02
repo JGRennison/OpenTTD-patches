@@ -80,7 +80,8 @@ bool ObjectSpec::WasEverAvailable() const
 bool ObjectSpec::IsAvailable() const
 {
 	return this->WasEverAvailable() &&
-			(_date < this->end_of_life_date || this->end_of_life_date < this->introduction_date + 365);
+			(_date < this->end_of_life_date || this->end_of_life_date < this->introduction_date + 365 ||
+			(_settings_game.construction.no_expire_objects_after != 0 && _cur_year >= _settings_game.construction.no_expire_objects_after));
 }
 
 /**

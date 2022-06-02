@@ -2088,6 +2088,7 @@ static SettingsContainer &GetSettingsTree()
 			limitations->Add(new SettingEntry("construction.allow_docks_under_bridges"));
 			limitations->Add(new SettingEntry("construction.purchase_land_permitted"));
 			limitations->Add(new SettingEntry("construction.build_object_area_permitted"));
+			limitations->Add(new SettingEntry("construction.no_expire_objects_after"));
 		}
 
 		SettingsPage *disasters = main->Add(new SettingsPage(STR_CONFIG_SETTING_ACCIDENTS));
