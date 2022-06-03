@@ -5708,7 +5708,10 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 		reset_store_values();
 	};
 	if (adjust.variable == 0x7B && adjust.parameter == 0x7D) handle_unpredictable_temp_load();
-	if (adjust.variable == 0x7D && adjust.parameter < 0x100) {
+
+	VarAction2AdjustInferenceFlags non_const_var_inference = VA2AIF_NONE;
+	while (adjust.variable == 0x7D && adjust.parameter < 0x100) {
+		non_const_var_inference = VA2AIF_NONE;
 		auto iter = state.temp_stores.find(adjust.parameter);
 		if (iter == state.temp_stores.end()) {
 			/* Read without any previous store */
@@ -5728,15 +5731,20 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 						adjust.and_mask = store.var_source.and_mask;
 						adjust.add_val = store.var_source.add_val;
 						adjust.divmod_val = store.var_source.divmod_val;
+						continue;
 					}
 				} else if (store.var_source.type == DSGA_TYPE_NONE && (adjust.shift_num + store.var_source.shift_num) < 32) {
 					adjust.variable = store.var_source.variable;
 					adjust.parameter = store.var_source.parameter;
 					adjust.and_mask &= store.var_source.and_mask >> adjust.shift_num;
 					adjust.shift_num += store.var_source.shift_num;
+					continue;
 				}
+			} else if (adjust.type == DSGA_TYPE_NONE) {
+				non_const_var_inference = store.inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
 			}
 		}
+		break;
 	}
 
 	auto get_prev_single_load = [&]() -> const DeterministicSpriteGroupAdjust* {
@@ -5975,9 +5983,11 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					} else if ((adjust.and_mask & get_sign_bit()) == 0) {
 						state.inference = VA2AIF_SIGNED_NON_NEGATIVE;
 					}
+					state.inference |= non_const_var_inference;
 					break;
 				case DSGA_OP_OR:
 					if (adjust.and_mask <= 1) state.inference = prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
+					state.inference |= prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO) & non_const_var_inference;
 					break;
 				case DSGA_OP_XOR:
 					if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1 && group->adjusts.size() >= 2) {
@@ -6004,6 +6014,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 						}
 					}
 					if (adjust.and_mask <= 1) state.inference = prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
+					state.inference |= prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO) & non_const_var_inference;
 					break;
 				case DSGA_OP_MUL: {
 					if ((prev_inference & VA2AIF_ONE_OR_ZERO) && adjust.variable == 0x1A && adjust.shift_num == 0 && group->adjusts.size() >= 2) {
