@@ -130,6 +130,7 @@ public:
 	btree::btree_map<const SpriteGroup *, VarAction2GroupVariableTracking *> group_temp_store_variable_tracking;
 	UniformArenaAllocator<sizeof(VarAction2GroupVariableTracking), 1024> group_temp_store_variable_tracking_storage;
 	std::vector<DeterministicSpriteGroup *> dead_store_elimination_candidates;
+	std::vector<std::pair<GrfSpecFeature, DeterministicSpriteGroup *>> pending_expensive_var_checks;
 
 	VarAction2GroupVariableTracking *GetVarAction2GroupVariableTracking(const SpriteGroup *group, bool make_new)
 	{
@@ -159,6 +160,7 @@ public:
 		this->group_temp_store_variable_tracking.clear();
 		this->group_temp_store_variable_tracking_storage.EmptyArena();
 		this->dead_store_elimination_candidates.clear();
+		this->pending_expensive_var_checks.clear();
 	}
 
 	/**
@@ -5629,6 +5631,7 @@ struct VarAction2OptimiseState {
 	btree::btree_map<uint8, VarAction2TempStoreInference> temp_stores;
 	VarAction2GroupVariableTracking *var_tracking = nullptr;
 	bool seen_procedure_call = false;
+	bool check_expensive_vars = false;
 
 	inline VarAction2GroupVariableTracking *GetVarTracking(DeterministicSpriteGroup *group)
 	{
@@ -5638,6 +5641,24 @@ struct VarAction2OptimiseState {
 		return this->var_tracking;
 	}
 };
+
+static bool IsExpensiveVehicleVariable(uint16 variable)
+{
+	switch (variable) {
+		case 0x45:
+		case 0x4A:
+		case 0x60:
+		case 0x61:
+		case 0x62:
+		case 0x63:
+		case 0xFE:
+		case 0xFF:
+			return true;
+
+		default:
+			return false;
+	}
+}
 
 static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group, DeterministicSpriteGroupAdjust &adjust)
 {
@@ -5746,6 +5767,8 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 		}
 		break;
 	}
+
+	if ((feature >= GSF_TRAINS && feature <= GSF_AIRCRAFT) && IsExpensiveVehicleVariable(adjust.variable)) state.check_expensive_vars = true;
 
 	auto get_prev_single_load = [&]() -> const DeterministicSpriteGroupAdjust* {
 		for (int i = (int)group->adjusts.size() - 2; i >= 0; i--) {
@@ -6177,7 +6200,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 	}
 }
 
-static void CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSpriteGroup *group, std::bitset<256> bits, bool add_to_dse, bool quick_exit);
+static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSpriteGroup *group, std::bitset<256> bits, bool add_to_dse, bool quick_exit);
 
 static void RecursiveDisallowDSEForProcedure(const SpriteGroup *group)
 {
@@ -6207,7 +6230,7 @@ static void RecursiveDisallowDSEForProcedure(const SpriteGroup *group)
 	}
 }
 
-static void CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSpriteGroup *group, std::bitset<256> bits, bool add_to_dse, bool quick_exit)
+static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSpriteGroup *group, std::bitset<256> bits, bool add_to_dse, bool quick_exit)
 {
 	bool dse = false;
 	for (int i = (int)group->adjusts.size() - 1; i >= 0; i--) {
@@ -6222,6 +6245,14 @@ static void CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSprite
 				}
 				bits.set(adjust.and_mask, false);
 			}
+		}
+		if (adjust.operation == DSGA_OP_STO_NC) {
+			if (!bits[adjust.add_val]) {
+				/* Possibly redundant store */
+				dse = true;
+				if (quick_exit) break;
+			}
+			bits.set(adjust.add_val, false);
 		}
 		if (adjust.variable == 0x7B && adjust.parameter == 0x7D) {
 			/* Unpredictable load */
@@ -6257,7 +6288,122 @@ static void CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSprite
 			handle_group(adjust.subroutine);
 		}
 	}
-	if (dse && add_to_dse) _cur.dead_store_elimination_candidates.push_back(const_cast<DeterministicSpriteGroup *>(group));
+	bool dse_candidate = (dse && add_to_dse);
+	if (dse_candidate) _cur.dead_store_elimination_candidates.push_back(const_cast<DeterministicSpriteGroup *>(group));
+	return dse_candidate;
+}
+
+static bool OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(const GrfSpecFeature feature, DeterministicSpriteGroup *group, VarAction2GroupVariableTracking *var_tracking)
+{
+	btree::btree_map<uint64, uint32> seen_expensive_variables;
+	std::bitset<256> usable_vars;
+	if (var_tracking != nullptr) {
+		usable_vars = ~var_tracking->out;
+	} else {
+		usable_vars.set();
+	}
+	uint16 target_var = 0;
+	uint32 target_param = 0;
+	auto found_target = [&]() -> bool {
+		for (auto &iter : seen_expensive_variables) {
+			if (iter.second >= 2) {
+				target_var = iter.first >> 32;
+				target_param = iter.first & 0xFFFFFFFF;
+				return true;
+			}
+		}
+		return false;
+	};
+	auto do_replacements = [&](int start, int end) {
+		std::bitset<256> mask(UINT64_MAX);
+		std::bitset<256> cur = usable_vars;
+		uint8 bit = 0;
+		while (true) {
+			uint64 t = (cur & mask).to_ullong();
+			if (t != 0) {
+				bit += FindFirstBit(t);
+				break;
+			}
+			cur >>= 64;
+			bit += 64;
+		}
+		int insert_pos = start;
+		uint32 and_mask = 0;
+		for (int j = end; j >= start; j--) {
+			DeterministicSpriteGroupAdjust &adjust = group->adjusts[j];
+			if (adjust.variable == target_var && adjust.parameter == target_param) {
+				and_mask |= adjust.and_mask << adjust.shift_num;
+				adjust.variable = 0x7D;
+				adjust.parameter = bit;
+				insert_pos = j;
+			}
+		}
+		DeterministicSpriteGroupAdjust load = {};
+		load.operation = DSGA_OP_STO_NC;
+		load.type = DSGA_TYPE_NONE;
+		load.variable = target_var;
+		load.shift_num = 0;
+		load.parameter = target_param;
+		load.and_mask = and_mask;
+		load.add_val = bit;
+		group->adjusts.insert(group->adjusts.begin() + insert_pos, load);
+	};
+
+	int i = (int)group->adjusts.size() - 1;
+	int end = i;
+	while (i >= 0) {
+		const DeterministicSpriteGroupAdjust &adjust = group->adjusts[i];
+		if (adjust.operation == DSGA_OP_STO && (adjust.type != DSGA_TYPE_NONE || adjust.variable != 0x1A || adjust.shift_num != 0)) return false;
+		if (adjust.variable == 0x7B && adjust.parameter == 0x7D) return false;
+		if (adjust.operation == DSGA_OP_STO_NC) {
+			usable_vars.set(adjust.add_val, false);
+		} else if (adjust.operation == DSGA_OP_STO && adjust.and_mask < 0x100) {
+			usable_vars.set(adjust.and_mask, false);
+		} else if (adjust.variable == 0x7D) {
+			if (adjust.parameter < 0x100) usable_vars.set(adjust.parameter, false);
+		} else if ((feature >= GSF_TRAINS && feature <= GSF_AIRCRAFT) && IsExpensiveVehicleVariable(adjust.variable)) {
+			seen_expensive_variables[(((uint64)adjust.variable) << 32) | adjust.parameter]++;
+		}
+		if (adjust.variable == 0x7E || (adjust.operation == DSGA_OP_STO && adjust.and_mask >= 0x100)) {
+			/* Can't cross this barrier, stop here */
+			if (usable_vars.none()) return false;
+			if (found_target()) {
+				do_replacements(i + 1, end);
+				return true;
+			}
+			seen_expensive_variables.clear();
+			end = i - 1;
+			if (adjust.variable == 0x7E) {
+				auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
+					if (sg != nullptr && sg->type == SGT_DETERMINISTIC) {
+						VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sg, false);
+						if (var_tracking != nullptr) usable_vars &= ~var_tracking->in;
+					}
+					if (sg != nullptr && sg->type == SGT_RANDOMIZED) {
+						const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
+						for (const auto &group : rsg->groups) {
+							handle_group(group);
+						}
+					}
+				});
+				handle_group(adjust.subroutine);
+			}
+		}
+		i--;
+	}
+	if (usable_vars.none()) return false;
+	if (found_target()) {
+		do_replacements(0, end);
+		return true;
+	}
+
+	return false;
+}
+
+static void OptimiseVarAction2DeterministicSpriteGroupExpensiveVars(const GrfSpecFeature feature, DeterministicSpriteGroup *group)
+{
+	VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(group, false);
+	while (OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(feature, group, var_tracking)) {}
 }
 
 static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group)
@@ -6352,7 +6498,16 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 		}
 	}
 	bool check_dse = (feature != GSF_STATIONS);
-	if (check_dse || state.seen_procedure_call) CheckDeterministicSpriteGroupOutputVarBits(group, bits, check_dse, !state.seen_procedure_call);
+	bool dse_candidate = false;
+	if (check_dse || state.seen_procedure_call) dse_candidate = CheckDeterministicSpriteGroupOutputVarBits(group, bits, check_dse, !state.seen_procedure_call);
+
+	if (state.check_expensive_vars && !HasChickenBit(DCBF_NO_OPTIMISE_VARACT2_EXP_VAR)) {
+		if (dse_candidate && !HasChickenBit(DCBF_NO_OPTIMISE_VARACT2_DSE)) {
+			_cur.pending_expensive_var_checks.push_back({ feature, group });
+		} else {
+			OptimiseVarAction2DeterministicSpriteGroupExpensiveVars(feature, group);
+		}
+	}
 }
 
 static void HandleVarAction2DeadStoreElimination()
@@ -6441,6 +6596,10 @@ static void HandleVarAction2DeadStoreElimination()
 			}
 			i--;
 		}
+	}
+
+	for (auto iter : _cur.pending_expensive_var_checks) {
+		OptimiseVarAction2DeterministicSpriteGroupExpensiveVars(iter.first, iter.second);
 	}
 }
 

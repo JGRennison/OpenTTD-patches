@@ -185,6 +185,7 @@ enum DeterministicSpriteGroupAdjustOperation {
 	DSGA_OP_SLE,            ///< (signed) a <= b ? 1 : 0,
 	DSGA_OP_SGT,            ///< (signed) a > b ? 1 : 0,
 	DSGA_OP_RSUB,           ///< b - a
+	DSGA_OP_STO_NC,         ///< store b into temporary storage, indexed by c. return a
 
 	DSGA_OP_SPECIAL_END,
 };

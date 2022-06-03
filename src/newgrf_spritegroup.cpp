@@ -193,6 +193,7 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust &adjust, ScopeResolver
 		case DSGA_OP_SLE:  return ((S)last_value <= (S)value) ? 1 : 0;
 		case DSGA_OP_SGT:  return ((S)last_value >  (S)value) ? 1 : 0;
 		case DSGA_OP_RSUB: return value - last_value;
+		case DSGA_OP_STO_NC: _temp_store.StoreValue(adjust.add_val, (S)value); return last_value;
 		default:           return value;
 	}
 }
@@ -659,6 +660,7 @@ static const char *_dsg_op_special_names[] {
 	"SLE",
 	"SGT",
 	"RSUB",
+	"STO_NC",
 };
 static_assert(lengthof(_dsg_op_special_names) == DSGA_OP_SPECIAL_END - DSGA_OP_TERNARY);
 
@@ -771,6 +773,10 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 					case DSGA_TYPE_EQ:  p += seprintf(p, lastof(this->buffer), ", eq: %X", adjust.add_val); break;
 					case DSGA_TYPE_NEQ: p += seprintf(p, lastof(this->buffer), ", neq: %X", adjust.add_val); break;
 					case DSGA_TYPE_NONE: break;
+				}
+				if (adjust.operation == DSGA_OP_STO_NC) {
+					p += seprintf(p, lastof(this->buffer), ", store to: %X", adjust.add_val);
+					highlight_tag = (1 << 16) | adjust.add_val;
 				}
 				p += seprintf(p, lastof(this->buffer), ", op: %X (%s)", adjust.operation, GetAdjustOperationName(adjust.operation));
 				print();
