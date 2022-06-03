@@ -6293,7 +6293,16 @@ static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSprite
 				} else if (sg->type == SGT_DETERMINISTIC) {
 					const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(sg);
 					VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sub, true);
-					if (sub->calculated_result) {
+					auto procedure_dse_ok = [&]() -> bool {
+						if (sub->calculated_result) return true;
+
+						if (sub->default_group != nullptr && sub->default_group->type != SGT_CALLBACK) return false;
+						for (const auto &range : sub->ranges) {
+							if (range.group != nullptr && range.group->type != SGT_CALLBACK) return false;
+						}
+						return true;
+					};
+					if (procedure_dse_ok()) {
 						std::bitset<256> new_out = bits | var_tracking->out;
 						if (new_out != var_tracking->out) {
 							var_tracking->out = new_out;
