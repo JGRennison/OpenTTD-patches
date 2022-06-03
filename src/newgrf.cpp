@@ -5920,6 +5920,15 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 							break;
 						} else {
 							state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+							if (group->adjusts.size() >= 2) {
+								DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+								if (prev.operation == DSGA_OP_RST && prev.type == DSGA_TYPE_NONE) {
+									prev.type = DSGA_TYPE_NEQ;
+									prev.add_val = 0;
+									group->adjusts.pop_back();
+									state.inference |= VA2AIF_SINGLE_LOAD;
+								}
+							}
 						}
 					}
 					break;
