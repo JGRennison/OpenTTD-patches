@@ -5660,6 +5660,11 @@ static bool IsExpensiveVehicleVariable(uint16 variable)
 	}
 }
 
+static bool IsFeatureUsableForDSE(GrfSpecFeature feature)
+{
+	return (feature != GSF_STATIONS);
+}
+
 static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group, DeterministicSpriteGroupAdjust &adjust)
 {
 	if (unlikely(HasChickenBit(DCBF_NO_OPTIMISE_VARACT2))) return;
@@ -5742,7 +5747,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 			if (store.inference & VA2AIF_HAVE_CONSTANT) {
 				adjust.variable = 0x1A;
 				adjust.and_mask &= (store.store_constant >> adjust.shift_num);
-			} else if (store.inference & VA2AIF_SINGLE_LOAD) {
+			} else if ((store.inference & VA2AIF_SINGLE_LOAD) && (store.var_source.variable == 0x7D || IsFeatureUsableForDSE(feature))) {
 				if (adjust.type == DSGA_TYPE_NONE) {
 					if (adjust.and_mask == 0xFFFFFFFF || ((store.inference & VA2AIF_ONE_OR_ZERO) && (adjust.and_mask & 1))) {
 						adjust.type = store.var_source.type;
@@ -6497,7 +6502,7 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 			state.GetVarTracking(group)->in |= in_bits;
 		}
 	}
-	bool check_dse = (feature != GSF_STATIONS);
+	bool check_dse = IsFeatureUsableForDSE(feature);
 	bool dse_candidate = false;
 	if (check_dse || state.seen_procedure_call) dse_candidate = CheckDeterministicSpriteGroupOutputVarBits(group, bits, check_dse, !state.seen_procedure_call);
 
