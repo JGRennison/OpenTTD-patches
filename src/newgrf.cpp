@@ -6382,7 +6382,7 @@ static void HandleVarAction2DeadStoreElimination()
 						/* Redundant store */
 						group->adjusts.erase(group->adjusts.begin() + i);
 						i--;
-						if ((i + 1 < (int)group->adjusts.size() && group->adjusts[i + 1].operation == DSGA_OP_RST) ||
+						if ((i + 1 < (int)group->adjusts.size() && group->adjusts[i + 1].operation == DSGA_OP_RST && group->adjusts[i + 1].variable != 0x7B) ||
 								(i + 1 == (int)group->adjusts.size() && group->ranges.empty() && !group->calculated_result)) {
 							/* Now the store is eliminated, the current value has no users */
 							while (i >= 0) {
