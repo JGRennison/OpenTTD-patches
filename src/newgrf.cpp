@@ -5607,9 +5607,20 @@ enum VarAction2AdjustInferenceFlags {
 };
 DECLARE_ENUM_AS_BIT_SET(VarAction2AdjustInferenceFlags)
 
+struct VarAction2TempStoreInferenceVarSource {
+	DeterministicSpriteGroupAdjustType type;
+	uint16 variable;
+	byte shift_num;
+	uint32 parameter;
+	uint32 and_mask;
+	uint32 add_val;
+	uint32 divmod_val;
+};
+
 struct VarAction2TempStoreInference {
 	VarAction2AdjustInferenceFlags inference = VA2AIF_NONE;
 	uint32 store_constant = 0;
+	VarAction2TempStoreInferenceVarSource var_source;
 };
 
 struct VarAction2OptimiseState {
@@ -5707,18 +5718,32 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 			if (store.inference & VA2AIF_HAVE_CONSTANT) {
 				adjust.variable = 0x1A;
 				adjust.and_mask &= (store.store_constant >> adjust.shift_num);
+			} else if (store.inference & VA2AIF_SINGLE_LOAD) {
+				if (adjust.type == DSGA_TYPE_NONE) {
+					if (adjust.and_mask == 0xFFFFFFFF || ((store.inference & VA2AIF_ONE_OR_ZERO) && (adjust.and_mask & 1))) {
+						adjust.type = store.var_source.type;
+						adjust.variable = store.var_source.variable;
+						adjust.shift_num = store.var_source.shift_num;
+						adjust.parameter = store.var_source.parameter;
+						adjust.and_mask = store.var_source.and_mask;
+						adjust.add_val = store.var_source.add_val;
+						adjust.divmod_val = store.var_source.divmod_val;
+					}
+				} else if (store.var_source.type == DSGA_TYPE_NONE && (adjust.shift_num + store.var_source.shift_num) < 32) {
+					adjust.variable = store.var_source.variable;
+					adjust.parameter = store.var_source.parameter;
+					adjust.and_mask &= store.var_source.and_mask >> adjust.shift_num;
+					adjust.shift_num += store.var_source.shift_num;
+				}
 			}
 		}
 	}
 
-	if ((prev_inference & VA2AIF_SINGLE_LOAD) && adjust.operation == DSGA_OP_RST && adjust.variable != 0x1A && adjust.variable != 0x7D && adjust.variable != 0x7E) {
-		/* See if this is a repeated load of a variable (not constant, temp store load or procedure call) */
+	auto get_prev_single_load = [&]() -> const DeterministicSpriteGroupAdjust* {
 		for (int i = (int)group->adjusts.size() - 2; i >= 0; i--) {
 			const DeterministicSpriteGroupAdjust &prev = group->adjusts[i];
-			if (MemCmpT<DeterministicSpriteGroupAdjust>(&prev, &adjust) == 0) {
-				group->adjusts.pop_back();
-				state.inference = prev_inference;
-				return;
+			if (prev.operation == DSGA_OP_RST) {
+				return &prev;
 			} else if (prev.operation == DSGA_OP_STO) {
 				if (prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask < 0x100) {
 					/* Temp store */
@@ -5733,6 +5758,17 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 			} else {
 				break;
 			}
+		}
+		return nullptr;
+	};
+
+	if ((prev_inference & VA2AIF_SINGLE_LOAD) && adjust.operation == DSGA_OP_RST && adjust.variable != 0x1A && adjust.variable != 0x7D && adjust.variable != 0x7E) {
+		/* See if this is a repeated load of a variable (not constant, temp store load or procedure call) */
+		const DeterministicSpriteGroupAdjust *prev_load = get_prev_single_load();
+		if (prev_load != nullptr && MemCmpT<DeterministicSpriteGroupAdjust>(prev_load, &adjust) == 0) {
+			group->adjusts.pop_back();
+			state.inference = prev_inference;
+			return;
 		}
 	}
 
@@ -5788,6 +5824,13 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 				}
 			});
 			handle_group(adjust.subroutine);
+		} else {
+			if (adjust.operation == DSGA_OP_RST) {
+				state.inference = VA2AIF_SINGLE_LOAD;
+				if (adjust.type == DSGA_TYPE_EQ || adjust.type == DSGA_TYPE_NEQ) {
+					state.inference |= VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+				}
+			}
 		}
 	} else {
 		if (adjust.and_mask == 0 && IsEvalAdjustWithZeroRemovable(adjust.operation)) {
@@ -6009,7 +6052,33 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					state.inference = prev_inference & (~VA2AIF_PREV_MASK);
 					if (adjust.variable == 0x1A && adjust.shift_num == 0) {
 						state.inference |= VA2AIF_PREV_STORE_TMP;
-						if (adjust.and_mask < 0x100) state.temp_stores[adjust.and_mask] = { prev_inference & (~VA2AIF_PREV_MASK), state.current_constant };
+						if (adjust.and_mask < 0x100) {
+							VarAction2TempStoreInference &store = state.temp_stores[adjust.and_mask];
+							store.inference = prev_inference & (~VA2AIF_PREV_MASK);
+							store.store_constant = state.current_constant;
+							if (prev_inference & VA2AIF_SINGLE_LOAD) {
+								const DeterministicSpriteGroupAdjust *prev_load = get_prev_single_load();
+								if (prev_load != nullptr) {
+									store.inference |= VA2AIF_SINGLE_LOAD;
+									store.var_source.type = prev_load->type;
+									store.var_source.variable = prev_load->variable;
+									store.var_source.shift_num = prev_load->shift_num;
+									store.var_source.parameter = prev_load->parameter;
+									store.var_source.and_mask = prev_load->and_mask;
+									store.var_source.add_val = prev_load->add_val;
+									store.var_source.divmod_val = prev_load->divmod_val;
+								}
+							}
+						} else {
+							/* Store to special register, this can change the result of future variable loads for some variables.
+							 * Assume all variables except temp storage for now.
+							 */
+							for (auto &it : state.temp_stores) {
+								if (it.second.inference & VA2AIF_SINGLE_LOAD && it.second.var_source.variable != 0x7D) {
+									it.second.inference &= ~VA2AIF_SINGLE_LOAD;
+								}
+							}
+						}
 					} else {
 						handle_unpredictable_temp_store();
 					}
