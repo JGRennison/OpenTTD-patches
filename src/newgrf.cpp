@@ -5773,6 +5773,15 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 		break;
 	}
 
+	if (adjust.operation == DSGA_OP_STOP) {
+		for (auto &it : state.temp_stores) {
+			/* Check if some other variable is marked as a copy of permanent storage */
+			if ((it.second.inference & VA2AIF_SINGLE_LOAD) && it.second.var_source.variable == 0x7C) {
+				it.second.inference &= ~VA2AIF_SINGLE_LOAD;
+			}
+		}
+	}
+
 	if ((feature >= GSF_TRAINS && feature <= GSF_AIRCRAFT) && IsExpensiveVehicleVariable(adjust.variable)) state.check_expensive_vars = true;
 
 	auto get_prev_single_load = [&]() -> const DeterministicSpriteGroupAdjust* {
@@ -6103,6 +6112,12 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					if (adjust.variable == 0x1A && adjust.shift_num == 0) {
 						state.inference |= VA2AIF_PREV_STORE_TMP;
 						if (adjust.and_mask < 0x100) {
+							for (auto &it : state.temp_stores) {
+								/* Check if some other variable is marked as a copy of the one we are overwriting */
+								if ((it.second.inference & VA2AIF_SINGLE_LOAD) && it.second.var_source.variable == 0x7D && it.second.var_source.parameter == adjust.and_mask) {
+									it.second.inference &= ~VA2AIF_SINGLE_LOAD;
+								}
+							}
 							VarAction2TempStoreInference &store = state.temp_stores[adjust.and_mask];
 							store.inference = prev_inference & (~VA2AIF_PREV_MASK);
 							store.store_constant = state.current_constant;
