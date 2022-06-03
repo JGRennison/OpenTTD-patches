@@ -900,18 +900,6 @@ bool CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_ou
 	_savegame_DBGL_data = nullptr;
 	_save_DBGC_data = false;
 
-	if (!(_screen.width < 1 || _screen.height < 1 || _screen.dst_ptr == nullptr)) {
-		SetScreenshotAuxiliaryText("Desync Log", buffer);
-		bret = this->WriteScreenshot(filename, lastof(filename), name_buffer);
-		if (bret) {
-			printf("Desync screenshot written to %s. Please add this file to any bug reports.\n\n", filename);
-		} else {
-			ret = false;
-			printf("Writing desync screenshot failed.\n\n");
-		}
-		ClearScreenshotAuxiliaryText();
-	}
-
 	return ret;
 }
 
@@ -961,18 +949,6 @@ bool CrashLog::MakeInconsistencyLog(const InconsistencyExtraInfo &info) const
 	}
 	_savegame_DBGL_data = nullptr;
 	_save_DBGC_data = false;
-
-	if (!(_screen.width < 1 || _screen.height < 1 || _screen.dst_ptr == nullptr)) {
-		SetScreenshotAuxiliaryText("Inconsistency Log", buffer);
-		bret = this->WriteScreenshot(filename, lastof(filename), name_buffer);
-		if (bret) {
-			printf("Inconsistency screenshot written to %s. Please add this file to any bug reports.\n\n", filename);
-		} else {
-			ret = false;
-			printf("Writing inconsistency screenshot failed.\n\n");
-		}
-		ClearScreenshotAuxiliaryText();
-	}
 
 	return ret;
 }
