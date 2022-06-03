@@ -5601,6 +5601,7 @@ enum VarAction2AdjustInferenceFlags {
 	VA2AIF_PREV_MASK_ADJUST      = 0x08,
 	VA2AIF_PREV_STORE_TMP        = 0x10,
 	VA2AIF_HAVE_CONSTANT         = 0x20,
+	VA2AIF_SINGLE_LOAD           = 0x40,
 
 	VA2AIF_PREV_MASK             = VA2AIF_PREV_TERNARY | VA2AIF_PREV_MASK_ADJUST | VA2AIF_PREV_STORE_TMP,
 };
@@ -5706,6 +5707,31 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 			if (store.inference & VA2AIF_HAVE_CONSTANT) {
 				adjust.variable = 0x1A;
 				adjust.and_mask &= (store.store_constant >> adjust.shift_num);
+			}
+		}
+	}
+
+	if ((prev_inference & VA2AIF_SINGLE_LOAD) && adjust.operation == DSGA_OP_RST && adjust.variable != 0x1A && adjust.variable != 0x7D && adjust.variable != 0x7E) {
+		/* See if this is a repeated load of a variable (not constant, temp store load or procedure call) */
+		for (int i = (int)group->adjusts.size() - 2; i >= 0; i--) {
+			const DeterministicSpriteGroupAdjust &prev = group->adjusts[i];
+			if (MemCmpT<DeterministicSpriteGroupAdjust>(&prev, &adjust) == 0) {
+				group->adjusts.pop_back();
+				state.inference = prev_inference;
+				return;
+			} else if (prev.operation == DSGA_OP_STO) {
+				if (prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask < 0x100) {
+					/* Temp store */
+					continue;
+				} else {
+					/* Special register store or unpredictable store, don't try to optimise following load */
+					break;
+				}
+			} else if (prev.operation == DSGA_OP_STOP) {
+				/* Permanent storage store */
+				continue;
+			} else {
+				break;
 			}
 		}
 	}
@@ -5982,7 +6008,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 						}
 					}
 					add_inferences_from_mask(adjust.and_mask);
-					state.inference |= VA2AIF_PREV_MASK_ADJUST;
+					state.inference |= VA2AIF_PREV_MASK_ADJUST | VA2AIF_SINGLE_LOAD;
 					if ((prev_inference & VA2AIF_PREV_MASK_ADJUST) && adjust.variable == 0x7B) {
 						const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
 						if (prev.variable == 0x1A) {
@@ -5992,7 +6018,6 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 							current.parameter = (UINT_MAX >> prev.shift_num) & prev.and_mask;
 							group->adjusts.pop_back();
 							group->adjusts.pop_back();
-							if (group->adjusts.empty()) current.operation = DSGA_OP_ADD;
 							group->adjusts.push_back(current);
 							break;
 						}
