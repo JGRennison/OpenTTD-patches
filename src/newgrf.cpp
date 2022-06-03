@@ -5824,12 +5824,14 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 				}
 			});
 			handle_group(adjust.subroutine);
-		} else {
+		} else if (adjust.operation == DSGA_OP_RST) {
+			state.inference = VA2AIF_SINGLE_LOAD;
+		}
+		if (adjust.type == DSGA_TYPE_EQ || adjust.type == DSGA_TYPE_NEQ) {
 			if (adjust.operation == DSGA_OP_RST) {
-				state.inference = VA2AIF_SINGLE_LOAD;
-				if (adjust.type == DSGA_TYPE_EQ || adjust.type == DSGA_TYPE_NEQ) {
-					state.inference |= VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
-				}
+				state.inference |= VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+			} else if (adjust.operation == DSGA_OP_OR || adjust.operation == DSGA_OP_XOR || adjust.operation == DSGA_OP_AND) {
+				state.inference |= (prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO));
 			}
 		}
 	} else {
