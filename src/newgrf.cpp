@@ -52,6 +52,7 @@
 #include "debug_settings.h"
 #include "core/arena_alloc.hpp"
 #include "core/y_combinator.hpp"
+#include "core/container_func.hpp"
 
 #include "table/strings.h"
 #include "table/build_industry.h"
@@ -6237,10 +6238,9 @@ static void RecursiveDisallowDSEForProcedure(const SpriteGroup *group)
 	if (group->type != SGT_DETERMINISTIC) return;
 
 	const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(group);
-	VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sub, true);
-	if (!var_tracking->out.all()) {
-		var_tracking->out.set();
-		CheckDeterministicSpriteGroupOutputVarBits(sub, var_tracking->out, false, false);
+	container_unordered_remove(_cur.dead_store_elimination_candidates, group);
+	for (const DeterministicSpriteGroupAdjust &adjust : sub->adjusts) {
+		if (adjust.variable == 0x7E) RecursiveDisallowDSEForProcedure(adjust.subroutine);
 	}
 	if (!sub->calculated_result) {
 		RecursiveDisallowDSEForProcedure(const_cast<SpriteGroup *>(sub->default_group));
