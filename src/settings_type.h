@@ -757,6 +757,7 @@ struct CompanySettings {
 /** Debug settings. */
 struct DebugSettings {
 	uint32 chicken_bits;                     ///< chicken bits
+	uint32 newgrf_optimiser_flags;           ///< NewGRF optimiser flags
 };
 
 /** Scenario editor settings. */

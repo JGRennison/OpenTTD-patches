@@ -234,6 +234,9 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 	if (_settings_game.debug.chicken_bits != 0) {
 		buffer += seprintf(buffer, last, "Chicken bits: 0x%08X\n\n", _settings_game.debug.chicken_bits);
 	}
+	if (_settings_game.debug.newgrf_optimiser_flags != 0) {
+		buffer += seprintf(buffer, last, "NewGRF optimiser flags: 0x%08X\n\n", _settings_game.debug.newgrf_optimiser_flags);
+	}
 
 	buffer += seprintf(buffer, last, "AI Configuration (local: %i) (current: %i):\n", (int)_local_company, (int)_current_company);
 	for (const Company *c : Company::Iterate()) {

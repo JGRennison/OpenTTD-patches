@@ -5536,7 +5536,7 @@ static const SpriteGroup *GetGroupFromGroupID(byte setid, byte type, uint16 grou
 	}
 
 	const SpriteGroup *result = _cur.spritegroups[groupid];
-	if (HasChickenBit(DCBF_NO_OPTIMISE_VARACT2) || HasChickenBit(DCBF_NO_OPTIMISE_VARACT2_PRUNE)) return result;
+	if (HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2) || HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_GROUP_PRUNE)) return result;
 	while (result != nullptr) {
 		if (result->type == SGT_DETERMINISTIC) {
 			const DeterministicSpriteGroup *sg = static_cast<const DeterministicSpriteGroup *>(result);
@@ -5667,7 +5667,7 @@ static bool IsFeatureUsableForDSE(GrfSpecFeature feature)
 
 static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group, DeterministicSpriteGroupAdjust &adjust)
 {
-	if (unlikely(HasChickenBit(DCBF_NO_OPTIMISE_VARACT2))) return;
+	if (unlikely(HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2))) return;
 
 	VarAction2AdjustInferenceFlags prev_inference = state.inference;
 	state.inference = VA2AIF_NONE;
@@ -6428,9 +6428,9 @@ static void OptimiseVarAction2DeterministicSpriteGroupExpensiveVars(const GrfSpe
 
 static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group)
 {
-	if (unlikely(HasChickenBit(DCBF_NO_OPTIMISE_VARACT2))) return;
+	if (unlikely(HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2))) return;
 
-	if (!HasChickenBit(DCBF_NO_OPTIMISE_VARACT2_PRUNE) && (state.inference & VA2AIF_HAVE_CONSTANT) && !group->calculated_result) {
+	if (!HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_GROUP_PRUNE) && (state.inference & VA2AIF_HAVE_CONSTANT) && !group->calculated_result) {
 		/* Result of this sprite group is always the same, discard the unused branches */
 		const SpriteGroup *target = group->default_group;
 		for (const auto &range : group->ranges) {
@@ -6443,7 +6443,7 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 		group->ranges.clear();
 	}
 
-	if (!HasChickenBit(DCBF_NO_OPTIMISE_VARACT2_PRUNE) && group->ranges.empty() && !group->calculated_result) {
+	if (!HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_GROUP_PRUNE) && group->ranges.empty() && !group->calculated_result) {
 		/* There is only one option, remove any redundant adjustments when the result will be ignored anyway */
 		while (!group->adjusts.empty()) {
 			const DeterministicSpriteGroupAdjust &prev = group->adjusts.back();
@@ -6521,8 +6521,8 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 	bool dse_candidate = false;
 	if (check_dse || state.seen_procedure_call) dse_candidate = CheckDeterministicSpriteGroupOutputVarBits(group, bits, check_dse, !state.seen_procedure_call);
 
-	if (state.check_expensive_vars && !HasChickenBit(DCBF_NO_OPTIMISE_VARACT2_EXP_VAR)) {
-		if (dse_candidate && !HasChickenBit(DCBF_NO_OPTIMISE_VARACT2_DSE)) {
+	if (state.check_expensive_vars && !HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_EXPENSIVE_VARS)) {
+		if (dse_candidate && !HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_DSE)) {
 			_cur.pending_expensive_var_checks.push_back({ feature, group });
 		} else {
 			OptimiseVarAction2DeterministicSpriteGroupExpensiveVars(feature, group);
@@ -6532,7 +6532,7 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 
 static void HandleVarAction2DeadStoreElimination()
 {
-	if (unlikely(HasChickenBit(DCBF_NO_OPTIMISE_VARACT2) || HasChickenBit(DCBF_NO_OPTIMISE_VARACT2_DSE))) return;
+	if (unlikely(HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2) || HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_DSE))) return;
 
 	for (DeterministicSpriteGroup *group : _cur.dead_store_elimination_candidates) {
 		std::bitset<256> bits;

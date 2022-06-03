@@ -20,15 +20,23 @@ enum ChickenBitFlags {
 	DCBF_DESYNC_CHECK_POST_COMMAND     = 3,
 	DCBF_DESYNC_CHECK_NO_GENERAL       = 4,
 	DCBF_DESYNC_CHECK_PERIODIC_SIGNALS = 5,
-	DCBF_NO_OPTIMISE_VARACT2           = 6,
-	DCBF_NO_OPTIMISE_VARACT2_DSE       = 7,
-	DCBF_NO_OPTIMISE_VARACT2_PRUNE     = 8,
-	DCBF_NO_OPTIMISE_VARACT2_EXP_VAR   = 9,
 };
 
 inline bool HasChickenBit(ChickenBitFlags flag)
 {
 	return HasBit(_settings_game.debug.chicken_bits, flag);
+}
+
+enum NewGRFOptimiserFlags {
+	NGOF_NO_OPT_VARACT2                = 0,
+	NGOF_NO_OPT_VARACT2_DSE            = 1,
+	NGOF_NO_OPT_VARACT2_GROUP_PRUNE    = 2,
+	NGOF_NO_OPT_VARACT2_EXPENSIVE_VARS = 3,
+};
+
+inline bool HasGrfOptimiserFlag(NewGRFOptimiserFlags flag)
+{
+	return HasBit(_settings_game.debug.newgrf_optimiser_flags, flag);
 }
 
 enum MiscDebugFlags {
