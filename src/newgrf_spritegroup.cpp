@@ -157,6 +157,8 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust &adjust, ScopeResolver
 	switch (adjust.type) {
 		case DSGA_TYPE_DIV:  value = ((S)value + (S)adjust.add_val) / (S)adjust.divmod_val; break;
 		case DSGA_TYPE_MOD:  value = ((S)value + (S)adjust.add_val) % (S)adjust.divmod_val; break;
+		case DSGA_TYPE_EQ:   value = (value == adjust.add_val) ? 1 : 0; break;
+		case DSGA_TYPE_NEQ:  value = (value != adjust.add_val) ? 1 : 0; break;
 		case DSGA_TYPE_NONE: break;
 	}
 
@@ -765,7 +767,9 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 				p += seprintf(p, lastof(this->buffer), ", shift: %X, and: %X", adjust.shift_num, adjust.and_mask);
 				switch (adjust.type) {
 					case DSGA_TYPE_DIV: p += seprintf(p, lastof(this->buffer), ", add: %X, div: %X", adjust.add_val, adjust.divmod_val); break;
-					case DSGA_TYPE_MOD:  p += seprintf(p, lastof(this->buffer), ", add: %X, mod: %X", adjust.add_val, adjust.divmod_val); break;
+					case DSGA_TYPE_MOD: p += seprintf(p, lastof(this->buffer), ", add: %X, mod: %X", adjust.add_val, adjust.divmod_val); break;
+					case DSGA_TYPE_EQ:  p += seprintf(p, lastof(this->buffer), ", eq: %X", adjust.add_val); break;
+					case DSGA_TYPE_NEQ: p += seprintf(p, lastof(this->buffer), ", neq: %X", adjust.add_val); break;
 					case DSGA_TYPE_NONE: break;
 				}
 				p += seprintf(p, lastof(this->buffer), ", op: %X (%s)", adjust.operation, GetAdjustOperationName(adjust.operation));

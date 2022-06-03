@@ -5896,6 +5896,17 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 							prev.operation = DSGA_OP_EQ;
 							group->adjusts.pop_back();
 							state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+							if (group->adjusts.size() >= 2) {
+								DeterministicSpriteGroupAdjust &eq_adjust = group->adjusts[group->adjusts.size() - 1];
+								DeterministicSpriteGroupAdjust &prev_op = group->adjusts[group->adjusts.size() - 2];
+								if (eq_adjust.type == DSGA_TYPE_NONE && eq_adjust.variable == 0x1A &&
+										prev_op.type == DSGA_TYPE_NONE && prev_op.operation == DSGA_OP_RST) {
+									prev_op.type = DSGA_TYPE_EQ;
+									prev_op.add_val = (0xFFFFFFFF >> eq_adjust.shift_num) & eq_adjust.and_mask;
+									group->adjusts.pop_back();
+									state.inference |= VA2AIF_SINGLE_LOAD;
+								}
+							}
 							break;
 						}
 						if (prev_inference & VA2AIF_ONE_OR_ZERO) {
@@ -5929,6 +5940,12 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 							prev.add_val = 1;
 							group->adjusts.pop_back();
 							state.inference = VA2AIF_PREV_TERNARY;
+							break;
+						}
+						if (prev.operation == DSGA_OP_RST && (prev.type == DSGA_TYPE_EQ || prev.type == DSGA_TYPE_NEQ)) {
+							prev.type = (prev.type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
+							group->adjusts.pop_back();
+							state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO | VA2AIF_SINGLE_LOAD;
 							break;
 						}
 					}

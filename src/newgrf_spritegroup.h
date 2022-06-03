@@ -146,6 +146,9 @@ enum DeterministicSpriteGroupAdjustType {
 	DSGA_TYPE_NONE,
 	DSGA_TYPE_DIV,
 	DSGA_TYPE_MOD,
+
+	DSGA_TYPE_EQ,
+	DSGA_TYPE_NEQ,
 };
 
 enum DeterministicSpriteGroupAdjustOperation {
