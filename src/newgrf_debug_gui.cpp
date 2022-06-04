@@ -322,6 +322,7 @@ struct NewGRFInspectWindow : Window {
 	const SpriteGroup *selected_sprite_group = nullptr;
 	btree::btree_map<int, uint32> highlight_tag_lines;
 	uint32 selected_highlight_tag = 0;
+	btree::btree_set<const SpriteGroup *> collapsed_groups;
 
 	/**
 	 * Check whether the given variable has a parameter.
@@ -527,8 +528,31 @@ struct NewGRFInspectWindow : Window {
 		};
 		const_cast<NewGRFInspectWindow *>(this)->sprite_group_lines.clear();
 		if (this->sprite_dump) {
-			nih->SpriteDump(index, [&](const SpriteGroup *group, uint32 highlight_tag, const char *buf) {
-				if (this->log_console) DEBUG(misc, 0, "  %s", buf);
+			bool collapsed = false;
+			const SpriteGroup *collapse_group = nullptr;
+			uint collapse_lines = 0;
+			char tmp_buf[256];
+			nih->SpriteDump(index, [&](const SpriteGroup *group, DumpSpriteGroupPrintOp operation, uint32 highlight_tag, const char *buf) {
+				if (this->log_console && operation == DSGPO_PRINT) DEBUG(misc, 0, "  %s", buf);
+
+				if (operation == DSGPO_START && !collapsed && this->collapsed_groups.count(group)) {
+					collapsed = true;
+					collapse_group = group;
+					collapse_lines = 0;
+				}
+				if (operation == DSGPO_END && collapsed && collapse_group == group) {
+					seprintf(tmp_buf, lastof(tmp_buf), "%*sCOLLAPSED: %u lines omitted", highlight_tag + 2, "", collapse_lines);
+					buf = tmp_buf;
+					collapsed = false;
+					highlight_tag = 0;
+					operation = DSGPO_PRINT;
+				}
+
+				if (operation != DSGPO_PRINT) return;
+				if (collapsed) {
+					collapse_lines++;
+					return;
+				}
 
 				int offset = i++;
 				int scroll_offset = offset - this->vscroll->GetPosition();
@@ -742,6 +766,20 @@ struct NewGRFInspectWindow : Window {
 							this->selected_highlight_tag = (highlight_tag == this->selected_highlight_tag) ? 0 : highlight_tag;
 							this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
 						}
+					} else if (_shift_pressed) {
+						const SpriteGroup *group = nullptr;
+						auto iter = this->sprite_group_lines.find(line);
+						if (iter != this->sprite_group_lines.end()) group = iter->second;
+						if (group != nullptr) {
+							auto iter = this->collapsed_groups.lower_bound(group);
+							if (iter != this->collapsed_groups.end() && *iter == group) {
+								this->collapsed_groups.erase(iter);
+							} else {
+								this->collapsed_groups.insert(iter, group);
+							}
+							this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
+						}
+
 					} else {
 						const SpriteGroup *group = nullptr;
 						auto iter = this->sprite_group_lines.find(line);

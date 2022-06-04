@@ -17,6 +17,7 @@
 #include "string_func.h"
 #include "newgrf_extension.h"
 #include "newgrf_industrytiles_analysis.h"
+#include "scope.h"
 
 #include "safeguards.h"
 
@@ -688,7 +689,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 {
 	uint32 highlight_tag = 0;
 	auto print = [&]() {
-		this->print_fn(sg, highlight_tag, this->buffer);
+		this->print_fn(sg, DSGPO_PRINT, highlight_tag, this->buffer);
 		highlight_tag = 0;
 	};
 
@@ -698,12 +699,24 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 		return;
 	}
 
+	bool start_emitted = false;
+	auto emit_start = [&]() {
+		this->print_fn(sg, DSGPO_START, 0, nullptr);
+		start_emitted = true;
+	};
+	auto guard = scope_guard([&]() {
+		if (start_emitted) {
+			this->print_fn(sg, DSGPO_END, padding, nullptr);
+		}
+	});
+
 	switch (sg->type) {
 		case SGT_REAL: {
 			const RealSpriteGroup *rsg = (const RealSpriteGroup*)sg;
 			seprintf(this->buffer, lastof(this->buffer), "%*sReal (loaded: %u, loading: %u) [%u]",
 					padding, "", (uint)rsg->loaded.size(), (uint)rsg->loading.size(), sg->nfo_line);
 			print();
+			emit_start();
 			for (size_t i = 0; i < rsg->loaded.size(); i++) {
 				seprintf(this->buffer, lastof(this->buffer), "%*sLoaded %u", padding + 2, "", (uint)i);
 				print();
@@ -737,6 +750,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 			seprintf(this->buffer, lastof(this->buffer), "%*sDeterministic (%s, %s), [%u]",
 					padding, "", _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], dsg->nfo_line);
 			print();
+			emit_start();
 			padding += 2;
 			for (const auto &adjust : dsg->adjusts) {
 				char *p = this->buffer;
@@ -807,6 +821,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 					padding, "", _sg_scope_names[rsg->var_scope], rsg->cmp_mode == RSG_CMP_ANY ? "ANY" : "ALL",
 					rsg->triggers, rsg->count, rsg->lowest_randbit, (uint)rsg->groups.size(), rsg->nfo_line);
 			print();
+			emit_start();
 			for (const auto &group : rsg->groups) {
 				this->DumpSpriteGroup(group, padding + 2, 0);
 			}
@@ -825,6 +840,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 			const TileLayoutSpriteGroup *tlsg = (const TileLayoutSpriteGroup*)sg;
 			seprintf(this->buffer, lastof(this->buffer), "%*sTile Layout [%u]", padding, "", sg->nfo_line);
 			print();
+			emit_start();
 			padding += 2;
 			if (tlsg->dts.registers != nullptr) {
 				const TileLayoutRegisters *registers = tlsg->dts.registers;
@@ -866,6 +882,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 			const IndustryProductionSpriteGroup *ipsg = (const IndustryProductionSpriteGroup*)sg;
 			seprintf(this->buffer, lastof(this->buffer), "%*sIndustry Production (version %X) [%u]", padding, "", ipsg->version, ipsg->nfo_line);
 			print();
+			emit_start();
 			auto log_io = [&](const char *prefix, int i, int quantity, CargoID cargo) {
 				if (ipsg->version >= 1) highlight_tag = (1 << 16) | quantity;
 				if (ipsg->version >= 2) {

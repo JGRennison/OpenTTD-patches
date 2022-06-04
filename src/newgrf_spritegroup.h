@@ -579,7 +579,13 @@ struct ResolverObject {
 	virtual uint32 GetDebugID() const { return 0; }
 };
 
-using DumpSpriteGroupPrinter = std::function<void(const SpriteGroup *, uint32, const char *)>;
+enum DumpSpriteGroupPrintOp {
+	DSGPO_PRINT,
+	DSGPO_START,
+	DSGPO_END,
+};
+
+using DumpSpriteGroupPrinter = std::function<void(const SpriteGroup *, DumpSpriteGroupPrintOp, uint32, const char *)>;
 
 void DumpSpriteGroup(const SpriteGroup *sg, DumpSpriteGroupPrinter print);
 uint32 EvaluateDeterministicSpriteGroupAdjust(DeterministicSpriteGroupSize size, const DeterministicSpriteGroupAdjust &adjust, ScopeResolver *scope, uint32 last_value, uint32 value);
