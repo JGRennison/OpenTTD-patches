@@ -158,6 +158,10 @@ byte NetworkSpectatorCount()
 	return count;
 }
 
+uint NetworkClientCount() {
+	return (uint)NetworkClientInfo::GetNumItems();
+}
+
 /**
  * Change the company password of a given company.
  * @param company_id ID of the company the password should be changed for.
