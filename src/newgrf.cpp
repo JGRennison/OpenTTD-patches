@@ -79,6 +79,8 @@ const std::vector<GRFFile *> &GetAllGRFFiles()
 	return _grf_files;
 }
 
+static btree::btree_map<uint16, const CallbackResultSpriteGroup *> _callback_result_cache;
+
 /** Miscellaneous GRF features, set by Action 0x0D, parameter 0x9E */
 byte _misc_grf_features = 0;
 
@@ -5522,13 +5524,24 @@ static void SkipAct1(ByteReader *buf)
 	grfmsg(3, "SkipAct1: Skipping %d sprites", _cur.skip_sprites);
 }
 
+static const CallbackResultSpriteGroup *NewCallbackResultSpriteGroup(uint16 groupid)
+{
+	uint16 result = CallbackResultSpriteGroup::TransformResultValue(groupid, _cur.grffile->grf_version >= 8);
+
+	const CallbackResultSpriteGroup *&ptr = _callback_result_cache[result];
+	if (ptr == nullptr) {
+		assert(CallbackResultSpriteGroup::CanAllocateItem());
+		ptr = new CallbackResultSpriteGroup(result);
+	}
+	return ptr;
+}
+
 /* Helper function to either create a callback or link to a previously
  * defined spritegroup. */
 static const SpriteGroup *GetGroupFromGroupID(byte setid, byte type, uint16 groupid)
 {
 	if (HasBit(groupid, 15)) {
-		assert(CallbackResultSpriteGroup::CanAllocateItem());
-		return new CallbackResultSpriteGroup(groupid, _cur.grffile->grf_version >= 8);
+		return NewCallbackResultSpriteGroup(groupid);
 	}
 
 	if (groupid > MAX_SPRITEGROUP || _cur.spritegroups[groupid] == nullptr) {
@@ -5576,8 +5589,7 @@ static const SpriteGroup *GetGroupByID(uint16 groupid)
 static const SpriteGroup *CreateGroupFromGroupID(byte feature, byte setid, byte type, uint16 spriteid)
 {
 	if (HasBit(spriteid, 15)) {
-		assert(CallbackResultSpriteGroup::CanAllocateItem());
-		return new CallbackResultSpriteGroup(spriteid, _cur.grffile->grf_version >= 8);
+		return NewCallbackResultSpriteGroup(spriteid);
 	}
 
 	if (!_cur.IsValidSpriteSet(feature, spriteid)) {
@@ -11195,6 +11207,7 @@ void ResetNewGRFData()
 
 	InitializeSoundPool();
 	_spritegroup_pool.CleanPool();
+	_callback_result_cache.clear();
 }
 
 /**
@@ -12443,6 +12456,7 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 	for (GRFFile * const file : _grf_files) {
 		file->string_map.clear();
 	}
+	_callback_result_cache.clear();
 
 	/* Call any functions that should be run after GRFs have been loaded. */
 	AfterLoadGRFs();
