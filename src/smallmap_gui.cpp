@@ -179,9 +179,10 @@ static void NotifyAllViewports(ViewportMapType map_type)
 
 void UpdateSmallMapSelectedIndustries()
 {
-	extern std::bitset<NUM_INDUSTRYTYPES> _displayed_industries;
+	extern const std::bitset<NUM_INDUSTRYTYPES> &GetIndustryLinkDisplayIndustries();
+	const std::bitset<NUM_INDUSTRYTYPES> &displayed_industries = GetIndustryLinkDisplayIndustries();
 	for (int i = 0; i != _smallmap_industry_count; i++) {
-		_legend_from_industries[i].show_on_map = _displayed_industries.test(_legend_from_industries[i].type);
+		_legend_from_industries[i].show_on_map = displayed_industries.test(_legend_from_industries[i].type);
 	}
 
 	NotifyAllViewports(VPMT_INDUSTRY);

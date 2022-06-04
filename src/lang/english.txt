@@ -3803,6 +3803,7 @@ STR_INDUSTRY_CARGOES_SELECT_CARGO                               :{BLACK}Select c
 STR_INDUSTRY_CARGOES_SELECT_CARGO_TOOLTIP                       :{BLACK}Select the cargo you want to display
 STR_INDUSTRY_CARGOES_SELECT_INDUSTRY                            :{BLACK}Select industry
 STR_INDUSTRY_CARGOES_SELECT_INDUSTRY_TOOLTIP                    :{BLACK}Select the industry you want to display
+STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP_ALL                        :All industries
 
 # Land area window
 STR_LAND_AREA_INFORMATION_CAPTION                               :{WHITE}Land Area Information
