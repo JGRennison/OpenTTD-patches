@@ -515,8 +515,8 @@ void GfxLoadSprites()
 	VideoDriver::GetInstance()->ClearSystemSprites();
 	ClearFontCache();
 	GfxInitSpriteMem();
-	LoadSpriteTables();
 	GfxInitPalettes();
+	LoadSpriteTables();
 	GfxDetermineMainColours();
 
 	UpdateRouteStepSpriteSize();

@@ -1621,6 +1621,12 @@ STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_HELPTEXT     :When enabled, t
 STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL                    :Allow hiding waypoint viewport labels: {STRING2}
 STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL_HELPTEXT           :When enabled, waypoints can have their viewport labels individually hidden.{}This is useful when waypoints are used decoratively or when minor waypoints do not require a label.
 
+STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION                      :Disable water animation: {STRING2}
+STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_HELPTEXT             :When enabled, disables water animation when the zoom level is at or more zoomed out than the specified zoom level.{}This can be useful to avoid visual artefacts with animated water at high zoom levels with some basesets.
+STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_8X                   :8x zoom and above
+STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_16X                  :16x zoom and above
+STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_32X                  :32x zoom and above
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Enable signals on bridges/tunnels advanced modes: {STRING2}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Enables use of advanced modes of signal simulation on bridges and tunnels. When disabled, bridges/tunnels which are not already in an advanced mode cannot be changed to an advanced mode, however other players may choose to enable this setting and use an advanced mode.
 
