@@ -6462,7 +6462,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(Determinist
 		DeterministicSpriteGroupAdjust &adjust = group->adjusts[i];
 
 		if (adjust.type == DSGA_TYPE_NONE && adjust.operation == DSGA_OP_RST && adjust.variable != 0x7E) {
-			src_adjust = i;
+			src_adjust = (int)i;
 			is_constant = (adjust.variable == 0x1A);
 			continue;
 		}
