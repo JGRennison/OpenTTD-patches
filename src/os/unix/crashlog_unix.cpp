@@ -178,6 +178,7 @@ static bool ExecReadStdout(const char *file, char *const *args, char *&buffer, c
 	}
 }
 
+#if defined(WITH_DBG_GDB)
 static bool ExecReadStdoutThroughFile(const char *file, char *const *args, char *&buffer, const char *last)
 {
 	ExecReadNullHandler nulls;
@@ -238,6 +239,7 @@ static bool ExecReadStdoutThroughFile(const char *file, char *const *args, char 
 		return true;
 	}
 }
+#endif /* WITH_DBG_GDB */
 
 /**
  * Unix implementation for the crash logger.
