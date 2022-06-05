@@ -61,6 +61,9 @@ static size_t ConvertLandscape(const char *value);
 #define SDTG_VAR(name, type, flags, var, def, min, max, interval, str, strhelp, strval, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname)\
 	NSD(Int, SLEG_GENERAL_X(SL_VAR, var, type, 1, from, to, extver), name, flags, guiproc, startup, patxname, def, min, max, interval, str, strhelp, strval, cat, pre_check, post_callback, nullptr)
 
+#define SDTG_ENUM(name, type, flags, var, def, str, strhelp, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname, enumlist)\
+	NSD(Int, SLEG_GENERAL_X(SL_VAR, var, type, 1, from, to, extver), name, flags | SF_ENUM, guiproc, startup, patxname, def, 0, 0, 0, str, strhelp, STR_NULL, cat, pre_check, post_callback, enumlist)
+
 #define SDTG_BOOL(name, flags, var, def, str, strhelp, strval, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname)\
 	NSD(Bool, SLEG_GENERAL_X(SL_VAR, var, SLE_BOOL, 1, from, to, extver), name, flags, guiproc, startup, patxname, def, str, strhelp, strval, cat, pre_check, post_callback)
 
@@ -107,6 +110,9 @@ static size_t ConvertLandscape(const char *value);
 
 #define SDTC_VAR(var, type, flags, def, min, max, interval, str, strhelp, strval, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname)\
 	SDTG_VAR(#var, type, flags, _settings_client.var, def, min, max, interval, str, strhelp, strval, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname)
+
+#define SDTC_ENUM(var, type, flags, def, str, strhelp, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname, enumlist)\
+	SDTG_ENUM(#var, type, flags, _settings_client.var, def, str, strhelp, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname, enumlist)
 
 #define SDTC_BOOL(var, flags, def, str, strhelp, strval, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname)\
 	SDTG_BOOL(#var, flags, _settings_client.var, def, str, strhelp, strval, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname)
