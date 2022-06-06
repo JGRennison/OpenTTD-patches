@@ -59,6 +59,12 @@ enum AnalyseCallbackOperationMode {
 
 struct AnalyseCallbackOperationIndustryTileData;
 
+enum AnalyseCallbackOperationResultFlags {
+	ACORF_NONE                              = 0,
+	ACORF_CB_RESULT_FOUND                   = 1 << 0,
+};
+DECLARE_ENUM_AS_BIT_SET(AnalyseCallbackOperationResultFlags)
+
 struct AnalyseCallbackOperation {
 	struct FindCBResultData {
 		uint16 callback;
@@ -69,8 +75,8 @@ struct AnalyseCallbackOperation {
 	btree::btree_set<const SpriteGroup *> seen;
 	AnalyseCallbackOperationMode mode = ACOM_CB_VAR;
 	SpriteGroupCallbacksUsed callbacks_used = SGCU_NONE;
+	AnalyseCallbackOperationResultFlags result_flags = ACORF_NONE;
 	uint64 properties_used = 0;
-	bool cb_result_found = false;
 	union {
 		FindCBResultData cb_result;
 		AnalyseCallbackOperationIndustryTileData *indtile;

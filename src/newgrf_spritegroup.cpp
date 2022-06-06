@@ -311,9 +311,9 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 
 	if (op.mode == ACOM_FIND_CB_RESULT) {
 		if (this->calculated_result) {
-			op.cb_result_found = true;
+			op.result_flags |= ACORF_CB_RESULT_FOUND;
 			return;
-		} else if (!op.cb_result_found) {
+		} else if (!(op.result_flags & ACORF_CB_RESULT_FOUND)) {
 			if (check_1A_range()) return;
 			auto check_var_filter = [&](uint8 var, uint value) -> bool {
 				if (this->adjusts.size() == 1 && this->adjusts[0].variable == var && (this->adjusts[0].operation == DSGA_OP_ADD || this->adjusts[0].operation == DSGA_OP_RST)) {
@@ -349,7 +349,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 		cbr_op.mode = ACOM_FIND_CB_RESULT;
 		cbr_op.data.cb_result = data;
 		group->AnalyseCallbacks(cbr_op);
-		return cbr_op.cb_result_found;
+		return (cbr_op.result_flags & ACORF_CB_RESULT_FOUND);
 	};
 
 	if (this->adjusts.size() == 1 && !this->calculated_result && (this->adjusts[0].operation == DSGA_OP_ADD || this->adjusts[0].operation == DSGA_OP_RST)) {
@@ -546,7 +546,7 @@ bool DeterministicSpriteGroup::GroupMayBeBypassed() const
 
 void CallbackResultSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) const
 {
-	if (op.mode == ACOM_FIND_CB_RESULT) op.cb_result_found = true;
+	if (op.mode == ACOM_FIND_CB_RESULT) op.result_flags |= ACORF_CB_RESULT_FOUND;
 }
 
 const SpriteGroup *RandomizedSpriteGroup::Resolve(ResolverObject &object) const
