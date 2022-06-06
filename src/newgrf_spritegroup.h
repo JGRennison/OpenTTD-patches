@@ -151,7 +151,7 @@ enum DeterministicSpriteGroupSize : uint8 {
 	DSG_SIZE_DWORD,
 };
 
-enum DeterministicSpriteGroupAdjustType {
+enum DeterministicSpriteGroupAdjustType : uint8 {
 	DSGA_TYPE_NONE,
 	DSGA_TYPE_DIV,
 	DSGA_TYPE_MOD,
@@ -160,7 +160,7 @@ enum DeterministicSpriteGroupAdjustType {
 	DSGA_TYPE_NEQ,
 };
 
-enum DeterministicSpriteGroupAdjustOperation {
+enum DeterministicSpriteGroupAdjustOperation : uint8 {
 	DSGA_OP_ADD,  ///< a + b
 	DSGA_OP_SUB,  ///< a - b
 	DSGA_OP_SMIN, ///< (signed) min(a, b)
