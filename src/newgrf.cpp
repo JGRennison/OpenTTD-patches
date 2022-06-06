@@ -6066,26 +6066,34 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					state.inference |= prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO) & non_const_var_inference;
 					break;
 				case DSGA_OP_XOR:
-					if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1 && group->adjusts.size() >= 2) {
+					if (adjust.variable == 0x1A && adjust.shift_num == 0 && group->adjusts.size() >= 2) {
 						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
-						if (prev.operation == DSGA_OP_SLT || prev.operation == DSGA_OP_SGE || prev.operation == DSGA_OP_SLE || prev.operation == DSGA_OP_SGT) {
-							prev.operation = (DeterministicSpriteGroupAdjustOperation)(prev.operation ^ 1);
-							group->adjusts.pop_back();
-							state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
-							break;
+						if (adjust.and_mask == 1) {
+							if (prev.operation == DSGA_OP_SLT || prev.operation == DSGA_OP_SGE || prev.operation == DSGA_OP_SLE || prev.operation == DSGA_OP_SGT) {
+								prev.operation = (DeterministicSpriteGroupAdjustOperation)(prev.operation ^ 1);
+								group->adjusts.pop_back();
+								state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+								break;
+							}
+							if (prev.operation == DSGA_OP_UMIN && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == 1) {
+								prev.operation = DSGA_OP_TERNARY;
+								prev.and_mask = 0;
+								prev.add_val = 1;
+								group->adjusts.pop_back();
+								state.inference = VA2AIF_PREV_TERNARY;
+								break;
+							}
+							if (prev.operation == DSGA_OP_RST && (prev.type == DSGA_TYPE_EQ || prev.type == DSGA_TYPE_NEQ)) {
+								prev.type = (prev.type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
+								group->adjusts.pop_back();
+								state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO | VA2AIF_SINGLE_LOAD;
+								break;
+							}
 						}
-						if (prev.operation == DSGA_OP_UMIN && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == 1) {
-							prev.operation = DSGA_OP_TERNARY;
-							prev.and_mask = 0;
-							prev.add_val = 1;
+						if (prev.operation == DSGA_OP_OR && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == adjust.and_mask) {
+							prev.operation = DSGA_OP_AND;
+							prev.and_mask = ~prev.and_mask;
 							group->adjusts.pop_back();
-							state.inference = VA2AIF_PREV_TERNARY;
-							break;
-						}
-						if (prev.operation == DSGA_OP_RST && (prev.type == DSGA_TYPE_EQ || prev.type == DSGA_TYPE_NEQ)) {
-							prev.type = (prev.type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
-							group->adjusts.pop_back();
-							state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO | VA2AIF_SINGLE_LOAD;
 							break;
 						}
 					}
