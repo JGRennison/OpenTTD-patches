@@ -5681,6 +5681,19 @@ static bool IsExpensiveVehicleVariable(uint16 variable)
 	}
 }
 
+static bool IsExpensiveIndustryTileVariable(uint16 variable)
+{
+	switch (variable) {
+		case 0x60:
+		case 0x61:
+		case 0x62:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
 static bool IsFeatureUsableForDSE(GrfSpecFeature feature)
 {
 	return (feature != GSF_STATIONS);
@@ -5804,6 +5817,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 	}
 
 	if ((feature >= GSF_TRAINS && feature <= GSF_AIRCRAFT) && IsExpensiveVehicleVariable(adjust.variable)) state.check_expensive_vars = true;
+	if (feature == GSF_INDUSTRYTILES && group->var_scope == VSG_SCOPE_SELF && IsExpensiveIndustryTileVariable(adjust.variable)) state.check_expensive_vars = true;
 
 	auto get_prev_single_load = [&]() -> const DeterministicSpriteGroupAdjust* {
 		for (int i = (int)group->adjusts.size() - 2; i >= 0; i--) {
@@ -6413,6 +6427,8 @@ static bool OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(const G
 		} else if (adjust.variable == 0x7D) {
 			if (adjust.parameter < 0x100) usable_vars.set(adjust.parameter, false);
 		} else if ((feature >= GSF_TRAINS && feature <= GSF_AIRCRAFT) && IsExpensiveVehicleVariable(adjust.variable)) {
+			seen_expensive_variables[(((uint64)adjust.variable) << 32) | adjust.parameter]++;
+		} else if (feature == GSF_INDUSTRYTILES && group->var_scope == VSG_SCOPE_SELF && IsExpensiveIndustryTileVariable(adjust.variable)) {
 			seen_expensive_variables[(((uint64)adjust.variable) << 32) | adjust.parameter]++;
 		}
 		if (adjust.variable == 0x7E || (adjust.operation == DSGA_OP_STO && adjust.and_mask >= 0x100) || (adjust.operation == DSGA_OP_STO_NC && adjust.add_val >= 0x100)) {
