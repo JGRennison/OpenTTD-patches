@@ -223,6 +223,9 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 	ScopeResolver *scope = object.GetScope(this->var_scope);
 
 	for (const auto &adjust : this->adjusts) {
+		if ((adjust.adjust_flags & DSGAF_SKIP_ON_ZERO) && (last_value == 0)) continue;
+		if ((adjust.adjust_flags & DSGAF_SKIP_ON_LSB_SET) && (last_value & 1) != 0) continue;
+
 		/* Try to get the variable. We shall assume it is available, unless told otherwise. */
 		GetVariableExtra extra(adjust.and_mask << adjust.shift_num);
 		if (adjust.variable == 0x7E) {
@@ -772,8 +775,19 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 					/* Temp storage load */
 					highlight_tag = (1 << 16) | (adjust.parameter & 0xFFFF);
 				}
+
+				auto append_flags = [&]() {
+					if (adjust.adjust_flags & DSGAF_SKIP_ON_ZERO) {
+						p += seprintf(p, lastof(this->buffer), ", skip on zero");
+					}
+					if (adjust.adjust_flags & DSGAF_SKIP_ON_LSB_SET) {
+						p += seprintf(p, lastof(this->buffer), ", skip on LSB set");
+					}
+				};
+
 				if (adjust.operation == DSGA_OP_TERNARY) {
 					p += seprintf(p, lastof(this->buffer), "%*sTERNARY: true: %X, false: %X", padding, "", adjust.and_mask, adjust.add_val);
+					append_flags();
 					print();
 					continue;
 				}
@@ -808,6 +822,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 				}
 				p += seprintf(p, lastof(this->buffer), ", op: ");
 				p = GetAdjustOperationName(p, lastof(this->buffer), adjust.operation);
+				append_flags();
 				print();
 				if (adjust.variable == 0x7E && adjust.subroutine != nullptr) {
 					this->DumpSpriteGroup(adjust.subroutine, padding + 5, 0);

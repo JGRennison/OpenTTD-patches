@@ -202,6 +202,13 @@ enum DeterministicSpriteGroupAdjustOperation : uint8 {
 static_assert((DSGA_OP_SLT ^ 1) == DSGA_OP_SGE);
 static_assert((DSGA_OP_SLE ^ 1) == DSGA_OP_SGT);
 
+enum DeterministicSpriteGroupAdjustFlags : uint8 {
+	DSGAF_NONE               = 0,
+	DSGAF_SKIP_ON_ZERO       = 1 << 0,
+	DSGAF_SKIP_ON_LSB_SET    = 1 << 1,
+};
+DECLARE_ENUM_AS_BIT_SET(DeterministicSpriteGroupAdjustFlags);
+
 inline bool IsEvalAdjustWithZeroRemovable(DeterministicSpriteGroupAdjustOperation op)
 {
 	switch (op) {
@@ -333,13 +340,13 @@ struct DeterministicSpriteGroupAdjust {
 	DeterministicSpriteGroupAdjustType type;
 	uint16 variable;
 	byte shift_num;
+	DeterministicSpriteGroupAdjustFlags adjust_flags = DSGAF_NONE;
 	uint32 parameter; ///< Used for variables between 0x60 and 0x7F inclusive.
 	uint32 and_mask;
 	uint32 add_val;
 	uint32 divmod_val;
 	const SpriteGroup *subroutine;
 };
-
 
 struct DeterministicSpriteGroupRange {
 	const SpriteGroup *group;

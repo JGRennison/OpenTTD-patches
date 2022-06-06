@@ -5852,6 +5852,10 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 		}
 	}
 
+	if (adjust.variable != 0x7E && IsEvalAdjustWithZeroLastValueAlwaysZero(adjust.operation)) {
+		adjust.adjust_flags |= DSGAF_SKIP_ON_ZERO;
+	}
+
 	if ((prev_inference & VA2AIF_PREV_TERNARY) && adjust.variable == 0x1A && IsEvalAdjustUsableForConstantPropagation(adjust.operation)) {
 		/* Propagate constant operation back into previous ternary */
 		DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
@@ -5862,7 +5866,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 	} else if ((prev_inference & VA2AIF_HAVE_CONSTANT) && adjust.variable == 0x1A && IsEvalAdjustUsableForConstantPropagation(adjust.operation)) {
 		/* Reduce constant operation on previous constant */
 		replace_with_constant_load(EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, state.current_constant, UINT_MAX));
-	} else if ((prev_inference & VA2AIF_HAVE_CONSTANT) && state.current_constant == 0 && adjust.variable != 0x7E && IsEvalAdjustWithZeroLastValueAlwaysZero(adjust.operation)) {
+	} else if ((prev_inference & VA2AIF_HAVE_CONSTANT) && state.current_constant == 0 && (adjust.adjust_flags & DSGAF_SKIP_ON_ZERO)) {
 		/* Remove operation which does nothing when applied to 0 */
 		group->adjusts.pop_back();
 		state.inference = prev_inference;
@@ -5880,6 +5884,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 			}
 		}
 		current.operation = DSGA_OP_RST;
+		current.adjust_flags = DSGAF_NONE;
 		group->adjusts.push_back(current);
 		OptimiseVarAction2Adjust(state, feature, varsize, group, group->adjusts.back());
 		return;
@@ -5917,6 +5922,9 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 			} else if (adjust.operation == DSGA_OP_OR || adjust.operation == DSGA_OP_XOR || adjust.operation == DSGA_OP_AND) {
 				state.inference |= (prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO));
 			}
+			if (adjust.operation == DSGA_OP_OR && (prev_inference & VA2AIF_ONE_OR_ZERO) && adjust.variable != 0x7E) {
+				adjust.adjust_flags |= DSGAF_SKIP_ON_LSB_SET;
+			}
 		}
 	} else {
 		if (adjust.and_mask == 0 && IsEvalAdjustWithZeroRemovable(adjust.operation)) {
@@ -5936,6 +5944,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 						/* Convert: store, load var, commutative op on stored --> (dead) store, commutative op var */
 						prev.operation = adjust.operation;
 						group->adjusts.pop_back();
+						state.inference = non_const_var_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
 						OptimiseVarAction2Adjust(state, feature, varsize, group, group->adjusts.back());
 						return;
 					}
@@ -5952,6 +5961,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 								/* Convert: store, load var, subtract stored --> (dead) store, reverse subtract var */
 								prev.operation = DSGA_OP_RSUB;
 								group->adjusts.pop_back();
+								state.inference = non_const_var_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
 								OptimiseVarAction2Adjust(state, feature, varsize, group, group->adjusts.back());
 								return;
 							}
@@ -6068,6 +6078,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					}
 					if (adjust.and_mask <= 1) state.inference = prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
 					state.inference |= prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO) & non_const_var_inference;
+					if ((non_const_var_inference & VA2AIF_ONE_OR_ZERO) || (adjust.and_mask <= 1)) adjust.adjust_flags |= DSGAF_SKIP_ON_LSB_SET;
 					break;
 				case DSGA_OP_XOR:
 					if (adjust.variable == 0x1A && adjust.shift_num == 0 && group->adjusts.size() >= 2) {
@@ -6081,6 +6092,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 							}
 							if (prev.operation == DSGA_OP_UMIN && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == 1) {
 								prev.operation = DSGA_OP_TERNARY;
+								prev.adjust_flags = DSGAF_NONE;
 								prev.and_mask = 0;
 								prev.add_val = 1;
 								group->adjusts.pop_back();
@@ -6097,6 +6109,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 						if (prev.operation == DSGA_OP_OR && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == adjust.and_mask) {
 							prev.operation = DSGA_OP_AND;
 							prev.and_mask = ~prev.and_mask;
+							prev.adjust_flags = DSGAF_NONE;
 							group->adjusts.pop_back();
 							break;
 						}
@@ -6108,6 +6121,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					if ((prev_inference & VA2AIF_ONE_OR_ZERO) && adjust.variable == 0x1A && adjust.shift_num == 0 && group->adjusts.size() >= 2) {
 						/* Found a ternary operator */
 						adjust.operation = DSGA_OP_TERNARY;
+						adjust.adjust_flags = DSGAF_NONE;
 						while (group->adjusts.size() > 1) {
 							/* Merge with previous if applicable */
 							const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
@@ -6537,6 +6551,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(Determinist
 			if (ok) {
 				const DeterministicSpriteGroupAdjust &src = group->adjusts[src_adjust];
 				adjust.operation = DSGA_OP_STO_NC;
+				adjust.adjust_flags = DSGAF_NONE;
 				adjust.add_val = adjust.and_mask;
 				adjust.variable = src.variable;
 				adjust.parameter = src.parameter;
