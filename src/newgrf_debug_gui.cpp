@@ -561,7 +561,7 @@ struct NewGRFInspectWindow : Window {
 				if (group != nullptr) const_cast<NewGRFInspectWindow *>(this)->sprite_group_lines[offset] = group;
 				if (highlight_tag != 0) const_cast<NewGRFInspectWindow *>(this)->highlight_tag_lines[offset] = highlight_tag;
 
-				TextColour colour = (this->selected_sprite_group == group) ? TC_LIGHT_BLUE : TC_BLACK;
+				TextColour colour = (this->selected_sprite_group == group && group != nullptr) ? TC_LIGHT_BLUE : TC_BLACK;
 				if (highlight_tag != 0 && this->selected_highlight_tag == highlight_tag) colour = TC_YELLOW;
 				::DrawString(r.left + LEFT_OFFSET, r.right - RIGHT_OFFSET, r.top + TOP_OFFSET + (scroll_offset * this->resize.step_height), buf, colour);
 			});

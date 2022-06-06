@@ -1621,14 +1621,28 @@ void AnalyseEngineCallbacks()
 
 void DumpVehicleSpriteGroup(const Vehicle *v, DumpSpriteGroupPrinter print)
 {
+	char buffer[512];
 	const SpriteGroup *root_spritegroup = nullptr;
-	if (v->IsGroundVehicle()) root_spritegroup = GetWagonOverrideSpriteSet(v->engine_type, v->cargo_type, v->GetGroundVehicleCache()->first_engine);
+	if (v->IsGroundVehicle()) {
+		root_spritegroup = GetWagonOverrideSpriteSet(v->engine_type, v->cargo_type, v->GetGroundVehicleCache()->first_engine);
+		if (root_spritegroup != nullptr) {
+			seprintf(buffer, lastof(buffer), "Wagon Override for cargo: %u, engine type: %u", v->cargo_type, v->GetGroundVehicleCache()->first_engine);
+			print(nullptr, DSGPO_PRINT, 0, buffer);
+		}
+	}
 
 	if (root_spritegroup == nullptr) {
 		const Engine *e = Engine::Get(v->engine_type);
 		CargoID cargo = v->cargo_type;
 		assert(cargo < lengthof(e->grf_prop.spritegroup));
-		root_spritegroup = e->grf_prop.spritegroup[cargo] != nullptr ? e->grf_prop.spritegroup[cargo] : e->grf_prop.spritegroup[CT_DEFAULT];
+		if (e->grf_prop.spritegroup[cargo] != nullptr) {
+			root_spritegroup = e->grf_prop.spritegroup[cargo];
+			seprintf(buffer, lastof(buffer), "Cargo: %u", cargo);
+		} else {
+			root_spritegroup = e->grf_prop.spritegroup[CT_DEFAULT];
+			seprintf(buffer, lastof(buffer), "CT_DEFAULT");
+		}
+		print(nullptr, DSGPO_PRINT, 0, buffer);
 	}
 	DumpSpriteGroup(root_spritegroup, std::move(print));
 }
