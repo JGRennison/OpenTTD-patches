@@ -307,6 +307,27 @@ inline bool IsEvalAdjustOperationOnConstantEffectiveLoad(DeterministicSpriteGrou
 	}
 }
 
+inline bool IsEvalAdjustWithZeroLastValueAlwaysZero(DeterministicSpriteGroupAdjustOperation op)
+{
+	switch (op) {
+		case DSGA_OP_SDIV:
+		case DSGA_OP_SMOD:
+		case DSGA_OP_UDIV:
+		case DSGA_OP_UMOD:
+		case DSGA_OP_UMIN:
+		case DSGA_OP_MUL:
+		case DSGA_OP_AND:
+		case DSGA_OP_ROR:
+		case DSGA_OP_SHL:
+		case DSGA_OP_SHR:
+		case DSGA_OP_SAR:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
 struct DeterministicSpriteGroupAdjust {
 	DeterministicSpriteGroupAdjustOperation operation;
 	DeterministicSpriteGroupAdjustType type;

@@ -5862,6 +5862,10 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 	} else if ((prev_inference & VA2AIF_HAVE_CONSTANT) && adjust.variable == 0x1A && IsEvalAdjustUsableForConstantPropagation(adjust.operation)) {
 		/* Reduce constant operation on previous constant */
 		replace_with_constant_load(EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, state.current_constant, UINT_MAX));
+	} else if ((prev_inference & VA2AIF_HAVE_CONSTANT) && state.current_constant == 0 && adjust.variable != 0x7E && IsEvalAdjustWithZeroLastValueAlwaysZero(adjust.operation)) {
+		/* Remove operation which does nothing when applied to 0 */
+		group->adjusts.pop_back();
+		state.inference = prev_inference;
 	} else if ((prev_inference & VA2AIF_HAVE_CONSTANT) && IsEvalAdjustOperationOnConstantEffectiveLoad(adjust.operation, state.current_constant)) {
 		/* Convert operation to a load */
 		DeterministicSpriteGroupAdjust current = group->adjusts.back();
