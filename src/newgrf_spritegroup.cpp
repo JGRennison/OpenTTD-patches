@@ -66,6 +66,7 @@ static inline uint32 GetVariable(const ResolverObject &object, ScopeResolver *sc
 		case 0x0C: return object.callback;
 		case 0x10: return object.callback_param1;
 		case 0x18: return object.callback_param2;
+		case 0x1A: return UINT_MAX;
 		case 0x1C: return object.last_value;
 
 		case 0x5F: return (scope->GetRandomBits() << 8) | scope->GetTriggers();
