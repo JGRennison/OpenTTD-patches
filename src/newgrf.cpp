@@ -6058,6 +6058,10 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					state.inference |= non_const_var_inference;
 					break;
 				case DSGA_OP_OR:
+					if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1 && (prev_inference & VA2AIF_ONE_OR_ZERO)) {
+						replace_with_constant_load(1);
+						break;
+					}
 					if (adjust.and_mask <= 1) state.inference = prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
 					state.inference |= prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO) & non_const_var_inference;
 					break;
