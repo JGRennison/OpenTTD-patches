@@ -55,6 +55,7 @@ enum AnalyseCallbackOperationMode {
 	ACOM_FIND_CB_RESULT,
 	ACOM_CB36_SPEED,
 	ACOM_INDUSTRY_TILE,
+	ACOM_CB_REFIT_CAPACITY,
 };
 
 struct AnalyseCallbackOperationIndustryTileData;
@@ -62,6 +63,8 @@ struct AnalyseCallbackOperationIndustryTileData;
 enum AnalyseCallbackOperationResultFlags {
 	ACORF_NONE                              = 0,
 	ACORF_CB_RESULT_FOUND                   = 1 << 0,
+	ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND  = 1 << 1,
+	ACORF_CB_REFIT_CAP_SEEN_VAR_47          = 1 << 2,
 };
 DECLARE_ENUM_AS_BIT_SET(AnalyseCallbackOperationResultFlags)
 

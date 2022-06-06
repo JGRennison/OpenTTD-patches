@@ -343,6 +343,10 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 
 	if (check_1A_range()) return;
 
+	if ((op.mode == ACOM_CB_VAR || op.mode == ACOM_CB_REFIT_CAPACITY) && this->var_scope != VSG_SCOPE_SELF) {
+		op.result_flags |= ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND;
+	}
+
 	auto find_cb_result = [&](const SpriteGroup *group, AnalyseCallbackOperation::FindCBResultData data) -> bool {
 		if (group == nullptr) return false;
 		AnalyseCallbackOperation cbr_op;
@@ -356,6 +360,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 		const auto &adjust = this->adjusts[0];
 		if (op.mode == ACOM_CB_VAR && adjust.variable == 0xC) {
 			if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
+				bool found_refit_cap = false;
 				for (const auto &range : this->ranges) {
 					if (range.low == range.high) {
 						switch (range.low) {
@@ -380,12 +385,30 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 									op.callbacks_used |= cb36_op.callbacks_used;
 								}
 								break;
+
+							case CBID_VEHICLE_REFIT_CAPACITY:
+								found_refit_cap = true;
+								if (range.group != nullptr) {
+									AnalyseCallbackOperation cb_refit_op;
+									cb_refit_op.mode = ACOM_CB_REFIT_CAPACITY;
+									range.group->AnalyseCallbacks(cb_refit_op);
+									op.result_flags |= (cb_refit_op.result_flags & (ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND | ACORF_CB_REFIT_CAP_SEEN_VAR_47));
+								}
+								break;
 						}
 					} else {
 						if (range.group != nullptr) range.group->AnalyseCallbacks(op);
 					}
 				}
-				if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
+				if (this->default_group != nullptr) {
+					AnalyseCallbackOperationResultFlags prev_result = op.result_flags;
+					this->default_group->AnalyseCallbacks(op);
+					if (found_refit_cap) {
+						const AnalyseCallbackOperationResultFlags save_mask = ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND | ACORF_CB_REFIT_CAP_SEEN_VAR_47;
+						op.result_flags &= ~save_mask;
+						op.result_flags |= (prev_result & save_mask);
+					}
+				}
 				return;
 			}
 		}
@@ -516,6 +539,12 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 				op.properties_used |= UINT64_MAX;
 			}
 		}
+		if ((op.mode == ACOM_CB_VAR || op.mode == ACOM_CB_REFIT_CAPACITY) && !(adjust.variable == 0xC || adjust.variable == 0x1A || adjust.variable == 0x47 || adjust.variable == 0x7D || adjust.variable == 0x7E)) {
+			op.result_flags |= ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND;
+		}
+		if ((op.mode == ACOM_CB_VAR || op.mode == ACOM_CB_REFIT_CAPACITY) && adjust.variable == 0x47) {
+			op.result_flags |= ACORF_CB_REFIT_CAP_SEEN_VAR_47;
+		}
 		if (adjust.variable == 0x7E && adjust.subroutine != nullptr) {
 			adjust.subroutine->AnalyseCallbacks(op);
 		}
@@ -571,6 +600,8 @@ const SpriteGroup *RandomizedSpriteGroup::Resolve(ResolverObject &object) const
 
 void RandomizedSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) const
 {
+	op.result_flags |= ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND;
+
 	if (op.mode == ACOM_CB_VAR) op.callbacks_used |= SGCU_RANDOM_TRIGGER;
 
 	for (const SpriteGroup *group: this->groups) {

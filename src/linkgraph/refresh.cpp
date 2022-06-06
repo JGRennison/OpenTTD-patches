@@ -111,7 +111,10 @@ bool LinkRefresher::HandleRefit(CargoID refit_cargo)
 		CargoID temp_cid = v->cargo_type;
 		byte temp_subtype = v->cargo_subtype;
 		v->cargo_type = this->cargo;
-		v->cargo_subtype = GetBestFittingSubType(v, v, this->cargo);
+		if (e->refit_capacity_values == nullptr || !(e->callbacks_used & SGCU_REFIT_CB_ALL_CARGOES) || this->cargo == e->GetDefaultCargoType() || (e->type == VEH_AIRCRAFT && IsCargoInClass(this->cargo, CC_PASSENGERS))) {
+			/* This can be omitted when the refit capacity values are already determined, and the capacity is definitely from the refit callback */
+			v->cargo_subtype = GetBestFittingSubType(v, v, this->cargo);
+		}
 
 		uint16 mail_capacity = 0;
 		uint amount = e->DetermineCapacity(v, &mail_capacity);

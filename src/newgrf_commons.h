@@ -335,11 +335,12 @@ struct GRFFileProps : GRFFilePropsBase<1> {
 
 enum SpriteGroupCallbacksUsed : uint8 {
 	SGCU_NONE                           = 0,
-	SGCU_ALL                            = 0xFF,
+	SGCU_ALL                            = 0xF,
 	SGCU_VEHICLE_32DAY_CALLBACK         = 1 << 0,
 	SGCU_VEHICLE_REFIT_COST             = 1 << 1,
 	SGCU_RANDOM_TRIGGER                 = 1 << 2,
 	SGCU_CB36_SPEED_RAILTYPE            = 1 << 3,
+	SGCU_REFIT_CB_ALL_CARGOES           = 1 << 4,
 };
 DECLARE_ENUM_AS_BIT_SET(SpriteGroupCallbacksUsed)
 

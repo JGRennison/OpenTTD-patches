@@ -1587,13 +1587,18 @@ void FillNewGRFVehicleCache(const Vehicle *v)
 void AnalyseEngineCallbacks()
 {
 	btree::btree_map<const SpriteGroup *, uint64> sg_cb36;
+	btree::btree_map<uint32, CargoTypes> cb_refit_cap_values;
 	for (Engine *e : Engine::Iterate()) {
 		sg_cb36.clear();
 		e->sprite_group_cb36_properties_used.clear();
+		e->refit_capacity_values.reset();
 
 		SpriteGroupCallbacksUsed callbacks_used = SGCU_NONE;
 		uint64 cb36_properties_used = 0;
-		auto process_sg = [&](const SpriteGroup *sg) {
+		bool refit_cap_whitelist_ok = true;
+		bool refit_cap_no_var_47 = true;
+		uint non_purchase_groups = 0;
+		auto process_sg = [&](const SpriteGroup *sg, bool is_purchase) {
 			if (sg == nullptr) return;
 
 			AnalyseCallbackOperation op;
@@ -1601,13 +1606,16 @@ void AnalyseEngineCallbacks()
 			callbacks_used |= op.callbacks_used;
 			cb36_properties_used |= op.properties_used;
 			sg_cb36[sg] = op.properties_used;
+			if ((op.result_flags & ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND) && !is_purchase) refit_cap_whitelist_ok = false;
+			if ((op.result_flags & ACORF_CB_REFIT_CAP_SEEN_VAR_47) && !is_purchase) refit_cap_no_var_47 = false;
+			if (!is_purchase) non_purchase_groups++;
 		};
 
 		for (uint i = 0; i < NUM_CARGO + 2; i++) {
-			process_sg(e->grf_prop.spritegroup[i]);
+			process_sg(e->grf_prop.spritegroup[i], i == CT_PURCHASE);
 		}
 		for (const WagonOverride &wo : e->overrides) {
-			process_sg(wo.group);
+			process_sg(wo.group, false);
 		}
 		e->callbacks_used = callbacks_used;
 		e->cb36_properties_used = cb36_properties_used;
@@ -1615,6 +1623,33 @@ void AnalyseEngineCallbacks()
 			if (iter.second != cb36_properties_used) {
 				e->sprite_group_cb36_properties_used[iter.first] = iter.second;
 			}
+		}
+
+		if (refit_cap_whitelist_ok && non_purchase_groups <= 1 && HasBit(e->info.callback_mask, CBM_VEHICLE_REFIT_CAPACITY) && e->grf_prop.spritegroup[CT_DEFAULT] != nullptr) {
+			const SpriteGroup *purchase_sg = e->grf_prop.spritegroup[CT_PURCHASE];
+			e->grf_prop.spritegroup[CT_PURCHASE] = nullptr; // Temporarily disable separate purchase sprite group
+			if (refit_cap_no_var_47) {
+				cb_refit_cap_values[GetVehicleCallback(CBID_VEHICLE_REFIT_CAPACITY, 0, 0, e->index, nullptr)] = ALL_CARGOTYPES;
+			} else {
+				const CargoID default_cb = e->info.cargo_type;
+				for (CargoID c = 0; c < NUM_CARGO; c++) {
+					e->info.cargo_type = c;
+					cb_refit_cap_values[GetVehicleCallback(CBID_VEHICLE_REFIT_CAPACITY, 0, 0, e->index, nullptr)] |= (static_cast<CargoTypes>(1) << c);
+				}
+				e->info.cargo_type = default_cb;
+			}
+			e->grf_prop.spritegroup[CT_PURCHASE] = purchase_sg;
+			bool all_ok = true;
+			uint index = 0;
+			e->refit_capacity_values.reset(MallocT<EngineRefitCapacityValue>(cb_refit_cap_values.size()));
+			for (const auto &iter : cb_refit_cap_values) {
+				if (iter.first == CALLBACK_FAILED) all_ok = false;
+				e->refit_capacity_values.get()[index] = { iter.second, iter.first };
+				index++;
+			}
+			if (all_ok) e->callbacks_used |= SGCU_REFIT_CB_ALL_CARGOES;
+
+			cb_refit_cap_values.clear();
 		}
 	}
 }

@@ -27,6 +27,11 @@ struct WagonOverride {
 typedef Pool<Engine, EngineID, 64, 64000> EnginePool;
 extern EnginePool _engine_pool;
 
+struct EngineRefitCapacityValue {
+	CargoTypes cargoes;
+	uint32 capacity;
+};
+
 struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	TinyString name;            ///< Custom name of engine.
 	Date intro_date;            ///< Date of introduction of the engine.
@@ -71,6 +76,8 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	SpriteGroupCallbacksUsed callbacks_used = SGCU_ALL;
 	uint64 cb36_properties_used = UINT64_MAX;
 	btree::btree_map<const SpriteGroup *, uint64> sprite_group_cb36_properties_used;
+
+	std::unique_ptr<EngineRefitCapacityValue, FreeDeleter> refit_capacity_values;
 
 	Engine() {}
 	Engine(VehicleType type, EngineID base);

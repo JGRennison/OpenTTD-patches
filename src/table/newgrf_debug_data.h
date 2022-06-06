@@ -373,6 +373,16 @@ class NIHVehicle : public NIHelper {
 						output.print(buffer);
 					}
 				}
+				if (e->refit_capacity_values != nullptr) {
+					const EngineRefitCapacityValue *caps = e->refit_capacity_values.get();
+					CargoTypes seen = 0;
+					while (seen != ALL_CARGOTYPES) {
+						seprintf(buffer, lastof(buffer), "    Refit capacity cache: cargoes: 0x" OTTD_PRINTFHEX64 " --> 0x%X", caps->cargoes, caps->capacity);
+						output.print(buffer);
+						seen |= caps->cargoes;
+						caps++;
+					}
+				}
 				YearMonthDay ymd;
 				ConvertDateToYMD(e->intro_date, &ymd);
 				seprintf(buffer, lastof(buffer), "    Intro: %4i-%02i-%02i, Age: %u, Base life: %u, Durations: %u %u %u (sum: %u)",
