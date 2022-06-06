@@ -614,10 +614,17 @@ StringID AddGRFString(uint32 grfid, uint16 stringid, byte langid_to_add, bool ne
  */
 StringID GetGRFStringID(uint32 grfid, StringID stringid)
 {
-	for (uint id = 0; id < _num_grf_texts; id++) {
-		if (_grf_text[id].grfid == grfid && _grf_text[id].stringid == stringid) {
-			return MakeStringID(TEXT_TAB_NEWGRF_START, id);
+	extern GRFFile *GetFileByGRFIDExpectCurrent(uint32 grfid);
+	GRFFile *grf = GetFileByGRFIDExpectCurrent(grfid);
+	if (unlikely(grf == nullptr)) {
+		for (uint id = 0; id < _num_grf_texts; id++) {
+			if (_grf_text[id].grfid == grfid && _grf_text[id].stringid == stringid) {
+				return MakeStringID(TEXT_TAB_NEWGRF_START, id);
+			}
 		}
+	} else {
+		auto iter = grf->string_map.find(stringid);
+		if (iter != grf->string_map.end()) return MakeStringID(TEXT_TAB_NEWGRF_START, iter->second);
 	}
 
 	return STR_UNDEFINED;

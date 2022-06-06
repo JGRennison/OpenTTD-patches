@@ -12461,9 +12461,6 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 
 	/* Pseudo sprite processing is finished; free temporary stuff */
 	_cur.ClearDataForNextFile();
-	for (GRFFile * const file : _grf_files) {
-		file->string_map.clear();
-	}
 	_callback_result_cache.clear();
 
 	/* Call any functions that should be run after GRFs have been loaded. */
