@@ -303,8 +303,8 @@
 #if defined(_MSC_VER) || defined(__MINGW32__)
 #   define OTTD_PRINTF64 "%I64d"
 #   define OTTD_PRINTF64U "%I64u"
-#   define OTTD_PRINTFHEX64 "%I64x"
-#   define OTTD_PRINTFHEX64PAD "%016I64x"
+#   define OTTD_PRINTFHEX64 "%I64X"
+#   define OTTD_PRINTFHEX64PAD "%016I64X"
 #   define PRINTF_SIZE "%Iu"
 #   define PRINTF_SIZEX "%IX"
 #else
@@ -318,12 +318,12 @@
 #else
 #   define OTTD_PRINTF64U "%llu"
 #endif
-#if defined(PRIx64)
-#   define OTTD_PRINTFHEX64 "%" PRIx64
-#   define OTTD_PRINTFHEX64PAD "%016" PRIx64
+#if defined(PRIX64)
+#   define OTTD_PRINTFHEX64 "%" PRIX64
+#   define OTTD_PRINTFHEX64PAD "%016" PRIX64
 #else
-#   define OTTD_PRINTFHEX64 "%llx"
-#   define OTTD_PRINTFHEX64PAD "%016llx"
+#   define OTTD_PRINTFHEX64 "%llX"
+#   define OTTD_PRINTFHEX64PAD "%016llX"
 #endif
 #   define PRINTF_SIZE "%zu"
 #   define PRINTF_SIZEX "%zX"
