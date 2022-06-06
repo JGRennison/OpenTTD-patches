@@ -6105,6 +6105,25 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 								state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO | VA2AIF_SINGLE_LOAD;
 								break;
 							}
+							if (prev.operation == DSGA_OP_OR && (prev.type == DSGA_TYPE_EQ || prev.type == DSGA_TYPE_NEQ) && group->adjusts.size() >= 3) {
+								DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
+								bool found = false;
+								if (prev2.operation == DSGA_OP_SLT || prev2.operation == DSGA_OP_SGE || prev2.operation == DSGA_OP_SLE || prev2.operation == DSGA_OP_SGT) {
+									prev2.operation = (DeterministicSpriteGroupAdjustOperation)(prev2.operation ^ 1);
+									found = true;
+								} else if (prev2.operation == DSGA_OP_RST && (prev2.type == DSGA_TYPE_EQ || prev2.type == DSGA_TYPE_NEQ) ) {
+									prev2.type = (prev2.type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
+									found = true;
+								}
+								if (found) {
+									prev.type = (prev.type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
+									prev.operation = DSGA_OP_AND;
+									prev.adjust_flags = DSGAF_SKIP_ON_ZERO;
+									group->adjusts.pop_back();
+									state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
+									break;
+								}
+							}
 						}
 						if (prev.operation == DSGA_OP_OR && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == adjust.and_mask) {
 							prev.operation = DSGA_OP_AND;
