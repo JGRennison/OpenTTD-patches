@@ -35,7 +35,7 @@ static inline uint32 GetRegister(uint i)
 }
 
 /* List of different sprite group types */
-enum SpriteGroupType {
+enum SpriteGroupType : uint8 {
 	SGT_REAL,
 	SGT_DETERMINISTIC,
 	SGT_RANDOMIZED,
@@ -49,7 +49,7 @@ struct SpriteGroup;
 typedef uint32 SpriteGroupID;
 struct ResolverObject;
 
-enum AnalyseCallbackOperationMode {
+enum AnalyseCallbackOperationMode : uint8 {
 	ACOM_CB_VAR,
 	ACOM_CB36_PROP,
 	ACOM_FIND_CB_RESULT,
@@ -60,7 +60,7 @@ enum AnalyseCallbackOperationMode {
 
 struct AnalyseCallbackOperationIndustryTileData;
 
-enum AnalyseCallbackOperationResultFlags {
+enum AnalyseCallbackOperationResultFlags : uint8 {
 	ACORF_NONE                              = 0,
 	ACORF_CB_RESULT_FOUND                   = 1 << 0,
 	ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND  = 1 << 1,
@@ -134,7 +134,7 @@ protected:
 };
 
 /* Shared by deterministic and random groups. */
-enum VarSpriteGroupScope {
+enum VarSpriteGroupScope : uint8 {
 	VSG_BEGIN,
 
 	VSG_SCOPE_SELF = VSG_BEGIN, ///< Resolved object itself
@@ -145,7 +145,7 @@ enum VarSpriteGroupScope {
 };
 DECLARE_POSTFIX_INCREMENT(VarSpriteGroupScope)
 
-enum DeterministicSpriteGroupSize {
+enum DeterministicSpriteGroupSize : uint8 {
 	DSG_SIZE_BYTE,
 	DSG_SIZE_WORD,
 	DSG_SIZE_DWORD,
