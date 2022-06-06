@@ -326,6 +326,11 @@ struct DeterministicSpriteGroupRange {
 	uint32 high;
 };
 
+enum DeterministicSpriteGroupFlags : uint8 {
+	DSGF_NONE                 = 0,
+	DSGF_NO_DSE               = 1 << 0,
+};
+DECLARE_ENUM_AS_BIT_SET(DeterministicSpriteGroupFlags)
 
 struct DeterministicSpriteGroup : SpriteGroup {
 	DeterministicSpriteGroup() : SpriteGroup(SGT_DETERMINISTIC) {}
@@ -333,6 +338,7 @@ struct DeterministicSpriteGroup : SpriteGroup {
 	VarSpriteGroupScope var_scope;
 	DeterministicSpriteGroupSize size;
 	bool calculated_result;
+	DeterministicSpriteGroupFlags dsg_flags = DSGF_NONE;
 	std::vector<DeterministicSpriteGroupAdjust> adjusts;
 	std::vector<DeterministicSpriteGroupRange> ranges; // Dynamically allocated
 
