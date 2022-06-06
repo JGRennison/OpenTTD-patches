@@ -587,6 +587,24 @@ enum DumpSpriteGroupPrintOp {
 
 using DumpSpriteGroupPrinter = std::function<void(const SpriteGroup *, DumpSpriteGroupPrintOp, uint32, const char *)>;
 
+struct SpriteGroupDumper {
+private:
+	char buffer[1024];
+	DumpSpriteGroupPrinter print_fn;
+
+	const SpriteGroup *top_default_group = nullptr;
+	btree::btree_set<const DeterministicSpriteGroup *> seen_dsgs;
+
+	enum SpriteGroupDumperFlags {
+		SGDF_DEFAULT          = 1 << 0,
+	};
+
+public:
+	SpriteGroupDumper(DumpSpriteGroupPrinter print) : print_fn(print) {}
+
+	void DumpSpriteGroup(const SpriteGroup *sg, int padding, uint flags);
+};
+
 void DumpSpriteGroup(const SpriteGroup *sg, DumpSpriteGroupPrinter print);
 uint32 EvaluateDeterministicSpriteGroupAdjust(DeterministicSpriteGroupSize size, const DeterministicSpriteGroupAdjust &adjust, ScopeResolver *scope, uint32 last_value, uint32 value);
 

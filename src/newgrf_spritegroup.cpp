@@ -609,24 +609,6 @@ const DrawTileSprites *TileLayoutSpriteGroup::ProcessRegisters(uint8 *stage) con
 	return &result;
 }
 
-struct SpriteGroupDumper {
-private:
-	char buffer[1024];
-	DumpSpriteGroupPrinter print_fn;
-
-	const SpriteGroup *top_default_group = nullptr;
-	btree::btree_set<const DeterministicSpriteGroup *> seen_dsgs;
-
-	enum SpriteGroupDumperFlags {
-		SGDF_DEFAULT          = 1 << 0,
-	};
-
-public:
-	SpriteGroupDumper(DumpSpriteGroupPrinter print) : print_fn(print) {}
-
-	void DumpSpriteGroup(const SpriteGroup *sg, int padding, uint flags);
-};
-
 static const char *_dsg_op_names[] {
 	"ADD",
 	"SUB",
