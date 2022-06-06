@@ -692,11 +692,11 @@ static const char *_sg_size_names[] {
 	"DWORD",
 };
 
-static const char *GetAdjustOperationName(DeterministicSpriteGroupAdjustOperation operation)
+static char *GetAdjustOperationName(char *str, const char *last, DeterministicSpriteGroupAdjustOperation operation)
 {
-	if (operation < DSGA_OP_END) return _dsg_op_names[operation];
-	if (operation >= DSGA_OP_TERNARY && operation < DSGA_OP_SPECIAL_END) return _dsg_op_special_names[operation - DSGA_OP_TERNARY];
-	return "???";
+	if (operation < DSGA_OP_END) return strecat(str, _dsg_op_names[operation], last);
+	if (operation >= DSGA_OP_TERNARY && operation < DSGA_OP_SPECIAL_END) return strecat(str, _dsg_op_special_names[operation - DSGA_OP_TERNARY], last);
+	return str + seprintf(str, last, "\?\?\?(0x%X)", operation);
 }
 
 void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint flags)
@@ -806,7 +806,8 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 					p += seprintf(p, lastof(this->buffer), ", store to: %X", adjust.add_val);
 					highlight_tag = (1 << 16) | adjust.add_val;
 				}
-				p += seprintf(p, lastof(this->buffer), ", op: %X (%s)", adjust.operation, GetAdjustOperationName(adjust.operation));
+				p += seprintf(p, lastof(this->buffer), ", op: ");
+				p = GetAdjustOperationName(p, lastof(this->buffer), adjust.operation);
 				print();
 				if (adjust.variable == 0x7E && adjust.subroutine != nullptr) {
 					this->DumpSpriteGroup(adjust.subroutine, padding + 5, 0);
