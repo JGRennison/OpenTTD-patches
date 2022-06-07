@@ -54,6 +54,7 @@ void SetWindowDirty(WindowClass cls, WindowNumber number);
 void SetWindowClassesDirty(WindowClass cls);
 
 void DeleteWindowById(WindowClass cls, WindowNumber number, bool force = true);
+void DeleteAllWindowsById(WindowClass cls, WindowNumber number, bool force = true);
 void DeleteWindowByClass(WindowClass cls);
 
 bool FocusWindowById(WindowClass cls, WindowNumber number);

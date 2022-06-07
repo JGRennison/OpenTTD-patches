@@ -831,6 +831,12 @@ struct NewGRFInspectWindow : Window {
 				break;
 			}
 
+			case WID_NGRFI_DUPLICATE: {
+				NewGRFInspectWindow *w = new NewGRFInspectWindow(this->window_desc, this->window_number);
+				w->SetCallerGRFID(this->caller_grfid);
+				break;
+			}
+
 			case WID_NGRFI_SPRITE_DUMP: {
 				this->sprite_dump = !this->sprite_dump;
 				this->SetWidgetLoweredState(WID_NGRFI_SPRITE_DUMP, this->sprite_dump);
@@ -887,6 +893,7 @@ static const NWidgetPart _nested_newgrf_inspect_chain_widgets[] = {
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_SPRITE_DUMP_SEL),
 			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_NGRFI_SPRITE_DUMP), SetDataTip(STR_NEWGRF_INSPECT_SPRITE_DUMP, STR_NEWGRF_INSPECT_SPRITE_DUMP_TOOLTIP),
 		EndContainer(),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NGRFI_DUPLICATE), SetDataTip(STR_NEWGRF_INSPECT_DUPLICATE, STR_NEWGRF_INSPECT_DUPLICATE_TOOLTIP),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NGRFI_LOG_CONSOLE), SetDataTip(STR_NEWGRF_INSPECT_LOG_CONSOLE, STR_NEWGRF_INSPECT_LOG_CONSOLE_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_NGRFI_REFRESH), SetDataTip(STR_NEWGRF_INSPECT_REFRESH, STR_NEWGRF_INSPECT_REFRESH_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
@@ -917,6 +924,7 @@ static const NWidgetPart _nested_newgrf_inspect_widgets[] = {
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_SPRITE_DUMP_SEL),
 			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_NGRFI_SPRITE_DUMP), SetDataTip(STR_NEWGRF_INSPECT_SPRITE_DUMP, STR_NEWGRF_INSPECT_SPRITE_DUMP_TOOLTIP),
 		EndContainer(),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NGRFI_DUPLICATE), SetDataTip(STR_NEWGRF_INSPECT_DUPLICATE, STR_NEWGRF_INSPECT_DUPLICATE_TOOLTIP),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NGRFI_LOG_CONSOLE), SetDataTip(STR_NEWGRF_INSPECT_LOG_CONSOLE, STR_NEWGRF_INSPECT_LOG_CONSOLE_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_NGRFI_REFRESH), SetDataTip(STR_NEWGRF_INSPECT_REFRESH, STR_NEWGRF_INSPECT_REFRESH_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
@@ -997,7 +1005,7 @@ void DeleteNewGRFInspectWindow(GrfSpecFeature feature, uint index)
 	if (index >= (1 << 27)) return;
 
 	WindowNumber wno = GetInspectWindowNumber(feature, index);
-	DeleteWindowById(WC_NEWGRF_INSPECT, wno);
+	DeleteAllWindowsById(WC_NEWGRF_INSPECT, wno);
 
 	/* Reinitialise the land information window to remove the "debug" sprite if needed.
 	 * Note: Since we might be called from a command here, it is important to not execute

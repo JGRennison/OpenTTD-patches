@@ -1194,6 +1194,22 @@ void DeleteWindowById(WindowClass cls, WindowNumber number, bool force)
 }
 
 /**
+ * Delete all windows of its class and window number (if open).
+ * @param cls Window class
+ * @param number Number of the window within the window class
+ * @param force force deletion; if false don't delete when stickied
+ */
+void DeleteAllWindowsById(WindowClass cls, WindowNumber number, bool force)
+{
+	/* Note: the container remains stable, even when deleting windows. */
+	for (Window *w : Window::IterateUnordered()) {
+		if (w->window_class == cls && w->window_number == number && (force || (w->flags & WF_STICKY) == 0)) {
+			delete w;
+		}
+	}
+}
+
+/**
  * Delete all windows of a given class
  * @param cls Window class of windows to delete
  */

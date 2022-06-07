@@ -4212,6 +4212,8 @@ STR_NEWGRF_INSPECT_REFRESH                                      :{BLACK}R
 STR_NEWGRF_INSPECT_REFRESH_TOOLTIP                              :{BLACK}Toggle whether to refresh the contents every frame
 STR_NEWGRF_INSPECT_LOG_CONSOLE                                  :{BLACK}L
 STR_NEWGRF_INSPECT_LOG_CONSOLE_TOOLTIP                          :{BLACK}Log text content of this window to the console
+STR_NEWGRF_INSPECT_DUPLICATE                                    :{BLACK}D
+STR_NEWGRF_INSPECT_DUPLICATE_TOOLTIP                            :{BLACK}Duplicate this window
 STR_NEWGRF_INSPECT_SPRITE_DUMP                                  :{BLACK}S
 STR_NEWGRF_INSPECT_SPRITE_DUMP_TOOLTIP                          :{BLACK}Display current sprite chain
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP                    :{BLACK}Click to highlight sprite group{}Shift+Click to collapse sprite group{}Ctrl+Click to highlight temporary storage register
