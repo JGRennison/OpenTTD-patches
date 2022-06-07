@@ -311,6 +311,8 @@ struct NewGRFInspectWindow : Window {
 	Scrollbar *vscroll;
 
 	int first_variable_line_index = 0;
+	bool redraw_panel = false;
+	bool redraw_scrollbar = false;
 
 	bool auto_refresh = false;
 	bool log_console = false;
@@ -513,7 +515,12 @@ struct NewGRFInspectWindow : Window {
 				/* Not nice and certainly a hack, but it beats duplicating
 				 * this whole function just to count the actual number of
 				 * elements. Especially because they need to be redrawn. */
+				uint position = this->vscroll->GetPosition();
 				const_cast<NewGRFInspectWindow*>(this)->vscroll->SetCount(count);
+				const_cast<NewGRFInspectWindow*>(this)->redraw_scrollbar = true;
+				if (position != this->vscroll->GetPosition()) {
+					const_cast<NewGRFInspectWindow*>(this)->redraw_panel = true;
+				}
 			}
 		});
 
@@ -880,7 +887,14 @@ struct NewGRFInspectWindow : Window {
 
 	void OnRealtimeTick(uint delta_ms) override
 	{
-		if (this->auto_refresh) this->SetDirty();
+		if (this->auto_refresh) {
+			this->SetDirty();
+		} else {
+			if (this->redraw_panel) this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
+			if (this->redraw_scrollbar) this->SetWidgetDirty(WID_NGRFI_SCROLLBAR);
+		}
+		this->redraw_panel = false;
+		this->redraw_scrollbar = false;
 	}
 };
 
