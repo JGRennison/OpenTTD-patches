@@ -5659,6 +5659,7 @@ struct VarAction2OptimiseState {
 	VarAction2GroupVariableTracking *var_tracking = nullptr;
 	bool seen_procedure_call = false;
 	bool check_expensive_vars = false;
+	bool enable_dse = false;
 
 	inline VarAction2GroupVariableTracking *GetVarTracking(DeterministicSpriteGroup *group)
 	{
@@ -5838,17 +5839,15 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 				adjust.variable = 0x1A;
 				adjust.and_mask &= (store.store_constant >> adjust.shift_num);
 			} else if ((store.inference & VA2AIF_SINGLE_LOAD) && (store.var_source.variable == 0x7D || IsVariableVeryCheap(store.var_source.variable, feature))) {
-				if (adjust.type == DSGA_TYPE_NONE) {
-					if (adjust.and_mask == 0xFFFFFFFF || ((store.inference & VA2AIF_ONE_OR_ZERO) && (adjust.and_mask & 1))) {
-						adjust.type = store.var_source.type;
-						adjust.variable = store.var_source.variable;
-						adjust.shift_num = store.var_source.shift_num;
-						adjust.parameter = store.var_source.parameter;
-						adjust.and_mask = store.var_source.and_mask;
-						adjust.add_val = store.var_source.add_val;
-						adjust.divmod_val = store.var_source.divmod_val;
-						continue;
-					}
+				if (adjust.type == DSGA_TYPE_NONE && adjust.shift_num == 0 && (adjust.and_mask == 0xFFFFFFFF || ((store.inference & VA2AIF_ONE_OR_ZERO) && (adjust.and_mask & 1)))) {
+					adjust.type = store.var_source.type;
+					adjust.variable = store.var_source.variable;
+					adjust.shift_num = store.var_source.shift_num;
+					adjust.parameter = store.var_source.parameter;
+					adjust.and_mask = store.var_source.and_mask;
+					adjust.add_val = store.var_source.add_val;
+					adjust.divmod_val = store.var_source.divmod_val;
+					continue;
 				} else if (store.var_source.type == DSGA_TYPE_NONE && (adjust.shift_num + store.var_source.shift_num) < 32) {
 					adjust.variable = store.var_source.variable;
 					adjust.parameter = store.var_source.parameter;
@@ -5856,8 +5855,14 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					adjust.shift_num += store.var_source.shift_num;
 					continue;
 				}
-			} else if (adjust.type == DSGA_TYPE_NONE) {
-				non_const_var_inference = store.inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
+			} else {
+				if (adjust.type == DSGA_TYPE_NONE) {
+					non_const_var_inference = store.inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
+				}
+				if (store.inference & VA2AIF_SINGLE_LOAD) {
+					/* Not possible to substitute this here, but it may be possible in the DSE pass */
+					state.enable_dse = true;
+				}
 			}
 		}
 		break;
@@ -6343,7 +6348,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 	}
 }
 
-static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSpriteGroup *group, std::bitset<256> bits, bool add_to_dse, bool quick_exit);
+static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSpriteGroup *group, std::bitset<256> bits, bool quick_exit);
 
 static void RecursiveDisallowDSEForProcedure(const SpriteGroup *group)
 {
@@ -6373,7 +6378,7 @@ static void RecursiveDisallowDSEForProcedure(const SpriteGroup *group)
 	}
 }
 
-static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSpriteGroup *group, std::bitset<256> bits, bool add_to_dse, bool quick_exit)
+static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSpriteGroup *group, std::bitset<256> bits, bool quick_exit)
 {
 	bool dse = false;
 	for (int i = (int)group->adjusts.size() - 1; i >= 0; i--) {
@@ -6429,7 +6434,7 @@ static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSprite
 						std::bitset<256> new_out = bits | var_tracking->out;
 						if (new_out != var_tracking->out) {
 							var_tracking->out = new_out;
-							CheckDeterministicSpriteGroupOutputVarBits(sub, new_out, false, false);
+							CheckDeterministicSpriteGroupOutputVarBits(sub, new_out, false);
 						}
 					} else {
 						RecursiveDisallowDSEForProcedure(sub);
@@ -6440,9 +6445,7 @@ static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSprite
 			handle_group(adjust.subroutine);
 		}
 	}
-	bool dse_candidate = (dse && add_to_dse);
-	if (dse_candidate) _cur.dead_store_elimination_candidates.push_back(const_cast<DeterministicSpriteGroup *>(group));
-	return dse_candidate;
+	return dse;
 }
 
 static bool OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(const GrfSpecFeature feature, DeterministicSpriteGroup *group, VarAction2GroupVariableTracking *var_tracking)
@@ -6716,9 +6719,13 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 			state.GetVarTracking(group)->in |= in_bits;
 		}
 	}
-	bool check_dse = IsFeatureUsableForDSE(feature);
-	bool dse_candidate = false;
-	if (check_dse || state.seen_procedure_call) dse_candidate = CheckDeterministicSpriteGroupOutputVarBits(group, bits, check_dse, !state.seen_procedure_call);
+	bool dse_allowed = IsFeatureUsableForDSE(feature);
+	bool dse_eligible = state.enable_dse;
+	if ((dse_allowed && !dse_eligible) || state.seen_procedure_call) {
+		dse_eligible |= CheckDeterministicSpriteGroupOutputVarBits(group, bits, !state.seen_procedure_call);
+	}
+	bool dse_candidate = (dse_allowed && dse_eligible);
+	if (dse_candidate) _cur.dead_store_elimination_candidates.push_back(group);
 
 	if (!dse_candidate) OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(group);
 
@@ -6734,26 +6741,96 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 static void HandleVarAction2DeadStoreElimination(DeterministicSpriteGroup *group)
 {
 	std::bitset<256> bits;
+	std::vector<uint> substitution_candidates;
 	VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(group, false);
 	if (var_tracking != nullptr) bits = var_tracking->out;
 
+	auto abandon_substitution_candidates = [&]() {
+		for (uint value : substitution_candidates) {
+			bits.set(value & 0xFF, true);
+		}
+		substitution_candidates.clear();
+	};
+	auto erase_adjust = [&](int index) {
+		group->adjusts.erase(group->adjusts.begin() + index);
+		for (size_t i = 0; i < substitution_candidates.size();) {
+			uint &value = substitution_candidates[i];
+			if (value >> 8 == (uint)index) {
+				/* Removed the substitution candidate target */
+				value = substitution_candidates.back();
+				substitution_candidates.pop_back();
+				continue;
+			}
+
+			if (value >> 8 > (uint)index) {
+				/* Adjust the substitution candidate target offset */
+				value -= 0x100;
+			}
+
+			i++;
+		}
+	};
+
 	for (int i = (int)group->adjusts.size() - 1; i >= 0;) {
+		bool pending_restart = false;
 		auto restart = [&]() {
+			pending_restart = false;
 			i = (int)group->adjusts.size() - 1;
 			if (var_tracking != nullptr) {
 				bits = var_tracking->out;
 			} else {
 				bits.reset();
 			}
+			substitution_candidates.clear();
 		};
 		const DeterministicSpriteGroupAdjust &adjust = group->adjusts[i];
 		if (adjust.operation == DSGA_OP_STO) {
 			if (adjust.type == DSGA_TYPE_NONE && adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask < 0x100) {
 				uint8 idx = adjust.and_mask;
 				/* Predictable store */
+
+				for (size_t j = 0; j < substitution_candidates.size(); j++) {
+					if ((substitution_candidates[j] & 0xFF) == idx) {
+						/* Found candidate */
+
+						DeterministicSpriteGroupAdjust &target = group->adjusts[substitution_candidates[j] >> 8];
+						assert(target.variable == 0x7D && target.parameter == idx);
+
+						bool substituted = false;
+						const DeterministicSpriteGroupAdjust *var_src = GetVarAction2PreviousSingleLoadAdjust(group->adjusts, i - 1);
+						if (var_src != nullptr && var_src->variable != 0x7C) {
+							/* Don't use variable 7C as we're not checking for store perms which may clobber the value here */
+
+							if (target.type == DSGA_TYPE_NONE && target.shift_num == 0 && (target.and_mask == 0xFFFFFFFF || ((var_src->type == DSGA_TYPE_EQ || var_src->type == DSGA_TYPE_NEQ) && (target.and_mask & 1)))) {
+								target.type = var_src->type;
+								target.variable = var_src->variable;
+								target.shift_num = var_src->shift_num;
+								target.parameter = var_src->parameter;
+								target.and_mask = var_src->and_mask;
+								target.add_val = var_src->add_val;
+								target.divmod_val = var_src->divmod_val;
+								substituted = true;
+							} else if (var_src->type == DSGA_TYPE_NONE && (adjust.shift_num + var_src->shift_num) < 32) {
+								target.variable = var_src->variable;
+								target.parameter = var_src->parameter;
+								target.and_mask &= var_src->and_mask >> adjust.shift_num;
+								target.shift_num += var_src->shift_num;
+								substituted = true;
+							}
+						}
+						if (!substituted) {
+							/* Not usable, mark as required so it's not eliminated */
+							bits.set(idx, true);
+						}
+						substitution_candidates[j] = substitution_candidates.back();
+						substitution_candidates.pop_back();
+						break;
+					}
+				}
+
 				if (!bits[idx]) {
 					/* Redundant store */
-					group->adjusts.erase(group->adjusts.begin() + i);
+					erase_adjust(i);
 					i--;
 					if ((i + 1 < (int)group->adjusts.size() && group->adjusts[i + 1].operation == DSGA_OP_RST && group->adjusts[i + 1].variable != 0x7B) ||
 							(i + 1 == (int)group->adjusts.size() && group->ranges.empty() && !group->calculated_result)) {
@@ -6762,7 +6839,7 @@ static void HandleVarAction2DeadStoreElimination(DeterministicSpriteGroup *group
 							const DeterministicSpriteGroupAdjust &prev = group->adjusts[i];
 							if (prev.variable != 0x7E && !IsEvalAdjustWithSideEffects(prev.operation)) {
 								/* Delete useless operation */
-								group->adjusts.erase(group->adjusts.begin() + i);
+								erase_adjust(i);
 								i--;
 							} else {
 								if (i + 1 < (int)group->adjusts.size()) {
@@ -6772,7 +6849,7 @@ static void HandleVarAction2DeadStoreElimination(DeterministicSpriteGroup *group
 											next.operation == DSGA_OP_RST && next.type == DSGA_TYPE_NONE && next.variable == 0x7D &&
 											next.parameter == prev.and_mask && next.shift_num == 0 && next.and_mask == 0xFFFFFFFF) {
 										/* Removing the dead store results in a store/load sequence, remove the load and re-check */
-										group->adjusts.erase(group->adjusts.begin() + i + 1);
+										erase_adjust(i + 1);
 										restart();
 										break;
 									}
@@ -6780,7 +6857,8 @@ static void HandleVarAction2DeadStoreElimination(DeterministicSpriteGroup *group
 										/* See if this is a repeated load of a variable (not procedure call) */
 										const DeterministicSpriteGroupAdjust *prev_load = GetVarAction2PreviousSingleLoadAdjust(group->adjusts, i);
 										if (prev_load != nullptr && MemCmpT<DeterministicSpriteGroupAdjust>(prev_load, &next) == 0) {
-											group->adjusts.erase(group->adjusts.begin() + i + 1);
+											if (next.variable == 0x7D) pending_restart = true;
+											erase_adjust(i + 1);
 											break;
 										}
 									}
@@ -6789,19 +6867,40 @@ static void HandleVarAction2DeadStoreElimination(DeterministicSpriteGroup *group
 							}
 						}
 					}
+					if (pending_restart) restart();
 					continue;
 				} else {
 					/* Non-redundant store */
 					bits.set(idx, false);
 				}
+			} else {
+				/* Unpredictable store */
+				abandon_substitution_candidates();
 			}
 		}
 		if (adjust.variable == 0x7B && adjust.parameter == 0x7D) {
 			/* Unpredictable load */
 			bits.set();
+			abandon_substitution_candidates();
 		}
 		if (adjust.variable == 0x7D && adjust.parameter < 0x100) {
-			bits.set(adjust.parameter, true);
+			if (i > 0 && !bits[adjust.parameter]) {
+				/* See if this can be made a substitution candidate */
+				bool add = true;
+				for (size_t j = 0; j < substitution_candidates.size(); j++) {
+					if ((substitution_candidates[j] & 0xFF) == adjust.parameter) {
+						/* There already is a candidate */
+						substitution_candidates[j] = substitution_candidates.back();
+						substitution_candidates.pop_back();
+						bits.set(adjust.parameter, true);
+						add = false;
+						break;
+					}
+				}
+				if (add) substitution_candidates.push_back(adjust.parameter | (i << 8));
+			} else {
+				bits.set(adjust.parameter, true);
+			}
 		}
 		if (adjust.variable == 0x7E) {
 			/* procedure call */
@@ -6819,6 +6918,7 @@ static void HandleVarAction2DeadStoreElimination(DeterministicSpriteGroup *group
 				}
 			});
 			handle_group(adjust.subroutine);
+			abandon_substitution_candidates();
 		}
 		i--;
 	}
