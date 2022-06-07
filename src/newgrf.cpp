@@ -5705,6 +5705,34 @@ static bool IsFeatureUsableForDSE(GrfSpecFeature feature)
 	return (feature != GSF_STATIONS);
 }
 
+static const DeterministicSpriteGroupAdjust *GetVarAction2PreviousSingleLoadAdjust(const std::vector<DeterministicSpriteGroupAdjust> &adjusts, int start_index)
+{
+	for (int i = start_index; i >= 0; i--) {
+		const DeterministicSpriteGroupAdjust &prev = adjusts[i];
+		if (prev.variable == 0x7E) {
+			/* Procedure call, don't use or go past this */
+			break;
+		}
+		if (prev.operation == DSGA_OP_RST) {
+			return &prev;
+		} else if (prev.operation == DSGA_OP_STO) {
+			if (prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask < 0x100) {
+				/* Temp store */
+				continue;
+			} else {
+				/* Special register store or unpredictable store, don't try to optimise following load */
+				break;
+			}
+		} else if (prev.operation == DSGA_OP_STOP) {
+			/* Permanent storage store */
+			continue;
+		} else {
+			break;
+		}
+	}
+	return nullptr;
+}
+
 static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group, DeterministicSpriteGroupAdjust &adjust)
 {
 	if (unlikely(HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2))) return;
@@ -5826,26 +5854,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 	if (feature == GSF_INDUSTRYTILES && group->var_scope == VSG_SCOPE_SELF && IsExpensiveIndustryTileVariable(adjust.variable)) state.check_expensive_vars = true;
 
 	auto get_prev_single_load = [&]() -> const DeterministicSpriteGroupAdjust* {
-		for (int i = (int)group->adjusts.size() - 2; i >= 0; i--) {
-			const DeterministicSpriteGroupAdjust &prev = group->adjusts[i];
-			if (prev.operation == DSGA_OP_RST) {
-				return &prev;
-			} else if (prev.operation == DSGA_OP_STO) {
-				if (prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask < 0x100) {
-					/* Temp store */
-					continue;
-				} else {
-					/* Special register store or unpredictable store, don't try to optimise following load */
-					break;
-				}
-			} else if (prev.operation == DSGA_OP_STOP) {
-				/* Permanent storage store */
-				continue;
-			} else {
-				break;
-			}
-		}
-		return nullptr;
+		return GetVarAction2PreviousSingleLoadAdjust(group->adjusts, (int)group->adjusts.size() - 2);
 	};
 
 	if ((prev_inference & VA2AIF_SINGLE_LOAD) && adjust.operation == DSGA_OP_RST && adjust.variable != 0x1A && adjust.variable != 0x7D && adjust.variable != 0x7E) {
@@ -6744,6 +6753,14 @@ static void HandleVarAction2DeadStoreElimination(DeterministicSpriteGroup *group
 										group->adjusts.erase(group->adjusts.begin() + i + 1);
 										restart();
 										break;
+									}
+									if (next.operation == DSGA_OP_RST) {
+										/* See if this is a repeated load of a variable (not procedure call) */
+										const DeterministicSpriteGroupAdjust *prev_load = GetVarAction2PreviousSingleLoadAdjust(group->adjusts, i);
+										if (prev_load != nullptr && MemCmpT<DeterministicSpriteGroupAdjust>(prev_load, &next) == 0) {
+											group->adjusts.erase(group->adjusts.begin() + i + 1);
+											break;
+										}
 									}
 								}
 								break;
