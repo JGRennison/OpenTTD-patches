@@ -345,8 +345,8 @@ struct DeterministicSpriteGroupAdjust {
 	DeterministicSpriteGroupAdjustFlags adjust_flags = DSGAF_NONE;
 	uint32 parameter; ///< Used for variables between 0x60 and 0x7F inclusive.
 	uint32 and_mask;
-	uint32 add_val;
-	uint32 divmod_val;
+	uint32 add_val;    ///< Also used for DSGA_TYPE_EQ/DSGA_TYPE_NEQ constants and DSGA_OP_TERNARY false value
+	uint32 divmod_val; ///< Also used for DSGA_OP_STO_NC
 	const SpriteGroup *subroutine;
 };
 

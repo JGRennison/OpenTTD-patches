@@ -6394,13 +6394,13 @@ static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSprite
 				bits.set(adjust.and_mask, false);
 			}
 		}
-		if (adjust.operation == DSGA_OP_STO_NC && adjust.add_val < 0x100) {
-			if (!bits[adjust.add_val]) {
+		if (adjust.operation == DSGA_OP_STO_NC && adjust.divmod_val < 0x100) {
+			if (!bits[adjust.divmod_val]) {
 				/* Possibly redundant store */
 				dse = true;
 				if (quick_exit) break;
 			}
-			bits.set(adjust.add_val, false);
+			bits.set(adjust.divmod_val, false);
 		}
 		if (adjust.variable == 0x7B && adjust.parameter == 0x7D) {
 			/* Unpredictable load */
@@ -6500,7 +6500,7 @@ static bool OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(const G
 		load.shift_num = 0;
 		load.parameter = target_param;
 		load.and_mask = and_mask;
-		load.add_val = bit;
+		load.divmod_val = bit;
 		group->adjusts.insert(group->adjusts.begin() + insert_pos, load);
 	};
 
@@ -6510,8 +6510,8 @@ static bool OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(const G
 		const DeterministicSpriteGroupAdjust &adjust = group->adjusts[i];
 		if (adjust.operation == DSGA_OP_STO && (adjust.type != DSGA_TYPE_NONE || adjust.variable != 0x1A || adjust.shift_num != 0)) return false;
 		if (adjust.variable == 0x7B && adjust.parameter == 0x7D) return false;
-		if (adjust.operation == DSGA_OP_STO_NC && adjust.add_val < 0x100) {
-			usable_vars.set(adjust.add_val, false);
+		if (adjust.operation == DSGA_OP_STO_NC && adjust.divmod_val < 0x100) {
+			usable_vars.set(adjust.divmod_val, false);
 		}
 		if (adjust.operation == DSGA_OP_STO && adjust.and_mask < 0x100) {
 			usable_vars.set(adjust.and_mask, false);
@@ -6522,7 +6522,7 @@ static bool OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(const G
 		} else if (feature == GSF_INDUSTRYTILES && group->var_scope == VSG_SCOPE_SELF && IsExpensiveIndustryTileVariable(adjust.variable)) {
 			seen_expensive_variables[(((uint64)adjust.variable) << 32) | adjust.parameter]++;
 		}
-		if (adjust.variable == 0x7E || (adjust.operation == DSGA_OP_STO && adjust.and_mask >= 0x100) || (adjust.operation == DSGA_OP_STO_NC && adjust.add_val >= 0x100)) {
+		if (adjust.variable == 0x7E || (adjust.operation == DSGA_OP_STO && adjust.and_mask >= 0x100) || (adjust.operation == DSGA_OP_STO_NC && adjust.divmod_val >= 0x100)) {
 			/* Can't cross this barrier, stop here */
 			if (usable_vars.none()) return false;
 			if (found_target()) {
@@ -6577,7 +6577,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(Determinist
 
 		DeterministicSpriteGroupAdjust &adjust = group->adjusts[i];
 
-		if (adjust.type == DSGA_TYPE_NONE && adjust.operation == DSGA_OP_RST && adjust.variable != 0x7E) {
+		if ((adjust.type == DSGA_TYPE_NONE || adjust.type == DSGA_TYPE_EQ || adjust.type == DSGA_TYPE_NEQ) && adjust.operation == DSGA_OP_RST && adjust.variable != 0x7E) {
 			src_adjust = (int)i;
 			is_constant = (adjust.variable == 0x1A);
 			continue;
@@ -6610,8 +6610,10 @@ static void OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(Determinist
 			if (ok) {
 				const DeterministicSpriteGroupAdjust &src = group->adjusts[src_adjust];
 				adjust.operation = DSGA_OP_STO_NC;
+				adjust.type = src.type;
 				adjust.adjust_flags = DSGAF_NONE;
-				adjust.add_val = adjust.and_mask;
+				adjust.divmod_val = adjust.and_mask;
+				adjust.add_val = src.add_val;
 				adjust.variable = src.variable;
 				adjust.parameter = src.parameter;
 				adjust.shift_num = src.shift_num;
