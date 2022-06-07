@@ -6974,8 +6974,10 @@ static void HandleVarAction2OptimisationPasses()
 				}
 			});
 			handle_group(group->default_group);
-			for (const auto &range : group->ranges) {
+			group->default_group = PruneTargetSpriteGroup(group->default_group);
+			for (auto &range : group->ranges) {
 				handle_group(range.group);
+				range.group = PruneTargetSpriteGroup(range.group);
 			}
 		}
 
