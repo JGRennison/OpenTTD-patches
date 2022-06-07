@@ -357,8 +357,10 @@ struct DeterministicSpriteGroupRange {
 };
 
 enum DeterministicSpriteGroupFlags : uint8 {
-	DSGF_NONE                 = 0,
-	DSGF_NO_DSE               = 1 << 0,
+	DSGF_NONE                    = 0,
+	DSGF_NO_DSE                  = 1 << 0,
+	DSGF_DSE_RECURSIVE_DISABLE   = 1 << 1,
+	DSGF_VAR_TRACKING_PENDING    = 1 << 2,
 };
 DECLARE_ENUM_AS_BIT_SET(DeterministicSpriteGroupFlags)
 

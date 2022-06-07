@@ -6365,8 +6365,8 @@ static void RecursiveDisallowDSEForProcedure(const SpriteGroup *group)
 	if (group->type != SGT_DETERMINISTIC) return;
 
 	const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(group);
-	if (sub->dsg_flags & DSGF_NO_DSE) return;
-	const_cast<DeterministicSpriteGroup *>(sub)->dsg_flags |= DSGF_NO_DSE;
+	if (sub->dsg_flags & DSGF_DSE_RECURSIVE_DISABLE) return;
+	const_cast<DeterministicSpriteGroup *>(sub)->dsg_flags |= (DSGF_NO_DSE | DSGF_DSE_RECURSIVE_DISABLE);
 	for (const DeterministicSpriteGroupAdjust &adjust : sub->adjusts) {
 		if (adjust.variable == 0x7E) RecursiveDisallowDSEForProcedure(adjust.subroutine);
 	}
@@ -6661,11 +6661,19 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 	}
 
 	std::bitset<256> bits;
+	std::bitset<256> pending_bits;
+	bool seen_pending = false;
 	if (!group->calculated_result) {
 		auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
 			if (sg != nullptr && sg->type == SGT_DETERMINISTIC) {
 				VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sg, false);
-				if (var_tracking != nullptr) bits |= var_tracking->in;
+				const DeterministicSpriteGroup *dsg = (const DeterministicSpriteGroup*)sg;
+				if (dsg->dsg_flags & DSGF_VAR_TRACKING_PENDING) {
+					seen_pending = true;
+					if (var_tracking != nullptr) pending_bits |= var_tracking->in;
+				} else {
+					if (var_tracking != nullptr) bits |= var_tracking->in;
+				}
 			}
 			if (sg != nullptr && sg->type == SGT_RANDOMIZED) {
 				const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
@@ -6714,25 +6722,40 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 		}
 		if (bits.any()) {
 			state.GetVarTracking(group)->out = bits;
-			std::bitset<256> in_bits = bits;
+			std::bitset<256> in_bits = bits | pending_bits;
 			for (auto &it : state.temp_stores) {
 				in_bits.set(it.first, false);
 			}
 			state.GetVarTracking(group)->in |= in_bits;
 		}
 	}
-	bool dse_allowed = IsFeatureUsableForDSE(feature);
+	bool dse_allowed = IsFeatureUsableForDSE(feature) && !HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_DSE);
 	bool dse_eligible = state.enable_dse;
-	if ((dse_allowed && !dse_eligible) || state.seen_procedure_call) {
-		dse_eligible |= CheckDeterministicSpriteGroupOutputVarBits(group, bits, !state.seen_procedure_call);
+	if (dse_allowed && !dse_eligible) {
+		dse_eligible |= CheckDeterministicSpriteGroupOutputVarBits(group, bits, true);
+	}
+	if (state.seen_procedure_call) {
+		/* Be more pessimistic with procedures as the ordering is different.
+		 * Later groups can require variables set in earlier procedures instead of the usual
+		 * where earlier groups can require variables set in later groups.
+		 * DSE on the procedure runs before the groups which use it, so set the procedure
+		 * output bits not using values from call site groups before DSE. */
+		CheckDeterministicSpriteGroupOutputVarBits(group, bits | pending_bits, false);
 	}
 	bool dse_candidate = (dse_allowed && dse_eligible);
-	if (dse_candidate) _cur.dead_store_elimination_candidates.push_back(group);
+	if (seen_pending && !dse_candidate) {
+		group->dsg_flags |= DSGF_NO_DSE;
+		dse_candidate = true;
+	}
+	if (dse_candidate) {
+		_cur.dead_store_elimination_candidates.push_back(group);
+		group->dsg_flags |= DSGF_VAR_TRACKING_PENDING;
+	}
 
 	if (!dse_candidate) OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(group);
 
 	if (state.check_expensive_vars && !HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_EXPENSIVE_VARS)) {
-		if (dse_candidate && !HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_DSE)) {
+		if (dse_candidate) {
 			_cur.pending_expensive_var_checks.push_back({ feature, group });
 		} else {
 			OptimiseVarAction2DeterministicSpriteGroupExpensiveVars(feature, group);
@@ -6740,11 +6763,10 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 	}
 }
 
-static void HandleVarAction2DeadStoreElimination(DeterministicSpriteGroup *group)
+static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSpriteGroup *group, VarAction2GroupVariableTracking *var_tracking, bool no_changes)
 {
 	std::bitset<256> bits;
 	std::vector<uint> substitution_candidates;
-	VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(group, false);
 	if (var_tracking != nullptr) bits = var_tracking->out;
 
 	auto abandon_substitution_candidates = [&]() {
@@ -6830,7 +6852,7 @@ static void HandleVarAction2DeadStoreElimination(DeterministicSpriteGroup *group
 					}
 				}
 
-				if (!bits[idx]) {
+				if (!bits[idx] && !no_changes) {
 					/* Redundant store */
 					erase_adjust(i);
 					i--;
@@ -6886,7 +6908,7 @@ static void HandleVarAction2DeadStoreElimination(DeterministicSpriteGroup *group
 			abandon_substitution_candidates();
 		}
 		if (adjust.variable == 0x7D && adjust.parameter < 0x100) {
-			if (i > 0 && !bits[adjust.parameter]) {
+			if (i > 0 && !bits[adjust.parameter] && !no_changes) {
 				/* See if this can be made a substitution candidate */
 				bool add = true;
 				for (size_t j = 0; j < substitution_candidates.size(); j++) {
@@ -6924,14 +6946,49 @@ static void HandleVarAction2DeadStoreElimination(DeterministicSpriteGroup *group
 		}
 		i--;
 	}
+	abandon_substitution_candidates();
+	return bits;
 }
 
 static void HandleVarAction2OptimisationPasses()
 {
-	if (unlikely(HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2) || HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_DSE))) return;
+	if (unlikely(HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2))) return;
 
 	for (DeterministicSpriteGroup *group : _cur.dead_store_elimination_candidates) {
-		if (!(group->dsg_flags & DSGF_NO_DSE)) HandleVarAction2DeadStoreElimination(group);
+		VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(group, false);
+		if (!group->calculated_result) {
+			/* Add bits from any groups previously marked with DSGF_VAR_TRACKING_PENDING which should now be correctly updated after DSE */
+			auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
+				if (sg != nullptr && sg->type == SGT_DETERMINISTIC) {
+					VarAction2GroupVariableTracking *targ_var_tracking = _cur.GetVarAction2GroupVariableTracking(sg, false);
+					if (targ_var_tracking != nullptr) {
+						if (var_tracking == nullptr) var_tracking = _cur.GetVarAction2GroupVariableTracking(group, true);
+						var_tracking->out |= targ_var_tracking->in;
+					}
+				}
+				if (sg != nullptr && sg->type == SGT_RANDOMIZED) {
+					const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
+					for (const auto &group : rsg->groups) {
+						handle_group(group);
+					}
+				}
+			});
+			handle_group(group->default_group);
+			for (const auto &range : group->ranges) {
+				handle_group(range.group);
+			}
+		}
+
+		/* Always run this even DSGF_NO_DSE is set because the load/store tracking is needed to re-calculate the input bits,
+		 * even if no stores are actually eliminated */
+		std::bitset<256> in_bits = HandleVarAction2DeadStoreElimination(group, var_tracking, group->dsg_flags & DSGF_NO_DSE);
+		if (var_tracking == nullptr && in_bits.any()) {
+			var_tracking = _cur.GetVarAction2GroupVariableTracking(group, true);
+			var_tracking->in = in_bits;
+		} else if (var_tracking != nullptr) {
+			var_tracking->in = in_bits;
+		}
+
 		OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(group);
 	}
 
