@@ -5700,6 +5700,18 @@ static bool IsExpensiveIndustryTileVariable(uint16 variable)
 	}
 }
 
+static bool IsVariableVeryCheap(uint16 variable, GrfSpecFeature feature)
+{
+	switch (variable) {
+		case 0x0C:
+		case 0x10:
+		case 0x18:
+		case 0x1C:
+			return true;
+	}
+	return false;
+}
+
 static bool IsFeatureUsableForDSE(GrfSpecFeature feature)
 {
 	return (feature != GSF_STATIONS);
@@ -5825,7 +5837,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 			if (store.inference & VA2AIF_HAVE_CONSTANT) {
 				adjust.variable = 0x1A;
 				adjust.and_mask &= (store.store_constant >> adjust.shift_num);
-			} else if ((store.inference & VA2AIF_SINGLE_LOAD) && (store.var_source.variable == 0x7D || IsFeatureUsableForDSE(feature))) {
+			} else if ((store.inference & VA2AIF_SINGLE_LOAD) && (store.var_source.variable == 0x7D || IsVariableVeryCheap(store.var_source.variable, feature))) {
 				if (adjust.type == DSGA_TYPE_NONE) {
 					if (adjust.and_mask == 0xFFFFFFFF || ((store.inference & VA2AIF_ONE_OR_ZERO) && (adjust.and_mask & 1))) {
 						adjust.type = store.var_source.type;
