@@ -5707,6 +5707,7 @@ static bool IsFeatureUsableForDSE(GrfSpecFeature feature)
 
 static const DeterministicSpriteGroupAdjust *GetVarAction2PreviousSingleLoadAdjust(const std::vector<DeterministicSpriteGroupAdjust> &adjusts, int start_index)
 {
+	bool passed_store_perm = false;
 	for (int i = start_index; i >= 0; i--) {
 		const DeterministicSpriteGroupAdjust &prev = adjusts[i];
 		if (prev.variable == 0x7E) {
@@ -5714,6 +5715,14 @@ static const DeterministicSpriteGroupAdjust *GetVarAction2PreviousSingleLoadAdju
 			break;
 		}
 		if (prev.operation == DSGA_OP_RST) {
+			if (prev.variable == 0x7B) {
+				/* Can't use this previous load as it depends on the last value */
+				return nullptr;
+			}
+			if (prev.variable == 0x7C && passed_store_perm) {
+				/* If we passed a store perm then a load from permanent storage is not a valid previous load as we may have clobbered it */
+				return nullptr;
+			}
 			return &prev;
 		} else if (prev.operation == DSGA_OP_STO) {
 			if (prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask < 0x100) {
@@ -5725,6 +5734,7 @@ static const DeterministicSpriteGroupAdjust *GetVarAction2PreviousSingleLoadAdju
 			}
 		} else if (prev.operation == DSGA_OP_STOP) {
 			/* Permanent storage store */
+			passed_store_perm = true;
 			continue;
 		} else {
 			break;
