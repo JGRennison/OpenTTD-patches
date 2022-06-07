@@ -22,6 +22,8 @@
 
 #include "3rdparty/cpp-btree/btree_set.h"
 
+#include <map>
+
 /**
  * Gets the value of a so-called newgrf "register".
  * @param i index of the register
@@ -360,6 +362,12 @@ enum DeterministicSpriteGroupFlags : uint8 {
 };
 DECLARE_ENUM_AS_BIT_SET(DeterministicSpriteGroupFlags)
 
+struct DeterministicSpriteGroupShadowCopy {
+	std::vector<DeterministicSpriteGroupAdjust> adjusts;
+	std::vector<DeterministicSpriteGroupRange> ranges;
+	const SpriteGroup *default_group;
+};
+
 struct DeterministicSpriteGroup : SpriteGroup {
 	DeterministicSpriteGroup() : SpriteGroup(SGT_DETERMINISTIC) {}
 
@@ -387,6 +395,10 @@ enum RandomizedSpriteGroupCompareMode {
 	RSG_CMP_ALL,
 };
 
+struct RandomizedSpriteGroupShadowCopy {
+	std::vector<const SpriteGroup *> groups;
+};
+
 struct RandomizedSpriteGroup : SpriteGroup {
 	RandomizedSpriteGroup() : SpriteGroup(SGT_RANDOMIZED) {}
 
@@ -406,6 +418,9 @@ protected:
 	const SpriteGroup *Resolve(ResolverObject &object) const override;
 };
 
+extern std::map<const DeterministicSpriteGroup *, DeterministicSpriteGroupShadowCopy> _deterministic_sg_shadows;
+extern std::map<const RandomizedSpriteGroup *, RandomizedSpriteGroupShadowCopy> _randomized_sg_shadows;
+extern bool _grfs_loaded_with_sg_shadow_enable;
 
 /* This contains a callback result. A failed callback has a value of
  * CALLBACK_FAILED */
@@ -631,6 +646,8 @@ enum DumpSpriteGroupPrintOp {
 using DumpSpriteGroupPrinter = std::function<void(const SpriteGroup *, DumpSpriteGroupPrintOp, uint32, const char *)>;
 
 struct SpriteGroupDumper {
+	static bool use_shadows;
+
 private:
 	char buffer[1024];
 	DumpSpriteGroupPrinter print_fn;

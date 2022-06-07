@@ -24,6 +24,8 @@ enum NewGRFInspectWidgets {
 	WID_NGRFI_DUPLICATE, ///< Duplicate window
 	WID_NGRFI_SPRITE_DUMP, ///< Dump current sprite group
 	WID_NGRFI_SPRITE_DUMP_SEL, ///< Selection widget for WID_NGRFI_SPRITE_DUMP
+	WID_NGRFI_SPRITE_DUMP_UNOPT, ///< Dump unoptimised sprite group
+	WID_NGRFI_SPRITE_DUMP_UNOPT_SEL, ///< Selection widget for WID_NGRFI_SPRITE_DUMP_UNOPT
 };
 
 /** Widgets of the #SpriteAlignerWindow class. */

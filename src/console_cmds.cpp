@@ -3056,6 +3056,7 @@ DEF_CONSOLE_CMD(ConMiscDebug)
 		IConsoleHelp("  2: MDF_ZONING_RS_WATER_FLOOD_STATE");
 		IConsoleHelp("  4: MDF_ZONING_RS_TROPIC_ZONE");
 		IConsoleHelp("  8: MDF_ZONING_RS_ANIMATED_TILE");
+		IConsoleHelp(" 10: MDF_NEWGRF_SG_SAVE_RAW");
 		return true;
 	}
 

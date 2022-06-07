@@ -4216,6 +4216,8 @@ STR_NEWGRF_INSPECT_DUPLICATE                                    :{BLACK}D
 STR_NEWGRF_INSPECT_DUPLICATE_TOOLTIP                            :{BLACK}Duplicate this window
 STR_NEWGRF_INSPECT_SPRITE_DUMP                                  :{BLACK}S
 STR_NEWGRF_INSPECT_SPRITE_DUMP_TOOLTIP                          :{BLACK}Display current sprite chain
+STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT                            :{BLACK}U
+STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP                    :{BLACK}Display sprite groups without any optimisations applied.{}{}Requires reloading NewGRFs if not previously enabled (misc_debug 10).
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP                    :{BLACK}Click to highlight sprite group{}Shift+Click to collapse sprite group{}Ctrl+Click to highlight temporary storage register
 
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT                            :{STRING1} at {HEX}

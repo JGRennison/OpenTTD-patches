@@ -26,6 +26,10 @@ INSTANTIATE_POOL_METHODS(SpriteGroup)
 
 TemporaryStorageArray<int32, 0x110> _temp_store;
 
+std::map<const DeterministicSpriteGroup *, DeterministicSpriteGroupShadowCopy> _deterministic_sg_shadows;
+std::map<const RandomizedSpriteGroup *, RandomizedSpriteGroupShadowCopy> _randomized_sg_shadows;
+bool _grfs_loaded_with_sg_shadow_enable = false;
+
 
 /**
  * ResolverObject (re)entry point.
@@ -702,6 +706,8 @@ static char *GetAdjustOperationName(char *str, const char *last, DeterministicSp
 	return str + seprintf(str, last, "\?\?\?(0x%X)", operation);
 }
 
+bool SpriteGroupDumper::use_shadows = false;
+
 void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint flags)
 {
 	uint32 highlight_tag = 0;
@@ -748,8 +754,22 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 		}
 		case SGT_DETERMINISTIC: {
 			const DeterministicSpriteGroup *dsg = (const DeterministicSpriteGroup*)sg;
-			if (padding == 0 && !dsg->calculated_result && dsg->default_group != nullptr) {
-				this->top_default_group = dsg->default_group;
+
+			const SpriteGroup *default_group = dsg->default_group;
+			const std::vector<DeterministicSpriteGroupAdjust> *adjusts = &(dsg->adjusts);
+			const std::vector<DeterministicSpriteGroupRange> *ranges = &(dsg->ranges);
+
+			if (SpriteGroupDumper::use_shadows) {
+				auto iter = _deterministic_sg_shadows.find(dsg);
+				if (iter != _deterministic_sg_shadows.end()) {
+					default_group = iter->second.default_group;
+					adjusts = &(iter->second.adjusts);
+					ranges = &(iter->second.ranges);
+				}
+			}
+
+			if (padding == 0 && !dsg->calculated_result && default_group != nullptr) {
+				this->top_default_group = default_group;
 			}
 			if (dsg == this->top_default_group && !(padding == 4 && (flags & SGDF_DEFAULT))) {
 				seprintf(this->buffer, lastof(this->buffer), "%*sTOP LEVEL DEFAULT GROUP: Deterministic (%s, %s), [%u]",
@@ -769,7 +789,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 			print();
 			emit_start();
 			padding += 2;
-			for (const auto &adjust : dsg->adjusts) {
+			for (const auto &adjust : (*adjusts)) {
 				char *p = this->buffer;
 				if (adjust.variable == 0x7D) {
 					/* Temp storage load */
@@ -832,27 +852,37 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 				seprintf(this->buffer, lastof(this->buffer), "%*scalculated_result", padding, "");
 				print();
 			} else {
-				for (const auto &range : dsg->ranges) {
+				for (const auto &range : (*ranges)) {
 					seprintf(this->buffer, lastof(this->buffer), "%*srange: %X -> %X", padding, "", range.low, range.high);
 					print();
 					this->DumpSpriteGroup(range.group, padding + 2, 0);
 				}
-				if (dsg->default_group != nullptr) {
+				if (default_group != nullptr) {
 					seprintf(this->buffer, lastof(this->buffer), "%*sdefault", padding, "");
 					print();
-					this->DumpSpriteGroup(dsg->default_group, padding + 2, SGDF_DEFAULT);
+					this->DumpSpriteGroup(default_group, padding + 2, SGDF_DEFAULT);
 				}
 			}
 			break;
 		}
 		case SGT_RANDOMIZED: {
 			const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
+
+			const std::vector<const SpriteGroup *> *groups = &(rsg->groups);
+
+			if (SpriteGroupDumper::use_shadows) {
+				auto iter = _randomized_sg_shadows.find(rsg);
+				if (iter != _randomized_sg_shadows.end()) {
+					groups = &(iter->second.groups);
+				}
+			}
+
 			seprintf(this->buffer, lastof(this->buffer), "%*sRandom (%s, %s, triggers: %X, count: %X, lowest_randbit: %X, groups: %u) [%u]",
 					padding, "", _sg_scope_names[rsg->var_scope], rsg->cmp_mode == RSG_CMP_ANY ? "ANY" : "ALL",
 					rsg->triggers, rsg->count, rsg->lowest_randbit, (uint)rsg->groups.size(), rsg->nfo_line);
 			print();
 			emit_start();
-			for (const auto &group : rsg->groups) {
+			for (const auto &group : (*groups)) {
 				this->DumpSpriteGroup(group, padding + 2, 0);
 			}
 			break;

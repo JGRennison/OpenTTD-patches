@@ -5544,20 +5544,8 @@ static const CallbackResultSpriteGroup *NewCallbackResultSpriteGroup(uint16 grou
 	return ptr;
 }
 
-/* Helper function to either create a callback or link to a previously
- * defined spritegroup. */
-static const SpriteGroup *GetGroupFromGroupID(byte setid, byte type, uint16 groupid)
+static const SpriteGroup *PruneTargetSpriteGroup(const SpriteGroup *result)
 {
-	if (HasBit(groupid, 15)) {
-		return NewCallbackResultSpriteGroup(groupid);
-	}
-
-	if (groupid > MAX_SPRITEGROUP || _cur.spritegroups[groupid] == nullptr) {
-		grfmsg(1, "GetGroupFromGroupID(0x%02X:0x%02X): Groupid 0x%04X does not exist, leaving empty", setid, type, groupid);
-		return nullptr;
-	}
-
-	const SpriteGroup *result = _cur.spritegroups[groupid];
 	if (HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2) || HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_GROUP_PRUNE)) return result;
 	while (result != nullptr) {
 		if (result->type == SGT_DETERMINISTIC) {
@@ -5577,6 +5565,24 @@ static const SpriteGroup *GetGroupFromGroupID(byte setid, byte type, uint16 grou
 		}
 		break;
 	}
+	return result;
+}
+
+/* Helper function to either create a callback or link to a previously
+ * defined spritegroup. */
+static const SpriteGroup *GetGroupFromGroupID(byte setid, byte type, uint16 groupid)
+{
+	if (HasBit(groupid, 15)) {
+		return NewCallbackResultSpriteGroup(groupid);
+	}
+
+	if (groupid > MAX_SPRITEGROUP || _cur.spritegroups[groupid] == nullptr) {
+		grfmsg(1, "GetGroupFromGroupID(0x%02X:0x%02X): Groupid 0x%04X does not exist, leaving empty", setid, type, groupid);
+		return nullptr;
+	}
+
+	const SpriteGroup *result = _cur.spritegroups[groupid];
+	if (likely(!HasBit(_misc_debug_flags, MDF_NEWGRF_SG_SAVE_RAW))) result = PruneTargetSpriteGroup(result);
 	return result;
 }
 
@@ -6793,6 +6799,46 @@ static void HandleVarAction2OptimisationPasses()
 	}
 }
 
+static void ProcessDeterministicSpriteGroupRanges(const std::vector<DeterministicSpriteGroupRange> &ranges, std::vector<DeterministicSpriteGroupRange> &ranges_out, const SpriteGroup *default_group)
+{
+	/* Sort ranges ascending. When ranges overlap, this may required clamping or splitting them */
+	std::vector<uint32> bounds;
+	for (uint i = 0; i < ranges.size(); i++) {
+		bounds.push_back(ranges[i].low);
+		if (ranges[i].high != UINT32_MAX) bounds.push_back(ranges[i].high + 1);
+	}
+	std::sort(bounds.begin(), bounds.end());
+	bounds.erase(std::unique(bounds.begin(), bounds.end()), bounds.end());
+
+	std::vector<const SpriteGroup *> target;
+	for (uint j = 0; j < bounds.size(); ++j) {
+		uint32 v = bounds[j];
+		const SpriteGroup *t = default_group;
+		for (uint i = 0; i < ranges.size(); i++) {
+			if (ranges[i].low <= v && v <= ranges[i].high) {
+				t = ranges[i].group;
+				break;
+			}
+		}
+		target.push_back(t);
+	}
+	assert(target.size() == bounds.size());
+
+	for (uint j = 0; j < bounds.size(); ) {
+		if (target[j] != default_group) {
+			DeterministicSpriteGroupRange &r = ranges_out.emplace_back();
+			r.group = target[j];
+			r.low = bounds[j];
+			while (j < bounds.size() && target[j] == r.group) {
+				j++;
+			}
+			r.high = j < bounds.size() ? bounds[j] - 1 : UINT32_MAX;
+		} else {
+			j++;
+		}
+	}
+}
+
 /* Action 0x02 */
 static void NewSpriteGroup(ByteReader *buf)
 {
@@ -6847,6 +6893,11 @@ static void NewSpriteGroup(ByteReader *buf)
 				case 0: group->size = DSG_SIZE_BYTE;  varsize = 1; break;
 				case 1: group->size = DSG_SIZE_WORD;  varsize = 2; break;
 				case 2: group->size = DSG_SIZE_DWORD; varsize = 4; break;
+			}
+
+			DeterministicSpriteGroupShadowCopy *shadow = nullptr;
+			if (unlikely(HasBit(_misc_debug_flags, MDF_NEWGRF_SG_SAVE_RAW))) {
+				shadow = &(_deterministic_sg_shadows[group]);
 			}
 
 			VarAction2OptimiseState va2_opt_state;
@@ -6904,6 +6955,11 @@ static void NewSpriteGroup(ByteReader *buf)
 					adjust.add_val    = 0;
 					adjust.divmod_val = 0;
 				}
+				if (unlikely(shadow != nullptr)) {
+					shadow->adjusts.push_back(adjust);
+					/* Pruning was turned off so that the unpruned target could be saved in the shadow, prune now */
+					if (adjust.subroutine != nullptr) adjust.subroutine = PruneTargetSpriteGroup(adjust.subroutine);
+				}
 
 				OptimiseVarAction2Adjust(va2_opt_state, feature, varsize, group, adjust);
 
@@ -6919,46 +6975,23 @@ static void NewSpriteGroup(ByteReader *buf)
 			}
 
 			group->default_group = GetGroupFromGroupID(setid, type, buf->ReadWord());
+
+			if (unlikely(shadow != nullptr)) {
+				ProcessDeterministicSpriteGroupRanges(ranges, shadow->ranges, group->default_group);
+				shadow->default_group = group->default_group;
+
+				/* Pruning was turned off so that the unpruned targets could be saved in the shadow ranges, prune now */
+				for (DeterministicSpriteGroupRange &range : ranges) {
+					range.group = PruneTargetSpriteGroup(range.group);
+				}
+				group->default_group = PruneTargetSpriteGroup(group->default_group);
+			}
+
 			group->error_group = ranges.size() > 0 ? ranges[0].group : group->default_group;
 			/* nvar == 0 is a special case -- we turn our value into a callback result */
 			group->calculated_result = ranges.size() == 0;
 
-			/* Sort ranges ascending. When ranges overlap, this may required clamping or splitting them */
-			std::vector<uint32> bounds;
-			for (uint i = 0; i < ranges.size(); i++) {
-				bounds.push_back(ranges[i].low);
-				if (ranges[i].high != UINT32_MAX) bounds.push_back(ranges[i].high + 1);
-			}
-			std::sort(bounds.begin(), bounds.end());
-			bounds.erase(std::unique(bounds.begin(), bounds.end()), bounds.end());
-
-			std::vector<const SpriteGroup *> target;
-			for (uint j = 0; j < bounds.size(); ++j) {
-				uint32 v = bounds[j];
-				const SpriteGroup *t = group->default_group;
-				for (uint i = 0; i < ranges.size(); i++) {
-					if (ranges[i].low <= v && v <= ranges[i].high) {
-						t = ranges[i].group;
-						break;
-					}
-				}
-				target.push_back(t);
-			}
-			assert(target.size() == bounds.size());
-
-			for (uint j = 0; j < bounds.size(); ) {
-				if (target[j] != group->default_group) {
-					DeterministicSpriteGroupRange &r = group->ranges.emplace_back();
-					r.group = target[j];
-					r.low = bounds[j];
-					while (j < bounds.size() && target[j] == r.group) {
-						j++;
-					}
-					r.high = j < bounds.size() ? bounds[j] - 1 : UINT32_MAX;
-				} else {
-					j++;
-				}
-			}
+			ProcessDeterministicSpriteGroupRanges(ranges, group->ranges, group->default_group);
 
 			OptimiseVarAction2DeterministicSpriteGroup(va2_opt_state, feature, varsize, group);
 			break;
@@ -6992,6 +7025,16 @@ static void NewSpriteGroup(ByteReader *buf)
 
 			for (uint i = 0; i < num_groups; i++) {
 				group->groups.push_back(GetGroupFromGroupID(setid, type, buf->ReadWord()));
+			}
+
+			if (unlikely(HasBit(_misc_debug_flags, MDF_NEWGRF_SG_SAVE_RAW))) {
+				RandomizedSpriteGroupShadowCopy *shadow = &(_randomized_sg_shadows[group]);
+				shadow->groups = group->groups;
+
+				/* Pruning was turned off so that the unpruned targets could be saved in the shadow groups, prune now */
+				for (const SpriteGroup *&group : group->groups) {
+					group = PruneTargetSpriteGroup(group);
+				}
 			}
 
 			break;
@@ -11289,6 +11332,9 @@ void ResetNewGRFData()
 	InitializeSoundPool();
 	_spritegroup_pool.CleanPool();
 	_callback_result_cache.clear();
+	_deterministic_sg_shadows.clear();
+	_randomized_sg_shadows.clear();
+	_grfs_loaded_with_sg_shadow_enable = HasBit(_misc_debug_flags, MDF_NEWGRF_SG_SAVE_RAW);
 }
 
 /**

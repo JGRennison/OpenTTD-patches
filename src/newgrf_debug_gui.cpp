@@ -20,6 +20,7 @@
 #include "vehicle_gui.h"
 #include "zoom_func.h"
 #include "scope.h"
+#include "debug_settings.h"
 
 #include "engine_base.h"
 #include "industry.h"
@@ -317,6 +318,7 @@ struct NewGRFInspectWindow : Window {
 	bool auto_refresh = false;
 	bool log_console = false;
 	bool sprite_dump = false;
+	bool sprite_dump_unopt = false;
 
 	uint32 extra_info_flags = 0;
 	btree::btree_map<int, uint> extra_info_click_flag_toggles;
@@ -389,7 +391,10 @@ struct NewGRFInspectWindow : Window {
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_NGRFI_SCROLLBAR);
-		this->GetWidget<NWidgetStacked>(WID_NGRFI_SPRITE_DUMP_SEL)->SetDisplayedPlane(GetFeatureHelper(wno)->ShowSpriteDumpButton(::GetFeatureIndex(wno)) ? 0 : SZSP_NONE);
+		bool show_sprite_dump_button = GetFeatureHelper(wno)->ShowSpriteDumpButton(::GetFeatureIndex(wno));
+		this->GetWidget<NWidgetStacked>(WID_NGRFI_SPRITE_DUMP_SEL)->SetDisplayedPlane(show_sprite_dump_button ? 0 : SZSP_NONE);
+		this->GetWidget<NWidgetStacked>(WID_NGRFI_SPRITE_DUMP_UNOPT_SEL)->SetDisplayedPlane(show_sprite_dump_button ? 0 : SZSP_NONE);
+		this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_UNOPT, true);
 		this->FinishInitNested(wno);
 
 		this->vscroll->SetCount(0);
@@ -535,6 +540,7 @@ struct NewGRFInspectWindow : Window {
 		};
 		const_cast<NewGRFInspectWindow *>(this)->sprite_group_lines.clear();
 		if (this->sprite_dump) {
+			SpriteGroupDumper::use_shadows = this->sprite_dump_unopt;
 			bool collapsed = false;
 			const SpriteGroup *collapse_group = nullptr;
 			uint collapse_lines = 0;
@@ -572,6 +578,7 @@ struct NewGRFInspectWindow : Window {
 				if (highlight_tag != 0 && this->selected_highlight_tag == highlight_tag) colour = TC_YELLOW;
 				::DrawString(r.left + LEFT_OFFSET, r.right - RIGHT_OFFSET, r.top + TOP_OFFSET + (scroll_offset * this->resize.step_height), buf, colour);
 			});
+			SpriteGroupDumper::use_shadows = false;
 			return;
 		} else {
 			NewGRFInspectWindow *this_mutable = const_cast<NewGRFInspectWindow *>(this);
@@ -731,6 +738,20 @@ struct NewGRFInspectWindow : Window {
 		}
 	}
 
+	bool UnOptimisedSpriteDumpOK() const
+	{
+		if (_grfs_loaded_with_sg_shadow_enable) return true;
+
+		if (_networking && !_network_server) return false;
+
+		extern uint NetworkClientCount();
+		if (_networking && NetworkClientCount() > 1) {
+			return false;
+		}
+
+		return true;
+	}
+
 	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
@@ -847,8 +868,34 @@ struct NewGRFInspectWindow : Window {
 			case WID_NGRFI_SPRITE_DUMP: {
 				this->sprite_dump = !this->sprite_dump;
 				this->SetWidgetLoweredState(WID_NGRFI_SPRITE_DUMP, this->sprite_dump);
+				this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_UNOPT, !this->sprite_dump || !UnOptimisedSpriteDumpOK());
 				this->GetWidget<NWidgetCore>(WID_NGRFI_MAINPANEL)->SetToolTip(this->sprite_dump ? STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP : STR_NULL);
 				this->SetWidgetDirty(WID_NGRFI_SPRITE_DUMP);
+				this->SetWidgetDirty(WID_NGRFI_SPRITE_DUMP_UNOPT);
+				this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
+				this->SetWidgetDirty(WID_NGRFI_SCROLLBAR);
+				break;
+			}
+
+			case WID_NGRFI_SPRITE_DUMP_UNOPT: {
+				if (!this->sprite_dump_unopt) {
+					if (!UnOptimisedSpriteDumpOK()) {
+						this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_UNOPT, true);
+						this->SetWidgetDirty(WID_NGRFI_SPRITE_DUMP_UNOPT);
+						return;
+					}
+					if (!_grfs_loaded_with_sg_shadow_enable) {
+						SetBit(_misc_debug_flags, MDF_NEWGRF_SG_SAVE_RAW);
+
+						ReloadNewGRFData();
+
+						extern void PostCheckNewGRFLoadWarnings();
+						PostCheckNewGRFLoadWarnings();
+					}
+				}
+				this->sprite_dump_unopt = !this->sprite_dump_unopt;
+				this->SetWidgetLoweredState(WID_NGRFI_SPRITE_DUMP_UNOPT, this->sprite_dump_unopt);
+				this->SetWidgetDirty(WID_NGRFI_SPRITE_DUMP_UNOPT);
 				this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
 				this->SetWidgetDirty(WID_NGRFI_SCROLLBAR);
 				break;
@@ -904,6 +951,9 @@ static const NWidgetPart _nested_newgrf_inspect_chain_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_NGRFI_CAPTION), SetDataTip(STR_NEWGRF_INSPECT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_SPRITE_DUMP_UNOPT_SEL),
+			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_NGRFI_SPRITE_DUMP_UNOPT), SetDataTip(STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT, STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP),
+		EndContainer(),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_SPRITE_DUMP_SEL),
 			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_NGRFI_SPRITE_DUMP), SetDataTip(STR_NEWGRF_INSPECT_SPRITE_DUMP, STR_NEWGRF_INSPECT_SPRITE_DUMP_TOOLTIP),
 		EndContainer(),
@@ -935,6 +985,9 @@ static const NWidgetPart _nested_newgrf_inspect_widgets[] = {
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_NGRFI_CAPTION), SetDataTip(STR_NEWGRF_INSPECT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NGRFI_PARENT), SetDataTip(STR_NEWGRF_INSPECT_PARENT_BUTTON, STR_NEWGRF_INSPECT_PARENT_TOOLTIP),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_SPRITE_DUMP_UNOPT_SEL),
+			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_NGRFI_SPRITE_DUMP_UNOPT), SetDataTip(STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT, STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP),
+		EndContainer(),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_SPRITE_DUMP_SEL),
 			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_NGRFI_SPRITE_DUMP), SetDataTip(STR_NEWGRF_INSPECT_SPRITE_DUMP, STR_NEWGRF_INSPECT_SPRITE_DUMP_TOOLTIP),
 		EndContainer(),
