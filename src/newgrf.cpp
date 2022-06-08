@@ -6936,6 +6936,20 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 								break;
 							}
 						}
+					} else if (i >= 0 && i + 1 < (int)group->adjusts.size()) {
+						/* See if having removed the store, there is now a useful pair of operations which can be combined */
+						DeterministicSpriteGroupAdjust &prev = group->adjusts[i];
+						DeterministicSpriteGroupAdjust &next = group->adjusts[i + 1];
+						if (next.type == DSGA_TYPE_NONE && next.operation == DSGA_OP_XOR && next.variable == 0x1A && next.shift_num == 0 && next.and_mask == 1) {
+							/* XOR: boolean invert */
+							if (prev.operation == DSGA_OP_SLT || prev.operation == DSGA_OP_SGE || prev.operation == DSGA_OP_SLE || prev.operation == DSGA_OP_SGT) {
+								prev.operation = (DeterministicSpriteGroupAdjustOperation)(prev.operation ^ 1);
+								erase_adjust(i + 1);
+							} else if (prev.operation == DSGA_OP_RST && (prev.type == DSGA_TYPE_EQ || prev.type == DSGA_TYPE_NEQ)) {
+								prev.type = (prev.type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
+								erase_adjust(i + 1);
+							}
+						}
 					}
 					if (pending_restart) restart();
 					continue;
