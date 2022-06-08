@@ -323,6 +323,7 @@ struct NewGRFInspectWindow : Window {
 	uint32 extra_info_flags = 0;
 	btree::btree_map<int, uint> extra_info_click_flag_toggles;
 	btree::btree_map<int, const SpriteGroup *> sprite_group_lines;
+	btree::btree_map<int, uint16> nfo_line_lines;
 	const SpriteGroup *selected_sprite_group = nullptr;
 	btree::btree_map<int, uint32> highlight_tag_lines;
 	uint32 selected_highlight_tag = 0;
@@ -394,7 +395,9 @@ struct NewGRFInspectWindow : Window {
 		bool show_sprite_dump_button = GetFeatureHelper(wno)->ShowSpriteDumpButton(::GetFeatureIndex(wno));
 		this->GetWidget<NWidgetStacked>(WID_NGRFI_SPRITE_DUMP_SEL)->SetDisplayedPlane(show_sprite_dump_button ? 0 : SZSP_NONE);
 		this->GetWidget<NWidgetStacked>(WID_NGRFI_SPRITE_DUMP_UNOPT_SEL)->SetDisplayedPlane(show_sprite_dump_button ? 0 : SZSP_NONE);
+		this->GetWidget<NWidgetStacked>(WID_NGRFI_SPRITE_DUMP_GOTO_SEL)->SetDisplayedPlane(show_sprite_dump_button ? 0 : SZSP_NONE);
 		this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_UNOPT, true);
+		this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_GOTO, true);
 		this->FinishInitNested(wno);
 
 		this->vscroll->SetCount(0);
@@ -539,6 +542,8 @@ struct NewGRFInspectWindow : Window {
 			::DrawString(r.left + LEFT_OFFSET, r.right - RIGHT_OFFSET, r.top + TOP_OFFSET + (offset * this->resize.step_height), buf, TC_BLACK);
 		};
 		const_cast<NewGRFInspectWindow *>(this)->sprite_group_lines.clear();
+		const_cast<NewGRFInspectWindow *>(this)->highlight_tag_lines.clear();
+		const_cast<NewGRFInspectWindow *>(this)->nfo_line_lines.clear();
 		if (this->sprite_dump) {
 			SpriteGroupDumper::use_shadows = this->sprite_dump_unopt;
 			bool collapsed = false;
@@ -547,6 +552,16 @@ struct NewGRFInspectWindow : Window {
 			char tmp_buf[256];
 			nih->SpriteDump(index, [&](const SpriteGroup *group, DumpSpriteGroupPrintOp operation, uint32 highlight_tag, const char *buf) {
 				if (this->log_console && operation == DSGPO_PRINT) DEBUG(misc, 0, "  %s", buf);
+
+				if (operation == DSGPO_NFO_LINE) {
+					btree::btree_map<int, uint16> &lines = const_cast<NewGRFInspectWindow *>(this)->nfo_line_lines;
+					auto iter = lines.lower_bound(highlight_tag);
+					if (iter != lines.end() && iter->first == (int)highlight_tag) {
+						/* Already stored, don't insert again */
+					} else {
+						lines.insert(iter, std::make_pair<int, uint16>(highlight_tag, std::min<uint>(UINT16_MAX, i)));
+					}
+				}
 
 				if (operation == DSGPO_START && !collapsed && this->collapsed_groups.count(group)) {
 					collapsed = true;
@@ -869,9 +884,11 @@ struct NewGRFInspectWindow : Window {
 				this->sprite_dump = !this->sprite_dump;
 				this->SetWidgetLoweredState(WID_NGRFI_SPRITE_DUMP, this->sprite_dump);
 				this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_UNOPT, !this->sprite_dump || !UnOptimisedSpriteDumpOK());
+				this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_GOTO, !this->sprite_dump);
 				this->GetWidget<NWidgetCore>(WID_NGRFI_MAINPANEL)->SetToolTip(this->sprite_dump ? STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP : STR_NULL);
 				this->SetWidgetDirty(WID_NGRFI_SPRITE_DUMP);
 				this->SetWidgetDirty(WID_NGRFI_SPRITE_DUMP_UNOPT);
+				this->SetWidgetDirty(WID_NGRFI_SPRITE_DUMP_GOTO);
 				this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
 				this->SetWidgetDirty(WID_NGRFI_SCROLLBAR);
 				break;
@@ -900,6 +917,12 @@ struct NewGRFInspectWindow : Window {
 				this->SetWidgetDirty(WID_NGRFI_SCROLLBAR);
 				break;
 			}
+
+			case WID_NGRFI_SPRITE_DUMP_GOTO: {
+				this->current_edit_param = 0;
+				ShowQueryString(STR_EMPTY, STR_SPRITE_ALIGNER_GOTO_CAPTION, 10, this, CS_NUMERAL, QSF_NONE);
+				break;
+			}
 		}
 	}
 
@@ -907,8 +930,17 @@ struct NewGRFInspectWindow : Window {
 	{
 		if (StrEmpty(str)) return;
 
-		NewGRFInspectWindow::var60params[GetFeatureNum(this->window_number)][this->current_edit_param - 0x60] = strtol(str, nullptr, 16);
-		this->SetDirty();
+		if (this->current_edit_param == 0 && this->sprite_dump) {
+			auto iter = this->nfo_line_lines.find(atoi(str));
+			if (iter != this->nfo_line_lines.end()) {
+				this->vscroll->SetPosition(std::min<int>(iter->second, std::max<int>(0, this->vscroll->GetCount() - this->vscroll->GetCapacity())));
+				this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
+				this->SetWidgetDirty(WID_NGRFI_SCROLLBAR);
+			}
+		} else if (this->current_edit_param != 0 && !this->sprite_dump) {
+			NewGRFInspectWindow::var60params[GetFeatureNum(this->window_number)][this->current_edit_param - 0x60] = strtol(str, nullptr, 16);
+			this->SetDirty();
+		}
 	}
 
 	void OnResize() override
@@ -951,6 +983,9 @@ static const NWidgetPart _nested_newgrf_inspect_chain_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_NGRFI_CAPTION), SetDataTip(STR_NEWGRF_INSPECT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_SPRITE_DUMP_GOTO_SEL),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NGRFI_SPRITE_DUMP_GOTO), SetDataTip(STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO, STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO_TOOLTIP),
+		EndContainer(),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_SPRITE_DUMP_UNOPT_SEL),
 			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_NGRFI_SPRITE_DUMP_UNOPT), SetDataTip(STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT, STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP),
 		EndContainer(),
@@ -985,6 +1020,9 @@ static const NWidgetPart _nested_newgrf_inspect_widgets[] = {
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_NGRFI_CAPTION), SetDataTip(STR_NEWGRF_INSPECT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NGRFI_PARENT), SetDataTip(STR_NEWGRF_INSPECT_PARENT_BUTTON, STR_NEWGRF_INSPECT_PARENT_TOOLTIP),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_SPRITE_DUMP_GOTO_SEL),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NGRFI_SPRITE_DUMP_GOTO), SetDataTip(STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO, STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO_TOOLTIP),
+		EndContainer(),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_SPRITE_DUMP_UNOPT_SEL),
 			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_NGRFI_SPRITE_DUMP_UNOPT), SetDataTip(STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT, STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP),
 		EndContainer(),

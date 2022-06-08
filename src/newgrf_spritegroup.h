@@ -643,6 +643,7 @@ enum DumpSpriteGroupPrintOp {
 	DSGPO_PRINT,
 	DSGPO_START,
 	DSGPO_END,
+	DSGPO_NFO_LINE,
 };
 
 using DumpSpriteGroupPrinter = std::function<void(const SpriteGroup *, DumpSpriteGroupPrintOp, uint32, const char *)>;
