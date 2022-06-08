@@ -5718,9 +5718,10 @@ static bool IsFeatureUsableForDSE(GrfSpecFeature feature)
 	return (feature != GSF_STATIONS);
 }
 
-static const DeterministicSpriteGroupAdjust *GetVarAction2PreviousSingleLoadAdjust(const std::vector<DeterministicSpriteGroupAdjust> &adjusts, int start_index)
+static const DeterministicSpriteGroupAdjust *GetVarAction2PreviousSingleLoadAdjust(const std::vector<DeterministicSpriteGroupAdjust> &adjusts, int start_index, bool *is_inverted)
 {
 	bool passed_store_perm = false;
+	if (is_inverted != nullptr) *is_inverted = false;
 	for (int i = start_index; i >= 0; i--) {
 		const DeterministicSpriteGroupAdjust &prev = adjusts[i];
 		if (prev.variable == 0x7E) {
@@ -5748,6 +5749,10 @@ static const DeterministicSpriteGroupAdjust *GetVarAction2PreviousSingleLoadAdju
 		} else if (prev.operation == DSGA_OP_STOP) {
 			/* Permanent storage store */
 			passed_store_perm = true;
+			continue;
+		} else if (prev.operation == DSGA_OP_XOR && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == 1 && is_inverted != nullptr) {
+			/* XOR invert */
+			*is_inverted = !(*is_inverted);
 			continue;
 		} else {
 			break;
@@ -5880,13 +5885,13 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 	if ((feature >= GSF_TRAINS && feature <= GSF_AIRCRAFT) && IsExpensiveVehicleVariable(adjust.variable)) state.check_expensive_vars = true;
 	if (feature == GSF_INDUSTRYTILES && group->var_scope == VSG_SCOPE_SELF && IsExpensiveIndustryTileVariable(adjust.variable)) state.check_expensive_vars = true;
 
-	auto get_prev_single_load = [&]() -> const DeterministicSpriteGroupAdjust* {
-		return GetVarAction2PreviousSingleLoadAdjust(group->adjusts, (int)group->adjusts.size() - 2);
+	auto get_prev_single_load = [&](bool *invert) -> const DeterministicSpriteGroupAdjust* {
+		return GetVarAction2PreviousSingleLoadAdjust(group->adjusts, (int)group->adjusts.size() - 2, invert);
 	};
 
 	if ((prev_inference & VA2AIF_SINGLE_LOAD) && adjust.operation == DSGA_OP_RST && adjust.variable != 0x1A && adjust.variable != 0x7D && adjust.variable != 0x7E) {
 		/* See if this is a repeated load of a variable (not constant, temp store load or procedure call) */
-		const DeterministicSpriteGroupAdjust *prev_load = get_prev_single_load();
+		const DeterministicSpriteGroupAdjust *prev_load = get_prev_single_load(nullptr);
 		if (prev_load != nullptr && MemCmpT<DeterministicSpriteGroupAdjust>(prev_load, &adjust) == 0) {
 			group->adjusts.pop_back();
 			state.inference = prev_inference;
@@ -6182,6 +6187,10 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					}
 					if (adjust.and_mask <= 1) state.inference = prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
 					state.inference |= prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO) & non_const_var_inference;
+					if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1) {
+						/* Single load tracking can handle bool inverts */
+						state.inference |= (prev_inference & VA2AIF_SINGLE_LOAD);
+					}
 					break;
 				case DSGA_OP_MUL: {
 					if ((prev_inference & VA2AIF_ONE_OR_ZERO) && adjust.variable == 0x1A && adjust.shift_num == 0 && group->adjusts.size() >= 2) {
@@ -6253,10 +6262,12 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 							store.inference = prev_inference & (~VA2AIF_PREV_MASK);
 							store.store_constant = state.current_constant;
 							if (prev_inference & VA2AIF_SINGLE_LOAD) {
-								const DeterministicSpriteGroupAdjust *prev_load = get_prev_single_load();
-								if (prev_load != nullptr) {
+								bool invert = false;
+								const DeterministicSpriteGroupAdjust *prev_load = get_prev_single_load(&invert);
+								if (prev_load != nullptr && (!invert || prev_load->type == DSGA_TYPE_EQ || prev_load->type == DSGA_TYPE_NEQ)) {
 									store.inference |= VA2AIF_SINGLE_LOAD;
 									store.var_source.type = prev_load->type;
+									if (invert) store.var_source.type = (store.var_source.type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
 									store.var_source.variable = prev_load->variable;
 									store.var_source.shift_num = prev_load->shift_num;
 									store.var_source.parameter = prev_load->parameter;
@@ -6799,6 +6810,62 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 			i++;
 		}
 	};
+	auto try_variable_substitution = [&](DeterministicSpriteGroupAdjust &target, int prev_load_index, uint8 idx) -> bool {
+		assert(target.variable == 0x7D && target.parameter == idx);
+
+		bool inverted = false;
+		const DeterministicSpriteGroupAdjust *var_src = GetVarAction2PreviousSingleLoadAdjust(group->adjusts, prev_load_index, &inverted);
+		if (var_src != nullptr && var_src->variable != 0x7C) {
+			/* Don't use variable 7C as we're not checking for store perms which may clobber the value here */
+
+			DeterministicSpriteGroupAdjustType var_src_type = var_src->type;
+			if (inverted) {
+				switch (var_src_type) {
+					case DSGA_TYPE_EQ:
+						var_src_type = DSGA_TYPE_NEQ;
+						break;
+					case DSGA_TYPE_NEQ:
+						var_src_type = DSGA_TYPE_EQ;
+						break;
+					default:
+						/* Don't try to handle this case */
+						return false;
+				}
+			}
+			if (target.type == DSGA_TYPE_NONE && target.shift_num == 0 && (target.and_mask == 0xFFFFFFFF || ((var_src_type == DSGA_TYPE_EQ || var_src_type == DSGA_TYPE_NEQ) && (target.and_mask & 1)))) {
+				target.type = var_src_type;
+				target.variable = var_src->variable;
+				target.shift_num = var_src->shift_num;
+				target.parameter = var_src->parameter;
+				target.and_mask = var_src->and_mask;
+				target.add_val = var_src->add_val;
+				target.divmod_val = var_src->divmod_val;
+				return true;
+			} else if ((target.type == DSGA_TYPE_EQ || target.type == DSGA_TYPE_NEQ) && target.shift_num == 0 && (target.and_mask & 1) && target.add_val == 0 &&
+					(var_src_type == DSGA_TYPE_EQ || var_src_type == DSGA_TYPE_NEQ)) {
+				/* DSGA_TYPE_EQ/NEQ on target are OK if add_val is 0 because this is a boolean invert/convert of the incoming DSGA_TYPE_EQ/NEQ */
+				if (target.type == DSGA_TYPE_EQ) {
+					target.type = (var_src_type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
+				} else {
+					target.type = var_src_type;
+				}
+				target.variable = var_src->variable;
+				target.shift_num = var_src->shift_num;
+				target.parameter = var_src->parameter;
+				target.and_mask = var_src->and_mask;
+				target.add_val = var_src->add_val;
+				target.divmod_val = var_src->divmod_val;
+				return true;
+			} else if (var_src_type == DSGA_TYPE_NONE && (target.shift_num + var_src->shift_num) < 32) {
+				target.variable = var_src->variable;
+				target.parameter = var_src->parameter;
+				target.and_mask &= var_src->and_mask >> target.shift_num;
+				target.shift_num += var_src->shift_num;
+				return true;
+			}
+		}
+		return false;
+	};
 
 	for (int i = (int)group->adjusts.size() - 1; i >= 0;) {
 		bool pending_restart = false;
@@ -6823,45 +6890,7 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 						/* Found candidate */
 
 						DeterministicSpriteGroupAdjust &target = group->adjusts[substitution_candidates[j] >> 8];
-						assert(target.variable == 0x7D && target.parameter == idx);
-
-						bool substituted = false;
-						const DeterministicSpriteGroupAdjust *var_src = GetVarAction2PreviousSingleLoadAdjust(group->adjusts, i - 1);
-						if (var_src != nullptr && var_src->variable != 0x7C) {
-							/* Don't use variable 7C as we're not checking for store perms which may clobber the value here */
-
-							if (target.type == DSGA_TYPE_NONE && target.shift_num == 0 && (target.and_mask == 0xFFFFFFFF || ((var_src->type == DSGA_TYPE_EQ || var_src->type == DSGA_TYPE_NEQ) && (target.and_mask & 1)))) {
-								target.type = var_src->type;
-								target.variable = var_src->variable;
-								target.shift_num = var_src->shift_num;
-								target.parameter = var_src->parameter;
-								target.and_mask = var_src->and_mask;
-								target.add_val = var_src->add_val;
-								target.divmod_val = var_src->divmod_val;
-								substituted = true;
-							} else if ((target.type == DSGA_TYPE_EQ || target.type == DSGA_TYPE_NEQ) && target.shift_num == 0 && (target.and_mask & 1) && target.add_val == 0 &&
-									(var_src->type == DSGA_TYPE_EQ || var_src->type == DSGA_TYPE_NEQ)) {
-								/* DSGA_TYPE_EQ/NEQ on target are OK if add_val is 0 because this is a boolean invert/convert of the incoming DSGA_TYPE_EQ/NEQ */
-								if (target.type == DSGA_TYPE_EQ) {
-									target.type = (var_src->type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
-								} else {
-									target.type = var_src->type;
-								}
-								target.variable = var_src->variable;
-								target.shift_num = var_src->shift_num;
-								target.parameter = var_src->parameter;
-								target.and_mask = var_src->and_mask;
-								target.add_val = var_src->add_val;
-								target.divmod_val = var_src->divmod_val;
-								substituted = true;
-							} else if (var_src->type == DSGA_TYPE_NONE && (adjust.shift_num + var_src->shift_num) < 32) {
-								target.variable = var_src->variable;
-								target.parameter = var_src->parameter;
-								target.and_mask &= var_src->and_mask >> adjust.shift_num;
-								target.shift_num += var_src->shift_num;
-								substituted = true;
-							}
-						}
+						bool substituted = try_variable_substitution(target, i - 1, idx);
 						if (!substituted) {
 							/* Not usable, mark as required so it's not eliminated */
 							bits.set(idx, true);
@@ -6899,7 +6928,7 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 									}
 									if (next.operation == DSGA_OP_RST) {
 										/* See if this is a repeated load of a variable (not procedure call) */
-										const DeterministicSpriteGroupAdjust *prev_load = GetVarAction2PreviousSingleLoadAdjust(group->adjusts, i);
+										const DeterministicSpriteGroupAdjust *prev_load = GetVarAction2PreviousSingleLoadAdjust(group->adjusts, i, nullptr);
 										if (prev_load != nullptr && MemCmpT<DeterministicSpriteGroupAdjust>(prev_load, &next) == 0) {
 											if (next.variable == 0x7D) pending_restart = true;
 											erase_adjust(i + 1);
