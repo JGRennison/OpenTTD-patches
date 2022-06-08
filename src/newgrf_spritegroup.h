@@ -332,6 +332,26 @@ inline DeterministicSpriteGroupAdjustOperation ReverseEvalAdjustOperation(Determ
 	}
 }
 
+inline bool IsEvalAdjustOperationRelationalComparison(DeterministicSpriteGroupAdjustOperation op)
+{
+	switch (op) {
+		case DSGA_OP_SLT:
+		case DSGA_OP_SGE:
+		case DSGA_OP_SLE:
+		case DSGA_OP_SGT:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+inline DeterministicSpriteGroupAdjustOperation InvertEvalAdjustRelationalComparisonOperation(DeterministicSpriteGroupAdjustOperation op)
+{
+	assert(IsEvalAdjustOperationRelationalComparison(op));
+	return (DeterministicSpriteGroupAdjustOperation)(op ^ 1);
+}
+
 inline bool IsEvalAdjustOperationOnConstantEffectiveLoad(DeterministicSpriteGroupAdjustOperation op, uint32 constant)
 {
 	switch (op) {

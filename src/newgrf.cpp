@@ -6131,8 +6131,8 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					if (adjust.variable == 0x1A && adjust.shift_num == 0 && group->adjusts.size() >= 2) {
 						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
 						if (adjust.and_mask == 1) {
-							if (prev.operation == DSGA_OP_SLT || prev.operation == DSGA_OP_SGE || prev.operation == DSGA_OP_SLE || prev.operation == DSGA_OP_SGT) {
-								prev.operation = (DeterministicSpriteGroupAdjustOperation)(prev.operation ^ 1);
+							if (IsEvalAdjustOperationRelationalComparison(prev.operation)) {
+								prev.operation = InvertEvalAdjustRelationalComparisonOperation(prev.operation);
 								group->adjusts.pop_back();
 								state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
 								break;
@@ -6155,8 +6155,8 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 							if (prev.operation == DSGA_OP_OR && (prev.type == DSGA_TYPE_EQ || prev.type == DSGA_TYPE_NEQ || (prev.type == DSGA_TYPE_NONE && (prev.adjust_flags & DSGAF_SKIP_ON_LSB_SET))) && group->adjusts.size() >= 3) {
 								DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
 								bool found = false;
-								if (prev2.operation == DSGA_OP_SLT || prev2.operation == DSGA_OP_SGE || prev2.operation == DSGA_OP_SLE || prev2.operation == DSGA_OP_SGT) {
-									prev2.operation = (DeterministicSpriteGroupAdjustOperation)(prev2.operation ^ 1);
+								if (IsEvalAdjustOperationRelationalComparison(prev2.operation)) {
+									prev2.operation = InvertEvalAdjustRelationalComparisonOperation(prev2.operation);
 									found = true;
 								} else if (prev2.operation == DSGA_OP_RST && (prev2.type == DSGA_TYPE_EQ || prev2.type == DSGA_TYPE_NEQ) ) {
 									prev2.type = (prev2.type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
@@ -6963,8 +6963,8 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 						DeterministicSpriteGroupAdjust &next = group->adjusts[i + 1];
 						if (next.type == DSGA_TYPE_NONE && next.operation == DSGA_OP_XOR && next.variable == 0x1A && next.shift_num == 0 && next.and_mask == 1) {
 							/* XOR: boolean invert */
-							if (prev.operation == DSGA_OP_SLT || prev.operation == DSGA_OP_SGE || prev.operation == DSGA_OP_SLE || prev.operation == DSGA_OP_SGT) {
-								prev.operation = (DeterministicSpriteGroupAdjustOperation)(prev.operation ^ 1);
+							if (IsEvalAdjustOperationRelationalComparison(prev.operation)) {
+								prev.operation = InvertEvalAdjustRelationalComparisonOperation(prev.operation);
 								erase_adjust(i + 1);
 							} else if (prev.operation == DSGA_OP_RST && (prev.type == DSGA_TYPE_EQ || prev.type == DSGA_TYPE_NEQ)) {
 								prev.type = (prev.type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
