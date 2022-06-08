@@ -54,6 +54,7 @@
 #include "core/arena_alloc.hpp"
 #include "core/y_combinator.hpp"
 #include "core/container_func.hpp"
+#include "scope.h"
 
 #include "table/strings.h"
 #include "table/build_industry.h"
@@ -5652,10 +5653,17 @@ struct VarAction2TempStoreInference {
 	VarAction2TempStoreInferenceVarSource var_source;
 };
 
+struct VarAction2InferenceBackup {
+	VarAction2AdjustInferenceFlags inference = VA2AIF_NONE;
+	uint32 current_constant = 0;
+	uint adjust_size = 0;
+};
+
 struct VarAction2OptimiseState {
 	VarAction2AdjustInferenceFlags inference = VA2AIF_NONE;
 	uint32 current_constant = 0;
 	btree::btree_map<uint8, VarAction2TempStoreInference> temp_stores;
+	VarAction2InferenceBackup inference_backup;
 	VarAction2GroupVariableTracking *var_tracking = nullptr;
 	bool seen_procedure_call = false;
 	bool check_expensive_vars = false;
@@ -5772,6 +5780,25 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 {
 	if (unlikely(HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2))) return;
 
+	auto guard = scope_guard([&]() {
+		if (!group->adjusts.empty()) {
+			const DeterministicSpriteGroupAdjust &adjust = group->adjusts.back();
+			if (adjust.variable == 0x7E || IsEvalAdjustWithSideEffects(adjust.operation)) {
+				/* save inference state */
+				state.inference_backup.adjust_size = (uint)group->adjusts.size();
+				state.inference_backup.inference = state.inference;
+				state.inference_backup.current_constant = state.current_constant;
+			}
+		}
+	});
+
+	auto try_restore_inference_backup = [&]() {
+		if (state.inference_backup.adjust_size != 0 && state.inference_backup.adjust_size == (uint)group->adjusts.size()) {
+			state.inference = state.inference_backup.inference;
+			state.current_constant = state.inference_backup.current_constant;
+		}
+	};
+
 	VarAction2AdjustInferenceFlags prev_inference = state.inference;
 	state.inference = VA2AIF_NONE;
 
@@ -5807,15 +5834,18 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 				break;
 			}
 		}
-		DeterministicSpriteGroupAdjust &replacement = group->adjusts.emplace_back();
-		replacement.operation = DSGA_OP_RST;
-		replacement.variable = 0x1A;
-		replacement.shift_num = 0;
-		replacement.type = DSGA_TYPE_NONE;
-		replacement.and_mask = constant;
-		replacement.add_val = 0;
-		replacement.divmod_val = 0;
-		state.inference = VA2AIF_PREV_MASK_ADJUST | VA2AIF_HAVE_CONSTANT;
+		if (constant != 0 || !group->adjusts.empty()) {
+			DeterministicSpriteGroupAdjust &replacement = group->adjusts.emplace_back();
+			replacement.operation = DSGA_OP_RST;
+			replacement.variable = 0x1A;
+			replacement.shift_num = 0;
+			replacement.type = DSGA_TYPE_NONE;
+			replacement.and_mask = constant;
+			replacement.add_val = 0;
+			replacement.divmod_val = 0;
+			state.inference = VA2AIF_PREV_MASK_ADJUST;
+		}
+		state.inference = VA2AIF_HAVE_CONSTANT;
 		add_inferences_from_mask(constant);
 		state.current_constant = constant;
 	};
@@ -5936,6 +5966,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 				break;
 			}
 		}
+		try_restore_inference_backup();
 		current.operation = DSGA_OP_RST;
 		current.adjust_flags = DSGAF_NONE;
 		group->adjusts.push_back(current);
