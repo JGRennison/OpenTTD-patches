@@ -134,7 +134,7 @@ public:
 	btree::btree_map<const SpriteGroup *, VarAction2GroupVariableTracking *> group_temp_store_variable_tracking;
 	UniformArenaAllocator<sizeof(VarAction2GroupVariableTracking), 1024> group_temp_store_variable_tracking_storage;
 	std::vector<DeterministicSpriteGroup *> dead_store_elimination_candidates;
-	std::vector<std::pair<GrfSpecFeature, DeterministicSpriteGroup *>> pending_expensive_var_checks;
+	std::vector<DeterministicSpriteGroup *> pending_expensive_var_checks;
 
 	VarAction2GroupVariableTracking *GetVarAction2GroupVariableTracking(const SpriteGroup *group, bool make_new)
 	{
@@ -5701,6 +5701,13 @@ static bool IsExpensiveIndustryTileVariable(uint16 variable)
 	}
 }
 
+static bool IsExpensiveVariable(uint16 variable, GrfSpecFeature feature, VarSpriteGroupScope var_scope)
+{
+	if ((feature >= GSF_TRAINS && feature <= GSF_AIRCRAFT) && IsExpensiveVehicleVariable(variable)) return true;
+	if (feature == GSF_INDUSTRYTILES && var_scope == VSG_SCOPE_SELF && IsExpensiveIndustryTileVariable(variable)) return true;
+	return false;
+}
+
 static bool IsVariableVeryCheap(uint16 variable, GrfSpecFeature feature)
 {
 	switch (variable) {
@@ -5882,8 +5889,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 		}
 	}
 
-	if ((feature >= GSF_TRAINS && feature <= GSF_AIRCRAFT) && IsExpensiveVehicleVariable(adjust.variable)) state.check_expensive_vars = true;
-	if (feature == GSF_INDUSTRYTILES && group->var_scope == VSG_SCOPE_SELF && IsExpensiveIndustryTileVariable(adjust.variable)) state.check_expensive_vars = true;
+	if (IsExpensiveVariable(adjust.variable, feature, group->var_scope)) state.check_expensive_vars = true;
 
 	auto get_prev_single_load = [&](bool *invert) -> const DeterministicSpriteGroupAdjust* {
 		return GetVarAction2PreviousSingleLoadAdjust(group->adjusts, (int)group->adjusts.size() - 2, invert);
@@ -6464,7 +6470,7 @@ static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSprite
 	return dse;
 }
 
-static bool OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(const GrfSpecFeature feature, DeterministicSpriteGroup *group, VarAction2GroupVariableTracking *var_tracking)
+static bool OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(DeterministicSpriteGroup *group, VarAction2GroupVariableTracking *var_tracking)
 {
 	btree::btree_map<uint64, uint32> seen_expensive_variables;
 	std::bitset<256> usable_vars;
@@ -6533,9 +6539,7 @@ static bool OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(const G
 			usable_vars.set(adjust.and_mask, false);
 		} else if (adjust.variable == 0x7D) {
 			if (adjust.parameter < 0x100) usable_vars.set(adjust.parameter, false);
-		} else if ((feature >= GSF_TRAINS && feature <= GSF_AIRCRAFT) && IsExpensiveVehicleVariable(adjust.variable)) {
-			seen_expensive_variables[(((uint64)adjust.variable) << 32) | adjust.parameter]++;
-		} else if (feature == GSF_INDUSTRYTILES && group->var_scope == VSG_SCOPE_SELF && IsExpensiveIndustryTileVariable(adjust.variable)) {
+		} else if (IsExpensiveVariable(adjust.variable, group->feature, group->var_scope)) {
 			seen_expensive_variables[(((uint64)adjust.variable) << 32) | adjust.parameter]++;
 		}
 		if (adjust.variable == 0x7E || (adjust.operation == DSGA_OP_STO && adjust.and_mask >= 0x100) || (adjust.operation == DSGA_OP_STO_NC && adjust.divmod_val >= 0x100)) {
@@ -6574,10 +6578,10 @@ static bool OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(const G
 	return false;
 }
 
-static void OptimiseVarAction2DeterministicSpriteGroupExpensiveVars(const GrfSpecFeature feature, DeterministicSpriteGroup *group)
+static void OptimiseVarAction2DeterministicSpriteGroupExpensiveVars(DeterministicSpriteGroup *group)
 {
 	VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(group, false);
-	while (OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(feature, group, var_tracking)) {}
+	while (OptimiseVarAction2DeterministicSpriteGroupExpensiveVarsInner(group, var_tracking)) {}
 }
 
 static void OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(DeterministicSpriteGroup *group)
@@ -6772,9 +6776,9 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 
 	if (state.check_expensive_vars && !HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_EXPENSIVE_VARS)) {
 		if (dse_candidate) {
-			_cur.pending_expensive_var_checks.push_back({ feature, group });
+			_cur.pending_expensive_var_checks.push_back(group);
 		} else {
-			OptimiseVarAction2DeterministicSpriteGroupExpensiveVars(feature, group);
+			OptimiseVarAction2DeterministicSpriteGroupExpensiveVars(group);
 		}
 	}
 }
@@ -7075,8 +7079,8 @@ static void HandleVarAction2OptimisationPasses()
 		OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(group);
 	}
 
-	for (auto iter : _cur.pending_expensive_var_checks) {
-		OptimiseVarAction2DeterministicSpriteGroupExpensiveVars(iter.first, iter.second);
+	for (DeterministicSpriteGroup *group : _cur.pending_expensive_var_checks) {
+		OptimiseVarAction2DeterministicSpriteGroupExpensiveVars(group);
 	}
 }
 
@@ -7166,6 +7170,7 @@ static void NewSpriteGroup(ByteReader *buf)
 			assert(DeterministicSpriteGroup::CanAllocateItem());
 			DeterministicSpriteGroup *group = new DeterministicSpriteGroup();
 			group->nfo_line = _cur.nfo_line;
+			group->feature = feature;
 			act_group = group;
 			group->var_scope = HasBit(type, 1) ? VSG_SCOPE_PARENT : VSG_SCOPE_SELF;
 

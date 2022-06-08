@@ -106,6 +106,7 @@ public:
 
 	uint32 nfo_line;
 	SpriteGroupType type;
+	GrfSpecFeature feature;
 
 	virtual SpriteID GetResult() const { return 0; }
 	virtual byte GetNumResults() const { return 0; }
