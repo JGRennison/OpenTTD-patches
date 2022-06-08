@@ -6887,7 +6887,7 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 								i--;
 							} else {
 								if (i + 1 < (int)group->adjusts.size()) {
-									const DeterministicSpriteGroupAdjust &next = group->adjusts[i + 1];
+									DeterministicSpriteGroupAdjust &next = group->adjusts[i + 1];
 									if (prev.operation == DSGA_OP_STO && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A &&
 											prev.shift_num == 0 && prev.and_mask < 0x100 &&
 											next.operation == DSGA_OP_RST && next.type == DSGA_TYPE_NONE && next.variable == 0x7D &&
@@ -6904,6 +6904,32 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 											if (next.variable == 0x7D) pending_restart = true;
 											erase_adjust(i + 1);
 											break;
+										}
+									}
+									if (i + 2 < (int)group->adjusts.size() && next.operation == DSGA_OP_RST && next.variable != 0x7E &&
+											prev.operation == DSGA_OP_STO && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A &&
+											prev.shift_num == 0 && prev.and_mask < 0x100) {
+										const DeterministicSpriteGroupAdjust &next2 = group->adjusts[i + 2];
+										if (next2.type == DSGA_TYPE_NONE && next2.variable == 0x7D && next2.shift_num == 0 &&
+												next2.and_mask == 0xFFFFFFFF && next2.parameter == prev.and_mask) {
+											bool found = false;
+											if (IsEvalAdjustOperationCommutative(next2.operation)) {
+												/* Convert: store, load var, commutative op on stored --> (dead) store, commutative op var */
+												next.operation = next2.operation;
+												if (IsEvalAdjustWithZeroLastValueAlwaysZero(next.operation)) {
+													next.adjust_flags |= DSGAF_SKIP_ON_ZERO;
+												}
+												found = true;
+											} else if (next2.operation == DSGA_OP_SUB || next2.operation == DSGA_OP_RSUB) {
+												/* Convert: store, load var, sub/rsub op on stored --> (dead) store, rsub/sub op var */
+												next.operation = (next2.operation == DSGA_OP_SUB) ? DSGA_OP_RSUB : DSGA_OP_SUB;
+												found = true;
+											}
+											if (found) {
+												erase_adjust(i + 2);
+												restart();
+												break;
+											}
 										}
 									}
 								}
