@@ -6147,7 +6147,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 								state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO | VA2AIF_SINGLE_LOAD;
 								break;
 							}
-							if (prev.operation == DSGA_OP_OR && (prev.type == DSGA_TYPE_EQ || prev.type == DSGA_TYPE_NEQ) && group->adjusts.size() >= 3) {
+							if (prev.operation == DSGA_OP_OR && (prev.type == DSGA_TYPE_EQ || prev.type == DSGA_TYPE_NEQ || (prev.type == DSGA_TYPE_NONE && (prev.adjust_flags & DSGAF_SKIP_ON_LSB_SET))) && group->adjusts.size() >= 3) {
 								DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
 								bool found = false;
 								if (prev2.operation == DSGA_OP_SLT || prev2.operation == DSGA_OP_SGE || prev2.operation == DSGA_OP_SLE || prev2.operation == DSGA_OP_SGT) {
@@ -6158,7 +6158,12 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 									found = true;
 								}
 								if (found) {
-									prev.type = (prev.type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
+									if (prev.type == DSGA_TYPE_NONE) {
+										prev.type = DSGA_TYPE_EQ;
+										prev.add_val = 0;
+									} else {
+										prev.type = (prev.type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
+									}
 									prev.operation = DSGA_OP_AND;
 									prev.adjust_flags = DSGAF_SKIP_ON_ZERO;
 									group->adjusts.pop_back();
@@ -6827,6 +6832,21 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 
 							if (target.type == DSGA_TYPE_NONE && target.shift_num == 0 && (target.and_mask == 0xFFFFFFFF || ((var_src->type == DSGA_TYPE_EQ || var_src->type == DSGA_TYPE_NEQ) && (target.and_mask & 1)))) {
 								target.type = var_src->type;
+								target.variable = var_src->variable;
+								target.shift_num = var_src->shift_num;
+								target.parameter = var_src->parameter;
+								target.and_mask = var_src->and_mask;
+								target.add_val = var_src->add_val;
+								target.divmod_val = var_src->divmod_val;
+								substituted = true;
+							} else if ((target.type == DSGA_TYPE_EQ || target.type == DSGA_TYPE_NEQ) && target.shift_num == 0 && (target.and_mask & 1) && target.add_val == 0 &&
+									(var_src->type == DSGA_TYPE_EQ || var_src->type == DSGA_TYPE_NEQ)) {
+								/* DSGA_TYPE_EQ/NEQ on target are OK if add_val is 0 because this is a boolean invert/convert of the incoming DSGA_TYPE_EQ/NEQ */
+								if (target.type == DSGA_TYPE_EQ) {
+									target.type = (var_src->type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
+								} else {
+									target.type = var_src->type;
+								}
 								target.variable = var_src->variable;
 								target.shift_num = var_src->shift_num;
 								target.parameter = var_src->parameter;
