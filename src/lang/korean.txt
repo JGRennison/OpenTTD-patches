@@ -2204,7 +2204,9 @@ STR_CONFIG_SETTING_EXTRA_TREE_PLACEMENT_NO_GROWTH_NO_SPREAD     :성장과 확�
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE                        :조정된 눈 쌓인 나무: {STRING}
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_HELPTEXT               :아한대 기후에서의 설선 근처의 눈 쌓인 나무의 개수를 조정합니다. 설선 위에는 나무가 적어집니다. 설선에서는 온대 기후의 나무와 눈 쌓인 나무가 공존할 것입니다. 설선 아래에선 온대 기후의 나무가 자랄 것입니다.
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE                  :눈 쌓인 나무 범위: {STRING}
-STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE_HELPTEXT         :설선 주변에 위치할 눈 쌓인 나무의 근삿값
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE_HELPTEXT         :설선 주변에 위치할 눈 쌓인 나무의 근삿값입니다.
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_DYNAMIC_RANGE          :아한대 나무를 위해 계절에 따라 변하는 눈 쌓인 나무 범위: {STRING}
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_DYNAMIC_RANGE_HELPTEXT :계절에 따라 변하는 설선 설정을 사용할 때, 아한대 나무 배치를 위한 설선으로 사용할 설선 변동 비율입니다. 0%면 더 낮은 (겨울) 설선을 사용하고, 100%면 여름과 겨울의 설선 전체 범위를 사용합니다.
 
 STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS                           :도시 사이를 공용 도로로 연결: {STRING}
 STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_HELPTEXT                  :도시 사이를 공용 도로로 연결합니다. 지도가 더 크면 클 수록 시간이 더 많이 걸립니다.'커브를 최소화해서 건설'을 사용하면 도로가 되도록 격자 모양에 가깝게 만들어집니다.
