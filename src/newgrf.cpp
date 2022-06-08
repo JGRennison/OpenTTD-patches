@@ -5895,6 +5895,57 @@ static void TryMergeBoolMulCombineVarAction2Adjust(std::vector<DeterministicSpri
 	check_match();
 }
 
+/* Returns the number of adjusts to remove: 0: either, 1: current, 2: prev and current */
+static uint TryMergeVarAction2AdjustConstantOperations(DeterministicSpriteGroupAdjust &prev, DeterministicSpriteGroupAdjust &current)
+{
+	if (prev.type != DSGA_TYPE_NONE || prev.variable != 0x1A || prev.shift_num != 0) return 0;
+	if (current.type != DSGA_TYPE_NONE || current.variable != 0x1A || current.shift_num != 0) return 0;
+
+	switch (current.operation) {
+		case DSGA_OP_ADD:
+		case DSGA_OP_SUB:
+			if (prev.operation == current.operation) {
+				prev.and_mask += current.and_mask;
+				break;
+			}
+			if (prev.operation == ((current.operation == DSGA_OP_SUB) ? DSGA_OP_ADD : DSGA_OP_SUB)) {
+				prev.and_mask -= current.and_mask;
+				break;
+			}
+			return 0;
+
+		case DSGA_OP_OR:
+			if (prev.operation == DSGA_OP_OR) {
+				prev.and_mask |= current.and_mask;
+				break;
+			}
+			return 0;
+
+		case DSGA_OP_AND:
+			if (prev.operation == DSGA_OP_AND) {
+				prev.and_mask &= current.and_mask;
+				break;
+			}
+			return 0;
+
+		case DSGA_OP_XOR:
+			if (prev.operation == DSGA_OP_XOR) {
+				prev.and_mask ^= current.and_mask;
+				break;
+			}
+			return 0;
+
+		default:
+			return 0;
+	}
+
+	if (prev.and_mask == 0 && IsEvalAdjustWithZeroRemovable(prev.operation)) {
+		/* prev now does nothing, remove it as well */
+		return 2;
+	}
+	return 1;
+}
+
 static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group, DeterministicSpriteGroupAdjust &adjust)
 {
 	if (unlikely(HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2))) return;
@@ -5985,6 +6036,20 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 	auto handle_unpredictable_temp_store = [&]() {
 		reset_store_values();
 	};
+
+	auto try_merge_with_previous = [&]() {
+		if (adjust.variable == 0x1A && group->adjusts.size() >= 2) {
+			/* Merged this adjust into the previous one */
+			uint to_remove = TryMergeVarAction2AdjustConstantOperations(group->adjusts[group->adjusts.size() - 2], adjust);
+			if (to_remove > 0) group->adjusts.erase(group->adjusts.end() - to_remove, group->adjusts.end());
+
+			if (to_remove == 1 && group->adjusts.back().and_mask == 0 && IsEvalAdjustWithZeroAlwaysZero(group->adjusts.back().operation)) {
+				/* Operation always returns 0, replace it and any useless prior operations */
+				replace_with_constant_load(0);
+			}
+		}
+	};
+
 	if (adjust.variable == 0x7B && adjust.parameter == 0x7D) handle_unpredictable_temp_load();
 
 	VarAction2AdjustInferenceFlags non_const_var_inference = VA2AIF_NONE;
@@ -6183,6 +6248,9 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 				}
 			}
 			switch (adjust.operation) {
+				case DSGA_OP_ADD:
+					try_merge_with_previous();
+					break;
 				case DSGA_OP_SUB:
 					if (adjust.variable == 0x7D && adjust.shift_num == 0 && adjust.and_mask == 0xFFFFFFFF && group->adjusts.size() >= 2) {
 						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
@@ -6199,6 +6267,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 							}
 						}
 					}
+					try_merge_with_previous();
 					break;
 				case DSGA_OP_SMIN:
 					if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1 && group->adjusts.size() >= 2) {
@@ -6302,6 +6371,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 						state.inference = VA2AIF_SIGNED_NON_NEGATIVE;
 					}
 					state.inference |= non_const_var_inference;
+					try_merge_with_previous();
 					break;
 				case DSGA_OP_OR:
 					if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1 && (prev_inference & VA2AIF_ONE_OR_ZERO)) {
@@ -6311,6 +6381,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					if (adjust.and_mask <= 1) state.inference = prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
 					state.inference |= prev_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO) & non_const_var_inference;
 					if ((non_const_var_inference & VA2AIF_ONE_OR_ZERO) || (adjust.and_mask <= 1)) adjust.adjust_flags |= DSGAF_SKIP_ON_LSB_SET;
+					try_merge_with_previous();
 					break;
 				case DSGA_OP_XOR:
 					if (adjust.variable == 0x1A && adjust.shift_num == 0 && group->adjusts.size() >= 2) {
@@ -6376,6 +6447,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 						/* Single load tracking can handle bool inverts */
 						state.inference |= (prev_inference & VA2AIF_SINGLE_LOAD);
 					}
+					try_merge_with_previous();
 					break;
 				case DSGA_OP_MUL: {
 					if ((prev_inference & VA2AIF_ONE_OR_ZERO) && adjust.variable == 0x1A && adjust.shift_num == 0 && group->adjusts.size() >= 2) {
@@ -6545,6 +6617,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 						adjust.and_mask = shift_count;
 						state.inference = VA2AIF_SIGNED_NON_NEGATIVE;
 					}
+					break;
 				default:
 					break;
 			}
