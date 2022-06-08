@@ -706,6 +706,62 @@ static char *GetAdjustOperationName(char *str, const char *last, DeterministicSp
 	return str + seprintf(str, last, "\?\?\?(0x%X)", operation);
 }
 
+static char *DumpSpriteGroupAdjust(char *p, const char *last, const DeterministicSpriteGroupAdjust &adjust, int padding, uint32 &highlight_tag)
+{
+	if (adjust.variable == 0x7D) {
+		/* Temp storage load */
+		highlight_tag = (1 << 16) | (adjust.parameter & 0xFFFF);
+	}
+
+	auto append_flags = [&]() {
+		if (adjust.adjust_flags & DSGAF_SKIP_ON_ZERO) {
+			p += seprintf(p, last, ", skip on zero");
+		}
+		if (adjust.adjust_flags & DSGAF_SKIP_ON_LSB_SET) {
+			p += seprintf(p, last, ", skip on LSB set");
+		}
+	};
+
+	if (adjust.operation == DSGA_OP_TERNARY) {
+		p += seprintf(p, last, "%*sTERNARY: true: %X, false: %X", padding, "", adjust.and_mask, adjust.add_val);
+		append_flags();
+		return p;
+	}
+	if (adjust.operation == DSGA_OP_STO && adjust.type == DSGA_TYPE_NONE && adjust.variable == 0x1A && adjust.shift_num == 0) {
+		/* Temp storage store */
+		highlight_tag = (1 << 16) | (adjust.and_mask & 0xFFFF);
+	}
+	p += seprintf(p, last, "%*svar: %X", padding, "", adjust.variable);
+	if (adjust.variable == A2VRI_VEHICLE_CURRENT_SPEED_SCALED) {
+		p += seprintf(p, last, " (current_speed_scaled)");
+	} else if (adjust.variable >= 0x100) {
+		extern const GRFVariableMapDefinition _grf_action2_remappable_variables[];
+		for (const GRFVariableMapDefinition *info = _grf_action2_remappable_variables; info->name != nullptr; info++) {
+			if (adjust.variable == info->id) {
+				p += seprintf(p, last, " (%s)", info->name);
+				break;
+			}
+		}
+	}
+	if ((adjust.variable >= 0x60 && adjust.variable <= 0x7F && adjust.variable != 0x7E) || adjust.parameter != 0) p += seprintf(p, last, " (parameter: %X)", adjust.parameter);
+	p += seprintf(p, last, ", shift: %X, and: %X", adjust.shift_num, adjust.and_mask);
+	switch (adjust.type) {
+		case DSGA_TYPE_DIV: p += seprintf(p, last, ", add: %X, div: %X", adjust.add_val, adjust.divmod_val); break;
+		case DSGA_TYPE_MOD: p += seprintf(p, last, ", add: %X, mod: %X", adjust.add_val, adjust.divmod_val); break;
+		case DSGA_TYPE_EQ:  p += seprintf(p, last, ", eq: %X", adjust.add_val); break;
+		case DSGA_TYPE_NEQ: p += seprintf(p, last, ", neq: %X", adjust.add_val); break;
+		case DSGA_TYPE_NONE: break;
+	}
+	if (adjust.operation == DSGA_OP_STO_NC) {
+		p += seprintf(p, last, ", store to: %X", adjust.divmod_val);
+		highlight_tag = (1 << 16) | adjust.divmod_val;
+	}
+	p += seprintf(p, last, ", op: ");
+	p = GetAdjustOperationName(p, last, adjust.operation);
+	append_flags();
+	return p;
+}
+
 bool SpriteGroupDumper::use_shadows = false;
 
 void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint flags)
@@ -792,59 +848,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 			emit_start();
 			padding += 2;
 			for (const auto &adjust : (*adjusts)) {
-				char *p = this->buffer;
-				if (adjust.variable == 0x7D) {
-					/* Temp storage load */
-					highlight_tag = (1 << 16) | (adjust.parameter & 0xFFFF);
-				}
-
-				auto append_flags = [&]() {
-					if (adjust.adjust_flags & DSGAF_SKIP_ON_ZERO) {
-						p += seprintf(p, lastof(this->buffer), ", skip on zero");
-					}
-					if (adjust.adjust_flags & DSGAF_SKIP_ON_LSB_SET) {
-						p += seprintf(p, lastof(this->buffer), ", skip on LSB set");
-					}
-				};
-
-				if (adjust.operation == DSGA_OP_TERNARY) {
-					p += seprintf(p, lastof(this->buffer), "%*sTERNARY: true: %X, false: %X", padding, "", adjust.and_mask, adjust.add_val);
-					append_flags();
-					print();
-					continue;
-				}
-				if (adjust.operation == DSGA_OP_STO && adjust.type == DSGA_TYPE_NONE && adjust.variable == 0x1A && adjust.shift_num == 0) {
-					/* Temp storage store */
-					highlight_tag = (1 << 16) | (adjust.and_mask & 0xFFFF);
-				}
-				p += seprintf(p, lastof(this->buffer), "%*svar: %X", padding, "", adjust.variable);
-				if (adjust.variable == A2VRI_VEHICLE_CURRENT_SPEED_SCALED) {
-					p += seprintf(p, lastof(this->buffer), " (current_speed_scaled)");
-				} else if (adjust.variable >= 0x100) {
-					extern const GRFVariableMapDefinition _grf_action2_remappable_variables[];
-					for (const GRFVariableMapDefinition *info = _grf_action2_remappable_variables; info->name != nullptr; info++) {
-						if (adjust.variable == info->id) {
-							p += seprintf(p, lastof(this->buffer), " (%s)", info->name);
-							break;
-						}
-					}
-				}
-				if ((adjust.variable >= 0x60 && adjust.variable <= 0x7F && adjust.variable != 0x7E) || adjust.parameter != 0) p += seprintf(p, lastof(this->buffer), " (parameter: %X)", adjust.parameter);
-				p += seprintf(p, lastof(this->buffer), ", shift: %X, and: %X", adjust.shift_num, adjust.and_mask);
-				switch (adjust.type) {
-					case DSGA_TYPE_DIV: p += seprintf(p, lastof(this->buffer), ", add: %X, div: %X", adjust.add_val, adjust.divmod_val); break;
-					case DSGA_TYPE_MOD: p += seprintf(p, lastof(this->buffer), ", add: %X, mod: %X", adjust.add_val, adjust.divmod_val); break;
-					case DSGA_TYPE_EQ:  p += seprintf(p, lastof(this->buffer), ", eq: %X", adjust.add_val); break;
-					case DSGA_TYPE_NEQ: p += seprintf(p, lastof(this->buffer), ", neq: %X", adjust.add_val); break;
-					case DSGA_TYPE_NONE: break;
-				}
-				if (adjust.operation == DSGA_OP_STO_NC) {
-					p += seprintf(p, lastof(this->buffer), ", store to: %X", adjust.divmod_val);
-					highlight_tag = (1 << 16) | adjust.divmod_val;
-				}
-				p += seprintf(p, lastof(this->buffer), ", op: ");
-				p = GetAdjustOperationName(p, lastof(this->buffer), adjust.operation);
-				append_flags();
+				DumpSpriteGroupAdjust(this->buffer, lastof(this->buffer), adjust, padding, highlight_tag);
 				print();
 				if (adjust.variable == 0x7E && adjust.subroutine != nullptr) {
 					this->DumpSpriteGroup(adjust.subroutine, padding + 5, 0);
