@@ -5632,6 +5632,7 @@ enum VarAction2AdjustInferenceFlags {
 	VA2AIF_PREV_STORE_TMP        = 0x10,
 	VA2AIF_HAVE_CONSTANT         = 0x20,
 	VA2AIF_SINGLE_LOAD           = 0x40,
+	VA2AIF_MUL_BOOL              = 0x80,
 
 	VA2AIF_PREV_MASK             = VA2AIF_PREV_TERNARY | VA2AIF_PREV_MASK_ADJUST | VA2AIF_PREV_STORE_TMP,
 };
@@ -5793,6 +5794,107 @@ static const DeterministicSpriteGroupAdjust *GetVarAction2PreviousSingleLoadAdju
 	return nullptr;
 }
 
+/*
+ * Find and replace the result of: (var * flag) + (var * !flag) with var
+ * "+" may be ADD, OR or XOR.
+ */
+static void TryMergeBoolMulCombineVarAction2Adjust(std::vector<DeterministicSpriteGroupAdjust> &adjusts, const int adjust_index)
+{
+	uint8 store_var = adjusts[adjust_index].parameter;
+
+	const DeterministicSpriteGroupAdjust *a1 = nullptr;
+	const DeterministicSpriteGroupAdjust *a2 = nullptr;
+	const DeterministicSpriteGroupAdjust *b1 = nullptr;
+	const DeterministicSpriteGroupAdjust *b2 = nullptr;
+
+	auto find_adjusts = [&](int start_index, const DeterministicSpriteGroupAdjust *&mul, const DeterministicSpriteGroupAdjust *&rst) {
+		bool have_mul = false;
+		for (int i = start_index; i >= 0; i--) {
+			const DeterministicSpriteGroupAdjust &prev = adjusts[i];
+			if (prev.variable == 0x7E || prev.variable == 0x7B) {
+				/* Procedure call or load depends on the last value, don't use or go past this */
+				return;
+			}
+			if (prev.operation == DSGA_OP_RST) {
+				if (have_mul) {
+					rst = &prev;
+				}
+				return;
+			} else if (prev.operation == DSGA_OP_STO) {
+				if (prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask < 0x100) {
+					/* Temp store */
+					if (prev.and_mask == store_var) return;
+				} else {
+					/* Special register store or unpredictable store, don't use or go past this */
+					return;
+				}
+			} else if (prev.operation == DSGA_OP_MUL && !have_mul) {
+				mul = &prev;
+				have_mul = true;
+			} else {
+				return;
+			}
+		}
+	};
+
+	find_adjusts(adjust_index - 1, a1, a2);
+	if (a1 == nullptr || a2 == nullptr) return;
+
+	/* Find offset of referenced store */
+	int store_index = -1;
+	for (int i = adjust_index - 1; i >= 0; i--) {
+		const DeterministicSpriteGroupAdjust &prev = adjusts[i];
+		if (prev.variable == 0x7E) {
+			/* Procedure call, don't use or go past this */
+			return;
+		}
+		if (prev.operation == DSGA_OP_STO) {
+			if (prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask < 0x100) {
+				/* Temp store */
+				if (prev.and_mask == store_var) {
+					store_index = i;
+					break;
+				}
+			} else {
+				/* Special register store or unpredictable store, don't use or go past this */
+				return;
+			}
+		}
+	}
+	if (store_index < 0) return;
+
+	find_adjusts(store_index - 1, b1, b2);
+	if (b1 == nullptr || b2 == nullptr) return;
+
+	/* Sanity check to avoid being confused by bizarre inputs */
+	if (std::tie(a1->variable, a1->parameter) == std::tie(a2->variable, a2->parameter)) return;
+	if (std::tie(b1->variable, b1->parameter) == std::tie(b2->variable, b2->parameter)) return;
+
+	if (std::tie(a1->variable, a1->parameter) == std::tie(b2->variable, b2->parameter)) std::swap(a1, a2);
+
+	auto check_match = [&]() -> bool {
+		if (IsConstantComparisonAdjustType(a1->type) && InvertConstantComparisonAdjustType(a1->type) == b1->type &&
+				(std::tie(a1->variable, a1->shift_num, a1->parameter, a1->and_mask, a1->add_val, a1->divmod_val) ==
+				std::tie(b1->variable, b1->shift_num, b1->parameter, b1->and_mask, b1->add_val, b1->divmod_val)) &&
+				IsIdenticalValueLoad(a2, b2)) {
+			/* Success */
+			DeterministicSpriteGroupAdjust &adjust = adjusts[adjust_index];
+			adjust.operation = DSGA_OP_RST;
+			adjust.adjust_flags = DSGAF_NONE;
+			std::tie(adjust.type, adjust.variable, adjust.shift_num, adjust.parameter, adjust.and_mask, adjust.add_val, adjust.divmod_val) =
+						std::tie(a2->type, a2->variable, a2->shift_num, a2->parameter, a2->and_mask, a2->add_val, a2->divmod_val);
+			return true;
+		}
+		return false;
+	};
+	if (check_match()) return;
+
+	std::swap(a1, a2);
+	std::swap(b1, b2);
+
+	check_match();
+}
+
 static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group, DeterministicSpriteGroupAdjust &adjust)
 {
 	if (unlikely(HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2))) return;
@@ -5916,7 +6018,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 				}
 			} else {
 				if (adjust.type == DSGA_TYPE_NONE) {
-					non_const_var_inference = store.inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
+					non_const_var_inference = store.inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO | VA2AIF_MUL_BOOL);
 				}
 				if (store.inference & VA2AIF_SINGLE_LOAD) {
 					/* Not possible to substitute this here, but it may be possible in the DSE pass */
@@ -5948,6 +6050,32 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 		if (prev_load != nullptr && MemCmpT<DeterministicSpriteGroupAdjust>(prev_load, &adjust) == 0) {
 			group->adjusts.pop_back();
 			state.inference = prev_inference;
+			return;
+		}
+	}
+
+	if ((prev_inference & VA2AIF_MUL_BOOL) && (non_const_var_inference & VA2AIF_MUL_BOOL) &&
+			(adjust.operation == DSGA_OP_ADD || adjust.operation == DSGA_OP_OR || adjust.operation == DSGA_OP_XOR) &&
+			adjust.variable == 0x7D && adjust.parameter < 0x100 && adjust.type == DSGA_TYPE_NONE && adjust.shift_num == 0 && adjust.and_mask == 0xFFFFFFFF) {
+		TryMergeBoolMulCombineVarAction2Adjust(group->adjusts, (int)(group->adjusts.size() - 1));
+	}
+
+	if (group->adjusts.size() >= 2 && adjust.operation == DSGA_OP_RST && adjust.variable != 0x7B) {
+		/* See if any previous adjusts can be removed */
+		bool removed = false;
+		while (group->adjusts.size() >= 2) {
+			const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+			if (prev.variable != 0x7E && !IsEvalAdjustWithSideEffects(prev.operation)) {
+				/* Delete useless operation */
+				group->adjusts.erase(group->adjusts.end() - 2);
+				removed = true;
+			} else {
+				break;
+			}
+		}
+		if (removed) {
+			state.inference = prev_inference;
+			OptimiseVarAction2Adjust(state, feature, varsize, group, group->adjusts.back());
 			return;
 		}
 	}
@@ -6026,6 +6154,9 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 			if (adjust.operation == DSGA_OP_OR && (prev_inference & VA2AIF_ONE_OR_ZERO) && adjust.variable != 0x7E) {
 				adjust.adjust_flags |= DSGAF_SKIP_ON_LSB_SET;
 			}
+			if (adjust.operation == DSGA_OP_MUL && adjust.variable != 0x7E) {
+				state.inference |= VA2AIF_MUL_BOOL;
+			}
 		}
 	} else {
 		if (adjust.and_mask == 0 && IsEvalAdjustWithZeroRemovable(adjust.operation)) {
@@ -6045,7 +6176,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 						/* Convert: store, load var, commutative op on stored --> (dead) store, commutative op var */
 						prev.operation = adjust.operation;
 						group->adjusts.pop_back();
-						state.inference = non_const_var_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO);
+						state.inference = non_const_var_inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO | VA2AIF_MUL_BOOL);
 						OptimiseVarAction2Adjust(state, feature, varsize, group, group->adjusts.back());
 						return;
 					}
@@ -6291,6 +6422,9 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 						if (((uint64)group->adjusts[group->adjusts.size() - 2].and_mask) * ((uint64)adjust.and_mask) < ((uint64)sign_bit)) {
 							state.inference |= VA2AIF_SIGNED_NON_NEGATIVE;
 						}
+					}
+					if ((prev_inference & VA2AIF_ONE_OR_ZERO) || (non_const_var_inference & VA2AIF_ONE_OR_ZERO)) {
+						state.inference |= VA2AIF_MUL_BOOL;
 					}
 					break;
 				}
