@@ -389,6 +389,24 @@ inline bool IsEvalAdjustWithZeroLastValueAlwaysZero(DeterministicSpriteGroupAdju
 	}
 }
 
+inline bool IsConstantComparisonAdjustType(DeterministicSpriteGroupAdjustType adjust_type)
+{
+	switch (adjust_type) {
+		case DSGA_TYPE_EQ:
+		case DSGA_TYPE_NEQ:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+inline DeterministicSpriteGroupAdjustType InvertConstantComparisonAdjustType(DeterministicSpriteGroupAdjustType adjust_type)
+{
+	assert(IsConstantComparisonAdjustType(adjust_type));
+	return (adjust_type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
+}
+
 struct DeterministicSpriteGroupAdjust {
 	DeterministicSpriteGroupAdjustOperation operation;
 	DeterministicSpriteGroupAdjustType type;

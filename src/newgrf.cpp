@@ -5963,7 +5963,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 		} else if (adjust.operation == DSGA_OP_RST) {
 			state.inference = VA2AIF_SINGLE_LOAD;
 		}
-		if (adjust.type == DSGA_TYPE_EQ || adjust.type == DSGA_TYPE_NEQ) {
+		if (IsConstantComparisonAdjustType(adjust.type)) {
 			if (adjust.operation == DSGA_OP_RST) {
 				state.inference |= VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO;
 			} else if (adjust.operation == DSGA_OP_OR || adjust.operation == DSGA_OP_XOR || adjust.operation == DSGA_OP_AND) {
@@ -6146,20 +6146,20 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 								state.inference = VA2AIF_PREV_TERNARY;
 								break;
 							}
-							if (prev.operation == DSGA_OP_RST && (prev.type == DSGA_TYPE_EQ || prev.type == DSGA_TYPE_NEQ)) {
-								prev.type = (prev.type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
+							if (prev.operation == DSGA_OP_RST && IsConstantComparisonAdjustType(prev.type)) {
+								prev.type = InvertConstantComparisonAdjustType(prev.type);
 								group->adjusts.pop_back();
 								state.inference = VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO | VA2AIF_SINGLE_LOAD;
 								break;
 							}
-							if (prev.operation == DSGA_OP_OR && (prev.type == DSGA_TYPE_EQ || prev.type == DSGA_TYPE_NEQ || (prev.type == DSGA_TYPE_NONE && (prev.adjust_flags & DSGAF_SKIP_ON_LSB_SET))) && group->adjusts.size() >= 3) {
+							if (prev.operation == DSGA_OP_OR && (IsConstantComparisonAdjustType(prev.type) || (prev.type == DSGA_TYPE_NONE && (prev.adjust_flags & DSGAF_SKIP_ON_LSB_SET))) && group->adjusts.size() >= 3) {
 								DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
 								bool found = false;
 								if (IsEvalAdjustOperationRelationalComparison(prev2.operation)) {
 									prev2.operation = InvertEvalAdjustRelationalComparisonOperation(prev2.operation);
 									found = true;
-								} else if (prev2.operation == DSGA_OP_RST && (prev2.type == DSGA_TYPE_EQ || prev2.type == DSGA_TYPE_NEQ) ) {
-									prev2.type = (prev2.type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
+								} else if (prev2.operation == DSGA_OP_RST && IsConstantComparisonAdjustType(prev2.type)) {
+									prev2.type = InvertConstantComparisonAdjustType(prev2.type);
 									found = true;
 								}
 								if (found) {
@@ -6167,7 +6167,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 										prev.type = DSGA_TYPE_EQ;
 										prev.add_val = 0;
 									} else {
-										prev.type = (prev.type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
+										prev.type = InvertConstantComparisonAdjustType(prev.type);
 									}
 									prev.operation = DSGA_OP_AND;
 									prev.adjust_flags = DSGAF_SKIP_ON_ZERO;
@@ -6264,10 +6264,10 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 							if (prev_inference & VA2AIF_SINGLE_LOAD) {
 								bool invert = false;
 								const DeterministicSpriteGroupAdjust *prev_load = get_prev_single_load(&invert);
-								if (prev_load != nullptr && (!invert || prev_load->type == DSGA_TYPE_EQ || prev_load->type == DSGA_TYPE_NEQ)) {
+								if (prev_load != nullptr && (!invert || IsConstantComparisonAdjustType(prev_load->type))) {
 									store.inference |= VA2AIF_SINGLE_LOAD;
 									store.var_source.type = prev_load->type;
-									if (invert) store.var_source.type = (store.var_source.type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
+									if (invert) store.var_source.type = InvertConstantComparisonAdjustType(store.var_source.type);
 									store.var_source.variable = prev_load->variable;
 									store.var_source.shift_num = prev_load->shift_num;
 									store.var_source.parameter = prev_load->parameter;
@@ -6593,7 +6593,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(Determinist
 
 		DeterministicSpriteGroupAdjust &adjust = group->adjusts[i];
 
-		if ((adjust.type == DSGA_TYPE_NONE || adjust.type == DSGA_TYPE_EQ || adjust.type == DSGA_TYPE_NEQ) && adjust.operation == DSGA_OP_RST && adjust.variable != 0x7E) {
+		if ((adjust.type == DSGA_TYPE_NONE || IsConstantComparisonAdjustType(adjust.type)) && adjust.operation == DSGA_OP_RST && adjust.variable != 0x7E) {
 			src_adjust = (int)i;
 			is_constant = (adjust.variable == 0x1A);
 			continue;
@@ -6832,7 +6832,7 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 						return false;
 				}
 			}
-			if (target.type == DSGA_TYPE_NONE && target.shift_num == 0 && (target.and_mask == 0xFFFFFFFF || ((var_src_type == DSGA_TYPE_EQ || var_src_type == DSGA_TYPE_NEQ) && (target.and_mask & 1)))) {
+			if (target.type == DSGA_TYPE_NONE && target.shift_num == 0 && (target.and_mask == 0xFFFFFFFF || (IsConstantComparisonAdjustType(var_src_type) && (target.and_mask & 1)))) {
 				target.type = var_src_type;
 				target.variable = var_src->variable;
 				target.shift_num = var_src->shift_num;
@@ -6841,11 +6841,11 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 				target.add_val = var_src->add_val;
 				target.divmod_val = var_src->divmod_val;
 				return true;
-			} else if ((target.type == DSGA_TYPE_EQ || target.type == DSGA_TYPE_NEQ) && target.shift_num == 0 && (target.and_mask & 1) && target.add_val == 0 &&
-					(var_src_type == DSGA_TYPE_EQ || var_src_type == DSGA_TYPE_NEQ)) {
+			} else if (IsConstantComparisonAdjustType(target.type) && target.shift_num == 0 && (target.and_mask & 1) && target.add_val == 0 &&
+					IsConstantComparisonAdjustType(var_src_type)) {
 				/* DSGA_TYPE_EQ/NEQ on target are OK if add_val is 0 because this is a boolean invert/convert of the incoming DSGA_TYPE_EQ/NEQ */
 				if (target.type == DSGA_TYPE_EQ) {
-					target.type = (var_src_type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
+					target.type = InvertConstantComparisonAdjustType(var_src_type);
 				} else {
 					target.type = var_src_type;
 				}
@@ -6966,8 +6966,8 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 							if (IsEvalAdjustOperationRelationalComparison(prev.operation)) {
 								prev.operation = InvertEvalAdjustRelationalComparisonOperation(prev.operation);
 								erase_adjust(i + 1);
-							} else if (prev.operation == DSGA_OP_RST && (prev.type == DSGA_TYPE_EQ || prev.type == DSGA_TYPE_NEQ)) {
-								prev.type = (prev.type == DSGA_TYPE_EQ) ? DSGA_TYPE_NEQ : DSGA_TYPE_EQ;
+							} else if (prev.operation == DSGA_OP_RST && IsConstantComparisonAdjustType(prev.type)) {
+								prev.type = InvertConstantComparisonAdjustType(prev.type);
 								erase_adjust(i + 1);
 							}
 						}
