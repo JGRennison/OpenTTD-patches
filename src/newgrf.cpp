@@ -5733,10 +5733,22 @@ static bool IsFeatureUsableForDSE(GrfSpecFeature feature)
 	return (feature != GSF_STATIONS);
 }
 
+static bool IsIdenticalValueLoad(const DeterministicSpriteGroupAdjust *a, const DeterministicSpriteGroupAdjust *b)
+{
+	if (a == nullptr && b == nullptr) return true;
+	if (a == nullptr || b == nullptr) return false;
+
+	if (a->variable == 0x7B || a->variable == 0x7E) return false;
+
+	return std::tie(a->type, a->variable, a->shift_num, a->parameter, a->and_mask, a->add_val, a->divmod_val) ==
+			std::tie(b->type, b->variable, b->shift_num, b->parameter, b->and_mask, b->add_val, b->divmod_val);
+}
+
 static const DeterministicSpriteGroupAdjust *GetVarAction2PreviousSingleLoadAdjust(const std::vector<DeterministicSpriteGroupAdjust> &adjusts, int start_index, bool *is_inverted)
 {
 	bool passed_store_perm = false;
 	if (is_inverted != nullptr) *is_inverted = false;
+	std::bitset<256> seen_stores;
 	for (int i = start_index; i >= 0; i--) {
 		const DeterministicSpriteGroupAdjust &prev = adjusts[i];
 		if (prev.variable == 0x7E) {
@@ -5752,10 +5764,15 @@ static const DeterministicSpriteGroupAdjust *GetVarAction2PreviousSingleLoadAdju
 				/* If we passed a store perm then a load from permanent storage is not a valid previous load as we may have clobbered it */
 				return nullptr;
 			}
+			if (prev.variable == 0x7D && prev.parameter < 0x100 && seen_stores[prev.parameter]) {
+				/* If we passed a store then a load from that same store is not valid */
+				return nullptr;
+			}
 			return &prev;
 		} else if (prev.operation == DSGA_OP_STO) {
 			if (prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask < 0x100) {
 				/* Temp store */
+				seen_stores.set(prev.and_mask, true);
 				continue;
 			} else {
 				/* Special register store or unpredictable store, don't try to optimise following load */
@@ -7042,19 +7059,41 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 								break;
 							}
 						}
-					} else if (i >= 0 && i + 1 < (int)group->adjusts.size()) {
-						/* See if having removed the store, there is now a useful pair of operations which can be combined */
-						DeterministicSpriteGroupAdjust &prev = group->adjusts[i];
-						DeterministicSpriteGroupAdjust &next = group->adjusts[i + 1];
-						if (next.type == DSGA_TYPE_NONE && next.operation == DSGA_OP_XOR && next.variable == 0x1A && next.shift_num == 0 && next.and_mask == 1) {
-							/* XOR: boolean invert */
-							if (IsEvalAdjustOperationRelationalComparison(prev.operation)) {
-								prev.operation = InvertEvalAdjustRelationalComparisonOperation(prev.operation);
-								erase_adjust(i + 1);
-							} else if (prev.operation == DSGA_OP_RST && IsConstantComparisonAdjustType(prev.type)) {
-								prev.type = InvertConstantComparisonAdjustType(prev.type);
-								erase_adjust(i + 1);
+					} else {
+						while (i >= 0 && i + 1 < (int)group->adjusts.size()) {
+							/* See if having removed the store, there is now a useful pair of operations which can be combined */
+							DeterministicSpriteGroupAdjust &prev = group->adjusts[i];
+							DeterministicSpriteGroupAdjust &next = group->adjusts[i + 1];
+							if (next.type == DSGA_TYPE_NONE && next.operation == DSGA_OP_XOR && next.variable == 0x1A && next.shift_num == 0 && next.and_mask == 1) {
+								/* XOR: boolean invert */
+								if (IsEvalAdjustOperationRelationalComparison(prev.operation)) {
+									prev.operation = InvertEvalAdjustRelationalComparisonOperation(prev.operation);
+									erase_adjust(i + 1);
+									continue;
+								} else if (prev.operation == DSGA_OP_RST && IsConstantComparisonAdjustType(prev.type)) {
+									prev.type = InvertConstantComparisonAdjustType(prev.type);
+									erase_adjust(i + 1);
+									continue;
+								}
 							}
+							if (i >= 1 && prev.type == DSGA_TYPE_NONE && IsEvalAdjustOperationRelationalComparison(prev.operation) &&
+									prev.variable == 0x1A && prev.shift_num == 0 && next.operation == DSGA_OP_MUL) {
+								if (((prev.operation == DSGA_OP_SGT && (prev.and_mask == 0 || prev.and_mask == (uint)-1)) || (prev.operation == DSGA_OP_SGE && (prev.and_mask == 0 || prev.and_mask == 1))) &&
+										IsIdenticalValueLoad(GetVarAction2PreviousSingleLoadAdjust(group->adjusts, i - 1, nullptr), &next)) {
+									prev.operation = DSGA_OP_SMAX;
+									prev.and_mask = 0;
+									erase_adjust(i + 1);
+									continue;
+								}
+								if (((prev.operation == DSGA_OP_SLE && (prev.and_mask == 0 || prev.and_mask == (uint)-1)) || (prev.operation == DSGA_OP_SLT && (prev.and_mask == 0 || prev.and_mask == 1))) &&
+										IsIdenticalValueLoad(GetVarAction2PreviousSingleLoadAdjust(group->adjusts, i - 1, nullptr), &next)) {
+									prev.operation = DSGA_OP_SMIN;
+									prev.and_mask = 0;
+									erase_adjust(i + 1);
+									continue;
+								}
+							}
+							break;
 						}
 					}
 					if (pending_restart) restart();
