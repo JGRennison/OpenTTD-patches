@@ -6941,20 +6941,12 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 										const DeterministicSpriteGroupAdjust &next2 = group->adjusts[i + 2];
 										if (next2.type == DSGA_TYPE_NONE && next2.variable == 0x7D && next2.shift_num == 0 &&
 												next2.and_mask == 0xFFFFFFFF && next2.parameter == prev.and_mask) {
-											bool found = false;
-											if (IsEvalAdjustOperationCommutative(next2.operation)) {
-												/* Convert: store, load var, commutative op on stored --> (dead) store, commutative op var */
-												next.operation = next2.operation;
+											if (IsEvalAdjustOperationReversable(next2.operation)) {
+												/* Convert: store, load var, (anti-)commutative op on stored --> (dead) store, (reversed) (anti-)commutative op var */
+												next.operation = ReverseEvalAdjustOperation(next2.operation);
 												if (IsEvalAdjustWithZeroLastValueAlwaysZero(next.operation)) {
 													next.adjust_flags |= DSGAF_SKIP_ON_ZERO;
 												}
-												found = true;
-											} else if (next2.operation == DSGA_OP_SUB || next2.operation == DSGA_OP_RSUB) {
-												/* Convert: store, load var, sub/rsub op on stored --> (dead) store, rsub/sub op var */
-												next.operation = (next2.operation == DSGA_OP_SUB) ? DSGA_OP_RSUB : DSGA_OP_SUB;
-												found = true;
-											}
-											if (found) {
 												erase_adjust(i + 2);
 												restart();
 												break;

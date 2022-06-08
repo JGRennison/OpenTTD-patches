@@ -300,6 +300,38 @@ inline bool IsEvalAdjustOperationCommutative(DeterministicSpriteGroupAdjustOpera
 	}
 }
 
+inline bool IsEvalAdjustOperationAntiCommutative(DeterministicSpriteGroupAdjustOperation op)
+{
+	switch (op) {
+		case DSGA_OP_SUB:
+		case DSGA_OP_RSUB:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+inline bool IsEvalAdjustOperationReversable(DeterministicSpriteGroupAdjustOperation op)
+{
+	return IsEvalAdjustOperationCommutative(op) || IsEvalAdjustOperationAntiCommutative(op);
+}
+
+inline DeterministicSpriteGroupAdjustOperation ReverseEvalAdjustOperation(DeterministicSpriteGroupAdjustOperation op)
+{
+	if (IsEvalAdjustOperationCommutative(op)) return op;
+
+	switch (op) {
+		case DSGA_OP_SUB:
+			return DSGA_OP_RSUB;
+		case DSGA_OP_RSUB:
+			return DSGA_OP_SUB;
+
+		default:
+			NOT_REACHED();
+	}
+}
+
 inline bool IsEvalAdjustOperationOnConstantEffectiveLoad(DeterministicSpriteGroupAdjustOperation op, uint32 constant)
 {
 	switch (op) {
