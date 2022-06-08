@@ -6650,6 +6650,55 @@ static void OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(Determinist
 	}
 }
 
+static void OptimiseVarAction2DeterministicSpriteGroupAdjustOrdering(DeterministicSpriteGroup *group)
+{
+	if (HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_ADJUST_ORDERING)) return;
+
+	auto acceptable_variable = [](uint16 variable) -> bool {
+		return variable != 0x7E && variable != 0x7B;
+	};
+
+	auto get_variable_expense = [&](uint16 variable) -> int {
+		if (variable == 0x1A) return -15;
+		if (IsVariableVeryCheap(variable, group->feature)) return -10;
+		if (variable == 0x7D || variable == 0x7C) return -5;
+		if (IsExpensiveVariable(variable, group->feature, group->var_scope)) return 10;
+		return 0;
+	};
+
+	for (size_t i = 0; i + 1 < group->adjusts.size(); i++) {
+		DeterministicSpriteGroupAdjust &adjust = group->adjusts[i];
+
+		if (adjust.operation == DSGA_OP_RST && acceptable_variable(adjust.variable)) {
+			DeterministicSpriteGroupAdjustOperation operation = group->adjusts[i + 1].operation;
+			const size_t start = i;
+			size_t end = i;
+			if (IsEvalAdjustWithZeroLastValueAlwaysZero(operation) && IsEvalAdjustOperationCommutative(operation)) {
+				for (size_t j = start + 1; j < group->adjusts.size(); j++) {
+					DeterministicSpriteGroupAdjust &next = group->adjusts[j];
+					if (next.operation == operation && acceptable_variable(next.variable) && (next.adjust_flags & DSGAF_SKIP_ON_ZERO)) {
+						end = j;
+					} else {
+						break;
+					}
+				}
+			}
+			if (end != start) {
+				adjust.operation = operation;
+				adjust.adjust_flags |= DSGAF_SKIP_ON_ZERO;
+
+				/* Sort so that the least expensive comes first */
+				std::stable_sort(group->adjusts.begin() + start, group->adjusts.begin() + end + 1, [&](const DeterministicSpriteGroupAdjust &a, const DeterministicSpriteGroupAdjust &b) -> bool {
+					return get_variable_expense(a.variable) < get_variable_expense(b.variable);
+				});
+
+				adjust.operation = DSGA_OP_RST;
+				adjust.adjust_flags &= ~DSGAF_SKIP_ON_ZERO;
+			}
+		}
+	}
+}
+
 static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group)
 {
 	if (unlikely(HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2))) return;
@@ -6770,9 +6819,10 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 	if (dse_candidate) {
 		_cur.dead_store_elimination_candidates.push_back(group);
 		group->dsg_flags |= DSGF_VAR_TRACKING_PENDING;
+	} else {
+		OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(group);
+		OptimiseVarAction2DeterministicSpriteGroupAdjustOrdering(group);
 	}
-
-	if (!dse_candidate) OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(group);
 
 	if (state.check_expensive_vars && !HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_EXPENSIVE_VARS)) {
 		if (dse_candidate) {
@@ -7077,6 +7127,7 @@ static void HandleVarAction2OptimisationPasses()
 		}
 
 		OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(group);
+		OptimiseVarAction2DeterministicSpriteGroupAdjustOrdering(group);
 	}
 
 	for (DeterministicSpriteGroup *group : _cur.pending_expensive_var_checks) {
