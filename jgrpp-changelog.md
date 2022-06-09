@@ -2,6 +2,34 @@
 
 * * *
 
+### v0.47.3 (2022-06-09)
+* Fix being able to add/remove/modify tunnel/bridge signals when occupied by trains, which could result in train or game crashes.
+* Fix crash when building public roads encountered level crossings and other non-normal road.
+* Fix performance problems refreshing the cargodist link graph when order lists contained many conditional order loops.
+* Fix timetable autofill activation when scheduled dispatch is active.
+* Disabling timetable automation without holding the ctrl key no longer clears the timetable.
+* Support railtype-dependant GRF train speed limits with realistic braking.
+* Fix selecting a savegame with realistic braking enabled in the load savegame window triggering realistic braking signal checks on the current game.
+* Allow ctrl-clicking on trains of other companies on own track to start/stop.
+* Add setting to disable water animation depending on zoom level.
+* Add setting to disable object expiry after a given year.
+* Add setting to ignore object introduction dates.
+* Allow linking only inputs or outputs to smallmap and viewport map mode in industry chain window.
+* Viewport map mode:
+  * Fix ships not always updating in viewport map mode.
+  * Fix the industry chain window not always updating viewports in industry map mode.
+  * Fix scrolling viewport overlay over vehicle dots on animated blitters.
+  * Fix scrolling viewport overlay on emscripten.
+  * Allow using the measurement tool in viewport map mode.
+* Trees:
+  * Fix tree tile grass not growing when tree growth/spread was disabled.
+  * Make tree tile grass growth speed independent of the tree growth speed.
+  * Adjust positioning of seasonally variable snow line width for arctic tree placement.
+* Improve reliability of crashlog writing on Unix/Linux and MacOS.
+* Add various features to the NewGRF debug window.
+* Various NewGRF and realistic braking related minor performance improvements.
+* Bump trunk base from commit e79724ea22b2c4428ab402a808b7ab777fec2985 to commit 0d3756818fc2178242b0a72d979131a9cb376d76.
+
 ### v0.47.2 (2022-05-01)
 * Fix crash and/or multiplayer desync after a new industry is built within the catchment of an existing station.
 * Fix multiplayer desync after a raise land action removed a water object next to a dock.
