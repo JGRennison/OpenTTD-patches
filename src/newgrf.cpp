@@ -6877,7 +6877,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(Determinist
 				}
 				const DeterministicSpriteGroupAdjust &next = group->adjusts[j];
 				if (next.operation == DSGA_OP_RST) {
-					ok = true;
+					ok = (next.variable != 0x7B);
 					break;
 				}
 				if (is_constant && next.operation == DSGA_OP_STO_NC) {
