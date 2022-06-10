@@ -5796,6 +5796,34 @@ static const DeterministicSpriteGroupAdjust *GetVarAction2PreviousSingleLoadAdju
 	return nullptr;
 }
 
+static const DeterministicSpriteGroupAdjust *GetVarAction2PreviousSingleStoreAdjust(const std::vector<DeterministicSpriteGroupAdjust> &adjusts, int start_index, bool *is_inverted)
+{
+	if (is_inverted != nullptr) *is_inverted = false;
+	for (int i = start_index; i >= 0; i--) {
+		const DeterministicSpriteGroupAdjust &prev = adjusts[i];
+		if (prev.variable == 0x7E) {
+			/* Procedure call, don't use or go past this */
+			break;
+		}
+		if (prev.operation == DSGA_OP_STO) {
+			if (prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask < 0x100) {
+				/* Temp store */
+				return &prev;
+			} else {
+				/* Special register store or unpredictable store, don't try to optimise following load */
+				break;
+			}
+		} else if (prev.operation == DSGA_OP_XOR && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == 1 && is_inverted != nullptr) {
+			/* XOR invert */
+			*is_inverted = !(*is_inverted);
+			continue;
+		} else {
+			break;
+		}
+	}
+	return nullptr;
+}
+
 /*
  * Find and replace the result of: (var * flag) + (var * !flag) with var
  * "+" may be ADD, OR or XOR.
@@ -6130,6 +6158,10 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 
 	auto get_prev_single_load = [&](bool *invert) -> const DeterministicSpriteGroupAdjust* {
 		return GetVarAction2PreviousSingleLoadAdjust(group->adjusts, (int)group->adjusts.size() - 2, invert);
+	};
+
+	auto get_prev_single_store = [&](bool *invert) -> const DeterministicSpriteGroupAdjust* {
+		return GetVarAction2PreviousSingleStoreAdjust(group->adjusts, (int)group->adjusts.size() - 2, invert);
 	};
 
 	if ((prev_inference & VA2AIF_SINGLE_LOAD) && adjust.operation == DSGA_OP_RST && adjust.variable != 0x1A && adjust.variable != 0x7D && adjust.variable != 0x7E) {
@@ -6564,7 +6596,22 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 									store.var_source.and_mask = prev_load->and_mask;
 									store.var_source.add_val = prev_load->add_val;
 									store.var_source.divmod_val = prev_load->divmod_val;
+									break;
 								}
+							}
+							bool invert_store = false;
+							const DeterministicSpriteGroupAdjust *prev_store = get_prev_single_store((prev_inference & VA2AIF_ONE_OR_ZERO) ? &invert_store : nullptr);
+							if (prev_store != nullptr) {
+								/* This store is a clone of the previous store, or inverted clone of the previous store (bool) */
+								store.inference |= VA2AIF_SINGLE_LOAD;
+								store.var_source.type = (invert_store ? DSGA_TYPE_EQ : DSGA_TYPE_NONE);
+								store.var_source.variable = 0x7D;
+								store.var_source.shift_num = 0;
+								store.var_source.parameter = prev_store->and_mask | (state.temp_stores[prev_store->and_mask].version << 8);
+								store.var_source.and_mask = 0xFFFFFFFF;
+								store.var_source.add_val = 0;
+								store.var_source.divmod_val = 0;
+								break;
 							}
 						} else {
 							/* Store to special register, this can change the result of future variable loads for some variables.
