@@ -5652,6 +5652,7 @@ struct VarAction2TempStoreInference {
 	VarAction2AdjustInferenceFlags inference = VA2AIF_NONE;
 	uint32 store_constant = 0;
 	VarAction2TempStoreInferenceVarSource var_source;
+	uint version = 0;
 };
 
 struct VarAction2InferenceBackup {
@@ -5669,6 +5670,7 @@ struct VarAction2OptimiseState {
 	bool seen_procedure_call = false;
 	bool check_expensive_vars = false;
 	bool enable_dse = false;
+	uint default_variable_version = 0;
 
 	inline VarAction2GroupVariableTracking *GetVarTracking(DeterministicSpriteGroup *group)
 	{
@@ -5765,7 +5767,7 @@ static const DeterministicSpriteGroupAdjust *GetVarAction2PreviousSingleLoadAdju
 				/* If we passed a store perm then a load from permanent storage is not a valid previous load as we may have clobbered it */
 				return nullptr;
 			}
-			if (prev.variable == 0x7D && prev.parameter < 0x100 && seen_stores[prev.parameter]) {
+			if (prev.variable == 0x7D && seen_stores[prev.parameter & 0xFF]) {
 				/* If we passed a store then a load from that same store is not valid */
 				return nullptr;
 			}
@@ -5800,7 +5802,7 @@ static const DeterministicSpriteGroupAdjust *GetVarAction2PreviousSingleLoadAdju
  */
 static void TryMergeBoolMulCombineVarAction2Adjust(std::vector<DeterministicSpriteGroupAdjust> &adjusts, const int adjust_index)
 {
-	uint8 store_var = adjusts[adjust_index].parameter;
+	uint store_var = adjusts[adjust_index].parameter;
 
 	const DeterministicSpriteGroupAdjust *a1 = nullptr;
 	const DeterministicSpriteGroupAdjust *a2 = nullptr;
@@ -5823,7 +5825,7 @@ static void TryMergeBoolMulCombineVarAction2Adjust(std::vector<DeterministicSpri
 			} else if (prev.operation == DSGA_OP_STO) {
 				if (prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask < 0x100) {
 					/* Temp store */
-					if (prev.and_mask == store_var) return;
+					if (prev.and_mask == (store_var & 0xFF)) return;
 				} else {
 					/* Special register store or unpredictable store, don't use or go past this */
 					return;
@@ -5851,7 +5853,7 @@ static void TryMergeBoolMulCombineVarAction2Adjust(std::vector<DeterministicSpri
 		if (prev.operation == DSGA_OP_STO) {
 			if (prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask < 0x100) {
 				/* Temp store */
-				if (prev.and_mask == store_var) {
+				if (prev.and_mask == (store_var & 0xFF)) {
 					store_index = i;
 					break;
 				}
@@ -6031,7 +6033,9 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 	auto reset_store_values = [&]() {
 		for (auto &it : state.temp_stores) {
 			it.second.inference = VA2AIF_NONE;
+			it.second.version++;
 		}
+		state.default_variable_version++;
 	};
 	auto handle_unpredictable_temp_store = [&]() {
 		reset_store_values();
@@ -6069,12 +6073,13 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 	}
 
 	VarAction2AdjustInferenceFlags non_const_var_inference = VA2AIF_NONE;
-	while (adjust.variable == 0x7D && adjust.parameter < 0x100) {
+	while (adjust.variable == 0x7D) {
 		non_const_var_inference = VA2AIF_NONE;
-		auto iter = state.temp_stores.find(adjust.parameter);
+		auto iter = state.temp_stores.find(adjust.parameter & 0xFF);
 		if (iter == state.temp_stores.end()) {
 			/* Read without any previous store */
-			state.GetVarTracking(group)->in.set(adjust.parameter, true);
+			state.GetVarTracking(group)->in.set(adjust.parameter & 0xFF, true);
+			adjust.parameter |= (state.default_variable_version << 8);
 		} else {
 			const VarAction2TempStoreInference &store = iter->second;
 			if (store.inference & VA2AIF_HAVE_CONSTANT) {
@@ -6097,6 +6102,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					adjust.shift_num += store.var_source.shift_num;
 					continue;
 				}
+				adjust.parameter |= (store.version << 8);
 			} else {
 				if (adjust.type == DSGA_TYPE_NONE) {
 					non_const_var_inference = store.inference & (VA2AIF_SIGNED_NON_NEGATIVE | VA2AIF_ONE_OR_ZERO | VA2AIF_MUL_BOOL);
@@ -6105,6 +6111,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					/* Not possible to substitute this here, but it may be possible in the DSE pass */
 					state.enable_dse = true;
 				}
+				adjust.parameter |= (store.version << 8);
 			}
 		}
 		break;
@@ -6137,7 +6144,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 
 	if ((prev_inference & VA2AIF_MUL_BOOL) && (non_const_var_inference & VA2AIF_MUL_BOOL) &&
 			(adjust.operation == DSGA_OP_ADD || adjust.operation == DSGA_OP_OR || adjust.operation == DSGA_OP_XOR) &&
-			adjust.variable == 0x7D && adjust.parameter < 0x100 && adjust.type == DSGA_TYPE_NONE && adjust.shift_num == 0 && adjust.and_mask == 0xFFFFFFFF) {
+			adjust.variable == 0x7D && adjust.type == DSGA_TYPE_NONE && adjust.shift_num == 0 && adjust.and_mask == 0xFFFFFFFF) {
 		TryMergeBoolMulCombineVarAction2Adjust(group->adjusts, (int)(group->adjusts.size() - 1));
 	}
 
@@ -6530,11 +6537,18 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 						if (adjust.and_mask < 0x100) {
 							for (auto &it : state.temp_stores) {
 								/* Check if some other variable is marked as a copy of the one we are overwriting */
-								if ((it.second.inference & VA2AIF_SINGLE_LOAD) && it.second.var_source.variable == 0x7D && it.second.var_source.parameter == adjust.and_mask) {
+								if ((it.second.inference & VA2AIF_SINGLE_LOAD) && it.second.var_source.variable == 0x7D && (it.second.var_source.parameter & 0xFF) == adjust.and_mask) {
 									it.second.inference &= ~VA2AIF_SINGLE_LOAD;
 								}
 							}
 							VarAction2TempStoreInference &store = state.temp_stores[adjust.and_mask];
+							if (store.version == 0) {
+								/* New store */
+								store.version = state.default_variable_version + 1;
+							} else {
+								/* Updating previous store */
+								store.version++;
+							}
 							store.inference = prev_inference & (~VA2AIF_PREV_MASK);
 							store.store_constant = state.current_constant;
 							if (prev_inference & VA2AIF_SINGLE_LOAD) {
@@ -6569,7 +6583,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 				case DSGA_OP_RST:
 					if ((prev_inference & VA2AIF_PREV_STORE_TMP) && adjust.variable == 0x7D && adjust.shift_num == 0 && adjust.and_mask == get_full_mask() && group->adjusts.size() >= 2) {
 						const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
-						if (prev.type == DSGA_TYPE_NONE && prev.operation == DSGA_OP_STO && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == adjust.parameter) {
+						if (prev.type == DSGA_TYPE_NONE && prev.operation == DSGA_OP_STO && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask == (adjust.parameter & 0xFF)) {
 							/* Redundant load from temp store after store to temp store */
 							group->adjusts.pop_back();
 							state.inference = prev_inference;
@@ -6686,8 +6700,8 @@ static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSprite
 			/* Unpredictable load */
 			bits.set();
 		}
-		if (adjust.variable == 0x7D && adjust.parameter < 0x100) {
-			bits.set(adjust.parameter, true);
+		if (adjust.variable == 0x7D && adjust.parameter) {
+			bits.set(adjust.parameter & 0xFF, true);
 		}
 		if (adjust.variable == 0x7E) {
 			/* procedure call */
@@ -6960,6 +6974,10 @@ static void OptimiseVarAction2DeterministicSpriteGroupAdjustOrdering(Determinist
 static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, const GrfSpecFeature feature, const byte varsize, DeterministicSpriteGroup *group)
 {
 	if (unlikely(HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2))) return;
+
+	for (DeterministicSpriteGroupAdjust &adjust : group->adjusts) {
+		if (adjust.variable == 0x7D) adjust.parameter &= 0xFF; // Clear temporary version tags
+	}
 
 	if (!HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_GROUP_PRUNE) && (state.inference & VA2AIF_HAVE_CONSTANT) && !group->calculated_result) {
 		/* Result of this sprite group is always the same, discard the unused branches */
