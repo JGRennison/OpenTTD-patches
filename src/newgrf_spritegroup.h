@@ -464,7 +464,7 @@ protected:
 	const SpriteGroup *Resolve(ResolverObject &object) const override;
 };
 
-enum RandomizedSpriteGroupCompareMode {
+enum RandomizedSpriteGroupCompareMode : uint8 {
 	RSG_CMP_ANY,
 	RSG_CMP_ALL,
 };
