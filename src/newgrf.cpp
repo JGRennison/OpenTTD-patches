@@ -6004,6 +6004,9 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 				break;
 			}
 		}
+		state.inference = VA2AIF_HAVE_CONSTANT;
+		add_inferences_from_mask(constant);
+		state.current_constant = constant;
 		if (constant != 0 || !group->adjusts.empty()) {
 			DeterministicSpriteGroupAdjust &replacement = group->adjusts.emplace_back();
 			replacement.operation = DSGA_OP_RST;
@@ -6013,11 +6016,8 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 			replacement.and_mask = constant;
 			replacement.add_val = 0;
 			replacement.divmod_val = 0;
-			state.inference = VA2AIF_PREV_MASK_ADJUST;
+			state.inference |= VA2AIF_PREV_MASK_ADJUST;
 		}
-		state.inference = VA2AIF_HAVE_CONSTANT;
-		add_inferences_from_mask(constant);
-		state.current_constant = constant;
 	};
 
 	auto handle_unpredictable_temp_load = [&]() {
@@ -6050,10 +6050,19 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 		}
 	};
 
-	if (adjust.variable == 0x7B && adjust.parameter == 0x7D) handle_unpredictable_temp_load();
-	if (adjust.variable == 0x7B && adjust.parameter == 0x1C) {
-		adjust.variable = adjust.parameter;
-		adjust.parameter = 0;
+	/* Special handling of variable 7B, this uses the parameter as the variable number, and the last value as the variable's parameter.
+	 * If the last value is a known constant, it can be substituted immediately. */
+	if (adjust.variable == 0x7B) {
+		if (prev_inference & VA2AIF_HAVE_CONSTANT) {
+			adjust.variable = adjust.parameter;
+			adjust.parameter = state.current_constant;
+		} else if (adjust.parameter == 0x7D) {
+			handle_unpredictable_temp_load();
+		} else if (adjust.parameter == 0x1C) {
+			/* This is to simplify tracking of variable 1C, the parameter is never used for anything */
+			adjust.variable = adjust.parameter;
+			adjust.parameter = 0;
+		}
 	}
 	if (adjust.variable == 0x1C && !state.seen_procedure_call) {
 		group->dsg_flags |= DSGF_REQUIRES_VAR1C;
@@ -6569,19 +6578,6 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 					}
 					add_inferences_from_mask(adjust.and_mask);
 					state.inference |= VA2AIF_PREV_MASK_ADJUST | VA2AIF_SINGLE_LOAD;
-					if ((prev_inference & VA2AIF_PREV_MASK_ADJUST) && adjust.variable == 0x7B && group->adjusts.size() >= 2) {
-						const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
-						if (prev.variable == 0x1A) {
-							/* Extract constant to remove indirect access via variable 7B */
-							DeterministicSpriteGroupAdjust current = group->adjusts.back();
-							current.variable = current.parameter;
-							current.parameter = (UINT_MAX >> prev.shift_num) & prev.and_mask;
-							group->adjusts.pop_back();
-							group->adjusts.pop_back();
-							group->adjusts.push_back(current);
-							break;
-						}
-					}
 					if (adjust.variable == 0x1A || adjust.and_mask == 0) {
 						replace_with_constant_load(EvaluateDeterministicSpriteGroupAdjust(group->size, adjust, nullptr, 0, UINT_MAX));
 					}
