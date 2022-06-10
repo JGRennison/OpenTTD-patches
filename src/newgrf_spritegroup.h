@@ -432,6 +432,7 @@ enum DeterministicSpriteGroupFlags : uint8 {
 	DSGF_NO_DSE                  = 1 << 0,
 	DSGF_DSE_RECURSIVE_DISABLE   = 1 << 1,
 	DSGF_VAR_TRACKING_PENDING    = 1 << 2,
+	DSGF_REQUIRES_VAR1C          = 1 << 3,
 };
 DECLARE_ENUM_AS_BIT_SET(DeterministicSpriteGroupFlags)
 

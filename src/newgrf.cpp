@@ -6051,6 +6051,13 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 	};
 
 	if (adjust.variable == 0x7B && adjust.parameter == 0x7D) handle_unpredictable_temp_load();
+	if (adjust.variable == 0x7B && adjust.parameter == 0x1C) {
+		adjust.variable = adjust.parameter;
+		adjust.parameter = 0;
+	}
+	if (adjust.variable == 0x1C && !state.seen_procedure_call) {
+		group->dsg_flags |= DSGF_REQUIRES_VAR1C;
+	}
 
 	VarAction2AdjustInferenceFlags non_const_var_inference = VA2AIF_NONE;
 	while (adjust.variable == 0x7D && adjust.parameter < 0x100) {
@@ -6988,6 +6995,7 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 	std::bitset<256> pending_bits;
 	bool seen_pending = false;
 	if (!group->calculated_result) {
+		bool require_var1C = false;
 		auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
 			if (sg != nullptr && sg->type == SGT_DETERMINISTIC) {
 				VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sg, false);
@@ -6998,6 +7006,7 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 				} else {
 					if (var_tracking != nullptr) bits |= var_tracking->in;
 				}
+				if (dsg->dsg_flags & DSGF_REQUIRES_VAR1C) require_var1C = true;
 			}
 			if (sg != nullptr && sg->type == SGT_RANDOMIZED) {
 				const RandomizedSpriteGroup *rsg = (const RandomizedSpriteGroup*)sg;
@@ -7052,6 +7061,7 @@ static void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &
 			}
 			state.GetVarTracking(group)->in |= in_bits;
 		}
+		if (require_var1C && !state.seen_procedure_call) group->dsg_flags |= DSGF_REQUIRES_VAR1C;
 	}
 	bool dse_allowed = IsFeatureUsableForDSE(feature) && !HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_DSE);
 	bool dse_eligible = state.enable_dse;
