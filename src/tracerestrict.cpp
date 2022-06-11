@@ -931,6 +931,11 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 
 				case TRIT_RESERVE_THROUGH:
 					actions_used_flags |= TRPAUF_RESERVE_THROUGH;
+					if (GetTraceRestrictValue(item)) {
+						actions_used_flags &= ~TRPAUF_RESERVE_THROUGH_ALWAYS;
+					} else if (condstack.empty()) {
+						actions_used_flags |= TRPAUF_RESERVE_THROUGH_ALWAYS;
+					}
 					break;
 
 				case TRIT_LONG_RESERVE:
