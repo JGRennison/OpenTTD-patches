@@ -423,6 +423,7 @@ struct GRFLocation {
 static btree::btree_map<GRFLocation, SpriteID> _grm_sprites;
 typedef btree::btree_map<GRFLocation, byte*> GRFLineToSpriteOverride;
 static GRFLineToSpriteOverride _grf_line_to_action6_sprite_override;
+static bool _action6_override_active = false;
 
 /**
  * DEBUG() function dedicated to newGRF debugging messages
@@ -7594,6 +7595,7 @@ static void NewSpriteGroup(ByteReader *buf)
 			DeterministicSpriteGroup *group = new DeterministicSpriteGroup();
 			group->nfo_line = _cur.nfo_line;
 			group->feature = feature;
+			if (_action6_override_active) group->sg_flags |= SGF_ACTION6;
 			act_group = group;
 			group->var_scope = HasBit(type, 1) ? VSG_SCOPE_PARENT : VSG_SCOPE_SELF;
 
@@ -7714,6 +7716,7 @@ static void NewSpriteGroup(ByteReader *buf)
 			assert(RandomizedSpriteGroup::CanAllocateItem());
 			RandomizedSpriteGroup *group = new RandomizedSpriteGroup();
 			group->nfo_line = _cur.nfo_line;
+			if (_action6_override_active) group->sg_flags |= SGF_ACTION6;
 			act_group = group;
 			group->var_scope = HasBit(type, 1) ? VSG_SCOPE_PARENT : VSG_SCOPE_SELF;
 
@@ -7821,6 +7824,7 @@ static void NewSpriteGroup(ByteReader *buf)
 					assert(RealSpriteGroup::CanAllocateItem());
 					RealSpriteGroup *group = new RealSpriteGroup();
 					group->nfo_line = _cur.nfo_line;
+					if (_action6_override_active) group->sg_flags |= SGF_ACTION6;
 					act_group = group;
 
 					for (uint16 spriteid : loaded) {
@@ -7846,6 +7850,7 @@ static void NewSpriteGroup(ByteReader *buf)
 					assert(TileLayoutSpriteGroup::CanAllocateItem());
 					TileLayoutSpriteGroup *group = new TileLayoutSpriteGroup();
 					group->nfo_line = _cur.nfo_line;
+					if (_action6_override_active) group->sg_flags |= SGF_ACTION6;
 					act_group = group;
 
 					/* On error, bail out immediately. Temporary GRF data was already freed */
@@ -7862,6 +7867,7 @@ static void NewSpriteGroup(ByteReader *buf)
 					assert(IndustryProductionSpriteGroup::CanAllocateItem());
 					IndustryProductionSpriteGroup *group = new IndustryProductionSpriteGroup();
 					group->nfo_line = _cur.nfo_line;
+					if (_action6_override_active) group->sg_flags |= SGF_ACTION6;
 					act_group = group;
 					group->version = type;
 					if (type == 0) {
@@ -12715,6 +12721,7 @@ static void DecodeSpecialSprite(byte *buf, uint num, GrfLoadingStage stage)
 	GRFLocation location(_cur.grfconfig->ident.grfid, _cur.nfo_line);
 
 	GRFLineToSpriteOverride::iterator it = _grf_line_to_action6_sprite_override.find(location);
+	_action6_override_active = (it != _grf_line_to_action6_sprite_override.end());
 	if (it == _grf_line_to_action6_sprite_override.end()) {
 		/* No preloaded sprite to work with; read the
 		 * pseudo sprite content. */

@@ -798,11 +798,14 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 		}
 	});
 
+	char extra_info[64] = "";
+	if (sg->sg_flags & SGF_ACTION6) strecat(extra_info, " (action 6 modified)", lastof(extra_info));
+
 	switch (sg->type) {
 		case SGT_REAL: {
 			const RealSpriteGroup *rsg = (const RealSpriteGroup*)sg;
-			seprintf(this->buffer, lastof(this->buffer), "%*sReal (loaded: %u, loading: %u) [%u]",
-					padding, "", (uint)rsg->loaded.size(), (uint)rsg->loading.size(), sg->nfo_line);
+			seprintf(this->buffer, lastof(this->buffer), "%*sReal (loaded: %u, loading: %u)%s [%u]",
+					padding, "", (uint)rsg->loaded.size(), (uint)rsg->loading.size(), extra_info, sg->nfo_line);
 			print();
 			emit_start();
 			for (size_t i = 0; i < rsg->loaded.size(); i++) {
@@ -849,8 +852,8 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 				print();
 				return;
 			}
-			seprintf(this->buffer, lastof(this->buffer), "%*sDeterministic (%s, %s), [%u]",
-					padding, "", _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], dsg->nfo_line);
+			seprintf(this->buffer, lastof(this->buffer), "%*sDeterministic (%s, %s)%s [%u]",
+					padding, "", _sg_scope_names[dsg->var_scope], _sg_size_names[dsg->size], extra_info, dsg->nfo_line);
 			print();
 			emit_start();
 			padding += 2;
@@ -890,9 +893,9 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 				}
 			}
 
-			seprintf(this->buffer, lastof(this->buffer), "%*sRandom (%s, %s, triggers: %X, count: %X, lowest_randbit: %X, groups: %u) [%u]",
+			seprintf(this->buffer, lastof(this->buffer), "%*sRandom (%s, %s, triggers: %X, count: %X, lowest_randbit: %X, groups: %u)%s [%u]",
 					padding, "", _sg_scope_names[rsg->var_scope], rsg->cmp_mode == RSG_CMP_ANY ? "ANY" : "ALL",
-					rsg->triggers, rsg->count, rsg->lowest_randbit, (uint)rsg->groups.size(), rsg->nfo_line);
+					rsg->triggers, rsg->count, rsg->lowest_randbit, (uint)rsg->groups.size(), extra_info, rsg->nfo_line);
 			print();
 			emit_start();
 			for (const auto &group : (*groups)) {
@@ -911,7 +914,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 			break;
 		case SGT_TILELAYOUT: {
 			const TileLayoutSpriteGroup *tlsg = (const TileLayoutSpriteGroup*)sg;
-			seprintf(this->buffer, lastof(this->buffer), "%*sTile Layout [%u]", padding, "", sg->nfo_line);
+			seprintf(this->buffer, lastof(this->buffer), "%*sTile Layout%s [%u]", padding, "", extra_info, sg->nfo_line);
 			print();
 			emit_start();
 			padding += 2;

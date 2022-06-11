@@ -94,6 +94,12 @@ struct AnalyseCallbackOperation {
 typedef Pool<SpriteGroup, SpriteGroupID, 1024, 1 << 30, PT_DATA> SpriteGroupPool;
 extern SpriteGroupPool _spritegroup_pool;
 
+enum SpriteGroupFlags : uint8 {
+	SGF_NONE                     = 0,
+	SGF_ACTION6                  = 1 << 0,
+};
+DECLARE_ENUM_AS_BIT_SET(SpriteGroupFlags)
+
 /* Common wrapper for all the different sprite group types */
 struct SpriteGroup : SpriteGroupPool::PoolItem<&_spritegroup_pool> {
 protected:
@@ -107,6 +113,7 @@ public:
 	uint32 nfo_line;
 	SpriteGroupType type;
 	GrfSpecFeature feature;
+	SpriteGroupFlags sg_flags = SGF_NONE;
 
 	virtual SpriteID GetResult() const { return 0; }
 	virtual byte GetNumResults() const { return 0; }
