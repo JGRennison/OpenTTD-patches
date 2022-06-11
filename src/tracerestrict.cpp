@@ -1198,17 +1198,16 @@ void TraceRestrictSetIsSignalRestrictedBit(TileIndex t)
 	// First mapping for this tile, or later
 	TraceRestrictMapping::iterator lower_bound = _tracerestrictprogram_mapping.lower_bound(MakeTraceRestrictRefId(t, static_cast<Track>(0)));
 
-	// First mapping for next tile, or later
-	TraceRestrictMapping::iterator upper_bound = _tracerestrictprogram_mapping.lower_bound(MakeTraceRestrictRefId(t + 1, static_cast<Track>(0)));
+	bool found = (lower_bound != _tracerestrictprogram_mapping.end()) && (GetTraceRestrictRefIdTileIndex(lower_bound->first) == t);
 
 	// If iterators are the same, there are no mappings for this tile
 	switch (GetTileType(t)) {
 		case MP_RAILWAY:
-			SetRestrictedSignal(t, lower_bound != upper_bound);
+			SetRestrictedSignal(t, found);
 			break;
 
 		case MP_TUNNELBRIDGE:
-			SetTunnelBridgeRestrictedSignal(t, lower_bound != upper_bound);
+			SetTunnelBridgeRestrictedSignal(t, found);
 			break;
 
 		default:
