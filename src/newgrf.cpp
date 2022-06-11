@@ -5990,10 +5990,12 @@ static VarAction2AdjustsBooleanInverseResult AreVarAction2AdjustsBooleanInverse(
 }
 
 /*
- * Find and replace the result of: (var * flag) + (var * !flag) with var
+ * Find and replace the result of:
+ *   (var * flag) + (var * !flag) with var
+ *   (-var * (var < 0)) + (var * !(var < 0)) with abs(var)
  * "+" may be ADD, OR or XOR.
  */
-static bool TryMergeBoolMulCombineVarAction2Adjust(std::vector<DeterministicSpriteGroupAdjust> &adjusts, const int adjust_index)
+static bool TryMergeBoolMulCombineVarAction2Adjust(VarAction2OptimiseState &state, std::vector<DeterministicSpriteGroupAdjust> &adjusts, const int adjust_index)
 {
 	uint store_var = adjusts[adjust_index].parameter;
 
@@ -6049,14 +6051,14 @@ static bool TryMergeBoolMulCombineVarAction2Adjust(std::vector<DeterministicSpri
 		}
 	};
 
-	find_adjusts(adjust_index - 1, 0);
+	find_adjusts(adjust_index - 1, 0); // A (first, closest)
 	if (!found_adjusts[0].IsValid() || !found_adjusts[1].IsValid()) return false;
 
 	/* Find offset of referenced store */
 	int store_index = GetVarAction2AdjustOfPreviousTempStoreSource(adjusts.data(), adjust_index - 1, (store_var & 0xFF));
 	if (store_index < 0) return false;
 
-	find_adjusts(store_index - 1, 1);
+	find_adjusts(store_index - 1, 1); // B (second, further)
 	if (!found_adjusts[2].IsValid() || !found_adjusts[3].IsValid()) return false;
 
 	bool is_cond_first[2];
@@ -6126,6 +6128,89 @@ static bool TryMergeBoolMulCombineVarAction2Adjust(std::vector<DeterministicSpri
 		}
 
 		return false;
+	}
+
+	auto check_rsub = [&](VarAction2AdjustDescriptor &desc) -> bool {
+		int rsub_offset = desc.index;
+		if (rsub_offset < 1) return false;
+		const DeterministicSpriteGroupAdjust &adj = adjusts[rsub_offset];
+		if (adj.operation == DSGA_OP_RSUB && adj.type == DSGA_TYPE_NONE && adj.variable == 0x1A && adj.shift_num == 0 && adj.and_mask == 0) {
+			desc.index--;
+			return true;
+		}
+		return false;
+	};
+
+	auto check_abs_cond = [&](VarAction2AdjustDescriptor cond, VarAction2AdjustDescriptor &value) -> bool {
+		int lt_offset = cond.index;
+		if (lt_offset < 1) return false;
+		const DeterministicSpriteGroupAdjust &adj = adjusts[lt_offset];
+		if (adj.operation == DSGA_OP_SLT && adj.type == DSGA_TYPE_NONE && adj.variable == 0x1A && adj.shift_num == 0 && adj.and_mask == 0) {
+			cond.index--;
+			return AreVarAction2AdjustsEquivalent(cond, value);
+		}
+		return false;
+	};
+
+	auto append_abs = [&]() {
+		adjusts.emplace_back();
+		adjusts.back().operation = DSGA_OP_ABS;
+		state.inference |= VA2AIF_SIGNED_NON_NEGATIVE;
+	};
+
+	if (found == VA2ABIR_XOR_A) {
+		/* Try to find an ABS:
+		 * A has the extra invert, check cond of B
+		 * B is the negative path with the RSUB
+		 */
+		VarAction2AdjustDescriptor value_b = found_adjusts[is_cond_first[1] ? 3 : 2];
+		const VarAction2AdjustDescriptor &cond_b = found_adjusts[is_cond_first[1] ? 2 : 3];
+
+		if (check_rsub(value_b) && check_abs_cond(cond_b, value_b) && AreVarAction2AdjustsEquivalent(found_adjusts[is_cond_first[0] ? 1 : 0], value_b)) {
+			/* Found an ABS, use one of the two value parts */
+
+			if (is_cond_first[0]) {
+				/* The cond is the mul variable of the A (first, closest) mul, the actual value is the prior adjust */
+				if (try_erase_from(mul_indices[0])) {
+					append_abs();
+					return true;
+				}
+			} else {
+				/* The value is the mul variable of the A (first, closest) mul, the cond is the prior adjust */
+				if (try_to_make_rst_from(mul_indices[0])) {
+					append_abs();
+					return true;
+				}
+			}
+		}
+	}
+	if (found == VA2ABIR_XOR_B) {
+		/* Try to find an ABS:
+		 * B has the extra invert, check cond of A
+		 * A is the negative path with the RSUB
+		 */
+		VarAction2AdjustDescriptor value_a = found_adjusts[is_cond_first[0] ? 1 : 0];
+		const VarAction2AdjustDescriptor &cond_a = found_adjusts[is_cond_first[0] ? 0 : 1];
+
+		if (check_rsub(value_a) && check_abs_cond(cond_a, value_a) && AreVarAction2AdjustsEquivalent(found_adjusts[is_cond_first[1] ? 3 : 2], value_a)) {
+			/* Found an ABS, use one of the two value parts */
+
+			if (is_cond_first[0]) {
+				/* The cond is the mul variable of the A (first, closest) mul, the actual value is the prior adjust, -1 to also remove the RSUB */
+				if (try_erase_from(mul_indices[0] - 1)) {
+					append_abs();
+					return true;
+				}
+			}
+
+			if (!is_cond_first[1]) {
+				/* The value is the mul variable of the B (second, further) mul, the cond is the prior adjust */
+				if (try_to_make_rst_from(mul_indices[1])) {
+					append_abs();
+					return true;
+				}
+			}
+		}
 	}
 
 	return false;
@@ -6383,7 +6468,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 	if ((prev_inference & VA2AIF_MUL_BOOL) && (non_const_var_inference & VA2AIF_MUL_BOOL) &&
 			(adjust.operation == DSGA_OP_ADD || adjust.operation == DSGA_OP_OR || adjust.operation == DSGA_OP_XOR) &&
 			adjust.variable == 0x7D && adjust.type == DSGA_TYPE_NONE && adjust.shift_num == 0 && adjust.and_mask == 0xFFFFFFFF) {
-		if (TryMergeBoolMulCombineVarAction2Adjust(group->adjusts, (int)(group->adjusts.size() - 1))) {
+		if (TryMergeBoolMulCombineVarAction2Adjust(state, group->adjusts, (int)(group->adjusts.size() - 1))) {
 			OptimiseVarAction2Adjust(state, feature, varsize, group, group->adjusts.back());
 			return;
 		}
