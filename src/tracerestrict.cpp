@@ -1632,8 +1632,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 		}
 
 		default:
-			NOT_REACHED();
-			break;
+			return CMD_ERROR;
 	}
 
 	TraceRestrictProgramActionsUsedFlags actions_used_flags;
@@ -1794,8 +1793,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 		}
 
 		default:
-			NOT_REACHED();
-			break;
+			return CMD_ERROR;
 	}
 
 	// update windows
