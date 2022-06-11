@@ -200,6 +200,7 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust &adjust, ScopeResolver
 		case DSGA_OP_SGT:  return ((S)last_value >  (S)value) ? 1 : 0;
 		case DSGA_OP_RSUB: return value - last_value;
 		case DSGA_OP_STO_NC: _temp_store.StoreValue(adjust.divmod_val, (S)value); return last_value;
+		case DSGA_OP_ABS:  return ((S)last_value < 0) ? -((S)last_value) : (S)last_value;
 		default:           return value;
 	}
 }
@@ -683,6 +684,7 @@ static const char *_dsg_op_special_names[] {
 	"SGT",
 	"RSUB",
 	"STO_NC",
+	"ABS",
 };
 static_assert(lengthof(_dsg_op_special_names) == DSGA_OP_SPECIAL_END - DSGA_OP_TERNARY);
 
@@ -724,6 +726,11 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 
 	if (adjust.operation == DSGA_OP_TERNARY) {
 		p += seprintf(p, last, "%*sTERNARY: true: %X, false: %X", padding, "", adjust.and_mask, adjust.add_val);
+		append_flags();
+		return p;
+	}
+	if (adjust.operation == DSGA_OP_ABS) {
+		p += seprintf(p, last, "%*sABS", padding, "");
 		append_flags();
 		return p;
 	}

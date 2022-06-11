@@ -5633,8 +5633,9 @@ enum VarAction2AdjustInferenceFlags {
 	VA2AIF_HAVE_CONSTANT         = 0x20,
 	VA2AIF_SINGLE_LOAD           = 0x40,
 	VA2AIF_MUL_BOOL              = 0x80,
+	VA2AIF_PREV_SCMP_DEC         = 0x100,
 
-	VA2AIF_PREV_MASK             = VA2AIF_PREV_TERNARY | VA2AIF_PREV_MASK_ADJUST | VA2AIF_PREV_STORE_TMP,
+	VA2AIF_PREV_MASK             = VA2AIF_PREV_TERNARY | VA2AIF_PREV_MASK_ADJUST | VA2AIF_PREV_STORE_TMP | VA2AIF_PREV_SCMP_DEC,
 };
 DECLARE_ENUM_AS_BIT_SET(VarAction2AdjustInferenceFlags)
 
@@ -6322,6 +6323,12 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 							}
 						}
 					}
+					if (adjust.variable == 0x1A && adjust.shift_num == 0 && adjust.and_mask == 1 && group->adjusts.size() >= 2) {
+						DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
+						if (prev.operation == DSGA_OP_SCMP) {
+							state.inference |= VA2AIF_PREV_SCMP_DEC;
+						}
+					}
 					try_merge_with_previous();
 					break;
 				case DSGA_OP_SMIN:
@@ -6542,6 +6549,23 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 						}
 						state.inference = VA2AIF_PREV_TERNARY;
 						break;
+					}
+					if ((prev_inference & VA2AIF_PREV_SCMP_DEC) && group->adjusts.size() >= 4 && adjust.variable == 0x7D && adjust.shift_num == 0 && adjust.and_mask == 0xFFFFFFFF) {
+						const DeterministicSpriteGroupAdjust &adj1 = group->adjusts[group->adjusts.size() - 4];
+						const DeterministicSpriteGroupAdjust &adj2 = group->adjusts[group->adjusts.size() - 3];
+						const DeterministicSpriteGroupAdjust &adj3 = group->adjusts[group->adjusts.size() - 2];
+						auto is_expected_op = [](const DeterministicSpriteGroupAdjust &adj, DeterministicSpriteGroupAdjustOperation op, uint32 value) -> bool {
+							return adj.operation == op && adj.type == DSGA_TYPE_NONE && adj.variable == 0x1A && adj.shift_num == 0 && adj.and_mask == value;
+						};
+						if (is_expected_op(adj1, DSGA_OP_STO, (adjust.parameter & 0xFF)) &&
+								is_expected_op(adj2, DSGA_OP_SCMP, 0) &&
+								is_expected_op(adj3, DSGA_OP_SUB, 1)) {
+							group->adjusts.pop_back();
+							group->adjusts.pop_back();
+							group->adjusts.back().operation = DSGA_OP_ABS;
+							state.inference |= VA2AIF_SIGNED_NON_NEGATIVE;
+							break;
+						}
 					}
 					uint32 sign_bit = (1 << ((varsize * 8) - 1));
 					if ((prev_inference & VA2AIF_PREV_MASK_ADJUST) && (prev_inference & VA2AIF_SIGNED_NON_NEGATIVE) && adjust.variable == 0x1A && adjust.shift_num == 0 && (adjust.and_mask & sign_bit) == 0) {
