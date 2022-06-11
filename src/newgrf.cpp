@@ -6294,7 +6294,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 				if (group->adjusts.size() >= 3 && prev.operation == DSGA_OP_RST) {
 					const DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
 					if (prev2.operation == DSGA_OP_STO && prev2.type == DSGA_TYPE_NONE && prev2.variable == 0x1A &&
-							prev2.shift_num == 0 && prev2.and_mask == adjust.parameter) {
+							prev2.shift_num == 0 && prev2.and_mask == (adjust.parameter & 0xFF)) {
 						/* Convert: store, load var, commutative op on stored --> (dead) store, commutative op var */
 						prev.operation = adjust.operation;
 						group->adjusts.pop_back();
@@ -6314,7 +6314,7 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 						if (group->adjusts.size() >= 3 && prev.operation == DSGA_OP_RST) {
 							const DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
 							if (prev2.operation == DSGA_OP_STO && prev2.type == DSGA_TYPE_NONE && prev2.variable == 0x1A &&
-									prev2.shift_num == 0 && prev2.and_mask == adjust.parameter) {
+									prev2.shift_num == 0 && prev2.and_mask == (adjust.parameter & 0xFF)) {
 								/* Convert: store, load var, subtract stored --> (dead) store, reverse subtract var */
 								prev.operation = DSGA_OP_RSUB;
 								group->adjusts.pop_back();
