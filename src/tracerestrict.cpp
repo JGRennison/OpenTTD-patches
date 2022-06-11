@@ -818,12 +818,58 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 	assert(condstack.empty());
 }
 
+void TraceRestrictProgram::ClearRefIds()
+{
+	if (this->refcount > 4) free(this->ref_ids.ptr_ref_ids.buffer);
+}
+
+/**
+ * Increment ref count, only use when creating a mapping
+ */
+void TraceRestrictProgram::IncrementRefCount(TraceRestrictRefId ref_id)
+{
+	if (this->refcount >= 4) {
+		if (this->refcount == 4) {
+			/* Transition from inline to allocated mode */
+
+			TraceRestrictRefId *ptr = MallocT<TraceRestrictRefId>(8);
+			MemCpyT<TraceRestrictRefId>(ptr, this->ref_ids.inline_ref_ids, 4);
+			this->ref_ids.ptr_ref_ids.buffer = ptr;
+			this->ref_ids.ptr_ref_ids.elem_capacity = 8;
+		} else if (this->refcount == this->ref_ids.ptr_ref_ids.elem_capacity) {
+			// grow buffer
+			this->ref_ids.ptr_ref_ids.elem_capacity *= 2;
+			this->ref_ids.ptr_ref_ids.buffer = ReallocT<TraceRestrictRefId>(this->ref_ids.ptr_ref_ids.buffer, this->ref_ids.ptr_ref_ids.elem_capacity);
+		}
+		this->ref_ids.ptr_ref_ids.buffer[this->refcount] = ref_id;
+	} else {
+		this->ref_ids.inline_ref_ids[this->refcount] = ref_id;
+	}
+	this->refcount++;
+}
+
 /**
  * Decrement ref count, only use when removing a mapping
  */
-void TraceRestrictProgram::DecrementRefCount() {
+void TraceRestrictProgram::DecrementRefCount(TraceRestrictRefId ref_id) {
 	assert(this->refcount > 0);
+	if (this->refcount >= 2) {
+		TraceRestrictRefId *data = this->GetRefIdsPtr();
+		for (uint i = 0; i < this->refcount - 1; i++) {
+			if (data[i] == ref_id) {
+				data[i] = data[this->refcount - 1];
+				break;
+			}
+		}
+	}
 	this->refcount--;
+	if (this->refcount == 4) {
+		/* Transition from allocated to inline mode */
+
+		TraceRestrictRefId *ptr = this->ref_ids.ptr_ref_ids.buffer;
+		MemCpyT<TraceRestrictRefId>(this->ref_ids.inline_ref_ids, ptr, 4);
+		free(ptr);
+	}
 	if (this->refcount == 0) {
 		delete this;
 	}
@@ -1227,10 +1273,10 @@ void TraceRestrictCreateProgramMapping(TraceRestrictRefId ref, TraceRestrictProg
 	if (!insert_result.second) {
 		// value was not inserted, there is an existing mapping
 		// unref the existing mapping before updating it
-		_tracerestrictprogram_pool.Get(insert_result.first->second.program_id)->DecrementRefCount();
+		_tracerestrictprogram_pool.Get(insert_result.first->second.program_id)->DecrementRefCount(ref);
 		insert_result.first->second = prog->index;
 	}
-	prog->IncrementRefCount();
+	prog->IncrementRefCount(ref);
 
 	TileIndex tile = GetTraceRestrictRefIdTileIndex(ref);
 	Track track = GetTraceRestrictRefIdTrack(ref);
@@ -1254,7 +1300,7 @@ bool TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 		// do this before decrementing the refcount
 		bool remove_other_mapping = prog->refcount == 2 && prog->items.empty();
 
-		prog->DecrementRefCount();
+		prog->DecrementRefCount(ref);
 		_tracerestrictprogram_mapping.erase(iter);
 
 		TileIndex tile = GetTraceRestrictRefIdTileIndex(ref);
@@ -1264,14 +1310,7 @@ bool TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 		YapfNotifyTrackLayoutChange(tile, track);
 
 		if (remove_other_mapping) {
-			TraceRestrictProgramID id = prog->index;
-			for (TraceRestrictMapping::iterator rm_iter = _tracerestrictprogram_mapping.begin();
-					rm_iter != _tracerestrictprogram_mapping.end(); ++rm_iter) {
-				if (rm_iter->second.program_id == id) {
-					TraceRestrictRemoveProgramMapping(rm_iter->first);
-					break;
-				}
-			}
+			TraceRestrictRemoveProgramMapping(const_cast<const TraceRestrictProgram *>(prog)->GetRefIdsPtr()[0]);
 		}
 		return true;
 	} else {
@@ -1743,6 +1782,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 					// allocation failed
 					return CMD_ERROR;
 				}
+
 				prog->items.reserve(prog->items.size() + source_prog->items.size()); // this is in case prog == source_prog
 				prog->items.insert(prog->items.end(), source_prog->items.begin(), source_prog->items.end()); // append
 				prog->Validate();

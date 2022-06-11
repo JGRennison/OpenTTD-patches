@@ -479,17 +479,43 @@ struct TraceRestrictProgram : TraceRestrictProgramPool::PoolItem<&_tracerestrict
 	uint32 refcount;
 	TraceRestrictProgramActionsUsedFlags actions_used_flags;
 
+private:
+
+	struct ptr_buffer {
+		TraceRestrictRefId *buffer;
+		uint32 elem_capacity;
+	};
+	union refid_list_union {
+		TraceRestrictRefId inline_ref_ids[4];
+		ptr_buffer ptr_ref_ids;
+
+		// Actual construction/destruction done by struct TraceRestrictProgram
+		refid_list_union() {}
+		~refid_list_union() {}
+	};
+	refid_list_union ref_ids;
+
+	void ClearRefIds();
+
+	inline TraceRestrictRefId *GetRefIdsPtr() { return this->refcount <= 4 ? this->ref_ids.inline_ref_ids : this->ref_ids.ptr_ref_ids.buffer; };
+
+public:
+
 	TraceRestrictProgram()
 			: refcount(0), actions_used_flags(static_cast<TraceRestrictProgramActionsUsedFlags>(0)) { }
 
+	~TraceRestrictProgram()
+	{
+		this->ClearRefIds();
+	}
+
 	void Execute(const Train *v, const TraceRestrictProgramInput &input, TraceRestrictProgramResult &out) const;
 
-	/**
-	 * Increment ref count, only use when creating a mapping
-	 */
-	void IncrementRefCount() { refcount++; }
+	inline const TraceRestrictRefId *GetRefIdsPtr() const { return const_cast<TraceRestrictProgram *>(this)->GetRefIdsPtr(); }
 
-	void DecrementRefCount();
+	void IncrementRefCount(TraceRestrictRefId ref_id);
+
+	void DecrementRefCount(TraceRestrictRefId ref_id);
 
 	static CommandCost Validate(const std::vector<TraceRestrictItem> &items, TraceRestrictProgramActionsUsedFlags &actions_used_flags);
 

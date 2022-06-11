@@ -211,7 +211,7 @@ void AfterLoadTraceRestrict()
 {
 	for (TraceRestrictMapping::iterator iter = _tracerestrictprogram_mapping.begin();
 			iter != _tracerestrictprogram_mapping.end(); ++iter) {
-		_tracerestrictprogram_pool.Get(iter->second.program_id)->IncrementRefCount();
+		_tracerestrictprogram_pool.Get(iter->second.program_id)->IncrementRefCount(iter->first);
 	}
 }
 
