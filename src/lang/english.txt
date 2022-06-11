@@ -3452,6 +3452,7 @@ STR_TRACE_RESTRICT_SHARE_TOOLTIP                                :{BLACK}Share pr
 STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}Stop sharing program with other signals, create a copy of the program
 STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}Routefinding restriction
 STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}Click an instruction to select it{}Ctrl+Click to scroll to the instruction's target (if any)
+STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP                            :{BLACK}Toggle highlighting all signals sharing this program
 STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM                      :{WHITE}Can't insert instruction
 STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM                      :{WHITE}Can't modify instruction
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}Can't remove instruction

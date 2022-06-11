@@ -871,6 +871,11 @@ void TraceRestrictProgram::DecrementRefCount(TraceRestrictRefId ref_id) {
 		free(ptr);
 	}
 	if (this->refcount == 0) {
+		extern const TraceRestrictProgram *_viewport_highlight_tracerestrict_program;
+		if (_viewport_highlight_tracerestrict_program == this) {
+			_viewport_highlight_tracerestrict_program = nullptr;
+			InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+		}
 		delete this;
 	}
 }

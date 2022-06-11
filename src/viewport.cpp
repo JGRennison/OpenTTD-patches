@@ -112,6 +112,7 @@
 #include "object_map.h"
 #include "newgrf_object.h"
 #include "infrastructure_func.h"
+#include "tracerestrict.h"
 
 #include <map>
 #include <vector>
@@ -1391,6 +1392,7 @@ enum TileHighlightType {
 
 const Station *_viewport_highlight_station; ///< Currently selected station for coverage area highlight
 const Town *_viewport_highlight_town;       ///< Currently selected town for coverage area highlight
+const TraceRestrictProgram *_viewport_highlight_tracerestrict_program; ///< Currently selected tracerestrict program for highlight
 
 /**
  * Get tile highlight type of coverage area for a given tile.
@@ -1419,6 +1421,13 @@ static TileHighlightType GetTileHighlightType(TileIndex t)
 				if (st->owner != _current_company) continue;
 				if (GetStationIndex(t) == st->index) return THT_WHITE;
 			}
+		}
+	}
+
+	if (_viewport_highlight_tracerestrict_program != nullptr) {
+		const TraceRestrictRefId *refs = _viewport_highlight_tracerestrict_program->GetRefIdsPtr();
+		for (uint i = 0; i < _viewport_highlight_tracerestrict_program->refcount; i++) {
+			if (GetTraceRestrictRefIdTileIndex(refs[i]) == t) return THT_LIGHT_BLUE;
 		}
 	}
 
@@ -6208,6 +6217,8 @@ void SetViewportCatchmentStation(const Station *st, bool sel)
 		MarkCatchmentTilesDirty();
 		_viewport_highlight_station = st;
 		_viewport_highlight_town = nullptr;
+		if (_viewport_highlight_tracerestrict_program != nullptr) InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+		_viewport_highlight_tracerestrict_program = nullptr;
 		MarkCatchmentTilesDirty();
 	} else if (!sel && _viewport_highlight_station == st) {
 		MarkCatchmentTilesDirty();
@@ -6229,12 +6240,31 @@ void SetViewportCatchmentTown(const Town *t, bool sel)
 	if (sel && _viewport_highlight_town != t) {
 		_viewport_highlight_station = nullptr;
 		_viewport_highlight_town = t;
+		if (_viewport_highlight_tracerestrict_program != nullptr) InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+		_viewport_highlight_tracerestrict_program = nullptr;
 		MarkWholeNonMapViewportsDirty();
 	} else if (!sel && _viewport_highlight_town == t) {
 		_viewport_highlight_town = nullptr;
 		MarkWholeNonMapViewportsDirty();
 	}
 	if (_viewport_highlight_town != nullptr) SetWindowDirty(WC_TOWN_VIEW, _viewport_highlight_town->index);
+}
+
+void SetViewportCatchmentTraceRestrictProgram(const TraceRestrictProgram *prog, bool sel)
+{
+	if (_viewport_highlight_town != nullptr) SetWindowDirty(WC_TOWN_VIEW, _viewport_highlight_town->index);
+	if (_viewport_highlight_station != nullptr) SetWindowDirty(WC_STATION_VIEW, _viewport_highlight_station->index);
+	if (sel && _viewport_highlight_tracerestrict_program != prog) {
+		_viewport_highlight_station = nullptr;
+		_viewport_highlight_town = nullptr;
+		_viewport_highlight_tracerestrict_program = prog;
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+		MarkWholeNonMapViewportsDirty();
+	} else if (!sel && _viewport_highlight_tracerestrict_program == prog) {
+		_viewport_highlight_tracerestrict_program = nullptr;
+		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+		MarkWholeNonMapViewportsDirty();
+	}
 }
 
 int GetSlopeTreeBrightnessAdjust(Slope slope)
