@@ -34,7 +34,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action5_road_waypoints", 1),
 	GRFFeatureInfo("action0_railtype_programmable_signals", 1),
 	GRFFeatureInfo("action0_railtype_no_entry_signals", 1),
-	GRFFeatureInfo("action0_railtype_restricted_signals", 1),
+	GRFFeatureInfo("action0_railtype_restricted_signals", 2),
 	GRFFeatureInfo("action0_railtype_disable_realistic_braking", 1),
 	GRFFeatureInfo("action0_railtype_recolour", 1),
 	GRFFeatureInfo("action0_railtype_extra_aspects", 1),
@@ -43,7 +43,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_global_default_object_generate_amount", 1),
 	GRFFeatureInfo("action0_signals_programmable_signals", 1),
 	GRFFeatureInfo("action0_signals_no_entry_signals", 1),
-	GRFFeatureInfo("action0_signals_restricted_signals", 1),
+	GRFFeatureInfo("action0_signals_restricted_signals", 2),
 	GRFFeatureInfo("action0_signals_recolour", 1),
 	GRFFeatureInfo("action0_signals_extra_aspects", 1),
 	GRFFeatureInfo("action3_signals_custom_signal_sprites", 1),
@@ -126,6 +126,8 @@ extern const GRFVariableMapDefinition _grf_action2_remappable_variables[] = {
 	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x67, "roadstop_land_info_nearby_tiles"),
 	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x68, "roadstop_road_stop_info_nearby_tiles"),
 	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x6A, "roadstop_road_stop_grfid_nearby_tiles"),
+	GRFVariableMapDefinition(GSF_RAILTYPES, A2VRI_RAILTYPE_SIGNAL_RESTRICTION_INFO, "railtype_signal_restriction_info"),
+	GRFVariableMapDefinition(GSF_SIGNALS, A2VRI_SIGNALS_SIGNAL_RESTRICTION_INFO, "signals_signal_restriction_info"),
 	GRFVariableMapDefinition(),
 };
 

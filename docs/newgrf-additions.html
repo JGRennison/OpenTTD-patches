@@ -241,6 +241,7 @@
 	This flag should only be set if the Action 2/3 actually returns a different sprite when bit 24 of variable 18 is set.<br />
 	The property length is 1 byte. 0 is disabled (default). 1 is enabled.
 	</p>
+	<p>See also: <a href="#railtype_signal_restriction_info">railtype_signal_restriction_info variable</a></p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_railtype_restricted_signals</font>, version 1</p>
 	<h4 id="railtype_enable_signal_recolour">Enable recolouring for custom signal sprites (mappable property: railtype_enable_signal_recolour)</h4>
 	<p>This applies to <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Railtypes#Signal_sprites_.280B.29">Action 2/3 - Railtype custom signal sprites</a>.<br />
@@ -358,6 +359,7 @@
 	The property length is 1 byte. 0 is disabled (default). 1 is enabled.<br />
 	The Action 0 Id field is not used, the value is ignored.
 	</p>
+	<p>See also: <a href="#signals_signal_restriction_info">signals_signal_restriction_info variable</a></p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_signals_restricted_signals</font>, version 1</p>
 	<h4 id="signals_enable_signal_recolour">Enable recolouring for custom signal sprites (mappable property: signals_enable_signal_recolour)</h4>
 	<p>This applies to <a href="#a3signals_custom_signal_sprites">Action 2/3 Signals (Feature 0E) custom signal sprites</a> for this GRF.<br />
@@ -547,6 +549,18 @@
 	<h4 id="varaction2_station_var42">Track type in purchase list (42)</h4>
 	<p>This is indicated by the feature name: <font face="monospace">varaction2_station_var42</font>, version 1</p>
 	<br />
+	<h3 id="varaction2_railtypes"><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Railtypes">Variational Action 2 - Railtypes</a></h3>
+	<h4 id="railtype_signal_restriction_info">Signal routing restriction information (mappable variable: railtype_signal_restriction_info)</h4>
+	<p>This applies to <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Railtypes#Signal_sprites_.280B.29">Action 2/3 - Railtype custom signal sprites</a>.<br />
+	<table>
+	<tr><th>Bit</th><th>Value</th><th>Meaning</th></tr>
+	<tr><td>0</td><td>1</td><td>This signal has a routing restriction program attached</td></tr>
+	<tr><td>1</td><td>2</td><td>Reserve through is unconditionally set in the routing restriction program</td></tr>
+	</table>
+	</p>
+	<p>See also: <a href="#railtype_enable_restricted_signals">railtype_enable_restricted_signals property</a></p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_railtype_restricted_signals</font>, version 2</p>
+	<br />
 	<h3 id="varaction2_object"><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Objects">Variational Action 2 - Objects</a></h3>
 	<h4 id="object_foundation_tile_slope">Tile slope after foundation applied (mappable variable: object_foundation_tile_slope)</h4>
 	<p>This has the same format as bits 8-12 of object variable 41.</p>
@@ -556,6 +570,18 @@
 	If this variable is non-zero a foundation is present.<br />
 	This is useful for xoring with bits 8-12 of variable 41, because if this variable is unavailable then the result is still the underlying tile slope.</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_object_edge_foundation_mode</font>, version 2</p>
+	<br />
+	<h3 id="varaction2_signals"><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2">Variational Action 2 - Signals (Feature 0E)</a></h3>
+	<h4 id="signals_signal_restriction_info">Signal routing restriction information (mappable variable: signals_signal_restriction_info)</h4>
+	<p>This applies to <a href="#a3signals_custom_signal_sprites">Action 2/3 Signals (Feature 0E) custom signal sprites</a>.<br />
+	<table>
+	<tr><th>Bit</th><th>Value</th><th>Meaning</th></tr>
+	<tr><td>0</td><td>1</td><td>This signal has a routing restriction program attached</td></tr>
+	<tr><td>1</td><td>2</td><td>Reserve through is unconditionally set in the routing restriction program</td></tr>
+	</table>
+	</p>
+	<p>See also: <a href="#signals_enable_restricted_signals">signals_enable_restricted_signals property</a></p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_restricted_signals</font>, version 2</p>
 	<br />
 	<br />
 	<h3 id="a3signals"><a href="https://newgrf-specs.tt-wiki.net/wiki/Action3">Action 3 - Signals (Feature 0E)</a></h3>

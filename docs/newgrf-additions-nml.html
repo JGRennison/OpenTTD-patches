@@ -103,6 +103,22 @@
 		</td>
 	</tr>
 	</table>
+	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#Railtype_variables">Railtypes variables</a></h3>
+	<p>Variables in the table below which are not supported by the version of OpenTTD being used return a value of 0.</p>
+	<table>
+	<tr><th>Variable</th><th>Value range</th><th>Comment</th></tr>
+	<tr><td>signal_restriction_info</td><td>bitmask(SIGNAL_RESTRICTION_INFO_XXX, ...)</td>
+		<td>
+			Information about the restricted signal status of the signal being drawn:
+			<dl>
+				<dt>RESTRICTED</dt>
+				<dd>The signal is restricted (has a routing restriction program attached)</dd>
+				<dt>RESERVE_THROUGH_ALWAYS</dt>
+				<dd>The attached routing restriction program unconditionally sets reserve through</dd>
+			</dl>
+		</td>
+	</tr>
+	</table>
 	<h3><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Roadtypes#Roadtype_properties">Roadtype properties</a></h3>
 	<table>
 	<tr><th>Property</th><th>Value range</th><th>Comment</th></tr>
@@ -397,6 +413,21 @@ item (FEAT_GLOBALVARS) {
 			<br />
 			The provided value is currently clamped to be within the range 0 - 6 (inclusive).<br />
 			N.B. Realistic braking must be enabled for additional signal aspects to be used
+		</td>
+	</tr>
+	</table>
+	<br />
+	<table>
+	<tr><th>Variable</th><th>Value range</th><th>Comment</th></tr>
+	<tr><td>signal_restriction_info</td><td>bitmask(SIGNAL_RESTRICTION_INFO_XXX, ...)</td>
+		<td>
+			Information about the restricted signal status of the signal being drawn:
+			<dl>
+				<dt>RESTRICTED</dt>
+				<dd>The signal is restricted (has a routing restriction program attached)</dd>
+				<dt>RESERVE_THROUGH_ALWAYS</dt>
+				<dd>The attached routing restriction program unconditionally sets reserve through</dd>
+			</dl>
 		</td>
 	</tr>
 	</table>

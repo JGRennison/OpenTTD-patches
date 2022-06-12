@@ -15,10 +15,13 @@
 
 extern std::vector<const GRFFile *> _new_signals_grfs;
 
+struct TraceRestrictProgram;
+
 /** Resolver for the new signals scope. */
 struct NewSignalsScopeResolver : public ScopeResolver {
 	TileIndex tile;      ///< Tracktile. For track on a bridge this is the southern bridgehead.
 	TileContext context; ///< Are we resolving sprites for the upper halftile, or on a bridge?
+	const TraceRestrictProgram *prog;
 
 	/**
 	 * Constructor of the railtype scope resolvers.
@@ -26,8 +29,8 @@ struct NewSignalsScopeResolver : public ScopeResolver {
 	 * @param tile %Tile containing the track. For track on a bridge this is the southern bridgehead.
 	 * @param context Are we resolving sprites for the upper halftile, or on a bridge?
 	 */
-	NewSignalsScopeResolver(ResolverObject &ro, TileIndex tile, TileContext context)
-		: ScopeResolver(ro), tile(tile), context(context)
+	NewSignalsScopeResolver(ResolverObject &ro, TileIndex tile, TileContext context, const TraceRestrictProgram *prog)
+		: ScopeResolver(ro), tile(tile), context(context), prog(prog)
 	{
 	}
 
@@ -39,7 +42,7 @@ struct NewSignalsScopeResolver : public ScopeResolver {
 struct NewSignalsResolverObject : public ResolverObject {
 	NewSignalsScopeResolver newsignals_scope; ///< Resolver for the new signals scope.
 
-	NewSignalsResolverObject(const GRFFile *grffile, TileIndex tile, TileContext context, uint32 param1 = 0, uint32 param2 = 0);
+	NewSignalsResolverObject(const GRFFile *grffile, TileIndex tile, TileContext context, uint32 param1 = 0, uint32 param2 = 0, const TraceRestrictProgram *prog = nullptr);
 
 	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, byte relative = 0) override
 	{
@@ -53,5 +56,7 @@ struct NewSignalsResolverObject : public ResolverObject {
 
 	GrfSpecFeature GetFeature() const override;
 };
+
+uint GetNewSignalsRestrictedSignalsInfo(const TraceRestrictProgram *prog, TileIndex tile);
 
 #endif /* NEWGRF_RAILTYPE_H */

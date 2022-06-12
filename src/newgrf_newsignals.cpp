@@ -10,7 +10,9 @@
 #include "stdafx.h"
 #include "debug.h"
 #include "newgrf_newsignals.h"
+#include "newgrf_extension.h"
 #include "map_func.h"
+#include "tracerestrict.h"
 
 #include "safeguards.h"
 
@@ -27,11 +29,14 @@ std::vector<const GRFFile *> _new_signals_grfs;
 	if (this->tile == INVALID_TILE) {
 		switch (variable) {
 			case 0x40: return 0;
+			case A2VRI_SIGNALS_SIGNAL_RESTRICTION_INFO: return 0;
 		}
 	}
 
 	switch (variable) {
 		case 0x40: return GetTerrainType(this->tile, this->context);
+		case A2VRI_SIGNALS_SIGNAL_RESTRICTION_INFO:
+			return GetNewSignalsRestrictedSignalsInfo(this->prog, this->tile);
 	}
 
 	DEBUG(grf, 1, "Unhandled new signals tile variable 0x%X", variable);
@@ -59,9 +64,19 @@ GrfSpecFeature NewSignalsResolverObject::GetFeature() const
  * @param context Are we resolving sprites for the upper halftile, or on a bridge?
  * @param param1 Extra parameter (first parameter of the callback, except railtypes do not have callbacks).
  * @param param2 Extra parameter (second parameter of the callback, except railtypes do not have callbacks).
+ * @param prog Routing restriction program.
  */
-NewSignalsResolverObject::NewSignalsResolverObject(const GRFFile *grffile, TileIndex tile, TileContext context, uint32 param1, uint32 param2)
-	: ResolverObject(grffile, CBID_NO_CALLBACK, param1, param2), newsignals_scope(*this, tile, context)
+NewSignalsResolverObject::NewSignalsResolverObject(const GRFFile *grffile, TileIndex tile, TileContext context, uint32 param1, uint32 param2, const TraceRestrictProgram *prog)
+	: ResolverObject(grffile, CBID_NO_CALLBACK, param1, param2), newsignals_scope(*this, tile, context, prog)
 {
 	this->root_spritegroup = grffile != nullptr ? grffile->new_signals_group : nullptr;
+}
+
+uint GetNewSignalsRestrictedSignalsInfo(const TraceRestrictProgram *prog, TileIndex tile)
+{
+	if (prog == nullptr) return 0;
+
+	uint result = 1;
+	if ((prog->actions_used_flags & TRPAUF_RESERVE_THROUGH_ALWAYS) && !IsTileType(tile, MP_TUNNELBRIDGE)) result |= 2;
+	return result;
 }

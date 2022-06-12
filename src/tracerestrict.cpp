@@ -1323,6 +1323,20 @@ bool TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 	}
 }
 
+void TraceRestrictCheckRefreshSignals(const TraceRestrictProgram *prog, TileIndex tile, size_t old_size, TraceRestrictProgramActionsUsedFlags old_actions_used_flags)
+{
+	if (_network_dedicated) return;
+
+	if (!((old_actions_used_flags ^ prog->actions_used_flags) & TRPAUF_RESERVE_THROUGH_ALWAYS)) return;
+
+	if (old_size == 0 && prog->refcount == 1) return; // Program is new, no need to refresh again
+
+	const TraceRestrictRefId *data = prog->GetRefIdsPtr();
+	for (uint i = 0; i < prog->refcount; i++) {
+		MarkTileDirtyByTile(GetTraceRestrictRefIdTileIndex(data[i]), VMDF_NOT_MAP_MODE);
+	}
+}
+
 /**
  * Gets the signal program for the tile ref @p ref
  * An empty program will be constructed if none exists, and @p create_new is true, unless the pool is full
@@ -1687,6 +1701,9 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 	if (flags & DC_EXEC) {
 		assert(prog);
 
+		size_t old_size = prog->items.size();
+		TraceRestrictProgramActionsUsedFlags old_actions_used_flags = prog->actions_used_flags;
+
 		// move in modified program
 		prog->items.swap(items);
 		prog->actions_used_flags = actions_used_flags;
@@ -1695,6 +1712,8 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 			// program is empty, and this tile is the only reference to it
 			// so delete it, as it's redundant
 			TraceRestrictRemoveProgramMapping(MakeTraceRestrictRefId(tile, track));
+		} else {
+			TraceRestrictCheckRefreshSignals(prog, tile, old_size, old_actions_used_flags);
 		}
 
 		// update windows
@@ -1788,9 +1807,14 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 					return CMD_ERROR;
 				}
 
+				size_t old_size = prog->items.size();
+				TraceRestrictProgramActionsUsedFlags old_actions_used_flags = prog->actions_used_flags;
+
 				prog->items.reserve(prog->items.size() + source_prog->items.size()); // this is in case prog == source_prog
 				prog->items.insert(prog->items.end(), source_prog->items.begin(), source_prog->items.end()); // append
 				prog->Validate();
+
+				TraceRestrictCheckRefreshSignals(prog, tile, old_size, old_actions_used_flags);
 			}
 			break;
 		}

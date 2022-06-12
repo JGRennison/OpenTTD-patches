@@ -2721,8 +2721,10 @@ static void GetSignalXY(TileIndex tile, uint pos, uint &x, uint &y)
 }
 
 void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, SignalState condition, SignalOffsets image, uint pos, SignalType type,
-		SignalVariant variant, bool show_restricted, bool exit_signal = false)
+		SignalVariant variant, const TraceRestrictProgram *prog, bool exit_signal = false)
 {
+	bool show_restricted = (prog != nullptr);
+
 	if (type == SIGTYPE_NO_ENTRY) pos ^= 1;
 
 	uint x, y;
@@ -2742,7 +2744,7 @@ void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track track, Sign
 		aspect = 0;
 	}
 
-	const CustomSignalSpriteResult result = GetCustomSignalSprite(rti, tile, type, variant, aspect, false, show_restricted);
+	const CustomSignalSpriteResult result = GetCustomSignalSprite(rti, tile, type, variant, aspect, false, prog);
 	SpriteID sprite = result.sprite.sprite;
 	PaletteID pal = PAL_NONE;
 	bool is_custom_sprite = (sprite != 0);
@@ -2822,8 +2824,8 @@ static void DrawSingleSignal(TileIndex tile, const RailtypeInfo *rti, Track trac
 	SignalType type       = GetSignalType(tile, track);
 	SignalVariant variant = GetSignalVariant(tile, track);
 
-	bool show_restricted = IsRestrictedSignal(tile) && (GetExistingTraceRestrictProgram(tile, track) != nullptr);
-	DrawSingleSignal(tile, rti, track, condition, image, pos, type, variant, show_restricted);
+	const TraceRestrictProgram *prog = IsRestrictedSignal(tile) ? GetExistingTraceRestrictProgram(tile, track) : nullptr;
+	DrawSingleSignal(tile, rti, track, condition, image, pos, type, variant, prog);
 }
 
 template <typename F>
