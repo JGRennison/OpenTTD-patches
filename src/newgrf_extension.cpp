@@ -52,12 +52,14 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("action0_object_flood_resistant", 1),
 	GRFFeatureInfo("action0_object_viewport_map_tile_type", 1),
 	GRFFeatureInfo("road_stops", 2),
+	GRFFeatureInfo("new_landscape", 1),
 	GRFFeatureInfo(),
 };
 
 /** Action14 remappable feature list */
 extern const GRFFeatureMapDefinition _grf_remappable_features[] = {
 	GRFFeatureMapDefinition(GSF_ROADSTOPS, "road_stops"),
+	GRFFeatureMapDefinition(GSF_NEWLANDSCAPE, "new_landscape"),
 	GRFFeatureMapDefinition(),
 };
 
@@ -105,6 +107,7 @@ extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[] = {
 	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_MIN_BRIDGE_HEIGHT, "roadstop_min_bridge_height"),
 	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_DISALLOWED_BRIDGE_PILLARS, "roadstop_disallowed_bridge_pillars"),
 	GRFPropertyMapDefinition(GSF_ROADSTOPS, A0RPI_ROADSTOP_COST_MULTIPLIERS, "roadstop_cost_multipliers"),
+	GRFPropertyMapDefinition(GSF_NEWLANDSCAPE, A0RPI_NEWLANDSCAPE_ENABLE_RECOLOUR, "newlandscape_enable_recolour"),
 	GRFPropertyMapDefinition(),
 };
 
@@ -128,6 +131,12 @@ extern const GRFVariableMapDefinition _grf_action2_remappable_variables[] = {
 	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x6A, "roadstop_road_stop_grfid_nearby_tiles"),
 	GRFVariableMapDefinition(GSF_RAILTYPES, A2VRI_RAILTYPE_SIGNAL_RESTRICTION_INFO, "railtype_signal_restriction_info"),
 	GRFVariableMapDefinition(GSF_SIGNALS, A2VRI_SIGNALS_SIGNAL_RESTRICTION_INFO, "signals_signal_restriction_info"),
+	GRFVariableMapDefinition(GSF_NEWLANDSCAPE, 0x40, "newlandscape_terrain_type"),
+	GRFVariableMapDefinition(GSF_NEWLANDSCAPE, 0x41, "newlandscape_tile_slope"),
+	GRFVariableMapDefinition(GSF_NEWLANDSCAPE, 0x42, "newlandscape_tile_height"),
+	GRFVariableMapDefinition(GSF_NEWLANDSCAPE, 0x43, "newlandscape_tile_hash"),
+	GRFVariableMapDefinition(GSF_NEWLANDSCAPE, 0x44, "newlandscape_landscape_type"),
+	GRFVariableMapDefinition(GSF_NEWLANDSCAPE, 0x60, "newlandscape_land_info_nearby_tiles"),
 	GRFVariableMapDefinition(),
 };
 

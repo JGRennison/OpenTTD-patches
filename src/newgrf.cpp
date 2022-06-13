@@ -35,6 +35,7 @@
 #include "newgrf_airport.h"
 #include "newgrf_object.h"
 #include "newgrf_newsignals.h"
+#include "newgrf_newlandscape.h"
 #include "newgrf_extension.h"
 #include "rev.h"
 #include "fios.h"
@@ -5168,6 +5169,38 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 	return ret;
 }
 
+/**
+ * Define properties for new landscape
+ * @param id Landscape type.
+ * @param numinfo Number of subsequent IDs to change the property for.
+ * @param prop The property to change.
+ * @param buf The property value.
+ * @return ChangeInfoResult.
+ */
+static ChangeInfoResult NewLandscapeChangeInfo(uint id, int numinfo, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader *buf)
+{
+	/* Properties which are handled per item */
+	ChangeInfoResult ret = CIR_SUCCESS;
+	for (int i = 0; i < numinfo; i++) {
+		switch (prop) {
+			case A0RPI_NEWLANDSCAPE_ENABLE_RECOLOUR: {
+				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
+				bool enabled = (buf->ReadByte() != 0 ? 1 : 0);
+				if (id == NLA3ID_CUSTOM_ROCKS) {
+					SB(_cur.grffile->new_landscape_ctrl_flags, NLCF_ROCKS_RECOLOUR_ENABLED, 1, enabled);
+				}
+				break;
+			}
+
+			default:
+				ret = HandleAction0PropertyDefault(buf, prop);
+				break;
+		}
+	}
+
+	return ret;
+}
+
 static bool HandleChangeInfoResult(const char *caller, ChangeInfoResult cir, GrfSpecFeature feature, int property)
 {
 	switch (cir) {
@@ -5248,6 +5281,7 @@ static const char *_feature_names[] = {
 	"ROADTYPES",
 	"TRAMTYPES",
 	"ROADSTOPS",
+	"NEWLANDSCAPE",
 };
 static_assert(lengthof(_feature_names) == GSF_END);
 
@@ -5353,6 +5387,7 @@ static void FeatureChangeInfo(ByteReader *buf)
 		/* GSF_ROADTYPES */     RoadTypeChangeInfo,
 		/* GSF_TRAMTYPES */     TramTypeChangeInfo,
 		/* GSF_ROADSTOPS */     RoadStopChangeInfo,
+		/* GSF_NEWLANDSCAPE */  NewLandscapeChangeInfo,
 	};
 	static_assert(GSF_END == lengthof(handler));
 	static_assert(lengthof(handler) == lengthof(_cur.grffile->action0_property_remaps), "Action 0 feature list length mismatch");
@@ -8060,6 +8095,7 @@ static void NewSpriteGroup(ByteReader *buf)
 				case GSF_ROADTYPES:
 				case GSF_TRAMTYPES:
 				case GSF_SIGNALS:
+				case GSF_NEWLANDSCAPE:
 				{
 					byte num_loaded  = type;
 					byte num_loading = buf->ReadByte();
@@ -8861,6 +8897,39 @@ static void RoadStopMapSpriteGroup(ByteReader *buf, uint8 idcount)
 	}
 }
 
+static void NewLandscapeMapSpriteGroup(ByteReader *buf, uint8 idcount)
+{
+	uint8 *ids = AllocaM(uint8, idcount);
+	for (uint i = 0; i < idcount; i++) {
+		ids[i] = buf->ReadByte();
+	}
+
+	/* Skip the cargo type section, we only care about the default group */
+	uint8 cidcount = buf->ReadByte();
+	buf->Skip(cidcount * 3);
+
+	uint16 groupid = buf->ReadWord();
+	if (!IsValidGroupID(groupid, "NewLandscapeMapSpriteGroup")) return;
+
+	for (uint i = 0; i < idcount; i++) {
+		uint8 id = ids[i];
+
+		switch (id) {
+			case NLA3ID_CUSTOM_ROCKS:
+				_cur.grffile->new_rocks_group = GetGroupByID(groupid);
+				if (!HasBit(_cur.grffile->new_landscape_ctrl_flags, NLCF_ROCKS_SET)) {
+					SetBit(_cur.grffile->new_landscape_ctrl_flags, NLCF_ROCKS_SET);
+					_new_landscape_rocks_grfs.push_back(_cur.grffile);
+				}
+				break;
+
+			default:
+				grfmsg(1, "NewLandscapeMapSpriteGroup: ID not implemented: %d", id);
+			break;
+		}
+	}
+}
+
 /* Action 0x03 */
 static void FeatureMapSpriteGroup(ByteReader *buf)
 {
@@ -8967,6 +9036,10 @@ static void FeatureMapSpriteGroup(ByteReader *buf)
 
 		case GSF_ROADSTOPS:
 			RoadStopMapSpriteGroup(buf, idcount);
+			return;
+
+		case GSF_NEWLANDSCAPE:
+			NewLandscapeMapSpriteGroup(buf, idcount);
 			return;
 
 		default:
@@ -12229,6 +12302,7 @@ static void ResetNewGRF()
 	_grf_files.clear();
 	_cur.grffile   = nullptr;
 	_new_signals_grfs.clear();
+	_new_landscape_rocks_grfs.clear();
 }
 
 /** Clear all NewGRF errors */
@@ -12414,6 +12488,9 @@ GRFFile::GRFFile(const GRFConfig *config)
 	this->new_signals_group = nullptr;
 	this->new_signal_ctrl_flags = 0;
 	this->new_signal_extra_aspects = 0;
+
+	this->new_rocks_group = nullptr;
+	this->new_landscape_ctrl_flags = 0;
 
 	/* Mark price_base_multipliers as 'not set' */
 	for (Price i = PR_BEGIN; i < PR_END; i++) {

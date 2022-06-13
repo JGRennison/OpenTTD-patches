@@ -89,6 +89,7 @@ enum GrfSpecFeature : uint8 {
 	GSF_TRAMTYPES,
 
 	GSF_ROADSTOPS,
+	GSF_NEWLANDSCAPE,
 	GSF_END,
 
 	GSF_REAL_FEATURE_END = GSF_ROADSTOPS,
@@ -278,9 +279,20 @@ enum {
 	NEW_SIGNALS_MAX_EXTRA_ASPECT = 6,
 };
 
-/** New signal control flags. */
+/** New signal action 3 IDs. */
 enum NewSignalAction3ID {
 	NSA3ID_CUSTOM_SIGNALS       = 0,                          ///< Action 3 ID for custom signal sprites
+};
+
+/** New landscape control flags. */
+enum NewLandscapeCtrlFlags {
+	NLCF_ROCKS_SET              = 0,                          ///< Custom landscape rocks sprites group set.
+	NLCF_ROCKS_RECOLOUR_ENABLED = 1,                          ///< Recolour sprites enabled for rocks
+};
+
+/** New landscape action 3 IDs. */
+enum NewLandscapeAction3ID {
+	NLA3ID_CUSTOM_ROCKS         = 0,                          ///< Action 3 ID for custom landscape sprites
 };
 
 /** GRFFile control flags. */
@@ -345,6 +357,9 @@ struct GRFFile : ZeroedMemoryAllocator {
 	const SpriteGroup *new_signals_group;    ///< New signals sprite group
 	byte new_signal_ctrl_flags;              ///< Ctrl flags for new signals
 	byte new_signal_extra_aspects;           ///< Number of extra aspects for new signals
+
+	const SpriteGroup *new_rocks_group;      ///< New landscape rocks group
+	byte new_landscape_ctrl_flags;           ///< Ctrl flags for new landscape
 
 	byte ctrl_flags;                         ///< General GRF control flags
 
