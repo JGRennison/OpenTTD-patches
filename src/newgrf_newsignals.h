@@ -59,4 +59,4 @@ struct NewSignalsResolverObject : public ResolverObject {
 
 uint GetNewSignalsRestrictedSignalsInfo(const TraceRestrictProgram *prog, TileIndex tile);
 
-#endif /* NEWGRF_RAILTYPE_H */
+#endif /* NEWGRF_NEWSIGNALS_H */
