@@ -773,8 +773,6 @@ bool SpriteGroupDumper::use_shadows = false;
 
 void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint flags)
 {
-	if (sg->nfo_line != 0) this->print_fn(sg, DSGPO_NFO_LINE, sg->nfo_line, nullptr);
-
 	uint32 highlight_tag = 0;
 	auto print = [&]() {
 		this->print_fn(sg, DSGPO_PRINT, highlight_tag, this->buffer);
@@ -786,6 +784,8 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, int padding, uint
 		print();
 		return;
 	}
+
+	if (sg->nfo_line != 0) this->print_fn(sg, DSGPO_NFO_LINE, sg->nfo_line, nullptr);
 
 	bool start_emitted = false;
 	auto emit_start = [&]() {
