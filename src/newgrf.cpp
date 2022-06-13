@@ -6935,6 +6935,22 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 							}
 							store.inference = prev_inference & (~VA2AIF_PREV_MASK);
 							store.store_constant = state.current_constant;
+
+							bool invert_store = false;
+							const DeterministicSpriteGroupAdjust *prev_store = get_prev_single_store((prev_inference & VA2AIF_ONE_OR_ZERO) ? &invert_store : nullptr);
+							if (prev_store != nullptr) {
+								/* This store is a clone of the previous store, or inverted clone of the previous store (bool) */
+								store.inference |= VA2AIF_SINGLE_LOAD;
+								store.var_source.type = (invert_store ? DSGA_TYPE_EQ : DSGA_TYPE_NONE);
+								store.var_source.variable = 0x7D;
+								store.var_source.shift_num = 0;
+								store.var_source.parameter = prev_store->and_mask | (state.temp_stores[prev_store->and_mask].version << 8);
+								store.var_source.and_mask = 0xFFFFFFFF;
+								store.var_source.add_val = 0;
+								store.var_source.divmod_val = 0;
+								break;
+							}
+
 							if (prev_inference & VA2AIF_SINGLE_LOAD) {
 								bool invert = false;
 								const DeterministicSpriteGroupAdjust *prev_load = get_prev_single_load(&invert);
@@ -6950,20 +6966,6 @@ static void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const GrfSp
 									store.var_source.divmod_val = prev_load->divmod_val;
 									break;
 								}
-							}
-							bool invert_store = false;
-							const DeterministicSpriteGroupAdjust *prev_store = get_prev_single_store((prev_inference & VA2AIF_ONE_OR_ZERO) ? &invert_store : nullptr);
-							if (prev_store != nullptr) {
-								/* This store is a clone of the previous store, or inverted clone of the previous store (bool) */
-								store.inference |= VA2AIF_SINGLE_LOAD;
-								store.var_source.type = (invert_store ? DSGA_TYPE_EQ : DSGA_TYPE_NONE);
-								store.var_source.variable = 0x7D;
-								store.var_source.shift_num = 0;
-								store.var_source.parameter = prev_store->and_mask | (state.temp_stores[prev_store->and_mask].version << 8);
-								store.var_source.and_mask = 0xFFFFFFFF;
-								store.var_source.add_val = 0;
-								store.var_source.divmod_val = 0;
-								break;
 							}
 						} else {
 							/* Store to special register, this can change the result of future variable loads for some variables.
