@@ -6251,7 +6251,7 @@ static bool TryMergeBoolMulCombineVarAction2Adjust(VarAction2OptimiseState &stat
 	return false;
 }
 
-/* Returns the number of adjusts to remove: 0: either, 1: current, 2: prev and current */
+/* Returns the number of adjusts to remove: 0: neither, 1: current, 2: prev and current */
 static uint TryMergeVarAction2AdjustConstantOperations(DeterministicSpriteGroupAdjust &prev, DeterministicSpriteGroupAdjust &current)
 {
 	if (prev.type != DSGA_TYPE_NONE || prev.variable != 0x1A || prev.shift_num != 0) return 0;
